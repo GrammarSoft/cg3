@@ -41,6 +41,8 @@ int main(int argc, char* argv[])
     int         i;
 //*/
 
+    Test_HashSave();
+
     U_MAIN_INIT_ARGS(argc, argv);
 
     argc = u_parseArgs(argc, argv, (int32_t)(sizeof(options)/sizeof(options[0])), options);
