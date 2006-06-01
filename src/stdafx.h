@@ -2,10 +2,9 @@
 #define __STDAFX_H
 #pragma once
 
+#include <stdlib.h>
 #include <stdio.h>
-#include <iostream>
-#include <fstream>
-#include <sstream>
+#include <string.h>
 
 // ICU includes
 #include <unicode/uclean.h>
@@ -16,9 +15,10 @@
 
 // CG3 includes
 #include "cg3_resources.h"
+#include "hashtable.h"
 
+/*
 #include "tests.h"
-
 // hash_map fix for cross-platform
 #ifdef WIN32
     #include <hash_map>
@@ -34,5 +34,6 @@
         };
     }
 #endif
+//*/
 
 #endif

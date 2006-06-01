@@ -33,15 +33,6 @@ UOption options[]= {
 int main(int argc, char* argv[])
 {
     UErrorCode  status    = U_ZERO_ERROR;
-/*
-    const char *arg       = NULL;
-    const char *outputDir = NULL;
-    const char *inputDir  = NULL;
-    const char *encoding  = "";
-    int         i;
-//*/
-
-    Test_HashSave();
 
     U_MAIN_INIT_ARGS(argc, argv);
 
