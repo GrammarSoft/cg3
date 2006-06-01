@@ -21,8 +21,8 @@ enum {
 };
 
 UOption options[]= {
-	UOPTION_DEF("help",			'h', UOPT_NO_ARG),
-	UOPTION_DEF("?",			'?', UOPT_NO_ARG),
+	UOPTION_DEF("help",		'h', UOPT_NO_ARG),
+	UOPTION_DEF("?",		'?', UOPT_NO_ARG),
 	UOPTION_DEF("version",		'V', UOPT_NO_ARG),
 	UOPTION_DEF("grammar",		'g', UOPT_REQUIRES_ARG),
 	UOPTION_DEF("unsafe",		'u', UOPT_NO_ARG),
