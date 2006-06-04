@@ -116,40 +116,34 @@
 			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}">
 			<File
-				RelativePath=".\src\cg3.c">
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="$(IntDir)/$(InputName)1.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="$(IntDir)/$(InputName)1.obj"/>
-				</FileConfiguration>
+				RelativePath=".\src\cg3.cpp">
 			</File>
 			<File
-				RelativePath=".\src\cmemory.c">
+				RelativePath=".\src\cmemory.cpp">
 			</File>
 			<File
-				RelativePath=".\src\cstring.c">
+				RelativePath=".\src\cstring.cpp">
 			</File>
 			<File
-				RelativePath=".\src\hashtable.c">
+				RelativePath=".\src\hash.cpp">
 			</File>
 			<File
-				RelativePath=".\src\hashtable_itr.c">
+				RelativePath=".\src\hashtable.cpp">
 			</File>
 			<File
-				RelativePath=".\src\hashtable_utility.c">
+				RelativePath=".\src\hashtable_itr.cpp">
 			</File>
 			<File
-				RelativePath=".\src\tests.c">
+				RelativePath=".\src\hashtable_private.cpp">
 			</File>
 			<File
-				RelativePath=".\src\uoptions.c">
+				RelativePath=".\src\hashtable_utility.cpp">
+			</File>
+			<File
+				RelativePath=".\src\tests.cpp">
+			</File>
+			<File
+				RelativePath=".\src\uoptions.cpp">
 			</File>
 		</Filter>
 		<Filter
@@ -158,6 +152,9 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}">
 			<File
 				RelativePath=".\src\cg3_resources.h">
+			</File>
+			<File
+				RelativePath=".\src\cg3_structs.h">
 			</File>
 			<File
 				RelativePath=".\src\cmemory.h">
@@ -205,6 +202,12 @@
 				RelativePath=".\dancg.spelling">
 			</File>
 		</Filter>
+		<File
+			RelativePath=".\license.icu.txt">
+		</File>
+		<File
+			RelativePath=".\resources.txt">
+		</File>
 	</Files>
 	<Globals>
 	</Globals>

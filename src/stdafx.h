@@ -1,6 +1,5 @@
 #ifndef __STDAFX_H
 #define __STDAFX_H
-#pragma once
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -8,13 +7,15 @@
 
 // ICU includes
 #include <unicode/uclean.h>
+#include <unicode/ustdio.h>
 #include <unicode/utypes.h>
 #include <unicode/ucnv.h>
 #include <unicode/utrans.h>
-#include <unicode/ustdio.h>
+#include <unicode/ustring.h>
 
 // CG3 includes
 #include "cg3_resources.h"
+#include "cg3_structs.h"
 #include "hashtable.h"
 
 /*

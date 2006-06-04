@@ -7,6 +7,7 @@
 #include "hashtable_itr.h"
 #include "hashtable_utility.h"
 
+static unsigned long hash_sdbm(unsigned char *str);
 struct hashtable;
 
 /* Example of use:
