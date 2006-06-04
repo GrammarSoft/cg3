@@ -1,5 +1,5 @@
 #include "stdafx.h"
-
+/*
 void Test_HashSave() {
     struct hashtable *wookie;
     char buffer[10000];
@@ -11,3 +11,4 @@ void Test_HashSave() {
     FILE *f = fopen("/tmp/saved_hash.tmp", "wb");
 //    outfile.write(&wookie, sizeof(wookie));
 }
+//*/

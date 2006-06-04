@@ -101,5 +101,7 @@ int main(int argc, char* argv[])
     }
     status = U_ZERO_ERROR;
 
+	system("pause");
+
     return status;
 }

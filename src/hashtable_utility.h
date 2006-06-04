@@ -16,7 +16,7 @@
  * @param       value
  *
  */
-extern int
+int
 hashtable_change(struct hashtable *h, void *k, void *v);
 
 #endif /* __HASHTABLE_CWC22_H__ */

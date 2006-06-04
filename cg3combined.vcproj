@@ -116,13 +116,37 @@
 			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}">
 			<File
-				RelativePath=".\src\cg3.cpp">
+				RelativePath=".\src\cg3.c">
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath=".\src\cmemory.c">
 			</File>
 			<File
 				RelativePath=".\src\cstring.c">
+			</File>
+			<File
+				RelativePath=".\src\hashtable.c">
+			</File>
+			<File
+				RelativePath=".\src\hashtable_itr.c">
+			</File>
+			<File
+				RelativePath=".\src\hashtable_utility.c">
+			</File>
+			<File
+				RelativePath=".\src\tests.c">
 			</File>
 			<File
 				RelativePath=".\src\uoptions.c">
@@ -142,7 +166,22 @@
 				RelativePath=".\src\cstring.h">
 			</File>
 			<File
+				RelativePath=".\src\hashtable.h">
+			</File>
+			<File
+				RelativePath=".\src\hashtable_itr.h">
+			</File>
+			<File
+				RelativePath=".\src\hashtable_private.h">
+			</File>
+			<File
+				RelativePath=".\src\hashtable_utility.h">
+			</File>
+			<File
 				RelativePath=".\src\stdafx.h">
+			</File>
+			<File
+				RelativePath=".\src\tests.h">
 			</File>
 			<File
 				RelativePath=".\src\uassert.h">
