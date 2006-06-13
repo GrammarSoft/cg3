@@ -52,9 +52,8 @@ am__installdirs = "$(DESTDIR)$(bindir)"
 binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 PROGRAMS = $(bin_PROGRAMS)
 am_vislcg3_OBJECTS = cg3.$(OBJEXT) cmemory.$(OBJEXT) cstring.$(OBJEXT) \
-	hash.$(OBJEXT) hashtable.$(OBJEXT) hashtable_itr.$(OBJEXT) \
-	hashtable_private.$(OBJEXT) hashtable_utility.$(OBJEXT) \
-	tests.$(OBJEXT) uoptions.$(OBJEXT)
+	hash.$(OBJEXT) tests.$(OBJEXT) uoptions.$(OBJEXT) \
+	parser.$(OBJEXT)
 vislcg3_OBJECTS = $(am_vislcg3_OBJECTS)
 vislcg3_DEPENDENCIES =
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)
@@ -68,14 +67,6 @@ LTCXXCOMPILE = $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) \
 CXXLD = $(CXX)
 CXXLINK = $(LIBTOOL) --tag=CXX --mode=link $(CXXLD) $(AM_CXXFLAGS) \
 	$(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
-COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
-	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
-LTCOMPILE = $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) \
-	$(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) \
-	$(AM_CFLAGS) $(CFLAGS)
-CCLD = $(CC)
-LINK = $(LIBTOOL) --tag=CC --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
-	$(AM_LDFLAGS) $(LDFLAGS) -o $@
 SOURCES = $(vislcg3_SOURCES)
 DIST_SOURCES = $(vislcg3_SOURCES)
 ETAGS = etags
@@ -177,10 +168,8 @@ sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
-vislcg3_SOURCES = cg3.cpp cg3_resources.h cg3_structs.h cmemory.cpp cmemory.h \
-	cstring.cpp cstring.h hash.cpp hashtable.cpp hashtable.h hashtable_itr.cpp \
-	hashtable_itr.h hashtable_private.cpp hashtable_private.h hashtable_utility.cpp \
-	hashtable_utility.h stdafx.h tests.cpp tests.h uassert.h uoptions.cpp uoptions.h
+vislcg3_SOURCES = cg3.cpp cmemory.cpp cstring.cpp hash.cpp tests.cpp \
+	uoptions.cpp parser.cpp
 
 
 # set the include path found by configure
@@ -264,10 +253,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cmemory.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cstring.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hash.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hashtable.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hashtable_itr.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hashtable_private.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hashtable_utility.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/parser.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tests.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/uoptions.Po@am__quote@
 

@@ -5,21 +5,8 @@
 #include <stdio.h>
 #include <string.h>
 
-// ICU includes
-#include <unicode/uclean.h>
-#include <unicode/ustdio.h>
-#include <unicode/utypes.h>
-#include <unicode/ucnv.h>
-#include <unicode/utrans.h>
-#include <unicode/ustring.h>
-
-// CG3 includes
-#include "cg3_resources.h"
-#include "cg3_structs.h"
-#include "hashtable.h"
-
-/*
-#include "tests.h"
+//*
+// #include "tests.h"
 // hash_map fix for cross-platform
 #ifdef WIN32
     #include <hash_map>
@@ -36,5 +23,17 @@
     }
 #endif
 //*/
+
+// ICU includes
+#include <unicode/uclean.h>
+#include <unicode/ustdio.h>
+#include <unicode/utypes.h>
+#include <unicode/ucnv.h>
+#include <unicode/utrans.h>
+#include <unicode/ustring.h>
+
+// CG3 includes
+#include "cg3_resources.h"
+#include "cg3_structs.h"
 
 #endif

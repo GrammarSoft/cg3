@@ -2,7 +2,6 @@
 #define __CG3_STRUCTS
 
 #include <unicode/ustring.h>
-#include "hashtable.h"
 
 namespace CG3 {
 
@@ -11,7 +10,7 @@ namespace CG3 {
 	};
 
 	struct MultiTag {
-		hashtable *tags;
+		stdext::hash_map<UChar*, bool> *tags;
 	};
 
 	struct Set {
@@ -20,17 +19,18 @@ namespace CG3 {
 	};
 
 	struct IndexEntry {
-		hashtable *rules;
-		hashtable *sets;
-		hashtable *index_simple;
+		stdext::hash_map<unsigned int, unsigned int> *rules;
+		stdext::hash_map<UChar*, bool> *sets;
+		stdext::hash_map<UChar*, bool> *index_simple;
 	};
 
 	struct Grammar {
 		unsigned int last_modified;
 		UChar *name;
 		unsigned int lines;
-		hashtable *index_simple;
-		hashtable *sets;
+		stdext::hash_map<UChar*, bool> *index_simple;
+		stdext::hash_map<UChar*, bool> *sets;
+		stdext::hash_map<UChar*, bool> *delimiters;
 	};
 
 }
