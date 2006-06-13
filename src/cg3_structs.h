@@ -19,10 +19,18 @@ namespace CG3 {
 		unsigned int line;
 	};
 
+	struct IndexEntry {
+		hashtable *rules;
+		hashtable *sets;
+		hashtable *index_simple;
+	};
+
 	struct Grammar {
 		unsigned int last_modified;
 		UChar *name;
 		unsigned int lines;
+		hashtable *index_simple;
+		hashtable *sets;
 	};
 
 }
