@@ -31,7 +31,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="icuuc.lib"
+				AdditionalDependencies="icuuc.lib icuio.lib"
 				OutputFile="$(OutDir)/cg3combined.exe"
 				LinkIncremental="2"
 				IgnoreDefaultLibraryNames=""
@@ -78,6 +78,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="icuuc.lib icuio.lib"
 				OutputFile="$(OutDir)/cg3combined.exe"
 				LinkIncremental="1"
 				IgnoreDefaultLibraryNames=""
@@ -125,22 +126,10 @@
 				RelativePath=".\src\cstring.cpp">
 			</File>
 			<File
+				RelativePath=".\src\GrammarParser.cpp">
+			</File>
+			<File
 				RelativePath=".\src\hash.cpp">
-			</File>
-			<File
-				RelativePath=".\src\hashtable.cpp">
-			</File>
-			<File
-				RelativePath=".\src\hashtable_itr.cpp">
-			</File>
-			<File
-				RelativePath=".\src\hashtable_private.cpp">
-			</File>
-			<File
-				RelativePath=".\src\hashtable_utility.cpp">
-			</File>
-			<File
-				RelativePath=".\src\tests.cpp">
 			</File>
 			<File
 				RelativePath=".\src\uoptions.cpp">
@@ -154,31 +143,31 @@
 				RelativePath=".\src\cg3_resources.h">
 			</File>
 			<File
-				RelativePath=".\src\cg3_structs.h">
+				RelativePath=".\src\cmemory.h">
 			</File>
 			<File
-				RelativePath=".\src\cmemory.h">
+				RelativePath=".\src\CompositeTag.h">
 			</File>
 			<File
 				RelativePath=".\src\cstring.h">
 			</File>
 			<File
-				RelativePath=".\src\hashtable.h">
+				RelativePath=".\src\Grammar.h">
 			</File>
 			<File
-				RelativePath=".\src\hashtable_itr.h">
+				RelativePath=".\src\GrammarParser.h">
 			</File>
 			<File
-				RelativePath=".\src\hashtable_private.h">
+				RelativePath=".\src\Rule.h">
 			</File>
 			<File
-				RelativePath=".\src\hashtable_utility.h">
+				RelativePath=".\src\Set.h">
 			</File>
 			<File
 				RelativePath=".\src\stdafx.h">
 			</File>
 			<File
-				RelativePath=".\src\tests.h">
+				RelativePath=".\src\Tag.h">
 			</File>
 			<File
 				RelativePath=".\src\uassert.h">
@@ -201,7 +190,13 @@
 			<File
 				RelativePath=".\dancg.spelling">
 			</File>
+			<File
+				RelativePath=".\dancg.spelling.unicode">
+			</File>
 		</Filter>
+		<File
+			RelativePath=".\glossary.txt">
+		</File>
 		<File
 			RelativePath=".\license.icu.txt">
 		</File>

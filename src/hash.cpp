@@ -14,9 +14,21 @@
  * implied. See the License for the specific language governing
  * rights and limitations under the License.
  */
- 
- static unsigned long hash_sdbm(unsigned char *str)
-{
+
+#include "stdafx.h"
+
+unsigned long hash_sdbm_char(const unsigned char *str) {
+    unsigned long hash = 0;
+    int c;
+
+	while (c = *str++) {
+        hash = c + (hash << 6) + (hash << 16) - hash;
+	}
+
+    return hash;
+}
+
+unsigned long hash_sdbm_uchar(const UChar *str) {
     unsigned long hash = 0;
     int c;
 

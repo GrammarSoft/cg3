@@ -17,34 +17,46 @@
 
 #include "stdafx.h"
 #include "uoptions.h"
+#include "GrammarParser.h"
+#include "Grammar.h"
 
-enum {
-    HELP1,
-    HELP2,
-	VERSION,
-    GRAMMAR,
-	UNSAFE,
-	SECTIONS,
-	DEBUG
-};
+namespace Options {
+	enum OPTIONS {
+		HELP1,
+		HELP2,
+		VERSION,
+		GRAMMAR,
+		UNSAFE,
+		SECTIONS,
+		DEBUG,
+		CODEPAGE_ALL,
+		CODEPAGE_GRAMMAR,
+		CODEPAGE_INPUT,
+		CODEPAGE_OUTPUT,
+		NUM_OPTIONS
+	};
 
-UOption options[]= {
-	UOPTION_DEF("help",		'h', UOPT_NO_ARG),
-	UOPTION_DEF("?",		'?', UOPT_NO_ARG),
-	UOPTION_DEF("version",		'V', UOPT_NO_ARG),
-	UOPTION_DEF("grammar",		'g', UOPT_REQUIRES_ARG),
-	UOPTION_DEF("unsafe",		'u', UOPT_NO_ARG),
-	UOPTION_DEF("sections",		's', UOPT_REQUIRES_ARG),
-	UOPTION_DEF("debug",		'd', UOPT_OPTIONAL_ARG)
-};
+	UOption options[]= {
+		UOPTION_DEF("help",					'h', UOPT_NO_ARG),
+		UOPTION_DEF("?",					'?', UOPT_NO_ARG),
+		UOPTION_DEF("version",				'V', UOPT_NO_ARG),
+		UOPTION_DEF("grammar",				'g', UOPT_REQUIRES_ARG),
+		UOPTION_DEF("unsafe",				'u', UOPT_NO_ARG),
+		UOPTION_DEF("sections",				's', UOPT_REQUIRES_ARG),
+		UOPTION_DEF("debug",				'd', UOPT_OPTIONAL_ARG),
+		UOPTION_DEF("codepage-all",			'C', UOPT_REQUIRES_ARG),
+		UOPTION_DEF("codepage-grammar",		NULL, UOPT_REQUIRES_ARG),
+		UOPTION_DEF("codepage-input",		NULL, UOPT_REQUIRES_ARG),
+		UOPTION_DEF("codepage-output",		NULL, UOPT_REQUIRES_ARG)
+	};
+}
 
-int main(int argc, char* argv[])
-{
-    UErrorCode  status    = U_ZERO_ERROR;
+int main(int argc, char* argv[]) {
+    UErrorCode status = U_ZERO_ERROR;
 
     U_MAIN_INIT_ARGS(argc, argv);
 
-    argc = u_parseArgs(argc, argv, (int32_t)(sizeof(options)/sizeof(options[0])), options);
+	argc = u_parseArgs(argc, argv, (int32_t)(sizeof(Options::options)/sizeof(Options::options[0])), Options::options);
 
     if (argc < 0) {
         fprintf(stderr, "%s: error in command line argument \"%s\"\n", argv[0], argv[-argc]);
@@ -52,7 +64,7 @@ int main(int argc, char* argv[])
         argc = -1;
     }
 
-    if (options[VERSION].doesOccur) {
+    if (Options::options[Options::VERSION].doesOccur) {
         fprintf(stderr,
                 "VISL CG-3 Disambiguator version %s.\n"
                 "%s\n",
@@ -60,7 +72,7 @@ int main(int argc, char* argv[])
         return U_ZERO_ERROR;
     }
 
-    if (argc < 0 || options[HELP1].doesOccur || options[HELP2].doesOccur) {
+    if (argc < 0 || Options::options[Options::HELP1].doesOccur || Options::options[Options::HELP2].doesOccur) {
         /*
          * Broken into chucks because the C89 standard says the minimum
          * required supported string length is 509 bytes.
@@ -109,7 +121,30 @@ int main(int argc, char* argv[])
     }
     status = U_ZERO_ERROR;
 
-	system("pause");
+	CG3::Grammar *grammar = new CG3::Grammar;
+	const char *codepage_grammar = "ISO-8859-1";
 
-    return status;
+	if (Options::options[Options::CODEPAGE_GRAMMAR].doesOccur) {
+		codepage_grammar = Options::options[Options::CODEPAGE_GRAMMAR].value;
+	} else if (Options::options[Options::CODEPAGE_ALL].doesOccur) {
+		codepage_grammar = Options::options[Options::CODEPAGE_ALL].value;
+	}
+
+	CG3::GrammarParser::parse_grammar_from_file(Options::options[Options::GRAMMAR].value, codepage_grammar, grammar);
+
+	std::cout << "DELIMITERS = ";
+	stdext::hash_map<UChar*, unsigned long>::iterator iter;
+	for( iter = grammar->delimiters.begin(); iter != grammar->delimiters.end(); iter++ ) {
+		std::wcout << " " << iter->first;
+	}
+	std::cout << " ;" << std::endl;
+
+	std::cout << "PREFERRED-TARGETS = ";
+	for( iter = grammar->preferred_targets.begin(); iter != grammar->preferred_targets.end(); iter++ ) {
+		std::wcout << " " << iter->first;
+	}
+	std::cout << " ;" << std::endl;
+
+	system("pause");
+	return status;
 }

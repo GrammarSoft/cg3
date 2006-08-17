@@ -14,16 +14,38 @@
  * implied. See the License for the specific language governing
  * rights and limitations under the License.
  */
-#ifndef __CG3_RESOURCES_H
-#define __CG3_RESOURCES_H
+#ifndef __COMPOSITETAG_H
+#define __COMPOSITETAG_H
 
-#define CG3_COPYRIGHT_STRING \
-  "Copyright (C) 2006, GrammarSoft Aps and the VISL project at the University of Southern Denmark. All Rights Reserved."
+#include <unicode/ustring.h>
+#include "Tag.h"
 
-#define CG3_VERSION_MAJOR 0
-#define CG3_VERSION_MINOR 0
-#define CG3_VERSION_PATCH 1
+namespace CG3 {
 
-#define CG3_VERSION_STRING "0.0.1"
+	class CompositeTag {
+	public:
+		unsigned int num_tags;
+		std::vector<Tag*> tags;
+
+		CompositeTag() {
+			num_tags = 0;
+		}
+
+		void addTag(Tag *tag) {
+			tags.push_back(tag);
+		}
+
+		Tag *allocateTag(const UChar *tag) {
+			Tag *fresh = new Tag;
+			fresh->parseTag(tag);
+			num_tags++;
+			return fresh;
+		}
+		void destroyTag(Tag *tag) {
+			delete tag;
+		}
+	};
+
+}
 
 #endif
