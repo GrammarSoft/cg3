@@ -170,6 +170,7 @@ namespace CG3 {
 			int MODE_COMMAND = K_IGNORE;
 			int TOKENS_SINCE_CMD = 0;
 			int MODE_PARENTHESES = 0;
+			int PREV_PARENTHESES = 0;
 			int CUR_SECTION = 0;
 			CG3::Set *CUR_SET = 0;
 			CG3::CompositeTag *CUR_COMPTAG = 0;
@@ -219,6 +220,7 @@ namespace CG3 {
 						} else if (u_strcmp(current16, keywords[K_LIST]) == 0) {
 							MODE_COMMAND = K_LIST;
 							TOKENS_SINCE_CMD = 0;
+							PREV_PARENTHESES = MODE_PARENTHESES;
 						} else if (u_strcmp(current16, keywords[K_SET]) == 0) {
 							MODE_COMMAND = K_SET;
 						} else if (u_strcmp(current16, keywords[K_MAPPINGS]) == 0 || u_strcmp(current16, keywords[K_CORRECTIONS]) == 0) {
@@ -244,20 +246,25 @@ namespace CG3 {
 						} else if (MODE_COMMAND == K_LIST) {
 							TOKENS_SINCE_CMD++;
 							if (TOKENS_SINCE_CMD == 1) {
+								if (CUR_SET) {
+									result->addSet(CUR_SET);
+									CUR_SET = 0;
+								}
 								CUR_SET = result->allocateSet();
 								CUR_SET->setName(current16);
+								CUR_SET->setLine(result->lines);
 							} else {
+								if (CUR_COMPTAG && MODE_PARENTHESES < PREV_PARENTHESES) {
+									CUR_SET->addCompositeTag(CUR_COMPTAG);
+									CUR_COMPTAG = 0;
+									PREV_PARENTHESES = MODE_PARENTHESES;
+								}
 								if (!CUR_COMPTAG) {
 									CUR_COMPTAG = CUR_SET->allocateCompositeTag();
 								}
 								CUR_TAG = CUR_COMPTAG->allocateTag(current16);
 								CUR_COMPTAG->addTag(CUR_TAG);
-								if (!MODE_PARENTHESES) {
-									CUR_SET->addCompositeTag(CUR_COMPTAG);
-									CUR_COMPTAG = 0;
-								} else {
-									CUR_COMPTAG = CUR_COMPTAG;
-								}
+								CUR_TAG = 0;
 							}
 						}
 					} else {
@@ -265,25 +272,18 @@ namespace CG3 {
 					}
 					buffer_pos = 0;
 					memset(buffer32, 0, sizeof(UChar32)*BUFFER_SIZE);
-/*
-#ifdef _DEBUG
-					std::wcout << "Current token history: ";
-					for (int i=0;i<NUM_BUFFERS;i++) {
-						std::wcout << buffers16[(NUM_BUFFERS+which16-i)%NUM_BUFFERS] << " ";
-					}
-					std::cout << '\r' << std::flush;
-#endif
-//*/
 				} else if (!MODE_ESCAPE && current == '(') {
 					if (MODE_COMMAND == K_IGNORE) {
 						//std::cerr << "Warning: Invalid opening parenthesis on line " << (NUM_LINES+1) << " - ignoring it." << std::endl;
 					} else {
+						PREV_PARENTHESES = MODE_PARENTHESES;
 						MODE_PARENTHESES++;
 					}
 				} else if (!MODE_ESCAPE && current == ')') {
 					if (MODE_COMMAND == K_IGNORE) {
 						//std::cerr << "Warning: Invalid closing parenthesis on line " << (NUM_LINES+1) << " - ignoring it." << std::endl;
 					} else {
+						PREV_PARENTHESES = MODE_PARENTHESES;
 						MODE_PARENTHESES--;
 					}
 				} else {

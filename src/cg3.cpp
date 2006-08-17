@@ -134,16 +134,39 @@ int main(int argc, char* argv[]) {
 
 	std::cout << "DELIMITERS = ";
 	stdext::hash_map<UChar*, unsigned long>::iterator iter;
-	for( iter = grammar->delimiters.begin(); iter != grammar->delimiters.end(); iter++ ) {
+	for(iter = grammar->delimiters.begin() ; iter != grammar->delimiters.end() ; iter++ ) {
 		std::wcout << " " << iter->first;
 	}
 	std::cout << " ;" << std::endl;
 
 	std::cout << "PREFERRED-TARGETS = ";
-	for( iter = grammar->preferred_targets.begin(); iter != grammar->preferred_targets.end(); iter++ ) {
+	for(iter = grammar->preferred_targets.begin() ; iter != grammar->preferred_targets.end() ; iter++ ) {
 		std::wcout << " " << iter->first;
 	}
 	std::cout << " ;" << std::endl;
+
+	std::cout << "SETS" << std::endl;
+	stdext::hash_map<UChar*, CG3::Set*>::iterator set_iter;
+	for (set_iter = grammar->sets.begin() ; set_iter != grammar->sets.end() ; set_iter++) {
+		std::vector<CG3::CompositeTag*>::iterator comp_iter;
+		CG3::Set *curset = set_iter->second;
+		std::wcout << "LIST " << set_iter->first << " = ";
+		for (comp_iter = curset->tags.begin() ; comp_iter != curset->tags.end() ; comp_iter++) {
+			CG3::CompositeTag *curcomptag = *comp_iter;
+			if (curcomptag->num_tags == 1) {
+				std::wcout << curcomptag->tags.front()->raw << " ";
+			} else {
+				std::wcout << "(";
+				std::vector<CG3::Tag*>::iterator tag_iter;
+				for (tag_iter = curcomptag->tags.begin() ; tag_iter != curcomptag->tags.end() ; tag_iter++) {
+					std::wcout << (*tag_iter)->raw << " ";
+				}
+				std::wcout << ") ";
+			}
+		}
+		std::wcout << " ;" << std::endl;
+	}
+	std::cout << std::endl;
 
 	system("pause");
 	return status;

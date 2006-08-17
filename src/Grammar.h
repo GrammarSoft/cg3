@@ -46,11 +46,13 @@ namespace CG3 {
 			u_strcpy(delim, to);
 			delimiters[delim] = hash_sdbm_uchar(delim);
 		}
-
 		void addPreferredTarget(UChar *to) {
 			UChar *pf = new UChar[u_strlen(to)+1];
 			u_strcpy(pf, to);
 			preferred_targets[pf] = hash_sdbm_uchar(pf);
+		}
+		void addSet(Set *to) {
+			sets[to->name] = to;
 		}
 
 		Set *allocateSet() {

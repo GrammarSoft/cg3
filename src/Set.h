@@ -42,6 +42,9 @@ namespace CG3 {
 			name = new UChar[u_strlen(to)+1];
 			u_strcpy(name, to);
 		}
+		void setLine(unsigned int to) {
+			line = to;
+		}
 
 		void addCompositeTag(CompositeTag *tag) {
 			tags.push_back(tag);
