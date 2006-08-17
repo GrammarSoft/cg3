@@ -74,6 +74,18 @@ unsigned long hash_sdbm_uchar(const UChar *str);
                 return __gnu_cxx::__stl_hash_string(s.c_str());
             }
         };
+        template<> struct hash<UChar*> {
+            size_t operator()(const UChar *str) const {
+                size_t uhash = 0;
+                int c;
+
+                while (c = *str++) {
+                    uhash = c + (uhash << 6) + (uhash << 16) - uhash;
+                }
+
+                return uhash;
+            }
+        };
     }
 #endif
 //*/

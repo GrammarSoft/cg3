@@ -55,9 +55,9 @@ namespace CG3 {
 		};
 		UChar *keywords[KEYWORD_COUNT];
 
+/* These are not really needed.
 		U_STRING_DECL(S_ADD, "ADD", 3);      U_STRING_INIT(S_ADD, "ADD", 3);
 		U_STRING_DECL(S_OR, "OR", 2);        U_STRING_INIT(S_OR, "OR", 2);
-/* These are not really needed.
 		U_STRING_DECL(S_PLUS, "+", 1);       U_STRING_INIT(S_PLUS, "+", 1);
 		U_STRING_DECL(S_MINUS, "-", 1);      U_STRING_INIT(S_MINUS, "-", 1);
 		U_STRING_DECL(S_MULTIPLY, "*", 1);   U_STRING_INIT(S_MULTIPLY, "*", 1);
