@@ -126,6 +126,16 @@ namespace CG3 {
 			}
 			return 0;
 		}
+
+		bool ux_isNewline(const UChar32 current, const UChar32 previous) {
+			return (current == 0x0D0A // ASCII \r\n
+			|| current == 0x2028 // Unicode Line Seperator
+			|| current == 0x2029 // Unicode Paragraph Seperator
+			|| current == 0x0085 // EBCDIC NEL
+			|| current == 0x000C // Form Feed
+			|| current == 0x000A // ASCII \n
+			|| previous == 0x000D); // ASCII \r
+		}
 		
 		int parse_grammar_from_ufile(UFILE *input, CG3::Grammar *result) {
 			u_frewind(input);
@@ -182,13 +192,7 @@ namespace CG3 {
 				previous = current;
 				current = u_fgetcx(input);
 
-				if (current == 0x0D0A // ASCII \r\n
-				 || current == 0x2028 // Unicode Line Seperator
-				 || current == 0x2029 // Unicode Paragraph Seperator
-				 || current == 0x0085 // EBCDIC NEL
-				 || current == 0x000C // Form Feed
-				 || current == 0x000A // ASCII \n
-				 || previous == 0x000D) { // ASCII \r
+				if (ux_isNewline(current, previous)) {
 					if (MODE_PARENTHESES != 0) {
 						std::cerr << "Warning: Mismatched number of parentheses " << MODE_PARENTHESES << " on line " << result->lines << std::endl;
 						MODE_PARENTHESES = 0;
