@@ -31,7 +31,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="icuuc.lib icuio.lib"
+				AdditionalDependencies="icuuc.lib icuio.lib icuin.lib"
 				OutputFile="$(OutDir)/cg3combined.exe"
 				LinkIncremental="2"
 				IgnoreDefaultLibraryNames=""
@@ -78,7 +78,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="icuuc.lib icuio.lib"
+				AdditionalDependencies="icuuc.lib icuio.lib icuin.lib"
 				OutputFile="$(OutDir)/cg3combined.exe"
 				LinkIncremental="1"
 				IgnoreDefaultLibraryNames=""
@@ -132,6 +132,9 @@
 				RelativePath=".\src\hash.cpp">
 			</File>
 			<File
+				RelativePath=".\src\uextras.cpp">
+			</File>
+			<File
 				RelativePath=".\src\uoptions.cpp">
 			</File>
 		</Filter>
@@ -171,6 +174,9 @@
 			</File>
 			<File
 				RelativePath=".\src\uassert.h">
+			</File>
+			<File
+				RelativePath=".\src\uextras.h">
 			</File>
 			<File
 				RelativePath=".\src\uoptions.h">

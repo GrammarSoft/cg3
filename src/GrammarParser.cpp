@@ -16,8 +16,10 @@
  */
 
 #include "stdafx.h"
+#include <unicode/uregex.h>
 #include "GrammarParser.h"
 #include "Grammar.h"
+#include "uextras.h"
 
 namespace CG3 {
 	namespace GrammarParser {
@@ -127,14 +129,8 @@ namespace CG3 {
 			return 0;
 		}
 
-		bool ux_isNewline(const UChar32 current, const UChar32 previous) {
-			return (current == 0x0D0A // ASCII \r\n
-			|| current == 0x2028 // Unicode Line Seperator
-			|| current == 0x2029 // Unicode Paragraph Seperator
-			|| current == 0x0085 // EBCDIC NEL
-			|| current == 0x000C // Form Feed
-			|| current == 0x000A // ASCII \n
-			|| previous == 0x000D); // ASCII \r
+		int parseSingleLine(const UChar *line, CG3::Grammar *result) {
+			return 0;
 		}
 		
 		int parse_grammar_from_ufile(UFILE *input, CG3::Grammar *result) {
@@ -154,153 +150,66 @@ namespace CG3 {
 				return error;
 			}
 
+			// ToDo: Make this dynamic.
+			#define BUFFER_SIZE (6*1024)
 			UErrorCode *uerror = new UErrorCode;
-			UChar32 previous = 0;
-			UChar32 current = 0;
+			URegularExpression* regex_stripcomments = uregex_openC("a+", 0, NULL, uerror);
 
-			#define BUFFER_SIZE 1024
-			#define NUM_BUFFERS 10
-			unsigned int buffer_pos = 0;
-			UChar32 buffer32[BUFFER_SIZE];
-			memset(buffer32, 0, sizeof(UChar32)*BUFFER_SIZE);
-
-			UChar *buffers16[NUM_BUFFERS];
-			for (int i=0;i<NUM_BUFFERS;i++) {
-				buffers16[i] = new UChar[BUFFER_SIZE];
-				memset(buffers16[i], 0, sizeof(UChar)*BUFFER_SIZE);
-			}
-			int which16 = 1;
-			UChar *current16 = buffers16[which16%NUM_BUFFERS];
-			UChar *previous16 = buffers16[(NUM_BUFFERS+which16-1)%NUM_BUFFERS];
-
-			bool MODE_IGNORELINE = false;
-			bool MODE_ESCAPE = false;
-			bool MODE_STRING = false;
-
-			int MODE_COMMAND = K_IGNORE;
-			int TOKENS_SINCE_CMD = 0;
-			int MODE_PARENTHESES = 0;
-			int PREV_PARENTHESES = 0;
-			int CUR_SECTION = 0;
-			CG3::Set *CUR_SET = 0;
-			CG3::CompositeTag *CUR_COMPTAG = 0;
-			CG3::Tag *CUR_TAG = 0;
-			
-			result->lines = 1;
-
+			std::map<unsigned int, UChar*> lines;
+			unsigned int lastcmd = 0;
 			while (!u_feof(input)) {
-				previous = current;
-				current = u_fgetcx(input);
+				result->lines++;
+				UChar *line = new UChar[BUFFER_SIZE];
+				u_fgets(line, BUFFER_SIZE-1, input);
+				ux_cutComments(line, '#');
+				ux_cutComments(line, ';');
 
-				if (ux_isNewline(current, previous)) {
-					if (MODE_PARENTHESES != 0) {
-						std::cerr << "Warning: Mismatched number of parentheses " << MODE_PARENTHESES << " on line " << result->lines << std::endl;
-						MODE_PARENTHESES = 0;
-					}
-					result->lines++;
-					MODE_IGNORELINE = false;
-					MODE_ESCAPE = false;
-				}
-				
-				if ((current == ';' || current == '#') && !MODE_ESCAPE && !MODE_STRING) {
-					if (current == ';') {
-						MODE_COMMAND = K_IGNORE;
-					} else {
-						MODE_IGNORELINE = true;
+				int length = u_strlen(line);
+				bool notnull = false;
+				for (int i=0;i<length;i++) {
+					if (!u_isWhitespace(line[i])) {
+						notnull = true;
+						break;
 					}
 				}
-				if (MODE_IGNORELINE || current == 0x000D) {
-					continue;
-				}
-				if (!MODE_ESCAPE && u_isWhitespace(current)) {
-					MODE_STRING = false;
-					which16 = (which16+1)%NUM_BUFFERS;
-					current16 = buffers16[which16];
-					previous16 = buffers16[(NUM_BUFFERS+which16-1)%NUM_BUFFERS];
-					u_strFromUTF32(current16, BUFFER_SIZE, NULL, buffer32, -1, uerror);
-					if (current16[0] != '=' && u_strlen(current16)) {
-						if (u_strcmp(current16, keywords[K_DELIMITERS]) == 0) {
-							MODE_COMMAND = K_DELIMITERS;
-						} else if (u_strcmp(current16, keywords[K_LIST]) == 0) {
-							MODE_COMMAND = K_LIST;
-							TOKENS_SINCE_CMD = 0;
-							PREV_PARENTHESES = MODE_PARENTHESES;
-						} else if (u_strcmp(current16, keywords[K_SET]) == 0) {
-							MODE_COMMAND = K_SET;
-						} else if (u_strcmp(current16, keywords[K_MAPPINGS]) == 0 || u_strcmp(current16, keywords[K_CORRECTIONS]) == 0) {
-							CUR_SECTION = 0;
-							MODE_COMMAND = K_IGNORE;
-						} else if (u_strcmp(current16, keywords[K_CONSTRAINTS]) == 0 || u_strcmp(current16, keywords[K_SECTION]) == 0) {
-							result->sections++;
-							CUR_SECTION = result->sections;
-							MODE_COMMAND = K_IGNORE;
-						} else if (u_strcmp(current16, keywords[K_SETS]) == 0) {
-							MODE_COMMAND = K_IGNORE;
-						} else if (u_strcmp(current16, keywords[K_ANCHOR]) == 0) {
-							MODE_COMMAND = K_ANCHOR;
-						} else if (u_strcmp(current16, keywords[K_END]) == 0) {
-							MODE_COMMAND = K_IGNORE;
+				if (notnull) {
+					ux_trimUChar(line);
+					bool keyword = false;
+					for (int i=1;i<KEYWORD_COUNT;i++) {
+						if (u_strstr(line, keywords[i])) {
+							lastcmd = result->lines;
+							keyword = true;
 							break;
-						} else if (u_strcmp(current16, keywords[K_PREFERRED_TARGETS]) == 0) {
-							MODE_COMMAND = K_PREFERRED_TARGETS;
-						} else if (MODE_COMMAND == K_DELIMITERS) {
-							result->addDelimiter(current16);
-						} else if (MODE_COMMAND == K_PREFERRED_TARGETS) {
-							result->addPreferredTarget(current16);
-						} else if (MODE_COMMAND == K_LIST) {
-							TOKENS_SINCE_CMD++;
-							if (TOKENS_SINCE_CMD == 1) {
-								if (CUR_SET) {
-									result->addSet(CUR_SET);
-									CUR_SET = 0;
-								}
-								CUR_SET = result->allocateSet();
-								CUR_SET->setName(current16);
-								CUR_SET->setLine(result->lines);
-							} else {
-								if (CUR_COMPTAG && MODE_PARENTHESES < PREV_PARENTHESES) {
-									CUR_SET->addCompositeTag(CUR_COMPTAG);
-									CUR_COMPTAG = 0;
-									PREV_PARENTHESES = MODE_PARENTHESES;
-								}
-								if (!CUR_COMPTAG) {
-									CUR_COMPTAG = CUR_SET->allocateCompositeTag();
-								}
-								CUR_TAG = CUR_COMPTAG->allocateTag(current16);
-								CUR_COMPTAG->addTag(CUR_TAG);
-								CUR_TAG = 0;
-							}
 						}
-					} else {
-						which16 = (NUM_BUFFERS+which16-1)%NUM_BUFFERS;
 					}
-					buffer_pos = 0;
-					memset(buffer32, 0, sizeof(UChar32)*BUFFER_SIZE);
-				} else if (!MODE_ESCAPE && current == '(') {
-					if (MODE_COMMAND == K_IGNORE) {
-						//std::cerr << "Warning: Invalid opening parenthesis on line " << (NUM_LINES+1) << " - ignoring it." << std::endl;
+					if (keyword || !lines[lastcmd]) {
+						lines[result->lines] = line;
 					} else {
-						PREV_PARENTHESES = MODE_PARENTHESES;
-						MODE_PARENTHESES++;
-					}
-				} else if (!MODE_ESCAPE && current == ')') {
-					if (MODE_COMMAND == K_IGNORE) {
-						//std::cerr << "Warning: Invalid closing parenthesis on line " << (NUM_LINES+1) << " - ignoring it." << std::endl;
-					} else {
-						PREV_PARENTHESES = MODE_PARENTHESES;
-						MODE_PARENTHESES--;
+						length = u_strlen(lines[lastcmd]);
+						lines[lastcmd][length] = ' ';
+						lines[lastcmd][length+1] = 0;
+						u_strcat(lines[lastcmd], line);
 					}
 				} else {
-					if (!MODE_ESCAPE && current == '\\') {
-						MODE_ESCAPE = true;
-					} else {
-						buffer32[buffer_pos] = current;
-						buffer_pos++;
-						MODE_STRING = true;
-						MODE_ESCAPE = false;
-					}
+					delete line;
 				}
 			}
+
+			std::map<unsigned int, UChar*>::iterator lines_iter;
+			int _min=BUFFER_SIZE, _max=0, _num=0;
+			double _avg=0.0;
+			for (lines_iter = lines.begin() ; lines_iter != lines.end() ; lines_iter++) {
+				unsigned int which = lines_iter->first;
+				UChar *line = lines_iter->second;
+				int length = u_strlen(line);
+				_min = _min < length ? _min : length;
+				_max = _max > length ? _max : length;
+				_num++;
+				_avg += length;
+				//std::wcout << line << std::endl;
+			}
+			_avg = _avg / (double)_num;
+
 			free_keywords();
 			return 0; // No errors.
 		}
