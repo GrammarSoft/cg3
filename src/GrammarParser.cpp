@@ -22,6 +22,8 @@
 #include "Grammar.h"
 #include "uextras.h"
 
+using namespace CG3::Strings;
+
 namespace CG3 {
 	namespace GrammarParser {
 		bool findMatchingParenthesis(const UChar *structure, int pos, int *result) {
@@ -33,7 +35,7 @@ namespace CG3 {
 					return true;
 				}
 				if (structure[pos] == '(' && structure[pos-1] != '\\') {
-					int tmp = 0;
+					int tmp;
 					findMatchingParenthesis(structure, pos, &tmp);
 					pos = tmp;
 				}
@@ -41,73 +43,216 @@ namespace CG3 {
 			return false;
 		}
 
-		int parseList(const UChar *line, const unsigned int which, CG3::Grammar *result) {
-			UErrorCode *status = new UErrorCode;
+		int parseSetList(UChar *paren, CG3::Set *curset) {
+			if (!curset) {
+				std::cerr << "Error: No preallocated set provided - cannot continue!" << std::endl;
+				return -1;
+			}
+			if (!paren) {
+				std::cerr << "Error: No string provided - cannot continue!" << std::endl;
+				return -1;
+			}
+			UChar *space = paren;
+			while(paren[0]) {
+				if (space[0] == 0) {
+					if (u_strlen(paren)) {
+						CG3::CompositeTag *ctag = curset->allocateCompositeTag();
+						CG3::Tag *tag = ctag->allocateTag(paren);
+						tag->parseTag(paren);
+						ctag->addTag(tag);
+						curset->addCompositeTag(ctag);
+					}
+					paren = space;
+				}
+				else if (space[0] == ' ') {
+					if (space[-1] != '\\') {
+						space[0] = 0;
+						if (u_strlen(paren)) {
+							CG3::CompositeTag *ctag = curset->allocateCompositeTag();
+							CG3::Tag *tag = ctag->allocateTag(paren);
+							tag->parseTag(paren);
+							ctag->addTag(tag);
+							curset->addCompositeTag(ctag);
+						}
+						paren = space+1;
+					}
+				}
+				else if (space[0] == '(') {
+					if (space[-1] != '\\') {
+						int matching = 0;
+						if (!findMatchingParenthesis(space, 0, &matching)) {
+							std::cerr << "Error: Unmatched parentheses on or after line " << curset->getLine() << std::endl;
+						} else {
+							space[matching] = 0;
+							UChar *composite = space+1;
+							ux_trimUChar(composite);
+
+							CG3::CompositeTag *ctag = curset->allocateCompositeTag();
+							UChar *temp = composite;
+							while(temp = u_strchr(temp, ' ')) {
+								if (temp[-1] == '\\') {
+									temp++;
+									continue;
+								}
+								temp[0] = 0;
+								CG3::Tag *tag = ctag->allocateTag(composite);
+								tag->parseTag(composite);
+								ctag->addTag(tag);
+
+								temp++;
+								composite = temp;
+							}
+							CG3::Tag *tag = ctag->allocateTag(composite);
+							tag->parseTag(composite);
+							ctag->addTag(tag);
+
+							curset->addCompositeTag(ctag);
+
+							paren = space+matching+1;
+							space = space+matching;
+							ux_trimUChar(paren);
+						}
+					}
+				}
+				space++;
+			}
+			return 0;
+		}
+
+		int parseSet(const UChar *line, const unsigned int which, CG3::Grammar *result) {
+			if (!which) {
+				std::cerr << "Error: No line number provided - cannot continue!" << std::endl;
+				return -1;
+			}
+			if (!line) {
+				std::cerr << "Error: No string provided at line " << which << " - cannot continue!" << std::endl;
+				return -1;
+			}
 			int length = u_strlen(line);
-
-			uregex_setText(Strings::regexps[Strings::R_PACKSPACE], line, length, status);
-
+			if (!length) {
+				std::cerr << "Error: No string provided at line " << which << " - cannot continue!" << std::endl;
+				return -1;
+			}
 			UChar *local = new UChar[length+1];
-			u_strcpy(local, line);
+			memset(local, 0, length+1);
+			u_strcpy(local, line+u_strlen(keywords[K_SET])+1);
+
+			// Allocate temp vars and skips over "SET X = "
+			UChar *space = u_strchr(local, ' ');
+			space[0] = 0;
+			space+=3;
+
+			CG3::Set *curset = result->allocateSet();
+			curset->setName(local);
+			curset->setLine(which);
+
+			//parseSetList(space, curset);
+
+			result->addSet(curset);
 
 			delete local;
-			delete status;
+			return 0;
+		}
+
+		int parseList(const UChar *line, const unsigned int which, CG3::Grammar *result) {
+			if (!which) {
+				std::cerr << "Error: No line number provided - cannot continue!" << std::endl;
+				return -1;
+			}
+			if (!line) {
+				std::cerr << "Error: No string provided at line " << which << " - cannot continue!" << std::endl;
+				return -1;
+			}
+			int length = u_strlen(line);
+			if (!length) {
+				std::cerr << "Error: No string provided at line " << which << " - cannot continue!" << std::endl;
+				return -1;
+			}
+			UChar *local = new UChar[length+1];
+			memset(local, 0, length+1);
+			u_strcpy(local, line+u_strlen(keywords[K_LIST])+1);
+
+			// Allocate temp vars and skips over "LIST X = "
+			UChar *space = u_strchr(local, ' ');
+			space[0] = 0;
+			space+=3;
+
+			CG3::Set *curset = result->allocateSet();
+			curset->setName(local);
+			curset->setLine(which);
+
+			parseSetList(space, curset);
+
+			result->addSet(curset);
+
+			delete local;
 			return 0;
 		}
 
 		int parseSingleLine(const int key, const UChar *line, const unsigned int which, CG3::Grammar *result) {
-			if (key <= Strings::K_IGNORE || key >= Strings::KEYWORD_COUNT) {
+			if (key <= K_IGNORE || key >= KEYWORD_COUNT) {
 				std::cerr << "Error: Invalid keyword " << key << " - skipping." << std::endl;
 				return -1;
 			}
 
-			UErrorCode *status = new UErrorCode;
+			UErrorCode status = U_ZERO_ERROR;
 			int length = u_strlen(line);
 			UChar *local = new UChar[int(length*1.5)];
+			memset(local, 0, int(length*1.5));
 
-			uregex_reset(Strings::regexps[Strings::R_PACKSPACE], 0, status);
-			uregex_setText(Strings::regexps[Strings::R_PACKSPACE], line, length, status);
-			uregex_replaceAll(Strings::regexps[Strings::R_PACKSPACE], Strings::stringbits[Strings::S_SPACE], 1, local, int(length*1.5), status);
+			uregex_setText(regexps[R_PACKSPACE], line, length, &status);
+			if (status != U_ZERO_ERROR) {
+				std::cerr << "Error: uregex_setText returned " << status << " - cannot continue." << std::endl;
+				return -1;
+			}
+			status = U_ZERO_ERROR;
+			uregex_replaceAll(regexps[R_PACKSPACE], stringbits[S_SPACE], u_strlen(stringbits[S_SPACE]), local, int(length*1.5), &status);
+			if (status != U_ZERO_ERROR) {
+				std::cerr << "Error: uregex_setText returned " << status << " - cannot continue." << std::endl;
+				return -1;
+			}
 
 			switch(key) {
-				case Strings::K_LIST:
+				case K_LIST:
 					parseList(local, which, result);
+					break;
+				case K_SET:
+					parseSet(local, which, result);
 					break;
 				default:
 					break;
 			}
 
 			delete local;
-			delete status;
 			return 0;
 		}
 		
 		int parse_grammar_from_ufile(UFILE *input, CG3::Grammar *result) {
 			u_frewind(input);
 			if (u_feof(input)) {
-				std::cerr << "Input is null - nothing to parse!" << std::endl;
+				std::cerr << "Error: Input is null - nothing to parse!" << std::endl;
 				return -1;
 			}
 			if (!result) {
-				std::cerr << "No preallocated grammar provided - cannot continue!" << std::endl;
+				std::cerr << "Error: No preallocated grammar provided - cannot continue!" << std::endl;
 				return -1;
 			}
 			
-			int error = Strings::init_keywords();
+			int error = init_keywords();
 			if (error) {
-				std::cerr << "init_keywords returned " << error << std::endl;
+				std::cerr << "Error: init_keywords returned " << error << std::endl;
 				return error;
 			}
 
-			error = Strings::init_regexps();
+			error = init_regexps();
 			if (error) {
-				std::cerr << "init_regexps returned " << error << std::endl;
+				std::cerr << "Error: init_regexps returned " << error << std::endl;
 				return error;
 			}
 
-			error = Strings::init_strings();
+			error = init_strings();
 			if (error) {
-				std::cerr << "init_strings returned " << error << std::endl;
+				std::cerr << "Error: init_strings returned " << error << std::endl;
 				return error;
 			}
 
@@ -135,11 +280,11 @@ namespace CG3 {
 				if (notnull) {
 					ux_trimUChar(line);
 					int keyword = 0;
-					for (int i=1;i<Strings::KEYWORD_COUNT;i++) {
+					for (int i=1;i<KEYWORD_COUNT;i++) {
 						UChar *pos = 0;
 						int length = 0;
-						if (pos = u_strstr(line, Strings::keywords[i])) {
-							length = u_strlen(Strings::keywords[i]);
+						if (pos = u_strstr(line, keywords[i])) {
+							length = u_strlen(keywords[i]);
 							if (
 								((pos == line) || (pos > line && u_isWhitespace(pos[-1])))
 								&& (pos[length] == ':' || u_isWhitespace(pos[length]))
@@ -181,9 +326,9 @@ namespace CG3 {
 				keys.erase(which);
 			}
 
-			Strings::free_keywords();
-			Strings::free_regexps();
-			Strings::free_strings();
+			free_keywords();
+			free_regexps();
+			free_strings();
 			lines.clear();
 			keys.clear();
 

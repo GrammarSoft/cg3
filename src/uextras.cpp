@@ -56,18 +56,20 @@ bool ux_trimUChar(UChar *totrim) {
 bool ux_cutComments(UChar *line, const UChar comment) {
 	bool retval = false;
 	UChar *offset_hash = line;
-	UChar *offset_escape = line;
-	while(offset_hash) {
-		offset_escape = u_strchr(offset_hash, '\\');
-		offset_hash = u_strchr(offset_hash, comment);
-		if (offset_hash) {
-			if (!offset_escape || offset_escape != offset_hash-1) {
-				offset_hash[0] = 0;
-				offset_hash = 0;
-				retval = true;
-			} else {
-				offset_hash++;
-			}
+	while(offset_hash = u_strchr(offset_hash, comment)) {
+		if (offset_hash == line) {
+			offset_hash[0] = 0;
+			retval = true;
+			break;
+		}
+		else if (u_isgraph(offset_hash[-1])) {
+			offset_hash++;
+			continue;
+		}
+		else {
+			offset_hash[0] = 0;
+			retval = true;
+			break;
 		}
 	}
 	return retval;

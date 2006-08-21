@@ -77,11 +77,14 @@ namespace CG3 {
 			S_HASH,
 			S_NOT,
 			S_SPACE,
+			S_LINKZ,
 			STRINGS_COUNT
 		};
 
 		enum REGEXPS {
 			R_PACKSPACE,
+			R_ANDLINK,
+			R_CLEANSTRING,
 			REGEXP_COUNT
 		};
 

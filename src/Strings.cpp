@@ -98,16 +98,17 @@ namespace CG3 {
 		}
 		
 		int init_strings() {
-			init_string_single("ADD", S_ADD);
-			init_string_single("OR",  S_OR);
-			init_string_single("+",   S_PLUS);
-			init_string_single("-",   S_MINUS);
-			init_string_single("*",   S_MULTIPLY);
-			init_string_single("^",   S_DENY);
-			init_string_single("\\",  S_BACKSLASH);
-			init_string_single("#",   S_HASH);
-			init_string_single("!",   S_NOT);
-			init_string_single(" ",   S_SPACE);
+			init_string_single("ADD",        S_ADD);
+			init_string_single("OR",         S_OR);
+			init_string_single("+",          S_PLUS);
+			init_string_single("-",          S_MINUS);
+			init_string_single("*",          S_MULTIPLY);
+			init_string_single("^",          S_DENY);
+			init_string_single("\\",         S_BACKSLASH);
+			init_string_single("#",          S_HASH);
+			init_string_single("!",          S_NOT);
+			init_string_single(" ",          S_SPACE);
+			init_string_single(" LINK 0 ",   S_LINKZ);
 
 			for (int i=0;i<STRINGS_COUNT;i++) {
 				if (!stringbits[i]) {
@@ -129,13 +130,21 @@ namespace CG3 {
 
 		int init_regexps() {
 			UParseError *pe = new UParseError;
+			UErrorCode status = U_ZERO_ERROR;
+
 			memset(pe, 0, sizeof(UParseError));
-			UErrorCode *status = new UErrorCode;
-			memset(status, 0, sizeof(UErrorCode));
-			regexps[R_PACKSPACE] = uregex_openC("\\s+\0", 0, pe, status);
+			status = U_ZERO_ERROR;
+			regexps[R_PACKSPACE] = uregex_openC("\\s+\0", 0, pe, &status);
+
+			memset(pe, 0, sizeof(UParseError));
+			status = U_ZERO_ERROR;
+			regexps[R_CLEANSTRING] = uregex_openC("\\s+(TARGET|IF)\\s+\0", 0, pe, &status);
+
+			memset(pe, 0, sizeof(UParseError));
+			status = U_ZERO_ERROR;
+			regexps[R_ANDLINK] = uregex_openC("\\s+AND\\s+\0", 0, pe, &status);
 
 			delete pe;
-			delete status;
 			return 0;
 		}
 

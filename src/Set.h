@@ -45,6 +45,9 @@ namespace CG3 {
 		void setLine(unsigned int to) {
 			line = to;
 		}
+		unsigned int getLine() {
+			return line;
+		}
 
 		void addCompositeTag(CompositeTag *tag) {
 			tags.push_back(tag);

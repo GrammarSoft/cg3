@@ -23,6 +23,8 @@
 				MinimalRebuild="TRUE"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="5"
+				BufferSecurityCheck="TRUE"
+				EnableFunctionLevelLinking="TRUE"
 				UsePrecompiledHeader="2"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="TRUE"
@@ -37,6 +39,7 @@
 				IgnoreDefaultLibraryNames=""
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile="$(OutDir)/cg3combined.pdb"
+				MapLines="FALSE"
 				SubSystem="1"
 				TargetMachine="1"/>
 			<Tool
@@ -65,12 +68,22 @@
 			OutputDirectory="Release"
 			IntermediateDirectory="Release"
 			ConfigurationType="1"
-			CharacterSet="2">
+			CharacterSet="2"
+			WholeProgramOptimization="TRUE">
 			<Tool
 				Name="VCCLCompilerTool"
+				Optimization="3"
+				GlobalOptimizations="TRUE"
+				InlineFunctionExpansion="2"
+				EnableIntrinsicFunctions="TRUE"
+				FavorSizeOrSpeed="1"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
+				StringPooling="FALSE"
+				MinimalRebuild="TRUE"
 				RuntimeLibrary="4"
-				UsePrecompiledHeader="2"
+				BufferSecurityCheck="TRUE"
+				EnableEnhancedInstructionSet="2"
+				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="TRUE"
 				DebugInformationFormat="3"/>
@@ -80,12 +93,13 @@
 				Name="VCLinkerTool"
 				AdditionalDependencies="icuuc.lib icuio.lib icuin.lib"
 				OutputFile="$(OutDir)/cg3combined.exe"
-				LinkIncremental="1"
+				LinkIncremental="0"
 				IgnoreDefaultLibraryNames=""
 				GenerateDebugInformation="TRUE"
 				SubSystem="1"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
+				OptimizeForWindows98="1"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCMIDLTool"/>

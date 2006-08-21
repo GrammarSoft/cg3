@@ -131,7 +131,7 @@ int main(int argc, char* argv[]) {
 	}
 
 	CG3::GrammarParser::parse_grammar_from_file(Options::options[Options::GRAMMAR].value, codepage_grammar, grammar);
-
+//*
 	std::cout << "DELIMITERS = ";
 	stdext::hash_map<UChar*, unsigned long>::iterator iter;
 	for(iter = grammar->delimiters.begin() ; iter != grammar->delimiters.end() ; iter++ ) {
@@ -167,6 +167,6 @@ int main(int argc, char* argv[]) {
 		std::wcout << " ;" << std::endl;
 	}
 	std::cout << std::endl;
-
+//*/
 	return status;
 }
