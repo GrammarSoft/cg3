@@ -132,6 +132,9 @@
 				RelativePath=".\src\hash.cpp">
 			</File>
 			<File
+				RelativePath=".\src\Strings.cpp">
+			</File>
+			<File
 				RelativePath=".\src\uextras.cpp">
 			</File>
 			<File
@@ -168,6 +171,9 @@
 			</File>
 			<File
 				RelativePath=".\src\stdafx.h">
+			</File>
+			<File
+				RelativePath=".\src\Strings.h">
 			</File>
 			<File
 				RelativePath=".\src\Tag.h">
