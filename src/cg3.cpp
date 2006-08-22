@@ -71,50 +71,25 @@ int main(int argc, char* argv[]) {
         return U_ZERO_ERROR;
     }
 
-    if (argc < 0 || Options::options[Options::HELP1].doesOccur || Options::options[Options::HELP2].doesOccur) {
-        /*
-         * Broken into chucks because the C89 standard says the minimum
-         * required supported string length is 509 bytes.
-         */
-        fprintf(stderr,
-                "Usage: vislcg3 [OPTIONS] [FILES]\n"
-                "  Reads the list of resource bundle source files and creates\n"
-                "  binary version of reosurce bundles (.res files)\n");
-        fprintf(stderr,
-                "Options:\n"
-                "  -h or -? or --help       this usage text\n"
-                "  -q or --quiet            do not display warnings\n"
-                "  -v or --verbose          print extra information when processing files\n"
-                "  -V or --version          prints out version number and exits\n"
-                "  -c or --copyright        include copyright notice\n");
-        fprintf(stderr,
-                "  -e or --encoding         encoding of source files\n"
-                "  -d of --destdir          destination directory, followed by the path, defaults to\n"
-                "  -s or --sourcedir        source directory for files followed by path, defaults to\n"
-                "  -i or --icudatadir       directory for locating any needed intermediate data files,\n"
-                "                           followed by path, defaults to\n");
-        fprintf(stderr,
-                "  -j or --write-java       write a Java ListResourceBundle for ICU4J, followed by optional encoding\n"
-                "                           defaults to ASCII and \\uXXXX format.\n"
-                "  -p or --package-name     For ICU4J: package name for writing the ListResourceBundle for ICU4J,\n"
-                "                           defaults to com.ibm.icu.impl.data\n"
-                "                           For ICU4C: Package name for the .res files on output. Specfiying\n"
-                "                           'ICUDATA' defaults to the current ICU4C data name.\n");
-        fprintf(stderr,
-                "  -b or --bundle-name      bundle name for writing the ListResourceBundle for ICU4J,\n"
-                "                           defaults to LocaleElements\n"
-                "  -x or --write-xliff      write a XLIFF file for the resource bundle. Followed by an optional output file name.\n"
-                "  -k or --strict           use pedantic parsing of syntax\n"
-                /*added by Jing*/
-                "  -l or --language         For XLIFF: language code compliant with ISO 639.\n");
-
-        return argc < 0 ? U_ILLEGAL_ARGUMENT_ERROR : U_ZERO_ERROR;
-    }
-
 	if (!Options::options[Options::GRAMMAR].doesOccur) {
 		std::cerr << "Error: No grammar specified - cannot continue!" << std::endl;
-		return -1;
+		argc = -argc;
 	}
+
+    if (argc < 0 || Options::options[Options::HELP1].doesOccur || Options::options[Options::HELP2].doesOccur) {
+        std::cerr << "Usage: vislcg3 [OPTIONS] [FILES]" << std::endl;
+        std::cerr << std::endl;
+        std::cerr << "Options:" << std::endl;
+        std::cerr << " -h or -? or --help       Displays this list." << std::endl;
+        std::cerr << " -V or --version          Prints version number." << std::endl;
+        std::cerr << " -g or --grammar          Specifies the grammar file to use for disambiguation." << std::endl;
+        std::cerr << " -C or --codepage-all     The codepage to use for grammar, input, and output streams. Defaults to ISO-8859-1." << std::endl;
+        std::cerr << " --codepage-grammar       Codepage to use for grammar. Overwrites --codepage-all." << std::endl;
+        std::cerr << " --codepage-input         Codepage to use for input. Overwrites --codepage-all." << std::endl;
+        std::cerr << " --codepage-output        Codepage to use for output. Overwrites --codepage-all." << std::endl;
+        
+        return argc < 0 ? U_ILLEGAL_ARGUMENT_ERROR : U_ZERO_ERROR;
+    }
 
     /* Initialize ICU */
     u_init(&status);

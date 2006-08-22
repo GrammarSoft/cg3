@@ -1,6 +1,6 @@
 bin_PROGRAMS = vislcg3
 vislcg3_SOURCES = cg3.cpp cmemory.cpp cstring.cpp hash.cpp uoptions.cpp \
-	GrammarParser.cpp
+		GrammarParser.cpp Strings.cpp uextras.cpp
 
 # set the include path found by configure
 INCLUDES= $(all_includes)

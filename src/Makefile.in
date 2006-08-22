@@ -50,7 +50,8 @@ am__installdirs = "$(DESTDIR)$(bindir)"
 binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 PROGRAMS = $(bin_PROGRAMS)
 am_vislcg3_OBJECTS = cg3.$(OBJEXT) cmemory.$(OBJEXT) cstring.$(OBJEXT) \
-	hash.$(OBJEXT) uoptions.$(OBJEXT) GrammarParser.$(OBJEXT)
+	hash.$(OBJEXT) uoptions.$(OBJEXT) GrammarParser.$(OBJEXT) \
+	Strings.$(OBJEXT) uextras.$(OBJEXT)
 vislcg3_OBJECTS = $(am_vislcg3_OBJECTS)
 vislcg3_DEPENDENCIES =
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)
@@ -166,7 +167,7 @@ sharedstatedir = @sharedstatedir@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 vislcg3_SOURCES = cg3.cpp cmemory.cpp cstring.cpp hash.cpp uoptions.cpp \
-	GrammarParser.cpp
+		GrammarParser.cpp Strings.cpp uextras.cpp
 
 
 # set the include path found by configure
@@ -247,10 +248,12 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GrammarParser.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Strings.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cg3.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cmemory.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cstring.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hash.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/uextras.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/uoptions.Po@am__quote@
 
 .cpp.o:

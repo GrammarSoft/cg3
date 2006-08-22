@@ -20,8 +20,7 @@
 #include "cstring.h"
 #include "uoptions.h"
 
-U_CAPI int U_EXPORT2
-u_parseArgs(int argc, char* argv[],
+int u_parseArgs(int argc, char* argv[],
             int optionCount, UOption options[]) {
     char *arg;
     int i=1, remaining=1;
