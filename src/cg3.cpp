@@ -154,16 +154,18 @@ int main(int argc, char* argv[]) {
 		if (!curset->tags.empty()) {
 			std::wcout << "LIST " << curset->getName() << " = ";
 			for (comp_iter = curset->tags.begin() ; comp_iter != curset->tags.end() ; comp_iter++) {
-				CG3::CompositeTag *curcomptag = comp_iter->second;
-				if (curcomptag->num_tags == 1) {
-					std::wcout << curcomptag->tags.begin()->second->raw << " ";
-				} else {
-					std::wcout << "(";
-					std::map<unsigned long, CG3::Tag*>::iterator tag_iter;
-					for (tag_iter = curcomptag->_tags_map.begin() ; tag_iter != curcomptag->_tags_map.end() ; tag_iter++) {
-						std::wcout << tag_iter->second->raw << " ";
+				if (comp_iter->second) {
+					CG3::CompositeTag *curcomptag = comp_iter->second;
+					if (curcomptag->tags.size() == 1) {
+						std::wcout << curcomptag->tags.begin()->second->raw << " ";
+					} else {
+						std::wcout << "(";
+						std::map<unsigned long, CG3::Tag*>::iterator tag_iter;
+						for (tag_iter = curcomptag->tags_map.begin() ; tag_iter != curcomptag->tags_map.end() ; tag_iter++) {
+							std::wcout << tag_iter->second->raw << " ";
+						}
+						std::wcout << ") ";
 					}
-					std::wcout << ") ";
 				}
 			}
 			std::wcout << " ;" << std::endl;

@@ -43,7 +43,7 @@ namespace CG3 {
 			return false;
 		}
 
-		int parseSetList(UChar *paren, CG3::Set *curset) {
+		int parseSetList(UChar *paren, CG3::Set *curset, CG3::Grammar *result) {
 			if (!curset) {
 				std::cerr << "Error: No preallocated set provided - cannot continue!" << std::endl;
 				return -1;
@@ -56,11 +56,11 @@ namespace CG3 {
 			while(paren[0]) {
 				if (space[0] == 0) {
 					if (u_strlen(paren)) {
-						CG3::CompositeTag *ctag = curset->allocateCompositeTag();
+						CG3::CompositeTag *ctag = result->allocateCompositeTag();
 						CG3::Tag *tag = ctag->allocateTag(paren);
 						tag->parseTag(paren);
 						ctag->addTag(tag);
-						curset->addCompositeTag(ctag);
+						result->addCompositeTagToSet(curset, ctag);
 					}
 					paren = space;
 				}
@@ -68,11 +68,11 @@ namespace CG3 {
 					if (space[-1] != '\\') {
 						space[0] = 0;
 						if (u_strlen(paren)) {
-							CG3::CompositeTag *ctag = curset->allocateCompositeTag();
+							CG3::CompositeTag *ctag = result->allocateCompositeTag();
 							CG3::Tag *tag = ctag->allocateTag(paren);
 							tag->parseTag(paren);
 							ctag->addTag(tag);
-							curset->addCompositeTag(ctag);
+							result->addCompositeTagToSet(curset, ctag);
 						}
 						paren = space+1;
 					}
@@ -87,7 +87,7 @@ namespace CG3 {
 							UChar *composite = space+1;
 							ux_trimUChar(composite);
 
-							CG3::CompositeTag *ctag = curset->allocateCompositeTag();
+							CG3::CompositeTag *ctag = result->allocateCompositeTag();
 							UChar *temp = composite;
 							while(temp = u_strchr(temp, ' ')) {
 								if (temp[-1] == '\\') {
@@ -106,7 +106,7 @@ namespace CG3 {
 							tag->parseTag(composite);
 							ctag->addTag(tag);
 
-							curset->addCompositeTag(ctag);
+							result->addCompositeTagToSet(curset, ctag);
 
 							paren = space+matching+1;
 							space = space+matching;
@@ -186,7 +186,7 @@ namespace CG3 {
 								set_b = hash_sdbm_uchar(set_c->getName());
 							}
 
-							CG3::CompositeTag *ctag = set_c->allocateCompositeTag();
+							CG3::CompositeTag *ctag = result->allocateCompositeTag();
 							UChar *temp = composite;
 							while(temp = u_strchr(temp, ' ')) {
 								if (temp[-1] == '\\') {
@@ -205,7 +205,7 @@ namespace CG3 {
 							tag->parseTag(composite);
 							ctag->addTag(tag);
 
-							set_c->addCompositeTag(ctag);
+							result->addCompositeTagToSet(set_c, ctag);
 							result->addSet(set_c);
 
 							paren = space+matching+1;
@@ -284,7 +284,7 @@ namespace CG3 {
 			curset->setName(local);
 			curset->setLine(which);
 
-			parseSetList(space, curset);
+			parseSetList(space, curset, result);
 
 			result->addSet(curset);
 

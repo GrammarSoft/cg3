@@ -19,6 +19,7 @@
 
 #include <set>
 #include <unicode/ustring.h>
+#include "Grammar.h"
 #include "CompositeTag.h"
 #include "Strings.h"
 
@@ -27,7 +28,6 @@ namespace CG3 {
 	class Set {
 	public:
 		UChar *name;
-		unsigned int num_tags;
 		unsigned int line;
 		stdext::hash_map<UChar*, unsigned long> index_certain;
 		stdext::hash_map<UChar*, unsigned long> index_possible;
@@ -36,7 +36,6 @@ namespace CG3 {
 
 		Set() {
 			name = 0;
-			num_tags = 0;
 			line = 0;
 		}
 
@@ -67,15 +66,19 @@ namespace CG3 {
 		}
 
 		void addCompositeTag(CompositeTag *tag) {
-			tags[tag->rehash()] = tag;
-			num_tags++;
+			if (tag && tag->tags.size()) {
+				tags[tag->rehash()] = tag;
+			} else {
+				std::cerr << "Error: Attempted to add empty tag to set." << std::endl;
+			}
 		}
-
-		CompositeTag *allocateCompositeTag() {
-			return new CompositeTag;
+		void removeCompositeTag(CompositeTag *tag) {
+			tags[tag->getHash()] = 0;
+			tags.erase(tag->getHash());
 		}
-		void destroyCompositeTag(CompositeTag *tag) {
-			delete tag;
+		void removeCompositeTag(unsigned long tag) {
+			tags[tag] = 0;
+			tags.erase(tag);
 		}
 	};
 

@@ -29,6 +29,7 @@ namespace CG3 {
 		UChar *name;
 		unsigned int lines;
 		unsigned int sections;
+		stdext::hash_map<unsigned long, CompositeTag*> tags;
 		stdext::hash_map<unsigned long, Set*> sets;
 		stdext::hash_map<UChar*, unsigned long> delimiters;
 		stdext::hash_map<UChar*, unsigned long> preferred_targets;
@@ -69,6 +70,22 @@ namespace CG3 {
 			delete set;
 		}
 
+		void addCompositeTagToSet(Set *set, CompositeTag *tag) {
+			if (tag && tag->tags.size()) {
+				tag->rehash();
+				tags[tag->getHash()] = tag;
+				set->addCompositeTag(tag);
+			} else {
+				std::cerr << "Error: Attempted to add empty tag to grammar and set." << std::endl;
+			}
+		}
+		CompositeTag *allocateCompositeTag() {
+			return new CompositeTag;
+		}
+		void destroyCompositeTag(CompositeTag *tag) {
+			delete tag;
+		}
+
 		void manipulateSet(unsigned long set_a, int op, unsigned long set_b, Set *result) {
 			if (op <= S_IGNORE || op >= STRINGS_COUNT) {
 				std::wcerr << "Error: Invalid set operation on line " << lines << std::endl;
@@ -86,19 +103,49 @@ namespace CG3 {
 				std::wcerr << "Error: Invalid target for set operation on line " << lines << std::endl;
 				return;
 			}
+			const UChar *tmpa = sets[set_a]->getName();
+			const UChar *tmpb = sets[set_b]->getName();
+			Set *stmpa = sets[set_a];
+			Set *stmpb = sets[set_b];
 			switch (op) {
-				case S_OR:
-					break;
-				case S_PLUS:
-					break;
-				case S_MINUS:
-					break;
 				case S_MULTIPLY:
-					break;
 				case S_DENY:
-					break;
 				case S_NOT:
+				case S_PLUS:
+				case S_OR:
+				{
+					stdext::hash_map<unsigned long, CompositeTag*>::iterator iter;
+					for (iter = sets[set_a]->tags.begin() ; iter != sets[set_a]->tags.end() ; iter++) {
+						if (!result->tags[iter->first]) {
+							if (true || iter->second) {
+								addCompositeTagToSet(result, iter->second);
+							}
+						}
+					}
+					for (iter = sets[set_b]->tags.begin() ; iter != sets[set_b]->tags.end() ; iter++) {
+						if (!result->tags[iter->first]) {
+							if (true || iter->second) {
+								addCompositeTagToSet(result, iter->second);
+							}
+						}
+					}
 					break;
+				}
+				case S_MINUS:
+				{
+					stdext::hash_map<unsigned long, CompositeTag*>::iterator iter;
+					for (iter = sets[set_a]->tags.begin() ; iter != sets[set_a]->tags.end() ; iter++) {
+						if (!result->tags[iter->first]) {
+							addCompositeTagToSet(result, iter->second);
+						}
+					}
+					for (iter = sets[set_b]->tags.begin() ; iter != sets[set_b]->tags.end() ; iter++) {
+						if (result->tags[iter->first]) {
+							result->removeCompositeTag(iter->first);
+						}
+					}
+					break;
+				}
 				default:
 					std::wcerr << "Error: Invalid set operation " << op << " between " << sets[set_a]->getName() << " and " << sets[set_b]->getName() << std::endl;
 					break;
