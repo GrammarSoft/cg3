@@ -67,6 +67,7 @@ namespace CG3 {
 //*/
 
 		enum STRINGS {
+			S_IGNORE,
 			S_ADD,
 			S_OR,
 			S_PLUS,
@@ -102,5 +103,7 @@ namespace CG3 {
 		int free_regexps();
 	}
 }
+
+using namespace CG3::Strings;
 
 #endif

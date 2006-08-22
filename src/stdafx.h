@@ -22,6 +22,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <map>
+#include <time.h>
 
 // ICU includes
 #include <unicode/uclean.h>
@@ -35,6 +36,7 @@
 // hash_map fix for cross-platform
 unsigned long hash_sdbm_char(const unsigned char *str);
 unsigned long hash_sdbm_uchar(const UChar *str);
+unsigned long hash_sdbm_uchar(const UChar *str, unsigned long hash);
 
 #ifdef WIN32
 	#include <winsock.h>

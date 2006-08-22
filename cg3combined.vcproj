@@ -82,7 +82,7 @@
 				MinimalRebuild="TRUE"
 				RuntimeLibrary="4"
 				BufferSecurityCheck="TRUE"
-				EnableEnhancedInstructionSet="2"
+				EnableEnhancedInstructionSet="0"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="TRUE"
@@ -225,6 +225,9 @@
 		</File>
 		<File
 			RelativePath=".\license.icu.txt">
+		</File>
+		<File
+			RelativePath=".\pieces.txt">
 		</File>
 		<File
 			RelativePath=".\resources.txt">

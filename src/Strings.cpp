@@ -98,6 +98,7 @@ namespace CG3 {
 		}
 		
 		int init_strings() {
+			init_string_single("1f283fc29adb937a892e09bbc124b85c this is a dummy string to hold position 0", S_IGNORE);
 			init_string_single("ADD",        S_ADD);
 			init_string_single("OR",         S_OR);
 			init_string_single("+",          S_PLUS);

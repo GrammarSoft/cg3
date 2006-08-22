@@ -53,6 +53,7 @@ namespace Options {
 
 int main(int argc, char* argv[]) {
     UErrorCode status = U_ZERO_ERROR;
+	srand((unsigned int)time(0));
 
     U_MAIN_INIT_ARGS(argc, argv);
 
@@ -60,8 +61,6 @@ int main(int argc, char* argv[]) {
 
     if (argc < 0) {
         fprintf(stderr, "%s: error in command line argument \"%s\"\n", argv[0], argv[-argc]);
-    } else if (argc < 2) {
-        argc = -1;
     }
 
     if (Options::options[Options::VERSION].doesOccur) {
@@ -112,17 +111,24 @@ int main(int argc, char* argv[]) {
         return argc < 0 ? U_ILLEGAL_ARGUMENT_ERROR : U_ZERO_ERROR;
     }
 
+	if (!Options::options[Options::GRAMMAR].doesOccur) {
+		std::cerr << "Error: No grammar specified - cannot continue!" << std::endl;
+		return -1;
+	}
+
     /* Initialize ICU */
     u_init(&status);
     if (U_FAILURE(status) && status != U_FILE_ACCESS_ERROR) {
         fprintf(stderr, "Error: can not initialize ICU.  status = %s\n",
             u_errorName(status));
-        exit(1);
+        return -1;
     }
     status = U_ZERO_ERROR;
 
 	CG3::Grammar *grammar = new CG3::Grammar;
 	const char *codepage_grammar = "ISO-8859-1";
+	const char *codepage_input   = "ISO-8859-1";
+	const char *codepage_output  = "ISO-8859-1";
 
 	if (Options::options[Options::CODEPAGE_GRAMMAR].doesOccur) {
 		codepage_grammar = Options::options[Options::CODEPAGE_GRAMMAR].value;
@@ -130,7 +136,27 @@ int main(int argc, char* argv[]) {
 		codepage_grammar = Options::options[Options::CODEPAGE_ALL].value;
 	}
 
+	if (Options::options[Options::CODEPAGE_INPUT].doesOccur) {
+		codepage_input = Options::options[Options::CODEPAGE_INPUT].value;
+	} else if (Options::options[Options::CODEPAGE_ALL].doesOccur) {
+		codepage_input = Options::options[Options::CODEPAGE_ALL].value;
+	}
+
+	if (Options::options[Options::CODEPAGE_OUTPUT].doesOccur) {
+		codepage_output = Options::options[Options::CODEPAGE_OUTPUT].value;
+	} else if (Options::options[Options::CODEPAGE_ALL].doesOccur) {
+		codepage_output = Options::options[Options::CODEPAGE_ALL].value;
+	}
+
 	CG3::GrammarParser::parse_grammar_from_file(Options::options[Options::GRAMMAR].value, codepage_grammar, grammar);
+
+	UFILE *input = 0;
+	if (argc < 2 || strcmp(argv[argc-1], "-") == 0) {
+		input = u_finit(stdin, NULL, codepage_input);
+	} else {
+		input = u_fopen(argv[argc-1], "r", NULL, codepage_input);
+	}
+
 //*
 	std::cout << "DELIMITERS = ";
 	stdext::hash_map<UChar*, unsigned long>::iterator iter;
@@ -146,25 +172,27 @@ int main(int argc, char* argv[]) {
 	std::cout << " ;" << std::endl;
 
 	std::cout << "SETS" << std::endl;
-	stdext::hash_map<UChar*, CG3::Set*>::iterator set_iter;
+	stdext::hash_map<unsigned long, CG3::Set*>::iterator set_iter;
 	for (set_iter = grammar->sets.begin() ; set_iter != grammar->sets.end() ; set_iter++) {
-		std::vector<CG3::CompositeTag*>::iterator comp_iter;
+		stdext::hash_map<unsigned long, CG3::CompositeTag*>::iterator comp_iter;
 		CG3::Set *curset = set_iter->second;
-		std::wcout << "LIST " << set_iter->first << " = ";
-		for (comp_iter = curset->tags.begin() ; comp_iter != curset->tags.end() ; comp_iter++) {
-			CG3::CompositeTag *curcomptag = *comp_iter;
-			if (curcomptag->num_tags == 1) {
-				std::wcout << curcomptag->tags.front()->raw << " ";
-			} else {
-				std::wcout << "(";
-				std::vector<CG3::Tag*>::iterator tag_iter;
-				for (tag_iter = curcomptag->tags.begin() ; tag_iter != curcomptag->tags.end() ; tag_iter++) {
-					std::wcout << (*tag_iter)->raw << " ";
+		if (!curset->tags.empty()) {
+			std::wcout << "LIST " << curset->getName() << " = ";
+			for (comp_iter = curset->tags.begin() ; comp_iter != curset->tags.end() ; comp_iter++) {
+				CG3::CompositeTag *curcomptag = comp_iter->second;
+				if (curcomptag->num_tags == 1) {
+					std::wcout << curcomptag->tags.begin()->second->raw << " ";
+				} else {
+					std::wcout << "(";
+					std::map<unsigned long, CG3::Tag*>::iterator tag_iter;
+					for (tag_iter = curcomptag->_tags_map.begin() ; tag_iter != curcomptag->_tags_map.end() ; tag_iter++) {
+						std::wcout << tag_iter->second->raw << " ";
+					}
+					std::wcout << ") ";
 				}
-				std::wcout << ") ";
 			}
+			std::wcout << " ;" << std::endl;
 		}
-		std::wcout << " ;" << std::endl;
 	}
 	std::cout << std::endl;
 //*/

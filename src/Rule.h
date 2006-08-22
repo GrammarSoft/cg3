@@ -25,7 +25,7 @@ namespace CG3 {
 	class Rule {
 	public:
 		UChar *name;
-		Set *target;
+		unsigned long target;
 		unsigned int line;
 	};
 

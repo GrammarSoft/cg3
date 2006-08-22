@@ -17,8 +17,10 @@
 #ifndef __SET_H
 #define __SET_H
 
+#include <set>
 #include <unicode/ustring.h>
 #include "CompositeTag.h"
+#include "Strings.h"
 
 namespace CG3 {
 
@@ -30,7 +32,7 @@ namespace CG3 {
 		stdext::hash_map<UChar*, unsigned long> index_certain;
 		stdext::hash_map<UChar*, unsigned long> index_possible;
 		stdext::hash_map<UChar*, unsigned long> index_impossible;
-		std::vector<CompositeTag*> tags;
+		stdext::hash_map<unsigned long, CompositeTag*> tags;
 
 		Set() {
 			name = 0;
@@ -38,9 +40,24 @@ namespace CG3 {
 			line = 0;
 		}
 
+		void setName(unsigned long to) {
+			if (!to) {
+				to = (unsigned long)rand();
+			}
+			name = new UChar[24];
+			memset(name, 0, 24);
+			u_sprintf(name, "_G_%u_", to);
+		}
 		void setName(const UChar *to) {
-			name = new UChar[u_strlen(to)+1];
-			u_strcpy(name, to);
+			if (to) {
+				name = new UChar[u_strlen(to)+1];
+				u_strcpy(name, to);
+			} else {
+				setName((unsigned long)rand());
+			}
+		}
+		const UChar *getName() {
+			return name;
 		}
 		void setLine(unsigned int to) {
 			line = to;
@@ -50,7 +67,7 @@ namespace CG3 {
 		}
 
 		void addCompositeTag(CompositeTag *tag) {
-			tags.push_back(tag);
+			tags[tag->rehash()] = tag;
 			num_tags++;
 		}
 

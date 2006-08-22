@@ -25,14 +25,23 @@ namespace CG3 {
 	class CompositeTag {
 	public:
 		unsigned int num_tags;
-		std::vector<Tag*> tags;
+		unsigned long hash;
+		std::map<unsigned long, Tag*> _tags_map;
+		stdext::hash_map<unsigned long, Tag*> tags;
 
 		CompositeTag() {
+			hash = 0;
 			num_tags = 0;
 		}
 
 		void addTag(Tag *tag) {
-			tags.push_back(tag);
+			tags[hash_sdbm_uchar(tag->raw)] = tag;
+			_tags_map[hash_sdbm_uchar(tag->raw)] = tag;
+		}
+		void removeTag(Tag *tag) {
+			tags.erase(hash_sdbm_uchar(tag->raw));
+			_tags_map.erase(hash_sdbm_uchar(tag->raw));
+			destroyTag(tags[hash_sdbm_uchar(tag->raw)]);
 		}
 
 		Tag *allocateTag(const UChar *tag) {
@@ -43,6 +52,16 @@ namespace CG3 {
 		}
 		void destroyTag(Tag *tag) {
 			delete tag;
+		}
+
+		unsigned long rehash() {
+			unsigned long retval = 0;
+			std::map<unsigned long, Tag*>::iterator iter;
+			for (iter = _tags_map.begin() ; iter != _tags_map.end() ; iter++) {
+				retval = hash_sdbm_uchar(iter->second->raw, retval);
+			}
+			hash = retval;
+			return retval;
 		}
 	};
 

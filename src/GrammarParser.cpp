@@ -119,6 +119,109 @@ namespace CG3 {
 			return 0;
 		}
 
+		int parseNextSet(UChar *paren, CG3::Set *curset, CG3::Grammar *result) {
+			if (!curset) {
+				std::cerr << "Error: No preallocated set provided - cannot continue!" << std::endl;
+				return -1;
+			}
+			if (!paren) {
+				std::cerr << "Error: No string provided - cannot continue!" << std::endl;
+				return -1;
+			}
+			UChar *space = paren;
+			unsigned long set_a = 0;
+			unsigned long set_b = 0;
+			int set_op = S_IGNORE;
+			while(paren[0]) {
+				if (space[0] == 0) {
+					if (u_strlen(paren)) {
+						int t_set_op = ux_isSetOp(paren);
+						if (!set_a && t_set_op) {
+							std::cerr << "Error: Found unexpected set operator " << paren << " on line " << curset->getLine() << std::endl;
+							break;
+						} else if (!set_a && !t_set_op) {
+							set_a = hash_sdbm_uchar(paren);
+						} else if (!set_b && !t_set_op) {
+							set_b = hash_sdbm_uchar(paren);
+						} else if (t_set_op) {
+							set_op = t_set_op;
+						}
+					}
+					paren = space;
+				}
+				else if (space[0] == ' ') {
+					if (space[-1] != '\\') {
+						space[0] = 0;
+						if (u_strlen(paren)) {
+							int t_set_op = ux_isSetOp(paren);
+							if (!set_a && t_set_op) {
+								std::cerr << "Error: Found unexpected set operator " << paren << " on line " << curset->getLine() << std::endl;
+								break;
+							} else if (!set_a && !t_set_op) {
+								set_a = hash_sdbm_uchar(paren);
+							} else if (!set_b && !t_set_op) {
+								set_b = hash_sdbm_uchar(paren);
+							} else if (t_set_op) {
+								set_op = t_set_op;
+							}
+						}
+						paren = space+1;
+					}
+				}
+				else if (space[0] == '(') {
+					if (space[-1] != '\\') {
+						int matching = 0;
+						if (!findMatchingParenthesis(space, 0, &matching)) {
+							std::cerr << "Error: Unmatched parentheses on or after line " << curset->getLine() << std::endl;
+						} else {
+							space[matching] = 0;
+							UChar *composite = space+1;
+							ux_trimUChar(composite);
+
+							CG3::Set *set_c = result->allocateSet();
+							set_c->setName(hash_sdbm_uchar(composite));
+							if (!set_a) {
+								set_a = hash_sdbm_uchar(set_c->getName());
+							} else if (!set_b) {
+								set_b = hash_sdbm_uchar(set_c->getName());
+							}
+
+							CG3::CompositeTag *ctag = set_c->allocateCompositeTag();
+							UChar *temp = composite;
+							while(temp = u_strchr(temp, ' ')) {
+								if (temp[-1] == '\\') {
+									temp++;
+									continue;
+								}
+								temp[0] = 0;
+								CG3::Tag *tag = ctag->allocateTag(composite);
+								tag->parseTag(composite);
+								ctag->addTag(tag);
+
+								temp++;
+								composite = temp;
+							}
+							CG3::Tag *tag = ctag->allocateTag(composite);
+							tag->parseTag(composite);
+							ctag->addTag(tag);
+
+							set_c->addCompositeTag(ctag);
+							result->addSet(set_c);
+
+							paren = space+matching+1;
+							space = space+matching;
+							ux_trimUChar(paren);
+						}
+					}
+				}
+				if (set_a && set_b && set_op) {
+					result->manipulateSet(set_a, set_op, set_b, curset);
+				}
+				space++;
+			}
+			return 0;
+		}
+
 		int parseSet(const UChar *line, const unsigned int which, CG3::Grammar *result) {
 			if (!which) {
 				std::cerr << "Error: No line number provided - cannot continue!" << std::endl;
@@ -146,7 +249,7 @@ namespace CG3 {
 			curset->setName(local);
 			curset->setLine(which);
 
-			//parseSetList(space, curset);
+			parseNextSet(space, curset, result);
 
 			result->addSet(curset);
 
@@ -197,18 +300,19 @@ namespace CG3 {
 
 			UErrorCode status = U_ZERO_ERROR;
 			int length = u_strlen(line);
-			UChar *local = new UChar[int(length*1.5)];
-			memset(local, 0, int(length*1.5));
+			int locallength = int(length*1.5);
+			UChar *local = new UChar[locallength];
+			memset(local, 0, locallength);
 
 			uregex_setText(regexps[R_PACKSPACE], line, length, &status);
 			if (status != U_ZERO_ERROR) {
-				std::cerr << "Error: uregex_setText returned " << status << " - cannot continue." << std::endl;
+				std::cerr << "Error: uregex_setText returned " << u_errorName(status) << " - cannot continue." << std::endl;
 				return -1;
 			}
 			status = U_ZERO_ERROR;
-			uregex_replaceAll(regexps[R_PACKSPACE], stringbits[S_SPACE], u_strlen(stringbits[S_SPACE]), local, int(length*1.5), &status);
+			uregex_replaceAll(regexps[R_PACKSPACE], stringbits[S_SPACE], u_strlen(stringbits[S_SPACE]), local, locallength, &status);
 			if (status != U_ZERO_ERROR) {
-				std::cerr << "Error: uregex_setText returned " << status << " - cannot continue." << std::endl;
+				std::cerr << "Error: uregex_replaceAll returned " << u_errorName(status) << " - cannot continue." << std::endl;
 				return -1;
 			}
 

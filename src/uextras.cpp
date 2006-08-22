@@ -17,7 +17,10 @@
 
 #include "stdafx.h"
 #include <unicode/uchar.h>
+#include "Strings.h"
 #include "uextras.h"
+
+using namespace CG3::Strings;
 
 bool ux_isNewline(const UChar32 current, const UChar32 previous) {
 	return (current == 0x0D0A // ASCII \r\n
@@ -57,7 +60,7 @@ bool ux_cutComments(UChar *line, const UChar comment) {
 	bool retval = false;
 	UChar *offset_hash = line;
 	while(offset_hash = u_strchr(offset_hash, comment)) {
-		if (offset_hash == line) {
+		if (offset_hash == line || offset_hash[1] == 0 || ux_isNewline(offset_hash[1], offset_hash[0])) {
 			offset_hash[0] = 0;
 			retval = true;
 			break;
@@ -71,6 +74,24 @@ bool ux_cutComments(UChar *line, const UChar comment) {
 			retval = true;
 			break;
 		}
+	}
+	return retval;
+}
+
+int ux_isSetOp(const UChar *it) {
+	int retval = S_IGNORE;
+	if (u_strcmp(it, stringbits[S_OR]) == 0) {
+		retval = S_OR;
+	} else if (u_strcmp(it, stringbits[S_PLUS]) == 0) {
+		retval = S_PLUS;
+	} else if (u_strcmp(it, stringbits[S_MINUS]) == 0) {
+		retval = S_MINUS;
+	} else if (u_strcmp(it, stringbits[S_MULTIPLY]) == 0) {
+		retval = S_MULTIPLY;
+	} else if (u_strcmp(it, stringbits[S_DENY]) == 0) {
+		retval = S_DENY;
+	} else if (u_strcmp(it, stringbits[S_NOT]) == 0) {
+		retval = S_NOT;
 	}
 	return retval;
 }

@@ -38,3 +38,13 @@ unsigned long hash_sdbm_uchar(const UChar *str) {
 
     return hash;
 }
+
+unsigned long hash_sdbm_uchar(const UChar *str, unsigned long hash) {
+    int c;
+
+	while (c = *str++) {
+        hash = c + (hash << 6) + (hash << 16) - hash;
+	}
+
+    return hash;
+}

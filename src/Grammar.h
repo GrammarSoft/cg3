@@ -29,7 +29,7 @@ namespace CG3 {
 		UChar *name;
 		unsigned int lines;
 		unsigned int sections;
-		stdext::hash_map<UChar*, Set*> sets;
+		stdext::hash_map<unsigned long, Set*> sets;
 		stdext::hash_map<UChar*, unsigned long> delimiters;
 		stdext::hash_map<UChar*, unsigned long> preferred_targets;
 		stdext::hash_map<unsigned int, Rule*> rules;
@@ -52,7 +52,14 @@ namespace CG3 {
 			preferred_targets[pf] = hash_sdbm_uchar(pf);
 		}
 		void addSet(Set *to) {
-			sets[to->name] = to;
+			if (sets[hash_sdbm_uchar(to->name)]) {
+				std::wcerr << "Warning: Overwrote set " << to->name << std::endl;
+				destroySet(sets[hash_sdbm_uchar(to->name)]);
+			}
+			sets[hash_sdbm_uchar(to->name)] = to;
+		}
+		Set *getSet(unsigned long which) {
+			return sets[which] ? sets[which] : 0;
 		}
 
 		Set *allocateSet() {
@@ -60,6 +67,42 @@ namespace CG3 {
 		}
 		void destroySet(Set *set) {
 			delete set;
+		}
+
+		void manipulateSet(unsigned long set_a, int op, unsigned long set_b, Set *result) {
+			if (op <= S_IGNORE || op >= STRINGS_COUNT) {
+				std::wcerr << "Error: Invalid set operation on line " << lines << std::endl;
+				return;
+			}
+			if (!sets[set_a]) {
+				std::wcerr << "Error: Invalid left operand for set operation on line " << lines << std::endl;
+				return;
+			}
+			if (!sets[set_b]) {
+				std::wcerr << "Error: Invalid right operand for set operation on line " << lines << std::endl;
+				return;
+			}
+			if (!result) {
+				std::wcerr << "Error: Invalid target for set operation on line " << lines << std::endl;
+				return;
+			}
+			switch (op) {
+				case S_OR:
+					break;
+				case S_PLUS:
+					break;
+				case S_MINUS:
+					break;
+				case S_MULTIPLY:
+					break;
+				case S_DENY:
+					break;
+				case S_NOT:
+					break;
+				default:
+					std::wcerr << "Error: Invalid set operation " << op << " between " << sets[set_a]->getName() << " and " << sets[set_b]->getName() << std::endl;
+					break;
+			}
 		}
 	};
 
