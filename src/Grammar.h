@@ -86,7 +86,7 @@ namespace CG3 {
 			delete tag;
 		}
 
-		void manipulateSet(unsigned long set_a, int op, unsigned long set_b, Set *result) {
+		void manipulateSet(unsigned long set_a, int op, unsigned long set_b, unsigned long result) {
 			if (op <= S_IGNORE || op >= STRINGS_COUNT) {
 				std::wcerr << "Error: Invalid set operation on line " << lines << std::endl;
 				return;
@@ -103,10 +103,7 @@ namespace CG3 {
 				std::wcerr << "Error: Invalid target for set operation on line " << lines << std::endl;
 				return;
 			}
-			const UChar *tmpa = sets[set_a]->getName();
-			const UChar *tmpb = sets[set_b]->getName();
-			Set *stmpa = sets[set_a];
-			Set *stmpb = sets[set_b];
+			stdext::hash_map<unsigned long, CompositeTag*> result_tags;
 			switch (op) {
 				case S_MULTIPLY:
 				case S_DENY:
@@ -114,34 +111,23 @@ namespace CG3 {
 				case S_PLUS:
 				case S_OR:
 				{
+//*
 					stdext::hash_map<unsigned long, CompositeTag*>::iterator iter;
 					for (iter = sets[set_a]->tags.begin() ; iter != sets[set_a]->tags.end() ; iter++) {
-						if (!result->tags[iter->first]) {
-							if (true || iter->second) {
-								addCompositeTagToSet(result, iter->second);
-							}
-						}
+						result_tags[iter->first] = iter->second;
 					}
 					for (iter = sets[set_b]->tags.begin() ; iter != sets[set_b]->tags.end() ; iter++) {
-						if (!result->tags[iter->first]) {
-							if (true || iter->second) {
-								addCompositeTagToSet(result, iter->second);
-							}
-						}
+						result_tags[iter->first] = iter->second;
 					}
+//*/
 					break;
 				}
 				case S_MINUS:
 				{
 					stdext::hash_map<unsigned long, CompositeTag*>::iterator iter;
 					for (iter = sets[set_a]->tags.begin() ; iter != sets[set_a]->tags.end() ; iter++) {
-						if (!result->tags[iter->first]) {
-							addCompositeTagToSet(result, iter->second);
-						}
-					}
-					for (iter = sets[set_b]->tags.begin() ; iter != sets[set_b]->tags.end() ; iter++) {
-						if (result->tags[iter->first]) {
-							result->removeCompositeTag(iter->first);
+						if (!sets[set_b]->tags[iter->first]) {
+							result_tags[iter->first] = iter->second;
 						}
 					}
 					break;
@@ -150,6 +136,8 @@ namespace CG3 {
 					std::wcerr << "Error: Invalid set operation " << op << " between " << sets[set_a]->getName() << " and " << sets[set_b]->getName() << std::endl;
 					break;
 			}
+			sets[result]->tags.clear();
+			sets[result]->tags.swap(result_tags);
 		}
 	};
 

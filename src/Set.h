@@ -72,6 +72,7 @@ namespace CG3 {
 				std::cerr << "Error: Attempted to add empty tag to set." << std::endl;
 			}
 		}
+/*
 		void removeCompositeTag(CompositeTag *tag) {
 			tags[tag->getHash()] = 0;
 			tags.erase(tag->getHash());
@@ -80,6 +81,7 @@ namespace CG3 {
 			tags[tag] = 0;
 			tags.erase(tag);
 		}
+//*/
 	};
 
 }

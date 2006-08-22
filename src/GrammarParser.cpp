@@ -131,6 +131,7 @@ namespace CG3 {
 			UChar *space = paren;
 			unsigned long set_a = 0;
 			unsigned long set_b = 0;
+			unsigned long res = hash_sdbm_uchar(curset->getName());
 			int set_op = S_IGNORE;
 			while(paren[0]) {
 				if (space[0] == 0) {
@@ -206,6 +207,7 @@ namespace CG3 {
 							ctag->addTag(tag);
 
 							result->addCompositeTagToSet(set_c, ctag);
+							set_c->setLine(curset->getLine());
 							result->addSet(set_c);
 
 							paren = space+matching+1;
@@ -215,7 +217,10 @@ namespace CG3 {
 					}
 				}
 				if (set_a && set_b && set_op) {
-					result->manipulateSet(set_a, set_op, set_b, curset);
+					result->manipulateSet(set_a, set_op, set_b, res);
+					set_op = 0;
+					set_b = 0;
+					set_a = res;
 				}
 				space++;
 			}
@@ -248,10 +253,9 @@ namespace CG3 {
 			CG3::Set *curset = result->allocateSet();
 			curset->setName(local);
 			curset->setLine(which);
+			result->addSet(curset);
 
 			parseNextSet(space, curset, result);
-
-			result->addSet(curset);
 
 			delete local;
 			return 0;
