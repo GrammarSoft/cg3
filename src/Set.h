@@ -29,6 +29,7 @@ namespace CG3 {
 	public:
 		UChar *name;
 		unsigned int line;
+		stdext::hash_map<UChar*, unsigned long> index_requires; // Simple common tags across the set
 		stdext::hash_map<UChar*, unsigned long> index_certain;
 		stdext::hash_map<UChar*, unsigned long> index_possible;
 		stdext::hash_map<UChar*, unsigned long> index_impossible;

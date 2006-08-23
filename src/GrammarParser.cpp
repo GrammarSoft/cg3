@@ -143,6 +143,10 @@ namespace CG3 {
 						} else if (!set_a && !t_set_op) {
 							set_a = hash_sdbm_uchar(paren);
 						} else if (!set_b && !t_set_op) {
+							if (!set_op) {
+								std::wcerr << "Error: Found unexpected set " << paren << " on line " << curset->getLine() << std::endl;
+								break;
+							}
 							set_b = hash_sdbm_uchar(paren);
 						} else if (t_set_op) {
 							set_op = t_set_op;
@@ -161,6 +165,10 @@ namespace CG3 {
 							} else if (!set_a && !t_set_op) {
 								set_a = hash_sdbm_uchar(paren);
 							} else if (!set_b && !t_set_op) {
+								if (!set_op) {
+									std::wcerr << "Error: Found unexpected set " << paren << " on line " << curset->getLine() << std::endl;
+									break;
+								}
 								set_b = hash_sdbm_uchar(paren);
 							} else if (t_set_op) {
 								set_op = t_set_op;
@@ -395,7 +403,7 @@ namespace CG3 {
 							length = u_strlen(keywords[i]);
 							if (
 								((pos == line) || (pos > line && u_isWhitespace(pos[-1])))
-								&& (pos[length] == ':' || u_isWhitespace(pos[length]))
+								&& (pos[length] == 0 || pos[length] == ':' || u_isWhitespace(pos[length]))
 								) {
 								lastcmd = result->lines;
 								keyword = i;

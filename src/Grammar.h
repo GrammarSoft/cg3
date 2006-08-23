@@ -53,11 +53,12 @@ namespace CG3 {
 			preferred_targets[pf] = hash_sdbm_uchar(pf);
 		}
 		void addSet(Set *to) {
-			if (sets[hash_sdbm_uchar(to->name)]) {
+			unsigned long hash = hash_sdbm_uchar(to->name);
+			if (sets[hash]) {
 				std::wcerr << "Warning: Overwrote set " << to->name << std::endl;
-				destroySet(sets[hash_sdbm_uchar(to->name)]);
+				destroySet(sets[hash]);
 			}
-			sets[hash_sdbm_uchar(to->name)] = to;
+			sets[hash] = to;
 		}
 		Set *getSet(unsigned long which) {
 			return sets[which] ? sets[which] : 0;
@@ -105,13 +106,8 @@ namespace CG3 {
 			}
 			stdext::hash_map<unsigned long, CompositeTag*> result_tags;
 			switch (op) {
-				case S_MULTIPLY:
-				case S_DENY:
-				case S_NOT:
-				case S_PLUS:
 				case S_OR:
 				{
-//*
 					stdext::hash_map<unsigned long, CompositeTag*>::iterator iter;
 					for (iter = sets[set_a]->tags.begin() ; iter != sets[set_a]->tags.end() ; iter++) {
 						result_tags[iter->first] = iter->second;
@@ -119,9 +115,10 @@ namespace CG3 {
 					for (iter = sets[set_b]->tags.begin() ; iter != sets[set_b]->tags.end() ; iter++) {
 						result_tags[iter->first] = iter->second;
 					}
-//*/
 					break;
 				}
+				case S_DENY:
+				case S_NOT:
 				case S_MINUS:
 				{
 					stdext::hash_map<unsigned long, CompositeTag*>::iterator iter;
@@ -132,9 +129,35 @@ namespace CG3 {
 					}
 					break;
 				}
+				case S_MULTIPLY:
+				case S_PLUS:
+				{
+					stdext::hash_map<unsigned long, CompositeTag*>::iterator iter_a;
+					for (iter_a = sets[set_a]->tags.begin() ; iter_a != sets[set_a]->tags.end() ; iter_a++) {
+						stdext::hash_map<unsigned long, CompositeTag*>::iterator iter_b;
+						for (iter_b = sets[set_b]->tags.begin() ; iter_b != sets[set_b]->tags.end() ; iter_b++) {
+							CompositeTag *tag_r = allocateCompositeTag();
+
+							stdext::hash_map<unsigned long, Tag*>::iterator iter_t;
+							for (iter_t = iter_a->second->tags.begin() ; iter_t != iter_a->second->tags.end() ; iter_t++) {
+								Tag *ttag = tag_r->allocateTag(iter_t->second->raw);
+								tag_r->addTag(ttag);
+							}
+
+							for (iter_t = iter_b->second->tags.begin() ; iter_t != iter_b->second->tags.end() ; iter_t++) {
+								Tag *ttag = tag_r->allocateTag(iter_t->second->raw);
+								tag_r->addTag(ttag);
+							}
+							result_tags[tag_r->rehash()] = tag_r;
+						}
+					}
+					break;
+				}
 				default:
+				{
 					std::wcerr << "Error: Invalid set operation " << op << " between " << sets[set_a]->getName() << " and " << sets[set_b]->getName() << std::endl;
 					break;
+				}
 			}
 			sets[result]->tags.clear();
 			sets[result]->tags.swap(result_tags);
