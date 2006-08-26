@@ -1,5 +1,2 @@
-C Hash Table
-URL: http://www.cl.cam.ac.uk/~cwc22/hashtable/
-
 IBM ICU
 URL: http://ibm.com/software/globalization/icu/
