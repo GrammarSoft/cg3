@@ -119,121 +119,86 @@ namespace CG3 {
 			return 0;
 		}
 
-		int parseNextSet(UChar *paren, CG3::Set *curset, CG3::Grammar *result) {
-			if (!curset) {
-				std::cerr << "Error: No preallocated set provided - cannot continue!" << std::endl;
-				return -1;
+		int readSetOperator(UChar **paren, CG3::Grammar *result) {
+			UChar *space = 0;
+			int set_op = 0;
+			ux_trimUChar(*paren);
+			space = u_strchr(*paren, ' ');
+			if (space) {
+				space[0] = 0;
+				set_op = ux_isSetOp(*paren);
+				if (!set_op) {
+					space[0] = ' ';
+					return 0;
+				}
+			} else {
+				set_op = ux_isSetOp(*paren);
+				if (!set_op) {
+					return 0;
+				}
 			}
-			if (!paren) {
-				std::cerr << "Error: No string provided - cannot continue!" << std::endl;
-				return -1;
+			*paren = *paren+u_strlen(*paren)+1;
+			return set_op;
+		}
+
+		unsigned long readSingleSet(UChar **paren, CG3::Grammar *result) {
+			ux_trimUChar(*paren);
+			UChar *space = u_strchr(*paren, ' ');
+			unsigned long retval = 0;
+
+			if ((*paren)[0] == '(') {
+				space = (*paren);
+				int matching = 0;
+				if (!findMatchingParenthesis(space, 0, &matching)) {
+					std::cerr << "Error: Unmatched parentheses on or after line " << result->lines << std::endl;
+				} else {
+					space[matching] = 0;
+					UChar *composite = space+1;
+					ux_trimUChar(composite);
+
+					CG3::Set *set_c = result->allocateSet();
+					set_c->setName(hash_sdbm_uchar(composite));
+					retval = hash_sdbm_uchar(set_c->getName());
+
+					CG3::CompositeTag *ctag = result->allocateCompositeTag();
+					UChar *temp = composite;
+					while(temp = u_strchr(temp, ' ')) {
+						if (temp[-1] == '\\') {
+							temp++;
+							continue;
+						}
+						temp[0] = 0;
+						CG3::Tag *tag = ctag->allocateTag(composite);
+						tag->parseTag(composite);
+						ctag->addTag(tag);
+
+						temp++;
+						composite = temp;
+					}
+					CG3::Tag *tag = ctag->allocateTag(composite);
+					tag->parseTag(composite);
+					ctag->addTag(tag);
+
+					result->addCompositeTagToSet(set_c, ctag);
+					set_c->setLine(result->lines);
+					result->addSet(set_c);
+
+					*paren = space+matching+1;
+					space = space+matching;
+					ux_trimUChar(*paren);
+				}
 			}
-			UChar *space = paren;
-			unsigned long set_a = 0;
-			unsigned long set_b = 0;
-			unsigned long res = hash_sdbm_uchar(curset->getName());
-			int set_op = S_IGNORE;
-			// ToDo: Split this into seperate
-			while(paren[0]) {
-				if (space[0] == 0) {
-					if (u_strlen(paren)) {
-						int t_set_op = ux_isSetOp(paren);
-						if (!set_a && t_set_op) {
-							std::cerr << "Error: Found unexpected set operator " << paren << " on line " << curset->getLine() << std::endl;
-							break;
-						} else if (!set_a && !t_set_op) {
-							set_a = hash_sdbm_uchar(paren);
-						} else if (!set_b && !t_set_op) {
-							if (!set_op) {
-								std::wcerr << "Error: Found unexpected set " << paren << " on line " << curset->getLine() << std::endl;
-								break;
-							}
-							set_b = hash_sdbm_uchar(paren);
-						} else if (t_set_op) {
-							set_op = t_set_op;
-						}
-					}
-					paren = space;
+			else if (space && space[0] == ' ') {
+				space[0] = 0;
+				if (u_strlen(*paren)) {
+					retval = hash_sdbm_uchar(*paren);
 				}
-				else if (space[0] == ' ') {
-					if (space[-1] != '\\') {
-						space[0] = 0;
-						if (u_strlen(paren)) {
-							int t_set_op = ux_isSetOp(paren);
-							if (!set_a && t_set_op) {
-								std::cerr << "Error: Found unexpected set operator " << paren << " on line " << curset->getLine() << std::endl;
-								break;
-							} else if (!set_a && !t_set_op) {
-								set_a = hash_sdbm_uchar(paren);
-							} else if (!set_b && !t_set_op) {
-								if (!set_op) {
-									std::wcerr << "Error: Found unexpected set " << paren << " on line " << curset->getLine() << std::endl;
-									break;
-								}
-								set_b = hash_sdbm_uchar(paren);
-							} else if (t_set_op) {
-								set_op = t_set_op;
-							}
-						}
-						paren = space+1;
-					}
-				}
-				else if (space[0] == '(') {
-					if (space[-1] != '\\') {
-						int matching = 0;
-						if (!findMatchingParenthesis(space, 0, &matching)) {
-							std::cerr << "Error: Unmatched parentheses on or after line " << curset->getLine() << std::endl;
-						} else {
-							space[matching] = 0;
-							UChar *composite = space+1;
-							ux_trimUChar(composite);
-
-							CG3::Set *set_c = result->allocateSet();
-							set_c->setName(hash_sdbm_uchar(composite));
-							if (!set_a) {
-								set_a = hash_sdbm_uchar(set_c->getName());
-							} else if (!set_b) {
-								set_b = hash_sdbm_uchar(set_c->getName());
-							}
-
-							CG3::CompositeTag *ctag = result->allocateCompositeTag();
-							UChar *temp = composite;
-							while(temp = u_strchr(temp, ' ')) {
-								if (temp[-1] == '\\') {
-									temp++;
-									continue;
-								}
-								temp[0] = 0;
-								CG3::Tag *tag = ctag->allocateTag(composite);
-								tag->parseTag(composite);
-								ctag->addTag(tag);
-
-								temp++;
-								composite = temp;
-							}
-							CG3::Tag *tag = ctag->allocateTag(composite);
-							tag->parseTag(composite);
-							ctag->addTag(tag);
-
-							result->addCompositeTagToSet(set_c, ctag);
-							set_c->setLine(curset->getLine());
-							result->addSet(set_c);
-
-							paren = space+matching+1;
-							space = space+matching;
-							ux_trimUChar(paren);
-						}
-					}
-				}
-				if (set_a && set_b && set_op) {
-					result->manipulateSet(set_a, set_op, set_b, res);
-					set_op = 0;
-					set_b = 0;
-					set_a = res;
-				}
-				space++;
+				*paren = space+1;
+			} else if (u_strlen(*paren)) {
+				retval = hash_sdbm_uchar(*paren);
+				*paren = *paren+u_strlen(*paren);
 			}
-			return 0;
+			return retval;
 		}
 
 		int parseSet(const UChar *line, const unsigned int which, CG3::Grammar *result) {
@@ -264,7 +229,40 @@ namespace CG3 {
 			curset->setLine(which);
 			result->addSet(curset);
 
-			parseNextSet(space, curset, result);
+			unsigned long set_a = 0;
+			unsigned long set_b = 0;
+			unsigned long res = hash_sdbm_uchar(curset->getName());
+			int set_op = S_IGNORE;
+			while(space[0]) {
+				if (!set_a) {
+					set_a = readSingleSet(&space, result);
+					if (!set_a) {
+						std::cerr << "Error: Could not read in left hand set on line " << which << " - cannot continue!" << std::endl;
+						return -1;
+					}
+				}
+				if (!set_op) {
+					set_op = readSetOperator(&space, result);
+					if (!set_op) {
+						std::cerr << "Warning: Could not read in set operator on line " << which << " - assuming set alias." << std::endl;
+						result->manipulateSet(res, S_OR, set_a, res);
+						return -1;
+					}
+				}
+				if (!set_b) {
+					set_b = readSingleSet(&space, result);
+					if (!set_b) {
+						std::cerr << "Error: Could not read in right hand set on line " << which << " - cannot continue!" << std::endl;
+						return -1;
+					}
+				}
+				if (set_a && set_b && set_op) {
+					result->manipulateSet(set_a, set_op, set_b, res);
+					set_op = 0;
+					set_b = 0;
+					set_a = res;
+				}
+			}
 
 			delete local;
 			return 0;
@@ -315,7 +313,7 @@ namespace CG3 {
 			int length = u_strlen(line);
 			int locallength = int(length*1.5);
 			UChar *local = new UChar[locallength];
-			memset(local, 0, locallength);
+			//memset(local, 0, locallength);
 
 			uregex_setText(regexps[R_PACKSPACE], line, length, &status);
 			if (status != U_ZERO_ERROR) {
@@ -381,8 +379,9 @@ namespace CG3 {
 			while (!u_feof(input)) {
 				result->lines++;
 
-				#define BUFFER_SIZE (1024)
+				#define BUFFER_SIZE (65536)
 				UChar *line = new UChar[BUFFER_SIZE];
+				//memset(line, 0, sizeof(UChar)*BUFFER_SIZE);
 				u_fgets(line, BUFFER_SIZE-1, input);
 				ux_cutComments(line, '#');
 				ux_cutComments(line, ';');
