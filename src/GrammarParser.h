@@ -25,6 +25,14 @@
 namespace CG3 {
 	namespace GrammarParser {
 		int parse_grammar_from_file(const char *filename, const char *codepage, CG3::Grammar *result);
+
+		int parseList(const UChar *line, const unsigned int which, CG3::Grammar *result);
+
+		int readSetOperator(UChar **paren, CG3::Grammar *result);
+		unsigned long readSingleSet(UChar **paren, CG3::Grammar *result);
+		int parseSet(const UChar *line, const unsigned int which, CG3::Grammar *result);
+
+		int parseSelectRemoveIffDelimit(const UChar *line, unsigned int which, unsigned int key, CG3::Grammar *result);
 	}
 }
 

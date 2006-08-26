@@ -143,6 +143,15 @@
 				RelativePath=".\src\GrammarParser.cpp">
 			</File>
 			<File
+				RelativePath=".\src\GrammarParser_parseList.cpp">
+			</File>
+			<File
+				RelativePath=".\src\GrammarParser_parseSelectRemoveIffDelimit.cpp">
+			</File>
+			<File
+				RelativePath=".\src\GrammarParser_parseSet.cpp">
+			</File>
+			<File
 				RelativePath=".\src\hash.cpp">
 			</File>
 			<File
@@ -167,6 +176,9 @@
 			</File>
 			<File
 				RelativePath=".\src\CompositeTag.h">
+			</File>
+			<File
+				RelativePath=".\src\ContextualTest.h">
 			</File>
 			<File
 				RelativePath=".\src\cstring.h">

@@ -95,3 +95,20 @@ int ux_isSetOp(const UChar *it) {
 	}
 	return retval;
 }
+
+bool ux_findMatchingParenthesis(const UChar *structure, int pos, int *result) {
+	int len = u_strlen(structure);
+	while (pos < len) {
+		pos++;
+		if (structure[pos] == ')' && structure[pos-1] != '\\') {
+			*result = pos;
+			return true;
+		}
+		if (structure[pos] == '(' && structure[pos-1] != '\\') {
+			int tmp;
+			ux_findMatchingParenthesis(structure, pos, &tmp);
+			pos = tmp;
+		}
+	}
+	return false;
+}

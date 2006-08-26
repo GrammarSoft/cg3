@@ -14,28 +14,17 @@
  * implied. See the License for the specific language governing
  * rights and limitations under the License.
  */
-#ifndef __RULE_H
-#define __RULE_H
+#ifndef __CONTEXTUALTEST_H
+#define __CONTEXTUALTEST_H
 
-#include <list>
 #include <unicode/ustring.h>
-#include "ContextualTest.h"
 //#include "Set.h"
 
 namespace CG3 {
 
-	class Rule {
+	class ContextualTest {
 	public:
-		UChar *name;
 		unsigned long target;
-		unsigned int line;
-		std::list<ContextualTest*> tests;
-
-		Rule() {
-			name = 0;
-			target = 0;
-			line = 0;
-		}
 	};
 
 }
