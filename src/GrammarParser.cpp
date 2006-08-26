@@ -133,6 +133,7 @@ namespace CG3 {
 			unsigned long set_b = 0;
 			unsigned long res = hash_sdbm_uchar(curset->getName());
 			int set_op = S_IGNORE;
+			// ToDo: Split this into seperate
 			while(paren[0]) {
 				if (space[0] == 0) {
 					if (u_strlen(paren)) {
@@ -373,13 +374,14 @@ namespace CG3 {
 			}
 
 			// ToDo: Make this dynamic.
-			#define BUFFER_SIZE (65536)
 			std::map<unsigned int, UChar*> lines;
 			std::map<unsigned int, unsigned int> keys;
 			unsigned int lastcmd = 0;
 
 			while (!u_feof(input)) {
 				result->lines++;
+
+				#define BUFFER_SIZE (1024)
 				UChar *line = new UChar[BUFFER_SIZE];
 				u_fgets(line, BUFFER_SIZE-1, input);
 				ux_cutComments(line, '#');
