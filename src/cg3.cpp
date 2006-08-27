@@ -29,6 +29,9 @@ namespace Options {
 		UNSAFE,
 		SECTIONS,
 		DEBUG,
+		STDIN,
+		STDOUT,
+		STDERR,
 		CODEPAGE_ALL,
 		CODEPAGE_GRAMMAR,
 		CODEPAGE_INPUT,
@@ -44,12 +47,21 @@ namespace Options {
 		UOPTION_DEF("unsafe",				'u', UOPT_NO_ARG),
 		UOPTION_DEF("sections",				's', UOPT_REQUIRES_ARG),
 		UOPTION_DEF("debug",				'd', UOPT_OPTIONAL_ARG),
+
+		UOPTION_DEF("stdin",				'I', UOPT_REQUIRES_ARG),
+		UOPTION_DEF("stdout",				'O', UOPT_REQUIRES_ARG),
+		UOPTION_DEF("stderr",				'E', UOPT_REQUIRES_ARG),
+
 		UOPTION_DEF("codepage-all",			'C', UOPT_REQUIRES_ARG),
 		UOPTION_DEF("codepage-grammar",		NULL, UOPT_REQUIRES_ARG),
 		UOPTION_DEF("codepage-input",		NULL, UOPT_REQUIRES_ARG),
 		UOPTION_DEF("codepage-output",		NULL, UOPT_REQUIRES_ARG)
 	};
 }
+
+UFILE *ux_stdin = 0;
+UFILE *ux_stdout = 0;
+UFILE *ux_stderr = 0;
 
 int main(int argc, char* argv[]) {
     UErrorCode status = U_ZERO_ERROR;
@@ -72,21 +84,26 @@ int main(int argc, char* argv[]) {
     }
 
 	if (!Options::options[Options::GRAMMAR].doesOccur) {
-		std::cerr << "Error: No grammar specified - cannot continue!" << std::endl;
+		fprintf(stderr, "Error: No grammar specified - cannot continue!\n");
 		argc = -argc;
 	}
 
     if (argc < 0 || Options::options[Options::HELP1].doesOccur || Options::options[Options::HELP2].doesOccur) {
-        std::cerr << "Usage: vislcg3 [OPTIONS] [FILES]" << std::endl;
-        std::cerr << std::endl;
-        std::cerr << "Options:" << std::endl;
-        std::cerr << " -h or -? or --help       Displays this list." << std::endl;
-        std::cerr << " -V or --version          Prints version number." << std::endl;
-        std::cerr << " -g or --grammar          Specifies the grammar file to use for disambiguation." << std::endl;
-        std::cerr << " -C or --codepage-all     The codepage to use for grammar, input, and output streams. Defaults to ISO-8859-1." << std::endl;
-        std::cerr << " --codepage-grammar       Codepage to use for grammar. Overwrites --codepage-all." << std::endl;
-        std::cerr << " --codepage-input         Codepage to use for input. Overwrites --codepage-all." << std::endl;
-        std::cerr << " --codepage-output        Codepage to use for output. Overwrites --codepage-all." << std::endl;
+        fprintf(stderr, "Usage: vislcg3 [OPTIONS] [FILES]\n");
+        fprintf(stderr, "\n");
+        fprintf(stderr, "Options:\n");
+        fprintf(stderr, " -h or -? or --help       Displays this list.\n");
+        fprintf(stderr, " -V or --version          Prints version number.\n");
+        fprintf(stderr, " -g or --grammar          Specifies the grammar file to use for disambiguation.\n");
+        fprintf(stderr, "\n");
+		fprintf(stderr, " -O or --stdout           A file to print out to instead of stdout.\n");
+		fprintf(stderr, " -I or --stdin            A file to read input from instead of stdin.\n");
+		fprintf(stderr, " -E or --stderr           A file to print errors to instead of stderr.\n");
+        fprintf(stderr, "\n");
+		fprintf(stderr, " -C or --codepage-all     The codepage to use for grammar, input, and output streams. Defaults to ISO-8859-1.\n");
+        fprintf(stderr, " --codepage-grammar       Codepage to use for grammar. Overwrites --codepage-all.\n");
+        fprintf(stderr, " --codepage-input         Codepage to use for input. Overwrites --codepage-all.\n");
+        fprintf(stderr, " --codepage-output        Codepage to use for output. Overwrites --codepage-all.\n");
         
         return argc < 0 ? U_ILLEGAL_ARGUMENT_ERROR : U_ZERO_ERROR;
     }
@@ -123,55 +140,70 @@ int main(int argc, char* argv[]) {
 		codepage_output = Options::options[Options::CODEPAGE_ALL].value;
 	}
 
+	if (!Options::options[Options::STDIN].doesOccur) {
+		ux_stdin = u_finit(stdin, NULL, codepage_input);
+	} else {
+		ux_stdin = u_fopen(Options::options[Options::STDIN].value, "r", NULL, codepage_input);
+	}
+
+	if (!Options::options[Options::STDOUT].doesOccur) {
+		ux_stdout = u_finit(stdout, NULL, codepage_input);
+	} else {
+		ux_stdout = u_fopen(Options::options[Options::STDOUT].value, "w", NULL, codepage_output);
+	}
+
+	if (!Options::options[Options::STDERR].doesOccur) {
+		ux_stderr = u_finit(stderr, NULL, codepage_input);
+	} else {
+		ux_stderr = u_fopen(Options::options[Options::STDERR].value, "w", NULL, codepage_output);
+	}
+
 	CG3::GrammarParser::parse_grammar_from_file(Options::options[Options::GRAMMAR].value, codepage_grammar, grammar);
 
-	UFILE *input = 0;
-	if (argc < 2 || strcmp(argv[argc-1], "-") == 0) {
-		input = u_finit(stdin, NULL, codepage_input);
-	} else {
-		input = u_fopen(argv[argc-1], "r", NULL, codepage_input);
-	}
-
 //*
-	std::cout << "DELIMITERS = ";
+	u_fprintf(ux_stdout, "DELIMITERS = ");
 	stdext::hash_map<UChar*, uint32_t>::iterator iter;
 	for(iter = grammar->delimiters.begin() ; iter != grammar->delimiters.end() ; iter++ ) {
-		std::wcout << " " << iter->first;
+		u_fprintf(ux_stdout, " %S", iter->first);
 	}
-	std::cout << " ;" << std::endl;
+	u_fprintf(ux_stdout, " ;\n");
 
-	std::cout << "PREFERRED-TARGETS = ";
+	u_fprintf(ux_stdout, "PREFERRED-TARGETS = ");
 	for(iter = grammar->preferred_targets.begin() ; iter != grammar->preferred_targets.end() ; iter++ ) {
-		std::wcout << " " << iter->first;
+		u_fprintf(ux_stdout, " %S", iter->first);
 	}
-	std::cout << " ;" << std::endl;
+	u_fprintf(ux_stdout, " ;\n");
 
-	std::cout << "SETS" << std::endl;
+	u_fprintf(ux_stdout, "SETS\n");
 	stdext::hash_map<uint32_t, CG3::Set*>::iterator set_iter;
 	for (set_iter = grammar->sets.begin() ; set_iter != grammar->sets.end() ; set_iter++) {
 		stdext::hash_map<uint32_t, CG3::CompositeTag*>::iterator comp_iter;
 		CG3::Set *curset = set_iter->second;
 		if (!curset->tags.empty()) {
-			std::wcout << "LIST " << curset->getName() << " = ";
+			u_fprintf(ux_stdout, "LIST %S = ", curset->getName());
 			for (comp_iter = curset->tags.begin() ; comp_iter != curset->tags.end() ; comp_iter++) {
 				if (comp_iter->second) {
 					CG3::CompositeTag *curcomptag = comp_iter->second;
 					if (curcomptag->tags.size() == 1) {
-						std::wcout << curcomptag->tags.begin()->second->raw << " ";
+						u_fprintf(ux_stdout, "%S ", curcomptag->tags.begin()->second->raw);
 					} else {
-						std::wcout << "(";
+						u_fprintf(ux_stdout, "(");
 						std::map<uint32_t, CG3::Tag*>::iterator tag_iter;
 						for (tag_iter = curcomptag->tags_map.begin() ; tag_iter != curcomptag->tags_map.end() ; tag_iter++) {
-							std::wcout << tag_iter->second->raw << " ";
+							u_fprintf(ux_stdout, "%S ", tag_iter->second->raw);
 						}
-						std::wcout << ") ";
+						u_fprintf(ux_stdout, ") ");
 					}
 				}
 			}
-			std::wcout << " ;" << std::endl;
+			u_fprintf(ux_stdout, " ;\n");
 		}
 	}
-	std::cout << std::endl;
+	u_fprintf(ux_stdout, "\n");
 //*/
+
+	u_fclose(ux_stdin);
+	u_fclose(ux_stdout);
+	u_fclose(ux_stderr);
 	return status;
 }

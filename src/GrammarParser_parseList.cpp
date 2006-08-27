@@ -26,18 +26,14 @@ using namespace CG3::Strings;
 
 namespace CG3 {
 	namespace GrammarParser {
-		int parseList(const UChar *line, const uint32_t which, CG3::Grammar *result) {
-			if (!which) {
-				std::cerr << "Error: No line number provided - cannot continue!" << std::endl;
-				return -1;
-			}
+		int parseList(const UChar *line, CG3::Grammar *result) {
 			if (!line) {
-				std::cerr << "Error: No string provided at line " << which << " - cannot continue!" << std::endl;
+				u_fprintf(ux_stderr, "Error: No string provided at line %u - cannot continue!\n", result->lines);
 				return -1;
 			}
 			int length = u_strlen(line);
 			if (!length) {
-				std::cerr << "Error: No string provided at line " << which << " - cannot continue!" << std::endl;
+				u_fprintf(ux_stderr, "Error: No string provided at line %u - cannot continue!\n", result->lines);
 				return -1;
 			}
 			UChar *local = new UChar[length+1];
@@ -51,7 +47,7 @@ namespace CG3 {
 
 			CG3::Set *curset = result->allocateSet();
 			curset->setName(local);
-			curset->setLine(which);
+			curset->setLine(result->lines);
 
 			UChar *paren = space;
 			while(paren[0]) {
@@ -82,7 +78,7 @@ namespace CG3 {
 					if (space[-1] != '\\') {
 						int matching = 0;
 						if (!ux_findMatchingParenthesis(space, 0, &matching)) {
-							std::cerr << "Error: Unmatched parentheses on or after line " << curset->getLine() << std::endl;
+							u_fprintf(ux_stderr, "Error: Unmatched parentheses on or after line %u!\n", curset->getLine());
 						} else {
 							space[matching] = 0;
 							UChar *composite = space+1;

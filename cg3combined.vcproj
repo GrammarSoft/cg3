@@ -235,6 +235,19 @@
 				RelativePath=".\dancg.spelling.unicode">
 			</File>
 		</Filter>
+		<Filter
+			Name="Streams"
+			Filter="">
+			<File
+				RelativePath=".\stderr.txt">
+			</File>
+			<File
+				RelativePath=".\stdin.txt">
+			</File>
+			<File
+				RelativePath=".\stdout.txt">
+			</File>
+		</Filter>
 		<File
 			RelativePath=".\glossary.txt">
 		</File>

@@ -18,10 +18,16 @@
 #ifndef __UEXTRAS_H
 #define __UEXTRAS_H
 
+#include <unicode/ustdio.h>
+
 bool ux_isNewline(const UChar32 current, const UChar32 previous);
 bool ux_trimUChar(UChar *totrim);
 bool ux_cutComments(UChar *line, const UChar comment);
 int ux_isSetOp(const UChar *it);
 bool ux_findMatchingParenthesis(const UChar *structure, int pos, int *result);
+
+extern UFILE *ux_stdin;
+extern UFILE *ux_stdout;
+extern UFILE *ux_stderr;
 
 #endif

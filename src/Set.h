@@ -44,9 +44,9 @@ namespace CG3 {
 			if (!to) {
 				to = (uint32_t)rand();
 			}
-			name = new UChar[24];
-			memset(name, 0, 24);
-			u_sprintf(name, "_G_%u_", to);
+			name = new UChar[32];
+			memset(name, 0, 32);
+			u_sprintf(name, "_G_%u_%u_", line, to);
 		}
 		void setName(const UChar *to) {
 			if (to) {
@@ -71,7 +71,7 @@ namespace CG3 {
 			if (tag && tag->tags.size()) {
 				tags[tag->rehash()] = tag;
 			} else {
-				std::cerr << "Error: Attempted to add empty tag to set." << std::endl;
+				u_fprintf(ux_stderr, "Error: Attempted to add empty tag to set!\n");
 			}
 		}
 /*

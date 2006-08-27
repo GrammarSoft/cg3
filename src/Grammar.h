@@ -28,7 +28,7 @@ namespace CG3 {
 	public:
 		uint32_t last_modified;
 		UChar *name;
-		uint32_t lines;
+		uint32_t lines, curline;
 		stdext::hash_map<uint32_t, CompositeTag*> tags;
 		stdext::hash_map<uint32_t, Set*> sets;
 		stdext::hash_map<UChar*, uint32_t> delimiters;
@@ -41,6 +41,7 @@ namespace CG3 {
 			last_modified = 0;
 			name = 0;
 			lines = 0;
+			curline = 0;
 			srand((uint32_t)time(0));
 		}
 
@@ -57,7 +58,7 @@ namespace CG3 {
 		void addSet(Set *to) {
 			uint32_t hash = hash_sdbm_uchar(to->name);
 			if (sets[hash]) {
-				std::wcerr << "Warning: Overwrote set " << to->name << std::endl;
+				u_fprintf(ux_stderr, "Warning: Overwrote set %S.\n", to->name);
 				destroySet(sets[hash]);
 			}
 			sets[hash] = to;
@@ -79,7 +80,7 @@ namespace CG3 {
 				tags[tag->getHash()] = tag;
 				set->addCompositeTag(tag);
 			} else {
-				std::cerr << "Error: Attempted to add empty tag to grammar and set." << std::endl;
+				u_fprintf(ux_stderr, "Error: Attempted to add empty tag to grammar and set!\n");
 			}
 		}
 		CompositeTag *allocateCompositeTag() {
@@ -99,19 +100,19 @@ namespace CG3 {
 		// ToDO: Implement the rest
 		void manipulateSet(uint32_t set_a, int op, uint32_t set_b, uint32_t result) {
 			if (op <= S_IGNORE || op >= STRINGS_COUNT) {
-				std::wcerr << "Error: Invalid set operation on line " << lines << std::endl;
+				u_fprintf(ux_stderr, "Error: Invalid set operation on line %u!\n", lines);
 				return;
 			}
 			if (!sets[set_a]) {
-				std::wcerr << "Error: Invalid left operand for set operation on line " << lines << std::endl;
+				u_fprintf(ux_stderr, "Error: Invalid left operand for set operation on line %u!\n", lines);
 				return;
 			}
 			if (!sets[set_b]) {
-				std::wcerr << "Error: Invalid right operand for set operation on line " << lines << std::endl;
+				u_fprintf(ux_stderr, "Error: Invalid right operand for set operation on line %u!\n", lines);
 				return;
 			}
 			if (!result) {
-				std::wcerr << "Error: Invalid target for set operation on line " << lines << std::endl;
+				u_fprintf(ux_stderr, "Error: Invalid target for set operation on line %u!\n", lines);
 				return;
 			}
 			stdext::hash_map<uint32_t, CompositeTag*> result_tags;
@@ -165,7 +166,7 @@ namespace CG3 {
 				}
 				default:
 				{
-					std::wcerr << "Error: Invalid set operation " << op << " between " << sets[set_a]->getName() << " and " << sets[set_b]->getName() << std::endl;
+					u_fprintf(ux_stderr, "Error: Invalid set operation %u between %S and %S!\n", op, sets[set_a]->getName(), sets[set_b]->getName());
 					break;
 				}
 			}

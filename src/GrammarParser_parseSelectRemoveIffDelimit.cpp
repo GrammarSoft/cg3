@@ -26,22 +26,18 @@ using namespace CG3::Strings;
 
 namespace CG3 {
 	namespace GrammarParser {
-		int parseSelectRemoveIffDelimit(const UChar *line, uint32_t which, uint32_t key, CG3::Grammar *result) {
-			if (!which) {
-				std::cerr << "Error: No line number provided - cannot continue!" << std::endl;
-				return -1;
-			}
+		int parseSelectRemoveIffDelimit(const UChar *line, uint32_t key, CG3::Grammar *result) {
 			if (!line) {
-				std::cerr << "Error: No string provided at line " << which << " - cannot continue!" << std::endl;
+				u_fprintf(ux_stderr, "Error: No string provided at line %u - cannot continue!\n", result->lines);
 				return -1;
 			}
 			int length = u_strlen(line);
 			if (!length) {
-				std::cerr << "Error: No string provided at line " << which << " - cannot continue!" << std::endl;
+				u_fprintf(ux_stderr, "Error: No string provided at line %u - cannot continue!\n", result->lines);
 				return -1;
 			}
 			if (key != K_SELECT && key != K_REMOVE && key != K_IFF && key != K_DELIMIT) {
-				std::cerr << "Error: Invalid keyword " << key << " - cannot continue!" << std::endl;
+				u_fprintf(ux_stderr, "Error: Invalid keyword %u - cannot continue!\n", key);
 				return -1;
 			}
 

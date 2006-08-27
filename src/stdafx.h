@@ -32,6 +32,8 @@
 #include <unicode/utrans.h>
 #include <unicode/ustring.h>
 
+#include "uextras.h"
+
 //*
 // hash_map fix for cross-platform
 uint32_t hash_sdbm_char(const unsigned char *str);

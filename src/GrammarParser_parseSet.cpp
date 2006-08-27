@@ -57,13 +57,14 @@ namespace CG3 {
 				space = (*paren);
 				int matching = 0;
 				if (!ux_findMatchingParenthesis(space, 0, &matching)) {
-					std::cerr << "Error: Unmatched parentheses on or after line " << result->lines << std::endl;
+					u_fprintf(ux_stderr, "Error: Unmatched parentheses on or after line %u!\n", result->lines);
 				} else {
 					space[matching] = 0;
 					UChar *composite = space+1;
 					ux_trimUChar(composite);
 
 					CG3::Set *set_c = result->allocateSet();
+					set_c->setLine(result->lines);
 					set_c->setName(hash_sdbm_uchar(composite));
 					retval = hash_sdbm_uchar(set_c->getName());
 
@@ -87,7 +88,6 @@ namespace CG3 {
 					ctag->addTag(tag);
 
 					result->addCompositeTagToSet(set_c, ctag);
-					set_c->setLine(result->lines);
 					result->addSet(set_c);
 
 					*paren = space+matching+1;
@@ -108,18 +108,14 @@ namespace CG3 {
 			return retval;
 		}
 
-		int parseSet(const UChar *line, const uint32_t which, CG3::Grammar *result) {
-			if (!which) {
-				std::cerr << "Error: No line number provided - cannot continue!" << std::endl;
-				return -1;
-			}
+		int parseSet(const UChar *line, CG3::Grammar *result) {
 			if (!line) {
-				std::cerr << "Error: No string provided at line " << which << " - cannot continue!" << std::endl;
+				u_fprintf(ux_stderr, "Error: No string provided at line %u - cannot continue!\n", result->lines);
 				return -1;
 			}
 			int length = u_strlen(line);
 			if (!length) {
-				std::cerr << "Error: No string provided at line " << which << " - cannot continue!" << std::endl;
+				u_fprintf(ux_stderr, "Error: No string provided at line %u - cannot continue!\n", result->lines);
 				return -1;
 			}
 			UChar *local = new UChar[length+1];
@@ -133,7 +129,7 @@ namespace CG3 {
 
 			CG3::Set *curset = result->allocateSet();
 			curset->setName(local);
-			curset->setLine(which);
+			curset->setLine(result->lines);
 			result->addSet(curset);
 
 			uint32_t set_a = 0;
@@ -144,14 +140,14 @@ namespace CG3 {
 				if (!set_a) {
 					set_a = readSingleSet(&space, result);
 					if (!set_a) {
-						std::cerr << "Error: Could not read in left hand set on line " << which << " - cannot continue!" << std::endl;
+						u_fprintf(ux_stderr, "Error: Could not read in left hand set on line %u - cannot continue!\n", result->lines);
 						break;
 					}
 				}
 				if (!set_op) {
 					set_op = readSetOperator(&space, result);
 					if (!set_op) {
-						std::cerr << "Warning: Could not read in set operator on line " << which << " - assuming set alias." << std::endl;
+						u_fprintf(ux_stderr, "Warning: Could not read in set operator on line %u - assuming set alias.\n", result->lines);
 						result->manipulateSet(res, S_OR, set_a, res);
 						break;
 					}
@@ -159,7 +155,7 @@ namespace CG3 {
 				if (!set_b) {
 					set_b = readSingleSet(&space, result);
 					if (!set_b) {
-						std::cerr << "Error: Could not read in right hand set on line " << which << " - cannot continue!" << std::endl;
+						u_fprintf(ux_stderr, "Error: Could not read in right hand set on line %u - cannot continue!\n", result->lines);
 						break;
 					}
 				}

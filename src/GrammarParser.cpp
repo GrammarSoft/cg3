@@ -26,9 +26,9 @@ using namespace CG3::Strings;
 
 namespace CG3 {
 	namespace GrammarParser {
-		int parseSingleLine(const int key, const UChar *line, const uint32_t which, CG3::Grammar *result) {
+		int parseSingleLine(const int key, const UChar *line, CG3::Grammar *result) {
 			if (key <= K_IGNORE || key >= KEYWORD_COUNT) {
-				std::cerr << "Error: Invalid keyword " << key << " - skipping." << std::endl;
+				u_fprintf(ux_stderr, "Error: Invalid keyword %u - skipping!\n", key);
 				return -1;
 			}
 
@@ -40,13 +40,13 @@ namespace CG3 {
 			status = U_ZERO_ERROR;
 			uregex_setText(regexps[R_CLEANSTRING], line, length, &status);
 			if (status != U_ZERO_ERROR) {
-				std::cerr << "Error: uregex_setText returned " << u_errorName(status) << " - cannot continue." << std::endl;
+				u_fprintf(ux_stderr, "Error: uregex_setText returned %s - cannot continue!\n", u_errorName(status));
 				return -1;
 			}
 			status = U_ZERO_ERROR;
 			uregex_replaceAll(regexps[R_CLEANSTRING], stringbits[S_SPACE], u_strlen(stringbits[S_SPACE]), local, length+1, &status);
 			if (status != U_ZERO_ERROR) {
-				std::cerr << "Error: uregex_replaceAll returned " << u_errorName(status) << " - cannot continue." << std::endl;
+				u_fprintf(ux_stderr, "Error: uregex_replaceAll returned %s - cannot continue!\n", u_errorName(status));
 				return -1;
 			}
 
@@ -56,13 +56,13 @@ namespace CG3 {
 			status = U_ZERO_ERROR;
 			uregex_setText(regexps[R_ANDLINK], local, length, &status);
 			if (status != U_ZERO_ERROR) {
-				std::cerr << "Error: uregex_setText returned " << u_errorName(status) << " - cannot continue." << std::endl;
+				u_fprintf(ux_stderr, "Error: uregex_setText returned %s - cannot continue!\n", u_errorName(status));
 				return -1;
 			}
 			status = U_ZERO_ERROR;
 			uregex_replaceAll(regexps[R_ANDLINK], stringbits[S_LINKZ], u_strlen(stringbits[S_LINKZ]), newlocal, length+1, &status);
 			if (status != U_ZERO_ERROR) {
-				std::cerr << "Error: uregex_replaceAll returned " << u_errorName(status) << " - cannot continue." << std::endl;
+				u_fprintf(ux_stderr, "Error: uregex_replaceAll returned %s - cannot continue!\n", u_errorName(status));
 				return -1;
 			}
 
@@ -73,13 +73,13 @@ namespace CG3 {
 			status = U_ZERO_ERROR;
 			uregex_setText(regexps[R_PACKSPACE], newlocal, length, &status);
 			if (status != U_ZERO_ERROR) {
-				std::cerr << "Error: uregex_setText returned " << u_errorName(status) << " - cannot continue." << std::endl;
+				u_fprintf(ux_stderr, "Error: uregex_setText returned %s - cannot continue!\n", u_errorName(status));
 				return -1;
 			}
 			status = U_ZERO_ERROR;
 			uregex_replaceAll(regexps[R_PACKSPACE], stringbits[S_SPACE], u_strlen(stringbits[S_SPACE]), local, length+1, &status);
 			if (status != U_ZERO_ERROR) {
-				std::cerr << "Error: uregex_replaceAll returned " << u_errorName(status) << " - cannot continue." << std::endl;
+				u_fprintf(ux_stderr, "Error: uregex_replaceAll returned %s - cannot continue!\n", u_errorName(status));
 				return -1;
 			}
 
@@ -87,16 +87,16 @@ namespace CG3 {
 
 			switch(key) {
 				case K_LIST:
-					parseList(local, which, result);
+					parseList(local, result);
 					break;
 				case K_SET:
-					parseSet(local, which, result);
+					parseSet(local, result);
 					break;
 				case K_SELECT:
 				case K_REMOVE:
 				case K_IFF:
 				case K_DELIMIT:
-					parseSelectRemoveIffDelimit(local, which, key, result);
+					parseSelectRemoveIffDelimit(local, key, result);
 					break;
 				default:
 					break;
@@ -109,29 +109,29 @@ namespace CG3 {
 		int parse_grammar_from_ufile(UFILE *input, CG3::Grammar *result) {
 			u_frewind(input);
 			if (u_feof(input)) {
-				std::cerr << "Error: Input is null - nothing to parse!" << std::endl;
+				u_fprintf(ux_stderr, "Error: Input is null - nothing to parse!\n");
 				return -1;
 			}
 			if (!result) {
-				std::cerr << "Error: No preallocated grammar provided - cannot continue!" << std::endl;
+				u_fprintf(ux_stderr, "Error: No preallocated grammar provided - cannot continue!\n");
 				return -1;
 			}
 			
 			int error = init_keywords();
 			if (error) {
-				std::cerr << "Error: init_keywords returned " << error << std::endl;
+				u_fprintf(ux_stderr, "Error: init_keywords returned %u!\n", error);
 				return error;
 			}
 
 			error = init_regexps();
 			if (error) {
-				std::cerr << "Error: init_regexps returned " << error << std::endl;
+				u_fprintf(ux_stderr, "Error: init_regexps returned %u!\n", error);
 				return error;
 			}
 
 			error = init_strings();
 			if (error) {
-				std::cerr << "Error: init_strings returned " << error << std::endl;
+				u_fprintf(ux_stderr, "Error: init_strings returned %u!\n", error);
 				return error;
 			}
 
@@ -139,10 +139,9 @@ namespace CG3 {
 			std::map<uint32_t, UChar*> lines;
 			std::map<uint32_t, uint32_t> keys;
 			uint32_t lastcmd = 0;
+			result->lines = 1;
 
 			while (!u_feof(input)) {
-				result->lines++;
-
 				#define BUFFER_SIZE (65536)
 				UChar *line = new UChar[BUFFER_SIZE];
 				//memset(line, 0, sizeof(UChar)*BUFFER_SIZE);
@@ -178,12 +177,11 @@ namespace CG3 {
 					}
 					if (keyword || !lines[lastcmd]) {
 						while (!lines.empty()) {
-							uint32_t which = (*lines.begin()).first;
 							UChar *line = (*lines.begin()).second;
-							parseSingleLine(keys[which], line, which, result);
+							parseSingleLine(keys[ (*lines.begin()).first ], line, result);
 							delete line;
+							keys.erase( (*lines.begin()).first );
 							lines.erase(lines.begin());
-							keys.erase(which);
 						}
 						lines[result->lines] = line;
 						keys[result->lines] = keyword;
@@ -196,15 +194,15 @@ namespace CG3 {
 				} else {
 					delete line;
 				}
+				result->lines++;
 			}
 
 			while (!lines.empty()) {
-				uint32_t which = (*lines.begin()).first;
 				UChar *line = (*lines.begin()).second;
-				parseSingleLine(keys[which], line, which, result);
+				parseSingleLine(keys[ (*lines.begin()).first ], line, result);
 				delete line;
+				keys.erase( (*lines.begin()).first );
 				lines.erase(lines.begin());
-				keys.erase(which);
 			}
 
 			free_keywords();
