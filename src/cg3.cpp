@@ -36,6 +36,10 @@ namespace Options {
 		CODEPAGE_GRAMMAR,
 		CODEPAGE_INPUT,
 		CODEPAGE_OUTPUT,
+		LOCALE_ALL,
+		LOCALE_GRAMMAR,
+		LOCALE_INPUT,
+		LOCALE_OUTPUT,
 		NUM_OPTIONS
 	};
 
@@ -53,9 +57,14 @@ namespace Options {
 		UOPTION_DEF("stderr",				'E', UOPT_REQUIRES_ARG),
 
 		UOPTION_DEF("codepage-all",			'C', UOPT_REQUIRES_ARG),
-		UOPTION_DEF("codepage-grammar",		NULL, UOPT_REQUIRES_ARG),
-		UOPTION_DEF("codepage-input",		NULL, UOPT_REQUIRES_ARG),
-		UOPTION_DEF("codepage-output",		NULL, UOPT_REQUIRES_ARG)
+		UOPTION_DEF("codepage-grammar",		0, UOPT_REQUIRES_ARG),
+		UOPTION_DEF("codepage-input",		0, UOPT_REQUIRES_ARG),
+		UOPTION_DEF("codepage-output",		0, UOPT_REQUIRES_ARG),
+
+		UOPTION_DEF("locale-all",			'L', UOPT_REQUIRES_ARG),
+		UOPTION_DEF("locale-grammar",		0, UOPT_REQUIRES_ARG),
+		UOPTION_DEF("locale-input",			0, UOPT_REQUIRES_ARG),
+		UOPTION_DEF("locale-output",		0, UOPT_REQUIRES_ARG)
 	};
 }
 
@@ -83,7 +92,7 @@ int main(int argc, char* argv[]) {
         return U_ZERO_ERROR;
     }
 
-	if (!Options::options[Options::GRAMMAR].doesOccur) {
+	if (!Options::options[Options::GRAMMAR].doesOccur && !Options::options[Options::HELP1].doesOccur && !Options::options[Options::HELP2].doesOccur) {
 		fprintf(stderr, "Error: No grammar specified - cannot continue!\n");
 		argc = -argc;
 	}
@@ -104,6 +113,11 @@ int main(int argc, char* argv[]) {
         fprintf(stderr, " --codepage-grammar       Codepage to use for grammar. Overwrites --codepage-all.\n");
         fprintf(stderr, " --codepage-input         Codepage to use for input. Overwrites --codepage-all.\n");
         fprintf(stderr, " --codepage-output        Codepage to use for output. Overwrites --codepage-all.\n");
+        fprintf(stderr, "\n");
+		fprintf(stderr, " -L or --locale-all       The locale to use for grammar, input, and output streams. Defaults to en_US_POSIX.\n");
+        fprintf(stderr, " --locale-grammar         Locale to use for grammar. Overwrites --locale-all.\n");
+        fprintf(stderr, " --locale-input           Locale to use for input. Overwrites --locale-all.\n");
+        fprintf(stderr, " --locale-output          Locale to use for output. Overwrites --locale-all.\n");
         
         return argc < 0 ? U_ILLEGAL_ARGUMENT_ERROR : U_ZERO_ERROR;
     }
@@ -119,8 +133,8 @@ int main(int argc, char* argv[]) {
 
 	CG3::Grammar *grammar = new CG3::Grammar;
 	const char *codepage_grammar = "ISO-8859-1";
-	const char *codepage_input   = "ISO-8859-1";
-	const char *codepage_output  = "ISO-8859-1";
+	const char *codepage_input   = codepage_grammar;
+	const char *codepage_output  = codepage_grammar;
 
 	if (Options::options[Options::CODEPAGE_GRAMMAR].doesOccur) {
 		codepage_grammar = Options::options[Options::CODEPAGE_GRAMMAR].value;
@@ -140,25 +154,47 @@ int main(int argc, char* argv[]) {
 		codepage_output = Options::options[Options::CODEPAGE_ALL].value;
 	}
 
+	const char *locale_grammar = "en_US_POSIX";
+	const char *locale_input   = locale_grammar;
+	const char *locale_output  = locale_grammar;
+
+	if (Options::options[Options::LOCALE_GRAMMAR].doesOccur) {
+		locale_grammar = Options::options[Options::LOCALE_GRAMMAR].value;
+	} else if (Options::options[Options::LOCALE_ALL].doesOccur) {
+		locale_grammar = Options::options[Options::LOCALE_ALL].value;
+	}
+
+	if (Options::options[Options::LOCALE_INPUT].doesOccur) {
+		locale_input = Options::options[Options::LOCALE_INPUT].value;
+	} else if (Options::options[Options::LOCALE_ALL].doesOccur) {
+		locale_input = Options::options[Options::LOCALE_ALL].value;
+	}
+
+	if (Options::options[Options::LOCALE_OUTPUT].doesOccur) {
+		locale_output = Options::options[Options::LOCALE_OUTPUT].value;
+	} else if (Options::options[Options::LOCALE_ALL].doesOccur) {
+		locale_output = Options::options[Options::LOCALE_ALL].value;
+	}
+
 	if (!Options::options[Options::STDIN].doesOccur) {
-		ux_stdin = u_finit(stdin, NULL, codepage_input);
+		ux_stdin = u_finit(stdin, locale_input, codepage_input);
 	} else {
-		ux_stdin = u_fopen(Options::options[Options::STDIN].value, "r", NULL, codepage_input);
+		ux_stdin = u_fopen(Options::options[Options::STDIN].value, "r", locale_input, codepage_input);
 	}
 
 	if (!Options::options[Options::STDOUT].doesOccur) {
-		ux_stdout = u_finit(stdout, NULL, codepage_input);
+		ux_stdout = u_finit(stdout, locale_output, codepage_input);
 	} else {
-		ux_stdout = u_fopen(Options::options[Options::STDOUT].value, "w", NULL, codepage_output);
+		ux_stdout = u_fopen(Options::options[Options::STDOUT].value, "w", locale_output, codepage_output);
 	}
 
 	if (!Options::options[Options::STDERR].doesOccur) {
-		ux_stderr = u_finit(stderr, NULL, codepage_input);
+		ux_stderr = u_finit(stderr, locale_output, codepage_input);
 	} else {
-		ux_stderr = u_fopen(Options::options[Options::STDERR].value, "w", NULL, codepage_output);
+		ux_stderr = u_fopen(Options::options[Options::STDERR].value, "w", locale_output, codepage_output);
 	}
 
-	CG3::GrammarParser::parse_grammar_from_file(Options::options[Options::GRAMMAR].value, codepage_grammar, grammar);
+	CG3::GrammarParser::parse_grammar_from_file(Options::options[Options::GRAMMAR].value, locale_grammar, codepage_grammar, grammar);
 
 //*
 	u_fprintf(ux_stdout, "DELIMITERS = ");

@@ -214,8 +214,8 @@ namespace CG3 {
 			return 0; // No errors.
 		}
 		
-		int parse_grammar_from_file(const char *filename, const char *codepage, CG3::Grammar *result) {
-			UFILE *grammar = u_fopen(filename, "r", NULL, codepage);
+		int parse_grammar_from_file(const char *filename, const char *locale, const char *codepage, CG3::Grammar *result) {
+			UFILE *grammar = u_fopen(filename, "r", locale, codepage);
 			if (!grammar) {
 				return -1; // File could not be opened for reading.
 			}
