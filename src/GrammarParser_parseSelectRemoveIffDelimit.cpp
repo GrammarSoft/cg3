@@ -26,7 +26,7 @@ using namespace CG3::Strings;
 
 namespace CG3 {
 	namespace GrammarParser {
-		int parseSelectRemoveIffDelimit(const UChar *line, unsigned int which, unsigned int key, CG3::Grammar *result) {
+		int parseSelectRemoveIffDelimit(const UChar *line, uint32_t which, uint32_t key, CG3::Grammar *result) {
 			if (!which) {
 				std::cerr << "Error: No line number provided - cannot continue!" << std::endl;
 				return -1;

@@ -27,8 +27,8 @@ namespace CG3 {
 	class Rule {
 	public:
 		UChar *name;
-		unsigned long target;
-		unsigned int line;
+		uint32_t target;
+		uint32_t line;
 		std::list<ContextualTest*> tests;
 
 		Rule() {

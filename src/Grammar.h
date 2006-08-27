@@ -19,27 +19,29 @@
 
 #include <unicode/ustring.h>
 #include "Set.h"
+#include "Section.h"
 #include "Rule.h"
 
 namespace CG3 {
 
 	class Grammar {
 	public:
-		unsigned int last_modified;
+		uint32_t last_modified;
 		UChar *name;
-		unsigned int lines;
-		unsigned int sections;
-		stdext::hash_map<unsigned long, CompositeTag*> tags;
-		stdext::hash_map<unsigned long, Set*> sets;
-		stdext::hash_map<UChar*, unsigned long> delimiters;
-		stdext::hash_map<UChar*, unsigned long> preferred_targets;
-		stdext::hash_map<unsigned int, Rule*> rules;
+		uint32_t lines;
+		stdext::hash_map<uint32_t, CompositeTag*> tags;
+		stdext::hash_map<uint32_t, Set*> sets;
+		stdext::hash_map<UChar*, uint32_t> delimiters;
+		stdext::hash_map<UChar*, uint32_t> preferred_targets;
+
+		std::map<uint32_t, Section*> sections;
+		stdext::hash_map<uint32_t, Rule*> rules;
 
 		Grammar() {
 			last_modified = 0;
 			name = 0;
 			lines = 0;
-			sections = 0;
+			srand((uint32_t)time(0));
 		}
 
 		void addDelimiter(UChar *to) {
@@ -53,14 +55,14 @@ namespace CG3 {
 			preferred_targets[pf] = hash_sdbm_uchar(pf);
 		}
 		void addSet(Set *to) {
-			unsigned long hash = hash_sdbm_uchar(to->name);
+			uint32_t hash = hash_sdbm_uchar(to->name);
 			if (sets[hash]) {
 				std::wcerr << "Warning: Overwrote set " << to->name << std::endl;
 				destroySet(sets[hash]);
 			}
 			sets[hash] = to;
 		}
-		Set *getSet(unsigned long which) {
+		Set *getSet(uint32_t which) {
 			return sets[which] ? sets[which] : 0;
 		}
 
@@ -87,7 +89,15 @@ namespace CG3 {
 			delete tag;
 		}
 
-		void manipulateSet(unsigned long set_a, int op, unsigned long set_b, unsigned long result) {
+		Rule *allocateRule() {
+			return new Rule;
+		}
+		void destroyRule(Rule *rule) {
+			delete rule;
+		}
+
+		// ToDO: Implement the rest
+		void manipulateSet(uint32_t set_a, int op, uint32_t set_b, uint32_t result) {
 			if (op <= S_IGNORE || op >= STRINGS_COUNT) {
 				std::wcerr << "Error: Invalid set operation on line " << lines << std::endl;
 				return;
@@ -104,11 +114,11 @@ namespace CG3 {
 				std::wcerr << "Error: Invalid target for set operation on line " << lines << std::endl;
 				return;
 			}
-			stdext::hash_map<unsigned long, CompositeTag*> result_tags;
+			stdext::hash_map<uint32_t, CompositeTag*> result_tags;
 			switch (op) {
 				case S_OR:
 				{
-					stdext::hash_map<unsigned long, CompositeTag*>::iterator iter;
+					stdext::hash_map<uint32_t, CompositeTag*>::iterator iter;
 					for (iter = sets[set_a]->tags.begin() ; iter != sets[set_a]->tags.end() ; iter++) {
 						result_tags[iter->first] = iter->second;
 					}
@@ -121,7 +131,7 @@ namespace CG3 {
 				case S_NOT:
 				case S_MINUS:
 				{
-					stdext::hash_map<unsigned long, CompositeTag*>::iterator iter;
+					stdext::hash_map<uint32_t, CompositeTag*>::iterator iter;
 					for (iter = sets[set_a]->tags.begin() ; iter != sets[set_a]->tags.end() ; iter++) {
 						if (!sets[set_b]->tags[iter->first]) {
 							result_tags[iter->first] = iter->second;
@@ -132,13 +142,13 @@ namespace CG3 {
 				case S_MULTIPLY:
 				case S_PLUS:
 				{
-					stdext::hash_map<unsigned long, CompositeTag*>::iterator iter_a;
+					stdext::hash_map<uint32_t, CompositeTag*>::iterator iter_a;
 					for (iter_a = sets[set_a]->tags.begin() ; iter_a != sets[set_a]->tags.end() ; iter_a++) {
-						stdext::hash_map<unsigned long, CompositeTag*>::iterator iter_b;
+						stdext::hash_map<uint32_t, CompositeTag*>::iterator iter_b;
 						for (iter_b = sets[set_b]->tags.begin() ; iter_b != sets[set_b]->tags.end() ; iter_b++) {
 							CompositeTag *tag_r = allocateCompositeTag();
 
-							stdext::hash_map<unsigned long, Tag*>::iterator iter_t;
+							stdext::hash_map<uint32_t, Tag*>::iterator iter_t;
 							for (iter_t = iter_a->second->tags.begin() ; iter_t != iter_a->second->tags.end() ; iter_t++) {
 								Tag *ttag = tag_r->allocateTag(iter_t->second->raw);
 								tag_r->addTag(ttag);

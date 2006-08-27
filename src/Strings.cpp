@@ -24,7 +24,7 @@ namespace CG3 {
 		UChar *stringbits[STRINGS_COUNT];
 		URegularExpression *regexps[REGEXP_COUNT];
 
-		inline int init_keyword_single(const char *keyword, const unsigned int entry) {
+		inline int init_keyword_single(const char *keyword, const uint32_t entry) {
 			if (entry >= KEYWORD_COUNT) {
 				return -1; // Out of bounds
 			}
@@ -85,7 +85,7 @@ namespace CG3 {
 			return 0;
 		}
 
-		inline int init_string_single(const char *keyword, const unsigned int entry) {
+		inline int init_string_single(const char *keyword, const uint32_t entry) {
 			if (entry >= STRINGS_COUNT) {
 				return -1; // Out of bounds
 			}

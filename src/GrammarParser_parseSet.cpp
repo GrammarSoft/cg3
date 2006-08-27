@@ -48,10 +48,10 @@ namespace CG3 {
 			return set_op;
 		}
 
-		unsigned long readSingleSet(UChar **paren, CG3::Grammar *result) {
+		uint32_t readSingleSet(UChar **paren, CG3::Grammar *result) {
 			ux_trimUChar(*paren);
 			UChar *space = u_strchr(*paren, ' ');
-			unsigned long retval = 0;
+			uint32_t retval = 0;
 
 			if ((*paren)[0] == '(') {
 				space = (*paren);
@@ -108,7 +108,7 @@ namespace CG3 {
 			return retval;
 		}
 
-		int parseSet(const UChar *line, const unsigned int which, CG3::Grammar *result) {
+		int parseSet(const UChar *line, const uint32_t which, CG3::Grammar *result) {
 			if (!which) {
 				std::cerr << "Error: No line number provided - cannot continue!" << std::endl;
 				return -1;
@@ -136,9 +136,9 @@ namespace CG3 {
 			curset->setLine(which);
 			result->addSet(curset);
 
-			unsigned long set_a = 0;
-			unsigned long set_b = 0;
-			unsigned long res = hash_sdbm_uchar(curset->getName());
+			uint32_t set_a = 0;
+			uint32_t set_b = 0;
+			uint32_t res = hash_sdbm_uchar(curset->getName());
 			int set_op = S_IGNORE;
 			while(space[0]) {
 				if (!set_a) {

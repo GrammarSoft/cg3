@@ -26,7 +26,7 @@ using namespace CG3::Strings;
 
 namespace CG3 {
 	namespace GrammarParser {
-		int parseList(const UChar *line, const unsigned int which, CG3::Grammar *result) {
+		int parseList(const UChar *line, const uint32_t which, CG3::Grammar *result) {
 			if (!which) {
 				std::cerr << "Error: No line number provided - cannot continue!" << std::endl;
 				return -1;

@@ -53,7 +53,7 @@ namespace Options {
 
 int main(int argc, char* argv[]) {
     UErrorCode status = U_ZERO_ERROR;
-	srand((unsigned int)time(0));
+	srand((uint32_t)time(0));
 
     U_MAIN_INIT_ARGS(argc, argv);
 
@@ -134,7 +134,7 @@ int main(int argc, char* argv[]) {
 
 //*
 	std::cout << "DELIMITERS = ";
-	stdext::hash_map<UChar*, unsigned long>::iterator iter;
+	stdext::hash_map<UChar*, uint32_t>::iterator iter;
 	for(iter = grammar->delimiters.begin() ; iter != grammar->delimiters.end() ; iter++ ) {
 		std::wcout << " " << iter->first;
 	}
@@ -147,9 +147,9 @@ int main(int argc, char* argv[]) {
 	std::cout << " ;" << std::endl;
 
 	std::cout << "SETS" << std::endl;
-	stdext::hash_map<unsigned long, CG3::Set*>::iterator set_iter;
+	stdext::hash_map<uint32_t, CG3::Set*>::iterator set_iter;
 	for (set_iter = grammar->sets.begin() ; set_iter != grammar->sets.end() ; set_iter++) {
-		stdext::hash_map<unsigned long, CG3::CompositeTag*>::iterator comp_iter;
+		stdext::hash_map<uint32_t, CG3::CompositeTag*>::iterator comp_iter;
 		CG3::Set *curset = set_iter->second;
 		if (!curset->tags.empty()) {
 			std::wcout << "LIST " << curset->getName() << " = ";
@@ -160,7 +160,7 @@ int main(int argc, char* argv[]) {
 						std::wcout << curcomptag->tags.begin()->second->raw << " ";
 					} else {
 						std::wcout << "(";
-						std::map<unsigned long, CG3::Tag*>::iterator tag_iter;
+						std::map<uint32_t, CG3::Tag*>::iterator tag_iter;
 						for (tag_iter = curcomptag->tags_map.begin() ; tag_iter != curcomptag->tags_map.end() ; tag_iter++) {
 							std::wcout << tag_iter->second->raw << " ";
 						}

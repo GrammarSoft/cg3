@@ -24,9 +24,9 @@ namespace CG3 {
 
 	class CompositeTag {
 	public:
-		unsigned long hash;
-		std::map<unsigned long, Tag*> tags_map;
-		stdext::hash_map<unsigned long, Tag*> tags;
+		uint32_t hash;
+		std::map<uint32_t, Tag*> tags_map;
+		stdext::hash_map<uint32_t, Tag*> tags;
 
 		CompositeTag() {
 			hash = 0;
@@ -51,16 +51,16 @@ namespace CG3 {
 			delete tag;
 		}
 
-		unsigned long rehash() {
-			unsigned long retval = 0;
-			std::map<unsigned long, Tag*>::iterator iter;
+		uint32_t rehash() {
+			uint32_t retval = 0;
+			std::map<uint32_t, Tag*>::iterator iter;
 			for (iter = tags_map.begin() ; iter != tags_map.end() ; iter++) {
 				retval = hash_sdbm_uchar(iter->second->raw, retval);
 			}
 			hash = retval;
 			return retval;
 		}
-		const unsigned long getHash() {
+		const uint32_t getHash() {
 			return hash;
 		}
 	};

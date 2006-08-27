@@ -193,6 +193,9 @@
 				RelativePath=".\src\Rule.h">
 			</File>
 			<File
+				RelativePath=".\src\Section.h">
+			</File>
+			<File
 				RelativePath=".\src\Set.h">
 			</File>
 			<File

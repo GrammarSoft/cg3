@@ -24,7 +24,7 @@ namespace CG3 {
 
 	class ContextualTest {
 	public:
-		unsigned long target;
+		uint32_t target;
 	};
 
 }

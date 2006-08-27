@@ -34,49 +34,18 @@
 
 //*
 // hash_map fix for cross-platform
-unsigned long hash_sdbm_char(const unsigned char *str);
-unsigned long hash_sdbm_uchar(const UChar *str);
-unsigned long hash_sdbm_uchar(const UChar *str, unsigned long hash);
+uint32_t hash_sdbm_char(const unsigned char *str);
+uint32_t hash_sdbm_uchar(const UChar *str);
+uint32_t hash_sdbm_uchar(const UChar *str, uint32_t hash);
 
 #ifdef WIN32
-	#include <winsock.h>
+	#include <winsock.h> // for hton() and family.
     #include <hash_map>
-/*
-	struct uchar_hash {
-		const static size_t bucket_size = sizeof(UChar*);
-		const static size_t min_buckets = 3;
-
-		size_t operator()(const UChar* str) const {
-			size_t uhash = 0;
-			int c;
-
-			while (c = *str++) {
-				uhash = c + (uhash << 6) + (uhash << 16) - uhash;
-			}
-
-			return uhash;
-		}
-	};
-
-	struct uchar_equal {
-		const static size_t bucket_size = sizeof(UChar*);
-		const static size_t min_buckets = 3;
-
-		size_t operator()(const UChar* stra, const UChar* strb) const {
-			return (stra == strb) || u_strcmp(stra, strb) == 0;
-		}
-	};
-//*/
 #else
-	#include <netinet/in.h>
+	#include <netinet/in.h> // for hton() and family.
     #include <ext/hash_map>
     #define stdext __gnu_cxx
     namespace __gnu_cxx {
-        template<> struct hash<std::string> {
-            size_t operator()(const std::string& s) const {
-                return __gnu_cxx::__stl_hash_string(s.c_str());
-            }
-        };
         template<> struct hash<UChar*> {
             size_t operator()(const UChar *str) const {
                 size_t uhash = 0;

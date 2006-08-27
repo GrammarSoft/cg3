@@ -26,7 +26,7 @@ using namespace CG3::Strings;
 
 namespace CG3 {
 	namespace GrammarParser {
-		int parseSingleLine(const int key, const UChar *line, const unsigned int which, CG3::Grammar *result) {
+		int parseSingleLine(const int key, const UChar *line, const uint32_t which, CG3::Grammar *result) {
 			if (key <= K_IGNORE || key >= KEYWORD_COUNT) {
 				std::cerr << "Error: Invalid keyword " << key << " - skipping." << std::endl;
 				return -1;
@@ -136,9 +136,9 @@ namespace CG3 {
 			}
 
 			// ToDo: Make this dynamic.
-			std::map<unsigned int, UChar*> lines;
-			std::map<unsigned int, unsigned int> keys;
-			unsigned int lastcmd = 0;
+			std::map<uint32_t, UChar*> lines;
+			std::map<uint32_t, uint32_t> keys;
+			uint32_t lastcmd = 0;
 
 			while (!u_feof(input)) {
 				result->lines++;
@@ -178,7 +178,7 @@ namespace CG3 {
 					}
 					if (keyword || !lines[lastcmd]) {
 						while (!lines.empty()) {
-							unsigned int which = (*lines.begin()).first;
+							uint32_t which = (*lines.begin()).first;
 							UChar *line = (*lines.begin()).second;
 							parseSingleLine(keys[which], line, which, result);
 							delete line;
@@ -199,7 +199,7 @@ namespace CG3 {
 			}
 
 			while (!lines.empty()) {
-				unsigned int which = (*lines.begin()).first;
+				uint32_t which = (*lines.begin()).first;
 				UChar *line = (*lines.begin()).second;
 				parseSingleLine(keys[which], line, which, result);
 				delete line;

@@ -28,21 +28,21 @@ namespace CG3 {
 	class Set {
 	public:
 		UChar *name;
-		unsigned int line;
-		stdext::hash_map<UChar*, unsigned long> index_requires; // Simple common tags across the set
-		stdext::hash_map<UChar*, unsigned long> index_certain;
-		stdext::hash_map<UChar*, unsigned long> index_possible;
-		stdext::hash_map<UChar*, unsigned long> index_impossible;
-		stdext::hash_map<unsigned long, CompositeTag*> tags;
+		uint32_t line;
+		stdext::hash_map<UChar*, uint32_t> index_requires; // Simple common tags across the set
+		stdext::hash_map<UChar*, uint32_t> index_certain;
+		stdext::hash_map<UChar*, uint32_t> index_possible;
+		stdext::hash_map<UChar*, uint32_t> index_impossible;
+		stdext::hash_map<uint32_t, CompositeTag*> tags;
 
 		Set() {
 			name = 0;
 			line = 0;
 		}
 
-		void setName(unsigned long to) {
+		void setName(uint32_t to) {
 			if (!to) {
-				to = (unsigned long)rand();
+				to = (uint32_t)rand();
 			}
 			name = new UChar[24];
 			memset(name, 0, 24);
@@ -53,16 +53,17 @@ namespace CG3 {
 				name = new UChar[u_strlen(to)+1];
 				u_strcpy(name, to);
 			} else {
-				setName((unsigned long)rand());
+				setName((uint32_t)rand());
 			}
 		}
 		const UChar *getName() {
 			return name;
 		}
-		void setLine(unsigned int to) {
+
+		void setLine(uint32_t to) {
 			line = to;
 		}
-		unsigned int getLine() {
+		uint32_t getLine() {
 			return line;
 		}
 
@@ -78,7 +79,7 @@ namespace CG3 {
 			tags[tag->getHash()] = 0;
 			tags.erase(tag->getHash());
 		}
-		void removeCompositeTag(unsigned long tag) {
+		void removeCompositeTag(uint32_t tag) {
 			tags[tag] = 0;
 			tags.erase(tag);
 		}

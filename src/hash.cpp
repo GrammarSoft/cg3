@@ -17,8 +17,8 @@
 
 #include "stdafx.h"
 
-unsigned long hash_sdbm_char(const unsigned char *str) {
-    unsigned long hash = 0;
+uint32_t hash_sdbm_char(const unsigned char *str) {
+    uint32_t hash = 0;
     int c;
 
 	while (c = *str++) {
@@ -28,8 +28,8 @@ unsigned long hash_sdbm_char(const unsigned char *str) {
     return hash;
 }
 
-unsigned long hash_sdbm_uchar(const UChar *str) {
-    unsigned long hash = 0;
+uint32_t hash_sdbm_uchar(const UChar *str) {
+    uint32_t hash = 0;
     int c;
 
 	while (c = *str++) {
@@ -39,7 +39,7 @@ unsigned long hash_sdbm_uchar(const UChar *str) {
     return hash;
 }
 
-unsigned long hash_sdbm_uchar(const UChar *str, unsigned long hash) {
+uint32_t hash_sdbm_uchar(const UChar *str, uint32_t hash) {
     int c;
 
 	while (c = *str++) {
