@@ -37,8 +37,10 @@ bool ux_trim(UChar *totrim) {
 	int length = u_strlen(totrim);
 	if (totrim && length) {
 		while(u_isWhitespace(totrim[length-1])) {
-			totrim[length-1] = 0;
 			length--;
+		}
+		if (u_isWhitespace(totrim[length])) {
+			totrim[length] = 0;
 			retval = true;
 		}
 		if (u_isWhitespace(totrim[0])) {
@@ -47,7 +49,7 @@ bool ux_trim(UChar *totrim) {
 			while(u_isWhitespace(current[0])) {
 				current++;
 			}
-			uint32_t num_spaces = (current-totrim)-1;
+			uint32_t num_spaces = (uint32_t)((current-totrim)-1);
 			for (int i=0;i<length;i++) {
 				totrim[i] = totrim[i+num_spaces+1];
 			}
