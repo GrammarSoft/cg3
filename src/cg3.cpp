@@ -194,23 +194,27 @@ int main(int argc, char* argv[]) {
 		ux_stderr = u_fopen(Options::options[Options::STDERR].value, "w", locale_output, codepage_output);
 	}
 
-	CG3::GrammarParser::parse_grammar_from_file(Options::options[Options::GRAMMAR].value, locale_grammar, codepage_grammar, grammar);
+	if (CG3::GrammarParser::parse_grammar_from_file(Options::options[Options::GRAMMAR].value, locale_grammar, codepage_grammar, grammar)) {
+		u_fprintf(ux_stderr, "Error: Grammar could not be parsed - exiting!\n");
+		return -1;
+	}
 
-//*
+/*
 	u_fprintf(ux_stdout, "DELIMITERS = ");
 	stdext::hash_map<UChar*, uint32_t>::iterator iter;
 	for(iter = grammar->delimiters.begin() ; iter != grammar->delimiters.end() ; iter++ ) {
 		u_fprintf(ux_stdout, " %S", iter->first);
 	}
-	u_fprintf(ux_stdout, " ;\n");
+	u_fprintf(ux_stdout, "\n");
 
 	u_fprintf(ux_stdout, "PREFERRED-TARGETS = ");
 	for(iter = grammar->preferred_targets.begin() ; iter != grammar->preferred_targets.end() ; iter++ ) {
 		u_fprintf(ux_stdout, " %S", iter->first);
 	}
-	u_fprintf(ux_stdout, " ;\n");
-
-	u_fprintf(ux_stdout, "SETS\n");
+	u_fprintf(ux_stdout, "\n");
+//*/
+//*
+	//u_fprintf(ux_stdout, "SETS\n");
 	stdext::hash_map<uint32_t, CG3::Set*>::iterator set_iter;
 	for (set_iter = grammar->sets.begin() ; set_iter != grammar->sets.end() ; set_iter++) {
 		stdext::hash_map<uint32_t, CG3::CompositeTag*>::iterator comp_iter;
@@ -232,7 +236,7 @@ int main(int argc, char* argv[]) {
 					}
 				}
 			}
-			u_fprintf(ux_stdout, " ;\n");
+			u_fprintf(ux_stdout, "\n");
 		}
 	}
 	u_fprintf(ux_stdout, "\n");

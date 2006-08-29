@@ -28,12 +28,12 @@ namespace CG3 {
 	namespace GrammarParser {
 		int parseSelectRemoveIffDelimit(const UChar *line, uint32_t key, CG3::Grammar *result) {
 			if (!line) {
-				u_fprintf(ux_stderr, "Error: No string provided at line %u - cannot continue!\n", result->lines);
+				u_fprintf(ux_stderr, "Error: No string provided at line %u - cannot continue!\n", result->curline);
 				return -1;
 			}
 			int length = u_strlen(line);
 			if (!length) {
-				u_fprintf(ux_stderr, "Error: No string provided at line %u - cannot continue!\n", result->lines);
+				u_fprintf(ux_stderr, "Error: No string provided at line %u - cannot continue!\n", result->curline);
 				return -1;
 			}
 			if (key != K_SELECT && key != K_REMOVE && key != K_IFF && key != K_DELIMIT) {

@@ -83,7 +83,6 @@ namespace CG3 {
 		};
 
 		enum REGEXPS {
-			R_PACKSPACE,
 			R_ANDLINK,
 			R_CLEANSTRING,
 			REGEXP_COUNT

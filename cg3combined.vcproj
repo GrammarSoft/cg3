@@ -143,7 +143,13 @@
 				RelativePath=".\src\GrammarParser.cpp">
 			</File>
 			<File
+				RelativePath=".\src\GrammarParser_parseDelimiters.cpp">
+			</File>
+			<File
 				RelativePath=".\src\GrammarParser_parseList.cpp">
+			</File>
+			<File
+				RelativePath=".\src\GrammarParser_parsePreferredTargets.cpp">
 			</File>
 			<File
 				RelativePath=".\src\GrammarParser_parseSelectRemoveIffDelimit.cpp">

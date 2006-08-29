@@ -29,7 +29,7 @@ namespace CG3 {
 		int readSetOperator(UChar **paren, CG3::Grammar *result) {
 			UChar *space = 0;
 			int set_op = 0;
-			ux_trimUChar(*paren);
+			ux_trim(*paren);
 			space = u_strchr(*paren, ' ');
 			if (space) {
 				space[0] = 0;
@@ -49,7 +49,7 @@ namespace CG3 {
 		}
 
 		uint32_t readSingleSet(UChar **paren, CG3::Grammar *result) {
-			ux_trimUChar(*paren);
+			ux_trim(*paren);
 			UChar *space = u_strchr(*paren, ' ');
 			uint32_t retval = 0;
 
@@ -57,14 +57,14 @@ namespace CG3 {
 				space = (*paren);
 				int matching = 0;
 				if (!ux_findMatchingParenthesis(space, 0, &matching)) {
-					u_fprintf(ux_stderr, "Error: Unmatched parentheses on or after line %u!\n", result->lines);
+					u_fprintf(ux_stderr, "Error: Unmatched parentheses on or after line %u!\n", result->curline);
 				} else {
 					space[matching] = 0;
 					UChar *composite = space+1;
-					ux_trimUChar(composite);
+					ux_trim(composite);
 
 					CG3::Set *set_c = result->allocateSet();
-					set_c->setLine(result->lines);
+					set_c->setLine(result->curline);
 					set_c->setName(hash_sdbm_uchar(composite));
 					retval = hash_sdbm_uchar(set_c->getName());
 
@@ -92,7 +92,7 @@ namespace CG3 {
 
 					*paren = space+matching+1;
 					space = space+matching;
-					ux_trimUChar(*paren);
+					ux_trim(*paren);
 				}
 			}
 			else if (space && space[0] == ' ') {
@@ -110,12 +110,12 @@ namespace CG3 {
 
 		int parseSet(const UChar *line, CG3::Grammar *result) {
 			if (!line) {
-				u_fprintf(ux_stderr, "Error: No string provided at line %u - cannot continue!\n", result->lines);
+				u_fprintf(ux_stderr, "Error: No string provided at line %u - cannot continue!\n", result->curline);
 				return -1;
 			}
 			int length = u_strlen(line);
 			if (!length) {
-				u_fprintf(ux_stderr, "Error: No string provided at line %u - cannot continue!\n", result->lines);
+				u_fprintf(ux_stderr, "Error: No string provided at line %u - cannot continue!\n", result->curline);
 				return -1;
 			}
 			UChar *local = new UChar[length+1];
@@ -129,7 +129,7 @@ namespace CG3 {
 
 			CG3::Set *curset = result->allocateSet();
 			curset->setName(local);
-			curset->setLine(result->lines);
+			curset->setLine(result->curline);
 			result->addSet(curset);
 
 			uint32_t set_a = 0;
@@ -140,14 +140,14 @@ namespace CG3 {
 				if (!set_a) {
 					set_a = readSingleSet(&space, result);
 					if (!set_a) {
-						u_fprintf(ux_stderr, "Error: Could not read in left hand set on line %u - cannot continue!\n", result->lines);
+						u_fprintf(ux_stderr, "Error: Could not read in left hand set on line %u for set %S - cannot continue!\n", result->curline, local);
 						break;
 					}
 				}
 				if (!set_op) {
 					set_op = readSetOperator(&space, result);
 					if (!set_op) {
-						u_fprintf(ux_stderr, "Warning: Could not read in set operator on line %u - assuming set alias.\n", result->lines);
+						u_fprintf(ux_stderr, "Warning: Could not read in operator on line %u for set %S - assuming set alias.\n", result->curline, local);
 						result->manipulateSet(res, S_OR, set_a, res);
 						break;
 					}
@@ -155,7 +155,7 @@ namespace CG3 {
 				if (!set_b) {
 					set_b = readSingleSet(&space, result);
 					if (!set_b) {
-						u_fprintf(ux_stderr, "Error: Could not read in right hand set on line %u - cannot continue!\n", result->lines);
+						u_fprintf(ux_stderr, "Error: Could not read in right hand set on line %u for set %S - cannot continue!\n", result->curline, local);
 						break;
 					}
 				}

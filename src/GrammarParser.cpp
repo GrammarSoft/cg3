@@ -67,23 +67,8 @@ namespace CG3 {
 			}
 
 			delete local;
-			length = u_strlen(newlocal);
-			local = new UChar[length+1];
-
-			status = U_ZERO_ERROR;
-			uregex_setText(regexps[R_PACKSPACE], newlocal, length, &status);
-			if (status != U_ZERO_ERROR) {
-				u_fprintf(ux_stderr, "Error: uregex_setText returned %s - cannot continue!\n", u_errorName(status));
-				return -1;
-			}
-			status = U_ZERO_ERROR;
-			uregex_replaceAll(regexps[R_PACKSPACE], stringbits[S_SPACE], u_strlen(stringbits[S_SPACE]), local, length+1, &status);
-			if (status != U_ZERO_ERROR) {
-				u_fprintf(ux_stderr, "Error: uregex_replaceAll returned %s - cannot continue!\n", u_errorName(status));
-				return -1;
-			}
-
-			delete newlocal;
+			local = newlocal;
+			ux_packWhitespace(local);
 
 			switch(key) {
 				case K_LIST:
@@ -97,6 +82,12 @@ namespace CG3 {
 				case K_IFF:
 				case K_DELIMIT:
 					parseSelectRemoveIffDelimit(local, key, result);
+					break;
+				case K_DELIMITERS:
+					parseDelimiters(local, result);
+					break;
+				case K_PREFERRED_TARGETS:
+					parsePreferredTargets(local, result);
 					break;
 				default:
 					break;
@@ -158,7 +149,7 @@ namespace CG3 {
 					}
 				}
 				if (notnull) {
-					ux_trimUChar(line);
+					ux_trim(line);
 					int keyword = 0;
 					for (int i=1;i<KEYWORD_COUNT;i++) {
 						UChar *pos = 0;
@@ -177,10 +168,11 @@ namespace CG3 {
 					}
 					if (keyword || !lines[lastcmd]) {
 						while (!lines.empty()) {
+							result->curline = (*lines.begin()).first;
 							UChar *line = (*lines.begin()).second;
-							parseSingleLine(keys[ (*lines.begin()).first ], line, result);
+							parseSingleLine(keys[result->curline], line, result);
 							delete line;
-							keys.erase( (*lines.begin()).first );
+							keys.erase(result->curline);
 							lines.erase(lines.begin());
 						}
 						lines[result->lines] = line;
@@ -198,10 +190,11 @@ namespace CG3 {
 			}
 
 			while (!lines.empty()) {
+				result->curline = (*lines.begin()).first;
 				UChar *line = (*lines.begin()).second;
-				parseSingleLine(keys[ (*lines.begin()).first ], line, result);
+				parseSingleLine(keys[result->curline], line, result);
 				delete line;
-				keys.erase( (*lines.begin()).first );
+				keys.erase(result->curline);
 				lines.erase(lines.begin());
 			}
 
@@ -221,7 +214,7 @@ namespace CG3 {
 			}
 			
 			int error = parse_grammar_from_ufile(grammar, result);
-			if (error || !result) {
+			if (error) {
 				return error;
 			}
 			result->name = new UChar[strlen(filename)+1];

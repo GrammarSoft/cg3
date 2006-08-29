@@ -33,7 +33,7 @@ bool ux_isNewline(const UChar32 current, const UChar32 previous) {
 }
 
 // ToDo: Make this faster by trimming all whitespace in a single iteration.
-bool ux_trimUChar(UChar *totrim) {
+bool ux_trim(UChar *totrim) {
 	bool retval = false;
 	int length = u_strlen(totrim);
 	if (totrim && length) {
@@ -47,10 +47,46 @@ bool ux_trimUChar(UChar *totrim) {
 				if (totrim[i]) {
 					totrim[i] = totrim[i+1];
 					retval = true;
-				} else {
+				}
+				else {
 					break;
 				}
 			}
+		}
+	}
+	return retval;
+}
+
+bool ux_packWhitespace(UChar *totrim) {
+	bool retval = false;
+	int length = u_strlen(totrim);
+	if (totrim && length) {
+		UChar *space = 0;
+		UChar *current = totrim;
+		UChar previous = 0;
+		uint32_t num_spaces = 0;
+		while (current[0]) {
+			if (u_isWhitespace(current[0]) && !u_isWhitespace(previous)) {
+				current[0] = ' ';
+				space = current+1;
+				num_spaces = 1;
+			}
+			else if (!u_isWhitespace(current[0]) && u_isWhitespace(previous)) {
+				if (num_spaces > 1) {
+					num_spaces--;
+					retval = true;
+					length = u_strlen(current);
+					for (int i=0;i<=length;i++) {
+						space[i] = current[i];
+					}
+					current = space;
+				}
+			}
+			else if (u_isWhitespace(current[0]) && u_isWhitespace(previous)) {
+				num_spaces++;
+			}
+			previous = current[0];
+			current++;
 		}
 	}
 	return retval;
@@ -82,15 +118,20 @@ int ux_isSetOp(const UChar *it) {
 	int retval = S_IGNORE;
 	if (u_strcmp(it, stringbits[S_OR]) == 0) {
 		retval = S_OR;
-	} else if (u_strcmp(it, stringbits[S_PLUS]) == 0) {
+	}
+	else if (u_strcmp(it, stringbits[S_PLUS]) == 0) {
 		retval = S_PLUS;
-	} else if (u_strcmp(it, stringbits[S_MINUS]) == 0) {
+	}
+	else if (u_strcmp(it, stringbits[S_MINUS]) == 0) {
 		retval = S_MINUS;
-	} else if (u_strcmp(it, stringbits[S_MULTIPLY]) == 0) {
+	}
+	else if (u_strcmp(it, stringbits[S_MULTIPLY]) == 0) {
 		retval = S_MULTIPLY;
-	} else if (u_strcmp(it, stringbits[S_DENY]) == 0) {
+	}
+	else if (u_strcmp(it, stringbits[S_DENY]) == 0) {
 		retval = S_DENY;
-	} else if (u_strcmp(it, stringbits[S_NOT]) == 0) {
+	}
+	else if (u_strcmp(it, stringbits[S_NOT]) == 0) {
 		retval = S_NOT;
 	}
 	return retval;

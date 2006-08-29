@@ -28,12 +28,12 @@ namespace CG3 {
 	namespace GrammarParser {
 		int parseList(const UChar *line, CG3::Grammar *result) {
 			if (!line) {
-				u_fprintf(ux_stderr, "Error: No string provided at line %u - cannot continue!\n", result->lines);
+				u_fprintf(ux_stderr, "Error: No string provided at line %u - cannot continue!\n", result->curline);
 				return -1;
 			}
 			int length = u_strlen(line);
 			if (!length) {
-				u_fprintf(ux_stderr, "Error: No string provided at line %u - cannot continue!\n", result->lines);
+				u_fprintf(ux_stderr, "Error: No string provided at line %u - cannot continue!\n", result->curline);
 				return -1;
 			}
 			UChar *local = new UChar[length+1];
@@ -47,7 +47,7 @@ namespace CG3 {
 
 			CG3::Set *curset = result->allocateSet();
 			curset->setName(local);
-			curset->setLine(result->lines);
+			curset->setLine(result->curline);
 
 			UChar *paren = space;
 			while(paren[0]) {
@@ -82,7 +82,7 @@ namespace CG3 {
 						} else {
 							space[matching] = 0;
 							UChar *composite = space+1;
-							ux_trimUChar(composite);
+							ux_trim(composite);
 
 							CG3::CompositeTag *ctag = result->allocateCompositeTag();
 							UChar *temp = composite;
@@ -107,7 +107,7 @@ namespace CG3 {
 
 							paren = space+matching+1;
 							space = space+matching;
-							ux_trimUChar(paren);
+							ux_trim(paren);
 						}
 					}
 				}

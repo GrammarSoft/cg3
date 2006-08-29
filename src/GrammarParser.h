@@ -26,6 +26,9 @@ namespace CG3 {
 	namespace GrammarParser {
 		int parse_grammar_from_file(const char *filename, const char *locale, const char *codepage, CG3::Grammar *result);
 
+		int parseDelimiters(const UChar *line, CG3::Grammar *result);
+		int parsePreferredTargets(const UChar *line, CG3::Grammar *result);
+
 		int parseList(const UChar *line, CG3::Grammar *result);
 
 		int readSetOperator(UChar **paren, CG3::Grammar *result);

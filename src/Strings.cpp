@@ -135,15 +135,19 @@ namespace CG3 {
 
 			memset(pe, 0, sizeof(UParseError));
 			status = U_ZERO_ERROR;
-			regexps[R_PACKSPACE] = uregex_openC("\\s+\0", 0, pe, &status);
-
-			memset(pe, 0, sizeof(UParseError));
-			status = U_ZERO_ERROR;
 			regexps[R_CLEANSTRING] = uregex_openC("\\s+(TARGET|IF)\\s+\0", 0, pe, &status);
+			if (status != U_ZERO_ERROR) {
+				u_fprintf(ux_stderr, "Error: uregex_openC returned %s - cannot continue!\n", u_errorName(status));
+				return -1;
+			}
 
 			memset(pe, 0, sizeof(UParseError));
 			status = U_ZERO_ERROR;
 			regexps[R_ANDLINK] = uregex_openC("\\s+AND\\s+\0", 0, pe, &status);
+			if (status != U_ZERO_ERROR) {
+				u_fprintf(ux_stderr, "Error: uregex_openC returned %s - cannot continue!\n", u_errorName(status));
+				return -1;
+			}
 
 			delete pe;
 			return 0;

@@ -21,7 +21,8 @@
 #include <unicode/ustdio.h>
 
 bool ux_isNewline(const UChar32 current, const UChar32 previous);
-bool ux_trimUChar(UChar *totrim);
+bool ux_trim(UChar *totrim);
+bool ux_packWhitespace(UChar *totrim);
 bool ux_cutComments(UChar *line, const UChar comment);
 int ux_isSetOp(const UChar *it);
 bool ux_findMatchingParenthesis(const UChar *structure, int pos, int *result);

@@ -40,7 +40,7 @@ namespace CG3 {
 		bool baseform;
 		bool numerical;
 		UChar *comparison_key;
-		unsigned char comparison_op;
+		C_OPS comparison_op;
 		int comparison_val;
 		UChar *tag;
 		UChar *raw;
