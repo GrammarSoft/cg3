@@ -32,7 +32,6 @@ bool ux_isNewline(const UChar32 current, const UChar32 previous) {
 	|| previous == 0x000D); // ASCII \r
 }
 
-// ToDo: Make this faster by trimming all whitespace in a single iteration.
 bool ux_trim(UChar *totrim) {
 	bool retval = false;
 	int length = u_strlen(totrim);
@@ -42,15 +41,15 @@ bool ux_trim(UChar *totrim) {
 			length--;
 			retval = true;
 		}
-		while(u_isWhitespace(totrim[0])) {
+		if (u_isWhitespace(totrim[0])) {
+			retval = true;
+			UChar *current = totrim;
+			while(u_isWhitespace(current[0])) {
+				current++;
+			}
+			uint32_t num_spaces = (current-totrim)-1;
 			for (int i=0;i<length;i++) {
-				if (totrim[i]) {
-					totrim[i] = totrim[i+1];
-					retval = true;
-				}
-				else {
-					break;
-				}
+				totrim[i] = totrim[i+num_spaces+1];
 			}
 		}
 	}
