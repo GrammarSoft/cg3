@@ -237,7 +237,6 @@ int main(int argc, char* argv[]) {
 		}
 	}
 	u_fprintf(ux_stdout, "\n");
-//*/
 
 	u_fclose(ux_stdin);
 	u_fclose(ux_stdout);
