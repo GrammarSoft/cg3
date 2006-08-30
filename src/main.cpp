@@ -68,6 +68,8 @@ namespace Options {
 	};
 }
 
+using namespace Options;
+
 UFILE *ux_stdin = 0;
 UFILE *ux_stdout = 0;
 UFILE *ux_stderr = 0;
@@ -78,13 +80,13 @@ int main(int argc, char* argv[]) {
 
     U_MAIN_INIT_ARGS(argc, argv);
 
-	argc = u_parseArgs(argc, argv, (int32_t)(sizeof(Options::options)/sizeof(Options::options[0])), Options::options);
+	argc = u_parseArgs(argc, argv, (int32_t)(sizeof(options)/sizeof(options[0])), options);
 
     if (argc < 0) {
         fprintf(stderr, "%s: error in command line argument \"%s\"\n", argv[0], argv[-argc]);
     }
 
-    if (Options::options[Options::VERSION].doesOccur) {
+    if (options[VERSION].doesOccur) {
         fprintf(stderr,
                 "VISL CG-3 Disambiguator version %s.\n"
                 "%s\n",
@@ -92,12 +94,12 @@ int main(int argc, char* argv[]) {
         return U_ZERO_ERROR;
     }
 
-	if (!Options::options[Options::GRAMMAR].doesOccur && !Options::options[Options::HELP1].doesOccur && !Options::options[Options::HELP2].doesOccur) {
+	if (!options[GRAMMAR].doesOccur && !options[HELP1].doesOccur && !options[HELP2].doesOccur) {
 		fprintf(stderr, "Error: No grammar specified - cannot continue!\n");
 		argc = -argc;
 	}
 
-    if (argc < 0 || Options::options[Options::HELP1].doesOccur || Options::options[Options::HELP2].doesOccur) {
+    if (argc < 0 || options[HELP1].doesOccur || options[HELP2].doesOccur) {
         fprintf(stderr, "Usage: vislcg3 [OPTIONS] [FILES]\n");
         fprintf(stderr, "\n");
         fprintf(stderr, "Options:\n");
@@ -136,65 +138,65 @@ int main(int argc, char* argv[]) {
 	const char *codepage_input   = codepage_grammar;
 	const char *codepage_output  = codepage_grammar;
 
-	if (Options::options[Options::CODEPAGE_GRAMMAR].doesOccur) {
-		codepage_grammar = Options::options[Options::CODEPAGE_GRAMMAR].value;
-	} else if (Options::options[Options::CODEPAGE_ALL].doesOccur) {
-		codepage_grammar = Options::options[Options::CODEPAGE_ALL].value;
+	if (options[CODEPAGE_GRAMMAR].doesOccur) {
+		codepage_grammar = options[CODEPAGE_GRAMMAR].value;
+	} else if (options[CODEPAGE_ALL].doesOccur) {
+		codepage_grammar = options[CODEPAGE_ALL].value;
 	}
 
-	if (Options::options[Options::CODEPAGE_INPUT].doesOccur) {
-		codepage_input = Options::options[Options::CODEPAGE_INPUT].value;
-	} else if (Options::options[Options::CODEPAGE_ALL].doesOccur) {
-		codepage_input = Options::options[Options::CODEPAGE_ALL].value;
+	if (options[CODEPAGE_INPUT].doesOccur) {
+		codepage_input = options[CODEPAGE_INPUT].value;
+	} else if (options[CODEPAGE_ALL].doesOccur) {
+		codepage_input = options[CODEPAGE_ALL].value;
 	}
 
-	if (Options::options[Options::CODEPAGE_OUTPUT].doesOccur) {
-		codepage_output = Options::options[Options::CODEPAGE_OUTPUT].value;
-	} else if (Options::options[Options::CODEPAGE_ALL].doesOccur) {
-		codepage_output = Options::options[Options::CODEPAGE_ALL].value;
+	if (options[CODEPAGE_OUTPUT].doesOccur) {
+		codepage_output = options[CODEPAGE_OUTPUT].value;
+	} else if (options[CODEPAGE_ALL].doesOccur) {
+		codepage_output = options[CODEPAGE_ALL].value;
 	}
 
 	const char *locale_grammar = "en_US_POSIX";
 	const char *locale_input   = locale_grammar;
 	const char *locale_output  = locale_grammar;
 
-	if (Options::options[Options::LOCALE_GRAMMAR].doesOccur) {
-		locale_grammar = Options::options[Options::LOCALE_GRAMMAR].value;
-	} else if (Options::options[Options::LOCALE_ALL].doesOccur) {
-		locale_grammar = Options::options[Options::LOCALE_ALL].value;
+	if (options[LOCALE_GRAMMAR].doesOccur) {
+		locale_grammar = options[LOCALE_GRAMMAR].value;
+	} else if (options[LOCALE_ALL].doesOccur) {
+		locale_grammar = options[LOCALE_ALL].value;
 	}
 
-	if (Options::options[Options::LOCALE_INPUT].doesOccur) {
-		locale_input = Options::options[Options::LOCALE_INPUT].value;
-	} else if (Options::options[Options::LOCALE_ALL].doesOccur) {
-		locale_input = Options::options[Options::LOCALE_ALL].value;
+	if (options[LOCALE_INPUT].doesOccur) {
+		locale_input = options[LOCALE_INPUT].value;
+	} else if (options[LOCALE_ALL].doesOccur) {
+		locale_input = options[LOCALE_ALL].value;
 	}
 
-	if (Options::options[Options::LOCALE_OUTPUT].doesOccur) {
-		locale_output = Options::options[Options::LOCALE_OUTPUT].value;
-	} else if (Options::options[Options::LOCALE_ALL].doesOccur) {
-		locale_output = Options::options[Options::LOCALE_ALL].value;
+	if (options[LOCALE_OUTPUT].doesOccur) {
+		locale_output = options[LOCALE_OUTPUT].value;
+	} else if (options[LOCALE_ALL].doesOccur) {
+		locale_output = options[LOCALE_ALL].value;
 	}
 
-	if (!Options::options[Options::STDIN].doesOccur) {
+	if (!options[STDIN].doesOccur) {
 		ux_stdin = u_finit(stdin, locale_input, codepage_input);
 	} else {
-		ux_stdin = u_fopen(Options::options[Options::STDIN].value, "r", locale_input, codepage_input);
+		ux_stdin = u_fopen(options[STDIN].value, "r", locale_input, codepage_input);
 	}
 
-	if (!Options::options[Options::STDOUT].doesOccur) {
+	if (!options[STDOUT].doesOccur) {
 		ux_stdout = u_finit(stdout, locale_output, codepage_input);
 	} else {
-		ux_stdout = u_fopen(Options::options[Options::STDOUT].value, "w", locale_output, codepage_output);
+		ux_stdout = u_fopen(options[STDOUT].value, "w", locale_output, codepage_output);
 	}
 
-	if (!Options::options[Options::STDERR].doesOccur) {
+	if (!options[STDERR].doesOccur) {
 		ux_stderr = u_finit(stderr, locale_output, codepage_input);
 	} else {
-		ux_stderr = u_fopen(Options::options[Options::STDERR].value, "w", locale_output, codepage_output);
+		ux_stderr = u_fopen(options[STDERR].value, "w", locale_output, codepage_output);
 	}
 
-	if (CG3::GrammarParser::parse_grammar_from_file(Options::options[Options::GRAMMAR].value, locale_grammar, codepage_grammar, grammar)) {
+	if (CG3::GrammarParser::parse_grammar_from_file(options[GRAMMAR].value, locale_grammar, codepage_grammar, grammar)) {
 		u_fprintf(ux_stderr, "Error: Grammar could not be parsed - exiting!\n");
 		return -1;
 	}

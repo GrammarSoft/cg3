@@ -17,17 +17,6 @@
 
 #include "stdafx.h"
 
-uint32_t hash_sdbm_char(const unsigned char *str) {
-    uint32_t hash = 0;
-    int c;
-
-	while (c = *str++) {
-        hash = c + (hash << 6) + (hash << 16) - hash;
-	}
-
-    return hash;
-}
-
 uint32_t hash_sdbm_uchar(const UChar *str) {
     uint32_t hash = 0;
     int c;
