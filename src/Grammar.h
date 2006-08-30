@@ -31,8 +31,8 @@ namespace CG3 {
 		uint32_t lines, curline;
 		stdext::hash_map<uint32_t, CompositeTag*> tags;
 		stdext::hash_map<uint32_t, Set*> sets;
-		stdext::hash_map<uint32_t, CompositeTag*> delimiters;
-		stdext::hash_map<uint32_t, CompositeTag*> preferred_targets;
+		Set *delimiters;
+		std::vector<UChar*> preferred_targets;
 
 		std::map<uint32_t, Section*> sections;
 		stdext::hash_map<uint32_t, Rule*> rules;
@@ -42,18 +42,14 @@ namespace CG3 {
 			name = 0;
 			lines = 0;
 			curline = 0;
+			delimiters = 0;
 			srand((uint32_t)time(0));
 		}
 
-		void addDelimiter(UChar *to) {
-			UChar *delim = new UChar[u_strlen(to)+1];
-			u_strcpy(delim, to);
-//			delimiters[delim] = hash_sdbm_uchar(delim);
-		}
 		void addPreferredTarget(UChar *to) {
 			UChar *pf = new UChar[u_strlen(to)+1];
 			u_strcpy(pf, to);
-//			preferred_targets[pf] = hash_sdbm_uchar(pf);
+			preferred_targets.push_back(pf);
 		}
 		void addSet(Set *to) {
 			uint32_t hash = hash_sdbm_uchar(to->name);

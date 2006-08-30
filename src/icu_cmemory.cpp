@@ -19,7 +19,7 @@
 ******************************************************************************
 */
 #include "unicode/uclean.h"
-#include "cmemory.h"
+#include "icu_cmemory.h"
 #include <stdlib.h>
 
 /* uprv_malloc(0) returns a pointer to this read-only data. */                

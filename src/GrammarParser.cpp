@@ -27,8 +27,12 @@ using namespace CG3::Strings;
 namespace CG3 {
 	namespace GrammarParser {
 		int parseSingleLine(const int key, const UChar *line, CG3::Grammar *result) {
+			if (!line || !u_strlen(line)) {
+				u_fprintf(ux_stderr, "Warning: Line %u is empty - skipping.\n", result->curline);
+				return -1;
+			}
 			if (key <= K_IGNORE || key >= KEYWORD_COUNT) {
-				u_fprintf(ux_stderr, "Error: Invalid keyword %u - skipping!\n", key);
+				u_fprintf(ux_stderr, "Warning: Invalid keyword %u on line %u - skipping.\n", key, result->curline);
 				return -1;
 			}
 
@@ -170,7 +174,9 @@ namespace CG3 {
 						while (!lines.empty()) {
 							result->curline = (*lines.begin()).first;
 							UChar *line = (*lines.begin()).second;
-							parseSingleLine(keys[result->curline], line, result);
+							if (keys[result->curline]) {
+								parseSingleLine(keys[result->curline], line, result);
+							}
 							delete line;
 							keys.erase(result->curline);
 							lines.erase(lines.begin());
@@ -192,7 +198,9 @@ namespace CG3 {
 			while (!lines.empty()) {
 				result->curline = (*lines.begin()).first;
 				UChar *line = (*lines.begin()).second;
-				parseSingleLine(keys[result->curline], line, result);
+				if (keys[result->curline]) {
+					parseSingleLine(keys[result->curline], line, result);
+				}
 				delete line;
 				keys.erase(result->curline);
 				lines.erase(lines.begin());

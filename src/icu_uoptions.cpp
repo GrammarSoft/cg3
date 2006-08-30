@@ -17,8 +17,8 @@
 */
 
 #include "unicode/utypes.h"
-#include "cstring.h"
-#include "uoptions.h"
+#include "icu_cstring.h"
+#include "icu_uoptions.h"
 
 int u_parseArgs(int argc, char* argv[],
             int optionCount, UOption options[]) {

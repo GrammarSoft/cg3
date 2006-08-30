@@ -24,9 +24,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "unicode/utypes.h"
-#include "cmemory.h"
-#include "cstring.h"
-#include "uassert.h"
+#include "icu_cmemory.h"
+#include "icu_cstring.h"
+#include "icu_uassert.h"
 
 /*
  * We hardcode case conversion for invariant characters to match our expectation

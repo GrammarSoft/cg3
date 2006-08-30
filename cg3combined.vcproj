@@ -134,12 +134,6 @@
 				RelativePath=".\src\cg3.cpp">
 			</File>
 			<File
-				RelativePath=".\src\cmemory.cpp">
-			</File>
-			<File
-				RelativePath=".\src\cstring.cpp">
-			</File>
-			<File
 				RelativePath=".\src\GrammarParser.cpp">
 			</File>
 			<File
@@ -161,13 +155,19 @@
 				RelativePath=".\src\hash.cpp">
 			</File>
 			<File
+				RelativePath=".\src\icu_cmemory.cpp">
+			</File>
+			<File
+				RelativePath=".\src\icu_cstring.cpp">
+			</File>
+			<File
+				RelativePath=".\src\icu_uoptions.cpp">
+			</File>
+			<File
 				RelativePath=".\src\Strings.cpp">
 			</File>
 			<File
 				RelativePath=".\src\uextras.cpp">
-			</File>
-			<File
-				RelativePath=".\src\uoptions.cpp">
 			</File>
 		</Filter>
 		<Filter
@@ -178,22 +178,25 @@
 				RelativePath=".\src\cg3_resources.h">
 			</File>
 			<File
-				RelativePath=".\src\cmemory.h">
-			</File>
-			<File
 				RelativePath=".\src\CompositeTag.h">
 			</File>
 			<File
 				RelativePath=".\src\ContextualTest.h">
 			</File>
 			<File
-				RelativePath=".\src\cstring.h">
-			</File>
-			<File
 				RelativePath=".\src\Grammar.h">
 			</File>
 			<File
 				RelativePath=".\src\GrammarParser.h">
+			</File>
+			<File
+				RelativePath=".\src\icu_cmemory.h">
+			</File>
+			<File
+				RelativePath=".\src\icu_cstring.h">
+			</File>
+			<File
+				RelativePath=".\src\icu_uoptions.h">
 			</File>
 			<File
 				RelativePath=".\src\Rule.h">
@@ -214,13 +217,7 @@
 				RelativePath=".\src\Tag.h">
 			</File>
 			<File
-				RelativePath=".\src\uassert.h">
-			</File>
-			<File
 				RelativePath=".\src\uextras.h">
-			</File>
-			<File
-				RelativePath=".\src\uoptions.h">
 			</File>
 		</Filter>
 		<Filter

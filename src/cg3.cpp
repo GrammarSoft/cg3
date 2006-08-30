@@ -16,7 +16,7 @@
  */
 
 #include "stdafx.h"
-#include "uoptions.h"
+#include "icu_uoptions.h"
 #include "GrammarParser.h"
 #include "Grammar.h"
 
@@ -199,22 +199,17 @@ int main(int argc, char* argv[]) {
 		return -1;
 	}
 
-/*
-	u_fprintf(ux_stdout, "DELIMITERS = ");
-	stdext::hash_map<UChar*, uint32_t>::iterator iter;
-	for(iter = grammar->delimiters.begin() ; iter != grammar->delimiters.end() ; iter++ ) {
-		u_fprintf(ux_stdout, " %S", iter->first);
+	u_fprintf(ux_stdout, "# DELIMITERS does not exist. Instead, look for the set _S_DELIMITERS_\n");
+
+	u_fprintf(ux_stdout, "PREFERRED-TARGETS = ");
+	std::vector<UChar*>::iterator iter;
+	for(iter = grammar->preferred_targets.begin() ; iter != grammar->preferred_targets.end() ; iter++ ) {
+		u_fprintf(ux_stdout, "%S ", *iter);
 	}
 	u_fprintf(ux_stdout, "\n");
 
-	u_fprintf(ux_stdout, "PREFERRED-TARGETS = ");
-	for(iter = grammar->preferred_targets.begin() ; iter != grammar->preferred_targets.end() ; iter++ ) {
-		u_fprintf(ux_stdout, " %S", iter->first);
-	}
 	u_fprintf(ux_stdout, "\n");
-//*/
-//*
-	//u_fprintf(ux_stdout, "SETS\n");
+
 	stdext::hash_map<uint32_t, CG3::Set*>::iterator set_iter;
 	for (set_iter = grammar->sets.begin() ; set_iter != grammar->sets.end() ; set_iter++) {
 		stdext::hash_map<uint32_t, CG3::CompositeTag*>::iterator comp_iter;
