@@ -32,11 +32,7 @@ namespace CG3 {
 		uint32_t line;
 		std::list<ContextualTest*> tests;
 
-		Rule() {
-			name = 0;
-			target = 0;
-			line = 0;
-		}
+		Rule();
 	};
 
 }

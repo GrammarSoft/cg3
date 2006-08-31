@@ -41,9 +41,9 @@ namespace CG3 {
 		~Grammar();
 
 		void addPreferredTarget(UChar *to);
+
 		void addSet(Set *to);
 		Set *getSet(uint32_t which);
-
 		Set *allocateSet();
 		void destroySet(Set *set);
 
@@ -53,6 +53,7 @@ namespace CG3 {
 		void destroyCompositeTag(CompositeTag *tag);
 
 		Rule *allocateRule();
+		void addRule(Rule *rule);
 		void destroyRule(Rule *rule);
 
 		void manipulateSet(uint32_t set_a, int op, uint32_t set_b, uint32_t result);

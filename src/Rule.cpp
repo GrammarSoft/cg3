@@ -14,52 +14,14 @@
  * implied. See the License for the specific language governing
  * rights and limitations under the License.
  */
-
-#include "stdafx.h"
 #include <unicode/ustring.h>
-#include "Section.h"
+#include "Rule.h"
+#include "ContextualTest.h"
 
 using namespace CG3;
 
-Section::Section() {
+Rule::Rule() {
 	name = 0;
-	hash = 0;
-	start = 0;
-	end = 0;
-}
-Section::~Section() {
-	if (name) {
-		delete name;
-	}
-}
-
-void Section::setName(uint32_t to) {
-	if (!to) {
-		if (!line) {
-			to = (uint32_t)rand();
-		} else {
-			to = line;
-		}
-	}
-	name = new UChar[24];
-	memset(name, 0, 24);
-	u_sprintf(name, "Section_%u", to);
-}
-void Section::setName(const UChar *to) {
-	if (to) {
-		name = new UChar[u_strlen(to)+1];
-		u_strcpy(name, to);
-	} else {
-		setName((uint32_t)rand());
-	}
-}
-const UChar *Section::getName() {
-	return name;
-}
-
-void Section::setLine(uint32_t to) {
-	line = to;
-}
-uint32_t Section::getLine() {
-	return line;
+	target = 0;
+	line = 0;
 }

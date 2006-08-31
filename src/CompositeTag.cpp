@@ -18,60 +18,59 @@
 #include <unicode/ustring.h>
 #include "CompositeTag.h"
 
-namespace CG3 {
+using namespace CG3;
 
-	CompositeTag::CompositeTag() {
-		hash = 0;
-	}
-	
-	CompositeTag::~CompositeTag() {
-		std::map<uint32_t, Tag*>::iterator iter_map;
-		for (iter_map = tags_map.begin() ; iter_map != tags_map.end() ; iter_map++) {
-			if (iter_map->second) {
-				delete iter_map->second;
-			}
+CompositeTag::CompositeTag() {
+	hash = 0;
+}
+
+CompositeTag::~CompositeTag() {
+	std::map<uint32_t, Tag*>::iterator iter_map;
+	for (iter_map = tags_map.begin() ; iter_map != tags_map.end() ; iter_map++) {
+		if (iter_map->second) {
+			delete iter_map->second;
 		}
-		tags_map.clear();
+	}
+	tags_map.clear();
 
-		tags.clear();
-	}
+	tags.clear();
+}
 
-	void CompositeTag::addTag(Tag *tag) {
-		tags[hash_sdbm_uchar(tag->raw)] = tag;
-		tags_map[hash_sdbm_uchar(tag->raw)] = tag;
-	}
-	void CompositeTag::removeTag(Tag *tag) {
-		tags.erase(hash_sdbm_uchar(tag->raw));
-		tags_map.erase(hash_sdbm_uchar(tag->raw));
-		destroyTag(tags[hash_sdbm_uchar(tag->raw)]);
-	}
+void CompositeTag::addTag(Tag *tag) {
+	tags[hash_sdbm_uchar(tag->raw)] = tag;
+	tags_map[hash_sdbm_uchar(tag->raw)] = tag;
+}
+void CompositeTag::removeTag(Tag *tag) {
+	tags.erase(hash_sdbm_uchar(tag->raw));
+	tags_map.erase(hash_sdbm_uchar(tag->raw));
+	destroyTag(tags[hash_sdbm_uchar(tag->raw)]);
+}
 
-	Tag *CompositeTag::allocateTag(const UChar *tag) {
-		Tag *fresh = new Tag;
-		fresh->parseTag(tag);
-		return fresh;
-	}
-	Tag *CompositeTag::duplicateTag(Tag *tag) {
-		Tag *fresh = new Tag;
-		fresh->parseTag(tag->raw);
-		fresh->denied = tag->denied;
-		fresh->negative = tag->negative;
-		return fresh;
-	}
-	void CompositeTag::destroyTag(Tag *tag) {
-		delete tag;
-	}
+Tag *CompositeTag::allocateTag(const UChar *tag) {
+	Tag *fresh = new Tag;
+	fresh->parseTag(tag);
+	return fresh;
+}
+Tag *CompositeTag::duplicateTag(Tag *tag) {
+	Tag *fresh = new Tag;
+	fresh->parseTag(tag->raw);
+	fresh->denied = tag->denied;
+	fresh->negative = tag->negative;
+	return fresh;
+}
+void CompositeTag::destroyTag(Tag *tag) {
+	delete tag;
+}
 
-	uint32_t CompositeTag::rehash() {
-		uint32_t retval = 0;
-		std::map<uint32_t, Tag*>::iterator iter;
-		for (iter = tags_map.begin() ; iter != tags_map.end() ; iter++) {
-			retval = hash_sdbm_uchar(iter->second->raw, retval);
-		}
-		hash = retval;
-		return retval;
+uint32_t CompositeTag::rehash() {
+	uint32_t retval = 0;
+	std::map<uint32_t, Tag*>::iterator iter;
+	for (iter = tags_map.begin() ; iter != tags_map.end() ; iter++) {
+		retval = hash_sdbm_uchar(iter->second->raw, retval);
 	}
-	const uint32_t CompositeTag::getHash() {
-		return hash;
-	}
+	hash = retval;
+	return retval;
+}
+const uint32_t CompositeTag::getHash() {
+	return hash;
 }

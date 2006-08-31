@@ -170,6 +170,9 @@
 				RelativePath=".\src\main.cpp">
 			</File>
 			<File
+				RelativePath=".\src\Rule.cpp">
+			</File>
+			<File
 				RelativePath=".\src\Section.cpp">
 			</File>
 			<File
