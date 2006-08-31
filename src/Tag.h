@@ -62,9 +62,15 @@ namespace CG3 {
 		}
 		
 		~Tag() {
-			delete tag;
-			delete raw;
-			delete comparison_key;
+			if (tag) {
+				delete tag;
+			}
+			if (raw) {
+				delete raw;
+			}
+			if (comparison_key) {
+				delete comparison_key;
+			}
 		}
 
 		void parseTag(const UChar *to) {

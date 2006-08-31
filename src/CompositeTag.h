@@ -38,11 +38,7 @@ namespace CG3 {
 				delete (*iter_map).second;
 			}
 			tags_map.clear();
-			
-			stdext::hash_map<uint32_t, Tag*>::iterator iter_hash;
-			for (iter_hash = tags.begin() ; iter_hash != tags.end() ; iter_hash++) {
-				delete (*iter_hash).second;
-			}
+
 			tags.clear();
 		}
 

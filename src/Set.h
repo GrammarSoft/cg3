@@ -41,7 +41,9 @@ namespace CG3 {
 		}
 		
 		~Set() {
-			delete name;
+			if (name) {
+				delete name;
+			}
 		}
 
 		void setName(uint32_t to) {
