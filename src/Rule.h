@@ -27,6 +27,7 @@ namespace CG3 {
 	class Rule {
 	public:
 		UChar *name;
+		UChar *wordform;
 		uint32_t target;
 		uint32_t line;
 		std::list<ContextualTest*> tests;

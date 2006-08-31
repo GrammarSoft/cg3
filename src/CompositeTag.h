@@ -28,60 +28,18 @@ namespace CG3 {
 		std::map<uint32_t, Tag*> tags_map;
 		stdext::hash_map<uint32_t, Tag*> tags;
 
-		CompositeTag() {
-			hash = 0;
-		}
-		
-		~CompositeTag() {
-			std::map<uint32_t, Tag*>::iterator iter_map;
-			for (iter_map = tags_map.begin() ; iter_map != tags_map.end() ; iter_map++) {
-				if (iter_map->second) {
-					delete iter_map->second;
-				}
-			}
-			tags_map.clear();
+		CompositeTag();
+		~CompositeTag();
 
-			tags.clear();
-		}
+		void addTag(Tag *tag);
+		void removeTag(Tag *tag);
 
-		void addTag(Tag *tag) {
-			tags[hash_sdbm_uchar(tag->raw)] = tag;
-			tags_map[hash_sdbm_uchar(tag->raw)] = tag;
-		}
-		void removeTag(Tag *tag) {
-			tags.erase(hash_sdbm_uchar(tag->raw));
-			tags_map.erase(hash_sdbm_uchar(tag->raw));
-			destroyTag(tags[hash_sdbm_uchar(tag->raw)]);
-		}
+		Tag *allocateTag(const UChar *tag);
+		Tag *duplicateTag(Tag *tag);
+		void destroyTag(Tag *tag);
 
-		Tag *allocateTag(const UChar *tag) {
-			Tag *fresh = new Tag;
-			fresh->parseTag(tag);
-			return fresh;
-		}
-		Tag *duplicateTag(Tag *tag) {
-			Tag *fresh = new Tag;
-			fresh->parseTag(tag->raw);
-			fresh->denied = tag->denied;
-			fresh->negative = tag->negative;
-			return fresh;
-		}
-		void destroyTag(Tag *tag) {
-			delete tag;
-		}
-
-		uint32_t rehash() {
-			uint32_t retval = 0;
-			std::map<uint32_t, Tag*>::iterator iter;
-			for (iter = tags_map.begin() ; iter != tags_map.end() ; iter++) {
-				retval = hash_sdbm_uchar(iter->second->raw, retval);
-			}
-			hash = retval;
-			return retval;
-		}
-		const uint32_t getHash() {
-			return hash;
-		}
+		uint32_t rehash();
+		const uint32_t getHash();
 	};
 
 }

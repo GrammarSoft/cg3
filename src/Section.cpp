@@ -14,30 +14,53 @@
  * implied. See the License for the specific language governing
  * rights and limitations under the License.
  */
-#ifndef __SECTION_H
-#define __SECTION_H
 
+#include "stdafx.h"
 #include <unicode/ustring.h>
+#include "Section.h"
 
 namespace CG3 {
 
-	class Section {
-	public:
-		UChar *name;
-		uint32_t hash;
-		uint32_t start, end;
-		uint32_t line;
+	Section::Section() {
+		name = 0;
+		hash = 0;
+		start = 0;
+		end = 0;
+	}
+	Section::~Section() {
+		if (name) {
+			delete name;
+		}
+	}
 
-		Section();
-		~Section();
+	void Section::setName(uint32_t to) {
+		if (!to) {
+			if (!line) {
+				to = (uint32_t)rand();
+			} else {
+				to = line;
+			}
+		}
+		name = new UChar[24];
+		memset(name, 0, 24);
+		u_sprintf(name, "Section_%u", to);
+	}
+	void Section::setName(const UChar *to) {
+		if (to) {
+			name = new UChar[u_strlen(to)+1];
+			u_strcpy(name, to);
+		} else {
+			setName((uint32_t)rand());
+		}
+	}
+	const UChar *Section::getName() {
+		return name;
+	}
 
-		void setName(uint32_t to);
-		void setName(const UChar *to);
-		const UChar *getName();
-
-		void setLine(uint32_t to);
-		uint32_t getLine();
-	};
+	void Section::setLine(uint32_t to) {
+		line = to;
+	}
+	uint32_t Section::getLine() {
+		return line;
+	}
 }
-
-#endif

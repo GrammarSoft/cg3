@@ -18,7 +18,6 @@
 #define __CONTEXTUALTEST_H
 
 #include <unicode/ustring.h>
-//#include "Set.h"
 
 namespace CG3 {
 

@@ -37,17 +37,17 @@ namespace CG3 {
 				return -1;
 			}
 			if (key != K_SELECT && key != K_REMOVE && key != K_IFF && key != K_DELIMIT) {
-				u_fprintf(ux_stderr, "Error: Invalid keyword %u - cannot continue!\n", key);
+				u_fprintf(ux_stderr, "Error: Invalid keyword %u for line %u - cannot continue!\n", key, result->curline);
 				return -1;
 			}
 
 			UChar *local = new UChar[length+1];
-			u_strcpy(local, line+u_strlen(keywords[K_SET])+1);
-
+			u_strcpy(local, line);
 			UChar *space = u_strchr(local, ' ');
 			space[0] = 0;
 
 			if (u_strcmp(local, keywords[key]) != 0) {
+				;
 			}
 
 			delete local;

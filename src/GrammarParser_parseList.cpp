@@ -55,7 +55,6 @@ namespace CG3 {
 					if (u_strlen(paren)) {
 						CG3::CompositeTag *ctag = result->allocateCompositeTag();
 						CG3::Tag *tag = ctag->allocateTag(paren);
-						tag->parseTag(paren);
 						ctag->addTag(tag);
 						result->addCompositeTagToSet(curset, ctag);
 					}
@@ -67,7 +66,6 @@ namespace CG3 {
 						if (u_strlen(paren)) {
 							CG3::CompositeTag *ctag = result->allocateCompositeTag();
 							CG3::Tag *tag = ctag->allocateTag(paren);
-							tag->parseTag(paren);
 							ctag->addTag(tag);
 							result->addCompositeTagToSet(curset, ctag);
 						}
@@ -100,7 +98,6 @@ namespace CG3 {
 								composite = temp;
 							}
 							CG3::Tag *tag = ctag->allocateTag(composite);
-							tag->parseTag(composite);
 							ctag->addTag(tag);
 
 							result->addCompositeTagToSet(curset, ctag);
