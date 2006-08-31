@@ -57,8 +57,8 @@ namespace CG3 {
 			}
 
 			CG3::Set *curset = result->allocateSet();
-			curset->setName(result->curline);
 			curset->setLine(result->curline);
+			curset->setName(result->curline);
 			result->addSet(curset);
 
 			uint32_t set_a = 0;
@@ -69,14 +69,14 @@ namespace CG3 {
 				if (!set_a) {
 					set_a = readSingleSet(&space, result);
 					if (!set_a) {
-						u_fprintf(ux_stderr, "Error: Could not read in left hand set on line %u for set %S - cannot continue!\n", result->curline, local);
+//						u_fprintf(ux_stderr, "Error: Could not read in left hand set on line %u for set %S - cannot continue!\n", result->curline, local);
 						break;
 					}
 				}
 				if (!set_op) {
 					set_op = readSetOperator(&space, result);
 					if (!set_op) {
-						u_fprintf(ux_stderr, "Warning: Could not read in operator on line %u for set %S - assuming set alias.\n", result->curline, local);
+//						u_fprintf(ux_stderr, "Warning: Could not read in operator on line %u for set %S - assuming set alias.\n", result->curline, local);
 						result->manipulateSet(res, S_OR, set_a, res);
 						break;
 					}
@@ -84,7 +84,7 @@ namespace CG3 {
 				if (!set_b) {
 					set_b = readSingleSet(&space, result);
 					if (!set_b) {
-						u_fprintf(ux_stderr, "Error: Could not read in right hand set on line %u for set %S - cannot continue!\n", result->curline, local);
+//						u_fprintf(ux_stderr, "Error: Could not read in right hand set on line %u for set %S - cannot continue!\n", result->curline, local);
 						break;
 					}
 				}
@@ -95,6 +95,11 @@ namespace CG3 {
 					set_a = res;
 				}
 			}
+
+			CG3::Rule *rule = result->allocateRule();
+			rule->line = result->curline;
+			rule->target = res;
+			result->addRule(rule);
 
 			delete local;
 			return 0;
