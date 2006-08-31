@@ -120,6 +120,15 @@ namespace CG3 {
 		CompositeTag *allocateCompositeTag() {
 			return new CompositeTag;
 		}
+		CompositeTag *duplicateCompositeTag(CompositeTag *tag) {
+			CompositeTag *tmp = new CompositeTag;
+			std::map<uint32_t, Tag*>::iterator iter;
+			for (iter = tag->tags_map.begin() ; iter != tag->tags_map.end() ; iter++) {
+				Tag *ntag = tmp->duplicateTag(iter->second);
+				tmp->addTag(ntag);
+			}
+			return tmp;
+		}
 		void destroyCompositeTag(CompositeTag *tag) {
 			delete tag;
 		}
@@ -163,7 +172,41 @@ namespace CG3 {
 					break;
 				}
 				case S_DENY:
+				{
+					stdext::hash_map<uint32_t, CompositeTag*>::iterator iter;
+					for (iter = sets[set_a]->tags.begin() ; iter != sets[set_a]->tags.end() ; iter++) {
+						if (!sets[set_b]->tags[iter->first]) {
+							result_tags[iter->first] = iter->second;
+						}
+					}
+					for (iter = sets[set_b]->tags.begin() ; iter != sets[set_b]->tags.end() ; iter++) {
+						CompositeTag *tmp = duplicateCompositeTag(iter->second);
+						std::map<uint32_t, Tag*>::iterator iter_tag;
+						for (iter_tag = tmp->tags_map.begin() ; iter_tag != tmp->tags_map.end() ; iter_tag++) {
+							iter_tag->second->denied = !(iter_tag->second->denied);
+						}
+						result_tags[iter->first] = tmp;
+					}
+					break;
+				}
 				case S_NOT:
+				{
+					stdext::hash_map<uint32_t, CompositeTag*>::iterator iter;
+					for (iter = sets[set_a]->tags.begin() ; iter != sets[set_a]->tags.end() ; iter++) {
+						if (!sets[set_b]->tags[iter->first]) {
+							result_tags[iter->first] = iter->second;
+						}
+					}
+					for (iter = sets[set_b]->tags.begin() ; iter != sets[set_b]->tags.end() ; iter++) {
+						CompositeTag *tmp = duplicateCompositeTag(iter->second);
+						std::map<uint32_t, Tag*>::iterator iter_tag;
+						for (iter_tag = tmp->tags_map.begin() ; iter_tag != tmp->tags_map.end() ; iter_tag++) {
+							iter_tag->second->negative = !(iter_tag->second->negative);
+						}
+						result_tags[iter->first] = tmp;
+					}
+					break;
+				}
 				case S_MINUS:
 				{
 					stdext::hash_map<uint32_t, CompositeTag*>::iterator iter;

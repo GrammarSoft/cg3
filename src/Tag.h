@@ -87,7 +87,7 @@ namespace CG3 {
 					}
 				}
 				uint32_t length = u_strlen(tmp);
-				while (tmp[0] && tmp[0] == '"' && (tmp[length-1] == 'i' || tmp[length-1] == 'w' || tmp[length-1] == 'r')) {
+				while (tmp[0] && (tmp[0] == '"' || tmp[0] == '<') && (tmp[length-1] == 'i' || tmp[length-1] == 'w' || tmp[length-1] == 'r')) {
 					if (tmp[length-1] == 'r') {
 						regexp = true;
 						length--;
@@ -101,8 +101,12 @@ namespace CG3 {
 						length--;
 					}
 				}
-				raw = new UChar[length+1];
-				u_strncpy(raw, tmp, length);
+				
+				tag = new UChar[length+1];
+				tag[length] = 0;
+				u_strncpy(tag, tmp, length);
+				raw = new UChar[u_strlen(to)+1];
+				u_strcpy(raw, to);
 			}
 		}
 	};

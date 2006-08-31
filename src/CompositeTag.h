@@ -35,7 +35,9 @@ namespace CG3 {
 		~CompositeTag() {
 			std::map<uint32_t, Tag*>::iterator iter_map;
 			for (iter_map = tags_map.begin() ; iter_map != tags_map.end() ; iter_map++) {
-				delete (*iter_map).second;
+				if (iter_map->second) {
+					delete iter_map->second;
+				}
 			}
 			tags_map.clear();
 
@@ -55,6 +57,13 @@ namespace CG3 {
 		Tag *allocateTag(const UChar *tag) {
 			Tag *fresh = new Tag;
 			fresh->parseTag(tag);
+			return fresh;
+		}
+		Tag *duplicateTag(Tag *tag) {
+			Tag *fresh = new Tag;
+			fresh->parseTag(tag->raw);
+			fresh->denied = tag->denied;
+			fresh->negative = tag->negative;
 			return fresh;
 		}
 		void destroyTag(Tag *tag) {
