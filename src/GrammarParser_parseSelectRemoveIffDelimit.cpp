@@ -41,6 +41,7 @@ namespace CG3 {
 				return -1;
 			}
 
+			uint32_t lname = hash_sdbm_uchar(line);
 			UChar *local = new UChar[length+1];
 			u_strcpy(local, line);
 			UChar *space = u_strchr(local, ' ');
@@ -48,17 +49,25 @@ namespace CG3 {
 			UChar *wordform = 0;
 
 			// ToDo: Add parsing for RULE:name
+			UChar *name = local;
 			if (u_strcmp(local, keywords[key]) != 0) {
 				wordform = local;
 				space++;
+				name = space;
 				space = u_strchr(space, ' ');
 				space[0] = 0;
 				space++;
 			}
 
+			name = u_strchr(name, ':');
+			if (name) {
+				name[0] = 0;
+				name++;
+			}
+
 			CG3::Set *curset = result->allocateSet();
 			curset->setLine(result->curline);
-			curset->setName(result->curline);
+			curset->setName(hash_sdbm_uchar(space));
 			result->addSet(curset);
 
 			uint32_t set_a = 0;
@@ -100,6 +109,13 @@ namespace CG3 {
 			rule->line = result->curline;
 			rule->target = res;
 			result->addRule(rule);
+
+			if (name && name[0] && u_strlen(name)) {
+				rule->setName(name);
+			}
+			else {
+				rule->setName(lname);
+			}
 
 			delete local;
 			return 0;

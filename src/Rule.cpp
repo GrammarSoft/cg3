@@ -14,6 +14,7 @@
  * implied. See the License for the specific language governing
  * rights and limitations under the License.
  */
+#include "stdafx.h"
 #include <unicode/ustring.h>
 #include "Rule.h"
 #include "ContextualTest.h"
@@ -24,4 +25,22 @@ Rule::Rule() {
 	name = 0;
 	target = 0;
 	line = 0;
+	wordform = 0;
+}
+
+void Rule::setName(uint32_t to) {
+	if (!to) {
+		to = (uint32_t)rand();
+	}
+	name = new UChar[32];
+	memset(name, 0, 32);
+	u_sprintf(name, "_R_%u_%u_", line, to);
+}
+void Rule::setName(const UChar *to) {
+	if (to) {
+		name = new UChar[u_strlen(to)+1];
+		u_strcpy(name, to);
+	} else {
+		setName((uint32_t)rand());
+	}
 }

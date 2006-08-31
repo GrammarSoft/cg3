@@ -33,6 +33,8 @@ namespace CG3 {
 		std::list<ContextualTest*> tests;
 
 		Rule();
+		void setName(uint32_t to);
+		void setName(const UChar *to);
 	};
 
 }
