@@ -9,4 +9,4 @@ INCLUDES= $(all_includes)
 
 # the library search path.
 vislcg3_LDFLAGS = $(all_libraries) 
-vislcg3_LDADD = -licuio -licuuc
+vislcg3_LDADD = -lgc -licuio -licuuc

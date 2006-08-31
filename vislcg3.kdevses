@@ -9,10 +9,10 @@
    <View0 Type="Source" />
   </Doc1>
   <Doc2 NumberOfViews="1" URL="file:///home/tino/vislcg3/trunk/src/GrammarParser.cpp" >
-   <View0 line="190" Type="Source" />
+   <View0 Type="Source" />
   </Doc2>
   <Doc3 NumberOfViews="1" URL="file:///home/tino/vislcg3/trunk/src/Grammar.h" >
-   <View0 line="60" Type="Source" />
+   <View0 Type="Source" />
   </Doc3>
   <Doc4 NumberOfViews="1" URL="file:///home/tino/vislcg3/trunk/src/Strings.cpp" >
    <View0 Type="Source" />
@@ -21,25 +21,25 @@
    <View0 Type="Source" />
   </Doc5>
   <Doc6 NumberOfViews="1" URL="file:///home/tino/parsers/dansk/etc/dancg" >
-   <View0 line="0" Type="Source" />
+   <View0 Type="Source" />
   </Doc6>
   <Doc7 NumberOfViews="1" URL="file:///home/tino/vislcg3/trunk/src/main.cpp" >
-   <View0 line="244" Type="Source" />
+   <View0 Type="Source" />
   </Doc7>
   <Doc8 NumberOfViews="1" URL="file:///home/tino/vislcg3/trunk/src/Set.h" >
-   <View0 line="44" Type="Source" />
+   <View0 Type="Source" />
   </Doc8>
   <Doc9 NumberOfViews="1" URL="file:///home/tino/vislcg3/trunk/src/CompositeTag.h" >
-   <View0 line="41" Type="Source" />
+   <View0 Type="Source" />
   </Doc9>
   <Doc10 NumberOfViews="1" URL="file:///home/tino/vislcg3/trunk/src/Tag.h" >
-   <View0 line="70" Type="Source" />
+   <View0 Type="Source" />
   </Doc10>
   <Doc11 NumberOfViews="1" URL="file:///home/tino/vislcg3/trunk/src/Rule.h" >
-   <View0 line="0" Type="Source" />
+   <View0 Type="Source" />
   </Doc11>
   <Doc12 NumberOfViews="1" URL="file:///home/tino/vislcg3/trunk/src/Section.h" >
-   <View0 line="0" Type="Source" />
+   <View0 line="21" Type="Source" />
   </Doc12>
  </DocsAndViews>
  <pluginList>

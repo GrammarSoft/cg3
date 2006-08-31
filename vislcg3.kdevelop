@@ -22,7 +22,7 @@
       <terminal>true</terminal>
       <directoryradio>executable</directoryradio>
       <runarguments>
-        <vislcg3/>
+        <vislcg3></vislcg3>
       </runarguments>
     </run>
     <configurations>
