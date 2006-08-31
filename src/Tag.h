@@ -74,8 +74,26 @@ namespace CG3 {
 		}
 
 		void parseTag(const UChar *to) {
-			raw = new UChar[u_strlen(to)+1];
-			u_strcpy(raw, to);
+			if (to && u_strlen(to)) {
+				const UChar *tmp = to;
+				while (tmp[0] && tmp[0] == '!' || tmp[0] == ' ') {
+					if (tmp[0] == '!') {
+						negative = true;
+						tmp++;
+					}
+					if (tmp[0] == ' ') {
+						denied = true;
+						tmp++;
+					}
+				}
+				uint32_t length = u_strlen(tmp);
+				if (tmp[0] == '"' && tmp[length-1] == 'i') {
+					case_insensitive = true;
+					length--;
+				}
+				raw = new UChar[u_strlen(to)+1];
+				u_strcpy(raw, to);
+			}
 		}
 	};
 
