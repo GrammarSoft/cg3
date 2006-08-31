@@ -241,5 +241,7 @@ int main(int argc, char* argv[]) {
 	u_fclose(ux_stdin);
 	u_fclose(ux_stdout);
 	u_fclose(ux_stderr);
+	
+	delete grammar;
 	return status;
 }

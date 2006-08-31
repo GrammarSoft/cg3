@@ -188,6 +188,7 @@ namespace CG3 {
 						lines[lastcmd][length] = ' ';
 						lines[lastcmd][length+1] = 0;
 						u_strcat(lines[lastcmd], line);
+						delete line;
 					}
 				} else {
 					delete line;

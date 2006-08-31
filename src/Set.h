@@ -39,6 +39,10 @@ namespace CG3 {
 			name = 0;
 			line = 0;
 		}
+		
+		~Set() {
+			delete name;
+		}
 
 		void setName(uint32_t to) {
 			if (!to) {

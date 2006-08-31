@@ -45,6 +45,39 @@ namespace CG3 {
 			delimiters = 0;
 			srand((uint32_t)time(0));
 		}
+		
+		~Grammar() {
+			if (name) {
+				delete name;
+			}
+			if (delimiters) {
+				delete delimiters;
+			}
+			
+			std::vector<UChar*>::iterator iter;
+			for (iter = preferred_targets.begin() ; iter != preferred_targets.end() ; iter++) {
+				delete *iter;
+			}
+			preferred_targets.clear();
+			
+			std::map<uint32_t, Section*>::iterator iter_sec;
+			for (iter_sec = sections.begin() ; iter_sec != sections.end() ; iter_sec++) {
+				delete (*iter_sec).second;
+			}
+			sections.clear();
+			
+			stdext::hash_map<uint32_t, Set*>::iterator iter_set;
+			for (iter_set = sets.begin() ; iter_set != sets.end() ; iter_set++) {
+				delete (*iter_set).second;
+			}
+			sets.clear();
+			
+			stdext::hash_map<uint32_t, CompositeTag*>::iterator iter_ctag;
+			for (iter_ctag = tags.begin() ; iter_ctag != tags.end() ; iter_ctag++) {
+				delete (*iter_ctag).second;
+			}
+			tags.clear();
+		}
 
 		void addPreferredTarget(UChar *to) {
 			UChar *pf = new UChar[u_strlen(to)+1];

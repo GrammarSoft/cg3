@@ -31,6 +31,20 @@ namespace CG3 {
 		CompositeTag() {
 			hash = 0;
 		}
+		
+		~CompositeTag() {
+			std::map<uint32_t, Tag*>::iterator iter_map;
+			for (iter_map = tags_map.begin() ; iter_map != tags_map.end() ; iter_map++) {
+				delete (*iter_map).second;
+			}
+			tags_map.clear();
+			
+			stdext::hash_map<uint32_t, Tag*>::iterator iter_hash;
+			for (iter_hash = tags.begin() ; iter_hash != tags.end() ; iter_hash++) {
+				delete (*iter_hash).second;
+			}
+			tags.clear();
+		}
 
 		void addTag(Tag *tag) {
 			tags[hash_sdbm_uchar(tag->raw)] = tag;
