@@ -35,6 +35,7 @@ namespace CG3 {
 		uint32_t readSingleSet(UChar **paren, CG3::Grammar *result);
 		int parseSet(const UChar *line, CG3::Grammar *result);
 
+		int parseTarget(UChar **space, CG3::Grammar *result);
 		int parseSelectRemoveIffDelimit(const UChar *line, uint32_t key, CG3::Grammar *result);
 	}
 }
