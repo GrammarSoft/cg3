@@ -15,12 +15,14 @@
  * rights and limitations under the License.
  */
 #include <unicode/ustring.h>
+#include "Strings.h"
 #include "Tag.h"
 
 using namespace CG3;
 
 Tag::Tag() {
 	negative = false;
+	// ToDo: Rename to Fail-Fast
 	denied = false;
 	case_insensitive = false;
 	regexp = false;
@@ -28,6 +30,7 @@ Tag::Tag() {
 	wordform = false;
 	baseform = false;
 	numerical = false;
+	any = false;
 	comparison_key = 0;
 	comparison_op = OP_NOP;
 	comparison_val = 0;
@@ -90,5 +93,9 @@ void Tag::parseTag(const UChar *to) {
 		u_strncpy(tag, tmp, length);
 		raw = new UChar[u_strlen(to)+1];
 		u_strcpy(raw, to);
+
+		if (u_strcmp(tag, stringbits[S_ASTERIK]) == 0) {
+			any = true;
+		}
 	}
 }

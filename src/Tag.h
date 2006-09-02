@@ -39,6 +39,7 @@ namespace CG3 {
 		bool wordform;
 		bool baseform;
 		bool numerical;
+		bool any;
 		UChar *comparison_key;
 		C_OPS comparison_op;
 		int comparison_val;

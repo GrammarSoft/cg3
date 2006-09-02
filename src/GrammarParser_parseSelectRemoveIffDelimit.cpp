@@ -48,7 +48,7 @@ namespace CG3 {
 			space[0] = 0;
 			UChar *wordform = 0;
 
-			// ToDo: Add parsing for RULE:name
+			// ToDo: Add ANCHOR for named rules
 			UChar *name = local;
 			if (u_strcmp(local, keywords[key]) != 0) {
 				wordform = local;
@@ -77,6 +77,10 @@ namespace CG3 {
 			}
 			else {
 				rule->setName(lname);
+			}
+
+			if (space && space[0] && space[0] == '(') {
+				space = space;
 			}
 
 			delete local;

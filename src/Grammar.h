@@ -34,6 +34,9 @@ namespace CG3 {
 		Set *delimiters;
 		std::vector<UChar*> preferred_targets;
 
+		// ToDo: Implement vislcg_compat_mode
+		bool vislcg_compat_mode;
+
 		std::map<uint32_t, Section*> sections;
 		stdext::hash_map<uint32_t, Rule*> rules;
 

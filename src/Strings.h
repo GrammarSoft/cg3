@@ -80,6 +80,7 @@ namespace CG3 {
 			S_SPACE,
 			S_LINKZ,
 			S_DELIMITSET,
+			S_ASTERIK,
 			STRINGS_COUNT
 		};
 
