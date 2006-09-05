@@ -101,13 +101,17 @@ void Grammar::addCompositeTagToSet(Set *set, CompositeTag *tag) {
 		tags[tag->getHash()] = tag;
 		set->addCompositeTag(tag);
 	} else {
-		u_fprintf(ux_stderr, "Error: Attempted to add empty tag to grammar and set!\n");
+		u_fprintf(ux_stderr, "Error: Attempted to add empty composite tag to grammar and set!\n");
 	}
 }
 CompositeTag *Grammar::allocateCompositeTag() {
 	return new CompositeTag;
 }
 CompositeTag *Grammar::duplicateCompositeTag(CompositeTag *tag) {
+	if (!tag) {
+		u_fprintf(ux_stderr, "Error: Attempted to duplicate an empty composite tag!\n");
+		return 0;
+	}
 	CompositeTag *tmp = new CompositeTag;
 	std::map<uint32_t, Tag*>::iterator iter;
 	for (iter = tag->tags_map.begin() ; iter != tag->tags_map.end() ; iter++) {
@@ -148,6 +152,10 @@ void Grammar::manipulateSet(uint32_t set_a, int op, uint32_t set_b, uint32_t res
 		u_fprintf(ux_stderr, "Error: Invalid target for set operation on line %u!\n", lines);
 		return;
 	}
+	Set *a = sets[set_a];
+	Set *b = sets[set_b];
+	Set *r = sets[result];
+
 	stdext::hash_map<uint32_t, CompositeTag*> result_tags;
 	switch (op) {
 		case S_OR:
@@ -161,11 +169,11 @@ void Grammar::manipulateSet(uint32_t set_a, int op, uint32_t set_b, uint32_t res
 			}
 			break;
 		}
-		case S_DENY:
+		case S_FAILFAST:
 		{
 			stdext::hash_map<uint32_t, CompositeTag*>::iterator iter;
 			for (iter = sets[set_a]->tags.begin() ; iter != sets[set_a]->tags.end() ; iter++) {
-				if (!sets[set_b]->tags[iter->first]) {
+				if (sets[set_b]->tags.find(iter->first) == sets[set_b]->tags.end()) {
 					result_tags[iter->first] = iter->second;
 				}
 			}
@@ -173,7 +181,7 @@ void Grammar::manipulateSet(uint32_t set_a, int op, uint32_t set_b, uint32_t res
 				CompositeTag *tmp = duplicateCompositeTag(iter->second);
 				std::map<uint32_t, Tag*>::iterator iter_tag;
 				for (iter_tag = tmp->tags_map.begin() ; iter_tag != tmp->tags_map.end() ; iter_tag++) {
-					iter_tag->second->denied = !(iter_tag->second->denied);
+					iter_tag->second->failfast = !(iter_tag->second->failfast);
 				}
 				result_tags[iter->first] = tmp;
 			}
@@ -183,7 +191,7 @@ void Grammar::manipulateSet(uint32_t set_a, int op, uint32_t set_b, uint32_t res
 		{
 			stdext::hash_map<uint32_t, CompositeTag*>::iterator iter;
 			for (iter = sets[set_a]->tags.begin() ; iter != sets[set_a]->tags.end() ; iter++) {
-				if (!sets[set_b]->tags[iter->first]) {
+				if (sets[set_b]->tags.find(iter->first) == sets[set_b]->tags.end()) {
 					result_tags[iter->first] = iter->second;
 				}
 			}
@@ -201,7 +209,7 @@ void Grammar::manipulateSet(uint32_t set_a, int op, uint32_t set_b, uint32_t res
 		{
 			stdext::hash_map<uint32_t, CompositeTag*>::iterator iter;
 			for (iter = sets[set_a]->tags.begin() ; iter != sets[set_a]->tags.end() ; iter++) {
-				if (!sets[set_b]->tags[iter->first]) {
+				if (sets[set_b]->tags.find(iter->first) == sets[set_b]->tags.end()) {
 					result_tags[iter->first] = iter->second;
 				}
 			}
@@ -239,4 +247,14 @@ void Grammar::manipulateSet(uint32_t set_a, int op, uint32_t set_b, uint32_t res
 	}
 	sets[result]->tags.clear();
 	sets[result]->tags.swap(result_tags);
+}
+
+void Grammar::setName(const char *to) {
+	name = new UChar[strlen(to)+1];
+	u_uastrcpy(name, to);
+}
+
+void Grammar::setName(const UChar *to) {
+	name = new UChar[u_strlen(to)+1];
+	u_strcpy(name, to);
 }

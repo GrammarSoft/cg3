@@ -22,8 +22,7 @@ using namespace CG3;
 
 Tag::Tag() {
 	negative = false;
-	// ToDo: Rename to Fail-Fast
-	denied = false;
+	failfast = false;
 	case_insensitive = false;
 	regexp = false;
 	wildcard = false;
@@ -31,6 +30,7 @@ Tag::Tag() {
 	baseform = false;
 	numerical = false;
 	any = false;
+	mapping = false;
 	comparison_key = 0;
 	comparison_op = OP_NOP;
 	comparison_val = 0;
@@ -59,7 +59,7 @@ void Tag::parseTag(const UChar *to) {
 				tmp++;
 			}
 			if (tmp[0] == '^') {
-				denied = true;
+				failfast = true;
 				tmp++;
 			}
 		}
@@ -97,5 +97,29 @@ void Tag::parseTag(const UChar *to) {
 		if (u_strcmp(tag, stringbits[S_ASTERIK]) == 0) {
 			any = true;
 		}
+		if (tag[0] == '@') {
+			mapping = true;
+		}
+	}
+}
+
+void Tag::print(UFILE *to) {
+	if (negative) {
+		u_fprintf(to, "!");
+	}
+	if (failfast) {
+		u_fprintf(to, "^");
+	}
+
+	u_fprintf(to, "%S", tag);
+
+	if (case_insensitive) {
+		u_fprintf(to, "i");
+	}
+	if (regexp) {
+		u_fprintf(to, "r");
+	}
+	if (wildcard) {
+		u_fprintf(to, "w");
 	}
 }

@@ -22,99 +22,96 @@
 #include "Grammar.h"
 #include "uextras.h"
 
+using namespace CG3;
 using namespace CG3::Strings;
 
-namespace CG3 {
-	namespace GrammarParser {
-		int parseDelimiters(const UChar *line, CG3::Grammar *result) {
-			if (!line) {
-				u_fprintf(ux_stderr, "Error: No string provided at line %u - cannot continue!\n", result->curline);
-				return -1;
-			}
-			int length = u_strlen(line);
-			if (!length) {
-				u_fprintf(ux_stderr, "Error: No string provided at line %u - cannot continue!\n", result->curline);
-				return -1;
-			}
-			UChar *local = new UChar[length+1];
-			u_strcpy(local, line+u_strlen(keywords[K_DELIMITERS])+1);
-
-			// Allocate temp vars and skips over "DELIMITERS = "
-			UChar *space = u_strchr(local, ' ');
-			space[0] = 0;
-			space++;
-
-			CG3::Set *curset = result->allocateSet();
-			curset->setName(stringbits[S_DELIMITSET]);
-			curset->setLine(result->curline);
-
-			UChar *paren = space;
-			while(paren[0]) {
-				if (space[0] == 0) {
-					if (u_strlen(paren)) {
-						CG3::CompositeTag *ctag = result->allocateCompositeTag();
-						CG3::Tag *tag = ctag->allocateTag(paren);
-						ctag->addTag(tag);
-						result->addCompositeTagToSet(curset, ctag);
-					}
-					paren = space;
-				}
-				else if (space[0] == ' ') {
-					if (space[-1] != '\\') {
-						space[0] = 0;
-						if (u_strlen(paren)) {
-							CG3::CompositeTag *ctag = result->allocateCompositeTag();
-							CG3::Tag *tag = ctag->allocateTag(paren);
-							ctag->addTag(tag);
-							result->addCompositeTagToSet(curset, ctag);
-						}
-						paren = space+1;
-					}
-				}
-				else if (space[0] == '(') {
-					if (space[-1] != '\\') {
-						int matching = 0;
-						if (!ux_findMatchingParenthesis(space, 0, &matching)) {
-							u_fprintf(ux_stderr, "Error: Unmatched parentheses on or after line %u!\n", curset->getLine());
-						} else {
-							space[matching] = 0;
-							UChar *composite = space+1;
-							ux_trim(composite);
-
-							CG3::CompositeTag *ctag = result->allocateCompositeTag();
-							UChar *temp = composite;
-							while(temp = u_strchr(temp, ' ')) {
-								if (temp[-1] == '\\') {
-									temp++;
-									continue;
-								}
-								temp[0] = 0;
-								CG3::Tag *tag = ctag->allocateTag(composite);
-								tag->parseTag(composite);
-								ctag->addTag(tag);
-
-								temp++;
-								composite = temp;
-							}
-							CG3::Tag *tag = ctag->allocateTag(composite);
-							ctag->addTag(tag);
-
-							result->addCompositeTagToSet(curset, ctag);
-
-							paren = space+matching+1;
-							space = space+matching;
-							ux_trim(paren);
-						}
-					}
-				}
-				space++;
-			}
-
-			result->addSet(curset);
-			result->delimiters = curset;
-
-			delete local;
-			return 0;
-		}
+int GrammarParser::parseDelimiters(const UChar *line) {
+	if (!line) {
+		u_fprintf(ux_stderr, "Error: No string provided at line %u - cannot continue!\n", result->curline);
+		return -1;
 	}
+	int length = u_strlen(line);
+	if (!length) {
+		u_fprintf(ux_stderr, "Error: No string provided at line %u - cannot continue!\n", result->curline);
+		return -1;
+	}
+	UChar *local = new UChar[length+1];
+	u_strcpy(local, line+u_strlen(keywords[K_DELIMITERS])+1);
+
+	// Allocate temp vars and skips over "DELIMITERS = "
+	UChar *space = u_strchr(local, ' ');
+	space[0] = 0;
+	space++;
+
+	CG3::Set *curset = result->allocateSet();
+	curset->setName(stringbits[S_DELIMITSET]);
+	curset->setLine(result->curline);
+
+	UChar *paren = space;
+	while(paren[0]) {
+		if (space[0] == 0) {
+			if (u_strlen(paren)) {
+				CG3::CompositeTag *ctag = result->allocateCompositeTag();
+				CG3::Tag *tag = ctag->allocateTag(paren);
+				ctag->addTag(tag);
+				result->addCompositeTagToSet(curset, ctag);
+			}
+			paren = space;
+		}
+		else if (space[0] == ' ') {
+			if (space[-1] != '\\') {
+				space[0] = 0;
+				if (u_strlen(paren)) {
+					CG3::CompositeTag *ctag = result->allocateCompositeTag();
+					CG3::Tag *tag = ctag->allocateTag(paren);
+					ctag->addTag(tag);
+					result->addCompositeTagToSet(curset, ctag);
+				}
+				paren = space+1;
+			}
+		}
+		else if (space[0] == '(') {
+			if (space[-1] != '\\') {
+				int matching = 0;
+				if (!ux_findMatchingParenthesis(space, 0, &matching)) {
+					u_fprintf(ux_stderr, "Error: Unmatched parentheses on or after line %u!\n", curset->getLine());
+				} else {
+					space[matching] = 0;
+					UChar *composite = space+1;
+					ux_trim(composite);
+
+					CG3::CompositeTag *ctag = result->allocateCompositeTag();
+					UChar *temp = composite;
+					while(temp = u_strchr(temp, ' ')) {
+						if (temp[-1] == '\\') {
+							temp++;
+							continue;
+						}
+						temp[0] = 0;
+						CG3::Tag *tag = ctag->allocateTag(composite);
+						tag->parseTag(composite);
+						ctag->addTag(tag);
+
+						temp++;
+						composite = temp;
+					}
+					CG3::Tag *tag = ctag->allocateTag(composite);
+					ctag->addTag(tag);
+
+					result->addCompositeTagToSet(curset, ctag);
+
+					paren = space+matching+1;
+					space = space+matching;
+					ux_trim(paren);
+				}
+			}
+		}
+		space++;
+	}
+
+	result->addSet(curset);
+	result->delimiters = curset;
+
+	delete local;
+	return 0;
 }

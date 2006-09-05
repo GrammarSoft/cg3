@@ -129,8 +129,8 @@ int ux_isSetOp(const UChar *it) {
 	else if (u_strcmp(it, stringbits[S_MULTIPLY]) == 0) {
 		retval = S_MULTIPLY;
 	}
-	else if (u_strcmp(it, stringbits[S_DENY]) == 0) {
-		retval = S_DENY;
+	else if (u_strcmp(it, stringbits[S_FAILFAST]) == 0) {
+		retval = S_FAILFAST;
 	}
 	else if (u_strcmp(it, stringbits[S_NOT]) == 0) {
 		retval = S_NOT;

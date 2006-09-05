@@ -29,6 +29,7 @@ namespace Options {
 		UNSAFE,
 		SECTIONS,
 		DEBUG,
+		VISLCGCOMPAT,
 		STDIN,
 		STDOUT,
 		STDERR,
@@ -51,6 +52,7 @@ namespace Options {
 		UOPTION_DEF("unsafe",				'u', UOPT_NO_ARG),
 		UOPTION_DEF("sections",				's', UOPT_REQUIRES_ARG),
 		UOPTION_DEF("debug",				'd', UOPT_OPTIONAL_ARG),
+		UOPTION_DEF("vislcg-compat",		'p', UOPT_NO_ARG),
 
 		UOPTION_DEF("stdin",				'I', UOPT_REQUIRES_ARG),
 		UOPTION_DEF("stdout",				'O', UOPT_REQUIRES_ARG),
@@ -106,6 +108,7 @@ int main(int argc, char* argv[]) {
         fprintf(stderr, " -h or -? or --help       Displays this list.\n");
         fprintf(stderr, " -V or --version          Prints version number.\n");
         fprintf(stderr, " -g or --grammar          Specifies the grammar file to use for disambiguation.\n");
+        fprintf(stderr, " -p or --vislcg-compat    Tells the grammar compiler to be compatible with older VISLCG syntax.\n");
         fprintf(stderr, "\n");
 		fprintf(stderr, " -O or --stdout           A file to print out to instead of stdout.\n");
 		fprintf(stderr, " -I or --stdin            A file to read input from instead of stdin.\n");
@@ -196,7 +199,14 @@ int main(int argc, char* argv[]) {
 		ux_stderr = u_fopen(options[STDERR].value, "w", locale_output, codepage_output);
 	}
 
-	if (CG3::GrammarParser::parse_grammar_from_file(options[GRAMMAR].value, locale_grammar, codepage_grammar, grammar)) {
+	CG3::GrammarParser *parser = new CG3::GrammarParser;
+	parser->setResult(grammar);
+
+	if (options[VISLCGCOMPAT].doesOccur) {
+		parser->option_vislcg_compat = true;
+	}
+
+	if (parser->parse_grammar_from_file(options[GRAMMAR].value, locale_grammar, codepage_grammar)) {
 		u_fprintf(ux_stderr, "Error: Grammar could not be parsed - exiting!\n");
 		return -1;
 	}
@@ -222,12 +232,14 @@ int main(int argc, char* argv[]) {
 				if (comp_iter->second) {
 					CG3::CompositeTag *curcomptag = comp_iter->second;
 					if (curcomptag->tags.size() == 1) {
-						u_fprintf(ux_stdout, "%S ", curcomptag->tags.begin()->second->raw);
+						curcomptag->tags.begin()->second->print(ux_stdout);
+						u_fprintf(ux_stdout, " ");
 					} else {
 						u_fprintf(ux_stdout, "(");
 						std::map<uint32_t, CG3::Tag*>::iterator tag_iter;
 						for (tag_iter = curcomptag->tags_map.begin() ; tag_iter != curcomptag->tags_map.end() ; tag_iter++) {
-							u_fprintf(ux_stdout, "%S ", tag_iter->second->raw);
+							tag_iter->second->print(ux_stdout);
+							u_fprintf(ux_stdout, " ");
 						}
 						u_fprintf(ux_stdout, ") ");
 					}
@@ -243,5 +255,6 @@ int main(int argc, char* argv[]) {
 	u_fclose(ux_stderr);
 	
 	delete grammar;
+	delete parser;
 	return status;
 }

@@ -54,7 +54,7 @@ Tag *CompositeTag::allocateTag(const UChar *tag) {
 Tag *CompositeTag::duplicateTag(Tag *tag) {
 	Tag *fresh = new Tag;
 	fresh->parseTag(tag->raw);
-	fresh->denied = tag->denied;
+	fresh->failfast = tag->failfast;
 	fresh->negative = tag->negative;
 	return fresh;
 }

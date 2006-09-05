@@ -19,43 +19,13 @@
 #include "Strings.h"
 #include <unicode/uregex.h>
 #include "GrammarParser.h"
+#include "Rule.h"
 #include "Grammar.h"
 #include "uextras.h"
 
 using namespace CG3;
 using namespace CG3::Strings;
 
-int GrammarParser::parsePreferredTargets(const UChar *line) {
-	if (!line) {
-		u_fprintf(ux_stderr, "Error: No string provided at line %u - cannot continue!\n", result->curline);
-		return -1;
-	}
-	int length = u_strlen(line);
-	if (!length) {
-		u_fprintf(ux_stderr, "Error: No string provided at line %u - cannot continue!\n", result->curline);
-		return -1;
-	}
-	UChar *local = new UChar[length+1];
-	u_strcpy(local, line+u_strlen(keywords[K_PREFERRED_TARGETS])+1);
-
-	// Allocate temp vars and skips over "PREFERRED-TARGETS = "
-	UChar *space = u_strchr(local, ' ');
-	space[0] = 0;
-	space++;
-	UChar *base = space;
-
-	while (space && (space = u_strchr(space, ' ')) != 0) {
-		space[0] = 0;
-		space++;
-		if (u_strlen(base)) {
-			result->addPreferredTarget(base);
-		}
-		base = space;
-	}
-	if (u_strlen(base)) {
-		result->addPreferredTarget(base);
-	}
-
-	delete local;
+int GrammarParser::parseContextualTest(UChar **space, CG3::Rule *rule) {
 	return 0;
 }

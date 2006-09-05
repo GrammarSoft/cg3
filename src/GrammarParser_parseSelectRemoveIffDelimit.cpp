@@ -22,69 +22,66 @@
 #include "Grammar.h"
 #include "uextras.h"
 
+using namespace CG3;
 using namespace CG3::Strings;
 
-namespace CG3 {
-	namespace GrammarParser {
-		int parseSelectRemoveIffDelimit(const UChar *line, uint32_t key, CG3::Grammar *result) {
-			if (!line) {
-				u_fprintf(ux_stderr, "Error: No string provided at line %u - cannot continue!\n", result->curline);
-				return -1;
-			}
-			int length = u_strlen(line);
-			if (!length) {
-				u_fprintf(ux_stderr, "Error: No string provided at line %u - cannot continue!\n", result->curline);
-				return -1;
-			}
-			if (key != K_SELECT && key != K_REMOVE && key != K_IFF && key != K_DELIMIT) {
-				u_fprintf(ux_stderr, "Error: Invalid keyword %u for line %u - cannot continue!\n", key, result->curline);
-				return -1;
-			}
-
-			uint32_t lname = hash_sdbm_uchar(line);
-			UChar *local = new UChar[length+1];
-			u_strcpy(local, line);
-			UChar *space = u_strchr(local, ' ');
-			space[0] = 0;
-			UChar *wordform = 0;
-
-			// ToDo: Add ANCHOR for named rules
-			UChar *name = local;
-			if (u_strcmp(local, keywords[key]) != 0) {
-				wordform = local;
-				space++;
-				name = space;
-				space = u_strchr(space, ' ');
-				space[0] = 0;
-				space++;
-			}
-
-			name = u_strchr(name, ':');
-			if (name) {
-				name[0] = 0;
-				name++;
-			}
-
-			uint32_t res = parseTarget(&space, result);
-
-			CG3::Rule *rule = result->allocateRule();
-			rule->line = result->curline;
-			rule->target = res;
-			result->addRule(rule);
-
-			if (name && name[0] && u_strlen(name)) {
-				rule->setName(name);
-			}
-			else {
-				rule->setName(lname);
-			}
-
-			if (space && space[0] && space[0] == '(') {
-				space = space;
-			}
-
-			delete local;
-			return 0;
-		}
+int GrammarParser::parseSelectRemoveIffDelimit(const UChar *line, uint32_t key) {
+	if (!line) {
+		u_fprintf(ux_stderr, "Error: No string provided at line %u - cannot continue!\n", result->curline);
+		return -1;
 	}
+	int length = u_strlen(line);
+	if (!length) {
+		u_fprintf(ux_stderr, "Error: No string provided at line %u - cannot continue!\n", result->curline);
+		return -1;
+	}
+	if (key != K_SELECT && key != K_REMOVE && key != K_IFF && key != K_DELIMIT) {
+		u_fprintf(ux_stderr, "Error: Invalid keyword %u for line %u - cannot continue!\n", key, result->curline);
+		return -1;
+	}
+
+	uint32_t lname = hash_sdbm_uchar(line);
+	UChar *local = new UChar[length+1];
+	u_strcpy(local, line);
+	UChar *space = u_strchr(local, ' ');
+	space[0] = 0;
+	UChar *wordform = 0;
+
+	// ToDo: Add ANCHOR for named rules
+	UChar *name = local;
+	if (u_strcmp(local, keywords[key]) != 0) {
+		wordform = local;
+		space++;
+		name = space;
+		space = u_strchr(space, ' ');
+		space[0] = 0;
+		space++;
+	}
+
+	name = u_strchr(name, ':');
+	if (name) {
+		name[0] = 0;
+		name++;
+	}
+
+	uint32_t res = parseTarget(&space);
+
+	CG3::Rule *rule = result->allocateRule();
+	rule->line = result->curline;
+	rule->target = res;
+	result->addRule(rule);
+
+	if (name && name[0] && u_strlen(name)) {
+		rule->setName(name);
+	}
+	else {
+		rule->setName(lname);
+	}
+
+	if (space && space[0] && space[0] == '(') {
+		space = space;
+	}
+
+	delete local;
+	return 0;
 }

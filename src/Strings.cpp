@@ -104,7 +104,7 @@ namespace CG3 {
 			init_string_single("+",          S_PLUS);
 			init_string_single("-",          S_MINUS);
 			init_string_single("*",          S_MULTIPLY);
-			init_string_single("^",          S_DENY);
+			init_string_single("^",          S_FAILFAST);
 			init_string_single("\\",         S_BACKSLASH);
 			init_string_single("#",          S_HASH);
 			init_string_single("!",          S_NOT);

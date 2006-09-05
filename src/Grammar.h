@@ -43,6 +43,9 @@ namespace CG3 {
 		Grammar();
 		~Grammar();
 
+		void setName(const char *to);
+		void setName(const UChar *to);
+
 		void addPreferredTarget(UChar *to);
 
 		void addSet(Set *to);

@@ -23,21 +23,37 @@
 #include "Grammar.h"
  
 namespace CG3 {
-	namespace GrammarParser {
-		int parse_grammar_from_file(const char *filename, const char *locale, const char *codepage, CG3::Grammar *result);
+	class GrammarParser {
+	public:
+		bool option_vislcg_compat;
+		const char *filename;
+		const char *locale;
+		const char *codepage;
+		CG3::Grammar *result;
+	
+		GrammarParser();
+		~GrammarParser();
 
-		int parseDelimiters(const UChar *line, CG3::Grammar *result);
-		int parsePreferredTargets(const UChar *line, CG3::Grammar *result);
+		void setResult(CG3::Grammar *result);
 
-		int parseList(const UChar *line, CG3::Grammar *result);
+		int parse_grammar_from_ufile(UFILE *input);
+		int parse_grammar_from_file(const char *filename, const char *locale, const char *codepage);
 
-		int readSetOperator(UChar **paren, CG3::Grammar *result);
-		uint32_t readSingleSet(UChar **paren, CG3::Grammar *result);
-		int parseSet(const UChar *line, CG3::Grammar *result);
+		int parseSingleLine(const int key, const UChar *line);
 
-		int parseTarget(UChar **space, CG3::Grammar *result);
-		int parseSelectRemoveIffDelimit(const UChar *line, uint32_t key, CG3::Grammar *result);
-	}
+		int parseDelimiters(const UChar *line);
+		int parsePreferredTargets(const UChar *line);
+
+		int parseList(const UChar *line);
+
+		int readSetOperator(UChar **paren);
+		uint32_t readSingleSet(UChar **paren);
+		int parseSet(const UChar *line);
+
+		int parseTarget(UChar **space);
+		int parseContextualTest(UChar **space, CG3::Rule *rule);
+		int parseSelectRemoveIffDelimit(const UChar *line, uint32_t key);
+	};
 }
 
 #endif

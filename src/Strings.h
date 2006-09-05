@@ -73,7 +73,7 @@ namespace CG3 {
 			S_PLUS,
 			S_MINUS,
 			S_MULTIPLY,
-			S_DENY,
+			S_FAILFAST,
 			S_BACKSLASH,
 			S_HASH,
 			S_NOT,

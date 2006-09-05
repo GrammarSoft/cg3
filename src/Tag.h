@@ -17,6 +17,7 @@
 #ifndef __TAG_H
 #define __TAG_H
 
+#include <unicode/ustdio.h>
 #include <unicode/ustring.h>
 
 namespace CG3 {
@@ -32,7 +33,7 @@ namespace CG3 {
 	class Tag {
 	public:
 		bool negative;
-		bool denied;
+		bool failfast;
 		bool case_insensitive;
 		bool regexp;
 		bool wildcard;
@@ -40,6 +41,7 @@ namespace CG3 {
 		bool baseform;
 		bool numerical;
 		bool any;
+		bool mapping;
 		UChar *comparison_key;
 		C_OPS comparison_op;
 		int comparison_val;
@@ -49,6 +51,8 @@ namespace CG3 {
 		Tag();
 		~Tag();
 		void parseTag(const UChar *to);
+
+		void print(UFILE *out);
 	};
 
 }
