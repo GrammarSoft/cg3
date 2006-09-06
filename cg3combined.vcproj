@@ -134,6 +134,9 @@
 				RelativePath=".\src\CompositeTag.cpp">
 			</File>
 			<File
+				RelativePath=".\src\ContextualTest.cpp">
+			</File>
+			<File
 				RelativePath=".\src\Grammar.cpp">
 			</File>
 			<File

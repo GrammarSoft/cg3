@@ -51,7 +51,7 @@ namespace CG3 {
 		int parseSet(const UChar *line);
 
 		int parseTarget(UChar **space);
-		int parseContextualTest(UChar **space, CG3::Rule *rule);
+		int parseContextualTests(UChar **space, CG3::Rule *rule);
 		int parseSelectRemoveIffDelimit(const UChar *line, uint32_t key);
 	};
 }

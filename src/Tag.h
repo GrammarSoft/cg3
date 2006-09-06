@@ -32,6 +32,7 @@ namespace CG3 {
 
 	class Tag {
 	public:
+		// ToDo: Add META, VAR, etc to the list
 		bool negative;
 		bool failfast;
 		bool case_insensitive;

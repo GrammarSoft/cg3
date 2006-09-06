@@ -78,14 +78,17 @@ void Grammar::addPreferredTarget(UChar *to) {
 }
 void Grammar::addSet(Set *to) {
 	uint32_t hash = hash_sdbm_uchar(to->name);
-	if (sets[hash]) {
+	if (sets.find(hash) != sets.end()) {
 		u_fprintf(ux_stderr, "Warning: Overwrote set %S.\n", to->name);
 		destroySet(sets[hash]);
 	}
 	sets[hash] = to;
 }
 Set *Grammar::getSet(uint32_t which) {
-	return sets[which] ? sets[which] : 0;
+	if (sets.find(which) != sets.end()) {
+		return sets[which];
+	}
+	return 0;
 }
 
 Set *Grammar::allocateSet() {
@@ -140,11 +143,11 @@ void Grammar::manipulateSet(uint32_t set_a, int op, uint32_t set_b, uint32_t res
 		u_fprintf(ux_stderr, "Error: Invalid set operation on line %u!\n", lines);
 		return;
 	}
-	if (!sets[set_a]) {
+	if (sets.find(set_a) == sets.end()) {
 		u_fprintf(ux_stderr, "Error: Invalid left operand for set operation on line %u!\n", lines);
 		return;
 	}
-	if (!sets[set_b]) {
+	if (sets.find(set_b) == sets.end()) {
 		u_fprintf(ux_stderr, "Error: Invalid right operand for set operation on line %u!\n", lines);
 		return;
 	}

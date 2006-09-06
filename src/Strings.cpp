@@ -108,9 +108,11 @@ namespace CG3 {
 			init_string_single("\\",         S_BACKSLASH);
 			init_string_single("#",          S_HASH);
 			init_string_single("!",          S_NOT);
+			init_string_single("NOT",        S_TEXTNOT);
 			init_string_single(" ",          S_SPACE);
 			init_string_single(" LINK 0 ",   S_LINKZ);
 			init_string_single("*",          S_ASTERIK);
+			init_string_single("**",         S_ASTERIKTWO);
 			init_string_single("_S_DELIMITERS_", S_DELIMITSET);
 
 			for (int i=0;i<STRINGS_COUNT;i++) {

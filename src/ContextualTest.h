@@ -23,7 +23,23 @@ namespace CG3 {
 
 	class ContextualTest {
 	public:
+		bool careful;
+		bool negative;
+		bool scanfirst;
+		bool scanall;
+		bool absolute;
+		bool span_windows;
+		int32_t offset;
+
 		uint32_t target;
+		uint32_t barrier;
+
+		ContextualTest *linked;
+
+		ContextualTest();
+		~ContextualTest();
+
+		void parsePosition(const UChar *pos);
 	};
 
 }

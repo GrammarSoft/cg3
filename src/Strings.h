@@ -77,10 +77,12 @@ namespace CG3 {
 			S_BACKSLASH,
 			S_HASH,
 			S_NOT,
+			S_TEXTNOT,
 			S_SPACE,
 			S_LINKZ,
 			S_DELIMITSET,
 			S_ASTERIK,
+			S_ASTERIKTWO,
 			STRINGS_COUNT
 		};
 

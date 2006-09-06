@@ -16,41 +16,49 @@
  */
 #include "stdafx.h"
 #include <unicode/ustring.h>
-#include "Rule.h"
+#include "Strings.h"
 #include "ContextualTest.h"
 
 using namespace CG3;
+using namespace CG3::Strings;
 
-Rule::Rule() {
-	name = 0;
+ContextualTest::ContextualTest() {
+	careful = false;
+	negative = false;
+	scanfirst = false;
+	scanall = false;
+	absolute = false;
+	span_windows = false;
+	offset = 0;
 	target = 0;
-	line = 0;
-	wordform = 0;
+	barrier = 0;
+	linked = 0;
 }
 
-Rule::~Rule() {
-	delete name;
-	delete wordform;
-	std::list<ContextualTest*>::iterator iter;
-	for (iter = tests.begin() ; iter != tests.end() ; iter++) {
-		delete (*iter);
-	}
-	tests.clear();
+ContextualTest::~ContextualTest() {
+	delete linked;
+	linked = 0;
 }
 
-void Rule::setName(uint32_t to) {
-	if (!to) {
-		to = (uint32_t)rand();
+void ContextualTest::parsePosition(const UChar *pos) {
+	if (u_strstr(pos, stringbits[S_ASTERIKTWO])) {
+		scanall = true;
 	}
-	name = new UChar[32];
-	memset(name, 0, 32);
-	u_sprintf(name, "_R_%u_%u_", line, to);
-}
-void Rule::setName(const UChar *to) {
-	if (to) {
-		name = new UChar[u_strlen(to)+1];
-		u_strcpy(name, to);
-	} else {
-		setName((uint32_t)rand());
+	else if (u_strstr(pos, stringbits[S_ASTERIK])) {
+		scanfirst = true;
+	}
+	if (u_strchr(pos, 'C')) {
+		careful = true;
+	}
+	if (u_strchr(pos, 'W')) {
+		span_windows = true;
+	}
+	if (u_strchr(pos, '@')) {
+		absolute = true;
+	}
+	UChar tmp[8];
+	u_sscanf(pos, "%[^0-9]%d", &tmp, &offset);
+	if (u_strchr(pos, '-')) {
+		offset = (-1) * offset;
 	}
 }

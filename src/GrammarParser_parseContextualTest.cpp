@@ -26,6 +26,44 @@
 using namespace CG3;
 using namespace CG3::Strings;
 
-int GrammarParser::parseContextualTest(UChar **space, CG3::Rule *rule) {
+// (*1C N BARRIER NON-ATTR LINK 1 KOMMA)
+int GrammarParser::parseContextualTests(UChar **paren, CG3::Rule *rule) {
+	while (*paren && (*paren)[0] && (*paren)[0] == '(') {
+		int matching = 0;
+		if (!ux_findMatchingParenthesis(*paren, 0, &matching)) {
+			u_fprintf(ux_stderr, "Error: Unmatched parentheses on or after line %u!\n", result->curline);
+		} else {
+			(*paren)[matching] = 0;
+			UChar *test = (*paren)+1;
+			ux_trim(test);
+
+			UChar *space = u_strchr(test, ' ');
+			if (!space) {
+				u_fprintf(ux_stderr, "Error: Missing whitespace in test \"%S\" on line %u - skipping!\n", test, result->curline);
+				*paren += matching+1;
+				ux_trim(*paren);
+				continue;
+			}
+			space[0] = 0;
+
+			bool negative = false;
+			UChar *position = test;
+			test = space+1;
+			if (u_strcmp(position, stringbits[S_TEXTNOT]) == 0) {
+				negative = true;
+				space = u_strchr(test, ' ');
+				space[0] = 0;
+				position = test;
+				test = space+1;
+			}
+
+			ContextualTest *context = new ContextualTest;
+			context->parsePosition(position);
+			delete context;
+
+			*paren += matching+1;
+			ux_trim(*paren);
+		}
+	}
 	return 0;
 }

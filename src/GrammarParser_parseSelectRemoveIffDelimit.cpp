@@ -79,7 +79,7 @@ int GrammarParser::parseSelectRemoveIffDelimit(const UChar *line, uint32_t key) 
 	}
 
 	if (space && space[0] && space[0] == '(') {
-		space = space;
+		parseContextualTests(&space, rule);
 	}
 
 	delete local;
