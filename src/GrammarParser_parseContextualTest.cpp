@@ -26,7 +26,51 @@
 using namespace CG3;
 using namespace CG3::Strings;
 
-// (*1C N BARRIER NON-ATTR LINK 1 KOMMA)
+int GrammarParser::parseContextualTest(UChar **paren, CG3::ContextualTest *parentTest) {
+	UChar *test = *paren;
+	ux_trim(test);
+
+	UChar *space = u_strchr(test, ' ');
+	if (!space) {
+		u_fprintf(ux_stderr, "Error: Missing whitespace in test \"%S\" on line %u - skipping!\n", test, result->curline);
+		return 0;
+	}
+	space[0] = 0;
+
+	bool negative = false;
+	UChar *position = test;
+	test = space+1;
+	if (u_strcmp(position, stringbits[S_TEXTNOT]) == 0) {
+		negative = true;
+		space = u_strchr(test, ' ');
+		space[0] = 0;
+		position = test;
+		test = space+1;
+	}
+
+	ContextualTest *context = parentTest->allocateContextualTest();
+	context->parsePosition(position);
+	context->negative = negative;
+	parentTest->linked = context;
+
+	context->target = parseTarget(&test);
+
+	if (test && test[0]) {
+		space = u_strstr(test, stringbits[S_BARRIER]);
+		if (space == test) {
+			test += 8;
+			context->barrier = parseTarget(&test);
+		}
+		space = u_strstr(test, stringbits[S_LINK]);
+		if (space == test) {
+			test += 5;
+			parseContextualTest(&test, context);
+		}
+	}
+
+	return 0;
+}
+
 int GrammarParser::parseContextualTests(UChar **paren, CG3::Rule *rule) {
 	while (*paren && (*paren)[0] && (*paren)[0] == '(') {
 		int matching = 0;
@@ -57,9 +101,25 @@ int GrammarParser::parseContextualTests(UChar **paren, CG3::Rule *rule) {
 				test = space+1;
 			}
 
-			ContextualTest *context = new ContextualTest;
+			ContextualTest *context = rule->allocateContextualTest();
 			context->parsePosition(position);
-			delete context;
+			context->negative = negative;
+			rule->addContextualTest(context);
+
+			context->target = parseTarget(&test);
+
+			if (test && test[0]) {
+				space = u_strstr(test, stringbits[S_BARRIER]);
+				if (space == test) {
+					test += 8;
+					context->barrier = parseTarget(&test);
+				}
+				space = u_strstr(test, stringbits[S_LINK]);
+				if (space == test) {
+					test += 5;
+					parseContextualTest(&test, context);
+				}
+			}
 
 			*paren += matching+1;
 			ux_trim(*paren);

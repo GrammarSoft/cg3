@@ -96,7 +96,7 @@ bool ux_packWhitespace(UChar *totrim) {
 bool ux_cutComments(UChar *line, const UChar comment) {
 	bool retval = false;
 	UChar *offset_hash = line;
-	while(offset_hash = u_strchr(offset_hash, comment)) {
+	while((offset_hash = u_strchr(offset_hash, comment)) != 0) {
 		if (offset_hash == line || offset_hash[1] == 0 || ux_isNewline(offset_hash[1], offset_hash[0])) {
 			offset_hash[0] = 0;
 			retval = true;

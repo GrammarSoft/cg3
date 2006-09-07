@@ -69,7 +69,7 @@ uint32_t GrammarParser::readSingleSet(UChar **paren) {
 
 			CG3::CompositeTag *ctag = result->allocateCompositeTag();
 			UChar *temp = composite;
-			while(temp = u_strchr(temp, ' ')) {
+			while((temp = u_strchr(temp, ' ')) != 0) {
 				if (temp[-1] == '\\') {
 					temp++;
 					continue;

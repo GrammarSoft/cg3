@@ -54,3 +54,16 @@ void Rule::setName(const UChar *to) {
 		setName((uint32_t)rand());
 	}
 }
+
+ContextualTest *Rule::allocateContextualTest() {
+	return new ContextualTest;
+}
+
+void Rule::addContextualTest(ContextualTest *to) {
+	tests.push_back(to);
+}
+
+void Rule::destroyContextualTest(ContextualTest *to) {
+	tests.remove(to);
+	delete to;
+}

@@ -25,6 +25,7 @@ using namespace CG3;
 Set::Set() {
 	name = 0;
 	line = 0;
+	hash = 0;
 }
 
 Set::~Set() {
@@ -40,6 +41,7 @@ void Set::setName(uint32_t to) {
 	name = new UChar[32];
 	memset(name, 0, 32);
 	u_sprintf(name, "_G_%u_%u_", line, to);
+//	u_sprintf(name, "_G_%u_", to);
 }
 void Set::setName(const UChar *to) {
 	if (to) {
@@ -62,8 +64,23 @@ uint32_t Set::getLine() {
 
 void Set::addCompositeTag(CompositeTag *tag) {
 	if (tag && tag->tags.size()) {
-		tags[tag->rehash()] = tag;
+		tag->rehash();
+		tags_map[tag->getHash()] = tag;
+		tags[tag->getHash()] = tag;
 	} else {
 		u_fprintf(ux_stderr, "Error: Attempted to add empty tag to set!\n");
 	}
+}
+
+uint32_t Set::rehash() {
+	uint32_t retval = 0;
+	std::map<uint32_t, CompositeTag*>::iterator iter;
+	for (iter = tags_map.begin() ; iter != tags_map.end() ; iter++) {
+		retval = iter->second->getHash() + (retval << 6) + (retval << 16) - retval;
+	}
+	hash = retval;
+	return retval;
+}
+const uint32_t Set::getHash() {
+	return hash;
 }

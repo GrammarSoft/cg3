@@ -62,3 +62,11 @@ void ContextualTest::parsePosition(const UChar *pos) {
 		offset = (-1) * offset;
 	}
 }
+
+ContextualTest *ContextualTest::allocateContextualTest() {
+	return new ContextualTest;
+}
+
+void ContextualTest::destroyContextualTest(ContextualTest *to) {
+	delete to;
+}

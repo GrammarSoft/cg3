@@ -137,7 +137,6 @@ void Grammar::destroyRule(Rule *rule) {
 	delete rule;
 }
 
-// ToDO: Implement the rest
 void Grammar::manipulateSet(uint32_t set_a, int op, uint32_t set_b, uint32_t result) {
 	if (op <= S_IGNORE || op >= STRINGS_COUNT) {
 		u_fprintf(ux_stderr, "Error: Invalid set operation on line %u!\n", lines);
@@ -155,20 +154,20 @@ void Grammar::manipulateSet(uint32_t set_a, int op, uint32_t set_b, uint32_t res
 		u_fprintf(ux_stderr, "Error: Invalid target for set operation on line %u!\n", lines);
 		return;
 	}
-	Set *a = sets[set_a];
-	Set *b = sets[set_b];
-	Set *r = sets[result];
 
 	stdext::hash_map<uint32_t, CompositeTag*> result_tags;
+	std::map<uint32_t, CompositeTag*> result_map;
 	switch (op) {
 		case S_OR:
 		{
 			stdext::hash_map<uint32_t, CompositeTag*>::iterator iter;
 			for (iter = sets[set_a]->tags.begin() ; iter != sets[set_a]->tags.end() ; iter++) {
 				result_tags[iter->first] = iter->second;
+				result_map[iter->first] = iter->second;
 			}
 			for (iter = sets[set_b]->tags.begin() ; iter != sets[set_b]->tags.end() ; iter++) {
 				result_tags[iter->first] = iter->second;
+				result_map[iter->first] = iter->second;
 			}
 			break;
 		}
@@ -178,6 +177,7 @@ void Grammar::manipulateSet(uint32_t set_a, int op, uint32_t set_b, uint32_t res
 			for (iter = sets[set_a]->tags.begin() ; iter != sets[set_a]->tags.end() ; iter++) {
 				if (sets[set_b]->tags.find(iter->first) == sets[set_b]->tags.end()) {
 					result_tags[iter->first] = iter->second;
+					result_map[iter->first] = iter->second;
 				}
 			}
 			for (iter = sets[set_b]->tags.begin() ; iter != sets[set_b]->tags.end() ; iter++) {
@@ -187,6 +187,7 @@ void Grammar::manipulateSet(uint32_t set_a, int op, uint32_t set_b, uint32_t res
 					iter_tag->second->failfast = !(iter_tag->second->failfast);
 				}
 				result_tags[iter->first] = tmp;
+				result_map[iter->first] = tmp;
 			}
 			break;
 		}
@@ -196,6 +197,7 @@ void Grammar::manipulateSet(uint32_t set_a, int op, uint32_t set_b, uint32_t res
 			for (iter = sets[set_a]->tags.begin() ; iter != sets[set_a]->tags.end() ; iter++) {
 				if (sets[set_b]->tags.find(iter->first) == sets[set_b]->tags.end()) {
 					result_tags[iter->first] = iter->second;
+					result_map[iter->first] = iter->second;
 				}
 			}
 			for (iter = sets[set_b]->tags.begin() ; iter != sets[set_b]->tags.end() ; iter++) {
@@ -205,6 +207,7 @@ void Grammar::manipulateSet(uint32_t set_a, int op, uint32_t set_b, uint32_t res
 					iter_tag->second->negative = !(iter_tag->second->negative);
 				}
 				result_tags[iter->first] = tmp;
+				result_map[iter->first] = tmp;
 			}
 			break;
 		}
@@ -214,6 +217,7 @@ void Grammar::manipulateSet(uint32_t set_a, int op, uint32_t set_b, uint32_t res
 			for (iter = sets[set_a]->tags.begin() ; iter != sets[set_a]->tags.end() ; iter++) {
 				if (sets[set_b]->tags.find(iter->first) == sets[set_b]->tags.end()) {
 					result_tags[iter->first] = iter->second;
+					result_map[iter->first] = iter->second;
 				}
 			}
 			break;
@@ -238,6 +242,7 @@ void Grammar::manipulateSet(uint32_t set_a, int op, uint32_t set_b, uint32_t res
 						tag_r->addTag(ttag);
 					}
 					result_tags[tag_r->rehash()] = tag_r;
+					result_map[tag_r->getHash()] = tag_r;
 				}
 			}
 			break;
@@ -250,6 +255,9 @@ void Grammar::manipulateSet(uint32_t set_a, int op, uint32_t set_b, uint32_t res
 	}
 	sets[result]->tags.clear();
 	sets[result]->tags.swap(result_tags);
+
+	sets[result]->tags_map.clear();
+	sets[result]->tags_map.swap(result_map);
 }
 
 void Grammar::setName(const char *to) {

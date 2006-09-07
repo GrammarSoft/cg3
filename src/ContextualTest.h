@@ -40,6 +40,9 @@ namespace CG3 {
 		~ContextualTest();
 
 		void parsePosition(const UChar *pos);
+
+		ContextualTest *allocateContextualTest();
+		void destroyContextualTest(ContextualTest *to);
 	};
 
 }

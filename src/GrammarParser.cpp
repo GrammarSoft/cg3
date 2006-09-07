@@ -172,7 +172,7 @@ int GrammarParser::parse_grammar_from_ufile(UFILE *input) {
 			for (int i=1;i<KEYWORD_COUNT;i++) {
 				UChar *pos = 0;
 				int length = 0;
-				if (pos = u_strstr(line, keywords[i])) {
+				if ((pos = u_strstr(line, keywords[i])) != 0) {
 					length = u_strlen(keywords[i]);
 					if (
 						((pos == line) || (pos > line && u_isWhitespace(pos[-1])))

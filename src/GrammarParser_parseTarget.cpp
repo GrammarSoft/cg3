@@ -25,7 +25,7 @@
 using namespace CG3;
 using namespace CG3::Strings;
 
-int GrammarParser::parseTarget(UChar **space) {
+uint32_t GrammarParser::parseTarget(UChar **space) {
 	CG3::Set *curset = result->allocateSet();
 	curset->setLine(result->curline);
 	curset->setName(hash_sdbm_uchar(*space));
