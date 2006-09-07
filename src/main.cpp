@@ -223,7 +223,7 @@ int main(int argc, char* argv[]) {
 	u_fprintf(ux_stdout, "\n");
 
 	stdext::hash_map<uint32_t, CG3::Set*>::iterator set_iter;
-	for (set_iter = grammar->sets.begin() ; set_iter != grammar->sets.end() ; set_iter++) {
+	for (set_iter = grammar->uniqsets.begin() ; set_iter != grammar->uniqsets.end() ; set_iter++) {
 		stdext::hash_map<uint32_t, CG3::CompositeTag*>::iterator comp_iter;
 		CG3::Set *curset = set_iter->second;
 		if (!curset->tags.empty()) {

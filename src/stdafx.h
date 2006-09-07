@@ -49,14 +49,7 @@ uint32_t hash_sdbm_uchar(const UChar *str, uint32_t hash);
     namespace __gnu_cxx {
         template<> struct hash<UChar*> {
             size_t operator()(const UChar *str) const {
-                size_t uhash = 0;
-                int c = 0;
-
-                while ((c = *str++) != 0) {
-                    uhash = c + (uhash << 6) + (uhash << 16) - uhash;
-                }
-
-                return uhash;
+                return hash_sdbm_uchar(str);
             }
         };
     }
