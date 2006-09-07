@@ -50,9 +50,9 @@ uint32_t hash_sdbm_uchar(const UChar *str, uint32_t hash);
         template<> struct hash<UChar*> {
             size_t operator()(const UChar *str) const {
                 size_t uhash = 0;
-                int c;
+                int c = 0;
 
-                while (c = *str++) {
+                while ((c = *str++) != 0) {
                     uhash = c + (uhash << 6) + (uhash << 16) - uhash;
                 }
 

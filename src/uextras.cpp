@@ -147,7 +147,7 @@ bool ux_findMatchingParenthesis(const UChar *structure, int pos, int *result) {
 			return true;
 		}
 		if (structure[pos] == '(' && structure[pos-1] != '\\') {
-			int tmp;
+			int tmp = 0;
 			ux_findMatchingParenthesis(structure, pos, &tmp);
 			pos = tmp;
 		}
