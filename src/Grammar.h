@@ -31,6 +31,7 @@ namespace CG3 {
 		uint32_t lines, curline;
 		stdext::hash_map<uint32_t, CompositeTag*> tags;
 		stdext::hash_map<uint32_t, Set*> sets;
+		stdext::hash_map<uint32_t, Set*> uniqsets;
 		Set *delimiters;
 		std::vector<UChar*> preferred_targets;
 
@@ -49,6 +50,7 @@ namespace CG3 {
 		void addPreferredTarget(UChar *to);
 
 		void addSet(Set *to);
+		void addUniqSet(Set *to);
 		Set *getSet(uint32_t which);
 		Set *allocateSet();
 		void destroySet(Set *set);

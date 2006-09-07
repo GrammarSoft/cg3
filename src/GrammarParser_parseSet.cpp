@@ -170,6 +170,8 @@ int GrammarParser::parseSet(const UChar *line) {
 		}
 	}
 
+	result->addUniqSet(curset);
+
 	delete local;
 	return 0;
 }

@@ -111,6 +111,7 @@ int GrammarParser::parseList(const UChar *line) {
 	}
 
 	result->addSet(curset);
+	result->addUniqSet(curset);
 
 	delete local;
 	return 0;

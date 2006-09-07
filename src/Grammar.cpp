@@ -77,12 +77,22 @@ void Grammar::addPreferredTarget(UChar *to) {
 	preferred_targets.push_back(pf);
 }
 void Grammar::addSet(Set *to) {
+	const UChar *sname = to->getName();
 	uint32_t hash = hash_sdbm_uchar(to->name);
-	if (sets.find(hash) != sets.end()) {
-		u_fprintf(ux_stderr, "Warning: Overwrote set %S.\n", to->name);
-		destroySet(sets[hash]);
+	if (sets.find(hash) == sets.end()) {
+		sets[hash] = to;
+	} else if (!(sname[0] == '_' && sname[1] == 'G' && sname[2] == '_')) {
+		u_fprintf(ux_stderr, "Warning: Set %S already existed.\n", to->name);
 	}
-	sets[hash] = to;
+}
+void Grammar::addUniqSet(Set *to) {
+	if (curline == 11095) {
+		to = to;
+	}
+	uint32_t hash = to->rehash();
+	if (to && to->tags.size()/* && uniqsets.find(hash) == uniqsets.end()*/) {
+		uniqsets[hash] = to;
+	}
 }
 Set *Grammar::getSet(uint32_t which) {
 	if (sets.find(which) != sets.end()) {
