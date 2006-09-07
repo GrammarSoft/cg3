@@ -52,7 +52,7 @@ namespace CG3 {
 
 		uint32_t parseTarget(UChar **space);
 
-		int GrammarParser::parseContextualTest(UChar **paren, CG3::ContextualTest *test);
+		int parseContextualTest(UChar **paren, CG3::ContextualTest *test);
 		int parseContextualTests(UChar **space, CG3::Rule *rule);
 		int parseSelectRemoveIffDelimit(const UChar *line, uint32_t key);
 	};

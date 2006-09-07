@@ -55,7 +55,12 @@ am_vislcg3_OBJECTS = hash.$(OBJEXT) GrammarParser.$(OBJEXT) \
 	GrammarParser_parseSet.$(OBJEXT) icu_cmemory.$(OBJEXT) \
 	icu_cstring.$(OBJEXT) icu_uoptions.$(OBJEXT) main.$(OBJEXT) \
 	uextras.$(OBJEXT) GrammarParser_parseDelimiters.$(OBJEXT) \
-	GrammarParser_parsePreferredTargets.$(OBJEXT)
+	GrammarParser_parsePreferredTargets.$(OBJEXT) \
+	CompositeTag.$(OBJEXT) Grammar.$(OBJEXT) \
+	GrammarParser_parseTarget.$(OBJEXT) Rule.$(OBJEXT) \
+	Section.$(OBJEXT) Set.$(OBJEXT) Tag.$(OBJEXT) \
+	ContextualTest.$(OBJEXT) \
+	GrammarParser_parseContextualTest.$(OBJEXT)
 vislcg3_OBJECTS = $(am_vislcg3_OBJECTS)
 vislcg3_DEPENDENCIES =
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)
@@ -171,9 +176,11 @@ sharedstatedir = @sharedstatedir@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 vislcg3_SOURCES = hash.cpp GrammarParser.cpp Strings.cpp \
-	GrammarParser_parseList.cpp GrammarParser_parseSelectRemoveIffDelimit.cpp \
-	GrammarParser_parseSet.cpp icu_cmemory.cpp icu_cstring.cpp icu_uoptions.cpp main.cpp uextras.cpp \
-	GrammarParser_parseDelimiters.cpp GrammarParser_parsePreferredTargets.cpp
+			GrammarParser_parseList.cpp GrammarParser_parseSelectRemoveIffDelimit.cpp \
+			GrammarParser_parseSet.cpp icu_cmemory.cpp icu_cstring.cpp icu_uoptions.cpp main.cpp uextras.cpp \
+			GrammarParser_parseDelimiters.cpp GrammarParser_parsePreferredTargets.cpp CompositeTag.cpp Grammar.cpp \
+		GrammarParser_parseTarget.cpp Rule.cpp Section.cpp Set.cpp Tag.cpp ContextualTest.cpp \
+	GrammarParser_parseContextualTest.cpp
 
 
 # set the include path found by configure
@@ -253,13 +260,22 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/CompositeTag.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ContextualTest.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Grammar.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GrammarParser.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GrammarParser_parseContextualTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GrammarParser_parseDelimiters.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GrammarParser_parseList.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GrammarParser_parsePreferredTargets.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GrammarParser_parseSelectRemoveIffDelimit.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GrammarParser_parseSet.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GrammarParser_parseTarget.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Rule.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Section.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Set.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Strings.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Tag.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hash.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/icu_cmemory.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/icu_cstring.Po@am__quote@
