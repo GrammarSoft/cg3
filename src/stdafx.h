@@ -34,10 +34,19 @@
 
 #include "uextras.h"
 
-//*
+/*
 // hash_map fix for cross-platform
-uint32_t hash_sdbm_uchar(const UChar *str);
 uint32_t hash_sdbm_uchar(const UChar *str, uint32_t hash);
+//*/
+__inline uint32_t hash_sdbm_uchar(const UChar *str, uint32_t hash) {
+    UChar c = 0;
+
+	while ((c = *str++) != 0) {
+        hash = c + (hash << 6) + (hash << 16) - hash;
+	}
+
+    return hash;
+}
 
 #ifdef WIN32
 	#include <winsock.h> // for hton() and family.
@@ -46,15 +55,16 @@ uint32_t hash_sdbm_uchar(const UChar *str, uint32_t hash);
 	#include <netinet/in.h> // for hton() and family.
     #include <ext/hash_map>
     #define stdext __gnu_cxx
+/*
     namespace __gnu_cxx {
         template<> struct hash<UChar*> {
             size_t operator()(const UChar *str) const {
-                return hash_sdbm_uchar(str);
+                return hash_sdbm_uchar(str, 0);
             }
         };
     }
-#endif
 //*/
+#endif
 
 // CG3 includes
 #include "cg3_resources.h"

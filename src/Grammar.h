@@ -27,6 +27,7 @@ namespace CG3 {
 	class Grammar {
 	public:
 		uint32_t last_modified;
+		uint32_t grammar_size;
 		UChar *name;
 		uint32_t lines, curline;
 		stdext::hash_map<uint32_t, CompositeTag*> tags;

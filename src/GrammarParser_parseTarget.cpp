@@ -28,12 +28,12 @@ using namespace CG3::Strings;
 uint32_t GrammarParser::parseTarget(UChar **space) {
 	CG3::Set *curset = result->allocateSet();
 	curset->setLine(result->curline);
-	curset->setName(hash_sdbm_uchar(*space));
+	curset->setName(hash_sdbm_uchar(*space, 0));
 	result->addSet(curset);
 
 	uint32_t set_a = 0;
 	uint32_t set_b = 0;
-	uint32_t res = hash_sdbm_uchar(curset->getName());
+	uint32_t res = hash_sdbm_uchar(curset->getName(), 0);
 	int set_op = S_IGNORE;
 	while((*space)[0]) {
 		if (!set_a) {

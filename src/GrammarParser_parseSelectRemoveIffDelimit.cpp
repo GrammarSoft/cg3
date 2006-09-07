@@ -40,7 +40,7 @@ int GrammarParser::parseSelectRemoveIffDelimit(const UChar *line, uint32_t key) 
 		return -1;
 	}
 
-	uint32_t lname = hash_sdbm_uchar(line);
+	uint32_t lname = hash_sdbm_uchar(line, 0);
 	UChar *local = new UChar[length+1];
 	u_strcpy(local, line);
 	UChar *space = u_strchr(local, ' ');

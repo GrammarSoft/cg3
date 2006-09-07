@@ -64,8 +64,8 @@ uint32_t GrammarParser::readSingleSet(UChar **paren) {
 
 			CG3::Set *set_c = result->allocateSet();
 			set_c->setLine(result->curline);
-			set_c->setName(hash_sdbm_uchar(composite));
-			retval = hash_sdbm_uchar(set_c->getName());
+			set_c->setName(hash_sdbm_uchar(composite, 0));
+			retval = hash_sdbm_uchar(set_c->getName(), 0);
 
 			CG3::CompositeTag *ctag = result->allocateCompositeTag();
 			UChar *temp = composite;
@@ -97,11 +97,11 @@ uint32_t GrammarParser::readSingleSet(UChar **paren) {
 	else if (space && space[0] == ' ') {
 		space[0] = 0;
 		if (u_strlen(*paren)) {
-			retval = hash_sdbm_uchar(*paren);
+			retval = hash_sdbm_uchar(*paren, 0);
 		}
 		*paren = space+1;
 	} else if (u_strlen(*paren)) {
-		retval = hash_sdbm_uchar(*paren);
+		retval = hash_sdbm_uchar(*paren, 0);
 		*paren = *paren+u_strlen(*paren);
 	}
 	return retval;
@@ -133,7 +133,7 @@ int GrammarParser::parseSet(const UChar *line) {
 
 	uint32_t set_a = 0;
 	uint32_t set_b = 0;
-	uint32_t res = hash_sdbm_uchar(curset->getName());
+	uint32_t res = hash_sdbm_uchar(curset->getName(), 0);
 	int set_op = S_IGNORE;
 	while(space[0]) {
 		if (!set_a) {

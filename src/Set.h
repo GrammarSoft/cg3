@@ -30,10 +30,12 @@ namespace CG3 {
 		uint32_t line;
 		uint32_t hash;
 		bool used;
+/*
 		stdext::hash_map<UChar*, uint32_t> index_requires; // Simple common tags across the set
 		stdext::hash_map<UChar*, uint32_t> index_certain;
 		stdext::hash_map<UChar*, uint32_t> index_possible;
 		stdext::hash_map<UChar*, uint32_t> index_impossible;
+//*/
 		std::map<uint32_t, CompositeTag*> tags_map;
 		stdext::hash_map<uint32_t, CompositeTag*> tags;
 

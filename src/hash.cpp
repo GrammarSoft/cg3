@@ -16,8 +16,8 @@
  */
 
 #include "stdafx.h"
-
-uint32_t hash_sdbm_uchar(const UChar *str, uint32_t hash) {
+/*
+__inline uint32_t hash_sdbm_uchar(const UChar *str, uint32_t hash) {
     UChar c = 0;
 
 	while ((c = *str++) != 0) {
@@ -26,7 +26,4 @@ uint32_t hash_sdbm_uchar(const UChar *str, uint32_t hash) {
 
     return hash;
 }
-
-uint32_t hash_sdbm_uchar(const UChar *str) {
-    return hash_sdbm_uchar(str, 0);
-}
+//*/

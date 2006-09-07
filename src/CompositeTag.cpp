@@ -37,13 +37,15 @@ CompositeTag::~CompositeTag() {
 }
 
 void CompositeTag::addTag(Tag *tag) {
-	tags[hash_sdbm_uchar(tag->raw)] = tag;
-	tags_map[hash_sdbm_uchar(tag->raw)] = tag;
+	uint32_t tmp = hash_sdbm_uchar(tag->raw, 0);
+	tags[tmp] = tag;
+	tags_map[tmp] = tag;
 }
 void CompositeTag::removeTag(Tag *tag) {
-	tags.erase(hash_sdbm_uchar(tag->raw));
-	tags_map.erase(hash_sdbm_uchar(tag->raw));
-	destroyTag(tags[hash_sdbm_uchar(tag->raw)]);
+	uint32_t tmp = hash_sdbm_uchar(tag->raw, 0);
+	destroyTag(tags[tmp]);
+	tags.erase(tmp);
+	tags_map.erase(tmp);
 }
 
 Tag *CompositeTag::allocateTag(const UChar *tag) {

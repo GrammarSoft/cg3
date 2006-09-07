@@ -78,7 +78,7 @@ void Grammar::addPreferredTarget(UChar *to) {
 }
 void Grammar::addSet(Set *to) {
 	const UChar *sname = to->getName();
-	uint32_t hash = hash_sdbm_uchar(to->name);
+	uint32_t hash = hash_sdbm_uchar(to->name, 0);
 	if (sets.find(hash) == sets.end()) {
 		sets[hash] = to;
 	} else if (!(sname[0] == '_' && sname[1] == 'G' && sname[2] == '_')) {

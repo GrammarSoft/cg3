@@ -168,9 +168,6 @@
 				RelativePath=".\src\GrammarParser_parseTarget.cpp">
 			</File>
 			<File
-				RelativePath=".\src\hash.cpp">
-			</File>
-			<File
 				RelativePath=".\src\icu_cmemory.cpp">
 			</File>
 			<File

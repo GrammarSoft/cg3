@@ -59,7 +59,7 @@ void ContextualTest::parsePosition(const UChar *pos) {
 	UChar tmp[8];
 	u_sscanf(pos, "%[^0-9]%d", &tmp, &offset);
 	if (u_strchr(pos, '-')) {
-		offset = (-1) * offset;
+		offset = (-1) * abs(offset);
 	}
 }
 
