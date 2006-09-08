@@ -146,7 +146,7 @@ int GrammarParser::parseSet(const UChar *line) {
 		if (!set_op) {
 			set_op = readSetOperator(&space);
 			if (!set_op) {
-				u_fprintf(ux_stderr, "Warning: Could not read in operator on line %u for set %S - assuming set alias.\n", result->curline, local);
+				u_fprintf(ux_stderr, "Warning: Could not read in operator on line %u for set %S - assuming set alias.\n", result->curline, curset->name);
 				result->manipulateSet(res, S_OR, set_a, res);
 				break;
 			}
@@ -154,13 +154,13 @@ int GrammarParser::parseSet(const UChar *line) {
 		if (!set_b) {
 			set_b = readSingleSet(&space);
 			if (!set_b) {
-				u_fprintf(ux_stderr, "Error: Could not read in right hand set on line %u for set %S - cannot continue!\n", result->curline, local);
+				u_fprintf(ux_stderr, "Error: Could not read in right hand set on line %u for set %S - cannot continue!\n", result->curline, curset->name);
 				break;
 			}
 		}
 		if (set_a && set_b && set_op) {
 			if (option_vislcg_compat && set_op == S_MINUS) {
-				u_fprintf(ux_stderr, "Warning: Set %S on line %u - difference operator converted to fail-fast as per --vislcg-compat.\n", local, result->curline);
+				u_fprintf(ux_stderr, "Warning: Set %S on line %u - difference operator converted to fail-fast as per --vislcg-compat.\n", curset->name, result->curline);
 				set_op = S_FAILFAST;
 			}
 			result->manipulateSet(set_a, set_op, set_b, res);

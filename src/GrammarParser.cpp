@@ -42,6 +42,7 @@ GrammarParser::~GrammarParser() {
 }
 
 int GrammarParser::parseSingleLine(const int key, const UChar *line) {
+	u_fflush(ux_stderr);
 	if (!line || !u_strlen(line)) {
 		u_fprintf(ux_stderr, "Warning: Line %u is empty - skipping.\n", result->curline);
 		return -1;

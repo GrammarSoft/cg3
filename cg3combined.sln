@@ -5,10 +5,13 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cg3combined", "cg3combined.
 EndProject
 Global
 	GlobalSection(SolutionConfiguration) = preSolution
+		Common = Common
 		Debug = Debug
 		Release = Release
 	EndGlobalSection
 	GlobalSection(ProjectConfiguration) = postSolution
+		{439A194D-EC3B-42A4-8BD2-CADD9CB6087C}.Common.ActiveCfg = Common|Win32
+		{439A194D-EC3B-42A4-8BD2-CADD9CB6087C}.Common.Build.0 = Common|Win32
 		{439A194D-EC3B-42A4-8BD2-CADD9CB6087C}.Debug.ActiveCfg = Debug|Win32
 		{439A194D-EC3B-42A4-8BD2-CADD9CB6087C}.Debug.Build.0 = Debug|Win32
 		{439A194D-EC3B-42A4-8BD2-CADD9CB6087C}.Release.ActiveCfg = Release|Win32
