@@ -19,8 +19,9 @@
 
 #include <unicode/ustring.h>
 #include "Set.h"
-#include "Section.h"
+#include "CompositeTag.h"
 #include "Rule.h"
+#include "Anchor.h"
 
 namespace CG3 {
 
@@ -39,8 +40,9 @@ namespace CG3 {
 		// ToDo: Implement vislcg_compat_mode
 		bool vislcg_compat_mode;
 
-		std::map<uint32_t, Section*> sections;
-		stdext::hash_map<uint32_t, Rule*> rules;
+		std::vector<uint32_t> sections;
+		std::map<uint32_t, Anchor*> anchors;
+		std::vector<Rule*> rules;
 
 		Grammar();
 		~Grammar();
@@ -55,6 +57,9 @@ namespace CG3 {
 		Set *getSet(uint32_t which);
 		Set *allocateSet();
 		void destroySet(Set *set);
+
+		void addAnchor(const UChar *to);
+		void addAnchor(const UChar *to, const uint32_t line);
 
 		void addCompositeTagToSet(Set *set, CompositeTag *tag);
 		CompositeTag *allocateCompositeTag();

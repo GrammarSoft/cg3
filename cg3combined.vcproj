@@ -19,6 +19,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
+				AdditionalIncludeDirectories=""
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="TRUE"
 				BasicRuntimeChecks="3"
@@ -39,6 +40,7 @@
 				AdditionalDependencies="icuuc.lib icuio.lib icuin.lib"
 				OutputFile="$(OutDir)/cg3combined.exe"
 				LinkIncremental="2"
+				AdditionalLibraryDirectories=""
 				IgnoreDefaultLibraryNames=""
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile="$(OutDir)/cg3combined.pdb"
@@ -79,7 +81,8 @@
 				InlineFunctionExpansion="2"
 				EnableIntrinsicFunctions="TRUE"
 				FavorSizeOrSpeed="1"
-				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
+				AdditionalIncludeDirectories=""
+				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;GC_NOT_DLL;_GC_OFF"
 				MinimalRebuild="TRUE"
 				ForceConformanceInForLoopScope="TRUE"
 				UsePrecompiledHeader="0"
@@ -93,6 +96,7 @@
 				AdditionalDependencies="icuuc.lib icuio.lib icuin.lib"
 				OutputFile="$(OutDir)/cg3combined.exe"
 				LinkIncremental="0"
+				AdditionalLibraryDirectories=""
 				IgnoreDefaultLibraryNames=""
 				GenerateDebugInformation="TRUE"
 				SubSystem="1"
@@ -131,6 +135,7 @@
 				Optimization="3"
 				FavorSizeOrSpeed="1"
 				OptimizeForProcessor="1"
+				AdditionalIncludeDirectories=""
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
 				MinimalRebuild="TRUE"
 				ForceConformanceInForLoopScope="TRUE"
@@ -141,6 +146,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="icuuc.lib icuio.lib icuin.lib"
+				AdditionalLibraryDirectories=""
 				OptimizeForWindows98="2"/>
 			<Tool
 				Name="VCMIDLTool"/>
@@ -171,6 +177,9 @@
 			Name="Source Files"
 			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}">
+			<File
+				RelativePath=".\src\Anchor.cpp">
+			</File>
 			<File
 				RelativePath=".\src\CompositeTag.cpp">
 			</File>
@@ -220,9 +229,6 @@
 				RelativePath=".\src\Rule.cpp">
 			</File>
 			<File
-				RelativePath=".\src\Section.cpp">
-			</File>
-			<File
 				RelativePath=".\src\Set.cpp">
 			</File>
 			<File
@@ -239,6 +245,9 @@
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}">
+			<File
+				RelativePath=".\src\Anchor.h">
+			</File>
 			<File
 				RelativePath=".\src\cg3_resources.h">
 			</File>
@@ -265,9 +274,6 @@
 			</File>
 			<File
 				RelativePath=".\src\Rule.h">
-			</File>
-			<File
-				RelativePath=".\src\Section.h">
 			</File>
 			<File
 				RelativePath=".\src\Set.h">

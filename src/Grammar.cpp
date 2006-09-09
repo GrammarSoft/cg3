@@ -18,7 +18,6 @@
 #include <unicode/ustring.h>
 #include "Grammar.h"
 #include "Set.h"
-#include "Section.h"
 #include "Rule.h"
 
 using namespace CG3;
@@ -46,12 +45,6 @@ Grammar::~Grammar() {
 	}
 	preferred_targets.clear();
 	
-	std::map<uint32_t, Section*>::iterator iter_sec;
-	for (iter_sec = sections.begin() ; iter_sec != sections.end() ; iter_sec++) {
-		if (iter_sec->second) {
-			delete iter_sec->second;
-		}
-	}
 	sections.clear();
 	
 	stdext::hash_map<uint32_t, Set*>::iterator iter_set;
@@ -61,6 +54,21 @@ Grammar::~Grammar() {
 		}
 	}
 	sets.clear();
+/*
+	for (iter_set = uniqsets.begin() ; iter_set != uniqsets.end() ; iter_set++) {
+		if (iter_set->second) {
+			delete iter_set->second;
+		}
+	}
+	uniqsets.clear();
+//*/
+	std::map<uint32_t, Anchor*>::iterator iter_anc;
+	for (iter_anc = anchors.begin() ; iter_anc != anchors.end() ; iter_anc++) {
+		if (iter_anc->second) {
+			delete iter_anc->second;
+		}
+	}
+	anchors.clear();
 	
 	stdext::hash_map<uint32_t, CompositeTag*>::iterator iter_ctag;
 	for (iter_ctag = tags.begin() ; iter_ctag != tags.end() ; iter_ctag++) {
@@ -69,6 +77,14 @@ Grammar::~Grammar() {
 		}
 	}
 	tags.clear();
+
+	std::vector<Rule*>::iterator iter_rules;
+	for (iter_rules = rules.begin() ; iter_rules != rules.end() ; iter_rules++) {
+		if (*iter_rules) {
+			delete *iter_rules;
+		}
+	}
+	rules.clear();
 }
 
 void Grammar::addPreferredTarget(UChar *to) {
@@ -141,10 +157,21 @@ Rule *Grammar::allocateRule() {
 	return new Rule;
 }
 void Grammar::addRule(Rule *rule) {
-	rules[rule->line] = rule;
+	rules.push_back(rule);
 }
 void Grammar::destroyRule(Rule *rule) {
 	delete rule;
+}
+
+void Grammar::addAnchor(const UChar *to, uint32_t line) {
+	Anchor *anc = new Anchor;
+	anc->setName(to);
+	anc->line = line;
+	anchors[hash_sdbm_uchar(to, 0)] = anc;
+}
+
+void Grammar::addAnchor(const UChar *to) {
+	addAnchor(to, (uint32_t)(rules.size()+1));
 }
 
 void Grammar::manipulateSet(uint32_t set_a, int op, uint32_t set_b, uint32_t result) {
