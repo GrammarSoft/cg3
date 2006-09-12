@@ -17,6 +17,10 @@
 #ifndef __STDAFX_H
 #define __STDAFX_H
 
+#ifdef _GC
+#include <gc.h>
+#endif
+
 #include <iostream>
 #include <stdlib.h>
 #include <stdio.h>

@@ -81,6 +81,9 @@ uint32_t _np_ux_trim=0, _np_ux_findMatchingParenthesis=0;
 #endif
 
 int main(int argc, char* argv[]) {
+#ifdef _GC
+	GC_INIT();
+#endif
     UErrorCode status = U_ZERO_ERROR;
 	srand((uint32_t)time(0));
 

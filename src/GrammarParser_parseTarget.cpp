@@ -63,7 +63,7 @@ uint32_t GrammarParser::parseTarget(UChar **space) {
 				u_fprintf(ux_stderr, "Warning: Set %S on line %u - difference operator converted to fail-fast as per --vislcg-compat.\n", curset->name, result->curline);
 				set_op = S_FAILFAST;
 			}
-			result->manipulateSet(set_a, set_op, set_b, res);
+			//result->manipulateSet(set_a, set_op, set_b, res);
 			set_op = 0;
 			set_b = 0;
 			set_a = res;
