@@ -159,7 +159,7 @@ bool ux_unEscape(UChar *target, const UChar *source) {
 	bool retval = false;
 	uint32_t length = u_strlen(source);
 	if (length > 0) {
-		int i=0,j=0;
+		uint32_t i=0,j=0;
 		for (;i<=length;i++,j++) {
 			if (source[i] == '\\') {
 				retval = true;
@@ -176,7 +176,7 @@ bool ux_escape(UChar *target, const UChar *source) {
 	bool retval = false;
 	uint32_t length = u_strlen(source);
 	if (length > 0) {
-		int i=0,j=0;
+		uint32_t i=0,j=0;
 		for (;i<=length;i++,j++) {
 			if (source[i] == '\\') {
 				target[j] = '\\';
