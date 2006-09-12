@@ -208,7 +208,7 @@
 				RelativePath=".\src\GrammarParser_parsePreferredTargets.cpp">
 			</File>
 			<File
-				RelativePath=".\src\GrammarParser_parseSelectRemoveIffDelimit.cpp">
+				RelativePath=".\src\GrammarParser_parseSelectRemoveIffDelimitMatch.cpp">
 			</File>
 			<File
 				RelativePath=".\src\GrammarParser_parseSet.cpp">
