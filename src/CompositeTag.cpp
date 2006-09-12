@@ -25,54 +25,25 @@ CompositeTag::CompositeTag() {
 }
 
 CompositeTag::~CompositeTag() {
-	std::map<uint32_t, Tag*>::iterator iter_map;
-	for (iter_map = tags_map.begin() ; iter_map != tags_map.end() ; iter_map++) {
-		if (iter_map->second) {
-			delete iter_map->second;
-		}
-	}
 	tags_map.clear();
-
 	tags.clear();
 }
 
-void CompositeTag::addTag(Tag *tag) {
-	uint32_t tmp = hash_sdbm_uchar(tag->raw, 0);
-	tags[tmp] = tag;
-	tags_map[tmp] = tag;
+void CompositeTag::addTag(uint32_t tag) {
+	tags[tag] = tag;
+	tags_map[tag] = tag;
 }
-void CompositeTag::removeTag(Tag *tag) {
-	uint32_t tmp = hash_sdbm_uchar(tag->raw, 0);
-	destroyTag(tags[tmp]);
-	tags.erase(tmp);
-	tags_map.erase(tmp);
-}
-
-Tag *CompositeTag::allocateTag(const UChar *tag) {
-	Tag *fresh = new Tag;
-	fresh->parseTag(tag);
-	return fresh;
-}
-Tag *CompositeTag::duplicateTag(Tag *tag) {
-	Tag *fresh = new Tag;
-	fresh->parseTag(tag->raw);
-	fresh->failfast = tag->failfast;
-	fresh->negative = tag->negative;
-	return fresh;
-}
-void CompositeTag::destroyTag(Tag *tag) {
-	delete tag;
+void CompositeTag::removeTag(uint32_t tag) {
+	tags.erase(tag);
+	tags_map.erase(tag);
 }
 
 uint32_t CompositeTag::rehash() {
 	uint32_t retval = 0;
-	std::map<uint32_t, Tag*>::iterator iter;
+	std::map<uint32_t, uint32_t>::iterator iter;
 	for (iter = tags_map.begin() ; iter != tags_map.end() ; iter++) {
-		retval = hash_sdbm_uchar(iter->second->raw, retval);
+		retval = hash_sdbm_uint32_t(iter->second, retval);
 	}
 	hash = retval;
 	return retval;
-}
-const uint32_t CompositeTag::getHash() {
-	return hash;
 }

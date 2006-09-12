@@ -76,7 +76,7 @@ int GrammarParser::parseAddMapReplaceAppend(const UChar *line, uint32_t key) {
 	result->addRule(rule);
 
 	if (name && name[0] && u_strlen(name)) {
-		result->addAnchor(name, result->rules.size()-1);
+		result->addAnchor(name, (uint32_t)(result->rules.size()-1));
 		rule->setName(name);
 	}
 	else {

@@ -36,8 +36,8 @@ namespace CG3 {
 		stdext::hash_map<UChar*, uint32_t> index_possible;
 		stdext::hash_map<UChar*, uint32_t> index_impossible;
 //*/
-		std::map<uint32_t, CompositeTag*> tags_map;
-		stdext::hash_map<uint32_t, CompositeTag*> tags;
+		std::map<uint32_t, uint32_t> tags_map;
+		stdext::hash_map<uint32_t, uint32_t> tags;
 
 		Set();
 		~Set();
@@ -49,13 +49,12 @@ namespace CG3 {
 		void setLine(uint32_t to);
 		uint32_t getLine();
 
-		void addCompositeTag(CompositeTag *tag);
+		void addCompositeTag(uint32_t tag);
 /*
 		void removeCompositeTag(CompositeTag *tag);
 		void removeCompositeTag(uint32_t tag);
 //*/
 		uint32_t rehash();
-		const uint32_t getHash();
 	};
 
 }

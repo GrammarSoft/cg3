@@ -53,8 +53,8 @@ int GrammarParser::parseList(const UChar *line) {
 		if (space[0] == 0) {
 			if (u_strlen(paren)) {
 				CG3::CompositeTag *ctag = result->allocateCompositeTag();
-				CG3::Tag *tag = ctag->allocateTag(paren);
-				ctag->addTag(tag);
+				CG3::Tag *tag = result->allocateTag(paren);
+				result->addTagToCompositeTag(tag, ctag);
 				result->addCompositeTagToSet(curset, ctag);
 			}
 			paren = space;
@@ -64,8 +64,8 @@ int GrammarParser::parseList(const UChar *line) {
 				space[0] = 0;
 				if (u_strlen(paren)) {
 					CG3::CompositeTag *ctag = result->allocateCompositeTag();
-					CG3::Tag *tag = ctag->allocateTag(paren);
-					ctag->addTag(tag);
+					CG3::Tag *tag = result->allocateTag(paren);
+					result->addTagToCompositeTag(tag, ctag);
 					result->addCompositeTagToSet(curset, ctag);
 				}
 				paren = space+1;
@@ -89,15 +89,15 @@ int GrammarParser::parseList(const UChar *line) {
 							continue;
 						}
 						temp[0] = 0;
-						CG3::Tag *tag = ctag->allocateTag(composite);
+						CG3::Tag *tag = result->allocateTag(composite);
 						tag->parseTag(composite);
-						ctag->addTag(tag);
+						result->addTagToCompositeTag(tag, ctag);
 
 						temp++;
 						composite = temp;
 					}
-					CG3::Tag *tag = ctag->allocateTag(composite);
-					ctag->addTag(tag);
+					CG3::Tag *tag = result->allocateTag(composite);
+					result->addTagToCompositeTag(tag, ctag);
 
 					result->addCompositeTagToSet(curset, ctag);
 

@@ -25,21 +25,16 @@ namespace CG3 {
 	class CompositeTag {
 	public:
 		uint32_t hash;
-		std::map<uint32_t, Tag*> tags_map;
-		stdext::hash_map<uint32_t, Tag*> tags;
+		std::map<uint32_t, uint32_t> tags_map;
+		stdext::hash_map<uint32_t, uint32_t> tags;
 
 		CompositeTag();
 		~CompositeTag();
 
-		void addTag(Tag *tag);
-		void removeTag(Tag *tag);
-
-		Tag *allocateTag(const UChar *tag);
-		Tag *duplicateTag(Tag *tag);
-		void destroyTag(Tag *tag);
+		void addTag(uint32_t tag);
+		void removeTag(uint32_t tag);
 
 		uint32_t rehash();
-		const uint32_t getHash();
 	};
 
 }

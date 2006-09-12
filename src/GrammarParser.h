@@ -48,7 +48,7 @@ namespace CG3 {
 
 		int readSetOperator(UChar **paren);
 		uint32_t readSingleSet(UChar **paren);
-		uint32_t readTagList(UChar **paren, std::list<Tag*> *taglist);
+		uint32_t readTagList(UChar **paren, std::list<uint32_t> *taglist);
 		int parseSet(const UChar *line);
 
 		uint32_t parseTarget(UChar **space);

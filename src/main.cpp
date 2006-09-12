@@ -76,6 +76,10 @@ UFILE *ux_stdin = 0;
 UFILE *ux_stdout = 0;
 UFILE *ux_stderr = 0;
 
+#ifdef _DEBUG
+uint32_t _np_ux_trim=0, _np_ux_findMatchingParenthesis=0;
+#endif
+
 int main(int argc, char* argv[]) {
     UErrorCode status = U_ZERO_ERROR;
 	srand((uint32_t)time(0));
@@ -224,21 +228,21 @@ int main(int argc, char* argv[]) {
 
 	stdext::hash_map<uint32_t, CG3::Set*>::iterator set_iter;
 	for (set_iter = grammar->uniqsets.begin() ; set_iter != grammar->uniqsets.end() ; set_iter++) {
-		stdext::hash_map<uint32_t, CG3::CompositeTag*>::iterator comp_iter;
+		stdext::hash_map<uint32_t, uint32_t>::iterator comp_iter;
 		CG3::Set *curset = set_iter->second;
 		if (!curset->tags.empty()) {
 			u_fprintf(ux_stdout, "LIST %S = ", curset->getName());
 			for (comp_iter = curset->tags.begin() ; comp_iter != curset->tags.end() ; comp_iter++) {
-				if (comp_iter->second) {
-					CG3::CompositeTag *curcomptag = comp_iter->second;
+				if (grammar->tags.find(comp_iter->second) != grammar->tags.end()) {
+					CG3::CompositeTag *curcomptag = grammar->tags[comp_iter->second];
 					if (curcomptag->tags.size() == 1) {
-						curcomptag->tags.begin()->second->print(ux_stdout);
+						grammar->single_tags[curcomptag->tags.begin()->second]->print(ux_stdout);
 						u_fprintf(ux_stdout, " ");
 					} else {
 						u_fprintf(ux_stdout, "(");
-						std::map<uint32_t, CG3::Tag*>::iterator tag_iter;
+						std::map<uint32_t, uint32_t>::iterator tag_iter;
 						for (tag_iter = curcomptag->tags_map.begin() ; tag_iter != curcomptag->tags_map.end() ; tag_iter++) {
-							tag_iter->second->print(ux_stdout);
+							grammar->single_tags[tag_iter->second]->print(ux_stdout);
 							u_fprintf(ux_stdout, " ");
 						}
 						u_fprintf(ux_stdout, ") ");

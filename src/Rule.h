@@ -31,7 +31,7 @@ namespace CG3 {
 		UChar *wordform;
 		uint32_t target;
 		uint32_t line;
-		std::list<Tag*> maplist;
+		std::list<uint32_t> maplist;
 		std::list<ContextualTest*> tests;
 
 		Rule();

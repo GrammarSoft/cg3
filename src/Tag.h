@@ -48,13 +48,15 @@ namespace CG3 {
 		C_OPS comparison_op;
 		int comparison_val;
 		UChar *tag;
-		UChar *raw;
+		uint32_t hash;
 
 		Tag();
 		~Tag();
 		void parseTag(const UChar *to);
+		void duplicateTag(const Tag *from);
 
 		void print(UFILE *out);
+		uint32_t rehash();
 	};
 
 }

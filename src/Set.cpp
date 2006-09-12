@@ -34,6 +34,8 @@ Set::~Set() {
 	if (name) {
 		delete name;
 	}
+	tags_map.clear();
+	tags.clear();
 }
 
 void Set::setName(uint32_t to) {
@@ -64,25 +66,17 @@ uint32_t Set::getLine() {
 	return line;
 }
 
-void Set::addCompositeTag(CompositeTag *tag) {
-	if (tag && tag->tags.size()) {
-		tag->rehash();
-		tags_map[tag->getHash()] = tag;
-		tags[tag->getHash()] = tag;
-	} else {
-		u_fprintf(ux_stderr, "Error: Attempted to add empty tag to set!\n");
-	}
+void Set::addCompositeTag(uint32_t tag) {
+	tags_map[tag] = tag;
+	tags[tag] = tag;
 }
 
 uint32_t Set::rehash() {
 	uint32_t retval = 0;
-	std::map<uint32_t, CompositeTag*>::iterator iter;
+	std::map<uint32_t, uint32_t>::iterator iter;
 	for (iter = tags_map.begin() ; iter != tags_map.end() ; iter++) {
-		retval = iter->second->getHash() + (retval << 6) + (retval << 16) - retval;
+		retval = hash_sdbm_uint32_t(iter->second, retval);
 	}
 	hash = retval;
 	return retval;
-}
-const uint32_t Set::getHash() {
-	return hash;
 }

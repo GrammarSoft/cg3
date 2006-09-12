@@ -74,5 +74,5 @@ uint32_t GrammarParser::parseTarget(UChar **space) {
 	curset->used = true;
 	result->addUniqSet(curset);
 
-	return curset->getHash();
+	return curset->hash;
 }

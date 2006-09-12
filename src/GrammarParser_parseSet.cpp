@@ -49,7 +49,7 @@ int GrammarParser::readSetOperator(UChar **paren) {
 }
 
 uint32_t GrammarParser::readSingleSet(UChar **paren) {
-	ux_trim(*paren);
+//	ux_trim(*paren);
 	UChar *space = u_strchr(*paren, ' ');
 	uint32_t retval = 0;
 
@@ -77,19 +77,18 @@ uint32_t GrammarParser::readSingleSet(UChar **paren) {
 					continue;
 				}
 				temp[0] = 0;
-				CG3::Tag *tag = ctag->allocateTag(composite);
-				tag->parseTag(composite);
-				ctag->addTag(tag);
+				CG3::Tag *tag = result->allocateTag(composite);
+				result->addTagToCompositeTag(tag, ctag);
 
 				temp++;
 				composite = temp;
 			}
-			CG3::Tag *tag = ctag->allocateTag(composite);
-			tag->parseTag(composite);
-			ctag->addTag(tag);
+			CG3::Tag *tag = result->allocateTag(composite);
+			result->addTagToCompositeTag(tag, ctag);
 
 			result->addCompositeTagToSet(set_c, ctag);
 			result->addSet(set_c);
+			result->addUniqSet(set_c);
 
 			*paren = space+matching+1;
 			space = space+matching;
@@ -110,8 +109,8 @@ uint32_t GrammarParser::readSingleSet(UChar **paren) {
 	return retval;
 }
 
-uint32_t GrammarParser::readTagList(UChar **paren, std::list<Tag*> *taglist) {
-	ux_trim(*paren);
+uint32_t GrammarParser::readTagList(UChar **paren, std::list<uint32_t> *taglist) {
+//	ux_trim(*paren);
 	UChar *space = u_strchr(*paren, ' ');
 	uint32_t retval = 0;
 
@@ -126,7 +125,6 @@ uint32_t GrammarParser::readTagList(UChar **paren, std::list<Tag*> *taglist) {
 			UChar *composite = space+1;
 			ux_trim(composite);
 
-			CG3::CompositeTag *ctag = result->allocateCompositeTag();
 			UChar *temp = composite;
 			while((temp = u_strchr(temp, ' ')) != 0) {
 				if (temp[-1] == '\\') {
@@ -134,17 +132,21 @@ uint32_t GrammarParser::readTagList(UChar **paren, std::list<Tag*> *taglist) {
 					continue;
 				}
 				temp[0] = 0;
-				CG3::Tag *tag = ctag->allocateTag(composite);
+				CG3::Tag *tag = result->allocateTag(composite);
 				tag->parseTag(composite);
-				taglist->push_back(tag);
+				tag->rehash();
+				result->addTag(tag);
+				taglist->push_back(tag->hash);
 
 				temp++;
 				composite = temp;
 				retval++;
 			}
-			CG3::Tag *tag = ctag->allocateTag(composite);
+			CG3::Tag *tag = result->allocateTag(composite);
 			tag->parseTag(composite);
-			taglist->push_back(tag);
+			tag->rehash();
+			result->addTag(tag);
+			taglist->push_back(tag->hash);
 			retval++;
 
 			*paren = space+matching+1;

@@ -48,6 +48,21 @@ __inline uint32_t hash_sdbm_uchar(const UChar *str, uint32_t hash) {
     return hash;
 }
 
+__inline uint32_t hash_sdbm_char(const char *str, uint32_t hash) {
+    UChar c = 0;
+
+	while ((c = *str++) != 0) {
+        hash = c + (hash << 6) + (hash << 16) - hash;
+	}
+
+    return hash;
+}
+
+__inline uint32_t hash_sdbm_uint32_t(uint32_t c, uint32_t hash) {
+    hash = c + (hash << 6) + (hash << 16) - hash;
+    return hash;
+}
+
 #ifdef WIN32
 	#include <winsock.h> // for hton() and family.
     #include <hash_map>
@@ -68,5 +83,9 @@ __inline uint32_t hash_sdbm_uchar(const UChar *str, uint32_t hash) {
 
 // CG3 includes
 #include "cg3_resources.h"
+
+#ifdef _DEBUG
+extern uint32_t _np_ux_trim, _np_ux_findMatchingParenthesis;
+#endif
 
 #endif

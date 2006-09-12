@@ -14,6 +14,7 @@
  * implied. See the License for the specific language governing
  * rights and limitations under the License.
  */
+#include "stdafx.h"
 #include <unicode/ustring.h>
 #include "Strings.h"
 #include "Tag.h"
@@ -38,15 +39,11 @@ Tag::Tag() {
 	comparison_op = OP_NOP;
 	comparison_val = 0;
 	tag = 0;
-	raw = 0;
 }
 
 Tag::~Tag() {
 	if (tag) {
 		delete tag;
-	}
-	if (raw) {
-		delete raw;
 	}
 	if (comparison_key) {
 		delete comparison_key;
@@ -100,9 +97,6 @@ void Tag::parseTag(const UChar *to) {
 		tag = utag;
 		utag = 0;
 
-		raw = new UChar[u_strlen(to)+1];
-		u_strcpy(raw, to);
-
 		if (u_strcmp(tag, stringbits[S_ASTERIK]) == 0) {
 			any = true;
 		}
@@ -119,6 +113,12 @@ void Tag::print(UFILE *to) {
 	if (failfast) {
 		u_fprintf(to, "^");
 	}
+	if (meta) {
+		u_fprintf(to, "META:");
+	}
+	if (variable) {
+		u_fprintf(to, "VAR:");
+	}
 
 	UChar *tmp = new UChar[u_strlen(tag)*2+3];
 	ux_escape(tmp, tag);
@@ -133,5 +133,65 @@ void Tag::print(UFILE *to) {
 	}
 	if (wildcard) {
 		u_fprintf(to, "w");
+	}
+}
+
+uint32_t Tag::rehash() {
+	hash = 0;
+	if (negative) {
+		hash = hash_sdbm_char("!", hash);
+	}
+	if (failfast) {
+		hash = hash_sdbm_char("^", hash);
+	}
+	if (meta) {
+		hash = hash_sdbm_char("META:", hash);
+	}
+	if (variable) {
+		hash = hash_sdbm_char("VAR:", hash);
+	}
+
+	UChar *tmp = new UChar[u_strlen(tag)*2+3];
+	ux_escape(tmp, tag);
+	hash = hash_sdbm_uchar(tmp, hash);
+	delete tmp;
+
+	if (case_insensitive) {
+		hash = hash_sdbm_char("i", hash);
+	}
+	if (regexp) {
+		hash = hash_sdbm_char("r", hash);
+	}
+	if (wildcard) {
+		hash = hash_sdbm_char("w", hash);
+	}
+	return hash;
+}
+
+void Tag::duplicateTag(const Tag *from) {
+	negative = from->negative;
+	failfast = from->failfast;
+	case_insensitive = from->case_insensitive;
+	regexp = from->regexp;
+	wildcard = from->wildcard;
+	wordform = from->wordform;
+	baseform = from->baseform;
+	numerical = from->numerical;
+	any = from->any;
+	hash = from->hash;
+	mapping = from->mapping;
+	variable = from->variable;
+	meta = from->meta;
+	comparison_op = from->comparison_op;
+	comparison_val = from->comparison_val;
+
+	if (from->comparison_key) {
+		comparison_key = new UChar[u_strlen(from->comparison_key)+1];
+		u_strcpy(comparison_key, from->comparison_key);
+	}
+
+	if (from->tag) {
+		tag = new UChar[u_strlen(from->tag)+1];
+		u_strcpy(tag, from->tag);
 	}
 }

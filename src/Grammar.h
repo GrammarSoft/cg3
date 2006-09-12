@@ -19,6 +19,7 @@
 
 #include <unicode/ustring.h>
 #include "Set.h"
+#include "Tag.h"
 #include "CompositeTag.h"
 #include "Rule.h"
 #include "Anchor.h"
@@ -31,6 +32,7 @@ namespace CG3 {
 		uint32_t grammar_size;
 		UChar *name;
 		uint32_t lines, curline;
+		stdext::hash_map<uint32_t, Tag*> single_tags;
 		stdext::hash_map<uint32_t, CompositeTag*> tags;
 		stdext::hash_map<uint32_t, Set*> sets;
 		stdext::hash_map<uint32_t, Set*> uniqsets;
@@ -61,6 +63,13 @@ namespace CG3 {
 		void addAnchor(const UChar *to);
 		void addAnchor(const UChar *to, const uint32_t line);
 
+		Tag *allocateTag(const UChar *tag);
+		Tag *duplicateTag(uint32_t tag);
+		void destroyTag(Tag *tag);
+		void addTag(Tag *simpletag);
+		void addTagToCompositeTag(Tag *simpletag, CompositeTag *tag);
+
+		void addCompositeTag(CompositeTag *tag);
 		void addCompositeTagToSet(Set *set, CompositeTag *tag);
 		CompositeTag *allocateCompositeTag();
 		CompositeTag *duplicateCompositeTag(CompositeTag *tag);
