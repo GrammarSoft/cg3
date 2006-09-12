@@ -17,6 +17,7 @@
 #include <unicode/ustring.h>
 #include "Strings.h"
 #include "Tag.h"
+#include "uextras.h"
 
 using namespace CG3;
 
@@ -31,6 +32,8 @@ Tag::Tag() {
 	numerical = false;
 	any = false;
 	mapping = false;
+	variable = false;
+	meta = false;
 	comparison_key = 0;
 	comparison_op = OP_NOP;
 	comparison_val = 0;
@@ -91,6 +94,12 @@ void Tag::parseTag(const UChar *to) {
 		tag = new UChar[length+1];
 		tag[length] = 0;
 		u_strncpy(tag, tmp, length);
+		UChar *utag = new UChar[u_strlen(tag)+3];
+		ux_unEscape(utag, tag);
+		delete tag;
+		tag = utag;
+		utag = 0;
+
 		raw = new UChar[u_strlen(to)+1];
 		u_strcpy(raw, to);
 
@@ -111,7 +120,10 @@ void Tag::print(UFILE *to) {
 		u_fprintf(to, "^");
 	}
 
-	u_fprintf(to, "%S", tag);
+	UChar *tmp = new UChar[u_strlen(tag)*2+3];
+	ux_escape(tmp, tag);
+	u_fprintf(to, "%S", tmp);
+	delete tmp;
 
 	if (case_insensitive) {
 		u_fprintf(to, "i");

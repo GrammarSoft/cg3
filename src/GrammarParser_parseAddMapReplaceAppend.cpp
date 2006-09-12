@@ -25,7 +25,7 @@
 using namespace CG3;
 using namespace CG3::Strings;
 
-int GrammarParser::parseSelectRemoveIffDelimitMatch(const UChar *line, uint32_t key) {
+int GrammarParser::parseAddMapReplaceAppend(const UChar *line, uint32_t key) {
 	if (!line) {
 		u_fprintf(ux_stderr, "Error: No string provided at line %u - cannot continue!\n", result->curline);
 		return -1;
@@ -35,7 +35,7 @@ int GrammarParser::parseSelectRemoveIffDelimitMatch(const UChar *line, uint32_t 
 		u_fprintf(ux_stderr, "Error: No string provided at line %u - cannot continue!\n", result->curline);
 		return -1;
 	}
-	if (key != K_SELECT && key != K_REMOVE && key != K_IFF && key != K_DELIMIT) {
+	if (key != K_ADD && key != K_MAP && key != K_REPLACE && key != K_APPEND) {
 		u_fprintf(ux_stderr, "Error: Invalid keyword %u for line %u - cannot continue!\n", key, result->curline);
 		return -1;
 	}
@@ -66,10 +66,12 @@ int GrammarParser::parseSelectRemoveIffDelimitMatch(const UChar *line, uint32_t 
 		name++;
 	}
 
-	uint32_t res = parseTarget(&space);
-
 	CG3::Rule *rule = result->allocateRule();
 	rule->line = result->curline;
+
+	readTagList(&space, &rule->maplist);
+	uint32_t res = parseTarget(&space);
+
 	rule->target = res;
 	result->addRule(rule);
 

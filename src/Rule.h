@@ -19,6 +19,7 @@
 
 #include <list>
 #include <unicode/ustring.h>
+#include "Tag.h"
 #include "ContextualTest.h"
 //#include "Set.h"
 
@@ -30,6 +31,7 @@ namespace CG3 {
 		UChar *wordform;
 		uint32_t target;
 		uint32_t line;
+		std::list<Tag*> maplist;
 		std::list<ContextualTest*> tests;
 
 		Rule();

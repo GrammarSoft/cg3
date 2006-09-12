@@ -48,13 +48,15 @@ namespace CG3 {
 
 		int readSetOperator(UChar **paren);
 		uint32_t readSingleSet(UChar **paren);
+		uint32_t readTagList(UChar **paren, std::list<Tag*> *taglist);
 		int parseSet(const UChar *line);
 
 		uint32_t parseTarget(UChar **space);
 
 		int parseContextualTest(UChar **paren, CG3::ContextualTest *test);
 		int parseContextualTests(UChar **space, CG3::Rule *rule);
-		int parseSelectRemoveIffDelimit(const UChar *line, uint32_t key);
+		int parseSelectRemoveIffDelimitMatch(const UChar *line, uint32_t key);
+		int parseAddMapReplaceAppend(const UChar *line, uint32_t key);
 	};
 }
 

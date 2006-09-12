@@ -32,7 +32,6 @@ namespace CG3 {
 
 	class Tag {
 	public:
-		// ToDo: Add META, VAR, etc to the list
 		bool negative;
 		bool failfast;
 		bool case_insensitive;
@@ -43,6 +42,8 @@ namespace CG3 {
 		bool numerical;
 		bool any;
 		bool mapping;
+		bool variable;
+		bool meta;
 		UChar *comparison_key;
 		C_OPS comparison_op;
 		int comparison_val;

@@ -164,10 +164,16 @@ void Grammar::destroyRule(Rule *rule) {
 }
 
 void Grammar::addAnchor(const UChar *to, uint32_t line) {
+	uint32_t ah = hash_sdbm_uchar(to, 0);
+	if (anchors.find(ah) != anchors.end()) {
+		u_fprintf(ux_stderr, "Warning: Anchor '%S' redefined on line %u!\n", to, curline);
+		delete anchors[ah];
+		anchors.erase(ah);
+	}
 	Anchor *anc = new Anchor;
 	anc->setName(to);
 	anc->line = line;
-	anchors[hash_sdbm_uchar(to, 0)] = anc;
+	anchors[ah] = anc;
 }
 
 void Grammar::addAnchor(const UChar *to) {
@@ -176,19 +182,19 @@ void Grammar::addAnchor(const UChar *to) {
 
 void Grammar::manipulateSet(uint32_t set_a, int op, uint32_t set_b, uint32_t result) {
 	if (op <= S_IGNORE || op >= STRINGS_COUNT) {
-		u_fprintf(ux_stderr, "Error: Invalid set operation on line %u!\n", lines);
+		u_fprintf(ux_stderr, "Error: Invalid set operation on line %u!\n", curline);
 		return;
 	}
 	if (sets.find(set_a) == sets.end()) {
-		u_fprintf(ux_stderr, "Error: Invalid left operand for set operation on line %u!\n", lines);
+		u_fprintf(ux_stderr, "Error: Invalid left operand for set operation on line %u!\n", curline);
 		return;
 	}
 	if (sets.find(set_b) == sets.end()) {
-		u_fprintf(ux_stderr, "Error: Invalid right operand for set operation on line %u!\n", lines);
+		u_fprintf(ux_stderr, "Error: Invalid right operand for set operation on line %u!\n", curline);
 		return;
 	}
 	if (!result) {
-		u_fprintf(ux_stderr, "Error: Invalid target for set operation on line %u!\n", lines);
+		u_fprintf(ux_stderr, "Error: Invalid target for set operation on line %u!\n", curline);
 		return;
 	}
 

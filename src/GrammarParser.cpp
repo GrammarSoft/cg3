@@ -101,7 +101,14 @@ int GrammarParser::parseSingleLine(const int key, const UChar *line) {
 		case K_REMOVE:
 		case K_IFF:
 		case K_DELIMIT:
-			parseSelectRemoveIffDelimit(local, key);
+		case K_MATCH:
+			parseSelectRemoveIffDelimitMatch(local, key);
+			break;
+		case K_ADD:
+		case K_MAP:
+		case K_REPLACE:
+		case K_APPEND:
+			parseAddMapReplaceAppend(local, key);
 			break;
 		case K_DELIMITERS:
 			parseDelimiters(local);
@@ -157,8 +164,8 @@ int GrammarParser::parse_grammar_from_ufile(UFILE *input) {
 		UChar *line = new UChar[BUFFER_SIZE];
 		//memset(line, 0, sizeof(UChar)*BUFFER_SIZE);
 		u_fgets(line, BUFFER_SIZE-1, input);
-		ux_cutComments(line, '#');
-		ux_cutComments(line, ';');
+		ux_cutComments(line, '#', false);
+		ux_cutComments(line, ';', true);
 
 		int length = u_strlen(line);
 		bool notnull = false;

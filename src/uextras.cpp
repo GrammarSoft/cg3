@@ -93,7 +93,7 @@ bool ux_packWhitespace(UChar *totrim) {
 	return retval;
 }
 
-bool ux_cutComments(UChar *line, const UChar comment) {
+bool ux_cutComments(UChar *line, const UChar comment, bool ruthless) {
 	bool retval = false;
 	UChar *offset_hash = line;
 	while((offset_hash = u_strchr(offset_hash, comment)) != 0) {
@@ -102,7 +102,7 @@ bool ux_cutComments(UChar *line, const UChar comment) {
 			retval = true;
 			break;
 		}
-		else if (u_isgraph(offset_hash[-1])) {
+		else if (!ruthless && u_isgraph(offset_hash[-1])) {
 			offset_hash++;
 			continue;
 		}
@@ -153,4 +153,38 @@ bool ux_findMatchingParenthesis(const UChar *structure, int pos, int *result) {
 		}
 	}
 	return false;
+}
+
+bool ux_unEscape(UChar *target, const UChar *source) {
+	bool retval = false;
+	uint32_t length = u_strlen(source);
+	if (length > 0) {
+		int i=0,j=0;
+		for (;i<=length;i++,j++) {
+			if (source[i] == '\\') {
+				retval = true;
+				i++;
+			}
+			target[j] = source[i];
+		}
+		target[j+1] = 0;
+	}
+	return retval;
+}
+
+bool ux_escape(UChar *target, const UChar *source) {
+	bool retval = false;
+	uint32_t length = u_strlen(source);
+	if (length > 0) {
+		int i=0,j=0;
+		for (;i<=length;i++,j++) {
+			if (source[i] == '\\') {
+				target[j] = '\\';
+				j++;
+			}
+			target[j] = source[i];
+		}
+		target[j+1] = 0;
+	}
+	return retval;
 }

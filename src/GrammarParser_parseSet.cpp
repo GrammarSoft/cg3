@@ -37,7 +37,8 @@ int GrammarParser::readSetOperator(UChar **paren) {
 			space[0] = ' ';
 			return 0;
 		}
-	} else {
+	}
+	else {
 		set_op = ux_isSetOp(*paren);
 		if (!set_op) {
 			return 0;
@@ -57,7 +58,8 @@ uint32_t GrammarParser::readSingleSet(UChar **paren) {
 		int matching = 0;
 		if (!ux_findMatchingParenthesis(space, 0, &matching)) {
 			u_fprintf(ux_stderr, "Error: Unmatched parentheses on or after line %u!\n", result->curline);
-		} else {
+		}
+		else {
 			space[matching] = 0;
 			UChar *composite = space+1;
 			ux_trim(composite);
@@ -100,9 +102,55 @@ uint32_t GrammarParser::readSingleSet(UChar **paren) {
 			retval = hash_sdbm_uchar(*paren, 0);
 		}
 		*paren = space+1;
-	} else if (u_strlen(*paren)) {
+	}
+	else if (u_strlen(*paren)) {
 		retval = hash_sdbm_uchar(*paren, 0);
 		*paren = *paren+u_strlen(*paren);
+	}
+	return retval;
+}
+
+uint32_t GrammarParser::readTagList(UChar **paren, std::list<Tag*> *taglist) {
+	ux_trim(*paren);
+	UChar *space = u_strchr(*paren, ' ');
+	uint32_t retval = 0;
+
+	if ((*paren)[0] == '(') {
+		space = (*paren);
+		int matching = 0;
+		if (!ux_findMatchingParenthesis(space, 0, &matching)) {
+			u_fprintf(ux_stderr, "Error: Unmatched parentheses on or after line %u!\n", result->curline);
+		}
+		else {
+			space[matching] = 0;
+			UChar *composite = space+1;
+			ux_trim(composite);
+
+			CG3::CompositeTag *ctag = result->allocateCompositeTag();
+			UChar *temp = composite;
+			while((temp = u_strchr(temp, ' ')) != 0) {
+				if (temp[-1] == '\\') {
+					temp++;
+					continue;
+				}
+				temp[0] = 0;
+				CG3::Tag *tag = ctag->allocateTag(composite);
+				tag->parseTag(composite);
+				taglist->push_back(tag);
+
+				temp++;
+				composite = temp;
+				retval++;
+			}
+			CG3::Tag *tag = ctag->allocateTag(composite);
+			tag->parseTag(composite);
+			taglist->push_back(tag);
+			retval++;
+
+			*paren = space+matching+1;
+			space = space+matching;
+			ux_trim(*paren);
+		}
 	}
 	return retval;
 }

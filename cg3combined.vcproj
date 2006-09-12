@@ -193,6 +193,9 @@
 				RelativePath=".\src\GrammarParser.cpp">
 			</File>
 			<File
+				RelativePath=".\src\GrammarParser_parseAddMapReplaceAppend.cpp">
+			</File>
+			<File
 				RelativePath=".\src\GrammarParser_parseContextualTest.cpp">
 			</File>
 			<File
