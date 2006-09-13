@@ -252,15 +252,10 @@ void Grammar::manipulateSet(uint32_t set_a, int op, uint32_t set_b, uint32_t res
 	switch (op) {
 		case S_OR:
 		{
-			stdext::hash_map<uint32_t, uint32_t>::iterator iter;
-			for (iter = sets[set_a]->tags.begin() ; iter != sets[set_a]->tags.end() ; iter++) {
-				result_tags[iter->first] = iter->second;
-				result_map[iter->first] = iter->second;
-			}
-			for (iter = sets[set_b]->tags.begin() ; iter != sets[set_b]->tags.end() ; iter++) {
-				result_tags[iter->first] = iter->second;
-				result_map[iter->first] = iter->second;
-			}
+			result_tags.insert(sets[set_a]->tags.begin(), sets[set_a]->tags.end());
+			result_map.insert(sets[set_a]->tags.begin(), sets[set_a]->tags.end());
+			result_tags.insert(sets[set_b]->tags.begin(), sets[set_b]->tags.end());
+			result_map.insert(sets[set_b]->tags.begin(), sets[set_b]->tags.end());
 			break;
 		}
 		case S_FAILFAST:

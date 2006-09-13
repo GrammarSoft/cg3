@@ -60,7 +60,7 @@ uint32_t GrammarParser::readSingleSet(UChar **paren) {
 		else {
 			space[matching] = 0;
 			UChar *composite = space+1;
-			ux_trim(composite);
+//			ux_trim(composite);
 
 			CG3::Set *set_c = result->allocateSet();
 			set_c->setLine(result->curline);
@@ -75,14 +75,18 @@ uint32_t GrammarParser::readSingleSet(UChar **paren) {
 					continue;
 				}
 				temp[0] = 0;
-				CG3::Tag *tag = result->allocateTag(composite);
-				result->addTagToCompositeTag(tag, ctag);
+				if (composite[0]) {
+					CG3::Tag *tag = result->allocateTag(composite);
+					result->addTagToCompositeTag(tag, ctag);
+				}
 
 				temp++;
 				composite = temp;
 			}
-			CG3::Tag *tag = result->allocateTag(composite);
-			result->addTagToCompositeTag(tag, ctag);
+			if (composite[0]) {
+				CG3::Tag *tag = result->allocateTag(composite);
+				result->addTagToCompositeTag(tag, ctag);
+			}
 
 			result->addCompositeTagToSet(set_c, ctag);
 			result->addSet(set_c);
@@ -122,7 +126,7 @@ uint32_t GrammarParser::readTagList(UChar **paren, std::list<uint32_t> *taglist)
 		else {
 			space[matching] = 0;
 			UChar *composite = space+1;
-			ux_trim(composite);
+//			ux_trim(composite);
 
 			UChar *temp = composite;
 			while((temp = u_strchr(temp, ' ')) != 0) {
@@ -131,22 +135,26 @@ uint32_t GrammarParser::readTagList(UChar **paren, std::list<uint32_t> *taglist)
 					continue;
 				}
 				temp[0] = 0;
+				if (composite[0]) {
+					CG3::Tag *tag = result->allocateTag(composite);
+					tag->parseTag(composite);
+					tag->rehash();
+					result->addTag(tag);
+					taglist->push_back(tag->hash);
+					retval++;
+				}
+
+				temp++;
+				composite = temp;
+			}
+			if (composite[0]) {
 				CG3::Tag *tag = result->allocateTag(composite);
 				tag->parseTag(composite);
 				tag->rehash();
 				result->addTag(tag);
 				taglist->push_back(tag->hash);
-
-				temp++;
-				composite = temp;
 				retval++;
 			}
-			CG3::Tag *tag = result->allocateTag(composite);
-			tag->parseTag(composite);
-			tag->rehash();
-			result->addTag(tag);
-			taglist->push_back(tag->hash);
-			retval++;
 
 			*paren = space+matching+1;
 			space = space+matching;

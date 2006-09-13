@@ -79,7 +79,7 @@ int GrammarParser::parseList(const UChar *line) {
 				} else {
 					space[matching] = 0;
 					UChar *composite = space+1;
-					ux_trim(composite);
+//					ux_trim(composite);
 
 					CG3::CompositeTag *ctag = result->allocateCompositeTag();
 					UChar *temp = composite;
@@ -89,15 +89,18 @@ int GrammarParser::parseList(const UChar *line) {
 							continue;
 						}
 						temp[0] = 0;
-						CG3::Tag *tag = result->allocateTag(composite);
-						tag->parseTag(composite);
-						result->addTagToCompositeTag(tag, ctag);
+						if (composite[0]) {
+							CG3::Tag *tag = result->allocateTag(composite);
+							result->addTagToCompositeTag(tag, ctag);
+						}
 
 						temp++;
 						composite = temp;
 					}
-					CG3::Tag *tag = result->allocateTag(composite);
-					result->addTagToCompositeTag(tag, ctag);
+					if (composite[0]) {
+						CG3::Tag *tag = result->allocateTag(composite);
+						result->addTagToCompositeTag(tag, ctag);
+					}
 
 					result->addCompositeTagToSet(curset, ctag);
 
