@@ -1,9 +1,9 @@
 <?xml version = '1.0' encoding = 'UTF-8'?>
 <!DOCTYPE KDevPrjSession>
 <KDevPrjSession>
- <DocsAndViews NumberOfDocuments="13" >
+ <DocsAndViews NumberOfDocuments="15" >
   <Doc0 NumberOfViews="1" URL="file:///home/tino/vislcg3/trunk/src/stdafx.h" >
-   <View0 Type="Source" />
+   <View0 line="50" Type="Source" />
   </Doc0>
   <Doc1 NumberOfViews="1" URL="file:///home/tino/vislcg3/trunk/src/hash.cpp" >
    <View0 Type="Source" />
@@ -18,10 +18,10 @@
    <View0 Type="Source" />
   </Doc4>
   <Doc5 NumberOfViews="1" URL="file:///home/tino/vislcg3/trunk/src/uextras.cpp" >
-   <View0 Type="Source" />
+   <View0 line="149" Type="Source" />
   </Doc5>
   <Doc6 NumberOfViews="1" URL="file:///home/tino/vislcg3/trunk/src/main.cpp" >
-   <View0 line="0" Type="Source" />
+   <View0 line="224" Type="Source" />
   </Doc6>
   <Doc7 NumberOfViews="1" URL="file:///home/tino/vislcg3/trunk/src/Set.h" >
    <View0 Type="Source" />
@@ -41,6 +41,12 @@
   <Doc12 NumberOfViews="1" URL="file:///home/tino/vislcg3/trunk/src/GrammarParser.h" >
    <View0 line="49" Type="Source" />
   </Doc12>
+  <Doc13 NumberOfViews="1" URL="file:///home/tino/parsers/dansk/etc/dancg" >
+   <View0 line="26" Type="Source" />
+  </Doc13>
+  <Doc14 NumberOfViews="1" URL="file:///home/tino/vislcg3/trunk/src/CompositeTag.cpp" >
+   <View0 line="19" Type="Source" />
+  </Doc14>
  </DocsAndViews>
  <pluginList>
   <kdevdebugger>

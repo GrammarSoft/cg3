@@ -19,7 +19,7 @@
   <kdevautoproject>
     <general>
       <activetarget>src/vislcg3</activetarget>
-      <useconfiguration>optimized</useconfiguration>
+      <useconfiguration>debug</useconfiguration>
     </general>
     <run>
       <mainprogram>src/vislcg3</mainprogram>
@@ -29,7 +29,7 @@
         <vislcg3/>
       </runarguments>
       <customdirectory>/</customdirectory>
-      <programargs></programargs>
+      <programargs/>
       <autocompile>true</autocompile>
       <envvars/>
     </run>
@@ -41,15 +41,15 @@
         <f77compiler>kdevg77options</f77compiler>
         <cxxflags>-O3 -g0</cxxflags>
         <envvars/>
-        <configargs></configargs>
-        <topsourcedir></topsourcedir>
-        <cppflags></cppflags>
-        <ldflags></ldflags>
-        <ccompilerbinary></ccompilerbinary>
-        <cxxcompilerbinary></cxxcompilerbinary>
-        <f77compilerbinary></f77compilerbinary>
-        <cflags></cflags>
-        <f77flags></f77flags>
+        <configargs/>
+        <topsourcedir/>
+        <cppflags/>
+        <ldflags/>
+        <ccompilerbinary/>
+        <cxxcompilerbinary/>
+        <f77compilerbinary/>
+        <cflags/>
+        <f77flags/>
       </optimized>
       <debug>
         <configargs>--enable-debug=full</configargs>
@@ -162,6 +162,7 @@
     <tree>
       <hidepatterns>*.o,*.lo,CVS</hidepatterns>
       <hidenonprojectfiles>false</hidenonprojectfiles>
+      <showvcsfields>false</showvcsfields>
     </tree>
   </kdevfileview>
   <kdevdocumentation>

@@ -51,7 +51,6 @@ binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 PROGRAMS = $(bin_PROGRAMS)
 am_vislcg3_OBJECTS = hash.$(OBJEXT) GrammarParser.$(OBJEXT) \
 	Strings.$(OBJEXT) GrammarParser_parseList.$(OBJEXT) \
-	GrammarParser_parseSelectRemoveIffDelimit.$(OBJEXT) \
 	GrammarParser_parseSet.$(OBJEXT) icu_cmemory.$(OBJEXT) \
 	icu_cstring.$(OBJEXT) icu_uoptions.$(OBJEXT) main.$(OBJEXT) \
 	uextras.$(OBJEXT) GrammarParser_parseDelimiters.$(OBJEXT) \
@@ -60,7 +59,9 @@ am_vislcg3_OBJECTS = hash.$(OBJEXT) GrammarParser.$(OBJEXT) \
 	GrammarParser_parseTarget.$(OBJEXT) Rule.$(OBJEXT) \
 	Section.$(OBJEXT) Set.$(OBJEXT) Tag.$(OBJEXT) \
 	ContextualTest.$(OBJEXT) \
-	GrammarParser_parseContextualTest.$(OBJEXT)
+	GrammarParser_parseContextualTest.$(OBJEXT) Anchor.$(OBJEXT) \
+	GrammarParser_parseAddMapReplaceAppend.$(OBJEXT) \
+	GrammarParser_parseSelectRemoveIffDelimitMatch.$(OBJEXT)
 vislcg3_OBJECTS = $(am_vislcg3_OBJECTS)
 vislcg3_DEPENDENCIES =
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)
@@ -176,11 +177,12 @@ sharedstatedir = @sharedstatedir@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 vislcg3_SOURCES = hash.cpp GrammarParser.cpp Strings.cpp \
-			GrammarParser_parseList.cpp GrammarParser_parseSelectRemoveIffDelimit.cpp \
-			GrammarParser_parseSet.cpp icu_cmemory.cpp icu_cstring.cpp icu_uoptions.cpp main.cpp uextras.cpp \
-			GrammarParser_parseDelimiters.cpp GrammarParser_parsePreferredTargets.cpp CompositeTag.cpp Grammar.cpp \
-		GrammarParser_parseTarget.cpp Rule.cpp Section.cpp Set.cpp Tag.cpp ContextualTest.cpp \
-	GrammarParser_parseContextualTest.cpp
+	GrammarParser_parseList.cpp GrammarParser_parseSet.cpp icu_cmemory.cpp icu_cstring.cpp \
+	icu_uoptions.cpp main.cpp uextras.cpp GrammarParser_parseDelimiters.cpp \
+	GrammarParser_parsePreferredTargets.cpp CompositeTag.cpp Grammar.cpp GrammarParser_parseTarget.cpp Rule.cpp \
+	Section.cpp Set.cpp Tag.cpp ContextualTest.cpp \
+	GrammarParser_parseContextualTest.cpp Anchor.cpp GrammarParser_parseAddMapReplaceAppend.cpp \
+	GrammarParser_parseSelectRemoveIffDelimitMatch.cpp
 
 
 # set the include path found by configure
@@ -260,15 +262,17 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Anchor.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/CompositeTag.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ContextualTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Grammar.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GrammarParser.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GrammarParser_parseAddMapReplaceAppend.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GrammarParser_parseContextualTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GrammarParser_parseDelimiters.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GrammarParser_parseList.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GrammarParser_parsePreferredTargets.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GrammarParser_parseSelectRemoveIffDelimit.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GrammarParser_parseSelectRemoveIffDelimitMatch.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GrammarParser_parseSet.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GrammarParser_parseTarget.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Rule.Po@am__quote@
