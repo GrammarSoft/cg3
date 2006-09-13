@@ -328,10 +328,16 @@
 				RelativePath=".\stderr.txt">
 			</File>
 			<File
+				RelativePath=".\stderr2.txt">
+			</File>
+			<File
 				RelativePath=".\stdin.txt">
 			</File>
 			<File
 				RelativePath=".\stdout.txt">
+			</File>
+			<File
+				RelativePath=".\stdout2.txt">
 			</File>
 		</Filter>
 		<File

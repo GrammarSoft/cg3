@@ -33,9 +33,6 @@ bool ux_isNewline(const UChar32 current, const UChar32 previous) {
 }
 
 bool ux_trim(UChar *totrim) {
-#ifdef _DEBUG
-	_np_ux_trim++;
-#endif
 	bool retval = false;
 	int length = u_strlen(totrim);
 	if (totrim && length) {
@@ -146,9 +143,6 @@ int ux_isSetOp(const UChar *it) {
 }
 
 bool ux_findMatchingParenthesis(const UChar *structure, int pos, int *result) {
-#ifdef _DEBUG
-	_np_ux_findMatchingParenthesis++;
-#endif
 	int len = u_strlen(structure);
 	while (pos < len) {
 		pos++;
@@ -188,7 +182,7 @@ bool ux_escape(UChar *target, const UChar *source) {
 	if (length > 0) {
 		uint32_t i=0,j=0;
 		for (;i<=length;i++,j++) {
-			if (source[i] == '\\') {
+			if (source[i] == '\\' || source[i] == '(' || source[i] == ')') {
 				target[j] = '\\';
 				j++;
 			}

@@ -36,7 +36,6 @@ int GrammarParser::parseList(const UChar *line) {
 		return -1;
 	}
 	UChar *local = new UChar[length+1];
-	//memset(local, 0, length+1);
 	u_strcpy(local, line+u_strlen(keywords[K_LIST])+1);
 
 	// Allocate temp vars and skips over "LIST X = "
@@ -79,7 +78,6 @@ int GrammarParser::parseList(const UChar *line) {
 				} else {
 					space[matching] = 0;
 					UChar *composite = space+1;
-//					ux_trim(composite);
 
 					CG3::CompositeTag *ctag = result->allocateCompositeTag();
 					UChar *temp = composite;

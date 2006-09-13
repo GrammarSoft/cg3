@@ -38,10 +38,6 @@
 
 #include "uextras.h"
 
-/*
-// hash_map fix for cross-platform
-uint32_t hash_sdbm_uchar(const UChar *str, uint32_t hash);
-//*/
 inline uint32_t hash_sdbm_uchar(const UChar *str, uint32_t hash) {
     UChar c = 0;
 
@@ -74,22 +70,9 @@ inline uint32_t hash_sdbm_uint32_t(uint32_t c, uint32_t hash) {
 	#include <netinet/in.h> // for hton() and family.
     #include <ext/hash_map>
     #define stdext __gnu_cxx
-/*
-    namespace __gnu_cxx {
-        template<> struct hash<UChar*> {
-            size_t operator()(const UChar *str) const {
-                return hash_sdbm_uchar(str, 0);
-            }
-        };
-    }
-//*/
 #endif
 
 // CG3 includes
 #include "cg3_resources.h"
-
-#ifdef _DEBUG
-extern uint32_t _np_ux_trim, _np_ux_findMatchingParenthesis;
-#endif
 
 #endif

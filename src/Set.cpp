@@ -45,7 +45,6 @@ void Set::setName(uint32_t to) {
 	name = new UChar[32];
 	memset(name, 0, 32);
 	u_sprintf(name, "_G_%u_%u_", line, to);
-//	u_sprintf(name, "_G_%u_", to);
 }
 void Set::setName(const UChar *to) {
 	if (to) {

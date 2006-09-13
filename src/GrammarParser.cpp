@@ -55,7 +55,6 @@ int GrammarParser::parseSingleLine(KEYWORDS key, const UChar *line) {
 	UErrorCode status = U_ZERO_ERROR;
 	int length = u_strlen(line);
 	UChar *local = new UChar[length+1];
-	//memset(local, 0, length);
 
 	status = U_ZERO_ERROR;
 	uregex_setText(regexps[R_CLEANSTRING], line, length, &status);
@@ -250,7 +249,7 @@ int GrammarParser::parse_grammar_from_ufile(UFILE *input) {
 	lines.clear();
 	keys.clear();
 
-	return 0; // No errors.
+	return 0;
 }
 
 int GrammarParser::parse_grammar_from_file(const char *fname, const char *loc, const char *cpage) {

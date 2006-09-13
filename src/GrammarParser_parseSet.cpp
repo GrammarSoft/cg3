@@ -60,7 +60,6 @@ uint32_t GrammarParser::readSingleSet(UChar **paren) {
 		else {
 			space[matching] = 0;
 			UChar *composite = space+1;
-//			ux_trim(composite);
 
 			CG3::Set *set_c = result->allocateSet();
 			set_c->setLine(result->curline);
@@ -126,7 +125,6 @@ uint32_t GrammarParser::readTagList(UChar **paren, std::list<uint32_t> *taglist)
 		else {
 			space[matching] = 0;
 			UChar *composite = space+1;
-//			ux_trim(composite);
 
 			UChar *temp = composite;
 			while((temp = u_strchr(temp, ' ')) != 0) {
@@ -177,7 +175,6 @@ int GrammarParser::parseSet(const UChar *line) {
 		return -1;
 	}
 	UChar *local = new UChar[length+1];
-	//memset(local, 0, length+1);
 	u_strcpy(local, line+u_strlen(keywords[K_SET])+1);
 
 	// Allocate temp vars and skips over "SET X = "

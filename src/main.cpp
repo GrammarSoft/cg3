@@ -76,10 +76,6 @@ UFILE *ux_stdin = 0;
 UFILE *ux_stdout = 0;
 UFILE *ux_stderr = 0;
 
-#ifdef _DEBUG
-uint32_t _np_ux_trim=0, _np_ux_findMatchingParenthesis=0;
-#endif
-
 int main(int argc, char* argv[]) {
 #ifdef _GC
 	GC_INIT();

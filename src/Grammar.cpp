@@ -51,14 +51,7 @@ Grammar::~Grammar() {
 		}
 	}
 	sets.clear();
-/*
-	for (iter_set = uniqsets.begin() ; iter_set != uniqsets.end() ; iter_set++) {
-		if (iter_set->second) {
-			delete iter_set->second;
-		}
-	}
-	uniqsets.clear();
-//*/
+
 	std::map<uint32_t, Anchor*>::iterator iter_anc;
 	for (iter_anc = anchors.begin() ; iter_anc != anchors.end() ; iter_anc++) {
 		if (iter_anc->second) {
@@ -224,9 +217,6 @@ void Grammar::addAnchor(const UChar *to) {
 }
 
 void Grammar::manipulateSet(uint32_t set_a, int op, uint32_t set_b, uint32_t result) {
-/*
-	return;
-/*/
 	if (op <= S_IGNORE || op >= STRINGS_COUNT) {
 		u_fprintf(ux_stderr, "Error: Invalid set operation on line %u!\n", curline);
 		return;
@@ -352,7 +342,6 @@ void Grammar::manipulateSet(uint32_t set_a, int op, uint32_t set_b, uint32_t res
 
 	sets[result]->tags_map.clear();
 	sets[result]->tags_map.swap(result_map);
-//*/
 }
 
 void Grammar::setName(const char *to) {

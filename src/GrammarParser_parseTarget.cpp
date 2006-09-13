@@ -46,7 +46,6 @@ uint32_t GrammarParser::parseTarget(UChar **space) {
 		if (!set_op) {
 			set_op = readSetOperator(space);
 			if (!set_op) {
-//				u_fprintf(ux_stderr, "Warning: Could not read in operator on line %u for set %S - assuming set alias.\n", result->curline, local);
 				result->manipulateSet(res, S_OR, set_a, res);
 				break;
 			}
