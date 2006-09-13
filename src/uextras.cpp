@@ -96,7 +96,7 @@ bool ux_packWhitespace(UChar *totrim) {
 	return retval;
 }
 
-bool ux_cutComments(UChar *line, const UChar comment, bool ruthless) {
+bool ux_cutComments(UChar *line, const UChar comment, bool compatible) {
 	bool retval = false;
 	UChar *offset_hash = line;
 	while((offset_hash = u_strchr(offset_hash, comment)) != 0) {
@@ -105,7 +105,11 @@ bool ux_cutComments(UChar *line, const UChar comment, bool ruthless) {
 			retval = true;
 			break;
 		}
-		else if (!ruthless && u_isgraph(offset_hash[-1])) {
+		else if (!compatible && u_isgraph(offset_hash[-1])) {
+			offset_hash++;
+			continue;
+		}
+		else if (compatible && offset_hash[-1] == '\\') {
 			offset_hash++;
 			continue;
 		}

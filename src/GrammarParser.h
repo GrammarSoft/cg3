@@ -44,6 +44,8 @@ namespace CG3 {
 		int parseDelimiters(const UChar *line);
 		int parsePreferredTargets(const UChar *line);
 
+		int parseAnchor(const UChar *line);
+		int parseSection(const UChar *line);
 		int parseList(const UChar *line);
 
 		int readSetOperator(UChar **paren);

@@ -103,7 +103,9 @@ int GrammarParser::parseList(const UChar *line) {
 
 					paren = space+matching+1;
 					space = space+matching;
-					ux_trim(paren);
+					if (u_isWhitespace(paren[0])) {
+						paren++;
+					}
 				}
 			}
 		}

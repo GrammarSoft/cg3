@@ -103,8 +103,8 @@ void Grammar::addSet(Set *to) {
 	}
 }
 void Grammar::addUniqSet(Set *to) {
-	if (to && to->tags.size()/* && uniqsets.find(hash) == uniqsets.end()*/) {
-		uint32_t hash = to->rehash();
+	uint32_t hash = to->rehash();
+	if (to && to->tags.size() && uniqsets.find(hash) == uniqsets.end()) {
 		uniqsets[hash] = to;
 	}
 }

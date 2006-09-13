@@ -71,8 +71,10 @@ uint32_t GrammarParser::parseTarget(UChar **space) {
 	}
 
 	curset = result->getSet(res);
-	curset->used = true;
 	result->addUniqSet(curset);
+	if (curset->hash) {
+		result->uniqsets[curset->hash]->used = true;
+	}
 
 	return curset->hash;
 }

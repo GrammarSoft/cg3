@@ -28,7 +28,6 @@ using namespace CG3::Strings;
 int GrammarParser::readSetOperator(UChar **paren) {
 	UChar *space = 0;
 	int set_op = 0;
-	ux_trim(*paren);
 	space = u_strchr(*paren, ' ');
 	if (space) {
 		space[0] = 0;
@@ -49,7 +48,6 @@ int GrammarParser::readSetOperator(UChar **paren) {
 }
 
 uint32_t GrammarParser::readSingleSet(UChar **paren) {
-//	ux_trim(*paren);
 	UChar *space = u_strchr(*paren, ' ');
 	uint32_t retval = 0;
 
@@ -92,7 +90,9 @@ uint32_t GrammarParser::readSingleSet(UChar **paren) {
 
 			*paren = space+matching+1;
 			space = space+matching;
-			ux_trim(*paren);
+			if (u_isWhitespace((*paren)[0])) {
+				(*paren)++;
+			}
 		}
 	}
 	else if (space && space[0] == ' ') {
@@ -110,7 +110,6 @@ uint32_t GrammarParser::readSingleSet(UChar **paren) {
 }
 
 uint32_t GrammarParser::readTagList(UChar **paren, std::list<uint32_t> *taglist) {
-//	ux_trim(*paren);
 	UChar *space = u_strchr(*paren, ' ');
 	uint32_t retval = 0;
 
@@ -151,7 +150,9 @@ uint32_t GrammarParser::readTagList(UChar **paren, std::list<uint32_t> *taglist)
 
 			*paren = space+matching+1;
 			space = space+matching;
-			ux_trim(*paren);
+			if (u_isWhitespace((*paren)[0])) {
+				(*paren)++;
+			}
 		}
 	}
 	return retval;

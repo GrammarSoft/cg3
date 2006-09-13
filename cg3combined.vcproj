@@ -196,6 +196,9 @@
 				RelativePath=".\src\GrammarParser_parseAddMapReplaceAppend.cpp">
 			</File>
 			<File
+				RelativePath=".\src\GrammarParser_parseAnchor.cpp">
+			</File>
+			<File
 				RelativePath=".\src\GrammarParser_parseContextualTest.cpp">
 			</File>
 			<File
@@ -206,6 +209,9 @@
 			</File>
 			<File
 				RelativePath=".\src\GrammarParser_parsePreferredTargets.cpp">
+			</File>
+			<File
+				RelativePath=".\src\GrammarParser_parseSection.cpp">
 			</File>
 			<File
 				RelativePath=".\src\GrammarParser_parseSelectRemoveIffDelimitMatch.cpp">

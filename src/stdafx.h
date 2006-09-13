@@ -42,7 +42,7 @@
 // hash_map fix for cross-platform
 uint32_t hash_sdbm_uchar(const UChar *str, uint32_t hash);
 //*/
-__inline uint32_t hash_sdbm_uchar(const UChar *str, uint32_t hash) {
+inline uint32_t hash_sdbm_uchar(const UChar *str, uint32_t hash) {
     UChar c = 0;
 
 	while ((c = *str++) != 0) {
@@ -52,7 +52,7 @@ __inline uint32_t hash_sdbm_uchar(const UChar *str, uint32_t hash) {
     return hash;
 }
 
-__inline uint32_t hash_sdbm_char(const char *str, uint32_t hash) {
+inline uint32_t hash_sdbm_char(const char *str, uint32_t hash) {
     UChar c = 0;
 
 	while ((c = *str++) != 0) {
@@ -62,7 +62,7 @@ __inline uint32_t hash_sdbm_char(const char *str, uint32_t hash) {
     return hash;
 }
 
-__inline uint32_t hash_sdbm_uint32_t(uint32_t c, uint32_t hash) {
+inline uint32_t hash_sdbm_uint32_t(uint32_t c, uint32_t hash) {
     hash = c + (hash << 6) + (hash << 16) - hash;
     return hash;
 }

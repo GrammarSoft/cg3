@@ -91,6 +91,15 @@ int GrammarParser::parseSingleLine(const int key, const UChar *line) {
 	ux_packWhitespace(local);
 
 	switch(key) {
+		case K_SECTION:
+		case K_CORRECTIONS:
+		case K_CONSTRAINTS:
+		case K_MAPPINGS:
+			parseSection(local);
+			break;
+		case K_ANCHOR:
+			parseAnchor(local);
+			break;
 		case K_LIST:
 			parseList(local);
 			break;
@@ -164,8 +173,11 @@ int GrammarParser::parse_grammar_from_ufile(UFILE *input) {
 		UChar *line = new UChar[BUFFER_SIZE];
 		//memset(line, 0, sizeof(UChar)*BUFFER_SIZE);
 		u_fgets(line, BUFFER_SIZE-1, input);
+
 		ux_cutComments(line, '#', false);
-		ux_cutComments(line, ';', true);
+		if (option_vislcg_compat) {
+			ux_cutComments(line, ';', true);
+		}
 
 		int length = u_strlen(line);
 		bool notnull = false;
