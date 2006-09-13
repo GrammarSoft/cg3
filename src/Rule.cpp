@@ -16,16 +16,20 @@
  */
 #include "stdafx.h"
 #include <unicode/ustring.h>
+#include "Strings.h"
 #include "Rule.h"
 #include "ContextualTest.h"
 
 using namespace CG3;
+using namespace CG3::Strings;
 
 Rule::Rule() {
 	name = 0;
+	subst_target = 0;
 	target = 0;
 	line = 0;
 	wordform = 0;
+	type = K_IGNORE;
 }
 
 Rule::~Rule() {
@@ -52,6 +56,13 @@ void Rule::setName(const UChar *to) {
 		u_strcpy(name, to);
 	} else {
 		setName((uint32_t)rand());
+	}
+}
+
+void Rule::setWordform(const UChar *to) {
+	if (to) {
+		wordform = new UChar[u_strlen(to)+1];
+		u_strcpy(wordform, to);
 	}
 }
 

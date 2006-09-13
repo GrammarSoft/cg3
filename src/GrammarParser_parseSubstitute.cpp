@@ -25,7 +25,7 @@
 using namespace CG3;
 using namespace CG3::Strings;
 
-int GrammarParser::parseSelectRemoveIffDelimitMatch(const UChar *line, KEYWORDS key) {
+int GrammarParser::parseSubstitute(const UChar *line) {
 	if (!line) {
 		u_fprintf(ux_stderr, "Error: No string provided at line %u - cannot continue!\n", result->curline);
 		return -1;
@@ -33,10 +33,6 @@ int GrammarParser::parseSelectRemoveIffDelimitMatch(const UChar *line, KEYWORDS 
 	int length = u_strlen(line);
 	if (!length) {
 		u_fprintf(ux_stderr, "Error: No string provided at line %u - cannot continue!\n", result->curline);
-		return -1;
-	}
-	if (key != K_SELECT && key != K_REMOVE && key != K_IFF && key != K_DELIMIT) {
-		u_fprintf(ux_stderr, "Error: Invalid keyword %u for line %u - cannot continue!\n", key, result->curline);
 		return -1;
 	}
 
@@ -48,7 +44,7 @@ int GrammarParser::parseSelectRemoveIffDelimitMatch(const UChar *line, KEYWORDS 
 	UChar *wordform = 0;
 
 	UChar *name = local;
-	if (u_strcmp(local, keywords[key]) != 0) {
+	if (u_strcmp(local, keywords[K_SUBSTITUTE]) != 0) {
 		wordform = local;
 		space++;
 		name = space;
@@ -66,13 +62,15 @@ int GrammarParser::parseSelectRemoveIffDelimitMatch(const UChar *line, KEYWORDS 
 		name++;
 	}
 
-	uint32_t res = parseTarget(&space);
-
 	CG3::Rule *rule = result->allocateRule();
 	rule->line = result->curline;
-	rule->type = key;
+	rule->type = K_SUBSTITUTE;
 	rule->setWordform(wordform);
-	rule->target = res;
+
+	rule->subst_target = parseTarget(&space);
+	readTagList(&space, &rule->maplist);
+	rule->target = parseTarget(&space);
+
 	result->addRule(rule);
 
 	if (name && name[0] && u_strlen(name)) {

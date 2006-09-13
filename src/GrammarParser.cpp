@@ -41,7 +41,7 @@ GrammarParser::~GrammarParser() {
 	result = 0;
 }
 
-int GrammarParser::parseSingleLine(const int key, const UChar *line) {
+int GrammarParser::parseSingleLine(KEYWORDS key, const UChar *line) {
 	u_fflush(ux_stderr);
 	if (!line || !u_strlen(line)) {
 		u_fprintf(ux_stderr, "Warning: Line %u is empty - skipping.\n", result->curline);
@@ -99,6 +99,9 @@ int GrammarParser::parseSingleLine(const int key, const UChar *line) {
 			break;
 		case K_ANCHOR:
 			parseAnchor(local);
+			break;
+		case K_SUBSTITUTE:
+			parseSubstitute(local);
 			break;
 		case K_LIST:
 			parseList(local);
@@ -164,7 +167,7 @@ int GrammarParser::parse_grammar_from_ufile(UFILE *input) {
 
 	// ToDo: Make this dynamic.
 	std::map<uint32_t, UChar*> lines;
-	std::map<uint32_t, uint32_t> keys;
+	std::map<uint32_t, KEYWORDS> keys;
 	uint32_t lastcmd = 0;
 	result->lines = 1;
 
@@ -189,8 +192,8 @@ int GrammarParser::parse_grammar_from_ufile(UFILE *input) {
 		}
 		if (notnull) {
 			ux_trim(line);
-			int keyword = 0;
-			for (int i=1;i<KEYWORD_COUNT;i++) {
+			KEYWORDS keyword = K_IGNORE;
+			for (uint32_t i=1;i<KEYWORD_COUNT;i++) {
 				UChar *pos = 0;
 				int length = 0;
 				if ((pos = u_strstr(line, keywords[i])) != 0) {
@@ -200,7 +203,7 @@ int GrammarParser::parse_grammar_from_ufile(UFILE *input) {
 						&& (pos[length] == 0 || pos[length] == ':' || u_isWhitespace(pos[length]))
 						) {
 						lastcmd = result->lines;
-						keyword = i;
+						keyword = (KEYWORDS)i;
 						break;
 					}
 				}
@@ -242,7 +245,6 @@ int GrammarParser::parse_grammar_from_ufile(UFILE *input) {
 		lines.erase(lines.begin());
 	}
 
-	free_keywords();
 	free_regexps();
 	free_strings();
 	lines.clear();

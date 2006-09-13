@@ -39,7 +39,7 @@ namespace CG3 {
 		int parse_grammar_from_ufile(UFILE *input);
 		int parse_grammar_from_file(const char *filename, const char *locale, const char *codepage);
 
-		int parseSingleLine(const int key, const UChar *line);
+		int parseSingleLine(KEYWORDS key, const UChar *line);
 
 		int parseDelimiters(const UChar *line);
 		int parsePreferredTargets(const UChar *line);
@@ -57,8 +57,9 @@ namespace CG3 {
 
 		int parseContextualTest(UChar **paren, CG3::ContextualTest *test);
 		int parseContextualTests(UChar **space, CG3::Rule *rule);
-		int parseSelectRemoveIffDelimitMatch(const UChar *line, uint32_t key);
-		int parseAddMapReplaceAppend(const UChar *line, uint32_t key);
+		int parseSelectRemoveIffDelimitMatch(const UChar *line, KEYWORDS key);
+		int parseAddMapReplaceAppend(const UChar *line, KEYWORDS key);
+		int parseSubstitute(const UChar *line);
 	};
 }
 

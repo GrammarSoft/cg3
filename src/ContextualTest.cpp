@@ -37,7 +37,6 @@ ContextualTest::ContextualTest() {
 
 ContextualTest::~ContextualTest() {
 	delete linked;
-	linked = 0;
 }
 
 void ContextualTest::parsePosition(const UChar *pos) {

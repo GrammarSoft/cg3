@@ -15,10 +15,7 @@
  * rights and limitations under the License.
  */
 #include "stdafx.h"
-#include <unicode/ustring.h>
 #include "Grammar.h"
-#include "Set.h"
-#include "Rule.h"
 
 using namespace CG3;
 
@@ -366,4 +363,79 @@ void Grammar::setName(const char *to) {
 void Grammar::setName(const UChar *to) {
 	name = new UChar[u_strlen(to)+1];
 	u_strcpy(name, to);
+}
+
+void Grammar::printRule(UFILE *to, Rule *rule) {
+	if (rule->wordform) {
+		u_fprintf(to, "%S ", rule->wordform);
+	}
+
+	u_fprintf(to, "%S", keywords[rule->type]);
+
+	if (rule->name && !(rule->name[0] == '_' && rule->name[1] == 'R' && rule->name[2] == '_')) {
+		u_fprintf(to, ":%S", rule->name);
+	}
+	u_fprintf(to, " ");
+
+	if (rule->subst_target) {
+		u_fprintf(to, "%S ", uniqsets[rule->subst_target]->name);
+	}
+
+	if (rule->maplist.size()) {
+		std::list<uint32_t>::iterator iter;
+		u_fprintf(to, "(");
+		for (iter = rule->maplist.begin() ; iter != rule->maplist.end() ; iter++) {
+			single_tags[*iter]->print(to);
+			u_fprintf(to, " ");
+		}
+		u_fprintf(to, ") ");
+	}
+
+	if (rule->target) {
+		u_fprintf(to, "%S ", uniqsets[rule->target]->name);
+	}
+
+	if (rule->tests.size()) {
+		std::list<ContextualTest*>::iterator iter;
+		for (iter = rule->tests.begin() ; iter != rule->tests.end() ; iter++) {
+			u_fprintf(to, "(");
+			printContextualTest(to, *iter);
+			u_fprintf(to, ") ");
+		}
+	}
+}
+
+void Grammar::printContextualTest(UFILE *to, ContextualTest *test) {
+	if (test->absolute) {
+		u_fprintf(to, "@");
+	}
+	if (test->scanall) {
+		u_fprintf(to, "**");
+	}
+	else if (test->scanfirst) {
+		u_fprintf(to, "*");
+	}
+
+	u_fprintf(to, "%d", test->offset);
+
+	if (test->careful) {
+		u_fprintf(to, "C");
+	}
+	if (test->span_windows) {
+		u_fprintf(to, "W");
+	}
+
+	u_fprintf(to, " ");
+
+	if (test->target) {
+		u_fprintf(to, "%S ", uniqsets[test->target]->name);
+	}
+	if (test->barrier) {
+		u_fprintf(to, "BARRIER %S ", uniqsets[test->barrier]->name);
+	}
+
+	if (test->linked) {
+		u_fprintf(to, "LINK ");
+		printContextualTest(to, test->linked);
+	}
 }

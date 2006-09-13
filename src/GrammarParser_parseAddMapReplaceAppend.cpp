@@ -25,7 +25,7 @@
 using namespace CG3;
 using namespace CG3::Strings;
 
-int GrammarParser::parseAddMapReplaceAppend(const UChar *line, uint32_t key) {
+int GrammarParser::parseAddMapReplaceAppend(const UChar *line, KEYWORDS key) {
 	if (!line) {
 		u_fprintf(ux_stderr, "Error: No string provided at line %u - cannot continue!\n", result->curline);
 		return -1;
@@ -68,6 +68,8 @@ int GrammarParser::parseAddMapReplaceAppend(const UChar *line, uint32_t key) {
 
 	CG3::Rule *rule = result->allocateRule();
 	rule->line = result->curline;
+	rule->type = key;
+	rule->setWordform(wordform);
 
 	readTagList(&space, &rule->maplist);
 	uint32_t res = parseTarget(&space);

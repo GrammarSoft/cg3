@@ -257,6 +257,14 @@ int main(int argc, char* argv[]) {
 	}
 	u_fprintf(ux_stdout, "\n");
 
+	u_fprintf(ux_stdout, "\n");
+
+	std::vector<CG3::Rule*>::iterator iter_rules;
+	for (iter_rules = grammar->rules.begin() ; iter_rules != grammar->rules.end() ; iter_rules++) {
+		grammar->printRule(ux_stdout, *iter_rules);
+		u_fprintf(ux_stdout, "\n");
+	}
+
 	u_fclose(ux_stdin);
 	u_fclose(ux_stdout);
 	u_fclose(ux_stderr);

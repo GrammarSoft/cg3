@@ -220,6 +220,9 @@
 				RelativePath=".\src\GrammarParser_parseSet.cpp">
 			</File>
 			<File
+				RelativePath=".\src\GrammarParser_parseSubstitute.cpp">
+			</File>
+			<File
 				RelativePath=".\src\GrammarParser_parseTarget.cpp">
 			</File>
 			<File
