@@ -5,7 +5,7 @@ vislcg3_SOURCES = hash.cpp GrammarParser.cpp Strings.cpp \
 	GrammarParser_parsePreferredTargets.cpp CompositeTag.cpp Grammar.cpp GrammarParser_parseTarget.cpp Rule.cpp \
 	Section.cpp Set.cpp Tag.cpp ContextualTest.cpp \
 	GrammarParser_parseContextualTest.cpp Anchor.cpp GrammarParser_parseAddMapReplaceAppend.cpp \
-	GrammarParser_parseSelectRemoveIffDelimitMatch.cpp
+	GrammarParser_parseSelectRemoveIffDelimitMatch.cpp GrammarParser_parseAnchor.cpp GrammarParser_parseSection.cpp
 
 # set the include path found by configure
 INCLUDES= $(all_includes)
