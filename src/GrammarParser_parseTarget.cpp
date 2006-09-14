@@ -31,23 +31,30 @@ uint32_t GrammarParser::parseTarget(UChar **space) {
 	curset->setName(hash_sdbm_uchar(*space, 0));
 	result->addSet(curset);
 
+	std::vector<uint32_t> sets;
 	uint32_t set_a = 0;
 	uint32_t set_b = 0;
 	uint32_t res = hash_sdbm_uchar(curset->getName(), 0);
 	int set_op = S_IGNORE;
-	while((*space)[0]) {
+	while ((*space)[0]) {
 		if (!set_a) {
 			set_a = readSingleSet(space);
 			if (!set_a) {
 				u_fprintf(ux_stderr, "Error: Could not read in left hand set on line %u for set %S - cannot continue!\n", result->curline, curset->getName());
 				break;
 			}
+			sets.push_back(set_a);
+			set_a = 0;
 		}
 		if (!set_op) {
 			set_op = readSetOperator(space);
 			if (!set_op) {
-				result->manipulateSet(res, S_OR, set_a, res);
+				sets.push_back(set_a);
 				break;
+			}
+			if (option_vislcg_compat && set_op == S_MINUS) {
+				u_fprintf(ux_stderr, "Warning: Set %S on line %u - difference operator converted to fail-fast as per --vislcg-compat.\n", curset->name, result->curline);
+				set_op = S_FAILFAST;
 			}
 		}
 		if (!set_b) {
@@ -56,17 +63,37 @@ uint32_t GrammarParser::parseTarget(UChar **space) {
 				u_fprintf(ux_stderr, "Error: Could not read in right hand set on line %u for set %S - cannot continue!\n", result->curline, curset->getName());
 				break;
 			}
-		}
-		if (set_a && set_b && set_op) {
-			if (option_vislcg_compat && set_op == S_MINUS) {
-				u_fprintf(ux_stderr, "Warning: Set %S on line %u - difference operator converted to fail-fast as per --vislcg-compat.\n", curset->name, result->curline);
-				set_op = S_FAILFAST;
-			}
-			result->manipulateSet(set_a, set_op, set_b, res);
-			set_op = 0;
+			sets.push_back(set_b);
 			set_b = 0;
-			set_a = res;
 		}
+
+		set_a = sets.at(sets.size()-2);
+		set_b = sets.at(sets.size()-1);
+		if (set_a && set_b && set_op) {
+			if (set_op != S_OR) {
+				sets.pop_back();
+				sets.pop_back();
+				CG3::Set *curset = result->allocateSet();
+				curset->setLine(result->curline);
+				curset->setName(clock()+rand()+hash_sdbm_uchar(*space, 0));
+				result->addSet(curset);
+
+				uint32_t res = hash_sdbm_uchar(curset->getName(), 0);
+				result->manipulateSet(set_a, set_op, set_b, res);
+				sets.push_back(res);
+				set_op = 0;
+				set_b = 0;
+			}
+			else {
+				set_a = set_b;
+				set_b = 0;
+			}
+		}
+		set_op = 0;
+	}
+
+	for (uint32_t i=0;i<sets.size();i++) {
+		result->manipulateSet(res, S_OR, sets.at(i), res);
 	}
 
 	curset = result->getSet(res);

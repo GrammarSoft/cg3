@@ -48,8 +48,9 @@ int GrammarParser::parseList(const UChar *line) {
 	curset->setLine(result->curline);
 
 	UChar *paren = space;
-	while(paren[0]) {
-		if (space[0] == 0) {
+	while(paren && paren[0]) {
+		space = u_strchr(paren, ' ');
+		if (!space || space[0] == 0) {
 			if (u_strlen(paren)) {
 				CG3::CompositeTag *ctag = result->allocateCompositeTag();
 				CG3::Tag *tag = result->allocateTag(paren);
@@ -58,59 +59,55 @@ int GrammarParser::parseList(const UChar *line) {
 			}
 			paren = space;
 		}
-		else if (space[0] == ' ') {
-			if (space[-1] != '\\') {
-				space[0] = 0;
-				if (u_strlen(paren)) {
-					CG3::CompositeTag *ctag = result->allocateCompositeTag();
-					CG3::Tag *tag = result->allocateTag(paren);
-					result->addTagToCompositeTag(tag, ctag);
-					result->addCompositeTagToSet(curset, ctag);
-				}
-				paren = space+1;
-			}
-		}
-		else if (space[0] == '(') {
-			if (space[-1] != '\\') {
-				int matching = 0;
-				if (!ux_findMatchingParenthesis(space, 0, &matching)) {
-					u_fprintf(ux_stderr, "Error: Unmatched parentheses on or after line %u!\n", curset->getLine());
-				} else {
-					space[matching] = 0;
-					UChar *composite = space+1;
+		else if (paren[0] == '(' && paren[-1] != '\\') {
+			space = paren;
+			int matching = 0;
+			if (!ux_findMatchingParenthesis(space, 0, &matching)) {
+				u_fprintf(ux_stderr, "Error: Unmatched parentheses on or after line %u!\n", curset->getLine());
+			} else {
+				space[matching] = 0;
+				UChar *composite = space+1;
 
-					CG3::CompositeTag *ctag = result->allocateCompositeTag();
-					UChar *temp = composite;
-					while((temp = u_strchr(temp, ' ')) != 0) {
-						if (temp[-1] == '\\') {
-							temp++;
-							continue;
-						}
-						temp[0] = 0;
-						if (composite[0]) {
-							CG3::Tag *tag = result->allocateTag(composite);
-							result->addTagToCompositeTag(tag, ctag);
-						}
-
+				CG3::CompositeTag *ctag = result->allocateCompositeTag();
+				UChar *temp = composite;
+				while((temp = u_strchr(temp, ' ')) != 0) {
+					if (temp[-1] == '\\') {
 						temp++;
-						composite = temp;
+						continue;
 					}
+					temp[0] = 0;
 					if (composite[0]) {
 						CG3::Tag *tag = result->allocateTag(composite);
 						result->addTagToCompositeTag(tag, ctag);
 					}
 
-					result->addCompositeTagToSet(curset, ctag);
+					temp++;
+					composite = temp;
+				}
+				if (composite[0]) {
+					CG3::Tag *tag = result->allocateTag(composite);
+					result->addTagToCompositeTag(tag, ctag);
+				}
 
-					paren = space+matching+1;
-					space = space+matching;
-					if (u_isWhitespace(paren[0])) {
-						paren++;
-					}
+				result->addCompositeTagToSet(curset, ctag);
+
+				paren = space+matching+1;
+				space = space+matching;
+				if (u_isWhitespace(paren[0])) {
+					paren++;
 				}
 			}
 		}
-		space++;
+		else if (space[0] == ' ' && space[-1] != '\\') {
+			space[0] = 0;
+			if (u_strlen(paren)) {
+				CG3::CompositeTag *ctag = result->allocateCompositeTag();
+				CG3::Tag *tag = result->allocateTag(paren);
+				result->addTagToCompositeTag(tag, ctag);
+				result->addCompositeTagToSet(curset, ctag);
+			}
+			paren = space+1;
+		}
 	}
 
 	result->addSet(curset);

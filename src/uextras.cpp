@@ -143,17 +143,18 @@ int ux_isSetOp(const UChar *it) {
 }
 
 bool ux_findMatchingParenthesis(const UChar *structure, int pos, int *result) {
-	int len = u_strlen(structure);
-	while (pos < len) {
-		pos++;
-		if (structure[pos] == ')' && structure[pos-1] != '\\') {
-			*result = pos;
-			return true;
+	uint32_t len = (uint32_t)u_strlen(structure);
+	uint32_t paren = 0;
+	for (uint32_t i=pos;i<len;i++) {
+		if (structure[i] == ')' && structure[i-1] != '\\') {
+			paren--;
+			if (paren == 0) {
+				*result = i;
+				return true;
+			}
 		}
-		if (structure[pos] == '(' && structure[pos-1] != '\\') {
-			int tmp = 0;
-			ux_findMatchingParenthesis(structure, pos, &tmp);
-			pos = tmp;
+		if (structure[i] == '(' && structure[i-1] != '\\') {
+			paren++;
 		}
 	}
 	return false;
