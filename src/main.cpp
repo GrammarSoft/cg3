@@ -212,6 +212,7 @@ int main(int argc, char* argv[]) {
 		parser->option_vislcg_compat = true;
 	}
 
+	std::cerr << "Initialization took " << (double)((double)(clock()-glob_timer)/(double)CLOCKS_PER_SEC) << " seconds." << std::endl;
 	glob_timer = clock();
 
 	if (parser->parse_grammar_from_file(options[GRAMMAR].value, locale_grammar, codepage_grammar)) {
