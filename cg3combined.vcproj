@@ -226,6 +226,9 @@
 				RelativePath=".\src\GrammarParser_parseTarget.cpp">
 			</File>
 			<File
+				RelativePath=".\src\GrammarWriter.cpp">
+			</File>
+			<File
 				RelativePath=".\src\icu_cmemory.cpp">
 			</File>
 			<File
@@ -274,6 +277,9 @@
 			</File>
 			<File
 				RelativePath=".\src\GrammarParser.h">
+			</File>
+			<File
+				RelativePath=".\src\GrammarWriter.h">
 			</File>
 			<File
 				RelativePath=".\src\icu_cmemory.h">

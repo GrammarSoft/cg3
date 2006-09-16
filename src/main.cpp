@@ -17,8 +17,9 @@
 
 #include "stdafx.h"
 #include "icu_uoptions.h"
-#include "GrammarParser.h"
 #include "Grammar.h"
+#include "GrammarParser.h"
+#include "GrammarWriter.h"
 
 namespace Options {
 	enum OPTIONS {
@@ -72,11 +73,13 @@ namespace Options {
 
 using namespace Options;
 
+clock_t glob_timer = 0;
 UFILE *ux_stdin = 0;
 UFILE *ux_stdout = 0;
 UFILE *ux_stderr = 0;
 
 int main(int argc, char* argv[]) {
+	glob_timer = clock();
 #ifdef _GC
 	GC_INIT();
 #endif
@@ -209,57 +212,22 @@ int main(int argc, char* argv[]) {
 		parser->option_vislcg_compat = true;
 	}
 
+	glob_timer = clock();
+
 	if (parser->parse_grammar_from_file(options[GRAMMAR].value, locale_grammar, codepage_grammar)) {
 		u_fprintf(ux_stderr, "Error: Grammar could not be parsed - exiting!\n");
 		return -1;
 	}
 
-	u_fprintf(ux_stdout, "# DELIMITERS does not exist. Instead, look for the set _S_DELIMITERS_\n");
+	std::cerr << "Parsing grammar took " << (double)((double)(clock()-glob_timer)/(double)CLOCKS_PER_SEC) << " seconds." << std::endl;
+	glob_timer = clock();
 
-	u_fprintf(ux_stdout, "PREFERRED-TARGETS = ");
-	std::vector<UChar*>::iterator iter;
-	for(iter = grammar->preferred_targets.begin() ; iter != grammar->preferred_targets.end() ; iter++ ) {
-		u_fprintf(ux_stdout, "%S ", *iter);
-	}
-	u_fprintf(ux_stdout, "\n");
+	CG3::GrammarWriter *writer = new CG3::GrammarWriter();
+	writer->setGrammar(grammar);
+	writer->write_grammar_to_ufile_text(ux_stdout);
 
-	u_fprintf(ux_stdout, "\n");
-
-	stdext::hash_map<uint32_t, CG3::Set*>::iterator set_iter;
-	for (set_iter = grammar->uniqsets.begin() ; set_iter != grammar->uniqsets.end() ; set_iter++) {
-		stdext::hash_map<uint32_t, uint32_t>::iterator comp_iter;
-		CG3::Set *curset = set_iter->second;
-		if (!curset->tags.empty()) {
-			u_fprintf(ux_stdout, "LIST %S = ", curset->getName());
-			for (comp_iter = curset->tags.begin() ; comp_iter != curset->tags.end() ; comp_iter++) {
-				if (grammar->tags.find(comp_iter->second) != grammar->tags.end()) {
-					CG3::CompositeTag *curcomptag = grammar->tags[comp_iter->second];
-					if (curcomptag->tags.size() == 1) {
-						grammar->single_tags[curcomptag->tags.begin()->second]->print(ux_stdout);
-						u_fprintf(ux_stdout, " ");
-					} else {
-						u_fprintf(ux_stdout, "(");
-						std::map<uint32_t, uint32_t>::iterator tag_iter;
-						for (tag_iter = curcomptag->tags_map.begin() ; tag_iter != curcomptag->tags_map.end() ; tag_iter++) {
-							grammar->single_tags[tag_iter->second]->print(ux_stdout);
-							u_fprintf(ux_stdout, " ");
-						}
-						u_fprintf(ux_stdout, ") ");
-					}
-				}
-			}
-			u_fprintf(ux_stdout, "\n");
-		}
-	}
-	u_fprintf(ux_stdout, "\n");
-
-	u_fprintf(ux_stdout, "\n");
-
-	std::vector<CG3::Rule*>::iterator iter_rules;
-	for (iter_rules = grammar->rules.begin() ; iter_rules != grammar->rules.end() ; iter_rules++) {
-		grammar->printRule(ux_stdout, *iter_rules);
-		u_fprintf(ux_stdout, "\n");
-	}
+	std::cerr << "Writing grammar took " << (double)((double)(clock()-glob_timer)/(double)CLOCKS_PER_SEC) << " seconds." << std::endl;
+	glob_timer = clock();
 
 	u_fclose(ux_stdin);
 	u_fclose(ux_stdout);
@@ -267,5 +235,8 @@ int main(int argc, char* argv[]) {
 	
 	delete grammar;
 	delete parser;
+	delete writer;
+
+	std::cerr << "Cleanup took " << (double)((double)(clock()-glob_timer)/(double)CLOCKS_PER_SEC) << " seconds." << std::endl;
 	return status;
 }
