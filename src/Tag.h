@@ -30,20 +30,29 @@ namespace CG3 {
 		NUM_OPS
 	};
 
+	enum TAG_FEATURES {
+		F_NEGATIVE =  1,
+		F_FAILFAST =  2,
+		F_CASE_INSENSITIVE = 4,
+		F_REGEXP   =  8,
+		F_WILDCARD = 16,
+	};
+
+	enum TAG_TYPE {
+		T_ANY       =  1,
+		T_NUMERICAL =  2,
+		T_MAPPING   =  4,
+		T_VARIABLE  =  8,
+		T_META      = 16,
+		T_WORDFORM = 32,
+		T_BASEFORM = 64
+	};
+
 	class Tag {
 	public:
-		bool negative;
-		bool failfast;
-		bool case_insensitive;
-		bool regexp;
-		bool wildcard;
-		bool wordform;
-		bool baseform;
-		bool numerical;
-		bool any;
-		bool mapping;
-		bool variable;
-		bool meta;
+		uint8_t features;
+		uint8_t type;
+
 		UChar *comparison_key;
 		C_OPS comparison_op;
 		int comparison_val;

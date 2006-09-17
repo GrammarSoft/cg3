@@ -37,7 +37,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="icuuc.lib icuio.lib icuin.lib"
+				AdditionalDependencies="icuuc.lib icuio.lib icuin.lib WSock32.Lib"
 				OutputFile="$(OutDir)/cg3combined.exe"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories=""
@@ -93,7 +93,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="icuuc.lib icuio.lib icuin.lib"
+				AdditionalDependencies="icuuc.lib icuio.lib icuin.lib WSock32.Lib"
 				OutputFile="$(OutDir)/cg3combined.exe"
 				LinkIncremental="0"
 				AdditionalLibraryDirectories=""
@@ -145,7 +145,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="icuuc.lib icuio.lib icuin.lib"
+				AdditionalDependencies="icuuc.lib icuio.lib icuin.lib WSock32.Lib"
 				AdditionalLibraryDirectories=""
 				OptimizeForWindows98="2"/>
 			<Tool

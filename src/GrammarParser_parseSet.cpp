@@ -200,7 +200,6 @@ int GrammarParser::parseSet(const UChar *line) {
 				break;
 			}
 			sets.push_back(set_a);
-			set_a = 0;
 		}
 		if (!set_op) {
 			set_op = readSetOperator(&space);

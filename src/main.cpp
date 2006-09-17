@@ -226,6 +226,7 @@ int main(int argc, char* argv[]) {
 	CG3::GrammarWriter *writer = new CG3::GrammarWriter();
 	writer->setGrammar(grammar);
 	writer->write_grammar_to_ufile_text(ux_stdout);
+	writer->write_grammar_to_file_binary(fopen("/tmp/cg3.utf16le.txt", "wb"));
 
 	std::cerr << "Writing grammar took " << (double)((double)(clock()-glob_timer)/(double)CLOCKS_PER_SEC) << " seconds." << std::endl;
 	glob_timer = clock();

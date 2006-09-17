@@ -25,6 +25,7 @@
 using namespace CG3;
 using namespace CG3::Strings;
 
+// ToDo: Only precalc complex operations, or none at all.
 uint32_t GrammarParser::parseTarget(UChar **space) {
 	CG3::Set *curset = result->allocateSet();
 	curset->setLine(result->curline);
@@ -44,7 +45,7 @@ uint32_t GrammarParser::parseTarget(UChar **space) {
 				break;
 			}
 			sets.push_back(set_a);
-			set_a = 0;
+//			set_a = 0;
 		}
 		if (!set_op) {
 			set_op = readSetOperator(space);

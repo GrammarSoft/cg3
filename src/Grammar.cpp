@@ -180,6 +180,9 @@ void Grammar::addTag(Tag *simpletag) {
 	if (simpletag && simpletag->tag) {
 		simpletag->rehash();
 		if (single_tags.find(simpletag->hash) != single_tags.end()) {
+			if (u_strcmp(single_tags[simpletag->hash]->tag, simpletag->tag) != 0) {
+				u_fprintf(ux_stderr, "Warning: Hash collision between %S and %S!\n", single_tags[simpletag->hash]->tag, simpletag->tag);
+			}
 			delete single_tags[simpletag->hash];
 		}
 		single_tags[simpletag->hash] = simpletag;
@@ -234,6 +237,10 @@ void Grammar::manipulateSet(uint32_t set_a, int op, uint32_t set_b, uint32_t res
 		return;
 	}
 
+	if (set_a == set_b && set_a == result && op == S_OR) {
+		return;
+	}
+
 	stdext::hash_map<uint32_t, uint32_t> result_tags;
 	std::map<uint32_t, uint32_t> result_map;
 	switch (op) {
@@ -241,17 +248,21 @@ void Grammar::manipulateSet(uint32_t set_a, int op, uint32_t set_b, uint32_t res
 		{
 			result_tags.insert(sets[set_a]->tags.begin(), sets[set_a]->tags.end());
 			result_map.insert(sets[set_a]->tags.begin(), sets[set_a]->tags.end());
-			result_tags.insert(sets[set_b]->tags.begin(), sets[set_b]->tags.end());
-			result_map.insert(sets[set_b]->tags.begin(), sets[set_b]->tags.end());
+			if (set_a != set_b) {
+				result_tags.insert(sets[set_b]->tags.begin(), sets[set_b]->tags.end());
+				result_map.insert(sets[set_b]->tags.begin(), sets[set_b]->tags.end());
+			}
 			break;
 		}
 		case S_FAILFAST:
 		{
 			stdext::hash_map<uint32_t, uint32_t>::iterator iter;
-			for (iter = sets[set_a]->tags.begin() ; iter != sets[set_a]->tags.end() ; iter++) {
-				if (sets[set_b]->tags.find(iter->first) == sets[set_b]->tags.end()) {
-					result_tags[iter->first] = iter->second;
-					result_map[iter->first] = iter->second;
+			if (set_a != set_b) {
+				for (iter = sets[set_a]->tags.begin() ; iter != sets[set_a]->tags.end() ; iter++) {
+					if (sets[set_b]->tags.find(iter->first) == sets[set_b]->tags.end()) {
+						result_tags[iter->first] = iter->second;
+						result_map[iter->first] = iter->second;
+					}
 				}
 			}
 			for (iter = sets[set_b]->tags.begin() ; iter != sets[set_b]->tags.end() ; iter++) {
@@ -259,7 +270,12 @@ void Grammar::manipulateSet(uint32_t set_a, int op, uint32_t set_b, uint32_t res
 				std::map<uint32_t, uint32_t>::iterator iter_tag;
 				for (iter_tag = tags[iter->second]->tags_map.begin() ; iter_tag != tags[iter->second]->tags_map.end() ; iter_tag++) {
 					Tag *tmptag = duplicateTag(iter_tag->second);
-					tmptag->failfast = !(tmptag->failfast);
+					if (tmptag->features & F_FAILFAST) {
+						tmptag->features &= ~F_FAILFAST;
+					}
+					else {
+						tmptag->features |= F_FAILFAST;
+					}
 					tmptag->rehash();
 					addTagToCompositeTag(tmptag, tmp);
 				}
@@ -273,10 +289,12 @@ void Grammar::manipulateSet(uint32_t set_a, int op, uint32_t set_b, uint32_t res
 		case S_NOT:
 		{
 			stdext::hash_map<uint32_t, uint32_t>::iterator iter;
-			for (iter = sets[set_a]->tags.begin() ; iter != sets[set_a]->tags.end() ; iter++) {
-				if (sets[set_b]->tags.find(iter->first) == sets[set_b]->tags.end()) {
-					result_tags[iter->first] = iter->second;
-					result_map[iter->first] = iter->second;
+			if (set_a != set_b) {
+				for (iter = sets[set_a]->tags.begin() ; iter != sets[set_a]->tags.end() ; iter++) {
+					if (sets[set_b]->tags.find(iter->first) == sets[set_b]->tags.end()) {
+						result_tags[iter->first] = iter->second;
+						result_map[iter->first] = iter->second;
+					}
 				}
 			}
 			for (iter = sets[set_b]->tags.begin() ; iter != sets[set_b]->tags.end() ; iter++) {
@@ -284,7 +302,12 @@ void Grammar::manipulateSet(uint32_t set_a, int op, uint32_t set_b, uint32_t res
 				std::map<uint32_t, uint32_t>::iterator iter_tag;
 				for (iter_tag = tags[iter->second]->tags_map.begin() ; iter_tag != tags[iter->second]->tags_map.end() ; iter_tag++) {
 					Tag *tmptag = duplicateTag(iter_tag->second);
-					tmptag->negative = !(tmptag->negative);
+					if (tmptag->features & F_NEGATIVE) {
+						tmptag->features &= ~F_NEGATIVE;
+					}
+					else {
+						tmptag->features |= F_NEGATIVE;
+					}
 					tmptag->rehash();
 					addTagToCompositeTag(tmptag, tmp);
 				}
@@ -297,11 +320,13 @@ void Grammar::manipulateSet(uint32_t set_a, int op, uint32_t set_b, uint32_t res
 		}
 		case S_MINUS:
 		{
-			stdext::hash_map<uint32_t, uint32_t>::iterator iter;
-			for (iter = sets[set_a]->tags.begin() ; iter != sets[set_a]->tags.end() ; iter++) {
-				if (sets[set_b]->tags.find(iter->first) == sets[set_b]->tags.end()) {
-					result_tags[iter->first] = iter->second;
-					result_map[iter->first] = iter->second;
+			if (set_a != set_b) {
+				stdext::hash_map<uint32_t, uint32_t>::iterator iter;
+				for (iter = sets[set_a]->tags.begin() ; iter != sets[set_a]->tags.end() ; iter++) {
+					if (sets[set_b]->tags.find(iter->first) == sets[set_b]->tags.end()) {
+						result_tags[iter->first] = iter->second;
+						result_map[iter->first] = iter->second;
+					}
 				}
 			}
 			break;

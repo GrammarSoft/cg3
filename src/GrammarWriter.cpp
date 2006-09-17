@@ -92,6 +92,50 @@ int GrammarWriter::write_grammar_to_ufile_text(UFILE *output) {
 	return 0;
 }
 
+int GrammarWriter::write_grammar_to_file_binary(FILE *output) {
+	if (!output) {
+		u_fprintf(ux_stderr, "Error: Output is null - cannot write to nothing!\n");
+		return -1;
+	}
+	if (!grammar) {
+		u_fprintf(ux_stderr, "Error: No grammar provided - cannot continue! Hint: call setGrammar() first.\n");
+		return -1;
+	}
+
+	fprintf(output, "CG3B");
+	uint32_t tmp = (uint32_t)htonl((uint32_t)grammar->uniqsets.size());
+	fwrite(&tmp, sizeof(uint32_t), 1, output);
+/*
+	stdext::hash_map<uint32_t, CG3::Set*>::iterator set_iter;
+	for (set_iter = grammar->uniqsets.begin() ; set_iter != grammar->uniqsets.end() ; set_iter++) {
+		stdext::hash_map<uint32_t, uint32_t>::iterator comp_iter;
+		CG3::Set *curset = set_iter->second;
+		if (!curset->tags.empty()) {
+			u_fprintf(output, "%S %u\n", curset->getName(), curset->tags.size());
+			for (comp_iter = curset->tags.begin() ; comp_iter != curset->tags.end() ; comp_iter++) {
+				if (grammar->tags.find(comp_iter->second) != grammar->tags.end()) {
+					CG3::CompositeTag *curcomptag = grammar->tags[comp_iter->second];
+					u_fprintf(output, "%u\n", curcomptag->tags.size());
+					std::map<uint32_t, uint32_t>::iterator tag_iter;
+					for (tag_iter = curcomptag->tags_map.begin() ; tag_iter != curcomptag->tags_map.end() ; tag_iter++) {
+						CG3::Tag *tag = grammar->single_tags[tag_iter->second];
+						u_fprintf(output, "%S %u %u %u %u %u %u %u %u %u %u %u %u %u %u %S\n",
+							tag->tag,
+							tag->any, tag->wordform, tag->baseform, tag->case_insensitive,
+							tag->failfast, tag->negative,
+							tag->mapping, tag->regexp,
+							tag->variable, tag->wildcard,
+							tag->numerical, tag->comparison_op, tag->comparison_val,
+							tag->comparison_key);
+					}
+				}
+			}
+		}
+	}
+//*/
+	return 0;
+}
+
 void GrammarWriter::setGrammar(CG3::Grammar *res) {
 	grammar = res;
 }

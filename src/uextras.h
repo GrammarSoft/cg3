@@ -30,6 +30,8 @@ bool ux_findMatchingParenthesis(const UChar *structure, int pos, int *result);
 bool ux_escape(UChar *target, const UChar *source);
 bool ux_unEscape(UChar *target, const UChar *source);
 
+uint32_t ux_fputuchar(FILE *output, UChar *txt);
+
 extern UFILE *ux_stdin;
 extern UFILE *ux_stdout;
 extern UFILE *ux_stderr;

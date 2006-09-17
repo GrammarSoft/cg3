@@ -193,3 +193,14 @@ bool ux_escape(UChar *target, const UChar *source) {
 	}
 	return retval;
 }
+
+uint32_t ux_fputuchar(FILE *output, UChar *txt) {
+	uint32_t retval = 0;
+	uint32_t length = u_strlen(txt);
+	for (uint32_t i=0;i<length;i++) {
+		UChar c = (UChar)htons(txt[i]);
+		fwrite(&c, sizeof(UChar), 1, output);
+		retval++;
+	}
+	return retval;
+}

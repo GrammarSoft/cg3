@@ -31,7 +31,7 @@ namespace CG3 {
 		~GrammarWriter();
 
 		int write_grammar_to_ufile_text(UFILE *output);
-		int write_grammar_to_ufile_binary(UFILE *output);
+		int write_grammar_to_file_binary(FILE *output);
 
 		void setGrammar(CG3::Grammar *res);
 	};

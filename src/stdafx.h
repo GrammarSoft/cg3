@@ -39,6 +39,9 @@
 #include "uextras.h"
 
 inline uint32_t hash_sdbm_uchar(const UChar *str, uint32_t hash) {
+	if (hash == 0) {
+		hash = 705577479;
+	}
     UChar c = 0;
 
 	while ((c = *str++) != 0) {
@@ -49,6 +52,9 @@ inline uint32_t hash_sdbm_uchar(const UChar *str, uint32_t hash) {
 }
 
 inline uint32_t hash_sdbm_char(const char *str, uint32_t hash) {
+	if (hash == 0) {
+		hash = 705577479;
+	}
     UChar c = 0;
 
 	while ((c = *str++) != 0) {
@@ -59,6 +65,9 @@ inline uint32_t hash_sdbm_char(const char *str, uint32_t hash) {
 }
 
 inline uint32_t hash_sdbm_uint32_t(uint32_t c, uint32_t hash) {
+	if (hash == 0) {
+		hash = 705577479;
+	}
     hash = c + (hash << 6) + (hash << 16) - hash;
     return hash;
 }

@@ -171,6 +171,9 @@ int GrammarParser::parse_grammar_from_ufile(UFILE *input) {
 	result->lines = 1;
 
 	while (!u_feof(input)) {
+		if (result->lines % 100 == 0) {
+			std::cerr << "Parsing line " << result->lines << "          \r" << std::flush;
+		}
 		#define BUFFER_SIZE (131072)
 		UChar *line = new UChar[BUFFER_SIZE];
 		u_fgets(line, BUFFER_SIZE-1, input);

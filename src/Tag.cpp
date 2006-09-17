@@ -23,18 +23,8 @@
 using namespace CG3;
 
 Tag::Tag() {
-	negative = false;
-	failfast = false;
-	case_insensitive = false;
-	regexp = false;
-	wildcard = false;
-	wordform = false;
-	baseform = false;
-	numerical = false;
-	any = false;
-	mapping = false;
-	variable = false;
-	meta = false;
+	features = 0;
+	type = 0;
 	comparison_key = 0;
 	comparison_op = OP_NOP;
 	comparison_val = 0;
@@ -55,36 +45,36 @@ void Tag::parseTag(const UChar *to) {
 		const UChar *tmp = to;
 		while (tmp[0] && (tmp[0] == '!' || tmp[0] == '^')) {
 			if (tmp[0] == '!') {
-				negative = true;
+				features |= F_NEGATIVE;
 				tmp++;
 			}
 			if (tmp[0] == '^') {
-				failfast = true;
+				features |= F_FAILFAST;
 				tmp++;
 			}
 		}
 		uint32_t length = u_strlen(tmp);
 		while (tmp[0] && (tmp[0] == '"' || tmp[0] == '<') && (tmp[length-1] == 'i' || tmp[length-1] == 'w' || tmp[length-1] == 'r')) {
 			if (tmp[length-1] == 'r') {
-				regexp = true;
+				features |= F_REGEXP;
 				length--;
 			}
 			if (tmp[length-1] == 'i') {
-				case_insensitive = true;
+				features |= F_CASE_INSENSITIVE;
 				length--;
 			}
 			if (tmp[length-1] == 'w') {
-				wildcard = true;
+				features |= F_WILDCARD;
 				length--;
 			}
 		}
 
 		if (tmp[0] == '"' && tmp[length-1] == '"') {
 			if (tmp[1] == '<' && tmp[length-2] == '>') {
-				wordform = true;
+				type |= T_WORDFORM;
 			}
 			else {
-				baseform = true;
+				type |= T_BASEFORM;
 			}
 		}
 		
@@ -98,25 +88,25 @@ void Tag::parseTag(const UChar *to) {
 		utag = 0;
 
 		if (u_strcmp(tag, stringbits[S_ASTERIK]) == 0) {
-			any = true;
+			type |= T_ANY;
 		}
 		if (tag[0] == '@') {
-			mapping = true;
+			type |= T_MAPPING;
 		}
 	}
 }
 
 void Tag::print(UFILE *to) {
-	if (negative) {
+	if (features & F_NEGATIVE) {
 		u_fprintf(to, "!");
 	}
-	if (failfast) {
+	if (features & F_FAILFAST) {
 		u_fprintf(to, "^");
 	}
-	if (meta) {
+	if (type & T_META) {
 		u_fprintf(to, "META:");
 	}
-	if (variable) {
+	if (type & T_VARIABLE) {
 		u_fprintf(to, "VAR:");
 	}
 
@@ -125,29 +115,29 @@ void Tag::print(UFILE *to) {
 	u_fprintf(to, "%S", tmp);
 	delete tmp;
 
-	if (case_insensitive) {
+	if (features & F_CASE_INSENSITIVE) {
 		u_fprintf(to, "i");
 	}
-	if (regexp) {
+	if (features & F_REGEXP) {
 		u_fprintf(to, "r");
 	}
-	if (wildcard) {
+	if (features & F_WILDCARD) {
 		u_fprintf(to, "w");
 	}
 }
 
 uint32_t Tag::rehash() {
 	hash = 0;
-	if (negative) {
+	if (features & F_NEGATIVE) {
 		hash = hash_sdbm_char("!", hash);
 	}
-	if (failfast) {
+	if (features & F_FAILFAST) {
 		hash = hash_sdbm_char("^", hash);
 	}
-	if (meta) {
+	if (type & T_META) {
 		hash = hash_sdbm_char("META:", hash);
 	}
-	if (variable) {
+	if (type & T_VARIABLE) {
 		hash = hash_sdbm_char("VAR:", hash);
 	}
 
@@ -156,32 +146,22 @@ uint32_t Tag::rehash() {
 	hash = hash_sdbm_uchar(tmp, hash);
 	delete tmp;
 
-	if (case_insensitive) {
+	if (features & F_CASE_INSENSITIVE) {
 		hash = hash_sdbm_char("i", hash);
 	}
-	if (regexp) {
+	if (features & F_REGEXP) {
 		hash = hash_sdbm_char("r", hash);
 	}
-	if (wildcard) {
+	if (features & F_WILDCARD) {
 		hash = hash_sdbm_char("w", hash);
 	}
 	return hash;
 }
 
 void Tag::duplicateTag(const Tag *from) {
-	negative = from->negative;
-	failfast = from->failfast;
-	case_insensitive = from->case_insensitive;
-	regexp = from->regexp;
-	wildcard = from->wildcard;
-	wordform = from->wordform;
-	baseform = from->baseform;
-	numerical = from->numerical;
-	any = from->any;
+	features = from->features;
+	type = from->type;
 	hash = from->hash;
-	mapping = from->mapping;
-	variable = from->variable;
-	meta = from->meta;
 	comparison_op = from->comparison_op;
 	comparison_val = from->comparison_val;
 
