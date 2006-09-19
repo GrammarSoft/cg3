@@ -53,15 +53,15 @@ int GrammarWriter::write_grammar_to_ufile_text(UFILE *output) {
 
 	u_fprintf(output, "\n");
 
-	stdext::hash_map<uint32_t, CG3::Set*>::iterator set_iter;
+	stdext::hash_map<uint32_t, Set*>::iterator set_iter;
 	for (set_iter = grammar->uniqsets.begin() ; set_iter != grammar->uniqsets.end() ; set_iter++) {
 		stdext::hash_map<uint32_t, uint32_t>::iterator comp_iter;
-		CG3::Set *curset = set_iter->second;
+		Set *curset = set_iter->second;
 		if (!curset->tags.empty()) {
 			u_fprintf(output, "LIST %S = ", curset->getName());
 			for (comp_iter = curset->tags.begin() ; comp_iter != curset->tags.end() ; comp_iter++) {
 				if (grammar->tags.find(comp_iter->second) != grammar->tags.end()) {
-					CG3::CompositeTag *curcomptag = grammar->tags[comp_iter->second];
+					CompositeTag *curcomptag = grammar->tags[comp_iter->second];
 					if (curcomptag->tags.size() == 1) {
 						grammar->single_tags[curcomptag->tags.begin()->second]->print(output);
 						u_fprintf(output, " ");
@@ -83,7 +83,7 @@ int GrammarWriter::write_grammar_to_ufile_text(UFILE *output) {
 
 	u_fprintf(output, "\n");
 
-	std::vector<CG3::Rule*>::iterator iter_rules;
+	std::vector<Rule*>::iterator iter_rules;
 	for (iter_rules = grammar->rules.begin() ; iter_rules != grammar->rules.end() ; iter_rules++) {
 		grammar->printRule(output, *iter_rules);
 		u_fprintf(output, "\n");
@@ -106,19 +106,19 @@ int GrammarWriter::write_grammar_to_file_binary(FILE *output) {
 	uint32_t tmp = (uint32_t)htonl((uint32_t)grammar->uniqsets.size());
 	fwrite(&tmp, sizeof(uint32_t), 1, output);
 /*
-	stdext::hash_map<uint32_t, CG3::Set*>::iterator set_iter;
+	stdext::hash_map<uint32_t, Set*>::iterator set_iter;
 	for (set_iter = grammar->uniqsets.begin() ; set_iter != grammar->uniqsets.end() ; set_iter++) {
 		stdext::hash_map<uint32_t, uint32_t>::iterator comp_iter;
-		CG3::Set *curset = set_iter->second;
+		Set *curset = set_iter->second;
 		if (!curset->tags.empty()) {
 			u_fprintf(output, "%S %u\n", curset->getName(), curset->tags.size());
 			for (comp_iter = curset->tags.begin() ; comp_iter != curset->tags.end() ; comp_iter++) {
 				if (grammar->tags.find(comp_iter->second) != grammar->tags.end()) {
-					CG3::CompositeTag *curcomptag = grammar->tags[comp_iter->second];
+					CompositeTag *curcomptag = grammar->tags[comp_iter->second];
 					u_fprintf(output, "%u\n", curcomptag->tags.size());
 					std::map<uint32_t, uint32_t>::iterator tag_iter;
 					for (tag_iter = curcomptag->tags_map.begin() ; tag_iter != curcomptag->tags_map.end() ; tag_iter++) {
-						CG3::Tag *tag = grammar->single_tags[tag_iter->second];
+						Tag *tag = grammar->single_tags[tag_iter->second];
 						u_fprintf(output, "%S %u %u %u %u %u %u %u %u %u %u %u %u %u %u %S\n",
 							tag->tag,
 							tag->any, tag->wordform, tag->baseform, tag->case_insensitive,
@@ -136,6 +136,6 @@ int GrammarWriter::write_grammar_to_file_binary(FILE *output) {
 	return 0;
 }
 
-void GrammarWriter::setGrammar(CG3::Grammar *res) {
+void GrammarWriter::setGrammar(Grammar *res) {
 	grammar = res;
 }

@@ -193,6 +193,9 @@
 				RelativePath=".\src\Grammar.cpp">
 			</File>
 			<File
+				RelativePath=".\src\GrammarApplicator.cpp">
+			</File>
+			<File
 				RelativePath=".\src\GrammarParser.cpp">
 			</File>
 			<File
@@ -261,6 +264,9 @@
 			<File
 				RelativePath=".\src\uextras.cpp">
 			</File>
+			<File
+				RelativePath=".\src\Window.cpp">
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -283,6 +289,9 @@
 			</File>
 			<File
 				RelativePath=".\src\Grammar.h">
+			</File>
+			<File
+				RelativePath=".\src\GrammarApplicator.h">
 			</File>
 			<File
 				RelativePath=".\src\GrammarParser.h">
@@ -319,6 +328,9 @@
 			</File>
 			<File
 				RelativePath=".\src\uextras.h">
+			</File>
+			<File
+				RelativePath=".\src\Window.h">
 			</File>
 		</Filter>
 		<Filter

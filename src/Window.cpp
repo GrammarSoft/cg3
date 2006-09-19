@@ -14,39 +14,26 @@
  * implied. See the License for the specific language governing
  * rights and limitations under the License.
  */
-#include "stdafx.h"
-#include <unicode/ustring.h>
-#include "Reading.h"
+#include "Window.h"
 
 using namespace CG3;
 
-Reading::Reading() {
-	wordform = 0;
-	baseform = 0;
-	mapped = false;
-	text = 0;
+Window::Window() {
 }
 
-Reading::~Reading() {
-	wordform = 0;
-	baseform = 0;
-	if (text) {
-		delete text;
+Window::~Window() {
+	std::list<Cohort*>::iterator iter;
+	for (iter = previous.begin() ; iter != previous.end() ; iter++) {
+		delete *iter;
 	}
-	text = 0;
-	tags.clear();
-}
+	previous.clear();
 
-uint32_t Reading::rehash() {
-	hash = 0;
-	hash_tags = 0;
-	stdext::hash_map<uint32_t, uint32_t>::iterator iter;
-	for (iter = tags.begin() ; iter != tags.end() ; iter++) {
-		hash = hash_sdbm_uint32_t(iter->second, hash);
+	if (current) {
+		delete current;
 	}
-	hash_tags = hash;
 
-	hash = hash_sdbm_uint32_t(wordform, hash);
-	hash = hash_sdbm_uint32_t(baseform, hash);
-	return hash;
+	for (iter = next.begin() ; iter != next.end() ; iter++) {
+		delete *iter;
+	}
+	next.clear();
 }

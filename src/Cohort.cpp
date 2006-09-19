@@ -14,10 +14,7 @@
  * implied. See the License for the specific language governing
  * rights and limitations under the License.
  */
-#include "stdafx.h"
-#include <unicode/ustring.h>
 #include "Cohort.h"
-#include "Reading.h"
 
 using namespace CG3;
 

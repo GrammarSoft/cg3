@@ -14,39 +14,33 @@
  * implied. See the License for the specific language governing
  * rights and limitations under the License.
  */
-#include "stdafx.h"
-#include <unicode/ustring.h>
-#include "Reading.h"
+
+#include "GrammarApplicator.h"
+#include "uextras.h"
 
 using namespace CG3;
+using namespace CG3::Strings;
 
-Reading::Reading() {
-	wordform = 0;
-	baseform = 0;
-	mapped = false;
-	text = 0;
+GrammarApplicator::GrammarApplicator() {
+	grammar = 0;
 }
 
-Reading::~Reading() {
-	wordform = 0;
-	baseform = 0;
-	if (text) {
-		delete text;
-	}
-	text = 0;
-	tags.clear();
+GrammarApplicator::~GrammarApplicator() {
+	grammar = 0;
 }
 
-uint32_t Reading::rehash() {
-	hash = 0;
-	hash_tags = 0;
-	stdext::hash_map<uint32_t, uint32_t>::iterator iter;
-	for (iter = tags.begin() ; iter != tags.end() ; iter++) {
-		hash = hash_sdbm_uint32_t(iter->second, hash);
-	}
-	hash_tags = hash;
+void GrammarApplicator::setGrammar(Grammar *res) {
+	grammar = res;
+}
 
-	hash = hash_sdbm_uint32_t(wordform, hash);
-	hash = hash_sdbm_uint32_t(baseform, hash);
+uint32_t GrammarApplicator::addTag(UChar *txt) {
+	Tag *tag = new Tag();
+	tag->parseTag(txt);
+	uint32_t hash = tag->rehash();
+	if (single_tags.find(hash) == single_tags.end()) {
+		single_tags[hash] = tag;
+	} else {
+		delete tag;
+	}
 	return hash;
 }

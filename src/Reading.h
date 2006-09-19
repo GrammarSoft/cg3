@@ -27,11 +27,15 @@ namespace CG3 {
 	public:
 		uint32_t wordform;
 		uint32_t baseform;
+		uint32_t hash, hash_tags;
+		bool mapped;
 		stdext::hash_map<uint32_t, uint32_t> tags;
 		UChar *text;
 
 		Reading();
 		~Reading();
+
+		uint32_t rehash();
 	};
 
 }
