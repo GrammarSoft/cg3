@@ -181,6 +181,9 @@
 				RelativePath=".\src\Anchor.cpp">
 			</File>
 			<File
+				RelativePath=".\src\Cohort.cpp">
+			</File>
+			<File
 				RelativePath=".\src\CompositeTag.cpp">
 			</File>
 			<File
@@ -241,6 +244,9 @@
 				RelativePath=".\src\main.cpp">
 			</File>
 			<File
+				RelativePath=".\src\Reading.cpp">
+			</File>
+			<File
 				RelativePath=".\src\Rule.cpp">
 			</File>
 			<File
@@ -267,6 +273,9 @@
 				RelativePath=".\src\cg3_resources.h">
 			</File>
 			<File
+				RelativePath=".\src\Cohort.h">
+			</File>
+			<File
 				RelativePath=".\src\CompositeTag.h">
 			</File>
 			<File
@@ -289,6 +298,9 @@
 			</File>
 			<File
 				RelativePath=".\src\icu_uoptions.h">
+			</File>
+			<File
+				RelativePath=".\src\Reading.h">
 			</File>
 			<File
 				RelativePath=".\src\Rule.h">
