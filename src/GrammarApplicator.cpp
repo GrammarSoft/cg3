@@ -123,6 +123,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 				for (iter = cCohort->readings.begin() ; iter != cCohort->readings.end() ; iter++) {
 					(*iter)->tags[endtag] = endtag;
 				}
+				doesSetMatchReading(lReading, grammar->delimiters->hash);
 
 				cSWindow->cohorts.push_back(cCohort);
 				cWindow->next.push_back(cSWindow);

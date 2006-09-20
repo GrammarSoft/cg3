@@ -46,6 +46,10 @@ namespace CG3 {
 		int runGrammarOnText(UFILE *input, UFILE *output);
 
 		bool doesTagMatchSet(uint32_t tag, uint32_t set);
+		bool doesSetMatchReading(Reading *reading, uint32_t set);
+		bool doesSetMatchCohortNormal(Cohort *cohort, uint32_t set);
+		bool doesSetMatchCohortCareful(Cohort *cohort, uint32_t set);
+
 		void printSingleWindow(SingleWindow *window, UFILE *output);
 	};
 }

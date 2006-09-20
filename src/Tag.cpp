@@ -82,6 +82,18 @@ void Tag::parseTag(const UChar *to) {
 				type |= T_BASEFORM;
 			}
 		}
+
+		// ToDo: Implement these...
+		if (tmp[0] == 'M' && tmp[1] == 'E' && tmp[2] == 'T' && tmp[3] == 'A' && tmp[4] == ':') {
+			type |= T_META;
+			tmp += 5;
+			length -= 5;
+		}
+		else if (tmp[0] == 'V' && tmp[1] == 'A' && tmp[2] == 'R' && tmp[3] == ':') {
+			type |= T_VARIABLE;
+			tmp += 4;
+			length -= 4;
+		}
 		
 		tag = new UChar[length+1];
 		tag[length] = 0;
@@ -146,12 +158,14 @@ void Tag::print(UFILE *to) {
 
 uint32_t Tag::rehash() {
 	hash = 0;
+/*
 	if (features & F_NEGATIVE) {
 		hash = hash_sdbm_char("!", hash);
 	}
 	if (features & F_FAILFAST) {
 		hash = hash_sdbm_char("^", hash);
 	}
+//*/
 	if (type & T_META) {
 		hash = hash_sdbm_char("META:", hash);
 	}
@@ -163,7 +177,7 @@ uint32_t Tag::rehash() {
 	ux_escape(tmp, tag);
 	hash = hash_sdbm_uchar(tmp, hash);
 	delete tmp;
-
+/*
 	if (features & F_CASE_INSENSITIVE) {
 		hash = hash_sdbm_char("i", hash);
 	}
@@ -173,6 +187,7 @@ uint32_t Tag::rehash() {
 	if (features & F_WILDCARD) {
 		hash = hash_sdbm_char("w", hash);
 	}
+//*/
 	return hash;
 }
 
