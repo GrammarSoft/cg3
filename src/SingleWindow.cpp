@@ -19,6 +19,7 @@
 using namespace CG3;
 
 SingleWindow::SingleWindow() {
+	text = 0;
 }
 
 SingleWindow::~SingleWindow() {

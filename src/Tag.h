@@ -46,7 +46,8 @@ namespace CG3 {
 		T_VARIABLE  =  8,
 		T_META      = 16,
 		T_WORDFORM = 32,
-		T_BASEFORM = 64
+		T_BASEFORM = 64,
+		T_TEXTUAL = 128
 	};
 
 	class Tag {

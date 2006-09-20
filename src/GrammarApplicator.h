@@ -21,6 +21,7 @@
 #include "Strings.h"
 #include "Tag.h"
 #include "Grammar.h"
+#include "SingleWindow.h"
  
 namespace CG3 {
 	class GrammarApplicator {
@@ -45,6 +46,7 @@ namespace CG3 {
 		int runGrammarOnText(UFILE *input, UFILE *output);
 
 		bool doesTagMatchSet(uint32_t tag, uint32_t set);
+		void printSingleWindow(SingleWindow *window, UFILE *output);
 	};
 }
 

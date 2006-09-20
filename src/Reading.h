@@ -30,6 +30,7 @@ namespace CG3 {
 		uint32_t hash, hash_tags;
 		bool mapped;
 		bool deleted;
+		bool noprint;
 		stdext::hash_map<uint32_t, uint32_t> tags;
 		UChar *text;
 

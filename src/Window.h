@@ -26,6 +26,7 @@ namespace CG3 {
 
 	class Window {
 	public:
+		uint32_t num_windows;
 		std::list<SingleWindow*> previous;
 		SingleWindow *current;
 		std::list<SingleWindow*> next;

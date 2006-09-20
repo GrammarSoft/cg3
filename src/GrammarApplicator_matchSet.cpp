@@ -23,7 +23,6 @@ using namespace CG3::Strings;
 
 bool GrammarApplicator::doesTagMatchSet(uint32_t tag, uint32_t set) {
 	bool retval = false;
-	Tag *thetag = single_tags[tag];
 
 	stdext::hash_map<uint32_t, Set*>::const_iterator iter = grammar->uniqsets.find(set);
 	if (iter != grammar->uniqsets.end()) {

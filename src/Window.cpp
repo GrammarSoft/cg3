@@ -19,6 +19,8 @@
 using namespace CG3;
 
 Window::Window() {
+	current = 0;
+	num_windows = 0;
 }
 
 Window::~Window() {
@@ -39,7 +41,7 @@ Window::~Window() {
 }
 
 void Window::shuffleWindowsDown() {
-	if (!previous.empty()) {
+	if (!previous.empty() && previous.size() >= num_windows) {
 		delete previous.front();
 		previous.pop_front();
 	}

@@ -95,6 +95,12 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 	Cohort *cCohort = 0;
 	Reading *cReading = 0;
 
+	SingleWindow *lSWindow = 0;
+	Cohort *lCohort = 0;
+	Reading *lReading = 0;
+
+	cWindow->num_windows = num_windows;
+
 	while (!u_feof(input)) {
 		u_fgets(line, BUFFER_SIZE-1, input);
 		u_strcpy(cleaned, line);
@@ -102,6 +108,29 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 
 		if (cleaned[0] == '"' && cleaned[1] == '<') {
 			ux_trim(cleaned);
+			if (cCohort && doesTagMatchSet(cCohort->wordform, grammar->delimiters->hash)) {
+				if (cCohort->readings.empty()) {
+					cReading = new Reading();
+					cReading->wordform = cCohort->wordform;
+					cReading->baseform = cCohort->wordform;
+					cReading->tags[cCohort->wordform] = cCohort->wordform;
+					cReading->rehash();
+					cReading->noprint = true;
+					cCohort->readings.push_back(cReading);
+					lReading = cReading;
+				}
+				std::vector<Reading*>::iterator iter;
+				for (iter = cCohort->readings.begin() ; iter != cCohort->readings.end() ; iter++) {
+					(*iter)->tags[endtag] = endtag;
+				}
+
+				cSWindow->cohorts.push_back(cCohort);
+				cWindow->next.push_back(cSWindow);
+				lSWindow = cSWindow;
+				lCohort = cCohort;
+				cSWindow = 0;
+				cCohort = 0;
+			}
 			if (!cSWindow) {
 				cReading = new Reading();
 				cReading->baseform = begintag;
@@ -112,15 +141,28 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 				cCohort = new Cohort();
 				cCohort->wordform = begintag;
 				cCohort->readings.push_back(cReading);
-				
+
 				cSWindow = new SingleWindow();
-			}
-			if (cCohort) {
 				cSWindow->cohorts.push_back(cCohort);
+
+				lSWindow = cSWindow;
+				lReading = cReading;
+				lCohort = cCohort;
 				cCohort = 0;
+			}
+			if (cCohort && cSWindow) {
+				cSWindow->cohorts.push_back(cCohort);
+				lCohort = cCohort;
+			}
+			if (cWindow->next.size() > num_windows) {
+				cWindow->shuffleWindowsDown();
+				printSingleWindow(cWindow->current, output);
+				u_fflush(output);
 			}
 			cCohort = new Cohort();
 			cCohort->wordform = addTag(cleaned);
+			lCohort = cCohort;
+			lReading = 0;
 		}
 		else if (cleaned[0] == ' ' && cleaned[1] == '"' && cCohort) {
 			cReading = new Reading();
@@ -139,6 +181,9 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 					if (!cReading->baseform && single_tags[tag]->type & T_BASEFORM) {
 						cReading->baseform = tag;
 					}
+					if (single_tags[tag]->type & T_MAPPING) {
+						cReading->mapped = true;
+					}
 					cReading->tags[tag] = tag;
 				}
 				base = space;
@@ -148,31 +193,84 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 				if (!cReading->baseform && single_tags[tag]->type & T_BASEFORM) {
 					cReading->baseform = tag;
 				}
+				if (single_tags[tag]->type & T_MAPPING) {
+					cReading->mapped = true;
+				}
 				cReading->tags[tag] = tag;
 			}
 			cCohort->readings.push_back(cReading);
-			cReading = 0;
+			lReading = cReading;
 		}
 		else {
 			if (cleaned[0] == ' ' && cleaned[1] == '"') {
 				u_fprintf(ux_stderr, "Warning: Line %u looked like a reading but there was no containing cohort - treated as plain text.\n", lines);
 			}
-			if (cReading) {
-				cReading->text = ux_append(cReading->text, line);
+			if (lReading) {
+				lReading->text = ux_append(lReading->text, line);
 			}
-			else if (cCohort) {
-				cCohort->text = ux_append(cCohort->text, line);
+			else if (lCohort) {
+				lCohort->text = ux_append(lCohort->text, line);
 			}
-			else if (cSWindow) {
-				cSWindow->text = ux_append(cSWindow->text, line);
+			else if (lSWindow) {
+				lSWindow->text = ux_append(lSWindow->text, line);
 			}
 			else {
 				u_fprintf(output, "%S", line);
-				u_fflush(output);
 			}
 		}
 		lines++;
 	}
 
+	while (!cWindow->next.empty()) {
+		cWindow->shuffleWindowsDown();
+		printSingleWindow(cWindow->current, output);
+		u_fflush(output);
+	}
 	return 0;
+}
+
+void GrammarApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
+	if (window->text) {
+		u_fprintf(output, "%S", window->text);
+	}
+
+	std::vector<Cohort*>::iterator cter;
+	for (cter = window->cohorts.begin() ; cter != window->cohorts.end() ; cter++) {
+		if (cter == window->cohorts.begin()) {
+			continue;
+		}
+		Cohort *cohort = *cter;
+		single_tags[cohort->wordform]->print(output);
+		u_fprintf(output, "\n");
+		if (cohort->text) {
+			u_fprintf(output, "%S", cohort->text);
+		}
+
+		std::vector<Reading*>::iterator rter;
+		for (rter = cohort->readings.begin() ; rter != cohort->readings.end() ; rter++) {
+			Reading *reading = *rter;
+			if (reading->noprint) {
+				continue;
+			}
+			if (reading->deleted) {
+				u_fprintf(output, ";");
+			}
+			u_fprintf(output, "\t");
+			single_tags[reading->baseform]->print(output);
+			u_fprintf(output, " ");
+
+			stdext::hash_map<uint32_t, uint32_t>::iterator tter;
+			for (tter = reading->tags.begin() ; tter != reading->tags.end() ; tter++) {
+				Tag *tag = single_tags[tter->second];
+				if (!(tag->type & T_BASEFORM) && !(tag->type & T_WORDFORM)) {
+					tag->print(output);
+					u_fprintf(output, " ");
+				}
+			}
+			u_fprintf(output, "\n");
+			if (reading->text) {
+				u_fprintf(output, "%S", reading->text);
+			}
+		}
+	}
 }
