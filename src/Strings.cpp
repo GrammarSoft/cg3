@@ -15,12 +15,14 @@
  * rights and limitations under the License.
  */
 
+#include <math.h>
 #include "stdafx.h"
 #include "Strings.h"
 
 namespace CG3 {
 	namespace Strings {
 		UChar *keywords[KEYWORD_COUNT];
+		uint32_t keyword_pow[KEYWORD_COUNT];
 		UChar *stringbits[STRINGS_COUNT];
 		URegularExpression *regexps[REGEXP_COUNT];
 
@@ -33,6 +35,7 @@ namespace CG3 {
 			u_uastrcpy(buffer, keyword);
 			keywords[entry] = new UChar[u_strlen(buffer)+1];
 			u_strcpy(keywords[entry], buffer);
+			keyword_pow[entry] = (uint32_t)pow(2, entry);
 			return 0;
 		}
 		

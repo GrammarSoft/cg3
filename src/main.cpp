@@ -20,6 +20,8 @@
 #include "Grammar.h"
 #include "GrammarParser.h"
 #include "GrammarWriter.h"
+#include "GrammarApplicator.h"
+#include <sys/stat.h>
 
 namespace Options {
 	enum OPTIONS {
@@ -86,6 +88,7 @@ int main(int argc, char* argv[]) {
     UErrorCode status = U_ZERO_ERROR;
 	srand((uint32_t)time(0));
 
+    fprintf(stderr, "VISL CG-3 Disambiguator version %s.\n", CG3_VERSION_STRING);
     U_MAIN_INIT_ARGS(argc, argv);
 
 	argc = u_parseArgs(argc, argv, (int32_t)(sizeof(options)/sizeof(options[0])), options);
@@ -95,10 +98,7 @@ int main(int argc, char* argv[]) {
     }
 
     if (options[VERSION].doesOccur) {
-        fprintf(stderr,
-                "VISL CG-3 Disambiguator version %s.\n"
-                "%s\n",
-                CG3_VERSION_STRING, CG3_COPYRIGHT_STRING);
+        fprintf(stderr, "%s\n", CG3_COPYRIGHT_STRING);
         return U_ZERO_ERROR;
     }
 
@@ -187,22 +187,40 @@ int main(int argc, char* argv[]) {
 		locale_output = options[LOCALE_ALL].value;
 	}
 
-	if (!options[STDIN].doesOccur) {
-		ux_stdin = u_finit(stdin, locale_input, codepage_input);
-	} else {
-		ux_stdin = u_fopen(options[STDIN].value, "r", locale_input, codepage_input);
-	}
-
 	if (!options[STDOUT].doesOccur) {
 		ux_stdout = u_finit(stdout, locale_output, codepage_input);
 	} else {
 		ux_stdout = u_fopen(options[STDOUT].value, "w", locale_output, codepage_output);
+	}
+	if (!ux_stdout) {
+		fprintf(stderr, "Error: Failed to open the output stream for writing!\n");
+		return -1;
 	}
 
 	if (!options[STDERR].doesOccur) {
 		ux_stderr = u_finit(stderr, locale_output, codepage_input);
 	} else {
 		ux_stderr = u_fopen(options[STDERR].value, "w", locale_output, codepage_output);
+	}
+	if (!ux_stdout) {
+		fprintf(stderr, "Error: Failed to open the error stream for writing!\n");
+		return -1;
+	}
+
+	if (!options[STDIN].doesOccur) {
+		ux_stdin = u_finit(stdin, locale_input, codepage_input);
+	} else {
+		struct stat info;
+		int serr = stat(options[STDIN].value, &info);
+		if (serr) {
+			fprintf(stderr, "Error: Cannot stat %s due to error %d!\n", options[STDIN].value, serr);
+			return -serr;
+		}
+		ux_stdin = u_fopen(options[STDIN].value, "r", locale_input, codepage_input);
+	}
+	if (!ux_stdin) {
+		fprintf(stderr, "Error: Failed to open the input stream for reading!\n");
+		return -1;
 	}
 
 	CG3::GrammarParser *parser = new CG3::GrammarParser;
@@ -223,12 +241,23 @@ int main(int argc, char* argv[]) {
 	std::cerr << "Parsing grammar took " << (double)((double)(clock()-glob_timer)/(double)CLOCKS_PER_SEC) << " seconds." << std::endl;
 	glob_timer = clock();
 
-	CG3::GrammarWriter *writer = new CG3::GrammarWriter();
+	CG3::GrammarWriter *writer = 0;
+/*
+	writer = new CG3::GrammarWriter();
 	writer->setGrammar(grammar);
 	writer->write_grammar_to_ufile_text(ux_stdout);
 	writer->write_grammar_to_file_binary(fopen("/tmp/cg3.utf16le.txt", "wb"));
 
 	std::cerr << "Writing grammar took " << (double)((double)(clock()-glob_timer)/(double)CLOCKS_PER_SEC) << " seconds." << std::endl;
+	glob_timer = clock();
+//*/
+
+	CG3::GrammarApplicator *applicator = 0;
+	applicator = new CG3::GrammarApplicator();
+	applicator->setGrammar(grammar);
+	applicator->runGrammarOnText(ux_stdin, ux_stdout);
+
+	std::cerr << "Applying grammar on input took " << (double)((double)(clock()-glob_timer)/(double)CLOCKS_PER_SEC) << " seconds." << std::endl;
 	glob_timer = clock();
 
 	u_fclose(ux_stdin);
@@ -238,6 +267,7 @@ int main(int argc, char* argv[]) {
 	delete grammar;
 	delete parser;
 	delete writer;
+	delete applicator;
 
 	std::cerr << "Cleanup took " << (double)((double)(clock()-glob_timer)/(double)CLOCKS_PER_SEC) << " seconds." << std::endl;
 	return status;

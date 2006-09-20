@@ -84,6 +84,7 @@ namespace CG3 {
 		};
 
 		extern UChar *keywords[KEYWORD_COUNT];
+		extern uint32_t keyword_pow[KEYWORD_COUNT];
 		extern UChar *stringbits[STRINGS_COUNT];
 		extern URegularExpression *regexps[REGEXP_COUNT];
 

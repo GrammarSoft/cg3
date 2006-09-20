@@ -16,12 +16,15 @@
  */
 
 #include "GrammarApplicator.h"
+#include "Window.h"
+#include "SingleWindow.h"
 #include "uextras.h"
 
 using namespace CG3;
 using namespace CG3::Strings;
 
 GrammarApplicator::GrammarApplicator() {
+	num_windows = 2;
 	grammar = 0;
 }
 
@@ -29,11 +32,11 @@ GrammarApplicator::~GrammarApplicator() {
 	grammar = 0;
 }
 
-void GrammarApplicator::setGrammar(Grammar *res) {
+void GrammarApplicator::setGrammar(const Grammar *res) {
 	grammar = res;
 }
 
-uint32_t GrammarApplicator::addTag(UChar *txt) {
+uint32_t GrammarApplicator::addTag(const UChar *txt) {
 	Tag *tag = new Tag();
 	tag->parseTag(txt);
 	uint32_t hash = tag->rehash();
@@ -43,4 +46,44 @@ uint32_t GrammarApplicator::addTag(UChar *txt) {
 		delete tag;
 	}
 	return hash;
+}
+
+int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
+	if (!input) {
+		u_fprintf(ux_stderr, "Error: Input is null - nothing to parse!\n");
+		return -1;
+	}
+	u_frewind(input);
+	if (u_feof(input)) {
+		u_fprintf(ux_stderr, "Error: Input is empty - nothing to parse!\n");
+		return -1;
+	}
+	if (!output) {
+		u_fprintf(ux_stderr, "Error: Output is null - cannot write to nothing!\n");
+		return -1;
+	}
+	if (!grammar) {
+		u_fprintf(ux_stderr, "Error: No grammar provided - cannot continue! Hint: call setGrammar() first.\n");
+		return -1;
+	}
+	
+	free_keywords();
+	int error = init_keywords();
+	if (error) {
+		u_fprintf(ux_stderr, "Error: init_keywords returned %u!\n", error);
+		return error;
+	}
+
+	#define BUFFER_SIZE (131072)
+	UChar *line = new UChar[BUFFER_SIZE];
+
+	while (!u_feof(input)) {
+		u_fgets(line, BUFFER_SIZE-1, input);
+		u_fprintf(output, "%S", line);
+		u_fflush(output);
+	}
+
+	delete line;
+
+	return 0;
 }

@@ -146,6 +146,10 @@ int GrammarParser::parse_grammar_from_ufile(UFILE *input) {
 		return -1;
 	}
 	
+	free_keywords();
+	free_regexps();
+	free_strings();
+
 	int error = init_keywords();
 	if (error) {
 		u_fprintf(ux_stderr, "Error: init_keywords returned %u!\n", error);

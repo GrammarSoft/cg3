@@ -18,8 +18,6 @@
 #define __GRAMMARAPPLICATOR_H
 
 #include "stdafx.h"
-#include <unicode/uchar.h>
-#include <unicode/ustdio.h>
 #include "Strings.h"
 #include "Tag.h"
 #include "Grammar.h"
@@ -27,15 +25,24 @@
 namespace CG3 {
 	class GrammarApplicator {
 	public:
-		Grammar *grammar;
+		uint32_t num_windows;
+
+		const Grammar *grammar;
 
 		stdext::hash_map<uint32_t, Tag*> single_tags;
+
+		stdext::hash_map<uint32_t, uint32_t> index_reading_tags_yes;
+		stdext::hash_map<uint32_t, uint32_t> index_reading_yes;
+		stdext::hash_map<uint32_t, uint32_t> index_reading_tags_no;
+		stdext::hash_map<uint32_t, uint32_t> index_reading_no;
 	
 		GrammarApplicator();
 		~GrammarApplicator();
 
-		void setGrammar(Grammar *res);
-		uint32_t addTag(UChar *tag);
+		void setGrammar(const Grammar *res);
+		uint32_t addTag(const UChar *tag);
+
+		int runGrammarOnText(UFILE *input, UFILE *output);
 	};
 }
 

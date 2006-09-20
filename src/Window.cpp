@@ -22,7 +22,7 @@ Window::Window() {
 }
 
 Window::~Window() {
-	std::list<Cohort*>::iterator iter;
+	std::list<SingleWindow*>::iterator iter;
 	for (iter = previous.begin() ; iter != previous.end() ; iter++) {
 		delete *iter;
 	}
@@ -36,4 +36,20 @@ Window::~Window() {
 		delete *iter;
 	}
 	next.clear();
+}
+
+void Window::shuffleWindowsDown() {
+	if (!previous.empty()) {
+		delete previous.front();
+		previous.pop_front();
+	}
+
+	if (current) {
+		previous.push_back(current);
+	}
+
+	if (!next.empty()) {
+		current = next.front();
+		next.pop_front();
+	}
 }

@@ -14,40 +14,24 @@
  * implied. See the License for the specific language governing
  * rights and limitations under the License.
  */
+#ifndef __SINGLEWINDOW_H
+#define __SINGLEWINDOW_H
+
 #include "stdafx.h"
+#include <unicode/ustdio.h>
 #include <unicode/ustring.h>
-#include "Reading.h"
+#include "Cohort.h"
 
-using namespace CG3;
+namespace CG3 {
 
-Reading::Reading() {
-	wordform = 0;
-	baseform = 0;
-	mapped = false;
-	deleted = false;
-	text = 0;
+	class SingleWindow {
+	public:
+		std::vector<Cohort*> cohorts;
+
+		SingleWindow();
+		~SingleWindow();
+	};
+
 }
 
-Reading::~Reading() {
-	wordform = 0;
-	baseform = 0;
-	if (text) {
-		delete text;
-	}
-	text = 0;
-	tags.clear();
-}
-
-uint32_t Reading::rehash() {
-	hash = 0;
-	hash_tags = 0;
-	stdext::hash_map<uint32_t, uint32_t>::iterator iter;
-	for (iter = tags.begin() ; iter != tags.end() ; iter++) {
-		hash = hash_sdbm_uint32_t(iter->second, hash);
-	}
-	hash_tags = hash;
-
-	hash = hash_sdbm_uint32_t(wordform, hash);
-	hash = hash_sdbm_uint32_t(baseform, hash);
-	return hash;
-}
+#endif

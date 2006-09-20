@@ -86,7 +86,7 @@
 				MinimalRebuild="TRUE"
 				ForceConformanceInForLoopScope="TRUE"
 				UsePrecompiledHeader="0"
-				WarningLevel="4"
+				WarningLevel="3"
 				Detect64BitPortabilityProblems="TRUE"
 				DebugInformationFormat="3"/>
 			<Tool
@@ -135,12 +135,14 @@
 				Optimization="3"
 				FavorSizeOrSpeed="1"
 				OptimizeForProcessor="1"
+				OptimizeForWindowsApplication="TRUE"
 				AdditionalIncludeDirectories=""
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
 				MinimalRebuild="TRUE"
 				ForceConformanceInForLoopScope="TRUE"
-				WarningLevel="4"
-				Detect64BitPortabilityProblems="TRUE"/>
+				WarningLevel="3"
+				Detect64BitPortabilityProblems="TRUE"
+				DebugInformationFormat="3"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
 			<Tool
@@ -256,6 +258,9 @@
 				RelativePath=".\src\Set.cpp">
 			</File>
 			<File
+				RelativePath=".\src\SingleWindow.cpp">
+			</File>
+			<File
 				RelativePath=".\src\Strings.cpp">
 			</File>
 			<File
@@ -318,6 +323,9 @@
 				RelativePath=".\src\Set.h">
 			</File>
 			<File
+				RelativePath=".\src\SingleWindow.h">
+			</File>
+			<File
 				RelativePath=".\src\stdafx.h">
 			</File>
 			<File
@@ -342,13 +350,25 @@
 			Name="Grammars"
 			Filter="">
 			<File
-				RelativePath=".\dancg">
+				RelativePath="..\..\parsers\dansk\etc\dancg">
 			</File>
 			<File
-				RelativePath=".\dancg.spelling">
+				RelativePath="..\..\parsers\dansk\etc\dancg.attach">
 			</File>
 			<File
-				RelativePath=".\dancg.spelling.unicode">
+				RelativePath="..\..\parsers\dansk\etc\dancg.eng">
+			</File>
+			<File
+				RelativePath="..\..\parsers\dansk\etc\dancg.morf">
+			</File>
+			<File
+				RelativePath="..\..\parsers\dansk\etc\dancg.prop">
+			</File>
+			<File
+				RelativePath="..\..\parsers\dansk\etc\dancg.spelling">
+			</File>
+			<File
+				RelativePath="..\..\parsers\dansk\etc\dancg.syn">
 			</File>
 		</Filter>
 		<Filter
@@ -368,6 +388,46 @@
 			</File>
 			<File
 				RelativePath=".\stdout2.txt">
+			</File>
+		</Filter>
+		<Filter
+			Name="PHP Proof of Concept"
+			Filter="">
+			<File
+				RelativePath="..\..\cg3\php\cg3.php">
+			</File>
+			<File
+				RelativePath="..\..\cg3\php\cg3_applycg.php">
+			</File>
+			<File
+				RelativePath="..\..\cg3\php\cg3_checks.php">
+			</File>
+			<File
+				RelativePath="..\..\cg3\php\cg3_constants.php">
+			</File>
+			<File
+				RelativePath="..\..\cg3\php\cg3_getargs.php">
+			</File>
+			<File
+				RelativePath="..\..\cg3\php\cg3_misc.php">
+			</File>
+			<File
+				RelativePath="..\..\cg3\php\cg3_parsecg.php">
+			</File>
+			<File
+				RelativePath="..\..\cg3\php\cg3_php_compat.php">
+			</File>
+			<File
+				RelativePath="..\..\cg3\php\cg3_rules.php">
+			</File>
+			<File
+				RelativePath="..\..\cg3\php\cg3_runtests.php">
+			</File>
+			<File
+				RelativePath="..\..\cg3\php\cg3_set.php">
+			</File>
+			<File
+				RelativePath="..\..\cg3\php\cg3_set_ops.php">
 			</File>
 		</Filter>
 		<File

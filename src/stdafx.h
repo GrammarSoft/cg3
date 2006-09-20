@@ -29,6 +29,7 @@
 #include <time.h>
 
 // ICU includes
+#include <unicode/uchar.h>
 #include <unicode/uclean.h>
 #include <unicode/ustdio.h>
 #include <unicode/utypes.h>

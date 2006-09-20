@@ -20,18 +20,20 @@
 #include "stdafx.h"
 #include <unicode/ustdio.h>
 #include <unicode/ustring.h>
-#include "Cohort.h"
+#include "SingleWindow.h"
 
 namespace CG3 {
 
 	class Window {
 	public:
-		std::list<Cohort*> previous;
-		Cohort *current;
-		std::list<Cohort*> next;
+		std::list<SingleWindow*> previous;
+		SingleWindow *current;
+		std::list<SingleWindow*> next;
 
 		Window();
 		~Window();
+
+		void shuffleWindowsDown();
 	};
 
 }

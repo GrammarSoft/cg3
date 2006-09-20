@@ -53,6 +53,7 @@ void Tag::parseTag(const UChar *to) {
 				tmp++;
 			}
 		}
+		// ToDo: Implement these...
 		uint32_t length = u_strlen(tmp);
 		while (tmp[0] && (tmp[0] == '"' || tmp[0] == '<') && (tmp[length-1] == 'i' || tmp[length-1] == 'w' || tmp[length-1] == 'r')) {
 			if (tmp[length-1] == 'r') {
