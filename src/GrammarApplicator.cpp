@@ -90,7 +90,7 @@ void GrammarApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 				}
 			}
 			if (reading->hit_by) {
-				u_fprintf(output, "R:%u", reading->hit_by);
+				u_fprintf(output, "R:%u", grammar->rules.at(reading->hit_by)->line);
 			}
 			u_fprintf(output, "\n");
 			if (reading->text) {
