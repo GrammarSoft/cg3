@@ -241,7 +241,7 @@ void GrammarApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 			continue;
 		}
 		Cohort *cohort = *cter;
-		single_tags[cohort->wordform]->print(output);
+		single_tags[cohort->wordform]->printRaw(output);
 		u_fprintf(output, "\n");
 		if (cohort->text) {
 			u_fprintf(output, "%S", cohort->text);
@@ -257,14 +257,14 @@ void GrammarApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 				u_fprintf(output, ";");
 			}
 			u_fprintf(output, "\t");
-			single_tags[reading->baseform]->print(output);
+			single_tags[reading->baseform]->printRaw(output);
 			u_fprintf(output, " ");
 
 			stdext::hash_map<uint32_t, uint32_t>::iterator tter;
 			for (tter = reading->tags.begin() ; tter != reading->tags.end() ; tter++) {
 				Tag *tag = single_tags[tter->second];
 				if (!(tag->type & T_BASEFORM) && !(tag->type & T_WORDFORM)) {
-					tag->print(output);
+					tag->printRaw(output);
 					u_fprintf(output, " ");
 				}
 			}

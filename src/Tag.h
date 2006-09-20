@@ -68,6 +68,7 @@ namespace CG3 {
 		void duplicateTag(const Tag *from);
 
 		void print(UFILE *out);
+		void printRaw(UFILE *out);
 		uint32_t rehash();
 	};
 

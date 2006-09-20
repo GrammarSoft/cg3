@@ -156,6 +156,33 @@ void Tag::print(UFILE *to) {
 	}
 }
 
+void Tag::printRaw(UFILE *to) {
+	if (features & F_NEGATIVE) {
+		u_fprintf(to, "!");
+	}
+	if (features & F_FAILFAST) {
+		u_fprintf(to, "^");
+	}
+	if (type & T_META) {
+		u_fprintf(to, "META:");
+	}
+	if (type & T_VARIABLE) {
+		u_fprintf(to, "VAR:");
+	}
+
+	u_fprintf(to, "%S", tag);
+
+	if (features & F_CASE_INSENSITIVE) {
+		u_fprintf(to, "i");
+	}
+	if (features & F_REGEXP) {
+		u_fprintf(to, "r");
+	}
+	if (features & F_WILDCARD) {
+		u_fprintf(to, "w");
+	}
+}
+
 uint32_t Tag::rehash() {
 	hash = 0;
 /*
