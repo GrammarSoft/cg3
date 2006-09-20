@@ -67,27 +67,112 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 		return -1;
 	}
 	
+	free_strings();
 	free_keywords();
 	int error = init_keywords();
 	if (error) {
 		u_fprintf(ux_stderr, "Error: init_keywords returned %u!\n", error);
 		return error;
 	}
+	error = init_strings();
+	if (error) {
+		u_fprintf(ux_stderr, "Error: init_strings returned %u!\n", error);
+		return error;
+	}
 
 	#define BUFFER_SIZE (131072)
-	UChar *line = new UChar[BUFFER_SIZE];
+	UChar _line[BUFFER_SIZE];
+	UChar *line = _line;
+	UChar _cleaned[BUFFER_SIZE];
+	UChar *cleaned = _cleaned;
 
+	uint32_t begintag = addTag(stringbits[S_BEGINTAG]);
+	uint32_t endtag = addTag(stringbits[S_ENDTAG]);
+
+	uint32_t lines = 0;
 	Window *cWindow = new Window();
 	SingleWindow *cSWindow = 0;
 	Cohort *cCohort = 0;
+	Reading *cReading = 0;
 
 	while (!u_feof(input)) {
 		u_fgets(line, BUFFER_SIZE-1, input);
-		u_fprintf(output, "%S", line);
-		u_fflush(output);
-	}
+		u_strcpy(cleaned, line);
+		ux_packWhitespace(cleaned);
 
-	delete line;
+		if (cleaned[0] == '"' && cleaned[1] == '<') {
+			ux_trim(cleaned);
+			if (!cSWindow) {
+				cReading = new Reading();
+				cReading->baseform = begintag;
+				cReading->wordform = begintag;
+				cReading->tags[begintag] = begintag;
+				cReading->rehash();
+				
+				cCohort = new Cohort();
+				cCohort->wordform = begintag;
+				cCohort->readings.push_back(cReading);
+				
+				cSWindow = new SingleWindow();
+			}
+			if (cCohort) {
+				cSWindow->cohorts.push_back(cCohort);
+				cCohort = 0;
+			}
+			cCohort = new Cohort();
+			cCohort->wordform = addTag(cleaned);
+		}
+		else if (cleaned[0] == ' ' && cleaned[1] == '"' && cCohort) {
+			cReading = new Reading();
+			cReading->wordform = cCohort->wordform;
+			cReading->tags[cReading->wordform] = cReading->wordform;
+
+			ux_trim(cleaned);
+			UChar *space = cleaned;
+			UChar *base = space;
+
+			while (space && (space = u_strchr(space, ' ')) != 0) {
+				space[0] = 0;
+				space++;
+				if (u_strlen(base)) {
+					uint32_t tag = addTag(base);
+					if (!cReading->baseform && single_tags[tag]->type & T_BASEFORM) {
+						cReading->baseform = tag;
+					}
+					cReading->tags[tag] = tag;
+				}
+				base = space;
+			}
+			if (u_strlen(base)) {
+				uint32_t tag = addTag(base);
+				if (!cReading->baseform && single_tags[tag]->type & T_BASEFORM) {
+					cReading->baseform = tag;
+				}
+				cReading->tags[tag] = tag;
+			}
+			cCohort->readings.push_back(cReading);
+			cReading = 0;
+		}
+		else {
+			if (cleaned[0] == ' ' && cleaned[1] == '"') {
+				u_fprintf(ux_stderr, "Warning: Line %u looked like a reading but there was no containing cohort - treated as plain text.\n", lines);
+			}
+			if (cReading) {
+				cReading->text = ux_append(cReading->text, line);
+			}
+			else if (cCohort) {
+				cCohort->text = ux_append(cCohort->text, line);
+			}
+			else if (cSWindow) {
+				cSWindow->text = ux_append(cSWindow->text, line);
+			}
+			else {
+				u_fprintf(output, "%S", line);
+				u_fflush(output);
+			}
+		}
+		lines++;
+	}
 
 	return 0;
 }

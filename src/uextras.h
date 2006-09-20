@@ -31,6 +31,7 @@ bool ux_escape(UChar *target, const UChar *source);
 bool ux_unEscape(UChar *target, const UChar *source);
 
 uint32_t ux_fputuchar(FILE *output, UChar *txt);
+UChar *ux_append(UChar *target, const UChar *data);
 
 extern UFILE *ux_stdin;
 extern UFILE *ux_stdout;

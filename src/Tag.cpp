@@ -29,6 +29,7 @@ Tag::Tag() {
 	comparison_op = OP_NOP;
 	comparison_val = 0;
 	tag = 0;
+	regexp = 0;
 }
 
 Tag::~Tag() {
@@ -53,7 +54,7 @@ void Tag::parseTag(const UChar *to) {
 				tmp++;
 			}
 		}
-		// ToDo: Implement these...
+		// ToDo: Implement these...and numerical tests.
 		uint32_t length = u_strlen(tmp);
 		while (tmp[0] && (tmp[0] == '"' || tmp[0] == '<') && (tmp[length-1] == 'i' || tmp[length-1] == 'w' || tmp[length-1] == 'r')) {
 			if (tmp[length-1] == 'r') {
@@ -93,6 +94,19 @@ void Tag::parseTag(const UChar *to) {
 		}
 		if (tag[0] == '@') {
 			type |= T_MAPPING;
+		}
+
+		if (features & F_REGEXP) {
+			UParseError *pe = new UParseError;
+			UErrorCode status = U_ZERO_ERROR;
+
+			memset(pe, 0, sizeof(UParseError));
+			status = U_ZERO_ERROR;
+			regexp = uregex_open(tag, u_strlen(tag), 0, pe, &status);
+			if (status != U_ZERO_ERROR) {
+				u_fprintf(ux_stderr, "Error: uregex_open returned %s trying to parse tag %S!\n", u_errorName(status), tag);
+				features &= ~F_REGEXP;
+			}
 		}
 	}
 }

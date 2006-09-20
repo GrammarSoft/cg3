@@ -74,6 +74,8 @@ namespace CG3 {
 			S_DELIMITSET,
 			S_ASTERIK,
 			S_ASTERIKTWO,
+			S_BEGINTAG,
+			S_ENDTAG,
 			STRINGS_COUNT
 		};
 
@@ -86,6 +88,7 @@ namespace CG3 {
 		extern UChar *keywords[KEYWORD_COUNT];
 		extern uint32_t keyword_pow[KEYWORD_COUNT];
 		extern UChar *stringbits[STRINGS_COUNT];
+		extern uint32_t string_hashes[STRINGS_COUNT];
 		extern URegularExpression *regexps[REGEXP_COUNT];
 
 		int init_keywords();

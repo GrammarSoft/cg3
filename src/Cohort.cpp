@@ -19,6 +19,8 @@
 using namespace CG3;
 
 Cohort::Cohort() {
+	wordform = 0;
+	text = 0;
 }
 
 Cohort::~Cohort() {

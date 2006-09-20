@@ -43,6 +43,8 @@ namespace CG3 {
 		uint32_t addTag(const UChar *tag);
 
 		int runGrammarOnText(UFILE *input, UFILE *output);
+
+		bool doesTagMatchSet(uint32_t tag, uint32_t set);
 	};
 }
 

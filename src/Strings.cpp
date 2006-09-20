@@ -24,6 +24,7 @@ namespace CG3 {
 		UChar *keywords[KEYWORD_COUNT];
 		uint32_t keyword_pow[KEYWORD_COUNT];
 		UChar *stringbits[STRINGS_COUNT];
+		uint32_t string_hashes[STRINGS_COUNT];
 		URegularExpression *regexps[REGEXP_COUNT];
 
 		inline int init_keyword_single(const char *keyword, const uint32_t entry) {
@@ -97,6 +98,7 @@ namespace CG3 {
 			u_uastrcpy(buffer, keyword);
 			stringbits[entry] = new UChar[u_strlen(buffer)+1];
 			u_strcpy(stringbits[entry], buffer);
+			string_hashes[entry] = hash_sdbm_uchar(stringbits[entry], 0);
 			return 0;
 		}
 		
@@ -118,6 +120,8 @@ namespace CG3 {
 			init_string_single("BARRIER",    S_BARRIER);
 			init_string_single("*",          S_ASTERIK);
 			init_string_single("**",         S_ASTERIKTWO);
+			init_string_single(">>>",        S_BEGINTAG);
+			init_string_single("<<<",        S_ENDTAG);
 			init_string_single("_S_DELIMITERS_", S_DELIMITSET);
 
 			for (int i=0;i<STRINGS_COUNT;i++) {

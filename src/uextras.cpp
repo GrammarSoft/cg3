@@ -204,3 +204,23 @@ uint32_t ux_fputuchar(FILE *output, UChar *txt) {
 	}
 	return retval;
 }
+
+UChar *ux_append(UChar *target, const UChar *data) {
+	UChar *tmp = 0;
+	if (!target) {
+		uint32_t length = u_strlen(data)+1;
+		tmp = new UChar[length];
+		tmp[0] = 0;
+		u_strcat(tmp, data);
+		target = tmp;
+	} else {
+		uint32_t length = u_strlen(target)+u_strlen(data)+1;
+		tmp = new UChar[length];
+		tmp[0] = 0;
+		u_strcat(tmp, target);
+		u_strcat(tmp, data);
+		delete target;
+		target = tmp;
+	}
+	return tmp;
+}

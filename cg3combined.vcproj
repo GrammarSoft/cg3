@@ -198,6 +198,9 @@
 				RelativePath=".\src\GrammarApplicator.cpp">
 			</File>
 			<File
+				RelativePath=".\src\GrammarApplicator_matchSet.cpp">
+			</File>
+			<File
 				RelativePath=".\src\GrammarParser.cpp">
 			</File>
 			<File
@@ -374,6 +377,12 @@
 		<Filter
 			Name="Streams"
 			Filter="">
+			<File
+				RelativePath=".\input.txt">
+			</File>
+			<File
+				RelativePath=".\input6x.txt">
+			</File>
 			<File
 				RelativePath=".\stderr.txt">
 			</File>

@@ -17,6 +17,7 @@
 #ifndef __TAG_H
 #define __TAG_H
 
+#include <unicode/uregex.h>
 #include <unicode/ustdio.h>
 #include <unicode/ustring.h>
 
@@ -52,6 +53,7 @@ namespace CG3 {
 	public:
 		uint8_t features;
 		uint8_t type;
+		URegularExpression *regexp;
 
 		UChar *comparison_key;
 		C_OPS comparison_op;

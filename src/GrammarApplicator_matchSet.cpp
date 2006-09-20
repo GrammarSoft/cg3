@@ -14,25 +14,29 @@
  * implied. See the License for the specific language governing
  * rights and limitations under the License.
  */
-#ifndef __SINGLEWINDOW_H
-#define __SINGLEWINDOW_H
 
-#include "stdafx.h"
-#include <unicode/ustdio.h>
-#include <unicode/ustring.h>
-#include "Cohort.h"
+#include "GrammarApplicator.h"
+#include "uextras.h"
 
-namespace CG3 {
+using namespace CG3;
+using namespace CG3::Strings;
 
-	class SingleWindow {
-	public:
-		std::vector<Cohort*> cohorts;
-		UChar *text;
+bool GrammarApplicator::doesTagMatchSet(uint32_t tag, uint32_t set) {
+	bool retval = false;
+	Tag *thetag = single_tags[tag];
 
-		SingleWindow();
-		~SingleWindow();
-	};
+	stdext::hash_map<uint32_t, Set*>::const_iterator iter = grammar->uniqsets.find(set);
+	if (iter != grammar->uniqsets.end()) {
+		const Set *theset = iter->second;
 
+		CompositeTag *ctag = new CompositeTag();
+		ctag->addTag(tag);
+		ctag->rehash();
+
+		if (theset->tags.find(ctag->hash) != theset->tags.end()) {
+			retval = true;
+		}
+		delete ctag;
+	}
+	return retval;
 }
-
-#endif
