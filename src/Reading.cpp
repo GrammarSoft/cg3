@@ -25,6 +25,7 @@ Reading::Reading() {
 	baseform = 0;
 	mapped = false;
 	deleted = false;
+	deleted_by = 0;
 	noprint = false;
 	text = 0;
 }
@@ -37,6 +38,7 @@ Reading::~Reading() {
 	}
 	text = 0;
 	tags.clear();
+	tags_list.clear();
 }
 
 uint32_t Reading::rehash() {

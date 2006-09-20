@@ -79,8 +79,8 @@ namespace CG3 {
 		void destroyRule(Rule *rule);
 
 		void manipulateSet(uint32_t set_a, int op, uint32_t set_b, uint32_t result);
-		void printRule(UFILE *to, Rule *rule);
-		void printContextualTest(UFILE *to, ContextualTest *test);
+		void printRule(UFILE *to, const Rule *rule);
+		void printContextualTest(UFILE *to, const ContextualTest *test);
 	};
 
 }

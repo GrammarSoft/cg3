@@ -34,7 +34,6 @@ Rule::Rule() {
 
 Rule::~Rule() {
 	delete name;
-	delete wordform;
 	std::list<ContextualTest*>::iterator iter;
 	for (iter = tests.begin() ; iter != tests.end() ; iter++) {
 		delete (*iter);
@@ -56,13 +55,6 @@ void Rule::setName(const UChar *to) {
 		u_strcpy(name, to);
 	} else {
 		setName((uint32_t)rand());
-	}
-}
-
-void Rule::setWordform(const UChar *to) {
-	if (to) {
-		wordform = new UChar[u_strlen(to)+1];
-		u_strcpy(wordform, to);
 	}
 }
 

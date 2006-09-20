@@ -59,17 +59,13 @@ void Tag::parseTag(const UChar *to) {
 		if (tmp[0] && (tmp[0] == '"' || tmp[0] == '<')) {
 			type |= T_TEXTUAL;
 		}
-		while (tmp[0] && (tmp[0] == '"' || tmp[0] == '<') && (tmp[length-1] == 'i' || tmp[length-1] == 'w' || tmp[length-1] == 'r')) {
+		while (tmp[0] && (tmp[0] == '"' || tmp[0] == '<') && (tmp[length-1] == 'i' || tmp[length-1] == 'r')) {
 			if (tmp[length-1] == 'r') {
 				features |= F_REGEXP;
 				length--;
 			}
 			if (tmp[length-1] == 'i') {
 				features |= F_CASE_INSENSITIVE;
-				length--;
-			}
-			if (tmp[length-1] == 'w') {
-				features |= F_WILDCARD;
 				length--;
 			}
 		}
@@ -103,6 +99,30 @@ void Tag::parseTag(const UChar *to) {
 		delete tag;
 		tag = utag;
 		utag = 0;
+
+		if (tag && tag[0] == '<' && tag[length-1] == '>') {
+			UChar tkey[256];
+			UChar top[256];
+			tkey[0] = 0;
+			top[0] = 0;
+			int tval = 0;
+			if (u_sscanf(tag, "<%[^<>=:]%[<>=:]%i>", &tkey, &top, &tval) == 3 && tval != 0 && top[0] && u_strlen(top)) {
+				if (top[0] == '<') {
+					comparison_op = OP_LESSTHAN;
+				}
+				else if (top[0] == '>') {
+					comparison_op = OP_GREATERTHAN;
+				}
+				else if (top[0] == '=' || top[0] == ':') {
+					comparison_op = OP_EQUALS;
+				}
+				comparison_val = tval;
+				uint32_t length = u_strlen(tkey);
+				comparison_key = new UChar[length+1];
+				u_strcpy(comparison_key, tkey);
+				comparison_hash = hash_sdbm_uchar(comparison_key, 0);
+			}
+		}
 
 		if (u_strcmp(tag, stringbits[S_ASTERIK]) == 0) {
 			type |= T_ANY;
@@ -151,9 +171,6 @@ void Tag::print(UFILE *to) {
 	if (features & F_REGEXP) {
 		u_fprintf(to, "r");
 	}
-	if (features & F_WILDCARD) {
-		u_fprintf(to, "w");
-	}
 }
 
 void Tag::printRaw(UFILE *to) {
@@ -177,9 +194,6 @@ void Tag::printRaw(UFILE *to) {
 	}
 	if (features & F_REGEXP) {
 		u_fprintf(to, "r");
-	}
-	if (features & F_WILDCARD) {
-		u_fprintf(to, "w");
 	}
 }
 
@@ -210,9 +224,6 @@ uint32_t Tag::rehash() {
 	}
 	if (features & F_REGEXP) {
 		hash = hash_sdbm_char("r", hash);
-	}
-	if (features & F_WILDCARD) {
-		hash = hash_sdbm_char("w", hash);
 	}
 //*/
 	return hash;

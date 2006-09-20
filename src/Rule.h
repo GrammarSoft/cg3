@@ -30,7 +30,7 @@ namespace CG3 {
 	class Rule {
 	public:
 		UChar *name;
-		UChar *wordform;
+		uint32_t wordform;
 		uint32_t subst_target;
 		uint32_t target;
 		uint32_t line;
@@ -42,8 +42,6 @@ namespace CG3 {
 		~Rule();
 		void setName(uint32_t to);
 		void setName(const UChar *to);
-
-		void setWordform(const UChar *to);
 
 		ContextualTest *allocateContextualTest();
 		void addContextualTest(ContextualTest *to);

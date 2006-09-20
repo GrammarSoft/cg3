@@ -379,9 +379,9 @@ void Grammar::setName(const UChar *to) {
 	u_strcpy(name, to);
 }
 
-void Grammar::printRule(UFILE *to, Rule *rule) {
+void Grammar::printRule(UFILE *to, const Rule *rule) {
 	if (rule->wordform) {
-		u_fprintf(to, "%S ", rule->wordform);
+		single_tags.find(rule->wordform)->second->print(to);
 	}
 
 	u_fprintf(to, "%S", keywords[rule->type]);
@@ -392,25 +392,25 @@ void Grammar::printRule(UFILE *to, Rule *rule) {
 	u_fprintf(to, " ");
 
 	if (rule->subst_target) {
-		u_fprintf(to, "%S ", uniqsets[rule->subst_target]->name);
+		u_fprintf(to, "%S ", uniqsets.find(rule->subst_target)->second->name);
 	}
 
 	if (rule->maplist.size()) {
-		std::list<uint32_t>::iterator iter;
+		std::list<uint32_t>::const_iterator iter;
 		u_fprintf(to, "(");
 		for (iter = rule->maplist.begin() ; iter != rule->maplist.end() ; iter++) {
-			single_tags[*iter]->print(to);
+			single_tags.find(*iter)->second->print(to);
 			u_fprintf(to, " ");
 		}
 		u_fprintf(to, ") ");
 	}
 
 	if (rule->target) {
-		u_fprintf(to, "%S ", uniqsets[rule->target]->name);
+		u_fprintf(to, "%S ", uniqsets.find(rule->target)->second->name);
 	}
 
 	if (rule->tests.size()) {
-		std::list<ContextualTest*>::iterator iter;
+		std::list<ContextualTest*>::const_iterator iter;
 		for (iter = rule->tests.begin() ; iter != rule->tests.end() ; iter++) {
 			u_fprintf(to, "(");
 			printContextualTest(to, *iter);
@@ -419,7 +419,7 @@ void Grammar::printRule(UFILE *to, Rule *rule) {
 	}
 }
 
-void Grammar::printContextualTest(UFILE *to, ContextualTest *test) {
+void Grammar::printContextualTest(UFILE *to, const ContextualTest *test) {
 	if (test->absolute) {
 		u_fprintf(to, "@");
 	}
@@ -442,10 +442,10 @@ void Grammar::printContextualTest(UFILE *to, ContextualTest *test) {
 	u_fprintf(to, " ");
 
 	if (test->target) {
-		u_fprintf(to, "%S ", uniqsets[test->target]->name);
+		u_fprintf(to, "%S ", uniqsets.find(test->target)->second->name);
 	}
 	if (test->barrier) {
-		u_fprintf(to, "BARRIER %S ", uniqsets[test->barrier]->name);
+		u_fprintf(to, "BARRIER %S ", uniqsets.find(test->barrier)->second->name);
 	}
 
 	if (test->linked) {

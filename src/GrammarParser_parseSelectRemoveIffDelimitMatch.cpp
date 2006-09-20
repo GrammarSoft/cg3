@@ -68,10 +68,15 @@ int GrammarParser::parseSelectRemoveIffDelimitMatch(const UChar *line, KEYWORDS 
 
 	uint32_t res = parseTarget(&space);
 
-	CG3::Rule *rule = result->allocateRule();
+	Rule *rule = result->allocateRule();
 	rule->line = result->curline;
 	rule->type = key;
-	rule->setWordform(wordform);
+
+	if (wordform) {
+		Tag *wform = result->allocateTag(wordform);
+		rule->wordform = wform->rehash();
+	}
+
 	rule->target = res;
 	result->addRule(rule);
 

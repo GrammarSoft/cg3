@@ -201,6 +201,9 @@
 				RelativePath=".\src\GrammarApplicator_matchSet.cpp">
 			</File>
 			<File
+				RelativePath=".\src\GrammarApplicator_runGrammar.cpp">
+			</File>
+			<File
 				RelativePath=".\src\GrammarParser.cpp">
 			</File>
 			<File
@@ -247,6 +250,9 @@
 			</File>
 			<File
 				RelativePath=".\src\icu_uoptions.cpp">
+			</File>
+			<File
+				RelativePath=".\src\Index.cpp">
 			</File>
 			<File
 				RelativePath=".\src\main.cpp">
@@ -315,6 +321,9 @@
 			</File>
 			<File
 				RelativePath=".\src\icu_uoptions.h">
+			</File>
+			<File
+				RelativePath=".\src\Index.h">
 			</File>
 			<File
 				RelativePath=".\src\Reading.h">

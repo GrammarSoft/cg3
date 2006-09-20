@@ -21,7 +21,7 @@
 using namespace CG3;
 using namespace CG3::Strings;
 
-bool GrammarApplicator::doesTagMatchSet(uint32_t tag, uint32_t set) {
+bool GrammarApplicator::doesTagMatchSet(const uint32_t tag, const uint32_t set) {
 	bool retval = false;
 
 	stdext::hash_map<uint32_t, Set*>::const_iterator iter = grammar->uniqsets.find(set);
@@ -40,7 +40,7 @@ bool GrammarApplicator::doesTagMatchSet(uint32_t tag, uint32_t set) {
 	return retval;
 }
 
-bool GrammarApplicator::doesSetMatchReading(Reading *reading, uint32_t set) {
+bool GrammarApplicator::doesSetMatchReading(const Reading *reading, const uint32_t set) {
 	bool retval = false;
 
 	stdext::hash_map<uint32_t, Set*>::const_iterator iter = grammar->uniqsets.find(set);
@@ -87,12 +87,32 @@ bool GrammarApplicator::doesSetMatchReading(Reading *reading, uint32_t set) {
 	return retval;
 }
 
-bool GrammarApplicator::doesSetMatchCohortNormal(Cohort *cohort, uint32_t set) {
+bool GrammarApplicator::doesSetMatchCohortNormal(const Cohort *cohort, const uint32_t set) {
 	bool retval = false;
+	std::vector<Reading*>::const_iterator iter;
+	for (iter = cohort->readings.begin() ; iter != cohort->readings.end() ; iter++) {
+		Reading *reading = *iter;
+		if (!reading->deleted) {
+			if (doesSetMatchReading(reading, set)) {
+				retval = true;
+				break;
+			}
+		}
+	}
 	return retval;
 }
 
-bool GrammarApplicator::doesSetMatchCohortCareful(Cohort *cohort, uint32_t set) {
-	bool retval = false;
+bool GrammarApplicator::doesSetMatchCohortCareful(const Cohort *cohort, const uint32_t set) {
+	bool retval = true;
+	std::vector<Reading*>::const_iterator iter;
+	for (iter = cohort->readings.begin() ; iter != cohort->readings.end() ; iter++) {
+		Reading *reading = *iter;
+		if (!reading->deleted) {
+			if (!doesSetMatchReading(reading, set)) {
+				retval = false;
+				break;
+			}
+		}
+	}
 	return retval;
 }

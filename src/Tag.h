@@ -35,8 +35,7 @@ namespace CG3 {
 		F_NEGATIVE =  1,
 		F_FAILFAST =  2,
 		F_CASE_INSENSITIVE = 4,
-		F_REGEXP   =  8,
-		F_WILDCARD = 16,
+		F_REGEXP   =  8
 	};
 
 	enum TAG_TYPE {
@@ -56,6 +55,7 @@ namespace CG3 {
 		uint8_t type;
 		URegularExpression *regexp;
 
+		uint32_t comparison_hash;
 		UChar *comparison_key;
 		C_OPS comparison_op;
 		int comparison_val;

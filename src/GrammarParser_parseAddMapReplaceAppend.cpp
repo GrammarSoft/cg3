@@ -69,7 +69,11 @@ int GrammarParser::parseAddMapReplaceAppend(const UChar *line, KEYWORDS key) {
 	CG3::Rule *rule = result->allocateRule();
 	rule->line = result->curline;
 	rule->type = key;
-	rule->setWordform(wordform);
+
+	if (wordform) {
+		Tag *wform = result->allocateTag(wordform);
+		rule->wordform = wform->rehash();
+	}
 
 	readTagList(&space, &rule->maplist);
 	uint32_t res = parseTarget(&space);

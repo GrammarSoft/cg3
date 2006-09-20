@@ -65,7 +65,11 @@ int GrammarParser::parseSubstitute(const UChar *line) {
 	CG3::Rule *rule = result->allocateRule();
 	rule->line = result->curline;
 	rule->type = K_SUBSTITUTE;
-	rule->setWordform(wordform);
+
+	if (wordform) {
+		Tag *wform = result->allocateTag(wordform);
+		rule->wordform = wform->rehash();
+	}
 
 	rule->subst_target = parseTarget(&space);
 	readTagList(&space, &rule->maplist);

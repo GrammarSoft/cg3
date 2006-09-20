@@ -21,7 +21,9 @@
 #include "Strings.h"
 #include "Tag.h"
 #include "Grammar.h"
+#include "Window.h"
 #include "SingleWindow.h"
+#include "Index.h"
  
 namespace CG3 {
 	class GrammarApplicator {
@@ -32,10 +34,10 @@ namespace CG3 {
 
 		stdext::hash_map<uint32_t, Tag*> single_tags;
 
-		stdext::hash_map<uint32_t, uint32_t> index_reading_tags_yes;
-		stdext::hash_map<uint32_t, uint32_t> index_reading_yes;
-		stdext::hash_map<uint32_t, uint32_t> index_reading_tags_no;
-		stdext::hash_map<uint32_t, uint32_t> index_reading_no;
+		stdext::hash_map<uint32_t, Index*> index_reading_tags_yes;
+		stdext::hash_map<uint32_t, Index*> index_reading_yes;
+		stdext::hash_map<uint32_t, Index*> index_reading_tags_no;
+		stdext::hash_map<uint32_t, Index*> index_reading_no;
 	
 		GrammarApplicator();
 		~GrammarApplicator();
@@ -44,11 +46,14 @@ namespace CG3 {
 		uint32_t addTag(const UChar *tag);
 
 		int runGrammarOnText(UFILE *input, UFILE *output);
+		int runGrammarOnWindow(Window *window);
 
-		bool doesTagMatchSet(uint32_t tag, uint32_t set);
-		bool doesSetMatchReading(Reading *reading, uint32_t set);
-		bool doesSetMatchCohortNormal(Cohort *cohort, uint32_t set);
-		bool doesSetMatchCohortCareful(Cohort *cohort, uint32_t set);
+		bool runContextualTest(const Window *window, const SingleWindow *sWindow, const uint32_t position, const ContextualTest *test);
+
+		bool doesTagMatchSet(const uint32_t tag, const uint32_t set);
+		bool doesSetMatchReading(const Reading *reading, const uint32_t set);
+		bool doesSetMatchCohortNormal(const Cohort *cohort, const uint32_t set);
+		bool doesSetMatchCohortCareful(const Cohort *cohort, const uint32_t set);
 
 		void printSingleWindow(SingleWindow *window, UFILE *output);
 	};
