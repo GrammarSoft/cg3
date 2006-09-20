@@ -24,6 +24,7 @@ using namespace CG3;
 using namespace CG3::Strings;
 
 GrammarApplicator::GrammarApplicator() {
+	// ToDo: Make --always-span switch
 	num_windows = 2;
 	grammar = 0;
 }
