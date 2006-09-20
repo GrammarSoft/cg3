@@ -31,6 +31,7 @@ namespace CG3 {
 		bool span_windows;
 		int32_t offset;
 
+		// ToDo: Implement careful barrier
 		uint32_t target;
 		uint32_t barrier;
 

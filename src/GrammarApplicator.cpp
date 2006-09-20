@@ -27,6 +27,8 @@ GrammarApplicator::GrammarApplicator() {
 	// ToDo: Make --always-span switch
 	num_windows = 2;
 	grammar = 0;
+	cache_hits = 0;
+	cache_miss = 0;
 }
 
 GrammarApplicator::~GrammarApplicator() {
@@ -86,6 +88,9 @@ void GrammarApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 					tag->printRaw(output);
 					u_fprintf(output, " ");
 				}
+			}
+			if (reading->hit_by) {
+				u_fprintf(output, "R:%u", reading->hit_by);
 			}
 			u_fprintf(output, "\n");
 			if (reading->text) {

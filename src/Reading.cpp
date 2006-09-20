@@ -25,7 +25,8 @@ Reading::Reading() {
 	baseform = 0;
 	mapped = false;
 	deleted = false;
-	deleted_by = 0;
+	selected = false;
+	hit_by = 0;
 	noprint = false;
 	text = 0;
 }

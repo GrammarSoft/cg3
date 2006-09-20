@@ -133,6 +133,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 				cWindow->shuffleWindowsDown();
 				runGrammarOnWindow(cWindow);
 				printSingleWindow(cWindow->current, output);
+				std::cerr << "Cache " << cache_hits << " / " << cache_miss << "\r" << std::flush;
 				u_fflush(output);
 			}
 			cCohort = new Cohort();
@@ -205,39 +206,62 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 		printSingleWindow(cWindow->current, output);
 		u_fflush(output);
 	}
+	std::cerr << "Cache " << cache_hits << " / " << cache_miss << std::endl;
 	return 0;
 }
 
 int GrammarApplicator::runGrammarOnWindow(Window *window) {
 	SingleWindow *current = window->current;
 
-	std::vector<Cohort*>::iterator cter;
-	for (cter = current->cohorts.begin() ; cter != current->cohorts.end() ; cter++) {
-		if (cter == current->cohorts.begin()) {
+	for (uint32_t c=0 ; c < current->cohorts.size() ; c++) {
+		if (c == 0) {
 			continue;
 		}
-		Cohort *cohort = *cter;
+		Cohort *cohort = current->cohorts[c];
+		Reading *selected = 0;
 		
 		std::vector<Reading*>::iterator rter;
 		for (rter = cohort->readings.begin() ; rter != cohort->readings.end() ; rter++) {
 			Reading *reading = *rter;
-			for (uint32_t i=0;i<grammar->sections.size();i++) {
-				for (uint32_t j=0;j<grammar->sections.at(i);j++) {
-					const Rule *rule = grammar->rules.at(j);
-					if (!rule->wordform || rule->wordform == reading->wordform) {
-						if (rule->target && doesSetMatchReading(reading, rule->target)) {
-							bool good = true;
-							if (!rule->tests.empty()) {
-								std::list<ContextualTest*>::const_iterator iter;
-								for (iter = rule->tests.begin() ; iter != rule->tests.end() ; iter++) {
-									const ContextualTest *test = *iter;
-									good = runContextualTest(window, current, cohort, test);
-									if (!good) {
+			if (selected && selected != reading) {
+				reading->deleted = true;
+				reading->hit_by = selected->hit_by;
+			}
+			if (!reading->deleted) {
+				for (uint32_t i=0;i<grammar->sections.size();i++) {
+					for (uint32_t j=0;j<grammar->sections[i];j++) {
+						const Rule *rule = grammar->rules[j];
+						if (!rule->wordform || rule->wordform == reading->wordform) {
+							if (rule->target && doesSetMatchReading(reading, rule->target)) {
+								bool good = true;
+								if (!rule->tests.empty()) {
+									std::list<ContextualTest*>::const_iterator iter;
+									for (iter = rule->tests.begin() ; iter != rule->tests.end() ; iter++) {
+										const ContextualTest *test = *iter;
+										good = runContextualTest(window, current, c, test);
+										if (!good) {
+											break;
+										}
+									}
+								}
+								if (good) {
+									if (rule->type == K_REMOVE) {
+										reading->deleted = true;
+										reading->hit_by = rule->line;
+										break;
+									}
+									else if (rule->type == K_SELECT) {
+										reading->selected = true;
+										reading->hit_by = rule->line;
+										selected = reading;
 										break;
 									}
 								}
 							}
 						}
+					}
+					if (reading->deleted || reading->selected || selected) {
+						break;
 					}
 				}
 			}
@@ -248,21 +272,84 @@ int GrammarApplicator::runGrammarOnWindow(Window *window) {
 
 bool GrammarApplicator::runContextualTest(const Window *window, const SingleWindow *sWindow, const uint32_t position, const ContextualTest *test) {
 	bool retval = true;
-	const Cohort *cohort = sWindow->cohorts.at(position);
-	if (test->offset == 0) {
-		if (test->careful) {
-			retval = doesSetMatchCohortCareful(cohort, test->target);
+	int pos = position + test->offset;
+	const Cohort *cohort = 0;
+	if (pos >= 0 && (uint32_t)pos < sWindow->cohorts.size()) {
+		cohort = sWindow->cohorts.at(pos);
+	}
+	if (!cohort) {
+		retval = false;
+	}
+	else {
+		bool foundfirst = false;
+		if (test->offset < 0 && pos >= 0 && (test->scanall || test->scanfirst)) {
+			for (int i=pos;i>=0;i--) {
+				cohort = sWindow->cohorts.at(pos);
+				if (test->careful) {
+					retval = doesSetMatchCohortCareful(cohort, test->target);
+				}
+				else {
+					retval = doesSetMatchCohortNormal(cohort, test->target);
+				}
+				foundfirst = retval;
+				if (test->negative) {
+					retval = !retval;
+				}
+				if (!retval && foundfirst && test->scanfirst) {
+					break;
+				}
+				else if (test->barrier) {
+					bool barrier = doesSetMatchCohortNormal(cohort, test->barrier);
+					if (barrier) {
+						break;
+					}
+				}
+				if (retval && test->linked) {
+					retval = runContextualTest(window, sWindow, i, test->linked);
+				}
+			}
+		}
+		else if (test->offset > 0 && (uint32_t)pos <= sWindow->cohorts.size() && (test->scanall || test->scanfirst)) {
+			for (uint32_t i=pos;i<sWindow->cohorts.size();i++) {
+				cohort = sWindow->cohorts.at(pos);
+				if (test->careful) {
+					retval = doesSetMatchCohortCareful(cohort, test->target);
+				}
+				else {
+					retval = doesSetMatchCohortNormal(cohort, test->target);
+				}
+				foundfirst = retval;
+				if (test->negative) {
+					retval = !retval;
+				}
+				if (!retval && foundfirst && test->scanfirst) {
+					break;
+				}
+				else if (test->barrier) {
+					bool barrier = doesSetMatchCohortNormal(cohort, test->barrier);
+					if (barrier) {
+						break;
+					}
+				}
+				if (retval && test->linked) {
+					retval = runContextualTest(window, sWindow, i, test->linked);
+				}
+			}
 		}
 		else {
-			retval = doesSetMatchCohortNormal(cohort, test->target);
+			if (test->careful) {
+				retval = doesSetMatchCohortCareful(cohort, test->target);
+			}
+			else {
+				retval = doesSetMatchCohortNormal(cohort, test->target);
+			}
+			if (test->negative) {
+				retval = !retval;
+			}
+			if (retval && test->linked) {
+				retval = runContextualTest(window, sWindow, pos, test->linked);
+			}
 		}
-		if (retval && test->linked) {
-			retval = runContextualTest(window, sWindow, cohort, test->linked);
-		}
-	}
-	else if (test->offset < 0) {
-	}
-	else if (test->offset > 0) {
 	}
 	return retval;
 }

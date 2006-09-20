@@ -43,6 +43,22 @@ bool GrammarApplicator::doesTagMatchSet(const uint32_t tag, const uint32_t set) 
 bool GrammarApplicator::doesSetMatchReading(const Reading *reading, const uint32_t set) {
 	bool retval = false;
 
+	if (index_reading_yes.find(reading->hash) != index_reading_yes.end()) {
+		Index *index = index_reading_yes[reading->hash];
+		if (index->values.find(set) != index->values.end()) {
+			cache_hits++;
+			return true;
+		}
+	}
+	if (index_reading_no.find(reading->hash) != index_reading_no.end()) {
+		Index *index = index_reading_no[reading->hash];
+		if (index->values.find(set) != index->values.end()) {
+			cache_hits++;
+			return false;
+		}
+	}
+
+	cache_miss++;
 	stdext::hash_map<uint32_t, Set*>::const_iterator iter = grammar->uniqsets.find(set);
 	if (iter != grammar->uniqsets.end()) {
 		const Set *theset = iter->second;
@@ -84,6 +100,22 @@ bool GrammarApplicator::doesSetMatchReading(const Reading *reading, const uint32
 			}
 		}
 	}
+
+	if (retval) {
+		if (index_reading_yes.find(reading->hash) == index_reading_yes.end()) {
+			index_reading_yes[reading->hash] = new Index();
+		}
+		Index *index = index_reading_yes[reading->hash];
+		index->values[set] = set;
+	}
+	else {
+		if (index_reading_no.find(reading->hash) == index_reading_no.end()) {
+			index_reading_no[reading->hash] = new Index();
+		}
+		Index *index = index_reading_no[reading->hash];
+		index->values[set] = set;
+	}
+
 	return retval;
 }
 
