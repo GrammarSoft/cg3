@@ -77,6 +77,10 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 	#define BUFFER_SIZE (131072)
 	UChar *line = new UChar[BUFFER_SIZE];
 
+	Window *cWindow = new Window();
+	SingleWindow *cSWindow = 0;
+	Cohort *cCohort = 0;
+
 	while (!u_feof(input)) {
 		u_fgets(line, BUFFER_SIZE-1, input);
 		u_fprintf(output, "%S", line);

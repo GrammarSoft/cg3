@@ -242,6 +242,7 @@ int main(int argc, char* argv[]) {
 	glob_timer = clock();
 
 	CG3::GrammarWriter *writer = 0;
+	CG3::GrammarApplicator *applicator = 0;
 /*
 	writer = new CG3::GrammarWriter();
 	writer->setGrammar(grammar);
@@ -250,16 +251,14 @@ int main(int argc, char* argv[]) {
 
 	std::cerr << "Writing grammar took " << (double)((double)(clock()-glob_timer)/(double)CLOCKS_PER_SEC) << " seconds." << std::endl;
 	glob_timer = clock();
-//*/
-
-	CG3::GrammarApplicator *applicator = 0;
+/*/
 	applicator = new CG3::GrammarApplicator();
 	applicator->setGrammar(grammar);
 	applicator->runGrammarOnText(ux_stdin, ux_stdout);
 
 	std::cerr << "Applying grammar on input took " << (double)((double)(clock()-glob_timer)/(double)CLOCKS_PER_SEC) << " seconds." << std::endl;
 	glob_timer = clock();
-
+//*/
 	u_fclose(ux_stdin);
 	u_fclose(ux_stdout);
 	u_fclose(ux_stderr);
