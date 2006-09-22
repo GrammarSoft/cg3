@@ -63,41 +63,50 @@ bool GrammarApplicator::doesSetMatchReading(const Reading *reading, const uint32
 	stdext::hash_map<uint32_t, Set*>::const_iterator iter = grammar->sets_by_contents.find(set);
 	if (iter != grammar->sets_by_contents.end()) {
 		const Set *theset = iter->second;
-		stdext::hash_map<uint32_t, uint32_t>::const_iterator ster;
-		for (ster = theset->tags.begin() ; ster != theset->tags.end() ; ster++) {
-			bool match = true;
-			bool failfast = true;
-			const CompositeTag *ctag = grammar->tags.find(ster->second)->second;
+		if (!theset->tags.empty()) {
+			stdext::hash_map<uint32_t, uint32_t>::const_iterator ster;
+			for (ster = theset->tags.begin() ; ster != theset->tags.end() ; ster++) {
+				bool match = true;
+				bool failfast = true;
+				const CompositeTag *ctag = grammar->tags.find(ster->second)->second;
 
-			stdext::hash_map<uint32_t, uint32_t>::const_iterator cter;
-			for (cter = ctag->tags.begin() ; cter != ctag->tags.end() ; cter++) {
-				const Tag *tag = grammar->single_tags.find(cter->second)->second;
-				if (!(tag->features & F_FAILFAST)) {
-					failfast = false;
-				}
-				if (reading->tags.find(cter->second) == reading->tags.end()) {
-					match = false;
-					if (tag->features & F_NEGATIVE) {
-						match = true;
+				stdext::hash_map<uint32_t, uint32_t>::const_iterator cter;
+				for (cter = ctag->tags.begin() ; cter != ctag->tags.end() ; cter++) {
+					const Tag *tag = grammar->single_tags.find(cter->second)->second;
+					if (!(tag->features & F_FAILFAST)) {
+						failfast = false;
 					}
-				}
-				else {
-					if (tag->features & F_NEGATIVE) {
+					if (reading->tags.find(cter->second) == reading->tags.end()) {
 						match = false;
+						if (tag->features & F_NEGATIVE) {
+							match = true;
+						}
+					}
+					else {
+						if (tag->features & F_NEGATIVE) {
+							match = false;
+						}
+					}
+					if (!match) {
+						break;
 					}
 				}
-				if (!match) {
+				if (match) {
+					if (failfast) {
+						retval = false;
+					}
+					else {
+						retval = true;
+					}
 					break;
 				}
 			}
-			if (match) {
-				if (failfast) {
-					retval = false;
+		} else {
+			for (uint32_t i=0;i<theset->sets.size();i++) {
+				retval = doesSetMatchReading(reading, theset->sets.at(i));
+				if (retval) {
+					break;
 				}
-				else {
-					retval = true;
-				}
-				break;
 			}
 		}
 	}

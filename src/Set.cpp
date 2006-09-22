@@ -37,6 +37,8 @@ Set::~Set() {
 	}
 	tags_map.clear();
 	tags.clear();
+	sets.clear();
+	set_ops.clear();
 }
 
 void Set::setName(uint32_t to) {
@@ -73,6 +75,7 @@ void Set::addCompositeTag(uint32_t tag) {
 
 uint32_t Set::rehash() {
 	uint32_t retval = 0;
+	assert(tags_map.empty() || (sets.empty() && set_ops.empty()));
 	std::map<uint32_t, uint32_t>::iterator iter;
 	if (!tags_map.empty()) {
 		for (iter = tags_map.begin() ; iter != tags_map.end() ; iter++) {

@@ -199,14 +199,14 @@ void Tag::printRaw(UFILE *to) {
 
 uint32_t Tag::rehash() {
 	hash = 0;
-/*
+
 	if (features & F_NEGATIVE) {
 		hash = hash_sdbm_char("!", hash);
 	}
 	if (features & F_FAILFAST) {
 		hash = hash_sdbm_char("^", hash);
 	}
-//*/
+
 	if (type & T_META) {
 		hash = hash_sdbm_char("META:", hash);
 	}
@@ -218,14 +218,14 @@ uint32_t Tag::rehash() {
 	ux_escape(tmp, tag);
 	hash = hash_sdbm_uchar(tmp, hash);
 	delete tmp;
-/*
+
 	if (features & F_CASE_INSENSITIVE) {
 		hash = hash_sdbm_char("i", hash);
 	}
 	if (features & F_REGEXP) {
 		hash = hash_sdbm_char("r", hash);
 	}
-//*/
+
 	return hash;
 }
 
