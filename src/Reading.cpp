@@ -23,6 +23,8 @@ using namespace CG3;
 Reading::Reading() {
 	wordform = 0;
 	baseform = 0;
+	hash = 0;
+	hash_tags = 0;
 	mapped = false;
 	deleted = false;
 	selected = false;

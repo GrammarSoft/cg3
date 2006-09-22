@@ -238,7 +238,7 @@ int main(int argc, char* argv[]) {
 		return -1;
 	}
 
-//	grammar->trim();
+	grammar->trim();
 
 	std::cerr << "Parsing grammar took " << (double)((double)(clock()-glob_timer)/(double)CLOCKS_PER_SEC) << " seconds." << std::endl;
 	glob_timer = clock();

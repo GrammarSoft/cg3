@@ -315,7 +315,8 @@ void Grammar::printContextualTest(UFILE *to, const ContextualTest *test) {
 
 void Grammar::trim() {
 	set_alias.clear();
-
+	sets_by_name.clear();
+/*
 	std::cerr << "Trimmed sets from " << (uint32_t)sets_by_contents.size();
 	stdext::hash_map<uint32_t, Set*>::iterator iter_set;
 	for (iter_set = sets_by_contents.begin() ; iter_set != sets_by_contents.end() ; iter_set++) {
@@ -341,4 +342,5 @@ void Grammar::trim() {
 		}
 	}
 	std::cerr << " to " << (uint32_t)sets_by_contents.size() << std::endl;
+//*/
 }
