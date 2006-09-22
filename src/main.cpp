@@ -238,6 +238,8 @@ int main(int argc, char* argv[]) {
 		return -1;
 	}
 
+//	grammar->trim();
+
 	std::cerr << "Parsing grammar took " << (double)((double)(clock()-glob_timer)/(double)CLOCKS_PER_SEC) << " seconds." << std::endl;
 	glob_timer = clock();
 
@@ -254,7 +256,7 @@ int main(int argc, char* argv[]) {
 /*/
 	applicator = new CG3::GrammarApplicator();
 	applicator->setGrammar(grammar);
-	applicator->runGrammarOnText(ux_stdin, ux_stdout);
+//	applicator->runGrammarOnText(ux_stdin, ux_stdout);
 
 	std::cerr << "Applying grammar on input took " << (double)((double)(clock()-glob_timer)/(double)CLOCKS_PER_SEC) << " seconds." << std::endl;
 	glob_timer = clock();

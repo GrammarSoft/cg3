@@ -24,8 +24,8 @@ using namespace CG3::Strings;
 bool GrammarApplicator::doesTagMatchSet(const uint32_t tag, const uint32_t set) {
 	bool retval = false;
 
-	stdext::hash_map<uint32_t, Set*>::const_iterator iter = grammar->uniqsets.find(set);
-	if (iter != grammar->uniqsets.end()) {
+	stdext::hash_map<uint32_t, Set*>::const_iterator iter = grammar->sets_by_contents.find(set);
+	if (iter != grammar->sets_by_contents.end()) {
 		const Set *theset = iter->second;
 
 		CompositeTag *ctag = new CompositeTag();
@@ -59,8 +59,9 @@ bool GrammarApplicator::doesSetMatchReading(const Reading *reading, const uint32
 	}
 
 	cache_miss++;
-	stdext::hash_map<uint32_t, Set*>::const_iterator iter = grammar->uniqsets.find(set);
-	if (iter != grammar->uniqsets.end()) {
+
+	stdext::hash_map<uint32_t, Set*>::const_iterator iter = grammar->sets_by_contents.find(set);
+	if (iter != grammar->sets_by_contents.end()) {
 		const Set *theset = iter->second;
 		stdext::hash_map<uint32_t, uint32_t>::const_iterator ster;
 		for (ster = theset->tags.begin() ; ster != theset->tags.end() ; ster++) {

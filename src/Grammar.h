@@ -34,8 +34,9 @@ namespace CG3 {
 		uint32_t lines, curline;
 		stdext::hash_map<uint32_t, Tag*> single_tags;
 		stdext::hash_map<uint32_t, CompositeTag*> tags;
-		stdext::hash_map<uint32_t, Set*> sets;
-		stdext::hash_map<uint32_t, Set*> uniqsets;
+		stdext::hash_map<uint32_t, uint32_t> sets_by_name;
+		stdext::hash_map<uint32_t, Set*> sets_by_contents;
+		stdext::hash_map<uint32_t, uint32_t> set_alias;
 		Set *delimiters;
 		std::vector<UChar*> preferred_targets;
 
@@ -51,10 +52,11 @@ namespace CG3 {
 		void setName(const char *to);
 		void setName(const UChar *to);
 
+		void trim();
+
 		void addPreferredTarget(UChar *to);
 
 		void addSet(Set *to);
-		void addUniqSet(Set *to);
 		Set *getSet(uint32_t which);
 		Set *allocateSet();
 		void destroySet(Set *set);
@@ -78,7 +80,6 @@ namespace CG3 {
 		void addRule(Rule *rule);
 		void destroyRule(Rule *rule);
 
-		void manipulateSet(uint32_t set_a, int op, uint32_t set_b, uint32_t result);
 		void printRule(UFILE *to, const Rule *rule);
 		void printContextualTest(UFILE *to, const ContextualTest *test);
 	};

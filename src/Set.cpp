@@ -28,6 +28,7 @@ Set::Set() {
 	line = 0;
 	hash = 0;
 	used = false;
+	composite = false;
 }
 
 Set::~Set() {
@@ -73,9 +74,22 @@ void Set::addCompositeTag(uint32_t tag) {
 uint32_t Set::rehash() {
 	uint32_t retval = 0;
 	std::map<uint32_t, uint32_t>::iterator iter;
-	for (iter = tags_map.begin() ; iter != tags_map.end() ; iter++) {
-		retval = hash_sdbm_uint32_t(iter->second, retval);
+	if (!tags_map.empty()) {
+		for (iter = tags_map.begin() ; iter != tags_map.end() ; iter++) {
+			retval = hash_sdbm_uint32_t(iter->second, retval);
+		}
 	}
+	if (!sets.empty()) {
+		for (uint32_t i=0;i<sets.size();i++) {
+			retval = hash_sdbm_uint32_t(sets.at(i), retval);
+		}
+	}
+	if (!set_ops.empty()) {
+		for (uint32_t i=0;i<set_ops.size();i++) {
+			retval = hash_sdbm_uint32_t(set_ops.at(i), retval);
+		}
+	}
+	assert(retval != 0);
 	hash = retval;
 	return retval;
 }

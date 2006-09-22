@@ -24,6 +24,7 @@ namespace CG3 {
 	class ContextualTest {
 	public:
 		bool careful;
+		// ToDo: Implement NEGATE
 		bool negative;
 		bool scanfirst;
 		bool scanall;

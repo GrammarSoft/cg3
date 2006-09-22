@@ -30,9 +30,13 @@ namespace CG3 {
 		uint32_t line;
 		uint32_t hash;
 		bool used;
+		bool composite;
 
 		std::map<uint32_t, uint32_t> tags_map;
 		stdext::hash_map<uint32_t, uint32_t> tags;
+
+		std::vector<uint32_t> set_ops;
+		std::vector<uint32_t> sets;
 
 		Set();
 		~Set();

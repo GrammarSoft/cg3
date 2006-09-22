@@ -30,6 +30,8 @@
 #include <map>
 #include <time.h>
 
+#include <assert.h>
+
 // ICU includes
 #include <unicode/uchar.h>
 #include <unicode/uclean.h>

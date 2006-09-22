@@ -54,7 +54,7 @@ int GrammarWriter::write_grammar_to_ufile_text(UFILE *output) {
 	u_fprintf(output, "\n");
 
 	stdext::hash_map<uint32_t, Set*>::iterator set_iter;
-	for (set_iter = grammar->uniqsets.begin() ; set_iter != grammar->uniqsets.end() ; set_iter++) {
+	for (set_iter = grammar->sets_by_contents.begin() ; set_iter != grammar->sets_by_contents.end() ; set_iter++) {
 		stdext::hash_map<uint32_t, uint32_t>::iterator comp_iter;
 		Set *curset = set_iter->second;
 		if (!curset->tags.empty()) {
@@ -103,7 +103,7 @@ int GrammarWriter::write_grammar_to_file_binary(FILE *output) {
 	}
 
 	fprintf(output, "CG3B");
-	uint32_t tmp = (uint32_t)htonl((uint32_t)grammar->uniqsets.size());
+	uint32_t tmp = (uint32_t)htonl((uint32_t)grammar->sets_by_contents.size());
 	fwrite(&tmp, sizeof(uint32_t), 1, output);
 /*
 	stdext::hash_map<uint32_t, Set*>::iterator set_iter;

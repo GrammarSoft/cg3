@@ -45,12 +45,13 @@ Grammar::~Grammar() {
 	sections.clear();
 	
 	stdext::hash_map<uint32_t, Set*>::iterator iter_set;
-	for (iter_set = sets.begin() ; iter_set != sets.end() ; iter_set++) {
+	for (iter_set = sets_by_contents.begin() ; iter_set != sets_by_contents.end() ; iter_set++) {
 		if (iter_set->second) {
 			delete iter_set->second;
 		}
 	}
-	sets.clear();
+	sets_by_contents.clear();
+	sets_by_name.clear();
 
 	std::map<uint32_t, Anchor*>::iterator iter_anc;
 	for (iter_anc = anchors.begin() ; iter_anc != anchors.end() ; iter_anc++) {
@@ -75,6 +76,8 @@ Grammar::~Grammar() {
 		}
 	}
 	rules.clear();
+
+	set_alias.clear();
 }
 
 void Grammar::addPreferredTarget(UChar *to) {
@@ -83,26 +86,29 @@ void Grammar::addPreferredTarget(UChar *to) {
 	preferred_targets.push_back(pf);
 }
 void Grammar::addSet(Set *to) {
-	const UChar *sname = to->getName();
-	uint32_t hash = hash_sdbm_uchar(to->name, 0);
-	if (sets.find(hash) == sets.end()) {
-		sets[hash] = to;
+	assert(to);
+	uint32_t nhash = hash_sdbm_uchar(to->name, 0);
+	uint32_t chash = to->rehash();
+	if (sets_by_name.find(nhash) == sets_by_name.end()) {
+		sets_by_name[nhash] = chash;
 	}
-	else if (!(sname[0] == '_' && sname[1] == 'G' && sname[2] == '_')) {
+	else if (!(to->name[0] == '_' && to->name[1] == 'G' && to->name[2] == '_')) {
 		u_fprintf(ux_stderr, "Warning: Set %S already existed.\n", to->name);
 	}
-}
-void Grammar::addUniqSet(Set *to) {
-	uint32_t hash = to->rehash();
-	if (to && to->tags.size() && uniqsets.find(hash) == uniqsets.end()) {
-		uniqsets[hash] = to;
+	if (sets_by_contents.find(chash) == sets_by_contents.end()) {
+		sets_by_contents[chash] = to;
 	}
 }
 Set *Grammar::getSet(uint32_t which) {
-	if (sets.find(which) != sets.end()) {
-		return sets[which];
+	Set *retval = 0;
+	if (sets_by_contents.find(which) != sets_by_contents.end()) {
+		retval = sets_by_contents[which];
 	}
-	return 0;
+	else if (sets_by_name.find(which) != sets_by_name.end()) {
+		retval = getSet(sets_by_name[which]);
+	}
+	assert(retval);
+	return retval;
 }
 
 Set *Grammar::allocateSet() {
@@ -219,156 +225,6 @@ void Grammar::addAnchor(const UChar *to) {
 	addAnchor(to, (uint32_t)(rules.size()+1));
 }
 
-void Grammar::manipulateSet(uint32_t set_a, int op, uint32_t set_b, uint32_t result) {
-	if (op <= S_IGNORE || op >= STRINGS_COUNT) {
-		u_fprintf(ux_stderr, "Error: Invalid set operation on line %u!\n", curline);
-		return;
-	}
-	if (sets.find(set_a) == sets.end()) {
-		u_fprintf(ux_stderr, "Error: Invalid left operand for set operation on line %u!\n", curline);
-		return;
-	}
-	if (sets.find(set_b) == sets.end()) {
-		u_fprintf(ux_stderr, "Error: Invalid right operand for set operation on line %u!\n", curline);
-		return;
-	}
-	if (!result) {
-		u_fprintf(ux_stderr, "Error: Invalid target for set operation on line %u!\n", curline);
-		return;
-	}
-
-	if (set_a == set_b && set_a == result && op == S_OR) {
-		return;
-	}
-
-	stdext::hash_map<uint32_t, uint32_t> result_tags;
-	std::map<uint32_t, uint32_t> result_map;
-	switch (op) {
-		case S_OR:
-		{
-			result_tags.insert(sets[set_a]->tags.begin(), sets[set_a]->tags.end());
-			result_map.insert(sets[set_a]->tags.begin(), sets[set_a]->tags.end());
-			if (set_a != set_b) {
-				result_tags.insert(sets[set_b]->tags.begin(), sets[set_b]->tags.end());
-				result_map.insert(sets[set_b]->tags.begin(), sets[set_b]->tags.end());
-			}
-			break;
-		}
-		case S_FAILFAST:
-		{
-			stdext::hash_map<uint32_t, uint32_t>::iterator iter;
-			if (set_a != set_b) {
-				for (iter = sets[set_a]->tags.begin() ; iter != sets[set_a]->tags.end() ; iter++) {
-					if (sets[set_b]->tags.find(iter->first) == sets[set_b]->tags.end()) {
-						result_tags[iter->first] = iter->second;
-						result_map[iter->first] = iter->second;
-					}
-				}
-			}
-			for (iter = sets[set_b]->tags.begin() ; iter != sets[set_b]->tags.end() ; iter++) {
-				CompositeTag *tmp = allocateCompositeTag();
-				std::map<uint32_t, uint32_t>::iterator iter_tag;
-				for (iter_tag = tags[iter->second]->tags_map.begin() ; iter_tag != tags[iter->second]->tags_map.end() ; iter_tag++) {
-					Tag *tmptag = duplicateTag(iter_tag->second);
-					if (tmptag->features & F_FAILFAST) {
-						tmptag->features &= ~F_FAILFAST;
-					}
-					else {
-						tmptag->features |= F_FAILFAST;
-					}
-					tmptag->rehash();
-					addTagToCompositeTag(tmptag, tmp);
-				}
-				tmp->rehash();
-				addCompositeTag(tmp);
-				result_tags[tmp->hash] = tmp->hash;
-				result_map[tmp->hash] = tmp->hash;
-			}
-			break;
-		}
-		case S_NOT:
-		{
-			stdext::hash_map<uint32_t, uint32_t>::iterator iter;
-			if (set_a != set_b) {
-				for (iter = sets[set_a]->tags.begin() ; iter != sets[set_a]->tags.end() ; iter++) {
-					if (sets[set_b]->tags.find(iter->first) == sets[set_b]->tags.end()) {
-						result_tags[iter->first] = iter->second;
-						result_map[iter->first] = iter->second;
-					}
-				}
-			}
-			for (iter = sets[set_b]->tags.begin() ; iter != sets[set_b]->tags.end() ; iter++) {
-				CompositeTag *tmp = allocateCompositeTag();
-				std::map<uint32_t, uint32_t>::iterator iter_tag;
-				for (iter_tag = tags[iter->second]->tags_map.begin() ; iter_tag != tags[iter->second]->tags_map.end() ; iter_tag++) {
-					Tag *tmptag = duplicateTag(iter_tag->second);
-					if (tmptag->features & F_NEGATIVE) {
-						tmptag->features &= ~F_NEGATIVE;
-					}
-					else {
-						tmptag->features |= F_NEGATIVE;
-					}
-					tmptag->rehash();
-					addTagToCompositeTag(tmptag, tmp);
-				}
-				tmp->rehash();
-				addCompositeTag(tmp);
-				result_tags[tmp->hash] = tmp->hash;
-				result_map[tmp->hash] = tmp->hash;
-			}
-			break;
-		}
-		case S_MINUS:
-		{
-			if (set_a != set_b) {
-				stdext::hash_map<uint32_t, uint32_t>::iterator iter;
-				for (iter = sets[set_a]->tags.begin() ; iter != sets[set_a]->tags.end() ; iter++) {
-					if (sets[set_b]->tags.find(iter->first) == sets[set_b]->tags.end()) {
-						result_tags[iter->first] = iter->second;
-						result_map[iter->first] = iter->second;
-					}
-				}
-			}
-			break;
-		}
-		case S_MULTIPLY:
-		case S_PLUS:
-		{
-			stdext::hash_map<uint32_t, uint32_t>::iterator iter_a;
-			for (iter_a = sets[set_a]->tags.begin() ; iter_a != sets[set_a]->tags.end() ; iter_a++) {
-				stdext::hash_map<uint32_t, uint32_t>::iterator iter_b;
-				for (iter_b = sets[set_b]->tags.begin() ; iter_b != sets[set_b]->tags.end() ; iter_b++) {
-					CompositeTag *tag_r = allocateCompositeTag();
-
-					stdext::hash_map<uint32_t, uint32_t>::iterator iter_t;
-					for (iter_t = tags[iter_a->second]->tags.begin() ; iter_t != tags[iter_a->second]->tags.end() ; iter_t++) {
-						tag_r->addTag(iter_t->second);
-					}
-
-					for (iter_t = tags[iter_b->second]->tags.begin() ; iter_t != tags[iter_b->second]->tags.end() ; iter_t++) {
-						tag_r->addTag(iter_t->second);
-					}
-					tag_r->rehash();
-					addCompositeTag(tag_r);
-					result_tags[tag_r->hash] = tag_r->hash;
-					result_map[tag_r->hash] = tag_r->hash;
-				}
-			}
-			break;
-		}
-		default:
-		{
-			u_fprintf(ux_stderr, "Error: Invalid set operation %u between %S and %S!\n", op, sets[set_a]->getName(), sets[set_b]->getName());
-			break;
-		}
-	}
-	sets[result]->tags.clear();
-	sets[result]->tags.swap(result_tags);
-
-	sets[result]->tags_map.clear();
-	sets[result]->tags_map.swap(result_map);
-}
-
 void Grammar::setName(const char *to) {
 	name = new UChar[strlen(to)+1];
 	u_uastrcpy(name, to);
@@ -392,7 +248,7 @@ void Grammar::printRule(UFILE *to, const Rule *rule) {
 	u_fprintf(to, " ");
 
 	if (rule->subst_target) {
-		u_fprintf(to, "%S ", uniqsets.find(rule->subst_target)->second->name);
+		u_fprintf(to, "%S ", sets_by_contents.find(rule->subst_target)->second->name);
 	}
 
 	if (rule->maplist.size()) {
@@ -406,7 +262,7 @@ void Grammar::printRule(UFILE *to, const Rule *rule) {
 	}
 
 	if (rule->target) {
-		u_fprintf(to, "%S ", uniqsets.find(rule->target)->second->name);
+		u_fprintf(to, "%S ", sets_by_contents.find(rule->target)->second->name);
 	}
 
 	if (rule->tests.size()) {
@@ -442,14 +298,44 @@ void Grammar::printContextualTest(UFILE *to, const ContextualTest *test) {
 	u_fprintf(to, " ");
 
 	if (test->target) {
-		u_fprintf(to, "%S ", uniqsets.find(test->target)->second->name);
+		u_fprintf(to, "%S ", sets_by_contents.find(test->target)->second->name);
 	}
 	if (test->barrier) {
-		u_fprintf(to, "BARRIER %S ", uniqsets.find(test->barrier)->second->name);
+		u_fprintf(to, "BARRIER %S ", sets_by_contents.find(test->barrier)->second->name);
 	}
 
 	if (test->linked) {
 		u_fprintf(to, "LINK ");
 		printContextualTest(to, test->linked);
 	}
+}
+
+void Grammar::trim() {
+	set_alias.clear();
+
+	std::cerr << "Trimmed sets from " << (uint32_t)sets_by_contents.size();
+	stdext::hash_map<uint32_t, Set*>::iterator iter_set;
+	for (iter_set = sets_by_contents.begin() ; iter_set != sets_by_contents.end() ; iter_set++) {
+		if (iter_set->second) {
+			iter_set->second->used = false;
+		}
+	}
+
+	std::vector<Rule*>::iterator iter_rules;
+	for (iter_rules = rules.begin() ; iter_rules != rules.end() ; iter_rules++) {
+		if (*iter_rules) {
+			Rule *rule = *iter_rules;
+			if (sets_by_contents.find(rule->target) != sets_by_contents.end()) {
+				sets_by_contents[rule->target]->used = true;
+			}
+		}
+	}
+
+	for (iter_set = sets_by_contents.begin() ; iter_set != sets_by_contents.end() ; iter_set++) {
+		if (iter_set->second->used == false) {
+			delete iter_set->second;
+			sets_by_contents.erase(iter_set->first);
+		}
+	}
+	std::cerr << " to " << (uint32_t)sets_by_contents.size() << std::endl;
 }
