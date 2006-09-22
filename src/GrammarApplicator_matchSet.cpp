@@ -131,6 +131,9 @@ bool GrammarApplicator::doesSetMatchReading(const Reading *reading, const uint32
 				for (uint32_t i=0;i<size;i++) {
 					matches[i] = doesSetMatchReading(reading, theset->sets.at(i));
 					retval = matches[i];
+					if (retval) {
+						break;
+					}
 				}
 				delete matches;
 			}
