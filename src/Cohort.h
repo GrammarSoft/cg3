@@ -27,6 +27,7 @@ namespace CG3 {
 	public:
 		uint32_t wordform;
 		std::vector<Reading*> readings;
+		std::vector<Reading*> deleted;
 		UChar *text;
 
 		Cohort();

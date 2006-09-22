@@ -27,14 +27,17 @@ namespace CG3 {
 	public:
 		uint32_t wordform;
 		uint32_t baseform;
-		uint32_t hash, hash_tags;
+		uint32_t hash, hash_tags, hash_mapped, hash_plain, hash_textual;
 		bool mapped;
 		bool deleted;
 		bool selected;
-		uint32_t hit_by;
+		std::vector<uint32_t> hit_by;
 		bool noprint;
 		std::list<uint32_t> tags_list;
 		stdext::hash_map<uint32_t, uint32_t> tags;
+		std::map<uint32_t, uint32_t> tags_plain;
+		std::map<uint32_t, uint32_t> tags_mapped;
+		std::map<uint32_t, uint32_t> tags_textual;
 		UChar *text;
 
 		Reading();

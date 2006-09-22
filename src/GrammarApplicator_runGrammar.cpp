@@ -89,13 +89,14 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 					cReading->wordform = cCohort->wordform;
 					cReading->baseform = cCohort->wordform;
 					cReading->tags[cCohort->wordform] = cCohort->wordform;
-					cReading->rehash();
+//					cReading->rehash();
 					cReading->noprint = true;
 					cCohort->readings.push_back(cReading);
 					lReading = cReading;
 				}
 				std::vector<Reading*>::iterator iter;
 				for (iter = cCohort->readings.begin() ; iter != cCohort->readings.end() ; iter++) {
+					(*iter)->tags_list.push_back(endtag);
 					(*iter)->tags[endtag] = endtag;
 				}
 
@@ -111,7 +112,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 				cReading->baseform = begintag;
 				cReading->wordform = begintag;
 				cReading->tags[begintag] = begintag;
-				cReading->rehash();
+//				cReading->rehash();
 				
 				cCohort = new Cohort();
 				cCohort->wordform = begintag;
@@ -133,7 +134,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 					cReading->wordform = cCohort->wordform;
 					cReading->baseform = cCohort->wordform;
 					cReading->tags[cCohort->wordform] = cCohort->wordform;
-					cReading->rehash();
+//					cReading->rehash();
 					cReading->noprint = true;
 					cCohort->readings.push_back(cReading);
 					lReading = cReading;
@@ -183,6 +184,13 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 				}
 				if (single_tags[tag]->type & T_MAPPING) {
 					cReading->mapped = true;
+					cReading->tags_mapped[tag] = tag;
+				}
+				if (single_tags[tag]->type & T_TEXTUAL) {
+					cReading->tags_textual[tag] = tag;
+				}
+				if (!single_tags[tag]->type && !single_tags[tag]->features) {
+					cReading->tags_plain[tag] = tag;
 				}
 				cReading->tags[tag] = tag;
 				cReading->tags_list.push_back(tag);
@@ -237,9 +245,9 @@ int GrammarApplicator::runGrammarOnWindow(Window *window) {
 			reading->rehash();
 			if (selected && selected != reading && !doesSetMatchReading(reading, selectrule->target)) {
 				reading->deleted = true;
-				reading->hit_by = selected->hit_by;
+				reading->hit_by.push_back(selected->hit_by.back());
 			}
-			if (!reading->deleted) {
+			if (!reading->deleted && !reading->selected) {
 				for (uint32_t i=0;i<grammar->sections.size();i++) {
 					for (uint32_t j=0;j<grammar->sections[i];j++) {
 						const Rule *rule = grammar->rules[j];
@@ -257,15 +265,14 @@ int GrammarApplicator::runGrammarOnWindow(Window *window) {
 									}
 								}
 								if (good) {
+									reading->hit_by.push_back(j);
 									if (rule->type == K_REMOVE) {
 										reading->deleted = true;
-										reading->hit_by = j;
 										break;
 									}
 									else if (rule->type == K_SELECT) {
 										selectrule = rule;
 										reading->selected = true;
-										reading->hit_by = j;
 										selected = reading;
 										break;
 									}

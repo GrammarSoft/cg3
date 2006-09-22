@@ -238,7 +238,9 @@ int main(int argc, char* argv[]) {
 		return -1;
 	}
 
+//	system("pause");
 	grammar->trim();
+//	system("pause");
 
 	std::cerr << "Parsing grammar took " << (double)((double)(clock()-glob_timer)/(double)CLOCKS_PER_SEC) << " seconds." << std::endl;
 	glob_timer = clock();
@@ -265,11 +267,13 @@ int main(int argc, char* argv[]) {
 	u_fclose(ux_stdout);
 	u_fclose(ux_stderr);
 	
+//	system("pause");
 	delete grammar;
 	delete parser;
 	delete writer;
 	delete applicator;
 
 	std::cerr << "Cleanup took " << (double)((double)(clock()-glob_timer)/(double)CLOCKS_PER_SEC) << " seconds." << std::endl;
+//	system("pause");
 	return status;
 }

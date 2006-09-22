@@ -35,10 +35,12 @@ namespace CG3 {
 
 		stdext::hash_map<uint32_t, Tag*> single_tags;
 
-		stdext::hash_map<uint32_t, Index*> index_reading_tags_yes;
 		stdext::hash_map<uint32_t, Index*> index_reading_yes;
-		stdext::hash_map<uint32_t, Index*> index_reading_tags_no;
 		stdext::hash_map<uint32_t, Index*> index_reading_no;
+		stdext::hash_map<uint32_t, Index*> index_reading_tags_yes;
+		stdext::hash_map<uint32_t, Index*> index_reading_tags_no;
+		stdext::hash_map<uint32_t, Index*> index_reading_plain_yes;
+		stdext::hash_map<uint32_t, Index*> index_reading_plain_no;
 	
 		GrammarApplicator();
 		~GrammarApplicator();
@@ -57,6 +59,9 @@ namespace CG3 {
 		bool doesSetMatchCohortCareful(const Cohort *cohort, const uint32_t set);
 
 		void printSingleWindow(SingleWindow *window, UFILE *output);
+
+	private:
+		inline bool __index_matches(const stdext::hash_map<uint32_t, Index*> *me, const uint32_t value, const uint32_t set);
 	};
 }
 

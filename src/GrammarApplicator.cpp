@@ -29,6 +29,12 @@ GrammarApplicator::GrammarApplicator() {
 	grammar = 0;
 	cache_hits = 0;
 	cache_miss = 0;
+	index_reading_yes.clear();
+	index_reading_no.clear();
+	index_reading_tags_yes.clear();
+	index_reading_tags_no.clear();
+	index_reading_plain_yes.clear();
+	index_reading_plain_no.clear();
 }
 
 GrammarApplicator::~GrammarApplicator() {
@@ -89,8 +95,10 @@ void GrammarApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 					u_fprintf(output, " ");
 				}
 			}
-			if (reading->hit_by) {
-				u_fprintf(output, "R:%u", grammar->rules.at(reading->hit_by)->line);
+			if (!reading->hit_by.empty()) {
+				for (uint32_t i=0;i<reading->hit_by.size();i++) {
+					u_fprintf(output, "H:%u", grammar->rules.at(reading->hit_by.at(i))->line);
+				}
 			}
 			u_fprintf(output, "\n");
 			if (reading->text) {

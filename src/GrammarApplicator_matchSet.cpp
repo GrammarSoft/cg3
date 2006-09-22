@@ -40,40 +40,32 @@ bool GrammarApplicator::doesTagMatchSet(const uint32_t tag, const uint32_t set) 
 	return retval;
 }
 
+inline bool GrammarApplicator::__index_matches(const stdext::hash_map<uint32_t, Index*> *me, const uint32_t value, const uint32_t set) {
+	if (me->find(value) != me->end()) {
+		const Index *index = me->find(value)->second;
+		if (index->values.find(set) != index->values.end()) {
+			cache_hits++;
+			return true;
+		}
+	}
+	return false;
+}
+
 bool GrammarApplicator::doesSetMatchReading(const Reading *reading, const uint32_t set) {
 	bool retval = false;
 
-	if (index_reading_tags_yes.find(reading->hash_tags) != index_reading_tags_yes.end()) {
-		Index *index = index_reading_tags_yes[reading->hash_tags];
-		if (index->values.find(set) != index->values.end()) {
-			cache_hits++;
-			return true;
-		}
-	}
-	if (index_reading_tags_no.find(reading->hash_tags) != index_reading_tags_no.end()) {
-		Index *index = index_reading_tags_no[reading->hash_tags];
-		if (index->values.find(set) != index->values.end()) {
-			cache_hits++;
-			return false;
-		}
-	}
-	if (index_reading_yes.find(reading->hash) != index_reading_yes.end()) {
-		Index *index = index_reading_yes[reading->hash];
-		if (index->values.find(set) != index->values.end()) {
-			cache_hits++;
-			return true;
-		}
-	}
-	if (index_reading_no.find(reading->hash) != index_reading_no.end()) {
-		Index *index = index_reading_no[reading->hash];
-		if (index->values.find(set) != index->values.end()) {
-			cache_hits++;
-			return false;
-		}
-	}
+	if (__index_matches(&index_reading_plain_yes, reading->hash_plain, set)) { return true; }
+	if (__index_matches(&index_reading_plain_no, reading->hash_plain, set)) { return false; }
+
+	if (__index_matches(&index_reading_tags_yes, reading->hash_tags, set)) { return true; }
+	if (__index_matches(&index_reading_tags_no, reading->hash_tags, set)) { return false; }
+
+	if (__index_matches(&index_reading_yes, reading->hash, set)) { return true; }
+	if (__index_matches(&index_reading_no, reading->hash, set)) { return false; }
 
 	cache_miss++;
 	bool used_special = false;
+	bool only_plain = true;
 
 	stdext::hash_map<uint32_t, Set*>::const_iterator iter = grammar->sets_by_contents.find(set);
 	if (iter != grammar->sets_by_contents.end()) {
@@ -84,6 +76,7 @@ bool GrammarApplicator::doesSetMatchReading(const Reading *reading, const uint32
 				bool match = true;
 				bool failfast = true;
 				bool special = false;
+				bool plain = true;
 				const CompositeTag *ctag = grammar->tags.find(ster->second)->second;
 
 				stdext::hash_map<uint32_t, uint32_t>::const_iterator cter;
@@ -94,6 +87,9 @@ bool GrammarApplicator::doesSetMatchReading(const Reading *reading, const uint32
 					}
 					if (tag->type & (T_WORDFORM|T_BASEFORM)) {
 						special = true;
+					}
+					if (tag->type || tag->features) {
+						plain = false;
 					}
 					if (reading->tags.find(cter->second) == reading->tags.end()) {
 						match = false;
@@ -112,6 +108,7 @@ bool GrammarApplicator::doesSetMatchReading(const Reading *reading, const uint32
 				}
 				if (match) {
 					used_special = special;
+					only_plain = plain;
 					if (failfast) {
 						retval = false;
 					}
@@ -141,7 +138,13 @@ bool GrammarApplicator::doesSetMatchReading(const Reading *reading, const uint32
 	}
 
 	if (retval) {
-		if (used_special) {
+		if (only_plain) {
+			if (index_reading_plain_yes.find(reading->hash_plain) == index_reading_plain_yes.end()) {
+				index_reading_plain_yes[reading->hash_plain] = new Index();
+			}
+			index_reading_plain_yes[reading->hash_plain]->values[set] = set;
+		}
+		else if (used_special) {
 			if (index_reading_yes.find(reading->hash) == index_reading_yes.end()) {
 				index_reading_yes[reading->hash] = new Index();
 			}
@@ -155,7 +158,13 @@ bool GrammarApplicator::doesSetMatchReading(const Reading *reading, const uint32
 		}
 	}
 	else {
-		if (used_special) {
+		if (only_plain) {
+			if (index_reading_plain_no.find(reading->hash_plain) == index_reading_plain_no.end()) {
+				index_reading_plain_no[reading->hash_plain] = new Index();
+			}
+			index_reading_plain_no[reading->hash_plain]->values[set] = set;
+		}
+		else if (used_special) {
 			if (index_reading_no.find(reading->hash) == index_reading_no.end()) {
 				index_reading_no[reading->hash] = new Index();
 			}
