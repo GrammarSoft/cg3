@@ -43,6 +43,20 @@ bool GrammarApplicator::doesTagMatchSet(const uint32_t tag, const uint32_t set) 
 bool GrammarApplicator::doesSetMatchReading(const Reading *reading, const uint32_t set) {
 	bool retval = false;
 
+	if (index_reading_tags_yes.find(reading->hash_tags) != index_reading_tags_yes.end()) {
+		Index *index = index_reading_tags_yes[reading->hash_tags];
+		if (index->values.find(set) != index->values.end()) {
+			cache_hits++;
+			return true;
+		}
+	}
+	if (index_reading_tags_no.find(reading->hash_tags) != index_reading_tags_no.end()) {
+		Index *index = index_reading_tags_no[reading->hash_tags];
+		if (index->values.find(set) != index->values.end()) {
+			cache_hits++;
+			return false;
+		}
+	}
 	if (index_reading_yes.find(reading->hash) != index_reading_yes.end()) {
 		Index *index = index_reading_yes[reading->hash];
 		if (index->values.find(set) != index->values.end()) {
@@ -59,6 +73,7 @@ bool GrammarApplicator::doesSetMatchReading(const Reading *reading, const uint32
 	}
 
 	cache_miss++;
+	bool used_special = false;
 
 	stdext::hash_map<uint32_t, Set*>::const_iterator iter = grammar->sets_by_contents.find(set);
 	if (iter != grammar->sets_by_contents.end()) {
@@ -68,6 +83,7 @@ bool GrammarApplicator::doesSetMatchReading(const Reading *reading, const uint32
 			for (ster = theset->tags.begin() ; ster != theset->tags.end() ; ster++) {
 				bool match = true;
 				bool failfast = true;
+				bool special = false;
 				const CompositeTag *ctag = grammar->tags.find(ster->second)->second;
 
 				stdext::hash_map<uint32_t, uint32_t>::const_iterator cter;
@@ -75,6 +91,9 @@ bool GrammarApplicator::doesSetMatchReading(const Reading *reading, const uint32
 					const Tag *tag = grammar->single_tags.find(cter->second)->second;
 					if (!(tag->features & F_FAILFAST)) {
 						failfast = false;
+					}
+					if (tag->type & (T_WORDFORM|T_BASEFORM)) {
+						special = true;
 					}
 					if (reading->tags.find(cter->second) == reading->tags.end()) {
 						match = false;
@@ -92,6 +111,7 @@ bool GrammarApplicator::doesSetMatchReading(const Reading *reading, const uint32
 					}
 				}
 				if (match) {
+					used_special = special;
 					if (failfast) {
 						retval = false;
 					}
@@ -102,28 +122,48 @@ bool GrammarApplicator::doesSetMatchReading(const Reading *reading, const uint32
 				}
 			}
 		} else {
-			for (uint32_t i=0;i<theset->sets.size();i++) {
-				retval = doesSetMatchReading(reading, theset->sets.at(i));
-				if (retval) {
-					break;
+			used_special = true;
+			uint32_t size = (uint32_t)theset->sets.size();
+			if (size == 1) {
+				retval = doesSetMatchReading(reading, theset->sets.at(0));
+			} else {
+				bool *matches = new bool[size];
+				for (uint32_t i=0;i<size;i++) {
+					matches[i] = doesSetMatchReading(reading, theset->sets.at(i));
+					retval = matches[i];
 				}
+				delete matches;
 			}
 		}
 	}
 
 	if (retval) {
-		if (index_reading_yes.find(reading->hash) == index_reading_yes.end()) {
-			index_reading_yes[reading->hash] = new Index();
+		if (used_special) {
+			if (index_reading_yes.find(reading->hash) == index_reading_yes.end()) {
+				index_reading_yes[reading->hash] = new Index();
+			}
+			index_reading_yes[reading->hash]->values[set] = set;
 		}
-		Index *index = index_reading_yes[reading->hash];
-		index->values[set] = set;
+		else {
+			if (index_reading_tags_yes.find(reading->hash_tags) == index_reading_tags_yes.end()) {
+				index_reading_tags_yes[reading->hash_tags] = new Index();
+			}
+			index_reading_tags_yes[reading->hash_tags]->values[set] = set;
+		}
 	}
 	else {
-		if (index_reading_no.find(reading->hash) == index_reading_no.end()) {
-			index_reading_no[reading->hash] = new Index();
+		if (used_special) {
+			if (index_reading_no.find(reading->hash) == index_reading_no.end()) {
+				index_reading_no[reading->hash] = new Index();
+			}
+			index_reading_no[reading->hash]->values[set] = set;
 		}
-		Index *index = index_reading_no[reading->hash];
-		index->values[set] = set;
+		else {
+			if (index_reading_tags_no.find(reading->hash_tags) == index_reading_tags_no.end()) {
+				index_reading_tags_no[reading->hash_tags] = new Index();
+			}
+			index_reading_tags_no[reading->hash_tags]->values[set] = set;
+		}
 	}
 
 	return retval;

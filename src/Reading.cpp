@@ -47,13 +47,19 @@ Reading::~Reading() {
 uint32_t Reading::rehash() {
 	hash = 0;
 	hash_tags = 0;
-	stdext::hash_map<uint32_t, uint32_t>::iterator iter;
-	for (iter = tags.begin() ; iter != tags.end() ; iter++) {
-		hash = hash_sdbm_uint32_t(iter->second, hash);
+	std::list<uint32_t>::iterator iter;
+	for (iter = tags_list.begin() ; iter != tags_list.end() ; iter++) {
+		if (iter == tags_list.begin()) {
+			continue;
+		}
+		hash = hash_sdbm_uint32_t(*iter, hash);
 	}
 	hash_tags = hash;
 
 	hash = hash_sdbm_uint32_t(wordform, hash);
 	hash = hash_sdbm_uint32_t(baseform, hash);
+
+	assert(hash_tags != 0);
+	assert(hash != 0);
 	return hash;
 }

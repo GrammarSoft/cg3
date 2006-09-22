@@ -234,6 +234,7 @@ int GrammarApplicator::runGrammarOnWindow(Window *window) {
 		std::vector<Reading*>::iterator rter;
 		for (rter = cohort->readings.begin() ; rter != cohort->readings.end() ; rter++) {
 			Reading *reading = *rter;
+			reading->rehash();
 			if (selected && selected != reading && !doesSetMatchReading(reading, selectrule->target)) {
 				reading->deleted = true;
 				reading->hit_by = selected->hit_by;
