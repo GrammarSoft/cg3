@@ -65,13 +65,9 @@ void GrammarWriter::write_set_to_ufile(UFILE *output, Set *curset) {
 			write_set_to_ufile(output, grammar->sets_by_contents[curset->sets.at(i)]);
 		}
 		u_fprintf(output, "SET %S = ", curset->getName());
-		if (curset->sets.size() == 1) {
-			u_fprintf(output, "%S", grammar->sets_by_contents[curset->sets.at(0)]->name);
-		} else {
-			u_fprintf(output, "%S ", grammar->sets_by_contents[curset->sets.at(0)]->name);
-			for (uint32_t i=0;i<curset->sets.size()-1;i++) {
-				u_fprintf(output, "%S %S ", stringbits[curset->set_ops.at(i)], grammar->sets_by_contents[curset->sets.at(i+1)]->name);
-			}
+		u_fprintf(output, "%S ", grammar->sets_by_contents[curset->sets.at(0)]->name);
+		for (uint32_t i=0;i<curset->sets.size()-1;i++) {
+			u_fprintf(output, "%S %S ", stringbits[curset->set_ops.at(i)], grammar->sets_by_contents[curset->sets.at(i+1)]->name);
 		}
 		u_fprintf(output, "\n");
 	}

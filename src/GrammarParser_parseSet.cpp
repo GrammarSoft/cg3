@@ -189,6 +189,7 @@ int GrammarParser::parseSet(const UChar *line) {
 	curset->setName(local);
 	curset->setLine(result->curline);
 
+	bool only_or = true;
 	uint32_t set_a = 0;
 	uint32_t set_b = 0;
 	uint32_t res = hash_sdbm_uchar(curset->getName(), 0);
@@ -214,6 +215,9 @@ int GrammarParser::parseSet(const UChar *line) {
 				set_op = S_FAILFAST;
 			}
 			curset->set_ops.push_back(set_op);
+			if (set_op != S_OR) {
+				only_or = false;
+			}
 			set_op = 0;
 		}
 		if (!set_b) {
@@ -231,7 +235,30 @@ int GrammarParser::parseSet(const UChar *line) {
 		res = curset->sets.at(0);
 		result->destroySet(curset);
 		curset = result->getSet(res);
+	} else if (only_or) {
+		bool only_simple = true;
+		for (uint32_t i=0;i<curset->sets.size();i++) {
+			Set *set = result->getSet(curset->sets[i]);
+			if (!set->sets.empty()) {
+				only_simple = false;
+			}
+		}
+		if (only_simple) {
+			for (uint32_t i=0;i<curset->sets.size();i++) {
+				Set *set = result->getSet(curset->sets[i]);
+				curset->tags.insert(set->tags.begin(), set->tags.end());
+				curset->tags_map.insert(set->tags.begin(), set->tags.end());
+				curset->single_tags.insert(set->single_tags.begin(), set->single_tags.end());
+				curset->tags_map.insert(set->single_tags.begin(), set->single_tags.end());
+			}
+			curset->sets.clear();
+			curset->set_ops.clear();
+		}
 	}
+/*
+	else if (curset->sets.size() == 2 && curset->set_ops[0] == S_FAILFAST) {
+	}
+//*/
 
 	result->addSet(curset);
 

@@ -186,36 +186,32 @@ bool GrammarApplicator::doesSetMatchReading(const Reading *reading, const uint32
 			used_special = true;
 			only_plain = false;
 			uint32_t size = (uint32_t)theset->sets.size();
-			if (size == 1) {
-				retval = doesSetMatchReading(reading, theset->sets.at(0));
-			} else {
-				for (uint32_t i=0;i<size;i++) {
-					bool match = doesSetMatchReading(reading, theset->sets.at(i));
-					while (i < size-1 && theset->set_ops.at(i) != S_OR) {
-						switch (theset->set_ops.at(i)) {
-							case S_PLUS:
-								match = (match && doesSetMatchReading(reading, theset->sets.at(i+1)));
-								break;
-							case S_MINUS:
-								if (match && doesSetMatchReading(reading, theset->sets.at(i+1))) {
-									match = false;
-								}
-								break;
-							case S_FAILFAST:
-								if (!match || doesSetMatchReading(reading, theset->sets.at(i+1))) {
-									match = false;
-								}
-								break;
-							default:
-								break;
-						}
-						i++;
+			for (uint32_t i=0;i<size;i++) {
+				bool match = doesSetMatchReading(reading, theset->sets.at(i));
+				while (i < size-1 && theset->set_ops.at(i) != S_OR) {
+					switch (theset->set_ops.at(i)) {
+						case S_PLUS:
+							match = (match && doesSetMatchReading(reading, theset->sets.at(i+1)));
+							break;
+						case S_MINUS:
+							if (match && doesSetMatchReading(reading, theset->sets.at(i+1))) {
+								match = false;
+							}
+							break;
+						case S_FAILFAST:
+							if (!match || doesSetMatchReading(reading, theset->sets.at(i+1))) {
+								match = false;
+							}
+							break;
+						default:
+							break;
 					}
-					if (match) {
-						match_sub++;
-						retval = true;
-						break;
-					}
+					i++;
+				}
+				if (match) {
+					match_sub++;
+					retval = true;
+					break;
 				}
 			}
 		}

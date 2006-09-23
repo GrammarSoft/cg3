@@ -284,12 +284,13 @@ int GrammarApplicator::runGrammarOnWindow(Window *window) {
 							if (rule->target && doesSetMatchReading(reading, rule->target)) {
 								bool good = true;
 								if (!rule->tests.empty()) {
-									std::list<ContextualTest*>::const_iterator iter;
+									std::list<ContextualTest*>::iterator iter;
 									for (iter = rule->tests.begin() ; iter != rule->tests.end() ; iter++) {
-										const ContextualTest *test = *iter;
+										ContextualTest *test = *iter;
 										good = runContextualTest(window, current, c, test);
 										if (!good) {
-											// ToDo: Make grammar non-const and reorder contextual tests.
+											rule->tests.remove(test);
+											rule->tests.push_front(test);
 											break;
 										}
 									}

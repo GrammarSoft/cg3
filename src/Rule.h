@@ -36,7 +36,7 @@ namespace CG3 {
 		uint32_t line;
 		KEYWORDS type;
 		std::list<uint32_t> maplist;
-		std::list<ContextualTest*> tests;
+		mutable std::list<ContextualTest*> tests;
 
 		Rule();
 		~Rule();
