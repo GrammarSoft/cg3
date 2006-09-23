@@ -53,7 +53,7 @@ Reading::~Reading() {
 uint32_t Reading::rehash() {
 	hash = 0;
 	hash_tags = 0;
-	std::list<uint32_t>::iterator iter;
+	std::list<uint32_t>::const_iterator iter;
 	for (iter = tags_list.begin() ; iter != tags_list.end() ; iter++) {
 		if (*iter == wordform || *iter == baseform) {
 			continue;
@@ -62,17 +62,21 @@ uint32_t Reading::rehash() {
 	}
 	hash_tags = hash;
 
+	if (hash_tags == 0) {
+		hash_tags = 1;
+	}
+
 	hash = hash_sdbm_uint32_t(wordform, hash);
 	hash = hash_sdbm_uint32_t(baseform, hash);
 
 	assert(hash != 0);
 
-	std::map<uint32_t, uint32_t>::iterator mter;
+	std::map<uint32_t, uint32_t>::const_iterator mter;
 	hash_mapped = 0;
 	for (mter = tags_mapped.begin() ; mter != tags_mapped.end() ; mter++) {
 		hash_mapped = hash_sdbm_uint32_t(mter->second, hash_mapped);
 	}
-	hash_plain = 0;
+	hash_plain = 1;
 	for (mter = tags_plain.begin() ; mter != tags_plain.end() ; mter++) {
 		hash_plain = hash_sdbm_uint32_t(mter->second, hash_plain);
 	}

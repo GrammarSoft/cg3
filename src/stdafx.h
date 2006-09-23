@@ -69,7 +69,7 @@ inline uint32_t hash_sdbm_char(const char *str, uint32_t hash) {
     return hash;
 }
 
-inline uint32_t hash_sdbm_uint32_t(uint32_t c, uint32_t hash) {
+inline uint32_t hash_sdbm_uint32_t(const uint32_t c, uint32_t hash) {
 	if (hash == 0) {
 		hash = 705577479;
 	}

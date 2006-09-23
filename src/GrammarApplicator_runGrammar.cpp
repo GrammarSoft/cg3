@@ -89,8 +89,8 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 					cReading->wordform = cCohort->wordform;
 					cReading->baseform = cCohort->wordform;
 					cReading->tags[cCohort->wordform] = cCohort->wordform;
-//					cReading->rehash();
 					cReading->noprint = true;
+					cReading->rehash();
 					cCohort->readings.push_back(cReading);
 					lReading = cReading;
 				}
@@ -98,6 +98,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 				for (iter = cCohort->readings.begin() ; iter != cCohort->readings.end() ; iter++) {
 					(*iter)->tags_list.push_back(endtag);
 					(*iter)->tags[endtag] = endtag;
+					(*iter)->rehash();
 				}
 
 				cSWindow->cohorts.push_back(cCohort);
@@ -134,8 +135,8 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 					cReading->wordform = cCohort->wordform;
 					cReading->baseform = cCohort->wordform;
 					cReading->tags[cCohort->wordform] = cCohort->wordform;
-//					cReading->rehash();
 					cReading->noprint = true;
+					cReading->rehash();
 					cCohort->readings.push_back(cReading);
 					lReading = cReading;
 				}
@@ -202,6 +203,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 				cReading->tags[tag] = tag;
 				cReading->tags_list.push_back(tag);
 			}
+			cReading->rehash();
 			cCohort->readings.push_back(cReading);
 			lReading = cReading;
 		}

@@ -59,6 +59,8 @@ inline bool GrammarApplicator::__index_matches(const stdext::hash_map<uint32_t, 
 bool GrammarApplicator::doesSetMatchReading(const Reading *reading, const uint32_t set) {
 	bool retval = false;
 
+	assert(reading->hash != 0);
+
 	if (reading->hash_plain) {
 		if (__index_matches(&index_reading_plain_yes, reading->hash_plain, set)) { return true; }
 		if (__index_matches(&index_reading_plain_no, reading->hash_plain, set)) { return false; }
