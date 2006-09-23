@@ -24,6 +24,7 @@ using namespace CG3::Strings;
 
 ContextualTest::ContextualTest() {
 	careful = false;
+	negated = false;
 	negative = false;
 	scanfirst = false;
 	scanall = false;
@@ -33,6 +34,7 @@ ContextualTest::ContextualTest() {
 	target = 0;
 	barrier = 0;
 	linked = 0;
+	hash = 0;
 }
 
 ContextualTest::~ContextualTest() {
@@ -68,4 +70,26 @@ ContextualTest *ContextualTest::allocateContextualTest() {
 
 void ContextualTest::destroyContextualTest(ContextualTest *to) {
 	delete to;
+}
+
+uint32_t ContextualTest::rehash() {
+	hash = 0;
+	hash = hash_sdbm_uint32_t(hash, (uint32_t)careful);
+	hash = hash_sdbm_uint32_t(hash, (uint32_t)negated);
+	hash = hash_sdbm_uint32_t(hash, (uint32_t)negative);
+	hash = hash_sdbm_uint32_t(hash, (uint32_t)scanfirst);
+	hash = hash_sdbm_uint32_t(hash, (uint32_t)scanall);
+	hash = hash_sdbm_uint32_t(hash, (uint32_t)absolute);
+	hash = hash_sdbm_uint32_t(hash, (uint32_t)span_windows);
+	hash = hash_sdbm_uint32_t(hash, target);
+	hash = hash_sdbm_uint32_t(hash, barrier);
+	hash = hash_sdbm_uint32_t(hash, abs(offset));
+	if (offset < 0) {
+		hash = hash_sdbm_uint32_t(hash, 5000);
+	}
+	if (linked) {
+		hash = hash_sdbm_uint32_t(hash, linked->rehash());
+	}
+	assert(hash != 0);
+	return hash;
 }

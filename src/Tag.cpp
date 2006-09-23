@@ -57,7 +57,7 @@ void Tag::parseTag(const UChar *to) {
 				tmp++;
 			}
 		}
-		// ToDo: Implement these...and numerical tests.
+		// ToDo: Implement RegExp and ICase
 		uint32_t length = u_strlen(tmp);
 		if (tmp[0] && (tmp[0] == '"' || tmp[0] == '<')) {
 			type |= T_TEXTUAL;
@@ -82,7 +82,7 @@ void Tag::parseTag(const UChar *to) {
 			}
 		}
 
-		// ToDo: Implement these...
+		// ToDo: Implement META and VAR
 		if (tmp[0] == 'M' && tmp[1] == 'E' && tmp[2] == 'T' && tmp[3] == 'A' && tmp[4] == ':') {
 			type |= T_META;
 			tmp += 5;

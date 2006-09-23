@@ -23,8 +23,10 @@ namespace CG3 {
 
 	class ContextualTest {
 	public:
+		uint32_t hash;
 		bool careful;
 		// ToDo: Implement NEGATE
+		bool negated;
 		bool negative;
 		bool scanfirst;
 		bool scanall;
@@ -45,6 +47,8 @@ namespace CG3 {
 
 		ContextualTest *allocateContextualTest();
 		void destroyContextualTest(ContextualTest *to);
+		
+		uint32_t rehash();
 	};
 
 }

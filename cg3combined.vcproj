@@ -387,6 +387,9 @@
 			Name="Streams"
 			Filter="">
 			<File
+				RelativePath=".\dancg.morf.txt">
+			</File>
+			<File
 				RelativePath=".\input.txt">
 			</File>
 			<File
@@ -400,6 +403,9 @@
 			</File>
 			<File
 				RelativePath=".\stdin.txt">
+			</File>
+			<File
+				RelativePath=".\stdout-trace.txt">
 			</File>
 			<File
 				RelativePath=".\stdout.txt">

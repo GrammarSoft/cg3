@@ -249,6 +249,7 @@ int GrammarApplicator::runGrammarOnWindow(Window *window) {
 		const Rule *selectrule = 0;
 		const Rule *removerule = 0;
 		Reading *selected = 0;
+		Reading *deleted = 0;
 
 		std::list<Reading*>::iterator rter;
 		for (rter = cohort->readings.begin() ; rter != cohort->readings.end() ; rter++) {
@@ -258,6 +259,7 @@ int GrammarApplicator::runGrammarOnWindow(Window *window) {
 			}
 			if (removerule && doesSetMatchReading(reading, removerule->target)) {
 				reading->deleted = true;
+				reading->hit_by.push_back(deleted->hit_by.back());
 				cohort->deleted.push_back(reading);
 				cohort->readings.remove(reading);
 				rter = cohort->readings.begin();
@@ -279,7 +281,7 @@ int GrammarApplicator::runGrammarOnWindow(Window *window) {
 				for (uint32_t i=0;i<grammar->sections.size();i++) {
 					bool section_did_something = false;
 					for (uint32_t j=0;j<grammar->sections[i];j++) {
-						if (!section_did_something && i != 0 && j == 0) {
+						if (!section_did_something && j == 0) {
 							j = grammar->sections[i-1];
 						}
 						const Rule *rule = grammar->rules[j];
@@ -295,8 +297,10 @@ int GrammarApplicator::runGrammarOnWindow(Window *window) {
 										ContextualTest *test = *iter;
 										good = runContextualTest(window, current, c, test);
 										if (!good) {
-											rule->tests.remove(test);
-											rule->tests.push_front(test);
+											if (test != rule->tests.front()) {
+												rule->tests.remove(test);
+												rule->tests.push_front(test);
+											}
 											break;
 										}
 									}
@@ -307,6 +311,7 @@ int GrammarApplicator::runGrammarOnWindow(Window *window) {
 									if (rule->type == K_REMOVE) {
 										removerule = rule;
 										reading->deleted = true;
+										deleted = reading;
 										break;
 									}
 									else if (rule->type == K_SELECT) {

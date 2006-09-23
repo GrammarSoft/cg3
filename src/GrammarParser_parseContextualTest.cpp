@@ -120,6 +120,7 @@ int GrammarParser::parseContextualTests(UChar **paren, CG3::Rule *rule) {
 					parseContextualTest(&test, context);
 				}
 			}
+			context->rehash();
 
 			*paren += matching+1;
 			ux_trim(*paren);

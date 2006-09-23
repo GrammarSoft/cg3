@@ -113,12 +113,12 @@ int GrammarWriter::write_grammar_to_ufile_text(UFILE *output) {
 	}
 	u_fprintf(output, "\n");
 
-	u_fprintf(output, "\n");
-
-	std::vector<Rule*>::iterator iter_rules;
-	for (iter_rules = grammar->rules.begin() ; iter_rules != grammar->rules.end() ; iter_rules++) {
-		grammar->printRule(output, *iter_rules);
-		u_fprintf(output, "\n");
+	for (uint32_t i=1;i<grammar->sections.size();i++) {
+		u_fprintf(output, "\nSECTION\n");
+		for (uint32_t j=grammar->sections[i-1];j<grammar->sections[i];j++) {
+			grammar->printRule(output, grammar->rules[j]);
+			u_fprintf(output, "\n");
+		}
 	}
 
 	return 0;

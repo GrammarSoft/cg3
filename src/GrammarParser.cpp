@@ -168,7 +168,7 @@ int GrammarParser::parse_grammar_from_ufile(UFILE *input) {
 		return error;
 	}
 
-	// ToDo: Make this dynamic.
+	// ToDo: Make line length dynamic
 	std::map<uint32_t, UChar*> lines;
 	std::map<uint32_t, KEYWORDS> keys;
 	uint32_t lastcmd = 0;
@@ -254,6 +254,10 @@ int GrammarParser::parse_grammar_from_ufile(UFILE *input) {
 	free_strings();
 	lines.clear();
 	keys.clear();
+
+	if (!result->rules.empty()) {
+		result->sections.push_back((uint32_t)result->rules.size());
+	}
 
 	return 0;
 }

@@ -30,6 +30,7 @@ namespace Options {
 		VERSION,
 		GRAMMAR,
 		GRAMMAR_OUT,
+		CHECK_ONLY,
 		UNSAFE,
 		SECTIONS,
 		DODEBUG,
@@ -54,6 +55,7 @@ namespace Options {
 		UOPTION_DEF("version",				'V', UOPT_NO_ARG),
 		UOPTION_DEF("grammar",				'g', UOPT_REQUIRES_ARG),
 		UOPTION_DEF("grammar-out",			0, UOPT_REQUIRES_ARG),
+		UOPTION_DEF("check-only",			0, UOPT_NO_ARG),
 		UOPTION_DEF("unsafe",				'u', UOPT_NO_ARG),
 		UOPTION_DEF("sections",				's', UOPT_REQUIRES_ARG),
 		UOPTION_DEF("debug",				'd', UOPT_OPTIONAL_ARG),
@@ -260,16 +262,16 @@ int main(int argc, char* argv[]) {
 		}
 	}
 
-//	system("pause");
-	grammar->trim();
-//	system("pause");
+	if (!options[CHECK_ONLY].doesOccur) {
+		grammar->trim();
 
-	applicator = new CG3::GrammarApplicator();
-	applicator->setGrammar(grammar);
-	applicator->runGrammarOnText(ux_stdin, ux_stdout);
+		applicator = new CG3::GrammarApplicator();
+		applicator->setGrammar(grammar);
+		applicator->runGrammarOnText(ux_stdin, ux_stdout);
 
-	std::cerr << "Applying grammar on input took " << (double)((double)(clock()-glob_timer)/(double)CLOCKS_PER_SEC) << " seconds." << std::endl;
-	glob_timer = clock();
+		std::cerr << "Applying grammar on input took " << (double)((double)(clock()-glob_timer)/(double)CLOCKS_PER_SEC) << " seconds." << std::endl;
+		glob_timer = clock();
+	}
 
 	u_fclose(ux_stdin);
 	u_fclose(ux_stdout);
