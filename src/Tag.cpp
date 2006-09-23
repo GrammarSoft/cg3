@@ -42,7 +42,10 @@ Tag::~Tag() {
 }
 
 void Tag::parseTag(const UChar *to) {
-	if (to && u_strlen(to)) {
+	assert(to != 0);
+	type = 0;
+	features = 0;
+	if (u_strlen(to)) {
 		const UChar *tmp = to;
 		while (tmp[0] && (tmp[0] == '!' || tmp[0] == '^')) {
 			if (tmp[0] == '!') {

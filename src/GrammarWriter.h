@@ -34,6 +34,9 @@ namespace CG3 {
 		int write_grammar_to_file_binary(FILE *output);
 
 		void setGrammar(Grammar *res);
+
+	private:
+		void write_set_to_ufile(UFILE *output, Set *curset);
 	};
 }
 

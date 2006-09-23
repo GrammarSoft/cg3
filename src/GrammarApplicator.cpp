@@ -29,6 +29,9 @@ GrammarApplicator::GrammarApplicator() {
 	grammar = 0;
 	cache_hits = 0;
 	cache_miss = 0;
+	match_single = 0;
+	match_comp = 0;
+	match_sub = 0;
 	index_reading_yes.clear();
 	index_reading_no.clear();
 	index_reading_tags_yes.clear();
@@ -74,7 +77,7 @@ void GrammarApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 			u_fprintf(output, "%S", cohort->text);
 		}
 
-		std::vector<Reading*>::iterator rter;
+		std::list<Reading*>::iterator rter;
 		for (rter = cohort->readings.begin() ; rter != cohort->readings.end() ; rter++) {
 			Reading *reading = *rter;
 			if (reading->noprint) {
@@ -97,7 +100,37 @@ void GrammarApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 			}
 			if (!reading->hit_by.empty()) {
 				for (uint32_t i=0;i<reading->hit_by.size();i++) {
-					u_fprintf(output, "H:%u", grammar->rules.at(reading->hit_by.at(i))->line);
+					u_fprintf(output, "H:%u ", grammar->rules.at(reading->hit_by.at(i))->line);
+				}
+			}
+			u_fprintf(output, "\n");
+			if (reading->text) {
+				u_fprintf(output, "%S", reading->text);
+			}
+		}
+		for (rter = cohort->deleted.begin() ; rter != cohort->deleted.end() ; rter++) {
+			Reading *reading = *rter;
+			if (reading->noprint) {
+				continue;
+			}
+			if (reading->deleted) {
+				u_fprintf(output, ";");
+			}
+			u_fprintf(output, "\t");
+			single_tags[reading->baseform]->printRaw(output);
+			u_fprintf(output, " ");
+
+			std::list<uint32_t>::iterator tter;
+			for (tter = reading->tags_list.begin() ; tter != reading->tags_list.end() ; tter++) {
+				Tag *tag = single_tags[*tter];
+				if (!(tag->type & T_BASEFORM) && !(tag->type & T_WORDFORM)) {
+					tag->printRaw(output);
+					u_fprintf(output, " ");
+				}
+			}
+			if (!reading->hit_by.empty()) {
+				for (uint32_t i=0;i<reading->hit_by.size();i++) {
+					u_fprintf(output, "H:%u ", grammar->rules.at(reading->hit_by.at(i))->line);
 				}
 			}
 			u_fprintf(output, "\n");
@@ -106,4 +139,5 @@ void GrammarApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 			}
 		}
 	}
+	u_fprintf(output, "\n");
 }

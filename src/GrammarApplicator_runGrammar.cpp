@@ -94,7 +94,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 					cCohort->readings.push_back(cReading);
 					lReading = cReading;
 				}
-				std::vector<Reading*>::iterator iter;
+				std::list<Reading*>::iterator iter;
 				for (iter = cCohort->readings.begin() ; iter != cCohort->readings.end() ; iter++) {
 					(*iter)->tags_list.push_back(endtag);
 					(*iter)->tags[endtag] = endtag;
@@ -144,7 +144,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 				cWindow->shuffleWindowsDown();
 				runGrammarOnWindow(cWindow);
 				printSingleWindow(cWindow->current, output);
-				std::cerr << "Cache " << cache_hits << " / " << cache_miss << "\r" << std::flush;
+				std::cerr << "Cache " << (cache_hits+cache_miss) << " : " << cache_hits << " / " << cache_miss << "\r" << std::flush;
 				u_fflush(output);
 			}
 			cCohort = new Cohort();
@@ -171,6 +171,13 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 					}
 					if (single_tags[tag]->type & T_MAPPING) {
 						cReading->mapped = true;
+						cReading->tags_mapped[tag] = tag;
+					}
+					if (single_tags[tag]->type & T_TEXTUAL) {
+						cReading->tags_textual[tag] = tag;
+					}
+					if (!single_tags[tag]->type && !single_tags[tag]->features) {
+						cReading->tags_plain[tag] = tag;
 					}
 					cReading->tags[tag] = tag;
 					cReading->tags_list.push_back(tag);
@@ -224,7 +231,8 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 		printSingleWindow(cWindow->current, output);
 		u_fflush(output);
 	}
-	std::cerr << "Cache " << cache_hits << " / " << cache_miss << std::endl;
+	std::cerr << "Cache " << (cache_hits+cache_miss) << " : " << cache_hits << " / " << cache_miss << std::endl;
+	std::cerr << "Match " << (match_sub+match_comp+match_single) << " : " << match_sub << " / " << match_comp << " / " << match_single << std::endl;
 	return 0;
 }
 
@@ -237,20 +245,41 @@ int GrammarApplicator::runGrammarOnWindow(Window *window) {
 		}
 		Cohort *cohort = current->cohorts[c];
 		const Rule *selectrule = 0;
+		const Rule *removerule = 0;
 		Reading *selected = 0;
-		
-		std::vector<Reading*>::iterator rter;
+
+		std::list<Reading*>::iterator rter;
 		for (rter = cohort->readings.begin() ; rter != cohort->readings.end() ; rter++) {
 			Reading *reading = *rter;
-			reading->rehash();
-			if (selected && selected != reading && !doesSetMatchReading(reading, selectrule->target)) {
-				reading->deleted = true;
-				reading->hit_by.push_back(selected->hit_by.back());
+			if (!reading->hash) {
+				reading->rehash();
 			}
-			if (!reading->deleted && !reading->selected) {
+			if (removerule && doesSetMatchReading(reading, removerule->target)) {
+				reading->deleted = true;
+				cohort->deleted.push_back(reading);
+				cohort->readings.remove(reading);
+				rter = cohort->readings.begin();
+				rter--;
+			}
+			else if (selected && selected != reading) {
+				reading->hit_by.push_back(selected->hit_by.back());
+				if (doesSetMatchReading(reading, selectrule->target)) {
+					reading->selected = true;
+				} else {
+					reading->deleted = true;
+					cohort->deleted.push_back(reading);
+					cohort->readings.remove(reading);
+					rter = cohort->readings.begin();
+					rter--;
+				}
+			}
+			else if (!reading->deleted && !selected) {
 				for (uint32_t i=0;i<grammar->sections.size();i++) {
 					for (uint32_t j=0;j<grammar->sections[i];j++) {
 						const Rule *rule = grammar->rules[j];
+						if ((rule->type == K_REMOVE || rule->type == K_SELECT || rule->type == K_IFF) && cohort->readings.size() <= 1) {
+							continue;
+						}
 						if (!rule->wordform || rule->wordform == reading->wordform) {
 							if (rule->target && doesSetMatchReading(reading, rule->target)) {
 								bool good = true;
@@ -260,6 +289,7 @@ int GrammarApplicator::runGrammarOnWindow(Window *window) {
 										const ContextualTest *test = *iter;
 										good = runContextualTest(window, current, c, test);
 										if (!good) {
+											// ToDo: Make grammar non-const and reorder contextual tests.
 											break;
 										}
 									}
@@ -267,6 +297,7 @@ int GrammarApplicator::runGrammarOnWindow(Window *window) {
 								if (good) {
 									reading->hit_by.push_back(j);
 									if (rule->type == K_REMOVE) {
+										removerule = rule;
 										reading->deleted = true;
 										break;
 									}
@@ -280,7 +311,16 @@ int GrammarApplicator::runGrammarOnWindow(Window *window) {
 							}
 						}
 					}
-					if (reading->deleted || reading->selected || selected) {
+					if (reading->deleted) {
+						cohort->deleted.push_back(reading);
+						cohort->readings.remove(reading);
+						rter = cohort->readings.begin();
+						rter--;
+						break;
+					}
+					if (reading->selected) {
+						rter = cohort->readings.begin();
+						rter--;
 						break;
 					}
 				}
@@ -312,9 +352,6 @@ bool GrammarApplicator::runContextualTest(const Window *window, const SingleWind
 					retval = doesSetMatchCohortNormal(cohort, test->target);
 				}
 				foundfirst = retval;
-				if (test->negative) {
-					retval = !retval;
-				}
 				if (!retval && foundfirst && test->scanfirst) {
 					break;
 				}
@@ -323,6 +360,9 @@ bool GrammarApplicator::runContextualTest(const Window *window, const SingleWind
 					if (barrier) {
 						break;
 					}
+				}
+				if (test->negative) {
+					retval = !retval;
 				}
 				if (retval && test->linked) {
 					retval = runContextualTest(window, sWindow, i, test->linked);
@@ -339,9 +379,6 @@ bool GrammarApplicator::runContextualTest(const Window *window, const SingleWind
 					retval = doesSetMatchCohortNormal(cohort, test->target);
 				}
 				foundfirst = retval;
-				if (test->negative) {
-					retval = !retval;
-				}
 				if (!retval && foundfirst && test->scanfirst) {
 					break;
 				}
@@ -350,6 +387,9 @@ bool GrammarApplicator::runContextualTest(const Window *window, const SingleWind
 					if (barrier) {
 						break;
 					}
+				}
+				if (test->negative) {
+					retval = !retval;
 				}
 				if (retval && test->linked) {
 					retval = runContextualTest(window, sWindow, i, test->linked);

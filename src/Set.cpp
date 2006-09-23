@@ -28,7 +28,6 @@ Set::Set() {
 	line = 0;
 	hash = 0;
 	used = false;
-	composite = false;
 }
 
 Set::~Set() {
@@ -37,6 +36,7 @@ Set::~Set() {
 	}
 	tags_map.clear();
 	tags.clear();
+	single_tags.clear();
 	sets.clear();
 	set_ops.clear();
 }
@@ -73,21 +73,24 @@ void Set::addCompositeTag(uint32_t tag) {
 	tags[tag] = tag;
 }
 
+void Set::addTag(uint32_t tag) {
+	tags_map[tag] = tag;
+	single_tags[tag] = tag;
+}
+
 uint32_t Set::rehash() {
 	uint32_t retval = 0;
-	assert(tags_map.empty() || (sets.empty() && set_ops.empty()));
-	std::map<uint32_t, uint32_t>::iterator iter;
-	if (!tags_map.empty()) {
+	assert(tags_map.empty() || sets.empty());
+	if (sets.empty()) {
+		std::map<uint32_t, uint32_t>::iterator iter;
 		for (iter = tags_map.begin() ; iter != tags_map.end() ; iter++) {
 			retval = hash_sdbm_uint32_t(iter->second, retval);
 		}
 	}
-	if (!sets.empty()) {
+	else {
 		for (uint32_t i=0;i<sets.size();i++) {
 			retval = hash_sdbm_uint32_t(sets.at(i), retval);
 		}
-	}
-	if (!set_ops.empty()) {
 		for (uint32_t i=0;i<set_ops.size();i++) {
 			retval = hash_sdbm_uint32_t(set_ops.at(i), retval);
 		}

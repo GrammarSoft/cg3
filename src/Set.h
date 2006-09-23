@@ -17,6 +17,7 @@
 #ifndef __SET_H
 #define __SET_H
 
+#include "stdafx.h"
 #include <unicode/ustring.h>
 #include "Grammar.h"
 #include "CompositeTag.h"
@@ -30,10 +31,10 @@ namespace CG3 {
 		uint32_t line;
 		uint32_t hash;
 		bool used;
-		bool composite;
 
 		std::map<uint32_t, uint32_t> tags_map;
 		stdext::hash_map<uint32_t, uint32_t> tags;
+		stdext::hash_map<uint32_t, uint32_t> single_tags;
 
 		std::vector<uint32_t> set_ops;
 		std::vector<uint32_t> sets;
@@ -49,6 +50,7 @@ namespace CG3 {
 		uint32_t getLine();
 
 		void addCompositeTag(uint32_t tag);
+		void addTag(uint32_t tag);
 
 		uint32_t rehash();
 	};

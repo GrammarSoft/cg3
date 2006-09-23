@@ -86,6 +86,11 @@ inline uint32_t hash_sdbm_uint32_t(uint32_t c, uint32_t hash) {
     #define stdext __gnu_cxx
 #endif
 
+/*
+#define stdext std
+#define hash_map map
+//*/
+
 // CG3 includes
 #include "cg3_resources.h"
 

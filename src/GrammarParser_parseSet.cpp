@@ -88,7 +88,6 @@ uint32_t GrammarParser::readSingleSet(UChar **paren) {
 			}
 
 			result->addCompositeTagToSet(set_c, ctag);
-			set_c->composite = false;
 			result->addSet(set_c);
 
 			*paren = space+matching+1;
@@ -232,8 +231,6 @@ int GrammarParser::parseSet(const UChar *line) {
 		res = curset->sets.at(0);
 		result->destroySet(curset);
 		curset = result->getSet(res);
-	} else {
-		curset->composite = true;
 	}
 
 	result->addSet(curset);

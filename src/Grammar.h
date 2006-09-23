@@ -17,6 +17,7 @@
 #ifndef __GRAMMAR_H
 #define __GRAMMAR_H
 
+#include "stdafx.h"
 #include <unicode/ustring.h>
 #include "Set.h"
 #include "Tag.h"
@@ -65,7 +66,6 @@ namespace CG3 {
 		void addAnchor(const UChar *to, const uint32_t line);
 
 		Tag *allocateTag(const UChar *tag);
-		Tag *duplicateTag(uint32_t tag);
 		void destroyTag(Tag *tag);
 		void addTag(Tag *simpletag);
 		void addTagToCompositeTag(Tag *simpletag, CompositeTag *tag);
@@ -73,7 +73,6 @@ namespace CG3 {
 		void addCompositeTag(CompositeTag *tag);
 		void addCompositeTagToSet(Set *set, CompositeTag *tag);
 		CompositeTag *allocateCompositeTag();
-		CompositeTag *duplicateCompositeTag(CompositeTag *tag);
 		void destroyCompositeTag(CompositeTag *tag);
 
 		Rule *allocateRule();

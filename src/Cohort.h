@@ -26,8 +26,8 @@ namespace CG3 {
 	class Cohort {
 	public:
 		uint32_t wordform;
-		std::vector<Reading*> readings;
-		std::vector<Reading*> deleted;
+		std::list<Reading*> readings;
+		std::list<Reading*> deleted;
 		UChar *text;
 
 		Cohort();

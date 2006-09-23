@@ -24,7 +24,7 @@ Cohort::Cohort() {
 }
 
 Cohort::~Cohort() {
-	std::vector<Reading*>::iterator iter;
+	std::list<Reading*>::iterator iter;
 	for (iter = readings.begin() ; iter != readings.end() ; iter++) {
 		delete *iter;
 	}

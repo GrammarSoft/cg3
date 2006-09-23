@@ -92,9 +92,11 @@ void Grammar::addSet(Set *to) {
 	if (sets_by_name.find(nhash) == sets_by_name.end()) {
 		sets_by_name[nhash] = chash;
 	}
+/*
 	else if (!(to->name[0] == '_' && to->name[1] == 'G' && to->name[2] == '_')) {
 		u_fprintf(ux_stderr, "Warning: Set %S already existed.\n", to->name);
 	}
+//*/
 	if (sets_by_contents.find(chash) == sets_by_contents.end()) {
 		sets_by_contents[chash] = to;
 	}
@@ -131,27 +133,18 @@ void Grammar::addCompositeTag(CompositeTag *tag) {
 }
 void Grammar::addCompositeTagToSet(Set *set, CompositeTag *tag) {
 	if (tag && tag->tags.size()) {
-		addCompositeTag(tag);
-		set->addCompositeTag(tag->hash);
+		if (tag->tags.size() == 1) {
+			set->addTag(tag->tags.begin()->second);
+		} else {
+			addCompositeTag(tag);
+			set->addCompositeTag(tag->hash);
+		}
 	} else {
 		u_fprintf(ux_stderr, "Error: Attempted to add empty composite tag to grammar and set!\n");
 	}
 }
 CompositeTag *Grammar::allocateCompositeTag() {
 	return new CompositeTag;
-}
-CompositeTag *Grammar::duplicateCompositeTag(CompositeTag *tag) {
-	if (tag && tag->tags.size()) {
-		CompositeTag *tmp = new CompositeTag;
-		std::map<uint32_t, uint32_t>::iterator iter;
-		for (iter = tag->tags_map.begin() ; iter != tag->tags_map.end() ; iter++) {
-			tmp->addTag(iter->second);
-		}
-		return tmp;
-	} else {
-		u_fprintf(ux_stderr, "Error: Attempted to duplicate an empty composite tag!\n");
-	}
-	return 0;
 }
 void Grammar::destroyCompositeTag(CompositeTag *tag) {
 	delete tag;
@@ -171,16 +164,6 @@ Tag *Grammar::allocateTag(const UChar *tag) {
 	Tag *fresh = new Tag;
 	fresh->parseTag(tag);
 	return fresh;
-}
-Tag *Grammar::duplicateTag(uint32_t tag) {
-	if (tag && single_tags.find(tag) != single_tags.end() && single_tags[tag]->tag) {
-		Tag *fresh = new Tag;
-		fresh->duplicateTag(single_tags[tag]);
-		return fresh;
-	} else {
-		u_fprintf(ux_stderr, "Error: Attempted to duplicate an empty tag!\n");
-	}
-	return 0;
 }
 void Grammar::addTag(Tag *simpletag) {
 	if (simpletag && simpletag->tag) {
@@ -241,6 +224,7 @@ void Grammar::setName(const UChar *to) {
 void Grammar::printRule(UFILE *to, const Rule *rule) {
 	if (rule->wordform) {
 		single_tags.find(rule->wordform)->second->print(to);
+		u_fprintf(to, " ");
 	}
 
 	u_fprintf(to, "%S", keywords[rule->type]);
@@ -279,6 +263,9 @@ void Grammar::printRule(UFILE *to, const Rule *rule) {
 }
 
 void Grammar::printContextualTest(UFILE *to, const ContextualTest *test) {
+	if (test->negative) {
+		u_fprintf(to, "NOT ");
+	}
 	if (test->absolute) {
 		u_fprintf(to, "@");
 	}
@@ -316,14 +303,14 @@ void Grammar::printContextualTest(UFILE *to, const ContextualTest *test) {
 void Grammar::trim() {
 	set_alias.clear();
 	sets_by_name.clear();
-
+/*
 	stdext::hash_map<uint32_t, Tag*>::iterator iter_tags;
 	for (iter_tags = single_tags.begin() ; iter_tags != single_tags.end() ; iter_tags++) {
 		if (!iter_tags->second->type && !iter_tags->second->features) {
 			delete iter_tags->second->tag;
 		}
 	}
-/*
+
 	std::cerr << "Trimmed sets from " << (uint32_t)sets_by_contents.size();
 	stdext::hash_map<uint32_t, Set*>::iterator iter_set;
 	for (iter_set = sets_by_contents.begin() ; iter_set != sets_by_contents.end() ; iter_set++) {

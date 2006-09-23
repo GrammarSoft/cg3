@@ -17,6 +17,7 @@
 #ifndef __COMPOSITETAG_H
 #define __COMPOSITETAG_H
 
+#include "stdafx.h"
 #include <unicode/ustring.h>
 #include "Tag.h"
 

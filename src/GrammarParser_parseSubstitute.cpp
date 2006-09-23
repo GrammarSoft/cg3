@@ -69,6 +69,7 @@ int GrammarParser::parseSubstitute(const UChar *line) {
 	if (wordform) {
 		Tag *wform = result->allocateTag(wordform);
 		rule->wordform = wform->rehash();
+		result->addTag(wform);
 	}
 
 	rule->subst_target = parseTarget(&space);

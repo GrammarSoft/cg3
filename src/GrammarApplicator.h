@@ -29,7 +29,7 @@ namespace CG3 {
 	class GrammarApplicator {
 	public:
 		uint32_t num_windows;
-		uint32_t cache_hits, cache_miss;
+		uint32_t cache_hits, cache_miss, match_single, match_comp, match_sub;
 
 		const Grammar *grammar;
 

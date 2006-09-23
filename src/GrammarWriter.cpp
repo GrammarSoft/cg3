@@ -32,6 +32,51 @@ GrammarWriter::~GrammarWriter() {
 	grammar = 0;
 }
 
+void GrammarWriter::write_set_to_ufile(UFILE *output, Set *curset) {
+	if (curset->sets.empty() && !curset->used) {
+		curset->used = true;
+		u_fprintf(output, "LIST %S = ", curset->getName());
+		stdext::hash_map<uint32_t, uint32_t>::iterator comp_iter;
+		for (comp_iter = curset->single_tags.begin() ; comp_iter != curset->single_tags.end() ; comp_iter++) {
+			grammar->single_tags[comp_iter->second]->print(output);
+			u_fprintf(output, " ");
+		}
+		for (comp_iter = curset->tags.begin() ; comp_iter != curset->tags.end() ; comp_iter++) {
+			if (grammar->tags.find(comp_iter->second) != grammar->tags.end()) {
+				CompositeTag *curcomptag = grammar->tags[comp_iter->second];
+				if (curcomptag->tags.size() == 1) {
+					grammar->single_tags[curcomptag->tags.begin()->second]->print(output);
+					u_fprintf(output, " ");
+				} else {
+					u_fprintf(output, "(");
+					std::map<uint32_t, uint32_t>::iterator tag_iter;
+					for (tag_iter = curcomptag->tags_map.begin() ; tag_iter != curcomptag->tags_map.end() ; tag_iter++) {
+						grammar->single_tags[tag_iter->second]->print(output);
+						u_fprintf(output, " ");
+					}
+					u_fprintf(output, ") ");
+				}
+			}
+		}
+		u_fprintf(output, "\n");
+	} else if (!curset->sets.empty() && !curset->used) {
+		curset->used = true;
+		for (uint32_t i=0;i<curset->sets.size();i++) {
+			write_set_to_ufile(output, grammar->sets_by_contents[curset->sets.at(i)]);
+		}
+		u_fprintf(output, "SET %S = ", curset->getName());
+		if (curset->sets.size() == 1) {
+			u_fprintf(output, "%S", grammar->sets_by_contents[curset->sets.at(0)]->name);
+		} else {
+			u_fprintf(output, "%S ", grammar->sets_by_contents[curset->sets.at(0)]->name);
+			for (uint32_t i=0;i<curset->sets.size()-1;i++) {
+				u_fprintf(output, "%S %S ", stringbits[curset->set_ops.at(i)], grammar->sets_by_contents[curset->sets.at(i+1)]->name);
+			}
+		}
+		u_fprintf(output, "\n");
+	}
+}
+
 int GrammarWriter::write_grammar_to_ufile_text(UFILE *output) {
 	if (!output) {
 		u_fprintf(ux_stderr, "Error: Output is null - cannot write to nothing!\n");
@@ -40,6 +85,19 @@ int GrammarWriter::write_grammar_to_ufile_text(UFILE *output) {
 	if (!grammar) {
 		u_fprintf(ux_stderr, "Error: No grammar provided - cannot continue! Hint: call setGrammar() first.\n");
 		return -1;
+	}
+
+	free_strings();
+	free_keywords();
+	int error = init_keywords();
+	if (error) {
+		u_fprintf(ux_stderr, "Error: init_keywords returned %u!\n", error);
+		return error;
+	}
+	error = init_strings();
+	if (error) {
+		u_fprintf(ux_stderr, "Error: init_strings returned %u!\n", error);
+		return error;
 	}
 
 	u_fprintf(output, "# DELIMITERS does not exist. Instead, look for the set _S_DELIMITERS_\n");
@@ -55,29 +113,7 @@ int GrammarWriter::write_grammar_to_ufile_text(UFILE *output) {
 
 	stdext::hash_map<uint32_t, Set*>::iterator set_iter;
 	for (set_iter = grammar->sets_by_contents.begin() ; set_iter != grammar->sets_by_contents.end() ; set_iter++) {
-		stdext::hash_map<uint32_t, uint32_t>::iterator comp_iter;
-		Set *curset = set_iter->second;
-		if (!curset->tags.empty()) {
-			u_fprintf(output, "LIST %S = ", curset->getName());
-			for (comp_iter = curset->tags.begin() ; comp_iter != curset->tags.end() ; comp_iter++) {
-				if (grammar->tags.find(comp_iter->second) != grammar->tags.end()) {
-					CompositeTag *curcomptag = grammar->tags[comp_iter->second];
-					if (curcomptag->tags.size() == 1) {
-						grammar->single_tags[curcomptag->tags.begin()->second]->print(output);
-						u_fprintf(output, " ");
-					} else {
-						u_fprintf(output, "(");
-						std::map<uint32_t, uint32_t>::iterator tag_iter;
-						for (tag_iter = curcomptag->tags_map.begin() ; tag_iter != curcomptag->tags_map.end() ; tag_iter++) {
-							grammar->single_tags[tag_iter->second]->print(output);
-							u_fprintf(output, " ");
-						}
-						u_fprintf(output, ") ");
-					}
-				}
-			}
-			u_fprintf(output, "\n");
-		}
+		write_set_to_ufile(output, set_iter->second);
 	}
 	u_fprintf(output, "\n");
 
@@ -105,34 +141,7 @@ int GrammarWriter::write_grammar_to_file_binary(FILE *output) {
 	fprintf(output, "CG3B");
 	uint32_t tmp = (uint32_t)htonl((uint32_t)grammar->sets_by_contents.size());
 	fwrite(&tmp, sizeof(uint32_t), 1, output);
-/*
-	stdext::hash_map<uint32_t, Set*>::iterator set_iter;
-	for (set_iter = grammar->uniqsets.begin() ; set_iter != grammar->uniqsets.end() ; set_iter++) {
-		stdext::hash_map<uint32_t, uint32_t>::iterator comp_iter;
-		Set *curset = set_iter->second;
-		if (!curset->tags.empty()) {
-			u_fprintf(output, "%S %u\n", curset->getName(), curset->tags.size());
-			for (comp_iter = curset->tags.begin() ; comp_iter != curset->tags.end() ; comp_iter++) {
-				if (grammar->tags.find(comp_iter->second) != grammar->tags.end()) {
-					CompositeTag *curcomptag = grammar->tags[comp_iter->second];
-					u_fprintf(output, "%u\n", curcomptag->tags.size());
-					std::map<uint32_t, uint32_t>::iterator tag_iter;
-					for (tag_iter = curcomptag->tags_map.begin() ; tag_iter != curcomptag->tags_map.end() ; tag_iter++) {
-						Tag *tag = grammar->single_tags[tag_iter->second];
-						u_fprintf(output, "%S %u %u %u %u %u %u %u %u %u %u %u %u %u %u %S\n",
-							tag->tag,
-							tag->any, tag->wordform, tag->baseform, tag->case_insensitive,
-							tag->failfast, tag->negative,
-							tag->mapping, tag->regexp,
-							tag->variable, tag->wildcard,
-							tag->numerical, tag->comparison_op, tag->comparison_val,
-							tag->comparison_key);
-					}
-				}
-			}
-		}
-	}
-//*/
+
 	return 0;
 }
 

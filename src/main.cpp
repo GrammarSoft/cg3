@@ -29,6 +29,7 @@ namespace Options {
 		HELP2,
 		VERSION,
 		GRAMMAR,
+		GRAMMAR_OUT,
 		UNSAFE,
 		SECTIONS,
 		DEBUG,
@@ -52,6 +53,7 @@ namespace Options {
 		UOPTION_DEF("?",					'?', UOPT_NO_ARG),
 		UOPTION_DEF("version",				'V', UOPT_NO_ARG),
 		UOPTION_DEF("grammar",				'g', UOPT_REQUIRES_ARG),
+		UOPTION_DEF("grammar-out",			0, UOPT_REQUIRES_ARG),
 		UOPTION_DEF("unsafe",				'u', UOPT_NO_ARG),
 		UOPTION_DEF("sections",				's', UOPT_REQUIRES_ARG),
 		UOPTION_DEF("debug",				'd', UOPT_OPTIONAL_ARG),
@@ -238,31 +240,37 @@ int main(int argc, char* argv[]) {
 		return -1;
 	}
 
-//	system("pause");
-	grammar->trim();
-//	system("pause");
-
 	std::cerr << "Parsing grammar took " << (double)((double)(clock()-glob_timer)/(double)CLOCKS_PER_SEC) << " seconds." << std::endl;
 	glob_timer = clock();
 
 	CG3::GrammarWriter *writer = 0;
 	CG3::GrammarApplicator *applicator = 0;
-/*
-	writer = new CG3::GrammarWriter();
-	writer->setGrammar(grammar);
-	writer->write_grammar_to_ufile_text(ux_stdout);
-	writer->write_grammar_to_file_binary(fopen("/tmp/cg3.utf16le.txt", "wb"));
 
-	std::cerr << "Writing grammar took " << (double)((double)(clock()-glob_timer)/(double)CLOCKS_PER_SEC) << " seconds." << std::endl;
-	glob_timer = clock();
-/*/
+	if (options[GRAMMAR_OUT].doesOccur) {
+		UFILE *gout = u_fopen(options[GRAMMAR_OUT].value, "w", locale_output, codepage_output);
+		if (gout) {
+			writer = new CG3::GrammarWriter();
+			writer->setGrammar(grammar);
+			writer->write_grammar_to_ufile_text(gout);
+
+			std::cerr << "Writing grammar took " << (double)((double)(clock()-glob_timer)/(double)CLOCKS_PER_SEC) << " seconds." << std::endl;
+			glob_timer = clock();
+		} else {
+			std::cerr << "Could not write grammar to " << options[GRAMMAR_OUT].value << std::endl;
+		}
+	}
+
+//	system("pause");
+	grammar->trim();
+//	system("pause");
+
 	applicator = new CG3::GrammarApplicator();
 	applicator->setGrammar(grammar);
 	applicator->runGrammarOnText(ux_stdin, ux_stdout);
 
 	std::cerr << "Applying grammar on input took " << (double)((double)(clock()-glob_timer)/(double)CLOCKS_PER_SEC) << " seconds." << std::endl;
 	glob_timer = clock();
-//*/
+
 	u_fclose(ux_stdin);
 	u_fclose(ux_stdout);
 	u_fclose(ux_stderr);
