@@ -32,7 +32,7 @@ namespace Options {
 		GRAMMAR_OUT,
 		UNSAFE,
 		SECTIONS,
-		DEBUG,
+		DODEBUG,
 		VISLCGCOMPAT,
 		STDIN,
 		STDOUT,

@@ -113,7 +113,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 				cReading->baseform = begintag;
 				cReading->wordform = begintag;
 				cReading->tags[begintag] = begintag;
-//				cReading->rehash();
+				cReading->rehash();
 				
 				cCohort = new Cohort();
 				cCohort->wordform = begintag;
