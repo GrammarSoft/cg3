@@ -277,7 +277,11 @@ int GrammarApplicator::runGrammarOnWindow(Window *window) {
 			}
 			else if (!reading->deleted && !selected) {
 				for (uint32_t i=0;i<grammar->sections.size();i++) {
+					bool section_did_something = false;
 					for (uint32_t j=0;j<grammar->sections[i];j++) {
+						if (!section_did_something && i != 0 && j == 0) {
+							j = grammar->sections[i-1];
+						}
 						const Rule *rule = grammar->rules[j];
 						if ((rule->type == K_REMOVE || rule->type == K_SELECT || rule->type == K_IFF) && cohort->readings.size() <= 1) {
 							continue;
@@ -298,6 +302,7 @@ int GrammarApplicator::runGrammarOnWindow(Window *window) {
 									}
 								}
 								if (good) {
+									section_did_something = true;
 									reading->hit_by.push_back(j);
 									if (rule->type == K_REMOVE) {
 										removerule = rule;
