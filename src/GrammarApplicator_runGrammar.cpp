@@ -89,6 +89,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 					cReading->wordform = cCohort->wordform;
 					cReading->baseform = cCohort->wordform;
 					cReading->tags[cCohort->wordform] = cCohort->wordform;
+					cReading->tags_list.push_back(cCohort->wordform);
 					cReading->noprint = true;
 					cReading->rehash();
 					cCohort->readings.push_back(cReading);
@@ -113,6 +114,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 				cReading->baseform = begintag;
 				cReading->wordform = begintag;
 				cReading->tags[begintag] = begintag;
+				cReading->tags_list.push_back(begintag);
 				cReading->rehash();
 				
 				cCohort = new Cohort();
@@ -252,94 +254,94 @@ int GrammarApplicator::runGrammarOnWindow(Window *window) {
 		Reading *selected = 0;
 		Reading *deleted = 0;
 
-		// ToDo: Run Rules->Readings instead of Readings->Rules
-		std::list<Reading*>::iterator rter;
-		for (rter = cohort->readings.begin() ; rter != cohort->readings.end() ; rter++) {
-			Reading *reading = *rter;
-			if (!reading->hash) {
-				reading->rehash();
+		for (uint32_t i=0;i<grammar->sections.size()-1;i++) {
+			bool section_did_something = false;
+			if (selected) {
+				break;
 			}
-			if (removerule && doesSetMatchReading(reading, removerule->target)) {
-				reading->deleted = true;
-				reading->hit_by.push_back(deleted->hit_by.back());
-				cohort->deleted.push_back(reading);
-				cohort->readings.remove(reading);
-				rter = cohort->readings.begin();
-				rter--;
-			}
-			else if (selected && selected != reading) {
-				reading->hit_by.push_back(selected->hit_by.back());
-				if (doesSetMatchReading(reading, selectrule->target)) {
-					reading->selected = true;
-				} else {
-					reading->deleted = true;
-					cohort->deleted.push_back(reading);
-					cohort->readings.remove(reading);
-					rter = cohort->readings.begin();
-					rter--;
+			for (uint32_t j=0;j<grammar->sections[i+1];j++) {
+				if (selected) {
+					break;
 				}
-			}
-			else if (!reading->deleted && !selected) {
-				for (uint32_t i=0;i<grammar->sections.size()-1;i++) {
-					bool section_did_something = false;
-					for (uint32_t j=0;j<grammar->sections[i+1];j++) {
-						if (!section_did_something && j == 0) {
-							j = grammar->sections[i];
-						}
-						const Rule *rule = grammar->rules[j];
-						if ((rule->type == K_REMOVE || rule->type == K_SELECT || rule->type == K_IFF) && cohort->readings.size() <= 1) {
-							continue;
-						}
-						if (reading->mapped && rule->type == K_MAP) {
-							continue;
-						}
-						if (!rule->wordform || rule->wordform == reading->wordform) {
-							if (rule->target && doesSetMatchReading(reading, rule->target)) {
-								bool good = true;
-								if (!rule->tests.empty()) {
-									std::list<ContextualTest*>::iterator iter;
-									for (iter = rule->tests.begin() ; iter != rule->tests.end() ; iter++) {
-										ContextualTest *test = *iter;
-										good = runContextualTest(window, current, c, test);
-										if (!good) {
-											if (test != rule->tests.front()) {
-												rule->tests.remove(test);
-												rule->tests.push_front(test);
-											}
-											break;
+				if (!section_did_something && j == 0) {
+					j = grammar->sections[i];
+				}
+				const Rule *rule = grammar->rules[j];
+				if ((rule->type == K_REMOVE || rule->type == K_SELECT || rule->type == K_IFF) && cohort->readings.size() <= 1) {
+					continue;
+				}
+
+				std::list<Reading*>::iterator rter;
+				for (rter = cohort->readings.begin() ; rter != cohort->readings.end() ; rter++) {
+					Reading *reading = *rter;
+					if (reading->mapped && rule->type == K_MAP) {
+						continue;
+					}
+					if (!reading->hash) {
+						reading->rehash();
+					}
+					if (!rule->wordform || rule->wordform == reading->wordform) {
+						if (rule->target && doesSetMatchReading(reading, rule->target)) {
+							bool good = true;
+							if (!rule->tests.empty()) {
+								std::list<ContextualTest*>::iterator iter;
+								for (iter = rule->tests.begin() ; iter != rule->tests.end() ; iter++) {
+									ContextualTest *test = *iter;
+									good = runContextualTest(window, current, c, test);
+									if (!good) {
+										if (test != rule->tests.front()) {
+											rule->tests.remove(test);
+											rule->tests.push_front(test);
 										}
-									}
-								}
-								if (good) {
-									section_did_something = true;
-									reading->hit_by.push_back(j);
-									if (rule->type == K_REMOVE) {
-										removerule = rule;
-										reading->deleted = true;
-										deleted = reading;
-										break;
-									}
-									else if (rule->type == K_SELECT) {
-										selectrule = rule;
-										reading->selected = true;
-										selected = reading;
 										break;
 									}
 								}
 							}
+							if (good) {
+								section_did_something = true;
+								reading->hit_by.push_back(j);
+								if (rule->type == K_REMOVE) {
+									removerule = rule;
+									reading->deleted = true;
+									cohort->deleted.push_back(reading);
+									cohort->readings.remove(reading);
+									deleted = reading;
+									for (rter = cohort->readings.begin() ; rter != cohort->readings.end() ; rter++) {
+										Reading *reading = *rter;
+										if (deleted != reading && doesSetMatchReading(reading, removerule->target)) {
+											reading->hit_by.push_back(deleted->hit_by.back());
+											reading->deleted = true;
+											cohort->deleted.push_back(reading);
+											cohort->readings.remove(reading);
+											rter = cohort->readings.begin();
+											rter--;
+										}
+									}
+									break;
+								}
+								else if (rule->type == K_SELECT) {
+									selectrule = rule;
+									reading->selected = true;
+									selected = reading;
+									for (rter = cohort->readings.begin() ; rter != cohort->readings.end() ; rter++) {
+										Reading *reading = *rter;
+										if (selected != reading) {
+											reading->hit_by.push_back(selected->hit_by.back());
+											if (doesSetMatchReading(reading, selectrule->target)) {
+												reading->selected = true;
+											} else {
+												reading->deleted = true;
+												cohort->deleted.push_back(reading);
+												cohort->readings.remove(reading);
+												rter = cohort->readings.begin();
+												rter--;
+											}
+										}
+									}
+									break;
+								}
+							}
 						}
-					}
-					if (reading->deleted) {
-						cohort->deleted.push_back(reading);
-						cohort->readings.remove(reading);
-						rter = cohort->readings.begin();
-						rter--;
-						break;
-					}
-					if (reading->selected) {
-						rter = cohort->readings.begin();
-						rter--;
-						break;
 					}
 				}
 			}
@@ -362,7 +364,10 @@ bool GrammarApplicator::runContextualTest(const Window *window, const SingleWind
 		bool foundfirst = false;
 		if (test->offset < 0 && pos >= 0 && (test->scanall || test->scanfirst)) {
 			for (int i=pos;i>=0;i--) {
-				cohort = sWindow->cohorts.at(pos);
+				if (test->line == 7619) {
+					i=i;
+				}
+				cohort = sWindow->cohorts.at(i);
 				if (test->careful) {
 					retval = doesSetMatchCohortCareful(cohort, test->target);
 				}
@@ -389,7 +394,7 @@ bool GrammarApplicator::runContextualTest(const Window *window, const SingleWind
 		}
 		else if (test->offset > 0 && (uint32_t)pos <= sWindow->cohorts.size() && (test->scanall || test->scanfirst)) {
 			for (uint32_t i=pos;i<sWindow->cohorts.size();i++) {
-				cohort = sWindow->cohorts.at(pos);
+				cohort = sWindow->cohorts.at(i);
 				if (test->careful) {
 					retval = doesSetMatchCohortCareful(cohort, test->target);
 				}

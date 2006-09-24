@@ -66,12 +66,11 @@ void GrammarApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 		u_fprintf(output, "%S", window->text);
 	}
 
-	std::vector<Cohort*>::iterator cter;
-	for (cter = window->cohorts.begin() ; cter != window->cohorts.end() ; cter++) {
-		if (cter == window->cohorts.begin()) {
+	for (uint32_t c=0 ; c < window->cohorts.size() ; c++) {
+		if (c == 0) {
 			continue;
 		}
-		Cohort *cohort = *cter;
+		Cohort *cohort = window->cohorts[c];
 		GrammarWriter::printTagRaw(output, single_tags[cohort->wordform]);
 		u_fprintf(output, "\n");
 		if (cohort->text) {
