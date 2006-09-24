@@ -35,6 +35,7 @@ ContextualTest::ContextualTest() {
 	barrier = 0;
 	linked = 0;
 	hash = 0;
+	line = 0;
 }
 
 ContextualTest::~ContextualTest() {

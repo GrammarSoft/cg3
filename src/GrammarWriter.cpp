@@ -38,20 +38,20 @@ void GrammarWriter::write_set_to_ufile(UFILE *output, Set *curset) {
 		u_fprintf(output, "LIST %S = ", curset->getName());
 		stdext::hash_map<uint32_t, uint32_t>::iterator comp_iter;
 		for (comp_iter = curset->single_tags.begin() ; comp_iter != curset->single_tags.end() ; comp_iter++) {
-			grammar->single_tags[comp_iter->second]->print(output);
+			printTag(output, grammar->single_tags[comp_iter->second]);
 			u_fprintf(output, " ");
 		}
 		for (comp_iter = curset->tags.begin() ; comp_iter != curset->tags.end() ; comp_iter++) {
 			if (grammar->tags.find(comp_iter->second) != grammar->tags.end()) {
 				CompositeTag *curcomptag = grammar->tags[comp_iter->second];
 				if (curcomptag->tags.size() == 1) {
-					grammar->single_tags[curcomptag->tags.begin()->second]->print(output);
+					printTag(output, grammar->single_tags[curcomptag->tags.begin()->second]);
 					u_fprintf(output, " ");
 				} else {
 					u_fprintf(output, "(");
 					std::map<uint32_t, uint32_t>::iterator tag_iter;
 					for (tag_iter = curcomptag->tags_map.begin() ; tag_iter != curcomptag->tags_map.end() ; tag_iter++) {
-						grammar->single_tags[tag_iter->second]->print(output);
+						printTag(output, grammar->single_tags[tag_iter->second]);
 						u_fprintf(output, " ");
 					}
 					u_fprintf(output, ") ");
@@ -116,7 +116,7 @@ int GrammarWriter::write_grammar_to_ufile_text(UFILE *output) {
 	for (uint32_t i=1;i<grammar->sections.size();i++) {
 		u_fprintf(output, "\nSECTION\n");
 		for (uint32_t j=grammar->sections[i-1];j<grammar->sections[i];j++) {
-			grammar->printRule(output, grammar->rules[j]);
+			printRule(output, grammar->rules[j]);
 			u_fprintf(output, "\n");
 		}
 	}
@@ -143,4 +143,134 @@ int GrammarWriter::write_grammar_to_file_binary(FILE *output) {
 
 void GrammarWriter::setGrammar(Grammar *res) {
 	grammar = res;
+}
+
+void GrammarWriter::printRule(UFILE *to, const Rule *rule) {
+	if (rule->wordform) {
+		printTag(to, grammar->single_tags.find(rule->wordform)->second);
+		u_fprintf(to, " ");
+	}
+
+	u_fprintf(to, "%S", keywords[rule->type]);
+
+	if (rule->name && !(rule->name[0] == '_' && rule->name[1] == 'R' && rule->name[2] == '_')) {
+		u_fprintf(to, ":%S", rule->name);
+	}
+	u_fprintf(to, " ");
+
+	if (rule->subst_target) {
+		u_fprintf(to, "%S ", grammar->sets_by_contents.find(rule->subst_target)->second->name);
+	}
+
+	if (rule->maplist.size()) {
+		std::list<uint32_t>::const_iterator iter;
+		u_fprintf(to, "(");
+		for (iter = rule->maplist.begin() ; iter != rule->maplist.end() ; iter++) {
+			printTag(to, grammar->single_tags.find(*iter)->second);
+			u_fprintf(to, " ");
+		}
+		u_fprintf(to, ") ");
+	}
+
+	if (rule->target) {
+		u_fprintf(to, "%S ", grammar->sets_by_contents.find(rule->target)->second->name);
+	}
+
+	if (rule->tests.size()) {
+		std::list<ContextualTest*>::const_iterator iter;
+		for (iter = rule->tests.begin() ; iter != rule->tests.end() ; iter++) {
+			u_fprintf(to, "(");
+			printContextualTest(to, *iter);
+			u_fprintf(to, ") ");
+		}
+	}
+}
+
+void GrammarWriter::printContextualTest(UFILE *to, const ContextualTest *test) {
+	if (test->negative) {
+		u_fprintf(to, "NOT ");
+	}
+	if (test->absolute) {
+		u_fprintf(to, "@");
+	}
+	if (test->scanall) {
+		u_fprintf(to, "**");
+	}
+	else if (test->scanfirst) {
+		u_fprintf(to, "*");
+	}
+
+	u_fprintf(to, "%d", test->offset);
+
+	if (test->careful) {
+		u_fprintf(to, "C");
+	}
+	if (test->span_windows) {
+		u_fprintf(to, "W");
+	}
+
+	u_fprintf(to, " ");
+
+	if (test->target) {
+		u_fprintf(to, "%S ", grammar->sets_by_contents.find(test->target)->second->name);
+	}
+	if (test->barrier) {
+		u_fprintf(to, "BARRIER %S ", grammar->sets_by_contents.find(test->barrier)->second->name);
+	}
+
+	if (test->linked) {
+		u_fprintf(to, "LINK ");
+		printContextualTest(to, test->linked);
+	}
+}
+
+void GrammarWriter::printTag(UFILE *to, const Tag *tag) {
+	if (tag->features & F_NEGATIVE) {
+		u_fprintf(to, "!");
+	}
+	if (tag->features & F_FAILFAST) {
+		u_fprintf(to, "^");
+	}
+	if (tag->type & T_META) {
+		u_fprintf(to, "META:");
+	}
+	if (tag->type & T_VARIABLE) {
+		u_fprintf(to, "VAR:");
+	}
+
+	UChar *tmp = new UChar[u_strlen(tag->tag)*2+3];
+	ux_escape(tmp, tag->tag);
+	u_fprintf(to, "%S", tmp);
+	delete tmp;
+
+	if (tag->features & F_CASE_INSENSITIVE) {
+		u_fprintf(to, "i");
+	}
+	if (tag->features & F_REGEXP) {
+		u_fprintf(to, "r");
+	}
+}
+
+void GrammarWriter::printTagRaw(UFILE *to, const Tag *tag) {
+	if (tag->features & F_NEGATIVE) {
+		u_fprintf(to, "!");
+	}
+	if (tag->features & F_FAILFAST) {
+		u_fprintf(to, "^");
+	}
+	if (tag->type & T_META) {
+		u_fprintf(to, "META:");
+	}
+	if (tag->type & T_VARIABLE) {
+		u_fprintf(to, "VAR:");
+	}
+
+	u_fprintf(to, "%S", tag->tag);
+
+	if (tag->features & F_CASE_INSENSITIVE) {
+		u_fprintf(to, "i");
+	}
+	if (tag->features & F_REGEXP) {
+		u_fprintf(to, "r");
+	}
 }

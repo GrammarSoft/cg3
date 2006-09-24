@@ -23,6 +23,7 @@ namespace CG3 {
 
 	class ContextualTest {
 	public:
+		uint32_t line;
 		uint32_t hash;
 		bool careful;
 		// ToDo: Implement NEGATE

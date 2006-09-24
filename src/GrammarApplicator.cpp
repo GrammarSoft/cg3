@@ -16,6 +16,7 @@
  */
 
 #include "GrammarApplicator.h"
+#include "GrammarWriter.h"
 #include "Window.h"
 #include "SingleWindow.h"
 #include "uextras.h"
@@ -71,7 +72,7 @@ void GrammarApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 			continue;
 		}
 		Cohort *cohort = *cter;
-		single_tags[cohort->wordform]->printRaw(output);
+		GrammarWriter::printTagRaw(output, single_tags[cohort->wordform]);
 		u_fprintf(output, "\n");
 		if (cohort->text) {
 			u_fprintf(output, "%S", cohort->text);
@@ -87,14 +88,14 @@ void GrammarApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 				u_fprintf(output, ";");
 			}
 			u_fprintf(output, "\t");
-			single_tags[reading->baseform]->printRaw(output);
+			GrammarWriter::printTagRaw(output, single_tags[reading->baseform]);
 			u_fprintf(output, " ");
 
 			std::list<uint32_t>::iterator tter;
 			for (tter = reading->tags_list.begin() ; tter != reading->tags_list.end() ; tter++) {
 				Tag *tag = single_tags[*tter];
 				if (!(tag->type & T_BASEFORM) && !(tag->type & T_WORDFORM)) {
-					tag->printRaw(output);
+					GrammarWriter::printTagRaw(output, tag);
 					u_fprintf(output, " ");
 				}
 			}
@@ -117,14 +118,14 @@ void GrammarApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 				u_fprintf(output, ";");
 			}
 			u_fprintf(output, "\t");
-			single_tags[reading->baseform]->printRaw(output);
+			GrammarWriter::printTagRaw(output, single_tags[reading->baseform]);
 			u_fprintf(output, " ");
 
 			std::list<uint32_t>::iterator tter;
 			for (tter = reading->tags_list.begin() ; tter != reading->tags_list.end() ; tter++) {
 				Tag *tag = single_tags[*tter];
 				if (!(tag->type & T_BASEFORM) && !(tag->type & T_WORDFORM)) {
-					tag->printRaw(output);
+					GrammarWriter::printTagRaw(output, tag);
 					u_fprintf(output, " ");
 				}
 			}

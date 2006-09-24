@@ -30,6 +30,7 @@ namespace CG3 {
 		UChar *name;
 		uint32_t line;
 		uint32_t hash;
+		// ToDo: Phase Set->used out in favour of a local lookup table
 		bool used;
 
 		std::map<uint32_t, uint32_t> tags_map;

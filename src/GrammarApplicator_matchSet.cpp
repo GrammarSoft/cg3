@@ -61,6 +61,10 @@ bool GrammarApplicator::doesSetMatchReading(const Reading *reading, const uint32
 
 	assert(reading->hash != 0);
 
+	if (reading->hash) {
+		if (__index_matches(&index_reading_yes, reading->hash, set)) { return true; }
+		if (__index_matches(&index_reading_no, reading->hash, set)) { return false; }
+	}
 	if (reading->hash_plain) {
 		if (__index_matches(&index_reading_plain_yes, reading->hash_plain, set)) { return true; }
 		if (__index_matches(&index_reading_plain_no, reading->hash_plain, set)) { return false; }
@@ -68,10 +72,6 @@ bool GrammarApplicator::doesSetMatchReading(const Reading *reading, const uint32
 	if (reading->hash_tags) {
 		if (__index_matches(&index_reading_tags_yes, reading->hash_tags, set)) { return true; }
 		if (__index_matches(&index_reading_tags_no, reading->hash_tags, set)) { return false; }
-	}
-	if (reading->hash) {
-		if (__index_matches(&index_reading_yes, reading->hash, set)) { return true; }
-		if (__index_matches(&index_reading_no, reading->hash, set)) { return false; }
 	}
 
 	cache_miss++;

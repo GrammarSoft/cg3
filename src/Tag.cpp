@@ -149,57 +149,6 @@ void Tag::parseTag(const UChar *to) {
 	}
 }
 
-void Tag::print(UFILE *to) {
-	if (features & F_NEGATIVE) {
-		u_fprintf(to, "!");
-	}
-	if (features & F_FAILFAST) {
-		u_fprintf(to, "^");
-	}
-	if (type & T_META) {
-		u_fprintf(to, "META:");
-	}
-	if (type & T_VARIABLE) {
-		u_fprintf(to, "VAR:");
-	}
-
-	UChar *tmp = new UChar[u_strlen(tag)*2+3];
-	ux_escape(tmp, tag);
-	u_fprintf(to, "%S", tmp);
-	delete tmp;
-
-	if (features & F_CASE_INSENSITIVE) {
-		u_fprintf(to, "i");
-	}
-	if (features & F_REGEXP) {
-		u_fprintf(to, "r");
-	}
-}
-
-void Tag::printRaw(UFILE *to) {
-	if (features & F_NEGATIVE) {
-		u_fprintf(to, "!");
-	}
-	if (features & F_FAILFAST) {
-		u_fprintf(to, "^");
-	}
-	if (type & T_META) {
-		u_fprintf(to, "META:");
-	}
-	if (type & T_VARIABLE) {
-		u_fprintf(to, "VAR:");
-	}
-
-	u_fprintf(to, "%S", tag);
-
-	if (features & F_CASE_INSENSITIVE) {
-		u_fprintf(to, "i");
-	}
-	if (features & F_REGEXP) {
-		u_fprintf(to, "r");
-	}
-}
-
 uint32_t Tag::rehash() {
 	hash = 0;
 

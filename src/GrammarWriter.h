@@ -35,8 +35,15 @@ namespace CG3 {
 
 		void setGrammar(Grammar *res);
 
+		static void printTag(UFILE *out, const Tag *tag);
+		static void printTagRaw(UFILE *out, const Tag *tag);
+
 	private:
 		void write_set_to_ufile(UFILE *output, Set *curset);
+
+		void printRule(UFILE *to, const Rule *rule);
+		void printContextualTest(UFILE *to, const ContextualTest *test);
+
 	};
 }
 

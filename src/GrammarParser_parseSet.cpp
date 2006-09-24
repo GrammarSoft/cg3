@@ -235,7 +235,9 @@ int GrammarParser::parseSet(const UChar *line) {
 		res = curset->sets.at(0);
 		result->destroySet(curset);
 		curset = result->getSet(res);
-	} else if (only_or) {
+	}
+//*
+	else if (only_or) {
 		bool only_simple = true;
 		for (uint32_t i=0;i<curset->sets.size();i++) {
 			Set *set = result->getSet(curset->sets[i]);
@@ -255,6 +257,7 @@ int GrammarParser::parseSet(const UChar *line) {
 			curset->set_ops.clear();
 		}
 	}
+//*/
 /*
 	else if (curset->sets.size() == 2 && curset->set_ops[0] == S_FAILFAST) {
 	}

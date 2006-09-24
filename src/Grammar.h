@@ -78,9 +78,6 @@ namespace CG3 {
 		Rule *allocateRule();
 		void addRule(Rule *rule);
 		void destroyRule(Rule *rule);
-
-		void printRule(UFILE *to, const Rule *rule);
-		void printContextualTest(UFILE *to, const ContextualTest *test);
 	};
 
 }

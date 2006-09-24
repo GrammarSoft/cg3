@@ -53,6 +53,7 @@ int GrammarParser::parseContextualTest(UChar **paren, CG3::ContextualTest *paren
 	context->negative = negative;
 	parentTest->linked = context;
 
+	context->line = result->curline;
 	context->target = parseTarget(&test);
 
 	if (test && test[0]) {
@@ -106,6 +107,7 @@ int GrammarParser::parseContextualTests(UChar **paren, CG3::Rule *rule) {
 			context->negative = negative;
 			rule->addContextualTest(context);
 
+			context->line = result->curline;
 			context->target = parseTarget(&test);
 
 			if (test && test[0]) {

@@ -239,6 +239,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 }
 
 int GrammarApplicator::runGrammarOnWindow(Window *window) {
+	// ToDo: Time runGrammarOnWindow
 	SingleWindow *current = window->current;
 
 	for (uint32_t c=0 ; c < current->cohorts.size() ; c++) {
@@ -251,6 +252,7 @@ int GrammarApplicator::runGrammarOnWindow(Window *window) {
 		Reading *selected = 0;
 		Reading *deleted = 0;
 
+		// ToDo: Run Rules->Readings instead of Readings->Rules
 		std::list<Reading*>::iterator rter;
 		for (rter = cohort->readings.begin() ; rter != cohort->readings.end() ; rter++) {
 			Reading *reading = *rter;
@@ -278,14 +280,17 @@ int GrammarApplicator::runGrammarOnWindow(Window *window) {
 				}
 			}
 			else if (!reading->deleted && !selected) {
-				for (uint32_t i=0;i<grammar->sections.size();i++) {
+				for (uint32_t i=0;i<grammar->sections.size()-1;i++) {
 					bool section_did_something = false;
-					for (uint32_t j=0;j<grammar->sections[i];j++) {
+					for (uint32_t j=0;j<grammar->sections[i+1];j++) {
 						if (!section_did_something && j == 0) {
-							j = grammar->sections[i-1];
+							j = grammar->sections[i];
 						}
 						const Rule *rule = grammar->rules[j];
 						if ((rule->type == K_REMOVE || rule->type == K_SELECT || rule->type == K_IFF) && cohort->readings.size() <= 1) {
+							continue;
+						}
+						if (reading->mapped && rule->type == K_MAP) {
 							continue;
 						}
 						if (!rule->wordform || rule->wordform == reading->wordform) {
@@ -365,20 +370,20 @@ bool GrammarApplicator::runContextualTest(const Window *window, const SingleWind
 					retval = doesSetMatchCohortNormal(cohort, test->target);
 				}
 				foundfirst = retval;
-				if (!retval && foundfirst && test->scanfirst) {
-					break;
-				}
-				else if (test->barrier) {
-					bool barrier = doesSetMatchCohortNormal(cohort, test->barrier);
-					if (barrier) {
-						break;
-					}
-				}
 				if (test->negative) {
 					retval = !retval;
 				}
 				if (retval && test->linked) {
 					retval = runContextualTest(window, sWindow, i, test->linked);
+				}
+				if (foundfirst && test->scanfirst) {
+					break;
+				}
+				if (test->barrier) {
+					bool barrier = doesSetMatchCohortNormal(cohort, test->barrier);
+					if (barrier) {
+						break;
+					}
 				}
 			}
 		}
@@ -392,20 +397,20 @@ bool GrammarApplicator::runContextualTest(const Window *window, const SingleWind
 					retval = doesSetMatchCohortNormal(cohort, test->target);
 				}
 				foundfirst = retval;
-				if (!retval && foundfirst && test->scanfirst) {
-					break;
-				}
-				else if (test->barrier) {
-					bool barrier = doesSetMatchCohortNormal(cohort, test->barrier);
-					if (barrier) {
-						break;
-					}
-				}
 				if (test->negative) {
 					retval = !retval;
 				}
 				if (retval && test->linked) {
 					retval = runContextualTest(window, sWindow, i, test->linked);
+				}
+				if (foundfirst && test->scanfirst) {
+					break;
+				}
+				if (test->barrier) {
+					bool barrier = doesSetMatchCohortNormal(cohort, test->barrier);
+					if (barrier) {
+						break;
+					}
 				}
 			}
 		}
