@@ -147,8 +147,8 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 				cWindow->shuffleWindowsDown();
 				runGrammarOnWindow(cWindow);
 				printSingleWindow(cWindow->current, output);
-				std::cerr << "Cache " << (cache_hits+cache_miss) << " : " << cache_hits << " / " << cache_miss << "\r" << std::flush;
-				u_fflush(output);
+//				std::cerr << "Cache " << (cache_hits+cache_miss) << " : " << cache_hits << " / " << cache_miss << "\r" << std::flush;
+//				u_fflush(output);
 			}
 			cCohort = new Cohort();
 			cCohort->wordform = addTag(cleaned);
@@ -233,8 +233,9 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 		cWindow->shuffleWindowsDown();
 		runGrammarOnWindow(cWindow);
 		printSingleWindow(cWindow->current, output);
-		u_fflush(output);
+//		u_fflush(output);
 	}
+	u_fflush(output);
 	std::cerr << "Cache " << (cache_hits+cache_miss) << " : " << cache_hits << " / " << cache_miss << std::endl;
 	std::cerr << "Match " << (match_sub+match_comp+match_single) << " : " << match_sub << " / " << match_comp << " / " << match_single << std::endl;
 	return 0;
