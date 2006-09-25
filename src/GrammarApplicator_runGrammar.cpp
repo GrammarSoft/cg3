@@ -259,11 +259,16 @@ int GrammarApplicator::runGrammarOnWindow(Window *window) {
 			if (selected) {
 				break;
 			}
+			if (fast) {
+				i = (uint32_t)grammar->sections.size()-2;
+				section_did_something = true;
+			}
 			for (uint32_t j=0;j<grammar->sections[i+1];j++) {
 				if (selected) {
 					break;
 				}
 				if (!section_did_something && j == 0) {
+					// ToDo: Count how much skipping rules does
 					j = grammar->sections[i];
 				}
 				const Rule *rule = grammar->rules[j];
@@ -354,6 +359,7 @@ bool GrammarApplicator::runContextualTest(const Window *window, const SingleWind
 	bool retval = true;
 	int pos = position + test->offset;
 	const Cohort *cohort = 0;
+	// ToDo: Implement absolute offsets
 	if (pos >= 0 && (uint32_t)pos < sWindow->cohorts.size()) {
 		cohort = sWindow->cohorts.at(pos);
 	}
@@ -364,9 +370,6 @@ bool GrammarApplicator::runContextualTest(const Window *window, const SingleWind
 		bool foundfirst = false;
 		if (test->offset < 0 && pos >= 0 && (test->scanall || test->scanfirst)) {
 			for (int i=pos;i>=0;i--) {
-				if (test->line == 7619) {
-					i=i;
-				}
 				cohort = sWindow->cohorts.at(i);
 				if (test->careful) {
 					retval = doesSetMatchCohortCareful(cohort, test->target);

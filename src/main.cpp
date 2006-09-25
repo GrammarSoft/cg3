@@ -46,6 +46,7 @@ namespace Options {
 		LOCALE_GRAMMAR,
 		LOCALE_INPUT,
 		LOCALE_OUTPUT,
+		FAST,
 		NUM_OPTIONS
 	};
 
@@ -73,7 +74,8 @@ namespace Options {
 		UOPTION_DEF("locale-all",			'L', UOPT_REQUIRES_ARG),
 		UOPTION_DEF("locale-grammar",		0, UOPT_REQUIRES_ARG),
 		UOPTION_DEF("locale-input",			0, UOPT_REQUIRES_ARG),
-		UOPTION_DEF("locale-output",		0, UOPT_REQUIRES_ARG)
+		UOPTION_DEF("locale-output",		0, UOPT_REQUIRES_ARG),
+		UOPTION_DEF("fast",					0, UOPT_NO_ARG)
 	};
 }
 
@@ -267,6 +269,9 @@ int main(int argc, char* argv[]) {
 
 		applicator = new CG3::GrammarApplicator();
 		applicator->setGrammar(grammar);
+		if (options[FAST].doesOccur) {
+			applicator->fast = true;
+		}
 		applicator->runGrammarOnText(ux_stdin, ux_stdout);
 
 		std::cerr << "Applying grammar on input took " << (double)((double)(clock()-glob_timer)/(double)CLOCKS_PER_SEC) << " seconds." << std::endl;
