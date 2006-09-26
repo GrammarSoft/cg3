@@ -47,6 +47,9 @@ namespace Options {
 		LOCALE_INPUT,
 		LOCALE_OUTPUT,
 		FAST,
+		NOMAPPINGS,
+		NOCORRECTIONS,
+		TRACE,
 		NUM_OPTIONS
 	};
 
@@ -75,7 +78,10 @@ namespace Options {
 		UOPTION_DEF("locale-grammar",		0, UOPT_REQUIRES_ARG),
 		UOPTION_DEF("locale-input",			0, UOPT_REQUIRES_ARG),
 		UOPTION_DEF("locale-output",		0, UOPT_REQUIRES_ARG),
-		UOPTION_DEF("fast",					0, UOPT_NO_ARG)
+		UOPTION_DEF("fast",					0, UOPT_NO_ARG),
+		UOPTION_DEF("no-mappings",			0, UOPT_NO_ARG),
+		UOPTION_DEF("no-corrections",		0, UOPT_NO_ARG),
+		UOPTION_DEF("trace",				0, UOPT_NO_ARG)
 	};
 }
 
@@ -273,6 +279,12 @@ int main(int argc, char* argv[]) {
 			applicator->fast = true;
 		}
 		applicator->apply_mappings = true;
+		if (options[NOMAPPINGS].doesOccur) {
+			applicator->apply_mappings = false;
+		}
+		if (options[TRACE].doesOccur) {
+			applicator->trace = true;
+		}
 		applicator->apply_corrections = false;
 		applicator->runGrammarOnText(ux_stdin, ux_stdout);
 

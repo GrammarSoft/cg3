@@ -323,34 +323,19 @@ int GrammarApplicator::runGrammarOnWindow(Window *window) {
 	}
 
 	if (!grammar->rules.empty()) {
-		for (uint32_t c=0 ; c < current->cohorts.size() ; c++) {
-			if (c == 0) {
-				continue;
-			}
-			Cohort *cohort = current->cohorts[c];
-			const Rule *selectrule = 0;
-			const Rule *removerule = 0;
-			Reading *selected = 0;
-			Reading *deleted = 0;
+		for (uint32_t i=0;i<grammar->sections.size()-1;i++) {
+			for (uint32_t j=0;j<grammar->sections[i+1];j++) {
+				const Rule *rule = grammar->rules[j];
+				const Rule *removerule = 0;
+				const Rule *selectrule = 0;
+				Reading *deleted = 0;
+				Reading *selected = 0;
 
-			for (uint32_t i=0;i<grammar->sections.size()-1;i++) {
-				bool section_did_something = false;
-				if (selected) {
-					break;
-				}
-				if (fast) {
-					i = (uint32_t)grammar->sections.size()-2;
-					section_did_something = true;
-				}
-				for (uint32_t j=0;j<grammar->sections[i+1];j++) {
-					if (selected) {
-						break;
+				for (uint32_t c=0 ; c < current->cohorts.size() ; c++) {
+					if (c == 0) {
+						continue;
 					}
-					if (!section_did_something && j == 0) {
-						// ToDo: Count how much skipping rules does
-						j = grammar->sections[i];
-					}
-					const Rule *rule = grammar->rules[j];
+					Cohort *cohort = current->cohorts[c];
 					if (cohort->readings.size() <= 1) {
 						continue;
 					}
@@ -379,7 +364,6 @@ int GrammarApplicator::runGrammarOnWindow(Window *window) {
 									}
 								}
 								if (good) {
-									section_did_something = true;
 									reading->hit_by.push_back(j);
 									if (rule->type == K_REMOVE) {
 										removerule = rule;
