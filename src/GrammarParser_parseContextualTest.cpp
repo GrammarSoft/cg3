@@ -128,5 +128,8 @@ int GrammarParser::parseContextualTests(UChar **paren, CG3::Rule *rule) {
 			ux_trim(*paren);
 		}
 	}
+	if (*paren && (*paren)[0] && (*paren)[0] != '(') {
+		u_fprintf(ux_stderr, "Warning: Remnant text \"%S\" on line %u - skipping it!\n", *paren, result->curline);
+	}
 	return 0;
 }

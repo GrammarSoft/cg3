@@ -125,6 +125,10 @@ int GrammarParser::parseSingleLine(KEYWORDS key, const UChar *line) {
 		case K_PREFERRED_TARGETS:
 			parsePreferredTargets(local);
 			break;
+		case K_REMVARIABLE:
+		case K_SETVARIABLE:
+			parseRemSetVariable(local, key);
+			break;
 		default:
 			break;
 	}
@@ -193,6 +197,7 @@ int GrammarParser::parse_grammar_from_ufile(UFILE *input) {
 				break;
 			}
 		}
+		// ToDo: Maybe support ICase keywords
 		if (notnull) {
 			ux_trim(line);
 			KEYWORDS keyword = K_IGNORE;

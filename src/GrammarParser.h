@@ -60,6 +60,7 @@ namespace CG3 {
 		int parseSelectRemoveIffDelimitMatch(const UChar *line, KEYWORDS key);
 		int parseAddMapReplaceAppend(const UChar *line, KEYWORDS key);
 		int parseSubstitute(const UChar *line);
+		int parseRemSetVariable(const UChar *line, KEYWORDS key);
 	};
 }
 

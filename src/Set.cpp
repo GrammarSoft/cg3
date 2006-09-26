@@ -27,7 +27,6 @@ Set::Set() {
 	name = 0;
 	line = 0;
 	hash = 0;
-	used = false;
 }
 
 Set::~Set() {

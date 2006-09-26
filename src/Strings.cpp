@@ -63,11 +63,8 @@ namespace CG3 {
 			init_keyword_single("ANCHOR",            K_ANCHOR);
 			init_keyword_single("EXECUTE",           K_EXECUTE);
 			init_keyword_single("JUMP",              K_JUMP);
-			init_keyword_single("DEFINEGLOBAL",      K_DEFINEGLOBAL);
-			init_keyword_single("REMGLOBAL",         K_REMGLOBAL);
-			init_keyword_single("SETGLOBAL",         K_SETGLOBAL);
-			init_keyword_single("MINVALUE",          K_MINVALUE);
-			init_keyword_single("MAXVALUE",          K_MAXVALUE);
+			init_keyword_single("REMVARIABLE",       K_REMVARIABLE);
+			init_keyword_single("SETVARIABLE",       K_SETVARIABLE);
 			init_keyword_single("DELIMIT",           K_DELIMIT);
 			init_keyword_single("MATCH",             K_MATCH);
 

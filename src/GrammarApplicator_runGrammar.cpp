@@ -242,6 +242,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 }
 
 int GrammarApplicator::runGrammarOnWindow(Window *window) {
+label_runGrammarOnWindow_begin:
 	SingleWindow *current = window->current;
 
 	if ((apply_mappings || apply_corrections) && !grammar->mappings.empty()) {
@@ -449,6 +450,25 @@ int GrammarApplicator::runGrammarOnWindow(Window *window) {
 											section_did_good = false;
 										}
 										break;
+									}
+									else if (type == K_DELIMIT) {
+										SingleWindow *nwin = new SingleWindow();
+										uint32_t nc = c;
+										for (nc = c ; nc < current->cohorts.size() ; nc++) {
+											nwin->cohorts.push_back(current->cohorts.at(nc));
+										}
+										c = (uint32_t)current->cohorts.size()-c;
+										for (nc = 0 ; nc < c ; nc++) {
+											current->cohorts.pop_back();
+										}
+										window->next.push_front(nwin);
+										cohort = current->cohorts.back();
+
+										for (rter = cohort->readings.begin() ; rter != cohort->readings.end() ; rter++) {
+											Reading *reading = *rter;
+											reading->rehash();
+										}
+										goto label_runGrammarOnWindow_begin;
 									}
 								}
 							}

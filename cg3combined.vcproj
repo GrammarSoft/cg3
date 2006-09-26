@@ -225,6 +225,9 @@
 				RelativePath=".\src\GrammarParser_parsePreferredTargets.cpp">
 			</File>
 			<File
+				RelativePath=".\src\GrammarParser_parseRemSetVariable.cpp">
+			</File>
+			<File
 				RelativePath=".\src\GrammarParser_parseSection.cpp">
 			</File>
 			<File
