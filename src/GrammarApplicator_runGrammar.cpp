@@ -363,9 +363,16 @@ int GrammarApplicator::runGrammarOnWindow(Window *window) {
 										}
 									}
 								}
+								KEYWORDS type = rule->type;
+								if (rule->type == K_IFF && good) {
+									type = K_SELECT;
+								}
+								else if (rule->type == K_IFF && !good) {
+									type = K_REMOVE;
+								}
 								if (good) {
 									reading->hit_by.push_back(j);
-									if (rule->type == K_REMOVE) {
+									if (type == K_REMOVE) {
 										removerule = rule;
 										reading->deleted = true;
 										cohort->deleted.push_back(reading);
@@ -384,7 +391,7 @@ int GrammarApplicator::runGrammarOnWindow(Window *window) {
 										}
 										break;
 									}
-									else if (rule->type == K_SELECT) {
+									else if (type == K_SELECT) {
 										selectrule = rule;
 										reading->selected = true;
 										selected = reading;

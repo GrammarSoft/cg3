@@ -34,6 +34,7 @@ namespace CG3 {
 		uint32_t subst_target;
 		uint32_t target;
 		uint32_t line;
+		uint32_t varname, varvalue;
 		KEYWORDS type;
 		std::list<uint32_t> maplist;
 		mutable std::list<ContextualTest*> tests;

@@ -75,7 +75,7 @@ uint32_t GrammarParser::parseTarget(UChar **space) {
 		result->destroySet(curset);
 		curset = result->getSet(res);
 	}
-//*
+/*
 	else if (only_or) {
 		bool only_simple = true;
 		for (uint32_t i=0;i<curset->sets.size();i++) {

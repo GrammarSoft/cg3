@@ -236,7 +236,7 @@ int GrammarParser::parseSet(const UChar *line) {
 		result->destroySet(curset);
 		curset = result->getSet(res);
 	}
-//*
+/*
 	else if (only_or) {
 		bool only_simple = true;
 		for (uint32_t i=0;i<curset->sets.size();i++) {

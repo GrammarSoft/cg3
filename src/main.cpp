@@ -30,6 +30,7 @@ namespace Options {
 		VERSION,
 		GRAMMAR,
 		GRAMMAR_OUT,
+		GRAMMAR_ONLY,
 		CHECK_ONLY,
 		UNSAFE,
 		SECTIONS,
@@ -59,6 +60,7 @@ namespace Options {
 		UOPTION_DEF("version",				'V', UOPT_NO_ARG),
 		UOPTION_DEF("grammar",				'g', UOPT_REQUIRES_ARG),
 		UOPTION_DEF("grammar-out",			0, UOPT_REQUIRES_ARG),
+		UOPTION_DEF("grammar-only",			0, UOPT_NO_ARG),
 		UOPTION_DEF("check-only",			0, UOPT_NO_ARG),
 		UOPTION_DEF("unsafe",				'u', UOPT_NO_ARG),
 		UOPTION_DEF("sections",				's', UOPT_REQUIRES_ARG),
@@ -127,6 +129,8 @@ int main(int argc, char* argv[]) {
         fprintf(stderr, " -V or --version          Prints version number.\n");
         fprintf(stderr, " -g or --grammar          Specifies the grammar file to use for disambiguation.\n");
         fprintf(stderr, " -p or --vislcg-compat    Tells the grammar compiler to be compatible with older VISLCG syntax.\n");
+        fprintf(stderr, " --grammar-only           Compiles the grammar only.\n");
+        fprintf(stderr, " --check-only             Compiles the grammar only.\n");
         fprintf(stderr, " --trace                  Prints debug output alongside with normal output.\n");
         fprintf(stderr, " --no-mappings            Disables running any MAP, ADD, or REPLACE rules.\n");
         fprintf(stderr, " --no-corrections         Disables running any SUBSTITUTE or APPEND rules.\n");
@@ -273,7 +277,7 @@ int main(int argc, char* argv[]) {
 		}
 	}
 
-	if (!options[CHECK_ONLY].doesOccur) {
+	if (!options[CHECK_ONLY].doesOccur && !options[GRAMMAR_ONLY].doesOccur) {
 		grammar->trim();
 
 		applicator = new CG3::GrammarApplicator();

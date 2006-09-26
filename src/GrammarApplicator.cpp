@@ -174,8 +174,6 @@ void GrammarApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 				u_fprintf(output, "\n");
 			}
 		}
-		u_fprintf(output, "\n");
-
 		for (rter = cohort->readings.begin() ; rter != cohort->readings.end() ; rter++) {
 			Reading *reading = *rter;
 			if (reading->text) {
@@ -189,4 +187,5 @@ void GrammarApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 			}
 		}
 	}
+	u_fprintf(output, "\n");
 }
