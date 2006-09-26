@@ -242,10 +242,10 @@ void Grammar::trim() {
 		if (!iter_tags->second->type && !iter_tags->second->features) {
 			Tag *tag = iter_tags->second;
 			tag->type &= ~T_TEXTUAL;
-			tag->type &= ~T_WORDFORM;
-			tag->type &= ~T_BASEFORM;
 		}
 	}
+
+	// ToDo: Reorder contextual tests according to weight
 /*
 	stdext::hash_map<uint32_t, Tag*>::iterator iter_tags;
 	for (iter_tags = single_tags.begin() ; iter_tags != single_tags.end() ; iter_tags++) {

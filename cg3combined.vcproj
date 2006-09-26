@@ -387,6 +387,9 @@
 			Name="Streams"
 			Filter="">
 			<File
+				RelativePath=".\cg3-trace.txt">
+			</File>
+			<File
 				RelativePath=".\dancg.morf.txt">
 			</File>
 			<File

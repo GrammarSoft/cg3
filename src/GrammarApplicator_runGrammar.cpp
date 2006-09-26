@@ -323,8 +323,16 @@ int GrammarApplicator::runGrammarOnWindow(Window *window) {
 	}
 
 	if (!grammar->rules.empty()) {
-		for (uint32_t i=0;i<grammar->sections.size()-1;i++) {
+		for (uint32_t i=0;i<grammar->sections.size()-1;) {
+			bool section_did_good = true;
+			uint32_t first_good_rule = grammar->sections[grammar->sections.size()-1]*2;
 			for (uint32_t j=0;j<grammar->sections[i+1];j++) {
+/*
+				if (j == 0 && i > 1 && first_good_rule > grammar->sections[i-2]) {
+					j = grammar->sections[i-2];
+				}
+//*/
+				section_did_good = false;
 				const Rule *rule = grammar->rules[j];
 				const Rule *removerule = 0;
 				const Rule *selectrule = 0;
@@ -366,11 +374,15 @@ int GrammarApplicator::runGrammarOnWindow(Window *window) {
 								KEYWORDS type = rule->type;
 								if (rule->type == K_IFF && good) {
 									type = K_SELECT;
+									good = true;
 								}
 								else if (rule->type == K_IFF && !good) {
 									type = K_REMOVE;
+									good = true;
 								}
 								if (good) {
+									section_did_good = true;
+									first_good_rule = (j < first_good_rule) ? j : first_good_rule;
 									reading->hit_by.push_back(j);
 									if (type == K_REMOVE) {
 										removerule = rule;
@@ -395,6 +407,7 @@ int GrammarApplicator::runGrammarOnWindow(Window *window) {
 										selectrule = rule;
 										reading->selected = true;
 										selected = reading;
+										size_t nc = cohort->readings.size();
 										for (rter = cohort->readings.begin() ; rter != cohort->readings.end() ; rter++) {
 											Reading *reading = *rter;
 											if (selected != reading) {
@@ -410,6 +423,10 @@ int GrammarApplicator::runGrammarOnWindow(Window *window) {
 												}
 											}
 										}
+										// This SELECT had no effect, so don't mark section as active.
+										if (nc == cohort->readings.size()) {
+											section_did_good = false;
+										}
 										break;
 									}
 								}
@@ -417,6 +434,9 @@ int GrammarApplicator::runGrammarOnWindow(Window *window) {
 						}
 					}
 				}
+			}
+			if (!section_did_good) {
+				i++;
 			}
 		}
 	}
@@ -428,6 +448,7 @@ bool GrammarApplicator::runContextualTest(const Window *window, const SingleWind
 	int pos = position + test->offset;
 	const Cohort *cohort = 0;
 	// ToDo: Implement absolute offsets
+	// ToDo: (NOT *) and (*C) tests can be cached
 	if (pos >= 0 && (uint32_t)pos < sWindow->cohorts.size()) {
 		cohort = sWindow->cohorts.at(pos);
 	}
@@ -439,13 +460,16 @@ bool GrammarApplicator::runContextualTest(const Window *window, const SingleWind
 		if (test->offset < 0 && pos >= 0 && (test->scanall || test->scanfirst)) {
 			for (int i=pos;i>=0;i--) {
 				cohort = sWindow->cohorts.at(i);
-				if (test->careful) {
-					retval = doesSetMatchCohortCareful(cohort, test->target);
-				}
-				else {
-					retval = doesSetMatchCohortNormal(cohort, test->target);
-				}
+				retval = doesSetMatchCohortNormal(cohort, test->target);
 				foundfirst = retval;
+				if (test->careful) {
+					if (retval) {
+						retval = doesSetMatchCohortCareful(cohort, test->target);
+					}
+					else {
+						retval = false;
+					}
+				}
 				if (test->negative) {
 					retval = !retval;
 				}
@@ -466,13 +490,16 @@ bool GrammarApplicator::runContextualTest(const Window *window, const SingleWind
 		else if (test->offset > 0 && (uint32_t)pos <= sWindow->cohorts.size() && (test->scanall || test->scanfirst)) {
 			for (uint32_t i=pos;i<sWindow->cohorts.size();i++) {
 				cohort = sWindow->cohorts.at(i);
-				if (test->careful) {
-					retval = doesSetMatchCohortCareful(cohort, test->target);
-				}
-				else {
-					retval = doesSetMatchCohortNormal(cohort, test->target);
-				}
+				retval = doesSetMatchCohortNormal(cohort, test->target);
 				foundfirst = retval;
+				if (test->careful) {
+					if (retval) {
+						retval = doesSetMatchCohortCareful(cohort, test->target);
+					}
+					else {
+						retval = false;
+					}
+				}
 				if (test->negative) {
 					retval = !retval;
 				}
