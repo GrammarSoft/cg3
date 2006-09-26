@@ -250,6 +250,58 @@ int GrammarApplicator::runGrammarOnWindow(Window *window) {
 			continue;
 		}
 		Cohort *cohort = current->cohorts[c];
+
+		for (uint32_t j=0;j<grammar->rules.size();j++) {
+			const Rule *rule = grammar->rules[j];
+			if (rule->type != K_MAP && rule->type != K_ADD && rule->type != K_REPLACE) {
+				continue;
+			}
+
+			std::list<Reading*>::iterator rter;
+			for (rter = cohort->readings.begin() ; rter != cohort->readings.end() ; rter++) {
+				Reading *reading = *rter;
+				if (reading->mapped) {
+					continue;
+				}
+				if (!reading->hash) {
+					reading->rehash();
+				}
+				if (!rule->wordform || rule->wordform == reading->wordform) {
+					if (rule->target && doesSetMatchReading(reading, rule->target)) {
+						bool good = true;
+						if (!rule->tests.empty()) {
+							std::list<ContextualTest*>::iterator iter;
+							for (iter = rule->tests.begin() ; iter != rule->tests.end() ; iter++) {
+								ContextualTest *test = *iter;
+								good = runContextualTest(window, current, c, test);
+								if (!good) {
+									if (test != rule->tests.front()) {
+										rule->tests.remove(test);
+										rule->tests.push_front(test);
+									}
+									break;
+								}
+							}
+						}
+						if (good) {
+							if (rule->type == K_ADD || rule->type == K_MAP || rule->type == K_APPEND) {
+								std::list<uint32_t>::const_iterator tter;
+								for (tter = rule->maplist.begin() ; tter != rule->maplist.end() ; tter++) {
+									reading->tags_list.push_back(*tter);
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	for (uint32_t c=0 ; c < current->cohorts.size() ; c++) {
+		if (c == 0) {
+			continue;
+		}
+		Cohort *cohort = current->cohorts[c];
 		const Rule *selectrule = 0;
 		const Rule *removerule = 0;
 		Reading *selected = 0;

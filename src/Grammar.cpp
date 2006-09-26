@@ -224,6 +224,16 @@ void Grammar::setName(const UChar *to) {
 void Grammar::trim() {
 	set_alias.clear();
 	sets_by_name.clear();
+
+	stdext::hash_map<uint32_t, Tag*>::iterator iter_tags;
+	for (iter_tags = single_tags.begin() ; iter_tags != single_tags.end() ; iter_tags++) {
+		if (!iter_tags->second->type && !iter_tags->second->features) {
+			Tag *tag = iter_tags->second;
+			tag->type &= ~T_TEXTUAL;
+			tag->type &= ~T_WORDFORM;
+			tag->type &= ~T_BASEFORM;
+		}
+	}
 /*
 	stdext::hash_map<uint32_t, Tag*>::iterator iter_tags;
 	for (iter_tags = single_tags.begin() ; iter_tags != single_tags.end() ; iter_tags++) {

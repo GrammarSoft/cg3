@@ -27,6 +27,8 @@ using namespace CG3::Strings;
 GrammarApplicator::GrammarApplicator() {
 	// ToDo: Make --always-span switch
 	fast = false;
+	apply_mappings = true;
+	apply_corrections = true;
 	num_windows = 2;
 	grammar = 0;
 	cache_hits = 0;
