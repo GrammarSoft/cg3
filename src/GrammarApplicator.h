@@ -35,8 +35,12 @@ namespace CG3 {
 
 		uint32_t num_windows;
 		uint32_t cache_hits, cache_miss, match_single, match_comp, match_sub;
+		uint32_t begintag, endtag;
 
 		const Grammar *grammar;
+
+		stdext::hash_map<uint32_t, uint32_t> variables;
+		stdext::hash_map<uint32_t, uint32_t> metas;
 
 		stdext::hash_map<uint32_t, Tag*> single_tags;
 

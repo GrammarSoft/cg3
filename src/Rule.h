@@ -31,12 +31,12 @@ namespace CG3 {
 	public:
 		UChar *name;
 		uint32_t wordform;
-		uint32_t subst_target;
 		uint32_t target;
 		uint32_t line;
 		uint32_t varname, varvalue;
 		KEYWORDS type;
 		std::list<uint32_t> maplist;
+		std::list<uint32_t> sublist;
 		mutable std::list<ContextualTest*> tests;
 
 		Rule();

@@ -173,11 +173,17 @@ void GrammarWriter::printRule(UFILE *to, const Rule *rule) {
 	}
 	u_fprintf(to, " ");
 
-	if (rule->subst_target) {
-		u_fprintf(to, "%S ", grammar->sets_by_contents.find(rule->subst_target)->second->name);
+	if (!rule->sublist.empty()) {
+		std::list<uint32_t>::const_iterator iter;
+		u_fprintf(to, "(");
+		for (iter = rule->sublist.begin() ; iter != rule->sublist.end() ; iter++) {
+			printTag(to, grammar->single_tags.find(*iter)->second);
+			u_fprintf(to, " ");
+		}
+		u_fprintf(to, ") ");
 	}
 
-	if (rule->maplist.size()) {
+	if (!rule->maplist.empty()) {
 		std::list<uint32_t>::const_iterator iter;
 		u_fprintf(to, "(");
 		for (iter = rule->maplist.begin() ; iter != rule->maplist.end() ; iter++) {

@@ -31,6 +31,8 @@ GrammarApplicator::GrammarApplicator() {
 	apply_corrections = true;
 	trace = false;
 	num_windows = 2;
+	begintag = 0;
+	endtag = 0;
 	grammar = 0;
 	cache_hits = 0;
 	cache_miss = 0;

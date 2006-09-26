@@ -25,7 +25,6 @@ using namespace CG3::Strings;
 
 Rule::Rule() {
 	name = 0;
-	subst_target = 0;
 	target = 0;
 	line = 0;
 	wordform = 0;

@@ -61,8 +61,8 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 	UChar _cleaned[BUFFER_SIZE];
 	UChar *cleaned = _cleaned;
 
-	uint32_t begintag = addTag(stringbits[S_BEGINTAG]);
-	uint32_t endtag = addTag(stringbits[S_ENDTAG]);
+	begintag = addTag(stringbits[S_BEGINTAG]);
+	endtag = addTag(stringbits[S_ENDTAG]);
 
 	uint32_t lines = 0;
 	Window *cWindow = new Window();
@@ -304,20 +304,42 @@ label_runGrammarOnWindow_begin:
 								if (rule->type == K_REPLACE) {
 									std::list<uint32_t>::const_iterator tter;
 									reading->tags_list.clear();
-									reading->tags.clear();
 									reading->tags_list.push_back(reading->wordform);
 									reading->tags_list.push_back(reading->baseform);
-									reading->tags[reading->wordform] = reading->wordform;
-									reading->tags[reading->baseform] = reading->baseform;
 									for (tter = rule->maplist.begin() ; tter != rule->maplist.end() ; tter++) {
 										reading->tags_list.push_back(*tter);
+									}
+									reading->tags.clear();
+									reading->tags_mapped.clear();
+									for (tter = reading->tags_list.begin() ; tter != reading->tags_list.end() ; tter++) {
 										reading->tags[*tter] = *tter;
 										if (grammar->single_tags.find(*tter)->second->type & T_MAPPING) {
 											reading->tags_mapped[*tter] = *tter;
+											reading->mapped = true;
 										}
 									}
 									reading->rehash();
 								}
+								if (rule->type == K_SUBSTITUTE) {
+									std::list<uint32_t>::const_iterator tter;
+									for (tter = rule->sublist.begin() ; tter != rule->sublist.end() ; tter++) {
+										reading->tags_list.remove(*tter);
+									}
+									for (tter = rule->maplist.begin() ; tter != rule->maplist.end() ; tter++) {
+										reading->tags_list.push_back(*tter);
+									}
+									reading->tags.clear();
+									reading->tags_mapped.clear();
+									for (tter = reading->tags_list.begin() ; tter != reading->tags_list.end() ; tter++) {
+										reading->tags[*tter] = *tter;
+										if (grammar->single_tags.find(*tter)->second->type & T_MAPPING) {
+											reading->tags_mapped[*tter] = *tter;
+											reading->mapped = true;
+										}
+									}
+									reading->rehash();
+								}
+								// ToDo: Implement APPEND
 								if (rule->type == K_MAP) {
 									reading->mapped = true;
 								}
@@ -451,6 +473,14 @@ label_runGrammarOnWindow_begin:
 										}
 										break;
 									}
+									else if (type == K_REMVARIABLE) {
+										variables[rule->varname] = 0;
+										section_did_good = false;
+									}
+									else if (type == K_SETVARIABLE) {
+										variables[rule->varname] = rule->varvalue;
+										section_did_good = false;
+									}
 									else if (type == K_DELIMIT) {
 										SingleWindow *nwin = new SingleWindow();
 										uint32_t nc = c;
@@ -462,10 +492,12 @@ label_runGrammarOnWindow_begin:
 											current->cohorts.pop_back();
 										}
 										window->next.push_front(nwin);
-										cohort = current->cohorts.back();
 
+										cohort = current->cohorts.back();
 										for (rter = cohort->readings.begin() ; rter != cohort->readings.end() ; rter++) {
 											Reading *reading = *rter;
+											reading->tags_list.push_back(endtag);
+											reading->tags[endtag] = endtag;
 											reading->rehash();
 										}
 										goto label_runGrammarOnWindow_begin;

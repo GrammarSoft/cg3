@@ -72,7 +72,7 @@ int GrammarParser::parseSubstitute(const UChar *line) {
 		result->addTag(wform);
 	}
 
-	rule->subst_target = parseTarget(&space);
+	readTagList(&space, &rule->sublist);
 	readTagList(&space, &rule->maplist);
 	rule->target = parseTarget(&space);
 
