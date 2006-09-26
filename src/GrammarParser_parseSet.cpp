@@ -62,9 +62,9 @@ uint32_t GrammarParser::readSingleSet(UChar **paren) {
 			UChar *composite = space+1;
 
 			CG3::Set *set_c = result->allocateSet();
-			set_c->setLine(result->curline);
+			set_c->line = result->curline;
 			set_c->setName(hash_sdbm_uchar(composite, 0));
-			retval = hash_sdbm_uchar(set_c->getName(), 0);
+			retval = hash_sdbm_uchar(set_c->name, 0);
 
 			CG3::CompositeTag *ctag = result->allocateCompositeTag();
 			UChar *temp = composite;
@@ -187,18 +187,18 @@ int GrammarParser::parseSet(const UChar *line) {
 
 	CG3::Set *curset = result->allocateSet();
 	curset->setName(local);
-	curset->setLine(result->curline);
+	curset->line = result->curline;
 
 	bool only_or = true;
 	uint32_t set_a = 0;
 	uint32_t set_b = 0;
-	uint32_t res = hash_sdbm_uchar(curset->getName(), 0);
+	uint32_t res = hash_sdbm_uchar(curset->name, 0);
 	int set_op = S_IGNORE;
 	while (space[0]) {
 		if (!set_a) {
 			set_a = readSingleSet(&space);
 			if (!set_a) {
-				u_fprintf(ux_stderr, "Error: Could not read in left hand set on line %u for set %S - cannot continue!\n", result->curline, curset->getName());
+				u_fprintf(ux_stderr, "Error: Could not read in left hand set on line %u for set %S - cannot continue!\n", result->curline, curset->name);
 				break;
 			}
 			curset->sets.push_back(set_a);
@@ -223,7 +223,7 @@ int GrammarParser::parseSet(const UChar *line) {
 		if (!set_b) {
 			set_b = readSingleSet(&space);
 			if (!set_b) {
-				u_fprintf(ux_stderr, "Error: Could not read in right hand set on line %u for set %S - cannot continue!\n", result->curline, curset->getName());
+				u_fprintf(ux_stderr, "Error: Could not read in right hand set on line %u for set %S - cannot continue!\n", result->curline, curset->name);
 				break;
 			}
 			curset->sets.push_back(set_b);

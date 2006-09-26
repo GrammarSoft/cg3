@@ -32,26 +32,26 @@ GrammarWriter::~GrammarWriter() {
 	grammar = 0;
 }
 
-void GrammarWriter::write_set_to_ufile(UFILE *output, Set *curset) {
-	if (curset->sets.empty() && !curset->used) {
-		curset->used = true;
-		u_fprintf(output, "LIST %S = ", curset->getName());
-		stdext::hash_map<uint32_t, uint32_t>::iterator comp_iter;
+void GrammarWriter::write_set_to_ufile(UFILE *output, const Set *curset) {
+	if (curset->sets.empty() && used_sets.find(curset->hash) == used_sets.end()) {
+		used_sets[curset->hash] = curset->hash;
+		u_fprintf(output, "LIST %S = ", curset->name);
+		stdext::hash_map<uint32_t, uint32_t>::const_iterator comp_iter;
 		for (comp_iter = curset->single_tags.begin() ; comp_iter != curset->single_tags.end() ; comp_iter++) {
-			printTag(output, grammar->single_tags[comp_iter->second]);
+			printTag(output, grammar->single_tags.find(comp_iter->second)->second);
 			u_fprintf(output, " ");
 		}
 		for (comp_iter = curset->tags.begin() ; comp_iter != curset->tags.end() ; comp_iter++) {
 			if (grammar->tags.find(comp_iter->second) != grammar->tags.end()) {
-				CompositeTag *curcomptag = grammar->tags[comp_iter->second];
+				CompositeTag *curcomptag = grammar->tags.find(comp_iter->second)->second;
 				if (curcomptag->tags.size() == 1) {
-					printTag(output, grammar->single_tags[curcomptag->tags.begin()->second]);
+					printTag(output, grammar->single_tags.find(curcomptag->tags.begin()->second)->second);
 					u_fprintf(output, " ");
 				} else {
 					u_fprintf(output, "(");
-					std::map<uint32_t, uint32_t>::iterator tag_iter;
+					std::map<uint32_t, uint32_t>::const_iterator tag_iter;
 					for (tag_iter = curcomptag->tags_map.begin() ; tag_iter != curcomptag->tags_map.end() ; tag_iter++) {
-						printTag(output, grammar->single_tags[tag_iter->second]);
+						printTag(output, grammar->single_tags.find(tag_iter->second)->second);
 						u_fprintf(output, " ");
 					}
 					u_fprintf(output, ") ");
@@ -59,15 +59,15 @@ void GrammarWriter::write_set_to_ufile(UFILE *output, Set *curset) {
 			}
 		}
 		u_fprintf(output, "\n");
-	} else if (!curset->sets.empty() && !curset->used) {
-		curset->used = true;
+	} else if (!curset->sets.empty() && used_sets.find(curset->hash) == used_sets.end()) {
+		used_sets[curset->hash] = curset->hash;
 		for (uint32_t i=0;i<curset->sets.size();i++) {
-			write_set_to_ufile(output, grammar->sets_by_contents[curset->sets.at(i)]);
+			write_set_to_ufile(output, grammar->sets_by_contents.find(curset->sets.at(i))->second);
 		}
-		u_fprintf(output, "SET %S = ", curset->getName());
-		u_fprintf(output, "%S ", grammar->sets_by_contents[curset->sets.at(0)]->name);
+		u_fprintf(output, "SET %S = ", curset->name);
+		u_fprintf(output, "%S ", grammar->sets_by_contents.find(curset->sets.at(0))->second->name);
 		for (uint32_t i=0;i<curset->sets.size()-1;i++) {
-			u_fprintf(output, "%S %S ", stringbits[curset->set_ops.at(i)], grammar->sets_by_contents[curset->sets.at(i+1)]->name);
+			u_fprintf(output, "%S %S ", stringbits[curset->set_ops.at(i)], grammar->sets_by_contents.find(curset->sets.at(i+1))->second->name);
 		}
 		u_fprintf(output, "\n");
 	}
@@ -96,10 +96,17 @@ int GrammarWriter::write_grammar_to_ufile_text(UFILE *output) {
 		return error;
 	}
 
+	u_fprintf(output, "# Grammar last modified %u, with size %u", grammar->last_modified, grammar->grammar_size);
+	if (grammar->name) {
+		u_fprintf(output, ", from filename %S", grammar->name);
+	}
+	u_fprintf(output, "\n");
+	u_fprintf(output, "\n");
+
 	u_fprintf(output, "# DELIMITERS does not exist. Instead, look for the set _S_DELIMITERS_\n");
 
 	u_fprintf(output, "PREFERRED-TARGETS = ");
-	std::vector<UChar*>::iterator iter;
+	std::vector<UChar*>::const_iterator iter;
 	for(iter = grammar->preferred_targets.begin() ; iter != grammar->preferred_targets.end() ; iter++ ) {
 		u_fprintf(output, "%S ", *iter);
 	}
@@ -107,7 +114,8 @@ int GrammarWriter::write_grammar_to_ufile_text(UFILE *output) {
 
 	u_fprintf(output, "\n");
 
-	stdext::hash_map<uint32_t, Set*>::iterator set_iter;
+	used_sets.clear();
+	stdext::hash_map<uint32_t, Set*>::const_iterator set_iter;
 	for (set_iter = grammar->sets_by_contents.begin() ; set_iter != grammar->sets_by_contents.end() ; set_iter++) {
 		write_set_to_ufile(output, set_iter->second);
 	}

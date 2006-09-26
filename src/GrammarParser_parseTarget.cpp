@@ -27,19 +27,19 @@ using namespace CG3::Strings;
 
 uint32_t GrammarParser::parseTarget(UChar **space) {
 	CG3::Set *curset = result->allocateSet();
-	curset->setLine(result->curline);
+	curset->line = result->curline;
 	curset->setName(hash_sdbm_uchar(*space, 0));
 
 	bool only_or = true;
 	uint32_t set_a = 0;
 	uint32_t set_b = 0;
-	uint32_t res = hash_sdbm_uchar(curset->getName(), 0);
+	uint32_t res = hash_sdbm_uchar(curset->name, 0);
 	int set_op = S_IGNORE;
 	while ((*space)[0]) {
 		if (!set_a) {
 			set_a = readSingleSet(space);
 			if (!set_a) {
-				u_fprintf(ux_stderr, "Error: Could not read in left hand set on line %u for set %S - cannot continue!\n", result->curline, curset->getName());
+				u_fprintf(ux_stderr, "Error: Could not read in left hand set on line %u for set %S - cannot continue!\n", result->curline, curset->name);
 				break;
 			}
 			curset->sets.push_back(set_a);
@@ -62,7 +62,7 @@ uint32_t GrammarParser::parseTarget(UChar **space) {
 		if (!set_b) {
 			set_b = readSingleSet(space);
 			if (!set_b) {
-				u_fprintf(ux_stderr, "Error: Could not read in right hand set on line %u for set %S - cannot continue!\n", result->curline, curset->getName());
+				u_fprintf(ux_stderr, "Error: Could not read in right hand set on line %u for set %S - cannot continue!\n", result->curline, curset->name);
 				break;
 			}
 			curset->sets.push_back(set_b);

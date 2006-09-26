@@ -57,16 +57,6 @@ void Set::setName(const UChar *to) {
 		setName((uint32_t)rand());
 	}
 }
-const UChar *Set::getName() {
-	return name;
-}
-
-void Set::setLine(uint32_t to) {
-	line = to;
-}
-uint32_t Set::getLine() {
-	return line;
-}
 
 void Set::addCompositeTag(uint32_t tag) {
 	tags_map[tag] = tag;

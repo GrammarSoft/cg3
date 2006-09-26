@@ -45,10 +45,6 @@ namespace CG3 {
 
 		void setName(uint32_t to);
 		void setName(const UChar *to);
-		const UChar *getName();
-
-		void setLine(uint32_t to);
-		uint32_t getLine();
 
 		void addCompositeTag(uint32_t tag);
 		void addTag(uint32_t tag);

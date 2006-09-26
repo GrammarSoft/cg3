@@ -45,7 +45,7 @@ int GrammarParser::parseList(const UChar *line) {
 
 	CG3::Set *curset = result->allocateSet();
 	curset->setName(local);
-	curset->setLine(result->curline);
+	curset->line = result->curline;
 
 	UChar *paren = space;
 	while(paren && paren[0]) {
@@ -63,7 +63,7 @@ int GrammarParser::parseList(const UChar *line) {
 			space = paren;
 			int matching = 0;
 			if (!ux_findMatchingParenthesis(space, 0, &matching)) {
-				u_fprintf(ux_stderr, "Error: Unmatched parentheses on or after line %u!\n", curset->getLine());
+				u_fprintf(ux_stderr, "Error: Unmatched parentheses on or after line %u!\n", curset->line);
 			} else {
 				space[matching] = 0;
 				UChar *composite = space+1;
