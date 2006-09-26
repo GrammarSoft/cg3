@@ -468,8 +468,15 @@ bool GrammarApplicator::runContextualTest(const Window *window, const SingleWind
 	bool retval = true;
 	int pos = position + test->offset;
 	const Cohort *cohort = 0;
-	// ToDo: Implement absolute offsets
 	// ToDo: (NOT *) and (*C) tests can be cached
+	if (test->absolute) {
+		if (test->offset < 0) {
+			pos = ((int)sWindow->cohorts.size()-1) - test->offset;
+		}
+		else {
+			pos = test->offset;
+		}
+	}
 	if (pos >= 0 && (uint32_t)pos < sWindow->cohorts.size()) {
 		cohort = sWindow->cohorts.at(pos);
 	}
