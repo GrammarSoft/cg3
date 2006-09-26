@@ -272,6 +272,8 @@ int main(int argc, char* argv[]) {
 		if (options[FAST].doesOccur) {
 			applicator->fast = true;
 		}
+		applicator->apply_mappings = true;
+		applicator->apply_corrections = false;
 		applicator->runGrammarOnText(ux_stdin, ux_stdout);
 
 		std::cerr << "Applying grammar on input took " << (double)((double)(clock()-glob_timer)/(double)CLOCKS_PER_SEC) << " seconds." << std::endl;

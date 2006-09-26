@@ -91,9 +91,7 @@ int GrammarParser::parseSingleLine(KEYWORDS key, const UChar *line) {
 
 	switch(key) {
 		case K_SECTION:
-		case K_CORRECTIONS:
 		case K_CONSTRAINTS:
-		case K_MAPPINGS:
 			parseSection(local);
 			break;
 		case K_ANCHOR:

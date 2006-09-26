@@ -32,6 +32,7 @@ namespace CG3 {
 		bool deleted;
 		bool selected;
 		std::vector<uint32_t> hit_by;
+		std::vector<uint32_t> mapped_by;
 		bool noprint;
 		std::list<uint32_t> tags_list;
 		stdext::hash_map<uint32_t, uint32_t> tags;

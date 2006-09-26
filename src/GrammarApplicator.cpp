@@ -93,12 +93,29 @@ void GrammarApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 			GrammarWriter::printTagRaw(output, single_tags[reading->baseform]);
 			u_fprintf(output, " ");
 
+			stdext::hash_map<uint32_t, uint32_t> used_tags;
 			std::list<uint32_t>::iterator tter;
 			for (tter = reading->tags_list.begin() ; tter != reading->tags_list.end() ; tter++) {
-				Tag *tag = single_tags[*tter];
+				if (used_tags.find(*tter) != used_tags.end()) {
+					continue;
+				}
+				used_tags[*tter] = *tter;
+				const Tag *tag = 0;
+				if (grammar->single_tags.find(*tter) != grammar->single_tags.end()) {
+					tag = grammar->single_tags.find(*tter)->second;
+				}
+				else {
+					tag = single_tags[*tter];
+				}
+				assert(tag != 0);
 				if (!(tag->type & T_BASEFORM) && !(tag->type & T_WORDFORM)) {
 					GrammarWriter::printTagRaw(output, tag);
 					u_fprintf(output, " ");
+				}
+			}
+			if (!reading->mapped_by.empty()) {
+				for (uint32_t i=0;i<reading->mapped_by.size();i++) {
+					u_fprintf(output, "M:%u ", grammar->mappings.at(reading->mapped_by.at(i))->line);
 				}
 			}
 			if (!reading->hit_by.empty()) {
@@ -123,12 +140,29 @@ void GrammarApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 			GrammarWriter::printTagRaw(output, single_tags[reading->baseform]);
 			u_fprintf(output, " ");
 
+			stdext::hash_map<uint32_t, uint32_t> used_tags;
 			std::list<uint32_t>::iterator tter;
 			for (tter = reading->tags_list.begin() ; tter != reading->tags_list.end() ; tter++) {
-				Tag *tag = single_tags[*tter];
+				if (used_tags.find(*tter) != used_tags.end()) {
+					continue;
+				}
+				used_tags[*tter] = *tter;
+				const Tag *tag = 0;
+				if (grammar->single_tags.find(*tter) != grammar->single_tags.end()) {
+					tag = grammar->single_tags.find(*tter)->second;
+				}
+				else {
+					tag = single_tags[*tter];
+				}
+				assert(tag != 0);
 				if (!(tag->type & T_BASEFORM) && !(tag->type & T_WORDFORM)) {
 					GrammarWriter::printTagRaw(output, tag);
 					u_fprintf(output, " ");
+				}
+			}
+			if (!reading->mapped_by.empty()) {
+				for (uint32_t i=0;i<reading->mapped_by.size();i++) {
+					u_fprintf(output, "M:%u ", grammar->mappings.at(reading->mapped_by.at(i))->line);
 				}
 			}
 			if (!reading->hit_by.empty()) {

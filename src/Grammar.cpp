@@ -77,6 +77,13 @@ Grammar::~Grammar() {
 	}
 	rules.clear();
 
+	for (iter_rules = mappings.begin() ; iter_rules != mappings.end() ; iter_rules++) {
+		if (*iter_rules) {
+			delete *iter_rules;
+		}
+	}
+	mappings.clear();
+
 	set_alias.clear();
 }
 
@@ -154,7 +161,12 @@ Rule *Grammar::allocateRule() {
 	return new Rule;
 }
 void Grammar::addRule(Rule *rule) {
-	rules.push_back(rule);
+	if (rule->type == K_MAP || rule->type == K_ADD || rule->type == K_REPLACE || rule->type == K_SUBSTITUTE || rule->type == K_APPEND) {
+		mappings.push_back(rule);
+	}
+	else {
+		rules.push_back(rule);
+	}
 }
 void Grammar::destroyRule(Rule *rule) {
 	delete rule;

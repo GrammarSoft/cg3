@@ -45,6 +45,7 @@ namespace CG3 {
 
 		std::vector<uint32_t> sections;
 		std::map<uint32_t, Anchor*> anchors;
+		std::vector<Rule*> mappings;
 		std::vector<Rule*> rules;
 
 		Grammar();

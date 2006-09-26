@@ -242,97 +242,29 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 }
 
 int GrammarApplicator::runGrammarOnWindow(Window *window) {
-	// ToDo: Time runGrammarOnWindow
 	SingleWindow *current = window->current;
 
-	for (uint32_t c=0 ; c < current->cohorts.size() ; c++) {
-		if (c == 0) {
-			continue;
-		}
-		Cohort *cohort = current->cohorts[c];
+	if ((apply_mappings || apply_corrections) && !grammar->mappings.empty()) {
+		for (uint32_t j=0;j<grammar->mappings.size();j++) {
+			const Rule *rule = grammar->mappings[j];
 
-		for (uint32_t j=0;j<grammar->rules.size();j++) {
-			const Rule *rule = grammar->rules[j];
-			if (rule->type != K_MAP && rule->type != K_ADD && rule->type != K_REPLACE) {
+			if (!apply_mappings && (rule->type == K_MAP || rule->type == K_ADD || rule->type == K_REPLACE)) {
+				continue;
+			}
+			if (!apply_corrections && (rule->type == K_SUBSTITUTE || rule->type == K_APPEND)) {
 				continue;
 			}
 
-			std::list<Reading*>::iterator rter;
-			for (rter = cohort->readings.begin() ; rter != cohort->readings.end() ; rter++) {
-				Reading *reading = *rter;
-				if (reading->mapped) {
+			for (uint32_t c=0 ; c < current->cohorts.size() ; c++) {
+				if (c == 0) {
 					continue;
 				}
-				if (!reading->hash) {
-					reading->rehash();
-				}
-				if (!rule->wordform || rule->wordform == reading->wordform) {
-					if (rule->target && doesSetMatchReading(reading, rule->target)) {
-						bool good = true;
-						if (!rule->tests.empty()) {
-							std::list<ContextualTest*>::iterator iter;
-							for (iter = rule->tests.begin() ; iter != rule->tests.end() ; iter++) {
-								ContextualTest *test = *iter;
-								good = runContextualTest(window, current, c, test);
-								if (!good) {
-									if (test != rule->tests.front()) {
-										rule->tests.remove(test);
-										rule->tests.push_front(test);
-									}
-									break;
-								}
-							}
-						}
-						if (good) {
-							if (rule->type == K_ADD || rule->type == K_MAP || rule->type == K_APPEND) {
-								std::list<uint32_t>::const_iterator tter;
-								for (tter = rule->maplist.begin() ; tter != rule->maplist.end() ; tter++) {
-									reading->tags_list.push_back(*tter);
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-	}
-
-	for (uint32_t c=0 ; c < current->cohorts.size() ; c++) {
-		if (c == 0) {
-			continue;
-		}
-		Cohort *cohort = current->cohorts[c];
-		const Rule *selectrule = 0;
-		const Rule *removerule = 0;
-		Reading *selected = 0;
-		Reading *deleted = 0;
-
-		for (uint32_t i=0;i<grammar->sections.size()-1;i++) {
-			bool section_did_something = false;
-			if (selected) {
-				break;
-			}
-			if (fast) {
-				i = (uint32_t)grammar->sections.size()-2;
-				section_did_something = true;
-			}
-			for (uint32_t j=0;j<grammar->sections[i+1];j++) {
-				if (selected) {
-					break;
-				}
-				if (!section_did_something && j == 0) {
-					// ToDo: Count how much skipping rules does
-					j = grammar->sections[i];
-				}
-				const Rule *rule = grammar->rules[j];
-				if ((rule->type == K_REMOVE || rule->type == K_SELECT || rule->type == K_IFF) && cohort->readings.size() <= 1) {
-					continue;
-				}
+				Cohort *cohort = current->cohorts[c];
 
 				std::list<Reading*>::iterator rter;
 				for (rter = cohort->readings.begin() ; rter != cohort->readings.end() ; rter++) {
 					Reading *reading = *rter;
-					if (reading->mapped && rule->type == K_MAP) {
+					if (reading->mapped) {
 						continue;
 					}
 					if (!reading->hash) {
@@ -356,38 +288,109 @@ int GrammarApplicator::runGrammarOnWindow(Window *window) {
 								}
 							}
 							if (good) {
-								section_did_something = true;
-								reading->hit_by.push_back(j);
-								if (rule->type == K_REMOVE) {
-									removerule = rule;
-									reading->deleted = true;
-									cohort->deleted.push_back(reading);
-									cohort->readings.remove(reading);
-									deleted = reading;
-									for (rter = cohort->readings.begin() ; rter != cohort->readings.end() ; rter++) {
-										Reading *reading = *rter;
-										if (deleted != reading && doesSetMatchReading(reading, removerule->target)) {
-											reading->hit_by.push_back(deleted->hit_by.back());
-											reading->deleted = true;
-											cohort->deleted.push_back(reading);
-											cohort->readings.remove(reading);
-											rter = cohort->readings.begin();
-											rter--;
+								reading->mapped_by.push_back(j);
+								if (rule->type == K_ADD || rule->type == K_MAP) {
+									std::list<uint32_t>::const_iterator tter;
+									for (tter = rule->maplist.begin() ; tter != rule->maplist.end() ; tter++) {
+										reading->tags_list.push_back(*tter);
+										reading->tags[*tter] = *tter;
+									}
+									reading->rehash();
+								}
+								if (rule->type == K_REPLACE) {
+									std::list<uint32_t>::const_iterator tter;
+									reading->tags_list.clear();
+									reading->tags.clear();
+									reading->tags_list.push_back(reading->wordform);
+									reading->tags_list.push_back(reading->baseform);
+									reading->tags[reading->wordform] = reading->wordform;
+									reading->tags[reading->baseform] = reading->baseform;
+									for (tter = rule->maplist.begin() ; tter != rule->maplist.end() ; tter++) {
+										reading->tags_list.push_back(*tter);
+										reading->tags[*tter] = *tter;
+									}
+									reading->rehash();
+								}
+								if (rule->type == K_MAP) {
+									reading->mapped = true;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	if (!grammar->rules.empty()) {
+		for (uint32_t c=0 ; c < current->cohorts.size() ; c++) {
+			if (c == 0) {
+				continue;
+			}
+			Cohort *cohort = current->cohorts[c];
+			const Rule *selectrule = 0;
+			const Rule *removerule = 0;
+			Reading *selected = 0;
+			Reading *deleted = 0;
+
+			for (uint32_t i=0;i<grammar->sections.size()-1;i++) {
+				bool section_did_something = false;
+				if (selected) {
+					break;
+				}
+				if (fast) {
+					i = (uint32_t)grammar->sections.size()-2;
+					section_did_something = true;
+				}
+				for (uint32_t j=0;j<grammar->sections[i+1];j++) {
+					if (selected) {
+						break;
+					}
+					if (!section_did_something && j == 0) {
+						// ToDo: Count how much skipping rules does
+						j = grammar->sections[i];
+					}
+					const Rule *rule = grammar->rules[j];
+					if (cohort->readings.size() <= 1) {
+						continue;
+					}
+
+					std::list<Reading*>::iterator rter;
+					for (rter = cohort->readings.begin() ; rter != cohort->readings.end() ; rter++) {
+						Reading *reading = *rter;
+						if (!reading->hash) {
+							reading->rehash();
+						}
+						if (!rule->wordform || rule->wordform == reading->wordform) {
+							if (rule->target && doesSetMatchReading(reading, rule->target)) {
+								bool good = true;
+								if (!rule->tests.empty()) {
+									std::list<ContextualTest*>::iterator iter;
+									for (iter = rule->tests.begin() ; iter != rule->tests.end() ; iter++) {
+										ContextualTest *test = *iter;
+										good = runContextualTest(window, current, c, test);
+										if (!good) {
+											if (test != rule->tests.front()) {
+												rule->tests.remove(test);
+												rule->tests.push_front(test);
+											}
+											break;
 										}
 									}
-									break;
 								}
-								else if (rule->type == K_SELECT) {
-									selectrule = rule;
-									reading->selected = true;
-									selected = reading;
-									for (rter = cohort->readings.begin() ; rter != cohort->readings.end() ; rter++) {
-										Reading *reading = *rter;
-										if (selected != reading) {
-											reading->hit_by.push_back(selected->hit_by.back());
-											if (doesSetMatchReading(reading, selectrule->target)) {
-												reading->selected = true;
-											} else {
+								if (good) {
+									section_did_something = true;
+									reading->hit_by.push_back(j);
+									if (rule->type == K_REMOVE) {
+										removerule = rule;
+										reading->deleted = true;
+										cohort->deleted.push_back(reading);
+										cohort->readings.remove(reading);
+										deleted = reading;
+										for (rter = cohort->readings.begin() ; rter != cohort->readings.end() ; rter++) {
+											Reading *reading = *rter;
+											if (deleted != reading && doesSetMatchReading(reading, removerule->target)) {
+												reading->hit_by.push_back(deleted->hit_by.back());
 												reading->deleted = true;
 												cohort->deleted.push_back(reading);
 												cohort->readings.remove(reading);
@@ -395,8 +398,29 @@ int GrammarApplicator::runGrammarOnWindow(Window *window) {
 												rter--;
 											}
 										}
+										break;
 									}
-									break;
+									else if (rule->type == K_SELECT) {
+										selectrule = rule;
+										reading->selected = true;
+										selected = reading;
+										for (rter = cohort->readings.begin() ; rter != cohort->readings.end() ; rter++) {
+											Reading *reading = *rter;
+											if (selected != reading) {
+												reading->hit_by.push_back(selected->hit_by.back());
+												if (doesSetMatchReading(reading, selectrule->target)) {
+													reading->selected = true;
+												} else {
+													reading->deleted = true;
+													cohort->deleted.push_back(reading);
+													cohort->readings.remove(reading);
+													rter = cohort->readings.begin();
+													rter--;
+												}
+											}
+										}
+										break;
+									}
 								}
 							}
 						}

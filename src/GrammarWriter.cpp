@@ -121,6 +121,13 @@ int GrammarWriter::write_grammar_to_ufile_text(UFILE *output) {
 	}
 	u_fprintf(output, "\n");
 
+	if (!grammar->mappings.empty()) {
+		for (uint32_t j=0;j<grammar->mappings.size();j++) {
+			printRule(output, grammar->mappings[j]);
+			u_fprintf(output, "\n");
+		}
+	}
+
 	for (uint32_t i=1;i<grammar->sections.size();i++) {
 		u_fprintf(output, "\nSECTION\n");
 		for (uint32_t j=grammar->sections[i-1];j<grammar->sections[i];j++) {
