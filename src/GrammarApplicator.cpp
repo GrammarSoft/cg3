@@ -127,9 +127,6 @@ void GrammarApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 				}
 			}
 			u_fprintf(output, "\n");
-			if (reading->text) {
-				u_fprintf(output, "%S", reading->text);
-			}
 		}
 		if (trace) {
 			for (rter = cohort->deleted.begin() ; rter != cohort->deleted.end() ; rter++) {
@@ -175,11 +172,21 @@ void GrammarApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 					}
 				}
 				u_fprintf(output, "\n");
-				if (reading->text) {
-					u_fprintf(output, "%S", reading->text);
-				}
+			}
+		}
+		u_fprintf(output, "\n");
+
+		for (rter = cohort->readings.begin() ; rter != cohort->readings.end() ; rter++) {
+			Reading *reading = *rter;
+			if (reading->text) {
+				u_fprintf(output, "%S", reading->text);
+			}
+		}
+		for (rter = cohort->deleted.begin() ; rter != cohort->deleted.end() ; rter++) {
+			Reading *reading = *rter;
+			if (reading->text) {
+				u_fprintf(output, "%S", reading->text);
 			}
 		}
 	}
-	u_fprintf(output, "\n");
 }

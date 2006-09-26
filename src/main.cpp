@@ -127,6 +127,9 @@ int main(int argc, char* argv[]) {
         fprintf(stderr, " -V or --version          Prints version number.\n");
         fprintf(stderr, " -g or --grammar          Specifies the grammar file to use for disambiguation.\n");
         fprintf(stderr, " -p or --vislcg-compat    Tells the grammar compiler to be compatible with older VISLCG syntax.\n");
+        fprintf(stderr, " --trace                  Prints debug output alongside with normal output.\n");
+        fprintf(stderr, " --no-mappings            Disables running any MAP, ADD, or REPLACE rules.\n");
+        fprintf(stderr, " --no-corrections         Disables running any SUBSTITUTE or APPEND rules.\n");
         fprintf(stderr, "\n");
 		fprintf(stderr, " -O or --stdout           A file to print out to instead of stdout.\n");
 		fprintf(stderr, " -I or --stdin            A file to read input from instead of stdin.\n");
