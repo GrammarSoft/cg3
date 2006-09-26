@@ -294,6 +294,9 @@ int GrammarApplicator::runGrammarOnWindow(Window *window) {
 									for (tter = rule->maplist.begin() ; tter != rule->maplist.end() ; tter++) {
 										reading->tags_list.push_back(*tter);
 										reading->tags[*tter] = *tter;
+										if (grammar->single_tags.find(*tter)->second->type & T_MAPPING) {
+											reading->tags_mapped[*tter] = *tter;
+										}
 									}
 									reading->rehash();
 								}
@@ -308,6 +311,9 @@ int GrammarApplicator::runGrammarOnWindow(Window *window) {
 									for (tter = rule->maplist.begin() ; tter != rule->maplist.end() ; tter++) {
 										reading->tags_list.push_back(*tter);
 										reading->tags[*tter] = *tter;
+										if (grammar->single_tags.find(*tter)->second->type & T_MAPPING) {
+											reading->tags_mapped[*tter] = *tter;
+										}
 									}
 									reading->rehash();
 								}
@@ -344,7 +350,10 @@ int GrammarApplicator::runGrammarOnWindow(Window *window) {
 						continue;
 					}
 					Cohort *cohort = current->cohorts[c];
-					if (cohort->readings.size() <= 1) {
+					if (cohort->readings.empty()) {
+						continue;
+					}
+					if (cohort->readings.size() <= 1 && cohort->readings.front()->tags_mapped.size() <= 1) {
 						continue;
 					}
 
@@ -390,17 +399,29 @@ int GrammarApplicator::runGrammarOnWindow(Window *window) {
 										cohort->deleted.push_back(reading);
 										cohort->readings.remove(reading);
 										deleted = reading;
+										std::list<Reading*> removed;
 										for (rter = cohort->readings.begin() ; rter != cohort->readings.end() ; rter++) {
 											Reading *reading = *rter;
 											if (deleted != reading && doesSetMatchReading(reading, removerule->target)) {
 												reading->hit_by.push_back(deleted->hit_by.back());
 												reading->deleted = true;
+												removed.push_back(reading);
 												cohort->deleted.push_back(reading);
 												cohort->readings.remove(reading);
 												rter = cohort->readings.begin();
 												rter--;
 											}
 										}
+										if (cohort->readings.empty()) {
+											for (rter = removed.begin() ; rter != removed.end() ; rter++) {
+												Reading *reading = *rter;
+												reading->deleted = false;
+												cohort->readings.push_back(reading);
+												cohort->deleted.remove(reading);
+											}
+											section_did_good = false;
+										}
+										removed.clear();
 										break;
 									}
 									else if (type == K_SELECT) {
