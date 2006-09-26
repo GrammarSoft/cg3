@@ -405,6 +405,9 @@
 				RelativePath=".\stdin.txt">
 			</File>
 			<File
+				RelativePath=".\stdout-linux.txt">
+			</File>
+			<File
 				RelativePath=".\stdout-trace.txt">
 			</File>
 			<File

@@ -115,12 +115,12 @@ void GrammarApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 			}
 			if (!reading->mapped_by.empty()) {
 				for (uint32_t i=0;i<reading->mapped_by.size();i++) {
-					u_fprintf(output, "M:%u ", grammar->mappings.at(reading->mapped_by.at(i))->line);
+					u_fprintf(output, "%S:%u ", keywords[grammar->mappings.at(reading->mapped_by.at(i))->type], grammar->mappings.at(reading->mapped_by.at(i))->line);
 				}
 			}
 			if (!reading->hit_by.empty()) {
 				for (uint32_t i=0;i<reading->hit_by.size();i++) {
-					u_fprintf(output, "H:%u ", grammar->rules.at(reading->hit_by.at(i))->line);
+					u_fprintf(output, "%S:%u ", keywords[grammar->rules.at(reading->hit_by.at(i))->type], grammar->rules.at(reading->hit_by.at(i))->line);
 				}
 			}
 			u_fprintf(output, "\n");
@@ -162,12 +162,12 @@ void GrammarApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 			}
 			if (!reading->mapped_by.empty()) {
 				for (uint32_t i=0;i<reading->mapped_by.size();i++) {
-					u_fprintf(output, "M:%u ", grammar->mappings.at(reading->mapped_by.at(i))->line);
+					u_fprintf(output, "%S:%u ", keywords[grammar->mappings.at(reading->mapped_by.at(i))->type], grammar->mappings.at(reading->mapped_by.at(i))->line);
 				}
 			}
 			if (!reading->hit_by.empty()) {
 				for (uint32_t i=0;i<reading->hit_by.size();i++) {
-					u_fprintf(output, "H:%u ", grammar->rules.at(reading->hit_by.at(i))->line);
+					u_fprintf(output, "%S:%u ", keywords[grammar->rules.at(reading->hit_by.at(i))->type], grammar->rules.at(reading->hit_by.at(i))->line);
 				}
 			}
 			u_fprintf(output, "\n");
