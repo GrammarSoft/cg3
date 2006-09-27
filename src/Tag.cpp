@@ -150,6 +150,62 @@ void Tag::parseTag(const UChar *to) {
 	}
 }
 
+void Tag::parseTagRaw(const UChar *to) {
+	assert(to != 0);
+	type = 0;
+	features = 0;
+	if (u_strlen(to)) {
+		const UChar *tmp = to;
+		uint32_t length = u_strlen(tmp);
+
+		if (tmp[0] && (tmp[0] == '"' || tmp[0] == '<')) {
+			type |= T_TEXTUAL;
+		}
+
+		if (tmp[0] == '"' && tmp[length-1] == '"') {
+			if (tmp[1] == '<' && tmp[length-2] == '>') {
+				type |= T_WORDFORM;
+			}
+			else {
+				type |= T_BASEFORM;
+			}
+		}
+
+		tag = new UChar[length+1];
+		tag[length] = 0;
+		u_strncpy(tag, tmp, length);
+
+		if (tag && tag[0] == '<' && tag[length-1] == '>') {
+			UChar tkey[256];
+			UChar top[256];
+			tkey[0] = 0;
+			top[0] = 0;
+			int tval = 0;
+			if (u_sscanf(tag, "<%[^<>=:]%[<>=:]%i>", &tkey, &top, &tval) == 3 && tval != 0 && top[0] && u_strlen(top)) {
+				if (top[0] == '<') {
+					comparison_op = OP_LESSTHAN;
+				}
+				else if (top[0] == '>') {
+					comparison_op = OP_GREATERTHAN;
+				}
+				else if (top[0] == '=' || top[0] == ':') {
+					comparison_op = OP_EQUALS;
+				}
+				comparison_val = tval;
+				uint32_t length = u_strlen(tkey);
+				comparison_key = new UChar[length+1];
+				u_strcpy(comparison_key, tkey);
+				comparison_hash = hash_sdbm_uchar(comparison_key, 0);
+				type |= T_NUMERICAL;
+			}
+		}
+
+		if (tag[0] == '@') {
+			type |= T_MAPPING;
+		}
+	}
+}
+
 uint32_t Tag::rehash() {
 	hash = 0;
 
@@ -166,11 +222,14 @@ uint32_t Tag::rehash() {
 	if (type & T_VARIABLE) {
 		hash = hash_sdbm_char("VAR:", hash);
 	}
-
+/*
 	UChar *tmp = new UChar[u_strlen(tag)*2+3];
 	ux_escape(tmp, tag);
 	hash = hash_sdbm_uchar(tmp, hash);
 	delete tmp;
+/*/
+	hash = hash_sdbm_uchar(tag, hash);
+//*/
 
 	if (features & F_CASE_INSENSITIVE) {
 		hash = hash_sdbm_char("i", hash);

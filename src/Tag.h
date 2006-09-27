@@ -65,6 +65,7 @@ namespace CG3 {
 		Tag();
 		~Tag();
 		void parseTag(const UChar *to);
+		void parseTagRaw(const UChar *to);
 		void duplicateTag(const Tag *from);
 
 		uint32_t rehash();

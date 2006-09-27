@@ -57,7 +57,7 @@ void GrammarApplicator::setGrammar(const Grammar *res) {
 
 uint32_t GrammarApplicator::addTag(const UChar *txt) {
 	Tag *tag = new Tag();
-	tag->parseTag(txt);
+	tag->parseTagRaw(txt);
 	uint32_t hash = tag->rehash();
 	if (single_tags.find(hash) == single_tags.end()) {
 		single_tags[hash] = tag;

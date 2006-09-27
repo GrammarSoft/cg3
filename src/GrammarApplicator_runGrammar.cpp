@@ -23,6 +23,36 @@
 using namespace CG3;
 using namespace CG3::Strings;
 
+inline void GrammarApplicator::reflowReading(Reading *reading) {
+	reading->tags.clear();
+	reading->tags_mapped.clear();
+	reading->tags_plain.clear();
+	reading->tags_textual.clear();
+
+	std::list<uint32_t>::const_iterator tter;
+	for (tter = reading->tags_list.begin() ; tter != reading->tags_list.end() ; tter++) {
+		reading->tags[*tter] = *tter;
+		Tag *tag = 0;
+		if (grammar->single_tags.find(*tter) != grammar->single_tags.end()) {
+			tag = grammar->single_tags.find(*tter)->second;
+		}
+		else {
+			tag = single_tags.find(*tter)->second;
+		}
+		assert(tag != 0);
+		if (tag->type & T_MAPPING) {
+			reading->tags_mapped[*tter] = *tter;
+		}
+		if (tag->type & T_TEXTUAL) {
+			reading->tags_textual[*tter] = *tter;
+		}
+		if (!tag->features && !tag->type) {
+			reading->tags_plain[*tter] = *tter;
+		}
+	}
+	reading->rehash();
+}
+
 int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 	if (!input) {
 		u_fprintf(ux_stderr, "Error: Input is null - nothing to parse!\n");
@@ -172,17 +202,6 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 					if (!cReading->baseform && single_tags[tag]->type & T_BASEFORM) {
 						cReading->baseform = tag;
 					}
-					if (single_tags[tag]->type & T_MAPPING) {
-						cReading->mapped = true;
-						cReading->tags_mapped[tag] = tag;
-					}
-					if (single_tags[tag]->type & T_TEXTUAL) {
-						cReading->tags_textual[tag] = tag;
-					}
-					if (!single_tags[tag]->type && !single_tags[tag]->features) {
-						cReading->tags_plain[tag] = tag;
-					}
-					cReading->tags[tag] = tag;
 					cReading->tags_list.push_back(tag);
 				}
 				base = space;
@@ -192,20 +211,12 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 				if (!cReading->baseform && single_tags[tag]->type & T_BASEFORM) {
 					cReading->baseform = tag;
 				}
-				if (single_tags[tag]->type & T_MAPPING) {
-					cReading->mapped = true;
-					cReading->tags_mapped[tag] = tag;
-				}
-				if (single_tags[tag]->type & T_TEXTUAL) {
-					cReading->tags_textual[tag] = tag;
-				}
-				if (!single_tags[tag]->type && !single_tags[tag]->features) {
-					cReading->tags_plain[tag] = tag;
-				}
-				cReading->tags[tag] = tag;
 				cReading->tags_list.push_back(tag);
 			}
-			cReading->rehash();
+			reflowReading(cReading);
+			if (!cReading->tags_mapped.empty()) {
+				cReading->mapped = true;
+			}
 			cCohort->readings.push_back(cReading);
 			lReading = cReading;
 		}
@@ -294,12 +305,8 @@ label_runGrammarOnWindow_begin:
 									std::list<uint32_t>::const_iterator tter;
 									for (tter = rule->maplist.begin() ; tter != rule->maplist.end() ; tter++) {
 										reading->tags_list.push_back(*tter);
-										reading->tags[*tter] = *tter;
-										if (grammar->single_tags.find(*tter)->second->type & T_MAPPING) {
-											reading->tags_mapped[*tter] = *tter;
-										}
 									}
-									reading->rehash();
+									reflowReading(reading);
 								}
 								if (rule->type == K_REPLACE) {
 									std::list<uint32_t>::const_iterator tter;
@@ -309,16 +316,10 @@ label_runGrammarOnWindow_begin:
 									for (tter = rule->maplist.begin() ; tter != rule->maplist.end() ; tter++) {
 										reading->tags_list.push_back(*tter);
 									}
-									reading->tags.clear();
-									reading->tags_mapped.clear();
-									for (tter = reading->tags_list.begin() ; tter != reading->tags_list.end() ; tter++) {
-										reading->tags[*tter] = *tter;
-										if (grammar->single_tags.find(*tter)->second->type & T_MAPPING) {
-											reading->tags_mapped[*tter] = *tter;
-											reading->mapped = true;
-										}
+									reflowReading(reading);
+									if (!reading->tags_mapped.empty()) {
+										reading->mapped = true;
 									}
-									reading->rehash();
 								}
 								if (rule->type == K_SUBSTITUTE) {
 									std::list<uint32_t>::const_iterator tter;
@@ -328,16 +329,10 @@ label_runGrammarOnWindow_begin:
 									for (tter = rule->maplist.begin() ; tter != rule->maplist.end() ; tter++) {
 										reading->tags_list.push_back(*tter);
 									}
-									reading->tags.clear();
-									reading->tags_mapped.clear();
-									for (tter = reading->tags_list.begin() ; tter != reading->tags_list.end() ; tter++) {
-										reading->tags[*tter] = *tter;
-										if (grammar->single_tags.find(*tter)->second->type & T_MAPPING) {
-											reading->tags_mapped[*tter] = *tter;
-											reading->mapped = true;
-										}
+									reflowReading(reading);
+									if (!reading->tags_mapped.empty()) {
+										reading->mapped = true;
 									}
-									reading->rehash();
 								}
 								// ToDo: Implement APPEND
 								if (rule->type == K_MAP) {
@@ -506,6 +501,9 @@ label_runGrammarOnWindow_begin:
 							}
 						}
 					}
+				}
+				if (!section_did_good && j == grammar->sections[i+1] && i < grammar->sections.size()-1) {
+					i++;
 				}
 			}
 			if (!section_did_good) {
