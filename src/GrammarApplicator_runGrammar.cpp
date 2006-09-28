@@ -1,19 +1,19 @@
 /*
- * Copyright (C) 2006, GrammarSoft Aps
- * and the VISL project at the University of Southern Denmark.
- * All Rights Reserved.
- *
- * The contents of this file are subject to the GrammarSoft Public
- * License Version 1.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of
- * the License at http://www.grammarsoft.com/GSPL or
- * http://visl.sdu.dk/GSPL.txt
- * 
- * Software distributed under the License is distributed on an "AS
- * IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
- * implied. See the License for the specific language governing
- * rights and limitations under the License.
- */
+* Copyright (C) 2006, GrammarSoft Aps
+* and the VISL project at the University of Southern Denmark.
+* All Rights Reserved.
+*
+* The contents of this file are subject to the GrammarSoft Public
+* License Version 1.0 (the "License"); you may not use this file
+* except in compliance with the License. You may obtain a copy of
+* the License at http://www.grammarsoft.com/GSPL or
+* http://visl.sdu.dk/GSPL.txt
+* 
+* Software distributed under the License is distributed on an "AS
+* IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+* implied. See the License for the specific language governing
+* rights and limitations under the License.
+*/
 
 #include "GrammarApplicator.h"
 #include "Window.h"
@@ -71,7 +71,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 		u_fprintf(ux_stderr, "Error: No grammar provided - cannot continue! Hint: call setGrammar() first.\n");
 		return -1;
 	}
-	
+
 	free_strings();
 	free_keywords();
 	int error = init_keywords();
@@ -85,7 +85,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 		return error;
 	}
 
-	#define BUFFER_SIZE (131072)
+#define BUFFER_SIZE (131072)
 	UChar _line[BUFFER_SIZE];
 	UChar *line = _line;
 	UChar _cleaned[BUFFER_SIZE];
@@ -146,7 +146,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 				cReading->tags[begintag] = begintag;
 				cReading->tags_list.push_back(begintag);
 				cReading->rehash();
-				
+
 				cCohort = new Cohort();
 				cCohort->wordform = begintag;
 				cCohort->readings.push_back(cReading);
@@ -177,8 +177,8 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 				cWindow->shuffleWindowsDown();
 				runGrammarOnWindow(cWindow);
 				printSingleWindow(cWindow->current, output);
-//				std::cerr << "Cache " << (cache_hits+cache_miss) << " : " << cache_hits << " / " << cache_miss << "\r" << std::flush;
-//				u_fflush(output);
+				//				std::cerr << "Cache " << (cache_hits+cache_miss) << " : " << cache_hits << " / " << cache_miss << "\r" << std::flush;
+				//				u_fflush(output);
 			}
 			cCohort = new Cohort();
 			cCohort->wordform = addTag(cleaned);
@@ -244,7 +244,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 		cWindow->shuffleWindowsDown();
 		runGrammarOnWindow(cWindow);
 		printSingleWindow(cWindow->current, output);
-//		u_fflush(output);
+		//		u_fflush(output);
 	}
 	u_fflush(output);
 	std::cerr << "Cache " << (cache_hits+cache_miss) << " : " << cache_hits << " / " << cache_miss << std::endl;
@@ -351,11 +351,11 @@ label_runGrammarOnWindow_begin:
 			bool section_did_good = true;
 			uint32_t first_good_rule = grammar->sections[grammar->sections.size()-1]*2;
 			for (uint32_t j=0;j<grammar->sections[i+1];j++) {
-/*
+				/*
 				if (j == 0 && i > 1 && first_good_rule > grammar->sections[i-2]) {
-					j = grammar->sections[i-2];
+				j = grammar->sections[i-2];
 				}
-//*/
+				//*/
 				section_did_good = false;
 				const Rule *rule = grammar->rules[j];
 				const Rule *removerule = 0;
@@ -368,6 +368,9 @@ label_runGrammarOnWindow_begin:
 						continue;
 					}
 					Cohort *cohort = current->cohorts[c];
+					if (rule->wordform && rule->wordform != cohort->wordform) {
+						continue;
+					}
 					if (cohort->readings.empty()) {
 						continue;
 					}
@@ -381,122 +384,120 @@ label_runGrammarOnWindow_begin:
 						if (!reading->hash) {
 							reading->rehash();
 						}
-						if (!rule->wordform || rule->wordform == reading->wordform) {
-							if (rule->target && doesSetMatchReading(reading, rule->target)) {
-								bool good = true;
-								if (!rule->tests.empty()) {
-									std::list<ContextualTest*>::iterator iter;
-									for (iter = rule->tests.begin() ; iter != rule->tests.end() ; iter++) {
-										ContextualTest *test = *iter;
-										good = runContextualTest(window, current, c, test);
-										if (!good) {
-											if (test != rule->tests.front()) {
-												rule->tests.remove(test);
-												rule->tests.push_front(test);
-											}
-											break;
+						if (rule->target && doesSetMatchReading(reading, rule->target)) {
+							bool good = true;
+							if (!rule->tests.empty()) {
+								std::list<ContextualTest*>::iterator iter;
+								for (iter = rule->tests.begin() ; iter != rule->tests.end() ; iter++) {
+									ContextualTest *test = *iter;
+									good = runContextualTest(window, current, c, test);
+									if (!good) {
+										if (test != rule->tests.front()) {
+											rule->tests.remove(test);
+											rule->tests.push_front(test);
 										}
+										break;
 									}
 								}
-								KEYWORDS type = rule->type;
-								if (rule->type == K_IFF && good) {
-									type = K_SELECT;
-									good = true;
-								}
-								else if (rule->type == K_IFF && !good) {
-									type = K_REMOVE;
-									good = true;
-								}
-								if (good) {
-									section_did_good = true;
-									first_good_rule = (j < first_good_rule) ? j : first_good_rule;
-									reading->hit_by.push_back(j);
-									if (type == K_REMOVE) {
-										removerule = rule;
-										reading->deleted = true;
-										cohort->deleted.push_back(reading);
-										cohort->readings.remove(reading);
-										deleted = reading;
-										std::list<Reading*> removed;
-										for (rter = cohort->readings.begin() ; rter != cohort->readings.end() ; rter++) {
+							}
+							KEYWORDS type = rule->type;
+							if (rule->type == K_IFF && good) {
+								type = K_SELECT;
+								good = true;
+							}
+							else if (rule->type == K_IFF && !good) {
+								type = K_REMOVE;
+								good = true;
+							}
+							if (good) {
+								section_did_good = true;
+								first_good_rule = (j < first_good_rule) ? j : first_good_rule;
+								reading->hit_by.push_back(j);
+								if (type == K_REMOVE) {
+									removerule = rule;
+									reading->deleted = true;
+									cohort->deleted.push_back(reading);
+									cohort->readings.remove(reading);
+									deleted = reading;
+									std::list<Reading*> removed;
+									for (rter = cohort->readings.begin() ; rter != cohort->readings.end() ; rter++) {
+										Reading *reading = *rter;
+										if (deleted != reading && doesSetMatchReading(reading, removerule->target)) {
+											reading->hit_by.push_back(deleted->hit_by.back());
+											reading->deleted = true;
+											removed.push_back(reading);
+											cohort->deleted.push_back(reading);
+											cohort->readings.remove(reading);
+											rter = cohort->readings.begin();
+											rter--;
+										}
+									}
+									if (cohort->readings.empty()) {
+										for (rter = removed.begin() ; rter != removed.end() ; rter++) {
 											Reading *reading = *rter;
-											if (deleted != reading && doesSetMatchReading(reading, removerule->target)) {
-												reading->hit_by.push_back(deleted->hit_by.back());
+											reading->deleted = false;
+											cohort->readings.push_back(reading);
+											cohort->deleted.remove(reading);
+										}
+										section_did_good = false;
+									}
+									removed.clear();
+									break;
+								}
+								else if (type == K_SELECT) {
+									selectrule = rule;
+									reading->selected = true;
+									selected = reading;
+									size_t nc = cohort->readings.size();
+									for (rter = cohort->readings.begin() ; rter != cohort->readings.end() ; rter++) {
+										Reading *reading = *rter;
+										if (selected != reading) {
+											reading->hit_by.push_back(selected->hit_by.back());
+											if (doesSetMatchReading(reading, selectrule->target)) {
+												reading->selected = true;
+											} else {
 												reading->deleted = true;
-												removed.push_back(reading);
 												cohort->deleted.push_back(reading);
 												cohort->readings.remove(reading);
 												rter = cohort->readings.begin();
 												rter--;
 											}
 										}
-										if (cohort->readings.empty()) {
-											for (rter = removed.begin() ; rter != removed.end() ; rter++) {
-												Reading *reading = *rter;
-												reading->deleted = false;
-												cohort->readings.push_back(reading);
-												cohort->deleted.remove(reading);
-											}
-											section_did_good = false;
-										}
-										removed.clear();
-										break;
 									}
-									else if (type == K_SELECT) {
-										selectrule = rule;
-										reading->selected = true;
-										selected = reading;
-										size_t nc = cohort->readings.size();
-										for (rter = cohort->readings.begin() ; rter != cohort->readings.end() ; rter++) {
-											Reading *reading = *rter;
-											if (selected != reading) {
-												reading->hit_by.push_back(selected->hit_by.back());
-												if (doesSetMatchReading(reading, selectrule->target)) {
-													reading->selected = true;
-												} else {
-													reading->deleted = true;
-													cohort->deleted.push_back(reading);
-													cohort->readings.remove(reading);
-													rter = cohort->readings.begin();
-													rter--;
-												}
-											}
-										}
-										// This SELECT had no effect, so don't mark section as active.
-										if (nc == cohort->readings.size()) {
-											section_did_good = false;
-										}
-										break;
-									}
-									else if (type == K_REMVARIABLE) {
-										variables[rule->varname] = 0;
+									// This SELECT had no effect, so don't mark section as active.
+									if (nc == cohort->readings.size()) {
 										section_did_good = false;
 									}
-									else if (type == K_SETVARIABLE) {
-										variables[rule->varname] = rule->varvalue;
-										section_did_good = false;
+									break;
+								}
+								else if (type == K_REMVARIABLE) {
+									variables[rule->varname] = 0;
+									section_did_good = false;
+								}
+								else if (type == K_SETVARIABLE) {
+									variables[rule->varname] = rule->varvalue;
+									section_did_good = false;
+								}
+								else if (type == K_DELIMIT) {
+									SingleWindow *nwin = new SingleWindow();
+									uint32_t nc = c;
+									for (nc = c ; nc < current->cohorts.size() ; nc++) {
+										nwin->cohorts.push_back(current->cohorts.at(nc));
 									}
-									else if (type == K_DELIMIT) {
-										SingleWindow *nwin = new SingleWindow();
-										uint32_t nc = c;
-										for (nc = c ; nc < current->cohorts.size() ; nc++) {
-											nwin->cohorts.push_back(current->cohorts.at(nc));
-										}
-										c = (uint32_t)current->cohorts.size()-c;
-										for (nc = 0 ; nc < c ; nc++) {
-											current->cohorts.pop_back();
-										}
-										window->next.push_front(nwin);
+									c = (uint32_t)current->cohorts.size()-c;
+									for (nc = 0 ; nc < c ; nc++) {
+										current->cohorts.pop_back();
+									}
+									window->next.push_front(nwin);
 
-										cohort = current->cohorts.back();
-										for (rter = cohort->readings.begin() ; rter != cohort->readings.end() ; rter++) {
-											Reading *reading = *rter;
-											reading->tags_list.push_back(endtag);
-											reading->tags[endtag] = endtag;
-											reading->rehash();
-										}
-										goto label_runGrammarOnWindow_begin;
+									cohort = current->cohorts.back();
+									for (rter = cohort->readings.begin() ; rter != cohort->readings.end() ; rter++) {
+										Reading *reading = *rter;
+										reading->tags_list.push_back(endtag);
+										reading->tags[endtag] = endtag;
+										reading->rehash();
 									}
+									goto label_runGrammarOnWindow_begin;
 								}
 							}
 						}

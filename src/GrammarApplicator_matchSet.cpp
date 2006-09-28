@@ -195,19 +195,29 @@ bool GrammarApplicator::doesSetMatchReading(const Reading *reading, const uint32
 				while (i < size-1 && theset->set_ops.at(i) != S_OR) {
 					switch (theset->set_ops.at(i)) {
 						case S_PLUS:
-							match = (match
-								&& doesSetMatchReading(reading, theset->sets.at(i+1)));
+							if (match) {
+								match = doesSetMatchReading(reading, theset->sets.at(i+1));
+							}
 							break;
 						case S_MINUS:
-							if (match
-								&& doesSetMatchReading(reading, theset->sets.at(i+1))) {
-								match = false;
+							if (match) {
+								if (doesSetMatchReading(reading, theset->sets.at(i+1))) {
+									match = false;
+								}
 							}
 							break;
 						case S_FAILFAST:
-							if (!match
-								|| doesSetMatchReading(reading, theset->sets.at(i+1))) {
-								match = false;
+							if (match) {
+								if (doesSetMatchReading(reading, theset->sets.at(i+1))) {
+									match = false;
+								}
+							}
+							break;
+						case S_NOT:
+							if (!match) {
+								if (!doesSetMatchReading(reading, theset->sets.at(i+1))) {
+									match = true;
+								}
 							}
 							break;
 						default:
