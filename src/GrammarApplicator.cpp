@@ -30,6 +30,8 @@ GrammarApplicator::GrammarApplicator() {
 	apply_mappings = true;
 	apply_corrections = true;
 	trace = false;
+	reorder = false;
+	single_run = false;
 	num_windows = 2;
 	begintag = 0;
 	endtag = 0;

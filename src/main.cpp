@@ -51,6 +51,8 @@ namespace Options {
 		NOMAPPINGS,
 		NOCORRECTIONS,
 		TRACE,
+		REORDER,
+		SINGLERUN,
 		NUM_OPTIONS
 	};
 
@@ -83,7 +85,9 @@ namespace Options {
 		UOPTION_DEF("fast",					0, UOPT_NO_ARG),
 		UOPTION_DEF("no-mappings",			0, UOPT_NO_ARG),
 		UOPTION_DEF("no-corrections",		0, UOPT_NO_ARG),
-		UOPTION_DEF("trace",				0, UOPT_NO_ARG)
+		UOPTION_DEF("trace",				0, UOPT_NO_ARG),
+		UOPTION_DEF("reorder",				0, UOPT_NO_ARG),
+		UOPTION_DEF("single-run",			0, UOPT_NO_ARG)
 	};
 }
 
@@ -132,6 +136,8 @@ int main(int argc, char* argv[]) {
         fprintf(stderr, " --grammar-only           Compiles the grammar only.\n");
         fprintf(stderr, " --check-only             Compiles the grammar only.\n");
         fprintf(stderr, " --trace                  Prints debug output alongside with normal output.\n");
+        fprintf(stderr, " --reorder                Rearranges rules optimized for speed.\n");
+        fprintf(stderr, " --single-run             Only runs each section once.\n");
         fprintf(stderr, " --no-mappings            Disables running any MAP, ADD, or REPLACE rules.\n");
         fprintf(stderr, " --no-corrections         Disables running any SUBSTITUTE or APPEND rules.\n");
         fprintf(stderr, "\n");
@@ -291,6 +297,12 @@ int main(int argc, char* argv[]) {
 		}
 		if (options[TRACE].doesOccur) {
 			applicator->trace = true;
+		}
+		if (options[REORDER].doesOccur) {
+			applicator->reorder = true;
+		}
+		if (options[SINGLERUN].doesOccur) {
+			applicator->single_run = true;
 		}
 		applicator->apply_corrections = false;
 		applicator->runGrammarOnText(ux_stdin, ux_stdout);

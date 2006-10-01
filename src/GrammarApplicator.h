@@ -32,6 +32,8 @@ namespace CG3 {
 		bool apply_mappings;
 		bool apply_corrections;
 		bool trace;
+		bool reorder;
+		bool single_run;
 
 		uint32_t num_windows;
 		uint32_t cache_hits, cache_miss, match_single, match_comp, match_sub;

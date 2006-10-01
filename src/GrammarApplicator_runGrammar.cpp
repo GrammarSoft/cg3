@@ -348,15 +348,10 @@ label_runGrammarOnWindow_begin:
 
 	if (!grammar->rules.empty()) {
 		for (uint32_t i=0;i<grammar->sections.size()-1;) {
-			bool section_did_good = true;
+			bool section_did_good = false;
+			bool select_only = reorder;
 			uint32_t first_good_rule = grammar->sections[grammar->sections.size()-1]*2;
-			for (uint32_t j=0;j<grammar->sections[i+1];j++) {
-				/*
-				if (j == 0 && i > 1 && first_good_rule > grammar->sections[i-2]) {
-				j = grammar->sections[i-2];
-				}
-				//*/
-				section_did_good = false;
+			for (uint32_t j=0;j<grammar->sections[i+1];) {
 				const Rule *rule = grammar->rules[j];
 				const Rule *removerule = 0;
 				const Rule *selectrule = 0;
@@ -366,6 +361,9 @@ label_runGrammarOnWindow_begin:
 				for (uint32_t c=0 ; c < current->cohorts.size() ; c++) {
 					if (c == 0) {
 						continue;
+					}
+					if (select_only && rule->type != K_SELECT) {
+						break;
 					}
 					Cohort *cohort = current->cohorts[c];
 					if (rule->wordform && rule->wordform != cohort->wordform) {
@@ -503,9 +501,20 @@ label_runGrammarOnWindow_begin:
 						}
 					}
 				}
-				if (!section_did_good && j == grammar->sections[i+1] && i < grammar->sections.size()-1) {
-					i++;
+				if (j == grammar->sections[i+1]) {
+					if (single_run) {
+						section_did_good = false;
+					}
+					if (select_only) {
+						select_only = false;
+						j = 0;
+						continue;
+					}
+					else if (!section_did_good && i < grammar->sections.size()-1) {
+						i++;
+					}
 				}
+				j++;
 			}
 			if (!section_did_good) {
 				i++;
