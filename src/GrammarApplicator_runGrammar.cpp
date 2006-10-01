@@ -23,6 +23,45 @@
 using namespace CG3;
 using namespace CG3::Strings;
 
+inline void GrammarApplicator::reflowSingleWindow(SingleWindow *swindow) {
+	swindow->tags.clear();
+	swindow->tags_mapped.clear();
+	swindow->tags_plain.clear();
+	swindow->tags_textual.clear();
+
+	for (uint32_t c=0 ; c < swindow->cohorts.size() ; c++) {
+		Cohort *cohort = swindow->cohorts[c];
+
+		std::list<Reading*>::iterator rter;
+		for (rter = cohort->readings.begin() ; rter != cohort->readings.end() ; rter++) {
+			Reading *reading = *rter;
+
+			std::list<uint32_t>::const_iterator tter;
+			for (tter = reading->tags_list.begin() ; tter != reading->tags_list.end() ; tter++) {
+				swindow->tags[*tter] = *tter;
+				Tag *tag = 0;
+				if (grammar->single_tags.find(*tter) != grammar->single_tags.end()) {
+					tag = grammar->single_tags.find(*tter)->second;
+				}
+				else {
+					tag = single_tags.find(*tter)->second;
+				}
+				assert(tag != 0);
+				if (tag->type & T_MAPPING) {
+					swindow->tags_mapped[*tter] = *tter;
+				}
+				if (tag->type & T_TEXTUAL) {
+					swindow->tags_textual[*tter] = *tter;
+				}
+				if (!tag->features && !tag->type) {
+					swindow->tags_plain[*tter] = *tter;
+				}
+			}
+		}
+	}
+	swindow->rehash();
+}
+
 inline void GrammarApplicator::reflowReading(Reading *reading) {
 	reading->tags.clear();
 	reading->tags_mapped.clear();
@@ -347,6 +386,8 @@ label_runGrammarOnWindow_begin:
 	}
 
 	if (!grammar->rules.empty()) {
+		reflowSingleWindow(current);
+		
 		for (uint32_t i=0;i<grammar->sections.size()-1;) {
 			bool section_did_good = false;
 			bool select_only = reorder;

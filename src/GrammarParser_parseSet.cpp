@@ -206,12 +206,12 @@ int GrammarParser::parseSet(const UChar *line) {
 		if (!set_op) {
 			set_op = readSetOperator(&space);
 			if (!set_op) {
-				u_fprintf(ux_stderr, "Warning: Could not read in operator on line %u for set %S - assuming set alias.\n", result->curline, curset->name);
+//				u_fprintf(ux_stderr, "Warning: Could not read in operator on line %u for set %S - assuming set alias.\n", result->curline, curset->name);
 				result->set_alias[res] = set_a;
 				break;
 			}
 			if (option_vislcg_compat && set_op == S_MINUS) {
-				u_fprintf(ux_stderr, "Warning: Set %S on line %u - difference operator converted to fail-fast as per --vislcg-compat.\n", curset->name, result->curline);
+//				u_fprintf(ux_stderr, "Warning: Set %S on line %u - difference operator converted to fail-fast as per --vislcg-compat.\n", curset->name, result->curline);
 				set_op = S_FAILFAST;
 			}
 			curset->set_ops.push_back(set_op);

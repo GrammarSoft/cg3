@@ -72,7 +72,7 @@ uint32_t Reading::rehash() {
 	assert(hash != 0);
 
 	std::map<uint32_t, uint32_t>::const_iterator mter;
-	hash_mapped = 0;
+	hash_mapped = 1;
 	for (mter = tags_mapped.begin() ; mter != tags_mapped.end() ; mter++) {
 		hash_mapped = hash_sdbm_uint32_t(mter->second, hash_mapped);
 	}
@@ -80,7 +80,7 @@ uint32_t Reading::rehash() {
 	for (mter = tags_plain.begin() ; mter != tags_plain.end() ; mter++) {
 		hash_plain = hash_sdbm_uint32_t(mter->second, hash_plain);
 	}
-	hash_textual = 0;
+	hash_textual = 1;
 	for (mter = tags_textual.begin() ; mter != tags_textual.end() ; mter++) {
 		hash_textual = hash_sdbm_uint32_t(mter->second, hash_textual);
 	}

@@ -148,9 +148,18 @@ int GrammarWriter::write_grammar_to_file_binary(FILE *output) {
 		u_fprintf(ux_stderr, "Error: No grammar provided - cannot continue! Hint: call setGrammar() first.\n");
 		return -1;
 	}
+	uint32_t tmp = 0;
 
 	fprintf(output, "CG3B");
-	uint32_t tmp = (uint32_t)htonl((uint32_t)grammar->sets_by_contents.size());
+
+	// Write out the version of the binary format
+	tmp = (uint32_t)htonl((uint32_t)1);
+	fwrite(&tmp, sizeof(uint32_t), 1, output);
+
+	tmp = (uint32_t)htonl((uint32_t)grammar->single_tags.size());
+	fwrite(&tmp, sizeof(uint32_t), 1, output);
+
+	tmp = (uint32_t)htonl((uint32_t)grammar->sets_by_contents.size());
 	fwrite(&tmp, sizeof(uint32_t), 1, output);
 
 	return 0;

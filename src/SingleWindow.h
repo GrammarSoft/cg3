@@ -28,9 +28,17 @@ namespace CG3 {
 	public:
 		std::vector<Cohort*> cohorts;
 		UChar *text;
+		uint32_t hash, hash_tags, hash_mapped, hash_plain, hash_textual;
+
+		stdext::hash_map<uint32_t, uint32_t> tags;
+		std::map<uint32_t, uint32_t> tags_plain;
+		std::map<uint32_t, uint32_t> tags_mapped;
+		std::map<uint32_t, uint32_t> tags_textual;
 
 		SingleWindow();
 		~SingleWindow();
+
+		uint32_t rehash();
 	};
 
 }

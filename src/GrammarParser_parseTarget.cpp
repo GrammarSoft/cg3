@@ -50,7 +50,7 @@ uint32_t GrammarParser::parseTarget(UChar **space) {
 				break;
 			}
 			if (option_vislcg_compat && set_op == S_MINUS) {
-				u_fprintf(ux_stderr, "Warning: Set %S on line %u - difference operator converted to fail-fast as per --vislcg-compat.\n", curset->name, result->curline);
+//				u_fprintf(ux_stderr, "Warning: Set %S on line %u - difference operator converted to fail-fast as per --vislcg-compat.\n", curset->name, result->curline);
 				set_op = S_FAILFAST;
 			}
 			curset->set_ops.push_back(set_op);

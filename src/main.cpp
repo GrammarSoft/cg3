@@ -30,6 +30,7 @@ namespace Options {
 		VERSION,
 		GRAMMAR,
 		GRAMMAR_OUT,
+		GRAMMAR_BIN,
 		GRAMMAR_ONLY,
 		CHECK_ONLY,
 		UNSAFE,
@@ -62,6 +63,7 @@ namespace Options {
 		UOPTION_DEF("version",				'V', UOPT_NO_ARG),
 		UOPTION_DEF("grammar",				'g', UOPT_REQUIRES_ARG),
 		UOPTION_DEF("grammar-out",			0, UOPT_REQUIRES_ARG),
+		UOPTION_DEF("grammar-bin",			0, UOPT_REQUIRES_ARG),
 		UOPTION_DEF("grammar-only",			0, UOPT_NO_ARG),
 		UOPTION_DEF("check-only",			0, UOPT_NO_ARG),
 		UOPTION_DEF("unsafe",				'u', UOPT_NO_ARG),
@@ -133,10 +135,12 @@ int main(int argc, char* argv[]) {
         fprintf(stderr, " -V or --version          Prints version number.\n");
         fprintf(stderr, " -g or --grammar          Specifies the grammar file to use for disambiguation.\n");
         fprintf(stderr, " -p or --vislcg-compat    Tells the grammar compiler to be compatible with older VISLCG syntax.\n");
+        fprintf(stderr, " --grammar-out            Writes the compiled grammar back out in textual form to a file.\n");
+        fprintf(stderr, " --grammar-bin            Writes the compiled grammar back out in binary form to a file.\n");
         fprintf(stderr, " --grammar-only           Compiles the grammar only.\n");
         fprintf(stderr, " --check-only             Compiles the grammar only.\n");
         fprintf(stderr, " --trace                  Prints debug output alongside with normal output.\n");
-        fprintf(stderr, " --reorder                Rearranges rules optimized for speed.\n");
+        fprintf(stderr, " --reorder                Rearranges rules so SELECTs are run first.\n");
         fprintf(stderr, " --single-run             Only runs each section once.\n");
         fprintf(stderr, " --no-mappings            Disables running any MAP, ADD, or REPLACE rules.\n");
         fprintf(stderr, " --no-corrections         Disables running any SUBSTITUTE or APPEND rules.\n");
@@ -276,10 +280,24 @@ int main(int argc, char* argv[]) {
 			writer->setGrammar(grammar);
 			writer->write_grammar_to_ufile_text(gout);
 
-			std::cerr << "Writing grammar took " << (double)((double)(clock()-glob_timer)/(double)CLOCKS_PER_SEC) << " seconds." << std::endl;
+			std::cerr << "Writing textual grammar took " << (double)((double)(clock()-glob_timer)/(double)CLOCKS_PER_SEC) << " seconds." << std::endl;
 			glob_timer = clock();
 		} else {
 			std::cerr << "Could not write grammar to " << options[GRAMMAR_OUT].value << std::endl;
+		}
+	}
+
+	if (options[GRAMMAR_BIN].doesOccur) {
+		FILE *gout = fopen(options[GRAMMAR_BIN].value, "wb");
+		if (gout) {
+			writer = new CG3::GrammarWriter();
+			writer->setGrammar(grammar);
+			writer->write_grammar_to_file_binary(gout);
+
+			std::cerr << "Writing binary grammar took " << (double)((double)(clock()-glob_timer)/(double)CLOCKS_PER_SEC) << " seconds." << std::endl;
+			glob_timer = clock();
+		} else {
+			std::cerr << "Could not write grammar to " << options[GRAMMAR_BIN].value << std::endl;
 		}
 	}
 

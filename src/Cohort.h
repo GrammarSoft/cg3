@@ -29,7 +29,6 @@ namespace CG3 {
 		std::list<Reading*> readings;
 		std::list<Reading*> deleted;
 		UChar *text;
-		// ToDo: Add a cohort and window-wide tag list.
 
 		Cohort();
 		~Cohort();
