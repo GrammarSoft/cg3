@@ -25,6 +25,7 @@ using namespace CG3;
 using namespace CG3::Strings;
 
 GrammarWriter::GrammarWriter() {
+	statistics = false;
 	grammar = 0;
 }
 
@@ -170,6 +171,9 @@ void GrammarWriter::setGrammar(Grammar *res) {
 }
 
 void GrammarWriter::printRule(UFILE *to, const Rule *rule) {
+	if (statistics) {
+		u_fprintf(to, "(M:%u;F:%u;W:%.3f;Q:%.16f) ", rule->num_match, rule->num_fail, rule->weight, rule->quality);
+	}
 	if (rule->wordform) {
 		printTag(to, grammar->single_tags.find(rule->wordform)->second);
 		u_fprintf(to, " ");
@@ -217,6 +221,9 @@ void GrammarWriter::printRule(UFILE *to, const Rule *rule) {
 }
 
 void GrammarWriter::printContextualTest(UFILE *to, const ContextualTest *test) {
+	if (statistics) {
+		u_fprintf(to, "(M:%u;F:%u;W:%.3f) ", test->num_match, test->num_fail, test->weight);
+	}
 	if (test->negative) {
 		u_fprintf(to, "NOT ");
 	}

@@ -36,6 +36,9 @@ ContextualTest::ContextualTest() {
 	linked = 0;
 	hash = 0;
 	line = 0;
+	num_fail = 0;
+	num_match = 0;
+	weight = 0.0;
 }
 
 ContextualTest::~ContextualTest() {
@@ -93,4 +96,35 @@ uint32_t ContextualTest::rehash() {
 	}
 	assert(hash != 0);
 	return hash;
+}
+
+double ContextualTest::reweight() {
+	weight = 1.0;
+	if (scanfirst) {
+		weight += 2.0;
+	}
+	if (scanall) {
+		weight += 3.0;
+	}
+	if (barrier) {
+		weight += 2.0;
+	}
+	if (careful) {
+		weight += 2.0;
+	}
+	if (span_windows) {
+		weight += 3.0;
+	}
+	if (linked) {
+		weight += 1.0;
+		if (num_fail || num_match) {
+			double lw = linked->reweight();
+			lw *= double(linked->num_fail+linked->num_match) / double(num_fail+num_match);
+			weight += lw;
+		} else {
+			weight += linked->reweight();
+		}
+	}
+	assert(weight != 0);
+	return weight;
 }

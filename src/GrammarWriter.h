@@ -25,6 +25,7 @@
 namespace CG3 {
 	class GrammarWriter {
 	public:
+		bool statistics;
 		stdext::hash_map<uint32_t, uint32_t> used_sets;
 		const Grammar *grammar;
 	

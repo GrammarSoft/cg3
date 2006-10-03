@@ -448,6 +448,7 @@ label_runGrammarOnWindow_begin:
 								good = true;
 							}
 							if (good) {
+								rule->num_match++;
 								reading->hit_by.push_back(j);
 								if (type == K_REMOVE) {
 									removerule = rule;
@@ -538,6 +539,9 @@ label_runGrammarOnWindow_begin:
 								if (good) {
 									section_did_good = true;
 								}
+							}
+							else {
+								rule->num_fail++;
 							}
 						}
 					}
@@ -660,6 +664,11 @@ bool GrammarApplicator::runContextualTest(const Window *window, const SingleWind
 				retval = runContextualTest(window, sWindow, pos, test->linked);
 			}
 		}
+	}
+	if (retval) {
+		test->num_match++;
+	} else {
+		test->num_fail++;
 	}
 	return retval;
 }

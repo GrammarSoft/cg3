@@ -21,6 +21,7 @@
 #include <gc.h>
 #endif
 
+#include <algorithm>
 #include <iostream>
 #include <stdlib.h>
 #include <stdio.h>
@@ -29,6 +30,7 @@
 #include <vector>
 #include <map>
 #include <time.h>
+#include <math.h>
 
 #include <assert.h>
 

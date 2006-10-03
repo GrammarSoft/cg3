@@ -31,6 +31,7 @@ namespace Options {
 		GRAMMAR,
 		GRAMMAR_OUT,
 		GRAMMAR_BIN,
+		GRAMMAR_INFO,
 		GRAMMAR_ONLY,
 		CHECK_ONLY,
 		UNSAFE,
@@ -64,6 +65,7 @@ namespace Options {
 		UOPTION_DEF("grammar",				'g', UOPT_REQUIRES_ARG),
 		UOPTION_DEF("grammar-out",			0, UOPT_REQUIRES_ARG),
 		UOPTION_DEF("grammar-bin",			0, UOPT_REQUIRES_ARG),
+		UOPTION_DEF("grammar-info",			0, UOPT_REQUIRES_ARG),
 		UOPTION_DEF("grammar-only",			0, UOPT_NO_ARG),
 		UOPTION_DEF("check-only",			0, UOPT_NO_ARG),
 		UOPTION_DEF("unsafe",				'u', UOPT_NO_ARG),
@@ -137,6 +139,7 @@ int main(int argc, char* argv[]) {
         fprintf(stderr, " -p or --vislcg-compat    Tells the grammar compiler to be compatible with older VISLCG syntax.\n");
         fprintf(stderr, " --grammar-out            Writes the compiled grammar back out in textual form to a file.\n");
         fprintf(stderr, " --grammar-bin            Writes the compiled grammar back out in binary form to a file.\n");
+        fprintf(stderr, " --grammar-info           Writes the compiled grammar back out in textual form to a file, with lots of statistics and information.\n");
         fprintf(stderr, " --grammar-only           Compiles the grammar only.\n");
         fprintf(stderr, " --check-only             Compiles the grammar only.\n");
         fprintf(stderr, " --trace                  Prints debug output alongside with normal output.\n");
@@ -302,6 +305,72 @@ int main(int argc, char* argv[]) {
 	}
 
 	if (!options[CHECK_ONLY].doesOccur && !options[GRAMMAR_ONLY].doesOccur) {
+		grammar->trim();
+
+		applicator = new CG3::GrammarApplicator();
+		applicator->setGrammar(grammar);
+		if (options[FAST].doesOccur) {
+			applicator->fast = true;
+		}
+		applicator->apply_mappings = true;
+		if (options[NOMAPPINGS].doesOccur) {
+			applicator->apply_mappings = false;
+		}
+		if (options[TRACE].doesOccur) {
+			applicator->trace = true;
+		}
+		if (options[REORDER].doesOccur) {
+			applicator->reorder = true;
+		}
+		if (options[SINGLERUN].doesOccur) {
+			applicator->single_run = true;
+		}
+		applicator->apply_corrections = false;
+		applicator->runGrammarOnText(ux_stdin, ux_stdout);
+
+		std::cerr << "Applying grammar on input took " << (double)((double)(clock()-glob_timer)/(double)CLOCKS_PER_SEC) << " seconds." << std::endl;
+		glob_timer = clock();
+	}
+
+	if (options[GRAMMAR_INFO].doesOccur) {
+		UFILE *gout = u_fopen(options[GRAMMAR_INFO].value, "w", locale_output, codepage_output);
+		if (gout) {
+			for (uint32_t j=0;j<grammar->rules.size();j++) {
+				grammar->rules[j]->reweight();
+			}
+			for (uint32_t i=0;i<grammar->sections.size()-1;i++) {
+				std::sort(&grammar->rules[grammar->sections[i]], &grammar->rules[grammar->sections[i+1]-1], CG3::Rule::cmp_quality);
+			}
+
+			writer = new CG3::GrammarWriter();
+			writer->setGrammar(grammar);
+			writer->statistics = true;
+			writer->write_grammar_to_ufile_text(gout);
+
+			std::cerr << "Writing textual grammar with statistics took " << (double)((double)(clock()-glob_timer)/(double)CLOCKS_PER_SEC) << " seconds." << std::endl;
+			glob_timer = clock();
+		} else {
+			std::cerr << "Could not write grammar to " << options[GRAMMAR_INFO].value << std::endl;
+		}
+	}
+
+	if (!options[CHECK_ONLY].doesOccur && !options[GRAMMAR_ONLY].doesOccur) {
+		if (!options[STDIN].doesOccur) {
+			ux_stdin = u_finit(stdin, locale_input, codepage_input);
+		} else {
+			struct stat info;
+			int serr = stat(options[STDIN].value, &info);
+			if (serr) {
+				fprintf(stderr, "Error: Cannot stat %s due to error %d!\n", options[STDIN].value, serr);
+				return -serr;
+			}
+			ux_stdin = u_fopen(options[STDIN].value, "r", locale_input, codepage_input);
+		}
+		if (!ux_stdin) {
+			fprintf(stderr, "Error: Failed to open the input stream for reading!\n");
+			return -1;
+		}
+
 		grammar->trim();
 
 		applicator = new CG3::GrammarApplicator();

@@ -34,19 +34,25 @@ namespace CG3 {
 		uint32_t target;
 		uint32_t line;
 		uint32_t varname, varvalue;
+		double weight, quality;
 		KEYWORDS type;
 		std::list<uint32_t> maplist;
 		std::list<uint32_t> sublist;
+		
 		mutable std::list<ContextualTest*> tests;
+		mutable uint32_t num_fail, num_match;
 
 		Rule();
 		~Rule();
 		void setName(uint32_t to);
 		void setName(const UChar *to);
+		double reweight();
 
 		ContextualTest *allocateContextualTest();
 		void addContextualTest(ContextualTest *to);
 		void destroyContextualTest(ContextualTest *to);
+
+		static bool cmp_quality(Rule *a, Rule *b);
 	};
 
 }

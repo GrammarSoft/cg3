@@ -107,6 +107,8 @@ int GrammarParser::parseRemSetVariable(const UChar *line, KEYWORDS key) {
 		parseContextualTests(&space, rule);
 	}
 
+	rule->reweight();
+
 	delete local;
 	return 0;
 }

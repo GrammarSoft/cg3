@@ -28,6 +28,10 @@ Rule::Rule() {
 	target = 0;
 	line = 0;
 	wordform = 0;
+	num_fail = 0;
+	num_match = 0;
+	weight = 0.0;
+	quality = 0.0;
 	type = K_IGNORE;
 }
 
@@ -68,4 +72,35 @@ void Rule::addContextualTest(ContextualTest *to) {
 void Rule::destroyContextualTest(ContextualTest *to) {
 	tests.remove(to);
 	delete to;
+}
+
+double Rule::reweight() {
+	weight = 1.0;
+
+	std::list<ContextualTest*>::iterator iter;
+	for (iter = tests.begin() ; iter != tests.end() ; iter++) {
+		weight += (*iter)->reweight();
+	}
+
+	double st = 0.0;
+	if (type == K_SELECT) {
+		st = 2.0;
+	}
+	else if (type == K_REMOVE) {
+		st = 1.0;
+	}
+	else if (type == K_IFF) {
+		st = 3.0;
+	}
+	double mt = (double)num_match;
+	if (mt == 0.0) {
+		mt = 0.01;
+	}
+	quality = (pow(mt, 2.0)*st) / (double(num_fail+mt) * weight);
+
+	return weight;
+}
+
+bool Rule::cmp_quality(Rule *a, Rule *b) {
+	return a->quality > b->quality;
 }

@@ -39,6 +39,10 @@ namespace CG3 {
 		uint32_t target;
 		uint32_t barrier;
 
+		double weight;
+
+		mutable uint32_t num_fail, num_match;
+
 		ContextualTest *linked;
 
 		ContextualTest();
@@ -50,6 +54,7 @@ namespace CG3 {
 		void destroyContextualTest(ContextualTest *to);
 		
 		uint32_t rehash();
+		double reweight();
 	};
 
 }
