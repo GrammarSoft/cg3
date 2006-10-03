@@ -391,7 +391,6 @@ label_runGrammarOnWindow_begin:
 		for (uint32_t i=0;i<grammar->sections.size()-1;) {
 			bool section_did_good = false;
 			bool select_only = reorder;
-			uint32_t first_good_rule = grammar->sections[grammar->sections.size()-1]*2;
 			for (uint32_t j=0;j<grammar->sections[i+1];) {
 				const Rule *rule = grammar->rules[j];
 				const Rule *removerule = 0;
@@ -449,8 +448,6 @@ label_runGrammarOnWindow_begin:
 								good = true;
 							}
 							if (good) {
-								section_did_good = true;
-								first_good_rule = (j < first_good_rule) ? j : first_good_rule;
 								reading->hit_by.push_back(j);
 								if (type == K_REMOVE) {
 									removerule = rule;
@@ -478,7 +475,7 @@ label_runGrammarOnWindow_begin:
 											cohort->readings.push_back(reading);
 											cohort->deleted.remove(reading);
 										}
-										section_did_good = false;
+										good = false;
 									}
 									removed.clear();
 									break;
@@ -505,17 +502,17 @@ label_runGrammarOnWindow_begin:
 									}
 									// This SELECT had no effect, so don't mark section as active.
 									if (nc == cohort->readings.size()) {
-										section_did_good = false;
+										good = false;
 									}
 									break;
 								}
 								else if (type == K_REMVARIABLE) {
 									variables[rule->varname] = 0;
-									section_did_good = false;
+									good = false;
 								}
 								else if (type == K_SETVARIABLE) {
 									variables[rule->varname] = rule->varvalue;
-									section_did_good = false;
+									good = false;
 								}
 								else if (type == K_DELIMIT) {
 									SingleWindow *nwin = new SingleWindow();
@@ -537,6 +534,9 @@ label_runGrammarOnWindow_begin:
 										reading->rehash();
 									}
 									goto label_runGrammarOnWindow_begin;
+								}
+								if (good) {
+									section_did_good = true;
 								}
 							}
 						}
