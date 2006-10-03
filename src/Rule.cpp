@@ -101,6 +101,17 @@ double Rule::reweight() {
 	return weight;
 }
 
+void Rule::reset() {
+	std::list<ContextualTest*>::iterator iter;
+	for (iter = tests.begin() ; iter != tests.end() ; iter++) {
+		(*iter)->reset();
+	}
+	num_fail = 0;
+	num_match = 0;
+
+	reweight();
+}
+
 bool Rule::cmp_quality(Rule *a, Rule *b) {
 	return a->quality > b->quality;
 }

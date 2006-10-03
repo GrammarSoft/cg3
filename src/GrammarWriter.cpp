@@ -222,7 +222,7 @@ void GrammarWriter::printRule(UFILE *to, const Rule *rule) {
 
 void GrammarWriter::printContextualTest(UFILE *to, const ContextualTest *test) {
 	if (statistics) {
-		u_fprintf(to, "(M:%u;F:%u;W:%.3f) ", test->num_match, test->num_fail, test->weight);
+		u_fprintf(to, "(M:%u;F:%u;W:%.3f;Q:%.16f) ", test->num_match, test->num_fail, test->weight, test->quality);
 	}
 	if (test->negative) {
 		u_fprintf(to, "NOT ");

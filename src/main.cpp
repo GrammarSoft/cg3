@@ -1,19 +1,19 @@
 /*
- * Copyright (C) 2006, GrammarSoft Aps
- * and the VISL project at the University of Southern Denmark.
- * All Rights Reserved.
- *
- * The contents of this file are subject to the GrammarSoft Public
- * License Version 1.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of
- * the License at http://www.grammarsoft.com/GSPL or
- * http://visl.sdu.dk/GSPL.txt
- * 
- * Software distributed under the License is distributed on an "AS
- * IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
- * implied. See the License for the specific language governing
- * rights and limitations under the License.
- */
+* Copyright (C) 2006, GrammarSoft Aps
+* and the VISL project at the University of Southern Denmark.
+* All Rights Reserved.
+*
+* The contents of this file are subject to the GrammarSoft Public
+* License Version 1.0 (the "License"); you may not use this file
+* except in compliance with the License. You may obtain a copy of
+* the License at http://www.grammarsoft.com/GSPL or
+* http://visl.sdu.dk/GSPL.txt
+* 
+* Software distributed under the License is distributed on an "AS
+* IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+* implied. See the License for the specific language governing
+* rights and limitations under the License.
+*/
 
 #include "stdafx.h"
 #include "icu_uoptions.h"
@@ -60,38 +60,38 @@ namespace Options {
 
 	UOption options[]= {
 		UOPTION_DEF("help",					'h', UOPT_NO_ARG),
-		UOPTION_DEF("?",					'?', UOPT_NO_ARG),
-		UOPTION_DEF("version",				'V', UOPT_NO_ARG),
-		UOPTION_DEF("grammar",				'g', UOPT_REQUIRES_ARG),
-		UOPTION_DEF("grammar-out",			0, UOPT_REQUIRES_ARG),
-		UOPTION_DEF("grammar-bin",			0, UOPT_REQUIRES_ARG),
-		UOPTION_DEF("grammar-info",			0, UOPT_REQUIRES_ARG),
-		UOPTION_DEF("grammar-only",			0, UOPT_NO_ARG),
-		UOPTION_DEF("check-only",			0, UOPT_NO_ARG),
-		UOPTION_DEF("unsafe",				'u', UOPT_NO_ARG),
-		UOPTION_DEF("sections",				's', UOPT_REQUIRES_ARG),
-		UOPTION_DEF("debug",				'd', UOPT_OPTIONAL_ARG),
-		UOPTION_DEF("vislcg-compat",		'p', UOPT_NO_ARG),
+			UOPTION_DEF("?",					'?', UOPT_NO_ARG),
+			UOPTION_DEF("version",				'V', UOPT_NO_ARG),
+			UOPTION_DEF("grammar",				'g', UOPT_REQUIRES_ARG),
+			UOPTION_DEF("grammar-out",			0, UOPT_REQUIRES_ARG),
+			UOPTION_DEF("grammar-bin",			0, UOPT_REQUIRES_ARG),
+			UOPTION_DEF("grammar-info",			0, UOPT_REQUIRES_ARG),
+			UOPTION_DEF("grammar-only",			0, UOPT_NO_ARG),
+			UOPTION_DEF("check-only",			0, UOPT_NO_ARG),
+			UOPTION_DEF("unsafe",				'u', UOPT_NO_ARG),
+			UOPTION_DEF("sections",				's', UOPT_REQUIRES_ARG),
+			UOPTION_DEF("debug",				'd', UOPT_OPTIONAL_ARG),
+			UOPTION_DEF("vislcg-compat",		'p', UOPT_NO_ARG),
 
-		UOPTION_DEF("stdin",				'I', UOPT_REQUIRES_ARG),
-		UOPTION_DEF("stdout",				'O', UOPT_REQUIRES_ARG),
-		UOPTION_DEF("stderr",				'E', UOPT_REQUIRES_ARG),
+			UOPTION_DEF("stdin",				'I', UOPT_REQUIRES_ARG),
+			UOPTION_DEF("stdout",				'O', UOPT_REQUIRES_ARG),
+			UOPTION_DEF("stderr",				'E', UOPT_REQUIRES_ARG),
 
-		UOPTION_DEF("codepage-all",			'C', UOPT_REQUIRES_ARG),
-		UOPTION_DEF("codepage-grammar",		0, UOPT_REQUIRES_ARG),
-		UOPTION_DEF("codepage-input",		0, UOPT_REQUIRES_ARG),
-		UOPTION_DEF("codepage-output",		0, UOPT_REQUIRES_ARG),
+			UOPTION_DEF("codepage-all",			'C', UOPT_REQUIRES_ARG),
+			UOPTION_DEF("codepage-grammar",		0, UOPT_REQUIRES_ARG),
+			UOPTION_DEF("codepage-input",		0, UOPT_REQUIRES_ARG),
+			UOPTION_DEF("codepage-output",		0, UOPT_REQUIRES_ARG),
 
-		UOPTION_DEF("locale-all",			'L', UOPT_REQUIRES_ARG),
-		UOPTION_DEF("locale-grammar",		0, UOPT_REQUIRES_ARG),
-		UOPTION_DEF("locale-input",			0, UOPT_REQUIRES_ARG),
-		UOPTION_DEF("locale-output",		0, UOPT_REQUIRES_ARG),
-		UOPTION_DEF("fast",					0, UOPT_NO_ARG),
-		UOPTION_DEF("no-mappings",			0, UOPT_NO_ARG),
-		UOPTION_DEF("no-corrections",		0, UOPT_NO_ARG),
-		UOPTION_DEF("trace",				0, UOPT_NO_ARG),
-		UOPTION_DEF("reorder",				0, UOPT_NO_ARG),
-		UOPTION_DEF("single-run",			0, UOPT_NO_ARG)
+			UOPTION_DEF("locale-all",			'L', UOPT_REQUIRES_ARG),
+			UOPTION_DEF("locale-grammar",		0, UOPT_REQUIRES_ARG),
+			UOPTION_DEF("locale-input",			0, UOPT_REQUIRES_ARG),
+			UOPTION_DEF("locale-output",		0, UOPT_REQUIRES_ARG),
+			UOPTION_DEF("fast",					0, UOPT_NO_ARG),
+			UOPTION_DEF("no-mappings",			0, UOPT_NO_ARG),
+			UOPTION_DEF("no-corrections",		0, UOPT_NO_ARG),
+			UOPTION_DEF("trace",				0, UOPT_NO_ARG),
+			UOPTION_DEF("reorder",				0, UOPT_NO_ARG),
+			UOPTION_DEF("single-run",			0, UOPT_NO_ARG)
 	};
 }
 
@@ -107,72 +107,72 @@ int main(int argc, char* argv[]) {
 #ifdef _GC
 	GC_INIT();
 #endif
-    UErrorCode status = U_ZERO_ERROR;
+	UErrorCode status = U_ZERO_ERROR;
 	srand((uint32_t)time(0));
 
-    fprintf(stderr, "VISL CG-3 Disambiguator version %s.\n", CG3_VERSION_STRING);
-    U_MAIN_INIT_ARGS(argc, argv);
+	fprintf(stderr, "VISL CG-3 Disambiguator version %s.\n", CG3_VERSION_STRING);
+	U_MAIN_INIT_ARGS(argc, argv);
 
 	argc = u_parseArgs(argc, argv, (int32_t)(sizeof(options)/sizeof(options[0])), options);
 
-    if (argc < 0) {
-        fprintf(stderr, "%s: error in command line argument \"%s\"\n", argv[0], argv[-argc]);
-    }
+	if (argc < 0) {
+		fprintf(stderr, "%s: error in command line argument \"%s\"\n", argv[0], argv[-argc]);
+	}
 
-    if (options[VERSION].doesOccur) {
-        fprintf(stderr, "%s\n", CG3_COPYRIGHT_STRING);
-        return U_ZERO_ERROR;
-    }
+	if (options[VERSION].doesOccur) {
+		fprintf(stderr, "%s\n", CG3_COPYRIGHT_STRING);
+		return U_ZERO_ERROR;
+	}
 
 	if (!options[GRAMMAR].doesOccur && !options[HELP1].doesOccur && !options[HELP2].doesOccur) {
 		fprintf(stderr, "Error: No grammar specified - cannot continue!\n");
 		argc = -argc;
 	}
 
-    if (argc < 0 || options[HELP1].doesOccur || options[HELP2].doesOccur) {
-        fprintf(stderr, "Usage: vislcg3 [OPTIONS] [FILES]\n");
-        fprintf(stderr, "\n");
-        fprintf(stderr, "Options:\n");
-        fprintf(stderr, " -h or -? or --help       Displays this list.\n");
-        fprintf(stderr, " -V or --version          Prints version number.\n");
-        fprintf(stderr, " -g or --grammar          Specifies the grammar file to use for disambiguation.\n");
-        fprintf(stderr, " -p or --vislcg-compat    Tells the grammar compiler to be compatible with older VISLCG syntax.\n");
-        fprintf(stderr, " --grammar-out            Writes the compiled grammar back out in textual form to a file.\n");
-        fprintf(stderr, " --grammar-bin            Writes the compiled grammar back out in binary form to a file.\n");
-        fprintf(stderr, " --grammar-info           Writes the compiled grammar back out in textual form to a file, with lots of statistics and information.\n");
-        fprintf(stderr, " --grammar-only           Compiles the grammar only.\n");
-        fprintf(stderr, " --check-only             Compiles the grammar only.\n");
-        fprintf(stderr, " --trace                  Prints debug output alongside with normal output.\n");
-        fprintf(stderr, " --reorder                Rearranges rules so SELECTs are run first.\n");
-        fprintf(stderr, " --single-run             Only runs each section once.\n");
-        fprintf(stderr, " --no-mappings            Disables running any MAP, ADD, or REPLACE rules.\n");
-        fprintf(stderr, " --no-corrections         Disables running any SUBSTITUTE or APPEND rules.\n");
-        fprintf(stderr, "\n");
+	if (argc < 0 || options[HELP1].doesOccur || options[HELP2].doesOccur) {
+		fprintf(stderr, "Usage: vislcg3 [OPTIONS] [FILES]\n");
+		fprintf(stderr, "\n");
+		fprintf(stderr, "Options:\n");
+		fprintf(stderr, " -h or -? or --help       Displays this list.\n");
+		fprintf(stderr, " -V or --version          Prints version number.\n");
+		fprintf(stderr, " -g or --grammar          Specifies the grammar file to use for disambiguation.\n");
+		fprintf(stderr, " -p or --vislcg-compat    Tells the grammar compiler to be compatible with older VISLCG syntax.\n");
+		fprintf(stderr, " --grammar-out            Writes the compiled grammar back out in textual form to a file.\n");
+		fprintf(stderr, " --grammar-bin            Writes the compiled grammar back out in binary form to a file.\n");
+		fprintf(stderr, " --grammar-info           Writes the compiled grammar back out in textual form to a file, with lots of statistics and information.\n");
+		fprintf(stderr, " --grammar-only           Compiles the grammar only.\n");
+		fprintf(stderr, " --check-only             Compiles the grammar only.\n");
+		fprintf(stderr, " --trace                  Prints debug output alongside with normal output.\n");
+		fprintf(stderr, " --reorder                Rearranges rules so SELECTs are run first.\n");
+		fprintf(stderr, " --single-run             Only runs each section once.\n");
+		fprintf(stderr, " --no-mappings            Disables running any MAP, ADD, or REPLACE rules.\n");
+		fprintf(stderr, " --no-corrections         Disables running any SUBSTITUTE or APPEND rules.\n");
+		fprintf(stderr, "\n");
 		fprintf(stderr, " -O or --stdout           A file to print out to instead of stdout.\n");
 		fprintf(stderr, " -I or --stdin            A file to read input from instead of stdin.\n");
 		fprintf(stderr, " -E or --stderr           A file to print errors to instead of stderr.\n");
-        fprintf(stderr, "\n");
+		fprintf(stderr, "\n");
 		fprintf(stderr, " -C or --codepage-all     The codepage to use for grammar, input, and output streams. Defaults to ISO-8859-1.\n");
-        fprintf(stderr, " --codepage-grammar       Codepage to use for grammar. Overwrites --codepage-all.\n");
-        fprintf(stderr, " --codepage-input         Codepage to use for input. Overwrites --codepage-all.\n");
-        fprintf(stderr, " --codepage-output        Codepage to use for output. Overwrites --codepage-all.\n");
-        fprintf(stderr, "\n");
+		fprintf(stderr, " --codepage-grammar       Codepage to use for grammar. Overwrites --codepage-all.\n");
+		fprintf(stderr, " --codepage-input         Codepage to use for input. Overwrites --codepage-all.\n");
+		fprintf(stderr, " --codepage-output        Codepage to use for output. Overwrites --codepage-all.\n");
+		fprintf(stderr, "\n");
 		fprintf(stderr, " -L or --locale-all       The locale to use for grammar, input, and output streams. Defaults to en_US_POSIX.\n");
-        fprintf(stderr, " --locale-grammar         Locale to use for grammar. Overwrites --locale-all.\n");
-        fprintf(stderr, " --locale-input           Locale to use for input. Overwrites --locale-all.\n");
-        fprintf(stderr, " --locale-output          Locale to use for output. Overwrites --locale-all.\n");
-        
-        return argc < 0 ? U_ILLEGAL_ARGUMENT_ERROR : U_ZERO_ERROR;
-    }
+		fprintf(stderr, " --locale-grammar         Locale to use for grammar. Overwrites --locale-all.\n");
+		fprintf(stderr, " --locale-input           Locale to use for input. Overwrites --locale-all.\n");
+		fprintf(stderr, " --locale-output          Locale to use for output. Overwrites --locale-all.\n");
 
-    /* Initialize ICU */
-    u_init(&status);
-    if (U_FAILURE(status) && status != U_FILE_ACCESS_ERROR) {
-        fprintf(stderr, "Error: can not initialize ICU.  status = %s\n",
-            u_errorName(status));
-        return -1;
-    }
-    status = U_ZERO_ERROR;
+		return argc < 0 ? U_ILLEGAL_ARGUMENT_ERROR : U_ZERO_ERROR;
+	}
+
+	/* Initialize ICU */
+	u_init(&status);
+	if (U_FAILURE(status) && status != U_FILE_ACCESS_ERROR) {
+		fprintf(stderr, "Error: can not initialize ICU.  status = %s\n",
+			u_errorName(status));
+		return -1;
+	}
+	status = U_ZERO_ERROR;
 
 	CG3::Grammar *grammar = new CG3::Grammar;
 	const char *codepage_grammar = "ISO-8859-1";
@@ -325,6 +325,9 @@ int main(int argc, char* argv[]) {
 		if (options[SINGLERUN].doesOccur) {
 			applicator->single_run = true;
 		}
+		if (options[GRAMMAR_INFO].doesOccur) {
+			applicator->statistics = true;
+		}
 		applicator->apply_corrections = false;
 		applicator->runGrammarOnText(ux_stdin, ux_stdout);
 
@@ -335,6 +338,58 @@ int main(int argc, char* argv[]) {
 	if (options[GRAMMAR_INFO].doesOccur) {
 		UFILE *gout = u_fopen(options[GRAMMAR_INFO].value, "w", locale_output, codepage_output);
 		if (gout) {
+			for (uint32_t j=0;j<grammar->rules.size();j++) {
+				grammar->rules[j]->reweight();
+				if (!grammar->rules[j]->tests.empty()) {
+					grammar->rules[j]->tests.sort(CG3::ContextualTest::cmp_quality);
+				}
+				grammar->rules[j]->reset();
+			}
+
+			if (!options[CHECK_ONLY].doesOccur && !options[GRAMMAR_ONLY].doesOccur) {
+				if (!options[STDIN].doesOccur) {
+					ux_stdin = u_finit(stdin, locale_input, codepage_input);
+				} else {
+					struct stat info;
+					int serr = stat(options[STDIN].value, &info);
+					if (serr) {
+						fprintf(stderr, "Error: Cannot stat %s due to error %d!\n", options[STDIN].value, serr);
+						return -serr;
+					}
+					ux_stdin = u_fopen(options[STDIN].value, "r", locale_input, codepage_input);
+				}
+				if (!ux_stdin) {
+					fprintf(stderr, "Error: Failed to open the input stream for reading!\n");
+					return -1;
+				}
+
+				grammar->trim();
+
+				applicator = new CG3::GrammarApplicator();
+				applicator->setGrammar(grammar);
+				if (options[FAST].doesOccur) {
+					applicator->fast = true;
+				}
+				applicator->apply_mappings = true;
+				if (options[NOMAPPINGS].doesOccur) {
+					applicator->apply_mappings = false;
+				}
+				if (options[TRACE].doesOccur) {
+					applicator->trace = true;
+				}
+				if (options[REORDER].doesOccur) {
+					applicator->reorder = true;
+				}
+				if (options[SINGLERUN].doesOccur) {
+					applicator->single_run = true;
+				}
+				applicator->apply_corrections = false;
+				applicator->runGrammarOnText(ux_stdin, ux_stdout);
+
+				std::cerr << "Applying context-sorted grammar on input took " << (double)((double)(clock()-glob_timer)/(double)CLOCKS_PER_SEC) << " seconds." << std::endl;
+				glob_timer = clock();
+			}
+
 			for (uint32_t j=0;j<grammar->rules.size();j++) {
 				grammar->rules[j]->reweight();
 			}
@@ -352,63 +407,63 @@ int main(int argc, char* argv[]) {
 		} else {
 			std::cerr << "Could not write grammar to " << options[GRAMMAR_INFO].value << std::endl;
 		}
-	}
 
-	if (!options[CHECK_ONLY].doesOccur && !options[GRAMMAR_ONLY].doesOccur) {
-		if (!options[STDIN].doesOccur) {
-			ux_stdin = u_finit(stdin, locale_input, codepage_input);
-		} else {
-			struct stat info;
-			int serr = stat(options[STDIN].value, &info);
-			if (serr) {
-				fprintf(stderr, "Error: Cannot stat %s due to error %d!\n", options[STDIN].value, serr);
-				return -serr;
+		if (!options[CHECK_ONLY].doesOccur && !options[GRAMMAR_ONLY].doesOccur) {
+			if (!options[STDIN].doesOccur) {
+				ux_stdin = u_finit(stdin, locale_input, codepage_input);
+			} else {
+				struct stat info;
+				int serr = stat(options[STDIN].value, &info);
+				if (serr) {
+					fprintf(stderr, "Error: Cannot stat %s due to error %d!\n", options[STDIN].value, serr);
+					return -serr;
+				}
+				ux_stdin = u_fopen(options[STDIN].value, "r", locale_input, codepage_input);
 			}
-			ux_stdin = u_fopen(options[STDIN].value, "r", locale_input, codepage_input);
-		}
-		if (!ux_stdin) {
-			fprintf(stderr, "Error: Failed to open the input stream for reading!\n");
-			return -1;
-		}
+			if (!ux_stdin) {
+				fprintf(stderr, "Error: Failed to open the input stream for reading!\n");
+				return -1;
+			}
 
-		grammar->trim();
+			grammar->trim();
 
-		applicator = new CG3::GrammarApplicator();
-		applicator->setGrammar(grammar);
-		if (options[FAST].doesOccur) {
-			applicator->fast = true;
-		}
-		applicator->apply_mappings = true;
-		if (options[NOMAPPINGS].doesOccur) {
-			applicator->apply_mappings = false;
-		}
-		if (options[TRACE].doesOccur) {
-			applicator->trace = true;
-		}
-		if (options[REORDER].doesOccur) {
-			applicator->reorder = true;
-		}
-		if (options[SINGLERUN].doesOccur) {
-			applicator->single_run = true;
-		}
-		applicator->apply_corrections = false;
-		applicator->runGrammarOnText(ux_stdin, ux_stdout);
+			applicator = new CG3::GrammarApplicator();
+			applicator->setGrammar(grammar);
+			if (options[FAST].doesOccur) {
+				applicator->fast = true;
+			}
+			applicator->apply_mappings = true;
+			if (options[NOMAPPINGS].doesOccur) {
+				applicator->apply_mappings = false;
+			}
+			if (options[TRACE].doesOccur) {
+				applicator->trace = true;
+			}
+			if (options[REORDER].doesOccur) {
+				applicator->reorder = true;
+			}
+			if (options[SINGLERUN].doesOccur) {
+				applicator->single_run = true;
+			}
+			applicator->apply_corrections = false;
+			applicator->runGrammarOnText(ux_stdin, ux_stdout);
 
-		std::cerr << "Applying grammar on input took " << (double)((double)(clock()-glob_timer)/(double)CLOCKS_PER_SEC) << " seconds." << std::endl;
-		glob_timer = clock();
+			std::cerr << "Applying fully-sorted grammar on input took " << (double)((double)(clock()-glob_timer)/(double)CLOCKS_PER_SEC) << " seconds." << std::endl;
+			glob_timer = clock();
+		}
 	}
 
 	u_fclose(ux_stdin);
 	u_fclose(ux_stdout);
 	u_fclose(ux_stderr);
-	
-//	system("pause");
+
+	//	system("pause");
 	delete grammar;
 	delete parser;
 	delete writer;
 	delete applicator;
 
 	std::cerr << "Cleanup took " << (double)((double)(clock()-glob_timer)/(double)CLOCKS_PER_SEC) << " seconds." << std::endl;
-//	system("pause");
+	//	system("pause");
 	return status;
 }

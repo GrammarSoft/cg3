@@ -39,6 +39,7 @@ ContextualTest::ContextualTest() {
 	num_fail = 0;
 	num_match = 0;
 	weight = 0.0;
+	quality = 0.0;
 }
 
 ContextualTest::~ContextualTest() {
@@ -109,7 +110,7 @@ double ContextualTest::reweight() {
 	if (barrier) {
 		weight += 2.0;
 	}
-	if (careful) {
+	if (careful || negative) {
 		weight += 2.0;
 	}
 	if (span_windows) {
@@ -125,6 +126,26 @@ double ContextualTest::reweight() {
 			weight += linked->reweight();
 		}
 	}
+
+	double ft = (double)num_fail;
+	if (ft == 0.0) {
+		ft = 0.01;
+	}
+	quality = (ft) / (double(num_match+ft) * weight);
+
 	assert(weight != 0);
 	return weight;
+}
+
+void ContextualTest::reset() {
+	num_fail = 0;
+	num_match = 0;
+	if (linked) {
+		linked->reset();
+	}
+	reweight();
+}
+
+bool ContextualTest::cmp_quality(ContextualTest *a, ContextualTest *b) {
+	return a->quality > b->quality;
 }

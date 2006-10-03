@@ -426,16 +426,22 @@ label_runGrammarOnWindow_begin:
 						if (rule->target && doesSetMatchReading(reading, rule->target)) {
 							bool good = true;
 							if (!rule->tests.empty()) {
+								bool test_good = false;
 								std::list<ContextualTest*>::iterator iter;
 								for (iter = rule->tests.begin() ; iter != rule->tests.end() ; iter++) {
 									ContextualTest *test = *iter;
-									good = runContextualTest(window, current, c, test);
-									if (!good) {
+									test_good = runContextualTest(window, current, c, test);
+									if (!test_good) {
+										/*
 										if (test != rule->tests.front()) {
 											rule->tests.remove(test);
 											rule->tests.push_front(test);
 										}
-										break;
+										//*/
+										good = test_good;
+										if (!statistics) {
+											break;
+										}
 									}
 								}
 							}

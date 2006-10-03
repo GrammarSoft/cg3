@@ -34,6 +34,7 @@ namespace CG3 {
 		bool trace;
 		bool reorder;
 		bool single_run;
+		bool statistics;
 
 		uint32_t num_windows;
 		uint32_t cache_hits, cache_miss, match_single, match_comp, match_sub;

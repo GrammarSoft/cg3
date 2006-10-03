@@ -46,7 +46,9 @@ namespace CG3 {
 		~Rule();
 		void setName(uint32_t to);
 		void setName(const UChar *to);
+		
 		double reweight();
+		void reset();
 
 		ContextualTest *allocateContextualTest();
 		void addContextualTest(ContextualTest *to);
