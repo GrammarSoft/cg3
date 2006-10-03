@@ -28,13 +28,11 @@ namespace CG3 {
 		uint32_t hash;
 		std::map<uint32_t, uint32_t> tags_map;
 		stdext::hash_map<uint32_t, uint32_t> tags;
-		stdext::hash_map<uint32_t, uint32_t> ff_tags;
 
 		CompositeTag();
 		~CompositeTag();
 
 		void addTag(uint32_t tag);
-		void addFFTag(uint32_t tag);
 		void removeTag(uint32_t tag);
 
 		uint32_t rehash();

@@ -53,7 +53,7 @@ namespace CG3 {
 	public:
 		uint8_t features;
 		uint8_t type;
-		URegularExpression *regexp;
+		mutable URegularExpression *regexp;
 
 		uint32_t comparison_hash;
 		UChar *comparison_key;

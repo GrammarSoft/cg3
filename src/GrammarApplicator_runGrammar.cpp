@@ -397,6 +397,7 @@ label_runGrammarOnWindow_begin:
 				const Rule *selectrule = 0;
 				Reading *deleted = 0;
 				Reading *selected = 0;
+				KEYWORDS type = rule->type;
 
 				for (uint32_t c=0 ; c < current->cohorts.size() ; c++) {
 					if (c == 0) {
@@ -412,7 +413,7 @@ label_runGrammarOnWindow_begin:
 					if (cohort->readings.empty()) {
 						continue;
 					}
-					if (cohort->readings.size() <= 1 && cohort->readings.front()->tags_mapped.size() <= 1) {
+					if ((type == K_SELECT || type == K_REMOVE || type == K_IFF) && cohort->readings.size() <= 1 && cohort->readings.front()->tags_mapped.size() <= 1) {
 						continue;
 					}
 
@@ -438,7 +439,6 @@ label_runGrammarOnWindow_begin:
 									}
 								}
 							}
-							KEYWORDS type = rule->type;
 							if (rule->type == K_IFF && good) {
 								type = K_SELECT;
 								good = true;

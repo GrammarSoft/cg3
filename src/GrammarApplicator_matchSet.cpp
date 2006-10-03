@@ -199,14 +199,14 @@ bool GrammarApplicator::doesSetMatchReading(const Reading *reading, const uint32
 								match = doesSetMatchReading(reading, theset->sets.at(i+1));
 							}
 							break;
-						case S_MINUS:
+						case S_FAILFAST:
 							if (match) {
 								if (doesSetMatchReading(reading, theset->sets.at(i+1))) {
 									match = false;
 								}
 							}
 							break;
-						case S_FAILFAST:
+						case S_MINUS:
 							if (match) {
 								if (doesSetMatchReading(reading, theset->sets.at(i+1))) {
 									match = false;

@@ -45,6 +45,7 @@ namespace CG3 {
 		stdext::hash_map<uint32_t, uint32_t> metas;
 
 		stdext::hash_map<uint32_t, Tag*> single_tags;
+		stdext::hash_map<uint32_t, Index*> index_tags_regexp;
 
 		stdext::hash_map<uint32_t, Index*> index_reading_yes;
 		stdext::hash_map<uint32_t, Index*> index_reading_no;

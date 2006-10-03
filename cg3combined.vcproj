@@ -396,6 +396,9 @@
 				RelativePath=".\dancg.morf.txt">
 			</File>
 			<File
+				RelativePath=".\example.input.txt">
+			</File>
+			<File
 				RelativePath=".\input.txt">
 			</File>
 			<File

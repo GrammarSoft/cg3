@@ -193,9 +193,6 @@ void Grammar::addTag(Tag *simpletag) {
 }
 void Grammar::addTagToCompositeTag(Tag *simpletag, CompositeTag *tag) {
 	if (simpletag && simpletag->tag) {
-		if (simpletag->features & F_FAILFAST) {
-			tag->addFFTag(simpletag->hash);
-		}
 		addTag(simpletag);
 		tag->addTag(simpletag->hash);
 	} else {

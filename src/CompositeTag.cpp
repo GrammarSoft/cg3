@@ -27,15 +27,10 @@ CompositeTag::CompositeTag() {
 CompositeTag::~CompositeTag() {
 	tags_map.clear();
 	tags.clear();
-	ff_tags.clear();
 }
 
 void CompositeTag::addTag(uint32_t tag) {
 	tags[tag] = tag;
-	tags_map[tag] = tag;
-}
-void CompositeTag::addFFTag(uint32_t tag) {
-	ff_tags[tag] = tag;
 	tags_map[tag] = tag;
 }
 void CompositeTag::removeTag(uint32_t tag) {
