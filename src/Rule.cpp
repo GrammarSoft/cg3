@@ -97,6 +97,9 @@ double Rule::reweight() {
 		mt = 0.01;
 	}
 	quality = (pow(mt, 2.0)*st) / (double(num_fail+mt) * weight);
+	if (wordform) {
+		quality *= 5.0;
+	}
 
 	return weight;
 }

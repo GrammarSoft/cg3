@@ -407,13 +407,14 @@ label_runGrammarOnWindow_begin:
 						break;
 					}
 					Cohort *cohort = current->cohorts[c];
-					if (rule->wordform && rule->wordform != cohort->wordform) {
-						continue;
-					}
 					if (cohort->readings.empty()) {
 						continue;
 					}
 					if ((type == K_SELECT || type == K_REMOVE || type == K_IFF) && cohort->readings.size() <= 1 && cohort->readings.front()->tags_mapped.size() <= 1) {
+						continue;
+					}
+					if (rule->wordform && rule->wordform != cohort->wordform) {
+						rule->num_fail++;
 						continue;
 					}
 
@@ -549,6 +550,9 @@ label_runGrammarOnWindow_begin:
 							else {
 								rule->num_fail++;
 							}
+						}
+						else {
+							rule->num_fail++;
 						}
 					}
 				}
