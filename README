@@ -1,0 +1,39 @@
+[Installing ICU]
+These steps have been tested on Red Hat Linux 8, Red Hat Linux 9, Fedora Core 3,
+Fedora Core 4, and Fedora Core 5. They may vary for your distribution.
+
+As root:
+# cd /tmp
+# wget -c --passive 'ftp://ftp.software.ibm.com/software/globalization/icu/3.6/icu4c-3_6-src.tgz'
+# tar -zxvf icu4c-3_6-src.tgz
+# cd icu/source/
+# ./runConfigureICU Linux
+# make
+# make install
+# echo "/usr/local/lib" >> /etc/ld.so.conf
+# ldconfig
+
+[Compiling VISL CG-3]
+This step requires you have Subversion ( http://subversion.tigris.org/ ) installed.
+Subversion binaries are very likely available for your distribution already;
+try using 'yum install subversion' or 'apt-get install subversion' or whichever
+package manager your distribution uses.
+
+When there are feature-complete releases of VISL CG-3 I will also be making
+proper tarballs of those.
+
+As any user in any folder:
+$ svn co http://beta.visl.sdu.dk/svn/visl/tools/vislcg3
+
+It will prompt for password for your current user, which you don't have.
+Hit enter to make it ask for a username.
+Username is 'anonymous' and password is also 'anonymous'
+
+$ cd vislcg3/trunk/
+$ ./compile.sh
+$ ./vislcg3
+
+If all went well, it should spit out the usage information.
+
+Note: If any errors or warnings were output by compile.sh, please contact me;
+      I strive to make it compile cleanly on every platform.
