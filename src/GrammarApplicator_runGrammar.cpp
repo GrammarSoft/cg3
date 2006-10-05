@@ -402,6 +402,7 @@ label_runGrammarOnWindow_begin:
 		}
 	}
 
+	// ToDo: Make old cohort->rules order available via switch
 	if (!grammar->rules.empty()) {
 		reflowSingleWindow(current);
 		
