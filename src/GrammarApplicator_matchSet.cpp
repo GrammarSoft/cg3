@@ -108,14 +108,12 @@ bool GrammarApplicator::doesSetMatchReading(const Reading *reading, const uint32
 					uregex_setText(tag->regexp, itag->tag, u_strlen(itag->tag), &status);
 					if (status != U_ZERO_ERROR) {
 						u_fprintf(ux_stderr, "Error: uregex_setText returned %s - cannot continue!\n", u_errorName(status));
-						assert(status != U_ZERO_ERROR);
 						exit(1);
 					}
 					status = U_ZERO_ERROR;
 					match = (uregex_matches(tag->regexp, 0, &status) == TRUE);
 					if (status != U_ZERO_ERROR) {
 						u_fprintf(ux_stderr, "Error: uregex_matches returned %s - cannot continue!\n", u_errorName(status));
-						assert(status != U_ZERO_ERROR);
 						exit(1);
 					}
 					if (match) {
