@@ -27,6 +27,7 @@ namespace CG3 {
 
 	class Set {
 	public:
+		bool match_any;
 		UChar *name;
 		uint32_t line;
 		uint32_t hash;
@@ -34,8 +35,6 @@ namespace CG3 {
 		std::map<uint32_t, uint32_t> tags_map;
 
 		stdext::hash_map<uint32_t, uint32_t> tags;
-		stdext::hash_map<uint32_t, uint32_t> tags_failfast;
-		stdext::hash_map<uint32_t, uint32_t> tags_special;
 
 		stdext::hash_map<uint32_t, uint32_t> single_tags;
 		stdext::hash_map<uint32_t, uint32_t> single_tags_failfast;
@@ -49,9 +48,6 @@ namespace CG3 {
 
 		void setName(uint32_t to);
 		void setName(const UChar *to);
-
-		void addCompositeTag(uint32_t tag);
-		void addTag(uint32_t tag);
 
 		uint32_t rehash();
 	};

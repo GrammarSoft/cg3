@@ -35,7 +35,8 @@ namespace CG3 {
 		F_NEGATIVE =  1,
 		F_FAILFAST =  2,
 		F_CASE_INSENSITIVE = 4,
-		F_REGEXP   =  8
+		F_REGEXP   =  8,
+		F_NUMERICAL =  16
 	};
 
 	enum TAG_TYPE {

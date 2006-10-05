@@ -24,6 +24,6 @@
 #define CG3_VERSION_MINOR 0
 #define CG3_VERSION_PATCH 1
 
-#define CG3_VERSION_STRING "0.0.1"
+#define CG3_VERSION_STRING "0.5.0"
 
 #endif

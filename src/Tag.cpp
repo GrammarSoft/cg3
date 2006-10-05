@@ -124,7 +124,7 @@ void Tag::parseTag(const UChar *to) {
 				comparison_key = new UChar[length+1];
 				u_strcpy(comparison_key, tkey);
 				comparison_hash = hash_sdbm_uchar(comparison_key, 0);
-				type |= T_NUMERICAL;
+				features |= F_NUMERICAL;
 			}
 		}
 

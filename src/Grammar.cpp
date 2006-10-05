@@ -141,10 +141,25 @@ void Grammar::addCompositeTag(CompositeTag *tag) {
 void Grammar::addCompositeTagToSet(Set *set, CompositeTag *tag) {
 	if (tag && tag->tags.size()) {
 		if (tag->tags.size() == 1) {
-			set->addTag(tag->tags.begin()->second);
+			Tag *rtag = single_tags[tag->tags.begin()->second];
+			set->tags_map[rtag->hash] = rtag->hash;
+			if (rtag->features & (F_REGEXP | F_CASE_INSENSITIVE | F_NEGATIVE | F_NUMERICAL)) {
+				set->single_tags_special[rtag->hash] = rtag->hash;
+			}
+			else if (rtag->features & F_FAILFAST) {
+				set->single_tags_failfast[rtag->hash] = rtag->hash;
+			}
+			else {
+				set->single_tags[rtag->hash] = rtag->hash;
+			}
+
+			if (rtag->type & T_ANY) {
+				set->match_any = true;
+			}
 		} else {
 			addCompositeTag(tag);
-			set->addCompositeTag(tag->hash);
+			set->tags_map[tag->hash] = tag->hash;
+			set->tags[tag->hash] = tag->hash;
 		}
 	} else {
 		u_fprintf(ux_stderr, "Error: Attempted to add empty composite tag to grammar and set!\n");

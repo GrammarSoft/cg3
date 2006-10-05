@@ -1,0 +1,6 @@
+DELIMITERS = "<$.>" "<$?>" "<$!>"
+
+LIST ANY = *
+
+SECTION
+"<$;>" DELIMIT ANY

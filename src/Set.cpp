@@ -24,6 +24,7 @@
 using namespace CG3;
 
 Set::Set() {
+	match_any = false;
 	name = 0;
 	line = 0;
 	hash = 0;
@@ -36,6 +37,8 @@ Set::~Set() {
 	tags_map.clear();
 	tags.clear();
 	single_tags.clear();
+	single_tags_failfast.clear();
+	single_tags_special.clear();
 	sets.clear();
 	set_ops.clear();
 }
@@ -55,16 +58,6 @@ void Set::setName(const UChar *to) {
 	} else {
 		setName((uint32_t)rand());
 	}
-}
-
-void Set::addCompositeTag(uint32_t tag) {
-	tags_map[tag] = tag;
-	tags[tag] = tag;
-}
-
-void Set::addTag(uint32_t tag) {
-	tags_map[tag] = tag;
-	single_tags[tag] = tag;
 }
 
 uint32_t Set::rehash() {

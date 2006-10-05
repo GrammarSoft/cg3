@@ -276,31 +276,23 @@ int main(int argc, char* argv[]) {
 	CG3::GrammarWriter *writer = 0;
 	CG3::GrammarApplicator *applicator = 0;
 
-	if (options[GRAMMAR_OUT].doesOccur) {
-		UFILE *gout = u_fopen(options[GRAMMAR_OUT].value, "w", locale_output, codepage_output);
-		if (gout) {
-			writer = new CG3::GrammarWriter();
-			writer->setGrammar(grammar);
-			writer->write_grammar_to_ufile_text(gout);
-
-			std::cerr << "Writing textual grammar took " << (double)((double)(clock()-glob_timer)/(double)CLOCKS_PER_SEC) << " seconds." << std::endl;
-			glob_timer = clock();
-		} else {
-			std::cerr << "Could not write grammar to " << options[GRAMMAR_OUT].value << std::endl;
+	if (options[REORDER].doesOccur) {
+		for (uint32_t j=0;j<grammar->rules.size();j++) {
+			if (grammar->rules[j]->type == K_IFF) {
+				grammar->rules[j]->quality = 4.0;
+			}
+			else if (grammar->rules[j]->type == K_SELECT) {
+				grammar->rules[j]->quality = 3.0;
+			}
+			else if (grammar->rules[j]->type == K_REMOVE) {
+				grammar->rules[j]->quality = 2.0;
+			}
+			else {
+				grammar->rules[j]->quality = 1.0;
+			}
 		}
-	}
-
-	if (options[GRAMMAR_BIN].doesOccur) {
-		FILE *gout = fopen(options[GRAMMAR_BIN].value, "wb");
-		if (gout) {
-			writer = new CG3::GrammarWriter();
-			writer->setGrammar(grammar);
-			writer->write_grammar_to_file_binary(gout);
-
-			std::cerr << "Writing binary grammar took " << (double)((double)(clock()-glob_timer)/(double)CLOCKS_PER_SEC) << " seconds." << std::endl;
-			glob_timer = clock();
-		} else {
-			std::cerr << "Could not write grammar to " << options[GRAMMAR_BIN].value << std::endl;
+		for (uint32_t i=0;i<grammar->sections.size()-1;i++) {
+			std::sort(&grammar->rules[grammar->sections[i]], &grammar->rules[grammar->sections[i+1]-1], CG3::Rule::cmp_quality);
 		}
 	}
 
@@ -318,9 +310,6 @@ int main(int argc, char* argv[]) {
 		}
 		if (options[TRACE].doesOccur) {
 			applicator->trace = true;
-		}
-		if (options[REORDER].doesOccur) {
-			applicator->reorder = true;
 		}
 		if (options[SINGLERUN].doesOccur) {
 			applicator->single_run = true;
@@ -347,22 +336,7 @@ int main(int argc, char* argv[]) {
 			}
 
 			if (!options[CHECK_ONLY].doesOccur && !options[GRAMMAR_ONLY].doesOccur) {
-				if (!options[STDIN].doesOccur) {
-					ux_stdin = u_finit(stdin, locale_input, codepage_input);
-				} else {
-					struct stat info;
-					int serr = stat(options[STDIN].value, &info);
-					if (serr) {
-						fprintf(stderr, "Error: Cannot stat %s due to error %d!\n", options[STDIN].value, serr);
-						return -serr;
-					}
-					ux_stdin = u_fopen(options[STDIN].value, "r", locale_input, codepage_input);
-				}
-				if (!ux_stdin) {
-					fprintf(stderr, "Error: Failed to open the input stream for reading!\n");
-					return -1;
-				}
-
+				u_frewind(ux_stdin);
 				grammar->trim();
 
 				applicator = new CG3::GrammarApplicator();
@@ -409,22 +383,7 @@ int main(int argc, char* argv[]) {
 		}
 
 		if (!options[CHECK_ONLY].doesOccur && !options[GRAMMAR_ONLY].doesOccur) {
-			if (!options[STDIN].doesOccur) {
-				ux_stdin = u_finit(stdin, locale_input, codepage_input);
-			} else {
-				struct stat info;
-				int serr = stat(options[STDIN].value, &info);
-				if (serr) {
-					fprintf(stderr, "Error: Cannot stat %s due to error %d!\n", options[STDIN].value, serr);
-					return -serr;
-				}
-				ux_stdin = u_fopen(options[STDIN].value, "r", locale_input, codepage_input);
-			}
-			if (!ux_stdin) {
-				fprintf(stderr, "Error: Failed to open the input stream for reading!\n");
-				return -1;
-			}
-
+			u_frewind(ux_stdin);
 			grammar->trim();
 
 			applicator = new CG3::GrammarApplicator();
@@ -450,6 +409,34 @@ int main(int argc, char* argv[]) {
 
 			std::cerr << "Applying fully-sorted grammar on input took " << (double)((double)(clock()-glob_timer)/(double)CLOCKS_PER_SEC) << " seconds." << std::endl;
 			glob_timer = clock();
+		}
+	}
+
+	if (options[GRAMMAR_OUT].doesOccur) {
+		UFILE *gout = u_fopen(options[GRAMMAR_OUT].value, "w", locale_output, codepage_output);
+		if (gout) {
+			writer = new CG3::GrammarWriter();
+			writer->setGrammar(grammar);
+			writer->write_grammar_to_ufile_text(gout);
+
+			std::cerr << "Writing textual grammar took " << (double)((double)(clock()-glob_timer)/(double)CLOCKS_PER_SEC) << " seconds." << std::endl;
+			glob_timer = clock();
+		} else {
+			std::cerr << "Could not write grammar to " << options[GRAMMAR_OUT].value << std::endl;
+		}
+	}
+
+	if (options[GRAMMAR_BIN].doesOccur) {
+		FILE *gout = fopen(options[GRAMMAR_BIN].value, "wb");
+		if (gout) {
+			writer = new CG3::GrammarWriter();
+			writer->setGrammar(grammar);
+			writer->write_grammar_to_file_binary(gout);
+
+			std::cerr << "Writing binary grammar took " << (double)((double)(clock()-glob_timer)/(double)CLOCKS_PER_SEC) << " seconds." << std::endl;
+			glob_timer = clock();
+		} else {
+			std::cerr << "Could not write grammar to " << options[GRAMMAR_BIN].value << std::endl;
 		}
 	}
 

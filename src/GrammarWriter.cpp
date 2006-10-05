@@ -59,7 +59,7 @@ void GrammarWriter::write_set_to_ufile(UFILE *output, const Set *curset) {
 				}
 			}
 		}
-		u_fprintf(output, "\n");
+		u_fprintf(output, " ;\n");
 	} else if (!curset->sets.empty() && used_sets.find(curset->hash) == used_sets.end()) {
 		used_sets[curset->hash] = curset->hash;
 		for (uint32_t i=0;i<curset->sets.size();i++) {
@@ -70,7 +70,7 @@ void GrammarWriter::write_set_to_ufile(UFILE *output, const Set *curset) {
 		for (uint32_t i=0;i<curset->sets.size()-1;i++) {
 			u_fprintf(output, "%S %S ", stringbits[curset->set_ops.at(i)], grammar->sets_by_contents.find(curset->sets.at(i+1))->second->name);
 		}
-		u_fprintf(output, "\n");
+		u_fprintf(output, " ;\n");
 	}
 }
 
@@ -111,7 +111,7 @@ int GrammarWriter::write_grammar_to_ufile_text(UFILE *output) {
 	for(iter = grammar->preferred_targets.begin() ; iter != grammar->preferred_targets.end() ; iter++ ) {
 		u_fprintf(output, "%S ", *iter);
 	}
-	u_fprintf(output, "\n");
+	u_fprintf(output, " ;\n");
 
 	u_fprintf(output, "\n");
 
@@ -125,7 +125,7 @@ int GrammarWriter::write_grammar_to_ufile_text(UFILE *output) {
 	if (!grammar->mappings.empty()) {
 		for (uint32_t j=0;j<grammar->mappings.size();j++) {
 			printRule(output, grammar->mappings[j]);
-			u_fprintf(output, "\n");
+			u_fprintf(output, " ;\n");
 		}
 	}
 
@@ -133,7 +133,7 @@ int GrammarWriter::write_grammar_to_ufile_text(UFILE *output) {
 		u_fprintf(output, "\nSECTION\n");
 		for (uint32_t j=grammar->sections[i-1];j<grammar->sections[i];j++) {
 			printRule(output, grammar->rules[j]);
-			u_fprintf(output, "\n");
+			u_fprintf(output, " ;\n");
 		}
 	}
 

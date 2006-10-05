@@ -216,8 +216,6 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 				cWindow->shuffleWindowsDown();
 				runGrammarOnWindow(cWindow);
 				printSingleWindow(cWindow->current, output);
-				//				std::cerr << "Cache " << (cache_hits+cache_miss) << " : " << cache_hits << " / " << cache_miss << "\r" << std::flush;
-				//				u_fflush(output);
 			}
 			cCohort = new Cohort();
 			cCohort->wordform = addTag(cleaned);
@@ -263,27 +261,44 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 			if (cleaned[0] == ' ' && cleaned[1] == '"') {
 				u_fprintf(ux_stderr, "Warning: Line %u looked like a reading but there was no containing cohort - treated as plain text.\n", lines);
 			}
-			if (lReading) {
-				lReading->text = ux_append(lReading->text, line);
-			}
-			else if (lCohort) {
-				lCohort->text = ux_append(lCohort->text, line);
-			}
-			else if (lSWindow) {
-				lSWindow->text = ux_append(lSWindow->text, line);
-			}
-			else {
-				u_fprintf(output, "%S", line);
+			ux_trim(cleaned);
+			if (u_strlen(cleaned) > 0) {
+				if (lReading) {
+					lReading->text = ux_append(lReading->text, line);
+				}
+				else if (lCohort) {
+					lCohort->text = ux_append(lCohort->text, line);
+				}
+				else if (lSWindow) {
+					lSWindow->text = ux_append(lSWindow->text, line);
+				}
+				else {
+					u_fprintf(output, "%S", line);
+				}
 			}
 		}
 		lines++;
 	}
 
+	if (cCohort && cSWindow) {
+		cSWindow->cohorts.push_back(cCohort);
+		lCohort = cCohort;
+		if (cCohort->readings.empty()) {
+			cReading = new Reading();
+			cReading->wordform = cCohort->wordform;
+			cReading->baseform = cCohort->wordform;
+			cReading->tags[cCohort->wordform] = cCohort->wordform;
+			cReading->noprint = true;
+			cReading->rehash();
+			cCohort->readings.push_back(cReading);
+			lReading = cReading;
+		}
+		cWindow->next.push_back(cSWindow);
+	}
 	while (!cWindow->next.empty()) {
 		cWindow->shuffleWindowsDown();
 		runGrammarOnWindow(cWindow);
 		printSingleWindow(cWindow->current, output);
-		//		u_fflush(output);
 	}
 	u_fflush(output);
 	std::cerr << "Cache " << (cache_hits+cache_miss) << " : " << cache_hits << " / " << cache_miss << std::endl;
@@ -413,6 +428,9 @@ label_runGrammarOnWindow_begin:
 					if ((type == K_SELECT || type == K_REMOVE || type == K_IFF) && cohort->readings.size() <= 1 && cohort->readings.front()->tags_mapped.size() <= 1) {
 						continue;
 					}
+					if (type == K_DELIMIT && c == current->cohorts.size()-1) {
+						continue;
+					}
 					if (rule->wordform && rule->wordform != cohort->wordform) {
 						rule->num_fail++;
 						continue;
@@ -433,14 +451,14 @@ label_runGrammarOnWindow_begin:
 									ContextualTest *test = *iter;
 									test_good = runContextualTest(window, current, c, test);
 									if (!test_good) {
-										/*
-										if (test != rule->tests.front()) {
-											rule->tests.remove(test);
-											rule->tests.push_front(test);
-										}
-										//*/
 										good = test_good;
 										if (!statistics) {
+											/*
+											if (test != rule->tests.front()) {
+												rule->tests.remove(test);
+												rule->tests.push_front(test);
+											}
+											//*/
 											break;
 										}
 									}
@@ -524,12 +542,26 @@ label_runGrammarOnWindow_begin:
 								}
 								else if (type == K_DELIMIT) {
 									SingleWindow *nwin = new SingleWindow();
-									uint32_t nc = c;
-									for (nc = c ; nc < current->cohorts.size() ; nc++) {
+									uint32_t nc = c+1;
+
+									Reading *cReading = new Reading();
+									cReading->baseform = begintag;
+									cReading->wordform = begintag;
+									cReading->tags[begintag] = begintag;
+									cReading->tags_list.push_back(begintag);
+									cReading->rehash();
+
+									Cohort *cCohort = new Cohort();
+									cCohort->wordform = begintag;
+									cCohort->readings.push_back(cReading);
+
+									nwin->cohorts.push_back(cCohort);
+
+									for ( ; nc < current->cohorts.size() ; nc++) {
 										nwin->cohorts.push_back(current->cohorts.at(nc));
 									}
 									c = (uint32_t)current->cohorts.size()-c;
-									for (nc = 0 ; nc < c ; nc++) {
+									for (nc = 0 ; nc < c-1 ; nc++) {
 										current->cohorts.pop_back();
 									}
 									window->next.push_front(nwin);
