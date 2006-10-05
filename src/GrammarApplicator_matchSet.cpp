@@ -90,26 +90,39 @@ bool GrammarApplicator::doesSetMatchReading(const Reading *reading, const uint32
 			bool set_special = false;
 			bool set_plain = true;
 			stdext::hash_map<uint32_t, uint32_t>::const_iterator ster;
-			for (ster = theset->single_tags.begin() ; ster != theset->single_tags.end() ; ster++) {
+			for (ster = theset->single_tags_special.begin() ; ster != theset->single_tags_special.end() ; ster++) {
 				bool match = true;
 				bool failfast = true;
-				bool comp_special = false;
-				bool comp_plain = true;
+				bool comp_special = true;
+				bool comp_plain = false;
 
 				const Tag *tag = grammar->single_tags.find(ster->second)->second;
 				if (!(tag->features & F_FAILFAST)) {
 					failfast = false;
 				}
-				if (tag->type & (T_WORDFORM|T_BASEFORM)) {
-					comp_special = true;
-					set_special = true;
+				std::map<uint32_t, uint32_t>::const_iterator mter;
+				for (mter = reading->tags_textual.begin() ; mter != reading->tags_textual.end() ; mter++) {
+					// ToDo: Cache regexp hits/misses
+					const Tag *itag = single_tags.find(mter->second)->second;
+					UErrorCode status = U_ZERO_ERROR;
+					uregex_setText(tag->regexp, itag->tag, u_strlen(itag->tag), &status);
+					if (status != U_ZERO_ERROR) {
+						u_fprintf(ux_stderr, "Error: uregex_setText returned %s - cannot continue!\n", u_errorName(status));
+						assert(status != U_ZERO_ERROR);
+						exit(1);
+					}
+					status = U_ZERO_ERROR;
+					match = (uregex_matches(tag->regexp, 0, &status) == TRUE);
+					if (status != U_ZERO_ERROR) {
+						u_fprintf(ux_stderr, "Error: uregex_matches returned %s - cannot continue!\n", u_errorName(status));
+						assert(status != U_ZERO_ERROR);
+						exit(1);
+					}
+					if (match) {
+						break;
+					}
 				}
-				if (tag->type || tag->features) {
-					comp_plain = false;
-					set_plain = false;
-				}
-				if (reading->tags.find(ster->second) == reading->tags.end()) {
-					match = false;
+				if (!match) {
 					if (tag->features & F_NEGATIVE) {
 						match = true;
 					}
@@ -133,6 +146,53 @@ bool GrammarApplicator::doesSetMatchReading(const Reading *reading, const uint32
 				} else {
 					used_special = set_special;
 					only_plain = set_plain;
+				}
+			}
+			if (!retval) {
+				for (ster = theset->single_tags.begin() ; ster != theset->single_tags.end() ; ster++) {
+					bool match = true;
+					bool failfast = true;
+					bool comp_special = false;
+					bool comp_plain = true;
+
+					const Tag *tag = grammar->single_tags.find(ster->second)->second;
+					if (!(tag->features & F_FAILFAST)) {
+						failfast = false;
+					}
+					if (tag->type & (T_WORDFORM|T_BASEFORM)) {
+						comp_special = true;
+						set_special = true;
+					}
+					if (tag->type || tag->features) {
+						comp_plain = false;
+						set_plain = false;
+					}
+					if (reading->tags.find(ster->second) == reading->tags.end()) {
+						match = false;
+						if (tag->features & F_NEGATIVE) {
+							match = true;
+						}
+					}
+					else {
+						if (tag->features & F_NEGATIVE) {
+							match = false;
+						}
+					}
+					if (match) {
+						match_single++;
+						used_special = comp_special;
+						only_plain = comp_plain;
+						if (failfast) {
+							retval = false;
+						}
+						else {
+							retval = true;
+						}
+						break;
+					} else {
+						used_special = set_special;
+						only_plain = set_plain;
+					}
 				}
 			}
 			if (!retval) {

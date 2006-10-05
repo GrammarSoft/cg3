@@ -82,7 +82,7 @@ inline void GrammarApplicator::reflowReading(Reading *reading) {
 		if (tag->type & T_MAPPING) {
 			reading->tags_mapped[*tter] = *tter;
 		}
-		if (tag->type & T_TEXTUAL) {
+		if (tag->type & (T_TEXTUAL|T_WORDFORM|T_BASEFORM)) {
 			reading->tags_textual[*tter] = *tter;
 		}
 		if (!tag->features && !tag->type) {
@@ -160,7 +160,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 					cReading->tags[cCohort->wordform] = cCohort->wordform;
 					cReading->tags_list.push_back(cCohort->wordform);
 					cReading->noprint = true;
-					cReading->rehash();
+					reflowReading(cReading);
 					cCohort->readings.push_back(cReading);
 					lReading = cReading;
 				}
@@ -199,6 +199,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 				cCohort = 0;
 			}
 			if (cCohort && cSWindow) {
+				// ToDo: Add max window length
 				cSWindow->cohorts.push_back(cCohort);
 				lCohort = cCohort;
 				if (cCohort->readings.empty()) {
@@ -206,8 +207,9 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 					cReading->wordform = cCohort->wordform;
 					cReading->baseform = cCohort->wordform;
 					cReading->tags[cCohort->wordform] = cCohort->wordform;
+					cReading->tags_list.push_back(cCohort->wordform);
 					cReading->noprint = true;
-					cReading->rehash();
+					reflowReading(cReading);
 					cCohort->readings.push_back(cReading);
 					lReading = cReading;
 				}

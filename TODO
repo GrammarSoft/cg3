@@ -1,0 +1,12 @@
+src/ContextualTest.h:		// ToDo: Implement NEGATE
+src/ContextualTest.h:		// ToDo: Implement careful barrier
+src/Grammar.cpp:	// ToDo: Reorder contextual tests according to weight
+src/GrammarApplicator.cpp:	// ToDo: Make --always-span switch
+src/GrammarApplicator_matchSet.cpp:					// ToDo: Cache regexp hits/misses
+src/GrammarApplicator_runGrammar.cpp:				// ToDo: Add max window length
+src/GrammarApplicator_runGrammar.cpp:								// ToDo: Implement APPEND
+src/GrammarApplicator_runGrammar.cpp:	// ToDo: (NOT *) and (*C) tests can be cached
+src/GrammarParser.cpp:	// ToDo: Make line length dynamic
+src/GrammarParser.cpp:		// ToDo: Maybe support ICase keywords
+src/Tag.cpp:		// ToDo: Implement RegExp and ICase
+src/Tag.cpp:		// ToDo: Implement META and VAR

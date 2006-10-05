@@ -444,13 +444,11 @@ int main(int argc, char* argv[]) {
 	u_fclose(ux_stdout);
 	u_fclose(ux_stderr);
 
-	//	system("pause");
 	delete grammar;
 	delete parser;
 	delete writer;
 	delete applicator;
 
 	std::cerr << "Cleanup took " << (double)((double)(clock()-glob_timer)/(double)CLOCKS_PER_SEC) << " seconds." << std::endl;
-	//	system("pause");
 	return status;
 }

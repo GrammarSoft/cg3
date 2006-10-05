@@ -1,6 +1,6 @@
 DELIMITERS = "<$.>" "<$?>" "<$!>"
 
-LIST ANY = *
+LIST xLim = "<\\$.*>"r
 
 SECTION
-"<$;>" DELIMIT ANY
+DELIMIT xLim

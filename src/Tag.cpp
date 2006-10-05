@@ -141,10 +141,15 @@ void Tag::parseTag(const UChar *to) {
 
 			memset(pe, 0, sizeof(UParseError));
 			status = U_ZERO_ERROR;
-			regexp = uregex_open(tag, u_strlen(tag), 0, pe, &status);
+			if (features & F_CASE_INSENSITIVE) {
+				regexp = uregex_open(tag, u_strlen(tag), UREGEX_CASE_INSENSITIVE, pe, &status);
+			}
+			else {
+				regexp = uregex_open(tag, u_strlen(tag), 0, pe, &status);
+			}
 			if (status != U_ZERO_ERROR) {
-				u_fprintf(ux_stderr, "Error: uregex_open returned %s trying to parse tag %S!\n", u_errorName(status), tag);
-				features &= ~F_REGEXP;
+				u_fprintf(ux_stderr, "Error: uregex_open returned %s trying to parse tag %S - cannot continue!\n", u_errorName(status), tag);
+				exit(1);
 			}
 		}
 	}
