@@ -56,6 +56,7 @@ void ContextualTest::parsePosition(const UChar *pos) {
 	if (u_strchr(pos, 'C')) {
 		careful = true;
 	}
+	// ToDo: Add < and > to ContextualTest's window jumps
 	if (u_strchr(pos, 'W')) {
 		span_windows = true;
 	}

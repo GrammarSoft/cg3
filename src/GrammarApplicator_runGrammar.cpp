@@ -629,6 +629,17 @@ bool GrammarApplicator::runContextualTest(const Window *window, const SingleWind
 	if (pos >= 0 && (uint32_t)pos < sWindow->cohorts.size()) {
 		cohort = sWindow->cohorts.at(pos);
 	}
+	else if (test->span_windows && pos < 0) {
+		sWindow = window->previousFrom(sWindow);
+		if (sWindow) {
+			pos = (int)sWindow->cohorts.size()+pos;
+			cohort = sWindow->cohorts.at(pos);
+		}
+	}
+	else if (test->span_windows && (uint32_t)pos >= sWindow->cohorts.size()) {
+		sWindow = window->nextFrom(sWindow);
+	}
+
 	if (!cohort) {
 		retval = false;
 	}

@@ -485,7 +485,7 @@
 			RelativePath=".\resources.txt">
 		</File>
 		<File
-			RelativePath=".\todo.txt">
+			RelativePath=".\Todo">
 		</File>
 	</Files>
 	<Globals>

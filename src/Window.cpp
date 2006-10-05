@@ -55,3 +55,19 @@ void Window::shuffleWindowsDown() {
 		next.pop_front();
 	}
 }
+
+SingleWindow *Window::previousFrom(const SingleWindow *me) const {
+	if (current == me && !previous.empty()) {
+		return previous.back();
+	}
+
+	return 0;
+}
+
+SingleWindow *Window::nextFrom(const SingleWindow *me) const {
+	if (current == me && !next.empty()) {
+		return next.front();
+	}
+
+	return 0;
+}
