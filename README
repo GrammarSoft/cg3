@@ -1,4 +1,8 @@
 [Installing ICU]
+Only need to do this once, but it must be done unless you already have a recent
+(newer or equal to ICU 3.6) version installed. ICU 3.4 will also work, but is
+considerably slower.
+
 These steps have been tested on Red Hat Linux 8, Red Hat Linux 9, Fedora Core 3,
 Fedora Core 4, and Fedora Core 5. They may vary for your distribution.
 
