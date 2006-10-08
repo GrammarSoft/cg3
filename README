@@ -1,43 +1,61 @@
-[Installing ICU]
-Only need to do this once, but it must be done unless you already have a recent
-(newer or equal to ICU 3.6) version installed. ICU 3.4 will also work, but is
-considerably slower.
+* First Time Install *
 
-These steps have been tested on Red Hat Linux 8, Red Hat Linux 9, Fedora Core 3,
-Fedora Core 4, and Fedora Core 5. They may vary for your distribution.
+** Installing ICU **
 
-As root:
-# cd /tmp
-# wget -c --passive 'ftp://ftp.software.ibm.com/software/globalization/icu/3.6/icu4c-3_6-src.tgz'
-# tar -zxvf icu4c-3_6-src.tgz
-# cd icu/source/
-# ./runConfigureICU Linux
-# make
-# make install
-# echo "/usr/local/lib" >> /etc/ld.so.conf
-# ldconfig
+ Only need to do this once, but it must be done unless you already have a recent
+ (newer or equal to ICU 3.6) version installed. ICU 3.4 will also work, but is
+ considerably slower.
 
-[Compiling VISL CG-3]
-This step requires you have Subversion ( http://subversion.tigris.org/ ) installed.
-Subversion binaries are very likely available for your distribution already;
-try using 'yum install subversion' or 'apt-get install subversion' or whichever
-package manager your distribution uses.
+ These steps have been tested on Red Hat Linux 8, Red Hat Linux 9, Fedora Core 3,
+ Fedora Core 4, and Fedora Core 5. They may vary for your distribution.
 
-When there are feature-complete releases of VISL CG-3 I will also be making
-proper tarballs of those.
+ As root:
+ # cd /tmp
+ # wget -c --passive 'ftp://ftp.software.ibm.com/software/globalization/icu/3.6/icu4c-3_6-src.tgz'
+ # tar -zxvf icu4c-3_6-src.tgz
+ # cd icu/source/
+ # ./runConfigureICU Linux
+ # make
+ # make install
+ # echo "/usr/local/lib" >> /etc/ld.so.conf
+ # ldconfig
 
-As any user in any folder:
-$ svn co http://beta.visl.sdu.dk/svn/visl/tools/vislcg3
+** Compiling VISL CG-3 **
 
-It will prompt for password for your current user, which you don't have.
-Hit enter to make it ask for a username.
-Username is 'anonymous' and password is also 'anonymous'
+ This step requires you have Subversion ( http://subversion.tigris.org/ ) installed.
+ Subversion binaries are very likely available for your distribution already;
+ try using 'yum install subversion' or 'apt-get install subversion' or whichever
+ package manager your distribution uses.
 
-$ cd vislcg3/trunk/
-$ ./compile.sh
-$ ./vislcg3
+ When there are feature-complete releases of VISL CG-3 I will also be making
+ proper tarballs of those.
 
-If all went well, it should spit out the usage information.
+ As any user in any folder where you can find it again:
+ $ svn co --username anonymous --password anonymous http://beta.visl.sdu.dk/svn/visl/tools/vislcg3
+ $ cd vislcg3/trunk/
+ $ ./compile.sh
+ $ ./vislcg3
 
-Note: If any errors or warnings were output by compile.sh, please contact me;
-      I strive to make it compile cleanly on every platform.
+ If all went well, it should spit out the usage information.
+
+ Note: If any errors or warnings were output by compile.sh, please contact me;
+       I strive to make it compile cleanly on every platform.
+
+
+
+* Updating / Upgrading *
+
+** Compiling VISL CG-3 **
+
+ In the same folder you chose above, as the same user:
+ $ svn up
+ $ ./compile.sh
+ $ ./vislcg
+
+
+
+* Contributing *
+
+ The anonymous user does not have commit rights, and also cannot access any
+ other part of the repository. If you want commit rights to VISL CG-3, just
+ tell me...
