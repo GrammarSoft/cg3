@@ -117,6 +117,7 @@ int main(int argc, char* argv[]) {
 
 	if (argc < 0) {
 		fprintf(stderr, "%s: error in command line argument \"%s\"\n", argv[0], argv[-argc]);
+		return argc;
 	}
 
 	if (options[VERSION].doesOccur) {
