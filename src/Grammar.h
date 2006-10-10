@@ -45,6 +45,7 @@ namespace CG3 {
 
 		std::vector<uint32_t> sections;
 		std::map<uint32_t, Anchor*> anchors;
+		// ToDo: Add BEFORE, SECTION, AFTER sections
 		std::vector<Rule*> mappings;
 		std::vector<Rule*> rules;
 

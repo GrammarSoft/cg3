@@ -135,6 +135,7 @@ void Tag::parseTag(const UChar *to) {
 			type |= T_MAPPING;
 		}
 
+		// ToDo: Add ICASE: REGEXP: and //r //ri //i to tags
 		if (features & F_REGEXP) {
 			UParseError *pe = new UParseError;
 			UErrorCode status = U_ZERO_ERROR;

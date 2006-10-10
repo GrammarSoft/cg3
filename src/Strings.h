@@ -55,6 +55,7 @@ namespace CG3 {
 		enum STRINGS {
 			S_IGNORE,
 			S_ADD,
+			S_PIPE,
 			S_OR,
 			S_PLUS,
 			S_MINUS,

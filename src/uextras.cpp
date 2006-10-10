@@ -121,7 +121,7 @@ bool ux_cutComments(UChar *line, const UChar comment, bool compatible) {
 
 int ux_isSetOp(const UChar *it) {
 	int retval = S_IGNORE;
-	if (u_strcmp(it, stringbits[S_OR]) == 0) {
+	if (u_strcmp(it, stringbits[S_OR]) == 0 || u_strcmp(it, stringbits[S_PIPE]) == 0) {
 		retval = S_OR;
 	}
 	else if (u_strcmp(it, stringbits[S_PLUS]) == 0) {

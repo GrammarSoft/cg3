@@ -185,9 +185,9 @@ int GrammarParser::parse_grammar_from_ufile(UFILE *input) {
 		u_fgets(line, BUFFER_SIZE-1, input);
 
 		ux_cutComments(line, '#', false);
-		if (option_vislcg_compat) {
+//		if (option_vislcg_compat) {
 			ux_cutComments(line, ';', true);
-		}
+//		}
 
 		int length = u_strlen(line);
 		bool notnull = false;

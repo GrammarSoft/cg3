@@ -2,6 +2,7 @@ src/ContextualTest.cpp:	// ToDo: Add < and > to ContextualTest's window jumps
 src/ContextualTest.h:		// ToDo: Implement NEGATE
 src/ContextualTest.h:		// ToDo: Implement careful barrier
 src/Grammar.cpp:	// ToDo: Reorder contextual tests according to weight
+src/Grammar.h:		// ToDo: Add BEFORE, SECTION, AFTER sections
 src/GrammarApplicator.cpp:	// ToDo: Make --always-span switch
 src/GrammarApplicator_matchSet.cpp:					// ToDo: Cache regexp hits/misses
 src/GrammarApplicator_runGrammar.cpp:				// ToDo: Add max window length
@@ -10,5 +11,7 @@ src/GrammarApplicator_runGrammar.cpp:	// ToDo: Make old cohort->rules order avai
 src/GrammarApplicator_runGrammar.cpp:	// ToDo: (NOT *) and (*C) tests can be cached
 src/GrammarParser.cpp:	// ToDo: Make line length dynamic
 src/GrammarParser.cpp:		// ToDo: Maybe support ICase keywords
+src/Set.h:		// ToDo: Add knowledge of primary tag types to sets
 src/Tag.cpp:		// ToDo: Implement RegExp and ICase
 src/Tag.cpp:		// ToDo: Implement META and VAR
+src/Tag.cpp:		// ToDo: Add ICASE: REGEXP: and //r //ri //i to tags

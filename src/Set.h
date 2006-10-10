@@ -27,6 +27,7 @@ namespace CG3 {
 
 	class Set {
 	public:
+		// ToDo: Add knowledge of primary tag types to sets
 		bool match_any;
 		UChar *name;
 		uint32_t line;
