@@ -61,11 +61,11 @@ bool GrammarApplicator::doesSetMatchReading(const Reading *reading, const uint32
 
 	assert(reading->hash != 0);
 
-	if (reading->hash) {
+	if (reading->hash && reading->hash != 1) {
 		if (!bypass_index && __index_matches(&index_reading_yes, reading->hash, set)) { return true; }
 		if (__index_matches(&index_reading_no, reading->hash, set)) { return false; }
 	}
-	if (reading->hash_plain) {
+	if (reading->hash_plain && reading->hash_plain != 1) {
 		if (!bypass_index && __index_matches(&index_reading_plain_yes, reading->hash_plain, set)) { return true; }
 		if (__index_matches(&index_reading_plain_no, reading->hash_plain, set)) { return false; }
 	}
@@ -304,7 +304,7 @@ bool GrammarApplicator::doesSetMatchReading(const Reading *reading, const uint32
 	}
 
 	if (retval) {
-		if (only_plain && reading->hash_plain) {
+		if (only_plain && reading->hash_plain && reading->hash_plain != 1) {
 			if (index_reading_plain_yes.find(reading->hash_plain) == index_reading_plain_yes.end()) {
 				index_reading_plain_yes[reading->hash_plain] = new Index();
 			}
@@ -318,7 +318,7 @@ bool GrammarApplicator::doesSetMatchReading(const Reading *reading, const uint32
 		index_reading_tags_yes[reading->hash_tags]->values[set] = set;
 		}
 		//*/
-		if (reading->hash) {
+		if (reading->hash && reading->hash != 1) {
 			if (index_reading_yes.find(reading->hash) == index_reading_yes.end()) {
 				index_reading_yes[reading->hash] = new Index();
 			}
@@ -326,7 +326,7 @@ bool GrammarApplicator::doesSetMatchReading(const Reading *reading, const uint32
 		}
 	}
 	else {
-		if (only_plain && reading->hash_plain) {
+		if (only_plain && reading->hash_plain && reading->hash_plain != 1) {
 			if (index_reading_plain_no.find(reading->hash_plain) == index_reading_plain_no.end()) {
 				index_reading_plain_no[reading->hash_plain] = new Index();
 			}
@@ -340,7 +340,7 @@ bool GrammarApplicator::doesSetMatchReading(const Reading *reading, const uint32
 		index_reading_tags_no[reading->hash_tags]->values[set] = set;
 		}
 		//*/
-		if (reading->hash) {
+		if (reading->hash && reading->hash != 1) {
 			if (index_reading_no.find(reading->hash) == index_reading_no.end()) {
 				index_reading_no[reading->hash] = new Index();
 			}

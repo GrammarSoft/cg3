@@ -358,6 +358,7 @@ label_runGrammarOnWindow_begin:
 							}
 							if (good) {
 								reading->mapped_by.push_back(j);
+								reading->noprint = false;
 								if (rule->type == K_ADD || rule->type == K_MAP) {
 									std::list<uint32_t>::const_iterator tter;
 									for (tter = rule->maplist.begin() ; tter != rule->maplist.end() ; tter++) {
