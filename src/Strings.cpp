@@ -47,10 +47,13 @@ namespace CG3 {
 			init_keyword_single("SET",               K_SET);
 			init_keyword_single("DELIMITERS",        K_DELIMITERS);
 			init_keyword_single("PREFERRED-TARGETS", K_PREFERRED_TARGETS);
+			init_keyword_single("MAPPING-PREFIX",    K_MAPPING_PREFIX);
 			init_keyword_single("MAPPINGS",          K_MAPPINGS);
 			init_keyword_single("CONSTRAINTS",       K_CONSTRAINTS);
 			init_keyword_single("CORRECTIONS",       K_CORRECTIONS);
 			init_keyword_single("SECTION",           K_SECTION);
+			init_keyword_single("BEFORE-SECTIONS",   K_BEFORE_SECTIONS);
+			init_keyword_single("AFTER-SECTIONS",    K_AFTER_SECTIONS);
 			init_keyword_single("ADD",               K_ADD);
 			init_keyword_single("MAP",               K_MAP);
 			init_keyword_single("REPLACE",           K_REPLACE);

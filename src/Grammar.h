@@ -31,6 +31,7 @@ namespace CG3 {
 	public:
 		uint32_t last_modified;
 		uint32_t grammar_size;
+		UChar mapping_prefix;
 		UChar *name;
 		uint32_t lines, curline;
 		stdext::hash_map<uint32_t, Tag*> single_tags;
@@ -39,15 +40,16 @@ namespace CG3 {
 		stdext::hash_map<uint32_t, Set*> sets_by_contents;
 		stdext::hash_map<uint32_t, uint32_t> set_alias;
 		Set *delimiters;
-		std::vector<UChar*> preferred_targets;
+		std::vector<uint32_t> preferred_targets;
 
 		bool vislcg_compat_mode;
 
 		std::vector<uint32_t> sections;
 		std::map<uint32_t, Anchor*> anchors;
-		// ToDo: Add BEFORE, SECTION, AFTER sections
-		std::vector<Rule*> mappings;
+
+		std::vector<Rule*> before_sections;
 		std::vector<Rule*> rules;
+		std::vector<Rule*> after_sections;
 
 		Grammar();
 		~Grammar();
@@ -78,8 +80,10 @@ namespace CG3 {
 		void destroyCompositeTag(CompositeTag *tag);
 
 		Rule *allocateRule();
-		void addRule(Rule *rule);
+		void addRule(Rule *rule, std::vector<Rule*> *where);
 		void destroyRule(Rule *rule);
+
+		void reindex();
 	};
 
 }

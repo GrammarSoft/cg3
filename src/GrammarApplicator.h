@@ -32,13 +32,13 @@ namespace CG3 {
 		bool apply_mappings;
 		bool apply_corrections;
 		bool trace;
-		bool reorder;
 		bool single_run;
 		bool statistics;
 
 		uint32_t num_windows;
 		uint32_t cache_hits, cache_miss, match_single, match_comp, match_sub;
 		uint32_t begintag, endtag;
+		uint32_t last_mapping_tag;
 
 		const Grammar *grammar;
 
@@ -67,7 +67,7 @@ namespace CG3 {
 		bool runContextualTest(const Window *window, const SingleWindow *sWindow, const uint32_t position, const ContextualTest *test);
 
 		bool doesTagMatchSet(const uint32_t tag, const uint32_t set);
-		bool doesSetMatchReading(const Reading *reading, const uint32_t set);
+		bool doesSetMatchReading(const Reading *reading, const uint32_t set, bool bypass_index = false);
 		bool doesSetMatchCohortNormal(const Cohort *cohort, const uint32_t set);
 		bool doesSetMatchCohortCareful(const Cohort *cohort, const uint32_t set);
 

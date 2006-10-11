@@ -80,7 +80,7 @@ int GrammarParser::parseAddMapReplaceAppend(const UChar *line, KEYWORDS key) {
 	uint32_t res = parseTarget(&space);
 
 	rule->target = res;
-	result->addRule(rule);
+	addRuleToGrammar(rule);
 
 	if (name && name[0] && u_strlen(name)) {
 		result->addAnchor(name, (uint32_t)(result->rules.size()-1));
@@ -95,6 +95,37 @@ int GrammarParser::parseAddMapReplaceAppend(const UChar *line, KEYWORDS key) {
 	}
 
 	rule->reweight();
+
+	delete local;
+	return 0;
+}
+
+int GrammarParser::parseMappingPrefix(const UChar *line) {
+	if (!line) {
+		u_fprintf(ux_stderr, "Error: No string provided at line %u - cannot continue!\n", result->curline);
+		return -1;
+	}
+	int length = u_strlen(line);
+	if (!length) {
+		u_fprintf(ux_stderr, "Error: No string provided at line %u - cannot continue!\n", result->curline);
+		return -1;
+	}
+	UChar *local = new UChar[length+1];
+	u_strcpy(local, line+u_strlen(keywords[K_MAPPING_PREFIX])+1);
+
+	// Allocate temp vars and skips over "MAPPING-PREFIX = "
+	UChar *space = u_strchr(local, ' ');
+	space[0] = 0;
+	space++;
+	UChar *base = space;
+
+	if (u_strlen(base)) {
+		result->mapping_prefix = base[0];
+	}
+	else {
+		u_fprintf(ux_stderr, "Warning: No mapping prefix provided at line %u - using @ instead.\n", result->curline);
+		result->mapping_prefix = '@';
+	}
 
 	delete local;
 	return 0;

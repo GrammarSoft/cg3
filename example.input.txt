@@ -4,8 +4,8 @@
 "<went>"
     "go" <SVC/A> <SV> <P/for> <P/with> V PAST VFIN @+FMAINV 
 "<to>"
-    "to" INFMARK> @INFMARK> 
-    "to" PREP 
+#    "to" INFMARK>
+    "to" PREP
 "<the>"
     "the" <Def> DET CENTRAL ART SG/PL @DN> 
 "<store>"

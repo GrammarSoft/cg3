@@ -79,7 +79,7 @@ int GrammarParser::parseSelectRemoveIffDelimitMatch(const UChar *line, KEYWORDS 
 	}
 
 	rule->target = res;
-	result->addRule(rule);
+	addRuleToGrammar(rule);
 
 	if (name && name[0] && u_strlen(name)) {
 		result->addAnchor(name, (uint32_t)(result->rules.size()-1));

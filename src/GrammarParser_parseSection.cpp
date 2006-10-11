@@ -44,5 +44,45 @@ int GrammarParser::parseSection(const UChar *line) {
 		result->addAnchor(space, nline);
 	}
 
+	in_section = true;
+	in_after_sections = false;
+	in_before_sections = false;
+
+	return 0;
+}
+
+int GrammarParser::parseBeforeSections(const UChar *line) {
+	if (!line) {
+		u_fprintf(ux_stderr, "Error: No string provided at line %u - cannot continue!\n", result->curline);
+		return -1;
+	}
+	int length = u_strlen(line);
+	if (!length) {
+		u_fprintf(ux_stderr, "Error: No string provided at line %u - cannot continue!\n", result->curline);
+		return -1;
+	}
+
+	in_section = false;
+	in_after_sections = false;
+	in_before_sections = true;
+
+	return 0;
+}
+
+int GrammarParser::parseAfterSections(const UChar *line) {
+	if (!line) {
+		u_fprintf(ux_stderr, "Error: No string provided at line %u - cannot continue!\n", result->curline);
+		return -1;
+	}
+	int length = u_strlen(line);
+	if (!length) {
+		u_fprintf(ux_stderr, "Error: No string provided at line %u - cannot continue!\n", result->curline);
+		return -1;
+	}
+
+	in_section = false;
+	in_after_sections = true;
+	in_before_sections = false;
+
 	return 0;
 }

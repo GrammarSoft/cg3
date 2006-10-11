@@ -32,6 +32,9 @@ GrammarParser::GrammarParser() {
 	codepage = 0;
 	result = 0;
 	option_vislcg_compat = false;
+	in_before_sections = false;
+	in_after_sections = false;
+	in_section = false;
 }
 
 GrammarParser::~GrammarParser() {
@@ -90,6 +93,27 @@ int GrammarParser::parseSingleLine(KEYWORDS key, const UChar *line) {
 	ux_packWhitespace(local);
 
 	switch(key) {
+		case K_SELECT:
+		case K_REMOVE:
+		case K_IFF:
+		case K_DELIMIT:
+		case K_MATCH:
+			parseSelectRemoveIffDelimitMatch(local, key);
+			break;
+		case K_ADD:
+		case K_MAP:
+		case K_REPLACE:
+		case K_APPEND:
+			parseAddMapReplaceAppend(local, key);
+			break;
+		case K_MAPPINGS:
+		case K_CORRECTIONS:
+		case K_BEFORE_SECTIONS:
+			parseBeforeSections(local);
+			break;
+		case K_AFTER_SECTIONS:
+			parseAfterSections(local);
+			break;
 		case K_SECTION:
 		case K_CONSTRAINTS:
 			parseSection(local);
@@ -106,19 +130,6 @@ int GrammarParser::parseSingleLine(KEYWORDS key, const UChar *line) {
 		case K_SET:
 			parseSet(local);
 			break;
-		case K_SELECT:
-		case K_REMOVE:
-		case K_IFF:
-		case K_DELIMIT:
-		case K_MATCH:
-			parseSelectRemoveIffDelimitMatch(local, key);
-			break;
-		case K_ADD:
-		case K_MAP:
-		case K_REPLACE:
-		case K_APPEND:
-			parseAddMapReplaceAppend(local, key);
-			break;
 		case K_DELIMITERS:
 			parseDelimiters(local);
 			break;
@@ -128,6 +139,9 @@ int GrammarParser::parseSingleLine(KEYWORDS key, const UChar *line) {
 		case K_REMVARIABLE:
 		case K_SETVARIABLE:
 			parseRemSetVariable(local, key);
+			break;
+		case K_MAPPING_PREFIX:
+			parseMappingPrefix(local);
 			break;
 		default:
 			break;
@@ -304,4 +318,16 @@ int GrammarParser::parse_grammar_from_file(const char *fname, const char *loc, c
 
 void GrammarParser::setResult(CG3::Grammar *res) {
 	result = res;
+}
+
+void GrammarParser::addRuleToGrammar(Rule *rule) {
+	if (in_section) {
+		result->addRule(rule, &result->rules);
+	}
+	else if (in_before_sections) {
+		result->addRule(rule, &result->before_sections);
+	}
+	else if (in_after_sections) {
+		result->addRule(rule, &result->after_sections);
+	}
 }

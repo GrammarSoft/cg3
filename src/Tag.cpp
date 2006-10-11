@@ -131,9 +131,6 @@ void Tag::parseTag(const UChar *to) {
 		if (u_strcmp(tag, stringbits[S_ASTERIK]) == 0) {
 			type |= T_ANY;
 		}
-		if (tag[0] == '@') {
-			type |= T_MAPPING;
-		}
 
 		// ToDo: Add ICASE: REGEXP: and //r //ri //i to tags
 		if (features & F_REGEXP) {
@@ -204,10 +201,6 @@ void Tag::parseTagRaw(const UChar *to) {
 				comparison_hash = hash_sdbm_uchar(comparison_key, 0);
 				type |= T_NUMERICAL;
 			}
-		}
-
-		if (tag[0] == '@') {
-			type |= T_MAPPING;
 		}
 	}
 }

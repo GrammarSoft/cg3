@@ -47,7 +47,7 @@ inline void GrammarApplicator::reflowSingleWindow(SingleWindow *swindow) {
 					tag = single_tags.find(*tter)->second;
 				}
 				assert(tag != 0);
-				if (tag->type & T_MAPPING) {
+				if (tag->type & T_MAPPING || tag->tag[0] == grammar->mapping_prefix) {
 					swindow->tags_mapped[*tter] = *tter;
 				}
 				if (tag->type & T_TEXTUAL) {
@@ -79,7 +79,7 @@ inline void GrammarApplicator::reflowReading(Reading *reading) {
 			tag = single_tags.find(*tter)->second;
 		}
 		assert(tag != 0);
-		if (tag->type & T_MAPPING) {
+		if (tag->type & T_MAPPING || tag->tag[0] == grammar->mapping_prefix) {
 			reading->tags_mapped[*tter] = *tter;
 		}
 		if (tag->type & (T_TEXTUAL|T_WORDFORM|T_BASEFORM)) {
@@ -89,6 +89,7 @@ inline void GrammarApplicator::reflowReading(Reading *reading) {
 			reading->tags_plain[*tter] = *tter;
 		}
 	}
+	assert(!reading->tags.empty());
 	reading->rehash();
 }
 
@@ -312,9 +313,9 @@ int GrammarApplicator::runGrammarOnWindow(Window *window) {
 label_runGrammarOnWindow_begin:
 	SingleWindow *current = window->current;
 
-	if ((apply_mappings || apply_corrections) && !grammar->mappings.empty()) {
-		for (uint32_t j=0;j<grammar->mappings.size();j++) {
-			const Rule *rule = grammar->mappings[j];
+	if (!grammar->before_sections.empty()) {
+		for (uint32_t j=0;j<grammar->before_sections.size();j++) {
+			const Rule *rule = grammar->before_sections[j];
 
 			if (!apply_mappings && (rule->type == K_MAP || rule->type == K_ADD || rule->type == K_REPLACE)) {
 				continue;
@@ -402,13 +403,12 @@ label_runGrammarOnWindow_begin:
 		}
 	}
 
-	// ToDo: Make old cohort->rules order available via switch
+	// ToDo: Make old cohort -> rules order available via switch
 	if (!grammar->rules.empty()) {
 		reflowSingleWindow(current);
 		
 		for (uint32_t i=0;i<grammar->sections.size()-1;) {
 			bool section_did_good = false;
-			bool select_only = reorder;
 			for (uint32_t j=0;j<grammar->sections[i+1];) {
 				const Rule *rule = grammar->rules[j];
 				const Rule *removerule = 0;
@@ -421,15 +421,16 @@ label_runGrammarOnWindow_begin:
 					if (c == 0) {
 						continue;
 					}
-					if (select_only && rule->type != K_SELECT) {
-						break;
-					}
 					Cohort *cohort = current->cohorts[c];
 					if (cohort->readings.empty()) {
 						continue;
 					}
-					if ((type == K_SELECT || type == K_REMOVE || type == K_IFF) && cohort->readings.size() <= 1 && cohort->readings.front()->tags_mapped.size() <= 1) {
-						continue;
+
+					const Set *set = grammar->sets_by_contents.find(rule->target)->second;
+					if ((type == K_SELECT || type == K_REMOVE || type == K_IFF) && cohort->readings.size() == 1) {
+						if (!set->has_mappings || cohort->readings.front()->tags_mapped.size() <= 1) {
+							continue;
+						}
 					}
 					if (type == K_DELIMIT && c == current->cohorts.size()-1) {
 						continue;
@@ -445,7 +446,15 @@ label_runGrammarOnWindow_begin:
 						if (!reading->hash) {
 							reading->rehash();
 						}
-						if (rule->target && doesSetMatchReading(reading, rule->target)) {
+						if (rule->line == 11592) {
+							rule = rule;
+						}
+						last_mapping_tag = 0;
+						if (rule->target && doesSetMatchReading(reading, rule->target, set->has_mappings)) {
+							if (rule->line == 11592) {
+								rule = rule;
+							}
+							uint32_t current_mapping_tag = last_mapping_tag;
 							bool good = true;
 							if (!rule->tests.empty()) {
 								bool test_good = false;
@@ -480,37 +489,59 @@ label_runGrammarOnWindow_begin:
 								reading->hit_by.push_back(j);
 								if (type == K_REMOVE) {
 									removerule = rule;
-									reading->deleted = true;
-									cohort->deleted.push_back(reading);
-									cohort->readings.remove(reading);
-									deleted = reading;
-									std::list<Reading*> removed;
-									for (rter = cohort->readings.begin() ; rter != cohort->readings.end() ; rter++) {
-										Reading *reading = *rter;
-										if (deleted != reading && doesSetMatchReading(reading, removerule->target)) {
-											reading->hit_by.push_back(deleted->hit_by.back());
-											reading->deleted = true;
-											removed.push_back(reading);
-											cohort->deleted.push_back(reading);
-											cohort->readings.remove(reading);
-											rter = cohort->readings.begin();
-											rter--;
-										}
+									if (current_mapping_tag && reading->tags_mapped.size() > 1) {
+										reading->tags_list.remove(current_mapping_tag);
+										reflowReading(reading);
 									}
-									if (cohort->readings.empty()) {
-										for (rter = removed.begin() ; rter != removed.end() ; rter++) {
+									else {
+										reading->deleted = true;
+										cohort->deleted.push_back(reading);
+										cohort->readings.remove(reading);
+										deleted = reading;
+										std::list<Reading*> removed;
+										for (rter = cohort->readings.begin() ; rter != cohort->readings.end() ; rter++) {
 											Reading *reading = *rter;
-											reading->deleted = false;
-											cohort->readings.push_back(reading);
-											cohort->deleted.remove(reading);
+											if (deleted != reading && doesSetMatchReading(reading, removerule->target)) {
+												reading->hit_by.push_back(deleted->hit_by.back());
+												reading->deleted = true;
+												removed.push_back(reading);
+												cohort->deleted.push_back(reading);
+												cohort->readings.remove(reading);
+												rter = cohort->readings.begin();
+												rter--;
+											}
 										}
-										good = false;
+										if (cohort->readings.empty()) {
+											for (rter = removed.begin() ; rter != removed.end() ; rter++) {
+												Reading *reading = *rter;
+												reading->deleted = false;
+												cohort->readings.push_back(reading);
+												cohort->deleted.remove(reading);
+											}
+											good = false;
+										}
+										removed.clear();
 									}
-									removed.clear();
+									if (good) {
+										section_did_good = true;
+									}
+									/*
+									rter = cohort->readings.begin();
+									rter--;
+									/*/
 									break;
+									//*/
 								}
 								else if (type == K_SELECT) {
 									selectrule = rule;
+									if (current_mapping_tag && reading->tags_mapped.size() > 1) {
+										std::map<uint32_t, uint32_t>::iterator iter_maps;
+										for (iter_maps = reading->tags_mapped.begin() ; iter_maps != reading->tags_mapped.end() ; iter_maps++) {
+											reading->tags_list.remove(iter_maps->second);
+										}
+										reading->tags_list.push_back(current_mapping_tag);
+										reflowReading(reading);
+									}
 									reading->selected = true;
 									selected = reading;
 									size_t nc = cohort->readings.size();
@@ -519,6 +550,14 @@ label_runGrammarOnWindow_begin:
 										if (selected != reading) {
 											reading->hit_by.push_back(selected->hit_by.back());
 											if (doesSetMatchReading(reading, selectrule->target)) {
+												if (current_mapping_tag && reading->tags_mapped.size() > 1) {
+													std::map<uint32_t, uint32_t>::iterator iter_maps;
+													for (iter_maps = reading->tags_mapped.begin() ; iter_maps != reading->tags_mapped.end() ; iter_maps++) {
+														reading->tags_list.remove(iter_maps->second);
+													}
+													reading->tags_list.push_back(current_mapping_tag);
+													reflowReading(reading);
+												}
 												reading->selected = true;
 											} else {
 												reading->deleted = true;
@@ -533,15 +572,16 @@ label_runGrammarOnWindow_begin:
 									if (nc == cohort->readings.size()) {
 										good = false;
 									}
+									if (good) {
+										section_did_good = true;
+									}
 									break;
 								}
 								else if (type == K_REMVARIABLE) {
 									variables[rule->varname] = 0;
-									good = false;
 								}
 								else if (type == K_SETVARIABLE) {
 									variables[rule->varname] = rule->varvalue;
-									good = false;
 								}
 								else if (type == K_DELIMIT) {
 									SingleWindow *nwin = new SingleWindow();
@@ -578,9 +618,6 @@ label_runGrammarOnWindow_begin:
 									}
 									goto label_runGrammarOnWindow_begin;
 								}
-								if (good) {
-									section_did_good = true;
-								}
 							}
 							else {
 								rule->num_fail++;
@@ -595,12 +632,7 @@ label_runGrammarOnWindow_begin:
 					if (single_run) {
 						section_did_good = false;
 					}
-					if (select_only) {
-						select_only = false;
-						j = 0;
-						continue;
-					}
-					else if (!section_did_good && i < grammar->sections.size()-1) {
+					if (!section_did_good && i < grammar->sections.size()-1) {
 						i++;
 					}
 				}

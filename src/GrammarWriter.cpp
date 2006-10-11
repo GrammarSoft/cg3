@@ -106,10 +106,13 @@ int GrammarWriter::write_grammar_to_ufile_text(UFILE *output) {
 
 	u_fprintf(output, "# DELIMITERS does not exist. Instead, look for the set _S_DELIMITERS_\n");
 
+	u_fprintf(output, "MAPPING-PREFIX = %C ;\n", grammar->mapping_prefix);
+
 	u_fprintf(output, "PREFERRED-TARGETS = ");
-	std::vector<UChar*>::const_iterator iter;
+	std::vector<uint32_t>::const_iterator iter;
 	for(iter = grammar->preferred_targets.begin() ; iter != grammar->preferred_targets.end() ; iter++ ) {
-		u_fprintf(output, "%S ", *iter);
+		printTag(output, grammar->single_tags.find(*iter)->second);
+		u_fprintf(output, " ");
 	}
 	u_fprintf(output, " ;\n");
 
@@ -122,9 +125,10 @@ int GrammarWriter::write_grammar_to_ufile_text(UFILE *output) {
 	}
 	u_fprintf(output, "\n");
 
-	if (!grammar->mappings.empty()) {
-		for (uint32_t j=0;j<grammar->mappings.size();j++) {
-			printRule(output, grammar->mappings[j]);
+	if (!grammar->before_sections.empty()) {
+		u_fprintf(output, "BEFORE-SECTIONS\n");
+		for (uint32_t j=0;j<grammar->before_sections.size();j++) {
+			printRule(output, grammar->before_sections[j]);
 			u_fprintf(output, " ;\n");
 		}
 	}
@@ -133,6 +137,14 @@ int GrammarWriter::write_grammar_to_ufile_text(UFILE *output) {
 		u_fprintf(output, "\nSECTION\n");
 		for (uint32_t j=grammar->sections[i-1];j<grammar->sections[i];j++) {
 			printRule(output, grammar->rules[j]);
+			u_fprintf(output, " ;\n");
+		}
+	}
+
+	if (!grammar->after_sections.empty()) {
+		u_fprintf(output, "AFTER-SECTIONS\n");
+		for (uint32_t j=0;j<grammar->after_sections.size();j++) {
+			printRule(output, grammar->after_sections[j]);
 			u_fprintf(output, " ;\n");
 		}
 	}

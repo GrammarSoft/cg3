@@ -56,17 +56,17 @@ inline bool GrammarApplicator::__index_matches(const stdext::hash_map<uint32_t, 
 	return false;
 }
 
-bool GrammarApplicator::doesSetMatchReading(const Reading *reading, const uint32_t set) {
+bool GrammarApplicator::doesSetMatchReading(const Reading *reading, const uint32_t set, bool bypass_index) {
 	bool retval = false;
 
 	assert(reading->hash != 0);
 
 	if (reading->hash) {
-		if (__index_matches(&index_reading_yes, reading->hash, set)) { return true; }
+		if (!bypass_index && __index_matches(&index_reading_yes, reading->hash, set)) { return true; }
 		if (__index_matches(&index_reading_no, reading->hash, set)) { return false; }
 	}
 	if (reading->hash_plain) {
-		if (__index_matches(&index_reading_plain_yes, reading->hash_plain, set)) { return true; }
+		if (!bypass_index && __index_matches(&index_reading_plain_yes, reading->hash_plain, set)) { return true; }
 		if (__index_matches(&index_reading_plain_no, reading->hash_plain, set)) { return false; }
 	}
 	/*
@@ -102,7 +102,7 @@ bool GrammarApplicator::doesSetMatchReading(const Reading *reading, const uint32
 				}
 				std::map<uint32_t, uint32_t>::const_iterator mter;
 				for (mter = reading->tags_textual.begin() ; mter != reading->tags_textual.end() ; mter++) {
-					// ToDo: Cache regexp hits/misses
+					// ToDo: Cache regexp and icase hits/misses
 					const Tag *itag = single_tags.find(mter->second)->second;
 					UErrorCode status = U_ZERO_ERROR;
 					uregex_setText(tag->regexp, itag->tag, u_strlen(itag->tag), &status);
@@ -186,6 +186,9 @@ bool GrammarApplicator::doesSetMatchReading(const Reading *reading, const uint32
 						else {
 							retval = true;
 						}
+						if (tag->type & T_MAPPING || tag->tag[0] == grammar->mapping_prefix) {
+							last_mapping_tag = tag->hash;
+						}
 						break;
 					} else {
 						used_special = set_special;
@@ -229,6 +232,9 @@ bool GrammarApplicator::doesSetMatchReading(const Reading *reading, const uint32
 						if (!match) {
 							break;
 						}
+						if (tag->type & T_MAPPING || tag->tag[0] == grammar->mapping_prefix) {
+							last_mapping_tag = tag->hash;
+						}
 					}
 					if (match) {
 						match_comp++;
@@ -242,6 +248,7 @@ bool GrammarApplicator::doesSetMatchReading(const Reading *reading, const uint32
 						}
 						break;
 					} else {
+						last_mapping_tag = 0;
 						used_special = set_special;
 						only_plain = set_plain;
 					}
@@ -253,24 +260,24 @@ bool GrammarApplicator::doesSetMatchReading(const Reading *reading, const uint32
 			only_plain = false;
 			uint32_t size = (uint32_t)theset->sets.size();
 			for (uint32_t i=0;i<size;i++) {
-				bool match = doesSetMatchReading(reading, theset->sets.at(i));
+				bool match = doesSetMatchReading(reading, theset->sets.at(i), bypass_index);
 				while (i < size-1 && theset->set_ops.at(i) != S_OR) {
 					switch (theset->set_ops.at(i)) {
 						case S_PLUS:
 							if (match) {
-								match = doesSetMatchReading(reading, theset->sets.at(i+1));
+								match = doesSetMatchReading(reading, theset->sets.at(i+1), bypass_index);
 							}
 							break;
 						case S_FAILFAST:
 							if (match) {
-								if (doesSetMatchReading(reading, theset->sets.at(i+1))) {
+								if (doesSetMatchReading(reading, theset->sets.at(i+1)), bypass_index) {
 									match = false;
 								}
 							}
 							break;
 						case S_MINUS:
 							if (match) {
-								if (doesSetMatchReading(reading, theset->sets.at(i+1))) {
+								if (doesSetMatchReading(reading, theset->sets.at(i+1)), bypass_index) {
 									match = false;
 								}
 							}

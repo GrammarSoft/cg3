@@ -15,6 +15,7 @@
 * rights and limitations under the License.
 */
 
+// ToDo: Reflow which includes are really needed where
 #include "stdafx.h"
 #include "icu_uoptions.h"
 #include "Grammar.h"
@@ -55,6 +56,7 @@ namespace Options {
 		TRACE,
 		REORDER,
 		SINGLERUN,
+		MAPPING_PREFIX,
 		NUM_OPTIONS
 	};
 
@@ -91,7 +93,8 @@ namespace Options {
 			UOPTION_DEF("no-corrections",		0, UOPT_NO_ARG),
 			UOPTION_DEF("trace",				0, UOPT_NO_ARG),
 			UOPTION_DEF("reorder",				0, UOPT_NO_ARG),
-			UOPTION_DEF("single-run",			0, UOPT_NO_ARG)
+			UOPTION_DEF("single-run",			0, UOPT_NO_ARG),
+			UOPTION_DEF("prefix",			    0, UOPT_REQUIRES_ARG)
 	};
 }
 
@@ -247,7 +250,7 @@ int main(int argc, char* argv[]) {
 		int serr = stat(options[STDIN].value, &info);
 		if (serr) {
 			fprintf(stderr, "Error: Cannot stat %s due to error %d!\n", options[STDIN].value, serr);
-			return -serr;
+			return serr;
 		}
 		ux_stdin = u_fopen(options[STDIN].value, "r", locale_input, codepage_input);
 	}
@@ -270,6 +273,11 @@ int main(int argc, char* argv[]) {
 		u_fprintf(ux_stderr, "Error: Grammar could not be parsed - exiting!\n");
 		return -1;
 	}
+
+	if (options[MAPPING_PREFIX].doesOccur) {
+		grammar->mapping_prefix = options[MAPPING_PREFIX].value[0];
+	}
+	grammar->reindex();
 
 	std::cerr << "Parsing grammar took " << (double)((double)(clock()-glob_timer)/(double)CLOCKS_PER_SEC) << " seconds." << std::endl;
 	glob_timer = clock();
@@ -352,9 +360,6 @@ int main(int argc, char* argv[]) {
 				if (options[TRACE].doesOccur) {
 					applicator->trace = true;
 				}
-				if (options[REORDER].doesOccur) {
-					applicator->reorder = true;
-				}
 				if (options[SINGLERUN].doesOccur) {
 					applicator->single_run = true;
 				}
@@ -398,9 +403,6 @@ int main(int argc, char* argv[]) {
 			}
 			if (options[TRACE].doesOccur) {
 				applicator->trace = true;
-			}
-			if (options[REORDER].doesOccur) {
-				applicator->reorder = true;
 			}
 			if (options[SINGLERUN].doesOccur) {
 				applicator->single_run = true;

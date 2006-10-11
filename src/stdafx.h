@@ -96,4 +96,23 @@ inline uint32_t hash_sdbm_uint32_t(const uint32_t c, uint32_t hash) {
 // CG3 includes
 #include "cg3_resources.h"
 
+// Forward declarations
+namespace CG3 {
+	class Grammar;
+	class Set;
+	class Rule;
+	class Cohort;
+	class Anchor;
+	class Tag;
+	class Window;
+	class SingleWindow;
+	class Index;
+	class Reading;
+	class GrammarApplicator;
+	class GrammarParser;
+	class GrammarWriter;
+	class CompositeTag;
+	class ContextualTest;
+}
+
 #endif

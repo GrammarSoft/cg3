@@ -76,7 +76,7 @@ int GrammarParser::parseSubstitute(const UChar *line) {
 	readTagList(&space, &rule->maplist);
 	rule->target = parseTarget(&space);
 
-	result->addRule(rule);
+	addRuleToGrammar(rule);
 
 	if (name && name[0] && u_strlen(name)) {
 		result->addAnchor(name, (uint32_t)(result->rules.size()-1));

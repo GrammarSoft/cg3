@@ -27,8 +27,8 @@ namespace CG3 {
 
 	class Set {
 	public:
-		// ToDo: Add knowledge of primary tag types to sets
 		bool match_any;
+		bool has_mappings;
 		UChar *name;
 		uint32_t line;
 		uint32_t hash;
@@ -51,6 +51,7 @@ namespace CG3 {
 		void setName(const UChar *to);
 
 		uint32_t rehash();
+		void reindex(Grammar *grammar);
 	};
 
 }

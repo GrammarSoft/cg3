@@ -26,6 +26,7 @@ namespace CG3 {
 	class GrammarParser {
 	public:
 		bool option_vislcg_compat;
+		bool in_section, in_before_sections, in_after_sections;
 		const char *filename;
 		const char *locale;
 		const char *codepage;
@@ -43,10 +44,15 @@ namespace CG3 {
 
 		int parseDelimiters(const UChar *line);
 		int parsePreferredTargets(const UChar *line);
+		int parseMappingPrefix(const UChar *line);
 
 		int parseAnchor(const UChar *line);
 		int parseSection(const UChar *line);
+		int parseBeforeSections(const UChar *line);
+		int parseAfterSections(const UChar *line);
 		int parseList(const UChar *line);
+
+		void addRuleToGrammar(Rule *rule);
 
 		int readSetOperator(UChar **paren);
 		uint32_t readSingleSet(UChar **paren);

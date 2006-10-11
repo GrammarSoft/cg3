@@ -26,6 +26,7 @@ Grammar::Grammar() {
 	curline = 0;
 	delimiters = 0;
 	vislcg_compat_mode = false;
+	mapping_prefix = '@';
 	srand((uint32_t)time(0));
 }
 
@@ -34,12 +35,6 @@ Grammar::~Grammar() {
 		delete name;
 	}
 	
-	std::vector<UChar*>::iterator iter;
-	for (iter = preferred_targets.begin() ; iter != preferred_targets.end() ; iter++) {
-		if (*iter) {
-			delete *iter;
-		}
-	}
 	preferred_targets.clear();
 	
 	sections.clear();
@@ -77,20 +72,29 @@ Grammar::~Grammar() {
 	}
 	rules.clear();
 
-	for (iter_rules = mappings.begin() ; iter_rules != mappings.end() ; iter_rules++) {
+	for (iter_rules = before_sections.begin() ; iter_rules != before_sections.end() ; iter_rules++) {
 		if (*iter_rules) {
 			delete *iter_rules;
 		}
 	}
-	mappings.clear();
+	before_sections.clear();
+
+	for (iter_rules = after_sections.begin() ; iter_rules != after_sections.end() ; iter_rules++) {
+		if (*iter_rules) {
+			delete *iter_rules;
+		}
+	}
+	after_sections.clear();
 
 	set_alias.clear();
 }
 
 void Grammar::addPreferredTarget(UChar *to) {
-	UChar *pf = new UChar[u_strlen(to)+1];
-	u_strcpy(pf, to);
-	preferred_targets.push_back(pf);
+	Tag *tag = new Tag();
+	tag->parseTag(to);
+	tag->rehash();
+	addTag(tag);
+	preferred_targets.push_back(tag->hash);
 }
 void Grammar::addSet(Set *to) {
 	assert(to);
@@ -175,13 +179,8 @@ void Grammar::destroyCompositeTag(CompositeTag *tag) {
 Rule *Grammar::allocateRule() {
 	return new Rule;
 }
-void Grammar::addRule(Rule *rule) {
-	if (rule->type == K_MAP || rule->type == K_ADD || rule->type == K_REPLACE || rule->type == K_SUBSTITUTE || rule->type == K_APPEND) {
-		mappings.push_back(rule);
-	}
-	else {
-		rules.push_back(rule);
-	}
+void Grammar::addRule(Rule *rule, std::vector<Rule*> *where) {
+	where->push_back(rule);
 }
 void Grammar::destroyRule(Rule *rule) {
 	delete rule;
@@ -292,4 +291,22 @@ void Grammar::trim() {
 	}
 	std::cerr << " to " << (uint32_t)sets_by_contents.size() << std::endl;
 //*/
+}
+
+void Grammar::reindex() {
+	stdext::hash_map<uint32_t, Tag*>::iterator iter_tags;
+	for (iter_tags = single_tags.begin() ; iter_tags != single_tags.end() ; iter_tags++) {
+		Tag *tag = iter_tags->second;
+		if (tag->tag[0] == mapping_prefix) {
+			tag->type |= T_MAPPING;
+		}
+		else {
+			tag->type &= ~T_MAPPING;
+		}
+	}
+
+	stdext::hash_map<uint32_t, Set*>::iterator iter_sets;
+	for (iter_sets = sets_by_contents.begin() ; iter_sets != sets_by_contents.end() ; iter_sets++) {
+		iter_sets->second->reindex(this);
+	}
 }

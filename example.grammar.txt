@@ -1,6 +1,14 @@
+MAPPING-PREFIX = @
 DELIMITERS = "<$.>" "<$?>" "<$!>"
 
 LIST xLim = "<\\$.*>"r
+LIST xMap = @TEST1 @TEST2 @TEST3
+
+BEFORE-SECTIONS
+MAP (@ANY @ALL @TEST1 @TEST2 @TEST3) (*)
 
 SECTION
-DELIMIT xLim
+# DELIMIT xLim
+# SELECT (@ANY "store")
+# REMOVE (@ANY "to")
+REMOVE xMap

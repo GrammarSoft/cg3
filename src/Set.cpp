@@ -25,6 +25,7 @@ using namespace CG3;
 
 Set::Set() {
 	match_any = false;
+	has_mappings = false;
 	name = 0;
 	line = 0;
 	hash = 0;
@@ -80,4 +81,47 @@ uint32_t Set::rehash() {
 	assert(retval != 0);
 	hash = retval;
 	return retval;
+}
+
+void Set::reindex(Grammar *grammar) {
+	has_mappings = false;
+	if (sets.empty()) {
+		stdext::hash_map<uint32_t, uint32_t>::const_iterator comp_iter;
+		for (comp_iter = single_tags.begin() ; comp_iter != single_tags.end() ; comp_iter++) {
+			Tag *tag = grammar->single_tags.find(comp_iter->second)->second;
+			if (tag->type & T_MAPPING || tag->tag[0] == grammar->mapping_prefix) {
+				has_mappings = true;
+				return;
+			}
+		}
+		for (comp_iter = tags.begin() ; comp_iter != tags.end() ; comp_iter++) {
+			if (grammar->tags.find(comp_iter->second) != grammar->tags.end()) {
+				CompositeTag *curcomptag = grammar->tags.find(comp_iter->second)->second;
+				if (curcomptag->tags.size() == 1) {
+					Tag *tag = grammar->single_tags.find(curcomptag->tags.begin()->second)->second;
+					if (tag->type & T_MAPPING || tag->tag[0] == grammar->mapping_prefix) {
+						has_mappings = true;
+						return;
+					}
+				} else {
+					std::map<uint32_t, uint32_t>::const_iterator tag_iter;
+					for (tag_iter = curcomptag->tags_map.begin() ; tag_iter != curcomptag->tags_map.end() ; tag_iter++) {
+						Tag *tag = grammar->single_tags.find(tag_iter->second)->second;
+						if (tag->type & T_MAPPING || tag->tag[0] == grammar->mapping_prefix) {
+							has_mappings = true;
+							return;
+						}
+					}
+				}
+			}
+		}
+	} else if (!sets.empty()) {
+		for (uint32_t i=0;i<sets.size();i++) {
+			Set *set = grammar->sets_by_contents.find(sets.at(i))->second;
+			set->reindex(grammar);
+			if (set->has_mappings) {
+				has_mappings = true;
+			}
+		}
+	}
 }
