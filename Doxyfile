@@ -1,14 +1,14 @@
-# Doxyfile 1.4.1-KDevelop
+# Doxyfile 1.4.7
 
 #---------------------------------------------------------------------------
 # Project related configuration options
 #---------------------------------------------------------------------------
-PROJECT_NAME           = vislcg3.kdevelop
-PROJECT_NUMBER         = 0.1
-OUTPUT_DIRECTORY       = 
-CREATE_SUBDIRS         = NO
+PROJECT_NAME           = "\"VISL CG-3\""
+PROJECT_NUMBER         = 
+OUTPUT_DIRECTORY       = O:/Temp
+CREATE_SUBDIRS         = YES
 OUTPUT_LANGUAGE        = English
-USE_WINDOWS_ENCODING   = NO
+USE_WINDOWS_ENCODING   = YES
 BRIEF_MEMBER_DESC      = YES
 REPEAT_BRIEF           = YES
 ABBREVIATE_BRIEF       = "The $name class" \
@@ -25,25 +25,27 @@ ABBREVIATE_BRIEF       = "The $name class" \
 ALWAYS_DETAILED_SEC    = NO
 INLINE_INHERITED_MEMB  = NO
 FULL_PATH_NAMES        = YES
-STRIP_FROM_PATH        = /home/tino/
+STRIP_FROM_PATH        = D:/Programmer/Launchy/
 STRIP_FROM_INC_PATH    = 
 SHORT_NAMES            = NO
 JAVADOC_AUTOBRIEF      = NO
 MULTILINE_CPP_IS_BRIEF = NO
 DETAILS_AT_TOP         = NO
 INHERIT_DOCS           = YES
-DISTRIBUTE_GROUP_DOC   = NO
+SEPARATE_MEMBER_PAGES  = NO
 TAB_SIZE               = 8
 ALIASES                = 
 OPTIMIZE_OUTPUT_FOR_C  = NO
 OPTIMIZE_OUTPUT_JAVA   = NO
+BUILTIN_STL_SUPPORT    = NO
+DISTRIBUTE_GROUP_DOC   = NO
 SUBGROUPING            = YES
 #---------------------------------------------------------------------------
 # Build related configuration options
 #---------------------------------------------------------------------------
-EXTRACT_ALL            = NO
-EXTRACT_PRIVATE        = NO
-EXTRACT_STATIC         = NO
+EXTRACT_ALL            = YES
+EXTRACT_PRIVATE        = YES
+EXTRACT_STATIC         = YES
 EXTRACT_LOCAL_CLASSES  = YES
 EXTRACT_LOCAL_METHODS  = NO
 HIDE_UNDOC_MEMBERS     = NO
@@ -51,7 +53,7 @@ HIDE_UNDOC_CLASSES     = NO
 HIDE_FRIEND_COMPOUNDS  = NO
 HIDE_IN_BODY_DOCS      = NO
 INTERNAL_DOCS          = NO
-CASE_SENSE_NAMES       = YES
+CASE_SENSE_NAMES       = NO
 HIDE_SCOPE_NAMES       = NO
 SHOW_INCLUDE_FILES     = YES
 INLINE_INFO            = YES
@@ -65,7 +67,7 @@ GENERATE_DEPRECATEDLIST= YES
 ENABLED_SECTIONS       = 
 MAX_INITIALIZER_LINES  = 30
 SHOW_USED_FILES        = YES
-SHOW_DIRECTORIES       = YES
+SHOW_DIRECTORIES       = NO
 FILE_VERSION_FILTER    = 
 #---------------------------------------------------------------------------
 # configuration options related to warning and progress messages
@@ -80,12 +82,13 @@ WARN_LOGFILE           =
 #---------------------------------------------------------------------------
 # configuration options related to the input files
 #---------------------------------------------------------------------------
-INPUT                  = /home/tino/visl-projects/vislcg3
+INPUT                  = "D:/Programmer/Cygwin/home/Tino Didriksen/vislcg3/trunk/src/"
 FILE_PATTERNS          = *.c \
                          *.cc \
                          *.cxx \
                          *.cpp \
                          *.c++ \
+                         *.d \
                          *.java \
                          *.ii \
                          *.ixx \
@@ -106,28 +109,8 @@ FILE_PATTERNS          = *.c \
                          *.m \
                          *.mm \
                          *.dox \
-                         *.C \
-                         *.CC \
-                         *.C++ \
-                         *.II \
-                         *.I++ \
-                         *.H \
-                         *.HH \
-                         *.H++ \
-                         *.CS \
-                         *.PHP \
-                         *.PHP3 \
-                         *.M \
-                         *.MM \
-                         *.C \
-                         *.H \
-                         *.tlh \
-                         *.diff \
-                         *.patch \
-                         *.moc \
-                         *.xpm \
-                         *.dox
-RECURSIVE              = yes
+                         *.py
+RECURSIVE              = NO
 EXCLUDE                = 
 EXCLUDE_SYMLINKS       = NO
 EXCLUDE_PATTERNS       = 
@@ -146,6 +129,8 @@ INLINE_SOURCES         = NO
 STRIP_CODE_COMMENTS    = YES
 REFERENCED_BY_RELATION = YES
 REFERENCES_RELATION    = YES
+REFERENCES_LINK_SOURCE = YES
+USE_HTAGS              = NO
 VERBATIM_HEADERS       = YES
 #---------------------------------------------------------------------------
 # configuration options related to the alphabetical class index
@@ -191,7 +176,7 @@ LATEX_HIDE_INDICES     = NO
 #---------------------------------------------------------------------------
 # configuration options related to the RTF output
 #---------------------------------------------------------------------------
-GENERATE_RTF           = NO
+GENERATE_RTF           = YES
 RTF_OUTPUT             = rtf
 COMPACT_RTF            = NO
 RTF_HYPERLINKS         = NO
@@ -207,7 +192,7 @@ MAN_LINKS              = NO
 #---------------------------------------------------------------------------
 # configuration options related to the XML output
 #---------------------------------------------------------------------------
-GENERATE_XML           = yes
+GENERATE_XML           = NO
 XML_OUTPUT             = xml
 XML_SCHEMA             = 
 XML_DTD                = 
@@ -239,7 +224,7 @@ SKIP_FUNCTION_MACROS   = YES
 # Configuration::additions related to external references   
 #---------------------------------------------------------------------------
 TAGFILES               = 
-GENERATE_TAGFILE       = vislcg3.tag
+GENERATE_TAGFILE       = 
 ALLEXTERNALS           = NO
 EXTERNAL_GROUPS        = YES
 PERL_PATH              = /usr/bin/perl
@@ -257,6 +242,7 @@ TEMPLATE_RELATIONS     = NO
 INCLUDE_GRAPH          = YES
 INCLUDED_BY_GRAPH      = YES
 CALL_GRAPH             = NO
+CALLER_GRAPH           = NO
 GRAPHICAL_HIERARCHY    = YES
 DIRECTORY_GRAPH        = YES
 DOT_IMAGE_FORMAT       = png

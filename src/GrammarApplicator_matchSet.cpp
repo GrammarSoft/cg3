@@ -372,7 +372,14 @@ bool GrammarApplicator::doesSetMatchCohortCareful(const Cohort *cohort, const ui
 	for (iter = cohort->readings.begin() ; iter != cohort->readings.end() ; iter++) {
 		Reading *reading = *iter;
 		if (!reading->deleted) {
-			if (!doesSetMatchReading(reading, set)) {
+			last_mapping_tag = 0;
+			const Set *theset = grammar->sets_by_contents.find(set)->second;
+			if (!doesSetMatchReading(reading, set, theset->has_mappings)) {
+				retval = false;
+				break;
+			}
+			// A mapped tag must be the only mapped tag in the reading to be considered a Careful match
+			if (last_mapping_tag && reading->tags_mapped.size() > 1) {
 				retval = false;
 				break;
 			}
