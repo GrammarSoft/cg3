@@ -115,4 +115,7 @@ namespace CG3 {
 	class ContextualTest;
 }
 
+// re2c defines
+#define YYCTYPE         UChar
+
 #endif

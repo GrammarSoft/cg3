@@ -293,9 +293,8 @@ int GrammarParser::parse_grammar_from_file(const char *fname, const char *loc, c
 	int error = stat(filename, &_stat);
 
 	if (error != 0) {
-		u_fprintf(ux_stderr, "Warning: Cannot stat %s due to error %d - setting defaults.\n", filename, error);
-		result->last_modified = 12345678;
-		result->grammar_size = 12345678;
+		u_fprintf(ux_stderr, "Error: Cannot stat %s due to error %d - bailing out!\n", filename, error);
+		exit(1);
 	} else {
 		result->last_modified = (uint32_t)_stat.st_mtime;
 		result->grammar_size = (uint32_t)_stat.st_size;
@@ -309,6 +308,7 @@ int GrammarParser::parse_grammar_from_file(const char *fname, const char *loc, c
 		return -1;
 	}
 	
+	error = re2c_grammar_from_ufile(grammar);
 	error = parse_grammar_from_ufile(grammar);
 	if (error) {
 		return error;

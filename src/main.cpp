@@ -15,6 +15,8 @@
 * rights and limitations under the License.
 */
 
+// ToDo: Rules can be dynamically reordered in "optimize correct" mode by moving the offending rule to the end of the section
+
 // ToDo: Reflow which includes are really needed where
 #include "stdafx.h"
 #include "icu_uoptions.h"

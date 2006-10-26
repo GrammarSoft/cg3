@@ -38,6 +38,7 @@ namespace CG3 {
 		void setResult(CG3::Grammar *result);
 
 		int parse_grammar_from_ufile(UFILE *input);
+		int re2c_grammar_from_ufile(UFILE *input);
 		int parse_grammar_from_file(const char *filename, const char *locale, const char *codepage);
 
 		int parseSingleLine(KEYWORDS key, const UChar *line);
@@ -67,6 +68,8 @@ namespace CG3 {
 		int parseAddMapReplaceAppend(const UChar *line, KEYWORDS key);
 		int parseSubstitute(const UChar *line);
 		int parseRemSetVariable(const UChar *line, KEYWORDS key);
+
+		KEYWORDS scan(YYCTYPE *input);
 	};
 }
 
