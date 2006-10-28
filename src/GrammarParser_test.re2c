@@ -27,14 +27,17 @@ using namespace CG3;
 using namespace CG3::Strings;
 
 /*!re2c
-re2c:yyfill:enable = 0 ;
+	re2c:yyfill:enable = 0 ;
 
-newline = [\n\u2028\u2029\x85\x0C];
-space = [ \t\r\x0B\x0D\u001C\u001D\u001E\u001F];
-any = [^];
-eof = [\u0000];
-notspace = any\space;
-semicolon = [^\\][;];
+	newline = [\n\u2028\u2029\x85\x0C];
+	space = [ \t\r\x0B\x0D\u001C\u001D\u001E\u001F];
+	any = [^];
+	eof = [\u0000];
+	eoc = [;];
+	special = [#;)(];
+	notspecial = [^#;]\space;
+	escaped = [\\] special;
+	entity = (notspecial|escaped);
 */
 
 #define YYCURSOR        input
@@ -42,23 +45,52 @@ semicolon = [^\\][;];
 YYCTYPE *GrammarParser::re2c_skipline(YYCTYPE *input) {
 skipline_start:
 /*!re2c
-		eof				{goto skipline_end;}
-        newline			{result->lines++; goto skipline_end;}
-		any				{goto skipline_start;}
+	eof				{goto skipline_end;}
+	newline			{result->lines++; goto skipline_end;}
+	any				{goto skipline_start;}
 */
 skipline_end:
 	return YYCURSOR;
 }
 
 YYCTYPE *GrammarParser::re2c_parseTagList(YYCTYPE *input, Set *set) {
+	marker = YYCURSOR;
+
 parseTagList_start:
 /*!re2c
-		eof				{goto parseTagList_end;}
-        newline			{result->lines++; goto parseTagList_start;}
-        semicolon		{goto parseTagList_end;}
-        notspace+		{set=set;}
-        '#'				{YYCURSOR = re2c_skipline(YYCURSOR); goto parseTagList_start;}
-		any				{goto parseTagList_start;}
+	eof				{goto parseTagList_end;}
+	newline			{
+		marker = YYCURSOR;
+		result->lines++;
+		goto parseTagList_start;
+		}
+	space+			{
+		marker = YYCURSOR;
+		goto parseTagList_start;
+		}
+	entity+			{
+		size_t length = (YYCURSOR - marker)+1;
+		YYCTYPE *buffer = new YYCTYPE[length];
+		buffer[length-1] = 0;
+		u_strncpy(buffer, marker, length-1);
+		CG3::CompositeTag *ctag = result->allocateCompositeTag();
+		CG3::Tag *tag = result->allocateTag(buffer);
+		result->addTagToCompositeTag(tag, ctag);
+		result->addCompositeTagToSet(set, ctag);
+		delete buffer;
+		marker = YYCURSOR;
+		goto parseTagList_start;
+		}
+	'#'				{
+		YYCURSOR = re2c_skipline(YYCURSOR);
+		marker = YYCURSOR;
+		goto parseTagList_start;
+		}
+	eoc				{goto parseTagList_end;}
+	any				{
+		marker = YYCURSOR;
+		goto parseTagList_start;
+		}
 */
 
 parseTagList_end:
@@ -72,12 +104,12 @@ YYCTYPE *GrammarParser::re2c_parseDelimiters(YYCTYPE *input) {
 
 parseDelimiters_start:
 /*!re2c
-		eof				{goto parseDelimiters_end;}
-        newline			{result->lines++; goto parseDelimiters_start;}
-        semicolon		{goto parseDelimiters_end;}
-        '='				{YYCURSOR = re2c_parseTagList(YYCURSOR, curset); goto parseDelimiters_end;}
-        '#'				{YYCURSOR = re2c_skipline(YYCURSOR); goto parseDelimiters_start;}
-		any				{goto parseDelimiters_start;}
+	eof				{goto parseDelimiters_end;}
+	newline			{result->lines++; goto parseDelimiters_start;}
+	'='				{YYCURSOR = re2c_parseTagList(YYCURSOR, curset); goto parseDelimiters_end;}
+	'#'				{YYCURSOR = re2c_skipline(YYCURSOR); goto parseDelimiters_start;}
+	eoc				{goto parseDelimiters_end;}
+	any				{goto parseDelimiters_start;}
 */
 
 parseDelimiters_end:
@@ -87,22 +119,23 @@ parseDelimiters_end:
 }
 
 KEYWORDS GrammarParser::re2c_scan(YYCTYPE *input) {
-	YYCTYPE *YYMARKER = 0;
 	KEYWORDS retval = K_IGNORE;
+	YYCTYPE *YYMARKER = 0;
 	
-scanstart:
+scan_start:
 /*!re2c
-		eof				{return K_IGNORE;}
-        newline			{result->lines++; goto scanstart;}
-        'DELIMITERS'	{YYCURSOR = re2c_parseDelimiters(YYCURSOR); goto scanstart;}
-        'SETS'			{retval = K_SETS; goto scanend;}
-        'SET'			{retval = K_SET; goto scanend;}
-        'LIST'			{retval = K_LIST; goto scanend;}
-        '#'				{YYCURSOR = re2c_skipline(YYCURSOR); goto scanstart;}
-		any				{goto scanstart;}
+	eof				{return K_IGNORE;}
+	newline			{result->lines++; goto scan_start;}
+	'DELIMITERS'	{YYCURSOR = re2c_parseDelimiters(YYCURSOR); goto scan_start;}
+	'SETS'			{goto scan_start;}
+	'SET'			{retval = K_SET; goto scan_end;}
+	'LIST'			{retval = K_LIST; goto scan_end;}
+	'END'			{return K_IGNORE;}
+	'#'				{YYCURSOR = re2c_skipline(YYCURSOR); goto scan_start;}
+	any				{goto scan_start;}
 */
 
-scanend:
+scan_end:
 	return retval;
 }
 
