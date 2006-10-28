@@ -27,31 +27,81 @@ using namespace CG3;
 using namespace CG3::Strings;
 
 /*!re2c
+re2c:yyfill:enable = 0 ;
+
 newline = [\n\u2028\u2029\x85\x0C];
-space = [ \t\r];
+space = [ \t\r\x0B\x0D\u001C\u001D\u001E\u001F];
 any = [^];
+eof = [\u0000];
+notspace = any\space;
+semicolon = [^\\][;];
 */
 
-KEYWORDS GrammarParser::scan(YYCTYPE *input) {
-	#define YYCURSOR        input
-	#define YYLIMIT         input
-	#define YYFILL(n)
+#define YYCURSOR        input
+
+YYCTYPE *GrammarParser::re2c_skipline(YYCTYPE *input) {
+skipline_start:
+/*!re2c
+		eof				{goto skipline_end;}
+        newline			{result->lines++; goto skipline_end;}
+		any				{goto skipline_start;}
+*/
+skipline_end:
+	return YYCURSOR;
+}
+
+YYCTYPE *GrammarParser::re2c_parseTagList(YYCTYPE *input, Set *set) {
+parseTagList_start:
+/*!re2c
+		eof				{goto parseTagList_end;}
+        newline			{result->lines++; goto parseTagList_start;}
+        semicolon		{goto parseTagList_end;}
+        notspace+		{set=set;}
+        '#'				{YYCURSOR = re2c_skipline(YYCURSOR); goto parseTagList_start;}
+		any				{goto parseTagList_start;}
+*/
+
+parseTagList_end:
+	return YYCURSOR;
+}
+
+YYCTYPE *GrammarParser::re2c_parseDelimiters(YYCTYPE *input) {
+	CG3::Set *curset = result->allocateSet();
+	curset->setName(stringbits[S_DELIMITSET]);
+	curset->line = result->lines;
+
+parseDelimiters_start:
+/*!re2c
+		eof				{goto parseDelimiters_end;}
+        newline			{result->lines++; goto parseDelimiters_start;}
+        semicolon		{goto parseDelimiters_end;}
+        '='				{YYCURSOR = re2c_parseTagList(YYCURSOR, curset); goto parseDelimiters_end;}
+        '#'				{YYCURSOR = re2c_skipline(YYCURSOR); goto parseDelimiters_start;}
+		any				{goto parseDelimiters_start;}
+*/
+
+parseDelimiters_end:
+	result->addSet(curset);
+	result->delimiters = curset;
+	return YYCURSOR;
+}
+
+KEYWORDS GrammarParser::re2c_scan(YYCTYPE *input) {
 	YYCTYPE *YYMARKER = 0;
 	KEYWORDS retval = K_IGNORE;
-
+	
 scanstart:
-
 /*!re2c
-		[\u0000]		{return K_IGNORE;}
-        'DELIMITERS'	{retval = K_DELIMITERS; goto scanend;}
+		eof				{return K_IGNORE;}
+        newline			{result->lines++; goto scanstart;}
+        'DELIMITERS'	{YYCURSOR = re2c_parseDelimiters(YYCURSOR); goto scanstart;}
         'SETS'			{retval = K_SETS; goto scanend;}
         'SET'			{retval = K_SET; goto scanend;}
         'LIST'			{retval = K_LIST; goto scanend;}
-        '#'				{goto scanstart;}
-        space			{goto scanstart;}
-        newline			{result->lines++; goto scanstart;}
+        '#'				{YYCURSOR = re2c_skipline(YYCURSOR); goto scanstart;}
 		any				{goto scanstart;}
 */
+
 scanend:
 	return retval;
 }
@@ -89,16 +139,12 @@ int GrammarParser::re2c_grammar_from_ufile(UFILE *input) {
 		return error;
 	}
 
-	UChar *buffer = new UChar[result->grammar_size+1];
-	memset(buffer, 0, sizeof(UChar)*(result->grammar_size+1));
+	UChar *buffer = new UChar[result->grammar_size+8];
+	memset(buffer, 0, sizeof(UChar)*(result->grammar_size+8));
 	u_file_read(buffer, result->grammar_size, input);
 	
-	KEYWORDS type = K_IGNORE;
 	UChar *offset = buffer;
-	while (offset[0] && (type = scan(offset)) != K_IGNORE) {
-		printf("Type: %i\n", type);
-		offset += u_strlen(keywords[type]);
-	}
+	re2c_scan(offset);
 	
 	delete buffer;
 	free_regexps();

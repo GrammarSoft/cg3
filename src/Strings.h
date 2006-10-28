@@ -22,6 +22,7 @@
 
 namespace CG3 {
 	namespace Strings {
+		// ToDo: Add ABORT
 		enum KEYWORDS {
 			K_IGNORE,
 			K_SETS,

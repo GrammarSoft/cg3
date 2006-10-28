@@ -69,7 +69,10 @@ namespace CG3 {
 		int parseSubstitute(const UChar *line);
 		int parseRemSetVariable(const UChar *line, KEYWORDS key);
 
-		KEYWORDS scan(YYCTYPE *input);
+		YYCTYPE *re2c_skipline(YYCTYPE *input);
+		YYCTYPE *re2c_parseTagList(YYCTYPE *input, Set *set);
+		YYCTYPE *re2c_parseDelimiters(YYCTYPE *input);
+		KEYWORDS re2c_scan(YYCTYPE *input);
 	};
 }
 

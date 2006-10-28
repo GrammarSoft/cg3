@@ -309,7 +309,7 @@ int GrammarParser::parse_grammar_from_file(const char *fname, const char *loc, c
 	}
 	
 	error = re2c_grammar_from_ufile(grammar);
-	error = parse_grammar_from_ufile(grammar);
+//	error = parse_grammar_from_ufile(grammar);
 	if (error) {
 		return error;
 	}
