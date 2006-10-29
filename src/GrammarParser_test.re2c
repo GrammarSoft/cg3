@@ -25,21 +25,22 @@
 
 using namespace CG3;
 using namespace CG3::Strings;
+#define YYCURSOR        input
 
 /*!re2c
 	re2c:yyfill:enable = 0 ;
 
 	newline = [\n\u2028\u2029\x85\x0C];
 	space = [ \t\r\x0B\x0D\u001C\u001D\u001E\u001F];
-	any = [^];
+	any = [^]\newline;
 	eof = [\u0000];
 	special = [#;)(];
-	notspecial = [^#;)(]\space;
+	notspecial = [^#;)(]\(space|newline);
 	escaped = [\\] special;
 	entity = (notspecial|escaped);
+	setname = (notspecial|escaped|[#]);
+	setop = ("|"|"+"|"-"|'OR'|"*"|"^"|"!");
 */
-
-#define YYCURSOR        input
 
 YYCTYPE *GrammarParser::re2c_skipline(YYCTYPE *input) {
 skipline_start:
@@ -62,10 +63,6 @@ parseCompositeTag_start:
 	newline			{
 		marker = YYCURSOR;
 		result->lines++;
-		goto parseCompositeTag_start;
-		}
-	space+			{
-		marker = YYCURSOR;
 		goto parseCompositeTag_start;
 		}
 	entity+			{
@@ -102,6 +99,116 @@ parseCompositeTag_end:
 	return YYCURSOR;
 }
 
+YYCTYPE *GrammarParser::re2c_parseInlineSet(YYCTYPE *input, Set **ret_set) {
+	CG3::Set *curset = result->allocateSet();
+	curset->line = result->lines;
+	curset->setName((uint32_t)0);
+	marker = YYCURSOR;
+
+parseInlineSet_start:
+/*!re2c
+	eof				{goto parseInlineSet_end;}
+	newline			{marker = YYCURSOR; result->lines++; goto parseInlineSet_start;}
+	entity+			{
+		size_t length = (YYCURSOR - marker)+1;
+		YYCTYPE *buffer = new YYCTYPE[length];
+		buffer[length-1] = 0;
+		u_strncpy(buffer, marker, (int32_t)length-1);
+		CG3::CompositeTag *ctag = result->allocateCompositeTag();
+		CG3::Tag *tag = result->allocateTag(buffer);
+		result->addTagToCompositeTag(tag, ctag);
+		result->addCompositeTagToSet(curset, ctag);
+		delete buffer;
+		marker = YYCURSOR;
+		goto parseInlineSet_start;
+		}
+	"#"				{YYCURSOR = re2c_skipline(YYCURSOR);marker = YYCURSOR;goto parseInlineSet_start;}
+	"("				{u_fprintf(ux_stderr, "Error: Mismatched ( on line %u!\n", result->lines); exit(1);}
+	")"				{goto parseInlineSet_end;}
+	";"				{u_fprintf(ux_stderr, "Error: Found ; before ) on line %u!\n", result->lines); exit(1);}
+	any				{
+		marker = YYCURSOR;
+		goto parseInlineSet_start;
+		}
+*/
+
+parseInlineSet_end:
+	result->addSet(curset);
+	*ret_set = curset;
+	return YYCURSOR;
+}
+
+YYCTYPE *GrammarParser::re2c_parseSetList(YYCTYPE *input, Set *set) {
+	bool want_set = true;
+	marker = YYCURSOR;
+	if (result->lines == 1333) {
+		input=input;
+	}
+
+parseSetList_start:
+/*!re2c
+	eof				{goto parseSetList_end;}
+	newline			{marker = YYCURSOR; result->lines++; goto parseSetList_start;}
+	setop			{
+		size_t length = (YYCURSOR - marker)+1;
+		YYCTYPE *buffer = new YYCTYPE[length];
+		buffer[length-1] = 0;
+		u_strncpy(buffer, marker, (int32_t)length-1);
+		if (want_set) {
+			u_fprintf(ux_stderr, "Error: Missing set for operator %S on line %u!\n", buffer, result->lines);
+			exit(1);
+		}
+		uint32_t set_op = ux_isSetOp(buffer);
+		set->set_ops.push_back(set_op);
+		want_set = true;
+		marker = YYCURSOR;
+		goto parseSetList_start;
+		}
+	setname+		{
+		if (!want_set) {
+			return YYCURSOR;
+		}
+		size_t length = (YYCURSOR - marker)+1;
+		YYCTYPE *buffer = new YYCTYPE[length];
+		buffer[length-1] = 0;
+		u_strncpy(buffer, marker, (int32_t)length-1);
+		uint32_t set_hash = hash_sdbm_uchar(buffer, 0);
+		if (result->set_alias.find(set_hash) != result->set_alias.end()) {
+			set_hash = result->set_alias[set_hash];
+		}
+		set_hash = result->getSet(set_hash)->hash;
+		set->sets.push_back(set_hash);
+		delete buffer;
+		marker = YYCURSOR;
+		want_set = false;
+		goto parseSetList_start;
+		}
+	"("				{
+		if (!want_set) {
+			return YYCURSOR;
+		}
+		Set *ret_set = 0;
+		YYCURSOR = re2c_parseInlineSet(YYCURSOR, &ret_set);
+		uint32_t set_hash = ret_set->hash;
+		if (result->set_alias.find(set_hash) != result->set_alias.end()) {
+			set_hash = result->set_alias[set_hash];
+		}
+		set->sets.push_back(set_hash);
+		marker = YYCURSOR;
+		want_set = false;
+		goto parseSetList_start;
+		}
+	")"				{u_fprintf(ux_stderr, "Error: Mismatched ) on line %u!\n", result->lines); exit(1);}
+	"#"				{YYCURSOR = re2c_skipline(YYCURSOR);marker = YYCURSOR;goto parseSetList_start;}
+	space			{marker = YYCURSOR; goto parseSetList_start;}
+	";"				{goto parseSetList_end;}
+	any				{goto parseSetList_end;}
+*/
+
+parseSetList_end:
+	return YYCURSOR;
+}
+
 YYCTYPE *GrammarParser::re2c_parseTagList(YYCTYPE *input, Set *set) {
 	marker = YYCURSOR;
 
@@ -111,10 +218,6 @@ parseTagList_start:
 	newline			{
 		marker = YYCURSOR;
 		result->lines++;
-		goto parseTagList_start;
-		}
-	space+			{
-		marker = YYCURSOR;
 		goto parseTagList_start;
 		}
 	entity+			{
@@ -173,6 +276,75 @@ parseDelimiters_end:
 	return YYCURSOR;
 }
 
+YYCTYPE *GrammarParser::re2c_parseList(YYCTYPE *input) {
+	marker = YYCURSOR;
+	CG3::Set *curset = result->allocateSet();
+	curset->line = result->lines;
+
+parseList_start:
+/*!re2c
+	eof				{goto parseList_end;}
+	newline			{marker = YYCURSOR; result->lines++; goto parseList_start;}
+	"="				{YYCURSOR = re2c_parseTagList(YYCURSOR, curset); marker = YYCURSOR; goto parseList_end;}
+	"#"				{YYCURSOR = re2c_skipline(YYCURSOR); marker = YYCURSOR; goto parseList_start;}
+	setname+		{
+		size_t length = (YYCURSOR - marker)+1;
+		YYCTYPE *buffer = new YYCTYPE[length];
+		buffer[length-1] = 0;
+		u_strncpy(buffer, marker, (int32_t)length-1);
+		curset->setName(buffer);
+		delete buffer;
+		marker = YYCURSOR;
+		goto parseList_start;
+		}
+	";"				{goto parseList_end;}
+	any				{marker = YYCURSOR; goto parseList_start;}
+*/
+
+parseList_end:
+	result->addSet(curset);
+	return YYCURSOR;
+}
+
+YYCTYPE *GrammarParser::re2c_parseSet(YYCTYPE *input) {
+	marker = YYCURSOR;
+	CG3::Set *curset = result->allocateSet();
+	curset->line = result->lines;
+	if (result->lines == 1333) {
+		input=input;
+	}
+
+parseSet_start:
+/*!re2c
+	eof				{goto parseSet_end;}
+	newline			{marker = YYCURSOR; result->lines++; goto parseSet_start;}
+	"="				{YYCURSOR = re2c_parseSetList(YYCURSOR, curset); marker = YYCURSOR; goto parseSet_end;}
+	"#"				{YYCURSOR = re2c_skipline(YYCURSOR); marker = YYCURSOR; goto parseSet_start;}
+	setname+		{
+		size_t length = (YYCURSOR - marker)+1;
+		YYCTYPE *buffer = new YYCTYPE[length];
+		buffer[length-1] = 0;
+		u_strncpy(buffer, marker, (int32_t)length-1);
+		curset->setName(buffer);
+		delete buffer;
+		marker = YYCURSOR;
+		goto parseSet_start;
+		}
+	";"				{goto parseSet_end;}
+	any				{marker = YYCURSOR; goto parseSet_start;}
+*/
+
+parseSet_end:
+	if (curset->sets.size() == 1) {
+		uint32_t res = curset->sets.at(0);
+		result->set_alias[hash_sdbm_uchar(curset->name, 0)] = res;
+		result->destroySet(curset);
+		curset = result->getSet(res);
+	}
+	result->addSet(curset);
+	return YYCURSOR;
+}
+
 YYCTYPE *GrammarParser::re2c_parsePreferredTargets(YYCTYPE *input) {
 	marker = YYCURSOR;
 
@@ -182,10 +354,6 @@ parsePreferredTargets_start:
 	newline			{
 		marker = YYCURSOR;
 		result->lines++;
-		goto parsePreferredTargets_start;
-		}
-	space+			{
-		marker = YYCURSOR;
 		goto parsePreferredTargets_start;
 		}
 	entity+			{
@@ -224,12 +392,14 @@ parsePreferredTargets_end:
 KEYWORDS GrammarParser::re2c_scan(YYCTYPE *input) {
 	KEYWORDS retval = K_IGNORE;
 	YYCTYPE *YYMARKER = 0;
+	marker = YYCURSOR;
 	
 scan_start:
 /*!re2c
 	eof				{retval = K_IGNORE; goto scan_end;}
-	newline			{result->lines++; goto scan_start;}
-	'PREFERRED-TARGETS'		{YYCURSOR = re2c_parsePreferredTargets(YYCURSOR); goto scan_start;}
+	newline			{marker = YYCURSOR; result->lines++; goto scan_start;}
+	space			{goto scan_start;}
+	'PREFERRED-TARGETS'		{YYCURSOR = re2c_parsePreferredTargets(YYCURSOR); marker = YYCURSOR; goto scan_start;}
 	'BEFORE-SECTIONS'		{goto scan_start;}
 	'AFTER-SECTIONS'		{goto scan_start;}
 	'MAPPING-PREFIX'		{goto scan_start;}
@@ -237,7 +407,7 @@ scan_start:
 	'SETVARIABLE'	{goto scan_start;}
 	'CORRECTIONS'	{goto scan_start;}
 	'CONSTRAINTS'	{goto scan_start;}
-	'DELIMITERS'	{YYCURSOR = re2c_parseDelimiters(YYCURSOR); goto scan_start;}
+	'DELIMITERS'	{YYCURSOR = re2c_parseDelimiters(YYCURSOR); marker = YYCURSOR; goto scan_start;}
 	'SUBSTITUTE'	{goto scan_start;}
 	'MAPPINGS'		{goto scan_start;}
 	'SECTION'		{goto scan_start;}
@@ -252,17 +422,19 @@ scan_start:
 	'MATCH'			{goto scan_start;}
 	'JUMP'			{goto scan_start;}
 	'SETS'			{goto scan_start;}
-	'LIST'			{goto scan_start;}
-	'SET'			{goto scan_start;}
+	'LIST'			{YYCURSOR = re2c_parseList(YYCURSOR); marker = YYCURSOR; goto scan_start;}
+	'SET'			{YYCURSOR = re2c_parseSet(YYCURSOR); marker = YYCURSOR; goto scan_start;}
 	'IFF'			{goto scan_start;}
 	'MAP'			{goto scan_start;}
 	'ADD'			{goto scan_start;}
 	'END'			{retval = K_IGNORE; goto scan_end;}
-	"#"				{YYCURSOR = re2c_skipline(YYCURSOR); goto scan_start;}
-	any				{goto scan_start;}
+	"#"				{YYCURSOR = re2c_skipline(YYCURSOR); marker = YYCURSOR; goto scan_start;}
+	entity+			{goto scan_start;}
+	any				{u_fprintf(ux_stderr, "Error: Unexpected input on line %u!\n", result->lines); goto scan_end;}
 */
 
 scan_end:
+	marker = 0;
 	return retval;
 }
 
