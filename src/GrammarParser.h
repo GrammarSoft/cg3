@@ -71,8 +71,10 @@ namespace CG3 {
 
 		YYCTYPE *marker;
 		YYCTYPE *re2c_skipline(YYCTYPE *input);
+		YYCTYPE *re2c_parseCompositeTag(YYCTYPE *input, Set *set);
 		YYCTYPE *re2c_parseTagList(YYCTYPE *input, Set *set);
 		YYCTYPE *re2c_parseDelimiters(YYCTYPE *input);
+		YYCTYPE *re2c_parsePreferredTargets(YYCTYPE *input);
 		KEYWORDS re2c_scan(YYCTYPE *input);
 	};
 }

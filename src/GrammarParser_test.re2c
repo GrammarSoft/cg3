@@ -33,9 +33,8 @@ using namespace CG3::Strings;
 	space = [ \t\r\x0B\x0D\u001C\u001D\u001E\u001F];
 	any = [^];
 	eof = [\u0000];
-	eoc = [;];
 	special = [#;)(];
-	notspecial = [^#;]\space;
+	notspecial = [^#;)(]\space;
 	escaped = [\\] special;
 	entity = (notspecial|escaped);
 */
@@ -50,6 +49,56 @@ skipline_start:
 	any				{goto skipline_start;}
 */
 skipline_end:
+	return YYCURSOR;
+}
+
+YYCTYPE *GrammarParser::re2c_parseCompositeTag(YYCTYPE *input, Set *set) {
+	CG3::CompositeTag *ctag = result->allocateCompositeTag();
+	marker = YYCURSOR;
+
+parseCompositeTag_start:
+/*!re2c
+	eof				{goto parseCompositeTag_end;}
+	newline			{
+		marker = YYCURSOR;
+		result->lines++;
+		goto parseCompositeTag_start;
+		}
+	space+			{
+		marker = YYCURSOR;
+		goto parseCompositeTag_start;
+		}
+	entity+			{
+		size_t length = (YYCURSOR - marker)+1;
+		YYCTYPE *buffer = new YYCTYPE[length];
+		buffer[length-1] = 0;
+		u_strncpy(buffer, marker, (int32_t)length-1);
+		CG3::Tag *tag = result->allocateTag(buffer);
+		result->addTagToCompositeTag(tag, ctag);
+		delete buffer;
+		marker = YYCURSOR;
+		goto parseCompositeTag_start;
+		}
+	"#"				{
+		YYCURSOR = re2c_skipline(YYCURSOR);
+		marker = YYCURSOR;
+		goto parseCompositeTag_start;
+		}
+	"("				{u_fprintf(ux_stderr, "Error: Mismatched ( on line %u!\n", result->lines); exit(1);}
+	")"				{goto parseCompositeTag_end;}
+	";"				{u_fprintf(ux_stderr, "Error: Found ; before ) on line %u!\n", result->lines); exit(1);}
+	any				{
+		marker = YYCURSOR;
+		goto parseCompositeTag_start;
+		}
+*/
+
+parseCompositeTag_end:
+	if (ctag->tags_map.empty()) {
+		u_fprintf(ux_stderr, "Error: Empty () on line %u!\n", result->lines);
+		exit(1);
+	}
+	result->addCompositeTagToSet(set, ctag);
 	return YYCURSOR;
 }
 
@@ -72,7 +121,7 @@ parseTagList_start:
 		size_t length = (YYCURSOR - marker)+1;
 		YYCTYPE *buffer = new YYCTYPE[length];
 		buffer[length-1] = 0;
-		u_strncpy(buffer, marker, length-1);
+		u_strncpy(buffer, marker, (int32_t)length-1);
 		CG3::CompositeTag *ctag = result->allocateCompositeTag();
 		CG3::Tag *tag = result->allocateTag(buffer);
 		result->addTagToCompositeTag(tag, ctag);
@@ -81,12 +130,18 @@ parseTagList_start:
 		marker = YYCURSOR;
 		goto parseTagList_start;
 		}
-	'#'				{
+	"("				{
+		YYCURSOR = re2c_parseCompositeTag(YYCURSOR, set);
+		marker = YYCURSOR;
+		goto parseTagList_start;
+		}
+	")"				{u_fprintf(ux_stderr, "Error: Mismatched ) on line %u!\n", result->lines); exit(1);}
+	"#"				{
 		YYCURSOR = re2c_skipline(YYCURSOR);
 		marker = YYCURSOR;
 		goto parseTagList_start;
 		}
-	eoc				{goto parseTagList_end;}
+	";"				{goto parseTagList_end;}
 	any				{
 		marker = YYCURSOR;
 		goto parseTagList_start;
@@ -106,9 +161,9 @@ parseDelimiters_start:
 /*!re2c
 	eof				{goto parseDelimiters_end;}
 	newline			{result->lines++; goto parseDelimiters_start;}
-	'='				{YYCURSOR = re2c_parseTagList(YYCURSOR, curset); goto parseDelimiters_end;}
-	'#'				{YYCURSOR = re2c_skipline(YYCURSOR); goto parseDelimiters_start;}
-	eoc				{goto parseDelimiters_end;}
+	"="				{YYCURSOR = re2c_parseTagList(YYCURSOR, curset); goto parseDelimiters_end;}
+	"#"				{YYCURSOR = re2c_skipline(YYCURSOR); goto parseDelimiters_start;}
+	";"				{goto parseDelimiters_end;}
 	any				{goto parseDelimiters_start;}
 */
 
@@ -118,20 +173,92 @@ parseDelimiters_end:
 	return YYCURSOR;
 }
 
+YYCTYPE *GrammarParser::re2c_parsePreferredTargets(YYCTYPE *input) {
+	marker = YYCURSOR;
+
+parsePreferredTargets_start:
+/*!re2c
+	eof				{goto parsePreferredTargets_end;}
+	newline			{
+		marker = YYCURSOR;
+		result->lines++;
+		goto parsePreferredTargets_start;
+		}
+	space+			{
+		marker = YYCURSOR;
+		goto parsePreferredTargets_start;
+		}
+	entity+			{
+		size_t length = (YYCURSOR - marker)+1;
+		YYCTYPE *buffer = new YYCTYPE[length];
+		buffer[length-1] = 0;
+		u_strncpy(buffer, marker, (int32_t)length-1);
+		if (!(buffer[0] == '=' && u_strlen(buffer) == 1)) {
+			result->addPreferredTarget(buffer);
+		}
+		delete buffer;
+		marker = YYCURSOR;
+		goto parsePreferredTargets_start;
+		}
+	"("				{u_fprintf(ux_stderr, "Error: Unexpected ( on line %u!\n", result->lines); exit(1);}
+	")"				{u_fprintf(ux_stderr, "Error: Unexpected ) on line %u!\n", result->lines); exit(1);}
+	"#"				{
+		YYCURSOR = re2c_skipline(YYCURSOR);
+		marker = YYCURSOR;
+		goto parsePreferredTargets_start;
+		}
+	";"				{goto parsePreferredTargets_end;}
+	any				{
+		marker = YYCURSOR;
+		goto parsePreferredTargets_start;
+		}
+*/
+
+parsePreferredTargets_end:
+	if (result->preferred_targets.empty()) {
+		u_fprintf(ux_stderr, "Warning: PREFERRED-TARGETS was declared with no elements on line %u.\n", result->lines);
+	}
+	return YYCURSOR;
+}
+
 KEYWORDS GrammarParser::re2c_scan(YYCTYPE *input) {
 	KEYWORDS retval = K_IGNORE;
 	YYCTYPE *YYMARKER = 0;
 	
 scan_start:
 /*!re2c
-	eof				{return K_IGNORE;}
+	eof				{retval = K_IGNORE; goto scan_end;}
 	newline			{result->lines++; goto scan_start;}
+	'PREFERRED-TARGETS'		{YYCURSOR = re2c_parsePreferredTargets(YYCURSOR); goto scan_start;}
+	'BEFORE-SECTIONS'		{goto scan_start;}
+	'AFTER-SECTIONS'		{goto scan_start;}
+	'MAPPING-PREFIX'		{goto scan_start;}
+	'REMVARIABLE'	{goto scan_start;}
+	'SETVARIABLE'	{goto scan_start;}
+	'CORRECTIONS'	{goto scan_start;}
+	'CONSTRAINTS'	{goto scan_start;}
 	'DELIMITERS'	{YYCURSOR = re2c_parseDelimiters(YYCURSOR); goto scan_start;}
+	'SUBSTITUTE'	{goto scan_start;}
+	'MAPPINGS'		{goto scan_start;}
+	'SECTION'		{goto scan_start;}
+	'EXECUTE'		{goto scan_start;}
+	'DELIMIT'		{goto scan_start;}
+	'REPLACE'		{goto scan_start;}
+	'SELECT'		{goto scan_start;}
+	'REMOVE'		{goto scan_start;}
+	'ANCHOR'		{goto scan_start;}
+	'APPEND'		{goto scan_start;}
+	'ABORT'			{goto scan_start;}
+	'MATCH'			{goto scan_start;}
+	'JUMP'			{goto scan_start;}
 	'SETS'			{goto scan_start;}
-	'SET'			{retval = K_SET; goto scan_end;}
-	'LIST'			{retval = K_LIST; goto scan_end;}
-	'END'			{return K_IGNORE;}
-	'#'				{YYCURSOR = re2c_skipline(YYCURSOR); goto scan_start;}
+	'LIST'			{goto scan_start;}
+	'SET'			{goto scan_start;}
+	'IFF'			{goto scan_start;}
+	'MAP'			{goto scan_start;}
+	'ADD'			{goto scan_start;}
+	'END'			{retval = K_IGNORE; goto scan_end;}
+	"#"				{YYCURSOR = re2c_skipline(YYCURSOR); goto scan_start;}
 	any				{goto scan_start;}
 */
 
@@ -156,19 +283,19 @@ int GrammarParser::re2c_grammar_from_ufile(UFILE *input) {
 
 	int error = init_keywords();
 	if (error) {
-		u_fprintf(ux_stderr, "Error: init_keywords returned %u!\n", error);
+		u_fprintf(ux_stderr, "Error: init_keywords returned %i!\n", error);
 		return error;
 	}
 
 	error = init_regexps();
 	if (error) {
-		u_fprintf(ux_stderr, "Error: init_regexps returned %u!\n", error);
+		u_fprintf(ux_stderr, "Error: init_regexps returned %i!\n", error);
 		return error;
 	}
 
 	error = init_strings();
 	if (error) {
-		u_fprintf(ux_stderr, "Error: init_strings returned %u!\n", error);
+		u_fprintf(ux_stderr, "Error: init_strings returned %i!\n", error);
 		return error;
 	}
 
@@ -177,7 +304,13 @@ int GrammarParser::re2c_grammar_from_ufile(UFILE *input) {
 	u_file_read(buffer, result->grammar_size, input);
 	
 	UChar *offset = buffer;
-	re2c_scan(offset);
+	if (u_strlen(offset) > 0) {
+		result->lines = 1;
+		re2c_scan(offset);
+	} else {
+		u_fprintf(ux_stderr, "Error: Grammar file is empty - nothing to parse!\n");
+		return -1;
+	}
 	
 	delete buffer;
 	free_regexps();
