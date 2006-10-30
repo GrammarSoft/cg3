@@ -103,6 +103,7 @@ YYCTYPE *GrammarParser::re2c_parseInlineSet(YYCTYPE *input, Set **ret_set) {
 	CG3::Set *curset = result->allocateSet();
 	curset->line = result->lines;
 	curset->setName((uint32_t)0);
+	CG3::CompositeTag *ctag = result->allocateCompositeTag();
 	marker = YYCURSOR;
 
 parseInlineSet_start:
@@ -114,10 +115,8 @@ parseInlineSet_start:
 		YYCTYPE *buffer = new YYCTYPE[length];
 		buffer[length-1] = 0;
 		u_strncpy(buffer, marker, (int32_t)length-1);
-		CG3::CompositeTag *ctag = result->allocateCompositeTag();
 		CG3::Tag *tag = result->allocateTag(buffer);
 		result->addTagToCompositeTag(tag, ctag);
-		result->addCompositeTagToSet(curset, ctag);
 		delete buffer;
 		marker = YYCURSOR;
 		goto parseInlineSet_start;
@@ -133,6 +132,7 @@ parseInlineSet_start:
 */
 
 parseInlineSet_end:
+	result->addCompositeTagToSet(curset, ctag);
 	result->addSet(curset);
 	*ret_set = curset;
 	return YYCURSOR;
