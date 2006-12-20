@@ -36,7 +36,7 @@ namespace CG3 {
 			u_uastrcpy(buffer, keyword);
 			keywords[entry] = new UChar[u_strlen(buffer)+1];
 			u_strcpy(keywords[entry], buffer);
-			keyword_pow[entry] = (uint32_t)pow(2, entry);
+			keyword_pow[entry] = (uint32_t)pow(2.0, (double)entry);
 			return 0;
 		}
 		

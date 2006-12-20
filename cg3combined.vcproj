@@ -1,40 +1,69 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="7.10"
+	Version="8,00"
 	Name="cg3combined"
 	ProjectGUID="{439A194D-EC3B-42A4-8BD2-CADD9CB6087C}"
-	Keyword="Win32Proj">
+	Keyword="Win32Proj"
+	>
 	<Platforms>
 		<Platform
-			Name="Win32"/>
+			Name="Win32"
+		/>
 	</Platforms>
+	<ToolFiles>
+	</ToolFiles>
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
 			OutputDirectory="Debug"
 			IntermediateDirectory="Debug"
 			ConfigurationType="1"
-			CharacterSet="2">
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
+			CharacterSet="2"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories=""
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;DEBUG"
-				MinimalRebuild="TRUE"
+				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
-				SmallerTypeCheck="TRUE"
-				RuntimeLibrary="5"
-				BufferSecurityCheck="TRUE"
-				EnableFunctionLevelLinking="TRUE"
-				ForceConformanceInForLoopScope="TRUE"
-				RuntimeTypeInfo="TRUE"
-				UsePrecompiledHeader="2"
+				SmallerTypeCheck="true"
+				RuntimeLibrary="1"
+				BufferSecurityCheck="true"
+				EnableFunctionLevelLinking="true"
+				ForceConformanceInForLoopScope="true"
+				RuntimeTypeInfo="true"
+				UsePrecompiledHeader="0"
 				WarningLevel="4"
-				Detect64BitPortabilityProblems="TRUE"
-				DebugInformationFormat="4"/>
+				Detect64BitPortabilityProblems="true"
+				DebugInformationFormat="4"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="icuuc.lib icuio.lib icuin.lib WSock32.Lib"
@@ -42,55 +71,84 @@
 				LinkIncremental="2"
 				AdditionalLibraryDirectories=""
 				IgnoreDefaultLibraryNames=""
-				GenerateDebugInformation="TRUE"
+				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(OutDir)/cg3combined.pdb"
-				MapLines="FALSE"
 				SubSystem="1"
-				TargetMachine="1"/>
+				TargetMachine="1"
+			/>
 			<Tool
-				Name="VCMIDLTool"/>
+				Name="VCALinkTool"
+			/>
 			<Tool
-				Name="VCPostBuildEventTool"/>
+				Name="VCManifestTool"
+			/>
 			<Tool
-				Name="VCPreBuildEventTool"/>
+				Name="VCXDCMakeTool"
+			/>
 			<Tool
-				Name="VCPreLinkEventTool"/>
+				Name="VCBscMakeTool"
+			/>
 			<Tool
-				Name="VCResourceCompilerTool"/>
+				Name="VCFxCopTool"
+			/>
 			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
+				Name="VCAppVerifierTool"
+			/>
 			<Tool
-				Name="VCXMLDataGeneratorTool"/>
+				Name="VCWebDeploymentTool"
+			/>
 			<Tool
-				Name="VCWebDeploymentTool"/>
-			<Tool
-				Name="VCManagedWrapperGeneratorTool"/>
-			<Tool
-				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+				Name="VCPostBuildEventTool"
+			/>
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
 			OutputDirectory="Release"
 			IntermediateDirectory="Release"
 			ConfigurationType="1"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			CharacterSet="2"
-			WholeProgramOptimization="TRUE">
+			WholeProgramOptimization="1"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="3"
 				InlineFunctionExpansion="2"
-				EnableIntrinsicFunctions="TRUE"
+				EnableIntrinsicFunctions="true"
 				FavorSizeOrSpeed="1"
 				AdditionalIncludeDirectories=""
 				PreprocessorDefinitions="WIN32;_CONSOLE"
-				MinimalRebuild="TRUE"
-				ForceConformanceInForLoopScope="TRUE"
+				MinimalRebuild="true"
+				ForceConformanceInForLoopScope="true"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
-				Detect64BitPortabilityProblems="TRUE"
-				DebugInformationFormat="3"/>
+				Detect64BitPortabilityProblems="true"
+				DebugInformationFormat="3"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="icuuc.lib icuio.lib icuin.lib WSock32.Lib"
@@ -98,78 +156,111 @@
 				LinkIncremental="0"
 				AdditionalLibraryDirectories=""
 				IgnoreDefaultLibraryNames=""
-				GenerateDebugInformation="TRUE"
+				GenerateDebugInformation="true"
 				SubSystem="1"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
 				OptimizeForWindows98="1"
-				TargetMachine="1"/>
+				TargetMachine="1"
+			/>
 			<Tool
-				Name="VCMIDLTool"/>
+				Name="VCALinkTool"
+			/>
 			<Tool
-				Name="VCPostBuildEventTool"/>
+				Name="VCManifestTool"
+			/>
 			<Tool
-				Name="VCPreBuildEventTool"/>
+				Name="VCXDCMakeTool"
+			/>
 			<Tool
-				Name="VCPreLinkEventTool"/>
+				Name="VCBscMakeTool"
+			/>
 			<Tool
-				Name="VCResourceCompilerTool"/>
+				Name="VCFxCopTool"
+			/>
 			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
+				Name="VCAppVerifierTool"
+			/>
 			<Tool
-				Name="VCXMLDataGeneratorTool"/>
+				Name="VCWebDeploymentTool"
+			/>
 			<Tool
-				Name="VCWebDeploymentTool"/>
-			<Tool
-				Name="VCManagedWrapperGeneratorTool"/>
-			<Tool
-				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+				Name="VCPostBuildEventTool"
+			/>
 		</Configuration>
 		<Configuration
 			Name="Common|Win32"
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
-			ConfigurationType="1">
+			ConfigurationType="1"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="3"
 				FavorSizeOrSpeed="1"
-				OptimizeForProcessor="1"
-				OptimizeForWindowsApplication="TRUE"
 				AdditionalIncludeDirectories=""
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
-				MinimalRebuild="TRUE"
-				ForceConformanceInForLoopScope="TRUE"
+				MinimalRebuild="true"
+				ForceConformanceInForLoopScope="true"
 				WarningLevel="3"
-				Detect64BitPortabilityProblems="TRUE"
-				DebugInformationFormat="3"/>
+				Detect64BitPortabilityProblems="true"
+				DebugInformationFormat="3"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="icuuc.lib icuio.lib icuin.lib WSock32.Lib"
 				AdditionalLibraryDirectories=""
-				OptimizeForWindows98="2"/>
+				OptimizeForWindows98="2"
+			/>
 			<Tool
-				Name="VCMIDLTool"/>
+				Name="VCALinkTool"
+			/>
 			<Tool
-				Name="VCPostBuildEventTool"/>
+				Name="VCManifestTool"
+			/>
 			<Tool
-				Name="VCPreBuildEventTool"/>
+				Name="VCXDCMakeTool"
+			/>
 			<Tool
-				Name="VCPreLinkEventTool"/>
+				Name="VCBscMakeTool"
+			/>
 			<Tool
-				Name="VCResourceCompilerTool"/>
+				Name="VCFxCopTool"
+			/>
 			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
+				Name="VCAppVerifierTool"
+			/>
 			<Tool
-				Name="VCXMLDataGeneratorTool"/>
+				Name="VCWebDeploymentTool"
+			/>
 			<Tool
-				Name="VCWebDeploymentTool"/>
-			<Tool
-				Name="VCManagedWrapperGeneratorTool"/>
-			<Tool
-				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+				Name="VCPostBuildEventTool"
+			/>
 		</Configuration>
 	</Configurations>
 	<References>
@@ -178,320 +269,420 @@
 		<Filter
 			Name="Source Files"
 			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx"
-			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}">
+			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
+			>
 			<File
-				RelativePath=".\src\Anchor.cpp">
+				RelativePath=".\src\Anchor.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\src\Cohort.cpp">
+				RelativePath=".\src\Cohort.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\src\CompositeTag.cpp">
+				RelativePath=".\src\CompositeTag.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\src\ContextualTest.cpp">
+				RelativePath=".\src\ContextualTest.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\src\Grammar.cpp">
+				RelativePath=".\src\Grammar.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\src\GrammarApplicator.cpp">
+				RelativePath=".\src\GrammarApplicator.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\src\GrammarApplicator_matchSet.cpp">
+				RelativePath=".\src\GrammarApplicator_matchSet.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\src\GrammarApplicator_runGrammar.cpp">
+				RelativePath=".\src\GrammarApplicator_runGrammar.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\src\GrammarParser.cpp">
+				RelativePath=".\src\GrammarParser.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\src\GrammarParser_parseAddMapReplaceAppend.cpp">
+				RelativePath=".\src\GrammarParser_parseAddMapReplaceAppend.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\src\GrammarParser_parseAnchor.cpp">
+				RelativePath=".\src\GrammarParser_parseAnchor.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\src\GrammarParser_parseContextualTest.cpp">
+				RelativePath=".\src\GrammarParser_parseContextualTest.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\src\GrammarParser_parseDelimiters.cpp">
+				RelativePath=".\src\GrammarParser_parseDelimiters.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\src\GrammarParser_parseList.cpp">
+				RelativePath=".\src\GrammarParser_parseList.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\src\GrammarParser_parsePreferredTargets.cpp">
+				RelativePath=".\src\GrammarParser_parsePreferredTargets.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\src\GrammarParser_parseRemSetVariable.cpp">
+				RelativePath=".\src\GrammarParser_parseRemSetVariable.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\src\GrammarParser_parseSection.cpp">
+				RelativePath=".\src\GrammarParser_parseSection.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\src\GrammarParser_parseSelectRemoveIffDelimitMatch.cpp">
+				RelativePath=".\src\GrammarParser_parseSelectRemoveIffDelimitMatch.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\src\GrammarParser_parseSet.cpp">
+				RelativePath=".\src\GrammarParser_parseSet.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\src\GrammarParser_parseSubstitute.cpp">
+				RelativePath=".\src\GrammarParser_parseSubstitute.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\src\GrammarParser_parseTarget.cpp">
+				RelativePath=".\src\GrammarParser_parseTarget.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\src\GrammarParser_test.cpp">
+				RelativePath=".\src\GrammarParser_test.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\src\GrammarWriter.cpp">
+				RelativePath=".\src\GrammarWriter.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\src\icu_cmemory.cpp">
+				RelativePath=".\src\icu_cmemory.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\src\icu_cstring.cpp">
+				RelativePath=".\src\icu_cstring.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\src\icu_uoptions.cpp">
+				RelativePath=".\src\icu_uoptions.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\src\Index.cpp">
+				RelativePath=".\src\Index.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\src\main.cpp">
+				RelativePath=".\src\main.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\src\Reading.cpp">
+				RelativePath=".\src\Reading.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\src\Rule.cpp">
+				RelativePath=".\src\Rule.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\src\Set.cpp">
+				RelativePath=".\src\Set.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\src\SingleWindow.cpp">
+				RelativePath=".\src\SingleWindow.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\src\Strings.cpp">
+				RelativePath=".\src\Strings.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\src\Tag.cpp">
+				RelativePath=".\src\Tag.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\src\uextras.cpp">
+				RelativePath=".\src\uextras.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\src\Window.cpp">
+				RelativePath=".\src\Window.cpp"
+				>
 			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
-			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}">
+			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
+			>
 			<File
-				RelativePath=".\src\Anchor.h">
+				RelativePath=".\src\Anchor.h"
+				>
 			</File>
 			<File
-				RelativePath=".\src\cg3_resources.h">
+				RelativePath=".\src\cg3_resources.h"
+				>
 			</File>
 			<File
-				RelativePath=".\src\Cohort.h">
+				RelativePath=".\src\Cohort.h"
+				>
 			</File>
 			<File
-				RelativePath=".\src\CompositeTag.h">
+				RelativePath=".\src\CompositeTag.h"
+				>
 			</File>
 			<File
-				RelativePath=".\src\ContextualTest.h">
+				RelativePath=".\src\ContextualTest.h"
+				>
 			</File>
 			<File
-				RelativePath=".\src\Grammar.h">
+				RelativePath=".\src\Grammar.h"
+				>
 			</File>
 			<File
-				RelativePath=".\src\GrammarApplicator.h">
+				RelativePath=".\src\GrammarApplicator.h"
+				>
 			</File>
 			<File
-				RelativePath=".\src\GrammarParser.h">
+				RelativePath=".\src\GrammarParser.h"
+				>
 			</File>
 			<File
-				RelativePath=".\src\GrammarWriter.h">
+				RelativePath=".\src\GrammarWriter.h"
+				>
 			</File>
 			<File
-				RelativePath=".\src\icu_cmemory.h">
+				RelativePath=".\src\icu_cmemory.h"
+				>
 			</File>
 			<File
-				RelativePath=".\src\icu_cstring.h">
+				RelativePath=".\src\icu_cstring.h"
+				>
 			</File>
 			<File
-				RelativePath=".\src\icu_uoptions.h">
+				RelativePath=".\src\icu_uoptions.h"
+				>
 			</File>
 			<File
-				RelativePath=".\src\Index.h">
+				RelativePath=".\src\Index.h"
+				>
 			</File>
 			<File
-				RelativePath=".\src\Reading.h">
+				RelativePath=".\src\Reading.h"
+				>
 			</File>
 			<File
-				RelativePath=".\src\Rule.h">
+				RelativePath=".\src\Rule.h"
+				>
 			</File>
 			<File
-				RelativePath=".\src\Set.h">
+				RelativePath=".\src\Set.h"
+				>
 			</File>
 			<File
-				RelativePath=".\src\SingleWindow.h">
+				RelativePath=".\src\SingleWindow.h"
+				>
 			</File>
 			<File
-				RelativePath=".\src\stdafx.h">
+				RelativePath=".\src\stdafx.h"
+				>
 			</File>
 			<File
-				RelativePath=".\src\Strings.h">
+				RelativePath=".\src\Strings.h"
+				>
 			</File>
 			<File
-				RelativePath=".\src\Tag.h">
+				RelativePath=".\src\Tag.h"
+				>
 			</File>
 			<File
-				RelativePath=".\src\uextras.h">
+				RelativePath=".\src\uextras.h"
+				>
 			</File>
 			<File
-				RelativePath=".\src\Window.h">
+				RelativePath=".\src\Window.h"
+				>
 			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"
 			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx"
-			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}">
+			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
+			>
 			<File
-				RelativePath=".\src\GrammarParser_test.re2c">
+				RelativePath=".\src\GrammarParser_test.re2c"
+				>
 			</File>
 		</Filter>
 		<Filter
 			Name="Grammars"
-			Filter="">
+			>
 			<File
-				RelativePath="..\..\parsers\dansk\etc\dancg">
+				RelativePath="..\..\parsers\dansk\etc\dancg"
+				>
 			</File>
 			<File
-				RelativePath="..\..\parsers\dansk\etc\dancg.attach">
+				RelativePath="..\..\parsers\dansk\etc\dancg.attach"
+				>
 			</File>
 			<File
-				RelativePath="..\..\parsers\dansk\etc\dancg.eng">
+				RelativePath="..\..\parsers\dansk\etc\dancg.eng"
+				>
 			</File>
 			<File
-				RelativePath="..\..\parsers\dansk\etc\dancg.morf">
+				RelativePath="..\..\parsers\dansk\etc\dancg.morf"
+				>
 			</File>
 			<File
-				RelativePath="..\..\parsers\dansk\etc\dancg.prop">
+				RelativePath="..\..\parsers\dansk\etc\dancg.prop"
+				>
 			</File>
 			<File
-				RelativePath="..\..\parsers\dansk\etc\dancg.spelling">
+				RelativePath="..\..\parsers\dansk\etc\dancg.spelling"
+				>
 			</File>
 			<File
-				RelativePath="..\..\parsers\dansk\etc\dancg.syn">
+				RelativePath="..\..\parsers\dansk\etc\dancg.syn"
+				>
 			</File>
 		</Filter>
 		<Filter
 			Name="Streams"
-			Filter="">
+			>
 			<File
-				RelativePath=".\cg3-trace.txt">
+				RelativePath=".\cg3-trace.txt"
+				>
 			</File>
 			<File
-				RelativePath=".\dancg.morf.txt">
+				RelativePath=".\dancg.morf.txt"
+				>
 			</File>
 			<File
-				RelativePath=".\example.grammar.txt">
+				RelativePath=".\example.grammar.txt"
+				>
 			</File>
 			<File
-				RelativePath=".\example.input.txt">
+				RelativePath=".\example.input.txt"
+				>
 			</File>
 			<File
-				RelativePath=".\example.output.txt">
+				RelativePath=".\example.output.txt"
+				>
 			</File>
 			<File
-				RelativePath=".\input.txt">
+				RelativePath=".\input.txt"
+				>
 			</File>
 			<File
-				RelativePath=".\input6x.txt">
+				RelativePath=".\input6x.txt"
+				>
 			</File>
 			<File
-				RelativePath=".\stderr.txt">
+				RelativePath=".\stderr.txt"
+				>
 			</File>
 			<File
-				RelativePath=".\stderr2.txt">
+				RelativePath=".\stderr2.txt"
+				>
 			</File>
 			<File
-				RelativePath=".\stdin.txt">
+				RelativePath=".\stdin.txt"
+				>
 			</File>
 			<File
-				RelativePath=".\stdout-linux.txt">
+				RelativePath=".\stdout-linux.txt"
+				>
 			</File>
 			<File
-				RelativePath=".\stdout-trace.txt">
+				RelativePath=".\stdout-trace.txt"
+				>
 			</File>
 			<File
-				RelativePath=".\stdout.txt">
+				RelativePath=".\stdout.txt"
+				>
 			</File>
 			<File
-				RelativePath=".\stdout2.txt">
+				RelativePath=".\stdout2.txt"
+				>
 			</File>
 		</Filter>
 		<Filter
 			Name="PHP Proof of Concept"
-			Filter="">
+			>
 			<File
-				RelativePath="..\..\cg3\php\cg3.php">
+				RelativePath="..\..\cg3\php\cg3.php"
+				>
 			</File>
 			<File
-				RelativePath="..\..\cg3\php\cg3_applycg.php">
+				RelativePath="..\..\cg3\php\cg3_applycg.php"
+				>
 			</File>
 			<File
-				RelativePath="..\..\cg3\php\cg3_checks.php">
+				RelativePath="..\..\cg3\php\cg3_checks.php"
+				>
 			</File>
 			<File
-				RelativePath="..\..\cg3\php\cg3_constants.php">
+				RelativePath="..\..\cg3\php\cg3_constants.php"
+				>
 			</File>
 			<File
-				RelativePath="..\..\cg3\php\cg3_getargs.php">
+				RelativePath="..\..\cg3\php\cg3_getargs.php"
+				>
 			</File>
 			<File
-				RelativePath="..\..\cg3\php\cg3_misc.php">
+				RelativePath="..\..\cg3\php\cg3_misc.php"
+				>
 			</File>
 			<File
-				RelativePath="..\..\cg3\php\cg3_parsecg.php">
+				RelativePath="..\..\cg3\php\cg3_parsecg.php"
+				>
 			</File>
 			<File
-				RelativePath="..\..\cg3\php\cg3_php_compat.php">
+				RelativePath="..\..\cg3\php\cg3_php_compat.php"
+				>
 			</File>
 			<File
-				RelativePath="..\..\cg3\php\cg3_rules.php">
+				RelativePath="..\..\cg3\php\cg3_rules.php"
+				>
 			</File>
 			<File
-				RelativePath="..\..\cg3\php\cg3_runtests.php">
+				RelativePath="..\..\cg3\php\cg3_runtests.php"
+				>
 			</File>
 			<File
-				RelativePath="..\..\cg3\php\cg3_set.php">
+				RelativePath="..\..\cg3\php\cg3_set.php"
+				>
 			</File>
 			<File
-				RelativePath="..\..\cg3\php\cg3_set_ops.php">
+				RelativePath="..\..\cg3\php\cg3_set_ops.php"
+				>
 			</File>
 		</Filter>
 		<File
-			RelativePath=".\glossary.txt">
+			RelativePath=".\glossary.txt"
+			>
 		</File>
 		<File
-			RelativePath=".\License">
+			RelativePath=".\License"
+			>
 		</File>
 		<File
-			RelativePath=".\license.icu.txt">
+			RelativePath=".\license.icu.txt"
+			>
 		</File>
 		<File
-			RelativePath=".\resources.txt">
+			RelativePath=".\resources.txt"
+			>
 		</File>
 		<File
-			RelativePath=".\Todo">
+			RelativePath=".\Todo"
+			>
 		</File>
 	</Files>
 	<Globals>
