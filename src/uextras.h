@@ -18,6 +18,7 @@
 #ifndef __UEXTRAS_H
 #define __UEXTRAS_H
 
+#include "PACC_Timer.h"
 #include <unicode/ustdio.h>
 
 bool ux_isNewline(const UChar32 current, const UChar32 previous);
@@ -33,6 +34,7 @@ bool ux_unEscape(UChar *target, const UChar *source);
 uint32_t ux_fputuchar(FILE *output, UChar *txt);
 UChar *ux_append(UChar *target, const UChar *data);
 
+extern PACC::Timer *glob_timer;
 extern UFILE *ux_stdin;
 extern UFILE *ux_stdout;
 extern UFILE *ux_stderr;

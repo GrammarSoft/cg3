@@ -58,6 +58,8 @@ This method is called automatically by the class constructor. Under normal circu
  */
 void Timer::calibrateCountPeriod(unsigned int inDelay, unsigned int inTimes)
 {
+	inDelay = inDelay; // Just to foil the warning. Compiler will optimize this away.
+	inTimes = inTimes; // Just to foil the warning. Compiler will optimize this away.
 #ifdef WIN32
 	// use the windows counter
 	LARGE_INTEGER lFrequency;
@@ -97,9 +99,9 @@ This method returns the highest resolution count available for this timer. Under
 
 Under Unix, when using the gcc compiler on an i386 family processor (Pentium or AMD), or on a PowerPC family processor, this method can also return the hardware performance counter value using in-lined assembly code. On all other platforms, or when the hardware mode is deactivated, it returns a count based on the standard gettimeofday function (in micro-seconds).
  */
-unsigned long long Timer::getCount(void) const
+PACC_TimeStamp Timer::getCount(void) const
 {
-	unsigned long long lCount = 0;
+	PACC_TimeStamp lCount = 0;
 #ifdef WIN32
 	LARGE_INTEGER lCurrent;
 	QueryPerformanceCounter(&lCurrent);

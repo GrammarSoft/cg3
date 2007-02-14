@@ -15,4 +15,5 @@ src/Tag.cpp:		// ToDo: Implement RegExp and ICase
 src/Tag.cpp:		// ToDo: Implement META and VAR
 src/Tag.cpp:		// ToDo: Add ICASE: REGEXP: and //r //ri //i to tags
 src/main.cpp:// ToDo: Rules can be dynamically reordered in "optimize correct" mode by moving the offending rule to the end of the section
+src/main.cpp:// ToDo: Refactor statistics to be gathered in their own objects rather than inline with Rules
 src/main.cpp:// ToDo: Reflow which includes are really needed where

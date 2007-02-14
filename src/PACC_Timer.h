@@ -36,6 +36,8 @@
 #ifndef PACC_Timer_hpp
 #define PACC_Timer_hpp
 
+typedef unsigned long long PACC_TimeStamp;
+
 namespace PACC {
 
 	/*! \brief Portable timer class.
@@ -71,7 +73,7 @@ namespace PACC {
 		void calibrateCountPeriod(unsigned int inDelay=10000, unsigned int inTimes=10);
 
 		//! Return the current high resolution count.
-		unsigned long long getCount(void) const;
+		PACC_TimeStamp getCount(void) const;
 
 		//! Return the time period of a single count increment (in seconds).
 		double getCountPeriod(void) const {return mPeriod;}
@@ -79,12 +81,15 @@ namespace PACC {
 		//! Return the current timer value in seconds.
 		double getValue(void) const {return (getCount()-mCount)*mPeriod;}
 
+		//! Return the current timer value in seconds.
+		double getValueFrom(PACC_TimeStamp from) const {return (getCount()-from)*mPeriod;}
+
 		//! reset the timer value (to 0 second).
 		void reset(void) {mCount = getCount();}
 
 	 protected:
 		bool mHardware; //!< Specifies whether hardware time-stamps should be used.
-		unsigned long long mCount; //!< Count value at last reset.
+		PACC_TimeStamp mCount; //!< Count value at last reset.
 		static double mPeriod; //!< Time period of a single count in seconds.
 	};
 

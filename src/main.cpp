@@ -113,6 +113,7 @@ UFILE *ux_stderr = 0;
 
 int main(int argc, char* argv[]) {
 	glob_timer = new PACC::Timer();
+	PACC_TimeStamp main_timer = glob_timer->getCount();
 
 #ifdef _GC
 	GC_INIT();
@@ -277,8 +278,8 @@ int main(int argc, char* argv[]) {
 		parser->use_re2c = true;
 	}
 
-	std::cerr << "Initialization took " << glob_timer->getValue() << " seconds." << std::endl;
-	glob_timer->reset();
+	std::cerr << "Initialization took " << glob_timer->getValueFrom(main_timer) << " seconds." << std::endl;
+	main_timer = glob_timer->getCount();
 
 	if (parser->parse_grammar_from_file(options[GRAMMAR].value, locale_grammar, codepage_grammar)) {
 		u_fprintf(ux_stderr, "Error: Grammar could not be parsed - exiting!\n");
@@ -290,8 +291,8 @@ int main(int argc, char* argv[]) {
 	}
 	grammar->reindex();
 
-	std::cerr << "Parsing grammar took " << glob_timer->getValue() << " seconds." << std::endl;
-	glob_timer->reset();
+	std::cerr << "Parsing grammar took " << glob_timer->getValueFrom(main_timer) << " seconds." << std::endl;
+	main_timer = glob_timer->getCount();
 
 	CG3::GrammarWriter *writer = 0;
 	CG3::GrammarApplicator *applicator = 0;
@@ -340,8 +341,8 @@ int main(int argc, char* argv[]) {
 		applicator->apply_corrections = false;
 		applicator->runGrammarOnText(ux_stdin, ux_stdout);
 
-		std::cerr << "Applying grammar on input took " << glob_timer->getValue() << " seconds." << std::endl;
-		glob_timer->reset();
+		std::cerr << "Applying grammar on input took " << glob_timer->getValueFrom(main_timer) << " seconds." << std::endl;
+		main_timer = glob_timer->getCount();
 	}
 
 	if (options[GRAMMAR_INFO].doesOccur) {
@@ -377,8 +378,8 @@ int main(int argc, char* argv[]) {
 				applicator->apply_corrections = false;
 				applicator->runGrammarOnText(ux_stdin, ux_stdout);
 
-				std::cerr << "Applying context-sorted grammar on input took " << glob_timer->getValue() << " seconds." << std::endl;
-				glob_timer->reset();
+				std::cerr << "Applying context-sorted grammar on input took " << glob_timer->getValueFrom(main_timer) << " seconds." << std::endl;
+				main_timer = glob_timer->getCount();
 			}
 
 			for (uint32_t j=0;j<grammar->rules.size();j++) {
@@ -393,8 +394,8 @@ int main(int argc, char* argv[]) {
 			writer->statistics = true;
 			writer->write_grammar_to_ufile_text(gout);
 
-			std::cerr << "Writing textual grammar with statistics took " << glob_timer->getValue() << " seconds." << std::endl;
-			glob_timer->reset();
+			std::cerr << "Writing textual grammar with statistics took " << glob_timer->getValueFrom(main_timer) << " seconds." << std::endl;
+			main_timer = glob_timer->getCount();
 		} else {
 			std::cerr << "Could not write grammar to " << options[GRAMMAR_INFO].value << std::endl;
 		}
@@ -421,8 +422,8 @@ int main(int argc, char* argv[]) {
 			applicator->apply_corrections = false;
 			applicator->runGrammarOnText(ux_stdin, ux_stdout);
 
-			std::cerr << "Applying fully-sorted grammar on input took " << glob_timer->getValue() << " seconds." << std::endl;
-			glob_timer->reset();
+			std::cerr << "Applying fully-sorted grammar on input took " << glob_timer->getValueFrom(main_timer) << " seconds." << std::endl;
+			main_timer = glob_timer->getCount();
 		}
 	}
 
@@ -433,8 +434,8 @@ int main(int argc, char* argv[]) {
 			writer->setGrammar(grammar);
 			writer->write_grammar_to_ufile_text(gout);
 
-			std::cerr << "Writing textual grammar took " << glob_timer->getValue() << " seconds." << std::endl;
-			glob_timer->reset();
+			std::cerr << "Writing textual grammar took " << glob_timer->getValueFrom(main_timer) << " seconds." << std::endl;
+			main_timer = glob_timer->getCount();
 		} else {
 			std::cerr << "Could not write grammar to " << options[GRAMMAR_OUT].value << std::endl;
 		}
@@ -447,8 +448,8 @@ int main(int argc, char* argv[]) {
 			writer->setGrammar(grammar);
 			writer->write_grammar_to_file_binary(gout);
 
-			std::cerr << "Writing binary grammar took " << glob_timer->getValue() << " seconds." << std::endl;
-			glob_timer->reset();
+			std::cerr << "Writing binary grammar took " << glob_timer->getValueFrom(main_timer) << " seconds." << std::endl;
+			main_timer = glob_timer->getCount();
 		} else {
 			std::cerr << "Could not write grammar to " << options[GRAMMAR_BIN].value << std::endl;
 		}
@@ -463,8 +464,8 @@ int main(int argc, char* argv[]) {
 	delete writer;
 	delete applicator;
 
-	std::cerr << "Cleanup took " << glob_timer->getValue() << " seconds." << std::endl;
-	glob_timer->reset();
+	std::cerr << "Cleanup took " << glob_timer->getValueFrom(main_timer) << " seconds." << std::endl;
+	delete glob_timer;
 
 	return status;
 }

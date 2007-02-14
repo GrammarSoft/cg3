@@ -392,6 +392,7 @@ parsePreferredTargets_end:
 KEYWORDS GrammarParser::re2c_scan(YYCTYPE *input) {
 	KEYWORDS retval = K_IGNORE;
 	YYCTYPE *YYMARKER = 0;
+	YYMARKER = YYMARKER; // Just to foil the warning. Compiler will optimize this away.
 	marker = YYCURSOR;
 	
 scan_start:

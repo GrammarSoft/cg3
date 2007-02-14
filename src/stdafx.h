@@ -17,6 +17,10 @@
 #ifndef __STDAFX_H
 #define __STDAFX_H
 
+// MSVC 2005 (MSVC 8) fix.
+#define _CRT_SECURE_NO_DEPRECATE 1
+#define _CRT_NONSTDC_NO_DEPRECATE 1
+
 #ifdef _GC
 #include <gc.h>
 #endif
@@ -43,7 +47,6 @@
 #include <unicode/utrans.h>
 #include <unicode/ustring.h>
 
-#include "PACC_Timer.h"
 #include "uextras.h"
 
 inline uint32_t hash_sdbm_uchar(const UChar *str, uint32_t hash) {
