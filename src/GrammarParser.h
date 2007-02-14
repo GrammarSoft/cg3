@@ -25,7 +25,7 @@
 namespace CG3 {
 	class GrammarParser {
 	public:
-		bool option_vislcg_compat;
+		bool option_vislcg_compat, use_re2c;
 		bool in_section, in_before_sections, in_after_sections;
 		const char *filename;
 		const char *locale;

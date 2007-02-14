@@ -32,6 +32,7 @@ GrammarParser::GrammarParser() {
 	codepage = 0;
 	result = 0;
 	option_vislcg_compat = false;
+	use_re2c = false;
 	in_before_sections = false;
 	in_after_sections = false;
 	in_section = false;
@@ -308,8 +309,11 @@ int GrammarParser::parse_grammar_from_file(const char *fname, const char *loc, c
 		return -1;
 	}
 	
-	error = re2c_grammar_from_ufile(grammar);
-//	error = parse_grammar_from_ufile(grammar);
+	if (use_re2c) {
+		error = re2c_grammar_from_ufile(grammar);
+	} else {
+		error = parse_grammar_from_ufile(grammar);
+	}
 	if (error) {
 		return error;
 	}

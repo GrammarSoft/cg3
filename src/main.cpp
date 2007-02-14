@@ -60,6 +60,7 @@ namespace Options {
 		REORDER,
 		SINGLERUN,
 		MAPPING_PREFIX,
+		RE2C,
 		NUM_OPTIONS
 	};
 
@@ -97,7 +98,9 @@ namespace Options {
 			UOPTION_DEF("trace",				0, UOPT_NO_ARG),
 			UOPTION_DEF("reorder",				0, UOPT_NO_ARG),
 			UOPTION_DEF("single-run",			0, UOPT_NO_ARG),
-			UOPTION_DEF("prefix",			    0, UOPT_REQUIRES_ARG)
+			UOPTION_DEF("prefix",			    0, UOPT_REQUIRES_ARG),
+
+			UOPTION_DEF("re2c",					0, UOPT_NO_ARG)
 	};
 }
 
@@ -269,6 +272,9 @@ int main(int argc, char* argv[]) {
 
 	if (options[VISLCGCOMPAT].doesOccur) {
 		parser->option_vislcg_compat = true;
+	}
+	if (options[RE2C].doesOccur) {
+		parser->use_re2c = true;
 	}
 
 	std::cerr << "Initialization took " << glob_timer->getValue() << " seconds." << std::endl;
