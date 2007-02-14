@@ -16,6 +16,7 @@
 */
 
 // ToDo: Rules can be dynamically reordered in "optimize correct" mode by moving the offending rule to the end of the section
+// ToDo: Refactor statistics to be gathered in their own objects rather than inline with Rules
 
 // ToDo: Reflow which includes are really needed where
 #include "stdafx.h"
@@ -102,16 +103,18 @@ namespace Options {
 
 using namespace Options;
 
-clock_t glob_timer = 0;
+PACC::Timer *glob_timer;
 UFILE *ux_stdin = 0;
 UFILE *ux_stdout = 0;
 UFILE *ux_stderr = 0;
 
 int main(int argc, char* argv[]) {
-	glob_timer = clock();
+	glob_timer = new PACC::Timer();
+
 #ifdef _GC
 	GC_INIT();
 #endif
+
 	UErrorCode status = U_ZERO_ERROR;
 	srand((uint32_t)time(0));
 
@@ -268,8 +271,8 @@ int main(int argc, char* argv[]) {
 		parser->option_vislcg_compat = true;
 	}
 
-	std::cerr << "Initialization took " << (double)((double)(clock()-glob_timer)/(double)CLOCKS_PER_SEC) << " seconds." << std::endl;
-	glob_timer = clock();
+	std::cerr << "Initialization took " << glob_timer->getValue() << " seconds." << std::endl;
+	glob_timer->reset();
 
 	if (parser->parse_grammar_from_file(options[GRAMMAR].value, locale_grammar, codepage_grammar)) {
 		u_fprintf(ux_stderr, "Error: Grammar could not be parsed - exiting!\n");
@@ -281,8 +284,8 @@ int main(int argc, char* argv[]) {
 	}
 	grammar->reindex();
 
-	std::cerr << "Parsing grammar took " << (double)((double)(clock()-glob_timer)/(double)CLOCKS_PER_SEC) << " seconds." << std::endl;
-	glob_timer = clock();
+	std::cerr << "Parsing grammar took " << glob_timer->getValue() << " seconds." << std::endl;
+	glob_timer->reset();
 
 	CG3::GrammarWriter *writer = 0;
 	CG3::GrammarApplicator *applicator = 0;
@@ -331,8 +334,8 @@ int main(int argc, char* argv[]) {
 		applicator->apply_corrections = false;
 		applicator->runGrammarOnText(ux_stdin, ux_stdout);
 
-		std::cerr << "Applying grammar on input took " << (double)((double)(clock()-glob_timer)/(double)CLOCKS_PER_SEC) << " seconds." << std::endl;
-		glob_timer = clock();
+		std::cerr << "Applying grammar on input took " << glob_timer->getValue() << " seconds." << std::endl;
+		glob_timer->reset();
 	}
 
 	if (options[GRAMMAR_INFO].doesOccur) {
@@ -368,8 +371,8 @@ int main(int argc, char* argv[]) {
 				applicator->apply_corrections = false;
 				applicator->runGrammarOnText(ux_stdin, ux_stdout);
 
-				std::cerr << "Applying context-sorted grammar on input took " << (double)((double)(clock()-glob_timer)/(double)CLOCKS_PER_SEC) << " seconds." << std::endl;
-				glob_timer = clock();
+				std::cerr << "Applying context-sorted grammar on input took " << glob_timer->getValue() << " seconds." << std::endl;
+				glob_timer->reset();
 			}
 
 			for (uint32_t j=0;j<grammar->rules.size();j++) {
@@ -384,8 +387,8 @@ int main(int argc, char* argv[]) {
 			writer->statistics = true;
 			writer->write_grammar_to_ufile_text(gout);
 
-			std::cerr << "Writing textual grammar with statistics took " << (double)((double)(clock()-glob_timer)/(double)CLOCKS_PER_SEC) << " seconds." << std::endl;
-			glob_timer = clock();
+			std::cerr << "Writing textual grammar with statistics took " << glob_timer->getValue() << " seconds." << std::endl;
+			glob_timer->reset();
 		} else {
 			std::cerr << "Could not write grammar to " << options[GRAMMAR_INFO].value << std::endl;
 		}
@@ -412,8 +415,8 @@ int main(int argc, char* argv[]) {
 			applicator->apply_corrections = false;
 			applicator->runGrammarOnText(ux_stdin, ux_stdout);
 
-			std::cerr << "Applying fully-sorted grammar on input took " << (double)((double)(clock()-glob_timer)/(double)CLOCKS_PER_SEC) << " seconds." << std::endl;
-			glob_timer = clock();
+			std::cerr << "Applying fully-sorted grammar on input took " << glob_timer->getValue() << " seconds." << std::endl;
+			glob_timer->reset();
 		}
 	}
 
@@ -424,8 +427,8 @@ int main(int argc, char* argv[]) {
 			writer->setGrammar(grammar);
 			writer->write_grammar_to_ufile_text(gout);
 
-			std::cerr << "Writing textual grammar took " << (double)((double)(clock()-glob_timer)/(double)CLOCKS_PER_SEC) << " seconds." << std::endl;
-			glob_timer = clock();
+			std::cerr << "Writing textual grammar took " << glob_timer->getValue() << " seconds." << std::endl;
+			glob_timer->reset();
 		} else {
 			std::cerr << "Could not write grammar to " << options[GRAMMAR_OUT].value << std::endl;
 		}
@@ -438,8 +441,8 @@ int main(int argc, char* argv[]) {
 			writer->setGrammar(grammar);
 			writer->write_grammar_to_file_binary(gout);
 
-			std::cerr << "Writing binary grammar took " << (double)((double)(clock()-glob_timer)/(double)CLOCKS_PER_SEC) << " seconds." << std::endl;
-			glob_timer = clock();
+			std::cerr << "Writing binary grammar took " << glob_timer->getValue() << " seconds." << std::endl;
+			glob_timer->reset();
 		} else {
 			std::cerr << "Could not write grammar to " << options[GRAMMAR_BIN].value << std::endl;
 		}
@@ -454,6 +457,8 @@ int main(int argc, char* argv[]) {
 	delete writer;
 	delete applicator;
 
-	std::cerr << "Cleanup took " << (double)((double)(clock()-glob_timer)/(double)CLOCKS_PER_SEC) << " seconds." << std::endl;
+	std::cerr << "Cleanup took " << glob_timer->getValue() << " seconds." << std::endl;
+	glob_timer->reset();
+
 	return status;
 }

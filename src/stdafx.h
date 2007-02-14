@@ -43,6 +43,7 @@
 #include <unicode/utrans.h>
 #include <unicode/ustring.h>
 
+#include "PACC_Timer.h"
 #include "uextras.h"
 
 inline uint32_t hash_sdbm_uchar(const UChar *str, uint32_t hash) {
