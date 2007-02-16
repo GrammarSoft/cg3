@@ -24,10 +24,14 @@
 #include "Window.h"
 #include "SingleWindow.h"
 #include "Index.h"
- 
+
 namespace CG3 {
 	class GrammarApplicator {
 	public:
+		static const uint32_t RV_NOTHING = 1;
+		static const uint32_t RV_SOMETHING = 2;
+		static const uint32_t RV_DELIMITED = 4;
+
 		bool fast;
 		bool apply_mappings;
 		bool apply_corrections;
@@ -63,6 +67,7 @@ namespace CG3 {
 
 		int runGrammarOnText(UFILE *input, UFILE *output);
 		int runGrammarOnWindow(Window *window);
+		uint32_t runRulesOnWindow(Window *window, const std::vector<Rule*> *rules, const uint32_t start, const uint32_t end);
 
 		bool runContextualTest(const Window *window, const SingleWindow *sWindow, const uint32_t position, const ContextualTest *test);
 
