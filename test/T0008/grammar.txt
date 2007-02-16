@@ -1,0 +1,7 @@
+DELIMITERS = "<$.>" ;
+
+LIST ASet = "matchme" ;
+
+SECTION
+
+DELIMIT ASet ;

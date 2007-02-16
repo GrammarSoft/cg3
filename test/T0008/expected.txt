@@ -1,0 +1,11 @@
+"<word>"
+	"word" notwanted 
+	"word" notmeeither 
+"<word>"
+	"word" notwanted <<< 
+	"matchme" wanted <<< 
+	"word" notmeeither <<< 
+
+"<word>"
+	"word" notwanted 
+	"word" notmeeither 

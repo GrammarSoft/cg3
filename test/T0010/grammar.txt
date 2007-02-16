@@ -1,0 +1,4 @@
+DELIMITERS = "<$.>" ;
+
+SECTION
+IFF (wanted) (NOT 1* ("blocker"))

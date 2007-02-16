@@ -1,0 +1,8 @@
+"<word>"
+	"word" notwanted 
+	"word" notmeeither 
+"<word>"
+	"word" notwanted 
+	"word" notmeeither 
+"<word>"
+	"blocker" wanted 
