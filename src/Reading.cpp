@@ -32,6 +32,8 @@ Reading::Reading() {
 	deleted = false;
 	selected = false;
 	noprint = false;
+	active = false;
+	current_mapping_tag = 0;
 	text = 0;
 }
 

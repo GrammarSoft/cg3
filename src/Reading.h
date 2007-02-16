@@ -41,6 +41,9 @@ namespace CG3 {
 		std::map<uint32_t, uint32_t> tags_textual;
 		UChar *text;
 
+		bool active;
+		uint32_t current_mapping_tag;
+
 		Reading();
 		~Reading();
 
