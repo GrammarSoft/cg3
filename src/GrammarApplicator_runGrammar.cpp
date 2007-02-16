@@ -309,6 +309,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 	return 0;
 }
 
+// ToDo: Split this into two to simply run a range of rules on a window.
 int GrammarApplicator::runGrammarOnWindow(Window *window) {
 label_runGrammarOnWindow_begin:
 	SingleWindow *current = window->current;
