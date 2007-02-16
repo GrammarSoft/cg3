@@ -352,12 +352,14 @@ uint32_t GrammarApplicator::runRulesOnWindow(Window *window, const std::vector<R
 				}
 
 				size_t num_active = 0;
+				size_t num_iff = 0;
 				bool all_active = false;
 				std::list<Reading*>::iterator rter;
-				// ToDo: Mark readings for processing then process them, instead of processing them individually.
+
 				for (rter = cohort->readings.begin() ; rter != cohort->readings.end() ; rter++) {
 					Reading *reading = *rter;
-					reading->active = false;
+					reading->matched_target = false;
+					reading->matched_tests = false;
 					reading->current_mapping_tag = 0;
 					if (!reading->hash) {
 						reading->rehash();
@@ -368,6 +370,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(Window *window, const std::vector<R
 					last_mapping_tag = 0;
 					if (rule->target && doesSetMatchReading(reading, rule->target, set->has_mappings)) {
 						reading->current_mapping_tag = last_mapping_tag;
+						reading->matched_target = true;
 						bool good = true;
 						if (!rule->tests.empty()) {
 							bool test_good = false;
@@ -390,16 +393,17 @@ uint32_t GrammarApplicator::runRulesOnWindow(Window *window, const std::vector<R
 							}
 						}
 						if (good) {
-							reading->active = true;
+							reading->matched_tests = true;
 							num_active++;
 						}
+						num_iff++;
 					}
 					else {
 						rule->num_fail++;
 					}
 				}
 
-				if (num_active == 0) {
+				if (num_active == 0 && (num_iff == 0 || rule->type != K_IFF)) {
 					continue;
 				}
 				if (num_active == cohort->readings.size()) {
@@ -419,15 +423,13 @@ uint32_t GrammarApplicator::runRulesOnWindow(Window *window, const std::vector<R
 				
 				for (rter = cohort->readings.begin() ; rter != cohort->readings.end() ; rter++) {
 					Reading *reading = *rter;
-					bool good = reading->active;
+					bool good = reading->matched_tests;
 
-					if (rule->type == K_IFF && good) {
-						type = K_SELECT;
-						good = true;
-					}
-					else if (rule->type == K_IFF && !good) {
-						type = K_REMOVE;
-						good = true;
+					if (rule->type == K_IFF) {
+						if (!good && reading->matched_target) {
+							type = K_REMOVE;
+							good = true;
+						}
 					}
 
 					if (type == K_REMOVE) {
