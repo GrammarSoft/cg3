@@ -235,7 +235,7 @@ int main(int argc, char* argv[]) {
 	if (!options[STDOUT].doesOccur) {
 		ux_stdout = u_finit(stdout, locale_output, codepage_input);
 	} else {
-		ux_stdout = u_fopen(options[STDOUT].value, "w", locale_output, codepage_output);
+		ux_stdout = u_fopen(options[STDOUT].value, "wb", locale_output, codepage_output);
 	}
 	if (!ux_stdout) {
 		fprintf(stderr, "Error: Failed to open the output stream for writing!\n");
@@ -245,7 +245,7 @@ int main(int argc, char* argv[]) {
 	if (!options[STDERR].doesOccur) {
 		ux_stderr = u_finit(stderr, locale_output, codepage_input);
 	} else {
-		ux_stderr = u_fopen(options[STDERR].value, "w", locale_output, codepage_output);
+		ux_stderr = u_fopen(options[STDERR].value, "wb", locale_output, codepage_output);
 	}
 	if (!ux_stdout) {
 		fprintf(stderr, "Error: Failed to open the error stream for writing!\n");
@@ -261,7 +261,7 @@ int main(int argc, char* argv[]) {
 			fprintf(stderr, "Error: Cannot stat %s due to error %d!\n", options[STDIN].value, serr);
 			return serr;
 		}
-		ux_stdin = u_fopen(options[STDIN].value, "r", locale_input, codepage_input);
+		ux_stdin = u_fopen(options[STDIN].value, "rb", locale_input, codepage_input);
 	}
 	if (!ux_stdin) {
 		fprintf(stderr, "Error: Failed to open the input stream for reading!\n");

@@ -546,7 +546,8 @@ label_runGrammarOnWindow_begin:
 									reading->selected = true;
 									selected = reading;
 									size_t nc = cohort->readings.size();
-									for (rter = cohort->readings.begin() ; rter != cohort->readings.end() ; rter++) {
+									for (rter = cohort->readings.begin() ; rter != cohort->readings.end() ; ) {
+										bool inc = true;
 										Reading *reading = *rter;
 										if (selected != reading) {
 											reading->hit_by.push_back(selected->hit_by.back());
@@ -565,8 +566,11 @@ label_runGrammarOnWindow_begin:
 												cohort->deleted.push_back(reading);
 												cohort->readings.remove(reading);
 												rter = cohort->readings.begin();
-												rter--;
+												inc = false;
 											}
+										}
+										if (inc) {
+											rter++;
 										}
 									}
 									// This SELECT had no effect, so don't mark section as active.
@@ -753,6 +757,9 @@ bool GrammarApplicator::runContextualTest(const Window *window, const SingleWind
 				retval = runContextualTest(window, sWindow, pos, test->linked);
 			}
 		}
+	}
+	if (!cohort && test->negative) {
+		retval = !retval;
 	}
 	if (retval) {
 		test->num_match++;

@@ -1,0 +1,3 @@
+"<word>"
+	"word" notwanted 
+	"word" notmeeither 
