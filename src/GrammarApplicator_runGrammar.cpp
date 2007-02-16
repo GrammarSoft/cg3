@@ -356,6 +356,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(Window *window, const std::vector<R
 				}
 
 				std::list<Reading*>::iterator rter;
+				// ToDo: Mark readings for processing then process them, instead of processing them individually.
 				for (rter = cohort->readings.begin() ; rter != cohort->readings.end() ; rter++) {
 					Reading *reading = *rter;
 					if (!reading->hash) {
@@ -618,7 +619,6 @@ uint32_t GrammarApplicator::runRulesOnWindow(Window *window, const std::vector<R
 	return retval;
 }
 
-// ToDo: Split this into two to simply run a range of rules on a window.
 int GrammarApplicator::runGrammarOnWindow(Window *window) {
 label_runGrammarOnWindow_begin:
 	SingleWindow *current = window->current;

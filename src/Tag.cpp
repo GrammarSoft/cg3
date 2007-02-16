@@ -57,7 +57,7 @@ void Tag::parseTag(const UChar *to) {
 				tmp++;
 			}
 		}
-		// ToDo: Implement RegExp and ICase
+
 		uint32_t length = u_strlen(tmp);
 		if (tmp[0] && (tmp[0] == '"' || tmp[0] == '<')) {
 			type |= T_TEXTUAL;

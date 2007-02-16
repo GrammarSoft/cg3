@@ -256,7 +256,6 @@ void Grammar::trim() {
 		}
 	}
 
-	// ToDo: Reorder contextual tests according to weight
 /*
 	stdext::hash_map<uint32_t, Tag*>::iterator iter_tags;
 	for (iter_tags = single_tags.begin() ; iter_tags != single_tags.end() ; iter_tags++) {
