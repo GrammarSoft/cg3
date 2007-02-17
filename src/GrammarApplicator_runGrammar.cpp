@@ -356,6 +356,10 @@ uint32_t GrammarApplicator::runRulesOnWindow(Window *window, const std::vector<R
 				bool all_active = false;
 				std::list<Reading*>::iterator rter;
 
+				if (rule->type == K_IFF) {
+					type = K_REMOVE;
+				}
+
 				for (rter = cohort->readings.begin() ; rter != cohort->readings.end() ; rter++) {
 					Reading *reading = *rter;
 					reading->matched_target = false;
@@ -393,6 +397,9 @@ uint32_t GrammarApplicator::runRulesOnWindow(Window *window, const std::vector<R
 							}
 						}
 						if (good) {
+							if (rule->type == K_IFF) {
+								type = K_SELECT;
+							}
 							reading->matched_tests = true;
 							num_active++;
 						}
@@ -425,11 +432,8 @@ uint32_t GrammarApplicator::runRulesOnWindow(Window *window, const std::vector<R
 					Reading *reading = *rter;
 					bool good = reading->matched_tests;
 
-					if (rule->type == K_IFF) {
-						if (!good && reading->matched_target) {
-							type = K_REMOVE;
-							good = true;
-						}
+					if (rule->type == K_IFF && type == K_REMOVE && reading->matched_target) {
+						good = true;
 					}
 
 					if (type == K_REMOVE) {
