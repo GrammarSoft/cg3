@@ -32,6 +32,7 @@ GrammarApplicator::GrammarApplicator() {
 	trace = false;
 	single_run = false;
 	statistics = false;
+	timer = 0;
 	num_windows = 2;
 	begintag = 0;
 	endtag = 0;
@@ -56,6 +57,21 @@ GrammarApplicator::~GrammarApplicator() {
 
 void GrammarApplicator::setGrammar(const Grammar *res) {
 	grammar = res;
+}
+
+void GrammarApplicator::enableStatistics() {
+	statistics = true;
+	if (!timer) {
+		timer = new PACC::Timer();
+	}
+}
+
+void GrammarApplicator::disableStatistics() {
+	statistics = false;
+	if (timer) {
+		delete timer;
+		timer = 0;
+	}
 }
 
 uint32_t GrammarApplicator::addTag(const UChar *txt) {

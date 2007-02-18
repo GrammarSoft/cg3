@@ -184,7 +184,7 @@ void GrammarWriter::setGrammar(Grammar *res) {
 
 void GrammarWriter::printRule(UFILE *to, const Rule *rule) {
 	if (statistics) {
-		u_fprintf(to, "(M:%u;F:%u;W:%.3f;Q:%.16f) ", rule->num_match, rule->num_fail, rule->weight, rule->quality);
+		u_fprintf(to, "(M:%u;F:%u;T:%u) ", rule->num_match, rule->num_fail, rule->total_time);
 	}
 	if (rule->wordform) {
 		printTag(to, grammar->single_tags.find(rule->wordform)->second);
@@ -234,7 +234,7 @@ void GrammarWriter::printRule(UFILE *to, const Rule *rule) {
 
 void GrammarWriter::printContextualTest(UFILE *to, const ContextualTest *test) {
 	if (statistics) {
-		u_fprintf(to, "(M:%u;F:%u;W:%.3f;Q:%.16f) ", test->num_match, test->num_fail, test->weight, test->quality);
+		u_fprintf(to, "(M:%u;F:%u;T:%u) ", test->num_match, test->num_fail, test->total_time);
 	}
 	if (test->negative) {
 		u_fprintf(to, "NOT ");

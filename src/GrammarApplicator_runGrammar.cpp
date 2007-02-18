@@ -317,7 +317,8 @@ uint32_t GrammarApplicator::runRulesOnWindow(Window *window, const std::vector<R
 	bool delimited = false;
 
 	if (!rules->empty()) {
-		for (uint32_t j=start;j<end;) {
+		for (uint32_t j=start;j<end;j++) {
+			PACC_TimeStamp tstamp = 0;
 			const Rule *rule = rules->at(j);
 			KEYWORDS type = rule->type;
 
@@ -326,6 +327,9 @@ uint32_t GrammarApplicator::runRulesOnWindow(Window *window, const std::vector<R
 			}
 			if (!apply_corrections && (rule->type == K_SUBSTITUTE || rule->type == K_APPEND)) {
 				continue;
+			}
+			if (statistics) {
+				tstamp = timer->getCount();
 			}
 
 			for (uint32_t c=0 ; c < current->cohorts.size() ; c++) {
@@ -385,12 +389,6 @@ uint32_t GrammarApplicator::runRulesOnWindow(Window *window, const std::vector<R
 								if (!test_good) {
 									good = test_good;
 									if (!statistics) {
-										/*
-										if (test != rule->tests.front()) {
-										rule->tests.remove(test);
-										rule->tests.push_front(test);
-										}
-										//*/
 										break;
 									}
 								}
@@ -581,12 +579,10 @@ uint32_t GrammarApplicator::runRulesOnWindow(Window *window, const std::vector<R
 					break;
 				}
 			}
-			if (j == end) {
-				if (single_run) {
-					section_did_good = false;
-				}
+
+			if (statistics) {
+				rule->total_time += (timer->getCount() - tstamp);
 			}
-			j++;
 			if (delimited) {
 				break;
 			}
@@ -639,8 +635,14 @@ label_runGrammarOnWindow_begin:
 
 bool GrammarApplicator::runContextualTest(const Window *window, const SingleWindow *sWindow, const uint32_t position, const ContextualTest *test) {
 	bool retval = true;
+	PACC_TimeStamp tstamp = 0;
 	int pos = position + test->offset;
 	const Cohort *cohort = 0;
+
+	if (statistics) {
+		tstamp = timer->getCount();
+	}
+
 	// ToDo: (NOT *) and (*C) tests can be cached
 	if (test->absolute) {
 		if (test->offset < 0) {
@@ -751,6 +753,10 @@ bool GrammarApplicator::runContextualTest(const Window *window, const SingleWind
 		test->num_match++;
 	} else {
 		test->num_fail++;
+	}
+
+	if (statistics) {
+		test->total_time += (timer->getCount() - tstamp);
 	}
 	return retval;
 }

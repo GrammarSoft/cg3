@@ -74,36 +74,6 @@ void Rule::destroyContextualTest(ContextualTest *to) {
 	delete to;
 }
 
-double Rule::reweight() {
-	weight = 1.0;
-
-	std::list<ContextualTest*>::iterator iter;
-	for (iter = tests.begin() ; iter != tests.end() ; iter++) {
-		weight += (*iter)->reweight();
-	}
-
-	double st = 0.0;
-	if (type == K_SELECT) {
-		st = 2.0;
-	}
-	else if (type == K_REMOVE) {
-		st = 1.0;
-	}
-	else if (type == K_IFF) {
-		st = 3.0;
-	}
-	double mt = (double)num_match;
-	if (mt == 0.0) {
-		mt = 0.01;
-	}
-	quality = (pow(mt, 2.0)*st) / (double(num_fail+mt) * weight);
-	if (wordform) {
-		quality *= 5.0;
-	}
-
-	return weight;
-}
-
 void Rule::reset() {
 	std::list<ContextualTest*>::iterator iter;
 	for (iter = tests.begin() ; iter != tests.end() ; iter++) {
@@ -111,10 +81,9 @@ void Rule::reset() {
 	}
 	num_fail = 0;
 	num_match = 0;
-
-	reweight();
+	total_time = 0;
 }
 
 bool Rule::cmp_quality(Rule *a, Rule *b) {
-	return a->quality > b->quality;
+	return a->total_time > b->total_time;
 }

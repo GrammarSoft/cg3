@@ -38,8 +38,7 @@ ContextualTest::ContextualTest() {
 	line = 0;
 	num_fail = 0;
 	num_match = 0;
-	weight = 0.0;
-	quality = 0.0;
+	total_time = 0;
 }
 
 ContextualTest::~ContextualTest() {
@@ -100,53 +99,15 @@ uint32_t ContextualTest::rehash() {
 	return hash;
 }
 
-double ContextualTest::reweight() {
-	weight = 1.0;
-	if (scanfirst) {
-		weight += 2.0;
-	}
-	if (scanall) {
-		weight += 3.0;
-	}
-	if (barrier) {
-		weight += 2.0;
-	}
-	if (careful || negative) {
-		weight += 2.0;
-	}
-	if (span_windows) {
-		weight += 3.0;
-	}
-	if (linked) {
-		weight += 1.0;
-		if (num_fail || num_match) {
-			double lw = linked->reweight();
-			lw *= double(linked->num_fail+linked->num_match) / double(num_fail+num_match);
-			weight += lw;
-		} else {
-			weight += linked->reweight();
-		}
-	}
-
-	double ft = (double)num_fail;
-	if (ft == 0.0) {
-		ft = 0.01;
-	}
-	quality = (ft) / (double(num_match+ft) * weight);
-
-	assert(weight != 0);
-	return weight;
-}
-
 void ContextualTest::reset() {
 	num_fail = 0;
 	num_match = 0;
+	total_time = 0;
 	if (linked) {
 		linked->reset();
 	}
-	reweight();
 }
 
 bool ContextualTest::cmp_quality(ContextualTest *a, ContextualTest *b) {
-	return a->quality > b->quality;
+	return a->total_time > b->total_time;
 }

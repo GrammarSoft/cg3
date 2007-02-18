@@ -336,7 +336,7 @@ int main(int argc, char* argv[]) {
 			applicator->single_run = true;
 		}
 		if (options[GRAMMAR_INFO].doesOccur) {
-			applicator->statistics = true;
+			applicator->enableStatistics();
 		}
 		applicator->apply_corrections = false;
 		applicator->runGrammarOnText(ux_stdin, ux_stdout);
@@ -346,13 +346,9 @@ int main(int argc, char* argv[]) {
 	}
 
 	if (options[GRAMMAR_INFO].doesOccur) {
-		UFILE *gout = u_fopen(options[GRAMMAR_INFO].value, "w", locale_output, codepage_output);
+		UFILE *gout = u_fopen(options[GRAMMAR_INFO].value, "wb", locale_output, codepage_output);
 		if (gout) {
 			for (uint32_t j=0;j<grammar->rules.size();j++) {
-				grammar->rules[j]->reweight();
-				if (!grammar->rules[j]->tests.empty()) {
-					grammar->rules[j]->tests.sort(CG3::ContextualTest::cmp_quality);
-				}
 				grammar->rules[j]->reset();
 			}
 
@@ -375,6 +371,7 @@ int main(int argc, char* argv[]) {
 				if (options[SINGLERUN].doesOccur) {
 					applicator->single_run = true;
 				}
+				applicator->enableStatistics();
 				applicator->apply_corrections = false;
 				applicator->runGrammarOnText(ux_stdin, ux_stdout);
 
@@ -382,9 +379,11 @@ int main(int argc, char* argv[]) {
 				main_timer = glob_timer->getCount();
 			}
 
+			/*
 			for (uint32_t j=0;j<grammar->rules.size();j++) {
 				grammar->rules[j]->reweight();
 			}
+			//*/
 			for (uint32_t i=0;i<grammar->sections.size()-1;i++) {
 				std::sort(&grammar->rules[grammar->sections[i]], &grammar->rules[grammar->sections[i+1]-1], CG3::Rule::cmp_quality);
 			}
@@ -419,6 +418,7 @@ int main(int argc, char* argv[]) {
 			if (options[SINGLERUN].doesOccur) {
 				applicator->single_run = true;
 			}
+			applicator->enableStatistics();
 			applicator->apply_corrections = false;
 			applicator->runGrammarOnText(ux_stdin, ux_stdout);
 

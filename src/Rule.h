@@ -34,6 +34,7 @@ namespace CG3 {
 		uint32_t target;
 		uint32_t line;
 		uint32_t varname, varvalue;
+		// ToDo: Add proper "quality" quantifier based on num_fail, num_match, total_time
 		double weight, quality;
 		KEYWORDS type;
 		std::list<uint32_t> maplist;
@@ -41,14 +42,13 @@ namespace CG3 {
 		
 		mutable std::list<ContextualTest*> tests;
 		mutable uint32_t num_fail, num_match;
-		mutable clock_t total_time;
+		mutable PACC_TimeStamp total_time;
 
 		Rule();
 		~Rule();
 		void setName(uint32_t to);
 		void setName(const UChar *to);
 		
-		double reweight();
 		void reset();
 
 		ContextualTest *allocateContextualTest();

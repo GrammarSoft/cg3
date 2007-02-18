@@ -37,7 +37,9 @@ namespace CG3 {
 		bool apply_corrections;
 		bool trace;
 		bool single_run;
-		bool statistics;
+
+		void enableStatistics();
+		void disableStatistics();
 
 		uint32_t num_windows;
 		uint32_t cache_hits, cache_miss, match_single, match_comp, match_sub;
@@ -79,6 +81,9 @@ namespace CG3 {
 		void printSingleWindow(SingleWindow *window, UFILE *output);
 
 	private:
+		bool statistics;
+		PACC::Timer *timer;
+
 		inline bool __index_matches(const stdext::hash_map<uint32_t, Index*> *me, const uint32_t value, const uint32_t set);
 		inline void reflowReading(Reading *reading);
 		inline void reflowSingleWindow(SingleWindow *swindow);

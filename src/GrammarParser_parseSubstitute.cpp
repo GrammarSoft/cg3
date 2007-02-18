@@ -90,8 +90,6 @@ int GrammarParser::parseSubstitute(const UChar *line) {
 		parseContextualTests(&space, rule);
 	}
 
-	rule->reweight();
-
 	delete local;
 	return 0;
 }
