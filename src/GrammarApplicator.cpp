@@ -53,6 +53,10 @@ GrammarApplicator::GrammarApplicator() {
 
 GrammarApplicator::~GrammarApplicator() {
 	grammar = 0;
+	if (timer) {
+		delete timer;
+		timer = 0;
+	}
 }
 
 void GrammarApplicator::setGrammar(const Grammar *res) {

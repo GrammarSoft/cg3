@@ -400,6 +400,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(Window *window, const std::vector<R
 							}
 							reading->matched_tests = true;
 							num_active++;
+							rule->num_match++;
 						}
 						num_iff++;
 					}
@@ -431,6 +432,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(Window *window, const std::vector<R
 					bool good = reading->matched_tests;
 
 					if (rule->type == K_IFF && type == K_REMOVE && reading->matched_target) {
+						rule->num_match++;
 						good = true;
 					}
 
