@@ -271,9 +271,7 @@ bool GrammarApplicator::doesSetMatchReading(const Reading *reading, const uint32
 							break;
 						case S_FAILFAST:
 							if (match) {
-								u_fprintf(ux_stderr, "Notice: S_FF\n");
 								if (doesSetMatchReading(reading, theset->sets.at(i+1), bypass_index)) {
-									u_fprintf(ux_stderr, "Notice: S_FF matched %u.\n", theset->sets.at(i+1));
 									match = false;
 									failfast = true;
 								}
@@ -281,9 +279,7 @@ bool GrammarApplicator::doesSetMatchReading(const Reading *reading, const uint32
 							break;
 						case S_MINUS:
 							if (match) {
-								u_fprintf(ux_stderr, "Notice: S_MINUS\n");
 								if (doesSetMatchReading(reading, theset->sets.at(i+1), bypass_index)) {
-									u_fprintf(ux_stderr, "Notice: S_MINUS matched %u.\n", theset->sets.at(i+1));
 									match = false;
 								}
 							}
