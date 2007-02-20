@@ -91,7 +91,7 @@ bool GrammarApplicator::doesSetMatchReading(const Reading *reading, const uint32
 			bool set_plain = true;
 			stdext::hash_map<uint32_t, uint32_t>::const_iterator ster;
 			for (ster = theset->single_tags_special.begin() ; ster != theset->single_tags_special.end() ; ster++) {
-				bool match = true;
+				bool match = !reading->tags_textual.empty();
 				bool failfast = true;
 				bool comp_special = true;
 				bool comp_plain = false;
