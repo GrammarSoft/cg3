@@ -1,0 +1,8 @@
+DELIMITERS = "<$.>" ;
+
+LIST ASet = wanted alsowanted ;
+LIST CSet = notreally ;
+SET ESet = ASet ^ CSet ;
+
+SECTION
+SELECT ESet ;
