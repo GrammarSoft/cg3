@@ -63,29 +63,29 @@ int GrammarParser::parseSingleLine(KEYWORDS key, const UChar *line) {
 	status = U_ZERO_ERROR;
 	uregex_setText(regexps[R_CLEANSTRING], line, length, &status);
 	if (status != U_ZERO_ERROR) {
-		u_fprintf(ux_stderr, "Error: uregex_setText returned %s - cannot continue!\n", u_errorName(status));
+		u_fprintf(ux_stderr, "Error: uregex_setText returned %s on line %u - cannot continue!\n", u_errorName(status), result->curline);
 		return -1;
 	}
 	status = U_ZERO_ERROR;
 	uregex_replaceAll(regexps[R_CLEANSTRING], stringbits[S_SPACE], u_strlen(stringbits[S_SPACE]), local, length+1, &status);
 	if (status != U_ZERO_ERROR) {
-		u_fprintf(ux_stderr, "Error: uregex_replaceAll returned %s - cannot continue!\n", u_errorName(status));
+		u_fprintf(ux_stderr, "Error: uregex_replaceAll returned %s on line %u - cannot continue!\n", u_errorName(status), result->curline);
 		return -1;
 	}
 
 	length = u_strlen(local);
-	UChar *newlocal = new UChar[length+1];
+	UChar *newlocal = new UChar[length*2];
 
 	status = U_ZERO_ERROR;
 	uregex_setText(regexps[R_ANDLINK], local, length, &status);
 	if (status != U_ZERO_ERROR) {
-		u_fprintf(ux_stderr, "Error: uregex_setText returned %s - cannot continue!\n", u_errorName(status));
+		u_fprintf(ux_stderr, "Error: uregex_setText returned %s on line %u - cannot continue!\n", u_errorName(status), result->curline);
 		return -1;
 	}
 	status = U_ZERO_ERROR;
-	uregex_replaceAll(regexps[R_ANDLINK], stringbits[S_LINKZ], u_strlen(stringbits[S_LINKZ]), newlocal, length+1, &status);
+	uregex_replaceAll(regexps[R_ANDLINK], stringbits[S_LINKZ], u_strlen(stringbits[S_LINKZ]), newlocal, length*2, &status);
 	if (status != U_ZERO_ERROR) {
-		u_fprintf(ux_stderr, "Error: uregex_replaceAll returned %s - cannot continue!\n", u_errorName(status));
+		u_fprintf(ux_stderr, "Error: uregex_replaceAll returned %s on line %u - cannot continue!\n", u_errorName(status), result->curline);
 		return -1;
 	}
 
