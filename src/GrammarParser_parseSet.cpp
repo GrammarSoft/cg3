@@ -49,6 +49,8 @@ int GrammarParser::readSetOperator(UChar **paren) {
 
 uint32_t GrammarParser::readSingleSet(UChar **paren) {
 	UChar *space = u_strchr(*paren, ' ');
+	UChar *set = space;
+	Set *tmp = 0;
 	uint32_t retval = 0;
 
 	if ((*paren)[0] == '(') {
@@ -60,6 +62,7 @@ uint32_t GrammarParser::readSingleSet(UChar **paren) {
 		else {
 			space[matching] = 0;
 			UChar *composite = space+1;
+			set = composite;
 
 			CG3::Set *set_c = result->allocateSet();
 			set_c->line = result->curline;
@@ -101,17 +104,24 @@ uint32_t GrammarParser::readSingleSet(UChar **paren) {
 		space[0] = 0;
 		if (u_strlen(*paren)) {
 			retval = hash_sdbm_uchar(*paren, 0);
+			set = *paren;
 		}
 		*paren = space+1;
 	}
 	else if (u_strlen(*paren)) {
 		retval = hash_sdbm_uchar(*paren, 0);
+		set = *paren;
 		*paren = *paren+u_strlen(*paren);
 	}
 	if (result->set_alias.find(retval) != result->set_alias.end()) {
 		retval = result->set_alias[retval];
 	}
-	retval = result->getSet(retval)->hash;
+	tmp = result->getSet(retval);
+	if (!tmp) {
+		u_fprintf(ux_stderr, "Error: Attempted to reference undefined set '%S' on line %u!\n", set, result->curline);
+		exit(1);
+	}
+	retval = tmp->hash;
 	return retval;
 }
 

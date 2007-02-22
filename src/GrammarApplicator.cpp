@@ -116,8 +116,13 @@ void GrammarApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 				u_fprintf(output, ";");
 			}
 			u_fprintf(output, "\t");
-			GrammarWriter::printTagRaw(output, single_tags[reading->baseform]);
-			u_fprintf(output, " ");
+			if (reading->baseform) {
+				GrammarWriter::printTagRaw(output, single_tags[reading->baseform]);
+				u_fprintf(output, " ");
+			} else {
+				// ToDo: Allow whitespace in baseforms.
+				u_fprintf(ux_stderr, "Warning: Reading had no baseform. Usually caused by whitespace in the baseform.\n");
+			}
 
 			stdext::hash_map<uint32_t, uint32_t> used_tags;
 			std::list<uint32_t>::iterator tter;

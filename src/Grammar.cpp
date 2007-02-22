@@ -120,7 +120,6 @@ Set *Grammar::getSet(uint32_t which) {
 	else if (sets_by_name.find(which) != sets_by_name.end()) {
 		retval = getSet(sets_by_name[which]);
 	}
-	assert(retval);
 	return retval;
 }
 
