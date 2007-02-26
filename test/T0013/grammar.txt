@@ -6,7 +6,7 @@ SETS
 
 LIST @ACC = @<ACC @ACC> ;
 LIST @P< = @P< ;
-LIST N-ANIM = <H> <Hfam> <Hprof> <A> ;
+LIST N-ANIM = <H> <Hfam> <Hprof> <Hattr> <A> ;
 LIST PRP = PRP ;
 
 SECTION
