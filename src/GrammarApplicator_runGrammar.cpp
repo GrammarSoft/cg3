@@ -389,6 +389,8 @@ uint32_t GrammarApplicator::runRulesOnWindow(Window *window, const std::vector<R
 					type = K_REMOVE;
 				}
 
+				bool did_test = false;
+				bool test_good = false;
 				for (rter = cohort->readings.begin() ; rter != cohort->readings.end() ; rter++) {
 					Reading *reading = *rter;
 					reading->matched_target = false;
@@ -405,8 +407,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(Window *window, const std::vector<R
 						reading->current_mapping_tag = last_mapping_tag;
 						reading->matched_target = true;
 						bool good = true;
-						if (!rule->tests.empty()) {
-							bool test_good = false;
+						if (!rule->tests.empty() && !did_test) {
 							std::list<ContextualTest*>::iterator iter;
 							for (iter = rule->tests.begin() ; iter != rule->tests.end() ; iter++) {
 								ContextualTest *test = *iter;
@@ -418,6 +419,10 @@ uint32_t GrammarApplicator::runRulesOnWindow(Window *window, const std::vector<R
 									}
 								}
 							}
+							did_test = true;
+						}
+						else if (did_test) {
+							good = test_good;
 						}
 						if (good) {
 							if (rule->type == K_IFF) {
