@@ -30,6 +30,9 @@ ContextualTest::ContextualTest() {
 	scanall = false;
 	absolute = false;
 	span_windows = false;
+	dep_parent = false;
+	dep_sibling = false;
+	dep_child = false;
 	offset = 0;
 	target = 0;
 	barrier = 0;
@@ -55,6 +58,15 @@ void ContextualTest::parsePosition(const UChar *pos) {
 	if (u_strchr(pos, 'C')) {
 		careful = true;
 	}
+	if (u_strchr(pos, 'c')) {
+		dep_child = true;
+	}
+	if (u_strchr(pos, 'p')) {
+		dep_parent = true;
+	}
+	if (u_strchr(pos, 's')) {
+		dep_sibling = true;
+	}
 	// ToDo: Add < and > to ContextualTest's window jumps
 	if (u_strchr(pos, 'W')) {
 		span_windows = true;
@@ -62,10 +74,18 @@ void ContextualTest::parsePosition(const UChar *pos) {
 	if (u_strchr(pos, '@')) {
 		absolute = true;
 	}
-	UChar tmp[8];
-	u_sscanf(pos, "%[^0-9]%d", &tmp, &offset);
+	UChar tmp[16];
+	tmp[0] = 0;
+	int32_t retval = u_sscanf(pos, "%[^0-9]%d", &tmp, &offset);
 	if (u_strchr(pos, '-')) {
 		offset = (-1) * abs(offset);
+	}
+	// ToDo: Check for erronous position
+	if ((!dep_child && !dep_parent && !dep_sibling) && (retval == EOF || (offset == 0 && tmp[0] == 0 && retval < 1))) {
+		u_fprintf(ux_stderr, "Error: '%S' is not a valid position!\n", pos);
+	}
+	if ((dep_child || dep_parent || dep_sibling) && (scanall || scanfirst || absolute || span_windows || offset != 0)) {
+		u_fprintf(ux_stderr, "Warning: Position '%S' is mixed. Behavior for mixed positions is undefined.\n", pos);
 	}
 }
 

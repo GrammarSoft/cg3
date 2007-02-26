@@ -30,3 +30,31 @@ Cohort::~Cohort() {
 	}
 	readings.clear();
 }
+
+void Cohort::addParent(uint32_t parent) {
+	std::list<Reading*>::iterator iter;
+	for (iter = readings.begin() ; iter != readings.end() ; iter++) {
+		(*iter)->dep_parents.insert(parent);
+	}
+}
+
+void Cohort::addSibling(uint32_t sibling) {
+	std::list<Reading*>::iterator iter;
+	for (iter = readings.begin() ; iter != readings.end() ; iter++) {
+		(*iter)->dep_siblings.insert(sibling);
+	}
+}
+
+void Cohort::remSibling(uint32_t sibling) {
+	std::list<Reading*>::iterator iter;
+	for (iter = readings.begin() ; iter != readings.end() ; iter++) {
+		(*iter)->dep_siblings.erase(sibling);
+	}
+}
+
+void Cohort::addChild(uint32_t child) {
+	std::list<Reading*>::iterator iter;
+	for (iter = readings.begin() ; iter != readings.end() ; iter++) {
+		(*iter)->dep_children.insert(child);
+	}
+}

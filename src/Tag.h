@@ -47,19 +47,22 @@ namespace CG3 {
 		T_META      = 16,
 		T_WORDFORM = 32,
 		T_BASEFORM = 64,
-		T_TEXTUAL = 128
+		T_TEXTUAL = 128,
+		T_DEPENDENCY = 256
 	};
 
 	class Tag {
 	public:
 		uint8_t features;
-		uint8_t type;
+		uint16_t type;
 		mutable URegularExpression *regexp;
 
+		// ToDo: Test whether tag comparisons actually work
 		uint32_t comparison_hash;
 		UChar *comparison_key;
 		C_OPS comparison_op;
 		int comparison_val;
+		uint32_t dep_self, dep_parent;
 		UChar *tag;
 		uint32_t hash;
 

@@ -36,6 +36,7 @@ Reading::Reading() {
 	matched_tests = false;
 	current_mapping_tag = 0;
 	text = 0;
+	dep_self = 0;
 }
 
 Reading::~Reading() {
@@ -51,6 +52,9 @@ Reading::~Reading() {
 	tags_textual.clear();
 	tags_list.clear();
 	hit_by.clear();
+	dep_parents.clear();
+	dep_children.clear();
+	dep_siblings.clear();
 }
 
 uint32_t Reading::rehash() {

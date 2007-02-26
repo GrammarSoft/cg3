@@ -32,6 +32,11 @@ namespace CG3 {
 
 		Cohort();
 		~Cohort();
+
+		void addParent(uint32_t parent);
+		void addSibling(uint32_t sibling);
+		void remSibling(uint32_t sibling);
+		void addChild(uint32_t child);
 	};
 
 }

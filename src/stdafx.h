@@ -32,6 +32,7 @@
 #include <string.h>
 #include <list>
 #include <vector>
+#include <set>
 #include <map>
 #include <time.h>
 #include <math.h>

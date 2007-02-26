@@ -1,5 +1,7 @@
 DELIMITERS = "<$.>" ;
 
+MAPPING-PREFIX = § ;
+
 SETS
 
 LIST @ACC = @<ACC @ACC> ;
@@ -9,6 +11,6 @@ LIST PRP = PRP ;
 
 SECTION
 
-MAP (§DES) TARGET @P< (*-1 PRP LINK 0 ("em") LINK M ("bater")) (NOT 0 N-ANIM) ;
-MAP (§PAT) TARGET @P< (*-1 PRP LINK 0 ("em") LINK M ("bater")) (NOT S @ACC) ;
-MAP (§PAT) TARGET @ACC (M ("bater")) ;
+MAP (§DES) TARGET @P< (*-1 PRP LINK 0 ("em") LINK p ("bater")) (NOT 0 N-ANIM) ;
+MAP (§PAT) TARGET @P< (*-1 PRP LINK 0 ("em") LINK p ("bater")) (NOT s @ACC) ;
+MAP (§PAT) TARGET @ACC (p ("bater")) ;

@@ -33,6 +33,9 @@ namespace CG3 {
 		bool scanall;
 		bool absolute;
 		bool span_windows;
+		bool dep_parent;
+		bool dep_sibling;
+		bool dep_child;
 		int32_t offset;
 
 		// ToDo: Implement careful barrier

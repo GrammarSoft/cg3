@@ -394,3 +394,45 @@ bool GrammarApplicator::doesSetMatchCohortCareful(const Cohort *cohort, const ui
 	}
 	return retval;
 }
+
+int32_t GrammarApplicator::doesSetMatchDependency(const SingleWindow *sWindow, const Cohort *current, const ContextualTest *test) {
+	int32_t rv = -1;
+
+	std::list<Reading*>::const_iterator iter;
+	for (iter = current->readings.begin() ; iter != current->readings.end() ; iter++) {
+		Reading *reading = *iter;
+		if (!reading->deleted) {
+			const std::set<uint32_t> *deps = 0;
+			if (test->dep_child) {
+				deps = &reading->dep_children;
+			}
+			else if (test->dep_parent) {
+				deps = &reading->dep_parents;
+			}
+			else {
+				deps = &reading->dep_siblings;
+			}
+
+			std::set<uint32_t>::const_iterator dter;
+			for (dter = deps->begin() ; dter != deps->end() ; dter++) {
+				Cohort *cohort = sWindow->cohorts[*dter];
+				bool retval = false;
+				if (test->careful) {
+					retval = doesSetMatchCohortCareful(cohort, test->target);
+				}
+				else {
+					retval = doesSetMatchCohortNormal(cohort, test->target);
+				}
+				if (retval) {
+					rv = *dter;
+					break;
+				}
+			}
+			if (rv != -1) {
+				break;
+			}
+		}
+	}
+
+	return rv;
+}

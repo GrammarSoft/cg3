@@ -30,6 +30,8 @@ Tag::Tag() {
 	comparison_val = 0;
 	tag = 0;
 	regexp = 0;
+	dep_self = 0;
+	dep_parent = 0;
 }
 
 Tag::~Tag() {
@@ -125,6 +127,11 @@ void Tag::parseTag(const UChar *to) {
 				u_strcpy(comparison_key, tkey);
 				comparison_hash = hash_sdbm_uchar(comparison_key, 0);
 				features |= F_NUMERICAL;
+			}
+		}
+		if (tag && tag[0] == '#') {
+			if (u_sscanf(tag, "#%i->%i", &dep_self, &dep_parent) == 2 && dep_self != 0) {
+				type |= T_DEPENDENCY;
 			}
 		}
 

@@ -53,9 +53,30 @@ inline void GrammarApplicator::reflowSingleWindow(SingleWindow *swindow) {
 				if (tag->type & T_TEXTUAL) {
 					swindow->tags_textual[*tter] = *tter;
 				}
+				if (tag->type & T_DEPENDENCY && tag->dep_parent < swindow->cohorts.size()) {
+					swindow->cohorts[tag->dep_parent]->addChild(tag->dep_self);
+				}
 				if (!tag->features && !tag->type) {
 					swindow->tags_plain[*tter] = *tter;
 				}
+			}
+		}
+	}
+
+	for (uint32_t c=0 ; c < swindow->cohorts.size() ; c++) {
+		Cohort *cohort = swindow->cohorts[c];
+
+		std::list<Reading*>::iterator rter;
+		for (rter = cohort->readings.begin() ; rter != cohort->readings.end() ; rter++) {
+			Reading *reading = *rter;
+
+			std::set<uint32_t>::const_iterator tter;
+			for (tter = reading->dep_children.begin() ; tter != reading->dep_children.end() ; tter++) {
+				std::set<uint32_t>::const_iterator ster;
+				for (ster = reading->dep_children.begin() ; ster != reading->dep_children.end() ; ster++) {
+					swindow->cohorts[*tter]->addSibling(*ster);
+				}
+				swindow->cohorts[*tter]->remSibling(*tter);
 			}
 		}
 	}
@@ -84,6 +105,10 @@ inline void GrammarApplicator::reflowReading(Reading *reading) {
 		}
 		if (tag->type & (T_TEXTUAL|T_WORDFORM|T_BASEFORM)) {
 			reading->tags_textual[*tter] = *tter;
+		}
+		if (tag->type & T_DEPENDENCY) {
+			reading->dep_self = tag->dep_self;
+			reading->dep_parents.insert(tag->dep_parent);
 		}
 		if (!tag->features && !tag->type) {
 			reading->tags_plain[*tter] = *tter;
@@ -734,11 +759,20 @@ bool GrammarApplicator::runContextualTest(const Window *window, const SingleWind
 			}
 		}
 		else {
-			if (test->careful) {
-				retval = doesSetMatchCohortCareful(cohort, test->target);
+			if (test->dep_child || test->dep_sibling || test->dep_parent) {
+				int32_t rv = doesSetMatchDependency(sWindow, cohort, test);
+				if (rv != -1) {
+					retval = true;
+					pos = rv;
+				}
 			}
 			else {
-				retval = doesSetMatchCohortNormal(cohort, test->target);
+				if (test->careful) {
+					retval = doesSetMatchCohortCareful(cohort, test->target);
+				}
+				else {
+					retval = doesSetMatchCohortNormal(cohort, test->target);
+				}
 			}
 			if (test->negative) {
 				retval = !retval;
