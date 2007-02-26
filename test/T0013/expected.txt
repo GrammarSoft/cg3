@@ -31,7 +31,7 @@
 "<em>"
 	"em" PRP @ADVL> #1->4 
 "<1993>"
-	"1993" <date> <card> <NER:date> NUM M/F S @P< #2->1 §DES 
+	"1993" <date> <card> <NER:date> NUM M/F S @P< #2->1 
 "<ele>"
 	"ele" PERS M 3S NOM @SUBJ> #3->4 
 "<bateu>"

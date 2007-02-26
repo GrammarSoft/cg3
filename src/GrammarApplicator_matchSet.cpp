@@ -413,18 +413,22 @@ int32_t GrammarApplicator::doesSetMatchDependency(const SingleWindow *sWindow, c
 				deps = &reading->dep_siblings;
 			}
 
+			bool retval = false;
 			std::set<uint32_t>::const_iterator dter;
 			for (dter = deps->begin() ; dter != deps->end() ; dter++) {
 				Cohort *cohort = sWindow->cohorts[*dter];
-				bool retval = false;
 				if (test->careful) {
 					retval = doesSetMatchCohortCareful(cohort, test->target);
 				}
 				else {
 					retval = doesSetMatchCohortNormal(cohort, test->target);
 				}
-				if (retval) {
+				if (retval && !test->negative) {
 					rv = *dter;
+					break;
+				}
+				else if (retval && test->negative) {
+					rv = 0;
 					break;
 				}
 			}
