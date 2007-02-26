@@ -12,5 +12,5 @@ LIST PRP = PRP ;
 SECTION
 
 MAP (§DES) TARGET @P< (*-1 PRP LINK 0 ("em") LINK p ("bater")) (NOT 0 N-ANIM) ;
-MAP (§PAT) TARGET @P< (*-1 PRP LINK 0 ("em") LINK NOT s @ACC LINK p ("bater")) ;
+MAP (§PAT) TARGET @P< (*-1 PRP LINK 0 ("em") LINK LINK p ("bater") LINK NOT c @ACC) ;
 MAP (§PAT) TARGET @ACC (p ("bater")) ;
