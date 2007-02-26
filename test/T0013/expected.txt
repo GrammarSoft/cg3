@@ -7,7 +7,7 @@
 "<a>"
 	"o" <artd> <-sam> DET F S @>N #4->5 
 "<mulher>"
-	"mulher" <Hattr> N F S @P< #5->3 §DES 
+	"mulher" <Hattr> N F S @P< #5->3 §PAT 
 "<$.>"
 	"$." PU @PU #6->0 <<< 
 </s>

@@ -209,6 +209,11 @@ void Tag::parseTagRaw(const UChar *to) {
 				type |= T_NUMERICAL;
 			}
 		}
+		if (tag && tag[0] == '#') {
+			if (u_sscanf(tag, "#%i->%i", &dep_self, &dep_parent) == 2 && dep_self != 0) {
+				type |= T_DEPENDENCY;
+			}
+		}
 	}
 }
 

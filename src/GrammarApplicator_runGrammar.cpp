@@ -765,6 +765,9 @@ bool GrammarApplicator::runContextualTest(const Window *window, const SingleWind
 					retval = true;
 					pos = rv;
 				}
+				else {
+					retval = false;
+				}
 			}
 			else {
 				if (test->careful) {
