@@ -156,6 +156,7 @@ int main(int argc, char* argv[]) {
 		fprintf(stderr, " --grammar-only           Compiles the grammar only.\n");
 		fprintf(stderr, " --check-only             Compiles the grammar only.\n");
 		fprintf(stderr, " --trace                  Prints debug output alongside with normal output.\n");
+		fprintf(stderr, " --prefix                 Sets the prefix for mapping. Defaults to @.\n");
 		fprintf(stderr, " --reorder                Rearranges rules so SELECTs are run first.\n");
 		fprintf(stderr, " --single-run             Only runs each section once.\n");
 		fprintf(stderr, " --no-mappings            Disables running any MAP, ADD, or REPLACE rules.\n");
