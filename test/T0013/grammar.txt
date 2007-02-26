@@ -1,0 +1,14 @@
+DELIMITERS = "<$.>" ;
+
+SETS
+
+LIST @ACC = @<ACC @ACC> ;
+LIST @P< = @P< ;
+LIST N-ANIM = <H> <Hfam> <Hprof> <A> ;
+LIST PRP = PRP ;
+
+SECTION
+
+MAP (§DES) TARGET @P< (*-1 PRP LINK 0 ("em") LINK M ("bater")) (NOT 0 N-ANIM) ;
+MAP (§PAT) TARGET @P< (*-1 PRP LINK 0 ("em") LINK M ("bater")) (NOT S @ACC) ;
+MAP (§PAT) TARGET @ACC (M ("bater")) ;
