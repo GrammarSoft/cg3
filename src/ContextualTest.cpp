@@ -80,7 +80,7 @@ void ContextualTest::parsePosition(const UChar *pos) {
 	if (u_strchr(pos, '-')) {
 		offset = (-1) * abs(offset);
 	}
-	// ToDo: Check for erronous position
+
 	if ((!dep_child && !dep_parent && !dep_sibling) && (retval == EOF || (offset == 0 && tmp[0] == 0 && retval < 1))) {
 		u_fprintf(ux_stderr, "Error: '%S' is not a valid position!\n", pos);
 	}

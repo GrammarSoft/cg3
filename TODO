@@ -1,18 +1,21 @@
 src/ContextualTest.cpp:	// ToDo: Add < and > to ContextualTest's window jumps
+src/ContextualTest.cpp:	// ToDo: Check for erronous position
 src/ContextualTest.h:		// ToDo: Implement NEGATE
 src/ContextualTest.h:		// ToDo: Implement careful barrier
 src/GrammarApplicator.cpp:	// ToDo: Make --always-span switch
+src/GrammarApplicator.cpp:				// ToDo: Allow whitespace in baseforms.
 src/GrammarApplicator_matchSet.cpp:					// ToDo: Cache regexp and icase hits/misses
 src/GrammarApplicator_runGrammar.cpp:				// ToDo: Add max window length
-src/GrammarApplicator_runGrammar.cpp:				// ToDo: Mark readings for processing then process them, instead of processing them individually.
-src/GrammarApplicator_runGrammar.cpp:							// ToDo: Implement APPEND
+src/GrammarApplicator_runGrammar.cpp:					// ToDo: Implement APPEND
 src/GrammarApplicator_runGrammar.cpp:	// ToDo: Make old cohort -> rules order available via switch
 src/GrammarApplicator_runGrammar.cpp:	// ToDo: (NOT *) and (*C) tests can be cached
 src/GrammarParser.cpp:	// ToDo: Make line length dynamic
 src/GrammarParser.cpp:		// ToDo: Maybe support ICase keywords
+src/Rule.h:		// ToDo: Add proper "quality" quantifier based on num_fail, num_match, total_time
 src/Strings.h:		// ToDo: Add ABORT
 src/Tag.cpp:		// ToDo: Implement META and VAR
 src/Tag.cpp:		// ToDo: Add ICASE: REGEXP: and //r //ri //i to tags
+src/Tag.h:		// ToDo: Test whether tag comparisons actually work
 src/main.cpp:// ToDo: Rules can be dynamically reordered in "optimize correct" mode by moving the offending rule to the end of the section
 src/main.cpp:// ToDo: Refactor statistics to be gathered in their own objects rather than inline with Rules
 src/main.cpp:// ToDo: Reflow which includes are really needed where

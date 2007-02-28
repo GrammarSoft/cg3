@@ -21,10 +21,6 @@
 #define _CRT_SECURE_NO_DEPRECATE 1
 #define _CRT_NONSTDC_NO_DEPRECATE 1
 
-#ifdef _GC
-#include <gc.h>
-#endif
-
 #include <algorithm>
 #include <iostream>
 #include <stdlib.h>
@@ -92,11 +88,6 @@ inline uint32_t hash_sdbm_uint32_t(const uint32_t c, uint32_t hash) {
     #include <ext/hash_map>
     #define stdext __gnu_cxx
 #endif
-
-/*
-#define stdext std
-#define hash_map map
-//*/
 
 // CG3 includes
 #include "cg3_resources.h"

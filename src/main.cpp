@@ -115,10 +115,6 @@ int main(int argc, char* argv[]) {
 	glob_timer = new PACC::Timer();
 	PACC_TimeStamp main_timer = glob_timer->getCount();
 
-#ifdef _GC
-	GC_INIT();
-#endif
-
 	UErrorCode status = U_ZERO_ERROR;
 	srand((uint32_t)time(0));
 

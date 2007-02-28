@@ -634,6 +634,7 @@ label_runGrammarOnWindow_begin:
 	SingleWindow *current = window->current;
 
 	if (!grammar->before_sections.empty()) {
+		reflowSingleWindow(current);
 		uint32_t rv = runRulesOnWindow(window, &grammar->before_sections, 0, (uint32_t)grammar->before_sections.size());
 		if (rv & RV_DELIMITED) {
 			goto label_runGrammarOnWindow_begin;
@@ -643,7 +644,6 @@ label_runGrammarOnWindow_begin:
 	// ToDo: Make old cohort -> rules order available via switch
 	if (!grammar->rules.empty()) {
 		reflowSingleWindow(current);
-
 		for (uint32_t i=0;i<grammar->sections.size()-1;) {
 			uint32_t rv = runRulesOnWindow(window, &grammar->rules, 0, grammar->sections[i+1]);
 			if (rv & RV_DELIMITED) {
@@ -656,6 +656,7 @@ label_runGrammarOnWindow_begin:
 	}
 
 	if (!grammar->after_sections.empty()) {
+		reflowSingleWindow(current);
 		uint32_t rv = runRulesOnWindow(window, &grammar->after_sections, 0, (uint32_t)grammar->after_sections.size());
 		if (rv & RV_DELIMITED) {
 			goto label_runGrammarOnWindow_begin;
