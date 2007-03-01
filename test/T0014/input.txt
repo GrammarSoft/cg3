@@ -1,0 +1,4 @@
+"<word>"
+	"word" notwanted @tagA
+	"word" wanted @tagA @tagB
+	"word" notmeeither @tagA
