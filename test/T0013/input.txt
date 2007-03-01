@@ -33,8 +33,7 @@
 "<1993>"
   "1993" <date> <card> <NER:date> NUM M/F S @P<  #2->1
 "<ele>"
-  "ele" PERS M 3S NOM @SUBJ>  #3->4
-  "ele" PERS M 3S NOM @F-SUBJ>  #3->4
+  "ele" PERS M 3S NOM @SUBJ> @F-SUBJ> #3->4
 "<bateu>"
   "bater" <fmc> <mv> V PS 3S IND VFIN @FS-STA  #4->0
 "<o>"
