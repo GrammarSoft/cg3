@@ -2,23 +2,14 @@ DELIMITERS = "<$.>" ;
 
 MAPPING-PREFIX = § ;
 
-SETS
-
 LIST @ACC = @<ACC @ACC> ;
 LIST @PIV = @<PIV @PIV> ;
 LIST @P< = @P< ;
 LIST N-ANIM = <H> <Hfam> <Hprof> <Hattr> <A> ;
 LIST PRP = PRP ;
 
-#BEFORE-SECTIONS
-MAPPINGS
+BEFORE-SECTIONS
 
 MAP (§DES) TARGET @P< (*-1 PRP LINK 0 ("em") LINK 0 @PIV LINK p ("bater")) (NOT 0 N-ANIM) ;
 MAP (§PAT) TARGET @P< (*-1 PRP LINK 0 ("em") LINK p ("bater") LINK NOT c @ACC) ;
 MAP (§PAT §EXP) TARGET @ACC (p ("bater")) ;
-
-CONSTRAINTS
-
-REMOVE (P) ;
-REMOVE (@F-SUBJ>) ;
-REMOVE (§EXP) ;
