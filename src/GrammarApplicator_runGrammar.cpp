@@ -483,9 +483,11 @@ uint32_t GrammarApplicator::runRulesOnWindow(Window *window, const std::vector<R
 								reading->deleted = true;
 								reading->hit_by.push_back(j);
 							}
+							/*
 							else {
 								selected.push_back(reading);
 							}
+							//*/
 						}
 						if (good) {
 							section_did_good = true;
@@ -605,6 +607,10 @@ uint32_t GrammarApplicator::runRulesOnWindow(Window *window, const std::vector<R
 				
 				if (!removed.empty()) {
 					cohort->deleted.insert(cohort->deleted.end(), removed.begin(), removed.end());
+					while (!removed.empty()) {
+						cohort->readings.remove(removed.back());
+						removed.pop_back();
+					}
 					removed.clear();
 				}
 				if (!selected.empty()) {
