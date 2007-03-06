@@ -102,18 +102,22 @@ bool GrammarApplicator::doesSetMatchReading(const Reading *reading, const uint32
 				}
 				std::map<uint32_t, uint32_t>::const_iterator mter;
 				for (mter = reading->tags_textual.begin() ; mter != reading->tags_textual.end() ; mter++) {
+					// ToDo: Seperate icase from regexp tests
+					if (!tag->regexp) {
+						break;
+					}
 					// ToDo: Cache regexp and icase hits/misses
 					const Tag *itag = single_tags.find(mter->second)->second;
 					UErrorCode status = U_ZERO_ERROR;
 					uregex_setText(tag->regexp, itag->tag, u_strlen(itag->tag), &status);
 					if (status != U_ZERO_ERROR) {
-						u_fprintf(ux_stderr, "Error: uregex_setText returned %s - cannot continue!\n", u_errorName(status));
+						u_fprintf(ux_stderr, "Error: uregex_setText(MatchSet) returned %s - cannot continue!\n", u_errorName(status));
 						exit(1);
 					}
 					status = U_ZERO_ERROR;
 					match = (uregex_matches(tag->regexp, 0, &status) == TRUE);
 					if (status != U_ZERO_ERROR) {
-						u_fprintf(ux_stderr, "Error: uregex_matches returned %s - cannot continue!\n", u_errorName(status));
+						u_fprintf(ux_stderr, "Error: uregex_matches(MatchSet) returned %s - cannot continue!\n", u_errorName(status));
 						exit(1);
 					}
 					if (match) {

@@ -125,6 +125,7 @@ void Tag::parseTag(const UChar *to) {
 				u_strcpy(comparison_key, tkey);
 				comparison_hash = hash_sdbm_uchar(comparison_key, 0);
 				type |= T_NUMERICAL;
+				type &= ~T_TEXTUAL;
 			}
 		}
 		if (tag && tag[0] == '#') {
@@ -204,6 +205,7 @@ void Tag::parseTagRaw(const UChar *to) {
 				u_strcpy(comparison_key, tkey);
 				comparison_hash = hash_sdbm_uchar(comparison_key, 0);
 				type |= T_NUMERICAL;
+				type &= ~T_TEXTUAL;
 			}
 		}
 		if (tag && tag[0] == '#') {
