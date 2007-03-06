@@ -28,6 +28,7 @@ inline void GrammarApplicator::reflowSingleWindow(SingleWindow *swindow) {
 	swindow->tags_mapped.clear();
 	swindow->tags_plain.clear();
 	swindow->tags_textual.clear();
+	swindow->dep_map.clear();
 
 	// ToDo: Clean out dependency information on every reflow
 	for (uint32_t c=0 ; c < swindow->cohorts.size() ; c++) {
@@ -55,11 +56,8 @@ inline void GrammarApplicator::reflowSingleWindow(SingleWindow *swindow) {
 					swindow->tags_textual[*tter] = *tter;
 				}
 				if (tag->type & T_DEPENDENCY) {
-					if (tag->dep_parent >= swindow->cohorts.size()) {
-						u_fprintf(ux_stderr, "Warning: Parent %u is out of range - ignoring.\n", tag->dep_parent);
-					}
-					else {
-						swindow->cohorts[tag->dep_parent]->addChild(tag->dep_self);
+					if (swindow->dep_map.find(tag->dep_self) == swindow->dep_map.end()) {
+						swindow->dep_map[tag->dep_self] = c;
 					}
 				}
 				if (!tag->type) {
@@ -69,23 +67,56 @@ inline void GrammarApplicator::reflowSingleWindow(SingleWindow *swindow) {
 		}
 	}
 
-	for (uint32_t c=0 ; c < swindow->cohorts.size() ; c++) {
-		Cohort *cohort = swindow->cohorts[c];
+	if (!swindow->dep_map.empty()) {
+		swindow->dep_map[0] = 0;
+		for (uint32_t c=0 ; c < swindow->cohorts.size() ; c++) {
+			Cohort *cohort = swindow->cohorts[c];
 
-		std::list<Reading*>::iterator rter;
-		for (rter = cohort->readings.begin() ; rter != cohort->readings.end() ; rter++) {
-			Reading *reading = *rter;
+			std::list<Reading*>::iterator rter;
+			for (rter = cohort->readings.begin() ; rter != cohort->readings.end() ; rter++) {
+				Reading *reading = *rter;
 
-			std::set<uint32_t>::const_iterator tter;
-			for (tter = reading->dep_children.begin() ; tter != reading->dep_children.end() ; tter++) {
-				std::set<uint32_t>::const_iterator ster;
-				for (ster = reading->dep_children.begin() ; ster != reading->dep_children.end() ; ster++) {
-					swindow->cohorts[*tter]->addSibling(*ster);
+				std::list<uint32_t>::const_iterator tter;
+				for (tter = reading->tags_list.begin() ; tter != reading->tags_list.end() ; tter++) {
+					Tag *tag = 0;
+					if (grammar->single_tags.find(*tter) != grammar->single_tags.end()) {
+						tag = grammar->single_tags.find(*tter)->second;
+					}
+					else {
+						tag = single_tags.find(*tter)->second;
+					}
+					assert(tag != 0);
+					if (tag->type & T_DEPENDENCY) {
+						if (swindow->dep_map.find(tag->dep_parent) == swindow->dep_map.end()) {
+							u_fprintf(ux_stderr, "Warning: Parent %u does not exist - ignoring.\n", tag->dep_parent);
+						}
+						else {
+							swindow->cohorts[swindow->dep_map.find(tag->dep_parent)->second]->addChild(tag->dep_self);
+						}
+					}
 				}
-				swindow->cohorts[*tter]->remSibling(*tter);
+			}
+		}
+
+		for (uint32_t c=0 ; c < swindow->cohorts.size() ; c++) {
+			Cohort *cohort = swindow->cohorts[c];
+
+			std::list<Reading*>::iterator rter;
+			for (rter = cohort->readings.begin() ; rter != cohort->readings.end() ; rter++) {
+				Reading *reading = *rter;
+
+				std::set<uint32_t>::const_iterator tter;
+				for (tter = reading->dep_children.begin() ; tter != reading->dep_children.end() ; tter++) {
+					std::set<uint32_t>::const_iterator ster;
+					for (ster = reading->dep_children.begin() ; ster != reading->dep_children.end() ; ster++) {
+						swindow->cohorts[*tter]->addSibling(*ster);
+					}
+					swindow->cohorts[*tter]->remSibling(*tter);
+				}
 			}
 		}
 	}
+
 	swindow->rehash();
 }
 

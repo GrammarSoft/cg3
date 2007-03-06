@@ -383,11 +383,12 @@ int32_t GrammarApplicator::doesSetMatchDependency(const SingleWindow *sWindow, c
 			bool retval = false;
 			std::set<uint32_t>::const_iterator dter;
 			for (dter = deps->begin() ; dter != deps->end() ; dter++) {
-				if (*dter >= sWindow->cohorts.size()) {
-					u_fprintf(ux_stderr, "Warning: Dependency %u is out of range - ignoring.\n", *dter);
+				if (sWindow->dep_map.find(*dter) == sWindow->dep_map.end()) {
+					u_fprintf(ux_stderr, "Warning: Dependency %u does not exist - ignoring.\n", *dter);
 					continue;
 				}
-				Cohort *cohort = sWindow->cohorts[*dter];
+				uint32_t dep_pos = sWindow->dep_map.find(*dter)->second;
+				Cohort *cohort = sWindow->cohorts[dep_pos];
 				if (test->careful) {
 					retval = doesSetMatchCohortCareful(cohort, test->target);
 				}
@@ -395,7 +396,7 @@ int32_t GrammarApplicator::doesSetMatchDependency(const SingleWindow *sWindow, c
 					retval = doesSetMatchCohortNormal(cohort, test->target);
 				}
 				if (retval && !test->negative) {
-					rv = *dter;
+					rv = dep_pos;
 					break;
 				}
 				else if (retval && test->negative) {
