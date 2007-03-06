@@ -203,7 +203,7 @@ void Tag::parseTagRaw(const UChar *to) {
 				comparison_key = new UChar[length+1];
 				u_strcpy(comparison_key, tkey);
 				comparison_hash = hash_sdbm_uchar(comparison_key, 0);
-				type |= T_NUMBER;
+				type |= T_NUMERICAL;
 			}
 		}
 		if (tag && tag[0] == '#') {

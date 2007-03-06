@@ -141,7 +141,7 @@ void Grammar::addCompositeTagToSet(Set *set, CompositeTag *tag) {
 		if (tag->tags.size() == 1) {
 			Tag *rtag = single_tags[tag->tags.begin()->second];
 			set->tags_map[rtag->hash] = rtag->hash;
-			if (rtag->type & (T_REGEXP | T_CASE_INSENSITIVE | T_NEGATIVE | T_NUMBER)) {
+			if (rtag->type & (T_REGEXP | T_CASE_INSENSITIVE | T_NEGATIVE | T_NUMERICAL)) {
 				set->single_tags_special[rtag->hash] = rtag->hash;
 			}
 			else if (rtag->type & T_FAILFAST) {

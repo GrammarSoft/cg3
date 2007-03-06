@@ -44,8 +44,7 @@ namespace CG3 {
 		T_NEGATIVE =  512,
 		T_FAILFAST =  1024,
 		T_CASE_INSENSITIVE = 2048,
-		T_REGEXP   =  4096,
-		T_NUMBER =  8192
+		T_REGEXP   =  4096
 	};
 
 	class Tag {
