@@ -90,41 +90,50 @@ bool GrammarApplicator::doesSetMatchReading(const Reading *reading, const uint32
 			bool set_special = false;
 			bool set_plain = true;
 			stdext::hash_map<uint32_t, uint32_t>::const_iterator ster;
-			for (ster = theset->single_tags_special.begin() ; ster != theset->single_tags_special.end() ; ster++) {
-				bool match = !reading->tags_textual.empty();
+
+			for (ster = theset->single_tags.begin() ; ster != theset->single_tags.end() ; ster++) {
+				bool match = true;
 				bool failfast = true;
-				bool comp_special = true;
-				bool comp_plain = false;
+				bool comp_special = false;
+				bool comp_plain = true;
 
 				const Tag *tag = grammar->single_tags.find(ster->second)->second;
 				if (!(tag->type & T_FAILFAST)) {
 					failfast = false;
 				}
-				std::map<uint32_t, uint32_t>::const_iterator mter;
-				for (mter = reading->tags_textual.begin() ; mter != reading->tags_textual.end() ; mter++) {
-					// ToDo: Seperate icase from regexp tests
-					if (!tag->regexp) {
-						break;
-					}
-					// ToDo: Cache regexp and icase hits/misses
-					const Tag *itag = single_tags.find(mter->second)->second;
-					UErrorCode status = U_ZERO_ERROR;
-					uregex_setText(tag->regexp, itag->tag, u_strlen(itag->tag), &status);
-					if (status != U_ZERO_ERROR) {
-						u_fprintf(ux_stderr, "Error: uregex_setText(MatchSet) returned %s - cannot continue!\n", u_errorName(status));
-						exit(1);
-					}
-					status = U_ZERO_ERROR;
-					match = (uregex_matches(tag->regexp, 0, &status) == TRUE);
-					if (status != U_ZERO_ERROR) {
-						u_fprintf(ux_stderr, "Error: uregex_matches(MatchSet) returned %s - cannot continue!\n", u_errorName(status));
-						exit(1);
-					}
-					if (match) {
-						break;
+				if (tag->type & (T_WORDFORM|T_BASEFORM)) {
+					comp_special = true;
+					set_special = true;
+				}
+				if (tag->type) {
+					comp_plain = false;
+					set_plain = false;
+				}
+				if (tag->regexp) {
+					match = !reading->tags_textual.empty();
+					std::map<uint32_t, uint32_t>::const_iterator mter;
+					for (mter = reading->tags_textual.begin() ; mter != reading->tags_textual.end() ; mter++) {
+						// ToDo: Cache regexp and icase hits/misses
+						const Tag *itag = single_tags.find(mter->second)->second;
+						UErrorCode status = U_ZERO_ERROR;
+						uregex_setText(tag->regexp, itag->tag, u_strlen(itag->tag), &status);
+						if (status != U_ZERO_ERROR) {
+							u_fprintf(ux_stderr, "Error: uregex_setText(MatchSet) returned %s - cannot continue!\n", u_errorName(status));
+							exit(1);
+						}
+						status = U_ZERO_ERROR;
+						match = (uregex_matches(tag->regexp, 0, &status) == TRUE);
+						if (status != U_ZERO_ERROR) {
+							u_fprintf(ux_stderr, "Error: uregex_matches(MatchSet) returned %s - cannot continue!\n", u_errorName(status));
+							exit(1);
+						}
+						if (match) {
+							break;
+						}
 					}
 				}
-				if (!match) {
+				else if (reading->tags.find(ster->second) == reading->tags.end()) {
+					match = false;
 					if (tag->type & T_NEGATIVE) {
 						match = true;
 					}
@@ -144,62 +153,16 @@ bool GrammarApplicator::doesSetMatchReading(const Reading *reading, const uint32
 					else {
 						retval = true;
 					}
+					if (tag->type & T_MAPPING || tag->tag[0] == grammar->mapping_prefix) {
+						last_mapping_tag = tag->hash;
+					}
 					break;
 				} else {
 					used_special = set_special;
 					only_plain = set_plain;
 				}
 			}
-			if (!retval) {
-				for (ster = theset->single_tags.begin() ; ster != theset->single_tags.end() ; ster++) {
-					bool match = true;
-					bool failfast = true;
-					bool comp_special = false;
-					bool comp_plain = true;
 
-					const Tag *tag = grammar->single_tags.find(ster->second)->second;
-					if (!(tag->type & T_FAILFAST)) {
-						failfast = false;
-					}
-					if (tag->type & (T_WORDFORM|T_BASEFORM)) {
-						comp_special = true;
-						set_special = true;
-					}
-					if (tag->type) {
-						comp_plain = false;
-						set_plain = false;
-					}
-					if (reading->tags.find(ster->second) == reading->tags.end()) {
-						match = false;
-						if (tag->type & T_NEGATIVE) {
-							match = true;
-						}
-					}
-					else {
-						if (tag->type & T_NEGATIVE) {
-							match = false;
-						}
-					}
-					if (match) {
-						match_single++;
-						used_special = comp_special;
-						only_plain = comp_plain;
-						if (failfast) {
-							retval = false;
-						}
-						else {
-							retval = true;
-						}
-						if (tag->type & T_MAPPING || tag->tag[0] == grammar->mapping_prefix) {
-							last_mapping_tag = tag->hash;
-						}
-						break;
-					} else {
-						used_special = set_special;
-						only_plain = set_plain;
-					}
-				}
-			}
 			if (!retval) {
 				for (ster = theset->tags.begin() ; ster != theset->tags.end() ; ster++) {
 					bool match = true;

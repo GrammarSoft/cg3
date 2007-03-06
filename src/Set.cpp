@@ -38,8 +38,6 @@ Set::~Set() {
 	tags_map.clear();
 	tags.clear();
 	single_tags.clear();
-	single_tags_failfast.clear();
-	single_tags_special.clear();
 	sets.clear();
 	set_ops.clear();
 }
