@@ -62,7 +62,7 @@ inline void GrammarApplicator::reflowSingleWindow(SingleWindow *swindow) {
 						swindow->cohorts[tag->dep_parent]->addChild(tag->dep_self);
 					}
 				}
-				if (!tag->features && !tag->type) {
+				if (!tag->type) {
 					swindow->tags_plain[*tter] = *tter;
 				}
 			}
@@ -122,7 +122,7 @@ inline void GrammarApplicator::reflowReading(Reading *reading) {
 			reading->dep_self = tag->dep_self;
 			reading->dep_parents.insert(tag->dep_parent);
 		}
-		if (!tag->features && !tag->type) {
+		if (!tag->type) {
 			reading->tags_plain[*tter] = *tter;
 		}
 	}
@@ -595,14 +595,14 @@ uint32_t GrammarApplicator::runRulesOnWindow(Window *window, const std::vector<R
 							}
 						}
 						else if (rule->type == K_SUBSTITUTE) {
-							reading->mapped_by.push_back(j);
-							reading->noprint = false;
 							std::list<uint32_t>::const_iterator tter;
 							size_t tagb = reading->tags_list.size();
 							for (tter = rule->sublist.begin() ; tter != rule->sublist.end() ; tter++) {
 								reading->tags_list.remove(*tter);
 							}
 							if (tagb != reading->tags_list.size()) {
+								reading->mapped_by.push_back(j);
+								reading->noprint = false;
 								for (tter = rule->maplist.begin() ; tter != rule->maplist.end() ; tter++) {
 									reading->tags_list.push_back(*tter);
 								}
@@ -614,6 +614,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(Window *window, const std::vector<R
 						}
 						else if (rule->type == K_APPEND) {
 							Reading *nr = cohort->allocateAppendReading();
+							nr->mapped_by.push_back(j);
 							nr->noprint = false;
 							nr->tags_list.push_back(cohort->wordform);
 							std::list<uint32_t>::const_iterator tter;

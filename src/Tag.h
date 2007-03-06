@@ -31,14 +31,6 @@ namespace CG3 {
 		NUM_OPS
 	};
 
-	enum TAG_FEATURES {
-		F_NEGATIVE =  1,
-		F_FAILFAST =  2,
-		F_CASE_INSENSITIVE = 4,
-		F_REGEXP   =  8,
-		F_NUMERICAL =  16
-	};
-
 	enum TAG_TYPE {
 		T_ANY       =  1,
 		T_NUMERICAL =  2,
@@ -48,12 +40,16 @@ namespace CG3 {
 		T_WORDFORM = 32,
 		T_BASEFORM = 64,
 		T_TEXTUAL = 128,
-		T_DEPENDENCY = 256
+		T_DEPENDENCY = 256,
+		T_NEGATIVE =  512,
+		T_FAILFAST =  1024,
+		T_CASE_INSENSITIVE = 2048,
+		T_REGEXP   =  4096,
+		T_NUMBER =  8192
 	};
 
 	class Tag {
 	public:
-		uint8_t features;
 		uint16_t type;
 		mutable URegularExpression *regexp;
 

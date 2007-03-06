@@ -30,6 +30,7 @@
 #include <vector>
 #include <set>
 #include <map>
+#include <bitset>
 #include <time.h>
 #include <math.h>
 

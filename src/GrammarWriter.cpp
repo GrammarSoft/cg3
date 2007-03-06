@@ -274,10 +274,10 @@ void GrammarWriter::printContextualTest(UFILE *to, const ContextualTest *test) {
 }
 
 void GrammarWriter::printTag(UFILE *to, const Tag *tag) {
-	if (tag->features & F_NEGATIVE) {
+	if (tag->type & T_NEGATIVE) {
 		u_fprintf(to, "!");
 	}
-	if (tag->features & F_FAILFAST) {
+	if (tag->type & T_FAILFAST) {
 		u_fprintf(to, "^");
 	}
 	if (tag->type & T_META) {
@@ -292,19 +292,19 @@ void GrammarWriter::printTag(UFILE *to, const Tag *tag) {
 	u_fprintf(to, "%S", tmp);
 	delete tmp;
 
-	if (tag->features & F_CASE_INSENSITIVE) {
+	if (tag->type & T_CASE_INSENSITIVE) {
 		u_fprintf(to, "i");
 	}
-	if (tag->features & F_REGEXP) {
+	if (tag->type & T_REGEXP) {
 		u_fprintf(to, "r");
 	}
 }
 
 void GrammarWriter::printTagRaw(UFILE *to, const Tag *tag) {
-	if (tag->features & F_NEGATIVE) {
+	if (tag->type & T_NEGATIVE) {
 		u_fprintf(to, "!");
 	}
-	if (tag->features & F_FAILFAST) {
+	if (tag->type & T_FAILFAST) {
 		u_fprintf(to, "^");
 	}
 	if (tag->type & T_META) {
@@ -316,10 +316,10 @@ void GrammarWriter::printTagRaw(UFILE *to, const Tag *tag) {
 
 	u_fprintf(to, "%S", tag->tag);
 
-	if (tag->features & F_CASE_INSENSITIVE) {
+	if (tag->type & T_CASE_INSENSITIVE) {
 		u_fprintf(to, "i");
 	}
-	if (tag->features & F_REGEXP) {
+	if (tag->type & T_REGEXP) {
 		u_fprintf(to, "r");
 	}
 }

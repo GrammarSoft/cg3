@@ -141,10 +141,10 @@ void Grammar::addCompositeTagToSet(Set *set, CompositeTag *tag) {
 		if (tag->tags.size() == 1) {
 			Tag *rtag = single_tags[tag->tags.begin()->second];
 			set->tags_map[rtag->hash] = rtag->hash;
-			if (rtag->features & (F_REGEXP | F_CASE_INSENSITIVE | F_NEGATIVE | F_NUMERICAL)) {
+			if (rtag->type & (T_REGEXP | T_CASE_INSENSITIVE | T_NEGATIVE | T_NUMBER)) {
 				set->single_tags_special[rtag->hash] = rtag->hash;
 			}
-			else if (rtag->features & F_FAILFAST) {
+			else if (rtag->type & T_FAILFAST) {
 				set->single_tags_failfast[rtag->hash] = rtag->hash;
 			}
 			else {
@@ -244,7 +244,7 @@ void Grammar::trim() {
 
 	stdext::hash_map<uint32_t, Tag*>::iterator iter_tags;
 	for (iter_tags = single_tags.begin() ; iter_tags != single_tags.end() ; iter_tags++) {
-		if (!iter_tags->second->type && !iter_tags->second->features) {
+		if (!iter_tags->second->type) {
 			Tag *tag = iter_tags->second;
 			tag->type &= ~T_TEXTUAL;
 		}

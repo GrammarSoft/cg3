@@ -23,7 +23,6 @@
 using namespace CG3;
 
 Tag::Tag() {
-	features = 0;
 	type = 0;
 	comparison_key = 0;
 	comparison_op = OP_NOP;
@@ -46,16 +45,15 @@ Tag::~Tag() {
 void Tag::parseTag(const UChar *to) {
 	assert(to != 0);
 	type = 0;
-	features = 0;
 	if (u_strlen(to)) {
 		const UChar *tmp = to;
 		while (tmp[0] && (tmp[0] == '!' || tmp[0] == '^')) {
 			if (tmp[0] == '!') {
-				features |= F_NEGATIVE;
+				type |= T_NEGATIVE;
 				tmp++;
 			}
 			if (tmp[0] == '^') {
-				features |= F_FAILFAST;
+				type |= T_FAILFAST;
 				tmp++;
 			}
 		}
@@ -66,11 +64,11 @@ void Tag::parseTag(const UChar *to) {
 		}
 		while (tmp[0] && (tmp[0] == '"' || tmp[0] == '<') && (tmp[length-1] == 'i' || tmp[length-1] == 'r')) {
 			if (tmp[length-1] == 'r') {
-				features |= F_REGEXP;
+				type |= T_REGEXP;
 				length--;
 			}
 			if (tmp[length-1] == 'i') {
-				features |= F_CASE_INSENSITIVE;
+				type |= T_CASE_INSENSITIVE;
 				length--;
 			}
 		}
@@ -126,7 +124,7 @@ void Tag::parseTag(const UChar *to) {
 				comparison_key = new UChar[length+1];
 				u_strcpy(comparison_key, tkey);
 				comparison_hash = hash_sdbm_uchar(comparison_key, 0);
-				features |= F_NUMERICAL;
+				type |= T_NUMERICAL;
 			}
 		}
 		if (tag && tag[0] == '#') {
@@ -140,13 +138,13 @@ void Tag::parseTag(const UChar *to) {
 		}
 
 		// ToDo: Add ICASE: REGEXP: and //r //ri //i to tags
-		if (features & F_REGEXP) {
+		if (type & T_REGEXP) {
 			UParseError *pe = new UParseError;
 			UErrorCode status = U_ZERO_ERROR;
 
 			memset(pe, 0, sizeof(UParseError));
 			status = U_ZERO_ERROR;
-			if (features & F_CASE_INSENSITIVE) {
+			if (type & T_CASE_INSENSITIVE) {
 				regexp = uregex_open(tag, u_strlen(tag), UREGEX_CASE_INSENSITIVE, pe, &status);
 			}
 			else {
@@ -163,7 +161,6 @@ void Tag::parseTag(const UChar *to) {
 void Tag::parseTagRaw(const UChar *to) {
 	assert(to != 0);
 	type = 0;
-	features = 0;
 	if (u_strlen(to)) {
 		const UChar *tmp = to;
 		uint32_t length = u_strlen(tmp);
@@ -206,7 +203,7 @@ void Tag::parseTagRaw(const UChar *to) {
 				comparison_key = new UChar[length+1];
 				u_strcpy(comparison_key, tkey);
 				comparison_hash = hash_sdbm_uchar(comparison_key, 0);
-				type |= T_NUMERICAL;
+				type |= T_NUMBER;
 			}
 		}
 		if (tag && tag[0] == '#') {
@@ -220,10 +217,10 @@ void Tag::parseTagRaw(const UChar *to) {
 uint32_t Tag::rehash() {
 	hash = 0;
 
-	if (features & F_NEGATIVE) {
+	if (type & T_NEGATIVE) {
 		hash = hash_sdbm_char("!", hash);
 	}
-	if (features & F_FAILFAST) {
+	if (type & T_FAILFAST) {
 		hash = hash_sdbm_char("^", hash);
 	}
 
@@ -242,10 +239,10 @@ uint32_t Tag::rehash() {
 	hash = hash_sdbm_uchar(tag, hash);
 //*/
 
-	if (features & F_CASE_INSENSITIVE) {
+	if (type & T_CASE_INSENSITIVE) {
 		hash = hash_sdbm_char("i", hash);
 	}
-	if (features & F_REGEXP) {
+	if (type & T_REGEXP) {
 		hash = hash_sdbm_char("r", hash);
 	}
 
@@ -253,7 +250,6 @@ uint32_t Tag::rehash() {
 }
 
 void Tag::duplicateTag(const Tag *from) {
-	features = from->features;
 	type = from->type;
 	hash = from->hash;
 	comparison_op = from->comparison_op;

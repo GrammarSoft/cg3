@@ -97,7 +97,7 @@ bool GrammarApplicator::doesSetMatchReading(const Reading *reading, const uint32
 				bool comp_plain = false;
 
 				const Tag *tag = grammar->single_tags.find(ster->second)->second;
-				if (!(tag->features & F_FAILFAST)) {
+				if (!(tag->type & T_FAILFAST)) {
 					failfast = false;
 				}
 				std::map<uint32_t, uint32_t>::const_iterator mter;
@@ -121,12 +121,12 @@ bool GrammarApplicator::doesSetMatchReading(const Reading *reading, const uint32
 					}
 				}
 				if (!match) {
-					if (tag->features & F_NEGATIVE) {
+					if (tag->type & T_NEGATIVE) {
 						match = true;
 					}
 				}
 				else {
-					if (tag->features & F_NEGATIVE) {
+					if (tag->type & T_NEGATIVE) {
 						match = false;
 					}
 				}
@@ -154,25 +154,25 @@ bool GrammarApplicator::doesSetMatchReading(const Reading *reading, const uint32
 					bool comp_plain = true;
 
 					const Tag *tag = grammar->single_tags.find(ster->second)->second;
-					if (!(tag->features & F_FAILFAST)) {
+					if (!(tag->type & T_FAILFAST)) {
 						failfast = false;
 					}
 					if (tag->type & (T_WORDFORM|T_BASEFORM)) {
 						comp_special = true;
 						set_special = true;
 					}
-					if (tag->type || tag->features) {
+					if (tag->type) {
 						comp_plain = false;
 						set_plain = false;
 					}
 					if (reading->tags.find(ster->second) == reading->tags.end()) {
 						match = false;
-						if (tag->features & F_NEGATIVE) {
+						if (tag->type & T_NEGATIVE) {
 							match = true;
 						}
 					}
 					else {
-						if (tag->features & F_NEGATIVE) {
+						if (tag->type & T_NEGATIVE) {
 							match = false;
 						}
 					}
@@ -207,25 +207,25 @@ bool GrammarApplicator::doesSetMatchReading(const Reading *reading, const uint32
 					stdext::hash_map<uint32_t, uint32_t>::const_iterator cter;
 					for (cter = ctag->tags.begin() ; cter != ctag->tags.end() ; cter++) {
 						const Tag *tag = grammar->single_tags.find(cter->second)->second;
-						if (!(tag->features & F_FAILFAST)) {
+						if (!(tag->type & T_FAILFAST)) {
 							failfast = false;
 						}
 						if (tag->type & (T_WORDFORM|T_BASEFORM)) {
 							comp_special = true;
 							set_special = true;
 						}
-						if (tag->type || tag->features) {
+						if (tag->type) {
 							comp_plain = false;
 							set_plain = false;
 						}
 						if (reading->tags.find(cter->second) == reading->tags.end()) {
 							match = false;
-							if (tag->features & F_NEGATIVE) {
+							if (tag->type & T_NEGATIVE) {
 								match = true;
 							}
 						}
 						else {
-							if (tag->features & F_NEGATIVE) {
+							if (tag->type & T_NEGATIVE) {
 								match = false;
 							}
 						}
