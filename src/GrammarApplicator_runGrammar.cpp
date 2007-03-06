@@ -598,15 +598,18 @@ uint32_t GrammarApplicator::runRulesOnWindow(Window *window, const std::vector<R
 							reading->mapped_by.push_back(j);
 							reading->noprint = false;
 							std::list<uint32_t>::const_iterator tter;
+							size_t tagb = reading->tags_list.size();
 							for (tter = rule->sublist.begin() ; tter != rule->sublist.end() ; tter++) {
 								reading->tags_list.remove(*tter);
 							}
-							for (tter = rule->maplist.begin() ; tter != rule->maplist.end() ; tter++) {
-								reading->tags_list.push_back(*tter);
-							}
-							reflowReading(reading);
-							if (!reading->tags_mapped.empty()) {
-								reading->mapped = true;
+							if (tagb != reading->tags_list.size()) {
+								for (tter = rule->maplist.begin() ; tter != rule->maplist.end() ; tter++) {
+									reading->tags_list.push_back(*tter);
+								}
+								reflowReading(reading);
+								if (!reading->tags_mapped.empty()) {
+									reading->mapped = true;
+								}
 							}
 						}
 						else if (rule->type == K_APPEND) {
