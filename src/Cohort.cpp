@@ -58,3 +58,9 @@ void Cohort::addChild(uint32_t child) {
 		(*iter)->dep_children.insert(child);
 	}
 }
+
+Reading* Cohort::allocateAppendReading() {
+	Reading *read = new Reading();
+	readings.push_back(read);
+	return read;
+}

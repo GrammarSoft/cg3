@@ -37,6 +37,7 @@ namespace CG3 {
 		void addSibling(uint32_t sibling);
 		void remSibling(uint32_t sibling);
 		void addChild(uint32_t child);
+		Reading *allocateAppendReading();
 	};
 
 }

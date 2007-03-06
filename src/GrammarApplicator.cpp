@@ -61,6 +61,7 @@ GrammarApplicator::~GrammarApplicator() {
 
 void GrammarApplicator::setGrammar(const Grammar *res) {
 	grammar = res;
+	single_tags.insert(grammar->single_tags.begin(), grammar->single_tags.end());
 }
 
 void GrammarApplicator::enableStatistics() {

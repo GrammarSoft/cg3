@@ -112,6 +112,12 @@ inline void GrammarApplicator::reflowReading(Reading *reading) {
 		if (tag->type & (T_TEXTUAL|T_WORDFORM|T_BASEFORM)) {
 			reading->tags_textual[*tter] = *tter;
 		}
+		if (!reading->baseform && tag->type & T_BASEFORM) {
+			reading->baseform = tag->hash;
+		}
+		if (!reading->wordform && tag->type & T_WORDFORM) {
+			reading->wordform = tag->hash;
+		}
 		if (tag->type & T_DEPENDENCY) {
 			reading->dep_self = tag->dep_self;
 			reading->dep_parents.insert(tag->dep_parent);
@@ -425,7 +431,9 @@ uint32_t GrammarApplicator::runRulesOnWindow(Window *window, const std::vector<R
 									}
 								}
 							}
-							did_test = true;
+							if (type != K_APPEND) {
+								did_test = true;
+							}
 						}
 						else if (did_test) {
 							good = test_good;
@@ -601,8 +609,20 @@ uint32_t GrammarApplicator::runRulesOnWindow(Window *window, const std::vector<R
 								reading->mapped = true;
 							}
 						}
+						else if (rule->type == K_APPEND) {
+							Reading *nr = cohort->allocateAppendReading();
+							nr->noprint = false;
+							nr->tags_list.push_back(cohort->wordform);
+							std::list<uint32_t>::const_iterator tter;
+							for (tter = rule->maplist.begin() ; tter != rule->maplist.end() ; tter++) {
+								nr->tags_list.push_back(*tter);
+							}
+							reflowReading(nr);
+							if (!nr->tags_mapped.empty()) {
+								nr->mapped = true;
+							}
+						}
 					}
-					// ToDo: Implement APPEND
 				}
 				
 				if (!removed.empty()) {

@@ -326,6 +326,10 @@ int main(int argc, char* argv[]) {
 		if (options[NOMAPPINGS].doesOccur) {
 			applicator->apply_mappings = false;
 		}
+		applicator->apply_corrections = true;
+		if (options[NOCORRECTIONS].doesOccur) {
+			applicator->apply_corrections = false;
+		}
 		if (options[TRACE].doesOccur) {
 			applicator->trace = true;
 		}
@@ -335,7 +339,6 @@ int main(int argc, char* argv[]) {
 		if (options[GRAMMAR_INFO].doesOccur) {
 			applicator->enableStatistics();
 		}
-		applicator->apply_corrections = false;
 		applicator->runGrammarOnText(ux_stdin, ux_stdout);
 
 		std::cerr << "Applying grammar on input took " << glob_timer->getValueFrom(main_timer) << " seconds." << std::endl;
@@ -362,6 +365,10 @@ int main(int argc, char* argv[]) {
 				if (options[NOMAPPINGS].doesOccur) {
 					applicator->apply_mappings = false;
 				}
+				applicator->apply_corrections = true;
+				if (options[NOCORRECTIONS].doesOccur) {
+					applicator->apply_corrections = false;
+				}
 				if (options[TRACE].doesOccur) {
 					applicator->trace = true;
 				}
@@ -369,7 +376,6 @@ int main(int argc, char* argv[]) {
 					applicator->single_run = true;
 				}
 				applicator->enableStatistics();
-				applicator->apply_corrections = false;
 				applicator->runGrammarOnText(ux_stdin, ux_stdout);
 
 				std::cerr << "Applying context-sorted grammar on input took " << glob_timer->getValueFrom(main_timer) << " seconds." << std::endl;
@@ -409,6 +415,10 @@ int main(int argc, char* argv[]) {
 			if (options[NOMAPPINGS].doesOccur) {
 				applicator->apply_mappings = false;
 			}
+			applicator->apply_corrections = true;
+			if (options[NOCORRECTIONS].doesOccur) {
+				applicator->apply_corrections = false;
+			}
 			if (options[TRACE].doesOccur) {
 				applicator->trace = true;
 			}
@@ -416,7 +426,6 @@ int main(int argc, char* argv[]) {
 				applicator->single_run = true;
 			}
 			applicator->enableStatistics();
-			applicator->apply_corrections = false;
 			applicator->runGrammarOnText(ux_stdin, ux_stdout);
 
 			std::cerr << "Applying fully-sorted grammar on input took " << glob_timer->getValueFrom(main_timer) << " seconds." << std::endl;
