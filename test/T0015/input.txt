@@ -1,0 +1,13 @@
+"<ele>"
+	"ele" PERS M 3S NOM @SUBJ> #1->2 
+"<bate>"
+	"bater" <fmc> <mv> V PR 3S IND VFIN @FS-STA #2->0 
+"<em>"
+	"em" <sam-> PRP @<PIV #3->2 
+"<a>"
+	"o" <artd> <-sam> DET F S @>N #4->99 
+"<mulher>"
+	"mulher" <Hattr> N F S @P< #5->3
+"<$.>"
+	"$." PU @PU #6->0 <<< 
+</s>
