@@ -32,7 +32,9 @@ namespace CG3 {
 		bool scanfirst;
 		bool scanall;
 		bool absolute;
-		bool span_windows;
+		bool span_right;
+		bool span_left;
+		bool span_both;
 		bool dep_parent;
 		bool dep_sibling;
 		bool dep_child;

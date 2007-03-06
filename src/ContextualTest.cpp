@@ -29,7 +29,9 @@ ContextualTest::ContextualTest() {
 	scanfirst = false;
 	scanall = false;
 	absolute = false;
-	span_windows = false;
+	span_left = false;
+	span_right = false;
+	span_both = false;
 	dep_parent = false;
 	dep_sibling = false;
 	dep_child = false;
@@ -68,8 +70,14 @@ void ContextualTest::parsePosition(const UChar *pos) {
 		dep_sibling = true;
 	}
 	// ToDo: Add < and > to ContextualTest's window jumps
+	if (u_strchr(pos, '<')) {
+		span_left = true;
+	}
+	if (u_strchr(pos, '>')) {
+		span_right = true;
+	}
 	if (u_strchr(pos, 'W')) {
-		span_windows = true;
+		span_both = true;
 	}
 	if (u_strchr(pos, '@')) {
 		absolute = true;
@@ -84,7 +92,7 @@ void ContextualTest::parsePosition(const UChar *pos) {
 	if ((!dep_child && !dep_parent && !dep_sibling) && (retval == EOF || (offset == 0 && tmp[0] == 0 && retval < 1))) {
 		u_fprintf(ux_stderr, "Error: '%S' is not a valid position!\n", pos);
 	}
-	if ((dep_child || dep_parent || dep_sibling) && (scanall || scanfirst || absolute || span_windows || offset != 0)) {
+	if ((dep_child || dep_parent || dep_sibling) && (scanall || scanfirst || absolute || span_left || span_right || span_both || offset != 0)) {
 		u_fprintf(ux_stderr, "Warning: Position '%S' is mixed. Behavior for mixed positions is undefined.\n", pos);
 	}
 }
@@ -105,7 +113,9 @@ uint32_t ContextualTest::rehash() {
 	hash = hash_sdbm_uint32_t(hash, (uint32_t)scanfirst);
 	hash = hash_sdbm_uint32_t(hash, (uint32_t)scanall);
 	hash = hash_sdbm_uint32_t(hash, (uint32_t)absolute);
-	hash = hash_sdbm_uint32_t(hash, (uint32_t)span_windows);
+	hash = hash_sdbm_uint32_t(hash, (uint32_t)span_left);
+	hash = hash_sdbm_uint32_t(hash, (uint32_t)span_right);
+	hash = hash_sdbm_uint32_t(hash, (uint32_t)span_both);
 	hash = hash_sdbm_uint32_t(hash, target);
 	hash = hash_sdbm_uint32_t(hash, barrier);
 	hash = hash_sdbm_uint32_t(hash, abs(offset));

@@ -254,7 +254,7 @@ void GrammarWriter::printContextualTest(UFILE *to, const ContextualTest *test) {
 	if (test->careful) {
 		u_fprintf(to, "C");
 	}
-	if (test->span_windows) {
+	if (test->span_both) {
 		u_fprintf(to, "W");
 	}
 

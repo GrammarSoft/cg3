@@ -416,6 +416,10 @@ int32_t GrammarApplicator::doesSetMatchDependency(const SingleWindow *sWindow, c
 			bool retval = false;
 			std::set<uint32_t>::const_iterator dter;
 			for (dter = deps->begin() ; dter != deps->end() ; dter++) {
+				if (*dter >= sWindow->cohorts.size()) {
+					u_fprintf(ux_stderr, "Warning: Dependency %u is out of range - ignoring.\n", *dter);
+					continue;
+				}
 				Cohort *cohort = sWindow->cohorts[*dter];
 				if (test->careful) {
 					retval = doesSetMatchCohortCareful(cohort, test->target);

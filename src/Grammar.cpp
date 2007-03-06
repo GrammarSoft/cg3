@@ -103,11 +103,6 @@ void Grammar::addSet(Set *to) {
 	if (sets_by_name.find(nhash) == sets_by_name.end()) {
 		sets_by_name[nhash] = chash;
 	}
-/*
-	else if (!(to->name[0] == '_' && to->name[1] == 'G' && to->name[2] == '_')) {
-		u_fprintf(ux_stderr, "Warning: Set %S already existed.\n", to->name);
-	}
-//*/
 	if (sets_by_contents.find(chash) == sets_by_contents.end()) {
 		sets_by_contents[chash] = to;
 	}
@@ -254,41 +249,6 @@ void Grammar::trim() {
 			tag->type &= ~T_TEXTUAL;
 		}
 	}
-
-/*
-	stdext::hash_map<uint32_t, Tag*>::iterator iter_tags;
-	for (iter_tags = single_tags.begin() ; iter_tags != single_tags.end() ; iter_tags++) {
-		if (!iter_tags->second->type && !iter_tags->second->features) {
-			delete iter_tags->second->tag;
-		}
-	}
-
-	std::cerr << "Trimmed sets from " << (uint32_t)sets_by_contents.size();
-	stdext::hash_map<uint32_t, Set*>::iterator iter_set;
-	for (iter_set = sets_by_contents.begin() ; iter_set != sets_by_contents.end() ; iter_set++) {
-		if (iter_set->second) {
-			iter_set->second->used = false;
-		}
-	}
-
-	std::vector<Rule*>::iterator iter_rules;
-	for (iter_rules = rules.begin() ; iter_rules != rules.end() ; iter_rules++) {
-		if (*iter_rules) {
-			Rule *rule = *iter_rules;
-			if (sets_by_contents.find(rule->target) != sets_by_contents.end()) {
-				sets_by_contents[rule->target]->used = true;
-			}
-		}
-	}
-
-	for (iter_set = sets_by_contents.begin() ; iter_set != sets_by_contents.end() ; iter_set++) {
-		if (iter_set->second->used == false) {
-			delete iter_set->second;
-			sets_by_contents.erase(iter_set->first);
-		}
-	}
-	std::cerr << " to " << (uint32_t)sets_by_contents.size() << std::endl;
-//*/
 }
 
 void Grammar::reindex() {

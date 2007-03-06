@@ -29,6 +29,7 @@ inline void GrammarApplicator::reflowSingleWindow(SingleWindow *swindow) {
 	swindow->tags_plain.clear();
 	swindow->tags_textual.clear();
 
+	// ToDo: Clean out dependency information on every reflow
 	for (uint32_t c=0 ; c < swindow->cohorts.size() ; c++) {
 		Cohort *cohort = swindow->cohorts[c];
 
@@ -53,8 +54,13 @@ inline void GrammarApplicator::reflowSingleWindow(SingleWindow *swindow) {
 				if (tag->type & T_TEXTUAL) {
 					swindow->tags_textual[*tter] = *tter;
 				}
-				if (tag->type & T_DEPENDENCY && tag->dep_parent < swindow->cohorts.size()) {
-					swindow->cohorts[tag->dep_parent]->addChild(tag->dep_self);
+				if (tag->type & T_DEPENDENCY) {
+					if (tag->dep_parent >= swindow->cohorts.size()) {
+						u_fprintf(ux_stderr, "Warning: Parent %u is out of range - ignoring.\n", tag->dep_parent);
+					}
+					else {
+						swindow->cohorts[tag->dep_parent]->addChild(tag->dep_self);
+					}
 				}
 				if (!tag->features && !tag->type) {
 					swindow->tags_plain[*tter] = *tter;
@@ -688,14 +694,14 @@ bool GrammarApplicator::runContextualTest(const Window *window, const SingleWind
 	if (pos >= 0 && (uint32_t)pos < sWindow->cohorts.size()) {
 		cohort = sWindow->cohorts.at(pos);
 	}
-	else if (test->span_windows && pos < 0) {
+	else if (test->span_both && pos < 0) {
 		sWindow = window->previousFrom(sWindow);
 		if (sWindow) {
 			pos = (int)sWindow->cohorts.size()+pos;
 			cohort = sWindow->cohorts.at(pos);
 		}
 	}
-	else if (test->span_windows && (uint32_t)pos >= sWindow->cohorts.size()) {
+	else if (test->span_both && (uint32_t)pos >= sWindow->cohorts.size()) {
 		sWindow = window->nextFrom(sWindow);
 	}
 
