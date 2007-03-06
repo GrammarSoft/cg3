@@ -166,6 +166,7 @@ Rule *Grammar::allocateRule() {
 	return new Rule;
 }
 void Grammar::addRule(Rule *rule, std::vector<Rule*> *where) {
+	rule_by_line[rule->line] = rule;
 	where->push_back(rule);
 }
 void Grammar::destroyRule(Rule *rule) {

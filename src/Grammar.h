@@ -47,6 +47,8 @@ namespace CG3 {
 		std::vector<uint32_t> sections;
 		std::map<uint32_t, Anchor*> anchors;
 
+		// ToDo: Maintain a map of line->rule for tracing.
+		std::map<uint32_t, Rule*> rule_by_line;
 		std::vector<Rule*> before_sections;
 		std::vector<Rule*> rules;
 		std::vector<Rule*> after_sections;

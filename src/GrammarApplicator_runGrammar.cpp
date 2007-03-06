@@ -489,7 +489,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(Window *window, const std::vector<R
 							if (good) {
 								removed.push_back(reading);
 								reading->deleted = true;
-								reading->hit_by.push_back(j);
+								reading->hit_by.push_back(rule->line);
 							}
 							/*
 							else {
@@ -513,12 +513,12 @@ uint32_t GrammarApplicator::runRulesOnWindow(Window *window, const std::vector<R
 						if (good) {
 							selected.push_back(reading);
 							reading->selected = true;
-							reading->hit_by.push_back(j);
+							reading->hit_by.push_back(rule->line);
 						}
 						else {
 							removed.push_back(reading);
 							reading->deleted = true;
-							reading->hit_by.push_back(j);
+							reading->hit_by.push_back(rule->line);
 						}
 						if (good) {
 							section_did_good = true;
@@ -568,7 +568,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(Window *window, const std::vector<R
 							break;
 						}
 						else if (rule->type == K_ADD || rule->type == K_MAP) {
-							reading->mapped_by.push_back(j);
+							reading->mapped_by.push_back(rule->line);
 							reading->noprint = false;
 							std::list<uint32_t>::const_iterator tter;
 							for (tter = rule->maplist.begin() ; tter != rule->maplist.end() ; tter++) {
@@ -580,7 +580,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(Window *window, const std::vector<R
 							}
 						}
 						else if (rule->type == K_REPLACE) {
-							reading->mapped_by.push_back(j);
+							reading->mapped_by.push_back(rule->line);
 							reading->noprint = false;
 							std::list<uint32_t>::const_iterator tter;
 							reading->tags_list.clear();
@@ -601,7 +601,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(Window *window, const std::vector<R
 								reading->tags_list.remove(*tter);
 							}
 							if (tagb != reading->tags_list.size()) {
-								reading->mapped_by.push_back(j);
+								reading->mapped_by.push_back(rule->line);
 								reading->noprint = false;
 								for (tter = rule->maplist.begin() ; tter != rule->maplist.end() ; tter++) {
 									reading->tags_list.push_back(*tter);
@@ -614,7 +614,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(Window *window, const std::vector<R
 						}
 						else if (rule->type == K_APPEND) {
 							Reading *nr = cohort->allocateAppendReading();
-							nr->mapped_by.push_back(j);
+							nr->mapped_by.push_back(rule->line);
 							nr->noprint = false;
 							nr->tags_list.push_back(cohort->wordform);
 							std::list<uint32_t>::const_iterator tter;

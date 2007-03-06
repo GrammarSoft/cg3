@@ -148,12 +148,12 @@ void GrammarApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 			if (trace) {
 				if (!reading->mapped_by.empty()) {
 					for (uint32_t i=0;i<reading->mapped_by.size();i++) {
-						u_fprintf(output, "%S:%u ", keywords[grammar->before_sections.at(reading->mapped_by.at(i))->type], grammar->before_sections.at(reading->mapped_by.at(i))->line);
+						u_fprintf(output, "%S:%u ", keywords[grammar->rule_by_line.find(reading->mapped_by.at(i))->second->type], reading->mapped_by.at(i));
 					}
 				}
 				if (!reading->hit_by.empty()) {
 					for (uint32_t i=0;i<reading->hit_by.size();i++) {
-						u_fprintf(output, "%S:%u ", keywords[grammar->rules.at(reading->hit_by.at(i))->type], grammar->rules.at(reading->hit_by.at(i))->line);
+						u_fprintf(output, "%S:%u ", keywords[grammar->rule_by_line.find(reading->hit_by.at(i))->second->type], reading->hit_by.at(i));
 					}
 				}
 			}
@@ -194,12 +194,12 @@ void GrammarApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 				}
 				if (!reading->mapped_by.empty()) {
 					for (uint32_t i=0;i<reading->mapped_by.size();i++) {
-						u_fprintf(output, "%S:%u ", keywords[grammar->before_sections.at(reading->mapped_by.at(i))->type], grammar->before_sections.at(reading->mapped_by.at(i))->line);
+						u_fprintf(output, "%S:%u ", keywords[grammar->rule_by_line.find(reading->mapped_by.at(i))->second->type], reading->mapped_by.at(i));
 					}
 				}
 				if (!reading->hit_by.empty()) {
 					for (uint32_t i=0;i<reading->hit_by.size();i++) {
-						u_fprintf(output, "%S:%u ", keywords[grammar->rules.at(reading->hit_by.at(i))->type], grammar->rules.at(reading->hit_by.at(i))->line);
+						u_fprintf(output, "%S:%u ", keywords[grammar->rule_by_line.find(reading->hit_by.at(i))->second->type], reading->hit_by.at(i));
 					}
 				}
 				u_fprintf(output, "\n");
