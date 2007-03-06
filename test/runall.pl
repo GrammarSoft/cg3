@@ -36,7 +36,7 @@ print STDERR "\nRunning tests...\n";
 my @tests = grep { -x } glob('./T*/run.*');
 foreach (@tests) {
 	chdir $bindir or die("Error: Could not change directory to $bindir !");
-	my ($test) = m/^.*(T[^\/]+).*$/;
+	my ($test) = m/^.*?(T[^\/]+).*$/;
 	print STDERR "$test: ";
 	`$_ "$binary"`;
 }
