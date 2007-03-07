@@ -1,0 +1,13 @@
+"<word>"
+	"word" wanted SELECT:7 
+;	"word" notwanted SELECT:7 
+;	"word" notmeeither SELECT:7 
+"<word>"
+	"word" wanted SELECT:7 
+;	"word" notwanted SELECT:7 
+;	"word" notmeeither SELECT:7 
+"<word>"
+	"word" notwanted @tag MAP:4 
+	"word" notmeeither @tag MAP:4 
+;	"blocker" block @tag MAP:4 REMOVE:10 
+
