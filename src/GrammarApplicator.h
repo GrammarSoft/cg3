@@ -56,12 +56,6 @@ namespace CG3 {
 
 		stdext::hash_map<uint32_t, Index*> index_reading_yes;
 		stdext::hash_map<uint32_t, Index*> index_reading_no;
-		/*
-		stdext::hash_map<uint32_t, Index*> index_reading_tags_yes;
-		stdext::hash_map<uint32_t, Index*> index_reading_tags_no;
-		stdext::hash_map<uint32_t, Index*> index_reading_plain_yes;
-		stdext::hash_map<uint32_t, Index*> index_reading_plain_no;
-		//*/
 	
 		GrammarApplicator();
 		~GrammarApplicator();

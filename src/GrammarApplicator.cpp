@@ -45,12 +45,6 @@ GrammarApplicator::GrammarApplicator() {
 	match_sub = 0;
 	index_reading_yes.clear();
 	index_reading_no.clear();
-	/*
-	index_reading_tags_yes.clear();
-	index_reading_tags_no.clear();
-	index_reading_plain_yes.clear();
-	index_reading_plain_no.clear();
-	//*/
 }
 
 GrammarApplicator::~GrammarApplicator() {

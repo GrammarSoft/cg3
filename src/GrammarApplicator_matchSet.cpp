@@ -120,16 +120,6 @@ bool GrammarApplicator::doesSetMatchReading(const Reading *reading, const uint32
 		if (!bypass_index && __index_matches(&index_reading_yes, reading->hash, set)) { return true; }
 		if (__index_matches(&index_reading_no, reading->hash, set)) { return false; }
 	}
-	/*
-	if (reading->hash_plain && reading->hash_plain != 1) {
-		if (!bypass_index && __index_matches(&index_reading_plain_yes, reading->hash_plain, set)) { return true; }
-		if (__index_matches(&index_reading_plain_no, reading->hash_plain, set)) { return false; }
-	}
-	if (reading->hash_tags) {
-		if (__index_matches(&index_reading_tags_yes, reading->hash_tags, set)) { return true; }
-		if (__index_matches(&index_reading_tags_no, reading->hash_tags, set)) { return false; }
-	}
-	//*/
 
 	cache_miss++;
 
@@ -165,14 +155,6 @@ bool GrammarApplicator::doesSetMatchReading(const Reading *reading, const uint32
 					}
 					if (match) {
 						match_comp++;
-						/*
-						if (failfast) {
-							retval = false;
-						}
-						else {
-							retval = true;
-						}
-						//*/
 						retval = true;
 						break;
 					} else {
@@ -235,20 +217,6 @@ bool GrammarApplicator::doesSetMatchReading(const Reading *reading, const uint32
 	}
 
 	if (retval) {
-		/*
-		if (only_plain && reading->hash_plain && reading->hash_plain != 1) {
-			if (index_reading_plain_yes.find(reading->hash_plain) == index_reading_plain_yes.end()) {
-				index_reading_plain_yes[reading->hash_plain] = new Index();
-			}
-			index_reading_plain_yes[reading->hash_plain]->values[set] = set;
-		}
-		else if (!used_special && reading->hash_tags) {
-			if (index_reading_tags_yes.find(reading->hash_tags) == index_reading_tags_yes.end()) {
-				index_reading_tags_yes[reading->hash_tags] = new Index();
-			}
-			index_reading_tags_yes[reading->hash_tags]->values[set] = set;
-		}
-		//*/
 		if (reading->hash && reading->hash != 1) {
 			if (index_reading_yes.find(reading->hash) == index_reading_yes.end()) {
 				index_reading_yes[reading->hash] = new Index();
@@ -257,20 +225,6 @@ bool GrammarApplicator::doesSetMatchReading(const Reading *reading, const uint32
 		}
 	}
 	else {
-		/*
-		if (only_plain && reading->hash_plain && reading->hash_plain != 1) {
-			if (index_reading_plain_no.find(reading->hash_plain) == index_reading_plain_no.end()) {
-				index_reading_plain_no[reading->hash_plain] = new Index();
-			}
-			index_reading_plain_no[reading->hash_plain]->values[set] = set;
-		}
-		else if (!used_special && reading->hash_tags) {
-			if (index_reading_tags_no.find(reading->hash_tags) == index_reading_tags_no.end()) {
-				index_reading_tags_no[reading->hash_tags] = new Index();
-			}
-			index_reading_tags_no[reading->hash_tags]->values[set] = set;
-		}
-		//*/
 		if (reading->hash && reading->hash != 1) {
 			if (index_reading_no.find(reading->hash) == index_reading_no.end()) {
 				index_reading_no[reading->hash] = new Index();
