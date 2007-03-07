@@ -56,10 +56,12 @@ namespace CG3 {
 
 		stdext::hash_map<uint32_t, Index*> index_reading_yes;
 		stdext::hash_map<uint32_t, Index*> index_reading_no;
+		/*
 		stdext::hash_map<uint32_t, Index*> index_reading_tags_yes;
 		stdext::hash_map<uint32_t, Index*> index_reading_tags_no;
 		stdext::hash_map<uint32_t, Index*> index_reading_plain_yes;
 		stdext::hash_map<uint32_t, Index*> index_reading_plain_no;
+		//*/
 	
 		GrammarApplicator();
 		~GrammarApplicator();
@@ -74,6 +76,7 @@ namespace CG3 {
 		bool runContextualTest(const Window *window, const SingleWindow *sWindow, const uint32_t position, const ContextualTest *test);
 
 		bool doesTagMatchSet(const uint32_t tag, const uint32_t set);
+		bool doesTagMatchReading(const Reading *reading, const uint32_t tag, bool bypass_index = false);
 		bool doesSetMatchReading(const Reading *reading, const uint32_t set, bool bypass_index = false);
 		bool doesSetMatchCohortNormal(const Cohort *cohort, const uint32_t set);
 		bool doesSetMatchCohortCareful(const Cohort *cohort, const uint32_t set);

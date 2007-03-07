@@ -52,7 +52,6 @@ namespace CG3 {
 		uint16_t type;
 		mutable URegularExpression *regexp;
 
-		// ToDo: Test whether tag comparisons actually work
 		uint32_t comparison_hash;
 		UChar *comparison_key;
 		C_OPS comparison_op;

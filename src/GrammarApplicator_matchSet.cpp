@@ -56,6 +56,61 @@ inline bool GrammarApplicator::__index_matches(const stdext::hash_map<uint32_t, 
 	return false;
 }
 
+bool GrammarApplicator::doesTagMatchReading(const Reading *reading, const uint32_t ztag, bool bypass_index) {
+	bool retval = false;
+	bool match = true;
+	bypass_index = false;
+
+	const Tag *tag = grammar->single_tags.find(ztag)->second;
+	if (tag->regexp) {
+		match = !reading->tags_textual.empty();
+		std::map<uint32_t, uint32_t>::const_iterator mter;
+		for (mter = reading->tags_textual.begin() ; mter != reading->tags_textual.end() ; mter++) {
+			// ToDo: Cache regexp and icase hits/misses
+			const Tag *itag = single_tags.find(mter->second)->second;
+			UErrorCode status = U_ZERO_ERROR;
+			uregex_setText(tag->regexp, itag->tag, u_strlen(itag->tag), &status);
+			if (status != U_ZERO_ERROR) {
+				u_fprintf(ux_stderr, "Error: uregex_setText(MatchSet) returned %s - cannot continue!\n", u_errorName(status));
+				exit(1);
+			}
+			status = U_ZERO_ERROR;
+			match = (uregex_matches(tag->regexp, 0, &status) == TRUE);
+			if (status != U_ZERO_ERROR) {
+				u_fprintf(ux_stderr, "Error: uregex_matches(MatchSet) returned %s - cannot continue!\n", u_errorName(status));
+				exit(1);
+			}
+			if (match) {
+				break;
+			}
+		}
+	}
+	else if (reading->tags.find(ztag) == reading->tags.end()) {
+		match = false;
+		if (tag->type & T_NEGATIVE) {
+			match = true;
+		}
+	}
+	else {
+		if (tag->type & T_NEGATIVE) {
+			match = false;
+		}
+	}
+	if (match) {
+		match_single++;
+		if (tag->type & T_FAILFAST) {
+			retval = false;
+		}
+		else {
+			retval = true;
+		}
+		if (tag->type & T_MAPPING || tag->tag[0] == grammar->mapping_prefix) {
+			last_mapping_tag = tag->hash;
+		}
+	}
+	return retval;
+}
+
 bool GrammarApplicator::doesSetMatchReading(const Reading *reading, const uint32_t set, bool bypass_index) {
 	bool retval = false;
 
@@ -65,20 +120,18 @@ bool GrammarApplicator::doesSetMatchReading(const Reading *reading, const uint32
 		if (!bypass_index && __index_matches(&index_reading_yes, reading->hash, set)) { return true; }
 		if (__index_matches(&index_reading_no, reading->hash, set)) { return false; }
 	}
+	/*
 	if (reading->hash_plain && reading->hash_plain != 1) {
 		if (!bypass_index && __index_matches(&index_reading_plain_yes, reading->hash_plain, set)) { return true; }
 		if (__index_matches(&index_reading_plain_no, reading->hash_plain, set)) { return false; }
 	}
-	/*
 	if (reading->hash_tags) {
-	if (__index_matches(&index_reading_tags_yes, reading->hash_tags, set)) { return true; }
-	if (__index_matches(&index_reading_tags_no, reading->hash_tags, set)) { return false; }
+		if (__index_matches(&index_reading_tags_yes, reading->hash_tags, set)) { return true; }
+		if (__index_matches(&index_reading_tags_no, reading->hash_tags, set)) { return false; }
 	}
 	//*/
 
 	cache_miss++;
-	bool used_special = false;
-	bool only_plain = true;
 
 	stdext::hash_map<uint32_t, Set*>::const_iterator iter = grammar->sets_by_contents.find(set);
 	if (iter != grammar->sets_by_contents.end()) {
@@ -87,144 +140,47 @@ bool GrammarApplicator::doesSetMatchReading(const Reading *reading, const uint32
 			retval = true;
 		}
 		else if (theset->sets.empty()) {
-			bool set_special = false;
-			bool set_plain = true;
 			stdext::hash_map<uint32_t, uint32_t>::const_iterator ster;
 
 			for (ster = theset->single_tags.begin() ; ster != theset->single_tags.end() ; ster++) {
-				bool match = true;
-				bool failfast = true;
-				bool comp_special = false;
-				bool comp_plain = true;
-
-				const Tag *tag = grammar->single_tags.find(ster->second)->second;
-				if (!(tag->type & T_FAILFAST)) {
-					failfast = false;
-				}
-				if (tag->type & (T_WORDFORM|T_BASEFORM)) {
-					comp_special = true;
-					set_special = true;
-				}
-				if (tag->type) {
-					comp_plain = false;
-					set_plain = false;
-				}
-				if (tag->regexp) {
-					match = !reading->tags_textual.empty();
-					std::map<uint32_t, uint32_t>::const_iterator mter;
-					for (mter = reading->tags_textual.begin() ; mter != reading->tags_textual.end() ; mter++) {
-						// ToDo: Cache regexp and icase hits/misses
-						const Tag *itag = single_tags.find(mter->second)->second;
-						UErrorCode status = U_ZERO_ERROR;
-						uregex_setText(tag->regexp, itag->tag, u_strlen(itag->tag), &status);
-						if (status != U_ZERO_ERROR) {
-							u_fprintf(ux_stderr, "Error: uregex_setText(MatchSet) returned %s - cannot continue!\n", u_errorName(status));
-							exit(1);
-						}
-						status = U_ZERO_ERROR;
-						match = (uregex_matches(tag->regexp, 0, &status) == TRUE);
-						if (status != U_ZERO_ERROR) {
-							u_fprintf(ux_stderr, "Error: uregex_matches(MatchSet) returned %s - cannot continue!\n", u_errorName(status));
-							exit(1);
-						}
-						if (match) {
-							break;
-						}
-					}
-				}
-				else if (reading->tags.find(ster->second) == reading->tags.end()) {
-					match = false;
-					if (tag->type & T_NEGATIVE) {
-						match = true;
-					}
-				}
-				else {
-					if (tag->type & T_NEGATIVE) {
-						match = false;
-					}
-				}
+				bool match = doesTagMatchReading(reading, ster->second, bypass_index);
 				if (match) {
-					match_single++;
-					used_special = comp_special;
-					only_plain = comp_plain;
-					if (failfast) {
-						retval = false;
-					}
-					else {
-						retval = true;
-					}
-					if (tag->type & T_MAPPING || tag->tag[0] == grammar->mapping_prefix) {
-						last_mapping_tag = tag->hash;
-					}
+					retval = true;
 					break;
-				} else {
-					used_special = set_special;
-					only_plain = set_plain;
 				}
 			}
 
 			if (!retval) {
 				for (ster = theset->tags.begin() ; ster != theset->tags.end() ; ster++) {
 					bool match = true;
-					bool failfast = true;
-					bool comp_special = false;
-					bool comp_plain = true;
 					const CompositeTag *ctag = grammar->tags.find(ster->second)->second;
 
 					stdext::hash_map<uint32_t, uint32_t>::const_iterator cter;
 					for (cter = ctag->tags.begin() ; cter != ctag->tags.end() ; cter++) {
-						const Tag *tag = grammar->single_tags.find(cter->second)->second;
-						if (!(tag->type & T_FAILFAST)) {
-							failfast = false;
-						}
-						if (tag->type & (T_WORDFORM|T_BASEFORM)) {
-							comp_special = true;
-							set_special = true;
-						}
-						if (tag->type) {
-							comp_plain = false;
-							set_plain = false;
-						}
-						if (reading->tags.find(cter->second) == reading->tags.end()) {
-							match = false;
-							if (tag->type & T_NEGATIVE) {
-								match = true;
-							}
-						}
-						else {
-							if (tag->type & T_NEGATIVE) {
-								match = false;
-							}
-						}
-						if (!match) {
+						bool match = doesTagMatchReading(reading, ster->second, bypass_index);
+						if (match) {
+							retval = true;
 							break;
-						}
-						if (tag->type & T_MAPPING || tag->tag[0] == grammar->mapping_prefix) {
-							last_mapping_tag = tag->hash;
 						}
 					}
 					if (match) {
 						match_comp++;
-						used_special = comp_special;
-						only_plain = comp_plain;
+						/*
 						if (failfast) {
 							retval = false;
 						}
 						else {
 							retval = true;
 						}
+						//*/
 						break;
 					} else {
 						last_mapping_tag = 0;
-						used_special = set_special;
-						only_plain = set_plain;
 					}
 				}
 			}
 		}
 		else {
-			used_special = true;
-			only_plain = false;
 			uint32_t size = (uint32_t)theset->sets.size();
 			for (uint32_t i=0;i<size;i++) {
 				bool match = doesSetMatchReading(reading, theset->sets.at(i), bypass_index);
@@ -278,18 +234,18 @@ bool GrammarApplicator::doesSetMatchReading(const Reading *reading, const uint32
 	}
 
 	if (retval) {
+		/*
 		if (only_plain && reading->hash_plain && reading->hash_plain != 1) {
 			if (index_reading_plain_yes.find(reading->hash_plain) == index_reading_plain_yes.end()) {
 				index_reading_plain_yes[reading->hash_plain] = new Index();
 			}
 			index_reading_plain_yes[reading->hash_plain]->values[set] = set;
 		}
-		/*
 		else if (!used_special && reading->hash_tags) {
-		if (index_reading_tags_yes.find(reading->hash_tags) == index_reading_tags_yes.end()) {
-		index_reading_tags_yes[reading->hash_tags] = new Index();
-		}
-		index_reading_tags_yes[reading->hash_tags]->values[set] = set;
+			if (index_reading_tags_yes.find(reading->hash_tags) == index_reading_tags_yes.end()) {
+				index_reading_tags_yes[reading->hash_tags] = new Index();
+			}
+			index_reading_tags_yes[reading->hash_tags]->values[set] = set;
 		}
 		//*/
 		if (reading->hash && reading->hash != 1) {
@@ -300,18 +256,18 @@ bool GrammarApplicator::doesSetMatchReading(const Reading *reading, const uint32
 		}
 	}
 	else {
+		/*
 		if (only_plain && reading->hash_plain && reading->hash_plain != 1) {
 			if (index_reading_plain_no.find(reading->hash_plain) == index_reading_plain_no.end()) {
 				index_reading_plain_no[reading->hash_plain] = new Index();
 			}
 			index_reading_plain_no[reading->hash_plain]->values[set] = set;
 		}
-		/*
 		else if (!used_special && reading->hash_tags) {
-		if (index_reading_tags_no.find(reading->hash_tags) == index_reading_tags_no.end()) {
-		index_reading_tags_no[reading->hash_tags] = new Index();
-		}
-		index_reading_tags_no[reading->hash_tags]->values[set] = set;
+			if (index_reading_tags_no.find(reading->hash_tags) == index_reading_tags_no.end()) {
+				index_reading_tags_no[reading->hash_tags] = new Index();
+			}
+			index_reading_tags_no[reading->hash_tags]->values[set] = set;
 		}
 		//*/
 		if (reading->hash && reading->hash != 1) {

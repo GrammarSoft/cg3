@@ -30,7 +30,6 @@ inline void GrammarApplicator::reflowSingleWindow(SingleWindow *swindow) {
 	swindow->tags_textual.clear();
 	swindow->dep_map.clear();
 
-	// ToDo: Clean out dependency information on every reflow
 	for (uint32_t c=0 ; c < swindow->cohorts.size() ; c++) {
 		Cohort *cohort = swindow->cohorts[c];
 
