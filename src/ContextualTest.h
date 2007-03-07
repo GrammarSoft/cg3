@@ -42,7 +42,6 @@ namespace CG3 {
 
 		// ToDo: Implement careful barrier
 		uint32_t target;
-		// ToDo: Test barrier
 		uint32_t barrier;
 
 		mutable uint32_t num_fail, num_match;
