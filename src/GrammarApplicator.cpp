@@ -87,6 +87,57 @@ uint32_t GrammarApplicator::addTag(const UChar *txt) {
 	return hash;
 }
 
+void GrammarApplicator::printReading(Reading *reading, UFILE *output) {
+	if (reading->noprint) {
+		return;
+	}
+	if (reading->deleted) {
+		u_fprintf(output, ";");
+	}
+	u_fprintf(output, "\t");
+	if (reading->baseform) {
+		GrammarWriter::printTagRaw(output, single_tags[reading->baseform]);
+		u_fprintf(output, " ");
+	} else {
+		// ToDo: Allow whitespace in baseforms.
+		u_fprintf(ux_stderr, "Warning: Reading had no baseform. Usually caused by whitespace in the baseform.\n");
+	}
+
+	stdext::hash_map<uint32_t, uint32_t> used_tags;
+	std::list<uint32_t>::iterator tter;
+	for (tter = reading->tags_list.begin() ; tter != reading->tags_list.end() ; tter++) {
+		if (used_tags.find(*tter) != used_tags.end()) {
+			continue;
+		}
+		used_tags[*tter] = *tter;
+		const Tag *tag = 0;
+		if (grammar->single_tags.find(*tter) != grammar->single_tags.end()) {
+			tag = grammar->single_tags.find(*tter)->second;
+		}
+		else {
+			tag = single_tags[*tter];
+		}
+		assert(tag != 0);
+		if (!(tag->type & T_BASEFORM) && !(tag->type & T_WORDFORM)) {
+			GrammarWriter::printTagRaw(output, tag);
+			u_fprintf(output, " ");
+		}
+	}
+	if (trace) {
+		if (!reading->mapped_by.empty()) {
+			for (uint32_t i=0;i<reading->mapped_by.size();i++) {
+				u_fprintf(output, "%S:%u ", keywords[grammar->rule_by_line.find(reading->mapped_by.at(i))->second->type], reading->mapped_by.at(i));
+			}
+		}
+		if (!reading->hit_by.empty()) {
+			for (uint32_t i=0;i<reading->hit_by.size();i++) {
+				u_fprintf(output, "%S:%u ", keywords[grammar->rule_by_line.find(reading->hit_by.at(i))->second->type], reading->hit_by.at(i));
+			}
+		}
+	}
+	u_fprintf(output, "\n");
+}
+
 void GrammarApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 	if (window->text) {
 		u_fprintf(output, "%S", window->text);
@@ -105,100 +156,11 @@ void GrammarApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 
 		std::list<Reading*>::iterator rter;
 		for (rter = cohort->readings.begin() ; rter != cohort->readings.end() ; rter++) {
-			Reading *reading = *rter;
-			if (reading->noprint) {
-				continue;
-			}
-			if (reading->deleted) {
-				u_fprintf(output, ";");
-			}
-			u_fprintf(output, "\t");
-			if (reading->baseform) {
-				GrammarWriter::printTagRaw(output, single_tags[reading->baseform]);
-				u_fprintf(output, " ");
-			} else {
-				// ToDo: Allow whitespace in baseforms.
-				u_fprintf(ux_stderr, "Warning: Reading had no baseform. Usually caused by whitespace in the baseform.\n");
-			}
-
-			stdext::hash_map<uint32_t, uint32_t> used_tags;
-			std::list<uint32_t>::iterator tter;
-			for (tter = reading->tags_list.begin() ; tter != reading->tags_list.end() ; tter++) {
-				if (used_tags.find(*tter) != used_tags.end()) {
-					continue;
-				}
-				used_tags[*tter] = *tter;
-				const Tag *tag = 0;
-				if (grammar->single_tags.find(*tter) != grammar->single_tags.end()) {
-					tag = grammar->single_tags.find(*tter)->second;
-				}
-				else {
-					tag = single_tags[*tter];
-				}
-				assert(tag != 0);
-				if (!(tag->type & T_BASEFORM) && !(tag->type & T_WORDFORM)) {
-					GrammarWriter::printTagRaw(output, tag);
-					u_fprintf(output, " ");
-				}
-			}
-			if (trace) {
-				if (!reading->mapped_by.empty()) {
-					for (uint32_t i=0;i<reading->mapped_by.size();i++) {
-						u_fprintf(output, "%S:%u ", keywords[grammar->rule_by_line.find(reading->mapped_by.at(i))->second->type], reading->mapped_by.at(i));
-					}
-				}
-				if (!reading->hit_by.empty()) {
-					for (uint32_t i=0;i<reading->hit_by.size();i++) {
-						u_fprintf(output, "%S:%u ", keywords[grammar->rule_by_line.find(reading->hit_by.at(i))->second->type], reading->hit_by.at(i));
-					}
-				}
-			}
-			u_fprintf(output, "\n");
+			printReading(*rter, output);
 		}
 		if (trace) {
 			for (rter = cohort->deleted.begin() ; rter != cohort->deleted.end() ; rter++) {
-				Reading *reading = *rter;
-				if (reading->noprint) {
-					continue;
-				}
-				if (reading->deleted) {
-					u_fprintf(output, ";");
-				}
-				u_fprintf(output, "\t");
-				GrammarWriter::printTagRaw(output, single_tags[reading->baseform]);
-				u_fprintf(output, " ");
-
-				stdext::hash_map<uint32_t, uint32_t> used_tags;
-				std::list<uint32_t>::iterator tter;
-				for (tter = reading->tags_list.begin() ; tter != reading->tags_list.end() ; tter++) {
-					if (used_tags.find(*tter) != used_tags.end()) {
-						continue;
-					}
-					used_tags[*tter] = *tter;
-					const Tag *tag = 0;
-					if (grammar->single_tags.find(*tter) != grammar->single_tags.end()) {
-						tag = grammar->single_tags.find(*tter)->second;
-					}
-					else {
-						tag = single_tags[*tter];
-					}
-					assert(tag != 0);
-					if (!(tag->type & T_BASEFORM) && !(tag->type & T_WORDFORM)) {
-						GrammarWriter::printTagRaw(output, tag);
-						u_fprintf(output, " ");
-					}
-				}
-				if (!reading->mapped_by.empty()) {
-					for (uint32_t i=0;i<reading->mapped_by.size();i++) {
-						u_fprintf(output, "%S:%u ", keywords[grammar->rule_by_line.find(reading->mapped_by.at(i))->second->type], reading->mapped_by.at(i));
-					}
-				}
-				if (!reading->hit_by.empty()) {
-					for (uint32_t i=0;i<reading->hit_by.size();i++) {
-						u_fprintf(output, "%S:%u ", keywords[grammar->rule_by_line.find(reading->hit_by.at(i))->second->type], reading->hit_by.at(i));
-					}
-				}
-				u_fprintf(output, "\n");
+				printReading(*rter, output);
 			}
 		}
 		for (rter = cohort->readings.begin() ; rter != cohort->readings.end() ; rter++) {

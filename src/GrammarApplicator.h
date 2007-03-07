@@ -76,6 +76,7 @@ namespace CG3 {
 		bool doesSetMatchCohortCareful(const Cohort *cohort, const uint32_t set);
 		int32_t doesSetMatchDependency(const SingleWindow *sWindow, const Cohort *current, const ContextualTest *test);
 
+		void printReading(Reading *reading, UFILE *output);
 		void printSingleWindow(SingleWindow *window, UFILE *output);
 
 	private:
