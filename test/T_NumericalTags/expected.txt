@@ -1,4 +1,8 @@
 "<word>"
+	"word" <VALUE=50> @fifty 
 	"word" <VALUE:50> @fifty 
-	"word" <VALUE>40> @lessfifty 
-	"word" <VALUE<60> @morefifty 
+	"word" <VALUE>50> @moreThanFifty @moreThanSixty 
+	"word" <VALUE<50> @lessThanFifty @lessThanForty 
+	"word" <VALUE>40> @fifty @moreThanFifty @lessThanFifty @moreThanSixty 
+	"word" <VALUE<60> @fifty @moreThanFifty @lessThanFifty @lessThanForty 
+

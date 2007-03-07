@@ -49,6 +49,7 @@ Reading::~Reading() {
 	tags_plain.clear();
 	tags_mapped.clear();
 	tags_textual.clear();
+	tags_numerical.clear();
 	tags_list.clear();
 	hit_by.clear();
 	dep_parents.clear();

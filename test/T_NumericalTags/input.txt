@@ -1,4 +1,7 @@
 "<word>"
+	"word" <VALUE=50>
 	"word" <VALUE:50>
+	"word" <VALUE>50>
+	"word" <VALUE<50>
 	"word" <VALUE>40>
 	"word" <VALUE<60>

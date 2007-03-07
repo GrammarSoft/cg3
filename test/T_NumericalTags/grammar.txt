@@ -2,6 +2,8 @@ DELIMITERS = "<$.>" ;
 
 BEFORE-SECTIONS
 
-MAP (@fifty) (<VALUE=50>) ;
-MAP (@morefifty) (<VALUE>50>) ;
-MAP (@lessfifty) (<VALUE<50>) ;
+ADD (@fifty) (<VALUE=50>) ;
+ADD (@moreThanFifty) (<VALUE>50>) ;
+ADD (@lessThanFifty) (<VALUE<50>) ;
+ADD (@moreThanSixty) (<VALUE>60>) ;
+ADD (@lessThanForty) (<VALUE<40>) ;

@@ -62,8 +62,54 @@ bool GrammarApplicator::doesTagMatchReading(const Reading *reading, const uint32
 	bypass_index = false;
 
 	const Tag *tag = grammar->single_tags.find(ztag)->second;
-	if (tag->regexp) {
-		match = !reading->tags_textual.empty();
+	if (tag->type & T_NUMERICAL && !reading->tags_numerical.empty()) {
+		match = false;
+		std::map<uint32_t, uint32_t>::const_iterator mter;
+		for (mter = reading->tags_numerical.begin() ; mter != reading->tags_numerical.end() ; mter++) {
+			const Tag *itag = single_tags.find(mter->second)->second;
+			if (tag->comparison_hash == itag->comparison_hash) {
+				if (tag->comparison_op == OP_EQUALS && itag->comparison_op == OP_EQUALS && tag->comparison_val == itag->comparison_val) {
+					match = true;
+					break;
+				}
+				if (tag->comparison_op == OP_EQUALS && itag->comparison_op == OP_LESSTHAN && tag->comparison_val < itag->comparison_val) {
+					match = true;
+					break;
+				}
+				if (tag->comparison_op == OP_EQUALS && itag->comparison_op == OP_GREATERTHAN && tag->comparison_val > itag->comparison_val) {
+					match = true;
+					break;
+				}
+
+				if (tag->comparison_op == OP_LESSTHAN && itag->comparison_op == OP_EQUALS && tag->comparison_val > itag->comparison_val) {
+					match = true;
+					break;
+				}
+				if (tag->comparison_op == OP_LESSTHAN && itag->comparison_op == OP_LESSTHAN) {
+					match = true;
+					break;
+				}
+				if (tag->comparison_op == OP_LESSTHAN && itag->comparison_op == OP_GREATERTHAN && tag->comparison_val > itag->comparison_val) {
+					match = true;
+					break;
+				}
+
+				if (tag->comparison_op == OP_GREATERTHAN && itag->comparison_op == OP_EQUALS && tag->comparison_val < itag->comparison_val) {
+					match = true;
+					break;
+				}
+				if (tag->comparison_op == OP_GREATERTHAN && itag->comparison_op == OP_GREATERTHAN) {
+					match = true;
+					break;
+				}
+				if (tag->comparison_op == OP_GREATERTHAN && itag->comparison_op == OP_LESSTHAN && tag->comparison_val < itag->comparison_val) {
+					match = true;
+					break;
+				}
+			}
+		}
+	}
+	else if (tag->regexp && !reading->tags_textual.empty()) {
 		std::map<uint32_t, uint32_t>::const_iterator mter;
 		for (mter = reading->tags_textual.begin() ; mter != reading->tags_textual.end() ; mter++) {
 			// ToDo: Cache regexp and icase hits/misses

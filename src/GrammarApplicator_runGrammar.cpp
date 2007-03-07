@@ -124,6 +124,7 @@ inline void GrammarApplicator::reflowReading(Reading *reading) {
 	reading->tags_mapped.clear();
 	reading->tags_plain.clear();
 	reading->tags_textual.clear();
+	reading->tags_numerical.clear();
 
 	std::list<uint32_t>::const_iterator tter;
 	for (tter = reading->tags_list.begin() ; tter != reading->tags_list.end() ; tter++) {
@@ -141,6 +142,9 @@ inline void GrammarApplicator::reflowReading(Reading *reading) {
 		}
 		if (tag->type & (T_TEXTUAL|T_WORDFORM|T_BASEFORM)) {
 			reading->tags_textual[*tter] = *tter;
+		}
+		if (tag->type & T_NUMERICAL) {
+			reading->tags_numerical[*tter] = *tter;
 		}
 		if (!reading->baseform && tag->type & T_BASEFORM) {
 			reading->baseform = tag->hash;
