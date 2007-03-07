@@ -436,6 +436,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(Window *window, const std::vector<R
 				}
 
 				bool did_test = false;
+				bool did_append = false;
 				bool test_good = false;
 				for (rter = cohort->readings.begin() ; rter != cohort->readings.end() ; rter++) {
 					Reading *reading = *rter;
@@ -464,9 +465,6 @@ uint32_t GrammarApplicator::runRulesOnWindow(Window *window, const std::vector<R
 										break;
 									}
 								}
-							}
-							if (type != K_APPEND) {
-								did_test = true;
 							}
 						}
 						else if (did_test) {
@@ -525,11 +523,6 @@ uint32_t GrammarApplicator::runRulesOnWindow(Window *window, const std::vector<R
 								reading->deleted = true;
 								reading->hit_by.push_back(rule->line);
 							}
-							/*
-							else {
-								selected.push_back(reading);
-							}
-							//*/
 						}
 						if (good) {
 							section_did_good = true;
@@ -645,7 +638,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(Window *window, const std::vector<R
 								}
 							}
 						}
-						else if (rule->type == K_APPEND) {
+						else if (rule->type == K_APPEND && !did_append) {
 							Reading *nr = cohort->allocateAppendReading();
 							nr->hit_by.push_back(rule->line);
 							nr->noprint = false;
@@ -658,6 +651,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(Window *window, const std::vector<R
 							if (!nr->tags_mapped.empty()) {
 								nr->mapped = true;
 							}
+							did_append = true;
 						}
 					}
 				}
