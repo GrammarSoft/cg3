@@ -42,8 +42,6 @@ namespace CG3 {
 		Set *delimiters;
 		std::vector<uint32_t> preferred_targets;
 
-		bool vislcg_compat_mode;
-
 		std::vector<uint32_t> sections;
 		std::map<uint32_t, Anchor*> anchors;
 

@@ -30,7 +30,6 @@ Reading::Reading() {
 	hash_textual = 0;
 	mapped = false;
 	deleted = false;
-	selected = false;
 	noprint = false;
 	matched_target = false;
 	matched_tests = false;

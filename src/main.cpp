@@ -53,7 +53,6 @@ namespace Options {
 		LOCALE_GRAMMAR,
 		LOCALE_INPUT,
 		LOCALE_OUTPUT,
-		FAST,
 		NOMAPPINGS,
 		NOCORRECTIONS,
 		TRACE,
@@ -92,7 +91,6 @@ namespace Options {
 			UOPTION_DEF("locale-grammar",		0, UOPT_REQUIRES_ARG),
 			UOPTION_DEF("locale-input",			0, UOPT_REQUIRES_ARG),
 			UOPTION_DEF("locale-output",		0, UOPT_REQUIRES_ARG),
-			UOPTION_DEF("fast",					0, UOPT_NO_ARG),
 			UOPTION_DEF("no-mappings",			0, UOPT_NO_ARG),
 			UOPTION_DEF("no-corrections",		0, UOPT_NO_ARG),
 			UOPTION_DEF("trace",				0, UOPT_NO_ARG),
@@ -319,9 +317,6 @@ int main(int argc, char* argv[]) {
 
 		applicator = new CG3::GrammarApplicator();
 		applicator->setGrammar(grammar);
-		if (options[FAST].doesOccur) {
-			applicator->fast = true;
-		}
 		applicator->apply_mappings = true;
 		if (options[NOMAPPINGS].doesOccur) {
 			applicator->apply_mappings = false;
@@ -358,9 +353,6 @@ int main(int argc, char* argv[]) {
 
 				applicator = new CG3::GrammarApplicator();
 				applicator->setGrammar(grammar);
-				if (options[FAST].doesOccur) {
-					applicator->fast = true;
-				}
 				applicator->apply_mappings = true;
 				if (options[NOMAPPINGS].doesOccur) {
 					applicator->apply_mappings = false;
@@ -408,9 +400,6 @@ int main(int argc, char* argv[]) {
 
 			applicator = new CG3::GrammarApplicator();
 			applicator->setGrammar(grammar);
-			if (options[FAST].doesOccur) {
-				applicator->fast = true;
-			}
 			applicator->apply_mappings = true;
 			if (options[NOMAPPINGS].doesOccur) {
 				applicator->apply_mappings = false;

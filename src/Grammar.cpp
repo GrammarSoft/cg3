@@ -25,7 +25,6 @@ Grammar::Grammar() {
 	lines = 0;
 	curline = 0;
 	delimiters = 0;
-	vislcg_compat_mode = false;
 	mapping_prefix = '@';
 	srand((uint32_t)time(0));
 }

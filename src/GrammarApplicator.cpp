@@ -26,7 +26,6 @@ using namespace CG3::Strings;
 
 GrammarApplicator::GrammarApplicator() {
 	// ToDo: Make --always-span switch
-	fast = false;
 	apply_mappings = true;
 	apply_corrections = true;
 	trace = false;
@@ -124,11 +123,6 @@ void GrammarApplicator::printReading(Reading *reading, UFILE *output) {
 		}
 	}
 	if (trace) {
-		if (!reading->mapped_by.empty()) {
-			for (uint32_t i=0;i<reading->mapped_by.size();i++) {
-				u_fprintf(output, "%S:%u ", keywords[grammar->rule_by_line.find(reading->mapped_by.at(i))->second->type], reading->mapped_by.at(i));
-			}
-		}
 		if (!reading->hit_by.empty()) {
 			for (uint32_t i=0;i<reading->hit_by.size();i++) {
 				u_fprintf(output, "%S:%u ", keywords[grammar->rule_by_line.find(reading->hit_by.at(i))->second->type], reading->hit_by.at(i));
