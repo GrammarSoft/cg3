@@ -92,7 +92,7 @@ void ContextualTest::parsePosition(const UChar *pos) {
 	if ((!dep_child && !dep_parent && !dep_sibling) && (retval == EOF || (offset == 0 && tmp[0] == 0 && retval < 1))) {
 		u_fprintf(ux_stderr, "Error: '%S' is not a valid position!\n", pos);
 	}
-	if ((dep_child || dep_parent || dep_sibling) && (scanall || scanfirst || absolute || span_left || span_right || span_both || offset != 0)) {
+	if ((dep_child || dep_parent || dep_sibling) && (scanall || scanfirst || span_left || span_right || span_both)) {
 		u_fprintf(ux_stderr, "Warning: Position '%S' is mixed. Behavior for mixed positions is undefined.\n", pos);
 	}
 }
