@@ -1,0 +1,4 @@
+DELIMITERS = "<$.>" ;
+
+BEFORE-SECTIONS
+MAP (@tag) ("word") (1* (findme) BARRIER ("blocker")) ;
