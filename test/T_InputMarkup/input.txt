@@ -1,0 +1,19 @@
+This is some text that should not interfere with the run.
+"<word>"
+	"word" notwanted
+	"word" wanted
+Some more text.
+	"word" notmeeither
+<tag>
+Text.
+"<word>"
+You guessed it, text.
+	"word" notwanted
+	"word" wanted
+	"word" notmeeither
+</tag>
+"<word>"
+	"word" notwanted
+	"word" wanted
+	"word" notmeeither
+<fluffy>
