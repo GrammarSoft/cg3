@@ -173,6 +173,7 @@ bool GrammarApplicator::doesSetMatchReading(const Reading *reading, const uint32
 							retval = true;
 						}
 						//*/
+						retval = true;
 						break;
 					} else {
 						last_mapping_tag = 0;
