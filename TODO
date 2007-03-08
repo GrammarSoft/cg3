@@ -4,7 +4,6 @@ src/ContextualTest.h:		// ToDo: Implement careful barrier
 src/GrammarApplicator.cpp:	// ToDo: Make --always-span switch
 src/GrammarApplicator.cpp:		// ToDo: Allow whitespace in baseforms.
 src/GrammarApplicator_matchSet.cpp:			// ToDo: Cache regexp and icase hits/misses
-src/GrammarApplicator_runGrammar.cpp:				// ToDo: Add max window length
 src/GrammarApplicator_runGrammar.cpp:	// ToDo: Make old cohort -> rules order available via switch
 src/GrammarApplicator_runGrammar.cpp:	// ToDo: (NOT *) and (*C) tests can be cached
 src/GrammarParser.cpp:	// ToDo: Make line length dynamic

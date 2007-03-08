@@ -305,7 +305,6 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 				cCohort = 0;
 			}
 			if (cCohort && cSWindow) {
-				// ToDo: Add max window length
 				cSWindow->cohorts.push_back(cCohort);
 				lCohort = cCohort;
 				if (cCohort->readings.empty()) {
