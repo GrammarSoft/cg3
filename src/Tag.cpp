@@ -102,6 +102,7 @@ void Tag::parseTag(const UChar *to) {
 		delete tag;
 		tag = utag;
 		utag = 0;
+		comparison_hash = hash_sdbm_uchar(tag, 0);
 
 		if (tag && tag[0] == '<' && tag[length-1] == '>') {
 			UChar tkey[256];

@@ -82,13 +82,16 @@ int GrammarParser::parseRemSetVariable(const UChar *line, KEYWORDS key) {
 	space++;
 	rule->varname = hash_sdbm_uchar(varname, 0);
 
-	if (key == K_SETVARIABLE) {
+	/*
+	// ToDo: Fix variables
+	if (false && key == K_SETVARIABLE) {
 		varname = space;
 		space = u_strchr(space, ' ');
 		space[0] = 0;
 		space++;
 		rule->varvalue = hash_sdbm_uchar(varname, 0);
 	}
+	//*/
 
 	uint32_t res = parseTarget(&space);
 

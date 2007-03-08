@@ -1,0 +1,45 @@
+"<word>"
+	"word" male
+"<word>"
+	"word" unknown
+"<$.>"
+
+"<word>"
+	"word" unknown
+"<word>"
+	"word" unknown
+"<word>"
+	"word" female
+"<word>"
+	"word" unknown
+"<$.>"
+
+"<word>"
+	"word" unknown
+"<word>"
+	"word" unknown
+"<word>"
+	"word" female
+"<word>"
+	"word" unknown
+"<$.>"
+
+"<word>"
+	"word" unknown
+"<word>"
+	"word" unknown
+"<word>"
+	"word" male
+"<word>"
+	"word" unknown
+"<$.>"
+
+"<word>"
+	"word" unknown
+"<word>"
+	"word" unknown
+"<word>"
+	"word" female
+"<word>"
+	"word" unknown
+"<$.>"

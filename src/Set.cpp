@@ -87,7 +87,7 @@ void Set::reindex(Grammar *grammar) {
 		stdext::hash_map<uint32_t, uint32_t>::const_iterator comp_iter;
 		for (comp_iter = single_tags.begin() ; comp_iter != single_tags.end() ; comp_iter++) {
 			Tag *tag = grammar->single_tags.find(comp_iter->second)->second;
-			if (tag->type & T_MAPPING || tag->tag[0] == grammar->mapping_prefix) {
+			if (tag->type & T_MAPPING || tag->type & T_VARIABLE || tag->tag[0] == grammar->mapping_prefix) {
 				has_mappings = true;
 				return;
 			}
@@ -97,7 +97,7 @@ void Set::reindex(Grammar *grammar) {
 				CompositeTag *curcomptag = grammar->tags.find(comp_iter->second)->second;
 				if (curcomptag->tags.size() == 1) {
 					Tag *tag = grammar->single_tags.find(curcomptag->tags.begin()->second)->second;
-					if (tag->type & T_MAPPING || tag->tag[0] == grammar->mapping_prefix) {
+					if (tag->type & T_MAPPING || tag->type & T_VARIABLE || tag->tag[0] == grammar->mapping_prefix) {
 						has_mappings = true;
 						return;
 					}
@@ -105,7 +105,7 @@ void Set::reindex(Grammar *grammar) {
 					std::map<uint32_t, uint32_t>::const_iterator tag_iter;
 					for (tag_iter = curcomptag->tags_map.begin() ; tag_iter != curcomptag->tags_map.end() ; tag_iter++) {
 						Tag *tag = grammar->single_tags.find(tag_iter->second)->second;
-						if (tag->type & T_MAPPING || tag->tag[0] == grammar->mapping_prefix) {
+						if (tag->type & T_MAPPING || tag->type & T_VARIABLE || tag->tag[0] == grammar->mapping_prefix) {
 							has_mappings = true;
 							return;
 						}

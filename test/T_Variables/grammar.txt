@@ -1,0 +1,15 @@
+DELIMITERS = "<$.>" ;
+
+BEFORE-SECTIONS
+
+ADD (@male) (VAR:GenderMale) (NOT 0 (<<<)) ;
+ADD (@female) (VAR:GenderFemale) (NOT 0 (<<<)) ;
+
+REMVARIABLE GenderFemale (male) ;
+REMVARIABLE GenderMale (female) ;
+
+SETVARIABLE GenderMale (male) ;
+SETVARIABLE GenderFemale (female) ;
+
+ADD (@male) (VAR:GenderMale) (NOT 0 (<<<)) ;
+ADD (@female) (VAR:GenderFemale) (NOT 0 (<<<)) ;

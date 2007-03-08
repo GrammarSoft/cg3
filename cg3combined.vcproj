@@ -628,58 +628,6 @@
 				>
 			</File>
 		</Filter>
-		<Filter
-			Name="PHP Proof of Concept"
-			>
-			<File
-				RelativePath="..\..\cg3\php\cg3.php"
-				>
-			</File>
-			<File
-				RelativePath="..\..\cg3\php\cg3_applycg.php"
-				>
-			</File>
-			<File
-				RelativePath="..\..\cg3\php\cg3_checks.php"
-				>
-			</File>
-			<File
-				RelativePath="..\..\cg3\php\cg3_constants.php"
-				>
-			</File>
-			<File
-				RelativePath="..\..\cg3\php\cg3_getargs.php"
-				>
-			</File>
-			<File
-				RelativePath="..\..\cg3\php\cg3_misc.php"
-				>
-			</File>
-			<File
-				RelativePath="..\..\cg3\php\cg3_parsecg.php"
-				>
-			</File>
-			<File
-				RelativePath="..\..\cg3\php\cg3_php_compat.php"
-				>
-			</File>
-			<File
-				RelativePath="..\..\cg3\php\cg3_rules.php"
-				>
-			</File>
-			<File
-				RelativePath="..\..\cg3\php\cg3_runtests.php"
-				>
-			</File>
-			<File
-				RelativePath="..\..\cg3\php\cg3_set.php"
-				>
-			</File>
-			<File
-				RelativePath="..\..\cg3\php\cg3_set_ops.php"
-				>
-			</File>
-		</Filter>
 		<File
 			RelativePath=".\glossary.txt"
 			>

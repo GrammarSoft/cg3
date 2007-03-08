@@ -62,7 +62,17 @@ bool GrammarApplicator::doesTagMatchReading(const Reading *reading, const uint32
 	bypass_index = false;
 
 	const Tag *tag = grammar->single_tags.find(ztag)->second;
-	if (tag->type & T_NUMERICAL && !reading->tags_numerical.empty()) {
+	if (tag->type & T_VARIABLE) {
+		if (variables.find(tag->comparison_hash) == variables.end()) {
+			u_fprintf(ux_stderr, "Info: %u failed.\n", tag->comparison_hash);
+			match = false;
+		}
+		else {
+			u_fprintf(ux_stderr, "Info: %u matched.\n", tag->comparison_hash);
+			match = true;
+		}
+	}
+	else if (tag->type & T_NUMERICAL && !reading->tags_numerical.empty()) {
 		match = false;
 		std::map<uint32_t, uint32_t>::const_iterator mter;
 		for (mter = reading->tags_numerical.begin() ; mter != reading->tags_numerical.end() ; mter++) {
@@ -129,11 +139,11 @@ bool GrammarApplicator::doesTagMatchReading(const Reading *reading, const uint32
 			match = true;
 		}
 	}
-	else {
-		if (tag->type & T_NEGATIVE) {
-			match = false;
-		}
+
+	if (tag->type & T_NEGATIVE) {
+			match = !match;
 	}
+
 	if (match) {
 		match_single++;
 		if (tag->type & T_FAILFAST) {

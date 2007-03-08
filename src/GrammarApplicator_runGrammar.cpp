@@ -589,10 +589,12 @@ uint32_t GrammarApplicator::runRulesOnWindow(Window *window, const std::vector<R
 					}
 					if (good) {
 						if (type == K_REMVARIABLE) {
-							variables[rule->varname] = 0;
+							u_fprintf(ux_stderr, "Info: RemVariable fired for %u.\n", rule->varname);
+							variables.erase(rule->varname);
 						}
 						else if (type == K_SETVARIABLE) {
-							variables[rule->varname] = rule->varvalue;
+							u_fprintf(ux_stderr, "Info: SetVariable fired for %u.\n", rule->varname);
+							variables[rule->varname] = 1;
 						}
 						else if (type == K_DELIMIT) {
 							SingleWindow *nwin = new SingleWindow();
