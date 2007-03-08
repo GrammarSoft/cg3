@@ -17,6 +17,9 @@
 #ifndef __GPRE2C_H
 #define __GPRE2C_H
 
+// re2c defines
+#define YYCTYPE         UChar
+
 #include "IGrammarParser.h"
  
 namespace CG3 {
