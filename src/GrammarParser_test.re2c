@@ -255,9 +255,9 @@ parseTagList_end:
 	return YYCURSOR;
 }
 
-YYCTYPE *GrammarParser::re2c_parseDelimiters(YYCTYPE *input) {
+YYCTYPE *GrammarParser::re2c_parseDelimiters(YYCTYPE *input, STRINGS which) {
 	CG3::Set *curset = result->allocateSet();
-	curset->setName(stringbits[S_DELIMITSET]);
+	curset->setName(stringbits[which]);
 	curset->line = result->lines;
 
 parseDelimiters_start:
@@ -272,7 +272,12 @@ parseDelimiters_start:
 
 parseDelimiters_end:
 	result->addSet(curset);
-	result->delimiters = curset;
+	if (which == S_DELIMITSET) {
+		result->delimiters = curset;
+	}
+	else if (which == S_SOFTDELIMITSET) {
+		result->soft_delimiters = curset;
+	}
 	return YYCURSOR;
 }
 
@@ -402,13 +407,14 @@ scan_start:
 	space			{goto scan_start;}
 	'PREFERRED-TARGETS'		{YYCURSOR = re2c_parsePreferredTargets(YYCURSOR); marker = YYCURSOR; goto scan_start;}
 	'BEFORE-SECTIONS'		{goto scan_start;}
+	'SOFT-DELIMITERS'		{YYCURSOR = re2c_parseDelimiters(YYCURSOR, S_SOFTDELIMITSET); marker = YYCURSOR; goto scan_start;}
 	'AFTER-SECTIONS'		{goto scan_start;}
 	'MAPPING-PREFIX'		{goto scan_start;}
 	'REMVARIABLE'	{goto scan_start;}
 	'SETVARIABLE'	{goto scan_start;}
 	'CORRECTIONS'	{goto scan_start;}
 	'CONSTRAINTS'	{goto scan_start;}
-	'DELIMITERS'	{YYCURSOR = re2c_parseDelimiters(YYCURSOR); marker = YYCURSOR; goto scan_start;}
+	'DELIMITERS'	{YYCURSOR = re2c_parseDelimiters(YYCURSOR, S_DELIMITSET); marker = YYCURSOR; goto scan_start;}
 	'SUBSTITUTE'	{goto scan_start;}
 	'MAPPINGS'		{goto scan_start;}
 	'SECTION'		{goto scan_start;}

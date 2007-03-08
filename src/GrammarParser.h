@@ -78,7 +78,7 @@ namespace CG3 {
 		YYCTYPE *re2c_parseTagList(YYCTYPE *input, Set *set);
 		YYCTYPE *re2c_parseSet(YYCTYPE *input);
 		YYCTYPE *re2c_parseList(YYCTYPE *input);
-		YYCTYPE *re2c_parseDelimiters(YYCTYPE *input);
+		YYCTYPE *re2c_parseDelimiters(YYCTYPE *input, STRINGS which);
 		YYCTYPE *re2c_parsePreferredTargets(YYCTYPE *input);
 		KEYWORDS re2c_scan(YYCTYPE *input);
 	};
