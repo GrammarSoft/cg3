@@ -27,7 +27,7 @@
 namespace CG3 {
 	class IGrammarParser {
 	public:
-		virtual ~IGrammarParser();
+		virtual ~IGrammarParser() {};
 		virtual void setCompatible(bool compat) = 0;
 		virtual void setResult(CG3::Grammar *result) = 0;
 		virtual int parse_grammar_from_file(const char *filename, const char *locale, const char *codepage) = 0;
