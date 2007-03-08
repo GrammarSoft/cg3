@@ -40,6 +40,7 @@ namespace CG3 {
 		stdext::hash_map<uint32_t, Set*> sets_by_contents;
 		stdext::hash_map<uint32_t, uint32_t> set_alias;
 		Set *delimiters;
+		Set *soft_delimiters;
 		std::vector<uint32_t> preferred_targets;
 
 		std::vector<uint32_t> sections;

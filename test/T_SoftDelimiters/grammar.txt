@@ -1,0 +1,6 @@
+DELIMITERS = "<$.>" ;
+SOFT-DELIMITERS = "<$soft>" ;
+
+BEFORE-SECTIONS
+
+MAP (@breakhere) (<<<) ;

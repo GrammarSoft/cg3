@@ -1,0 +1,44 @@
+"<word>"
+	"word" wanted 
+"<word>"
+	"word" wanted 
+"<$.>"
+	"<$.>" <<< @breakhere 
+
+"<word>"
+	"word" wanted 
+"<word>"
+	"word" wanted 
+"<word>"
+	"word" wanted 
+"<word>"
+	"word" wanted 
+"<word>"
+	"word" wanted 
+"<$soft>"
+	"<$soft>" <<< @breakhere 
+
+"<word>"
+	"word" wanted 
+"<word>"
+	"word" wanted 
+"<word>"
+	"word" wanted 
+"<word>"
+	"word" wanted 
+"<word>"
+	"word" wanted 
+"<word>"
+	"word" wanted <<< @breakhere 
+
+"<word>"
+	"word" wanted 
+"<word>"
+	"word" wanted 
+"<word>"
+	"word" wanted 
+"<word>"
+	"word" wanted 
+"<$.>"
+	"<$.>" <<< @breakhere 
+

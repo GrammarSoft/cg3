@@ -134,6 +134,9 @@ int GrammarParser::parseSingleLine(KEYWORDS key, const UChar *line) {
 		case K_DELIMITERS:
 			parseDelimiters(local);
 			break;
+		case K_SOFT_DELIMITERS:
+			parseSoftDelimiters(local);
+			break;
 		case K_PREFERRED_TARGETS:
 			parsePreferredTargets(local);
 			break;

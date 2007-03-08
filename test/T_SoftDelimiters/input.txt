@@ -1,0 +1,37 @@
+"<word>"
+	"word" wanted
+"<word>"
+	"word" wanted
+"<$.>"
+"<word>"
+	"word" wanted
+"<word>"
+	"word" wanted
+"<word>"
+	"word" wanted
+"<word>"
+	"word" wanted
+"<word>"
+	"word" wanted
+"<$soft>"
+"<word>"
+	"word" wanted
+"<word>"
+	"word" wanted
+"<word>"
+	"word" wanted
+"<word>"
+	"word" wanted
+"<word>"
+	"word" wanted
+"<word>"
+	"word" wanted
+"<word>"
+	"word" wanted
+"<word>"
+	"word" wanted
+"<word>"
+	"word" wanted
+"<word>"
+	"word" wanted
+"<$.>"

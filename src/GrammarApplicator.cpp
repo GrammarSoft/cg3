@@ -42,6 +42,8 @@ GrammarApplicator::GrammarApplicator() {
 	match_single = 0;
 	match_comp = 0;
 	match_sub = 0;
+	soft_limit = 300;
+	hard_limit = 500;
 	index_reading_yes.clear();
 	index_reading_no.clear();
 }

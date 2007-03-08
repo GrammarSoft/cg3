@@ -41,6 +41,8 @@ namespace CG3 {
 		void disableStatistics();
 
 		uint32_t num_windows;
+		uint32_t soft_limit;
+		uint32_t hard_limit;
 		uint32_t cache_hits, cache_miss, match_single, match_comp, match_sub;
 		uint32_t begintag, endtag;
 		uint32_t last_mapping_tag;

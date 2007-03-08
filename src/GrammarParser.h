@@ -44,6 +44,7 @@ namespace CG3 {
 		int parseSingleLine(KEYWORDS key, const UChar *line);
 
 		int parseDelimiters(const UChar *line);
+		int parseSoftDelimiters(const UChar *line);
 		int parsePreferredTargets(const UChar *line);
 		int parseMappingPrefix(const UChar *line);
 

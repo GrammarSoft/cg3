@@ -226,7 +226,39 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 
 		if (cleaned[0] == '"' && cleaned[1] == '<') {
 			ux_trim(cleaned);
-			if (cCohort && doesTagMatchSet(cCohort->wordform, grammar->delimiters->hash)) {
+			if (cCohort && cSWindow->cohorts.size() >= soft_limit && doesTagMatchSet(cCohort->wordform, grammar->soft_delimiters->hash)) {
+				if (cSWindow->cohorts.size() >= soft_limit) {
+					u_fprintf(ux_stderr, "Warning: Soft limit of %u cohorts reached but found suitable soft delimiter.\n", soft_limit);
+				}
+				if (cCohort->readings.empty()) {
+					cReading = new Reading();
+					cReading->wordform = cCohort->wordform;
+					cReading->baseform = cCohort->wordform;
+					cReading->tags[cCohort->wordform] = cCohort->wordform;
+					cReading->tags_list.push_back(cCohort->wordform);
+					cReading->noprint = true;
+					reflowReading(cReading);
+					cCohort->readings.push_back(cReading);
+					lReading = cReading;
+				}
+				std::list<Reading*>::iterator iter;
+				for (iter = cCohort->readings.begin() ; iter != cCohort->readings.end() ; iter++) {
+					(*iter)->tags_list.push_back(endtag);
+					(*iter)->tags[endtag] = endtag;
+					(*iter)->rehash();
+				}
+
+				cSWindow->cohorts.push_back(cCohort);
+				cWindow->next.push_back(cSWindow);
+				lSWindow = cSWindow;
+				lCohort = cCohort;
+				cSWindow = 0;
+				cCohort = 0;
+			}
+			if (cCohort && (cSWindow->cohorts.size() >= hard_limit || doesTagMatchSet(cCohort->wordform, grammar->delimiters->hash))) {
+				if (cSWindow->cohorts.size() >= hard_limit) {
+					u_fprintf(ux_stderr, "Warning: Hard limit of %u cohorts reached - forcing break.\n", hard_limit);
+				}
 				if (cCohort->readings.empty()) {
 					cReading = new Reading();
 					cReading->wordform = cCohort->wordform;

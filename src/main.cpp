@@ -60,6 +60,8 @@ namespace Options {
 		SINGLERUN,
 		MAPPING_PREFIX,
 		RE2C,
+		SOFT_LIMIT,
+		HARD_LIMIT,
 		NUM_OPTIONS
 	};
 
@@ -98,7 +100,9 @@ namespace Options {
 			UOPTION_DEF("single-run",			0, UOPT_NO_ARG),
 			UOPTION_DEF("prefix",			    0, UOPT_REQUIRES_ARG),
 
-			UOPTION_DEF("re2c",					0, UOPT_NO_ARG)
+			UOPTION_DEF("re2c",					0, UOPT_NO_ARG),
+			UOPTION_DEF("soft-limit",			0, UOPT_REQUIRES_ARG),
+			UOPTION_DEF("hard-limit",			0, UOPT_REQUIRES_ARG)
 	};
 }
 
@@ -334,6 +338,12 @@ int main(int argc, char* argv[]) {
 		if (options[GRAMMAR_INFO].doesOccur) {
 			applicator->enableStatistics();
 		}
+		if (options[SOFT_LIMIT].doesOccur) {
+			applicator->soft_limit = atoi(options[SOFT_LIMIT].value);
+		}
+		if (options[HARD_LIMIT].doesOccur) {
+			applicator->hard_limit = atoi(options[HARD_LIMIT].value);
+		}
 		applicator->runGrammarOnText(ux_stdin, ux_stdout);
 
 		std::cerr << "Applying grammar on input took " << glob_timer->getValueFrom(main_timer) << " seconds." << std::endl;
@@ -366,6 +376,12 @@ int main(int argc, char* argv[]) {
 				}
 				if (options[SINGLERUN].doesOccur) {
 					applicator->single_run = true;
+				}
+				if (options[SOFT_LIMIT].doesOccur) {
+					applicator->soft_limit = atoi(options[SOFT_LIMIT].value);
+				}
+				if (options[HARD_LIMIT].doesOccur) {
+					applicator->hard_limit = atoi(options[HARD_LIMIT].value);
 				}
 				applicator->enableStatistics();
 				applicator->runGrammarOnText(ux_stdin, ux_stdout);
@@ -413,6 +429,12 @@ int main(int argc, char* argv[]) {
 			}
 			if (options[SINGLERUN].doesOccur) {
 				applicator->single_run = true;
+			}
+			if (options[SOFT_LIMIT].doesOccur) {
+				applicator->soft_limit = atoi(options[SOFT_LIMIT].value);
+			}
+			if (options[HARD_LIMIT].doesOccur) {
+				applicator->hard_limit = atoi(options[HARD_LIMIT].value);
 			}
 			applicator->enableStatistics();
 			applicator->runGrammarOnText(ux_stdin, ux_stdout);

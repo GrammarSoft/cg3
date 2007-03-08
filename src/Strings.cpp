@@ -46,6 +46,7 @@ namespace CG3 {
 			init_keyword_single("LIST",              K_LIST);
 			init_keyword_single("SET",               K_SET);
 			init_keyword_single("DELIMITERS",        K_DELIMITERS);
+			init_keyword_single("SOFT-DELIMITERS",   K_SOFT_DELIMITERS);
 			init_keyword_single("PREFERRED-TARGETS", K_PREFERRED_TARGETS);
 			init_keyword_single("MAPPING-PREFIX",    K_MAPPING_PREFIX);
 			init_keyword_single("MAPPINGS",          K_MAPPINGS);
@@ -124,6 +125,7 @@ namespace CG3 {
 			init_string_single(">>>",        S_BEGINTAG);
 			init_string_single("<<<",        S_ENDTAG);
 			init_string_single("_S_DELIMITERS_", S_DELIMITSET);
+			init_string_single("_S_SOFT_DELIMITERS_", S_SOFTDELIMITSET);
 
 			for (int i=0;i<STRINGS_COUNT;i++) {
 				if (!stringbits[i]) {

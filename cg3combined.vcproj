@@ -348,6 +348,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\GrammarParser_parseSoftDelimiters.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\GrammarParser_parseSubstitute.cpp"
 				>
 			</File>
