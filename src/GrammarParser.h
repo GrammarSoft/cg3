@@ -17,15 +17,12 @@
 #ifndef __GRAMMARPARSER_H
 #define __GRAMMARPARSER_H
 
-#include "stdafx.h"
-#include <unicode/uchar.h>
-#include <unicode/ustdio.h>
-#include "Grammar.h"
+#include "IGrammarParser.h"
  
 namespace CG3 {
-	class GrammarParser {
+	class GrammarParser : public IGrammarParser {
 	public:
-		bool option_vislcg_compat, use_re2c;
+		bool option_vislcg_compat;
 		bool in_section, in_before_sections, in_after_sections;
 		const char *filename;
 		const char *locale;
@@ -35,10 +32,10 @@ namespace CG3 {
 		GrammarParser();
 		~GrammarParser();
 
+		void setCompatible(bool compat);
 		void setResult(CG3::Grammar *result);
 
 		int parse_grammar_from_ufile(UFILE *input);
-		int re2c_grammar_from_ufile(UFILE *input);
 		int parse_grammar_from_file(const char *filename, const char *locale, const char *codepage);
 
 		int parseSingleLine(KEYWORDS key, const UChar *line);
@@ -69,18 +66,6 @@ namespace CG3 {
 		int parseAddMapReplaceAppend(const UChar *line, KEYWORDS key);
 		int parseSubstitute(const UChar *line);
 		int parseRemSetVariable(const UChar *line, KEYWORDS key);
-
-		YYCTYPE *marker;
-		YYCTYPE *re2c_skipline(YYCTYPE *input);
-		YYCTYPE *re2c_parseCompositeTag(YYCTYPE *input, Set *set);
-		YYCTYPE *re2c_parseInlineSet(YYCTYPE *input, Set **ret_set);
-		YYCTYPE *re2c_parseSetList(YYCTYPE *input, Set *set);
-		YYCTYPE *re2c_parseTagList(YYCTYPE *input, Set *set);
-		YYCTYPE *re2c_parseSet(YYCTYPE *input);
-		YYCTYPE *re2c_parseList(YYCTYPE *input);
-		YYCTYPE *re2c_parseDelimiters(YYCTYPE *input, STRINGS which);
-		YYCTYPE *re2c_parsePreferredTargets(YYCTYPE *input);
-		KEYWORDS re2c_scan(YYCTYPE *input);
 	};
 }
 

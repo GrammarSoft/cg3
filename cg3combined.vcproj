@@ -288,6 +288,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\GPRE2C.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\Grammar.cpp"
 				>
 			</File>
@@ -365,10 +369,6 @@
 			</File>
 			<File
 				RelativePath=".\src\GrammarParser_parseTarget.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\src\GrammarParser_test.cpp"
 				>
 			</File>
 			<File
@@ -458,6 +458,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\GPRE2C.h"
+				>
+			</File>
+			<File
 				RelativePath=".\src\Grammar.h"
 				>
 			</File>
@@ -483,6 +487,10 @@
 			</File>
 			<File
 				RelativePath=".\src\icu_uoptions.h"
+				>
+			</File>
+			<File
+				RelativePath=".\src\IGrammarParser.h"
 				>
 			</File>
 			<File
@@ -540,7 +548,7 @@
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
 			<File
-				RelativePath=".\src\GrammarParser_test.re2c"
+				RelativePath=".\src\GPRE2C.cpp.re2c"
 				>
 			</File>
 		</Filter>

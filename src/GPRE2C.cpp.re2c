@@ -15,13 +15,7 @@
  * rights and limitations under the License.
  */
 
-#include "stdafx.h"
-#include "Strings.h"
-#include <unicode/uregex.h>
-#include "GrammarParser.h"
-#include "Grammar.h"
-#include "uextras.h"
-#include <sys/stat.h>
+#include "GPRE2C.h"
 
 using namespace CG3;
 using namespace CG3::Strings;
@@ -42,7 +36,7 @@ using namespace CG3::Strings;
 	setop = ("|"|"+"|"-"|'OR'|"*"|"^"|"!");
 */
 
-YYCTYPE *GrammarParser::re2c_skipline(YYCTYPE *input) {
+YYCTYPE *GPRE2C::re2c_skipline(YYCTYPE *input) {
 skipline_start:
 /*!re2c
 	eof				{goto skipline_end;}
@@ -53,7 +47,7 @@ skipline_end:
 	return YYCURSOR;
 }
 
-YYCTYPE *GrammarParser::re2c_parseCompositeTag(YYCTYPE *input, Set *set) {
+YYCTYPE *GPRE2C::re2c_parseCompositeTag(YYCTYPE *input, Set *set) {
 	CG3::CompositeTag *ctag = result->allocateCompositeTag();
 	marker = YYCURSOR;
 
@@ -99,7 +93,7 @@ parseCompositeTag_end:
 	return YYCURSOR;
 }
 
-YYCTYPE *GrammarParser::re2c_parseInlineSet(YYCTYPE *input, Set **ret_set) {
+YYCTYPE *GPRE2C::re2c_parseInlineSet(YYCTYPE *input, Set **ret_set) {
 	CG3::Set *curset = result->allocateSet();
 	curset->line = result->lines;
 	curset->setName((uint32_t)0);
@@ -138,7 +132,7 @@ parseInlineSet_end:
 	return YYCURSOR;
 }
 
-YYCTYPE *GrammarParser::re2c_parseSetList(YYCTYPE *input, Set *set) {
+YYCTYPE *GPRE2C::re2c_parseSetList(YYCTYPE *input, Set *set) {
 	bool want_set = true;
 	marker = YYCURSOR;
 	if (result->lines == 1333) {
@@ -209,7 +203,7 @@ parseSetList_end:
 	return YYCURSOR;
 }
 
-YYCTYPE *GrammarParser::re2c_parseTagList(YYCTYPE *input, Set *set) {
+YYCTYPE *GPRE2C::re2c_parseTagList(YYCTYPE *input, Set *set) {
 	marker = YYCURSOR;
 
 parseTagList_start:
@@ -255,7 +249,7 @@ parseTagList_end:
 	return YYCURSOR;
 }
 
-YYCTYPE *GrammarParser::re2c_parseDelimiters(YYCTYPE *input, STRINGS which) {
+YYCTYPE *GPRE2C::re2c_parseDelimiters(YYCTYPE *input, STRINGS which) {
 	CG3::Set *curset = result->allocateSet();
 	curset->setName(stringbits[which]);
 	curset->line = result->lines;
@@ -281,7 +275,7 @@ parseDelimiters_end:
 	return YYCURSOR;
 }
 
-YYCTYPE *GrammarParser::re2c_parseList(YYCTYPE *input) {
+YYCTYPE *GPRE2C::re2c_parseList(YYCTYPE *input) {
 	marker = YYCURSOR;
 	CG3::Set *curset = result->allocateSet();
 	curset->line = result->lines;
@@ -311,7 +305,7 @@ parseList_end:
 	return YYCURSOR;
 }
 
-YYCTYPE *GrammarParser::re2c_parseSet(YYCTYPE *input) {
+YYCTYPE *GPRE2C::re2c_parseSet(YYCTYPE *input) {
 	marker = YYCURSOR;
 	CG3::Set *curset = result->allocateSet();
 	curset->line = result->lines;
@@ -350,7 +344,7 @@ parseSet_end:
 	return YYCURSOR;
 }
 
-YYCTYPE *GrammarParser::re2c_parsePreferredTargets(YYCTYPE *input) {
+YYCTYPE *GPRE2C::re2c_parsePreferredTargets(YYCTYPE *input) {
 	marker = YYCURSOR;
 
 parsePreferredTargets_start:
@@ -394,7 +388,7 @@ parsePreferredTargets_end:
 	return YYCURSOR;
 }
 
-KEYWORDS GrammarParser::re2c_scan(YYCTYPE *input) {
+KEYWORDS GPRE2C::re2c_scan(YYCTYPE *input) {
 	KEYWORDS retval = K_IGNORE;
 	YYCTYPE *YYMARKER = 0;
 	YYMARKER = YYMARKER; // Just to foil the warning. Compiler will optimize this away.
@@ -445,7 +439,33 @@ scan_end:
 	return retval;
 }
 
-int GrammarParser::re2c_grammar_from_ufile(UFILE *input) {
+GPRE2C::GPRE2C() {
+	filename = 0;
+	locale = 0;
+	codepage = 0;
+	result = 0;
+	option_vislcg_compat = false;
+	in_before_sections = false;
+	in_after_sections = false;
+	in_section = false;
+}
+
+GPRE2C::~GPRE2C() {
+	filename = 0;
+	locale = 0;
+	codepage = 0;
+	result = 0;
+}
+
+void GPRE2C::setResult(CG3::Grammar *res) {
+	result = res;
+}
+
+void GPRE2C::setCompatible(bool f) {
+	option_vislcg_compat = f;
+}
+
+int GPRE2C::re2c_grammar_from_ufile(UFILE *input) {
 	u_frewind(input);
 	if (u_feof(input)) {
 		u_fprintf(ux_stderr, "Error: Input is null - nothing to parse!\n");
@@ -495,5 +515,41 @@ int GrammarParser::re2c_grammar_from_ufile(UFILE *input) {
 	free_regexps();
 	free_strings();
 
+	return 0;
+}
+
+int GPRE2C::parse_grammar_from_file(const char *fname, const char *loc, const char *cpage) {
+	filename = fname;
+	locale = loc;
+	codepage = cpage;
+
+	if (!result) {
+		u_fprintf(ux_stderr, "Error: Cannot parse into nothing - hint: call setResult() before trying.\n");
+		return -1;
+	}
+
+	struct stat _stat;
+	int error = stat(filename, &_stat);
+
+	if (error != 0) {
+		u_fprintf(ux_stderr, "Error: Cannot stat %s due to error %d - bailing out!\n", filename, error);
+		exit(1);
+	} else {
+		result->last_modified = (uint32_t)_stat.st_mtime;
+		result->grammar_size = (uint32_t)_stat.st_size;
+	}
+
+	result->setName(filename);
+
+	UFILE *grammar = u_fopen(filename, "r", locale, codepage);
+	if (!grammar) {
+		u_fprintf(ux_stderr, "Error: Error opening %s for reading!\n", filename);
+		return -1;
+	}
+	
+	error = re2c_grammar_from_ufile(grammar);
+	if (error) {
+		return error;
+	}
 	return 0;
 }

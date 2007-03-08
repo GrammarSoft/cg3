@@ -23,6 +23,7 @@
 #include "icu_uoptions.h"
 #include "Grammar.h"
 #include "GrammarParser.h"
+#include "GPRE2C.h"
 #include "GrammarWriter.h"
 #include "GrammarApplicator.h"
 #include <sys/stat.h>
@@ -267,15 +268,15 @@ int main(int argc, char* argv[]) {
 		return -1;
 	}
 
-	CG3::GrammarParser *parser = new CG3::GrammarParser;
-	parser->setResult(grammar);
-
-	if (options[VISLCGCOMPAT].doesOccur) {
-		parser->option_vislcg_compat = true;
-	}
+	CG3::IGrammarParser *parser = 0;
 	if (options[RE2C].doesOccur) {
-		parser->use_re2c = true;
+		parser = new CG3::GPRE2C;
 	}
+	else {
+		parser = new CG3::GrammarParser;
+	}
+	parser->setResult(grammar);
+	parser->setCompatible(options[VISLCGCOMPAT].doesOccur != 0);
 
 	std::cerr << "Initialization took " << glob_timer->getValueFrom(main_timer) << " seconds." << std::endl;
 	main_timer = glob_timer->getCount();

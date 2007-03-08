@@ -15,13 +15,7 @@
  * rights and limitations under the License.
  */
 
-#include "stdafx.h"
-#include "Strings.h"
-#include <unicode/uregex.h>
 #include "GrammarParser.h"
-#include "Grammar.h"
-#include "uextras.h"
-#include <sys/stat.h>
 
 using namespace CG3;
 using namespace CG3::Strings;
@@ -32,7 +26,6 @@ GrammarParser::GrammarParser() {
 	codepage = 0;
 	result = 0;
 	option_vislcg_compat = false;
-	use_re2c = false;
 	in_before_sections = false;
 	in_after_sections = false;
 	in_section = false;
@@ -312,11 +305,7 @@ int GrammarParser::parse_grammar_from_file(const char *fname, const char *loc, c
 		return -1;
 	}
 	
-	if (use_re2c) {
-		error = re2c_grammar_from_ufile(grammar);
-	} else {
-		error = parse_grammar_from_ufile(grammar);
-	}
+	error = parse_grammar_from_ufile(grammar);
 	if (error) {
 		return error;
 	}
@@ -325,6 +314,10 @@ int GrammarParser::parse_grammar_from_file(const char *fname, const char *loc, c
 
 void GrammarParser::setResult(CG3::Grammar *res) {
 	result = res;
+}
+
+void GrammarParser::setCompatible(bool f) {
+	option_vislcg_compat = f;
 }
 
 void GrammarParser::addRuleToGrammar(Rule *rule) {

@@ -1,1 +1,1 @@
-re2c -isu src/GrammarParser_test.re2c > src/GrammarParser_test.cpp
+re2c -isu src/GPRE2C.cpp.re2c > src/GPRE2C.cpp
