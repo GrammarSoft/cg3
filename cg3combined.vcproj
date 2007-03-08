@@ -300,7 +300,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\GrammarApplicator_reflow.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\GrammarApplicator_runGrammar.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\GrammarApplicator_runRules.cpp"
 				>
 			</File>
 			<File

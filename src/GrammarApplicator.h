@@ -85,8 +85,8 @@ namespace CG3 {
 		PACC::Timer *timer;
 
 		inline bool __index_matches(const stdext::hash_map<uint32_t, Index*> *me, const uint32_t value, const uint32_t set);
-		inline void reflowReading(Reading *reading);
-		inline void reflowSingleWindow(SingleWindow *swindow);
+		void reflowReading(Reading *reading);
+		void reflowSingleWindow(SingleWindow *swindow);
 	};
 }
 
