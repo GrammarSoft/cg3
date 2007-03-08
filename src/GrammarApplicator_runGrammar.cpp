@@ -104,13 +104,15 @@ inline void GrammarApplicator::reflowSingleWindow(SingleWindow *swindow) {
 			for (rter = cohort->readings.begin() ; rter != cohort->readings.end() ; rter++) {
 				Reading *reading = *rter;
 
+				uint32_t dep_real = 0;
 				std::set<uint32_t>::const_iterator tter;
 				for (tter = reading->dep_children.begin() ; tter != reading->dep_children.end() ; tter++) {
+					dep_real = swindow->dep_map.find(*tter)->second;
 					std::set<uint32_t>::const_iterator ster;
 					for (ster = reading->dep_children.begin() ; ster != reading->dep_children.end() ; ster++) {
-						swindow->cohorts[*tter]->addSibling(*ster);
+						swindow->cohorts[dep_real]->addSibling(*ster);
 					}
-					swindow->cohorts[*tter]->remSibling(*tter);
+					swindow->cohorts[dep_real]->remSibling(dep_real);
 				}
 			}
 		}
