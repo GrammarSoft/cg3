@@ -110,6 +110,9 @@ void GrammarApplicator::printReading(Reading *reading, UFILE *output) {
 		if (used_tags.find(*tter) != used_tags.end()) {
 			continue;
 		}
+		if (*tter == endtag || *tter == begintag) {
+			continue;
+		}
 		used_tags[*tter] = *tter;
 		const Tag *tag = 0;
 		if (grammar->single_tags.find(*tter) != grammar->single_tags.end()) {

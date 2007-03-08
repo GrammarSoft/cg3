@@ -389,7 +389,6 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 
 	if (cCohort && cSWindow) {
 		cSWindow->cohorts.push_back(cCohort);
-		lCohort = cCohort;
 		if (cCohort->readings.empty()) {
 			cReading = new Reading();
 			cReading->wordform = cCohort->wordform;
@@ -398,7 +397,12 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 			cReading->noprint = true;
 			cReading->rehash();
 			cCohort->readings.push_back(cReading);
-			lReading = cReading;
+		}
+		std::list<Reading*>::iterator iter;
+		for (iter = cCohort->readings.begin() ; iter != cCohort->readings.end() ; iter++) {
+			(*iter)->tags_list.push_back(endtag);
+			(*iter)->tags[endtag] = endtag;
+			(*iter)->rehash();
 		}
 		cWindow->next.push_back(cSWindow);
 	}

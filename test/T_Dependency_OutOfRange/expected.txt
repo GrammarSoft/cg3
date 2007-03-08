@@ -9,6 +9,6 @@
 "<mulher>"
 	"mulher" <Hattr> N F S @P< #5->3 §PAT 
 "<$.>"
-	"$." PU @PU #6->0 <<< 
+	"$." PU @PU #6->0 
 </s>
 

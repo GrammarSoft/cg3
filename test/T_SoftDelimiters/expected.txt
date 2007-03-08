@@ -3,7 +3,7 @@
 "<word>"
 	"word" wanted 
 "<$.>"
-	"<$.>" <<< @breakhere 
+	"<$.>" @breakhere 
 
 "<word>"
 	"word" wanted 
@@ -16,7 +16,7 @@
 "<word>"
 	"word" wanted 
 "<$soft>"
-	"<$soft>" <<< @breakhere 
+	"<$soft>" @breakhere 
 
 "<word>"
 	"word" wanted 
@@ -29,7 +29,7 @@
 "<word>"
 	"word" wanted 
 "<word>"
-	"word" wanted <<< @breakhere 
+	"word" wanted @breakhere 
 
 "<word>"
 	"word" wanted 
@@ -40,5 +40,5 @@
 "<word>"
 	"word" wanted 
 "<$.>"
-	"<$.>" <<< @breakhere 
+	"<$.>" @breakhere 
 
