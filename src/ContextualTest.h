@@ -26,7 +26,6 @@ namespace CG3 {
 		uint32_t line;
 		uint32_t hash;
 		bool careful;
-		// ToDo: Implement NEGATE
 		bool negated;
 		bool negative;
 		bool scanfirst;

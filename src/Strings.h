@@ -70,6 +70,7 @@ namespace CG3 {
 			S_HASH,
 			S_NOT,
 			S_TEXTNOT,
+			S_TEXTNEGATE,
 			S_SPACE,
 			S_LINK,
 			S_LINKZ,

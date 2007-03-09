@@ -37,9 +37,17 @@ int GrammarParser::parseContextualTest(UChar **paren, CG3::ContextualTest *paren
 	}
 	space[0] = 0;
 
+	bool negated = false;
 	bool negative = false;
 	UChar *position = test;
 	test = space+1;
+	if (u_strcmp(position, stringbits[S_TEXTNEGATE]) == 0) {
+		negated = true;
+		space = u_strchr(test, ' ');
+		space[0] = 0;
+		position = test;
+		test = space+1;
+	}
 	if (u_strcmp(position, stringbits[S_TEXTNOT]) == 0) {
 		negative = true;
 		space = u_strchr(test, ' ');
@@ -50,6 +58,7 @@ int GrammarParser::parseContextualTest(UChar **paren, CG3::ContextualTest *paren
 
 	ContextualTest *context = parentTest->allocateContextualTest();
 	context->parsePosition(position);
+	context->negated = negated;
 	context->negative = negative;
 	parentTest->linked = context;
 
@@ -91,9 +100,17 @@ int GrammarParser::parseContextualTests(UChar **paren, CG3::Rule *rule) {
 			}
 			space[0] = 0;
 
+			bool negated = false;
 			bool negative = false;
 			UChar *position = test;
 			test = space+1;
+			if (u_strcmp(position, stringbits[S_TEXTNEGATE]) == 0) {
+				negated = true;
+				space = u_strchr(test, ' ');
+				space[0] = 0;
+				position = test;
+				test = space+1;
+			}
 			if (u_strcmp(position, stringbits[S_TEXTNOT]) == 0) {
 				negative = true;
 				space = u_strchr(test, ' ');
@@ -104,6 +121,7 @@ int GrammarParser::parseContextualTests(UChar **paren, CG3::Rule *rule) {
 
 			ContextualTest *context = rule->allocateContextualTest();
 			context->parsePosition(position);
+			context->negated = negated;
 			context->negative = negative;
 			rule->addContextualTest(context);
 

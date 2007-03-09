@@ -502,6 +502,9 @@ bool GrammarApplicator::runContextualTest(const Window *window, const SingleWind
 	if (!cohort && test->negative) {
 		retval = !retval;
 	}
+	if (test->negated) {
+		retval = !retval;
+	}
 	if (retval) {
 		test->num_match++;
 	} else {
