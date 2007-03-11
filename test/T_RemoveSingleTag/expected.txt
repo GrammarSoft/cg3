@@ -2,3 +2,5 @@
 	"word" notwanted @tagA 
 	"word" wanted @tagA 
 	"word" notmeeither @tagA 
+"<word>"
+	"word" wanted @tagA 

@@ -134,10 +134,10 @@ uint32_t GrammarApplicator::runRulesOnWindow(Window *window, const std::vector<R
 				if (num_active == cohort->readings.size()) {
 					all_active = true;
 				}
-				if (all_active && rule->type == K_SELECT) {
+				if (all_active && rule->type == K_SELECT && !set->has_mappings && !last_mapping_tag) {
 					continue;
 				}
-				if (all_active && rule->type == K_REMOVE) {
+				if (all_active && rule->type == K_REMOVE && !set->has_mappings && !last_mapping_tag) {
 					continue;
 				}
 
