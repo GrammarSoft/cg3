@@ -4,3 +4,8 @@
 	"word" notmeeither @tagA 
 "<word>"
 	"word" wanted @tagA 
+
+"<word>"
+	"word" wanted @tagD 
+"<word>"
+	"word" wanted @tagD 

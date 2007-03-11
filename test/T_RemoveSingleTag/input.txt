@@ -4,3 +4,10 @@
 	"word" notmeeither @tagA
 "<word>"
 	"word" wanted @tagA @tagB
+
+"<word>"
+	"word" notwanted @tagC
+	"word" wanted @tagC @tagD
+	"word" notmeeither @tagC
+"<word>"
+	"word" wanted @tagC @tagD
