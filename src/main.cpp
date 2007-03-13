@@ -270,6 +270,7 @@ int main(int argc, char* argv[]) {
 
 	CG3::IGrammarParser *parser = 0;
 	if (options[RE2C].doesOccur) {
+		fprintf(stderr, "Info: Using experimental RE2C parser.\n");
 		parser = new CG3::GPRE2C;
 	}
 	else {

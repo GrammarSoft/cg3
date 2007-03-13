@@ -55,6 +55,15 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 		return error;
 	}
 
+	if (!grammar->delimiters || (grammar->delimiters->sets.empty() && grammar->delimiters->tags_map.empty())) {
+		if (!grammar->soft_delimiters || (grammar->soft_delimiters->sets.empty() && grammar->soft_delimiters->tags_map.empty())) {
+			u_fprintf(ux_stderr, "Warning: No soft or hard delimiters defined in grammar. Hard limit of %u cohorts may break windows in unintended places.\n", hard_limit);
+		}
+		else {
+			u_fprintf(ux_stderr, "Warning: No hard delimiters defined in grammar. Soft limit of %u cohorts may break windows in unintended places.\n", soft_limit);
+		}
+	}
+
 #define BUFFER_SIZE (131072)
 	UChar _line[BUFFER_SIZE];
 	UChar *line = _line;

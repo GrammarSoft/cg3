@@ -97,14 +97,15 @@ int GrammarWriter::write_grammar_to_ufile_text(UFILE *output) {
 		return error;
 	}
 
+	/*
 	u_fprintf(output, "# Grammar last modified %u, with size %u", grammar->last_modified, grammar->grammar_size);
 	if (grammar->name) {
 		u_fprintf(output, ", from filename %S", grammar->name);
 	}
 	u_fprintf(output, "\n");
-	u_fprintf(output, "\n");
+	//*/
 
-	u_fprintf(output, "# DELIMITERS does not exist. Instead, look for the set _S_DELIMITERS_\n");
+	u_fprintf(output, "# DELIMITERS and SOFT-DELIMITERS do not exist. Instead, look for the sets _S_DELIMITERS_ and _S_SOFT_DELIMITERS_.\n");
 
 	u_fprintf(output, "MAPPING-PREFIX = %C ;\n", grammar->mapping_prefix);
 
