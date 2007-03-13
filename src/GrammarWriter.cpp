@@ -108,13 +108,15 @@ int GrammarWriter::write_grammar_to_ufile_text(UFILE *output) {
 
 	u_fprintf(output, "MAPPING-PREFIX = %C ;\n", grammar->mapping_prefix);
 
-	u_fprintf(output, "PREFERRED-TARGETS = ");
-	std::vector<uint32_t>::const_iterator iter;
-	for(iter = grammar->preferred_targets.begin() ; iter != grammar->preferred_targets.end() ; iter++ ) {
-		printTag(output, grammar->single_tags.find(*iter)->second);
-		u_fprintf(output, " ");
+	if (!grammar->preferred_targets.empty()) {
+		u_fprintf(output, "PREFERRED-TARGETS = ");
+		std::vector<uint32_t>::const_iterator iter;
+		for(iter = grammar->preferred_targets.begin() ; iter != grammar->preferred_targets.end() ; iter++ ) {
+			printTag(output, grammar->single_tags.find(*iter)->second);
+			u_fprintf(output, " ");
+		}
+		u_fprintf(output, " ;\n");
 	}
-	u_fprintf(output, " ;\n");
 
 	u_fprintf(output, "\n");
 
@@ -236,6 +238,9 @@ void GrammarWriter::printContextualTest(UFILE *to, const ContextualTest *test) {
 	if (statistics) {
 		u_fprintf(to, "(M:%u;F:%u;T:%u) ", test->num_match, test->num_fail, test->total_time);
 	}
+	if (test->negated) {
+		u_fprintf(to, "NEGATE ");
+	}
 	if (test->negative) {
 		u_fprintf(to, "NOT ");
 	}
@@ -249,6 +254,16 @@ void GrammarWriter::printContextualTest(UFILE *to, const ContextualTest *test) {
 		u_fprintf(to, "*");
 	}
 
+	if (test->dep_child) {
+		u_fprintf(to, "c");
+	}
+	if (test->dep_parent) {
+		u_fprintf(to, "p");
+	}
+	if (test->dep_sibling) {
+		u_fprintf(to, "s");
+	}
+
 	u_fprintf(to, "%d", test->offset);
 
 	if (test->careful) {
@@ -256,6 +271,12 @@ void GrammarWriter::printContextualTest(UFILE *to, const ContextualTest *test) {
 	}
 	if (test->span_both) {
 		u_fprintf(to, "W");
+	}
+	if (test->span_left) {
+		u_fprintf(to, "<");
+	}
+	if (test->span_right) {
+		u_fprintf(to, ">");
 	}
 
 	u_fprintf(to, " ");
