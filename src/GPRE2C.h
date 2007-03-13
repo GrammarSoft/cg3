@@ -14,8 +14,8 @@
  * implied. See the License for the specific language governing
  * rights and limitations under the License.
  */
-#ifndef __GPRE2C_H
-#define __GPRE2C_H
+#ifndef __GPH
+#define __GPH
 
 // re2c defines
 #define YYCTYPE         UChar
@@ -38,20 +38,21 @@ namespace CG3 {
 		void setCompatible(bool compat);
 		void setResult(CG3::Grammar *result);
 
-		int re2c_grammar_from_ufile(UFILE *input);
+		int grammar_from_ufile(UFILE *input);
 		int parse_grammar_from_file(const char *filename, const char *locale, const char *codepage);
 
 		YYCTYPE *marker;
-		YYCTYPE *re2c_skipline(YYCTYPE *input);
-		YYCTYPE *re2c_parseCompositeTag(YYCTYPE *input, Set *set);
-		YYCTYPE *re2c_parseInlineSet(YYCTYPE *input, Set **ret_set);
-		YYCTYPE *re2c_parseSetList(YYCTYPE *input, Set *set);
-		YYCTYPE *re2c_parseTagList(YYCTYPE *input, Set *set);
-		YYCTYPE *re2c_parseSet(YYCTYPE *input);
-		YYCTYPE *re2c_parseList(YYCTYPE *input);
-		YYCTYPE *re2c_parseDelimiters(YYCTYPE *input, STRINGS which);
-		YYCTYPE *re2c_parsePreferredTargets(YYCTYPE *input);
-		KEYWORDS re2c_scan(YYCTYPE *input);
+		YYCTYPE *skipline(YYCTYPE *input);
+		YYCTYPE *parseCompositeTag(YYCTYPE *input, Set *set);
+		YYCTYPE *parseInlineSet(YYCTYPE *input, Set **ret_set);
+		YYCTYPE *parseSetList(YYCTYPE *input, Set *set);
+		YYCTYPE *parseTagList(YYCTYPE *input, Set *set);
+		YYCTYPE *parseSet(YYCTYPE *input);
+		YYCTYPE *parseList(YYCTYPE *input);
+		YYCTYPE *parseMappingPrefix(YYCTYPE *input);
+		YYCTYPE *parseDelimiters(YYCTYPE *input, STRINGS which);
+		YYCTYPE *parsePreferredTargets(YYCTYPE *input);
+		KEYWORDS scan(YYCTYPE *input);
 	};
 }
 

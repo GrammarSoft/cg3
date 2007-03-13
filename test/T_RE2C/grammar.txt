@@ -1,7 +1,17 @@
 DELIMITERS = "<$.>" ;
+SOFT-DELIMITERS = "<$\;>" ;
+MAPPING-PREFIX = £ ;
 
-LIST ASet = wanted ;
+LIST ASet = wanted ; # a comment
+LIST BSet = "\;" ; # a comment
+SET CSet = ASet + BSet ;
 
-SECTION
+# a comment
+BEFORE-SECTIONS
 
+"<word>" MAP ASet ;#comment
+
+SECTION # a comment
+
+"<word>" SELECT ASet ;
 SELECT ASet ;
