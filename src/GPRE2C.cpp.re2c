@@ -196,7 +196,7 @@ parseSetList_start:
 		goto parseSetList_start;
 		}
 	")"				{u_fprintf(ux_stderr, "Error: Mismatched ) on line %u!\n", result->lines); exit(1);}
-	"#"				{YYCURSOR = skipline(YYCURSOR);marker = YYCURSOR;goto parseSetList_start;}
+	"#"				{YYCURSOR = skipline(YYCURSOR); marker = YYCURSOR; goto parseSetList_start;}
 	space			{marker = YYCURSOR; goto parseSetList_start;}
 	";"				{goto parseSetList_end;}
 	any				{goto parseSetList_end;}
@@ -252,6 +252,48 @@ parseTagList_end:
 	return YYCURSOR;
 }
 
+YYCTYPE *GPRE2C::parseMappingList(YYCTYPE *input, std::list<uint32_t> *taglist) {
+	marker = YYCURSOR;
+
+parseMappingList_start:
+/*!re2c
+	eof				{goto parseMappingList_end;}
+	newline			{
+		marker = YYCURSOR;
+		result->lines++;
+		goto parseMappingList_start;
+		}
+	entity+			{
+		size_t length = (YYCURSOR - marker)+1;
+		YYCTYPE *buffer = new YYCTYPE[length];
+		buffer[length-1] = 0;
+		u_strncpy(buffer, marker, (int32_t)length-1);
+		CG3::Tag *tag = result->allocateTag(buffer);
+		tag->parseTag(buffer);
+		tag->rehash();
+		result->addTag(tag);
+		taglist->push_back(tag->hash);
+		delete buffer;
+		marker = YYCURSOR;
+		goto parseMappingList_start;
+		}
+	")"				{goto parseMappingList_end;}
+	"#"				{
+		YYCURSOR = skipline(YYCURSOR);
+		marker = YYCURSOR;
+		goto parseMappingList_start;
+		}
+	";"				{goto parseMappingList_end;}
+	any				{
+		marker = YYCURSOR;
+		goto parseMappingList_start;
+		}
+*/
+
+parseMappingList_end:
+	return YYCURSOR;
+}
+
 YYCTYPE *GPRE2C::parseDelimiters(YYCTYPE *input, STRINGS which) {
 	CG3::Set *curset = result->allocateSet();
 	curset->setName(stringbits[which]);
@@ -301,11 +343,38 @@ parseMapAddReplaceAppend_start:
 	eof				{goto parseMapAddReplaceAppend_end;}
 	newline			{result->lines++; goto parseMapAddReplaceAppend_start;}
 	"#"				{YYCURSOR = skipline(YYCURSOR); goto parseMapAddReplaceAppend_start;}
+	"("				{
+			if (rule->maplist.empty()) {
+				YYCURSOR = parseMappingList(YYCURSOR, &rule->maplist);
+			}
+		}
 	";"				{goto parseMapAddReplaceAppend_end;}
 	any				{goto parseMapAddReplaceAppend_start;}
 */
 
 parseMapAddReplaceAppend_end:
+	if (rule->maplist.empty()) {
+		u_fprintf(ux_stderr, "Error: Mapping-type rule on line %u had no list of tags to work with!\n", result->lines);
+		exit(0);
+	}
+
+	uint32_t rset = 0;
+	CG3::Set *curset = result->allocateSet();
+	curset->line = result->lines;
+	// ToDo: Generate a unique set name somehow faster.
+	curset->setName(hash_sdbm_uchar(input, result->lines+which));
+	YYCURSOR = parseSetList(YYCURSOR, curset);
+	if (curset->sets.size() == 1) {
+		rset = curset->sets.at(0);
+		result->destroySet(curset);
+		curset = result->getSet(rset);
+	}
+	else {
+		rset = curset->rehash();
+	}
+	rule->target = rset;
+	result->addSet(curset);
+
 	addRuleToGrammar(rule);
 	return YYCURSOR;
 }

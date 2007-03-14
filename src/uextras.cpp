@@ -183,7 +183,7 @@ bool ux_escape(UChar *target, const UChar *source) {
 	if (length > 0) {
 		uint32_t i=0,j=0;
 		for (;i<=length;i++,j++) {
-			if (source[i] == '\\' || source[i] == '(' || source[i] == ')') {
+			if (source[i] == '\\' || source[i] == '(' || source[i] == ')' || source[i] == ';' || source[i] == '#') {
 				target[j] = '\\';
 				j++;
 			}

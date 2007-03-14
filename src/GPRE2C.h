@@ -46,16 +46,18 @@ namespace CG3 {
 		int parse_grammar_from_file(const char *filename, const char *locale, const char *codepage);
 
 		YYCTYPE *skipline(YYCTYPE *input);
+
 		YYCTYPE *parseCompositeTag(YYCTYPE *input, Set *set);
 		YYCTYPE *parseInlineSet(YYCTYPE *input, Set **ret_set);
 		YYCTYPE *parseSetList(YYCTYPE *input, Set *set);
 		YYCTYPE *parseTagList(YYCTYPE *input, Set *set);
+		YYCTYPE *parseMappingList(YYCTYPE *input, std::list<uint32_t> *taglist);
+
 		YYCTYPE *parseSet(YYCTYPE *input);
 		YYCTYPE *parseList(YYCTYPE *input);
 		YYCTYPE *parseMappingPrefix(YYCTYPE *input);
 		YYCTYPE *parseDelimiters(YYCTYPE *input, STRINGS which);
 		YYCTYPE *parsePreferredTargets(YYCTYPE *input);
-
 		YYCTYPE *parseMapAddReplaceAppend(YYCTYPE *input, KEYWORDS which);
 
 		KEYWORDS scan(YYCTYPE *input);
