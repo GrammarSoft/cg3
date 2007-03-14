@@ -9,7 +9,9 @@ SET CSet = ASet + BSet ;
 # a comment
 BEFORE-SECTIONS
 
-"<word>" MAP ASet ;#comment
+"<word>" map (@tag @othertag) CSet + ASet (NEGATE NOT *1C BSet BARRIER BSet LINK -3 BSet)(1 BSet)#thingy
+	(c BSet LINK NEGATE 5 ASet) # comment
+	(p BSet) ;#comment
 
 SECTION # a comment
 

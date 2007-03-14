@@ -17,9 +17,15 @@
 
 #include "GPRE2C.h"
 
+// This disables the warnings for \uXXXX style characters.
+#ifdef WIN32
+	#pragma warning( disable : 4428 4566 )
+#endif
+
 using namespace CG3;
 using namespace CG3::Strings;
 #define YYCURSOR        input
+#define __WHITESPACE	"%[^ \t\x0A\x0B\x0C\x0D\u001C\u001D\u001E\u001F\u2028\u2029\x85]"
 
 /*!re2c
 	re2c:yyfill:enable = 0 ;
@@ -115,7 +121,7 @@ parseInlineSet_start:
 		marker = YYCURSOR;
 		goto parseInlineSet_start;
 		}
-	"#"				{YYCURSOR = skipline(YYCURSOR);marker = YYCURSOR;goto parseInlineSet_start;}
+	"#"				{YYCURSOR = skipline(YYCURSOR); marker = YYCURSOR; goto parseInlineSet_start;}
 	"("				{u_fprintf(ux_stderr, "Error: Mismatched ( on line %u!\n", result->lines); exit(1);}
 	")"				{goto parseInlineSet_end;}
 	";"				{u_fprintf(ux_stderr, "Error: Found ; before ) on line %u!\n", result->lines); exit(1);}
@@ -135,9 +141,6 @@ parseInlineSet_end:
 YYCTYPE *GPRE2C::parseSetList(YYCTYPE *input, Set *set) {
 	bool want_set = true;
 	marker = YYCURSOR;
-	if (result->lines == 1333) {
-		input=input;
-	}
 
 parseSetList_start:
 /*!re2c
@@ -272,6 +275,38 @@ parseDelimiters_end:
 	else if (which == S_SOFTDELIMITSET) {
 		result->soft_delimiters = curset;
 	}
+	return YYCURSOR;
+}
+
+YYCTYPE *GPRE2C::parseMapAddReplaceAppend(YYCTYPE *input, KEYWORDS which) {
+	CG3::Rule *rule = result->allocateRule();
+	rule->line = result->lines;
+	rule->type = which;
+
+	UChar wform[256];
+	if (marker[0] == '"' && marker[1] == '<') {
+		u_sscanf(marker, __WHITESPACE, &wform);
+	}
+	else if (last_entity[0] == '"' && last_entity[1] == '<') {
+		u_sscanf(last_entity, __WHITESPACE, &wform);
+	}
+	if (wform[0] == '"' && wform[1] == '<' && u_strlen(wform) < 256 && wform[u_strlen(wform)] == 0) {
+		Tag *wformt = result->allocateTag(wform);
+		rule->wordform = wformt->rehash();
+		result->addTag(wformt);
+	}
+
+parseMapAddReplaceAppend_start:
+/*!re2c
+	eof				{goto parseMapAddReplaceAppend_end;}
+	newline			{result->lines++; goto parseMapAddReplaceAppend_start;}
+	"#"				{YYCURSOR = skipline(YYCURSOR); goto parseMapAddReplaceAppend_start;}
+	";"				{goto parseMapAddReplaceAppend_end;}
+	any				{goto parseMapAddReplaceAppend_start;}
+*/
+
+parseMapAddReplaceAppend_end:
+	addRuleToGrammar(rule);
 	return YYCURSOR;
 }
 
@@ -450,12 +485,11 @@ scan_start:
 	'LIST'			{YYCURSOR = parseList(YYCURSOR); marker = YYCURSOR; goto scan_start;}
 	'SET'			{YYCURSOR = parseSet(YYCURSOR); marker = YYCURSOR; goto scan_start;}
 	'IFF'			{goto scan_start;}
-	'MAP'			{goto scan_start;}
+	'MAP'			{YYCURSOR = parseMapAddReplaceAppend(YYCURSOR, K_MAP); marker = YYCURSOR; goto scan_start;}
 	'ADD'			{goto scan_start;}
 	'END'			{retval = K_IGNORE; goto scan_end;}
-	"\000"			{retval = K_IGNORE; goto scan_end;}
 	"#"				{YYCURSOR = skipline(YYCURSOR); marker = YYCURSOR; goto scan_start;}
-	entity+			{goto scan_start;}
+	entity+			{last_entity = YYCURSOR; goto scan_start;}
 	any				{u_fprintf(ux_stderr, "Error: Unexpected input on line %u!\n", result->lines); goto scan_end;}
 */
 
@@ -473,6 +507,8 @@ GPRE2C::GPRE2C() {
 	in_before_sections = false;
 	in_after_sections = false;
 	in_section = false;
+	marker = 0;
+	last_entity = 0;
 }
 
 GPRE2C::~GPRE2C() {
@@ -488,6 +524,18 @@ void GPRE2C::setResult(CG3::Grammar *res) {
 
 void GPRE2C::setCompatible(bool f) {
 	option_vislcg_compat = f;
+}
+
+void GPRE2C::addRuleToGrammar(Rule *rule) {
+	if (in_section) {
+		result->addRule(rule, &result->rules);
+	}
+	else if (in_before_sections) {
+		result->addRule(rule, &result->before_sections);
+	}
+	else if (in_after_sections) {
+		result->addRule(rule, &result->after_sections);
+	}
 }
 
 int GPRE2C::grammar_from_ufile(UFILE *input) {

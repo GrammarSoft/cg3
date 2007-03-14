@@ -30,18 +30,21 @@ namespace CG3 {
 		const char *filename;
 		const char *locale;
 		const char *codepage;
-		CG3::Grammar *result;
+		Grammar *result;
 	
+		YYCTYPE *marker;
+		YYCTYPE *last_entity;
+
 		GPRE2C();
 		~GPRE2C();
 
 		void setCompatible(bool compat);
-		void setResult(CG3::Grammar *result);
+		void setResult(Grammar *result);
+		void addRuleToGrammar(Rule *rule);
 
 		int grammar_from_ufile(UFILE *input);
 		int parse_grammar_from_file(const char *filename, const char *locale, const char *codepage);
 
-		YYCTYPE *marker;
 		YYCTYPE *skipline(YYCTYPE *input);
 		YYCTYPE *parseCompositeTag(YYCTYPE *input, Set *set);
 		YYCTYPE *parseInlineSet(YYCTYPE *input, Set **ret_set);
@@ -52,6 +55,9 @@ namespace CG3 {
 		YYCTYPE *parseMappingPrefix(YYCTYPE *input);
 		YYCTYPE *parseDelimiters(YYCTYPE *input, STRINGS which);
 		YYCTYPE *parsePreferredTargets(YYCTYPE *input);
+
+		YYCTYPE *parseMapAddReplaceAppend(YYCTYPE *input, KEYWORDS which);
+
 		KEYWORDS scan(YYCTYPE *input);
 	};
 }
