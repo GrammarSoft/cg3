@@ -25,13 +25,13 @@
 using namespace CG3;
 using namespace CG3::Strings;
 #define YYCURSOR        input
-#define __WHITESPACE	"%[^ \t\x0A\x0B\x0C\x0D\u001C\u001D\u001E\u001F\u2028\u2029\x85]"
+#define __WHITESPACE	"%[^ \t\x0A\x0B\x0C\x0D\x1C\x1D\x1E\x1F\u2028\u2029\x85]"
 
 /*!re2c
 	re2c:yyfill:enable = 0 ;
 
 	newline = [\n\u2028\u2029\x85\x0C];
-	space = [ \t\r\x0B\x0D\u001C\u001D\u001E\u001F];
+	space = [ \t\r\x0B\x0D\x1C\x1D\x1E\x1F];
 	any = [^]\newline;
 	eof = [\u0000];
 	special = [#;)(];
