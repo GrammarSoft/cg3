@@ -90,6 +90,14 @@ inline uint32_t hash_sdbm_uint32_t(const uint32_t c, uint32_t hash) {
     #define stdext __gnu_cxx
 #endif
 
+#ifndef max
+#define max(a,b)            (((a) > (b)) ? (a) : (b))
+#endif
+
+#ifndef min
+#define min(a,b)            (((a) < (b)) ? (a) : (b))
+#endif
+
 // CG3 includes
 #include "cg3_resources.h"
 
