@@ -20,6 +20,7 @@ using namespace CG3;
 
 Cohort::Cohort() {
 	wordform = 0;
+	parent = 0;
 	text = 0;
 }
 

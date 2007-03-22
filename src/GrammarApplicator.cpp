@@ -33,6 +33,8 @@ GrammarApplicator::GrammarApplicator() {
 	statistics = false;
 	dep_delimit = false;
 	dep_humanize = false;
+	cohort_counter = 0;
+	dep_highest_seen = 0;
 	timer = 0;
 	num_windows = 2;
 	begintag = 0;

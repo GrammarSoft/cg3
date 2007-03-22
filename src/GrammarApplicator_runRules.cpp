@@ -23,8 +23,7 @@
 using namespace CG3;
 using namespace CG3::Strings;
 
-uint32_t GrammarApplicator::runRulesOnWindow(Window *window, const std::vector<Rule*> *rules, const uint32_t start, const uint32_t end) {
-	SingleWindow *current = window->current;
+uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, const std::vector<Rule*> *rules, const uint32_t start, const uint32_t end) {
 
 	uint32_t retval = RV_NOTHING;
 	bool section_did_good = false;
@@ -101,7 +100,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(Window *window, const std::vector<R
 							std::list<ContextualTest*>::iterator iter;
 							for (iter = rule->tests.begin() ; iter != rule->tests.end() ; iter++) {
 								ContextualTest *test = *iter;
-								test_good = runContextualTest(window, current, c, test);
+								test_good = runContextualTest(current, c, test);
 								if (!test_good) {
 									good = test_good;
 									if (!statistics) {
@@ -217,16 +216,23 @@ uint32_t GrammarApplicator::runRulesOnWindow(Window *window, const std::vector<R
 							cCohort->wordform = begintag;
 							cCohort->readings.push_back(cReading);
 
-							nwin->cohorts.push_back(cCohort);
+							nwin->appendCohort(cCohort);
 
 							for ( ; nc < current->cohorts.size() ; nc++) {
-								nwin->cohorts.push_back(current->cohorts.at(nc));
+								nwin->appendCohort(current->cohorts.at(nc));
 							}
 							c = (uint32_t)current->cohorts.size()-c;
 							for (nc = 0 ; nc < c-1 ; nc++) {
 								current->cohorts.pop_back();
 							}
-							window->next.push_front(nwin);
+							if (!current->parent->next.empty()) {
+								nwin->next = current->parent->next.front();
+								current->parent->next.front()->previous = nwin;
+							}
+							current->next = nwin;
+							nwin->previous = current;
+							nwin->parent = current->parent;
+							current->parent->next.push_front(nwin);
 
 							cohort = current->cohorts.back();
 							for (rter = cohort->readings.begin() ; rter != cohort->readings.end() ; rter++) {
@@ -343,7 +349,7 @@ label_runGrammarOnWindow_begin:
 
 	if (!grammar->before_sections.empty()) {
 		reflowSingleWindow(current);
-		uint32_t rv = runRulesOnWindow(window, &grammar->before_sections, 0, (uint32_t)grammar->before_sections.size());
+		uint32_t rv = runRulesOnWindow(current, &grammar->before_sections, 0, (uint32_t)grammar->before_sections.size());
 		if (rv & RV_DELIMITED) {
 			goto label_runGrammarOnWindow_begin;
 		}
@@ -353,7 +359,7 @@ label_runGrammarOnWindow_begin:
 	if (!grammar->rules.empty()) {
 		reflowSingleWindow(current);
 		for (uint32_t i=0;i<grammar->sections.size()-1;) {
-			uint32_t rv = runRulesOnWindow(window, &grammar->rules, 0, grammar->sections[i+1]);
+			uint32_t rv = runRulesOnWindow(current, &grammar->rules, 0, grammar->sections[i+1]);
 			if (rv & RV_DELIMITED) {
 				goto label_runGrammarOnWindow_begin;
 			}
@@ -365,7 +371,7 @@ label_runGrammarOnWindow_begin:
 
 	if (!grammar->after_sections.empty()) {
 		reflowSingleWindow(current);
-		uint32_t rv = runRulesOnWindow(window, &grammar->after_sections, 0, (uint32_t)grammar->after_sections.size());
+		uint32_t rv = runRulesOnWindow(current, &grammar->after_sections, 0, (uint32_t)grammar->after_sections.size());
 		if (rv & RV_DELIMITED) {
 			goto label_runGrammarOnWindow_begin;
 		}
@@ -374,7 +380,7 @@ label_runGrammarOnWindow_begin:
 	return 0;
 }
 
-bool GrammarApplicator::runContextualTest(const Window *window, const SingleWindow *sWindow, const uint32_t position, const ContextualTest *test) {
+bool GrammarApplicator::runContextualTest(const SingleWindow *sWindow, const uint32_t position, const ContextualTest *test) {
 	bool retval = true;
 	PACC_TimeStamp tstamp = 0;
 	int pos = position + test->offset;
@@ -419,7 +425,7 @@ bool GrammarApplicator::runContextualTest(const Window *window, const SingleWind
 					retval = !retval;
 				}
 				if (retval && test->linked) {
-					retval = runContextualTest(window, sWindow, i, test->linked);
+					retval = runContextualTest(sWindow, i, test->linked);
 				}
 				if (foundfirst && test->scanfirst) {
 					break;
@@ -453,7 +459,7 @@ bool GrammarApplicator::runContextualTest(const Window *window, const SingleWind
 					retval = !retval;
 				}
 				if (retval && test->linked) {
-					retval = runContextualTest(window, sWindow, i, test->linked);
+					retval = runContextualTest(sWindow, i, test->linked);
 				}
 				if (foundfirst && test->scanfirst) {
 					break;
@@ -493,7 +499,7 @@ bool GrammarApplicator::runContextualTest(const Window *window, const SingleWind
 				retval = !retval;
 			}
 			if (retval && test->linked) {
-				retval = runContextualTest(window, sWindow, pos, test->linked);
+				retval = runContextualTest(sWindow, pos, test->linked);
 			}
 		}
 	}

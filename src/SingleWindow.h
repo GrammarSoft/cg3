@@ -26,7 +26,9 @@ namespace CG3 {
 
 	class SingleWindow {
 	public:
+		uint32_t number;
 		SingleWindow *next, *previous;
+		Window *parent;
 
 		std::vector<Cohort*> cohorts;
 		stdext::hash_map<uint32_t, uint32_t> dep_map;
@@ -41,6 +43,7 @@ namespace CG3 {
 		SingleWindow();
 		~SingleWindow();
 
+		void appendCohort(Cohort *cohort);
 		uint32_t rehash();
 	};
 

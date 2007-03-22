@@ -20,7 +20,8 @@ using namespace CG3;
 
 Window::Window() {
 	current = 0;
-	num_windows = 0;
+	window_span = 0;
+	window_counter = 0;
 }
 
 Window::~Window() {
@@ -41,6 +42,10 @@ Window::~Window() {
 }
 
 void Window::appendSingleWindow(SingleWindow *swindow) {
+	window_counter++;
+	swindow->number = window_counter;
+	swindow->parent = this;
+	window_map[swindow->number] = swindow;
 	if (!next.empty()) {
 		swindow->previous = next.back();
 		next.back()->next = swindow;
@@ -49,7 +54,8 @@ void Window::appendSingleWindow(SingleWindow *swindow) {
 }
 
 SingleWindow *Window::shuffleWindowsDown() {
-	if (!previous.empty() && previous.size() >= num_windows) {
+	if (!previous.empty() && previous.size() >= window_span) {
+		window_map.erase(previous.front()->number);
 		delete previous.front();
 		previous.pop_front();
 	}

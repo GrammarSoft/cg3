@@ -22,6 +22,8 @@ SingleWindow::SingleWindow() {
 	text = 0;
 	next = 0;
 	previous = 0;
+	number = 0;
+	parent = 0;
 }
 
 SingleWindow::~SingleWindow() {
@@ -42,6 +44,11 @@ SingleWindow::~SingleWindow() {
 			previous->next = 0;
 		}
 	}
+}
+
+void SingleWindow::appendCohort(Cohort *cohort) {
+	cohort->parent = this;
+	cohorts.push_back(cohort);
 }
 
 uint32_t SingleWindow::rehash() {

@@ -43,6 +43,8 @@ namespace CG3 {
 		void enableStatistics();
 		void disableStatistics();
 
+		uint32_t cohort_counter;
+		uint32_t dep_highest_seen;
 		uint32_t num_windows;
 		uint32_t soft_limit;
 		uint32_t hard_limit;
@@ -69,9 +71,9 @@ namespace CG3 {
 
 		int runGrammarOnText(UFILE *input, UFILE *output);
 		int runGrammarOnWindow(Window *window);
-		uint32_t runRulesOnWindow(Window *window, const std::vector<Rule*> *rules, const uint32_t start, const uint32_t end);
+		uint32_t runRulesOnWindow(SingleWindow *current, const std::vector<Rule*> *rules, const uint32_t start, const uint32_t end);
 
-		bool runContextualTest(const Window *window, const SingleWindow *sWindow, const uint32_t position, const ContextualTest *test);
+		bool runContextualTest(const SingleWindow *sWindow, const uint32_t position, const ContextualTest *test);
 
 		bool doesTagMatchSet(const uint32_t tag, const uint32_t set);
 		bool doesTagMatchReading(const Reading *reading, const uint32_t tag, bool bypass_index = false);

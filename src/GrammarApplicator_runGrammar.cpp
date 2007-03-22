@@ -84,7 +84,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 	Cohort *lCohort = 0;
 	Reading *lReading = 0;
 
-	cWindow->num_windows = num_windows;
+	cWindow->window_span = num_windows;
 
 	while (!u_feof(input)) {
 		u_fgets(line, BUFFER_SIZE-1, input);
@@ -115,7 +115,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 					(*iter)->rehash();
 				}
 
-				cSWindow->cohorts.push_back(cCohort);
+				cSWindow->appendCohort(cCohort);
 				cWindow->appendSingleWindow(cSWindow);
 				lSWindow = cSWindow;
 				lCohort = cCohort;
@@ -144,7 +144,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 					(*iter)->rehash();
 				}
 
-				cSWindow->cohorts.push_back(cCohort);
+				cSWindow->appendCohort(cCohort);
 				cWindow->appendSingleWindow(cSWindow);
 				lSWindow = cSWindow;
 				lCohort = cCohort;
@@ -164,7 +164,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 				cCohort->readings.push_back(cReading);
 
 				cSWindow = new SingleWindow();
-				cSWindow->cohorts.push_back(cCohort);
+				cSWindow->appendCohort(cCohort);
 
 				lSWindow = cSWindow;
 				lReading = cReading;
@@ -172,7 +172,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 				cCohort = 0;
 			}
 			if (cCohort && cSWindow) {
-				cSWindow->cohorts.push_back(cCohort);
+				cSWindow->appendCohort(cCohort);
 				lCohort = cCohort;
 				if (cCohort->readings.empty()) {
 					cReading = new Reading();
@@ -240,7 +240,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 				if (u_strcmp(cleaned, stringbits[S_CMD_FLUSH]) == 0) {
 					u_fprintf(ux_stderr, "Info: CGCMD:FLUSH encountered on line %u. Flushing...\n", lines);
 					if (cCohort && cSWindow) {
-						cSWindow->cohorts.push_back(cCohort);
+						cSWindow->appendCohort(cCohort);
 						if (cCohort->readings.empty()) {
 							cReading = new Reading();
 							cReading->wordform = cCohort->wordform;
@@ -298,7 +298,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 	}
 
 	if (cCohort && cSWindow) {
-		cSWindow->cohorts.push_back(cCohort);
+		cSWindow->appendCohort(cCohort);
 		if (cCohort->readings.empty()) {
 			cReading = new Reading();
 			cReading->wordform = cCohort->wordform;

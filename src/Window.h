@@ -26,7 +26,10 @@ namespace CG3 {
 
 	class Window {
 	public:
-		uint32_t num_windows;
+		uint32_t window_counter;
+		uint32_t window_span;
+		stdext::hash_map<uint32_t, SingleWindow*> window_map;
+
 		std::list<SingleWindow*> previous;
 		SingleWindow *current;
 		std::list<SingleWindow*> next;
