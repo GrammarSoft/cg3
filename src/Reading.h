@@ -25,7 +25,6 @@ namespace CG3 {
 
 	class Reading {
 	public:
-		Reading *next, *previous;
 		Cohort *parent;
 
 		uint32_t wordform;
@@ -56,7 +55,6 @@ namespace CG3 {
 		Reading();
 		~Reading();
 
-		void detach();
 		uint32_t rehash();
 	};
 

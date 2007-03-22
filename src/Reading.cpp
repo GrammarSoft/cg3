@@ -24,7 +24,6 @@ Reading::Reading() {
 	wordform = 0;
 	baseform = 0;
 	hash = 0;
-	next = previous = 0;
 	parent = 0;
 	hash_tags = 0;
 	hash_mapped = 0;
@@ -58,36 +57,6 @@ Reading::~Reading() {
 	dep_parents.clear();
 	dep_children.clear();
 	dep_siblings.clear();
-
-	if (next && previous) {
-		next->previous = previous;
-		previous->next = next;
-	}
-	else {
-		if (next) {
-			next->previous = 0;
-		}
-		if (previous) {
-			previous->next = 0;
-		}
-	}
-}
-
-void Reading::detach() {
-	if (next && previous) {
-		next->previous = previous;
-		previous->next = next;
-	}
-	else {
-		if (next) {
-			next->previous = 0;
-		}
-		if (previous) {
-			previous->next = 0;
-		}
-	}
-	next = 0;
-	previous = 0;
 }
 
 uint32_t Reading::rehash() {

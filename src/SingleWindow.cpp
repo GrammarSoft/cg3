@@ -48,22 +48,6 @@ SingleWindow::~SingleWindow() {
 }
 
 void SingleWindow::appendCohort(Cohort *cohort) {
-	if (!cohorts.empty()) {
-		cohort->previous = cohorts.back();
-		if (cohorts.back()->next) {
-			cohort->next = cohorts.back()->next;
-			cohorts.back()->next->previous = cohort;
-		}
-		cohorts.back()->next = cohort;
-	}
-	else if (previous) {
-		cohort->previous = previous->cohorts.back();
-		previous->cohorts.back()->next = cohort;
-	}
-	if (next) {
-		cohort->next = next->cohorts.front();
-		next->cohorts.front()->previous = cohort;
-	}
 	cohort->parent = this;
 	cohorts.push_back(cohort);
 	parent->cohort_map[cohort->number] = cohort;

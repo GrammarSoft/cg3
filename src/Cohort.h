@@ -29,7 +29,6 @@ namespace CG3 {
 	public:
 		uint32_t number;
 		uint32_t wordform;
-		Cohort *next, *previous;
 		SingleWindow *parent;
 		std::list<Reading*> readings;
 		std::list<Reading*> deleted;
@@ -43,7 +42,6 @@ namespace CG3 {
 		void remSibling(uint32_t sibling);
 		void addChild(uint32_t child);
 		void appendReading(Reading *read);
-		void reenumerate();
 		Reading *allocateAppendReading();
 	};
 
