@@ -153,30 +153,34 @@ int main(int argc, char* argv[]) {
 		fprintf(stderr, " -g or --grammar          Specifies the grammar file to use for disambiguation.\n");
 		fprintf(stderr, " -p or --vislcg-compat    Tells the grammar compiler to be compatible with older VISLCG syntax.\n");
 		fprintf(stderr, " --grammar-out            Writes the compiled grammar back out in textual form to a file.\n");
-		fprintf(stderr, " --grammar-bin            Writes the compiled grammar back out in binary form to a file.\n");
+		// ToDo: Implement binary grammars
+		//fprintf(stderr, " --grammar-bin            Writes the compiled grammar back out in binary form to a file.\n");
 		fprintf(stderr, " --grammar-info           Writes the compiled grammar back out in textual form to a file, with lots of statistics and information.\n");
 		fprintf(stderr, " --grammar-only           Compiles the grammar only.\n");
-		fprintf(stderr, " --check-only             Compiles the grammar only.\n");
 		fprintf(stderr, " --trace                  Prints debug output alongside with normal output.\n");
 		fprintf(stderr, " --prefix                 Sets the prefix for mapping. Defaults to @.\n");
-		fprintf(stderr, " --reorder                Rearranges rules so SELECTs are run first.\n");
-		fprintf(stderr, " --single-run             Only runs each section once.\n");
+		//fprintf(stderr, " --reorder                Rearranges rules so SELECTs are run first.\n");
+		//fprintf(stderr, " --single-run             Only runs each section once.\n");
 		fprintf(stderr, " --no-mappings            Disables running any MAP, ADD, or REPLACE rules.\n");
 		fprintf(stderr, " --no-corrections         Disables running any SUBSTITUTE or APPEND rules.\n");
+		fprintf(stderr, "\n");
+		fprintf(stderr, " --num-windows            Number of windows to keep in before/ahead buffers. Defaults to 2.\n");
+		fprintf(stderr, " --soft-limit             Number of cohorts after which the SOFT-DELIMITERS kick in. Defaults to 300.\n");
+		fprintf(stderr, " --hard-limit             Number of cohorts after which the window is delimited forcefully. Defaults to 500.\n");
 		fprintf(stderr, "\n");
 		fprintf(stderr, " -O or --stdout           A file to print out to instead of stdout.\n");
 		fprintf(stderr, " -I or --stdin            A file to read input from instead of stdin.\n");
 		fprintf(stderr, " -E or --stderr           A file to print errors to instead of stderr.\n");
 		fprintf(stderr, "\n");
 		fprintf(stderr, " -C or --codepage-all     The codepage to use for grammar, input, and output streams. Defaults to ISO-8859-1.\n");
-		fprintf(stderr, " --codepage-grammar       Codepage to use for grammar. Overwrites --codepage-all.\n");
-		fprintf(stderr, " --codepage-input         Codepage to use for input. Overwrites --codepage-all.\n");
-		fprintf(stderr, " --codepage-output        Codepage to use for output. Overwrites --codepage-all.\n");
+		fprintf(stderr, " --codepage-grammar       Codepage to use for grammar. Overrides --codepage-all.\n");
+		fprintf(stderr, " --codepage-input         Codepage to use for input. Overrides --codepage-all.\n");
+		fprintf(stderr, " --codepage-output        Codepage to use for output. Overrides --codepage-all.\n");
 		fprintf(stderr, "\n");
 		fprintf(stderr, " -L or --locale-all       The locale to use for grammar, input, and output streams. Defaults to en_US_POSIX.\n");
-		fprintf(stderr, " --locale-grammar         Locale to use for grammar. Overwrites --locale-all.\n");
-		fprintf(stderr, " --locale-input           Locale to use for input. Overwrites --locale-all.\n");
-		fprintf(stderr, " --locale-output          Locale to use for output. Overwrites --locale-all.\n");
+		fprintf(stderr, " --locale-grammar         Locale to use for grammar. Overrides --locale-all.\n");
+		fprintf(stderr, " --locale-input           Locale to use for input. Overrides --locale-all.\n");
+		fprintf(stderr, " --locale-output          Locale to use for output. Overrides --locale-all.\n");
 
 		return argc < 0 ? U_ILLEGAL_ARGUMENT_ERROR : U_ZERO_ERROR;
 	}
