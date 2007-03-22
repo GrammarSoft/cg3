@@ -69,6 +69,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 	UChar *line = _line;
 	UChar _cleaned[BUFFER_SIZE];
 	UChar *cleaned = _cleaned;
+	bool ignoreinput = false;
 
 	begintag = addTag(stringbits[S_BEGINTAG]);
 	endtag = addTag(stringbits[S_ENDTAG]);
@@ -90,7 +91,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 		u_strcpy(cleaned, line);
 		ux_packWhitespace(cleaned);
 
-		if (cleaned[0] == '"' && cleaned[1] == '<') {
+		if (!ignoreinput && cleaned[0] == '"' && cleaned[1] == '<') {
 			ux_trim(cleaned);
 			if (cCohort && cSWindow->cohorts.size() >= soft_limit && doesTagMatchSet(cCohort->wordform, grammar->soft_delimiters->hash)) {
 				if (cSWindow->cohorts.size() >= soft_limit) {
@@ -231,7 +232,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 			lReading = cReading;
 		}
 		else {
-			if (cleaned[0] == ' ' && cleaned[1] == '"') {
+			if (!ignoreinput && cleaned[0] == ' ' && cleaned[1] == '"') {
 				u_fprintf(ux_stderr, "Warning: Line %u looked like a reading but there was no containing cohort - treated as plain text.\n", lines);
 			}
 			ux_trim(cleaned);
@@ -270,6 +271,14 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 				else if (u_strcmp(cleaned, stringbits[S_CMD_EXIT]) == 0) {
 					u_fprintf(ux_stderr, "Info: CGCMD:EXIT encountered on line %u. Exiting...\n", lines);
 					goto CGCMD_EXIT;
+				}
+				else if (u_strcmp(cleaned, stringbits[S_CMD_IGNORE]) == 0) {
+					u_fprintf(ux_stderr, "Info: CGCMD:IGNORE encountered on line %u. Passing through all input...\n", lines);
+					ignoreinput = true;
+				}
+				else if (u_strcmp(cleaned, stringbits[S_CMD_RESUME]) == 0) {
+					u_fprintf(ux_stderr, "Info: CGCMD:RESUME encountered on line %u. Resuming CG...\n", lines);
+					ignoreinput = false;
 				}
 				else if (lReading) {
 					lReading->text = ux_append(lReading->text, line);

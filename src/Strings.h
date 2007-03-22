@@ -83,6 +83,8 @@ namespace CG3 {
 			S_ENDTAG,
 			S_CMD_FLUSH,
 			S_CMD_EXIT,
+			S_CMD_IGNORE,
+			S_CMD_RESUME,
 			STRINGS_COUNT
 		};
 

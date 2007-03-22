@@ -31,6 +31,8 @@ GrammarApplicator::GrammarApplicator() {
 	trace = false;
 	single_run = false;
 	statistics = false;
+	dep_delimit = false;
+	dep_humanize = false;
 	timer = 0;
 	num_windows = 2;
 	begintag = 0;

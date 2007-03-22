@@ -15,19 +15,33 @@
 	"word" notmeeither @2 
 "<$.>"
 
+test
 "<word>"
-	"word" notwanted @3 
 	"word" wanted @3 
-	"word" notmeeither @3 
 "<word>"
 	"word" nomatch @3 
 "<$.>"
 
-test
 "<word>"
+	"word" notwanted @4 
 	"word" wanted @4 
+	"word" notmeeither @4 
 "<word>"
+	"word" notwanted @4 
 	"word" wanted @4 
+	"word" notmeeither @4 
 "<$.>"
 
 test2
+"<word>"
+	"word" notwanted @5
+	"word" wanted @5
+	"word" notmeeither @5
+"<word>"
+	"word" notwanted @5
+	"word" wanted @5
+	"word" notmeeither @5
+"<$.>"
+"<word>"
+	"word" wanted @5 
+

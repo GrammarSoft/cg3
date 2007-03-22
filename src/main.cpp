@@ -66,6 +66,8 @@ namespace Options {
 		ALWAYS_SPAN,
 		SOFT_LIMIT,
 		HARD_LIMIT,
+		DEP_DELIMIT,
+		DEP_HUMANIZE,
 		NUM_OPTIONS
 	};
 
@@ -108,7 +110,9 @@ namespace Options {
 			UOPTION_DEF("num-windows",			0, UOPT_REQUIRES_ARG),
 			UOPTION_DEF("always-span",			0, UOPT_NO_ARG),
 			UOPTION_DEF("soft-limit",			0, UOPT_REQUIRES_ARG),
-			UOPTION_DEF("hard-limit",			0, UOPT_REQUIRES_ARG)
+			UOPTION_DEF("hard-limit",			0, UOPT_REQUIRES_ARG),
+			UOPTION_DEF("dep-delimit",			0, UOPT_NO_ARG),
+			UOPTION_DEF("dep-humanize",			0, UOPT_NO_ARG)
 	};
 }
 
@@ -170,6 +174,8 @@ int main(int argc, char* argv[]) {
 		fprintf(stderr, " --always-span            Forces all scanning tests to always span across window boundaries.\n");
 		fprintf(stderr, " --soft-limit             Number of cohorts after which the SOFT-DELIMITERS kick in. Defaults to 300.\n");
 		fprintf(stderr, " --hard-limit             Number of cohorts after which the window is delimited forcefully. Defaults to 500.\n");
+		fprintf(stderr, " --dep-delimit            Delimit via dependency information instead of DELIMITERS.\n");
+		fprintf(stderr, " --dep-humanize           Output dependency information in a more readable format.\n");
 		fprintf(stderr, "\n");
 		fprintf(stderr, " -O or --stdout           A file to print out to instead of stdout.\n");
 		fprintf(stderr, " -I or --stdin            A file to read input from instead of stdin.\n");

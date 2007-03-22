@@ -37,6 +37,8 @@ namespace CG3 {
 		bool apply_corrections;
 		bool trace;
 		bool single_run;
+		bool dep_delimit;
+		bool dep_humanize;
 
 		void enableStatistics();
 		void disableStatistics();

@@ -17,6 +17,9 @@
 	"word" notmeeither @2
 "<$.>"
 
+CGCMD:FLUSH
+test
+
 "<word>"
 	"word" notwanted @3
 	"word" wanted @3
@@ -25,9 +28,6 @@
 	"word" nomatch @3
 "<$.>"
 
-CGCMD:FLUSH
-test
-
 "<word>"
 	"word" notwanted @4
 	"word" wanted @4
@@ -39,7 +39,27 @@ test
 "<$.>"
 
 CGCMD:FLUSH
+CGCMD:IGNORE
 test2
+
+"<word>"
+	"word" notwanted @5
+	"word" wanted @5
+	"word" notmeeither @5
+"<word>"
+	"word" notwanted @5
+	"word" wanted @5
+	"word" notmeeither @5
+"<$.>"
+
+CGCMD:RESUME
+
+"<word>"
+	"word" notwanted @5
+	"word" wanted @5
+	"word" notmeeither @5
+
+CGCMD:FLUSH
 CGCMD:EXIT
 
 "<word>"
