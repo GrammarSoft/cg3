@@ -18,12 +18,12 @@
 
 using namespace CG3;
 
-SingleWindow::SingleWindow() {
+SingleWindow::SingleWindow(Window *p) {
 	text = 0;
 	next = 0;
 	previous = 0;
 	number = 0;
-	parent = 0;
+	parent = p;
 }
 
 SingleWindow::~SingleWindow() {
@@ -44,11 +44,29 @@ SingleWindow::~SingleWindow() {
 			previous->next = 0;
 		}
 	}
+	parent->window_map.erase(number);
 }
 
 void SingleWindow::appendCohort(Cohort *cohort) {
+	if (!cohorts.empty()) {
+		cohort->previous = cohorts.back();
+		if (cohorts.back()->next) {
+			cohort->next = cohorts.back()->next;
+			cohorts.back()->next->previous = cohort;
+		}
+		cohorts.back()->next = cohort;
+	}
+	else if (previous) {
+		cohort->previous = previous->cohorts.back();
+		previous->cohorts.back()->next = cohort;
+	}
+	if (next) {
+		cohort->next = next->cohorts.front();
+		next->cohorts.front()->previous = cohort;
+	}
 	cohort->parent = this;
 	cohorts.push_back(cohort);
+	parent->cohort_map[cohort->number] = cohort;
 }
 
 uint32_t SingleWindow::rehash() {

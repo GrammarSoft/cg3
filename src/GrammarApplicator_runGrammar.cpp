@@ -105,7 +105,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 					cReading->tags_list.push_back(cCohort->wordform);
 					cReading->noprint = true;
 					reflowReading(cReading);
-					cCohort->readings.push_back(cReading);
+					cCohort->appendReading(cReading);
 					lReading = cReading;
 				}
 				std::list<Reading*>::iterator iter;
@@ -134,7 +134,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 					cReading->tags_list.push_back(cCohort->wordform);
 					cReading->noprint = true;
 					reflowReading(cReading);
-					cCohort->readings.push_back(cReading);
+					cCohort->appendReading(cReading);
 					lReading = cReading;
 				}
 				std::list<Reading*>::iterator iter;
@@ -152,6 +152,9 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 				cCohort = 0;
 			}
 			if (!cSWindow) {
+				// ToDo: Refactor to allocate SingleWindow, Cohort, and Reading from their containers
+				cSWindow = new SingleWindow(cWindow);
+
 				cReading = new Reading();
 				cReading->baseform = begintag;
 				cReading->wordform = begintag;
@@ -159,11 +162,11 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 				cReading->tags_list.push_back(begintag);
 				cReading->rehash();
 
-				cCohort = new Cohort();
+				cCohort = new Cohort(cSWindow);
+				cCohort->number = cWindow->cohort_counter++;
 				cCohort->wordform = begintag;
-				cCohort->readings.push_back(cReading);
+				cCohort->appendReading(cReading);
 
-				cSWindow = new SingleWindow();
 				cSWindow->appendCohort(cCohort);
 
 				lSWindow = cSWindow;
@@ -182,7 +185,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 					cReading->tags_list.push_back(cCohort->wordform);
 					cReading->noprint = true;
 					reflowReading(cReading);
-					cCohort->readings.push_back(cReading);
+					cCohort->appendReading(cReading);
 					lReading = cReading;
 				}
 			}
@@ -191,7 +194,8 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 				runGrammarOnWindow(cWindow);
 				printSingleWindow(cWindow->current, output);
 			}
-			cCohort = new Cohort();
+			cCohort = new Cohort(cSWindow);
+			cCohort->number = cWindow->cohort_counter++;
 			cCohort->wordform = addTag(cleaned);
 			lCohort = cCohort;
 			lReading = 0;
@@ -228,7 +232,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 			if (!cReading->tags_mapped.empty()) {
 				cReading->mapped = true;
 			}
-			cCohort->readings.push_back(cReading);
+			cCohort->appendReading(cReading);
 			lReading = cReading;
 		}
 		else {
@@ -248,7 +252,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 							cReading->tags[cCohort->wordform] = cCohort->wordform;
 							cReading->noprint = true;
 							cReading->rehash();
-							cCohort->readings.push_back(cReading);
+							cCohort->appendReading(cReading);
 						}
 						std::list<Reading*>::iterator iter;
 						for (iter = cCohort->readings.begin() ; iter != cCohort->readings.end() ; iter++) {
@@ -306,7 +310,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 			cReading->tags[cCohort->wordform] = cCohort->wordform;
 			cReading->noprint = true;
 			cReading->rehash();
-			cCohort->readings.push_back(cReading);
+			cCohort->appendReading(cReading);
 		}
 		std::list<Reading*>::iterator iter;
 		for (iter = cCohort->readings.begin() ; iter != cCohort->readings.end() ; iter++) {

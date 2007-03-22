@@ -342,11 +342,11 @@ int32_t GrammarApplicator::doesSetMatchDependency(const SingleWindow *sWindow, c
 			bool retval = false;
 			std::set<uint32_t>::const_iterator dter;
 			for (dter = deps->begin() ; dter != deps->end() ; dter++) {
-				if (sWindow->dep_map.find(*dter) == sWindow->dep_map.end()) {
+				if (sWindow->parent->dep_map.find(*dter) == sWindow->parent->dep_map.end()) {
 					u_fprintf(ux_stderr, "Warning: Dependency %u does not exist - ignoring.\n", *dter);
 					continue;
 				}
-				uint32_t dep_pos = sWindow->dep_map.find(*dter)->second;
+				uint32_t dep_pos = sWindow->parent->dep_map.find(*dter)->second;
 				Cohort *cohort = sWindow->cohorts[dep_pos];
 				if (test->careful) {
 					retval = doesSetMatchCohortCareful(cohort, test->target);

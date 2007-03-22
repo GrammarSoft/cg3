@@ -17,27 +17,33 @@
 #ifndef __COHORT_H
 #define __COHORT_H
 
+#include "stdafx.h"
 #include <unicode/ustdio.h>
 #include <unicode/ustring.h>
+#include "Window.h"
 #include "Reading.h"
 
 namespace CG3 {
 
 	class Cohort {
 	public:
+		uint32_t number;
 		uint32_t wordform;
+		Cohort *next, *previous;
 		SingleWindow *parent;
 		std::list<Reading*> readings;
 		std::list<Reading*> deleted;
 		UChar *text;
 
-		Cohort();
+		Cohort(SingleWindow *p);
 		~Cohort();
 
 		void addParent(uint32_t parent);
 		void addSibling(uint32_t sibling);
 		void remSibling(uint32_t sibling);
 		void addChild(uint32_t child);
+		void appendReading(Reading *read);
+		void reenumerate();
 		Reading *allocateAppendReading();
 	};
 

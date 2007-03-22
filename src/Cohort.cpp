@@ -18,9 +18,12 @@
 
 using namespace CG3;
 
-Cohort::Cohort() {
+Cohort::Cohort(SingleWindow *p) {
 	wordform = 0;
-	parent = 0;
+	number = 0;
+	next = 0;
+	previous = 0;
+	parent = p;
 	text = 0;
 }
 
@@ -30,6 +33,19 @@ Cohort::~Cohort() {
 		delete *iter;
 	}
 	readings.clear();
+	if (next && previous) {
+		next->previous = previous;
+		previous->next = next;
+	}
+	else {
+		if (next) {
+			next->previous = 0;
+		}
+		if (previous) {
+			previous->next = 0;
+		}
+	}
+	parent->parent->cohort_map.erase(number);
 }
 
 void Cohort::addParent(uint32_t parent) {
@@ -60,8 +76,26 @@ void Cohort::addChild(uint32_t child) {
 	}
 }
 
+void Cohort::appendReading(Reading *read) {
+	read->parent = this;
+	readings.push_back(read);
+}
+
+void Cohort::reenumerate() {
+	Cohort *c = this;
+	if (c->previous) {
+		c = c->previous;
+	}
+	while (c->next) {
+		c->next->number = c->number+1;
+		c = c->next;
+	}
+	u_fprintf(ux_stderr, "Info: Reenumerate called.\n");
+}
+
 Reading* Cohort::allocateAppendReading() {
 	Reading *read = new Reading();
+	read->parent = this;
 	readings.push_back(read);
 	return read;
 }

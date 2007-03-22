@@ -20,6 +20,7 @@
 #include "stdafx.h"
 #include <unicode/ustdio.h>
 #include <unicode/ustring.h>
+#include "Window.h"
 #include "Cohort.h"
 
 namespace CG3 {
@@ -31,7 +32,6 @@ namespace CG3 {
 		Window *parent;
 
 		std::vector<Cohort*> cohorts;
-		stdext::hash_map<uint32_t, uint32_t> dep_map;
 		UChar *text;
 		uint32_t hash, hash_tags, hash_mapped, hash_plain, hash_textual;
 
@@ -40,7 +40,7 @@ namespace CG3 {
 		std::map<uint32_t, uint32_t> tags_mapped;
 		std::map<uint32_t, uint32_t> tags_textual;
 
-		SingleWindow();
+		SingleWindow(Window *p);
 		~SingleWindow();
 
 		void appendCohort(Cohort *cohort);

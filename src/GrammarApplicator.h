@@ -43,7 +43,6 @@ namespace CG3 {
 		void enableStatistics();
 		void disableStatistics();
 
-		uint32_t cohort_counter;
 		uint32_t dep_highest_seen;
 		uint32_t num_windows;
 		uint32_t soft_limit;

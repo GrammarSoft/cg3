@@ -24,6 +24,7 @@ Reading::Reading() {
 	wordform = 0;
 	baseform = 0;
 	hash = 0;
+	parent = 0;
 	hash_tags = 0;
 	hash_mapped = 0;
 	hash_plain = 0;

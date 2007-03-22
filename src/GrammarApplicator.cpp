@@ -33,7 +33,6 @@ GrammarApplicator::GrammarApplicator() {
 	statistics = false;
 	dep_delimit = false;
 	dep_humanize = false;
-	cohort_counter = 0;
 	dep_highest_seen = 0;
 	timer = 0;
 	num_windows = 2;
@@ -152,6 +151,7 @@ void GrammarApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 		}
 		Cohort *cohort = window->cohorts[c];
 		GrammarWriter::printTagRaw(output, single_tags[cohort->wordform]);
+		//u_fprintf(output, " %u", cohort->number);
 		u_fprintf(output, "\n");
 		if (cohort->text) {
 			u_fprintf(output, "%S", cohort->text);

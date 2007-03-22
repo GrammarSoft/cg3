@@ -22,6 +22,7 @@ Window::Window() {
 	current = 0;
 	window_span = 0;
 	window_counter = 0;
+	cohort_counter = 1;
 }
 
 Window::~Window() {
@@ -39,18 +40,21 @@ Window::~Window() {
 		delete *iter;
 	}
 	next.clear();
+
+	window_map.clear();
+	cohort_map.clear();
 }
 
 void Window::appendSingleWindow(SingleWindow *swindow) {
 	window_counter++;
 	swindow->number = window_counter;
 	swindow->parent = this;
-	window_map[swindow->number] = swindow;
 	if (!next.empty()) {
 		swindow->previous = next.back();
 		next.back()->next = swindow;
 	}
 	next.push_back(swindow);
+	window_map[swindow->number] = swindow;
 }
 
 SingleWindow *Window::shuffleWindowsDown() {

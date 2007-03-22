@@ -202,8 +202,14 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, const std::v
 							variables[rule->varname] = 1;
 						}
 						else if (type == K_DELIMIT) {
-							SingleWindow *nwin = new SingleWindow();
-							uint32_t nc = c+1;
+							SingleWindow *nwin = new SingleWindow(current->parent);
+							nwin->previous = current;
+							nwin->next = current->next;
+							if (nwin->next) {
+								nwin->next->previous = nwin;
+							}
+
+							current->parent->next.push_front(nwin);
 
 							Reading *cReading = new Reading();
 							cReading->baseform = begintag;
@@ -212,12 +218,15 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, const std::v
 							cReading->tags_list.push_back(begintag);
 							cReading->rehash();
 
-							Cohort *cCohort = new Cohort();
+							current->parent->cohort_counter++;
+							Cohort *cCohort = new Cohort(nwin);
+							cCohort->number = 0;
 							cCohort->wordform = begintag;
-							cCohort->readings.push_back(cReading);
+							cCohort->appendReading(cReading);
 
 							nwin->appendCohort(cCohort);
 
+							uint32_t nc = c+1;
 							for ( ; nc < current->cohorts.size() ; nc++) {
 								nwin->appendCohort(current->cohorts.at(nc));
 							}
@@ -225,14 +234,6 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, const std::v
 							for (nc = 0 ; nc < c-1 ; nc++) {
 								current->cohorts.pop_back();
 							}
-							if (!current->parent->next.empty()) {
-								nwin->next = current->parent->next.front();
-								current->parent->next.front()->previous = nwin;
-							}
-							current->next = nwin;
-							nwin->previous = current;
-							nwin->parent = current->parent;
-							current->parent->next.push_front(nwin);
 
 							cohort = current->cohorts.back();
 							for (rter = cohort->readings.begin() ; rter != cohort->readings.end() ; rter++) {

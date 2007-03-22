@@ -25,6 +25,7 @@ namespace CG3 {
 
 	class Reading {
 	public:
+		Cohort *parent;
 		uint32_t wordform;
 		uint32_t baseform;
 		uint32_t hash, hash_tags, hash_mapped, hash_plain, hash_textual;

@@ -28,7 +28,7 @@ void GrammarApplicator::reflowSingleWindow(SingleWindow *swindow) {
 	swindow->tags_mapped.clear();
 	swindow->tags_plain.clear();
 	swindow->tags_textual.clear();
-	swindow->dep_map.clear();
+	swindow->parent->dep_map.clear();
 
 	for (uint32_t c=0 ; c < swindow->cohorts.size() ; c++) {
 		Cohort *cohort = swindow->cohorts[c];
@@ -55,8 +55,8 @@ void GrammarApplicator::reflowSingleWindow(SingleWindow *swindow) {
 					swindow->tags_textual[*tter] = *tter;
 				}
 				if (tag->type & T_DEPENDENCY) {
-					if (swindow->dep_map.find(tag->dep_self) == swindow->dep_map.end()) {
-						swindow->dep_map[tag->dep_self] = c;
+					if (swindow->parent->dep_map.find(tag->dep_self) == swindow->parent->dep_map.end()) {
+						swindow->parent->dep_map[tag->dep_self] = c;
 					}
 				}
 				if (!tag->type) {
@@ -66,8 +66,8 @@ void GrammarApplicator::reflowSingleWindow(SingleWindow *swindow) {
 		}
 	}
 
-	if (!swindow->dep_map.empty()) {
-		swindow->dep_map[0] = 0;
+	if (!swindow->parent->dep_map.empty()) {
+		swindow->parent->dep_map[0] = 0;
 		for (uint32_t c=0 ; c < swindow->cohorts.size() ; c++) {
 			Cohort *cohort = swindow->cohorts[c];
 
@@ -86,11 +86,11 @@ void GrammarApplicator::reflowSingleWindow(SingleWindow *swindow) {
 					}
 					assert(tag != 0);
 					if (tag->type & T_DEPENDENCY) {
-						if (swindow->dep_map.find(tag->dep_parent) == swindow->dep_map.end()) {
+						if (swindow->parent->dep_map.find(tag->dep_parent) == swindow->parent->dep_map.end()) {
 							u_fprintf(ux_stderr, "Warning: Parent %u does not exist - ignoring.\n", tag->dep_parent);
 						}
 						else {
-							swindow->cohorts[swindow->dep_map.find(tag->dep_parent)->second]->addChild(tag->dep_self);
+							swindow->cohorts[swindow->parent->dep_map.find(tag->dep_parent)->second]->addChild(tag->dep_self);
 						}
 					}
 				}
@@ -107,7 +107,7 @@ void GrammarApplicator::reflowSingleWindow(SingleWindow *swindow) {
 				uint32_t dep_real = 0;
 				std::set<uint32_t>::const_iterator tter;
 				for (tter = reading->dep_children.begin() ; tter != reading->dep_children.end() ; tter++) {
-					dep_real = swindow->dep_map.find(*tter)->second;
+					dep_real = swindow->parent->dep_map.find(*tter)->second;
 					std::set<uint32_t>::const_iterator ster;
 					for (ster = reading->dep_children.begin() ; ster != reading->dep_children.end() ; ster++) {
 						swindow->cohorts[dep_real]->addSibling(*ster);
