@@ -25,7 +25,9 @@ namespace CG3 {
 
 	class Reading {
 	public:
+		Reading *next, *previous;
 		Cohort *parent;
+
 		uint32_t wordform;
 		uint32_t baseform;
 		uint32_t hash, hash_tags, hash_mapped, hash_plain, hash_textual;
@@ -54,6 +56,7 @@ namespace CG3 {
 		Reading();
 		~Reading();
 
+		void detach();
 		uint32_t rehash();
 	};
 
