@@ -25,7 +25,7 @@ using namespace CG3;
 using namespace CG3::Strings;
 
 GrammarApplicator::GrammarApplicator() {
-	// ToDo: Make --always-span switch
+	always_span = false;
 	apply_mappings = true;
 	apply_corrections = true;
 	trace = false;

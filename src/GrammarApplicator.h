@@ -32,6 +32,7 @@ namespace CG3 {
 		static const uint32_t RV_SOMETHING = 2;
 		static const uint32_t RV_DELIMITED = 4;
 
+		bool always_span;
 		bool apply_mappings;
 		bool apply_corrections;
 		bool trace;

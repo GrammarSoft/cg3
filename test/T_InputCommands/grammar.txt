@@ -5,4 +5,4 @@ LIST BSet = nomatch ;
 
 SECTION
 
-SELECT ASet (NOT -1*W BSet) ;
+SELECT ASet (NOT -1*< BSet) ;

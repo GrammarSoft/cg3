@@ -63,6 +63,7 @@ namespace Options {
 		MAPPING_PREFIX,
 		RE2C,
 		NUM_WINDOWS,
+		ALWAYS_SPAN,
 		SOFT_LIMIT,
 		HARD_LIMIT,
 		NUM_OPTIONS
@@ -105,6 +106,7 @@ namespace Options {
 
 			UOPTION_DEF("re2c",					0, UOPT_NO_ARG),
 			UOPTION_DEF("num-windows",			0, UOPT_REQUIRES_ARG),
+			UOPTION_DEF("always-span",			0, UOPT_NO_ARG),
 			UOPTION_DEF("soft-limit",			0, UOPT_REQUIRES_ARG),
 			UOPTION_DEF("hard-limit",			0, UOPT_REQUIRES_ARG)
 	};
@@ -165,6 +167,7 @@ int main(int argc, char* argv[]) {
 		fprintf(stderr, " --no-corrections         Disables running any SUBSTITUTE or APPEND rules.\n");
 		fprintf(stderr, "\n");
 		fprintf(stderr, " --num-windows            Number of windows to keep in before/ahead buffers. Defaults to 2.\n");
+		fprintf(stderr, " --always-span            Forces all scanning tests to always span across window boundaries.\n");
 		fprintf(stderr, " --soft-limit             Number of cohorts after which the SOFT-DELIMITERS kick in. Defaults to 300.\n");
 		fprintf(stderr, " --hard-limit             Number of cohorts after which the window is delimited forcefully. Defaults to 500.\n");
 		fprintf(stderr, "\n");
@@ -330,6 +333,9 @@ int main(int argc, char* argv[]) {
 
 		applicator = new CG3::GrammarApplicator();
 		applicator->setGrammar(grammar);
+		if (options[ALWAYS_SPAN].doesOccur) {
+			applicator->always_span = true;
+		}
 		applicator->apply_mappings = true;
 		if (options[NOMAPPINGS].doesOccur) {
 			applicator->apply_mappings = false;
@@ -375,6 +381,9 @@ int main(int argc, char* argv[]) {
 
 				applicator = new CG3::GrammarApplicator();
 				applicator->setGrammar(grammar);
+				if (options[ALWAYS_SPAN].doesOccur) {
+					applicator->always_span = true;
+				}
 				applicator->apply_mappings = true;
 				if (options[NOMAPPINGS].doesOccur) {
 					applicator->apply_mappings = false;
@@ -431,6 +440,9 @@ int main(int argc, char* argv[]) {
 
 			applicator = new CG3::GrammarApplicator();
 			applicator->setGrammar(grammar);
+			if (options[ALWAYS_SPAN].doesOccur) {
+				applicator->always_span = true;
+			}
 			applicator->apply_mappings = true;
 			if (options[NOMAPPINGS].doesOccur) {
 				applicator->apply_mappings = false;

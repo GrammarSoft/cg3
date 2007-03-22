@@ -256,9 +256,9 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 							(*iter)->rehash();
 						}
 						cWindow->appendSingleWindow(cSWindow);
-						cReading = 0;
-						cCohort = 0;
-						cSWindow = 0;
+						cReading = lReading = 0;
+						cCohort = lCohort = 0;
+						cSWindow = lSWindow = 0;
 					}
 					while (!cWindow->next.empty()) {
 						cWindow->shuffleWindowsDown();

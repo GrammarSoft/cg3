@@ -430,6 +430,10 @@ bool GrammarApplicator::runContextualTest(const Window *window, const SingleWind
 						break;
 					}
 				}
+				if (i == 0 && (test->span_both || test->span_left || always_span) && sWindow->previous) {
+					sWindow = sWindow->previous;
+					i = (uint32_t)sWindow->cohorts.size()-1;
+				}
 			}
 		}
 		else if (test->offset > 0 && (uint32_t)pos <= sWindow->cohorts.size() && (test->scanall || test->scanfirst)) {
@@ -459,6 +463,10 @@ bool GrammarApplicator::runContextualTest(const Window *window, const SingleWind
 					if (barrier) {
 						break;
 					}
+				}
+				if (i == sWindow->cohorts.size() && (test->span_both || test->span_left || always_span) && sWindow->next) {
+					sWindow = sWindow->next;
+					i = 0;
 				}
 			}
 		}

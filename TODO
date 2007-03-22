@@ -2,7 +2,6 @@ src/ContextualTest.cpp:	// ToDo: Add < and > to ContextualTest's window jumps
 src/ContextualTest.h:		// ToDo: Implement careful barrier
 src/GPRE2C.cpp:	// ToDo: Generate a unique set name somehow faster.
 src/GPRE2C.cpp.re2c:	// ToDo: Generate a unique set name somehow faster.
-src/GrammarApplicator.cpp:	// ToDo: Make --always-span switch
 src/GrammarApplicator.cpp:		// ToDo: Allow whitespace in baseforms.
 src/GrammarApplicator_matchSet.cpp:			// ToDo: Cache regexp and icase hits/misses
 src/GrammarApplicator_runRules.cpp:	// ToDo: Make old cohort -> rules order available via switch

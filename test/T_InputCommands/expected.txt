@@ -1,2 +1,33 @@
 "<word>"
-	"word" wanted 
+	"word" wanted @1 
+"<word>"
+	"word" notwanted @1 
+	"word" nomatch @1 
+"<$.>"
+
+"<word>"
+	"word" notwanted @2 
+	"word" wanted @2 
+	"word" notmeeither @2 
+"<word>"
+	"word" notwanted @2 
+	"word" wanted @2 
+	"word" notmeeither @2 
+"<$.>"
+
+"<word>"
+	"word" notwanted @3 
+	"word" wanted @3 
+	"word" notmeeither @3 
+"<word>"
+	"word" nomatch @3 
+"<$.>"
+
+test
+"<word>"
+	"word" wanted @4 
+"<word>"
+	"word" wanted @4 
+"<$.>"
+
+test2

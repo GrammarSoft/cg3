@@ -26,6 +26,7 @@
 "<$.>"
 
 CGCMD:FLUSH
+test
 
 "<word>"
 	"word" notwanted @4
@@ -38,6 +39,7 @@ CGCMD:FLUSH
 "<$.>"
 
 CGCMD:FLUSH
+test2
 CGCMD:EXIT
 
 "<word>"
