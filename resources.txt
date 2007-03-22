@@ -1,2 +1,0 @@
-IBM ICU
-URL: http://ibm.com/software/globalization/icu/

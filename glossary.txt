@@ -1,5 +1,0 @@
-individual tag: Any single TAG element.
-composite tag: Any multiple (TAGA TAGB TAGC) element.
-simple tag: Any tag that does not make use of the advanced features.
-complex tag: Any tag that does make use of those features.
-tag: Any of the above.
