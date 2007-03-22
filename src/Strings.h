@@ -81,6 +81,8 @@ namespace CG3 {
 			S_ASTERIKTWO,
 			S_BEGINTAG,
 			S_ENDTAG,
+			S_CMD_FLUSH,
+			S_CMD_EXIT,
 			STRINGS_COUNT
 		};
 

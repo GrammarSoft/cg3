@@ -34,9 +34,8 @@ namespace CG3 {
 		Window();
 		~Window();
 
-		void shuffleWindowsDown();
-		SingleWindow *previousFrom(const SingleWindow *me) const;
-		SingleWindow *nextFrom(const SingleWindow *me) const;
+		void appendSingleWindow(SingleWindow *swindow);
+		SingleWindow *shuffleWindowsDown();
 	};
 
 }

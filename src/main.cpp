@@ -17,6 +17,7 @@
 
 // ToDo: Rules can be dynamically reordered in "optimize correct" mode by moving the offending rule to the end of the section
 // ToDo: Refactor statistics to be gathered in their own objects rather than inline with Rules
+// ToDo: Enable a daemonized version.
 
 // ToDo: Reflow which includes are really needed where
 #include "stdafx.h"
@@ -61,6 +62,7 @@ namespace Options {
 		SINGLERUN,
 		MAPPING_PREFIX,
 		RE2C,
+		NUM_WINDOWS,
 		SOFT_LIMIT,
 		HARD_LIMIT,
 		NUM_OPTIONS
@@ -102,6 +104,7 @@ namespace Options {
 			UOPTION_DEF("prefix",			    0, UOPT_REQUIRES_ARG),
 
 			UOPTION_DEF("re2c",					0, UOPT_NO_ARG),
+			UOPTION_DEF("num-windows",			0, UOPT_REQUIRES_ARG),
 			UOPTION_DEF("soft-limit",			0, UOPT_REQUIRES_ARG),
 			UOPTION_DEF("hard-limit",			0, UOPT_REQUIRES_ARG)
 	};
@@ -340,6 +343,9 @@ int main(int argc, char* argv[]) {
 		if (options[GRAMMAR_INFO].doesOccur) {
 			applicator->enableStatistics();
 		}
+		if (options[NUM_WINDOWS].doesOccur) {
+			applicator->num_windows = atoi(options[NUM_WINDOWS].value);
+		}
 		if (options[SOFT_LIMIT].doesOccur) {
 			applicator->soft_limit = atoi(options[SOFT_LIMIT].value);
 		}
@@ -378,6 +384,9 @@ int main(int argc, char* argv[]) {
 				}
 				if (options[SINGLERUN].doesOccur) {
 					applicator->single_run = true;
+				}
+				if (options[NUM_WINDOWS].doesOccur) {
+					applicator->num_windows = atoi(options[NUM_WINDOWS].value);
 				}
 				if (options[SOFT_LIMIT].doesOccur) {
 					applicator->soft_limit = atoi(options[SOFT_LIMIT].value);
@@ -431,6 +440,9 @@ int main(int argc, char* argv[]) {
 			}
 			if (options[SINGLERUN].doesOccur) {
 				applicator->single_run = true;
+			}
+			if (options[NUM_WINDOWS].doesOccur) {
+				applicator->num_windows = atoi(options[NUM_WINDOWS].value);
 			}
 			if (options[SOFT_LIMIT].doesOccur) {
 				applicator->soft_limit = atoi(options[SOFT_LIMIT].value);

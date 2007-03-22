@@ -20,6 +20,8 @@ using namespace CG3;
 
 SingleWindow::SingleWindow() {
 	text = 0;
+	next = 0;
+	previous = 0;
 }
 
 SingleWindow::~SingleWindow() {
@@ -28,6 +30,18 @@ SingleWindow::~SingleWindow() {
 		delete *iter;
 	}
 	cohorts.clear();
+	if (next && previous) {
+		next->previous = previous;
+		previous->next = next;
+	}
+	else {
+		if (next) {
+			next->previous = 0;
+		}
+		if (previous) {
+			previous->next = 0;
+		}
+	}
 }
 
 uint32_t SingleWindow::rehash() {

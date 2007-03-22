@@ -26,6 +26,8 @@ namespace CG3 {
 
 	class SingleWindow {
 	public:
+		SingleWindow *next, *previous;
+
 		std::vector<Cohort*> cohorts;
 		stdext::hash_map<uint32_t, uint32_t> dep_map;
 		UChar *text;

@@ -1,5 +1,7 @@
 src/ContextualTest.cpp:	// ToDo: Add < and > to ContextualTest's window jumps
 src/ContextualTest.h:		// ToDo: Implement careful barrier
+src/GPRE2C.cpp:	// ToDo: Generate a unique set name somehow faster.
+src/GPRE2C.cpp.re2c:	// ToDo: Generate a unique set name somehow faster.
 src/GrammarApplicator.cpp:	// ToDo: Make --always-span switch
 src/GrammarApplicator.cpp:		// ToDo: Allow whitespace in baseforms.
 src/GrammarApplicator_matchSet.cpp:			// ToDo: Cache regexp and icase hits/misses
@@ -14,4 +16,5 @@ src/Tag.cpp:		// ToDo: Implement META and VAR
 src/Tag.cpp:		// ToDo: Add ICASE: REGEXP: and //r //ri //i to tags
 src/main.cpp:// ToDo: Rules can be dynamically reordered in "optimize correct" mode by moving the offending rule to the end of the section
 src/main.cpp:// ToDo: Refactor statistics to be gathered in their own objects rather than inline with Rules
+src/main.cpp:// ToDo: Add input stream commands such as VISLCGCMD:FLUSH VISLCGCMD:REOPEN to help a daemonized version
 src/main.cpp:// ToDo: Reflow which includes are really needed where

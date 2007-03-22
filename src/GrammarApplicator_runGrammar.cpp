@@ -115,7 +115,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 				}
 
 				cSWindow->cohorts.push_back(cCohort);
-				cWindow->next.push_back(cSWindow);
+				cWindow->appendSingleWindow(cSWindow);
 				lSWindow = cSWindow;
 				lCohort = cCohort;
 				cSWindow = 0;
@@ -144,7 +144,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 				}
 
 				cSWindow->cohorts.push_back(cCohort);
-				cWindow->next.push_back(cSWindow);
+				cWindow->appendSingleWindow(cSWindow);
 				lSWindow = cSWindow;
 				lCohort = cCohort;
 				cSWindow = 0;
@@ -236,7 +236,42 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 			}
 			ux_trim(cleaned);
 			if (u_strlen(cleaned) > 0) {
-				if (lReading) {
+				if (u_strcmp(cleaned, stringbits[S_CMD_FLUSH]) == 0) {
+					u_fprintf(ux_stderr, "Info: CGCMD:FLUSH encountered on line %u. Flushing...\n", lines);
+					if (cCohort && cSWindow) {
+						cSWindow->cohorts.push_back(cCohort);
+						if (cCohort->readings.empty()) {
+							cReading = new Reading();
+							cReading->wordform = cCohort->wordform;
+							cReading->baseform = cCohort->wordform;
+							cReading->tags[cCohort->wordform] = cCohort->wordform;
+							cReading->noprint = true;
+							cReading->rehash();
+							cCohort->readings.push_back(cReading);
+						}
+						std::list<Reading*>::iterator iter;
+						for (iter = cCohort->readings.begin() ; iter != cCohort->readings.end() ; iter++) {
+							(*iter)->tags_list.push_back(endtag);
+							(*iter)->tags[endtag] = endtag;
+							(*iter)->rehash();
+						}
+						cWindow->appendSingleWindow(cSWindow);
+						cReading = 0;
+						cCohort = 0;
+						cSWindow = 0;
+					}
+					while (!cWindow->next.empty()) {
+						cWindow->shuffleWindowsDown();
+						runGrammarOnWindow(cWindow);
+						printSingleWindow(cWindow->current, output);
+					}
+					u_fflush(output);
+				}
+				else if (u_strcmp(cleaned, stringbits[S_CMD_EXIT]) == 0) {
+					u_fprintf(ux_stderr, "Info: CGCMD:EXIT encountered on line %u. Exiting...\n", lines);
+					goto CGCMD_EXIT;
+				}
+				else if (lReading) {
 					lReading->text = ux_append(lReading->text, line);
 				}
 				else if (lCohort) {
@@ -270,14 +305,20 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 			(*iter)->tags[endtag] = endtag;
 			(*iter)->rehash();
 		}
-		cWindow->next.push_back(cSWindow);
+		cWindow->appendSingleWindow(cSWindow);
+		cReading = 0;
+		cCohort = 0;
+		cSWindow = 0;
 	}
 	while (!cWindow->next.empty()) {
 		cWindow->shuffleWindowsDown();
 		runGrammarOnWindow(cWindow);
 		printSingleWindow(cWindow->current, output);
 	}
+
 	u_fflush(output);
+
+CGCMD_EXIT:
 	std::cerr << "Cache " << (cache_hits+cache_miss) << " : " << cache_hits << " / " << cache_miss << std::endl;
 	std::cerr << "Match " << (match_sub+match_comp+match_single) << " : " << match_sub << " / " << match_comp << " / " << match_single << std::endl;
 	return 0;

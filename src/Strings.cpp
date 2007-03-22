@@ -127,6 +127,8 @@ namespace CG3 {
 			init_string_single("<<<",        S_ENDTAG);
 			init_string_single("_S_DELIMITERS_", S_DELIMITSET);
 			init_string_single("_S_SOFT_DELIMITERS_", S_SOFTDELIMITSET);
+			init_string_single("CGCMD:FLUSH", S_CMD_FLUSH);
+			init_string_single("CGCMD:EXIT", S_CMD_EXIT);
 
 			for (int i=0;i<STRINGS_COUNT;i++) {
 				if (!stringbits[i]) {

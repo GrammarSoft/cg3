@@ -40,7 +40,15 @@ Window::~Window() {
 	next.clear();
 }
 
-void Window::shuffleWindowsDown() {
+void Window::appendSingleWindow(SingleWindow *swindow) {
+	if (!next.empty()) {
+		swindow->previous = next.back();
+		next.back()->next = swindow;
+	}
+	next.push_back(swindow);
+}
+
+SingleWindow *Window::shuffleWindowsDown() {
 	if (!previous.empty() && previous.size() >= num_windows) {
 		delete previous.front();
 		previous.pop_front();
@@ -54,20 +62,6 @@ void Window::shuffleWindowsDown() {
 		current = next.front();
 		next.pop_front();
 	}
-}
 
-SingleWindow *Window::previousFrom(const SingleWindow *me) const {
-	if (current == me && !previous.empty()) {
-		return previous.back();
-	}
-
-	return 0;
-}
-
-SingleWindow *Window::nextFrom(const SingleWindow *me) const {
-	if (current == me && !next.empty()) {
-		return next.front();
-	}
-
-	return 0;
+	return current;
 }
