@@ -1,10 +1,17 @@
 * First Time Install *
 
+ These guidelines are primarily for Linux, but I actually develop on Windows
+ using Microsoft Visual Studio 2005. These steps will not work under Cygwin,
+ but I have successfully compiled and run tests under Windows, Linux, and Mac OS X.
+ 
+ -- Tino Didriksen (tino@didriksen.cc)
+
+
 ** Installing ICU **
 
  Only need to do this once, but it must be done unless you already have a recent
- (newer or equal to ICU 3.6) version installed. ICU 3.4 will also work, but is
- considerably slower.
+ (newer or equal to ICU 3.6) version installed. ICU 3.4 may also work, but is
+ considerably slower. Latest info on ICU can be found at http://icu-project.org/
 
  These steps have been tested on Red Hat Linux 8, Red Hat Linux 9, Fedora Core 3,
  Fedora Core 4, and Fedora Core 5. They may vary for your distribution.
@@ -20,6 +27,8 @@
  # echo "/usr/local/lib" >> /etc/ld.so.conf
  # ldconfig
 
+
+
 ** Compiling VISL CG-3 **
 
  This step requires you have Subversion ( http://subversion.tigris.org/ ) installed.
@@ -33,13 +42,15 @@
  As any user in any folder where you can find it again:
  $ svn co --username anonymous --password anonymous http://beta.visl.sdu.dk/svn/visl/tools/vislcg3
  $ cd vislcg3/trunk/
- $ ./compile.sh
+ $ ./compile-linux.sh
  $ ./vislcg3
 
  If all went well, it should spit out the usage information.
 
  Note: If any errors or warnings were output by compile.sh, please contact me;
        I strive to make it compile cleanly on every platform.
+ 
+ After it has been compiled, you can run the regression test suite as described below.
 
 
 
@@ -49,8 +60,19 @@
 
  In the same folder you chose above, as the same user:
  $ svn up
- $ ./compile.sh
+ $ ./compile-linux.sh
  $ ./vislcg
+ 
+ 
+* Regression Testing *
+
+ After successfully compiling the binary, you can run the regression test suite
+ with the command:
+ $ ./test/runall.pl
+ 
+ This will run a series of tests that should all exit with "Success".
+ If a test on your end exits with "Fail", please tar up that tests' folder and
+ send it to me alongside any ideas you may have as to why it failed.
 
 
 
