@@ -29,7 +29,7 @@ foreach (@binlist) {
 	}
 }
 $binary = realpath $binary;
-print STDERR "Set binary to: $binary\n";
+print STDERR "Binary found at: $binary\n";
 
 print STDERR "\nRunning tests...\n";
 
@@ -41,6 +41,9 @@ foreach (@tests) {
 	chdir $bindir or die("Error: Could not change directory to $bindir !");
 	my ($test) = m/^.*?(T[^\/]+).*$/;
 	print STDERR "$test: ";
+	if (-s "./$test/byline.txt") {
+		print STDERR "(".`cat "./$test/byline.txt"`.") ";
+	}
 	`$_ "$binary"`;
 }
 
