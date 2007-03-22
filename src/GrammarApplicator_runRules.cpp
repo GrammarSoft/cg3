@@ -436,6 +436,9 @@ bool GrammarApplicator::runContextualTest(const SingleWindow *sWindow, const uin
 						break;
 					}
 				}
+				if (foundfirst && retval) {
+					break;
+				}
 				if (i == 0 && (test->span_both || test->span_left || always_span) && sWindow->previous) {
 					sWindow = sWindow->previous;
 					i = (uint32_t)sWindow->cohorts.size()-1;
@@ -469,6 +472,9 @@ bool GrammarApplicator::runContextualTest(const SingleWindow *sWindow, const uin
 					if (barrier) {
 						break;
 					}
+				}
+				if (foundfirst && retval) {
+					break;
 				}
 				if (i == sWindow->cohorts.size() && (test->span_both || test->span_left || always_span) && sWindow->next) {
 					sWindow = sWindow->next;

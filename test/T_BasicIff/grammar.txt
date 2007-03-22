@@ -1,4 +1,4 @@
 DELIMITERS = "<$.>" ;
 
 SECTION
-IFF (wanted) (NOT 1* ("blocker"))
+IFF (wanted) (NEGATE 1* ("blocker"))

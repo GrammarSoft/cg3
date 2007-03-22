@@ -1,10 +1,10 @@
 DELIMITERS = "<$.>" ;
 
 BEFORE-SECTIONS
-MAP (@tag) (*) (NOT 1* ("blocker"))
+MAP (@tag) (*) (NEGATE 1* ("blocker"))
 
 SECTION
-SELECT (wanted) (NOT 1* ("blocker"))
+SELECT (wanted) (NEGATE 1* ("blocker"))
 
 SECTION
 REMOVE ("blocker")
