@@ -1,2 +1,3 @@
 #!/bin/bash
-xmllint --valid --noout manual.xml
+. combine.sh
+xmllint --valid --noout manual-combined.xml

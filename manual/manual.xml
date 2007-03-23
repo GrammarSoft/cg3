@@ -1,15 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd"
-[
-  <!ENTITY intro SYSTEM "intro.xml">
-  <!ENTITY installation SYSTEM "installation.xml">
-  <!ENTITY contributing SYSTEM "contributing.xml">
-  <!ENTITY features SYSTEM "features.xml">
-  <!ENTITY cgkeywords SYSTEM "cgkeywords.xml">
-  <!ENTITY glossary SYSTEM "glossary.xml">
-  <!ENTITY bibliography SYSTEM "bibliography.xml">
-]
->
+<!DOCTYPE book SYSTEM "docbook-dtd-45/docbookx.dtd">
 
 <book>
   <title>VISL Constraint Grammar Manual</title>
@@ -44,11 +34,12 @@
     </keywordset>
   </bookinfo>
 
-  &intro;
-  &installation;
-  &contributing;
-  &features;
-  &cgkeywords;
-  &glossary;
-  &bibliography;
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="intro.xml" />
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="installation.xml" />
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="contributing.xml" />
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="features.xml" />
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="cgkeywords.xml" />
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="glossary.xml" />
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="bibliography.xml" />
+
 </book>
