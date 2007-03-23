@@ -1,0 +1,37 @@
+<chapter id="intro">
+  <title>Intro</title>
+
+  <section id="whatis">
+    <title>What this is...</title>
+    <para>
+      This document describes the design, features, implementation, usability, etc
+      of an evolution in the <glossterm linkend="gloss-cg">constraint grammar</glossterm> formalism,
+      as developed by <glossterm linkend="gloss-visl">VISL</glossterm>.
+    </para>
+  </section>
+
+  <section id="naming">
+    <title>Naming</title>
+    <para>
+      I have called this version of CG "VISL CG-3" since it is made by VISL and is a
+      general update of the grammar format and parser features that warrants a version bump.
+      VISL CG-3 is feature-wise backwards compatible with CG-2 and VISLCG, and contains switches
+      to enforce their respective behavior in certain areas.
+    </para>
+  </section>
+
+  <section id="unicode">
+    <title>Unicode</title>
+    <para>
+      Even before any other designing and development had started, the desire to include
+      <glossterm linkend="gloss-unicode">Unicode</glossterm> support was a strong requirement.
+      By default, grammar file, input stream, and output stream are considered to be
+      in ISO-8859-1 (Latin 1) encoding as this covers most the grammars and tool
+      chains currently written. Internally and through switches there is full support
+      for Unicode and any other encoding known by the Unicode library.
+      I have chosen the <glossterm linkend="gloss-icu">International Components for Unicode</glossterm>
+      library as it provides strong <glossterm linkend="gloss-cross-platform">cross-platform</glossterm>
+      Unicode support with built-in regular expressions.
+    </para>
+  </section>
+</chapter>

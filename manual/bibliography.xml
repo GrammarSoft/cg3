@@ -1,0 +1,22 @@
+<bibliography id="references">
+  <title>References</title>
+
+  <biblioentry>
+    <authorinitials>Karlsson, Fred, Atro Voutilainen, Juha Heikkilä, and Arto Anttila, editors</authorinitials>
+    <pubdate>1995</pubdate>
+    <citetitle>"Constraint Grammar: A Language-Independent System for Parsing Unrestricted Text" (Natural Language Processing, No 4)</citetitle>
+    <publishername>Mouton de Gruyter, Berlin and New York</publishername>
+    <isbn>ISBN 3-11-014179-5</isbn>
+  </biblioentry>
+
+  <biblioentry>
+    <authorinitials>Pasi Tapanainen</authorinitials>
+    <pubdate>1996</pubdate>
+    <citetitle>The Constraint Grammar Parser CG-2</citetitle>
+    <bibliomisc>Number 27 in publications</bibliomisc>
+    <publisher>
+      <publishername>Department of General Linguistics, University of Helsinki</publishername>
+    </publisher>
+  </biblioentry>
+
+</bibliography>

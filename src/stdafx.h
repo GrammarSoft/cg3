@@ -91,11 +91,11 @@ inline uint32_t hash_sdbm_uint32_t(const uint32_t c, uint32_t hash) {
 #endif
 
 #ifndef max
-#define max(a,b)            (((a) > (b)) ? (a) : (b))
+	#define max(a,b)  (((a) > (b)) ? (a) : (b))
 #endif
 
 #ifndef min
-#define min(a,b)            (((a) < (b)) ? (a) : (b))
+	#define min(a,b)  (((a) < (b)) ? (a) : (b))
 #endif
 
 // CG3 includes

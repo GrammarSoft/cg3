@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd"
+[
+  <!ENTITY intro SYSTEM "intro.xml">
+  <!ENTITY installation SYSTEM "installation.xml">
+  <!ENTITY contributing SYSTEM "contributing.xml">
+  <!ENTITY features SYSTEM "features.xml">
+  <!ENTITY cgkeywords SYSTEM "cgkeywords.xml">
+  <!ENTITY glossary SYSTEM "glossary.xml">
+  <!ENTITY bibliography SYSTEM "bibliography.xml">
+]
+>
+
+<book>
+  <title>VISL Constraint Grammar Manual</title>
+  <subtitle>3rd version of the CG formalism variant</subtitle>
+  <titleabbrev>VISL CG-3 Manual</titleabbrev>
+
+  <bookinfo>
+    <productname>VISL CG-3</productname>
+
+    <authorgroup>
+      <author>
+        <firstname>Tino</firstname>
+        <surname>Didriksen</surname>
+        <affiliation>
+          <address>
+            <otheraddr>
+              <ulink url="http://visl.dk/">Visual Interactive Syntax Learning</ulink>
+            </otheraddr>
+            <email>tino@didriksen.cc</email>
+          </address>
+        </affiliation>
+      </author>
+    </authorgroup>
+
+    <copyright>
+      <year>2007</year>
+      <holder>Visual Interactive Syntax Learning</holder>
+    </copyright>
+
+    <keywordset>
+      <keyword>Constraint Grammar</keyword>
+    </keywordset>
+  </bookinfo>
+
+  &intro;
+  &installation;
+  &contributing;
+  &features;
+  &cgkeywords;
+  &glossary;
+  &bibliography;
+</book>

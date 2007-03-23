@@ -1,0 +1,130 @@
+<chapter id="cgkeywords">
+  <title>Constraint Grammar Keywords</title>
+
+  <glosslist>
+
+    <glossentry id="keyword-after-sections">
+      <glossterm>AFTER-SECTIONS</glossterm>
+      <glossdef>
+        <para>
+          Same as SECTION, except it is only run a single time per window,
+          and only after all normal SECTIONs have run.
+        </para>
+      </glossdef>
+    </glossentry>
+
+    <glossentry id="keyword-and">
+      <glossterm>AND</glossterm>
+      <glossdef>
+        <para>
+          <emphasis>Deprecated: use "LINK 0" instead.</emphasis>
+          An inline keyword put between contextual tests as shorthand for "LINK 0".
+        </para>
+      </glossdef>
+    </glossentry>
+
+    <glossentry id="keyword-before-sections">
+      <glossterm>BEFORE-SECTIONS</glossterm>
+      <glossdef>
+        <para>
+          Same as SECTION, except it is only run a single time per window,
+          and only before all normal SECTIONs have run.
+        </para>
+      </glossdef>
+    </glossentry>
+
+    <glossentry id="keyword-constraints">
+      <glossterm>CONSTRAINTS</glossterm>
+      <glossdef>
+        <para>
+          <emphasis>Deprecated: use SECTION instead.</emphasis>
+          A section of the grammar that can contain SELECT, REMOVE, and IFF entries.
+        </para>
+      </glossdef>
+    </glossentry>
+
+    <glossentry id="keyword-corrections">
+      <glossterm>CORRECTIONS</glossterm>
+      <glossdef>
+        <para>
+          <emphasis>Deprecated: use BEFORE-SECTIONS instead.</emphasis>
+          A section of the grammar that can contain APPEND and SUBSTITUTE entries.
+        </para>
+      </glossdef>
+    </glossentry>
+
+    <glossentry id="keyword-if">
+      <glossterm>IF</glossterm>
+      <glossdef>
+        <para>
+          <emphasis>Deprecated: has no effect in CG-3.</emphasis>
+          An inline keyword put before the first contextual test of a rule.
+        </para>
+      </glossdef>
+    </glossentry>
+
+    <glossentry id="keyword-list">
+      <glossterm>LIST</glossterm>
+      <glossdef>
+        <para>
+          Defines a new set based on a list of tags.
+        </para>
+        <screen>
+          LIST setname = tag othertag (mtag htag) ltag ;
+        </screen>
+      </glossdef>
+    </glossentry>
+
+    <glossentry id="keyword-mappings">
+      <glossterm>MAPPINGS</glossterm>
+      <glossdef>
+        <para>
+          <emphasis>Deprecated: use BEFORE-SECTIONS instead.</emphasis>
+          A section of the grammar that can contain MAP, ADD, and REPLACE entries.
+        </para>
+      </glossdef>
+    </glossentry>
+
+    <glossentry id="keyword-section">
+      <glossterm>SECTION</glossterm>
+      <glossdef>
+        <para>
+          A section of the grammar that can contain all types of rule and set definition entries.
+        </para>
+      </glossdef>
+    </glossentry>
+
+    <glossentry id="keyword-set">
+      <glossterm>SET</glossterm>
+      <glossdef>
+        <para>
+          Defines a new set based on operations between existing sets.
+        </para>
+        <screen>
+          SET setname = someset + someotherset - (tag) ;
+        </screen>
+      </glossdef>
+    </glossentry>
+
+    <glossentry id="keyword-sets">
+      <glossterm>SETS</glossterm>
+      <glossdef>
+        <para>
+          <emphasis>Deprecated: has no effect in CG-3.</emphasis>
+          A section of the grammar that can contain SET and LIST entries.
+        </para>
+      </glossdef>
+    </glossentry>
+
+    <glossentry id="keyword-target">
+      <glossterm>TARGET</glossterm>
+      <glossdef>
+        <para>
+          <emphasis>Deprecated: has no effect in CG-3.</emphasis>
+          An inline keyword put before the target of a rule.
+        </para>
+      </glossdef>
+    </glossentry>
+
+  </glosslist>
+</chapter>

@@ -1,0 +1,58 @@
+<glossary id="glossary">
+  <title>Glossary</title>
+
+  <glossentry id="gloss-cg">
+    <glossterm>CG</glossterm>
+    <glossdef>
+      <para>
+        Constraint Grammar,
+        <ulink url="http://en.wikipedia.org/wiki/Constraint_Grammar">http://en.wikipedia.org/wiki/Constraint_Grammar</ulink>,
+        <ulink url="http://visl.sdu.dk/constraint_grammar.html">http://visl.sdu.dk/constraint_grammar.html</ulink>
+      </para>
+    </glossdef>
+  </glossentry>
+
+  <glossentry id="gloss-cross-platform">
+    <glossterm>Cross-platform</glossterm>
+    <glossdef>
+      <para>
+        When a program can run on multiple operating systems and/or architectures it is
+        considered cross-platform.
+      </para>
+    </glossdef>
+  </glossentry>
+
+  <glossentry id="gloss-icu">
+    <glossterm>ICU</glossterm>
+    <glossdef>
+      <para>
+        International Components for Unicode,
+        <ulink url="http://icu-project.org/">http://icu-project.org/</ulink>
+      </para>
+    </glossdef>
+  </glossentry>
+
+  <glossentry id="gloss-visl">
+    <glossterm>VISL</glossterm>
+    <glossdef>
+      <para>
+        Visual Interactive Syntax Learning,
+        <ulink url="http://visl.dk/">http://visl.dk/</ulink>,
+        <ulink url="http://visl.sdu.dk/">http://visl.sdu.dk/</ulink>,
+        <ulink url="http://beta.visl.sdu.dk/">http://beta.visl.sdu.dk/</ulink>
+      </para>
+    </glossdef>
+  </glossentry>
+
+  <glossentry id="gloss-unicode">
+    <glossterm>Unicode</glossterm>
+    <glossdef>
+      <para>
+        "Unicode provides a unique number for every character,
+        no matter what platform, no matter what program, no matter what language",
+        <ulink url="http://unicode.org/">http://unicode.org/</ulink>,
+      </para>
+    </glossdef>
+  </glossentry>
+
+</glossary>
