@@ -4,253 +4,235 @@
 <chapter id="cgkeywords">
   <title>Constraint Grammar Keywords</title>
 
-  <glosslist>
+  <section id="keyword-after-sections">
+    <title>AFTER-SECTIONS</title>
+    <indexterm>
+      <primary>AFTER-SECTIONS</primary>
+    </indexterm>
+    <para>
+      Same as SECTION, except it is only run a single time per window,
+      and only after all normal SECTIONs have run.
+    </para>
+  </section>
 
-    <glossentry id="keyword-after-sections">
-      <glossterm>AFTER-SECTIONS</glossterm>
-      <glossdef>
-        <indexterm>
-          <primary>AFTER-SECTIONS</primary>
-        </indexterm>
-        <para>
-          Same as SECTION, except it is only run a single time per window,
-          and only after all normal SECTIONs have run.
-        </para>
-      </glossdef>
-    </glossentry>
+  <section id="keyword-and">
+    <title>AND</title>
+    <indexterm>
+      <primary>AND</primary>
+    </indexterm>
+    <para>
+      <emphasis>Deprecated: use "LINK 0" instead.</emphasis>
+      An inline keyword put between contextual tests as shorthand for "LINK 0".
+    </para>
+  </section>
 
-    <glossentry id="keyword-and">
-      <glossterm>AND</glossterm>
-      <glossdef>
-        <indexterm>
-          <primary>AND</primary>
-        </indexterm>
-        <para>
-          <emphasis>Deprecated: use "LINK 0" instead.</emphasis>
-          An inline keyword put between contextual tests as shorthand for "LINK 0".
-        </para>
-      </glossdef>
-    </glossentry>
+  <section id="keyword-before-sections">
+    <title>BEFORE-SECTIONS</title>
+    <indexterm>
+      <primary>BEFORE-SECTIONS</primary>
+    </indexterm>
+    <para>
+      Same as SECTION, except it is only run a single time per window,
+      and only before all normal SECTIONs have run.
+    </para>
+  </section>
 
-    <glossentry id="keyword-before-sections">
-      <glossterm>BEFORE-SECTIONS</glossterm>
-      <glossdef>
-        <indexterm>
-          <primary>BEFORE-SECTIONS</primary>
-        </indexterm>
-        <para>
-          Same as SECTION, except it is only run a single time per window,
-          and only before all normal SECTIONs have run.
-        </para>
-      </glossdef>
-    </glossentry>
+  <section id="keyword-constraints">
+    <title>CONSTRAINTS</title>
+    <indexterm>
+      <primary>CONSTRAINTS</primary>
+    </indexterm>
+    <para>
+      <emphasis>Deprecated: use SECTION instead.</emphasis>
+      A section of the grammar that can contain SELECT, REMOVE, and IFF entries.
+    </para>
+  </section>
 
-    <glossentry id="keyword-constraints">
-      <glossterm>CONSTRAINTS</glossterm>
-      <glossdef>
-        <indexterm>
-          <primary>CONSTRAINTS</primary>
-        </indexterm>
-        <para>
-          <emphasis>Deprecated: use SECTION instead.</emphasis>
-          A section of the grammar that can contain SELECT, REMOVE, and IFF entries.
-        </para>
-      </glossdef>
-    </glossentry>
+  <section id="keyword-corrections">
+    <title>CORRECTIONS</title>
+    <indexterm>
+      <primary>CORRECTIONS</primary>
+    </indexterm>
+    <para>
+      <emphasis>Deprecated: use BEFORE-SECTIONS instead.</emphasis>
+      A section of the grammar that can contain APPEND and SUBSTITUTE entries.
+    </para>
+  </section>
 
-    <glossentry id="keyword-corrections">
-      <glossterm>CORRECTIONS</glossterm>
-      <glossdef>
-        <indexterm>
-          <primary>CORRECTIONS</primary>
-        </indexterm>
-        <para>
-          <emphasis>Deprecated: use BEFORE-SECTIONS instead.</emphasis>
-          A section of the grammar that can contain APPEND and SUBSTITUTE entries.
-        </para>
-      </glossdef>
-    </glossentry>
+  <section id="keyword-delimit">
+    <title>DELIMIT</title>
+    <indexterm>
+      <primary>DELIMIT</primary>
+      <seealso>DELIMITERS</seealso>
+    </indexterm>
+    <para>
+      If it finds a reading which satisfies the target and the contextual tests, DELIMIT will
+      cut the disambituation window immediately after the cohort the reading is in. After delimiting
+      in this manner, CG-3 will bail out and disambiguate the newly formed window from the start.
+      <emphasis>
+        This should not be used instead of DELIMITERS unless you know what you are doing.
+      </emphasis>
+    </para>
+    <screen>
+      DELIMIT targetset (-1* ("someword")) ;
+    </screen>
+  </section>
 
-    <glossentry id="keyword-delimiters">
-      <glossterm>DELIMITERS</glossterm>
-      <glossdef>
-        <indexterm>
-          <primary>DELIMITERS</primary>
-          <seealso>SOFT-DELIMITERS</seealso>
-        </indexterm>
-        <para>
-          Sets a list of hard delimiters. If one of these are found the disambuation window is cut
-          immediately after the cohort it was found in.
-          If no delimiters are defined and the window exceeds the hard limit (defaults to 500 cohorts),
-          the window will be cut arbitarily.
-          Internally, this is converted to the magic set _S_DELIMITERS_.
-        </para>
-        <screen>
-          DELIMITERS = "&lt;$.&gt;" "&lt;$?&gt;" "&lt;$!&gt;" "&lt;$:&gt;" "&lt;$\;&gt;" ;
-        </screen>
-      </glossdef>
-    </glossentry>
+  <section id="keyword-delimiters">
+    <title>DELIMITERS</title>
+    <indexterm>
+      <primary>DELIMITERS</primary>
+      <seealso>SOFT-DELIMITERS</seealso>
+    </indexterm>
+    <para>
+      Sets a list of hard delimiters. If one of these are found the disambuation window is cut
+      immediately after the cohort it was found in.
+      If no delimiters are defined or the window exceeds the hard limit (defaults to 500 cohorts),
+      the window will be cut arbitarily.
+      Internally, this is converted to the magic set _S_DELIMITERS_.
+    </para>
+    <screen>
+      DELIMITERS = "&lt;$.&gt;" "&lt;$?&gt;" "&lt;$!&gt;" "&lt;$:&gt;" "&lt;$\;&gt;" ;
+    </screen>
+  </section>
 
-    <glossentry id="keyword-if">
-      <glossterm>IF</glossterm>
-      <glossdef>
-        <indexterm>
-          <primary>IF</primary>
-        </indexterm>
-        <para>
-          <emphasis>Deprecated: has no effect in CG-3.</emphasis>
-          An inline keyword put before the first contextual test of a rule.
-        </para>
-      </glossdef>
-    </glossentry>
+  <section id="keyword-if">
+    <title>IF</title>
+    <indexterm>
+      <primary>IF</primary>
+    </indexterm>
+    <para>
+      <emphasis>Deprecated: has no effect in CG-3.</emphasis>
+      An inline keyword put before the first contextual test of a rule.
+    </para>
+  </section>
 
-    <glossentry id="keyword-iff">
-      <glossterm>IFF</glossterm>
-      <glossdef>
-        <indexterm>
-          <primary>IFF</primary>
-        </indexterm>
-        <para>
-          Singles out a reading from the cohort that matches the target, and if all contextual tests are
-          satisfied it will behave as a SELECT rule.
-          If the tests are not satisfied it will behave as a REMOVE rule.
-        </para>
-        <screen>
-          IFF targetset (-1* ("someword")) ;
-        </screen>
-      </glossdef>
-    </glossentry>
+  <section id="keyword-iff">
+    <title>IFF</title>
+    <indexterm>
+      <primary>IFF</primary>
+    </indexterm>
+    <para>
+      Singles out a reading from the cohort that matches the target, and if all contextual tests are
+      satisfied it will behave as a SELECT rule.
+      If the tests are not satisfied it will behave as a REMOVE rule.
+    </para>
+    <screen>
+      IFF targetset (-1* ("someword")) ;
+    </screen>
+  </section>
 
-    <glossentry id="keyword-list">
-      <glossterm>LIST</glossterm>
-      <glossdef>
-        <indexterm>
-          <primary>LIST</primary>
-        </indexterm>
-        <para>
-          Defines a new set based on a list of tags.
-        </para>
-        <screen>
-          LIST setname = tag othertag (mtag htag) ltag ;
-        </screen>
-      </glossdef>
-    </glossentry>
+  <section id="keyword-list">
+    <title>LIST</title>
+    <indexterm>
+      <primary>LIST</primary>
+    </indexterm>
+    <para>
+      Defines a new set based on a list of tags.
+    </para>
+    <screen>
+      LIST setname = tag othertag (mtag htag) ltag ;
+    </screen>
+  </section>
 
-    <glossentry id="keyword-mappings">
-      <glossterm>MAPPINGS</glossterm>
-      <glossdef>
-        <indexterm>
-          <primary>MAPPINGS</primary>
-        </indexterm>
-        <para>
-          <emphasis>Deprecated: use BEFORE-SECTIONS instead.</emphasis>
-          A section of the grammar that can contain MAP, ADD, and REPLACE entries.
-        </para>
-      </glossdef>
-    </glossentry>
+  <section id="keyword-mappings">
+    <title>MAPPINGS</title>
+    <indexterm>
+      <primary>MAPPINGS</primary>
+    </indexterm>
+    <para>
+      <emphasis>Deprecated: use BEFORE-SECTIONS instead.</emphasis>
+      A section of the grammar that can contain MAP, ADD, and REPLACE entries.
+    </para>
+  </section>
 
-    <glossentry id="keyword-remove">
-      <glossterm>REMOVE</glossterm>
-      <glossdef>
-        <indexterm>
-          <primary>REMOVE</primary>
-        </indexterm>
-        <para>
-          Singles out a reading from the cohort that matches the target, and if all contextual tests are
-          satisfied it will delete the mached reading.
-        </para>
-        <screen>
-          REMOVE targetset (-1* ("someword")) ;
-        </screen>
-      </glossdef>
-    </glossentry>
+  <section id="keyword-remove">
+    <title>REMOVE</title>
+    <indexterm>
+      <primary>REMOVE</primary>
+    </indexterm>
+    <para>
+      Singles out a reading from the cohort that matches the target, and if all contextual tests are
+      satisfied it will delete the mached reading.
+    </para>
+    <screen>
+      REMOVE targetset (-1* ("someword")) ;
+    </screen>
+  </section>
 
-    <glossentry id="keyword-section">
-      <glossterm>SECTION</glossterm>
-      <glossdef>
-        <indexterm>
-          <primary>SECTION</primary>
-        </indexterm>
-        <para>
-          A section of the grammar that can contain all types of rule and set definition entries.
-        </para>
-      </glossdef>
-    </glossentry>
+  <section id="keyword-section">
+    <title>SECTION</title>
+    <indexterm>
+      <primary>SECTION</primary>
+    </indexterm>
+    <para>
+      A section of the grammar that can contain all types of rule and set definition entries.
+    </para>
+  </section>
 
-    <glossentry id="keyword-select">
-      <glossterm>SELECT</glossterm>
-      <glossdef>
-        <indexterm>
-          <primary>SELECT</primary>
-        </indexterm>
-        <para>
-          Singles out a reading from the cohort that matches the target, and if all contextual tests are
-          satisfied it will delete all other readings except the matched one.
-        </para>
-        <screen>
-          SELECT targetset (-1* ("someword")) ;
-        </screen>
-      </glossdef>
-    </glossentry>
+  <section id="keyword-select">
+    <title>SELECT</title>
+    <indexterm>
+      <primary>SELECT</primary>
+    </indexterm>
+    <para>
+      Singles out a reading from the cohort that matches the target, and if all contextual tests are
+      satisfied it will delete all other readings except the matched one.
+    </para>
+    <screen>
+      SELECT targetset (-1* ("someword")) ;
+    </screen>
+  </section>
 
-    <glossentry id="keyword-set">
-      <glossterm>SET</glossterm>
-      <glossdef>
-        <indexterm>
-          <primary>SET</primary>
-        </indexterm>
-        <para>
-          Defines a new set based on operations between existing sets.
-        </para>
-        <screen>
-          SET setname = someset + someotherset - (tag) ;
-        </screen>
-      </glossdef>
-    </glossentry>
+  <section id="keyword-set">
+    <title>SET</title>
+    <indexterm>
+      <primary>SET</primary>
+    </indexterm>
+    <para>
+      Defines a new set based on operations between existing sets.
+    </para>
+    <screen>
+      SET setname = someset + someotherset - (tag) ;
+    </screen>
+  </section>
 
-    <glossentry id="keyword-sets">
-      <glossterm>SETS</glossterm>
-      <glossdef>
-        <indexterm>
-          <primary>SETS</primary>
-        </indexterm>
-        <para>
-          <emphasis>Deprecated: has no effect in CG-3.</emphasis>
-          A section of the grammar that can contain SET and LIST entries.
-        </para>
-      </glossdef>
-    </glossentry>
+  <section id="keyword-sets">
+    <title>SETS</title>
+    <indexterm>
+      <primary>SETS</primary>
+    </indexterm>
+    <para>
+      <emphasis>Deprecated: has no effect in CG-3.</emphasis>
+      A section of the grammar that can contain SET and LIST entries.
+    </para>
+  </section>
 
-    <glossentry id="keyword-soft-delimiters">
-      <glossterm>SOFT-DELIMITERS</glossterm>
-      <glossdef>
-        <indexterm>
-          <primary>SOFT-DELIMITERS</primary>
-          <seealso>DELIMITERS</seealso>
-        </indexterm>
-        <para>
-          Sets a list of soft delimiters. If a disambiguation window is approaching the soft-limit
-          (defaults to 300 cohorts), CG-3 will begin to look for a soft delimiter to cut the window after.
-          Internally, this is converted to the magic set _S_SOFT_DELIMITERS_.
-        </para>
-        <screen>
-          SOFT-DELIMITERS = "&lt;$,&gt;" ;
-        </screen>
-      </glossdef>
-    </glossentry>
+  <section id="keyword-soft-delimiters">
+    <title>SOFT-DELIMITERS</title>
+    <indexterm>
+      <primary>SOFT-DELIMITERS</primary>
+      <seealso>DELIMITERS</seealso>
+    </indexterm>
+    <para>
+      Sets a list of soft delimiters. If a disambiguation window is approaching the soft-limit
+      (defaults to 300 cohorts), CG-3 will begin to look for a soft delimiter to cut the window after.
+      Internally, this is converted to the magic set _S_SOFT_DELIMITERS_.
+    </para>
+    <screen>
+      SOFT-DELIMITERS = "&lt;$,&gt;" ;
+    </screen>
+  </section>
 
-    <glossentry id="keyword-target">
-      <glossterm>TARGET</glossterm>
-      <glossdef>
-        <indexterm>
-          <primary>TARGET</primary>
-        </indexterm>
-        <para>
-          <emphasis>Deprecated: has no effect in CG-3.</emphasis>
-          An inline keyword put before the target of a rule.
-        </para>
-      </glossdef>
-    </glossentry>
+  <section id="keyword-target">
+    <title>TARGET</title>
+    <indexterm>
+      <primary>TARGET</primary>
+    </indexterm>
+    <para>
+      <emphasis>Deprecated: has no effect in CG-3.</emphasis>
+      An inline keyword put before the target of a rule.
+    </para>
+  </section>
 
-  </glosslist>
 </chapter>
