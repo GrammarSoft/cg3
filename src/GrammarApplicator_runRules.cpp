@@ -384,7 +384,7 @@ label_runGrammarOnWindow_begin:
 bool GrammarApplicator::runContextualTest(const SingleWindow *sWindow, const uint32_t position, const ContextualTest *test) {
 	bool retval = true;
 	PACC_TimeStamp tstamp = 0;
-	int pos = position + test->offset;
+	int32_t pos = position + test->offset;
 	const Cohort *cohort = 0;
 
 	if (statistics) {
@@ -394,14 +394,29 @@ bool GrammarApplicator::runContextualTest(const SingleWindow *sWindow, const uin
 	// ToDo: (NOT *) and (*C) tests can be cached
 	if (test->absolute) {
 		if (test->offset < 0) {
-			pos = ((int)sWindow->cohorts.size()-1) - test->offset;
+			pos = ((uint32_t)sWindow->cohorts.size()-1) - test->offset;
 		}
 		else {
 			pos = test->offset;
 		}
 	}
-	if (pos >= 0 && (uint32_t)pos < sWindow->cohorts.size()) {
-		cohort = sWindow->cohorts.at(pos);
+	if (pos >= 0) {
+		if ((uint32_t)pos >= sWindow->cohorts.size() && (test->span_both || test->span_right) && sWindow->next) {
+			sWindow = sWindow->next;
+			pos = 0;
+		}
+		if ((uint32_t)pos < sWindow->cohorts.size()) {
+			cohort = sWindow->cohorts.at(pos);
+		}
+	}
+	else {
+		if ((test->span_both || test->span_left) && sWindow->previous) {
+			sWindow = sWindow->previous;
+			pos = (int32_t)sWindow->cohorts.size()-1;
+		}
+		if ((uint32_t)pos < sWindow->cohorts.size()) {
+			cohort = sWindow->cohorts.at(pos);
+		}
 	}
 
 	if (!cohort) {
