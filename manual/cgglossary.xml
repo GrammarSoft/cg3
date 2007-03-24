@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE chapter SYSTEM "docbook-dtd-45/docbookx.dtd">
+
+<chapter id="cgglossary">
+  <title>Constraint Grammar Glossary</title>
+
+  <para>
+    The terms in this glossary are specific to the workings and concepts of constraint grammar;
+    internal and otherwise.
+  </para>
+
+  <section id="cg-baseform">
+    <title>Baseform</title>
+    <indexterm>
+      <primary>baseform</primary>
+      <seealso>wordform</seealso>
+    </indexterm>
+    <para>
+      The first part of a reading. Every reading must have one of these. It is usually the
+      base form of the word in the containing cohort. Other than that, it is a tag like any other.
+    </para>
+    <screen>
+      "defy"
+    </screen>
+  </section>
+
+  <section id="cg-cohort">
+    <title>Cohort</title>
+    <indexterm>
+      <primary>cohort</primary>
+    </indexterm>
+    <para>
+      A single word with all its readings.
+    </para>
+    <screen>
+      "&lt;defiable&gt;"
+      &nbsp; "defy" adjective
+      &nbsp; "defy" adverb
+      &nbsp; "defy" verb plural
+    </screen>
+  </section>
+
+  <section id="cg-contextual-test">
+    <title>Contextual Test</title>
+    <indexterm>
+      <primary>contextual test</primary>
+      <secondary>context</secondary>
+      <tertiary>test</tertiary>
+    </indexterm>
+    <para>
+      The part of a disambiguation rule that looks at words surrounding the active cohort.
+      A rule will not act unless all its contextual tests are satisfied.
+    </para>
+  </section>
+
+  <section id="cg-disambiguation-window">
+    <title>Disambiguation Window</title>
+    <indexterm>
+      <primary>disambiguation window</primary>
+      <secondary>window</secondary>
+    </indexterm>
+    <para>
+      An array of cohorts as provided by the input stream. Usually the last cohort in a window is
+      one from the DELIMITERS definition.
+      CG-3 can keep several windows in memory
+      at any time in order to fascilitate cross-window scanning from contextual tests. It is also
+      possible to break a window into smaller windows on-the-fly with a DELIMIT rule.
+    </para>
+  </section>
+
+  <section id="cg-reading">
+    <title>Reading</title>
+    <indexterm>
+      <primary>reading</primary>
+      <seealso>cohort</seealso>
+    </indexterm>
+    <para>
+      Part of a cohort. Defines one variant of the word in question.
+      A reading must begin with a baseform.
+      Readings are the whole
+      basis for how CG operates; they are what we disambiguate between and test against.
+      The goal is to exit with one per cohort.
+    </para>
+    <screen>
+      &nbsp; "defy" adjective
+    </screen>
+  </section>
+
+  <section id="cg-rule">
+    <title>Rule</title>
+    <indexterm>
+      <primary>rule</primary>
+    </indexterm>
+    <para>
+      The primary workhorses of CG. They can add, remove, alter readings, cohorts, and windows based on
+      tests and type.
+    </para>
+    <screen>
+      ADD (tags) targetset (-1* ("someword")) ;
+      SELECT targetset (-1* ("someword") BARRIER (tag)) ;
+      DELIMIT targetset (-1* ("someword")) ;
+    </screen>
+  </section>
+
+  <section id="cg-set">
+    <title>Set</title>
+    <indexterm>
+      <primary>set</primary>
+    </indexterm>
+    <para>
+      A list of tags or a combination of other sets. Used as targets for rules and contextual tests.
+    </para>
+    <screen>
+      LIST SomeSet = tags moretags (etc tags) ;
+      LIST OtherSet = moretags (etc tags) ;
+      SET CombiSet = SomeSet + OtherSet - (tag) ;
+    </screen>
+  </section>
+
+  <section id="cg-tag">
+    <title>Tag</title>
+    <indexterm>
+      <primary>tag</primary>
+    </indexterm>
+    <para>
+      Any simple string of text. Readings and sets are built from tags.
+    </para>
+    <screen>
+      "plumber" noun @jobtitle
+    </screen>
+  </section>
+
+  <section id="cg-wordform">
+    <title>Wordform</title>
+    <indexterm>
+      <primary>wordform</primary>
+      <seealso>baseform</seealso>
+    </indexterm>
+    <para>
+      The container word of a cohort. Every cohort has exactly one of these. It is usually
+      the original word of the input text.
+    </para>
+    <screen>
+      "&lt;defiable&gt;"
+    </screen>
+  </section>
+
+</chapter>

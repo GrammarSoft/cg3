@@ -4,6 +4,10 @@
 <glossary id="glossary">
   <title>Glossary</title>
 
+  <para>
+    The terms in this glossary are on wide subjects.
+  </para>
+
   <glossentry id="gloss-cg">
     <glossterm>CG</glossterm>
     <glossdef>

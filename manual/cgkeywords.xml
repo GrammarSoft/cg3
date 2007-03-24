@@ -57,6 +57,20 @@
     </screen>
   </section>
 
+  <section id="keyword-barrier">
+    <title>BARRIER</title>
+    <indexterm>
+      <primary>BARRIER</primary>
+    </indexterm>
+    <para>
+      An inline keyword part of a contextual test that will halt a scan if the barrier is encountered.
+      Only meaningful in scanning contexts.
+    </para>
+    <screen>
+      SELECT targetset (-1* ("someword") BARRIER (tag)) ;
+    </screen>
+  </section>
+
   <section id="keyword-before-sections">
     <title>BEFORE-SECTIONS</title>
     <indexterm>
@@ -167,6 +181,22 @@
     </screen>
   </section>
 
+  <section id="keyword-link">
+    <title>LINK</title>
+    <indexterm>
+      <primary>LINK</primary>
+    </indexterm>
+    <para>
+      An inline keyword part of a contextual test that will chain to another contextual test
+      if the current is satisfied. The chained contextual test will operate from the current position
+      in the window, as opposed to the position of the original cohort that initiated the chain.
+      The chain can be extended to any depth.
+    </para>
+    <screen>
+      SELECT targetset (-1* ("someword") LINK 3 (tag)) ;
+    </screen>
+  </section>
+
   <section id="keyword-list">
     <title>LIST</title>
     <indexterm>
@@ -219,6 +249,37 @@
     </para>
     <screen>
       MAPPING-PREFIX = @ ;
+    </screen>
+  </section>
+
+  <section id="keyword-negate">
+    <title>NEGATE</title>
+    <indexterm>
+      <primary>NEGATE</primary>
+      <seealso>NOT</seealso>
+    </indexterm>
+    <para>
+      An inline keyword put at the start of a contextual test to invert the combined result of all
+      following contextual tests.
+      Similar to, but not the same as, NOT.
+    </para>
+    <screen>
+      SELECT targetset (NEGATE -1* ("someword") LINK NOT 1 (tag)) ;
+    </screen>
+  </section>
+
+  <section id="keyword-not">
+    <title>NOT</title>
+    <indexterm>
+      <primary>NOT</primary>
+      <seealso>NEGATE</seealso>
+    </indexterm>
+    <para>
+      An inline keyword put at the start of a contextual test to invert the result of it.
+      Similar to, but not the same as, NEGATE.
+    </para>
+    <screen>
+      SELECT targetset (NEGATE -1* ("someword") LINK NOT 1 (tag)) ;
     </screen>
   </section>
 
