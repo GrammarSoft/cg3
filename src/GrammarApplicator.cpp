@@ -103,7 +103,7 @@ void GrammarApplicator::printReading(Reading *reading, UFILE *output) {
 		GrammarWriter::printTagRaw(output, single_tags[reading->baseform]);
 		u_fprintf(output, " ");
 	} else {
-		// ToDo: Allow whitespace in baseforms.
+		// ToDo: Maybe allow whitespace in baseforms.
 		u_fprintf(ux_stderr, "Warning: Reading had no baseform. Usually caused by whitespace in the baseform.\n");
 	}
 

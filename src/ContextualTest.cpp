@@ -69,7 +69,6 @@ void ContextualTest::parsePosition(const UChar *pos) {
 	if (u_strchr(pos, 's')) {
 		dep_sibling = true;
 	}
-	// ToDo: Add < and > to ContextualTest's window jumps
 	if (u_strchr(pos, '<')) {
 		span_left = true;
 	}

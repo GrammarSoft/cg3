@@ -4,6 +4,22 @@
 <chapter id="cgkeywords">
   <title>Constraint Grammar Keywords</title>
 
+  <section id="keyword-add">
+    <title>ADD</title>
+    <indexterm>
+      <primary>ADD</primary>
+      <seealso>MAP</seealso>
+    </indexterm>
+    <para>
+      Singles out a reading from the cohort that matches the target, and if all contextual tests are
+      satisfied it will add the listed tags to the reading. Unlike MAP it will not block further MAP,
+      ADD, or REPLACE rules from operating on the reading.
+    </para>
+    <screen>
+      ADD (tags) targetset (-1* ("someword")) ;
+    </screen>
+  </section>
+
   <section id="keyword-after-sections">
     <title>AFTER-SECTIONS</title>
     <indexterm>
@@ -24,6 +40,21 @@
       <emphasis>Deprecated: use "LINK 0" instead.</emphasis>
       An inline keyword put between contextual tests as shorthand for "LINK 0".
     </para>
+  </section>
+
+  <section id="keyword-append">
+    <title>APPEND</title>
+    <indexterm>
+      <primary>APPEND</primary>
+    </indexterm>
+    <para>
+      Singles out a reading from the cohort that matches the target, and if all contextual tests are
+      satisfied it will create and append a new reading from the listed tags.
+      <emphasis>Since this creates a raw reading you must include a baseform in the tag list.</emphasis>
+    </para>
+    <screen>
+      APPEND ("baseform" tags) targetset (-1* ("someword")) ;
+    </screen>
   </section>
 
   <section id="keyword-before-sections">
@@ -96,6 +127,20 @@
     </screen>
   </section>
 
+  <section id="keyword-end">
+    <title>END</title>
+    <indexterm>
+      <primary>END</primary>
+    </indexterm>
+    <para>
+      Denotes the end of the grammar. Nothing after this keyword is read.
+      <emphasis>
+        Deprecated: Remnant from older versions of CG;
+        the end of the file will do just fine.
+      </emphasis>
+    </para>
+  </section>
+
   <section id="keyword-if">
     <title>IF</title>
     <indexterm>
@@ -135,6 +180,22 @@
     </screen>
   </section>
 
+  <section id="keyword-map">
+    <title>MAP</title>
+    <indexterm>
+      <primary>MAP</primary>
+      <seealso>ADD</seealso>
+    </indexterm>
+    <para>
+      Singles out a reading from the cohort that matches the target, and if all contextual tests are
+      satisfied it will add the listed tags to the reading and block further MAP,
+      ADD, or REPLACE rules from operating on the reading.
+    </para>
+    <screen>
+      MAP (tags) targetset (-1* ("someword")) ;
+    </screen>
+  </section>
+
   <section id="keyword-mappings">
     <title>MAPPINGS</title>
     <indexterm>
@@ -144,6 +205,43 @@
       <emphasis>Deprecated: use BEFORE-SECTIONS instead.</emphasis>
       A section of the grammar that can contain MAP, ADD, and REPLACE entries.
     </para>
+  </section>
+
+  <section id="keyword-mapping-prefix">
+    <title>MAPPING-PREFIX</title>
+    <indexterm>
+      <primary>MAPPING-PREFIX</primary>
+      <seealso>MAP</seealso>
+    </indexterm>
+    <para>
+      Defines the single prefix character that should determine whether a tag is considered a mapping tag
+      or not. Defaults to @.
+    </para>
+    <screen>
+      MAPPING-PREFIX = @ ;
+    </screen>
+  </section>
+
+  <section id="keyword-preferred-targets">
+    <title>PREFERRED-TARGETS</title>
+    <indexterm>
+      <primary>PREFERRED-TARGETS</primary>
+    </indexterm>
+    <para>
+      If the preferred targets are defined, this will influence SELECT, REMOVE, and IFF rules.
+      Normally, these rules will operate until one reading remains in the cohort.
+      If there are preferred targets, these rules are allowed to operate until there are no readings left,
+      after which the preferred target list is consulted to find a reading to "bring back from the dead"
+      and pass on as the final reading to survive the round.
+      <emphasis>
+        Due to its nature of defying the rule application order, this is bad voodoo.
+        I recommend only using this if you know what you are doing.
+      </emphasis>
+      <emphasis>This currently has no effect in CG-3, but will in the future.</emphasis>
+    </para>
+    <screen>
+      PREFERRED-TARGETS = tag othertag etctag ;
+    </screen>
   </section>
 
   <section id="keyword-remove">
@@ -157,6 +255,22 @@
     </para>
     <screen>
       REMOVE targetset (-1* ("someword")) ;
+    </screen>
+  </section>
+
+  <section id="keyword-replace">
+    <title>REPLACE</title>
+    <indexterm>
+      <primary>REPLACE</primary>
+      <seealso>SUBSTITUTE</seealso>
+    </indexterm>
+    <para>
+      Singles out a reading from the cohort that matches the target, and if all contextual tests are
+      satisfied it will remove all existing tags from the reading, then add the listed tags to the reading
+      and block further MAP, ADD, or REPLACE rules from operating on the reading.
+    </para>
+    <screen>
+      REPLACE (tags) targetset (-1* ("someword")) ;
     </screen>
   </section>
 
@@ -221,6 +335,27 @@
     </para>
     <screen>
       SOFT-DELIMITERS = "&lt;$,&gt;" ;
+    </screen>
+  </section>
+
+  <section id="keyword-substitute">
+    <title>SUBSTITUTE</title>
+    <indexterm>
+      <primary>SUBSTITUTE</primary>
+      <seealso>REPLACE</seealso>
+    </indexterm>
+    <para>
+      Singles out a reading from the cohort that matches the target, and if all contextual tests are
+      satisfied it will remove the tags from the search list, then add the listed tags to the reading.
+      <emphasis>
+        No guarantee is currently made as to where the replacement tags are inserted, but in the future
+        the idea is that the tags will be inserted in place of the last found tag from the search list.
+        This is a moot point for CG-3 as the tag order does not matter internally, but external tools may
+        expect a specific order.
+      </emphasis>
+    </para>
+    <screen>
+      SUBSTITUTE (search tags) (new tags) targetset (-1* ("someword")) ;
     </screen>
   </section>
 
