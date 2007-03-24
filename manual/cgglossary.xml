@@ -51,6 +51,9 @@
       The part of a disambiguation rule that looks at words surrounding the active cohort.
       A rule will not act unless all its contextual tests are satisfied.
     </para>
+    <screen>
+      (-1* Verb LINK 1* Noun)
+    </screen>
   </section>
 
   <section id="cg-disambiguation-window">
