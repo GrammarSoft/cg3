@@ -37,7 +37,8 @@
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="intro.xml" />
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="installation.xml" />
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="contributing.xml" />
-  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="features.xml" />
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="sections.xml" />
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="rules.xml" />
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="cgkeywords.xml" />
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="glossary.xml" />
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="bibliography.xml" />
