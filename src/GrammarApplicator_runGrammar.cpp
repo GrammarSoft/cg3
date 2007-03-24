@@ -272,10 +272,6 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 					}
 					u_fflush(output);
 				}
-				else if (u_strcmp(cleaned, stringbits[S_CMD_EXIT]) == 0) {
-					u_fprintf(ux_stderr, "Info: CGCMD:EXIT encountered on line %u. Exiting...\n", lines);
-					goto CGCMD_EXIT;
-				}
 				else if (u_strcmp(cleaned, stringbits[S_CMD_IGNORE]) == 0) {
 					u_fprintf(ux_stderr, "Info: CGCMD:IGNORE encountered on line %u. Passing through all input...\n", lines);
 					ignoreinput = true;
@@ -284,7 +280,13 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 					u_fprintf(ux_stderr, "Info: CGCMD:RESUME encountered on line %u. Resuming CG...\n", lines);
 					ignoreinput = false;
 				}
-				else if (lReading) {
+				else if (u_strcmp(cleaned, stringbits[S_CMD_EXIT]) == 0) {
+					u_fprintf(ux_stderr, "Info: CGCMD:EXIT encountered on line %u. Exiting...\n", lines);
+					u_fprintf(output, "%S", line);
+					goto CGCMD_EXIT;
+				}
+				
+				if (lReading) {
 					lReading->text = ux_append(lReading->text, line);
 				}
 				else if (lCohort) {

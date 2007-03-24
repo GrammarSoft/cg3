@@ -4,6 +4,10 @@
 <chapter id="cgkeywords">
   <title>Constraint Grammar Keywords</title>
 
+  <para>
+    <emphasis>You should avoid using these keywords as set names or similar.</emphasis>
+  </para>
+
   <section id="keyword-add">
     <title>ADD</title>
     <indexterm>
