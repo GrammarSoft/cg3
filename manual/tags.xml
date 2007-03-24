@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE chapter SYSTEM "docbook-dtd-45/docbookx.dtd">
+
+<chapter id="tags">
+  <title>Tags</title>
+
+  <para>
+    First some example tags as we know them from CG-2 and VISLCG:
+    <screen>
+    ”&lt;wordform&gt;”
+    ”baseform”
+    &lt;W-max&gt;
+    ADV
+    @error
+    (&lt;civ&gt; N)
+  </screen>
+  </para>
+  <para>
+    Now some example tags as they may look in VISL CG-3:
+    <screen>
+    ”&lt;Wordform&gt;”i
+    ”^[Bb]ase.*”r
+    &lt;W&gt;65&gt;
+    (&lt;F&gt;=15&gt; &lt;F&lt;=30&gt;)
+    !ADV
+    ^&lt;dem&gt;
+    (N &lt;civ&gt;)
+  </screen>
+  </para>
+
+  <section id="tag-order">
+    <title>Tag Order</title>
+    <para>
+      Starting with the latter, (N &lt;civ&gt;), as this merely signifies that tags
+      with multiple parts do not have to match in-order; (N &lt;civ&gt;) is the same
+      as (&lt;civ&gt; N). This is different from previous versions of CG, but I deemed
+      it unncecessary to spend extra time checking the tag order when hash lookups can
+      verify the existance so fast. A side effect of this means there is no intersection
+      set operator, nor need of one.
+    </para>
+  </section>
+
+  <section id="literal-string-modifiers">
+    <title>Literal String Modifiers</title>
+    <para>
+      The first two additions to the feature sheet all display what I refer to as
+      literal string modifiers, and there are two of such: 'i' for case-insensitive,
+      and 'r' for a regular expression match.
+      Using these modifiers will significantly slow down the matching as a hash lookup will no
+      longer be enough. You can combine 'ir' for case-insensitive regular expressions.
+    </para>
+  </section>
+
+  <section id="numerical-matches">
+    <title>Numerical Matches</title>
+    <para>
+      Then there are the numerical matches, e.g. &lt;W&gt;65&gt;.
+      This will match tags such as &lt;W:204&gt; and &lt;W=156&gt; but not &lt;W:32&gt;.
+      The second tag, (&lt;F&gt;15&gt; &lt;F&lt;30&gt;), matches values 15&gt;F&gt;30.
+      The following numerical comparisons are valid: = &gt; &lt;.
+      These constructs are also slower than simple hash lookups.
+    </para>
+  </section>
+
+  <section id="tag-inversion">
+    <title>Tag Inversion</title>
+    <para>
+      You can negate a tag by prepending a !, as in !ADV. This has the effect
+      of matching if some tag other than ADV exists in the reading, but won't
+      match if ADV is actually present. This is mostly useful in tags such as
+      (V TR !ADV) as !ADV alone would match quite a lot.
+    </para>
+  </section>
+
+  <section id="fail-fast-tag">
+    <title>Fail-Fast Tag</title>
+    <para>
+      A Fail-Fast tag is the ^ prefix, such as ^&lt;dem&gt;.
+      This will be checked first of a set and if found will block the set from matching,
+      regardless of whether later independent tags could match.
+      It is mostly useful for sets such as LIST SetWithFail = (N &lt;bib&gt;) (V TR) ^&lt;dem&gt;.
+      This set will never match a reading with a &lt;dem&gt; tag, even if the reading matches (V TR).
+    </para>
+  </section>
+</chapter>

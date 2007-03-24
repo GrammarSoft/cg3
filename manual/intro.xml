@@ -4,6 +4,19 @@
 <chapter id="intro">
   <title>Intro</title>
 
+  <section id="caveat">
+    <title>Caveat Emptor</title>
+    <para>
+      <emphasis>
+        This manual should be regarded as a guideline. Some of the features or functionality
+        described is either not implemented yet, or does not work exactly as advertised.
+        A good place to see what is and is not implemented is to run the regression test suite
+        as the test names are indicative of features. The individual tests are also good starting points
+        to find examples on how a specific feature works.
+      </emphasis>
+    </para>
+  </section>
+
   <section id="whatis">
     <title>What this is...</title>
     <para>
