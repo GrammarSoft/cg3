@@ -18,7 +18,8 @@
   <xsl:import href="docbook.xsl"/>
   <xsl:import href="chunk-common.xsl"/>
   <xsl:include href="manifest.xsl"/>
-  <xsl:param name="chunk.section.depth" select='0'/>
+  <xsl:param name="chunk.section.depth" select="0"/>
+  <xsl:param name="use.id.as.filename" select="1"/>
 
   <!-- Why is chunk-code now xsl:included?
 
