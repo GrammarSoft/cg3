@@ -9,6 +9,9 @@
     <glossentry id="keyword-after-sections">
       <glossterm>AFTER-SECTIONS</glossterm>
       <glossdef>
+        <indexterm>
+          <primary>AFTER-SECTIONS</primary>
+        </indexterm>
         <para>
           Same as SECTION, except it is only run a single time per window,
           and only after all normal SECTIONs have run.
@@ -19,6 +22,9 @@
     <glossentry id="keyword-and">
       <glossterm>AND</glossterm>
       <glossdef>
+        <indexterm>
+          <primary>AND</primary>
+        </indexterm>
         <para>
           <emphasis>Deprecated: use "LINK 0" instead.</emphasis>
           An inline keyword put between contextual tests as shorthand for "LINK 0".
@@ -29,6 +35,9 @@
     <glossentry id="keyword-before-sections">
       <glossterm>BEFORE-SECTIONS</glossterm>
       <glossdef>
+        <indexterm>
+          <primary>BEFORE-SECTIONS</primary>
+        </indexterm>
         <para>
           Same as SECTION, except it is only run a single time per window,
           and only before all normal SECTIONs have run.
@@ -39,6 +48,9 @@
     <glossentry id="keyword-constraints">
       <glossterm>CONSTRAINTS</glossterm>
       <glossdef>
+        <indexterm>
+          <primary>CONSTRAINTS</primary>
+        </indexterm>
         <para>
           <emphasis>Deprecated: use SECTION instead.</emphasis>
           A section of the grammar that can contain SELECT, REMOVE, and IFF entries.
@@ -49,6 +61,9 @@
     <glossentry id="keyword-corrections">
       <glossterm>CORRECTIONS</glossterm>
       <glossdef>
+        <indexterm>
+          <primary>CORRECTIONS</primary>
+        </indexterm>
         <para>
           <emphasis>Deprecated: use BEFORE-SECTIONS instead.</emphasis>
           A section of the grammar that can contain APPEND and SUBSTITUTE entries.
@@ -56,9 +71,32 @@
       </glossdef>
     </glossentry>
 
+    <glossentry id="keyword-delimiters">
+      <glossterm>DELIMITERS</glossterm>
+      <glossdef>
+        <indexterm>
+          <primary>DELIMITERS</primary>
+          <seealso>SOFT-DELIMITERS</seealso>
+        </indexterm>
+        <para>
+          Sets a list of hard delimiters. If one of these are found the disambuation window is cut
+          immediately after the cohort it was found in.
+          If no delimiters are defined and the window exceeds the hard limit (defaults to 500 cohorts),
+          the window will be cut arbitarily.
+          Internally, this is converted to the magic set _S_DELIMITERS_.
+        </para>
+        <screen>
+          DELIMITERS = "&lt;$.&gt;" "&lt;$?&gt;" "&lt;$!&gt;" "&lt;$:&gt;" "&lt;$\;&gt;" ;
+        </screen>
+      </glossdef>
+    </glossentry>
+
     <glossentry id="keyword-if">
       <glossterm>IF</glossterm>
       <glossdef>
+        <indexterm>
+          <primary>IF</primary>
+        </indexterm>
         <para>
           <emphasis>Deprecated: has no effect in CG-3.</emphasis>
           An inline keyword put before the first contextual test of a rule.
@@ -66,9 +104,29 @@
       </glossdef>
     </glossentry>
 
+    <glossentry id="keyword-iff">
+      <glossterm>IFF</glossterm>
+      <glossdef>
+        <indexterm>
+          <primary>IFF</primary>
+        </indexterm>
+        <para>
+          Singles out a reading from the cohort that matches the target, and if all contextual tests are
+          satisfied it will behave as a SELECT rule.
+          If the tests are not satisfied it will behave as a REMOVE rule.
+        </para>
+        <screen>
+          IFF targetset (-1* ("someword")) ;
+        </screen>
+      </glossdef>
+    </glossentry>
+
     <glossentry id="keyword-list">
       <glossterm>LIST</glossterm>
       <glossdef>
+        <indexterm>
+          <primary>LIST</primary>
+        </indexterm>
         <para>
           Defines a new set based on a list of tags.
         </para>
@@ -81,6 +139,9 @@
     <glossentry id="keyword-mappings">
       <glossterm>MAPPINGS</glossterm>
       <glossdef>
+        <indexterm>
+          <primary>MAPPINGS</primary>
+        </indexterm>
         <para>
           <emphasis>Deprecated: use BEFORE-SECTIONS instead.</emphasis>
           A section of the grammar that can contain MAP, ADD, and REPLACE entries.
@@ -88,18 +149,56 @@
       </glossdef>
     </glossentry>
 
+    <glossentry id="keyword-remove">
+      <glossterm>REMOVE</glossterm>
+      <glossdef>
+        <indexterm>
+          <primary>REMOVE</primary>
+        </indexterm>
+        <para>
+          Singles out a reading from the cohort that matches the target, and if all contextual tests are
+          satisfied it will delete the mached reading.
+        </para>
+        <screen>
+          REMOVE targetset (-1* ("someword")) ;
+        </screen>
+      </glossdef>
+    </glossentry>
+
     <glossentry id="keyword-section">
       <glossterm>SECTION</glossterm>
       <glossdef>
+        <indexterm>
+          <primary>SECTION</primary>
+        </indexterm>
         <para>
           A section of the grammar that can contain all types of rule and set definition entries.
         </para>
       </glossdef>
     </glossentry>
 
+    <glossentry id="keyword-select">
+      <glossterm>SELECT</glossterm>
+      <glossdef>
+        <indexterm>
+          <primary>SELECT</primary>
+        </indexterm>
+        <para>
+          Singles out a reading from the cohort that matches the target, and if all contextual tests are
+          satisfied it will delete all other readings except the matched one.
+        </para>
+        <screen>
+          SELECT targetset (-1* ("someword")) ;
+        </screen>
+      </glossdef>
+    </glossentry>
+
     <glossentry id="keyword-set">
       <glossterm>SET</glossterm>
       <glossdef>
+        <indexterm>
+          <primary>SET</primary>
+        </indexterm>
         <para>
           Defines a new set based on operations between existing sets.
         </para>
@@ -112,6 +211,9 @@
     <glossentry id="keyword-sets">
       <glossterm>SETS</glossterm>
       <glossdef>
+        <indexterm>
+          <primary>SETS</primary>
+        </indexterm>
         <para>
           <emphasis>Deprecated: has no effect in CG-3.</emphasis>
           A section of the grammar that can contain SET and LIST entries.
@@ -119,9 +221,30 @@
       </glossdef>
     </glossentry>
 
+    <glossentry id="keyword-soft-delimiters">
+      <glossterm>SOFT-DELIMITERS</glossterm>
+      <glossdef>
+        <indexterm>
+          <primary>SOFT-DELIMITERS</primary>
+          <seealso>DELIMITERS</seealso>
+        </indexterm>
+        <para>
+          Sets a list of soft delimiters. If a disambiguation window is approaching the soft-limit
+          (defaults to 300 cohorts), CG-3 will begin to look for a soft delimiter to cut the window after.
+          Internally, this is converted to the magic set _S_SOFT_DELIMITERS_.
+        </para>
+        <screen>
+          SOFT-DELIMITERS = "&lt;$,&gt;" ;
+        </screen>
+      </glossdef>
+    </glossentry>
+
     <glossentry id="keyword-target">
       <glossterm>TARGET</glossterm>
       <glossdef>
+        <indexterm>
+          <primary>TARGET</primary>
+        </indexterm>
         <para>
           <emphasis>Deprecated: has no effect in CG-3.</emphasis>
           An inline keyword put before the target of a rule.

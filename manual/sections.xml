@@ -4,6 +4,21 @@
 <chapter id="sections">
   <title>Sections</title>
 
+  <indexterm>
+    <primary>SECTION</primary>
+  </indexterm>
+  <indexterm>
+    <primary>MAPPINGS</primary>
+  </indexterm>
+  <indexterm>
+    <primary>SETS</primary>
+  </indexterm>
+  <indexterm>
+    <primary>CORRECTIONS</primary>
+  </indexterm>
+  <indexterm>
+    <primary>CONSTRAINTS</primary>
+  </indexterm>
   <para>
     CG-2 has three seperate grammar sections: <glossterm linkend="keyword-sets">SETS</glossterm>,
     <glossterm linkend="keyword-mappings">MAPPINGS</glossterm>,

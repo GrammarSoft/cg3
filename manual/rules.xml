@@ -15,6 +15,12 @@
 
   <section id="namedrules">
     <title>Named Rules</title>
+    <indexterm>
+      <primary>rule name</primary>
+    </indexterm>
+    <indexterm>
+      <primary>named rules</primary>
+    </indexterm>
     <screen>
       [wordform] MAP:rule_name &lt;tag&gt; &lt;target&gt; [contextual_tests]
       [wordform] SELECT:rule_name &lt;target&gt; [contextual_tests]
@@ -30,6 +36,9 @@
 
   <section id="delimit">
     <title>DELIMIT</title>
+    <indexterm>
+      <primary>DELIMIT</primary>
+    </indexterm>
     <screen>
       [wordform] DELIMIT &lt;target&gt; [contextual_tests]
     </screen>
@@ -44,6 +53,9 @@
 
   <section id="match">
     <title>MATCH</title>
+    <indexterm>
+      <primary>MATCH</primary>
+    </indexterm>
     <screen>
       [wordform] MATCH &lt;target&gt; [contextual_tests]
     </screen>
@@ -62,6 +74,15 @@
 
   <section id="anchor-jump-execute">
     <title>ANCHOR, JUMP, EXECUTE</title>
+    <indexterm>
+      <primary>ANCHOR</primary>
+    </indexterm>
+    <indexterm>
+      <primary>JUMP</primary>
+    </indexterm>
+    <indexterm>
+      <primary>EXECUTE</primary>
+    </indexterm>
     <screen>
       ANCHOR &lt;anchor_name&gt;
       SECTION [anchor_name]
@@ -77,11 +98,17 @@
     </para>
   </section>
 
-  <section id="setglobal-remglobal">
-    <title>SETGLOBAL, REMGLOBAL</title>
+  <section id="setvariable-remvariable">
+    <title>SETVARIABLE, REMVARIABLE</title>
+    <indexterm>
+      <primary>SETVARIABLE</primary>
+    </indexterm>
+    <indexterm>
+      <primary>REMVARIABLE</primary>
+    </indexterm>
     <screen>
-      [wordform] SETGLOBAL &lt;variable_name&gt; &lt;value&gt; &lt;target&gt; [contextual_tests]
-      [wordform] REMGLOBAL &lt;variable_name&gt; &lt;target&gt; [contextual_tests]
+      [wordform] SETVARIABLE &lt;variable_name&gt; &lt;value&gt; &lt;target&gt; [contextual_tests]
+      [wordform] REMVARIABLE &lt;variable_name&gt; &lt;target&gt; [contextual_tests]
     </screen>
     <para>
       Global variables complement and are very similar to Metadata, but are set
