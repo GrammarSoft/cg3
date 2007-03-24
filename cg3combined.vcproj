@@ -376,14 +376,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\src\icu_cmemory.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\src\icu_cstring.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\src\icu_uoptions.cpp"
 				>
 			</File>
@@ -475,14 +467,6 @@
 			</File>
 			<File
 				RelativePath=".\src\GrammarWriter.h"
-				>
-			</File>
-			<File
-				RelativePath=".\src\icu_cmemory.h"
-				>
-			</File>
-			<File
-				RelativePath=".\src\icu_cstring.h"
 				>
 			</File>
 			<File

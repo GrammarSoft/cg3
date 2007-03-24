@@ -19,7 +19,7 @@
 #ifndef __UOPTIONS_H__
 #define __UOPTIONS_H__
 
-#include "unicode/utypes.h"
+#include "stdafx.h"
 
 /* This should usually be called before calling u_parseArgs */
 /*#if defined(OS390) && (U_CHARSET_FAMILY == U_ASCII_FAMILY)*/
@@ -136,5 +136,47 @@ struct UOption {
  */
 int u_parseArgs(int argc, char* argv[],
             int optionCount, UOption options[]);
+
+#define uprv_strcpy(dst, src) U_STANDARD_CPP_NAMESPACE  strcpy(dst, src)
+#define uprv_strncpy(dst, src, size) U_STANDARD_CPP_NAMESPACE strncpy(dst, src, size)
+#define uprv_strlen(str) U_STANDARD_CPP_NAMESPACE strlen(str)
+#define uprv_strcmp(s1, s2) U_STANDARD_CPP_NAMESPACE strcmp(s1, s2)
+#define uprv_strncmp(s1, s2, n) U_STANDARD_CPP_NAMESPACE strncmp(s1, s2, n)
+#define uprv_strcat(dst, src) U_STANDARD_CPP_NAMESPACE strcat(dst, src)
+#define uprv_strncat(dst, src, n) U_STANDARD_CPP_NAMESPACE strncat(dst, src, n)
+#define uprv_strchr(s, c) U_STANDARD_CPP_NAMESPACE strchr(s, c)
+#define uprv_strstr(s, c) U_STANDARD_CPP_NAMESPACE strstr(s, c)
+#define uprv_strrchr(s, c) U_STANDARD_CPP_NAMESPACE strrchr(s, c)
+
+#if U_CHARSET_FAMILY==U_ASCII_FAMILY
+#   define uprv_tolower uprv_asciitolower
+#elif U_CHARSET_FAMILY==U_EBCDIC_FAMILY
+#   define uprv_tolower uprv_ebcdictolower
+#else
+#   error U_CHARSET_FAMILY is not valid
+#endif
+
+#define uprv_strtod(source, end) U_STANDARD_CPP_NAMESPACE strtod(source, end)
+#define uprv_strtoul(str, end, base) U_STANDARD_CPP_NAMESPACE strtoul(str, end, base)
+#define uprv_strtol(str, end, base) U_STANDARD_CPP_NAMESPACE strtol(str, end, base)
+#ifdef U_WINDOWS
+#   if defined(__BORLANDC__)
+#       define uprv_stricmp(str1, str2) U_STANDARD_CPP_NAMESPACE stricmp(str1, str2)
+#       define uprv_strnicmp(str1, str2, n) U_STANDARD_CPP_NAMESPACE strnicmp(str1, str2, n)
+#   else
+#       define uprv_stricmp(str1, str2) U_STANDARD_CPP_NAMESPACE _stricmp(str1, str2)
+#       define uprv_strnicmp(str1, str2, n) U_STANDARD_CPP_NAMESPACE _strnicmp(str1, str2, n)
+#   endif
+#elif defined(POSIX) 
+#   define uprv_stricmp(str1, str2) U_STANDARD_CPP_NAMESPACE strcasecmp(str1, str2) 
+#   define uprv_strnicmp(str1, str2, n) U_STANDARD_CPP_NAMESPACE strncasecmp(str1, str2, n) 
+#else
+#   define uprv_stricmp(str1, str2) T_CString_stricmp(str1, str2)
+#   define uprv_strnicmp(str1, str2, n) T_CString_strnicmp(str1, str2, n)
+#endif
+
+/* Conversion from a digit to the character with radix base from 2-19 */
+/* May need to use U_UPPER_ORDINAL*/
+#define T_CString_itosOffset(a) ((a)<=9?('0'+(a)):('A'+(a)-10))
 
 #endif

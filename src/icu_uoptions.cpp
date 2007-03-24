@@ -16,8 +16,6 @@
 *   This file provides a command line argument parser.
 */
 
-#include "unicode/utypes.h"
-#include "icu_cstring.h"
 #include "icu_uoptions.h"
 
 int u_parseArgs(int argc, char* argv[],
