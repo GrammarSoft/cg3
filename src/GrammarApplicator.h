@@ -32,6 +32,8 @@ namespace CG3 {
 		static const uint32_t RV_SOMETHING = 2;
 		static const uint32_t RV_DELIMITED = 4;
 
+		// ToDo: Implement --unsafe
+		// ToDo: Make use of Preferred-Targets
 		bool always_span;
 		bool apply_mappings;
 		bool apply_corrections;

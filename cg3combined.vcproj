@@ -482,6 +482,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\options.h"
+				>
+			</File>
+			<File
 				RelativePath=".\src\PACC_Assert.h"
 				>
 			</File>

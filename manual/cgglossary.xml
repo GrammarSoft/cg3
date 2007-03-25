@@ -71,6 +71,35 @@
     </para>
   </section>
 
+  <section id="cg-mapping-tag">
+    <title>Mapping Tag</title>
+    <indexterm>
+      <primary>mapping tag</primary>
+      <secondary>mapping</secondary>
+      <seealso>mapping prefix</seealso>
+      <seealso>MAP</seealso>
+    </indexterm>
+    <para>
+      A special type of tag, as defined by the mapping prefix.
+      If a reading contains more than one mapping tag, the reading is logically multiplied
+      into several readings with one of the mapping tags each and all the normal tags copied.
+      <emphasis>Internally there is no duplication of readings, but it is a good way to think.</emphasis>
+    </para>
+  </section>
+
+  <section id="cg-mapping-prefix">
+    <title>Mapping Prefix</title>
+    <indexterm>
+      <primary>mapping prefix</primary>
+      <secondary>prefix</secondary>
+    </indexterm>
+    <para>
+      A single unicode character. If a tag begins with this character, it is considered a mapping tag.
+      The character can be changed with the grammar keyword MAPPING-PREFIX or the command line flag
+      --prefix. Defaults to @.
+    </para>
+  </section>
+
   <section id="cg-reading">
     <title>Reading</title>
     <indexterm>
