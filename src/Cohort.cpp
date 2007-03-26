@@ -20,7 +20,8 @@ using namespace CG3;
 
 Cohort::Cohort(SingleWindow *p) {
 	wordform = 0;
-	number = 0;
+	global_number = 0;
+	local_number = 0;
 	parent = p;
 	text = 0;
 }
@@ -31,7 +32,7 @@ Cohort::~Cohort() {
 		delete *iter;
 	}
 	readings.clear();
-	parent->parent->cohort_map.erase(number);
+	parent->parent->cohort_map.erase(global_number);
 }
 
 void Cohort::addParent(uint32_t parent) {

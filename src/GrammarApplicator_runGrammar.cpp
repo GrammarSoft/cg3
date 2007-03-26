@@ -55,6 +55,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 		return error;
 	}
 
+	// ToDo: Add flag for using dependencies to delimit windows
 	if (!grammar->delimiters || (grammar->delimiters->sets.empty() && grammar->delimiters->tags_map.empty())) {
 		if (!grammar->soft_delimiters || (grammar->soft_delimiters->sets.empty() && grammar->soft_delimiters->tags_map.empty())) {
 			u_fprintf(ux_stderr, "Warning: No soft or hard delimiters defined in grammar. Hard limit of %u cohorts may break windows in unintended places.\n", hard_limit);
@@ -84,6 +85,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 	Cohort *lCohort = 0;
 	Reading *lReading = 0;
 
+	cWindow->parent = this;
 	cWindow->window_span = num_windows;
 
 	while (!u_feof(input)) {
@@ -163,7 +165,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 				cReading->rehash();
 
 				cCohort = new Cohort(cSWindow);
-				cCohort->number = cWindow->cohort_counter++;
+				cCohort->global_number = cWindow->cohort_counter++;
 				cCohort->wordform = begintag;
 				cCohort->appendReading(cReading);
 
@@ -195,7 +197,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 				printSingleWindow(cWindow->current, output);
 			}
 			cCohort = new Cohort(cSWindow);
-			cCohort->number = cWindow->cohort_counter++;
+			cCohort->global_number = cWindow->cohort_counter++;
 			cCohort->wordform = addTag(cleaned);
 			lCohort = cCohort;
 			lReading = 0;
@@ -336,5 +338,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 CGCMD_EXIT:
 	std::cerr << "Cache " << (cache_hits+cache_miss) << " : " << cache_hits << " / " << cache_miss << std::endl;
 	std::cerr << "Match " << (match_sub+match_comp+match_single) << " : " << match_sub << " / " << match_comp << " / " << match_single << std::endl;
+
+	delete cWindow;
 	return 0;
 }

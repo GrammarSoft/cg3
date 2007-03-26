@@ -26,6 +26,7 @@ namespace CG3 {
 
 	class Window {
 	public:
+		GrammarApplicator *parent;
 		uint32_t cohort_counter;
 		uint32_t window_counter;
 		uint32_t window_span;

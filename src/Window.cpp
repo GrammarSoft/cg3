@@ -19,6 +19,7 @@
 using namespace CG3;
 
 Window::Window() {
+	parent = 0;
 	current = 0;
 	window_span = 0;
 	window_counter = 0;

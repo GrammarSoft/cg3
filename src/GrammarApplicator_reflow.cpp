@@ -55,7 +55,7 @@ void GrammarApplicator::reflowSingleWindow(SingleWindow *swindow) {
 					swindow->tags_textual[*tter] = *tter;
 				}
 				if (tag->type & T_DEPENDENCY) {
-					dep_highest_seen = max(tag->dep_self, dep_highest_seen);
+					dep_highest_seen = MAX(tag->dep_self, dep_highest_seen);
 					if (swindow->parent->dep_map.find(tag->dep_self) == swindow->parent->dep_map.end()) {
 						swindow->parent->dep_map[tag->dep_self] = c;
 					}

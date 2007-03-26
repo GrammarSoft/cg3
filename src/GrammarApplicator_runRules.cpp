@@ -220,7 +220,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, const std::v
 
 							current->parent->cohort_counter++;
 							Cohort *cCohort = new Cohort(nwin);
-							cCohort->number = 0;
+							cCohort->global_number = 0;
 							cCohort->wordform = begintag;
 							cCohort->appendReading(cReading);
 

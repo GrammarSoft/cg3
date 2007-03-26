@@ -27,7 +27,8 @@ namespace CG3 {
 
 	class Cohort {
 	public:
-		uint32_t number;
+		uint32_t global_number;
+		uint32_t local_number;
 		uint32_t wordform;
 		SingleWindow *parent;
 		std::list<Reading*> readings;

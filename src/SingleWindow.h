@@ -30,6 +30,7 @@ namespace CG3 {
 		uint32_t number;
 		SingleWindow *next, *previous;
 		Window *parent;
+		stdext::hash_map<uint32_t, uint32_t> dep_map;
 
 		std::vector<Cohort*> cohorts;
 		UChar *text;

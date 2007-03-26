@@ -45,12 +45,14 @@ SingleWindow::~SingleWindow() {
 		}
 	}
 	parent->window_map.erase(number);
+	dep_map.clear();
 }
 
 void SingleWindow::appendCohort(Cohort *cohort) {
 	cohort->parent = this;
+	cohort->local_number = (uint32_t)cohorts.size();
 	cohorts.push_back(cohort);
-	parent->cohort_map[cohort->number] = cohort;
+	parent->cohort_map[cohort->global_number] = cohort;
 }
 
 uint32_t SingleWindow::rehash() {
