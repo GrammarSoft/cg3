@@ -119,6 +119,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 
 				cSWindow->appendCohort(cCohort);
 				cWindow->appendSingleWindow(cSWindow);
+				reflowSingleWindow(cSWindow);
 				lSWindow = cSWindow;
 				lCohort = cCohort;
 				cSWindow = 0;
@@ -148,6 +149,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 
 				cSWindow->appendCohort(cCohort);
 				cWindow->appendSingleWindow(cSWindow);
+				reflowSingleWindow(cSWindow);
 				lSWindow = cSWindow;
 				lCohort = cCohort;
 				cSWindow = 0;
@@ -263,6 +265,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 							(*iter)->rehash();
 						}
 						cWindow->appendSingleWindow(cSWindow);
+						reflowSingleWindow(cSWindow);
 						cReading = lReading = 0;
 						cCohort = lCohort = 0;
 						cSWindow = lSWindow = 0;
@@ -323,6 +326,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 			(*iter)->rehash();
 		}
 		cWindow->appendSingleWindow(cSWindow);
+		reflowSingleWindow(cSWindow);
 		cReading = 0;
 		cCohort = 0;
 		cSWindow = 0;

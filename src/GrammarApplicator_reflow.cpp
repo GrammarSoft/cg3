@@ -34,24 +34,11 @@ void GrammarApplicator::reflowSingleWindow(SingleWindow *swindow) {
 		std::list<Reading*>::iterator rter;
 		for (rter = cohort->readings.begin() ; rter != cohort->readings.end() ; rter++) {
 			Reading *reading = *rter;
-
-			std::list<uint32_t>::const_iterator tter;
-			for (tter = reading->tags_list.begin() ; tter != reading->tags_list.end() ; tter++) {
-				Tag *tag = 0;
-				if (grammar->single_tags.find(*tter) != grammar->single_tags.end()) {
-					tag = grammar->single_tags.find(*tter)->second;
-				}
-				else {
-					tag = single_tags.find(*tter)->second;
-				}
-				assert(tag != 0);
-				if (tag->type & T_DEPENDENCY) {
-					dep_highest_seen = MAX(tag->dep_self, dep_highest_seen);
-					did_dep = true;
-					if (swindow->parent->dep_map.find(tag->dep_self) == swindow->parent->dep_map.end()) {
-						swindow->parent->dep_map[tag->dep_self] = cohort->global_number;
-						reading->dep_self = cohort->global_number;
-					}
+			if (reading->dep_self) {
+				did_dep = true;
+				if (swindow->parent->dep_map.find(reading->dep_self) == swindow->parent->dep_map.end()) {
+					swindow->parent->dep_map[reading->dep_self] = cohort->global_number;
+					reading->dep_self = cohort->global_number;
 				}
 			}
 		}
@@ -66,29 +53,18 @@ void GrammarApplicator::reflowSingleWindow(SingleWindow *swindow) {
 			for (rter = cohort->readings.begin() ; rter != cohort->readings.end() ; rter++) {
 				Reading *reading = *rter;
 
-				std::list<uint32_t>::const_iterator tter;
-				for (tter = reading->tags_list.begin() ; tter != reading->tags_list.end() ; tter++) {
-					Tag *tag = 0;
-					if (grammar->single_tags.find(*tter) != grammar->single_tags.end()) {
-						tag = grammar->single_tags.find(*tter)->second;
+				if (reading->dep_self) {
+					if (swindow->parent->dep_map.find(reading->dep_parent) == swindow->parent->dep_map.end()) {
+						u_fprintf(
+							ux_stderr,
+							"Warning: Parent %u of dep %u in cohort %u of window %u does not exist - ignoring.\n",
+							reading->dep_parent, reading->dep_self, cohort->local_number, swindow->number
+							);
 					}
 					else {
-						tag = single_tags.find(*tter)->second;
-					}
-					assert(tag != 0);
-					if (tag->type & T_DEPENDENCY) {
-						if (swindow->parent->dep_map.find(tag->dep_parent) == swindow->parent->dep_map.end()) {
-							u_fprintf(
-								ux_stderr,
-								"Warning: Parent %u of dep %u in cohort %u of window %u does not exist - ignoring.\n",
-								tag->dep_parent, tag->dep_self, cohort->local_number, swindow->number
-								);
-						}
-						else {
-							uint32_t dep_real = swindow->parent->dep_map.find(tag->dep_parent)->second;
-							reading->dep_parent = dep_real;
-							swindow->parent->cohort_map.find(dep_real)->second->addChild(reading->dep_self);
-						}
+						uint32_t dep_real = swindow->parent->dep_map.find(reading->dep_parent)->second;
+						reading->dep_parent = dep_real;
+						swindow->parent->cohort_map.find(dep_real)->second->addChild(reading->dep_self);
 					}
 				}
 			}
@@ -146,6 +122,10 @@ void GrammarApplicator::reflowReading(Reading *reading) {
 		}
 		if (!reading->wordform && tag->type & T_WORDFORM) {
 			reading->wordform = tag->hash;
+		}
+		if (tag->type & T_DEPENDENCY) {
+			reading->dep_self = tag->dep_self;
+			reading->dep_parent = tag->dep_parent;
 		}
 		if (!tag->type) {
 			reading->tags_plain[*tter] = *tter;
