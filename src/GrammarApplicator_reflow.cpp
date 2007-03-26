@@ -26,7 +26,9 @@ using namespace CG3::Strings;
 void GrammarApplicator::reflowDependencyWindow() {
 	bool did_dep = false;
 	if (gWindow->dep_window.find(0) == gWindow->dep_window.end()) {
-		gWindow->dep_window[0] = gWindow->dep_window.begin()->second->parent->cohorts.at(0);
+		// This has to be done in 2 steps or it will segfault on Linux for some reason...
+		Cohort *tmp = gWindow->dep_window.begin()->second->parent->cohorts.at(0);
+		gWindow->dep_window[0] = tmp;
 	}
 
 	std::map<uint32_t, Cohort*>::iterator dIter;
