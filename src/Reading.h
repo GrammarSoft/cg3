@@ -42,7 +42,7 @@ namespace CG3 {
 		std::map<uint32_t, uint32_t> tags_numerical;
 
 		uint32_t dep_self;
-		std::set<uint32_t> dep_parents;
+		uint32_t dep_parent;
 		std::set<uint32_t> dep_children;
 		std::set<uint32_t> dep_siblings;
 

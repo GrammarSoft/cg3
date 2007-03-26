@@ -24,11 +24,9 @@ using namespace CG3;
 using namespace CG3::Strings;
 
 void GrammarApplicator::reflowSingleWindow(SingleWindow *swindow) {
-	swindow->tags.clear();
-	swindow->tags_mapped.clear();
-	swindow->tags_plain.clear();
-	swindow->tags_textual.clear();
+	bool did_dep = false;
 	swindow->parent->dep_map.clear();
+	swindow->parent->cohort_map[0] = swindow->cohorts[0];
 
 	for (uint32_t c=0 ; c < swindow->cohorts.size() ; c++) {
 		Cohort *cohort = swindow->cohorts[c];
@@ -39,7 +37,6 @@ void GrammarApplicator::reflowSingleWindow(SingleWindow *swindow) {
 
 			std::list<uint32_t>::const_iterator tter;
 			for (tter = reading->tags_list.begin() ; tter != reading->tags_list.end() ; tter++) {
-				swindow->tags[*tter] = *tter;
 				Tag *tag = 0;
 				if (grammar->single_tags.find(*tter) != grammar->single_tags.end()) {
 					tag = grammar->single_tags.find(*tter)->second;
@@ -48,26 +45,19 @@ void GrammarApplicator::reflowSingleWindow(SingleWindow *swindow) {
 					tag = single_tags.find(*tter)->second;
 				}
 				assert(tag != 0);
-				if (tag->type & T_MAPPING || tag->tag[0] == grammar->mapping_prefix) {
-					swindow->tags_mapped[*tter] = *tter;
-				}
-				if (tag->type & T_TEXTUAL) {
-					swindow->tags_textual[*tter] = *tter;
-				}
 				if (tag->type & T_DEPENDENCY) {
 					dep_highest_seen = MAX(tag->dep_self, dep_highest_seen);
+					did_dep = true;
 					if (swindow->parent->dep_map.find(tag->dep_self) == swindow->parent->dep_map.end()) {
-						swindow->parent->dep_map[tag->dep_self] = c;
+						swindow->parent->dep_map[tag->dep_self] = cohort->global_number;
+						reading->dep_self = cohort->global_number;
 					}
-				}
-				if (!tag->type) {
-					swindow->tags_plain[*tter] = *tter;
 				}
 			}
 		}
 	}
 
-	if (!swindow->parent->dep_map.empty()) {
+	if (did_dep) {
 		swindow->parent->dep_map[0] = 0;
 		for (uint32_t c=0 ; c < swindow->cohorts.size() ; c++) {
 			Cohort *cohort = swindow->cohorts[c];
@@ -88,10 +78,16 @@ void GrammarApplicator::reflowSingleWindow(SingleWindow *swindow) {
 					assert(tag != 0);
 					if (tag->type & T_DEPENDENCY) {
 						if (swindow->parent->dep_map.find(tag->dep_parent) == swindow->parent->dep_map.end()) {
-							u_fprintf(ux_stderr, "Warning: Parent %u does not exist - ignoring.\n", tag->dep_parent);
+							u_fprintf(
+								ux_stderr,
+								"Warning: Parent %u of dep %u in cohort %u of window %u does not exist - ignoring.\n",
+								tag->dep_parent, tag->dep_self, cohort->local_number, swindow->number
+								);
 						}
 						else {
-							swindow->cohorts[swindow->parent->dep_map.find(tag->dep_parent)->second]->addChild(tag->dep_self);
+							uint32_t dep_real = swindow->parent->dep_map.find(tag->dep_parent)->second;
+							reading->dep_parent = dep_real;
+							swindow->parent->cohort_map.find(dep_real)->second->addChild(reading->dep_self);
 						}
 					}
 				}
@@ -105,21 +101,17 @@ void GrammarApplicator::reflowSingleWindow(SingleWindow *swindow) {
 			for (rter = cohort->readings.begin() ; rter != cohort->readings.end() ; rter++) {
 				Reading *reading = *rter;
 
-				uint32_t dep_real = 0;
 				std::set<uint32_t>::const_iterator tter;
 				for (tter = reading->dep_children.begin() ; tter != reading->dep_children.end() ; tter++) {
-					dep_real = swindow->parent->dep_map.find(*tter)->second;
 					std::set<uint32_t>::const_iterator ster;
 					for (ster = reading->dep_children.begin() ; ster != reading->dep_children.end() ; ster++) {
-						swindow->cohorts[dep_real]->addSibling(*ster);
+						swindow->parent->cohort_map.find(*tter)->second->addSibling(*ster);
 					}
-					swindow->cohorts[dep_real]->remSibling(dep_real);
+					swindow->parent->cohort_map.find(*tter)->second->remSibling(*tter);
 				}
 			}
 		}
 	}
-
-	swindow->rehash();
 }
 
 void GrammarApplicator::reflowReading(Reading *reading) {
@@ -154,10 +146,6 @@ void GrammarApplicator::reflowReading(Reading *reading) {
 		}
 		if (!reading->wordform && tag->type & T_WORDFORM) {
 			reading->wordform = tag->hash;
-		}
-		if (tag->type & T_DEPENDENCY) {
-			reading->dep_self = tag->dep_self;
-			reading->dep_parents.insert(tag->dep_parent);
 		}
 		if (!tag->type) {
 			reading->tags_plain[*tter] = *tter;

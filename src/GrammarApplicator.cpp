@@ -137,6 +137,11 @@ void GrammarApplicator::printReading(Reading *reading, UFILE *output) {
 			}
 		}
 	}
+	/*
+	if (reading->dep_self) {
+		u_fprintf(output, "DEP:%u->%u", reading->dep_self, reading->dep_parent);
+	}
+	//*/
 	u_fprintf(output, "\n");
 }
 

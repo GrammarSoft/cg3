@@ -35,13 +35,6 @@ Cohort::~Cohort() {
 	parent->parent->cohort_map.erase(global_number);
 }
 
-void Cohort::addParent(uint32_t parent) {
-	std::list<Reading*>::iterator iter;
-	for (iter = readings.begin() ; iter != readings.end() ; iter++) {
-		(*iter)->dep_parents.insert(parent);
-	}
-}
-
 void Cohort::addSibling(uint32_t sibling) {
 	std::list<Reading*>::iterator iter;
 	for (iter = readings.begin() ; iter != readings.end() ; iter++) {

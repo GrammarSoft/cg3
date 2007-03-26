@@ -500,10 +500,12 @@ bool GrammarApplicator::runContextualTest(const SingleWindow *sWindow, const uin
 		}
 		else {
 			if (test->dep_child || test->dep_sibling || test->dep_parent) {
-				int32_t rv = doesSetMatchDependency(sWindow, cohort, test);
-				if (rv != -1) {
+				const Cohort *nc = doesSetMatchDependency(sWindow, cohort, test);
+				if (nc) {
+					cohort = nc;
 					retval = true;
-					pos = rv;
+					sWindow = cohort->parent;
+					pos = cohort->local_number;
 				}
 				else {
 					retval = false;

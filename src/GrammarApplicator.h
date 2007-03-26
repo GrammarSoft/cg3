@@ -81,7 +81,7 @@ namespace CG3 {
 		bool doesSetMatchReading(const Reading *reading, const uint32_t set, bool bypass_index = false);
 		bool doesSetMatchCohortNormal(const Cohort *cohort, const uint32_t set);
 		bool doesSetMatchCohortCareful(const Cohort *cohort, const uint32_t set);
-		int32_t doesSetMatchDependency(const SingleWindow *sWindow, const Cohort *current, const ContextualTest *test);
+		const Cohort *doesSetMatchDependency(const SingleWindow *sWindow, const Cohort *current, const ContextualTest *test);
 
 		void printReading(Reading *reading, UFILE *output);
 		void printSingleWindow(SingleWindow *window, UFILE *output);

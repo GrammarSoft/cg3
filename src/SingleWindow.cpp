@@ -45,7 +45,6 @@ SingleWindow::~SingleWindow() {
 		}
 	}
 	parent->window_map.erase(number);
-	dep_map.clear();
 }
 
 void SingleWindow::appendCohort(Cohort *cohort) {
@@ -53,30 +52,4 @@ void SingleWindow::appendCohort(Cohort *cohort) {
 	cohort->local_number = (uint32_t)cohorts.size();
 	cohorts.push_back(cohort);
 	parent->cohort_map[cohort->global_number] = cohort;
-}
-
-uint32_t SingleWindow::rehash() {
-	stdext::hash_map<uint32_t, uint32_t>::const_iterator hter;
-	hash = 0;
-	for (hter = tags.begin() ; hter != tags.end() ; hter++) {
-		hash = hash_sdbm_uint32_t(hter->second, hash);
-	}
-	hash_tags = hash;
-
-	std::map<uint32_t, uint32_t>::const_iterator mter;
-	hash_mapped = 1;
-	for (mter = tags_mapped.begin() ; mter != tags_mapped.end() ; mter++) {
-		hash_mapped = hash_sdbm_uint32_t(mter->second, hash_mapped);
-	}
-	hash_plain = 1;
-	for (mter = tags_plain.begin() ; mter != tags_plain.end() ; mter++) {
-		hash_plain = hash_sdbm_uint32_t(mter->second, hash_plain);
-	}
-	hash_textual = 1;
-	for (mter = tags_textual.begin() ; mter != tags_textual.end() ; mter++) {
-		hash_textual = hash_sdbm_uint32_t(mter->second, hash_textual);
-	}
-
-	assert(hash != 0);
-	return hash;
 }

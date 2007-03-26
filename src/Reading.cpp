@@ -54,7 +54,6 @@ Reading::~Reading() {
 	tags_numerical.clear();
 	tags_list.clear();
 	hit_by.clear();
-	dep_parents.clear();
 	dep_children.clear();
 	dep_siblings.clear();
 }

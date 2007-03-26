@@ -30,22 +30,15 @@ namespace CG3 {
 		uint32_t number;
 		SingleWindow *next, *previous;
 		Window *parent;
-		stdext::hash_map<uint32_t, uint32_t> dep_map;
 
 		std::vector<Cohort*> cohorts;
 		UChar *text;
 		uint32_t hash, hash_tags, hash_mapped, hash_plain, hash_textual;
 
-		stdext::hash_map<uint32_t, uint32_t> tags;
-		std::map<uint32_t, uint32_t> tags_plain;
-		std::map<uint32_t, uint32_t> tags_mapped;
-		std::map<uint32_t, uint32_t> tags_textual;
-
 		SingleWindow(Window *p);
 		~SingleWindow();
 
 		void appendCohort(Cohort *cohort);
-		uint32_t rehash();
 	};
 
 }

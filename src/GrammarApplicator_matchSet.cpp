@@ -141,7 +141,7 @@ bool GrammarApplicator::doesTagMatchReading(const Reading *reading, const uint32
 	}
 
 	if (tag->type & T_NEGATIVE) {
-			match = !match;
+		match = !match;
 	}
 
 	if (match) {
@@ -321,33 +321,20 @@ bool GrammarApplicator::doesSetMatchCohortCareful(const Cohort *cohort, const ui
 	return retval;
 }
 
-int32_t GrammarApplicator::doesSetMatchDependency(const SingleWindow *sWindow, const Cohort *current, const ContextualTest *test) {
-	int32_t rv = -1;
+const Cohort *GrammarApplicator::doesSetMatchDependency(const SingleWindow *sWindow, const Cohort *current, const ContextualTest *test) {
+	const Cohort *rv = 0;
 
 	std::list<Reading*>::const_iterator iter;
 	for (iter = current->readings.begin() ; iter != current->readings.end() ; iter++) {
 		Reading *reading = *iter;
 		if (!reading->deleted) {
-			const std::set<uint32_t> *deps = 0;
-			if (test->dep_child) {
-				deps = &reading->dep_children;
-			}
-			else if (test->dep_parent) {
-				deps = &reading->dep_parents;
-			}
-			else {
-				deps = &reading->dep_siblings;
-			}
-
 			bool retval = false;
-			std::set<uint32_t>::const_iterator dter;
-			for (dter = deps->begin() ; dter != deps->end() ; dter++) {
-				if (sWindow->parent->dep_map.find(*dter) == sWindow->parent->dep_map.end()) {
-					u_fprintf(ux_stderr, "Warning: Dependency %u does not exist - ignoring.\n", *dter);
+			if (test->dep_parent) {
+				if (sWindow->parent->cohort_map.find(reading->dep_parent) == sWindow->parent->cohort_map.end()) {
+					u_fprintf(ux_stderr, "Warning: Dependency %u does not exist - ignoring.\n", reading->dep_parent);
 					continue;
 				}
-				uint32_t dep_pos = sWindow->parent->dep_map.find(*dter)->second;
-				Cohort *cohort = sWindow->cohorts[dep_pos];
+				Cohort *cohort = sWindow->parent->cohort_map.find(reading->dep_parent)->second;
 				if (test->careful) {
 					retval = doesSetMatchCohortCareful(cohort, test->target);
 				}
@@ -355,15 +342,41 @@ int32_t GrammarApplicator::doesSetMatchDependency(const SingleWindow *sWindow, c
 					retval = doesSetMatchCohortNormal(cohort, test->target);
 				}
 				if (retval && !test->negative) {
-					rv = dep_pos;
-					break;
+					rv = cohort;
 				}
 				else if (retval && test->negative) {
 					rv = 0;
-					break;
 				}
 			}
-			if (rv != -1) {
+			else {
+				const std::set<uint32_t> *deps = 0;
+				if (test->dep_child) {
+					deps = &reading->dep_children;
+				}
+				else {
+					deps = &reading->dep_siblings;
+				}
+
+				std::set<uint32_t>::const_iterator dter;
+				for (dter = deps->begin() ; dter != deps->end() ; dter++) {
+					if (sWindow->parent->cohort_map.find(*dter) == sWindow->parent->cohort_map.end()) {
+						u_fprintf(ux_stderr, "Warning: Dependency %u does not exist - ignoring.\n", *dter);
+						continue;
+					}
+					Cohort *cohort = sWindow->parent->cohort_map.find(*dter)->second;
+					if (test->careful) {
+						retval = doesSetMatchCohortCareful(cohort, test->target);
+					}
+					else {
+						retval = doesSetMatchCohortNormal(cohort, test->target);
+					}
+					if (retval) {
+						rv = cohort;
+						break;
+					}
+				}
+			}
+			if (rv) {
 				break;
 			}
 		}
