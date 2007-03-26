@@ -35,6 +35,7 @@ GrammarApplicator::GrammarApplicator() {
 	dep_delimit = false;
 	dep_humanize = false;
 	dep_highest_seen = 0;
+	has_dep = false;
 	timer = 0;
 	num_windows = 2;
 	begintag = 0;
@@ -131,7 +132,7 @@ void GrammarApplicator::printReading(Reading *reading, UFILE *output) {
 		}
 		assert(tag != 0);
 		if (!(tag->type & T_BASEFORM) && !(tag->type & T_WORDFORM)) {
-			if (dep_reenum && tag->type & T_DEPENDENCY && tag->dep_self && reading->dep_self) {
+			if (has_dep && dep_reenum && tag->type & T_DEPENDENCY && tag->dep_self && reading->dep_self) {
 				if (dep_humanize) {
 					int32_t tmp = reading->parent->parent->cohorts[1]->global_number;
 					int32_t self = 1+(reading->dep_self - tmp);

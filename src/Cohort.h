@@ -27,6 +27,7 @@ namespace CG3 {
 
 	class Cohort {
 	public:
+		bool dep_done;
 		uint32_t global_number;
 		uint32_t local_number;
 		uint32_t wordform;

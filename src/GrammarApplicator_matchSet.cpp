@@ -335,17 +335,26 @@ const Cohort *GrammarApplicator::doesSetMatchDependency(const SingleWindow *sWin
 					continue;
 				}
 				Cohort *cohort = sWindow->parent->cohort_map.find(reading->dep_parent)->second;
-				if (test->careful) {
-					retval = doesSetMatchCohortCareful(cohort, test->target);
+				bool good = true;
+				if (current->parent != cohort->parent) {
+					if ((!test->span_both || !test->span_left) && cohort->parent->number < current->parent->number) {
+						good = false;
+					}
+					else if ((!test->span_both || !test->span_right) && cohort->parent->number > current->parent->number) {
+						good = false;
+					}
+
 				}
-				else {
-					retval = doesSetMatchCohortNormal(cohort, test->target);
+				if (good) {
+					if (test->careful) {
+						retval = doesSetMatchCohortCareful(cohort, test->target);
+					}
+					else {
+						retval = doesSetMatchCohortNormal(cohort, test->target);
+					}
 				}
-				if (retval && !test->negative) {
+				if (retval) {
 					rv = cohort;
-				}
-				else if (retval && test->negative) {
-					rv = 0;
 				}
 			}
 			else {
@@ -364,11 +373,23 @@ const Cohort *GrammarApplicator::doesSetMatchDependency(const SingleWindow *sWin
 						continue;
 					}
 					Cohort *cohort = sWindow->parent->cohort_map.find(*dter)->second;
-					if (test->careful) {
-						retval = doesSetMatchCohortCareful(cohort, test->target);
+					bool good = true;
+					if (current->parent != cohort->parent) {
+						if ((!test->span_both || !test->span_left) && cohort->parent->number < current->parent->number) {
+							good = false;
+						}
+						else if ((!test->span_both || !test->span_right) && cohort->parent->number > current->parent->number) {
+							good = false;
+						}
+
 					}
-					else {
-						retval = doesSetMatchCohortNormal(cohort, test->target);
+					if (good) {
+						if (test->careful) {
+							retval = doesSetMatchCohortCareful(cohort, test->target);
+						}
+						else {
+							retval = doesSetMatchCohortNormal(cohort, test->target);
+						}
 					}
 					if (retval) {
 						rv = cohort;

@@ -18,8 +18,8 @@
 
 using namespace CG3;
 
-Window::Window() {
-	parent = 0;
+Window::Window(GrammarApplicator *p) {
+	parent = p;
 	current = 0;
 	window_span = 0;
 	window_counter = 0;
@@ -42,8 +42,9 @@ Window::~Window() {
 	}
 	next.clear();
 
-	window_map.clear();
 	cohort_map.clear();
+	dep_map.clear();
+	dep_window.clear();
 }
 
 void Window::appendSingleWindow(SingleWindow *swindow) {
@@ -55,12 +56,10 @@ void Window::appendSingleWindow(SingleWindow *swindow) {
 		next.back()->next = swindow;
 	}
 	next.push_back(swindow);
-	window_map[swindow->number] = swindow;
 }
 
 SingleWindow *Window::shuffleWindowsDown() {
 	if (!previous.empty() && previous.size() >= window_span) {
-		window_map.erase(previous.front()->number);
 		delete previous.front();
 		previous.pop_front();
 	}

@@ -23,6 +23,7 @@ Cohort::Cohort(SingleWindow *p) {
 	global_number = 0;
 	local_number = 0;
 	parent = p;
+	dep_done = false;
 	text = 0;
 }
 
@@ -33,6 +34,7 @@ Cohort::~Cohort() {
 	}
 	readings.clear();
 	parent->parent->cohort_map.erase(global_number);
+	parent->parent->dep_window.erase(global_number);
 }
 
 void Cohort::addSibling(uint32_t sibling) {

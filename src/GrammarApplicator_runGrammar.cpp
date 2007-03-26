@@ -75,8 +75,10 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 	begintag = addTag(stringbits[S_BEGINTAG]);
 	endtag = addTag(stringbits[S_ENDTAG]);
 
+	gWindow = new Window(this);
+
 	uint32_t lines = 0;
-	Window *cWindow = new Window();
+	Window *cWindow = gWindow;
 	SingleWindow *cSWindow = 0;
 	Cohort *cCohort = 0;
 	Reading *cReading = 0;
@@ -85,8 +87,6 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 	Cohort *lCohort = 0;
 	Reading *lReading = 0;
 
-	gWindow = cWindow;
-	cWindow->parent = this;
 	cWindow->window_span = num_windows;
 
 	while (!u_feof(input)) {
@@ -120,7 +120,6 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 
 				cSWindow->appendCohort(cCohort);
 				cWindow->appendSingleWindow(cSWindow);
-				reflowSingleWindow(cSWindow);
 				lSWindow = cSWindow;
 				lCohort = cCohort;
 				cSWindow = 0;
@@ -150,7 +149,6 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 
 				cSWindow->appendCohort(cCohort);
 				cWindow->appendSingleWindow(cSWindow);
-				reflowSingleWindow(cSWindow);
 				lSWindow = cSWindow;
 				lCohort = cCohort;
 				cSWindow = 0;
@@ -267,7 +265,6 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 							(*iter)->rehash();
 						}
 						cWindow->appendSingleWindow(cSWindow);
-						reflowSingleWindow(cSWindow);
 						cReading = lReading = 0;
 						cCohort = lCohort = 0;
 						cSWindow = lSWindow = 0;
@@ -328,7 +325,6 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 			(*iter)->rehash();
 		}
 		cWindow->appendSingleWindow(cSWindow);
-		reflowSingleWindow(cSWindow);
 		cReading = 0;
 		cCohort = 0;
 		cSWindow = 0;

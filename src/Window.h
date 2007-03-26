@@ -30,15 +30,16 @@ namespace CG3 {
 		uint32_t cohort_counter;
 		uint32_t window_counter;
 		uint32_t window_span;
-		std::map<uint32_t, SingleWindow*> window_map;
+
 		std::map<uint32_t, Cohort*> cohort_map;
 		std::map<uint32_t, uint32_t> dep_map;
+		std::map<uint32_t, Cohort*> dep_window;
 
 		std::list<SingleWindow*> previous;
 		SingleWindow *current;
 		std::list<SingleWindow*> next;
 
-		Window();
+		Window(GrammarApplicator *p);
 		~Window();
 
 		void appendSingleWindow(SingleWindow *swindow);

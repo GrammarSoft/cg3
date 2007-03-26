@@ -88,6 +88,7 @@ namespace CG3 {
 		void printSingleWindow(SingleWindow *window, UFILE *output);
 
 	private:
+		bool has_dep;
 		uint32_t dep_highest_seen;
 		Window *gWindow;
 		bool statistics;
@@ -95,7 +96,7 @@ namespace CG3 {
 
 		inline bool __index_matches(const stdext::hash_map<uint32_t, Index*> *me, const uint32_t value, const uint32_t set);
 		void reflowReading(Reading *reading);
-		void reflowSingleWindow(SingleWindow *swindow);
+		void reflowDependencyWindow();
 	};
 }
 

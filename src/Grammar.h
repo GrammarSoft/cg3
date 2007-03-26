@@ -29,6 +29,7 @@ namespace CG3 {
 
 	class Grammar {
 	public:
+		bool has_dep;
 		uint32_t last_modified;
 		uint32_t grammar_size;
 		UChar mapping_prefix;

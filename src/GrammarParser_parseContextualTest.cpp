@@ -65,6 +65,10 @@ int GrammarParser::parseContextualTest(UChar **paren, CG3::ContextualTest *paren
 	context->line = result->curline;
 	context->target = parseTarget(&test);
 
+	if (context->dep_child || context->dep_parent || context->dep_sibling) {
+		result->has_dep = true;
+	}
+
 	if (test && test[0]) {
 		space = u_strstr(test, stringbits[S_BARRIER]);
 		if (space == test) {

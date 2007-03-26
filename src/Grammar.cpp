@@ -20,6 +20,7 @@
 using namespace CG3;
 
 Grammar::Grammar() {
+	has_dep = false;
 	last_modified = 0;
 	name = 0;
 	lines = 0;

@@ -229,6 +229,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, const std::v
 
 							uint32_t nc = c+1;
 							for ( ; nc < current->cohorts.size() ; nc++) {
+								current->cohorts.at(nc)->parent = nwin;
 								nwin->appendCohort(current->cohorts.at(nc));
 							}
 							c = (uint32_t)current->cohorts.size()-c;
@@ -241,7 +242,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, const std::v
 								Reading *reading = *rter;
 								reading->tags_list.push_back(endtag);
 								reading->tags[endtag] = endtag;
-								reading->rehash();
+								reflowReading(reading);
 							}
 							delimited = true;
 							break;
@@ -347,6 +348,9 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, const std::v
 
 int GrammarApplicator::runGrammarOnWindow(Window *window) {
 label_runGrammarOnWindow_begin:
+	if (has_dep) {
+		reflowDependencyWindow();
+	}
 	SingleWindow *current = window->current;
 
 	if (!grammar->before_sections.empty()) {
