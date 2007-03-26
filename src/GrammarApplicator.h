@@ -39,13 +39,11 @@ namespace CG3 {
 		bool apply_corrections;
 		bool trace;
 		bool single_run;
+
+		bool dep_reenum;
 		bool dep_delimit;
 		bool dep_humanize;
 
-		void enableStatistics();
-		void disableStatistics();
-
-		uint32_t dep_highest_seen;
 		uint32_t num_windows;
 		uint32_t soft_limit;
 		uint32_t hard_limit;
@@ -67,6 +65,9 @@ namespace CG3 {
 		GrammarApplicator();
 		~GrammarApplicator();
 
+		void enableStatistics();
+		void disableStatistics();
+
 		void setGrammar(const Grammar *res);
 		uint32_t addTag(const UChar *tag);
 
@@ -87,6 +88,8 @@ namespace CG3 {
 		void printSingleWindow(SingleWindow *window, UFILE *output);
 
 	private:
+		uint32_t dep_highest_seen;
+		Window *gWindow;
 		bool statistics;
 		PACC::Timer *timer;
 

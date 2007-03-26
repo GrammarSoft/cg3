@@ -211,17 +211,18 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, const std::v
 
 							current->parent->next.push_front(nwin);
 
-							Reading *cReading = new Reading();
+							current->parent->cohort_counter++;
+							Cohort *cCohort = new Cohort(nwin);
+							cCohort->global_number = 0;
+							cCohort->wordform = begintag;
+
+							Reading *cReading = new Reading(cCohort);
 							cReading->baseform = begintag;
 							cReading->wordform = begintag;
 							cReading->tags[begintag] = begintag;
 							cReading->tags_list.push_back(begintag);
 							cReading->rehash();
 
-							current->parent->cohort_counter++;
-							Cohort *cCohort = new Cohort(nwin);
-							cCohort->global_number = 0;
-							cCohort->wordform = begintag;
 							cCohort->appendReading(cReading);
 
 							nwin->appendCohort(cCohort);

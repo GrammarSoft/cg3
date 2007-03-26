@@ -20,11 +20,11 @@
 
 using namespace CG3;
 
-Reading::Reading() {
+Reading::Reading(Cohort *p) {
 	wordform = 0;
 	baseform = 0;
 	hash = 0;
-	parent = 0;
+	parent = p;
 	hash_tags = 0;
 	hash_mapped = 0;
 	hash_plain = 0;
@@ -37,6 +37,7 @@ Reading::Reading() {
 	current_mapping_tag = 0;
 	text = 0;
 	dep_self = 0;
+	dep_parent = 0;
 }
 
 Reading::~Reading() {

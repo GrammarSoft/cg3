@@ -52,7 +52,7 @@ namespace CG3 {
 		bool matched_tests;
 		uint32_t current_mapping_tag;
 
-		Reading();
+		Reading(Cohort *p);
 		~Reading();
 
 		uint32_t rehash();

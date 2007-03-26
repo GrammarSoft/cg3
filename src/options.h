@@ -56,6 +56,7 @@ namespace Options {
 		SOFT_LIMIT,
 		HARD_LIMIT,
 		DEP_DELIMIT,
+		DEP_REENUM,
 		DEP_HUMANIZE,
 		NUM_OPTIONS
 	};
@@ -101,6 +102,7 @@ namespace Options {
 			UOPTION_DEF("soft-limit",			0, UOPT_REQUIRES_ARG),
 			UOPTION_DEF("hard-limit",			0, UOPT_REQUIRES_ARG),
 			UOPTION_DEF("dep-delimit",			0, UOPT_NO_ARG),
+			UOPTION_DEF("dep-reenum",			0, UOPT_NO_ARG),
 			UOPTION_DEF("dep-humanize",			0, UOPT_NO_ARG)
 	};
 }

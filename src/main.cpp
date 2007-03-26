@@ -89,6 +89,7 @@ int main(int argc, char* argv[]) {
 		fprintf(stderr, " --soft-limit             Number of cohorts after which the SOFT-DELIMITERS kick in. Defaults to 300.\n");
 		fprintf(stderr, " --hard-limit             Number of cohorts after which the window is delimited forcefully. Defaults to 500.\n");
 		fprintf(stderr, " --dep-delimit            Delimit via dependency information instead of DELIMITERS.\n");
+		fprintf(stderr, " --dep-reenum             Outputs the internal reenumeration of dependencies.\n");
 		fprintf(stderr, " --dep-humanize           Output dependency information in a more readable format.\n");
 		fprintf(stderr, "\n");
 		fprintf(stderr, " -O or --stdout           A file to print out to instead of stdout.\n");
@@ -282,6 +283,13 @@ int main(int argc, char* argv[]) {
 		if (options[HARD_LIMIT].doesOccur) {
 			applicator->hard_limit = atoi(options[HARD_LIMIT].value);
 		}
+		if (options[DEP_REENUM].doesOccur) {
+			applicator->dep_reenum = true;
+		}
+		if (options[DEP_HUMANIZE].doesOccur) {
+			applicator->dep_reenum = true;
+			applicator->dep_humanize = true;
+		}
 		applicator->runGrammarOnText(ux_stdin, ux_stdout);
 
 		std::cerr << "Applying grammar on input took " << glob_timer->getValueFrom(main_timer) << " seconds." << std::endl;
@@ -326,6 +334,13 @@ int main(int argc, char* argv[]) {
 				}
 				if (options[HARD_LIMIT].doesOccur) {
 					applicator->hard_limit = atoi(options[HARD_LIMIT].value);
+				}
+				if (options[DEP_REENUM].doesOccur) {
+					applicator->dep_reenum = true;
+				}
+				if (options[DEP_HUMANIZE].doesOccur) {
+					applicator->dep_reenum = true;
+					applicator->dep_humanize = true;
 				}
 				applicator->enableStatistics();
 				applicator->runGrammarOnText(ux_stdin, ux_stdout);
@@ -385,6 +400,13 @@ int main(int argc, char* argv[]) {
 			}
 			if (options[HARD_LIMIT].doesOccur) {
 				applicator->hard_limit = atoi(options[HARD_LIMIT].value);
+			}
+			if (options[DEP_REENUM].doesOccur) {
+				applicator->dep_reenum = true;
+			}
+			if (options[DEP_HUMANIZE].doesOccur) {
+				applicator->dep_reenum = true;
+				applicator->dep_humanize = true;
 			}
 			applicator->enableStatistics();
 			applicator->runGrammarOnText(ux_stdin, ux_stdout);

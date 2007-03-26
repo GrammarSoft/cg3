@@ -57,13 +57,11 @@ void Cohort::addChild(uint32_t child) {
 }
 
 void Cohort::appendReading(Reading *read) {
-	read->parent = this;
 	readings.push_back(read);
 }
 
 Reading* Cohort::allocateAppendReading() {
-	Reading *read = new Reading();
-	read->parent = this;
+	Reading *read = new Reading(this);
 	readings.push_back(read);
 	return read;
 }

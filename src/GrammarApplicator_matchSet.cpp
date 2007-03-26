@@ -329,7 +329,7 @@ const Cohort *GrammarApplicator::doesSetMatchDependency(const SingleWindow *sWin
 		Reading *reading = *iter;
 		if (!reading->deleted) {
 			bool retval = false;
-			if (test->dep_parent) {
+			if (test->dep_parent && reading->dep_self != reading->dep_parent) {
 				if (sWindow->parent->cohort_map.find(reading->dep_parent) == sWindow->parent->cohort_map.end()) {
 					u_fprintf(ux_stderr, "Warning: Dependency %u does not exist - ignoring.\n", reading->dep_parent);
 					continue;

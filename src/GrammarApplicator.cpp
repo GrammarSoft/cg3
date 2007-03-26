@@ -31,6 +31,7 @@ GrammarApplicator::GrammarApplicator() {
 	trace = false;
 	single_run = false;
 	statistics = false;
+	dep_reenum = false;
 	dep_delimit = false;
 	dep_humanize = false;
 	dep_highest_seen = 0;
@@ -47,6 +48,7 @@ GrammarApplicator::GrammarApplicator() {
 	match_sub = 0;
 	soft_limit = 300;
 	hard_limit = 500;
+	gWindow = 0;
 	index_reading_yes.clear();
 	index_reading_no.clear();
 }
@@ -56,6 +58,9 @@ GrammarApplicator::~GrammarApplicator() {
 	if (timer) {
 		delete timer;
 		timer = 0;
+	}
+	if (gWindow) {
+		delete gWindow;
 	}
 }
 
@@ -126,7 +131,25 @@ void GrammarApplicator::printReading(Reading *reading, UFILE *output) {
 		}
 		assert(tag != 0);
 		if (!(tag->type & T_BASEFORM) && !(tag->type & T_WORDFORM)) {
-			GrammarWriter::printTagRaw(output, tag);
+			if (dep_reenum && tag->type & T_DEPENDENCY && tag->dep_self && reading->dep_self) {
+				if (dep_humanize) {
+					int32_t tmp = reading->parent->parent->cohorts[1]->global_number;
+					int32_t self = 1+(reading->dep_self - tmp);
+					int32_t parent = reading->dep_parent == 0 ? 0 : 1+(reading->dep_parent - tmp);
+					u_fprintf(
+						output,
+						"#%i->%i",
+						self,
+						parent
+						);
+				}
+				else {
+					u_fprintf(output, "#%u->%u", reading->dep_self, reading->dep_parent);
+				}
+			}
+			else {
+				GrammarWriter::printTagRaw(output, tag);
+			}
 			u_fprintf(output, " ");
 		}
 	}
@@ -137,11 +160,6 @@ void GrammarApplicator::printReading(Reading *reading, UFILE *output) {
 			}
 		}
 	}
-	/*
-	if (reading->dep_self) {
-		u_fprintf(output, "DEP:%u->%u", reading->dep_self, reading->dep_parent);
-	}
-	//*/
 	u_fprintf(output, "\n");
 }
 

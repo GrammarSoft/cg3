@@ -13,33 +13,33 @@
 </s>
 
 "<o>"
-	"o" <artd> DET M S @>N #1->2 
+	"o" <artd> DET M S @>N #71->72 
 "<carro>"
-	"carro" <V> N M S @SUBJ> #2->3 
+	"carro" <V> N M S @SUBJ> #72->73 
 "<bateu>"
-	"bater" <fmc> <mv> V PS 3S IND VFIN @FS-STA #3->0 
+	"bater" <fmc> <mv> V PS 3S IND VFIN @FS-STA #73->0 
 "<em>"
-	"em" <sam-> PRP @<PIV #4->3 
+	"em" <sam-> PRP @<PIV #74->73 
 "<uma>"
-	"um" <arti> <-sam> DET F S @>N #5->6 
+	"um" <arti> <-sam> DET F S @>N #75->76 
 "<árvore>"
-	"árvore" <Btree> N F S @P< #6->4 §DES 
+	"árvore" <Btree> N F S @P< #76->74 §DES 
 "<$.>"
-	"$." PU @PU #7->0 
+	"$." PU @PU #77->0 
 </s>
 
 "<em>"
-	"em" PRP @ADVL> #1->4 
+	"em" PRP @ADVL> #41->44 
 "<1993>"
-	"1993" <date> <card> <NER:date> NUM M/F S @P< #2->1 
+	"1993" <date> <card> <NER:date> NUM M/F S @P< #42->41 
 "<ele>"
-	"ele" PERS M 3S NOM @SUBJ> #3->4 
+	"ele" PERS M 3S NOM @SUBJ> #43->44 
 "<bateu>"
-	"bater" <fmc> <mv> V PS 3S IND VFIN @FS-STA #4->0 
+	"bater" <fmc> <mv> V PS 3S IND VFIN @FS-STA #44->0 
 "<o>"
-	"o" <artd> DET M S @>N #5->6 
+	"o" <artd> DET M S @>N #45->46 
 "<recorde>"
-	"recorde" <ac> N M S @<ACC #6->4 §PAT §EXP 
+	"recorde" <ac> N M S @<ACC #46->44 §PAT §EXP 
 "<$.>"
-	"$." PU @PU #7->0 
+	"$." PU @PU #47->0 
 

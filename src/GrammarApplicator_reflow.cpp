@@ -60,6 +60,8 @@ void GrammarApplicator::reflowSingleWindow(SingleWindow *swindow) {
 							"Warning: Parent %u of dep %u in cohort %u of window %u does not exist - ignoring.\n",
 							reading->dep_parent, reading->dep_self, cohort->local_number, swindow->number
 							);
+						// ToDo: If parent is not found, it should be totally ignored, not just set to itself
+						reading->dep_parent = reading->dep_self;
 					}
 					else {
 						uint32_t dep_real = swindow->parent->dep_map.find(reading->dep_parent)->second;
@@ -123,7 +125,11 @@ void GrammarApplicator::reflowReading(Reading *reading) {
 		if (!reading->wordform && tag->type & T_WORDFORM) {
 			reading->wordform = tag->hash;
 		}
-		if (tag->type & T_DEPENDENCY) {
+		if (tag->type & T_DEPENDENCY && !reading->dep_self && !reading->dep_parent) {
+			if (reading->dep_self <= dep_highest_seen) {
+				// Stuff...
+				dep_highest_seen = reading->dep_self;
+			}
 			reading->dep_self = tag->dep_self;
 			reading->dep_parent = tag->dep_parent;
 		}
