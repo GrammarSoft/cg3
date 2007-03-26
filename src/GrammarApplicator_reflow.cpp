@@ -42,7 +42,6 @@ void GrammarApplicator::reflowDependencyWindow() {
 		for (rter = cohort->readings.begin() ; rter != cohort->readings.end() ; rter++) {
 			Reading *reading = *rter;
 			if (reading->dep_self) {
-				cohort->dep_done = true;
 				did_dep = true;
 				if (gWindow->dep_map.find(reading->dep_self) == gWindow->dep_map.end()) {
 					gWindow->dep_map[reading->dep_self] = cohort->global_number;
@@ -62,7 +61,7 @@ void GrammarApplicator::reflowDependencyWindow() {
 				Reading *reading = *rter;
 
 				if (reading->dep_self) {
-					if (gWindow->dep_map.find(reading->dep_parent) == gWindow->dep_map.end()) {
+					if (!cohort->dep_done && gWindow->dep_map.find(reading->dep_parent) == gWindow->dep_map.end()) {
 						u_fprintf(
 							ux_stderr,
 							"Warning: Parent %u of dep %u in cohort %u of window %u does not exist - ignoring.\n",
@@ -72,9 +71,12 @@ void GrammarApplicator::reflowDependencyWindow() {
 						reading->dep_parent = reading->dep_self;
 					}
 					else {
-						uint32_t dep_real = gWindow->dep_map.find(reading->dep_parent)->second;
-						reading->dep_parent = dep_real;
-						gWindow->cohort_map.find(dep_real)->second->addChild(reading->dep_self);
+						if (!cohort->dep_done) {
+							uint32_t dep_real = gWindow->dep_map.find(reading->dep_parent)->second;
+							reading->dep_parent = dep_real;
+						}
+						gWindow->cohort_map.find(reading->dep_parent)->second->addChild(reading->dep_self);
+						cohort->dep_done = true;
 					}
 				}
 			}
