@@ -24,6 +24,7 @@ using namespace CG3;
 
 Tag::Tag() {
 	type = 0;
+	in_grammar = false;
 	comparison_key = 0;
 	comparison_op = OP_NOP;
 	comparison_val = 0;

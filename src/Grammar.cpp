@@ -64,6 +64,14 @@ Grammar::~Grammar() {
 	}
 	tags.clear();
 
+	stdext::hash_map<uint32_t, Tag*>::iterator iter_stag;
+	for (iter_stag = single_tags.begin() ; iter_stag != single_tags.end() ; iter_stag++) {
+		if (iter_stag->second) {
+			delete iter_stag->second;
+		}
+	}
+	single_tags.clear();
+
 	std::vector<Rule*>::iterator iter_rules;
 	for (iter_rules = rules.begin() ; iter_rules != rules.end() ; iter_rules++) {
 		if (*iter_rules) {
@@ -179,6 +187,7 @@ Tag *Grammar::allocateTag(const UChar *tag) {
 	return fresh;
 }
 void Grammar::addTag(Tag *simpletag) {
+	simpletag->in_grammar = true;
 	if (simpletag && simpletag->tag) {
 		simpletag->rehash();
 		if (single_tags.find(simpletag->hash) != single_tags.end()) {
