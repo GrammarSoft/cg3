@@ -39,6 +39,7 @@
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="contributing.xml" />
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="sections.xml" />
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="rules.xml" />
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="contexts.xml" />
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="dependencies.xml" />
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="tags.xml" />
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="cgglossary.xml" />

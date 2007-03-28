@@ -103,7 +103,7 @@ Cohort *GrammarApplicator::runContextualTest(SingleWindow *sWindow, const uint32
 			right = left = sWindow;
 			rpos = lpos = pos;
 
-			for (uint32_t i=0 ; left || right ; i++) {
+			for (uint32_t i=1 ; left || right ; i++) {
 				if (left) {
 					bool brk = false;
 					cohort = runSingleTest(left, lpos-i, test, &brk, &retval);

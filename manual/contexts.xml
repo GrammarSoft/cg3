@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE chapter SYSTEM "docbook-dtd-45/docbookx.dtd">
+
+<chapter id="contexts">
+  <title>Contextual Tests</title>
+
+  <section id="test-negate">
+    <title>NEGATE</title>
+    <indexterm>
+      <primary>NEGATE</primary>
+    </indexterm>
+    <para>
+      NEGATE is similar to, yet not the same as, NOT. Where NOT will invert the result of only the
+      immediately following test, NEGATE will invert the result of the entire LINK'ed chain that follows.
+      NEGATE is thus usually used at the beginning of a test.
+      <emphasis>
+        VISLCG emulated the NEGATE functionality for tests that started with NOT.
+      </emphasis>
+    </para>
+  </section>
+
+  <section id="test-spanning">
+    <title>Spanning Window Boundaries</title>
+    <indexterm>
+      <primary>W</primary>
+    </indexterm>
+    <indexterm>
+      <primary>&lt;</primary>
+    </indexterm>
+    <indexterm>
+      <primary>&gt;</primary>
+    </indexterm>
+    <para>
+      These options allows a test to find matching cohorts in any window currently in the buffer.
+      The buffer size can be adjusted with the --num-windows cmdline flag and defaults to 2.
+      Meaning, 2 windows on either side of the current one is preserved, so a total of 5 would be in
+      the buffer at any time.
+    </para>
+
+    <section id="test-span-both">
+      <title>Span Both</title>
+      <para>
+        Allowing a test to span beyond boundaries in either direction is denoted by 'W'.
+        One could also allow all tests to behave in this manner with the --always-span cmdline flag.
+      </para>
+      <screen>
+        (-1*W (someset))
+      </screen>
+    </section>
+
+    <section id="test-span-left">
+      <title>Span Left</title>
+      <para>
+        '&lt;' allows a test to span beyond boundaries in left direction only.
+      </para>
+      <screen>
+        (-3**&lt; (someset))
+      </screen>
+    </section>
+
+    <section id="test-span-right">
+      <title>Span Right</title>
+      <para>
+        '&gt;' allows a test to span beyond boundaries in right direction only.
+      </para>
+      <screen>
+        (2*&gt; (someset))
+      </screen>
+    </section>
+  </section>
+
+  <section id="test-nearest">
+    <title>Nearest Neighbor</title>
+    <para>
+      Usually a '*' or '**' test scans in only one direction, denoted by the value of the offset;
+      if offset is positive it will scan rightwards, and if negative leftwards.
+      In CG-3 the magic offset '0' will scan in both directions;
+      first one to the left, then one to the right, then two to the left, then two to the right, etc.
+      This makes it easy to find the nearest neighbor that matches.
+      <emphasis>
+        In earlier versions of CG this could be approximated with two seperate rules, and you
+        had to scan entirely in one direction, then come back and do the other direction.
+      </emphasis>
+    </para>
+    <screen>
+      (0* (someset))
+      (0**W (otherset))
+    </screen>
+  </section>
+
+  <section id="test-dependency">
+    <title>Dependencies</title>
+    <indexterm>
+      <primary>p</primary>
+    </indexterm>
+    <indexterm>
+      <primary>c</primary>
+    </indexterm>
+    <indexterm>
+      <primary>s</primary>
+    </indexterm>
+    <para>
+      CG-3 also introduces the p, c, and s positions.
+      See the section about those in the <link linkend="dep-contextual-tests">Dependencies</link> chapter.
+    </para>
+  </section>
+
+</chapter>

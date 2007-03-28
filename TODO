@@ -6,10 +6,10 @@ src/GrammarApplicator.h:		// ToDo: Implement --unsafe
 src/GrammarApplicator.h:		// ToDo: Make use of Preferred-Targets
 src/GrammarApplicator_matchSet.cpp:			// ToDo: Cache regexp and icase hits/misses
 src/GrammarApplicator_reflow.cpp:						// ToDo: If parent is not found, it should be totally ignored, not just set to itself
+src/GrammarApplicator_runContextualTest.cpp:	// ToDo: (NOT *) and (*C) tests can be cached
 src/GrammarApplicator_runGrammar.cpp:	// ToDo: Add flag for using dependencies to delimit windows
 src/GrammarApplicator_runGrammar.cpp:				// ToDo: Refactor to allocate SingleWindow, Cohort, and Reading from their containers
 src/GrammarApplicator_runRules.cpp:	// ToDo: Make old cohort -> rules order available via switch
-src/GrammarApplicator_runRules.cpp:	// ToDo: (NOT *) and (*C) tests can be cached
 src/GrammarParser.cpp:	// ToDo: Make line length dynamic
 src/GrammarParser.cpp:		// ToDo: Maybe support ICase keywords
 src/GrammarParser_parseRemSetVariable.cpp:	// ToDo: Fix variables

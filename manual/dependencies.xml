@@ -77,6 +77,9 @@
 
     <section id="dep-ct-parent">
       <title>Parent</title>
+      <indexterm>
+        <primary>p</primary>
+      </indexterm>
       <para>
         The 'p' position asks for the parent of the current position.
       </para>
@@ -87,6 +90,9 @@
 
     <section id="dep-ct-children">
       <title>Children</title>
+      <indexterm>
+        <primary>c</primary>
+      </indexterm>
       <para>
         The 'c' position asks for a child of the current position.
       </para>
@@ -97,6 +103,9 @@
 
     <section id="dep-ct-siblings">
       <title>Siblings</title>
+      <indexterm>
+        <primary>s</primary>
+      </indexterm>
       <para>
         The 's' position asks for a sibling of the current position.
       </para>
