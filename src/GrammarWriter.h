@@ -26,8 +26,6 @@ namespace CG3 {
 	class GrammarWriter {
 	public:
 		bool statistics;
-		stdext::hash_map<uint32_t, uint32_t> used_sets;
-		const Grammar *grammar;
 	
 		GrammarWriter();
 		~GrammarWriter();
@@ -41,6 +39,9 @@ namespace CG3 {
 		static void printTagRaw(UFILE *out, const Tag *tag);
 
 	private:
+		stdext::hash_map<uint32_t, uint32_t> used_sets;
+		const Grammar *grammar;
+
 		void write_set_to_ufile(UFILE *output, const Set *curset);
 
 		void printRule(UFILE *to, const Rule *rule);

@@ -22,6 +22,15 @@
 namespace CG3 {
 	class GrammarParser : public IGrammarParser {
 	public:
+		GrammarParser();
+		~GrammarParser();
+
+		void setCompatible(bool compat);
+		void setResult(CG3::Grammar *result);
+
+		int parse_grammar_from_file(const char *filename, const char *locale, const char *codepage);
+
+	private:
 		bool option_vislcg_compat;
 		bool in_section, in_before_sections, in_after_sections;
 		const char *filename;
@@ -29,15 +38,7 @@ namespace CG3 {
 		const char *codepage;
 		CG3::Grammar *result;
 	
-		GrammarParser();
-		~GrammarParser();
-
-		void setCompatible(bool compat);
-		void setResult(CG3::Grammar *result);
-
 		int parse_grammar_from_ufile(UFILE *input);
-		int parse_grammar_from_file(const char *filename, const char *locale, const char *codepage);
-
 		int parseSingleLine(KEYWORDS key, const UChar *line);
 
 		int parseDelimiters(const UChar *line);

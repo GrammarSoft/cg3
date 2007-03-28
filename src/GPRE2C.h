@@ -25,6 +25,14 @@
 namespace CG3 {
 	class GPRE2C : public IGrammarParser {
 	public:
+		GPRE2C();
+		~GPRE2C();
+
+		void setCompatible(bool compat);
+		void setResult(Grammar *result);
+		int parse_grammar_from_file(const char *filename, const char *locale, const char *codepage);
+
+	private:
 		bool option_vislcg_compat;
 		bool in_section, in_before_sections, in_after_sections;
 		const char *filename;
@@ -32,18 +40,11 @@ namespace CG3 {
 		const char *codepage;
 		Grammar *result;
 	
+		void addRuleToGrammar(Rule *rule);
+		int grammar_from_ufile(UFILE *input);
+
 		YYCTYPE *marker;
 		YYCTYPE *last_entity;
-
-		GPRE2C();
-		~GPRE2C();
-
-		void setCompatible(bool compat);
-		void setResult(Grammar *result);
-		void addRuleToGrammar(Rule *rule);
-
-		int grammar_from_ufile(UFILE *input);
-		int parse_grammar_from_file(const char *filename, const char *locale, const char *codepage);
 
 		YYCTYPE *skipline(YYCTYPE *input);
 
