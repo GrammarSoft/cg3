@@ -35,7 +35,7 @@ print STDERR "\nRunning tests...\n";
 
 my @tests = grep { -x } glob('./T*/run.*');
 foreach (@tests) {
-	if ($ARGV[0] && $ARGV[0] ne "" && !(/\Q$ARGV[0]\E/i)) {
+	if ($ARGV[0] && $ARGV[0] ne "" && !(/$ARGV[0]/i)) {
 		next;
 	}
 	chdir $bindir or die("Error: Could not change directory to $bindir !");

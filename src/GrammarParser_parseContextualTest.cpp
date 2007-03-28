@@ -85,7 +85,7 @@ int GrammarParser::parseContextualTest(UChar **paren, CG3::ContextualTest *paren
 	return 0;
 }
 
-int GrammarParser::parseContextualTests(UChar **paren, CG3::Rule *rule) {
+int GrammarParser::parseContextualTestList(UChar **paren, CG3::Rule *rule, std::list<ContextualTest*> *thelist) {
 	while (*paren && (*paren)[0] && (*paren)[0] == '(') {
 		int matching = 0;
 		if (!ux_findMatchingParenthesis(*paren, 0, &matching)) {
@@ -127,7 +127,7 @@ int GrammarParser::parseContextualTests(UChar **paren, CG3::Rule *rule) {
 			context->parsePosition(position);
 			context->negated = negated;
 			context->negative = negative;
-			rule->addContextualTest(context);
+			rule->addContextualTest(context, thelist);
 
 			context->line = result->curline;
 			context->target = parseTarget(&test);
@@ -150,8 +150,16 @@ int GrammarParser::parseContextualTests(UChar **paren, CG3::Rule *rule) {
 			ux_trim(*paren);
 		}
 	}
-	if (*paren && (*paren)[0] && (*paren)[0] != '(') {
+	if (*paren && (*paren)[0] && (*paren)[0] != '(' && (*paren)[0] != 'T' && (*paren)[1] != 'O' && (*paren)[2] != ' ') {
 		u_fprintf(ux_stderr, "Warning: Remnant text \"%S\" on line %u - skipping it!\n", *paren, result->curline);
 	}
 	return 0;
+}
+
+int GrammarParser::parseContextualTests(UChar **paren, CG3::Rule *rule) {
+	return parseContextualTestList(paren, rule, &rule->tests);
+}
+
+int GrammarParser::parseContextualDependencyTests(UChar **paren, CG3::Rule *rule) {
+	return parseContextualTestList(paren, rule, &rule->dep_tests);
 }

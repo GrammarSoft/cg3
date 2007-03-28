@@ -137,6 +137,10 @@ int GrammarParser::parseSingleLine(KEYWORDS key, const UChar *line) {
 		case K_SETVARIABLE:
 			parseRemSetVariable(local, key);
 			break;
+		case K_SETPARENT:
+		case K_SETCHILD:
+			parseSetParentChild(local, key);
+			break;
 		case K_MAPPING_PREFIX:
 			parseMappingPrefix(local);
 			break;

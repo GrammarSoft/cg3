@@ -43,6 +43,8 @@ namespace CG3 {
 		mutable std::list<ContextualTest*> tests;
 		mutable uint32_t num_fail, num_match;
 		mutable PACC_TimeStamp total_time;
+		mutable ContextualTest *dep_target;
+		mutable std::list<ContextualTest*> dep_tests;
 
 		Rule();
 		~Rule();
@@ -52,8 +54,7 @@ namespace CG3 {
 		void reset();
 
 		ContextualTest *allocateContextualTest();
-		void addContextualTest(ContextualTest *to);
-		void destroyContextualTest(ContextualTest *to);
+		void addContextualTest(ContextualTest *to, std::list<ContextualTest*> *thelist);
 
 		static bool cmp_quality(Rule *a, Rule *b);
 	};

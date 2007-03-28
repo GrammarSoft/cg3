@@ -26,6 +26,7 @@ using namespace CG3::Strings;
 Rule::Rule() {
 	name = 0;
 	target = 0;
+	dep_target = 0;
 	line = 0;
 	wordform = 0;
 	num_fail = 0;
@@ -42,6 +43,13 @@ Rule::~Rule() {
 		delete (*iter);
 	}
 	tests.clear();
+
+	for (iter = dep_tests.begin() ; iter != dep_tests.end() ; iter++) {
+		delete (*iter);
+	}
+	dep_tests.clear();
+
+	delete dep_target;
 }
 
 void Rule::setName(uint32_t to) {
@@ -65,13 +73,8 @@ ContextualTest *Rule::allocateContextualTest() {
 	return new ContextualTest;
 }
 
-void Rule::addContextualTest(ContextualTest *to) {
-	tests.push_back(to);
-}
-
-void Rule::destroyContextualTest(ContextualTest *to) {
-	tests.remove(to);
-	delete to;
+void Rule::addContextualTest(ContextualTest *to, std::list<ContextualTest*> *thelist) {
+	thelist->push_back(to);
 }
 
 void Rule::reset() {

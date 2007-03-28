@@ -1,0 +1,14 @@
+DELIMITERS = "<$.>" ;
+
+BEFORE-SECTIONS
+
+MAP (vis) _S_DELIMITERS_ ;
+SETPARENT _S_DELIMITERS_ TO (@0 (*)) ;
+
+# These two are equivalent
+SETCHILD (N) TO (-1* (@>N)) ;
+SETPARENT (@>N) TO (1* (N)) ;
+
+SETPARENT (@P<) TO (-1* (PRP)) ;
+
+SETPARENT (@ADVL) (0 (PRP)) TO (-1* (ADV)) (0 (@ADVL)) ;

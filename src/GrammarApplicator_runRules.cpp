@@ -100,7 +100,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, const std::v
 							std::list<ContextualTest*>::iterator iter;
 							for (iter = rule->tests.begin() ; iter != rule->tests.end() ; iter++) {
 								ContextualTest *test = *iter;
-								test_good = runContextualTest(current, c, test);
+								test_good = (runContextualTest(current, c, test) != 0);
 								if (!test_good) {
 									good = test_good;
 									if (!statistics) {
@@ -144,7 +144,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, const std::v
 				std::list<Reading*> selected;
 				removed.clear();
 				selected.clear();
-				
+
 				for (rter = cohort->readings.begin() ; rter != cohort->readings.end() ; rter++) {
 					Reading *reading = *rter;
 					bool good = reading->matched_tests;
@@ -192,7 +192,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, const std::v
 							section_did_good = true;
 						}
 					}
-					if (good) {
+					else if (good) {
 						if (type == K_REMVARIABLE) {
 							u_fprintf(ux_stderr, "Info: RemVariable fired for %u.\n", rule->varname);
 							variables.erase(rule->varname);
@@ -307,9 +307,39 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, const std::v
 							}
 							did_append = true;
 						}
+						else if (type == K_SETPARENT || type == K_SETCHILD) {
+							Cohort *attach = runContextualTest(current, c, rule->dep_target);
+							if (attach) {
+								bool good = true;
+								if (!rule->dep_tests.empty()) {
+									std::list<ContextualTest*>::iterator iter;
+									for (iter = rule->dep_tests.begin() ; iter != rule->dep_tests.end() ; iter++) {
+										ContextualTest *test = *iter;
+										test_good = (runContextualTest(attach->parent, attach->local_number, test) != 0);
+										if (!test_good) {
+											good = test_good;
+											if (!statistics) {
+												break;
+											}
+										}
+									}
+								}
+								if (good) {
+									reading->hit_by.push_back(rule->line);
+									has_dep = true;
+									if (type == K_SETPARENT) {
+										attachParentChild(attach, cohort);
+									}
+									else {
+										attachParentChild(cohort, attach);
+									}
+								}
+							}
+							break;
+						}
 					}
 				}
-				
+
 				if (!removed.empty()) {
 					cohort->deleted.insert(cohort->deleted.end(), removed.begin(), removed.end());
 					while (!removed.empty()) {
@@ -323,7 +353,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, const std::v
 					cohort->readings.insert(cohort->readings.begin(), selected.begin(), selected.end());
 					selected.clear();
 				}
-				
+
 				if (delimited) {
 					break;
 				}
@@ -383,11 +413,11 @@ label_runGrammarOnWindow_begin:
 	return 0;
 }
 
-bool GrammarApplicator::runContextualTest(const SingleWindow *sWindow, const uint32_t position, const ContextualTest *test) {
+Cohort *GrammarApplicator::runContextualTest(SingleWindow *sWindow, const uint32_t position, const ContextualTest *test) {
 	bool retval = true;
 	PACC_TimeStamp tstamp = 0;
 	int32_t pos = position + test->offset;
-	const Cohort *cohort = 0;
+	Cohort *cohort = 0;
 
 	if (statistics) {
 		tstamp = timer->getCount();
@@ -443,7 +473,7 @@ bool GrammarApplicator::runContextualTest(const SingleWindow *sWindow, const uin
 					retval = !retval;
 				}
 				if (retval && test->linked) {
-					retval = runContextualTest(sWindow, i, test->linked);
+					retval = (runContextualTest(sWindow, i, test->linked) != 0);
 				}
 				if (foundfirst && test->scanfirst) {
 					break;
@@ -480,7 +510,7 @@ bool GrammarApplicator::runContextualTest(const SingleWindow *sWindow, const uin
 					retval = !retval;
 				}
 				if (retval && test->linked) {
-					retval = runContextualTest(sWindow, i, test->linked);
+					retval = (runContextualTest(sWindow, i, test->linked) != 0);
 				}
 				if (foundfirst && test->scanfirst) {
 					break;
@@ -502,7 +532,7 @@ bool GrammarApplicator::runContextualTest(const SingleWindow *sWindow, const uin
 		}
 		else {
 			if (test->dep_child || test->dep_sibling || test->dep_parent) {
-				const Cohort *nc = doesSetMatchDependency(sWindow, cohort, test);
+				Cohort *nc = doesSetMatchDependency(sWindow, cohort, test);
 				if (nc) {
 					cohort = nc;
 					retval = true;
@@ -525,7 +555,7 @@ bool GrammarApplicator::runContextualTest(const SingleWindow *sWindow, const uin
 				retval = !retval;
 			}
 			if (retval && test->linked) {
-				retval = runContextualTest(sWindow, pos, test->linked);
+				retval = (runContextualTest(sWindow, pos, test->linked) != 0);
 			}
 		}
 	}
@@ -544,5 +574,13 @@ bool GrammarApplicator::runContextualTest(const SingleWindow *sWindow, const uin
 	if (statistics) {
 		test->total_time += (timer->getCount() - tstamp);
 	}
-	return retval;
+
+	if (!retval) {
+		cohort = 0;
+	}
+	else if (!cohort) {
+		cohort = sWindow->cohorts.at(0);
+	}
+
+	return cohort;
 }

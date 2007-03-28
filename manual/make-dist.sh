@@ -23,3 +23,5 @@ tar -zcvf source.tar.gz source
 zip -r9 chunked.zip chunked
 zip -r9 single.zip single
 zip -r9 source.zip source
+
+cd ..

@@ -23,6 +23,34 @@
 using namespace CG3;
 using namespace CG3::Strings;
 
+void GrammarApplicator::attachParentChild(Cohort *parent, Cohort *child) {
+	std::list<Reading*>::iterator rter;
+	for (rter = parent->readings.begin() ; rter != parent->readings.end() ; rter++) {
+		Reading *reading = *rter;
+		reading->dep_self = parent->global_number;
+	}
+	for (rter = child->readings.begin() ; rter != child->readings.end() ; rter++) {
+		Reading *reading = *rter;
+		reading->dep_self = child->global_number;
+		reading->dep_parent = parent->global_number;
+	}
+
+	parent->addChild(child->global_number);
+
+	for (rter = parent->readings.begin() ; rter != parent->readings.end() ; rter++) {
+		Reading *reading = *rter;
+
+		std::set<uint32_t>::const_iterator tter;
+		for (tter = reading->dep_children.begin() ; tter != reading->dep_children.end() ; tter++) {
+			std::set<uint32_t>::const_iterator ster;
+			for (ster = reading->dep_children.begin() ; ster != reading->dep_children.end() ; ster++) {
+				gWindow->cohort_map.find(*tter)->second->addSibling(*ster);
+			}
+			gWindow->cohort_map.find(*tter)->second->remSibling(*tter);
+		}
+	}
+}
+
 void GrammarApplicator::reflowDependencyWindow() {
 	bool did_dep = false;
 	if (gWindow->dep_window.find(0) == gWindow->dep_window.end()) {

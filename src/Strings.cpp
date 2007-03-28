@@ -71,6 +71,8 @@ namespace CG3 {
 			init_keyword_single("SETVARIABLE",       K_SETVARIABLE);
 			init_keyword_single("DELIMIT",           K_DELIMIT);
 			init_keyword_single("MATCH",             K_MATCH);
+			init_keyword_single("SETPARENT",         K_SETPARENT);
+			init_keyword_single("SETCHILD",          K_SETCHILD);
 
 			for (int i=0;i<KEYWORD_COUNT;i++) {
 				if (!keywords[i]) {
@@ -106,6 +108,7 @@ namespace CG3 {
 		int init_strings() {
 			init_string_single("1f283fc29adb937a892e09bbc124b85c this is a dummy string to hold position 0", S_IGNORE);
 			init_string_single("|",          S_PIPE);
+			init_string_single("TO",         S_TO);
 			init_string_single("OR",         S_OR);
 			init_string_single("+",          S_PLUS);
 			init_string_single("-",          S_MINUS);

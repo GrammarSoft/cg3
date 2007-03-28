@@ -54,12 +54,15 @@ namespace CG3 {
 			K_SETVARIABLE,
 			K_DELIMIT,
 			K_MATCH,
+			K_SETPARENT,
+			K_SETCHILD,
 			KEYWORD_COUNT
 		};
 
 		enum STRINGS {
 			S_IGNORE,
 			S_PIPE,
+			S_TO,
 			S_OR,
 			S_PLUS,
 			S_MINUS,

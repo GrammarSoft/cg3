@@ -321,8 +321,8 @@ bool GrammarApplicator::doesSetMatchCohortCareful(const Cohort *cohort, const ui
 	return retval;
 }
 
-const Cohort *GrammarApplicator::doesSetMatchDependency(const SingleWindow *sWindow, const Cohort *current, const ContextualTest *test) {
-	const Cohort *rv = 0;
+Cohort *GrammarApplicator::doesSetMatchDependency(SingleWindow *sWindow, const Cohort *current, const ContextualTest *test) {
+	Cohort *rv = 0;
 
 	std::list<Reading*>::const_iterator iter;
 	for (iter = current->readings.begin() ; iter != current->readings.end() ; iter++) {

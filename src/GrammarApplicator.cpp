@@ -140,27 +140,15 @@ void GrammarApplicator::printReading(Reading *reading, UFILE *output) {
 		}
 		assert(tag != 0);
 		if (!(tag->type & T_BASEFORM) && !(tag->type & T_WORDFORM)) {
-			if (has_dep && dep_reenum && tag->type & T_DEPENDENCY && tag->dep_self && reading->dep_self) {
-				if (dep_humanize) {
-					int32_t tmp = reading->parent->parent->cohorts[1]->global_number;
-					int32_t self = 1+(reading->dep_self - tmp);
-					int32_t parent = reading->dep_parent == 0 ? 0 : 1+(reading->dep_parent - tmp);
-					u_fprintf(
-						output,
-						"#%i->%i",
-						self,
-						parent
-						);
-				}
-				else {
-					u_fprintf(output, "#%u->%u", reading->dep_self, reading->dep_parent);
-				}
-			}
-			else {
-				GrammarWriter::printTagRaw(output, tag);
-			}
+			GrammarWriter::printTagRaw(output, tag);
 			u_fprintf(output, " ");
 		}
+	}
+	if (has_dep) {
+		if (!reading->dep_self) {
+			reading->dep_self = reading->parent->global_number;
+		}
+		u_fprintf(output, "#%u->%u ", reading->dep_self, reading->dep_parent);
 	}
 	if (trace) {
 		if (!reading->hit_by.empty()) {

@@ -376,6 +376,36 @@
     </screen>
   </section>
 
+  <section id="keyword-setchild">
+    <title>SETCHILD</title>
+    <indexterm>
+      <primary>SETCHILD</primary>
+    </indexterm>
+    <para>
+      Attaches the matching reading to the contextually targetted cohort as the parent.
+      <emphasis>Yes, I do mean parent.</emphasis>
+    </para>
+    <screen>
+      SETCHILD targetset (-1* ("someword"))
+      &nbsp; TO (1* (@candidate)) (2 SomeSet) ;
+    </screen>
+  </section>
+
+  <section id="keyword-setparent">
+    <title>SETPARENT</title>
+    <indexterm>
+      <primary>SETPARENT</primary>
+    </indexterm>
+    <para>
+      Attaches the matching reading to the contextually targetted cohort as a child.
+      <emphasis>Yes, I do mean child.</emphasis>
+    </para>
+    <screen>
+      SETPARENT targetset (-1* ("someword"))
+      &nbsp; TO (1* (@candidate)) (2 SomeSet) ;
+    </screen>
+  </section>
+
   <section id="keyword-sets">
     <title>SETS</title>
     <indexterm>
@@ -432,6 +462,18 @@
     <para>
       <emphasis>Deprecated: has no effect in CG-3.</emphasis>
       An inline keyword put before the target of a rule.
+    </para>
+  </section>
+
+  <section id="keyword-to">
+    <title>TO</title>
+    <indexterm>
+      <primary>TO</primary>
+      <seealso>SETPARENT</seealso>
+      <seealso>SETCHILD</seealso>
+    </indexterm>
+    <para>
+      An inline keyword put before the contextual target of a SETPARENT or SETCHILD rule.
     </para>
   </section>
 

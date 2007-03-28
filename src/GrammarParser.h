@@ -61,11 +61,15 @@ namespace CG3 {
 		uint32_t parseTarget(UChar **space);
 
 		int parseContextualTest(UChar **paren, CG3::ContextualTest *test);
+		int parseContextualTestList(UChar **paren, CG3::Rule *rule, std::list<ContextualTest*> *thelist);
+		int parseContextualDependencyTests(UChar **paren, CG3::Rule *rule);
 		int parseContextualTests(UChar **space, CG3::Rule *rule);
+
 		int parseSelectRemoveIffDelimitMatch(const UChar *line, KEYWORDS key);
 		int parseAddMapReplaceAppend(const UChar *line, KEYWORDS key);
 		int parseSubstitute(const UChar *line);
 		int parseRemSetVariable(const UChar *line, KEYWORDS key);
+		int parseSetParentChild(const UChar *line, KEYWORDS key);
 	};
 }
 

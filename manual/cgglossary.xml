@@ -40,6 +40,25 @@
     </screen>
   </section>
 
+  <section id="cg-contextual-target">
+    <title>Contextual Target</title>
+    <indexterm>
+      <primary>contextual target</primary>
+      <secondary>target</secondary>
+    </indexterm>
+    <para>
+      The part of a dependency rule that locates a suitable cohort to attach to.
+      It is no different from a normal contextual test and can have links, barriers, etc.
+      <emphasis>
+        While you technically can NEGATE the entire contextual target,
+        it is probably not a good idea to do so.
+      </emphasis>
+    </para>
+    <screen>
+      (-1* Verb LINK 1* Noun)
+    </screen>
+  </section>
+
   <section id="cg-contextual-test">
     <title>Contextual Test</title>
     <indexterm>
