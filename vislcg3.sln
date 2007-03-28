@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual Studio 2005
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cg3combined", "cg3combined.vcproj", "{439A194D-EC3B-42A4-8BD2-CADD9CB6087C}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vislcg3", "vislcg3.vcproj", "{439A194D-EC3B-42A4-8BD2-CADD9CB6087C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

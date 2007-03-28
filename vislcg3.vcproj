@@ -2,7 +2,7 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8,00"
-	Name="cg3combined"
+	Name="vislcg3"
 	ProjectGUID="{439A194D-EC3B-42A4-8BD2-CADD9CB6087C}"
 	Keyword="Win32Proj"
 	>
@@ -67,12 +67,12 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="icuuc.lib icuio.lib icuin.lib WSock32.Lib"
-				OutputFile="$(OutDir)/cg3combined.exe"
+				OutputFile="$(OutDir)/vislcg3.exe"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories=""
 				IgnoreDefaultLibraryNames=""
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile="$(OutDir)/cg3combined.pdb"
+				ProgramDatabaseFile="$(OutDir)/vislcg3.pdb"
 				SubSystem="1"
 				TargetMachine="1"
 			/>
@@ -152,7 +152,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="icuuc.lib icuio.lib icuin.lib WSock32.Lib"
-				OutputFile="$(OutDir)/cg3combined.exe"
+				OutputFile="$(OutDir)/vislcg3.exe"
 				LinkIncremental="0"
 				AdditionalLibraryDirectories=""
 				IgnoreDefaultLibraryNames=""
@@ -544,112 +544,12 @@
 				>
 			</File>
 		</Filter>
-		<Filter
-			Name="Grammars"
-			>
-			<File
-				RelativePath="..\..\parsers\dansk\etc\dancg"
-				>
-			</File>
-			<File
-				RelativePath="..\..\parsers\dansk\etc\dancg.attach"
-				>
-			</File>
-			<File
-				RelativePath="..\..\parsers\dansk\etc\dancg.eng"
-				>
-			</File>
-			<File
-				RelativePath="..\..\parsers\dansk\etc\dancg.morf"
-				>
-			</File>
-			<File
-				RelativePath="..\..\parsers\dansk\etc\dancg.prop"
-				>
-			</File>
-			<File
-				RelativePath="..\..\parsers\dansk\etc\dancg.spelling"
-				>
-			</File>
-			<File
-				RelativePath="..\..\parsers\dansk\etc\dancg.syn"
-				>
-			</File>
-		</Filter>
-		<Filter
-			Name="Streams"
-			>
-			<File
-				RelativePath=".\cg3-trace.txt"
-				>
-			</File>
-			<File
-				RelativePath=".\dancg.morf.txt"
-				>
-			</File>
-			<File
-				RelativePath=".\example.grammar.txt"
-				>
-			</File>
-			<File
-				RelativePath=".\example.input.txt"
-				>
-			</File>
-			<File
-				RelativePath=".\example.output.txt"
-				>
-			</File>
-			<File
-				RelativePath=".\input.txt"
-				>
-			</File>
-			<File
-				RelativePath=".\input6x.txt"
-				>
-			</File>
-			<File
-				RelativePath=".\stderr.txt"
-				>
-			</File>
-			<File
-				RelativePath=".\stderr2.txt"
-				>
-			</File>
-			<File
-				RelativePath=".\stdin.txt"
-				>
-			</File>
-			<File
-				RelativePath=".\stdout-linux.txt"
-				>
-			</File>
-			<File
-				RelativePath=".\stdout-trace.txt"
-				>
-			</File>
-			<File
-				RelativePath=".\stdout.txt"
-				>
-			</File>
-			<File
-				RelativePath=".\stdout2.txt"
-				>
-			</File>
-		</Filter>
-		<File
-			RelativePath=".\glossary.txt"
-			>
-		</File>
 		<File
 			RelativePath=".\License"
 			>
 		</File>
 		<File
 			RelativePath=".\license.icu.txt"
-			>
-		</File>
-		<File
-			RelativePath=".\resources.txt"
 			>
 		</File>
 		<File

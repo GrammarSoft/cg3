@@ -11,9 +11,6 @@ chdir $bindir or die("Error: Could not change directory to $bindir !");
 my @binlist = (
 	"../Debug/vislcg3",
 	"../Release/vislcg3",
-	"../Debug/cg3combined",
-	"../Release/cg3combined",
-	"../cg3combined",
 	"../vislcg3",
 );
 my $binary = "vislcg3";
