@@ -308,6 +308,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\GrammarApplicator_runContextualTest.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\GrammarApplicator_runGrammar.cpp"
 				>
 			</File>
