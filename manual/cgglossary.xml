@@ -75,6 +75,19 @@
     </screen>
   </section>
 
+  <section id="cg-dependency">
+    <title>Dependency</title>
+    <indexterm>
+      <primary>dependency</primary>
+    </indexterm>
+    <indexterm>
+      <primary>attachment</primary>
+    </indexterm>
+    <para>
+      A tag in #X-&gt;Y format denoting that this cohort is the child of another cohort.
+    </para>
+  </section>
+
   <section id="cg-disambiguation-window">
     <title>Disambiguation Window</title>
     <indexterm>

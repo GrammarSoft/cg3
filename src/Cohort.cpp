@@ -58,6 +58,13 @@ void Cohort::addChild(uint32_t child) {
 	}
 }
 
+void Cohort::remChild(uint32_t child) {
+	std::list<Reading*>::iterator iter;
+	for (iter = readings.begin() ; iter != readings.end() ; iter++) {
+		(*iter)->dep_children.erase(child);
+	}
+}
+
 void Cohort::appendReading(Reading *read) {
 	readings.push_back(read);
 }

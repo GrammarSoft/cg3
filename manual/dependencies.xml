@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE chapter SYSTEM "docbook-dtd-45/docbookx.dtd">
+
+<chapter id="dependencies">
+  <title>Making use of Dependencies</title>
+
+  <indexterm>
+    <primary>SETPARENT</primary>
+  </indexterm>
+  <indexterm>
+    <primary>SETCHILD</primary>
+  </indexterm>
+  <para>
+    CG-3 can work with dependency trees in various ways. The input cohorts can have existing
+    dependencies; the grammar can create new attachments; or a combination of the two.
+    <emphasis>It should be noted that mixing the two sources is not recommended.</emphasis>
+  </para>
+
+  <section id="dep-input">
+    <title>Existing Trees in Input</title>
+    <para>
+      Dependency attachments in input comes in the form of #X-&gt;Y tags where X the number of the current
+      node and Y is the number of the parent node. The X must be unique positive integers and should
+      be sequentially enumerated. '0' is reserved and means the root of the tree, so no node may claim
+      to be '0', but nodes may attach to '0'.
+    </para>
+    <para>
+      <emphasis>If the Y of a reading cannot be located, it will be reset to 0.</emphasis>
+      <emphasis>If a reading contains more than one attachment, only the first will be honored.</emphasis>
+      <emphasis>If a cohort has conflicting attachments in its readings, the result is undefined.</emphasis>
+    </para>
+    <para>
+      For example:
+      <screen>
+        "&lt;There&gt;"
+        &nbsp; "there" &lt;*&gt; ADV @F-SUBJ #1-&gt;0
+        "&lt;once&gt;"
+        &nbsp; "once" ADV @ADVL #2-&gt;0
+        "&lt;was&gt;"
+        &nbsp; "be" &lt;SVC/N&gt; &lt;SVC/A&gt; V PAST SG1/3 VFIN IMP @FMV #3-&gt;2
+        "&lt;a&gt;"
+        &nbsp; "a" &lt;Indef&gt; ART DET CENTRAL SG @&gt;N #4-&gt;5
+        "&lt;man&gt;"
+        &nbsp; "man" N NOM SG @SC #5-&gt;0
+        "&lt;$.&gt;"
+      </screen>
+    </para>
+  </section>
+
+  <section id="dep-grammar">
+    <title>Creating Trees from Grammar</title>
+    <para>
+      It is also possible to create or modify the tree on-the-fly with rules.
+      See <glossterm linkend="keyword-setparent">SETPARENT</glossterm>
+      and <glossterm linkend="keyword-setchild">SETCHILD</glossterm>.
+      Dependencies created in this fashion will be output in the same format as above.
+    </para>
+    <para>
+      For example:
+      <screen>
+        SETPARENT (@&gt;N) (0 (ART DET))
+        &nbsp; TO (1* (N)) ;
+
+        SETPARENT (@&lt;P)
+        &nbsp; TO (-1* (PRP)) (NEGATE 1* (V)) ;
+      </screen>
+    </para>
+  </section>
+
+  <section id="dep-contextual-tests">
+    <title>Contextual Tests</title>
+    <para>
+      Either case, once you have a dependency tree to work with,
+      you can use that in subsequent contextual tests as seen below.
+      These positions can be combined with the window spanning options.
+    </para>
+
+    <section id="dep-ct-parent">
+      <title>Parent</title>
+      <para>
+        The 'p' position asks for the parent of the current position.
+      </para>
+      <screen>
+        (-1* (ADJ) LINK p (N))
+      </screen>
+    </section>
+
+    <section id="dep-ct-children">
+      <title>Children</title>
+      <para>
+        The 'c' position asks for a child of the current position.
+      </para>
+      <screen>
+        (-1* (N) LINK c (ADJ))
+      </screen>
+    </section>
+
+    <section id="dep-ct-siblings">
+      <title>Siblings</title>
+      <para>
+        The 's' position asks for a sibling of the current position.
+      </para>
+      <screen>
+        (-1* (ADJ) LINK s (ADJ))
+      </screen>
+    </section>
+  </section>
+
+</chapter>

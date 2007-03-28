@@ -32,6 +32,7 @@ void GrammarApplicator::attachParentChild(Cohort *parent, Cohort *child) {
 	for (rter = child->readings.begin() ; rter != child->readings.end() ; rter++) {
 		Reading *reading = *rter;
 		reading->dep_self = child->global_number;
+		gWindow->cohort_map.find(reading->dep_parent)->second->remChild(reading->dep_self);
 		reading->dep_parent = parent->global_number;
 	}
 
@@ -49,6 +50,9 @@ void GrammarApplicator::attachParentChild(Cohort *parent, Cohort *child) {
 			gWindow->cohort_map.find(*tter)->second->remSibling(*tter);
 		}
 	}
+
+	parent->dep_done = true;
+	child->dep_done = true;
 }
 
 void GrammarApplicator::reflowDependencyWindow() {
