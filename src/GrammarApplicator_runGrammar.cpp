@@ -194,9 +194,14 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 				}
 			}
 			if (cWindow->next.size() > num_windows) {
+				while (!cWindow->previous.empty() && cWindow->previous.size() > num_windows) {
+					SingleWindow *tmp = cWindow->previous.front();
+					printSingleWindow(tmp, output);
+					delete tmp;
+					cWindow->previous.pop_front();
+				}
 				cWindow->shuffleWindowsDown();
 				runGrammarOnWindow(cWindow);
-				printSingleWindow(cWindow->current, output);
 			}
 			cCohort = new Cohort(cSWindow);
 			cCohort->global_number = cWindow->cohort_counter++;
@@ -270,9 +275,21 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 						cSWindow = lSWindow = 0;
 					}
 					while (!cWindow->next.empty()) {
+						while (!cWindow->previous.empty() && cWindow->previous.size() > num_windows) {
+							SingleWindow *tmp = cWindow->previous.front();
+							printSingleWindow(tmp, output);
+							delete tmp;
+							cWindow->previous.pop_front();
+						}
 						cWindow->shuffleWindowsDown();
 						runGrammarOnWindow(cWindow);
-						printSingleWindow(cWindow->current, output);
+					}
+					cWindow->shuffleWindowsDown();
+					while (!cWindow->previous.empty()) {
+						SingleWindow *tmp = cWindow->previous.front();
+						printSingleWindow(tmp, output);
+						delete tmp;
+						cWindow->previous.pop_front();
 					}
 					u_fflush(output);
 				}
@@ -330,9 +347,22 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 		cSWindow = 0;
 	}
 	while (!cWindow->next.empty()) {
+		while (!cWindow->previous.empty() && cWindow->previous.size() > num_windows) {
+			SingleWindow *tmp = cWindow->previous.front();
+			printSingleWindow(tmp, output);
+			delete tmp;
+			cWindow->previous.pop_front();
+		}
 		cWindow->shuffleWindowsDown();
 		runGrammarOnWindow(cWindow);
-		printSingleWindow(cWindow->current, output);
+	}
+
+	cWindow->shuffleWindowsDown();
+	while (!cWindow->previous.empty()) {
+		SingleWindow *tmp = cWindow->previous.front();
+		printSingleWindow(tmp, output);
+		delete tmp;
+		cWindow->previous.pop_front();
 	}
 
 	u_fflush(output);

@@ -79,6 +79,7 @@ namespace CG3 {
 		int runGrammarOnWindow(Window *window);
 		uint32_t runRulesOnWindow(SingleWindow *current, const std::vector<Rule*> *rules, const uint32_t start, const uint32_t end);
 
+		Cohort *runSingleTest(SingleWindow *sWindow, uint32_t i, const ContextualTest *test, bool *brk, bool *retval);
 		Cohort *runContextualTest(SingleWindow *sWindow, const uint32_t position, const ContextualTest *test);
 
 		bool doesTagMatchSet(const uint32_t tag, const uint32_t set);

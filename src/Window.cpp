@@ -58,20 +58,14 @@ void Window::appendSingleWindow(SingleWindow *swindow) {
 	next.push_back(swindow);
 }
 
-SingleWindow *Window::shuffleWindowsDown() {
-	if (!previous.empty() && previous.size() >= window_span) {
-		delete previous.front();
-		previous.pop_front();
-	}
-
+void Window::shuffleWindowsDown() {
 	if (current) {
 		previous.push_back(current);
+		current = 0;
 	}
 
 	if (!next.empty()) {
 		current = next.front();
 		next.pop_front();
 	}
-
-	return current;
 }

@@ -43,7 +43,7 @@ namespace CG3 {
 		~Window();
 
 		void appendSingleWindow(SingleWindow *swindow);
-		SingleWindow *shuffleWindowsDown();
+		void shuffleWindowsDown();
 	};
 
 }

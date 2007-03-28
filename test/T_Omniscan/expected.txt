@@ -1,0 +1,46 @@
+"<word>"
+	"word" none #1->0 
+"<word>"
+	"word" third #2->0 
+"<word>"
+	"word" none #3->0 
+"<word>"
+	"word" none #4->0 
+"<$.>"
+
+"<word>"
+	"word" none #6->0 
+"<word>"
+	"word" second #7->0 
+"<word>"
+	"word" none #8->0 
+"<word>"
+	"word" first #9->0 
+"<word>"
+	"word" startfourth #10->20 
+"<word>"
+	"word" startfirst #11->9 
+"<word>"
+	"word" startsecond #12->14 
+"<word>"
+	"word" startthird #13->2 
+"<word>"
+	"word" second #14->0 
+"<word>"
+	"word" first #15->0 
+"<word>"
+	"word" none #16->0 
+"<word>"
+	"word" none #17->0 
+"<$.>"
+
+"<word>"
+	"word" none #19->0 
+"<word>"
+	"word" fourth #20->0 
+"<word>"
+	"word" none #21->0 
+"<word>"
+	"word" fourth #22->0 
+"<$.>"
+

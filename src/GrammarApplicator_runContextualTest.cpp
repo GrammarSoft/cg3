@@ -21,6 +21,39 @@
 
 using namespace CG3;
 
+Cohort *GrammarApplicator::runSingleTest(SingleWindow *sWindow, uint32_t i, const ContextualTest *test, bool *brk, bool *retval) {
+	Cohort *cohort = sWindow->cohorts.at(i);
+	*retval = doesSetMatchCohortNormal(cohort, test->target);
+	bool foundfirst = *retval;
+	if (test->careful) {
+		if (*retval) {
+			*retval = doesSetMatchCohortCareful(cohort, test->target);
+		}
+		else {
+			*retval = false;
+		}
+	}
+	if (test->negative) {
+		*retval = !*retval;
+	}
+	if (*retval && test->linked) {
+		*retval = (runContextualTest(sWindow, cohort->local_number, test->linked) != 0);
+	}
+	if (foundfirst && test->scanfirst) {
+		*brk = true;
+	}
+	if (test->barrier) {
+		bool barrier = doesSetMatchCohortNormal(cohort, test->barrier);
+		if (barrier) {
+			*brk = true;
+		}
+	}
+	if (foundfirst && *retval) {
+		*brk = true;
+	}
+	return cohort;
+}
+
 Cohort *GrammarApplicator::runContextualTest(SingleWindow *sWindow, const uint32_t position, const ContextualTest *test) {
 	bool retval = true;
 	PACC_TimeStamp tstamp = 0;
@@ -63,36 +96,55 @@ Cohort *GrammarApplicator::runContextualTest(SingleWindow *sWindow, const uint32
 		retval = false;
 	}
 	else {
-		bool foundfirst = false;
-		if (test->offset < 0 && pos >= 0 && (test->scanall || test->scanfirst)) {
-			for (int i=pos;i>=0;i--) {
-				cohort = sWindow->cohorts.at(i);
-				retval = doesSetMatchCohortNormal(cohort, test->target);
-				foundfirst = retval;
-				if (test->careful) {
-					if (retval) {
-						retval = doesSetMatchCohortCareful(cohort, test->target);
-					}
-					else {
-						retval = false;
-					}
-				}
-				if (test->negative) {
-					retval = !retval;
-				}
-				if (retval && test->linked) {
-					retval = (runContextualTest(sWindow, i, test->linked) != 0);
-				}
-				if (foundfirst && test->scanfirst) {
-					break;
-				}
-				if (test->barrier) {
-					bool barrier = doesSetMatchCohortNormal(cohort, test->barrier);
-					if (barrier) {
+		if (test->offset == 0 && (test->scanall || test->scanfirst)) {
+			SingleWindow *right, *left;
+			int32_t rpos, lpos;
+
+			right = left = sWindow;
+			rpos = lpos = pos;
+
+			for (uint32_t i=0 ; left || right ; i++) {
+				if (left) {
+					bool brk = false;
+					cohort = runSingleTest(left, lpos-i, test, &brk, &retval);
+					if (brk) {
 						break;
 					}
+					if (lpos-i == 0) {
+						if ((test->span_both || test->span_left || always_span)) {
+							left = left->previous;
+							if (left) {
+								lpos = i+left->cohorts.size();
+							}
+						}
+						else {
+							left = 0;
+						}
+					}
 				}
-				if (foundfirst && retval) {
+				if (right) {
+					bool brk = false;
+					cohort = runSingleTest(right, rpos+i, test, &brk, &retval);
+					if (brk) {
+						break;
+					}
+					if (rpos+i == right->cohorts.size()-1) {
+						if ((test->span_both || test->span_right || always_span)) {
+							right = right->next;
+							rpos = (0-i)-1;
+						}
+						else {
+							right = 0;
+						}
+					}
+				}
+			}
+		}
+		else if (test->offset < 0 && pos >= 0 && (test->scanall || test->scanfirst)) {
+			for (int i=pos;i>=0;i--) {
+				bool brk = false;
+				cohort = runSingleTest(sWindow, i, test, &brk, &retval);
+				if (brk) {
 					break;
 				}
 				if (i == 0 && (test->span_both || test->span_left || always_span) && sWindow->previous) {
@@ -103,36 +155,12 @@ Cohort *GrammarApplicator::runContextualTest(SingleWindow *sWindow, const uint32
 		}
 		else if (test->offset > 0 && (uint32_t)pos <= sWindow->cohorts.size() && (test->scanall || test->scanfirst)) {
 			for (uint32_t i=pos;i<sWindow->cohorts.size();i++) {
-				cohort = sWindow->cohorts.at(i);
-				retval = doesSetMatchCohortNormal(cohort, test->target);
-				foundfirst = retval;
-				if (test->careful) {
-					if (retval) {
-						retval = doesSetMatchCohortCareful(cohort, test->target);
-					}
-					else {
-						retval = false;
-					}
-				}
-				if (test->negative) {
-					retval = !retval;
-				}
-				if (retval && test->linked) {
-					retval = (runContextualTest(sWindow, i, test->linked) != 0);
-				}
-				if (foundfirst && test->scanfirst) {
+				bool brk = false;
+				cohort = runSingleTest(sWindow, i, test, &brk, &retval);
+				if (brk) {
 					break;
 				}
-				if (test->barrier) {
-					bool barrier = doesSetMatchCohortNormal(cohort, test->barrier);
-					if (barrier) {
-						break;
-					}
-				}
-				if (foundfirst && retval) {
-					break;
-				}
-				if (i == sWindow->cohorts.size() && (test->span_both || test->span_left || always_span) && sWindow->next) {
+				if (i == sWindow->cohorts.size()-1 && (test->span_both || test->span_left || always_span) && sWindow->next) {
 					sWindow = sWindow->next;
 					i = 0;
 				}

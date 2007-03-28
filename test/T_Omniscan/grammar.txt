@@ -1,0 +1,9 @@
+DELIMITERS = "<$.>" ;
+
+BEFORE-SECTIONS
+
+SETPARENT (startfirst) TO (0** (first)) ;
+SETPARENT (startsecond) TO (0** (second)) ;
+
+SETPARENT (startthird) TO (0**W (third)) ;
+SETPARENT (startfourth) TO (0**W (fourth)) ;
