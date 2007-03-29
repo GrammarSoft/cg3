@@ -73,6 +73,10 @@ namespace CG3 {
 			init_keyword_single("MATCH",             K_MATCH);
 			init_keyword_single("SETPARENT",         K_SETPARENT);
 			init_keyword_single("SETCHILD",          K_SETCHILD);
+			init_keyword_single("SETRELATION",       K_SETRELATION);
+			init_keyword_single("REMRELATION",       K_REMRELATION);
+			init_keyword_single("SETRELATIONS",       K_SETRELATIONS);
+			init_keyword_single("REMRELATIONS",       K_REMRELATIONS);
 
 			for (int i=0;i<KEYWORD_COUNT;i++) {
 				if (!keywords[i]) {

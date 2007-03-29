@@ -42,9 +42,9 @@
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="contexts.xml" />
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="dependencies.xml" />
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="tags.xml" />
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="inputcommands.xml" />
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="cgglossary.xml" />
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="cgkeywords.xml" />
-  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="inputcommands.xml" />
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="glossary.xml" />
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="bibliography.xml" />
 

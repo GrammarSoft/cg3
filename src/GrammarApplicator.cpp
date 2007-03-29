@@ -131,14 +131,7 @@ void GrammarApplicator::printReading(Reading *reading, UFILE *output) {
 			continue;
 		}
 		used_tags[*tter] = *tter;
-		const Tag *tag = 0;
-		if (grammar->single_tags.find(*tter) != grammar->single_tags.end()) {
-			tag = grammar->single_tags.find(*tter)->second;
-		}
-		else {
-			tag = single_tags[*tter];
-		}
-		assert(tag != 0);
+		const Tag *tag = single_tags[*tter];
 		if (!(tag->type & T_BASEFORM) && !(tag->type & T_WORDFORM)) {
 			GrammarWriter::printTagRaw(output, tag);
 			u_fprintf(output, " ");
@@ -149,6 +142,17 @@ void GrammarApplicator::printReading(Reading *reading, UFILE *output) {
 			reading->dep_self = reading->parent->global_number;
 		}
 		u_fprintf(output, "#%u->%u ", reading->dep_self, reading->dep_parent);
+	}
+	if (reading->parent->is_related) {
+		u_fprintf(output, "ID:%u ", reading->parent->global_number);
+		if (!reading->parent->relations.empty()) {
+			std::multimap<uint32_t,uint32_t>::iterator miter;
+			for (miter = reading->parent->relations.begin() ; miter != reading->parent->relations.end() ; miter++) {
+				u_fprintf(output, "R:");
+				GrammarWriter::printTagRaw(output, single_tags[miter->second]);
+				u_fprintf(output, ":%u ", miter->first);
+			}
+		}
 	}
 	if (trace) {
 		if (!reading->hit_by.empty()) {

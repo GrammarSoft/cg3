@@ -36,6 +36,9 @@ namespace CG3 {
 		std::list<Reading*> deleted;
 		UChar *text;
 
+		bool is_related;
+		std::multimap<uint32_t, uint32_t> relations;
+
 		Cohort(SingleWindow *p);
 		~Cohort();
 

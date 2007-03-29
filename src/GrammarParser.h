@@ -71,6 +71,9 @@ namespace CG3 {
 		int parseSubstitute(const UChar *line);
 		int parseRemSetVariable(const UChar *line, KEYWORDS key);
 		int parseSetParentChild(const UChar *line, KEYWORDS key);
+
+		int parseSetRemRelation(const UChar *line, KEYWORDS key);
+		int parseSetRemRelations(const UChar *line, KEYWORDS key);
 	};
 }
 

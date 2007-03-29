@@ -323,6 +323,38 @@
     </screen>
   </section>
 
+  <section id="keyword-remrelation">
+    <title>REMRELATION</title>
+    <indexterm>
+      <primary>REMRELATION</primary>
+    </indexterm>
+    <para>
+      Destroys one direction of a relation previously created with either
+      <link linkend="keyword-setrelation">SETRELATION</link> or
+      <link linkend="keyword-setrelations">SETRELATIONS</link>.
+    </para>
+    <screen>
+      REMRELATION (name) targetset (-1* ("someword"))
+      &nbsp; TO (1* (@candidate)) (2 SomeSet) ;
+    </screen>
+  </section>
+
+  <section id="keyword-remrelations">
+    <title>REMRELATIONS</title>
+    <indexterm>
+      <primary>REMRELATIONS</primary>
+    </indexterm>
+    <para>
+      Destroys both directions of a relation previously created with either
+      <link linkend="keyword-setrelation">SETRELATION</link> or
+      <link linkend="keyword-setrelations">SETRELATIONS</link>.
+    </para>
+    <screen>
+      REMRELATIONS (name) (name) targetset (-1* ("someword"))
+      &nbsp; TO (1* (@candidate)) (2 SomeSet) ;
+    </screen>
+  </section>
+
   <section id="keyword-replace">
     <title>REPLACE</title>
     <indexterm>
@@ -402,6 +434,36 @@
     </para>
     <screen>
       SETPARENT targetset (-1* ("someword"))
+      &nbsp; TO (1* (@candidate)) (2 SomeSet) ;
+    </screen>
+  </section>
+
+  <section id="keyword-setrelation">
+    <title>SETRELATION</title>
+    <indexterm>
+      <primary>SETRELATION</primary>
+    </indexterm>
+    <para>
+      Creates a one-way named relation from the current cohort to the found cohort.
+      The name must be an alphanumeric string with no whitespace.
+    </para>
+    <screen>
+      SETRELATION (name) targetset (-1* ("someword"))
+      &nbsp; TO (1* (@candidate)) (2 SomeSet) ;
+    </screen>
+  </section>
+
+  <section id="keyword-setrelations">
+    <title>SETRELATIONS</title>
+    <indexterm>
+      <primary>SETRELATIONS</primary>
+    </indexterm>
+    <para>
+      Creates two one-way named relation; one from the current cohort to the found cohort,
+      and one the other way. The names can be the same if so desired.
+    </para>
+    <screen>
+      SETRELATIONS (name) (name) targetset (-1* ("someword"))
       &nbsp; TO (1* (@candidate)) (2 SomeSet) ;
     </screen>
   </section>

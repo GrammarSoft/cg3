@@ -337,6 +337,88 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, const std::v
 							}
 							break;
 						}
+						else if (type == K_SETRELATION || type == K_REMRELATION) {
+							Cohort *attach = runContextualTest(current, c, rule->dep_target);
+							if (attach) {
+								bool good = true;
+								if (!rule->dep_tests.empty()) {
+									std::list<ContextualTest*>::iterator iter;
+									for (iter = rule->dep_tests.begin() ; iter != rule->dep_tests.end() ; iter++) {
+										ContextualTest *test = *iter;
+										test_good = (runContextualTest(attach->parent, attach->local_number, test) != 0);
+										if (!test_good) {
+											good = test_good;
+											if (!statistics) {
+												break;
+											}
+										}
+									}
+								}
+								if (good) {
+									reading->hit_by.push_back(rule->line);
+									if (type == K_SETRELATION) {
+										attach->is_related = true;
+										cohort->is_related = true;
+										cohort->relations.insert( std::pair<uint32_t,uint32_t>(attach->global_number, rule->maplist.front()) );
+									}
+									else {
+										std::multimap<uint32_t,uint32_t>::iterator miter = cohort->relations.find(attach->global_number);
+										while (miter != cohort->relations.end()
+											&& miter->first == attach->global_number
+											&& miter->second == rule->maplist.front()) {
+												cohort->relations.erase(miter);
+												miter = cohort->relations.find(attach->global_number);
+										}
+									}
+								}
+							}
+							break;
+						}
+						else if (type == K_SETRELATIONS || type == K_REMRELATIONS) {
+							Cohort *attach = runContextualTest(current, c, rule->dep_target);
+							if (attach) {
+								bool good = true;
+								if (!rule->dep_tests.empty()) {
+									std::list<ContextualTest*>::iterator iter;
+									for (iter = rule->dep_tests.begin() ; iter != rule->dep_tests.end() ; iter++) {
+										ContextualTest *test = *iter;
+										test_good = (runContextualTest(attach->parent, attach->local_number, test) != 0);
+										if (!test_good) {
+											good = test_good;
+											if (!statistics) {
+												break;
+											}
+										}
+									}
+								}
+								if (good) {
+									reading->hit_by.push_back(rule->line);
+									if (type == K_SETRELATIONS) {
+										attach->is_related = true;
+										cohort->is_related = true;
+										cohort->relations.insert( std::pair<uint32_t,uint32_t>(attach->global_number, rule->maplist.front()) );
+										attach->relations.insert( std::pair<uint32_t,uint32_t>(cohort->global_number, rule->sublist.front()) );
+									}
+									else {
+										std::multimap<uint32_t,uint32_t>::iterator miter = cohort->relations.find(attach->global_number);
+										while (miter != cohort->relations.end()
+											&& miter->first == attach->global_number
+											&& miter->second == rule->maplist.front()) {
+												cohort->relations.erase(miter);
+												miter = cohort->relations.find(attach->global_number);
+										}
+										
+										miter = attach->relations.find(cohort->global_number);
+										while (miter != attach->relations.end()
+											&& miter->first == cohort->global_number
+											&& miter->second == rule->sublist.front()) {
+												attach->relations.erase(miter);
+												miter = attach->relations.find(cohort->global_number);
+										}
+									}
+								}
+							}
+						}
 					}
 				}
 

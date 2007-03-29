@@ -24,6 +24,7 @@ Cohort::Cohort(SingleWindow *p) {
 	local_number = 0;
 	parent = p;
 	dep_done = false;
+	is_related = false;
 	text = 0;
 }
 
