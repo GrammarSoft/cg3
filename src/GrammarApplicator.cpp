@@ -70,6 +70,7 @@ GrammarApplicator::~GrammarApplicator() {
 	}
 	if (gWindow) {
 		delete gWindow;
+		gWindow = 0;
 	}
 }
 

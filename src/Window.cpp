@@ -27,6 +27,10 @@ Window::Window(GrammarApplicator *p) {
 }
 
 Window::~Window() {
+	cohort_map.clear();
+	dep_map.clear();
+	dep_window.clear();
+
 	std::list<SingleWindow*>::iterator iter;
 	for (iter = previous.begin() ; iter != previous.end() ; iter++) {
 		delete *iter;
@@ -35,16 +39,28 @@ Window::~Window() {
 
 	if (current) {
 		delete current;
+		current = 0;
 	}
 
 	for (iter = next.begin() ; iter != next.end() ; iter++) {
 		delete *iter;
 	}
 	next.clear();
+}
 
-	cohort_map.clear();
-	dep_map.clear();
-	dep_window.clear();
+void Window::pushSingleWindow(SingleWindow *swindow) {
+	window_counter++;
+	swindow->number = window_counter;
+	swindow->parent = this;
+	if (!next.empty()) {
+		swindow->next = next.front();
+		next.front()->previous = swindow;
+	}
+	if (current) {
+		swindow->previous = current;
+		current->next = swindow;
+	}
+	next.push_front(swindow);
 }
 
 void Window::appendSingleWindow(SingleWindow *swindow) {

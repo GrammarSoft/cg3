@@ -223,6 +223,9 @@ int main(int argc, char* argv[]) {
 	}
 	grammar->reindex();
 
+	delete parser;
+	parser = 0;
+
 	std::cerr << "Parsing grammar took " << glob_timer->getValueFrom(main_timer) << " seconds." << std::endl;
 	main_timer = glob_timer->getCount();
 
@@ -449,7 +452,6 @@ int main(int argc, char* argv[]) {
 	u_fclose(ux_stderr);
 
 	delete grammar;
-	delete parser;
 	delete writer;
 	delete applicator;
 

@@ -203,13 +203,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, const std::v
 						}
 						else if (type == K_DELIMIT) {
 							SingleWindow *nwin = new SingleWindow(current->parent);
-							nwin->previous = current;
-							nwin->next = current->next;
-							if (nwin->next) {
-								nwin->next->previous = nwin;
-							}
-
-							current->parent->next.push_front(nwin);
+							current->parent->pushSingleWindow(nwin);
 
 							current->parent->cohort_counter++;
 							Cohort *cCohort = new Cohort(nwin);
