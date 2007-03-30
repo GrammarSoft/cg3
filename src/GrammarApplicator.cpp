@@ -110,10 +110,13 @@ void GrammarApplicator::printReading(Reading *reading, UFILE *output) {
 	if (reading->noprint) {
 		return;
 	}
+
 	if (reading->deleted) {
 		u_fprintf(output, ";");
 	}
+
 	u_fprintf(output, "\t");
+
 	if (reading->baseform) {
 		GrammarWriter::printTagRaw(output, single_tags[reading->baseform]);
 		u_fprintf(output, " ");
@@ -138,12 +141,14 @@ void GrammarApplicator::printReading(Reading *reading, UFILE *output) {
 			u_fprintf(output, " ");
 		}
 	}
+
 	if (has_dep) {
-		if (!reading->dep_self) {
-			reading->dep_self = reading->parent->global_number;
+		if (!reading->parent->dep_self) {
+			reading->parent->dep_self = reading->parent->global_number;
 		}
-		u_fprintf(output, "#%u->%u ", reading->dep_self, reading->dep_parent);
+		u_fprintf(output, "#%u->%u ", reading->parent->dep_self, reading->parent->dep_parent);
 	}
+
 	if (reading->parent->is_related) {
 		u_fprintf(output, "ID:%u ", reading->parent->global_number);
 		if (!reading->parent->relations.empty()) {
@@ -155,6 +160,7 @@ void GrammarApplicator::printReading(Reading *reading, UFILE *output) {
 			}
 		}
 	}
+
 	if (trace) {
 		if (!reading->hit_by.empty()) {
 			for (uint32_t i=0;i<reading->hit_by.size();i++) {
@@ -162,6 +168,7 @@ void GrammarApplicator::printReading(Reading *reading, UFILE *output) {
 			}
 		}
 	}
+
 	u_fprintf(output, "\n");
 }
 

@@ -324,80 +324,72 @@ bool GrammarApplicator::doesSetMatchCohortCareful(const Cohort *cohort, const ui
 Cohort *GrammarApplicator::doesSetMatchDependency(SingleWindow *sWindow, const Cohort *current, const ContextualTest *test) {
 	Cohort *rv = 0;
 
-	std::list<Reading*>::const_iterator iter;
-	for (iter = current->readings.begin() ; iter != current->readings.end() ; iter++) {
-		Reading *reading = *iter;
-		if (!reading->deleted) {
-			bool retval = false;
-			if (test->dep_parent && reading->dep_self != reading->dep_parent) {
-				if (sWindow->parent->cohort_map.find(reading->dep_parent) == sWindow->parent->cohort_map.end()) {
-					u_fprintf(ux_stderr, "Warning: Dependency %u does not exist - ignoring.\n", reading->dep_parent);
-					continue;
-				}
-				Cohort *cohort = sWindow->parent->cohort_map.find(reading->dep_parent)->second;
-				bool good = true;
-				if (current->parent != cohort->parent) {
-					if ((!test->span_both || !test->span_left) && cohort->parent->number < current->parent->number) {
-						good = false;
-					}
-					else if ((!test->span_both || !test->span_right) && cohort->parent->number > current->parent->number) {
-						good = false;
-					}
+	bool retval = false;
+	if (test->dep_parent && current->dep_self != current->dep_parent) {
+		if (sWindow->parent->cohort_map.find(current->dep_parent) == sWindow->parent->cohort_map.end()) {
+			u_fprintf(ux_stderr, "Warning: Dependency %u does not exist - ignoring.\n", current->dep_parent);
+			return 0;
+		}
 
-				}
-				if (good) {
-					if (test->careful) {
-						retval = doesSetMatchCohortCareful(cohort, test->target);
-					}
-					else {
-						retval = doesSetMatchCohortNormal(cohort, test->target);
-					}
-				}
-				if (retval) {
-					rv = cohort;
-				}
+		Cohort *cohort = sWindow->parent->cohort_map.find(current->dep_parent)->second;
+		bool good = true;
+		if (current->parent != cohort->parent) {
+			if ((!test->span_both || !test->span_left) && cohort->parent->number < current->parent->number) {
+				good = false;
+			}
+			else if ((!test->span_both || !test->span_right) && cohort->parent->number > current->parent->number) {
+				good = false;
+			}
+
+		}
+		if (good) {
+			if (test->careful) {
+				retval = doesSetMatchCohortCareful(cohort, test->target);
 			}
 			else {
-				const std::set<uint32_t> *deps = 0;
-				if (test->dep_child) {
-					deps = &reading->dep_children;
+				retval = doesSetMatchCohortNormal(cohort, test->target);
+			}
+		}
+		if (retval) {
+			rv = cohort;
+		}
+	}
+	else {
+		const std::set<uint32_t> *deps = 0;
+		if (test->dep_child) {
+			deps = &current->dep_children;
+		}
+		else {
+			deps = &current->dep_siblings;
+		}
+
+		std::set<uint32_t>::const_iterator dter;
+		for (dter = deps->begin() ; dter != deps->end() ; dter++) {
+			if (sWindow->parent->cohort_map.find(*dter) == sWindow->parent->cohort_map.end()) {
+				u_fprintf(ux_stderr, "Warning: Dependency %u does not exist - ignoring.\n", *dter);
+				continue;
+			}
+			Cohort *cohort = sWindow->parent->cohort_map.find(*dter)->second;
+			bool good = true;
+			if (current->parent != cohort->parent) {
+				if ((!test->span_both || !test->span_left) && cohort->parent->number < current->parent->number) {
+					good = false;
+				}
+				else if ((!test->span_both || !test->span_right) && cohort->parent->number > current->parent->number) {
+					good = false;
+				}
+
+			}
+			if (good) {
+				if (test->careful) {
+					retval = doesSetMatchCohortCareful(cohort, test->target);
 				}
 				else {
-					deps = &reading->dep_siblings;
-				}
-
-				std::set<uint32_t>::const_iterator dter;
-				for (dter = deps->begin() ; dter != deps->end() ; dter++) {
-					if (sWindow->parent->cohort_map.find(*dter) == sWindow->parent->cohort_map.end()) {
-						u_fprintf(ux_stderr, "Warning: Dependency %u does not exist - ignoring.\n", *dter);
-						continue;
-					}
-					Cohort *cohort = sWindow->parent->cohort_map.find(*dter)->second;
-					bool good = true;
-					if (current->parent != cohort->parent) {
-						if ((!test->span_both || !test->span_left) && cohort->parent->number < current->parent->number) {
-							good = false;
-						}
-						else if ((!test->span_both || !test->span_right) && cohort->parent->number > current->parent->number) {
-							good = false;
-						}
-
-					}
-					if (good) {
-						if (test->careful) {
-							retval = doesSetMatchCohortCareful(cohort, test->target);
-						}
-						else {
-							retval = doesSetMatchCohortNormal(cohort, test->target);
-						}
-					}
-					if (retval) {
-						rv = cohort;
-						break;
-					}
+					retval = doesSetMatchCohortNormal(cohort, test->target);
 				}
 			}
-			if (rv) {
+			if (retval) {
+				rv = cohort;
 				break;
 			}
 		}

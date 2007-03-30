@@ -24,31 +24,21 @@ using namespace CG3;
 using namespace CG3::Strings;
 
 void GrammarApplicator::attachParentChild(Cohort *parent, Cohort *child) {
-	std::list<Reading*>::iterator rter;
-	for (rter = parent->readings.begin() ; rter != parent->readings.end() ; rter++) {
-		Reading *reading = *rter;
-		reading->dep_self = parent->global_number;
-	}
-	for (rter = child->readings.begin() ; rter != child->readings.end() ; rter++) {
-		Reading *reading = *rter;
-		reading->dep_self = child->global_number;
-		gWindow->cohort_map.find(reading->dep_parent)->second->remChild(reading->dep_self);
-		reading->dep_parent = parent->global_number;
-	}
+	parent->dep_self = parent->global_number;
+
+	child->dep_self = child->global_number;
+	gWindow->cohort_map.find(child->dep_parent)->second->remChild(child->dep_self);
+	child->dep_parent = parent->global_number;
 
 	parent->addChild(child->global_number);
 
-	for (rter = parent->readings.begin() ; rter != parent->readings.end() ; rter++) {
-		Reading *reading = *rter;
-
-		std::set<uint32_t>::const_iterator tter;
-		for (tter = reading->dep_children.begin() ; tter != reading->dep_children.end() ; tter++) {
-			std::set<uint32_t>::const_iterator ster;
-			for (ster = reading->dep_children.begin() ; ster != reading->dep_children.end() ; ster++) {
-				gWindow->cohort_map.find(*tter)->second->addSibling(*ster);
-			}
-			gWindow->cohort_map.find(*tter)->second->remSibling(*tter);
+	std::set<uint32_t>::const_iterator tter;
+	for (tter = parent->dep_children.begin() ; tter != parent->dep_children.end() ; tter++) {
+		std::set<uint32_t>::const_iterator ster;
+		for (ster = parent->dep_children.begin() ; ster != parent->dep_children.end() ; ster++) {
+			gWindow->cohort_map.find(*tter)->second->addSibling(*ster);
 		}
+		gWindow->cohort_map.find(*tter)->second->remSibling(*tter);
 	}
 
 	parent->dep_done = true;
@@ -70,15 +60,11 @@ void GrammarApplicator::reflowDependencyWindow() {
 			continue;
 		}
 
-		std::list<Reading*>::iterator rter;
-		for (rter = cohort->readings.begin() ; rter != cohort->readings.end() ; rter++) {
-			Reading *reading = *rter;
-			if (reading->dep_self) {
-				did_dep = true;
-				if (gWindow->dep_map.find(reading->dep_self) == gWindow->dep_map.end()) {
-					gWindow->dep_map[reading->dep_self] = cohort->global_number;
-					reading->dep_self = cohort->global_number;
-				}
+		if (cohort->dep_self) {
+			did_dep = true;
+			if (gWindow->dep_map.find(cohort->dep_self) == gWindow->dep_map.end()) {
+				gWindow->dep_map[cohort->dep_self] = cohort->global_number;
+				cohort->dep_self = cohort->global_number;
 			}
 		}
 	}
@@ -88,28 +74,23 @@ void GrammarApplicator::reflowDependencyWindow() {
 		for (dIter = gWindow->dep_window.begin() ; dIter != gWindow->dep_window.end() ; dIter++) {
 			Cohort *cohort = dIter->second;
 
-			std::list<Reading*>::iterator rter;
-			for (rter = cohort->readings.begin() ; rter != cohort->readings.end() ; rter++) {
-				Reading *reading = *rter;
-
-				if (reading->dep_self) {
-					if (!cohort->dep_done && gWindow->dep_map.find(reading->dep_parent) == gWindow->dep_map.end()) {
-						u_fprintf(
-							ux_stderr,
-							"Warning: Parent %u of dep %u in cohort %u of window %u does not exist - ignoring.\n",
-							reading->dep_parent, reading->dep_self, cohort->local_number, cohort->parent->number
-							);
-						// ToDo: If parent is not found, it should be totally ignored, not just set to itself
-						reading->dep_parent = reading->dep_self;
+			if (cohort->dep_self == cohort->global_number) {
+				if (!cohort->dep_done && gWindow->dep_map.find(cohort->dep_parent) == gWindow->dep_map.end()) {
+					u_fprintf(
+						ux_stderr,
+						"Warning: Parent %u of dep %u in cohort %u of window %u does not exist - ignoring.\n",
+						cohort->dep_parent, cohort->dep_self, cohort->local_number, cohort->parent->number
+						);
+					// ToDo: If parent is not found, it should be totally ignored, not just set to itself
+					cohort->dep_parent = cohort->dep_self;
+				}
+				else {
+					if (!cohort->dep_done) {
+						uint32_t dep_real = gWindow->dep_map.find(cohort->dep_parent)->second;
+						cohort->dep_parent = dep_real;
 					}
-					else {
-						if (!cohort->dep_done) {
-							uint32_t dep_real = gWindow->dep_map.find(reading->dep_parent)->second;
-							reading->dep_parent = dep_real;
-						}
-						gWindow->cohort_map.find(reading->dep_parent)->second->addChild(reading->dep_self);
-						cohort->dep_done = true;
-					}
+					gWindow->cohort_map.find(cohort->dep_parent)->second->addChild(cohort->dep_self);
+					cohort->dep_done = true;
 				}
 			}
 		}
@@ -117,18 +98,13 @@ void GrammarApplicator::reflowDependencyWindow() {
 		for (dIter = gWindow->dep_window.begin() ; dIter != gWindow->dep_window.end() ; dIter++) {
 			Cohort *cohort = dIter->second;
 
-			std::list<Reading*>::iterator rter;
-			for (rter = cohort->readings.begin() ; rter != cohort->readings.end() ; rter++) {
-				Reading *reading = *rter;
-
-				std::set<uint32_t>::const_iterator tter;
-				for (tter = reading->dep_children.begin() ; tter != reading->dep_children.end() ; tter++) {
-					std::set<uint32_t>::const_iterator ster;
-					for (ster = reading->dep_children.begin() ; ster != reading->dep_children.end() ; ster++) {
-						gWindow->cohort_map.find(*tter)->second->addSibling(*ster);
-					}
-					gWindow->cohort_map.find(*tter)->second->remSibling(*tter);
+			std::set<uint32_t>::const_iterator tter;
+			for (tter = cohort->dep_children.begin() ; tter != cohort->dep_children.end() ; tter++) {
+				std::set<uint32_t>::const_iterator ster;
+				for (ster = cohort->dep_children.begin() ; ster != cohort->dep_children.end() ; ster++) {
+					gWindow->cohort_map.find(*tter)->second->addSibling(*ster);
 				}
+				gWindow->cohort_map.find(*tter)->second->remSibling(*tter);
 			}
 		}
 	}
@@ -167,18 +143,18 @@ void GrammarApplicator::reflowReading(Reading *reading) {
 		if (!reading->wordform && tag->type & T_WORDFORM) {
 			reading->wordform = tag->hash;
 		}
-		if (grammar->has_dep && tag->type & T_DEPENDENCY && !reading->dep_self && !reading->dep_parent) {
-			reading->dep_self = tag->dep_self;
-			reading->dep_parent = tag->dep_parent;
+		if (grammar->has_dep && tag->type & T_DEPENDENCY && !reading->parent->dep_self && !reading->parent->dep_parent) {
+			reading->parent->dep_self = tag->dep_self;
+			reading->parent->dep_parent = tag->dep_parent;
 			has_dep = true;
-			if (reading->dep_self <= dep_highest_seen) {
+			if (reading->parent->dep_self <= dep_highest_seen) {
 				reflowDependencyWindow();
 				gWindow->dep_map.clear();
 				gWindow->dep_window.clear();
 				dep_highest_seen = 0;
 			}
 			else {
-				dep_highest_seen = reading->dep_self;
+				dep_highest_seen = reading->parent->dep_self;
 			}
 		}
 		if (!tag->type) {

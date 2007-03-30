@@ -26,6 +26,8 @@ Cohort::Cohort(SingleWindow *p) {
 	dep_done = false;
 	is_related = false;
 	text = 0;
+	dep_self = 0;
+	dep_parent = 0;
 }
 
 Cohort::~Cohort() {
@@ -39,31 +41,19 @@ Cohort::~Cohort() {
 }
 
 void Cohort::addSibling(uint32_t sibling) {
-	std::list<Reading*>::iterator iter;
-	for (iter = readings.begin() ; iter != readings.end() ; iter++) {
-		(*iter)->dep_siblings.insert(sibling);
-	}
+	dep_siblings.insert(sibling);
 }
 
 void Cohort::remSibling(uint32_t sibling) {
-	std::list<Reading*>::iterator iter;
-	for (iter = readings.begin() ; iter != readings.end() ; iter++) {
-		(*iter)->dep_siblings.erase(sibling);
-	}
+	dep_siblings.erase(sibling);
 }
 
 void Cohort::addChild(uint32_t child) {
-	std::list<Reading*>::iterator iter;
-	for (iter = readings.begin() ; iter != readings.end() ; iter++) {
-		(*iter)->dep_children.insert(child);
-	}
+	dep_children.insert(child);
 }
 
 void Cohort::remChild(uint32_t child) {
-	std::list<Reading*>::iterator iter;
-	for (iter = readings.begin() ; iter != readings.end() ; iter++) {
-		(*iter)->dep_children.erase(child);
-	}
+	dep_children.erase(child);
 }
 
 void Cohort::appendReading(Reading *read) {

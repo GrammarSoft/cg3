@@ -27,7 +27,6 @@ namespace CG3 {
 
 	class Cohort {
 	public:
-		bool dep_done;
 		uint32_t global_number;
 		uint32_t local_number;
 		uint32_t wordform;
@@ -35,6 +34,12 @@ namespace CG3 {
 		std::list<Reading*> readings;
 		std::list<Reading*> deleted;
 		UChar *text;
+
+		bool dep_done;
+		uint32_t dep_self;
+		uint32_t dep_parent;
+		std::set<uint32_t> dep_children;
+		std::set<uint32_t> dep_siblings;
 
 		bool is_related;
 		std::multimap<uint32_t, uint32_t> relations;
