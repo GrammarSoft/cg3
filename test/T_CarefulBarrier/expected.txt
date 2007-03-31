@@ -3,13 +3,16 @@
 	"word" wanted 
 	"word" notmeeither 
 "<word>"
-	"word" notwanted @tag 
-	"blocker" block 
-	"word" notmeeither @tag 
+	"blocker" block1 @tag 
+	"blocker" block2 @tag 
 "<word>"
 	"word" notwanted @tag 
 	"word" wanted @tag 
 	"word" notmeeither @tag 
+"<word>"
+	"blocker" block1 @tag 
+	"word" notwanted @tag 
+	"blocker" block2 @tag 
 "<word>"
 	"word" notwanted 
 	"word" findme 
