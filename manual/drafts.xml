@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE chapter SYSTEM "docbook-dtd-45/docbookx.dtd">
+
+<chapter id="drafts">
+  <title>Drafting Board</title>
+
+  <para>
+    Things that are planned but not yet implemented or not yet fully functional.
+  </para>
+
+  <section id="draft-namedrules">
+    <title>Named Rules</title>
+    <indexterm>
+      <primary>rule name</primary>
+    </indexterm>
+    <indexterm>
+      <primary>named rules</primary>
+    </indexterm>
+    <screen>
+      [wordform] MAP:rule_name &lt;tag&gt; &lt;target&gt; [contextual_tests]
+      [wordform] SELECT:rule_name &lt;target&gt; [contextual_tests]
+    </screen>
+    <para>
+      In certain cases you may want to name a rule to be able to refer to the same
+      rule across grammar revisions, as otherwise the rule line number may change.
+      It is optional to name rules, but all rule names must be unique, and must
+      include a letter in the name as to not conflict with pure line-numbered rules.
+      The name of a rule is used in tracing and debug output instead of the line number.
+    </para>
+  </section>
+
+  <section id="draft-careful-barrier">
+    <title>Careful Barrier</title>
+    <indexterm>
+      <primary>CBARRIER</primary>
+    </indexterm>
+    <screen>
+      CBARRIER
+    </screen>
+    <para>
+      Like <link linkend="keyword-barrier">BARRIER</link> but performs the test in Careful mode,
+      meaning it only blocks if all readings in the cohort matches.
+      This makes it less strict than <link linkend="keyword-barrier">BARRIER</link>.
+    </para>
+    <screen>
+      (**1 SetG CBARRIER (Verb))
+    </screen>
+  </section>
+
+  <section id="draft-match">
+    <title>MATCH</title>
+    <indexterm>
+      <primary>MATCH</primary>
+    </indexterm>
+    <screen>
+      [wordform] MATCH &lt;target&gt; [contextual_tests]
+    </screen>
+    <para>
+      Used for tracing and debugging, it will not alter the readings but will gather
+      information on why it matched, specifically what cohorts that fulfilled the tests.
+      Those numbers will be output in a format yet to be determined. Something along the
+      lines of M:548:1,3,4;2,1;9,9 where the numbers are absolute offsets within the window,
+      first cohort being the 1st one (0th cohort is the magic &gt;&gt;&gt;).
+      As such, 1,3,4 would denote that the first contextual test looked at
+      cohorts 1, 3, and 4 to validate itself, but not at cohort 2 (this can easily
+      happen if you have a (2 ADV LINK 1 V) test or similar). This reveals a great deal
+      about how the rule works.
+    </para>
+  </section>
+
+  <section id="draft-anchor-jump-execute">
+    <title>ANCHOR, JUMP, EXECUTE</title>
+    <indexterm>
+      <primary>ANCHOR</primary>
+    </indexterm>
+    <indexterm>
+      <primary>JUMP</primary>
+    </indexterm>
+    <indexterm>
+      <primary>EXECUTE</primary>
+    </indexterm>
+    <screen>
+      ANCHOR &lt;anchor_name&gt;
+      SECTION [anchor_name]
+      [wordform] JUMP &lt;anchor_name&gt; &lt;target&gt; [contextual_tests]
+      [wordform] EXECUTE &lt;anchor_name&gt; &lt;anchor_name&gt; &lt;target&gt; [contextual_tests]
+    </screen>
+    <para>
+      These rules will allow you to mark named anchors and jump to them based on a context.
+      In this manner you can skip or repeat certain rules. JUMP will jump to a location in
+      the grammar and run rules from there till the end (or another JUMP which sends it to
+      a different location), while EXECUTE will run rules in between the two provided ANCHORs
+      and then return to normal.
+    </para>
+  </section>
+
+  <section id="draft-setvariable-remvariable">
+    <title>SETVARIABLE, REMVARIABLE</title>
+    <indexterm>
+      <primary>SETVARIABLE</primary>
+    </indexterm>
+    <indexterm>
+      <primary>REMVARIABLE</primary>
+    </indexterm>
+    <screen>
+      [wordform] SETVARIABLE &lt;variable_name&gt; &lt;value&gt; &lt;target&gt; [contextual_tests]
+      [wordform] REMVARIABLE &lt;variable_name&gt; &lt;target&gt; [contextual_tests]
+    </screen>
+    <para>
+      Global variables complement and are very similar to Metadata, but are set
+      and unset on-the-fly via the grammar as opposed to input information. You
+      can set and unset the variable to these values based on contextual tests.
+      You can also test the value of a global variable in contextual tests via
+      VAR:variable_name:value or test if it is set at all with VAR:variable_name.
+      This is useful for sentences where you want to save certain states for later,
+      such as which gender the main actor of a paragraph is.
+    </para>
+  </section>
+
+</chapter>

@@ -51,8 +51,8 @@
     <title>Creating Trees from Grammar</title>
     <para>
       It is also possible to create or modify the tree on-the-fly with rules.
-      See <glossterm linkend="keyword-setparent">SETPARENT</glossterm>
-      and <glossterm linkend="keyword-setchild">SETCHILD</glossterm>.
+      See <link linkend="keyword-setparent">SETPARENT</link>
+      and <link linkend="keyword-setchild">SETCHILD</link>.
       Dependencies created in this fashion will be output in the same format as above.
     </para>
     <para>

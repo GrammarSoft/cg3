@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE chapter SYSTEM "docbook-dtd-45/docbookx.dtd">
+
+<chapter id="runtimeoptions">
+  <title>Runtime Options</title>
+
+  <para>
+    A list of things that can be set and/or altered at runtime.
+  </para>
+
+  <section id="rto-grammar">
+    <title>--grammar, -g</title>
+    <indexterm>
+      <primary>--grammar</primary>
+      <secondary>-g</secondary>
+    </indexterm>
+    <para>
+      The grammar file to use for the run.
+    </para>
+    <screen>
+      -g ../grammars/english
+    </screen>
+  </section>
+
+  <section id="rto-grammar-out">
+    <title>--grammar-out</title>
+    <indexterm>
+      <primary>--grammar-out</primary>
+    </indexterm>
+    <para>
+      Writes out the processed grammar to a file. Mainly for debugging.
+    </para>
+    <screen>
+      --grammar-out ../grammars/english.out
+    </screen>
+  </section>
+
+</chapter>

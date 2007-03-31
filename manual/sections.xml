@@ -20,14 +20,15 @@
     <primary>CONSTRAINTS</primary>
   </indexterm>
   <para>
-    CG-2 has three seperate grammar sections: <glossterm linkend="keyword-sets">SETS</glossterm>,
-    <glossterm linkend="keyword-mappings">MAPPINGS</glossterm>,
-    and <glossterm linkend="keyword-constraints">CONSTRAINTS</glossterm>.
-    VISLCG added to these with the <glossterm linkend="keyword-corrections">CORRECTIONS</glossterm> section.
+    CG-2 has three seperate grammar sections: <link linkend="keyword-sets">SETS</link>,
+    <link linkend="keyword-mappings">MAPPINGS</link>,
+    and <link linkend="keyword-constraints">CONSTRAINTS</link>.
+    VISLCG added to these with the <link linkend="keyword-corrections">CORRECTIONS</link> section.
     Each of these can only contain certain definitions, such as LIST, MAP, or SELECT.
     As I understand it, this was due to the original CG parser being written in a language
     that needed such a format. In any case, I did not see the logic or usability in
-    such a strict format. VISL CG-3 has a single section header <glossterm linkend="keyword-section">SECTION</glossterm>, which can contain
+    such a strict format. VISL CG-3 has a single section header
+    <link linkend="keyword-section">SECTION</link>, which can contain
     any of the set or rule definitions. Sections can also be given a name for easier
     identification and anchor behavior, but that is optional. The older section
     headings are still valid and will work as expected, though.
@@ -59,5 +60,32 @@
     Rules are applied in the order they are declared. In the above example
     that would execute SELECT first and then the MAP rule.
   </para>
+
+  <section id="sect-before-sections">
+    <title>BEFORE-SECTIONS</title>
+    <para>
+      See <link linkend="keyword-before-sections">BEFORE-SECTIONS</link>.
+      Takes the place of what previously were the MAPPINGS and CORRECTIONS blocks,
+      but may contain any rule type.
+    </para>
+  </section>
+
+  <section id="sect-sections">
+    <title>SECTION</title>
+    <para>
+      See <link linkend="keyword-section">SECTION</link>.
+      Takes the place of what previously were the CONSTRAINTS blocks,
+      but may contain any rule type.
+    </para>
+  </section>
+
+  <section id="sect-after-sections">
+    <title>AFTER-SECTIONS</title>
+    <para>
+      See <link linkend="keyword-after-sections">AFTER-SECTIONS</link>.
+      May contain any rule type, and is run once after all other sections.
+      This is new in CG-3.
+    </para>
+  </section>
 
 </chapter>

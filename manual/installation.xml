@@ -12,10 +12,10 @@
   <section id="installing_icu">
     <title>Installing ICU</title>
     <para>
-      <glossterm linkend="gloss-icu">International Components for Unicode</glossterm> are required to compile and run VISL CG-3.
+      <ulink url="http://icu-project.org/">International Components for Unicode</ulink> are required to compile and run VISL CG-3.
       Only need to do this once, however it must be done unless you already have a recent
-      (newer or equal to <glossterm linkend="gloss-icu">ICU</glossterm> 3.6) version installed. <glossterm linkend="gloss-icu">ICU</glossterm> 3.4 may also work, but is
-      considerably slower. Latest info on <glossterm linkend="gloss-icu">ICU</glossterm> can be found at <ulink url="http://icu-project.org/">http://icu-project.org/</ulink>
+      (newer or equal to <ulink url="http://icu-project.org/">ICU</ulink> 3.6) version installed. <ulink url="http://icu-project.org/">ICU</ulink> 3.4 may also work, but is
+      considerably slower. Latest info on <ulink url="http://icu-project.org/">ICU</ulink> can be found at <ulink url="http://icu-project.org/">http://icu-project.org/</ulink>
     </para>
     <para>
       These steps have been tested on Red Hat Linux 8, Red Hat Linux 9, Fedora Core 3,

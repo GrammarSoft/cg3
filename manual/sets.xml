@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE chapter SYSTEM "docbook-dtd-45/docbookx.dtd">
+
+<chapter id="sets">
+  <title>Sets</title>
+
+  <para>
+    Describes various magic sets.
+  </para>
+
+  <section id="set-any">
+    <title>(*)</title>
+    <para>
+      A set containing the (*) tag becomes a magic "any" set and will always match.
+      This saves having to declare a dummy set containing all imaginable tags.
+      Useful for testing whether a cohort exists at a position, without needing details about it.
+    </para>
+    <screen>
+      (*-1 (*) LINK 1* SomeSet)
+    </screen>
+  </section>
+
+  <section id="set-delimiters">
+    <title>_S_DELIMITERS_</title>
+    <para>
+      The magic set _S_DELIMITERS_ is created from the
+      <link linkend="keyword-delimiters">DELIMITERS</link> definition.
+      This saves having to declare and maintain a seperate set for matching delimiters in tests.
+    </para>
+    <screen>
+      SET SomeSet = OtherSet OR _S_DELIMITERS_ ;
+    </screen>
+  </section>
+
+  <section id="set-soft-delimiters">
+    <title>_S_SOFT_DELIMITERS_</title>
+    <para>
+      The magic set _S_SOFT_DELIMITERS_ is created from the
+      <link linkend="keyword-soft-delimiters">SOFT-DELIMITERS</link> definition.
+    </para>
+    <screen>
+      (**1 _S_SOFT_DELIMITERS_ BARRIER BoogieSet)
+    </screen>
+  </section>
+
+</chapter>

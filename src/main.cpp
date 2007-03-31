@@ -88,9 +88,9 @@ int main(int argc, char* argv[]) {
 		fprintf(stderr, " --always-span            Forces all scanning tests to always span across window boundaries.\n");
 		fprintf(stderr, " --soft-limit             Number of cohorts after which the SOFT-DELIMITERS kick in. Defaults to 300.\n");
 		fprintf(stderr, " --hard-limit             Number of cohorts after which the window is delimited forcefully. Defaults to 500.\n");
-		fprintf(stderr, " --dep-delimit            Delimit via dependency information instead of DELIMITERS.\n");
-		fprintf(stderr, " --dep-reenum             Outputs the internal reenumeration of dependencies.\n");
-		fprintf(stderr, " --dep-humanize           Output dependency information in a more readable format.\n");
+		//fprintf(stderr, " --dep-delimit            Delimit via dependency information instead of DELIMITERS.\n");
+		//fprintf(stderr, " --dep-reenum             Outputs the internal reenumeration of dependencies.\n");
+		//fprintf(stderr, " --dep-humanize           Output dependency information in a more readable format.\n");
 		fprintf(stderr, "\n");
 		fprintf(stderr, " -O or --stdout           A file to print out to instead of stdout.\n");
 		fprintf(stderr, " -I or --stdin            A file to read input from instead of stdin.\n");
