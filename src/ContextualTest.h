@@ -39,9 +39,9 @@ namespace CG3 {
 		bool dep_child;
 		int32_t offset;
 
-		// ToDo: Implement careful barrier
 		uint32_t target;
 		uint32_t barrier;
+		uint32_t cbarrier;
 
 		mutable uint32_t num_fail, num_match;
 		mutable PACC_TimeStamp total_time;

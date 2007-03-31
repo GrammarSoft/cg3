@@ -39,6 +39,21 @@
     </para>
   </section>
 
+  <section id="test-cbarrier">
+    <title>CBARRIER</title>
+    <indexterm>
+      <primary>CBARRIER</primary>
+    </indexterm>
+    <para>
+      Like <link linkend="keyword-barrier">BARRIER</link> but performs the test in Careful mode,
+      meaning it only blocks if all readings in the cohort matches.
+      This makes it less strict than <link linkend="keyword-barrier">BARRIER</link>.
+    </para>
+    <screen>
+      (**1 SetG CBARRIER (Verb))
+    </screen>
+  </section>
+
   <section id="test-spanning">
     <title>Spanning Window Boundaries</title>
     <indexterm>

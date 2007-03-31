@@ -70,6 +70,11 @@ int GrammarParser::parseContextualTest(UChar **paren, CG3::ContextualTest *paren
 	}
 
 	if (test && test[0]) {
+		space = u_strstr(test, stringbits[S_CBARRIER]);
+		if (space == test) {
+			test += 9;
+			context->cbarrier = parseTarget(&test);
+		}
 		space = u_strstr(test, stringbits[S_BARRIER]);
 		if (space == test) {
 			test += 8;
@@ -132,7 +137,16 @@ int GrammarParser::parseContextualTestList(UChar **paren, CG3::Rule *rule, std::
 			context->line = result->curline;
 			context->target = parseTarget(&test);
 
+			if (context->dep_child || context->dep_parent || context->dep_sibling) {
+				result->has_dep = true;
+			}
+
 			if (test && test[0]) {
+				space = u_strstr(test, stringbits[S_CBARRIER]);
+				if (space == test) {
+					test += 9;
+					context->cbarrier = parseTarget(&test);
+				}
 				space = u_strstr(test, stringbits[S_BARRIER]);
 				if (space == test) {
 					test += 8;

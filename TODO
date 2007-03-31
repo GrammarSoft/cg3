@@ -1,4 +1,3 @@
-src/ContextualTest.h:		// ToDo: Implement careful barrier
 src/GPRE2C.cpp:	// ToDo: Generate a unique set name somehow faster.
 src/GPRE2C.cpp.re2c:	// ToDo: Generate a unique set name somehow faster.
 src/GrammarApplicator.cpp:		// ToDo: Maybe allow whitespace in baseforms.

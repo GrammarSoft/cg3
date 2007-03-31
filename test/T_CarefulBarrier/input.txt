@@ -1,0 +1,19 @@
+"<word>"
+	"word" notwanted
+	"word" wanted
+	"word" notmeeither
+"<word>"
+	"blocker" block1
+	"blocker" block2
+"<word>"
+	"word" notwanted
+	"word" wanted
+	"word" notmeeither
+"<word>"
+	"blocker" block1
+	"word" notwanted
+	"blocker" block2
+"<word>"
+	"word" notwanted
+	"word" findme
+	"word" notmeeither

@@ -86,6 +86,20 @@
     </para>
   </section>
 
+  <section id="keyword-cbarrier">
+    <title>CBARRIER</title>
+    <indexterm>
+      <primary>CBARRIER</primary>
+    </indexterm>
+    <para>
+      Careful version of <link linkend="keyword-barrier">BARRIER</link>.
+      Only meaningful in scanning contexts. See <link linkend="test-cbarrier">CBARRIER</link>.
+    </para>
+    <screen>
+      SELECT targetset (-1* ("someword") CBARRIER (tag)) ;
+    </screen>
+  </section>
+
   <section id="keyword-constraints">
     <title>CONSTRAINTS</title>
     <indexterm>

@@ -81,6 +81,7 @@ namespace CG3 {
 			S_LINK,
 			S_LINKZ,
 			S_BARRIER,
+			S_CBARRIER,
 			S_DELIMITSET,
 			S_SOFTDELIMITSET,
 			S_ASTERIK,

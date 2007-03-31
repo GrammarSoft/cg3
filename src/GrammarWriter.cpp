@@ -299,6 +299,9 @@ void GrammarWriter::printContextualTest(UFILE *to, const ContextualTest *test) {
 	if (test->target) {
 		u_fprintf(to, "%S ", grammar->sets_by_contents.find(test->target)->second->name);
 	}
+	if (test->cbarrier) {
+		u_fprintf(to, "CBARRIER %S ", grammar->sets_by_contents.find(test->cbarrier)->second->name);
+	}
 	if (test->barrier) {
 		u_fprintf(to, "BARRIER %S ", grammar->sets_by_contents.find(test->barrier)->second->name);
 	}

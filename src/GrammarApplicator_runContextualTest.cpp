@@ -48,6 +48,12 @@ Cohort *GrammarApplicator::runSingleTest(SingleWindow *sWindow, uint32_t i, cons
 			*brk = true;
 		}
 	}
+	if (test->cbarrier) {
+		bool cbarrier = doesSetMatchCohortCareful(cohort, test->cbarrier);
+		if (cbarrier) {
+			*brk = true;
+		}
+	}
 	if (foundfirst && *retval) {
 		*brk = true;
 	}

@@ -38,6 +38,7 @@ ContextualTest::ContextualTest() {
 	offset = 0;
 	target = 0;
 	barrier = 0;
+	cbarrier = 0;
 	linked = 0;
 	hash = 0;
 	line = 0;

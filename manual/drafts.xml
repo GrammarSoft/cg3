@@ -29,24 +29,6 @@
     </para>
   </section>
 
-  <section id="draft-careful-barrier">
-    <title>Careful Barrier</title>
-    <indexterm>
-      <primary>CBARRIER</primary>
-    </indexterm>
-    <screen>
-      CBARRIER
-    </screen>
-    <para>
-      Like <link linkend="keyword-barrier">BARRIER</link> but performs the test in Careful mode,
-      meaning it only blocks if all readings in the cohort matches.
-      This makes it less strict than <link linkend="keyword-barrier">BARRIER</link>.
-    </para>
-    <screen>
-      (**1 SetG CBARRIER (Verb))
-    </screen>
-  </section>
-
   <section id="draft-sections-range">
     <title>--sections with ranges</title>
     <para>
