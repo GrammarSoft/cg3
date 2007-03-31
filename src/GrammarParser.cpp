@@ -318,9 +318,11 @@ int GrammarParser::parse_grammar_from_file(const char *fname, const char *loc, c
 	}
 	
 	error = parse_grammar_from_ufile(grammar);
+	u_fclose(grammar);
 	if (error) {
 		return error;
 	}
+
 	return 0;
 }
 
