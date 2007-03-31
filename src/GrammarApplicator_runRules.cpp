@@ -468,7 +468,11 @@ label_runGrammarOnWindow_begin:
 
 	// ToDo: Make old cohort -> rules order available via switch
 	if (!grammar->rules.empty()) {
-		for (uint32_t i=0;i<grammar->sections.size()-1;) {
+		uint32_t smax = (uint32_t)grammar->sections.size()-1;
+		if (sections && sections < smax) {
+			smax = sections;
+		}
+		for (uint32_t i=0;i<smax;) {
 			uint32_t rv = runRulesOnWindow(current, &grammar->rules, 0, grammar->sections[i+1]);
 			if (rv & RV_DELIMITED) {
 				goto label_runGrammarOnWindow_begin;

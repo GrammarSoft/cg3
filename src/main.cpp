@@ -79,6 +79,7 @@ int main(int argc, char* argv[]) {
 		fprintf(stderr, " --grammar-only           Compiles the grammar only.\n");
 		fprintf(stderr, " --trace                  Prints debug output alongside with normal output.\n");
 		fprintf(stderr, " --prefix                 Sets the prefix for mapping. Defaults to @.\n");
+		fprintf(stderr, " --sections               Number of sections to run. Defaults to running all sections.\n");
 		//fprintf(stderr, " --reorder                Rearranges rules so SELECTs are run first.\n");
 		//fprintf(stderr, " --single-run             Only runs each section once.\n");
 		fprintf(stderr, " --no-mappings            Disables running any MAP, ADD, or REPLACE rules.\n");
@@ -277,14 +278,17 @@ int main(int argc, char* argv[]) {
 		if (options[GRAMMAR_INFO].doesOccur) {
 			applicator->enableStatistics();
 		}
+		if (options[SECTIONS].doesOccur) {
+			applicator->sections = abs(atoi(options[SECTIONS].value));
+		}
 		if (options[NUM_WINDOWS].doesOccur) {
-			applicator->num_windows = atoi(options[NUM_WINDOWS].value);
+			applicator->num_windows = abs(atoi(options[NUM_WINDOWS].value));
 		}
 		if (options[SOFT_LIMIT].doesOccur) {
-			applicator->soft_limit = atoi(options[SOFT_LIMIT].value);
+			applicator->soft_limit = abs(atoi(options[SOFT_LIMIT].value));
 		}
 		if (options[HARD_LIMIT].doesOccur) {
-			applicator->hard_limit = atoi(options[HARD_LIMIT].value);
+			applicator->hard_limit = abs(atoi(options[HARD_LIMIT].value));
 		}
 		if (options[DEP_REENUM].doesOccur) {
 			applicator->dep_reenum = true;
@@ -329,14 +333,17 @@ int main(int argc, char* argv[]) {
 				if (options[SINGLERUN].doesOccur) {
 					applicator->single_run = true;
 				}
+				if (options[SECTIONS].doesOccur) {
+					applicator->sections = abs(atoi(options[SECTIONS].value));
+				}
 				if (options[NUM_WINDOWS].doesOccur) {
-					applicator->num_windows = atoi(options[NUM_WINDOWS].value);
+					applicator->num_windows = abs(atoi(options[NUM_WINDOWS].value));
 				}
 				if (options[SOFT_LIMIT].doesOccur) {
-					applicator->soft_limit = atoi(options[SOFT_LIMIT].value);
+					applicator->soft_limit = abs(atoi(options[SOFT_LIMIT].value));
 				}
 				if (options[HARD_LIMIT].doesOccur) {
-					applicator->hard_limit = atoi(options[HARD_LIMIT].value);
+					applicator->hard_limit = abs(atoi(options[HARD_LIMIT].value));
 				}
 				if (options[DEP_REENUM].doesOccur) {
 					applicator->dep_reenum = true;
@@ -395,14 +402,17 @@ int main(int argc, char* argv[]) {
 			if (options[SINGLERUN].doesOccur) {
 				applicator->single_run = true;
 			}
+			if (options[SECTIONS].doesOccur) {
+				applicator->sections = abs(atoi(options[SECTIONS].value));
+			}
 			if (options[NUM_WINDOWS].doesOccur) {
-				applicator->num_windows = atoi(options[NUM_WINDOWS].value);
+				applicator->num_windows = abs(atoi(options[NUM_WINDOWS].value));
 			}
 			if (options[SOFT_LIMIT].doesOccur) {
-				applicator->soft_limit = atoi(options[SOFT_LIMIT].value);
+				applicator->soft_limit = abs(atoi(options[SOFT_LIMIT].value));
 			}
 			if (options[HARD_LIMIT].doesOccur) {
-				applicator->hard_limit = atoi(options[HARD_LIMIT].value);
+				applicator->hard_limit = abs(atoi(options[HARD_LIMIT].value));
 			}
 			if (options[DEP_REENUM].doesOccur) {
 				applicator->dep_reenum = true;

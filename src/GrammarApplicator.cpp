@@ -36,6 +36,7 @@ GrammarApplicator::GrammarApplicator() {
 	dep_humanize = false;
 	dep_highest_seen = 0;
 	has_dep = false;
+	sections = 0;
 	timer = 0;
 	num_windows = 2;
 	begintag = 0;

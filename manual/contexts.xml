@@ -4,6 +4,26 @@
 <chapter id="contexts">
   <title>Contextual Tests</title>
 
+  <section id="test-position">
+    <title>Position Element Order</title>
+    <para>
+      CG-3 is not very strict with how a contextual position looks. Elements such as ** and C can be
+      anywhere before or after the offset number, and even the - for negative offsets does not have
+      to be near the number.
+    </para>
+    <para>
+      Examples of valid positions:
+      <screen>
+        *-1
+        1**-
+        W*2C
+        0**&gt;
+        cC
+        CsW
+      </screen>
+    </para>
+  </section>
+
   <section id="test-negate">
     <title>NEGATE</title>
     <indexterm>

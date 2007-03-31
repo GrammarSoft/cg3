@@ -47,6 +47,19 @@
     </screen>
   </section>
 
+  <section id="draft-sections-range">
+    <title>--sections with ranges</title>
+    <para>
+      The current --sections flag simply puts an upper limit on which sections to run.
+      A better version would be to be able to specify ranges of sections to run.
+    </para>
+    <screen>
+      --sections 6
+      --sections 3-6
+      --sections 2-5,7-9,13-15
+    </screen>
+  </section>
+
   <section id="draft-match">
     <title>MATCH</title>
     <indexterm>

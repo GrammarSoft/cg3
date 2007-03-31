@@ -28,7 +28,6 @@
 namespace CG3 {
 	class GrammarApplicator {
 	public:
-		// ToDo: Implement --sections
 		// ToDo: Implement --unsafe
 		// ToDo: Make use of Preferred-Targets
 		bool always_span;
@@ -44,6 +43,7 @@ namespace CG3 {
 		uint32_t num_windows;
 		uint32_t soft_limit;
 		uint32_t hard_limit;
+		uint32_t sections;
 
 		GrammarApplicator();
 		~GrammarApplicator();
