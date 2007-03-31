@@ -97,9 +97,6 @@ inline uint32_t hash_sdbm_uint32_t(const uint32_t c, uint32_t hash) {
 	#define MIN(a,b)  (((a) < (b)) ? (a) : (b))
 #endif
 
-// CG3 includes
-#include "cg3_resources.h"
-
 // Forward declarations
 namespace CG3 {
 	class Grammar;

@@ -446,10 +446,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\src\cg3_resources.h"
-				>
-			</File>
-			<File
 				RelativePath=".\src\Cohort.h"
 				>
 			</File>
@@ -535,6 +531,10 @@
 			</File>
 			<File
 				RelativePath=".\src\uextras.h"
+				>
+			</File>
+			<File
+				RelativePath=".\src\version.h"
 				>
 			</File>
 			<File

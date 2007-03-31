@@ -29,6 +29,8 @@
 #include "GrammarApplicator.h"
 #include <sys/stat.h>
 
+#include "version.h"
+
 #include "options.h"
 using namespace Options;
 
@@ -44,7 +46,8 @@ int main(int argc, char* argv[]) {
 	UErrorCode status = U_ZERO_ERROR;
 	srand((uint32_t)time(0));
 
-	fprintf(stderr, "VISL CG-3 Disambiguator version %s.\n", CG3_VERSION_STRING);
+	fprintf(stderr, "VISL CG-3 Disambiguator version %u.%u.%u.%u\n",
+		CG3_VERSION_MAJOR, CG3_VERSION_MINOR, CG3_VERSION_PATCH, CG3_REVISION);
 	U_MAIN_INIT_ARGS(argc, argv);
 
 	argc = u_parseArgs(argc, argv, (int32_t)(sizeof(options)/sizeof(options[0])), options);
