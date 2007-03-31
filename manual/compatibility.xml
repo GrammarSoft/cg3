@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE chapter SYSTEM "docbook-dtd-45/docbookx.dtd">
+
+<chapter id="compatibility">
+  <title>Compatibility and Incompatibilities</title>
+
+  <para>
+    Things to be aware of.
+  </para>
+
+  <section id="gotchas">
+    <title>Gotcha's</title>
+
+    <section id="gotcha-not-negate">
+      <title>NOT and NEGATE</title>
+      <para>
+        In CG-2 and VISLCG the keyword NOT behaved differently depending on whether it was
+        in front of the first test or in front of a linked test. In the case of
+        <screen>
+          (NOT 1 LSet LINK 1 KSet LINK 1 JSet)
+        </screen>
+        the NOT would apply last, meaning it would invert the result of the entire chain,
+        but in the case of
+        <screen>
+          (1 LSet LINK NOT 1 KSet LINK 1 JSet)
+        </screen>
+        it only inverts the result of the immediately following test.
+      </para>
+
+      <para>
+        CG-3 implements the <link linkend="test-negate">NEGATE</link> keyword to make the distinction clearer.
+        This means that if you are converting grammars to CG-3 you must replace starting NOTs with NEGATEs
+        to get the same functionality. So the first test should instead be
+        <screen>
+          (NEGATE 1 LSet LINK 1 KSet LINK 1 JSet)
+        </screen>
+      </para>
+    </section>
+
+    <section id="gotcha-setop-minus">
+      <title>Set Operator -</title>
+      <para>
+        In CG-2 the - operator means set difference; in VISLCG it means set fail-fast; in CG-3 it means
+        set difference again, but the new operator ^ takes place of VISLCG's behavior.
+      </para>
+    </section>
+  </section>
+
+  <section id="incompatibilites">
+    <title>Incompatibilites</title>
+
+    <section id="incompat-mapping">
+      <title>Mappings</title>
+      <para>
+        The CG-2 spec says that readings in the format
+        <screen>
+          "word" tag @MAP @MUP ntag @MIP
+        </screen>
+        should be equivalent to
+        <screen>
+          "word" tag @MAP
+          "word" tag @MUP
+          "word" tag ntag @MIP
+        </screen>
+      </para>
+
+      <para>
+        Since the tag order does not matter in CG-3, this is instead equivalent to
+        <screen>
+          "word" tag ntag @MAP
+          "word" tag ntag @MUP
+          "word" tag ntag @MIP
+        </screen>
+      </para>
+    </section>
+  </section>
+
+</chapter>
