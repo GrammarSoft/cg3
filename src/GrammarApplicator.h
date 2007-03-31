@@ -28,6 +28,7 @@
 namespace CG3 {
 	class GrammarApplicator {
 	public:
+		// ToDo: Implement --sections
 		// ToDo: Implement --unsafe
 		// ToDo: Make use of Preferred-Targets
 		bool always_span;
