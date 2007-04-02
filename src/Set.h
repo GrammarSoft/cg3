@@ -18,7 +18,6 @@
 #define __SET_H
 
 #include "stdafx.h"
-#include <unicode/ustring.h>
 #include "Grammar.h"
 #include "CompositeTag.h"
 #include "Strings.h"

@@ -18,6 +18,7 @@
 #define __GRAMMARAPPLICATOR_H
 
 #include "stdafx.h"
+#include "GrammarWriter.h"
 #include "Strings.h"
 #include "Tag.h"
 #include "Grammar.h"
@@ -45,7 +46,7 @@ namespace CG3 {
 		uint32_t hard_limit;
 		uint32_t sections;
 
-		GrammarApplicator();
+		GrammarApplicator(UFILE *ux_in, UFILE *ux_out, UFILE *ux_err);
 		~GrammarApplicator();
 
 		void enableStatistics();
@@ -56,6 +57,10 @@ namespace CG3 {
 		int runGrammarOnText(UFILE *input, UFILE *output);
 
 	private:
+		UFILE *ux_stdin;
+		UFILE *ux_stdout;
+		UFILE *ux_stderr;
+
 		static const uint32_t RV_NOTHING = 1;
 		static const uint32_t RV_SOMETHING = 2;
 		static const uint32_t RV_DELIMITED = 4;

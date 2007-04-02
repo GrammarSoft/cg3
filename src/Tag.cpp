@@ -14,11 +14,7 @@
  * implied. See the License for the specific language governing
  * rights and limitations under the License.
  */
-#include "stdafx.h"
-#include <unicode/ustring.h>
-#include "Strings.h"
 #include "Tag.h"
-#include "uextras.h"
 
 using namespace CG3;
 
@@ -43,7 +39,7 @@ Tag::~Tag() {
 	}
 }
 
-void Tag::parseTag(const UChar *to) {
+void Tag::parseTag(const UChar *to, UFILE *ux_stderr) {
 	assert(to != 0);
 	type = 0;
 	if (u_strlen(to)) {

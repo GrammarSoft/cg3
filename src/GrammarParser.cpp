@@ -20,7 +20,10 @@
 using namespace CG3;
 using namespace CG3::Strings;
 
-GrammarParser::GrammarParser() {
+GrammarParser::GrammarParser(UFILE *ux_in, UFILE *ux_out, UFILE *ux_err) {
+	ux_stdin = ux_in;
+	ux_stdout = ux_out;
+	ux_stderr = ux_err;
 	filename = 0;
 	locale = 0;
 	codepage = 0;
@@ -181,7 +184,7 @@ int GrammarParser::parse_grammar_from_ufile(UFILE *input) {
 		return error;
 	}
 
-	error = init_regexps();
+	error = init_regexps(ux_stderr);
 	if (error) {
 		u_fprintf(ux_stderr, "Error: init_regexps returned %u!\n", error);
 		return error;

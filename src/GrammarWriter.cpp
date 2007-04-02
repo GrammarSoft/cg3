@@ -15,16 +15,15 @@
  * rights and limitations under the License.
  */
 
-#include "stdafx.h"
-#include "Strings.h"
-#include "Grammar.h"
 #include "GrammarWriter.h"
-#include "uextras.h"
 
 using namespace CG3;
 using namespace CG3::Strings;
 
-GrammarWriter::GrammarWriter() {
+GrammarWriter::GrammarWriter(UFILE *ux_in, UFILE *ux_out, UFILE *ux_err) {
+	ux_stdin = ux_in;
+	ux_stdout = ux_out;
+	ux_stderr = ux_err;
 	statistics = false;
 	grammar = 0;
 }

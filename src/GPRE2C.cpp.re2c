@@ -269,7 +269,7 @@ parseMappingList_start:
 		buffer[length-1] = 0;
 		u_strncpy(buffer, marker, (int32_t)length-1);
 		CG3::Tag *tag = result->allocateTag(buffer);
-		tag->parseTag(buffer);
+		tag->parseTag(buffer, ux_stderr);
 		tag->rehash();
 		result->addTag(tag);
 		taglist->push_back(tag->hash);
@@ -567,7 +567,10 @@ scan_end:
 	return retval;
 }
 
-GPRE2C::GPRE2C() {
+GPRE2C::GPRE2C(UFILE *ux_in, UFILE *ux_out, UFILE *ux_err) {
+	ux_stdin = ux_in;
+	ux_stdout = ux_out;
+	ux_stderr = ux_err;
 	filename = 0;
 	locale = 0;
 	codepage = 0;
@@ -628,7 +631,7 @@ int GPRE2C::grammar_from_ufile(UFILE *input) {
 		return error;
 	}
 
-	error = init_regexps();
+	error = init_regexps(ux_stderr);
 	if (error) {
 		u_fprintf(ux_stderr, "Error: init_regexps returned %i!\n", error);
 		return error;

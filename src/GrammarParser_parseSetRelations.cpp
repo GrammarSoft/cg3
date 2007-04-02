@@ -15,12 +15,7 @@
  * rights and limitations under the License.
  */
 
-#include "stdafx.h"
-#include "Strings.h"
-#include <unicode/uregex.h>
 #include "GrammarParser.h"
-#include "Grammar.h"
-#include "uextras.h"
 
 using namespace CG3;
 using namespace CG3::Strings;

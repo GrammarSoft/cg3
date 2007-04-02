@@ -15,9 +15,6 @@
  * rights and limitations under the License.
  */
 
-#include "stdafx.h"
-#include <unicode/uchar.h>
-#include "Strings.h"
 #include "uextras.h"
 
 using namespace CG3::Strings;

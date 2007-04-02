@@ -16,8 +16,6 @@
 */
 
 #include "GrammarApplicator.h"
-#include "Window.h"
-#include "SingleWindow.h"
 
 using namespace CG3;
 

@@ -18,8 +18,7 @@
 #define __GRAMMARWRITER_H
 
 #include "stdafx.h"
-#include <unicode/uchar.h>
-#include <unicode/ustdio.h>
+#include "Strings.h"
 #include "Grammar.h"
  
 namespace CG3 {
@@ -27,7 +26,7 @@ namespace CG3 {
 	public:
 		bool statistics;
 	
-		GrammarWriter();
+		GrammarWriter(UFILE *ux_in, UFILE *ux_out, UFILE *ux_err);
 		~GrammarWriter();
 
 		int write_grammar_to_ufile_text(UFILE *output);
@@ -39,6 +38,9 @@ namespace CG3 {
 		static void printTagRaw(UFILE *out, const Tag *tag);
 
 	private:
+		UFILE *ux_stdin;
+		UFILE *ux_stdout;
+		UFILE *ux_stderr;
 		stdext::hash_map<uint32_t, uint32_t> used_sets;
 		const Grammar *grammar;
 

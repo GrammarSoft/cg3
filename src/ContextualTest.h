@@ -17,7 +17,8 @@
 #ifndef __CONTEXTUALTEST_H
 #define __CONTEXTUALTEST_H
 
-#include <unicode/ustring.h>
+#include "stdafx.h"
+#include "Strings.h"
 
 namespace CG3 {
 
@@ -51,7 +52,7 @@ namespace CG3 {
 		ContextualTest();
 		~ContextualTest();
 
-		void parsePosition(const UChar *pos);
+		void parsePosition(const UChar *pos, UFILE *ux_stderr);
 
 		ContextualTest *allocateContextualTest();
 		void destroyContextualTest(ContextualTest *to);

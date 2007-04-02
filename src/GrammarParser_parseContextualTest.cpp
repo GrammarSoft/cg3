@@ -15,13 +15,7 @@
  * rights and limitations under the License.
  */
 
-#include "stdafx.h"
-#include "Strings.h"
-#include <unicode/uregex.h>
 #include "GrammarParser.h"
-#include "Rule.h"
-#include "Grammar.h"
-#include "uextras.h"
 
 using namespace CG3;
 using namespace CG3::Strings;
@@ -57,7 +51,7 @@ int GrammarParser::parseContextualTest(UChar **paren, CG3::ContextualTest *paren
 	}
 
 	ContextualTest *context = parentTest->allocateContextualTest();
-	context->parsePosition(position);
+	context->parsePosition(position, ux_stderr);
 	context->negated = negated;
 	context->negative = negative;
 	parentTest->linked = context;
@@ -129,7 +123,7 @@ int GrammarParser::parseContextualTestList(UChar **paren, CG3::Rule *rule, std::
 			}
 
 			ContextualTest *context = rule->allocateContextualTest();
-			context->parsePosition(position);
+			context->parsePosition(position, ux_stderr);
 			context->negated = negated;
 			context->negative = negative;
 			rule->addContextualTest(context, thelist);

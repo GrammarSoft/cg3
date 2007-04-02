@@ -15,8 +15,6 @@
  * rights and limitations under the License.
  */
 
-#include <math.h>
-#include "stdafx.h"
 #include "Strings.h"
 
 namespace CG3 {
@@ -157,7 +155,7 @@ namespace CG3 {
 			return 0;
 		}
 
-		int init_regexps() {
+		int init_regexps(UFILE *ux_stderr) {
 			UParseError *pe = new UParseError;
 			UErrorCode status = U_ZERO_ERROR;
 

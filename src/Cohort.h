@@ -18,8 +18,6 @@
 #define __COHORT_H
 
 #include "stdafx.h"
-#include <unicode/ustdio.h>
-#include <unicode/ustring.h>
 #include "Window.h"
 #include "Reading.h"
 

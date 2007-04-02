@@ -17,8 +17,7 @@
 #ifndef __ANCHOR_H
 #define __ANCHOR_H
 
-#include <unicode/ustdio.h>
-#include <unicode/ustring.h>
+#include "stdafx.h"
 
 namespace CG3 {
 

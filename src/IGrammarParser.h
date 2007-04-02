@@ -19,10 +19,7 @@
 
 #include "stdafx.h"
 #include "Strings.h"
-#include <unicode/uregex.h>
 #include "Grammar.h"
-#include "uextras.h"
-#include <sys/stat.h>
  
 namespace CG3 {
 	class IGrammarParser {

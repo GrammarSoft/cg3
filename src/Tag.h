@@ -17,9 +17,8 @@
 #ifndef __TAG_H
 #define __TAG_H
 
-#include <unicode/uregex.h>
-#include <unicode/ustdio.h>
-#include <unicode/ustring.h>
+#include "stdafx.h"
+#include "Strings.h"
 
 namespace CG3 {
 
@@ -63,7 +62,7 @@ namespace CG3 {
 
 		Tag();
 		~Tag();
-		void parseTag(const UChar *to);
+		void parseTag(const UChar *to, UFILE *ux_stderr);
 		void parseTagRaw(const UChar *to);
 		void duplicateTag(const Tag *from);
 

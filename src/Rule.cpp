@@ -14,11 +14,7 @@
  * implied. See the License for the specific language governing
  * rights and limitations under the License.
  */
-#include "stdafx.h"
-#include <unicode/ustring.h>
-#include "Strings.h"
 #include "Rule.h"
-#include "ContextualTest.h"
 
 using namespace CG3;
 using namespace CG3::Strings;

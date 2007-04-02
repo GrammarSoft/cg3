@@ -33,7 +33,7 @@
 #include <bitset>
 #include <time.h>
 #include <math.h>
-
+#include <sys/stat.h>
 #include <assert.h>
 
 // ICU includes
@@ -44,7 +44,9 @@
 #include <unicode/ucnv.h>
 #include <unicode/utrans.h>
 #include <unicode/ustring.h>
+#include <unicode/uregex.h>
 
+#include "PACC_Timer.h"
 #include "uextras.h"
 
 inline uint32_t hash_sdbm_uchar(const UChar *str, uint32_t hash) {

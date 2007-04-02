@@ -16,9 +16,6 @@
 */
 
 #include "GrammarApplicator.h"
-#include "Window.h"
-#include "SingleWindow.h"
-#include "uextras.h"
 
 using namespace CG3;
 using namespace CG3::Strings;

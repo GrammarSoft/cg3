@@ -14,7 +14,6 @@
  * implied. See the License for the specific language governing
  * rights and limitations under the License.
  */
-#include "stdafx.h"
 #include "Grammar.h"
 
 using namespace CG3;
@@ -99,7 +98,7 @@ Grammar::~Grammar() {
 
 void Grammar::addPreferredTarget(UChar *to) {
 	Tag *tag = new Tag();
-	tag->parseTag(to);
+	tag->parseTag(to, ux_stderr);
 	tag->rehash();
 	addTag(tag);
 	preferred_targets.push_back(tag->hash);
@@ -183,7 +182,7 @@ void Grammar::destroyRule(Rule *rule) {
 
 Tag *Grammar::allocateTag(const UChar *tag) {
 	Tag *fresh = new Tag;
-	fresh->parseTag(tag);
+	fresh->parseTag(tag, ux_stderr);
 	return fresh;
 }
 void Grammar::addTag(Tag *simpletag) {

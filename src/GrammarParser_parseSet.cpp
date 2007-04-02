@@ -15,12 +15,7 @@
  * rights and limitations under the License.
  */
 
-#include "stdafx.h"
-#include "Strings.h"
-#include <unicode/uregex.h>
 #include "GrammarParser.h"
-#include "Grammar.h"
-#include "uextras.h"
 
 using namespace CG3;
 using namespace CG3::Strings;
@@ -148,7 +143,7 @@ uint32_t GrammarParser::readTagList(UChar **paren, std::list<uint32_t> *taglist)
 				temp[0] = 0;
 				if (composite[0]) {
 					CG3::Tag *tag = result->allocateTag(composite);
-					tag->parseTag(composite);
+					tag->parseTag(composite, ux_stderr);
 					tag->rehash();
 					result->addTag(tag);
 					taglist->push_back(tag->hash);
@@ -160,7 +155,7 @@ uint32_t GrammarParser::readTagList(UChar **paren, std::list<uint32_t> *taglist)
 			}
 			if (composite[0]) {
 				CG3::Tag *tag = result->allocateTag(composite);
-				tag->parseTag(composite);
+				tag->parseTag(composite, ux_stderr);
 				tag->rehash();
 				result->addTag(tag);
 				taglist->push_back(tag->hash);

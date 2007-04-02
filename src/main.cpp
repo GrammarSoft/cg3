@@ -19,7 +19,6 @@
 // ToDo: Refactor statistics to be gathered in their own objects rather than inline with Rules
 // ToDo: Enable a daemonized version.
 
-// ToDo: Reflow which includes are really needed where
 #include "stdafx.h"
 #include "icu_uoptions.h"
 #include "Grammar.h"
@@ -27,20 +26,18 @@
 #include "GPRE2C.h"
 #include "GrammarWriter.h"
 #include "GrammarApplicator.h"
-#include <sys/stat.h>
 
 #include "version.h"
 
 #include "options.h"
 using namespace Options;
 
-PACC::Timer *glob_timer;
-UFILE *ux_stdin = 0;
-UFILE *ux_stdout = 0;
-UFILE *ux_stderr = 0;
-
 int main(int argc, char* argv[]) {
-	glob_timer = new PACC::Timer();
+	UFILE *ux_stdin = 0;
+	UFILE *ux_stdout = 0;
+	UFILE *ux_stderr = 0;
+
+	PACC::Timer *glob_timer = new PACC::Timer();
 	PACC_TimeStamp main_timer = glob_timer->getCount();
 
 	UErrorCode status = U_ZERO_ERROR;
@@ -122,7 +119,7 @@ int main(int argc, char* argv[]) {
 	}
 	status = U_ZERO_ERROR;
 
-	CG3::Grammar *grammar = new CG3::Grammar;
+	CG3::Grammar *grammar = new CG3::Grammar();
 	const char *codepage_grammar = "ISO-8859-1";
 	const char *codepage_input   = codepage_grammar;
 	const char *codepage_output  = codepage_grammar;
@@ -206,11 +203,12 @@ int main(int argc, char* argv[]) {
 	CG3::IGrammarParser *parser = 0;
 	if (options[RE2C].doesOccur) {
 		fprintf(stderr, "Info: Using experimental RE2C parser.\n");
-		parser = new CG3::GPRE2C;
+		parser = new CG3::GPRE2C(ux_stdin, ux_stdout, ux_stderr);
 	}
 	else {
-		parser = new CG3::GrammarParser;
+		parser = new CG3::GrammarParser(ux_stdin, ux_stdout, ux_stderr);
 	}
+	grammar->ux_stderr = ux_stderr;
 	parser->setResult(grammar);
 	parser->setCompatible(options[VISLCGCOMPAT].doesOccur != 0);
 
@@ -259,7 +257,7 @@ int main(int argc, char* argv[]) {
 	if (!options[CHECK_ONLY].doesOccur && !options[GRAMMAR_ONLY].doesOccur) {
 		grammar->trim();
 
-		applicator = new CG3::GrammarApplicator();
+		applicator = new CG3::GrammarApplicator(ux_stdin, ux_stdout, ux_stderr);
 		applicator->setGrammar(grammar);
 		if (options[ALWAYS_SPAN].doesOccur) {
 			applicator->always_span = true;
@@ -317,7 +315,7 @@ int main(int argc, char* argv[]) {
 				u_frewind(ux_stdin);
 				grammar->trim();
 
-				applicator = new CG3::GrammarApplicator();
+				applicator = new CG3::GrammarApplicator(ux_stdin, ux_stdout, ux_stderr);
 				applicator->setGrammar(grammar);
 				if (options[ALWAYS_SPAN].doesOccur) {
 					applicator->always_span = true;
@@ -371,7 +369,7 @@ int main(int argc, char* argv[]) {
 				std::sort(&grammar->rules[grammar->sections[i]], &grammar->rules[grammar->sections[i+1]-1], CG3::Rule::cmp_quality);
 			}
 
-			writer = new CG3::GrammarWriter();
+			writer = new CG3::GrammarWriter(ux_stdin, ux_stdout, ux_stderr);
 			writer->setGrammar(grammar);
 			writer->statistics = true;
 			writer->write_grammar_to_ufile_text(gout);
@@ -386,7 +384,7 @@ int main(int argc, char* argv[]) {
 			u_frewind(ux_stdin);
 			grammar->trim();
 
-			applicator = new CG3::GrammarApplicator();
+			applicator = new CG3::GrammarApplicator(ux_stdin, ux_stdout, ux_stderr);
 			applicator->setGrammar(grammar);
 			if (options[ALWAYS_SPAN].doesOccur) {
 				applicator->always_span = true;
@@ -435,7 +433,7 @@ int main(int argc, char* argv[]) {
 	if (options[GRAMMAR_OUT].doesOccur) {
 		UFILE *gout = u_fopen(options[GRAMMAR_OUT].value, "w", locale_output, codepage_output);
 		if (gout) {
-			writer = new CG3::GrammarWriter();
+			writer = new CG3::GrammarWriter(ux_stdin, ux_stdout, ux_stderr);
 			writer->setGrammar(grammar);
 			writer->write_grammar_to_ufile_text(gout);
 
@@ -449,7 +447,7 @@ int main(int argc, char* argv[]) {
 	if (options[GRAMMAR_BIN].doesOccur) {
 		FILE *gout = fopen(options[GRAMMAR_BIN].value, "wb");
 		if (gout) {
-			writer = new CG3::GrammarWriter();
+			writer = new CG3::GrammarWriter(ux_stdin, ux_stdout, ux_stderr);
 			writer->setGrammar(grammar);
 			writer->write_grammar_to_file_binary(gout);
 

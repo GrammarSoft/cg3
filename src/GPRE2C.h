@@ -25,7 +25,7 @@
 namespace CG3 {
 	class GPRE2C : public IGrammarParser {
 	public:
-		GPRE2C();
+		GPRE2C(UFILE *ux_in, UFILE *ux_out, UFILE *ux_err);
 		~GPRE2C();
 
 		void setCompatible(bool compat);
@@ -33,6 +33,9 @@ namespace CG3 {
 		int parse_grammar_from_file(const char *filename, const char *locale, const char *codepage);
 
 	private:
+		UFILE *ux_stdin;
+		UFILE *ux_stdout;
+		UFILE *ux_stderr;
 		bool option_vislcg_compat;
 		bool in_section, in_before_sections, in_after_sections;
 		const char *filename;

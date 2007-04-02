@@ -18,8 +18,6 @@
 #define __SINGLEWINDOW_H
 
 #include "stdafx.h"
-#include <unicode/ustdio.h>
-#include <unicode/ustring.h>
 #include "Window.h"
 #include "Cohort.h"
 

@@ -18,7 +18,6 @@
 #define __GRAMMAR_H
 
 #include "stdafx.h"
-#include <unicode/ustring.h>
 #include "Set.h"
 #include "Tag.h"
 #include "CompositeTag.h"
@@ -29,6 +28,8 @@ namespace CG3 {
 
 	class Grammar {
 	public:
+		UFILE *ux_stderr;
+
 		bool has_dep;
 		uint32_t last_modified;
 		uint32_t grammar_size;

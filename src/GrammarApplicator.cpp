@@ -16,15 +16,14 @@
  */
 
 #include "GrammarApplicator.h"
-#include "GrammarWriter.h"
-#include "Window.h"
-#include "SingleWindow.h"
-#include "uextras.h"
 
 using namespace CG3;
 using namespace CG3::Strings;
 
-GrammarApplicator::GrammarApplicator() {
+GrammarApplicator::GrammarApplicator(UFILE *ux_in, UFILE *ux_out, UFILE *ux_err) {
+	ux_stdin = ux_in;
+	ux_stdout = ux_out;
+	ux_stderr = ux_err;
 	always_span = false;
 	apply_mappings = true;
 	apply_corrections = true;

@@ -18,7 +18,7 @@
 #ifndef __STRINGS_H
 #define __STRINGS_H
 
-#include <unicode/uregex.h>
+#include "stdafx.h"
 
 namespace CG3 {
 	namespace Strings {
@@ -113,7 +113,7 @@ namespace CG3 {
 		int init_strings();
 		int free_strings();
 
-		int init_regexps();
+		int init_regexps(UFILE *ux_stderr);
 		int free_regexps();
 	}
 }

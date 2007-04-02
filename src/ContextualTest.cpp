@@ -14,9 +14,6 @@
  * implied. See the License for the specific language governing
  * rights and limitations under the License.
  */
-#include "stdafx.h"
-#include <unicode/ustring.h>
-#include "Strings.h"
 #include "ContextualTest.h"
 
 using namespace CG3;
@@ -51,7 +48,7 @@ ContextualTest::~ContextualTest() {
 	delete linked;
 }
 
-void ContextualTest::parsePosition(const UChar *pos) {
+void ContextualTest::parsePosition(const UChar *pos, UFILE *ux_stderr) {
 	if (u_strstr(pos, stringbits[S_ASTERIKTWO])) {
 		scanall = true;
 	}

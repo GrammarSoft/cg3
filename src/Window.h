@@ -18,8 +18,6 @@
 #define __WINDOW_H
 
 #include "stdafx.h"
-#include <unicode/ustdio.h>
-#include <unicode/ustring.h>
 #include "SingleWindow.h"
 
 namespace CG3 {

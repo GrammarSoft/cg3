@@ -18,8 +18,6 @@
 #define __READING_H
 
 #include "stdafx.h"
-#include <unicode/ustdio.h>
-#include <unicode/ustring.h>
 
 namespace CG3 {
 

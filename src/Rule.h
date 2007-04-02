@@ -17,11 +17,11 @@
 #ifndef __RULE_H
 #define __RULE_H
 
-#include <list>
-#include <unicode/ustring.h>
+#include "stdafx.h"
+#include "Strings.h"
+#include "ContextualTest.h"
 #include "Tag.h"
 #include "ContextualTest.h"
-//#include "Set.h"
 
 namespace CG3 {
 
