@@ -1,0 +1,4 @@
+"<word>"
+	"word" notwanted @want
+	"word" wanted @want @notwanted
+	"word" notmeeither @want

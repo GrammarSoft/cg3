@@ -74,6 +74,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, const std::v
 					type = K_REMOVE;
 				}
 
+				bool good_mapping = false;
 				bool did_test = false;
 				bool did_append = false;
 				bool test_good = false;
@@ -155,6 +156,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, const std::v
 						if (good && reading->current_mapping_tag && reading->tags_mapped.size() > 1) {
 							reading->tags_list.remove(reading->current_mapping_tag);
 							reflowReading(reading);
+							good_mapping = true;
 						}
 						else {
 							if (good) {
@@ -175,6 +177,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, const std::v
 							}
 							reading->tags_list.push_back(reading->current_mapping_tag);
 							reflowReading(reading);
+							good_mapping = true;
 						}
 						if (good) {
 							selected.push_back(reading);
@@ -411,6 +414,10 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, const std::v
 							}
 						}
 					}
+				}
+
+				if (!good_mapping && removed.empty()) {
+					section_did_good = false;
 				}
 
 				if (!removed.empty()) {
