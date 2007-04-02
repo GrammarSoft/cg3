@@ -44,6 +44,34 @@
         set difference again, but the new operator ^ takes place of VISLCG's behavior.
       </para>
     </section>
+
+    <section id="gotcha-application-order">
+      <title>Rule Application Order</title>
+      <para>
+        In CG-2 the order in which rules are applied on cohorts cannot be reliably predicted.
+      </para>
+      <para>
+        In VISLCG rules can be forced to be applied in the order they occur in the grammar, but
+        VISLCG will try to run all rules on the current cohort before trying next cohort:
+        <screen>
+          ForEach (Window)
+          &nbsp; ForEach (Cohort)
+          &nbsp;&nbsp; ForEach (Rule)
+          &nbsp;&nbsp;&nbsp; ApplyRule
+        </screen>
+      </para>
+      <para>
+        CG-3 always applies rules in the order they occur in the grammar, and will try the current
+        rule on all cohorts in the window before moving on to the next rule.
+        This yields a far more predictable result and cuts down on the need for many sections in the grammar.
+        <screen>
+          ForEach (Window)
+          &nbsp; ForEach (Rule)
+          &nbsp;&nbsp; ForEach (Cohort)
+          &nbsp;&nbsp;&nbsp; ApplyRule
+        </screen>
+      </para>
+    </section>
   </section>
 
   <section id="incompatibilites">
