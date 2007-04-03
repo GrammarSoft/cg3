@@ -11,6 +11,51 @@
   <section id="gotchas">
     <title>Gotcha's</title>
 
+    <section id="gotcha-magic-readings">
+      <title>Magic Readings</title>
+      <para>
+        In CG-3 all cohorts have at least one reading. If none are given in the input, one is generated
+        from the wordform. These magic readings can be the target of rules, which may not always be intended.
+      </para>
+      <para>
+        For example, given the input
+        <screen>
+          "&lt;word&gt;"
+          &nbsp; "word" N NOM SG
+          "&lt;$.&gt;"
+        </screen>
+        a magic reading is made so the cohorts internally looks like
+        <screen>
+          "&lt;word&gt;"
+          &nbsp; "word" N NOM SG
+          "&lt;$.&gt;"
+          &nbsp; "&lt;$.&gt;" &lt;&lt;&lt;
+        </screen>
+      </para>
+      <para>
+        The above input combined with a rule a'la
+        <screen>
+          MAP (@X) (*) ;
+        </screen>
+        will give the output
+        <screen>
+          "&lt;word&gt;"
+          &nbsp; "word" N NOM SG @X
+          "&lt;$.&gt;"
+          &nbsp; "&lt;$.&gt;" @X
+        </screen>
+        because MAP promoted the last magic reading to a real reading.
+      </para>
+      <para>
+        If you do not want these magic readings to be the possible target of rules, you can use the
+        cmdline option --no-magic-readings. Internally they will still be generated and contextual tests
+        can still reference them, but rules cannot touch or modify them directly.
+        <emphasis>
+          <link linkend="keyword-setchild">SETCHILD</link> is an exception.
+        </emphasis>
+      </para>
+    </section>
+
     <section id="gotcha-not-negate">
       <title>NOT and NEGATE</title>
       <para>
@@ -42,6 +87,15 @@
       <para>
         In CG-2 the - operator means set difference; in VISLCG it means set fail-fast; in CG-3 it means
         set difference again, but the new operator ^ takes place of VISLCG's behavior.
+      </para>
+    </section>
+
+    <section id="gotcha-first-last-tags">
+      <title>&gt;&gt;&gt; and &lt;&lt;&lt;</title>
+      <para>
+        In VISLCG the magic tags &gt;&gt;&gt; and &lt;&lt;&lt;,
+        denoting sentence start and end respectively, could sometimes wind up in the output.
+        In CG-3 they are never part of the output.
       </para>
     </section>
 
