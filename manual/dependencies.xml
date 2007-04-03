@@ -4,13 +4,13 @@
 <chapter id="dependencies">
   <title>Making use of Dependencies</title>
 
-  <indexterm>
-    <primary>SETPARENT</primary>
-  </indexterm>
-  <indexterm>
-    <primary>SETCHILD</primary>
-  </indexterm>
   <para>
+    <indexterm>
+      <primary>SETPARENT</primary>
+    </indexterm>
+    <indexterm>
+      <primary>SETCHILD</primary>
+    </indexterm>
     CG-3 can work with dependency trees in various ways. The input cohorts can have existing
     dependencies; the grammar can create new attachments; or a combination of the two.
     <emphasis>It should be noted that mixing the two sources is not recommended.</emphasis>

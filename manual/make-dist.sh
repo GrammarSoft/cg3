@@ -11,7 +11,12 @@ mv *.html dist/chunked/
 mkdir -p dist/single
 mv *.html dist/single/
 
+. pdf.sh
+mv cg3.pdf dist/vislcg3.pdf
+
 rm -f manual-combined.xml
+rm -f cg3.fo
+
 mkdir -p dist/source
 cp *.xml dist/source
 

@@ -25,7 +25,8 @@
       As root:
       <screen>
         # cd /tmp
-        # wget -c --passive '<ulink url="http://icu-project.org/download/">ftp://ftp.software.ibm.com/software/globalization/icu/3.6/icu4c-3_6-src.tgz</ulink>'
+        # wget -c --passive
+        &nbsp; '<ulink url="http://icu-project.org/download/">ftp://ftp.software.ibm.com/software/globalization/icu/3.6/icu4c-3_6-src.tgz</ulink>'
         # tar -zxvf icu4c-3_6-src.tgz
         # cd icu/source/
         # ./runConfigureICU Linux
@@ -52,7 +53,8 @@
     <para>
       As any user in any folder where you can find it again:
       <screen>
-        $ svn co --username anonymous --password anonymous <ulink url="http://anonymous:anonymous@beta.visl.sdu.dk/svn/visl/tools/vislcg3/">http://beta.visl.sdu.dk/svn/visl/tools/vislcg3</ulink>
+        $ svn co --username anonymous --password anonymous
+        &nbsp; <ulink url="http://anonymous:anonymous@beta.visl.sdu.dk/svn/visl/tools/vislcg3/">http://beta.visl.sdu.dk/svn/visl/tools/vislcg3</ulink>
         $ cd vislcg3/trunk/
         $ ./compile-linux.sh
         $ ./vislcg3

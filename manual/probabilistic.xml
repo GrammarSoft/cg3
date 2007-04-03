@@ -33,7 +33,8 @@
       REMOVE (&lt;Conf&lt;5&gt;) ;
       # Select N NOM SG if Confidence is above 60%
       SELECT (N NOM SG &lt;Conf&gt;60&gt;) ;
-      # Remove the Verb reading if the frequency is under 150 and Noun's frequency is above 700
+      # Remove the Verb reading if the frequency is under 150
+      # and Noun's frequency is above 700
       REMOVE (&lt;Verb&lt;150&gt;) (0 (&lt;Noun&lt;700&gt;)) ;
     </screen>
   </para>

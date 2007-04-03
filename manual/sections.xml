@@ -4,22 +4,22 @@
 <chapter id="sections">
   <title>Sections</title>
 
-  <indexterm>
-    <primary>SECTION</primary>
-  </indexterm>
-  <indexterm>
-    <primary>MAPPINGS</primary>
-  </indexterm>
-  <indexterm>
-    <primary>SETS</primary>
-  </indexterm>
-  <indexterm>
-    <primary>CORRECTIONS</primary>
-  </indexterm>
-  <indexterm>
-    <primary>CONSTRAINTS</primary>
-  </indexterm>
   <para>
+    <indexterm>
+      <primary>SECTION</primary>
+    </indexterm>
+    <indexterm>
+      <primary>MAPPINGS</primary>
+    </indexterm>
+    <indexterm>
+      <primary>SETS</primary>
+    </indexterm>
+    <indexterm>
+      <primary>CORRECTIONS</primary>
+    </indexterm>
+    <indexterm>
+      <primary>CONSTRAINTS</primary>
+    </indexterm>
     CG-2 has three seperate grammar sections: <link linkend="keyword-sets">SETS</link>,
     <link linkend="keyword-mappings">MAPPINGS</link>,
     and <link linkend="keyword-constraints">CONSTRAINTS</link>.

@@ -11,13 +11,15 @@
 
     <authorgroup>
       <author>
+        <honorific>Mr</honorific>
         <firstname>Tino</firstname>
         <surname>Didriksen</surname>
         <affiliation>
+          <shortaffil>VISL</shortaffil>
+          <orgname>
+            <ulink url="http://visl.dk/">Visual Interactive Syntax Learning</ulink>
+          </orgname>
           <address>
-            <otheraddr>
-              <ulink url="http://visl.dk/">Visual Interactive Syntax Learning</ulink>
-            </otheraddr>
             <email>tino@didriksen.cc</email>
           </address>
         </affiliation>
