@@ -31,6 +31,7 @@
 
 #include "options.h"
 using namespace Options;
+void GAppSetOpts(CG3::GrammarApplicator *applicator);
 
 int main(int argc, char* argv[]) {
 	UFILE *ux_stdin = 0;
@@ -81,7 +82,7 @@ int main(int argc, char* argv[]) {
 		fprintf(stderr, " --prefix                 Sets the prefix for mapping. Defaults to @.\n");
 		fprintf(stderr, " --sections               Number of sections to run. Defaults to running all sections.\n");
 		//fprintf(stderr, " --reorder                Rearranges rules so SELECTs are run first.\n");
-		//fprintf(stderr, " --single-run             Only runs each section once.\n");
+		fprintf(stderr, " --single-run             Only runs each section once.\n");
 		fprintf(stderr, " --no-mappings            Disables running any MAP, ADD, or REPLACE rules.\n");
 		fprintf(stderr, " --no-corrections         Disables running any SUBSTITUTE or APPEND rules.\n");
 		fprintf(stderr, "\n");
@@ -89,6 +90,7 @@ int main(int argc, char* argv[]) {
 		fprintf(stderr, " --always-span            Forces all scanning tests to always span across window boundaries.\n");
 		fprintf(stderr, " --soft-limit             Number of cohorts after which the SOFT-DELIMITERS kick in. Defaults to 300.\n");
 		fprintf(stderr, " --hard-limit             Number of cohorts after which the window is delimited forcefully. Defaults to 500.\n");
+		fprintf(stderr, " --no-magic-readings      Prevents running rules on magic readings.\n");
 		//fprintf(stderr, " --dep-delimit            Delimit via dependency information instead of DELIMITERS.\n");
 		//fprintf(stderr, " --dep-reenum             Outputs the internal reenumeration of dependencies.\n");
 		//fprintf(stderr, " --dep-humanize           Output dependency information in a more readable format.\n");
@@ -259,45 +261,7 @@ int main(int argc, char* argv[]) {
 
 		applicator = new CG3::GrammarApplicator(ux_stdin, ux_stdout, ux_stderr);
 		applicator->setGrammar(grammar);
-		if (options[ALWAYS_SPAN].doesOccur) {
-			applicator->always_span = true;
-		}
-		applicator->apply_mappings = true;
-		if (options[NOMAPPINGS].doesOccur) {
-			applicator->apply_mappings = false;
-		}
-		applicator->apply_corrections = true;
-		if (options[NOCORRECTIONS].doesOccur) {
-			applicator->apply_corrections = false;
-		}
-		if (options[TRACE].doesOccur) {
-			applicator->trace = true;
-		}
-		if (options[SINGLERUN].doesOccur) {
-			applicator->single_run = true;
-		}
-		if (options[GRAMMAR_INFO].doesOccur) {
-			applicator->enableStatistics();
-		}
-		if (options[SECTIONS].doesOccur) {
-			applicator->sections = abs(atoi(options[SECTIONS].value));
-		}
-		if (options[NUM_WINDOWS].doesOccur) {
-			applicator->num_windows = abs(atoi(options[NUM_WINDOWS].value));
-		}
-		if (options[SOFT_LIMIT].doesOccur) {
-			applicator->soft_limit = abs(atoi(options[SOFT_LIMIT].value));
-		}
-		if (options[HARD_LIMIT].doesOccur) {
-			applicator->hard_limit = abs(atoi(options[HARD_LIMIT].value));
-		}
-		if (options[DEP_REENUM].doesOccur) {
-			applicator->dep_reenum = true;
-		}
-		if (options[DEP_HUMANIZE].doesOccur) {
-			applicator->dep_reenum = true;
-			applicator->dep_humanize = true;
-		}
+		GAppSetOpts(applicator);
 		applicator->runGrammarOnText(ux_stdin, ux_stdout);
 
 		std::cerr << "Applying grammar on input took " << glob_timer->getValueFrom(main_timer) << " seconds." << std::endl;
@@ -317,42 +281,7 @@ int main(int argc, char* argv[]) {
 
 				applicator = new CG3::GrammarApplicator(ux_stdin, ux_stdout, ux_stderr);
 				applicator->setGrammar(grammar);
-				if (options[ALWAYS_SPAN].doesOccur) {
-					applicator->always_span = true;
-				}
-				applicator->apply_mappings = true;
-				if (options[NOMAPPINGS].doesOccur) {
-					applicator->apply_mappings = false;
-				}
-				applicator->apply_corrections = true;
-				if (options[NOCORRECTIONS].doesOccur) {
-					applicator->apply_corrections = false;
-				}
-				if (options[TRACE].doesOccur) {
-					applicator->trace = true;
-				}
-				if (options[SINGLERUN].doesOccur) {
-					applicator->single_run = true;
-				}
-				if (options[SECTIONS].doesOccur) {
-					applicator->sections = abs(atoi(options[SECTIONS].value));
-				}
-				if (options[NUM_WINDOWS].doesOccur) {
-					applicator->num_windows = abs(atoi(options[NUM_WINDOWS].value));
-				}
-				if (options[SOFT_LIMIT].doesOccur) {
-					applicator->soft_limit = abs(atoi(options[SOFT_LIMIT].value));
-				}
-				if (options[HARD_LIMIT].doesOccur) {
-					applicator->hard_limit = abs(atoi(options[HARD_LIMIT].value));
-				}
-				if (options[DEP_REENUM].doesOccur) {
-					applicator->dep_reenum = true;
-				}
-				if (options[DEP_HUMANIZE].doesOccur) {
-					applicator->dep_reenum = true;
-					applicator->dep_humanize = true;
-				}
+				GAppSetOpts(applicator);
 				applicator->enableStatistics();
 				applicator->runGrammarOnText(ux_stdin, ux_stdout);
 
@@ -386,42 +315,7 @@ int main(int argc, char* argv[]) {
 
 			applicator = new CG3::GrammarApplicator(ux_stdin, ux_stdout, ux_stderr);
 			applicator->setGrammar(grammar);
-			if (options[ALWAYS_SPAN].doesOccur) {
-				applicator->always_span = true;
-			}
-			applicator->apply_mappings = true;
-			if (options[NOMAPPINGS].doesOccur) {
-				applicator->apply_mappings = false;
-			}
-			applicator->apply_corrections = true;
-			if (options[NOCORRECTIONS].doesOccur) {
-				applicator->apply_corrections = false;
-			}
-			if (options[TRACE].doesOccur) {
-				applicator->trace = true;
-			}
-			if (options[SINGLERUN].doesOccur) {
-				applicator->single_run = true;
-			}
-			if (options[SECTIONS].doesOccur) {
-				applicator->sections = abs(atoi(options[SECTIONS].value));
-			}
-			if (options[NUM_WINDOWS].doesOccur) {
-				applicator->num_windows = abs(atoi(options[NUM_WINDOWS].value));
-			}
-			if (options[SOFT_LIMIT].doesOccur) {
-				applicator->soft_limit = abs(atoi(options[SOFT_LIMIT].value));
-			}
-			if (options[HARD_LIMIT].doesOccur) {
-				applicator->hard_limit = abs(atoi(options[HARD_LIMIT].value));
-			}
-			if (options[DEP_REENUM].doesOccur) {
-				applicator->dep_reenum = true;
-			}
-			if (options[DEP_HUMANIZE].doesOccur) {
-				applicator->dep_reenum = true;
-				applicator->dep_humanize = true;
-			}
+			GAppSetOpts(applicator);
 			applicator->enableStatistics();
 			applicator->runGrammarOnText(ux_stdin, ux_stdout);
 
@@ -470,4 +364,49 @@ int main(int argc, char* argv[]) {
 	delete glob_timer;
 
 	return status;
+}
+
+void GAppSetOpts(CG3::GrammarApplicator *applicator) {
+	if (options[ALWAYS_SPAN].doesOccur) {
+		applicator->always_span = true;
+	}
+	applicator->apply_mappings = true;
+	if (options[NOMAPPINGS].doesOccur) {
+		applicator->apply_mappings = false;
+	}
+	applicator->apply_corrections = true;
+	if (options[NOCORRECTIONS].doesOccur) {
+		applicator->apply_corrections = false;
+	}
+	if (options[TRACE].doesOccur) {
+		applicator->trace = true;
+	}
+	if (options[SINGLERUN].doesOccur) {
+		applicator->single_run = true;
+	}
+	if (options[GRAMMAR_INFO].doesOccur) {
+		applicator->enableStatistics();
+	}
+	if (options[SECTIONS].doesOccur) {
+		applicator->sections = abs(atoi(options[SECTIONS].value));
+	}
+	if (options[NUM_WINDOWS].doesOccur) {
+		applicator->num_windows = abs(atoi(options[NUM_WINDOWS].value));
+	}
+	if (options[SOFT_LIMIT].doesOccur) {
+		applicator->soft_limit = abs(atoi(options[SOFT_LIMIT].value));
+	}
+	if (options[HARD_LIMIT].doesOccur) {
+		applicator->hard_limit = abs(atoi(options[HARD_LIMIT].value));
+	}
+	if (options[DEP_REENUM].doesOccur) {
+		applicator->dep_reenum = true;
+	}
+	if (options[DEP_HUMANIZE].doesOccur) {
+		applicator->dep_reenum = true;
+		applicator->dep_humanize = true;
+	}
+	if (options[MAGIC_READINGS].doesOccur) {
+		applicator->allow_magic_readings = false;
+	}
 }

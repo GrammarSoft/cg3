@@ -27,6 +27,7 @@ GrammarApplicator::GrammarApplicator(UFILE *ux_in, UFILE *ux_out, UFILE *ux_err)
 	always_span = false;
 	apply_mappings = true;
 	apply_corrections = true;
+	allow_magic_readings = true;
 	trace = false;
 	single_run = false;
 	statistics = false;

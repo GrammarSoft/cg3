@@ -89,6 +89,9 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, const std::v
 					if (reading->mapped && (rule->type == K_MAP || rule->type == K_ADD || rule->type == K_REPLACE)) {
 						continue;
 					}
+					if (reading->noprint && !allow_magic_readings) {
+						continue;
+					}
 					last_mapping_tag = 0;
 					if (rule->target && doesSetMatchReading(reading, rule->target, set->has_mappings)) {
 						reading->current_mapping_tag = last_mapping_tag;
@@ -417,6 +420,9 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, const std::v
 				}
 
 				if (!good_mapping && removed.empty()) {
+					section_did_good = false;
+				}
+				if (single_run) {
 					section_did_good = false;
 				}
 

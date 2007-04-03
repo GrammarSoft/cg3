@@ -36,6 +36,7 @@ namespace CG3 {
 		bool apply_corrections;
 		bool trace;
 		bool single_run;
+		bool allow_magic_readings;
 
 		bool dep_reenum;
 		bool dep_delimit;
