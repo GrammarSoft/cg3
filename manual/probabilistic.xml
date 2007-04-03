@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE chapter SYSTEM "docbook-dtd-45/docbookx.dtd">
+
+<chapter id="probabilistic">
+  <title>Making use of Probabilistic / Statistic Input</title>
+
+  <para>
+    If your input contains confidence values or similar, you can make use of those in the grammar.
+    <emphasis>
+      See <link linkend="numerical-matches">numeric tags</link> for the specific feature.
+    </emphasis>
+  </para>
+
+  <para>
+    For example, given the input sentence "<emphasis>Bear left at zoo.</emphasis>" a statistical tagger
+    may assign confidence and frequency values to the readings:
+    <screen>
+      "&lt;Bear&gt;"
+      &nbsp; "bear" N NOM SG &lt;Noun:784&gt; &lt;Conf:80&gt; @SUBJ
+      &nbsp; "bear" V INF &lt;Verb:140&gt; &lt;Conf:20&gt; @IMV @#ICL-AUX&lt;
+      "&lt;left&gt;"
+      &nbsp; "leave" PED @IMV @#ICL-N&lt;
+      &nbsp; "leave" V PAST VFIN @FMV
+      "&lt;at&gt;"
+      &nbsp; "at" PRP @ADVL
+      "&lt;zoo&gt;"
+      &nbsp; "zoo" N NOM SG @P&lt;
+      "&lt;$.&gt;"
+    </screen>
+    which you could query with e.g.
+    <screen>
+      # Remove any reading with Confidence below 5%
+      REMOVE (&lt;Conf&lt;5&gt;) ;
+      # Select N NOM SG if Confidence is above 60%
+      SELECT (N NOM SG &lt;Conf&gt;60&gt;) ;
+      # Remove the Verb reading if the frequency is under 150 and Noun's frequency is above 700
+      REMOVE (&lt;Verb&lt;150&gt;) (0 (&lt;Noun&lt;700&gt;)) ;
+    </screen>
+  </para>
+
+  <para>
+    These are just examples of what <link linkend="numerical-matches">numeric tags</link> could be used for.
+    There is no reason Confidence values are in % and there is no requirement that they must add up to 100%.
+    The only requirement of a numerical tag is an alphanumeric identifier and a positive integer value.
+  </para>
+
+</chapter>
