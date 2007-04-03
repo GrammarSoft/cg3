@@ -32,7 +32,6 @@ namespace CG3 {
 		~CompositeTag();
 
 		void addTag(uint32_t tag);
-		void removeTag(uint32_t tag);
 
 		uint32_t rehash();
 	};

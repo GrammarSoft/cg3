@@ -31,10 +31,6 @@ void CompositeTag::addTag(uint32_t tag) {
 	tags[tag] = tag;
 	tags_map[tag] = tag;
 }
-void CompositeTag::removeTag(uint32_t tag) {
-	tags.erase(tag);
-	tags_map.erase(tag);
-}
 
 uint32_t CompositeTag::rehash() {
 	uint32_t retval = 0;

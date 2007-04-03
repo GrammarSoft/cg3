@@ -98,10 +98,6 @@ ContextualTest *ContextualTest::allocateContextualTest() {
 	return new ContextualTest;
 }
 
-void ContextualTest::destroyContextualTest(ContextualTest *to) {
-	delete to;
-}
-
 uint32_t ContextualTest::rehash() {
 	hash = 0;
 	hash = hash_sdbm_uint32_t(hash, (uint32_t)careful);

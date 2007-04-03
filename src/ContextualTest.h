@@ -55,7 +55,6 @@ namespace CG3 {
 		void parsePosition(const UChar *pos, UFILE *ux_stderr);
 
 		ContextualTest *allocateContextualTest();
-		void destroyContextualTest(ContextualTest *to);
 		
 		uint32_t rehash();
 		void reset();

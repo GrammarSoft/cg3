@@ -248,20 +248,3 @@ uint32_t Tag::rehash() {
 
 	return hash;
 }
-
-void Tag::duplicateTag(const Tag *from) {
-	type = from->type;
-	hash = from->hash;
-	comparison_op = from->comparison_op;
-	comparison_val = from->comparison_val;
-
-	if (from->comparison_key) {
-		comparison_key = new UChar[u_strlen(from->comparison_key)+1];
-		u_strcpy(comparison_key, from->comparison_key);
-	}
-
-	if (from->tag) {
-		tag = new UChar[u_strlen(from->tag)+1];
-		u_strcpy(tag, from->tag);
-	}
-}
