@@ -476,7 +476,6 @@ label_runGrammarOnWindow_begin:
 		}
 	}
 
-	// ToDo: Make old cohort -> rules order available via switch
 	if (!grammar->rules.empty()) {
 		uint32_t smax = (uint32_t)grammar->sections.size()-1;
 		if (sections && sections < smax) {

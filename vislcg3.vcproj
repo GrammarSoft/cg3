@@ -564,6 +564,10 @@
 			RelativePath=".\Todo"
 			>
 		</File>
+		<File
+			RelativePath=".\TODO.list"
+			>
+		</File>
 	</Files>
 	<Globals>
 	</Globals>

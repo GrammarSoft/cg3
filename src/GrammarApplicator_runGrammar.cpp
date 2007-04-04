@@ -52,7 +52,6 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 		return error;
 	}
 
-	// ToDo: Add flag for using dependencies to delimit windows
 	if (!grammar->delimiters || (grammar->delimiters->sets.empty() && grammar->delimiters->tags_map.empty())) {
 		if (!grammar->soft_delimiters || (grammar->soft_delimiters->sets.empty() && grammar->soft_delimiters->tags_map.empty())) {
 			u_fprintf(ux_stderr, "Warning: No soft or hard delimiters defined in grammar. Hard limit of %u cohorts may break windows in unintended places.\n", hard_limit);

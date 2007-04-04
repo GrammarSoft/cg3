@@ -1,22 +1,9 @@
-src/GPRE2C.cpp:	// ToDo: Generate a unique set name somehow faster.
-src/GPRE2C.cpp.re2c:	// ToDo: Generate a unique set name somehow faster.
-src/GrammarApplicator.cpp:		// ToDo: Maybe allow whitespace in baseforms.
-src/GrammarApplicator.h:		// ToDo: Implement --unsafe
-src/GrammarApplicator.h:		// ToDo: Make use of Preferred-Targets
-src/GrammarApplicator_matchSet.cpp:			// ToDo: Cache regexp and icase hits/misses
-src/GrammarApplicator_reflow.cpp:					// ToDo: If parent is not found, it should be totally ignored, not just set to itself
-src/GrammarApplicator_runContextualTest.cpp:	// ToDo: (NOT *) and (*C) tests can be cached
-src/GrammarApplicator_runGrammar.cpp:	// ToDo: Add flag for using dependencies to delimit windows
-src/GrammarApplicator_runGrammar.cpp:				// ToDo: Refactor to allocate SingleWindow, Cohort, and Reading from their containers
-src/GrammarApplicator_runRules.cpp:	// ToDo: Make old cohort -> rules order available via switch
-src/GrammarParser.cpp:	// ToDo: Make line length dynamic
-src/GrammarParser.cpp:		// ToDo: Maybe support ICase keywords
-src/GrammarParser_parseRemSetVariable.cpp:	// ToDo: Fix variables
-src/Rule.h:		// ToDo: Add proper "quality" quantifier based on num_fail, num_match, total_time
-src/Strings.h:		// ToDo: Add ABORT
-src/Tag.cpp:		// ToDo: Implement META and VAR
-src/Tag.cpp:		// ToDo: Add ICASE: REGEXP: and //r //ri //i to tags
-src/main.cpp:// ToDo: Rules can be dynamically reordered in "optimize correct" mode by moving the offending rule to the end of the section
-src/main.cpp:// ToDo: Refactor statistics to be gathered in their own objects rather than inline with Rules
-src/main.cpp:// ToDo: Enable a daemonized version.
-src/main.cpp:		// ToDo: Implement binary grammars
+ToDo: Rules can be dynamically reordered in "optimize correct" mode by moving the offending rule to the end of the section
+ToDo: Refactor statistics to be gathered in their own objects rather than inline with Rules
+ToDo: Enable a daemonized version.
+ToDo: Maybe allow whitespace in baseforms.
+ToDo: Add flag for using dependencies to delimit windows
+ToDo: Make old cohort -> rules order available via switch
+ToDo: Implement binary grammars
+ToDo: Implement --unsafe
+ToDo: Make use of Preferred-Targets

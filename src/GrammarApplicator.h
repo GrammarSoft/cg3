@@ -29,8 +29,6 @@
 namespace CG3 {
 	class GrammarApplicator {
 	public:
-		// ToDo: Implement --unsafe
-		// ToDo: Make use of Preferred-Targets
 		bool always_span;
 		bool apply_mappings;
 		bool apply_corrections;

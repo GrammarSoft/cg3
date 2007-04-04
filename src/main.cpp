@@ -15,10 +15,6 @@
 * rights and limitations under the License.
 */
 
-// ToDo: Rules can be dynamically reordered in "optimize correct" mode by moving the offending rule to the end of the section
-// ToDo: Refactor statistics to be gathered in their own objects rather than inline with Rules
-// ToDo: Enable a daemonized version.
-
 #include "stdafx.h"
 #include "icu_uoptions.h"
 #include "Grammar.h"
@@ -48,7 +44,7 @@ int main(int argc, char* argv[]) {
 		CG3_VERSION_MAJOR, CG3_VERSION_MINOR, CG3_VERSION_PATCH, CG3_REVISION);
 	U_MAIN_INIT_ARGS(argc, argv);
 
-	argc = u_parseArgs(argc, argv, (int32_t)(sizeof(options)/sizeof(options[0])), options);
+	argc = u_parseArgs(argc, argv, NUM_OPTIONS, options);
 
 	if (argc < 0) {
 		fprintf(stderr, "%s: error in command line argument \"%s\"\n", argv[0], argv[-argc]);
@@ -66,7 +62,7 @@ int main(int argc, char* argv[]) {
 	}
 
 	if (argc < 0 || options[HELP1].doesOccur || options[HELP2].doesOccur) {
-		fprintf(stderr, "Usage: vislcg3 [OPTIONS] [FILES]\n");
+		fprintf(stderr, "Usage: vislcg3 [OPTIONS]\n");
 		fprintf(stderr, "\n");
 		fprintf(stderr, "Options:\n");
 		fprintf(stderr, " -h or -? or --help       Displays this list.\n");
@@ -74,7 +70,6 @@ int main(int argc, char* argv[]) {
 		fprintf(stderr, " -g or --grammar          Specifies the grammar file to use for disambiguation.\n");
 		fprintf(stderr, " -p or --vislcg-compat    Tells the grammar compiler to be compatible with older VISLCG syntax.\n");
 		fprintf(stderr, " --grammar-out            Writes the compiled grammar back out in textual form to a file.\n");
-		// ToDo: Implement binary grammars
 		//fprintf(stderr, " --grammar-bin            Writes the compiled grammar back out in binary form to a file.\n");
 		fprintf(stderr, " --grammar-info           Writes the compiled grammar back out in textual form to a file, with lots of statistics and information.\n");
 		fprintf(stderr, " --grammar-only           Compiles the grammar only.\n");
@@ -95,7 +90,7 @@ int main(int argc, char* argv[]) {
 		//fprintf(stderr, " --dep-reenum             Outputs the internal reenumeration of dependencies.\n");
 		//fprintf(stderr, " --dep-humanize           Output dependency information in a more readable format.\n");
 		fprintf(stderr, "\n");
-		fprintf(stderr, " -O or --stdout           A file to print out to instead of stdout.\n");
+		fprintf(stderr, " -O or --stdout           A file to print output to instead of stdout.\n");
 		fprintf(stderr, " -I or --stdin            A file to read input from instead of stdin.\n");
 		fprintf(stderr, " -E or --stderr           A file to print errors to instead of stderr.\n");
 		fprintf(stderr, "\n");
