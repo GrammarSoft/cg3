@@ -273,15 +273,32 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, const std::v
 						}
 						else if (rule->type == K_SUBSTITUTE) {
 							std::list<uint32_t>::const_iterator tter;
+							uint32_t tloc = 0;
 							size_t tagb = reading->tags_list.size();
 							for (tter = rule->sublist.begin() ; tter != rule->sublist.end() ; tter++) {
+								if (!tloc) {
+									std::list<uint32_t>::iterator tfind;
+									for (tfind = reading->tags_list.begin() ; tfind != reading->tags_list.end() ; tfind++) {
+										if (*tfind == *tter) {
+											tloc = *(--tfind);
+											break;
+										}
+									}
+								}
 								reading->tags_list.remove(*tter);
 							}
 							if (tagb != reading->tags_list.size()) {
 								reading->hit_by.push_back(rule->line);
 								reading->noprint = false;
+								std::list<uint32_t>::iterator tfind;
+								for (tfind = reading->tags_list.begin() ; tfind != reading->tags_list.end() ; tfind++) {
+									if (*tfind == tloc) {
+										tfind++;
+										break;
+									}
+								}
 								for (tter = rule->maplist.begin() ; tter != rule->maplist.end() ; tter++) {
-									reading->tags_list.push_back(*tter);
+									reading->tags_list.insert(tfind, *tter);
 								}
 								reflowReading(reading);
 								if (!reading->tags_mapped.empty()) {
