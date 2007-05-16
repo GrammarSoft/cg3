@@ -39,6 +39,7 @@ namespace CG3 {
 		bool dep_reenum;
 		bool dep_delimit;
 		bool dep_humanize;
+		bool dep_block_loops;
 
 		uint32_t num_windows;
 		uint32_t soft_limit;
@@ -106,6 +107,7 @@ namespace CG3 {
 		inline bool __index_matches(const stdext::hash_map<uint32_t, Index*> *me, const uint32_t value, const uint32_t set);
 		void reflowReading(Reading *reading);
 		void reflowDependencyWindow();
+		bool wouldParentChildLoop(Cohort *parent, Cohort *child);
 		void attachParentChild(Cohort *parent, Cohort *child);
 	};
 }

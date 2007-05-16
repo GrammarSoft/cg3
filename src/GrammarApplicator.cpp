@@ -34,6 +34,7 @@ GrammarApplicator::GrammarApplicator(UFILE *ux_in, UFILE *ux_out, UFILE *ux_err)
 	dep_reenum = false;
 	dep_delimit = false;
 	dep_humanize = false;
+	dep_block_loops = true;
 	dep_highest_seen = 0;
 	has_dep = false;
 	sections = 0;

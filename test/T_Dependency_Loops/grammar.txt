@@ -1,0 +1,19 @@
+DELIMITERS = "<$.>" ;
+
+BEFORE-SECTIONS
+
+MAP (vis) _S_DELIMITERS_ ;
+SETPARENT _S_DELIMITERS_ TO (@0 (*)) ;
+
+# These two are equivalent
+SETCHILD (N) TO (-1* (@>N)) ;
+SETPARENT (@>N) TO (1* (N)) ;
+
+SETPARENT (@P<) TO (-1* (PRP)) ;
+
+SETPARENT (@ADVL) (0 (PRP)) TO (-1* (ADV)) (0 (@ADVL)) ;
+
+SETPARENT ("down") TO (-1* ("once")) ;
+SETPARENT ("once") TO (1* ("down")) ; # Immediate parent->child = child->parent block
+SETPARENT ("once") TO (1* ("the")) ; # Deeper loop detection, blocks.
+SETPARENT ("man") TO (-1* ("there")) ; # Finds an existing loop, but won't block.

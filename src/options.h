@@ -58,6 +58,7 @@ namespace Options {
 		DEP_DELIMIT,
 		DEP_REENUM,
 		DEP_HUMANIZE,
+		DEP_ALLOW_LOOPS,
 		MAGIC_READINGS,
 		NUM_OPTIONS
 	};
@@ -105,6 +106,7 @@ namespace Options {
 		UOPTION_DEF("dep-delimit",			0, UOPT_NO_ARG),
 		UOPTION_DEF("dep-reenum",			0, UOPT_NO_ARG),
 		UOPTION_DEF("dep-humanize",			0, UOPT_NO_ARG),
+		UOPTION_DEF("dep-allow-loops",		0, UOPT_NO_ARG),
 
 		UOPTION_DEF("no-magic-readings",	0, UOPT_NO_ARG)
 	};

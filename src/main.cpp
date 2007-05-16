@@ -86,6 +86,7 @@ int main(int argc, char* argv[]) {
 		fprintf(stderr, " --soft-limit             Number of cohorts after which the SOFT-DELIMITERS kick in. Defaults to 300.\n");
 		fprintf(stderr, " --hard-limit             Number of cohorts after which the window is delimited forcefully. Defaults to 500.\n");
 		fprintf(stderr, " --no-magic-readings      Prevents running rules on magic readings.\n");
+		fprintf(stderr, " --dep-allow-loops        Allows the creation of circular dependencies.\n");
 		//fprintf(stderr, " --dep-delimit            Delimit via dependency information instead of DELIMITERS.\n");
 		//fprintf(stderr, " --dep-reenum             Outputs the internal reenumeration of dependencies.\n");
 		//fprintf(stderr, " --dep-humanize           Output dependency information in a more readable format.\n");
@@ -400,6 +401,9 @@ void GAppSetOpts(CG3::GrammarApplicator *applicator) {
 	if (options[DEP_HUMANIZE].doesOccur) {
 		applicator->dep_reenum = true;
 		applicator->dep_humanize = true;
+	}
+	if (options[DEP_ALLOW_LOOPS].doesOccur) {
+		applicator->dep_block_loops = false;
 	}
 	if (options[MAGIC_READINGS].doesOccur) {
 		applicator->allow_magic_readings = false;

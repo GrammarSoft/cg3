@@ -1,0 +1,22 @@
+"<There>"
+    "there" <*> ADV @F-SUBJ #1->3
+"<once>"
+    "once" ADV @ADVL 
+"<was>"
+    "be" <SVC/N> <SVC/A> V PAST SG1/3 VFIN IMP @FMV #3->1
+"<a>"
+    "a" <Indef> ART DET CENTRAL SG @>N 
+"<man>"
+    "man" N NOM SG @SC 
+"<that>"
+    "that" <NonMod> <**CLB> <Rel> PRON INDP SG/PL @SUBJ 
+"<walked>"
+    "walk" <SV> <SVO> V PAST VFIN @FMV 
+    "walk" <SV> <SVO> V PAST VFIN @FMV @#FS-N< 
+"<down>"
+    "down" <error> PRP @ADVL 
+"<the>"
+    "the" <Def> ART DET CENTRAL SG/PL @>N 
+"<street>"
+    "street" N NOM SG @P< 
+"<$.>"

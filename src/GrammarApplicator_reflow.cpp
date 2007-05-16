@@ -20,10 +20,56 @@
 using namespace CG3;
 using namespace CG3::Strings;
 
+bool GrammarApplicator::wouldParentChildLoop(Cohort *parent, Cohort *child) {
+	bool retval = false;
+	int i = 0;
+
+	if (parent->global_number == child->global_number) {
+		retval = true;
+	} else if (parent->global_number == child->dep_parent) {
+		retval = false;
+	} else if (parent->dep_parent == child->global_number) {
+		retval = true;
+	} else {
+		for (;i<1000;i++) {
+			if (parent->dep_parent == 0) {
+				retval = false;
+				break;
+			}
+			if (gWindow->cohort_map.find(parent->dep_parent) != gWindow->cohort_map.end()) {
+				parent = gWindow->cohort_map.find(parent->dep_parent)->second;
+			} else {
+				break;
+			}
+			if (parent->dep_parent == child->global_number) {
+				retval = true;
+				break;
+			}
+		}
+		if (i == 1000) {
+			u_fprintf(
+				ux_stderr,
+				"Warning: While testing whether %u and %u would loop the counter exceeded 1000 indicating a loop higher up in the tree.\n",
+				child->global_number, parent->global_number
+				);
+		}
+	}
+	return retval;
+}
+
 void GrammarApplicator::attachParentChild(Cohort *parent, Cohort *child) {
 	parent->dep_self = parent->global_number;
-
 	child->dep_self = child->global_number;
+
+	if (dep_block_loops && wouldParentChildLoop(parent, child)) {
+		u_fprintf(
+			ux_stderr,
+			"Info: Dependency between %u and %u would cause a loop. Will not attach them.\n",
+			child->global_number, parent->global_number
+			);
+		return;
+	}
+
 	gWindow->cohort_map.find(child->dep_parent)->second->remChild(child->dep_self);
 	child->dep_parent = parent->global_number;
 
