@@ -65,6 +65,20 @@
     </screen>
   </section>
 
+  <section id="rto-stderr">
+    <title>--stderr, -E</title>
+    <indexterm>
+      <primary>--stderr</primary>
+      <secondary>-E</secondary>
+    </indexterm>
+    <para>
+      A file to print errors to instead of stderr.
+    </para>
+    <screen>
+      -E ./errors.txt
+    </screen>
+  </section>
+
   <section id="rto-codepage-all">
     <title>--codepage-all, -C</title>
     <indexterm>
@@ -168,20 +182,6 @@
     </para>
     <screen>
       --locale-output da_DK
-    </screen>
-  </section>
-
-  <section id="rto-stderr">
-    <title>--stderr, -E</title>
-    <indexterm>
-      <primary>--stderr</primary>
-      <secondary>-E</secondary>
-    </indexterm>
-    <para>
-      A file to print errors to instead of stderr.
-    </para>
-    <screen>
-      -E ./errors.txt
     </screen>
   </section>
 
@@ -327,6 +327,7 @@
     </indexterm>
     <para>
       Number of windows to keep in before/ahead buffers. Defaults to 2.
+      See also <link linkend="test-spanning">Spanning Window Boundaries</link>.
     </para>
     <screen>
       --num-windows 5
@@ -340,6 +341,7 @@
     </indexterm>
     <para>
       Forces all scanning tests to always span across window boundaries.
+      See also <link linkend="test-spanning">Spanning Window Boundaries</link>.
     </para>
     <screen>
       --always-span
@@ -379,6 +381,7 @@
     </indexterm>
     <para>
       Prevents running rules on magic readings.
+      See also <link linkend="gotcha-magic-readings">Magic Readings</link>.
     </para>
     <screen>
       --no-magic-readings
