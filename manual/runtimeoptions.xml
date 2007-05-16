@@ -8,6 +8,198 @@
     A list of things that can be set and/or altered at runtime.
   </para>
 
+  <section id="rto-help">
+    <title>--help, -h, -?</title>
+    <indexterm>
+      <primary>--help</primary>
+      <secondary>-h</secondary>
+      <tertiary>-?</tertiary>
+    </indexterm>
+    <para>
+      Displays the available runtime options.
+    </para>
+    <screen>
+      --help
+    </screen>
+  </section>
+
+  <section id="rto-version">
+    <title>--version, -V</title>
+    <indexterm>
+      <primary>--version</primary>
+      <secondary>-V</secondary>
+    </indexterm>
+    <para>
+      Displays the version number.
+    </para>
+    <screen>
+      --version
+    </screen>
+  </section>
+
+  <section id="rto-stdin">
+    <title>--stdin, -I</title>
+    <indexterm>
+      <primary>--stdin</primary>
+      <secondary>-I</secondary>
+    </indexterm>
+    <para>
+      A file to read input from instead of stdin.
+    </para>
+    <screen>
+      -I ./input.txt
+    </screen>
+  </section>
+
+  <section id="rto-stdout">
+    <title>--stdout, -O</title>
+    <indexterm>
+      <primary>--stdout</primary>
+      <secondary>-O</secondary>
+    </indexterm>
+    <para>
+      A file to print output to instead of stdout.
+    </para>
+    <screen>
+      -O ./output.txt
+    </screen>
+  </section>
+
+  <section id="rto-codepage-all">
+    <title>--codepage-all, -C</title>
+    <indexterm>
+      <primary>--codepage-all</primary>
+      <secondary>-C</secondary>
+    </indexterm>
+    <para>
+      The codepage to use for grammar, input, and output streams. Defaults to ISO-8859-1.
+    </para>
+    <screen>
+      --codepage-all UTF-8
+    </screen>
+  </section>
+
+  <section id="rto-codepage-grammar">
+    <title>--codepage-grammar</title>
+    <indexterm>
+      <primary>--codepage-grammar</primary>
+    </indexterm>
+    <para>
+      Codepage to use for grammar. Overrides --codepage-all.
+    </para>
+    <screen>
+      --codepage-grammar UTF-8
+    </screen>
+  </section>
+
+  <section id="rto-codepage-input">
+    <title>--codepage-input</title>
+    <indexterm>
+      <primary>--codepage-input</primary>
+    </indexterm>
+    <para>
+      Codepage to use for input. Overrides --codepage-all.
+    </para>
+    <screen>
+      --codepage-input ISO-8859-16
+    </screen>
+  </section>
+
+  <section id="rto-codepage-output">
+    <title>--codepage-output</title>
+    <indexterm>
+      <primary>--codepage-output</primary>
+    </indexterm>
+    <para>
+      Codepage to use for output and error streams. Overrides --codepage-all.
+    </para>
+    <screen>
+      --codepage-output UTF-32
+    </screen>
+  </section>
+
+  <section id="rto-locale-all">
+    <title>--locale-all, -L</title>
+    <indexterm>
+      <primary>--locale-all</primary>
+      <secondary>-L</secondary>
+    </indexterm>
+    <para>
+      The locale to use for grammar, input, and output streams. Defaults to en_US_POSIX.
+    </para>
+    <screen>
+      --locale-all fr_FR
+    </screen>
+  </section>
+
+  <section id="rto-locale-grammar">
+    <title>--locale-grammar</title>
+    <indexterm>
+      <primary>--locale-grammar</primary>
+    </indexterm>
+    <para>
+      Locale to use for grammar. Overrides --locale-all.
+    </para>
+    <screen>
+      --locale-grammar da_DK
+    </screen>
+  </section>
+
+  <section id="rto-locale-input">
+    <title>--locale-input</title>
+    <indexterm>
+      <primary>--locale-input</primary>
+    </indexterm>
+    <para>
+      Locale to use for input. Overrides --locale-all.
+    </para>
+    <screen>
+      --locale-input da_DK
+    </screen>
+  </section>
+
+  <section id="rto-locale-output">
+    <title>--locale-output</title>
+    <indexterm>
+      <primary>--locale-output</primary>
+    </indexterm>
+    <para>
+      Locale to use for output and error streams. Overrides --locale-all.
+    </para>
+    <screen>
+      --locale-output da_DK
+    </screen>
+  </section>
+
+  <section id="rto-stderr">
+    <title>--stderr, -E</title>
+    <indexterm>
+      <primary>--stderr</primary>
+      <secondary>-E</secondary>
+    </indexterm>
+    <para>
+      A file to print errors to instead of stderr.
+    </para>
+    <screen>
+      -E ./errors.txt
+    </screen>
+  </section>
+
+  <section id="rto-vislcg-compat">
+    <title>--vislcg-compat, -p</title>
+    <indexterm>
+      <primary>--vislcg-compat</primary>
+      <secondary>-p</secondary>
+    </indexterm>
+    <para>
+      Tells the grammar compiler to be compatible with older VISLCG syntax.
+      Currently this changes all Difference set operators to Fail-Fast set operators.
+    </para>
+    <screen>
+      --version
+    </screen>
+  </section>
+
   <section id="rto-grammar">
     <title>--grammar, -g</title>
     <indexterm>
@@ -22,6 +214,85 @@
     </screen>
   </section>
 
+  <section id="rto-trace">
+    <title>--trace</title>
+    <indexterm>
+      <primary>--trace</primary>
+    </indexterm>
+    <para>
+      Prints debug output alongside with normal output.
+      Deleted readings are prepended a semicolon.
+    </para>
+    <screen>
+      --trace
+    </screen>
+  </section>
+
+  <section id="rto-prefix">
+    <title>--prefix</title>
+    <indexterm>
+      <primary>--prefix</primary>
+    </indexterm>
+    <para>
+      Sets the prefix for mapping. Defaults to @.
+    </para>
+    <screen>
+      --prefix @
+    </screen>
+  </section>
+
+  <section id="rto-sections">
+    <title>--sections</title>
+    <indexterm>
+      <primary>--sections</primary>
+    </indexterm>
+    <para>
+      Number of sections to run. Defaults to running all sections.
+    </para>
+    <screen>
+      --sections 6
+    </screen>
+  </section>
+
+  <section id="rto-single-run">
+    <title>--single-run</title>
+    <indexterm>
+      <primary>--single-run</primary>
+    </indexterm>
+    <para>
+      Only runs each section once.
+    </para>
+    <screen>
+      --single-run
+    </screen>
+  </section>
+
+  <section id="rto-no-mappings">
+    <title>--no-mappings</title>
+    <indexterm>
+      <primary>--no-mappings</primary>
+    </indexterm>
+    <para>
+      Disables running any MAP, ADD, or REPLACE rules.
+    </para>
+    <screen>
+      --no-mappings
+    </screen>
+  </section>
+
+  <section id="rto-no-corrections">
+    <title>--no-corrections</title>
+    <indexterm>
+      <primary>--no-corrections</primary>
+    </indexterm>
+    <para>
+      Disables running any SUBSTITUTE or APPEND rules.
+    </para>
+    <screen>
+      --no-corrections
+    </screen>
+  </section>
+
   <section id="rto-grammar-out">
     <title>--grammar-out</title>
     <indexterm>
@@ -32,6 +303,98 @@
     </para>
     <screen>
       --grammar-out ../grammars/english.out
+    </screen>
+  </section>
+
+  <section id="rto-grammar-info">
+    <title>--grammar-info</title>
+    <indexterm>
+      <primary>--grammar-info</primary>
+    </indexterm>
+    <para>
+      Gathers statistics about the grammar and writes that to a file.
+      This must be used with a file --stdin source as it has to re-run the applicator several times.
+    </para>
+    <screen>
+      --grammar-info ../grammars/english.info
+    </screen>
+  </section>
+
+  <section id="rto-num-windows">
+    <title>--num-windows</title>
+    <indexterm>
+      <primary>--num-windows</primary>
+    </indexterm>
+    <para>
+      Number of windows to keep in before/ahead buffers. Defaults to 2.
+    </para>
+    <screen>
+      --num-windows 5
+    </screen>
+  </section>
+
+  <section id="rto-always-span">
+    <title>--always-span</title>
+    <indexterm>
+      <primary>--always-span</primary>
+    </indexterm>
+    <para>
+      Forces all scanning tests to always span across window boundaries.
+    </para>
+    <screen>
+      --always-span
+    </screen>
+  </section>
+
+  <section id="rto-soft-limit">
+    <title>--soft-limit</title>
+    <indexterm>
+      <primary>--soft-limit</primary>
+    </indexterm>
+    <para>
+      Number of cohorts after which the SOFT-DELIMITERS kick in. Defaults to 300.
+    </para>
+    <screen>
+      --soft-limit 200
+    </screen>
+  </section>
+
+  <section id="rto-hard-limit">
+    <title>--hard-limit</title>
+    <indexterm>
+      <primary>--hard-limit</primary>
+    </indexterm>
+    <para>
+      Number of cohorts after which the window is delimited forcefully. Defaults to 500.
+    </para>
+    <screen>
+      --hard-limit 200
+    </screen>
+  </section>
+
+  <section id="rto-no-magic-readings">
+    <title>--no-magic-readings</title>
+    <indexterm>
+      <primary>--no-magic-readings</primary>
+    </indexterm>
+    <para>
+      Prevents running rules on magic readings.
+    </para>
+    <screen>
+      --no-magic-readings
+    </screen>
+  </section>
+
+  <section id="rto-dep-allow-loops">
+    <title>--dep-allow-loops</title>
+    <indexterm>
+      <primary>--dep-allow-loops</primary>
+    </indexterm>
+    <para>
+      Allows the creation of circular dependencies.
+    </para>
+    <screen>
+      --dep-allow-loops
     </screen>
   </section>
 

@@ -98,12 +98,12 @@ int main(int argc, char* argv[]) {
 		fprintf(stderr, " -C or --codepage-all     The codepage to use for grammar, input, and output streams. Defaults to ISO-8859-1.\n");
 		fprintf(stderr, " --codepage-grammar       Codepage to use for grammar. Overrides --codepage-all.\n");
 		fprintf(stderr, " --codepage-input         Codepage to use for input. Overrides --codepage-all.\n");
-		fprintf(stderr, " --codepage-output        Codepage to use for output. Overrides --codepage-all.\n");
+		fprintf(stderr, " --codepage-output        Codepage to use for output and errors. Overrides --codepage-all.\n");
 		fprintf(stderr, "\n");
 		fprintf(stderr, " -L or --locale-all       The locale to use for grammar, input, and output streams. Defaults to en_US_POSIX.\n");
 		fprintf(stderr, " --locale-grammar         Locale to use for grammar. Overrides --locale-all.\n");
 		fprintf(stderr, " --locale-input           Locale to use for input. Overrides --locale-all.\n");
-		fprintf(stderr, " --locale-output          Locale to use for output. Overrides --locale-all.\n");
+		fprintf(stderr, " --locale-output          Locale to use for output and errors. Overrides --locale-all.\n");
 
 		return argc < 0 ? U_ILLEGAL_ARGUMENT_ERROR : U_ZERO_ERROR;
 	}
