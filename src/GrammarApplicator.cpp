@@ -61,6 +61,7 @@ GrammarApplicator::~GrammarApplicator() {
 	for (iter_stag = single_tags.begin() ; iter_stag != single_tags.end() ; iter_stag++) {
 		if (iter_stag->second && !iter_stag->second->in_grammar) {
 			delete iter_stag->second;
+			iter_stag->second = 0;
 		}
 	}
 	single_tags.clear();
