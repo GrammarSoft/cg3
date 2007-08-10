@@ -34,6 +34,7 @@ GrammarApplicator::GrammarApplicator(UFILE *ux_in, UFILE *ux_out, UFILE *ux_err)
 	dep_reenum = false;
 	dep_delimit = false;
 	dep_humanize = false;
+	dep_original = false;
 	dep_block_loops = true;
 	dep_highest_seen = 0;
 	has_dep = false;
@@ -144,7 +145,7 @@ void GrammarApplicator::printReading(Reading *reading, UFILE *output) {
 		}
 	}
 
-	if (has_dep) {
+	if (has_dep && !dep_original) {
 		if (!reading->parent->dep_self) {
 			reading->parent->dep_self = reading->parent->global_number;
 		}

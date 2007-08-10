@@ -136,10 +136,8 @@ void GrammarApplicator::reflowDependencyWindow() {
 						uint32_t dep_real = gWindow->dep_map.find(cohort->dep_parent)->second;
 						cohort->dep_parent = dep_real;
 					}
-					if (true || gWindow->cohort_map.find(cohort->dep_parent) != gWindow->cohort_map.end()) {
-						gWindow->cohort_map.find(cohort->dep_parent)->second->addChild(cohort->dep_self);
-						cohort->dep_done = true;
-					}
+					gWindow->cohort_map.find(cohort->dep_parent)->second->addChild(cohort->dep_self);
+					cohort->dep_done = true;
 				}
 			}
 		}
@@ -149,13 +147,11 @@ void GrammarApplicator::reflowDependencyWindow() {
 
 			std::set<uint32_t>::const_iterator tter;
 			for (tter = cohort->dep_children.begin() ; tter != cohort->dep_children.end() ; tter++) {
-				if (true || gWindow->cohort_map.find(*tter) != gWindow->cohort_map.end()) {
-					std::set<uint32_t>::const_iterator ster;
-					for (ster = cohort->dep_children.begin() ; ster != cohort->dep_children.end() ; ster++) {
-						gWindow->cohort_map.find(*tter)->second->addSibling(*ster);
-					}
-					gWindow->cohort_map.find(*tter)->second->remSibling(*tter);
+				std::set<uint32_t>::const_iterator ster;
+				for (ster = cohort->dep_children.begin() ; ster != cohort->dep_children.end() ; ster++) {
+					gWindow->cohort_map.find(*tter)->second->addSibling(*ster);
 				}
+				gWindow->cohort_map.find(*tter)->second->remSibling(*tter);
 			}
 		}
 	}

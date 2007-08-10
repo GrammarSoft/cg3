@@ -39,6 +39,7 @@ namespace CG3 {
 		bool dep_reenum;
 		bool dep_delimit;
 		bool dep_humanize;
+		bool dep_original;
 		bool dep_block_loops;
 
 		uint32_t num_windows;

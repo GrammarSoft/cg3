@@ -409,6 +409,9 @@ void GAppSetOpts(CG3::GrammarApplicator *applicator) {
 		applicator->dep_reenum = true;
 		applicator->dep_humanize = true;
 	}
+	if (options[DEP_ORIGINAL].doesOccur) {
+		applicator->dep_original = true;
+	}
 	if (options[DEP_ALLOW_LOOPS].doesOccur) {
 		applicator->dep_block_loops = false;
 	}
