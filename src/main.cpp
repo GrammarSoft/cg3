@@ -226,15 +226,15 @@ int main(int argc, char* argv[]) {
 	delete parser;
 	parser = 0;
 	
+	std::cerr << "Parsing grammar took " << glob_timer->getValueFrom(main_timer) << " seconds." << std::endl;
+	main_timer = glob_timer->getCount();
+
 	if (grammar->has_dep) {
 		std::cerr << "Grammar has dependency rules: Yes" << std::endl;
 	}
 	else {
 		std::cerr << "Grammar has dependency rules: No" << std::endl;
 	}
-
-	std::cerr << "Parsing grammar took " << glob_timer->getValueFrom(main_timer) << " seconds." << std::endl;
-	main_timer = glob_timer->getCount();
 
 	CG3::GrammarWriter *writer = 0;
 	CG3::GrammarApplicator *applicator = 0;

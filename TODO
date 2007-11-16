@@ -7,3 +7,4 @@ ToDo: Make old cohort -> rules order available via switch
 ToDo: Implement binary grammars
 ToDo: Implement --unsafe
 ToDo: Make use of Preferred-Targets
+ToDo: Test whether indexed retrieval of rules is faster than looping over them
