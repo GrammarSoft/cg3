@@ -74,6 +74,9 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 	gWindow = new Window(this);
 
 	uint32_t lines = 0;
+	uint32_t numWindows = 0;
+	uint32_t numCohorts = 0;
+	uint32_t numReadings = 0;
 	Window *cWindow = gWindow;
 	SingleWindow *cSWindow = 0;
 	Cohort *cCohort = 0;
@@ -106,6 +109,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 					reflowReading(cReading);
 					cCohort->appendReading(cReading);
 					lReading = cReading;
+					numReadings++;
 				}
 				std::list<Reading*>::iterator iter;
 				for (iter = cCohort->readings.begin() ; iter != cCohort->readings.end() ; iter++) {
@@ -120,6 +124,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 				lCohort = cCohort;
 				cSWindow = 0;
 				cCohort = 0;
+				numCohorts++;
 			}
 			if (cCohort && (cSWindow->cohorts.size() >= hard_limit || doesTagMatchSet(cCohort->wordform, grammar->delimiters->hash))) {
 				if (cSWindow->cohorts.size() >= hard_limit) {
@@ -135,6 +140,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 					reflowReading(cReading);
 					cCohort->appendReading(cReading);
 					lReading = cReading;
+					numReadings++;
 				}
 				std::list<Reading*>::iterator iter;
 				for (iter = cCohort->readings.begin() ; iter != cCohort->readings.end() ; iter++) {
@@ -149,6 +155,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 				lCohort = cCohort;
 				cSWindow = 0;
 				cCohort = 0;
+				numCohorts++;
 			}
 			if (!cSWindow) {
 				// ToDo: Refactor to allocate SingleWindow, Cohort, and Reading from their containers
@@ -173,6 +180,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 				lReading = cReading;
 				lCohort = cCohort;
 				cCohort = 0;
+				numWindows++;
 			}
 			if (cCohort && cSWindow) {
 				cSWindow->appendCohort(cCohort);
@@ -187,6 +195,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 					reflowReading(cReading);
 					cCohort->appendReading(cReading);
 					lReading = cReading;
+					numReadings++;
 				}
 			}
 			if (cWindow->next.size() > num_windows) {
@@ -198,12 +207,15 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 				}
 				cWindow->shuffleWindowsDown();
 				runGrammarOnWindow(cWindow);
+				u_fprintf(ux_stderr, "Progress: L:%u, W:%u, C:%u, R:%u\r", lines, numWindows, numCohorts, numReadings);
+				u_fflush(ux_stderr);
 			}
 			cCohort = new Cohort(cSWindow);
 			cCohort->global_number = cWindow->cohort_counter++;
 			cCohort->wordform = addTag(cleaned);
 			lCohort = cCohort;
 			lReading = 0;
+			numCohorts++;
 		}
 		else if (cleaned[0] == ' ' && cleaned[1] == '"' && cCohort) {
 			cReading = new Reading(cCohort);
@@ -239,6 +251,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 			}
 			cCohort->appendReading(cReading);
 			lReading = cReading;
+			numReadings++;
 		}
 		else {
 			if (!ignoreinput && cleaned[0] == ' ' && cleaned[1] == '"') {
@@ -279,6 +292,8 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 						}
 						cWindow->shuffleWindowsDown();
 						runGrammarOnWindow(cWindow);
+						u_fprintf(ux_stderr, "Progress: L:%u, W:%u, C:%u, R:%u\r", lines, numWindows, numCohorts, numReadings);
+						u_fflush(ux_stderr);
 					}
 					cWindow->shuffleWindowsDown();
 					while (!cWindow->previous.empty()) {
@@ -351,6 +366,8 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 		}
 		cWindow->shuffleWindowsDown();
 		runGrammarOnWindow(cWindow);
+		u_fprintf(ux_stderr, "Progress: L:%u, W:%u, C:%u, R:%u\r", lines, numWindows, numCohorts, numReadings);
+		u_fflush(ux_stderr);
 	}
 
 	cWindow->shuffleWindowsDown();
