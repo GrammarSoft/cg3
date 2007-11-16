@@ -126,6 +126,7 @@ void GrammarApplicator::printReading(Reading *reading, UFILE *output) {
 		u_fprintf(output, " ");
 	} else {
 		u_fprintf(ux_stderr, "Warning: Reading had no baseform. Usually caused by whitespace in the baseform.\n");
+		u_fflush(ux_stderr);
 	}
 
 	stdext::hash_map<uint32_t, uint32_t> used_tags;
