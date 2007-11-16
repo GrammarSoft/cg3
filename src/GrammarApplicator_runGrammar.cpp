@@ -92,7 +92,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 
 		if (!ignoreinput && cleaned[0] == '"' && cleaned[1] == '<') {
 			ux_trim(cleaned);
-			if (cCohort && cSWindow->cohorts.size() >= soft_limit && doesTagMatchSet(cCohort->wordform, grammar->soft_delimiters->hash)) {
+			if (cCohort && cSWindow->cohorts.size() >= soft_limit && grammar->soft_delimiters && doesTagMatchSet(cCohort->wordform, grammar->soft_delimiters->hash)) {
 				if (cSWindow->cohorts.size() >= soft_limit) {
 					u_fprintf(ux_stderr, "Warning: Soft limit of %u cohorts reached but found suitable soft delimiter.\n", soft_limit);
 				}
