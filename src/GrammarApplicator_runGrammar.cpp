@@ -207,8 +207,10 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 				}
 				cWindow->shuffleWindowsDown();
 				runGrammarOnWindow(cWindow);
+				/*
 				u_fprintf(ux_stderr, "Progress: L:%u, W:%u, C:%u, R:%u\r", lines, numWindows, numCohorts, numReadings);
 				u_fflush(ux_stderr);
+				//*/
 			}
 			cCohort = new Cohort(cSWindow);
 			cCohort->global_number = cWindow->cohort_counter++;
@@ -292,8 +294,10 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 						}
 						cWindow->shuffleWindowsDown();
 						runGrammarOnWindow(cWindow);
+						/*
 						u_fprintf(ux_stderr, "Progress: L:%u, W:%u, C:%u, R:%u\r", lines, numWindows, numCohorts, numReadings);
 						u_fflush(ux_stderr);
+						//*/
 					}
 					cWindow->shuffleWindowsDown();
 					while (!cWindow->previous.empty()) {
@@ -366,8 +370,10 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 		}
 		cWindow->shuffleWindowsDown();
 		runGrammarOnWindow(cWindow);
+		/*
 		u_fprintf(ux_stderr, "Progress: L:%u, W:%u, C:%u, R:%u\r", lines, numWindows, numCohorts, numReadings);
 		u_fflush(ux_stderr);
+		//*/
 	}
 
 	cWindow->shuffleWindowsDown();
