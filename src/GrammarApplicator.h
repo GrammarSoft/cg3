@@ -62,6 +62,11 @@ namespace CG3 {
 		UFILE *ux_stdout;
 		UFILE *ux_stderr;
 
+		uint32_t numLines;
+		uint32_t numWindows;
+		uint32_t numCohorts;
+		uint32_t numReadings;
+
 		static const uint32_t RV_NOTHING = 1;
 		static const uint32_t RV_SOMETHING = 2;
 		static const uint32_t RV_DELIMITED = 4;

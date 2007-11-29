@@ -73,10 +73,6 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 
 	gWindow = new Window(this);
 
-	uint32_t lines = 0;
-	uint32_t numWindows = 0;
-	uint32_t numCohorts = 0;
-	uint32_t numReadings = 0;
 	Window *cWindow = gWindow;
 	SingleWindow *cSWindow = 0;
 	Cohort *cCohort = 0;
@@ -257,12 +253,12 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 		}
 		else {
 			if (!ignoreinput && cleaned[0] == ' ' && cleaned[1] == '"') {
-				u_fprintf(ux_stderr, "Warning: Line %u looked like a reading but there was no containing cohort - treated as plain text.\n", lines);
+				u_fprintf(ux_stderr, "Warning: Line %u looked like a reading but there was no containing cohort - treated as plain text.\n", numLines);
 			}
 			ux_trim(cleaned);
 			if (u_strlen(cleaned) > 0) {
 				if (u_strcmp(cleaned, stringbits[S_CMD_FLUSH]) == 0) {
-					u_fprintf(ux_stderr, "Info: CGCMD:FLUSH encountered on line %u. Flushing...\n", lines);
+					u_fprintf(ux_stderr, "Info: CGCMD:FLUSH encountered on line %u. Flushing...\n", numLines);
 					if (cCohort && cSWindow) {
 						cSWindow->appendCohort(cCohort);
 						if (cCohort->readings.empty()) {
@@ -309,15 +305,15 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 					u_fflush(output);
 				}
 				else if (u_strcmp(cleaned, stringbits[S_CMD_IGNORE]) == 0) {
-					u_fprintf(ux_stderr, "Info: CGCMD:IGNORE encountered on line %u. Passing through all input...\n", lines);
+					u_fprintf(ux_stderr, "Info: CGCMD:IGNORE encountered on line %u. Passing through all input...\n", numLines);
 					ignoreinput = true;
 				}
 				else if (u_strcmp(cleaned, stringbits[S_CMD_RESUME]) == 0) {
-					u_fprintf(ux_stderr, "Info: CGCMD:RESUME encountered on line %u. Resuming CG...\n", lines);
+					u_fprintf(ux_stderr, "Info: CGCMD:RESUME encountered on line %u. Resuming CG...\n", numLines);
 					ignoreinput = false;
 				}
 				else if (u_strcmp(cleaned, stringbits[S_CMD_EXIT]) == 0) {
-					u_fprintf(ux_stderr, "Info: CGCMD:EXIT encountered on line %u. Exiting...\n", lines);
+					u_fprintf(ux_stderr, "Info: CGCMD:EXIT encountered on line %u. Exiting...\n", numLines);
 					u_fprintf(output, "%S", line);
 					goto CGCMD_EXIT;
 				}
@@ -336,7 +332,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 				}
 			}
 		}
-		lines++;
+		numLines++;
 	}
 
 	if (cCohort && cSWindow) {
