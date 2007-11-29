@@ -384,6 +384,12 @@ void GAppSetOpts(CG3::GrammarApplicator *applicator) {
 	if (options[TRACE].doesOccur) {
 		applicator->trace = true;
 	}
+	/*
+	if (options[TRACE_ALL].doesOccur) {
+		applicator->trace = true;
+		applicator->trace_all = true;
+	}
+	//*/
 	if (options[SINGLERUN].doesOccur) {
 		applicator->single_run = true;
 	}

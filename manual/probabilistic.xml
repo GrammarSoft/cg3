@@ -35,7 +35,7 @@
       SELECT (N NOM SG &lt;Conf&gt;60&gt;) ;
       # Remove the Verb reading if the frequency is under 150
       # and Noun's frequency is above 700
-      REMOVE (&lt;Verb&lt;150&gt;) (0 (&lt;Noun&lt;700&gt;)) ;
+      REMOVE (&lt;Verb&lt;150&gt;) (0 (&lt;Noun&gt;700&gt;)) ;
     </screen>
   </para>
 

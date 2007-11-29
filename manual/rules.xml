@@ -6,8 +6,7 @@
 
   <para>
     Firstly, the CG-2 optional seperation keywords IF and TARGET are completely ignored by VISL CG-3,
-    as is the line terminating semi-colon, so only use them for readability.
-    The definitions are given in the following format:
+    so only use them for readability. The definitions are given in the following format:
     <screen>
       KEYWORD &lt;required_element&gt; [optional_element]
     </screen>
