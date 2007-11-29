@@ -52,7 +52,7 @@
     Notice that the first LIST ThisIsASet is outside a section.
     This is because sets are considered global regardless of where
     they are declared and can as such be declared anywhere, even before the
-    DELIMITERS declaration should you so desire1. A side effect of this is
+    DELIMITERS declaration should you so desire. A side effect of this is
     that set names must be unique across the entire grammar, but as this is
     also the behavior of CG-2 and VISLCG that should not be a surprise nor problem.
   </para>
