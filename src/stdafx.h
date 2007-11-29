@@ -41,6 +41,8 @@
 #include <unicode/uclean.h>
 #include <unicode/ustdio.h>
 #include <unicode/utypes.h>
+#include <unicode/uloc.h>
+#include <unicode/uenum.h>
 #include <unicode/ucnv.h>
 #include <unicode/utrans.h>
 #include <unicode/ustring.h>

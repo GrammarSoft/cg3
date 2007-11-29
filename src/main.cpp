@@ -118,7 +118,9 @@ int main(int argc, char* argv[]) {
 	status = U_ZERO_ERROR;
 
 	CG3::Grammar *grammar = new CG3::Grammar();
-	const char *codepage_grammar = "ISO-8859-1";
+
+	const char *codepage_default = ucnv_getDefaultName();
+	const char *codepage_grammar = codepage_default;
 	const char *codepage_input   = codepage_grammar;
 	const char *codepage_output  = codepage_grammar;
 
@@ -140,7 +142,10 @@ int main(int argc, char* argv[]) {
 		codepage_output = options[CODEPAGE_ALL].value;
 	}
 
-	const char *locale_grammar = "en_US_POSIX";
+	fprintf(stderr, "Codepage: default %s, input %s, output %s, grammar %s\n", codepage_default, codepage_input, codepage_output, codepage_grammar);
+
+	const char *locale_default = "en_US_POSIX"; //uloc_getDefault();
+	const char *locale_grammar = locale_default;
 	const char *locale_input   = locale_grammar;
 	const char *locale_output  = locale_grammar;
 
@@ -161,6 +166,8 @@ int main(int argc, char* argv[]) {
 	} else if (options[LOCALE_ALL].doesOccur) {
 		locale_output = options[LOCALE_ALL].value;
 	}
+
+	fprintf(stderr, "Locales: default %s, input %s, output %s, grammar %s\n", locale_default, locale_input, locale_output, locale_grammar);
 
 	if (!options[STDOUT].doesOccur) {
 		ux_stdout = u_finit(stdout, locale_output, codepage_input);
