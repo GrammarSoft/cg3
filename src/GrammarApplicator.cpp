@@ -55,6 +55,10 @@ GrammarApplicator::GrammarApplicator(UFILE *ux_in, UFILE *ux_out, UFILE *ux_err)
 	gWindow = 0;
 	index_reading_yes.clear();
 	index_reading_no.clear();
+	numLines = 0;
+	numWindows = 0;
+	numCohorts = 0;
+	numReadings = 0;
 }
 
 GrammarApplicator::~GrammarApplicator() {
@@ -125,7 +129,7 @@ void GrammarApplicator::printReading(Reading *reading, UFILE *output) {
 		GrammarWriter::printTagRaw(output, single_tags[reading->baseform]);
 		u_fprintf(output, " ");
 	} else {
-		u_fprintf(ux_stderr, "Warning: Reading had no baseform. Usually caused by whitespace in the baseform.\n");
+		u_fprintf(ux_stderr, "Warning: Reading had no valid baseform, somewhere before line %u.\n", numLines);
 		u_fflush(ux_stderr);
 	}
 
