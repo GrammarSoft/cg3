@@ -45,13 +45,13 @@ void GrammarWriter::write_set_to_ufile(UFILE *output, const Set *curset) {
 			if (grammar->tags.find(comp_iter->second) != grammar->tags.end()) {
 				CompositeTag *curcomptag = grammar->tags.find(comp_iter->second)->second;
 				if (curcomptag->tags.size() == 1) {
-					printTag(output, grammar->single_tags.find(curcomptag->tags.begin()->second)->second);
+					printTag(output, grammar->single_tags.find(*(curcomptag->tags.begin()))->second);
 					u_fprintf(output, " ");
 				} else {
 					u_fprintf(output, "(");
-					std::map<uint32_t, uint32_t>::const_iterator tag_iter;
-					for (tag_iter = curcomptag->tags_map.begin() ; tag_iter != curcomptag->tags_map.end() ; tag_iter++) {
-						printTag(output, grammar->single_tags.find(tag_iter->second)->second);
+					std::set<uint32_t>::const_iterator tag_iter;
+					for (tag_iter = curcomptag->tags_set.begin() ; tag_iter != curcomptag->tags_set.end() ; tag_iter++) {
+						printTag(output, grammar->single_tags.find(*tag_iter)->second);
 						u_fprintf(output, " ");
 					}
 					u_fprintf(output, ") ");

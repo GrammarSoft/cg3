@@ -95,7 +95,7 @@ void Set::reindex(Grammar *grammar) {
 			if (grammar->tags.find(comp_iter->second) != grammar->tags.end()) {
 				CompositeTag *curcomptag = grammar->tags.find(comp_iter->second)->second;
 				if (curcomptag->tags.size() == 1) {
-					Tag *tag = grammar->single_tags.find(curcomptag->tags.begin()->second)->second;
+					Tag *tag = grammar->single_tags.find(*(curcomptag->tags.begin()))->second;
 					if (tag->is_special) {
 						is_special = true;
 					}
@@ -104,9 +104,9 @@ void Set::reindex(Grammar *grammar) {
 						return;
 					}
 				} else {
-					std::map<uint32_t, uint32_t>::const_iterator tag_iter;
-					for (tag_iter = curcomptag->tags_map.begin() ; tag_iter != curcomptag->tags_map.end() ; tag_iter++) {
-						Tag *tag = grammar->single_tags.find(tag_iter->second)->second;
+					std::set<uint32_t>::const_iterator tag_iter;
+					for (tag_iter = curcomptag->tags_set.begin() ; tag_iter != curcomptag->tags_set.end() ; tag_iter++) {
+						Tag *tag = grammar->single_tags.find(*tag_iter)->second;
 						if (tag->is_special) {
 							is_special = true;
 						}

@@ -150,7 +150,7 @@ void Grammar::addCompositeTag(CompositeTag *tag) {
 void Grammar::addCompositeTagToSet(Set *set, CompositeTag *tag) {
 	if (tag && tag->tags.size()) {
 		if (tag->tags.size() == 1) {
-			Tag *rtag = single_tags[tag->tags.begin()->second];
+			Tag *rtag = single_tags[*(tag->tags.begin())];
 			set->tags_map[rtag->hash] = rtag->hash;
 			set->single_tags[rtag->hash] = rtag->hash;
 
@@ -296,11 +296,11 @@ void Grammar::indexSetToRule(uint32_t r, Set *s) {
 			if (tags.find(comp_iter->second) != tags.end()) {
 				CompositeTag *curcomptag = tags.find(comp_iter->second)->second;
 				if (curcomptag->tags.size() == 1) {
-					indexTagToRule(curcomptag->tags.begin()->second, r);
+					indexTagToRule(*(curcomptag->tags.begin()), r);
 				} else {
-					std::map<uint32_t, uint32_t>::const_iterator tag_iter;
-					for (tag_iter = curcomptag->tags_map.begin() ; tag_iter != curcomptag->tags_map.end() ; tag_iter++) {
-						indexTagToRule(tag_iter->second, r);
+					std::set<uint32_t>::const_iterator tag_iter;
+					for (tag_iter = curcomptag->tags_set.begin() ; tag_iter != curcomptag->tags_set.end() ; tag_iter++) {
+						indexTagToRule(*tag_iter, r);
 					}
 				}
 			}
@@ -337,11 +337,11 @@ void Grammar::indexSets(uint32_t r, Set *s) {
 			if (tags.find(comp_iter->second) != tags.end()) {
 				CompositeTag *curcomptag = tags.find(comp_iter->second)->second;
 				if (curcomptag->tags.size() == 1) {
-					indexTagToSet(curcomptag->tags.begin()->second, r);
+					indexTagToSet(*(curcomptag->tags.begin()), r);
 				} else {
-					std::map<uint32_t, uint32_t>::const_iterator tag_iter;
-					for (tag_iter = curcomptag->tags_map.begin() ; tag_iter != curcomptag->tags_map.end() ; tag_iter++) {
-						indexTagToSet(tag_iter->second, r);
+					std::set<uint32_t>::const_iterator tag_iter;
+					for (tag_iter = curcomptag->tags_set.begin() ; tag_iter != curcomptag->tags_set.end() ; tag_iter++) {
+						indexTagToSet(*tag_iter, r);
 					}
 				}
 			}

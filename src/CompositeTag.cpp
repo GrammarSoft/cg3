@@ -23,20 +23,20 @@ CompositeTag::CompositeTag() {
 }
 
 CompositeTag::~CompositeTag() {
-	tags_map.clear();
+	tags_set.clear();
 	tags.clear();
 }
 
 void CompositeTag::addTag(uint32_t tag) {
-	tags[tag] = tag;
-	tags_map[tag] = tag;
+	tags.insert(tag);
+	tags_set.insert(tag);
 }
 
 uint32_t CompositeTag::rehash() {
 	uint32_t retval = 0;
-	std::map<uint32_t, uint32_t>::iterator iter;
-	for (iter = tags_map.begin() ; iter != tags_map.end() ; iter++) {
-		retval = hash_sdbm_uint32_t(iter->second, retval);
+	std::set<uint32_t>::iterator iter;
+	for (iter = tags_set.begin() ; iter != tags_set.end() ; iter++) {
+		retval = hash_sdbm_uint32_t(*iter, retval);
 	}
 	hash = retval;
 	return retval;

@@ -25,8 +25,8 @@ namespace CG3 {
 	class CompositeTag {
 	public:
 		uint32_t hash;
-		std::map<uint32_t, uint32_t> tags_map;
-		stdext::hash_map<uint32_t, uint32_t> tags;
+		std::set<uint32_t> tags_set;
+		stdext::hash_set<uint32_t> tags;
 
 		CompositeTag();
 		~CompositeTag();
