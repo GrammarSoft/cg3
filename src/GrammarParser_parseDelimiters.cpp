@@ -51,6 +51,8 @@ int GrammarParser::parseDelimiters(const UChar *line) {
 				CG3::Tag *tag = result->allocateTag(paren);
 				result->addTagToCompositeTag(tag, ctag);
 				result->addCompositeTagToSet(curset, ctag);
+				ctag = 0;
+				tag = 0;
 			}
 			paren = space;
 		}
