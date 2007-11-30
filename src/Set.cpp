@@ -29,7 +29,7 @@ Set::Set() {
 
 Set::~Set() {
 	if (name) {
-		delete name;
+		delete[] name;
 	}
 	tags_map.clear();
 	tags.clear();

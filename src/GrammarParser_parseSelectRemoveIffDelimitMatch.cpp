@@ -88,6 +88,6 @@ int GrammarParser::parseSelectRemoveIffDelimitMatch(const UChar *line, KEYWORDS 
 		parseContextualTests(&space, rule);
 	}
 
-	delete local;
+	delete[] local;
 	return 0;
 }

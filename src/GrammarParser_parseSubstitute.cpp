@@ -85,6 +85,6 @@ int GrammarParser::parseSubstitute(const UChar *line) {
 		parseContextualTests(&space, rule);
 	}
 
-	delete local;
+	delete[] local;
 	return 0;
 }

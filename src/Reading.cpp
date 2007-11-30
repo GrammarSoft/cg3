@@ -40,7 +40,7 @@ Reading::~Reading() {
 	wordform = 0;
 	baseform = 0;
 	if (text) {
-		delete text;
+		delete[] text;
 	}
 	text = 0;
 

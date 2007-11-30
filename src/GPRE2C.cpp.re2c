@@ -72,7 +72,7 @@ parseCompositeTag_start:
 		u_strncpy(buffer, marker, (int32_t)length-1);
 		CG3::Tag *tag = result->allocateTag(buffer);
 		result->addTagToCompositeTag(tag, ctag);
-		delete buffer;
+		delete[] buffer;
 		marker = YYCURSOR;
 		goto parseCompositeTag_start;
 		}
@@ -117,7 +117,7 @@ parseInlineSet_start:
 		u_strncpy(buffer, marker, (int32_t)length-1);
 		CG3::Tag *tag = result->allocateTag(buffer);
 		result->addTagToCompositeTag(tag, ctag);
-		delete buffer;
+		delete[] buffer;
 		marker = YYCURSOR;
 		goto parseInlineSet_start;
 		}
@@ -175,7 +175,7 @@ parseSetList_start:
 		}
 		set_hash = result->getSet(set_hash)->hash;
 		set->sets.push_back(set_hash);
-		delete buffer;
+		delete[] buffer;
 		marker = YYCURSOR;
 		want_set = false;
 		goto parseSetList_start;
@@ -226,7 +226,7 @@ parseTagList_start:
 		CG3::Tag *tag = result->allocateTag(buffer);
 		result->addTagToCompositeTag(tag, ctag);
 		result->addCompositeTagToSet(set, ctag);
-		delete buffer;
+		delete[] buffer;
 		marker = YYCURSOR;
 		goto parseTagList_start;
 		}
@@ -273,7 +273,7 @@ parseMappingList_start:
 		tag->rehash();
 		result->addTag(tag);
 		taglist->push_back(tag->hash);
-		delete buffer;
+		delete[] buffer;
 		marker = YYCURSOR;
 		goto parseMappingList_start;
 		}
@@ -420,7 +420,7 @@ parseList_start:
 		buffer[length-1] = 0;
 		u_strncpy(buffer, marker, (int32_t)length-1);
 		curset->setName(buffer);
-		delete buffer;
+		delete[] buffer;
 		marker = YYCURSOR;
 		goto parseList_start;
 		}
@@ -453,7 +453,7 @@ parseSet_start:
 		buffer[length-1] = 0;
 		u_strncpy(buffer, marker, (int32_t)length-1);
 		curset->setName(buffer);
-		delete buffer;
+		delete[] buffer;
 		marker = YYCURSOR;
 		goto parseSet_start;
 		}
@@ -491,7 +491,7 @@ parsePreferredTargets_start:
 		if (!(buffer[0] == '=' && u_strlen(buffer) == 1)) {
 			result->addPreferredTarget(buffer);
 		}
-		delete buffer;
+		delete[] buffer;
 		marker = YYCURSOR;
 		goto parsePreferredTargets_start;
 		}
@@ -652,7 +652,7 @@ int GPRE2C::grammar_from_ufile(UFILE *input) {
 		return -1;
 	}
 	
-	delete buffer;
+	delete[] buffer;
 
 	return 0;
 }

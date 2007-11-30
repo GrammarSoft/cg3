@@ -89,7 +89,7 @@ int GrammarParser::parseAddMapReplaceAppend(const UChar *line, KEYWORDS key) {
 		parseContextualTests(&space, rule);
 	}
 
-	delete local;
+	delete[] local;
 	return 0;
 }
 
@@ -120,6 +120,6 @@ int GrammarParser::parseMappingPrefix(const UChar *line) {
 		result->mapping_prefix = '@';
 	}
 
-	delete local;
+	delete[] local;
 	return 0;
 }

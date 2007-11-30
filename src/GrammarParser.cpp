@@ -85,7 +85,7 @@ int GrammarParser::parseSingleLine(KEYWORDS key, const UChar *line) {
 		return -1;
 	}
 
-	delete local;
+	delete[] local;
 	local = newlocal;
 	ux_packWhitespace(local);
 
@@ -159,7 +159,7 @@ int GrammarParser::parseSingleLine(KEYWORDS key, const UChar *line) {
 			break;
 	}
 
-	delete local;
+	delete[] local;
 	return 0;
 }
 
@@ -245,7 +245,7 @@ int GrammarParser::parse_grammar_from_ufile(UFILE *input) {
 					if (keys[result->curline]) {
 						parseSingleLine(keys[result->curline], line);
 					}
-					delete line;
+					delete[] line;
 					keys.erase(result->curline);
 					lines.erase(lines.begin());
 				}
@@ -256,10 +256,10 @@ int GrammarParser::parse_grammar_from_ufile(UFILE *input) {
 				lines[lastcmd][length] = ' ';
 				lines[lastcmd][length+1] = 0;
 				u_strcat(lines[lastcmd], line);
-				delete line;
+				delete[] line;
 			}
 		} else {
-			delete line;
+			delete[] line;
 		}
 		result->lines++;
 	}
@@ -270,7 +270,7 @@ int GrammarParser::parse_grammar_from_ufile(UFILE *input) {
 		if (keys[result->curline]) {
 			parseSingleLine(keys[result->curline], line);
 		}
-		delete line;
+		delete[] line;
 		keys.erase(result->curline);
 		lines.erase(lines.begin());
 	}

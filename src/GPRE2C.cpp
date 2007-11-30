@@ -158,7 +158,7 @@ yy15:
 		u_strncpy(buffer, marker, (int32_t)length-1);
 		CG3::Tag *tag = result->allocateTag(buffer);
 		result->addTagToCompositeTag(tag, ctag);
-		delete buffer;
+		delete[] buffer;
 		marker = YYCURSOR;
 		goto parseCompositeTag_start;
 		}

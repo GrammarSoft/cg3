@@ -88,7 +88,7 @@ namespace CG3 {
 		int free_keywords() {
 			for (int i=0;i<KEYWORD_COUNT;i++) {
 				if (keywords[i]) {
-					delete keywords[i];
+					delete[] keywords[i];
 				}
 				keywords[i] = 0;
 			}
@@ -150,7 +150,7 @@ namespace CG3 {
 		int free_strings() {
 			for (int i=0;i<STRINGS_COUNT;i++) {
 				if (stringbits[i]) {
-					delete stringbits[i];
+					delete[] stringbits[i];
 				}
 				stringbits[i] = 0;
 			}

@@ -33,11 +33,11 @@ Tag::Tag() {
 
 Tag::~Tag() {
 	if (tag) {
-		delete tag;
+		delete[] tag;
 		tag = 0;
 	}
 	if (comparison_key) {
-		delete comparison_key;
+		delete[] comparison_key;
 		comparison_key = 0;
 	}
 }
@@ -99,7 +99,7 @@ void Tag::parseTag(const UChar *to, UFILE *ux_stderr) {
 		u_strncpy(tag, tmp, length);
 		UChar *utag = new UChar[u_strlen(tag)+3];
 		ux_unEscape(utag, tag);
-		delete tag;
+		delete[] tag;
 		tag = utag;
 		utag = 0;
 		comparison_hash = hash_sdbm_uchar(tag, 0);
@@ -246,7 +246,7 @@ uint32_t Tag::rehash() {
 	UChar *tmp = new UChar[u_strlen(tag)*2+3];
 	ux_escape(tmp, tag);
 	hash = hash_sdbm_uchar(tmp, hash);
-	delete tmp;
+	delete[] tmp;
 /*/
 	hash = hash_sdbm_uchar(tag, hash);
 //*/
