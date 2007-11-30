@@ -42,7 +42,7 @@ namespace CG3 {
 		stdext::hash_map<uint32_t, Set*> sets_by_contents;
 		stdext::hash_map<uint32_t, uint32_t> set_alias;
 
-		stdext::hash_map<uint32_t, uint32Set*> rules_by_tag;
+		stdext::hash_map<uint32_t, uint32HashSet*> rules_by_tag;
 		stdext::hash_map<uint32_t, uint32HashSet*> sets_by_tag;
 
 		Set *delimiters;

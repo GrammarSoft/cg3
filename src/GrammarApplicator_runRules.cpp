@@ -26,8 +26,11 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, const int32_
 	bool section_did_good = false;
 	bool delimited = false;
 
+	uint32Set valid_rules;
+	valid_rules.insert(current->valid_rules.begin(), current->valid_rules.end());
+
 	uint32Set::iterator iter_rules;
-	for (iter_rules = current->valid_rules.begin() ; iter_rules != current->valid_rules.end() ; iter_rules++) {
+	for (iter_rules = valid_rules.begin() ; iter_rules != valid_rules.end() ; iter_rules++) {
 		uint32_t j = (*iter_rules);
 		const Rule *rule = grammar->rule_by_line.find(j)->second;
 		if (start == 0 && rule->section < 0) {
@@ -498,16 +501,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, const int32_
 		}
 
 		if (!rule_is_valid) {
-			if (iter_rules == current->valid_rules.begin()) {
-				current->valid_rules.erase(iter_rules);
-				iter_rules = current->valid_rules.begin();
-			}
-			else {
-				uint32Set::iterator to_erase = iter_rules;
-				uint32_t n = *(--iter_rules);
-				current->valid_rules.erase(to_erase);
-				iter_rules = current->valid_rules.find(n);
-			}
+			current->valid_rules.erase(current->valid_rules.find(j));
 		}
 
 		if (statistics) {
