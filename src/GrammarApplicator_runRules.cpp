@@ -52,6 +52,8 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, const int32_
 			tstamp = timer->getCount();
 		}
 
+		bool rule_is_valid = false;
+
 		for (uint32_t c=0 ; c < current->cohorts.size() ; c++) {
 			if (c == 0) {
 				continue;
@@ -111,6 +113,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, const int32_
 				}
 				last_mapping_tag = 0;
 				if (rule->target && doesSetMatchReading(reading, rule->target, set->has_mappings)) {
+					rule_is_valid = true;
 					reading->current_mapping_tag = last_mapping_tag;
 					reading->matched_target = true;
 					bool good = true;
@@ -491,10 +494,26 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, const int32_
 			}
 		}
 
+		if (!rule_is_valid) {
+			if (iter_rules == current->valid_rules.begin()) {
+				current->valid_rules.erase(iter_rules);
+				iter_rules = current->valid_rules.begin();
+			}
+			else {
+				uint32Set::iterator to_erase = iter_rules;
+				uint32_t n = *(--iter_rules);
+				current->valid_rules.erase(to_erase);
+				iter_rules = current->valid_rules.find(n);
+			}
+		}
+
 		if (statistics) {
 			rule->total_time += (timer->getCount() - tstamp);
 		}
 		if (delimited) {
+			break;
+		}
+		if (current->valid_rules.empty()) {
 			break;
 		}
 	}
