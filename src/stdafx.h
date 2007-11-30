@@ -88,9 +88,11 @@ inline uint32_t hash_sdbm_uint32_t(const uint32_t c, uint32_t hash) {
 #ifdef WIN32
 	#include <winsock.h> // for hton() and family.
     #include <hash_map>
+    #include <hash_set>
 #else
 	#include <netinet/in.h> // for hton() and family.
     #include <ext/hash_map>
+    #include <ext/hash_set>
     #define stdext __gnu_cxx
 #endif
 
@@ -103,7 +105,7 @@ inline uint32_t hash_sdbm_uint32_t(const uint32_t c, uint32_t hash) {
 
 // Forward declarations
 namespace CG3 {
-	typedef std::set<uint32_t> RuleList;
+	typedef stdext::hash_set<uint32_t> RuleList;
 	class Grammar;
 	class Set;
 	class Rule;
