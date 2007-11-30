@@ -26,7 +26,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, const int32_
 	bool section_did_good = false;
 	bool delimited = false;
 
-	RuleList::iterator iter_rules;
+	uint32Set::iterator iter_rules;
 	for (iter_rules = current->valid_rules.begin() ; iter_rules != current->valid_rules.end() ; iter_rules++) {
 		uint32_t j = (*iter_rules);
 		const Rule *rule = grammar->rule_by_line.find(j)->second;
