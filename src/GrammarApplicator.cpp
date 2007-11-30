@@ -72,7 +72,16 @@ GrammarApplicator::~GrammarApplicator() {
 	}
 	single_tags.clear();
 
+	stdext::hash_map<uint32_t, Index*>::iterator indt;
+	for (indt = index_reading_yes.begin() ; indt != index_reading_yes.end() ; indt++) {
+		delete indt->second;
+		indt->second = 0;
+	}
 	index_reading_yes.clear();
+	for (indt = index_reading_no.begin() ; indt != index_reading_no.end() ; indt++) {
+		delete indt->second;
+		indt->second = 0;
+	}
 	index_reading_no.clear();
 
 	grammar = 0;

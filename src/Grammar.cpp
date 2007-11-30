@@ -96,7 +96,21 @@ Grammar::~Grammar() {
 	after_sections.clear();
 
 	set_alias.clear();
+
+	stdext::hash_map<uint32_t,uint32Set*>::iterator xrule;
+	for (xrule = rules_by_tag.begin() ; xrule != rules_by_tag.end() ; xrule++) {
+		xrule->second->clear();
+		delete xrule->second;
+		xrule->second = 0;
+	}
 	rules_by_tag.clear();
+
+	stdext::hash_map<uint32_t,uint32HashSet*>::iterator xset;
+	for (xset = sets_by_tag.begin() ; xset != sets_by_tag.end() ; xset++) {
+		xset->second->clear();
+		delete xset->second;
+		xset->second = 0;
+	}
 	sets_by_tag.clear();
 }
 
