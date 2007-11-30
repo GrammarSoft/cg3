@@ -283,7 +283,7 @@ void Grammar::indexRuleToSet(uint32_t r, Set *s) {
 	if (s->is_special) {
 		u_fprintf(ux_stderr, "Debug: Added rule %u to no-skip index.\n", r);
 		u_fflush(ux_stderr);
-		indexRuleToList(tag_any->hash, r);
+		indexRuleToList(tag_any, r);
 		return;
 	}
 	if (s->sets.empty()) {

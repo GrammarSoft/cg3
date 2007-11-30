@@ -121,8 +121,8 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 				}
 
 				cSWindow->appendCohort(cCohort);
-				if (grammar->rules_by_tag.find(grammar->tag_any->hash) != grammar->rules_by_tag.end()) {
-					cSWindow->valid_rules.insert(grammar->rules_by_tag.find(grammar->tag_any->hash)->second->begin(), grammar->rules_by_tag.find(grammar->tag_any->hash)->second->end());
+				if (grammar->rules_by_tag.find(grammar->tag_any) != grammar->rules_by_tag.end()) {
+					cSWindow->valid_rules.insert(grammar->rules_by_tag.find(grammar->tag_any)->second->begin(), grammar->rules_by_tag.find(grammar->tag_any)->second->end());
 				}
 				if (grammar->rules_by_tag.find(begintag) != grammar->rules_by_tag.end()) {
 					cSWindow->valid_rules.insert(grammar->rules_by_tag.find(begintag)->second->begin(), grammar->rules_by_tag.find(begintag)->second->end());
@@ -167,8 +167,8 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 				}
 
 				cSWindow->appendCohort(cCohort);
-				if (grammar->rules_by_tag.find(grammar->tag_any->hash) != grammar->rules_by_tag.end()) {
-					cSWindow->valid_rules.insert(grammar->rules_by_tag.find(grammar->tag_any->hash)->second->begin(), grammar->rules_by_tag.find(grammar->tag_any->hash)->second->end());
+				if (grammar->rules_by_tag.find(grammar->tag_any) != grammar->rules_by_tag.end()) {
+					cSWindow->valid_rules.insert(grammar->rules_by_tag.find(grammar->tag_any)->second->begin(), grammar->rules_by_tag.find(grammar->tag_any)->second->end());
 				}
 				if (grammar->rules_by_tag.find(begintag) != grammar->rules_by_tag.end()) {
 					cSWindow->valid_rules.insert(grammar->rules_by_tag.find(begintag)->second->begin(), grammar->rules_by_tag.find(begintag)->second->end());
@@ -333,8 +333,8 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 							(*iter)->tags[endtag] = endtag;
 							(*iter)->rehash();
 						}
-						if (grammar->rules_by_tag.find(grammar->tag_any->hash) != grammar->rules_by_tag.end()) {
-							cSWindow->valid_rules.insert(grammar->rules_by_tag.find(grammar->tag_any->hash)->second->begin(), grammar->rules_by_tag.find(grammar->tag_any->hash)->second->end());
+						if (grammar->rules_by_tag.find(grammar->tag_any) != grammar->rules_by_tag.end()) {
+							cSWindow->valid_rules.insert(grammar->rules_by_tag.find(grammar->tag_any)->second->begin(), grammar->rules_by_tag.find(grammar->tag_any)->second->end());
 						}
 						if (grammar->rules_by_tag.find(begintag) != grammar->rules_by_tag.end()) {
 							cSWindow->valid_rules.insert(grammar->rules_by_tag.find(begintag)->second->begin(), grammar->rules_by_tag.find(begintag)->second->end());
@@ -425,8 +425,8 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 			(*iter)->tags[endtag] = endtag;
 			(*iter)->rehash();
 		}
-		if (grammar->rules_by_tag.find(grammar->tag_any->hash) != grammar->rules_by_tag.end()) {
-			cSWindow->valid_rules.insert(grammar->rules_by_tag.find(grammar->tag_any->hash)->second->begin(), grammar->rules_by_tag.find(grammar->tag_any->hash)->second->end());
+		if (grammar->rules_by_tag.find(grammar->tag_any) != grammar->rules_by_tag.end()) {
+			cSWindow->valid_rules.insert(grammar->rules_by_tag.find(grammar->tag_any)->second->begin(), grammar->rules_by_tag.find(grammar->tag_any)->second->end());
 		}
 		if (grammar->rules_by_tag.find(begintag) != grammar->rules_by_tag.end()) {
 			cSWindow->valid_rules.insert(grammar->rules_by_tag.find(begintag)->second->begin(), grammar->rules_by_tag.find(begintag)->second->end());
