@@ -123,6 +123,7 @@ int main(int argc, char* argv[]) {
 	const char *codepage_grammar = codepage_default;
 	const char *codepage_input   = codepage_grammar;
 	const char *codepage_output  = codepage_grammar;
+	ucnv_setDefaultName("UTF-8");
 
 	if (options[CODEPAGE_GRAMMAR].doesOccur) {
 		codepage_grammar = options[CODEPAGE_GRAMMAR].value;
@@ -148,6 +149,7 @@ int main(int argc, char* argv[]) {
 	const char *locale_grammar = locale_default;
 	const char *locale_input   = locale_grammar;
 	const char *locale_output  = locale_grammar;
+	uloc_setDefault("en_US_POSIX", &status);
 
 	if (options[LOCALE_GRAMMAR].doesOccur) {
 		locale_grammar = options[LOCALE_GRAMMAR].value;
