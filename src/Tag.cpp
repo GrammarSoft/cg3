@@ -136,7 +136,7 @@ void Tag::parseTag(const UChar *to, UFILE *ux_stderr) {
 		}
 
 		if (u_strcmp(tag, stringbits[S_ASTERIK]) == 0) {
-			u_fprintf(ux_stderr, "Info: Tag marked as T_ANY.\n");
+			//u_fprintf(ux_stderr, "Info: Tag marked as T_ANY.\n");
 			type |= T_ANY;
 		}
 
