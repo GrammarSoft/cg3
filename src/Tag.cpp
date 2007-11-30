@@ -94,6 +94,9 @@ void Tag::parseTag(const UChar *to, UFILE *ux_stderr) {
 			length -= 4;
 		}
 		
+		if (tag) {
+			delete[] tag;
+		}
 		tag = new UChar[length+1];
 		tag[length] = 0;
 		u_strncpy(tag, tmp, length);
