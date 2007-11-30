@@ -212,9 +212,9 @@ bool GrammarApplicator::doesSetMatchReading(const Reading *reading, const uint32
 					bool match = true;
 					const CompositeTag *ctag = grammar->tags.find(ster->second)->second;
 
-					stdext::hash_map<uint32_t, uint32_t>::const_iterator cter;
+					stdext::hash_set<uint32_t>::const_iterator cter;
 					for (cter = ctag->tags.begin() ; cter != ctag->tags.end() ; cter++) {
-						bool inner = doesTagMatchReading(reading, cter->second, bypass_index);
+						bool inner = doesTagMatchReading(reading, *cter, bypass_index);
 						if (!inner) {
 							match = false;
 							break;

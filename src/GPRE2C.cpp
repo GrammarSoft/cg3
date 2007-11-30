@@ -251,7 +251,7 @@ yy29:
 
 
 parseCompositeTag_end:
-	if (ctag->tags_map.empty()) {
+	if (ctag->tags_set.empty()) {
 		u_fprintf(ux_stderr, "Error: Empty () on line %u!\n", result->lines);
 		exit(1);
 	}
