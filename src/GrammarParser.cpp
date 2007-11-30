@@ -174,10 +174,6 @@ int GrammarParser::parse_grammar_from_ufile(UFILE *input) {
 		return -1;
 	}
 	
-	free_keywords();
-	free_regexps();
-	free_strings();
-
 	int error = init_keywords();
 	if (error) {
 		u_fprintf(ux_stderr, "Error: init_keywords returned %u!\n", error);
@@ -279,8 +275,6 @@ int GrammarParser::parse_grammar_from_ufile(UFILE *input) {
 		lines.erase(lines.begin());
 	}
 
-	free_regexps();
-	free_strings();
 	lines.clear();
 	keys.clear();
 
@@ -339,12 +333,15 @@ void GrammarParser::setCompatible(bool f) {
 
 void GrammarParser::addRuleToGrammar(Rule *rule) {
 	if (in_section) {
+		rule->section = (int32_t)(result->sections.size()-1);
 		result->addRule(rule, &result->rules);
 	}
 	else if (in_before_sections) {
+		rule->section = -1;
 		result->addRule(rule, &result->before_sections);
 	}
 	else if (in_after_sections) {
+		rule->section = -2;
 		result->addRule(rule, &result->after_sections);
 	}
 }

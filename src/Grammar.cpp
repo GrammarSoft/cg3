@@ -96,6 +96,8 @@ Grammar::~Grammar() {
 	after_sections.clear();
 
 	set_alias.clear();
+	rules_by_tag.clear();
+	sets_by_tag.clear();
 }
 
 void Grammar::addPreferredTarget(UChar *to) {
@@ -269,39 +271,36 @@ void Grammar::reindex() {
 	stdext::hash_map<uint32_t, Set*>::iterator iter_sets;
 	for (iter_sets = sets_by_contents.begin() ; iter_sets != sets_by_contents.end() ; iter_sets++) {
 		iter_sets->second->reindex(this);
+		indexSets(iter_sets->first, iter_sets->second);
 	}
 
 	std::map<uint32_t, Rule*>::iterator iter_rule;
 	for (iter_rule = rule_by_line.begin() ; iter_rule != rule_by_line.end() ; iter_rule++) {
 		if (iter_rule->second->target) {
-			indexRuleToSet(iter_rule->second->line, getSet(iter_rule->second->target));
+			indexSetToRule(iter_rule->second->line, getSet(iter_rule->second->target));
 		}
 	}
 }
 
-void Grammar::indexRuleToSet(uint32_t r, Set *s) {
+void Grammar::indexSetToRule(uint32_t r, Set *s) {
 	if (s->is_special) {
-		/*
-		u_fprintf(ux_stderr, "Debug: Added rule %u to no-skip index.\n", r);
-		u_fflush(ux_stderr);
-		//*/
-		indexRuleToList(tag_any, r);
+		indexTagToRule(tag_any, r);
 		return;
 	}
 	if (s->sets.empty()) {
 		stdext::hash_map<uint32_t, uint32_t>::const_iterator comp_iter;
 		for (comp_iter = s->single_tags.begin() ; comp_iter != s->single_tags.end() ; comp_iter++) {
-			indexRuleToList(comp_iter->second, r);
+			indexTagToRule(comp_iter->second, r);
 		}
 		for (comp_iter = s->tags.begin() ; comp_iter != s->tags.end() ; comp_iter++) {
 			if (tags.find(comp_iter->second) != tags.end()) {
 				CompositeTag *curcomptag = tags.find(comp_iter->second)->second;
 				if (curcomptag->tags.size() == 1) {
-					indexRuleToList(curcomptag->tags.begin()->second, r);
+					indexTagToRule(curcomptag->tags.begin()->second, r);
 				} else {
 					std::map<uint32_t, uint32_t>::const_iterator tag_iter;
 					for (tag_iter = curcomptag->tags_map.begin() ; tag_iter != curcomptag->tags_map.end() ; tag_iter++) {
-						indexRuleToList(tag_iter->second, r);
+						indexTagToRule(tag_iter->second, r);
 					}
 				}
 			}
@@ -309,12 +308,12 @@ void Grammar::indexRuleToSet(uint32_t r, Set *s) {
 	} else if (!s->sets.empty()) {
 		for (uint32_t i=0;i<s->sets.size();i++) {
 			Set *set = sets_by_contents.find(s->sets.at(i))->second;
-			indexRuleToSet(r, set);
+			indexSetToRule(r, set);
 		}
 	}
 }
 
-void Grammar::indexRuleToList(uint32_t t, uint32_t r) {
+void Grammar::indexTagToRule(uint32_t t, uint32_t r) {
 	if (rules_by_tag.find(t) == rules_by_tag.end()) {
 		std::pair<uint32_t,RuleList*> p;
 		p.first = t;
@@ -322,8 +321,45 @@ void Grammar::indexRuleToList(uint32_t t, uint32_t r) {
 		rules_by_tag.insert(p);
 	}
 	rules_by_tag.find(t)->second->insert(r);
-	/*
-	u_fprintf(ux_stderr, "Debug: Indexed tag %u to rule %u.\n", t, r);
-	u_fflush(ux_stderr);
-	//*/
+}
+
+void Grammar::indexSets(uint32_t r, Set *s) {
+	if (s->is_special) {
+		indexTagToSet(tag_any, r);
+		return;
+	}
+	if (s->sets.empty()) {
+		stdext::hash_map<uint32_t, uint32_t>::const_iterator comp_iter;
+		for (comp_iter = s->single_tags.begin() ; comp_iter != s->single_tags.end() ; comp_iter++) {
+			indexTagToSet(comp_iter->second, r);
+		}
+		for (comp_iter = s->tags.begin() ; comp_iter != s->tags.end() ; comp_iter++) {
+			if (tags.find(comp_iter->second) != tags.end()) {
+				CompositeTag *curcomptag = tags.find(comp_iter->second)->second;
+				if (curcomptag->tags.size() == 1) {
+					indexTagToSet(curcomptag->tags.begin()->second, r);
+				} else {
+					std::map<uint32_t, uint32_t>::const_iterator tag_iter;
+					for (tag_iter = curcomptag->tags_map.begin() ; tag_iter != curcomptag->tags_map.end() ; tag_iter++) {
+						indexTagToSet(tag_iter->second, r);
+					}
+				}
+			}
+		}
+	} else if (!s->sets.empty()) {
+		for (uint32_t i=0;i<s->sets.size();i++) {
+			Set *set = sets_by_contents.find(s->sets.at(i))->second;
+			indexSets(r, set);
+		}
+	}
+}
+
+void Grammar::indexTagToSet(uint32_t t, uint32_t r) {
+	if (sets_by_tag.find(t) == sets_by_tag.end()) {
+		std::pair<uint32_t,RuleList*> p;
+		p.first = t;
+		p.second = new RuleList;
+		sets_by_tag.insert(p);
+	}
+	sets_by_tag.find(t)->second->insert(r);
 }

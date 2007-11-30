@@ -3795,10 +3795,6 @@ int GPRE2C::grammar_from_ufile(UFILE *input) {
 		return -1;
 	}
 	
-	free_keywords();
-	free_regexps();
-	free_strings();
-
 	int error = init_keywords();
 	if (error) {
 		u_fprintf(ux_stderr, "Error: init_keywords returned %i!\n", error);
@@ -3831,8 +3827,6 @@ int GPRE2C::grammar_from_ufile(UFILE *input) {
 	}
 	
 	delete buffer;
-	free_regexps();
-	free_strings();
 
 	return 0;
 }

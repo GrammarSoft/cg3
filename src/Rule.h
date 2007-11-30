@@ -34,6 +34,7 @@ namespace CG3 {
 		uint32_t target;
 		uint32_t line;
 		uint32_t varname, varvalue;
+		int32_t section;
 		// ToDo: Add proper "quality" quantifier based on num_fail, num_match, total_time
 		double weight, quality;
 		KEYWORDS type;

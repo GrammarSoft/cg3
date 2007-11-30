@@ -39,8 +39,6 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 		return -1;
 	}
 
-	free_strings();
-	free_keywords();
 	int error = init_keywords();
 	if (error) {
 		u_fprintf(ux_stderr, "Error: init_keywords returned %u!\n", error);
@@ -103,12 +101,6 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 					cReading->tags_list.push_back(cCohort->wordform);
 					cReading->noprint = true;
 					reflowReading(cReading);
-					std::list<uint32_t>::iterator iter_tags;
-					for (iter_tags = cReading->tags_list.begin() ; iter_tags != cReading->tags_list.end() ; iter_tags++) {
-						if (grammar->rules_by_tag.find(*iter_tags) != grammar->rules_by_tag.end()) {
-							cSWindow->valid_rules.insert(grammar->rules_by_tag.find(*iter_tags)->second->begin(), grammar->rules_by_tag.find(*iter_tags)->second->end());
-						}
-					}
 					cCohort->appendReading(cReading);
 					lReading = cReading;
 					numReadings++;
@@ -118,17 +110,27 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 					(*iter)->tags_list.push_back(endtag);
 					(*iter)->tags[endtag] = endtag;
 					(*iter)->rehash();
+					std::list<uint32_t>::iterator iter_tags;
+					for (iter_tags = (*iter)->tags_list.begin() ; iter_tags != (*iter)->tags_list.end() ; iter_tags++) {
+						if (grammar->rules_by_tag.find(*iter_tags) != grammar->rules_by_tag.end()) {
+							cSWindow->valid_rules.insert(grammar->rules_by_tag.find(*iter_tags)->second->begin(), grammar->rules_by_tag.find(*iter_tags)->second->end());
+							cCohort->valid_rules.insert(grammar->rules_by_tag.find(*iter_tags)->second->begin(), grammar->rules_by_tag.find(*iter_tags)->second->end());
+						}
+					}
 				}
 
 				cSWindow->appendCohort(cCohort);
 				if (grammar->rules_by_tag.find(grammar->tag_any) != grammar->rules_by_tag.end()) {
 					cSWindow->valid_rules.insert(grammar->rules_by_tag.find(grammar->tag_any)->second->begin(), grammar->rules_by_tag.find(grammar->tag_any)->second->end());
+					cCohort->valid_rules.insert(grammar->rules_by_tag.find(grammar->tag_any)->second->begin(), grammar->rules_by_tag.find(grammar->tag_any)->second->end());
 				}
 				if (grammar->rules_by_tag.find(begintag) != grammar->rules_by_tag.end()) {
 					cSWindow->valid_rules.insert(grammar->rules_by_tag.find(begintag)->second->begin(), grammar->rules_by_tag.find(begintag)->second->end());
+					cCohort->valid_rules.insert(grammar->rules_by_tag.find(begintag)->second->begin(), grammar->rules_by_tag.find(begintag)->second->end());
 				}
 				if (grammar->rules_by_tag.find(endtag) != grammar->rules_by_tag.end()) {
 					cSWindow->valid_rules.insert(grammar->rules_by_tag.find(endtag)->second->begin(), grammar->rules_by_tag.find(endtag)->second->end());
+					cCohort->valid_rules.insert(grammar->rules_by_tag.find(endtag)->second->begin(), grammar->rules_by_tag.find(endtag)->second->end());
 				}
 				cWindow->appendSingleWindow(cSWindow);
 				lSWindow = cSWindow;
@@ -149,12 +151,6 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 					cReading->tags_list.push_back(cCohort->wordform);
 					cReading->noprint = true;
 					reflowReading(cReading);
-					std::list<uint32_t>::iterator iter_tags;
-					for (iter_tags = cReading->tags_list.begin() ; iter_tags != cReading->tags_list.end() ; iter_tags++) {
-						if (grammar->rules_by_tag.find(*iter_tags) != grammar->rules_by_tag.end()) {
-							cSWindow->valid_rules.insert(grammar->rules_by_tag.find(*iter_tags)->second->begin(), grammar->rules_by_tag.find(*iter_tags)->second->end());
-						}
-					}
 					cCohort->appendReading(cReading);
 					lReading = cReading;
 					numReadings++;
@@ -164,17 +160,27 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 					(*iter)->tags_list.push_back(endtag);
 					(*iter)->tags[endtag] = endtag;
 					(*iter)->rehash();
+					std::list<uint32_t>::iterator iter_tags;
+					for (iter_tags = (*iter)->tags_list.begin() ; iter_tags != (*iter)->tags_list.end() ; iter_tags++) {
+						if (grammar->rules_by_tag.find(*iter_tags) != grammar->rules_by_tag.end()) {
+							cSWindow->valid_rules.insert(grammar->rules_by_tag.find(*iter_tags)->second->begin(), grammar->rules_by_tag.find(*iter_tags)->second->end());
+							cCohort->valid_rules.insert(grammar->rules_by_tag.find(*iter_tags)->second->begin(), grammar->rules_by_tag.find(*iter_tags)->second->end());
+						}
+					}
 				}
 
 				cSWindow->appendCohort(cCohort);
 				if (grammar->rules_by_tag.find(grammar->tag_any) != grammar->rules_by_tag.end()) {
 					cSWindow->valid_rules.insert(grammar->rules_by_tag.find(grammar->tag_any)->second->begin(), grammar->rules_by_tag.find(grammar->tag_any)->second->end());
+					cCohort->valid_rules.insert(grammar->rules_by_tag.find(grammar->tag_any)->second->begin(), grammar->rules_by_tag.find(grammar->tag_any)->second->end());
 				}
 				if (grammar->rules_by_tag.find(begintag) != grammar->rules_by_tag.end()) {
 					cSWindow->valid_rules.insert(grammar->rules_by_tag.find(begintag)->second->begin(), grammar->rules_by_tag.find(begintag)->second->end());
+					cCohort->valid_rules.insert(grammar->rules_by_tag.find(begintag)->second->begin(), grammar->rules_by_tag.find(begintag)->second->end());
 				}
 				if (grammar->rules_by_tag.find(endtag) != grammar->rules_by_tag.end()) {
 					cSWindow->valid_rules.insert(grammar->rules_by_tag.find(endtag)->second->begin(), grammar->rules_by_tag.find(endtag)->second->end());
+					cCohort->valid_rules.insert(grammar->rules_by_tag.find(endtag)->second->begin(), grammar->rules_by_tag.find(endtag)->second->end());
 				}
 				cWindow->appendSingleWindow(cSWindow);
 				lSWindow = cSWindow;
@@ -223,6 +229,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 					for (iter_tags = cReading->tags_list.begin() ; iter_tags != cReading->tags_list.end() ; iter_tags++) {
 						if (grammar->rules_by_tag.find(*iter_tags) != grammar->rules_by_tag.end()) {
 							cSWindow->valid_rules.insert(grammar->rules_by_tag.find(*iter_tags)->second->begin(), grammar->rules_by_tag.find(*iter_tags)->second->end());
+							cCohort->valid_rules.insert(grammar->rules_by_tag.find(*iter_tags)->second->begin(), grammar->rules_by_tag.find(*iter_tags)->second->end());
 						}
 					}
 					cCohort->appendReading(cReading);
@@ -258,6 +265,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 			cReading->tags_list.push_back(cReading->wordform);
 			if (grammar->rules_by_tag.find(cReading->wordform) != grammar->rules_by_tag.end()) {
 				cSWindow->valid_rules.insert(grammar->rules_by_tag.find(cReading->wordform)->second->begin(), grammar->rules_by_tag.find(cReading->wordform)->second->end());
+				cCohort->valid_rules.insert(grammar->rules_by_tag.find(cReading->wordform)->second->begin(), grammar->rules_by_tag.find(cReading->wordform)->second->end());
 			}
 
 			ux_trim(cleaned);
@@ -273,6 +281,10 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 						cReading->baseform = tag;
 					}
 					cReading->tags_list.push_back(tag);
+					if (grammar->rules_by_tag.find(tag) != grammar->rules_by_tag.end()) {
+						cSWindow->valid_rules.insert(grammar->rules_by_tag.find(tag)->second->begin(), grammar->rules_by_tag.find(tag)->second->end());
+						cCohort->valid_rules.insert(grammar->rules_by_tag.find(tag)->second->begin(), grammar->rules_by_tag.find(tag)->second->end());
+					}
 				}
 				base = space;
 			}
@@ -282,6 +294,10 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 					cReading->baseform = tag;
 				}
 				cReading->tags_list.push_back(tag);
+				if (grammar->rules_by_tag.find(tag) != grammar->rules_by_tag.end()) {
+					cSWindow->valid_rules.insert(grammar->rules_by_tag.find(tag)->second->begin(), grammar->rules_by_tag.find(tag)->second->end());
+					cCohort->valid_rules.insert(grammar->rules_by_tag.find(tag)->second->begin(), grammar->rules_by_tag.find(tag)->second->end());
+				}
 			}
 			reflowReading(cReading);
 			if (!cReading->tags_mapped.empty()) {
@@ -290,12 +306,6 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 			if (!cReading->baseform) {
 				u_fprintf(ux_stderr, "Warning: Reading on line %u had no valid baseform.\n", numLines);
 				u_fflush(ux_stderr);
-			}
-			std::list<uint32_t>::iterator iter_tags;
-			for (iter_tags = cReading->tags_list.begin() ; iter_tags != cReading->tags_list.end() ; iter_tags++) {
-				if (grammar->rules_by_tag.find(*iter_tags) != grammar->rules_by_tag.end()) {
-					cSWindow->valid_rules.insert(grammar->rules_by_tag.find(*iter_tags)->second->begin(), grammar->rules_by_tag.find(*iter_tags)->second->end());
-				}
 			}
 			cCohort->appendReading(cReading);
 			lReading = cReading;
@@ -319,12 +329,6 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 							cReading->tags_list.push_back(cCohort->wordform);
 							cReading->noprint = true;
 							cReading->rehash();
-							std::list<uint32_t>::iterator iter_tags;
-							for (iter_tags = cReading->tags_list.begin() ; iter_tags != cReading->tags_list.end() ; iter_tags++) {
-								if (grammar->rules_by_tag.find(*iter_tags) != grammar->rules_by_tag.end()) {
-									cSWindow->valid_rules.insert(grammar->rules_by_tag.find(*iter_tags)->second->begin(), grammar->rules_by_tag.find(*iter_tags)->second->end());
-								}
-							}
 							cCohort->appendReading(cReading);
 						}
 						std::list<Reading*>::iterator iter;
@@ -332,15 +336,25 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 							(*iter)->tags_list.push_back(endtag);
 							(*iter)->tags[endtag] = endtag;
 							(*iter)->rehash();
+							std::list<uint32_t>::iterator iter_tags;
+							for (iter_tags = (*iter)->tags_list.begin() ; iter_tags != (*iter)->tags_list.end() ; iter_tags++) {
+								if (grammar->rules_by_tag.find(*iter_tags) != grammar->rules_by_tag.end()) {
+									cSWindow->valid_rules.insert(grammar->rules_by_tag.find(*iter_tags)->second->begin(), grammar->rules_by_tag.find(*iter_tags)->second->end());
+									cCohort->valid_rules.insert(grammar->rules_by_tag.find(*iter_tags)->second->begin(), grammar->rules_by_tag.find(*iter_tags)->second->end());
+								}
+							}
 						}
 						if (grammar->rules_by_tag.find(grammar->tag_any) != grammar->rules_by_tag.end()) {
 							cSWindow->valid_rules.insert(grammar->rules_by_tag.find(grammar->tag_any)->second->begin(), grammar->rules_by_tag.find(grammar->tag_any)->second->end());
+							cCohort->valid_rules.insert(grammar->rules_by_tag.find(grammar->tag_any)->second->begin(), grammar->rules_by_tag.find(grammar->tag_any)->second->end());
 						}
 						if (grammar->rules_by_tag.find(begintag) != grammar->rules_by_tag.end()) {
 							cSWindow->valid_rules.insert(grammar->rules_by_tag.find(begintag)->second->begin(), grammar->rules_by_tag.find(begintag)->second->end());
+							cCohort->valid_rules.insert(grammar->rules_by_tag.find(begintag)->second->begin(), grammar->rules_by_tag.find(begintag)->second->end());
 						}
 						if (grammar->rules_by_tag.find(endtag) != grammar->rules_by_tag.end()) {
 							cSWindow->valid_rules.insert(grammar->rules_by_tag.find(endtag)->second->begin(), grammar->rules_by_tag.find(endtag)->second->end());
+							cCohort->valid_rules.insert(grammar->rules_by_tag.find(endtag)->second->begin(), grammar->rules_by_tag.find(endtag)->second->end());
 						}
 						cWindow->appendSingleWindow(cSWindow);
 						cReading = lReading = 0;
@@ -411,12 +425,6 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 			cReading->tags_list.push_back(cCohort->wordform);
 			cReading->noprint = true;
 			cReading->rehash();
-			std::list<uint32_t>::iterator iter_tags;
-			for (iter_tags = cReading->tags_list.begin() ; iter_tags != cReading->tags_list.end() ; iter_tags++) {
-				if (grammar->rules_by_tag.find(*iter_tags) != grammar->rules_by_tag.end()) {
-					cSWindow->valid_rules.insert(grammar->rules_by_tag.find(*iter_tags)->second->begin(), grammar->rules_by_tag.find(*iter_tags)->second->end());
-				}
-			}
 			cCohort->appendReading(cReading);
 		}
 		std::list<Reading*>::iterator iter;
@@ -424,15 +432,25 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 			(*iter)->tags_list.push_back(endtag);
 			(*iter)->tags[endtag] = endtag;
 			(*iter)->rehash();
+			std::list<uint32_t>::iterator iter_tags;
+			for (iter_tags = (*iter)->tags_list.begin() ; iter_tags != (*iter)->tags_list.end() ; iter_tags++) {
+				if (grammar->rules_by_tag.find(*iter_tags) != grammar->rules_by_tag.end()) {
+					cSWindow->valid_rules.insert(grammar->rules_by_tag.find(*iter_tags)->second->begin(), grammar->rules_by_tag.find(*iter_tags)->second->end());
+					cCohort->valid_rules.insert(grammar->rules_by_tag.find(*iter_tags)->second->begin(), grammar->rules_by_tag.find(*iter_tags)->second->end());
+				}
+			}
 		}
 		if (grammar->rules_by_tag.find(grammar->tag_any) != grammar->rules_by_tag.end()) {
 			cSWindow->valid_rules.insert(grammar->rules_by_tag.find(grammar->tag_any)->second->begin(), grammar->rules_by_tag.find(grammar->tag_any)->second->end());
+			cCohort->valid_rules.insert(grammar->rules_by_tag.find(grammar->tag_any)->second->begin(), grammar->rules_by_tag.find(grammar->tag_any)->second->end());
 		}
 		if (grammar->rules_by_tag.find(begintag) != grammar->rules_by_tag.end()) {
 			cSWindow->valid_rules.insert(grammar->rules_by_tag.find(begintag)->second->begin(), grammar->rules_by_tag.find(begintag)->second->end());
+			cCohort->valid_rules.insert(grammar->rules_by_tag.find(begintag)->second->begin(), grammar->rules_by_tag.find(begintag)->second->end());
 		}
 		if (grammar->rules_by_tag.find(endtag) != grammar->rules_by_tag.end()) {
 			cSWindow->valid_rules.insert(grammar->rules_by_tag.find(endtag)->second->begin(), grammar->rules_by_tag.find(endtag)->second->end());
+			cCohort->valid_rules.insert(grammar->rules_by_tag.find(endtag)->second->begin(), grammar->rules_by_tag.find(endtag)->second->end());
 		}
 		cWindow->appendSingleWindow(cSWindow);
 		cReading = 0;
@@ -465,7 +483,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 	u_fflush(output);
 
 CGCMD_EXIT:
-	std::cerr << "Skipped " << skipped_rules << " rules." << std::endl;
+	std::cerr << "Skipped " << skipped_rules << " of " << (skipped_rules+cache_hits+cache_miss) <<" rules." << std::endl;
 	std::cerr << "Cache " << (cache_hits+cache_miss) << " : " << cache_hits << " / " << cache_miss << std::endl;
 	std::cerr << "Match " << (match_sub+match_comp+match_single) << " : " << match_sub << " / " << match_comp << " / " << match_single << std::endl;
 

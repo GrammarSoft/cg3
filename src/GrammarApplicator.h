@@ -90,7 +90,7 @@ namespace CG3 {
 		uint32_t addTag(const UChar *tag);
 
 		int runGrammarOnWindow(Window *window);
-		uint32_t runRulesOnWindow(SingleWindow *current, const std::vector<Rule*> *rules, const uint32_t start, const uint32_t end);
+		uint32_t runRulesOnWindow(SingleWindow *current, const int32_t start, const int32_t end);
 
 		Cohort *runSingleTest(SingleWindow *sWindow, uint32_t i, const ContextualTest *test, bool *brk, bool *retval);
 		Cohort *runContextualTest(SingleWindow *sWindow, const uint32_t position, const ContextualTest *test);
