@@ -72,6 +72,9 @@ GrammarApplicator::~GrammarApplicator() {
 	}
 	single_tags.clear();
 
+	index_reading_yes.clear();
+	index_reading_no.clear();
+
 	grammar = 0;
 	if (timer) {
 		delete timer;
@@ -81,6 +84,7 @@ GrammarApplicator::~GrammarApplicator() {
 		delete gWindow;
 		gWindow = 0;
 	}
+	ux_stdin = ux_stderr = ux_stdout = 0;
 }
 
 void GrammarApplicator::setGrammar(const Grammar *res) {
