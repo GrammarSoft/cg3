@@ -83,8 +83,6 @@ int GrammarWriter::write_grammar_to_ufile_text(UFILE *output) {
 		return -1;
 	}
 
-	free_strings();
-	free_keywords();
 	int error = init_keywords();
 	if (error) {
 		u_fprintf(ux_stderr, "Error: init_keywords returned %u!\n", error);

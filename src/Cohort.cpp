@@ -38,6 +38,7 @@ Cohort::~Cohort() {
 	readings.clear();
 	parent->parent->cohort_map.erase(global_number);
 	parent->parent->dep_window.erase(global_number);
+	valid_rules.clear();
 }
 
 void Cohort::addSibling(uint32_t sibling) {

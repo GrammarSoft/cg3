@@ -43,6 +43,7 @@ namespace CG3 {
 		stdext::hash_map<uint32_t, uint32_t> set_alias;
 
 		stdext::hash_map<uint32_t, RuleList*> rules_by_tag;
+		stdext::hash_map<uint32_t, RuleList*> sets_by_tag;
 
 		Set *delimiters;
 		Set *soft_delimiters;
@@ -90,8 +91,10 @@ namespace CG3 {
 		void destroyRule(Rule *rule);
 
 		void reindex();
-		void indexRuleToSet(uint32_t, Set*);
-		void indexRuleToList(uint32_t, uint32_t);
+		void indexSetToRule(uint32_t, Set*);
+		void indexTagToRule(uint32_t, uint32_t);
+		void indexSets(uint32_t, Set*);
+		void indexTagToSet(uint32_t, uint32_t);
 	};
 
 }
