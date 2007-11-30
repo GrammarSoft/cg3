@@ -46,7 +46,7 @@ namespace CG3 {
 
 		Set *delimiters;
 		Set *soft_delimiters;
-		Tag *tag_any;
+		uint32_t tag_any;
 		std::vector<uint32_t> preferred_targets;
 
 		std::vector<uint32_t> sections;
