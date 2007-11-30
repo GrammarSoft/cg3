@@ -216,7 +216,7 @@ UChar *ux_append(UChar *target, const UChar *data) {
 		tmp[0] = 0;
 		u_strcat(tmp, target);
 		u_strcat(tmp, data);
-		delete target;
+		delete[] target;
 		target = tmp;
 	}
 	return tmp;

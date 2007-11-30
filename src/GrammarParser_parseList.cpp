@@ -107,6 +107,6 @@ int GrammarParser::parseList(const UChar *line) {
 
 	result->addSet(curset);
 
-	delete local;
+	delete[] local;
 	return 0;
 }

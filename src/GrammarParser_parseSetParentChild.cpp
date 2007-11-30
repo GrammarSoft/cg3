@@ -104,6 +104,6 @@ int GrammarParser::parseSetParentChild(const UChar *line, KEYWORDS key) {
 
 	result->has_dep = true;
 
-	delete local;
+	delete[] local;
 	return 0;
 }

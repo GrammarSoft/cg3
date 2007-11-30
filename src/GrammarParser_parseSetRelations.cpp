@@ -103,7 +103,7 @@ int GrammarParser::parseSetRemRelation(const UChar *line, KEYWORDS key) {
 	rule->dep_target = rule->dep_tests.front();
 	rule->dep_tests.pop_front();
 
-	delete local;
+	delete[] local;
 	return 0;
 }
 
@@ -191,6 +191,6 @@ int GrammarParser::parseSetRemRelations(const UChar *line, KEYWORDS key) {
 	rule->dep_target = rule->dep_tests.front();
 	rule->dep_tests.pop_front();
 
-	delete local;
+	delete[] local;
 	return 0;
 }

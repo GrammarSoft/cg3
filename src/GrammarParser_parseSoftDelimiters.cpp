@@ -108,6 +108,6 @@ int GrammarParser::parseSoftDelimiters(const UChar *line) {
 	result->addSet(curset);
 	result->soft_delimiters = curset;
 
-	delete local;
+	delete[] local;
 	return 0;
 }

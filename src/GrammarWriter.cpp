@@ -326,7 +326,7 @@ void GrammarWriter::printTag(UFILE *to, const Tag *tag) {
 	UChar *tmp = new UChar[u_strlen(tag->tag)*2+3];
 	ux_escape(tmp, tag->tag);
 	u_fprintf(to, "%S", tmp);
-	delete tmp;
+	delete[] tmp;
 
 	if (tag->type & T_CASE_INSENSITIVE) {
 		u_fprintf(to, "i");

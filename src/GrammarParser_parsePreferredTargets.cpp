@@ -51,6 +51,6 @@ int GrammarParser::parsePreferredTargets(const UChar *line) {
 		result->addPreferredTarget(base);
 	}
 
-	delete local;
+	delete[] local;
 	return 0;
 }

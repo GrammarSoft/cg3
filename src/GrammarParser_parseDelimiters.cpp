@@ -108,6 +108,6 @@ int GrammarParser::parseDelimiters(const UChar *line) {
 	result->addSet(curset);
 	result->delimiters = curset;
 
-	delete local;
+	delete[] local;
 	return 0;
 }

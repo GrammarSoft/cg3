@@ -25,7 +25,7 @@ Anchor::Anchor() {
 
 Anchor::~Anchor() {
 	if (name) {
-		delete name;
+		delete[] name;
 	}
 	line = 0;
 }

@@ -33,7 +33,7 @@ Grammar::Grammar() {
 
 Grammar::~Grammar() {
 	if (name) {
-		delete name;
+		delete[] name;
 	}
 	
 	preferred_targets.clear();

@@ -33,7 +33,7 @@ Rule::Rule() {
 }
 
 Rule::~Rule() {
-	delete name;
+	delete[] name;
 	std::list<ContextualTest*>::iterator iter;
 	for (iter = tests.begin() ; iter != tests.end() ; iter++) {
 		delete (*iter);
