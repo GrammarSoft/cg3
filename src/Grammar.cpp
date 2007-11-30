@@ -281,6 +281,8 @@ void Grammar::reindex() {
 
 void Grammar::indexRuleToSet(uint32_t r, Set *s) {
 	if (s->is_special) {
+		u_fprintf(ux_stderr, "Debug: Added rule %u to no-skip index.\n", r);
+		u_fflush(ux_stderr);
 		indexRuleToList(tag_any->hash, r);
 		return;
 	}
@@ -318,4 +320,6 @@ void Grammar::indexRuleToList(uint32_t t, uint32_t r) {
 		rules_by_tag.insert(p);
 	}
 	rules_by_tag.find(t)->second->insert(r);
+	u_fprintf(ux_stderr, "Debug: Indexed tag %u to rule %u.\n", t, r);
+	u_fflush(ux_stderr);
 }
