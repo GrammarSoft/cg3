@@ -10,8 +10,7 @@ ToDo: Make use of Preferred-Targets
 ToDo: Test whether indexed retrieval of rules is faster than looping over them
 ToDo: Cohorts should remember which sets they matched
 ToDo: Move DoesTagMatchSet to Grammar
-ToDo: Propagate has_special to containing sets
-ToDo: Auto detect environment encoding and display suitable warning and how to change it
 ToDo: Line number on all applicable warnings
 ToDo: Index applicable rules on the whole window, not just per cohort.
 ToDo: Check why last reading in a delimiter is duplicated.
+ToDo: Position Either Direction

@@ -45,6 +45,7 @@ GrammarApplicator::GrammarApplicator(UFILE *ux_in, UFILE *ux_out, UFILE *ux_err)
 	endtag = 0;
 	last_mapping_tag = 0;
 	grammar = 0;
+	skipped_rules = 0;
 	cache_hits = 0;
 	cache_miss = 0;
 	match_single = 0;

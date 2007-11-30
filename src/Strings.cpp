@@ -39,6 +39,7 @@ namespace CG3 {
 		}
 		
 		int init_keywords() {
+			free_keywords();
 			init_keyword_single("1f283fc29adb937a892e09bbc124b85c this is a dummy keyword to hold position 0", K_IGNORE);
 			init_keyword_single("SETS",              K_SETS);
 			init_keyword_single("LIST",              K_LIST);
@@ -108,6 +109,7 @@ namespace CG3 {
 		}
 		
 		int init_strings() {
+			free_strings();
 			init_string_single("1f283fc29adb937a892e09bbc124b85c this is a dummy string to hold position 0", S_IGNORE);
 			init_string_single("|",          S_PIPE);
 			init_string_single("TO",         S_TO);
@@ -156,6 +158,7 @@ namespace CG3 {
 		}
 
 		int init_regexps(UFILE *ux_stderr) {
+			free_regexps();
 			UParseError *pe = new UParseError;
 			UErrorCode status = U_ZERO_ERROR;
 

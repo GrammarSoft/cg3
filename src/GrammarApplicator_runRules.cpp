@@ -26,7 +26,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, const std::v
 	bool section_did_good = false;
 	bool delimited = false;
 
-	if (!rules->empty()) {
+	if (rules && !rules->empty()) {
 		for (uint32_t j=start;j<end;j++) {
 			PACC_TimeStamp tstamp = 0;
 			const Rule *rule = rules->at(j);
@@ -36,6 +36,10 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, const std::v
 				continue;
 			}
 			if (!apply_corrections && (rule->type == K_SUBSTITUTE || rule->type == K_APPEND)) {
+				continue;
+			}
+			if (current->valid_rules.find(rule->line) == current->valid_rules.end()) {
+				skipped_rules++;
 				continue;
 			}
 			if (statistics) {
@@ -250,6 +254,9 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, const std::v
 							std::list<uint32_t>::const_iterator tter;
 							for (tter = rule->maplist.begin() ; tter != rule->maplist.end() ; tter++) {
 								reading->tags_list.push_back(*tter);
+								if (grammar->rules_by_tag.find(*tter) != grammar->rules_by_tag.end()) {
+									current->valid_rules.insert(grammar->rules_by_tag.find(*tter)->second->begin(), grammar->rules_by_tag.find(*tter)->second->end());
+								}
 							}
 							reflowReading(reading);
 							if (rule->type == K_MAP) {
@@ -265,6 +272,9 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, const std::v
 							reading->tags_list.push_back(reading->baseform);
 							for (tter = rule->maplist.begin() ; tter != rule->maplist.end() ; tter++) {
 								reading->tags_list.push_back(*tter);
+								if (grammar->rules_by_tag.find(*tter) != grammar->rules_by_tag.end()) {
+									current->valid_rules.insert(grammar->rules_by_tag.find(*tter)->second->begin(), grammar->rules_by_tag.find(*tter)->second->end());
+								}
 							}
 							reflowReading(reading);
 							if (!reading->tags_mapped.empty()) {
@@ -299,6 +309,9 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, const std::v
 								}
 								for (tter = rule->maplist.begin() ; tter != rule->maplist.end() ; tter++) {
 									reading->tags_list.insert(tfind, *tter);
+									if (grammar->rules_by_tag.find(*tter) != grammar->rules_by_tag.end()) {
+										current->valid_rules.insert(grammar->rules_by_tag.find(*tter)->second->begin(), grammar->rules_by_tag.find(*tter)->second->end());
+									}
 								}
 								reflowReading(reading);
 								if (!reading->tags_mapped.empty()) {
@@ -314,6 +327,9 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, const std::v
 							std::list<uint32_t>::const_iterator tter;
 							for (tter = rule->maplist.begin() ; tter != rule->maplist.end() ; tter++) {
 								nr->tags_list.push_back(*tter);
+								if (grammar->rules_by_tag.find(*tter) != grammar->rules_by_tag.end()) {
+									current->valid_rules.insert(grammar->rules_by_tag.find(*tter)->second->begin(), grammar->rules_by_tag.find(*tter)->second->end());
+								}
 							}
 							reflowReading(nr);
 							if (!nr->tags_mapped.empty()) {

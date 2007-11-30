@@ -44,6 +44,7 @@ SingleWindow::~SingleWindow() {
 			previous->next = 0;
 		}
 	}
+	valid_rules.clear();
 }
 
 void SingleWindow::appendCohort(Cohort *cohort) {

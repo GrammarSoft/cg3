@@ -21,6 +21,7 @@ using namespace CG3;
 Tag::Tag() {
 	type = 0;
 	in_grammar = false;
+	is_special = false;
 	comparison_key = 0;
 	comparison_op = OP_NOP;
 	comparison_val = 0;
@@ -33,9 +34,11 @@ Tag::Tag() {
 Tag::~Tag() {
 	if (tag) {
 		delete tag;
+		tag = 0;
 	}
 	if (comparison_key) {
 		delete comparison_key;
+		comparison_key = 0;
 	}
 }
 
@@ -155,6 +158,10 @@ void Tag::parseTag(const UChar *to, UFILE *ux_stderr) {
 			}
 		}
 	}
+	is_special = false;
+	if (type & (T_ANY|T_NUMERICAL|T_VARIABLE|T_META|T_NEGATIVE|T_FAILFAST|T_CASE_INSENSITIVE|T_REGEXP)) {
+		is_special = true;
+	}
 }
 
 void Tag::parseTagRaw(const UChar *to) {
@@ -212,6 +219,10 @@ void Tag::parseTagRaw(const UChar *to) {
 			}
 		}
 	}
+	is_special = false;
+	if (type & (T_ANY|T_NUMERICAL|T_VARIABLE|T_META|T_NEGATIVE|T_FAILFAST|T_CASE_INSENSITIVE|T_REGEXP)) {
+		is_special = true;
+	}
 }
 
 uint32_t Tag::rehash() {
@@ -244,6 +255,11 @@ uint32_t Tag::rehash() {
 	}
 	if (type & T_REGEXP) {
 		hash = hash_sdbm_char("r", hash);
+	}
+
+	is_special = false;
+	if (type & (T_ANY|T_NUMERICAL|T_VARIABLE|T_META|T_NEGATIVE|T_FAILFAST|T_CASE_INSENSITIVE|T_REGEXP)) {
+		is_special = true;
 	}
 
 	return hash;

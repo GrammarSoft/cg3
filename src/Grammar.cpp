@@ -26,6 +26,7 @@ Grammar::Grammar() {
 	curline = 0;
 	delimiters = 0;
 	soft_delimiters = 0;
+	tag_any = 0;
 	mapping_prefix = '@';
 	srand((uint32_t)time(0));
 }
@@ -269,4 +270,52 @@ void Grammar::reindex() {
 	for (iter_sets = sets_by_contents.begin() ; iter_sets != sets_by_contents.end() ; iter_sets++) {
 		iter_sets->second->reindex(this);
 	}
+
+	std::map<uint32_t, Rule*>::iterator iter_rule;
+	for (iter_rule = rule_by_line.begin() ; iter_rule != rule_by_line.end() ; iter_rule++) {
+		if (iter_rule->second->target) {
+			indexRuleToSet(iter_rule->second->line, getSet(iter_rule->second->target));
+		}
+	}
+}
+
+void Grammar::indexRuleToSet(uint32_t r, Set *s) {
+	if (s->is_special) {
+		indexRuleToList(tag_any->hash, r);
+		return;
+	}
+	if (s->sets.empty()) {
+		stdext::hash_map<uint32_t, uint32_t>::const_iterator comp_iter;
+		for (comp_iter = s->single_tags.begin() ; comp_iter != s->single_tags.end() ; comp_iter++) {
+			indexRuleToList(comp_iter->second, r);
+		}
+		for (comp_iter = s->tags.begin() ; comp_iter != s->tags.end() ; comp_iter++) {
+			if (tags.find(comp_iter->second) != tags.end()) {
+				CompositeTag *curcomptag = tags.find(comp_iter->second)->second;
+				if (curcomptag->tags.size() == 1) {
+					indexRuleToList(curcomptag->tags.begin()->second, r);
+				} else {
+					std::map<uint32_t, uint32_t>::const_iterator tag_iter;
+					for (tag_iter = curcomptag->tags_map.begin() ; tag_iter != curcomptag->tags_map.end() ; tag_iter++) {
+						indexRuleToList(tag_iter->second, r);
+					}
+				}
+			}
+		}
+	} else if (!s->sets.empty()) {
+		for (uint32_t i=0;i<s->sets.size();i++) {
+			Set *set = sets_by_contents.find(s->sets.at(i))->second;
+			indexRuleToSet(r, set);
+		}
+	}
+}
+
+void Grammar::indexRuleToList(uint32_t t, uint32_t r) {
+	if (rules_by_tag.find(t) == rules_by_tag.end()) {
+		std::pair<uint32_t,RuleList*> p;
+		p.first = t;
+		p.second = new RuleList;
+		rules_by_tag.insert(p);
+	}
+	rules_by_tag.find(t)->second->insert(r);
 }

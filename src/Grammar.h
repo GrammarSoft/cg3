@@ -41,8 +41,12 @@ namespace CG3 {
 		stdext::hash_map<uint32_t, uint32_t> sets_by_name;
 		stdext::hash_map<uint32_t, Set*> sets_by_contents;
 		stdext::hash_map<uint32_t, uint32_t> set_alias;
+
+		stdext::hash_map<uint32_t, RuleList*> rules_by_tag;
+
 		Set *delimiters;
 		Set *soft_delimiters;
+		Tag *tag_any;
 		std::vector<uint32_t> preferred_targets;
 
 		std::vector<uint32_t> sections;
@@ -86,6 +90,8 @@ namespace CG3 {
 		void destroyRule(Rule *rule);
 
 		void reindex();
+		void indexRuleToSet(uint32_t, Set*);
+		void indexRuleToList(uint32_t, uint32_t);
 	};
 
 }

@@ -28,6 +28,7 @@ namespace CG3 {
 	public:
 		bool match_any;
 		bool has_mappings;
+		bool is_special;
 		UChar *name;
 		uint32_t line;
 		uint32_t hash;
