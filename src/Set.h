@@ -33,10 +33,9 @@ namespace CG3 {
 		uint32_t line;
 		uint32_t hash;
 
-		std::map<uint32_t, uint32_t> tags_map;
-
-		stdext::hash_map<uint32_t, uint32_t> tags;
-		stdext::hash_map<uint32_t, uint32_t> single_tags;
+		std::set<uint32_t> tags_set;
+		stdext::hash_set<uint32_t> tags;
+		stdext::hash_set<uint32_t> single_tags;
 
 		std::vector<uint32_t> set_ops;
 		std::vector<uint32_t> sets;

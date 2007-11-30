@@ -25,13 +25,18 @@ Set::Set() {
 	name = 0;
 	line = 0;
 	hash = 0;
+	tags_set.clear();
+	tags.clear();
+	single_tags.clear();
+	sets.clear();
+	set_ops.clear();
 }
 
 Set::~Set() {
 	if (name) {
 		delete[] name;
 	}
-	tags_map.clear();
+	tags_set.clear();
 	tags.clear();
 	single_tags.clear();
 	sets.clear();
@@ -57,11 +62,11 @@ void Set::setName(const UChar *to) {
 
 uint32_t Set::rehash() {
 	uint32_t retval = 0;
-	assert(tags_map.empty() || sets.empty());
+	assert(tags_set.empty() || sets.empty());
 	if (sets.empty()) {
-		std::map<uint32_t, uint32_t>::iterator iter;
-		for (iter = tags_map.begin() ; iter != tags_map.end() ; iter++) {
-			retval = hash_sdbm_uint32_t(iter->second, retval);
+		std::set<uint32_t>::iterator iter;
+		for (iter = tags_set.begin() ; iter != tags_set.end() ; iter++) {
+			retval = hash_sdbm_uint32_t(*iter, retval);
 		}
 	}
 	else {
@@ -80,9 +85,9 @@ uint32_t Set::rehash() {
 void Set::reindex(Grammar *grammar) {
 	has_mappings = false;
 	if (sets.empty()) {
-		stdext::hash_map<uint32_t, uint32_t>::const_iterator comp_iter;
+		stdext::hash_set<uint32_t>::const_iterator comp_iter;
 		for (comp_iter = single_tags.begin() ; comp_iter != single_tags.end() ; comp_iter++) {
-			Tag *tag = grammar->single_tags.find(comp_iter->second)->second;
+			Tag *tag = grammar->single_tags.find(*comp_iter)->second;
 			if (tag->is_special) {
 				is_special = true;
 			}
@@ -92,8 +97,8 @@ void Set::reindex(Grammar *grammar) {
 			}
 		}
 		for (comp_iter = tags.begin() ; comp_iter != tags.end() ; comp_iter++) {
-			if (grammar->tags.find(comp_iter->second) != grammar->tags.end()) {
-				CompositeTag *curcomptag = grammar->tags.find(comp_iter->second)->second;
+			if (grammar->tags.find(*comp_iter) != grammar->tags.end()) {
+				CompositeTag *curcomptag = grammar->tags.find(*comp_iter)->second;
 				if (curcomptag->tags.size() == 1) {
 					Tag *tag = grammar->single_tags.find(*(curcomptag->tags.begin()))->second;
 					if (tag->is_special) {

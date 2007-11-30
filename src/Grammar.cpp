@@ -165,16 +165,16 @@ void Grammar::addCompositeTagToSet(Set *set, CompositeTag *tag) {
 	if (tag && tag->tags.size()) {
 		if (tag->tags.size() == 1) {
 			Tag *rtag = single_tags[*(tag->tags.begin())];
-			set->tags_map[rtag->hash] = rtag->hash;
-			set->single_tags[rtag->hash] = rtag->hash;
+			set->tags_set.insert(rtag->hash);
+			set->single_tags.insert(rtag->hash);
 
 			if (rtag->type & T_ANY) {
 				set->match_any = true;
 			}
 		} else {
 			addCompositeTag(tag);
-			set->tags_map[tag->hash] = tag->hash;
-			set->tags[tag->hash] = tag->hash;
+			set->tags_set.insert(tag->hash);
+			set->tags.insert(tag->hash);
 		}
 	} else {
 		u_fprintf(ux_stderr, "Error: Attempted to add empty composite tag to grammar and set!\n");
@@ -302,13 +302,13 @@ void Grammar::indexSetToRule(uint32_t r, Set *s) {
 		return;
 	}
 	if (s->sets.empty()) {
-		stdext::hash_map<uint32_t, uint32_t>::const_iterator comp_iter;
+		stdext::hash_set<uint32_t>::const_iterator comp_iter;
 		for (comp_iter = s->single_tags.begin() ; comp_iter != s->single_tags.end() ; comp_iter++) {
-			indexTagToRule(comp_iter->second, r);
+			indexTagToRule(*comp_iter, r);
 		}
 		for (comp_iter = s->tags.begin() ; comp_iter != s->tags.end() ; comp_iter++) {
-			if (tags.find(comp_iter->second) != tags.end()) {
-				CompositeTag *curcomptag = tags.find(comp_iter->second)->second;
+			if (tags.find(*comp_iter) != tags.end()) {
+				CompositeTag *curcomptag = tags.find(*comp_iter)->second;
 				if (curcomptag->tags.size() == 1) {
 					indexTagToRule(*(curcomptag->tags.begin()), r);
 				} else {
@@ -343,13 +343,13 @@ void Grammar::indexSets(uint32_t r, Set *s) {
 		return;
 	}
 	if (s->sets.empty()) {
-		stdext::hash_map<uint32_t, uint32_t>::const_iterator comp_iter;
+		stdext::hash_set<uint32_t>::const_iterator comp_iter;
 		for (comp_iter = s->single_tags.begin() ; comp_iter != s->single_tags.end() ; comp_iter++) {
-			indexTagToSet(comp_iter->second, r);
+			indexTagToSet(*comp_iter, r);
 		}
 		for (comp_iter = s->tags.begin() ; comp_iter != s->tags.end() ; comp_iter++) {
-			if (tags.find(comp_iter->second) != tags.end()) {
-				CompositeTag *curcomptag = tags.find(comp_iter->second)->second;
+			if (tags.find(*comp_iter) != tags.end()) {
+				CompositeTag *curcomptag = tags.find(*comp_iter)->second;
 				if (curcomptag->tags.size() == 1) {
 					indexTagToSet(*(curcomptag->tags.begin()), r);
 				} else {

@@ -33,11 +33,11 @@ namespace CG3 {
 		std::vector<uint32_t> hit_by;
 		bool noprint;
 		std::list<uint32_t> tags_list;
-		stdext::hash_map<uint32_t, uint32_t> tags;
-		std::map<uint32_t, uint32_t> tags_plain;
-		std::map<uint32_t, uint32_t> tags_mapped;
-		std::map<uint32_t, uint32_t> tags_textual;
-		std::map<uint32_t, uint32_t> tags_numerical;
+		stdext::hash_set<uint32_t> tags;
+		std::set<uint32_t> tags_plain;
+		std::set<uint32_t> tags_mapped;
+		std::set<uint32_t> tags_textual;
+		std::set<uint32_t> tags_numerical;
 
 		UChar *text;
 
