@@ -39,7 +39,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, const std::v
 				continue;
 			}
 			if (current->valid_rules.find(rule->line) == current->valid_rules.end()) {
-				u_fprintf(ux_stderr, "Debug: Skipped rule %u.\n", rule->line);
+				//u_fprintf(ux_stderr, "Debug: Skipped rule %u.\n", rule->line);
 				skipped_rules++;
 				continue;
 			}
