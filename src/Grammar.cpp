@@ -97,7 +97,7 @@ Grammar::~Grammar() {
 
 	set_alias.clear();
 
-	stdext::hash_map<uint32_t,uint32HashSet*>::iterator xrule;
+	stdext::hash_map<uint32_t,uint32Set*>::iterator xrule;
 	for (xrule = rules_by_tag.begin() ; xrule != rules_by_tag.end() ; xrule++) {
 		xrule->second->clear();
 		delete xrule->second;
@@ -329,9 +329,9 @@ void Grammar::indexSetToRule(uint32_t r, Set *s) {
 
 void Grammar::indexTagToRule(uint32_t t, uint32_t r) {
 	if (rules_by_tag.find(t) == rules_by_tag.end()) {
-		std::pair<uint32_t,uint32HashSet*> p;
+		std::pair<uint32_t,uint32Set*> p;
 		p.first = t;
-		p.second = new uint32HashSet;
+		p.second = new uint32Set;
 		rules_by_tag.insert(p);
 	}
 	rules_by_tag.find(t)->second->insert(r);

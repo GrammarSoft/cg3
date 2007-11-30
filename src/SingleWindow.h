@@ -32,7 +32,7 @@ namespace CG3 {
 		std::vector<Cohort*> cohorts;
 		UChar *text;
 		uint32_t hash, hash_tags, hash_mapped, hash_plain, hash_textual;
-		uint32HashSet valid_rules;
+		uint32Set valid_rules;
 
 		SingleWindow(Window *p);
 		~SingleWindow();
