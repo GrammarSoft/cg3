@@ -173,6 +173,26 @@ bool GrammarApplicator::doesSetMatchReading(const Reading *reading, const uint32
 	stdext::hash_map<uint32_t, Set*>::const_iterator iter = grammar->sets_by_contents.find(set);
 	if (iter != grammar->sets_by_contents.end()) {
 		const Set *theset = iter->second;
+		if (!theset->is_special) {
+			bool possible = false;
+			std::list<uint32_t>::const_iterator iter_tags;
+			for (iter_tags = reading->tags_list.begin() ; iter_tags != reading->tags_list.end() ; iter_tags++) {
+				if (grammar->sets_by_tag.find(*iter_tags) != grammar->sets_by_tag.end() && grammar->sets_by_tag.find(*iter_tags)->second->find(set) != grammar->sets_by_tag.find(*iter_tags)->second->end()) {
+					possible = true;
+					break;
+				}
+			}
+			if (!possible) {
+				if (reading->hash && reading->hash != 1) {
+					if (index_reading_no.find(reading->hash) == index_reading_no.end()) {
+						index_reading_no[reading->hash] = new Index();
+					}
+					index_reading_no[reading->hash]->values[set] = set;
+				}
+				return false;
+			}
+		}
+
 		if (theset->match_any) {
 			retval = true;
 		}

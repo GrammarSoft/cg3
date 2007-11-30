@@ -315,9 +315,9 @@ void Grammar::indexSetToRule(uint32_t r, Set *s) {
 
 void Grammar::indexTagToRule(uint32_t t, uint32_t r) {
 	if (rules_by_tag.find(t) == rules_by_tag.end()) {
-		std::pair<uint32_t,RuleList*> p;
+		std::pair<uint32_t,uint32Set*> p;
 		p.first = t;
-		p.second = new RuleList;
+		p.second = new uint32Set;
 		rules_by_tag.insert(p);
 	}
 	rules_by_tag.find(t)->second->insert(r);
@@ -356,9 +356,9 @@ void Grammar::indexSets(uint32_t r, Set *s) {
 
 void Grammar::indexTagToSet(uint32_t t, uint32_t r) {
 	if (sets_by_tag.find(t) == sets_by_tag.end()) {
-		std::pair<uint32_t,RuleList*> p;
+		std::pair<uint32_t,uint32HashSet*> p;
 		p.first = t;
-		p.second = new RuleList;
+		p.second = new uint32HashSet;
 		sets_by_tag.insert(p);
 	}
 	sets_by_tag.find(t)->second->insert(r);

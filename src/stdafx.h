@@ -105,7 +105,8 @@ inline uint32_t hash_sdbm_uint32_t(const uint32_t c, uint32_t hash) {
 
 // Forward declarations
 namespace CG3 {
-	typedef std::set<uint32_t> RuleList;
+	typedef std::set<uint32_t> uint32Set;
+	typedef stdext::hash_set<uint32_t> uint32HashSet;
 	class Grammar;
 	class Set;
 	class Rule;
