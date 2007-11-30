@@ -205,6 +205,8 @@ int main(int argc, char* argv[]) {
 		return -1;
 	}
 
+	init_strings();
+
 	CG3::IGrammarParser *parser = 0;
 	if (options[RE2C].doesOccur) {
 		fprintf(stderr, "Info: Using experimental RE2C parser.\n");
@@ -214,6 +216,9 @@ int main(int argc, char* argv[]) {
 		parser = new CG3::GrammarParser(ux_stdin, ux_stdout, ux_stderr);
 	}
 	grammar->ux_stderr = ux_stderr;
+	CG3::Tag *tag_any = grammar->allocateTag(stringbits[S_ASTERIK]);
+	grammar->addTag(tag_any);
+	grammar->tag_any = tag_any;
 	parser->setResult(grammar);
 	parser->setCompatible(options[VISLCGCOMPAT].doesOccur != 0);
 
@@ -236,6 +241,10 @@ int main(int argc, char* argv[]) {
 	std::cerr << "Parsing grammar took " << glob_timer->getValueFrom(main_timer) << " seconds." << std::endl;
 	main_timer = glob_timer->getCount();
 
+	std::cerr << "Grammar has " << grammar->rule_by_line.size() << " rules, " << grammar->sets_by_contents.size() << " sets, " << grammar->single_tags.size() << " tags." << std::endl;
+	if (grammar->rules_by_tag.find(tag_any->hash) != grammar->rules_by_tag.end()) {
+		std::cerr << grammar->rules_by_tag.find(tag_any->hash)->second->size() << " rules cannot be skipped by index." << std::endl;
+	}
 	if (grammar->has_dep) {
 		std::cerr << "Grammar has dependency rules: Yes" << std::endl;
 	}

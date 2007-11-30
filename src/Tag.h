@@ -52,6 +52,7 @@ namespace CG3 {
 		mutable URegularExpression *regexp;
 
 		bool in_grammar;
+		bool is_special;
 		uint32_t comparison_hash;
 		UChar *comparison_key;
 		C_OPS comparison_op;
