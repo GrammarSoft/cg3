@@ -41,6 +41,12 @@ foreach (@tests) {
 	if (-s "./$test/byline.txt") {
 		print STDERR "(".`cat "./$test/byline.txt"`.") ";
 	}
+	if (-e "./".$test."/diff.txt") {
+	    unlink "./".$test."/diff.txt";
+	}
+	if (-e "./".$test."/output.txt") {
+	    unlink "./".$test."/output.txt";
+	}
 	`$_ "$binary"`;
 }
 
