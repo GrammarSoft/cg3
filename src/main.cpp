@@ -377,9 +377,9 @@ int main(int argc, char* argv[]) {
 	u_fclose(ux_stdout);
 	u_fclose(ux_stderr);
 
-	delete grammar;
 	delete writer;
 	delete applicator;
+	delete grammar;
 
 	std::cerr << "Cleanup took " << glob_timer->getValueFrom(main_timer) << " seconds." << std::endl;
 	delete glob_timer;
