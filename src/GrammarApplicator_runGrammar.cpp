@@ -50,8 +50,8 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 		return error;
 	}
 
-	if (!grammar->delimiters || (grammar->delimiters->sets.empty() && grammar->delimiters->tags_map.empty())) {
-		if (!grammar->soft_delimiters || (grammar->soft_delimiters->sets.empty() && grammar->soft_delimiters->tags_map.empty())) {
+	if (!grammar->delimiters || (grammar->delimiters->sets.empty() && grammar->delimiters->tags_set.empty())) {
+		if (!grammar->soft_delimiters || (grammar->soft_delimiters->sets.empty() && grammar->soft_delimiters->tags_set.empty())) {
 			u_fprintf(ux_stderr, "Warning: No soft or hard delimiters defined in grammar. Hard limit of %u cohorts may break windows in unintended places.\n", hard_limit);
 		}
 		else {
@@ -97,7 +97,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 					cReading = new Reading(cCohort);
 					cReading->wordform = cCohort->wordform;
 					cReading->baseform = cCohort->wordform;
-					cReading->tags[cCohort->wordform] = cCohort->wordform;
+					cReading->tags.insert(cCohort->wordform);
 					cReading->tags_list.push_back(cCohort->wordform);
 					cReading->noprint = true;
 					reflowReading(cReading);
@@ -108,7 +108,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 				std::list<Reading*>::iterator iter;
 				for (iter = cCohort->readings.begin() ; iter != cCohort->readings.end() ; iter++) {
 					(*iter)->tags_list.push_back(endtag);
-					(*iter)->tags[endtag] = endtag;
+					(*iter)->tags.insert(endtag);
 					(*iter)->rehash();
 					std::list<uint32_t>::iterator iter_tags;
 					for (iter_tags = (*iter)->tags_list.begin() ; iter_tags != (*iter)->tags_list.end() ; iter_tags++) {
@@ -147,7 +147,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 					cReading = new Reading(cCohort);
 					cReading->wordform = cCohort->wordform;
 					cReading->baseform = cCohort->wordform;
-					cReading->tags[cCohort->wordform] = cCohort->wordform;
+					cReading->tags.insert(cCohort->wordform);
 					cReading->tags_list.push_back(cCohort->wordform);
 					cReading->noprint = true;
 					reflowReading(cReading);
@@ -158,7 +158,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 				std::list<Reading*>::iterator iter;
 				for (iter = cCohort->readings.begin() ; iter != cCohort->readings.end() ; iter++) {
 					(*iter)->tags_list.push_back(endtag);
-					(*iter)->tags[endtag] = endtag;
+					(*iter)->tags.insert(endtag);
 					(*iter)->rehash();
 					std::list<uint32_t>::iterator iter_tags;
 					for (iter_tags = (*iter)->tags_list.begin() ; iter_tags != (*iter)->tags_list.end() ; iter_tags++) {
@@ -200,7 +200,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 				cReading = new Reading(cCohort);
 				cReading->baseform = begintag;
 				cReading->wordform = begintag;
-				cReading->tags[begintag] = begintag;
+				cReading->tags.insert(begintag);
 				cReading->tags_list.push_back(begintag);
 				cReading->rehash();
 
@@ -221,7 +221,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 					cReading = new Reading(cCohort);
 					cReading->wordform = cCohort->wordform;
 					cReading->baseform = cCohort->wordform;
-					cReading->tags[cCohort->wordform] = cCohort->wordform;
+					cReading->tags.insert(cCohort->wordform);
 					cReading->tags_list.push_back(cCohort->wordform);
 					cReading->noprint = true;
 					reflowReading(cReading);
@@ -261,7 +261,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 		else if (cleaned[0] == ' ' && cleaned[1] == '"' && cCohort) {
 			cReading = new Reading(cCohort);
 			cReading->wordform = cCohort->wordform;
-			cReading->tags[cReading->wordform] = cReading->wordform;
+			cReading->tags.insert(cReading->wordform);
 			cReading->tags_list.push_back(cReading->wordform);
 			if (grammar->rules_by_tag.find(cReading->wordform) != grammar->rules_by_tag.end()) {
 				cSWindow->valid_rules.insert(grammar->rules_by_tag.find(cReading->wordform)->second->begin(), grammar->rules_by_tag.find(cReading->wordform)->second->end());
@@ -325,7 +325,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 							cReading = new Reading(cCohort);
 							cReading->wordform = cCohort->wordform;
 							cReading->baseform = cCohort->wordform;
-							cReading->tags[cCohort->wordform] = cCohort->wordform;
+							cReading->tags.insert(cCohort->wordform);
 							cReading->tags_list.push_back(cCohort->wordform);
 							cReading->noprint = true;
 							cReading->rehash();
@@ -334,7 +334,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 						std::list<Reading*>::iterator iter;
 						for (iter = cCohort->readings.begin() ; iter != cCohort->readings.end() ; iter++) {
 							(*iter)->tags_list.push_back(endtag);
-							(*iter)->tags[endtag] = endtag;
+							(*iter)->tags.insert(endtag);
 							(*iter)->rehash();
 							std::list<uint32_t>::iterator iter_tags;
 							for (iter_tags = (*iter)->tags_list.begin() ; iter_tags != (*iter)->tags_list.end() ; iter_tags++) {
@@ -421,7 +421,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 			cReading = new Reading(cCohort);
 			cReading->wordform = cCohort->wordform;
 			cReading->baseform = cCohort->wordform;
-			cReading->tags[cCohort->wordform] = cCohort->wordform;
+			cReading->tags.insert(cCohort->wordform);
 			cReading->tags_list.push_back(cCohort->wordform);
 			cReading->noprint = true;
 			cReading->rehash();
@@ -430,7 +430,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 		std::list<Reading*>::iterator iter;
 		for (iter = cCohort->readings.begin() ; iter != cCohort->readings.end() ; iter++) {
 			(*iter)->tags_list.push_back(endtag);
-			(*iter)->tags[endtag] = endtag;
+			(*iter)->tags.insert(endtag);
 			(*iter)->rehash();
 			std::list<uint32_t>::iterator iter_tags;
 			for (iter_tags = (*iter)->tags_list.begin() ; iter_tags != (*iter)->tags_list.end() ; iter_tags++) {

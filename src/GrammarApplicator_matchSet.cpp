@@ -73,9 +73,9 @@ bool GrammarApplicator::doesTagMatchReading(const Reading *reading, const uint32
 	}
 	else if (tag->type & T_NUMERICAL && !reading->tags_numerical.empty()) {
 		match = false;
-		std::map<uint32_t, uint32_t>::const_iterator mter;
+		std::set<uint32_t>::const_iterator mter;
 		for (mter = reading->tags_numerical.begin() ; mter != reading->tags_numerical.end() ; mter++) {
-			const Tag *itag = single_tags.find(mter->second)->second;
+			const Tag *itag = single_tags.find(*mter)->second;
 			if (tag->comparison_hash == itag->comparison_hash) {
 				if (tag->comparison_op == OP_EQUALS && itag->comparison_op == OP_EQUALS && tag->comparison_val == itag->comparison_val) {
 					match = true;
@@ -111,10 +111,10 @@ bool GrammarApplicator::doesTagMatchReading(const Reading *reading, const uint32
 		}
 	}
 	else if (tag->regexp && !reading->tags_textual.empty()) {
-		std::map<uint32_t, uint32_t>::const_iterator mter;
+		std::set<uint32_t>::const_iterator mter;
 		for (mter = reading->tags_textual.begin() ; mter != reading->tags_textual.end() ; mter++) {
 			// ToDo: Cache regexp and icase hits/misses
-			const Tag *itag = single_tags.find(mter->second)->second;
+			const Tag *itag = single_tags.find(*mter)->second;
 			UErrorCode status = U_ZERO_ERROR;
 			uregex_setText(tag->regexp, itag->tag, u_strlen(itag->tag), &status);
 			if (status != U_ZERO_ERROR) {
@@ -197,10 +197,10 @@ bool GrammarApplicator::doesSetMatchReading(const Reading *reading, const uint32
 			retval = true;
 		}
 		else if (theset->sets.empty()) {
-			stdext::hash_map<uint32_t, uint32_t>::const_iterator ster;
+			stdext::hash_set<uint32_t>::const_iterator ster;
 
 			for (ster = theset->single_tags.begin() ; ster != theset->single_tags.end() ; ster++) {
-				bool match = doesTagMatchReading(reading, ster->second, bypass_index);
+				bool match = doesTagMatchReading(reading, *ster, bypass_index);
 				if (match) {
 					retval = true;
 					break;
@@ -210,7 +210,7 @@ bool GrammarApplicator::doesSetMatchReading(const Reading *reading, const uint32
 			if (!retval) {
 				for (ster = theset->tags.begin() ; ster != theset->tags.end() ; ster++) {
 					bool match = true;
-					const CompositeTag *ctag = grammar->tags.find(ster->second)->second;
+					const CompositeTag *ctag = grammar->tags.find(*ster)->second;
 
 					stdext::hash_set<uint32_t>::const_iterator cter;
 					for (cter = ctag->tags.begin() ; cter != ctag->tags.end() ; cter++) {

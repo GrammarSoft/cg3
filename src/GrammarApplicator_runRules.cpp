@@ -194,9 +194,9 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, const int32_
 				}
 				else if (type == K_SELECT) {
 					if (good && reading->current_mapping_tag && reading->tags_mapped.size() > 1) {
-						std::map<uint32_t, uint32_t>::iterator iter_maps;
+						std::set<uint32_t>::iterator iter_maps;
 						for (iter_maps = reading->tags_mapped.begin() ; iter_maps != reading->tags_mapped.end() ; iter_maps++) {
-							reading->tags_list.remove(iter_maps->second);
+							reading->tags_list.remove(*iter_maps);
 						}
 						reading->tags_list.push_back(reading->current_mapping_tag);
 						reflowReading(reading);
@@ -236,7 +236,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, const int32_
 						Reading *cReading = new Reading(cCohort);
 						cReading->baseform = begintag;
 						cReading->wordform = begintag;
-						cReading->tags[begintag] = begintag;
+						cReading->tags.insert(begintag);
 						cReading->tags_list.push_back(begintag);
 						cReading->rehash();
 
@@ -258,7 +258,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, const int32_
 						for (rter = cohort->readings.begin() ; rter != cohort->readings.end() ; rter++) {
 							Reading *reading = *rter;
 							reading->tags_list.push_back(endtag);
-							reading->tags[endtag] = endtag;
+							reading->tags.insert(endtag);
 							reflowReading(reading);
 						}
 						delimited = true;

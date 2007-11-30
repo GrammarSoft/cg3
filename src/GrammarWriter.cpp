@@ -36,14 +36,14 @@ void GrammarWriter::write_set_to_ufile(UFILE *output, const Set *curset) {
 	if (curset->sets.empty() && used_sets.find(curset->hash) == used_sets.end()) {
 		used_sets[curset->hash] = curset->hash;
 		u_fprintf(output, "LIST %S = ", curset->name);
-		stdext::hash_map<uint32_t, uint32_t>::const_iterator comp_iter;
+		stdext::hash_set<uint32_t>::const_iterator comp_iter;
 		for (comp_iter = curset->single_tags.begin() ; comp_iter != curset->single_tags.end() ; comp_iter++) {
-			printTag(output, grammar->single_tags.find(comp_iter->second)->second);
+			printTag(output, grammar->single_tags.find(*comp_iter)->second);
 			u_fprintf(output, " ");
 		}
 		for (comp_iter = curset->tags.begin() ; comp_iter != curset->tags.end() ; comp_iter++) {
-			if (grammar->tags.find(comp_iter->second) != grammar->tags.end()) {
-				CompositeTag *curcomptag = grammar->tags.find(comp_iter->second)->second;
+			if (grammar->tags.find(*comp_iter) != grammar->tags.end()) {
+				CompositeTag *curcomptag = grammar->tags.find(*comp_iter)->second;
 				if (curcomptag->tags.size() == 1) {
 					printTag(output, grammar->single_tags.find(*(curcomptag->tags.begin()))->second);
 					u_fprintf(output, " ");
