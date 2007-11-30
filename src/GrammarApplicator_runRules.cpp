@@ -62,13 +62,11 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, const int32_
 			if (cohort->readings.empty()) {
 				continue;
 			}
-			/*
-			if (cohort->valid_rules.find(rule->line) == cohort->valid_rules.end()) {
+			if (cohort->invalid_rules.find(rule->line) != cohort->invalid_rules.end()) {
 				//u_fprintf(ux_stderr, "Debug: Skipped rule %u.\n", rule->line);
 				skipped_rules++;
 				continue;
 			}
-			//*/
 
 			const Set *set = grammar->sets_by_contents.find(rule->target)->second;
 			if ((type == K_SELECT || type == K_REMOVE || type == K_IFF) && cohort->readings.size() == 1) {
@@ -93,6 +91,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, const int32_
 				type = K_REMOVE;
 			}
 
+			bool rule_is_valid_cohort = false;
 			bool good_mapping = false;
 			bool did_test = false;
 			bool did_append = false;
@@ -113,6 +112,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, const int32_
 				}
 				last_mapping_tag = 0;
 				if (rule->target && doesSetMatchReading(reading, rule->target, set->has_mappings)) {
+					rule_is_valid_cohort = true;
 					rule_is_valid = true;
 					reading->current_mapping_tag = last_mapping_tag;
 					reading->matched_target = true;
@@ -146,6 +146,9 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, const int32_
 				else {
 					rule->num_fail++;
 				}
+			}
+			if (!rule_is_valid_cohort) {
+				cohort->invalid_rules.insert(rule->line);
 			}
 
 			if (num_active == 0 && (num_iff == 0 || rule->type != K_IFF)) {

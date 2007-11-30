@@ -34,7 +34,7 @@ GrammarWriter::~GrammarWriter() {
 
 void GrammarWriter::write_set_to_ufile(UFILE *output, const Set *curset) {
 	if (curset->sets.empty() && used_sets.find(curset->hash) == used_sets.end()) {
-		used_sets[curset->hash] = curset->hash;
+		used_sets.insert(curset->hash);
 		u_fprintf(output, "LIST %S = ", curset->name);
 		stdext::hash_set<uint32_t>::const_iterator comp_iter;
 		for (comp_iter = curset->single_tags.begin() ; comp_iter != curset->single_tags.end() ; comp_iter++) {
@@ -60,7 +60,7 @@ void GrammarWriter::write_set_to_ufile(UFILE *output, const Set *curset) {
 		}
 		u_fprintf(output, " ;\n");
 	} else if (!curset->sets.empty() && used_sets.find(curset->hash) == used_sets.end()) {
-		used_sets[curset->hash] = curset->hash;
+		used_sets.insert(curset->hash);
 		for (uint32_t i=0;i<curset->sets.size();i++) {
 			write_set_to_ufile(output, grammar->sets_by_contents.find(curset->sets.at(i))->second);
 		}
