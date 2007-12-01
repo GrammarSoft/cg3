@@ -18,7 +18,8 @@
 #define __GRAMMARPARSER_H
 
 #include "IGrammarParser.h"
- 
+#define BUFFER_SIZE (131072)
+
 namespace CG3 {
 	class GrammarParser : public IGrammarParser {
 	public:
@@ -40,6 +41,8 @@ namespace CG3 {
 		const char *locale;
 		const char *codepage;
 		CG3::Grammar *result;
+
+		UChar *buffer1, *buffer2, *buffer3, *buffer4;
 	
 		int parse_grammar_from_ufile(UFILE *input);
 		int parseSingleLine(KEYWORDS key, const UChar *line);

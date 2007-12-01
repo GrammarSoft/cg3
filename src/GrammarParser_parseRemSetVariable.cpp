@@ -36,7 +36,7 @@ int GrammarParser::parseRemSetVariable(const UChar *line, KEYWORDS key) {
 	}
 
 	uint32_t lname = hash_sdbm_uchar(line, 0);
-	UChar *local = new UChar[length+1];
+	UChar *local = buffer1;
 	u_strcpy(local, line);
 	UChar *space = u_strchr(local, ' ');
 	space[0] = 0;
@@ -105,6 +105,5 @@ int GrammarParser::parseRemSetVariable(const UChar *line, KEYWORDS key) {
 		parseContextualTests(&space, rule);
 	}
 
-	delete[] local;
 	return 0;
 }

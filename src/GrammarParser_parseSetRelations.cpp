@@ -36,7 +36,7 @@ int GrammarParser::parseSetRemRelation(const UChar *line, KEYWORDS key) {
 	}
 
 	uint32_t lname = hash_sdbm_uchar(line, 0);
-	UChar *local = new UChar[length+1];
+	UChar *local = buffer1;
 	u_strcpy(local, line);
 	UChar *space = u_strchr(local, ' ');
 	space[0] = 0;
@@ -103,7 +103,6 @@ int GrammarParser::parseSetRemRelation(const UChar *line, KEYWORDS key) {
 	rule->dep_target = rule->dep_tests.front();
 	rule->dep_tests.pop_front();
 
-	delete[] local;
 	return 0;
 }
 
@@ -123,7 +122,7 @@ int GrammarParser::parseSetRemRelations(const UChar *line, KEYWORDS key) {
 	}
 
 	uint32_t lname = hash_sdbm_uchar(line, 0);
-	UChar *local = new UChar[length+1];
+	UChar *local = buffer1;
 	u_strcpy(local, line);
 	UChar *space = u_strchr(local, ' ');
 	space[0] = 0;
@@ -191,6 +190,5 @@ int GrammarParser::parseSetRemRelations(const UChar *line, KEYWORDS key) {
 	rule->dep_target = rule->dep_tests.front();
 	rule->dep_tests.pop_front();
 
-	delete[] local;
 	return 0;
 }
