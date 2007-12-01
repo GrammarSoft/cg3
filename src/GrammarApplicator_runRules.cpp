@@ -22,6 +22,7 @@ using namespace CG3::Strings;
 
 uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, const int32_t start, const int32_t end) {
 
+	Recycler *r = Recycler::instance();
 	uint32_t retval = RV_NOTHING;
 	bool section_did_good = false;
 	bool delimited = false;
@@ -232,11 +233,11 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, const int32_
 						current->parent->pushSingleWindow(nwin);
 
 						current->parent->cohort_counter++;
-						Cohort *cCohort = new Cohort(nwin);
+						Cohort *cCohort = r->new_Cohort(nwin);
 						cCohort->global_number = 0;
 						cCohort->wordform = begintag;
 
-						Reading *cReading = new Reading(cCohort);
+						Reading *cReading = r->new_Reading(cCohort);
 						cReading->baseform = begintag;
 						cReading->wordform = begintag;
 						cReading->tags.insert(begintag);

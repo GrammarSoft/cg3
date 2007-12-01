@@ -21,14 +21,34 @@ using namespace CG3;
 Recycler *Recycler::gRecycler = 0;
 
 Recycler::Recycler() {
+	ACohorts = DCohorts = 0;
+	AReadings = DReadings = 0;
 	Auint32Sets = Duint32Sets = 0;
+	for (uint32_t i=0;i<150;i++) {
+		Cohort *t = new Cohort(NULL);
+		Cohorts.push_back(t);
+	}
+	for (uint32_t i=0;i<400;i++) {
+		Reading *t = new Reading(NULL);
+		Readings.push_back(t);
+	}
+	/*
 	for (uint32_t i=0;i<500;i++) {
 		uint32Set *t = new uint32Set;
 		uint32Sets.push_back(t);
 	}
+	//*/
 }
 
 Recycler::~Recycler() {
+	while (!Cohorts.empty()) {
+		delete Cohorts.back();
+		Cohorts.pop_back();
+	}
+	while (!Readings.empty()) {
+		delete Readings.back();
+		Readings.pop_back();
+	}
 	while (!uint32Sets.empty()) {
 		delete uint32Sets.back();
 		uint32Sets.pop_back();
@@ -45,6 +65,40 @@ Recycler *Recycler::instance() {
 void Recycler::cleanup() {
 	delete gRecycler;
 	gRecycler = 0;
+}
+
+Cohort *Recycler::new_Cohort(SingleWindow *p) {
+	ACohorts++;
+	if (!Cohorts.empty()) {
+		Cohort *t = Cohorts.back();
+		Cohorts.pop_back();
+		t->clear(p);
+		return t;
+	}
+	return new Cohort(p);
+}
+
+void Recycler::delete_Cohort(Cohort *t) {
+	t->clear(NULL);
+	DCohorts++;
+	Cohorts.push_back(t);
+}
+
+Reading *Recycler::new_Reading(Cohort *p) {
+	AReadings++;
+	if (!Readings.empty()) {
+		Reading *t = Readings.back();
+		Readings.pop_back();
+		t->clear(p);
+		return t;
+	}
+	return new Reading(p);
+}
+
+void Recycler::delete_Reading(Reading *t) {
+	t->clear(NULL);
+	DReadings++;
+	Readings.push_back(t);
 }
 
 uint32Set *Recycler::new_uint32Set() {

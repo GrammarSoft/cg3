@@ -20,6 +20,7 @@
 #include "stdafx.h"
 #include "Window.h"
 #include "Reading.h"
+#include "Recycler.h"
 
 namespace CG3 {
 
@@ -45,6 +46,7 @@ namespace CG3 {
 
 		Cohort(SingleWindow *p);
 		~Cohort();
+		void clear(SingleWindow *p);
 
 		void addSibling(uint32_t sibling);
 		void remSibling(uint32_t sibling);

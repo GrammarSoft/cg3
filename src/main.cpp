@@ -206,6 +206,7 @@ int main(int argc, char* argv[]) {
 		return -1;
 	}
 
+	CG3::Recycler::instance();
 	init_gbuffers();
 	init_strings();
 	init_keywords();
@@ -399,6 +400,7 @@ int main(int argc, char* argv[]) {
 
 	std::cerr << "Cleanup took " << glob_timer->getValueFrom(main_timer) << " seconds." << std::endl;
 	delete glob_timer;
+	glob_timer = 0;
 
 	return status;
 }

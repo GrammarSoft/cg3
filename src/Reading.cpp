@@ -34,11 +34,41 @@ Reading::Reading(Cohort *p) {
 	matched_tests = false;
 	current_mapping_tag = 0;
 	text = 0;
-	Recycler *r = Recycler::instance();
-	tags_plain = r->new_uint32Set();
-	tags_mapped = r->new_uint32Set();
-	tags_textual = r->new_uint32Set();
-	tags_numerical = r->new_uint32Set();
+	hit_by.clear();
+	tags_list.clear();
+	tags.clear();
+	tags_plain = new uint32Set;
+	tags_mapped = new uint32Set;
+	tags_textual = new uint32Set;
+	tags_numerical = new uint32Set;
+}
+
+void Reading::clear(Cohort *p) {
+	wordform = 0;
+	baseform = 0;
+	hash = 0;
+	parent = p;
+	hash_tags = 0;
+	hash_mapped = 0;
+	hash_plain = 0;
+	hash_textual = 0;
+	mapped = false;
+	deleted = false;
+	noprint = false;
+	matched_target = false;
+	matched_tests = false;
+	current_mapping_tag = 0;
+	if (text) {
+		delete[] text;
+	}
+	text = 0;
+	hit_by.clear();
+	tags_list.clear();
+	tags.clear();
+	tags_plain->clear();
+	tags_mapped->clear();
+	tags_textual->clear();
+	tags_numerical->clear();
 }
 
 Reading::~Reading() {
@@ -50,13 +80,12 @@ Reading::~Reading() {
 	text = 0;
 
 	tags.clear();
-	Recycler *r = Recycler::instance();
-	r->delete_uint32Set(tags_plain);
-	r->delete_uint32Set(tags_mapped);
-	r->delete_uint32Set(tags_textual);
-	r->delete_uint32Set(tags_numerical);
 	tags_list.clear();
 	hit_by.clear();
+	delete tags_plain;
+	delete tags_mapped;
+	delete tags_textual;
+	delete tags_numerical;
 }
 
 uint32_t Reading::rehash() {
