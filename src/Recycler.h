@@ -36,6 +36,7 @@ namespace CG3 {
 	private:
 		static Recycler *gRecycler;
 
+		uint32_t Auint32Sets, Duint32Sets;
 		std::vector<uint32Set*> uint32Sets;
 	};
 
