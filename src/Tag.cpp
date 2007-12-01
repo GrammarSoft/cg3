@@ -99,7 +99,7 @@ void Tag::parseTag(const UChar *to, UFILE *ux_stderr) {
 		u_strncpy(tag, tmp, length);
 		UChar *utag = gbuffers[0];
 		ux_unEscape(utag, tag);
-		u_strncpy(tag, utag, u_strlen(utag));
+		u_strcpy(tag, utag);
 		utag = 0;
 		comparison_hash = hash_sdbm_uchar(tag, 0);
 
