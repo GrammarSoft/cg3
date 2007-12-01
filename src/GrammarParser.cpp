@@ -233,6 +233,7 @@ int GrammarParser::parse_grammar_from_ufile(UFILE *input) {
 				u_strcpy(lastline, line);
 				keys[result->lines] = keyword;
 			} else {
+				u_strcat(lastline, stringbits[S_SPACE]);
 				u_strcat(lastline, line);
 			}
 		}
