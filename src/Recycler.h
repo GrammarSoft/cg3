@@ -18,6 +18,8 @@
 #define __RECYCLER_H
 
 #include "stdafx.h"
+#include "Cohort.h"
+#include "Reading.h"
 
 namespace CG3 {
 
@@ -25,6 +27,12 @@ namespace CG3 {
 	public:
 		static Recycler *instance();
 		static void cleanup();
+
+		Cohort *new_Cohort(SingleWindow*);
+		void delete_Cohort(Cohort*);
+
+		Reading *new_Reading(Cohort*);
+		void delete_Reading(Reading*);
 
 		uint32Set *new_uint32Set();
 		void delete_uint32Set(uint32Set*);
@@ -35,6 +43,12 @@ namespace CG3 {
 
 	private:
 		static Recycler *gRecycler;
+
+		uint32_t ACohorts, DCohorts;
+		std::vector<Cohort*> Cohorts;
+
+		uint32_t AReadings, DReadings;
+		std::vector<Reading*> Readings;
 
 		uint32_t Auint32Sets, Duint32Sets;
 		std::vector<uint32Set*> uint32Sets;

@@ -55,6 +55,8 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 	UChar *cleaned = _cleaned;
 	bool ignoreinput = false;
 
+	Recycler *r = Recycler::instance();
+
 	begintag = addTag(stringbits[S_BEGINTAG]);
 	endtag = addTag(stringbits[S_ENDTAG]);
 
@@ -83,7 +85,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 					u_fprintf(ux_stderr, "Warning: Soft limit of %u cohorts reached but found suitable soft delimiter.\n", soft_limit);
 				}
 				if (cCohort->readings.empty()) {
-					cReading = new Reading(cCohort);
+					cReading = r->new_Reading(cCohort);
 					cReading->wordform = cCohort->wordform;
 					cReading->baseform = cCohort->wordform;
 					cReading->tags.insert(cCohort->wordform);
@@ -129,7 +131,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 					u_fprintf(ux_stderr, "Warning: Hard limit of %u cohorts reached - forcing break.\n", hard_limit);
 				}
 				if (cCohort->readings.empty()) {
-					cReading = new Reading(cCohort);
+					cReading = r->new_Reading(cCohort);
 					cReading->wordform = cCohort->wordform;
 					cReading->baseform = cCohort->wordform;
 					cReading->tags.insert(cCohort->wordform);
@@ -174,11 +176,11 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 				// ToDo: Refactor to allocate SingleWindow, Cohort, and Reading from their containers
 				cSWindow = new SingleWindow(cWindow);
 
-				cCohort = new Cohort(cSWindow);
+				cCohort = r->new_Cohort(cSWindow);
 				cCohort->global_number = 0;
 				cCohort->wordform = begintag;
 
-				cReading = new Reading(cCohort);
+				cReading = r->new_Reading(cCohort);
 				cReading->baseform = begintag;
 				cReading->wordform = begintag;
 				cReading->tags.insert(begintag);
@@ -199,7 +201,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 				cSWindow->appendCohort(cCohort);
 				lCohort = cCohort;
 				if (cCohort->readings.empty()) {
-					cReading = new Reading(cCohort);
+					cReading = r->new_Reading(cCohort);
 					cReading->wordform = cCohort->wordform;
 					cReading->baseform = cCohort->wordform;
 					cReading->tags.insert(cCohort->wordform);
@@ -231,7 +233,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 				u_fflush(ux_stderr);
 				//*/
 			}
-			cCohort = new Cohort(cSWindow);
+			cCohort = r->new_Cohort(cSWindow);
 			cCohort->global_number = cWindow->cohort_counter++;
 			cCohort->wordform = addTag(cleaned);
 			lCohort = cCohort;
@@ -239,7 +241,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 			numCohorts++;
 		}
 		else if (cleaned[0] == ' ' && cleaned[1] == '"' && cCohort) {
-			cReading = new Reading(cCohort);
+			cReading = r->new_Reading(cCohort);
 			cReading->wordform = cCohort->wordform;
 			cReading->tags.insert(cReading->wordform);
 			cReading->tags_list.push_back(cReading->wordform);
@@ -299,7 +301,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 					if (cCohort && cSWindow) {
 						cSWindow->appendCohort(cCohort);
 						if (cCohort->readings.empty()) {
-							cReading = new Reading(cCohort);
+							cReading = r->new_Reading(cCohort);
 							cReading->wordform = cCohort->wordform;
 							cReading->baseform = cCohort->wordform;
 							cReading->tags.insert(cCohort->wordform);
@@ -391,7 +393,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 	if (cCohort && cSWindow) {
 		cSWindow->appendCohort(cCohort);
 		if (cCohort->readings.empty()) {
-			cReading = new Reading(cCohort);
+			cReading = r->new_Reading(cCohort);
 			cReading->wordform = cCohort->wordform;
 			cReading->baseform = cCohort->wordform;
 			cReading->tags.insert(cCohort->wordform);

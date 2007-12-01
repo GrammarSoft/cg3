@@ -18,7 +18,6 @@
 #define __READING_H
 
 #include "stdafx.h"
-#include "Recycler.h"
 
 namespace CG3 {
 
@@ -48,6 +47,7 @@ namespace CG3 {
 
 		Reading(Cohort *p);
 		~Reading();
+		void clear(Cohort *p);
 
 		uint32_t rehash();
 	};

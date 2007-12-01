@@ -31,14 +31,46 @@ Cohort::Cohort(SingleWindow *p) {
 	invalid_rules.clear();
 }
 
-Cohort::~Cohort() {
+void Cohort::clear(SingleWindow *p) {
+	Recycler *r = Recycler::instance();
 	std::list<Reading*>::iterator iter;
 	for (iter = readings.begin() ; iter != readings.end() ; iter++) {
-		delete *iter;
+		r->delete_Reading(*iter);
 	}
 	readings.clear();
 	for (iter = deleted.begin() ; iter != deleted.end() ; iter++) {
-		delete *iter;
+		r->delete_Reading(*iter);
+	}
+	deleted.clear();
+	if (parent) {
+		parent->parent->cohort_map.erase(global_number);
+		parent->parent->dep_window.erase(global_number);
+	}
+
+	wordform = 0;
+	global_number = 0;
+	local_number = 0;
+	parent = p;
+	dep_done = false;
+	is_related = false;
+	if (text) {
+		delete[] text;
+	}
+	text = 0;
+	dep_self = 0;
+	dep_parent = 0;
+	invalid_rules.clear();
+}
+
+Cohort::~Cohort() {
+	Recycler *r = Recycler::instance();
+	std::list<Reading*>::iterator iter;
+	for (iter = readings.begin() ; iter != readings.end() ; iter++) {
+		r->delete_Reading(*iter);
+	}
+	readings.clear();
+	for (iter = deleted.begin() ; iter != deleted.end() ; iter++) {
+		r->delete_Reading(*iter);
 	}
 	deleted.clear();
 	parent->parent->cohort_map.erase(global_number);
@@ -67,7 +99,8 @@ void Cohort::appendReading(Reading *read) {
 }
 
 Reading* Cohort::allocateAppendReading() {
-	Reading *read = new Reading(this);
+	Recycler *r = Recycler::instance();
+	Reading *read = r->new_Reading(this);
 	readings.push_back(read);
 	return read;
 }
