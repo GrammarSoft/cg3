@@ -144,9 +144,12 @@ Set *Grammar::getSet(uint32_t which) {
 }
 
 Set *Grammar::allocateSet() {
-	return new Set;
+	Set *ns = new Set;
+	sets_all.insert(ns);
+	return ns;
 }
 void Grammar::destroySet(Set *set) {
+	sets_all.erase(set);
 	delete set;
 }
 
