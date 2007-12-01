@@ -43,11 +43,17 @@ Grammar::~Grammar() {
 	stdext::hash_map<uint32_t, Set*>::iterator iter_set;
 	for (iter_set = sets_by_contents.begin() ; iter_set != sets_by_contents.end() ; iter_set++) {
 		if (iter_set->second) {
-			delete iter_set->second;
+			destroySet(iter_set->second);
 		}
 	}
 	sets_by_contents.clear();
 	sets_by_name.clear();
+
+	std::set<Set*>::iterator rsets;
+	for (rsets = sets_all.begin() ; rsets != sets_all.end() ; rsets++) {
+		delete (*rsets);
+	}
+	sets_all.clear();
 
 	std::map<uint32_t, Anchor*>::iterator iter_anc;
 	for (iter_anc = anchors.begin() ; iter_anc != anchors.end() ; iter_anc++) {
