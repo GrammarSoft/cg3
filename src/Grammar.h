@@ -38,6 +38,7 @@ namespace CG3 {
 		uint32_t lines, curline;
 		stdext::hash_map<uint32_t, Tag*> single_tags;
 		stdext::hash_map<uint32_t, CompositeTag*> tags;
+		std::set<Set*> sets_all;
 		stdext::hash_map<uint32_t, uint32_t> sets_by_name;
 		stdext::hash_map<uint32_t, Set*> sets_by_contents;
 		stdext::hash_map<uint32_t, uint32_t> set_alias;
