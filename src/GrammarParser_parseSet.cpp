@@ -182,7 +182,7 @@ int GrammarParser::parseSet(const UChar *line) {
 		u_fprintf(ux_stderr, "Error: No string provided at line %u - cannot continue!\n", result->curline);
 		return -1;
 	}
-	UChar *local = new UChar[length+1];
+	UChar *local = buffer2;
 	u_strcpy(local, line+u_strlen(keywords[K_SET])+1);
 
 	// Allocate temp vars and skips over "SET X = "
@@ -241,35 +241,8 @@ int GrammarParser::parseSet(const UChar *line) {
 		result->destroySet(curset);
 		curset = result->getSet(res);
 	}
-/*
-	else if (only_or) {
-		bool only_simple = true;
-		for (uint32_t i=0;i<curset->sets.size();i++) {
-			Set *set = result->getSet(curset->sets[i]);
-			if (!set->sets.empty()) {
-				only_simple = false;
-			}
-		}
-		if (only_simple) {
-			for (uint32_t i=0;i<curset->sets.size();i++) {
-				Set *set = result->getSet(curset->sets[i]);
-				curset->tags.insert(set->tags.begin(), set->tags.end());
-				curset->tags_map.insert(set->tags.begin(), set->tags.end());
-				curset->single_tags.insert(set->single_tags.begin(), set->single_tags.end());
-				curset->tags_map.insert(set->single_tags.begin(), set->single_tags.end());
-			}
-			curset->sets.clear();
-			curset->set_ops.clear();
-		}
-	}
-//*/
-/*
-	else if (curset->sets.size() == 2 && curset->set_ops[0] == S_FAILFAST) {
-	}
-//*/
 
 	result->addSet(curset);
 
-	delete[] local;
 	return 0;
 }

@@ -30,7 +30,7 @@ int GrammarParser::parsePreferredTargets(const UChar *line) {
 		u_fprintf(ux_stderr, "Error: No string provided at line %u - cannot continue!\n", result->curline);
 		return -1;
 	}
-	UChar *local = new UChar[length+1];
+	UChar *local = buffer1;
 	u_strcpy(local, line+u_strlen(keywords[K_PREFERRED_TARGETS])+1);
 
 	// Allocate temp vars and skips over "PREFERRED-TARGETS = "
@@ -51,6 +51,5 @@ int GrammarParser::parsePreferredTargets(const UChar *line) {
 		result->addPreferredTarget(base);
 	}
 
-	delete[] local;
 	return 0;
 }

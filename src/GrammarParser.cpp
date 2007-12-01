@@ -32,6 +32,10 @@ GrammarParser::GrammarParser(UFILE *ux_in, UFILE *ux_out, UFILE *ux_err) {
 	in_before_sections = false;
 	in_after_sections = false;
 	in_section = false;
+	buffer1 = new UChar[BUFFER_SIZE];
+	buffer2 = new UChar[BUFFER_SIZE];
+	buffer3 = new UChar[BUFFER_SIZE];
+	buffer4 = new UChar[BUFFER_SIZE*2];
 }
 
 GrammarParser::~GrammarParser() {
@@ -39,6 +43,14 @@ GrammarParser::~GrammarParser() {
 	locale = 0;
 	codepage = 0;
 	result = 0;
+	delete[] buffer1;
+	buffer1 = 0;
+	delete[] buffer2;
+	buffer2 = 0;
+	delete[] buffer3;
+	buffer3 = 0;
+	delete[] buffer4;
+	buffer4 = 0;
 }
 
 int GrammarParser::parseSingleLine(KEYWORDS key, const UChar *line) {
@@ -54,7 +66,7 @@ int GrammarParser::parseSingleLine(KEYWORDS key, const UChar *line) {
 
 	UErrorCode status = U_ZERO_ERROR;
 	int length = u_strlen(line);
-	UChar *local = new UChar[length+1];
+	UChar *local = buffer3;
 
 	status = U_ZERO_ERROR;
 	uregex_setText(regexps[R_CLEANSTRING], line, length, &status);
@@ -70,7 +82,7 @@ int GrammarParser::parseSingleLine(KEYWORDS key, const UChar *line) {
 	}
 
 	length = u_strlen(local);
-	UChar *newlocal = new UChar[length*2];
+	UChar *newlocal = buffer4;
 
 	status = U_ZERO_ERROR;
 	uregex_setText(regexps[R_ANDLINK], local, length, &status);
@@ -85,7 +97,6 @@ int GrammarParser::parseSingleLine(KEYWORDS key, const UChar *line) {
 		return -1;
 	}
 
-	delete[] local;
 	local = newlocal;
 	ux_packWhitespace(local);
 
@@ -159,7 +170,6 @@ int GrammarParser::parseSingleLine(KEYWORDS key, const UChar *line) {
 			break;
 	}
 
-	delete[] local;
 	return 0;
 }
 
@@ -202,7 +212,6 @@ int GrammarParser::parse_grammar_from_ufile(UFILE *input) {
 		if (result->lines % 100 == 0) {
 			std::cerr << "Parsing line " << result->lines << "          \r" << std::flush;
 		}
-		#define BUFFER_SIZE (131072)
 		UChar *line = new UChar[BUFFER_SIZE];
 		u_fgets(line, BUFFER_SIZE-1, input);
 
