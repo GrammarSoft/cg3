@@ -238,6 +238,7 @@ int main(int argc, char* argv[]) {
 	if (options[MAPPING_PREFIX].doesOccur) {
 		grammar->mapping_prefix = options[MAPPING_PREFIX].value[0];
 	}
+	std::cerr << "Reindexing grammar... " << std::endl;
 	grammar->reindex();
 
 	delete parser;

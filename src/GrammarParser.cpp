@@ -173,7 +173,11 @@ int GrammarParser::parse_grammar_from_ufile(UFILE *input) {
 	}
 	
 	// ToDo: Make line length dynamic
-	std::map<uint32_t, UChar*> lines;
+	UChar _line[BUFFER_SIZE];
+	UChar *line = _line;
+	UChar _lastline[BUFFER_SIZE];
+	UChar *lastline = _lastline;
+	lastline[0] = 0;
 	std::map<uint32_t, KEYWORDS> keys;
 	uint32_t lastcmd = 0;
 	result->lines = 1;
@@ -182,7 +186,6 @@ int GrammarParser::parse_grammar_from_ufile(UFILE *input) {
 		if (result->lines % 100 == 0) {
 			std::cerr << "Parsing line " << result->lines << "          \r" << std::flush;
 		}
-		UChar *line = new UChar[BUFFER_SIZE];
 		u_fgets(line, BUFFER_SIZE-1, input);
 
 		ux_cutComments(line, '#', false);
@@ -217,44 +220,35 @@ int GrammarParser::parse_grammar_from_ufile(UFILE *input) {
 					}
 				}
 			}
-			if (keyword || !lines[lastcmd]) {
-				while (!lines.empty()) {
-					result->curline = (*lines.begin()).first;
-					UChar *line = (*lines.begin()).second;
+			if (keyword || !lastline[0]) {
+				if (lastline[0]) {
+					result->curline = (*keys.begin()).first;
+					UChar *line = lastline;
 					if (keys[result->curline]) {
 						parseSingleLine(keys[result->curline], line);
 					}
-					delete[] line;
 					keys.erase(result->curline);
-					lines.erase(lines.begin());
+					lastline[0] = 0;
 				}
-				lines[result->lines] = line;
+				u_strcpy(lastline, line);
 				keys[result->lines] = keyword;
 			} else {
-				length = u_strlen(lines[lastcmd]);
-				lines[lastcmd][length] = ' ';
-				lines[lastcmd][length+1] = 0;
-				u_strcat(lines[lastcmd], line);
-				delete[] line;
+				u_strcat(lastline, line);
 			}
-		} else {
-			delete[] line;
 		}
 		result->lines++;
 	}
 
-	while (!lines.empty()) {
-		result->curline = (*lines.begin()).first;
-		UChar *line = (*lines.begin()).second;
+	if (lastline[0]) {
+		result->curline = (*keys.begin()).first;
+		UChar *line = lastline;
 		if (keys[result->curline]) {
 			parseSingleLine(keys[result->curline], line);
 		}
-		delete[] line;
 		keys.erase(result->curline);
-		lines.erase(lines.begin());
+		lastline[0] = 0;
 	}
 
-	lines.clear();
 	keys.clear();
 
 	if (!result->rules.empty()) {
