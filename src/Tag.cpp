@@ -94,16 +94,12 @@ void Tag::parseTag(const UChar *to, UFILE *ux_stderr) {
 			length -= 4;
 		}
 		
-		if (tag) {
-			delete[] tag;
-		}
-		tag = new UChar[length+1];
-		tag[length] = 0;
+		tag = new UChar[length+8];
+		u_memset(tag, 0, length+8);
 		u_strncpy(tag, tmp, length);
-		UChar *utag = new UChar[u_strlen(tag)+3];
+		UChar *utag = gbuffers[0];
 		ux_unEscape(utag, tag);
-		delete[] tag;
-		tag = utag;
+		u_strncpy(tag, utag, u_strlen(utag));
 		utag = 0;
 		comparison_hash = hash_sdbm_uchar(tag, 0);
 

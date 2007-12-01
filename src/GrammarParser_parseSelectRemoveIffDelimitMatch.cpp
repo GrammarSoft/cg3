@@ -36,7 +36,7 @@ int GrammarParser::parseSelectRemoveIffDelimitMatch(const UChar *line, KEYWORDS 
 	}
 
 	uint32_t lname = hash_sdbm_uchar(line, 0);
-	UChar *local = buffer1;
+	UChar *local = gbuffers[1];
 	u_strcpy(local, line);
 	UChar *space = u_strchr(local, ' ');
 	space[0] = 0;

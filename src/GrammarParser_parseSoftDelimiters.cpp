@@ -30,7 +30,7 @@ int GrammarParser::parseSoftDelimiters(const UChar *line) {
 		u_fprintf(ux_stderr, "Error: No string provided at line %u - cannot continue!\n", result->curline);
 		return -1;
 	}
-	UChar *local = buffer1;
+	UChar *local = gbuffers[1];
 	u_strcpy(local, line+u_strlen(keywords[K_SOFT_DELIMITERS])+1);
 
 	// Allocate temp vars and skips over "SOFT-DELIMITERS = "

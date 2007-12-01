@@ -25,12 +25,6 @@ CompositeTag::CompositeTag() {
 }
 
 CompositeTag::~CompositeTag() {
-	/*
-	std::set<uint32_t>::iterator sit;
-	for (sit = tags_set.begin() ; sit != tags_set.end() ; sit++) {
-		delete (*sit);
-	}
-	//*/
 	tags_set.clear();
 	tags.clear();
 }

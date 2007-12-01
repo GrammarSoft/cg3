@@ -29,7 +29,7 @@ namespace CG3 {
 			if (entry >= KEYWORD_COUNT) {
 				return -1; // Out of bounds
 			}
-			UChar buffer[1024];
+			UChar *buffer = gbuffers[0];
 			u_memset(buffer, 0, 1024);
 			u_uastrcpy(buffer, keyword);
 			keywords[entry] = new UChar[u_strlen(buffer)+1];
@@ -99,7 +99,7 @@ namespace CG3 {
 			if (entry >= STRINGS_COUNT) {
 				return -1; // Out of bounds
 			}
-			UChar buffer[1024];
+			UChar *buffer = gbuffers[0];
 			u_memset(buffer, 0, 1024);
 			u_uastrcpy(buffer, keyword);
 			stringbits[entry] = new UChar[u_strlen(buffer)+1];
@@ -188,6 +188,23 @@ namespace CG3 {
 					uregex_close(regexps[i]);
 				}
 				regexps[i] = 0;
+			}
+			return 0;
+		}
+
+		UChar *gbuffers[NUM_GBUFFERS];
+
+		int init_gbuffers() {
+			for (uint32_t i=0;i<NUM_GBUFFERS;i++) {
+				gbuffers[i] = new UChar[BUFFER_SIZE];
+			}
+			return 0;
+		}
+
+		int free_gbuffers() {
+			for (uint32_t i=0;i<NUM_GBUFFERS;i++) {
+				delete[] gbuffers[i];
+				gbuffers[i] = 0;
 			}
 			return 0;
 		}
