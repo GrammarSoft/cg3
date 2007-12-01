@@ -70,7 +70,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, const int32_
 
 			const Set *set = grammar->sets_by_contents.find(rule->target)->second;
 			if ((type == K_SELECT || type == K_REMOVE || type == K_IFF) && cohort->readings.size() == 1) {
-				if (!set->has_mappings || cohort->readings.front()->tags_mapped.size() <= 1) {
+				if (!set->has_mappings || cohort->readings.front()->tags_mapped->size() <= 1) {
 					continue;
 				}
 			}
@@ -179,7 +179,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, const int32_
 				}
 
 				if (type == K_REMOVE) {
-					if (good && reading->current_mapping_tag && reading->tags_mapped.size() > 1) {
+					if (good && reading->current_mapping_tag && reading->tags_mapped->size() > 1) {
 						reading->tags_list.remove(reading->current_mapping_tag);
 						reflowReading(reading);
 						good_mapping = true;
@@ -196,9 +196,9 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, const int32_
 					}
 				}
 				else if (type == K_SELECT) {
-					if (good && reading->current_mapping_tag && reading->tags_mapped.size() > 1) {
+					if (good && reading->current_mapping_tag && reading->tags_mapped->size() > 1) {
 						std::set<uint32_t>::iterator iter_maps;
-						for (iter_maps = reading->tags_mapped.begin() ; iter_maps != reading->tags_mapped.end() ; iter_maps++) {
+						for (iter_maps = reading->tags_mapped->begin() ; iter_maps != reading->tags_mapped->end() ; iter_maps++) {
 							reading->tags_list.remove(*iter_maps);
 						}
 						reading->tags_list.push_back(reading->current_mapping_tag);
@@ -296,7 +296,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, const int32_
 							}
 						}
 						reflowReading(reading);
-						if (!reading->tags_mapped.empty()) {
+						if (!reading->tags_mapped->empty()) {
 							reading->mapped = true;
 						}
 					}
@@ -333,7 +333,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, const int32_
 								}
 							}
 							reflowReading(reading);
-							if (!reading->tags_mapped.empty()) {
+							if (!reading->tags_mapped->empty()) {
 								reading->mapped = true;
 							}
 						}
@@ -351,7 +351,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, const int32_
 							}
 						}
 						reflowReading(nr);
-						if (!nr->tags_mapped.empty()) {
+						if (!nr->tags_mapped->empty()) {
 							nr->mapped = true;
 						}
 						did_append = true;

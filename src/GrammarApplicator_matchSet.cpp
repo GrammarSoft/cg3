@@ -71,10 +71,10 @@ bool GrammarApplicator::doesTagMatchReading(const Reading *reading, const uint32
 			match = true;
 		}
 	}
-	else if (tag->type & T_NUMERICAL && !reading->tags_numerical.empty()) {
+	else if (tag->type & T_NUMERICAL && !reading->tags_numerical->empty()) {
 		match = false;
 		std::set<uint32_t>::const_iterator mter;
-		for (mter = reading->tags_numerical.begin() ; mter != reading->tags_numerical.end() ; mter++) {
+		for (mter = reading->tags_numerical->begin() ; mter != reading->tags_numerical->end() ; mter++) {
 			const Tag *itag = single_tags.find(*mter)->second;
 			if (tag->comparison_hash == itag->comparison_hash) {
 				if (tag->comparison_op == OP_EQUALS && itag->comparison_op == OP_EQUALS && tag->comparison_val == itag->comparison_val) {
@@ -110,9 +110,9 @@ bool GrammarApplicator::doesTagMatchReading(const Reading *reading, const uint32
 			}
 		}
 	}
-	else if (tag->regexp && !reading->tags_textual.empty()) {
+	else if (tag->regexp && !reading->tags_textual->empty()) {
 		std::set<uint32_t>::const_iterator mter;
-		for (mter = reading->tags_textual.begin() ; mter != reading->tags_textual.end() ; mter++) {
+		for (mter = reading->tags_textual->begin() ; mter != reading->tags_textual->end() ; mter++) {
 			// ToDo: Cache regexp and icase hits/misses
 			const Tag *itag = single_tags.find(*mter)->second;
 			UErrorCode status = U_ZERO_ERROR;
@@ -331,7 +331,7 @@ bool GrammarApplicator::doesSetMatchCohortCareful(const Cohort *cohort, const ui
 				break;
 			}
 			// A mapped tag must be the only mapped tag in the reading to be considered a Careful match
-			if (last_mapping_tag && reading->tags_mapped.size() > 1) {
+			if (last_mapping_tag && reading->tags_mapped->size() > 1) {
 				retval = false;
 				break;
 			}
@@ -374,7 +374,7 @@ Cohort *GrammarApplicator::doesSetMatchDependency(SingleWindow *sWindow, const C
 		}
 	}
 	else {
-		const std::set<uint32_t> *deps = 0;
+		const uint32HashSet *deps = 0;
 		if (test->dep_child) {
 			deps = &current->dep_children;
 		}
@@ -382,7 +382,7 @@ Cohort *GrammarApplicator::doesSetMatchDependency(SingleWindow *sWindow, const C
 			deps = &current->dep_siblings;
 		}
 
-		std::set<uint32_t>::const_iterator dter;
+		uint32HashSet::const_iterator dter;
 		for (dter = deps->begin() ; dter != deps->end() ; dter++) {
 			if (sWindow->parent->cohort_map.find(*dter) == sWindow->parent->cohort_map.end()) {
 				u_fprintf(ux_stderr, "Warning: Dependency %u does not exist - ignoring.\n", *dter);

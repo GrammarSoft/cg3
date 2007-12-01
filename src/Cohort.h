@@ -37,8 +37,8 @@ namespace CG3 {
 		bool dep_done;
 		uint32_t dep_self;
 		uint32_t dep_parent;
-		std::set<uint32_t> dep_children;
-		std::set<uint32_t> dep_siblings;
+		uint32HashSet dep_children;
+		uint32HashSet dep_siblings;
 
 		bool is_related;
 		std::multimap<uint32_t, uint32_t> relations;

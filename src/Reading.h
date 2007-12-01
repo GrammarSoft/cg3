@@ -18,6 +18,7 @@
 #define __READING_H
 
 #include "stdafx.h"
+#include "Recycler.h"
 
 namespace CG3 {
 
@@ -30,14 +31,14 @@ namespace CG3 {
 		uint32_t hash, hash_tags, hash_mapped, hash_plain, hash_textual;
 		bool mapped;
 		bool deleted;
-		std::vector<uint32_t> hit_by;
+		uint32Vector hit_by;
 		bool noprint;
-		std::list<uint32_t> tags_list;
-		stdext::hash_set<uint32_t> tags;
-		std::set<uint32_t> tags_plain;
-		std::set<uint32_t> tags_mapped;
-		std::set<uint32_t> tags_textual;
-		std::set<uint32_t> tags_numerical;
+		uint32List tags_list;
+		uint32HashSet tags;
+		uint32Set *tags_plain;
+		uint32Set *tags_mapped;
+		uint32Set *tags_textual;
+		uint32Set *tags_numerical;
 
 		UChar *text;
 
