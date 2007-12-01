@@ -21,6 +21,11 @@ using namespace CG3;
 Recycler *Recycler::gRecycler = 0;
 
 Recycler::Recycler() {
+	Auint32Sets = Duint32Sets = 0;
+	for (uint32_t i=0;i<500;i++) {
+		uint32Set *t = new uint32Set;
+		uint32Sets.push_back(t);
+	}
 }
 
 Recycler::~Recycler() {
@@ -43,15 +48,17 @@ void Recycler::cleanup() {
 }
 
 uint32Set *Recycler::new_uint32Set() {
+	Auint32Sets++;
 	if (!uint32Sets.empty()) {
 		uint32Set *t = uint32Sets.back();
 		uint32Sets.pop_back();
-		t->clear();
 		return t;
 	}
 	return new uint32Set;
 }
 
 void Recycler::delete_uint32Set(uint32Set *t) {
+	Duint32Sets++;
+	t->clear();
 	uint32Sets.push_back(t);
 }

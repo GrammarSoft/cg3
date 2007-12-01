@@ -37,6 +37,10 @@ Cohort::~Cohort() {
 		delete *iter;
 	}
 	readings.clear();
+	for (iter = deleted.begin() ; iter != deleted.end() ; iter++) {
+		delete *iter;
+	}
+	deleted.clear();
 	parent->parent->cohort_map.erase(global_number);
 	parent->parent->dep_window.erase(global_number);
 	invalid_rules.clear();
