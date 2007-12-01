@@ -41,13 +41,24 @@ Recycler::Recycler() {
 }
 
 Recycler::~Recycler() {
+	if (ACohorts != DCohorts) {
+		std::cerr << "Leak: Cohorts alloc " << ACohorts << ", dealloc " << DCohorts << std::endl;
+	}
 	while (!Cohorts.empty()) {
 		delete Cohorts.back();
 		Cohorts.pop_back();
 	}
+
+	if (AReadings != DReadings) {
+		std::cerr << "Leak: Readings alloc " << AReadings << ", dealloc " << DReadings << std::endl;
+	}
 	while (!Readings.empty()) {
 		delete Readings.back();
 		Readings.pop_back();
+	}
+
+	if (Auint32Sets != Duint32Sets) {
+		std::cerr << "Leak: uint32Sets alloc " << Auint32Sets << ", dealloc " << Duint32Sets << std::endl;
 	}
 	while (!uint32Sets.empty()) {
 		delete uint32Sets.back();
