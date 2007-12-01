@@ -382,8 +382,11 @@ int main(int argc, char* argv[]) {
 	u_fclose(ux_stderr);
 
 	delete writer;
+	writer = 0;
 	delete applicator;
+	applicator = 0;
 	delete grammar;
+	grammar = 0;
 
 	free_strings();
 	free_keywords();
