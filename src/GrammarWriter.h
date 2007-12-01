@@ -41,7 +41,7 @@ namespace CG3 {
 		UFILE *ux_stdin;
 		UFILE *ux_stdout;
 		UFILE *ux_stderr;
-		stdext::hash_set<uint32_t> used_sets;
+		uint32HashSet used_sets;
 		const Grammar *grammar;
 
 		void write_set_to_ufile(UFILE *output, const Set *curset);

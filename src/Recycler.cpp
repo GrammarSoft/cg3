@@ -14,42 +14,44 @@
  * implied. See the License for the specific language governing
  * rights and limitations under the License.
  */
-#ifndef __SET_H
-#define __SET_H
+#include "Recycler.h"
 
-#include "stdafx.h"
-#include "Grammar.h"
-#include "CompositeTag.h"
-#include "Strings.h"
+using namespace CG3;
 
-namespace CG3 {
+Recycler *Recycler::gRecycler = 0;
 
-	class Set {
-	public:
-		bool match_any;
-		bool has_mappings;
-		bool is_special;
-		UChar *name;
-		uint32_t line;
-		uint32_t hash;
-
-		uint32Set tags_set;
-		uint32HashSet tags;
-		uint32HashSet single_tags;
-
-		uint32Vector set_ops;
-		uint32Vector sets;
-
-		Set();
-		~Set();
-
-		void setName(uint32_t to);
-		void setName(const UChar *to);
-
-		uint32_t rehash();
-		void reindex(Grammar *grammar);
-	};
-
+Recycler::Recycler() {
 }
 
-#endif
+Recycler::~Recycler() {
+	while (!uint32Sets.empty()) {
+		delete uint32Sets.back();
+		uint32Sets.pop_back();
+	}
+}
+
+Recycler *Recycler::instance() {
+	if (!gRecycler) {
+		gRecycler = new Recycler();
+	}
+	return gRecycler;
+}
+
+void Recycler::cleanup() {
+	delete gRecycler;
+	gRecycler = 0;
+}
+
+uint32Set *Recycler::new_uint32Set() {
+	if (!uint32Sets.empty()) {
+		uint32Set *t = uint32Sets.back();
+		uint32Sets.pop_back();
+		t->clear();
+		return t;
+	}
+	return new uint32Set;
+}
+
+void Recycler::delete_uint32Set(uint32Set *t) {
+	uint32Sets.push_back(t);
+}

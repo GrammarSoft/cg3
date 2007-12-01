@@ -14,40 +14,29 @@
  * implied. See the License for the specific language governing
  * rights and limitations under the License.
  */
-#ifndef __SET_H
-#define __SET_H
+#ifndef __RECYCLER_H
+#define __RECYCLER_H
 
 #include "stdafx.h"
-#include "Grammar.h"
-#include "CompositeTag.h"
-#include "Strings.h"
 
 namespace CG3 {
 
-	class Set {
+	class Recycler {
 	public:
-		bool match_any;
-		bool has_mappings;
-		bool is_special;
-		UChar *name;
-		uint32_t line;
-		uint32_t hash;
+		static Recycler *instance();
+		static void cleanup();
 
-		uint32Set tags_set;
-		uint32HashSet tags;
-		uint32HashSet single_tags;
+		uint32Set *new_uint32Set();
+		void delete_uint32Set(uint32Set*);
 
-		uint32Vector set_ops;
-		uint32Vector sets;
+	protected:
+		Recycler();
+		~Recycler();
 
-		Set();
-		~Set();
+	private:
+		static Recycler *gRecycler;
 
-		void setName(uint32_t to);
-		void setName(const UChar *to);
-
-		uint32_t rehash();
-		void reindex(Grammar *grammar);
+		std::vector<uint32Set*> uint32Sets;
 	};
 
 }

@@ -277,7 +277,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 				}
 			}
 			reflowReading(cReading);
-			if (!cReading->tags_mapped.empty()) {
+			if (!cReading->tags_mapped->empty()) {
 				cReading->mapped = true;
 			}
 			if (!cReading->baseform) {

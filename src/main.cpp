@@ -17,6 +17,7 @@
 
 #include "stdafx.h"
 #include "icu_uoptions.h"
+#include "Recycler.h"
 #include "Grammar.h"
 #include "GrammarParser.h"
 #include "GPRE2C.h"
@@ -117,8 +118,6 @@ int main(int argc, char* argv[]) {
 	}
 	status = U_ZERO_ERROR;
 
-	CG3::Grammar *grammar = new CG3::Grammar();
-
 	const char *codepage_default = ucnv_getDefaultName();
 	const char *codepage_grammar = codepage_default;
 	const char *codepage_input   = codepage_grammar;
@@ -211,6 +210,7 @@ int main(int argc, char* argv[]) {
 	init_strings();
 	init_keywords();
 	init_regexps(ux_stderr);
+	CG3::Grammar *grammar = new CG3::Grammar();
 
 	CG3::IGrammarParser *parser = 0;
 	if (options[RE2C].doesOccur) {
@@ -389,6 +389,8 @@ int main(int argc, char* argv[]) {
 	free_keywords();
 	free_regexps();
 	free_gbuffers();
+
+	CG3::Recycler::cleanup();
 
 	u_cleanup();
 

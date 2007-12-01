@@ -75,9 +75,9 @@ void GrammarApplicator::attachParentChild(Cohort *parent, Cohort *child) {
 
 	parent->addChild(child->global_number);
 
-	std::set<uint32_t>::const_iterator tter;
+	uint32HashSet::const_iterator tter;
 	for (tter = parent->dep_children.begin() ; tter != parent->dep_children.end() ; tter++) {
-		std::set<uint32_t>::const_iterator ster;
+		uint32HashSet::const_iterator ster;
 		for (ster = parent->dep_children.begin() ; ster != parent->dep_children.end() ; ster++) {
 			gWindow->cohort_map.find(*tter)->second->addSibling(*ster);
 		}
@@ -145,9 +145,9 @@ void GrammarApplicator::reflowDependencyWindow() {
 		for (dIter = gWindow->dep_window.begin() ; dIter != gWindow->dep_window.end() ; dIter++) {
 			Cohort *cohort = dIter->second;
 
-			std::set<uint32_t>::const_iterator tter;
+			uint32HashSet::const_iterator tter;
 			for (tter = cohort->dep_children.begin() ; tter != cohort->dep_children.end() ; tter++) {
-				std::set<uint32_t>::const_iterator ster;
+				uint32HashSet::const_iterator ster;
 				for (ster = cohort->dep_children.begin() ; ster != cohort->dep_children.end() ; ster++) {
 					gWindow->cohort_map.find(*tter)->second->addSibling(*ster);
 				}
@@ -159,10 +159,10 @@ void GrammarApplicator::reflowDependencyWindow() {
 
 void GrammarApplicator::reflowReading(Reading *reading) {
 	reading->tags.clear();
-	reading->tags_mapped.clear();
-	reading->tags_plain.clear();
-	reading->tags_textual.clear();
-	reading->tags_numerical.clear();
+	reading->tags_mapped->clear();
+	reading->tags_plain->clear();
+	reading->tags_textual->clear();
+	reading->tags_numerical->clear();
 
 	std::list<uint32_t>::const_iterator tter;
 	for (tter = reading->tags_list.begin() ; tter != reading->tags_list.end() ; tter++) {
@@ -176,13 +176,13 @@ void GrammarApplicator::reflowReading(Reading *reading) {
 		}
 		assert(tag != 0);
 		if (tag->type & T_MAPPING || tag->tag[0] == grammar->mapping_prefix) {
-			reading->tags_mapped.insert(*tter);
+			reading->tags_mapped->insert(*tter);
 		}
 		if (tag->type & (T_TEXTUAL|T_WORDFORM|T_BASEFORM)) {
-			reading->tags_textual.insert(*tter);
+			reading->tags_textual->insert(*tter);
 		}
 		if (tag->type & T_NUMERICAL) {
-			reading->tags_numerical.insert(*tter);
+			reading->tags_numerical->insert(*tter);
 		}
 		if (!reading->baseform && tag->type & T_BASEFORM) {
 			reading->baseform = tag->hash;
@@ -205,7 +205,7 @@ void GrammarApplicator::reflowReading(Reading *reading) {
 			}
 		}
 		if (!tag->type) {
-			reading->tags_plain.insert(*tter);
+			reading->tags_plain->insert(*tter);
 		}
 	}
 	assert(!reading->tags.empty());
