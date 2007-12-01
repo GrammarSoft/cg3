@@ -73,8 +73,10 @@ Cohort::~Cohort() {
 		r->delete_Reading(*iter);
 	}
 	deleted.clear();
-	parent->parent->cohort_map.erase(global_number);
-	parent->parent->dep_window.erase(global_number);
+	if (parent) {
+		parent->parent->cohort_map.erase(global_number);
+		parent->parent->dep_window.erase(global_number);
+	}
 	invalid_rules.clear();
 }
 
