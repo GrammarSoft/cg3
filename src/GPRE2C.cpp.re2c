@@ -269,7 +269,6 @@ parseMappingList_start:
 		buffer[length-1] = 0;
 		u_strncpy(buffer, marker, (int32_t)length-1);
 		CG3::Tag *tag = result->allocateTag(buffer);
-		tag->parseTag(buffer, ux_stderr);
 		tag->rehash();
 		result->addTag(tag);
 		taglist->push_back(tag->hash);
@@ -621,24 +620,6 @@ int GPRE2C::grammar_from_ufile(UFILE *input) {
 		return -1;
 	}
 	
-	int error = init_keywords();
-	if (error) {
-		u_fprintf(ux_stderr, "Error: init_keywords returned %i!\n", error);
-		return error;
-	}
-
-	error = init_regexps(ux_stderr);
-	if (error) {
-		u_fprintf(ux_stderr, "Error: init_regexps returned %i!\n", error);
-		return error;
-	}
-
-	error = init_strings();
-	if (error) {
-		u_fprintf(ux_stderr, "Error: init_strings returned %i!\n", error);
-		return error;
-	}
-
 	UChar *buffer = new UChar[result->grammar_size+8];
 	memset(buffer, 0, sizeof(UChar)*(result->grammar_size+8));
 	u_file_read(buffer, result->grammar_size, input);

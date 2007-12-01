@@ -42,8 +42,6 @@ namespace CG3 {
 		const char *codepage;
 		CG3::Grammar *result;
 
-		UChar *buffer1, *buffer2, *buffer3, *buffer4;
-	
 		int parse_grammar_from_ufile(UFILE *input);
 		int parseSingleLine(KEYWORDS key, const UChar *line);
 

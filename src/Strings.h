@@ -19,6 +19,7 @@
 #define __STRINGS_H
 
 #include "stdafx.h"
+#define BUFFER_SIZE (131072)
 
 namespace CG3 {
 	namespace Strings {
@@ -115,6 +116,11 @@ namespace CG3 {
 
 		int init_regexps(UFILE *ux_stderr);
 		int free_regexps();
+
+		#define NUM_GBUFFERS 5
+		extern UChar *gbuffers[NUM_GBUFFERS];
+		int init_gbuffers();
+		int free_gbuffers();
 	}
 }
 

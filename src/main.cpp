@@ -207,7 +207,10 @@ int main(int argc, char* argv[]) {
 		return -1;
 	}
 
+	init_gbuffers();
 	init_strings();
+	init_keywords();
+	init_regexps(ux_stderr);
 
 	CG3::IGrammarParser *parser = 0;
 	if (options[RE2C].doesOccur) {
@@ -384,6 +387,7 @@ int main(int argc, char* argv[]) {
 	free_strings();
 	free_keywords();
 	free_regexps();
+	free_gbuffers();
 
 	u_cleanup();
 

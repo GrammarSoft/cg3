@@ -36,7 +36,7 @@ int GrammarParser::parseAddMapReplaceAppend(const UChar *line, KEYWORDS key) {
 	}
 
 	uint32_t lname = hash_sdbm_uchar(line, 0);
-	UChar *local = buffer1;
+	UChar *local = gbuffers[1];
 	u_strcpy(local, line);
 	UChar *space = u_strchr(local, ' ');
 	space[0] = 0;
@@ -102,7 +102,7 @@ int GrammarParser::parseMappingPrefix(const UChar *line) {
 		u_fprintf(ux_stderr, "Error: No string provided at line %u - cannot continue!\n", result->curline);
 		return -1;
 	}
-	UChar *local = buffer1;
+	UChar *local = gbuffers[1];
 	u_strcpy(local, line+u_strlen(keywords[K_MAPPING_PREFIX])+1);
 
 	// Allocate temp vars and skips over "MAPPING-PREFIX = "

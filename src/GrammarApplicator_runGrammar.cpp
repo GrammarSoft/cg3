@@ -39,17 +39,6 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 		return -1;
 	}
 
-	int error = init_keywords();
-	if (error) {
-		u_fprintf(ux_stderr, "Error: init_keywords returned %u!\n", error);
-		return error;
-	}
-	error = init_strings();
-	if (error) {
-		u_fprintf(ux_stderr, "Error: init_strings returned %u!\n", error);
-		return error;
-	}
-
 	if (!grammar->delimiters || (grammar->delimiters->sets.empty() && grammar->delimiters->tags_set.empty())) {
 		if (!grammar->soft_delimiters || (grammar->soft_delimiters->sets.empty() && grammar->soft_delimiters->tags_set.empty())) {
 			u_fprintf(ux_stderr, "Warning: No soft or hard delimiters defined in grammar. Hard limit of %u cohorts may break windows in unintended places.\n", hard_limit);

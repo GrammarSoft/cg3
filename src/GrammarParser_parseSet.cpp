@@ -143,7 +143,7 @@ uint32_t GrammarParser::readTagList(UChar **paren, std::list<uint32_t> *taglist)
 				temp[0] = 0;
 				if (composite[0]) {
 					CG3::Tag *tag = result->allocateTag(composite);
-					tag->parseTag(composite, ux_stderr);
+					//tag->parseTag(composite, ux_stderr);
 					tag->rehash();
 					result->addTag(tag);
 					taglist->push_back(tag->hash);
@@ -155,7 +155,7 @@ uint32_t GrammarParser::readTagList(UChar **paren, std::list<uint32_t> *taglist)
 			}
 			if (composite[0]) {
 				CG3::Tag *tag = result->allocateTag(composite);
-				tag->parseTag(composite, ux_stderr);
+				//tag->parseTag(composite, ux_stderr);
 				tag->rehash();
 				result->addTag(tag);
 				taglist->push_back(tag->hash);
@@ -182,7 +182,7 @@ int GrammarParser::parseSet(const UChar *line) {
 		u_fprintf(ux_stderr, "Error: No string provided at line %u - cannot continue!\n", result->curline);
 		return -1;
 	}
-	UChar *local = buffer2;
+	UChar *local = gbuffers[2];
 	u_strcpy(local, line+u_strlen(keywords[K_SET])+1);
 
 	// Allocate temp vars and skips over "SET X = "

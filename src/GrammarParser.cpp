@@ -32,10 +32,6 @@ GrammarParser::GrammarParser(UFILE *ux_in, UFILE *ux_out, UFILE *ux_err) {
 	in_before_sections = false;
 	in_after_sections = false;
 	in_section = false;
-	buffer1 = new UChar[BUFFER_SIZE];
-	buffer2 = new UChar[BUFFER_SIZE];
-	buffer3 = new UChar[BUFFER_SIZE];
-	buffer4 = new UChar[BUFFER_SIZE*2];
 }
 
 GrammarParser::~GrammarParser() {
@@ -43,14 +39,6 @@ GrammarParser::~GrammarParser() {
 	locale = 0;
 	codepage = 0;
 	result = 0;
-	delete[] buffer1;
-	buffer1 = 0;
-	delete[] buffer2;
-	buffer2 = 0;
-	delete[] buffer3;
-	buffer3 = 0;
-	delete[] buffer4;
-	buffer4 = 0;
 }
 
 int GrammarParser::parseSingleLine(KEYWORDS key, const UChar *line) {
@@ -66,7 +54,7 @@ int GrammarParser::parseSingleLine(KEYWORDS key, const UChar *line) {
 
 	UErrorCode status = U_ZERO_ERROR;
 	int length = u_strlen(line);
-	UChar *local = buffer3;
+	UChar *local = gbuffers[3];
 
 	status = U_ZERO_ERROR;
 	uregex_setText(regexps[R_CLEANSTRING], line, length, &status);
@@ -82,7 +70,7 @@ int GrammarParser::parseSingleLine(KEYWORDS key, const UChar *line) {
 	}
 
 	length = u_strlen(local);
-	UChar *newlocal = buffer4;
+	UChar *newlocal = gbuffers[4];
 
 	status = U_ZERO_ERROR;
 	uregex_setText(regexps[R_ANDLINK], local, length, &status);
@@ -184,24 +172,6 @@ int GrammarParser::parse_grammar_from_ufile(UFILE *input) {
 		return -1;
 	}
 	
-	int error = init_keywords();
-	if (error) {
-		u_fprintf(ux_stderr, "Error: init_keywords returned %u!\n", error);
-		return error;
-	}
-
-	error = init_regexps(ux_stderr);
-	if (error) {
-		u_fprintf(ux_stderr, "Error: init_regexps returned %u!\n", error);
-		return error;
-	}
-
-	error = init_strings();
-	if (error) {
-		u_fprintf(ux_stderr, "Error: init_strings returned %u!\n", error);
-		return error;
-	}
-
 	// ToDo: Make line length dynamic
 	std::map<uint32_t, UChar*> lines;
 	std::map<uint32_t, KEYWORDS> keys;

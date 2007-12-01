@@ -83,25 +83,6 @@ int GrammarWriter::write_grammar_to_ufile_text(UFILE *output) {
 		return -1;
 	}
 
-	int error = init_keywords();
-	if (error) {
-		u_fprintf(ux_stderr, "Error: init_keywords returned %u!\n", error);
-		return error;
-	}
-	error = init_strings();
-	if (error) {
-		u_fprintf(ux_stderr, "Error: init_strings returned %u!\n", error);
-		return error;
-	}
-
-	/*
-	u_fprintf(output, "# Grammar last modified %u, with size %u", grammar->last_modified, grammar->grammar_size);
-	if (grammar->name) {
-		u_fprintf(output, ", from filename %S", grammar->name);
-	}
-	u_fprintf(output, "\n");
-	//*/
-
 	u_fprintf(output, "# DELIMITERS and SOFT-DELIMITERS do not exist. Instead, look for the sets _S_DELIMITERS_ and _S_SOFT_DELIMITERS_.\n");
 
 	u_fprintf(output, "MAPPING-PREFIX = %C ;\n", grammar->mapping_prefix);
@@ -323,10 +304,9 @@ void GrammarWriter::printTag(UFILE *to, const Tag *tag) {
 		u_fprintf(to, "VAR:");
 	}
 
-	UChar *tmp = new UChar[u_strlen(tag->tag)*2+3];
+	UChar *tmp = gbuffers[0];
 	ux_escape(tmp, tag->tag);
 	u_fprintf(to, "%S", tmp);
-	delete[] tmp;
 
 	if (tag->type & T_CASE_INSENSITIVE) {
 		u_fprintf(to, "i");
