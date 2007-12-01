@@ -35,6 +35,7 @@ Set::Set() {
 Set::~Set() {
 	if (name) {
 		delete[] name;
+		name = 0;
 	}
 	tags_set.clear();
 	tags.clear();

@@ -65,34 +65,11 @@ uint32_t GrammarParser::parseTarget(UChar **space) {
 		}
 	}
 
-	if (curset->sets.size() == 1) {
+	while (curset->sets.size() == 1) {
 		res = curset->sets.at(0);
 		result->destroySet(curset);
 		curset = result->getSet(res);
 	}
-/*
-	else if (only_or) {
-		bool only_simple = true;
-		for (uint32_t i=0;i<curset->sets.size();i++) {
-			Set *set = result->getSet(curset->sets[i]);
-			if (!set->sets.empty()) {
-				only_simple = false;
-			}
-		}
-		if (only_simple) {
-			for (uint32_t i=0;i<curset->sets.size();i++) {
-				Set *set = result->getSet(curset->sets[i]);
-				curset->tags.insert(set->tags.begin(), set->tags.end());
-				curset->tags_map.insert(set->tags.begin(), set->tags.end());
-				curset->single_tags.insert(set->single_tags.begin(), set->single_tags.end());
-				curset->tags_map.insert(set->single_tags.begin(), set->single_tags.end());
-			}
-			curset->sets.clear();
-			curset->set_ops.clear();
-		}
-	}
-//*/
-
 
 	result->addSet(curset);
 
