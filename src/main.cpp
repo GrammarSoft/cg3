@@ -381,6 +381,12 @@ int main(int argc, char* argv[]) {
 	delete applicator;
 	delete grammar;
 
+	free_strings();
+	free_keywords();
+	free_regexps();
+
+	u_cleanup();
+
 	std::cerr << "Cleanup took " << glob_timer->getValueFrom(main_timer) << " seconds." << std::endl;
 	delete glob_timer;
 
