@@ -163,9 +163,23 @@ void GrammarApplicator::reflowReading(Reading *reading) {
 	reading->tags_plain->clear();
 	reading->tags_textual->clear();
 	reading->tags_numerical->clear();
+	reading->possible_sets.clear();
+
+	if (grammar->sets_by_tag.find(begintag) != grammar->sets_by_tag.end()) {
+		reading->possible_sets.insert(grammar->sets_by_tag.find(begintag)->second->begin(), grammar->sets_by_tag.find(begintag)->second->end());
+	}
+	if (grammar->sets_by_tag.find(endtag) != grammar->sets_by_tag.end()) {
+		reading->possible_sets.insert(grammar->sets_by_tag.find(endtag)->second->begin(), grammar->sets_by_tag.find(endtag)->second->end());
+	}
+	if (grammar->sets_by_tag.find(grammar->tag_any) != grammar->sets_by_tag.end()) {
+		reading->possible_sets.insert(grammar->sets_by_tag.find(grammar->tag_any)->second->begin(), grammar->sets_by_tag.find(grammar->tag_any)->second->end());
+	}
 
 	uint32List::const_iterator tter;
 	for (tter = reading->tags_list.begin() ; tter != reading->tags_list.end() ; tter++) {
+		if (grammar->sets_by_tag.find(*tter) != grammar->sets_by_tag.end()) {
+			reading->possible_sets.insert(grammar->sets_by_tag.find(*tter)->second->begin(), grammar->sets_by_tag.find(*tter)->second->end());
+		}
 		reading->tags.insert(*tter);
 		Tag *tag = 0;
 		if (grammar->single_tags.find(*tter) != grammar->single_tags.end()) {
@@ -208,6 +222,14 @@ void GrammarApplicator::reflowReading(Reading *reading) {
 			reading->tags_plain->insert(*tter);
 		}
 	}
+
+	if (reading->baseform && grammar->sets_by_tag.find(reading->baseform) != grammar->sets_by_tag.end()) {
+		reading->possible_sets.insert(grammar->sets_by_tag.find(reading->baseform)->second->begin(), grammar->sets_by_tag.find(reading->baseform)->second->end());
+	}
+	if (reading->wordform && grammar->sets_by_tag.find(reading->wordform) != grammar->sets_by_tag.end()) {
+		reading->possible_sets.insert(grammar->sets_by_tag.find(reading->wordform)->second->begin(), grammar->sets_by_tag.find(reading->wordform)->second->end());
+	}
+
 	assert(!reading->tags.empty());
 	reading->rehash();
 }

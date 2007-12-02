@@ -186,7 +186,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 				cReading->wordform = begintag;
 				cReading->tags.insert(begintag);
 				cReading->tags_list.push_back(begintag);
-				cReading->rehash();
+				reflowReading(cReading);
 
 				cCohort->appendReading(cReading);
 
@@ -311,7 +311,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 							cReading->tags.insert(cCohort->wordform);
 							cReading->tags_list.push_back(cCohort->wordform);
 							cReading->noprint = true;
-							cReading->rehash();
+							reflowReading(cReading);
 							cCohort->appendReading(cReading);
 						}
 						std::list<Reading*>::iterator iter;
@@ -406,7 +406,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 			cReading->tags.insert(cCohort->wordform);
 			cReading->tags_list.push_back(cCohort->wordform);
 			cReading->noprint = true;
-			cReading->rehash();
+			reflowReading(cReading);
 			cCohort->appendReading(cReading);
 		}
 		std::list<Reading*>::iterator iter;

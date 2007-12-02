@@ -69,6 +69,7 @@ void Reading::clear(Cohort *p) {
 	tags_mapped->clear();
 	tags_textual->clear();
 	tags_numerical->clear();
+	possible_sets.clear();
 }
 
 Reading::~Reading() {
