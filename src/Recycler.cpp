@@ -24,6 +24,7 @@ Recycler::Recycler() {
 	ACohorts = DCohorts = 0;
 	AReadings = DReadings = 0;
 	Auint32Sets = Duint32Sets = 0;
+	Auint32HashSets = Duint32HashSets = 0;
 	for (uint32_t i=0;i<150;i++) {
 		Cohort *t = new Cohort(NULL);
 		Cohorts.push_back(t);

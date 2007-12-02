@@ -454,9 +454,11 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 	u_fflush(output);
 
 CGCMD_EXIT:
-	std::cerr << "Skipped " << skipped_rules << " of " << (skipped_rules+cache_hits+cache_miss) <<" rules." << std::endl;
-	std::cerr << "Cache " << (cache_hits+cache_miss) << " : " << cache_hits << " / " << cache_miss << std::endl;
-	std::cerr << "Match " << (match_sub+match_comp+match_single) << " : " << match_sub << " / " << match_comp << " / " << match_single << std::endl;
+	//std::cerr << "Skipped " << skipped_rules << " of " << (skipped_rules+cache_hits+cache_miss) <<" rules." << std::endl;
+	//std::cerr << "Match " << (match_sub+match_comp+match_single) << " : " << match_sub << " / " << match_comp << " / " << match_single << std::endl;
+	u_fprintf(ux_stderr, "Cache %u total, %u hits, %u misses.\n", (cache_hits+cache_miss), cache_hits, cache_miss);
+	u_fprintf(ux_stderr, "Did %u lines, %u windows, %u cohorts, %u readings.\n", numLines, numWindows, numCohorts, numReadings);
+	u_fflush(ux_stderr);
 
 	return 0;
 }
