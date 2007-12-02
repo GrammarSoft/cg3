@@ -56,7 +56,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 	bool ignoreinput = false;
 
 	Recycler *r = Recycler::instance();
-	uint32_t resetAfter = ((num_windows+2)*2+1);
+	uint32_t resetAfter = ((num_windows+4)*2+1);
 
 	begintag = addTag(stringbits[S_BEGINTAG]);
 	endtag = addTag(stringbits[S_ENDTAG]);

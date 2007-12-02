@@ -158,6 +158,8 @@ void GrammarApplicator::reflowDependencyWindow() {
 }
 
 void GrammarApplicator::reflowReading(Reading *reading) {
+	reading->invalid_rules.clear();
+	reading->invalid_sets.clear();
 	reading->tags.clear();
 	reading->tags_mapped->clear();
 	reading->tags_plain->clear();

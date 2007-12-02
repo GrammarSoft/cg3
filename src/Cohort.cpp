@@ -63,25 +63,7 @@ void Cohort::clear(SingleWindow *p) {
 }
 
 Cohort::~Cohort() {
-	Recycler *r = Recycler::instance();
-	std::list<Reading*>::iterator iter;
-	for (iter = readings.begin() ; iter != readings.end() ; iter++) {
-		r->delete_Reading(*iter);
-	}
-	readings.clear();
-	for (iter = deleted.begin() ; iter != deleted.end() ; iter++) {
-		r->delete_Reading(*iter);
-	}
-	deleted.clear();
-	if (parent) {
-		parent->parent->cohort_map.erase(global_number);
-		parent->parent->dep_window.erase(global_number);
-	}
-	if (text) {
-		delete[] text;
-	}
-	text = 0;
-	invalid_rules.clear();
+	clear(NULL);
 }
 
 void Cohort::addSibling(uint32_t sibling) {

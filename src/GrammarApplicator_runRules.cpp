@@ -102,13 +102,18 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, const int32_
 				reading->matched_target = false;
 				reading->matched_tests = false;
 				reading->current_mapping_tag = 0;
+				/*
 				if (!reading->hash) {
 					reading->rehash();
 				}
+				//*/
 				if (reading->mapped && (rule->type == K_MAP || rule->type == K_ADD || rule->type == K_REPLACE)) {
 					continue;
 				}
 				if (reading->noprint && !allow_magic_readings) {
+					continue;
+				}
+				if (reading->invalid_rules.find(rule->line) != reading->invalid_rules.end()) {
 					continue;
 				}
 				last_mapping_tag = 0;
@@ -145,6 +150,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, const int32_
 					num_iff++;
 				}
 				else {
+					reading->invalid_rules.insert(rule->line);
 					rule->num_fail++;
 				}
 			}
