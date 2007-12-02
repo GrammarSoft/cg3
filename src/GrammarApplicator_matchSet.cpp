@@ -158,12 +158,13 @@ bool GrammarApplicator::doesTagMatchReading(const Reading *reading, const uint32
 	return retval;
 }
 
-bool GrammarApplicator::doesSetMatchReading(const Reading *reading, const uint32_t set, bool bypass_index) {
+bool GrammarApplicator::doesSetMatchReading(Reading *reading, const uint32_t set, bool bypass_index) {
 	bool retval = false;
 
 	assert(reading->hash != 0);
 
 	if (reading->hash && reading->hash != 1) {
+		if (reading->invalid_sets.find(set) != reading->invalid_sets.end()) { return false; }
 		if (!bypass_index && __index_matches(&index_reading_yes, reading->hash, set)) { return true; }
 		if (__index_matches(&index_reading_no, reading->hash, set)) { return false; }
 	}
@@ -300,6 +301,7 @@ bool GrammarApplicator::doesSetMatchReading(const Reading *reading, const uint32
 				index_reading_no[reading->hash] = r->new_uint32HashSet();
 			}
 			index_reading_no[reading->hash]->insert(set);
+			reading->invalid_sets.insert(set);
 		}
 	}
 

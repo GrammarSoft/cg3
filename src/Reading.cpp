@@ -41,6 +41,8 @@ Reading::Reading(Cohort *p) {
 	tags_mapped = new uint32Set;
 	tags_textual = new uint32Set;
 	tags_numerical = new uint32Set;
+	invalid_rules.clear();
+	invalid_sets.clear();
 }
 
 void Reading::clear(Cohort *p) {
@@ -69,19 +71,12 @@ void Reading::clear(Cohort *p) {
 	tags_mapped->clear();
 	tags_textual->clear();
 	tags_numerical->clear();
+	invalid_rules.clear();
+	invalid_sets.clear();
 }
 
 Reading::~Reading() {
-	wordform = 0;
-	baseform = 0;
-	if (text) {
-		delete[] text;
-	}
-	text = 0;
-
-	tags.clear();
-	tags_list.clear();
-	hit_by.clear();
+	clear(NULL);
 	delete tags_plain;
 	delete tags_mapped;
 	delete tags_textual;
