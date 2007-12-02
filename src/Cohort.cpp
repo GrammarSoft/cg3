@@ -60,7 +60,6 @@ void Cohort::clear(SingleWindow *p) {
 	text = 0;
 	dep_self = 0;
 	dep_parent = 0;
-	invalid_rules.clear();
 }
 
 Cohort::~Cohort() {
