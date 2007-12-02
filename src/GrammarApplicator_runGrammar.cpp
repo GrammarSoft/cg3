@@ -56,6 +56,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 	bool ignoreinput = false;
 
 	Recycler *r = Recycler::instance();
+	uint32_t resetAfter = ((num_windows+2)*2+1);
 
 	begintag = addTag(stringbits[S_BEGINTAG]);
 	endtag = addTag(stringbits[S_ENDTAG]);
@@ -228,7 +229,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 				}
 				cWindow->shuffleWindowsDown();
 				runGrammarOnWindow(cWindow);
-				if (numWindows % 25 == 0) {
+				if (numWindows % resetAfter == 0) {
 					resetIndexes();
 				}
 				/*
@@ -348,7 +349,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 						}
 						cWindow->shuffleWindowsDown();
 						runGrammarOnWindow(cWindow);
-						if (numWindows % 25 == 0) {
+						if (numWindows % resetAfter == 0) {
 							resetIndexes();
 						}
 						/*
