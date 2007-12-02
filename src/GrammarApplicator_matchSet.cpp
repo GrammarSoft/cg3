@@ -44,10 +44,10 @@ bool GrammarApplicator::doesTagMatchSet(const uint32_t tag, const uint32_t set) 
 	return retval;
 }
 
-inline bool GrammarApplicator::__index_matches(const stdext::hash_map<uint32_t, Index*> *me, const uint32_t value, const uint32_t set) {
+inline bool GrammarApplicator::__index_matches(const stdext::hash_map<uint32_t, uint32HashSet*> *me, const uint32_t value, const uint32_t set) {
 	if (me->find(value) != me->end()) {
-		const Index *index = me->find(value)->second;
-		if (index->values.find(set) != index->values.end()) {
+		const uint32HashSet *index = me->find(value)->second;
+		if (index->find(set) != index->end()) {
 			cache_hits++;
 			return true;
 		}
@@ -185,9 +185,10 @@ bool GrammarApplicator::doesSetMatchReading(const Reading *reading, const uint32
 			if (!possible) {
 				if (reading->hash && reading->hash != 1) {
 					if (index_reading_no.find(reading->hash) == index_reading_no.end()) {
-						index_reading_no[reading->hash] = new Index();
+						Recycler *r = Recycler::instance();
+						index_reading_no[reading->hash] = r->new_uint32HashSet();
 					}
-					index_reading_no[reading->hash]->values[set] = set;
+					index_reading_no[reading->hash]->insert(set);
 				}
 				return false;
 			}
@@ -286,17 +287,19 @@ bool GrammarApplicator::doesSetMatchReading(const Reading *reading, const uint32
 	if (retval) {
 		if (reading->hash && reading->hash != 1) {
 			if (index_reading_yes.find(reading->hash) == index_reading_yes.end()) {
-				index_reading_yes[reading->hash] = new Index();
+				Recycler *r = Recycler::instance();
+				index_reading_yes[reading->hash] = r->new_uint32HashSet();
 			}
-			index_reading_yes[reading->hash]->values[set] = set;
+			index_reading_yes[reading->hash]->insert(set);
 		}
 	}
 	else {
 		if (reading->hash && reading->hash != 1) {
 			if (index_reading_no.find(reading->hash) == index_reading_no.end()) {
-				index_reading_no[reading->hash] = new Index();
+				Recycler *r = Recycler::instance();
+				index_reading_no[reading->hash] = r->new_uint32HashSet();
 			}
-			index_reading_no[reading->hash]->values[set] = set;
+			index_reading_no[reading->hash]->insert(set);
 		}
 	}
 

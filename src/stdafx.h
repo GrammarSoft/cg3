@@ -118,7 +118,6 @@ namespace CG3 {
 	class Tag;
 	class Window;
 	class SingleWindow;
-	class Index;
 	class Reading;
 	class GrammarApplicator;
 	class GrammarParser;

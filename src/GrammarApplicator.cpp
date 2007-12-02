@@ -72,17 +72,7 @@ GrammarApplicator::~GrammarApplicator() {
 	}
 	single_tags.clear();
 
-	stdext::hash_map<uint32_t, Index*>::iterator indt;
-	for (indt = index_reading_yes.begin() ; indt != index_reading_yes.end() ; indt++) {
-		delete indt->second;
-		indt->second = 0;
-	}
-	index_reading_yes.clear();
-	for (indt = index_reading_no.begin() ; indt != index_reading_no.end() ; indt++) {
-		delete indt->second;
-		indt->second = 0;
-	}
-	index_reading_no.clear();
+	resetIndexes();
 
 	grammar = 0;
 	if (timer) {
@@ -94,6 +84,23 @@ GrammarApplicator::~GrammarApplicator() {
 		gWindow = 0;
 	}
 	ux_stdin = ux_stderr = ux_stdout = 0;
+}
+
+void GrammarApplicator::resetIndexes() {
+	Recycler *r = Recycler::instance();
+	stdext::hash_map<uint32_t, uint32HashSet*>::iterator indt;
+	for (indt = index_reading_yes.begin() ; indt != index_reading_yes.end() ; indt++) {
+		r->delete_uint32HashSet(indt->second);
+	}
+	index_reading_yes.clear();
+	for (indt = index_reading_no.begin() ; indt != index_reading_no.end() ; indt++) {
+		r->delete_uint32HashSet(indt->second);
+	}
+	index_reading_no.clear();
+	for (indt = index_tags_regexp.begin() ; indt != index_tags_regexp.end() ; indt++) {
+		r->delete_uint32HashSet(indt->second);
+	}
+	index_tags_regexp.clear();
 }
 
 void GrammarApplicator::setGrammar(const Grammar *res) {

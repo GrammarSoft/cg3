@@ -37,6 +37,9 @@ namespace CG3 {
 		uint32Set *new_uint32Set();
 		void delete_uint32Set(uint32Set*);
 
+		uint32HashSet *new_uint32HashSet();
+		void delete_uint32HashSet(uint32HashSet*);
+
 	protected:
 		Recycler();
 		~Recycler();
@@ -52,6 +55,9 @@ namespace CG3 {
 
 		uint32_t Auint32Sets, Duint32Sets;
 		std::vector<uint32Set*> uint32Sets;
+
+		uint32_t Auint32HashSets, Duint32HashSets;
+		std::vector<uint32HashSet*> uint32HashSets;
 	};
 
 }
