@@ -173,8 +173,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, const int32_
 
 				if (type == K_REMOVE) {
 					if (good && reading->current_mapping_tag && reading->tags_mapped->size() > 1) {
-						reading->tags_list.remove(reading->current_mapping_tag);
-						reflowReading(reading);
+						delTagFromReading(reading, reading->current_mapping_tag);
 						good_mapping = true;
 					}
 					else {
@@ -190,12 +189,12 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, const int32_
 				}
 				else if (type == K_SELECT) {
 					if (good && reading->current_mapping_tag && reading->tags_mapped->size() > 1) {
-						uint32Set::iterator iter_maps;
-						for (iter_maps = reading->tags_mapped->begin() ; iter_maps != reading->tags_mapped->end() ; iter_maps++) {
-							reading->tags_list.remove(*iter_maps);
+						uint32HashSet::iterator iter_maps;
+						while (!reading->tags_mapped->empty()) {
+							iter_maps = reading->tags_mapped->begin();
+							delTagFromReading(reading, *iter_maps);
 						}
-						reading->tags_list.push_back(reading->current_mapping_tag);
-						reflowReading(reading);
+						addTagToReading(reading, reading->current_mapping_tag);
 						good_mapping = true;
 					}
 					if (good) {
@@ -232,9 +231,10 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, const int32_
 						Reading *cReading = r->new_Reading(cCohort);
 						cReading->baseform = begintag;
 						cReading->wordform = begintag;
-						cReading->tags.insert(begintag);
-						cReading->tags_list.push_back(begintag);
-						reflowReading(cReading);
+						if (grammar->sets_by_tag.find(grammar->tag_any) != grammar->sets_by_tag.end()) {
+							cReading->possible_sets.insert(grammar->sets_by_tag.find(grammar->tag_any)->second->begin(), grammar->sets_by_tag.find(grammar->tag_any)->second->end());
+						}
+						addTagToReading(cReading, begintag);
 
 						cCohort->appendReading(cReading);
 
@@ -253,9 +253,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, const int32_
 						cohort = current->cohorts.back();
 						for (rter = cohort->readings.begin() ; rter != cohort->readings.end() ; rter++) {
 							Reading *reading = *rter;
-							reading->tags_list.push_back(endtag);
-							reading->tags.insert(endtag);
-							reflowReading(reading);
+							addTagToReading(reading, endtag);
 						}
 						delimited = true;
 						break;
@@ -265,12 +263,11 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, const int32_
 						reading->noprint = false;
 						uint32List::const_iterator tter;
 						for (tter = rule->maplist.begin() ; tter != rule->maplist.end() ; tter++) {
-							reading->tags_list.push_back(*tter);
+							addTagToReading(reading, *tter);
 							if (grammar->rules_by_tag.find(*tter) != grammar->rules_by_tag.end()) {
 								current->valid_rules.insert(grammar->rules_by_tag.find(*tter)->second->begin(), grammar->rules_by_tag.find(*tter)->second->end());
 							}
 						}
-						reflowReading(reading);
 						if (rule->type == K_MAP) {
 							reading->mapped = true;
 						}
@@ -335,15 +332,14 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, const int32_
 						Reading *nr = cohort->allocateAppendReading();
 						nr->hit_by.push_back(rule->line);
 						nr->noprint = false;
-						nr->tags_list.push_back(cohort->wordform);
+						addTagToReading(nr, cohort->wordform);
 						uint32List::const_iterator tter;
 						for (tter = rule->maplist.begin() ; tter != rule->maplist.end() ; tter++) {
-							nr->tags_list.push_back(*tter);
+							addTagToReading(nr, *tter);
 							if (grammar->rules_by_tag.find(*tter) != grammar->rules_by_tag.end()) {
 								current->valid_rules.insert(grammar->rules_by_tag.find(*tter)->second->begin(), grammar->rules_by_tag.find(*tter)->second->end());
 							}
 						}
-						reflowReading(nr);
 						if (!nr->tags_mapped->empty()) {
 							nr->mapped = true;
 						}

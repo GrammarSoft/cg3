@@ -27,18 +27,18 @@ namespace CG3 {
 
 		uint32_t wordform;
 		uint32_t baseform;
-		uint32_t hash, hash_tags, hash_mapped, hash_plain, hash_textual;
+		uint32_t hash;
 		bool mapped;
 		bool deleted;
 		uint32Vector hit_by;
 		bool noprint;
 		uint32List tags_list;
-		uint32HashSet tags;
+		uint32Set tags;
 		// ToDo: Get these back to normal ones; no need to recycle elements of a recycled object
-		uint32Set *tags_plain;
-		uint32Set *tags_mapped;
-		uint32Set *tags_textual;
-		uint32Set *tags_numerical;
+		uint32HashSet *tags_plain;
+		uint32HashSet *tags_mapped;
+		uint32HashSet *tags_textual;
+		uint32HashSet *tags_numerical;
 
 		uint32HashSet possible_sets;
 

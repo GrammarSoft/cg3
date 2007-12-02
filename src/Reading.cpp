@@ -23,10 +23,6 @@ Reading::Reading(Cohort *p) {
 	baseform = 0;
 	hash = 0;
 	parent = p;
-	hash_tags = 0;
-	hash_mapped = 0;
-	hash_plain = 0;
-	hash_textual = 0;
 	mapped = false;
 	deleted = false;
 	noprint = false;
@@ -34,10 +30,10 @@ Reading::Reading(Cohort *p) {
 	matched_tests = false;
 	current_mapping_tag = 0;
 	text = 0;
-	tags_plain = new uint32Set;
-	tags_mapped = new uint32Set;
-	tags_textual = new uint32Set;
-	tags_numerical = new uint32Set;
+	tags_plain = new uint32HashSet;
+	tags_mapped = new uint32HashSet;
+	tags_textual = new uint32HashSet;
+	tags_numerical = new uint32HashSet;
 }
 
 void Reading::clear(Cohort *p) {
@@ -45,10 +41,6 @@ void Reading::clear(Cohort *p) {
 	baseform = 0;
 	hash = 0;
 	parent = p;
-	hash_tags = 0;
-	hash_mapped = 0;
-	hash_plain = 0;
-	hash_textual = 0;
 	mapped = false;
 	deleted = false;
 	noprint = false;
@@ -81,38 +73,10 @@ Reading::~Reading() {
 
 uint32_t Reading::rehash() {
 	hash = 0;
-	hash_tags = 0;
-	uint32List::const_iterator iter;
-	for (iter = tags_list.begin() ; iter != tags_list.end() ; iter++) {
-		if (*iter == wordform || *iter == baseform) {
-			continue;
-		}
+	uint32Set::const_iterator iter;
+	for (iter = tags.begin() ; iter != tags.end() ; iter++) {
 		hash = hash_sdbm_uint32_t(*iter, hash);
 	}
-	hash_tags = hash;
-
-	if (hash_tags == 0) {
-		hash_tags = 1;
-	}
-
-	hash = hash_sdbm_uint32_t(wordform, hash);
-	hash = hash_sdbm_uint32_t(baseform, hash);
-
 	assert(hash != 0);
-
-	uint32Set::const_iterator mter;
-	hash_mapped = 1;
-	for (mter = tags_mapped->begin() ; mter != tags_mapped->end() ; mter++) {
-		hash_mapped = hash_sdbm_uint32_t(*mter, hash_mapped);
-	}
-	hash_plain = 1;
-	for (mter = tags_plain->begin() ; mter != tags_plain->end() ; mter++) {
-		hash_plain = hash_sdbm_uint32_t(*mter, hash_plain);
-	}
-	hash_textual = 1;
-	for (mter = tags_textual->begin() ; mter != tags_textual->end() ; mter++) {
-		hash_textual = hash_sdbm_uint32_t(*mter, hash_textual);
-	}
-
 	return hash;
 }
