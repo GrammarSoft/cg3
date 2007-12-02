@@ -244,7 +244,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, const int32_
 						cReading->wordform = begintag;
 						cReading->tags.insert(begintag);
 						cReading->tags_list.push_back(begintag);
-						cReading->rehash();
+						reflowReading(cReading);
 
 						cCohort->appendReading(cReading);
 

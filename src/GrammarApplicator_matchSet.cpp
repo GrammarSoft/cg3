@@ -161,9 +161,10 @@ bool GrammarApplicator::doesTagMatchReading(const Reading *reading, const uint32
 bool GrammarApplicator::doesSetMatchReading(Reading *reading, const uint32_t set, bool bypass_index) {
 	bool retval = false;
 
-	assert(reading->hash != 0);
-
-	if (reading->hash && reading->hash != 1) {
+	if (reading->possible_sets.find(set) == reading->possible_sets.end()) {
+		return false;
+	}
+	if (reading->hash != 1) {
 		if (!bypass_index && __index_matches(&index_reading_yes, reading->hash, set)) { return true; }
 		if (__index_matches(&index_reading_no, reading->hash, set)) { return false; }
 	}
@@ -173,26 +174,6 @@ bool GrammarApplicator::doesSetMatchReading(Reading *reading, const uint32_t set
 	stdext::hash_map<uint32_t, Set*>::const_iterator iter = grammar->sets_by_contents.find(set);
 	if (iter != grammar->sets_by_contents.end()) {
 		const Set *theset = iter->second;
-		if (!theset->is_special) {
-			bool possible = false;
-			uint32List::const_iterator iter_tags;
-			for (iter_tags = reading->tags_list.begin() ; iter_tags != reading->tags_list.end() ; iter_tags++) {
-				if (grammar->sets_by_tag.find(*iter_tags) != grammar->sets_by_tag.end() && grammar->sets_by_tag.find(*iter_tags)->second->find(set) != grammar->sets_by_tag.find(*iter_tags)->second->end()) {
-					possible = true;
-					break;
-				}
-			}
-			if (!possible) {
-				if (reading->hash && reading->hash != 1) {
-					if (index_reading_no.find(reading->hash) == index_reading_no.end()) {
-						Recycler *r = Recycler::instance();
-						index_reading_no[reading->hash] = r->new_uint32HashSet();
-					}
-					index_reading_no[reading->hash]->insert(set);
-				}
-				return false;
-			}
-		}
 
 		if (theset->match_any) {
 			retval = true;
@@ -285,7 +266,7 @@ bool GrammarApplicator::doesSetMatchReading(Reading *reading, const uint32_t set
 	}
 
 	if (retval) {
-		if (reading->hash && reading->hash != 1) {
+		if (reading->hash != 1) {
 			if (index_reading_yes.find(reading->hash) == index_reading_yes.end()) {
 				Recycler *r = Recycler::instance();
 				index_reading_yes[reading->hash] = r->new_uint32HashSet();
@@ -294,7 +275,7 @@ bool GrammarApplicator::doesSetMatchReading(Reading *reading, const uint32_t set
 		}
 	}
 	else {
-		if (reading->hash && reading->hash != 1) {
+		if (reading->hash != 1) {
 			if (index_reading_no.find(reading->hash) == index_reading_no.end()) {
 				Recycler *r = Recycler::instance();
 				index_reading_no[reading->hash] = r->new_uint32HashSet();

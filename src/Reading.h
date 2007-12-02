@@ -40,6 +40,8 @@ namespace CG3 {
 		uint32Set *tags_textual;
 		uint32Set *tags_numerical;
 
+		uint32HashSet possible_sets;
+
 		UChar *text;
 
 		bool matched_target;
