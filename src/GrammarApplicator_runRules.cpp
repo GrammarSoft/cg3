@@ -68,7 +68,6 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, const int32_
 			const Set *set = grammar->sets_by_contents.find(rule->target)->second;
 			if ((type == K_SELECT || type == K_REMOVE || type == K_IFF) && (cohort->is_disamb || cohort->readings.size() == 1)) {
 				if (cohort->is_disamb || !set->has_mappings || cohort->readings.front()->tags_mapped->size() <= 1) {
-					cohort->is_disamb = true;
 					continue;
 				}
 			}
