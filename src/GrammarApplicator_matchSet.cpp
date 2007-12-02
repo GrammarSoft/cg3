@@ -61,7 +61,7 @@ bool GrammarApplicator::doesTagMatchReading(const Reading *reading, const uint32
 	bypass_index = false;
 
 	const Tag *tag = grammar->single_tags.find(ztag)->second;
-	if (!tag->type && reading->tags.find(ztag) != reading->tags.end()) {
+	if (!tag->is_special && reading->tags.find(ztag) != reading->tags.end()) {
 		retval = true;
 	}
 	else if (tag->type & T_VARIABLE) {
