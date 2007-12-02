@@ -36,24 +36,17 @@ Grammar::~Grammar() {
 		delete[] name;
 	}
 	
-	preferred_targets.clear();
-	
-	sections.clear();
-	
 	stdext::hash_map<uint32_t, Set*>::iterator iter_set;
 	for (iter_set = sets_by_contents.begin() ; iter_set != sets_by_contents.end() ; iter_set++) {
 		if (iter_set->second) {
 			destroySet(iter_set->second);
 		}
 	}
-	sets_by_contents.clear();
-	sets_by_name.clear();
 
 	std::set<Set*>::iterator rsets;
 	for (rsets = sets_all.begin() ; rsets != sets_all.end() ; rsets++) {
 		delete (*rsets);
 	}
-	sets_all.clear();
 
 	std::map<uint32_t, Anchor*>::iterator iter_anc;
 	for (iter_anc = anchors.begin() ; iter_anc != anchors.end() ; iter_anc++) {
@@ -61,7 +54,6 @@ Grammar::~Grammar() {
 			delete iter_anc->second;
 		}
 	}
-	anchors.clear();
 	
 	stdext::hash_map<uint32_t, CompositeTag*>::iterator iter_ctag;
 	for (iter_ctag = tags.begin() ; iter_ctag != tags.end() ; iter_ctag++) {
@@ -69,7 +61,6 @@ Grammar::~Grammar() {
 			delete iter_ctag->second;
 		}
 	}
-	tags.clear();
 
 	stdext::hash_map<uint32_t, Tag*>::iterator iter_stag;
 	for (iter_stag = single_tags.begin() ; iter_stag != single_tags.end() ; iter_stag++) {
@@ -77,7 +68,6 @@ Grammar::~Grammar() {
 			delete iter_stag->second;
 		}
 	}
-	single_tags.clear();
 
 	std::vector<Rule*>::iterator iter_rules;
 	for (iter_rules = rules.begin() ; iter_rules != rules.end() ; iter_rules++) {
@@ -85,39 +75,30 @@ Grammar::~Grammar() {
 			delete *iter_rules;
 		}
 	}
-	rules.clear();
 
 	for (iter_rules = before_sections.begin() ; iter_rules != before_sections.end() ; iter_rules++) {
 		if (*iter_rules) {
 			delete *iter_rules;
 		}
 	}
-	before_sections.clear();
 
 	for (iter_rules = after_sections.begin() ; iter_rules != after_sections.end() ; iter_rules++) {
 		if (*iter_rules) {
 			delete *iter_rules;
 		}
 	}
-	after_sections.clear();
-
-	set_alias.clear();
 
 	stdext::hash_map<uint32_t,uint32HashSet*>::iterator xrule;
 	for (xrule = rules_by_tag.begin() ; xrule != rules_by_tag.end() ; xrule++) {
-		xrule->second->clear();
 		delete xrule->second;
 		xrule->second = 0;
 	}
-	rules_by_tag.clear();
 
 	stdext::hash_map<uint32_t,uint32HashSet*>::iterator xset;
 	for (xset = sets_by_tag.begin() ; xset != sets_by_tag.end() ; xset++) {
-		xset->second->clear();
 		delete xset->second;
 		xset->second = 0;
 	}
-	sets_by_tag.clear();
 }
 
 void Grammar::addPreferredTarget(UChar *to) {

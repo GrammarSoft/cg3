@@ -34,9 +34,6 @@ Reading::Reading(Cohort *p) {
 	matched_tests = false;
 	current_mapping_tag = 0;
 	text = 0;
-	hit_by.clear();
-	tags_list.clear();
-	tags.clear();
 	tags_plain = new uint32Set;
 	tags_mapped = new uint32Set;
 	tags_textual = new uint32Set;
@@ -73,7 +70,9 @@ void Reading::clear(Cohort *p) {
 }
 
 Reading::~Reading() {
-	clear(NULL);
+	if (text) {
+		delete[] text;
+	}
 	delete tags_plain;
 	delete tags_mapped;
 	delete tags_textual;

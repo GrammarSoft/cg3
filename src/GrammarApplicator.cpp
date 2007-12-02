@@ -54,8 +54,6 @@ GrammarApplicator::GrammarApplicator(UFILE *ux_in, UFILE *ux_out, UFILE *ux_err)
 	soft_limit = 300;
 	hard_limit = 500;
 	gWindow = 0;
-	index_reading_yes.clear();
-	index_reading_no.clear();
 	numLines = 0;
 	numWindows = 0;
 	numCohorts = 0;
@@ -70,19 +68,26 @@ GrammarApplicator::~GrammarApplicator() {
 			iter_stag->second = 0;
 		}
 	}
-	single_tags.clear();
 
-	resetIndexes();
+	Recycler *r = Recycler::instance();
+	stdext::hash_map<uint32_t, uint32HashSet*>::iterator indt;
+	for (indt = index_reading_yes.begin() ; indt != index_reading_yes.end() ; indt++) {
+		r->delete_uint32HashSet(indt->second);
+	}
+	for (indt = index_reading_no.begin() ; indt != index_reading_no.end() ; indt++) {
+		r->delete_uint32HashSet(indt->second);
+	}
+	for (indt = index_tags_regexp.begin() ; indt != index_tags_regexp.end() ; indt++) {
+		r->delete_uint32HashSet(indt->second);
+	}
 
-	grammar = 0;
 	if (timer) {
 		delete timer;
-		timer = 0;
 	}
 	if (gWindow) {
 		delete gWindow;
-		gWindow = 0;
 	}
+	grammar = 0;
 	ux_stdin = ux_stderr = ux_stdout = 0;
 }
 

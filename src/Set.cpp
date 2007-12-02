@@ -25,23 +25,12 @@ Set::Set() {
 	name = 0;
 	line = 0;
 	hash = 0;
-	tags_set.clear();
-	tags.clear();
-	single_tags.clear();
-	sets.clear();
-	set_ops.clear();
 }
 
 Set::~Set() {
 	if (name) {
 		delete[] name;
-		name = 0;
 	}
-	tags_set.clear();
-	tags.clear();
-	single_tags.clear();
-	sets.clear();
-	set_ops.clear();
 }
 
 void Set::setName(uint32_t to) {

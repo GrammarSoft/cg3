@@ -29,7 +29,6 @@ Cohort::Cohort(SingleWindow *p) {
 	text = 0;
 	dep_self = 0;
 	dep_parent = 0;
-	invalid_rules.clear();
 }
 
 void Cohort::clear(SingleWindow *p) {
@@ -65,7 +64,21 @@ void Cohort::clear(SingleWindow *p) {
 }
 
 Cohort::~Cohort() {
-	clear(NULL);
+	Recycler *r = Recycler::instance();
+	std::list<Reading*>::iterator iter;
+	for (iter = readings.begin() ; iter != readings.end() ; iter++) {
+		r->delete_Reading(*iter);
+	}
+	for (iter = deleted.begin() ; iter != deleted.end() ; iter++) {
+		r->delete_Reading(*iter);
+	}
+	if (parent) {
+		parent->parent->cohort_map.erase(global_number);
+		parent->parent->dep_window.erase(global_number);
+	}
+	if (text) {
+		delete[] text;
+	}
 }
 
 void Cohort::addSibling(uint32_t sibling) {
