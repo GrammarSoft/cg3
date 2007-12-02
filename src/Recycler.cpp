@@ -96,7 +96,7 @@ Cohort *Recycler::new_Cohort(SingleWindow *p) {
 	if (!Cohorts.empty()) {
 		Cohort *t = Cohorts.back();
 		Cohorts.pop_back();
-		t->clear(p);
+		t->parent = p;
 		return t;
 	}
 	return new Cohort(p);
@@ -113,7 +113,7 @@ Reading *Recycler::new_Reading(Cohort *p) {
 	if (!Readings.empty()) {
 		Reading *t = Readings.back();
 		Readings.pop_back();
-		t->clear(p);
+		t->parent = p;
 		return t;
 	}
 	return new Reading(p);
