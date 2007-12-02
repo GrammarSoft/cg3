@@ -190,6 +190,7 @@ bool GrammarApplicator::doesSetMatchReading(Reading *reading, const uint32_t set
 						index_reading_no[reading->hash] = r->new_uint32HashSet();
 					}
 					index_reading_no[reading->hash]->insert(set);
+					reading->invalid_sets.insert(set);
 				}
 				return false;
 			}
