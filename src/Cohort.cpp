@@ -23,6 +23,7 @@ Cohort::Cohort(SingleWindow *p) {
 	global_number = 0;
 	local_number = 0;
 	parent = p;
+	is_disamb = false;
 	dep_done = false;
 	is_related = false;
 	text = 0;
@@ -51,6 +52,7 @@ void Cohort::clear(SingleWindow *p) {
 	global_number = 0;
 	local_number = 0;
 	parent = p;
+	is_disamb = false;
 	dep_done = false;
 	is_related = false;
 	if (text) {
