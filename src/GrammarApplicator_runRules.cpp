@@ -161,8 +161,6 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, const int32_
 
 			std::list<Reading*> removed;
 			std::list<Reading*> selected;
-			removed.clear();
-			selected.clear();
 
 			for (rter = cohort->readings.begin() ; rter != cohort->readings.end() ; rter++) {
 				Reading *reading = *rter;
@@ -479,12 +477,10 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, const int32_
 					cohort->readings.remove(removed.back());
 					removed.pop_back();
 				}
-				removed.clear();
 			}
 			if (!selected.empty()) {
 				cohort->readings.clear();
 				cohort->readings.insert(cohort->readings.begin(), selected.begin(), selected.end());
-				selected.clear();
 			}
 
 			cohort->is_disamb = false;

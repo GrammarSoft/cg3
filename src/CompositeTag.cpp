@@ -20,13 +20,9 @@ using namespace CG3;
 
 CompositeTag::CompositeTag() {
 	hash = 0;
-	tags_set.clear();
-	tags.clear();
 }
 
 CompositeTag::~CompositeTag() {
-	tags_set.clear();
-	tags.clear();
 }
 
 void CompositeTag::addTag(uint32_t tag) {

@@ -38,12 +38,10 @@ Rule::~Rule() {
 	for (iter = tests.begin() ; iter != tests.end() ; iter++) {
 		delete (*iter);
 	}
-	tests.clear();
 
 	for (iter = dep_tests.begin() ; iter != dep_tests.end() ; iter++) {
 		delete (*iter);
 	}
-	dep_tests.clear();
 
 	delete dep_target;
 }

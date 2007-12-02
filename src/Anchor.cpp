@@ -27,7 +27,6 @@ Anchor::~Anchor() {
 	if (name) {
 		delete[] name;
 	}
-	line = 0;
 }
 
 void Anchor::setName(uint32_t to) {

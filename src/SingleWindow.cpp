@@ -32,7 +32,6 @@ SingleWindow::~SingleWindow() {
 	for (iter = cohorts.begin() ; iter != cohorts.end() ; iter++) {
 		r->delete_Cohort(*iter);
 	}
-	cohorts.clear();
 	if (next && previous) {
 		next->previous = previous;
 		previous->next = next;
@@ -45,7 +44,6 @@ SingleWindow::~SingleWindow() {
 			previous->next = 0;
 		}
 	}
-	valid_rules.clear();
 }
 
 void SingleWindow::appendCohort(Cohort *cohort) {

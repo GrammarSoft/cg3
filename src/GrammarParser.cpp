@@ -250,8 +250,6 @@ int GrammarParser::parse_grammar_from_ufile(UFILE *input) {
 		lastline[0] = 0;
 	}
 
-	keys.clear();
-
 	if (!result->rules.empty()) {
 		result->sections.push_back((uint32_t)result->rules.size());
 	}
