@@ -252,7 +252,7 @@ parseTagList_end:
 	return YYCURSOR;
 }
 
-YYCTYPE *GPRE2C::parseMappingList(YYCTYPE *input, std::list<uint32_t> *taglist) {
+YYCTYPE *GPRE2C::parseMappingList(YYCTYPE *input, uint32List *taglist) {
 	marker = YYCURSOR;
 
 parseMappingList_start:

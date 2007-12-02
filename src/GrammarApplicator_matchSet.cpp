@@ -73,7 +73,7 @@ bool GrammarApplicator::doesTagMatchReading(const Reading *reading, const uint32
 	}
 	else if (tag->type & T_NUMERICAL && !reading->tags_numerical->empty()) {
 		match = false;
-		std::set<uint32_t>::const_iterator mter;
+		uint32Set::const_iterator mter;
 		for (mter = reading->tags_numerical->begin() ; mter != reading->tags_numerical->end() ; mter++) {
 			const Tag *itag = single_tags.find(*mter)->second;
 			if (tag->comparison_hash == itag->comparison_hash) {
@@ -111,7 +111,7 @@ bool GrammarApplicator::doesTagMatchReading(const Reading *reading, const uint32
 		}
 	}
 	else if (tag->regexp && !reading->tags_textual->empty()) {
-		std::set<uint32_t>::const_iterator mter;
+		uint32Set::const_iterator mter;
 		for (mter = reading->tags_textual->begin() ; mter != reading->tags_textual->end() ; mter++) {
 			// ToDo: Cache regexp and icase hits/misses
 			const Tag *itag = single_tags.find(*mter)->second;
@@ -164,7 +164,6 @@ bool GrammarApplicator::doesSetMatchReading(Reading *reading, const uint32_t set
 	assert(reading->hash != 0);
 
 	if (reading->hash && reading->hash != 1) {
-		if (reading->invalid_sets.find(set) != reading->invalid_sets.end()) { return false; }
 		if (!bypass_index && __index_matches(&index_reading_yes, reading->hash, set)) { return true; }
 		if (__index_matches(&index_reading_no, reading->hash, set)) { return false; }
 	}
@@ -176,7 +175,7 @@ bool GrammarApplicator::doesSetMatchReading(Reading *reading, const uint32_t set
 		const Set *theset = iter->second;
 		if (!theset->is_special) {
 			bool possible = false;
-			std::list<uint32_t>::const_iterator iter_tags;
+			uint32List::const_iterator iter_tags;
 			for (iter_tags = reading->tags_list.begin() ; iter_tags != reading->tags_list.end() ; iter_tags++) {
 				if (grammar->sets_by_tag.find(*iter_tags) != grammar->sets_by_tag.end() && grammar->sets_by_tag.find(*iter_tags)->second->find(set) != grammar->sets_by_tag.find(*iter_tags)->second->end()) {
 					possible = true;
@@ -190,7 +189,6 @@ bool GrammarApplicator::doesSetMatchReading(Reading *reading, const uint32_t set
 						index_reading_no[reading->hash] = r->new_uint32HashSet();
 					}
 					index_reading_no[reading->hash]->insert(set);
-					reading->invalid_sets.insert(set);
 				}
 				return false;
 			}
@@ -200,7 +198,7 @@ bool GrammarApplicator::doesSetMatchReading(Reading *reading, const uint32_t set
 			retval = true;
 		}
 		else if (theset->sets.empty()) {
-			stdext::hash_set<uint32_t>::const_iterator ster;
+			uint32HashSet::const_iterator ster;
 
 			for (ster = theset->single_tags.begin() ; ster != theset->single_tags.end() ; ster++) {
 				bool match = doesTagMatchReading(reading, *ster, bypass_index);
@@ -215,7 +213,7 @@ bool GrammarApplicator::doesSetMatchReading(Reading *reading, const uint32_t set
 					bool match = true;
 					const CompositeTag *ctag = grammar->tags.find(*ster)->second;
 
-					stdext::hash_set<uint32_t>::const_iterator cter;
+					uint32HashSet::const_iterator cter;
 					for (cter = ctag->tags.begin() ; cter != ctag->tags.end() ; cter++) {
 						bool inner = doesTagMatchReading(reading, *cter, bypass_index);
 						if (!inner) {
@@ -302,7 +300,6 @@ bool GrammarApplicator::doesSetMatchReading(Reading *reading, const uint32_t set
 				index_reading_no[reading->hash] = r->new_uint32HashSet();
 			}
 			index_reading_no[reading->hash]->insert(set);
-			reading->invalid_sets.insert(set);
 		}
 	}
 
@@ -314,11 +311,9 @@ bool GrammarApplicator::doesSetMatchCohortNormal(const Cohort *cohort, const uin
 	std::list<Reading*>::const_iterator iter;
 	for (iter = cohort->readings.begin() ; iter != cohort->readings.end() ; iter++) {
 		Reading *reading = *iter;
-		if (!reading->deleted) {
-			if (doesSetMatchReading(reading, set)) {
-				retval = true;
-				break;
-			}
+		if (doesSetMatchReading(reading, set)) {
+			retval = true;
+			break;
 		}
 	}
 	return retval;
@@ -326,21 +321,19 @@ bool GrammarApplicator::doesSetMatchCohortNormal(const Cohort *cohort, const uin
 
 bool GrammarApplicator::doesSetMatchCohortCareful(const Cohort *cohort, const uint32_t set) {
 	bool retval = true;
+	const Set *theset = grammar->sets_by_contents.find(set)->second;
 	std::list<Reading*>::const_iterator iter;
 	for (iter = cohort->readings.begin() ; iter != cohort->readings.end() ; iter++) {
 		Reading *reading = *iter;
-		if (!reading->deleted) {
-			last_mapping_tag = 0;
-			const Set *theset = grammar->sets_by_contents.find(set)->second;
-			if (!doesSetMatchReading(reading, set, theset->has_mappings)) {
-				retval = false;
-				break;
-			}
-			// A mapped tag must be the only mapped tag in the reading to be considered a Careful match
-			if (last_mapping_tag && reading->tags_mapped->size() > 1) {
-				retval = false;
-				break;
-			}
+		last_mapping_tag = 0;
+		if (!doesSetMatchReading(reading, set, theset->has_mappings)) {
+			retval = false;
+			break;
+		}
+		// A mapped tag must be the only mapped tag in the reading to be considered a Careful match
+		if (last_mapping_tag && reading->tags_mapped->size() > 1) {
+			retval = false;
+			break;
 		}
 	}
 	return retval;

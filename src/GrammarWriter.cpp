@@ -36,7 +36,7 @@ void GrammarWriter::write_set_to_ufile(UFILE *output, const Set *curset) {
 	if (curset->sets.empty() && used_sets.find(curset->hash) == used_sets.end()) {
 		used_sets.insert(curset->hash);
 		u_fprintf(output, "LIST %S = ", curset->name);
-		stdext::hash_set<uint32_t>::const_iterator comp_iter;
+		uint32HashSet::const_iterator comp_iter;
 		for (comp_iter = curset->single_tags.begin() ; comp_iter != curset->single_tags.end() ; comp_iter++) {
 			printTag(output, grammar->single_tags.find(*comp_iter)->second);
 			u_fprintf(output, " ");
@@ -49,7 +49,7 @@ void GrammarWriter::write_set_to_ufile(UFILE *output, const Set *curset) {
 					u_fprintf(output, " ");
 				} else {
 					u_fprintf(output, "(");
-					std::set<uint32_t>::const_iterator tag_iter;
+					uint32Set::const_iterator tag_iter;
 					for (tag_iter = curcomptag->tags_set.begin() ; tag_iter != curcomptag->tags_set.end() ; tag_iter++) {
 						printTag(output, grammar->single_tags.find(*tag_iter)->second);
 						u_fprintf(output, " ");
@@ -89,7 +89,7 @@ int GrammarWriter::write_grammar_to_ufile_text(UFILE *output) {
 
 	if (!grammar->preferred_targets.empty()) {
 		u_fprintf(output, "PREFERRED-TARGETS = ");
-		std::vector<uint32_t>::const_iterator iter;
+		uint32Vector::const_iterator iter;
 		for(iter = grammar->preferred_targets.begin() ; iter != grammar->preferred_targets.end() ; iter++ ) {
 			printTag(output, grammar->single_tags.find(*iter)->second);
 			u_fprintf(output, " ");
@@ -180,7 +180,7 @@ void GrammarWriter::printRule(UFILE *to, const Rule *rule) {
 	u_fprintf(to, " ");
 
 	if (!rule->sublist.empty()) {
-		std::list<uint32_t>::const_iterator iter;
+		uint32List::const_iterator iter;
 		u_fprintf(to, "(");
 		for (iter = rule->sublist.begin() ; iter != rule->sublist.end() ; iter++) {
 			printTag(to, grammar->single_tags.find(*iter)->second);
@@ -190,7 +190,7 @@ void GrammarWriter::printRule(UFILE *to, const Rule *rule) {
 	}
 
 	if (!rule->maplist.empty()) {
-		std::list<uint32_t>::const_iterator iter;
+		uint32List::const_iterator iter;
 		u_fprintf(to, "(");
 		for (iter = rule->maplist.begin() ; iter != rule->maplist.end() ; iter++) {
 			printTag(to, grammar->single_tags.find(*iter)->second);

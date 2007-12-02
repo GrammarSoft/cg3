@@ -65,7 +65,7 @@ uint32_t Set::rehash() {
 	uint32_t retval = 0;
 	assert(tags_set.empty() || sets.empty());
 	if (sets.empty()) {
-		std::set<uint32_t>::iterator iter;
+		uint32Set::iterator iter;
 		for (iter = tags_set.begin() ; iter != tags_set.end() ; iter++) {
 			retval = hash_sdbm_uint32_t(*iter, retval);
 		}
@@ -86,7 +86,7 @@ uint32_t Set::rehash() {
 void Set::reindex(Grammar *grammar) {
 	has_mappings = false;
 	if (sets.empty()) {
-		stdext::hash_set<uint32_t>::const_iterator comp_iter;
+		uint32HashSet::const_iterator comp_iter;
 		for (comp_iter = single_tags.begin() ; comp_iter != single_tags.end() ; comp_iter++) {
 			Tag *tag = grammar->single_tags.find(*comp_iter)->second;
 			if (tag->is_special) {
@@ -110,7 +110,7 @@ void Set::reindex(Grammar *grammar) {
 						return;
 					}
 				} else {
-					std::set<uint32_t>::const_iterator tag_iter;
+					uint32Set::const_iterator tag_iter;
 					for (tag_iter = curcomptag->tags_set.begin() ; tag_iter != curcomptag->tags_set.end() ; tag_iter++) {
 						Tag *tag = grammar->single_tags.find(*tag_iter)->second;
 						if (tag->is_special) {

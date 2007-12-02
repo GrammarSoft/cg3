@@ -41,8 +41,6 @@ Reading::Reading(Cohort *p) {
 	tags_mapped = new uint32Set;
 	tags_textual = new uint32Set;
 	tags_numerical = new uint32Set;
-	invalid_rules.clear();
-	invalid_sets.clear();
 }
 
 void Reading::clear(Cohort *p) {
@@ -71,8 +69,6 @@ void Reading::clear(Cohort *p) {
 	tags_mapped->clear();
 	tags_textual->clear();
 	tags_numerical->clear();
-	invalid_rules.clear();
-	invalid_sets.clear();
 }
 
 Reading::~Reading() {
@@ -86,7 +82,7 @@ Reading::~Reading() {
 uint32_t Reading::rehash() {
 	hash = 0;
 	hash_tags = 0;
-	std::list<uint32_t>::const_iterator iter;
+	uint32List::const_iterator iter;
 	for (iter = tags_list.begin() ; iter != tags_list.end() ; iter++) {
 		if (*iter == wordform || *iter == baseform) {
 			continue;
@@ -104,7 +100,7 @@ uint32_t Reading::rehash() {
 
 	assert(hash != 0);
 
-	std::set<uint32_t>::const_iterator mter;
+	uint32Set::const_iterator mter;
 	hash_mapped = 1;
 	for (mter = tags_mapped->begin() ; mter != tags_mapped->end() ; mter++) {
 		hash_mapped = hash_sdbm_uint32_t(*mter, hash_mapped);
