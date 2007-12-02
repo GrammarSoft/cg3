@@ -34,7 +34,6 @@ namespace CG3 {
 		std::list<Reading*> readings;
 		std::list<Reading*> deleted;
 		UChar *text;
-		uint32HashSet invalid_rules;
 
 		bool dep_done;
 		uint32_t dep_self;
