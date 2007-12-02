@@ -61,7 +61,10 @@ bool GrammarApplicator::doesTagMatchReading(const Reading *reading, const uint32
 	bypass_index = false;
 
 	const Tag *tag = grammar->single_tags.find(ztag)->second;
-	if (tag->type & T_VARIABLE) {
+	if (!tag->type && reading->tags.find(ztag) != reading->tags.end()) {
+		retval = true;
+	}
+	else if (tag->type & T_VARIABLE) {
 		if (variables.find(tag->comparison_hash) == variables.end()) {
 			u_fprintf(ux_stderr, "Info: %u failed.\n", tag->comparison_hash);
 			match = false;
@@ -151,6 +154,7 @@ bool GrammarApplicator::doesTagMatchReading(const Reading *reading, const uint32
 		else {
 			retval = true;
 		}
+		// ToDo: Can tag->type ever not contain T_MAPPING if tag->tag[0] == grammar->mapping_prefix?
 		if (tag->type & T_MAPPING || tag->tag[0] == grammar->mapping_prefix) {
 			last_mapping_tag = tag->hash;
 		}
