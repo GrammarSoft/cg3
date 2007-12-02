@@ -113,9 +113,6 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, const int32_
 				if (reading->noprint && !allow_magic_readings) {
 					continue;
 				}
-				if (reading->invalid_rules.find(rule->line) != reading->invalid_rules.end()) {
-					continue;
-				}
 				last_mapping_tag = 0;
 				if (rule->target && doesSetMatchReading(reading, rule->target, set->has_mappings)) {
 					rule_is_valid_cohort = true;
@@ -150,7 +147,6 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, const int32_
 					num_iff++;
 				}
 				else {
-					reading->invalid_rules.insert(rule->line);
 					rule->num_fail++;
 				}
 			}
@@ -204,7 +200,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, const int32_
 				}
 				else if (type == K_SELECT) {
 					if (good && reading->current_mapping_tag && reading->tags_mapped->size() > 1) {
-						std::set<uint32_t>::iterator iter_maps;
+						uint32Set::iterator iter_maps;
 						for (iter_maps = reading->tags_mapped->begin() ; iter_maps != reading->tags_mapped->end() ; iter_maps++) {
 							reading->tags_list.remove(*iter_maps);
 						}
@@ -277,7 +273,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, const int32_
 					else if (rule->type == K_ADD || rule->type == K_MAP) {
 						reading->hit_by.push_back(rule->line);
 						reading->noprint = false;
-						std::list<uint32_t>::const_iterator tter;
+						uint32List::const_iterator tter;
 						for (tter = rule->maplist.begin() ; tter != rule->maplist.end() ; tter++) {
 							reading->tags_list.push_back(*tter);
 							if (grammar->rules_by_tag.find(*tter) != grammar->rules_by_tag.end()) {
@@ -292,7 +288,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, const int32_
 					else if (rule->type == K_REPLACE) {
 						reading->hit_by.push_back(rule->line);
 						reading->noprint = false;
-						std::list<uint32_t>::const_iterator tter;
+						uint32List::const_iterator tter;
 						reading->tags_list.clear();
 						reading->tags_list.push_back(reading->wordform);
 						reading->tags_list.push_back(reading->baseform);
@@ -308,12 +304,12 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, const int32_
 						}
 					}
 					else if (rule->type == K_SUBSTITUTE) {
-						std::list<uint32_t>::const_iterator tter;
+						uint32List::const_iterator tter;
 						uint32_t tloc = 0;
 						size_t tagb = reading->tags_list.size();
 						for (tter = rule->sublist.begin() ; tter != rule->sublist.end() ; tter++) {
 							if (!tloc) {
-								std::list<uint32_t>::iterator tfind;
+								uint32List::iterator tfind;
 								for (tfind = reading->tags_list.begin() ; tfind != reading->tags_list.end() ; tfind++) {
 									if (*tfind == *tter) {
 										tloc = *(--tfind);
@@ -326,7 +322,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, const int32_
 						if (tagb != reading->tags_list.size()) {
 							reading->hit_by.push_back(rule->line);
 							reading->noprint = false;
-							std::list<uint32_t>::iterator tfind;
+							uint32List::iterator tfind;
 							for (tfind = reading->tags_list.begin() ; tfind != reading->tags_list.end() ; tfind++) {
 								if (*tfind == tloc) {
 									tfind++;
@@ -350,7 +346,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, const int32_
 						nr->hit_by.push_back(rule->line);
 						nr->noprint = false;
 						nr->tags_list.push_back(cohort->wordform);
-						std::list<uint32_t>::const_iterator tter;
+						uint32List::const_iterator tter;
 						for (tter = rule->maplist.begin() ; tter != rule->maplist.end() ; tter++) {
 							nr->tags_list.push_back(*tter);
 							if (grammar->rules_by_tag.find(*tter) != grammar->rules_by_tag.end()) {

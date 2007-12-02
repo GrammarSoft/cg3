@@ -55,7 +55,7 @@ namespace CG3 {
 		YYCTYPE *parseInlineSet(YYCTYPE *input, Set **ret_set);
 		YYCTYPE *parseSetList(YYCTYPE *input, Set *set);
 		YYCTYPE *parseTagList(YYCTYPE *input, Set *set);
-		YYCTYPE *parseMappingList(YYCTYPE *input, std::list<uint32_t> *taglist);
+		YYCTYPE *parseMappingList(YYCTYPE *input, uint32List *taglist);
 
 		YYCTYPE *parseSet(YYCTYPE *input);
 		YYCTYPE *parseList(YYCTYPE *input);

@@ -36,7 +36,7 @@ void CompositeTag::addTag(uint32_t tag) {
 
 uint32_t CompositeTag::rehash() {
 	uint32_t retval = 0;
-	std::set<uint32_t>::iterator iter;
+	uint32Set::iterator iter;
 	for (iter = tags_set.begin() ; iter != tags_set.end() ; iter++) {
 		retval = hash_sdbm_uint32_t(*iter, retval);
 	}

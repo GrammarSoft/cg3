@@ -155,7 +155,7 @@ void GrammarApplicator::printReading(Reading *reading, UFILE *output) {
 	}
 
 	stdext::hash_map<uint32_t, uint32_t> used_tags;
-	std::list<uint32_t>::iterator tter;
+	uint32List::iterator tter;
 	for (tter = reading->tags_list.begin() ; tter != reading->tags_list.end() ; tter++) {
 		if (used_tags.find(*tter) != used_tags.end()) {
 			continue;

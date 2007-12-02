@@ -158,15 +158,13 @@ void GrammarApplicator::reflowDependencyWindow() {
 }
 
 void GrammarApplicator::reflowReading(Reading *reading) {
-	reading->invalid_rules.clear();
-	reading->invalid_sets.clear();
 	reading->tags.clear();
 	reading->tags_mapped->clear();
 	reading->tags_plain->clear();
 	reading->tags_textual->clear();
 	reading->tags_numerical->clear();
 
-	std::list<uint32_t>::const_iterator tter;
+	uint32List::const_iterator tter;
 	for (tter = reading->tags_list.begin() ; tter != reading->tags_list.end() ; tter++) {
 		reading->tags.insert(*tter);
 		Tag *tag = 0;

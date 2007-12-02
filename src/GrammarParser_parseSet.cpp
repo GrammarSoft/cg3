@@ -120,7 +120,7 @@ uint32_t GrammarParser::readSingleSet(UChar **paren) {
 	return retval;
 }
 
-uint32_t GrammarParser::readTagList(UChar **paren, std::list<uint32_t> *taglist) {
+uint32_t GrammarParser::readTagList(UChar **paren, uint32List *taglist) {
 	UChar *space = u_strchr(*paren, ' ');
 	uint32_t retval = 0;
 

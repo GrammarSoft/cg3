@@ -315,7 +315,7 @@ void Grammar::indexSetToRule(uint32_t r, Set *s) {
 		return;
 	}
 	if (s->sets.empty()) {
-		stdext::hash_set<uint32_t>::const_iterator comp_iter;
+		uint32HashSet::const_iterator comp_iter;
 		for (comp_iter = s->single_tags.begin() ; comp_iter != s->single_tags.end() ; comp_iter++) {
 			indexTagToRule(*comp_iter, r);
 		}
@@ -325,7 +325,7 @@ void Grammar::indexSetToRule(uint32_t r, Set *s) {
 				if (curcomptag->tags.size() == 1) {
 					indexTagToRule(*(curcomptag->tags.begin()), r);
 				} else {
-					std::set<uint32_t>::const_iterator tag_iter;
+					uint32Set::const_iterator tag_iter;
 					for (tag_iter = curcomptag->tags_set.begin() ; tag_iter != curcomptag->tags_set.end() ; tag_iter++) {
 						indexTagToRule(*tag_iter, r);
 					}
@@ -356,7 +356,7 @@ void Grammar::indexSets(uint32_t r, Set *s) {
 		return;
 	}
 	if (s->sets.empty()) {
-		stdext::hash_set<uint32_t>::const_iterator comp_iter;
+		uint32HashSet::const_iterator comp_iter;
 		for (comp_iter = s->single_tags.begin() ; comp_iter != s->single_tags.end() ; comp_iter++) {
 			indexTagToSet(*comp_iter, r);
 		}
@@ -366,7 +366,7 @@ void Grammar::indexSets(uint32_t r, Set *s) {
 				if (curcomptag->tags.size() == 1) {
 					indexTagToSet(*(curcomptag->tags.begin()), r);
 				} else {
-					std::set<uint32_t>::const_iterator tag_iter;
+					uint32Set::const_iterator tag_iter;
 					for (tag_iter = curcomptag->tags_set.begin() ; tag_iter != curcomptag->tags_set.end() ; tag_iter++) {
 						indexTagToSet(*tag_iter, r);
 					}

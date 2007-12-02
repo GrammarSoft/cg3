@@ -102,7 +102,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 					(*iter)->tags_list.push_back(endtag);
 					(*iter)->tags.insert(endtag);
 					(*iter)->rehash();
-					std::list<uint32_t>::iterator iter_tags;
+					uint32List::iterator iter_tags;
 					for (iter_tags = (*iter)->tags_list.begin() ; iter_tags != (*iter)->tags_list.end() ; iter_tags++) {
 						if (grammar->rules_by_tag.find(*iter_tags) != grammar->rules_by_tag.end()) {
 							cSWindow->valid_rules.insert(grammar->rules_by_tag.find(*iter_tags)->second->begin(), grammar->rules_by_tag.find(*iter_tags)->second->end());
@@ -148,7 +148,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 					(*iter)->tags_list.push_back(endtag);
 					(*iter)->tags.insert(endtag);
 					(*iter)->rehash();
-					std::list<uint32_t>::iterator iter_tags;
+					uint32List::iterator iter_tags;
 					for (iter_tags = (*iter)->tags_list.begin() ; iter_tags != (*iter)->tags_list.end() ; iter_tags++) {
 						if (grammar->rules_by_tag.find(*iter_tags) != grammar->rules_by_tag.end()) {
 							cSWindow->valid_rules.insert(grammar->rules_by_tag.find(*iter_tags)->second->begin(), grammar->rules_by_tag.find(*iter_tags)->second->end());
@@ -209,7 +209,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 					cReading->tags_list.push_back(cCohort->wordform);
 					cReading->noprint = true;
 					reflowReading(cReading);
-					std::list<uint32_t>::iterator iter_tags;
+					uint32List::iterator iter_tags;
 					for (iter_tags = cReading->tags_list.begin() ; iter_tags != cReading->tags_list.end() ; iter_tags++) {
 						if (grammar->rules_by_tag.find(*iter_tags) != grammar->rules_by_tag.end()) {
 							cSWindow->valid_rules.insert(grammar->rules_by_tag.find(*iter_tags)->second->begin(), grammar->rules_by_tag.find(*iter_tags)->second->end());
@@ -319,7 +319,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 							(*iter)->tags_list.push_back(endtag);
 							(*iter)->tags.insert(endtag);
 							(*iter)->rehash();
-							std::list<uint32_t>::iterator iter_tags;
+							uint32List::iterator iter_tags;
 							for (iter_tags = (*iter)->tags_list.begin() ; iter_tags != (*iter)->tags_list.end() ; iter_tags++) {
 								if (grammar->rules_by_tag.find(*iter_tags) != grammar->rules_by_tag.end()) {
 									cSWindow->valid_rules.insert(grammar->rules_by_tag.find(*iter_tags)->second->begin(), grammar->rules_by_tag.find(*iter_tags)->second->end());
@@ -414,7 +414,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 			(*iter)->tags_list.push_back(endtag);
 			(*iter)->tags.insert(endtag);
 			(*iter)->rehash();
-			std::list<uint32_t>::iterator iter_tags;
+			uint32List::iterator iter_tags;
 			for (iter_tags = (*iter)->tags_list.begin() ; iter_tags != (*iter)->tags_list.end() ; iter_tags++) {
 				if (grammar->rules_by_tag.find(*iter_tags) != grammar->rules_by_tag.end()) {
 					cSWindow->valid_rules.insert(grammar->rules_by_tag.find(*iter_tags)->second->begin(), grammar->rules_by_tag.find(*iter_tags)->second->end());
