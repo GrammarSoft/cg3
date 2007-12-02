@@ -24,7 +24,6 @@
 #include "Grammar.h"
 #include "Window.h"
 #include "SingleWindow.h"
-#include "Index.h"
 
 namespace CG3 {
 	class GrammarApplicator {
@@ -82,10 +81,11 @@ namespace CG3 {
 		stdext::hash_map<uint32_t, uint32_t> metas;
 
 		stdext::hash_map<uint32_t, Tag*> single_tags;
-		stdext::hash_map<uint32_t, Index*> index_tags_regexp;
+		stdext::hash_map<uint32_t, uint32HashSet*> index_tags_regexp;
 
-		stdext::hash_map<uint32_t, Index*> index_reading_yes;
-		stdext::hash_map<uint32_t, Index*> index_reading_no;
+		stdext::hash_map<uint32_t, uint32HashSet*> index_reading_yes;
+		stdext::hash_map<uint32_t, uint32HashSet*> index_reading_no;
+		void resetIndexes();
 	
 		uint32_t addTag(const UChar *tag);
 
@@ -111,7 +111,7 @@ namespace CG3 {
 		bool statistics;
 		PACC::Timer *timer;
 
-		inline bool __index_matches(const stdext::hash_map<uint32_t, Index*> *me, const uint32_t value, const uint32_t set);
+		inline bool __index_matches(const stdext::hash_map<uint32_t, uint32HashSet*> *me, const uint32_t value, const uint32_t set);
 		void reflowReading(Reading *reading);
 		void reflowDependencyWindow();
 		bool wouldParentChildLoop(Cohort *parent, Cohort *child);

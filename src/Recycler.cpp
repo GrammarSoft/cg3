@@ -38,6 +38,10 @@ Recycler::Recycler() {
 		uint32Sets.push_back(t);
 	}
 	//*/
+	for (uint32_t i=0;i<400;i++) {
+		uint32HashSet *t = new uint32HashSet;
+		uint32HashSets.push_back(t);
+	}
 }
 
 Recycler::~Recycler() {
@@ -63,6 +67,14 @@ Recycler::~Recycler() {
 	while (!uint32Sets.empty()) {
 		delete uint32Sets.back();
 		uint32Sets.pop_back();
+	}
+
+	if (Auint32HashSets != Duint32HashSets) {
+		std::cerr << "Leak: uint32HashSets alloc " << Auint32HashSets << ", dealloc " << Duint32HashSets << std::endl;
+	}
+	while (!uint32HashSets.empty()) {
+		delete uint32HashSets.back();
+		uint32HashSets.pop_back();
 	}
 }
 
@@ -126,4 +138,20 @@ void Recycler::delete_uint32Set(uint32Set *t) {
 	Duint32Sets++;
 	t->clear();
 	uint32Sets.push_back(t);
+}
+
+uint32HashSet *Recycler::new_uint32HashSet() {
+	Auint32HashSets++;
+	if (!uint32HashSets.empty()) {
+		uint32HashSet *t = uint32HashSets.back();
+		uint32HashSets.pop_back();
+		return t;
+	}
+	return new uint32HashSet;
+}
+
+void Recycler::delete_uint32HashSet(uint32HashSet *t) {
+	Duint32HashSets++;
+	t->clear();
+	uint32HashSets.push_back(t);
 }

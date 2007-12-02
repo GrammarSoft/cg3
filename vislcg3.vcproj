@@ -392,10 +392,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\src\Index.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\src\main.cpp"
 				>
 			</File>
@@ -487,10 +483,6 @@
 			</File>
 			<File
 				RelativePath=".\src\IGrammarParser.h"
-				>
-			</File>
-			<File
-				RelativePath=".\src\Index.h"
 				>
 			</File>
 			<File
