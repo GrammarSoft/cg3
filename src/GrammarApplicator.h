@@ -113,6 +113,8 @@ namespace CG3 {
 
 		inline bool __index_matches(const stdext::hash_map<uint32_t, uint32HashSet*> *me, const uint32_t value, const uint32_t set);
 		void reflowReading(Reading *reading);
+		void addTagToReading(Reading *reading, uint32_t tag);
+		void delTagFromReading(Reading *reading, uint32_t tag);
 		void reflowDependencyWindow();
 		bool wouldParentChildLoop(Cohort *parent, Cohort *child);
 		void attachParentChild(Cohort *parent, Cohort *child);

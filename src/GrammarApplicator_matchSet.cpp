@@ -73,7 +73,7 @@ bool GrammarApplicator::doesTagMatchReading(const Reading *reading, const uint32
 	}
 	else if (tag->type & T_NUMERICAL && !reading->tags_numerical->empty()) {
 		match = false;
-		uint32Set::const_iterator mter;
+		uint32HashSet::const_iterator mter;
 		for (mter = reading->tags_numerical->begin() ; mter != reading->tags_numerical->end() ; mter++) {
 			const Tag *itag = single_tags.find(*mter)->second;
 			if (tag->comparison_hash == itag->comparison_hash) {
@@ -111,7 +111,7 @@ bool GrammarApplicator::doesTagMatchReading(const Reading *reading, const uint32
 		}
 	}
 	else if (tag->regexp && !reading->tags_textual->empty()) {
-		uint32Set::const_iterator mter;
+		uint32HashSet::const_iterator mter;
 		for (mter = reading->tags_textual->begin() ; mter != reading->tags_textual->end() ; mter++) {
 			// ToDo: Cache regexp and icase hits/misses
 			const Tag *itag = single_tags.find(*mter)->second;
