@@ -472,10 +472,8 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, const int32_
 			}
 
 			cohort->is_disamb = false;
-			if (cohort->readings.size() == 1) {
-				if (!set->has_mappings || cohort->readings.front()->tags_mapped->size() <= 1) {
-					cohort->is_disamb = true;
-				}
+			if (cohort->readings.size() == 1 && cohort->readings.front()->tags_mapped->size() <= 1) {
+				cohort->is_disamb = true;
 			}
 
 			if (delimited) {
