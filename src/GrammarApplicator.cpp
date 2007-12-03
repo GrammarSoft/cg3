@@ -154,9 +154,6 @@ void GrammarApplicator::printReading(Reading *reading, UFILE *output) {
 	if (reading->baseform) {
 		GrammarWriter::printTagRaw(output, single_tags[reading->baseform]);
 		u_fprintf(output, " ");
-	} else {
-		u_fprintf(ux_stderr, "Warning: Reading had no valid baseform, somewhere before line %u.\n", numLines);
-		u_fflush(ux_stderr);
 	}
 
 	stdext::hash_map<uint32_t, uint32_t> used_tags;
