@@ -350,6 +350,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 			}
 		}
 		numLines++;
+		line[0] = cleaned[0] = 0;
 	}
 
 	if (cCohort && cSWindow) {
