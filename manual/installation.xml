@@ -28,8 +28,8 @@
       <screen>
         # cd /tmp
         # wget -c --passive
-        &nbsp; '<ulink url="http://icu-project.org/download/">ftp://ftp.software.ibm.com/software/globalization/icu/3.6/icu4c-3_6-src.tgz</ulink>'
-        # tar -zxvf icu4c-3_6-src.tgz
+        &nbsp; '<ulink url="http://icu-project.org/download/">http://download.icu-project.org/files/icu4c/3.8/icu4c-3_8-src.tgz</ulink>'
+        # tar -zxvf icu4c-3_8-src.tgz
         # cd icu/source/
         # ./runConfigureICU Linux
         # make

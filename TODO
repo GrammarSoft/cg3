@@ -9,4 +9,3 @@ ToDo: Implement --unsafe
 ToDo: Make use of Preferred-Targets
 ToDo: Move DoesTagMatchSet to Grammar
 ToDo: Line number on all applicable warnings
-ToDo: Check why last reading in a delimiter is duplicated.
