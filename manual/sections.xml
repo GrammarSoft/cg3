@@ -9,6 +9,12 @@
       <primary>SECTION</primary>
     </indexterm>
     <indexterm>
+      <primary>BEFORE-SECTIONS</primary>
+    </indexterm>
+    <indexterm>
+      <primary>AFTER-SECTIONS</primary>
+    </indexterm>
+    <indexterm>
       <primary>MAPPINGS</primary>
     </indexterm>
     <indexterm>
@@ -85,6 +91,37 @@
       See <link linkend="keyword-after-sections">AFTER-SECTIONS</link>.
       May contain any rule type, and is run once after all other sections.
       This is new in CG-3.
+    </para>
+  </section>
+
+  <section id="sect-section-order">
+    <title>Ordering of sections in grammar</title>
+    <para>
+      The order and arrangement of BEFORE-SECTIONS and AFTER-SECTIONS in the grammar has no impact on the
+      order normal SECTIONs are applied in.
+    </para>
+    <para>
+      An order of
+      <screen>
+        SECTION
+        SECTION
+        BEFORE-SECTIONS
+        SECTION
+        AFTER-SECTIONS
+        SECTION
+        BEFORE-SECTIONS
+        SECTION
+      </screen>
+      is equivalent to
+      <screen>
+        BEFORE-SECTIONS
+        SECTION
+        SECTION
+        SECTION
+        SECTION
+        SECTION
+        AFTER-SECTIONS
+      </screen>
     </para>
   </section>
 

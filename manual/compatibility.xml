@@ -82,6 +82,17 @@
       </para>
     </section>
 
+    <section id="gotcha-codepage">
+      <title>Default Codepage / Encoding</title>
+      <para>
+        CG-3 will auto-detect the codepage from the environment, which in some cases is not what you want.
+        It is not uncommon to work with UTF-8 data but have your environment set to US-ASCII which would
+        produce some unfortunate errors.
+        You can use the runtime option -C to override the default codepage, and you should always enforce
+        it if you plan on distributing packages that depend on a certain codepage.
+      </para>
+    </section>
+
     <section id="gotcha-setop-minus">
       <title>Set Operator -</title>
       <para>
@@ -153,6 +164,46 @@
           "word" tag ntag @MUP
           "word" tag ntag @MIP
         </screen>
+      </para>
+    </section>
+
+    <section id="incompat-baseforms">
+      <title>Baseforms &amp; Mixed Input</title>
+      <para>
+        The CG-2 spec says that the first tag of a reading is the baseform, whether it looks like
+        [baseform] or "baseform".
+        This is not true for CG-3; only "baseform" is valid, and it may not contain whitespace.
+      </para>
+
+      <para>
+        The reason for this is that CG-3 has to ignore all meta text such as XML, and the only way I can be sure
+        what is a reading and what is meta text is to declare that a reading is only valid in the form of
+        <screen>
+          "baseform" tag tags moretags
+        </screen>
+        and not in the forms of
+        <screen>
+          [baseform] tag tags moretags
+          "base form" tag tags moretags
+          baseform tag tags moretags
+        </screen>
+      </para>
+
+      <para>
+        For those moving from different CG systems, readings in the form of
+        <screen>
+          "base form" tag tags moretags
+        </screen>
+        will be considered a reading, but it will consist of the tags
+        <screen>
+          "base
+          form"
+          tag
+          tags
+          moretags
+        </screen>
+        and not actually have a baseform to match against.
+        CG-3 will also throw a warning denoting this behavior.
       </para>
     </section>
   </section>

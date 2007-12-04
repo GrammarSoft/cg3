@@ -14,9 +14,11 @@
       A set containing the (*) tag becomes a magic "any" set and will always match.
       This saves having to declare a dummy set containing all imaginable tags.
       Useful for testing whether a cohort exists at a position, without needing details about it.
+      Can also be used to match everything except a few tags with the set operator -.
     </para>
     <screen>
       (*-1 (*) LINK 1* SomeSet)
+      SELECT (*) - NotTheseTags ;
     </screen>
   </section>
 
