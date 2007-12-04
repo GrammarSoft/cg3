@@ -1,0 +1,38 @@
+(bcc mail; multiple recipients)
+
+G'day all on the CG-3 list...
+
+VISL CG-3 has undergone some optimizations and stability improvements, 
+plus a few tweaks to actual behavior vs. expected behavior. Everyone is 
+strongly encouraged to update to latest version, especially if you have 
+experienced any crashes or segfaults before.
+
+Main page: http://beta.visl.sdu.dk/cg3.html
+
+On the changelog from the last week is:
+
+- CG-3 now auto-detects codepage from environment. Can override with runtime option -C.
+- 20-40% application speed increase in all normal circumstances, compared against existing VISL CG-2 and older CG-3.
+(sorry, no grammar parsing improvement yet)
+--- If compiled with a recent GCC (4.1 or better) you can expect another 5%.
+--- In some rare cases you can see a factor 50 speed increase. Should in no cases be slower, though.
+- Memory fragmentation greatly reduced.
+--- The grammar parser used to allocate and deallocate over 3 GiB memory parsing big grammars. This is cut down to 50 MiB.
+--- Dynamic indexes used during application grew to enormous sizes in certain cases; this should no longer happen.
+- Several memory leaks fixed.
+--- Tested with Valgrind on full detail. There are no known leaks in CG-3 at this time.
+
+Documentation updated in these places:
+http://beta.visl.sdu.dk/cg3/chunked/compatibility.html#gotcha-codepage
+http://beta.visl.sdu.dk/cg3/chunked/compatibility.html#incompat-baseforms
+http://beta.visl.sdu.dk/cg3/chunked/sections.html#sect-section-order
+
+Also, I was planning on implementing a nearest-neighbor type of scan, 
+but appears I had already done it back in March.
+So, to be sure people know it exists:
+http://beta.visl.sdu.dk/cg3/chunked/contexts.html#test-nearest
+
+-- Tino Didriksen
+VISL Developer
+AIM/iChat: TinoDidriksen
+MSN: tino@didriksen.cc

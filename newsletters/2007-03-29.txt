@@ -1,0 +1,22 @@
+(bcc mail; multiple recipients)
+
+I have started a manual for VISL CG-3 that I hope can answer most 
+questions people might have about the new features in CG-3.
+
+If something seems unclear or if there is a topic you would like added 
+or amended, just let me know...
+
+Manual can be found at:
+- http://beta.visl.sdu.dk/cg3/chunked/ (multiple pages)
+- http://beta.visl.sdu.dk/cg3/single/ (single long page)
+- http://beta.visl.sdu.dk/cg3.html (general overview)
+
+The features implemented this week are described in:
+- http://beta.visl.sdu.dk/cg3/chunked/contexts.html (new contextual test options)
+- http://beta.visl.sdu.dk/cg3/chunked/dependencies.html (using and making dependency trees)
+- http://beta.visl.sdu.dk/cg3/chunked/inputcommands.html (input stream commands)
+
+-- Tino Didriksen
+VISL Developer
+AOL/AIM/iChat: tinodidriksen
+MSN: tino@didriksen.cc
