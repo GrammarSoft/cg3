@@ -18,7 +18,6 @@
 #define __GRAMMARAPPLICATOR_H
 
 #include "stdafx.h"
-#include "GrammarWriter.h"
 #include "Strings.h"
 #include "Tag.h"
 #include "Grammar.h"

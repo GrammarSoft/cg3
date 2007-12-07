@@ -42,6 +42,7 @@ Tag::~Tag() {
 
 void Tag::parseTag(const UChar *to, UFILE *ux_stderr) {
 	assert(to != 0);
+	in_grammar = true;
 	type = 0;
 	if (u_strlen(to)) {
 		const UChar *tmp = to;
@@ -164,6 +165,7 @@ void Tag::parseTag(const UChar *to, UFILE *ux_stderr) {
 
 void Tag::parseTagRaw(const UChar *to) {
 	assert(to != 0);
+	in_grammar = false;
 	type = 0;
 	if (u_strlen(to)) {
 		const UChar *tmp = to;
@@ -261,4 +263,28 @@ uint32_t Tag::rehash() {
 	}
 
 	return hash;
+}
+
+void Tag::printTagRaw(UFILE *to, const Tag *tag) {
+	if (tag->type & T_NEGATIVE) {
+		u_fprintf(to, "!");
+	}
+	if (tag->type & T_FAILFAST) {
+		u_fprintf(to, "^");
+	}
+	if (tag->type & T_META) {
+		u_fprintf(to, "META:");
+	}
+	if (tag->type & T_VARIABLE) {
+		u_fprintf(to, "VAR:");
+	}
+
+	u_fprintf(to, "%S", tag->tag);
+
+	if (tag->type & T_CASE_INSENSITIVE) {
+		u_fprintf(to, "i");
+	}
+	if (tag->type & T_REGEXP) {
+		u_fprintf(to, "r");
+	}
 }

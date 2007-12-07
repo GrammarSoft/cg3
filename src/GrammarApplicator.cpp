@@ -152,7 +152,7 @@ void GrammarApplicator::printReading(Reading *reading, UFILE *output) {
 	u_fprintf(output, "\t");
 
 	if (reading->baseform) {
-		GrammarWriter::printTagRaw(output, single_tags[reading->baseform]);
+		Tag::printTagRaw(output, single_tags[reading->baseform]);
 		u_fprintf(output, " ");
 	}
 
@@ -168,7 +168,7 @@ void GrammarApplicator::printReading(Reading *reading, UFILE *output) {
 		used_tags[*tter] = *tter;
 		const Tag *tag = single_tags[*tter];
 		if (!(tag->type & T_BASEFORM) && !(tag->type & T_WORDFORM)) {
-			GrammarWriter::printTagRaw(output, tag);
+			Tag::printTagRaw(output, tag);
 			u_fprintf(output, " ");
 		}
 	}
@@ -186,7 +186,7 @@ void GrammarApplicator::printReading(Reading *reading, UFILE *output) {
 			std::multimap<uint32_t,uint32_t>::iterator miter;
 			for (miter = reading->parent->relations.begin() ; miter != reading->parent->relations.end() ; miter++) {
 				u_fprintf(output, "R:");
-				GrammarWriter::printTagRaw(output, single_tags[miter->second]);
+				Tag::printTagRaw(output, single_tags[miter->second]);
 				u_fprintf(output, ":%u ", miter->first);
 			}
 		}
@@ -213,7 +213,7 @@ void GrammarApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 			continue;
 		}
 		Cohort *cohort = window->cohorts[c];
-		GrammarWriter::printTagRaw(output, single_tags[cohort->wordform]);
+		Tag::printTagRaw(output, single_tags[cohort->wordform]);
 		//u_fprintf(output, " %u", cohort->number);
 		u_fprintf(output, "\n");
 		if (cohort->text) {
