@@ -198,7 +198,6 @@ Tag *Grammar::allocateTag(const UChar *tag) {
 	return fresh;
 }
 void Grammar::addTag(Tag *simpletag) {
-	simpletag->in_grammar = true;
 	if (simpletag && simpletag->tag) {
 		simpletag->rehash();
 		if (single_tags.find(simpletag->hash) != single_tags.end()) {

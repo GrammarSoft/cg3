@@ -34,8 +34,7 @@ namespace CG3 {
 
 		void setGrammar(Grammar *res);
 
-		static void printTag(UFILE *out, const Tag *tag);
-		static void printTagRaw(UFILE *out, const Tag *tag);
+		void printTag(UFILE *out, const Tag *tag);
 
 	private:
 		UFILE *ux_stdin;
