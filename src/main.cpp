@@ -259,9 +259,6 @@ int main(int argc, char* argv[]) {
 		std::cerr << "Grammar has dependency rules: No" << std::endl;
 	}
 
-	CG3::GrammarWriter *writer = 0;
-	CG3::GrammarApplicator *applicator = 0;
-
 	if (options[REORDER].doesOccur) {
 		for (uint32_t j=0;j<grammar->rules.size();j++) {
 			if (grammar->rules[j]->type == K_IFF) {
@@ -285,10 +282,12 @@ int main(int argc, char* argv[]) {
 	if (!options[CHECK_ONLY].doesOccur && !options[GRAMMAR_ONLY].doesOccur) {
 		grammar->trim();
 
-		applicator = new CG3::GrammarApplicator(ux_stdin, ux_stdout, ux_stderr);
+		CG3::GrammarApplicator *applicator = new CG3::GrammarApplicator(ux_stdin, ux_stdout, ux_stderr);
 		applicator->setGrammar(grammar);
 		GAppSetOpts(applicator);
 		applicator->runGrammarOnText(ux_stdin, ux_stdout);
+		delete applicator;
+		applicator = 0;
 
 		std::cerr << "Applying grammar on input took " << glob_timer->getValueFrom(main_timer) << " seconds." << std::endl;
 		main_timer = glob_timer->getCount();
@@ -305,11 +304,13 @@ int main(int argc, char* argv[]) {
 				u_frewind(ux_stdin);
 				grammar->trim();
 
-				applicator = new CG3::GrammarApplicator(ux_stdin, ux_stdout, ux_stderr);
+				CG3::GrammarApplicator *applicator = new CG3::GrammarApplicator(ux_stdin, ux_stdout, ux_stderr);
 				applicator->setGrammar(grammar);
 				GAppSetOpts(applicator);
 				applicator->enableStatistics();
 				applicator->runGrammarOnText(ux_stdin, ux_stdout);
+				delete applicator;
+				applicator = 0;
 
 				std::cerr << "Applying context-sorted grammar on input took " << glob_timer->getValueFrom(main_timer) << " seconds." << std::endl;
 				main_timer = glob_timer->getCount();
@@ -324,10 +325,12 @@ int main(int argc, char* argv[]) {
 				std::sort(&grammar->rules[grammar->sections[i]], &grammar->rules[grammar->sections[i+1]-1], CG3::Rule::cmp_quality);
 			}
 
-			writer = new CG3::GrammarWriter(ux_stdin, ux_stdout, ux_stderr);
+			CG3::GrammarWriter *writer = new CG3::GrammarWriter(ux_stdin, ux_stdout, ux_stderr);
 			writer->setGrammar(grammar);
 			writer->statistics = true;
 			writer->write_grammar_to_ufile_text(gout);
+			delete writer;
+			writer = 0;
 
 			std::cerr << "Writing textual grammar with statistics took " << glob_timer->getValueFrom(main_timer) << " seconds." << std::endl;
 			main_timer = glob_timer->getCount();
@@ -339,11 +342,13 @@ int main(int argc, char* argv[]) {
 			u_frewind(ux_stdin);
 			grammar->trim();
 
-			applicator = new CG3::GrammarApplicator(ux_stdin, ux_stdout, ux_stderr);
+			CG3::GrammarApplicator *applicator = new CG3::GrammarApplicator(ux_stdin, ux_stdout, ux_stderr);
 			applicator->setGrammar(grammar);
 			GAppSetOpts(applicator);
 			applicator->enableStatistics();
 			applicator->runGrammarOnText(ux_stdin, ux_stdout);
+			delete applicator;
+			applicator = 0;
 
 			std::cerr << "Applying fully-sorted grammar on input took " << glob_timer->getValueFrom(main_timer) << " seconds." << std::endl;
 			main_timer = glob_timer->getCount();
@@ -353,9 +358,11 @@ int main(int argc, char* argv[]) {
 	if (options[GRAMMAR_OUT].doesOccur) {
 		UFILE *gout = u_fopen(options[GRAMMAR_OUT].value, "w", locale_output, codepage_output);
 		if (gout) {
-			writer = new CG3::GrammarWriter(ux_stdin, ux_stdout, ux_stderr);
+			CG3::GrammarWriter *writer = new CG3::GrammarWriter(ux_stdin, ux_stdout, ux_stderr);
 			writer->setGrammar(grammar);
 			writer->write_grammar_to_ufile_text(gout);
+			delete writer;
+			writer = 0;
 
 			std::cerr << "Writing textual grammar took " << glob_timer->getValueFrom(main_timer) << " seconds." << std::endl;
 			main_timer = glob_timer->getCount();
@@ -367,9 +374,11 @@ int main(int argc, char* argv[]) {
 	if (options[GRAMMAR_BIN].doesOccur) {
 		FILE *gout = fopen(options[GRAMMAR_BIN].value, "wb");
 		if (gout) {
-			writer = new CG3::GrammarWriter(ux_stdin, ux_stdout, ux_stderr);
+			CG3::GrammarWriter *writer = new CG3::GrammarWriter(ux_stdin, ux_stdout, ux_stderr);
 			writer->setGrammar(grammar);
 			writer->write_grammar_to_file_binary(gout);
+			delete writer;
+			writer = 0;
 
 			std::cerr << "Writing binary grammar took " << glob_timer->getValueFrom(main_timer) << " seconds." << std::endl;
 			main_timer = glob_timer->getCount();
@@ -382,10 +391,6 @@ int main(int argc, char* argv[]) {
 	u_fclose(ux_stdout);
 	u_fclose(ux_stderr);
 
-	delete writer;
-	writer = 0;
-	delete applicator;
-	applicator = 0;
 	delete grammar;
 	grammar = 0;
 
