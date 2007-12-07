@@ -32,7 +32,7 @@ GrammarWriter::~GrammarWriter() {
 	grammar = 0;
 }
 
-void GrammarWriter::write_set_to_ufile(UFILE *output, const Set *curset) {
+void GrammarWriter::printSet(UFILE *output, const Set *curset) {
 	if (curset->sets.empty() && used_sets.find(curset->hash) == used_sets.end()) {
 		used_sets.insert(curset->hash);
 		u_fprintf(output, "LIST %S = ", curset->name);
@@ -62,7 +62,7 @@ void GrammarWriter::write_set_to_ufile(UFILE *output, const Set *curset) {
 	} else if (!curset->sets.empty() && used_sets.find(curset->hash) == used_sets.end()) {
 		used_sets.insert(curset->hash);
 		for (uint32_t i=0;i<curset->sets.size();i++) {
-			write_set_to_ufile(output, grammar->sets_by_contents.find(curset->sets.at(i))->second);
+			printSet(output, grammar->sets_by_contents.find(curset->sets.at(i))->second);
 		}
 		u_fprintf(output, "SET %S = ", curset->name);
 		u_fprintf(output, "%S ", grammar->sets_by_contents.find(curset->sets.at(0))->second->name);
@@ -102,7 +102,7 @@ int GrammarWriter::write_grammar_to_ufile_text(UFILE *output) {
 	used_sets.clear();
 	stdext::hash_map<uint32_t, Set*>::const_iterator set_iter;
 	for (set_iter = grammar->sets_by_contents.begin() ; set_iter != grammar->sets_by_contents.end() ; set_iter++) {
-		write_set_to_ufile(output, set_iter->second);
+		printSet(output, set_iter->second);
 	}
 	u_fprintf(output, "\n");
 
@@ -160,6 +160,7 @@ int GrammarWriter::write_grammar_to_file_binary(FILE *output) {
 }
 
 void GrammarWriter::setGrammar(Grammar *res) {
+	used_sets.clear();
 	grammar = res;
 }
 

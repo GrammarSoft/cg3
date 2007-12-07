@@ -34,8 +34,6 @@ namespace CG3 {
 
 		void setGrammar(Grammar *res);
 
-		void printTag(UFILE *out, const Tag *tag);
-
 	private:
 		UFILE *ux_stdin;
 		UFILE *ux_stdout;
@@ -43,8 +41,8 @@ namespace CG3 {
 		uint32HashSet used_sets;
 		const Grammar *grammar;
 
-		void write_set_to_ufile(UFILE *output, const Set *curset);
-
+		void printTag(UFILE *out, const Tag *tag);
+		void printSet(UFILE *output, const Set *curset);
 		void printRule(UFILE *to, const Rule *rule);
 		void printContextualTest(UFILE *to, const ContextualTest *test);
 	};
