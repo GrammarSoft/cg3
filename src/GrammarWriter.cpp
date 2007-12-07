@@ -75,7 +75,7 @@ void GrammarWriter::printSet(UFILE *output, const Set *curset) {
 		for (uint32_t i=0;i<curset->sets.size()-1;i++) {
 			u_fprintf(output, "%S %S ", stringbits[curset->set_ops.at(i)], grammar->sets_by_contents.find(curset->sets.at(i+1))->second->name);
 		}
-		u_fprintf(output, " ;\n");
+		u_fprintf(output, " ;\n\n");
 	}
 }
 
@@ -175,7 +175,7 @@ void GrammarWriter::setGrammar(Grammar *res) {
 
 void GrammarWriter::printRule(UFILE *to, const Rule *rule) {
 	if (statistics) {
-		u_fprintf(to, "#Rule Matched: %u ; NoMatch: %u ; TotalTime: %u\n", rule->num_match, rule->num_fail, rule->total_time);
+		u_fprintf(to, "\n#Rule Matched: %u ; NoMatch: %u ; TotalTime: %u\n", rule->num_match, rule->num_fail, rule->total_time);
 	}
 	if (rule->wordform) {
 		printTag(to, grammar->single_tags.find(rule->wordform)->second);
