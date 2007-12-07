@@ -29,6 +29,8 @@ namespace CG3 {
 		bool match_any;
 		bool has_mappings;
 		bool is_special;
+		mutable uint32_t num_fail, num_match;
+		mutable clock_t total_time;
 		UChar *name;
 		uint32_t line;
 		uint32_t hash;
@@ -47,6 +49,7 @@ namespace CG3 {
 		void setName(const UChar *to);
 
 		uint32_t rehash();
+		void resetStatistics();
 		void reindex(Grammar *grammar);
 	};
 

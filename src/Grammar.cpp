@@ -24,6 +24,7 @@ Grammar::Grammar() {
 	name = 0;
 	lines = 0;
 	curline = 0;
+	total_time = 0;
 	delimiters = 0;
 	soft_delimiters = 0;
 	tag_any = 0;
@@ -250,20 +251,17 @@ void Grammar::setName(const UChar *to) {
 	u_strcpy(name, to);
 }
 
-void Grammar::trim() {
-	set_alias.clear();
-	sets_by_name.clear();
-
-	stdext::hash_map<uint32_t, Tag*>::iterator iter_tags;
-	for (iter_tags = single_tags.begin() ; iter_tags != single_tags.end() ; iter_tags++) {
-		if (!iter_tags->second->type) {
-			Tag *tag = iter_tags->second;
-			tag->type &= ~T_TEXTUAL;
-		}
+void Grammar::resetStatistics() {
+	total_time = 0;
+	for (uint32_t j=0;j<rules.size();j++) {
+		rules[j]->resetStatistics();
 	}
 }
 
 void Grammar::reindex() {
+	set_alias.clear();
+	sets_by_name.clear();
+
 	stdext::hash_map<uint32_t, Tag*>::iterator iter_tags;
 	for (iter_tags = single_tags.begin() ; iter_tags != single_tags.end() ; iter_tags++) {
 		Tag *tag = iter_tags->second;

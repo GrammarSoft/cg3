@@ -27,6 +27,7 @@ Rule::Rule() {
 	wordform = 0;
 	num_fail = 0;
 	num_match = 0;
+	total_time = 0;
 	weight = 0.0;
 	quality = 0.0;
 	type = K_IGNORE;
@@ -71,10 +72,10 @@ void Rule::addContextualTest(ContextualTest *to, std::list<ContextualTest*> *the
 	thelist->push_back(to);
 }
 
-void Rule::reset() {
+void Rule::resetStatistics() {
 	std::list<ContextualTest*>::iterator iter;
 	for (iter = tests.begin() ; iter != tests.end() ; iter++) {
-		(*iter)->reset();
+		(*iter)->resetStatistics();
 	}
 	num_fail = 0;
 	num_match = 0;

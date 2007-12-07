@@ -177,6 +177,11 @@ bool GrammarApplicator::doesSetMatchReading(Reading *reading, const uint32_t set
 
 	cache_miss++;
 
+	clock_t tstamp = 0;
+	if (statistics) {
+		tstamp = clock();
+	}
+
 	stdext::hash_map<uint32_t, Set*>::const_iterator iter = grammar->sets_by_contents.find(set);
 	if (iter != grammar->sets_by_contents.end()) {
 		const Set *theset = iter->second;
@@ -268,6 +273,15 @@ bool GrammarApplicator::doesSetMatchReading(Reading *reading, const uint32_t set
 					break;
 				}
 			}
+		}
+		if (statistics) {
+			if (retval) {
+				theset->num_match++;
+			}
+			else {
+				theset->num_fail++;
+			}
+			theset->total_time += clock() - tstamp;
 		}
 	}
 
