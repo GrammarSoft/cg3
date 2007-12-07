@@ -108,7 +108,6 @@ namespace CG3 {
 		uint32_t dep_highest_seen;
 		Window *gWindow;
 		bool statistics;
-		PACC::Timer *timer;
 
 		inline bool __index_matches(const stdext::hash_map<uint32_t, uint32HashSet*> *me, const uint32_t value, const uint32_t set);
 		void reflowReading(Reading *reading);

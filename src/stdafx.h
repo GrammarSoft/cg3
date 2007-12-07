@@ -48,7 +48,6 @@
 #include <unicode/ustring.h>
 #include <unicode/uregex.h>
 
-#include "PACC_Timer.h"
 #include "uextras.h"
 
 inline uint32_t hash_sdbm_uchar(const UChar *str, uint32_t hash) {

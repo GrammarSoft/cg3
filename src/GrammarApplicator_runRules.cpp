@@ -40,7 +40,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, const int32_
 		if (rule->section != start && (start == -1 || start == -2)) {
 			break;
 		}
-		PACC_TimeStamp tstamp = 0;
+		clock_t tstamp = 0;
 		KEYWORDS type = rule->type;
 
 		if (!apply_mappings && (rule->type == K_MAP || rule->type == K_ADD || rule->type == K_REPLACE)) {
@@ -50,7 +50,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, const int32_
 			continue;
 		}
 		if (statistics) {
-			tstamp = timer->getCount();
+			tstamp = clock();
 		}
 
 		// ToDo: Update list of in/valid rules upon MAP, ADD, REPLACE, APPEND, SUBSTITUTE; add tags + always add tag_any
@@ -495,7 +495,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, const int32_
 		}
 
 		if (statistics) {
-			rule->total_time += (timer->getCount() - tstamp);
+			rule->total_time += (clock() - tstamp);
 		}
 		if (delimited) {
 			break;

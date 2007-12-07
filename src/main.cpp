@@ -35,8 +35,7 @@ int main(int argc, char* argv[]) {
 	UFILE *ux_stdout = 0;
 	UFILE *ux_stderr = 0;
 
-	PACC::Timer *glob_timer = new PACC::Timer();
-	PACC_TimeStamp main_timer = glob_timer->getCount();
+	clock_t main_timer = clock();
 
 	UErrorCode status = U_ZERO_ERROR;
 	srand((uint32_t)time(0));
@@ -170,9 +169,14 @@ int main(int argc, char* argv[]) {
 
 	fprintf(stderr, "Locales: default %s, input %s, output %s, grammar %s\n", locale_default, locale_input, locale_output, locale_grammar);
 
+	bool stdin_isfile = false;
+	bool stdout_isfile = false;
+	bool stderr_isfile = false;
+
 	if (!options[STDOUT].doesOccur) {
 		ux_stdout = u_finit(stdout, locale_output, codepage_input);
 	} else {
+		stdout_isfile = true;
 		ux_stdout = u_fopen(options[STDOUT].value, "wb", locale_output, codepage_output);
 	}
 	if (!ux_stdout) {
@@ -183,6 +187,7 @@ int main(int argc, char* argv[]) {
 	if (!options[STDERR].doesOccur) {
 		ux_stderr = u_finit(stderr, locale_output, codepage_input);
 	} else {
+		stderr_isfile = true;
 		ux_stderr = u_fopen(options[STDERR].value, "wb", locale_output, codepage_output);
 	}
 	if (!ux_stdout) {
@@ -199,6 +204,7 @@ int main(int argc, char* argv[]) {
 			fprintf(stderr, "Error: Cannot stat %s due to error %d!\n", options[STDIN].value, serr);
 			return serr;
 		}
+		stdin_isfile = true;
 		ux_stdin = u_fopen(options[STDIN].value, "rb", locale_input, codepage_input);
 	}
 	if (!ux_stdin) {
@@ -228,8 +234,8 @@ int main(int argc, char* argv[]) {
 	parser->setResult(grammar);
 	parser->setCompatible(options[VISLCGCOMPAT].doesOccur != 0);
 
-	std::cerr << "Initialization took " << glob_timer->getValueFrom(main_timer) << " seconds." << std::endl;
-	main_timer = glob_timer->getCount();
+	std::cerr << "Initialization took " << (clock()-main_timer)/(double)CLOCKS_PER_SEC << " seconds." << std::endl;
+	main_timer = clock();
 
 	if (parser->parse_grammar_from_file(options[GRAMMAR].value, locale_grammar, codepage_grammar)) {
 		u_fprintf(ux_stderr, "Error: Grammar could not be parsed - exiting!\n");
@@ -245,8 +251,8 @@ int main(int argc, char* argv[]) {
 	delete parser;
 	parser = 0;
 	
-	std::cerr << "Parsing grammar took " << glob_timer->getValueFrom(main_timer) << " seconds." << std::endl;
-	main_timer = glob_timer->getCount();
+	std::cerr << "Parsing grammar took " << (clock()-main_timer)/(double)CLOCKS_PER_SEC << " seconds." << std::endl;
+	main_timer = clock();
 
 	std::cerr << "Grammar has " << grammar->rule_by_line.size() << " rules, " << grammar->sets_by_contents.size() << " sets, " << grammar->single_tags.size() << " tags." << std::endl;
 	if (grammar->rules_by_tag.find(tag_any->hash) != grammar->rules_by_tag.end()) {
@@ -259,29 +265,12 @@ int main(int argc, char* argv[]) {
 		std::cerr << "Grammar has dependency rules: No" << std::endl;
 	}
 
-	if (options[REORDER].doesOccur) {
-		for (uint32_t j=0;j<grammar->rules.size();j++) {
-			if (grammar->rules[j]->type == K_IFF) {
-				grammar->rules[j]->quality = 4.0;
-			}
-			else if (grammar->rules[j]->type == K_SELECT) {
-				grammar->rules[j]->quality = 3.0;
-			}
-			else if (grammar->rules[j]->type == K_REMOVE) {
-				grammar->rules[j]->quality = 2.0;
-			}
-			else {
-				grammar->rules[j]->quality = 1.0;
-			}
-		}
-		for (uint32_t i=0;i<grammar->sections.size()-1;i++) {
-			std::sort(&grammar->rules[grammar->sections[i]], &grammar->rules[grammar->sections[i+1]-1], CG3::Rule::cmp_quality);
-		}
+	if (options[GRAMMAR_INFO].doesOccur && !stdin_isfile) {
+		std::cerr << "Error: Re-ordering statistics can only be gathered with file input option (-I, --stdin) as the file must be re-run multiple times." << std::endl;
+		return -1;
 	}
 
 	if (!options[CHECK_ONLY].doesOccur && !options[GRAMMAR_ONLY].doesOccur) {
-		grammar->trim();
-
 		CG3::GrammarApplicator *applicator = new CG3::GrammarApplicator(ux_stdin, ux_stdout, ux_stderr);
 		applicator->setGrammar(grammar);
 		GAppSetOpts(applicator);
@@ -289,20 +278,17 @@ int main(int argc, char* argv[]) {
 		delete applicator;
 		applicator = 0;
 
-		std::cerr << "Applying grammar on input took " << glob_timer->getValueFrom(main_timer) << " seconds." << std::endl;
-		main_timer = glob_timer->getCount();
+		std::cerr << "Applying grammar on input took " << (clock()-main_timer)/(double)CLOCKS_PER_SEC << " seconds." << std::endl;
+		main_timer = clock();
 	}
 
 	if (options[GRAMMAR_INFO].doesOccur) {
 		UFILE *gout = u_fopen(options[GRAMMAR_INFO].value, "wb", locale_output, codepage_output);
 		if (gout) {
-			for (uint32_t j=0;j<grammar->rules.size();j++) {
-				grammar->rules[j]->reset();
-			}
+			grammar->resetStatistics();
 
 			if (!options[CHECK_ONLY].doesOccur && !options[GRAMMAR_ONLY].doesOccur) {
 				u_frewind(ux_stdin);
-				grammar->trim();
 
 				CG3::GrammarApplicator *applicator = new CG3::GrammarApplicator(ux_stdin, ux_stdout, ux_stderr);
 				applicator->setGrammar(grammar);
@@ -312,8 +298,8 @@ int main(int argc, char* argv[]) {
 				delete applicator;
 				applicator = 0;
 
-				std::cerr << "Applying context-sorted grammar on input took " << glob_timer->getValueFrom(main_timer) << " seconds." << std::endl;
-				main_timer = glob_timer->getCount();
+				std::cerr << "Applying context-sorted grammar on input took " << (clock()-main_timer)/(double)CLOCKS_PER_SEC << " seconds." << std::endl;
+				main_timer = clock();
 			}
 
 			/*
@@ -332,15 +318,14 @@ int main(int argc, char* argv[]) {
 			delete writer;
 			writer = 0;
 
-			std::cerr << "Writing textual grammar with statistics took " << glob_timer->getValueFrom(main_timer) << " seconds." << std::endl;
-			main_timer = glob_timer->getCount();
+			std::cerr << "Writing textual grammar with statistics took " << (clock()-main_timer)/(double)CLOCKS_PER_SEC << " seconds." << std::endl;
+			main_timer = clock();
 		} else {
 			std::cerr << "Could not write grammar to " << options[GRAMMAR_INFO].value << std::endl;
 		}
 
 		if (!options[CHECK_ONLY].doesOccur && !options[GRAMMAR_ONLY].doesOccur) {
 			u_frewind(ux_stdin);
-			grammar->trim();
 
 			CG3::GrammarApplicator *applicator = new CG3::GrammarApplicator(ux_stdin, ux_stdout, ux_stderr);
 			applicator->setGrammar(grammar);
@@ -350,8 +335,8 @@ int main(int argc, char* argv[]) {
 			delete applicator;
 			applicator = 0;
 
-			std::cerr << "Applying fully-sorted grammar on input took " << glob_timer->getValueFrom(main_timer) << " seconds." << std::endl;
-			main_timer = glob_timer->getCount();
+			std::cerr << "Applying fully-sorted grammar on input took " << (clock()-main_timer)/(double)CLOCKS_PER_SEC << " seconds." << std::endl;
+			main_timer = clock();
 		}
 	}
 
@@ -360,12 +345,15 @@ int main(int argc, char* argv[]) {
 		if (gout) {
 			CG3::GrammarWriter *writer = new CG3::GrammarWriter(ux_stdin, ux_stdout, ux_stderr);
 			writer->setGrammar(grammar);
+			if (options[STATISTICS].doesOccur) {
+				writer->statistics = true;
+			}
 			writer->write_grammar_to_ufile_text(gout);
 			delete writer;
 			writer = 0;
 
-			std::cerr << "Writing textual grammar took " << glob_timer->getValueFrom(main_timer) << " seconds." << std::endl;
-			main_timer = glob_timer->getCount();
+			std::cerr << "Writing textual grammar took " << (clock()-main_timer)/(double)CLOCKS_PER_SEC << " seconds." << std::endl;
+			main_timer = clock();
 		} else {
 			std::cerr << "Could not write grammar to " << options[GRAMMAR_OUT].value << std::endl;
 		}
@@ -380,8 +368,8 @@ int main(int argc, char* argv[]) {
 			delete writer;
 			writer = 0;
 
-			std::cerr << "Writing binary grammar took " << glob_timer->getValueFrom(main_timer) << " seconds." << std::endl;
-			main_timer = glob_timer->getCount();
+			std::cerr << "Writing binary grammar took " << (clock()-main_timer)/(double)CLOCKS_PER_SEC << " seconds." << std::endl;
+			main_timer = clock();
 		} else {
 			std::cerr << "Could not write grammar to " << options[GRAMMAR_BIN].value << std::endl;
 		}
@@ -403,9 +391,7 @@ int main(int argc, char* argv[]) {
 
 	u_cleanup();
 
-	std::cerr << "Cleanup took " << glob_timer->getValueFrom(main_timer) << " seconds." << std::endl;
-	delete glob_timer;
-	glob_timer = 0;
+	std::cerr << "Cleanup took " << (clock()-main_timer)/(double)CLOCKS_PER_SEC << " seconds." << std::endl;
 
 	return status;
 }
@@ -435,6 +421,9 @@ void GAppSetOpts(CG3::GrammarApplicator *applicator) {
 		applicator->single_run = true;
 	}
 	if (options[GRAMMAR_INFO].doesOccur) {
+		applicator->enableStatistics();
+	}
+	if (options[STATISTICS].doesOccur) {
 		applicator->enableStatistics();
 	}
 	if (options[SECTIONS].doesOccur) {
