@@ -122,12 +122,12 @@ uint32_t ContextualTest::rehash() {
 	return hash;
 }
 
-void ContextualTest::reset() {
+void ContextualTest::resetStatistics() {
 	num_fail = 0;
 	num_match = 0;
 	total_time = 0;
 	if (linked) {
-		linked->reset();
+		linked->resetStatistics();
 	}
 }
 

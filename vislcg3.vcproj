@@ -396,10 +396,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\src\PACC_Timer.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\src\Reading.cpp"
 				>
 			</File>
@@ -487,14 +483,6 @@
 			</File>
 			<File
 				RelativePath=".\src\options.h"
-				>
-			</File>
-			<File
-				RelativePath=".\src\PACC_Assert.h"
-				>
-			</File>
-			<File
-				RelativePath=".\src\PACC_Timer.h"
 				>
 			</File>
 			<File

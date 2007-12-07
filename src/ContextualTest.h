@@ -45,7 +45,7 @@ namespace CG3 {
 		uint32_t cbarrier;
 
 		mutable uint32_t num_fail, num_match;
-		mutable PACC_TimeStamp total_time;
+		mutable clock_t total_time;
 
 		ContextualTest *linked;
 
@@ -57,7 +57,7 @@ namespace CG3 {
 		ContextualTest *allocateContextualTest();
 		
 		uint32_t rehash();
-		void reset();
+		void resetStatistics();
 
 		static bool cmp_quality(ContextualTest *a, ContextualTest *b);
 	};

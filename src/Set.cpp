@@ -25,6 +25,9 @@ Set::Set() {
 	name = 0;
 	line = 0;
 	hash = 0;
+	num_fail = 0;
+	num_match = 0;
+	total_time = 0;
 }
 
 Set::~Set() {
@@ -125,4 +128,10 @@ void Set::reindex(Grammar *grammar) {
 			}
 		}
 	}
+}
+
+void Set::resetStatistics() {
+	num_fail = 0;
+	num_match = 0;
+	total_time = 0;
 }

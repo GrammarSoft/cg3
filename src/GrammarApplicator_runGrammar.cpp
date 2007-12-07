@@ -73,6 +73,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 	Reading *lReading = 0;
 
 	cWindow->window_span = num_windows;
+	grammar->total_time = clock();
 
 	while (!u_feof(input)) {
 		u_fgets(line, BUFFER_SIZE-1, input);
@@ -401,6 +402,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 	u_fflush(output);
 
 CGCMD_EXIT:
+	grammar->total_time = clock() - grammar->total_time;
 	//std::cerr << "Skipped " << skipped_rules << " of " << (skipped_rules+cache_hits+cache_miss) <<" rules." << std::endl;
 	//std::cerr << "Match " << (match_sub+match_comp+match_single) << " : " << match_sub << " / " << match_comp << " / " << match_single << std::endl;
 	u_fprintf(ux_stderr, "Cache %u total, %u hits, %u misses.\n", (cache_hits+cache_miss), cache_hits, cache_miss);

@@ -36,6 +36,7 @@ namespace CG3 {
 		UChar mapping_prefix;
 		UChar *name;
 		uint32_t lines, curline;
+		mutable clock_t total_time;
 		stdext::hash_map<uint32_t, Tag*> single_tags;
 		stdext::hash_map<uint32_t, CompositeTag*> tags;
 		std::set<Set*> sets_all;
@@ -65,8 +66,6 @@ namespace CG3 {
 		void setName(const char *to);
 		void setName(const UChar *to);
 
-		void trim();
-
 		void addPreferredTarget(UChar *to);
 
 		void addSet(Set *to);
@@ -91,7 +90,9 @@ namespace CG3 {
 		void addRule(Rule *rule, std::vector<Rule*> *where);
 		void destroyRule(Rule *rule);
 
+		void resetStatistics();
 		void reindex();
+
 		void indexSetToRule(uint32_t, Set*);
 		void indexTagToRule(uint32_t, uint32_t);
 		void indexSets(uint32_t, Set*);

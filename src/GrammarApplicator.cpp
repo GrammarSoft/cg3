@@ -39,7 +39,6 @@ GrammarApplicator::GrammarApplicator(UFILE *ux_in, UFILE *ux_out, UFILE *ux_err)
 	dep_highest_seen = 0;
 	has_dep = false;
 	sections = 0;
-	timer = 0;
 	num_windows = 2;
 	begintag = 0;
 	endtag = 0;
@@ -81,9 +80,6 @@ GrammarApplicator::~GrammarApplicator() {
 		r->delete_uint32HashSet(indt->second);
 	}
 
-	if (timer) {
-		delete timer;
-	}
 	if (gWindow) {
 		delete gWindow;
 	}
@@ -115,17 +111,10 @@ void GrammarApplicator::setGrammar(const Grammar *res) {
 
 void GrammarApplicator::enableStatistics() {
 	statistics = true;
-	if (!timer) {
-		timer = new PACC::Timer();
-	}
 }
 
 void GrammarApplicator::disableStatistics() {
 	statistics = false;
-	if (timer) {
-		delete timer;
-		timer = 0;
-	}
 }
 
 uint32_t GrammarApplicator::addTag(const UChar *txt) {
