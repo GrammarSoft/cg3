@@ -35,7 +35,7 @@ GrammarWriter::~GrammarWriter() {
 void GrammarWriter::printSet(UFILE *output, const Set *curset) {
 	if (curset->sets.empty() && used_sets.find(curset->hash) == used_sets.end()) {
 		if (statistics) {
-			u_fprintf(output, "#Set Matched: %u ; NoMatch: %u ; TotalTime: %u\n", curset->num_match, curset->num_fail, curset->total_time);
+			u_fprintf(output, "#List Matched: %u ; NoMatch: %u ; TotalTime: %u\n", curset->num_match, curset->num_fail, curset->total_time);
 		}
 		used_sets.insert(curset->hash);
 		u_fprintf(output, "LIST %S = ", curset->name);
@@ -66,6 +66,9 @@ void GrammarWriter::printSet(UFILE *output, const Set *curset) {
 		used_sets.insert(curset->hash);
 		for (uint32_t i=0;i<curset->sets.size();i++) {
 			printSet(output, grammar->sets_by_contents.find(curset->sets.at(i))->second);
+		}
+		if (statistics) {
+			u_fprintf(output, "#Set Matched: %u ; NoMatch: %u ; TotalTime: %u\n", curset->num_match, curset->num_fail, curset->total_time);
 		}
 		u_fprintf(output, "SET %S = ", curset->name);
 		u_fprintf(output, "%S ", grammar->sets_by_contents.find(curset->sets.at(0))->second->name);
