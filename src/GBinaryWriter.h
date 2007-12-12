@@ -14,32 +14,26 @@
  * implied. See the License for the specific language governing
  * rights and limitations under the License.
  */
-#ifndef __GRAMMARWRITER_H
-#define __GRAMMARWRITER_H
+#ifndef __GBINARYWRITER_H
+#define __GBINARYWRITER_H
 
 #include "stdafx.h"
+#include "version.h"
 #include "Strings.h"
 #include "Grammar.h"
  
 namespace CG3 {
-	class GrammarWriter {
+	class GBinaryWriter {
 	public:
-		bool statistics;
-	
-		GrammarWriter(Grammar *res, UFILE *ux_err);
-		~GrammarWriter();
+		GBinaryWriter(Grammar *res, UFILE *ux_err);
+		~GBinaryWriter();
 
-		int writeGrammar(UFILE *output);
+		int writeBinaryGrammar(FILE *output);
 
 	private:
 		UFILE *ux_stderr;
-		uint32HashSet used_sets;
 		const Grammar *grammar;
-
-		void printTag(UFILE *out, const Tag *tag);
-		void printSet(UFILE *output, const Set *curset);
-		void printRule(UFILE *to, const Rule *rule);
-		void printContextualTest(UFILE *to, const ContextualTest *test);
+		void writeContextualTest(ContextualTest *t, FILE *output);
 	};
 }
 

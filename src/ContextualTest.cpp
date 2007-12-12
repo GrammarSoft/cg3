@@ -20,18 +20,7 @@ using namespace CG3;
 using namespace CG3::Strings;
 
 ContextualTest::ContextualTest() {
-	careful = false;
-	negated = false;
-	negative = false;
-	scanfirst = false;
-	scanall = false;
-	absolute = false;
-	span_left = false;
-	span_right = false;
-	span_both = false;
-	dep_parent = false;
-	dep_sibling = false;
-	dep_child = false;
+	pos = 0;
 	offset = 0;
 	target = 0;
 	barrier = 0;
@@ -48,48 +37,48 @@ ContextualTest::~ContextualTest() {
 	delete linked;
 }
 
-void ContextualTest::parsePosition(const UChar *pos, UFILE *ux_stderr) {
-	if (u_strstr(pos, stringbits[S_ASTERIKTWO])) {
-		scanall = true;
+void ContextualTest::parsePosition(const UChar *input, UFILE *ux_stderr) {
+	if (u_strstr(input, stringbits[S_ASTERIKTWO])) {
+		pos |= POS_SCANALL;
 	}
-	else if (u_strstr(pos, stringbits[S_ASTERIK])) {
-		scanfirst = true;
+	else if (u_strstr(input, stringbits[S_ASTERIK])) {
+		pos |= POS_SCANFIRST;
 	}
-	if (u_strchr(pos, 'C')) {
-		careful = true;
+	if (u_strchr(input, 'C')) {
+		pos |= POS_CAREFUL;
 	}
-	if (u_strchr(pos, 'c')) {
-		dep_child = true;
+	if (u_strchr(input, 'c')) {
+		pos |= POS_DEP_CHILD;
 	}
-	if (u_strchr(pos, 'p')) {
-		dep_parent = true;
+	if (u_strchr(input, 'p')) {
+		pos |= POS_DEP_PARENT;
 	}
-	if (u_strchr(pos, 's')) {
-		dep_sibling = true;
+	if (u_strchr(input, 's')) {
+		pos |= POS_DEP_SIBLING;
 	}
-	if (u_strchr(pos, '<')) {
-		span_left = true;
+	if (u_strchr(input, '<')) {
+		pos |= POS_SPAN_LEFT;
 	}
-	if (u_strchr(pos, '>')) {
-		span_right = true;
+	if (u_strchr(input, '>')) {
+		pos |= POS_SPAN_RIGHT;
 	}
-	if (u_strchr(pos, 'W')) {
-		span_both = true;
+	if (u_strchr(input, 'W')) {
+		pos |= POS_SPAN_BOTH;
 	}
-	if (u_strchr(pos, '@')) {
-		absolute = true;
+	if (u_strchr(input, '@')) {
+		pos |= POS_ABSOLUTE;
 	}
 	UChar tmp[16];
 	tmp[0] = 0;
-	int32_t retval = u_sscanf(pos, "%[^0-9]%d", &tmp, &offset);
-	if (u_strchr(pos, '-')) {
+	int32_t retval = u_sscanf(input, "%[^0-9]%d", &tmp, &offset);
+	if (u_strchr(input, '-')) {
 		offset = (-1) * abs(offset);
 	}
 
-	if ((!dep_child && !dep_parent && !dep_sibling) && (retval == EOF || (offset == 0 && tmp[0] == 0 && retval < 1))) {
+	if ((!(pos & (POS_DEP_CHILD|POS_DEP_SIBLING|POS_DEP_PARENT))) && (retval == EOF || (offset == 0 && tmp[0] == 0 && retval < 1))) {
 		u_fprintf(ux_stderr, "Error: '%S' is not a valid position!\n", pos);
 	}
-	if ((dep_child || dep_parent || dep_sibling) && (scanall || scanfirst)) {
+	if ((pos & (POS_DEP_CHILD|POS_DEP_SIBLING|POS_DEP_PARENT)) && (pos & (POS_SCANFIRST|POS_SCANALL))) {
 		u_fprintf(ux_stderr, "Warning: Position '%S' is mixed. Behavior for mixed positions is undefined.\n", pos);
 	}
 }
@@ -100,15 +89,7 @@ ContextualTest *ContextualTest::allocateContextualTest() {
 
 uint32_t ContextualTest::rehash() {
 	hash = 0;
-	hash = hash_sdbm_uint32_t(hash, (uint32_t)careful);
-	hash = hash_sdbm_uint32_t(hash, (uint32_t)negated);
-	hash = hash_sdbm_uint32_t(hash, (uint32_t)negative);
-	hash = hash_sdbm_uint32_t(hash, (uint32_t)scanfirst);
-	hash = hash_sdbm_uint32_t(hash, (uint32_t)scanall);
-	hash = hash_sdbm_uint32_t(hash, (uint32_t)absolute);
-	hash = hash_sdbm_uint32_t(hash, (uint32_t)span_left);
-	hash = hash_sdbm_uint32_t(hash, (uint32_t)span_right);
-	hash = hash_sdbm_uint32_t(hash, (uint32_t)span_both);
+	hash = hash_sdbm_uint32_t(hash, pos);
 	hash = hash_sdbm_uint32_t(hash, target);
 	hash = hash_sdbm_uint32_t(hash, barrier);
 	hash = hash_sdbm_uint32_t(hash, abs(offset));

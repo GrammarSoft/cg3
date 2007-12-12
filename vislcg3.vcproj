@@ -288,6 +288,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\GBinaryWriter.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\GPRE2C.cpp"
 				>
 			</File>
@@ -451,6 +455,10 @@
 			</File>
 			<File
 				RelativePath=".\src\ContextualTest.h"
+				>
+			</File>
+			<File
+				RelativePath=".\src\GBinaryWriter.h"
 				>
 			</File>
 			<File

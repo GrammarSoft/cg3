@@ -22,6 +22,7 @@
 #include "GrammarParser.h"
 #include "GPRE2C.h"
 #include "GrammarWriter.h"
+#include "GBinaryWriter.h"
 #include "GrammarApplicator.h"
 
 #include "version.h"
@@ -311,10 +312,9 @@ int main(int argc, char* argv[]) {
 				std::sort(&grammar->rules[grammar->sections[i]], &grammar->rules[grammar->sections[i+1]-1], CG3::Rule::cmp_quality);
 			}
 
-			CG3::GrammarWriter *writer = new CG3::GrammarWriter(ux_stdin, ux_stdout, ux_stderr);
-			writer->setGrammar(grammar);
+			CG3::GrammarWriter *writer = new CG3::GrammarWriter(grammar, ux_stderr);
 			writer->statistics = true;
-			writer->write_grammar_to_ufile_text(gout);
+			writer->writeGrammar(gout);
 			delete writer;
 			writer = 0;
 
@@ -343,12 +343,11 @@ int main(int argc, char* argv[]) {
 	if (options[GRAMMAR_OUT].doesOccur) {
 		UFILE *gout = u_fopen(options[GRAMMAR_OUT].value, "w", locale_output, codepage_output);
 		if (gout) {
-			CG3::GrammarWriter *writer = new CG3::GrammarWriter(ux_stdin, ux_stdout, ux_stderr);
-			writer->setGrammar(grammar);
+			CG3::GrammarWriter *writer = new CG3::GrammarWriter(grammar, ux_stderr);
 			if (options[STATISTICS].doesOccur) {
 				writer->statistics = true;
 			}
-			writer->write_grammar_to_ufile_text(gout);
+			writer->writeGrammar(gout);
 			delete writer;
 			writer = 0;
 
@@ -362,9 +361,8 @@ int main(int argc, char* argv[]) {
 	if (options[GRAMMAR_BIN].doesOccur) {
 		FILE *gout = fopen(options[GRAMMAR_BIN].value, "wb");
 		if (gout) {
-			CG3::GrammarWriter *writer = new CG3::GrammarWriter(ux_stdin, ux_stdout, ux_stderr);
-			writer->setGrammar(grammar);
-			writer->write_grammar_to_file_binary(gout);
+			CG3::GBinaryWriter *writer = new CG3::GBinaryWriter(grammar, ux_stderr);
+			writer->writeBinaryGrammar(gout);
 			delete writer;
 			writer = 0;
 

@@ -119,6 +119,8 @@ namespace CG3 {
 
 		#define NUM_GBUFFERS 5
 		extern UChar *gbuffers[NUM_GBUFFERS];
+		#define NUM_CBUFFERS 1
+		extern char *cbuffers[NUM_CBUFFERS];
 		int init_gbuffers();
 		int free_gbuffers();
 	}
