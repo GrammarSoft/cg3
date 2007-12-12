@@ -20,12 +20,11 @@
 using namespace CG3;
 using namespace CG3::Strings;
 
-GrammarWriter::GrammarWriter(UFILE *ux_in, UFILE *ux_out, UFILE *ux_err) {
-	ux_stdin = ux_in;
-	ux_stdout = ux_out;
-	ux_stderr = ux_err;
+GrammarWriter::GrammarWriter(Grammar *res, UFILE *ux_err) {
+	used_sets.clear();
 	statistics = false;
-	grammar = 0;
+	ux_stderr = ux_err;
+	grammar = res;
 }
 
 GrammarWriter::~GrammarWriter() {
@@ -79,13 +78,13 @@ void GrammarWriter::printSet(UFILE *output, const Set *curset) {
 	}
 }
 
-int GrammarWriter::write_grammar_to_ufile_text(UFILE *output) {
+int GrammarWriter::writeGrammar(UFILE *output) {
 	if (!output) {
 		u_fprintf(ux_stderr, "Error: Output is null - cannot write to nothing!\n");
 		return -1;
 	}
 	if (!grammar) {
-		u_fprintf(ux_stderr, "Error: No grammar provided - cannot continue! Hint: call setGrammar() first.\n");
+		u_fprintf(ux_stderr, "Error: No grammar provided - cannot continue!\n");
 		return -1;
 	}
 
@@ -140,37 +139,6 @@ int GrammarWriter::write_grammar_to_ufile_text(UFILE *output) {
 	}
 
 	return 0;
-}
-
-int GrammarWriter::write_grammar_to_file_binary(FILE *output) {
-	if (!output) {
-		u_fprintf(ux_stderr, "Error: Output is null - cannot write to nothing!\n");
-		return -1;
-	}
-	if (!grammar) {
-		u_fprintf(ux_stderr, "Error: No grammar provided - cannot continue! Hint: call setGrammar() first.\n");
-		return -1;
-	}
-	uint32_t tmp = 0;
-
-	fprintf(output, "CG3B");
-
-	// Write out the version of the binary format
-	tmp = (uint32_t)htonl((uint32_t)1);
-	fwrite(&tmp, sizeof(uint32_t), 1, output);
-
-	tmp = (uint32_t)htonl((uint32_t)grammar->single_tags.size());
-	fwrite(&tmp, sizeof(uint32_t), 1, output);
-
-	tmp = (uint32_t)htonl((uint32_t)grammar->sets_by_contents.size());
-	fwrite(&tmp, sizeof(uint32_t), 1, output);
-
-	return 0;
-}
-
-void GrammarWriter::setGrammar(Grammar *res) {
-	used_sets.clear();
-	grammar = res;
 }
 
 void GrammarWriter::printRule(UFILE *to, const Rule *rule) {
@@ -241,44 +209,44 @@ void GrammarWriter::printContextualTest(UFILE *to, const ContextualTest *test) {
 	if (statistics) {
 		u_fprintf(to, "\n#Test Matched: %u ; NoMatch: %u ; TotalTime: %u\n", test->num_match, test->num_fail, test->total_time);
 	}
-	if (test->negated) {
+	if (test->pos & POS_NEGATED) {
 		u_fprintf(to, "NEGATE ");
 	}
-	if (test->negative) {
+	if (test->pos & POS_NEGATIVE) {
 		u_fprintf(to, "NOT ");
 	}
-	if (test->absolute) {
+	if (test->pos & POS_ABSOLUTE) {
 		u_fprintf(to, "@");
 	}
-	if (test->scanall) {
+	if (test->pos & POS_SCANALL) {
 		u_fprintf(to, "**");
 	}
-	else if (test->scanfirst) {
+	else if (test->pos & POS_SCANFIRST) {
 		u_fprintf(to, "*");
 	}
 
-	if (test->dep_child) {
+	if (test->pos & POS_DEP_CHILD) {
 		u_fprintf(to, "c");
 	}
-	if (test->dep_parent) {
+	if (test->pos & POS_DEP_PARENT) {
 		u_fprintf(to, "p");
 	}
-	if (test->dep_sibling) {
+	if (test->pos & POS_DEP_SIBLING) {
 		u_fprintf(to, "s");
 	}
 
 	u_fprintf(to, "%d", test->offset);
 
-	if (test->careful) {
+	if (test->pos & POS_CAREFUL) {
 		u_fprintf(to, "C");
 	}
-	if (test->span_both) {
+	if (test->pos & POS_SPAN_BOTH) {
 		u_fprintf(to, "W");
 	}
-	if (test->span_left) {
+	if (test->pos & POS_SPAN_LEFT) {
 		u_fprintf(to, "<");
 	}
-	if (test->span_right) {
+	if (test->pos & POS_SPAN_RIGHT) {
 		u_fprintf(to, ">");
 	}
 

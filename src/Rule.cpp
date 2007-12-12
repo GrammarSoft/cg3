@@ -28,6 +28,8 @@ Rule::Rule() {
 	num_fail = 0;
 	num_match = 0;
 	total_time = 0;
+	varname = 0;
+	varvalue = 0;
 	weight = 0.0;
 	quality = 0.0;
 	type = K_IGNORE;

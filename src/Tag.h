@@ -56,7 +56,7 @@ namespace CG3 {
 		uint32_t comparison_hash;
 		UChar *comparison_key;
 		C_OPS comparison_op;
-		int comparison_val;
+		int32_t comparison_val;
 		uint32_t dep_self, dep_parent;
 		UChar *tag;
 		uint32_t hash;

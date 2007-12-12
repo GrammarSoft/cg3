@@ -193,10 +193,14 @@ namespace CG3 {
 		}
 
 		UChar *gbuffers[NUM_GBUFFERS];
+		char *cbuffers[NUM_CBUFFERS];
 
 		int init_gbuffers() {
 			for (uint32_t i=0;i<NUM_GBUFFERS;i++) {
 				gbuffers[i] = new UChar[BUFFER_SIZE];
+			}
+			for (uint32_t i=0;i<NUM_CBUFFERS;i++) {
+				cbuffers[i] = new char[BUFFER_SIZE];
 			}
 			return 0;
 		}
@@ -205,6 +209,10 @@ namespace CG3 {
 			for (uint32_t i=0;i<NUM_GBUFFERS;i++) {
 				delete[] gbuffers[i];
 				gbuffers[i] = 0;
+			}
+			for (uint32_t i=0;i<NUM_CBUFFERS;i++) {
+				delete[] cbuffers[i];
+				cbuffers[i] = 0;
 			}
 			return 0;
 		}

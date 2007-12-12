@@ -52,14 +52,18 @@ int GrammarParser::parseContextualTest(UChar **paren, CG3::ContextualTest *paren
 
 	ContextualTest *context = parentTest->allocateContextualTest();
 	context->parsePosition(position, ux_stderr);
-	context->negated = negated;
-	context->negative = negative;
+	if (negated) {
+		context->pos |= POS_NEGATED;
+	}
+	if (negative) {
+		context->pos |= POS_NEGATIVE;
+	}
 	parentTest->linked = context;
 
 	context->line = result->curline;
 	context->target = parseTarget(&test);
 
-	if (context->dep_child || context->dep_parent || context->dep_sibling) {
+	if (context->pos & (POS_DEP_CHILD|POS_DEP_PARENT|POS_DEP_SIBLING)) {
 		result->has_dep = true;
 	}
 
@@ -124,14 +128,18 @@ int GrammarParser::parseContextualTestList(UChar **paren, CG3::Rule *rule, std::
 
 			ContextualTest *context = rule->allocateContextualTest();
 			context->parsePosition(position, ux_stderr);
-			context->negated = negated;
-			context->negative = negative;
+			if (negated) {
+				context->pos |= POS_NEGATED;
+			}
+			if (negative) {
+				context->pos |= POS_NEGATIVE;
+			}
 			rule->addContextualTest(context, thelist);
 
 			context->line = result->curline;
 			context->target = parseTarget(&test);
 
-			if (context->dep_child || context->dep_parent || context->dep_sibling) {
+			if (context->pos & (POS_DEP_CHILD|POS_DEP_PARENT|POS_DEP_SIBLING)) {
 				result->has_dep = true;
 			}
 
