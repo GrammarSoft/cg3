@@ -344,7 +344,7 @@ Cohort *GrammarApplicator::doesSetMatchDependency(SingleWindow *sWindow, const C
 	Cohort *rv = 0;
 
 	bool retval = false;
-	if (test->dep_parent && current->dep_self != current->dep_parent) {
+	if (test->pos & POS_DEP_PARENT && current->dep_self != current->dep_parent) {
 		if (sWindow->parent->cohort_map.find(current->dep_parent) == sWindow->parent->cohort_map.end()) {
 			u_fprintf(ux_stderr, "Warning: Dependency %u does not exist - ignoring.\n", current->dep_parent);
 			return 0;
@@ -353,16 +353,16 @@ Cohort *GrammarApplicator::doesSetMatchDependency(SingleWindow *sWindow, const C
 		Cohort *cohort = sWindow->parent->cohort_map.find(current->dep_parent)->second;
 		bool good = true;
 		if (current->parent != cohort->parent) {
-			if ((!test->span_both || !test->span_left) && cohort->parent->number < current->parent->number) {
+			if ((!(test->pos & (POS_SPAN_BOTH|POS_SPAN_LEFT))) && cohort->parent->number < current->parent->number) {
 				good = false;
 			}
-			else if ((!test->span_both || !test->span_right) && cohort->parent->number > current->parent->number) {
+			else if ((!(test->pos & (POS_SPAN_BOTH|POS_SPAN_RIGHT))) && cohort->parent->number > current->parent->number) {
 				good = false;
 			}
 
 		}
 		if (good) {
-			if (test->careful) {
+			if (test->pos & POS_CAREFUL) {
 				retval = doesSetMatchCohortCareful(cohort, test->target);
 			}
 			else {
@@ -375,7 +375,7 @@ Cohort *GrammarApplicator::doesSetMatchDependency(SingleWindow *sWindow, const C
 	}
 	else {
 		const uint32HashSet *deps = 0;
-		if (test->dep_child) {
+		if (test->pos & POS_DEP_CHILD) {
 			deps = &current->dep_children;
 		}
 		else {
@@ -391,16 +391,16 @@ Cohort *GrammarApplicator::doesSetMatchDependency(SingleWindow *sWindow, const C
 			Cohort *cohort = sWindow->parent->cohort_map.find(*dter)->second;
 			bool good = true;
 			if (current->parent != cohort->parent) {
-				if ((!test->span_both || !test->span_left) && cohort->parent->number < current->parent->number) {
+				if ((!(test->pos & (POS_SPAN_BOTH|POS_SPAN_LEFT))) && cohort->parent->number < current->parent->number) {
 					good = false;
 				}
-				else if ((!test->span_both || !test->span_right) && cohort->parent->number > current->parent->number) {
+				else if ((!(test->pos & (POS_SPAN_BOTH|POS_SPAN_RIGHT))) && cohort->parent->number > current->parent->number) {
 					good = false;
 				}
 
 			}
 			if (good) {
-				if (test->careful) {
+				if (test->pos & POS_CAREFUL) {
 					retval = doesSetMatchCohortCareful(cohort, test->target);
 				}
 				else {

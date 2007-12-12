@@ -22,22 +22,26 @@
 
 namespace CG3 {
 
+	enum CT_POS {
+		POS_CAREFUL = 1,
+		POS_NEGATED = 2,
+		POS_NEGATIVE = 4,
+		POS_SCANFIRST = 8,
+		POS_SCANALL = 16,
+		POS_ABSOLUTE = 32,
+		POS_SPAN_RIGHT = 64,
+		POS_SPAN_LEFT = 128,
+		POS_SPAN_BOTH = 256,
+		POS_DEP_PARENT = 512,
+		POS_DEP_SIBLING = 1024,
+		POS_DEP_CHILD = 2048
+	};
+
 	class ContextualTest {
 	public:
 		uint32_t line;
 		uint32_t hash;
-		bool careful;
-		bool negated;
-		bool negative;
-		bool scanfirst;
-		bool scanall;
-		bool absolute;
-		bool span_right;
-		bool span_left;
-		bool span_both;
-		bool dep_parent;
-		bool dep_sibling;
-		bool dep_child;
+		uint32_t pos;
 		int32_t offset;
 
 		uint32_t target;
@@ -52,7 +56,7 @@ namespace CG3 {
 		ContextualTest();
 		~ContextualTest();
 
-		void parsePosition(const UChar *pos, UFILE *ux_stderr);
+		void parsePosition(const UChar *input, UFILE *ux_stderr);
 
 		ContextualTest *allocateContextualTest();
 		
