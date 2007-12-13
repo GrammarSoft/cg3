@@ -599,13 +599,16 @@ void GPRE2C::setCompatible(bool f) {
 
 void GPRE2C::addRuleToGrammar(Rule *rule) {
 	if (in_section) {
-		result->addRule(rule, &result->rules);
+		rule->section = (int32_t)(result->sections.size()-1);
+		result->addRule(rule);
 	}
 	else if (in_before_sections) {
-		result->addRule(rule, &result->before_sections);
+		rule->section = -1;
+		result->addRule(rule);
 	}
 	else if (in_after_sections) {
-		result->addRule(rule, &result->after_sections);
+		rule->section = -2;
+		result->addRule(rule);
 	}
 }
 

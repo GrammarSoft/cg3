@@ -22,7 +22,7 @@
 #include "GrammarParser.h"
 #include "GPRE2C.h"
 #include "GrammarWriter.h"
-#include "GBinaryWriter.h"
+#include "BinaryGrammar.h"
 #include "GrammarApplicator.h"
 
 #include "version.h"
@@ -221,7 +221,19 @@ int main(int argc, char* argv[]) {
 	CG3::Grammar *grammar = new CG3::Grammar();
 
 	CG3::IGrammarParser *parser = 0;
-	if (options[RE2C].doesOccur) {
+	FILE *input = fopen(options[GRAMMAR].value, "rb");
+	if (!input) {
+		u_fprintf(ux_stderr, "Error: Error opening %s for reading!\n", options[GRAMMAR].value);
+		return -1;
+	}
+	fread(cbuffers[0], 1, 4, input);
+	fclose(input);
+
+	if (cbuffers[0][0] == 'C' && cbuffers[0][1] == 'G' && cbuffers[0][2] == '3' && cbuffers[0][3] == 'B') {
+		fprintf(stderr, "Info: Binary grammar detected.\n");
+		parser = new CG3::BinaryGrammar(grammar, ux_stderr);
+	}
+	else if (options[RE2C].doesOccur) {
 		fprintf(stderr, "Info: Using experimental RE2C parser.\n");
 		parser = new CG3::GPRE2C(ux_stdin, ux_stdout, ux_stderr);
 	}
@@ -235,7 +247,7 @@ int main(int argc, char* argv[]) {
 	parser->setResult(grammar);
 	parser->setCompatible(options[VISLCGCOMPAT].doesOccur != 0);
 
-	std::cerr << "Initialization took " << (clock()-main_timer)/(double)CLOCKS_PER_SEC << " seconds." << std::endl;
+	//std::cerr << "Initialization took " << (clock()-main_timer)/(double)CLOCKS_PER_SEC << " seconds." << std::endl;
 	main_timer = clock();
 
 	if (parser->parse_grammar_from_file(options[GRAMMAR].value, locale_grammar, codepage_grammar)) {
@@ -361,7 +373,7 @@ int main(int argc, char* argv[]) {
 	if (options[GRAMMAR_BIN].doesOccur) {
 		FILE *gout = fopen(options[GRAMMAR_BIN].value, "wb");
 		if (gout) {
-			CG3::GBinaryWriter *writer = new CG3::GBinaryWriter(grammar, ux_stderr);
+			CG3::BinaryGrammar *writer = new CG3::BinaryGrammar(grammar, ux_stderr);
 			writer->writeBinaryGrammar(gout);
 			delete writer;
 			writer = 0;
@@ -389,7 +401,7 @@ int main(int argc, char* argv[]) {
 
 	u_cleanup();
 
-	std::cerr << "Cleanup took " << (clock()-main_timer)/(double)CLOCKS_PER_SEC << " seconds." << std::endl;
+	//std::cerr << "Cleanup took " << (clock()-main_timer)/(double)CLOCKS_PER_SEC << " seconds." << std::endl;
 
 	return status;
 }

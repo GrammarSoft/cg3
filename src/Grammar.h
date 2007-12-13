@@ -31,6 +31,7 @@ namespace CG3 {
 		UFILE *ux_stderr;
 
 		bool has_dep;
+		bool is_binary;
 		uint32_t last_modified;
 		uint32_t grammar_size;
 		UChar mapping_prefix;
@@ -76,6 +77,7 @@ namespace CG3 {
 		void addAnchor(const UChar *to);
 		void addAnchor(const UChar *to, const uint32_t line);
 
+		Tag *allocateTag();
 		Tag *allocateTag(const UChar *tag);
 		void destroyTag(Tag *tag);
 		void addTag(Tag *simpletag);
@@ -87,7 +89,7 @@ namespace CG3 {
 		void destroyCompositeTag(CompositeTag *tag);
 
 		Rule *allocateRule();
-		void addRule(Rule *rule, std::vector<Rule*> *where);
+		void addRule(Rule *rule);
 		void destroyRule(Rule *rule);
 
 		void resetStatistics();

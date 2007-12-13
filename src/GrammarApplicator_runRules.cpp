@@ -529,7 +529,7 @@ label_runGrammarOnWindow_begin:
 	}
 
 	if (!grammar->rules.empty()) {
-		uint32_t smax = (uint32_t)grammar->sections.size()-1;
+		uint32_t smax = (uint32_t)grammar->sections.size();
 		if (sections && sections < smax) {
 			smax = sections;
 		}

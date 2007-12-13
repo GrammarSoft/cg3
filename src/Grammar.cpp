@@ -20,6 +20,7 @@ using namespace CG3;
 
 Grammar::Grammar() {
 	has_dep = false;
+	is_binary = false;
 	last_modified = 0;
 	name = 0;
 	lines = 0;
@@ -185,14 +186,16 @@ void Grammar::destroyCompositeTag(CompositeTag *tag) {
 Rule *Grammar::allocateRule() {
 	return new Rule;
 }
-void Grammar::addRule(Rule *rule, std::vector<Rule*> *where) {
+void Grammar::addRule(Rule *rule) {
 	rule_by_line[rule->line] = rule;
-	where->push_back(rule);
 }
 void Grammar::destroyRule(Rule *rule) {
 	delete rule;
 }
 
+Tag *Grammar::allocateTag() {
+	return new Tag;
+}
 Tag *Grammar::allocateTag(const UChar *tag) {
 	Tag *fresh = new Tag;
 	fresh->parseTag(tag, ux_stderr);
@@ -261,6 +264,9 @@ void Grammar::resetStatistics() {
 void Grammar::reindex() {
 	set_alias.clear();
 	sets_by_name.clear();
+	rules.clear();
+	before_sections.clear();
+	after_sections.clear();
 
 	stdext::hash_map<uint32_t, Tag*>::iterator iter_tags;
 	for (iter_tags = single_tags.begin() ; iter_tags != single_tags.end() ; iter_tags++) {
@@ -281,6 +287,15 @@ void Grammar::reindex() {
 
 	std::map<uint32_t, Rule*>::iterator iter_rule;
 	for (iter_rule = rule_by_line.begin() ; iter_rule != rule_by_line.end() ; iter_rule++) {
+		if (iter_rule->second->section == -1) {
+			before_sections.push_back(iter_rule->second);
+		}
+		else if (iter_rule->second->section == -2) {
+			after_sections.push_back(iter_rule->second);
+		}
+		else {
+			rules.push_back(iter_rule->second);
+		}
 		if (iter_rule->second->target) {
 			indexSetToRule(iter_rule->second->line, getSet(iter_rule->second->target));
 		}
