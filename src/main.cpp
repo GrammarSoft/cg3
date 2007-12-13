@@ -278,6 +278,21 @@ int main(int argc, char* argv[]) {
 		std::cerr << "Grammar has dependency rules: No" << std::endl;
 	}
 
+	if (grammar->is_binary) {
+		if (options[GRAMMAR_INFO].doesOccur) {
+			u_fprintf(ux_stderr, "Error: Re-ordering statistics cannot be gathered with a binary grammar.\n");
+			return -1;
+		}
+		if (options[GRAMMAR_BIN].doesOccur || options[GRAMMAR_OUT].doesOccur) {
+			u_fprintf(ux_stderr, "Error: Binary grammars cannot be rewritten.\n");
+			return -1;
+		}
+		if (options[STATISTICS].doesOccur) {
+			u_fprintf(ux_stderr, "Error: Statistics cannot be gathered with a binary grammar.\n");
+			return -1;
+		}
+	}
+
 	if (options[GRAMMAR_INFO].doesOccur && !stdin_isfile) {
 		std::cerr << "Error: Re-ordering statistics can only be gathered with file input option (-I, --stdin) as the file must be re-run multiple times." << std::endl;
 		return -1;

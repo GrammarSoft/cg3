@@ -327,6 +327,7 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 	uint32_t num_single_tags = u32tmp;
 	for (uint32_t i=0 ; i<num_single_tags ; i++) {
 		Tag *t = grammar->allocateTag();
+		t->in_grammar = true;
 		fread(&u32tmp, sizeof(uint32_t), 1, input);
 		t->hash = (uint32_t)ntohl(u32tmp);
 		fread(&u16tmp, sizeof(uint16_t), 1, input);
@@ -359,6 +360,23 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 			i32tmp = ucnv_toUChars(conv, gbuffers[0], BUFFER_SIZE-1, cbuffers[0], u32tmp, &err);
 			t->tag = t->allocateUChars(i32tmp+1);
 			u_strcpy(t->tag, gbuffers[0]);
+		}
+		if (t->type & T_REGEXP) {
+			UParseError *pe = new UParseError;
+			UErrorCode status = U_ZERO_ERROR;
+
+			memset(pe, 0, sizeof(UParseError));
+			status = U_ZERO_ERROR;
+			if (t->type & T_CASE_INSENSITIVE) {
+				t->regexp = uregex_open(t->tag, u_strlen(t->tag), UREGEX_CASE_INSENSITIVE, pe, &status);
+			}
+			else {
+				t->regexp = uregex_open(t->tag, u_strlen(t->tag), 0, pe, &status);
+			}
+			if (status != U_ZERO_ERROR) {
+				u_fprintf(ux_stderr, "Error: uregex_open returned %s trying to parse tag %S - cannot continue!\n", u_errorName(status), t->tag);
+				exit(1);
+			}
 		}
 		grammar->single_tags[t->hash] = t;
 	}
