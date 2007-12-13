@@ -14,26 +14,29 @@
  * implied. See the License for the specific language governing
  * rights and limitations under the License.
  */
-#ifndef __GBINARYWRITER_H
-#define __GBINARYWRITER_H
+#ifndef __BINARYGRAMMAR_H
+#define __BINARYGRAMMAR_H
 
-#include "stdafx.h"
+#include "IGrammarParser.h"
 #include "version.h"
-#include "Strings.h"
-#include "Grammar.h"
  
 namespace CG3 {
-	class GBinaryWriter {
+	class BinaryGrammar : public IGrammarParser {
 	public:
-		GBinaryWriter(Grammar *res, UFILE *ux_err);
-		~GBinaryWriter();
+		BinaryGrammar(Grammar *res, UFILE *ux_err);
+		~BinaryGrammar();
 
 		int writeBinaryGrammar(FILE *output);
+		int readBinaryGrammar(FILE *input);
 
+		void setCompatible(bool compat);
+		void setResult(CG3::Grammar *result);
+		int parse_grammar_from_file(const char *filename, const char *locale, const char *codepage);
 	private:
 		UFILE *ux_stderr;
-		const Grammar *grammar;
+		Grammar *grammar;
 		void writeContextualTest(ContextualTest *t, FILE *output);
+		void readContextualTest(ContextualTest *t, FILE *input);
 	};
 }
 

@@ -87,6 +87,10 @@ int GrammarWriter::writeGrammar(UFILE *output) {
 		u_fprintf(ux_stderr, "Error: No grammar provided - cannot continue!\n");
 		return -1;
 	}
+	if (grammar->is_binary) {
+		u_fprintf(ux_stderr, "Error: Grammar is binary and cannot be output in textual form!\n");
+		return -1;
+	}
 
 	if (statistics) {
 		u_fprintf(output, "# Total clock() time spent applying grammar: %u\n", grammar->total_time);

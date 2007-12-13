@@ -276,6 +276,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\BinaryGrammar.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\Cohort.cpp"
 				>
 			</File>
@@ -285,10 +289,6 @@
 			</File>
 			<File
 				RelativePath=".\src\ContextualTest.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\src\GBinaryWriter.cpp"
 				>
 			</File>
 			<File
@@ -446,6 +446,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\BinaryGrammar.h"
+				>
+			</File>
+			<File
 				RelativePath=".\src\Cohort.h"
 				>
 			</File>
@@ -455,10 +459,6 @@
 			</File>
 			<File
 				RelativePath=".\src\ContextualTest.h"
-				>
-			</File>
-			<File
-				RelativePath=".\src\GBinaryWriter.h"
 				>
 			</File>
 			<File

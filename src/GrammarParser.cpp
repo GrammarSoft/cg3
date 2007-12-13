@@ -250,10 +250,6 @@ int GrammarParser::parse_grammar_from_ufile(UFILE *input) {
 		lastline[0] = 0;
 	}
 
-	if (!result->rules.empty()) {
-		result->sections.push_back((uint32_t)result->rules.size());
-	}
-
 	return 0;
 }
 
@@ -306,14 +302,14 @@ void GrammarParser::setCompatible(bool f) {
 void GrammarParser::addRuleToGrammar(Rule *rule) {
 	if (in_section) {
 		rule->section = (int32_t)(result->sections.size()-1);
-		result->addRule(rule, &result->rules);
+		result->addRule(rule);
 	}
 	else if (in_before_sections) {
 		rule->section = -1;
-		result->addRule(rule, &result->before_sections);
+		result->addRule(rule);
 	}
 	else if (in_after_sections) {
 		rule->section = -2;
-		result->addRule(rule, &result->after_sections);
+		result->addRule(rule);
 	}
 }
