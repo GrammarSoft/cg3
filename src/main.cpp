@@ -109,11 +109,12 @@ int main(int argc, char* argv[]) {
 		return argc < 0 ? U_ILLEGAL_ARGUMENT_ERROR : U_ZERO_ERROR;
 	}
 
+	fflush(stderr);
+
 	/* Initialize ICU */
 	u_init(&status);
 	if (U_FAILURE(status) && status != U_FILE_ACCESS_ERROR) {
-		fprintf(stderr, "Error: can not initialize ICU.  status = %s\n",
-			u_errorName(status));
+		std::cerr << "Error: Cannot initialize ICU. Status = " << u_errorName(status) << std::endl;
 		return -1;
 	}
 	status = U_ZERO_ERROR;
@@ -142,7 +143,7 @@ int main(int argc, char* argv[]) {
 		codepage_output = options[CODEPAGE_ALL].value;
 	}
 
-	fprintf(stderr, "Codepage: default %s, input %s, output %s, grammar %s\n", codepage_default, codepage_input, codepage_output, codepage_grammar);
+	std::cerr << "Codepage: default " << codepage_default << ", input " << codepage_input << ", output " << codepage_output << ", grammar " << codepage_grammar << std::endl;
 
 	const char *locale_default = "en_US_POSIX"; //uloc_getDefault();
 	const char *locale_grammar = locale_default;
@@ -181,7 +182,7 @@ int main(int argc, char* argv[]) {
 		ux_stdout = u_fopen(options[STDOUT].value, "wb", locale_output, codepage_output);
 	}
 	if (!ux_stdout) {
-		fprintf(stderr, "Error: Failed to open the output stream for writing!\n");
+		std::cerr << "Error: Failed to open the output stream for writing!" << std::endl;
 		return -1;
 	}
 
@@ -192,7 +193,7 @@ int main(int argc, char* argv[]) {
 		ux_stderr = u_fopen(options[STDERR].value, "wb", locale_output, codepage_output);
 	}
 	if (!ux_stdout) {
-		fprintf(stderr, "Error: Failed to open the error stream for writing!\n");
+		std::cerr << "Error: Failed to open the error stream for writing!" << std::endl;
 		return -1;
 	}
 
@@ -202,14 +203,14 @@ int main(int argc, char* argv[]) {
 		struct stat info;
 		int serr = stat(options[STDIN].value, &info);
 		if (serr) {
-			fprintf(stderr, "Error: Cannot stat %s due to error %d!\n", options[STDIN].value, serr);
+			std::cerr << "Error: Cannot stat " << options[STDIN].value << " due to error " << serr << "!" << std::endl;
 			return serr;
 		}
 		stdin_isfile = true;
 		ux_stdin = u_fopen(options[STDIN].value, "rb", locale_input, codepage_input);
 	}
 	if (!ux_stdin) {
-		fprintf(stderr, "Error: Failed to open the input stream for reading!\n");
+		std::cerr << "Error: Failed to open the input stream for reading!" << std::endl;
 		return -1;
 	}
 
@@ -223,18 +224,18 @@ int main(int argc, char* argv[]) {
 	CG3::IGrammarParser *parser = 0;
 	FILE *input = fopen(options[GRAMMAR].value, "rb");
 	if (!input) {
-		u_fprintf(ux_stderr, "Error: Error opening %s for reading!\n", options[GRAMMAR].value);
+		std::cerr << "Error: Error opening " << options[GRAMMAR].value << " for reading!" << std::endl;
 		return -1;
 	}
 	fread(cbuffers[0], 1, 4, input);
 	fclose(input);
 
 	if (cbuffers[0][0] == 'C' && cbuffers[0][1] == 'G' && cbuffers[0][2] == '3' && cbuffers[0][3] == 'B') {
-		fprintf(stderr, "Info: Binary grammar detected.\n");
+		std::cerr << "Info: Binary grammar detected." << std::endl;
 		parser = new CG3::BinaryGrammar(grammar, ux_stderr);
 	}
 	else if (options[RE2C].doesOccur) {
-		fprintf(stderr, "Info: Using experimental RE2C parser.\n");
+		std::cerr << "Info: Using experimental RE2C parser." << std::endl;
 		parser = new CG3::GPRE2C(ux_stdin, ux_stdout, ux_stderr);
 	}
 	else {
@@ -251,14 +252,14 @@ int main(int argc, char* argv[]) {
 	main_timer = clock();
 
 	if (parser->parse_grammar_from_file(options[GRAMMAR].value, locale_grammar, codepage_grammar)) {
-		u_fprintf(ux_stderr, "Error: Grammar could not be parsed - exiting!\n");
+		std::cerr << "Error: Grammar could not be parsed - exiting!" << std::endl;
 		return -1;
 	}
 
 	if (options[MAPPING_PREFIX].doesOccur) {
 		grammar->mapping_prefix = options[MAPPING_PREFIX].value[0];
 	}
-	std::cerr << "Reindexing grammar... " << std::endl;
+	//std::cerr << "Reindexing grammar..." << std::endl;
 	grammar->reindex();
 
 	delete parser;
@@ -272,23 +273,20 @@ int main(int argc, char* argv[]) {
 		std::cerr << grammar->rules_by_tag.find(tag_any->hash)->second->size() << " rules cannot be skipped by index." << std::endl;
 	}
 	if (grammar->has_dep) {
-		std::cerr << "Grammar has dependency rules: Yes" << std::endl;
-	}
-	else {
-		std::cerr << "Grammar has dependency rules: No" << std::endl;
+		std::cerr << "Grammar has dependency rules." << std::endl;
 	}
 
 	if (grammar->is_binary) {
 		if (options[GRAMMAR_INFO].doesOccur) {
-			u_fprintf(ux_stderr, "Error: Re-ordering statistics cannot be gathered with a binary grammar.\n");
+			std::cerr << "Error: Re-ordering statistics cannot be gathered with a binary grammar." << std::endl;
 			return -1;
 		}
 		if (options[GRAMMAR_BIN].doesOccur || options[GRAMMAR_OUT].doesOccur) {
-			u_fprintf(ux_stderr, "Error: Binary grammars cannot be rewritten.\n");
+			std::cerr << "Error: Binary grammars cannot be rewritten." << std::endl;
 			return -1;
 		}
 		if (options[STATISTICS].doesOccur) {
-			u_fprintf(ux_stderr, "Error: Statistics cannot be gathered with a binary grammar.\n");
+			std::cerr << "Error: Statistics cannot be gathered with a binary grammar." << std::endl;
 			return -1;
 		}
 	}
