@@ -30,13 +30,12 @@ int GrammarParser::parseSection(const UChar *line) {
 		u_fprintf(ux_stderr, "Error: No string provided at line %u - cannot continue!\n", result->curline);
 		return -1;
 	}
-	uint32_t nline = (uint32_t)result->rules.size();
-	result->sections.push_back(nline);
+	result->sections.push_back(result->lines);
 
 	const UChar *space = u_strchr(line, ' ');
 	if (space) {
 		space++;
-		result->addAnchor(space, nline);
+		result->addAnchor(space, result->lines);
 	}
 
 	in_section = true;

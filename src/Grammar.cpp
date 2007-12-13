@@ -267,6 +267,7 @@ void Grammar::reindex() {
 	rules.clear();
 	before_sections.clear();
 	after_sections.clear();
+	sections.clear();
 
 	stdext::hash_map<uint32_t, Tag*>::iterator iter_tags;
 	for (iter_tags = single_tags.begin() ; iter_tags != single_tags.end() ; iter_tags++) {
@@ -285,6 +286,8 @@ void Grammar::reindex() {
 		indexSets(iter_sets->first, iter_sets->second);
 	}
 
+	uint32Set sects;
+
 	std::map<uint32_t, Rule*>::iterator iter_rule;
 	for (iter_rule = rule_by_line.begin() ; iter_rule != rule_by_line.end() ; iter_rule++) {
 		if (iter_rule->second->section == -1) {
@@ -294,12 +297,15 @@ void Grammar::reindex() {
 			after_sections.push_back(iter_rule->second);
 		}
 		else {
+			sects.insert(iter_rule->second->section);
 			rules.push_back(iter_rule->second);
 		}
 		if (iter_rule->second->target) {
 			indexSetToRule(iter_rule->second->line, getSet(iter_rule->second->target));
 		}
 	}
+
+	sections.insert(sections.end(), sects.begin(), sects.end());
 }
 
 void Grammar::indexSetToRule(uint32_t r, Set *s) {
