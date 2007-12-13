@@ -415,6 +415,7 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 				fread(&u32tmp, sizeof(uint32_t), 1, input);
 				u32tmp = (uint32_t)ntohl(u32tmp);
 				s->single_tags.insert(u32tmp);
+				s->tags_set.insert(u32tmp);
 			}
 			fread(&u32tmp, sizeof(uint32_t), 1, input);
 			u32tmp = (uint32_t)ntohl(u32tmp);
@@ -423,6 +424,7 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 				fread(&u32tmp, sizeof(uint32_t), 1, input);
 				u32tmp = (uint32_t)ntohl(u32tmp);
 				s->tags.insert(u32tmp);
+				s->tags_set.insert(u32tmp);
 			}
 		}
 		else {
