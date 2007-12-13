@@ -168,7 +168,7 @@ int main(int argc, char* argv[]) {
 		locale_output = options[LOCALE_ALL].value;
 	}
 
-	fprintf(stderr, "Locales: default %s, input %s, output %s, grammar %s\n", locale_default, locale_input, locale_output, locale_grammar);
+	//fprintf(stderr, "Locales: default %s, input %s, output %s, grammar %s\n", locale_default, locale_input, locale_output, locale_grammar);
 
 	bool stdin_isfile = false;
 	bool stdout_isfile = false;
@@ -267,7 +267,7 @@ int main(int argc, char* argv[]) {
 	std::cerr << "Parsing grammar took " << (clock()-main_timer)/(double)CLOCKS_PER_SEC << " seconds." << std::endl;
 	main_timer = clock();
 
-	std::cerr << "Grammar has " << grammar->rule_by_line.size() << " rules, " << grammar->sets_by_contents.size() << " sets, " << grammar->single_tags.size() << " tags." << std::endl;
+	std::cerr << "Grammar has " << grammar->sections.size() << " sections, " << grammar->rule_by_line.size() << " rules, " << grammar->sets_by_contents.size() << " sets, " << grammar->single_tags.size() << " tags." << std::endl;
 	if (grammar->rules_by_tag.find(tag_any->hash) != grammar->rules_by_tag.end()) {
 		std::cerr << grammar->rules_by_tag.find(tag_any->hash)->second->size() << " rules cannot be skipped by index." << std::endl;
 	}
@@ -319,10 +319,10 @@ int main(int argc, char* argv[]) {
 			for (uint32_t j=0;j<grammar->rules.size();j++) {
 				grammar->rules[j]->reweight();
 			}
-			//*/
 			for (uint32_t i=0;i<grammar->sections.size()-1;i++) {
 				std::sort(&grammar->rules[grammar->sections[i]], &grammar->rules[grammar->sections[i+1]-1], CG3::Rule::cmp_quality);
 			}
+			//*/
 
 			CG3::GrammarWriter *writer = new CG3::GrammarWriter(grammar, ux_stderr);
 			writer->statistics = true;
