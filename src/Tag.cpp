@@ -38,6 +38,9 @@ Tag::~Tag() {
 	if (comparison_key) {
 		delete[] comparison_key;
 	}
+	if (regexp) {
+		uregex_close(regexp);
+	}
 }
 
 void Tag::parseTag(const UChar *to, UFILE *ux_stderr) {
@@ -287,4 +290,8 @@ void Tag::printTagRaw(UFILE *to, const Tag *tag) {
 	if (tag->type & T_REGEXP) {
 		u_fprintf(to, "r");
 	}
+}
+
+UChar *Tag::allocateUChars(uint32_t n) {
+	return new UChar[n];
 }
