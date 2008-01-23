@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE chapter SYSTEM "docbook-dtd-45/docbookx.dtd">
+
+<chapter id="binarygrammar">
+  <title>Binary Grammars</title>
+
+  <section id="binaryvstextual">
+    <title>Security of Binary vs. Textual</title>
+    <para>
+      Textual grammars are the human readable plain-text input grammars as described in the rest of this manual.
+      Binary grammars are the compiled versions of textual grammars.
+    </para>
+    <para>
+      For the purpose of commercial distribution, textual grammars are terribly insecure;
+      anyone can take your carefully constructed grammar and use it as a basis of their own work.
+      Binary grammars are more secure in that it takes an active decompilation to get anything human
+      readable, and even then it will be undocumented and look rather different from the original grammar.
+    </para>
+    <para>
+      As of release 0.8.9.3142, VISL CG-3 can create and use binary grammars.
+      At this point they are basically memory dumps of the compiled grammars and can be trivially
+      decompiled by modifying the sources a bit. Future releases will have options to strenghten the security
+      of the binary grammars by excluding disused parts from the compilation.
+    </para>
+  </section>
+
+  <section id="binaryspeed">
+    <title>Loading Speed of Binary Grammars</title>
+    <para>
+      Due to my current CG-3 textual parser being awfully slow, it is not recommended for production use;
+      the startup overhead is simply too great.
+      Binary grammars, however, are nearly instantaneous to load; there is only a minor re-indexing step
+      after the grammar itself is loaded.
+    </para>
+    <para>
+      Textual grammars that might take 5 seconds to parse will take 0.5 seconds to load from their binary form.
+    </para>
+  </section>
+
+  <section id="binaryhowto">
+    <title>How to...</title>
+    <para>
+      To compile a textual grammar to a binary form, use
+      <screen>
+        vislcg3 --grammar inputgrammar.txt --grammar-only --grammar-bin binarygrammar.cg3b
+      </screen>
+      (remember to set codepage if needed)
+    </para>
+    <para>
+      To later on use the binary grammar, simply do
+      <screen>
+        vislcg3 --grammar binarygrammar.cg3b
+      </screen>
+    </para>
+    <para>
+      VISL CG-3 will auto-detect binary grammars in that the first 4 bytes of the file are ['C','G','3','B'].
+      Binary grammars are neutral with regard to codepage and system endianness;
+      to maximize portability of grammars, strings are stored in UTF-8 and all integers are normalized.
+    </para>
+  </section>
+
+  <section id="binaryincompat">
+    <title>Incompatibilities</title>
+
+    <section id="binarygencg">
+      <title>vislcg / bincg / gencg</title>
+      <para>
+        Binary grammars generated with the older 'gencg' tool are not compatible with VISL CG-3 and
+        there are no plans to make them loadable. Nor are binary grammars generated with VISL CG-3 usable
+        with the older 'bincg'.
+      </para>
+    </section>
+
+    <section id="binarystatistics">
+      <title>--grammar-info, --grammar-out, --statistics</title>
+      <para>
+        Since binary grammars cannot be written back out in textual form, the command line options
+        --grammar-info, --grammar-out, and --statistics will not work in binary mode.
+      </para>
+    </section>
+  </section>
+</chapter>
