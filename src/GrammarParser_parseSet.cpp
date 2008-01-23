@@ -211,7 +211,7 @@ int GrammarParser::parseSet(const UChar *line) {
 		if (!set_op) {
 			set_op = readSetOperator(&space);
 			if (!set_op) {
-//				u_fprintf(ux_stderr, "Warning: Could not read in operator on line %u for set %S - assuming set alias.\n", result->curline, curset->name);
+				u_fprintf(ux_stderr, "Warning: Could not read in operator on line %u for set %S - assuming set alias.\n", result->curline, curset->name);
 				result->set_alias[res] = set_a;
 				break;
 			}
