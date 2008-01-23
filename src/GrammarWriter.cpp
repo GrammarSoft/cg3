@@ -118,6 +118,27 @@ int GrammarWriter::writeGrammar(UFILE *output) {
 	}
 	u_fprintf(output, "\n");
 
+	int32_t lsect = -999;
+	std::map<uint32_t, Rule*>::const_iterator rule_iter;
+	for (rule_iter = grammar->rule_by_line.begin() ; rule_iter != grammar->rule_by_line.end() ; rule_iter++) {
+		const Rule *r = rule_iter->second;
+		if (lsect != r->section) {
+			if (r->section == -2) {
+				u_fprintf(output, "AFTER-SECTIONS\n");
+			}
+			else if (r->section == -1) {
+				u_fprintf(output, "BEFORE-SECTIONS\n");
+			}
+			else {
+				u_fprintf(output, "\nSECTION\n");
+			}
+			lsect = r->section;
+		}
+		printRule(output, r);
+		u_fprintf(output, " ;\n");
+	}
+
+	/*
 	if (!grammar->before_sections.empty()) {
 		u_fprintf(output, "BEFORE-SECTIONS\n");
 		for (uint32_t j=0;j<grammar->before_sections.size();j++) {
@@ -141,6 +162,7 @@ int GrammarWriter::writeGrammar(UFILE *output) {
 			u_fprintf(output, " ;\n");
 		}
 	}
+	//*/
 
 	return 0;
 }
