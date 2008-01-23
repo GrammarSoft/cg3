@@ -85,8 +85,14 @@ int GrammarParser::parseAddMapReplaceAppend(const UChar *line, KEYWORDS key) {
 		rule->setName(lname);
 	}
 
-	if (space && space[0] && space[0] == '(') {
-		parseContextualTests(&space, rule);
+	if (space && space[0]) {
+		if (space[0] == '(') {
+			parseContextualTests(&space, rule);
+		}
+		else {
+			u_fprintf(ux_stderr, "Error: Garbage on line %u - expected contextual test, found '%S'!\n", result->curline, space);
+			return -1;
+		}
 	}
 
 	return 0;

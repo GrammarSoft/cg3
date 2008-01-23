@@ -20,6 +20,7 @@
 #include "Recycler.h"
 #include "Grammar.h"
 #include "GrammarParser.h"
+#include "TextualParser.h"
 #include "GPRE2C.h"
 #include "GrammarWriter.h"
 #include "BinaryGrammar.h"
@@ -237,6 +238,10 @@ int main(int argc, char* argv[]) {
 	else if (options[RE2C].doesOccur) {
 		std::cerr << "Info: Using experimental RE2C parser." << std::endl;
 		parser = new CG3::GPRE2C(ux_stdin, ux_stdout, ux_stderr);
+	}
+	else if (options[TPAR].doesOccur) {
+		std::cerr << "Info: Using experimental textual parser." << std::endl;
+		parser = new CG3::TextualParser(ux_stdin, ux_stdout, ux_stderr);
 	}
 	else {
 		parser = new CG3::GrammarParser(ux_stdin, ux_stdout, ux_stderr);
