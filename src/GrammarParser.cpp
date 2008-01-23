@@ -88,77 +88,79 @@ int GrammarParser::parseSingleLine(KEYWORDS key, const UChar *line) {
 	local = newlocal;
 	ux_packWhitespace(local);
 
+	int32_t retval = 0;
+
 	switch(key) {
 		case K_SELECT:
 		case K_REMOVE:
 		case K_IFF:
 		case K_DELIMIT:
 		case K_MATCH:
-			parseSelectRemoveIffDelimitMatch(local, key);
+			retval = parseSelectRemoveIffDelimitMatch(local, key);
 			break;
 		case K_ADD:
 		case K_MAP:
 		case K_REPLACE:
 		case K_APPEND:
-			parseAddMapReplaceAppend(local, key);
+			retval = parseAddMapReplaceAppend(local, key);
 			break;
 		case K_MAPPINGS:
 		case K_CORRECTIONS:
 		case K_BEFORE_SECTIONS:
-			parseBeforeSections(local);
+			retval = parseBeforeSections(local);
 			break;
 		case K_AFTER_SECTIONS:
-			parseAfterSections(local);
+			retval = parseAfterSections(local);
 			break;
 		case K_SECTION:
 		case K_CONSTRAINTS:
-			parseSection(local);
+			retval = parseSection(local);
 			break;
 		case K_ANCHOR:
-			parseAnchor(local);
+			retval = parseAnchor(local);
 			break;
 		case K_SUBSTITUTE:
-			parseSubstitute(local);
+			retval = parseSubstitute(local);
 			break;
 		case K_LIST:
-			parseList(local);
+			retval = parseList(local);
 			break;
 		case K_SET:
-			parseSet(local);
+			retval = parseSet(local);
 			break;
 		case K_DELIMITERS:
-			parseDelimiters(local);
+			retval = parseDelimiters(local);
 			break;
 		case K_SOFT_DELIMITERS:
-			parseSoftDelimiters(local);
+			retval = parseSoftDelimiters(local);
 			break;
 		case K_PREFERRED_TARGETS:
-			parsePreferredTargets(local);
+			retval = parsePreferredTargets(local);
 			break;
 		case K_REMVARIABLE:
 		case K_SETVARIABLE:
-			parseRemSetVariable(local, key);
+			retval = parseRemSetVariable(local, key);
 			break;
 		case K_SETPARENT:
 		case K_SETCHILD:
-			parseSetParentChild(local, key);
+			retval = parseSetParentChild(local, key);
 			break;
 		case K_SETRELATION:
 		case K_REMRELATION:
-			parseSetRemRelation(local, key);
+			retval = parseSetRemRelation(local, key);
 			break;
 		case K_SETRELATIONS:
 		case K_REMRELATIONS:
-			parseSetRemRelations(local, key);
+			retval = parseSetRemRelations(local, key);
 			break;
 		case K_MAPPING_PREFIX:
-			parseMappingPrefix(local);
+			retval = parseMappingPrefix(local);
 			break;
 		default:
 			break;
 	}
 
-	return 0;
+	return retval;
 }
 
 int GrammarParser::parse_grammar_from_ufile(UFILE *input) {
@@ -225,7 +227,9 @@ int GrammarParser::parse_grammar_from_ufile(UFILE *input) {
 					result->curline = (*keys.begin()).first;
 					UChar *line = lastline;
 					if (keys[result->curline]) {
-						parseSingleLine(keys[result->curline], line);
+						if (parseSingleLine(keys[result->curline], line) != 0) {
+							return -1;
+						}
 					}
 					keys.erase(result->curline);
 					lastline[0] = 0;
@@ -244,7 +248,9 @@ int GrammarParser::parse_grammar_from_ufile(UFILE *input) {
 		result->curline = (*keys.begin()).first;
 		UChar *line = lastline;
 		if (keys[result->curline]) {
-			parseSingleLine(keys[result->curline], line);
+			if (parseSingleLine(keys[result->curline], line) != 0) {
+				return -1;
+			}
 		}
 		keys.erase(result->curline);
 		lastline[0] = 0;
