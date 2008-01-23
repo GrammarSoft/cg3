@@ -72,7 +72,7 @@ int main(int argc, char* argv[]) {
 		fprintf(stderr, " -g or --grammar          Specifies the grammar file to use for disambiguation.\n");
 		fprintf(stderr, " -p or --vislcg-compat    Tells the grammar compiler to be compatible with older VISLCG syntax.\n");
 		fprintf(stderr, " --grammar-out            Writes the compiled grammar back out in textual form to a file.\n");
-		//fprintf(stderr, " --grammar-bin            Writes the compiled grammar back out in binary form to a file.\n");
+		fprintf(stderr, " --grammar-bin            Writes the compiled grammar back out in binary form to a file.\n");
 		fprintf(stderr, " --grammar-info           Writes the compiled grammar back out in textual form to a file, with lots of statistics and information.\n");
 		fprintf(stderr, " --grammar-only           Compiles the grammar only.\n");
 		fprintf(stderr, " --trace                  Prints debug output alongside with normal output.\n");
