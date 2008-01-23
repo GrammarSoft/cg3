@@ -47,6 +47,7 @@
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="probabilistic.xml" />
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="sets.xml" />
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="tags.xml" />
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="binarygrammar.xml" />
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="runtimeoptions.xml" />
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="inputcommands.xml" />
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="cgglossary.xml" />
