@@ -138,32 +138,6 @@ int GrammarWriter::writeGrammar(UFILE *output) {
 		u_fprintf(output, " ;\n");
 	}
 
-	/*
-	if (!grammar->before_sections.empty()) {
-		u_fprintf(output, "BEFORE-SECTIONS\n");
-		for (uint32_t j=0;j<grammar->before_sections.size();j++) {
-			printRule(output, grammar->before_sections[j]);
-			u_fprintf(output, " ;\n");
-		}
-	}
-
-	for (uint32_t i=1;i<grammar->sections.size();i++) {
-		u_fprintf(output, "\nSECTION\n");
-		for (uint32_t j=grammar->sections[i-1];j<grammar->sections[i];j++) {
-			printRule(output, grammar->rules[j]);
-			u_fprintf(output, " ;\n");
-		}
-	}
-
-	if (!grammar->after_sections.empty()) {
-		u_fprintf(output, "AFTER-SECTIONS\n");
-		for (uint32_t j=0;j<grammar->after_sections.size();j++) {
-			printRule(output, grammar->after_sections[j]);
-			u_fprintf(output, " ;\n");
-		}
-	}
-	//*/
-
 	return 0;
 }
 
