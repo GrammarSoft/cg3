@@ -28,6 +28,8 @@ namespace CG3 {
 		static Recycler *instance();
 		static void cleanup();
 
+		void trim();
+
 		Cohort *new_Cohort(SingleWindow*);
 		void delete_Cohort(Cohort*);
 
