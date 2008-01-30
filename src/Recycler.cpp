@@ -79,6 +79,28 @@ Recycler::~Recycler() {
 	}
 }
 
+void Recycler::trim() {
+	while (Cohorts.size() > 150) {
+		delete Cohorts.back();
+		Cohorts.pop_back();
+	}
+
+	while (Readings.size() > 400) {
+		delete Readings.back();
+		Readings.pop_back();
+	}
+
+	while (uint32Sets.size() > 500) {
+		delete uint32Sets.back();
+		uint32Sets.pop_back();
+	}
+
+	while (uint32HashSets.size() > 400) {
+		delete uint32HashSets.back();
+		uint32HashSets.pop_back();
+	}
+}
+
 Recycler *Recycler::instance() {
 	if (!gRecycler) {
 		gRecycler = new Recycler();

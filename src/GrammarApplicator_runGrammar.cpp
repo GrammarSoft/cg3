@@ -202,6 +202,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 				runGrammarOnWindow(cWindow);
 				if (numWindows % resetAfter == 0) {
 					resetIndexes();
+					r->trim();
 				}
 				/*
 				u_fprintf(ux_stderr, "Progress: L:%u, W:%u, C:%u, R:%u\r", lines, numWindows, numCohorts, numReadings);
@@ -307,6 +308,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 						runGrammarOnWindow(cWindow);
 						if (numWindows % resetAfter == 0) {
 							resetIndexes();
+							r->trim();
 						}
 						/*
 						u_fprintf(ux_stderr, "Progress: L:%u, W:%u, C:%u, R:%u\r", lines, numWindows, numCohorts, numReadings);
