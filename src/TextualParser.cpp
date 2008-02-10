@@ -195,8 +195,8 @@ int TextualParser::parse_grammar_from_file(const char *fname, const char *loc, c
 		u_fprintf(ux_stderr, "Error: Cannot stat %s due to error %d - bailing out!\n", filename, error);
 		exit(1);
 	} else {
-		result->last_modified = (uint32_t)_stat.st_mtime;
-		result->grammar_size = (uint32_t)_stat.st_size;
+		result->last_modified = _stat.st_mtime;
+		result->grammar_size = _stat.st_size;
 	}
 
 	result->setName(filename);
@@ -209,7 +209,7 @@ int TextualParser::parse_grammar_from_file(const char *fname, const char *loc, c
 
 	UChar *data = new UChar[result->grammar_size*4];
 	memset(data, result->grammar_size*4, sizeof(UChar));
-	uint32_t read = (uint32_t)u_file_read(data, result->grammar_size*4, grammar);
+	uint32_t read = u_file_read(data, result->grammar_size*4, grammar);
 	if (read >= result->grammar_size*4-1) {
 		u_fprintf(ux_stderr, "Error: Converting from underlying codepage to UTF-16 exceeded factor 4 buffer.\n", filename);
 		return -1;

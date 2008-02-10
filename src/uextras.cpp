@@ -31,7 +31,7 @@ bool ux_isNewline(const UChar32 current, const UChar32 previous) {
 
 bool ux_trim(UChar *totrim) {
 	bool retval = false;
-	int length = u_strlen(totrim);
+	unsigned int length = u_strlen(totrim);
 	if (totrim && length) {
 		while(u_isWhitespace(totrim[length-1])) {
 			length--;
@@ -46,8 +46,8 @@ bool ux_trim(UChar *totrim) {
 			while(u_isWhitespace(current[0])) {
 				current++;
 			}
-			uint32_t num_spaces = (uint32_t)((current-totrim)-1);
-			for (int i=0;i<length;i++) {
+			size_t num_spaces = ((current-totrim)-1);
+			for (unsigned int i=0;i<length;i++) {
 				totrim[i] = totrim[i+num_spaces+1];
 			}
 		}
@@ -57,7 +57,7 @@ bool ux_trim(UChar *totrim) {
 
 bool ux_packWhitespace(UChar *totrim) {
 	bool retval = false;
-	int length = u_strlen(totrim);
+	unsigned int length = u_strlen(totrim);
 	if (totrim && length) {
 		UChar *space = 0;
 		UChar *current = totrim;
@@ -74,7 +74,7 @@ bool ux_packWhitespace(UChar *totrim) {
 					num_spaces--;
 					retval = true;
 					length = u_strlen(current);
-					for (int i=0;i<=length;i++) {
+					for (unsigned int i=0;i<=length;i++) {
 						space[i] = current[i];
 					}
 					current = space;
@@ -140,7 +140,7 @@ int ux_isSetOp(const UChar *it) {
 }
 
 bool ux_findMatchingParenthesis(const UChar *structure, int pos, int *result) {
-	uint32_t len = (uint32_t)u_strlen(structure);
+	uint32_t len = u_strlen(structure);
 	uint32_t paren = 0;
 	for (uint32_t i=pos;i<len;i++) {
 		if (structure[i] == ')' && structure[i-1] != '\\') {

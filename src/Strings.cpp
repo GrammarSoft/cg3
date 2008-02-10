@@ -77,16 +77,16 @@ namespace CG3 {
 			init_keyword_single("SETRELATIONS",       K_SETRELATIONS);
 			init_keyword_single("REMRELATIONS",       K_REMRELATIONS);
 
-			for (int i=0;i<KEYWORD_COUNT;i++) {
+			for (unsigned int i=0;i<KEYWORD_COUNT;i++) {
 				if (!keywords[i]) {
-					return -(i+1); // One did not get set properly. Returns -i to pinpoint which.
+					return i; // One did not get set properly. Returns i to pinpoint which.
 				}
 			}
 			return 0;
 		}
 
 		int free_keywords() {
-			for (int i=0;i<KEYWORD_COUNT;i++) {
+			for (unsigned int i=0;i<KEYWORD_COUNT;i++) {
 				if (keywords[i]) {
 					delete[] keywords[i];
 				}
@@ -139,16 +139,16 @@ namespace CG3 {
 			init_string_single("CGCMD:IGNORE", S_CMD_IGNORE);
 			init_string_single("CGCMD:RESUME", S_CMD_RESUME);
 
-			for (int i=0;i<STRINGS_COUNT;i++) {
+			for (unsigned int i=0;i<STRINGS_COUNT;i++) {
 				if (!stringbits[i]) {
-					return -(i+1); // One did not get set properly. Returns -i to pinpoint which.
+					return i; // One did not get set properly. Returns i to pinpoint which.
 				}
 			}
 			return 0;
 		}
 
 		int free_strings() {
-			for (int i=0;i<STRINGS_COUNT;i++) {
+			for (unsigned int i=0;i<STRINGS_COUNT;i++) {
 				if (stringbits[i]) {
 					delete[] stringbits[i];
 				}

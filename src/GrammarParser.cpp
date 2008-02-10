@@ -195,9 +195,9 @@ int GrammarParser::parse_grammar_from_ufile(UFILE *input) {
 			ux_cutComments(line, ';', true);
 //		}
 
-		int length = u_strlen(line);
+		unsigned int length = u_strlen(line);
 		bool notnull = false;
-		for (int i=0;i<length;i++) {
+		for (unsigned int i=0;i<length;i++) {
 			if (!u_isWhitespace(line[i])) {
 				notnull = true;
 				break;
@@ -209,7 +209,7 @@ int GrammarParser::parse_grammar_from_ufile(UFILE *input) {
 			KEYWORDS keyword = K_IGNORE;
 			for (uint32_t i=1;i<KEYWORD_COUNT;i++) {
 				UChar *pos = 0;
-				int length = 0;
+				unsigned int length = 0;
 				if ((pos = u_strstr(line, keywords[i])) != 0) {
 					length = u_strlen(keywords[i]);
 					if (
@@ -276,7 +276,7 @@ int GrammarParser::parse_grammar_from_file(const char *fname, const char *loc, c
 		u_fprintf(ux_stderr, "Error: Cannot stat %s due to error %d - bailing out!\n", filename, error);
 		exit(1);
 	} else {
-		result->last_modified = (uint32_t)_stat.st_mtime;
+		result->last_modified = _stat.st_mtime;
 		result->grammar_size = (uint32_t)_stat.st_size;
 	}
 

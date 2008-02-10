@@ -56,7 +56,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, const int32_
 		// ToDo: Update list of in/valid rules upon MAP, ADD, REPLACE, APPEND, SUBSTITUTE; add tags + always add tag_any
 		bool rule_is_valid = false;
 
-		for (uint32_t c=1 ; c < current->cohorts.size() ; c++) {
+		for (size_t c=1 ; c < current->cohorts.size() ; c++) {
 			Cohort *cohort = current->cohorts[c];
 			if (cohort->readings.empty()) {
 				continue;
@@ -232,12 +232,12 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, const int32_
 
 						nwin->appendCohort(cCohort);
 
-						uint32_t nc = c+1;
+						size_t nc = c+1;
 						for ( ; nc < current->cohorts.size() ; nc++) {
 							current->cohorts.at(nc)->parent = nwin;
 							nwin->appendCohort(current->cohorts.at(nc));
 						}
-						c = (uint32_t)current->cohorts.size()-c;
+						c = current->cohorts.size()-c;
 						for (nc = 0 ; nc < c-1 ; nc++) {
 							current->cohorts.pop_back();
 						}
@@ -529,12 +529,12 @@ label_runGrammarOnWindow_begin:
 	}
 
 	if (!grammar->rules.empty()) {
-		uint32_t smax = (uint32_t)grammar->sections.size();
+		size_t smax = grammar->sections.size();
 		if (sections && sections < smax) {
 			smax = sections;
 		}
-		for (uint32_t i=0;i<smax;) {
-			uint32_t rv = runRulesOnWindow(current, 0, i);
+		for (size_t i=0;i<smax;) {
+			uint32_t rv = runRulesOnWindow(current, 0, (int32_t)i);
 			if (rv & RV_DELIMITED) {
 				goto label_runGrammarOnWindow_begin;
 			}
