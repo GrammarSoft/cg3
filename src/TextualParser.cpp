@@ -43,11 +43,11 @@ TextualParser::~TextualParser() {
 
 inline bool ISNL(const UChar c) {
 	return (
-	   c == 0x2028 // Unicode Line Seperator
-	|| c == 0x2029 // Unicode Paragraph Seperator
-	|| c == 0x0085 // EBCDIC NEL
-	|| c == 0x000C // Form Feed
-	|| c == 0x000A // ASCII \n
+	   c == 0x2028L // Unicode Line Seperator
+	|| c == 0x2029L // Unicode Paragraph Seperator
+	|| c == 0x0085L // EBCDIC NEL
+	|| c == 0x000CL // Form Feed
+	|| c == 0x000AL // ASCII \n
 	);
 }
 
@@ -121,7 +121,7 @@ int TextualParser::parseFromUChar(UChar *input) {
 		if (*p == '#') {
 			result->lines += SKIPLN(&p);
 		}
-		if (*p == 0x000D) {
+		if (*p == 0x000DL) {
 			p++;
 			continue;
 		}

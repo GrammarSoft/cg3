@@ -19,7 +19,7 @@
 
 using namespace CG3;
 
-Cohort *GrammarApplicator::runSingleTest(SingleWindow *sWindow, uint32_t i, const ContextualTest *test, bool *brk, bool *retval) {
+Cohort *GrammarApplicator::runSingleTest(SingleWindow *sWindow, size_t i, const ContextualTest *test, bool *brk, bool *retval) {
 	Cohort *cohort = sWindow->cohorts.at(i);
 	*retval = doesSetMatchCohortNormal(cohort, test->target);
 	bool foundfirst = *retval;
@@ -58,10 +58,10 @@ Cohort *GrammarApplicator::runSingleTest(SingleWindow *sWindow, uint32_t i, cons
 	return cohort;
 }
 
-Cohort *GrammarApplicator::runContextualTest(SingleWindow *sWindow, const uint32_t position, const ContextualTest *test) {
+Cohort *GrammarApplicator::runContextualTest(SingleWindow *sWindow, const size_t position, const ContextualTest *test) {
 	bool retval = true;
 	clock_t tstamp = 0;
-	int32_t pos = position + test->offset;
+	int32_t pos = (int32_t)(position + test->offset);
 	Cohort *cohort = 0;
 
 	if (statistics) {
