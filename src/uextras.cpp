@@ -20,13 +20,13 @@
 using namespace CG3::Strings;
 
 bool ux_isNewline(const UChar32 current, const UChar32 previous) {
-	return (current == 0x0D0A // ASCII \r\n
-	|| current == 0x2028 // Unicode Line Seperator
-	|| current == 0x2029 // Unicode Paragraph Seperator
-	|| current == 0x0085 // EBCDIC NEL
-	|| current == 0x000C // Form Feed
-	|| current == 0x000A // ASCII \n
-	|| previous == 0x000D); // ASCII \r
+	return (current == 0x0D0AL // ASCII \r\n
+	|| current == 0x2028L // Unicode Line Seperator
+	|| current == 0x2029L // Unicode Paragraph Seperator
+	|| current == 0x0085L // EBCDIC NEL
+	|| current == 0x000CL // Form Feed
+	|| current == 0x000AL // ASCII \n
+	|| previous == 0x000DL); // ASCII \r
 }
 
 bool ux_trim(UChar *totrim) {
