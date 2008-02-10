@@ -48,7 +48,8 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 		}
 	}
 
-#define BUFFER_SIZE (131072)
+#undef BUFFER_SIZE
+#define BUFFER_SIZE (131072L)
 	UChar _line[BUFFER_SIZE];
 	UChar *line = _line;
 	UChar _cleaned[BUFFER_SIZE];
