@@ -71,18 +71,18 @@ Cohort *GrammarApplicator::runContextualTest(SingleWindow *sWindow, const size_t
 	// ToDo: (NOT *) and (*C) tests can be cached
 	if (test->pos & POS_ABSOLUTE) {
 		if (test->offset < 0) {
-			pos = ((uint32_t)sWindow->cohorts.size()-1) - test->offset;
+			pos = ((int32_t)sWindow->cohorts.size()-1) - test->offset;
 		}
 		else {
 			pos = test->offset;
 		}
 	}
 	if (pos >= 0) {
-		if ((uint32_t)pos >= sWindow->cohorts.size() && (test->pos & (POS_SPAN_RIGHT|POS_SPAN_BOTH)) && sWindow->next) {
+		if (pos >= (int32_t)sWindow->cohorts.size() && (test->pos & (POS_SPAN_RIGHT|POS_SPAN_BOTH)) && sWindow->next) {
 			sWindow = sWindow->next;
 			pos = 0;
 		}
-		if ((uint32_t)pos < sWindow->cohorts.size()) {
+		if (pos < (int32_t)sWindow->cohorts.size()) {
 			cohort = sWindow->cohorts.at(pos);
 		}
 	}
@@ -91,7 +91,7 @@ Cohort *GrammarApplicator::runContextualTest(SingleWindow *sWindow, const size_t
 			sWindow = sWindow->previous;
 			pos = (int32_t)sWindow->cohorts.size()-1;
 		}
-		if ((uint32_t)pos < sWindow->cohorts.size()) {
+		if (pos < (int32_t)sWindow->cohorts.size()) {
 			cohort = sWindow->cohorts.at(pos);
 		}
 	}
@@ -153,11 +153,11 @@ Cohort *GrammarApplicator::runContextualTest(SingleWindow *sWindow, const size_t
 				}
 				if (i == 0 && (test->pos & (POS_SPAN_BOTH|POS_SPAN_LEFT) || always_span) && sWindow->previous) {
 					sWindow = sWindow->previous;
-					i = (uint32_t)sWindow->cohorts.size()-1;
+					i = (int32_t)sWindow->cohorts.size()-1;
 				}
 			}
 		}
-		else if (test->offset > 0 && (uint32_t)pos <= sWindow->cohorts.size() && (test->pos & (POS_SCANALL|POS_SCANFIRST))) {
+		else if (test->offset > 0 && pos <= (int32_t)sWindow->cohorts.size() && (test->pos & (POS_SCANALL|POS_SCANFIRST))) {
 			for (uint32_t i=pos;i<sWindow->cohorts.size();i++) {
 				bool brk = false;
 				cohort = runSingleTest(sWindow, i, test, &brk, &retval);
@@ -177,7 +177,7 @@ Cohort *GrammarApplicator::runContextualTest(SingleWindow *sWindow, const size_t
 					cohort = nc;
 					retval = true;
 					sWindow = cohort->parent;
-					pos = cohort->local_number;
+					pos = (int32_t)cohort->local_number;
 				}
 				else {
 					retval = false;
