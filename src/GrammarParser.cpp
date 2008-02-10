@@ -277,7 +277,7 @@ int GrammarParser::parse_grammar_from_file(const char *fname, const char *loc, c
 		exit(1);
 	} else {
 		result->last_modified = _stat.st_mtime;
-		result->grammar_size = (uint32_t)_stat.st_size;
+		result->grammar_size = _stat.st_size;
 	}
 
 	result->setName(filename);
