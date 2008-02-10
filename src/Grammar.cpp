@@ -30,7 +30,7 @@ Grammar::Grammar() {
 	soft_delimiters = 0;
 	tag_any = 0;
 	mapping_prefix = '@';
-	srand((uint32_t)time(0));
+	srand((unsigned int)time(0));
 }
 
 Grammar::~Grammar() {

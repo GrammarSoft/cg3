@@ -224,8 +224,8 @@ bool GrammarApplicator::doesSetMatchReading(Reading *reading, const uint32_t set
 			}
 		}
 		else {
-			uint32_t size = (uint32_t)theset->sets.size();
-			for (uint32_t i=0;i<size;i++) {
+			size_t size = theset->sets.size();
+			for (size_t i=0;i<size;i++) {
 				bool match = doesSetMatchReading(reading, theset->sets.at(i), bypass_index);
 				bool failfast = false;
 				while (i < size-1 && theset->set_ops.at(i) != S_OR) {
