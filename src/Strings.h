@@ -19,7 +19,8 @@
 #define __STRINGS_H
 
 #include "stdafx.h"
-#define BUFFER_SIZE (131072)
+#undef BUFFER_SIZE
+#define BUFFER_SIZE (131072L)
 
 namespace CG3 {
 	namespace Strings {

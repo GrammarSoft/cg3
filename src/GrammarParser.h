@@ -18,7 +18,8 @@
 #define __GRAMMARPARSER_H
 
 #include "IGrammarParser.h"
-#define BUFFER_SIZE (131072)
+#undef BUFFER_SIZE
+#define BUFFER_SIZE (131072L)
 
 namespace CG3 {
 	class GrammarParser : public IGrammarParser {
