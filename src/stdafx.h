@@ -52,12 +52,12 @@
 
 inline uint32_t hash_sdbm_uchar(const UChar *str, uint32_t hash) {
 	if (hash == 0) {
-		hash = 705577479;
+		hash = 705577479L;
 	}
     UChar c = 0;
 
 	while ((c = *str++) != 0) {
-        hash = c + (hash << 6) + (hash << 16) - hash;
+        hash = c + (hash << 6L) + (hash << 16L) - hash;
 	}
 
     return hash;
@@ -65,12 +65,12 @@ inline uint32_t hash_sdbm_uchar(const UChar *str, uint32_t hash) {
 
 inline uint32_t hash_sdbm_char(const char *str, uint32_t hash) {
 	if (hash == 0) {
-		hash = 705577479;
+		hash = 705577479L;
 	}
     UChar c = 0;
 
 	while ((c = *str++) != 0) {
-        hash = c + (hash << 6) + (hash << 16) - hash;
+        hash = c + (hash << 6L) + (hash << 16L) - hash;
 	}
 
     return hash;
@@ -78,9 +78,9 @@ inline uint32_t hash_sdbm_char(const char *str, uint32_t hash) {
 
 inline uint32_t hash_sdbm_uint32_t(const uint32_t c, uint32_t hash) {
 	if (hash == 0) {
-		hash = 705577479;
+		hash = 705577479L;
 	}
-    hash = c + (hash << 6) + (hash << 16) - hash;
+    hash = c + (hash << 6L) + (hash << 16L) - hash;
     return hash;
 }
 
