@@ -32,7 +32,7 @@ namespace CG3 {
 
 		bool has_dep;
 		bool is_binary;
-		uint32_t last_modified;
+		time_t last_modified;
 		uint32_t grammar_size;
 		UChar mapping_prefix;
 		UChar *name;
