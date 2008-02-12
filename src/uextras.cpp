@@ -33,7 +33,7 @@ bool ux_trim(UChar *totrim) {
 	bool retval = false;
 	unsigned int length = u_strlen(totrim);
 	if (totrim && length) {
-		while(u_isWhitespace(totrim[length-1])) {
+		while(length >= 1 && u_isWhitespace(totrim[length-1])) {
 			length--;
 		}
 		if (u_isWhitespace(totrim[length])) {
@@ -143,15 +143,17 @@ bool ux_findMatchingParenthesis(const UChar *structure, int pos, int *result) {
 	uint32_t len = u_strlen(structure);
 	uint32_t paren = 0;
 	for (uint32_t i=pos;i<len;i++) {
-		if (structure[i] == ')' && structure[i-1] != '\\') {
-			paren--;
-			if (paren == 0) {
-				*result = i;
-				return true;
+		if (i == 0 || structure[i-1] != '\\') {
+			if (structure[i] == ')') {
+				paren--;
+				if (paren == 0) {
+					*result = i;
+					return true;
+				}
 			}
-		}
-		if (structure[i] == '(' && structure[i-1] != '\\') {
-			paren++;
+			if (structure[i] == '(') {
+				paren++;
+			}
 		}
 	}
 	return false;
