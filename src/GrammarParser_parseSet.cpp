@@ -74,6 +74,7 @@ uint32_t GrammarParser::readSingleSet(UChar **paren) {
 				temp[0] = 0;
 				if (composite[0]) {
 					CG3::Tag *tag = result->allocateTag(composite);
+					tag = result->addTag(tag);
 					result->addTagToCompositeTag(tag, ctag);
 				}
 
@@ -82,6 +83,7 @@ uint32_t GrammarParser::readSingleSet(UChar **paren) {
 			}
 			if (composite[0]) {
 				CG3::Tag *tag = result->allocateTag(composite);
+				tag = result->addTag(tag);
 				result->addTagToCompositeTag(tag, ctag);
 			}
 
@@ -145,7 +147,7 @@ uint32_t GrammarParser::readTagList(UChar **paren, uint32List *taglist) {
 					CG3::Tag *tag = result->allocateTag(composite);
 					//tag->parseTag(composite, ux_stderr);
 					tag->rehash();
-					result->addTag(tag);
+					tag = result->addTag(tag);
 					taglist->push_back(tag->hash);
 					retval++;
 				}
@@ -157,7 +159,7 @@ uint32_t GrammarParser::readTagList(UChar **paren, uint32List *taglist) {
 				CG3::Tag *tag = result->allocateTag(composite);
 				//tag->parseTag(composite, ux_stderr);
 				tag->rehash();
-				result->addTag(tag);
+				tag = result->addTag(tag);
 				taglist->push_back(tag->hash);
 				retval++;
 			}

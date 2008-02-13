@@ -70,7 +70,7 @@ int GrammarParser::parseSelectRemoveIffDelimitMatch(const UChar *line, KEYWORDS 
 	if (wordform) {
 		Tag *wform = result->allocateTag(wordform);
 		rule->wordform = wform->rehash();
-		result->addTag(wform);
+		wform = result->addTag(wform);
 	}
 
 	rule->target = res;

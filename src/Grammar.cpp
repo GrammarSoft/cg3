@@ -107,7 +107,7 @@ void Grammar::addPreferredTarget(UChar *to) {
 	Tag *tag = new Tag();
 	tag->parseTag(to, ux_stderr);
 	tag->rehash();
-	addTag(tag);
+	tag = addTag(tag);
 	preferred_targets.push_back(tag->hash);
 }
 void Grammar::addSet(Set *to) {
@@ -205,23 +205,28 @@ Tag *Grammar::allocateTag(const UChar *tag) {
 	fresh->parseTag(tag, ux_stderr);
 	return fresh;
 }
-void Grammar::addTag(Tag *simpletag) {
+Tag *Grammar::addTag(Tag *simpletag) {
 	if (simpletag && simpletag->tag) {
 		simpletag->rehash();
 		if (single_tags.find(simpletag->hash) != single_tags.end()) {
 			if (u_strcmp(single_tags[simpletag->hash]->tag, simpletag->tag) != 0) {
 				u_fprintf(ux_stderr, "Warning: Hash collision between %S and %S!\n", single_tags[simpletag->hash]->tag, simpletag->tag);
 			}
-			delete single_tags[simpletag->hash];
+			Tag *t = single_tags[simpletag->hash];
+			destroyTag(simpletag);
+			return t;
 		}
-		single_tags[simpletag->hash] = simpletag;
+		else {
+			single_tags[simpletag->hash] = simpletag;
+			return single_tags[simpletag->hash];
+		}
 	} else {
 		u_fprintf(ux_stderr, "Error: Attempted to add empty tag to grammar!\n");
 	}
+	return 0;
 }
 void Grammar::addTagToCompositeTag(Tag *simpletag, CompositeTag *tag) {
 	if (simpletag && simpletag->tag) {
-		addTag(simpletag);
 		tag->addTag(simpletag->hash);
 	} else {
 		u_fprintf(ux_stderr, "Error: Attempted to add empty tag to grammar and composite tag!\n");

@@ -49,6 +49,7 @@ int GrammarParser::parseDelimiters(const UChar *line) {
 			if (u_strlen(paren)) {
 				CG3::CompositeTag *ctag = result->allocateCompositeTag();
 				CG3::Tag *tag = result->allocateTag(paren);
+				tag = result->addTag(tag);
 				result->addTagToCompositeTag(tag, ctag);
 				result->addCompositeTagToSet(curset, ctag);
 				ctag = 0;
@@ -75,6 +76,7 @@ int GrammarParser::parseDelimiters(const UChar *line) {
 					temp[0] = 0;
 					if (composite[0]) {
 						CG3::Tag *tag = result->allocateTag(composite);
+						tag = result->addTag(tag);
 						result->addTagToCompositeTag(tag, ctag);
 					}
 
@@ -83,6 +85,7 @@ int GrammarParser::parseDelimiters(const UChar *line) {
 				}
 				if (composite[0]) {
 					CG3::Tag *tag = result->allocateTag(composite);
+					tag = result->addTag(tag);
 					result->addTagToCompositeTag(tag, ctag);
 				}
 
@@ -100,6 +103,7 @@ int GrammarParser::parseDelimiters(const UChar *line) {
 			if (u_strlen(paren)) {
 				CG3::CompositeTag *ctag = result->allocateCompositeTag();
 				CG3::Tag *tag = result->allocateTag(paren);
+				tag = result->addTag(tag);
 				result->addTagToCompositeTag(tag, ctag);
 				result->addCompositeTagToSet(curset, ctag);
 			}
