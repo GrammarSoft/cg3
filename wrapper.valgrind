@@ -1,2 +1,2 @@
 #!/bin/bash
-valgrind /usr/local/bin/vislcg3 $@
+valgrind --leak-check=full -v /usr/local/bin/vislcg3 $@
