@@ -64,7 +64,7 @@ int GrammarParser::parseSubstitute(const UChar *line) {
 	if (wordform) {
 		Tag *wform = result->allocateTag(wordform);
 		rule->wordform = wform->rehash();
-		result->addTag(wform);
+		wform = result->addTag(wform);
 	}
 
 	readTagList(&space, &rule->sublist);
