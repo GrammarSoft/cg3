@@ -80,7 +80,7 @@ namespace CG3 {
 		Tag *allocateTag();
 		Tag *allocateTag(const UChar *tag);
 		void destroyTag(Tag *tag);
-		void addTag(Tag *simpletag);
+		Tag *addTag(Tag *simpletag);
 		void addTagToCompositeTag(Tag *simpletag, CompositeTag *tag);
 
 		void addCompositeTag(CompositeTag *tag);

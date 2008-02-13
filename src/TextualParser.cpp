@@ -160,6 +160,7 @@ int TextualParser::parseFromUChar(UChar *input) {
 					gbuffers[0][l] = 0;
 					CompositeTag *ct = result->allocateCompositeTag();
 					Tag *t = result->allocateTag(gbuffers[0]);
+					t = result->addTag(t);
 					result->addTagToCompositeTag(t, ct);
 					result->addCompositeTagToSet(result->delimiters, ct);
 					p = n;

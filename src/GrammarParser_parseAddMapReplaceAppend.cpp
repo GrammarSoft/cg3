@@ -68,7 +68,7 @@ int GrammarParser::parseAddMapReplaceAppend(const UChar *line, KEYWORDS key) {
 	if (wordform) {
 		Tag *wform = result->allocateTag(wordform);
 		rule->wordform = wform->rehash();
-		result->addTag(wform);
+		wform = result->addTag(wform);
 	}
 
 	readTagList(&space, &rule->maplist);

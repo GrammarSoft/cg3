@@ -71,6 +71,7 @@ parseCompositeTag_start:
 		buffer[length-1] = 0;
 		u_strncpy(buffer, marker, (int32_t)length-1);
 		CG3::Tag *tag = result->allocateTag(buffer);
+		tag = result->addTag(tag);
 		result->addTagToCompositeTag(tag, ctag);
 		delete[] buffer;
 		marker = YYCURSOR;
@@ -116,6 +117,7 @@ parseInlineSet_start:
 		buffer[length-1] = 0;
 		u_strncpy(buffer, marker, (int32_t)length-1);
 		CG3::Tag *tag = result->allocateTag(buffer);
+		tag = result->addTag(tag);
 		result->addTagToCompositeTag(tag, ctag);
 		delete[] buffer;
 		marker = YYCURSOR;
@@ -224,6 +226,7 @@ parseTagList_start:
 		u_strncpy(buffer, marker, (int32_t)length-1);
 		CG3::CompositeTag *ctag = result->allocateCompositeTag();
 		CG3::Tag *tag = result->allocateTag(buffer);
+		tag = result->addTag(tag);
 		result->addTagToCompositeTag(tag, ctag);
 		result->addCompositeTagToSet(set, ctag);
 		delete[] buffer;
@@ -270,7 +273,7 @@ parseMappingList_start:
 		u_strncpy(buffer, marker, (int32_t)length-1);
 		CG3::Tag *tag = result->allocateTag(buffer);
 		tag->rehash();
-		result->addTag(tag);
+		tag = result->addTag(tag);
 		taglist->push_back(tag->hash);
 		delete[] buffer;
 		marker = YYCURSOR;
@@ -334,7 +337,7 @@ YYCTYPE *GPRE2C::parseMapAddReplaceAppend(YYCTYPE *input, KEYWORDS which) {
 	if (wform[0] == '"' && wform[1] == '<' && u_strlen(wform) < 256 && wform[u_strlen(wform)] == 0) {
 		Tag *wformt = result->allocateTag(wform);
 		rule->wordform = wformt->rehash();
-		result->addTag(wformt);
+		wformt = result->addTag(wformt);
 	}
 
 parseMapAddReplaceAppend_start:
