@@ -82,18 +82,15 @@ Cohort *GrammarApplicator::runContextualTest(SingleWindow *sWindow, const size_t
 			sWindow = sWindow->next;
 			pos = 0;
 		}
-		if (pos < (int32_t)sWindow->cohorts.size()) {
-			cohort = sWindow->cohorts.at(pos);
-		}
 	}
 	else {
 		if ((test->pos & (POS_SPAN_LEFT|POS_SPAN_BOTH)) && sWindow->previous) {
 			sWindow = sWindow->previous;
 			pos = (int32_t)sWindow->cohorts.size()-1;
 		}
-		if (pos < (int32_t)sWindow->cohorts.size()) {
-			cohort = sWindow->cohorts.at(pos);
-		}
+	}
+	if (pos >= 0 && pos < (int32_t)sWindow->cohorts.size()) {
+		cohort = sWindow->cohorts.at(pos);
 	}
 
 	if (!cohort) {
