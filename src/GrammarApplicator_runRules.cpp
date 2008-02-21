@@ -167,6 +167,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, const int32_
 					if (good && reading->current_mapping_tag && reading->tags_mapped->size() > 1) {
 						delTagFromReading(reading, reading->current_mapping_tag);
 						good_mapping = true;
+						reading->hit_by.push_back(rule->line);
 					}
 					else {
 						if (good) {
