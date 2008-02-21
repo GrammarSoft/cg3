@@ -21,8 +21,8 @@
   "Copyright 2006, GrammarSoft Aps and the VISL project at the University of Southern Denmark. All Rights Reserved."
 
 #define CG3_VERSION_MAJOR 0
-#define CG3_VERSION_MINOR 8
-#define CG3_VERSION_PATCH 9
-#define CG3_REVISION 3216
+#define CG3_VERSION_MINOR 9
+#define CG3_VERSION_PATCH 0
+#define CG3_REVISION 3236
 
 #endif
