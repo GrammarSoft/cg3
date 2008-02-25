@@ -97,7 +97,7 @@ int main(int argc, char* argv[]) {
 		fprintf(stderr, " -I or --stdin            A file to read input from instead of stdin.\n");
 		fprintf(stderr, " -E or --stderr           A file to print errors to instead of stderr.\n");
 		fprintf(stderr, "\n");
-		fprintf(stderr, " -C or --codepage-all     The codepage to use for grammar, input, and output streams. Defaults to ISO-8859-1.\n");
+		fprintf(stderr, " -C or --codepage-all     The codepage to use for grammar, input, and output streams. Auto-detects default from environment.\n");
 		fprintf(stderr, " --codepage-grammar       Codepage to use for grammar. Overrides --codepage-all.\n");
 		fprintf(stderr, " --codepage-input         Codepage to use for input. Overrides --codepage-all.\n");
 		fprintf(stderr, " --codepage-output        Codepage to use for output and errors. Overrides --codepage-all.\n");
