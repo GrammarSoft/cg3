@@ -7,4 +7,4 @@ SECTION
 SELECT (wanted) (NEGATE 1* ("blocker"))
 
 SECTION
-REMOVE ("blocker")
+REMOVE:named ("blocker")

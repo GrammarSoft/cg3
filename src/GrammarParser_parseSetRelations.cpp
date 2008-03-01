@@ -43,7 +43,7 @@ int GrammarParser::parseSetRemRelation(const UChar *line, KEYWORDS key) {
 	UChar *wordform = 0;
 
 	UChar *name = local;
-	if (u_strcmp(local, keywords[key]) != 0) {
+	if (u_strncmp(local, keywords[key], u_strlen(keywords[key])) != 0) {
 		wordform = local;
 		space++;
 		name = space;
@@ -129,7 +129,7 @@ int GrammarParser::parseSetRemRelations(const UChar *line, KEYWORDS key) {
 	UChar *wordform = 0;
 
 	UChar *name = local;
-	if (u_strcmp(local, keywords[key]) != 0) {
+	if (u_strncmp(local, keywords[key], u_strlen(keywords[key])) != 0) {
 		wordform = local;
 		space++;
 		name = space;

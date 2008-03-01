@@ -609,4 +609,3 @@ int BinaryGrammar::parse_grammar_from_file(const char *filename, const char *, c
 	}
 	return readBinaryGrammar(input);
 }
-
