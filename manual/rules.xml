@@ -29,4 +29,25 @@
     </para>
   </section>
 
+  <section id="named-rules">
+    <title>Named Rules</title>
+    <indexterm>
+      <primary>rule name</primary>
+    </indexterm>
+    <indexterm>
+      <primary>named rules</primary>
+    </indexterm>
+    <screen>
+      [wordform] MAP:rule_name &lt;tag&gt; &lt;target&gt; [contextual_tests]
+      [wordform] SELECT:rule_name &lt;target&gt; [contextual_tests]
+    </screen>
+    <para>
+      In certain cases you may want to name a rule to be able to refer to the same
+      rule across grammar revisions, as otherwise the rule line number may change.
+      It is optional to name rules, but all rule names must be unique, and not begin with
+      "_R_" as that is the internal prefix for unnamed rules.
+      The name of a rule is used in tracing and debug output in addition to the line number.
+    </para>
+  </section>
+
 </chapter>
