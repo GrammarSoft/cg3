@@ -39,7 +39,7 @@ int GrammarParser::parseSubstitute(const UChar *line) {
 	UChar *wordform = 0;
 
 	UChar *name = local;
-	if (u_strcmp(local, keywords[K_SUBSTITUTE]) != 0) {
+	if (u_strncmp(local, keywords[K_SUBSTITUTE], u_strlen(keywords[K_SUBSTITUTE])) != 0) {
 		wordform = local;
 		space++;
 		name = space;

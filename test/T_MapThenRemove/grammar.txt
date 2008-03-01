@@ -1,0 +1,11 @@
+DELIMITERS = "<$.>" ;
+
+LIST ASet = wanted ;
+
+BEFORE-SECTIONS
+MAP (@one @two @three) (*) ;
+
+SECTION
+REMOVE (@one) ;
+REMOVE (@two) ;
+REMOVE (@three) ;

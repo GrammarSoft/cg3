@@ -184,7 +184,12 @@ void GrammarApplicator::printReading(Reading *reading, UFILE *output) {
 	if (trace) {
 		if (!reading->hit_by.empty()) {
 			for (uint32_t i=0;i<reading->hit_by.size();i++) {
-				u_fprintf(output, "%S:%u ", keywords[grammar->rule_by_line.find(reading->hit_by.at(i))->second->type], reading->hit_by.at(i));
+				Rule *r = grammar->rule_by_line.find(reading->hit_by.at(i))->second;
+				u_fprintf(output, "%S:%u", keywords[r->type], reading->hit_by.at(i));
+				if (r->name && r->name[0] != '_' && r->name[1] != 'R' && r->name[2] != '_') {
+					u_fprintf(output, ":%S", r->name);
+				}
+				u_fprintf(output, " ");
 			}
 		}
 	}

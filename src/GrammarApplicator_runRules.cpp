@@ -89,6 +89,11 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, const int32_
 			bool did_test = false;
 			bool did_append = false;
 			bool test_good = false;
+
+			uint32_t known_mapping_tag = 0;
+			bool same_mapping_tag = true;
+			bool only_one_map_per_line = true;
+
 			for (rter = cohort->readings.begin() ; rter != cohort->readings.end() ; rter++) {
 				Reading *reading = *rter;
 				reading->matched_target = false;
@@ -104,6 +109,15 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, const int32_
 				last_mapping_tag = 0;
 				if (rule->target && doesSetMatchReading(reading, rule->target, set->has_mappings)) {
 					rule_is_valid = true;
+
+					if (known_mapping_tag && known_mapping_tag != last_mapping_tag) {
+						same_mapping_tag = false;
+					}
+					known_mapping_tag = last_mapping_tag;
+					if (reading->tags_mapped->size() > 1) {
+						only_one_map_per_line = false;
+					}
+
 					reading->current_mapping_tag = last_mapping_tag;
 					reading->matched_target = true;
 					bool good = true;
@@ -144,10 +158,10 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, const int32_
 			if (num_active == cohort->readings.size()) {
 				all_active = true;
 			}
-			if (all_active && rule->type == K_SELECT && !set->has_mappings && !last_mapping_tag) {
+			if (all_active && (rule->type == K_SELECT || rule->type == K_REMOVE) && !set->has_mappings && !last_mapping_tag) {
 				continue;
 			}
-			if (all_active && rule->type == K_REMOVE && !set->has_mappings && !last_mapping_tag) {
+			if (all_active && (rule->type == K_SELECT || rule->type == K_REMOVE) && only_one_map_per_line && same_mapping_tag) {
 				continue;
 			}
 
