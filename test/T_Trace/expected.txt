@@ -9,5 +9,5 @@
 "<word>"
 	"word" notwanted @tag MAP:4 
 	"word" notmeeither @tag MAP:4 
-;	"blocker" block @tag MAP:4 REMOVE:10 
+;	"blocker" block @tag MAP:4 REMOVE:10:named 
 
