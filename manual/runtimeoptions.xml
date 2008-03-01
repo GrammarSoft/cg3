@@ -86,7 +86,8 @@
       <secondary>-C</secondary>
     </indexterm>
     <para>
-      The codepage to use for grammar, input, and output streams. Defaults to ISO-8859-1.
+      The codepage to use for grammar, input, and output streams.
+      Tries to auto-detect from environment if not defined.
     </para>
     <screen>
       --codepage-all UTF-8
@@ -290,6 +291,45 @@
     </para>
     <screen>
       --no-corrections
+    </screen>
+  </section>
+
+  <section id="rto-no-before-sections">
+    <title>--no-before-sections</title>
+    <indexterm>
+      <primary>--no-before-sections</primary>
+    </indexterm>
+    <para>
+      Disables running rules from BEFORE-SECTIONS.
+    </para>
+    <screen>
+      --no-before-sections
+    </screen>
+  </section>
+
+  <section id="rto-no-sections">
+    <title>--no-sections</title>
+    <indexterm>
+      <primary>--no-sections</primary>
+    </indexterm>
+    <para>
+      Disables running rules from any SECTION.
+    </para>
+    <screen>
+      --no-sections
+    </screen>
+  </section>
+
+  <section id="rto-no-after-sections">
+    <title>--no-after-sections</title>
+    <indexterm>
+      <primary>--no-after-sections</primary>
+    </indexterm>
+    <para>
+      Disables running rules from AFTER-SECTIONS.
+    </para>
+    <screen>
+      --no-after-sections
     </screen>
   </section>
 
