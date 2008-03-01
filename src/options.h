@@ -46,6 +46,9 @@ namespace Options {
 		LOCALE_OUTPUT,
 		NOMAPPINGS,
 		NOCORRECTIONS,
+		NOBEFORESECTIONS,
+		NOSECTIONS,
+		NOAFTERSECTIONS,
 		TRACE,
 		TRACE_ALL,
 		SINGLERUN,
@@ -94,8 +97,13 @@ namespace Options {
 		UOPTION_DEF("locale-grammar",		0, UOPT_REQUIRES_ARG),
 		UOPTION_DEF("locale-input",			0, UOPT_REQUIRES_ARG),
 		UOPTION_DEF("locale-output",		0, UOPT_REQUIRES_ARG),
+
 		UOPTION_DEF("no-mappings",			0, UOPT_NO_ARG),
 		UOPTION_DEF("no-corrections",		0, UOPT_NO_ARG),
+		UOPTION_DEF("no-before-sections",	0, UOPT_NO_ARG),
+		UOPTION_DEF("no-sections",			0, UOPT_NO_ARG),
+		UOPTION_DEF("no-after-sections",	0, UOPT_NO_ARG),
+
 		UOPTION_DEF("trace",				0, UOPT_NO_ARG),
 		UOPTION_DEF("trace-all",			0, UOPT_NO_ARG),
 		UOPTION_DEF("single-run",			0, UOPT_NO_ARG),

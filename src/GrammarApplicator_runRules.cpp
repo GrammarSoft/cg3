@@ -536,14 +536,14 @@ label_runGrammarOnWindow_begin:
 	}
 	SingleWindow *current = window->current;
 
-	if (!grammar->before_sections.empty()) {
+	if (!grammar->before_sections.empty() && !no_before_sections) {
 		uint32_t rv = runRulesOnWindow(current, -1, -1);
 		if (rv & RV_DELIMITED) {
 			goto label_runGrammarOnWindow_begin;
 		}
 	}
 
-	if (!grammar->rules.empty()) {
+	if (!grammar->rules.empty() && !no_sections) {
 		size_t smax = grammar->sections.size();
 		if (sections && sections < smax) {
 			smax = sections;
@@ -559,7 +559,7 @@ label_runGrammarOnWindow_begin:
 		}
 	}
 
-	if (!grammar->after_sections.empty()) {
+	if (!grammar->after_sections.empty() && !no_after_sections) {
 		uint32_t rv = runRulesOnWindow(current, -2, -2);
 		if (rv & RV_DELIMITED) {
 			goto label_runGrammarOnWindow_begin;

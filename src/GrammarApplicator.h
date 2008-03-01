@@ -30,6 +30,9 @@ namespace CG3 {
 		bool always_span;
 		bool apply_mappings;
 		bool apply_corrections;
+		bool no_before_sections;
+		bool no_sections;
+		bool no_after_sections;
 		bool trace;
 		bool single_run;
 		bool allow_magic_readings;
