@@ -8,27 +8,6 @@
     Things that are planned but not yet implemented or not yet fully functional.
   </para>
 
-  <section id="draft-namedrules">
-    <title>Named Rules</title>
-    <indexterm>
-      <primary>rule name</primary>
-    </indexterm>
-    <indexterm>
-      <primary>named rules</primary>
-    </indexterm>
-    <screen>
-      [wordform] MAP:rule_name &lt;tag&gt; &lt;target&gt; [contextual_tests]
-      [wordform] SELECT:rule_name &lt;target&gt; [contextual_tests]
-    </screen>
-    <para>
-      In certain cases you may want to name a rule to be able to refer to the same
-      rule across grammar revisions, as otherwise the rule line number may change.
-      It is optional to name rules, but all rule names must be unique, and must
-      include a letter in the name as to not conflict with pure line-numbered rules.
-      The name of a rule is used in tracing and debug output instead of the line number.
-    </para>
-  </section>
-
   <section id="draft-sections-range">
     <title>--sections with ranges</title>
     <para>
