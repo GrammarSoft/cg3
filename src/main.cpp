@@ -441,15 +441,15 @@ void GAppSetOpts(CG3::GrammarApplicator *applicator) {
 	}
 	applicator->no_before_sections = false;
 	if (options[NOBEFORESECTIONS].doesOccur) {
-		applicator->no_before_sections = false;
+		applicator->no_before_sections = true;
 	}
 	applicator->no_sections = false;
 	if (options[NOSECTIONS].doesOccur) {
-		applicator->no_sections = false;
+		applicator->no_sections = true;
 	}
 	applicator->no_after_sections = false;
 	if (options[NOAFTERSECTIONS].doesOccur) {
-		applicator->no_after_sections = false;
+		applicator->no_after_sections = true;
 	}
 	if (options[TRACE].doesOccur) {
 		applicator->trace = true;
