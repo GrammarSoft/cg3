@@ -82,6 +82,9 @@ int main(int argc, char* argv[]) {
 		fprintf(stderr, " --single-run             Only runs each section once.\n");
 		fprintf(stderr, " --no-mappings            Disables running any MAP, ADD, or REPLACE rules.\n");
 		fprintf(stderr, " --no-corrections         Disables running any SUBSTITUTE or APPEND rules.\n");
+		fprintf(stderr, " --no-before-sections     Disables running rules from BEFORE-SECTIONS.\n");
+		fprintf(stderr, " --no-sections            Disables running rules from any SECTION.\n");
+		fprintf(stderr, " --no-after-sections      Disables running rules from AFTER-SECTIONS.\n");
 		fprintf(stderr, "\n");
 		fprintf(stderr, " --num-windows            Number of windows to keep in before/ahead buffers. Defaults to 2.\n");
 		fprintf(stderr, " --always-span            Forces all scanning tests to always span across window boundaries.\n");
@@ -435,6 +438,18 @@ void GAppSetOpts(CG3::GrammarApplicator *applicator) {
 	applicator->apply_corrections = true;
 	if (options[NOCORRECTIONS].doesOccur) {
 		applicator->apply_corrections = false;
+	}
+	applicator->no_before_sections = false;
+	if (options[NOBEFORESECTIONS].doesOccur) {
+		applicator->no_before_sections = false;
+	}
+	applicator->no_sections = false;
+	if (options[NOSECTIONS].doesOccur) {
+		applicator->no_sections = false;
+	}
+	applicator->no_after_sections = false;
+	if (options[NOAFTERSECTIONS].doesOccur) {
+		applicator->no_after_sections = false;
 	}
 	if (options[TRACE].doesOccur) {
 		applicator->trace = true;
