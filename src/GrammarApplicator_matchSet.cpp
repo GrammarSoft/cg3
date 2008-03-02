@@ -199,7 +199,6 @@ bool GrammarApplicator::doesSetMatchReading(Reading *reading, const uint32_t set
 				bool match = doesTagMatchReading(reading, *ster, bypass_index);
 				if (match) {
 					if (unif_mode) {
-						uint32_t st = *ster;
 						if (unif_tags.find(theset->hash) != unif_tags.end() && unif_tags[theset->hash] != *ster) {
 							continue;
 						}
@@ -269,7 +268,7 @@ bool GrammarApplicator::doesSetMatchReading(Reading *reading, const uint32_t set
 							break;
 						case S_NOT:
 							if (!match) {
-								if (!doesSetMatchReading(reading, theset->sets.at(i+1))) {
+								if (!doesSetMatchReading(reading, theset->sets.at(i+1), bypass_index)) {
 									match = true;
 								}
 							}
@@ -312,7 +311,7 @@ bool GrammarApplicator::doesSetMatchReading(Reading *reading, const uint32_t set
 		}
 	}
 	else {
-		if (reading->hash != 1) {
+		if (reading->hash != 1 && !unif_mode) {
 			if (index_reading_no.find(reading->hash) == index_reading_no.end()) {
 				Recycler *r = Recycler::instance();
 				index_reading_no[reading->hash] = r->new_uint32HashSet();
@@ -326,10 +325,11 @@ bool GrammarApplicator::doesSetMatchReading(Reading *reading, const uint32_t set
 
 bool GrammarApplicator::doesSetMatchCohortNormal(const Cohort *cohort, const uint32_t set) {
 	bool retval = false;
+	const Set *theset = grammar->sets_by_contents.find(set)->second;
 	std::list<Reading*>::const_iterator iter;
 	for (iter = cohort->readings.begin() ; iter != cohort->readings.end() ; iter++) {
 		Reading *reading = *iter;
-		if (doesSetMatchReading(reading, set)) {
+		if (doesSetMatchReading(reading, set, theset->has_mappings|theset->is_unified)) {
 			retval = true;
 			break;
 		}
@@ -344,7 +344,7 @@ bool GrammarApplicator::doesSetMatchCohortCareful(const Cohort *cohort, const ui
 	for (iter = cohort->readings.begin() ; iter != cohort->readings.end() ; iter++) {
 		Reading *reading = *iter;
 		last_mapping_tag = 0;
-		if (!doesSetMatchReading(reading, set, theset->has_mappings)) {
+		if (!doesSetMatchReading(reading, set, theset->has_mappings|theset->is_unified)) {
 			retval = false;
 			break;
 		}
