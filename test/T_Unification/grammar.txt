@@ -2,8 +2,10 @@ DELIMITERS = "<$.>" ;
 
 LIST ACESet = AA CC EE ;
 LIST BDFSet = BB DD FF ;
+LIST Hums = <H.*>r ;
 
 SECTION
 
 SELECT:one $$ACESet (1 $$ACESet) (2 $$ACESet) ;
 SELECT:two $$ACESet + $$BDFSet (1 $$ACESet + $$BDFSet) ;
+SELECT:regex $$Hums (1 $$Hums) ;
