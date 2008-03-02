@@ -111,7 +111,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, const int32_
 				unif_mode = false;
 				unif_tags.clear();
 
-				if (rule->target && doesSetMatchReading(reading, rule->target, set->has_mappings)) {
+				if (rule->target && doesSetMatchReading(reading, rule->target, set->has_mappings|set->is_unified)) {
 					rule_is_valid = true;
 
 					if (known_mapping_tag && known_mapping_tag != last_mapping_tag) {
