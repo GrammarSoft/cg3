@@ -21,28 +21,6 @@
     </screen>
   </section>
 
-  <section id="draft-sticky-sets">
-    <title>Sticky Sets</title>
-    <para>
-      Each time a rule is run, the tag that first satisfied the set must be the same as all subsequent
-      matches of the same set in tests.
-    </para>
-    <para>
-      For example
-      <screen>
-        LIST ROLE = &lt;human&gt; &lt;anim&gt; &lt;inanim&gt; (&lt;bench&gt; &lt;table&gt;) ;
-        SELECT %%ROLE (-1 KC) (-2C %%ROLE) ;
-      </screen>
-      which would logically be the same as
-      <screen>
-        SELECT (&lt;human&gt;) (-1 KC) (-2C (&lt;human&gt;)) ;
-        SELECT (&lt;anim&gt;) (-1 KC) (-2C (&lt;anim&gt;)) ;
-        SELECT (&lt;inanim&gt;) (-1 KC) (-2C (&lt;inanim&gt;)) ;
-        SELECT (&lt;bench&gt; &lt;table&gt;) (-1 KC) (-2C (&lt;bench&gt; &lt;table&gt;)) ;
-      </screen>
-    </para>
-  </section>
-
   <section id="draft-templates">
     <title>Templates</title>
     <para>

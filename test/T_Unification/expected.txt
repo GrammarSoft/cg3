@@ -1,3 +1,27 @@
-"<word>"
-	"word" notwanted 
-	"word" notmeeither 
+"<worda>"
+	"worda" some tags AA 
+	"worda" some tags 
+	"worda" some tags 
+"<wordb>"
+	"wordb" some tags 
+	"wordb" some tags CC 
+	"wordb" some tags 
+"<wordc>"
+	"wordc" some tags BB EE 
+"<wordd>"
+	"wordd" some tags 
+	"wordd" some tags BB EE 
+	"wordd" some tags 
+"<worde>"
+	"worde" some tags CC 
+"<wordf>"
+	"wordf" some tags 
+	"wordf" some tags CC 
+	"wordf" some tags 
+"<wordg>"
+	"wordg" some tags 
+	"wordg" some tags CC 
+	"wordg" some tags 
+"<$.>"
+	"." 
+

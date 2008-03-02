@@ -318,7 +318,7 @@ void Grammar::reindex() {
 }
 
 void Grammar::indexSetToRule(uint32_t r, Set *s) {
-	if (s->is_special) {
+	if (s->is_special || s->is_unified) {
 		indexTagToRule(tag_any, r);
 		return;
 	}
@@ -359,7 +359,7 @@ void Grammar::indexTagToRule(uint32_t t, uint32_t r) {
 }
 
 void Grammar::indexSets(uint32_t r, Set *s) {
-	if (s->is_special) {
+	if (s->is_special || s->is_unified) {
 		indexTagToSet(tag_any, r);
 		return;
 	}

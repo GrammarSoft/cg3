@@ -45,4 +45,31 @@
     </screen>
   </section>
 
+  <section id="set-sticky-sets">
+    <title>Sticky Sets</title>
+    <para>
+      Each time a rule is run, the tag that first satisfied the set must be the same as all subsequent
+      matches of the same set in tests.
+    </para>
+    <para>
+      A set is marked as a sticky set by prefixing $$ to the name when used in a rule.
+      You can only prefix existing sets; inline sets in the form of $$(tag tags) will not work,
+      but $$Set + $$OtherSet will; that method will make 2 sticky sets, though.
+    </para>
+    <para>
+      For example
+      <screen>
+        LIST ROLE = &lt;human&gt; &lt;anim&gt; &lt;inanim&gt; (&lt;bench&gt; &lt;table&gt;) ;
+        SELECT $$ROLE (-1 KC) (-2C $$ROLE) ;
+      </screen>
+      which would logically be the same as
+      <screen>
+        SELECT (&lt;human&gt;) (-1 KC) (-2C (&lt;human&gt;)) ;
+        SELECT (&lt;anim&gt;) (-1 KC) (-2C (&lt;anim&gt;)) ;
+        SELECT (&lt;inanim&gt;) (-1 KC) (-2C (&lt;inanim&gt;)) ;
+        SELECT (&lt;bench&gt; &lt;table&gt;) (-1 KC) (-2C (&lt;bench&gt; &lt;table&gt;)) ;
+      </screen>
+    </para>
+  </section>
+
 </chapter>
