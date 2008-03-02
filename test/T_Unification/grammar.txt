@@ -1,0 +1,9 @@
+DELIMITERS = "<$.>" ;
+
+LIST ACESet = A C E ;
+LIST BDFSet = B D F ;
+
+SECTION
+
+SELECT:two $$ACESet + $$BDFSet (1 $$ACESet + $$BDFSet) ;
+SELECT:one $$ACESet (1 $$ACESet) ;

@@ -42,7 +42,7 @@
           "&lt;word&gt;"
           &nbsp; "word" N NOM SG @X
           "&lt;$.&gt;"
-          &nbsp; "&lt;$.&gt;" @X
+          &nbsp; "&lt;$.&gt;" &lt;&lt;&lt; @X
         </screen>
         because MAP promoted the last magic reading to a real reading.
       </para>

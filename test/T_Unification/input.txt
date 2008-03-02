@@ -1,0 +1,24 @@
+"<worda>"
+	"worda" some tags A
+	"worda" some tags
+	"worda" some tags
+"<wordb>"
+	"wordb" some tags
+	"wordb" some tags C
+	"wordb" some tags
+"<wordc>"
+	"wordc" some tags
+	"wordc" some tags B A
+	"wordc" some tags
+"<wordd>"
+	"wordd" some tags
+	"wordd" some tags B A
+	"wordd" some tags
+"<worde>"
+	"worde" some tags
+	"worde" some tags D C
+	"worde" some tags
+"<wordf>"
+	"wordf" some tags
+	"wordf" some tags D C
+	"wordf" some tags
