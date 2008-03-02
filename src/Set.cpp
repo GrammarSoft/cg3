@@ -23,6 +23,7 @@ Set::Set() {
 	has_mappings = false;
 	is_special = false;
 	is_unified = false;
+	is_child_unified = false;
 	name = 0;
 	line = 0;
 	hash = 0;
@@ -78,6 +79,11 @@ uint32_t Set::rehash() {
 
 void Set::reindex(Grammar *grammar) {
 	has_mappings = false;
+	if (is_unified || is_child_unified) {
+		is_special = true;
+		is_child_unified = true;
+	}
+
 	if (sets.empty()) {
 		uint32HashSet::const_iterator comp_iter;
 		for (comp_iter = single_tags.begin() ; comp_iter != single_tags.end() ; comp_iter++) {
@@ -123,6 +129,9 @@ void Set::reindex(Grammar *grammar) {
 			set->reindex(grammar);
 			if (set->is_special) {
 				is_special = true;
+			}
+			if (set->is_unified || set->is_child_unified) {
+				is_child_unified = true;
 			}
 			if (set->has_mappings) {
 				has_mappings = true;

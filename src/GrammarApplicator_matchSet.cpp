@@ -329,7 +329,7 @@ bool GrammarApplicator::doesSetMatchCohortNormal(const Cohort *cohort, const uin
 	std::list<Reading*>::const_iterator iter;
 	for (iter = cohort->readings.begin() ; iter != cohort->readings.end() ; iter++) {
 		Reading *reading = *iter;
-		if (doesSetMatchReading(reading, set, theset->has_mappings|theset->is_unified)) {
+		if (doesSetMatchReading(reading, set, theset->has_mappings|theset->is_child_unified)) {
 			retval = true;
 			break;
 		}
@@ -344,7 +344,7 @@ bool GrammarApplicator::doesSetMatchCohortCareful(const Cohort *cohort, const ui
 	for (iter = cohort->readings.begin() ; iter != cohort->readings.end() ; iter++) {
 		Reading *reading = *iter;
 		last_mapping_tag = 0;
-		if (!doesSetMatchReading(reading, set, theset->has_mappings|theset->is_unified)) {
+		if (!doesSetMatchReading(reading, set, theset->has_mappings|theset->is_child_unified)) {
 			retval = false;
 			break;
 		}

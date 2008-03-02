@@ -19,13 +19,13 @@
 	"worde" some tags CC
 	"worde" some tags
 "<wordf>"
-	"wordf" some tags
-	"wordf" some tags CC
-	"wordf" some tags
+	"wordf" some tags NOTTHIS
+	"wordf" some tags CC THIS
+	"wordf" some tags THIS
 "<wordg>"
 	"wordg" some tags
-	"wordg" some tags CC
-	"wordg" some tags
+	"wordg" some tags CC THIS
+	"wordg" some tags ALSONOTTHIS
 "<wordh>"
 	"wordh" some tags
 	"wordh" some tags <Hprof>
