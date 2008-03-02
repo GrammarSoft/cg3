@@ -310,7 +310,7 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 	fread(&u32tmp, sizeof(uint32_t), 1, input);
 	u32tmp = (uint32_t)ntohl(u32tmp);
 	if (u32tmp < B_TOO_OLD) {
-		u_fprintf(ux_stderr, "Error: Grammar revision is %u, but this loader requires %u or later!\n", B_TOO_OLD, CG3_REVISION);
+		u_fprintf(ux_stderr, "Error: Grammar revision is %u, but this loader requires %u or later!\n", u32tmp, B_TOO_OLD);
 		return -1;
 	}
 	if (u32tmp > CG3_REVISION) {
