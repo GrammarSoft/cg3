@@ -132,6 +132,8 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 		fwrite(&u8tmp, sizeof(uint8_t), 1, output);
 		u8tmp = (uint8_t)s->is_special;
 		fwrite(&u8tmp, sizeof(uint8_t), 1, output);
+		u8tmp = (uint8_t)s->is_unified;
+		fwrite(&u8tmp, sizeof(uint8_t), 1, output);
 		u8tmp = (uint8_t)s->has_mappings;
 		fwrite(&u8tmp, sizeof(uint8_t), 1, output);
 
@@ -304,8 +306,13 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 		return -1;
 	}
 
+#define B_TOO_OLD 3264
 	fread(&u32tmp, sizeof(uint32_t), 1, input);
 	u32tmp = (uint32_t)ntohl(u32tmp);
+	if (u32tmp < B_TOO_OLD) {
+		u_fprintf(ux_stderr, "Error: Grammar revision is %u, but this loader requires %u or later!\n", B_TOO_OLD, CG3_REVISION);
+		return -1;
+	}
 	if (u32tmp > CG3_REVISION) {
 		u_fprintf(ux_stderr, "Error: Grammar revision is %u, but this loader only knows up to revision %u!\n", u32tmp, CG3_REVISION);
 		return -1;
@@ -421,6 +428,8 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 		s->match_any = (u8tmp == 1);
 		fread(&u8tmp, sizeof(uint8_t), 1, input);
 		s->is_special = (u8tmp == 1);
+		fread(&u8tmp, sizeof(uint8_t), 1, input);
+		s->is_unified = (u8tmp == 1);
 		fread(&u8tmp, sizeof(uint8_t), 1, input);
 		s->has_mappings = (u8tmp == 1);
 
