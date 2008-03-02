@@ -53,8 +53,13 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, const int32_
 			tstamp = clock();
 		}
 
+		const Set *set = grammar->sets_by_contents.find(rule->target)->second;
+
 		// ToDo: Update list of in/valid rules upon MAP, ADD, REPLACE, APPEND, SUBSTITUTE; add tags + always add tag_any
 		bool rule_is_valid = false;
+		if (set->is_unified) {
+			rule_is_valid = true;
+		}
 
 		for (size_t c=1 ; c < current->cohorts.size() ; c++) {
 			Cohort *cohort = current->cohorts[c];
@@ -62,7 +67,6 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, const int32_
 				continue;
 			}
 
-			const Set *set = grammar->sets_by_contents.find(rule->target)->second;
 			if ((type == K_SELECT || type == K_REMOVE || type == K_IFF) && (cohort->is_disamb || cohort->readings.size() == 1)) {
 				if (cohort->is_disamb || !set->has_mappings || cohort->readings.front()->tags_mapped->size() <= 1) {
 					continue;
@@ -108,10 +112,11 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, const int32_
 				}
 				last_mapping_tag = 0;
 
+				// ToDo: Enable/Disable unif_mode per top-level set
 				unif_mode = false;
 				unif_tags.clear();
 
-				if (rule->target && doesSetMatchReading(reading, rule->target, set->has_mappings|set->is_unified)) {
+				if (rule->target && doesSetMatchReading(reading, rule->target, set->has_mappings|set->is_child_unified)) {
 					rule_is_valid = true;
 
 					if (known_mapping_tag && known_mapping_tag != last_mapping_tag) {
