@@ -82,6 +82,9 @@ namespace CG3 {
 		stdext::hash_map<uint32_t, uint32_t> variables;
 		stdext::hash_map<uint32_t, uint32_t> metas;
 
+		bool unif_mode;
+		stdext::hash_map<uint32_t, uint32_t> unif_tags;
+
 		stdext::hash_map<uint32_t, Tag*> single_tags;
 		stdext::hash_map<uint32_t, uint32HashSet*> index_tags_regexp;
 

@@ -107,6 +107,10 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, const int32_
 					continue;
 				}
 				last_mapping_tag = 0;
+
+				unif_mode = false;
+				unif_tags.clear();
+
 				if (rule->target && doesSetMatchReading(reading, rule->target, set->has_mappings)) {
 					rule_is_valid = true;
 

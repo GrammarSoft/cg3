@@ -261,7 +261,8 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 				cReading->mapped = true;
 			}
 			if (!cReading->baseform) {
-				u_fprintf(ux_stderr, "Warning: Reading on line %u had no valid baseform.\n", numLines);
+				//cReading->baseform = cCohort->wordform;
+				u_fprintf(ux_stderr, "Warning: Line %u had no valid baseform.\n", numLines);
 				u_fflush(ux_stderr);
 			}
 			cCohort->appendReading(cReading);

@@ -185,6 +185,9 @@ bool GrammarApplicator::doesSetMatchReading(Reading *reading, const uint32_t set
 	stdext::hash_map<uint32_t, Set*>::const_iterator iter = grammar->sets_by_contents.find(set);
 	if (iter != grammar->sets_by_contents.end()) {
 		const Set *theset = iter->second;
+		if (theset->is_unified) {
+			unif_mode = true;
+		}
 
 		if (theset->match_any) {
 			retval = true;
@@ -195,6 +198,13 @@ bool GrammarApplicator::doesSetMatchReading(Reading *reading, const uint32_t set
 			for (ster = theset->single_tags.begin() ; ster != theset->single_tags.end() ; ster++) {
 				bool match = doesTagMatchReading(reading, *ster, bypass_index);
 				if (match) {
+					if (unif_mode) {
+						uint32_t st = *ster;
+						if (unif_tags.find(theset->hash) != unif_tags.end() && unif_tags[theset->hash] != *ster) {
+							continue;
+						}
+						unif_tags[theset->hash] = *ster;
+					}
 					retval = true;
 					break;
 				}
@@ -214,6 +224,13 @@ bool GrammarApplicator::doesSetMatchReading(Reading *reading, const uint32_t set
 						}
 					}
 					if (match) {
+						if (unif_mode) {
+							if (unif_tags.find(theset->hash) != unif_tags.end() && unif_tags[theset->hash] != *ster) {
+								last_mapping_tag = 0;
+								continue;
+							}
+							unif_tags[theset->hash] = *ster;
+						}
 						match_comp++;
 						retval = true;
 						break;
