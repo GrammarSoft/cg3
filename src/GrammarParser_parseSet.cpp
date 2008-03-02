@@ -110,6 +110,25 @@ uint32_t GrammarParser::readSingleSet(UChar **paren) {
 		set = *paren;
 		*paren = *paren+u_strlen(*paren);
 	}
+	if (set && set[0] == '$' && set[1] == '$' && set[2]) {
+		const UChar *wname = set + 2;
+		uint32_t wrap = hash_sdbm_uchar(wname, 0);
+		wrap=wrap;
+		Set *wtmp = result->getSet(wrap);
+		if (!wtmp) {
+			u_fprintf(ux_stderr, "Error: Attempted to reference undefined set '%S' on line %u!\n", wname, result->curline);
+			exit(1);
+		}
+		tmp = result->getSet(retval);
+		if (!tmp) {
+			Set *ns = result->allocateSet();
+			ns->setName(set);
+			ns->sets.push_back(wtmp->hash);
+			ns->is_unified = true;
+			ns->rehash();
+			result->addSet(ns);
+		}
+	}
 	if (result->set_alias.find(retval) != result->set_alias.end()) {
 		retval = result->set_alias[retval];
 	}

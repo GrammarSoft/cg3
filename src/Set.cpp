@@ -22,6 +22,7 @@ Set::Set() {
 	match_any = false;
 	has_mappings = false;
 	is_special = false;
+	is_unified = false;
 	name = 0;
 	line = 0;
 	hash = 0;

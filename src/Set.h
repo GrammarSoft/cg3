@@ -29,6 +29,7 @@ namespace CG3 {
 		bool match_any;
 		bool has_mappings;
 		bool is_special;
+		bool is_unified;
 		mutable uint32_t num_fail, num_match;
 		mutable clock_t total_time;
 		UChar *name;

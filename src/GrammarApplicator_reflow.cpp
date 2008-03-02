@@ -77,11 +77,13 @@ void GrammarApplicator::attachParentChild(Cohort *parent, Cohort *child) {
 
 	uint32HashSet::const_iterator tter;
 	for (tter = parent->dep_children.begin() ; tter != parent->dep_children.end() ; tter++) {
-		uint32HashSet::const_iterator ster;
-		for (ster = parent->dep_children.begin() ; ster != parent->dep_children.end() ; ster++) {
-			gWindow->cohort_map.find(*tter)->second->addSibling(*ster);
+		if (gWindow->cohort_map.find(*tter) != gWindow->cohort_map.end()) {
+			uint32HashSet::const_iterator ster;
+			for (ster = parent->dep_children.begin() ; ster != parent->dep_children.end() ; ster++) {
+					gWindow->cohort_map.find(*tter)->second->addSibling(*ster);
+			}
+			gWindow->cohort_map.find(*tter)->second->remSibling(*tter);
 		}
-		gWindow->cohort_map.find(*tter)->second->remSibling(*tter);
 	}
 
 	parent->dep_done = true;

@@ -65,7 +65,7 @@ uint32_t GrammarParser::parseTarget(UChar **space) {
 		}
 	}
 
-	while (curset->sets.size() == 1) {
+	while (curset->sets.size() == 1 && !curset->is_unified) {
 		res = curset->sets.at(0);
 		result->destroySet(curset);
 		curset = result->getSet(res);
