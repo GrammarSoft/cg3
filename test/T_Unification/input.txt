@@ -26,5 +26,13 @@
 	"wordg" some tags
 	"wordg" some tags CC
 	"wordg" some tags
+"<wordh>"
+	"wordh" some tags
+	"wordh" some tags <Hprof>
+	"wordh" some tags
+"<wordi>"
+	"wordi" some tags
+	"wordi" some tags <Hfam>
+	"wordi" some tags
 "<$.>"
 	"."
