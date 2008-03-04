@@ -1,0 +1,22 @@
+(bcc mail; multiple recipients)
+
+G'day to all on the CG-3 list, and hope you've entered 2008 in good spirits.
+
+A fresh batch of work has been done on the CG-3 project, and I recommend everyone update to latest revision.
+I have also made source snapshots available at http://beta.visl.sdu.dk/download/vislcg3/ for those without Subversion access.
+
+Bullet points:
+
+- Most significantly, VISL CG-3 now supports binary grammars for improved loading speed and distribution security.
+See http://beta.visl.sdu.dk/cg3/chunked/binarygrammar.html for more information.
+Using this feature, it is possible to use VISL CG-3 in production as it eliminates the parsing overhead.
+
+- The --statistics flag now generates more detailed and more accurate statistics, plus output files will now be reusable grammars instead of the old garbled inline format.
+
+- Several grammar consistency checks have been added to catch malformed grammars a bit better.
+
+-- Tino Didriksen
+VISL Developer
+Google Talk: tino.didriksen@gmail.com
+AIM/iChat: TinoDidriksen
+MSN: tino@didriksen.cc
