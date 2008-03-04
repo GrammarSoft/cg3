@@ -49,20 +49,10 @@ Rule::~Rule() {
 	delete dep_target;
 }
 
-void Rule::setName(uint32_t to) {
-	if (!to) {
-		to = (uint32_t)rand();
-	}
-	name = new UChar[32];
-	memset(name, 0, 32);
-	u_sprintf(name, "_R_%u_%u_", line, to);
-}
 void Rule::setName(const UChar *to) {
 	if (to) {
 		name = new UChar[u_strlen(to)+1];
 		u_strcpy(name, to);
-	} else {
-		setName((uint32_t)rand());
 	}
 }
 
