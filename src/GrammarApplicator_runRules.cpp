@@ -558,7 +558,13 @@ label_runGrammarOnWindow_begin:
 			smax = sections;
 		}
 		for (size_t i=0;i<smax;) {
-			uint32_t rv = runRulesOnWindow(current, 0, (int32_t)i);
+			uint32_t rv = 0;
+			if (single_run) {
+				rv = runRulesOnWindow(current, (int32_t)i, (int32_t)i);
+			}
+			else {
+				rv = runRulesOnWindow(current, 0, (int32_t)i);
+			}
 			if (rv & RV_DELIMITED) {
 				goto label_runGrammarOnWindow_begin;
 			}

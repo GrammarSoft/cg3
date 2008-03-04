@@ -223,18 +223,3 @@ UChar *ux_append(UChar *target, const UChar *data) {
 	}
 	return tmp;
 }
-
-std::vector<std::string> ux_explode(const char by, std::string splitme) {
-    std::vector<std::string> hubba;
-    size_t pos=std::string::npos;
-    int cur=-1;
-    splitme.append(&by);
-    while( (pos = splitme.find(by, cur+1)) != std::string::npos ) {
-        if (pos-cur-1 > 0) {
-            hubba.push_back(splitme.substr(cur+1, pos-cur-1));
-        }
-        cur=(int)pos;
-    }
-
-    return hubba;
-}

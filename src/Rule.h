@@ -49,7 +49,6 @@ namespace CG3 {
 
 		Rule();
 		~Rule();
-		void setName(uint32_t to);
 		void setName(const UChar *to);
 		
 		void resetStatistics();
