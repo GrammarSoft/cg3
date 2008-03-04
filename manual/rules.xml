@@ -44,8 +44,8 @@
     <para>
       In certain cases you may want to name a rule to be able to refer to the same
       rule across grammar revisions, as otherwise the rule line number may change.
-      It is optional to name rules, but all rule names must be unique, and not begin with
-      "_R_" as that is the internal prefix for unnamed rules.
+      It is optional to name rules, and names do not have to be unique which makes it easier to group
+      rules for statistics or tracing purposes.
       The name of a rule is used in tracing and debug output in addition to the line number.
     </para>
   </section>
