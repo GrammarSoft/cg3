@@ -32,11 +32,11 @@ BinaryGrammar::~BinaryGrammar() {
 int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 	if (!output) {
 		u_fprintf(ux_stderr, "Error: Output is null - cannot write to nothing!\n");
-		return -1;
+		CG3Quit(1);
 	}
 	if (!grammar) {
 		u_fprintf(ux_stderr, "Error: No grammar provided - cannot continue!\n");
-		return -1;
+		CG3Quit(1);
 	}
 	uint32_t u32tmp = 0;
 	uint16_t u16tmp = 0;
@@ -287,11 +287,11 @@ void BinaryGrammar::writeContextualTest(ContextualTest *t, FILE *output) {
 int BinaryGrammar::readBinaryGrammar(FILE *input) {
 	if (!input) {
 		u_fprintf(ux_stderr, "Error: Input is null - cannot read from nothing!\n");
-		return -1;
+		CG3Quit(1);
 	}
 	if (!grammar) {
 		u_fprintf(ux_stderr, "Error: No grammar provided - cannot continue!\n");
-		return -1;
+		CG3Quit(1);
 	}
 	uint32_t u32tmp = 0;
 	uint16_t u16tmp = 0;
@@ -303,7 +303,7 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 	fread(cbuffers[0], 1, 4, input);
 	if (cbuffers[0][0] != 'C' || cbuffers[0][1] != 'G' || cbuffers[0][2] != '3' || cbuffers[0][3] != 'B') {
 		u_fprintf(ux_stderr, "Error: Grammar does not begin with magic bytes - cannot load as binary!\n");
-		return -1;
+		CG3Quit(1);
 	}
 
 #define B_TOO_OLD 3264
@@ -311,11 +311,11 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 	u32tmp = (uint32_t)ntohl(u32tmp);
 	if (u32tmp < B_TOO_OLD) {
 		u_fprintf(ux_stderr, "Error: Grammar revision is %u, but this loader requires %u or later!\n", u32tmp, B_TOO_OLD);
-		return -1;
+		CG3Quit(1);
 	}
 	if (u32tmp > CG3_REVISION) {
 		u_fprintf(ux_stderr, "Error: Grammar revision is %u, but this loader only knows up to revision %u!\n", u32tmp, CG3_REVISION);
-		return -1;
+		CG3Quit(1);
 	}
 
 	grammar->is_binary = true;
@@ -382,7 +382,7 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 			}
 			if (status != U_ZERO_ERROR) {
 				u_fprintf(ux_stderr, "Error: uregex_open returned %s trying to parse tag %S - cannot continue!\n", u_errorName(status), t->tag);
-				exit(1);
+				CG3Quit(1);
 			}
 		}
 		grammar->single_tags[t->hash] = t;
@@ -595,7 +595,7 @@ void BinaryGrammar::setResult(CG3::Grammar *result) {
 int BinaryGrammar::parse_grammar_from_file(const char *filename, const char *, const char *) {
 	if (!grammar) {
 		u_fprintf(ux_stderr, "Error: Cannot parse into nothing - hint: call setResult() before trying.\n");
-		return -1;
+		CG3Quit(1);
 	}
 
 	struct stat _stat;
@@ -603,7 +603,7 @@ int BinaryGrammar::parse_grammar_from_file(const char *filename, const char *, c
 
 	if (error != 0) {
 		u_fprintf(ux_stderr, "Error: Cannot stat %s due to error %d - bailing out!\n", filename, error);
-		exit(1);
+		CG3Quit(1);
 	} else {
 		grammar->last_modified = (uint32_t)_stat.st_mtime;
 		grammar->grammar_size = (uint32_t)_stat.st_size;
@@ -614,7 +614,7 @@ int BinaryGrammar::parse_grammar_from_file(const char *filename, const char *, c
 	FILE *input = fopen(filename, "rb");
 	if (!input) {
 		u_fprintf(ux_stderr, "Error: Error opening %s for reading!\n", filename);
-		return -1;
+		CG3Quit(1);
 	}
 	return readBinaryGrammar(input);
 }

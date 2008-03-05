@@ -119,7 +119,7 @@ void Grammar::addSet(Set *to) {
 	}
 	else if (chash != sets_by_contents.find(sets_by_name.find(nhash)->second)->second->hash) {
 		u_fprintf(ux_stderr, "Error: Set %S already defined at line %u. Redefinition attempt at line %u!\n", sets_by_contents.find(sets_by_name.find(nhash)->second)->second->name, sets_by_contents.find(sets_by_name.find(nhash)->second)->second->line, to->line);
-		exit(1);
+		CG3Quit(1);
 	}
 	if (sets_by_contents.find(chash) == sets_by_contents.end()) {
 		sets_by_contents[chash] = to;
@@ -155,6 +155,7 @@ void Grammar::addCompositeTag(CompositeTag *tag) {
 		tags[tag->hash] = tag;
 	} else {
 		u_fprintf(ux_stderr, "Error: Attempted to add empty composite tag to grammar!\n");
+		CG3Quit(1);
 	}
 }
 void Grammar::addCompositeTagToSet(Set *set, CompositeTag *tag) {
@@ -167,10 +168,8 @@ void Grammar::addCompositeTagToSet(Set *set, CompositeTag *tag) {
 			if (rtag->type & T_ANY) {
 				set->match_any = true;
 			}
-			//*
 			delete tag;
 			tag = 0;
-			//*/
 		} else {
 			addCompositeTag(tag);
 			set->tags_set.insert(tag->hash);
@@ -178,6 +177,7 @@ void Grammar::addCompositeTagToSet(Set *set, CompositeTag *tag) {
 		}
 	} else {
 		u_fprintf(ux_stderr, "Error: Attempted to add empty composite tag to grammar and set!\n");
+		CG3Quit(1);
 	}
 }
 CompositeTag *Grammar::allocateCompositeTag() {
@@ -222,6 +222,7 @@ Tag *Grammar::addTag(Tag *simpletag) {
 		}
 	} else {
 		u_fprintf(ux_stderr, "Error: Attempted to add empty tag to grammar!\n");
+		CG3Quit(1);
 	}
 	return 0;
 }
@@ -230,6 +231,7 @@ void Grammar::addTagToCompositeTag(Tag *simpletag, CompositeTag *tag) {
 		tag->addTag(simpletag->hash);
 	} else {
 		u_fprintf(ux_stderr, "Error: Attempted to add empty tag to grammar and composite tag!\n");
+		CG3Quit(1);
 	}
 }
 void Grammar::destroyTag(Tag *tag) {

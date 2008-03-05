@@ -117,7 +117,7 @@ uint32_t GrammarParser::readSingleSet(UChar **paren) {
 		Set *wtmp = result->getSet(wrap);
 		if (!wtmp) {
 			u_fprintf(ux_stderr, "Error: Attempted to reference undefined set '%S' on line %u!\n", wname, result->curline);
-			exit(1);
+			CG3Quit(1);
 		}
 		tmp = result->getSet(retval);
 		if (!tmp) {
@@ -135,7 +135,7 @@ uint32_t GrammarParser::readSingleSet(UChar **paren) {
 	tmp = result->getSet(retval);
 	if (!tmp) {
 		u_fprintf(ux_stderr, "Error: Attempted to reference undefined set '%S' on line %u!\n", set, result->curline);
-		exit(1);
+		CG3Quit(1);
 	}
 	retval = tmp->hash;
 	return retval;
@@ -196,12 +196,12 @@ uint32_t GrammarParser::readTagList(UChar **paren, uint32List *taglist) {
 int GrammarParser::parseSet(const UChar *line) {
 	if (!line) {
 		u_fprintf(ux_stderr, "Error: No string provided at line %u - cannot continue!\n", result->curline);
-		return -1;
+		CG3Quit(1);
 	}
 	int length = u_strlen(line);
 	if (!length) {
 		u_fprintf(ux_stderr, "Error: No string provided at line %u - cannot continue!\n", result->curline);
-		return -1;
+		CG3Quit(1);
 	}
 	UChar *local = gbuffers[2];
 	u_strcpy(local, line+u_strlen(keywords[K_SET])+1);

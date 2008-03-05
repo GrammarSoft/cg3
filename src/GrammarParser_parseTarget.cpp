@@ -35,7 +35,7 @@ uint32_t GrammarParser::parseTarget(UChar **space) {
 			set_a = readSingleSet(space);
 			if (!set_a) {
 				u_fprintf(ux_stderr, "Error: Could not read in left hand set on line %u for set %S - cannot continue!\n", result->curline, curset->name);
-				break;
+				CG3Quit(1);
 			}
 			curset->sets.push_back(set_a);
 		}
@@ -58,7 +58,7 @@ uint32_t GrammarParser::parseTarget(UChar **space) {
 			set_b = readSingleSet(space);
 			if (!set_b) {
 				u_fprintf(ux_stderr, "Error: Could not read in right hand set on line %u for set %S - cannot continue!\n", result->curline, curset->name);
-				break;
+				CG3Quit(1);
 			}
 			curset->sets.push_back(set_b);
 			set_b = 0;

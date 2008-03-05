@@ -54,7 +54,6 @@ namespace Options {
 		SINGLERUN,
 		STATISTICS,
 		MAPPING_PREFIX,
-		RE2C,
 		TPAR,
 		NUM_WINDOWS,
 		ALWAYS_SPAN,
@@ -110,7 +109,6 @@ namespace Options {
 		UOPTION_DEF("statistics",			'S', UOPT_NO_ARG),
 		UOPTION_DEF("prefix",			    0, UOPT_REQUIRES_ARG),
 
-		UOPTION_DEF("re2c",					0, UOPT_NO_ARG),
 		UOPTION_DEF("tpar",					0, UOPT_NO_ARG),
 		UOPTION_DEF("num-windows",			0, UOPT_REQUIRES_ARG),
 		UOPTION_DEF("always-span",			0, UOPT_NO_ARG),

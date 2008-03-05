@@ -23,20 +23,20 @@ using namespace CG3::Strings;
 int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 	if (!input) {
 		u_fprintf(ux_stderr, "Error: Input is null - nothing to parse!\n");
-		return -1;
+		CG3Quit(1);
 	}
 	u_frewind(input);
 	if (u_feof(input)) {
 		u_fprintf(ux_stderr, "Error: Input is empty - nothing to parse!\n");
-		return -1;
+		CG3Quit(1);
 	}
 	if (!output) {
 		u_fprintf(ux_stderr, "Error: Output is null - cannot write to nothing!\n");
-		return -1;
+		CG3Quit(1);
 	}
 	if (!grammar) {
 		u_fprintf(ux_stderr, "Error: No grammar provided - cannot continue! Hint: call setGrammar() first.\n");
-		return -1;
+		CG3Quit(1);
 	}
 
 	if (!grammar->delimiters || (grammar->delimiters->sets.empty() && grammar->delimiters->tags_set.empty())) {
