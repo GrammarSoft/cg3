@@ -54,7 +54,7 @@ namespace Options {
 		SINGLERUN,
 		STATISTICS,
 		MAPPING_PREFIX,
-		TPAR,
+		OLD_PARSER,
 		NUM_WINDOWS,
 		ALWAYS_SPAN,
 		SOFT_LIMIT,
@@ -109,7 +109,7 @@ namespace Options {
 		UOPTION_DEF("statistics",			'S', UOPT_NO_ARG),
 		UOPTION_DEF("prefix",			    0, UOPT_REQUIRES_ARG),
 
-		UOPTION_DEF("tpar",					0, UOPT_NO_ARG),
+		UOPTION_DEF("old-parser",			0, UOPT_NO_ARG),
 		UOPTION_DEF("num-windows",			0, UOPT_REQUIRES_ARG),
 		UOPTION_DEF("always-span",			0, UOPT_NO_ARG),
 		UOPTION_DEF("soft-limit",			0, UOPT_REQUIRES_ARG),
