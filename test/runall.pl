@@ -30,7 +30,7 @@ print STDERR "Binary found at: $binary\n";
 
 print STDERR "\nRunning tests...\n";
 
-my @tests = grep { -x } glob('./T*/run.*');
+my @tests = grep { -x } glob('./T*/run.pl');
 foreach (@tests) {
 	if ($ARGV[0] && $ARGV[0] ne "" && !(/$ARGV[0]/i)) {
 		next;
@@ -47,7 +47,11 @@ foreach (@tests) {
 	if (-e "./".$test."/output.txt") {
 	    unlink "./".$test."/output.txt";
 	}
-	`$_ "$binary"`;
+	my $c = '""';
+	if ($ARGV[1] && $ARGV[1] ne "") {
+		$c = '"'.$ARGV[1].'"';
+	}
+	`$_ "$binary" \Q$c\E`;
 }
 
 print STDERR "\n";

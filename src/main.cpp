@@ -237,12 +237,12 @@ int main(int argc, char* argv[]) {
 		std::cerr << "Info: Binary grammar detected." << std::endl;
 		parser = new CG3::BinaryGrammar(grammar, ux_stderr);
 	}
-	else if (options[TPAR].doesOccur) {
-		std::cerr << "Info: Using experimental textual parser." << std::endl;
-		parser = new CG3::TextualParser(ux_stdin, ux_stdout, ux_stderr);
+	else if (options[OLD_PARSER].doesOccur) {
+		std::cerr << "Info: Using old buggy parser." << std::endl;
+		parser = new CG3::GrammarParser(ux_stdin, ux_stdout, ux_stderr);
 	}
 	else {
-		parser = new CG3::GrammarParser(ux_stdin, ux_stdout, ux_stderr);
+		parser = new CG3::TextualParser(ux_stdin, ux_stdout, ux_stderr);
 	}
 	grammar->ux_stderr = ux_stderr;
 	CG3::Tag *tag_any = grammar->allocateTag(stringbits[S_ASTERIK]);

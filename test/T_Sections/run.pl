@@ -12,7 +12,7 @@ if (!$binary || $binary eq '' || !(-x $binary)) {
 	die("Error: $binary is not executable!");
 }
 
-`"$binary" -C ISO-8859-1 --grammar grammar.txt --sections 4 -I input.txt -O output.txt >stdout.txt 2>stderr.txt`;
+`"$binary" $ARGV[1] -C ISO-8859-1 --grammar grammar.txt --sections 4 -I input.txt -O output.txt >stdout.txt 2>stderr.txt`;
 `diff -B expected.txt output.txt >diff.txt`;
 
 if (-s "diff.txt") {
