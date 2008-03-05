@@ -124,13 +124,13 @@ bool GrammarApplicator::doesTagMatchReading(const Reading *reading, const uint32
 			uregex_setText(tag->regexp, itag->tag, u_strlen(itag->tag), &status);
 			if (status != U_ZERO_ERROR) {
 				u_fprintf(ux_stderr, "Error: uregex_setText(MatchSet) returned %s - cannot continue!\n", u_errorName(status));
-				exit(1);
+				CG3Quit(1);
 			}
 			status = U_ZERO_ERROR;
 			match = (uregex_matches(tag->regexp, 0, &status) == TRUE);
 			if (status != U_ZERO_ERROR) {
 				u_fprintf(ux_stderr, "Error: uregex_matches(MatchSet) returned %s - cannot continue!\n", u_errorName(status));
-				exit(1);
+				CG3Quit(1);
 			}
 			if (match) {
 				break;

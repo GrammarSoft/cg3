@@ -23,16 +23,16 @@ using namespace CG3::Strings;
 int GrammarParser::parseSetRemRelation(const UChar *line, KEYWORDS key) {
 	if (!line) {
 		u_fprintf(ux_stderr, "Error: No string provided at line %u - cannot continue!\n", result->curline);
-		return -1;
+		CG3Quit(1);
 	}
 	int length = u_strlen(line);
 	if (!length) {
 		u_fprintf(ux_stderr, "Error: No string provided at line %u - cannot continue!\n", result->curline);
-		return -1;
+		CG3Quit(1);
 	}
 	if (key != K_SETRELATION && key != K_REMRELATION) {
 		u_fprintf(ux_stderr, "Error: Invalid keyword %u for line %u - cannot continue!\n", key, result->curline);
-		return -1;
+		CG3Quit(1);
 	}
 
 	UChar *local = gbuffers[1];
@@ -93,7 +93,7 @@ int GrammarParser::parseSetRemRelation(const UChar *line, KEYWORDS key) {
 
 	if (rule->dep_tests.empty()) {
 		u_fprintf(ux_stderr, "Error: Missing contextual target on line %u!\n", result->curline);
-		return -1;
+		CG3Quit(1);
 	}
 	rule->dep_target = rule->dep_tests.front();
 	rule->dep_tests.pop_front();
@@ -104,16 +104,16 @@ int GrammarParser::parseSetRemRelation(const UChar *line, KEYWORDS key) {
 int GrammarParser::parseSetRemRelations(const UChar *line, KEYWORDS key) {
 	if (!line) {
 		u_fprintf(ux_stderr, "Error: No string provided at line %u - cannot continue!\n", result->curline);
-		return -1;
+		CG3Quit(1);
 	}
 	int length = u_strlen(line);
 	if (!length) {
 		u_fprintf(ux_stderr, "Error: No string provided at line %u - cannot continue!\n", result->curline);
-		return -1;
+		CG3Quit(1);
 	}
 	if (key != K_SETRELATIONS && key != K_REMRELATIONS) {
 		u_fprintf(ux_stderr, "Error: Invalid keyword %u for line %u - cannot continue!\n", key, result->curline);
-		return -1;
+		CG3Quit(1);
 	}
 
 	UChar *local = gbuffers[1];
@@ -175,7 +175,7 @@ int GrammarParser::parseSetRemRelations(const UChar *line, KEYWORDS key) {
 
 	if (rule->dep_tests.empty()) {
 		u_fprintf(ux_stderr, "Error: Missing contextual target on line %u!\n", result->curline);
-		return -1;
+		CG3Quit(1);
 	}
 	rule->dep_target = rule->dep_tests.front();
 	rule->dep_tests.pop_front();

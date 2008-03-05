@@ -77,6 +77,7 @@ void ContextualTest::parsePosition(const UChar *input, UFILE *ux_stderr) {
 
 	if ((!(pos & (POS_DEP_CHILD|POS_DEP_SIBLING|POS_DEP_PARENT))) && (retval == EOF || (offset == 0 && tmp[0] == 0 && retval < 1))) {
 		u_fprintf(ux_stderr, "Error: '%S' is not a valid position!\n", pos);
+		CG3Quit(1);
 	}
 	if ((pos & (POS_DEP_CHILD|POS_DEP_SIBLING|POS_DEP_PARENT)) && (pos & (POS_SCANFIRST|POS_SCANALL))) {
 		u_fprintf(ux_stderr, "Warning: Position '%S' is mixed. Behavior for mixed positions is undefined.\n", pos);

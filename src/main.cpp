@@ -21,7 +21,6 @@
 #include "Grammar.h"
 #include "GrammarParser.h"
 #include "TextualParser.h"
-#include "GPRE2C.h"
 #include "GrammarWriter.h"
 #include "BinaryGrammar.h"
 #include "GrammarApplicator.h"
@@ -119,7 +118,7 @@ int main(int argc, char* argv[]) {
 	u_init(&status);
 	if (U_FAILURE(status) && status != U_FILE_ACCESS_ERROR) {
 		std::cerr << "Error: Cannot initialize ICU. Status = " << u_errorName(status) << std::endl;
-		return -1;
+		CG3Quit(1);
 	}
 	status = U_ZERO_ERROR;
 
@@ -187,7 +186,7 @@ int main(int argc, char* argv[]) {
 	}
 	if (!ux_stdout) {
 		std::cerr << "Error: Failed to open the output stream for writing!" << std::endl;
-		return -1;
+		CG3Quit(1);
 	}
 
 	if (!options[STDERR].doesOccur) {
@@ -198,7 +197,7 @@ int main(int argc, char* argv[]) {
 	}
 	if (!ux_stdout) {
 		std::cerr << "Error: Failed to open the error stream for writing!" << std::endl;
-		return -1;
+		CG3Quit(1);
 	}
 
 	if (!options[STDIN].doesOccur) {
@@ -215,7 +214,7 @@ int main(int argc, char* argv[]) {
 	}
 	if (!ux_stdin) {
 		std::cerr << "Error: Failed to open the input stream for reading!" << std::endl;
-		return -1;
+		CG3Quit(1);
 	}
 
 	CG3::Recycler::instance();
@@ -229,7 +228,7 @@ int main(int argc, char* argv[]) {
 	FILE *input = fopen(options[GRAMMAR].value, "rb");
 	if (!input) {
 		std::cerr << "Error: Error opening " << options[GRAMMAR].value << " for reading!" << std::endl;
-		return -1;
+		CG3Quit(1);
 	}
 	fread(cbuffers[0], 1, 4, input);
 	fclose(input);
@@ -237,10 +236,6 @@ int main(int argc, char* argv[]) {
 	if (cbuffers[0][0] == 'C' && cbuffers[0][1] == 'G' && cbuffers[0][2] == '3' && cbuffers[0][3] == 'B') {
 		std::cerr << "Info: Binary grammar detected." << std::endl;
 		parser = new CG3::BinaryGrammar(grammar, ux_stderr);
-	}
-	else if (options[RE2C].doesOccur) {
-		std::cerr << "Info: Using experimental RE2C parser." << std::endl;
-		parser = new CG3::GPRE2C(ux_stdin, ux_stdout, ux_stderr);
 	}
 	else if (options[TPAR].doesOccur) {
 		std::cerr << "Info: Using experimental textual parser." << std::endl;
@@ -261,7 +256,7 @@ int main(int argc, char* argv[]) {
 
 	if (parser->parse_grammar_from_file(options[GRAMMAR].value, locale_grammar, codepage_grammar)) {
 		std::cerr << "Error: Grammar could not be parsed - exiting!" << std::endl;
-		return -1;
+		CG3Quit(1);
 	}
 
 	if (options[MAPPING_PREFIX].doesOccur) {
@@ -287,21 +282,21 @@ int main(int argc, char* argv[]) {
 	if (grammar->is_binary) {
 		if (options[GRAMMAR_INFO].doesOccur) {
 			std::cerr << "Error: Re-ordering statistics cannot be gathered with a binary grammar." << std::endl;
-			return -1;
+			CG3Quit(1);
 		}
 		if (options[GRAMMAR_BIN].doesOccur || options[GRAMMAR_OUT].doesOccur) {
 			std::cerr << "Error: Binary grammars cannot be rewritten." << std::endl;
-			return -1;
+			CG3Quit(1);
 		}
 		if (options[STATISTICS].doesOccur) {
 			std::cerr << "Error: Statistics cannot be gathered with a binary grammar." << std::endl;
-			return -1;
+			CG3Quit(1);
 		}
 	}
 
 	if (options[GRAMMAR_INFO].doesOccur && !stdin_isfile) {
 		std::cerr << "Error: Re-ordering statistics can only be gathered with file input option (-I, --stdin) as the file must be re-run multiple times." << std::endl;
-		return -1;
+		CG3Quit(1);
 	}
 
 	if (!options[CHECK_ONLY].doesOccur && !options[GRAMMAR_ONLY].doesOccur) {
@@ -425,6 +420,14 @@ int main(int argc, char* argv[]) {
 	//std::cerr << "Cleanup took " << (clock()-main_timer)/(double)CLOCKS_PER_SEC << " seconds." << std::endl;
 
 	return status;
+}
+
+void CG3Quit(const int32_t c, const char* file, const uint32_t line) {
+	if (file && line) {
+		std::cerr << std::flush;
+		std::cerr << "CG3Quit triggered from " << file << " line " << line << "." << std::endl;
+	}
+	exit(c);
 }
 
 void GAppSetOpts(CG3::GrammarApplicator *applicator) {

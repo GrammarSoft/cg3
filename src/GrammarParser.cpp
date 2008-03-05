@@ -45,11 +45,11 @@ int GrammarParser::parseSingleLine(KEYWORDS key, const UChar *line) {
 	u_fflush(ux_stderr);
 	if (!line || !u_strlen(line)) {
 		u_fprintf(ux_stderr, "Warning: Line %u is empty - skipping.\n", result->curline);
-		return -1;
+		CG3Quit(1);
 	}
 	if (key <= K_IGNORE || key >= KEYWORD_COUNT) {
 		u_fprintf(ux_stderr, "Warning: Invalid keyword %u on line %u - skipping.\n", key, result->curline);
-		return -1;
+		CG3Quit(1);
 	}
 
 	UErrorCode status = U_ZERO_ERROR;
@@ -60,13 +60,13 @@ int GrammarParser::parseSingleLine(KEYWORDS key, const UChar *line) {
 	uregex_setText(regexps[R_CLEANSTRING], line, length, &status);
 	if (status != U_ZERO_ERROR) {
 		u_fprintf(ux_stderr, "Error: uregex_setText(Cleanstring) returned %s on line %u - cannot continue!\n", u_errorName(status), result->curline);
-		return -1;
+		CG3Quit(1);
 	}
 	status = U_ZERO_ERROR;
 	uregex_replaceAll(regexps[R_CLEANSTRING], stringbits[S_SPACE], u_strlen(stringbits[S_SPACE]), local, length+1, &status);
 	if (status != U_ZERO_ERROR) {
 		u_fprintf(ux_stderr, "Error: uregex_replaceAll(Cleanstring) returned %s on line %u - cannot continue!\n", u_errorName(status), result->curline);
-		return -1;
+		CG3Quit(1);
 	}
 
 	length = u_strlen(local);
@@ -76,13 +76,13 @@ int GrammarParser::parseSingleLine(KEYWORDS key, const UChar *line) {
 	uregex_setText(regexps[R_ANDLINK], local, length, &status);
 	if (status != U_ZERO_ERROR) {
 		u_fprintf(ux_stderr, "Error: uregex_setText(AndLink) returned %s on line %u - cannot continue!\n", u_errorName(status), result->curline);
-		return -1;
+		CG3Quit(1);
 	}
 	status = U_ZERO_ERROR;
 	uregex_replaceAll(regexps[R_ANDLINK], stringbits[S_LINKZ], u_strlen(stringbits[S_LINKZ]), newlocal, length*2, &status);
 	if (status != U_ZERO_ERROR) {
 		u_fprintf(ux_stderr, "Error: uregex_replaceAll(AndLink) returned %s on line %u - cannot continue!\n", u_errorName(status), result->curline);
-		return -1;
+		CG3Quit(1);
 	}
 
 	local = newlocal;
@@ -167,11 +167,11 @@ int GrammarParser::parse_grammar_from_ufile(UFILE *input) {
 	u_frewind(input);
 	if (u_feof(input)) {
 		u_fprintf(ux_stderr, "Error: Input is null - nothing to parse!\n");
-		return -1;
+		CG3Quit(1);
 	}
 	if (!result) {
 		u_fprintf(ux_stderr, "Error: No preallocated grammar provided - cannot continue!\n");
-		return -1;
+		CG3Quit(1);
 	}
 	
 	// ToDo: Make line length dynamic
@@ -228,7 +228,7 @@ int GrammarParser::parse_grammar_from_ufile(UFILE *input) {
 					UChar *line = lastline;
 					if (keys[result->curline]) {
 						if (parseSingleLine(keys[result->curline], line) != 0) {
-							return -1;
+							CG3Quit(1);
 						}
 					}
 					keys.erase(result->curline);
@@ -249,7 +249,7 @@ int GrammarParser::parse_grammar_from_ufile(UFILE *input) {
 		UChar *line = lastline;
 		if (keys[result->curline]) {
 			if (parseSingleLine(keys[result->curline], line) != 0) {
-				return -1;
+				CG3Quit(1);
 			}
 		}
 		keys.erase(result->curline);
@@ -266,7 +266,7 @@ int GrammarParser::parse_grammar_from_file(const char *fname, const char *loc, c
 
 	if (!result) {
 		u_fprintf(ux_stderr, "Error: Cannot parse into nothing - hint: call setResult() before trying.\n");
-		return -1;
+		CG3Quit(1);
 	}
 
 	struct stat _stat;
@@ -274,7 +274,7 @@ int GrammarParser::parse_grammar_from_file(const char *fname, const char *loc, c
 
 	if (error != 0) {
 		u_fprintf(ux_stderr, "Error: Cannot stat %s due to error %d - bailing out!\n", filename, error);
-		exit(1);
+		CG3Quit(1);
 	} else {
 		result->last_modified = _stat.st_mtime;
 		result->grammar_size = _stat.st_size;
@@ -285,7 +285,7 @@ int GrammarParser::parse_grammar_from_file(const char *fname, const char *loc, c
 	UFILE *grammar = u_fopen(filename, "r", locale, codepage);
 	if (!grammar) {
 		u_fprintf(ux_stderr, "Error: Error opening %s for reading!\n", filename);
-		return -1;
+		CG3Quit(1);
 	}
 	
 	error = parse_grammar_from_ufile(grammar);

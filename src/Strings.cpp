@@ -26,7 +26,7 @@ namespace CG3 {
 
 		inline int init_keyword_single(const char *keyword, const uint32_t entry) {
 			if (entry >= KEYWORD_COUNT) {
-				return -1; // Out of bounds
+				CG3Quit(1); // Out of bounds
 			}
 			UChar *buffer = gbuffers[0];
 			u_memset(buffer, 0, 1024);
@@ -95,7 +95,7 @@ namespace CG3 {
 
 		inline int init_string_single(const char *keyword, const uint32_t entry) {
 			if (entry >= STRINGS_COUNT) {
-				return -1; // Out of bounds
+				CG3Quit(1); // Out of bounds
 			}
 			UChar *buffer = gbuffers[0];
 			u_memset(buffer, 0, 1024);
@@ -136,6 +136,9 @@ namespace CG3 {
 			init_string_single("CGCMD:EXIT", S_CMD_EXIT);
 			init_string_single("CGCMD:IGNORE", S_CMD_IGNORE);
 			init_string_single("CGCMD:RESUME", S_CMD_RESUME);
+			init_string_single("TARGET", S_TARGET);
+			init_string_single("AND", S_AND);
+			init_string_single("IF", S_IF);
 
 			for (unsigned int i=0;i<STRINGS_COUNT;i++) {
 				if (!stringbits[i]) {
@@ -165,7 +168,7 @@ namespace CG3 {
 			regexps[R_CLEANSTRING] = uregex_openC("\\s+(TARGET|IF)\\s+\0", 0, pe, &status);
 			if (status != U_ZERO_ERROR) {
 				u_fprintf(ux_stderr, "Error: uregex_openC returned %s - cannot continue!\n", u_errorName(status));
-				return -1;
+				CG3Quit(1);
 			}
 
 			memset(pe, 0, sizeof(UParseError));
@@ -173,7 +176,7 @@ namespace CG3 {
 			regexps[R_ANDLINK] = uregex_openC("\\s+(AND)\\s+\0", 0, pe, &status);
 			if (status != U_ZERO_ERROR) {
 				u_fprintf(ux_stderr, "Error: uregex_openC returned %s - cannot continue!\n", u_errorName(status));
-				return -1;
+				CG3Quit(1);
 			}
 
 			delete pe;

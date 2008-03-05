@@ -156,7 +156,7 @@ void Tag::parseTag(const UChar *to, UFILE *ux_stderr) {
 			}
 			if (status != U_ZERO_ERROR) {
 				u_fprintf(ux_stderr, "Error: uregex_open returned %s trying to parse tag %S - cannot continue!\n", u_errorName(status), tag);
-				exit(1);
+				CG3Quit(1);
 			}
 		}
 	}
