@@ -47,6 +47,9 @@ void Tag::parseTag(const UChar *to, UFILE *ux_stderr) {
 	assert(to != 0);
 	in_grammar = true;
 	type = 0;
+	if (to[0] == '(') {
+		to=to;
+	}
 	if (u_strlen(to)) {
 		const UChar *tmp = to;
 		while (tmp[0] && (tmp[0] == '!' || tmp[0] == '^')) {
