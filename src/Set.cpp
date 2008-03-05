@@ -43,7 +43,7 @@ void Set::setName(uint32_t to) {
 		to = (uint32_t)rand();
 	}
 	name = new UChar[32];
-	memset(name, 0, 32);
+	memset(name, 0, sizeof(UChar)*32);
 	u_sprintf(name, "_G_%u_%u_", line, to);
 }
 void Set::setName(const UChar *to) {

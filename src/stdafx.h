@@ -48,9 +48,11 @@
 #include <unicode/ustring.h>
 #include <unicode/uregex.h>
 
+void CG3Quit(const int32_t c, const char* file = 0, const uint32_t line = 0);
+
 #include "uextras.h"
 
-inline uint32_t hash_sdbm_uchar(const UChar *str, uint32_t hash) {
+inline uint32_t hash_sdbm_uchar(const UChar *str, uint32_t hash = 0) {
 	if (hash == 0) {
 		hash = 705577479U;
 	}
@@ -63,7 +65,7 @@ inline uint32_t hash_sdbm_uchar(const UChar *str, uint32_t hash) {
     return hash;
 }
 
-inline uint32_t hash_sdbm_char(const char *str, uint32_t hash) {
+inline uint32_t hash_sdbm_char(const char *str, uint32_t hash = 0) {
 	if (hash == 0) {
 		hash = 705577479U;
 	}
@@ -76,7 +78,7 @@ inline uint32_t hash_sdbm_char(const char *str, uint32_t hash) {
     return hash;
 }
 
-inline uint32_t hash_sdbm_uint32_t(const uint32_t c, uint32_t hash) {
+inline uint32_t hash_sdbm_uint32_t(const uint32_t c, uint32_t hash = 0) {
 	if (hash == 0) {
 		hash = 705577479U;
 	}

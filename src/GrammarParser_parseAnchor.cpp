@@ -23,12 +23,12 @@ using namespace CG3::Strings;
 int GrammarParser::parseAnchor(const UChar *line) {
 	if (!line) {
 		u_fprintf(ux_stderr, "Error: No string provided at line %u - cannot continue!\n", result->curline);
-		return -1;
+		CG3Quit(1);
 	}
 	int length = u_strlen(line);
 	if (!length) {
 		u_fprintf(ux_stderr, "Error: No string provided at line %u - cannot continue!\n", result->curline);
-		return -1;
+		CG3Quit(1);
 	}
 	uint32_t nline = (uint32_t)result->rules.size();
 
@@ -39,7 +39,7 @@ int GrammarParser::parseAnchor(const UChar *line) {
 	}
 	else {
 		u_fprintf(ux_stderr, "Error: No anchor name provided at line %u!\n", result->curline);
-		return -1;
+		CG3Quit(1);
 	}
 
 	return 0;

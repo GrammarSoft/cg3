@@ -93,6 +93,7 @@ int GrammarParser::parseContextualTestList(UChar **paren, CG3::Rule *rule, std::
 		int matching = 0;
 		if (!ux_findMatchingParenthesis(*paren, 0, &matching)) {
 			u_fprintf(ux_stderr, "Error: Unmatched parentheses on or after line %u!\n", result->curline);
+			CG3Quit(1);
 		} else {
 			(*paren)[matching] = 0;
 			UChar *test = (*paren)+1;

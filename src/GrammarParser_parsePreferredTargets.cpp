@@ -23,12 +23,12 @@ using namespace CG3::Strings;
 int GrammarParser::parsePreferredTargets(const UChar *line) {
 	if (!line) {
 		u_fprintf(ux_stderr, "Error: No string provided at line %u - cannot continue!\n", result->curline);
-		return -1;
+		CG3Quit(1);
 	}
 	int length = u_strlen(line);
 	if (!length) {
 		u_fprintf(ux_stderr, "Error: No string provided at line %u - cannot continue!\n", result->curline);
-		return -1;
+		CG3Quit(1);
 	}
 	UChar *local = gbuffers[1];
 	u_strcpy(local, line+u_strlen(keywords[K_PREFERRED_TARGETS])+1);

@@ -23,16 +23,16 @@ using namespace CG3::Strings;
 int GrammarParser::parseAddMapReplaceAppend(const UChar *line, KEYWORDS key) {
 	if (!line) {
 		u_fprintf(ux_stderr, "Error: No string provided at line %u - cannot continue!\n", result->curline);
-		return -1;
+		CG3Quit(1);
 	}
 	int length = u_strlen(line);
 	if (!length) {
 		u_fprintf(ux_stderr, "Error: No string provided at line %u - cannot continue!\n", result->curline);
-		return -1;
+		CG3Quit(1);
 	}
 	if (key != K_ADD && key != K_MAP && key != K_REPLACE && key != K_APPEND) {
 		u_fprintf(ux_stderr, "Error: Invalid keyword %u for line %u - cannot continue!\n", key, result->curline);
-		return -1;
+		CG3Quit(1);
 	}
 
 	UChar *local = gbuffers[1];
@@ -86,7 +86,7 @@ int GrammarParser::parseAddMapReplaceAppend(const UChar *line, KEYWORDS key) {
 		}
 		else {
 			u_fprintf(ux_stderr, "Error: Garbage on line %u - expected contextual test, found '%S'!\n", result->curline, space);
-			return -1;
+			CG3Quit(1);
 		}
 	}
 
@@ -96,12 +96,12 @@ int GrammarParser::parseAddMapReplaceAppend(const UChar *line, KEYWORDS key) {
 int GrammarParser::parseMappingPrefix(const UChar *line) {
 	if (!line) {
 		u_fprintf(ux_stderr, "Error: No string provided at line %u - cannot continue!\n", result->curline);
-		return -1;
+		CG3Quit(1);
 	}
 	int length = u_strlen(line);
 	if (!length) {
 		u_fprintf(ux_stderr, "Error: No string provided at line %u - cannot continue!\n", result->curline);
-		return -1;
+		CG3Quit(1);
 	}
 	UChar *local = gbuffers[1];
 	u_strcpy(local, line+u_strlen(keywords[K_MAPPING_PREFIX])+1);

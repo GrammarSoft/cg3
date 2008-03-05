@@ -23,16 +23,16 @@ using namespace CG3::Strings;
 int GrammarParser::parseSelectRemoveIffDelimitMatch(const UChar *line, KEYWORDS key) {
 	if (!line) {
 		u_fprintf(ux_stderr, "Error: No string provided at line %u - cannot continue!\n", result->curline);
-		return -1;
+		CG3Quit(1);
 	}
 	int length = u_strlen(line);
 	if (!length) {
 		u_fprintf(ux_stderr, "Error: No string provided at line %u - cannot continue!\n", result->curline);
-		return -1;
+		CG3Quit(1);
 	}
 	if (key != K_SELECT && key != K_REMOVE && key != K_IFF && key != K_DELIMIT) {
 		u_fprintf(ux_stderr, "Error: Invalid keyword %u for line %u - cannot continue!\n", key, result->curline);
-		return -1;
+		CG3Quit(1);
 	}
 
 	UChar *local = gbuffers[1];
@@ -85,7 +85,7 @@ int GrammarParser::parseSelectRemoveIffDelimitMatch(const UChar *line, KEYWORDS 
 		}
 		else {
 			u_fprintf(ux_stderr, "Error: Garbage on line %u - expected contextual test, found '%S'!\n", result->curline, space);
-			return -1;
+			CG3Quit(1);
 		}
 	}
 

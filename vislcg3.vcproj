@@ -292,10 +292,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\src\GPRE2C.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\src\Grammar.cpp"
 				>
 			</File>
@@ -466,10 +462,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\src\GPRE2C.h"
-				>
-			</File>
-			<File
 				RelativePath=".\src\Grammar.h"
 				>
 			</File>
@@ -551,10 +543,6 @@
 			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx"
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
-			<File
-				RelativePath=".\src\GPRE2C.cpp.re2c"
-				>
-			</File>
 		</Filter>
 		<File
 			RelativePath=".\License"

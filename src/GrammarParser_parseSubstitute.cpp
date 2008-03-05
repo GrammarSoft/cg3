@@ -23,12 +23,12 @@ using namespace CG3::Strings;
 int GrammarParser::parseSubstitute(const UChar *line) {
 	if (!line) {
 		u_fprintf(ux_stderr, "Error: No string provided at line %u - cannot continue!\n", result->curline);
-		return -1;
+		CG3Quit(1);
 	}
 	int length = u_strlen(line);
 	if (!length) {
 		u_fprintf(ux_stderr, "Error: No string provided at line %u - cannot continue!\n", result->curline);
-		return -1;
+		CG3Quit(1);
 	}
 
 	UChar *local = gbuffers[1];
@@ -82,7 +82,7 @@ int GrammarParser::parseSubstitute(const UChar *line) {
 		}
 		else {
 			u_fprintf(ux_stderr, "Error: Garbage on line %u - expected contextual test, found '%S'!\n", result->curline, space);
-			return -1;
+			CG3Quit(1);
 		}
 	}
 
