@@ -79,9 +79,7 @@ namespace CG3 {
 			S_NOT,
 			S_TEXTNOT,
 			S_TEXTNEGATE,
-			S_SPACE,
 			S_LINK,
-			S_LINKZ,
 			S_BARRIER,
 			S_CBARRIER,
 			S_ASTERIK,
@@ -97,6 +95,8 @@ namespace CG3 {
 			S_SOFTDELIMITSET,
 			S_BEGINTAG,
 			S_ENDTAG,
+			S_LINKZ,
+			S_SPACE,
 			STRINGS_COUNT
 		};
 

@@ -85,7 +85,7 @@ namespace CG3 {
 		}
 
 		inline uint32_t BACKTONL(UChar **p) {
-			while (**p && !ISNL(**p)) {
+			while (**p && !ISNL(**p) && (**p != ';' || ISESC(*p))) {
 				(*p)--;
 			}
 			(*p)++;
@@ -120,10 +120,14 @@ namespace CG3 {
 
 		inline uint32_t SKIPTOWS(UChar **p, const UChar a = 0, const bool allowhash = false) {
 			uint32_t s = 0;
-			while (**p && !u_isWhitespace(**p) && **p != a) {
+			while (**p && !u_isWhitespace(**p)) {
 				if (!allowhash && **p == '#' && !ISESC(*p)) {
 					s += SKIPLN(p);
 					(*p)--;
+				}
+				if (ISNL(**p)) {
+					s++;
+					(*p)++;
 				}
 				if (**p == ';' && !ISESC(*p)) {
 					break;

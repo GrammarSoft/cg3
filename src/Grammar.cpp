@@ -154,7 +154,7 @@ void Grammar::addCompositeTag(CompositeTag *tag) {
 		}
 		tags[tag->hash] = tag;
 	} else {
-		u_fprintf(ux_stderr, "Error: Attempted to add empty composite tag to grammar!\n");
+		u_fprintf(ux_stderr, "Error: Attempted to add empty composite tag to grammar on line %u!\n", lines);
 		CG3Quit(1);
 	}
 }
@@ -176,7 +176,7 @@ void Grammar::addCompositeTagToSet(Set *set, CompositeTag *tag) {
 			set->tags.insert(tag->hash);
 		}
 	} else {
-		u_fprintf(ux_stderr, "Error: Attempted to add empty composite tag to grammar and set!\n");
+		u_fprintf(ux_stderr, "Error: Attempted to add empty composite tag to grammar and set on line %u!\n", lines);
 		CG3Quit(1);
 	}
 }
@@ -221,7 +221,7 @@ Tag *Grammar::addTag(Tag *simpletag) {
 			return single_tags[simpletag->hash];
 		}
 	} else {
-		u_fprintf(ux_stderr, "Error: Attempted to add empty tag to grammar!\n");
+		u_fprintf(ux_stderr, "Error: Attempted to add empty tag to grammar on line %u!\n", lines);
 		CG3Quit(1);
 	}
 	return 0;
@@ -230,7 +230,7 @@ void Grammar::addTagToCompositeTag(Tag *simpletag, CompositeTag *tag) {
 	if (simpletag && simpletag->tag) {
 		tag->addTag(simpletag->hash);
 	} else {
-		u_fprintf(ux_stderr, "Error: Attempted to add empty tag to grammar and composite tag!\n");
+		u_fprintf(ux_stderr, "Error: Attempted to add empty tag to grammar and composite tag on line %u!\n", lines);
 		CG3Quit(1);
 	}
 }
@@ -301,6 +301,9 @@ void Grammar::reindex() {
 
 	std::map<uint32_t, Rule*>::iterator iter_rule;
 	for (iter_rule = rule_by_line.begin() ; iter_rule != rule_by_line.end() ; iter_rule++) {
+		if (iter_rule->second->type == K_SETPARENT || iter_rule->second->type == K_SETCHILD) {
+			has_dep = true;
+		}
 		if (iter_rule->second->section == -1) {
 			before_sections.push_back(iter_rule->second);
 		}
