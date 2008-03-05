@@ -231,7 +231,7 @@ int TextualParser::parseContextualTestList(Rule *rule, std::list<ContextualTest*
 		t = rule->allocateContextualTest();
 	}
 	t->line = result->lines;
-	bool negated = false, not = false;
+	bool negated = false, negative = false;
 
 	result->lines += SKIPWS(p);
 	if (u_strncasecmp(*p, stringbits[S_TEXTNEGATE], u_strlen(stringbits[S_TEXTNEGATE]), U_FOLD_CASE_DEFAULT) == 0) {
@@ -241,7 +241,7 @@ int TextualParser::parseContextualTestList(Rule *rule, std::list<ContextualTest*
 	result->lines += SKIPWS(p);
 	if (u_strncasecmp(*p, stringbits[S_TEXTNOT], u_strlen(stringbits[S_TEXTNOT]), U_FOLD_CASE_DEFAULT) == 0) {
 		(*p) += u_strlen(stringbits[S_TEXTNOT]);
-		not = true;
+		negative = true;
 	}
 	result->lines += SKIPWS(p);
 
@@ -256,7 +256,7 @@ int TextualParser::parseContextualTestList(Rule *rule, std::list<ContextualTest*
 	if (negated) {
 		t->pos |= POS_NEGATED;
 	}
-	if (not) {
+	if (negative) {
 		t->pos |= POS_NEGATIVE;
 	}
 	if (t->pos & (POS_DEP_CHILD|POS_DEP_PARENT|POS_DEP_SIBLING)) {
