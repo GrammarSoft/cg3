@@ -1,0 +1,47 @@
+(bcc mail; multiple recipients)
+
+A new release of VISL CG-3 has been tagged v0.9.2.3279, and with plenty of changes.
+Main site: http://beta.visl.sdu.dk/cg3.html
+Source snapshots available at http://beta.visl.sdu.dk/download/vislcg3/ .
+
+Changes since last:
+
+## New grammar parser
+The grammar parser has been rewritten from ground up, which has eliminated a lot of bugs.
+Sadly has not made it much faster yet (only about 10% improvement so far), but it is a much cleaner design so easier for me to work with and optimize.
+It is also far stricter with syntax correctness of grammars; expect to have to fix your syntax if you've been sloppy. I will make it even more strict in the future, with explanatory comments on what was wrong where.
+
+It can now also detect when you create duplicate sets and will warn you about such (won't crash since they are fairly harmless).
+
+The old parser is available with --old-parser , but it will be removed once the new parser has been verified as being the better.
+
+## Named Rules
+http://beta.visl.sdu.dk/cg3/chunked/rules.html#named-rules
+
+## Set Unification
+http://beta.visl.sdu.dk/cg3/chunked/sets.html#set-unification
+
+## Ability to not run parts of the grammar
+http://beta.visl.sdu.dk/cg3/chunked/runtimeoptions.html#rto-no-before-sections
+http://beta.visl.sdu.dk/cg3/chunked/runtimeoptions.html#rto-no-sections
+http://beta.visl.sdu.dk/cg3/chunked/runtimeoptions.html#rto-no-after-sections
+
+## Binary grammar version bumped
+Due to the implementation of Set Unification, binary grammar version has been bumped and older grammars will no longer load.
+
+## Stability improvements on all platforms, inc 64bit
+I have run all the CG-3 tests through the most rigorous setting of Valgrind possible, and it has nothing to complain about on any platform I have access to. That's not to say it can't crash, but in my tests there are no more memory leaks or questionable code left.
+This includes 64bit platforms, though specifically tested on Fedora 8 x86_64.
+
+## Automatic update script for Linux
+- http://anonymous:anonymous@beta.visl.sdu.dk/svn/visl/tools/vislcg3/trunk/scripts/auto-linux-wget.sh
+If your platform has wget, ICU libraries, and GNU GCC C++ compiler, this script will download, compile, and run regression tests on the latest version from the repository.
+
+...and that's all for this batch.
+
+-- Tino Didriksen
+VISL Developer
+Google Talk: tino.didriksen@gmail.com
+AIM/iChat: TinoDidriksen
+MSN: tino@didriksen.cc
+ICQ: 5928308
