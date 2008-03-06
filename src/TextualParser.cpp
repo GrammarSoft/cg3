@@ -523,6 +523,9 @@ int TextualParser::parseRule(KEYWORDS key, UChar **p) {
 		rule->dep_target = rule->dep_tests.front();
 		rule->dep_tests.pop_front();
 	}
+	if (key == K_SETPARENT || key == K_SETCHILD) {
+		result->has_dep = true;
+	}
 
 	addRuleToGrammar(rule);
 	return 0;
