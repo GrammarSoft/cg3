@@ -301,9 +301,6 @@ void Grammar::reindex() {
 
 	std::map<uint32_t, Rule*>::iterator iter_rule;
 	for (iter_rule = rule_by_line.begin() ; iter_rule != rule_by_line.end() ; iter_rule++) {
-		if (iter_rule->second->type == K_SETPARENT || iter_rule->second->type == K_SETCHILD) {
-			has_dep = true;
-		}
 		if (iter_rule->second->section == -1) {
 			before_sections.push_back(iter_rule->second);
 		}
