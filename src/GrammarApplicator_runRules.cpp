@@ -506,6 +506,10 @@ rule_was_bad:
 			}
 		}
 
+		if (statistics) {
+			rule->total_time += (clock() - tstamp);
+		}
+
 		if (!rule_is_valid) {
 			if (iter_rules == current->valid_rules.begin()) {
 				current->valid_rules.erase(iter_rules);
@@ -522,9 +526,6 @@ rule_was_bad:
 			}
 		}
 
-		if (statistics) {
-			rule->total_time += (clock() - tstamp);
-		}
 		if (delimited) {
 			break;
 		}
