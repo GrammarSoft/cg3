@@ -29,6 +29,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, const int32_
 
 	uint32Set::iterator iter_rules;
 	for (iter_rules = current->valid_rules.begin() ; iter_rules != current->valid_rules.end() ; iter_rules++) {
+rule_was_bad:
 		uint32_t j = (*iter_rules);
 		const Rule *rule = grammar->rule_by_line.find(j)->second;
 		if (start == 0 && rule->section < 0) {
@@ -515,6 +516,9 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, const int32_
 				uint32_t n = *(--iter_rules);
 				current->valid_rules.erase(to_erase);
 				iter_rules = current->valid_rules.find(n);
+			}
+			if (iter_rules != current->valid_rules.end()) {
+				goto rule_was_bad;
 			}
 		}
 
