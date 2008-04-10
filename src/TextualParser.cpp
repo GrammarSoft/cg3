@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2007, GrammarSoft Aps
+* Copyright (C) 2007, GrammarSoft ApS
 * Developed by Tino Didriksen <tino@didriksen.cc>
 * Design by Eckhard Bick <eckhard.bick@mail.dk>, Tino Didriksen <tino@didriksen.cc>
 *
@@ -780,8 +780,10 @@ int TextualParser::parseFromUChar(UChar *input) {
 			s->rehash();
 			Set *tmp = result->getSet(s->hash);
 			if (tmp) {
-				u_fprintf(ux_stderr, "Warning: LIST %S was defined twice with the same contents: Lines %u and %u.\n", s->name, tmp->line, s->line);
-				u_fflush(ux_stderr);
+				if (tmp->name[0] != '_' || tmp->name[1] != 'G' || tmp->name[2] != '_') {
+					u_fprintf(ux_stderr, "Warning: LIST %S was defined twice with the same contents: Lines %u and %u.\n", s->name, tmp->line, s->line);
+					u_fflush(ux_stderr);
+				}
 			}
 			else if (tmp) {
 				u_fprintf(ux_stderr, "Warning: Set %S (L:%u) has been aliased to %S (L:%u).\n", s->name, s->line, tmp->name, tmp->line);
@@ -827,8 +829,10 @@ int TextualParser::parseFromUChar(UChar *input) {
 			s->rehash();
 			Set *tmp = result->getSet(s->hash);
 			if (tmp) {
-				u_fprintf(ux_stderr, "Warning: SET %S was defined twice with the same contents: Lines %u and %u.\n", s->name, tmp->line, s->line);
-				u_fflush(ux_stderr);
+				if (tmp->name[0] != '_' || tmp->name[1] != 'G' || tmp->name[2] != '_') {
+					u_fprintf(ux_stderr, "Warning: SET %S was defined twice with the same contents: Lines %u and %u.\n", s->name, tmp->line, s->line);
+					u_fflush(ux_stderr);
+				}
 			}
 			else if (s->sets.size() == 1 && !s->is_unified) {
 				tmp = result->getSet(s->sets.back());
