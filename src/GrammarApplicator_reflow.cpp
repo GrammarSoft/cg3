@@ -129,11 +129,14 @@ void GrammarApplicator::reflowDependencyWindow() {
 
 			if (cohort->dep_self == cohort->global_number) {
 				if (!cohort->dep_done && gWindow->dep_map.find(cohort->dep_parent) == gWindow->dep_map.end()) {
-					u_fprintf(
-						ux_stderr,
-						"Warning: Parent %u of dep %u in cohort %u of window %u does not exist - ignoring.\n",
-						cohort->dep_parent, cohort->dep_self, cohort->local_number, cohort->parent->number
-						);
+					if (verbosity_level > 0) {
+						u_fprintf(
+							ux_stderr,
+							"Warning: Parent %u of dep %u in cohort %u of window %u does not exist - ignoring.\n",
+							cohort->dep_parent, cohort->dep_self, cohort->local_number, cohort->parent->number
+							);
+						u_fflush(ux_stderr);
+					}
 					// ToDo: If parent is not found, it should be totally ignored, not just set to itself
 					cohort->dep_parent = cohort->dep_self;
 				}

@@ -245,6 +245,14 @@ int main(int argc, char* argv[]) {
 	else {
 		parser = new CG3::TextualParser(ux_stdin, ux_stdout, ux_stderr);
 	}
+	if (options[VERBOSE].doesOccur) {
+		if (options[VERBOSE].value) {
+			parser->setVerbosity(abs(atoi(options[VERBOSE].value)));
+		}
+		else {
+			parser->setVerbosity(1);
+		}
+	}
 	grammar->ux_stderr = ux_stderr;
 	CG3::Tag *tag_any = grammar->allocateTag(stringbits[S_ASTERIK]);
 	tag_any = grammar->addTag(tag_any);
@@ -477,6 +485,14 @@ void GAppSetOpts(CG3::GrammarApplicator *applicator) {
 	}
 	if (options[SECTIONS].doesOccur) {
 		applicator->sections = abs(atoi(options[SECTIONS].value));
+	}
+	if (options[VERBOSE].doesOccur) {
+		if (options[VERBOSE].value) {
+			applicator->verbosity_level = abs(atoi(options[VERBOSE].value));
+		}
+		else {
+			applicator->verbosity_level = 1;
+		}
 	}
 	if (options[NUM_WINDOWS].doesOccur) {
 		applicator->num_windows = abs(atoi(options[NUM_WINDOWS].value));

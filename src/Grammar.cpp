@@ -215,7 +215,8 @@ Tag *Grammar::addTag(Tag *simpletag) {
 		simpletag->rehash();
 		if (single_tags.find(simpletag->hash) != single_tags.end()) {
 			if (u_strcmp(single_tags[simpletag->hash]->tag, simpletag->tag) != 0) {
-				u_fprintf(ux_stderr, "Warning: Hash collision between %S and %S!\n", single_tags[simpletag->hash]->tag, simpletag->tag);
+				u_fprintf(ux_stderr, "Error: Hash collision between %S and %S!\n", single_tags[simpletag->hash]->tag, simpletag->tag);
+				CG3Quit(1);
 			}
 			Tag *t = single_tags[simpletag->hash];
 			destroyTag(simpletag);

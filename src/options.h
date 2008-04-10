@@ -36,6 +36,7 @@ namespace Options {
 		UNSAFE,
 		SECTIONS,
 		DODEBUG,
+		VERBOSE,
 		VISLCGCOMPAT,
 		STDIN,
 		STDOUT,
@@ -85,6 +86,7 @@ namespace Options {
 		UOPTION_DEF("unsafe",				'u', UOPT_NO_ARG),
 		UOPTION_DEF("sections",				's', UOPT_REQUIRES_ARG),
 		UOPTION_DEF("debug",				'd', UOPT_OPTIONAL_ARG),
+		UOPTION_DEF("verbose",				'v', UOPT_OPTIONAL_ARG),
 		UOPTION_DEF("vislcg-compat",		'p', UOPT_NO_ARG),
 
 		UOPTION_DEF("stdin",				'I', UOPT_REQUIRES_ARG),
