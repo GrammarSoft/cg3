@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2007, GrammarSoft Aps
+* Copyright (C) 2007, GrammarSoft ApS
 * Developed by Tino Didriksen <tino@didriksen.cc>
 * Design by Eckhard Bick <eckhard.bick@mail.dk>, Tino Didriksen <tino@didriksen.cc>
 *
@@ -23,7 +23,7 @@
 #define __VERSION_H
 
 #define CG3_COPYRIGHT_STRING \
-	"Copyright (C) 2007 GrammarSoft Aps. All Rights Reserved."
+	"Copyright (C) 2007 GrammarSoft ApS. All Rights Reserved."
 
 #define CG3_VERSION_MAJOR 0
 #define CG3_VERSION_MINOR 9
