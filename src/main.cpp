@@ -1,25 +1,28 @@
 /*
-* Copyright (C) 2006, GrammarSoft Aps
-* and the VISL project at the University of Southern Denmark.
-* All Rights Reserved.
+* Copyright (C) 2007, GrammarSoft Aps
+* Developed by Tino Didriksen <tino@didriksen.cc>
+* Design by Eckhard Bick <eckhard.bick@mail.dk>, Tino Didriksen <tino@didriksen.cc>
 *
-* The contents of this file are subject to the GrammarSoft Public
-* License Version 1.0 (the "License"); you may not use this file
-* except in compliance with the License. You may obtain a copy of
-* the License at http://www.grammarsoft.com/GSPL or
-* http://visl.sdu.dk/GSPL.txt
-* 
-* Software distributed under the License is distributed on an "AS
-* IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
-* implied. See the License for the specific language governing
-* rights and limitations under the License.
+* This file is part of VISL CG-3
+*
+* VISL CG-3 is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*
+* VISL CG-3 is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with VISL CG-3.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "stdafx.h"
 #include "icu_uoptions.h"
 #include "Recycler.h"
 #include "Grammar.h"
-#include "GrammarParser.h"
 #include "TextualParser.h"
 #include "GrammarWriter.h"
 #include "BinaryGrammar.h"
@@ -238,10 +241,6 @@ int main(int argc, char* argv[]) {
 	if (cbuffers[0][0] == 'C' && cbuffers[0][1] == 'G' && cbuffers[0][2] == '3' && cbuffers[0][3] == 'B') {
 		std::cerr << "Info: Binary grammar detected." << std::endl;
 		parser = new CG3::BinaryGrammar(grammar, ux_stderr);
-	}
-	else if (options[OLD_PARSER].doesOccur) {
-		std::cerr << "Info: Using old buggy parser." << std::endl;
-		parser = new CG3::GrammarParser(ux_stdin, ux_stdout, ux_stderr);
 	}
 	else {
 		parser = new CG3::TextualParser(ux_stdin, ux_stdout, ux_stderr);
