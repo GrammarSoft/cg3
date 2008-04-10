@@ -2,7 +2,7 @@
 <!DOCTYPE book SYSTEM "docbook-dtd-45/docbookx.dtd">
 
 <book>
-  <title>VISL Constraint Grammar Manual</title>
+  <title>Constraint Grammar Manual</title>
   <subtitle>3rd version of the CG formalism variant</subtitle>
   <titleabbrev>VISL CG-3 Manual</titleabbrev>
 
@@ -15,9 +15,8 @@
         <firstname>Tino</firstname>
         <surname>Didriksen</surname>
         <affiliation>
-          <shortaffil>VISL</shortaffil>
           <orgname>
-            <ulink url="http://visl.dk/">Visual Interactive Syntax Learning</ulink>
+            <ulink url="http://grammarsoft.com/">GrammarSoft ApS</ulink>
           </orgname>
           <address>
             <email>tino@didriksen.cc</email>
@@ -28,7 +27,7 @@
 
     <copyright>
       <year>2007</year>
-      <holder>Visual Interactive Syntax Learning</holder>
+      <holder>GrammarSoft ApS</holder>
     </copyright>
 
     <keywordset>
@@ -37,6 +36,7 @@
   </bookinfo>
 
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="intro.xml" />
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="license.xml" />
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="installation.xml" />
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="contributing.xml" />
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="compatibility.xml" />

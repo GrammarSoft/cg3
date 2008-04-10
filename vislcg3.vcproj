@@ -320,70 +320,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\src\GrammarParser.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\src\GrammarParser_parseAddMapReplaceAppend.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\src\GrammarParser_parseAnchor.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\src\GrammarParser_parseContextualTest.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\src\GrammarParser_parseDelimiters.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\src\GrammarParser_parseList.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\src\GrammarParser_parsePreferredTargets.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\src\GrammarParser_parseRemSetVariable.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\src\GrammarParser_parseSection.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\src\GrammarParser_parseSelectRemoveIffDelimitMatch.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\src\GrammarParser_parseSet.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\src\GrammarParser_parseSetParentChild.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\src\GrammarParser_parseSetRelations.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\src\GrammarParser_parseSoftDelimiters.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\src\GrammarParser_parseSubstitute.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\src\GrammarParser_parseTarget.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\src\GrammarWriter.cpp"
 				>
 			</File>
@@ -467,10 +403,6 @@
 			</File>
 			<File
 				RelativePath=".\src\GrammarApplicator.h"
-				>
-			</File>
-			<File
-				RelativePath=".\src\GrammarParser.h"
 				>
 			</File>
 			<File

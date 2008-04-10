@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE chapter SYSTEM "docbook-dtd-45/docbookx.dtd">
+
+<chapter id="license">
+  <title>License</title>
+
+  <section id="gplv3">
+    <title>GNU General Public License</title>
+    <para>
+      This program is free software: you can redistribute it and/or modify
+      it under the terms of the GNU General Public License as published by
+      the Free Software Foundation, either version 3 of the License, or
+      (at your option) any later version.
+    </para>
+    <para>
+      This program is distributed in the hope that it will be useful,
+      but WITHOUT ANY WARRANTY; without even the implied warranty of
+      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+      GNU General Public License for more details.
+    </para>
+    <para>
+      You should have received a copy of the GNU General Public License
+      along with this program.
+      If not, see <ulink url="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</ulink>.
+    </para>
+  </section>
+
+  <section id="floss">
+    <title>Open Source Exception</title>
+    <para>
+      If you plan on embedding VISL CG-3 into an open source project released under an
+      OSI approved license that is not compatible with the GPL, please contact GrammarSoft ApS
+      so we can grant you an explicit exception for the license or project.
+    </para>
+  </section>
+
+  <section id="commercial">
+    <title>Commercial/Proprietary License</title>
+    <para>
+      If you wish to embed VISL CG-3 into a proprietary or closed source project,
+      please contact GrammarSoft ApS to negotiate a commercial license.
+    </para>
+  </section>
+</chapter>

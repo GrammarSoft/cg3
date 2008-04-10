@@ -21,15 +21,15 @@
     <title>What this is...</title>
     <para>
       This document describes the design, features, implementation, usability, etc
-      of an evolution in the <ulink url="http://en.wikipedia.org/wiki/Constraint_Grammar">constraint grammar</ulink> formalism,
-      as developed by <ulink url="http://visl.dk/">VISL</ulink>.
+      of an evolution in the <ulink url="http://en.wikipedia.org/wiki/Constraint_Grammar">constraint grammar</ulink> formalism.
     </para>
   </section>
 
   <section id="naming">
     <title>Naming</title>
     <para>
-      I have called this version of CG "VISL CG-3" since it is made by VISL and is a
+      I have called this version of CG "VISL CG-3" since it implements the functionality of the
+      VISL CG-2 variant of constraint grammar and is a
       general update of the grammar format and parser features that warrants a version bump.
       VISL CG-3 is feature-wise backwards compatible with CG-2 and VISLCG, and contains switches
       to enforce their respective behavior in certain areas.
