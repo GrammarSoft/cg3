@@ -367,7 +367,10 @@ Cohort *GrammarApplicator::doesSetMatchDependency(SingleWindow *sWindow, const C
 	bool retval = false;
 	if (test->pos & POS_DEP_PARENT && current->dep_self != current->dep_parent) {
 		if (sWindow->parent->cohort_map.find(current->dep_parent) == sWindow->parent->cohort_map.end()) {
-			u_fprintf(ux_stderr, "Warning: Parent dependency %u -> %u does not exist - ignoring.\n", current->dep_self, current->dep_parent);
+			if (verbosity_level > 0) {
+				u_fprintf(ux_stderr, "Warning: Parent dependency %u -> %u does not exist - ignoring.\n", current->dep_self, current->dep_parent);
+				u_fflush(ux_stderr);
+			}
 			return 0;
 		}
 
@@ -406,11 +409,14 @@ Cohort *GrammarApplicator::doesSetMatchDependency(SingleWindow *sWindow, const C
 		uint32HashSet::const_iterator dter;
 		for (dter = deps->begin() ; dter != deps->end() ; dter++) {
 			if (sWindow->parent->cohort_map.find(*dter) == sWindow->parent->cohort_map.end()) {
-				if (test->pos & POS_DEP_CHILD) {
-					u_fprintf(ux_stderr, "Warning: Child dependency %u -> %u does not exist - ignoring.\n", current->dep_self, *dter);
-				}
-				else {
-					u_fprintf(ux_stderr, "Warning: Sibling dependency %u -> %u does not exist - ignoring.\n", current->dep_self, *dter);
+				if (verbosity_level > 0) {
+					if (test->pos & POS_DEP_CHILD) {
+						u_fprintf(ux_stderr, "Warning: Child dependency %u -> %u does not exist - ignoring.\n", current->dep_self, *dter);
+					}
+					else {
+						u_fprintf(ux_stderr, "Warning: Sibling dependency %u -> %u does not exist - ignoring.\n", current->dep_self, *dter);
+					}
+					u_fflush(ux_stderr);
 				}
 				continue;
 			}

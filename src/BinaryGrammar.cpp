@@ -592,6 +592,9 @@ void BinaryGrammar::readContextualTest(ContextualTest *t, FILE *input) {
 void BinaryGrammar::setCompatible(bool) {
 }
 
+void BinaryGrammar::setVerbosity(uint32_t) {
+}
+
 void BinaryGrammar::setResult(CG3::Grammar *result) {
 	grammar = result;
 }

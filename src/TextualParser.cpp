@@ -36,6 +36,7 @@ TextualParser::TextualParser(UFILE *ux_in, UFILE *ux_out, UFILE *ux_err) {
 	in_before_sections = false;
 	in_after_sections = false;
 	in_section = false;
+	verbosity_level = 0;
 }
 
 TextualParser::~TextualParser() {
@@ -780,14 +781,16 @@ int TextualParser::parseFromUChar(UChar *input) {
 			s->rehash();
 			Set *tmp = result->getSet(s->hash);
 			if (tmp) {
-				if (tmp->name[0] != '_' || tmp->name[1] != 'G' || tmp->name[2] != '_') {
+				if (verbosity_level > 0) {
 					u_fprintf(ux_stderr, "Warning: LIST %S was defined twice with the same contents: Lines %u and %u.\n", s->name, tmp->line, s->line);
 					u_fflush(ux_stderr);
 				}
 			}
 			else if (tmp) {
-				u_fprintf(ux_stderr, "Warning: Set %S (L:%u) has been aliased to %S (L:%u).\n", s->name, s->line, tmp->name, tmp->line);
-				u_fflush(ux_stderr);
+				if (verbosity_level > 0) {
+					u_fprintf(ux_stderr, "Warning: Set %S (L:%u) has been aliased to %S (L:%u).\n", s->name, s->line, tmp->name, tmp->line);
+					u_fflush(ux_stderr);
+				}
 				result->set_alias[sh] = tmp->hash;
 				result->destroySet(s);
 				s = tmp;
@@ -829,15 +832,17 @@ int TextualParser::parseFromUChar(UChar *input) {
 			s->rehash();
 			Set *tmp = result->getSet(s->hash);
 			if (tmp) {
-				if (tmp->name[0] != '_' || tmp->name[1] != 'G' || tmp->name[2] != '_') {
+				if (verbosity_level > 0) {
 					u_fprintf(ux_stderr, "Warning: SET %S was defined twice with the same contents: Lines %u and %u.\n", s->name, tmp->line, s->line);
 					u_fflush(ux_stderr);
 				}
 			}
 			else if (s->sets.size() == 1 && !s->is_unified) {
 				tmp = result->getSet(s->sets.back());
-				u_fprintf(ux_stderr, "Warning: Set %S (L:%u) has been aliased to %S (L:%u).\n", s->name, s->line, tmp->name, tmp->line);
-				u_fflush(ux_stderr);
+				if (verbosity_level > 0) {
+					u_fprintf(ux_stderr, "Warning: Set %S (L:%u) has been aliased to %S (L:%u).\n", s->name, s->line, tmp->name, tmp->line);
+					u_fflush(ux_stderr);
+				}
 				result->set_alias[sh] = tmp->hash;
 				result->destroySet(s);
 				s = tmp;
@@ -1046,6 +1051,10 @@ void TextualParser::setResult(CG3::Grammar *res) {
 
 void TextualParser::setCompatible(bool f) {
 	option_vislcg_compat = f;
+}
+
+void TextualParser::setVerbosity(uint32_t level) {
+	verbosity_level = level;
 }
 
 void TextualParser::addRuleToGrammar(Rule *rule) {
