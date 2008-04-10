@@ -75,6 +75,8 @@ int main(int argc, char* argv[]) {
 		fprintf(stderr, " --grammar-info           Writes the compiled grammar back out in textual form to a file, with lots of statistics and information.\n");
 		fprintf(stderr, " --grammar-only           Compiles the grammar only.\n");
 		fprintf(stderr, " --trace                  Prints debug output alongside with normal output.\n");
+		fprintf(stderr, " --trace-name-only        If a rule is named, omit the line number. Implies --trace.\n");
+		fprintf(stderr, " --trace-no-removed       Does not print removed readings. Implies --trace.\n");
 		fprintf(stderr, " --prefix                 Sets the prefix for mapping. Defaults to @.\n");
 		fprintf(stderr, " --sections               Number of sections to run. Defaults to running all sections.\n");
 		//fprintf(stderr, " --reorder                Rearranges rules so SELECTs are run first.\n");
