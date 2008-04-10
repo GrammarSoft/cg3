@@ -1,0 +1,138 @@
+.TH vislcg3 1 2007-04-10 "" ""
+.SH NAME
+vislcg3 \- This application is part of (
+.B vislcg3
+)
+.PP
+This tool is part of the vislcg3
+constraint grammar system: \fBhttp://beta.visl.sdu.dk/cg3.html\fR.
+.SH SYNOPSIS
+.B vislcg3
+[OPTIONS] 
+.SH DESCRIPTION
+.BR vislcg3 
+is the grammar parser and disambiguator in the VISL 
+constraint grammar system. It chooses between different analyses 
+(or "readings") of a word delivered by a morphological analyser
+based on a set of grammatical rules.
+.PP
+By default, vislcg3 reads input from stdin and writes output 
+to stdout.
+.RE
+.SH OPTIONS
+.TP
+.B \-h, \-\-help
+Display a help message.
+.TP
+.B \-V, \-\-version          
+Prints version number.
+.TP
+.B \-g, \-\-grammar          
+Specifies the grammar file to use for disambiguation.
+.TP
+.B \-p, \-\-vislcg-compat    
+Tells the grammar compiler to be compatible with older VISLCG syntax.
+.TP
+.B -O, \-\-stdout           
+A file to print output to instead of stdout.
+.TP
+.B \-I, \-\-stdin            
+A file to read input from instead of stdin.
+.TP
+.B \-E, \-\-stderr           
+A file to print errors to instead of stderr.
+.TP
+.B \-C, \-\-codepage-all     
+The codepage to use for grammar, input, and output streams. Auto-detects 
+default from environment.
+.TP
+.B \-L, \-\-locale-all       
+The locale to use for grammar, input, and output streams. Defaults 
+to en_US_POSIX.
+.PP
+.B     \-\-grammar\-out
+Writes the compiled grammar back out in textual form to a file.
+.TP
+.B     \-\-grammar\-bin
+Writes the compiled grammar back out in binary form to a file.
+.TP
+.B     \-\-grammar\-info
+Writes the compiled grammar back out in textual form to a file, with lots 
+of statistics and information.
+.TP
+.B     \-\-grammar\-only
+Compiles the grammar only.
+.TP
+.B     \-\-trace
+Prints debug output alongside with normal output.
+.TP
+.B     \-\-trace\-name\-only
+If a rule is named, omit the line number. Implies \-\-trace.
+.TP
+.B     \-\-trace\-no\-removed
+Does not print removed readings. Implies \-\-trace.
+.TP
+.B     \-\-prefix
+Sets the prefix for mapping. Defaults to @.
+.TP
+.B     \-\-sections
+Number of sections to run. Defaults to running all sections.
+.TP
+.B     \-\-single\-run
+Only runs each section once.
+.TP
+.B     \-\-no\-mappings
+Disables running any MAP, ADD, or REPLACE rules.
+.TP
+.B     \-\-no\-corrections
+Disables running any SUBSTITUTE or APPEND rules.
+.TP
+.B     \-\-no\-before\-sections
+Disables running rules from BEFORE\-SECTIONS.
+.TP
+.B     \-\-no\-sections
+Disables running rules from any SECTION.
+.TP
+.B     \-\-no\-after\-sections
+Disables running rules from AFTER\-SECTIONS.
+.TP
+.B     \-\-num\-windows
+Number of windows to keep in before/ahead buffers. Defaults to 2.
+.TP
+.B     \-\-always\-span
+Forces all scanning tests to always span across window boundaries.
+.TP
+.B     \-\-soft\-limit
+Number of cohorts after which the SOFT\-DELIMITERS kick in. Defaults to 300.
+.TP
+.B     \-\-hard\-limit
+Number of cohorts after which the window is delimited forcefully. Defaults to 500.
+.TP
+.B     \-\-no\-magic\-readings
+Prevents running rules on magic readings.
+.TP
+.B     \-\-dep\-allow\-loops
+Allows the creation of circular dependencies.
+.TP
+.B     \-\-codepage\-grammar
+Codepage to use for grammar. Overrides \-\-codepage\-all.
+.TP
+.B     \-\-codepage\-input
+Codepage to use for input. Overrides \-\-codepage\-all.
+.TP
+.B     \-\-codepage\-output
+Codepage to use for output and errors. Overrides \-\-codepage\-all.
+.TP
+.B     \-\-locale\-grammar
+Locale to use for grammar. Overrides \-\-locale\-all.
+.TP
+.B     \-\-locale\-input
+Locale to use for input. Overrides \-\-locale\-all.
+.TP
+.B     \-\-locale\-output
+Locale to use for output and errors. Overrides \-\-locale\-all.
+.RS
+.SH BUGS
+Email to: tino <at> didriksen.cc
+.SH AUTHOR
+(c) 2007 GrammarSoft ApS
