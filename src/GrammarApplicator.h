@@ -34,6 +34,8 @@ namespace CG3 {
 		bool no_sections;
 		bool no_after_sections;
 		bool trace;
+		bool trace_name_only;
+		bool trace_no_removed;
 		bool single_run;
 		bool allow_magic_readings;
 
