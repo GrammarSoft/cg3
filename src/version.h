@@ -23,6 +23,6 @@
 #define CG3_VERSION_MAJOR 0
 #define CG3_VERSION_MINOR 9
 #define CG3_VERSION_PATCH 2
-#define CG3_REVISION 3342
+#define CG3_REVISION 3346
 
 #endif
