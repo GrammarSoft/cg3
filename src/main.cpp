@@ -177,7 +177,9 @@ int main(int argc, char* argv[]) {
 		locale_output = options[LOCALE_ALL].value;
 	}
 
-	//fprintf(stderr, "Locales: default %s, input %s, output %s, grammar %s\n", locale_default, locale_input, locale_output, locale_grammar);
+	if (options[VERBOSE].doesOccur) {
+		fprintf(stderr, "Locales: default %s, input %s, output %s, grammar %s\n", locale_default, locale_input, locale_output, locale_grammar);
+	}
 
 	bool stdin_isfile = false;
 	bool stdout_isfile = false;
@@ -260,7 +262,9 @@ int main(int argc, char* argv[]) {
 	parser->setResult(grammar);
 	parser->setCompatible(options[VISLCGCOMPAT].doesOccur != 0);
 
-	//std::cerr << "Initialization took " << (clock()-main_timer)/(double)CLOCKS_PER_SEC << " seconds." << std::endl;
+	if (options[VERBOSE].doesOccur) {
+		std::cerr << "Initialization took " << (clock()-main_timer)/(double)CLOCKS_PER_SEC << " seconds." << std::endl;
+	}
 	main_timer = clock();
 
 	if (parser->parse_grammar_from_file(options[GRAMMAR].value, locale_grammar, codepage_grammar)) {
@@ -271,7 +275,9 @@ int main(int argc, char* argv[]) {
 	if (options[MAPPING_PREFIX].doesOccur) {
 		grammar->mapping_prefix = options[MAPPING_PREFIX].value[0];
 	}
-	//std::cerr << "Reindexing grammar..." << std::endl;
+	if (options[VERBOSE].doesOccur) {
+		std::cerr << "Reindexing grammar..." << std::endl;
+	}
 	grammar->reindex();
 
 	delete parser;
@@ -316,7 +322,9 @@ int main(int argc, char* argv[]) {
 		delete applicator;
 		applicator = 0;
 
-		std::cerr << "Applying grammar on input took " << (clock()-main_timer)/(double)CLOCKS_PER_SEC << " seconds." << std::endl;
+		if (options[VERBOSE].doesOccur) {
+			std::cerr << "Applying grammar on input took " << (clock()-main_timer)/(double)CLOCKS_PER_SEC << " seconds." << std::endl;
+		}
 		main_timer = clock();
 	}
 
@@ -336,7 +344,9 @@ int main(int argc, char* argv[]) {
 				delete applicator;
 				applicator = 0;
 
-				std::cerr << "Applying context-sorted grammar on input took " << (clock()-main_timer)/(double)CLOCKS_PER_SEC << " seconds." << std::endl;
+				if (options[VERBOSE].doesOccur) {
+					std::cerr << "Applying context-sorted grammar on input took " << (clock()-main_timer)/(double)CLOCKS_PER_SEC << " seconds." << std::endl;
+				}
 				main_timer = clock();
 			}
 
@@ -355,7 +365,9 @@ int main(int argc, char* argv[]) {
 			delete writer;
 			writer = 0;
 
-			std::cerr << "Writing textual grammar with statistics took " << (clock()-main_timer)/(double)CLOCKS_PER_SEC << " seconds." << std::endl;
+			if (options[VERBOSE].doesOccur) {
+				std::cerr << "Writing textual grammar with statistics took " << (clock()-main_timer)/(double)CLOCKS_PER_SEC << " seconds." << std::endl;
+			}
 			main_timer = clock();
 		} else {
 			std::cerr << "Could not write grammar to " << options[GRAMMAR_INFO].value << std::endl;
@@ -372,7 +384,9 @@ int main(int argc, char* argv[]) {
 			delete applicator;
 			applicator = 0;
 
-			std::cerr << "Applying fully-sorted grammar on input took " << (clock()-main_timer)/(double)CLOCKS_PER_SEC << " seconds." << std::endl;
+			if (options[VERBOSE].doesOccur) {
+				std::cerr << "Applying fully-sorted grammar on input took " << (clock()-main_timer)/(double)CLOCKS_PER_SEC << " seconds." << std::endl;
+			}
 			main_timer = clock();
 		}
 	}
@@ -388,7 +402,9 @@ int main(int argc, char* argv[]) {
 			delete writer;
 			writer = 0;
 
-			std::cerr << "Writing textual grammar took " << (clock()-main_timer)/(double)CLOCKS_PER_SEC << " seconds." << std::endl;
+			if (options[VERBOSE].doesOccur) {
+				std::cerr << "Writing textual grammar took " << (clock()-main_timer)/(double)CLOCKS_PER_SEC << " seconds." << std::endl;
+			}
 			main_timer = clock();
 		} else {
 			std::cerr << "Could not write grammar to " << options[GRAMMAR_OUT].value << std::endl;
@@ -403,7 +419,9 @@ int main(int argc, char* argv[]) {
 			delete writer;
 			writer = 0;
 
-			std::cerr << "Writing binary grammar took " << (clock()-main_timer)/(double)CLOCKS_PER_SEC << " seconds." << std::endl;
+			if (options[VERBOSE].doesOccur) {
+				std::cerr << "Writing binary grammar took " << (clock()-main_timer)/(double)CLOCKS_PER_SEC << " seconds." << std::endl;
+			}
 			main_timer = clock();
 		} else {
 			std::cerr << "Could not write grammar to " << options[GRAMMAR_BIN].value << std::endl;
@@ -426,7 +444,9 @@ int main(int argc, char* argv[]) {
 
 	u_cleanup();
 
-	//std::cerr << "Cleanup took " << (clock()-main_timer)/(double)CLOCKS_PER_SEC << " seconds." << std::endl;
+	if (options[VERBOSE].doesOccur) {
+		std::cerr << "Cleanup took " << (clock()-main_timer)/(double)CLOCKS_PER_SEC << " seconds." << std::endl;
+	}
 
 	return status;
 }
