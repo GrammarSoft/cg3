@@ -35,6 +35,7 @@ namespace CG3 {
 		int readBinaryGrammar(FILE *input);
 
 		void setCompatible(bool compat);
+		void setVerbosity(uint32_t level);
 		void setResult(CG3::Grammar *result);
 		int parse_grammar_from_file(const char *filename, const char *locale, const char *codepage);
 	private:

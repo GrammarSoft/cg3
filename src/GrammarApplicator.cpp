@@ -45,6 +45,7 @@ GrammarApplicator::GrammarApplicator(UFILE *ux_in, UFILE *ux_out, UFILE *ux_err)
 	dep_highest_seen = 0;
 	has_dep = false;
 	sections = 0;
+	verbosity_level = 0;
 	num_windows = 2;
 	begintag = 0;
 	endtag = 0;
