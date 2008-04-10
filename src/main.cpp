@@ -457,12 +457,14 @@ void GAppSetOpts(CG3::GrammarApplicator *applicator) {
 	if (options[TRACE].doesOccur) {
 		applicator->trace = true;
 	}
-	/*
-	if (options[TRACE_ALL].doesOccur) {
+	if (options[TRACE_NAME_ONLY].doesOccur) {
 		applicator->trace = true;
-		applicator->trace_all = true;
+		applicator->trace_name_only = true;
 	}
-	//*/
+	if (options[TRACE_NO_REMOVED].doesOccur) {
+		applicator->trace = true;
+		applicator->trace_no_removed = true;
+	}
 	if (options[SINGLERUN].doesOccur) {
 		applicator->single_run = true;
 	}
