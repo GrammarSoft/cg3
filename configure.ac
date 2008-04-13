@@ -3,8 +3,7 @@
 
 AC_PREREQ(2.52)
 
-AC_INIT([src/lttoolbox.h], [0.9.3], [tino@didriksen.cc])
-AC_CONFIG_HEADER([src/lttools_config.h])
+AC_INIT(vislcg3, [0.9.3], [tino@didriksen.cc])
 
 PACKAGE=vislcg3
 VERSION=0.9.3
