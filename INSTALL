@@ -1,3 +1,15 @@
+If you have autotools installed on Linux:
+
+$ sh autogen.sh <prefix>
+$ make 
+$ make install
+
+Where <prefix> is the desired installation
+location. The binary will be installed in 
+<prefix>/bin.
+
+Other systems:
+
 See instead:
 - http://beta.visl.sdu.dk/cg3.html
 - http://beta.visl.sdu.dk/cg3/chunked/
