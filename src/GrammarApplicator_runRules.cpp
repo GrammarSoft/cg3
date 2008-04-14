@@ -327,6 +327,9 @@ rule_was_bad:
 								}
 							}
 							reading->tags_list.remove(*tter);
+							if (reading->baseform == *tter) {
+								reading->baseform = 0;
+							}
 						}
 						if (tagb != reading->tags_list.size()) {
 							reading->hit_by.push_back(rule->line);
