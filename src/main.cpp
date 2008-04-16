@@ -186,7 +186,7 @@ int main(int argc, char* argv[]) {
 	bool stderr_isfile = false;
 
 	if (!options[STDOUT].doesOccur) {
-		ux_stdout = u_finit(stdout, locale_output, codepage_input);
+		ux_stdout = u_finit(stdout, locale_output, codepage_output);
 	} else {
 		stdout_isfile = true;
 		ux_stdout = u_fopen(options[STDOUT].value, "wb", locale_output, codepage_output);
@@ -197,7 +197,7 @@ int main(int argc, char* argv[]) {
 	}
 
 	if (!options[STDERR].doesOccur) {
-		ux_stderr = u_finit(stderr, locale_output, codepage_input);
+		ux_stderr = u_finit(stderr, locale_output, codepage_output);
 	} else {
 		stderr_isfile = true;
 		ux_stderr = u_fopen(options[STDERR].value, "wb", locale_output, codepage_output);
