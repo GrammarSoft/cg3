@@ -9,5 +9,8 @@ ADD (@found2) BSet ;
 ADD (@other) (with) ;
 ADD (@quotes) ("words"with"quotes"inside") ;
 
+# This is actually not allowed; cannot have multiple baseforms in a reading, but it's a good test.
+ADD (@normal) ("normal tag") ;
+
 SECTION
 "<word with spaces>" REMOVE (with) ;

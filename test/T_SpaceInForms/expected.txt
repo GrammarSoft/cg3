@@ -2,6 +2,7 @@
 	"word with spaces" wanted @found1 @found2 ADD:7 ADD:8 
 	"word with spaces" notwanted @found1 ADD:7 
 	"words"with"quotes"inside" quotes @quotes ADD:10 
-;	"word" with notwanted @other ADD:9 REMOVE:13 
-;	"word" with notmeeither @other ADD:9 REMOVE:13 
+	"baseform" @normal ADD:13 
+;	"word" with notwanted @other ADD:9 REMOVE:16 
+;	"word" with notmeeither @other ADD:9 REMOVE:16 
 
