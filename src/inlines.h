@@ -88,12 +88,11 @@ inline bool ISCHR(const UChar p, const UChar a, const UChar b) {
 	return ((p) && ((p) == (a) || (p) == (b)));
 }
 
-inline uint32_t BACKTONL(UChar **p) {
+inline void BACKTONL(UChar **p) {
 	while (**p && !ISNL(**p) && (**p != ';' || ISESC(*p))) {
 		(*p)--;
 	}
 	(*p)++;
-	return 1;
 }
 
 inline uint32_t SKIPLN(UChar **p) {
