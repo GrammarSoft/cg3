@@ -56,11 +56,15 @@ struct UOption {
     char shortName;         /* 'f' for -f */
     char hasArg;            /* enum value: option takes no/requires/may have argument */
     char doesOccur;         /* boolean for "this one occured" */
+	const char *description; /* description of the option (added by Tino Didriksen <tino@didriksen.cc>) */
 };
 
 /* macro for an entry in a declaration of UOption[] */
 #define UOPTION_DEF(longName, shortName, hasArg) \
-    { longName, NULL, NULL, NULL, shortName, hasArg, 0 }
+    { longName, NULL, NULL, NULL, shortName, hasArg, 0, NULL}
+/* added by Tino Didriksen <tino@didriksen.cc> */
+#define UOPTION_DEF_D(longName, shortName, hasArg, desc) \
+    { longName, NULL, NULL, NULL, shortName, hasArg, 0, desc}
 
 /* ICU Tools option definitions */
 #define UOPTION_HELP_H              UOPTION_DEF("help", 'h', UOPT_NO_ARG)
