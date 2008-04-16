@@ -418,6 +418,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\inlines.h"
+				>
+			</File>
+			<File
 				RelativePath=".\src\options.h"
 				>
 			</File>
