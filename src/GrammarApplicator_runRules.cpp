@@ -34,7 +34,9 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, const int32_
 
 	uint32Set::iterator iter_rules;
 	for (iter_rules = current->valid_rules.begin() ; iter_rules != current->valid_rules.end() ; iter_rules++) {
+		/*
 rule_was_bad:
+		//*/
 		uint32_t j = (*iter_rules);
 		const Rule *rule = grammar->rule_by_line.find(j)->second;
 		if (start == 0 && rule->section < 0) {
@@ -518,6 +520,7 @@ rule_was_bad:
 			rule->total_time += (clock() - tstamp);
 		}
 
+		/*
 		if (!rule_is_valid) {
 			if (iter_rules == current->valid_rules.begin()) {
 				current->valid_rules.erase(iter_rules);
@@ -533,6 +536,7 @@ rule_was_bad:
 				goto rule_was_bad;
 			}
 		}
+		//*/
 
 		if (delimited) {
 			break;
