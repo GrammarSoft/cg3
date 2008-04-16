@@ -24,8 +24,9 @@
 namespace CG3 {
 	namespace Strings {
 		UChar *keywords[KEYWORD_COUNT];
+		uint32_t keyword_lengths[KEYWORD_COUNT];
 		UChar *stringbits[STRINGS_COUNT];
-		uint32_t string_hashes[STRINGS_COUNT];
+		uint32_t stringbit_lengths[STRINGS_COUNT];
 		URegularExpression *regexps[REGEXP_COUNT];
 
 		inline int init_keyword_single(const char *keyword, const uint32_t entry) {
@@ -37,6 +38,7 @@ namespace CG3 {
 			u_uastrcpy(buffer, keyword);
 			keywords[entry] = new UChar[u_strlen(buffer)+1];
 			u_strcpy(keywords[entry], buffer);
+			keyword_lengths[entry] = u_strlen(keywords[entry]);
 			return 0;
 		}
 		
@@ -106,7 +108,7 @@ namespace CG3 {
 			u_uastrcpy(buffer, keyword);
 			stringbits[entry] = new UChar[u_strlen(buffer)+1];
 			u_strcpy(stringbits[entry], buffer);
-			string_hashes[entry] = hash_sdbm_uchar(stringbits[entry], 0);
+			stringbit_lengths[entry] = u_strlen(stringbits[entry]);
 			return 0;
 		}
 		

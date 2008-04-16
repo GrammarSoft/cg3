@@ -111,9 +111,9 @@ namespace CG3 {
 		};
 
 		extern UChar *keywords[KEYWORD_COUNT];
-		extern uint32_t keyword_pow[KEYWORD_COUNT];
+		extern uint32_t keyword_lengths[KEYWORD_COUNT];
 		extern UChar *stringbits[STRINGS_COUNT];
-		extern uint32_t string_hashes[STRINGS_COUNT];
+		extern uint32_t stringbit_lengths[STRINGS_COUNT];
 		extern URegularExpression *regexps[REGEXP_COUNT];
 
 		int init_keywords();
