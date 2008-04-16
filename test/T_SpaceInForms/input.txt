@@ -4,3 +4,4 @@
 	"word with spaces" notwanted
 	"word" with notmeeither
 	"words"with"quotes"inside" quotes
+	"baseform" "normal tag"

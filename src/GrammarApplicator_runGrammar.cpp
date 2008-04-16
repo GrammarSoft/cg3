@@ -255,6 +255,10 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 					}
 				}
 				base = space;
+				if (*space == '"') {
+					space++;
+					SKIPTO(&space, '"');
+				}
 			}
 			if (base && base[0]) {
 				uint32_t tag = addTag(base);
