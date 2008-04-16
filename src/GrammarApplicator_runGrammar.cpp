@@ -239,15 +239,16 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 			ux_trim(cleaned);
 			UChar *space = cleaned;
 			UChar *base = space;
+			if (*space == '"') {
+				space++;
+				SKIPTO(&space, '"');
+			}
 
 			while (space && (space = u_strchr(space, ' ')) != 0) {
 				space[0] = 0;
 				space++;
-				if (u_strlen(base)) {
+				if (base && base[0]) {
 					uint32_t tag = addTag(base);
-					if (!cReading->baseform && single_tags[tag]->type & T_BASEFORM) {
-						cReading->baseform = tag;
-					}
 					addTagToReading(cReading, tag);
 					if (grammar->rules_by_tag.find(tag) != grammar->rules_by_tag.end()) {
 						cSWindow->valid_rules.insert(grammar->rules_by_tag.find(tag)->second->begin(), grammar->rules_by_tag.find(tag)->second->end());
@@ -255,11 +256,8 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 				}
 				base = space;
 			}
-			if (u_strlen(base)) {
+			if (base && base[0]) {
 				uint32_t tag = addTag(base);
-				if (!cReading->baseform && single_tags[tag]->type & T_BASEFORM) {
-					cReading->baseform = tag;
-				}
 				addTagToReading(cReading, tag);
 				if (grammar->rules_by_tag.find(tag) != grammar->rules_by_tag.end()) {
 					cSWindow->valid_rules.insert(grammar->rules_by_tag.find(tag)->second->begin(), grammar->rules_by_tag.find(tag)->second->end());
@@ -269,7 +267,6 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 				cReading->mapped = true;
 			}
 			if (!cReading->baseform) {
-				//cReading->baseform = cCohort->wordform;
 				u_fprintf(ux_stderr, "Warning: Line %u had no valid baseform.\n", numLines);
 				u_fflush(ux_stderr);
 			}

@@ -75,6 +75,10 @@ int TextualParser::parseTagList(Set *s, UChar **p, const bool isinline = false) 
 
 				while (**p && **p != ';' && **p != ')') {
 					UChar *n = *p;
+					if (*n == '"') {
+						n++;
+						result->lines += SKIPTO(&n, '"');
+					}
 					result->lines += SKIPTOWS(&n, ')', true);
 					uint32_t c = (uint32_t)(n - *p);
 					u_strncpy(gbuffers[0], *p, c);
@@ -96,6 +100,10 @@ int TextualParser::parseTagList(Set *s, UChar **p, const bool isinline = false) 
 			}
 			else {
 				UChar *n = *p;
+				if (*n == '"') {
+					n++;
+					result->lines += SKIPTO(&n, '"');
+				}
 				result->lines += SKIPTOWS(&n, 0, true);
 				uint32_t c = (uint32_t)(n - *p);
 				u_strncpy(gbuffers[0], *p, c);
@@ -136,6 +144,10 @@ int TextualParser::parseSetInline(Set *s, UChar **p) {
 					while (**p && **p != ';' && **p != ')') {
 						result->lines += SKIPWS(p, ';', ')');
 						UChar *n = *p;
+						if (*n == '"') {
+							n++;
+							result->lines += SKIPTO(&n, '"');
+						}
 						result->lines += SKIPTOWS(&n, ')', true);
 						uint32_t c = (uint32_t)(n - *p);
 						u_strncpy(gbuffers[0], *p, c);
@@ -237,13 +249,13 @@ int TextualParser::parseContextualTestList(Rule *rule, std::list<ContextualTest*
 	bool negated = false, negative = false;
 
 	result->lines += SKIPWS(p);
-	if (u_strncasecmp(*p, stringbits[S_TEXTNEGATE], u_strlen(stringbits[S_TEXTNEGATE]), U_FOLD_CASE_DEFAULT) == 0) {
-		(*p) += u_strlen(stringbits[S_TEXTNEGATE]);
+	if (u_strncasecmp(*p, stringbits[S_TEXTNEGATE], stringbit_lengths[S_TEXTNEGATE], U_FOLD_CASE_DEFAULT) == 0) {
+		(*p) += stringbit_lengths[S_TEXTNEGATE];
 		negated = true;
 	}
 	result->lines += SKIPWS(p);
-	if (u_strncasecmp(*p, stringbits[S_TEXTNOT], u_strlen(stringbits[S_TEXTNOT]), U_FOLD_CASE_DEFAULT) == 0) {
-		(*p) += u_strlen(stringbits[S_TEXTNOT]);
+	if (u_strncasecmp(*p, stringbits[S_TEXTNOT], stringbit_lengths[S_TEXTNOT], U_FOLD_CASE_DEFAULT) == 0) {
+		(*p) += stringbit_lengths[S_TEXTNOT];
 		negative = true;
 	}
 	result->lines += SKIPWS(p);
@@ -280,8 +292,8 @@ int TextualParser::parseContextualTestList(Rule *rule, std::list<ContextualTest*
 	t->target = s->hash;
 
 	result->lines += SKIPWS(p);
-	if (u_strncasecmp(*p, stringbits[S_CBARRIER], u_strlen(stringbits[S_CBARRIER]), U_FOLD_CASE_DEFAULT) == 0) {
-		(*p) += u_strlen(stringbits[S_CBARRIER]);
+	if (u_strncasecmp(*p, stringbits[S_CBARRIER], stringbit_lengths[S_CBARRIER], U_FOLD_CASE_DEFAULT) == 0) {
+		(*p) += stringbit_lengths[S_CBARRIER];
 		result->lines += SKIPWS(p);
 		Set *s = result->allocateSet();
 		s->line = result->lines;
@@ -296,8 +308,8 @@ int TextualParser::parseContextualTestList(Rule *rule, std::list<ContextualTest*
 		t->cbarrier = s->hash;
 	}
 	result->lines += SKIPWS(p);
-	if (u_strncasecmp(*p, stringbits[S_BARRIER], u_strlen(stringbits[S_BARRIER]), U_FOLD_CASE_DEFAULT) == 0) {
-		(*p) += u_strlen(stringbits[S_BARRIER]);
+	if (u_strncasecmp(*p, stringbits[S_BARRIER], stringbit_lengths[S_BARRIER], U_FOLD_CASE_DEFAULT) == 0) {
+		(*p) += stringbit_lengths[S_BARRIER];
 		result->lines += SKIPWS(p);
 		Set *s = result->allocateSet();
 		s->line = result->lines;
@@ -315,8 +327,8 @@ int TextualParser::parseContextualTestList(Rule *rule, std::list<ContextualTest*
 
 	bool linked = false;
 	result->lines += SKIPWS(p);
-	if (u_strncasecmp(*p, stringbits[S_LINK], u_strlen(stringbits[S_LINK]), U_FOLD_CASE_DEFAULT) == 0) {
-		(*p) += u_strlen(stringbits[S_LINK]);
+	if (u_strncasecmp(*p, stringbits[S_LINK], stringbit_lengths[S_LINK], U_FOLD_CASE_DEFAULT) == 0) {
+		(*p) += stringbit_lengths[S_LINK];
 		linked = true;
 	}
 	result->lines += SKIPWS(p);
@@ -353,6 +365,10 @@ int TextualParser::parseRule(KEYWORDS key, UChar **p) {
 
 	if (lp != *p && lp < *p) {
 		UChar *n = lp;
+		if (*n == '"') {
+			n++;
+			result->lines += SKIPTO(&n, '"');
+		}
 		result->lines += SKIPTOWS(&n, 0, true);
 		uint32_t c = (uint32_t)(n - lp);
 		u_strncpy(gbuffers[0], lp, c);
@@ -462,8 +478,8 @@ int TextualParser::parseRule(KEYWORDS key, UChar **p) {
 	}
 
 	result->lines += SKIPWS(p);
-	if (u_strncasecmp(*p, stringbits[S_TARGET], u_strlen(stringbits[S_TARGET]), U_FOLD_CASE_DEFAULT) == 0) {
-		(*p) += u_strlen(stringbits[S_TARGET]);
+	if (u_strncasecmp(*p, stringbits[S_TARGET], stringbit_lengths[S_TARGET], U_FOLD_CASE_DEFAULT) == 0) {
+		(*p) += stringbit_lengths[S_TARGET];
 	}
 	result->lines += SKIPWS(p);
 
@@ -480,8 +496,8 @@ int TextualParser::parseRule(KEYWORDS key, UChar **p) {
 	rule->target = s->hash;
 
 	result->lines += SKIPWS(p);
-	if (u_strncasecmp(*p, stringbits[S_IF], u_strlen(stringbits[S_IF]), U_FOLD_CASE_DEFAULT) == 0) {
-		(*p) += u_strlen(stringbits[S_IF]);
+	if (u_strncasecmp(*p, stringbits[S_IF], stringbit_lengths[S_IF], U_FOLD_CASE_DEFAULT) == 0) {
+		(*p) += stringbit_lengths[S_IF];
 	}
 	result->lines += SKIPWS(p);
 
@@ -501,8 +517,8 @@ int TextualParser::parseRule(KEYWORDS key, UChar **p) {
 	if (key == K_SETPARENT || key == K_SETCHILD || key == K_SETRELATION || key == K_REMRELATION
 		|| key == K_SETRELATIONS || key == K_REMRELATIONS) {
 		result->lines += SKIPWS(p);
-		if (u_strncasecmp(*p, stringbits[S_TO], u_strlen(stringbits[S_TO]), U_FOLD_CASE_DEFAULT) == 0) {
-			(*p) += u_strlen(stringbits[S_TO]);
+		if (u_strncasecmp(*p, stringbits[S_TO], stringbit_lengths[S_TO], U_FOLD_CASE_DEFAULT) == 0) {
+			(*p) += stringbit_lengths[S_TO];
 		}
 		else {
 			u_fprintf(ux_stderr, "Error: Missing dependency keyword TO on line %u!\n", result->lines);
@@ -984,6 +1000,10 @@ int TextualParser::parseFromUChar(UChar *input) {
 		// No keyword found at this position, skip a character.
 		else {
 			if (*p == ';' || *p == '"' || *p == '<') {
+				if (*p == '"') {
+					p++;
+					result->lines += SKIPTO(&p, '"');
+				}
 				result->lines += SKIPTOWS(&p);
 			}
 			if (*p && *p != ';' && *p != '"' && *p != '<' && !ISNL(*p) && !u_isWhitespace(*p)) {

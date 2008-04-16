@@ -1,0 +1,6 @@
+"<word with spaces>"
+	"word" with notwanted
+	"word with spaces" wanted
+	"word with spaces" notwanted
+	"word" with notmeeither
+	"words"with"quotes"inside" quotes
