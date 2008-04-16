@@ -143,4 +143,15 @@ inline uint32_t SKIPTOWS(UChar **p, const UChar a = 0, const bool allowhash = fa
 	return s;
 }
 
+inline uint32_t SKIPTO(UChar **p, const UChar a) {
+	uint32_t s = 0;
+	while (**p && (**p != a || ISESC(*p))) {
+		if (ISNL(**p)) {
+			s++;
+		}
+		(*p)++;
+	}
+	return s;
+}
+
 #endif
