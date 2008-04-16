@@ -69,55 +69,43 @@ int main(int argc, char* argv[]) {
 		fprintf(stderr, "Usage: vislcg3 [OPTIONS]\n");
 		fprintf(stderr, "\n");
 		fprintf(stderr, "Options:\n");
-		fprintf(stderr, " -h or -? or --help       Displays this list.\n");
-		fprintf(stderr, " -V or --version          Prints version number.\n");
-		fprintf(stderr, " -g or --grammar          Specifies the grammar file to use for disambiguation.\n");
-		fprintf(stderr, " -p or --vislcg-compat    Tells the grammar compiler to be compatible with older VISLCG syntax.\n");
-		fprintf(stderr, " --grammar-out            Writes the compiled grammar back out in textual form to a file.\n");
-		fprintf(stderr, " --grammar-bin            Writes the compiled grammar back out in binary form to a file.\n");
-		fprintf(stderr, " --grammar-info           Writes the compiled grammar back out in textual form to a file, with lots of statistics and information.\n");
-		fprintf(stderr, " --grammar-only           Compiles the grammar only.\n");
-		fprintf(stderr, " --trace                  Prints debug output alongside with normal output.\n");
-		fprintf(stderr, " --trace-name-only        If a rule is named, omit the line number. Implies --trace.\n");
-		fprintf(stderr, " --trace-no-removed       Does not print removed readings. Implies --trace.\n");
-		fprintf(stderr, " --prefix                 Sets the prefix for mapping. Defaults to @.\n");
-		fprintf(stderr, " --sections               Number of sections to run. Defaults to running all sections.\n");
-		//fprintf(stderr, " --reorder                Rearranges rules so SELECTs are run first.\n");
-		fprintf(stderr, " --single-run             Only runs each section once.\n");
-		fprintf(stderr, " --no-mappings            Disables running any MAP, ADD, or REPLACE rules.\n");
-		fprintf(stderr, " --no-corrections         Disables running any SUBSTITUTE or APPEND rules.\n");
-		fprintf(stderr, " --no-before-sections     Disables running rules from BEFORE-SECTIONS.\n");
-		fprintf(stderr, " --no-sections            Disables running rules from any SECTION.\n");
-		fprintf(stderr, " --no-after-sections      Disables running rules from AFTER-SECTIONS.\n");
-		fprintf(stderr, "\n");
-		fprintf(stderr, " --num-windows            Number of windows to keep in before/ahead buffers. Defaults to 2.\n");
-		fprintf(stderr, " --always-span            Forces all scanning tests to always span across window boundaries.\n");
-		fprintf(stderr, " --soft-limit             Number of cohorts after which the SOFT-DELIMITERS kick in. Defaults to 300.\n");
-		fprintf(stderr, " --hard-limit             Number of cohorts after which the window is delimited forcefully. Defaults to 500.\n");
-		fprintf(stderr, " --no-magic-readings      Prevents running rules on magic readings.\n");
-		fprintf(stderr, " --dep-allow-loops        Allows the creation of circular dependencies.\n");
-		//fprintf(stderr, " --dep-delimit            Delimit via dependency information instead of DELIMITERS.\n");
-		//fprintf(stderr, " --dep-reenum             Outputs the internal reenumeration of dependencies.\n");
-		//fprintf(stderr, " --dep-humanize           Output dependency information in a more readable format.\n");
-		fprintf(stderr, "\n");
-		fprintf(stderr, " -O or --stdout           A file to print output to instead of stdout.\n");
-		fprintf(stderr, " -I or --stdin            A file to read input from instead of stdin.\n");
-		fprintf(stderr, " -E or --stderr           A file to print errors to instead of stderr.\n");
-		fprintf(stderr, "\n");
-		fprintf(stderr, " -C or --codepage-all     The codepage to use for grammar, input, and output streams. Auto-detects default from environment.\n");
-		fprintf(stderr, " --codepage-grammar       Codepage to use for grammar. Overrides --codepage-all.\n");
-		fprintf(stderr, " --codepage-input         Codepage to use for input. Overrides --codepage-all.\n");
-		fprintf(stderr, " --codepage-output        Codepage to use for output and errors. Overrides --codepage-all.\n");
-		fprintf(stderr, "\n");
-		fprintf(stderr, " -L or --locale-all       The locale to use for grammar, input, and output streams. Defaults to en_US_POSIX.\n");
-		fprintf(stderr, " --locale-grammar         Locale to use for grammar. Overrides --locale-all.\n");
-		fprintf(stderr, " --locale-input           Locale to use for input. Overrides --locale-all.\n");
-		fprintf(stderr, " --locale-output          Locale to use for output and errors. Overrides --locale-all.\n");
+
+		uint32_t longest = 0;
+		for (uint32_t i=0 ; i<NUM_OPTIONS ; i++) {
+			if (options[i].description) {
+				longest = MAX(longest, strlen(options[i].longName));
+			}
+		}
+		for (uint32_t i=0 ; i<NUM_OPTIONS ; i++) {
+			if (options[i].description) {
+				fprintf(stderr, " ");
+				if (options[i].shortName) {
+					fprintf(stderr, "-%c,", options[i].shortName);
+				}
+				else {
+					fprintf(stderr, "   ");
+				}
+				fprintf(stderr, " --%s", options[i].longName);
+				uint32_t ldiff = longest - strlen(options[i].longName);
+				while (ldiff) {
+					fprintf(stderr, " ");
+					ldiff--;
+				}
+				fprintf(stderr, "  %s", options[i].description);
+				fprintf(stderr, "\n");
+			}
+		}
 
 		return argc < 0 ? U_ILLEGAL_ARGUMENT_ERROR : U_ZERO_ERROR;
 	}
 
 	fflush(stderr);
+
+	if (options[CHECK_ONLY].doesOccur || options[GRAMMAR_ONLY].doesOccur) {
+		if (!options[VERBOSE].doesOccur) {
+			options[VERBOSE].doesOccur = true;
+		}
+	}
 
 	/* Initialize ICU */
 	u_init(&status);
