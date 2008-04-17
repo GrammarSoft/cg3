@@ -227,3 +227,48 @@ UChar *ux_append(UChar *target, const UChar *data) {
 	}
 	return tmp;
 }
+
+
+UChar *ux_append(UChar *target, const UChar data)
+{
+	UChar *tmp = 0;
+	UChar char_tmp[1];
+	char_tmp[0] = data;
+	char_tmp[1] = '\0';
+
+	if (!target) {
+		uint32_t length = u_strlen(char_tmp)+1;
+		tmp = new UChar[length];
+		tmp[0] = 0;
+		u_strcat(tmp, char_tmp);
+		target = tmp;
+	} else {
+		uint32_t length = u_strlen(target)+u_strlen(char_tmp)+1;
+		tmp = new UChar[length];
+		tmp[0] = 0;
+		u_strcat(tmp, target);
+		u_strcat(tmp, char_tmp);
+		delete[] target;
+		target = tmp;
+	}
+	return tmp;
+}
+
+UChar *ux_substr(UChar *string, int start, int end) 
+{
+	UChar *tmp = 0;
+	int i = 0;
+	
+	int len = u_strlen(string);
+	
+	if(end > len) {
+		return tmp;
+	}
+
+	for(i = start; i < end; i++) {
+		tmp = ux_append(tmp, string[i]);	
+	}
+
+	return tmp;
+}
+
