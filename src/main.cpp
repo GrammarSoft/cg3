@@ -73,7 +73,8 @@ int main(int argc, char* argv[]) {
 		uint32_t longest = 0;
 		for (uint32_t i=0 ; i<NUM_OPTIONS ; i++) {
 			if (options[i].description) {
-				longest = MAX(longest, strlen(options[i].longName));
+				size_t len = strlen(options[i].longName);
+				longest = MAX(longest, len);
 			}
 		}
 		for (uint32_t i=0 ; i<NUM_OPTIONS ; i++) {
