@@ -64,9 +64,14 @@ namespace CG3 {
 
 		void setGrammar(const Grammar *res);
 
-		int runGrammarOnText(UFILE *input, UFILE *output);
+		virtual int runGrammarOnText(UFILE *input, UFILE *output);
 
-	private:
+
+	protected:
+
+		void printReading(Reading *reading, UFILE *output);
+		void printSingleWindow(SingleWindow *window, UFILE *output);
+
 		UFILE *ux_stdin;
 		UFILE *ux_stdout;
 		UFILE *ux_stderr;
@@ -115,8 +120,8 @@ namespace CG3 {
 		bool doesSetMatchCohortCareful(const Cohort *cohort, const uint32_t set);
 		Cohort *doesSetMatchDependency(SingleWindow *sWindow, const Cohort *current, const ContextualTest *test);
 
-		void printReading(Reading *reading, UFILE *output);
-		void printSingleWindow(SingleWindow *window, UFILE *output);
+		SingleWindow *initialiseSingleWindow(Recycler *r, Window *cWindow, SingleWindow *cSWindow);
+
 
 		bool has_dep;
 		uint32_t dep_highest_seen;

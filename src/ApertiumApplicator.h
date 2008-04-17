@@ -19,27 +19,34 @@
 * along with VISL CG-3.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef __UEXTRAS_H
-#define __UEXTRAS_H
+#ifndef __GRAMMARAPPLICATORAPERTIUM_H
+#define __GRAMMARAPPLICATORAPERTIUM_H
 
 #include "stdafx.h"
 #include "Strings.h"
+#include "Tag.h"
+#include "Grammar.h"
+#include "Window.h"
+#include "SingleWindow.h"
+#include "GrammarApplicator.h"
 
-bool ux_isNewline(const UChar32 current, const UChar32 previous);
-bool ux_trim(UChar *totrim);
-bool ux_packWhitespace(UChar *totrim);
-bool ux_cutComments(UChar *line, const UChar comment, bool ruthless);
-int ux_isSetOp(const UChar *it);
-bool ux_findMatchingParenthesis(const UChar *structure, int pos, int *result);
+namespace CG3 {
+	class ApertiumApplicator : public GrammarApplicator {
+	public:
+		ApertiumApplicator(UFILE *ux_in, UFILE *ux_out, UFILE *ux_err);
 
-bool ux_escape(UChar *target, const UChar *source);
-bool ux_unEscape(UChar *target, const UChar *source);
+		virtual int runGrammarOnText(UFILE *input, UFILE *output);
 
-uint32_t ux_fputuchar(FILE *output, UChar *txt);
-UChar *ux_append(UChar *target, const UChar *data);
-UChar *ux_append(UChar *target, const UChar data);
+	protected:
 
-UChar *ux_substr(UChar *string, int start, int end);
+		void printReading(Reading *reading, UFILE *output);
+		void printSingleWindow(SingleWindow *window, UFILE *output);
 
+	private:
+
+		void processReading(SingleWindow *cSWindow, Reading *cReading, UChar *reading_string);
+
+	};
+}
 
 #endif

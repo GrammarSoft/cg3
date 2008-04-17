@@ -1,0 +1,55 @@
+.TH cg-proc 1 2007-04-10 "" ""
+.SH NAME
+cg-proc \- This application is part of (
+.B vislcg3
+)
+.PP
+This tool is part of the vislcg3
+constraint grammar system: \fBhttp://beta.visl.sdu.dk/cg3.html\fR.
+.SH SYNOPSIS
+.B cg-proc
+[
+.B \-d \fR|
+.B \-s \fR|
+.B \-t \fR|
+.B \-v \fR|
+.B \-h
+] grammar_file [input_file [output_file]]
+.SH DESCRIPTION
+.BR cg-proc 
+is the grammar parser and disambiguator in the VISL
+constraint grammar system. It chooses between different analyses
+(or "readings") of a word delivered by a morphological analyser
+based on a set of grammatical rules.
+.PP
+By default, cg-proc reads input from stdin and writes output
+to stdout. The binary grammar files read by the parser are generated
+by \fBcg\-comp(1)\fR
+.RE
+.SH OPTIONS
+.TP
+\fB\-d\fR, \fB\-\-disambiguation\fR:
+morphological disambiguation (default option)
+.TP
+\fB\-s\fR \fINUM\fR, \fB\-\-sections\fR=\fINUM\fR
+specify number, \fINUM\fR, of sections to process
+.TP
+\fB\-f\fR \fINUM\fR, \fB\-\-stream-format\fR=\fINUM
+set the format of the I/O stream to \fINUM\fR, where `0' is VISL format and `1' is Apertium format (default: 1)
+.TP
+\fB\-t\fR, \fB\-\-trace\fR:
+print debug output on stderr
+.TP
+\fB\-v\fR, \fB\-\-version\fR:
+version
+.TP
+\fB\-h\fR, \fB\-\-help\fR:
+show this help
+.RS
+.SH SEE ALSO
+.I cg-comp\fR(1),
+.SH BUGS
+Email to: tino <at> didriksen.cc
+.SH AUTHOR
+(c) 2007--2008 GrammarSoft ApS
+
