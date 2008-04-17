@@ -10,6 +10,7 @@ chdir $bindir or die("Error: Could not change directory to $bindir !");
 # Search paths for the binary
 my @binlist = (
 	"../Debug/vislcg3",
+	"../Common/vislcg3",
 	"../Release/vislcg3",
 	"../src/vislcg3",
 	"../vislcg3",
@@ -23,6 +24,14 @@ foreach (@binlist) {
 	}
 	elsif (-x $_.".exe") {
 		$binary = $_.".exe";
+		last;
+	}
+	elsif (-x "../".$_) {
+		$binary = "../".$_;
+		last;
+	}
+	elsif (-x "../".$_.".exe") {
+		$binary = "../".$_.".exe";
 		last;
 	}
 }
