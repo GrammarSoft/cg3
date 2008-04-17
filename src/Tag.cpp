@@ -166,6 +166,8 @@ void Tag::parseTag(const UChar *to, UFILE *ux_stderr) {
 				u_fprintf(ux_stderr, "Error: uregex_open returned %s trying to parse tag %S - cannot continue!\n", u_errorName(status), tag);
 				CG3Quit(1);
 			}
+			delete pe;
+			pe = 0;
 		}
 	}
 	is_special = false;
