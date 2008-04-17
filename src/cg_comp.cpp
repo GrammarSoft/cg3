@@ -46,7 +46,7 @@ endProgram(char *name)
 	if(name != NULL) {
 		fprintf(stdout, "VISL CG-3 Compiler version %u.%u.%u.%u\n",
 			CG3_VERSION_MAJOR, CG3_VERSION_MINOR, CG3_VERSION_PATCH, CG3_REVISION);
-		cout << basename(name) <<": compile a binary grammar from a text file" << endl;
+		cout << "cg-comp: compile a binary grammar from a text file" << endl;
 		cout << "USAGE: " << basename(name) << " grammar_file output_file" << endl;
 	}
 	exit(EXIT_FAILURE);
