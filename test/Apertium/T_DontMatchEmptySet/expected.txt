@@ -1,0 +1,1 @@
+^word/word<notwanted>/matchme<wanted><@tag>/word<notmeeither>$

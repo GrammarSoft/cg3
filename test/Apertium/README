@@ -1,0 +1,62 @@
+This is a sub-directory for tests relating to CG integration
+with Apertium.
+
+It contains almost the same tests as the parent directory with
+the main CG tests, but leaves some out.
+
+==Exceptions==
+
+T_BasicDepedency 
+ 
+  Apertium currently cannot encode dependency information in
+  its stream format.
+
+T_DependencyLoops
+
+  see T_BasicDependency
+
+T_DependencyOutOfRange
+
+  see T_BasicDependency
+
+T_InputCommands
+
+  Apertium does not make use of the input commands used to 
+  stop, start and flush the stream.
+
+T_InputMarkup
+
+  see new test T_SuperBlanks for test of dealing with markup
+  in the stream.
+
+T_NumericalTags
+ 
+  Numerical tags are not valid in Apertium streams.
+
+T_Relations
+
+  No way of expressing this in Apertium streams.
+
+T_SetParentChild
+
+  see T_BasicDepedency
+
+T_SoftDelimiters
+
+  Not currently supported
+
+T_Trace
+
+  Not currently supported -- unlikely to be.
+
+T_Omniscan
+
+  see T_BasicDependency
+
+==Known bugs==
+
+T_CarefulBarrier
+
+  Tag only gets mapped to the last reading in the Cohort.
+
+

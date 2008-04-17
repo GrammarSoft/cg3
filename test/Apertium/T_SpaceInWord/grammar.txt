@@ -1,0 +1,12 @@
+DELIMITERS = "<$.>" ;
+
+LIST BSet = ("al final" adv) ;
+LIST CSet = ("de todos");
+
+
+SECTION
+
+SELECT BSet ;
+SELECT CSet ;
+
+"<de la>" REMOVE (adv);

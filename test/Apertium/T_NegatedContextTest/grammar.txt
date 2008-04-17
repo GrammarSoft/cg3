@@ -1,0 +1,8 @@
+DELIMITERS = "<$.>" ;
+
+LIST ASet = wanted ;
+LIST BSet = maybe ;
+
+SECTION
+
+SELECT ASet (NEGATE 1 BSet LINK 0 BSet) ;

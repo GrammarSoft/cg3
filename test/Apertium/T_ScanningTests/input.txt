@@ -1,0 +1,2 @@
+^word/word<wanted>$ ^word/word<wanted>$ ^word/word<wanted><alsofindme>$ ^word/word<wanted><findme>$ ^word/word<wanted>$ ^word/word<wanted><alsofindme>$ ^word/word<wanted><alsofindme>$ ^word/word<wanted>$
+

@@ -1,0 +1,2 @@
+^wørd/word<wanted>$ ^unknown/*unknown$ ^bird/bĩrd<wanted>$
+
