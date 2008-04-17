@@ -1,0 +1,2 @@
+^wørd/word<notwanted><nope>/word<wanted>/wørd<notmeeither>$ ^unknown/*unknown$ ^bird/bir<notwanted><nope>/bĩrd<wanted>$
+

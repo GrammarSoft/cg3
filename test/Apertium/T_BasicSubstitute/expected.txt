@@ -1,0 +1,1 @@
+^word/word<notwanted>/word<before><substituted><after>/word<notmeeither>$

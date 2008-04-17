@@ -1,0 +1,16 @@
+DELIMITERS = "<$.>" ;
+
+SECTION
+REMOVE (didthis) ;
+
+SECTION
+REMOVE (didthis) ;
+
+SECTION
+REMOVE (didthis) ;
+
+SECTION
+ADD (didthis) (wanted) ;
+
+SECTION
+REMOVE (didthis) ;

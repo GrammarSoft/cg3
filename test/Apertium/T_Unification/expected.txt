@@ -1,0 +1,9 @@
+^worda/worda<some><tags><AA>/worda<some><tags>/worda<some><tags>$ 
+^wordb/wordb<some><tags>/wordb<some><tags><CC>/wordb<some><tags>$
+^wordc/wordc<some><tags><BB><EE>$
+^wordd/wordd<some><tags>/wordd<some><tags><BB><EE>/wordd<some><tags>$
+^worde/worde<some><tags><CC>$
+^wordf/wordf<some><tags><CC><THIS>/wordf<some><tags><THIS>$
+^wordg/wordg<some><tags><CC><THIS>$
+^wordh/wordh<some><tags><Hprof>$
+^wordi/wordi<some><tags>/wordi<some><tags><Hfam>/wordi<some><tags>$

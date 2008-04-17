@@ -1,0 +1,10 @@
+MAPPING-PREFIX = @ ;
+DELIMITERS = "<$.>" ;
+
+LIST ASet = ".atc[hm]{2}.*"r ;
+
+SECTION
+
+ADD ($tag) ASet ;
+ADD (£tag) ASet ;
+#ADD (@tag) ASet ;

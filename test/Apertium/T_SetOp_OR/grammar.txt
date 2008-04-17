@@ -1,0 +1,8 @@
+DELIMITERS = "<$.>" ;
+
+LIST ASet = wanted ;
+LIST BSet = notmeeither ;
+
+SECTION
+
+SELECT ASet OR BSet ;

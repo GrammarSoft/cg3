@@ -1,0 +1,14 @@
+DELIMITERS = "<$.>" ;
+
+LIST ACESet = AA CC EE ;
+LIST BDFSet = BB DD FF ;
+LIST Hums = <H.*>r ;
+LIST TSet = THIS NOTTHIS ALSONOTTHIS ;
+
+SECTION
+
+SELECT:this $$TSet (-1C (some) + $$TSet) ;
+SELECT:one $$ACESet (1 $$ACESet) (2 $$ACESet) ;
+SELECT:two $$ACESet + $$BDFSet (1 $$ACESet + $$BDFSet) ;
+SELECT:regex $$Hums (1 $$Hums) ;
+REMOVE (NOTTHIS) ;

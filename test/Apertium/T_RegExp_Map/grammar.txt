@@ -1,0 +1,7 @@
+DELIMITERS = "<$.>" ;
+
+LIST ASet = ".atc[hm]{2}.*"r ;
+
+SECTION
+
+MAP (tag) ASet ;

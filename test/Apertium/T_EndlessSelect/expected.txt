@@ -1,0 +1,2 @@
+^word/word<notwanted><want>/word<wanted><want>/word<notmeeither><want>$
+
