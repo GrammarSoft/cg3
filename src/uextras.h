@@ -28,14 +28,11 @@
 bool ux_isNewline(const UChar32 current, const UChar32 previous);
 bool ux_trim(UChar *totrim);
 bool ux_packWhitespace(UChar *totrim);
-bool ux_cutComments(UChar *line, const UChar comment, bool ruthless);
 int ux_isSetOp(const UChar *it);
-bool ux_findMatchingParenthesis(const UChar *structure, int pos, int *result);
 
 bool ux_escape(UChar *target, const UChar *source);
 bool ux_unEscape(UChar *target, const UChar *source);
 
-uint32_t ux_fputuchar(FILE *output, UChar *txt);
 UChar *ux_append(UChar *target, const UChar *data);
 UChar *ux_append(UChar *target, const UChar data);
 
