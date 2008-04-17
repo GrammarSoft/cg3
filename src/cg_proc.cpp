@@ -48,7 +48,7 @@ endProgram(char *name)
 {
 	fprintf(stdout, "VISL CG-3 Disambiguator version %u.%u.%u.%u\n",
 		CG3_VERSION_MAJOR, CG3_VERSION_MINOR, CG3_VERSION_PATCH, CG3_REVISION);
-	cout << basename(name) << ": process a stream with a constraint grammar" << endl;
+	cout << "cg-proc: process a stream with a constraint grammar" << endl;
 	cout << "USAGE: " << basename(name) << " [-t] [-s] [-d] grammar_file [input_file [output_file]]" << endl;
 	cout << "Options:" << endl;
 #if HAVE_GETOPT_LONG
