@@ -37,6 +37,7 @@ TextualParser::TextualParser(UFILE *ux_in, UFILE *ux_out, UFILE *ux_err) {
 	in_after_sections = false;
 	in_section = false;
 	verbosity_level = 0;
+	sets_counter = 100;
 }
 
 TextualParser::~TextualParser() {
@@ -138,7 +139,7 @@ int TextualParser::parseSetInline(Set *s, UChar **p) {
 					(*p)++;
 					Set *set_c = result->allocateSet();
 					set_c->line = result->lines;
-					set_c->setName((uint32_t)(uint64_t)(*p));
+					set_c->setName(sets_counter++);
 					CompositeTag *ct = result->allocateCompositeTag();
 
 					while (**p && **p != ';' && **p != ')') {
@@ -281,7 +282,7 @@ int TextualParser::parseContextualTestList(Rule *rule, std::list<ContextualTest*
 
 	Set *s = result->allocateSet();
 	s->line = result->lines;
-	s->setName((uint32_t)(uint64_t)(*p));
+	s->setName(sets_counter++);
 	parseSetInline(s, p);
 	if (s->sets.size() == 1 && !s->is_unified) {
 		Set *tmp = result->getSet(s->sets.back());
@@ -297,7 +298,7 @@ int TextualParser::parseContextualTestList(Rule *rule, std::list<ContextualTest*
 		result->lines += SKIPWS(p);
 		Set *s = result->allocateSet();
 		s->line = result->lines;
-		s->setName((uint32_t)(uint64_t)(*p));
+		s->setName(sets_counter++);
 		parseSetInline(s, p);
 		if (s->sets.size() == 1 && !s->is_unified) {
 			Set *tmp = result->getSet(s->sets.back());
@@ -313,7 +314,7 @@ int TextualParser::parseContextualTestList(Rule *rule, std::list<ContextualTest*
 		result->lines += SKIPWS(p);
 		Set *s = result->allocateSet();
 		s->line = result->lines;
-		s->setName((uint32_t)(uint64_t)(*p));
+		s->setName(sets_counter++);
 		parseSetInline(s, p);
 		if (s->sets.size() == 1 && !s->is_unified) {
 			Set *tmp = result->getSet(s->sets.back());
@@ -485,7 +486,7 @@ int TextualParser::parseRule(KEYWORDS key, UChar **p) {
 
 	Set *s = result->allocateSet();
 	s->line = result->lines;
-	s->setName((uint32_t)(uint64_t)(*p));
+	s->setName(sets_counter++);
 	parseSetInline(s, p);
 	if (s->sets.size() == 1 && !s->is_unified) {
 		Set *tmp = result->getSet(s->sets.back());
