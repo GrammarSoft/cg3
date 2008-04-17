@@ -1,0 +1,60 @@
+This file contains notes for writing a new reader to accept apertium/lttoolbox
+input format.
+
+The format uses brackets ('[' and ']') to encapsulate formatting information, 
+including whitespace, for example,
+
+  $ echo "<em>this is a test   </em>" | apertium-deshtml 
+  [<em>]this is a test.[][   <\/em>]
+
+Here, only 'this is a test' will be processed. A full stop is appended to the 
+end of input to reset tagger probabilities. This can be discarded.
+
+==Todo list==
+
+TODO: subclass GrammarApplicator and override printSingleWindow() and 
+      runGrammarOnText()
+TODO: make a binary for statistics cg-stat maybe 
+TODO: fix regular expression handling
+TODO: add the part about hard/soft limit
+
+==Basic cohort==
+
+;Examples
+
+$ echo "al final" | lt-proc es-ca.automorf.bin 
+^al final/al final<adv>$
+
+$ echo "vino" | apertium-destxt | lt-proc es-ca.automorf.bin 
+^vino/vino<n><m><sg>/venir<vblex><ifi><p3><sg>$^./.<sent>$[]
+
+ |__| |__||________| 
+  WF   BF    TAGS
+       |_______|
+        READING
+|_____________________________________________|
+                   COHORT
+
+==Complex cohorts==
+
+Here are some examples of complex things, it might be worth looking at:
+
+http://xixona.dlsi.ua.es/wiki/index.php/Partial_hack_for_prefix_inflection#Pretagger
+
+$ echo "dímelo" | apertium-destxt | lt-proc es-ca.automorf.bin 
+^dímelo/decir<vblex><imp><p2><sg>+me<prn><enc><p1><mf><sg>+lo<prn><enc><p3><nt>/decir<vblex><imp><p2><sg>+me<prn><enc><p1><mf><sg>+lo<prn><enc><p3><m><sg>$
+
+$ echo "take it away" | apertium-destxt | lt-proc /usr/share/apertium/apertium-en-es/en-es.automorf.bin 
+^take it away/take<vblex><sep><inf>+prpers<prn><obj><p3><nt><sg># away/take<vblex><sep><pres>+prpers<prn><obj><p3><nt><sg># away$^./.<sent>$[][
+
+==Test input==
+
+$ echo "vino a la playa" | apertium-destxt | lt-proc es-ca.automorf.bin 
+^vino/vino<n><m><sg>/venir<vblex><ifi><p3><sg>$ ^a/a<pr>$ ^la/el<det><def><f><sg>/lo<prn><pro><p3><f><sg>$ ^playa/playa<n><f><sg>$^./.<sent>$[]
+
+
+==Links==
+
+Implementation of getopt and libgen for Windows:
+
+http://repo.or.cz/w/apertium.git?a=tree;f=apertium-unicode/apertium/win32;h=8a0321bc4772b8c017542110a835619e49787787;hb=refs/heads/windows
