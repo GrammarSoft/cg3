@@ -94,32 +94,6 @@ bool ux_packWhitespace(UChar *totrim) {
 	return retval;
 }
 
-bool ux_cutComments(UChar *line, const UChar comment, bool compatible) {
-	bool retval = false;
-	UChar *offset_hash = line;
-	while((offset_hash = u_strchr(offset_hash, comment)) != 0) {
-		if (offset_hash == line || offset_hash[1] == 0 || ux_isNewline(offset_hash[1], offset_hash[0])) {
-			offset_hash[0] = 0;
-			retval = true;
-			break;
-		}
-		else if (!compatible && u_isgraph(offset_hash[-1])) {
-			offset_hash++;
-			continue;
-		}
-		else if (compatible && offset_hash[-1] == '\\') {
-			offset_hash++;
-			continue;
-		}
-		else {
-			offset_hash[0] = 0;
-			retval = true;
-			break;
-		}
-	}
-	return retval;
-}
-
 int ux_isSetOp(const UChar *it) {
 	int retval = S_IGNORE;
 	if (u_strcasecmp(it, stringbits[S_OR], 0) == 0 || u_strcmp(it, stringbits[S_PIPE]) == 0) {
@@ -141,26 +115,6 @@ int ux_isSetOp(const UChar *it) {
 		retval = S_NOT;
 	}
 	return retval;
-}
-
-bool ux_findMatchingParenthesis(const UChar *structure, int pos, int *result) {
-	uint32_t len = u_strlen(structure);
-	uint32_t paren = 0;
-	for (uint32_t i=pos;i<len;i++) {
-		if (i == 0 || structure[i-1] != '\\') {
-			if (structure[i] == ')') {
-				paren--;
-				if (paren == 0) {
-					*result = i;
-					return true;
-				}
-			}
-			if (structure[i] == '(') {
-				paren++;
-			}
-		}
-	}
-	return false;
 }
 
 bool ux_unEscape(UChar *target, const UChar *source) {
@@ -197,17 +151,6 @@ bool ux_escape(UChar *target, const UChar *source) {
 	return retval;
 }
 
-uint32_t ux_fputuchar(FILE *output, UChar *txt) {
-	uint32_t retval = 0;
-	uint32_t length = u_strlen(txt);
-	for (uint32_t i=0;i<length;i++) {
-		UChar c = (UChar)htons(txt[i]);
-		fwrite(&c, sizeof(UChar), 1, output);
-		retval++;
-	}
-	return retval;
-}
-
 UChar *ux_append(UChar *target, const UChar *data) {
 	UChar *tmp = 0;
 	if (!target) {
@@ -232,7 +175,7 @@ UChar *ux_append(UChar *target, const UChar *data) {
 UChar *ux_append(UChar *target, const UChar data)
 {
 	UChar *tmp = 0;
-	UChar char_tmp[1];
+	UChar *char_tmp = new UChar[2];
 	char_tmp[0] = data;
 	char_tmp[1] = '\0';
 
@@ -251,6 +194,7 @@ UChar *ux_append(UChar *target, const UChar data)
 		delete[] target;
 		target = tmp;
 	}
+	delete[] char_tmp;
 	return tmp;
 }
 
