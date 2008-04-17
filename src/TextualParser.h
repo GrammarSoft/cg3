@@ -41,6 +41,7 @@ namespace CG3 {
 		UFILE *ux_stdout;
 		UFILE *ux_stderr;
 		uint32_t verbosity_level;
+		uint32_t sets_counter;
 		bool option_vislcg_compat;
 		bool in_section, in_before_sections, in_after_sections;
 		const char *filename;
