@@ -19,10 +19,14 @@
  * along with VISL CG-3.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+// MSVC 2005 (MSVC 8) fix.
+#define _CRT_SECURE_NO_DEPRECATE 1
+#define _CRT_NONSTDC_NO_DEPRECATE 1
+
 #include <cstdlib>
 #include <iostream>
 #include <string>
-//#include <libgen.h>
+#include <libgen.h>
 
 #include "stdafx.h"
 #include "icu_uoptions.h"
@@ -46,7 +50,7 @@ endProgram(char *name)
 	if(name != NULL) {
 		fprintf(stdout, "VISL CG-3 Compiler version %u.%u.%u.%u\n",
 			CG3_VERSION_MAJOR, CG3_VERSION_MINOR, CG3_VERSION_PATCH, CG3_REVISION);
-		cout << "cg-comp: compile a binary grammar from a text file" << endl;
+		cout << basename(name) << ": compile a binary grammar from a text file" << endl;
 		cout << "USAGE: " << basename(name) << " grammar_file output_file" << endl;
 	}
 	exit(EXIT_FAILURE);
