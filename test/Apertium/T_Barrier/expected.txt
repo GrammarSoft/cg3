@@ -1,0 +1,1 @@
+^word/word<notwanted>/word<wanted>/word<notmeeither>$ ^word/word<notwanted><tag>/blocker<block>/word<notmeeither><tag>$ ^word/word<notwanted><tag>/word<wanted><tag>/word<notmeeither><tag>$ ^word/word<notwanted>/word<findme>/word<notmeeither>$

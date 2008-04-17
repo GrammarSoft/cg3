@@ -1,0 +1,8 @@
+DELIMITERS = "<$.>" ;
+
+LIST ASet = wanted;
+
+SECTION
+
+"<wørd>" SELECT ASet;
+

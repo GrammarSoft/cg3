@@ -1,0 +1,11 @@
+DELIMITERS = "<$.>" ;
+
+LIST ASet = wanted ;
+LIST LemmaA = "bĩrd";
+LIST LemmaB = "wørd";
+
+SECTION
+
+"<bird>" SELECT LemmaA;
+
+"<wørd>" SELECT LemmaB;

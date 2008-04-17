@@ -1,0 +1,5 @@
+DELIMITERS = "<$.>" ;
+
+SECTION
+
+SELECT (want) ;

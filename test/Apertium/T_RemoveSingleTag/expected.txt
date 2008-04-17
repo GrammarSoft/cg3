@@ -1,0 +1,2 @@
+^word/word<notwanted><tagA>/word<wanted><tagA>/word<notmeeither><tagA>$ ^word/word<wanted><tagA>$ ^word/word<wanted><tagD>$ ^word/word<wanted><tagD>$
+

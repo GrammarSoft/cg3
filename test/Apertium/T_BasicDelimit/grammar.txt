@@ -1,0 +1,10 @@
+DELIMITERS = "<$.>" ;
+
+LIST ASet = "matchme" ;
+LIST BSet = notwanted;
+
+SECTION
+
+DELIMIT ASet ;
+
+REMOVE BSet;

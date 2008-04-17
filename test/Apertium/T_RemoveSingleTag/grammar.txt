@@ -1,0 +1,9 @@
+DELIMITERS = "<$.>" ;
+
+LIST ASet = @tagB ;
+LIST CSet = @tagD ;
+
+SECTION
+
+REMOVE ASet ;
+SELECT CSet ;
