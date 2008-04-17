@@ -40,6 +40,7 @@
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="installation.xml" />
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="contributing.xml" />
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="compatibility.xml" />
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="runtimeoptions.xml" />
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="sections.xml" />
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="rules.xml" />
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="contexts.xml" />
@@ -48,7 +49,6 @@
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="sets.xml" />
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="tags.xml" />
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="binarygrammar.xml" />
-  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="runtimeoptions.xml" />
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="inputcommands.xml" />
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="cgglossary.xml" />
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="cgkeywords.xml" />
