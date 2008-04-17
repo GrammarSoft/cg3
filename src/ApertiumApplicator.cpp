@@ -78,7 +78,7 @@ ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output)
 	cWindow->window_span = num_windows; 
 //	grammar->total_time = clock();
 
-	while((inchar = u_fgetc(input))) { 
+	while((inchar = u_fgetc(input)) != 0) { 
 		if(u_feof(input)) {
 			break;
 		}
@@ -290,6 +290,10 @@ ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output)
 		}
 		cWindow->shuffleWindowsDown();
 		runGrammarOnWindow(cWindow);
+		if (numWindows % resetAfter == 0) {
+			resetIndexes();
+			r->trim();
+		}
 	}
 
 	// Print out the result

@@ -19,10 +19,14 @@
 * along with VISL CG-3.	If not, see <http://www.gnu.org/licenses/>.
 */
 
+// MSVC 2005 (MSVC 8) fix.
+#define _CRT_SECURE_NO_DEPRECATE 1
+#define _CRT_NONSTDC_NO_DEPRECATE 1
+
 #include <cstdlib>
 #include <getopt.h>
 #include <iostream>
-//#include <libgen.h>
+#include <libgen.h>
 
 #include "stdafx.h"
 #include "icu_uoptions.h"
@@ -48,7 +52,7 @@ endProgram(char *name)
 {
 	fprintf(stdout, "VISL CG-3 Disambiguator version %u.%u.%u.%u\n",
 		CG3_VERSION_MAJOR, CG3_VERSION_MINOR, CG3_VERSION_PATCH, CG3_REVISION);
-	cout << "cg-proc: process a stream with a constraint grammar" << endl;
+	cout << basename(name) <<": process a stream with a constraint grammar" << endl;
 	cout << "USAGE: " << basename(name) << " [-t] [-s] [-d] grammar_file [input_file [output_file]]" << endl;
 	cout << "Options:" << endl;
 #if HAVE_GETOPT_LONG
