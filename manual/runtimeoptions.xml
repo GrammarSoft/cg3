@@ -8,437 +8,48 @@
     A list of things that can be set and/or altered at runtime.
   </para>
 
-  <section id="rto-help">
-    <title>--help, -h, -?</title>
-    <indexterm>
-      <primary>--help</primary>
-      <secondary>-h</secondary>
-      <tertiary>-?</tertiary>
-    </indexterm>
-    <para>
-      Displays the available runtime options.
-    </para>
-    <screen>
-      --help
-    </screen>
-  </section>
+  <screen>
+Usage: vislcg3 [OPTIONS]
 
-  <section id="rto-version">
-    <title>--version, -V</title>
-    <indexterm>
-      <primary>--version</primary>
-      <secondary>-V</secondary>
-    </indexterm>
-    <para>
-      Displays the version number.
-    </para>
-    <screen>
-      --version
-    </screen>
-  </section>
-
-  <section id="rto-stdin">
-    <title>--stdin, -I</title>
-    <indexterm>
-      <primary>--stdin</primary>
-      <secondary>-I</secondary>
-    </indexterm>
-    <para>
-      A file to read input from instead of stdin.
-    </para>
-    <screen>
-      -I ./input.txt
-    </screen>
-  </section>
-
-  <section id="rto-stdout">
-    <title>--stdout, -O</title>
-    <indexterm>
-      <primary>--stdout</primary>
-      <secondary>-O</secondary>
-    </indexterm>
-    <para>
-      A file to print output to instead of stdout.
-    </para>
-    <screen>
-      -O ./output.txt
-    </screen>
-  </section>
-
-  <section id="rto-stderr">
-    <title>--stderr, -E</title>
-    <indexterm>
-      <primary>--stderr</primary>
-      <secondary>-E</secondary>
-    </indexterm>
-    <para>
-      A file to print errors to instead of stderr.
-    </para>
-    <screen>
-      -E ./errors.txt
-    </screen>
-  </section>
-
-  <section id="rto-codepage-all">
-    <title>--codepage-all, -C</title>
-    <indexterm>
-      <primary>--codepage-all</primary>
-      <secondary>-C</secondary>
-    </indexterm>
-    <para>
-      The codepage to use for grammar, input, and output streams.
-      Tries to auto-detect from environment if not defined.
-    </para>
-    <screen>
-      --codepage-all UTF-8
-    </screen>
-  </section>
-
-  <section id="rto-codepage-grammar">
-    <title>--codepage-grammar</title>
-    <indexterm>
-      <primary>--codepage-grammar</primary>
-    </indexterm>
-    <para>
-      Codepage to use for grammar. Overrides --codepage-all.
-    </para>
-    <screen>
-      --codepage-grammar UTF-8
-    </screen>
-  </section>
-
-  <section id="rto-codepage-input">
-    <title>--codepage-input</title>
-    <indexterm>
-      <primary>--codepage-input</primary>
-    </indexterm>
-    <para>
-      Codepage to use for input. Overrides --codepage-all.
-    </para>
-    <screen>
-      --codepage-input ISO-8859-16
-    </screen>
-  </section>
-
-  <section id="rto-codepage-output">
-    <title>--codepage-output</title>
-    <indexterm>
-      <primary>--codepage-output</primary>
-    </indexterm>
-    <para>
-      Codepage to use for output and error streams. Overrides --codepage-all.
-    </para>
-    <screen>
-      --codepage-output UTF-32
-    </screen>
-  </section>
-
-  <section id="rto-locale-all">
-    <title>--locale-all, -L</title>
-    <indexterm>
-      <primary>--locale-all</primary>
-      <secondary>-L</secondary>
-    </indexterm>
-    <para>
-      The locale to use for grammar, input, and output streams. Defaults to en_US_POSIX.
-    </para>
-    <screen>
-      --locale-all fr_FR
-    </screen>
-  </section>
-
-  <section id="rto-locale-grammar">
-    <title>--locale-grammar</title>
-    <indexterm>
-      <primary>--locale-grammar</primary>
-    </indexterm>
-    <para>
-      Locale to use for grammar. Overrides --locale-all.
-    </para>
-    <screen>
-      --locale-grammar da_DK
-    </screen>
-  </section>
-
-  <section id="rto-locale-input">
-    <title>--locale-input</title>
-    <indexterm>
-      <primary>--locale-input</primary>
-    </indexterm>
-    <para>
-      Locale to use for input. Overrides --locale-all.
-    </para>
-    <screen>
-      --locale-input da_DK
-    </screen>
-  </section>
-
-  <section id="rto-locale-output">
-    <title>--locale-output</title>
-    <indexterm>
-      <primary>--locale-output</primary>
-    </indexterm>
-    <para>
-      Locale to use for output and error streams. Overrides --locale-all.
-    </para>
-    <screen>
-      --locale-output da_DK
-    </screen>
-  </section>
-
-  <section id="rto-vislcg-compat">
-    <title>--vislcg-compat, -p</title>
-    <indexterm>
-      <primary>--vislcg-compat</primary>
-      <secondary>-p</secondary>
-    </indexterm>
-    <para>
-      Tells the grammar compiler to be compatible with older VISLCG syntax.
-      Currently this changes all Difference set operators to Fail-Fast set operators.
-    </para>
-    <screen>
-      --version
-    </screen>
-  </section>
-
-  <section id="rto-grammar">
-    <title>--grammar, -g</title>
-    <indexterm>
-      <primary>--grammar</primary>
-      <secondary>-g</secondary>
-    </indexterm>
-    <para>
-      The grammar file to use for the run.
-    </para>
-    <screen>
-      -g ../grammars/english
-    </screen>
-  </section>
-
-  <section id="rto-trace">
-    <title>--trace</title>
-    <indexterm>
-      <primary>--trace</primary>
-    </indexterm>
-    <para>
-      Prints debug output alongside with normal output.
-      Deleted readings are prepended a semicolon.
-    </para>
-    <screen>
-      --trace
-    </screen>
-  </section>
-
-  <section id="rto-prefix">
-    <title>--prefix</title>
-    <indexterm>
-      <primary>--prefix</primary>
-    </indexterm>
-    <para>
-      Sets the prefix for mapping. Defaults to @.
-    </para>
-    <screen>
-      --prefix @
-    </screen>
-  </section>
-
-  <section id="rto-sections">
-    <title>--sections</title>
-    <indexterm>
-      <primary>--sections</primary>
-    </indexterm>
-    <para>
-      Number of sections to run. Defaults to running all sections.
-    </para>
-    <screen>
-      --sections 6
-    </screen>
-  </section>
-
-  <section id="rto-single-run">
-    <title>--single-run</title>
-    <indexterm>
-      <primary>--single-run</primary>
-    </indexterm>
-    <para>
-      Only runs each section once.
-    </para>
-    <screen>
-      --single-run
-    </screen>
-  </section>
-
-  <section id="rto-no-mappings">
-    <title>--no-mappings</title>
-    <indexterm>
-      <primary>--no-mappings</primary>
-    </indexterm>
-    <para>
-      Disables running any MAP, ADD, or REPLACE rules.
-    </para>
-    <screen>
-      --no-mappings
-    </screen>
-  </section>
-
-  <section id="rto-no-corrections">
-    <title>--no-corrections</title>
-    <indexterm>
-      <primary>--no-corrections</primary>
-    </indexterm>
-    <para>
-      Disables running any SUBSTITUTE or APPEND rules.
-    </para>
-    <screen>
-      --no-corrections
-    </screen>
-  </section>
-
-  <section id="rto-no-before-sections">
-    <title>--no-before-sections</title>
-    <indexterm>
-      <primary>--no-before-sections</primary>
-    </indexterm>
-    <para>
-      Disables running rules from BEFORE-SECTIONS.
-    </para>
-    <screen>
-      --no-before-sections
-    </screen>
-  </section>
-
-  <section id="rto-no-sections">
-    <title>--no-sections</title>
-    <indexterm>
-      <primary>--no-sections</primary>
-    </indexterm>
-    <para>
-      Disables running rules from any SECTION.
-    </para>
-    <screen>
-      --no-sections
-    </screen>
-  </section>
-
-  <section id="rto-no-after-sections">
-    <title>--no-after-sections</title>
-    <indexterm>
-      <primary>--no-after-sections</primary>
-    </indexterm>
-    <para>
-      Disables running rules from AFTER-SECTIONS.
-    </para>
-    <screen>
-      --no-after-sections
-    </screen>
-  </section>
-
-  <section id="rto-grammar-out">
-    <title>--grammar-out</title>
-    <indexterm>
-      <primary>--grammar-out</primary>
-    </indexterm>
-    <para>
-      Writes out the processed grammar to a file. Mainly for debugging.
-    </para>
-    <screen>
-      --grammar-out ../grammars/english.out
-    </screen>
-  </section>
-
-  <section id="rto-grammar-info">
-    <title>--grammar-info</title>
-    <indexterm>
-      <primary>--grammar-info</primary>
-    </indexterm>
-    <para>
-      Gathers statistics about the grammar and writes that to a file.
-      This must be used with a file --stdin source as it has to re-run the applicator several times.
-    </para>
-    <screen>
-      --grammar-info ../grammars/english.info
-    </screen>
-  </section>
-
-  <section id="rto-num-windows">
-    <title>--num-windows</title>
-    <indexterm>
-      <primary>--num-windows</primary>
-    </indexterm>
-    <para>
-      Number of windows to keep in before/ahead buffers. Defaults to 2.
-      See also <link linkend="test-spanning">Spanning Window Boundaries</link>.
-    </para>
-    <screen>
-      --num-windows 5
-    </screen>
-  </section>
-
-  <section id="rto-always-span">
-    <title>--always-span</title>
-    <indexterm>
-      <primary>--always-span</primary>
-    </indexterm>
-    <para>
-      Forces all scanning tests to always span across window boundaries.
-      See also <link linkend="test-spanning">Spanning Window Boundaries</link>.
-    </para>
-    <screen>
-      --always-span
-    </screen>
-  </section>
-
-  <section id="rto-soft-limit">
-    <title>--soft-limit</title>
-    <indexterm>
-      <primary>--soft-limit</primary>
-    </indexterm>
-    <para>
-      Number of cohorts after which the SOFT-DELIMITERS kick in. Defaults to 300.
-    </para>
-    <screen>
-      --soft-limit 200
-    </screen>
-  </section>
-
-  <section id="rto-hard-limit">
-    <title>--hard-limit</title>
-    <indexterm>
-      <primary>--hard-limit</primary>
-    </indexterm>
-    <para>
-      Number of cohorts after which the window is delimited forcefully. Defaults to 500.
-    </para>
-    <screen>
-      --hard-limit 200
-    </screen>
-  </section>
-
-  <section id="rto-no-magic-readings">
-    <title>--no-magic-readings</title>
-    <indexterm>
-      <primary>--no-magic-readings</primary>
-    </indexterm>
-    <para>
-      Prevents running rules on magic readings.
-      See also <link linkend="gotcha-magic-readings">Magic Readings</link>.
-    </para>
-    <screen>
-      --no-magic-readings
-    </screen>
-  </section>
-
-  <section id="rto-dep-allow-loops">
-    <title>--dep-allow-loops</title>
-    <indexterm>
-      <primary>--dep-allow-loops</primary>
-    </indexterm>
-    <para>
-      Allows the creation of circular dependencies.
-    </para>
-    <screen>
-      --dep-allow-loops
-    </screen>
-  </section>
+Options:
+ -h, --help                shows this help
+ -?, --?                   shows this help
+ -V, --version             prints copyright and version information
+ -g, --grammar             specifies the grammar file to use for disambiguation
+     --grammar-out         writes the compiled grammar in textual form to a file
+     --grammar-bin         writes the compiled grammar in binary form to a file
+     --grammar-info        writes the compiled grammar in textual form to a file, with lots of statistics and information
+     --grammar-only        only compiles the grammar; implies --verbose
+     --check-only          same as --grammar-only
+ -s, --sections            number of sections to run; defaults to all sections
+ -v, --verbose             increases verbosity
+ -I, --stdin               file to print output to instead of stdout
+ -O, --stdout              file to read input from instead of stdin
+ -E, --stderr              file to print errors to instead of stderr
+ -C, --codepage-all        codepage to use for grammar, input, and output streams; defaults to environment settings
+     --codepage-grammar    codepage to use for grammar; overrides --codepage-all
+     --codepage-input      codepage to use for input; overrides --codepage-all
+     --codepage-output     codepage to use for output and errors; overrides --codepage-all
+ -L, --locale-all          locale to use for grammar, input, and output streams; defaults to en_US_POSIX
+     --locale-grammar      locale to use for grammar; overrides --locale-all
+     --locale-input        locale to use for input; overrides --locale-all
+     --locale-output       locale to use for output and errors; overrides --locale-all
+     --no-mappings         disables all MAP, ADD, and REPLACE rules
+     --no-corrections      disables all SUBSTITUTE and APPEND rules
+     --no-before-sections  disables all rules in BEFORE-SECTIONS parts
+     --no-sections         disables all rules in SECTION parts
+     --no-after-sections   disables all rules in AFTER-SECTIONS parts
+ -t, --trace               prints debug output alongside with normal output
+     --trace-name-only     if a rule is named, omit the line number; implies --trace
+     --trace-no-removed    does not print removed readings; implies --trace
+     --single-run          runs each section only once
+ -p, --prefix              sets the mapping prefix; defaults to @
+     --num-windows         number of windows to keep in before/ahead buffers; defaults to 2
+     --always-span         forces scanning tests to always span across window boundaries
+     --soft-limit          number of cohorts after which the SOFT-DELIMITERS kick in; defaults to 300
+     --hard-limit          number of cohorts after which the window is forcefully cut; defaults to 500
+     --dep-allow-loops     allows the creation of circular dependencies
+     --no-magic-readings   prevents running rules on magic readings
+  </screen>
 
 </chapter>
