@@ -27,7 +27,7 @@
 namespace CG3 {
 	class TextualParser : public IGrammarParser {
 	public:
-		TextualParser(UFILE *ux_in, UFILE *ux_out, UFILE *ux_err);
+		TextualParser(UFILE *ux_err);
 		~TextualParser();
 
 		void setCompatible(bool compat);
@@ -37,8 +37,6 @@ namespace CG3 {
 		int parse_grammar_from_file(const char *filename, const char *locale, const char *codepage);
 
 	private:
-		UFILE *ux_stdin;
-		UFILE *ux_stdout;
 		UFILE *ux_stderr;
 		uint32_t verbosity_level;
 		uint32_t sets_counter;

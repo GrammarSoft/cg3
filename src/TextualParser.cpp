@@ -24,9 +24,7 @@
 using namespace CG3;
 using namespace CG3::Strings;
 
-TextualParser::TextualParser(UFILE *ux_in, UFILE *ux_out, UFILE *ux_err) {
-	ux_stdin = ux_in;
-	ux_stdout = ux_out;
+TextualParser::TextualParser(UFILE *ux_err) {
 	ux_stderr = ux_err;
 	filename = 0;
 	locale = 0;
