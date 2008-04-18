@@ -27,7 +27,6 @@ namespace CG3 {
 		uint32_t keyword_lengths[KEYWORD_COUNT];
 		UChar *stringbits[STRINGS_COUNT];
 		uint32_t stringbit_lengths[STRINGS_COUNT];
-		URegularExpression *regexps[REGEXP_COUNT];
 
 		inline int init_keyword_single(const char *keyword, const uint32_t entry) {
 			if (entry >= KEYWORD_COUNT) {
@@ -160,41 +159,6 @@ namespace CG3 {
 					delete[] stringbits[i];
 				}
 				stringbits[i] = 0;
-			}
-			return 0;
-		}
-
-		int init_regexps(UFILE *ux_stderr) {
-			free_regexps();
-			UParseError *pe = new UParseError;
-			UErrorCode status = U_ZERO_ERROR;
-
-			memset(pe, 0, sizeof(UParseError));
-			status = U_ZERO_ERROR;
-			regexps[R_CLEANSTRING] = uregex_openC("\\s+(TARGET|IF)\\s+\0", 0, pe, &status);
-			if (status != U_ZERO_ERROR) {
-				u_fprintf(ux_stderr, "Error: uregex_openC returned %s - cannot continue!\n", u_errorName(status));
-				CG3Quit(1);
-			}
-
-			memset(pe, 0, sizeof(UParseError));
-			status = U_ZERO_ERROR;
-			regexps[R_ANDLINK] = uregex_openC("\\s+(AND)\\s+\0", 0, pe, &status);
-			if (status != U_ZERO_ERROR) {
-				u_fprintf(ux_stderr, "Error: uregex_openC returned %s - cannot continue!\n", u_errorName(status));
-				CG3Quit(1);
-			}
-
-			delete pe;
-			return 0;
-		}
-
-		int free_regexps() {
-			for(int i=0;i<REGEXP_COUNT;i++) {
-				if (regexps[i]) {
-					uregex_close(regexps[i]);
-				}
-				regexps[i] = 0;
 			}
 			return 0;
 		}

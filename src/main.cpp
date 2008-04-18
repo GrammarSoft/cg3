@@ -217,7 +217,6 @@ int main(int argc, char* argv[]) {
 	init_gbuffers();
 	init_strings();
 	init_keywords();
-	init_regexps(ux_stderr);
 	CG3::Grammar *grammar = new CG3::Grammar();
 
 	CG3::IGrammarParser *parser = 0;
@@ -426,7 +425,6 @@ int main(int argc, char* argv[]) {
 
 	free_strings();
 	free_keywords();
-	free_regexps();
 	free_gbuffers();
 
 	CG3::Recycler::cleanup();
