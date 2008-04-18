@@ -59,9 +59,7 @@ endProgram(char *name)
 int 
 main(int argc, char *argv[])
 {
-	UFILE *ux_grammar = 0;
 	UFILE *ux_stderr = 0;
-	UFILE *ux_stdout = 0;
 	UErrorCode status = U_ZERO_ERROR;
 
 	U_MAIN_INIT_ARGS(argc, argv);
@@ -106,9 +104,7 @@ main(int argc, char *argv[])
 		std::cerr << "Binary grammar detected. Cannot re-compile binary grammars." << std::endl;
 		CG3Quit(1);
 	} else {
-		ux_grammar = u_fopen(argv[1], "rb", locale_default, codepage_default);
-		ux_stdout = u_finit(stdout, locale_default, codepage_default);
-		parser = new CG3::TextualParser(ux_grammar, ux_stdout, ux_stderr);
+		parser = new CG3::TextualParser(ux_stderr);
 	}
 
 	grammar->ux_stderr = ux_stderr;
@@ -146,9 +142,6 @@ main(int argc, char *argv[])
 		std::cerr << "Could not write grammar to " << argv[2] << std::endl;
 	}
 
-
-	u_fclose(ux_grammar);
-	u_fclose(ux_stdout);
 	u_fclose(ux_stderr);
 
 	delete grammar;

@@ -231,7 +231,7 @@ main(int argc, char *argv[])
 		parser = new CG3::BinaryGrammar(grammar, ux_stderr);
 	} else {
 		//std::cerr << "Info: Text grammar detected." << std::endl;
-		parser = new CG3::TextualParser(ux_stdin, ux_stdout, ux_stderr);
+		parser = new CG3::TextualParser(ux_stderr);
 	}
 
 	grammar->ux_stderr = ux_stderr;
