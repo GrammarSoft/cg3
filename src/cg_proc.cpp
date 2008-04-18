@@ -161,8 +161,8 @@ main(int argc, char *argv[])
 	ucnv_setDefaultName("UTF-8");
 	const char *locale_default = "en_US_POSIX"; //uloc_getDefault();
 
-	FILE *input = stdin, *output = stdout;
-
+	ux_stdin = u_finit(stdin, locale_default, codepage_default);
+	ux_stdout = u_finit(stdout, locale_default, codepage_default);
 	ux_stderr = u_finit(stderr, locale_default, codepage_default);
 
 	CG3::Recycler::instance();
@@ -181,13 +181,15 @@ main(int argc, char *argv[])
 			endProgram(argv[0]);
 		}
 		
-		input = fopen(argv[optind+1], "r");
-		if(input == NULL || ferror(input)) {
+		u_fclose(ux_stdin);
+		ux_stdin = u_fopen(argv[optind+1], "rb", locale_default, codepage_default);
+		if(ux_stdin == NULL) {
 			endProgram(argv[0]);
 		}
 		
-		output= fopen(argv[optind+2], "w");
-		if(output == NULL || ferror(output)) {
+		u_fclose(ux_stdout);
+		ux_stdout = u_fopen(argv[optind+2], "wb", locale_default, codepage_default);
+		if(ux_stdout == NULL) {
 			endProgram(argv[0]);
 		}
 
@@ -201,11 +203,12 @@ main(int argc, char *argv[])
 			endProgram(argv[0]);
 		}
 		
-		input = fopen(argv[optind+1], "r");
-		if(input == NULL || ferror(input)) {
+		u_fclose(ux_stdin);
+		ux_stdin = u_fopen(argv[optind+1], "rb", locale_default, codepage_default);
+		if(ux_stdin == NULL) {
 			endProgram(argv[0]);
 		}
-
+		
 		fread(cbuffers[0], 1, 4, in);
 		fclose(in);
 		
@@ -223,9 +226,6 @@ main(int argc, char *argv[])
 		endProgram(argv[0]);
 	}
 
-	ux_stdout = u_finit(output, locale_default, codepage_default);
-	ux_stdin  = u_finit(input, locale_default, codepage_default);
-		
 	if (cbuffers[0][0] == 'C' && cbuffers[0][1] == 'G' && cbuffers[0][2] == '3' && cbuffers[0][3] == 'B') {
 		//std::cerr << "Info: Binary grammar detected." << std::endl;
 		parser = new CG3::BinaryGrammar(grammar, ux_stderr);
@@ -284,9 +284,6 @@ main(int argc, char *argv[])
 	u_fclose(ux_stdin);
 	u_fclose(ux_stdout);
 	u_fclose(ux_stderr);
-
-	fclose(input);
-	fclose(output); 
 
 	delete grammar;
 	grammar = 0;
