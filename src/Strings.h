@@ -114,16 +114,12 @@ namespace CG3 {
 		extern uint32_t keyword_lengths[KEYWORD_COUNT];
 		extern UChar *stringbits[STRINGS_COUNT];
 		extern uint32_t stringbit_lengths[STRINGS_COUNT];
-		extern URegularExpression *regexps[REGEXP_COUNT];
 
 		int init_keywords();
 		int free_keywords();
 
 		int init_strings();
 		int free_strings();
-
-		int init_regexps(UFILE *ux_stderr);
-		int free_regexps();
 
 		#define NUM_GBUFFERS 5
 		extern UChar *gbuffers[NUM_GBUFFERS];
