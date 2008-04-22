@@ -229,8 +229,11 @@ main(int argc, char *argv[])
 		//std::cerr << "Info: Binary grammar detected." << std::endl;
 		parser = new CG3::BinaryGrammar(grammar, ux_stderr);
 	} else {
-		//std::cerr << "Info: Text grammar detected." << std::endl;
-		parser = new CG3::TextualParser(ux_stderr);
+		std::cerr << "Info: Text grammar detected -- to process textual " << std::endl;
+		std::cerr << "grammars, use `vislcg', to compile this grammar, use `cg-comp'" << std::endl;
+
+		//parser = new CG3::TextualParser(ux_stderr);
+		CG3Quit(1);
 	}
 
 	grammar->ux_stderr = ux_stderr;
