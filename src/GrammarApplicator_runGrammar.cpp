@@ -120,7 +120,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 				cCohort = 0;
 				numCohorts++;
 			}
-			if (cCohort && (cSWindow->cohorts.size() >= hard_limit || doesTagMatchSet(cCohort->wordform, grammar->delimiters->hash))) {
+			if (cCohort && (cSWindow->cohorts.size() >= hard_limit || (grammar->delimiters && doesTagMatchSet(cCohort->wordform, grammar->delimiters->hash)))) {
 				if (cSWindow->cohorts.size() >= hard_limit) {
 					u_fprintf(ux_stderr, "Warning: Hard limit of %u cohorts reached at line %u - forcing break.\n", hard_limit, numLines);
 					u_fflush(ux_stderr);
