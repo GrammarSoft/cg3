@@ -112,10 +112,13 @@ Cohort *GrammarApplicator::runContextualTest(SingleWindow *sWindow, const size_t
 				if (left) {
 					bool brk = false;
 					cohort = runSingleTest(left, lpos-i, test, &brk, &retval);
-					if (brk) {
+					if (brk && retval) {
 						break;
 					}
-					if (lpos-i == 0) {
+					else if (brk) {
+						left = 0;
+					}
+					else if (lpos-i == 0) {
 						if ((test->pos & (POS_SPAN_BOTH|POS_SPAN_LEFT) || always_span)) {
 							left = left->previous;
 							if (left) {
@@ -130,10 +133,13 @@ Cohort *GrammarApplicator::runContextualTest(SingleWindow *sWindow, const size_t
 				if (right) {
 					bool brk = false;
 					cohort = runSingleTest(right, rpos+i, test, &brk, &retval);
-					if (brk) {
+					if (brk && retval) {
 						break;
 					}
-					if (rpos+i == right->cohorts.size()-1) {
+					else if (brk) {
+						right = 0;
+					}
+					else if (rpos+i == right->cohorts.size()-1) {
 						if ((test->pos & (POS_SPAN_BOTH|POS_SPAN_RIGHT) || always_span)) {
 							right = right->next;
 							rpos = (0-i)-1;
