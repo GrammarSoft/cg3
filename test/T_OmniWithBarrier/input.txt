@@ -1,0 +1,18 @@
+"<Mun>"
+         "mun" Pron Pers Sg1 Nom
+"<geahčastin>"
+         "geahčastit" V TV Ind Prt Sg1
+"<áigetávvalii>"
+         "áige#távval" N Sg Ill
+"<go>"
+         "go" Pcle
+         "go" CS
+"<jovden>"
+         "joavdat" V IV Ind Prt Sg1
+         "joavdit" V IV Ind Prt Sg1
+"<mollii>"
+         "molla" N Sg Ill
+         "moalla" N Sg Ill
+         "mollet" V TV Ind Prt Sg3
+"<.>"
+         "." CLB

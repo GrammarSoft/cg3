@@ -1,0 +1,4 @@
+DELIMITERS = "<.>";
+
+SECTION
+SELECT ("joavdat") IF (0 ("joavdit"))(0* ("moalla" Ill) BARRIER (CS));
