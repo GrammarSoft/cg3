@@ -23,12 +23,6 @@
 #define _CRT_SECURE_NO_DEPRECATE 1
 #define _CRT_NONSTDC_NO_DEPRECATE 1
 
-#include <stdlib.h>
-#include <cstdlib>
-#include <iostream>
-#include <string>
-#include <libgen.h>
-
 #include "stdafx.h"
 #include "icu_uoptions.h"
 #include "Recycler.h"
@@ -37,6 +31,8 @@
 #include "GrammarWriter.h"
 #include "BinaryGrammar.h"
 #include "GrammarApplicator.h"
+
+#include <libgen.h>
 
 #include "version.h"
 
