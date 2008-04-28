@@ -23,12 +23,6 @@
 #define _CRT_SECURE_NO_DEPRECATE 1
 #define _CRT_NONSTDC_NO_DEPRECATE 1
 
-#include <stdlib.h>
-#include <cstdlib>
-#include <getopt.h>
-#include <iostream>
-#include <libgen.h>
-
 #include "stdafx.h"
 #include "icu_uoptions.h"
 #include "Recycler.h"
@@ -39,6 +33,9 @@
 #include "ApertiumApplicator.h"
 #include "GrammarApplicator.h"
 #include "uextras.h"
+
+#include <getopt.h>
+#include <libgen.h>
 
 #include "version.h"
 
