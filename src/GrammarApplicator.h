@@ -57,7 +57,7 @@ namespace CG3 {
 		uint32_t verbosity_level;
 
 		GrammarApplicator(UFILE *ux_in, UFILE *ux_out, UFILE *ux_err);
-		~GrammarApplicator();
+		virtual ~GrammarApplicator();
 
 		void enableStatistics();
 		void disableStatistics();
