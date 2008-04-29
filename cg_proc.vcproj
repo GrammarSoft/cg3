@@ -364,10 +364,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\src\TextualParser.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\src\uextras.cpp"
 				>
 			</File>
@@ -463,10 +459,6 @@
 			</File>
 			<File
 				RelativePath=".\src\Tag.h"
-				>
-			</File>
-			<File
-				RelativePath=".\src\TextualParser.h"
 				>
 			</File>
 			<File
