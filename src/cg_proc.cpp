@@ -27,8 +27,6 @@
 #include "icu_uoptions.h"
 #include "Recycler.h"
 #include "Grammar.h"
-#include "TextualParser.h"
-#include "GrammarWriter.h"
 #include "BinaryGrammar.h"
 #include "ApertiumApplicator.h"
 #include "GrammarApplicator.h"
@@ -101,12 +99,14 @@ main(int argc, char *argv[])
 	};
 #endif
 
-	while(true) {
+	// This is to make pedantic compilers not complain about the while(true) condition...silly MSVC.
+	int c = 0;
+	while(c != -1) {
 #if HAVE_GETOPT_LONG
 		int option_index;
-		int c = getopt_long(argc, argv, "ds:f:tvh", long_options, &option_index);
+		c = getopt_long(argc, argv, "ds:f:tvh", long_options, &option_index);
 #else
-		int c = getopt(argc, argv, "ds:f:tvh");
+		c = getopt(argc, argv, "ds:f:tvh");
 #endif		
 		if(c == -1) {
 			break;
