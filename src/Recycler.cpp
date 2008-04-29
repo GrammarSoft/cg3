@@ -30,6 +30,7 @@ Recycler::Recycler() {
 	AReadings = DReadings = 0;
 	Auint32Sets = Duint32Sets = 0;
 	Auint32HashSets = Duint32HashSets = 0;
+	/*
 	for (uint32_t i=0;i<150;i++) {
 		Cohort *t = new Cohort(NULL);
 		Cohorts.push_back(t);
@@ -38,16 +39,15 @@ Recycler::Recycler() {
 		Reading *t = new Reading(NULL);
 		Readings.push_back(t);
 	}
-	/*
 	for (uint32_t i=0;i<500;i++) {
 		uint32Set *t = new uint32Set;
 		uint32Sets.push_back(t);
 	}
-	//*/
 	for (uint32_t i=0;i<400;i++) {
 		uint32HashSet *t = new uint32HashSet;
 		uint32HashSets.push_back(t);
 	}
+	//*/
 }
 
 Recycler::~Recycler() {
