@@ -124,20 +124,20 @@ int main(int argc, char* argv[]) {
 
 	if (options[CODEPAGE_GRAMMAR].doesOccur) {
 		codepage_grammar = options[CODEPAGE_GRAMMAR].value;
-	} else if (options[CODEPAGE_ALL].doesOccur) {
-		codepage_grammar = options[CODEPAGE_ALL].value;
+	} else if (options[CODEPAGE_GLOBAL].doesOccur) {
+		codepage_grammar = options[CODEPAGE_GLOBAL].value;
 	}
 
 	if (options[CODEPAGE_INPUT].doesOccur) {
 		codepage_input = options[CODEPAGE_INPUT].value;
-	} else if (options[CODEPAGE_ALL].doesOccur) {
-		codepage_input = options[CODEPAGE_ALL].value;
+	} else if (options[CODEPAGE_GLOBAL].doesOccur) {
+		codepage_input = options[CODEPAGE_GLOBAL].value;
 	}
 
 	if (options[CODEPAGE_OUTPUT].doesOccur) {
 		codepage_output = options[CODEPAGE_OUTPUT].value;
-	} else if (options[CODEPAGE_ALL].doesOccur) {
-		codepage_output = options[CODEPAGE_ALL].value;
+	} else if (options[CODEPAGE_GLOBAL].doesOccur) {
+		codepage_output = options[CODEPAGE_GLOBAL].value;
 	}
 
 	std::cerr << "Codepage: default " << codepage_default << ", input " << codepage_input << ", output " << codepage_output << ", grammar " << codepage_grammar << std::endl;
@@ -150,20 +150,20 @@ int main(int argc, char* argv[]) {
 
 	if (options[LOCALE_GRAMMAR].doesOccur) {
 		locale_grammar = options[LOCALE_GRAMMAR].value;
-	} else if (options[LOCALE_ALL].doesOccur) {
-		locale_grammar = options[LOCALE_ALL].value;
+	} else if (options[LOCALE_GLOBAL].doesOccur) {
+		locale_grammar = options[LOCALE_GLOBAL].value;
 	}
 
 	if (options[LOCALE_INPUT].doesOccur) {
 		locale_input = options[LOCALE_INPUT].value;
-	} else if (options[LOCALE_ALL].doesOccur) {
-		locale_input = options[LOCALE_ALL].value;
+	} else if (options[LOCALE_GLOBAL].doesOccur) {
+		locale_input = options[LOCALE_GLOBAL].value;
 	}
 
 	if (options[LOCALE_OUTPUT].doesOccur) {
 		locale_output = options[LOCALE_OUTPUT].value;
-	} else if (options[LOCALE_ALL].doesOccur) {
-		locale_output = options[LOCALE_ALL].value;
+	} else if (options[LOCALE_GLOBAL].doesOccur) {
+		locale_output = options[LOCALE_GLOBAL].value;
 	}
 
 	if (options[VERBOSE].doesOccur) {
