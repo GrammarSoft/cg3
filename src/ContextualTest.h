@@ -23,6 +23,7 @@
 #define __CONTEXTUALTEST_H
 
 #include "stdafx.h"
+#include "Set.h"
 #include "Strings.h"
 
 namespace CG3 {
@@ -49,9 +50,9 @@ namespace CG3 {
 		uint32_t pos;
 		int32_t offset;
 
-		uint32_t target;
-		uint32_t barrier;
-		uint32_t cbarrier;
+		Set *target;
+		Set *barrier;
+		Set *cbarrier;
 
 		mutable uint32_t num_fail, num_match;
 		mutable clock_t total_time;
