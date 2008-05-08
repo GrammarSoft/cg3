@@ -122,24 +122,9 @@ void Grammar::addSet(Set *to) {
 	if (sets_by_name.find(nhash) == sets_by_name.end()) {
 		sets_by_name[nhash] = chash;
 	}
-	else if (chash != sets_by_name.find(nhash)->second) {
-		const Set *ct = sets_by_contents.find(sets_by_name.find(nhash)->second)->second;
-		if (ct->tags_set.size() != to->tags_set.size()
-			|| ct->tags_set.size() != to->tags_set.size()
-			|| ct->tags_set.size() != to->tags_set.size()) {
-				u_fprintf(ux_stderr, "Warning: Set names %S and %S collided. Fixing.\n", ct->name, to->name);
-				uint32_t ch = hash_sdbm_uchar(to->name);
-				while (sets_by_name.find(ch) != sets_by_name.end()) {
-					to->name[1]++;
-					ch = hash_sdbm_uchar(to->name);
-				}
-				sets_by_name[ch] = chash;
-				u_fprintf(ux_stderr, "Warning: Set renamed to %S.\n", to->name);
-		}
-		else {
-			u_fprintf(ux_stderr, "Error: Set %S already defined at line %u. Redefinition attempt at line %u!\n", sets_by_contents.find(sets_by_name.find(nhash)->second)->second->name, sets_by_contents.find(sets_by_name.find(nhash)->second)->second->line, to->line);
-			CG3Quit(1);
-		}
+	else if (chash != sets_by_contents.find(sets_by_name.find(nhash)->second)->second->hash) {
+		u_fprintf(ux_stderr, "Error: Set %S already defined at line %u. Redefinition attempt at line %u!\n", sets_by_contents.find(sets_by_name.find(nhash)->second)->second->name, sets_by_contents.find(sets_by_name.find(nhash)->second)->second->line, to->line);
+		CG3Quit(1);
 	}
 	if (sets_by_contents.find(chash) == sets_by_contents.end()) {
 		sets_by_contents[chash] = to;
@@ -333,7 +318,7 @@ void Grammar::reindex() {
 			rules.push_back(iter_rule->second);
 		}
 		if (iter_rule->second->target) {
-			indexSetToRule(iter_rule->second->line, iter_rule->second->target);
+			indexSetToRule(iter_rule->second->line, getSet(iter_rule->second->target));
 		}
 	}
 
@@ -365,7 +350,7 @@ void Grammar::indexSetToRule(uint32_t r, Set *s) {
 		}
 	} else if (!s->sets.empty()) {
 		for (uint32_t i=0;i<s->sets.size();i++) {
-			Set *set = s->sets.at(i);
+			Set *set = sets_by_contents.find(s->sets.at(i))->second;
 			indexSetToRule(r, set);
 		}
 	}
@@ -406,7 +391,7 @@ void Grammar::indexSets(uint32_t r, Set *s) {
 		}
 	} else if (!s->sets.empty()) {
 		for (uint32_t i=0;i<s->sets.size();i++) {
-			Set *set = s->sets.at(i);
+			Set *set = sets_by_contents.find(s->sets.at(i))->second;
 			indexSets(r, set);
 		}
 	}

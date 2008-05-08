@@ -40,9 +40,7 @@ namespace CG3 {
 		int parse_grammar_from_file(const char *filename, const char *locale, const char *codepage);
 	private:
 		UFILE *ux_stderr;
-		uint32HashSet used_sets;
 		Grammar *grammar;
-		void writeSet(Set *s, FILE *output);
 		void writeContextualTest(ContextualTest *t, FILE *output);
 		void readContextualTest(ContextualTest *t, FILE *input);
 	};

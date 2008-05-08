@@ -166,7 +166,7 @@ int TextualParser::parseSetInline(Set *s, UChar **p) {
 
 					result->addCompositeTagToSet(set_c, ct);
 					result->addSet(set_c);
-					s->sets.push_back(set_c);
+					s->sets.push_back(set_c->hash);
 				}
 				else {
 					UChar *n = *p;
@@ -195,7 +195,7 @@ int TextualParser::parseSetInline(Set *s, UChar **p) {
 							Set *ns = result->allocateSet();
 							ns->line = result->lines;
 							ns->setName(gbuffers[0]);
-							ns->sets.push_back(wtmp);
+							ns->sets.push_back(wtmp->hash);
 							ns->is_unified = true;
 							result->addSet(ns);
 						}
@@ -209,7 +209,7 @@ int TextualParser::parseSetInline(Set *s, UChar **p) {
 						CG3Quit(1);
 					}
 					sh = tmp->hash;
-					s->sets.push_back(tmp);
+					s->sets.push_back(sh);
 					*p = n;
 				}
 				wantop = true;
@@ -283,12 +283,12 @@ int TextualParser::parseContextualTestList(Rule *rule, std::list<ContextualTest*
 	s->setName(sets_counter++);
 	parseSetInline(s, p);
 	if (s->sets.size() == 1 && !s->is_unified) {
-		Set *tmp = s->sets.back();
+		Set *tmp = result->getSet(s->sets.back());
 		result->destroySet(s);
 		s = tmp;
 	}
 	result->addSet(s);
-	t->target = s;
+	t->target = s->hash;
 
 	result->lines += SKIPWS(p);
 	if (u_strncasecmp(*p, stringbits[S_CBARRIER], stringbit_lengths[S_CBARRIER], U_FOLD_CASE_DEFAULT) == 0) {
@@ -299,12 +299,12 @@ int TextualParser::parseContextualTestList(Rule *rule, std::list<ContextualTest*
 		s->setName(sets_counter++);
 		parseSetInline(s, p);
 		if (s->sets.size() == 1 && !s->is_unified) {
-			Set *tmp = s->sets.back();
+			Set *tmp = result->getSet(s->sets.back());
 			result->destroySet(s);
 			s = tmp;
 		}
 		result->addSet(s);
-		t->cbarrier = s;
+		t->cbarrier = s->hash;
 	}
 	result->lines += SKIPWS(p);
 	if (u_strncasecmp(*p, stringbits[S_BARRIER], stringbit_lengths[S_BARRIER], U_FOLD_CASE_DEFAULT) == 0) {
@@ -315,12 +315,12 @@ int TextualParser::parseContextualTestList(Rule *rule, std::list<ContextualTest*
 		s->setName(sets_counter++);
 		parseSetInline(s, p);
 		if (s->sets.size() == 1 && !s->is_unified) {
-			Set *tmp = s->sets.back();
+			Set *tmp = result->getSet(s->sets.back());
 			result->destroySet(s);
 			s = tmp;
 		}
 		result->addSet(s);
-		t->barrier = s;
+		t->barrier = s->hash;
 	}
 	result->lines += SKIPWS(p);
 
@@ -487,12 +487,12 @@ int TextualParser::parseRule(KEYWORDS key, UChar **p) {
 	s->setName(sets_counter++);
 	parseSetInline(s, p);
 	if (s->sets.size() == 1 && !s->is_unified) {
-		Set *tmp = s->sets.back();
+		Set *tmp = result->getSet(s->sets.back());
 		result->destroySet(s);
 		s = tmp;
 	}
 	result->addSet(s);
-	rule->target = s;
+	rule->target = s->hash;
 
 	result->lines += SKIPWS(p);
 	if (u_strncasecmp(*p, stringbits[S_IF], stringbit_lengths[S_IF], U_FOLD_CASE_DEFAULT) == 0) {
@@ -853,7 +853,7 @@ int TextualParser::parseFromUChar(UChar *input) {
 				}
 			}
 			else if (s->sets.size() == 1 && !s->is_unified) {
-				tmp = s->sets.back();
+				tmp = result->getSet(s->sets.back());
 				if (verbosity_level > 0) {
 					u_fprintf(ux_stderr, "Warning: Set %S (L:%u) has been aliased to %S (L:%u).\n", s->name, s->line, tmp->name, tmp->line);
 					u_fflush(ux_stderr);

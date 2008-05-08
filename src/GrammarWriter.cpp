@@ -68,15 +68,15 @@ void GrammarWriter::printSet(UFILE *output, const Set *curset) {
 	} else if (!curset->sets.empty() && used_sets.find(curset->hash) == used_sets.end()) {
 		used_sets.insert(curset->hash);
 		for (uint32_t i=0;i<curset->sets.size();i++) {
-			printSet(output, curset->sets.at(i));
+			printSet(output, grammar->sets_by_contents.find(curset->sets.at(i))->second);
 		}
 		if (statistics) {
 			u_fprintf(output, "#Set Matched: %u ; NoMatch: %u ; TotalTime: %u\n", curset->num_match, curset->num_fail, curset->total_time);
 		}
 		u_fprintf(output, "SET %S = ", curset->name);
-		u_fprintf(output, "%S ", curset->sets.at(0)->name);
+		u_fprintf(output, "%S ", grammar->sets_by_contents.find(curset->sets.at(0))->second->name);
 		for (uint32_t i=0;i<curset->sets.size()-1;i++) {
-			u_fprintf(output, "%S %S ", stringbits[curset->set_ops.at(i)], curset->sets.at(i+1)->name);
+			u_fprintf(output, "%S %S ", stringbits[curset->set_ops.at(i)], grammar->sets_by_contents.find(curset->sets.at(i+1))->second->name);
 		}
 		u_fprintf(output, " ;\n\n");
 	}
@@ -182,7 +182,7 @@ void GrammarWriter::printRule(UFILE *to, const Rule *rule) {
 	}
 
 	if (rule->target) {
-		u_fprintf(to, "%S ", rule->target->name);
+		u_fprintf(to, "%S ", grammar->sets_by_contents.find(rule->target)->second->name);
 	}
 
 	if (rule->tests.size()) {
@@ -257,13 +257,13 @@ void GrammarWriter::printContextualTest(UFILE *to, const ContextualTest *test) {
 	u_fprintf(to, " ");
 
 	if (test->target) {
-		u_fprintf(to, "%S ", test->target->name);
+		u_fprintf(to, "%S ", grammar->sets_by_contents.find(test->target)->second->name);
 	}
 	if (test->cbarrier) {
-		u_fprintf(to, "CBARRIER %S ", test->cbarrier->name);
+		u_fprintf(to, "CBARRIER %S ", grammar->sets_by_contents.find(test->cbarrier)->second->name);
 	}
 	if (test->barrier) {
-		u_fprintf(to, "BARRIER %S ", test->barrier->name);
+		u_fprintf(to, "BARRIER %S ", grammar->sets_by_contents.find(test->barrier)->second->name);
 	}
 
 	if (test->linked) {
