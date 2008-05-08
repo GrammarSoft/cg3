@@ -29,6 +29,8 @@
 
 namespace CG3 {
 
+	typedef std::vector<Set*> SetVector;
+
 	class Set {
 	public:
 		bool match_any;
@@ -47,7 +49,7 @@ namespace CG3 {
 		uint32HashSet single_tags;
 
 		uint32Vector set_ops;
-		uint32Vector sets;
+		SetVector sets;
 
 		Set();
 		~Set();

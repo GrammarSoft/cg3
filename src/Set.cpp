@@ -44,19 +44,16 @@ Set::~Set() {
 }
 
 void Set::setName(uint32_t to) {
-	if (!to) {
-		to = (uint32_t)rand();
-	}
+	assert(to != 0);
 	name = new UChar[32];
 	memset(name, 0, sizeof(UChar)*32);
-	u_sprintf(name, "_G_%u_%u_", line, to);
+	u_sprintf(name, "_A_%u_%u_", line, to);
 }
 void Set::setName(const UChar *to) {
+	assert(to);
 	if (to) {
 		name = new UChar[u_strlen(to)+1];
 		u_strcpy(name, to);
-	} else {
-		setName((uint32_t)rand());
 	}
 }
 
@@ -64,15 +61,18 @@ uint32_t Set::rehash() {
 	uint32_t retval = 0;
 	assert(tags_set.empty() || sets.empty());
 	if (sets.empty()) {
+		retval = hash_sdbm_uint32_t((uint32_t)tags_set.size(), retval);
 		uint32Set::iterator iter;
 		for (iter = tags_set.begin() ; iter != tags_set.end() ; iter++) {
 			retval = hash_sdbm_uint32_t(*iter, retval);
 		}
 	}
 	else {
+		retval = hash_sdbm_uint32_t((uint32_t)sets.size(), retval);
 		for (uint32_t i=0;i<sets.size();i++) {
-			retval = hash_sdbm_uint32_t(sets.at(i), retval);
+			retval = hash_sdbm_uint32_t(sets.at(i)->hash, retval);
 		}
+		retval = hash_sdbm_uint32_t((uint32_t)set_ops.size(), retval);
 		for (uint32_t i=0;i<set_ops.size();i++) {
 			retval = hash_sdbm_uint32_t(set_ops.at(i), retval);
 		}
@@ -130,7 +130,7 @@ void Set::reindex(Grammar *grammar) {
 		}
 	} else if (!sets.empty()) {
 		for (uint32_t i=0;i<sets.size();i++) {
-			Set *set = grammar->sets_by_contents.find(sets.at(i))->second;
+			Set *set = sets.at(i);
 			set->reindex(grammar);
 			if (set->is_special) {
 				is_special = true;
