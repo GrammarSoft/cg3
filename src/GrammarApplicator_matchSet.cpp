@@ -24,21 +24,26 @@
 using namespace CG3;
 using namespace CG3::Strings;
 
-bool GrammarApplicator::doesTagMatchSet(const uint32_t tag, const Set *set) {
+bool GrammarApplicator::doesTagMatchSet(const uint32_t tag, const uint32_t set) {
 	bool retval = false;
 
-	if (set->single_tags.find(tag) != set->single_tags.end()) {
-		retval = true;
-	}
-	else {
-		CompositeTag *ctag = new CompositeTag();
-		ctag->addTag(tag);
-		ctag->rehash();
+	stdext::hash_map<uint32_t, Set*>::const_iterator iter = grammar->sets_by_contents.find(set);
+	if (iter != grammar->sets_by_contents.end()) {
+		const Set *theset = iter->second;
 
-		if (set->tags.find(ctag->hash) != set->tags.end()) {
+		if (theset->single_tags.find(tag) != theset->single_tags.end()) {
 			retval = true;
 		}
-		delete ctag;
+		else {
+			CompositeTag *ctag = new CompositeTag();
+			ctag->addTag(tag);
+			ctag->rehash();
+
+			if (theset->tags.find(ctag->hash) != theset->tags.end()) {
+				retval = true;
+			}
+			delete ctag;
+		}
 	}
 	return retval;
 }
@@ -163,15 +168,15 @@ bool GrammarApplicator::doesTagMatchReading(const Reading *reading, const uint32
 	return retval;
 }
 
-bool GrammarApplicator::doesSetMatchReading(Reading *reading, const Set *set, bool bypass_index) {
+bool GrammarApplicator::doesSetMatchReading(Reading *reading, const uint32_t set, bool bypass_index) {
 	bool retval = false;
 
-	if (reading->possible_sets.find(set->hash) == reading->possible_sets.end()) {
+	if (reading->possible_sets.find(set) == reading->possible_sets.end()) {
 		return false;
 	}
 	if (reading->hash != 1) {
-		if (!bypass_index && __index_matches(&index_reading_yes, reading->hash, set->hash)) { return true; }
-		if (__index_matches(&index_reading_no, reading->hash, set->hash)) { return false; }
+		if (!bypass_index && __index_matches(&index_reading_yes, reading->hash, set)) { return true; }
+		if (__index_matches(&index_reading_no, reading->hash, set)) { return false; }
 	}
 
 	cache_miss++;
@@ -181,119 +186,123 @@ bool GrammarApplicator::doesSetMatchReading(Reading *reading, const Set *set, bo
 		tstamp = clock();
 	}
 
-	if (set->is_unified) {
-		unif_mode = true;
-	}
-
-	if (set->match_any) {
-		retval = true;
-	}
-	else if (set->sets.empty()) {
-		uint32HashSet::const_iterator ster;
-
-		for (ster = set->single_tags.begin() ; ster != set->single_tags.end() ; ster++) {
-			bool match = doesTagMatchReading(reading, *ster, bypass_index);
-			if (match) {
-				if (unif_mode) {
-					if (unif_tags.find(set->hash) != unif_tags.end() && unif_tags[set->hash] != *ster) {
-						continue;
-					}
-					unif_tags[set->hash] = *ster;
-				}
-				retval = true;
-				break;
-			}
+	stdext::hash_map<uint32_t, Set*>::const_iterator iter = grammar->sets_by_contents.find(set);
+	if (iter != grammar->sets_by_contents.end()) {
+		const Set *theset = iter->second;
+		if (theset->is_unified) {
+			unif_mode = true;
 		}
 
-		if (!retval) {
-			for (ster = set->tags.begin() ; ster != set->tags.end() ; ster++) {
-				bool match = true;
-				const CompositeTag *ctag = grammar->tags.find(*ster)->second;
+		if (theset->match_any) {
+			retval = true;
+		}
+		else if (theset->sets.empty()) {
+			uint32HashSet::const_iterator ster;
 
-				uint32HashSet::const_iterator cter;
-				for (cter = ctag->tags.begin() ; cter != ctag->tags.end() ; cter++) {
-					bool inner = doesTagMatchReading(reading, *cter, bypass_index);
-					if (!inner) {
-						match = false;
-						break;
-					}
-				}
+			for (ster = theset->single_tags.begin() ; ster != theset->single_tags.end() ; ster++) {
+				bool match = doesTagMatchReading(reading, *ster, bypass_index);
 				if (match) {
 					if (unif_mode) {
-						if (unif_tags.find(set->hash) != unif_tags.end() && unif_tags[set->hash] != *ster) {
-							last_mapping_tag = 0;
+						if (unif_tags.find(theset->hash) != unif_tags.end() && unif_tags[theset->hash] != *ster) {
 							continue;
 						}
-						unif_tags[set->hash] = *ster;
+						unif_tags[theset->hash] = *ster;
 					}
-					match_comp++;
 					retval = true;
 					break;
-				} else {
-					last_mapping_tag = 0;
 				}
 			}
-		}
-	}
-	else {
-		size_t size = set->sets.size();
-		for (size_t i=0;i<size;i++) {
-			bool match = doesSetMatchReading(reading, set->sets.at(i), bypass_index);
-			bool failfast = false;
-			while (i < size-1 && set->set_ops.at(i) != S_OR) {
-				switch (set->set_ops.at(i)) {
-					case S_PLUS:
-						if (match) {
-							match = doesSetMatchReading(reading, set->sets.at(i+1), bypass_index);
+
+			if (!retval) {
+				for (ster = theset->tags.begin() ; ster != theset->tags.end() ; ster++) {
+					bool match = true;
+					const CompositeTag *ctag = grammar->tags.find(*ster)->second;
+
+					uint32HashSet::const_iterator cter;
+					for (cter = ctag->tags.begin() ; cter != ctag->tags.end() ; cter++) {
+						bool inner = doesTagMatchReading(reading, *cter, bypass_index);
+						if (!inner) {
+							match = false;
+							break;
 						}
-						break;
-					case S_FAILFAST:
-						if (match) {
-							if (doesSetMatchReading(reading, set->sets.at(i+1), bypass_index)) {
-								match = false;
-								failfast = true;
+					}
+					if (match) {
+						if (unif_mode) {
+							if (unif_tags.find(theset->hash) != unif_tags.end() && unif_tags[theset->hash] != *ster) {
+								last_mapping_tag = 0;
+								continue;
 							}
+							unif_tags[theset->hash] = *ster;
 						}
+						match_comp++;
+						retval = true;
 						break;
-					case S_MINUS:
-						if (match) {
-							if (doesSetMatchReading(reading, set->sets.at(i+1), bypass_index)) {
-								match = false;
-							}
-						}
-						break;
-					case S_NOT:
-						if (!match) {
-							if (!doesSetMatchReading(reading, set->sets.at(i+1), bypass_index)) {
-								match = true;
-							}
-						}
-						break;
-					default:
-						break;
+					} else {
+						last_mapping_tag = 0;
+					}
 				}
-				i++;
 			}
-			if (match) {
-				match_sub++;
-				retval = true;
-				break;
-			}
-			if (failfast) {
-				match_sub++;
-				retval = false;
-				break;
-			}
-		}
-	}
-	if (statistics) {
-		if (retval) {
-			set->num_match++;
 		}
 		else {
-			set->num_fail++;
+			size_t size = theset->sets.size();
+			for (size_t i=0;i<size;i++) {
+				bool match = doesSetMatchReading(reading, theset->sets.at(i), bypass_index);
+				bool failfast = false;
+				while (i < size-1 && theset->set_ops.at(i) != S_OR) {
+					switch (theset->set_ops.at(i)) {
+						case S_PLUS:
+							if (match) {
+								match = doesSetMatchReading(reading, theset->sets.at(i+1), bypass_index);
+							}
+							break;
+						case S_FAILFAST:
+							if (match) {
+								if (doesSetMatchReading(reading, theset->sets.at(i+1), bypass_index)) {
+									match = false;
+									failfast = true;
+								}
+							}
+							break;
+						case S_MINUS:
+							if (match) {
+								if (doesSetMatchReading(reading, theset->sets.at(i+1), bypass_index)) {
+									match = false;
+								}
+							}
+							break;
+						case S_NOT:
+							if (!match) {
+								if (!doesSetMatchReading(reading, theset->sets.at(i+1), bypass_index)) {
+									match = true;
+								}
+							}
+							break;
+						default:
+							break;
+					}
+					i++;
+				}
+				if (match) {
+					match_sub++;
+					retval = true;
+					break;
+				}
+				if (failfast) {
+					match_sub++;
+					retval = false;
+					break;
+				}
+			}
 		}
-		set->total_time += clock() - tstamp;
+		if (statistics) {
+			if (retval) {
+				theset->num_match++;
+			}
+			else {
+				theset->num_fail++;
+			}
+			theset->total_time += clock() - tstamp;
+		}
 	}
 
 	if (retval) {
@@ -302,7 +311,7 @@ bool GrammarApplicator::doesSetMatchReading(Reading *reading, const Set *set, bo
 				Recycler *r = Recycler::instance();
 				index_reading_yes[reading->hash] = r->new_uint32HashSet();
 			}
-			index_reading_yes[reading->hash]->insert(set->hash);
+			index_reading_yes[reading->hash]->insert(set);
 		}
 	}
 	else {
@@ -311,19 +320,20 @@ bool GrammarApplicator::doesSetMatchReading(Reading *reading, const Set *set, bo
 				Recycler *r = Recycler::instance();
 				index_reading_no[reading->hash] = r->new_uint32HashSet();
 			}
-			index_reading_no[reading->hash]->insert(set->hash);
+			index_reading_no[reading->hash]->insert(set);
 		}
 	}
 
 	return retval;
 }
 
-bool GrammarApplicator::doesSetMatchCohortNormal(const Cohort *cohort, const Set *set) {
+bool GrammarApplicator::doesSetMatchCohortNormal(const Cohort *cohort, const uint32_t set) {
 	bool retval = false;
+	const Set *theset = grammar->sets_by_contents.find(set)->second;
 	std::list<Reading*>::const_iterator iter;
 	for (iter = cohort->readings.begin() ; iter != cohort->readings.end() ; iter++) {
 		Reading *reading = *iter;
-		if (doesSetMatchReading(reading, set, set->has_mappings|set->is_child_unified)) {
+		if (doesSetMatchReading(reading, set, theset->has_mappings|theset->is_child_unified)) {
 			retval = true;
 			break;
 		}
@@ -331,13 +341,14 @@ bool GrammarApplicator::doesSetMatchCohortNormal(const Cohort *cohort, const Set
 	return retval;
 }
 
-bool GrammarApplicator::doesSetMatchCohortCareful(const Cohort *cohort, const Set *set) {
+bool GrammarApplicator::doesSetMatchCohortCareful(const Cohort *cohort, const uint32_t set) {
 	bool retval = true;
+	const Set *theset = grammar->sets_by_contents.find(set)->second;
 	std::list<Reading*>::const_iterator iter;
 	for (iter = cohort->readings.begin() ; iter != cohort->readings.end() ; iter++) {
 		Reading *reading = *iter;
 		last_mapping_tag = 0;
-		if (!doesSetMatchReading(reading, set, set->has_mappings|set->is_child_unified)) {
+		if (!doesSetMatchReading(reading, set, theset->has_mappings|theset->is_child_unified)) {
 			retval = false;
 			break;
 		}

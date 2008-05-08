@@ -28,12 +28,9 @@ inline uint32_t hash_sdbm_uchar(const UChar *str, uint32_t hash = 0) {
 	}
     UChar c = 0;
 
-	uint32_t len = 0;
 	while ((c = *str++) != 0) {
-		len++;
         hash = c + (hash << 6U) + (hash << 16U) - hash;
 	}
-    hash = len + (hash << 6U) + (hash << 16U) - hash;
 
     return hash;
 }
@@ -44,12 +41,9 @@ inline uint32_t hash_sdbm_char(const char *str, uint32_t hash = 0) {
 	}
     UChar c = 0;
 
-	uint32_t len = 0;
 	while ((c = *str++) != 0) {
-		len++;
         hash = c + (hash << 6U) + (hash << 16U) - hash;
 	}
-    hash = len + (hash << 6U) + (hash << 16U) - hash;
 
     return hash;
 }
