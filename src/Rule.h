@@ -25,6 +25,7 @@
 #include "stdafx.h"
 #include "Strings.h"
 #include "ContextualTest.h"
+#include "Set.h"
 #include "Tag.h"
 #include "ContextualTest.h"
 
@@ -36,7 +37,7 @@ namespace CG3 {
 	public:
 		UChar *name;
 		uint32_t wordform;
-		uint32_t target;
+		Set *target;
 		uint32_t line;
 		uint32_t varname, varvalue;
 		int32_t section;

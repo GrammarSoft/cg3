@@ -96,8 +96,9 @@ ContextualTest *ContextualTest::allocateContextualTest() {
 uint32_t ContextualTest::rehash() {
 	hash = 0;
 	hash = hash_sdbm_uint32_t(hash, pos);
-	hash = hash_sdbm_uint32_t(hash, target);
-	hash = hash_sdbm_uint32_t(hash, barrier);
+	hash = hash_sdbm_uint32_t(hash, target->hash);
+	hash = hash_sdbm_uint32_t(hash, barrier->hash);
+	hash = hash_sdbm_uint32_t(hash, cbarrier->hash);
 	hash = hash_sdbm_uint32_t(hash, abs(offset));
 	if (offset < 0) {
 		hash = hash_sdbm_uint32_t(hash, 5000);
