@@ -61,7 +61,7 @@ rule_was_bad:
 			tstamp = clock();
 		}
 
-		const Set *set = rule->target;
+		const Set *set = grammar->sets_by_contents.find(rule->target)->second;
 
 		// ToDo: Update list of in/valid rules upon MAP, ADD, REPLACE, APPEND, SUBSTITUTE; add tags + always add tag_any
 		bool rule_is_valid = false;

@@ -130,7 +130,50 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 	stdext::hash_map<uint32_t, Set*>::const_iterator set_iter;
 	for (set_iter = grammar->sets_by_contents.begin() ; set_iter != grammar->sets_by_contents.end() ; set_iter++) {
 		Set *s = set_iter->second;
-		writeSet(s, output);
+		u32tmp = (uint32_t)htonl((uint32_t)s->hash);
+		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
+		u8tmp = (uint8_t)s->match_any;
+		fwrite(&u8tmp, sizeof(uint8_t), 1, output);
+		u8tmp = (uint8_t)s->is_special;
+		fwrite(&u8tmp, sizeof(uint8_t), 1, output);
+		u8tmp = (uint8_t)s->is_unified;
+		fwrite(&u8tmp, sizeof(uint8_t), 1, output);
+		u8tmp = (uint8_t)s->has_mappings;
+		fwrite(&u8tmp, sizeof(uint8_t), 1, output);
+
+		if (s->sets.empty()) {
+			u8tmp = (uint8_t)0;
+			fwrite(&u8tmp, sizeof(uint8_t), 1, output);
+			u32tmp = (uint32_t)htonl((uint32_t)s->single_tags.size());
+			fwrite(&u32tmp, sizeof(uint32_t), 1, output);
+			uint32HashSet::const_iterator comp_iter;
+			for (comp_iter = s->single_tags.begin() ; comp_iter != s->single_tags.end() ; comp_iter++) {
+				u32tmp = (uint32_t)htonl((uint32_t)*comp_iter);
+				fwrite(&u32tmp, sizeof(uint32_t), 1, output);
+			}
+			u32tmp = (uint32_t)htonl((uint32_t)s->tags.size());
+			fwrite(&u32tmp, sizeof(uint32_t), 1, output);
+			for (comp_iter = s->tags.begin() ; comp_iter != s->tags.end() ; comp_iter++) {
+				u32tmp = (uint32_t)htonl((uint32_t)*comp_iter);
+				fwrite(&u32tmp, sizeof(uint32_t), 1, output);
+			}
+		}
+		else {
+			u8tmp = (uint8_t)1;
+			fwrite(&u8tmp, sizeof(uint8_t), 1, output);
+			u32tmp = (uint32_t)htonl((uint32_t)s->set_ops.size());
+			fwrite(&u32tmp, sizeof(uint32_t), 1, output);
+			for (uint32_t i=0;i<s->set_ops.size();i++) {
+				u32tmp = (uint32_t)htonl((uint32_t)s->set_ops.at(i));
+				fwrite(&u32tmp, sizeof(uint32_t), 1, output);
+			}
+			u32tmp = (uint32_t)htonl((uint32_t)s->sets.size());
+			fwrite(&u32tmp, sizeof(uint32_t), 1, output);
+			for (uint32_t i=0;i<s->sets.size();i++) {
+				u32tmp = (uint32_t)htonl((uint32_t)s->sets.at(i));
+				fwrite(&u32tmp, sizeof(uint32_t), 1, output);
+			}
+		}
 	}
 
 	if (grammar->delimiters) {
@@ -162,7 +205,7 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 		u32tmp = (uint32_t)htonl((uint32_t)r->line);
 		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
-		u32tmp = (uint32_t)htonl((uint32_t)r->target->hash);
+		u32tmp = (uint32_t)htonl((uint32_t)r->target);
 		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 		u32tmp = (uint32_t)htonl((uint32_t)r->wordform);
 		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
@@ -225,21 +268,11 @@ void BinaryGrammar::writeContextualTest(ContextualTest *t, FILE *output) {
 	fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 	u32tmp = (uint32_t)htonl((uint32_t)t->pos);
 	fwrite(&u32tmp, sizeof(uint32_t), 1, output);
-	u32tmp = (uint32_t)htonl((uint32_t)t->target->hash);
+	u32tmp = (uint32_t)htonl((uint32_t)t->target);
 	fwrite(&u32tmp, sizeof(uint32_t), 1, output);
-	if (t->barrier) {
-		u32tmp = (uint32_t)htonl((uint32_t)t->barrier->hash);
-	}
-	else {
-		u32tmp = 0;
-	}
+	u32tmp = (uint32_t)htonl((uint32_t)t->barrier);
 	fwrite(&u32tmp, sizeof(uint32_t), 1, output);
-	if (t->cbarrier) {
-		u32tmp = (uint32_t)htonl((uint32_t)t->cbarrier->hash);
-	}
-	else {
-		u32tmp = 0;
-	}
+	u32tmp = (uint32_t)htonl((uint32_t)t->cbarrier);
 	fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 	i32tmp = (int32_t)htonl(t->offset);
 	fwrite(&i32tmp, sizeof(int32_t), 1, output);
@@ -252,67 +285,6 @@ void BinaryGrammar::writeContextualTest(ContextualTest *t, FILE *output) {
 	else {
 		u8tmp = (uint8_t)0;
 		fwrite(&u8tmp, sizeof(uint8_t), 1, output);
-	}
-}
-
-void BinaryGrammar::writeSet(Set *s, FILE *output) {
-	if (used_sets.find(s->hash) != used_sets.end()) {
-		return;
-	}
-	used_sets.insert(s->hash);
-
-	if (!s->sets.empty()) {
-		for (uint32_t i=0;i<s->sets.size();i++) {
-			writeSet(s->sets.at(i), output);
-		}
-	}
-
-	uint32_t u32tmp = 0;
-	uint8_t u8tmp = 0;
-
-	u32tmp = (uint32_t)htonl((uint32_t)s->hash);
-	fwrite(&u32tmp, sizeof(uint32_t), 1, output);
-	u8tmp = (uint8_t)s->match_any;
-	fwrite(&u8tmp, sizeof(uint8_t), 1, output);
-	u8tmp = (uint8_t)s->is_special;
-	fwrite(&u8tmp, sizeof(uint8_t), 1, output);
-	u8tmp = (uint8_t)s->is_unified;
-	fwrite(&u8tmp, sizeof(uint8_t), 1, output);
-	u8tmp = (uint8_t)s->has_mappings;
-	fwrite(&u8tmp, sizeof(uint8_t), 1, output);
-
-	if (s->sets.empty()) {
-		u8tmp = (uint8_t)0;
-		fwrite(&u8tmp, sizeof(uint8_t), 1, output);
-		u32tmp = (uint32_t)htonl((uint32_t)s->single_tags.size());
-		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
-		uint32HashSet::const_iterator comp_iter;
-		for (comp_iter = s->single_tags.begin() ; comp_iter != s->single_tags.end() ; comp_iter++) {
-			u32tmp = (uint32_t)htonl((uint32_t)*comp_iter);
-			fwrite(&u32tmp, sizeof(uint32_t), 1, output);
-		}
-		u32tmp = (uint32_t)htonl((uint32_t)s->tags.size());
-		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
-		for (comp_iter = s->tags.begin() ; comp_iter != s->tags.end() ; comp_iter++) {
-			u32tmp = (uint32_t)htonl((uint32_t)*comp_iter);
-			fwrite(&u32tmp, sizeof(uint32_t), 1, output);
-		}
-	}
-	else {
-		u8tmp = (uint8_t)1;
-		fwrite(&u8tmp, sizeof(uint8_t), 1, output);
-		u32tmp = (uint32_t)htonl((uint32_t)s->set_ops.size());
-		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
-		for (uint32_t i=0;i<s->set_ops.size();i++) {
-			u32tmp = (uint32_t)htonl((uint32_t)s->set_ops.at(i));
-			fwrite(&u32tmp, sizeof(uint32_t), 1, output);
-		}
-		u32tmp = (uint32_t)htonl((uint32_t)s->sets.size());
-		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
-		for (uint32_t i=0;i<s->sets.size();i++) {
-			u32tmp = (uint32_t)htonl((uint32_t)s->sets.at(i)->hash);
-			fwrite(&u32tmp, sizeof(uint32_t), 1, output);
-		}
 	}
 }
 
@@ -338,7 +310,7 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 		CG3Quit(1);
 	}
 
-#define B_TOO_OLD 3594
+#define B_TOO_OLD 3264
 	fread(&u32tmp, sizeof(uint32_t), 1, input);
 	u32tmp = (uint32_t)ntohl(u32tmp);
 	if (u32tmp < B_TOO_OLD) {
@@ -501,7 +473,7 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 			for (uint32_t j=0 ; j<num_sets ; j++) {
 				fread(&u32tmp, sizeof(uint32_t), 1, input);
 				u32tmp = (uint32_t)ntohl(u32tmp);
-				s->sets.push_back(grammar->sets_by_contents.find(u32tmp)->second);
+				s->sets.push_back(u32tmp);
 			}
 		}
 		grammar->sets_by_contents[s->hash] = s;
@@ -531,7 +503,7 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 		fread(&u32tmp, sizeof(uint32_t), 1, input);
 		r->line = (uint32_t)ntohl(u32tmp);
 		fread(&u32tmp, sizeof(uint32_t), 1, input);
-		r->target = grammar->sets_by_contents.find((uint32_t)ntohl(u32tmp))->second;
+		r->target = (uint32_t)ntohl(u32tmp);
 		fread(&u32tmp, sizeof(uint32_t), 1, input);
 		r->wordform = (uint32_t)ntohl(u32tmp);
 		fread(&u32tmp, sizeof(uint32_t), 1, input);
@@ -598,17 +570,11 @@ void BinaryGrammar::readContextualTest(ContextualTest *t, FILE *input) {
 	fread(&u32tmp, sizeof(uint32_t), 1, input);
 	t->pos = (uint32_t)ntohl(u32tmp);
 	fread(&u32tmp, sizeof(uint32_t), 1, input);
-	t->target = grammar->sets_by_contents.find((uint32_t)ntohl(u32tmp))->second;
+	t->target = (uint32_t)ntohl(u32tmp);
 	fread(&u32tmp, sizeof(uint32_t), 1, input);
-	u32tmp = (uint32_t)ntohl(u32tmp);
-	if (u32tmp) {
-		t->barrier = grammar->sets_by_contents.find(u32tmp)->second;
-	}
+	t->barrier = (uint32_t)ntohl(u32tmp);
 	fread(&u32tmp, sizeof(uint32_t), 1, input);
-	u32tmp = (uint32_t)ntohl(u32tmp);
-	if (u32tmp) {
-		t->cbarrier = grammar->sets_by_contents.find(u32tmp)->second;
-	}
+	t->cbarrier = (uint32_t)ntohl(u32tmp);
 	fread(&i32tmp, sizeof(int32_t), 1, input);
 	t->offset = (int32_t)ntohl(i32tmp);
 
