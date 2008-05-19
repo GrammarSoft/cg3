@@ -62,6 +62,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 
 	Recycler *r = Recycler::instance();
 	uint32_t resetAfter = ((num_windows+4)*2+1);
+	uint32_t lines = 0;
 
 	begintag = addTag(stringbits[S_BEGINTAG]);
 	endtag = addTag(stringbits[S_ENDTAG]);
@@ -81,6 +82,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 	grammar->total_time = clock();
 
 	while (!u_feof(input)) {
+		lines++;
 		u_fgets(line, BUFFER_SIZE-1, input);
 		u_strcpy(cleaned, line);
 		ux_packWhitespace(cleaned);
@@ -213,10 +215,10 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 					resetIndexes();
 					r->trim();
 				}
-				/*
-				u_fprintf(ux_stderr, "Progress: L:%u, W:%u, C:%u, R:%u\r", lines, numWindows, numCohorts, numReadings);
-				u_fflush(ux_stderr);
-				//*/
+				if (verbosity_level > 0) {
+					u_fprintf(ux_stderr, "Progress: L:%u, W:%u, C:%u, R:%u\r", lines, numWindows, numCohorts, numReadings);
+					u_fflush(ux_stderr);
+				}
 			}
 			cCohort = r->new_Cohort(cSWindow);
 			cCohort->global_number = cWindow->cohort_counter++;
@@ -324,10 +326,10 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 							resetIndexes();
 							r->trim();
 						}
-						/*
-						u_fprintf(ux_stderr, "Progress: L:%u, W:%u, C:%u, R:%u\r", lines, numWindows, numCohorts, numReadings);
-						u_fflush(ux_stderr);
-						//*/
+						if (verbosity_level > 0) {
+							u_fprintf(ux_stderr, "Progress: L:%u, W:%u, C:%u, R:%u\r", lines, numWindows, numCohorts, numReadings);
+							u_fflush(ux_stderr);
+						}
 					}
 					cWindow->shuffleWindowsDown();
 					while (!cWindow->previous.empty()) {
@@ -401,10 +403,10 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 		}
 		cWindow->shuffleWindowsDown();
 		runGrammarOnWindow(cWindow);
-		/*
-		u_fprintf(ux_stderr, "Progress: L:%u, W:%u, C:%u, R:%u\r", lines, numWindows, numCohorts, numReadings);
-		u_fflush(ux_stderr);
-		//*/
+		if (verbosity_level > 0) {
+			u_fprintf(ux_stderr, "Progress: L:%u, W:%u, C:%u, R:%u\r", lines, numWindows, numCohorts, numReadings);
+			u_fflush(ux_stderr);
+		}
 	}
 
 	cWindow->shuffleWindowsDown();
