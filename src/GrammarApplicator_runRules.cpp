@@ -344,6 +344,9 @@ rule_was_bad:
 								}
 							}
 							for (tter = rule->maplist.begin() ; tter != rule->maplist.end() ; tter++) {
+								if (*tter == grammar->tag_any) {
+									break;
+								}
 								reading->tags_list.insert(tfind, *tter);
 								if (grammar->rules_by_tag.find(*tter) != grammar->rules_by_tag.end()) {
 									current->valid_rules.insert(grammar->rules_by_tag.find(*tter)->second->begin(), grammar->rules_by_tag.find(*tter)->second->end());
@@ -577,7 +580,8 @@ label_runGrammarOnWindow_begin:
 		for (size_t i=0;i<smax;) {
 			uint32_t rv = 0;
 			if (single_run) {
-				rv = runRulesOnWindow(current, (int32_t)i, (int32_t)i);
+				runRulesOnWindow(current, (int32_t)i, (int32_t)i);
+				rv = 0;
 			}
 			else {
 				rv = runRulesOnWindow(current, 0, (int32_t)i);
