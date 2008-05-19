@@ -1,0 +1,66 @@
+DELIMITERS = "<$.>" ;
+
+TEMPLATE DefinedAnywhere = (1 (Q)) ;
+
+BEFORE-SECTIONS
+
+TEMPLATE V-Prep = (1 (V) LINK 1* (PREP)) ;
+
+ADD (@postGood) (*) IF (T:V-Prep LINK 1 (N)) ;
+ADD (@postBad) (*) IF (T:V-Prep LINK 1 (Q)) ;
+ADD (@preGood) (*) IF (-2 (SUBJ) LINK T:V-Prep) ;
+ADD (@preBad) (*) IF (-2 (Q) LINK T:V-Prep) ;
+ADD (@bothGoodGood) (*) IF (-3 (SUBJ) LINK T:V-Prep LINK 1 (N)) ;
+ADD (@bothGoodBad) (*) IF (-3 (SUBJ) LINK T:V-Prep LINK 1 (Q)) ;
+ADD (@bothBadGood) (*) IF (-4 (Q) LINK T:V-Prep LINK 1 (N)) ;
+ADD (@bothBadBad) (*) IF (-4 (Q) LINK T:V-Prep LINK 1 (Q)) ;
+
+TEMPLATE NccN = (0 (N) LINK 1 (CC) LINK 1 (N)) ;
+
+ADD (@leftone) (*) IF (1 (*) LINK T:NccN) ;
+ADD (@startNccN) (*) IF (T:NccN) ;
+ADD (@endNccN) (*) IF (-2 (N) LINK T:NccN) ;
+
+TEMPLATE A-link-B = (T:V-Prep LINK 1 (N) LINK T:NccN) ;
+
+ADD (@linkedGood) (*) IF (0 (SUBJ) LINK T:A-link-B LINK 1 (<<<)) ;
+ADD (@linkedBad) (*) IF (0 (SUBJ) LINK T:A-link-B LINK 1 (>>>)) ;
+
+## --- Following is an internal compiler stress test.
+
+LIST x = x;
+LIST y = y;
+LIST z = z;
+LIST m = m;
+LIST n = n;
+LIST k = k;
+LIST v = v;
+LIST f = f;
+
+# Predefined templates for use in multiple rules.
+TEMPLATE alts =
+	   (1*C x LINK 1 y LINK 2 z)
+	OR (-2*C x LINK 1 y LINK 2 z)
+	OR (1 m LINK 1 k)
+	# Alternatives within alternatives...this can get very complex.
+	OR ((2** x BARRIER v) OR (-2** x LINK 1 f))
+	;
+TEMPLATE another =
+	   (1*C x LINK 1 y LINK 2 z)
+	OR (-2*C x LINK 1 y LINK 2 z)
+	# Templates can use previously defined templates; complexity level going bonanzas.
+	OR (T:alts)
+	;
+
+SECTION
+
+# Use a template with T:name; rules can use multiple templates if so desired.
+SELECT x IF (T:alts) (0 n) ;
+SELECT n IF (T:alts LINK 0 n) ;
+
+# Inline usage to provide alternatives for a single rule.
+# Extra () is needed to distinguish set OR from context OR.
+SELECT x IF ((1 x LINK 1 y) OR (-2 x LINK 1 y)) ;
+
+# Inline can also use defined templates.
+SELECT x IF ((1 x LINK 1 y) OR (T:another)) ;

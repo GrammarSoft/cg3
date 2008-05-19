@@ -26,6 +26,8 @@
 #include "Strings.h"
 
 bool ux_isNewline(const UChar32 current, const UChar32 previous);
+bool ux_isEmpty(const UChar *text);
+
 bool ux_trim(UChar *totrim);
 bool ux_packWhitespace(UChar *totrim);
 int ux_isSetOp(const UChar *it);

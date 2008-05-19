@@ -541,6 +541,22 @@
     </para>
   </section>
 
+  <section id="keyword-template">
+    <title>TEMPLATE</title>
+    <indexterm>
+      <primary>TEMPLATE</primary>
+    </indexterm>
+    <para>
+      Sets up templates of alternative contextual tests which can later be referred to by multiple rules
+      or templates.
+    </para>
+    <screen>
+      TEMPLATE name = (1 (N) LINK 1 (V)) OR (-1 (N) LINK 1 (V)) ;
+      TEMPLATE other = (T:name LINK 1 (P)) OR (1 (C)) ;
+      SELECT (x) IF ((T:name) OR (T:other)) ;
+    </screen>
+  </section>
+
   <section id="keyword-to">
     <title>TO</title>
     <indexterm>

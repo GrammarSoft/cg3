@@ -32,13 +32,22 @@ ContextualTest::ContextualTest() {
 	cbarrier = 0;
 	linked = 0;
 	hash = 0;
+	name = 0;
 	line = 0;
 	num_fail = 0;
 	num_match = 0;
 	total_time = 0;
+	tmpl = 0;
 }
 
 ContextualTest::~ContextualTest() {
+	std::list<ContextualTest*>::iterator iter;
+	for (iter = ors.begin() ; iter != ors.end() ; iter++) {
+		delete *iter;
+		*iter = 0;
+	}
+	ors.clear();
+	tmpl = 0;
 	delete linked;
 }
 

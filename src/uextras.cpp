@@ -33,6 +33,18 @@ bool ux_isNewline(const UChar32 current, const UChar32 previous) {
 	|| previous == 0x000DL); // ASCII \r
 }
 
+bool ux_isEmpty(const UChar *text) {
+	size_t length = u_strlen(text);
+	if (length > 0) {
+		for (size_t i=0 ; i<=length ; i++) {
+			if (!u_isWhitespace(text[i])) {
+				return false;
+			}
+		}
+	}
+	return true;
+}
+
 bool ux_trim(UChar *totrim) {
 	bool retval = false;
 	unsigned int length = u_strlen(totrim);
@@ -216,4 +228,3 @@ UChar *ux_substr(UChar *string, int start, int end)
 
 	return tmp;
 }
-

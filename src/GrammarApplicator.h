@@ -110,8 +110,8 @@ namespace CG3 {
 		int runGrammarOnWindow(Window *window);
 		uint32_t runRulesOnWindow(SingleWindow *current, const int32_t start, const int32_t end);
 
-		Cohort *runSingleTest(SingleWindow *sWindow, size_t i, const ContextualTest *test, bool *brk, bool *retval);
-		Cohort *runContextualTest(SingleWindow *sWindow, const size_t position, const ContextualTest *test);
+		Cohort *runSingleTest(SingleWindow *sWindow, size_t i, const ContextualTest *test, bool *brk, bool *retval, Cohort **deep = 0);
+		Cohort *runContextualTest(SingleWindow *sWindow, const size_t position, const ContextualTest *test, Cohort **deep = 0);
 
 		bool doesTagMatchSet(const uint32_t tag, const uint32_t set);
 		bool doesTagMatchReading(const Reading *reading, const uint32_t tag, bool bypass_index = false);

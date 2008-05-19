@@ -45,6 +45,7 @@ namespace CG3 {
 	class ContextualTest {
 	public:
 		uint32_t line;
+		uint32_t name;
 		uint32_t hash;
 		uint32_t pos;
 		int32_t offset;
@@ -56,6 +57,8 @@ namespace CG3 {
 		mutable uint32_t num_fail, num_match;
 		mutable clock_t total_time;
 
+		ContextualTest *tmpl;
+		std::list<ContextualTest*> ors;
 		ContextualTest *linked;
 
 		ContextualTest();

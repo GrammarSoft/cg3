@@ -137,6 +137,40 @@
         </screen>
       </para>
     </section>
+
+    <section id="gotcha-endless-loops">
+      <title>Endless Loops</title>
+      <para>
+        Since any rule can be in any section, it is possible to write endless loops.
+      </para>
+      <para>
+        For example, this grammar will potentially loop forever:
+        <screen>
+          SECTION
+          ADD (@not-noun) (N) (0 (V)) ;
+          ADD (@noun) (N) ;
+
+          SECTION
+          REMOVE (@noun) IF (0 (V)) ;
+        </screen>
+        Since ADD is in a SECTION it will be run again after REMOVE, and since ADD does not block from further
+        appending of mapping tags it can re-add @noun each time, leading to REMOVE finding it and removing,
+        ad nauseum.
+      </para>
+      <para>
+        In order to prevent this, the REMOVE rule can in most cases be rewritten to:
+        <screen>
+          REMOVE (N) IF (0 (@noun) + (N)) (0 (V)) ;
+        </screen>
+        That is, the target of the REMOVE rule should be a non-mapping tag with the mapping tag as 0 context.
+        This will either remove the entire reading or nothing, as opposed to a single mapping tag, and will not
+        cause the grammar to rewind.
+      </para>
+      <para>
+        Similarly, it is possible to make loops with APPEND and SELECT/REMOVE/IFF combinations, and probably
+        many other to-be-discovered mixtures of rules. Something to be aware of.
+      </para>
+    </section>
   </section>
 
   <section id="incompatibilites">

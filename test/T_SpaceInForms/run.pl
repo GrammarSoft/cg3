@@ -16,6 +16,16 @@ if (!$binary || $binary eq '' || !(-x $binary)) {
 `diff -B expected.txt output.txt >diff.txt`;
 
 if (-s "diff.txt") {
+	print STDERR "Fail ";
+} else {
+	print STDERR "Success ";
+}
+
+`"$binary" $ARGV[1] --trace -C ISO-8859-1 --grammar grammar.txt --grammar-only --grammar-bin grammar.bin3 >stdout.bin.txt 2>stderr.bin.txt`;
+`"$binary" $ARGV[1] --trace -C ISO-8859-1 --grammar grammar.bin3 -I input.txt -O output.bin.txt >>stdout.bin.txt 2>>stderr.bin.txt`;
+`diff -B expected.txt output.bin.txt >diff.bin.txt`;
+
+if (-s "diff.bin.txt") {
 	print STDERR "Fail.\n";
 } else {
 	print STDERR "Success.\n";
