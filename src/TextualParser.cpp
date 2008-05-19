@@ -236,9 +236,12 @@ int TextualParser::parseSetInline(Set *s, UChar **p) {
 	return 0;
 }
 
-int TextualParser::parseContextualTestList(Rule *rule, std::list<ContextualTest*> *thelist, CG3::ContextualTest *parentTest, UChar **p) {
+int TextualParser::parseContextualTestList(Rule *rule, std::list<ContextualTest*> *thelist, CG3::ContextualTest *parentTest, UChar **p, CG3::ContextualTest *self) {
 	ContextualTest *t = 0;
-	if (parentTest) {
+	if (self) {
+		t = self;
+	}
+	else if (parentTest) {
 		t = parentTest->allocateContextualTest();
 	}
 	else {
@@ -265,35 +268,66 @@ int TextualParser::parseContextualTestList(Rule *rule, std::list<ContextualTest*
 	u_strncpy(gbuffers[0], *p, c);
 	gbuffers[0][c] = 0;
 	dieIfKeyword(gbuffers[0]);
-	t->parsePosition(gbuffers[0], ux_stderr);
-	*p = n;
-	if (negated) {
-		t->pos |= POS_NEGATED;
+	if (ux_isEmpty(gbuffers[0])) {
+		*p = n;
+		for (;;) {
+			ContextualTest *ored = t->allocateContextualTest();
+			if (**p != '(') {
+				u_fprintf(ux_stderr, "Error: Expected '(' but found '%C' on line %u!\n", **p, result->lines);
+				CG3Quit(1);
+			}
+			(*p)++;
+			parseContextualTestList(0, 0, 0, p, ored);
+			(*p)++;
+			t->ors.push_back(ored);
+			result->lines += SKIPWS(p);
+			if (u_strncasecmp(*p, stringbits[S_OR], stringbit_lengths[S_OR], U_FOLD_CASE_DEFAULT) == 0) {
+				(*p) += stringbit_lengths[S_OR];
+			}
+			else {
+				break;
+			}
+			result->lines += SKIPWS(p);
+		}
 	}
-	if (negative) {
-		t->pos |= POS_NEGATIVE;
-	}
-	if (t->pos & (POS_DEP_CHILD|POS_DEP_PARENT|POS_DEP_SIBLING)) {
-		result->has_dep = true;
-	}
-	result->lines += SKIPWS(p);
-
-	Set *s = result->allocateSet();
-	s->line = result->lines;
-	s->setName(sets_counter++);
-	parseSetInline(s, p);
-	if (s->sets.size() == 1 && !s->is_unified) {
-		Set *tmp = result->getSet(s->sets.back());
-		result->destroySet(s);
-		s = tmp;
-	}
-	result->addSet(s);
-	t->target = s->hash;
-
-	result->lines += SKIPWS(p);
-	if (u_strncasecmp(*p, stringbits[S_CBARRIER], stringbit_lengths[S_CBARRIER], U_FOLD_CASE_DEFAULT) == 0) {
-		(*p) += stringbit_lengths[S_CBARRIER];
+	else if (gbuffers[0][0] == 'T' && gbuffers[0][1] == ':') {
+		(*p) += 2;
+		n = *p;
+		result->lines += SKIPTOWS(&n, ')');
+		uint32_t c = (uint32_t)(n - *p);
+		u_strncpy(gbuffers[0], *p, c);
+		gbuffers[0][c] = 0;
+		dieIfKeyword(gbuffers[0]);
+		uint32_t cn = hash_sdbm_uchar(gbuffers[0]);
+		if (result->templates.find(cn) == result->templates.end()) {
+			u_fprintf(ux_stderr, "Error: Unknown template '%S' referenced on line %u!\n", gbuffers[0], result->lines);
+			CG3Quit(1);
+		}
+		t->tmpl = result->templates.find(cn)->second;
+		*p = n;
 		result->lines += SKIPWS(p);
+		/*
+		if (**p != ')') {
+			u_fprintf(ux_stderr, "Error: Expected ')' but found '%C' on line %u!\n", **p, result->lines);
+			CG3Quit(1);
+		}
+		(**p)++;
+		//*/
+	}
+	else {
+		t->parsePosition(gbuffers[0], ux_stderr);
+		*p = n;
+		if (negated) {
+			t->pos |= POS_NEGATED;
+		}
+		if (negative) {
+			t->pos |= POS_NEGATIVE;
+		}
+		if (t->pos & (POS_DEP_CHILD|POS_DEP_PARENT|POS_DEP_SIBLING)) {
+			result->has_dep = true;
+		}
+		result->lines += SKIPWS(p);
+
 		Set *s = result->allocateSet();
 		s->line = result->lines;
 		s->setName(sets_counter++);
@@ -304,25 +338,42 @@ int TextualParser::parseContextualTestList(Rule *rule, std::list<ContextualTest*
 			s = tmp;
 		}
 		result->addSet(s);
-		t->cbarrier = s->hash;
-	}
-	result->lines += SKIPWS(p);
-	if (u_strncasecmp(*p, stringbits[S_BARRIER], stringbit_lengths[S_BARRIER], U_FOLD_CASE_DEFAULT) == 0) {
-		(*p) += stringbit_lengths[S_BARRIER];
+		t->target = s->hash;
+
 		result->lines += SKIPWS(p);
-		Set *s = result->allocateSet();
-		s->line = result->lines;
-		s->setName(sets_counter++);
-		parseSetInline(s, p);
-		if (s->sets.size() == 1 && !s->is_unified) {
-			Set *tmp = result->getSet(s->sets.back());
-			result->destroySet(s);
-			s = tmp;
+		if (u_strncasecmp(*p, stringbits[S_CBARRIER], stringbit_lengths[S_CBARRIER], U_FOLD_CASE_DEFAULT) == 0) {
+			(*p) += stringbit_lengths[S_CBARRIER];
+			result->lines += SKIPWS(p);
+			Set *s = result->allocateSet();
+			s->line = result->lines;
+			s->setName(sets_counter++);
+			parseSetInline(s, p);
+			if (s->sets.size() == 1 && !s->is_unified) {
+				Set *tmp = result->getSet(s->sets.back());
+				result->destroySet(s);
+				s = tmp;
+			}
+			result->addSet(s);
+			t->cbarrier = s->hash;
 		}
-		result->addSet(s);
-		t->barrier = s->hash;
+		result->lines += SKIPWS(p);
+		if (u_strncasecmp(*p, stringbits[S_BARRIER], stringbit_lengths[S_BARRIER], U_FOLD_CASE_DEFAULT) == 0) {
+			(*p) += stringbit_lengths[S_BARRIER];
+			result->lines += SKIPWS(p);
+			Set *s = result->allocateSet();
+			s->line = result->lines;
+			s->setName(sets_counter++);
+			parseSetInline(s, p);
+			if (s->sets.size() == 1 && !s->is_unified) {
+				Set *tmp = result->getSet(s->sets.back());
+				result->destroySet(s);
+				s = tmp;
+			}
+			result->addSet(s);
+			t->barrier = s->hash;
+		}
+		result->lines += SKIPWS(p);
 	}
-	result->lines += SKIPWS(p);
 
 	bool linked = false;
 	result->lines += SKIPWS(p);
@@ -332,11 +383,21 @@ int TextualParser::parseContextualTestList(Rule *rule, std::list<ContextualTest*
 	}
 	result->lines += SKIPWS(p);
 
+	/*
+	if (linked && (t->tmpl || !t->ors.empty())) {
+		u_fprintf(ux_stderr, "Error: Cannot LINK after templates or alternative tests on line %u!\n", result->lines);
+		CG3Quit(1);
+	}
+	//*/
+
 	if (linked) {
 		parseContextualTestList(0, 0, t, p);
 	}
 
-	if (parentTest) {
+	if (self) {
+		// nothing...
+	}
+	else if (parentTest) {
 		parentTest->linked = t;
 	}
 	else {
@@ -986,6 +1047,39 @@ int TextualParser::parseFromUChar(UChar *input) {
 			&& ISCHR(*(p+7),'U','u') && ISCHR(*(p+8),'T','t')
 			&& !ISSTRING(p, 9)) {
 			parseRule(K_SUBSTITUTE, &p);
+		}
+		// TEMPLATE
+		else if (ISCHR(*p,'T','t') && ISCHR(*(p+7),'E','e') && ISCHR(*(p+1),'E','e') && ISCHR(*(p+2),'M','m')
+			&& ISCHR(*(p+3),'P','p') && ISCHR(*(p+4),'L','l') && ISCHR(*(p+5),'A','a') && ISCHR(*(p+6),'T','t')
+			&& !ISSTRING(p, 7)) {
+			ContextualTest *t = result->allocateContextualTest();
+			t->line = result->lines;
+			p += 8;
+			result->lines += SKIPWS(&p);
+			UChar *n = p;
+			result->lines += SKIPTOWS(&n, 0, true);
+			uint32_t c = (uint32_t)(n - p);
+			u_strncpy(gbuffers[0], p, c);
+			gbuffers[0][c] = 0;
+			dieIfKeyword(gbuffers[0]);
+			uint32_t cn = hash_sdbm_uchar(gbuffers[0]);
+			t->name = cn;
+			result->addContextualTest(t, gbuffers[0]);
+			p = n;
+			result->lines += SKIPWS(&p, '=');
+			if (*p != '=') {
+				u_fprintf(ux_stderr, "Error: Encountered a %C before the expected = on line %u!\n", *p, result->lines);
+				CG3Quit(1);
+			}
+			p++;
+
+			parseContextualTestList(0, 0, 0, &p, t);
+
+			result->lines += SKIPWS(&p, ';');
+			if (*p != ';') {
+				u_fprintf(ux_stderr, "Error: Missing closing ; before line %u! Probably caused by missing set operator.\n", *p, result->lines);
+				CG3Quit(1);
+			}
 		}
 		// END
 		else if (ISCHR(*p,'E','e') && ISCHR(*(p+2),'D','d') && ISCHR(*(p+1),'N','n')) {

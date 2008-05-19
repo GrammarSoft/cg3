@@ -28,6 +28,7 @@
 #include "CompositeTag.h"
 #include "Rule.h"
 #include "Anchor.h"
+#include "ContextualTest.h"
 
 namespace CG3 {
 
@@ -49,6 +50,8 @@ namespace CG3 {
 		stdext::hash_map<uint32_t, uint32_t> sets_by_name;
 		stdext::hash_map<uint32_t, Set*> sets_by_contents;
 		stdext::hash_map<uint32_t, uint32_t> set_alias;
+		stdext::hash_map<uint32_t, ContextualTest*> templates;
+		std::vector<ContextualTest*> template_list;
 
 		stdext::hash_map<uint32_t, uint32HashSet*> rules_by_tag;
 		stdext::hash_map<uint32_t, uint32HashSet*> sets_by_tag;
@@ -96,6 +99,9 @@ namespace CG3 {
 		Rule *allocateRule();
 		void addRule(Rule *rule);
 		void destroyRule(Rule *rule);
+
+		ContextualTest *allocateContextualTest();
+		void addContextualTest(ContextualTest *test, const UChar *name);
 
 		void resetStatistics();
 		void reindex();

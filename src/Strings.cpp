@@ -77,8 +77,9 @@ namespace CG3 {
 			init_keyword_single("SETCHILD",          K_SETCHILD);
 			init_keyword_single("SETRELATION",       K_SETRELATION);
 			init_keyword_single("REMRELATION",       K_REMRELATION);
-			init_keyword_single("SETRELATIONS",       K_SETRELATIONS);
-			init_keyword_single("REMRELATIONS",       K_REMRELATIONS);
+			init_keyword_single("SETRELATIONS",      K_SETRELATIONS);
+			init_keyword_single("REMRELATIONS",      K_REMRELATIONS);
+			init_keyword_single("TEMPLATE",          K_TEMPLATE);
 
 			for (unsigned int i=0;i<KEYWORD_COUNT;i++) {
 				if (!keywords[i]) {
@@ -130,20 +131,20 @@ namespace CG3 {
 			init_string_single("LINK",       S_LINK);
 			init_string_single(" LINK 0 ",   S_LINKZ);
 			init_string_single("BARRIER",    S_BARRIER);
-			init_string_single("CBARRIER",    S_CBARRIER);
+			init_string_single("CBARRIER",   S_CBARRIER);
 			init_string_single("*",          S_ASTERIK);
 			init_string_single("**",         S_ASTERIKTWO);
 			init_string_single(">>>",        S_BEGINTAG);
 			init_string_single("<<<",        S_ENDTAG);
 			init_string_single("_S_DELIMITERS_", S_DELIMITSET);
 			init_string_single("_S_SOFT_DELIMITERS_", S_SOFTDELIMITSET);
-			init_string_single("CGCMD:FLUSH", S_CMD_FLUSH);
-			init_string_single("CGCMD:EXIT", S_CMD_EXIT);
+			init_string_single("CGCMD:FLUSH",  S_CMD_FLUSH);
+			init_string_single("CGCMD:EXIT",   S_CMD_EXIT);
 			init_string_single("CGCMD:IGNORE", S_CMD_IGNORE);
 			init_string_single("CGCMD:RESUME", S_CMD_RESUME);
-			init_string_single("TARGET", S_TARGET);
-			init_string_single("AND", S_AND);
-			init_string_single("IF", S_IF);
+			init_string_single("TARGET",       S_TARGET);
+			init_string_single("AND",          S_AND);
+			init_string_single("IF",           S_IF);
 
 			for (unsigned int i=0;i<STRINGS_COUNT;i++) {
 				if (!stringbits[i]) {

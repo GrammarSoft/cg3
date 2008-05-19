@@ -21,13 +21,6 @@
     </screen>
   </section>
 
-  <section id="draft-templates">
-    <title>Templates</title>
-    <para>
-      Some form of templating a'la CG-1.
-    </para>
-  </section>
-
   <section id="draft-match">
     <title>MATCH</title>
     <indexterm>

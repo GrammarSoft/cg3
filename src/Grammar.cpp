@@ -244,6 +244,19 @@ void Grammar::destroyTag(Tag *tag) {
 	delete tag;
 }
 
+ContextualTest *Grammar::allocateContextualTest() {
+	return new ContextualTest;
+}
+void Grammar::addContextualTest(ContextualTest *test, const UChar *name) {
+	uint32_t cn = hash_sdbm_uchar(name);
+	if (templates.find(cn) != templates.end()) {
+		u_fprintf(ux_stderr, "Error: Redefinition attempt for template '%S' on line %u!\n", name, lines);
+		CG3Quit(1);
+	}
+	templates[cn] = test;
+	template_list.push_back(test);
+}
+
 void Grammar::addAnchor(const UChar *to, uint32_t line) {
 	uint32_t ah = hash_sdbm_uchar(to, 0);
 	if (anchors.find(ah) != anchors.end()) {
