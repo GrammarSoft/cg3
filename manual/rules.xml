@@ -8,7 +8,7 @@
     Firstly, the CG-2 optional seperation keywords IF and TARGET are completely ignored by VISL CG-3,
     so only use them for readability. The definitions are given in the following format:
     <screen>
-      KEYWORD &lt;required_element&gt; [optional_element]
+      KEYWORD &lt;required_element&gt; [optional_element] ;
     </screen>
   </para>
 
@@ -18,7 +18,7 @@
       <primary>DELIMIT</primary>
     </indexterm>
     <screen>
-      [wordform] DELIMIT &lt;target&gt; [contextual_tests]
+      [wordform] DELIMIT &lt;target&gt; [contextual_tests] ;
     </screen>
     <para>
       This will work as an on-the-fly sentence (disambiguation window) delimiter.
@@ -27,6 +27,23 @@
       window size. This is not and must not be used as a substitute for the DELIMITERS
       list, but can be useful for cases where the delimiter has to be decided from context.
     </para>
+  </section>
+
+  <section id="substitute">
+    <title>SUBSTITUTE</title>
+    <indexterm>
+      <primary>SUBSTITUTE</primary>
+    </indexterm>
+    <screen>
+      [wordform] SUBSTITUTE &lt;locate tags&gt; &lt;replacement tags&gt; &lt;target&gt; [contextual_tests] ;
+    </screen>
+    <para>
+      This works as in VISLCG, but the replacement tags may be the * tag to signify a nil replacement,
+      allowing for clean removal of tags in a reading. For example, to remove TAG do:
+    </para>
+    <screen>
+      SUBSTITUTE (TAG) (*) TARGET (TAG) ;
+    </screen>
   </section>
 
   <section id="named-rules">
@@ -38,8 +55,8 @@
       <primary>named rules</primary>
     </indexterm>
     <screen>
-      [wordform] MAP:rule_name &lt;tag&gt; &lt;target&gt; [contextual_tests]
-      [wordform] SELECT:rule_name &lt;target&gt; [contextual_tests]
+      [wordform] MAP:rule_name &lt;tag&gt; &lt;target&gt; [contextual_tests] ;
+      [wordform] SELECT:rule_name &lt;target&gt; [contextual_tests] ;
     </screen>
     <para>
       In certain cases you may want to name a rule to be able to refer to the same

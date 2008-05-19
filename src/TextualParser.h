@@ -52,7 +52,7 @@ namespace CG3 {
 
 		int parseTagList(Set *s, UChar **p, const bool isinline);
 		int parseSetInline(Set *s, UChar **p);
-		int parseContextualTestList(Rule *rule, std::list<ContextualTest*> *thelist, CG3::ContextualTest *parentTest, UChar **p);
+		int parseContextualTestList(Rule *rule = 0, std::list<ContextualTest*> *thelist = 0, CG3::ContextualTest *parentTest = 0, UChar **p = 0, CG3::ContextualTest *self = 0);
 		int parseContextualTests(Rule *rule, UChar **p);
 		int parseContextualDependencyTests(Rule *rule, UChar **p);
 		int parseRule(KEYWORDS key, UChar **p);

@@ -122,6 +122,14 @@ int GrammarWriter::writeGrammar(UFILE *output) {
 	}
 	u_fprintf(output, "\n");
 
+	std::vector<ContextualTest*>::const_iterator tmpl_iter;
+	for (tmpl_iter = grammar->template_list.begin() ; tmpl_iter != grammar->template_list.end() ; tmpl_iter++) {
+		u_fprintf(output, "TEMPLATE %u = ", (*tmpl_iter)->name);
+		printContextualTest(output, *tmpl_iter);
+		u_fprintf(output, " ;\n");
+	}
+	u_fprintf(output, "\n");
+
 	int32_t lsect = -999;
 	std::map<uint32_t, Rule*>::const_iterator rule_iter;
 	for (rule_iter = grammar->rule_by_line.begin() ; rule_iter != grammar->rule_by_line.end() ; rule_iter++) {
@@ -213,57 +221,77 @@ void GrammarWriter::printContextualTest(UFILE *to, const ContextualTest *test) {
 	if (statistics) {
 		u_fprintf(to, "\n#Test Matched: %u ; NoMatch: %u ; TotalTime: %u\n", test->num_match, test->num_fail, test->total_time);
 	}
-	if (test->pos & POS_NEGATED) {
-		u_fprintf(to, "NEGATE ");
+	if (test->tmpl) {
+		u_fprintf(to, "T:%u ", test->tmpl->name);
 	}
-	if (test->pos & POS_NEGATIVE) {
-		u_fprintf(to, "NOT ");
+	else if (!test->ors.empty()) {
+		std::list<ContextualTest*>::const_iterator iter;
+		for (iter = test->ors.begin() ; iter != test->ors.end() ; ) {
+			u_fprintf(to, "(");
+			printContextualTest(to, *iter);
+			u_fprintf(to, ")");
+			iter++;
+			if (iter != test->ors.end()) {
+				u_fprintf(to, " OR ");
+			}
+			else {
+				u_fprintf(to, " ");
+			}
+		}
 	}
-	if (test->pos & POS_ABSOLUTE) {
-		u_fprintf(to, "@");
-	}
-	if (test->pos & POS_SCANALL) {
-		u_fprintf(to, "**");
-	}
-	else if (test->pos & POS_SCANFIRST) {
-		u_fprintf(to, "*");
-	}
+	else {
+		if (test->pos & POS_NEGATED) {
+			u_fprintf(to, "NEGATE ");
+		}
+		if (test->pos & POS_NEGATIVE) {
+			u_fprintf(to, "NOT ");
+		}
+		if (test->pos & POS_ABSOLUTE) {
+			u_fprintf(to, "@");
+		}
+		if (test->pos & POS_SCANALL) {
+			u_fprintf(to, "**");
+		}
+		else if (test->pos & POS_SCANFIRST) {
+			u_fprintf(to, "*");
+		}
 
-	if (test->pos & POS_DEP_CHILD) {
-		u_fprintf(to, "c");
-	}
-	if (test->pos & POS_DEP_PARENT) {
-		u_fprintf(to, "p");
-	}
-	if (test->pos & POS_DEP_SIBLING) {
-		u_fprintf(to, "s");
-	}
+		if (test->pos & POS_DEP_CHILD) {
+			u_fprintf(to, "c");
+		}
+		if (test->pos & POS_DEP_PARENT) {
+			u_fprintf(to, "p");
+		}
+		if (test->pos & POS_DEP_SIBLING) {
+			u_fprintf(to, "s");
+		}
 
-	u_fprintf(to, "%d", test->offset);
+		u_fprintf(to, "%d", test->offset);
 
-	if (test->pos & POS_CAREFUL) {
-		u_fprintf(to, "C");
-	}
-	if (test->pos & POS_SPAN_BOTH) {
-		u_fprintf(to, "W");
-	}
-	if (test->pos & POS_SPAN_LEFT) {
-		u_fprintf(to, "<");
-	}
-	if (test->pos & POS_SPAN_RIGHT) {
-		u_fprintf(to, ">");
-	}
+		if (test->pos & POS_CAREFUL) {
+			u_fprintf(to, "C");
+		}
+		if (test->pos & POS_SPAN_BOTH) {
+			u_fprintf(to, "W");
+		}
+		if (test->pos & POS_SPAN_LEFT) {
+			u_fprintf(to, "<");
+		}
+		if (test->pos & POS_SPAN_RIGHT) {
+			u_fprintf(to, ">");
+		}
 
-	u_fprintf(to, " ");
+		u_fprintf(to, " ");
 
-	if (test->target) {
-		u_fprintf(to, "%S ", grammar->sets_by_contents.find(test->target)->second->name);
-	}
-	if (test->cbarrier) {
-		u_fprintf(to, "CBARRIER %S ", grammar->sets_by_contents.find(test->cbarrier)->second->name);
-	}
-	if (test->barrier) {
-		u_fprintf(to, "BARRIER %S ", grammar->sets_by_contents.find(test->barrier)->second->name);
+		if (test->target) {
+			u_fprintf(to, "%S ", grammar->sets_by_contents.find(test->target)->second->name);
+		}
+		if (test->cbarrier) {
+			u_fprintf(to, "CBARRIER %S ", grammar->sets_by_contents.find(test->cbarrier)->second->name);
+		}
+		if (test->barrier) {
+			u_fprintf(to, "BARRIER %S ", grammar->sets_by_contents.find(test->barrier)->second->name);
+		}
 	}
 
 	if (test->linked) {

@@ -57,6 +57,15 @@ foreach (@tests) {
 	if (-e "./".$test."/output.txt") {
 	    unlink "./".$test."/output.txt";
 	}
+	if (-e "./".$test."/grammar.bin3") {
+	    unlink "./".$test."/grammar.bin3";
+	}
+	if (-e "./".$test."/diff.bin.txt") {
+	    unlink "./".$test."/diff.bin.txt";
+	}
+	if (-e "./".$test."/output.bin.txt") {
+	    unlink "./".$test."/output.bin.txt";
+	}
 	my $c = '""';
 	if ($ARGV[1] && $ARGV[1] ne "") {
 		$c = '"'.$ARGV[1].'"';

@@ -1,0 +1,17 @@
+"<He>"
+	"he" <*> <NonMod> PRON PERS MASC NOM SG3 SUBJ
+"<ate>"
+	"eat" <SVO> <SV> V PAST VFIN
+"<a>"
+	"a" <Indef> DET CENTRAL ART SG
+"<cow>"
+	"cow" N NOM SG
+"<with>"
+	"with" PREP
+"<biscuits>"
+	"biscuit" N NOM PL
+"<and>"
+	"and" CC
+"<lemonade>"
+	"lemonade" <-Indef> N NOM SG
+"<$.>"

@@ -194,6 +194,15 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 	}
 
+	u32tmp = (uint32_t)htonl((uint32_t)grammar->template_list.size());
+	fwrite(&u32tmp, sizeof(uint32_t), 1, output);
+	std::vector<ContextualTest*>::const_iterator tmpl_iter;
+	for (tmpl_iter = grammar->template_list.begin() ; tmpl_iter != grammar->template_list.end() ; tmpl_iter++) {
+		u32tmp = (uint32_t)htonl((uint32_t)(*tmpl_iter)->name);
+		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
+		writeContextualTest(*tmpl_iter, output);
+	}
+
 	u32tmp = (uint32_t)htonl((uint32_t)grammar->rule_by_line.size());
 	fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 	std::map<uint32_t, Rule*>::const_iterator rule_iter;
@@ -205,6 +214,17 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 		u32tmp = (uint32_t)htonl((uint32_t)r->line);
 		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
+		if (r->name) {
+			ucnv_reset(conv);
+			i32tmp = ucnv_fromUChars(conv, cbuffers[0], BUFFER_SIZE-1, r->name, u_strlen(r->name), &err);
+			u32tmp = (uint32_t)htonl((uint32_t)i32tmp);
+			fwrite(&u32tmp, sizeof(uint32_t), 1, output);
+			fwrite(cbuffers[0], i32tmp, 1, output);
+		}
+		else {
+			u32tmp = (uint32_t)htonl((uint32_t)0);
+			fwrite(&u32tmp, sizeof(uint32_t), 1, output);
+		}
 		u32tmp = (uint32_t)htonl((uint32_t)r->target);
 		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 		u32tmp = (uint32_t)htonl((uint32_t)r->wordform);
@@ -264,18 +284,42 @@ void BinaryGrammar::writeContextualTest(ContextualTest *t, FILE *output) {
 
 	u32tmp = (uint32_t)htonl((uint32_t)t->hash);
 	fwrite(&u32tmp, sizeof(uint32_t), 1, output);
-	u32tmp = (uint32_t)htonl((uint32_t)t->line);
-	fwrite(&u32tmp, sizeof(uint32_t), 1, output);
-	u32tmp = (uint32_t)htonl((uint32_t)t->pos);
-	fwrite(&u32tmp, sizeof(uint32_t), 1, output);
-	u32tmp = (uint32_t)htonl((uint32_t)t->target);
-	fwrite(&u32tmp, sizeof(uint32_t), 1, output);
-	u32tmp = (uint32_t)htonl((uint32_t)t->barrier);
-	fwrite(&u32tmp, sizeof(uint32_t), 1, output);
-	u32tmp = (uint32_t)htonl((uint32_t)t->cbarrier);
-	fwrite(&u32tmp, sizeof(uint32_t), 1, output);
-	i32tmp = (int32_t)htonl(t->offset);
-	fwrite(&i32tmp, sizeof(int32_t), 1, output);
+
+	if (t->tmpl) {
+		u32tmp = (uint32_t)htonl((uint32_t)t->tmpl->name);
+		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
+		u32tmp = 0;
+		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
+	}
+	else if (!t->ors.empty()) {
+		u32tmp = 0;
+		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
+		u32tmp = (uint32_t)htonl((uint32_t)t->ors.size());
+		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
+		std::list<ContextualTest*>::const_iterator iter;
+		for (iter = t->ors.begin() ; iter != t->ors.end() ; iter++) {
+			writeContextualTest(*iter, output);
+		}
+	}
+	else {
+		u32tmp = 0;
+		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
+		u32tmp = 0;
+		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
+
+		u32tmp = (uint32_t)htonl((uint32_t)t->line);
+		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
+		u32tmp = (uint32_t)htonl((uint32_t)t->pos);
+		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
+		u32tmp = (uint32_t)htonl((uint32_t)t->target);
+		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
+		u32tmp = (uint32_t)htonl((uint32_t)t->barrier);
+		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
+		u32tmp = (uint32_t)htonl((uint32_t)t->cbarrier);
+		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
+		i32tmp = (int32_t)htonl(t->offset);
+		fwrite(&i32tmp, sizeof(int32_t), 1, output);
+	}
 
 	if (t->linked) {
 		u8tmp = (uint8_t)1;
@@ -310,7 +354,7 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 		CG3Quit(1);
 	}
 
-#define B_TOO_OLD 3264
+#define B_TOO_OLD 3617
 	fread(&u32tmp, sizeof(uint32_t), 1, input);
 	u32tmp = (uint32_t)ntohl(u32tmp);
 	if (u32tmp < B_TOO_OLD) {
@@ -493,6 +537,18 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 
 	fread(&u32tmp, sizeof(uint32_t), 1, input);
 	u32tmp = (uint32_t)ntohl(u32tmp);
+	uint32_t num_templates = u32tmp;
+	for (uint32_t i=0 ; i<num_templates ; i++) {
+		ContextualTest *t = grammar->allocateContextualTest();
+		fread(&u32tmp, sizeof(uint32_t), 1, input);
+		t->name = (uint32_t)ntohl(u32tmp);
+		grammar->templates[t->name] = t;
+		grammar->template_list.push_back(t);
+		readContextualTest(t, input);
+	}
+
+	fread(&u32tmp, sizeof(uint32_t), 1, input);
+	u32tmp = (uint32_t)ntohl(u32tmp);
 	uint32_t num_rules = u32tmp;
 	for (uint32_t i=0 ; i<num_rules ; i++) {
 		Rule *r = grammar->allocateRule();
@@ -502,6 +558,14 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 		r->type = (KEYWORDS)ntohl(u32tmp);
 		fread(&u32tmp, sizeof(uint32_t), 1, input);
 		r->line = (uint32_t)ntohl(u32tmp);
+		fread(&u32tmp, sizeof(uint32_t), 1, input);
+		u32tmp = (uint32_t)ntohl(u32tmp);
+		if (u32tmp) {
+			ucnv_reset(conv);
+			fread(cbuffers[0], 1, u32tmp, input);
+			i32tmp = ucnv_toUChars(conv, gbuffers[0], BUFFER_SIZE-1, cbuffers[0], u32tmp, &err);
+			r->setName(gbuffers[0]);
+		}
 		fread(&u32tmp, sizeof(uint32_t), 1, input);
 		r->target = (uint32_t)ntohl(u32tmp);
 		fread(&u32tmp, sizeof(uint32_t), 1, input);
@@ -566,20 +630,36 @@ void BinaryGrammar::readContextualTest(ContextualTest *t, FILE *input) {
 	fread(&u32tmp, sizeof(uint32_t), 1, input);
 	t->hash = (uint32_t)ntohl(u32tmp);
 	fread(&u32tmp, sizeof(uint32_t), 1, input);
-	t->line = (uint32_t)ntohl(u32tmp);
+	u32tmp = (uint32_t)ntohl(u32tmp);
+	if (u32tmp) {
+		t->tmpl = grammar->templates.find(u32tmp)->second;
+	}
 	fread(&u32tmp, sizeof(uint32_t), 1, input);
-	t->pos = (uint32_t)ntohl(u32tmp);
-	fread(&u32tmp, sizeof(uint32_t), 1, input);
-	t->target = (uint32_t)ntohl(u32tmp);
-	fread(&u32tmp, sizeof(uint32_t), 1, input);
-	t->barrier = (uint32_t)ntohl(u32tmp);
-	fread(&u32tmp, sizeof(uint32_t), 1, input);
-	t->cbarrier = (uint32_t)ntohl(u32tmp);
-	fread(&i32tmp, sizeof(int32_t), 1, input);
-	t->offset = (int32_t)ntohl(i32tmp);
+	u32tmp = (uint32_t)ntohl(u32tmp);
+	if (u32tmp) {
+		for (uint32_t i=0 ; i<u32tmp ; i++) {
+			ContextualTest *to = t->allocateContextualTest();
+			readContextualTest(to, input);
+			t->ors.push_back(to);
+		}
+	}
+
+	if (!t->tmpl && t->ors.empty()) {
+		fread(&u32tmp, sizeof(uint32_t), 1, input);
+		t->line = (uint32_t)ntohl(u32tmp);
+		fread(&u32tmp, sizeof(uint32_t), 1, input);
+		t->pos = (uint32_t)ntohl(u32tmp);
+		fread(&u32tmp, sizeof(uint32_t), 1, input);
+		t->target = (uint32_t)ntohl(u32tmp);
+		fread(&u32tmp, sizeof(uint32_t), 1, input);
+		t->barrier = (uint32_t)ntohl(u32tmp);
+		fread(&u32tmp, sizeof(uint32_t), 1, input);
+		t->cbarrier = (uint32_t)ntohl(u32tmp);
+		fread(&i32tmp, sizeof(int32_t), 1, input);
+		t->offset = (int32_t)ntohl(i32tmp);
+	}
 
 	fread(&u8tmp, sizeof(uint8_t), 1, input);
-
 	if (u8tmp == 1) {
 		t->linked = t->allocateContextualTest();
 		readContextualTest(t->linked, input);
