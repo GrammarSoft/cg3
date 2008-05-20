@@ -1,5 +1,8 @@
 DELIMITERS = "<$.>" ;
 
+SET ASet = (*) - (meme);
+
 SECTION
 
-SELECT (*) - (meme);
+SELECT ASet ;
+
