@@ -24,26 +24,21 @@
 using namespace CG3;
 using namespace CG3::Strings;
 
-bool GrammarApplicator::doesTagMatchSet(const uint32_t tag, const uint32_t set) {
+bool GrammarApplicator::doesTagMatchSet(const uint32_t tag, const Set *set) {
 	bool retval = false;
 
-	stdext::hash_map<uint32_t, Set*>::const_iterator iter = grammar->sets_by_contents.find(set);
-	if (iter != grammar->sets_by_contents.end()) {
-		const Set *theset = iter->second;
+	if (set->single_tags.find(tag) != set->single_tags.end()) {
+		retval = true;
+	}
+	else {
+		CompositeTag *ctag = new CompositeTag();
+		ctag->addTag(tag);
+		ctag->rehash();
 
-		if (theset->single_tags.find(tag) != theset->single_tags.end()) {
+		if (set->tags.find(ctag->hash) != set->tags.end()) {
 			retval = true;
 		}
-		else {
-			CompositeTag *ctag = new CompositeTag();
-			ctag->addTag(tag);
-			ctag->rehash();
-
-			if (theset->tags.find(ctag->hash) != theset->tags.end()) {
-				retval = true;
-			}
-			delete ctag;
-		}
+		delete ctag;
 	}
 	return retval;
 }

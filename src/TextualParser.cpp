@@ -625,6 +625,8 @@ int TextualParser::parseFromUChar(UChar *input) {
 	UChar *p = input;
 	result->lines = 1;
 
+	uint32_t seen_mapping_prefix = 0;
+
 	while (*p) {
 		if (result->lines % 100 == 0) {
 			std::cerr << "Parsing line " << result->lines << "          \r" << std::flush;
@@ -716,6 +718,13 @@ int TextualParser::parseFromUChar(UChar *input) {
 			&& ISCHR(*(p+8),'P','p') && ISCHR(*(p+9),'R','r') && ISCHR(*(p+10),'E','e') && ISCHR(*(p+11),'F','f')
 			&& ISCHR(*(p+12),'I','i')
 			&& !ISSTRING(p, 13)) {
+
+			if (seen_mapping_prefix) {
+				u_fprintf(ux_stderr, "Error: MAPPING-PREFIX on line %u cannot change previous prefix set on line %u!\n", result->lines, seen_mapping_prefix);
+				CG3Quit(1);
+			}
+			seen_mapping_prefix = result->lines;
+
 			p += 14;
 			result->lines += SKIPWS(&p, '=');
 			if (*p != '=') {
