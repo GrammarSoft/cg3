@@ -89,7 +89,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 
 		if (!ignoreinput && cleaned[0] == '"' && cleaned[1] == '<') {
 			ux_trim(cleaned);
-			if (cCohort && cSWindow->cohorts.size() >= soft_limit && grammar->soft_delimiters && doesTagMatchSet(cCohort->wordform, grammar->soft_delimiters->hash)) {
+			if (cCohort && cSWindow->cohorts.size() >= soft_limit && grammar->soft_delimiters && doesTagMatchSet(cCohort->wordform, grammar->soft_delimiters)) {
 				if (cSWindow->cohorts.size() >= soft_limit) {
 					if (verbosity_level > 0) {
 						u_fprintf(ux_stderr, "Warning: Soft limit of %u cohorts reached at line %u but found suitable soft delimiter.\n", soft_limit, numLines);
@@ -122,7 +122,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 				cCohort = 0;
 				numCohorts++;
 			}
-			if (cCohort && (cSWindow->cohorts.size() >= hard_limit || (grammar->delimiters && doesTagMatchSet(cCohort->wordform, grammar->delimiters->hash)))) {
+			if (cCohort && (cSWindow->cohorts.size() >= hard_limit || (grammar->delimiters && doesTagMatchSet(cCohort->wordform, grammar->delimiters)))) {
 				if (cSWindow->cohorts.size() >= hard_limit) {
 					u_fprintf(ux_stderr, "Warning: Hard limit of %u cohorts reached at line %u - forcing break.\n", hard_limit, numLines);
 					u_fflush(ux_stderr);
