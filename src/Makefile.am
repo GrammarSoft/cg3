@@ -10,7 +10,8 @@ cpp_sources = Anchor.cpp BinaryGrammar.cpp Cohort.cpp CompositeTag.cpp \
 	    GrammarApplicator_runRules.cpp \
 	    Grammar.cpp GrammarWriter.cpp icu_uoptions.cpp Reading.cpp \
 	    Recycler.cpp Rule.cpp Set.cpp SingleWindow.cpp Strings.cpp Tag.cpp \
-	    TextualParser.cpp uextras.cpp Window.cpp 
+	    TextualParser.cpp uextras.cpp Window.cpp \
+	    BinaryGrammar_read.cpp BinaryGrammar_write.cpp
 
 bin_PROGRAMS = cg-comp cg-proc vislcg3
 
