@@ -38,8 +38,7 @@ void CompositeTag::q_addTag(Tag *tag) {
 
 uint32_t CompositeTag::rehash() {
 	uint32_t retval = 0;
-	TagSet::iterator iter;
-	for (iter = q_tags_set.begin() ; iter != q_tags_set.end() ; iter++) {
+	foreach (TagSet, q_tags_set, iter, iter_end) {
 		retval = hash_sdbm_uint32_t((*iter)->hash, retval);
 	}
 	hash = retval;

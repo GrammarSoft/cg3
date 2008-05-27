@@ -153,8 +153,7 @@ void GrammarApplicator::printReading(Reading *reading, UFILE *output) {
 	}
 
 	stdext::hash_map<uint32_t, uint32_t> used_tags;
-	uint32List::iterator tter;
-	for (tter = reading->tags_list.begin() ; tter != reading->tags_list.end() ; tter++) {
+	foreach (uint32List, reading->tags_list, tter, tter_end) {
 		if (used_tags.find(*tter) != used_tags.end()) {
 			continue;
 		}
@@ -224,23 +223,22 @@ void GrammarApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 			u_fprintf(output, "%S", cohort->text);
 		}
 
-		std::list<Reading*>::iterator rter;
-		for (rter = cohort->readings.begin() ; rter != cohort->readings.end() ; rter++) {
-			printReading(*rter, output);
+		foreach (std::list<Reading*>, cohort->readings, rter1, rter1_end) {
+			printReading(*rter1, output);
 		}
 		if (trace && !trace_no_removed) {
-			for (rter = cohort->deleted.begin() ; rter != cohort->deleted.end() ; rter++) {
-				printReading(*rter, output);
+			foreach (std::list<Reading*>, cohort->deleted, rter2, rter2_end) {
+				printReading(*rter2, output);
 			}
 		}
-		for (rter = cohort->readings.begin() ; rter != cohort->readings.end() ; rter++) {
-			Reading *reading = *rter;
+		foreach (std::list<Reading*>, cohort->readings, rter3, rter3_end) {
+			Reading *reading = *rter3;
 			if (reading->text) {
 				u_fprintf(output, "%S", reading->text);
 			}
 		}
-		for (rter = cohort->deleted.begin() ; rter != cohort->deleted.end() ; rter++) {
-			Reading *reading = *rter;
+		foreach (std::list<Reading*>, cohort->deleted, rter4, rter4_end) {
+			Reading *reading = *rter4;
 			if (reading->text) {
 				u_fprintf(output, "%S", reading->text);
 			}
