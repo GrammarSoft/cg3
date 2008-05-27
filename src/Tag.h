@@ -79,4 +79,14 @@ namespace CG3 {
 
 }
 
+#ifdef __GNUC__
+namespace __gnu_cxx {
+	template<> struct hash< CG3::Tag* > {
+		size_t operator()( const CG3::Tag *x ) const {
+			return x->hash;
+		}
+	};
+}
+#endif
+
 #endif
