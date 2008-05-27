@@ -63,7 +63,8 @@ void CG3Quit(const int32_t c, const char* file = 0, const uint32_t line = 0);
 	#include <winsock.h> // for hton() and family.
     #include <hash_map>
     #include <hash_set>
-#else
+#endif
+#ifdef __GNUC__
 	#include <netinet/in.h> // for hton() and family.
     #include <ext/hash_map>
     #include <ext/hash_set>

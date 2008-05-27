@@ -44,4 +44,14 @@ namespace CG3 {
 
 }
 
+#ifdef __GNUC__
+namespace __gnu_cxx {
+	template<> struct hash< CG3::CompositeTag* > {
+		size_t operator()( const CG3::CompositeTag *x ) const {
+			return x->hash;
+		}
+	};
+}
+#endif
+
 #endif
