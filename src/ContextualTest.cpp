@@ -41,8 +41,7 @@ ContextualTest::ContextualTest() {
 }
 
 ContextualTest::~ContextualTest() {
-	std::list<ContextualTest*>::iterator iter;
-	for (iter = ors.begin() ; iter != ors.end() ; iter++) {
+	foreach (std::list<ContextualTest*>, ors, iter, iter_end) {
 		delete *iter;
 		*iter = 0;
 	}

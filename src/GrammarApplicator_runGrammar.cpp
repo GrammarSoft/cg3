@@ -109,8 +109,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 					lReading = cReading;
 					numReadings++;
 				}
-				std::list<Reading*>::iterator iter;
-				for (iter = cCohort->readings.begin() ; iter != cCohort->readings.end() ; iter++) {
+				foreach (std::list<Reading*>, cCohort->readings, iter, iter_end) {
 					addTagToReading(*iter, endtag);
 				}
 
@@ -140,8 +139,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 					lReading = cReading;
 					numReadings++;
 				}
-				std::list<Reading*>::iterator iter;
-				for (iter = cCohort->readings.begin() ; iter != cCohort->readings.end() ; iter++) {
+				foreach (std::list<Reading*>, cCohort->readings, iter, iter_end) {
 					addTagToReading(*iter, endtag);
 				}
 
@@ -304,8 +302,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 							cReading->noprint = true;
 							cCohort->appendReading(cReading);
 						}
-						std::list<Reading*>::iterator iter;
-						for (iter = cCohort->readings.begin() ; iter != cCohort->readings.end() ; iter++) {
+						foreach (std::list<Reading*>, cCohort->readings, iter, iter_end) {
 							addTagToReading(*iter, endtag);
 						}
 						cWindow->appendSingleWindow(cSWindow);
@@ -385,8 +382,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 			cReading->noprint = true;
 			cCohort->appendReading(cReading);
 		}
-		std::list<Reading*>::iterator iter;
-		for (iter = cCohort->readings.begin() ; iter != cCohort->readings.end() ; iter++) {
+		foreach (std::list<Reading*>, cCohort->readings, iter, iter_end) {
 			addTagToReading(*iter, endtag);
 		}
 		cWindow->appendSingleWindow(cSWindow);

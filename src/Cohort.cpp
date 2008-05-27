@@ -38,13 +38,12 @@ Cohort::Cohort(SingleWindow *p) {
 
 void Cohort::clear(SingleWindow *p) {
 	Recycler *r = Recycler::instance();
-	std::list<Reading*>::iterator iter;
-	for (iter = readings.begin() ; iter != readings.end() ; iter++) {
-		r->delete_Reading(*iter);
+	foreach (std::list<Reading*>, readings, iter1, iter1_end) {
+		r->delete_Reading(*iter1);
 	}
 	readings.clear();
-	for (iter = deleted.begin() ; iter != deleted.end() ; iter++) {
-		r->delete_Reading(*iter);
+	foreach (std::list<Reading*>, readings, iter2, iter2_end) {
+		r->delete_Reading(*iter2);
 	}
 	deleted.clear();
 	if (parent) {
@@ -69,12 +68,11 @@ void Cohort::clear(SingleWindow *p) {
 
 Cohort::~Cohort() {
 	Recycler *r = Recycler::instance();
-	std::list<Reading*>::iterator iter;
-	for (iter = readings.begin() ; iter != readings.end() ; iter++) {
-		r->delete_Reading(*iter);
+	foreach (std::list<Reading*>, readings, iter1, iter1_end) {
+		r->delete_Reading(*iter1);
 	}
-	for (iter = deleted.begin() ; iter != deleted.end() ; iter++) {
-		r->delete_Reading(*iter);
+	foreach (std::list<Reading*>, readings, iter2, iter2_end) {
+		r->delete_Reading(*iter2);
 	}
 	if (parent) {
 		parent->parent->cohort_map.erase(global_number);
