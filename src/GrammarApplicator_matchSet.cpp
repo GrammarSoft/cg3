@@ -27,18 +27,21 @@ using namespace CG3::Strings;
 bool GrammarApplicator::doesTagMatchSet(const uint32_t tag, const Set *set) {
 	bool retval = false;
 
-	if (set->single_tags.find(tag) != set->single_tags.end()) {
-		retval = true;
-	}
-	else {
-		CompositeTag *ctag = new CompositeTag();
-		ctag->addTag(tag);
-		ctag->rehash();
-
-		if (set->tags.find(ctag->hash) != set->tags.end()) {
+	if (grammar->single_tags.find(tag) != grammar->single_tags.end()) {
+		Tag *t = grammar->single_tags.find(tag)->second;
+		if (set->q_single_tags.find(t) != set->q_single_tags.end()) {
 			retval = true;
 		}
-		delete ctag;
+		else {
+			CompositeTag *ctag = new CompositeTag();
+			ctag->q_addTag(t);
+			ctag->rehash();
+
+			if (set->q_tags.find(ctag) != set->q_tags.end()) {
+				retval = true;
+			}
+			delete ctag;
+		}
 	}
 	return retval;
 }
@@ -181,7 +184,7 @@ bool GrammarApplicator::doesSetMatchReading(Reading *reading, const uint32_t set
 		tstamp = clock();
 	}
 
-	stdext::hash_map<uint32_t, Set*>::const_iterator iter = grammar->sets_by_contents.find(set);
+	uint32SetHashMap::const_iterator iter = grammar->sets_by_contents.find(set);
 	if (iter != grammar->sets_by_contents.end()) {
 		const Set *theset = iter->second;
 		if (theset->is_unified) {
@@ -192,16 +195,15 @@ bool GrammarApplicator::doesSetMatchReading(Reading *reading, const uint32_t set
 			retval = true;
 		}
 		else if (theset->sets.empty()) {
-			uint32HashSet::const_iterator ster;
-
-			for (ster = theset->single_tags.begin() ; ster != theset->single_tags.end() ; ster++) {
-				bool match = doesTagMatchReading(reading, *ster, bypass_index);
+			TagHashSet::const_iterator ster;
+			for (ster = theset->q_single_tags.begin() ; ster != theset->q_single_tags.end() ; ster++) {
+				bool match = doesTagMatchReading(reading, (*ster)->hash, bypass_index);
 				if (match) {
 					if (unif_mode) {
-						if (unif_tags.find(theset->hash) != unif_tags.end() && unif_tags[theset->hash] != *ster) {
+						if (unif_tags.find(theset->hash) != unif_tags.end() && unif_tags[theset->hash] != (*ster)->hash) {
 							continue;
 						}
-						unif_tags[theset->hash] = *ster;
+						unif_tags[theset->hash] = (*ster)->hash;
 					}
 					retval = true;
 					break;
@@ -209,13 +211,14 @@ bool GrammarApplicator::doesSetMatchReading(Reading *reading, const uint32_t set
 			}
 
 			if (!retval) {
-				for (ster = theset->tags.begin() ; ster != theset->tags.end() ; ster++) {
+				CompositeTagHashSet::const_iterator ster;
+				for (ster = theset->q_tags.begin() ; ster != theset->q_tags.end() ; ster++) {
 					bool match = true;
-					const CompositeTag *ctag = grammar->tags.find(*ster)->second;
+					const CompositeTag *ctag = *ster;
 
-					uint32HashSet::const_iterator cter;
-					for (cter = ctag->tags.begin() ; cter != ctag->tags.end() ; cter++) {
-						bool inner = doesTagMatchReading(reading, *cter, bypass_index);
+					TagHashSet::const_iterator cter;
+					for (cter = ctag->q_tags.begin() ; cter != ctag->q_tags.end() ; cter++) {
+						bool inner = doesTagMatchReading(reading, (*cter)->hash, bypass_index);
 						if (!inner) {
 							match = false;
 							break;
@@ -223,11 +226,11 @@ bool GrammarApplicator::doesSetMatchReading(Reading *reading, const uint32_t set
 					}
 					if (match) {
 						if (unif_mode) {
-							if (unif_tags.find(theset->hash) != unif_tags.end() && unif_tags[theset->hash] != *ster) {
+							if (unif_tags.find(theset->hash) != unif_tags.end() && unif_tags[theset->hash] != (*ster)->hash) {
 								last_mapping_tag = 0;
 								continue;
 							}
-							unif_tags[theset->hash] = *ster;
+							unif_tags[theset->hash] = (*ster)->hash;
 						}
 						match_comp++;
 						retval = true;

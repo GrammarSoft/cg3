@@ -55,6 +55,7 @@
 
 void CG3Quit(const int32_t c, const char* file = 0, const uint32_t line = 0);
 
+#include "macros.h"
 #include "inlines.h"
 #include "uextras.h"
 
@@ -96,6 +97,10 @@ namespace CG3 {
 	class GrammarWriter;
 	class CompositeTag;
 	class ContextualTest;
+	typedef std::set<Tag*> TagSet;
+	typedef stdext::hash_set<Tag*> TagHashSet;
+	typedef stdext::hash_set<CompositeTag*> CompositeTagHashSet;
+	typedef stdext::hash_map<uint32_t,Set*> uint32SetHashMap;
 }
 
 #endif

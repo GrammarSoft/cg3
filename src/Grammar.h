@@ -44,14 +44,21 @@ namespace CG3 {
 		UChar *name;
 		uint32_t lines, curline;
 		mutable clock_t total_time;
+
+		std::vector<Tag*> single_tags_list;
 		stdext::hash_map<uint32_t, Tag*> single_tags;
+
+		std::vector<CompositeTag*> tags_list;
 		stdext::hash_map<uint32_t, CompositeTag*> tags;
+
+		std::vector<Set*> sets_list;
 		std::set<Set*> sets_all;
 		stdext::hash_map<uint32_t, uint32_t> sets_by_name;
-		stdext::hash_map<uint32_t, Set*> sets_by_contents;
+		uint32SetHashMap sets_by_contents;
 		stdext::hash_map<uint32_t, uint32_t> set_alias;
-		stdext::hash_map<uint32_t, ContextualTest*> templates;
+
 		std::vector<ContextualTest*> template_list;
+		stdext::hash_map<uint32_t, ContextualTest*> templates;
 
 		stdext::hash_map<uint32_t, uint32HashSet*> rules_by_tag;
 		stdext::hash_map<uint32_t, uint32HashSet*> sets_by_tag;
@@ -81,6 +88,7 @@ namespace CG3 {
 		Set *getSet(uint32_t which);
 		Set *allocateSet();
 		void destroySet(Set *set);
+		void addSetToList(Set *s);
 
 		void addAnchor(const UChar *to);
 		void addAnchor(const UChar *to, const uint32_t line);
@@ -91,8 +99,8 @@ namespace CG3 {
 		Tag *addTag(Tag *simpletag);
 		void addTagToCompositeTag(Tag *simpletag, CompositeTag *tag);
 
-		void addCompositeTag(CompositeTag *tag);
-		void addCompositeTagToSet(Set *set, CompositeTag *tag);
+		CompositeTag *q_addCompositeTag(CompositeTag *tag);
+		CompositeTag *q_addCompositeTagToSet(Set *set, CompositeTag *tag);
 		CompositeTag *allocateCompositeTag();
 		void destroyCompositeTag(CompositeTag *tag);
 

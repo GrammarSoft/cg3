@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8,00"
+	Version="9,00"
 	Name="vislcg3"
 	ProjectGUID="{439A194D-EC3B-42A4-8BD2-CADD9CB6087C}"
 	Keyword="Win32Proj"
+	TargetFrameworkVersion="131072"
 	>
 	<Platforms>
 		<Platform
@@ -74,6 +75,8 @@
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(OutDir)/vislcg3.pdb"
 				SubSystem="1"
+				RandomizedBaseAddress="1"
+				DataExecutionPrevention="0"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -93,9 +96,6 @@
 			/>
 			<Tool
 				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCWebDeploymentTool"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
@@ -161,6 +161,8 @@
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
 				OptimizeForWindows98="1"
+				RandomizedBaseAddress="1"
+				DataExecutionPrevention="0"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -180,9 +182,6 @@
 			/>
 			<Tool
 				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCWebDeploymentTool"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
@@ -236,6 +235,8 @@
 				AdditionalDependencies="icuuc.lib icuio.lib icuin.lib WSock32.Lib"
 				AdditionalLibraryDirectories=""
 				OptimizeForWindows98="2"
+				RandomizedBaseAddress="1"
+				DataExecutionPrevention="0"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -256,9 +257,6 @@
 				Name="VCAppVerifierTool"
 			/>
 			<Tool
-				Name="VCWebDeploymentTool"
-			/>
-			<Tool
 				Name="VCPostBuildEventTool"
 			/>
 		</Configuration>
@@ -277,6 +275,14 @@
 			</File>
 			<File
 				RelativePath=".\src\BinaryGrammar.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\BinaryGrammar_read.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\BinaryGrammar_write.cpp"
 				>
 			</File>
 			<File
@@ -419,6 +425,10 @@
 			</File>
 			<File
 				RelativePath=".\src\inlines.h"
+				>
+			</File>
+			<File
+				RelativePath=".\src\macros.h"
 				>
 			</File>
 			<File

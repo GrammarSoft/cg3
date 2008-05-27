@@ -41,10 +41,11 @@ namespace CG3 {
 		UChar *name;
 		uint32_t line;
 		uint32_t hash;
+		uint32_t number;
 
 		uint32Set tags_set;
-		uint32HashSet tags;
-		uint32HashSet single_tags;
+		CompositeTagHashSet q_tags;
+		TagHashSet q_single_tags;
 
 		uint32Vector set_ops;
 		uint32Vector sets;

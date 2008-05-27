@@ -42,26 +42,25 @@ void GrammarWriter::printSet(UFILE *output, const Set *curset) {
 		}
 		used_sets.insert(curset->hash);
 		u_fprintf(output, "LIST %S = ", curset->name);
-		uint32HashSet::const_iterator comp_iter;
-		for (comp_iter = curset->single_tags.begin() ; comp_iter != curset->single_tags.end() ; comp_iter++) {
-			printTag(output, grammar->single_tags.find(*comp_iter)->second);
+		TagHashSet::const_iterator tomp_iter;
+		for (tomp_iter = curset->q_single_tags.begin() ; tomp_iter != curset->q_single_tags.end() ; tomp_iter++) {
+			printTag(output, *tomp_iter);
 			u_fprintf(output, " ");
 		}
-		for (comp_iter = curset->tags.begin() ; comp_iter != curset->tags.end() ; comp_iter++) {
-			if (grammar->tags.find(*comp_iter) != grammar->tags.end()) {
-				CompositeTag *curcomptag = grammar->tags.find(*comp_iter)->second;
-				if (curcomptag->tags.size() == 1) {
-					printTag(output, grammar->single_tags.find(*(curcomptag->tags.begin()))->second);
+		CompositeTagHashSet::const_iterator comp_iter;
+		for (comp_iter = curset->q_tags.begin() ; comp_iter != curset->q_tags.end() ; comp_iter++) {
+			CompositeTag *curcomptag = *comp_iter;
+			if (curcomptag->q_tags.size() == 1) {
+				printTag(output, *(curcomptag->q_tags.begin()));
+				u_fprintf(output, " ");
+			} else {
+				u_fprintf(output, "(");
+				TagSet::const_iterator tag_iter;
+				for (tag_iter = curcomptag->q_tags_set.begin() ; tag_iter != curcomptag->q_tags_set.end() ; tag_iter++) {
+					printTag(output, *tag_iter);
 					u_fprintf(output, " ");
-				} else {
-					u_fprintf(output, "(");
-					uint32Set::const_iterator tag_iter;
-					for (tag_iter = curcomptag->tags_set.begin() ; tag_iter != curcomptag->tags_set.end() ; tag_iter++) {
-						printTag(output, grammar->single_tags.find(*tag_iter)->second);
-						u_fprintf(output, " ");
-					}
-					u_fprintf(output, ") ");
 				}
+				u_fprintf(output, ") ");
 			}
 		}
 		u_fprintf(output, " ;\n");
@@ -116,7 +115,7 @@ int GrammarWriter::writeGrammar(UFILE *output) {
 	u_fprintf(output, "\n");
 
 	used_sets.clear();
-	stdext::hash_map<uint32_t, Set*>::const_iterator set_iter;
+	uint32SetHashMap::const_iterator set_iter;
 	for (set_iter = grammar->sets_by_contents.begin() ; set_iter != grammar->sets_by_contents.end() ; set_iter++) {
 		printSet(output, set_iter->second);
 	}

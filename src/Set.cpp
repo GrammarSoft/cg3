@@ -35,6 +35,7 @@ Set::Set() {
 	num_fail = 0;
 	num_match = 0;
 	total_time = 0;
+	number = 0;
 }
 
 Set::~Set() {
@@ -90,9 +91,9 @@ void Set::reindex(Grammar *grammar) {
 	}
 
 	if (sets.empty()) {
-		uint32HashSet::const_iterator comp_iter;
-		for (comp_iter = single_tags.begin() ; comp_iter != single_tags.end() ; comp_iter++) {
-			Tag *tag = grammar->single_tags.find(*comp_iter)->second;
+		TagHashSet::const_iterator tomp_iter;
+		for (tomp_iter = q_single_tags.begin() ; tomp_iter != q_single_tags.end() ; tomp_iter++) {
+			Tag *tag = *tomp_iter;
 			if (tag->is_special) {
 				is_special = true;
 			}
@@ -101,29 +102,28 @@ void Set::reindex(Grammar *grammar) {
 				return;
 			}
 		}
-		for (comp_iter = tags.begin() ; comp_iter != tags.end() ; comp_iter++) {
-			if (grammar->tags.find(*comp_iter) != grammar->tags.end()) {
-				CompositeTag *curcomptag = grammar->tags.find(*comp_iter)->second;
-				if (curcomptag->tags.size() == 1) {
-					Tag *tag = grammar->single_tags.find(*(curcomptag->tags.begin()))->second;
+		CompositeTagHashSet::const_iterator comp_iter;
+		for (comp_iter = q_tags.begin() ; comp_iter != q_tags.end() ; comp_iter++) {
+			CompositeTag *curcomptag = *comp_iter;
+			if (curcomptag->q_tags.size() == 1) {
+				Tag *tag = *(curcomptag->q_tags.begin());
+				if (tag->is_special) {
+					is_special = true;
+				}
+				if (tag->type & T_MAPPING || tag->type & T_VARIABLE || tag->tag[0] == grammar->mapping_prefix) {
+					has_mappings = true;
+					return;
+				}
+			} else {
+				TagSet::const_iterator tag_iter;
+				for (tag_iter = curcomptag->q_tags_set.begin() ; tag_iter != curcomptag->q_tags_set.end() ; tag_iter++) {
+					Tag *tag = *tag_iter;
 					if (tag->is_special) {
 						is_special = true;
 					}
 					if (tag->type & T_MAPPING || tag->type & T_VARIABLE || tag->tag[0] == grammar->mapping_prefix) {
 						has_mappings = true;
 						return;
-					}
-				} else {
-					uint32Set::const_iterator tag_iter;
-					for (tag_iter = curcomptag->tags_set.begin() ; tag_iter != curcomptag->tags_set.end() ; tag_iter++) {
-						Tag *tag = grammar->single_tags.find(*tag_iter)->second;
-						if (tag->is_special) {
-							is_special = true;
-						}
-						if (tag->type & T_MAPPING || tag->type & T_VARIABLE || tag->tag[0] == grammar->mapping_prefix) {
-							has_mappings = true;
-							return;
-						}
 					}
 				}
 			}

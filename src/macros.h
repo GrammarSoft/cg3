@@ -19,29 +19,17 @@
 * along with VISL CG-3.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "CompositeTag.h"
+#ifndef __MACROS_H
+#define __MACROS_H
 
-using namespace CG3;
+#define foreach(a, b, c, d) \
+	a::iterator c; \
+	a::iterator d = (b).end(); \
+	for (c = (b).begin() ; c != d ; c++) 
 
-CompositeTag::CompositeTag() {
-	hash = 0;
-	number = 0;
-}
+#define const_foreach(a, b, c, d) \
+	a::const_iterator c; \
+	a::const_iterator d = (b).end(); \
+	for (c = (b).begin() ; c != d ; c++) 
 
-CompositeTag::~CompositeTag() {
-}
-
-void CompositeTag::q_addTag(Tag *tag) {
-	q_tags.insert(tag);
-	q_tags_set.insert(tag);
-}
-
-uint32_t CompositeTag::rehash() {
-	uint32_t retval = 0;
-	TagSet::iterator iter;
-	for (iter = q_tags_set.begin() ; iter != q_tags_set.end() ; iter++) {
-		retval = hash_sdbm_uint32_t((*iter)->hash, retval);
-	}
-	hash = retval;
-	return retval;
-}
+#endif
