@@ -72,22 +72,21 @@ Grammar::~Grammar() {
 		}
 	}
 
-	std::vector<Rule*>::iterator iter_rules;
-	for (iter_rules = rules.begin() ; iter_rules != rules.end() ; iter_rules++) {
-		if (*iter_rules) {
-			delete *iter_rules;
+	foreach (std::vector<Rule*>, rules, iter_rules1, iter_rules1_end) {
+		if (*iter_rules1) {
+			delete *iter_rules1;
 		}
 	}
 
-	for (iter_rules = before_sections.begin() ; iter_rules != before_sections.end() ; iter_rules++) {
-		if (*iter_rules) {
-			delete *iter_rules;
+	foreach (std::vector<Rule*>, before_sections, iter_rules2, iter_rules2_end) {
+		if (*iter_rules2) {
+			delete *iter_rules2;
 		}
 	}
 
-	for (iter_rules = after_sections.begin() ; iter_rules != after_sections.end() ; iter_rules++) {
-		if (*iter_rules) {
-			delete *iter_rules;
+	foreach (std::vector<Rule*>, after_sections, iter_rules3, iter_rules3_end) {
+		if (*iter_rules3) {
+			delete *iter_rules3;
 		}
 	}
 
@@ -335,8 +334,7 @@ void Grammar::reindex() {
 		}
 	}
 
-	uint32SetHashMap::iterator iter_sets;
-	for (iter_sets = sets_by_contents.begin() ; iter_sets != sets_by_contents.end() ; iter_sets++) {
+	foreach (uint32SetHashMap, sets_by_contents, iter_sets, iter_sets_end) {
 		iter_sets->second->reindex(this);
 		indexSets(iter_sets->first, iter_sets->second);
 	}

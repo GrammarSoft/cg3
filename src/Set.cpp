@@ -65,8 +65,7 @@ uint32_t Set::rehash() {
 	uint32_t retval = 0;
 	assert(tags_set.empty() || sets.empty());
 	if (sets.empty()) {
-		uint32Set::iterator iter;
-		for (iter = tags_set.begin() ; iter != tags_set.end() ; iter++) {
+		foreach (uint32Set, tags_set, iter, iter_end) {
 			retval = hash_sdbm_uint32_t(*iter, retval);
 		}
 	}

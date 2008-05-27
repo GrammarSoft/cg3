@@ -32,8 +32,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, const int32_
 	bool section_did_good = false;
 	bool delimited = false;
 
-	uint32Set::iterator iter_rules;
-	for (iter_rules = current->valid_rules.begin() ; iter_rules != current->valid_rules.end() ; iter_rules++) {
+	foreach (uint32Set, current->valid_rules, iter_rules, iter_rules_end) {
 		/*
 rule_was_bad:
 		//*/
@@ -91,7 +90,6 @@ rule_was_bad:
 			size_t num_active = 0;
 			size_t num_iff = 0;
 			bool all_active = false;
-			std::list<Reading*>::iterator rter;
 
 			if (rule->type == K_IFF) {
 				type = K_REMOVE;
@@ -106,7 +104,7 @@ rule_was_bad:
 			bool same_mapping_tag = true;
 			bool only_one_map_per_line = true;
 
-			for (rter = cohort->readings.begin() ; rter != cohort->readings.end() ; rter++) {
+			foreach (std::list<Reading*>, cohort->readings, rter, rter_end) {
 				Reading *reading = *rter;
 				reading->matched_target = false;
 				reading->matched_tests = false;
@@ -139,8 +137,7 @@ rule_was_bad:
 					reading->matched_target = true;
 					bool good = true;
 					if (!rule->tests.empty() && !did_test) {
-						std::list<ContextualTest*>::iterator iter;
-						for (iter = rule->tests.begin() ; iter != rule->tests.end() ; iter++) {
+						foreach (std::list<ContextualTest*>, rule->tests, iter, iter_end) {
 							ContextualTest *test = *iter;
 							test_good = (runContextualTest(current, c, test) != 0);
 							if (!test_good) {
@@ -315,13 +312,11 @@ rule_was_bad:
 						}
 					}
 					else if (rule->type == K_SUBSTITUTE) {
-						uint32List::const_iterator tter;
 						uint32_t tloc = 0;
 						size_t tagb = reading->tags_list.size();
-						for (tter = rule->sublist.begin() ; tter != rule->sublist.end() ; tter++) {
+						const_foreach (uint32List, rule->sublist, tter, tter_end) {
 							if (!tloc) {
-								uint32List::iterator tfind;
-								for (tfind = reading->tags_list.begin() ; tfind != reading->tags_list.end() ; tfind++) {
+								foreach (uint32List, reading->tags_list, tfind, tfind_end) {
 									if (*tfind == *tter) {
 										tloc = *(--tfind);
 										break;
@@ -336,14 +331,13 @@ rule_was_bad:
 						if (tagb != reading->tags_list.size()) {
 							reading->hit_by.push_back(rule->line);
 							reading->noprint = false;
-							uint32List::iterator tfind;
-							for (tfind = reading->tags_list.begin() ; tfind != reading->tags_list.end() ; tfind++) {
+							foreach (uint32List, reading->tags_list, tfind, tfind_end) {
 								if (*tfind == tloc) {
 									tfind++;
 									break;
 								}
 							}
-							for (tter = rule->maplist.begin() ; tter != rule->maplist.end() ; tter++) {
+							const_foreach (uint32List, rule->maplist, tter, tter_end) {
 								if (*tter == grammar->tag_any) {
 									break;
 								}
@@ -363,8 +357,7 @@ rule_was_bad:
 						nr->hit_by.push_back(rule->line);
 						nr->noprint = false;
 						addTagToReading(nr, cohort->wordform);
-						uint32List::const_iterator tter;
-						for (tter = rule->maplist.begin() ; tter != rule->maplist.end() ; tter++) {
+						const_foreach (uint32List, rule->maplist, tter, tter_end) {
 							addTagToReading(nr, *tter);
 							if (grammar->rules_by_tag.find(*tter) != grammar->rules_by_tag.end()) {
 								current->valid_rules.insert(grammar->rules_by_tag.find(*tter)->second->begin(), grammar->rules_by_tag.find(*tter)->second->end());
@@ -380,8 +373,7 @@ rule_was_bad:
 						if (attach) {
 							bool good = true;
 							if (!rule->dep_tests.empty()) {
-								std::list<ContextualTest*>::iterator iter;
-								for (iter = rule->dep_tests.begin() ; iter != rule->dep_tests.end() ; iter++) {
+								foreach (std::list<ContextualTest*>, rule->dep_tests, iter, iter_end) {
 									ContextualTest *test = *iter;
 									test_good = (runContextualTest(attach->parent, attach->local_number, test) != 0);
 									if (!test_good) {
@@ -410,8 +402,7 @@ rule_was_bad:
 						if (attach) {
 							bool good = true;
 							if (!rule->dep_tests.empty()) {
-								std::list<ContextualTest*>::iterator iter;
-								for (iter = rule->dep_tests.begin() ; iter != rule->dep_tests.end() ; iter++) {
+								foreach (std::list<ContextualTest*>, rule->dep_tests, iter, iter_end) {
 									ContextualTest *test = *iter;
 									test_good = (runContextualTest(attach->parent, attach->local_number, test) != 0);
 									if (!test_good) {
@@ -447,8 +438,7 @@ rule_was_bad:
 						if (attach) {
 							bool good = true;
 							if (!rule->dep_tests.empty()) {
-								std::list<ContextualTest*>::iterator iter;
-								for (iter = rule->dep_tests.begin() ; iter != rule->dep_tests.end() ; iter++) {
+								foreach (std::list<ContextualTest*>, rule->dep_tests, iter, iter_end) {
 									ContextualTest *test = *iter;
 									test_good = (runContextualTest(attach->parent, attach->local_number, test) != 0);
 									if (!test_good) {
