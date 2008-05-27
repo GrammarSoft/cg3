@@ -34,6 +34,7 @@ Tag::Tag() {
 	regexp = 0;
 	dep_self = 0;
 	dep_parent = 0;
+	number = 0;
 }
 
 Tag::~Tag() {

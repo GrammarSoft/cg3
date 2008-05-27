@@ -30,13 +30,14 @@ namespace CG3 {
 	class CompositeTag {
 	public:
 		uint32_t hash;
-		uint32Set tags_set;
-		uint32HashSet tags;
+		uint32_t number;
+		TagSet q_tags_set;
+		TagHashSet q_tags;
 
 		CompositeTag();
 		~CompositeTag();
 
-		void addTag(uint32_t tag);
+		void q_addTag(Tag *tag);
 
 		uint32_t rehash();
 	};

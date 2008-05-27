@@ -95,7 +95,7 @@ int TextualParser::parseTagList(Set *s, UChar **p, const bool isinline = false) 
 				}
 				(*p)++;
 
-				result->addCompositeTagToSet(s, ct);
+				ct = result->q_addCompositeTagToSet(s, ct);
 			}
 			else {
 				UChar *n = *p;
@@ -112,7 +112,7 @@ int TextualParser::parseTagList(Set *s, UChar **p, const bool isinline = false) 
 				Tag *t = result->allocateTag(gbuffers[0]);
 				t = result->addTag(t);
 				result->addTagToCompositeTag(t, ct);
-				result->addCompositeTagToSet(s, ct);
+				ct = result->q_addCompositeTagToSet(s, ct);
 				*p = n;
 			}
 		}
@@ -164,7 +164,7 @@ int TextualParser::parseSetInline(Set *s, UChar **p) {
 					}
 					(*p)++;
 
-					result->addCompositeTagToSet(set_c, ct);
+					ct = result->q_addCompositeTagToSet(set_c, ct);
 					result->addSet(set_c);
 					s->sets.push_back(set_c->hash);
 				}
@@ -668,7 +668,7 @@ int TextualParser::parseFromUChar(UChar *input) {
 			p++;
 			parseTagList(result->delimiters, &p);
 			result->addSet(result->delimiters);
-			if (result->delimiters->tags.empty() && result->delimiters->single_tags.empty()) {
+			if (result->delimiters->q_tags.empty() && result->delimiters->q_single_tags.empty()) {
 				u_fprintf(ux_stderr, "Error: DELIMITERS declared, but no definitions given, on line %u!\n", result->lines);
 				CG3Quit(1);
 			}
@@ -701,7 +701,7 @@ int TextualParser::parseFromUChar(UChar *input) {
 			p++;
 			parseTagList(result->soft_delimiters, &p);
 			result->addSet(result->soft_delimiters);
-			if (result->soft_delimiters->tags.empty() && result->soft_delimiters->single_tags.empty()) {
+			if (result->soft_delimiters->q_tags.empty() && result->soft_delimiters->q_single_tags.empty()) {
 				u_fprintf(ux_stderr, "Error: SOFT-DELIMITERS declared, but no definitions given, on line %u!\n", result->lines);
 				CG3Quit(1);
 			}
@@ -881,7 +881,7 @@ int TextualParser::parseFromUChar(UChar *input) {
 				s = tmp;
 			}
 			result->addSet(s);
-			if (s->tags.empty() && s->single_tags.empty()) {
+			if (s->q_tags.empty() && s->q_single_tags.empty()) {
 				u_fprintf(ux_stderr, "Error: LIST %S declared, but no definitions given, on line %u!\n", result->lines);
 				CG3Quit(1);
 			}
@@ -933,7 +933,7 @@ int TextualParser::parseFromUChar(UChar *input) {
 				s = tmp;
 			}
 			result->addSet(s);
-			if (s->sets.empty() && s->tags.empty() && s->single_tags.empty()) {
+			if (s->sets.empty() && s->q_tags.empty() && s->q_single_tags.empty()) {
 				u_fprintf(ux_stderr, "Error: SET %S declared, but no definitions given, on line %u!\n", result->lines);
 				CG3Quit(1);
 			}

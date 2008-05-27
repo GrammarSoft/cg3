@@ -42,16 +42,12 @@ Grammar::~Grammar() {
 	if (name) {
 		delete[] name;
 	}
-	
-	stdext::hash_map<uint32_t, Set*>::iterator iter_set;
-	for (iter_set = sets_by_contents.begin() ; iter_set != sets_by_contents.end() ; iter_set++) {
-		if (iter_set->second) {
-			destroySet(iter_set->second);
-		}
+
+	foreach (std::vector<Set*>, sets_list, iter_set, iter_set_end) {
+		destroySet(*iter_set);
 	}
 
-	std::set<Set*>::iterator rsets;
-	for (rsets = sets_all.begin() ; rsets != sets_all.end() ; rsets++) {
+	foreach (std::set<Set*>, sets_all, rsets, rsets_end) {
 		delete (*rsets);
 	}
 
@@ -150,25 +146,46 @@ void Grammar::destroySet(Set *set) {
 	sets_all.erase(set);
 	delete set;
 }
+void Grammar::addSetToList(Set *s) {
+	assert(s);
+	if (s->number == 0) {
+		if (sets_list.empty() || sets_list.at(0) != s) {
+			if (!s->sets.empty()) {
+				foreach (uint32Vector, s->sets, sit, sit_end) {
+					addSetToList(getSet(*sit));
+				}
+			}
+			sets_list.push_back(s);
+			s->number = (uint32_t)sets_list.size()-1;
+		}
+	}
+}
 
-void Grammar::addCompositeTag(CompositeTag *tag) {
-	if (tag && tag->tags.size()) {
+CompositeTag *Grammar::q_addCompositeTag(CompositeTag *tag) {
+	if (tag && tag->q_tags.size()) {
 		tag->rehash();
 		if (tags.find(tag->hash) != tags.end()) {
-			delete tags[tag->hash];
+			uint32_t ct = tag->hash;
+			delete tag;
+			tag = tags[ct];
 		}
-		tags[tag->hash] = tag;
+		else {
+			tags[tag->hash] = tag;
+			tags_list.push_back(tag);
+			tag->number = (uint32_t)tags_list.size()-1;
+		}
 	} else {
 		u_fprintf(ux_stderr, "Error: Attempted to add empty composite tag to grammar on line %u!\n", lines);
 		CG3Quit(1);
 	}
+	return tags[tag->hash];
 }
-void Grammar::addCompositeTagToSet(Set *set, CompositeTag *tag) {
-	if (tag && tag->tags.size()) {
-		if (tag->tags.size() == 1) {
-			Tag *rtag = single_tags[*(tag->tags.begin())];
+CompositeTag *Grammar::q_addCompositeTagToSet(Set *set, CompositeTag *tag) {
+	if (tag && tag->q_tags.size()) {
+		if (tag->q_tags.size() == 1) {
+			Tag *rtag = *(tag->q_tags.begin());
 			set->tags_set.insert(rtag->hash);
-			set->single_tags.insert(rtag->hash);
+			set->q_single_tags.insert(rtag);
 
 			if (rtag->type & T_ANY) {
 				set->match_any = true;
@@ -176,14 +193,15 @@ void Grammar::addCompositeTagToSet(Set *set, CompositeTag *tag) {
 			delete tag;
 			tag = 0;
 		} else {
-			addCompositeTag(tag);
+			tag = q_addCompositeTag(tag);
 			set->tags_set.insert(tag->hash);
-			set->tags.insert(tag->hash);
+			set->q_tags.insert(tag);
 		}
 	} else {
 		u_fprintf(ux_stderr, "Error: Attempted to add empty composite tag to grammar and set on line %u!\n", lines);
 		CG3Quit(1);
 	}
+	return tag;
 }
 CompositeTag *Grammar::allocateCompositeTag() {
 	return new CompositeTag;
@@ -224,6 +242,8 @@ Tag *Grammar::addTag(Tag *simpletag) {
 		}
 		else {
 			single_tags[simpletag->hash] = simpletag;
+			single_tags_list.push_back(simpletag);
+			simpletag->number = (uint32_t)single_tags_list.size()-1;
 			return single_tags[simpletag->hash];
 		}
 	} else {
@@ -234,7 +254,7 @@ Tag *Grammar::addTag(Tag *simpletag) {
 }
 void Grammar::addTagToCompositeTag(Tag *simpletag, CompositeTag *tag) {
 	if (simpletag && simpletag->tag) {
-		tag->addTag(simpletag->hash);
+		tag->q_addTag(simpletag);
 	} else {
 		u_fprintf(ux_stderr, "Error: Attempted to add empty tag to grammar and composite tag on line %u!\n", lines);
 		CG3Quit(1);
@@ -298,6 +318,11 @@ void Grammar::reindex() {
 	before_sections.clear();
 	after_sections.clear();
 	sections.clear();
+	sets_list.clear();
+
+	foreach (uint32SetHashMap, sets_by_contents, tset, tset_end) {
+		addSetToList(tset->second);
+	}
 
 	stdext::hash_map<uint32_t, Tag*>::iterator iter_tags;
 	for (iter_tags = single_tags.begin() ; iter_tags != single_tags.end() ; iter_tags++) {
@@ -310,7 +335,7 @@ void Grammar::reindex() {
 		}
 	}
 
-	stdext::hash_map<uint32_t, Set*>::iterator iter_sets;
+	uint32SetHashMap::iterator iter_sets;
 	for (iter_sets = sets_by_contents.begin() ; iter_sets != sets_by_contents.end() ; iter_sets++) {
 		iter_sets->second->reindex(this);
 		indexSets(iter_sets->first, iter_sets->second);
@@ -344,20 +369,19 @@ void Grammar::indexSetToRule(uint32_t r, Set *s) {
 		return;
 	}
 	if (s->sets.empty()) {
-		uint32HashSet::const_iterator comp_iter;
-		for (comp_iter = s->single_tags.begin() ; comp_iter != s->single_tags.end() ; comp_iter++) {
-			indexTagToRule(*comp_iter, r);
+		TagHashSet::const_iterator tomp_iter;
+		for (tomp_iter = s->q_single_tags.begin() ; tomp_iter != s->q_single_tags.end() ; tomp_iter++) {
+			indexTagToRule((*tomp_iter)->hash, r);
 		}
-		for (comp_iter = s->tags.begin() ; comp_iter != s->tags.end() ; comp_iter++) {
-			if (tags.find(*comp_iter) != tags.end()) {
-				CompositeTag *curcomptag = tags.find(*comp_iter)->second;
-				if (curcomptag->tags.size() == 1) {
-					indexTagToRule(*(curcomptag->tags.begin()), r);
-				} else {
-					uint32Set::const_iterator tag_iter;
-					for (tag_iter = curcomptag->tags_set.begin() ; tag_iter != curcomptag->tags_set.end() ; tag_iter++) {
-						indexTagToRule(*tag_iter, r);
-					}
+		CompositeTagHashSet::const_iterator comp_iter;
+		for (comp_iter = s->q_tags.begin() ; comp_iter != s->q_tags.end() ; comp_iter++) {
+			CompositeTag *curcomptag = *comp_iter;
+			if (curcomptag->q_tags.size() == 1) {
+				indexTagToRule((*(curcomptag->q_tags.begin()))->hash, r);
+			} else {
+				TagSet::const_iterator tag_iter;
+				for (tag_iter = curcomptag->q_tags_set.begin() ; tag_iter != curcomptag->q_tags_set.end() ; tag_iter++) {
+					indexTagToRule((*tag_iter)->hash, r);
 				}
 			}
 		}
@@ -385,20 +409,19 @@ void Grammar::indexSets(uint32_t r, Set *s) {
 		return;
 	}
 	if (s->sets.empty()) {
-		uint32HashSet::const_iterator comp_iter;
-		for (comp_iter = s->single_tags.begin() ; comp_iter != s->single_tags.end() ; comp_iter++) {
-			indexTagToSet(*comp_iter, r);
+		TagHashSet::const_iterator tomp_iter;
+		for (tomp_iter = s->q_single_tags.begin() ; tomp_iter != s->q_single_tags.end() ; tomp_iter++) {
+			indexTagToSet((*tomp_iter)->hash, r);
 		}
-		for (comp_iter = s->tags.begin() ; comp_iter != s->tags.end() ; comp_iter++) {
-			if (tags.find(*comp_iter) != tags.end()) {
-				CompositeTag *curcomptag = tags.find(*comp_iter)->second;
-				if (curcomptag->tags.size() == 1) {
-					indexTagToSet(*(curcomptag->tags.begin()), r);
-				} else {
-					uint32Set::const_iterator tag_iter;
-					for (tag_iter = curcomptag->tags_set.begin() ; tag_iter != curcomptag->tags_set.end() ; tag_iter++) {
-						indexTagToSet(*tag_iter, r);
-					}
+		CompositeTagHashSet::const_iterator comp_iter;
+		for (comp_iter = s->q_tags.begin() ; comp_iter != s->q_tags.end() ; comp_iter++) {
+			CompositeTag *curcomptag = *comp_iter;
+			if (curcomptag->q_tags.size() == 1) {
+				indexTagToSet((*(curcomptag->q_tags.begin()))->hash, r);
+			} else {
+				TagSet::const_iterator tag_iter;
+				for (tag_iter = curcomptag->q_tags_set.begin() ; tag_iter != curcomptag->q_tags_set.end() ; tag_iter++) {
+					indexTagToSet((*tag_iter)->hash, r);
 				}
 			}
 		}
