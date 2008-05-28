@@ -39,11 +39,10 @@ namespace CG3 {
 		bool noprint;
 		uint32List tags_list;
 		uint32Set tags;
-		// ToDo: Get these back to normal ones; no need to recycle elements of a recycled object
-		uint32HashSet *tags_plain;
-		uint32HashSet *tags_mapped;
-		uint32HashSet *tags_textual;
-		uint32HashSet *tags_numerical;
+		uint32HashSet tags_plain;
+		uint32HashSet tags_mapped;
+		uint32HashSet tags_textual;
+		uint32HashSet tags_numerical;
 
 		uint32HashSet possible_sets;
 

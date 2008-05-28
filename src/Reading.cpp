@@ -35,10 +35,6 @@ Reading::Reading(Cohort *p) {
 	matched_tests = false;
 	current_mapping_tag = 0;
 	text = 0;
-	tags_plain = new uint32HashSet;
-	tags_mapped = new uint32HashSet;
-	tags_textual = new uint32HashSet;
-	tags_numerical = new uint32HashSet;
 }
 
 void Reading::clear(Cohort *p) {
@@ -59,10 +55,10 @@ void Reading::clear(Cohort *p) {
 	hit_by.clear();
 	tags_list.clear();
 	tags.clear();
-	tags_plain->clear();
-	tags_mapped->clear();
-	tags_textual->clear();
-	tags_numerical->clear();
+	tags_plain.clear();
+	tags_mapped.clear();
+	tags_textual.clear();
+	tags_numerical.clear();
 	possible_sets.clear();
 }
 
@@ -70,10 +66,6 @@ Reading::~Reading() {
 	if (text) {
 		delete[] text;
 	}
-	delete tags_plain;
-	delete tags_mapped;
-	delete tags_textual;
-	delete tags_numerical;
 }
 
 uint32_t Reading::rehash() {

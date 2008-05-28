@@ -267,7 +267,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 					cSWindow->valid_rules.insert(grammar->rules_by_tag.find(tag)->second->begin(), grammar->rules_by_tag.find(tag)->second->end());
 				}
 			}
-			if (!cReading->tags_mapped->empty()) {
+			if (!cReading->tags_mapped.empty()) {
 				cReading->mapped = true;
 			}
 			if (!cReading->baseform) {

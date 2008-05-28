@@ -171,10 +171,10 @@ void GrammarApplicator::reflowDependencyWindow() {
 
 void GrammarApplicator::reflowReading(Reading *reading) {
 	reading->tags.clear();
-	reading->tags_mapped->clear();
-	reading->tags_plain->clear();
-	reading->tags_textual->clear();
-	reading->tags_numerical->clear();
+	reading->tags_mapped.clear();
+	reading->tags_plain.clear();
+	reading->tags_textual.clear();
+	reading->tags_numerical.clear();
 	reading->possible_sets.clear();
 
 	if (grammar->sets_by_tag.find(grammar->tag_any) != grammar->sets_by_tag.end()) {
@@ -196,13 +196,13 @@ void GrammarApplicator::reflowReading(Reading *reading) {
 		}
 		assert(tag != 0);
 		if (tag->type & T_MAPPING || tag->tag[0] == grammar->mapping_prefix) {
-			reading->tags_mapped->insert(*tter);
+			reading->tags_mapped.insert(*tter);
 		}
 		if (tag->type & (T_TEXTUAL|T_WORDFORM|T_BASEFORM)) {
-			reading->tags_textual->insert(*tter);
+			reading->tags_textual.insert(*tter);
 		}
 		if (tag->type & T_NUMERICAL) {
-			reading->tags_numerical->insert(*tter);
+			reading->tags_numerical.insert(*tter);
 		}
 		if (!reading->baseform && tag->type & T_BASEFORM) {
 			reading->baseform = tag->hash;
@@ -225,7 +225,7 @@ void GrammarApplicator::reflowReading(Reading *reading) {
 			}
 		}
 		if (!tag->type) {
-			reading->tags_plain->insert(*tter);
+			reading->tags_plain.insert(*tter);
 		}
 	}
 
@@ -247,13 +247,13 @@ void GrammarApplicator::addTagToReading(Reading *reading, uint32_t utag) {
 	}
 	assert(tag != 0);
 	if (tag->type & T_MAPPING || tag->tag[0] == grammar->mapping_prefix) {
-		reading->tags_mapped->insert(utag);
+		reading->tags_mapped.insert(utag);
 	}
 	if (tag->type & (T_TEXTUAL|T_WORDFORM|T_BASEFORM)) {
-		reading->tags_textual->insert(utag);
+		reading->tags_textual.insert(utag);
 	}
 	if (tag->type & T_NUMERICAL) {
-		reading->tags_numerical->insert(utag);
+		reading->tags_numerical.insert(utag);
 	}
 	if (!reading->baseform && tag->type & T_BASEFORM) {
 		reading->baseform = tag->hash;
@@ -276,7 +276,7 @@ void GrammarApplicator::addTagToReading(Reading *reading, uint32_t utag) {
 		}
 	}
 	if (!tag->type) {
-		reading->tags_plain->insert(utag);
+		reading->tags_plain.insert(utag);
 	}
 	reading->rehash();
 }
@@ -284,9 +284,9 @@ void GrammarApplicator::addTagToReading(Reading *reading, uint32_t utag) {
 void GrammarApplicator::delTagFromReading(Reading *reading, uint32_t utag) {
 	reading->tags_list.remove(utag);
 	reading->tags.erase(utag);
-	reading->tags_mapped->erase(utag);
-	reading->tags_textual->erase(utag);
-	reading->tags_numerical->erase(utag);
-	reading->tags_plain->erase(utag);
+	reading->tags_mapped.erase(utag);
+	reading->tags_textual.erase(utag);
+	reading->tags_numerical.erase(utag);
+	reading->tags_plain.erase(utag);
 	reading->rehash();
 }

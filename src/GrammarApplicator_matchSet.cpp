@@ -27,21 +27,23 @@ using namespace CG3::Strings;
 bool GrammarApplicator::doesTagMatchSet(const uint32_t tag, const Set *set) {
 	bool retval = false;
 
-	if (grammar->single_tags.find(tag) != grammar->single_tags.end()) {
-		Tag *t = grammar->single_tags.find(tag)->second;
-		if (set->q_single_tags.find(t) != set->q_single_tags.end()) {
+	if (grammar->single_tags.find(tag) == grammar->single_tags.end()) {
+		return false;
+	}
+
+	Tag *t = grammar->single_tags.find(tag)->second;
+	if (set->q_single_tags.find(t) != set->q_single_tags.end()) {
+		retval = true;
+	}
+	else {
+		CompositeTag *ctag = new CompositeTag();
+		ctag->q_addTag(t);
+		ctag->rehash();
+
+		if (set->q_tags.find(ctag) != set->q_tags.end()) {
 			retval = true;
 		}
-		else {
-			CompositeTag *ctag = new CompositeTag();
-			ctag->q_addTag(t);
-			ctag->rehash();
-
-			if (set->q_tags.find(ctag) != set->q_tags.end()) {
-				retval = true;
-			}
-			delete ctag;
-		}
+		delete ctag;
 	}
 	return retval;
 }
@@ -78,10 +80,10 @@ bool GrammarApplicator::doesTagMatchReading(const Reading *reading, const uint32
 			match = true;
 		}
 	}
-	else if (tag->type & T_NUMERICAL && !reading->tags_numerical->empty()) {
+	else if (tag->type & T_NUMERICAL && !reading->tags_numerical.empty()) {
 		match = false;
 		uint32HashSet::const_iterator mter;
-		for (mter = reading->tags_numerical->begin() ; mter != reading->tags_numerical->end() ; mter++) {
+		for (mter = reading->tags_numerical.begin() ; mter != reading->tags_numerical.end() ; mter++) {
 			const Tag *itag = single_tags.find(*mter)->second;
 			if (tag->comparison_hash == itag->comparison_hash) {
 				if (tag->comparison_op == OP_EQUALS && itag->comparison_op == OP_EQUALS && tag->comparison_val == itag->comparison_val) {
@@ -117,9 +119,9 @@ bool GrammarApplicator::doesTagMatchReading(const Reading *reading, const uint32
 			}
 		}
 	}
-	else if (tag->regexp && !reading->tags_textual->empty()) {
+	else if (tag->regexp && !reading->tags_textual.empty()) {
 		uint32HashSet::const_iterator mter;
-		for (mter = reading->tags_textual->begin() ; mter != reading->tags_textual->end() ; mter++) {
+		for (mter = reading->tags_textual.begin() ; mter != reading->tags_textual.end() ; mter++) {
 			// ToDo: Cache regexp and icase hits/misses
 			const Tag *itag = single_tags.find(*mter)->second;
 			UErrorCode status = U_ZERO_ERROR;
@@ -351,7 +353,7 @@ bool GrammarApplicator::doesSetMatchCohortCareful(const Cohort *cohort, const ui
 			break;
 		}
 		// A mapped tag must be the only mapped tag in the reading to be considered a Careful match
-		if (last_mapping_tag && reading->tags_mapped->size() > 1) {
+		if (last_mapping_tag && reading->tags_mapped.size() > 1) {
 			retval = false;
 			break;
 		}
