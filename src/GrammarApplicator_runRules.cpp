@@ -75,7 +75,7 @@ rule_was_bad:
 			}
 
 			if ((type == K_SELECT || type == K_REMOVE || type == K_IFF) && (cohort->is_disamb || cohort->readings.size() == 1)) {
-				if (cohort->is_disamb || !set->has_mappings || cohort->readings.front()->tags_mapped->size() <= 1) {
+				if (cohort->is_disamb || !set->has_mappings || cohort->readings.front()->tags_mapped.size() <= 1) {
 					continue;
 				}
 			}
@@ -129,7 +129,7 @@ rule_was_bad:
 						same_mapping_tag = false;
 					}
 					known_mapping_tag = last_mapping_tag;
-					if (reading->tags_mapped->size() > 1) {
+					if (reading->tags_mapped.size() > 1) {
 						only_one_map_per_line = false;
 					}
 
@@ -192,7 +192,7 @@ rule_was_bad:
 				}
 
 				if (type == K_REMOVE) {
-					if (good && reading->current_mapping_tag && reading->tags_mapped->size() > 1) {
+					if (good && reading->current_mapping_tag && reading->tags_mapped.size() > 1) {
 						delTagFromReading(reading, reading->current_mapping_tag);
 						good_mapping = true;
 						reading->hit_by.push_back(rule->line);
@@ -209,10 +209,10 @@ rule_was_bad:
 					}
 				}
 				else if (type == K_SELECT) {
-					if (good && reading->current_mapping_tag && reading->tags_mapped->size() > 1) {
+					if (good && reading->current_mapping_tag && reading->tags_mapped.size() > 1) {
 						uint32HashSet::iterator iter_maps;
-						while (!reading->tags_mapped->empty()) {
-							iter_maps = reading->tags_mapped->begin();
+						while (!reading->tags_mapped.empty()) {
+							iter_maps = reading->tags_mapped.begin();
 							delTagFromReading(reading, *iter_maps);
 						}
 						addTagToReading(reading, reading->current_mapping_tag);
@@ -307,7 +307,7 @@ rule_was_bad:
 							}
 						}
 						reflowReading(reading);
-						if (!reading->tags_mapped->empty()) {
+						if (!reading->tags_mapped.empty()) {
 							reading->mapped = true;
 						}
 					}
@@ -347,7 +347,7 @@ rule_was_bad:
 								}
 							}
 							reflowReading(reading);
-							if (!reading->tags_mapped->empty()) {
+							if (!reading->tags_mapped.empty()) {
 								reading->mapped = true;
 							}
 						}
@@ -363,7 +363,7 @@ rule_was_bad:
 								current->valid_rules.insert(grammar->rules_by_tag.find(*tter)->second->begin(), grammar->rules_by_tag.find(*tter)->second->end());
 							}
 						}
-						if (!nr->tags_mapped->empty()) {
+						if (!nr->tags_mapped.empty()) {
 							nr->mapped = true;
 						}
 						did_append = true;
@@ -500,7 +500,7 @@ rule_was_bad:
 			}
 
 			cohort->is_disamb = false;
-			if (cohort->readings.size() == 1 && cohort->readings.front()->tags_mapped->size() <= 1) {
+			if (cohort->readings.size() == 1 && cohort->readings.front()->tags_mapped.size() <= 1) {
 				cohort->is_disamb = true;
 			}
 
