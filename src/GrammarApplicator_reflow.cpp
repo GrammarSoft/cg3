@@ -333,6 +333,7 @@ void GrammarApplicator::mergeMappings(Cohort *cohort) {
 	}
 
 	cohort->readings.clear();
+	std::vector<Reading*> order;
 
 	std::map<uint32_t, std::list<Reading*> >::iterator miter;
 	for (miter = mlist.begin() ; miter != mlist.end() ; miter++) {
@@ -348,8 +349,12 @@ void GrammarApplicator::mergeMappings(Cohort *cohort) {
 			}
 			r->delete_Reading(*iter1);
 		}
-		cohort->readings.push_back(nr);
+		order.push_back(nr);
 	}
 
-	//std::sort(cohort->readings.begin(), cohort->readings.end(), CG3::Reading::cmp_number);
+	std::sort(order.begin(), order.end(), CG3::Reading::cmp_number);
+
+	foreach (std::vector<Reading*>, order, oit, oit_end) {
+		cohort->readings.push_back(*oit);
+	}
 }
