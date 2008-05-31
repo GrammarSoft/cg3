@@ -29,6 +29,7 @@ Reading::Reading(Cohort *p) {
 	hash = 0;
 	hash_plain = 0;
 	parent = p;
+	number = 0;
 	mapped = false;
 	deleted = false;
 	noprint = false;
@@ -44,6 +45,7 @@ void Reading::clear(Cohort *p) {
 	hash = 0;
 	hash_plain = 0;
 	parent = p;
+	number = 0;
 	mapped = false;
 	deleted = false;
 	noprint = false;
@@ -117,4 +119,8 @@ void Reading::duplicateFrom(Reading *r) {
 	tags_textual.insert(r->tags_textual.begin(), r->tags_textual.end());
 	tags_numerical.insert(r->tags_numerical.begin(), r->tags_numerical.end());
 	possible_sets.insert(r->possible_sets.begin(), r->possible_sets.end());
+}
+
+bool Reading::cmp_number(Reading *a, Reading *b) {
+	return a->number < b->number;
 }

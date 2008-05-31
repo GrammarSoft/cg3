@@ -321,7 +321,7 @@ void GrammarApplicator::splitMappings(TagList mappings, Cohort *cohort, Reading 
 void GrammarApplicator::mergeMappings(Cohort *cohort) {
 	Recycler *r = Recycler::instance();
 
-	std::map<uint32_t, std::list<Reading*>> mlist;
+	std::map<uint32_t, std::list<Reading*> > mlist;
 	foreach (std::list<Reading*>, cohort->readings, iter, iter_end) {
 		Reading *r = *iter;
 		uint32_t hp = r->hash_plain;
@@ -334,7 +334,7 @@ void GrammarApplicator::mergeMappings(Cohort *cohort) {
 
 	cohort->readings.clear();
 
-	std::map<uint32_t, std::list<Reading*>>::iterator miter;
+	std::map<uint32_t, std::list<Reading*> >::iterator miter;
 	for (miter = mlist.begin() ; miter != mlist.end() ; miter++) {
 		std::list<Reading*> clist = miter->second;
 		Reading *nr = r->new_Reading(cohort);
@@ -351,5 +351,5 @@ void GrammarApplicator::mergeMappings(Cohort *cohort) {
 		cohort->readings.push_back(nr);
 	}
 
-	cohort=cohort;
+	//std::sort(cohort->readings.begin(), cohort->readings.end(), CG3::Reading::cmp_number);
 }
