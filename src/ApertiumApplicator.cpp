@@ -61,8 +61,8 @@ ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output)
 	UChar inchar = 0; 		// Current character 
 	bool superblank = false; 	// Are we in a superblank ?
 
-	begintag = addTag(stringbits[S_BEGINTAG]); // Beginning of sentence tag
-	endtag = addTag(stringbits[S_ENDTAG]); // End of sentence tag
+	begintag = addTag(stringbits[S_BEGINTAG])->hash; // Beginning of sentence tag
+	endtag = addTag(stringbits[S_ENDTAG])->hash; // End of sentence tag
 
 	gWindow = new Window(this); 	// Global window singleton
 
@@ -169,7 +169,7 @@ ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output)
 			wordform = ux_append(wordform, '>');
 			wordform = ux_append(wordform, '"');
 		
-			cCohort->wordform = addTag(wordform);
+			cCohort->wordform = addTag(wordform)->hash;
 	
 			if (grammar->rules_by_tag.find(cCohort->wordform) != grammar->rules_by_tag.end()) {
 				cSWindow->valid_rules.insert(grammar->rules_by_tag.find(cCohort->wordform)->second->begin(), 
@@ -341,7 +341,7 @@ ApertiumApplicator::processReading(SingleWindow *cSWindow, Reading *cReading, UC
 	}
 	base = ux_append(base, '"');
 
-	uint32_t tag = addTag(base);
+	uint32_t tag = addTag(base)->hash;
 	cReading->baseform = tag;
 	addTagToReading(cReading, tag);
 
@@ -364,7 +364,7 @@ ApertiumApplicator::processReading(SingleWindow *cSWindow, Reading *cReading, UC
 			c++;
 			continue;
 		} else if(*c == '>') {
-			uint32_t tag = addTag(tmptag);
+			uint32_t tag = addTag(tmptag)->hash;
 			addTagToReading(cReading, tag); // Add the baseform to the tag
 
 			if (grammar->rules_by_tag.find(tag) != grammar->rules_by_tag.end()) {

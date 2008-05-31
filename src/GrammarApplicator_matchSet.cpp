@@ -160,10 +160,6 @@ bool GrammarApplicator::doesTagMatchReading(const Reading *reading, const uint32
 		else {
 			retval = true;
 		}
-		// ToDo: Can tag->type ever not contain T_MAPPING if tag->tag[0] == grammar->mapping_prefix?
-		if (tag->type & T_MAPPING || tag->tag[0] == grammar->mapping_prefix) {
-			last_mapping_tag = tag->hash;
-		}
 	}
 	return retval;
 }
@@ -229,7 +225,6 @@ bool GrammarApplicator::doesSetMatchReading(Reading *reading, const uint32_t set
 					if (match) {
 						if (unif_mode) {
 							if (unif_tags.find(theset->hash) != unif_tags.end() && unif_tags[theset->hash] != (*ster)->hash) {
-								last_mapping_tag = 0;
 								continue;
 							}
 							unif_tags[theset->hash] = (*ster)->hash;
@@ -237,8 +232,6 @@ bool GrammarApplicator::doesSetMatchReading(Reading *reading, const uint32_t set
 						match_comp++;
 						retval = true;
 						break;
-					} else {
-						last_mapping_tag = 0;
 					}
 				}
 			}
@@ -333,7 +326,7 @@ bool GrammarApplicator::doesSetMatchCohortNormal(const Cohort *cohort, const uin
 	std::list<Reading*>::const_iterator iter;
 	for (iter = cohort->readings.begin() ; iter != cohort->readings.end() ; iter++) {
 		Reading *reading = *iter;
-		if (doesSetMatchReading(reading, set, theset->has_mappings|theset->is_child_unified)) {
+		if (doesSetMatchReading(reading, set, theset->is_child_unified)) {
 			retval = true;
 			break;
 		}
@@ -347,13 +340,7 @@ bool GrammarApplicator::doesSetMatchCohortCareful(const Cohort *cohort, const ui
 	std::list<Reading*>::const_iterator iter;
 	for (iter = cohort->readings.begin() ; iter != cohort->readings.end() ; iter++) {
 		Reading *reading = *iter;
-		last_mapping_tag = 0;
-		if (!doesSetMatchReading(reading, set, theset->has_mappings|theset->is_child_unified)) {
-			retval = false;
-			break;
-		}
-		// A mapped tag must be the only mapped tag in the reading to be considered a Careful match
-		if (last_mapping_tag && reading->tags_mapped.size() > 1) {
+		if (!doesSetMatchReading(reading, set, theset->is_child_unified)) {
 			retval = false;
 			break;
 		}

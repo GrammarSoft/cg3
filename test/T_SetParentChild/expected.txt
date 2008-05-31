@@ -12,7 +12,8 @@
 	"that" <NonMod> <**CLB> <Rel> PRON INDP SG/PL @SUBJ #6->0 
 "<walked>"
 	"walk" <SV> <SVO> V PAST VFIN @FMV #7->0 
-	"walk" <SV> <SVO> V PAST VFIN @FMV @#FS-N< #7->0 
+	"walk" <SV> <SVO> V PAST VFIN @FMV #7->0 
+	"walk" <SV> <SVO> V PAST VFIN @#FS-N< #7->0 
 "<down>"
 	"down" <error> PRP @ADVL #8->2 
 "<the>"

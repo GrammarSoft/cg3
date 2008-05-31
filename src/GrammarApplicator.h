@@ -88,7 +88,6 @@ namespace CG3 {
 		uint32_t skipped_rules;
 		uint32_t cache_hits, cache_miss, match_single, match_comp, match_sub;
 		uint32_t begintag, endtag;
-		uint32_t last_mapping_tag;
 
 		const Grammar *grammar;
 
@@ -105,7 +104,7 @@ namespace CG3 {
 		stdext::hash_map<uint32_t, uint32HashSet*> index_reading_no;
 		void resetIndexes();
 	
-		uint32_t addTag(const UChar *tag);
+		Tag *addTag(const UChar *tag);
 
 		int runGrammarOnWindow(Window *window);
 		uint32_t runRulesOnWindow(SingleWindow *current, const int32_t start, const int32_t end);
@@ -132,6 +131,8 @@ namespace CG3 {
 		void reflowReading(Reading *reading);
 		void addTagToReading(Reading *reading, uint32_t tag);
 		void delTagFromReading(Reading *reading, uint32_t tag);
+		void splitMappings(TagList mappings, Cohort *cohort, Reading *reading, bool mapped = false);
+		void mergeMappings(Cohort *cohort);
 		void reflowDependencyWindow();
 		bool wouldParentChildLoop(Cohort *parent, Cohort *child);
 		void attachParentChild(Cohort *parent, Cohort *child);

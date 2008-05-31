@@ -64,8 +64,8 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 	uint32_t resetAfter = ((num_windows+4)*2+1);
 	uint32_t lines = 0;
 
-	begintag = addTag(stringbits[S_BEGINTAG]);
-	endtag = addTag(stringbits[S_ENDTAG]);
+	begintag = addTag(stringbits[S_BEGINTAG])->hash;
+	endtag = addTag(stringbits[S_ENDTAG])->hash;
 
 	gWindow = new Window(this);
 
@@ -220,7 +220,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 			}
 			cCohort = r->new_Cohort(cSWindow);
 			cCohort->global_number = cWindow->cohort_counter++;
-			cCohort->wordform = addTag(cleaned);
+			cCohort->wordform = addTag(cleaned)->hash;
 			if (grammar->rules_by_tag.find(cCohort->wordform) != grammar->rules_by_tag.end()) {
 				cSWindow->valid_rules.insert(grammar->rules_by_tag.find(cCohort->wordform)->second->begin(), grammar->rules_by_tag.find(cCohort->wordform)->second->end());
 			}
@@ -244,14 +244,21 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 				SKIPTO(&space, '"');
 			}
 
+			TagList mappings;
+
 			while (space && (space = u_strchr(space, ' ')) != 0) {
 				space[0] = 0;
 				space++;
 				if (base && base[0]) {
-					uint32_t tag = addTag(base);
-					addTagToReading(cReading, tag);
-					if (grammar->rules_by_tag.find(tag) != grammar->rules_by_tag.end()) {
-						cSWindow->valid_rules.insert(grammar->rules_by_tag.find(tag)->second->begin(), grammar->rules_by_tag.find(tag)->second->end());
+					Tag *tag = addTag(base);
+					if (tag->type & T_MAPPING || tag->tag[0] == grammar->mapping_prefix) {
+						mappings.push_back(tag);
+					}
+					else {
+						addTagToReading(cReading, tag->hash);
+					}
+					if (grammar->rules_by_tag.find(tag->hash) != grammar->rules_by_tag.end()) {
+						cSWindow->valid_rules.insert(grammar->rules_by_tag.find(tag->hash)->second->begin(), grammar->rules_by_tag.find(tag->hash)->second->end());
 					}
 				}
 				base = space;
@@ -261,18 +268,35 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 				}
 			}
 			if (base && base[0]) {
-				uint32_t tag = addTag(base);
-				addTagToReading(cReading, tag);
-				if (grammar->rules_by_tag.find(tag) != grammar->rules_by_tag.end()) {
-					cSWindow->valid_rules.insert(grammar->rules_by_tag.find(tag)->second->begin(), grammar->rules_by_tag.find(tag)->second->end());
+				Tag *tag = addTag(base);
+				if (tag->type & T_MAPPING || tag->tag[0] == grammar->mapping_prefix) {
+					mappings.push_back(tag);
 				}
-			}
-			if (!cReading->tags_mapped.empty()) {
-				cReading->mapped = true;
+				else {
+					addTagToReading(cReading, tag->hash);
+				}
+				if (grammar->rules_by_tag.find(tag->hash) != grammar->rules_by_tag.end()) {
+					cSWindow->valid_rules.insert(grammar->rules_by_tag.find(tag->hash)->second->begin(), grammar->rules_by_tag.find(tag->hash)->second->end());
+				}
 			}
 			if (!cReading->baseform) {
 				u_fprintf(ux_stderr, "Warning: Line %u had no valid baseform.\n", numLines);
 				u_fflush(ux_stderr);
+			}
+			if (!mappings.empty()) {
+				Tag *tag = mappings.back();
+				mappings.pop_back();
+				foreach (TagList, mappings, ttag, ttag_end) {
+					Reading *nr = r->new_Reading(cCohort);
+					nr->duplicateFrom(cReading);
+					nr->mapped = true;
+					addTagToReading(nr, (*ttag)->hash);
+					nr->mapping = *ttag;
+					cCohort->appendReading(nr);
+				}
+				cReading->mapped = true;
+				addTagToReading(cReading, tag->hash);
+				cReading->mapping = tag;
 			}
 			cCohort->appendReading(cReading);
 			lReading = cReading;

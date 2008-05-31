@@ -499,7 +499,7 @@ int TextualParser::parseRule(KEYWORDS key, UChar **p) {
 			dieIfKeyword(gbuffers[0]);
 			Tag *wform = result->allocateTag(gbuffers[0]);
 			wform = result->addTag(wform);
-			rule->maplist.push_back(wform->hash);
+			rule->q_maplist.push_back(wform);
 			*p = n;
 			result->lines += SKIPWS(p, ';', ')');
 		}

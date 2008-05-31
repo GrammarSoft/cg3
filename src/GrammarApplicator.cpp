@@ -49,7 +49,6 @@ GrammarApplicator::GrammarApplicator(UFILE *ux_in, UFILE *ux_out, UFILE *ux_err)
 	num_windows = 2;
 	begintag = 0;
 	endtag = 0;
-	last_mapping_tag = 0;
 	grammar = 0;
 	skipped_rules = 0;
 	cache_hits = 0;
@@ -124,7 +123,7 @@ void GrammarApplicator::disableStatistics() {
 	statistics = false;
 }
 
-uint32_t GrammarApplicator::addTag(const UChar *txt) {
+Tag *GrammarApplicator::addTag(const UChar *txt) {
 	Tag *tag = new Tag();
 	tag->parseTagRaw(txt);
 	uint32_t hash = tag->rehash();
@@ -133,7 +132,7 @@ uint32_t GrammarApplicator::addTag(const UChar *txt) {
 	} else {
 		delete tag;
 	}
-	return hash;
+	return single_tags[hash];
 }
 
 void GrammarApplicator::printReading(Reading *reading, UFILE *output) {
@@ -211,16 +210,18 @@ void GrammarApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 		u_fprintf(output, "%S", window->text);
 	}
 
-	for (uint32_t c=0 ; c < window->cohorts.size() ; c++) {
-		if (c == 0) {
-			continue;
-		}
-		Cohort *cohort = window->cohorts[c];
+	uint32_t cs = (uint32_t)window->cohorts.size();
+	for (uint32_t c=1 ; c < cs ; c++) {
+		Cohort *cohort = window->cohorts.at(c);
 		Tag::printTagRaw(output, single_tags[cohort->wordform]);
 		//u_fprintf(output, " %u", cohort->number);
 		u_fprintf(output, "\n");
 		if (cohort->text) {
 			u_fprintf(output, "%S", cohort->text);
+		}
+
+		if (!trace) {
+			mergeMappings(cohort);
 		}
 
 		foreach (std::list<Reading*>, cohort->readings, rter1, rter1_end) {

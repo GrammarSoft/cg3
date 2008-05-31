@@ -23,6 +23,7 @@
 #define __READING_H
 
 #include "stdafx.h"
+#include "Tag.h"
 
 namespace CG3 {
 
@@ -33,6 +34,7 @@ namespace CG3 {
 		uint32_t wordform;
 		uint32_t baseform;
 		uint32_t hash;
+		uint32_t hash_plain;
 		bool mapped;
 		bool deleted;
 		uint32Vector hit_by;
@@ -40,9 +42,9 @@ namespace CG3 {
 		uint32List tags_list;
 		uint32Set tags;
 		uint32HashSet tags_plain;
-		uint32HashSet tags_mapped;
 		uint32HashSet tags_textual;
 		uint32HashSet tags_numerical;
+		Tag *mapping;
 
 		uint32HashSet possible_sets;
 
@@ -50,11 +52,11 @@ namespace CG3 {
 
 		bool matched_target;
 		bool matched_tests;
-		uint32_t current_mapping_tag;
 
 		Reading(Cohort *p);
 		~Reading();
 		void clear(Cohort *p);
+		void duplicateFrom(Reading *r);
 
 		uint32_t rehash();
 	};

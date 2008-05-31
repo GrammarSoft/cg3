@@ -27,27 +27,28 @@ Reading::Reading(Cohort *p) {
 	wordform = 0;
 	baseform = 0;
 	hash = 0;
+	hash_plain = 0;
 	parent = p;
 	mapped = false;
 	deleted = false;
 	noprint = false;
 	matched_target = false;
 	matched_tests = false;
-	current_mapping_tag = 0;
 	text = 0;
+	mapping = 0;
 }
 
 void Reading::clear(Cohort *p) {
 	wordform = 0;
 	baseform = 0;
 	hash = 0;
+	hash_plain = 0;
 	parent = p;
 	mapped = false;
 	deleted = false;
 	noprint = false;
 	matched_target = false;
 	matched_tests = false;
-	current_mapping_tag = 0;
 	if (text) {
 		delete[] text;
 	}
@@ -56,10 +57,10 @@ void Reading::clear(Cohort *p) {
 	tags_list.clear();
 	tags.clear();
 	tags_plain.clear();
-	tags_mapped.clear();
 	tags_textual.clear();
 	tags_numerical.clear();
 	possible_sets.clear();
+	mapping = 0;
 }
 
 Reading::~Reading() {
@@ -70,10 +71,50 @@ Reading::~Reading() {
 
 uint32_t Reading::rehash() {
 	hash = 0;
+	hash_plain = 0;
 	uint32Set::const_iterator iter;
 	for (iter = tags.begin() ; iter != tags.end() ; iter++) {
-		hash = hash_sdbm_uint32_t(*iter, hash);
+		if (!mapping || mapping->hash != *iter) {
+			hash = hash_sdbm_uint32_t(*iter, hash);
+		}
+	}
+	hash_plain = hash;
+	assert(hash_plain != 0);
+	if (mapping) {
+		hash = hash_sdbm_uint32_t(mapping->hash, hash);
 	}
 	assert(hash != 0);
 	return hash;
+}
+
+void Reading::duplicateFrom(Reading *r) {
+	wordform = r->wordform;
+	baseform = r->baseform;
+	hash = r->hash;
+	hash_plain = r->hash_plain;
+	parent = r->parent;
+	mapped = r->mapped;
+	deleted = r->deleted;
+	noprint = r->noprint;
+	mapping = r->mapping;
+	/*
+	matched_target = r->matched_target;
+	matched_tests = r->matched_tests;
+	//*/
+
+	hit_by.clear();
+	tags_list.clear();
+	tags.clear();
+	tags_plain.clear();
+	tags_textual.clear();
+	tags_numerical.clear();
+	possible_sets.clear();
+
+	hit_by.insert(hit_by.begin(), r->hit_by.begin(), r->hit_by.end());
+	tags_list.insert(tags_list.begin(), r->tags_list.begin(), r->tags_list.end());
+	tags.insert(r->tags.begin(), r->tags.end());
+	tags_plain.insert(r->tags_plain.begin(), r->tags_plain.end());
+	tags_textual.insert(r->tags_textual.begin(), r->tags_textual.end());
+	tags_numerical.insert(r->tags_numerical.begin(), r->tags_numerical.end());
+	possible_sets.insert(r->possible_sets.begin(), r->possible_sets.end());
 }

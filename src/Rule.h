@@ -43,7 +43,7 @@ namespace CG3 {
 		// ToDo: Add proper "quality" quantifier based on num_fail, num_match, total_time
 		double weight, quality;
 		KEYWORDS type;
-		uint32List maplist;
+		TagList q_maplist;
 		uint32List sublist;
 		
 		mutable std::list<ContextualTest*> tests;

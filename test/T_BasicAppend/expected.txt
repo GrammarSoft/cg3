@@ -2,4 +2,6 @@
 	"word" notwanted 
 	"word" wanted 
 	"word" notmeeither 
-	"newword" appended 
+	"newword" appended1 @B 
+	"newword" appended1 @A 
+	"newword" appended2 

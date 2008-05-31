@@ -178,11 +178,10 @@ void GrammarWriter::printRule(UFILE *to, const Rule *rule) {
 		u_fprintf(to, ") ");
 	}
 
-	if (!rule->maplist.empty()) {
-		uint32List::const_iterator iter;
+	if (!rule->q_maplist.empty()) {
 		u_fprintf(to, "(");
-		for (iter = rule->maplist.begin() ; iter != rule->maplist.end() ; iter++) {
-			printTag(to, grammar->single_tags.find(*iter)->second);
+		const_foreach (TagList, rule->q_maplist, iter, iter_end) {
+			printTag(to, *iter);
 			u_fprintf(to, " ");
 		}
 		u_fprintf(to, ") ");
