@@ -100,12 +100,15 @@ void Cohort::remChild(uint32_t child) {
 }
 
 void Cohort::appendReading(Reading *read) {
+	assert(read);
 	readings.push_back(read);
+	read->number = (uint32_t)readings.size();
 }
 
 Reading* Cohort::allocateAppendReading() {
 	Recycler *r = Recycler::instance();
 	Reading *read = r->new_Reading(this);
 	readings.push_back(read);
+	read->number = (uint32_t)readings.size();
 	return read;
 }
