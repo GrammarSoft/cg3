@@ -4,5 +4,6 @@
 	"word" mapped @A @B 
 "<word>"
 	"word" notwanted 
-	"word" notmeeither 
 	"word" mapped @D @E @X 
+	"word" notmeeither 
+

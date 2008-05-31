@@ -99,6 +99,7 @@ void Reading::duplicateFrom(Reading *r) {
 	deleted = r->deleted;
 	noprint = r->noprint;
 	mapping = r->mapping;
+	number = r->number;
 	/*
 	matched_target = r->matched_target;
 	matched_tests = r->matched_tests;
