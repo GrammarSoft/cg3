@@ -138,8 +138,6 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 		fwrite(&u8tmp, sizeof(uint8_t), 1, output);
 		u8tmp = (uint8_t)s->is_unified;
 		fwrite(&u8tmp, sizeof(uint8_t), 1, output);
-		u8tmp = (uint8_t)s->has_mappings;
-		fwrite(&u8tmp, sizeof(uint8_t), 1, output);
 
 		if (s->sets.empty()) {
 			u8tmp = (uint8_t)0;
@@ -235,17 +233,16 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 		u32tmp = (uint32_t)htonl((uint32_t)r->varvalue);
 		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 
-		uint32List::const_iterator liter;
-		u32tmp = (uint32_t)htonl((uint32_t)r->maplist.size());
+		u32tmp = (uint32_t)htonl((uint32_t)r->q_maplist.size());
 		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
-		for (liter = r->maplist.begin() ; liter != r->maplist.end() ; liter++) {
-			u32tmp = (uint32_t)htonl((uint32_t)*liter);
+		const_foreach (TagList, r->q_maplist, liter1, liter1_end) {
+			u32tmp = (uint32_t)htonl((*liter1)->hash);
 			fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 		}
 		u32tmp = (uint32_t)htonl((uint32_t)r->sublist.size());
 		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
-		for (liter = r->sublist.begin() ; liter != r->sublist.end() ; liter++) {
-			u32tmp = (uint32_t)htonl((uint32_t)*liter);
+		const_foreach (uint32List, r->sublist, liter2, liter2_end) {
+			u32tmp = (uint32_t)htonl((uint32_t)*liter2);
 			fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 		}
 

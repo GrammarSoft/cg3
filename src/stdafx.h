@@ -98,6 +98,7 @@ namespace CG3 {
 	class GrammarWriter;
 	class CompositeTag;
 	class ContextualTest;
+	typedef std::list<Tag*> TagList;
 	typedef std::set<Tag*> TagSet;
 	typedef stdext::hash_set<Tag*> TagHashSet;
 	typedef stdext::hash_set<CompositeTag*> CompositeTagHashSet;

@@ -1,7 +1,11 @@
 DELIMITERS = "<$.>" ;
 
 LIST ASet = wanted ;
+LIST BSet = @A @B @C ;
+LIST CSet = (@D @E) @F ;
 
 SECTION
 
 SELECT ASet ;
+SELECT BSet ;
+SELECT CSet ;

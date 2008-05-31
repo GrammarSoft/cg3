@@ -181,8 +181,6 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 		s->is_special = (u8tmp == 1);
 		fread(&u8tmp, sizeof(uint8_t), 1, input);
 		s->is_unified = (u8tmp == 1);
-		fread(&u8tmp, sizeof(uint8_t), 1, input);
-		s->has_mappings = (u8tmp == 1);
 
 		fread(&u8tmp, sizeof(uint8_t), 1, input);
 		if (u8tmp == 0) {
@@ -285,7 +283,7 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 		for (uint32_t j=0 ; j<num_maps ; j++) {
 			fread(&u32tmp, sizeof(uint32_t), 1, input);
 			u32tmp = (uint32_t)ntohl(u32tmp);
-			r->maplist.push_back(u32tmp);
+			r->q_maplist.push_back(grammar->single_tags[u32tmp]);
 		}
 		fread(&u32tmp, sizeof(uint32_t), 1, input);
 		u32tmp = (uint32_t)ntohl(u32tmp);
