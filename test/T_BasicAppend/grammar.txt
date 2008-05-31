@@ -2,4 +2,5 @@ DELIMITERS = "<$.>" ;
 
 BEFORE-SECTIONS
 
-"<word>" APPEND ("newword" appended) (*) (NOT 0 (appended)) ;
+"<word>" APPEND ("newword" appended1 @A @B) (*) (NOT 0 (appended1)) ;
+"<word>" APPEND ("newword" appended2) (*) (NOT 0 (appended2)) ;

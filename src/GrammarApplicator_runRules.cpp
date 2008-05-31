@@ -75,9 +75,7 @@ rule_was_bad:
 			}
 
 			if ((type == K_SELECT || type == K_REMOVE || type == K_IFF) && (cohort->is_disamb || cohort->readings.size() == 1)) {
-				if (cohort->is_disamb || !set->has_mappings || cohort->readings.front()->tags_mapped.size() <= 1) {
-					continue;
-				}
+				continue;
 			}
 			if (type == K_DELIMIT && c == current->cohorts.size()-1) {
 				continue;
@@ -97,18 +95,12 @@ rule_was_bad:
 
 			bool good_mapping = false;
 			bool did_test = false;
-			bool did_append = false;
 			bool test_good = false;
-
-			uint32_t known_mapping_tag = 0;
-			bool same_mapping_tag = true;
-			bool only_one_map_per_line = true;
 
 			foreach (std::list<Reading*>, cohort->readings, rter, rter_end) {
 				Reading *reading = *rter;
 				reading->matched_target = false;
 				reading->matched_tests = false;
-				reading->current_mapping_tag = 0;
 
 				if (reading->mapped && (rule->type == K_MAP || rule->type == K_ADD || rule->type == K_REPLACE)) {
 					continue;
@@ -116,24 +108,14 @@ rule_was_bad:
 				if (reading->noprint && !allow_magic_readings) {
 					continue;
 				}
-				last_mapping_tag = 0;
 
 				// ToDo: Enable/Disable unif_mode per top-level set
 				unif_mode = false;
 				unif_tags.clear();
 
-				if (rule->target && doesSetMatchReading(reading, rule->target, set->has_mappings|set->is_child_unified)) {
+				if (rule->target && doesSetMatchReading(reading, rule->target, set->is_child_unified)) {
 					rule_is_valid = true;
 
-					if (known_mapping_tag && known_mapping_tag != last_mapping_tag) {
-						same_mapping_tag = false;
-					}
-					known_mapping_tag = last_mapping_tag;
-					if (reading->tags_mapped.size() > 1) {
-						only_one_map_per_line = false;
-					}
-
-					reading->current_mapping_tag = last_mapping_tag;
 					reading->matched_target = true;
 					bool good = true;
 					if (!rule->tests.empty() && !did_test) {
@@ -172,16 +154,19 @@ rule_was_bad:
 			if (num_active == cohort->readings.size()) {
 				all_active = true;
 			}
-			if (all_active && (rule->type == K_SELECT || rule->type == K_REMOVE) && !set->has_mappings && !last_mapping_tag) {
+			if (all_active && (rule->type == K_SELECT || rule->type == K_REMOVE)) {
 				continue;
 			}
-			if (all_active && (rule->type == K_SELECT || rule->type == K_REMOVE) && only_one_map_per_line && same_mapping_tag) {
+			if (all_active && (rule->type == K_SELECT || rule->type == K_REMOVE)) {
 				continue;
 			}
 
+			uint32_t did_append = 0;
 			std::list<Reading*> removed;
 			std::list<Reading*> selected;
 
+			// ToDo: Should not use foreach() since .end() is dynamic in this context. True?
+			// ToDo: Test APPEND followed by MAP
 			for (rter = cohort->readings.begin() ; rter != cohort->readings.end() ; rter++) {
 				Reading *reading = *rter;
 				bool good = reading->matched_tests;
@@ -192,32 +177,14 @@ rule_was_bad:
 				}
 
 				if (type == K_REMOVE) {
-					if (good && reading->current_mapping_tag && reading->tags_mapped.size() > 1) {
-						delTagFromReading(reading, reading->current_mapping_tag);
-						good_mapping = true;
-						reading->hit_by.push_back(rule->line);
-					}
-					else {
-						if (good) {
-							removed.push_back(reading);
-							reading->deleted = true;
-							reading->hit_by.push_back(rule->line);
-						}
-					}
 					if (good) {
+						removed.push_back(reading);
+						reading->deleted = true;
+						reading->hit_by.push_back(rule->line);
 						section_did_good = true;
 					}
 				}
 				else if (type == K_SELECT) {
-					if (good && reading->current_mapping_tag && reading->tags_mapped.size() > 1) {
-						uint32HashSet::iterator iter_maps;
-						while (!reading->tags_mapped.empty()) {
-							iter_maps = reading->tags_mapped.begin();
-							delTagFromReading(reading, *iter_maps);
-						}
-						addTagToReading(reading, reading->current_mapping_tag);
-						good_mapping = true;
-					}
 					if (good) {
 						selected.push_back(reading);
 						reading->hit_by.push_back(rule->line);
@@ -282,12 +249,20 @@ rule_was_bad:
 					else if (rule->type == K_ADD || rule->type == K_MAP) {
 						reading->hit_by.push_back(rule->line);
 						reading->noprint = false;
-						uint32List::const_iterator tter;
-						for (tter = rule->maplist.begin() ; tter != rule->maplist.end() ; tter++) {
-							addTagToReading(reading, *tter);
-							if (grammar->rules_by_tag.find(*tter) != grammar->rules_by_tag.end()) {
-								current->valid_rules.insert(grammar->rules_by_tag.find(*tter)->second->begin(), grammar->rules_by_tag.find(*tter)->second->end());
+						TagList mappings;
+						const_foreach (TagList, rule->q_maplist, tter, tter_end) {
+							if ((*tter)->type & T_MAPPING || (*tter)->tag[0] == grammar->mapping_prefix) {
+								mappings.push_back(*tter);
 							}
+							else {
+								addTagToReading(reading, (*tter)->hash);
+							}
+							if (grammar->rules_by_tag.find((*tter)->hash) != grammar->rules_by_tag.end()) {
+								current->valid_rules.insert(grammar->rules_by_tag.find((*tter)->hash)->second->begin(), grammar->rules_by_tag.find((*tter)->hash)->second->end());
+							}
+						}
+						if (!mappings.empty()) {
+							splitMappings(mappings, cohort, reading, rule->type == K_MAP);
 						}
 						if (rule->type == K_MAP) {
 							reading->mapped = true;
@@ -296,19 +271,24 @@ rule_was_bad:
 					else if (rule->type == K_REPLACE) {
 						reading->hit_by.push_back(rule->line);
 						reading->noprint = false;
-						uint32List::const_iterator tter;
 						reading->tags_list.clear();
 						reading->tags_list.push_back(reading->wordform);
 						reading->tags_list.push_back(reading->baseform);
-						for (tter = rule->maplist.begin() ; tter != rule->maplist.end() ; tter++) {
-							reading->tags_list.push_back(*tter);
-							if (grammar->rules_by_tag.find(*tter) != grammar->rules_by_tag.end()) {
-								current->valid_rules.insert(grammar->rules_by_tag.find(*tter)->second->begin(), grammar->rules_by_tag.find(*tter)->second->end());
+						TagList mappings;
+						const_foreach (TagList, rule->q_maplist, tter, tter_end) {
+							if ((*tter)->type & T_MAPPING || (*tter)->tag[0] == grammar->mapping_prefix) {
+								mappings.push_back(*tter);
+							}
+							else {
+								reading->tags_list.push_back((*tter)->hash);
+							}
+							if (grammar->rules_by_tag.find((*tter)->hash) != grammar->rules_by_tag.end()) {
+								current->valid_rules.insert(grammar->rules_by_tag.find((*tter)->hash)->second->begin(), grammar->rules_by_tag.find((*tter)->hash)->second->end());
 							}
 						}
 						reflowReading(reading);
-						if (!reading->tags_mapped.empty()) {
-							reading->mapped = true;
+						if (!mappings.empty()) {
+							splitMappings(mappings, cohort, reading, true);
 						}
 					}
 					else if (rule->type == K_SUBSTITUTE) {
@@ -337,36 +317,60 @@ rule_was_bad:
 									break;
 								}
 							}
-							const_foreach (uint32List, rule->maplist, tter, tter_end) {
-								if (*tter == grammar->tag_any) {
+							TagList mappings;
+							const_foreach (TagList, rule->q_maplist, tter, tter_end) {
+								if ((*tter)->hash == grammar->tag_any) {
 									break;
 								}
-								reading->tags_list.insert(tfind, *tter);
-								if (grammar->rules_by_tag.find(*tter) != grammar->rules_by_tag.end()) {
-									current->valid_rules.insert(grammar->rules_by_tag.find(*tter)->second->begin(), grammar->rules_by_tag.find(*tter)->second->end());
+								if ((*tter)->type & T_MAPPING || (*tter)->tag[0] == grammar->mapping_prefix) {
+									mappings.push_back(*tter);
+								}
+								else {
+									reading->tags_list.insert(tfind, (*tter)->hash);
+								}
+								if (grammar->rules_by_tag.find((*tter)->hash) != grammar->rules_by_tag.end()) {
+									current->valid_rules.insert(grammar->rules_by_tag.find((*tter)->hash)->second->begin(), grammar->rules_by_tag.find((*tter)->hash)->second->end());
 								}
 							}
 							reflowReading(reading);
-							if (!reading->tags_mapped.empty()) {
-								reading->mapped = true;
+							if (!mappings.empty()) {
+								splitMappings(mappings, cohort, reading, true);
 							}
 						}
 					}
-					else if (rule->type == K_APPEND && !did_append) {
-						Reading *nr = cohort->allocateAppendReading();
-						nr->hit_by.push_back(rule->line);
-						nr->noprint = false;
-						addTagToReading(nr, cohort->wordform);
-						const_foreach (uint32List, rule->maplist, tter, tter_end) {
-							addTagToReading(nr, *tter);
-							if (grammar->rules_by_tag.find(*tter) != grammar->rules_by_tag.end()) {
-								current->valid_rules.insert(grammar->rules_by_tag.find(*tter)->second->begin(), grammar->rules_by_tag.find(*tter)->second->end());
+					else if (rule->type == K_APPEND && rule->line != did_append) {
+						reading = cohort->allocateAppendReading();
+						reading->hit_by.push_back(rule->line);
+						reading->noprint = false;
+						addTagToReading(reading, cohort->wordform);
+						TagList mappings;
+						const_foreach (TagList, rule->q_maplist, tter, tter_end) {
+							if ((*tter)->type & T_MAPPING || (*tter)->tag[0] == grammar->mapping_prefix) {
+								mappings.push_back(*tter);
+							}
+							else {
+								addTagToReading(reading, (*tter)->hash);
+							}
+							if (grammar->rules_by_tag.find((*tter)->hash) != grammar->rules_by_tag.end()) {
+								current->valid_rules.insert(grammar->rules_by_tag.find((*tter)->hash)->second->begin(), grammar->rules_by_tag.find((*tter)->hash)->second->end());
 							}
 						}
-						if (!nr->tags_mapped.empty()) {
-							nr->mapped = true;
+						if (!mappings.empty()) {
+							Tag *tag = mappings.back();
+							mappings.pop_back();
+							foreach (TagList, mappings, ttag, ttag_end) {
+								Reading *nr = r->new_Reading(cohort);
+								nr->duplicateFrom(reading);
+								nr->mapped = true;
+								addTagToReading(nr, (*ttag)->hash);
+								nr->mapping = *ttag;
+								cohort->appendReading(nr);
+							}
+							reading->mapped = true;
+							addTagToReading(reading, tag->hash);
+							reading->mapping = tag;
 						}
-						did_append = true;
+						did_append = rule->line;
 					}
 					else if (type == K_SETPARENT || type == K_SETCHILD) {
 						Cohort *attach = runContextualTest(current, c, rule->dep_target);
@@ -418,13 +422,13 @@ rule_was_bad:
 								if (type == K_SETRELATION) {
 									attach->is_related = true;
 									cohort->is_related = true;
-									cohort->relations.insert( std::pair<uint32_t,uint32_t>(attach->global_number, rule->maplist.front()) );
+									cohort->relations.insert( std::pair<uint32_t,uint32_t>(attach->global_number, (rule->q_maplist.front())->hash) );
 								}
 								else {
 									std::multimap<uint32_t,uint32_t>::iterator miter = cohort->relations.find(attach->global_number);
 									while (miter != cohort->relations.end()
 										&& miter->first == attach->global_number
-										&& miter->second == rule->maplist.front()) {
+										&& miter->second == (rule->q_maplist.front())->hash) {
 											cohort->relations.erase(miter);
 											miter = cohort->relations.find(attach->global_number);
 									}
@@ -454,14 +458,14 @@ rule_was_bad:
 								if (type == K_SETRELATIONS) {
 									attach->is_related = true;
 									cohort->is_related = true;
-									cohort->relations.insert( std::pair<uint32_t,uint32_t>(attach->global_number, rule->maplist.front()) );
+									cohort->relations.insert( std::pair<uint32_t,uint32_t>(attach->global_number, (rule->q_maplist.front())->hash) );
 									attach->relations.insert( std::pair<uint32_t,uint32_t>(cohort->global_number, rule->sublist.front()) );
 								}
 								else {
 									std::multimap<uint32_t,uint32_t>::iterator miter = cohort->relations.find(attach->global_number);
 									while (miter != cohort->relations.end()
 										&& miter->first == attach->global_number
-										&& miter->second == rule->maplist.front()) {
+										&& miter->second == (rule->q_maplist.front())->hash) {
 											cohort->relations.erase(miter);
 											miter = cohort->relations.find(attach->global_number);
 									}
@@ -500,7 +504,7 @@ rule_was_bad:
 			}
 
 			cohort->is_disamb = false;
-			if (cohort->readings.size() == 1 && cohort->readings.front()->tags_mapped.size() <= 1) {
+			if (cohort->readings.size() == 1) {
 				cohort->is_disamb = true;
 			}
 

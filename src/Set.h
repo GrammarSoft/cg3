@@ -32,7 +32,6 @@ namespace CG3 {
 	class Set {
 	public:
 		bool match_any;
-		bool has_mappings;
 		bool is_special;
 		bool is_unified;
 		bool is_child_unified;

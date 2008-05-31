@@ -42,7 +42,7 @@ void Cohort::clear(SingleWindow *p) {
 		r->delete_Reading(*iter1);
 	}
 	readings.clear();
-	foreach (std::list<Reading*>, readings, iter2, iter2_end) {
+	foreach (std::list<Reading*>, deleted, iter2, iter2_end) {
 		r->delete_Reading(*iter2);
 	}
 	deleted.clear();
@@ -71,7 +71,7 @@ Cohort::~Cohort() {
 	foreach (std::list<Reading*>, readings, iter1, iter1_end) {
 		r->delete_Reading(*iter1);
 	}
-	foreach (std::list<Reading*>, readings, iter2, iter2_end) {
+	foreach (std::list<Reading*>, deleted, iter2, iter2_end) {
 		r->delete_Reading(*iter2);
 	}
 	if (parent) {

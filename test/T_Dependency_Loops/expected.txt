@@ -1,9 +1,9 @@
 "<There>"
-	"there" <*> ADV @F-SUBJ #1->3 #1->3 
+	"there" <*> ADV #1->3 @F-SUBJ #1->3 
 "<once>"
 	"once" ADV @ADVL #2->0 
 "<was>"
-	"be" <SVC/N> <SVC/A> V PAST SG1/3 VFIN IMP @FMV #3->1 #3->1 
+	"be" <SVC/N> <SVC/A> V PAST SG1/3 VFIN IMP #3->1 @FMV #3->1 
 "<a>"
 	"a" <Indef> ART DET CENTRAL SG @>N #4->5 
 "<man>"
@@ -12,7 +12,8 @@
 	"that" <NonMod> <**CLB> <Rel> PRON INDP SG/PL @SUBJ #6->0 
 "<walked>"
 	"walk" <SV> <SVO> V PAST VFIN @FMV #7->0 
-	"walk" <SV> <SVO> V PAST VFIN @FMV @#FS-N< #7->0 
+	"walk" <SV> <SVO> V PAST VFIN @FMV #7->0 
+	"walk" <SV> <SVO> V PAST VFIN @#FS-N< #7->0 
 "<down>"
 	"down" <error> PRP @ADVL #8->2 
 "<the>"

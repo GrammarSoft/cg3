@@ -171,11 +171,11 @@ void GrammarApplicator::reflowDependencyWindow() {
 
 void GrammarApplicator::reflowReading(Reading *reading) {
 	reading->tags.clear();
-	reading->tags_mapped.clear();
 	reading->tags_plain.clear();
 	reading->tags_textual.clear();
 	reading->tags_numerical.clear();
 	reading->possible_sets.clear();
+	reading->mapping = 0;
 
 	if (grammar->sets_by_tag.find(grammar->tag_any) != grammar->sets_by_tag.end()) {
 		reading->possible_sets.insert(grammar->sets_by_tag.find(grammar->tag_any)->second->begin(), grammar->sets_by_tag.find(grammar->tag_any)->second->end());
@@ -196,7 +196,7 @@ void GrammarApplicator::reflowReading(Reading *reading) {
 		}
 		assert(tag != 0);
 		if (tag->type & T_MAPPING || tag->tag[0] == grammar->mapping_prefix) {
-			reading->tags_mapped.insert(*tter);
+			reading->mapping = tag;
 		}
 		if (tag->type & (T_TEXTUAL|T_WORDFORM|T_BASEFORM)) {
 			reading->tags_textual.insert(*tter);
@@ -247,7 +247,11 @@ void GrammarApplicator::addTagToReading(Reading *reading, uint32_t utag) {
 	}
 	assert(tag != 0);
 	if (tag->type & T_MAPPING || tag->tag[0] == grammar->mapping_prefix) {
-		reading->tags_mapped.insert(utag);
+		if (reading->mapping && reading->mapping != tag) {
+			u_fprintf(ux_stderr, "Error: addTagToReading() cannot add a mapping tag to a reading which already is mapped!\n");
+			CG3Quit(1);
+		}
+		reading->mapping = tag;
 	}
 	if (tag->type & (T_TEXTUAL|T_WORDFORM|T_BASEFORM)) {
 		reading->tags_textual.insert(utag);
@@ -284,9 +288,68 @@ void GrammarApplicator::addTagToReading(Reading *reading, uint32_t utag) {
 void GrammarApplicator::delTagFromReading(Reading *reading, uint32_t utag) {
 	reading->tags_list.remove(utag);
 	reading->tags.erase(utag);
-	reading->tags_mapped.erase(utag);
 	reading->tags_textual.erase(utag);
 	reading->tags_numerical.erase(utag);
 	reading->tags_plain.erase(utag);
+	if (utag == reading->mapping->hash) {
+		reading->mapping = 0;
+	}
 	reading->rehash();
+}
+
+void GrammarApplicator::splitMappings(TagList mappings, Cohort *cohort, Reading *reading, bool mapped) {
+	Recycler *r = Recycler::instance();
+	if (reading->mapping) {
+		mappings.push_back(reading->mapping);
+		delTagFromReading(reading, reading->mapping->hash);
+	}
+	Tag *tag = mappings.back();
+	mappings.pop_back();
+	foreach (TagList, mappings, ttag, ttag_end) {
+		Reading *nr = r->new_Reading(cohort);
+		nr->duplicateFrom(reading);
+		nr->mapped = mapped;
+		addTagToReading(nr, (*ttag)->hash);
+		nr->mapping = *ttag;
+		cohort->appendReading(nr);
+	}
+	reading->mapped = mapped;
+	addTagToReading(reading, tag->hash);
+	reading->mapping = tag;
+}
+
+void GrammarApplicator::mergeMappings(Cohort *cohort) {
+	Recycler *r = Recycler::instance();
+
+	std::map<uint32_t, std::list<Reading*>> mlist;
+	foreach (std::list<Reading*>, cohort->readings, iter, iter_end) {
+		Reading *r = *iter;
+		uint32_t hp = r->hash_plain;
+		mlist[hp].push_back(r);
+	}
+
+	if (mlist.size() == cohort->readings.size()) {
+		return;
+	}
+
+	cohort->readings.clear();
+
+	std::map<uint32_t, std::list<Reading*>>::iterator miter;
+	for (miter = mlist.begin() ; miter != mlist.end() ; miter++) {
+		std::list<Reading*> clist = miter->second;
+		Reading *nr = r->new_Reading(cohort);
+		nr->duplicateFrom(clist.front());
+		if (nr->mapping) {
+			nr->tags_list.remove(nr->mapping->hash);
+		}
+		foreach (std::list<Reading*>, clist, iter1, iter1_end) {
+			if ((*iter1)->mapping) {
+				nr->tags_list.push_back((*iter1)->mapping->hash);
+			}
+			r->delete_Reading(*iter1);
+		}
+		cohort->readings.push_back(nr);
+	}
+
+	cohort=cohort;
 }

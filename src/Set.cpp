@@ -25,7 +25,6 @@ using namespace CG3;
 
 Set::Set() {
 	match_any = false;
-	has_mappings = false;
 	is_special = false;
 	is_unified = false;
 	is_child_unified = false;
@@ -83,7 +82,6 @@ uint32_t Set::rehash() {
 }
 
 void Set::reindex(Grammar *grammar) {
-	has_mappings = false;
 	if (is_unified || is_child_unified) {
 		is_special = true;
 		is_child_unified = true;
@@ -96,10 +94,6 @@ void Set::reindex(Grammar *grammar) {
 			if (tag->is_special) {
 				is_special = true;
 			}
-			if (tag->type & T_MAPPING || tag->type & T_VARIABLE || tag->tag[0] == grammar->mapping_prefix) {
-				has_mappings = true;
-				return;
-			}
 		}
 		CompositeTagHashSet::const_iterator comp_iter;
 		for (comp_iter = q_tags.begin() ; comp_iter != q_tags.end() ; comp_iter++) {
@@ -109,20 +103,12 @@ void Set::reindex(Grammar *grammar) {
 				if (tag->is_special) {
 					is_special = true;
 				}
-				if (tag->type & T_MAPPING || tag->type & T_VARIABLE || tag->tag[0] == grammar->mapping_prefix) {
-					has_mappings = true;
-					return;
-				}
 			} else {
 				TagSet::const_iterator tag_iter;
 				for (tag_iter = curcomptag->q_tags_set.begin() ; tag_iter != curcomptag->q_tags_set.end() ; tag_iter++) {
 					Tag *tag = *tag_iter;
 					if (tag->is_special) {
 						is_special = true;
-					}
-					if (tag->type & T_MAPPING || tag->type & T_VARIABLE || tag->tag[0] == grammar->mapping_prefix) {
-						has_mappings = true;
-						return;
 					}
 				}
 			}
@@ -136,9 +122,6 @@ void Set::reindex(Grammar *grammar) {
 			}
 			if (set->is_unified || set->is_child_unified) {
 				is_child_unified = true;
-			}
-			if (set->has_mappings) {
-				has_mappings = true;
 			}
 		}
 	}

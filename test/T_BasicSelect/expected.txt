@@ -1,2 +1,8 @@
 "<word>"
 	"word" wanted 
+"<word>"
+	"word" mapped @A @B 
+"<word>"
+	"word" notwanted 
+	"word" notmeeither 
+	"word" mapped @D @E @X 

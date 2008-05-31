@@ -39,7 +39,8 @@
 "<o>"
 	"o" <artd> DET M S @>N #45->46 #18->19 
 "<recorde>"
-	"recorde" <ac> N M S @<ACC #46->44 §PAT §EXP #19->17 
+	"recorde" <ac> N M S @<ACC #46->44 §EXP #19->17 
+	"recorde" <ac> N M S @<ACC #46->44 §PAT #19->17 
 "<$.>"
 	"$." PU @PU #47->0 #20->0 
 
