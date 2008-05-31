@@ -35,6 +35,7 @@ namespace CG3 {
 		uint32_t baseform;
 		uint32_t hash;
 		uint32_t hash_plain;
+		uint32_t number;
 		bool mapped;
 		bool deleted;
 		uint32Vector hit_by;
@@ -59,6 +60,7 @@ namespace CG3 {
 		void duplicateFrom(Reading *r);
 
 		uint32_t rehash();
+		static bool cmp_number(Reading *a, Reading *b);
 	};
 
 }

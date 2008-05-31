@@ -372,9 +372,11 @@ ApertiumApplicator::processReading(SingleWindow *cSWindow, Reading *cReading, UC
 								grammar->rules_by_tag.find(tag)->second->end());
 			}
 
+			/*
 			if(!cReading->tags_mapped->empty()) {
 				cReading->mapped = true;
 			}
+			//*/
 
 			delete[] tmptag;
 			tmptag = 0;
