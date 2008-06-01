@@ -23,8 +23,8 @@ fi
 if test x$ARCH = xppc
 then
   AC_MSG_RESULT([PowerPC])
-  CFLAGS="-Wall -ansi -mpowerpc -maltivec -fno-pic -fomit-frame-pointer $CFLAGS"
-  CXXFLAGS="-Wall -ansi -mpowerpc -maltivec -fno-pic -fomit-frame-pointer $CXXFLAGS"
+  CFLAGS="-Wall -ansi -mpowerpc -maltivec -mdynamic-no-pic -fomit-frame-pointer $CFLAGS"
+  CXXFLAGS="-Wall -ansi -mpowerpc -maltivec -mdynamic-no-pic -fomit-frame-pointer $CXXFLAGS"
 else
   if test x$ARCH = xi686
   then
