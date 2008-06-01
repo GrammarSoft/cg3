@@ -99,8 +99,8 @@ namespace CG3 {
 		Tag *addTag(Tag *simpletag);
 		void addTagToCompositeTag(Tag *simpletag, CompositeTag *tag);
 
-		CompositeTag *q_addCompositeTag(CompositeTag *tag);
-		CompositeTag *q_addCompositeTagToSet(Set *set, CompositeTag *tag);
+		CompositeTag *addCompositeTag(CompositeTag *tag);
+		CompositeTag *addCompositeTagToSet(Set *set, CompositeTag *tag);
 		CompositeTag *allocateCompositeTag();
 		void destroyCompositeTag(CompositeTag *tag);
 

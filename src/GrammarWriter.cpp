@@ -43,20 +43,20 @@ void GrammarWriter::printSet(UFILE *output, const Set *curset) {
 		used_sets.insert(curset->hash);
 		u_fprintf(output, "LIST %S = ", curset->name);
 		TagHashSet::const_iterator tomp_iter;
-		for (tomp_iter = curset->q_single_tags.begin() ; tomp_iter != curset->q_single_tags.end() ; tomp_iter++) {
+		for (tomp_iter = curset->single_tags.begin() ; tomp_iter != curset->single_tags.end() ; tomp_iter++) {
 			printTag(output, *tomp_iter);
 			u_fprintf(output, " ");
 		}
 		CompositeTagHashSet::const_iterator comp_iter;
-		for (comp_iter = curset->q_tags.begin() ; comp_iter != curset->q_tags.end() ; comp_iter++) {
+		for (comp_iter = curset->tags.begin() ; comp_iter != curset->tags.end() ; comp_iter++) {
 			CompositeTag *curcomptag = *comp_iter;
-			if (curcomptag->q_tags.size() == 1) {
-				printTag(output, *(curcomptag->q_tags.begin()));
+			if (curcomptag->tags.size() == 1) {
+				printTag(output, *(curcomptag->tags.begin()));
 				u_fprintf(output, " ");
 			} else {
 				u_fprintf(output, "(");
 				TagSet::const_iterator tag_iter;
-				for (tag_iter = curcomptag->q_tags_set.begin() ; tag_iter != curcomptag->q_tags_set.end() ; tag_iter++) {
+				for (tag_iter = curcomptag->tags_set.begin() ; tag_iter != curcomptag->tags_set.end() ; tag_iter++) {
 					printTag(output, *tag_iter);
 					u_fprintf(output, " ");
 				}
@@ -178,9 +178,9 @@ void GrammarWriter::printRule(UFILE *to, const Rule *rule) {
 		u_fprintf(to, ") ");
 	}
 
-	if (!rule->q_maplist.empty()) {
+	if (!rule->maplist.empty()) {
 		u_fprintf(to, "(");
-		const_foreach (TagList, rule->q_maplist, iter, iter_end) {
+		const_foreach (TagList, rule->maplist, iter, iter_end) {
 			printTag(to, *iter);
 			u_fprintf(to, " ");
 		}

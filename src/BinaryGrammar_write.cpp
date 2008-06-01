@@ -106,10 +106,10 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 		u32tmp = (uint32_t)htonl((uint32_t)curcomptag->hash);
 		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 
-		u32tmp = (uint32_t)htonl((uint32_t)curcomptag->q_tags_set.size());
+		u32tmp = (uint32_t)htonl((uint32_t)curcomptag->tags_set.size());
 		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 		TagSet::const_iterator tag_iter;
-		for (tag_iter = curcomptag->q_tags_set.begin() ; tag_iter != curcomptag->q_tags_set.end() ; tag_iter++) {
+		for (tag_iter = curcomptag->tags_set.begin() ; tag_iter != curcomptag->tags_set.end() ; tag_iter++) {
 			u32tmp = (uint32_t)htonl((*tag_iter)->number);
 			fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 		}
@@ -142,17 +142,17 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 		if (s->sets.empty()) {
 			u8tmp = (uint8_t)0;
 			fwrite(&u8tmp, sizeof(uint8_t), 1, output);
-			u32tmp = (uint32_t)htonl((uint32_t)s->q_single_tags.size());
+			u32tmp = (uint32_t)htonl((uint32_t)s->single_tags.size());
 			fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 			TagHashSet::const_iterator tomp_iter;
-			for (tomp_iter = s->q_single_tags.begin() ; tomp_iter != s->q_single_tags.end() ; tomp_iter++) {
+			for (tomp_iter = s->single_tags.begin() ; tomp_iter != s->single_tags.end() ; tomp_iter++) {
 				u32tmp = (uint32_t)htonl((*tomp_iter)->number);
 				fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 			}
-			u32tmp = (uint32_t)htonl((uint32_t)s->q_tags.size());
+			u32tmp = (uint32_t)htonl((uint32_t)s->tags.size());
 			fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 			CompositeTagHashSet::const_iterator comp_iter;
-			for (comp_iter = s->q_tags.begin() ; comp_iter != s->q_tags.end() ; comp_iter++) {
+			for (comp_iter = s->tags.begin() ; comp_iter != s->tags.end() ; comp_iter++) {
 				u32tmp = (uint32_t)htonl((*comp_iter)->number);
 				fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 			}
@@ -233,9 +233,9 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 		u32tmp = (uint32_t)htonl((uint32_t)r->varvalue);
 		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 
-		u32tmp = (uint32_t)htonl((uint32_t)r->q_maplist.size());
+		u32tmp = (uint32_t)htonl((uint32_t)r->maplist.size());
 		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
-		const_foreach (TagList, r->q_maplist, liter1, liter1_end) {
+		const_foreach (TagList, r->maplist, liter1, liter1_end) {
 			u32tmp = (uint32_t)htonl((*liter1)->hash);
 			fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 		}
