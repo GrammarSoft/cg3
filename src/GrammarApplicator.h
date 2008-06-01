@@ -129,7 +129,7 @@ namespace CG3 {
 
 		inline bool __index_matches(const stdext::hash_map<uint32_t, uint32HashSet*> *me, const uint32_t value, const uint32_t set);
 		void reflowReading(Reading *reading);
-		void addTagToReading(Reading *reading, uint32_t tag);
+		void addTagToReading(Reading *reading, uint32_t tag, bool rehash = true);
 		void delTagFromReading(Reading *reading, uint32_t tag);
 		void splitMappings(TagList mappings, Cohort *cohort, Reading *reading, bool mapped = false);
 		void mergeMappings(Cohort *cohort);
