@@ -250,7 +250,7 @@ rule_was_bad:
 						reading->hit_by.push_back(rule->line);
 						reading->noprint = false;
 						TagList mappings;
-						const_foreach (TagList, rule->q_maplist, tter, tter_end) {
+						const_foreach (TagList, rule->maplist, tter, tter_end) {
 							if ((*tter)->type & T_MAPPING || (*tter)->tag[0] == grammar->mapping_prefix) {
 								mappings.push_back(*tter);
 							}
@@ -275,7 +275,7 @@ rule_was_bad:
 						reading->tags_list.push_back(reading->wordform);
 						reading->tags_list.push_back(reading->baseform);
 						TagList mappings;
-						const_foreach (TagList, rule->q_maplist, tter, tter_end) {
+						const_foreach (TagList, rule->maplist, tter, tter_end) {
 							if ((*tter)->type & T_MAPPING || (*tter)->tag[0] == grammar->mapping_prefix) {
 								mappings.push_back(*tter);
 							}
@@ -318,7 +318,7 @@ rule_was_bad:
 								}
 							}
 							TagList mappings;
-							const_foreach (TagList, rule->q_maplist, tter, tter_end) {
+							const_foreach (TagList, rule->maplist, tter, tter_end) {
 								if ((*tter)->hash == grammar->tag_any) {
 									break;
 								}
@@ -344,7 +344,7 @@ rule_was_bad:
 						reading->noprint = false;
 						addTagToReading(reading, cohort->wordform);
 						TagList mappings;
-						const_foreach (TagList, rule->q_maplist, tter, tter_end) {
+						const_foreach (TagList, rule->maplist, tter, tter_end) {
 							if ((*tter)->type & T_MAPPING || (*tter)->tag[0] == grammar->mapping_prefix) {
 								mappings.push_back(*tter);
 							}
@@ -422,13 +422,13 @@ rule_was_bad:
 								if (type == K_SETRELATION) {
 									attach->is_related = true;
 									cohort->is_related = true;
-									cohort->relations.insert( std::pair<uint32_t,uint32_t>(attach->global_number, (rule->q_maplist.front())->hash) );
+									cohort->relations.insert( std::pair<uint32_t,uint32_t>(attach->global_number, (rule->maplist.front())->hash) );
 								}
 								else {
 									std::multimap<uint32_t,uint32_t>::iterator miter = cohort->relations.find(attach->global_number);
 									while (miter != cohort->relations.end()
 										&& miter->first == attach->global_number
-										&& miter->second == (rule->q_maplist.front())->hash) {
+										&& miter->second == (rule->maplist.front())->hash) {
 											cohort->relations.erase(miter);
 											miter = cohort->relations.find(attach->global_number);
 									}
@@ -458,14 +458,14 @@ rule_was_bad:
 								if (type == K_SETRELATIONS) {
 									attach->is_related = true;
 									cohort->is_related = true;
-									cohort->relations.insert( std::pair<uint32_t,uint32_t>(attach->global_number, (rule->q_maplist.front())->hash) );
+									cohort->relations.insert( std::pair<uint32_t,uint32_t>(attach->global_number, (rule->maplist.front())->hash) );
 									attach->relations.insert( std::pair<uint32_t,uint32_t>(cohort->global_number, rule->sublist.front()) );
 								}
 								else {
 									std::multimap<uint32_t,uint32_t>::iterator miter = cohort->relations.find(attach->global_number);
 									while (miter != cohort->relations.end()
 										&& miter->first == attach->global_number
-										&& miter->second == (rule->q_maplist.front())->hash) {
+										&& miter->second == (rule->maplist.front())->hash) {
 											cohort->relations.erase(miter);
 											miter = cohort->relations.find(attach->global_number);
 									}

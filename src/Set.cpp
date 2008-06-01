@@ -89,23 +89,23 @@ void Set::reindex(Grammar *grammar) {
 
 	if (sets.empty()) {
 		TagHashSet::const_iterator tomp_iter;
-		for (tomp_iter = q_single_tags.begin() ; tomp_iter != q_single_tags.end() ; tomp_iter++) {
+		for (tomp_iter = single_tags.begin() ; tomp_iter != single_tags.end() ; tomp_iter++) {
 			Tag *tag = *tomp_iter;
 			if (tag->is_special) {
 				is_special = true;
 			}
 		}
 		CompositeTagHashSet::const_iterator comp_iter;
-		for (comp_iter = q_tags.begin() ; comp_iter != q_tags.end() ; comp_iter++) {
+		for (comp_iter = tags.begin() ; comp_iter != tags.end() ; comp_iter++) {
 			CompositeTag *curcomptag = *comp_iter;
-			if (curcomptag->q_tags.size() == 1) {
-				Tag *tag = *(curcomptag->q_tags.begin());
+			if (curcomptag->tags.size() == 1) {
+				Tag *tag = *(curcomptag->tags.begin());
 				if (tag->is_special) {
 					is_special = true;
 				}
 			} else {
 				TagSet::const_iterator tag_iter;
-				for (tag_iter = curcomptag->q_tags_set.begin() ; tag_iter != curcomptag->q_tags_set.end() ; tag_iter++) {
+				for (tag_iter = curcomptag->tags_set.begin() ; tag_iter != curcomptag->tags_set.end() ; tag_iter++) {
 					Tag *tag = *tag_iter;
 					if (tag->is_special) {
 						is_special = true;
