@@ -19,7 +19,6 @@
 * along with VISL CG-3.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 #include "GrammarApplicator.h"
 
 using namespace CG3;
@@ -99,8 +98,8 @@ rule_was_bad:
 			bool did_test = false;
 			bool test_good = false;
 
-			foreach (std::list<Reading*>, cohort->readings, rter, rter_end) {
-				Reading *reading = *rter;
+			foreach (std::list<Reading*>, cohort->readings, rter1, rter1_end) {
+				Reading *reading = *rter1;
 				reading->matched_target = false;
 				reading->matched_tests = false;
 
@@ -169,10 +168,9 @@ rule_was_bad:
 			std::list<Reading*> removed;
 			std::list<Reading*> selected;
 
-			// ToDo: Should not use foreach() since .end() is dynamic in this context. True?
 			// ToDo: Test APPEND followed by MAP
-			for (rter = cohort->readings.begin() ; rter != cohort->readings.end() ; rter++) {
-				Reading *reading = *rter;
+			foreach (std::list<Reading*>, cohort->readings, rter2, rter2_end) {
+				Reading *reading = *rter2;
 				bool good = reading->matched_tests;
 
 				if (rule->type == K_IFF && type == K_REMOVE && reading->matched_target) {
@@ -243,8 +241,8 @@ rule_was_bad:
 						}
 
 						cohort = current->cohorts.back();
-						for (rter = cohort->readings.begin() ; rter != cohort->readings.end() ; rter++) {
-							Reading *reading = *rter;
+						foreach (std::list<Reading*>, cohort->readings, rter3, rter3_end) {
+							Reading *reading = *rter3;
 							addTagToReading(reading, endtag);
 						}
 						delimited = true;
