@@ -170,12 +170,19 @@ bool GrammarApplicator::doesTagMatchReading(const Reading *reading, const uint32
 bool GrammarApplicator::doesSetMatchReading(Reading *reading, const uint32_t set, bool bypass_index) {
 	bool retval = false;
 
+	assert(reading->hash != 1);
+
 	if (reading->possible_sets.find(set) == reading->possible_sets.end()) {
 		return false;
 	}
-	if (reading->hash != 1) {
-		if (!bypass_index && __index_matches(&index_reading_yes, reading->hash, set)) { return true; }
-		if (__index_matches(&index_reading_no, reading->hash, set)) { return false; }
+	if (!bypass_index && __index_matches(&index_plain_yes, reading->hash_plain, set)) {
+		return true;
+	}
+	if (!bypass_index && __index_matches(&index_reading_yes, reading->hash, set)) {
+		return true;
+	}
+	if (__index_matches(&index_reading_no, reading->hash, set)) {
+		return false;
 	}
 
 	cache_miss++;
@@ -302,16 +309,19 @@ bool GrammarApplicator::doesSetMatchReading(Reading *reading, const uint32_t set
 	}
 
 	if (retval) {
-		if (reading->hash != 1) {
-			if (index_reading_yes.find(reading->hash) == index_reading_yes.end()) {
-				Recycler *r = Recycler::instance();
-				index_reading_yes[reading->hash] = r->new_uint32HashSet();
-			}
-			index_reading_yes[reading->hash]->insert(set);
+		if (index_reading_yes.find(reading->hash) == index_reading_yes.end()) {
+			Recycler *r = Recycler::instance();
+			index_reading_yes[reading->hash] = r->new_uint32HashSet();
 		}
+		index_reading_yes[reading->hash]->insert(set);
+		if (index_plain_yes.find(reading->hash_plain) == index_plain_yes.end()) {
+			Recycler *r = Recycler::instance();
+			index_plain_yes[reading->hash_plain] = r->new_uint32HashSet();
+		}
+		index_plain_yes[reading->hash_plain]->insert(set);
 	}
 	else {
-		if (reading->hash != 1 && !unif_mode) {
+		if (!unif_mode) {
 			if (index_reading_no.find(reading->hash) == index_reading_no.end()) {
 				Recycler *r = Recycler::instance();
 				index_reading_no[reading->hash] = r->new_uint32HashSet();

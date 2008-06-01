@@ -102,6 +102,7 @@ namespace CG3 {
 
 		stdext::hash_map<uint32_t, uint32HashSet*> index_reading_yes;
 		stdext::hash_map<uint32_t, uint32HashSet*> index_reading_no;
+		stdext::hash_map<uint32_t, uint32HashSet*> index_plain_yes;
 		void resetIndexes();
 	
 		Tag *addTag(const UChar *tag);
