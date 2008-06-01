@@ -63,10 +63,12 @@ rule_was_bad:
 		const Set *set = grammar->sets_by_contents.find(rule->target)->second;
 
 		// ToDo: Update list of in/valid rules upon MAP, ADD, REPLACE, APPEND, SUBSTITUTE; add tags + always add tag_any
+		/*
 		bool rule_is_valid = false;
 		if (set->is_unified) {
 			rule_is_valid = true;
 		}
+		//*/
 
 		for (size_t c=1 ; c < current->cohorts.size() ; c++) {
 			Cohort *cohort = current->cohorts[c];
@@ -111,10 +113,12 @@ rule_was_bad:
 
 				// ToDo: Enable/Disable unif_mode per top-level set
 				unif_mode = false;
-				unif_tags.clear();
+				if (!unif_tags.empty()) {
+					unif_tags.clear();
+				}
 
 				if (rule->target && doesSetMatchReading(reading, rule->target, set->is_child_unified)) {
-					rule_is_valid = true;
+					//rule_is_valid = true;
 
 					reading->matched_target = true;
 					bool good = true;
@@ -340,6 +344,7 @@ rule_was_bad:
 					}
 					else if (rule->type == K_APPEND && rule->line != did_append) {
 						reading = cohort->allocateAppendReading();
+						numReadings++;
 						reading->hit_by.push_back(rule->line);
 						reading->noprint = false;
 						addTagToReading(reading, cohort->wordform);

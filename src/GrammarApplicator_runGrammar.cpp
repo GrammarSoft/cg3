@@ -284,19 +284,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 				u_fflush(ux_stderr);
 			}
 			if (!mappings.empty()) {
-				Tag *tag = mappings.back();
-				mappings.pop_back();
-				foreach (TagList, mappings, ttag, ttag_end) {
-					Reading *nr = r->new_Reading(cCohort);
-					nr->duplicateFrom(cReading);
-					nr->mapped = true;
-					addTagToReading(nr, (*ttag)->hash);
-					nr->mapping = *ttag;
-					cCohort->appendReading(nr);
-				}
-				cReading->mapped = true;
-				addTagToReading(cReading, tag->hash);
-				cReading->mapping = tag;
+				splitMappings(mappings, cCohort, cReading, true);
 			}
 			cCohort->appendReading(cReading);
 			lReading = cReading;
