@@ -74,6 +74,9 @@ rule_was_bad:
 			if (cohort->readings.empty()) {
 				continue;
 			}
+			if (cohort->possible_sets.find(rule->target) == cohort->possible_sets.end()) {
+				continue;
+			}
 
 			if ((type == K_SELECT || type == K_REMOVE || type == K_IFF) && (cohort->is_disamb || cohort->readings.size() == 1)) {
 				continue;
@@ -160,9 +163,6 @@ rule_was_bad:
 			if (all_active && (rule->type == K_SELECT || rule->type == K_REMOVE)) {
 				continue;
 			}
-			if (all_active && (rule->type == K_SELECT || rule->type == K_REMOVE)) {
-				continue;
-			}
 
 			uint32_t did_append = 0;
 			std::list<Reading*> removed;
@@ -222,6 +222,7 @@ rule_was_bad:
 						cReading->baseform = begintag;
 						cReading->wordform = begintag;
 						if (grammar->sets_by_tag.find(grammar->tag_any) != grammar->sets_by_tag.end()) {
+							cReading->parent->possible_sets.insert(grammar->sets_by_tag.find(grammar->tag_any)->second->begin(), grammar->sets_by_tag.find(grammar->tag_any)->second->end());
 							cReading->possible_sets.insert(grammar->sets_by_tag.find(grammar->tag_any)->second->begin(), grammar->sets_by_tag.find(grammar->tag_any)->second->end());
 						}
 						addTagToReading(cReading, begintag);
