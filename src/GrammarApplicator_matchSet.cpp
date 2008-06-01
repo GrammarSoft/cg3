@@ -27,11 +27,13 @@ using namespace CG3::Strings;
 bool GrammarApplicator::doesTagMatchSet(const uint32_t tag, const Set *set) {
 	bool retval = false;
 
-	if (grammar->single_tags.find(tag) == grammar->single_tags.end()) {
+	
+	stdext::hash_map<uint32_t, Tag*>::const_iterator itag = grammar->single_tags.find(tag);
+	if (itag == grammar->single_tags.end()) {
 		return false;
 	}
 
-	Tag *t = grammar->single_tags.find(tag)->second;
+	Tag *t = itag->second;
 	if (set->single_tags.find(t) != set->single_tags.end()) {
 		retval = true;
 	}
@@ -49,8 +51,9 @@ bool GrammarApplicator::doesTagMatchSet(const uint32_t tag, const Set *set) {
 }
 
 inline bool GrammarApplicator::__index_matches(const stdext::hash_map<uint32_t, uint32HashSet*> *me, const uint32_t value, const uint32_t set) {
-	if (me->find(value) != me->end()) {
-		const uint32HashSet *index = me->find(value)->second;
+	stdext::hash_map<uint32_t, uint32HashSet*>::const_iterator ime = me->find(value);
+	if (ime != me->end()) {
+		const uint32HashSet *index = ime->second;
 		if (index->find(set) != index->end()) {
 			cache_hits++;
 			return true;

@@ -181,71 +181,20 @@ void GrammarApplicator::reflowReading(Reading *reading) {
 		reading->possible_sets.insert(grammar->sets_by_tag.find(grammar->tag_any)->second->begin(), grammar->sets_by_tag.find(grammar->tag_any)->second->end());
 	}
 
-	uint32List::const_iterator tter;
-	for (tter = reading->tags_list.begin() ; tter != reading->tags_list.end() ; tter++) {
-		if (grammar->sets_by_tag.find(*tter) != grammar->sets_by_tag.end()) {
-			reading->possible_sets.insert(grammar->sets_by_tag.find(*tter)->second->begin(), grammar->sets_by_tag.find(*tter)->second->end());
-		}
-		reading->tags.insert(*tter);
-		Tag *tag = 0;
-		if (grammar->single_tags.find(*tter) != grammar->single_tags.end()) {
-			tag = grammar->single_tags.find(*tter)->second;
-		}
-		else {
-			tag = single_tags.find(*tter)->second;
-		}
-		assert(tag != 0);
-		if (tag->type & T_MAPPING || tag->tag[0] == grammar->mapping_prefix) {
-			reading->mapping = tag;
-		}
-		if (tag->type & (T_TEXTUAL|T_WORDFORM|T_BASEFORM)) {
-			reading->tags_textual.insert(*tter);
-		}
-		if (tag->type & T_NUMERICAL) {
-			reading->tags_numerical.insert(*tter);
-		}
-		if (!reading->baseform && tag->type & T_BASEFORM) {
-			reading->baseform = tag->hash;
-		}
-		if (!reading->wordform && tag->type & T_WORDFORM) {
-			reading->wordform = tag->hash;
-		}
-		if (grammar->has_dep && tag->type & T_DEPENDENCY && !reading->parent->dep_self && !reading->parent->dep_parent) {
-			reading->parent->dep_self = tag->dep_self;
-			reading->parent->dep_parent = tag->dep_parent;
-			has_dep = true;
-			if (reading->parent->dep_self <= dep_highest_seen) {
-				reflowDependencyWindow();
-				gWindow->dep_map.clear();
-				gWindow->dep_window.clear();
-				dep_highest_seen = 0;
-			}
-			else {
-				dep_highest_seen = reading->parent->dep_self;
-			}
-		}
-		if (!tag->type) {
-			reading->tags_plain.insert(*tter);
-		}
+	const_foreach (uint32List, reading->tags_list, tter, tter_end) {
+		addTagToReading(reading, *tter, false);
 	}
 
 	reading->rehash();
 }
 
-void GrammarApplicator::addTagToReading(Reading *reading, uint32_t utag) {
+void GrammarApplicator::addTagToReading(Reading *reading, uint32_t utag, bool rehash) {
 	if (grammar->sets_by_tag.find(utag) != grammar->sets_by_tag.end()) {
 		reading->possible_sets.insert(grammar->sets_by_tag.find(utag)->second->begin(), grammar->sets_by_tag.find(utag)->second->end());
 	}
-	reading->tags_list.push_back(utag);
 	reading->tags.insert(utag);
-	Tag *tag = 0;
-	if (grammar->single_tags.find(utag) != grammar->single_tags.end()) {
-		tag = grammar->single_tags.find(utag)->second;
-	}
-	else {
-		tag = single_tags.find(utag)->second;
-	}
-	assert(tag != 0);
+	Tag *tag = single_tags.find(utag)->second;
+
 	if (tag->type & T_MAPPING || tag->tag[0] == grammar->mapping_prefix) {
 		if (reading->mapping && reading->mapping != tag) {
 			u_fprintf(ux_stderr, "Error: addTagToReading() cannot add a mapping tag to a reading which already is mapped!\n");
@@ -282,7 +231,10 @@ void GrammarApplicator::addTagToReading(Reading *reading, uint32_t utag) {
 	if (!tag->type) {
 		reading->tags_plain.insert(utag);
 	}
-	reading->rehash();
+	if (rehash) {
+		reading->tags_list.push_back(utag);
+		reading->rehash();
+	}
 }
 
 void GrammarApplicator::delTagFromReading(Reading *reading, uint32_t utag) {
