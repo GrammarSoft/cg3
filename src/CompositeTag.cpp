@@ -31,14 +31,14 @@ CompositeTag::CompositeTag() {
 CompositeTag::~CompositeTag() {
 }
 
-void CompositeTag::q_addTag(Tag *tag) {
-	q_tags.insert(tag);
-	q_tags_set.insert(tag);
+void CompositeTag::addTag(Tag *tag) {
+	tags.insert(tag);
+	tags_set.insert(tag);
 }
 
 uint32_t CompositeTag::rehash() {
 	uint32_t retval = 0;
-	foreach (TagSet, q_tags_set, iter, iter_end) {
+	foreach (TagSet, tags_set, iter, iter_end) {
 		retval = hash_sdbm_uint32_t((*iter)->hash, retval);
 	}
 	hash = retval;

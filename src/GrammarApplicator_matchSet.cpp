@@ -32,15 +32,15 @@ bool GrammarApplicator::doesTagMatchSet(const uint32_t tag, const Set *set) {
 	}
 
 	Tag *t = grammar->single_tags.find(tag)->second;
-	if (set->q_single_tags.find(t) != set->q_single_tags.end()) {
+	if (set->single_tags.find(t) != set->single_tags.end()) {
 		retval = true;
 	}
 	else {
 		CompositeTag *ctag = new CompositeTag();
-		ctag->q_addTag(t);
+		ctag->addTag(t);
 		ctag->rehash();
 
-		if (set->q_tags.find(ctag) != set->q_tags.end()) {
+		if (set->tags.find(ctag) != set->tags.end()) {
 			retval = true;
 		}
 		delete ctag;
@@ -194,7 +194,7 @@ bool GrammarApplicator::doesSetMatchReading(Reading *reading, const uint32_t set
 		}
 		else if (theset->sets.empty()) {
 			TagHashSet::const_iterator ster;
-			for (ster = theset->q_single_tags.begin() ; ster != theset->q_single_tags.end() ; ster++) {
+			for (ster = theset->single_tags.begin() ; ster != theset->single_tags.end() ; ster++) {
 				bool match = doesTagMatchReading(reading, (*ster)->hash, bypass_index);
 				if (match) {
 					if (unif_mode) {
@@ -210,12 +210,12 @@ bool GrammarApplicator::doesSetMatchReading(Reading *reading, const uint32_t set
 
 			if (!retval) {
 				CompositeTagHashSet::const_iterator ster;
-				for (ster = theset->q_tags.begin() ; ster != theset->q_tags.end() ; ster++) {
+				for (ster = theset->tags.begin() ; ster != theset->tags.end() ; ster++) {
 					bool match = true;
 					const CompositeTag *ctag = *ster;
 
 					TagHashSet::const_iterator cter;
-					for (cter = ctag->q_tags.begin() ; cter != ctag->q_tags.end() ; cter++) {
+					for (cter = ctag->tags.begin() ; cter != ctag->tags.end() ; cter++) {
 						bool inner = doesTagMatchReading(reading, (*cter)->hash, bypass_index);
 						if (!inner) {
 							match = false;
