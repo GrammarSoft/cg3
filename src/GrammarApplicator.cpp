@@ -82,6 +82,9 @@ GrammarApplicator::~GrammarApplicator() {
 	for (indt = index_reading_no.begin() ; indt != index_reading_no.end() ; indt++) {
 		r->delete_uint32HashSet(indt->second);
 	}
+	for (indt = index_plain_yes.begin() ; indt != index_plain_yes.end() ; indt++) {
+		r->delete_uint32HashSet(indt->second);
+	}
 	for (indt = index_tags_regexp.begin() ; indt != index_tags_regexp.end() ; indt++) {
 		r->delete_uint32HashSet(indt->second);
 	}
@@ -96,14 +99,22 @@ GrammarApplicator::~GrammarApplicator() {
 void GrammarApplicator::resetIndexes() {
 	Recycler *r = Recycler::instance();
 	stdext::hash_map<uint32_t, uint32HashSet*>::iterator indt;
+
 	for (indt = index_reading_yes.begin() ; indt != index_reading_yes.end() ; indt++) {
 		r->delete_uint32HashSet(indt->second);
 	}
 	index_reading_yes.clear();
+
 	for (indt = index_reading_no.begin() ; indt != index_reading_no.end() ; indt++) {
 		r->delete_uint32HashSet(indt->second);
 	}
 	index_reading_no.clear();
+
+	for (indt = index_plain_yes.begin() ; indt != index_plain_yes.end() ; indt++) {
+		r->delete_uint32HashSet(indt->second);
+	}
+	index_plain_yes.clear();
+
 	for (indt = index_tags_regexp.begin() ; indt != index_tags_regexp.end() ; indt++) {
 		r->delete_uint32HashSet(indt->second);
 	}
