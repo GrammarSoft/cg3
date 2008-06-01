@@ -312,6 +312,7 @@ void GrammarApplicator::splitMappings(TagList mappings, Cohort *cohort, Reading 
 		addTagToReading(nr, (*ttag)->hash);
 		nr->mapping = *ttag;
 		cohort->appendReading(nr);
+		numReadings++;
 	}
 	reading->mapped = mapped;
 	addTagToReading(reading, tag->hash);
