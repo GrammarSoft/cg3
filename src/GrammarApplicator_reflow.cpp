@@ -178,6 +178,7 @@ void GrammarApplicator::reflowReading(Reading *reading) {
 	reading->mapping = 0;
 
 	if (grammar->sets_by_tag.find(grammar->tag_any) != grammar->sets_by_tag.end()) {
+		reading->parent->possible_sets.insert(grammar->sets_by_tag.find(grammar->tag_any)->second->begin(), grammar->sets_by_tag.find(grammar->tag_any)->second->end());
 		reading->possible_sets.insert(grammar->sets_by_tag.find(grammar->tag_any)->second->begin(), grammar->sets_by_tag.find(grammar->tag_any)->second->end());
 	}
 
@@ -190,6 +191,7 @@ void GrammarApplicator::reflowReading(Reading *reading) {
 
 void GrammarApplicator::addTagToReading(Reading *reading, uint32_t utag, bool rehash) {
 	if (grammar->sets_by_tag.find(utag) != grammar->sets_by_tag.end()) {
+		reading->parent->possible_sets.insert(grammar->sets_by_tag.find(utag)->second->begin(), grammar->sets_by_tag.find(utag)->second->end());
 		reading->possible_sets.insert(grammar->sets_by_tag.find(utag)->second->begin(), grammar->sets_by_tag.find(utag)->second->end());
 	}
 	reading->tags.insert(utag);
