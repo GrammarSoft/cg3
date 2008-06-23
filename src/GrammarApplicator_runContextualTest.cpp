@@ -24,6 +24,11 @@
 using namespace CG3;
 
 Cohort *GrammarApplicator::runSingleTest(SingleWindow *sWindow, size_t i, const ContextualTest *test, bool *brk, bool *retval, Cohort **deep) {
+	if (i >= sWindow->cohorts.size()) {
+		*brk = true;
+		*retval = false;
+		return 0;
+	}
 	Cohort *cohort = sWindow->cohorts.at(i);
 	if (deep) {
 		*deep = cohort;
