@@ -305,7 +305,9 @@ ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output)
 		cWindow->previous.pop_front();
 	}
 
-	u_fprintf(output, "%C", inchar);
+	if((inchar) && inchar != 0xffff) {
+		u_fprintf(output, "%C", inchar);
+	}
 	u_fflush(input);
 	u_fflush(ux_stderr);
 	u_fflush(output);
