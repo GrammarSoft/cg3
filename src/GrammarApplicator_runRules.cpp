@@ -360,19 +360,7 @@ rule_was_bad:
 							}
 						}
 						if (!mappings.empty()) {
-							Tag *tag = mappings.back();
-							mappings.pop_back();
-							foreach (TagList, mappings, ttag, ttag_end) {
-								Reading *nr = r->new_Reading(cohort);
-								nr->duplicateFrom(reading);
-								nr->mapped = true;
-								addTagToReading(nr, (*ttag)->hash);
-								nr->mapping = *ttag;
-								cohort->appendReading(nr);
-							}
-							reading->mapped = true;
-							addTagToReading(reading, tag->hash);
-							reading->mapping = tag;
+							splitMappings(mappings, cohort, reading, true);
 						}
 						did_append = rule->line;
 					}
