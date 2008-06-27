@@ -49,6 +49,17 @@
       Using these modifiers will significantly slow down the matching as a hash lookup will no
       longer be enough. You can combine 'ir' for case-insensitive regular expressions.
     </para>
+    <para>
+      This will not work for wordforms used as the first qualifier of a rule, e.g:
+      <screen>
+        "&lt;wordform&gt;"i SELECT (tag) ;
+      </screen>
+      but those can be rewritten in a form such as
+      <screen>
+        SELECT ("&lt;wordform&gt;"i) + (tag) ;
+      </screen>
+      which will work, but be slightly slower.
+    </para>
   </section>
 
   <section id="numerical-matches">
