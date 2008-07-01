@@ -324,10 +324,29 @@ ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output)
 void
 ApertiumApplicator::processReading(SingleWindow *cSWindow, Reading *cReading, UChar *reading_string)
 {
+	UChar *m = reading_string;
 	UChar *c = reading_string;
 	UChar *tmptag = 0;
 	UChar *base = 0;
+	UChar *suf = 0;
 	bool unknown = false;
+	bool multi = false;
+
+	while(*m != '\0') {
+		if(*m == '\0') {
+			break;
+		}
+
+		if(*m == '#') {
+			multi = true;
+		}
+
+		if(multi) {
+			suf = ux_append(suf, *m);
+		}
+
+		m++;
+	}
 
 	// We encapsulate baseforms within '"' for internal processing.
 	base = ux_append(base, '"');
@@ -341,6 +360,10 @@ ApertiumApplicator::processReading(SingleWindow *cSWindow, Reading *cReading, UC
 		}
 		base = ux_append(base, *c);
 		c++;
+	}
+
+	if(suf != 0) {
+		base = ux_append(base, suf);
 	}
 	base = ux_append(base, '"');
 
