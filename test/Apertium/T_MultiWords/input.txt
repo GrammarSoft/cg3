@@ -1,0 +1,2 @@
+^diddorol/diddorol<adj>$^./.<sent>$[][
+]
