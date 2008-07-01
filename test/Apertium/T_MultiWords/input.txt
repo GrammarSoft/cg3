@@ -1,2 +1,2 @@
-^diddorol/diddorol<adj>$^./.<sent>$[][
+^mae/bod<vbser><pres><p3><sg>$^'n/yn<pr>/yn<part>$ ^amlwg/amlwg<adj><sint>$ ^ei/ei<det><pos><sp>/mynd<vblex><pres><p2><sg>$ ^fod/bod<vbser><inf>$ ^i/i<pr>/prpers<prn><subj><p1><mf><sg>$ ^dweud y gwir/dweud<vblex><inf># y gwir$^./.<sent>$[][
 ]

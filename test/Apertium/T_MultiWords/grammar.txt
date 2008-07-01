@@ -1,7 +1,8 @@
-DELIMITERS = "<$.>" ;
+DELIMITERS = "<.>" "<!>" "<?>";
 
-LIST ASet = wanted ;
+LIST VblexInf = (vblex inf);
+LIST Prep_i = ("i" pr);
 
 SECTION
 
-SELECT ASet ;
+SELECT Prep_i IF (1 VblexInf);
