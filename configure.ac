@@ -70,7 +70,7 @@ AC_FUNC_ERROR_AT_LINE
 AC_FUNC_MALLOC
 AC_FUNC_REALLOC
 
-AC_CHECK_ICU($ICU_VERSION, , [ *** install ICU, on Debian: apt-get install libicu-dev *** ])
+#AC_CHECK_ICU($ICU_VERSION, , [ *** install ICU, on Debian: apt-get install libicu-dev *** ])
 
 ICU_LIBS=`icu-config --ldflags`
 ICUIO_LIBS=`icu-config --ldflags-icuio`
