@@ -12,28 +12,9 @@ end of input to reset tagger probabilities. This can be discarded.
 
 ==Todo list==
 
-TODO: subclass GrammarApplicator and override printSingleWindow() and 
-      runGrammarOnText()
 TODO: make a binary for statistics cg-stat maybe 
 TODO: fix regular expression handling
 TODO: add the part about hard/soft limit
-
-==Basic cohort==
-
-;Examples
-
-$ echo "al final" | lt-proc es-ca.automorf.bin 
-^al final/al final<adv>$
-
-$ echo "vino" | apertium-destxt | lt-proc es-ca.automorf.bin 
-^vino/vino<n><m><sg>/venir<vblex><ifi><p3><sg>$^./.<sent>$[]
-
- |__| |__||________| 
-  WF   BF    TAGS
-       |_______|
-        READING
-|_____________________________________________|
-                   COHORT
 
 ==Complex cohorts==
 
@@ -51,7 +32,6 @@ $ echo "take it away" | apertium-destxt | lt-proc /usr/share/apertium/apertium-e
 
 $ echo "vino a la playa" | apertium-destxt | lt-proc es-ca.automorf.bin 
 ^vino/vino<n><m><sg>/venir<vblex><ifi><p3><sg>$ ^a/a<pr>$ ^la/el<det><def><f><sg>/lo<prn><pro><p3><f><sg>$ ^playa/playa<n><f><sg>$^./.<sent>$[]
-
 
 ==Links==
 
