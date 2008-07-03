@@ -1,6 +1,6 @@
 DELIMITERS = "<$.>" ;
 
-LIST ASet = wanted ;
+LIST ASet = (det def);
 
 SECTION
 

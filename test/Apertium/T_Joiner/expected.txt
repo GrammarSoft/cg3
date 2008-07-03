@@ -1,2 +1,2 @@
-^diddorol/diddorol<adj>$^./.<sent>$[][
+^i'r/i<pr>+yr<det><def><sp>$ ^diddorol/diddorol<adj>$^./.<sent>$[][
 ]
