@@ -380,15 +380,39 @@ ApertiumApplicator::processReading(SingleWindow *cSWindow, Reading *cReading, UC
 						grammar->rules_by_tag.find(tag)->second->end());
 	}
 
+	bool joiner = false;
+
 	// Now read in the tags
 	while(*c != '\0') {
 		if(*c == '\0') {
 			return;
 		}
 
+		if(*c == '+') {
+			joiner = true;
+		}
+
 		if(*c == '<') {
-			c++;
-			continue;
+			if(joiner == true) {
+				uint32_t tag = addTag(tmptag)->hash;
+				addTagToReading(cReading, tag); // Add the baseform to the tag
+
+				if (grammar->rules_by_tag.find(tag) != grammar->rules_by_tag.end()) {
+					cSWindow->valid_rules.insert(grammar->rules_by_tag.find(tag)->second->begin(), 
+									grammar->rules_by_tag.find(tag)->second->end());
+				}
+
+				delete[] tmptag;
+				tmptag = 0;
+				joiner = false;
+				c++;
+				continue;
+
+			} else {
+				c++;
+				continue;
+			}
+
 		} else if(*c == '>') {
 			uint32_t tag = addTag(tmptag)->hash;
 			addTagToReading(cReading, tag); // Add the baseform to the tag
@@ -406,6 +430,7 @@ ApertiumApplicator::processReading(SingleWindow *cSWindow, Reading *cReading, UC
 
 			delete[] tmptag;
 			tmptag = 0;
+			joiner = false;
 			c++;
 			continue;
 		}
@@ -445,9 +470,13 @@ ApertiumApplicator::printReading(Reading *reading, UFILE *output)
 		used_tags[*tter] = *tter;
 		const Tag *tag = single_tags[*tter];
 		if (!(tag->type & T_BASEFORM) && !(tag->type & T_WORDFORM)) {
-			u_fprintf(output, "<");
-			Tag::printTagRaw(output, tag);
-			u_fprintf(output, ">");
+			if(tag->tag[0] == '+') {
+				Tag::printTagRaw(output, tag);
+			} else {
+				u_fprintf(output, "<");
+				Tag::printTagRaw(output, tag);
+				u_fprintf(output, ">");
+			}
 		}
 	}
 
