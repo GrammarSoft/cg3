@@ -1,0 +1,12 @@
+LIST DetPos = (det pos);
+
+LIST MSoftC = ("<g.*>"r "c.*"r n m);
+LIST MAspC = ("<ch.*>"r "c.*"r n m);
+
+SECTION
+
+# mark a possessive determiner as being masculine if followed by soft mutation
+SUBSTITUTE (mf) (m) DetPos (1 MSoftC);
+
+# and feminine if followed by aspirate mutation.
+SUBSTITUTE (mf) (f) DetPos (1 MAspC);
