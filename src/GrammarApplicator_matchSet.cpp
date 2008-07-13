@@ -178,9 +178,6 @@ bool GrammarApplicator::doesSetMatchReading(Reading *reading, const uint32_t set
 	if (__index_matches(&index_reading_no, reading->hash, set)) {
 		return false;
 	}
-	if (!bypass_index && __index_matches(&index_plain_yes, reading->hash_plain, set)) {
-		return true;
-	}
 	if (!bypass_index && __index_matches(&index_reading_yes, reading->hash, set)) {
 		return true;
 	}
@@ -314,11 +311,6 @@ bool GrammarApplicator::doesSetMatchReading(Reading *reading, const uint32_t set
 			index_reading_yes[reading->hash] = r->new_uint32HashSet();
 		}
 		index_reading_yes[reading->hash]->insert(set);
-		if (index_plain_yes.find(reading->hash_plain) == index_plain_yes.end()) {
-			Recycler *r = Recycler::instance();
-			index_plain_yes[reading->hash_plain] = r->new_uint32HashSet();
-		}
-		index_plain_yes[reading->hash_plain]->insert(set);
 	}
 	else {
 		if (!unif_mode) {

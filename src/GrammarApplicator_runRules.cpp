@@ -101,6 +101,13 @@ rule_was_bad:
 			bool did_test = false;
 			bool test_good = false;
 
+			if (rule->line == 2079) {
+				rule = rule;
+			}
+			if (rule->line == 2080) {
+				rule = rule;
+			}
+
 			foreach (std::list<Reading*>, cohort->readings, rter1, rter1_end) {
 				Reading *reading = *rter1;
 				reading->matched_target = false;
