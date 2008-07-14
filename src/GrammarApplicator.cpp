@@ -190,18 +190,16 @@ void GrammarApplicator::printReading(Reading *reading, UFILE *output) {
 	}
 
 	if (trace) {
-		if (!reading->hit_by.empty()) {
-			for (uint32_t i=0;i<reading->hit_by.size();i++) {
-				Rule *r = grammar->rule_by_line.find(reading->hit_by.at(i))->second;
-				u_fprintf(output, "%S", keywords[r->type]);
-				if (!trace_name_only || !r->name) {
-					u_fprintf(output, ":%u", reading->hit_by.at(i));
-				}
-				if (r->name) {
-					u_fprintf(output, ":%S", r->name);
-				}
-				u_fprintf(output, " ");
+		foreach (uint32Vector, reading->hit_by, iter_hb, iter_hb_end) {
+			Rule *r = grammar->rule_by_line.find(*iter_hb)->second;
+			u_fprintf(output, "%S", keywords[r->type]);
+			if (!trace_name_only || !r->name) {
+				u_fprintf(output, ":%u", *iter_hb);
 			}
+			if (r->name) {
+				u_fprintf(output, ":%S", r->name);
+			}
+			u_fprintf(output, " ");
 		}
 	}
 
@@ -223,9 +221,7 @@ void GrammarApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 			u_fprintf(output, "%S", cohort->text);
 		}
 
-		if (!trace) {
-			mergeMappings(cohort);
-		}
+		mergeMappings(cohort);
 
 		foreach (std::list<Reading*>, cohort->readings, rter1, rter1_end) {
 			printReading(*rter1, output);
