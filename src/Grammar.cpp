@@ -356,6 +356,9 @@ void Grammar::reindex() {
 		if (iter_rule->second->target) {
 			indexSetToRule(iter_rule->second->line, getSet(iter_rule->second->target));
 		}
+		else {
+			u_fprintf(ux_stderr, "Warning: Rule on line %u had no target.\n", iter_rule->second->line);
+		}
 	}
 
 	sections.insert(sections.end(), sects.begin(), sects.end());

@@ -44,7 +44,7 @@ rule_was_bad:
 			break;
 		}
 		if (rule->section != start && (start == -1 || start == -2)) {
-			break;
+			continue;
 		}
 		clock_t tstamp = 0;
 		KEYWORDS type = rule->type;
