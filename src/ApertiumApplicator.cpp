@@ -108,6 +108,8 @@ ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output)
 			cReading->wordform = begintag;
 
 			if (grammar->sets_by_tag.find(grammar->tag_any) != grammar->sets_by_tag.end()) {
+				cReading->parent->possible_sets.insert(grammar->sets_by_tag.find(grammar->tag_any)->second->begin(),
+					grammar->sets_by_tag.find(grammar->tag_any)->second->end());
 				cReading->possible_sets.insert(grammar->sets_by_tag.find(grammar->tag_any)->second->begin(), 
 								grammar->sets_by_tag.find(grammar->tag_any)->second->end());
 			}
@@ -187,6 +189,8 @@ ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output)
 					cReading->wordform = cCohort->wordform;
 
 					if (grammar->sets_by_tag.find(grammar->tag_any) != grammar->sets_by_tag.end()) {
+						cReading->parent->possible_sets.insert(grammar->sets_by_tag.find(grammar->tag_any)->second->begin(),
+							grammar->sets_by_tag.find(grammar->tag_any)->second->end());
 						cReading->possible_sets.insert(grammar->sets_by_tag.find(grammar->tag_any)->second->begin(), 
 										 grammar->sets_by_tag.find(grammar->tag_any)->second->end());
 					}
@@ -236,6 +240,8 @@ ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output)
 					cReading->wordform = cCohort->wordform;
 					cReading->baseform = cCohort->wordform;
 					if (grammar->sets_by_tag.find(grammar->tag_any) != grammar->sets_by_tag.end()) {
+						cReading->parent->possible_sets.insert(grammar->sets_by_tag.find(grammar->tag_any)->second->begin(),
+							grammar->sets_by_tag.find(grammar->tag_any)->second->end());
 						cReading->possible_sets.insert(grammar->sets_by_tag.find(grammar->tag_any)->second->begin(), 
 										grammar->sets_by_tag.find(grammar->tag_any)->second->end());
 					}
@@ -263,6 +269,8 @@ ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output)
 			cReading->wordform = cCohort->wordform;
 			cReading->baseform = cCohort->wordform;
 			if (grammar->sets_by_tag.find(grammar->tag_any) != grammar->sets_by_tag.end()) {
+				cReading->parent->possible_sets.insert(grammar->sets_by_tag.find(grammar->tag_any)->second->begin(),
+					grammar->sets_by_tag.find(grammar->tag_any)->second->end());
 				cReading->possible_sets.insert(grammar->sets_by_tag.find(grammar->tag_any)->second->begin(), 
 								grammar->sets_by_tag.find(grammar->tag_any)->second->end());
 			}
