@@ -63,6 +63,9 @@ GrammarApplicator::GrammarApplicator(UFILE *ux_in, UFILE *ux_out, UFILE *ux_err)
 	numWindows = 0;
 	numCohorts = 0;
 	numReadings = 0;
+	no_sections = false;
+	no_after_sections = false;
+	no_before_sections = false;
 }
 
 GrammarApplicator::~GrammarApplicator() {
