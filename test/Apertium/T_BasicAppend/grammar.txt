@@ -1,5 +1,5 @@
 DELIMITERS = "<$.>" ;
 
-BEFORE-SECTIONS
+SECTION
 
 "<word>" APPEND ("newword" appended) (*) (NOT 0 (appended)) ;
