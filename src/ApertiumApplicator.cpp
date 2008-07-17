@@ -340,6 +340,13 @@ ApertiumApplicator::processReading(SingleWindow *cSWindow, Reading *cReading, UC
 	bool unknown = false;
 	bool multi = false;
 
+	if (grammar->sets_by_tag.find(grammar->tag_any) != grammar->sets_by_tag.end()) {
+		cReading->parent->possible_sets.insert(grammar->sets_by_tag.find(grammar->tag_any)->second->begin(),
+			grammar->sets_by_tag.find(grammar->tag_any)->second->end());
+		cReading->possible_sets.insert(grammar->sets_by_tag.find(grammar->tag_any)->second->begin(), 
+			grammar->sets_by_tag.find(grammar->tag_any)->second->end());
+	}
+
 	while(*m != '\0') {
 		if(*m == '\0') {
 			break;
