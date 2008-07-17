@@ -48,6 +48,8 @@ else
   fi
 fi
 
+CXXFLAGS="-Wno-deprecated $CXXFLAGS"
+
 AC_PROG_CXX
 AM_SANITY_CHECK
 AC_LANG_CPLUSPLUS
@@ -83,4 +85,4 @@ AC_CHECK_DECLS([fread_unlocked, fwrite_unlocked, fgetc_unlocked, \
                 
 AC_CHECK_FUNCS([setlocale strdup getopt_long])
 
-AC_OUTPUT([Makefile src/Makefile])
+AC_OUTPUT([Makefile src/Makefile m4/Makefile])

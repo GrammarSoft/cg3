@@ -1,2 +1,1 @@
-^weird/weird<notthis>$ ^word/word<notwanted>/word<wanted>/word<notmeeither>$
-
+^weird/weird<notthis>/werd<f>$ ^word/word<notwanted>/word<wanted>/word<notmeeither>/werd<f>$

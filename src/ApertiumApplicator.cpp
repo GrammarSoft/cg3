@@ -159,8 +159,8 @@ ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output)
 
 			// Read in the word form
 
-			wordform = ux_append(wordform, '"'); // We encapsulate wordforms within '"<' and '">' for internal processing.
-			wordform = ux_append(wordform, '<');
+			wordform = ux_append(wordform, '"');
+			wordform = ux_append(wordform, '<'); // We encapsulate wordforms within '"<' and '>"' for internal processing.
 			while(inchar != '/') {
 				inchar = u_fgetc(input); 
 
@@ -170,7 +170,8 @@ ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output)
 			}
 			wordform = ux_append(wordform, '>');
 			wordform = ux_append(wordform, '"');
-		
+
+			//u_fprintf(output, "# %S\n", wordform);
 			cCohort->wordform = addTag(wordform)->hash;
 	
 			if (grammar->rules_by_tag.find(cCohort->wordform) != grammar->rules_by_tag.end()) {
@@ -347,6 +348,8 @@ ApertiumApplicator::processReading(SingleWindow *cSWindow, Reading *cReading, UC
 			grammar->sets_by_tag.find(grammar->tag_any)->second->end());
 	}
 
+	// Look through the reading for the '#' symbol signifying that
+	// this is a multiword.
 	while(*m != '\0') {
 		if(*m == '\0') {
 			break;
@@ -377,7 +380,9 @@ ApertiumApplicator::processReading(SingleWindow *cSWindow, Reading *cReading, UC
 		c++;
 	}
 
-	if(suf != 0) {
+	if(suf != 0) { // Append the multiword suffix to the baseform
+		       // (this is normally done in pretransfer)
+
 		base = ux_append(base, suf);
 	}
 	base = ux_append(base, '"');
@@ -436,12 +441,6 @@ ApertiumApplicator::processReading(SingleWindow *cSWindow, Reading *cReading, UC
 				cSWindow->valid_rules.insert(grammar->rules_by_tag.find(tag)->second->begin(), 
 								grammar->rules_by_tag.find(tag)->second->end());
 			}
-
-			/*
-			if(!cReading->tags_mapped->empty()) {
-				cReading->mapped = true;
-			}
-			//*/
 
 			delete[] tmptag;
 			tmptag = 0;
