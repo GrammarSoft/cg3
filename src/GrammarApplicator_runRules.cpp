@@ -530,9 +530,11 @@ rule_was_bad:
 		if (delimited) {
 			break;
 		}
+		/*
 		if (current->valid_rules.empty()) {
 			break;
 		}
+		//*/
 	}
 
 	if (section_did_good) {
