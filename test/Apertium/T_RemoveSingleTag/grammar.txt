@@ -1,7 +1,7 @@
 DELIMITERS = "<$.>" ;
 
-LIST ASet = @tagB ;
-LIST CSet = @tagD ;
+LIST ASet = tagB ;
+LIST CSet = tagD ;
 
 SECTION
 
