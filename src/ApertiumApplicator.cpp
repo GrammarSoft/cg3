@@ -60,6 +60,7 @@ ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output)
 
 	UChar inchar = 0; 		// Current character 
 	bool superblank = false; 	// Are we in a superblank ?
+	bool incohort = false; 		// Are we in a cohort ?
 
 	begintag = addTag(stringbits[S_BEGINTAG])->hash; // Beginning of sentence tag
 	endtag = addTag(stringbits[S_ENDTAG])->hash; // End of sentence tag
@@ -134,7 +135,11 @@ ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output)
 			superblank = false;
 		}
 
-		if(superblank == true || inchar == ']' || u_isWhitespace(inchar) || u_ispunct(inchar)) {
+		if(inchar == '^') {
+			incohort = true;
+		}
+
+		if(superblank == true || inchar == ']' || u_isWhitespace(inchar) || incohort == false) {
 			if (cCohort) {
 				cCohort->text = ux_append(cCohort->text, inchar);
 			} else if (lSWindow) {
@@ -206,6 +211,8 @@ ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output)
 					delete[] current_reading;
 					current_reading = 0;
 					wordform = 0;
+
+					incohort = false;
 				}
 
 				if(inchar == '/') { // Reached end of reading
