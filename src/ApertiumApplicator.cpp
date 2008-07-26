@@ -134,7 +134,7 @@ ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output)
 			superblank = false;
 		}
 
-		if(superblank == true || inchar == ']' || u_isWhitespace(inchar)) {
+		if(superblank == true || inchar == ']' || u_isWhitespace(inchar) || u_ispunct(inchar)) {
 			if (cCohort) {
 				cCohort->text = ux_append(cCohort->text, inchar);
 			} else if (lSWindow) {
@@ -493,7 +493,6 @@ ApertiumApplicator::printReading(Reading *reading, UFILE *output)
 			}
 		}
 	}
-
 }
 
 void 
