@@ -139,7 +139,7 @@ ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output)
 			incohort = true;
 		}
 
-		if(superblank == true || inchar == ']' || u_isWhitespace(inchar) || incohort == false) {
+		if(superblank == true || inchar == ']' || incohort == false) {
 			if (cCohort) {
 				cCohort->text = ux_append(cCohort->text, inchar);
 			} else if (lSWindow) {
