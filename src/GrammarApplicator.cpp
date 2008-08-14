@@ -130,9 +130,14 @@ void GrammarApplicator::disableStatistics() {
 }
 
 Tag *GrammarApplicator::addTag(const UChar *txt) {
+	uint32_t hash = hash_sdbm_uchar(txt);
+	if (single_tags.find(hash) != single_tags.end()) {
+		return single_tags[hash];
+	}
+
 	Tag *tag = new Tag();
 	tag->parseTagRaw(txt);
-	uint32_t hash = tag->rehash();
+	hash = tag->rehash();
 	if (single_tags.find(hash) == single_tags.end()) {
 		single_tags[hash] = tag;
 	} else {

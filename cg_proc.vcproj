@@ -53,7 +53,6 @@
 				RuntimeTypeInfo="true"
 				UsePrecompiledHeader="0"
 				WarningLevel="4"
-				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="4"
 			/>
 			<Tool
@@ -137,7 +136,6 @@
 				ForceConformanceInForLoopScope="true"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
-				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="3"
 			/>
 			<Tool
@@ -160,7 +158,6 @@
 				SubSystem="1"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
-				OptimizeForWindows98="1"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
 				TargetMachine="1"
@@ -218,7 +215,6 @@
 				MinimalRebuild="true"
 				ForceConformanceInForLoopScope="true"
 				WarningLevel="3"
-				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="3"
 			/>
 			<Tool
@@ -234,7 +230,6 @@
 				Name="VCLinkerTool"
 				AdditionalDependencies="icuuc.lib icuio.lib icuin.lib WSock32.Lib"
 				AdditionalLibraryDirectories=""
-				OptimizeForWindows98="2"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
 			/>
