@@ -104,10 +104,17 @@ Grammar::~Grammar() {
 }
 
 void Grammar::addPreferredTarget(UChar *to) {
-	Tag *tag = new Tag();
-	tag->parseTag(to, ux_stderr);
-	tag->rehash();
-	tag = addTag(tag);
+	Tag *tag = 0;
+	uint32_t hash = hash_sdbm_uchar(to);
+	if (single_tags.find(hash) != single_tags.end()) {
+		tag = single_tags[hash];
+	}
+	else {
+		tag = new Tag();
+		tag->parseTag(to, ux_stderr);
+		tag->rehash();
+		tag = addTag(tag);
+	}
 	preferred_targets.push_back(tag->hash);
 }
 void Grammar::addSet(Set *to) {
@@ -223,8 +230,15 @@ Tag *Grammar::allocateTag() {
 	return new Tag;
 }
 Tag *Grammar::allocateTag(const UChar *tag) {
-	Tag *fresh = new Tag;
-	fresh->parseTag(tag, ux_stderr);
+	Tag *fresh = 0;
+	uint32_t hash = hash_sdbm_uchar(tag);
+	if (single_tags.find(hash) != single_tags.end()) {
+		fresh = single_tags[hash];
+	}
+	else {
+		fresh = new Tag;
+		fresh->parseTag(tag, ux_stderr);
+	}
 	return fresh;
 }
 Tag *Grammar::addTag(Tag *simpletag) {
@@ -236,7 +250,9 @@ Tag *Grammar::addTag(Tag *simpletag) {
 				CG3Quit(1);
 			}
 			Tag *t = single_tags[simpletag->hash];
-			destroyTag(simpletag);
+			if (simpletag != t) {
+				destroyTag(simpletag);
+			}
 			return t;
 		}
 		else {
