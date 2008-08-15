@@ -8,25 +8,18 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cg_proc", "cg_proc.vcproj",
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Common|Win32 = Common|Win32
 		Debug|Win32 = Debug|Win32
 		Release|Win32 = Release|Win32
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{439A194D-EC3B-42A4-8BD2-CADD9CB6087C}.Common|Win32.ActiveCfg = Release|Win32
-		{439A194D-EC3B-42A4-8BD2-CADD9CB6087C}.Common|Win32.Build.0 = Release|Win32
 		{439A194D-EC3B-42A4-8BD2-CADD9CB6087C}.Debug|Win32.ActiveCfg = Debug|Win32
 		{439A194D-EC3B-42A4-8BD2-CADD9CB6087C}.Debug|Win32.Build.0 = Debug|Win32
 		{439A194D-EC3B-42A4-8BD2-CADD9CB6087C}.Release|Win32.ActiveCfg = Release|Win32
 		{439A194D-EC3B-42A4-8BD2-CADD9CB6087C}.Release|Win32.Build.0 = Release|Win32
-		{78B338E7-9AF6-4CB7-818C-9A4E2765D527}.Common|Win32.ActiveCfg = Release|Win32
-		{78B338E7-9AF6-4CB7-818C-9A4E2765D527}.Common|Win32.Build.0 = Release|Win32
 		{78B338E7-9AF6-4CB7-818C-9A4E2765D527}.Debug|Win32.ActiveCfg = Debug|Win32
 		{78B338E7-9AF6-4CB7-818C-9A4E2765D527}.Debug|Win32.Build.0 = Debug|Win32
 		{78B338E7-9AF6-4CB7-818C-9A4E2765D527}.Release|Win32.ActiveCfg = Release|Win32
 		{78B338E7-9AF6-4CB7-818C-9A4E2765D527}.Release|Win32.Build.0 = Release|Win32
-		{2498EF8F-0AEF-4EBD-9C5B-5B7FBADFAD9F}.Common|Win32.ActiveCfg = Release|Win32
-		{2498EF8F-0AEF-4EBD-9C5B-5B7FBADFAD9F}.Common|Win32.Build.0 = Release|Win32
 		{2498EF8F-0AEF-4EBD-9C5B-5B7FBADFAD9F}.Debug|Win32.ActiveCfg = Debug|Win32
 		{2498EF8F-0AEF-4EBD-9C5B-5B7FBADFAD9F}.Debug|Win32.Build.0 = Debug|Win32
 		{2498EF8F-0AEF-4EBD-9C5B-5B7FBADFAD9F}.Release|Win32.ActiveCfg = Release|Win32
