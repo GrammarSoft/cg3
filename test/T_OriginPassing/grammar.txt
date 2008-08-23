@@ -1,0 +1,13 @@
+DELIMITERS = "<$.>" ;
+
+BEFORE-SECTIONS
+
+ADD (@error-right) (four) (-1* (one) LINK 1* (five)) ;
+ADD (@passed-right) (four) (-1*o (one) LINK 1* (five)) ;
+ADD (@error-left) (four) (1* (eight) LINK -1* (three)) ;
+ADD (@passed-left) (four) (1*o (eight) LINK -1* (three)) ;
+
+ADD (@error-reset-right) (five) (1*O (seven) LINK -1* (one) LINK 1* (eight)) ;
+ADD (@reset-right) (five) (1*O (seven) LINK -1* (one) LINK 1* (six)) ;
+ADD (@error-reset-left) (five) (-1*O (two) LINK 1* (eight) LINK -1* (one)) ;
+ADD (@reset-left) (five) (-1*O (two) LINK 1* (eight) LINK -1* (three)) ;

@@ -526,4 +526,7 @@ void GAppSetOpts(CG3::GrammarApplicator *applicator) {
 	if (options[MAGIC_READINGS].doesOccur) {
 		applicator->allow_magic_readings = false;
 	}
+	if (options[NO_PASS_ORIGIN].doesOccur) {
+		applicator->no_pass_origin = true;
+	}
 }

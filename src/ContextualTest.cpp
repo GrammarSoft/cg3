@@ -81,6 +81,12 @@ void ContextualTest::parsePosition(const UChar *input, UFILE *ux_stderr) {
 	if (u_strchr(input, '@')) {
 		pos |= POS_ABSOLUTE;
 	}
+	if (u_strchr(input, 'O')) {
+		pos |= POS_NO_PASS_ORIGIN;
+	}
+	if (u_strchr(input, 'o')) {
+		pos |= POS_PASS_ORIGIN;
+	}
 	UChar tmp[16];
 	tmp[0] = 0;
 	int32_t retval = u_sscanf(input, "%[^0-9]%d", &tmp, &offset);
@@ -94,6 +100,10 @@ void ContextualTest::parsePosition(const UChar *input, UFILE *ux_stderr) {
 	}
 	if ((pos & (POS_DEP_CHILD|POS_DEP_SIBLING|POS_DEP_PARENT)) && (pos & (POS_SCANFIRST|POS_SCANALL))) {
 		u_fprintf(ux_stderr, "Warning: Position '%S' is mixed. Behavior for mixed positions is undefined.\n", pos);
+	}
+	if ((pos & POS_PASS_ORIGIN) && (pos & POS_NO_PASS_ORIGIN)) {
+		u_fprintf(ux_stderr, "Error: '%S' is not a valid position - cannot have both O and o!\n", pos);
+		CG3Quit(1);
 	}
 }
 

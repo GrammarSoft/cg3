@@ -70,6 +70,7 @@ namespace Options {
 		DEP_ORIGINAL,
 		DEP_ALLOW_LOOPS,
 		MAGIC_READINGS,
+		NO_PASS_ORIGIN,
 		NUM_OPTIONS
 	};
 
@@ -126,7 +127,8 @@ namespace Options {
 		UOPTION_DEF("dep-original",			0, UOPT_NO_ARG),
 		UOPTION_DEF_D("dep-allow-loops",	0, UOPT_NO_ARG, "allows the creation of circular dependencies"),
 
-		UOPTION_DEF_D("no-magic-readings",	0, UOPT_NO_ARG, "prevents running rules on magic readings")
+		UOPTION_DEF_D("no-magic-readings",	0, UOPT_NO_ARG, "prevents running rules on magic readings"),
+		UOPTION_DEF_D("no-pass-origin",		'o', UOPT_NO_ARG, "prevents scanning tests from passing the point of origin")
 	};
 }
 

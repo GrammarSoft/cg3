@@ -66,6 +66,7 @@ GrammarApplicator::GrammarApplicator(UFILE *ux_in, UFILE *ux_out, UFILE *ux_err)
 	no_sections = false;
 	no_after_sections = false;
 	no_before_sections = false;
+	no_pass_origin = false;
 }
 
 GrammarApplicator::~GrammarApplicator() {
