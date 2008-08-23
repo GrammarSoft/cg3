@@ -23,7 +23,7 @@
 
 using namespace CG3;
 
-Cohort *GrammarApplicator::runSingleTest(SingleWindow *sWindow, size_t i, const ContextualTest *test, bool *brk, bool *retval, Cohort **deep) {
+Cohort *GrammarApplicator::runSingleTest(SingleWindow *sWindow, size_t i, const ContextualTest *test, bool *brk, bool *retval, Cohort **deep, Cohort *origin) {
 	if (i >= sWindow->cohorts.size()) {
 		*brk = true;
 		*retval = false;
@@ -47,7 +47,12 @@ Cohort *GrammarApplicator::runSingleTest(SingleWindow *sWindow, size_t i, const 
 		*retval = !*retval;
 	}
 	if (*retval && test->linked) {
-		*retval = (runContextualTest(sWindow, cohort->local_number, test->linked, deep) != 0);
+		if (test->pos & POS_NO_PASS_ORIGIN) {
+			*retval = (runContextualTest(sWindow, cohort->local_number, test->linked, deep, cohort) != 0);
+		}
+		else {
+			*retval = (runContextualTest(sWindow, cohort->local_number, test->linked, deep, origin) != 0);
+		}
 	}
 	if (foundfirst && test->pos & POS_SCANFIRST) {
 		*brk = true;
@@ -64,19 +69,22 @@ Cohort *GrammarApplicator::runSingleTest(SingleWindow *sWindow, size_t i, const 
 			*brk = true;
 		}
 	}
+	if (origin && origin == cohort && origin->local_number != 0) {
+		*brk = true;
+	}
 	if (foundfirst && *retval) {
 		*brk = true;
 	}
 	return cohort;
 }
 
-Cohort *GrammarApplicator::runContextualTest(SingleWindow *sWindow, const size_t position, const ContextualTest *test, Cohort **deep) {
+Cohort *GrammarApplicator::runContextualTest(SingleWindow *sWindow, const size_t position, const ContextualTest *test, Cohort **deep, Cohort *origin) {
 	Cohort *cohort = 0;
 	if (test->tmpl) {
 		Cohort *cdeep = 0;
-		cohort = runContextualTest(sWindow, position, test->tmpl, &cdeep);
+		cohort = runContextualTest(sWindow, position, test->tmpl, &cdeep, origin);
 		if (cohort && cdeep && test->linked) {
-			cohort = runContextualTest(cdeep->parent, cdeep->local_number, test->linked, &cdeep);
+			cohort = runContextualTest(cdeep->parent, cdeep->local_number, test->linked, &cdeep, origin);
 		}
 		if (deep) {
 			*deep = cdeep;
@@ -87,13 +95,13 @@ Cohort *GrammarApplicator::runContextualTest(SingleWindow *sWindow, const size_t
 		Cohort *cdeep = 0;
 		std::list<ContextualTest*>::const_iterator iter;
 		for (iter = test->ors.begin() ; iter != test->ors.end() ; iter++) {
-			cohort = runContextualTest(sWindow, position, *iter, &cdeep);
+			cohort = runContextualTest(sWindow, position, *iter, &cdeep, origin);
 			if (cohort) {
 				break;
 			}
 		}
 		if (cohort && cdeep && test->linked) {
-			cohort = runContextualTest(cdeep->parent, cdeep->local_number, test->linked, &cdeep);
+			cohort = runContextualTest(cdeep->parent, cdeep->local_number, test->linked, &cdeep, origin);
 		}
 		if (deep) {
 			*deep = cdeep;
@@ -138,6 +146,9 @@ Cohort *GrammarApplicator::runContextualTest(SingleWindow *sWindow, const size_t
 		retval = false;
 	}
 	else {
+		if (test->pos & POS_PASS_ORIGIN) {
+			origin = sWindow->cohorts.at(0);
+		}
 		if (deep) {
 			*deep = cohort;
 		}
@@ -151,7 +162,7 @@ Cohort *GrammarApplicator::runContextualTest(SingleWindow *sWindow, const size_t
 			for (uint32_t i=1 ; left || right ; i++) {
 				if (left) {
 					bool brk = false;
-					cohort = runSingleTest(left, lpos-i, test, &brk, &retval, deep);
+					cohort = runSingleTest(left, lpos-i, test, &brk, &retval, deep, origin);
 					if (brk && retval) {
 						break;
 					}
@@ -172,7 +183,7 @@ Cohort *GrammarApplicator::runContextualTest(SingleWindow *sWindow, const size_t
 				}
 				if (right) {
 					bool brk = false;
-					cohort = runSingleTest(right, rpos+i, test, &brk, &retval, deep);
+					cohort = runSingleTest(right, rpos+i, test, &brk, &retval, deep, origin);
 					if (brk && retval) {
 						break;
 					}
@@ -194,7 +205,7 @@ Cohort *GrammarApplicator::runContextualTest(SingleWindow *sWindow, const size_t
 		else if (test->offset < 0 && pos >= 0 && (test->pos & (POS_SCANALL|POS_SCANFIRST))) {
 			for (int i=pos;i>=0;i--) {
 				bool brk = false;
-				cohort = runSingleTest(sWindow, i, test, &brk, &retval, deep);
+				cohort = runSingleTest(sWindow, i, test, &brk, &retval, deep, origin);
 				if (brk) {
 					break;
 				}
@@ -207,7 +218,7 @@ Cohort *GrammarApplicator::runContextualTest(SingleWindow *sWindow, const size_t
 		else if (test->offset > 0 && pos <= (int32_t)sWindow->cohorts.size() && (test->pos & (POS_SCANALL|POS_SCANFIRST))) {
 			for (uint32_t i=pos;i<sWindow->cohorts.size();i++) {
 				bool brk = false;
-				cohort = runSingleTest(sWindow, i, test, &brk, &retval, deep);
+				cohort = runSingleTest(sWindow, i, test, &brk, &retval, deep, origin);
 				if (brk) {
 					break;
 				}
@@ -242,7 +253,7 @@ Cohort *GrammarApplicator::runContextualTest(SingleWindow *sWindow, const size_t
 				retval = !retval;
 			}
 			if (retval && test->linked) {
-				retval = (runContextualTest(sWindow, pos, test->linked, deep) != 0);
+				retval = (runContextualTest(sWindow, pos, test->linked, deep, origin) != 0);
 			}
 		}
 	}

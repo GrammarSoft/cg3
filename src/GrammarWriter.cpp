@@ -278,6 +278,12 @@ void GrammarWriter::printContextualTest(UFILE *to, const ContextualTest *test) {
 		if (test->pos & POS_SPAN_RIGHT) {
 			u_fprintf(to, ">");
 		}
+		if (test->pos & POS_PASS_ORIGIN) {
+			u_fprintf(to, "o");
+		}
+		if (test->pos & POS_NO_PASS_ORIGIN) {
+			u_fprintf(to, "O");
+		}
 
 		u_fprintf(to, " ");
 

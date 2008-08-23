@@ -1,0 +1,16 @@
+"<word>"
+	"word" one
+"<word>"
+	"word" two
+"<word>"
+	"word" three
+"<word>"
+	"word" four
+"<word>"
+	"word" five
+"<word>"
+	"word" six
+"<word>"
+	"word" seven
+"<word>"
+	"word" eight
