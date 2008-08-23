@@ -50,6 +50,7 @@ Options:
      --hard-limit          number of cohorts after which the window is forcefully cut; defaults to 500
      --dep-allow-loops     allows the creation of circular dependencies
      --no-magic-readings   prevents running rules on magic readings
+ -o, --no-pass-origin      prevents scanning tests from passing the point of origin
   </screen>
 
 </chapter>
