@@ -101,6 +101,15 @@
       </para>
     </section>
 
+    <section id="gotcha-origin-passing">
+      <title>Scanning Past Point of Origin</title>
+      <para>
+        In CG-1 and some versions of CG-2, scanning tests could not pass the point of origin, but in CG-3
+        they can by default do so. The cmdline flag --no-pass-origin can set the default behavior to that of
+        CG-1. See <link linkend="test-origin">Scanning Past Point of Origin</link> for more details.
+      </para>
+    </section>
+
     <section id="gotcha-first-last-tags">
       <title>&gt;&gt;&gt; and &lt;&lt;&lt;</title>
       <para>

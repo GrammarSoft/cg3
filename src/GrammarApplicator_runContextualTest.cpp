@@ -47,7 +47,7 @@ Cohort *GrammarApplicator::runSingleTest(SingleWindow *sWindow, size_t i, const 
 		*retval = !*retval;
 	}
 	if (*retval && test->linked) {
-		if (test->pos & POS_NO_PASS_ORIGIN) {
+		if (test->linked->pos & POS_NO_PASS_ORIGIN) {
 			*retval = (runContextualTest(sWindow, cohort->local_number, test->linked, deep, cohort) != 0);
 		}
 		else {
@@ -70,6 +70,7 @@ Cohort *GrammarApplicator::runSingleTest(SingleWindow *sWindow, size_t i, const 
 		}
 	}
 	if (origin && origin == cohort && origin->local_number != 0) {
+		*retval = false;
 		*brk = true;
 	}
 	if (foundfirst && *retval) {

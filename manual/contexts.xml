@@ -104,6 +104,61 @@
     </section>
   </section>
 
+  <section id="test-origin">
+    <title>Scanning Past Point of Origin</title>
+    <indexterm>
+      <primary>--no-pass-origin</primary>
+      <secondary>-o</secondary>
+    </indexterm>
+    <indexterm>
+      <primary>O</primary>
+    </indexterm>
+    <indexterm>
+      <primary>o</primary>
+    </indexterm>
+    <para>
+      By default, linked scanning tests are allowed to scan past the point of origin.
+      These options affect behavior.
+    </para>
+
+    <section id="test-origin-cmdline">
+      <title>--no-pass-origin, -o</title>
+      <para>
+        The --no-pass-origin (or -o in short form) changes the default mode to not allow passing the origin,
+        and defines the origin as the target of the currently active rule.
+        This is equivalent to adding 'O' to the first test of each contextual test of all rules.
+      </para>
+    </section>
+
+    <section id="test-no-pass-origin">
+      <title>No Pass Origin</title>
+      <para>
+        'O' sets the point of origin to the parent of the contextual test, and disallows itself and all linked
+        tests to pass this point of origin. The reason it sets it to the parent is that otherwise there is no
+        way to mark the rule's target as the desired origin.
+      </para>
+      <screen>
+        # Will not pass the (origin) cohort when looking for (right):
+        SELECT (origin) IF (-1*O (left) LINK 1* (right)) ;
+
+        # Will not pass the (origin) cohort when looking for (left):
+        SELECT (something) IF (-1* (origin) LINK 1*O (right) LINK -1* (left)) ;
+      </screen>
+    </section>
+
+    <section id="test-pass-origin">
+      <title>Pass Origin</title>
+      <para>
+        'o' allows the contextual test and all its linked tests to pass the point of origin,
+        even in --no-pass-origin mode. Used to counter 'O'.
+      </para>
+      <screen>
+        # Will pass the (origin) cohort when looking for (right), but not when looking for (middle):
+        SELECT (origin) IF (-1*O (left) LINK 1* (middle) LINK 1*o (right)) ;
+      </screen>
+    </section>
+  </section>
+
   <section id="test-nearest">
     <title>Nearest Neighbor</title>
     <para>
