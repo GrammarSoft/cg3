@@ -127,7 +127,12 @@ rule_was_bad:
 					if (!rule->tests.empty() && !did_test) {
 						foreach (std::list<ContextualTest*>, rule->tests, iter, iter_end) {
 							ContextualTest *test = *iter;
-							test_good = (runContextualTest(current, c, test) != 0);
+							if (!(test->pos & POS_PASS_ORIGIN) && (no_pass_origin || (test->pos & POS_NO_PASS_ORIGIN))) {
+								test_good = (runContextualTest(current, c, test, 0, cohort) != 0);
+							}
+							else {
+								test_good = (runContextualTest(current, c, test) != 0);
+							}
 							if (!test_good) {
 								good = test_good;
 								if (!statistics) {

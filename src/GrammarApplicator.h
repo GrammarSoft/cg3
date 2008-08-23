@@ -43,6 +43,7 @@ namespace CG3 {
 		bool trace_no_removed;
 		bool single_run;
 		bool allow_magic_readings;
+		bool no_pass_origin;
 
 		bool dep_reenum;
 		bool dep_delimit;
@@ -109,8 +110,8 @@ namespace CG3 {
 		int runGrammarOnWindow(Window *window);
 		uint32_t runRulesOnWindow(SingleWindow *current, const int32_t start, const int32_t end);
 
-		Cohort *runSingleTest(SingleWindow *sWindow, size_t i, const ContextualTest *test, bool *brk, bool *retval, Cohort **deep = 0);
-		Cohort *runContextualTest(SingleWindow *sWindow, const size_t position, const ContextualTest *test, Cohort **deep = 0);
+		Cohort *runSingleTest(SingleWindow *sWindow, size_t i, const ContextualTest *test, bool *brk, bool *retval, Cohort **deep = 0, Cohort *origin = 0);
+		Cohort *runContextualTest(SingleWindow *sWindow, const size_t position, const ContextualTest *test, Cohort **deep = 0, Cohort *origin = 0);
 
 		bool doesTagMatchSet(const uint32_t tag, const Set *set);
 		bool doesTagMatchReading(const Reading *reading, const uint32_t tag, bool bypass_index = false);
