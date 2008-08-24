@@ -5,9 +5,9 @@
 "<word>"
 	"word" three 
 "<word>"
-	"word" four @passed-right @passed-left 
+	"word" four @not-right @passed-right @not-left @passed-left 
 "<word>"
-	"word" five @reset-right @reset-left 
+	"word" five @not-reset-right @reset-right @not-reset-left @reset-left 
 "<word>"
 	"word" six 
 "<word>"
