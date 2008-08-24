@@ -3,13 +3,17 @@ DELIMITERS = "<$.>" ;
 BEFORE-SECTIONS
 
 ADD (@error-right) (four) (-1* (one) LINK 1* (five)) ;
+ADD (@not-right) (four) (-1* (one) LINK NOT 1* (five)) ;
 ADD (@passed-right) (four) (-1* (one) LINK 1*o (five)) ;
 ADD (@error-left) (four) (1* (eight) LINK -1* (three)) ;
+ADD (@not-left) (four) (1* (eight) LINK NOT -1* (three)) ;
 ADD (@passed-left) (four) (1* (eight) LINK -1*o (three)) ;
 
 ADD (@error-reset-right) (five) (1* (seven) LINK -1*O (one) LINK 1* (eight)) ;
+ADD (@not-reset-right) (five) (1* (seven) LINK -1*O (one) LINK NOT 1* (eight)) ;
 ADD (@reset-right) (five) (1* (seven) LINK -1*O (one) LINK 1* (six)) ;
 ADD (@error-reset-left) (five) (-1* (two) LINK 1*O (eight) LINK -1* (one)) ;
+ADD (@not-reset-left) (five) (-1* (two) LINK 1*O (eight) LINK NOT -1* (one)) ;
 ADD (@reset-left) (five) (-1* (two) LINK 1*O (eight) LINK -1* (three)) ;
 
 ADD (@error-origin) (four) (-1* (one) LINK 1* (four)) ;
