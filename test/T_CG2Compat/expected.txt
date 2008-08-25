@@ -1,0 +1,17 @@
+"<word>"
+	"word" notwanted 
+	"word" wanted @not 
+	"word" notmeeither 
+"<word>"
+	"word" notwanted 
+	"word" maybe 
+	"word" notmeeither 
+"<word>"
+	"word" notwanted 
+	"word" wanted @not2negate 
+	"word" notmeeither 
+"<word>"
+	"word" notwanted 
+	"word" wanted @not2negate 
+	"word" notmeeither 
+
