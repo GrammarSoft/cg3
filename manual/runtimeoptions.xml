@@ -23,6 +23,7 @@ Options:
      --check-only          same as --grammar-only
  -s, --sections            number of sections to run; defaults to all sections
  -v, --verbose             increases verbosity
+ -2, --vislcg-compat       enables compatibility mode for older CG-2 and vislcg grammars
  -I, --stdin               file to print output to instead of stdout
  -O, --stdout              file to read input from instead of stdin
  -E, --stderr              file to print errors to instead of stderr
