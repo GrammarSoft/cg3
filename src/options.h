@@ -88,7 +88,7 @@ namespace Options {
 		UOPTION_DEF_D("sections",			's', UOPT_REQUIRES_ARG, "number of sections to run; defaults to all sections"),
 		UOPTION_DEF("debug",				'd', UOPT_OPTIONAL_ARG),
 		UOPTION_DEF_D("verbose",			'v', UOPT_OPTIONAL_ARG, "increases verbosity"),
-		UOPTION_DEF("vislcg-compat",		'P', UOPT_NO_ARG),
+		UOPTION_DEF_D("vislcg-compat",		'2', UOPT_NO_ARG, "enables compatibility mode for older CG-2 and vislcg grammars"),
 
 		UOPTION_DEF_D("stdin",				'I', UOPT_REQUIRES_ARG, "file to print output to instead of stdout"),
 		UOPTION_DEF_D("stdout",				'O', UOPT_REQUIRES_ARG, "file to read input from instead of stdin"),
