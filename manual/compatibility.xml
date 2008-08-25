@@ -80,6 +80,11 @@
           (NEGATE 1 LSet LINK 1 KSet LINK 1 JSet)
         </screen>
       </para>
+
+      <para>
+        Alternatively you can use the --vislcg-compat (short form -2) to work with older grammars that you
+        do not wish to permanently update to use NEGATE.
+      </para>
     </section>
 
     <section id="gotcha-codepage">
