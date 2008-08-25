@@ -401,6 +401,10 @@ int TextualParser::parseContextualTestList(Rule *rule, std::list<ContextualTest*
 		parentTest->linked = t;
 	}
 	else {
+		if (option_vislcg_compat && t->pos & POS_NEGATIVE) {
+			t->pos &= ~POS_NEGATIVE;
+			t->pos |= POS_NEGATED;
+		}
 		rule->addContextualTest(t, thelist);
 	}
 	return 0;

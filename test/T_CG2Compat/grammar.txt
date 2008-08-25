@@ -1,0 +1,7 @@
+DELIMITERS = "<$.>" ;
+
+BEFORE-SECTIONS
+
+ADD (@not2negate) (wanted) (NOT 1 (maybe) LINK 0 (maybe)) ;
+ADD (@not) (wanted) (1 (maybe) LINK NOT 1 (xx) LINK -1 (maybe)) ;
+ADD (@error-negate) (wanted) (1 (maybe) LINK NEGATE 1 (wanted) LINK -1 (maybe)) ;
