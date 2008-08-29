@@ -74,15 +74,26 @@ my ($dev,$ino,$mode,$nlink,$uid,$gid,$rdev,$size,$atime,$mtime,$ctime,$blksize,$
 
 my $bn = File::Spec->tmpdir()."/".sha1_hex($args.$h{grammar}).".".$mtime.".bin3";
 
+my $bin = 'vislcg3';
+if (-x '/usr/bin/vislcg3') {
+	$bin = '/usr/bin/vislcg3';
+}
+if (-x '/usr/local/bin/vislcg3') {
+	$bin = '/usr/local/bin/vislcg3';
+}
+if (-x '~/bin/vislcg3') {
+	$bin = '~/bin/vislcg3';
+}
+
 if (!(-r $bn)) {
-	`vislcg3 $args --grammar $grammar --grammar-only --grammar-bin $bn`;
+	`$bin $args --grammar $grammar --grammar-only --grammar-bin $bn`;
 }
 
 if (-r $bn) {
 	print STDERR "CG3 AutoBin using $bn\n";
-	print `cat /dev/stdin | vislcg3 $args --grammar $bn`;
+	print `cat /dev/stdin | $bin $args --grammar $bn`;
 }
 else {
 	print STDERR "CG3 AutoBin failed - falling back to normal\n";
-	print `cat /dev/stdin | vislcg3 $args --grammar $grammar`;
+	print `cat /dev/stdin | $bin $args --grammar $grammar`;
 }
