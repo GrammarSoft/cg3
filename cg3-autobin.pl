@@ -18,7 +18,7 @@ GetOptions (\%h,
 "grammar-only",
 "check-only",
 "sections|s=s",
-"verbose|v=s",
+"verbose|v",
 "vislcg-compat|2",
 "stdin|I=s",
 "stdout|O=s",
@@ -63,16 +63,16 @@ if (! (-r $h{grammar})) {
 	die "Error: Cannot read file ".$h{grammar}." !\n";
 }
 
-my ($dev,$ino,$mode,$nlink,$uid,$gid,$rdev,$size,$atime,$mtime,$ctime,$blksize,$blocks) = stat($h{grammar});
-
-my $bn = File::Spec->tmpdir()."/".sha1_hex($h{grammar}).".".$mtime.".bin3";
-
 my $args = " ";
 while (my ($k,$v) = each(%h)) {
 	if ($k ne 'grammar') {
 		$args .= " --$k $v";
 	}
 }
+
+my ($dev,$ino,$mode,$nlink,$uid,$gid,$rdev,$size,$atime,$mtime,$ctime,$blksize,$blocks) = stat($h{grammar});
+
+my $bn = File::Spec->tmpdir()."/".sha1_hex($args.$h{grammar}).".".$mtime.".bin3";
 
 if (!(-r $bn)) {
 	`vislcg3 $args --grammar $grammar --grammar-only --grammar-bin $bn`;
