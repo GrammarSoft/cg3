@@ -80,9 +80,9 @@ if (!(-r $bn)) {
 
 if (-r $bn) {
 	print STDERR "CG3 AutoBin using $bn\n";
-	`cat | vislcg3 $args --grammar $bn`;
+	print `cat /dev/stdin | vislcg3 $args --grammar $bn`;
 }
 else {
 	print STDERR "CG3 AutoBin failed - falling back to normal\n";
-	`cat | vislcg3 $args --grammar $grammar`;
+	print `cat /dev/stdin | vislcg3 $args --grammar $grammar`;
 }
