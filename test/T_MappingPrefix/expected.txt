@@ -1,0 +1,6 @@
+"<word>"
+	"word" @mapped $tag §tag £tag @tag 
+	"word" £mapped 
+	"word" §mapped $tag §tag £tag @tag 
+	"word" $mapped $tag §tag £tag @tag 
+
