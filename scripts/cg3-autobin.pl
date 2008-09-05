@@ -88,11 +88,13 @@ if (-x '~/bin/vislcg3') {
 	$bin = '~/bin/vislcg3';
 }
 
-if (!(-r $bn)) {
+if (!(-r $bn) && !(-r $bn.".lock")) {
+	open(F, ">".$bn.".lock") && close F;
 	`$bin $args --grammar $grammar --grammar-only --grammar-bin $bn`;
+	unlink $bn.".lock";
 }
 
-if (-r $bn) {
+if (-r $bn && !(-r $bn.".lock")) {
 	print STDERR "CG3 AutoBin using $bn\n";
 	print `cat /dev/stdin | $bin $args --grammar $bn`;
 }
