@@ -5,6 +5,9 @@ use File::Spec;
 use Getopt::Long;
 use Digest::SHA qw(sha1_hex);
 
+# This is updated by the update-revision.pl script.
+my $revision = 3962;
+
 # Generate list with:
 # vislcg3 --help 2>&1 | perl -wpne 'if (/^ / && /-(\w), --([-\w]+)/) {print "$2|$1=s\n"} elsif (/^ / && /--([-\w]+)/) {print "$1=s\n"} s/^.*$//s;' | perl -wpne 's/^/"/; s/$/",/;'
 my %h = ();
@@ -72,7 +75,7 @@ while (my ($k,$v) = each(%h)) {
 
 my ($dev,$ino,$mode,$nlink,$uid,$gid,$rdev,$size,$atime,$mtime,$ctime,$blksize,$blocks) = stat($h{grammar});
 
-my $bn = File::Spec->tmpdir()."/".sha1_hex($args.$h{grammar}).".".$mtime.".bin3";
+my $bn = File::Spec->tmpdir()."/".sha1_hex($args.$h{grammar}).".".$revision.".".$mtime.".bin3";
 
 my $bin = 'vislcg3';
 if (-x '/usr/bin/vislcg3') {
