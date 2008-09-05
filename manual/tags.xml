@@ -68,8 +68,177 @@
       Then there are the numerical matches, e.g. &lt;W&gt;65&gt;.
       This will match tags such as &lt;W:204&gt; and &lt;W=156&gt; but not &lt;W:32&gt;.
       The second tag, (&lt;F&gt;15&gt; &lt;F&lt;30&gt;), matches values 15&gt;F&gt;30.
-      The following numerical comparisons are valid: = &gt; &lt;.
       These constructs are also slower than simple hash lookups.
+    </para>
+    <para>
+      <table id="numeric-operators">
+        <title>Valid Operators</title>
+        <tgroup cols="2">
+          <thead>
+            <row>
+              <entry>Operator</entry>
+              <entry>Meaning</entry>
+            </row>
+          </thead>
+          <tbody>
+            <row>
+              <entry>=</entry>
+              <entry>Equal to</entry>
+            </row>
+            <row>
+              <entry>!=</entry>
+              <entry>Not equal to</entry>
+            </row>
+            <row>
+              <entry>&lt;</entry>
+              <entry>Less than</entry>
+            </row>
+            <row>
+              <entry>&gt;</entry>
+              <entry>Greater than</entry>
+            </row>
+            <row>
+              <entry>&lt;=</entry>
+              <entry>Less than or equal to</entry>
+            </row>
+            <row>
+              <entry>&gt;=</entry>
+              <entry>Greater than or equal to</entry>
+            </row>
+            <row>
+              <entry>&lt;&gt;</entry>
+              <entry>Not equal to</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+      Anywhere that an = is valid you can also use : for backwards compatibility.
+    </para>
+    <para>
+      <table id="numeric-truths">
+        <title>Comparison Truth Table</title>
+        <tgroup cols="3">
+          <thead>
+            <row>
+              <entry>A</entry>
+              <entry>B</entry>
+              <entry>Result</entry>
+            </row>
+          </thead>
+        <tbody>
+          <row>
+            <entry>= x</entry>
+            <entry>= y</entry>
+            <entry>True if x = y</entry>
+          </row>
+          <row>
+            <entry>= x</entry>
+            <entry>!= y</entry>
+            <entry>True if x != y</entry>
+          </row>
+          <row>
+            <entry>= x</entry>
+            <entry>&lt; y</entry>
+            <entry>True if x &lt; y</entry>
+          </row>
+          <row>
+            <entry>= x</entry>
+            <entry>&gt; y</entry>
+            <entry>True if x &gt; y</entry>
+          </row>
+          <row>
+            <entry>= x</entry>
+            <entry>&lt;= y</entry>
+            <entry>True if x &lt;= y</entry>
+          </row>
+          <row>
+            <entry>= x</entry>
+            <entry>&gt;= y</entry>
+            <entry>True if x &gt;= y</entry>
+          </row>
+
+          <row>
+            <entry>&lt; x</entry>
+            <entry>!= y</entry>
+            <entry>Always true</entry>
+          </row>
+          <row>
+            <entry>&lt; x</entry>
+            <entry>&lt; y</entry>
+            <entry>Always true</entry>
+          </row>
+          <row>
+            <entry>&lt; x</entry>
+            <entry>&gt; y</entry>
+            <entry>True if x &gt; y</entry>
+          </row>
+          <row>
+            <entry>&lt; x</entry>
+            <entry>&lt;= y</entry>
+            <entry>Always true</entry>
+          </row>
+          <row>
+            <entry>&lt; x</entry>
+            <entry>&gt;= y</entry>
+            <entry>True if x &gt; y</entry>
+          </row>
+
+          <row>
+            <entry>&gt; x</entry>
+            <entry>!= y</entry>
+            <entry>Always true</entry>
+          </row>
+          <row>
+            <entry>&gt; x</entry>
+            <entry>&gt; y</entry>
+            <entry>Always true</entry>
+          </row>
+          <row>
+            <entry>&gt; x</entry>
+            <entry>&lt;= y</entry>
+            <entry>True if x &lt; y</entry>
+          </row>
+          <row>
+            <entry>&gt; x</entry>
+            <entry>&gt;= y</entry>
+            <entry>Always true</entry>
+          </row>
+
+          <row>
+            <entry>&lt;= x</entry>
+            <entry>!= y</entry>
+            <entry>Always true</entry>
+          </row>
+          <row>
+            <entry>&lt;= x</entry>
+            <entry>&lt;= y</entry>
+            <entry>Always true</entry>
+          </row>
+          <row>
+            <entry>&lt;= x</entry>
+            <entry>&gt;= y</entry>
+            <entry>True if x &gt;= y</entry>
+          </row>
+
+          <row>
+            <entry>&gt;= x</entry>
+            <entry>!= y</entry>
+            <entry>Always true</entry>
+          </row>
+          <row>
+            <entry>&gt;= x</entry>
+            <entry>&gt;= y</entry>
+            <entry>Always true</entry>
+          </row>
+
+          <row>
+            <entry>!= x</entry>
+            <entry>!= y</entry>
+            <entry>True if x = y</entry>
+          </row>
+        </tbody>
+        </tgroup>
+      </table>
     </para>
   </section>
 
