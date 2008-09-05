@@ -76,7 +76,11 @@ int TextualParser::parseTagList(Set *s, UChar **p, const bool isinline = false) 
 					UChar *n = *p;
 					if (*n == '"') {
 						n++;
-						result->lines += SKIPTO(&n, '"');
+						result->lines += SKIPTO_NOSPAN(&n, '"');
+						if (*n != '"') {
+							u_fprintf(ux_stderr, "Error: Missing closing \" on line %u!\n", result->lines);
+							CG3Quit(1);
+						}
 					}
 					result->lines += SKIPTOWS(&n, ')', true);
 					uint32_t c = (uint32_t)(n - *p);
@@ -101,7 +105,11 @@ int TextualParser::parseTagList(Set *s, UChar **p, const bool isinline = false) 
 				UChar *n = *p;
 				if (*n == '"') {
 					n++;
-					result->lines += SKIPTO(&n, '"');
+					result->lines += SKIPTO_NOSPAN(&n, '"');
+					if (*n != '"') {
+						u_fprintf(ux_stderr, "Error: Missing closing \" on line %u!\n", result->lines);
+						CG3Quit(1);
+					}
 				}
 				result->lines += SKIPTOWS(&n, 0, true);
 				uint32_t c = (uint32_t)(n - *p);
@@ -145,7 +153,11 @@ int TextualParser::parseSetInline(Set *s, UChar **p) {
 						UChar *n = *p;
 						if (*n == '"') {
 							n++;
-							result->lines += SKIPTO(&n, '"');
+							result->lines += SKIPTO_NOSPAN(&n, '"');
+							if (*n != '"') {
+								u_fprintf(ux_stderr, "Error: Missing closing \" on line %u!\n", result->lines);
+								CG3Quit(1);
+							}
 						}
 						result->lines += SKIPTOWS(&n, ')', true);
 						uint32_t c = (uint32_t)(n - *p);
@@ -377,6 +389,10 @@ int TextualParser::parseContextualTestList(Rule *rule, std::list<ContextualTest*
 
 	bool linked = false;
 	result->lines += SKIPWS(p);
+	if (u_strncasecmp(*p, stringbits[S_AND], stringbit_lengths[S_AND], U_FOLD_CASE_DEFAULT) == 0) {
+		u_fprintf(ux_stderr, "Error: 'AND' is deprecated; use 'LINK 0' instead. Found on line %u!\n", result->lines);
+		CG3Quit(1);
+	}
 	if (u_strncasecmp(*p, stringbits[S_LINK], stringbit_lengths[S_LINK], U_FOLD_CASE_DEFAULT) == 0) {
 		(*p) += stringbit_lengths[S_LINK];
 		linked = true;
@@ -431,7 +447,11 @@ int TextualParser::parseRule(KEYWORDS key, UChar **p) {
 		UChar *n = lp;
 		if (*n == '"') {
 			n++;
-			result->lines += SKIPTO(&n, '"');
+			result->lines += SKIPTO_NOSPAN(&n, '"');
+			if (*n != '"') {
+				u_fprintf(ux_stderr, "Error: Missing closing \" on line %u!\n", result->lines);
+				CG3Quit(1);
+			}
 		}
 		result->lines += SKIPTOWS(&n, 0, true);
 		uint32_t c = (uint32_t)(n - lp);
@@ -1108,7 +1128,11 @@ int TextualParser::parseFromUChar(UChar *input) {
 			if (*p == ';' || *p == '"' || *p == '<') {
 				if (*p == '"') {
 					p++;
-					result->lines += SKIPTO(&p, '"');
+					result->lines += SKIPTO_NOSPAN(&p, '"');
+					if (*p != '"') {
+						u_fprintf(ux_stderr, "Error: Missing closing \" on line %u!\n", result->lines);
+						CG3Quit(1);
+					}
 				}
 				result->lines += SKIPTOWS(&p);
 			}

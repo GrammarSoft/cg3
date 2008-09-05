@@ -154,4 +154,15 @@ inline uint32_t SKIPTO(UChar **p, const UChar a) {
 	return s;
 }
 
+inline uint32_t SKIPTO_NOSPAN(UChar **p, const UChar a) {
+	uint32_t s = 0;
+	while (**p && (**p != a || ISESC(*p))) {
+		if (ISNL(**p)) {
+			break;
+		}
+		(*p)++;
+	}
+	return s;
+}
+
 #endif
