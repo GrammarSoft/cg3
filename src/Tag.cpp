@@ -70,6 +70,19 @@ void Tag::parseTag(const UChar *to, UFILE *ux_stderr) {
 		}
 
 		uint32_t length = u_strlen(tmp);
+
+		// ToDo: Implement META and VAR
+		if (tmp[0] == 'M' && tmp[1] == 'E' && tmp[2] == 'T' && tmp[3] == 'A' && tmp[4] == ':') {
+			type |= T_META;
+			tmp += 5;
+			length -= 5;
+		}
+		else if (tmp[0] == 'V' && tmp[1] == 'A' && tmp[2] == 'R' && tmp[3] == ':') {
+			type |= T_VARIABLE;
+			tmp += 4;
+			length -= 4;
+		}
+		
 		if (tmp[0] && (tmp[0] == '"' || tmp[0] == '<')) {
 			type |= T_TEXTUAL;
 		}
@@ -93,18 +106,6 @@ void Tag::parseTag(const UChar *to, UFILE *ux_stderr) {
 			}
 		}
 
-		// ToDo: Implement META and VAR
-		if (tmp[0] == 'M' && tmp[1] == 'E' && tmp[2] == 'T' && tmp[3] == 'A' && tmp[4] == ':') {
-			type |= T_META;
-			tmp += 5;
-			length -= 5;
-		}
-		else if (tmp[0] == 'V' && tmp[1] == 'A' && tmp[2] == 'R' && tmp[3] == ':') {
-			type |= T_VARIABLE;
-			tmp += 4;
-			length -= 4;
-		}
-		
 		tag = new UChar[length+8];
 		u_memset(tag, 0, length+8);
 		u_strncpy(tag, tmp, length);
@@ -115,29 +116,7 @@ void Tag::parseTag(const UChar *to, UFILE *ux_stderr) {
 		comparison_hash = hash_sdbm_uchar(tag, 0);
 
 		if (tag && tag[0] == '<' && tag[length-1] == '>') {
-			UChar tkey[256];
-			UChar top[256];
-			tkey[0] = 0;
-			top[0] = 0;
-			int tval = 0;
-			if (u_sscanf(tag, "<%[^<>=:]%[<>=:]%i>", &tkey, &top, &tval) == 3 && tval != 0 && top[0] && u_strlen(top)) {
-				if (top[0] == '<') {
-					comparison_op = OP_LESSTHAN;
-				}
-				else if (top[0] == '>') {
-					comparison_op = OP_GREATERTHAN;
-				}
-				else if (top[0] == '=' || top[0] == ':') {
-					comparison_op = OP_EQUALS;
-				}
-				comparison_val = tval;
-				uint32_t length = u_strlen(tkey);
-				comparison_key = new UChar[length+1];
-				u_strcpy(comparison_key, tkey);
-				comparison_hash = hash_sdbm_uchar(comparison_key, 0);
-				type |= T_NUMERICAL;
-				type &= ~T_TEXTUAL;
-			}
+			parseNumeric(this, tag);
 		}
 		if (tag && tag[0] == '#') {
 			if (u_sscanf(tag, "#%i->%i", &dep_self, &dep_parent) == 2 && dep_self != 0) {
@@ -203,29 +182,7 @@ void Tag::parseTagRaw(const UChar *to) {
 		u_strncpy(tag, tmp, length);
 
 		if (tag && tag[0] == '<' && tag[length-1] == '>') {
-			UChar tkey[256];
-			UChar top[256];
-			tkey[0] = 0;
-			top[0] = 0;
-			int tval = 0;
-			if (u_sscanf(tag, "<%[^<>=:]%[<>=:]%i>", &tkey, &top, &tval) == 3 && tval != 0 && top[0] && u_strlen(top)) {
-				if (top[0] == '<') {
-					comparison_op = OP_LESSTHAN;
-				}
-				else if (top[0] == '>') {
-					comparison_op = OP_GREATERTHAN;
-				}
-				else if (top[0] == '=' || top[0] == ':') {
-					comparison_op = OP_EQUALS;
-				}
-				comparison_val = tval;
-				uint32_t length = u_strlen(tkey);
-				comparison_key = new UChar[length+1];
-				u_strcpy(comparison_key, tkey);
-				comparison_hash = hash_sdbm_uchar(comparison_key, 0);
-				type |= T_NUMERICAL;
-				type &= ~T_TEXTUAL;
-			}
+			parseNumeric(this, tag);
 		}
 		if (tag && tag[0] == '#') {
 			if (u_sscanf(tag, "#%i->%i", &dep_self, &dep_parent) == 2 && dep_self != 0) {
@@ -236,6 +193,64 @@ void Tag::parseTagRaw(const UChar *to) {
 	is_special = false;
 	if (type & (T_ANY|T_NUMERICAL|T_VARIABLE|T_META|T_NEGATIVE|T_FAILFAST|T_CASE_INSENSITIVE|T_REGEXP)) {
 		is_special = true;
+	}
+}
+
+void Tag::parseNumeric(Tag *tag, const UChar *txt) {
+	UChar tkey[256];
+	UChar top[256];
+	tkey[0] = 0;
+	top[0] = 0;
+	int tval = 0;
+	if (u_sscanf(txt, "<%[^<>=:!]%[<>=:!]%i>", &tkey, &top, &tval) == 3 && tval != 0 && top[0] && u_strlen(top)) {
+		if (top[0] == '<') {
+			tag->comparison_op = OP_LESSTHAN;
+		}
+		else if (top[0] == '>') {
+			tag->comparison_op = OP_GREATERTHAN;
+		}
+		else if (top[0] == '=' || top[0] == ':') {
+			tag->comparison_op = OP_EQUALS;
+		}
+		else if (top[0] == '!') {
+			tag->comparison_op = OP_NOTEQUALS;
+		}
+		if (top[1]) {
+			if (top[1] == '=' || top[1] == ':') {
+				if (tag->comparison_op == OP_GREATERTHAN) {
+					tag->comparison_op = OP_GREATEREQUALS;
+				}
+				else if (tag->comparison_op == OP_LESSTHAN) {
+					tag->comparison_op = OP_LESSEQUALS;
+				}
+				else if (tag->comparison_op == OP_NOTEQUALS) {
+					tag->comparison_op = OP_NOTEQUALS;
+				}
+			}
+			else if (top[1] == '>') {
+				if (tag->comparison_op == OP_EQUALS) {
+					tag->comparison_op = OP_GREATEREQUALS;
+				}
+				else if (tag->comparison_op == OP_LESSTHAN) {
+					tag->comparison_op = OP_NOTEQUALS;
+				}
+			}
+			else if (top[1] == '<') {
+				if (tag->comparison_op == OP_EQUALS) {
+					tag->comparison_op = OP_LESSEQUALS;
+				}
+				else if (tag->comparison_op == OP_GREATERTHAN) {
+					tag->comparison_op = OP_NOTEQUALS;
+				}
+			}
+		}
+		tag->comparison_val = tval;
+		uint32_t length = u_strlen(tkey);
+		tag->comparison_key = tag->allocateUChars(length+1);
+		u_strcpy(tag->comparison_key, tkey);
+		tag->comparison_hash = hash_sdbm_uchar(tag->comparison_key, 0);
+		tag->type |= T_NUMERICAL;
+		tag->type &= ~T_TEXTUAL;
 	}
 }
 
