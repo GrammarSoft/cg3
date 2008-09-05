@@ -32,6 +32,9 @@ namespace CG3 {
 		OP_EQUALS,
 		OP_LESSTHAN,
 		OP_GREATERTHAN,
+		OP_LESSEQUALS,
+		OP_GREATEREQUALS,
+		OP_NOTEQUALS,
 		NUM_OPS
 	};
 
@@ -72,6 +75,7 @@ namespace CG3 {
 		UChar *allocateUChars(uint32_t n);
 		void parseTag(const UChar *to, UFILE *ux_stderr);
 		void parseTagRaw(const UChar *to);
+		static void parseNumeric(Tag *tag, const UChar *txt);
 		static void printTagRaw(UFILE *out, const Tag *tag);
 
 		uint32_t rehash();
