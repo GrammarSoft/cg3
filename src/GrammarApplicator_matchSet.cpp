@@ -92,28 +92,109 @@ bool GrammarApplicator::doesTagMatchReading(const Reading *reading, const uint32
 				if (tag->comparison_op == OP_EQUALS && itag->comparison_op == OP_EQUALS && tag->comparison_val == itag->comparison_val) {
 					match = true;
 				}
+				else if (tag->comparison_op == OP_NOTEQUALS && itag->comparison_op == OP_EQUALS && tag->comparison_val != itag->comparison_val) {
+					match = true;
+				}
+				else if (tag->comparison_op == OP_EQUALS && itag->comparison_op == OP_NOTEQUALS && tag->comparison_val != itag->comparison_val) {
+					match = true;
+				}
+				else if (tag->comparison_op == OP_NOTEQUALS && itag->comparison_op == OP_NOTEQUALS && tag->comparison_val == itag->comparison_val) {
+					match = true;
+				}
 				else if (tag->comparison_op == OP_EQUALS && itag->comparison_op == OP_LESSTHAN && tag->comparison_val < itag->comparison_val) {
+					match = true;
+				}
+				else if (tag->comparison_op == OP_EQUALS && itag->comparison_op == OP_LESSEQUALS && tag->comparison_val <= itag->comparison_val) {
 					match = true;
 				}
 				else if (tag->comparison_op == OP_EQUALS && itag->comparison_op == OP_GREATERTHAN && tag->comparison_val > itag->comparison_val) {
 					match = true;
 				}
+				else if (tag->comparison_op == OP_EQUALS && itag->comparison_op == OP_GREATEREQUALS && tag->comparison_val >= itag->comparison_val) {
+					match = true;
+				}
+				else if (tag->comparison_op == OP_NOTEQUALS && itag->comparison_op == OP_LESSTHAN) {
+					match = true;
+				}
+				else if (tag->comparison_op == OP_NOTEQUALS && itag->comparison_op == OP_LESSEQUALS) {
+					match = true;
+				}
+				else if (tag->comparison_op == OP_NOTEQUALS && itag->comparison_op == OP_GREATERTHAN) {
+					match = true;
+				}
+				else if (tag->comparison_op == OP_NOTEQUALS && itag->comparison_op == OP_GREATEREQUALS) {
+					match = true;
+				}
+				else if (tag->comparison_op == OP_LESSTHAN && itag->comparison_op == OP_NOTEQUALS) {
+					match = true;
+				}
+				else if (tag->comparison_op == OP_LESSEQUALS && itag->comparison_op == OP_NOTEQUALS) {
+					match = true;
+				}
+				else if (tag->comparison_op == OP_GREATERTHAN && itag->comparison_op == OP_NOTEQUALS) {
+					match = true;
+				}
+				else if (tag->comparison_op == OP_GREATEREQUALS && itag->comparison_op == OP_NOTEQUALS) {
+					match = true;
+				}
 				else if (tag->comparison_op == OP_LESSTHAN && itag->comparison_op == OP_EQUALS && tag->comparison_val > itag->comparison_val) {
+					match = true;
+				}
+				else if (tag->comparison_op == OP_LESSEQUALS && itag->comparison_op == OP_EQUALS && tag->comparison_val >= itag->comparison_val) {
 					match = true;
 				}
 				else if (tag->comparison_op == OP_LESSTHAN && itag->comparison_op == OP_LESSTHAN) {
 					match = true;
 				}
+				else if (tag->comparison_op == OP_LESSEQUALS && itag->comparison_op == OP_LESSEQUALS) {
+					match = true;
+				}
+				else if (tag->comparison_op == OP_LESSEQUALS && itag->comparison_op == OP_LESSTHAN) {
+					match = true;
+				}
+				else if (tag->comparison_op == OP_LESSTHAN && itag->comparison_op == OP_LESSEQUALS) {
+					match = true;
+				}
 				else if (tag->comparison_op == OP_LESSTHAN && itag->comparison_op == OP_GREATERTHAN && tag->comparison_val > itag->comparison_val) {
+					match = true;
+				}
+				else if (tag->comparison_op == OP_LESSTHAN && itag->comparison_op == OP_GREATEREQUALS && tag->comparison_val > itag->comparison_val) {
+					match = true;
+				}
+				else if (tag->comparison_op == OP_LESSEQUALS && itag->comparison_op == OP_GREATERTHAN && tag->comparison_val > itag->comparison_val) {
+					match = true;
+				}
+				else if (tag->comparison_op == OP_LESSEQUALS && itag->comparison_op == OP_GREATEREQUALS && tag->comparison_val >= itag->comparison_val) {
 					match = true;
 				}
 				else if (tag->comparison_op == OP_GREATERTHAN && itag->comparison_op == OP_EQUALS && tag->comparison_val < itag->comparison_val) {
 					match = true;
 				}
+				else if (tag->comparison_op == OP_GREATEREQUALS && itag->comparison_op == OP_EQUALS && tag->comparison_val <= itag->comparison_val) {
+					match = true;
+				}
 				else if (tag->comparison_op == OP_GREATERTHAN && itag->comparison_op == OP_GREATERTHAN) {
 					match = true;
 				}
+				else if (tag->comparison_op == OP_GREATEREQUALS && itag->comparison_op == OP_GREATEREQUALS) {
+					match = true;
+				}
+				else if (tag->comparison_op == OP_GREATEREQUALS && itag->comparison_op == OP_GREATERTHAN) {
+					match = true;
+				}
+				else if (tag->comparison_op == OP_GREATERTHAN && itag->comparison_op == OP_GREATEREQUALS) {
+					match = true;
+				}
 				else if (tag->comparison_op == OP_GREATERTHAN && itag->comparison_op == OP_LESSTHAN && tag->comparison_val < itag->comparison_val) {
+					match = true;
+				}
+				else if (tag->comparison_op == OP_GREATERTHAN && itag->comparison_op == OP_LESSEQUALS && tag->comparison_val < itag->comparison_val) {
+					match = true;
+				}
+				else if (tag->comparison_op == OP_GREATEREQUALS && itag->comparison_op == OP_LESSTHAN && tag->comparison_val < itag->comparison_val) {
+					match = true;
+				}
+				else if (tag->comparison_op == OP_GREATEREQUALS && itag->comparison_op == OP_LESSEQUALS && tag->comparison_val <= itag->comparison_val) {
 					match = true;
 				}
 				if (match) {
