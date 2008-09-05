@@ -7,3 +7,6 @@ ADD (@moreThanFifty) (<VALUE>50>) ;
 ADD (@lessThanFifty) (<VALUE<50>) ;
 ADD (@moreThanSixty) (<VALUE>60>) ;
 ADD (@lessThanForty) (<VALUE<40>) ;
+
+ADD (@-fifty) (<VALUE=-50>) ;
+ADD (@zero) (<VALUE=0>) ;

@@ -202,7 +202,7 @@ void Tag::parseNumeric(Tag *tag, const UChar *txt) {
 	tkey[0] = 0;
 	top[0] = 0;
 	int tval = 0;
-	if (u_sscanf(txt, "<%[^<>=:!]%[<>=:!]%i>", &tkey, &top, &tval) == 3 && tval != 0 && top[0] && u_strlen(top)) {
+	if (u_sscanf(txt, "<%[^<>=:!]%[<>=:!]%i>", &tkey, &top, &tval) == 3 && top[0] && u_strlen(top)) {
 		if (top[0] == '<') {
 			tag->comparison_op = OP_LESSTHAN;
 		}
