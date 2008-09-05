@@ -246,7 +246,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 			UChar *base = space;
 			if (*space == '"') {
 				space++;
-				SKIPTO(&space, '"');
+				SKIPTO_NOSPAN(&space, '"');
 			}
 
 			TagList mappings;
@@ -269,7 +269,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 				base = space;
 				if (*space == '"') {
 					space++;
-					SKIPTO(&space, '"');
+					SKIPTO_NOSPAN(&space, '"');
 				}
 			}
 			if (base && base[0]) {
