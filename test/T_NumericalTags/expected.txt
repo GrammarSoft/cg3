@@ -2,7 +2,10 @@
 	"word" <VALUE=50> @fifty 
 	"word" <VALUE:50> @fifty 
 	"word" <VALUE>50> @moreThanFifty @moreThanSixty 
-	"word" <VALUE<50> @lessThanFifty @lessThanForty 
+	"word" <VALUE<50> @lessThanFifty @lessThanForty @-fifty @zero 
 	"word" <VALUE>40> @fifty @moreThanFifty @lessThanFifty @moreThanSixty 
-	"word" <VALUE<60> @fifty @moreThanFifty @lessThanFifty @lessThanForty 
+	"word" <VALUE<60> @fifty @moreThanFifty @lessThanFifty @lessThanForty @-fifty @zero 
+	"word" <VALUE=-50> @lessThanFifty @lessThanForty @-fifty 
+	"word" <VALUE>-50> @fifty @moreThanFifty @lessThanFifty @moreThanSixty @lessThanForty @zero 
+	"word" <VALUE=0> @lessThanFifty @lessThanForty @zero 
 
