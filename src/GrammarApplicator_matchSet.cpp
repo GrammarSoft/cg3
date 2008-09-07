@@ -62,26 +62,15 @@ inline bool GrammarApplicator::__index_matches(const stdext::hash_map<uint32_t, 
 	return false;
 }
 
-bool GrammarApplicator::doesTagMatchReading(const Reading *reading, const uint32_t ztag, bool bypass_index) {
+bool GrammarApplicator::doesTagMatchReading(const Reading *reading, const Tag *tag, bool bypass_index) {
 	bool retval = false;
 	bool match = true;
 	bypass_index = false;
 
-	bool raw_in = (reading->tags.find(ztag) != reading->tags.end());
+	bool raw_in = (reading->tags.find(tag->hash) != reading->tags.end());
 
-	const Tag *tag = grammar->single_tags.find(ztag)->second;
 	if (!tag->is_special) {
 		match = raw_in;
-	}
-	else if (tag->type & T_VARIABLE) {
-		if (variables.find(tag->comparison_hash) == variables.end()) {
-			u_fprintf(ux_stderr, "Info: %u failed.\n", tag->comparison_hash);
-			match = false;
-		}
-		else {
-			u_fprintf(ux_stderr, "Info: %u matched.\n", tag->comparison_hash);
-			match = true;
-		}
 	}
 	else if (tag->type & T_NUMERICAL && !reading->tags_numerical.empty()) {
 		match = false;
@@ -225,6 +214,16 @@ bool GrammarApplicator::doesTagMatchReading(const Reading *reading, const uint32
 			}
 		}
 	}
+	else if (tag->type & T_VARIABLE) {
+		if (variables.find(tag->comparison_hash) == variables.end()) {
+			u_fprintf(ux_stderr, "Info: %u failed.\n", tag->comparison_hash);
+			match = false;
+		}
+		else {
+			u_fprintf(ux_stderr, "Info: %u matched.\n", tag->comparison_hash);
+			match = true;
+		}
+	}
 	else if (!raw_in) {
 		match = false;
 		if (tag->type & T_NEGATIVE) {
@@ -249,8 +248,6 @@ bool GrammarApplicator::doesTagMatchReading(const Reading *reading, const uint32
 }
 
 bool GrammarApplicator::doesSetMatchReading(Reading *reading, const uint32_t set, bool bypass_index) {
-	bool retval = false;
-
 	if (reading->possible_sets.find(set) == reading->possible_sets.end()) {
 		return false;
 	}
@@ -261,6 +258,8 @@ bool GrammarApplicator::doesSetMatchReading(Reading *reading, const uint32_t set
 		return true;
 	}
 
+	bool retval = false;
+
 	cache_miss++;
 
 	clock_t tstamp = 0;
@@ -269,7 +268,7 @@ bool GrammarApplicator::doesSetMatchReading(Reading *reading, const uint32_t set
 	}
 
 	uint32SetHashMap::const_iterator iter = grammar->sets_by_contents.find(set);
-	if (iter != grammar->sets_by_contents.end()) {
+	//if (iter != grammar->sets_by_contents.end()) {
 		const Set *theset = iter->second;
 		if (theset->is_unified) {
 			unif_mode = true;
@@ -281,7 +280,7 @@ bool GrammarApplicator::doesSetMatchReading(Reading *reading, const uint32_t set
 		else if (theset->sets.empty()) {
 			TagHashSet::const_iterator ster;
 			for (ster = theset->single_tags.begin() ; ster != theset->single_tags.end() ; ster++) {
-				bool match = doesTagMatchReading(reading, (*ster)->hash, bypass_index);
+				bool match = doesTagMatchReading(reading, (*ster), bypass_index);
 				if (match) {
 					if (unif_mode) {
 						if (unif_tags.find(theset->hash) != unif_tags.end() && unif_tags[theset->hash] != (*ster)->hash) {
@@ -302,7 +301,7 @@ bool GrammarApplicator::doesSetMatchReading(Reading *reading, const uint32_t set
 
 					TagHashSet::const_iterator cter;
 					for (cter = ctag->tags.begin() ; cter != ctag->tags.end() ; cter++) {
-						bool inner = doesTagMatchReading(reading, (*cter)->hash, bypass_index);
+						bool inner = doesTagMatchReading(reading, (*cter), bypass_index);
 						if (!inner) {
 							match = false;
 							break;
@@ -382,7 +381,7 @@ bool GrammarApplicator::doesSetMatchReading(Reading *reading, const uint32_t set
 			}
 			theset->total_time += clock() - tstamp;
 		}
-	}
+	//}
 
 	if (retval) {
 		if (index_reading_yes.find(reading->hash) == index_reading_yes.end()) {

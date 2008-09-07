@@ -114,7 +114,7 @@ namespace CG3 {
 		Cohort *runContextualTest(SingleWindow *sWindow, const size_t position, const ContextualTest *test, Cohort **deep = 0, Cohort *origin = 0);
 
 		bool doesTagMatchSet(const uint32_t tag, const Set *set);
-		bool doesTagMatchReading(const Reading *reading, const uint32_t tag, bool bypass_index = false);
+		bool doesTagMatchReading(const Reading *reading, const Tag *tag, bool bypass_index = false);
 		bool doesSetMatchReading(Reading *reading, const uint32_t set, bool bypass_index = false);
 		bool doesSetMatchCohortNormal(const Cohort *cohort, const uint32_t set);
 		bool doesSetMatchCohortCareful(const Cohort *cohort, const uint32_t set);
