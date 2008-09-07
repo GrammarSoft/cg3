@@ -404,6 +404,9 @@ bool GrammarApplicator::doesSetMatchReading(Reading *reading, const uint32_t set
 }
 
 bool GrammarApplicator::doesSetMatchCohortNormal(const Cohort *cohort, const uint32_t set) {
+	if (cohort->possible_sets.find(set) == cohort->possible_sets.end()) {
+		return false;
+	}
 	bool retval = false;
 	const Set *theset = grammar->sets_by_contents.find(set)->second;
 	std::list<Reading*>::const_iterator iter;
@@ -418,6 +421,9 @@ bool GrammarApplicator::doesSetMatchCohortNormal(const Cohort *cohort, const uin
 }
 
 bool GrammarApplicator::doesSetMatchCohortCareful(const Cohort *cohort, const uint32_t set) {
+	if (cohort->possible_sets.find(set) == cohort->possible_sets.end()) {
+		return false;
+	}
 	bool retval = true;
 	const Set *theset = grammar->sets_by_contents.find(set)->second;
 	std::list<Reading*>::const_iterator iter;
