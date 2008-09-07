@@ -111,8 +111,6 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, const int32_
 				}
 
 				if (rule->target && doesSetMatchReading(reading, rule->target, set->is_child_unified)) {
-					//rule_is_valid = true;
-
 					reading->matched_target = true;
 					bool good = true;
 					if (!rule->tests.empty() && !did_test) {
