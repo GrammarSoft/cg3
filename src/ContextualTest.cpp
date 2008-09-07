@@ -123,7 +123,6 @@ uint32_t ContextualTest::rehash() {
 	if (linked) {
 		hash = hash_sdbm_uint32_t(hash, linked->rehash());
 	}
-	assert(hash != 0);
 	return hash;
 }
 

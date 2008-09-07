@@ -62,7 +62,6 @@ void Set::setName(const UChar *to) {
 
 uint32_t Set::rehash() {
 	uint32_t retval = 0;
-	assert(tags_set.empty() || sets.empty());
 	if (sets.empty()) {
 		foreach (uint32Set, tags_set, iter, iter_end) {
 			retval = hash_sdbm_uint32_t(*iter, retval);
@@ -76,7 +75,6 @@ uint32_t Set::rehash() {
 			retval = hash_sdbm_uint32_t(set_ops.at(i), retval);
 		}
 	}
-	assert(retval != 0);
 	hash = retval;
 	return retval;
 }

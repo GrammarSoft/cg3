@@ -251,8 +251,6 @@ bool GrammarApplicator::doesTagMatchReading(const Reading *reading, const uint32
 bool GrammarApplicator::doesSetMatchReading(Reading *reading, const uint32_t set, bool bypass_index) {
 	bool retval = false;
 
-	assert(reading->hash != 1);
-
 	if (reading->possible_sets.find(set) == reading->possible_sets.end()) {
 		return false;
 	}

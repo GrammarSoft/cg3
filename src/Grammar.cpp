@@ -118,7 +118,6 @@ void Grammar::addPreferredTarget(UChar *to) {
 	preferred_targets.push_back(tag->hash);
 }
 void Grammar::addSet(Set *to) {
-	assert(to);
 	uint32_t nhash = hash_sdbm_uchar(to->name, 0);
 	uint32_t chash = to->rehash();
 	if (sets_by_name.find(nhash) == sets_by_name.end()) {
@@ -153,7 +152,6 @@ void Grammar::destroySet(Set *set) {
 	delete set;
 }
 void Grammar::addSetToList(Set *s) {
-	assert(s);
 	if (s->number == 0) {
 		if (sets_list.empty() || sets_list.at(0) != s) {
 			if (!s->sets.empty()) {

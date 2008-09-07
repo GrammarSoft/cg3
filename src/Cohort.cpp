@@ -101,7 +101,6 @@ void Cohort::remChild(uint32_t child) {
 }
 
 void Cohort::appendReading(Reading *read) {
-	assert(read);
 	readings.push_back(read);
 	if (read->number == 0) {
 		read->number = (uint32_t)readings.size();
