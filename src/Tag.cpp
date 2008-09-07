@@ -270,14 +270,8 @@ uint32_t Tag::rehash() {
 	if (type & T_VARIABLE) {
 		hash = hash_sdbm_char("VAR:", hash);
 	}
-/*
-	UChar *tmp = new UChar[u_strlen(tag)*2+3];
-	ux_escape(tmp, tag);
-	hash = hash_sdbm_uchar(tmp, hash);
-	delete[] tmp;
-/*/
+
 	hash = hash_sdbm_uchar(tag, hash);
-//*/
 
 	if (type & T_CASE_INSENSITIVE) {
 		hash = hash_sdbm_char("i", hash);
