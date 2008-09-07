@@ -100,10 +100,6 @@ void Reading::duplicateFrom(Reading *r) {
 	noprint = r->noprint;
 	mapping = r->mapping;
 	number = r->number;
-	/*
-	matched_target = r->matched_target;
-	matched_tests = r->matched_tests;
-	//*/
 
 	hit_by.clear();
 	tags_list.clear();

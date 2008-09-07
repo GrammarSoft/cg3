@@ -32,9 +32,6 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, const int32_
 	bool delimited = false;
 
 	foreach (uint32Set, current->valid_rules, iter_rules, iter_rules_end) {
-		/*
-rule_was_bad:
-		//*/
 		uint32_t j = (*iter_rules);
 		const Rule *rule = grammar->rule_by_line.find(j)->second;
 		if (start == 0 && rule->section < 0) {
@@ -62,12 +59,6 @@ rule_was_bad:
 		const Set *set = grammar->sets_by_contents.find(rule->target)->second;
 
 		// ToDo: Update list of in/valid rules upon MAP, ADD, REPLACE, APPEND, SUBSTITUTE; add tags + always add tag_any
-		/*
-		bool rule_is_valid = false;
-		if (set->is_unified) {
-			rule_is_valid = true;
-		}
-		//*/
 
 		for (size_t c=1 ; c < current->cohorts.size() ; c++) {
 			Cohort *cohort = current->cohorts[c];
@@ -514,32 +505,9 @@ rule_was_bad:
 			rule->total_time += (clock() - tstamp);
 		}
 
-		/*
-		if (!rule_is_valid) {
-			if (iter_rules == current->valid_rules.begin()) {
-				current->valid_rules.erase(iter_rules);
-				iter_rules = current->valid_rules.begin();
-			}
-			else {
-				uint32Set::iterator to_erase = iter_rules;
-				uint32_t n = *(--iter_rules);
-				current->valid_rules.erase(to_erase);
-				iter_rules = current->valid_rules.find(n);
-			}
-			if (iter_rules != current->valid_rules.end()) {
-				goto rule_was_bad;
-			}
-		}
-		//*/
-
 		if (delimited) {
 			break;
 		}
-		/*
-		if (current->valid_rules.empty()) {
-			break;
-		}
-		//*/
 	}
 
 	if (section_did_good) {

@@ -45,25 +45,6 @@ TextualParser::~TextualParser() {
 	result = 0;
 }
 
-int TextualParser::dieIfKeyword(UChar *s) {
-	s=s;
-	/*
-	for (uint32_t i=0;i<KEYWORD_COUNT;i++) {
-		if (u_strcasecmp(s, keywords[i], U_FOLD_CASE_DEFAULT) == 0) {
-			u_fprintf(ux_stderr, "Error: Keyword %S is in an invalid position on line %u!\n", keywords[i], result->lines);
-			CG3Quit(1);
-		}
-	}
-	for (uint32_t i=0;i<S_DELIMITSET;i++) {
-		if (u_strcasecmp(s, stringbits[i], U_FOLD_CASE_DEFAULT) == 0) {
-			u_fprintf(ux_stderr, "Error: Keyword %S is in an invalid position on line %u!\n", stringbits[i], result->lines);
-			CG3Quit(1);
-		}
-	}
-	//*/
-	return 0;
-}
-
 int TextualParser::parseTagList(Set *s, UChar **p, const bool isinline = false) {
 	while (**p && **p != ';' && **p != ')') {
 		result->lines += SKIPWS(p, ';', ')');
@@ -86,7 +67,6 @@ int TextualParser::parseTagList(Set *s, UChar **p, const bool isinline = false) 
 					uint32_t c = (uint32_t)(n - *p);
 					u_strncpy(gbuffers[0], *p, c);
 					gbuffers[0][c] = 0;
-					dieIfKeyword(gbuffers[0]);
 					Tag *t = result->allocateTag(gbuffers[0]);
 					t = result->addTag(t);
 					result->addTagToCompositeTag(t, ct);
@@ -115,7 +95,6 @@ int TextualParser::parseTagList(Set *s, UChar **p, const bool isinline = false) 
 				uint32_t c = (uint32_t)(n - *p);
 				u_strncpy(gbuffers[0], *p, c);
 				gbuffers[0][c] = 0;
-				dieIfKeyword(gbuffers[0]);
 				CompositeTag *ct = result->allocateCompositeTag();
 				Tag *t = result->allocateTag(gbuffers[0]);
 				t = result->addTag(t);
@@ -163,7 +142,6 @@ int TextualParser::parseSetInline(Set *s, UChar **p) {
 						uint32_t c = (uint32_t)(n - *p);
 						u_strncpy(gbuffers[0], *p, c);
 						gbuffers[0][c] = 0;
-						dieIfKeyword(gbuffers[0]);
 						Tag *t = result->allocateTag(gbuffers[0]);
 						t = result->addTag(t);
 						result->addTagToCompositeTag(t, ct);
@@ -186,7 +164,6 @@ int TextualParser::parseSetInline(Set *s, UChar **p) {
 					uint32_t c = (uint32_t)(n - *p);
 					u_strncpy(gbuffers[0], *p, c);
 					gbuffers[0][c] = 0;
-					dieIfKeyword(gbuffers[0]);
 					uint32_t sh = hash_sdbm_uchar(gbuffers[0]);
 
 					if (ux_isSetOp(gbuffers[0]) != S_IGNORE) {
@@ -279,7 +256,6 @@ int TextualParser::parseContextualTestList(Rule *rule, std::list<ContextualTest*
 	uint32_t c = (uint32_t)(n - *p);
 	u_strncpy(gbuffers[0], *p, c);
 	gbuffers[0][c] = 0;
-	dieIfKeyword(gbuffers[0]);
 	if (ux_isEmpty(gbuffers[0])) {
 		*p = n;
 		for (;;) {
@@ -309,7 +285,6 @@ int TextualParser::parseContextualTestList(Rule *rule, std::list<ContextualTest*
 		uint32_t c = (uint32_t)(n - *p);
 		u_strncpy(gbuffers[0], *p, c);
 		gbuffers[0][c] = 0;
-		dieIfKeyword(gbuffers[0]);
 		uint32_t cn = hash_sdbm_uchar(gbuffers[0]);
 		if (result->templates.find(cn) == result->templates.end()) {
 			u_fprintf(ux_stderr, "Error: Unknown template '%S' referenced on line %u!\n", gbuffers[0], result->lines);
@@ -318,13 +293,6 @@ int TextualParser::parseContextualTestList(Rule *rule, std::list<ContextualTest*
 		t->tmpl = result->templates.find(cn)->second;
 		*p = n;
 		result->lines += SKIPWS(p);
-		/*
-		if (**p != ')') {
-			u_fprintf(ux_stderr, "Error: Expected ')' but found '%C' on line %u!\n", **p, result->lines);
-			CG3Quit(1);
-		}
-		(**p)++;
-		//*/
 	}
 	else {
 		t->parsePosition(gbuffers[0], ux_stderr);
@@ -399,13 +367,6 @@ int TextualParser::parseContextualTestList(Rule *rule, std::list<ContextualTest*
 	}
 	result->lines += SKIPWS(p);
 
-	/*
-	if (linked && (t->tmpl || !t->ors.empty())) {
-		u_fprintf(ux_stderr, "Error: Cannot LINK after templates or alternative tests on line %u!\n", result->lines);
-		CG3Quit(1);
-	}
-	//*/
-
 	if (linked) {
 		parseContextualTestList(0, 0, t, p);
 	}
@@ -457,7 +418,6 @@ int TextualParser::parseRule(KEYWORDS key, UChar **p) {
 		uint32_t c = (uint32_t)(n - lp);
 		u_strncpy(gbuffers[0], lp, c);
 		gbuffers[0][c] = 0;
-		dieIfKeyword(gbuffers[0]);
 		Tag *wform = result->allocateTag(gbuffers[0]);
 		rule->wordform = wform->rehash();
 		wform = result->addTag(wform);
@@ -473,7 +433,6 @@ int TextualParser::parseRule(KEYWORDS key, UChar **p) {
 		uint32_t c = (uint32_t)(n - *p);
 		u_strncpy(gbuffers[0], *p, c);
 		gbuffers[0][c] = 0;
-		dieIfKeyword(gbuffers[0]);
 		rule->setName(gbuffers[0]);
 		*p = n;
 	}
@@ -492,7 +451,6 @@ int TextualParser::parseRule(KEYWORDS key, UChar **p) {
 			uint32_t c = (uint32_t)(n - *p);
 			u_strncpy(gbuffers[0], *p, c);
 			gbuffers[0][c] = 0;
-			dieIfKeyword(gbuffers[0]);
 			Tag *wform = result->allocateTag(gbuffers[0]);
 			wform = result->addTag(wform);
 			rule->sublist.push_back(wform->hash);
@@ -520,7 +478,6 @@ int TextualParser::parseRule(KEYWORDS key, UChar **p) {
 			uint32_t c = (uint32_t)(n - *p);
 			u_strncpy(gbuffers[0], *p, c);
 			gbuffers[0][c] = 0;
-			dieIfKeyword(gbuffers[0]);
 			Tag *wform = result->allocateTag(gbuffers[0]);
 			wform = result->addTag(wform);
 			rule->maplist.push_back(wform);
@@ -547,7 +504,6 @@ int TextualParser::parseRule(KEYWORDS key, UChar **p) {
 			uint32_t c = (uint32_t)(n - *p);
 			u_strncpy(gbuffers[0], *p, c);
 			gbuffers[0][c] = 0;
-			dieIfKeyword(gbuffers[0]);
 			Tag *wform = result->allocateTag(gbuffers[0]);
 			wform = result->addTag(wform);
 			rule->sublist.push_back(wform->hash);
@@ -763,7 +719,6 @@ int TextualParser::parseFromUChar(UChar *input) {
 			uint32_t c = (uint32_t)(n - p);
 			u_strncpy(gbuffers[0], p, c);
 			gbuffers[0][c] = 0;
-			dieIfKeyword(gbuffers[0]);
 			p = n;
 
 			result->mapping_prefix = gbuffers[0][0];
@@ -800,7 +755,6 @@ int TextualParser::parseFromUChar(UChar *input) {
 				uint32_t c = (uint32_t)(n - p);
 				u_strncpy(gbuffers[0], p, c);
 				gbuffers[0][c] = 0;
-				dieIfKeyword(gbuffers[0]);
 				Tag *t = result->allocateTag(gbuffers[0]);
 				t = result->addTag(t);
 				result->preferred_targets.push_back(t->hash);
@@ -876,7 +830,6 @@ int TextualParser::parseFromUChar(UChar *input) {
 			uint32_t c = (uint32_t)(n - p);
 			u_strncpy(gbuffers[0], p, c);
 			gbuffers[0][c] = 0;
-			dieIfKeyword(gbuffers[0]);
 			s->setName(gbuffers[0]);
 			uint32_t sh = hash_sdbm_uchar(gbuffers[0]);
 			p = n;
@@ -927,7 +880,6 @@ int TextualParser::parseFromUChar(UChar *input) {
 			uint32_t c = (uint32_t)(n - p);
 			u_strncpy(gbuffers[0], p, c);
 			gbuffers[0][c] = 0;
-			dieIfKeyword(gbuffers[0]);
 			s->setName(gbuffers[0]);
 			uint32_t sh = hash_sdbm_uchar(gbuffers[0]);
 			p = n;
@@ -1094,7 +1046,6 @@ int TextualParser::parseFromUChar(UChar *input) {
 			uint32_t c = (uint32_t)(n - p);
 			u_strncpy(gbuffers[0], p, c);
 			gbuffers[0][c] = 0;
-			dieIfKeyword(gbuffers[0]);
 			uint32_t cn = hash_sdbm_uchar(gbuffers[0]);
 			t->name = cn;
 			result->addContextualTest(t, gbuffers[0]);
