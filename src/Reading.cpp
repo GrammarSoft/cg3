@@ -81,11 +81,9 @@ uint32_t Reading::rehash() {
 		}
 	}
 	hash_plain = hash;
-	assert(hash_plain != 0);
 	if (mapping) {
 		hash = hash_sdbm_uint32_t(mapping->hash, hash);
 	}
-	assert(hash != 0);
 	return hash;
 }
 
