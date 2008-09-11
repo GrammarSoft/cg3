@@ -8,3 +8,5 @@
 	"word" <VALUE=-50>
 	"word" <VALUE>-50>
 	"word" <VALUE=0>
+	"word" <VALUE:NotNumeric>
+	"word" <VALUE:x10>

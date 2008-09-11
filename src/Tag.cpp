@@ -197,10 +197,16 @@ void Tag::parseTagRaw(const UChar *to) {
 void Tag::parseNumeric(Tag *tag, const UChar *txt) {
 	UChar tkey[256];
 	UChar top[256];
+	UChar txval[256];
 	tkey[0] = 0;
 	top[0] = 0;
-	int tval = 0;
-	if (u_sscanf(txt, "<%[^<>=:!]%[<>=:!]%i>", &tkey, &top, &tval) == 3 && top[0] && u_strlen(top)) {
+	txval[0] = 0;
+	if (u_sscanf(txt, "<%[^<>=:!]%[<>=:!]%[-0-9]>", &tkey, &top, &txval) == 3 && top[0] && u_strlen(top)) {
+		int tval = 0;
+		int32_t rv = u_sscanf(txval, "%d", &tval);
+		if (rv != 1) {
+			return;
+		}
 		if (top[0] == '<') {
 			tag->comparison_op = OP_LESSTHAN;
 		}
