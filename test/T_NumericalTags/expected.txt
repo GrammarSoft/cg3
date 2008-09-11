@@ -8,4 +8,6 @@
 	"word" <VALUE=-50> @lessThanFifty @lessThanForty @-fifty 
 	"word" <VALUE>-50> @fifty @moreThanFifty @lessThanFifty @moreThanSixty @lessThanForty @zero 
 	"word" <VALUE=0> @lessThanFifty @lessThanForty @zero 
+	"word" <VALUE:NotNumeric> 
+	"word" <VALUE:x10> 
 
