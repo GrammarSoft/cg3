@@ -3,10 +3,10 @@
 
 AC_PREREQ(2.52)
 
-AC_INIT(vislcg3, [0.9.3], [tino@didriksen.cc])
+AC_INIT(vislcg3, [0.9.6], [tino@didriksen.cc])
 
 PACKAGE=vislcg3
-VERSION=0.9.3
+VERSION=0.9.6
 
 AM_INIT_AUTOMAKE($PACKAGE, $VERSION, no-define)
 
