@@ -5,8 +5,7 @@
   <title>Installation &amp; Updating</title>
   <para>
     These guidelines are primarily for Linux, although I develop on Windows
-    using Microsoft Visual Studio 2005. These steps will not work under Cygwin,
-    but I have successfully compiled and run tests under Windows, Linux, and Mac OS X.
+    using <ulink url="http://www.microsoft.com/express/vc/">Microsoft Visual C++ 2008 Express Edition</ulink>.
   </para>
 
   <section id="installing_icu">
@@ -16,9 +15,14 @@
       Only need to do this once, however it must be done unless you already have a recent
       (newer or equal to <ulink url="http://icu-project.org/">ICU</ulink> 3.6) version installed. <ulink url="http://icu-project.org/">ICU</ulink> 3.4 may also work, but is
       considerably slower. Latest info on <ulink url="http://icu-project.org/">ICU</ulink> can be found at <ulink url="http://icu-project.org/">http://icu-project.org/</ulink>.
-      ICU 3.8 has also been tested and works.
+      ICU 3.8 and 4.0 have also been tested and works.
     </para>
     <para>
+      Newer distributions may have a usable version of ICU available for install via the usual yum or apt managers.
+      Just make sure to get the developer package alongside the runtime libraries.
+    </para>
+    <para>
+      If you do not have ICU from your distribution, manual install is as follows.
       These steps have been tested on all Red Hat based distributions from RH8 to Fedora 8.
       Similar steps have been tested on Ubuntu 7.10, and Mac OS X 10.3 to 10.5 both PPC and Intel.
       They may vary for your distribution.
@@ -27,9 +31,9 @@
       As root:
       <screen>
         # cd /tmp
-        # wget -c --passive
-        &nbsp; '<ulink url="http://icu-project.org/download/">http://download.icu-project.org/files/icu4c/3.8/icu4c-3_8-src.tgz</ulink>'
-        # tar -zxvf icu4c-3_8-src.tgz
+        # wget -c
+        &nbsp; '<ulink url="http://icu-project.org/download/">http://download.icu-project.org/files/icu4c/4.0/icu4c-4_0-src.tgz</ulink>'
+        # tar -zxvf icu4c-4_0-src.tgz
         # cd icu/source/
         # ./runConfigureICU Linux
         # make
@@ -56,27 +60,15 @@
       As any user in any folder where you can find it again:
       <screen>
         $ svn co --username anonymous --password anonymous
-        &nbsp; <ulink url="http://anonymous:anonymous@beta.visl.sdu.dk/svn/visl/tools/vislcg3/">http://beta.visl.sdu.dk/svn/visl/tools/vislcg3</ulink>
-        $ cd vislcg3/trunk/
-        $ ./compile-linux.sh
-        $ ./vislcg3
+        &nbsp; <ulink url="http://anonymous:anonymous@beta.visl.sdu.dk/svn/visl/tools/vislcg3/trunk/">http://beta.visl.sdu.dk/svn/visl/tools/vislcg3/trunk</ulink> vislcg3
+        $ cd vislcg3/
+        $ ./autogen.sh
+        $ make
+        $ ./test/runall.pl
+        ... and if all tests succeed ...
+        $ make install
       </screen>
     </para>
-    <para>
-      If all went well, it should spit out the usage information.
-      After it has been compiled, you can run the regression test suite as <link linkend="regressiontest">described below</link>.
-    </para>
-    <tip>
-      <para>
-        For Mac OS X the script is called <command>compile-mac.sh</command> instead of <command>compile-linux.sh</command>.
-      </para>
-    </tip>
-    <note>
-      <para>
-        If any errors or warnings were output by <command>compile-linux.sh</command>, please contact me;
-        I strive to make it compile cleanly on every platform.
-      </para>
-    </note>
   </section>
 
   <section id="updating_cg3">
@@ -85,8 +77,12 @@
       In the same folder you chose above, as the same user:
       <screen>
         $ svn up
-        $ ./compile-linux.sh
-        $ ./vislcg
+        $ make clean
+        $ ./autogen.sh
+        $ make
+        $ ./test/runall.pl
+        ... and if all tests succeed ...
+        $ make install
       </screen>
     </para>
   </section>
@@ -101,9 +97,18 @@
       </screen>
     </para>
     <para>
-      This will run a series of tests that should all exit with "Success".
+      This will run a series of tests that should all exit with "Success Success".
       If a test on your end exits with "Fail", please tar up that tests' folder and
       send it to me alongside any ideas you may have as to why it failed.
+    </para>
+  </section>
+
+  <section id="cygwin">
+    <title>Cygwin</title>
+    <para>
+      While Cygwin can compile and run VISL CG-3 via the automake toolchain, it cannot be recommended
+      as it is very slow (even when using GCC 4.3).
+      Instead, compile with Microsoft Visual C++ or use the latest precompiled binary.
     </para>
   </section>
 </chapter>

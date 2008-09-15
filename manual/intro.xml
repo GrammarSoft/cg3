@@ -46,8 +46,15 @@
       Internally and through switches there is full support
       for Unicode and any other encoding known by the Unicode library.
       I have chosen the <ulink url="http://icu-project.org/">International Components for Unicode</ulink>
-      library as it provides strong cross-platform
-      Unicode support with built-in regular expressions.
+      library as it provides strong cross-platform Unicode support with built-in regular expressions.
+    </para>
+  </section>
+
+  <section id="discussion">
+    <title>Dicussion, Mailing Lists, Bug Reports, etc...</title>
+    <para>
+      All public discussion, feature requests, bug reports, and talk of related technologies happen in
+      the <ulink url="http://groups.google.com/group/constraint-grammar">Constraint Grammar via Google Groups</ulink>.
     </para>
   </section>
 </chapter>
