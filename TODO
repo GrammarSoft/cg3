@@ -8,5 +8,4 @@ ToDo: Make use of Preferred-Targets
 ToDo: Move DoesTagMatchSet to Grammar
 ToDo: Line number on all applicable warnings
 ToDo: Add --only-mappings-corrections --only-mappings --only-corrections
-ToDo: Add --sections 1,7,3,5-6,12,8
 ToDo: Section groups to allow multiple before/after-sections
