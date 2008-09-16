@@ -258,7 +258,7 @@ main(int argc, char *argv[])
 	}
 
 	applicator->setGrammar(grammar);
-	for (int32_t i=0 ; i<=sections ; i++) {
+	for (int32_t i=1 ; i<=sections ; i++) {
 		applicator->sections.push_back(i);
 	}
 
