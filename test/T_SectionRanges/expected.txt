@@ -1,0 +1,3 @@
+"<word>"
+	"word" tag @one @four @five @six @three 
+

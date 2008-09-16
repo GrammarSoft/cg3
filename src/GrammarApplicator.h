@@ -54,7 +54,7 @@ namespace CG3 {
 		uint32_t num_windows;
 		uint32_t soft_limit;
 		uint32_t hard_limit;
-		uint32_t sections;
+		std::vector<uint32_t> sections;
 		uint32_t verbosity_level;
 
 		GrammarApplicator(UFILE *ux_in, UFILE *ux_out, UFILE *ux_err);
@@ -64,12 +64,11 @@ namespace CG3 {
 		void disableStatistics();
 
 		void setGrammar(const Grammar *res);
+		void index();
 
 		virtual int runGrammarOnText(UFILE *input, UFILE *output);
 
-
 	protected:
-
 		void printReading(Reading *reading, UFILE *output);
 		void printSingleWindow(SingleWindow *window, UFILE *output);
 
@@ -81,6 +80,11 @@ namespace CG3 {
 		uint32_t numWindows;
 		uint32_t numCohorts;
 		uint32_t numReadings;
+
+		bool did_index;
+
+		uint32_t numsections;
+		std::map<int32_t, uint32Set*> runsections;
 
 		static const uint32_t RV_NOTHING = 1;
 		static const uint32_t RV_SOMETHING = 2;
@@ -108,7 +112,7 @@ namespace CG3 {
 		Tag *addTag(const UChar *tag);
 
 		int runGrammarOnWindow(Window *window);
-		uint32_t runRulesOnWindow(SingleWindow *current, const int32_t start, const int32_t end);
+		uint32_t runRulesOnWindow(SingleWindow *current, uint32Set *rules);
 
 		Cohort *runSingleTest(SingleWindow *sWindow, size_t i, const ContextualTest *test, bool *brk, bool *retval, Cohort **deep = 0, Cohort *origin = 0);
 		Cohort *runContextualTest(SingleWindow *sWindow, const size_t position, const ContextualTest *test, Cohort **deep = 0, Cohort *origin = 0);

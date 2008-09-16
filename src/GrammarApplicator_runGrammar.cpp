@@ -60,6 +60,8 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 	UChar *cleaned = _cleaned;
 	bool ignoreinput = false;
 
+	index();
+
 	Recycler *r = Recycler::instance();
 	uint32_t resetAfter = ((num_windows+4)*2+1);
 	uint32_t lines = 0;

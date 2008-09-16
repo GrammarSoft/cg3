@@ -490,9 +490,58 @@ void GAppSetOpts(CG3::GrammarApplicator *applicator) {
 	if (options[STATISTICS].doesOccur) {
 		applicator->enableStatistics();
 	}
+	/*
 	if (options[SECTIONS].doesOccur) {
 		applicator->sections = abs(atoi(options[SECTIONS].value));
 	}
+	/*/
+	if (options[SECTIONS].doesOccur) {
+		applicator->sections.clear();
+		const char *s = options[SECTIONS].value;
+		const char *c = strchr(s, ',');
+		const char *d = strchr(s, '-');
+		if (c == 0 && d == 0) {
+			uint32_t a = abs(atoi(s));
+			for (uint32_t i=1 ; i<=a ; i++) {
+				applicator->sections.push_back(i);
+			}
+		}
+		else {
+			uint32_t a = 0, b = 0;
+			while (c || d) {
+				if (d && (d < c || c == 0)) {
+					a = abs(atoi(s));
+					b = abs(atoi(d));
+					if (c) {
+						s = c+1;
+					}
+					else {
+						d = 0;
+						s = 0;
+					}
+					for (uint32_t i=a ; i<=b ; i++) {
+						applicator->sections.push_back(i);
+					}
+				}
+				else if (c && (c < d || d == 0)) {
+					a = abs(atoi(s));
+					s = c+1;
+					applicator->sections.push_back(a);
+				}
+				if (s) {
+					c = strchr(s, ',');
+					d = strchr(s, '-');
+					if (c == 0 && d == 0) {
+						a = abs(atoi(s));
+						applicator->sections.push_back(a);
+						s = 0;
+					}
+				}
+			}
+			a=a;
+		}
+	}
+	//*/
 	if (options[VERBOSE].doesOccur) {
 		if (options[VERBOSE].value) {
 			applicator->verbosity_level = abs(atoi(options[VERBOSE].value));

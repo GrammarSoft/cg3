@@ -258,7 +258,9 @@ main(int argc, char *argv[])
 	}
 
 	applicator->setGrammar(grammar);
-	applicator->sections = sections;
+	for (int32_t i=0 ; i<=sections ; i++) {
+		applicator->sections.push_back(i);
+	}
 
 	if(trace == 1) {
 		applicator->trace = true;
