@@ -1,0 +1,40 @@
+"<there>"
+	"there" word
+"<once>"
+	"once" word
+"<were>"
+	"are" word
+"<$(>"
+	"(" this is a mismatched parenthesis
+"<two>"
+	"two" word
+"<long>"
+	"long" word
+"<red>"
+	"red" word
+"<$(>"
+	"(" outer opening parenthesis
+"<more>"
+	"more" word
+"<like>"
+	"like" word
+"<maroon>"
+	"maroon" word
+"<$(>"
+	"(" inner opening parenthesis
+"<dark>"
+	"dark" word
+"<earthy>"
+	"earthy" word
+"<red>"
+	"red" word
+"<$)>"
+	"(" inner closing parenthesis
+"<$,>"
+"<actually>"
+	"actual" word
+"<$)>"
+	"(" outer closing parenthesis
+"<cars>"
+	"car" word
+"<$.>"
