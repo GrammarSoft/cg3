@@ -490,11 +490,6 @@ void GAppSetOpts(CG3::GrammarApplicator *applicator) {
 	if (options[STATISTICS].doesOccur) {
 		applicator->enableStatistics();
 	}
-	/*
-	if (options[SECTIONS].doesOccur) {
-		applicator->sections = abs(atoi(options[SECTIONS].value));
-	}
-	/*/
 	if (options[SECTIONS].doesOccur) {
 		applicator->sections.clear();
 		const char *s = options[SECTIONS].value;
@@ -541,7 +536,6 @@ void GAppSetOpts(CG3::GrammarApplicator *applicator) {
 			a=a;
 		}
 	}
-	//*/
 	if (options[VERBOSE].doesOccur) {
 		if (options[VERBOSE].value) {
 			applicator->verbosity_level = abs(atoi(options[VERBOSE].value));
