@@ -301,6 +301,17 @@
     </screen>
   </section>
 
+  <section id="keyword-null-section">
+    <title>NULL-SECTION</title>
+    <indexterm>
+      <primary>NULL-SECTION</primary>
+    </indexterm>
+    <para>
+      Same as SECTION, except it is not actually run.
+      Used for containing ANCHOR'ed lists of rules that you don't want run in the normal course of rule application.
+    </para>
+  </section>
+
   <section id="keyword-preferred-targets">
     <title>PREFERRED-TARGETS</title>
     <indexterm>

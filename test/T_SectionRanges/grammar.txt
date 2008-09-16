@@ -1,0 +1,22 @@
+DELIMITERS = "<$.>" ;
+
+SECTION
+ADD (@one) (*) ;
+
+SECTION
+ADD (@two) (*) ;
+
+SECTION
+ADD (@three) (*) ;
+
+SECTION
+ADD (@four) (*) ;
+
+SECTION
+ADD (@five) (*) ;
+
+SECTION
+ADD (@six) (*) ;
+
+SECTION
+ADD (@seven) (*) ;

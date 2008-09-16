@@ -103,6 +103,8 @@ namespace CG3 {
 	typedef stdext::hash_set<Tag*> TagHashSet;
 	typedef stdext::hash_set<CompositeTag*> CompositeTagHashSet;
 	typedef stdext::hash_map<uint32_t,Set*> uint32SetHashMap;
+	typedef std::map<uint32_t, Rule*> RuleByLineMap;
+	typedef std::vector<Rule*> RuleVector;
 }
 
 #endif

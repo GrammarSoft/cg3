@@ -24,25 +24,22 @@
 using namespace CG3;
 using namespace CG3::Strings;
 
-uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, const int32_t start, const int32_t end) {
+uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, uint32Set *rules) {
 
 	Recycler *r = Recycler::instance();
 	uint32_t retval = RV_NOTHING;
 	bool section_did_good = false;
 	bool delimited = false;
 
-	foreach (uint32Set, current->valid_rules, iter_rules, iter_rules_end) {
+	uint32Set intersects;
+	std::set_intersection(rules->begin(), rules->end(),
+		current->valid_rules.begin(), current->valid_rules.end(),
+		std::inserter(intersects, intersects.begin()));
+
+	foreach (uint32Set, intersects, iter_rules, iter_rules_end) {
 		uint32_t j = (*iter_rules);
 		const Rule *rule = grammar->rule_by_line.find(j)->second;
-		if (start == 0 && rule->section < 0) {
-			continue;
-		}
-		if (start == 0 && rule->section > end) {
-			break;
-		}
-		if (rule->section != start && (start == -1 || start == -2)) {
-			continue;
-		}
+
 		clock_t tstamp = 0;
 		KEYWORDS type = rule->type;
 
@@ -525,37 +522,39 @@ label_runGrammarOnWindow_begin:
 	SingleWindow *current = window->current;
 
 	if (!grammar->before_sections.empty() && !no_before_sections) {
-		uint32_t rv = runRulesOnWindow(current, -1, -1);
+		uint32_t rv = runRulesOnWindow(current, runsections[-1]);
 		if (rv & RV_DELIMITED) {
 			goto label_runGrammarOnWindow_begin;
 		}
 	}
 
 	if (!grammar->rules.empty() && !no_sections) {
-		size_t smax = grammar->sections.size();
-		if (sections && sections < smax) {
-			smax = sections;
+		std::map<int32_t, uint32Set*>::iterator iter_end = runsections.end();
+		if (single_run) {
+			iter_end--;
+			runRulesOnWindow(current, iter_end->second);
 		}
-		for (size_t i=0;i<smax;) {
-			uint32_t rv = 0;
-			if (single_run) {
-				runRulesOnWindow(current, (int32_t)i, (int32_t)i);
-				rv = 0;
-			}
-			else {
-				rv = runRulesOnWindow(current, 0, (int32_t)i);
-			}
-			if (rv & RV_DELIMITED) {
-				goto label_runGrammarOnWindow_begin;
-			}
-			if (!(rv & RV_SOMETHING)) {
-				i++;
+		else {
+			std::map<int32_t, uint32Set*>::iterator iter = runsections.begin();
+			for (; iter != iter_end ;) {
+				if (iter->first < 0) {
+					iter++;
+					continue;
+				}
+				uint32_t rv = 0;
+				rv = runRulesOnWindow(current, iter->second);
+				if (rv & RV_DELIMITED) {
+					goto label_runGrammarOnWindow_begin;
+				}
+				if (!(rv & RV_SOMETHING)) {
+					iter++;
+				}
 			}
 		}
 	}
 
 	if (!grammar->after_sections.empty() && !no_after_sections) {
-		uint32_t rv = runRulesOnWindow(current, -2, -2);
+		uint32_t rv = runRulesOnWindow(current, runsections[-2]);
 		if (rv & RV_DELIMITED) {
 			goto label_runGrammarOnWindow_begin;
 		}

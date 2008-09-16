@@ -72,21 +72,27 @@ Grammar::~Grammar() {
 		}
 	}
 
-	foreach (std::vector<Rule*>, rules, iter_rules1, iter_rules1_end) {
+	foreach (RuleVector, rules, iter_rules1, iter_rules1_end) {
 		if (*iter_rules1) {
 			delete *iter_rules1;
 		}
 	}
 
-	foreach (std::vector<Rule*>, before_sections, iter_rules2, iter_rules2_end) {
+	foreach (RuleVector, before_sections, iter_rules2, iter_rules2_end) {
 		if (*iter_rules2) {
 			delete *iter_rules2;
 		}
 	}
 
-	foreach (std::vector<Rule*>, after_sections, iter_rules3, iter_rules3_end) {
+	foreach (RuleVector, after_sections, iter_rules3, iter_rules3_end) {
 		if (*iter_rules3) {
 			delete *iter_rules3;
+		}
+	}
+
+	foreach (RuleVector, null_section, iter_rules4, iter_rules4_end) {
+		if (*iter_rules4) {
+			delete *iter_rules4;
 		}
 	}
 
@@ -330,6 +336,7 @@ void Grammar::reindex() {
 	rules.clear();
 	before_sections.clear();
 	after_sections.clear();
+	null_section.clear();
 	sections.clear();
 	sets_list.clear();
 
@@ -362,6 +369,9 @@ void Grammar::reindex() {
 		}
 		else if (iter_rule->second->section == -2) {
 			after_sections.push_back(iter_rule->second);
+		}
+		else if (iter_rule->second->section == -3) {
+			null_section.push_back(iter_rule->second);
 		}
 		else {
 			sects.insert(iter_rule->second->section);

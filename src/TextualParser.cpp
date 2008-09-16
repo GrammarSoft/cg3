@@ -33,6 +33,7 @@ TextualParser::TextualParser(UFILE *ux_err) {
 	option_vislcg_compat = false;
 	in_before_sections = false;
 	in_after_sections = false;
+	in_null_section = false;
 	in_section = false;
 	verbosity_level = 0;
 	sets_counter = 100;
@@ -927,6 +928,7 @@ int TextualParser::parseFromUChar(UChar *input) {
 			in_before_sections = true;
 			in_section = false;
 			in_after_sections = false;
+			in_null_section = false;
 		}
 		// CORRECTIONS
 		else if (ISCHR(*p,'C','c') && ISCHR(*(p+10),'S','s') && ISCHR(*(p+1),'O','o') && ISCHR(*(p+2),'R','r')
@@ -937,6 +939,7 @@ int TextualParser::parseFromUChar(UChar *input) {
 			in_before_sections = true;
 			in_section = false;
 			in_after_sections = false;
+			in_null_section = false;
 		}
 		// BEFORE-SECTIONS
 		else if (ISCHR(*p,'B','b') && ISCHR(*(p+14),'S','s') && ISCHR(*(p+1),'E','e') && ISCHR(*(p+2),'F','f')
@@ -948,6 +951,7 @@ int TextualParser::parseFromUChar(UChar *input) {
 			in_before_sections = true;
 			in_section = false;
 			in_after_sections = false;
+			in_null_section = false;
 		}
 		// SECTION
 		else if (ISCHR(*p,'S','s') && ISCHR(*(p+6),'N','n') && ISCHR(*(p+1),'E','e') && ISCHR(*(p+2),'C','c')
@@ -958,6 +962,7 @@ int TextualParser::parseFromUChar(UChar *input) {
 			in_before_sections = false;
 			in_section = true;
 			in_after_sections = false;
+			in_null_section = false;
 		}
 		// CONSTRAINTS
 		else if (ISCHR(*p,'C','c') && ISCHR(*(p+10),'S','s') && ISCHR(*(p+1),'O','o') && ISCHR(*(p+2),'N','n')
@@ -969,6 +974,7 @@ int TextualParser::parseFromUChar(UChar *input) {
 			in_before_sections = false;
 			in_section = true;
 			in_after_sections = false;
+			in_null_section = false;
 		}
 		// AFTER-SECTIONS
 		else if (ISCHR(*p,'A','a') && ISCHR(*(p+13),'S','s') && ISCHR(*(p+1),'F','f') && ISCHR(*(p+2),'T','t')
@@ -980,6 +986,19 @@ int TextualParser::parseFromUChar(UChar *input) {
 			in_before_sections = false;
 			in_section = false;
 			in_after_sections = true;
+			in_null_section = false;
+		}
+		// NULL-SECTION
+		else if (ISCHR(*p,'N','n') && ISCHR(*(p+11),'N','n') && ISCHR(*(p+1),'U','u') && ISCHR(*(p+2),'L','l')
+			&& ISCHR(*(p+3),'L','l') && ISCHR(*(p+4),'-','-') && ISCHR(*(p+5),'S','s')
+			&& ISCHR(*(p+6),'E','e') && ISCHR(*(p+7),'C','c') && ISCHR(*(p+8),'T','t') && ISCHR(*(p+9),'I','i')
+			&& ISCHR(*(p+10),'O','o')
+			&& !ISSTRING(p, 11)) {
+			p += 12;
+			in_before_sections = false;
+			in_section = false;
+			in_after_sections = false;
+			in_null_section = true;
 		}
 		// IFF
 		else if (ISCHR(*p,'I','i') && ISCHR(*(p+2),'F','f') && ISCHR(*(p+1),'F','f')
@@ -1169,6 +1188,10 @@ void TextualParser::addRuleToGrammar(Rule *rule) {
 	}
 	else if (in_after_sections) {
 		rule->section = -2;
+		result->addRule(rule);
+	}
+	else if (in_null_section) {
+		rule->section = -3;
 		result->addRule(rule);
 	}
 	else {

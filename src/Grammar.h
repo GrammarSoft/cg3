@@ -71,10 +71,11 @@ namespace CG3 {
 		uint32Vector sections;
 		std::map<uint32_t, Anchor*> anchors;
 
-		std::map<uint32_t, Rule*> rule_by_line;
-		std::vector<Rule*> before_sections;
-		std::vector<Rule*> rules;
-		std::vector<Rule*> after_sections;
+		RuleByLineMap rule_by_line;
+		RuleVector before_sections;
+		RuleVector rules;
+		RuleVector after_sections;
+		RuleVector null_section;
 
 		Grammar();
 		~Grammar();

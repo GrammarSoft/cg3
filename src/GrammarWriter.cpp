@@ -134,11 +134,14 @@ int GrammarWriter::writeGrammar(UFILE *output) {
 	for (rule_iter = grammar->rule_by_line.begin() ; rule_iter != grammar->rule_by_line.end() ; rule_iter++) {
 		const Rule *r = rule_iter->second;
 		if (lsect != r->section) {
-			if (r->section == -2) {
-				u_fprintf(output, "AFTER-SECTIONS\n");
+			if (r->section == -3) {
+				u_fprintf(output, "\nNULL-SECTION\n");
+			}
+			else if (r->section == -2) {
+				u_fprintf(output, "\nAFTER-SECTIONS\n");
 			}
 			else if (r->section == -1) {
-				u_fprintf(output, "BEFORE-SECTIONS\n");
+				u_fprintf(output, "\nBEFORE-SECTIONS\n");
 			}
 			else {
 				u_fprintf(output, "\nSECTION\n");

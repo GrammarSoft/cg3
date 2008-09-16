@@ -44,7 +44,6 @@ GrammarApplicator::GrammarApplicator(UFILE *ux_in, UFILE *ux_out, UFILE *ux_err)
 	dep_block_loops = true;
 	dep_highest_seen = 0;
 	has_dep = false;
-	sections = 0;
 	verbosity_level = 0;
 	num_windows = 2;
 	begintag = 0;
@@ -63,10 +62,12 @@ GrammarApplicator::GrammarApplicator(UFILE *ux_in, UFILE *ux_out, UFILE *ux_err)
 	numWindows = 0;
 	numCohorts = 0;
 	numReadings = 0;
+	numsections = 0;
 	no_sections = false;
 	no_after_sections = false;
 	no_before_sections = false;
 	no_pass_origin = false;
+	did_index = false;
 }
 
 GrammarApplicator::~GrammarApplicator() {
@@ -120,6 +121,80 @@ void GrammarApplicator::resetIndexes() {
 void GrammarApplicator::setGrammar(const Grammar *res) {
 	grammar = res;
 	single_tags.insert(grammar->single_tags.begin(), grammar->single_tags.end());
+}
+
+void GrammarApplicator::index() {
+	if (did_index) {
+		return;
+	}
+
+	if (!grammar->before_sections.empty()) {
+		uint32Set *m = new uint32Set;
+		const_foreach (RuleVector, grammar->before_sections, iter_rules, iter_rules_end) {
+			const Rule *r = *iter_rules;
+			m->insert(r->line);
+		}
+		runsections[-1] = m;
+	}
+
+	if (!grammar->after_sections.empty()) {
+		uint32Set *m = new uint32Set;
+		const_foreach (RuleVector, grammar->after_sections, iter_rules, iter_rules_end) {
+			const Rule *r = *iter_rules;
+			m->insert(r->line);
+		}
+		runsections[-2] = m;
+	}
+
+	if (!grammar->null_section.empty()) {
+		uint32Set *m = new uint32Set;
+		const_foreach (RuleVector, grammar->null_section, iter_rules, iter_rules_end) {
+			const Rule *r = *iter_rules;
+			m->insert(r->line);
+		}
+		runsections[-3] = m;
+	}
+
+	if (sections.empty()) {
+		int32_t smax = (int32_t)grammar->sections.size();
+		for (int32_t i=0 ; i < smax ; i++) {
+			const_foreach (RuleVector, grammar->rules, iter_rules, iter_rules_end) {
+				const Rule *r = *iter_rules;
+				if (r->section < 0 || r->section > i) {
+					continue;
+				}
+				uint32Set *m = 0;
+				if (runsections.find(i) == runsections.end()) {
+					m = new uint32Set;
+					runsections[i] = m;
+				}
+				m = runsections[i];
+				m->insert(r->line);
+			}
+		}
+	}
+	else {
+		numsections = sections.size();
+		for (uint32_t n=0 ; n<numsections ; n++) {
+			for (uint32_t e=0 ; e<=n ; e++) {
+				const_foreach (RuleVector, grammar->rules, iter_rules, iter_rules_end) {
+					const Rule *r = *iter_rules;
+					if (r->section != (int32_t)sections.at(e)-1) {
+						continue;
+					}
+					uint32Set *m = 0;
+					if (runsections.find(n) == runsections.end()) {
+						m = new uint32Set;
+						runsections[n] = m;
+					}
+					m = runsections[n];
+					m->insert(r->line);
+				}
+			}
+		}
+	}
+
+	did_index = true;
 }
 
 void GrammarApplicator::enableStatistics() {

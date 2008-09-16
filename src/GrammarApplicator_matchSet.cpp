@@ -482,8 +482,7 @@ Cohort *GrammarApplicator::doesSetMatchDependency(SingleWindow *sWindow, const C
 			deps = &current->dep_siblings;
 		}
 
-		uint32HashSet::const_iterator dter;
-		for (dter = deps->begin() ; dter != deps->end() ; dter++) {
+		const_foreach(uint32HashSet, *deps, dter, dter_end) {
 			if (sWindow->parent->cohort_map.find(*dter) == sWindow->parent->cohort_map.end()) {
 				if (verbosity_level > 0) {
 					if (test->pos & POS_DEP_CHILD) {

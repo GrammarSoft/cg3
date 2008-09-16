@@ -260,6 +260,20 @@ void GrammarApplicator::splitMappings(TagList mappings, Cohort *cohort, Reading 
 	Tag *tag = mappings.back();
 	mappings.pop_back();
 	foreach (TagList, mappings, ttag, ttag_end) {
+		// To avoid duplicating needlessly many times, check for a similar reading in the cohort that's already got this mapping
+		bool found = false;
+		foreach(std::list<Reading*>, cohort->readings, itr, itr_end) {
+			if ((*itr)->hash_plain == reading->hash_plain
+				&& (*itr)->mapping
+				&& (*itr)->mapping->hash == (*ttag)->hash
+				) {
+				found = true;
+				break;
+			}
+		}
+		if (found) {
+			continue;
+		}
 		Reading *nr = r->new_Reading(cohort);
 		nr->duplicateFrom(reading);
 		nr->mapped = mapped;

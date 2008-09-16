@@ -15,6 +15,9 @@
       <primary>AFTER-SECTIONS</primary>
     </indexterm>
     <indexterm>
+      <primary>NULL-SECTION</primary>
+    </indexterm>
+    <indexterm>
       <primary>MAPPINGS</primary>
     </indexterm>
     <indexterm>
@@ -94,6 +97,15 @@
     </para>
   </section>
 
+  <section id="sect-null-section">
+    <title>NULL-SECTION</title>
+    <para>
+      See <link linkend="keyword-null-section">NULL-SECTION</link>.
+      May contain any rule type, but is not actually run.
+      This is new in CG-3.
+    </para>
+  </section>
+
   <section id="sect-section-order">
     <title>Ordering of sections in grammar</title>
     <para>
@@ -123,6 +135,25 @@
         AFTER-SECTIONS
       </screen>
     </para>
+  </section>
+
+  <section id="sections-range">
+    <title>--sections with ranges</title>
+    <para>
+      In VISL CG-3, the --sections flag is able to specify ranges of sections to run, and can even be used to skip
+      sections. If only a single number N is given it behaves as if you had written 1-N.
+    </para>
+    <para>
+      While it is possible to specify a range such as 1,4-6,3 where the selection of sections is not ascending, the actual
+      application order will be 1, 1:4, 1:4:5, 1:4:5:6, 1:3:4:5:6 - that is, the final step will run section 3 in between
+      1 and 4. This is due to the ordering of rules being adamantly enforced as ascending only. If you wish to customize
+      the order of rules you will currently have to use JUMP or EXECUTE.
+    </para>
+    <screen>
+      --sections 6
+      --sections 3-6
+      --sections 2-5,7-9,13-15
+    </screen>
   </section>
 
 </chapter>
