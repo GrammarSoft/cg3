@@ -2,7 +2,7 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9,00"
-	Name="cg_comp"
+	Name="cg-comp"
 	ProjectGUID="{78B338E7-9AF6-4CB7-818C-9A4E2765D527}"
 	RootNamespace="cg_comp"
 	Keyword="Win32Proj"

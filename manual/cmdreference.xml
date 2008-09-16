@@ -1,14 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE chapter SYSTEM "docbook-dtd-45/docbookx.dtd">
 
-<chapter id="runtimeoptions">
-  <title>Runtime Options</title>
+<chapter id="cmdreference">
+  <title>Command Line Reference</title>
 
   <para>
-    A list of things that can be set and/or altered at runtime.
+    A list of binaries available and their usage information.
   </para>
 
-  <screen>
+  <section id="vislcg3">
+    <title>vislcg3</title>
+    <para>
+      vislcg3 is the primary binary. It can run rules, compile grammars, and so on.
+    </para>
+    <screen>
 Usage: vislcg3 [OPTIONS]
 
 Options:
@@ -52,6 +57,49 @@ Options:
      --dep-allow-loops     allows the creation of circular dependencies
      --no-magic-readings   prevents running rules on magic readings
  -o, --no-pass-origin      prevents scanning tests from passing the point of origin
-  </screen>
+    </screen>
+  </section>
 
+  <section id="cg-comp">
+    <title>cg-comp</title>
+    <para>
+      cg-comp is a lighter tool that only compiles grammars to their binary form.
+      It requires grammars to be in Unicode (UTF-8) encoding.
+      Made for the Apertium toolchain.
+    </para>
+    <screen>
+USAGE: cg-comp grammar_file output_file
+    </screen>
+  </section>
+
+  <section id="cg-proc">
+    <title>cg-proc</title>
+    <para>
+      cg-proc is a grammar applicator which can handle the Apertium stream format.
+      It works with binary grammars only, hence the need for cg-comp.
+      It requires the input stream to be in Unicode (UTF-8) encoding.
+      Made for the Apertium toolchain.
+    </para>
+    <screen>
+USAGE: cg-proc [-t] [-s] [-d] grammar_file [input_file [output_file]]
+
+Options:
+ -d, --disambiguation:    morphological disambiguation
+ -s, --sections=NUM:      specify number of sections to process
+ -f, --stream-format=NUM: set the format of the I/O stream to NUM,
+                            where `0' is VISL format and `1' is
+                            Apertium format (default: 1)
+ -t, --trace:             print debug output on stderr
+ -v, --version:           version
+ -h, --help:              show this help
+    </screen>
+  </section>
+
+  <section id="cg3-autobin.pl">
+    <title>cg3-autobin.pl</title>
+    <para>
+      A thin Perl wrapper for vislcg3. It will compile the grammar to binary form the first time and re-use that on
+      subsequent runs for the speed boost. Accepts all command line options that vislcg3 does.
+    </para>
+  </section>
 </chapter>
