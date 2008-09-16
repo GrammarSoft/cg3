@@ -41,7 +41,7 @@ namespace CG3 {
 		uint32_t verbosity_level;
 		uint32_t sets_counter;
 		bool option_vislcg_compat;
-		bool in_section, in_before_sections, in_after_sections;
+		bool in_section, in_before_sections, in_after_sections, in_null_section;
 		const char *filename;
 		const char *locale;
 		const char *codepage;

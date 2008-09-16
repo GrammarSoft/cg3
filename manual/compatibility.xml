@@ -185,6 +185,14 @@
         many other to-be-discovered mixtures of rules. Something to be aware of.
       </para>
     </section>
+
+    <section id="gotcha-mapping-visibility">
+      <title>Visibility of Mapped Tags</title>
+      <para>
+        In CG-1, CG-2, and VISLCG it was not always clear when you could refer to a previously mapped in the same
+        grammar. In VISL CG-3 all changes to readings become visible to the rest of the grammar immediately.
+      </para>
+    </section>
   </section>
 
   <section id="incompatibilites">

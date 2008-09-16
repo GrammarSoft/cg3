@@ -8,16 +8,14 @@
     Things that are planned but not yet implemented or not yet fully functional.
   </para>
 
-  <section id="draft-sections-range">
-    <title>--sections with ranges</title>
+  <section id="draft-parentheses">
+    <title>Parentheses Enclosure</title>
     <para>
-      The current --sections flag simply puts an upper limit on which sections to run.
-      A better version would be to be able to specify ranges of sections to run.
+      A set of enclosing wordforms where the contents should be initially omitted from the rule application
+      to prevent disturbing the rules.
     </para>
     <screen>
-      --sections 6
-      --sections 3-6
-      --sections 2-5,7-9,13-15
+      PARENTHESES = ("&lg;$(&gt;" "&lt;$)&gt;") ("&lg;$[&gt;" "&lt;$]&gt;") ("&lg;$«&gt;" "&lt;$»&gt;") ;
     </screen>
   </section>
 
