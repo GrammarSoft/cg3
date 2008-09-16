@@ -1084,6 +1084,43 @@ int TextualParser::parseFromUChar(UChar *input) {
 				CG3Quit(1);
 			}
 		}
+		// PARENTHESES
+		else if (ISCHR(*p,'P','p') && ISCHR(*(p+10),'S','s') && ISCHR(*(p+1),'A','a') && ISCHR(*(p+2),'R','r')
+			&& ISCHR(*(p+3),'E','e') && ISCHR(*(p+4),'N','n') && ISCHR(*(p+5),'T','t') && ISCHR(*(p+6),'H','h')
+			&& ISCHR(*(p+7),'E','e') && ISCHR(*(p+8),'S','s') && ISCHR(*(p+9),'E','e')
+			&& !ISSTRING(p, 10)) {
+			p += 11;
+			result->lines += SKIPWS(&p, '=');
+			if (*p != '=') {
+				u_fprintf(ux_stderr, "Error: Encountered a %C before the expected = on line %u!\n", *p, result->lines);
+				CG3Quit(1);
+			}
+			p++;
+			result->lines += SKIPWS(&p);
+
+			while (*p && *p != ';') {
+				UChar *n = p;
+				result->lines += SKIPTOWS(&n, '(', true);
+				uint32_t c = (uint32_t)(n - p);
+				u_strncpy(gbuffers[0], p, c);
+				gbuffers[0][c] = 0;
+				Tag *t = result->allocateTag(gbuffers[0]);
+				t = result->addTag(t);
+				result->preferred_targets.push_back(t->hash);
+				p = n;
+				result->lines += SKIPWS(&p);
+			}
+
+			if (result->preferred_targets.empty()) {
+				u_fprintf(ux_stderr, "Error: PREFERRED-TARGETS declared, but no definitions given, on line %u!\n", result->lines);
+				CG3Quit(1);
+			}
+			result->lines += SKIPWS(&p, ';');
+			if (*p != ';') {
+				u_fprintf(ux_stderr, "Error: Missing closing ; before line %u!\n", *p, result->lines);
+				CG3Quit(1);
+			}
+		}
 		// END
 		else if (ISCHR(*p,'E','e') && ISCHR(*(p+2),'D','d') && ISCHR(*(p+1),'N','n')) {
 			if (ISNL(*(p-1)) || u_isWhitespace(*(p-1))) {
