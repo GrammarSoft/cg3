@@ -2,8 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9,00"
-	Name="cg_proc"
+	Name="cg-proc"
 	ProjectGUID="{2498EF8F-0AEF-4EBD-9C5B-5B7FBADFAD9F}"
+	RootNamespace="cg-proc"
 	Keyword="Win32Proj"
 	TargetFrameworkVersion="131072"
 	>
