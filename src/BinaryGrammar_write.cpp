@@ -123,6 +123,24 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 	}
 
+	u32tmp = (uint32_t)htonl((uint32_t)grammar->parentheses.size());
+	fwrite(&u32tmp, sizeof(uint32_t), 1, output);
+	const_foreach(uint32Map, grammar->parentheses, iter_par, iter_par_end) {
+		u32tmp = (uint32_t)htonl((uint32_t)iter_par->first);
+		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
+		u32tmp = (uint32_t)htonl((uint32_t)iter_par->second);
+		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
+	}
+
+	u32tmp = (uint32_t)htonl((uint32_t)grammar->anchor_by_hash.size());
+	fwrite(&u32tmp, sizeof(uint32_t), 1, output);
+	const_foreach(uint32Map, grammar->anchor_by_hash, iter_anchor, iter_anchor_end) {
+		u32tmp = (uint32_t)htonl((uint32_t)iter_anchor->first);
+		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
+		u32tmp = (uint32_t)htonl((uint32_t)iter_anchor->second);
+		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
+	}
+
 	u32tmp = (uint32_t)htonl((uint32_t)grammar->sets_list.size());
 	fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 	std::vector<Set*>::const_iterator set_iter;
@@ -231,6 +249,10 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 		u32tmp = (uint32_t)htonl((uint32_t)r->varname);
 		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 		u32tmp = (uint32_t)htonl((uint32_t)r->varvalue);
+		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
+		u32tmp = (uint32_t)htonl((uint32_t)r->jumpstart);
+		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
+		u32tmp = (uint32_t)htonl((uint32_t)r->jumpend);
 		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 
 		u32tmp = (uint32_t)htonl((uint32_t)r->maplist.size());

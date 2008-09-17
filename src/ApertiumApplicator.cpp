@@ -479,7 +479,7 @@ ApertiumApplicator::printReading(Reading *reading, UFILE *output)
 //		Tag::printTagRaw(output, single_tags[reading->baseform]);
 	}
 
-	stdext::hash_map<uint32_t, uint32_t> used_tags;
+	uint32HashMap used_tags;
 	uint32List::iterator tter;
 	for (tter = reading->tags_list.begin() ; tter != reading->tags_list.end() ; tter++) {
 		if (used_tags.find(*tter) != used_tags.end()) {

@@ -32,4 +32,14 @@
 	a::const_iterator d = (b).end(); \
 	for (c = (b).begin() ; c != d ; c++) 
 
+#define reverse_foreach(a, b, c, d) \
+	a::reverse_iterator c; \
+	a::reverse_iterator d = (b).rend(); \
+	for (c = (b).rbegin() ; c != d ; c++) 
+
+#define reverse_const_foreach(a, b, c, d) \
+	a::reverse_const_iterator c; \
+	a::reverse_const_iterator d = (b).rend(); \
+	for (c = (b).rbegin() ; c != d ; c++) 
+
 #endif

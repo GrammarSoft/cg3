@@ -25,7 +25,7 @@
       <primary>MATCH</primary>
     </indexterm>
     <screen>
-      [wordform] MATCH &lt;target&gt; [contextual_tests]
+      [wordform] MATCH &lt;target&gt; [contextual_tests] ;
     </screen>
     <para>
       Used for tracing and debugging, it will not alter the readings but will gather
@@ -52,10 +52,10 @@
       <primary>EXECUTE</primary>
     </indexterm>
     <screen>
-      ANCHOR &lt;anchor_name&gt;
+      ANCHOR &lt;anchor_name&gt; ;
       SECTION [anchor_name]
-      [wordform] JUMP &lt;anchor_name&gt; &lt;target&gt; [contextual_tests]
-      [wordform] EXECUTE &lt;anchor_name&gt; &lt;anchor_name&gt; &lt;target&gt; [contextual_tests]
+      [wordform] JUMP &lt;anchor_name&gt; &lt;target&gt; [contextual_tests] ;
+      [wordform] EXECUTE &lt;anchor_name&gt; &lt;anchor_name&gt; &lt;target&gt; [contextual_tests] ;
     </screen>
     <para>
       These rules will allow you to mark named anchors and jump to them based on a context.
@@ -75,8 +75,8 @@
       <primary>REMVARIABLE</primary>
     </indexterm>
     <screen>
-      [wordform] SETVARIABLE &lt;variable_name&gt; &lt;value&gt; &lt;target&gt; [contextual_tests]
-      [wordform] REMVARIABLE &lt;variable_name&gt; &lt;target&gt; [contextual_tests]
+      [wordform] SETVARIABLE &lt;variable_name&gt; &lt;value&gt; &lt;target&gt; [contextual_tests] ;
+      [wordform] REMVARIABLE &lt;variable_name&gt; &lt;target&gt; [contextual_tests] ;
     </screen>
     <para>
       Global variables complement and are very similar to Metadata, but are set

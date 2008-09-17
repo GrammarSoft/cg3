@@ -238,7 +238,7 @@ void GrammarApplicator::printReading(Reading *reading, UFILE *output) {
 		u_fprintf(output, " ");
 	}
 
-	stdext::hash_map<uint32_t, uint32_t> used_tags;
+	uint32HashMap used_tags;
 	foreach (uint32List, reading->tags_list, tter, tter_end) {
 		if (used_tags.find(*tter) != used_tags.end()) {
 			continue;

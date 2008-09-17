@@ -65,6 +65,7 @@ void Cohort::clear(SingleWindow *p) {
 	dep_self = 0;
 	dep_parent = 0;
 	possible_sets.clear();
+	enclosed.clear();
 }
 
 Cohort::~Cohort() {

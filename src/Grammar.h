@@ -53,9 +53,9 @@ namespace CG3 {
 
 		std::vector<Set*> sets_list;
 		std::set<Set*> sets_all;
-		stdext::hash_map<uint32_t, uint32_t> sets_by_name;
+		uint32HashMap sets_by_name;
 		uint32SetHashMap sets_by_contents;
-		stdext::hash_map<uint32_t, uint32_t> set_alias;
+		uint32HashMap set_alias;
 
 		std::vector<ContextualTest*> template_list;
 		stdext::hash_map<uint32_t, ContextualTest*> templates;
@@ -67,9 +67,11 @@ namespace CG3 {
 		Set *soft_delimiters;
 		uint32_t tag_any;
 		uint32Vector preferred_targets;
+		uint32Map parentheses;
 
 		uint32Vector sections;
-		std::map<uint32_t, Anchor*> anchors;
+		uint32Map anchor_by_hash;
+		std::map<uint32_t, Anchor*> anchor_by_line;
 
 		RuleByLineMap rule_by_line;
 		RuleVector before_sections;
@@ -91,7 +93,6 @@ namespace CG3 {
 		void destroySet(Set *set);
 		void addSetToList(Set *s);
 
-		void addAnchor(const UChar *to);
 		void addAnchor(const UChar *to, const uint32_t line);
 
 		Tag *allocateTag();

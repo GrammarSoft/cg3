@@ -1,2 +1,17 @@
 DELIMITERS = "<$.>" ;
 PARENTHESES = ("<$(>" "<$)>") ("<$[>" "<$]>") ("<${>" "<$}>") ("<$<>" "<$>>") ("<$«>" "<$»>") ;
+
+BEFORE-SECTIONS
+MAP (@sixth) (*) (0** (@fifth)) ;
+MAP (@fifth) (*) (0** (@fourth)) ;
+MAP (@fourth) (*) (0** (@third)) ;
+MAP (@third) (*) (0** (@second)) ;
+MAP (@second) (*) (0** (@first)) ;
+MAP (@first) (*) ;
+
+SECTION
+JUMP FirstAnchor (*) (0 (*)) ;
+EXECUTE FirstAnchor END (*) (0 (*)) ;
+
+NULL-SECTION SectionCanBeAnchor
+ANCHOR FirstAnchor ;

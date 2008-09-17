@@ -1,9 +1,57 @@
-"<word>"
-	"word" wanted 
-"<word>"
-	"word" mapped @A @B 
-"<word>"
-	"word" notwanted 
-	"word" mapped @D @E @X 
-	"word" notmeeither 
+"<there>"
+	"there" word @first 
+"<once>"
+	"once" word @first 
+"<were>"
+	"are" word @first 
+"<$(>"
+	"<$(>" @first 
+"<two>"
+	"two" word @first 
+"<$[>"
+	"<$[>" @second 
+"<three>"
+	"three" word @second 
+"<$]>"
+	"<$]>" @second 
+"<long>"
+	"long" word @first 
+"<red>"
+	"red" word @first 
+"<$(>"
+	"<$(>" @third 
+"<more>"
+	"more" word @third 
+"<like>"
+	"like" word @third 
+"<maroon>"
+	"maroon" word @third 
+"<$(>"
+	"<$(>" @fourth 
+"<dark>"
+	"dark" word @fourth 
+"<earthy>"
+	"earthy" word @fourth 
+"<red>"
+	"red" word @fourth 
+"<$]>"
+	"<$]>" @fourth 
+"<$)>"
+	"<$)>" @fourth 
+"<$,>"
+	"<$,>" @third 
+"<actually>"
+	"actual" word @third 
+"<$)>"
+	"<$)>" @third 
+"<cars>"
+	"car" word @first 
+"<${>"
+	"<${>" @fifth 
+"<trucks>"
+	"truck" word @fifth 
+"<$}>"
+	"<$}>" @fifth 
+"<$.>"
+	"<$.>" @first 
 
