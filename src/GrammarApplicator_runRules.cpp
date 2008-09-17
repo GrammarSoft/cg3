@@ -514,17 +514,11 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, uint32Set *r
 	return retval;
 }
 
-int GrammarApplicator::runGrammarOnWindow(Window *window) {
-label_runGrammarOnWindow_begin:
-	if (has_dep) {
-		reflowDependencyWindow();
-	}
-	SingleWindow *current = window->current;
-
+int GrammarApplicator::runGrammarOnSingleWindow(SingleWindow *current) {
 	if (!grammar->before_sections.empty() && !no_before_sections) {
 		uint32_t rv = runRulesOnWindow(current, runsections[-1]);
 		if (rv & RV_DELIMITED) {
-			goto label_runGrammarOnWindow_begin;
+			return rv;
 		}
 	}
 
@@ -544,7 +538,7 @@ label_runGrammarOnWindow_begin:
 				uint32_t rv = 0;
 				rv = runRulesOnWindow(current, iter->second);
 				if (rv & RV_DELIMITED) {
-					goto label_runGrammarOnWindow_begin;
+					return rv;
 				}
 				if (!(rv & RV_SOMETHING)) {
 					iter++;
@@ -556,7 +550,97 @@ label_runGrammarOnWindow_begin:
 	if (!grammar->after_sections.empty() && !no_after_sections) {
 		uint32_t rv = runRulesOnWindow(current, runsections[-2]);
 		if (rv & RV_DELIMITED) {
-			goto label_runGrammarOnWindow_begin;
+			return rv;
+		}
+	}
+
+	return 0;
+}
+
+int GrammarApplicator::runGrammarOnWindow(Window *window) {
+	if (has_dep) {
+		reflowDependencyWindow();
+	}
+
+	SingleWindow *current = window->current;
+	if (!grammar->parentheses.empty()) {
+		label_scanParentheses:
+		reverse_foreach(std::vector<Cohort*>, current->cohorts, iter, iter_end) {
+			Cohort *c = *iter;
+			uint32Map::const_iterator p = grammar->parentheses.find(c->wordform);
+			if (p != grammar->parentheses.end()) {
+				std::vector<Cohort*>::iterator right = iter.base();
+				right--;
+				right--;
+				c = *right;
+				right++;
+				bool found = false;
+				for (; right != current->cohorts.end() ; right++) {
+					Cohort *s = *right;
+					c->enclosed.push_back(s);
+					if (s->wordform == p->second) {
+						found = true;
+						break;
+					}
+				}
+				if (!found) {
+					c->enclosed.clear();
+				}
+				else {
+					std::vector<Cohort*>::iterator left = iter.base();
+					left--;
+					uint32_t lc = (*left)->local_number;
+					right++;
+					for (; right != current->cohorts.end() ; right++) {
+						*left = *right;
+						(*left)->local_number = lc;
+						lc++;
+						left++;
+					}
+					current->cohorts.resize(current->cohorts.size() - c->enclosed.size());
+					goto label_scanParentheses;
+				}
+			}
+		}
+	}
+
+	par_left_tag = 0;
+	par_right_tag = 0;
+	par_left_pos = 0;
+	par_right_pos = 0;
+
+label_runGrammarOnWindow_begin:
+	current = window->current;
+
+	int rv = runGrammarOnSingleWindow(current);
+	if (rv & RV_DELIMITED) {
+		goto label_runGrammarOnWindow_begin;
+	}
+
+	if (!grammar->parentheses.empty()) {
+		size_t nc = current->cohorts.size();
+		for (size_t i=0 ; i<nc ; i++) {
+			Cohort *c = current->cohorts[i];
+			if (!c->enclosed.empty()) {
+				current->cohorts.resize(current->cohorts.size() + c->enclosed.size(), 0);
+				size_t ne = c->enclosed.size();
+				for (size_t j=nc-1 ; j>i ; j--) {
+					current->cohorts[j+ne] = current->cohorts[j];
+					current->cohorts[j+ne]->local_number = j+ne;
+				}
+				for (size_t j=0 ; j<ne ; j++) {
+					size_t x = i+j+1;
+					current->cohorts[i+j+1] = c->enclosed[j];
+					current->cohorts[i+j+1]->local_number = i+j+1;
+					current->cohorts[i+j+1]->parent = current;
+				}
+				par_left_tag = c->enclosed[0]->wordform;
+				par_right_tag = c->enclosed[ne-1]->wordform;
+				par_left_pos = i+1;
+				par_right_pos = i+ne;
+				c->enclosed.clear();
+				goto label_runGrammarOnWindow_begin;
+			}
 		}
 	}
 

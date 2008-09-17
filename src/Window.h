@@ -35,7 +35,7 @@ namespace CG3 {
 		uint32_t window_span;
 
 		std::map<uint32_t, Cohort*> cohort_map;
-		std::map<uint32_t, uint32_t> dep_map;
+		uint32HashMap dep_map;
 		std::map<uint32_t, Cohort*> dep_window;
 
 		std::list<SingleWindow*> previous;

@@ -119,6 +119,7 @@
         SECTION
         BEFORE-SECTIONS
         SECTION
+        NULL-SECTION
         AFTER-SECTIONS
         SECTION
         BEFORE-SECTIONS
@@ -133,6 +134,7 @@
         SECTION
         SECTION
         AFTER-SECTIONS
+        NULL-SECTION
       </screen>
     </para>
   </section>

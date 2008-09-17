@@ -33,8 +33,7 @@ SingleWindow::SingleWindow(Window *p) {
 
 SingleWindow::~SingleWindow() {
 	Recycler *r = Recycler::instance();
-	std::vector<Cohort*>::iterator iter;
-	for (iter = cohorts.begin() ; iter != cohorts.end() ; iter++) {
+	foreach(std::vector<Cohort*>, cohorts, iter, iter_end) {
 		r->delete_Cohort(*iter);
 	}
 	if (next && previous) {

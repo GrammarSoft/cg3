@@ -93,14 +93,16 @@ namespace CG3 {
 		uint32_t skipped_rules;
 		uint32_t cache_hits, cache_miss, match_single, match_comp, match_sub;
 		uint32_t begintag, endtag;
+		uint32_t par_left_tag, par_right_tag;
+		uint32_t par_left_pos, par_right_pos;
 
 		const Grammar *grammar;
 
-		stdext::hash_map<uint32_t, uint32_t> variables;
-		stdext::hash_map<uint32_t, uint32_t> metas;
+		uint32HashMap variables;
+		uint32HashMap metas;
 
 		bool unif_mode;
-		stdext::hash_map<uint32_t, uint32_t> unif_tags;
+		uint32HashMap unif_tags;
 
 		stdext::hash_map<uint32_t, Tag*> single_tags;
 		stdext::hash_map<uint32_t, uint32HashSet*> index_tags_regexp;
@@ -112,6 +114,7 @@ namespace CG3 {
 		Tag *addTag(const UChar *tag);
 
 		int runGrammarOnWindow(Window *window);
+		int runGrammarOnSingleWindow(SingleWindow *current);
 		uint32_t runRulesOnWindow(SingleWindow *current, uint32Set *rules);
 
 		Cohort *runSingleTest(SingleWindow *sWindow, size_t i, const ContextualTest *test, bool *brk, bool *retval, Cohort **deep = 0, Cohort *origin = 0);

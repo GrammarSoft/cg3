@@ -35,6 +35,8 @@ Rule::Rule() {
 	total_time = 0;
 	varname = 0;
 	varvalue = 0;
+	jumpstart = 0;
+	jumpend = 0;
 	weight = 0.0;
 	quality = 0.0;
 	type = K_IGNORE;

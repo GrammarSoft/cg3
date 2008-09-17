@@ -87,6 +87,12 @@ void ContextualTest::parsePosition(const UChar *input, UFILE *ux_stderr) {
 	if (u_strchr(input, 'o')) {
 		pos |= POS_PASS_ORIGIN;
 	}
+	if (u_strchr(input, 'L')) {
+		pos |= POS_LEFT_PAR;
+	}
+	if (u_strchr(input, 'R')) {
+		pos |= POS_RIGHT_PAR;
+	}
 	UChar tmp[16];
 	tmp[0] = 0;
 	int32_t retval = u_sscanf(input, "%[^0-9]%d", &tmp, &offset);
@@ -103,6 +109,10 @@ void ContextualTest::parsePosition(const UChar *input, UFILE *ux_stderr) {
 	}
 	if ((pos & POS_PASS_ORIGIN) && (pos & POS_NO_PASS_ORIGIN)) {
 		u_fprintf(ux_stderr, "Error: '%S' is not a valid position - cannot have both O and o!\n", pos);
+		CG3Quit(1);
+	}
+	if ((pos & POS_LEFT_PAR) && (pos & POS_RIGHT_PAR)) {
+		u_fprintf(ux_stderr, "Error: '%S' is not a valid position - cannot have both L and R!\n", pos);
 		CG3Quit(1);
 	}
 }

@@ -46,7 +46,7 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 		CG3Quit(1);
 	}
 
-#define B_TOO_OLD 3617
+#define B_TOO_OLD 4021
 	fread(&u32tmp, sizeof(uint32_t), 1, input);
 	u32tmp = (uint32_t)ntohl(u32tmp);
 	if (u32tmp < B_TOO_OLD) {
@@ -167,6 +167,28 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 
 	fread(&u32tmp, sizeof(uint32_t), 1, input);
 	u32tmp = (uint32_t)ntohl(u32tmp);
+	uint32_t num_par_pairs = u32tmp;
+	for (uint32_t i=0 ; i<num_par_pairs ; i++) {
+		fread(&u32tmp, sizeof(uint32_t), 1, input);
+		uint32_t left = (uint32_t)ntohl(u32tmp);
+		fread(&u32tmp, sizeof(uint32_t), 1, input);
+		uint32_t right = (uint32_t)ntohl(u32tmp);
+		grammar->parentheses[left] = right;
+	}
+
+	fread(&u32tmp, sizeof(uint32_t), 1, input);
+	u32tmp = (uint32_t)ntohl(u32tmp);
+	uint32_t num_par_anchors = u32tmp;
+	for (uint32_t i=0 ; i<num_par_anchors ; i++) {
+		fread(&u32tmp, sizeof(uint32_t), 1, input);
+		uint32_t left = (uint32_t)ntohl(u32tmp);
+		fread(&u32tmp, sizeof(uint32_t), 1, input);
+		uint32_t right = (uint32_t)ntohl(u32tmp);
+		grammar->anchor_by_hash[left] = right;
+	}
+
+	fread(&u32tmp, sizeof(uint32_t), 1, input);
+	u32tmp = (uint32_t)ntohl(u32tmp);
 	uint32_t num_sets = u32tmp;
 	grammar->sets_list.resize(num_sets);
 	for (uint32_t i=0 ; i<num_sets ; i++) {
@@ -276,6 +298,10 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 		r->varname = (uint32_t)ntohl(u32tmp);
 		fread(&u32tmp, sizeof(uint32_t), 1, input);
 		r->varvalue = (uint32_t)ntohl(u32tmp);
+		fread(&u32tmp, sizeof(uint32_t), 1, input);
+		r->jumpstart = (uint32_t)ntohl(u32tmp);
+		fread(&u32tmp, sizeof(uint32_t), 1, input);
+		r->jumpend = (uint32_t)ntohl(u32tmp);
 
 		fread(&u32tmp, sizeof(uint32_t), 1, input);
 		u32tmp = (uint32_t)ntohl(u32tmp);

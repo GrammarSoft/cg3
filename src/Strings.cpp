@@ -57,6 +57,7 @@ namespace CG3 {
 			init_keyword_single("SECTION",           K_SECTION);
 			init_keyword_single("BEFORE-SECTIONS",   K_BEFORE_SECTIONS);
 			init_keyword_single("AFTER-SECTIONS",    K_AFTER_SECTIONS);
+			init_keyword_single("NULL-SECTION",      K_NULL_SECTION);
 			init_keyword_single("ADD",               K_ADD);
 			init_keyword_single("MAP",               K_MAP);
 			init_keyword_single("REPLACE",           K_REPLACE);
@@ -65,6 +66,7 @@ namespace CG3 {
 			init_keyword_single("IFF",               K_IFF);
 			init_keyword_single("APPEND",            K_APPEND);
 			init_keyword_single("SUBSTITUTE",        K_SUBSTITUTE);
+			init_keyword_single("START",             K_START);
 			init_keyword_single("END",               K_END);
 			init_keyword_single("ANCHOR",            K_ANCHOR);
 			init_keyword_single("EXECUTE",           K_EXECUTE);
