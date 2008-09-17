@@ -47,6 +47,7 @@ namespace CG3 {
 		uint32HashSet dep_siblings;
 
 		uint32HashSet possible_sets;
+		std::vector<Cohort*> enclosed;
 
 		bool is_related;
 		std::multimap<uint32_t, uint32_t> relations;

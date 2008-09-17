@@ -424,7 +424,7 @@ int TextualParser::parseRule(KEYWORDS key, UChar **p) {
 		wform = result->addTag(wform);
 	}
 
-	(*p) += u_strlen(keywords[key]);
+	(*p) += keyword_lengths[key];
 	result->lines += SKIPWS(p);
 
 	if (**p == ':') {
@@ -435,6 +435,38 @@ int TextualParser::parseRule(KEYWORDS key, UChar **p) {
 		u_strncpy(gbuffers[0], *p, c);
 		gbuffers[0][c] = 0;
 		rule->setName(gbuffers[0]);
+		*p = n;
+	}
+	result->lines += SKIPWS(p);
+
+	if (key == K_JUMP || key == K_EXECUTE) {
+		UChar *n = *p;
+		result->lines += SKIPTOWS(&n, '(');
+		if (!u_isalnum(**p)) {
+			u_fprintf(ux_stderr, "Error: Anchor name for %S must be alphanumeric on line %u!\n", keywords[key], result->lines);
+			CG3Quit(1);
+		}
+		uint32_t c = (uint32_t)(n - *p);
+		u_strncpy(gbuffers[0], *p, c);
+		gbuffers[0][c] = 0;
+		uint32_t sh = hash_sdbm_uchar(gbuffers[0]);
+		rule->jumpstart = sh;
+		*p = n;
+	}
+	result->lines += SKIPWS(p);
+
+	if (key == K_EXECUTE) {
+		UChar *n = *p;
+		result->lines += SKIPTOWS(&n, '(');
+		if (!u_isalnum(**p)) {
+			u_fprintf(ux_stderr, "Error: Anchor name for %S must be alphanumeric on line %u!\n", keywords[key], result->lines);
+			CG3Quit(1);
+		}
+		uint32_t c = (uint32_t)(n - *p);
+		u_strncpy(gbuffers[0], *p, c);
+		gbuffers[0][c] = 0;
+		uint32_t sh = hash_sdbm_uchar(gbuffers[0]);
+		rule->jumpend = sh;
 		*p = n;
 	}
 	result->lines += SKIPWS(p);
@@ -464,6 +496,7 @@ int TextualParser::parseRule(KEYWORDS key, UChar **p) {
 		}
 		(*p)++;
 	}
+
 	result->lines += SKIPWS(p);
 	if (key == K_MAP || key == K_ADD || key == K_REPLACE || key == K_APPEND || key == K_SUBSTITUTE
 		|| key == K_SETRELATIONS || key == K_SETRELATION || key == K_REMRELATIONS || key == K_REMRELATION) {
@@ -491,6 +524,7 @@ int TextualParser::parseRule(KEYWORDS key, UChar **p) {
 		}
 		(*p)++;
 	}
+
 	result->lines += SKIPWS(p);
 	if (key == K_SETRELATIONS || key == K_REMRELATIONS) {
 		if (**p != '(') {
@@ -606,28 +640,15 @@ int TextualParser::parseFromUChar(UChar *input) {
 	UChar *p = input;
 	result->lines = 1;
 
+	result->addAnchor(keywords[K_START], result->lines);
+
 	uint32_t seen_mapping_prefix = 0;
 
 	while (*p) {
 		if (result->lines % 100 == 0) {
 			std::cerr << "Parsing line " << result->lines << "          \r" << std::flush;
 		}
-		while (*p == '#') {
-			result->lines += SKIPLN(&p);
-		}
-		if (*p == 0x000DL) {
-			p++;
-			continue;
-		}
-		if (ISNL(*p)) {
-			result->lines++;
-			p++;
-			continue;
-		}
-		if (u_isWhitespace(*p)) {
-			p++;
-			continue;
-		}
+		result->lines += SKIPWS(&p);
 		// DELIMITERS
 		if (ISCHR(*p,'D','d') && ISCHR(*(p+9),'S','s') && ISCHR(*(p+1),'E','e') && ISCHR(*(p+2),'L','l')
 			&& ISCHR(*(p+3),'I','i') && ISCHR(*(p+4),'M','m') && ISCHR(*(p+5),'I','i') && ISCHR(*(p+6),'T','t')
@@ -655,7 +676,7 @@ int TextualParser::parseFromUChar(UChar *input) {
 			}
 			result->lines += SKIPWS(&p, ';');
 			if (*p != ';') {
-				u_fprintf(ux_stderr, "Error: Missing closing ; before line %u!\n", *p, result->lines);
+				u_fprintf(ux_stderr, "Error: Missing closing ; before line %u!\n", result->lines);
 				CG3Quit(1);
 			}
 		}
@@ -688,7 +709,7 @@ int TextualParser::parseFromUChar(UChar *input) {
 			}
 			result->lines += SKIPWS(&p, ';');
 			if (*p != ';') {
-				u_fprintf(ux_stderr, "Error: Missing closing ; before line %u!\n", *p, result->lines);
+				u_fprintf(ux_stderr, "Error: Missing closing ; before line %u!\n", result->lines);
 				CG3Quit(1);
 			}
 		}
@@ -730,7 +751,7 @@ int TextualParser::parseFromUChar(UChar *input) {
 			}
 			result->lines += SKIPWS(&p, ';');
 			if (*p != ';') {
-				u_fprintf(ux_stderr, "Error: Missing closing ; before line %u!\n", *p, result->lines);
+				u_fprintf(ux_stderr, "Error: Missing closing ; before line %u!\n", result->lines);
 				CG3Quit(1);
 			}
 		}
@@ -752,6 +773,14 @@ int TextualParser::parseFromUChar(UChar *input) {
 
 			while (*p && *p != ';') {
 				UChar *n = p;
+				if (*n == '"') {
+					n++;
+					result->lines += SKIPTO_NOSPAN(&n, '"');
+					if (*n != '"') {
+						u_fprintf(ux_stderr, "Error: Missing closing \" on line %u!\n", result->lines);
+						CG3Quit(1);
+					}
+				}
 				result->lines += SKIPTOWS(&n, ';', true);
 				uint32_t c = (uint32_t)(n - p);
 				u_strncpy(gbuffers[0], p, c);
@@ -769,7 +798,7 @@ int TextualParser::parseFromUChar(UChar *input) {
 			}
 			result->lines += SKIPWS(&p, ';');
 			if (*p != ';') {
-				u_fprintf(ux_stderr, "Error: Missing closing ; before line %u!\n", *p, result->lines);
+				u_fprintf(ux_stderr, "Error: Missing closing ; before line %u!\n", result->lines);
 				CG3Quit(1);
 			}
 		}
@@ -860,12 +889,12 @@ int TextualParser::parseFromUChar(UChar *input) {
 			}
 			result->addSet(s);
 			if (s->tags.empty() && s->single_tags.empty()) {
-				u_fprintf(ux_stderr, "Error: LIST %S declared, but no definitions given, on line %u!\n", result->lines);
+				u_fprintf(ux_stderr, "Error: LIST %S declared, but no definitions given, on line %u!\n", s->name, result->lines);
 				CG3Quit(1);
 			}
 			result->lines += SKIPWS(&p, ';');
 			if (*p != ';') {
-				u_fprintf(ux_stderr, "Error: Missing closing ; before line %u!\n", *p, result->lines);
+				u_fprintf(ux_stderr, "Error: Missing closing ; before line %u!\n", result->lines);
 				CG3Quit(1);
 			}
 		}
@@ -911,12 +940,12 @@ int TextualParser::parseFromUChar(UChar *input) {
 			}
 			result->addSet(s);
 			if (s->sets.empty() && s->tags.empty() && s->single_tags.empty()) {
-				u_fprintf(ux_stderr, "Error: SET %S declared, but no definitions given, on line %u!\n", result->lines);
+				u_fprintf(ux_stderr, "Error: SET %S declared, but no definitions given, on line %u!\n", s->name, result->lines);
 				CG3Quit(1);
 			}
 			result->lines += SKIPWS(&p, ';');
 			if (*p != ';') {
-				u_fprintf(ux_stderr, "Error: Missing closing ; before line %u! Probably caused by missing set operator.\n", *p, result->lines);
+				u_fprintf(ux_stderr, "Error: Missing closing ; before line %u! Probably caused by missing set operator.\n", result->lines);
 				CG3Quit(1);
 			}
 		}
@@ -929,6 +958,19 @@ int TextualParser::parseFromUChar(UChar *input) {
 			in_section = false;
 			in_after_sections = false;
 			in_null_section = false;
+			UChar *s = p;
+			SKIPLN(&s);
+			SKIPWS(&s);
+			result->lines += SKIPWS(&p);
+			if (p != s) {
+				UChar *n = p;
+				result->lines += SKIPTOWS(&n, 0, true);
+				uint32_t c = (uint32_t)(n - p);
+				u_strncpy(gbuffers[0], p, c);
+				gbuffers[0][c] = 0;
+				result->addAnchor(gbuffers[0], result->lines);
+				p = n;
+			}
 		}
 		// CORRECTIONS
 		else if (ISCHR(*p,'C','c') && ISCHR(*(p+10),'S','s') && ISCHR(*(p+1),'O','o') && ISCHR(*(p+2),'R','r')
@@ -940,6 +982,19 @@ int TextualParser::parseFromUChar(UChar *input) {
 			in_section = false;
 			in_after_sections = false;
 			in_null_section = false;
+			UChar *s = p;
+			SKIPLN(&s);
+			SKIPWS(&s);
+			result->lines += SKIPWS(&p);
+			if (p != s) {
+				UChar *n = p;
+				result->lines += SKIPTOWS(&n, 0, true);
+				uint32_t c = (uint32_t)(n - p);
+				u_strncpy(gbuffers[0], p, c);
+				gbuffers[0][c] = 0;
+				result->addAnchor(gbuffers[0], result->lines);
+				p = n;
+			}
 		}
 		// BEFORE-SECTIONS
 		else if (ISCHR(*p,'B','b') && ISCHR(*(p+14),'S','s') && ISCHR(*(p+1),'E','e') && ISCHR(*(p+2),'F','f')
@@ -952,6 +1007,19 @@ int TextualParser::parseFromUChar(UChar *input) {
 			in_section = false;
 			in_after_sections = false;
 			in_null_section = false;
+			UChar *s = p;
+			SKIPLN(&s);
+			SKIPWS(&s);
+			result->lines += SKIPWS(&p);
+			if (p != s) {
+				UChar *n = p;
+				result->lines += SKIPTOWS(&n, 0, true);
+				uint32_t c = (uint32_t)(n - p);
+				u_strncpy(gbuffers[0], p, c);
+				gbuffers[0][c] = 0;
+				result->addAnchor(gbuffers[0], result->lines);
+				p = n;
+			}
 		}
 		// SECTION
 		else if (ISCHR(*p,'S','s') && ISCHR(*(p+6),'N','n') && ISCHR(*(p+1),'E','e') && ISCHR(*(p+2),'C','c')
@@ -963,6 +1031,19 @@ int TextualParser::parseFromUChar(UChar *input) {
 			in_section = true;
 			in_after_sections = false;
 			in_null_section = false;
+			UChar *s = p;
+			SKIPLN(&s);
+			SKIPWS(&s);
+			result->lines += SKIPWS(&p);
+			if (p != s) {
+				UChar *n = p;
+				result->lines += SKIPTOWS(&n, 0, true);
+				uint32_t c = (uint32_t)(n - p);
+				u_strncpy(gbuffers[0], p, c);
+				gbuffers[0][c] = 0;
+				result->addAnchor(gbuffers[0], result->lines);
+				p = n;
+			}
 		}
 		// CONSTRAINTS
 		else if (ISCHR(*p,'C','c') && ISCHR(*(p+10),'S','s') && ISCHR(*(p+1),'O','o') && ISCHR(*(p+2),'N','n')
@@ -975,6 +1056,19 @@ int TextualParser::parseFromUChar(UChar *input) {
 			in_section = true;
 			in_after_sections = false;
 			in_null_section = false;
+			UChar *s = p;
+			SKIPLN(&s);
+			SKIPWS(&s);
+			result->lines += SKIPWS(&p);
+			if (p != s) {
+				UChar *n = p;
+				result->lines += SKIPTOWS(&n, 0, true);
+				uint32_t c = (uint32_t)(n - p);
+				u_strncpy(gbuffers[0], p, c);
+				gbuffers[0][c] = 0;
+				result->addAnchor(gbuffers[0], result->lines);
+				p = n;
+			}
 		}
 		// AFTER-SECTIONS
 		else if (ISCHR(*p,'A','a') && ISCHR(*(p+13),'S','s') && ISCHR(*(p+1),'F','f') && ISCHR(*(p+2),'T','t')
@@ -987,6 +1081,19 @@ int TextualParser::parseFromUChar(UChar *input) {
 			in_section = false;
 			in_after_sections = true;
 			in_null_section = false;
+			UChar *s = p;
+			SKIPLN(&s);
+			SKIPWS(&s);
+			result->lines += SKIPWS(&p);
+			if (p != s) {
+				UChar *n = p;
+				result->lines += SKIPTOWS(&n, 0, true);
+				uint32_t c = (uint32_t)(n - p);
+				u_strncpy(gbuffers[0], p, c);
+				gbuffers[0][c] = 0;
+				result->addAnchor(gbuffers[0], result->lines);
+				p = n;
+			}
 		}
 		// NULL-SECTION
 		else if (ISCHR(*p,'N','n') && ISCHR(*(p+11),'N','n') && ISCHR(*(p+1),'U','u') && ISCHR(*(p+2),'L','l')
@@ -999,6 +1106,41 @@ int TextualParser::parseFromUChar(UChar *input) {
 			in_section = false;
 			in_after_sections = false;
 			in_null_section = true;
+			UChar *s = p;
+			SKIPLN(&s);
+			SKIPWS(&s);
+			result->lines += SKIPWS(&p);
+			if (p != s) {
+				UChar *n = p;
+				result->lines += SKIPTOWS(&n, 0, true);
+				uint32_t c = (uint32_t)(n - p);
+				u_strncpy(gbuffers[0], p, c);
+				gbuffers[0][c] = 0;
+				result->addAnchor(gbuffers[0], result->lines);
+				p = n;
+			}
+		}
+		// ANCHOR
+		else if (ISCHR(*p,'A','a') && ISCHR(*(p+5),'R','r') && ISCHR(*(p+1),'N','n') && ISCHR(*(p+2),'C','c')
+			&& ISCHR(*(p+3),'H','h') && ISCHR(*(p+4),'O','o')
+			&& !ISSTRING(p, 5)) {
+			p += 6;
+			result->lines += SKIPWS(&p);
+			UChar *n = p;
+			result->lines += SKIPTOWS(&n, 0, true);
+			uint32_t c = (uint32_t)(n - p);
+			u_strncpy(gbuffers[0], p, c);
+			gbuffers[0][c] = 0;
+			result->addAnchor(gbuffers[0], result->lines);
+			p = n;
+			//*
+			// ToDo: Whether ANCHOR should require ; or not...
+			result->lines += SKIPWS(&p, ';');
+			if (*p != ';') {
+				u_fprintf(ux_stderr, "Error: Missing closing ; before line %u!\n", result->lines);
+				CG3Quit(1);
+			}
+			//*/
 		}
 		// IFF
 		else if (ISCHR(*p,'I','i') && ISCHR(*(p+2),'F','f') && ISCHR(*(p+1),'F','f')
@@ -1052,6 +1194,17 @@ int TextualParser::parseFromUChar(UChar *input) {
 			&& !ISSTRING(p, 9)) {
 			parseRule(K_SUBSTITUTE, &p);
 		}
+		// JUMP
+		else if (ISCHR(*p,'J','j') && ISCHR(*(p+3),'P','p') && ISCHR(*(p+1),'U','u') && ISCHR(*(p+2),'M','m')
+			&& !ISSTRING(p, 4)) {
+			parseRule(K_JUMP, &p);
+		}
+		// EXECUTE
+		else if (ISCHR(*p,'E','e') && ISCHR(*(p+6),'E','e') && ISCHR(*(p+1),'X','x') && ISCHR(*(p+2),'E','e')
+			&& ISCHR(*(p+3),'C','c') && ISCHR(*(p+4),'U','u') && ISCHR(*(p+5),'T','t')
+			&& !ISSTRING(p, 7)) {
+			parseRule(K_EXECUTE, &p);
+		}
 		// TEMPLATE
 		else if (ISCHR(*p,'T','t') && ISCHR(*(p+7),'E','e') && ISCHR(*(p+1),'E','e') && ISCHR(*(p+2),'M','m')
 			&& ISCHR(*(p+3),'P','p') && ISCHR(*(p+4),'L','l') && ISCHR(*(p+5),'A','a') && ISCHR(*(p+6),'T','t')
@@ -1080,7 +1233,7 @@ int TextualParser::parseFromUChar(UChar *input) {
 
 			result->lines += SKIPWS(&p, ';');
 			if (*p != ';') {
-				u_fprintf(ux_stderr, "Error: Missing closing ; before line %u! Probably caused by missing set operator.\n", *p, result->lines);
+				u_fprintf(ux_stderr, "Error: Missing closing ; before line %u! Probably caused by missing set operator.\n", result->lines);
 				CG3Quit(1);
 			}
 		}
@@ -1099,25 +1252,76 @@ int TextualParser::parseFromUChar(UChar *input) {
 			result->lines += SKIPWS(&p);
 
 			while (*p && *p != ';') {
+				uint32_t c = 0;
+				Tag *left = 0;
+				Tag *right = 0;
 				UChar *n = p;
 				result->lines += SKIPTOWS(&n, '(', true);
-				uint32_t c = (uint32_t)(n - p);
+				if (*n != '(') {
+					u_fprintf(ux_stderr, "Error: Encountered %C before the expected ( on line %u!\n", *p, result->lines);
+					CG3Quit(1);
+				}
+				n++;
+				result->lines += SKIPWS(&n);
+				p = n;
+				if (*n == '"') {
+					n++;
+					result->lines += SKIPTO_NOSPAN(&n, '"');
+					if (*n != '"') {
+						u_fprintf(ux_stderr, "Error: Missing closing \" on line %u!\n", result->lines);
+						CG3Quit(1);
+					}
+				}
+				result->lines += SKIPTOWS(&n, ')', true);
+				c = (uint32_t)(n - p);
 				u_strncpy(gbuffers[0], p, c);
 				gbuffers[0][c] = 0;
-				Tag *t = result->allocateTag(gbuffers[0]);
-				t = result->addTag(t);
-				result->preferred_targets.push_back(t->hash);
+				left = result->allocateTag(gbuffers[0]);
+				left = result->addTag(left);
+				result->lines += SKIPWS(&n);
 				p = n;
+
+				if (*p == ')') {
+					u_fprintf(ux_stderr, "Error: Encountered ) before the expected Right tag on line %u!\n", result->lines);
+					CG3Quit(1);
+				}
+
+				if (*n == '"') {
+					n++;
+					result->lines += SKIPTO_NOSPAN(&n, '"');
+					if (*n != '"') {
+						u_fprintf(ux_stderr, "Error: Missing closing \" on line %u!\n", result->lines);
+						CG3Quit(1);
+					}
+				}
+				result->lines += SKIPTOWS(&n, ')', true);
+				c = (uint32_t)(n - p);
+				u_strncpy(gbuffers[0], p, c);
+				gbuffers[0][c] = 0;
+				right = result->allocateTag(gbuffers[0]);
+				right = result->addTag(right);
+				result->lines += SKIPWS(&n);
+				p = n;
+
+				if (*p != ')') {
+					u_fprintf(ux_stderr, "Error: Encountered %C before the expected ) on line %u!\n", *p, result->lines);
+					CG3Quit(1);
+				}
+				p++;
 				result->lines += SKIPWS(&p);
+
+				if (left && right) {
+					result->parentheses[left->hash] = right->hash;
+				}
 			}
 
-			if (result->preferred_targets.empty()) {
-				u_fprintf(ux_stderr, "Error: PREFERRED-TARGETS declared, but no definitions given, on line %u!\n", result->lines);
+			if (result->parentheses.empty()) {
+				u_fprintf(ux_stderr, "Error: PARENTHESES declared, but no definitions given, on line %u!\n", result->lines);
 				CG3Quit(1);
 			}
 			result->lines += SKIPWS(&p, ';');
 			if (*p != ';') {
-				u_fprintf(ux_stderr, "Error: Missing closing ; before line %u!\n", *p, result->lines);
+				u_fprintf(ux_stderr, "Error: Missing closing ; before line %u!\n", result->lines);
 				CG3Quit(1);
 			}
 		}
@@ -1145,13 +1349,15 @@ int TextualParser::parseFromUChar(UChar *input) {
 			}
 			if (*p && *p != ';' && *p != '"' && *p != '<' && !ISNL(*p) && !u_isWhitespace(*p)) {
 				p[16] = 0;
-				u_fprintf(ux_stderr, "Error: Garbage data '%S' encountered on line %u!\n", p, result->lines);
+				u_fprintf(ux_stderr, "Error: Garbage data '%S...' encountered on line %u!\n", p, result->lines);
 				CG3Quit(1);
 			}
 			p++;
 		}
 	}
 	
+	result->addAnchor(keywords[K_END], result->lines);
+
 	return 0;
 }
 

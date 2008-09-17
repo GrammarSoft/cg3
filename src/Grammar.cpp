@@ -52,7 +52,7 @@ Grammar::~Grammar() {
 	}
 
 	std::map<uint32_t, Anchor*>::iterator iter_anc;
-	for (iter_anc = anchors.begin() ; iter_anc != anchors.end() ; iter_anc++) {
+	for (iter_anc = anchor_by_line.begin() ; iter_anc != anchor_by_line.end() ; iter_anc++) {
 		if (iter_anc->second) {
 			delete iter_anc->second;
 		}
@@ -297,20 +297,16 @@ void Grammar::addContextualTest(ContextualTest *test, const UChar *name) {
 }
 
 void Grammar::addAnchor(const UChar *to, uint32_t line) {
-	uint32_t ah = hash_sdbm_uchar(to, 0);
-	if (anchors.find(ah) != anchors.end()) {
-		u_fprintf(ux_stderr, "Warning: Anchor '%S' redefined on line %u!\n", to, curline);
-		delete anchors[ah];
-		anchors.erase(ah);
+	uint32_t ah = hash_sdbm_uchar(to);
+	if (anchor_by_hash.find(ah) != anchor_by_hash.end()) {
+		u_fprintf(ux_stderr, "Error: Redefinition attempt for anchor '%S' on line %u!\n", to, line);
+		CG3Quit(1);
 	}
 	Anchor *anc = new Anchor;
 	anc->setName(to);
 	anc->line = line;
-	anchors[ah] = anc;
-}
-
-void Grammar::addAnchor(const UChar *to) {
-	addAnchor(to, (uint32_t)(rules.size()+1));
+	anchor_by_hash[ah] = line;
+	anchor_by_line[line] = anc;
 }
 
 void Grammar::setName(const char *to) {

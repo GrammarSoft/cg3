@@ -154,12 +154,10 @@ void GrammarApplicator::reflowDependencyWindow() {
 		for (dIter = gWindow->dep_window.begin() ; dIter != gWindow->dep_window.end() ; dIter++) {
 			Cohort *cohort = dIter->second;
 
-			uint32HashSet::const_iterator tter;
-			for (tter = cohort->dep_children.begin() ; tter != cohort->dep_children.end() ; tter++) {
+			const_foreach(uint32HashSet, cohort->dep_children, tter, tter_end) {
 				if (gWindow->cohort_map.find(*tter) != gWindow->cohort_map.end()) {
 					Cohort *c = gWindow->cohort_map.find(*tter)->second;
-					uint32HashSet::const_iterator ster;
-					for (ster = cohort->dep_children.begin() ; ster != cohort->dep_children.end() ; ster++) {
+					const_foreach(uint32HashSet, cohort->dep_children, ster, ster_end) {
 						c->addSibling(*ster);
 					}
 					c->remSibling(*tter);

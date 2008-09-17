@@ -83,7 +83,9 @@ namespace CG3 {
 	typedef std::list<uint32_t> uint32List;
 	typedef std::vector<uint32_t> uint32Vector;
 	typedef std::set<uint32_t> uint32Set;
+	typedef std::map<uint32_t, uint32_t> uint32Map;
 	typedef stdext::hash_set<uint32_t> uint32HashSet;
+	typedef stdext::hash_map<uint32_t, uint32_t> uint32HashMap;
 	class Recycler;
 	class Grammar;
 	class Set;
