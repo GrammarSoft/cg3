@@ -126,6 +126,7 @@ namespace CG3 {
 		bool doesSetMatchCohortNormal(const Cohort *cohort, const uint32_t set);
 		bool doesSetMatchCohortCareful(const Cohort *cohort, const uint32_t set);
 		Cohort *doesSetMatchDependency(SingleWindow *sWindow, const Cohort *current, const ContextualTest *test);
+		Cohort *doesSetMatchParenthesis(SingleWindow *sWindow, const Cohort *current, const ContextualTest *test);
 
 		SingleWindow *initialiseSingleWindow(Recycler *r, Window *cWindow, SingleWindow *cSWindow);
 

@@ -2,6 +2,11 @@ DELIMITERS = "<$.>" ;
 PARENTHESES = ("<$(>" "<$)>") ("<$[>" "<$]>") ("<${>" "<$}>") ("<$<>" "<$>>") ("<$«>" "<$»>") ;
 
 BEFORE-SECTIONS
+ADD (@enclosed) (*) (L (*)) ;
+ADD (@sqbrck) (*) (L ("<$[>")) ;
+ADD (@paren) (*) (L ("<$(>")) ;
+ADD (@clbrck) (*) (L ("<${>")) ;
+
 MAP (@sixth) (*) (0** (@fifth)) ;
 MAP (@fifth) (*) (0** (@fourth)) ;
 MAP (@fourth) (*) (0** (@third)) ;
