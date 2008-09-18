@@ -14,6 +14,10 @@ MAP (@third) (*) (0** (@second)) ;
 MAP (@second) (*) (0** (@first)) ;
 MAP (@first) (*) ;
 
+END
+
+# This part is not yet implemented...
+
 SECTION
 JUMP FirstAnchor (*) (0 (*)) ;
 EXECUTE FirstAnchor END (*) (0 (*)) ;
