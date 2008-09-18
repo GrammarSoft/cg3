@@ -629,7 +629,6 @@ label_runGrammarOnWindow_begin:
 					current->cohorts[j+ne]->local_number = j+ne;
 				}
 				for (size_t j=0 ; j<ne ; j++) {
-					size_t x = i+j+1;
 					current->cohorts[i+j+1] = c->enclosed[j];
 					current->cohorts[i+j+1]->local_number = i+j+1;
 					current->cohorts[i+j+1]->parent = current;
