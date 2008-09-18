@@ -523,3 +523,30 @@ Cohort *GrammarApplicator::doesSetMatchDependency(SingleWindow *sWindow, const C
 
 	return rv;
 }
+
+Cohort *GrammarApplicator::doesSetMatchParenthesis(SingleWindow *sWindow, const Cohort *current, const ContextualTest *test) {
+	if (current->local_number < par_left_pos || current->local_number > par_right_pos) {
+		return 0;
+	}
+	Cohort *rv = 0;
+
+	bool retval = false;
+	Cohort *cohort = 0;
+	if (test->pos & POS_LEFT_PAR) {
+		cohort = sWindow->cohorts.at(par_left_pos);
+	}
+	else if (test->pos & POS_RIGHT_PAR) {
+		cohort = sWindow->cohorts.at(par_right_pos);
+	}
+	if (test->pos & POS_CAREFUL) {
+		retval = doesSetMatchCohortCareful(cohort, test->target);
+	}
+	else {
+		retval = doesSetMatchCohortNormal(cohort, test->target);
+	}
+	if (retval) {
+		rv = cohort;
+	}
+
+	return rv;
+}

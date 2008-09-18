@@ -9,49 +9,49 @@
 "<two>"
 	"two" word @first 
 "<$[>"
-	"<$[>" @second 
+	"<$[>" @enclosed @sqbrck @second 
 "<three>"
-	"three" word @second 
+	"three" word @enclosed @sqbrck @second 
 "<$]>"
-	"<$]>" @second 
+	"<$]>" @enclosed @sqbrck @second 
 "<long>"
 	"long" word @first 
 "<red>"
 	"red" word @first 
 "<$(>"
-	"<$(>" @third 
+	"<$(>" @enclosed @paren @third 
 "<more>"
-	"more" word @third 
+	"more" word @enclosed @paren @third 
 "<like>"
-	"like" word @third 
+	"like" word @enclosed @paren @third 
 "<maroon>"
-	"maroon" word @third 
+	"maroon" word @enclosed @paren @third 
 "<$(>"
-	"<$(>" @fourth 
+	"<$(>" @enclosed @paren @fourth 
 "<dark>"
-	"dark" word @fourth 
+	"dark" word @enclosed @paren @fourth 
 "<earthy>"
-	"earthy" word @fourth 
+	"earthy" word @enclosed @paren @fourth 
 "<red>"
-	"red" word @fourth 
+	"red" word @enclosed @paren @fourth 
 "<$]>"
-	"<$]>" @fourth 
+	"<$]>" @enclosed @paren @fourth 
 "<$)>"
-	"<$)>" @fourth 
+	"<$)>" @enclosed @paren @fourth 
 "<$,>"
-	"<$,>" @third 
+	"<$,>" @enclosed @paren @third 
 "<actually>"
-	"actual" word @third 
+	"actual" word @enclosed @paren @third 
 "<$)>"
-	"<$)>" @third 
+	"<$)>" @enclosed @paren @third 
 "<cars>"
 	"car" word @first 
 "<${>"
-	"<${>" @fifth 
+	"<${>" @enclosed @clbrck @fifth 
 "<trucks>"
-	"truck" word @fifth 
+	"truck" word @enclosed @clbrck @fifth 
 "<$}>"
-	"<$}>" @fifth 
+	"<$}>" @enclosed @clbrck @fifth 
 "<$.>"
 	"<$.>" @first 
 
