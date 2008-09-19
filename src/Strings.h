@@ -104,6 +104,9 @@ namespace CG3 {
 			S_ENDTAG,
 			S_LINKZ,
 			S_SPACE,
+			S_UU_LEFT,
+			S_UU_RIGHT,
+			S_UU_PAREN,
 			STRINGS_COUNT
 		};
 

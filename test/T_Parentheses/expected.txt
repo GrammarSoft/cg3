@@ -9,17 +9,17 @@
 "<two>"
 	"two" word @first 
 "<$[>"
-	"<$[>" @enclosed @sqbrck @second 
+	"<$[>" @left @left-or-right @enclosed @sqbrck @second 
 "<three>"
 	"three" word @enclosed @sqbrck @second 
 "<$]>"
-	"<$]>" @enclosed @sqbrck @second 
+	"<$]>" @right @left-or-right @right-sqbrck @enclosed @sqbrck @second 
 "<long>"
 	"long" word @first 
 "<red>"
 	"red" word @first 
 "<$(>"
-	"<$(>" @enclosed @paren @third 
+	"<$(>" @left @left-or-right @left-paren @enclosed @paren @third 
 "<more>"
 	"more" word @enclosed @paren @third 
 "<like>"
@@ -27,7 +27,7 @@
 "<maroon>"
 	"maroon" word @enclosed @paren @third 
 "<$(>"
-	"<$(>" @enclosed @paren @fourth 
+	"<$(>" @left @left-or-right @left-paren @enclosed @paren @fourth 
 "<dark>"
 	"dark" word @enclosed @paren @fourth 
 "<earthy>"
@@ -37,21 +37,21 @@
 "<$]>"
 	"<$]>" @enclosed @paren @fourth 
 "<$)>"
-	"<$)>" @enclosed @paren @fourth 
+	"<$)>" @right @left-or-right @enclosed @paren @fourth 
 "<$,>"
 	"<$,>" @enclosed @paren @third 
 "<actually>"
 	"actual" word @enclosed @paren @third 
 "<$)>"
-	"<$)>" @enclosed @paren @third 
+	"<$)>" @right @left-or-right @enclosed @paren @third 
 "<cars>"
 	"car" word @first 
 "<${>"
-	"<${>" @enclosed @clbrck @fifth 
+	"<${>" @left @left-or-right @enclosed @clbrck @fifth 
 "<trucks>"
 	"truck" word @enclosed @clbrck @fifth 
 "<$}>"
-	"<$}>" @enclosed @clbrck @fifth 
+	"<$}>" @right @left-or-right @enclosed @clbrck @fifth 
 "<$.>"
 	"<$.>" @first 
 

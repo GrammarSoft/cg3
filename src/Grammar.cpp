@@ -200,6 +200,9 @@ CompositeTag *Grammar::addCompositeTagToSet(Set *set, CompositeTag *tag) {
 			if (rtag->type & T_ANY) {
 				set->match_any = true;
 			}
+			if (rtag->is_special) {
+				set->is_special = true;
+			}
 			delete tag;
 			tag = 0;
 		} else {
