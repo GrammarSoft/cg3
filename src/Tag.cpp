@@ -124,8 +124,13 @@ void Tag::parseTag(const UChar *to, UFILE *ux_stderr) {
 		}
 
 		if (u_strcmp(tag, stringbits[S_ASTERIK]) == 0) {
-			//u_fprintf(ux_stderr, "Info: Tag marked as T_ANY.\n");
 			type |= T_ANY;
+		}
+		else if (u_strcmp(tag, stringbits[S_UU_LEFT]) == 0) {
+			type |= T_PAR_LEFT;
+		}
+		else if (u_strcmp(tag, stringbits[S_UU_RIGHT]) == 0) {
+			type |= T_PAR_RIGHT;
 		}
 
 		// ToDo: Add ICASE: REGEXP: and //r //ri //i to tags
@@ -150,7 +155,7 @@ void Tag::parseTag(const UChar *to, UFILE *ux_stderr) {
 		}
 	}
 	is_special = false;
-	if (type & (T_ANY|T_NUMERICAL|T_VARIABLE|T_META|T_NEGATIVE|T_FAILFAST|T_CASE_INSENSITIVE|T_REGEXP)) {
+	if (type & (T_ANY|T_PAR_LEFT|T_PAR_RIGHT|T_NUMERICAL|T_VARIABLE|T_META|T_NEGATIVE|T_FAILFAST|T_CASE_INSENSITIVE|T_REGEXP)) {
 		is_special = true;
 	}
 }
@@ -189,7 +194,7 @@ void Tag::parseTagRaw(const UChar *to) {
 		}
 	}
 	is_special = false;
-	if (type & (T_ANY|T_NUMERICAL|T_VARIABLE|T_META|T_NEGATIVE|T_FAILFAST|T_CASE_INSENSITIVE|T_REGEXP)) {
+	if (type & (T_NUMERICAL)) {
 		is_special = true;
 	}
 }
@@ -285,7 +290,7 @@ uint32_t Tag::rehash() {
 	}
 
 	is_special = false;
-	if (type & (T_ANY|T_NUMERICAL|T_VARIABLE|T_META|T_NEGATIVE|T_FAILFAST|T_CASE_INSENSITIVE|T_REGEXP)) {
+	if (type & (T_ANY|T_PAR_LEFT|T_PAR_RIGHT|T_NUMERICAL|T_VARIABLE|T_META|T_NEGATIVE|T_FAILFAST|T_CASE_INSENSITIVE|T_REGEXP)) {
 		is_special = true;
 	}
 

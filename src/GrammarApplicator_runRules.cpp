@@ -107,7 +107,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, uint32Set *r
 					unif_tags.clear();
 				}
 
-				if (rule->target && doesSetMatchReading(reading, rule->target, set->is_child_unified)) {
+				if (rule->target && doesSetMatchReading(reading, rule->target, set->is_child_unified|set->is_special)) {
 					reading->matched_target = true;
 					bool good = true;
 					if (!rule->tests.empty() && !did_test) {
