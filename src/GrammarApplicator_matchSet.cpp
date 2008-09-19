@@ -224,6 +224,12 @@ bool GrammarApplicator::doesTagMatchReading(const Reading *reading, const Tag *t
 			match = true;
 		}
 	}
+	else if (par_left_tag && tag->type & T_PAR_LEFT) {
+		match = (reading->tags.find(par_left_tag) != reading->tags.end());
+	}
+	else if (par_right_tag && tag->type & T_PAR_RIGHT) {
+		match = (reading->tags.find(par_right_tag) != reading->tags.end());
+	}
 	else if (!raw_in) {
 		match = false;
 		if (tag->type & T_NEGATIVE) {
@@ -251,7 +257,8 @@ bool GrammarApplicator::doesSetMatchReading(Reading *reading, const uint32_t set
 	if (reading->possible_sets.find(set) == reading->possible_sets.end()) {
 		return false;
 	}
-	if (__index_matches(&index_reading_no, reading->hash, set)) {
+	// ToDo: This is not good enough...while numeric tags are special, their failures can be indexed.
+	if (!bypass_index && __index_matches(&index_reading_no, reading->hash, set)) {
 		return false;
 	}
 	if (!bypass_index && __index_matches(&index_reading_yes, reading->hash, set)) {
@@ -412,7 +419,7 @@ bool GrammarApplicator::doesSetMatchCohortNormal(const Cohort *cohort, const uin
 	std::list<Reading*>::const_iterator iter;
 	for (iter = cohort->readings.begin() ; iter != cohort->readings.end() ; iter++) {
 		Reading *reading = *iter;
-		if (doesSetMatchReading(reading, set, theset->is_child_unified)) {
+		if (doesSetMatchReading(reading, set, theset->is_child_unified|theset->is_special)) {
 			retval = true;
 			break;
 		}
@@ -429,7 +436,7 @@ bool GrammarApplicator::doesSetMatchCohortCareful(const Cohort *cohort, const ui
 	std::list<Reading*>::const_iterator iter;
 	for (iter = cohort->readings.begin() ; iter != cohort->readings.end() ; iter++) {
 		Reading *reading = *iter;
-		if (!doesSetMatchReading(reading, set, theset->is_child_unified)) {
+		if (!doesSetMatchReading(reading, set, theset->is_child_unified|theset->is_special)) {
 			retval = false;
 			break;
 		}

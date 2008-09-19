@@ -147,6 +147,9 @@ namespace CG3 {
 			init_string_single("TARGET",       S_TARGET);
 			init_string_single("AND",          S_AND);
 			init_string_single("IF",           S_IF);
+			init_string_single("_LEFT_",       S_UU_LEFT);
+			init_string_single("_RIGHT_",      S_UU_RIGHT);
+			init_string_single("_PAREN_",      S_UU_PAREN);
 
 			for (unsigned int i=0;i<STRINGS_COUNT;i++) {
 				if (!stringbits[i]) {
