@@ -44,6 +44,7 @@
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="sections.xml" />
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="rules.xml" />
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="contexts.xml" />
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="parentheses.xml" />
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="dependencies.xml" />
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="probabilistic.xml" />
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="templates.xml" />

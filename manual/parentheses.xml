@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE chapter SYSTEM "docbook-dtd-45/docbookx.dtd">
+
+<chapter id="parentheses">
+  <title>Parenthesis Enclosures</title>
+
+  <para>
+    A new feature in CG-3 is handling of enclosures by defining pairs of parentheses.
+    Any enclosure found will be omitted from the window on first run, then put back in the window and all rules
+    are re-run on the new larger window. This continues until all enclosures have been put back one-by-one.
+  </para>
+  <para>
+    The idea is that by omitting the enclosures their noise cannot disrupt disambiguation, thus providing
+    an easy way to write clean grammars that do not have to have special tests for parentheses all over the place.
+  </para>
+
+  <section id="parentheses-example">
+    <title>Example</title>
+    <para>
+      Example is adapted from the ./test/T_Parentheses/ regression test.
+    </para>
+    
+    <para>
+      Given the following sentence:
+    </para>
+    <screen>
+      There once were (two [three] long red (more like maroon (dark earthy red]), actually) cars {trucks}.
+    </screen>
+    <para>
+      ...and given the following parenthesis wordform pairs:
+    </para>
+    <screen>
+      PARENTHESES = ("&lt;(&gt;" "&lt;)&gt;") ("&lt;[&gt;" "&lt;]&gt;") ("&lt;{&gt;" "&lt;}&gt;") ;
+    </screen>
+    <para>
+      ...results in the sentence being run in the order of:
+    </para>
+    <screen>
+      1: There once were (two long red cars.
+      2: There once were (two [three] long red cars.
+      3: There once were (two [three] long red (more like maroon, actually) cars.
+      4: There once were (two [three] long red (more like maroon (dark earthy red]), actually) cars.
+      5: There once were (two [three] long red (more like maroon (dark earthy red]), actually) cars {trucks}.
+    </screen>
+    <para>
+      The example has 2 unmatched parenthesis in the words (two and red] which are left in untouched as they
+      are not really enclosing anything.
+    </para>
+
+    <para>
+      Note that enclosures are put back in the window left-to-right and only one at the time.
+      The depth of enclosure has no effect on the order of resurrection.
+      This may seem unintuitive, but it was the most efficient way of handling it.
+    </para>
+    <para>
+      Also of note is that all rules in all sections will be re-run each time an enclosure is resurrected.
+      This includes BEFORE-SECTIONS and AFTER-SECTIONS. So in the above example, all of those are run 5 times.
+    </para>
+  </section>
+
+  <section id="parentheses-pos-left">
+    <title>Contextual Position L</title>
+    <para>
+      In a contextual test you can jump to the leftward parenthesis of the currently active enclosure
+      with the L position. It is only valid from within the enclosure.
+    </para>
+    <screen>
+      (L (*) LINK 1* (V) BARRIER _RIGHT_)
+    </screen>
+  </section>
+
+  <section id="parentheses-pos-right">
+    <title>Contextual Position R</title>
+    <para>
+      In a contextual test you can jump to the rightward parenthesis of the currently active enclosure
+      with the R position. It is only valid from within the enclosure.
+    </para>
+    <screen>
+      (R (*) LINK -1* (V) BARRIER _LEFT_)
+    </screen>
+  </section>
+
+  <section id="parentheses-tag-left">
+    <title>Magic Tag _LEFT_</title>
+    <para>
+      A magic tag that represents the active enclosure's leftward parenthesis wordform.
+      This tag is only valid when an enclosure is active and only exactly on the leftward parenthesis cohort.
+      Useful for preventing scanning tests from crossing it with a barrier.
+    </para>
+  </section>
+
+  <section id="parentheses-tag-right">
+    <title>Magic Tag _RIGHT_</title>
+    <para>
+      A magic tag that represents the active enclosure's rightward parenthesis wordform.
+      This tag is only valid when an enclosure is active and only exactly on the rightward parenthesis cohort.
+      Useful for preventing scanning tests from crossing it with a barrier.
+    </para>
+  </section>
+
+  <section id="parentheses-set-left">
+    <title>Magic Set _LEFT_</title>
+    <para>
+      A magic set containing the single tag (_LEFT_).
+    </para>
+  </section>
+
+  <section id="parentheses-set-right">
+    <title>Magic Set _RIGHT_</title>
+    <para>
+      A magic set containing the single tag (_RIGHT_).
+    </para>
+  </section>
+
+  <section id="parentheses-set-paren">
+    <title>Magic Set _PAREN_</title>
+    <para>
+      A magic set defined as _LEFT_ OR _RIGHT_.
+    </para>
+  </section>
+
+</chapter>

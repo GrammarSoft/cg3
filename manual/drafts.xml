@@ -8,17 +8,6 @@
     Things that are planned but not yet implemented or not yet fully functional.
   </para>
 
-  <section id="draft-parentheses">
-    <title>Parentheses Enclosure</title>
-    <para>
-      A set of enclosing wordforms where the contents should be initially omitted from the rule application
-      to prevent disturbing the rules.
-    </para>
-    <screen>
-      PARENTHESES = ("&lg;$(&gt;" "&lt;$)&gt;") ("&lg;$[&gt;" "&lt;$]&gt;") ("&lg;$«&gt;" "&lt;$»&gt;") ;
-    </screen>
-  </section>
-
   <section id="draft-match">
     <title>MATCH</title>
     <indexterm>
