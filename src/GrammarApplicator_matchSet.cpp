@@ -224,10 +224,10 @@ bool GrammarApplicator::doesTagMatchReading(const Reading *reading, const Tag *t
 			match = true;
 		}
 	}
-	else if (par_left_tag && tag->type & T_PAR_LEFT) {
+	else if (par_left_tag && tag->type & T_PAR_LEFT && reading->parent->local_number == par_left_pos) {
 		match = (reading->tags.find(par_left_tag) != reading->tags.end());
 	}
-	else if (par_right_tag && tag->type & T_PAR_RIGHT) {
+	else if (par_right_tag && tag->type & T_PAR_RIGHT && reading->parent->local_number == par_right_pos) {
 		match = (reading->tags.find(par_right_tag) != reading->tags.end());
 	}
 	else if (!raw_in) {
