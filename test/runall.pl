@@ -47,6 +47,9 @@ foreach (@tests) {
 	chdir $bindir or die("Error: Could not change directory to $bindir !");
 	my ($test) = m/^.*?(T[^\/]+).*$/;
 	print STDERR "$test: ";
+	for (my $i=length $test;$i<30;$i++) {
+		print STDERR " ";
+	}
 	if (-s "./$test/byline.txt") {
 		print STDERR "(".`cat "./$test/byline.txt"`.") ";
 	}
