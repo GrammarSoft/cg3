@@ -296,14 +296,14 @@ int TextualParser::parseContextualTestList(Rule *rule, std::list<ContextualTest*
 		result->lines += SKIPWS(p);
 	}
 	else {
-		t->parsePosition(gbuffers[0], ux_stderr);
-		*p = n;
 		if (negated) {
 			t->pos |= POS_NEGATED;
 		}
 		if (negative) {
 			t->pos |= POS_NEGATIVE;
 		}
+		t->parsePosition(gbuffers[0], ux_stderr);
+		*p = n;
 		if (t->pos & (POS_DEP_CHILD|POS_DEP_PARENT|POS_DEP_SIBLING)) {
 			result->has_dep = true;
 		}
