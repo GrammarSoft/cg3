@@ -69,6 +69,9 @@ void ContextualTest::parsePosition(const UChar *input, UFILE *ux_stderr) {
 	if (u_strchr(input, 's')) {
 		pos |= POS_DEP_SIBLING;
 	}
+	if (u_strchr(input, 'S')) {
+		pos |= POS_DEP_SELF;
+	}
 	if (u_strchr(input, '<')) {
 		pos |= POS_SPAN_LEFT;
 	}
@@ -100,19 +103,38 @@ void ContextualTest::parsePosition(const UChar *input, UFILE *ux_stderr) {
 		offset = (-1) * abs(offset);
 	}
 
+	if ((pos & (POS_DEP_CHILD|POS_DEP_SIBLING|POS_DEP_PARENT)) && (pos & (POS_SCANFIRST|POS_SCANALL))) {
+		pos &= ~POS_SCANFIRST;
+		pos &= ~POS_SCANALL;
+		pos |= POS_DEP_DEEP;
+	}
+	if ((pos & (POS_DEP_CHILD|POS_DEP_SIBLING|POS_DEP_PARENT)) && (pos & POS_CAREFUL)) {
+		pos &= ~POS_CAREFUL;
+		pos |= POS_DEP_ALL;
+	}
+	if ((pos & (POS_DEP_CHILD|POS_DEP_SIBLING|POS_DEP_PARENT)) && (pos & POS_NEGATIVE)) {
+		pos &= ~POS_NEGATIVE;
+		pos |= POS_DEP_NONE;
+	}
+
 	if ((!(pos & (POS_DEP_CHILD|POS_DEP_SIBLING|POS_DEP_PARENT))) && (retval == EOF || (offset == 0 && tmp[0] == 0 && retval < 1))) {
-		u_fprintf(ux_stderr, "Error: '%S' is not a valid position!\n", pos);
+		u_fprintf(ux_stderr, "Error: '%S' is not a valid position!\n", input);
 		CG3Quit(1);
 	}
-	if ((pos & (POS_DEP_CHILD|POS_DEP_SIBLING|POS_DEP_PARENT)) && (pos & (POS_SCANFIRST|POS_SCANALL))) {
-		u_fprintf(ux_stderr, "Warning: Position '%S' is mixed. Behavior for mixed positions is undefined.\n", pos);
+	if ((pos & (POS_LEFT_PAR|POS_RIGHT_PAR)) && (pos & (POS_SCANFIRST|POS_SCANALL))) {
+		u_fprintf(ux_stderr, "Error: '%S' is not a valid position - cannot have both enclosure and scan!\n", input);
+		CG3Quit(1);
 	}
 	if ((pos & POS_PASS_ORIGIN) && (pos & POS_NO_PASS_ORIGIN)) {
-		u_fprintf(ux_stderr, "Error: '%S' is not a valid position - cannot have both O and o!\n", pos);
+		u_fprintf(ux_stderr, "Error: '%S' is not a valid position - cannot have both O and o!\n", input);
 		CG3Quit(1);
 	}
 	if ((pos & POS_LEFT_PAR) && (pos & POS_RIGHT_PAR)) {
-		u_fprintf(ux_stderr, "Error: '%S' is not a valid position - cannot have both L and R!\n", pos);
+		u_fprintf(ux_stderr, "Error: '%S' is not a valid position - cannot have both L and R!\n", input);
+		CG3Quit(1);
+	}
+	if ((pos & POS_DEP_ALL) && (pos & POS_DEP_NONE)) {
+		u_fprintf(ux_stderr, "Error: '%S' is not a valid position - cannot have both NOT and C for dependencies!\n", input);
 		CG3Quit(1);
 	}
 }
