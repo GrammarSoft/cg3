@@ -62,6 +62,8 @@ ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output)
 	bool superblank = false; 	// Are we in a superblank ?
 	bool incohort = false; 		// Are we in a cohort ?
 
+	index();
+
 	begintag = addTag(stringbits[S_BEGINTAG])->hash; // Beginning of sentence tag
 	endtag = addTag(stringbits[S_ENDTAG])->hash; // End of sentence tag
 
