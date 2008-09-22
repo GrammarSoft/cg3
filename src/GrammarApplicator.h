@@ -117,16 +117,16 @@ namespace CG3 {
 		int runGrammarOnSingleWindow(SingleWindow *current);
 		uint32_t runRulesOnWindow(SingleWindow *current, uint32Set *rules);
 
-		Cohort *runSingleTest(SingleWindow *sWindow, size_t i, const ContextualTest *test, bool *brk, bool *retval, Cohort **deep = 0, Cohort *origin = 0);
+		inline Cohort *runSingleTest(SingleWindow *sWindow, size_t i, const ContextualTest *test, bool *brk, bool *retval, Cohort **deep = 0, Cohort *origin = 0);
 		Cohort *runContextualTest(SingleWindow *sWindow, const size_t position, const ContextualTest *test, Cohort **deep = 0, Cohort *origin = 0);
+		Cohort *runDependencyTest(SingleWindow *sWindow, const Cohort *current, const ContextualTest *test, Cohort **deep = 0, Cohort *origin = 0);
+		Cohort *runParenthesisTest(SingleWindow *sWindow, const Cohort *current, const ContextualTest *test, Cohort **deep = 0, Cohort *origin = 0);
 
 		bool doesTagMatchSet(const uint32_t tag, const Set *set);
 		bool doesTagMatchReading(const Reading *reading, const Tag *tag, bool bypass_index = false);
 		bool doesSetMatchReading(Reading *reading, const uint32_t set, bool bypass_index = false);
 		bool doesSetMatchCohortNormal(const Cohort *cohort, const uint32_t set);
 		bool doesSetMatchCohortCareful(const Cohort *cohort, const uint32_t set);
-		Cohort *doesSetMatchDependency(SingleWindow *sWindow, const Cohort *current, const ContextualTest *test);
-		Cohort *doesSetMatchParenthesis(SingleWindow *sWindow, const Cohort *current, const ContextualTest *test);
 
 		SingleWindow *initialiseSingleWindow(Recycler *r, Window *cWindow, SingleWindow *cSWindow);
 

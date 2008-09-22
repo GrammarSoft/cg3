@@ -1,11 +1,11 @@
 "<ele>"
 	"ele" PERS M 3S NOM @SUBJ> #1->2 #1->2 
 "<bate>"
-	"bater" <fmc> <mv> V PR 3S IND VFIN @FS-STA #2->0 #2->0 
+	"bater" <fmc> <mv> V PR 3S IND VFIN @FS-STA #2->0 @child-deep #2->0 
 "<em>"
-	"em" <sam-> PRP @<PIV #3->2 #3->2 
+	"em" <sam-> PRP @<PIV #3->2 @self-or-child @self-or-parent #3->2 
 "<a>"
-	"o" <artd> <-sam> DET F S @>N #4->5 #4->5 
+	"o" <artd> <-sam> DET F S @>N #4->5 @parent-deep #4->5 
 "<mulher>"
 	"mulher" <Hattr> N F S @P< #5->3 §PAT #5->3 
 "<$.>"
@@ -13,13 +13,13 @@
 </s>
 
 "<o>"
-	"o" <artd> DET M S @>N #71->72 #7->8 
+	"o" <artd> DET M S @>N #71->72 @parent-deep #7->8 
 "<carro>"
 	"carro" <V> N M S @SUBJ> #72->73 #8->9 
 "<bateu>"
-	"bater" <fmc> <mv> V PS 3S IND VFIN @FS-STA #73->0 #9->0 
+	"bater" <fmc> <mv> V PS 3S IND VFIN @FS-STA #73->0 @child-deep #9->0 
 "<em>"
-	"em" <sam-> PRP @<PIV #74->73 #10->9 
+	"em" <sam-> PRP @<PIV #74->73 @self-or-child @self-or-parent #10->9 
 "<uma>"
 	"um" <arti> <-sam> DET F S @>N #75->76 #11->12 
 "<árvore>"
@@ -29,15 +29,15 @@
 </s>
 
 "<em>"
-	"em" PRP @ADVL> #41->44 #14->17 
+	"em" PRP @ADVL> #41->44 @self-or-child @self-or-parent #14->17 
 "<1993>"
 	"1993" <date> <card> <NER:date> NUM M/F S @P< #42->41 #15->14 
 "<ele>"
 	"ele" PERS M 3S NOM @SUBJ> #43->44 #16->17 
 "<bateu>"
-	"bater" <fmc> <mv> V PS 3S IND VFIN @FS-STA #44->0 #17->0 
+	"bater" <fmc> <mv> V PS 3S IND VFIN @FS-STA #44->0 @child-deep #17->0 
 "<o>"
-	"o" <artd> DET M S @>N #45->46 #18->19 
+	"o" <artd> DET M S @>N #45->46 @parent-deep #18->19 
 "<recorde>"
 	"recorde" <ac> N M S @<ACC #46->44 §EXP §PAT #19->17 
 "<$.>"
