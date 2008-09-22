@@ -242,7 +242,7 @@ Cohort *GrammarApplicator::runContextualTest(SingleWindow *sWindow, const size_t
 					retval = false;
 				}
 			}
-			if (test->pos & (POS_LEFT_PAR|POS_RIGHT_PAR)) {
+			else if (test->pos & (POS_LEFT_PAR|POS_RIGHT_PAR)) {
 				Cohort *nc = doesSetMatchParenthesis(sWindow, cohort, test);
 				if (nc) {
 					cohort = nc;
