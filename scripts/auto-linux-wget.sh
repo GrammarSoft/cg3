@@ -7,7 +7,7 @@ mkdir vislcg3-auto
 cd vislcg3-auto
 
 echo "Fetching VISL CG-3 source with wget..."
-wget -nv -r -l0 -np -nH --http-user=anonymous --http-password=anonymous http://beta.visl.sdu.dk/svn/visl/tools/vislcg3/
+wget -nv -r -l0 -np -nH --http-user=anonymous --http-passwd=anonymous http://beta.visl.sdu.dk/svn/visl/tools/vislcg3/trunk/
 cd svn/visl/tools/vislcg3/trunk/
 chmod +x *.sh test/*.pl test/*/*.pl
 
