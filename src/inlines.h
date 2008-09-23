@@ -165,4 +165,13 @@ inline uint32_t SKIPTO_NOSPAN(UChar **p, const UChar a) {
 	return s;
 }
 
+inline void CG3Quit(const int32_t c = 0, const char* file = 0, const uint32_t line = 0) {
+	if (file && line) {
+		std::cerr << std::flush;
+		std::cerr << "CG3Quit triggered from " << file << " line " << line << "." << std::endl;
+	}
+	exit(c);
+}
+// #define CG3Quit(a) CG3Quit((a), __FILE__, __LINE__)
+
 #endif
