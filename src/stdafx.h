@@ -53,8 +53,6 @@
 #include <unicode/ustring.h>
 #include <unicode/uregex.h>
 
-void CG3Quit(const int32_t c, const char* file = 0, const uint32_t line = 0);
-
 #include "macros.h"
 #include "inlines.h"
 #include "uextras.h"
