@@ -38,7 +38,6 @@
 
 using namespace std;
 
-void CG3Quit(const int32_t c, const char* file, const uint32_t line);
 void endProgram(char *name);
 
 void 
@@ -152,15 +151,4 @@ main(int argc, char *argv[])
 	u_cleanup();
 
 	return status;
-}
-
-
-void 
-CG3Quit(const int32_t c, const char* file, const uint32_t line) 
-{
-	if (file && line) {
-		std::cerr << std::flush;
-		std::cerr << "CG3Quit triggered from " << file << " line " << line << "." << std::endl;
-	}
-	exit(c);
 }
