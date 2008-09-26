@@ -113,74 +113,70 @@
         (-1* (ADJ) LINK s (ADJ))
       </screen>
     </section>
-  </section>
 
-  <section id="dep-ct-self">
-    <title>Self</title>
-    <indexterm>
-      <primary>S</primary>
-    </indexterm>
-    <para>
-      The 'S' option allows the test to look at the current target as well.
-      Used in conjunction with p, c, or s to test self and the relations.
-    </para>
-    <screen>
-      (cS (ADJ))
-    </screen>
-  </section>
-  </section>
+    <section id="dep-ct-self">
+      <title>Self</title>
+      <indexterm>
+        <primary>S</primary>
+      </indexterm>
+      <para>
+        The 'S' option allows the test to look at the current target as well.
+        Used in conjunction with p, c, or s to test self and the relations.
+      </para>
+      <screen>
+        (cS (ADJ))
+      </screen>
+    </section>
 
-  <section id="dep-ct-deep">
-    <title>Deep Scan</title>
-    <indexterm>
-      <primary>*</primary>
-    </indexterm>
-    <para>
-      The '*' option behaves differently when dealing with dependencies.
-      Here, the '*' option allows the test to perform a deep scan.
-      Used in conjunction with p, c, or s to continue until there are no deeper relations.
-      For example, position 'c*' tests the children, grand-children, grand-grand-children, and so forth.
-    </para>
-    <screen>
-      (c* (ADJ))
-    </screen>
-  </section>
-  </section>
+    <section id="dep-ct-deep">
+      <title>Deep Scan</title>
+      <indexterm>
+        <primary>*</primary>
+      </indexterm>
+      <para>
+        The '*' option behaves differently when dealing with dependencies.
+        Here, the '*' option allows the test to perform a deep scan.
+        Used in conjunction with p, c, or s to continue until there are no deeper relations.
+        For example, position 'c*' tests the children, grand-children, grand-grand-children, and so forth.
+      </para>
+      <screen>
+        (c* (ADJ))
+      </screen>
+    </section>
 
-  <section id="dep-ct-all">
-    <title>All Scan</title>
-    <indexterm>
-      <primary>C</primary>
-    </indexterm>
-    <para>
-      The 'C' option behaves differently when dealing with dependencies.
-      Here, the 'C' option will require that all of the relations match the set.
-      For example, position 'sC' requires that all of the siblings match the set.
-      This means that if you wish to find a relation where all readings have a set you must do e.g.
-      (c (ADJ) LINK 0C (ADJ)).
-    </para>
-    <screen>
-      (sC (ADJ))
-    </screen>
-  </section>
-  </section>
+    <section id="dep-ct-all">
+      <title>All Scan</title>
+      <indexterm>
+        <primary>C</primary>
+      </indexterm>
+      <para>
+        The 'C' option behaves differently when dealing with dependencies.
+        Here, the 'C' option will require that all of the relations match the set.
+        For example, position 'sC' requires that all of the siblings match the set.
+        This means that if you wish to find a relation where all readings have a set you must do e.g.
+        (c (ADJ) LINK 0C (ADJ)).
+      </para>
+      <screen>
+        (sC (ADJ))
+      </screen>
+    </section>
 
-  <section id="dep-ct-not">
-    <title>None Scan</title>
-    <indexterm>
-      <primary>NOT</primary>
-    </indexterm>
-    <para>
-      The 'NOT' option behaves differently when dealing with dependencies.
-      Here, the 'NOT' option will require that none of the relations match the set.
-      For example, position 'NOT c' requires that none of the children match the set.
-      This means that if you wish to find a relation that does not match the set you must do e.g.
-      (c (*) LINK NOT 0 (ADJ)).
-    </para>
-    <screen>
-      (NOT c (ADJ))
-    </screen>
-  </section>
+    <section id="dep-ct-not">
+      <title>None Scan</title>
+      <indexterm>
+        <primary>NOT</primary>
+      </indexterm>
+      <para>
+        The 'NOT' option behaves differently when dealing with dependencies.
+        Here, the 'NOT' option will require that none of the relations match the set.
+        For example, position 'NOT c' requires that none of the children match the set.
+        This means that if you wish to find a relation that does not match the set you must do e.g.
+        (c (*) LINK NOT 0 (ADJ)).
+      </para>
+      <screen>
+        (NOT c (ADJ))
+      </screen>
+    </section>
   </section>
 
 </chapter>
