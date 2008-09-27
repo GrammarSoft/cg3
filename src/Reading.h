@@ -49,8 +49,6 @@ namespace CG3 {
 
 		uint32HashSet possible_sets;
 
-		UChar *text;
-
 		bool matched_target;
 		bool matched_tests;
 

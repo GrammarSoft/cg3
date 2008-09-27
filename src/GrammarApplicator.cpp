@@ -301,8 +301,8 @@ void GrammarApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 		Tag::printTagRaw(output, single_tags[cohort->wordform]);
 		//u_fprintf(output, " %u", cohort->number);
 		u_fprintf(output, "\n");
-		if (cohort->text) {
-			u_fprintf(output, "%S", cohort->text);
+		if (cohort->text_pre) {
+			u_fprintf(output, "%S", cohort->text_pre);
 		}
 
 		mergeMappings(cohort);
@@ -315,17 +315,8 @@ void GrammarApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 				printReading(*rter2, output);
 			}
 		}
-		foreach (std::list<Reading*>, cohort->readings, rter3, rter3_end) {
-			Reading *reading = *rter3;
-			if (reading->text) {
-				u_fprintf(output, "%S", reading->text);
-			}
-		}
-		foreach (std::list<Reading*>, cohort->deleted, rter4, rter4_end) {
-			Reading *reading = *rter4;
-			if (reading->text) {
-				u_fprintf(output, "%S", reading->text);
-			}
+		if (cohort->text_post) {
+			u_fprintf(output, "%S", cohort->text_post);
 		}
 	}
 	u_fprintf(output, "\n");
