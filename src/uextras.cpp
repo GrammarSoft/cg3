@@ -163,6 +163,7 @@ bool ux_escape(UChar *target, const UChar *source) {
 	return retval;
 }
 
+// ToDo: ux_append is unsafe and slow...must be a better way
 UChar *ux_append(UChar *target, const UChar *data) {
 	UChar *tmp = 0;
 	if (!target) {
@@ -215,7 +216,7 @@ UChar *ux_substr(UChar *string, int start, int end)
 {
 	UChar *tmp = 0;
 	int i = 0;
-	
+
 	int len = u_strlen(string);
 	
 	if(end > len) {
@@ -223,7 +224,7 @@ UChar *ux_substr(UChar *string, int start, int end)
 	}
 
 	for(i = start; i < end; i++) {
-		tmp = ux_append(tmp, string[i]);	
+		tmp = ux_append(tmp, string[i]);
 	}
 
 	return tmp;

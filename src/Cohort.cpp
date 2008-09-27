@@ -31,7 +31,8 @@ Cohort::Cohort(SingleWindow *p) {
 	is_disamb = false;
 	dep_done = false;
 	is_related = false;
-	text = 0;
+	text_pre = 0;
+	text_post = 0;
 	dep_self = 0;
 	dep_parent = 0;
 }
@@ -58,10 +59,14 @@ void Cohort::clear(SingleWindow *p) {
 	is_disamb = false;
 	dep_done = false;
 	is_related = false;
-	if (text) {
-		delete[] text;
+	if (text_pre) {
+		delete[] text_pre;
 	}
-	text = 0;
+	text_pre = 0;
+	if (text_post) {
+		delete[] text_post;
+	}
+	text_post = 0;
 	dep_self = 0;
 	dep_parent = 0;
 	possible_sets.clear();
@@ -80,8 +85,11 @@ Cohort::~Cohort() {
 		parent->parent->cohort_map.erase(global_number);
 		parent->parent->dep_window.erase(global_number);
 	}
-	if (text) {
-		delete[] text;
+	if (text_pre) {
+		delete[] text_pre;
+	}
+	if (text_post) {
+		delete[] text_post;
 	}
 }
 
