@@ -38,7 +38,7 @@ namespace CG3 {
 		SingleWindow *parent;
 		std::list<Reading*> readings;
 		std::list<Reading*> deleted;
-		UChar *text;
+		UChar *text_pre, *text_post;
 
 		bool dep_done;
 		uint32_t dep_self;

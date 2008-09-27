@@ -371,11 +371,11 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 					goto CGCMD_EXIT;
 				}
 				
-				if (lReading) {
-					lReading->text = ux_append(lReading->text, line);
+				if (lReading && lCohort) {
+					lCohort->text_post = ux_append(lCohort->text_post, line);
 				}
 				else if (lCohort) {
-					lCohort->text = ux_append(lCohort->text, line);
+					lCohort->text_pre = ux_append(lCohort->text_pre, line);
 				}
 				else if (lSWindow) {
 					lSWindow->text = ux_append(lSWindow->text, line);

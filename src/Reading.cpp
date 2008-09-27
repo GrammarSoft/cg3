@@ -35,7 +35,6 @@ Reading::Reading(Cohort *p) {
 	noprint = false;
 	matched_target = false;
 	matched_tests = false;
-	text = 0;
 	mapping = 0;
 }
 
@@ -51,10 +50,6 @@ void Reading::clear(Cohort *p) {
 	noprint = false;
 	matched_target = false;
 	matched_tests = false;
-	if (text) {
-		delete[] text;
-	}
-	text = 0;
 	hit_by.clear();
 	tags_list.clear();
 	tags.clear();
@@ -66,9 +61,6 @@ void Reading::clear(Cohort *p) {
 }
 
 Reading::~Reading() {
-	if (text) {
-		delete[] text;
-	}
 }
 
 uint32_t Reading::rehash() {
