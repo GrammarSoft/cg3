@@ -58,7 +58,7 @@ namespace CG3 {
 
 	class Tag {
 	public:
-		uint16_t type;
+		uint32_t type;
 		mutable URegularExpression *regexp;
 
 		bool in_grammar;

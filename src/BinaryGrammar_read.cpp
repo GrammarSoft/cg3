@@ -34,7 +34,6 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 		CG3Quit(1);
 	}
 	uint32_t u32tmp = 0;
-	uint16_t u16tmp = 0;
 	int32_t i32tmp = 0;
 	uint8_t u8tmp = 0;
 	UErrorCode err = U_ZERO_ERROR;
@@ -46,7 +45,7 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 		CG3Quit(1);
 	}
 
-#define B_TOO_OLD 4021
+#define B_TOO_OLD 4077
 	fread(&u32tmp, sizeof(uint32_t), 1, input);
 	u32tmp = (uint32_t)ntohl(u32tmp);
 	if (u32tmp < B_TOO_OLD) {
@@ -80,8 +79,8 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 		t->number = (uint32_t)ntohl(u32tmp);
 		fread(&u32tmp, sizeof(uint32_t), 1, input);
 		t->hash = (uint32_t)ntohl(u32tmp);
-		fread(&u16tmp, sizeof(uint16_t), 1, input);
-		t->type = (uint16_t)ntohs(u16tmp);
+		fread(&u32tmp, sizeof(uint32_t), 1, input);
+		t->type = (uint32_t)ntohl(u32tmp);
 		fread(&u8tmp, sizeof(uint8_t), 1, input);
 		t->is_special = (u8tmp == 1);
 
