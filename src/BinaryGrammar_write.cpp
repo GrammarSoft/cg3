@@ -34,7 +34,6 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 		CG3Quit(1);
 	}
 	uint32_t u32tmp = 0;
-	uint16_t u16tmp = 0;
 	int32_t i32tmp = 0;
 	uint8_t u8tmp = 0;
 	UErrorCode err = U_ZERO_ERROR;
@@ -64,8 +63,8 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 		u32tmp = (uint32_t)htonl((uint32_t)t->hash);
 		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
-		u16tmp = (uint16_t)htons((uint16_t)t->type);
-		fwrite(&u16tmp, sizeof(uint16_t), 1, output);
+		u32tmp = (uint32_t)htonl((uint32_t)t->type);
+		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 		u8tmp = (uint8_t)t->is_special;
 		fwrite(&u8tmp, sizeof(uint8_t), 1, output);
 
