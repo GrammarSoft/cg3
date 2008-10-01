@@ -63,6 +63,9 @@ GrammarApplicator::GrammarApplicator(UFILE *ux_in, UFILE *ux_out, UFILE *ux_err)
 	numCohorts = 0;
 	numReadings = 0;
 	numsections = 0;
+	unif_last_wordform = 0;
+	unif_last_baseform = 0;
+	unif_last_textual = 0;
 	no_sections = false;
 	no_after_sections = false;
 	no_before_sections = false;
@@ -87,7 +90,10 @@ GrammarApplicator::~GrammarApplicator() {
 	for (indt = index_reading_no.begin() ; indt != index_reading_no.end() ; indt++) {
 		r->delete_uint32HashSet(indt->second);
 	}
-	for (indt = index_tags_regexp.begin() ; indt != index_tags_regexp.end() ; indt++) {
+	for (indt = index_regexp_yes.begin() ; indt != index_regexp_yes.end() ; indt++) {
+		r->delete_uint32HashSet(indt->second);
+	}
+	for (indt = index_regexp_no.begin() ; indt != index_regexp_no.end() ; indt++) {
 		r->delete_uint32HashSet(indt->second);
 	}
 
@@ -112,10 +118,15 @@ void GrammarApplicator::resetIndexes() {
 	}
 	index_reading_no.clear();
 
-	for (indt = index_tags_regexp.begin() ; indt != index_tags_regexp.end() ; indt++) {
+	for (indt = index_regexp_yes.begin() ; indt != index_regexp_yes.end() ; indt++) {
 		r->delete_uint32HashSet(indt->second);
 	}
-	index_tags_regexp.clear();
+	index_regexp_yes.clear();
+
+	for (indt = index_regexp_no.begin() ; indt != index_regexp_no.end() ; indt++) {
+		r->delete_uint32HashSet(indt->second);
+	}
+	index_regexp_no.clear();
 }
 
 void GrammarApplicator::setGrammar(const Grammar *res) {

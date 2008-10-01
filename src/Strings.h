@@ -107,6 +107,9 @@ namespace CG3 {
 			S_UU_LEFT,
 			S_UU_RIGHT,
 			S_UU_PAREN,
+			S_RXTEXT_ANY,
+			S_RXBASE_ANY,
+			S_RXWORD_ANY,
 			STRINGS_COUNT
 		};
 

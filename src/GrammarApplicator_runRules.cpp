@@ -103,6 +103,9 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, uint32Set *r
 
 				// ToDo: Enable/Disable unif_mode per top-level set
 				unif_mode = false;
+				unif_last_wordform = 0;
+				unif_last_baseform = 0;
+				unif_last_textual = 0;
 				if (!unif_tags.empty()) {
 					unif_tags.clear();
 				}

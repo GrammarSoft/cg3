@@ -150,6 +150,9 @@ namespace CG3 {
 			init_string_single("_LEFT_",       S_UU_LEFT);
 			init_string_single("_RIGHT_",      S_UU_RIGHT);
 			init_string_single("_PAREN_",      S_UU_PAREN);
+			init_string_single("<.*>",         S_RXTEXT_ANY);
+			init_string_single("\".*\"",       S_RXBASE_ANY);
+			init_string_single("\"<.*>\"",     S_RXWORD_ANY);
 
 			for (unsigned int i=0;i<STRINGS_COUNT;i++) {
 				if (!stringbits[i]) {
