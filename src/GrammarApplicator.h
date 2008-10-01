@@ -103,10 +103,16 @@ namespace CG3 {
 
 		bool unif_mode;
 		uint32HashMap unif_tags;
+		uint32_t unif_last_wordform;
+		uint32_t unif_last_baseform;
+		uint32_t unif_last_textual;
 
 		stdext::hash_map<uint32_t, Tag*> single_tags;
-		stdext::hash_map<uint32_t, uint32HashSet*> index_tags_regexp;
 
+		// ToDo: These could be multimaps, but there is no standard way to query the existence of a key->value pair.
+		// ToDo: Could also encode the value into the key and use a normal set...will have to investigate what's fastest.
+		stdext::hash_map<uint32_t, uint32HashSet*> index_regexp_yes;
+		stdext::hash_map<uint32_t, uint32HashSet*> index_regexp_no;
 		stdext::hash_map<uint32_t, uint32HashSet*> index_reading_yes;
 		stdext::hash_map<uint32_t, uint32HashSet*> index_reading_no;
 		void resetIndexes();

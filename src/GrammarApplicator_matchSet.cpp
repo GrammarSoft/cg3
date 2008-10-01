@@ -192,22 +192,91 @@ bool GrammarApplicator::doesTagMatchReading(const Reading *reading, const Tag *t
 			}
 		}
 	}
-	else if (tag->regexp && !reading->tags_textual.empty()) {
-		uint32HashSet::const_iterator mter;
-		for (mter = reading->tags_textual.begin() ; mter != reading->tags_textual.end() ; mter++) {
-			// ToDo: Cache regexp and icase hits/misses
-			const Tag *itag = single_tags.find(*mter)->second;
-			UErrorCode status = U_ZERO_ERROR;
-			uregex_setText(tag->regexp, itag->tag, u_strlen(itag->tag), &status);
-			if (status != U_ZERO_ERROR) {
-				u_fprintf(ux_stderr, "Error: uregex_setText(MatchSet) returned %s - cannot continue!\n", u_errorName(status));
-				CG3Quit(1);
+	else if (tag->type & T_REGEXP_ANY) {
+		if (tag->type & T_WORDFORM) {
+			match = true;
+			if (unif_mode) {
+				if (unif_last_wordform) {
+					if (unif_last_wordform != reading->wordform) {
+						match = false;
+					}
+				}
+				else {
+					unif_last_wordform = reading->wordform;
+				}
 			}
-			status = U_ZERO_ERROR;
-			match = (uregex_matches(tag->regexp, 0, &status) == TRUE);
-			if (status != U_ZERO_ERROR) {
-				u_fprintf(ux_stderr, "Error: uregex_matches(MatchSet) returned %s - cannot continue!\n", u_errorName(status));
-				CG3Quit(1);
+		}
+		else if (tag->type & T_BASEFORM) {
+			match = true;
+			if (unif_mode) {
+				if (unif_last_baseform) {
+					if (unif_last_baseform != reading->baseform) {
+						match = false;
+					}
+				}
+				else {
+					unif_last_baseform = reading->baseform;
+				}
+			}
+		}
+		else {
+			const_foreach(uint32HashSet, reading->tags_textual, mter, mter_end) {
+				const Tag *itag = single_tags.find(*mter)->second;
+				if (!(itag->type & (T_BASEFORM|T_WORDFORM))) {
+					match = true;
+					if (unif_mode) {
+						if (unif_last_textual) {
+							if (unif_last_textual != *mter) {
+								match = false;
+							}
+						}
+						else {
+							unif_last_textual = *mter;
+						}
+					}
+				}
+				if (match) {
+					break;
+				}
+			}
+		}
+	}
+	else if (tag->regexp && !reading->tags_textual.empty()) {
+		const_foreach(uint32HashSet, reading->tags_textual, mter, mter_end) {
+			if (__index_matches(&index_regexp_yes, tag->hash, *mter)) {
+				match = true;
+			}
+			else if (__index_matches(&index_regexp_no, tag->hash, *mter)) {
+				match = false;
+			}
+			else {
+				const Tag *itag = single_tags.find(*mter)->second;
+				UErrorCode status = U_ZERO_ERROR;
+				uregex_setText(tag->regexp, itag->tag, u_strlen(itag->tag), &status);
+				if (status != U_ZERO_ERROR) {
+					u_fprintf(ux_stderr, "Error: uregex_setText(MatchSet) returned %s - cannot continue!\n", u_errorName(status));
+					CG3Quit(1);
+				}
+				status = U_ZERO_ERROR;
+				match = (uregex_matches(tag->regexp, 0, &status) == TRUE);
+				if (status != U_ZERO_ERROR) {
+					u_fprintf(ux_stderr, "Error: uregex_matches(MatchSet) returned %s - cannot continue!\n", u_errorName(status));
+					CG3Quit(1);
+				}
+				if (match) {
+					if (index_regexp_yes.find(tag->hash) == index_regexp_yes.end()) {
+						Recycler *r = Recycler::instance();
+						index_regexp_yes[tag->hash] = r->new_uint32HashSet();
+					}
+					index_regexp_yes[tag->hash]->insert(*mter);
+				}
+				else {
+					if (index_regexp_no.find(tag->hash) == index_regexp_no.end()) {
+						Recycler *r = Recycler::instance();
+						index_regexp_no[tag->hash] = r->new_uint32HashSet();
+					}
+					index_regexp_no[tag->hash]->insert(*mter);
+				}
 			}
 			if (match) {
 				break;

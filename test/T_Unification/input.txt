@@ -1,10 +1,10 @@
 "<worda>"
 	"worda" some tags AA
-	"worda" some tags
-	"worda" some tags
+	"wordc" some tags
+	"wordc" some tags
 "<wordb>"
 	"wordb" some tags
-	"wordb" some tags CC
+	"worda" some tags CC
 	"wordb" some tags
 "<wordc>"
 	"wordc" some tags
