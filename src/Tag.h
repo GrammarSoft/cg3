@@ -53,7 +53,8 @@ namespace CG3 {
 		T_CASE_INSENSITIVE = 2048U,
 		T_REGEXP   =  4096U,
 		T_PAR_LEFT =  8192U,
-		T_PAR_RIGHT = 16384U
+		T_PAR_RIGHT = 16384U,
+		T_REGEXP_ANY = 32768U
 	};
 
 	class Tag {

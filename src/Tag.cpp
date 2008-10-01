@@ -135,27 +135,35 @@ void Tag::parseTag(const UChar *to, UFILE *ux_stderr) {
 
 		// ToDo: Add ICASE: REGEXP: and //r //ri //i to tags
 		if (type & T_REGEXP) {
-			UParseError *pe = new UParseError;
-			UErrorCode status = U_ZERO_ERROR;
-
-			memset(pe, 0, sizeof(UParseError));
-			status = U_ZERO_ERROR;
-			if (type & T_CASE_INSENSITIVE) {
-				regexp = uregex_open(tag, u_strlen(tag), UREGEX_CASE_INSENSITIVE, pe, &status);
+			if (u_strcmp(tag, stringbits[S_RXTEXT_ANY]) == 0
+			|| u_strcmp(tag, stringbits[S_RXBASE_ANY]) == 0
+			|| u_strcmp(tag, stringbits[S_RXWORD_ANY]) == 0) {
+				type |= T_REGEXP_ANY;
+				type &= ~T_REGEXP;
 			}
 			else {
-				regexp = uregex_open(tag, u_strlen(tag), 0, pe, &status);
+				UParseError *pe = new UParseError;
+				UErrorCode status = U_ZERO_ERROR;
+
+				memset(pe, 0, sizeof(UParseError));
+				status = U_ZERO_ERROR;
+				if (type & T_CASE_INSENSITIVE) {
+					regexp = uregex_open(tag, u_strlen(tag), UREGEX_CASE_INSENSITIVE, pe, &status);
+				}
+				else {
+					regexp = uregex_open(tag, u_strlen(tag), 0, pe, &status);
+				}
+				if (status != U_ZERO_ERROR) {
+					u_fprintf(ux_stderr, "Error: uregex_open returned %s trying to parse tag %S - cannot continue!\n", u_errorName(status), tag);
+					CG3Quit(1);
+				}
+				delete pe;
+				pe = 0;
 			}
-			if (status != U_ZERO_ERROR) {
-				u_fprintf(ux_stderr, "Error: uregex_open returned %s trying to parse tag %S - cannot continue!\n", u_errorName(status), tag);
-				CG3Quit(1);
-			}
-			delete pe;
-			pe = 0;
 		}
 	}
 	is_special = false;
-	if (type & (T_ANY|T_PAR_LEFT|T_PAR_RIGHT|T_NUMERICAL|T_VARIABLE|T_META|T_NEGATIVE|T_FAILFAST|T_CASE_INSENSITIVE|T_REGEXP)) {
+	if (type & (T_ANY|T_PAR_LEFT|T_PAR_RIGHT|T_NUMERICAL|T_VARIABLE|T_META|T_NEGATIVE|T_FAILFAST|T_CASE_INSENSITIVE|T_REGEXP|T_REGEXP_ANY)) {
 		is_special = true;
 	}
 }
@@ -290,7 +298,7 @@ uint32_t Tag::rehash() {
 	}
 
 	is_special = false;
-	if (type & (T_ANY|T_PAR_LEFT|T_PAR_RIGHT|T_NUMERICAL|T_VARIABLE|T_META|T_NEGATIVE|T_FAILFAST|T_CASE_INSENSITIVE|T_REGEXP)) {
+	if (type & (T_ANY|T_PAR_LEFT|T_PAR_RIGHT|T_NUMERICAL|T_VARIABLE|T_META|T_NEGATIVE|T_FAILFAST|T_CASE_INSENSITIVE|T_REGEXP|T_REGEXP_ANY)) {
 		is_special = true;
 	}
 

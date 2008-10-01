@@ -1,9 +1,8 @@
 "<worda>"
 	"worda" some tags AA 
-	"worda" some tags 
 "<wordb>"
 	"wordb" some tags 
-	"wordb" some tags CC 
+	"worda" some tags CC 
 "<wordc>"
 	"wordc" some tags BB EE 
 "<wordd>"
@@ -23,4 +22,3 @@
 	"wordi" some tags <Hfam> 
 "<$.>"
 	"." 
-
