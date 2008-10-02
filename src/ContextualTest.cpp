@@ -19,6 +19,7 @@
 * along with VISL CG-3.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "Grammar.h"
 #include "ContextualTest.h"
 
 using namespace CG3;
@@ -38,6 +39,7 @@ ContextualTest::ContextualTest() {
 	num_match = 0;
 	total_time = 0;
 	tmpl = 0;
+	is_used = false;
 }
 
 ContextualTest::~ContextualTest() {
@@ -162,8 +164,41 @@ void ContextualTest::resetStatistics() {
 	num_fail = 0;
 	num_match = 0;
 	total_time = 0;
+	if (tmpl) {
+		tmpl->resetStatistics();
+	}
+	foreach(std::list<ContextualTest*>, ors, idts, idts_end) {
+		(*idts)->resetStatistics();
+	}
 	if (linked) {
 		linked->resetStatistics();
+	}
+}
+
+void ContextualTest::markUsed(Grammar *grammar) {
+	is_used = true;
+
+	Set *s = 0;
+	if (target) {
+		s = grammar->getSet(target);
+		s->markUsed(grammar);
+	}
+	if (barrier) {
+		s = grammar->getSet(barrier);
+		s->markUsed(grammar);
+	}
+	if (cbarrier) {
+		s = grammar->getSet(cbarrier);
+		s->markUsed(grammar);
+	}
+	if (tmpl) {
+		tmpl->markUsed(grammar);
+	}
+	foreach(std::list<ContextualTest*>, ors, idts, idts_end) {
+		(*idts)->markUsed(grammar);
+	}
+	if (linked) {
+		linked->markUsed(grammar);
 	}
 }
 

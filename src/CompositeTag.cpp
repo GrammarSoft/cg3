@@ -24,6 +24,7 @@
 using namespace CG3;
 
 CompositeTag::CompositeTag() {
+	is_used = false;
 	hash = 0;
 	number = 0;
 }
@@ -43,4 +44,11 @@ uint32_t CompositeTag::rehash() {
 	}
 	hash = retval;
 	return retval;
+}
+
+void CompositeTag::markUsed() {
+	is_used = true;
+	foreach(TagSet, tags_set, itag, itag_end) {
+		(*itag)->markUsed();
+	}
 }

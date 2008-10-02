@@ -64,6 +64,7 @@ namespace CG3 {
 
 		bool in_grammar;
 		bool is_special;
+		bool is_used;
 		uint32_t comparison_hash;
 		UChar *comparison_key;
 		C_OPS comparison_op;
@@ -82,6 +83,7 @@ namespace CG3 {
 		static void printTagRaw(UFILE *out, const Tag *tag);
 
 		uint32_t rehash();
+		void markUsed();
 	};
 
 }

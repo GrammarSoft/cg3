@@ -339,8 +339,83 @@ void Grammar::reindex() {
 	sections.clear();
 	sets_list.clear();
 
+	std::map<uint32_t, Rule*>::iterator iter_rule;
+	for (iter_rule = rule_by_line.begin() ; iter_rule != rule_by_line.end() ; iter_rule++) {
+		Set *s = 0;
+		s = getSet(iter_rule->second->target);
+		s->markUsed(this);
+		if (iter_rule->second->dep_target) {
+			iter_rule->second->dep_target->markUsed(this);
+		}
+		foreach(std::list<ContextualTest*>, iter_rule->second->dep_tests, idts, idts_end) {
+			(*idts)->markUsed(this);
+		}
+		foreach(std::list<ContextualTest*>, iter_rule->second->tests, itts, itts_end) {
+			(*itts)->markUsed(this);
+		}
+	}
+	if (delimiters) {
+		delimiters->markUsed(this);
+	}
+	if (soft_delimiters) {
+		soft_delimiters->markUsed(this);
+	}
+
+	/*
+	// ToDo: Actually destroying the data still needs more work to determine what is safe to kill off.
+
+	foreach (uint32SetHashMap, sets_by_contents, rset, rset_end) {
+		if (!rset->second->is_used) {
+			destroySet(rset->second);
+			rset->second = 0;
+		}
+	}
+
+	sets_by_contents.clear();
+	foreach(std::set<Set*>, sets_all, sall, sall_end) {
+		sets_by_contents[(*sall)->hash] = *sall;
+	}
+
+	std::vector<CompositeTag*> ctmp;
+	foreach(std::vector<CompositeTag*>, tags_list, citer, citer_end) {
+		if ((*citer)->is_used) {
+			ctmp.push_back(*citer);
+		}
+		else {
+			destroyCompositeTag(*citer);
+			*citer = 0;
+		}
+	}
+	tags_list.clear();
+	tags.clear();
+	foreach(std::vector<CompositeTag*>, ctmp, cniter, cniter_end) {
+		addCompositeTag(*cniter);
+	}
+
+	std::vector<Tag*> stmp;
+	foreach(std::vector<Tag*>, single_tags_list, siter, siter_end) {
+		if ((*siter)->is_used) {
+			stmp.push_back(*siter);
+		}
+		else {
+			destroyTag(*siter);
+			*siter = 0;
+		}
+	}
+	single_tags_list.clear();
+	single_tags.clear();
+	foreach(std::vector<Tag*>, stmp, sniter, sniter_end) {
+		addTag(*sniter);
+	}
+
+	//*/
+
+	// Stuff below this line is not optional...
+
 	foreach (uint32SetHashMap, sets_by_contents, tset, tset_end) {
-		addSetToList(tset->second);
+		if (tset->second->is_used) {
+			addSetToList(tset->second);
+		}
 	}
 
 	stdext::hash_map<uint32_t, Tag*>::iterator iter_tags;
@@ -355,13 +430,14 @@ void Grammar::reindex() {
 	}
 
 	foreach (uint32SetHashMap, sets_by_contents, iter_sets, iter_sets_end) {
-		iter_sets->second->reindex(this);
-		indexSets(iter_sets->first, iter_sets->second);
+		if (iter_sets->second->is_used) {
+			iter_sets->second->reindex(this);
+			indexSets(iter_sets->first, iter_sets->second);
+		}
 	}
 
 	uint32Set sects;
 
-	std::map<uint32_t, Rule*>::iterator iter_rule;
 	for (iter_rule = rule_by_line.begin() ; iter_rule != rule_by_line.end() ; iter_rule++) {
 		if (iter_rule->second->section == -1) {
 			before_sections.push_back(iter_rule->second);
