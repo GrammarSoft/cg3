@@ -339,6 +339,10 @@ void Grammar::reindex() {
 	sections.clear();
 	sets_list.clear();
 
+	foreach (uint32SetHashMap, sets_by_contents, dset, dset_end) {
+		dset->second->is_used = false;
+	}
+
 	std::map<uint32_t, Rule*>::iterator iter_rule;
 	for (iter_rule = rule_by_line.begin() ; iter_rule != rule_by_line.end() ; iter_rule++) {
 		Set *s = 0;

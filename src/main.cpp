@@ -274,7 +274,7 @@ int main(int argc, char* argv[]) {
 	std::cerr << "Parsing grammar took " << (clock()-main_timer)/(double)CLOCKS_PER_SEC << " seconds." << std::endl;
 	main_timer = clock();
 
-	std::cerr << "Grammar has " << grammar->sections.size() << " sections, " << grammar->template_list.size() << " templates, " << grammar->rule_by_line.size() << " rules, " << grammar->sets_by_contents.size() << " sets, " << grammar->tags.size() << " c-tags, " << grammar->single_tags.size() << " s-tags." << std::endl;
+	std::cerr << "Grammar has " << grammar->sections.size() << " sections, " << grammar->template_list.size() << " templates, " << grammar->rule_by_line.size() << " rules, " << grammar->sets_list.size() << " sets, " << grammar->tags.size() << " c-tags, " << grammar->single_tags.size() << " s-tags." << std::endl;
 	if (grammar->rules_by_tag.find(tag_any->hash) != grammar->rules_by_tag.end()) {
 		std::cerr << grammar->rules_by_tag.find(tag_any->hash)->second->size() << " rules cannot be skipped by index." << std::endl;
 	}
@@ -295,10 +295,19 @@ int main(int argc, char* argv[]) {
 			std::cerr << "Error: Statistics cannot be gathered with a binary grammar." << std::endl;
 			CG3Quit(1);
 		}
+		if (options[OPTIMIZE].doesOccur) {
+			std::cerr << "Error: Binary grammars cannot be further optimized." << std::endl;
+			CG3Quit(1);
+		}
 	}
 
 	if (options[GRAMMAR_INFO].doesOccur && !stdin_isfile) {
 		std::cerr << "Error: Re-ordering statistics can only be gathered with file input option (-I, --stdin) as the file must be re-run multiple times." << std::endl;
+		CG3Quit(1);
+	}
+
+	if (options[STATISTICS].doesOccur && !(options[GRAMMAR_INFO].doesOccur || options[GRAMMAR_BIN].doesOccur || options[GRAMMAR_OUT].doesOccur)) {
+		std::cerr << "Error: Does not make sense to gather statistics if you are not writing the compiled grammar back out somehow." << std::endl;
 		CG3Quit(1);
 	}
 
@@ -377,6 +386,21 @@ int main(int argc, char* argv[]) {
 			}
 			main_timer = clock();
 		}
+	}
+
+	if (options[OPTIMIZE].doesOccur) {
+		std::vector<uint32_t> bad;
+		foreach(CG3::RuleByLineMap, grammar->rule_by_line, ir, ir_end) {
+			if (ir->second->num_match == 0) {
+				bad.push_back(ir->first);
+			}
+		}
+		foreach(std::vector<uint32_t>, bad, br, br_end) {
+			grammar->rule_by_line.erase(*br);
+		}
+		std::cerr << "Optimizer removed " << bad.size() << " rules." << std::endl;
+		grammar->reindex();
+		std::cerr << "Grammar has " << grammar->sections.size() << " sections, " << grammar->template_list.size() << " templates, " << grammar->rule_by_line.size() << " rules, " << grammar->sets_list.size() << " sets, " << grammar->tags.size() << " c-tags, " << grammar->single_tags.size() << " s-tags." << std::endl;
 	}
 
 	if (options[GRAMMAR_OUT].doesOccur) {
@@ -476,12 +500,6 @@ void GAppSetOpts(CG3::GrammarApplicator *applicator) {
 	if (options[SINGLERUN].doesOccur) {
 		applicator->single_run = true;
 	}
-	if (options[GRAMMAR_INFO].doesOccur) {
-		applicator->enableStatistics();
-	}
-	if (options[STATISTICS].doesOccur) {
-		applicator->enableStatistics();
-	}
 	if (options[SECTIONS].doesOccur) {
 		applicator->sections.clear();
 		const char *s = options[SECTIONS].value;
@@ -563,5 +581,14 @@ void GAppSetOpts(CG3::GrammarApplicator *applicator) {
 	}
 	if (options[NO_PASS_ORIGIN].doesOccur) {
 		applicator->no_pass_origin = true;
+	}
+	if (options[GRAMMAR_INFO].doesOccur) {
+		options[STATISTICS].doesOccur = true;
+	}
+	if (options[OPTIMIZE].doesOccur) {
+		options[STATISTICS].doesOccur = true;
+	}
+	if (options[STATISTICS].doesOccur) {
+		applicator->enableStatistics();
 	}
 }
