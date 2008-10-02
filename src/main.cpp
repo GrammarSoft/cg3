@@ -291,7 +291,7 @@ int main(int argc, char* argv[]) {
 			std::cerr << "Error: Statistics cannot be gathered with a binary grammar." << std::endl;
 			CG3Quit(1);
 		}
-		if (options[OPTIMIZE].doesOccur) {
+		if (options[OPTIMIZE_UNSAFE].doesOccur || options[OPTIMIZE_SAFE].doesOccur) {
 			std::cerr << "Error: Binary grammars cannot be further optimized." << std::endl;
 			CG3Quit(1);
 		}
@@ -303,6 +303,10 @@ int main(int argc, char* argv[]) {
 	}
 	if (options[STATISTICS].doesOccur && options[GRAMMAR_ONLY].doesOccur) {
 		std::cerr << "Error: Cannot gather statistics with no input to run grammar on." << std::endl;
+		CG3Quit(1);
+	}
+	if (options[OPTIMIZE_UNSAFE].doesOccur && options[OPTIMIZE_SAFE].doesOccur) {
+		std::cerr << "Error: Cannot optimize in both unsafe and safe mode." << std::endl;
 		CG3Quit(1);
 	}
 
@@ -320,7 +324,7 @@ int main(int argc, char* argv[]) {
 		main_timer = clock();
 	}
 
-	if (options[OPTIMIZE].doesOccur) {
+	if (options[OPTIMIZE_UNSAFE].doesOccur) {
 		std::vector<uint32_t> bad;
 		foreach(CG3::RuleByLineMap, grammar->rule_by_line, ir, ir_end) {
 			if (ir->second->num_match == 0) {
@@ -328,10 +332,28 @@ int main(int argc, char* argv[]) {
 			}
 		}
 		foreach(std::vector<uint32_t>, bad, br, br_end) {
-			grammar->destroyRule(grammar->rule_by_line.find(*br)->second);
+			CG3::Rule *r = grammar->rule_by_line.find(*br)->second;
 			grammar->rule_by_line.erase(*br);
+			grammar->destroyRule(r);
 		}
 		std::cerr << "Optimizer removed " << bad.size() << " rules." << std::endl;
+		grammar->reindex();
+		std::cerr << "Grammar has " << grammar->sections.size() << " sections, " << grammar->template_list.size() << " templates, " << grammar->rule_by_line.size() << " rules, " << grammar->sets_list.size() << " sets, " << grammar->tags.size() << " c-tags, " << grammar->single_tags.size() << " s-tags." << std::endl;
+	}
+	if (options[OPTIMIZE_SAFE].doesOccur) {
+		std::vector<uint32_t> bad;
+		foreach(CG3::RuleByLineMap, grammar->rule_by_line, ir, ir_end) {
+			if (ir->second->num_match == 0) {
+				bad.push_back(ir->first);
+			}
+		}
+		foreach(std::vector<uint32_t>, bad, br, br_end) {
+			CG3::Rule *r = grammar->rule_by_line.find(*br)->second;
+			grammar->rule_by_line.erase(*br);
+			r->line = grammar->rule_by_line.rbegin()->second->line + 1;
+			grammar->rule_by_line[r->line] = r;
+		}
+		std::cerr << "Optimizer moved " << bad.size() << " rules." << std::endl;
 		grammar->reindex();
 		std::cerr << "Grammar has " << grammar->sections.size() << " sections, " << grammar->template_list.size() << " templates, " << grammar->rule_by_line.size() << " rules, " << grammar->sets_list.size() << " sets, " << grammar->tags.size() << " c-tags, " << grammar->single_tags.size() << " s-tags." << std::endl;
 	}
@@ -515,7 +537,10 @@ void GAppSetOpts(CG3::GrammarApplicator *applicator) {
 	if (options[NO_PASS_ORIGIN].doesOccur) {
 		applicator->no_pass_origin = true;
 	}
-	if (options[OPTIMIZE].doesOccur) {
+	if (options[OPTIMIZE_UNSAFE].doesOccur) {
+		options[STATISTICS].doesOccur = true;
+	}
+	if (options[OPTIMIZE_SAFE].doesOccur) {
 		options[STATISTICS].doesOccur = true;
 	}
 	if (options[STATISTICS].doesOccur) {

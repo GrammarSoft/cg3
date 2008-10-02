@@ -117,7 +117,9 @@ int GrammarWriter::writeGrammar(UFILE *output) {
 	used_sets.clear();
 	uint32SetHashMap::const_iterator set_iter;
 	for (set_iter = grammar->sets_by_contents.begin() ; set_iter != grammar->sets_by_contents.end() ; set_iter++) {
-		printSet(output, set_iter->second);
+		if (set_iter->second->is_used) {
+			printSet(output, set_iter->second);
+		}
 	}
 	u_fprintf(output, "\n");
 
@@ -129,27 +131,56 @@ int GrammarWriter::writeGrammar(UFILE *output) {
 	}
 	u_fprintf(output, "\n");
 
-	int32_t lsect = -999;
+	bool found = false;
 	std::map<uint32_t, Rule*>::const_iterator rule_iter;
 	for (rule_iter = grammar->rule_by_line.begin() ; rule_iter != grammar->rule_by_line.end() ; rule_iter++) {
 		const Rule *r = rule_iter->second;
-		if (lsect != r->section) {
-			if (r->section == -3) {
-				u_fprintf(output, "\nNULL-SECTION\n");
-			}
-			else if (r->section == -2) {
-				u_fprintf(output, "\nAFTER-SECTIONS\n");
-			}
-			else if (r->section == -1) {
+		if (r->section == -1) {
+			if (!found) {
 				u_fprintf(output, "\nBEFORE-SECTIONS\n");
+				found = true;
 			}
-			else {
-				u_fprintf(output, "\nSECTION\n");
-			}
-			lsect = r->section;
+			printRule(output, r);
+			u_fprintf(output, " ;\n");
 		}
-		printRule(output, r);
-		u_fprintf(output, " ;\n");
+	}
+	const_foreach(uint32Vector, grammar->sections, isec, isec_end) {
+		found = false;
+		for (rule_iter = grammar->rule_by_line.begin() ; rule_iter != grammar->rule_by_line.end() ; rule_iter++) {
+			const Rule *r = rule_iter->second;
+			if (r->section == (int32_t)*isec) {
+				if (!found) {
+					u_fprintf(output, "\nSECTION\n");
+					found = true;
+				}
+				printRule(output, r);
+				u_fprintf(output, " ;\n");
+			}
+		}
+	}
+	found = false;
+	for (rule_iter = grammar->rule_by_line.begin() ; rule_iter != grammar->rule_by_line.end() ; rule_iter++) {
+		const Rule *r = rule_iter->second;
+		if (r->section == -2) {
+			if (!found) {
+				u_fprintf(output, "\nAFTER-SECTIONS\n");
+				found = true;
+			}
+			printRule(output, r);
+			u_fprintf(output, " ;\n");
+		}
+	}
+	found = false;
+	for (rule_iter = grammar->rule_by_line.begin() ; rule_iter != grammar->rule_by_line.end() ; rule_iter++) {
+		const Rule *r = rule_iter->second;
+		if (r->section == -3) {
+			if (!found) {
+				u_fprintf(output, "\nNULL-SECTION\n");
+				found = true;
+			}
+			printRule(output, r);
+			u_fprintf(output, " ;\n");
+		}
 	}
 
 	return 0;
