@@ -124,6 +124,12 @@ void Grammar::addPreferredTarget(UChar *to) {
 	preferred_targets.push_back(tag->hash);
 }
 void Grammar::addSet(Set *to) {
+	if (!delimiters && u_strcmp(to->name, stringbits[S_DELIMITSET]) == 0) {
+		delimiters = to;
+	}
+	else if (!soft_delimiters && u_strcmp(to->name, stringbits[S_SOFTDELIMITSET]) == 0) {
+		soft_delimiters = to;
+	}
 	uint32_t nhash = hash_sdbm_uchar(to->name, 0);
 	uint32_t chash = to->rehash();
 	if (sets_by_name.find(nhash) == sets_by_name.end()) {
