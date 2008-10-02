@@ -57,6 +57,7 @@ namespace CG3 {
 		uint32_t hash;
 		uint32_t pos;
 		int32_t offset;
+		bool is_used;
 
 		uint32_t target;
 		uint32_t barrier;
@@ -78,6 +79,7 @@ namespace CG3 {
 		
 		uint32_t rehash();
 		void resetStatistics();
+		void markUsed(Grammar *grammar);
 
 		static bool cmp_quality(ContextualTest *a, ContextualTest *b);
 	};

@@ -27,6 +27,7 @@ Tag::Tag() {
 	type = 0;
 	in_grammar = false;
 	is_special = false;
+	is_used = false;
 	comparison_key = 0;
 	comparison_op = OP_NOP;
 	comparison_val = 0;
@@ -303,6 +304,10 @@ uint32_t Tag::rehash() {
 	}
 
 	return hash;
+}
+
+void Tag::markUsed() {
+	is_used = true;
 }
 
 void Tag::printTagRaw(UFILE *to, const Tag *tag) {
