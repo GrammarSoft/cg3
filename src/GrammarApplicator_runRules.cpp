@@ -24,6 +24,17 @@
 using namespace CG3;
 using namespace CG3::Strings;
 
+inline void GrammarApplicator::updateValidRules(uint32Set *rules, uint32Set *valid_rules, uint32Set *intersects, uint32_t hash) {
+	if (grammar->rules_by_tag.find(hash) != grammar->rules_by_tag.end()) {
+		valid_rules->insert(grammar->rules_by_tag.find(hash)->second->begin(), grammar->rules_by_tag.find(hash)->second->end());
+		uint32Set tmp;
+		std::set_intersection(rules->begin(), rules->end(),
+			valid_rules->begin(), valid_rules->end(),
+			std::inserter(tmp, tmp.begin()));
+		intersects->insert(tmp.begin(), tmp.end());
+	}
+}
+
 uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, uint32Set *rules) {
 
 	Recycler *r = Recycler::instance();
@@ -254,9 +265,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, uint32Set *r
 							else {
 								addTagToReading(reading, (*tter)->hash);
 							}
-							if (grammar->rules_by_tag.find((*tter)->hash) != grammar->rules_by_tag.end()) {
-								current->valid_rules.insert(grammar->rules_by_tag.find((*tter)->hash)->second->begin(), grammar->rules_by_tag.find((*tter)->hash)->second->end());
-							}
+							updateValidRules(rules, &current->valid_rules, &intersects, (*tter)->hash);
 						}
 						if (!mappings.empty()) {
 							splitMappings(mappings, cohort, reading, rule->type == K_MAP);
@@ -279,9 +288,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, uint32Set *r
 							else {
 								reading->tags_list.push_back((*tter)->hash);
 							}
-							if (grammar->rules_by_tag.find((*tter)->hash) != grammar->rules_by_tag.end()) {
-								current->valid_rules.insert(grammar->rules_by_tag.find((*tter)->hash)->second->begin(), grammar->rules_by_tag.find((*tter)->hash)->second->end());
-							}
+							updateValidRules(rules, &current->valid_rules, &intersects, (*tter)->hash);
 						}
 						reflowReading(reading);
 						if (!mappings.empty()) {
@@ -325,9 +332,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, uint32Set *r
 								else {
 									reading->tags_list.insert(tfind, (*tter)->hash);
 								}
-								if (grammar->rules_by_tag.find((*tter)->hash) != grammar->rules_by_tag.end()) {
-									current->valid_rules.insert(grammar->rules_by_tag.find((*tter)->hash)->second->begin(), grammar->rules_by_tag.find((*tter)->hash)->second->end());
-								}
+								updateValidRules(rules, &current->valid_rules, &intersects, (*tter)->hash);
 							}
 							reflowReading(reading);
 							if (!mappings.empty()) {
@@ -349,9 +354,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, uint32Set *r
 							else {
 								addTagToReading(reading, (*tter)->hash);
 							}
-							if (grammar->rules_by_tag.find((*tter)->hash) != grammar->rules_by_tag.end()) {
-								current->valid_rules.insert(grammar->rules_by_tag.find((*tter)->hash)->second->begin(), grammar->rules_by_tag.find((*tter)->hash)->second->end());
-							}
+							updateValidRules(rules, &current->valid_rules, &intersects, (*tter)->hash);
 						}
 						if (!mappings.empty()) {
 							splitMappings(mappings, cohort, reading, true);
