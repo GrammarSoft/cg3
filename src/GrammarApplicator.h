@@ -121,6 +121,7 @@ namespace CG3 {
 
 		int runGrammarOnWindow(Window *window);
 		int runGrammarOnSingleWindow(SingleWindow *current);
+		inline void updateValidRules(uint32Set *rules, uint32Set *valid_rules, uint32Set *intersects, uint32_t hash);
 		uint32_t runRulesOnWindow(SingleWindow *current, uint32Set *rules);
 
 		inline Cohort *runSingleTest(SingleWindow *sWindow, size_t i, const ContextualTest *test, bool *brk, bool *retval, Cohort **deep = 0, Cohort *origin = 0);
