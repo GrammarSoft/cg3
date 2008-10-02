@@ -102,7 +102,7 @@ int main(int argc, char* argv[]) {
 
 	fflush(stderr);
 
-	if (options[CHECK_ONLY].doesOccur || options[GRAMMAR_ONLY].doesOccur) {
+	if (options[GRAMMAR_ONLY].doesOccur) {
 		if (!options[VERBOSE].doesOccur) {
 			options[VERBOSE].doesOccur = true;
 		}
@@ -283,10 +283,6 @@ int main(int argc, char* argv[]) {
 	}
 
 	if (grammar->is_binary) {
-		if (options[GRAMMAR_INFO].doesOccur) {
-			std::cerr << "Error: Re-ordering statistics cannot be gathered with a binary grammar." << std::endl;
-			CG3Quit(1);
-		}
 		if (options[GRAMMAR_BIN].doesOccur || options[GRAMMAR_OUT].doesOccur) {
 			std::cerr << "Error: Binary grammars cannot be rewritten." << std::endl;
 			CG3Quit(1);
@@ -301,17 +297,16 @@ int main(int argc, char* argv[]) {
 		}
 	}
 
-	if (options[GRAMMAR_INFO].doesOccur && !stdin_isfile) {
-		std::cerr << "Error: Re-ordering statistics can only be gathered with file input option (-I, --stdin) as the file must be re-run multiple times." << std::endl;
-		CG3Quit(1);
-	}
-
-	if (options[STATISTICS].doesOccur && !(options[GRAMMAR_INFO].doesOccur || options[GRAMMAR_BIN].doesOccur || options[GRAMMAR_OUT].doesOccur)) {
+	if (options[STATISTICS].doesOccur && !(options[GRAMMAR_BIN].doesOccur || options[GRAMMAR_OUT].doesOccur)) {
 		std::cerr << "Error: Does not make sense to gather statistics if you are not writing the compiled grammar back out somehow." << std::endl;
 		CG3Quit(1);
 	}
+	if (options[STATISTICS].doesOccur && options[GRAMMAR_ONLY].doesOccur) {
+		std::cerr << "Error: Cannot gather statistics with no input to run grammar on." << std::endl;
+		CG3Quit(1);
+	}
 
-	if (!options[CHECK_ONLY].doesOccur && !options[GRAMMAR_ONLY].doesOccur) {
+	if (!options[GRAMMAR_ONLY].doesOccur) {
 		CG3::GrammarApplicator *applicator = new CG3::GrammarApplicator(ux_stdin, ux_stdout, ux_stderr);
 		applicator->setGrammar(grammar);
 		GAppSetOpts(applicator);
@@ -325,69 +320,6 @@ int main(int argc, char* argv[]) {
 		main_timer = clock();
 	}
 
-	if (options[GRAMMAR_INFO].doesOccur) {
-		UFILE *gout = u_fopen(options[GRAMMAR_INFO].value, "wb", locale_output, codepage_output);
-		if (gout) {
-			grammar->resetStatistics();
-
-			if (!options[CHECK_ONLY].doesOccur && !options[GRAMMAR_ONLY].doesOccur) {
-				u_frewind(ux_stdin);
-
-				CG3::GrammarApplicator *applicator = new CG3::GrammarApplicator(ux_stdin, ux_stdout, ux_stderr);
-				applicator->setGrammar(grammar);
-				GAppSetOpts(applicator);
-				applicator->enableStatistics();
-				applicator->runGrammarOnText(ux_stdin, ux_stdout);
-				delete applicator;
-				applicator = 0;
-
-				if (options[VERBOSE].doesOccur) {
-					std::cerr << "Applying context-sorted grammar on input took " << (clock()-main_timer)/(double)CLOCKS_PER_SEC << " seconds." << std::endl;
-				}
-				main_timer = clock();
-			}
-
-			/*
-			for (uint32_t j=0;j<grammar->rules.size();j++) {
-				grammar->rules[j]->reweight();
-			}
-			for (uint32_t i=0;i<grammar->sections.size()-1;i++) {
-				std::sort(&grammar->rules[grammar->sections[i]], &grammar->rules[grammar->sections[i+1]-1], CG3::Rule::cmp_quality);
-			}
-			//*/
-
-			CG3::GrammarWriter *writer = new CG3::GrammarWriter(grammar, ux_stderr);
-			writer->statistics = true;
-			writer->writeGrammar(gout);
-			delete writer;
-			writer = 0;
-
-			if (options[VERBOSE].doesOccur) {
-				std::cerr << "Writing textual grammar with statistics took " << (clock()-main_timer)/(double)CLOCKS_PER_SEC << " seconds." << std::endl;
-			}
-			main_timer = clock();
-		} else {
-			std::cerr << "Could not write grammar to " << options[GRAMMAR_INFO].value << std::endl;
-		}
-
-		if (!options[CHECK_ONLY].doesOccur && !options[GRAMMAR_ONLY].doesOccur) {
-			u_frewind(ux_stdin);
-
-			CG3::GrammarApplicator *applicator = new CG3::GrammarApplicator(ux_stdin, ux_stdout, ux_stderr);
-			applicator->setGrammar(grammar);
-			GAppSetOpts(applicator);
-			applicator->enableStatistics();
-			applicator->runGrammarOnText(ux_stdin, ux_stdout);
-			delete applicator;
-			applicator = 0;
-
-			if (options[VERBOSE].doesOccur) {
-				std::cerr << "Applying fully-sorted grammar on input took " << (clock()-main_timer)/(double)CLOCKS_PER_SEC << " seconds." << std::endl;
-			}
-			main_timer = clock();
-		}
-	}
-
 	if (options[OPTIMIZE].doesOccur) {
 		std::vector<uint32_t> bad;
 		foreach(CG3::RuleByLineMap, grammar->rule_by_line, ir, ir_end) {
@@ -396,6 +328,7 @@ int main(int argc, char* argv[]) {
 			}
 		}
 		foreach(std::vector<uint32_t>, bad, br, br_end) {
+			grammar->destroyRule(grammar->rule_by_line.find(*br)->second);
 			grammar->rule_by_line.erase(*br);
 		}
 		std::cerr << "Optimizer removed " << bad.size() << " rules." << std::endl;
@@ -581,9 +514,6 @@ void GAppSetOpts(CG3::GrammarApplicator *applicator) {
 	}
 	if (options[NO_PASS_ORIGIN].doesOccur) {
 		applicator->no_pass_origin = true;
-	}
-	if (options[GRAMMAR_INFO].doesOccur) {
-		options[STATISTICS].doesOccur = true;
 	}
 	if (options[OPTIMIZE].doesOccur) {
 		options[STATISTICS].doesOccur = true;

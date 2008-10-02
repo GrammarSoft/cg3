@@ -341,6 +341,7 @@ void Grammar::reindex() {
 
 	foreach (uint32SetHashMap, sets_by_contents, dset, dset_end) {
 		dset->second->is_used = false;
+		dset->second->number = 0;
 	}
 
 	std::map<uint32_t, Rule*>::iterator iter_rule;
