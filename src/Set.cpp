@@ -28,6 +28,7 @@ Set::Set() {
 	is_special = false;
 	is_unified = false;
 	is_child_unified = false;
+	is_used = false;
 	name = 0;
 	line = 0;
 	hash = 0;
@@ -121,6 +122,28 @@ void Set::reindex(Grammar *grammar) {
 			if (set->is_unified || set->is_child_unified) {
 				is_child_unified = true;
 			}
+		}
+	}
+}
+
+void Set::markUsed(Grammar *grammar) {
+	is_used = true;
+
+	if (sets.empty()) {
+		TagHashSet::iterator tomp_iter;
+		for (tomp_iter = single_tags.begin() ; tomp_iter != single_tags.end() ; tomp_iter++) {
+			Tag *tag = *tomp_iter;
+			tag->markUsed();
+		}
+		CompositeTagHashSet::iterator comp_iter;
+		for (comp_iter = tags.begin() ; comp_iter != tags.end() ; comp_iter++) {
+			CompositeTag *curcomptag = *comp_iter;
+			curcomptag->markUsed();
+		}
+	} else if (!sets.empty()) {
+		for (uint32_t i=0;i<sets.size();i++) {
+			Set *set = grammar->sets_by_contents.find(sets.at(i))->second;
+			set->markUsed(grammar);
 		}
 	}
 }

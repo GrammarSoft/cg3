@@ -35,6 +35,7 @@ namespace CG3 {
 		bool is_special;
 		bool is_unified;
 		bool is_child_unified;
+		bool is_used;
 		mutable uint32_t num_fail, num_match;
 		mutable clock_t total_time;
 		UChar *name;
@@ -58,6 +59,7 @@ namespace CG3 {
 		uint32_t rehash();
 		void resetStatistics();
 		void reindex(Grammar *grammar);
+		void markUsed(Grammar *grammar);
 	};
 
 }

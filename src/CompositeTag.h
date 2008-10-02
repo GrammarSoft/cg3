@@ -33,6 +33,7 @@ namespace CG3 {
 		uint32_t number;
 		TagSet tags_set;
 		TagHashSet tags;
+		bool is_used;
 
 		CompositeTag();
 		~CompositeTag();
@@ -40,6 +41,7 @@ namespace CG3 {
 		void addTag(Tag *tag);
 
 		uint32_t rehash();
+		void markUsed();
 	};
 
 }
