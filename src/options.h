@@ -59,6 +59,7 @@ namespace Options {
 		TRACE_NO_REMOVED,
 		SINGLERUN,
 		STATISTICS,
+		OPTIMIZE,
 		MAPPING_PREFIX,
 		NUM_WINDOWS,
 		ALWAYS_SPAN,
@@ -115,6 +116,7 @@ namespace Options {
 		UOPTION_DEF_D("trace-no-removed",	0, UOPT_NO_ARG, "does not print removed readings; implies --trace"),
 		UOPTION_DEF_D("single-run",			0, UOPT_NO_ARG, "runs each section only once"),
 		UOPTION_DEF("statistics",			'S', UOPT_NO_ARG),
+		UOPTION_DEF_D("optimize",			'Z', UOPT_NO_ARG, "optimizes the profiled grammar to be faster"),
 		UOPTION_DEF_D("prefix",			    'p', UOPT_REQUIRES_ARG, "sets the mapping prefix; defaults to @"),
 
 		UOPTION_DEF_D("num-windows",		0, UOPT_REQUIRES_ARG, "number of windows to keep in before/ahead buffers; defaults to 2"),
