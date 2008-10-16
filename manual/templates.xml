@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE chapter SYSTEM "docbook-dtd-45/docbookx.dtd">
+
+<chapter id="templates">
+  <title>Templates</title>
+
+  <para>
+    Sets up templates of alternative contextual tests which can later be referred to by multiple rules
+    or templates.
+  </para>
+  <screen>
+    TEMPLATE name = (1 (N) LINK 1 (V)) OR (-1 (N) LINK 1 (V)) ;
+    TEMPLATE other = (T:name LINK 1 (P)) OR (1 (C)) ;
+    SELECT (x) IF ((T:name) OR (T:other)) ;
+  </screen>
+  <para>
+    Documentation is lacking at the moment. See the ./test/T_Templates/grammar.txt, input.txt, and
+    expected.txt files.
+  </para>
+
+</chapter>
