@@ -136,7 +136,8 @@ void Grammar::addSet(Set *to) {
 		sets_by_name[nhash] = chash;
 	}
 	else if (chash != sets_by_contents.find(sets_by_name.find(nhash)->second)->second->hash) {
-		u_fprintf(ux_stderr, "Error: Set %S already defined at line %u. Redefinition attempt at line %u!\n", sets_by_contents.find(sets_by_name.find(nhash)->second)->second->name, sets_by_contents.find(sets_by_name.find(nhash)->second)->second->line, to->line);
+		Set *a = sets_by_contents.find(sets_by_name.find(nhash)->second)->second;
+		u_fprintf(ux_stderr, "Error: Set %S already defined at line %u. Redefinition attempt at line %u!\n", a->name, a->line, to->line);
 		CG3Quit(1);
 	}
 	if (sets_by_contents.find(chash) == sets_by_contents.end()) {

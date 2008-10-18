@@ -64,11 +64,13 @@ void Set::setName(const UChar *to) {
 uint32_t Set::rehash() {
 	uint32_t retval = 0;
 	if (sets.empty()) {
+		retval = hash_sdbm_uint32_t(3499, retval); // Combat hash-collisions
 		foreach (uint32Set, tags_set, iter, iter_end) {
 			retval = hash_sdbm_uint32_t(*iter, retval);
 		}
 	}
 	else {
+		retval = hash_sdbm_uint32_t(2683, retval); // Combat hash-collisions
 		for (uint32_t i=0;i<sets.size();i++) {
 			retval = hash_sdbm_uint32_t(sets.at(i), retval);
 		}
