@@ -22,37 +22,43 @@
 #ifndef __INLINES_H
 #define __INLINES_H
 
+inline uint32_t hash_sdbm_uint32_t(const uint32_t c, uint32_t hash = 0) {
+	if (hash == 0) {
+		hash = 705577479U;
+	}
+    hash = c + (hash << 6U) + (hash << 16U) - hash;
+    return hash;
+}
+
 inline uint32_t hash_sdbm_uchar(const UChar *str, uint32_t hash = 0) {
 	if (hash == 0) {
 		hash = 705577479U;
 	}
     UChar c = 0;
 
+	uint32_t l = 0;
 	while ((c = *str++) != 0) {
         hash = c + (hash << 6U) + (hash << 16U) - hash;
+		l++;
 	}
 
-    return hash;
+    hash = hash_sdbm_uint32_t(l, hash);
+	return hash;
 }
 
 inline uint32_t hash_sdbm_char(const char *str, uint32_t hash = 0) {
 	if (hash == 0) {
 		hash = 705577479U;
 	}
-    UChar c = 0;
+    char c = 0;
 
+	uint32_t l = 0;
 	while ((c = *str++) != 0) {
         hash = c + (hash << 6U) + (hash << 16U) - hash;
+		l++;
 	}
 
-    return hash;
-}
-
-inline uint32_t hash_sdbm_uint32_t(const uint32_t c, uint32_t hash = 0) {
-	if (hash == 0) {
-		hash = 705577479U;
-	}
-    hash = c + (hash << 6U) + (hash << 16U) - hash;
+    hash = hash_sdbm_uint32_t(l, hash);
     return hash;
 }
 

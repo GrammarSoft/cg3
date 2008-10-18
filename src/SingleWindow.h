@@ -38,6 +38,7 @@ namespace CG3 {
 		UChar *text;
 		uint32_t hash, hash_tags, hash_mapped, hash_plain, hash_textual;
 		uint32Set valid_rules;
+		std::map<uint32_t, uint32Set> rule_to_cohorts;
 
 		SingleWindow(Window *p);
 		~SingleWindow();
