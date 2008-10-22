@@ -109,8 +109,6 @@ namespace CG3 {
 
 		stdext::hash_map<uint32_t, Tag*> single_tags;
 
-		// ToDo: These could be multimaps, but there is no standard way to query the existence of a key->value pair.
-		// ToDo: Could also encode the value into the key and use a normal set...will have to investigate what's fastest.
 		uint32HashSet index_regexp_yes;
 		uint32HashSet index_regexp_no;
 		uint32HashSet index_reading_yes;
@@ -132,7 +130,7 @@ namespace CG3 {
 		Cohort *runParenthesisTest(SingleWindow *sWindow, const Cohort *current, const ContextualTest *test, Cohort **deep = 0, Cohort *origin = 0);
 
 		bool doesTagMatchSet(const uint32_t tag, const Set *set);
-		bool doesTagMatchReading(const Reading *reading, const Tag *tag, bool bypass_index = false);
+		bool doesTagMatchReading(const Reading *reading, const Tag *tag);
 		bool doesSetMatchReading(Reading *reading, const uint32_t set, bool bypass_index = false);
 		bool doesSetMatchCohortNormal(const Cohort *cohort, const uint32_t set);
 		bool doesSetMatchCohortCareful(const Cohort *cohort, const uint32_t set);
@@ -145,7 +143,7 @@ namespace CG3 {
 		Window *gWindow;
 		bool statistics;
 
-		bool __index_matches(const uint32HashSet *me, const uint32_t value);
+#define __index_matches(a,b) ((a).find(b) != (a).end())
 		void reflowReading(Reading *reading);
 		void addTagToReading(Reading *reading, uint32_t tag, bool rehash = true);
 		void delTagFromReading(Reading *reading, uint32_t tag);
