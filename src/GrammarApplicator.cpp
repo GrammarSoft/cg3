@@ -50,8 +50,6 @@ GrammarApplicator::GrammarApplicator(UFILE *ux_in, UFILE *ux_out, UFILE *ux_err)
 	endtag = 0;
 	grammar = 0;
 	skipped_rules = 0;
-	cache_hits = 0;
-	cache_miss = 0;
 	match_single = 0;
 	match_comp = 0;
 	match_sub = 0;
