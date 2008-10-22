@@ -119,10 +119,11 @@ namespace CG3 {
 	
 		Tag *addTag(const UChar *tag);
 
-		inline void indexSingleWindow(SingleWindow *current);
+		void updateRuleToCohorts(Cohort *c, uint32_t rsit);
+		void indexSingleWindow(SingleWindow *current);
 		int runGrammarOnWindow(Window *window);
 		int runGrammarOnSingleWindow(SingleWindow *current);
-		inline void updateValidRules(uint32Set *rules, uint32Set *intersects, uint32_t hash, Reading *reading);
+		void updateValidRules(uint32Set *rules, uint32Set *intersects, uint32_t hash, Reading *reading);
 		uint32_t runRulesOnWindow(SingleWindow *current, uint32Set *rules);
 
 		inline Cohort *runSingleTest(SingleWindow *sWindow, size_t i, const ContextualTest *test, bool *brk, bool *retval, Cohort **deep = 0, Cohort *origin = 0);
