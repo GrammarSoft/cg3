@@ -126,7 +126,7 @@ namespace CG3 {
 		void updateValidRules(uint32Set *rules, uint32Set *intersects, uint32_t hash, Reading *reading);
 		uint32_t runRulesOnWindow(SingleWindow *current, uint32Set *rules);
 
-		inline Cohort *runSingleTest(SingleWindow *sWindow, size_t i, const ContextualTest *test, bool *brk, bool *retval, Cohort **deep = 0, Cohort *origin = 0);
+		Cohort *runSingleTest(SingleWindow *sWindow, size_t i, const ContextualTest *test, bool *brk, bool *retval, Cohort **deep = 0, Cohort *origin = 0);
 		Cohort *runContextualTest(SingleWindow *sWindow, const size_t position, const ContextualTest *test, Cohort **deep = 0, Cohort *origin = 0);
 		Cohort *runDependencyTest(SingleWindow *sWindow, const Cohort *current, const ContextualTest *test, Cohort **deep = 0, Cohort *origin = 0);
 		Cohort *runParenthesisTest(SingleWindow *sWindow, const Cohort *current, const ContextualTest *test, Cohort **deep = 0, Cohort *origin = 0);
@@ -145,7 +145,7 @@ namespace CG3 {
 		Window *gWindow;
 		bool statistics;
 
-		inline bool __index_matches(const uint32HashSetuint32HashMap *me, const uint32_t value, const uint32_t set);
+		bool __index_matches(const uint32HashSetuint32HashMap *me, const uint32_t value, const uint32_t set);
 		void reflowReading(Reading *reading);
 		void addTagToReading(Reading *reading, uint32_t tag, bool rehash = true);
 		void delTagFromReading(Reading *reading, uint32_t tag);
