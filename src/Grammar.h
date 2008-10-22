@@ -54,15 +54,15 @@ namespace CG3 {
 		std::vector<Set*> sets_list;
 		std::set<Set*> sets_all;
 		uint32HashMap sets_by_name;
-		uint32SetHashMap sets_by_contents;
+		Setuint32HashMap sets_by_contents;
 		uint32HashMap set_alias;
 
 		std::vector<ContextualTest*> template_list;
 		stdext::hash_map<uint32_t, ContextualTest*> templates;
 
-		stdext::hash_map<uint32_t, uint32HashSet*> rules_by_set;
-		stdext::hash_map<uint32_t, uint32HashSet*> rules_by_tag;
-		stdext::hash_map<uint32_t, uint32HashSet*> sets_by_tag;
+		stdext::hash_map<uint32_t, uint32Set*> rules_by_set;
+		uint32HashSetuint32HashMap rules_by_tag;
+		uint32HashSetuint32HashMap sets_by_tag;
 
 		Set *delimiters;
 		Set *soft_delimiters;
