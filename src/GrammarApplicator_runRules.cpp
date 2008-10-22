@@ -85,6 +85,9 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, uint32Set *r
 
 		//for (size_t c=1 ; c < current->cohorts.size() ; c++) {
 		foreach(uint32Set, (*(current->rule_to_cohorts.find(rule->line)->second)), rocit, rocit_end) {
+			if (current->parent->cohort_map.find(*rocit) == current->parent->cohort_map.end()) {
+				continue;
+			}
 			Cohort *cohort = current->parent->cohort_map.find(*rocit)->second;
 			uint32_t c = cohort->local_number;
 			if (cohort->is_enclosed || cohort->parent != current) {
