@@ -24,29 +24,51 @@
 using namespace CG3;
 using namespace CG3::Strings;
 
-inline void GrammarApplicator::updateValidRules(uint32Set *rules, uint32Set *intersects, uint32_t hash, Reading *reading) {
+void GrammarApplicator::updateRuleToCohorts(Cohort *c, uint32_t rsit) {
+	SingleWindow *current = c->parent;
+	const Rule *r = grammar->rule_by_line.find(rsit)->second;
+	if (r->wordform && r->wordform != c->wordform) {
+		return;
+	}
+	if (current->rule_to_cohorts.find(rsit) == current->rule_to_cohorts.end()) {
+		current->rule_to_cohorts[r->line] = new uint32Set;
+	}
+	uint32Set *s = current->rule_to_cohorts[rsit];
+	s->insert(c->global_number);
+	current->valid_rules.insert(r->line);
+}
+
+void GrammarApplicator::updateValidRules(uint32Set *rules, uint32Set *intersects, uint32_t hash, Reading *reading) {
 	if (grammar->rules_by_tag.find(hash) != grammar->rules_by_tag.end()) {
 		SingleWindow *current = reading->parent->parent;
 		Cohort *c = reading->parent;
 		const_foreach(uint32HashSet, (*(grammar->rules_by_tag.find(hash)->second)), rsit, rsit_end) {
-			const Rule *r = grammar->rule_by_line.find(*rsit)->second;
-			if (r->wordform && r->wordform != c->wordform) {
-				continue;
-			}
-			if (current->rule_to_cohorts.find(*rsit) == current->rule_to_cohorts.end()) {
-				current->rule_to_cohorts[r->line] = new uint32Set;
-			}
-			uint32Set *s = current->rule_to_cohorts[*rsit];
-			s->insert(c->global_number);
-			current->valid_rules.insert(r->line);
+			updateRuleToCohorts(c, *rsit);
 		}
 
 		//current->valid_rules.insert(grammar->rules_by_tag.find(hash)->second->begin(), grammar->rules_by_tag.find(hash)->second->end());
-		uint32HashSet tmp;
+		//uint32HashSet tmp;
 		std::set_intersection(rules->begin(), rules->end(),
 			current->valid_rules.begin(), current->valid_rules.end(),
-			std::inserter(tmp, tmp.begin()));
-		intersects->insert(tmp.begin(), tmp.end());
+			std::inserter(*intersects, (*intersects).begin()));
+		//intersects->insert(tmp.begin(), tmp.end());
+	}
+}
+
+void GrammarApplicator::indexSingleWindow(SingleWindow *current) {
+	current->valid_rules.clear();
+
+	foreach(std::vector<Cohort*>, current->cohorts, iter, iter_end) {
+		Cohort *c = *iter;
+		foreach(uint32HashSet, c->possible_sets, psit, psit_end) {
+			if (grammar->rules_by_set.find(*psit) == grammar->rules_by_set.end()) {
+				continue;
+			}
+			const uint32Set *rules = grammar->rules_by_set.find(*psit)->second;
+			const_foreach(uint32Set, (*rules), rsit, rsir_end) {
+				updateRuleToCohorts(c, *rsit);
+			}
+		}
 	}
 }
 
@@ -584,32 +606,6 @@ int GrammarApplicator::runGrammarOnSingleWindow(SingleWindow *current) {
 	}
 
 	return 0;
-}
-
-inline void GrammarApplicator::indexSingleWindow(SingleWindow *current) {
-	current->valid_rules.clear();
-
-	foreach(std::vector<Cohort*>, current->cohorts, iter, iter_end) {
-		Cohort *c = *iter;
-		foreach(uint32HashSet, c->possible_sets, psit, psit_end) {
-			if (grammar->rules_by_set.find(*psit) == grammar->rules_by_set.end()) {
-				continue;
-			}
-			const uint32Set *rules = grammar->rules_by_set.find(*psit)->second;
-			const_foreach(uint32Set, (*rules), rsit, rsir_end) {
-				const Rule *r = grammar->rule_by_line.find(*rsit)->second;
-				if (r->wordform && r->wordform != c->wordform) {
-					continue;
-				}
-				if (current->rule_to_cohorts.find(*rsit) == current->rule_to_cohorts.end()) {
-					current->rule_to_cohorts[r->line] = new uint32Set;
-				}
-				uint32Set *s = current->rule_to_cohorts[*rsit];
-				s->insert(c->global_number);
-				current->valid_rules.insert(r->line);
-			}
-		}
-	}
 }
 
 int GrammarApplicator::runGrammarOnWindow(Window *window) {
