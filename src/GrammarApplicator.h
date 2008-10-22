@@ -111,10 +111,10 @@ namespace CG3 {
 
 		// ToDo: These could be multimaps, but there is no standard way to query the existence of a key->value pair.
 		// ToDo: Could also encode the value into the key and use a normal set...will have to investigate what's fastest.
-		uint32HashSetuint32HashMap index_regexp_yes;
-		uint32HashSetuint32HashMap index_regexp_no;
-		uint32HashSetuint32HashMap index_reading_yes;
-		uint32HashSetuint32HashMap index_reading_no;
+		uint32HashSet index_regexp_yes;
+		uint32HashSet index_regexp_no;
+		uint32HashSet index_reading_yes;
+		uint32HashSet index_reading_no;
 		void resetIndexes();
 	
 		Tag *addTag(const UChar *tag);
@@ -145,7 +145,7 @@ namespace CG3 {
 		Window *gWindow;
 		bool statistics;
 
-		bool __index_matches(const uint32HashSetuint32HashMap *me, const uint32_t value, const uint32_t set);
+		bool __index_matches(const uint32HashSet *me, const uint32_t value);
 		void reflowReading(Reading *reading);
 		void addTagToReading(Reading *reading, uint32_t tag, bool rehash = true);
 		void delTagFromReading(Reading *reading, uint32_t tag);

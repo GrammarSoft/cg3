@@ -46,12 +46,9 @@ void GrammarApplicator::updateValidRules(uint32Set *rules, uint32Set *intersects
 			updateRuleToCohorts(c, *rsit);
 		}
 
-		//current->valid_rules.insert(grammar->rules_by_tag.find(hash)->second->begin(), grammar->rules_by_tag.find(hash)->second->end());
-		//uint32HashSet tmp;
 		std::set_intersection(rules->begin(), rules->end(),
 			current->valid_rules.begin(), current->valid_rules.end(),
 			std::inserter(*intersects, (*intersects).begin()));
-		//intersects->insert(tmp.begin(), tmp.end());
 	}
 }
 
