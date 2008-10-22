@@ -82,21 +82,6 @@ GrammarApplicator::~GrammarApplicator() {
 		}
 	}
 
-	Recycler *r = Recycler::instance();
-	uint32HashSetuint32HashMap::iterator indt;
-	for (indt = index_reading_yes.begin() ; indt != index_reading_yes.end() ; indt++) {
-		r->delete_uint32HashSet(indt->second);
-	}
-	for (indt = index_reading_no.begin() ; indt != index_reading_no.end() ; indt++) {
-		r->delete_uint32HashSet(indt->second);
-	}
-	for (indt = index_regexp_yes.begin() ; indt != index_regexp_yes.end() ; indt++) {
-		r->delete_uint32HashSet(indt->second);
-	}
-	for (indt = index_regexp_no.begin() ; indt != index_regexp_no.end() ; indt++) {
-		r->delete_uint32HashSet(indt->second);
-	}
-
 	if (gWindow) {
 		delete gWindow;
 	}
@@ -105,27 +90,9 @@ GrammarApplicator::~GrammarApplicator() {
 }
 
 void GrammarApplicator::resetIndexes() {
-	Recycler *r = Recycler::instance();
-	uint32HashSetuint32HashMap::iterator indt;
-
-	for (indt = index_reading_yes.begin() ; indt != index_reading_yes.end() ; indt++) {
-		r->delete_uint32HashSet(indt->second);
-	}
 	index_reading_yes.clear();
-
-	for (indt = index_reading_no.begin() ; indt != index_reading_no.end() ; indt++) {
-		r->delete_uint32HashSet(indt->second);
-	}
 	index_reading_no.clear();
-
-	for (indt = index_regexp_yes.begin() ; indt != index_regexp_yes.end() ; indt++) {
-		r->delete_uint32HashSet(indt->second);
-	}
 	index_regexp_yes.clear();
-
-	for (indt = index_regexp_no.begin() ; indt != index_regexp_no.end() ; indt++) {
-		r->delete_uint32HashSet(indt->second);
-	}
 	index_regexp_no.clear();
 }
 
