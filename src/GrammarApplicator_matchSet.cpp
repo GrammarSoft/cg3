@@ -50,7 +50,7 @@ bool GrammarApplicator::doesTagMatchSet(const uint32_t tag, const Set *set) {
 	return retval;
 }
 
-inline bool GrammarApplicator::__index_matches(const uint32HashSetuint32HashMap *me, const uint32_t value, const uint32_t set) {
+bool GrammarApplicator::__index_matches(const uint32HashSetuint32HashMap *me, const uint32_t value, const uint32_t set) {
 	uint32HashSetuint32HashMap::const_iterator ime = me->find(value);
 	if (ime != me->end()) {
 		const uint32HashSet *index = ime->second;
