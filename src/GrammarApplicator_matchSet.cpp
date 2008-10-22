@@ -50,14 +50,11 @@ bool GrammarApplicator::doesTagMatchSet(const uint32_t tag, const Set *set) {
 	return retval;
 }
 
-bool GrammarApplicator::__index_matches(const uint32HashSetuint32HashMap *me, const uint32_t value, const uint32_t set) {
-	uint32HashSetuint32HashMap::const_iterator ime = me->find(value);
+bool GrammarApplicator::__index_matches(const uint32HashSet *me, const uint32_t value) {
+	uint32HashSet::const_iterator ime = me->find(value);
 	if (ime != me->end()) {
-		const uint32HashSet *index = ime->second;
-		if (index->find(set) != index->end()) {
-			cache_hits++;
-			return true;
-		}
+		cache_hits++;
+		return true;
 	}
 	return false;
 }
@@ -243,10 +240,11 @@ bool GrammarApplicator::doesTagMatchReading(const Reading *reading, const Tag *t
 	}
 	else if (tag->regexp && !reading->tags_textual.empty()) {
 		const_foreach(uint32HashSet, reading->tags_textual, mter, mter_end) {
-			if (__index_matches(&index_regexp_yes, tag->hash, *mter)) {
+			uint32_t ih = hash_sdbm_uint32_t(tag->hash, *mter);
+			if (__index_matches(&index_regexp_yes, ih)) {
 				match = true;
 			}
-			else if (__index_matches(&index_regexp_no, tag->hash, *mter)) {
+			else if (__index_matches(&index_regexp_no, ih)) {
 				match = false;
 			}
 			else {
@@ -264,18 +262,10 @@ bool GrammarApplicator::doesTagMatchReading(const Reading *reading, const Tag *t
 					CG3Quit(1);
 				}
 				if (match) {
-					if (index_regexp_yes.find(tag->hash) == index_regexp_yes.end()) {
-						Recycler *r = Recycler::instance();
-						index_regexp_yes[tag->hash] = r->new_uint32HashSet();
-					}
-					index_regexp_yes[tag->hash]->insert(*mter);
+					index_regexp_yes.insert(ih);
 				}
 				else {
-					if (index_regexp_no.find(tag->hash) == index_regexp_no.end()) {
-						Recycler *r = Recycler::instance();
-						index_regexp_no[tag->hash] = r->new_uint32HashSet();
-					}
-					index_regexp_no[tag->hash]->insert(*mter);
+					index_regexp_no.insert(ih);
 				}
 			}
 			if (match) {
@@ -327,10 +317,11 @@ bool GrammarApplicator::doesSetMatchReading(Reading *reading, const uint32_t set
 		return false;
 	}
 	// ToDo: This is not good enough...while numeric tags are special, their failures can be indexed.
-	if (!bypass_index && __index_matches(&index_reading_no, reading->hash, set)) {
+	uint32_t ih = hash_sdbm_uint32_t(reading->hash, set);
+	if (!bypass_index && __index_matches(&index_reading_no, ih)) {
 		return false;
 	}
-	if (!bypass_index && __index_matches(&index_reading_yes, reading->hash, set)) {
+	if (!bypass_index && __index_matches(&index_reading_yes, ih)) {
 		return true;
 	}
 
@@ -460,19 +451,11 @@ bool GrammarApplicator::doesSetMatchReading(Reading *reading, const uint32_t set
 	//}
 
 	if (retval) {
-		if (index_reading_yes.find(reading->hash) == index_reading_yes.end()) {
-			Recycler *r = Recycler::instance();
-			index_reading_yes[reading->hash] = r->new_uint32HashSet();
-		}
-		index_reading_yes[reading->hash]->insert(set);
+		index_reading_yes.insert(ih);
 	}
 	else {
 		if (!unif_mode) {
-			if (index_reading_no.find(reading->hash) == index_reading_no.end()) {
-				Recycler *r = Recycler::instance();
-				index_reading_no[reading->hash] = r->new_uint32HashSet();
-			}
-			index_reading_no[reading->hash]->insert(set);
+			index_reading_no.insert(ih);
 		}
 	}
 
