@@ -91,7 +91,7 @@ namespace CG3 {
 		static const uint32_t RV_DELIMITED = 4;
 
 		uint32_t skipped_rules;
-		uint32_t cache_hits, cache_miss, match_single, match_comp, match_sub;
+		uint32_t match_single, match_comp, match_sub;
 		uint32_t begintag, endtag;
 		uint32_t par_left_tag, par_right_tag;
 		uint32_t par_left_pos, par_right_pos;
