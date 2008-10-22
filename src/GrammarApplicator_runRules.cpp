@@ -586,14 +586,9 @@ int GrammarApplicator::runGrammarOnSingleWindow(SingleWindow *current) {
 	return 0;
 }
 
-int GrammarApplicator::runGrammarOnWindow(Window *window) {
-	if (has_dep) {
-		reflowDependencyWindow();
-	}
-
-	SingleWindow *current = window->current;
-
+inline void GrammarApplicator::indexSingleWindow(SingleWindow *current) {
 	current->valid_rules.clear();
+
 	foreach(std::vector<Cohort*>, current->cohorts, iter, iter_end) {
 		Cohort *c = *iter;
 		foreach(uint32HashSet, c->possible_sets, psit, psit_end) {
@@ -615,6 +610,16 @@ int GrammarApplicator::runGrammarOnWindow(Window *window) {
 			}
 		}
 	}
+}
+
+int GrammarApplicator::runGrammarOnWindow(Window *window) {
+	if (has_dep) {
+		reflowDependencyWindow();
+	}
+
+	SingleWindow *current = window->current;
+
+	indexSingleWindow(current);
 
 	if (!grammar->parentheses.empty()) {
 		label_scanParentheses:

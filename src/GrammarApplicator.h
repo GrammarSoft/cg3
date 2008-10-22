@@ -119,6 +119,7 @@ namespace CG3 {
 	
 		Tag *addTag(const UChar *tag);
 
+		inline void indexSingleWindow(SingleWindow *current);
 		int runGrammarOnWindow(Window *window);
 		int runGrammarOnSingleWindow(SingleWindow *current);
 		inline void updateValidRules(uint32Set *rules, uint32Set *intersects, uint32_t hash, Reading *reading);
