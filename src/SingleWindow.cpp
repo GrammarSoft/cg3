@@ -48,7 +48,7 @@ SingleWindow::~SingleWindow() {
 			previous->next = 0;
 		}
 	}
-	foreach(uint32Setuint32Map, rule_to_cohorts, rocit, rocit_end) {
+	foreach(uint32Setuint32HashMap, rule_to_cohorts, rocit, rocit_end) {
 		rocit->second->clear();
 		delete rocit->second;
 		rocit->second = 0;

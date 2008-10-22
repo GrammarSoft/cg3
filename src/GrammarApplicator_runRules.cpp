@@ -41,8 +41,8 @@ inline void GrammarApplicator::updateValidRules(uint32Set *rules, uint32Set *int
 			current->valid_rules.insert(r->line);
 		}
 
-		//valid_rules->insert(grammar->rules_by_tag.find(hash)->second->begin(), grammar->rules_by_tag.find(hash)->second->end());
-		uint32Set tmp;
+		//current->valid_rules.insert(grammar->rules_by_tag.find(hash)->second->begin(), grammar->rules_by_tag.find(hash)->second->end());
+		uint32HashSet tmp;
 		std::set_intersection(rules->begin(), rules->end(),
 			current->valid_rules.begin(), current->valid_rules.end(),
 			std::inserter(tmp, tmp.begin()));
