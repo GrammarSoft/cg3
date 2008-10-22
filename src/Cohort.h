@@ -47,6 +47,8 @@ namespace CG3 {
 		uint32HashSet dep_siblings;
 
 		uint32HashSet possible_sets;
+
+		bool is_enclosed;
 		std::vector<Cohort*> enclosed;
 
 		bool is_related;

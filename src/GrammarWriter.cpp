@@ -115,7 +115,7 @@ int GrammarWriter::writeGrammar(UFILE *output) {
 	u_fprintf(output, "\n");
 
 	used_sets.clear();
-	uint32SetHashMap::const_iterator set_iter;
+	Setuint32HashMap::const_iterator set_iter;
 	for (set_iter = grammar->sets_by_contents.begin() ; set_iter != grammar->sets_by_contents.end() ; set_iter++) {
 		if (set_iter->second->is_used) {
 			printSet(output, set_iter->second);

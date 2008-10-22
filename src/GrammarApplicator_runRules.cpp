@@ -24,12 +24,27 @@
 using namespace CG3;
 using namespace CG3::Strings;
 
-inline void GrammarApplicator::updateValidRules(uint32Set *rules, uint32Set *valid_rules, uint32Set *intersects, uint32_t hash) {
+inline void GrammarApplicator::updateValidRules(uint32Set *rules, uint32Set *intersects, uint32_t hash, Reading *reading) {
 	if (grammar->rules_by_tag.find(hash) != grammar->rules_by_tag.end()) {
-		valid_rules->insert(grammar->rules_by_tag.find(hash)->second->begin(), grammar->rules_by_tag.find(hash)->second->end());
+		SingleWindow *current = reading->parent->parent;
+		Cohort *c = reading->parent;
+		const_foreach(uint32HashSet, (*(grammar->rules_by_tag.find(hash)->second)), rsit, rsit_end) {
+			const Rule *r = grammar->rule_by_line.find(*rsit)->second;
+			if (r->wordform && r->wordform != c->wordform) {
+				continue;
+			}
+			if (current->rule_to_cohorts.find(*rsit) == current->rule_to_cohorts.end()) {
+				current->rule_to_cohorts[r->line] = new uint32Set;
+			}
+			uint32Set *s = current->rule_to_cohorts[*rsit];
+			s->insert(c->global_number);
+			current->valid_rules.insert(r->line);
+		}
+
+		//valid_rules->insert(grammar->rules_by_tag.find(hash)->second->begin(), grammar->rules_by_tag.find(hash)->second->end());
 		uint32Set tmp;
 		std::set_intersection(rules->begin(), rules->end(),
-			valid_rules->begin(), valid_rules->end(),
+			current->valid_rules.begin(), current->valid_rules.end(),
 			std::inserter(tmp, tmp.begin()));
 		intersects->insert(tmp.begin(), tmp.end());
 	}
@@ -68,8 +83,13 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, uint32Set *r
 
 		// ToDo: Update list of in/valid rules upon MAP, ADD, REPLACE, APPEND, SUBSTITUTE; add tags + always add tag_any
 
-		for (size_t c=1 ; c < current->cohorts.size() ; c++) {
-			Cohort *cohort = current->cohorts[c];
+		//for (size_t c=1 ; c < current->cohorts.size() ; c++) {
+		foreach(uint32Set, (*(current->rule_to_cohorts.find(rule->line)->second)), rocit, rocit_end) {
+			Cohort *cohort = current->parent->cohort_map.find(*rocit)->second;
+			uint32_t c = cohort->local_number;
+			if (cohort->is_enclosed || cohort->parent != current) {
+				continue;
+			}
 			if (cohort->readings.empty()) {
 				continue;
 			}
@@ -265,7 +285,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, uint32Set *r
 							else {
 								addTagToReading(reading, (*tter)->hash);
 							}
-							updateValidRules(rules, &current->valid_rules, &intersects, (*tter)->hash);
+							updateValidRules(rules, &intersects, (*tter)->hash, reading);
 						}
 						if (!mappings.empty()) {
 							splitMappings(mappings, cohort, reading, rule->type == K_MAP);
@@ -288,7 +308,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, uint32Set *r
 							else {
 								reading->tags_list.push_back((*tter)->hash);
 							}
-							updateValidRules(rules, &current->valid_rules, &intersects, (*tter)->hash);
+							updateValidRules(rules, &intersects, (*tter)->hash, reading);
 						}
 						reflowReading(reading);
 						if (!mappings.empty()) {
@@ -332,7 +352,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, uint32Set *r
 								else {
 									reading->tags_list.insert(tfind, (*tter)->hash);
 								}
-								updateValidRules(rules, &current->valid_rules, &intersects, (*tter)->hash);
+								updateValidRules(rules, &intersects, (*tter)->hash, reading);
 							}
 							reflowReading(reading);
 							if (!mappings.empty()) {
@@ -354,7 +374,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, uint32Set *r
 							else {
 								addTagToReading(reading, (*tter)->hash);
 							}
-							updateValidRules(rules, &current->valid_rules, &intersects, (*tter)->hash);
+							updateValidRules(rules, &intersects, (*tter)->hash, reading);
 						}
 						if (!mappings.empty()) {
 							splitMappings(mappings, cohort, reading, true);
@@ -569,6 +589,30 @@ int GrammarApplicator::runGrammarOnWindow(Window *window) {
 	}
 
 	SingleWindow *current = window->current;
+
+	current->valid_rules.clear();
+	foreach(std::vector<Cohort*>, current->cohorts, iter, iter_end) {
+		Cohort *c = *iter;
+		foreach(uint32HashSet, c->possible_sets, psit, psit_end) {
+			if (grammar->rules_by_set.find(*psit) == grammar->rules_by_set.end()) {
+				continue;
+			}
+			const uint32Set *rules = grammar->rules_by_set.find(*psit)->second;
+			const_foreach(uint32Set, (*rules), rsit, rsir_end) {
+				const Rule *r = grammar->rule_by_line.find(*rsit)->second;
+				if (r->wordform && r->wordform != c->wordform) {
+					continue;
+				}
+				if (current->rule_to_cohorts.find(*rsit) == current->rule_to_cohorts.end()) {
+					current->rule_to_cohorts[r->line] = new uint32Set;
+				}
+				uint32Set *s = current->rule_to_cohorts[*rsit];
+				s->insert(c->global_number);
+				current->valid_rules.insert(r->line);
+			}
+		}
+	}
+
 	if (!grammar->parentheses.empty()) {
 		label_scanParentheses:
 		reverse_foreach(std::vector<Cohort*>, current->cohorts, iter, iter_end) {
@@ -604,6 +648,9 @@ int GrammarApplicator::runGrammarOnWindow(Window *window) {
 						left++;
 					}
 					current->cohorts.resize(current->cohorts.size() - c->enclosed.size());
+					foreach(std::vector<Cohort*>, c->enclosed, eiter, eiter_end) {
+						(*eiter)->is_enclosed = true;
+					}
 					goto label_scanParentheses;
 				}
 			}
@@ -638,6 +685,7 @@ label_runGrammarOnWindow_begin:
 					current->cohorts[i+j+1] = c->enclosed[j];
 					current->cohorts[i+j+1]->local_number = i+j+1;
 					current->cohorts[i+j+1]->parent = current;
+					current->cohorts[i+j+1]->is_enclosed = false;
 				}
 				par_left_tag = c->enclosed[0]->wordform;
 				par_right_tag = c->enclosed[ne-1]->wordform;

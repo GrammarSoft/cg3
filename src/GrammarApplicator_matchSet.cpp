@@ -50,8 +50,8 @@ bool GrammarApplicator::doesTagMatchSet(const uint32_t tag, const Set *set) {
 	return retval;
 }
 
-inline bool GrammarApplicator::__index_matches(const stdext::hash_map<uint32_t, uint32HashSet*> *me, const uint32_t value, const uint32_t set) {
-	stdext::hash_map<uint32_t, uint32HashSet*>::const_iterator ime = me->find(value);
+inline bool GrammarApplicator::__index_matches(const uint32HashSetuint32HashMap *me, const uint32_t value, const uint32_t set) {
+	uint32HashSetuint32HashMap::const_iterator ime = me->find(value);
 	if (ime != me->end()) {
 		const uint32HashSet *index = ime->second;
 		if (index->find(set) != index->end()) {
@@ -343,7 +343,7 @@ bool GrammarApplicator::doesSetMatchReading(Reading *reading, const uint32_t set
 		tstamp = clock();
 	}
 
-	uint32SetHashMap::const_iterator iter = grammar->sets_by_contents.find(set);
+	Setuint32HashMap::const_iterator iter = grammar->sets_by_contents.find(set);
 	//if (iter != grammar->sets_by_contents.end()) {
 		const Set *theset = iter->second;
 		if (theset->is_unified) {

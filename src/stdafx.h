@@ -82,8 +82,12 @@ namespace CG3 {
 	typedef std::vector<uint32_t> uint32Vector;
 	typedef std::set<uint32_t> uint32Set;
 	typedef std::map<uint32_t, uint32_t> uint32Map;
+	typedef std::map<uint32_t,uint32Set*> uint32Setuint32Map;
 	typedef stdext::hash_set<uint32_t> uint32HashSet;
 	typedef stdext::hash_map<uint32_t, uint32_t> uint32HashMap;
+	typedef stdext::hash_map<uint32_t,uint32Set*> uint32Setuint32HashMap;
+	typedef stdext::hash_map<uint32_t,uint32HashSet*> uint32HashSetuint32HashMap;
+
 	class Recycler;
 	class Grammar;
 	class Set;
@@ -98,11 +102,12 @@ namespace CG3 {
 	class GrammarWriter;
 	class CompositeTag;
 	class ContextualTest;
+
 	typedef std::list<Tag*> TagList;
 	typedef std::set<Tag*> TagSet;
 	typedef stdext::hash_set<Tag*> TagHashSet;
 	typedef stdext::hash_set<CompositeTag*> CompositeTagHashSet;
-	typedef stdext::hash_map<uint32_t,Set*> uint32SetHashMap;
+	typedef stdext::hash_map<uint32_t,Set*> Setuint32HashMap;
 	typedef std::map<uint32_t, Rule*> RuleByLineMap;
 	typedef std::vector<Rule*> RuleVector;
 }
