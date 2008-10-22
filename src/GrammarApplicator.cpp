@@ -83,7 +83,7 @@ GrammarApplicator::~GrammarApplicator() {
 	}
 
 	Recycler *r = Recycler::instance();
-	stdext::hash_map<uint32_t, uint32HashSet*>::iterator indt;
+	uint32HashSetuint32HashMap::iterator indt;
 	for (indt = index_reading_yes.begin() ; indt != index_reading_yes.end() ; indt++) {
 		r->delete_uint32HashSet(indt->second);
 	}
@@ -106,7 +106,7 @@ GrammarApplicator::~GrammarApplicator() {
 
 void GrammarApplicator::resetIndexes() {
 	Recycler *r = Recycler::instance();
-	stdext::hash_map<uint32_t, uint32HashSet*>::iterator indt;
+	uint32HashSetuint32HashMap::iterator indt;
 
 	for (indt = index_reading_yes.begin() ; indt != index_reading_yes.end() ; indt++) {
 		r->delete_uint32HashSet(indt->second);

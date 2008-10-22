@@ -31,6 +31,7 @@ Cohort::Cohort(SingleWindow *p) {
 	is_disamb = false;
 	dep_done = false;
 	is_related = false;
+	is_enclosed = false;
 	text_pre = 0;
 	text_post = 0;
 	dep_self = 0;
@@ -59,6 +60,7 @@ void Cohort::clear(SingleWindow *p) {
 	is_disamb = false;
 	dep_done = false;
 	is_related = false;
+	is_enclosed = false;
 	if (text_pre) {
 		delete[] text_pre;
 	}

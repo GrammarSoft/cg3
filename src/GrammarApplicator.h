@@ -111,17 +111,17 @@ namespace CG3 {
 
 		// ToDo: These could be multimaps, but there is no standard way to query the existence of a key->value pair.
 		// ToDo: Could also encode the value into the key and use a normal set...will have to investigate what's fastest.
-		stdext::hash_map<uint32_t, uint32HashSet*> index_regexp_yes;
-		stdext::hash_map<uint32_t, uint32HashSet*> index_regexp_no;
-		stdext::hash_map<uint32_t, uint32HashSet*> index_reading_yes;
-		stdext::hash_map<uint32_t, uint32HashSet*> index_reading_no;
+		uint32HashSetuint32HashMap index_regexp_yes;
+		uint32HashSetuint32HashMap index_regexp_no;
+		uint32HashSetuint32HashMap index_reading_yes;
+		uint32HashSetuint32HashMap index_reading_no;
 		void resetIndexes();
 	
 		Tag *addTag(const UChar *tag);
 
 		int runGrammarOnWindow(Window *window);
 		int runGrammarOnSingleWindow(SingleWindow *current);
-		inline void updateValidRules(uint32Set *rules, uint32Set *valid_rules, uint32Set *intersects, uint32_t hash);
+		inline void updateValidRules(uint32Set *rules, uint32Set *intersects, uint32_t hash, Reading *reading);
 		uint32_t runRulesOnWindow(SingleWindow *current, uint32Set *rules);
 
 		inline Cohort *runSingleTest(SingleWindow *sWindow, size_t i, const ContextualTest *test, bool *brk, bool *retval, Cohort **deep = 0, Cohort *origin = 0);
@@ -143,7 +143,7 @@ namespace CG3 {
 		Window *gWindow;
 		bool statistics;
 
-		inline bool __index_matches(const stdext::hash_map<uint32_t, uint32HashSet*> *me, const uint32_t value, const uint32_t set);
+		inline bool __index_matches(const uint32HashSetuint32HashMap *me, const uint32_t value, const uint32_t set);
 		void reflowReading(Reading *reading);
 		void addTagToReading(Reading *reading, uint32_t tag, bool rehash = true);
 		void delTagFromReading(Reading *reading, uint32_t tag);

@@ -96,16 +96,21 @@ Grammar::~Grammar() {
 		}
 	}
 
-	stdext::hash_map<uint32_t,uint32HashSet*>::iterator xrule;
+	uint32HashSetuint32HashMap::iterator xrule;
 	for (xrule = rules_by_tag.begin() ; xrule != rules_by_tag.end() ; xrule++) {
 		delete xrule->second;
 		xrule->second = 0;
 	}
 
-	stdext::hash_map<uint32_t,uint32HashSet*>::iterator xset;
+	uint32HashSetuint32HashMap::iterator xset;
 	for (xset = sets_by_tag.begin() ; xset != sets_by_tag.end() ; xset++) {
 		delete xset->second;
 		xset->second = 0;
+	}
+
+	foreach(uint32Setuint32HashMap, rules_by_set, irbs, irbs_end) {
+		delete irbs->second;
+		irbs->second = 0;
 	}
 }
 
@@ -346,7 +351,7 @@ void Grammar::reindex() {
 	sections.clear();
 	sets_list.clear();
 
-	foreach (uint32SetHashMap, sets_by_contents, dset, dset_end) {
+	foreach (Setuint32HashMap, sets_by_contents, dset, dset_end) {
 		dset->second->is_used = false;
 		dset->second->number = 0;
 	}
@@ -376,7 +381,7 @@ void Grammar::reindex() {
 	/*
 	// ToDo: Actually destroying the data still needs more work to determine what is safe to kill off.
 
-	foreach (uint32SetHashMap, sets_by_contents, rset, rset_end) {
+	foreach (Setuint32HashMap, sets_by_contents, rset, rset_end) {
 		if (!rset->second->is_used) {
 			destroySet(rset->second);
 			rset->second = 0;
@@ -424,7 +429,7 @@ void Grammar::reindex() {
 
 	// Stuff below this line is not optional...
 
-	foreach (uint32SetHashMap, sets_by_contents, tset, tset_end) {
+	foreach (Setuint32HashMap, sets_by_contents, tset, tset_end) {
 		if (tset->second->is_used) {
 			addSetToList(tset->second);
 		}
@@ -441,7 +446,7 @@ void Grammar::reindex() {
 		}
 	}
 
-	foreach (uint32SetHashMap, sets_by_contents, iter_sets, iter_sets_end) {
+	foreach (Setuint32HashMap, sets_by_contents, iter_sets, iter_sets_end) {
 		if (iter_sets->second->is_used) {
 			iter_sets->second->reindex(this);
 			indexSets(iter_sets->first, iter_sets->second);
@@ -466,6 +471,10 @@ void Grammar::reindex() {
 		}
 		if (iter_rule->second->target) {
 			indexSetToRule(iter_rule->second->line, getSet(iter_rule->second->target));
+			if (rules_by_set.find(iter_rule->second->target) == rules_by_set.end()) {
+				rules_by_set[iter_rule->second->target] = new uint32Set;
+			}
+			rules_by_set[iter_rule->second->target]->insert(iter_rule->first);
 		}
 		else {
 			u_fprintf(ux_stderr, "Warning: Rule on line %u had no target.\n", iter_rule->second->line);
