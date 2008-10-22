@@ -53,7 +53,6 @@ bool GrammarApplicator::doesTagMatchSet(const uint32_t tag, const Set *set) {
 bool GrammarApplicator::__index_matches(const uint32HashSet *me, const uint32_t value) {
 	uint32HashSet::const_iterator ime = me->find(value);
 	if (ime != me->end()) {
-		cache_hits++;
 		return true;
 	}
 	return false;
@@ -326,8 +325,6 @@ bool GrammarApplicator::doesSetMatchReading(Reading *reading, const uint32_t set
 	}
 
 	bool retval = false;
-
-	cache_miss++;
 
 	clock_t tstamp = 0;
 	if (statistics) {

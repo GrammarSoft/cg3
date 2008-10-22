@@ -439,7 +439,6 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 CGCMD_EXIT:
 	grammar->total_time = clock() - grammar->total_time;
 	if (verbosity_level > 0) {
-		u_fprintf(ux_stderr, "Cache %u total, %u hits, %u misses.\n", (cache_hits+cache_miss), cache_hits, cache_miss);
 		u_fprintf(ux_stderr, "Did %u lines, %u windows, %u cohorts, %u readings.\n", numLines, numWindows, numCohorts, numReadings);
 		u_fflush(ux_stderr);
 	}
