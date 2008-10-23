@@ -169,10 +169,10 @@ void GrammarApplicator::reflowDependencyWindow() {
 
 void GrammarApplicator::reflowReading(Reading *reading) {
 	reading->tags.clear();
-	reading->tags_plain.clear();
-	reading->tags_textual.clear();
-	reading->tags_numerical.clear();
-	reading->possible_sets.clear();
+	reading->tags_plain.clear_no_resize();
+	reading->tags_textual.clear_no_resize();
+	reading->tags_numerical.clear_no_resize();
+	reading->possible_sets.clear_no_resize();
 	reading->mapping = 0;
 
 	if (grammar->sets_by_tag.find(grammar->tag_any) != grammar->sets_by_tag.end()) {

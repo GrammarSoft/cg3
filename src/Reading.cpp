@@ -36,6 +36,14 @@ Reading::Reading(Cohort *p) {
 	matched_target = false;
 	matched_tests = false;
 	mapping = 0;
+	tags_plain.set_empty_key(0);
+	tags_textual.set_empty_key(0);
+	tags_numerical.set_empty_key(0);
+	possible_sets.set_empty_key(0);
+	tags_plain.set_deleted_key(1);
+	tags_textual.set_deleted_key(1);
+	tags_numerical.set_deleted_key(1);
+	possible_sets.set_deleted_key(1);
 }
 
 void Reading::clear(Cohort *p) {
