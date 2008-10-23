@@ -66,7 +66,7 @@ namespace CG3 {
 	};
 
 	struct compare_Rule {
-		bool operator() (const Rule* a, const Rule* b) const {
+		inline bool operator() (const Rule* a, const Rule* b) const {
 			return a->line < b->line;
 		}
 	};
