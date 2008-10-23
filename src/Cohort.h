@@ -66,6 +66,12 @@ namespace CG3 {
 		Reading *allocateAppendReading();
 	};
 
+	struct compare_Cohort {
+		bool operator() (const Cohort* a, const Cohort* b) const {
+			return a->global_number < b->global_number;
+		}
+	};
+
 }
 
 #endif

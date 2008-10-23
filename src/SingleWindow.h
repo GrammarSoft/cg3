@@ -25,6 +25,7 @@
 #include "stdafx.h"
 #include "Window.h"
 #include "Cohort.h"
+#include "Rule.h"
 
 namespace CG3 {
 
@@ -38,7 +39,7 @@ namespace CG3 {
 		UChar *text;
 		uint32_t hash, hash_tags, hash_mapped, hash_plain, hash_textual;
 		uint32Set valid_rules;
-		uint32Setuint32HashMap rule_to_cohorts;
+		RuleToCohortsMap rule_to_cohorts;
 
 		SingleWindow(Window *p);
 		~SingleWindow();
