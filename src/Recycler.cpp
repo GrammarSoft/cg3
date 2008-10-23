@@ -162,6 +162,6 @@ uint32HashSet *Recycler::new_uint32HashSet() {
 
 void Recycler::delete_uint32HashSet(uint32HashSet *t) {
 	Duint32HashSets++;
-	t->clear_no_resize();
+	t->clear();
 	uint32HashSets.push_back(t);
 }
