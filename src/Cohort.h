@@ -67,7 +67,7 @@ namespace CG3 {
 	};
 
 	struct compare_Cohort {
-		bool operator() (const Cohort* a, const Cohort* b) const {
+		inline bool operator() (const Cohort* a, const Cohort* b) const {
 			return a->global_number < b->global_number;
 		}
 	};
