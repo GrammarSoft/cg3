@@ -28,8 +28,6 @@ GrammarWriter::GrammarWriter(Grammar *res, UFILE *ux_err) {
 	statistics = false;
 	ux_stderr = ux_err;
 	grammar = res;
-	used_sets.set_empty_key(0);
-	used_sets.set_deleted_key(1);
 }
 
 GrammarWriter::~GrammarWriter() {
