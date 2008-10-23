@@ -66,6 +66,13 @@ namespace CG3 {
 	};
 
 	struct compare_Rule {
+		static const size_t bucket_size = 4;
+		static const size_t min_buckets = 8;
+
+		inline size_t operator() (const Rule* r) const {
+			return hash_sdbm_uint32_t(r->line);
+		}
+
 		inline bool operator() (const Rule* a, const Rule* b) const {
 			return a->line < b->line;
 		}

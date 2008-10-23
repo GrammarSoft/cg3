@@ -53,11 +53,15 @@
 #include <unicode/ustring.h>
 #include <unicode/uregex.h>
 
+// Google SparseHash includes
+#include <google/dense_hash_map>
+#include <google/dense_hash_set>
+
 #include "macros.h"
 #include "inlines.h"
 #include "uextras.h"
 
-#ifdef WIN32
+#ifdef _MSC_VER
 	#include <winsock.h> // for hton() and family.
     #include <hash_map>
     #include <hash_set>
@@ -83,7 +87,7 @@ namespace CG3 {
 	typedef std::set<uint32_t> uint32Set;
 	typedef std::map<uint32_t, uint32_t> uint32Map;
 	typedef std::map<uint32_t,uint32Set*> uint32Setuint32Map;
-	typedef stdext::hash_set<uint32_t> uint32HashSet;
+	typedef google::dense_hash_set<uint32_t> uint32HashSet;
 	typedef stdext::hash_map<uint32_t, uint32_t> uint32HashMap;
 	typedef stdext::hash_map<uint32_t,uint32Set*> uint32Setuint32HashMap;
 	typedef stdext::hash_map<uint32_t,uint32HashSet*> uint32HashSetuint32HashMap;
