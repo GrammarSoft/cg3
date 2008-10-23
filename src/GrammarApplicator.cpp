@@ -69,14 +69,6 @@ GrammarApplicator::GrammarApplicator(UFILE *ux_in, UFILE *ux_out, UFILE *ux_err)
 	no_before_sections = false;
 	no_pass_origin = false;
 	did_index = false;
-	index_regexp_yes.set_empty_key(0);
-	index_regexp_no.set_empty_key(0);
-	index_reading_yes.set_empty_key(0);
-	index_reading_no.set_empty_key(0);
-	index_regexp_yes.set_deleted_key(1);
-	index_regexp_no.set_deleted_key(1);
-	index_reading_yes.set_deleted_key(1);
-	index_reading_no.set_deleted_key(1);
 }
 
 GrammarApplicator::~GrammarApplicator() {

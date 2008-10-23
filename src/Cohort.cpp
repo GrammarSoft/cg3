@@ -36,12 +36,6 @@ Cohort::Cohort(SingleWindow *p) {
 	text_post = 0;
 	dep_self = 0;
 	dep_parent = 0;
-	dep_children.set_empty_key(0);
-	dep_siblings.set_empty_key(0);
-	possible_sets.set_empty_key(0);
-	dep_children.set_deleted_key(1);
-	dep_siblings.set_deleted_key(1);
-	possible_sets.set_deleted_key(1);
 }
 
 void Cohort::clear(SingleWindow *p) {
@@ -77,9 +71,9 @@ void Cohort::clear(SingleWindow *p) {
 	text_post = 0;
 	dep_self = 0;
 	dep_parent = 0;
-	possible_sets.clear_no_resize();
-	dep_children.clear_no_resize();
-	dep_siblings.clear_no_resize();
+	possible_sets.clear();
+	dep_children.clear();
+	dep_siblings.clear();
 	enclosed.clear();
 }
 
