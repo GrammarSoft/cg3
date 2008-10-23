@@ -239,6 +239,10 @@ Rule *Grammar::allocateRule() {
 	return new Rule;
 }
 void Grammar::addRule(Rule *rule) {
+	if (rule_by_line.find(rule->line) != rule_by_line.end()) {
+		u_fprintf(ux_stderr, "Error: Multiple rules defined on line %u - cannot currently handle multiple rules per line!\n", rule->line);
+		CG3Quit(1);
+	}
 	rule_by_line[rule->line] = rule;
 }
 void Grammar::destroyRule(Rule *rule) {

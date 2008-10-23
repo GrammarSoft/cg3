@@ -30,11 +30,11 @@ void GrammarApplicator::updateRuleToCohorts(Cohort *c, uint32_t rsit) {
 	if (r->wordform && r->wordform != c->wordform) {
 		return;
 	}
-	if (current->rule_to_cohorts.find(rsit) == current->rule_to_cohorts.end()) {
-		current->rule_to_cohorts[r->line] = new uint32Set;
+	if (current->rule_to_cohorts.find(r) == current->rule_to_cohorts.end()) {
+		current->rule_to_cohorts[r] = new CohortSet;
 	}
-	uint32Set *s = current->rule_to_cohorts[rsit];
-	s->insert(c->global_number);
+	CohortSet *s = current->rule_to_cohorts[r];
+	s->insert(c);
 	current->valid_rules.insert(r->line);
 }
 
@@ -103,11 +103,8 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, uint32Set *r
 		// ToDo: Update list of in/valid rules upon MAP, ADD, REPLACE, APPEND, SUBSTITUTE; add tags + always add tag_any
 
 		//for (size_t c=1 ; c < current->cohorts.size() ; c++) {
-		foreach(uint32Set, (*(current->rule_to_cohorts.find(rule->line)->second)), rocit, rocit_end) {
-			if (current->parent->cohort_map.find(*rocit) == current->parent->cohort_map.end()) {
-				continue;
-			}
-			Cohort *cohort = current->parent->cohort_map.find(*rocit)->second;
+		foreach(CohortSet, (*(current->rule_to_cohorts.find(rule)->second)), rocit, rocit_end) {
+			Cohort *cohort = *rocit;
 			uint32_t c = cohort->local_number;
 			if (cohort->is_enclosed || cohort->parent != current) {
 				continue;
