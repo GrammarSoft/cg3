@@ -401,8 +401,8 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, uint32Set *r
 						did_append = rule->line;
 					}
 					else if (type == K_SETPARENT || type == K_SETCHILD) {
-						Cohort *attach = runContextualTest(current, c, rule->dep_target);
-						if (attach) {
+						Cohort *attach = 0;
+						if (runContextualTest(current, c, rule->dep_target, &attach) && attach) {
 							bool good = true;
 							if (!rule->dep_tests.empty()) {
 								foreach (std::list<ContextualTest*>, rule->dep_tests, iter, iter_end) {
@@ -430,8 +430,8 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, uint32Set *r
 						break;
 					}
 					else if (type == K_SETRELATION || type == K_REMRELATION) {
-						Cohort *attach = runContextualTest(current, c, rule->dep_target);
-						if (attach) {
+						Cohort *attach = 0;
+						if (runContextualTest(current, c, rule->dep_target, &attach) && attach) {
 							bool good = true;
 							if (!rule->dep_tests.empty()) {
 								foreach (std::list<ContextualTest*>, rule->dep_tests, iter, iter_end) {
