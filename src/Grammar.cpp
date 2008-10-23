@@ -523,6 +523,7 @@ void Grammar::indexTagToRule(uint32_t t, uint32_t r) {
 		std::pair<uint32_t,uint32HashSet*> p;
 		p.first = t;
 		p.second = new uint32HashSet;
+		p.second->set_empty_key(0);
 		rules_by_tag.insert(p);
 	}
 	rules_by_tag.find(t)->second->insert(r);
@@ -563,6 +564,7 @@ void Grammar::indexTagToSet(uint32_t t, uint32_t r) {
 		std::pair<uint32_t,uint32HashSet*> p;
 		p.first = t;
 		p.second = new uint32HashSet;
+		p.second->set_empty_key(0);
 		sets_by_tag.insert(p);
 	}
 	sets_by_tag.find(t)->second->insert(r);
