@@ -103,6 +103,11 @@ namespace CG3 {
 	class CompositeTag;
 	class ContextualTest;
 
+	struct compare_Cohort;
+	struct compare_Rule;
+
+	typedef std::set<Cohort*, compare_Cohort> CohortSet;
+	typedef std::map<const Rule*, CohortSet*, compare_Rule> RuleToCohortsMap;
 	typedef std::list<Tag*> TagList;
 	typedef std::set<Tag*> TagSet;
 	typedef stdext::hash_set<Tag*> TagHashSet;

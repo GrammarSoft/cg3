@@ -65,6 +65,12 @@ namespace CG3 {
 		static bool cmp_quality(Rule *a, Rule *b);
 	};
 
+	struct compare_Rule {
+		bool operator() (const Rule* a, const Rule* b) const {
+			return a->line < b->line;
+		}
+	};
+
 }
 
 #endif
