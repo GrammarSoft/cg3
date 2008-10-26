@@ -106,15 +106,15 @@ namespace CG3 {
 	struct compare_Cohort;
 	struct compare_Rule;
 
-	typedef std::set<Cohort*, compare_Cohort> CohortSet;
-	typedef std::map<const Rule*, CohortSet*, compare_Rule> RuleToCohortsMap;
 	typedef std::list<Tag*> TagList;
+	typedef std::vector<Rule*> RuleVector;
+	typedef std::set<Cohort*, compare_Cohort> CohortSet;
 	typedef std::set<Tag*> TagSet;
+	typedef std::map<uint32_t, Rule*> RuleByLineMap;
 	typedef stdext::hash_set<Tag*> TagHashSet;
 	typedef stdext::hash_set<CompositeTag*> CompositeTagHashSet;
 	typedef stdext::hash_map<uint32_t,Set*> Setuint32HashMap;
-	typedef std::map<uint32_t, Rule*> RuleByLineMap;
-	typedef std::vector<Rule*> RuleVector;
+	typedef stdext::hash_map<const Rule*, CohortSet*, compare_Rule> RuleToCohortsMap;
 }
 
 #endif
