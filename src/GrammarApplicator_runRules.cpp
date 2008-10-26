@@ -527,8 +527,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, uint32Set *r
 				}
 			}
 			if (!selected.empty()) {
-				cohort->readings.clear();
-				cohort->readings.insert(cohort->readings.begin(), selected.begin(), selected.end());
+				cohort->readings = selected;
 			}
 
 			cohort->is_disamb = false;
