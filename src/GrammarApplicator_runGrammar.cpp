@@ -158,12 +158,6 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 			if (!cSWindow) {
 				// ToDo: Refactor to allocate SingleWindow, Cohort, and Reading from their containers
 				cSWindow = new SingleWindow(cWindow);
-				if (grammar->rules_by_tag.find(grammar->tag_any) != grammar->rules_by_tag.end()) {
-					cSWindow->valid_rules.insert(grammar->rules_by_tag.find(grammar->tag_any)->second->begin(), grammar->rules_by_tag.find(grammar->tag_any)->second->end());
-				}
-				if (grammar->rules_by_tag.find(endtag) != grammar->rules_by_tag.end()) {
-					cSWindow->valid_rules.insert(grammar->rules_by_tag.find(endtag)->second->begin(), grammar->rules_by_tag.find(endtag)->second->end());
-				}
 
 				cCohort = r->new_Cohort(cSWindow);
 				cCohort->global_number = 0;
@@ -227,9 +221,6 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 			cCohort = r->new_Cohort(cSWindow);
 			cCohort->global_number = cWindow->cohort_counter++;
 			cCohort->wordform = addTag(cleaned)->hash;
-			if (grammar->rules_by_tag.find(cCohort->wordform) != grammar->rules_by_tag.end()) {
-				cSWindow->valid_rules.insert(grammar->rules_by_tag.find(cCohort->wordform)->second->begin(), grammar->rules_by_tag.find(cCohort->wordform)->second->end());
-			}
 			lCohort = cCohort;
 			lReading = 0;
 			numCohorts++;
@@ -264,9 +255,6 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 					else {
 						addTagToReading(cReading, tag->hash);
 					}
-					if (grammar->rules_by_tag.find(tag->hash) != grammar->rules_by_tag.end()) {
-						cSWindow->valid_rules.insert(grammar->rules_by_tag.find(tag->hash)->second->begin(), grammar->rules_by_tag.find(tag->hash)->second->end());
-					}
 				}
 				base = space;
 				if (*space == '"') {
@@ -281,9 +269,6 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 				}
 				else {
 					addTagToReading(cReading, tag->hash);
-				}
-				if (grammar->rules_by_tag.find(tag->hash) != grammar->rules_by_tag.end()) {
-					cSWindow->valid_rules.insert(grammar->rules_by_tag.find(tag->hash)->second->begin(), grammar->rules_by_tag.find(tag->hash)->second->end());
 				}
 			}
 			if (!cReading->baseform) {

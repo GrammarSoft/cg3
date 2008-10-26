@@ -44,7 +44,7 @@ namespace CG3 {
 
 	private:
 
-		void processReading(SingleWindow *cSWindow, Reading *cReading, UChar *reading_string);
+		void processReading(Reading *cReading, UChar *reading_string);
 
 	};
 }
