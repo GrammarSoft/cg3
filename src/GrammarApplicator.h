@@ -131,7 +131,8 @@ namespace CG3 {
 
 		bool doesTagMatchSet(const uint32_t tag, const Set *set);
 		bool doesTagMatchReading(const Reading *reading, const Tag *tag);
-		bool doesSetMatchReading(Reading *reading, const uint32_t set, bool bypass_index = false);
+		bool doesSetMatchReading_tags(const Reading *reading, const Set *theset);
+		bool doesSetMatchReading(const Reading *reading, const uint32_t set, bool bypass_index = false);
 		bool doesSetMatchCohortNormal(const Cohort *cohort, const uint32_t set);
 		bool doesSetMatchCohortCareful(const Cohort *cohort, const uint32_t set);
 
