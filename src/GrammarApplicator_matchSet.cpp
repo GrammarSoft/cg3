@@ -351,7 +351,7 @@ bool GrammarApplicator::doesSetMatchReading_tags(const Reading *reading, const S
 	return retval;
 }
 
-bool GrammarApplicator::doesSetMatchReading(const Reading *reading, const uint32_t set, bool bypass_index) {
+bool GrammarApplicator::doesSetMatchReading(Reading *reading, const uint32_t set, bool bypass_index) {
 	if (reading->possible_sets.find(set) == reading->possible_sets.end()) {
 		return false;
 	}
@@ -450,6 +450,9 @@ bool GrammarApplicator::doesSetMatchReading(const Reading *reading, const uint32
 	else {
 		if (!unif_mode) {
 			index_reading_no.insert(ih);
+			if (!grammar->sets_any || grammar->sets_any->find(set) == grammar->sets_any->end()) {
+				reading->possible_sets.erase(set);
+			}
 		}
 	}
 
