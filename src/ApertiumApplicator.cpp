@@ -92,15 +92,6 @@ ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output)
 
 			cSWindow->text = 0;
 
-			if (grammar->rules_by_tag.find(grammar->tag_any) != grammar->rules_by_tag.end()) {
-				cSWindow->valid_rules.insert(grammar->rules_by_tag.find(grammar->tag_any)->second->begin(), 
-								grammar->rules_by_tag.find(grammar->tag_any)->second->end());
-			}
-			if (grammar->rules_by_tag.find(endtag) != grammar->rules_by_tag.end()) {
-				cSWindow->valid_rules.insert(grammar->rules_by_tag.find(endtag)->second->begin(), 
-								grammar->rules_by_tag.find(endtag)->second->end());
-			}
-
 			// Create 0th Cohort which serves as the beginning of sentence
 			cCohort = r->new_Cohort(cSWindow);
 			cCohort->global_number = 0;
@@ -181,11 +172,6 @@ ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output)
 			//u_fprintf(output, "# %S\n", wordform);
 			cCohort->wordform = addTag(wordform)->hash;
 	
-			if (grammar->rules_by_tag.find(cCohort->wordform) != grammar->rules_by_tag.end()) {
-				cSWindow->valid_rules.insert(grammar->rules_by_tag.find(cCohort->wordform)->second->begin(), 
-								grammar->rules_by_tag.find(cCohort->wordform)->second->end());
-			}
-
 			// Read in the readings	
 			while(inchar != '$') {
 				inchar = u_fgetc(input);
@@ -204,7 +190,7 @@ ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output)
 					}
 
 					addTagToReading(cReading, cReading->wordform);
-					processReading(cSWindow, cReading, current_reading);
+					processReading(cReading, current_reading);
 
 					cCohort->appendReading(cReading);
 					lReading = cReading;
@@ -225,7 +211,7 @@ ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output)
 
 					addTagToReading(cReading, cReading->wordform);
 
-					processReading(cSWindow, cReading, current_reading);
+					processReading(cReading, current_reading);
 
 					cCohort->appendReading(cReading);
 					lReading = cReading;
@@ -340,7 +326,7 @@ ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output)
  *   venir<vblex><imp><p2><sg>
  */
 void
-ApertiumApplicator::processReading(SingleWindow *cSWindow, Reading *cReading, UChar *reading_string)
+ApertiumApplicator::processReading(Reading *cReading, UChar *reading_string)
 {
 	UChar *m = reading_string;
 	UChar *c = reading_string;
@@ -404,11 +390,6 @@ ApertiumApplicator::processReading(SingleWindow *cSWindow, Reading *cReading, UC
 		return;
 	}
 
-	if (grammar->rules_by_tag.find(tag) != grammar->rules_by_tag.end()) {
-		cSWindow->valid_rules.insert(grammar->rules_by_tag.find(tag)->second->begin(), 
-						grammar->rules_by_tag.find(tag)->second->end());
-	}
-
 	bool joiner = false;
 
 	// Now read in the tags
@@ -426,11 +407,6 @@ ApertiumApplicator::processReading(SingleWindow *cSWindow, Reading *cReading, UC
 				uint32_t tag = addTag(tmptag)->hash;
 				addTagToReading(cReading, tag); // Add the baseform to the tag
 
-				if (grammar->rules_by_tag.find(tag) != grammar->rules_by_tag.end()) {
-					cSWindow->valid_rules.insert(grammar->rules_by_tag.find(tag)->second->begin(), 
-									grammar->rules_by_tag.find(tag)->second->end());
-				}
-
 				delete[] tmptag;
 				tmptag = 0;
 				joiner = false;
@@ -445,11 +421,6 @@ ApertiumApplicator::processReading(SingleWindow *cSWindow, Reading *cReading, UC
 		} else if(*c == '>') {
 			uint32_t tag = addTag(tmptag)->hash;
 			addTagToReading(cReading, tag); // Add the baseform to the tag
-
-			if (grammar->rules_by_tag.find(tag) != grammar->rules_by_tag.end()) {
-				cSWindow->valid_rules.insert(grammar->rules_by_tag.find(tag)->second->begin(), 
-								grammar->rules_by_tag.find(tag)->second->end());
-			}
 
 			delete[] tmptag;
 			tmptag = 0;
