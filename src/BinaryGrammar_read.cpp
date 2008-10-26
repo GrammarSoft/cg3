@@ -45,7 +45,7 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 		CG3Quit(1);
 	}
 
-#define B_TOO_OLD 4077
+#define B_TOO_OLD 4225
 	fread(&u32tmp, sizeof(uint32_t), 1, input);
 	u32tmp = (uint32_t)ntohl(u32tmp);
 	if (u32tmp < B_TOO_OLD) {
@@ -141,6 +141,8 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 		curcomptag->number = (uint32_t)ntohl(u32tmp);
 		fread(&u32tmp, sizeof(uint32_t), 1, input);
 		curcomptag->hash = (uint32_t)ntohl(u32tmp);
+		fread(&u8tmp, sizeof(uint8_t), 1, input);
+		curcomptag->is_special = (u8tmp == 1);
 
 		fread(&u32tmp, sizeof(uint32_t), 1, input);
 		u32tmp = (uint32_t)ntohl(u32tmp);

@@ -104,6 +104,8 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 		u32tmp = (uint32_t)htonl((uint32_t)curcomptag->hash);
 		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
+		u8tmp = (uint8_t)curcomptag->is_special;
+		fwrite(&u8tmp, sizeof(uint8_t), 1, output);
 
 		u32tmp = (uint32_t)htonl((uint32_t)curcomptag->tags_set.size());
 		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
