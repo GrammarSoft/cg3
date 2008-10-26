@@ -221,6 +221,9 @@ CompositeTag *Grammar::addCompositeTagToSet(Set *set, CompositeTag *tag) {
 			tag = addCompositeTag(tag);
 			set->tags_set.insert(tag->hash);
 			set->tags.insert(tag);
+			if (tag->is_special) {
+				set->is_special = true;
+			}
 		}
 	} else {
 		u_fprintf(ux_stderr, "Error: Attempted to add empty composite tag to grammar and set on line %u!\n", lines);
