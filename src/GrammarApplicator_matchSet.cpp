@@ -302,7 +302,56 @@ bool GrammarApplicator::doesTagMatchReading(const Reading *reading, const Tag *t
 	return retval;
 }
 
-bool GrammarApplicator::doesSetMatchReading(Reading *reading, const uint32_t set, bool bypass_index) {
+bool GrammarApplicator::doesSetMatchReading_tags(const Reading *reading, const Set *theset) {
+	bool retval = false;
+
+	TagHashSet::const_iterator ster;
+	for (ster = theset->single_tags.begin() ; ster != theset->single_tags.end() ; ster++) {
+		bool match = doesTagMatchReading(reading, (*ster));
+		if (match) {
+			if (unif_mode) {
+				if (unif_tags.find(theset->hash) != unif_tags.end() && unif_tags[theset->hash] != (*ster)->hash) {
+					continue;
+				}
+				unif_tags[theset->hash] = (*ster)->hash;
+			}
+			retval = true;
+			break;
+		}
+	}
+
+	if (!retval) {
+		CompositeTagHashSet::const_iterator ster;
+		for (ster = theset->tags.begin() ; ster != theset->tags.end() ; ster++) {
+			bool match = true;
+			const CompositeTag *ctag = *ster;
+
+			TagHashSet::const_iterator cter;
+			for (cter = ctag->tags.begin() ; cter != ctag->tags.end() ; cter++) {
+				bool inner = doesTagMatchReading(reading, (*cter));
+				if (!inner) {
+					match = false;
+					break;
+				}
+			}
+			if (match) {
+				if (unif_mode) {
+					if (unif_tags.find(theset->hash) != unif_tags.end() && unif_tags[theset->hash] != (*ster)->hash) {
+						continue;
+					}
+					unif_tags[theset->hash] = (*ster)->hash;
+				}
+				match_comp++;
+				retval = true;
+				break;
+			}
+		}
+	}
+
+	return retval;
+}
+
+bool GrammarApplicator::doesSetMatchReading(const Reading *reading, const uint32_t set, bool bypass_index) {
 	if (reading->possible_sets.find(set) == reading->possible_sets.end()) {
 		return false;
 	}
@@ -333,48 +382,7 @@ bool GrammarApplicator::doesSetMatchReading(Reading *reading, const uint32_t set
 			retval = true;
 		}
 		else if (theset->sets.empty()) {
-			TagHashSet::const_iterator ster;
-			for (ster = theset->single_tags.begin() ; ster != theset->single_tags.end() ; ster++) {
-				bool match = doesTagMatchReading(reading, (*ster));
-				if (match) {
-					if (unif_mode) {
-						if (unif_tags.find(theset->hash) != unif_tags.end() && unif_tags[theset->hash] != (*ster)->hash) {
-							continue;
-						}
-						unif_tags[theset->hash] = (*ster)->hash;
-					}
-					retval = true;
-					break;
-				}
-			}
-
-			if (!retval) {
-				CompositeTagHashSet::const_iterator ster;
-				for (ster = theset->tags.begin() ; ster != theset->tags.end() ; ster++) {
-					bool match = true;
-					const CompositeTag *ctag = *ster;
-
-					TagHashSet::const_iterator cter;
-					for (cter = ctag->tags.begin() ; cter != ctag->tags.end() ; cter++) {
-						bool inner = doesTagMatchReading(reading, (*cter));
-						if (!inner) {
-							match = false;
-							break;
-						}
-					}
-					if (match) {
-						if (unif_mode) {
-							if (unif_tags.find(theset->hash) != unif_tags.end() && unif_tags[theset->hash] != (*ster)->hash) {
-								continue;
-							}
-							unif_tags[theset->hash] = (*ster)->hash;
-						}
-						match_comp++;
-						retval = true;
-						break;
-					}
-				}
-			}
+			retval = doesSetMatchReading_tags(reading, theset);
 		}
 		else {
 			size_t size = theset->sets.size();
