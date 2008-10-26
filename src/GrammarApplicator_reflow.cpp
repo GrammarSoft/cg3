@@ -175,9 +175,9 @@ void GrammarApplicator::reflowReading(Reading *reading) {
 	reading->possible_sets.clear();
 	reading->mapping = 0;
 
-	if (grammar->sets_by_tag.find(grammar->tag_any) != grammar->sets_by_tag.end()) {
-		reading->parent->possible_sets.insert(grammar->sets_by_tag.find(grammar->tag_any)->second->begin(), grammar->sets_by_tag.find(grammar->tag_any)->second->end());
-		reading->possible_sets.insert(grammar->sets_by_tag.find(grammar->tag_any)->second->begin(), grammar->sets_by_tag.find(grammar->tag_any)->second->end());
+	if (grammar->sets_any && !grammar->sets_any->empty()) {
+		reading->parent->possible_sets.insert(grammar->sets_any->begin(), grammar->sets_any->end());
+		reading->possible_sets.insert(grammar->sets_any->begin(), grammar->sets_any->end());
 	}
 
 	const_foreach (uint32List, reading->tags_list, tter, tter_end) {

@@ -64,6 +64,9 @@ namespace CG3 {
 		uint32HashSetuint32HashMap rules_by_tag;
 		uint32HashSetuint32HashMap sets_by_tag;
 
+		uint32HashSet *rules_any;
+		uint32HashSet *sets_any;
+
 		Set *delimiters;
 		Set *soft_delimiters;
 		uint32_t tag_any;
