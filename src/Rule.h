@@ -62,7 +62,14 @@ namespace CG3 {
 		ContextualTest *allocateContextualTest();
 		void addContextualTest(ContextualTest *to, std::list<ContextualTest*> *thelist);
 
-		static bool cmp_quality(Rule *a, Rule *b);
+		static bool cmp_quality(const Rule *a, const Rule *b);
+
+		static inline size_t cmp_hash(const Rule* r) {
+			return hash_sdbm_uint32_t(r->line);
+		}
+		static inline bool cmp_compare(const Rule* a, const Rule* b) {
+			return a->line < b->line;
+		}
 	};
 
 	struct compare_Rule {
@@ -70,14 +77,24 @@ namespace CG3 {
 		static const size_t min_buckets = 8;
 
 		inline size_t operator() (const Rule* r) const {
-			return hash_sdbm_uint32_t(r->line);
+			return Rule::cmp_hash(r);
 		}
 
 		inline bool operator() (const Rule* a, const Rule* b) const {
-			return a->line < b->line;
+			return Rule::cmp_compare(a, b);
 		}
 	};
 
 }
+
+#ifdef __GNUC__
+namespace __gnu_cxx {
+	template<> struct hash< CG3::Rule* > {
+		size_t operator()( const CG3::Rule *x ) const {
+			return CG3::Rule::cmp_hash(x);
+		}
+	};
+}
+#endif
 
 #endif
