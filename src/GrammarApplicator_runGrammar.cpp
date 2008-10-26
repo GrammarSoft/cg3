@@ -102,9 +102,9 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 					cReading = r->new_Reading(cCohort);
 					cReading->wordform = cCohort->wordform;
 					cReading->baseform = cCohort->wordform;
-					if (grammar->sets_by_tag.find(grammar->tag_any) != grammar->sets_by_tag.end()) {
-						cReading->parent->possible_sets.insert(grammar->sets_by_tag.find(grammar->tag_any)->second->begin(), grammar->sets_by_tag.find(grammar->tag_any)->second->end());
-						cReading->possible_sets.insert(grammar->sets_by_tag.find(grammar->tag_any)->second->begin(), grammar->sets_by_tag.find(grammar->tag_any)->second->end());
+					if (grammar->sets_any && !grammar->sets_any->empty()) {
+						cReading->parent->possible_sets.insert(grammar->sets_any->begin(), grammar->sets_any->end());
+						cReading->possible_sets.insert(grammar->sets_any->begin(), grammar->sets_any->end());
 					}
 					addTagToReading(cReading, cCohort->wordform);
 					cReading->noprint = true;
@@ -133,9 +133,9 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 					cReading = r->new_Reading(cCohort);
 					cReading->wordform = cCohort->wordform;
 					cReading->baseform = cCohort->wordform;
-					if (grammar->sets_by_tag.find(grammar->tag_any) != grammar->sets_by_tag.end()) {
-						cReading->parent->possible_sets.insert(grammar->sets_by_tag.find(grammar->tag_any)->second->begin(), grammar->sets_by_tag.find(grammar->tag_any)->second->end());
-						cReading->possible_sets.insert(grammar->sets_by_tag.find(grammar->tag_any)->second->begin(), grammar->sets_by_tag.find(grammar->tag_any)->second->end());
+					if (grammar->sets_any && !grammar->sets_any->empty()) {
+						cReading->parent->possible_sets.insert(grammar->sets_any->begin(), grammar->sets_any->end());
+						cReading->possible_sets.insert(grammar->sets_any->begin(), grammar->sets_any->end());
 					}
 					addTagToReading(cReading, cCohort->wordform);
 					cReading->noprint = true;
@@ -166,9 +166,9 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 				cReading = r->new_Reading(cCohort);
 				cReading->baseform = begintag;
 				cReading->wordform = begintag;
-				if (grammar->sets_by_tag.find(grammar->tag_any) != grammar->sets_by_tag.end()) {
-					cReading->parent->possible_sets.insert(grammar->sets_by_tag.find(grammar->tag_any)->second->begin(), grammar->sets_by_tag.find(grammar->tag_any)->second->end());
-					cReading->possible_sets.insert(grammar->sets_by_tag.find(grammar->tag_any)->second->begin(), grammar->sets_by_tag.find(grammar->tag_any)->second->end());
+				if (grammar->sets_any && !grammar->sets_any->empty()) {
+					cReading->parent->possible_sets.insert(grammar->sets_any->begin(), grammar->sets_any->end());
+					cReading->possible_sets.insert(grammar->sets_any->begin(), grammar->sets_any->end());
 				}
 				addTagToReading(cReading, begintag);
 
@@ -189,9 +189,9 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 					cReading = r->new_Reading(cCohort);
 					cReading->wordform = cCohort->wordform;
 					cReading->baseform = cCohort->wordform;
-					if (grammar->sets_by_tag.find(grammar->tag_any) != grammar->sets_by_tag.end()) {
-						cReading->parent->possible_sets.insert(grammar->sets_by_tag.find(grammar->tag_any)->second->begin(), grammar->sets_by_tag.find(grammar->tag_any)->second->end());
-						cReading->possible_sets.insert(grammar->sets_by_tag.find(grammar->tag_any)->second->begin(), grammar->sets_by_tag.find(grammar->tag_any)->second->end());
+					if (grammar->sets_any && !grammar->sets_any->empty()) {
+						cReading->parent->possible_sets.insert(grammar->sets_any->begin(), grammar->sets_any->end());
+						cReading->possible_sets.insert(grammar->sets_any->begin(), grammar->sets_any->end());
 					}
 					addTagToReading(cReading, cCohort->wordform);
 					cReading->noprint = true;
@@ -228,9 +228,9 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 		else if (cleaned[0] == ' ' && cleaned[1] == '"' && cCohort) {
 			cReading = r->new_Reading(cCohort);
 			cReading->wordform = cCohort->wordform;
-			if (grammar->sets_by_tag.find(grammar->tag_any) != grammar->sets_by_tag.end()) {
-				cReading->parent->possible_sets.insert(grammar->sets_by_tag.find(grammar->tag_any)->second->begin(), grammar->sets_by_tag.find(grammar->tag_any)->second->end());
-				cReading->possible_sets.insert(grammar->sets_by_tag.find(grammar->tag_any)->second->begin(), grammar->sets_by_tag.find(grammar->tag_any)->second->end());
+			if (grammar->sets_any && !grammar->sets_any->empty()) {
+				cReading->parent->possible_sets.insert(grammar->sets_any->begin(), grammar->sets_any->end());
+				cReading->possible_sets.insert(grammar->sets_any->begin(), grammar->sets_any->end());
 			}
 			addTagToReading(cReading, cReading->wordform);
 
@@ -299,9 +299,9 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 							cReading = r->new_Reading(cCohort);
 							cReading->wordform = cCohort->wordform;
 							cReading->baseform = cCohort->wordform;
-							if (grammar->sets_by_tag.find(grammar->tag_any) != grammar->sets_by_tag.end()) {
-								cReading->parent->possible_sets.insert(grammar->sets_by_tag.find(grammar->tag_any)->second->begin(), grammar->sets_by_tag.find(grammar->tag_any)->second->end());
-								cReading->possible_sets.insert(grammar->sets_by_tag.find(grammar->tag_any)->second->begin(), grammar->sets_by_tag.find(grammar->tag_any)->second->end());
+							if (grammar->sets_any && !grammar->sets_any->empty()) {
+								cReading->parent->possible_sets.insert(grammar->sets_any->begin(), grammar->sets_any->end());
+								cReading->possible_sets.insert(grammar->sets_any->begin(), grammar->sets_any->end());
 							}
 							addTagToReading(cReading, cCohort->wordform);
 							cReading->noprint = true;
@@ -380,9 +380,9 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 			cReading = r->new_Reading(cCohort);
 			cReading->wordform = cCohort->wordform;
 			cReading->baseform = cCohort->wordform;
-			if (grammar->sets_by_tag.find(grammar->tag_any) != grammar->sets_by_tag.end()) {
-				cReading->parent->possible_sets.insert(grammar->sets_by_tag.find(grammar->tag_any)->second->begin(), grammar->sets_by_tag.find(grammar->tag_any)->second->end());
-				cReading->possible_sets.insert(grammar->sets_by_tag.find(grammar->tag_any)->second->begin(), grammar->sets_by_tag.find(grammar->tag_any)->second->end());
+			if (grammar->sets_any && !grammar->sets_any->empty()) {
+				cReading->parent->possible_sets.insert(grammar->sets_any->begin(), grammar->sets_any->end());
+				cReading->possible_sets.insert(grammar->sets_any->begin(), grammar->sets_any->end());
 			}
 			addTagToReading(cReading, cCohort->wordform);
 			cReading->noprint = true;
