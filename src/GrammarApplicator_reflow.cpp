@@ -228,7 +228,7 @@ void GrammarApplicator::addTagToReading(Reading *reading, uint32_t utag, bool re
 			dep_highest_seen = reading->parent->dep_self;
 		}
 	}
-	if (!tag->type) {
+	if (!tag->is_special) {
 		reading->tags_plain.insert(utag);
 	}
 	if (rehash) {

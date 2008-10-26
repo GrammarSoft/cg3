@@ -54,7 +54,7 @@ bool GrammarApplicator::doesTagMatchReading(const Reading *reading, const Tag *t
 	bool retval = false;
 	bool match = true;
 
-	bool raw_in = (reading->tags.find(tag->hash) != reading->tags.end());
+	bool raw_in = (reading->tags_plain.find(tag->hash) != reading->tags_plain.end());
 
 	if (!tag->is_special) {
 		match = raw_in;
