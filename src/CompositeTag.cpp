@@ -25,6 +25,7 @@ using namespace CG3;
 
 CompositeTag::CompositeTag() {
 	is_used = false;
+	is_special = false;
 	hash = 0;
 	number = 0;
 }
@@ -35,6 +36,9 @@ CompositeTag::~CompositeTag() {
 void CompositeTag::addTag(Tag *tag) {
 	tags.insert(tag);
 	tags_set.insert(tag);
+	if (tag->is_special) {
+		is_special = true;
+	}
 }
 
 uint32_t CompositeTag::rehash() {

@@ -372,79 +372,77 @@ bool GrammarApplicator::doesSetMatchReading(const Reading *reading, const uint32
 	}
 
 	Setuint32HashMap::const_iterator iter = grammar->sets_by_contents.find(set);
-	//if (iter != grammar->sets_by_contents.end()) {
-		const Set *theset = iter->second;
-		if (theset->is_unified) {
-			unif_mode = true;
-		}
+	const Set *theset = iter->second;
+	if (theset->is_unified) {
+		unif_mode = true;
+	}
 
-		if (theset->match_any) {
-			retval = true;
+	if (theset->match_any) {
+		retval = true;
+	}
+	else if (theset->sets.empty()) {
+		retval = doesSetMatchReading_tags(reading, theset);
+	}
+	else {
+		size_t size = theset->sets.size();
+		for (size_t i=0;i<size;i++) {
+			bool match = doesSetMatchReading(reading, theset->sets.at(i), bypass_index);
+			bool failfast = false;
+			while (i < size-1 && theset->set_ops.at(i) != S_OR) {
+				switch (theset->set_ops.at(i)) {
+					case S_PLUS:
+						if (match) {
+							match = doesSetMatchReading(reading, theset->sets.at(i+1), bypass_index);
+						}
+						break;
+					case S_FAILFAST:
+						if (match) {
+							if (doesSetMatchReading(reading, theset->sets.at(i+1), bypass_index)) {
+								match = false;
+								failfast = true;
+							}
+						}
+						break;
+					case S_MINUS:
+						if (match) {
+							if (doesSetMatchReading(reading, theset->sets.at(i+1), bypass_index)) {
+								match = false;
+							}
+						}
+						break;
+					case S_NOT:
+						if (!match) {
+							if (!doesSetMatchReading(reading, theset->sets.at(i+1), bypass_index)) {
+								match = true;
+							}
+						}
+						break;
+					default:
+						break;
+				}
+				i++;
+			}
+			if (match) {
+				match_sub++;
+				retval = true;
+				break;
+			}
+			if (failfast) {
+				match_sub++;
+				retval = false;
+				break;
+			}
 		}
-		else if (theset->sets.empty()) {
-			retval = doesSetMatchReading_tags(reading, theset);
+	}
+	if (statistics) {
+		if (retval) {
+			theset->num_match++;
 		}
 		else {
-			size_t size = theset->sets.size();
-			for (size_t i=0;i<size;i++) {
-				bool match = doesSetMatchReading(reading, theset->sets.at(i), bypass_index);
-				bool failfast = false;
-				while (i < size-1 && theset->set_ops.at(i) != S_OR) {
-					switch (theset->set_ops.at(i)) {
-						case S_PLUS:
-							if (match) {
-								match = doesSetMatchReading(reading, theset->sets.at(i+1), bypass_index);
-							}
-							break;
-						case S_FAILFAST:
-							if (match) {
-								if (doesSetMatchReading(reading, theset->sets.at(i+1), bypass_index)) {
-									match = false;
-									failfast = true;
-								}
-							}
-							break;
-						case S_MINUS:
-							if (match) {
-								if (doesSetMatchReading(reading, theset->sets.at(i+1), bypass_index)) {
-									match = false;
-								}
-							}
-							break;
-						case S_NOT:
-							if (!match) {
-								if (!doesSetMatchReading(reading, theset->sets.at(i+1), bypass_index)) {
-									match = true;
-								}
-							}
-							break;
-						default:
-							break;
-					}
-					i++;
-				}
-				if (match) {
-					match_sub++;
-					retval = true;
-					break;
-				}
-				if (failfast) {
-					match_sub++;
-					retval = false;
-					break;
-				}
-			}
+			theset->num_fail++;
 		}
-		if (statistics) {
-			if (retval) {
-				theset->num_match++;
-			}
-			else {
-				theset->num_fail++;
-			}
-			theset->total_time += clock() - tstamp;
-		}
-	//}
+		theset->total_time += clock() - tstamp;
+	}
 
 	if (retval) {
 		index_reading_yes.insert(ih);

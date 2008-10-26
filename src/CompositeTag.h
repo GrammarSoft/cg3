@@ -34,6 +34,7 @@ namespace CG3 {
 		TagSet tags_set;
 		TagHashSet tags;
 		bool is_used;
+		bool is_special;
 
 		CompositeTag();
 		~CompositeTag();
