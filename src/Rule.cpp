@@ -81,6 +81,6 @@ void Rule::resetStatistics() {
 	total_time = 0;
 }
 
-bool Rule::cmp_quality(Rule *a, Rule *b) {
+bool Rule::cmp_quality(const Rule *a, const Rule *b) {
 	return a->total_time > b->total_time;
 }
