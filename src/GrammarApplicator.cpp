@@ -251,7 +251,7 @@ void GrammarApplicator::printReading(Reading *reading, UFILE *output) {
 
 	if (trace) {
 		foreach (uint32Vector, reading->hit_by, iter_hb, iter_hb_end) {
-			Rule *r = grammar->rule_by_line.find(*iter_hb)->second;
+			const Rule *r = grammar->rule_by_line.find(*iter_hb)->second;
 			u_fprintf(output, "%S", keywords[r->type]);
 			if (!trace_name_only || !r->name) {
 				u_fprintf(output, ":%u", *iter_hb);

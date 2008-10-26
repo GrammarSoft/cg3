@@ -77,7 +77,7 @@ namespace CG3 {
 		uint32Map anchor_by_hash;
 		std::map<uint32_t, Anchor*> anchor_by_line;
 
-		RuleByLineMap rule_by_line;
+		RuleByLineHashMap rule_by_line;
 		RuleVector before_sections;
 		RuleVector rules;
 		RuleVector after_sections;
