@@ -26,7 +26,6 @@ using namespace CG3::Strings;
 
 bool GrammarApplicator::doesTagMatchSet(const uint32_t tag, const Set *set) {
 	bool retval = false;
-
 	
 	stdext::hash_map<uint32_t, Tag*>::const_iterator itag = grammar->single_tags.find(tag);
 	if (itag == grammar->single_tags.end()) {
@@ -450,9 +449,11 @@ bool GrammarApplicator::doesSetMatchReading(Reading *reading, const uint32_t set
 	else {
 		if (!unif_mode) {
 			index_reading_no.insert(ih);
+			/* This actually slows down the overall processing. Removing on cohort-level only is most efficient.
 			if (!grammar->sets_any || grammar->sets_any->find(set) == grammar->sets_any->end()) {
 				reading->possible_sets.erase(set);
 			}
+			//*/
 		}
 	}
 
