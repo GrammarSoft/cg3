@@ -325,8 +325,5 @@ void GrammarApplicator::mergeMappings(Cohort *cohort) {
 	}
 
 	std::sort(order.begin(), order.end(), CG3::Reading::cmp_number);
-
-	foreach (std::vector<Reading*>, order, oit, oit_end) {
-		cohort->readings.push_back(*oit);
-	}
+	cohort->readings.insert(cohort->readings.begin(), order.begin(), order.end());
 }

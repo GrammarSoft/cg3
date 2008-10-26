@@ -91,21 +91,13 @@ void Reading::duplicateFrom(Reading *r) {
 	mapping = r->mapping;
 	number = r->number;
 
-	hit_by.clear();
-	tags_list.clear();
-	tags.clear();
-	tags_plain.clear();
-	tags_textual.clear();
-	tags_numerical.clear();
-	possible_sets.clear();
-
-	hit_by.insert(hit_by.begin(), r->hit_by.begin(), r->hit_by.end());
-	tags_list.insert(tags_list.begin(), r->tags_list.begin(), r->tags_list.end());
-	tags.insert(r->tags.begin(), r->tags.end());
-	tags_plain.insert(r->tags_plain.begin(), r->tags_plain.end());
-	tags_textual.insert(r->tags_textual.begin(), r->tags_textual.end());
-	tags_numerical.insert(r->tags_numerical.begin(), r->tags_numerical.end());
-	possible_sets.insert(r->possible_sets.begin(), r->possible_sets.end());
+	hit_by = r->hit_by;
+	tags_list = r->tags_list;
+	tags = r->tags;
+	tags_plain = r->tags_plain;
+	tags_textual = r->tags_textual;
+	tags_numerical = r->tags_numerical;
+	possible_sets = r->possible_sets;
 }
 
 bool Reading::cmp_number(Reading *a, Reading *b) {
