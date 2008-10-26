@@ -34,6 +34,8 @@ Grammar::Grammar() {
 	delimiters = 0;
 	soft_delimiters = 0;
 	tag_any = 0;
+	sets_any = 0;
+	rules_any = 0;
 	mapping_prefix = '@';
 	srand((unsigned int)time(0));
 }
@@ -357,6 +359,8 @@ void Grammar::reindex() {
 	null_section.clear();
 	sections.clear();
 	sets_list.clear();
+	sets_any = 0;
+	rules_any = 0;
 
 	foreach (Setuint32HashMap, sets_by_contents, dset, dset_end) {
 		dset->second->is_used = false;
@@ -489,6 +493,13 @@ void Grammar::reindex() {
 	}
 
 	sections.insert(sections.end(), sects.begin(), sects.end());
+
+	if (sets_by_tag.find(tag_any) != sets_by_tag.end()) {
+		sets_any = sets_by_tag.find(tag_any)->second;
+	}
+	if (rules_by_tag.find(tag_any) != rules_by_tag.end()) {
+		rules_any = rules_by_tag.find(tag_any)->second;
+	}
 }
 
 void Grammar::indexSetToRule(uint32_t r, Set *s) {

@@ -456,18 +456,22 @@ bool GrammarApplicator::doesSetMatchReading(const Reading *reading, const uint32
 	return retval;
 }
 
-bool GrammarApplicator::doesSetMatchCohortNormal(const Cohort *cohort, const uint32_t set) {
+bool GrammarApplicator::doesSetMatchCohortNormal(Cohort *cohort, const uint32_t set) {
 	if (cohort->possible_sets.find(set) == cohort->possible_sets.end()) {
 		return false;
 	}
 	bool retval = false;
 	const Set *theset = grammar->sets_by_contents.find(set)->second;
-	std::list<Reading*>::const_iterator iter;
-	for (iter = cohort->readings.begin() ; iter != cohort->readings.end() ; iter++) {
+	const_foreach(std::list<Reading*>, cohort->readings, iter, iter_end) {
 		Reading *reading = *iter;
 		if (doesSetMatchReading(reading, set, theset->is_child_unified|theset->is_special)) {
 			retval = true;
 			break;
+		}
+	}
+	if (!retval) {
+		if (!grammar->sets_any || grammar->sets_any->find(set) == grammar->sets_any->end()) {
+			cohort->possible_sets.erase(set);
 		}
 	}
 	return retval;
@@ -479,8 +483,7 @@ bool GrammarApplicator::doesSetMatchCohortCareful(const Cohort *cohort, const ui
 	}
 	bool retval = true;
 	const Set *theset = grammar->sets_by_contents.find(set)->second;
-	std::list<Reading*>::const_iterator iter;
-	for (iter = cohort->readings.begin() ; iter != cohort->readings.end() ; iter++) {
+	const_foreach(std::list<Reading*>, cohort->readings, iter, iter_end) {
 		Reading *reading = *iter;
 		if (!doesSetMatchReading(reading, set, theset->is_child_unified|theset->is_special)) {
 			retval = false;
