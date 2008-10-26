@@ -223,8 +223,9 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 
 	u32tmp = (uint32_t)htonl((uint32_t)grammar->rule_by_line.size());
 	fwrite(&u32tmp, sizeof(uint32_t), 1, output);
-	std::map<uint32_t, Rule*>::const_iterator rule_iter;
-	for (rule_iter = grammar->rule_by_line.begin() ; rule_iter != grammar->rule_by_line.end() ; rule_iter++) {
+	RuleByLineMap rule_by_line;
+	rule_by_line.insert(grammar->rule_by_line.begin(), grammar->rule_by_line.end());
+	const_foreach(RuleByLineMap, rule_by_line, rule_iter, rule_iter_end) {
 		Rule *r = rule_iter->second;
 		i32tmp = (int32_t)htonl(r->section);
 		fwrite(&i32tmp, sizeof(int32_t), 1, output);

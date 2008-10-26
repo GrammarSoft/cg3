@@ -367,8 +367,9 @@ void Grammar::reindex() {
 		dset->second->number = 0;
 	}
 
-	std::map<uint32_t, Rule*>::iterator iter_rule;
-	for (iter_rule = rule_by_line.begin() ; iter_rule != rule_by_line.end() ; iter_rule++) {
+	RuleByLineMap rule_by_line;
+	rule_by_line.insert(this->rule_by_line.begin(), this->rule_by_line.end());
+	foreach(RuleByLineMap, rule_by_line, iter_rule, iter_rule_end) {
 		Set *s = 0;
 		s = getSet(iter_rule->second->target);
 		s->markUsed(this);

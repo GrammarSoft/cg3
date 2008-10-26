@@ -326,7 +326,7 @@ int main(int argc, char* argv[]) {
 
 	if (options[OPTIMIZE_UNSAFE].doesOccur) {
 		std::vector<uint32_t> bad;
-		foreach(CG3::RuleByLineMap, grammar->rule_by_line, ir, ir_end) {
+		foreach(CG3::RuleByLineHashMap, grammar->rule_by_line, ir, ir_end) {
 			if (ir->second->num_match == 0) {
 				bad.push_back(ir->first);
 			}
@@ -342,7 +342,7 @@ int main(int argc, char* argv[]) {
 	}
 	if (options[OPTIMIZE_SAFE].doesOccur) {
 		std::vector<uint32_t> bad;
-		foreach(CG3::RuleByLineMap, grammar->rule_by_line, ir, ir_end) {
+		foreach(CG3::RuleByLineHashMap, grammar->rule_by_line, ir, ir_end) {
 			if (ir->second->num_match == 0) {
 				bad.push_back(ir->first);
 			}
@@ -350,7 +350,7 @@ int main(int argc, char* argv[]) {
 		foreach(std::vector<uint32_t>, bad, br, br_end) {
 			CG3::Rule *r = grammar->rule_by_line.find(*br)->second;
 			grammar->rule_by_line.erase(*br);
-			r->line = grammar->rule_by_line.rbegin()->second->line + 1;
+			r->line += grammar->rule_by_line.size();
 			grammar->rule_by_line[r->line] = r;
 		}
 		std::cerr << "Optimizer moved " << bad.size() << " rules." << std::endl;
