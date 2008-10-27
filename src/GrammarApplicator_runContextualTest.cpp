@@ -30,6 +30,9 @@ Cohort *GrammarApplicator::runSingleTest(SingleWindow *sWindow, size_t i, const 
 		return 0;
 	}
 	Cohort *cohort = sWindow->cohorts.at(i);
+	if (test->pos & POS_MARK_SET) {
+		mark = cohort;
+	}
 	if (deep) {
 		*deep = cohort;
 	}
@@ -79,8 +82,14 @@ Cohort *GrammarApplicator::runSingleTest(SingleWindow *sWindow, size_t i, const 
 	return cohort;
 }
 
-Cohort *GrammarApplicator::runContextualTest(SingleWindow *sWindow, const size_t position, const ContextualTest *test, Cohort **deep, Cohort *origin) {
+Cohort *GrammarApplicator::runContextualTest(SingleWindow *sWindow, size_t position, const ContextualTest *test, Cohort **deep, Cohort *origin) {
 	Cohort *cohort = 0;
+
+	if (test->pos & POS_MARK_JUMP) {
+		sWindow = mark->parent;
+		position = mark->local_number;
+	}
+
 	if (test->tmpl) {
 		Cohort *cdeep = 0;
 		cohort = runContextualTest(sWindow, position, test->tmpl, &cdeep, origin);

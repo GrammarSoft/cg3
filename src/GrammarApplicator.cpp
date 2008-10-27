@@ -49,6 +49,7 @@ GrammarApplicator::GrammarApplicator(UFILE *ux_in, UFILE *ux_out, UFILE *ux_err)
 	begintag = 0;
 	endtag = 0;
 	grammar = 0;
+	mark = 0;
 	skipped_rules = 0;
 	match_single = 0;
 	match_comp = 0;

@@ -100,6 +100,7 @@ namespace CG3 {
 
 		uint32HashMap variables;
 		uint32HashMap metas;
+		Cohort *mark;
 
 		bool unif_mode;
 		uint32HashMap unif_tags;
@@ -125,7 +126,7 @@ namespace CG3 {
 		uint32_t runRulesOnWindow(SingleWindow *current, uint32Set *rules);
 
 		Cohort *runSingleTest(SingleWindow *sWindow, size_t i, const ContextualTest *test, bool *brk, bool *retval, Cohort **deep = 0, Cohort *origin = 0);
-		Cohort *runContextualTest(SingleWindow *sWindow, const size_t position, const ContextualTest *test, Cohort **deep = 0, Cohort *origin = 0);
+		Cohort *runContextualTest(SingleWindow *sWindow, size_t position, const ContextualTest *test, Cohort **deep = 0, Cohort *origin = 0);
 		Cohort *runDependencyTest(SingleWindow *sWindow, const Cohort *current, const ContextualTest *test, Cohort **deep = 0, Cohort *origin = 0);
 		Cohort *runParenthesisTest(SingleWindow *sWindow, const Cohort *current, const ContextualTest *test, Cohort **deep = 0, Cohort *origin = 0);
 
@@ -137,7 +138,6 @@ namespace CG3 {
 		bool doesSetMatchCohortCareful(const Cohort *cohort, const uint32_t set);
 
 		SingleWindow *initialiseSingleWindow(Recycler *r, Window *cWindow, SingleWindow *cSWindow);
-
 
 		bool has_dep;
 		uint32_t dep_highest_seen;
