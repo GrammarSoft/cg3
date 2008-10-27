@@ -210,6 +210,7 @@ CompositeTag *Grammar::addCompositeTagToSet(Set *set, CompositeTag *tag) {
 			Tag *rtag = *(tag->tags.begin());
 			set->tags_set.insert(rtag->hash);
 			set->single_tags.insert(rtag);
+			set->single_tags_hash.insert(rtag->hash);
 
 			if (rtag->type & T_ANY) {
 				set->match_any = true;

@@ -24,6 +24,24 @@
 using namespace CG3;
 using namespace CG3::Strings;
 
+bool uint32HashSet_Intersects(const uint32HashSet *a, const uint32HashSet *b) {
+	const uint32HashSet *outer, *inner;
+	if (a->size() > b->size()) {
+		inner = a;
+		outer = b;
+	}
+	else {
+		inner = b;
+		outer = a;
+	}
+	const_foreach(uint32HashSet, (*outer), oter, oter_end) {
+		if (inner->find(*oter) != inner->end()) {
+			return true;
+		}
+	}
+	return false;
+}
+
 bool GrammarApplicator::doesTagMatchSet(const uint32_t tag, const Set *set) {
 	bool retval = false;
 	
@@ -304,18 +322,24 @@ bool GrammarApplicator::doesTagMatchReading(const Reading *reading, const Tag *t
 bool GrammarApplicator::doesSetMatchReading_tags(const Reading *reading, const Set *theset) {
 	bool retval = false;
 
-	TagHashSet::const_iterator ster;
-	for (ster = theset->single_tags.begin() ; ster != theset->single_tags.end() ; ster++) {
-		bool match = doesTagMatchReading(reading, (*ster));
-		if (match) {
-			if (unif_mode) {
-				if (unif_tags.find(theset->hash) != unif_tags.end() && unif_tags[theset->hash] != (*ster)->hash) {
-					continue;
+	if (!(theset->is_special|unif_mode)) {
+		retval = uint32HashSet_Intersects(&theset->single_tags_hash, &reading->tags_plain);
+	}
+
+	if (!retval) {
+		TagHashSet::const_iterator ster;
+		for (ster = theset->single_tags.begin() ; ster != theset->single_tags.end() ; ster++) {
+			bool match = doesTagMatchReading(reading, (*ster));
+			if (match) {
+				if (unif_mode) {
+					if (unif_tags.find(theset->hash) != unif_tags.end() && unif_tags[theset->hash] != (*ster)->hash) {
+						continue;
+					}
+					unif_tags[theset->hash] = (*ster)->hash;
 				}
-				unif_tags[theset->hash] = (*ster)->hash;
+				retval = true;
+				break;
 			}
-			retval = true;
-			break;
 		}
 	}
 
