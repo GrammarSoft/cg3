@@ -8,6 +8,17 @@
     Things that are planned but not yet implemented or not yet fully functional.
   </para>
 
+  <section id="draft-unification-mapping">
+    <title>Unifying Mapping Tags</title>
+    <screen>
+      LIST CASE = A B C ;
+      MAP $$CASE (target) IF (1 $$CASE) ;
+    </screen>
+    <para>
+      Allow unification of very simple sets to work as a tag to be mapped.
+    </para>
+  </section>
+
   <section id="draft-match">
     <title>MATCH</title>
     <indexterm>
