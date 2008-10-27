@@ -151,6 +151,7 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 			fread(&u32tmp, sizeof(uint32_t), 1, input);
 			u32tmp = (uint32_t)ntohl(u32tmp);
 			curcomptag->tags.insert(grammar->single_tags_list.at(u32tmp));
+			curcomptag->tags_hash.insert(grammar->single_tags_list.at(u32tmp)->hash);
 			curcomptag->tags_set.insert(grammar->single_tags_list.at(u32tmp));
 		}
 		grammar->tags[curcomptag->hash] = curcomptag;
@@ -214,6 +215,7 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 				fread(&u32tmp, sizeof(uint32_t), 1, input);
 				u32tmp = (uint32_t)ntohl(u32tmp);
 				s->single_tags.insert(grammar->single_tags_list.at(u32tmp));
+				s->single_tags_hash.insert(grammar->single_tags_list.at(u32tmp)->hash);
 				s->tags_set.insert(grammar->single_tags_list.at(u32tmp)->hash);
 			}
 			fread(&u32tmp, sizeof(uint32_t), 1, input);

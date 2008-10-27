@@ -33,6 +33,7 @@ namespace CG3 {
 		uint32_t number;
 		TagSet tags_set;
 		TagHashSet tags;
+		uint32HashSet tags_hash;
 		bool is_used;
 		bool is_special;
 
