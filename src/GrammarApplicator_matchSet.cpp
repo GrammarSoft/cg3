@@ -24,7 +24,7 @@
 using namespace CG3;
 using namespace CG3::Strings;
 
-bool uint32HashSet_Intersects(const uint32HashSet *a, const uint32HashSet *b) {
+inline bool uint32HashSet_Intersects(const uint32HashSet *a, const uint32HashSet *b) {
 	const uint32HashSet *outer, *inner;
 	if (a->size() > b->size()) {
 		inner = a;
@@ -36,6 +36,15 @@ bool uint32HashSet_Intersects(const uint32HashSet *a, const uint32HashSet *b) {
 	}
 	const_foreach(uint32HashSet, (*outer), oter, oter_end) {
 		if (inner->find(*oter) != inner->end()) {
+			return true;
+		}
+	}
+	return false;
+}
+
+inline bool uint32HashSet_SubsetOf(const uint32HashSet *a, const uint32HashSet *b) {
+	const_foreach(uint32HashSet, (*a), oter, oter_end) {
+		if (b->find(*oter) == b->end()) {
 			return true;
 		}
 	}
@@ -325,8 +334,7 @@ bool GrammarApplicator::doesSetMatchReading_tags(const Reading *reading, const S
 	if (!(theset->is_special|unif_mode)) {
 		retval = uint32HashSet_Intersects(&theset->single_tags_hash, &reading->tags_plain);
 	}
-
-	if (!retval) {
+	else {
 		TagHashSet::const_iterator ster;
 		for (ster = theset->single_tags.begin() ; ster != theset->single_tags.end() ; ster++) {
 			bool match = doesTagMatchReading(reading, (*ster));
@@ -343,18 +351,23 @@ bool GrammarApplicator::doesSetMatchReading_tags(const Reading *reading, const S
 		}
 	}
 
-	if (!retval) {
+	if (!retval && !theset->tags.empty()) {
 		CompositeTagHashSet::const_iterator ster;
 		for (ster = theset->tags.begin() ; ster != theset->tags.end() ; ster++) {
 			bool match = true;
 			const CompositeTag *ctag = *ster;
 
-			TagHashSet::const_iterator cter;
-			for (cter = ctag->tags.begin() ; cter != ctag->tags.end() ; cter++) {
-				bool inner = doesTagMatchReading(reading, (*cter));
-				if (!inner) {
-					match = false;
-					break;
+			if (!(ctag->is_special|unif_mode)) {
+				match = !uint32HashSet_SubsetOf(&ctag->tags_hash, &reading->tags_plain);
+			}
+			else {
+				TagHashSet::const_iterator cter;
+				for (cter = ctag->tags.begin() ; cter != ctag->tags.end() ; cter++) {
+					bool inner = doesTagMatchReading(reading, (*cter));
+					if (!inner) {
+						match = false;
+						break;
+					}
 				}
 			}
 			if (match) {
