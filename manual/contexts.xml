@@ -104,6 +104,45 @@
     </section>
   </section>
 
+  <section id="test-mark">
+    <title>X Marks the Spot</title>
+    <indexterm>
+      <primary>X</primary>
+    </indexterm>
+    <indexterm>
+      <primary>x</primary>
+    </indexterm>
+    <para>
+	  By default, linked tests continue from the immediately preceding test.
+      These options affect behavior.
+    </para>
+
+    <screen>
+      # Look right for (third), then from there look right for (seventh),
+      # then jump back to (target) and from there look right for (fifth)
+      SELECT (target) (1* (third) LINK 1* (seventh) LINK 1*x (fifth)) ;
+
+      # Look right for (fourth), then from there look right for (seventh) and set that as the mark,
+      # then from there look left for (fifth), then jump back to (seventh) and from there look left for (sixth)
+      SELECT (target) (1* (fourth) LINK 1*X (seventh) LINK -1* (fifth) LINK -1*x (sixth)) ;
+    </screen>
+
+    <section id="test-mark-set">
+      <title>Set Mark</title>
+      <para>
+        'X' sets the mark to the currently active cohort of the test's target.
+        If no test sets X then the mark defaults to the cohort from the rule's target.
+      </para>
+    </section>
+
+    <section id="test-mark-jump">
+      <title>Jump to Mark</title>
+      <para>
+        'x' jumps back to the previously set mark (or the rule's target if no mark is set), then proceeds from there.
+      </para>
+    </section>
+  </section>
+
   <section id="test-origin">
     <title>Scanning Past Point of Origin</title>
     <indexterm>
