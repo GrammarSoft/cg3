@@ -166,6 +166,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, uint32Set *r
 					if (!rule->tests.empty() && !did_test) {
 						foreach (std::list<ContextualTest*>, rule->tests, iter, iter_end) {
 							ContextualTest *test = *iter;
+							mark = cohort;
 							if (!(test->pos & POS_PASS_ORIGIN) && (no_pass_origin || (test->pos & POS_NO_PASS_ORIGIN))) {
 								test_good = (runContextualTest(current, c, test, 0, cohort) != 0);
 							}
