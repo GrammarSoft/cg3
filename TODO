@@ -11,3 +11,4 @@ ToDo: Add --only-mappings-corrections --only-mappings --only-corrections
 ToDo: Section groups to allow multiple before/after-sections
 ToDo: "X Marks the Spot": Using x without setting a new X is equivalent to writing multiple () tests.
 ToDo: Optimize-unsafe by eliminating tests which do no good (either always true or never the only one to block).
+ToDo: Investigate effects of SetParent/Child and Xx.
