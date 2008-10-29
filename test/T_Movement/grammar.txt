@@ -1,0 +1,24 @@
+DELIMITERS = "<$.>" ;
+
+BEFORE-SECTIONS
+
+# Move from right to left
+MOVE (third) BEFORE (0* (tenth)) ;
+
+# Move from right to left
+MOVE (ninth) BEFORE (0* (second)) ;
+
+# Move from right to left
+MOVE (second) BEFORE (0* (fourth)) ;
+END
+# Move to absolute position; here the start of the window
+MOVE (third) AFTER (@0 (*)) ;
+
+# Move from left to right; here the end of the window
+MOVE (second) AFTER (*1 (<<<)) ;
+
+# Move from right to left
+MOVE (seventh) AFTER (-1* (first)) ;
+
+# Switch
+SWITCH (fourth) WITH (*1 (eighth)) ;

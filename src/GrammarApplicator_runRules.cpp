@@ -70,7 +70,6 @@ void GrammarApplicator::indexSingleWindow(SingleWindow *current) {
 }
 
 uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, uint32Set *rules) {
-
 	Recycler *r = Recycler::instance();
 	uint32_t retval = RV_NOTHING;
 	bool section_did_good = false;
@@ -402,11 +401,13 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, uint32Set *r
 						did_append = rule->line;
 					}
 					else if (type == K_SETPARENT || type == K_SETCHILD) {
+						// ToDo: ** tests will not correctly work for SETPARENT/CHILD/RELATION
 						Cohort *attach = 0;
 						if (runContextualTest(current, c, rule->dep_target, &attach) && attach) {
 							bool good = true;
 							if (!rule->dep_tests.empty()) {
 								foreach (std::list<ContextualTest*>, rule->dep_tests, iter, iter_end) {
+									mark = attach;
 									ContextualTest *test = *iter;
 									test_good = (runContextualTest(attach->parent, attach->local_number, test) != 0);
 									if (!test_good) {
@@ -430,12 +431,68 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, uint32Set *r
 						}
 						break;
 					}
+					else if (type == K_MOVE_AFTER || type == K_MOVE_BEFORE || type == K_SWITCH) {
+						// ToDo: ** tests will not correctly work for MOVE/SWITCH; cannot move cohorts between windows
+						Cohort *attach = 0;
+						if (runContextualTest(current, c, rule->dep_target, &attach) && attach && cohort->parent == attach->parent) {
+							bool good = true;
+							if (!rule->dep_tests.empty()) {
+								foreach (std::list<ContextualTest*>, rule->dep_tests, iter, iter_end) {
+									mark = attach;
+									ContextualTest *test = *iter;
+									test_good = (runContextualTest(attach->parent, attach->local_number, test) != 0);
+									if (!test_good) {
+										good = test_good;
+										if (!statistics) {
+											break;
+										}
+									}
+								}
+							}
+							uint32_t a = cohort->local_number;
+							uint32_t b = attach->local_number;
+							uint32_t max = current->cohorts.size()-1;
+							if (type == K_MOVE_BEFORE && b == 0) {
+								good = false;
+							}
+							else if (type == K_MOVE_BEFORE) {
+								b--;
+							}
+							if (good && a != b) {
+								if (type == K_SWITCH && a != 0 && b != 0) {
+									current->cohorts[a] = attach;
+									current->cohorts[b] = cohort;
+								}
+								else {
+									if (a != max) {
+										for (uint32_t i = a ; i < max ; i++) {
+											current->cohorts[i] = current->cohorts[i+1];
+										}
+									}
+									current->cohorts[max] = 0;
+									if (b != max) {
+										for (uint32_t i = max ; i > b ; i--) {
+											current->cohorts[i] = current->cohorts[i-1];
+										}
+									}
+									current->cohorts[b] = 0;
+									current->cohorts[b] = cohort;
+								}
+								for (uint32_t i = 0 ; i <= max ; i++) {
+									current->cohorts[i]->local_number = i;
+								}
+								a=a;
+							}
+						}
+						break;
+					}
 					else if (type == K_SETRELATION || type == K_REMRELATION) {
 						Cohort *attach = 0;
 						if (runContextualTest(current, c, rule->dep_target, &attach) && attach) {
 							bool good = true;
 							if (!rule->dep_tests.empty()) {
 								foreach (std::list<ContextualTest*>, rule->dep_tests, iter, iter_end) {
+									mark = attach;
 									ContextualTest *test = *iter;
 									test_good = (runContextualTest(attach->parent, attach->local_number, test) != 0);
 									if (!test_good) {
@@ -472,6 +529,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, uint32Set *r
 							bool good = true;
 							if (!rule->dep_tests.empty()) {
 								foreach (std::list<ContextualTest*>, rule->dep_tests, iter, iter_end) {
+									mark = attach;
 									ContextualTest *test = *iter;
 									test_good = (runContextualTest(attach->parent, attach->local_number, test) != 0);
 									if (!test_good) {

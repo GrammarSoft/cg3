@@ -44,7 +44,6 @@ namespace CG3 {
 		uint32_t dep_self;
 		uint32_t dep_parent;
 		uint32HashSet dep_children;
-		uint32HashSet dep_siblings;
 
 		uint32HashSet possible_sets;
 
@@ -58,8 +57,6 @@ namespace CG3 {
 		~Cohort();
 		void clear(SingleWindow *p);
 
-		void addSibling(uint32_t sibling);
-		void remSibling(uint32_t sibling);
 		void addChild(uint32_t child);
 		void remChild(uint32_t child);
 		void appendReading(Reading *read);
