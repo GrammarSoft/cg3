@@ -73,7 +73,6 @@ void Cohort::clear(SingleWindow *p) {
 	dep_parent = 0;
 	possible_sets.clear();
 	dep_children.clear();
-	dep_siblings.clear();
 	enclosed.clear();
 }
 
@@ -95,14 +94,6 @@ Cohort::~Cohort() {
 	if (text_post) {
 		delete[] text_post;
 	}
-}
-
-void Cohort::addSibling(uint32_t sibling) {
-	dep_siblings.insert(sibling);
-}
-
-void Cohort::remSibling(uint32_t sibling) {
-	dep_siblings.erase(sibling);
 }
 
 void Cohort::addChild(uint32_t child) {

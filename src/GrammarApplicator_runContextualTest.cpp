@@ -347,7 +347,7 @@ Cohort *GrammarApplicator::runDependencyTest(SingleWindow *sWindow, const Cohort
 			deps = &current->dep_children;
 		}
 		else {
-			deps = &current->dep_siblings;
+			deps = &(current->parent->cohorts[current->dep_parent]->dep_children);
 		}
 
 		const_foreach(uint32HashSet, *deps, dter, dter_end) {

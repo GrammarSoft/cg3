@@ -69,6 +69,10 @@ namespace CG3 {
 			K_SETRELATIONS,
 			K_REMRELATIONS,
 			K_TEMPLATE,
+			K_MOVE,
+			K_MOVE_AFTER,
+			K_MOVE_BEFORE,
+			K_SWITCH,
 			KEYWORD_COUNT
 		};
 
@@ -110,6 +114,9 @@ namespace CG3 {
 			S_RXTEXT_ANY,
 			S_RXBASE_ANY,
 			S_RXWORD_ANY,
+			S_AFTER,
+			S_BEFORE,
+			S_WITH,
 			STRINGS_COUNT
 		};
 

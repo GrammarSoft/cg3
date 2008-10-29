@@ -590,14 +590,39 @@ int TextualParser::parseRule(KEYWORDS key, UChar **p) {
 	}
 
 	if (key == K_SETPARENT || key == K_SETCHILD || key == K_SETRELATION || key == K_REMRELATION
-		|| key == K_SETRELATIONS || key == K_REMRELATIONS) {
+		|| key == K_SETRELATIONS || key == K_REMRELATIONS || key == K_MOVE || key == K_SWITCH) {
 		result->lines += SKIPWS(p);
-		if (u_strncasecmp(*p, stringbits[S_TO], stringbit_lengths[S_TO], U_FOLD_CASE_DEFAULT) == 0) {
-			(*p) += stringbit_lengths[S_TO];
+		if (key == K_MOVE) {
+			if (u_strncasecmp(*p, stringbits[S_AFTER], stringbit_lengths[S_AFTER], U_FOLD_CASE_DEFAULT) == 0) {
+				(*p) += stringbit_lengths[S_AFTER];
+				rule->type = K_MOVE_AFTER;
+			}
+			else if (u_strncasecmp(*p, stringbits[S_BEFORE], stringbit_lengths[S_BEFORE], U_FOLD_CASE_DEFAULT) == 0) {
+				(*p) += stringbit_lengths[S_BEFORE];
+				rule->type = K_MOVE_BEFORE;
+			}
+			else {
+				u_fprintf(ux_stderr, "Error: Missing movement keyword AFTER or BEFORE on line %u!\n", result->lines);
+				CG3Quit(1);
+			}
+		}
+		else if (key == K_SWITCH) {
+			if (u_strncasecmp(*p, stringbits[S_WITH], stringbit_lengths[S_WITH], U_FOLD_CASE_DEFAULT) == 0) {
+				(*p) += stringbit_lengths[S_WITH];
+			}
+			else {
+				u_fprintf(ux_stderr, "Error: Missing movement keyword WITH on line %u!\n", result->lines);
+				CG3Quit(1);
+			}
 		}
 		else {
-			u_fprintf(ux_stderr, "Error: Missing dependency keyword TO on line %u!\n", result->lines);
-			CG3Quit(1);
+			if (u_strncasecmp(*p, stringbits[S_TO], stringbit_lengths[S_TO], U_FOLD_CASE_DEFAULT) == 0) {
+				(*p) += stringbit_lengths[S_TO];
+			}
+			else {
+				u_fprintf(ux_stderr, "Error: Missing dependency keyword TO on line %u!\n", result->lines);
+				CG3Quit(1);
+			}
 		}
 		result->lines += SKIPWS(p);
 		while (**p && **p == '(') {
@@ -1239,6 +1264,17 @@ int TextualParser::parseFromUChar(UChar *input) {
 		else if (ISCHR(*p,'J','j') && ISCHR(*(p+3),'P','p') && ISCHR(*(p+1),'U','u') && ISCHR(*(p+2),'M','m')
 			&& !ISSTRING(p, 4)) {
 			parseRule(K_JUMP, &p);
+		}
+		// MOVE
+		else if (ISCHR(*p,'M','m') && ISCHR(*(p+3),'E','e') && ISCHR(*(p+1),'O','o') && ISCHR(*(p+2),'V','v')
+			&& !ISSTRING(p, 4)) {
+			parseRule(K_MOVE, &p);
+		}
+		// SWITCH
+		else if (ISCHR(*p,'S','s') && ISCHR(*(p+5),'H','h') && ISCHR(*(p+1),'W','w') && ISCHR(*(p+2),'I','i')
+			&& ISCHR(*(p+3),'T','t') && ISCHR(*(p+4),'C','c')
+			&& !ISSTRING(p, 5)) {
+			parseRule(K_SWITCH, &p);
 		}
 		// EXECUTE
 		else if (ISCHR(*p,'E','e') && ISCHR(*(p+6),'E','e') && ISCHR(*(p+1),'X','x') && ISCHR(*(p+2),'E','e')

@@ -82,6 +82,10 @@ namespace CG3 {
 			init_keyword_single("SETRELATIONS",      K_SETRELATIONS);
 			init_keyword_single("REMRELATIONS",      K_REMRELATIONS);
 			init_keyword_single("TEMPLATE",          K_TEMPLATE);
+			init_keyword_single("MOVE",              K_MOVE);
+			init_keyword_single("MOVE-AFTER",        K_MOVE_AFTER);
+			init_keyword_single("MOVE-BEFORE",       K_MOVE_BEFORE);
+			init_keyword_single("SWITCH",            K_SWITCH);
 
 			for (unsigned int i=0;i<KEYWORD_COUNT;i++) {
 				if (!keywords[i]) {
@@ -153,6 +157,9 @@ namespace CG3 {
 			init_string_single("<.*>",         S_RXTEXT_ANY);
 			init_string_single("\".*\"",       S_RXBASE_ANY);
 			init_string_single("\"<.*>\"",     S_RXWORD_ANY);
+			init_string_single("AFTER",        S_AFTER);
+			init_string_single("BEFORE",       S_BEFORE);
+			init_string_single("WITH",         S_WITH);
 
 			for (unsigned int i=0;i<STRINGS_COUNT;i++) {
 				if (!stringbits[i]) {
