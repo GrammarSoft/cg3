@@ -119,6 +119,7 @@ namespace CG3 {
 
 		void resetStatistics();
 		void reindex();
+		void renameAllRules();
 
 		void indexSetToRule(uint32_t, Set*);
 		void indexTagToRule(uint32_t, uint32_t);

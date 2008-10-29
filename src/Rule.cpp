@@ -57,6 +57,9 @@ Rule::~Rule() {
 }
 
 void Rule::setName(const UChar *to) {
+	if (name) {
+		delete[] name;
+	}
 	if (to) {
 		name = new UChar[u_strlen(to)+1];
 		u_strcpy(name, to);
