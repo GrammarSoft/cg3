@@ -310,6 +310,10 @@ int main(int argc, char* argv[]) {
 		CG3Quit(1);
 	}
 
+	if (options[STATISTICS].doesOccur) {
+		grammar->renameAllRules();
+	}
+
 	if (!options[GRAMMAR_ONLY].doesOccur) {
 		CG3::GrammarApplicator *applicator = new CG3::GrammarApplicator(ux_stdin, ux_stdout, ux_stderr);
 		applicator->setGrammar(grammar);
