@@ -335,6 +335,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, uint32Set *r
 						}
 					}
 					else if (rule->type == K_SUBSTITUTE) {
+						// ToDo: Check whether this substitution will do nothing at all to the end result
 						uint32_t tloc = 0;
 						size_t tagb = reading->tags_list.size();
 						const_foreach (uint32List, rule->sublist, tter, tter_end) {
@@ -347,6 +348,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, uint32Set *r
 								}
 							}
 							reading->tags_list.remove(*tter);
+							reading->tags.erase(*tter);
 							if (reading->baseform == *tter) {
 								reading->baseform = 0;
 							}
@@ -364,6 +366,9 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, uint32Set *r
 							const_foreach (TagList, rule->maplist, tter, tter_end) {
 								if ((*tter)->hash == grammar->tag_any) {
 									break;
+								}
+								if (reading->tags.find((*tter)->hash) != reading->tags.end()) {
+									continue;
 								}
 								if ((*tter)->type & T_MAPPING || (*tter)->tag[0] == grammar->mapping_prefix) {
 									mappings.push_back(*tter);
