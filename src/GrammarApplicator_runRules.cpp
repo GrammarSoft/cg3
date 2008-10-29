@@ -407,6 +407,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, uint32Set *r
 					}
 					else if (type == K_SETPARENT || type == K_SETCHILD) {
 						// ToDo: ** tests will not correctly work for SETPARENT/CHILD/RELATION
+						// ToDo: If the attachment would loop and we 
 						Cohort *attach = 0;
 						if (runContextualTest(current, c, rule->dep_target, &attach) && attach) {
 							bool good = true;
