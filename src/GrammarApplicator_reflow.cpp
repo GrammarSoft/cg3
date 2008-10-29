@@ -79,17 +79,6 @@ void GrammarApplicator::attachParentChild(Cohort *parent, Cohort *child) {
 
 	parent->addChild(child->global_number);
 
-	uint32HashSet::const_iterator tter;
-	for (tter = parent->dep_children.begin() ; tter != parent->dep_children.end() ; tter++) {
-		if (gWindow->cohort_map.find(*tter) != gWindow->cohort_map.end()) {
-			uint32HashSet::const_iterator ster;
-			for (ster = parent->dep_children.begin() ; ster != parent->dep_children.end() ; ster++) {
-					gWindow->cohort_map.find(*tter)->second->addSibling(*ster);
-			}
-			gWindow->cohort_map.find(*tter)->second->remSibling(*tter);
-		}
-	}
-
 	parent->dep_done = true;
 	child->dep_done = true;
 }
@@ -147,20 +136,6 @@ void GrammarApplicator::reflowDependencyWindow() {
 					}
 					gWindow->cohort_map.find(cohort->dep_parent)->second->addChild(cohort->dep_self);
 					cohort->dep_done = true;
-				}
-			}
-		}
-
-		for (dIter = gWindow->dep_window.begin() ; dIter != gWindow->dep_window.end() ; dIter++) {
-			Cohort *cohort = dIter->second;
-
-			const_foreach(uint32HashSet, cohort->dep_children, tter, tter_end) {
-				if (gWindow->cohort_map.find(*tter) != gWindow->cohort_map.end()) {
-					Cohort *c = gWindow->cohort_map.find(*tter)->second;
-					const_foreach(uint32HashSet, cohort->dep_children, ster, ster_end) {
-						c->addSibling(*ster);
-					}
-					c->remSibling(*tter);
 				}
 			}
 		}
