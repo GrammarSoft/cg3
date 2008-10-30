@@ -14,3 +14,7 @@ ToDo: Optimize-unsafe by eliminating tests which do no good (either always true 
 ToDo: Investigate effects of SetParent/Child and Xx.
 ToDo: Make SOFT-DELIMITERS look back.
 ToDo: Select highest/lowesr numerical value of a reading
+ToDo: Rule options: O:NEAREST ALLOWLOOP DELAYED IMMEDIATE LOOKDELETED LOOKDELAYED
+ToDo: Rule option blocks: OPTIONS +NEAREST -DELAYED
+ToDo: Transaction blocks: TRANSACTION, COMMIT, ROLLBACK
+ToDo: Position D to allow looking at deleted readings; Position d to look at delayed readings
