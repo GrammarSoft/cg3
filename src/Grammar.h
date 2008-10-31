@@ -43,7 +43,7 @@ namespace CG3 {
 		UChar mapping_prefix;
 		UChar *name;
 		uint32_t lines, curline;
-		mutable clock_t total_time;
+		mutable double total_time;
 
 		std::vector<Tag*> single_tags_list;
 		stdext::hash_map<uint32_t, Tag*> single_tags;

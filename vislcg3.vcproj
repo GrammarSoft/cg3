@@ -313,6 +313,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\cycle.h"
+				>
+			</File>
+			<File
 				RelativePath=".\src\Grammar.h"
 				>
 			</File>

@@ -84,7 +84,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, uint32Set *r
 		uint32_t j = (*iter_rules);
 		const Rule *rule = grammar->rule_by_line.find(j)->second;
 
-		clock_t tstamp = 0;
+		ticks tstamp;
 		KEYWORDS type = rule->type;
 
 		if (!apply_mappings && (rule->type == K_MAP || rule->type == K_ADD || rule->type == K_REPLACE)) {
@@ -94,7 +94,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, uint32Set *r
 			continue;
 		}
 		if (statistics) {
-			tstamp = clock();
+			tstamp = getticks();
 		}
 
 		const Set *set = grammar->sets_by_contents.find(rule->target)->second;
@@ -606,7 +606,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, uint32Set *r
 		}
 
 		if (statistics) {
-			rule->total_time += (clock() - tstamp);
+			rule->total_time += elapsed(getticks(), tstamp);
 		}
 
 		if (delimited) {
