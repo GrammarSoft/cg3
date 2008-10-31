@@ -53,6 +53,7 @@
 #include <unicode/ustring.h>
 #include <unicode/uregex.h>
 
+#include "cycle.h"
 #include "macros.h"
 #include "inlines.h"
 #include "uextras.h"

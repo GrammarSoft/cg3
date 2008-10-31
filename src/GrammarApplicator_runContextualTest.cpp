@@ -120,11 +120,11 @@ Cohort *GrammarApplicator::runContextualTest(SingleWindow *sWindow, size_t posit
 	}
 
 	bool retval = true;
-	clock_t tstamp = 0;
+	ticks tstamp;
 	int32_t pos = (int32_t)(position + test->offset);
 
 	if (statistics) {
-		tstamp = clock();
+		tstamp = getticks();
 	}
 
 	// ToDo: (NOT *) and (*C) tests can be cached
@@ -282,7 +282,7 @@ Cohort *GrammarApplicator::runContextualTest(SingleWindow *sWindow, size_t posit
 	}
 
 	if (statistics) {
-		test->total_time += (clock() - tstamp);
+		test->total_time += elapsed(getticks(), tstamp);
 	}
 
 	if (!retval) {

@@ -402,9 +402,9 @@ bool GrammarApplicator::doesSetMatchReading(Reading *reading, const uint32_t set
 
 	bool retval = false;
 
-	clock_t tstamp = 0;
+	ticks tstamp;
 	if (statistics) {
-		tstamp = clock();
+		tstamp = getticks();
 	}
 
 	Setuint32HashMap::const_iterator iter = grammar->sets_by_contents.find(set);
@@ -477,7 +477,7 @@ bool GrammarApplicator::doesSetMatchReading(Reading *reading, const uint32_t set
 		else {
 			theset->num_fail++;
 		}
-		theset->total_time += clock() - tstamp;
+		theset->total_time += elapsed(getticks(), tstamp);
 	}
 
 	if (retval) {

@@ -79,7 +79,7 @@ ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output)
 	Reading *lReading = 0; 		// Left hand reading
 
 	cWindow->window_span = num_windows; 
-//	grammar->total_time = clock();
+//	grammar->total_time = getticks();
 
 	while((inchar = u_fgetc(input)) != 0) { 
 		if(u_feof(input)) {
