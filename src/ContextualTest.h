@@ -66,7 +66,7 @@ namespace CG3 {
 		uint32_t cbarrier;
 
 		mutable uint32_t num_fail, num_match;
-		mutable clock_t total_time;
+		mutable double total_time;
 
 		ContextualTest *tmpl;
 		std::list<ContextualTest*> ors;

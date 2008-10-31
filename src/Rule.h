@@ -49,7 +49,7 @@ namespace CG3 {
 		
 		mutable std::list<ContextualTest*> tests;
 		mutable uint32_t num_fail, num_match;
-		mutable clock_t total_time;
+		mutable double total_time;
 		mutable ContextualTest *dep_target;
 		mutable std::list<ContextualTest*> dep_tests;
 

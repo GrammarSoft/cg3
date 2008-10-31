@@ -81,7 +81,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 	Reading *lReading = 0;
 
 	cWindow->window_span = num_windows;
-	grammar->total_time = clock();
+	ticks timer = getticks();
 
 	while (!u_feof(input)) {
 		lines++;
@@ -422,7 +422,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 	u_fflush(output);
 
 CGCMD_EXIT:
-	grammar->total_time = clock() - grammar->total_time;
+	grammar->total_time = elapsed(getticks(), timer);
 	if (verbosity_level > 0) {
 		u_fprintf(ux_stderr, "Did %u lines, %u windows, %u cohorts, %u readings.\n", numLines, numWindows, numCohorts, numReadings);
 		u_fflush(ux_stderr);

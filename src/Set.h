@@ -37,7 +37,7 @@ namespace CG3 {
 		bool is_child_unified;
 		bool is_used;
 		mutable uint32_t num_fail, num_match;
-		mutable clock_t total_time;
+		mutable double total_time;
 		UChar *name;
 		uint32_t line;
 		uint32_t hash;

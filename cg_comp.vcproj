@@ -284,6 +284,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\cycle.h"
+				>
+			</File>
+			<File
 				RelativePath=".\win32\getopt.h"
 				>
 			</File>
