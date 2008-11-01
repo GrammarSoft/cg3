@@ -282,7 +282,8 @@ Cohort *GrammarApplicator::runContextualTest(SingleWindow *sWindow, size_t posit
 	}
 
 	if (statistics) {
-		test->total_time += elapsed(getticks(), tstamp);
+		ticks tmp = getticks();
+		test->total_time += elapsed(tmp, tstamp);
 	}
 
 	if (!retval) {
