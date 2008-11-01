@@ -137,15 +137,17 @@ void Grammar::addSet(Set *to) {
 	else if (!soft_delimiters && u_strcmp(to->name, stringbits[S_SOFTDELIMITSET]) == 0) {
 		soft_delimiters = to;
 	}
-	uint32_t nhash = hash_sdbm_uchar(to->name, 0);
 	uint32_t chash = to->rehash();
-	if (sets_by_name.find(nhash) == sets_by_name.end()) {
-		sets_by_name[nhash] = chash;
-	}
-	else if (chash != sets_by_contents.find(sets_by_name.find(nhash)->second)->second->hash) {
-		Set *a = sets_by_contents.find(sets_by_name.find(nhash)->second)->second;
-		u_fprintf(ux_stderr, "Error: Set %S already defined at line %u. Redefinition attempt at line %u!\n", a->name, a->line, to->line);
-		CG3Quit(1);
+	if (to->name[0] != '_' || to->name[1] != 'G' || to->name[2] != '_') {
+		uint32_t nhash = hash_sdbm_uchar(to->name, 0);
+		if (sets_by_name.find(nhash) == sets_by_name.end()) {
+			sets_by_name[nhash] = chash;
+		}
+		else if (chash != sets_by_contents.find(sets_by_name.find(nhash)->second)->second->hash) {
+			Set *a = sets_by_contents.find(sets_by_name.find(nhash)->second)->second;
+			u_fprintf(ux_stderr, "Error: Set %S already defined at line %u. Redefinition as set %S attempted at line %u!\n", a->name, a->line, to->name, to->line);
+			CG3Quit(1);
+		}
 	}
 	if (sets_by_contents.find(chash) == sets_by_contents.end()) {
 		sets_by_contents[chash] = to;
