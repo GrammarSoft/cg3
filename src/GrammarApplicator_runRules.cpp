@@ -174,9 +174,13 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, uint32Set *r
 							}
 							if (!test_good) {
 								good = test_good;
+								/*
 								if (!statistics) {
 									break;
 								}
+								/*/
+								break;
+								//*/
 							}
 						}
 					}
@@ -418,9 +422,13 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, uint32Set *r
 									test_good = (runContextualTest(attach->parent, attach->local_number, test) != 0);
 									if (!test_good) {
 										good = test_good;
+										/*
 										if (!statistics) {
 											break;
 										}
+										/*/
+										break;
+										//*/
 									}
 								}
 							}
@@ -449,9 +457,13 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, uint32Set *r
 									test_good = (runContextualTest(attach->parent, attach->local_number, test) != 0);
 									if (!test_good) {
 										good = test_good;
+										/*
 										if (!statistics) {
 											break;
 										}
+										/*/
+										break;
+										//*/
 									}
 								}
 							}
@@ -503,9 +515,13 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, uint32Set *r
 									test_good = (runContextualTest(attach->parent, attach->local_number, test) != 0);
 									if (!test_good) {
 										good = test_good;
+										/*
 										if (!statistics) {
 											break;
 										}
+										/*/
+										break;
+										//*/
 									}
 								}
 							}
@@ -540,9 +556,13 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, uint32Set *r
 									test_good = (runContextualTest(attach->parent, attach->local_number, test) != 0);
 									if (!test_good) {
 										good = test_good;
+										/*
 										if (!statistics) {
 											break;
 										}
+										/*/
+										break;
+										//*/
 									}
 								}
 							}
