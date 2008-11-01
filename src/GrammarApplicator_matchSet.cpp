@@ -477,7 +477,8 @@ bool GrammarApplicator::doesSetMatchReading(Reading *reading, const uint32_t set
 		else {
 			theset->num_fail++;
 		}
-		theset->total_time += elapsed(getticks(), tstamp);
+		ticks tmp = getticks();
+		theset->total_time += elapsed(tmp, tstamp);
 	}
 
 	if (retval) {

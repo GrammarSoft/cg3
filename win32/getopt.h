@@ -5,6 +5,9 @@
 	extern "C" {
 #endif
 
+#include <stdio.h>
+#include <string.h>
+
 int getopt(int argc, char** argv, char* opts);
 
 extern int opterr;

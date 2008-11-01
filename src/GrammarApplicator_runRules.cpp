@@ -104,6 +104,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, uint32Set *r
 		//for (size_t c=1 ; c < current->cohorts.size() ; c++) {
 		foreach(CohortSet, (*(current->rule_to_cohorts.find(rule)->second)), rocit, rocit_end) {
 			Cohort *cohort = *rocit;
+
 			uint32_t c = cohort->local_number;
 			if (cohort->is_enclosed || cohort->parent != current) {
 				continue;
@@ -174,13 +175,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, uint32Set *r
 							}
 							if (!test_good) {
 								good = test_good;
-								/*
-								if (!statistics) {
-									break;
-								}
-								/*/
 								break;
-								//*/
 							}
 						}
 					}
@@ -422,13 +417,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, uint32Set *r
 									test_good = (runContextualTest(attach->parent, attach->local_number, test) != 0);
 									if (!test_good) {
 										good = test_good;
-										/*
-										if (!statistics) {
-											break;
-										}
-										/*/
 										break;
-										//*/
 									}
 								}
 							}
@@ -457,13 +446,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, uint32Set *r
 									test_good = (runContextualTest(attach->parent, attach->local_number, test) != 0);
 									if (!test_good) {
 										good = test_good;
-										/*
-										if (!statistics) {
-											break;
-										}
-										/*/
 										break;
-										//*/
 									}
 								}
 							}
@@ -515,13 +498,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, uint32Set *r
 									test_good = (runContextualTest(attach->parent, attach->local_number, test) != 0);
 									if (!test_good) {
 										good = test_good;
-										/*
-										if (!statistics) {
-											break;
-										}
-										/*/
 										break;
-										//*/
 									}
 								}
 							}
@@ -556,13 +533,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, uint32Set *r
 									test_good = (runContextualTest(attach->parent, attach->local_number, test) != 0);
 									if (!test_good) {
 										good = test_good;
-										/*
-										if (!statistics) {
-											break;
-										}
-										/*/
 										break;
-										//*/
 									}
 								}
 							}
@@ -626,7 +597,8 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, uint32Set *r
 		}
 
 		if (statistics) {
-			rule->total_time += elapsed(getticks(), tstamp);
+			ticks tmp = getticks();
+			rule->total_time += elapsed(tmp, tstamp);
 		}
 
 		if (delimited) {

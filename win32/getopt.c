@@ -14,19 +14,13 @@ in the public domain.
 
 /*LINTLIBRARY*/
 
-extern int strlen();
-extern int strcmp();
-extern char *strchr();
-extern int write();
-
-#define NULL	0
 #define EOF	(-1)
 #define ERR(s, c)	if(opterr){\
 	char errbuf[2];\
 	errbuf[0] = c; errbuf[1] = '\n';\
-	(void) write(2, argv[0], (unsigned)strlen(argv[0]));\
-	(void) write(2, s, (unsigned)strlen(s));\
-	(void) write(2, errbuf, 2);}
+	(void) fwrite(argv[0], (unsigned)strlen(argv[0]), 1, stderr);\
+	(void) fwrite(s, (unsigned)strlen(s), 1, stderr);\
+	(void) fwrite(errbuf, 2, 1, stderr);}
 
 
 int	opterr = 1;
@@ -45,12 +39,12 @@ getopt(int argc, char **argv, char *opts)
 		if(optind >= argc ||
 		   argv[optind][0] != '-' || argv[optind][1] == '\0')
 			return(EOF);
-		else if(strcmp(argv[optind], "--") == NULL) {
+		else if(strcmp(argv[optind], "--") == 0) {
 			optind++;
 			return(EOF);
 		}
 	optopt = c = argv[optind][sp];
-	if(c == ':' || (cp=strchr(opts, c)) == NULL) {
+	if(c == ':' || (cp=strchr(opts, c)) == 0) {
 		ERR(": illegal option -- ", (char)c);
 		if(argv[optind][++sp] == '\0') {
 			optind++;
