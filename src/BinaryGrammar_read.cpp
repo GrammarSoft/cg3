@@ -45,7 +45,7 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 		CG3Quit(1);
 	}
 
-#define B_TOO_OLD 4225
+#define B_TOO_OLD 4259
 	fread(&u32tmp, sizeof(uint32_t), 1, input);
 	u32tmp = (uint32_t)ntohl(u32tmp);
 	if (u32tmp < B_TOO_OLD) {
@@ -285,6 +285,8 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 		r->type = (KEYWORDS)ntohl(u32tmp);
 		fread(&u32tmp, sizeof(uint32_t), 1, input);
 		r->line = (uint32_t)ntohl(u32tmp);
+		fread(&u32tmp, sizeof(uint32_t), 1, input);
+		r->flags = (uint32_t)ntohl(u32tmp);
 		fread(&u32tmp, sizeof(uint32_t), 1, input);
 		u32tmp = (uint32_t)ntohl(u32tmp);
 		if (u32tmp) {

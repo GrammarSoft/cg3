@@ -87,6 +87,17 @@
       </para>
     </section>
 
+    <section id="gotcha-preferred-targets">
+      <title>PREFERRED-TARGETS</title>
+      <indexterm>
+        <primary>PREFERRED-TARGETS</primary>
+      </indexterm>
+      <para>
+        <link linkend="keyword-preferred-targets">PREFERRED-TARGETS</link> is currently ignored in CG-3.
+        See <link linkend="keyword-preferred-targets">PREFERRED-TARGETS</link> for details.
+      </para>
+    </section>
+
     <section id="gotcha-codepage">
       <title>Default Codepage / Encoding</title>
       <para>

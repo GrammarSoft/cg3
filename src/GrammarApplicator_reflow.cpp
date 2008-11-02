@@ -61,17 +61,19 @@ bool GrammarApplicator::wouldParentChildLoop(Cohort *parent, Cohort *child) {
 	return retval;
 }
 
-void GrammarApplicator::attachParentChild(Cohort *parent, Cohort *child) {
+bool GrammarApplicator::attachParentChild(Cohort *parent, Cohort *child, bool allowloop) {
 	parent->dep_self = parent->global_number;
 	child->dep_self = child->global_number;
 
-	if (dep_block_loops && wouldParentChildLoop(parent, child)) {
-		u_fprintf(
-			ux_stderr,
-			"Info: Dependency between %u and %u would cause a loop. Will not attach them.\n",
-			child->global_number, parent->global_number
-			);
-		return;
+	if (!allowloop && dep_block_loops && wouldParentChildLoop(parent, child)) {
+		if (verbosity_level > 0) {
+			u_fprintf(
+				ux_stderr,
+				"Info: Dependency between %u and %u would cause a loop. Will not attach them.\n",
+				child->global_number, parent->global_number
+				);
+		}
+		return false;
 	}
 
 	gWindow->cohort_map.find(child->dep_parent)->second->remChild(child->dep_self);
@@ -81,6 +83,7 @@ void GrammarApplicator::attachParentChild(Cohort *parent, Cohort *child) {
 
 	parent->dep_done = true;
 	child->dep_done = true;
+	return true;
 }
 
 void GrammarApplicator::reflowDependencyWindow() {
