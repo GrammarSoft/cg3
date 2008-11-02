@@ -81,7 +81,8 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 	Reading *lReading = 0;
 
 	cWindow->window_span = num_windows;
-	ticks timer = getticks();
+	gtimer = getticks();
+	ticks timer(gtimer);
 
 	while (!u_feof(input)) {
 		lines++;

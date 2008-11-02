@@ -13,7 +13,7 @@
 "<walked>"
 	"walk" <SV> <SVO> V PAST VFIN @FMV @#FS-N< #7->0 
 "<down>"
-	"down" <error> PRP @ADVL #8->2 
+	"down" <error> PRP @ADVL #8->11 
 "<the>"
 	"the" <Def> ART DET CENTRAL SG/PL @>N #9->10 
 "<street>"

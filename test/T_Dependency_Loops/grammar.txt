@@ -17,3 +17,5 @@ SETPARENT ("down") TO (-1* ("once")) ;
 SETPARENT ("once") TO (1* ("down")) ; # Immediate parent->child = child->parent block
 SETPARENT ("once") TO (1* ("the")) ; # Deeper loop detection, blocks.
 SETPARENT ("man") TO (-1* ("there")) ; # Finds an existing loop, but won't block.
+
+SETPARENT ("down") TO (*2 (*)) ;

@@ -90,7 +90,6 @@ namespace CG3 {
 		static const uint32_t RV_SOMETHING = 2;
 		static const uint32_t RV_DELIMITED = 4;
 
-		uint32_t skipped_rules;
 		uint32_t match_single, match_comp, match_sub;
 		uint32_t begintag, endtag;
 		uint32_t par_left_tag, par_right_tag;
@@ -143,6 +142,7 @@ namespace CG3 {
 		uint32_t dep_highest_seen;
 		Window *gWindow;
 		bool statistics;
+		ticks gtimer;
 
 #define __index_matches(a,b) ((a).find(b) != (a).end())
 		void reflowReading(Reading *reading);
@@ -152,7 +152,7 @@ namespace CG3 {
 		void mergeMappings(Cohort *cohort);
 		void reflowDependencyWindow();
 		bool wouldParentChildLoop(Cohort *parent, Cohort *child);
-		void attachParentChild(Cohort *parent, Cohort *child);
+		bool attachParentChild(Cohort *parent, Cohort *child, bool allowloop = false);
 	};
 }
 
