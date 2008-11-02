@@ -40,6 +40,7 @@ Rule::Rule() {
 	weight = 0.0;
 	quality = 0.0;
 	type = K_IGNORE;
+	flags = 0;
 }
 
 Rule::~Rule() {

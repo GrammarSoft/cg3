@@ -120,7 +120,7 @@ Cohort *GrammarApplicator::runContextualTest(SingleWindow *sWindow, size_t posit
 	}
 
 	bool retval = true;
-	ticks tstamp;
+	ticks tstamp(gtimer);
 	int32_t pos = (int32_t)(position + test->offset);
 
 	if (statistics) {

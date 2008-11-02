@@ -233,6 +233,8 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 		u32tmp = (uint32_t)htonl((uint32_t)r->line);
 		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
+		u32tmp = (uint32_t)htonl((uint32_t)r->flags);
+		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 		if (r->name) {
 			ucnv_reset(conv);
 			i32tmp = ucnv_fromUChars(conv, cbuffers[0], BUFFER_SIZE-1, r->name, u_strlen(r->name), &err);

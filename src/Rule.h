@@ -32,6 +32,17 @@ namespace CG3 {
 
 	class Grammar;
 
+	enum RULE_FLAGS {
+		RF_NEAREST      =  1U,
+		RF_ALLOWLOOP    =  2U,
+		RF_DELAYED      =  4U,
+		RF_IMMEDIATE    =  8U,
+		RF_LOOKDELETED  = 16U,
+		RF_LOOKDELAYED  = 32U,
+		RF_UNSAFE       = 64U,
+		RF_SAFE         = 128U
+	};
+
 	class Rule {
 	public:
 		UChar *name;
@@ -40,6 +51,7 @@ namespace CG3 {
 		uint32_t line;
 		uint32_t varname, varvalue;
 		uint32_t jumpstart, jumpend;
+		uint32_t flags;
 		int32_t section;
 		// ToDo: Add proper "quality" quantifier based on num_fail, num_match, total_time
 		double weight, quality;

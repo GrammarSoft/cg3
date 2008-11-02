@@ -84,7 +84,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, uint32Set *r
 		uint32_t j = (*iter_rules);
 		const Rule *rule = grammar->rule_by_line.find(j)->second;
 
-		ticks tstamp;
+		ticks tstamp(gtimer);
 		KEYWORDS type = rule->type;
 
 		if (!apply_mappings && (rule->type == K_MAP || rule->type == K_ADD || rule->type == K_REPLACE)) {
@@ -405,33 +405,59 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, uint32Set *r
 						did_append = rule->line;
 					}
 					else if (type == K_SETPARENT || type == K_SETCHILD) {
-						// ToDo: ** tests will not correctly work for SETPARENT/CHILD/RELATION
-						// ToDo: If the attachment would loop, try next match.
-						Cohort *attach = 0;
-						if (runContextualTest(current, c, rule->dep_target, &attach) && attach) {
-							bool good = true;
-							if (!rule->dep_tests.empty()) {
-								foreach (std::list<ContextualTest*>, rule->dep_tests, iter, iter_end) {
-									mark = attach;
-									ContextualTest *test = *iter;
-									test_good = (runContextualTest(attach->parent, attach->local_number, test) != 0);
-									if (!test_good) {
-										good = test_good;
-										break;
+						int32_t orgoffset = rule->dep_target->offset;
+
+						bool attached = false;
+						Cohort *target = cohort;
+						while (!attached) {
+							Cohort *attach = 0;
+							if (runContextualTest(target->parent, target->local_number, rule->dep_target, &attach) && attach) {
+								bool good = true;
+								if (!rule->dep_tests.empty()) {
+									foreach (std::list<ContextualTest*>, rule->dep_tests, iter, iter_end) {
+										mark = attach;
+										ContextualTest *test = *iter;
+										test_good = (runContextualTest(attach->parent, attach->local_number, test) != 0);
+										if (!test_good) {
+											good = test_good;
+											break;
+										}
+									}
+								}
+								if (good) {
+									if (type == K_SETPARENT) {
+										attached = attachParentChild(attach, cohort, (rule->flags & RF_ALLOWLOOP) != 0);
+									}
+									else {
+										attached = attachParentChild(cohort, attach, (rule->flags & RF_ALLOWLOOP) != 0);
+									}
+									if (attached) {
+										reading->hit_by.push_back(rule->line);
+										has_dep = true;
+									}
+								}
+								if (rule->flags & RF_NEAREST) {
+									break;
+								}
+								if (target == attach) {
+									// We've found the same cohort as we originated from...
+									// We assume running the test again would result in the same, so don't bother.
+									break;
+								}
+								if (!attached) {
+									// Did not successfully attach due to loop restrictions; look onwards from here
+									target = attach;
+									if (rule->dep_target->offset != 0) {
+										// Temporarily set offset to +/- 1 ... I'm sure there is a better way to reduce this, but eh.
+										rule->dep_target->offset = (int32_t)floor((double)rule->dep_target->offset / (double)abs(rule->dep_target->offset));
 									}
 								}
 							}
-							if (good) {
-								reading->hit_by.push_back(rule->line);
-								has_dep = true;
-								if (type == K_SETPARENT) {
-									attachParentChild(attach, cohort);
-								}
-								else {
-									attachParentChild(cohort, attach);
-								}
+							else {
+								break;
 							}
 						}
+						rule->dep_target->offset = orgoffset;
 						break;
 					}
 					else if (type == K_MOVE_AFTER || type == K_MOVE_BEFORE || type == K_SWITCH) {

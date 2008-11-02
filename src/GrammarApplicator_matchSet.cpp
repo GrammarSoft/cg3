@@ -402,7 +402,7 @@ bool GrammarApplicator::doesSetMatchReading(Reading *reading, const uint32_t set
 
 	bool retval = false;
 
-	ticks tstamp;
+	ticks tstamp(gtimer);
 	if (statistics) {
 		tstamp = getticks();
 	}
