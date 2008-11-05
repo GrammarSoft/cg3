@@ -1,12 +1,12 @@
 "<word>"
-	"word" alsowanted
-	"word" wanted
+	"word" alsowanted one two three
+	"word" wanted four five six
 	"word" notmeeither
 "<word>"
 	"word" alsowanted
 	"word" wanted notreally
 	"word" notmeeither
 "<word>"
-	"word" alsowanted
-	"word" wanted
+	"word" alsowanted one two three
+	"word" wanted four five six
 	"word" notmeeither

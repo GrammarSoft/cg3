@@ -81,8 +81,11 @@ bool GrammarApplicator::doesTagMatchReading(const Reading *reading, const Tag *t
 	bool match = true;
 
 	bool raw_in = (reading->tags_plain.find(tag->hash) != reading->tags_plain.end());
+	if (tag->type & T_FAILFAST) {
+		raw_in = (reading->tags_plain.find(tag->plain_hash) != reading->tags_plain.end());
+	}
 
-	if (!tag->is_special) {
+	if (!tag->is_special || tag->type == T_FAILFAST) {
 		match = raw_in;
 	}
 	else if (tag->type & T_NUMERICAL && !reading->tags_numerical.empty()) {
@@ -336,6 +339,12 @@ bool GrammarApplicator::doesSetMatchReading_tags(const Reading *reading, const S
 	}
 	else {
 		TagHashSet::const_iterator ster;
+		for (ster = theset->ff_tags.begin() ; ster != theset->ff_tags.end() ; ster++) {
+			bool match = doesTagMatchReading(reading, (*ster));
+			if (!match) {
+				return false;
+			}
+		}
 		for (ster = theset->single_tags.begin() ; ster != theset->single_tags.end() ; ster++) {
 			bool match = doesTagMatchReading(reading, (*ster));
 			if (match) {

@@ -45,7 +45,7 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 		CG3Quit(1);
 	}
 
-#define B_TOO_OLD 4259
+#define B_TOO_OLD 4264
 	fread(&u32tmp, sizeof(uint32_t), 1, input);
 	u32tmp = (uint32_t)ntohl(u32tmp);
 	if (u32tmp < B_TOO_OLD) {
@@ -79,6 +79,8 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 		t->number = (uint32_t)ntohl(u32tmp);
 		fread(&u32tmp, sizeof(uint32_t), 1, input);
 		t->hash = (uint32_t)ntohl(u32tmp);
+		fread(&u32tmp, sizeof(uint32_t), 1, input);
+		t->plain_hash = (uint32_t)ntohl(u32tmp);
 		fread(&u32tmp, sizeof(uint32_t), 1, input);
 		t->type = (uint32_t)ntohl(u32tmp);
 		fread(&u8tmp, sizeof(uint8_t), 1, input);
@@ -217,6 +219,15 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 				s->single_tags.insert(grammar->single_tags_list.at(u32tmp));
 				s->single_tags_hash.insert(grammar->single_tags_list.at(u32tmp)->hash);
 				s->tags_set.insert(grammar->single_tags_list.at(u32tmp)->hash);
+			}
+			fread(&u32tmp, sizeof(uint32_t), 1, input);
+			u32tmp = (uint32_t)ntohl(u32tmp);
+			uint32_t num_ff_tags = u32tmp;
+			for (uint32_t j=0 ; j<num_ff_tags ; j++) {
+				fread(&u32tmp, sizeof(uint32_t), 1, input);
+				u32tmp = (uint32_t)ntohl(u32tmp);
+				s->ff_tags.insert(grammar->single_tags_list.at(u32tmp));
+				s->ff_tags_hash.insert(grammar->single_tags_list.at(u32tmp)->hash);
 			}
 			fread(&u32tmp, sizeof(uint32_t), 1, input);
 			u32tmp = (uint32_t)ntohl(u32tmp);

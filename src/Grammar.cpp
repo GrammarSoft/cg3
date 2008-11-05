@@ -220,6 +220,10 @@ CompositeTag *Grammar::addCompositeTagToSet(Set *set, CompositeTag *tag) {
 			if (rtag->is_special) {
 				set->is_special = true;
 			}
+			if (rtag->type & T_FAILFAST) {
+				set->ff_tags.insert(rtag);
+				set->ff_tags_hash.insert(rtag->hash);
+			}
 			delete tag;
 			tag = 0;
 		} else {

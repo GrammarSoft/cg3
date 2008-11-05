@@ -72,6 +72,7 @@ namespace CG3 {
 		uint32_t dep_self, dep_parent;
 		UChar *tag;
 		uint32_t hash;
+		uint32_t plain_hash;
 		uint32_t number;
 
 		Tag();
