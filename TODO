@@ -18,3 +18,5 @@ ToDo: Rule options: O:NEAREST ALLOWLOOP DELAYED IMMEDIATE LOOKDELETED LOOKDELAYE
 ToDo: Rule option blocks: OPTIONS +NEAREST -DELAYED
 ToDo: Transaction blocks: TRANSACTION, COMMIT, ROLLBACK
 ToDo: Position D to allow looking at deleted readings; Position d to look at delayed readings
+ToDo: ^tag does not work
+ToDo: --prefix does not work
