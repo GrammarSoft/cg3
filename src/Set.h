@@ -47,6 +47,8 @@ namespace CG3 {
 		CompositeTagHashSet tags;
 		TagHashSet single_tags;
 		uint32HashSet single_tags_hash;
+		TagHashSet ff_tags;
+		uint32HashSet ff_tags_hash;
 
 		uint32Vector set_ops;
 		uint32Vector sets;

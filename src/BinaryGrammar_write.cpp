@@ -63,6 +63,8 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 		u32tmp = (uint32_t)htonl((uint32_t)t->hash);
 		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
+		u32tmp = (uint32_t)htonl((uint32_t)t->plain_hash);
+		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 		u32tmp = (uint32_t)htonl((uint32_t)t->type);
 		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 		u8tmp = (uint8_t)t->is_special;
@@ -165,6 +167,12 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 			fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 			TagHashSet::const_iterator tomp_iter;
 			for (tomp_iter = s->single_tags.begin() ; tomp_iter != s->single_tags.end() ; tomp_iter++) {
+				u32tmp = (uint32_t)htonl((*tomp_iter)->number);
+				fwrite(&u32tmp, sizeof(uint32_t), 1, output);
+			}
+			u32tmp = (uint32_t)htonl((uint32_t)s->ff_tags.size());
+			fwrite(&u32tmp, sizeof(uint32_t), 1, output);
+			for (tomp_iter = s->ff_tags.begin() ; tomp_iter != s->ff_tags.end() ; tomp_iter++) {
 				u32tmp = (uint32_t)htonl((*tomp_iter)->number);
 				fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 			}
