@@ -4,5 +4,8 @@ LIST ASet = wanted alsowanted ;
 LIST CSet = notreally ;
 SET ESet = ASet ^ CSet ;
 
+LIST FFSet = one two ^three ;
+
 SECTION
 SELECT ESet ;
+SELECT FFSet ;

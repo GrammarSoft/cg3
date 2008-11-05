@@ -36,6 +36,8 @@ Tag::Tag() {
 	dep_self = 0;
 	dep_parent = 0;
 	number = 0;
+	hash = 0;
+	plain_hash = 0;
 }
 
 Tag::~Tag() {
@@ -274,6 +276,7 @@ void Tag::parseNumeric(Tag *tag, const UChar *txt) {
 
 uint32_t Tag::rehash() {
 	hash = 0;
+	plain_hash = 0;
 
 	if (type & T_NEGATIVE) {
 		hash = hash_sdbm_char("!", hash);
@@ -289,7 +292,13 @@ uint32_t Tag::rehash() {
 		hash = hash_sdbm_char("VAR:", hash);
 	}
 
-	hash = hash_sdbm_uchar(tag, hash);
+	plain_hash = hash_sdbm_uchar(tag);
+	if (hash) {
+		hash = hash_sdbm_uint32_t(plain_hash, hash);
+	}
+	else {
+		hash = plain_hash;
+	}
 
 	if (type & T_CASE_INSENSITIVE) {
 		hash = hash_sdbm_char("i", hash);
