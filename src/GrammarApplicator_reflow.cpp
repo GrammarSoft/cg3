@@ -32,6 +32,8 @@ bool GrammarApplicator::wouldParentChildLoop(Cohort *parent, Cohort *child) {
 		retval = true;
 	} else if (parent->global_number == child->dep_parent) {
 		retval = false;
+	} else if (parent->global_number == parent->dep_parent) {
+		retval = false;
 	} else if (parent->dep_parent == child->global_number) {
 		retval = true;
 	} else {
@@ -77,12 +79,21 @@ bool GrammarApplicator::attachParentChild(Cohort *parent, Cohort *child, bool al
 	}
 
 	gWindow->cohort_map.find(child->dep_parent)->second->remChild(child->dep_self);
-	child->dep_parent = parent->global_number;
 
+	child->dep_parent = parent->global_number;
 	parent->addChild(child->global_number);
 
 	parent->dep_done = true;
 	child->dep_done = true;
+
+	if (!dep_has_spanned && child->parent != parent->parent) {
+		u_fprintf(
+			ux_stderr,
+			"Info: Dependency between %u and %u spans the window boundaries. Enumeration will be global from here on.\n",
+			child->global_number, parent->global_number
+			);
+		dep_has_spanned = true;
+	}
 	return true;
 }
 
@@ -192,7 +203,7 @@ void GrammarApplicator::addTagToReading(Reading *reading, uint32_t utag, bool re
 	if (!reading->wordform && tag->type & T_WORDFORM) {
 		reading->wordform = tag->hash;
 	}
-	if (grammar->has_dep && tag->type & T_DEPENDENCY && !reading->parent->dep_self && !reading->parent->dep_parent) {
+	if (grammar->has_dep && tag->type & T_DEPENDENCY) {
 		reading->parent->dep_self = tag->dep_self;
 		reading->parent->dep_parent = tag->dep_parent;
 		has_dep = true;

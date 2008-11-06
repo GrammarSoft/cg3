@@ -440,11 +440,11 @@
     </indexterm>
     <para>
       Attaches the matching reading to the contextually targetted cohort as the parent.
-      <emphasis>Yes, I do mean parent.</emphasis>
+      The last link of the contextual test is used as target.
     </para>
     <screen>
       SETCHILD targetset (-1* ("someword"))
-      &nbsp; TO (1* (@candidate)) (2 SomeSet) ;
+      &nbsp; TO (1* (step) LINK 1* (candidate)) (2 SomeSet) ;
     </screen>
   </section>
 
@@ -455,11 +455,11 @@
     </indexterm>
     <para>
       Attaches the matching reading to the contextually targetted cohort as a child.
-      <emphasis>Yes, I do mean child.</emphasis>
+      The last link of the contextual test is used as target.
     </para>
     <screen>
       SETPARENT targetset (-1* ("someword"))
-      &nbsp; TO (1* (@candidate)) (2 SomeSet) ;
+      &nbsp; TO (1* (step) LINK 1* (candidate)) (2 SomeSet) ;
     </screen>
   </section>
 

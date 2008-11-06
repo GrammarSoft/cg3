@@ -459,6 +459,10 @@ int TextualParser::parseRule(KEYWORDS key, UChar **p) {
 			result->lines += SKIPWS(p);
 		}
 	}
+	if (rule->flags & RF_NEAREST && rule->flags & RF_ALLOWLOOP) {
+		u_fprintf(ux_stderr, "Error: Line %u: NEAREST and ALLOWLOOP are mutually exclusive!\n", result->lines);
+		CG3Quit(1);
+	}
 	if (rule->flags & RF_UNSAFE && rule->flags & RF_SAFE) {
 		u_fprintf(ux_stderr, "Error: Line %u: SAFE and UNSAFE are mutually exclusive!\n", result->lines);
 		CG3Quit(1);

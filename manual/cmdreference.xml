@@ -23,10 +23,8 @@ Options:
  -g, --grammar             specifies the grammar file to use for disambiguation
      --grammar-out         writes the compiled grammar in textual form to a file
      --grammar-bin         writes the compiled grammar in binary form to a file
-     --grammar-info        writes the compiled grammar in textual form to a file, with lots of statistics and information
      --grammar-only        only compiles the grammar; implies --verbose
  -u, --unsafe              allows the removal of all readings in a cohort, even the last one
-     --check-only          same as --grammar-only
  -s, --sections            number of sections to run; defaults to all sections
  -v, --verbose             increases verbosity
  -2, --vislcg-compat       enables compatibility mode for older CG-2 and vislcg grammars
@@ -50,11 +48,16 @@ Options:
      --trace-name-only     if a rule is named, omit the line number; implies --trace
      --trace-no-removed    does not print removed readings; implies --trace
      --single-run          runs each section only once
+ -S, --statistics          gathers profiling statistics while applying grammar
+ -Z, --optimize-unsafe     destructively optimize the profiled grammar to be faster
+ -z, --optimize-safe       conservatively optimize the profiled grammar to be faster
  -p, --prefix              sets the mapping prefix; defaults to @
      --num-windows         number of windows to keep in before/ahead buffers; defaults to 2
      --always-span         forces scanning tests to always span across window boundaries
      --soft-limit          number of cohorts after which the SOFT-DELIMITERS kick in; defaults to 300
      --hard-limit          number of cohorts after which the window is forcefully cut; defaults to 500
+     --dep-humanize        forces enumeration of dependencies to human-readable; will not be valid for chained CG-3s
+     --dep-original        outputs the original input dependency tag even if it is no longer valid
      --dep-allow-loops     allows the creation of circular dependencies
      --no-magic-readings   prevents running rules on magic readings
  -o, --no-pass-origin      prevents scanning tests from passing the point of origin
