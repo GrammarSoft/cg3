@@ -5,16 +5,52 @@
   <title>Making use of Dependencies</title>
 
   <para>
-    <indexterm>
-      <primary>SETPARENT</primary>
-    </indexterm>
-    <indexterm>
-      <primary>SETCHILD</primary>
-    </indexterm>
     CG-3 can work with dependency trees in various ways. The input cohorts can have existing
     dependencies; the grammar can create new attachments; or a combination of the two.
     <emphasis>It should be noted that mixing the two sources is not recommended.</emphasis>
   </para>
+
+  <section id="dep-setparent">
+    <title>SETPARENT</title>
+    <indexterm>
+      <primary>SETPARENT</primary>
+    </indexterm>
+    <para>
+      Attaches the matching reading to the contextually targetted cohort as a child.
+      The last link of the contextual test is used as target.
+    </para>
+    <para>
+      If the contextual target is a scanning test and the first found candidate cannot be attached
+      due to loop prevention, SETPARENT will look onwards for the next candidate.
+      This can be controlled with rule option <link linkend="rule-options-nearest">NEAREST</link>
+      and <link linkend="rule-options-allowloop">ALLOWLOOP</link>.
+    </para>
+    <screen>
+      SETPARENT targetset (-1* ("someword"))
+      &nbsp; TO (1* (step) LINK 1* (candidate)) (2 SomeSet) ;
+    </screen>
+  </section>
+
+  <section id="dep-setchild">
+    <title>SETCHILD</title>
+    <indexterm>
+      <primary>SETCHILD</primary>
+    </indexterm>
+    <para>
+      Attaches the matching reading to the contextually targetted cohort as the parent.
+      The last link of the contextual test is used as target.
+    </para>
+    <para>
+      If the contextual target is a scanning test and the first found candidate cannot be attached
+      due to loop prevention, SETCHILD will look onwards for the next candidate.
+      This can be controlled with rule option <link linkend="rule-options-nearest">NEAREST</link>
+      and <link linkend="rule-options-allowloop">ALLOWLOOP</link>.
+    </para>
+    <screen>
+      SETCHILD targetset (-1* ("someword"))
+      &nbsp; TO (1* (step) LINK 1* (candidate)) (2 SomeSet) ;
+    </screen>
+  </section>
 
   <section id="dep-input">
     <title>Existing Trees in Input</title>
@@ -25,8 +61,8 @@
       to be '0', but nodes may attach to '0'.
     </para>
     <para>
-      <emphasis>If the Y of a reading cannot be located, it will be reset to 0.</emphasis>
-      <emphasis>If a reading contains more than one attachment, only the first will be honored.</emphasis>
+      <emphasis>If the Y of a reading cannot be located, it will be reattached to itself.</emphasis>
+      <emphasis>If a reading contains more than one attachment, only the last will be honored.</emphasis>
       <emphasis>If a cohort has conflicting attachments in its readings, the result is undefined.</emphasis>
     </para>
     <para>

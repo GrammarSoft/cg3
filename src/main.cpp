@@ -535,11 +535,7 @@ void GAppSetOpts(CG3::GrammarApplicator *applicator) {
 	if (options[HARD_LIMIT].doesOccur) {
 		applicator->hard_limit = abs(atoi(options[HARD_LIMIT].value));
 	}
-	if (options[DEP_REENUM].doesOccur) {
-		applicator->dep_reenum = true;
-	}
 	if (options[DEP_HUMANIZE].doesOccur) {
-		applicator->dep_reenum = true;
 		applicator->dep_humanize = true;
 	}
 	if (options[DEP_ORIGINAL].doesOccur) {
