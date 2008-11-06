@@ -46,7 +46,7 @@ namespace CG3 {
 		bool no_pass_origin;
 		bool unsafe;
 
-		bool dep_reenum;
+		bool dep_has_spanned;
 		bool dep_delimit;
 		bool dep_humanize;
 		bool dep_original;

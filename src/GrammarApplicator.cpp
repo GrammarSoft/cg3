@@ -37,7 +37,7 @@ GrammarApplicator::GrammarApplicator(UFILE *ux_in, UFILE *ux_out, UFILE *ux_err)
 	trace_no_removed = false;
 	single_run = false;
 	statistics = false;
-	dep_reenum = false;
+	dep_has_spanned = false;
 	dep_delimit = false;
 	dep_humanize = false;
 	dep_original = false;
@@ -225,17 +225,48 @@ void GrammarApplicator::printReading(Reading *reading, UFILE *output) {
 		}
 		used_tags[*tter] = *tter;
 		const Tag *tag = single_tags[*tter];
+		if (tag->type & T_DEPENDENCY && has_dep && !dep_original) {
+			continue;
+		}
 		if (!(tag->type & T_BASEFORM) && !(tag->type & T_WORDFORM)) {
 			Tag::printTagRaw(output, tag);
 			u_fprintf(output, " ");
 		}
 	}
 
-	if (has_dep && !dep_original) {
+	if (has_dep) {
 		if (!reading->parent->dep_self) {
 			reading->parent->dep_self = reading->parent->global_number;
 		}
-		u_fprintf(output, "#%u->%u ", reading->parent->dep_self, reading->parent->dep_parent);
+		const Cohort *pr = 0;
+		if (reading->parent->dep_parent) {
+			if (reading->parent->parent->parent->cohort_map.find(reading->parent->dep_parent) == reading->parent->parent->parent->cohort_map.end()) {
+				pr = reading->parent;
+			}
+			else {
+				pr = reading->parent->parent->parent->cohort_map[reading->parent->dep_parent];
+			}
+		}
+		else {
+			pr = reading->parent->parent->cohorts[0];
+		}
+		if (dep_humanize) {
+			u_fprintf(output, "#w%u,c%u->w%u,c%u ",
+				pr->parent->number,
+				reading->parent->local_number,
+				reading->parent->parent->number,
+				pr->local_number);
+		}
+		if (!dep_has_spanned) {
+			u_fprintf(output, "#%u->%u ",
+				reading->parent->local_number,
+				pr->local_number);
+		}
+		else {
+			u_fprintf(output, "#%u->%u ",
+				reading->parent->dep_self,
+				reading->parent->dep_parent);
+		}
 	}
 
 	if (reading->parent->is_related) {
