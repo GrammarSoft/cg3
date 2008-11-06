@@ -25,6 +25,7 @@ Options:
      --grammar-bin         writes the compiled grammar in binary form to a file
      --grammar-info        writes the compiled grammar in textual form to a file, with lots of statistics and information
      --grammar-only        only compiles the grammar; implies --verbose
+ -u, --unsafe              allows the removal of all readings in a cohort, even the last one
      --check-only          same as --grammar-only
  -s, --sections            number of sections to run; defaults to all sections
  -v, --verbose             increases verbosity

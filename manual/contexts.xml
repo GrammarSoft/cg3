@@ -113,7 +113,7 @@
       <primary>x</primary>
     </indexterm>
     <para>
-	  By default, linked tests continue from the immediately preceding test.
+      By default, linked tests continue from the immediately preceding test.
       These options affect behavior.
     </para>
 
@@ -139,6 +139,38 @@
       <title>Jump to Mark</title>
       <para>
         'x' jumps back to the previously set mark (or the rule's target if no mark is set), then proceeds from there.
+      </para>
+    </section>
+  </section>
+
+  <section id="test-deleted">
+    <title>Test Deleted/Delayed Readings</title>
+    <indexterm>
+      <primary>D</primary>
+    </indexterm>
+    <indexterm>
+      <primary>d</primary>
+    </indexterm>
+    <para>
+      By default, removed reading are not visible to tests.
+      These options allow tests to look at deleted and <link linkend="rule-options-delayed">delayed readings</link>.
+    </para>
+
+    <section id="test-deleted-deleted">
+      <title>Look at Deleted Readings</title>
+      <para>
+        'D' allows the current test (and any barrier) to look at readings that have previously been deleted
+        by SELECT/REMOVE/IFF.
+        Delayed readings are not part of 'D', but can be combined as 'Dd' to look at both.
+      </para>
+    </section>
+
+    <section id="test-deleted-delayed">
+      <title>Look at Delayed Readings</title>
+      <para>
+        'd' allows the current test (and any barrier) to look at readings that have previously been deleted
+        by SELECT/REMOVE/IFF <link linkend="rule-options-delayed">DELAYED</link>.
+        Deleted readings are not part of 'd', but can be combined as 'Dd' to look at both.
       </para>
     </section>
   </section>

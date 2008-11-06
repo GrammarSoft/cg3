@@ -3,7 +3,6 @@ ToDo: Refactor statistics to be gathered in their own objects rather than inline
 ToDo: Enable a daemonized version.
 ToDo: Add flag for using dependencies to delimit windows
 ToDo: Make old cohort -> rules order available via switch
-ToDo: Implement --unsafe
 ToDo: Make use of Preferred-Targets
 ToDo: Move DoesTagMatchSet to Grammar
 ToDo: Line number on all applicable warnings
@@ -13,10 +12,8 @@ ToDo: "X Marks the Spot": Using x without setting a new X is equivalent to writi
 ToDo: Optimize-unsafe by eliminating tests which do no good (either always true or never the only one to block).
 ToDo: Investigate effects of SetParent/Child and Xx.
 ToDo: Make SOFT-DELIMITERS look back.
-ToDo: Select highest/lowesr numerical value of a reading
-ToDo: Rule options: O:NEAREST ALLOWLOOP DELAYED IMMEDIATE LOOKDELETED LOOKDELAYED UNSAFE SAFE
+ToDo: Select highest/lowest numerical value of a reading
 ToDo: Rule option blocks: OPTIONS +NEAREST -DELAYED
 ToDo: Transaction blocks: TRANSACTION, COMMIT, ROLLBACK
-ToDo: Position D to allow looking at deleted readings; Position d to look at delayed readings
 ToDo: Binary input/output stream for lossless chaining of multiple CG-3
 ToDo: Make ANCHOR, JUMP, EXECUTE actually do something...
