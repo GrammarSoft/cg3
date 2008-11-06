@@ -31,13 +31,13 @@ namespace CG3 {
 
 	class Cohort {
 	public:
-		bool is_disamb;
 		uint32_t global_number;
 		uint32_t local_number;
 		uint32_t wordform;
 		SingleWindow *parent;
 		std::list<Reading*> readings;
 		std::list<Reading*> deleted;
+		std::list<Reading*> delayed;
 		UChar *text_pre, *text_post;
 
 		bool dep_done;

@@ -1,0 +1,27 @@
+DELIMITERS = "<$.>" ;
+
+SECTION
+REMOVE (three) ;
+SELECT DELAYED (one) ;
+
+REMOVE UNSAFE (second) ;
+IFF UNSAFE (third) (-1 (wombat)) ;
+
+AFTER-SECTIONS
+ADD (@c-one) (fourth) (-1*C (one)) ;
+ADD (@c-one-error1) (fourth) (-1*Cd (one)) ;
+ADD (@c-one-error2) (fourth) (-1*CD (one)) ;
+ADD (@c-one-error3) (fourth) (-1*CDd (one)) ;
+
+ADD LOOKDELAYED (@lookdelayed) (fourth) (-1* (two)) ;
+ADD (@delayed) (fourth) (-1*d (two)) ;
+ADD (@delayed-error1) (fourth) (-1* (two)) ;
+ADD (@delayed-error2) (fourth) (-1*D (two)) ;
+
+ADD LOOKDELETED (@lookdeleted) (fourth) (-1* (three)) ;
+ADD (@deleted) (fourth) (-1*D (three)) ;
+ADD (@deleted-error1) (fourth) (-1* (three)) ;
+ADD (@deleted-error2) (fourth) (-1*d (three)) ;
+
+ADD (@unsafe) (fourth) (NEGATE -1* (second)) ;
+ADD (@unsafe-error1) (fourth) (-1* (second)) ;

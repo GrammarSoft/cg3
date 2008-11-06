@@ -82,7 +82,7 @@ namespace Options {
 		UOPTION_DEF_D("grammar-out",		0, UOPT_REQUIRES_ARG, "writes the compiled grammar in textual form to a file"),
 		UOPTION_DEF_D("grammar-bin",		0, UOPT_REQUIRES_ARG, "writes the compiled grammar in binary form to a file"),
 		UOPTION_DEF_D("grammar-only",		0, UOPT_NO_ARG, "only compiles the grammar; implies --verbose"),
-		UOPTION_DEF("unsafe",				'u', UOPT_NO_ARG),
+		UOPTION_DEF_D("unsafe",				'u', UOPT_NO_ARG, "allows the removal of all readings in a cohort, even the last one"),
 		UOPTION_DEF_D("sections",			's', UOPT_REQUIRES_ARG, "number of sections to run; defaults to all sections"),
 		UOPTION_DEF("debug",				'd', UOPT_OPTIONAL_ARG),
 		UOPTION_DEF_D("verbose",			'v', UOPT_OPTIONAL_ARG, "increases verbosity"),

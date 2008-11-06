@@ -28,7 +28,6 @@ Cohort::Cohort(SingleWindow *p) {
 	global_number = 0;
 	local_number = 0;
 	parent = p;
-	is_disamb = false;
 	dep_done = false;
 	is_related = false;
 	is_enclosed = false;
@@ -48,6 +47,10 @@ void Cohort::clear(SingleWindow *p) {
 		r->delete_Reading(*iter2);
 	}
 	deleted.clear();
+	foreach (std::list<Reading*>, delayed, iter3, iter3_end) {
+		r->delete_Reading(*iter3);
+	}
+	delayed.clear();
 	if (parent) {
 		parent->parent->cohort_map.erase(global_number);
 		parent->parent->dep_window.erase(global_number);
@@ -57,7 +60,6 @@ void Cohort::clear(SingleWindow *p) {
 	global_number = 0;
 	local_number = 0;
 	parent = p;
-	is_disamb = false;
 	dep_done = false;
 	is_related = false;
 	is_enclosed = false;
@@ -83,6 +85,9 @@ Cohort::~Cohort() {
 	}
 	foreach (std::list<Reading*>, deleted, iter2, iter2_end) {
 		r->delete_Reading(*iter2);
+	}
+	foreach (std::list<Reading*>, delayed, iter3, iter3_end) {
+		r->delete_Reading(*iter3);
 	}
 	if (parent) {
 		parent->parent->cohort_map.erase(global_number);

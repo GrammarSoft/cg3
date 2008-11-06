@@ -330,6 +330,12 @@ void GrammarWriter::printContextualTest(UFILE *to, const ContextualTest *test) {
 		if (test->pos & POS_MARK_JUMP) {
 			u_fprintf(to, "x");
 		}
+		if (test->pos & POS_LOOK_DELETED) {
+			u_fprintf(to, "D");
+		}
+		if (test->pos & POS_LOOK_DELAYED) {
+			u_fprintf(to, "d");
+		}
 
 		u_fprintf(to, " ");
 
