@@ -19,3 +19,4 @@ ToDo: Rule option blocks: OPTIONS +NEAREST -DELAYED
 ToDo: Transaction blocks: TRANSACTION, COMMIT, ROLLBACK
 ToDo: Position D to allow looking at deleted readings; Position d to look at delayed readings
 ToDo: Binary input/output stream for lossless chaining of multiple CG-3
+ToDo: Make ANCHOR, JUMP, EXECUTE actually do something...

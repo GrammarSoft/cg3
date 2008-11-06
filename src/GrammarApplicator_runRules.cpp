@@ -116,8 +116,13 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, uint32Set *r
 				continue;
 			}
 
-			if ((type == K_SELECT || type == K_REMOVE || type == K_IFF) && (cohort->is_disamb || cohort->readings.size() == 1)) {
-				continue;
+			if (cohort->readings.size() == 1) {
+				if (type == K_SELECT) {
+					continue;
+				}
+				else if ((type == K_REMOVE || type == K_IFF) && (!unsafe || (rule->flags & RF_SAFE)) && !(rule->flags & RF_UNSAFE)) {
+					continue;
+				}
 			}
 			if (type == K_DELIMIT && c == current->cohorts.size()-1) {
 				continue;
@@ -129,7 +134,6 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, uint32Set *r
 
 			size_t num_active = 0;
 			size_t num_iff = 0;
-			bool all_active = false;
 
 			if (rule->type == K_IFF) {
 				type = K_REMOVE;
@@ -201,10 +205,12 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, uint32Set *r
 				continue;
 			}
 			if (num_active == cohort->readings.size()) {
-				all_active = true;
-			}
-			if (all_active && (rule->type == K_SELECT || rule->type == K_REMOVE)) {
-				continue;
+				if (rule->type == K_SELECT) {
+					continue;
+				}
+				else if (rule->type == K_REMOVE && (!unsafe || (rule->flags & RF_SAFE)) && !(rule->flags & RF_UNSAFE)) {
+					continue;
+				}
 			}
 
 			uint32_t did_append = 0;
@@ -602,7 +608,12 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, uint32Set *r
 			}
 
 			if (!removed.empty()) {
-				cohort->deleted.insert(cohort->deleted.end(), removed.begin(), removed.end());
+				if (rule->flags & RF_DELAYED) {
+					cohort->delayed.insert(cohort->delayed.end(), removed.begin(), removed.end());
+				}
+				else {
+					cohort->deleted.insert(cohort->deleted.end(), removed.begin(), removed.end());
+				}
 				while (!removed.empty()) {
 					cohort->readings.remove(removed.back());
 					removed.pop_back();
@@ -610,11 +621,6 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, uint32Set *r
 			}
 			if (!selected.empty()) {
 				cohort->readings = selected;
-			}
-
-			cohort->is_disamb = false;
-			if (cohort->readings.size() == 1) {
-				cohort->is_disamb = true;
 			}
 
 			if (delimited) {

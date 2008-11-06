@@ -266,7 +266,7 @@ int TextualParser::parseContextualTestList(Rule *rule, std::list<ContextualTest*
 				CG3Quit(1);
 			}
 			(*p)++;
-			parseContextualTestList(0, 0, 0, p, ored);
+			parseContextualTestList(rule, 0, 0, p, ored);
 			(*p)++;
 			t->ors.push_back(ored);
 			result->lines += SKIPWS(p);
@@ -369,7 +369,7 @@ int TextualParser::parseContextualTestList(Rule *rule, std::list<ContextualTest*
 	result->lines += SKIPWS(p);
 
 	if (linked) {
-		parseContextualTestList(0, 0, t, p);
+		parseContextualTestList(rule, 0, t, p);
 	}
 
 	if (self) {
@@ -384,6 +384,14 @@ int TextualParser::parseContextualTestList(Rule *rule, std::list<ContextualTest*
 			t->pos |= POS_NEGATED;
 		}
 		rule->addContextualTest(t, thelist);
+	}
+	if (rule) {
+		if (rule->flags & RF_LOOKDELETED) {
+			t->pos |= POS_LOOK_DELETED;
+		}
+		if (rule->flags & RF_LOOKDELAYED) {
+			t->pos |= POS_LOOK_DELAYED;
+		}
 	}
 	return 0;
 }
@@ -436,6 +444,28 @@ int TextualParser::parseRule(KEYWORDS key, UChar **p) {
 		gbuffers[0][c] = 0;
 		rule->setName(gbuffers[0]);
 		*p = n;
+	}
+	result->lines += SKIPWS(p);
+
+	bool setflag = true;
+	while (setflag) {
+		setflag = false;
+		for (uint32_t i=0 ; i<FLAGS_COUNT ; i++) {
+			if (u_strncasecmp(*p, flags[i], flag_lengths[i], U_FOLD_CASE_DEFAULT) == 0) {
+				(*p) += flag_lengths[i];
+				rule->flags |= (1 << i);
+				setflag = true;
+			}
+			result->lines += SKIPWS(p);
+		}
+	}
+	if (rule->flags & RF_UNSAFE && rule->flags & RF_SAFE) {
+		u_fprintf(ux_stderr, "Error: Line %u: SAFE and UNSAFE are mutually exclusive!\n", result->lines);
+		CG3Quit(1);
+	}
+	if (rule->flags & RF_DELAYED && rule->flags & RF_IMMEDIATE) {
+		u_fprintf(ux_stderr, "Error: Line %u: IMMEDIATE and DELAYED are mutually exclusive!\n", result->lines);
+		CG3Quit(1);
 	}
 	result->lines += SKIPWS(p);
 

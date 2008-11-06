@@ -219,6 +219,7 @@ int main(int argc, char* argv[]) {
 	init_gbuffers();
 	init_strings();
 	init_keywords();
+	init_flags();
 	CG3::Grammar *grammar = new CG3::Grammar();
 
 	CG3::IGrammarParser *parser = 0;
@@ -416,6 +417,7 @@ int main(int argc, char* argv[]) {
 	free_strings();
 	free_keywords();
 	free_gbuffers();
+	free_flags();
 
 	CG3::Recycler::cleanup();
 
@@ -451,6 +453,10 @@ void GAppSetOpts(CG3::GrammarApplicator *applicator) {
 	applicator->no_after_sections = false;
 	if (options[NOAFTERSECTIONS].doesOccur) {
 		applicator->no_after_sections = true;
+	}
+	applicator->unsafe = false;
+	if (options[UNSAFE].doesOccur) {
+		applicator->unsafe = true;
 	}
 	if (options[TRACE].doesOccur) {
 		applicator->trace = true;

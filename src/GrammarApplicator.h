@@ -44,6 +44,7 @@ namespace CG3 {
 		bool single_run;
 		bool allow_magic_readings;
 		bool no_pass_origin;
+		bool unsafe;
 
 		bool dep_reenum;
 		bool dep_delimit;
@@ -133,8 +134,8 @@ namespace CG3 {
 		bool doesTagMatchReading(const Reading *reading, const Tag *tag);
 		bool doesSetMatchReading_tags(const Reading *reading, const Set *theset);
 		bool doesSetMatchReading(Reading *reading, const uint32_t set, bool bypass_index = false);
-		bool doesSetMatchCohortNormal(Cohort *cohort, const uint32_t set);
-		bool doesSetMatchCohortCareful(const Cohort *cohort, const uint32_t set);
+		bool doesSetMatchCohortNormal(Cohort *cohort, const uint32_t set, uint32_t options = 0);
+		bool doesSetMatchCohortCareful(const Cohort *cohort, const uint32_t set, uint32_t options = 0);
 
 		SingleWindow *initialiseSingleWindow(Recycler *r, Window *cWindow, SingleWindow *cSWindow);
 

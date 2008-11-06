@@ -27,6 +27,8 @@ namespace CG3 {
 		uint32_t keyword_lengths[KEYWORD_COUNT];
 		UChar *stringbits[STRINGS_COUNT];
 		uint32_t stringbit_lengths[STRINGS_COUNT];
+		UChar *flags[FLAGS_COUNT];
+		uint32_t flag_lengths[FLAGS_COUNT];
 
 		inline int init_keyword_single(const char *keyword, const uint32_t entry) {
 			if (entry >= KEYWORD_COUNT) {
@@ -175,6 +177,48 @@ namespace CG3 {
 					delete[] stringbits[i];
 				}
 				stringbits[i] = 0;
+			}
+			return 0;
+		}
+
+		inline int init_flag_single(const char *keyword, const uint32_t entry) {
+			if (entry >= FLAGS_COUNT) {
+				CG3Quit(1); // Out of bounds
+			}
+			UChar *buffer = gbuffers[0];
+			u_memset(buffer, 0, 1024);
+			u_uastrcpy(buffer, keyword);
+			flags[entry] = new UChar[u_strlen(buffer)+1];
+			u_strcpy(flags[entry], buffer);
+			flag_lengths[entry] = u_strlen(flags[entry]);
+			return 0;
+		}
+
+		int init_flags() {
+			free_flags();
+			init_flag_single("NEAREST",       FL_NEAREST);
+			init_flag_single("ALLOWLOOP",     FL_ALLOWLOOP);
+			init_flag_single("DELAYED",       FL_DELAYED);
+			init_flag_single("IMMEDIATE",     FL_IMMEDIATE);
+			init_flag_single("LOOKDELETED",   FL_LOOKDELETED);
+			init_flag_single("LOOKDELAYED",    FL_LOOKDELAYED);
+			init_flag_single("UNSAFE",        FL_UNSAFE);
+			init_flag_single("SAFE",          FL_SAFE);
+
+			for (unsigned int i=0;i<FLAGS_COUNT;i++) {
+				if (!flags[i]) {
+					return i; // One did not get set properly. Returns i to pinpoint which.
+				}
+			}
+			return 0;
+		}
+
+		int free_flags() {
+			for (unsigned int i=0;i<FLAGS_COUNT;i++) {
+				if (flags[i]) {
+					delete[] flags[i];
+				}
+				flags[i] = 0;
 			}
 			return 0;
 		}

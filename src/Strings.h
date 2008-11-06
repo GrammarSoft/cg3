@@ -120,22 +120,34 @@ namespace CG3 {
 			STRINGS_COUNT
 		};
 
-		enum REGEXPS {
-			R_ANDLINK,
-			R_CLEANSTRING,
-			REGEXP_COUNT
+		// This must be kept in lock-step with Rule.h's RULE_FLAGS
+		enum FLAGS {
+			FL_NEAREST,
+			FL_ALLOWLOOP,
+			FL_DELAYED,
+			FL_IMMEDIATE,
+			FL_LOOKDELETED,
+			FL_LOOKDELAYED,
+			FL_UNSAFE,
+			FL_SAFE,
+			FLAGS_COUNT
 		};
 
 		extern UChar *keywords[KEYWORD_COUNT];
 		extern uint32_t keyword_lengths[KEYWORD_COUNT];
 		extern UChar *stringbits[STRINGS_COUNT];
 		extern uint32_t stringbit_lengths[STRINGS_COUNT];
+		extern UChar *flags[FLAGS_COUNT];
+		extern uint32_t flag_lengths[FLAGS_COUNT];
 
 		int init_keywords();
 		int free_keywords();
 
 		int init_strings();
 		int free_strings();
+
+		int init_flags();
+		int free_flags();
 
 		#define NUM_GBUFFERS 5
 		extern UChar *gbuffers[NUM_GBUFFERS];

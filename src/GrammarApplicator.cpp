@@ -69,6 +69,7 @@ GrammarApplicator::GrammarApplicator(UFILE *ux_in, UFILE *ux_out, UFILE *ux_err)
 	no_before_sections = false;
 	no_pass_origin = false;
 	did_index = false;
+	unsafe = false;
 }
 
 GrammarApplicator::~GrammarApplicator() {
@@ -287,6 +288,9 @@ void GrammarApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 			printReading(*rter1, output);
 		}
 		if (trace && !trace_no_removed) {
+			foreach (std::list<Reading*>, cohort->delayed, rter3, rter3_end) {
+				printReading(*rter3, output);
+			}
 			foreach (std::list<Reading*>, cohort->deleted, rter2, rter2_end) {
 				printReading(*rter2, output);
 			}
