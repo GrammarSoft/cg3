@@ -67,4 +67,143 @@
     </para>
   </section>
 
+  <section id="rule-options">
+    <title>Rule Options</title>
+    <para>
+      Rules can have options that affect their behavior.
+      Multiple options can be combined per rule and the order is not important, just seperate them with space.
+    </para>
+    <screen>
+      # Remove readings with (unwanted) even if it is the last reading.
+      REMOVE UNSAFE (unwanted) ;
+
+      # Attach daughter to mother, even if doing so would cause a loop.
+      SETPARENT ALLOWLOOP (daughter) TO (-1* (mother)) ;
+    </screen>
+
+    <section id="rule-options-nearest">
+      <title>NEAREST</title>
+      <indexterm>
+        <primary>NEAREST</primary>
+      </indexterm>
+      <para>
+        Applicable for rules SETPARENT and SETCHILD.
+        Not compatible with option ALLOWLOOP.
+      </para>
+      <para>
+        Normally, if SETPARENT or SETCHILD cannot attach because doing so would cause a loop, they will seek
+        onwards from that position until a valid target is found that does not cause a loop.
+        Setting NEAREST forces them to stop at the first found candidate.
+      </para>
+    </section>
+
+    <section id="rule-options-allowloop">
+      <title>ALLOWLOOP</title>
+      <indexterm>
+        <primary>ALLOWLOOP</primary>
+      </indexterm>
+      <para>
+        Applicable for rules SETPARENT and SETCHILD.
+        Not compatible with option NEAREST.
+      </para>
+      <para>
+        Normally, SETPARENT and SETCHILD cannot attach if doing so would cause a loop.
+        Setting ALLOWLOOP forces the attachment even in such a case.
+      </para>
+    </section>
+
+    <section id="rule-options-delayed">
+      <title>DELAYED</title>
+      <indexterm>
+        <primary>DELAYED</primary>
+      </indexterm>
+      <para>
+        Applicable for rules SELECT, REMOVE, and IFF.
+        Not compatible with option IMMEDIATE.
+      </para>
+      <para>
+        Option DELAYED causes readings that otherwise would have been put in the deleted buffer to be put in
+        a special delayed buffer, in the grey zone between living and dead.
+      </para>
+      <para>
+        Delayed readings can be looked at by contextual tests of rules that have option LOOKDELAYED,
+        or if the contextual test has position 'd'.
+      </para>
+    </section>
+
+    <section id="rule-options-immediate">
+      <title>IMMEDIATE</title>
+      <indexterm>
+        <primary>IMMEDIATE</primary>
+      </indexterm>
+      <para>
+        Applicable for rules SELECT, REMOVE, and IFF.
+        Not compatible with option DELAYED.
+      </para>
+      <para>
+        Option IMMEDIATE causes readings that otherwise would have been put in the special delayed buffer to be put in
+        the delayed buffer. This is mainly used to selectively override a global DELAYED flag
+        as rules are by default immediate.
+      </para>
+    </section>
+
+    <section id="rule-options-lookdelayed">
+      <title>LOOKDELAYED</title>
+      <indexterm>
+        <primary>LOOKDELAYED</primary>
+      </indexterm>
+      <para>
+        Applicable for all rules.
+      </para>
+      <para>
+        Option LOOKDELAYED puts <link linkend="test-deleted-delayed">contextual position 'd'</link> on all tests done by that rule,
+        allowing them all to see delayed readings.
+      </para>
+    </section>
+
+    <section id="rule-options-lookdeleted">
+      <title>LOOKDELETED</title>
+      <indexterm>
+        <primary>LOOKDELETED</primary>
+      </indexterm>
+      <para>
+        Applicable for all rules.
+      </para>
+      <para>
+        Option LOOKDELETED puts <link linkend="test-deleted-deleted">contextual position 'D'</link> on all tests done by that rule,
+        allowing them all to see deleted readings.
+      </para>
+    </section>
+
+    <section id="rule-options-unsafe">
+      <title>UNSAFE</title>
+      <indexterm>
+        <primary>UNSAFE</primary>
+      </indexterm>
+      <para>
+        Applicable for rules REMOVE and IFF.
+        Not compatible with option SAFE.
+      </para>
+      <para>
+        Normally, REMOVE and IFF cannot remove the last reading of a cohort.
+        Setting option UNSAFE allows them to do so.
+      </para>
+    </section>
+
+    <section id="rule-options-safe">
+      <title>SAFE</title>
+      <indexterm>
+        <primary>SAFE</primary>
+      </indexterm>
+      <para>
+        Applicable for rules REMOVE and IFF.
+        Not compatible with option UNSAFE.
+      </para>
+      <para>
+        SAFE prevents REMOVE and IFF from removing the last reading of a cohort.
+        Mainly used to selectively override global --unsafe mode.
+      </para>
+    </section>
+  </section>
+
 </chapter>

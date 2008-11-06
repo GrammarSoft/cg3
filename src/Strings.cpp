@@ -201,7 +201,7 @@ namespace CG3 {
 			init_flag_single("DELAYED",       FL_DELAYED);
 			init_flag_single("IMMEDIATE",     FL_IMMEDIATE);
 			init_flag_single("LOOKDELETED",   FL_LOOKDELETED);
-			init_flag_single("LOOKDELAYED",    FL_LOOKDELAYED);
+			init_flag_single("LOOKDELAYED",   FL_LOOKDELAYED);
 			init_flag_single("UNSAFE",        FL_UNSAFE);
 			init_flag_single("SAFE",          FL_SAFE);
 
