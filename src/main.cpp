@@ -170,6 +170,8 @@ int main(int argc, char* argv[]) {
 		fprintf(stderr, "Locales: default %s, input %s, output %s, grammar %s\n", locale_default, locale_input, locale_output, locale_grammar);
 	}
 
+	UConverter *conv = ucnv_open(codepage_default, &status);
+
 	bool stdin_isfile = false;
 	bool stdout_isfile = false;
 	bool stderr_isfile = false;
@@ -261,7 +263,12 @@ int main(int argc, char* argv[]) {
 	}
 
 	if (options[MAPPING_PREFIX].doesOccur) {
-		grammar->mapping_prefix = options[MAPPING_PREFIX].value[0];
+		size_t sn = strlen(options[MAPPING_PREFIX].value);
+		UChar *buf = new UChar[sn*3];
+		buf[0] = 0;
+		ucnv_toUChars(conv, buf, sn*3, options[MAPPING_PREFIX].value, sn, &status);
+		grammar->mapping_prefix = buf[0];
+		delete[] buf;
 	}
 	if (options[VERBOSE].doesOccur) {
 		std::cerr << "Reindexing grammar..." << std::endl;
