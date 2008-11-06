@@ -441,11 +441,9 @@ bool GrammarApplicator::doesSetMatchReading(Reading *reading, const uint32_t set
 						}
 						break;
 					case S_FAILFAST:
-						if (match) {
-							if (doesSetMatchReading(reading, theset->sets.at(i+1), bypass_index)) {
-								match = false;
-								failfast = true;
-							}
+						if (doesSetMatchReading(reading, theset->sets.at(i+1), bypass_index)) {
+							match = false;
+							failfast = true;
 						}
 						break;
 					case S_MINUS:
@@ -507,7 +505,7 @@ bool GrammarApplicator::doesSetMatchReading(Reading *reading, const uint32_t set
 	return retval;
 }
 
-bool GrammarApplicator::doesSetMatchCohortNormal(Cohort *cohort, const uint32_t set) {
+bool GrammarApplicator::doesSetMatchCohortNormal(Cohort *cohort, const uint32_t set, uint32_t options) {
 	if (cohort->possible_sets.find(set) == cohort->possible_sets.end()) {
 		return false;
 	}
@@ -520,6 +518,24 @@ bool GrammarApplicator::doesSetMatchCohortNormal(Cohort *cohort, const uint32_t 
 			break;
 		}
 	}
+	if (!retval && options & POS_LOOK_DELETED) {
+		const_foreach(std::list<Reading*>, cohort->deleted, iter, iter_end) {
+			Reading *reading = *iter;
+			if (doesSetMatchReading(reading, set, theset->is_child_unified|theset->is_special)) {
+				retval = true;
+				break;
+			}
+		}
+	}
+	if (!retval && options & POS_LOOK_DELAYED) {
+		const_foreach(std::list<Reading*>, cohort->delayed, iter, iter_end) {
+			Reading *reading = *iter;
+			if (doesSetMatchReading(reading, set, theset->is_child_unified|theset->is_special)) {
+				retval = true;
+				break;
+			}
+		}
+	}
 	if (!retval) {
 		if (!grammar->sets_any || grammar->sets_any->find(set) == grammar->sets_any->end()) {
 			cohort->possible_sets.erase(set);
@@ -528,7 +544,7 @@ bool GrammarApplicator::doesSetMatchCohortNormal(Cohort *cohort, const uint32_t 
 	return retval;
 }
 
-bool GrammarApplicator::doesSetMatchCohortCareful(const Cohort *cohort, const uint32_t set) {
+bool GrammarApplicator::doesSetMatchCohortCareful(const Cohort *cohort, const uint32_t set, uint32_t options) {
 	if (cohort->possible_sets.find(set) == cohort->possible_sets.end()) {
 		return false;
 	}
@@ -539,6 +555,24 @@ bool GrammarApplicator::doesSetMatchCohortCareful(const Cohort *cohort, const ui
 		if (!doesSetMatchReading(reading, set, theset->is_child_unified|theset->is_special)) {
 			retval = false;
 			break;
+		}
+	}
+	if (retval && options & POS_LOOK_DELETED) {
+		const_foreach(std::list<Reading*>, cohort->deleted, iter, iter_end) {
+			Reading *reading = *iter;
+			if (!doesSetMatchReading(reading, set, theset->is_child_unified|theset->is_special)) {
+				retval = false;
+				break;
+			}
+		}
+	}
+	if (retval && options & POS_LOOK_DELAYED) {
+		const_foreach(std::list<Reading*>, cohort->delayed, iter, iter_end) {
+			Reading *reading = *iter;
+			if (!doesSetMatchReading(reading, set, theset->is_child_unified|theset->is_special)) {
+				retval = false;
+				break;
+			}
 		}
 	}
 	return retval;

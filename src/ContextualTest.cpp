@@ -104,6 +104,12 @@ void ContextualTest::parsePosition(const UChar *input, UFILE *ux_stderr) {
 	if (u_strchr(input, 'x')) {
 		pos |= POS_MARK_JUMP;
 	}
+	if (u_strchr(input, 'D')) {
+		pos |= POS_LOOK_DELETED;
+	}
+	if (u_strchr(input, 'd')) {
+		pos |= POS_LOOK_DELAYED;
+	}
 	UChar tmp[16];
 	tmp[0] = 0;
 	int32_t retval = u_sscanf(input, "%[^0-9]%d", &tmp, &offset);

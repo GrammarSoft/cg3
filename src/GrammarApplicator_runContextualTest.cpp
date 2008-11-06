@@ -36,11 +36,11 @@ Cohort *GrammarApplicator::runSingleTest(SingleWindow *sWindow, size_t i, const 
 	if (deep) {
 		*deep = cohort;
 	}
-	*retval = doesSetMatchCohortNormal(cohort, test->target);
+	*retval = doesSetMatchCohortNormal(cohort, test->target, test->pos);
 	bool foundfirst = *retval;
 	if (test->pos & POS_CAREFUL) {
 		if (*retval) {
-			*retval = doesSetMatchCohortCareful(cohort, test->target);
+			*retval = doesSetMatchCohortCareful(cohort, test->target, test->pos);
 		}
 		else {
 			*retval = false;
@@ -65,13 +65,13 @@ Cohort *GrammarApplicator::runSingleTest(SingleWindow *sWindow, size_t i, const 
 		*brk = true;
 	}
 	if (test->barrier) {
-		bool barrier = doesSetMatchCohortNormal(cohort, test->barrier);
+		bool barrier = doesSetMatchCohortNormal(cohort, test->barrier, test->pos);
 		if (barrier) {
 			*brk = true;
 		}
 	}
 	if (test->cbarrier) {
-		bool cbarrier = doesSetMatchCohortCareful(cohort, test->cbarrier);
+		bool cbarrier = doesSetMatchCohortCareful(cohort, test->cbarrier, test->pos);
 		if (cbarrier) {
 			*brk = true;
 		}
