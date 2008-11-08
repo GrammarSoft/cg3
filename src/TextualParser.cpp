@@ -676,11 +676,13 @@ int TextualParser::parseRule(KEYWORDS key, UChar **p) {
 			CG3Quit(1);
 		}
 		rule->dep_target = rule->dep_test_head;
-		rule->dep_test_head = rule->dep_test_head->next;
-		if (rule->dep_test_head) {
-			rule->dep_test_head->prev = 0;
+		while (rule->dep_target->next) {
+			rule->dep_target = rule->dep_target->next;
 		}
-		rule->dep_target->next = 0;
+		rule->dep_target->detach();
+		if (rule->dep_target == rule->dep_test_head) {
+			rule->dep_test_head = 0;
+		}
 	}
 	if (key == K_SETPARENT || key == K_SETCHILD) {
 		result->has_dep = true;
