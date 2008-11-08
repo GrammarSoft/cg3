@@ -56,17 +56,13 @@ ContextualTest::~ContextualTest() {
 }
 
 void ContextualTest::detach() {
-	if (prev && next) {
-		prev->next = next;
-		next->prev = prev;
-		prev = next = 0;
-	}
 	if (prev) {
-		prev->next = 0;
+		prev->next = next;
 	}
 	if (next) {
-		next->prev = 0;
+		next->prev = prev;
 	}
+	prev = next = 0;
 }
 
 void ContextualTest::parsePosition(const UChar *input, UFILE *ux_stderr) {
