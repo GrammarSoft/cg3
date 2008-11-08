@@ -290,18 +290,33 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 			fwrite(&u8tmp, sizeof(uint8_t), 1, output);
 		}
 
-		std::list<ContextualTest*>::const_iterator citer;
 
-		u32tmp = (uint32_t)htonl((uint32_t)r->dep_tests.size());
+		u32tmp = 0;
+		ContextualTest *test = r->dep_test_head;
+		while (test) {
+			u32tmp++;
+			test = test->next;
+		}
+		u32tmp = (uint32_t)htonl(u32tmp);
 		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
-		for (citer = r->dep_tests.begin() ; citer != r->dep_tests.end() ; citer++) {
-			writeContextualTest(*citer, output);
+		test = r->dep_test_head;
+		while (test) {
+			writeContextualTest(test, output);
+			test = test->next;
 		}
 
-		u32tmp = (uint32_t)htonl((uint32_t)r->tests.size());
+		u32tmp = 0;
+		test = r->test_head;
+		while (test) {
+			u32tmp++;
+			test = test->next;
+		}
+		u32tmp = (uint32_t)htonl(u32tmp);
 		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
-		for (citer = r->tests.begin() ; citer != r->tests.end() ; citer++) {
-			writeContextualTest(*citer, output);
+		test = r->test_head;
+		while (test) {
+			writeContextualTest(test, output);
+			test = test->next;
 		}
 	}
 

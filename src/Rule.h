@@ -59,11 +59,11 @@ namespace CG3 {
 		TagList maplist;
 		uint32List sublist;
 		
-		mutable std::list<ContextualTest*> tests;
+		mutable ContextualTest *test_head;
+		mutable ContextualTest *dep_test_head;
 		mutable uint32_t num_fail, num_match;
 		mutable double total_time;
 		mutable ContextualTest *dep_target;
-		mutable std::list<ContextualTest*> dep_tests;
 
 		Rule();
 		~Rule();
@@ -72,7 +72,7 @@ namespace CG3 {
 		void resetStatistics();
 
 		ContextualTest *allocateContextualTest();
-		void addContextualTest(ContextualTest *to, std::list<ContextualTest*> *thelist);
+		void addContextualTest(ContextualTest *to, ContextualTest **head);
 
 		static bool cmp_quality(const Rule *a, const Rule *b);
 
