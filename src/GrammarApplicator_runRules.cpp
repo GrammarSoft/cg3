@@ -179,6 +179,14 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, uint32Set *r
 							}
 							if (!test_good) {
 								good = test_good;
+								if (test != rule->test_head) {
+									test->detach();
+									if (rule->test_head) {
+										rule->test_head->prev = test;
+										test->next = rule->test_head;
+									}
+									rule->test_head = test;
+								}
 								break;
 							}
 							test = test->next;
