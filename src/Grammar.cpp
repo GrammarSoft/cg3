@@ -392,11 +392,15 @@ void Grammar::reindex() {
 		if (iter_rule->second->dep_target) {
 			iter_rule->second->dep_target->markUsed(this);
 		}
-		foreach(std::list<ContextualTest*>, iter_rule->second->dep_tests, idts, idts_end) {
-			(*idts)->markUsed(this);
+		ContextualTest *test = iter_rule->second->dep_test_head;
+		while (test) {
+			test->markUsed(this);
+			test = test->next;
 		}
-		foreach(std::list<ContextualTest*>, iter_rule->second->tests, itts, itts_end) {
-			(*itts)->markUsed(this);
+		test = iter_rule->second->test_head;
+		while (test) {
+			test->markUsed(this);
+			test = test->next;
 		}
 	}
 	if (delimiters) {
