@@ -99,12 +99,18 @@ bool GrammarApplicator::attachParentChild(Cohort *parent, Cohort *child, bool al
 
 void GrammarApplicator::reflowDependencyWindow() {
 	bool did_dep = false;
-	if (gWindow->dep_window.find(0) == gWindow->dep_window.end()) {
+	if (gWindow->dep_window.empty()) {
+		gWindow->dep_window[0] = gWindow->current->cohorts.at(0);
+	}
+	else if (gWindow->dep_window.find(0) == gWindow->dep_window.end()) {
 		// This has to be done in 2 steps or it will segfault on Linux for some reason...
 		Cohort *tmp = gWindow->dep_window.begin()->second->parent->cohorts.at(0);
 		gWindow->dep_window[0] = tmp;
 	}
-	if (gWindow->cohort_map.find(0) == gWindow->cohort_map.end()) {
+	if (gWindow->cohort_map.empty()) {
+		gWindow->cohort_map[0] = gWindow->current->cohorts.at(0);
+	}
+	else if (gWindow->cohort_map.find(0) == gWindow->cohort_map.end()) {
 		Cohort *tmp = gWindow->cohort_map.begin()->second->parent->cohorts.at(0);
 		gWindow->cohort_map[0] = tmp;
 	}
