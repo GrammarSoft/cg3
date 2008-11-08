@@ -225,26 +225,24 @@ void GrammarWriter::printRule(UFILE *to, const Rule *rule) {
 		u_fprintf(to, "%S ", grammar->sets_by_contents.find(rule->target)->second->name);
 	}
 
-	if (rule->tests.size()) {
-		std::list<ContextualTest*>::const_iterator iter;
-		for (iter = rule->tests.begin() ; iter != rule->tests.end() ; iter++) {
-			u_fprintf(to, "(");
-			printContextualTest(to, *iter);
-			u_fprintf(to, ") ");
-		}
+	ContextualTest *test = rule->test_head;
+	while (test) {
+		u_fprintf(to, "(");
+		printContextualTest(to, test);
+		u_fprintf(to, ") ");
+		test = test->next;
 	}
 
 	if (rule->dep_target) {
 		u_fprintf(to, "TO (");
 		printContextualTest(to, rule->dep_target);
 		u_fprintf(to, ") ");
-		if (rule->dep_tests.size()) {
-			std::list<ContextualTest*>::const_iterator iter;
-			for (iter = rule->dep_tests.begin() ; iter != rule->dep_tests.end() ; iter++) {
-				u_fprintf(to, "(");
-				printContextualTest(to, *iter);
-				u_fprintf(to, ") ");
-			}
+		ContextualTest *test = rule->dep_test_head;
+		while (test) {
+			u_fprintf(to, "(");
+			printContextualTest(to, test);
+			u_fprintf(to, ") ");
+			test = test->next;
 		}
 	}
 }

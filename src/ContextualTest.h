@@ -74,6 +74,9 @@ namespace CG3 {
 		std::list<ContextualTest*> ors;
 		ContextualTest *linked;
 
+		ContextualTest *prev, *next;
+		void detach();
+
 		ContextualTest();
 		~ContextualTest();
 

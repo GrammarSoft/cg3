@@ -41,17 +41,22 @@ Rule::Rule() {
 	quality = 0.0;
 	type = K_IGNORE;
 	flags = 0;
+	test_head = 0;
+	dep_test_head = 0;
 }
 
 Rule::~Rule() {
 	delete[] name;
-	std::list<ContextualTest*>::iterator iter;
-	for (iter = tests.begin() ; iter != tests.end() ; iter++) {
-		delete (*iter);
-	}
 
-	for (iter = dep_tests.begin() ; iter != dep_tests.end() ; iter++) {
-		delete (*iter);
+	while (test_head) {
+		ContextualTest *t = test_head->next;
+		delete test_head;
+		test_head = t;
+	}
+	while (dep_test_head) {
+		ContextualTest *t = dep_test_head->next;
+		delete dep_test_head;
+		dep_test_head = t;
 	}
 
 	delete dep_target;
@@ -71,14 +76,24 @@ ContextualTest *Rule::allocateContextualTest() {
 	return new ContextualTest;
 }
 
-void Rule::addContextualTest(ContextualTest *to, std::list<ContextualTest*> *thelist) {
-	thelist->push_back(to);
+void Rule::addContextualTest(ContextualTest *to, ContextualTest **head) {
+	if (*head) {
+		(*head)->prev = to;
+		to->next = *head;
+	}
+	*head = to;
 }
 
 void Rule::resetStatistics() {
-	std::list<ContextualTest*>::iterator iter;
-	for (iter = tests.begin() ; iter != tests.end() ; iter++) {
-		(*iter)->resetStatistics();
+	ContextualTest *t = test_head;
+	while (t) {
+		t->resetStatistics();
+		t = t->next;
+	}
+	t = dep_test_head;
+	while (t) {
+		t->resetStatistics();
+		t = t->next;
 	}
 	num_fail = 0;
 	num_match = 0;

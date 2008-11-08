@@ -39,6 +39,8 @@ ContextualTest::ContextualTest() {
 	num_match = 0;
 	total_time = 0;
 	tmpl = 0;
+	prev = 0;
+	next = 0;
 	is_used = false;
 }
 
@@ -47,9 +49,24 @@ ContextualTest::~ContextualTest() {
 		delete *iter;
 		*iter = 0;
 	}
+	detach();
 	ors.clear();
 	tmpl = 0;
 	delete linked;
+}
+
+void ContextualTest::detach() {
+	if (prev && next) {
+		prev->next = next;
+		next->prev = prev;
+		prev = next = 0;
+	}
+	if (prev) {
+		prev->next = 0;
+	}
+	if (next) {
+		next->prev = 0;
+	}
 }
 
 void ContextualTest::parsePosition(const UChar *input, UFILE *ux_stderr) {

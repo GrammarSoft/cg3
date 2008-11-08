@@ -226,7 +226,7 @@ int TextualParser::parseSetInline(Set *s, UChar **p) {
 	return 0;
 }
 
-int TextualParser::parseContextualTestList(Rule *rule, std::list<ContextualTest*> *thelist, CG3::ContextualTest *parentTest, UChar **p, CG3::ContextualTest *self) {
+int TextualParser::parseContextualTestList(Rule *rule, ContextualTest **head, CG3::ContextualTest *parentTest, UChar **p, CG3::ContextualTest *self) {
 	ContextualTest *t = 0;
 	if (self) {
 		t = self;
@@ -383,7 +383,7 @@ int TextualParser::parseContextualTestList(Rule *rule, std::list<ContextualTest*
 			t->pos &= ~POS_NEGATIVE;
 			t->pos |= POS_NEGATED;
 		}
-		rule->addContextualTest(t, thelist);
+		rule->addContextualTest(t, head);
 	}
 	if (rule) {
 		if (rule->flags & RF_LOOKDELETED) {
@@ -397,11 +397,11 @@ int TextualParser::parseContextualTestList(Rule *rule, std::list<ContextualTest*
 }
 
 int TextualParser::parseContextualTests(Rule *rule, UChar **p) {
-	return parseContextualTestList(rule, &rule->tests, 0, p);
+	return parseContextualTestList(rule, &rule->test_head, 0, p);
 }
 
 int TextualParser::parseContextualDependencyTests(Rule *rule, UChar **p) {
-	return parseContextualTestList(rule, &rule->dep_tests, 0, p);
+	return parseContextualTestList(rule, &rule->dep_test_head, 0, p);
 }
 
 int TextualParser::parseRule(KEYWORDS key, UChar **p) {
@@ -671,12 +671,16 @@ int TextualParser::parseRule(KEYWORDS key, UChar **p) {
 			(*p)++;
 			result->lines += SKIPWS(p);
 		}
-		if (rule->dep_tests.empty()) {
+		if (!rule->dep_test_head) {
 			u_fprintf(ux_stderr, "Error: Missing dependency target on line %u!\n", result->lines);
 			CG3Quit(1);
 		}
-		rule->dep_target = rule->dep_tests.front();
-		rule->dep_tests.pop_front();
+		rule->dep_target = rule->dep_test_head;
+		rule->dep_test_head = rule->dep_test_head->next;
+		if (rule->dep_test_head) {
+			rule->dep_test_head->prev = 0;
+		}
+		rule->dep_target->next = 0;
 	}
 	if (key == K_SETPARENT || key == K_SETCHILD) {
 		result->has_dep = true;

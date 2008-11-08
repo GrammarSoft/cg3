@@ -167,9 +167,9 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, uint32Set *r
 				if (rule->target && doesSetMatchReading(reading, rule->target, set->is_child_unified|set->is_special)) {
 					reading->matched_target = true;
 					bool good = true;
-					if (!rule->tests.empty() && !did_test) {
-						foreach (std::list<ContextualTest*>, rule->tests, iter, iter_end) {
-							ContextualTest *test = *iter;
+					if (!did_test) {
+						ContextualTest *test = rule->test_head;
+						while (test) {
 							mark = cohort;
 							if (!(test->pos & POS_PASS_ORIGIN) && (no_pass_origin || (test->pos & POS_NO_PASS_ORIGIN))) {
 								test_good = (runContextualTest(current, c, test, 0, cohort) != 0);
@@ -181,6 +181,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, uint32Set *r
 								good = test_good;
 								break;
 							}
+							test = test->next;
 						}
 					}
 					else if (did_test) {
@@ -419,16 +420,15 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, uint32Set *r
 							Cohort *attach = 0;
 							if (runContextualTest(target->parent, target->local_number, rule->dep_target, &attach) && attach) {
 								bool good = true;
-								if (!rule->dep_tests.empty()) {
-									foreach (std::list<ContextualTest*>, rule->dep_tests, iter, iter_end) {
-										mark = attach;
-										ContextualTest *test = *iter;
-										test_good = (runContextualTest(attach->parent, attach->local_number, test) != 0);
-										if (!test_good) {
-											good = test_good;
-											break;
-										}
+								ContextualTest *test = rule->dep_test_head;
+								while (test) {
+									mark = attach;
+									test_good = (runContextualTest(attach->parent, attach->local_number, test) != 0);
+									if (!test_good) {
+										good = test_good;
+										break;
 									}
+									test = test->next;
 								}
 								if (good) {
 									if (type == K_SETPARENT) {
@@ -471,16 +471,15 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, uint32Set *r
 						Cohort *attach = 0;
 						if (runContextualTest(current, c, rule->dep_target, &attach) && attach && cohort->parent == attach->parent) {
 							bool good = true;
-							if (!rule->dep_tests.empty()) {
-								foreach (std::list<ContextualTest*>, rule->dep_tests, iter, iter_end) {
-									mark = attach;
-									ContextualTest *test = *iter;
-									test_good = (runContextualTest(attach->parent, attach->local_number, test) != 0);
-									if (!test_good) {
-										good = test_good;
-										break;
-									}
+							ContextualTest *test = rule->dep_test_head;
+							while (test) {
+								mark = attach;
+								test_good = (runContextualTest(attach->parent, attach->local_number, test) != 0);
+								if (!test_good) {
+									good = test_good;
+									break;
 								}
+								test = test->next;
 							}
 							uint32_t a = cohort->local_number;
 							uint32_t b = attach->local_number;
@@ -523,16 +522,15 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, uint32Set *r
 						Cohort *attach = 0;
 						if (runContextualTest(current, c, rule->dep_target, &attach) && attach) {
 							bool good = true;
-							if (!rule->dep_tests.empty()) {
-								foreach (std::list<ContextualTest*>, rule->dep_tests, iter, iter_end) {
-									mark = attach;
-									ContextualTest *test = *iter;
-									test_good = (runContextualTest(attach->parent, attach->local_number, test) != 0);
-									if (!test_good) {
-										good = test_good;
-										break;
-									}
+							ContextualTest *test = rule->dep_test_head;
+							while (test) {
+								mark = attach;
+								test_good = (runContextualTest(attach->parent, attach->local_number, test) != 0);
+								if (!test_good) {
+									good = test_good;
+									break;
 								}
+								test = test->next;
 							}
 							if (good) {
 								reading->hit_by.push_back(rule->line);
@@ -558,16 +556,15 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, uint32Set *r
 						Cohort *attach = runContextualTest(current, c, rule->dep_target);
 						if (attach) {
 							bool good = true;
-							if (!rule->dep_tests.empty()) {
-								foreach (std::list<ContextualTest*>, rule->dep_tests, iter, iter_end) {
-									mark = attach;
-									ContextualTest *test = *iter;
-									test_good = (runContextualTest(attach->parent, attach->local_number, test) != 0);
-									if (!test_good) {
-										good = test_good;
-										break;
-									}
+							ContextualTest *test = rule->dep_test_head;
+							while (test) {
+								mark = attach;
+								test_good = (runContextualTest(attach->parent, attach->local_number, test) != 0);
+								if (!test_good) {
+									good = test_good;
+									break;
 								}
+								test = test->next;
 							}
 							if (good) {
 								reading->hit_by.push_back(rule->line);
