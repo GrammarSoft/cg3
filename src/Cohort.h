@@ -45,6 +45,9 @@ namespace CG3 {
 		uint32_t dep_parent;
 		uint32HashSet dep_children;
 
+		Cohort *prev, *next;
+		void detach();
+
 		uint32HashSet possible_sets;
 
 		bool is_enclosed;

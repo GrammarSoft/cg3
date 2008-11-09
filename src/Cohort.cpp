@@ -35,6 +35,8 @@ Cohort::Cohort(SingleWindow *p) {
 	text_post = 0;
 	dep_self = 0;
 	dep_parent = 0;
+	prev = 0;
+	next = 0;
 }
 
 void Cohort::clear(SingleWindow *p) {
@@ -76,6 +78,7 @@ void Cohort::clear(SingleWindow *p) {
 	possible_sets.clear();
 	dep_children.clear();
 	enclosed.clear();
+	detach();
 }
 
 Cohort::~Cohort() {
@@ -99,6 +102,17 @@ Cohort::~Cohort() {
 	if (text_post) {
 		delete[] text_post;
 	}
+	detach();
+}
+
+void Cohort::detach() {
+	if (prev) {
+		prev->next = next;
+	}
+	if (next) {
+		next->prev = prev;
+	}
+	prev = next = 0;
 }
 
 void Cohort::addChild(uint32_t child) {

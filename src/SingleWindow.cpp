@@ -49,7 +49,7 @@ SingleWindow::~SingleWindow() {
 		}
 	}
 	foreach(RuleToCohortsMap, rule_to_cohorts, rocit, rocit_end) {
-		rocit->second->clear();
+		//rocit->second->clear();
 		delete rocit->second;
 		rocit->second = 0;
 	}
@@ -57,6 +57,13 @@ SingleWindow::~SingleWindow() {
 
 void SingleWindow::appendCohort(Cohort *cohort) {
 	cohort->local_number = (uint32_t)cohorts.size();
+	if (cohorts.empty()) {
+		cohort->prev = 0;
+	}
+	else {
+		cohort->prev = cohorts.back();
+		cohorts.back()->next = cohort;
+	}
 	cohorts.push_back(cohort);
 	parent->cohort_map[cohort->global_number] = cohort;
 	parent->dep_window[cohort->global_number] = cohort;
