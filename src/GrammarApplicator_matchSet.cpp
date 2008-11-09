@@ -321,12 +321,7 @@ bool GrammarApplicator::doesTagMatchReading(const Reading *reading, const Tag *t
 
 	if (match) {
 		match_single++;
-		if (tag->type & T_FAILFAST) {
-			retval = false;
-		}
-		else {
-			retval = true;
-		}
+		retval = true;
 	}
 	return retval;
 }
@@ -341,7 +336,7 @@ bool GrammarApplicator::doesSetMatchReading_tags(const Reading *reading, const S
 		TagHashSet::const_iterator ster;
 		for (ster = theset->ff_tags.begin() ; ster != theset->ff_tags.end() ; ster++) {
 			bool match = doesTagMatchReading(reading, (*ster));
-			if (!match) {
+			if (match) {
 				return false;
 			}
 		}
@@ -373,6 +368,9 @@ bool GrammarApplicator::doesSetMatchReading_tags(const Reading *reading, const S
 				TagHashSet::const_iterator cter;
 				for (cter = ctag->tags.begin() ; cter != ctag->tags.end() ; cter++) {
 					bool inner = doesTagMatchReading(reading, (*cter));
+					if ((*cter)->type & T_FAILFAST) {
+						inner = !inner;
+					}
 					if (!inner) {
 						match = false;
 						break;
