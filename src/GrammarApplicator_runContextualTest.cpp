@@ -348,7 +348,7 @@ Cohort *GrammarApplicator::runDependencyTest(SingleWindow *sWindow, const Cohort
 			deps = &current->dep_children;
 		}
 		else {
-			deps = &(current->parent->cohorts[current->dep_parent]->dep_children);
+			deps = &(current->parent->parent->cohort_map.find(current->dep_parent)->second->dep_children);
 		}
 
 		const_foreach(uint32HashSet, *deps, dter, dter_end) {
