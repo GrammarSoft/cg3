@@ -341,6 +341,9 @@ bool GrammarApplicator::doesSetMatchReading_tags(const Reading *reading, const S
 			}
 		}
 		for (ster = theset->single_tags.begin() ; ster != theset->single_tags.end() ; ster++) {
+			if ((*ster)->type & T_FAILFAST) {
+				continue;
+			}
 			bool match = doesTagMatchReading(reading, (*ster));
 			if (match) {
 				if (unif_mode) {
