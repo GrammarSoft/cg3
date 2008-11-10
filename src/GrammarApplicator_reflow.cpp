@@ -135,7 +135,6 @@ void GrammarApplicator::reflowDependencyWindow() {
 		gWindow->dep_map[0] = 0;
 		for (dIter = gWindow->dep_window.begin() ; dIter != gWindow->dep_window.end() ; dIter++) {
 			Cohort *cohort = dIter->second;
-
 			if (cohort->dep_self == cohort->global_number) {
 				if (!cohort->dep_done && gWindow->dep_map.find(cohort->dep_parent) == gWindow->dep_map.end()) {
 					if (verbosity_level > 0) {
@@ -209,7 +208,7 @@ void GrammarApplicator::addTagToReading(Reading *reading, uint32_t utag, bool re
 	if (!reading->wordform && tag->type & T_WORDFORM) {
 		reading->wordform = tag->hash;
 	}
-	if (grammar->has_dep && tag->type & T_DEPENDENCY) {
+	if (grammar->has_dep && tag->type & T_DEPENDENCY && !reading->parent->dep_done) {
 		reading->parent->dep_self = tag->dep_self;
 		reading->parent->dep_parent = tag->dep_parent;
 		has_dep = true;
