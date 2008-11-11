@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-print `svn up`;
+print `svn up --ignore-externals`;
 my $revision = `svnversion -n`;
 $revision =~ s/^([0-9]+).*/$1/g;
 $revision += 1;
