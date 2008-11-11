@@ -46,7 +46,7 @@ Cohort *GrammarApplicator::runSingleTest(SingleWindow *sWindow, size_t i, const 
 			*retval = false;
 		}
 	}
-	if (origin && origin == cohort && origin->local_number != 0) {
+	if (origin && (test->offset != 0 || (test->pos & (POS_SCANALL|POS_SCANFIRST))) && origin == cohort && origin->local_number != 0) {
 		*retval = false;
 		*brk = true;
 	}
