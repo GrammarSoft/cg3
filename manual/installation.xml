@@ -8,6 +8,51 @@
     using <ulink url="http://www.microsoft.com/express/vc/">Microsoft Visual C++ 2008 Express Edition</ulink>.
   </para>
 
+  <section id="ubuntu-debian">
+    <title>Ubuntu / Debian</title>
+    <para>
+      Steps tested on a clean install of Ubuntu 8.10, but should work on any version.
+      It is assumed you have a working network connection.
+    </para>
+    <para>
+      Launch a Terminal from Applications -&gt; Accessories, and in that do
+      <screen>
+        sudo apt-get install g++ libicu-dev subversion autoconf automake
+        cd /tmp/
+        svn export --ignore-externals --username anonymous --password anonymous http://beta.visl.sdu.dk/svn/visl/tools/vislcg3/trunk vislcg3
+        cd vislcg3/
+        ./autogen.sh
+        make -j3
+        ./test/runall.pl
+        sudo make install
+      </screen>
+      Rest of this page can be skipped.
+    </para>
+  </section>
+
+  <section id="fedora">
+    <title>Fedora</title>
+    <para>
+      Steps tested on a clean install of Fedora 9, but should work on any version.
+      It is assumed you have a working network connection.
+    </para>
+    <para>
+      Launch a Terminal from Applications -&gt; Accessories, and in that do
+      <screen>
+        su -
+        yum install gcc-c++ libicu-devel autoconf automake
+        cd /tmp/
+        svn export --ignore-externals --username anonymous --password anonymous http://beta.visl.sdu.dk/svn/visl/tools/vislcg3/trunk vislcg3
+        cd vislcg3/
+        ./autogen.sh
+        make -j3
+        ./test/runall.pl
+        make install
+      </screen>
+      Rest of this page can be skipped.
+    </para>
+  </section>
+
   <section id="installing_icu">
     <title>Installing ICU</title>
     <para>
@@ -38,7 +83,7 @@
         # ./runConfigureICU Linux
         # make
         # make install
-        # echo "/usr/local/lib" >> /etc/ld.so.conf
+        # echo "/usr/local/lib" &gt;&gt; /etc/ld.so.conf
         # ldconfig
       </screen>
     </para>
