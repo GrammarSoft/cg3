@@ -31,7 +31,7 @@
   </section>
 
   <section id="fedora">
-    <title>Fedora</title>
+    <title>Fedora / Red Hat</title>
     <para>
       Steps tested on a clean install of Fedora 9, but should work on any version.
       It is assumed you have a working network connection.
