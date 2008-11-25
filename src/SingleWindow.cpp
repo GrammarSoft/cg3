@@ -67,4 +67,7 @@ void SingleWindow::appendCohort(Cohort *cohort) {
 	cohorts.push_back(cohort);
 	parent->cohort_map[cohort->global_number] = cohort;
 	parent->dep_window[cohort->global_number] = cohort;
+	if (cohort->local_number == 0) {
+		parent->cohort_map[0] = cohort;
+	}
 }

@@ -40,7 +40,7 @@
       Launch a Terminal from Applications -&gt; Accessories, and in that do
       <screen>
         su -
-        yum install gcc-c++ libicu-devel autoconf automake
+        yum install gcc-c++ libicu-devel subversion autoconf automake
         cd /tmp/
         svn export --ignore-externals --username anonymous --password anonymous http://beta.visl.sdu.dk/svn/visl/tools/vislcg3/trunk vislcg3
         cd vislcg3/
