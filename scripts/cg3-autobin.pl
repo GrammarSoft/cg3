@@ -94,11 +94,18 @@ if (!(-r $bn) && !(-r $bn.".lock")) {
 	unlink $bn.".lock";
 }
 
+my $cmd = '';
 if (-r $bn && !(-r $bn.".lock")) {
 	print STDERR "CG3 AutoBin using $bn\n";
-	print `cat /dev/stdin | $bin $args --grammar $bn`;
+	$cmd = "cat /dev/stdin | $bin $args --grammar $bn";
 }
 else {
 	print STDERR "CG3 AutoBin failed - falling back to normal\n";
-	print `cat /dev/stdin | $bin $args --grammar $grammar`;
+	$cmd = "cat /dev/stdin | $bin $args --grammar $grammar";
 }
+
+open CG, "$cmd|" or die $!;
+while (<CG>) {
+    print;
+}
+close CG;
