@@ -331,4 +331,5 @@ void GrammarApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 		}
 	}
 	u_fprintf(output, "\n");
+	u_fflush(output);
 }
