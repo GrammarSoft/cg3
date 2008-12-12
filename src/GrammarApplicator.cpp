@@ -185,7 +185,11 @@ void GrammarApplicator::disableStatistics() {
 Tag *GrammarApplicator::addTag(const UChar *txt) {
 	uint32_t hash = hash_sdbm_uchar(txt);
 	if (single_tags.find(hash) != single_tags.end()) {
-		return single_tags[hash];
+		Tag *t = single_tags[hash];
+		if (t->tag && u_strcmp(t->tag, txt) != 0) {
+			u_fprintf(ux_stderr, "Warning: Hash collision between %S and %S - both hash to %u.\n", txt, t->tag, hash);
+			u_fflush(ux_stderr);
+		}
 	}
 
 	Tag *tag = new Tag();
