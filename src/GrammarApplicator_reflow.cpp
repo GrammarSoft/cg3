@@ -153,7 +153,10 @@ void GrammarApplicator::reflowDependencyWindow() {
 						uint32_t dep_real = gWindow->dep_map.find(cohort->dep_parent)->second;
 						cohort->dep_parent = dep_real;
 					}
-					gWindow->cohort_map.find(cohort->dep_parent)->second->addChild(cohort->dep_self);
+					std::map<uint32_t, Cohort*>::iterator tmp = gWindow->cohort_map.find(cohort->dep_parent);
+					if (tmp != gWindow->cohort_map.end()) {
+						tmp->second->addChild(cohort->dep_self);
+					}
 					cohort->dep_done = true;
 				}
 			}
