@@ -187,8 +187,11 @@ Tag *GrammarApplicator::addTag(const UChar *txt) {
 	if (single_tags.find(hash) != single_tags.end()) {
 		Tag *t = single_tags[hash];
 		if (t->tag && u_strcmp(t->tag, txt) != 0) {
-			u_fprintf(ux_stderr, "Warning: Hash collision between %S and %S - both hash to %u.\n", txt, t->tag, hash);
+			u_fprintf(ux_stderr, "Warning: Hash collision between %S and %S - both hash to %u. Removing existing.\n", txt, t->tag, hash);
 			u_fflush(ux_stderr);
+			delete single_tags[hash];
+			single_tags[hash] = 0;
+			single_tags.erase(hash);
 		}
 	}
 
