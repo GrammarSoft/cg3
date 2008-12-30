@@ -269,6 +269,10 @@ Tag *Grammar::allocateTag(const UChar *tag) {
 	uint32_t hash = hash_sdbm_uchar(tag);
 	if (single_tags.find(hash) != single_tags.end()) {
 		fresh = single_tags[hash];
+		if (u_strcmp(single_tags[hash]->tag, tag) != 0) {
+			u_fprintf(ux_stderr, "Error: Hash collision between %S and %S!\n", single_tags[hash]->tag, tag);
+			CG3Quit(1);
+		}
 	}
 	else {
 		fresh = new Tag;
