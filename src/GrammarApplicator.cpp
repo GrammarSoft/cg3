@@ -189,7 +189,7 @@ Tag *GrammarApplicator::addTag(const UChar *txt) {
 		if (t->tag && u_strcmp(t->tag, txt) != 0) {
 			u_fprintf(ux_stderr, "Warning: Hash collision between %S and %S - both hash to %u. Removing existing.\n", txt, t->tag, hash);
 			u_fflush(ux_stderr);
-			delete single_tags[hash];
+			//delete single_tags[hash]; // ToDo: Yes, that's a memory leak.
 			single_tags[hash] = 0;
 			single_tags.erase(hash);
 		}
