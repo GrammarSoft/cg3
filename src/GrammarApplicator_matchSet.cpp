@@ -229,6 +229,9 @@ bool GrammarApplicator::doesTagMatchReading(const Reading *reading, const Tag *t
 					if (unif_last_baseform != reading->baseform) {
 						match = false;
 					}
+					else {
+						match = true;
+					}
 				}
 				else {
 					unif_last_baseform = reading->baseform;
