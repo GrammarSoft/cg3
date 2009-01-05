@@ -293,9 +293,18 @@ Cohort *GrammarApplicator::runContextualTest(SingleWindow *sWindow, size_t posit
 	return cohort;
 }
 
-Cohort *GrammarApplicator::runDependencyTest(SingleWindow *sWindow, const Cohort *current, const ContextualTest *test, Cohort **deep, Cohort *origin) {
+Cohort *GrammarApplicator::runDependencyTest(SingleWindow *sWindow, const Cohort *current, const ContextualTest *test, Cohort **deep, Cohort *origin, const Cohort *self) {
 	Cohort *rv = 0;
 	Cohort *tmc = 0;
+
+	if (self) {
+		if (self == current) {
+			return 0;
+		}
+	}
+	else {
+		self = current;
+	}
 
 	bool retval = false;
 	bool brk = false;
@@ -333,7 +342,7 @@ Cohort *GrammarApplicator::runDependencyTest(SingleWindow *sWindow, const Cohort
 			rv = cohort;
 		}
 		else if (test->pos & POS_DEP_DEEP) {
-			tmc = runDependencyTest(cohort->parent, cohort, test, deep, origin);
+			tmc = runDependencyTest(cohort->parent, cohort, test, deep, origin, self);
 			if (tmc) {
 				rv = tmc;
 			}
@@ -397,7 +406,7 @@ Cohort *GrammarApplicator::runDependencyTest(SingleWindow *sWindow, const Cohort
 				break;
 			}
 			else if (test->pos & POS_DEP_DEEP) {
-				tmc = runDependencyTest(cohort->parent, cohort, test, deep, origin);
+				tmc = runDependencyTest(cohort->parent, cohort, test, deep, origin, self);
 				if (tmc) {
 					rv = tmc;
 					break;
