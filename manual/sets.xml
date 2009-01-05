@@ -80,6 +80,22 @@
       There may be side effects due to that. Also, unification of complex and deep sets have not been
       thoroughly tested yet, so expect some issues.
     </para>
+    <para>
+      Caveat 2: The behavior of this next rule is undefined:
+      <screen>
+        SELECT (tag) IF (0 $$UNISET) (-2* $$UNISET) (1** $$UNISET) ;
+      </screen>
+      Since the order of tests is dynamic, the unification of $$UNISET will be initialized with essentially random
+      data, and as such cannot be guaranteed to unify properly. Well defined behavior can be enforced in various ways:
+      <screen>
+        # Put $$UNISET in the target
+        SELECT (tag) + $$UNISET IF (-2* $$UNISET) (1** $$UNISET) ;
+
+        # Only refer to $$UNISET in a single linked chain of tests
+        SELECT (tag) IF (0 $$UNISET LINK -2* $$UNISET LINK 1** $$UNISET) ;
+      </screen>
+      Having the unifier in the target is usually the best way to enforce behavior.
+    </para>
   </section>
 
 </chapter>
