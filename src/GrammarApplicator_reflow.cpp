@@ -71,7 +71,7 @@ bool GrammarApplicator::attachParentChild(Cohort *parent, Cohort *child, bool al
 		if (verbosity_level > 0) {
 			u_fprintf(
 				ux_stderr,
-				"Info: Dependency between %u and %u would cause a loop. Will not attach them.\n",
+				"Warning: Dependency between %u and %u would cause a loop. Will not attach them.\n",
 				child->global_number, parent->global_number
 				);
 		}
