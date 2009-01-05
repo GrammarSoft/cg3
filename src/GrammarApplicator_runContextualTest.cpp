@@ -358,7 +358,20 @@ Cohort *GrammarApplicator::runDependencyTest(SingleWindow *sWindow, const Cohort
 				deps = &(current->parent->cohorts.at(0)->dep_children);
 			}
 			else {
-				deps = &(current->parent->parent->cohort_map.find(current->dep_parent)->second->dep_children);
+				if (current && current->parent && current->parent->parent
+					&& current->parent->parent->cohort_map.find(current->dep_parent) != current->parent->parent->cohort_map.end()
+					&& current->parent->parent->cohort_map.find(current->dep_parent)->second
+					&& !current->parent->parent->cohort_map.find(current->dep_parent)->second->dep_children.empty()
+					) {
+					deps = &(current->parent->parent->cohort_map.find(current->dep_parent)->second->dep_children);
+				}
+				else {
+					if (verbosity_level > 0) {
+						u_fprintf(ux_stderr, "Warning: Cohort %u (parent %u) did not have any siblings.\n", current->dep_self, current->dep_parent);
+						u_fflush(ux_stderr);
+					}
+					return 0;
+				}
 			}
 		}
 

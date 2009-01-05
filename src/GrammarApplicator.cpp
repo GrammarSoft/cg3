@@ -198,7 +198,7 @@ Tag *GrammarApplicator::addTag(const UChar *txt) {
 			}
 		}
 		else {
-			if (seed) {
+			if (seed && verbosity_level > 0) {
 				u_fprintf(ux_stderr, "Warning: Tag %S got hash seed %u.\n", txt, seed);
 				u_fflush(ux_stderr);
 			}
