@@ -21,6 +21,9 @@
 
 #include "stdafx.h"
 #include "icu_uoptions.h"
+#include "Tag.h"
+
+using namespace CG3;
 
 UFILE *ux_stdin = 0;
 UFILE *ux_stdout = 0;
@@ -70,8 +73,13 @@ int main(int argc, char* argv[]) {
 		CG3Quit(1);
 	}
 
+	init_gbuffers();
+	init_strings();
+	init_keywords();
+	init_flags();
+
 	UChar *t;
-	stdext::hash_map<uint32_t, UChar*> m;
+	stdext::hash_map<uint32_t, Tag*> m;
 
 	t = new UChar[512];
 	memset(t, 0, sizeof(UChar)*512);
@@ -80,24 +88,21 @@ int main(int argc, char* argv[]) {
 		for (uint32_t j=0 ; j<1000 ; j++) {
 			memset(t, 0, sizeof(UChar)*512);
 			u_sprintf(t, "#%u->%u", i, j);
+			
+			Tag *x = new Tag();
+			x->parseTag(t, ux_stderr);
+			uint32_t h = x->rehash();
 
-			uint32_t h = hash_sdbm_uchar(t);
-			/*
-			h = hash_sdbm_uint32_t(h, i);
-			h = hash_sdbm_uint32_t(h, j);
-			//*/
 			if (m.find(h) != m.end()) {
-				const UChar *o = m.find(h)->second;
-				if (u_strcmp(t, o) != 0) {
-					u_fprintf(ux_stdout, "Collision value %u between '%S' and '%S'\n", h, t, o);
+				const Tag *o = m.find(h)->second;
+				if (u_strcmp(x->tag, o->tag) != 0) {
+					u_fprintf(ux_stdout, "Collision value %u between '%S' and '%S'\n", h, x->tag, o->tag);
 					u_fflush(ux_stdout);
 				}
+				delete x;
 			}
 			else {
-				UChar *d = new UChar[u_strlen(t)+1];
-				memset(d, 0, sizeof(UChar)*(u_strlen(t)+1));
-				memcpy(d, t, sizeof(UChar)*u_strlen(t));
-				m[h] = d;
+				m[h] = x;
 			}
 		}
 	}
@@ -106,6 +111,11 @@ int main(int argc, char* argv[]) {
 	u_fclose(ux_stdout);
 	u_fclose(ux_stderr);
 	
+	free_strings();
+	free_keywords();
+	free_gbuffers();
+	free_flags();
+
 	u_cleanup();
 
 	return status;
