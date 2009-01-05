@@ -38,6 +38,7 @@ Tag::Tag() {
 	number = 0;
 	hash = 0;
 	plain_hash = 0;
+	seed = 0;
 }
 
 Tag::~Tag() {
@@ -113,7 +114,7 @@ void Tag::parseTag(const UChar *to, UFILE *ux_stderr) {
 		ux_unEscape(utag, tag);
 		u_strcpy(tag, utag);
 		utag = 0;
-		comparison_hash = hash_sdbm_uchar(tag, 0);
+		comparison_hash = hash_sdbm_uchar(tag);
 
 		if (tag && tag[0] == '<' && tag[length-1] == '>') {
 			parseNumeric(this, tag);
@@ -266,7 +267,7 @@ void Tag::parseNumeric(Tag *tag, const UChar *txt) {
 		uint32_t length = u_strlen(tkey);
 		tag->comparison_key = tag->allocateUChars(length+1);
 		u_strcpy(tag->comparison_key, tkey);
-		tag->comparison_hash = hash_sdbm_uchar(tag->comparison_key, 0);
+		tag->comparison_hash = hash_sdbm_uchar(tag->comparison_key);
 		tag->type |= T_NUMERICAL;
 		tag->type &= ~T_TEXTUAL;
 	}
@@ -303,6 +304,10 @@ uint32_t Tag::rehash() {
 	}
 	if (type & T_REGEXP) {
 		hash = hash_sdbm_char("r", hash);
+	}
+
+	if (seed) {
+		hash += seed;
 	}
 
 	is_special = false;

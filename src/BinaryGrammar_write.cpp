@@ -65,6 +65,8 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 		u32tmp = (uint32_t)htonl((uint32_t)t->plain_hash);
 		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
+		u32tmp = (uint32_t)htonl((uint32_t)t->seed);
+		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 		u32tmp = (uint32_t)htonl((uint32_t)t->type);
 		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 		u8tmp = (uint8_t)t->is_special;

@@ -235,7 +235,6 @@ main(int argc, char *argv[])
 
 	grammar->ux_stderr = ux_stderr;
 	CG3::Tag *tag_any = grammar->allocateTag(stringbits[S_ASTERIK]);
-	tag_any = grammar->addTag(tag_any);
 	grammar->tag_any = tag_any->hash;
 	parser->setResult(grammar);
 	if (parser->parse_grammar_from_file(argv[optind], locale_default, codepage_default)) {
