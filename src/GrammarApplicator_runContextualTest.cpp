@@ -38,12 +38,9 @@ Cohort *GrammarApplicator::runSingleTest(SingleWindow *sWindow, size_t i, const 
 	}
 	*retval = doesSetMatchCohortNormal(cohort, test->target, test->pos);
 	bool foundfirst = *retval;
-	if (test->pos & POS_CAREFUL) {
-		if (*retval) {
+	if (*retval && (test->pos & POS_CAREFUL)) {
+		if (cohort->readings.size() > 1 || test->pos & (POS_LOOK_DELETED|POS_LOOK_DELAYED)) {
 			*retval = doesSetMatchCohortCareful(cohort, test->target, test->pos);
-		}
-		else {
-			*retval = false;
 		}
 	}
 	if (origin && (test->offset != 0 || (test->pos & (POS_SCANALL|POS_SCANFIRST))) && origin == cohort && origin->local_number != 0) {
