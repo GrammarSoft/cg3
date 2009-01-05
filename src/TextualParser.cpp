@@ -69,7 +69,6 @@ int TextualParser::parseTagList(Set *s, UChar **p, const bool isinline = false) 
 					u_strncpy(gbuffers[0], *p, c);
 					gbuffers[0][c] = 0;
 					Tag *t = result->allocateTag(gbuffers[0]);
-					t = result->addTag(t);
 					result->addTagToCompositeTag(t, ct);
 					*p = n;
 					result->lines += SKIPWS(p, ';', ')');
@@ -98,7 +97,6 @@ int TextualParser::parseTagList(Set *s, UChar **p, const bool isinline = false) 
 				gbuffers[0][c] = 0;
 				CompositeTag *ct = result->allocateCompositeTag();
 				Tag *t = result->allocateTag(gbuffers[0]);
-				t = result->addTag(t);
 				result->addTagToCompositeTag(t, ct);
 				ct = result->addCompositeTagToSet(s, ct);
 				*p = n;
@@ -144,7 +142,6 @@ int TextualParser::parseSetInline(Set *s, UChar **p) {
 						u_strncpy(gbuffers[0], *p, c);
 						gbuffers[0][c] = 0;
 						Tag *t = result->allocateTag(gbuffers[0]);
-						t = result->addTag(t);
 						result->addTagToCompositeTag(t, ct);
 						*p = n;
 						result->lines += SKIPWS(p, ';', ')');
@@ -428,8 +425,7 @@ int TextualParser::parseRule(KEYWORDS key, UChar **p) {
 		u_strncpy(gbuffers[0], lp, c);
 		gbuffers[0][c] = 0;
 		Tag *wform = result->allocateTag(gbuffers[0]);
-		rule->wordform = wform->rehash();
-		wform = result->addTag(wform);
+		rule->wordform = wform->hash;
 	}
 
 	(*p) += keyword_lengths[key];
@@ -519,7 +515,6 @@ int TextualParser::parseRule(KEYWORDS key, UChar **p) {
 			u_strncpy(gbuffers[0], *p, c);
 			gbuffers[0][c] = 0;
 			Tag *wform = result->allocateTag(gbuffers[0]);
-			wform = result->addTag(wform);
 			rule->sublist.push_back(wform->hash);
 			*p = n;
 			result->lines += SKIPWS(p, ';', ')');
@@ -547,7 +542,6 @@ int TextualParser::parseRule(KEYWORDS key, UChar **p) {
 			u_strncpy(gbuffers[0], *p, c);
 			gbuffers[0][c] = 0;
 			Tag *wform = result->allocateTag(gbuffers[0]);
-			wform = result->addTag(wform);
 			rule->maplist.push_back(wform);
 			*p = n;
 			result->lines += SKIPWS(p, ';', ')');
@@ -574,7 +568,6 @@ int TextualParser::parseRule(KEYWORDS key, UChar **p) {
 			u_strncpy(gbuffers[0], *p, c);
 			gbuffers[0][c] = 0;
 			Tag *wform = result->allocateTag(gbuffers[0]);
-			wform = result->addTag(wform);
 			rule->sublist.push_back(wform->hash);
 			*p = n;
 			result->lines += SKIPWS(p, ';', ')');
@@ -717,7 +710,6 @@ int TextualParser::parseFromUChar(UChar *input) {
 		u_strncpy(gbuffers[0], stringbits[S_UU_LEFT], stringbit_lengths[S_UU_LEFT]);
 		gbuffers[0][stringbit_lengths[S_UU_LEFT]] = 0;
 		Tag *t = result->allocateTag(gbuffers[0]);
-		t = result->addTag(t);
 		result->addTagToCompositeTag(t, ct);
 		ct = result->addCompositeTagToSet(set_c, ct);
 		result->addSet(set_c);
@@ -732,7 +724,6 @@ int TextualParser::parseFromUChar(UChar *input) {
 		u_strncpy(gbuffers[0], stringbits[S_UU_RIGHT], stringbit_lengths[S_UU_RIGHT]);
 		gbuffers[0][stringbit_lengths[S_UU_RIGHT]] = 0;
 		Tag *t = result->allocateTag(gbuffers[0]);
-		t = result->addTag(t);
 		result->addTagToCompositeTag(t, ct);
 		ct = result->addCompositeTagToSet(set_c, ct);
 		result->addSet(set_c);
@@ -892,7 +883,6 @@ int TextualParser::parseFromUChar(UChar *input) {
 				u_strncpy(gbuffers[0], p, c);
 				gbuffers[0][c] = 0;
 				Tag *t = result->allocateTag(gbuffers[0]);
-				t = result->addTag(t);
 				result->preferred_targets.push_back(t->hash);
 				p = n;
 				result->lines += SKIPWS(&p);
@@ -1394,7 +1384,6 @@ int TextualParser::parseFromUChar(UChar *input) {
 				u_strncpy(gbuffers[0], p, c);
 				gbuffers[0][c] = 0;
 				left = result->allocateTag(gbuffers[0]);
-				left = result->addTag(left);
 				result->lines += SKIPWS(&n);
 				p = n;
 
@@ -1416,7 +1405,6 @@ int TextualParser::parseFromUChar(UChar *input) {
 				u_strncpy(gbuffers[0], p, c);
 				gbuffers[0][c] = 0;
 				right = result->allocateTag(gbuffers[0]);
-				right = result->addTag(right);
 				result->lines += SKIPWS(&n);
 				p = n;
 
