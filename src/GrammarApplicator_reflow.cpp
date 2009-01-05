@@ -53,11 +53,13 @@ bool GrammarApplicator::wouldParentChildLoop(Cohort *parent, Cohort *child) {
 			}
 		}
 		if (i == 1000) {
-			u_fprintf(
-				ux_stderr,
-				"Warning: While testing whether %u and %u would loop the counter exceeded 1000 indicating a loop higher up in the tree.\n",
-				child->global_number, parent->global_number
-				);
+			if (verbosity_level > 0) {
+				u_fprintf(
+					ux_stderr,
+					"Warning: While testing whether %u and %u would loop the counter exceeded 1000 indicating a loop higher up in the tree.\n",
+					child->global_number, parent->global_number
+					);
+			}
 		}
 	}
 	return retval;
