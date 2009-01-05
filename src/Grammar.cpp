@@ -117,17 +117,7 @@ Grammar::~Grammar() {
 }
 
 void Grammar::addPreferredTarget(UChar *to) {
-	Tag *tag = 0;
-	uint32_t hash = hash_sdbm_uchar(to);
-	if (single_tags.find(hash) != single_tags.end()) {
-		tag = single_tags[hash];
-	}
-	else {
-		tag = new Tag();
-		tag->parseTag(to, ux_stderr);
-		tag->rehash();
-		tag = addTag(tag);
-	}
+	Tag *tag = allocateTag(to);
 	preferred_targets.push_back(tag->hash);
 }
 void Grammar::addSet(Set *to) {
@@ -139,14 +129,30 @@ void Grammar::addSet(Set *to) {
 	}
 	uint32_t chash = to->rehash();
 	if (to->name[0] != '_' || to->name[1] != 'G' || to->name[2] != '_') {
-		uint32_t nhash = hash_sdbm_uchar(to->name, 0);
+		uint32_t nhash = hash_sdbm_uchar(to->name);
+		if (set_name_seeds.find(nhash) != set_name_seeds.end()) {
+			nhash += set_name_seeds[nhash];
+		}
 		if (sets_by_name.find(nhash) == sets_by_name.end()) {
 			sets_by_name[nhash] = chash;
 		}
 		else if (chash != sets_by_contents.find(sets_by_name.find(nhash)->second)->second->hash) {
 			Set *a = sets_by_contents.find(sets_by_name.find(nhash)->second)->second;
-			u_fprintf(ux_stderr, "Error: Set %S already defined at line %u. Redefinition as set %S attempted at line %u!\n", a->name, a->line, to->name, to->line);
-			CG3Quit(1);
+			if (u_strcmp(a->name, to->name) == 0) {
+				u_fprintf(ux_stderr, "Error: Set %S already defined at line %u. Redefinition attempted at line %u!\n", a->name, a->line, to->line);
+				CG3Quit(1);
+			}
+			else {
+				for (uint32_t seed=0 ; seed<1000 ; seed++) {
+					if (sets_by_name.find(nhash+seed) == sets_by_name.end()) {
+						u_fprintf(ux_stderr, "Warning: Set %S got hash seed %u.\n", to->name, seed);
+						u_fflush(ux_stderr);
+						set_name_seeds[nhash] = seed;
+						sets_by_name[nhash+seed] = chash;
+						break;
+					}
+				}
+			}
 		}
 	}
 	if (sets_by_contents.find(chash) == sets_by_contents.end()) {
@@ -159,7 +165,12 @@ Set *Grammar::getSet(uint32_t which) {
 		retval = sets_by_contents[which];
 	}
 	else if (sets_by_name.find(which) != sets_by_name.end()) {
-		retval = getSet(sets_by_name[which]);
+		if (set_name_seeds.find(which) != set_name_seeds.end()) {
+			retval = getSet(sets_by_name[which+set_name_seeds[which]]);
+		}
+		else {
+			retval = getSet(sets_by_name[which]);
+		}
 	}
 	return retval;
 }
@@ -264,47 +275,35 @@ void Grammar::destroyRule(Rule *rule) {
 Tag *Grammar::allocateTag() {
 	return new Tag;
 }
-Tag *Grammar::allocateTag(const UChar *tag) {
-	Tag *fresh = 0;
-	uint32_t hash = hash_sdbm_uchar(tag);
-	if (single_tags.find(hash) != single_tags.end()) {
-		fresh = single_tags[hash];
-		if (u_strcmp(single_tags[hash]->tag, tag) != 0) {
-			u_fprintf(ux_stderr, "Error: Hash collision between %S and %S!\n", single_tags[hash]->tag, tag);
-			CG3Quit(1);
-		}
-	}
-	else {
-		fresh = new Tag;
-		fresh->parseTag(tag, ux_stderr);
-	}
-	return fresh;
-}
-Tag *Grammar::addTag(Tag *simpletag) {
-	if (simpletag && simpletag->tag) {
-		simpletag->rehash();
-		if (single_tags.find(simpletag->hash) != single_tags.end()) {
-			if (u_strcmp(single_tags[simpletag->hash]->tag, simpletag->tag) != 0) {
-				u_fprintf(ux_stderr, "Error: Hash collision between %S and %S!\n", single_tags[simpletag->hash]->tag, simpletag->tag);
-				CG3Quit(1);
+Tag *Grammar::allocateTag(const UChar *txt) {
+	Tag *tag = new Tag();
+	tag->parseTag(txt, ux_stderr);
+	uint32_t hash = tag->rehash();
+	uint32_t seed = 0;
+	for ( ; seed < 10000 ; seed++) {
+		uint32_t ih = hash + seed;
+		if (single_tags.find(ih) != single_tags.end()) {
+			Tag *t = single_tags[ih];
+			if (t->tag && u_strcmp(t->tag, tag->tag) == 0) {
+				hash += seed;
+				delete tag;
+				break;
 			}
-			Tag *t = single_tags[simpletag->hash];
-			if (simpletag != t) {
-				destroyTag(simpletag);
-			}
-			return t;
 		}
 		else {
-			single_tags[simpletag->hash] = simpletag;
-			single_tags_list.push_back(simpletag);
-			simpletag->number = (uint32_t)single_tags_list.size()-1;
-			return single_tags[simpletag->hash];
+			if (seed) {
+				u_fprintf(ux_stderr, "Warning: Tag %S got hash seed %u.\n", txt, seed);
+				u_fflush(ux_stderr);
+			}
+			tag->seed = seed;
+			hash = tag->rehash();
+			single_tags_list.push_back(tag);
+			tag->number = (uint32_t)single_tags_list.size()-1;
+			single_tags[hash] = tag;
+			break;
 		}
-	} else {
-		u_fprintf(ux_stderr, "Error: Attempted to add empty tag to grammar on line %u!\n", lines);
-		CG3Quit(1);
 	}
-	return 0;
+	return single_tags[hash];
 }
 void Grammar::addTagToCompositeTag(Tag *simpletag, CompositeTag *tag) {
 	if (simpletag && simpletag->tag) {

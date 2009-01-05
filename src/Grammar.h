@@ -54,6 +54,7 @@ namespace CG3 {
 		std::vector<Set*> sets_list;
 		std::set<Set*> sets_all;
 		uint32HashMap sets_by_name;
+		uint32HashMap set_name_seeds;
 		Setuint32HashMap sets_by_contents;
 		uint32HashMap set_alias;
 
@@ -102,7 +103,6 @@ namespace CG3 {
 		Tag *allocateTag();
 		Tag *allocateTag(const UChar *tag);
 		void destroyTag(Tag *tag);
-		Tag *addTag(Tag *simpletag);
 		void addTagToCompositeTag(Tag *simpletag, CompositeTag *tag);
 
 		CompositeTag *addCompositeTag(CompositeTag *tag);

@@ -62,7 +62,7 @@ inline uint32_t SuperFastHash(const char *data, uint32_t hash = CG3_HASH_SEED, u
 	for (;len > 0; len--) {
 		hash  += get16bits (data);
 		tmp    = (get16bits (data+2) << 11) ^ hash;
-		hash   = (hash << 15) ^ tmp;
+		hash   = (hash << 16) ^ tmp;
 		data  += 2*sizeof (uint16_t);
 		hash  += hash >> 11;
 	}

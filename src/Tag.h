@@ -74,6 +74,7 @@ namespace CG3 {
 		uint32_t hash;
 		uint32_t plain_hash;
 		uint32_t number;
+		uint32_t seed;
 
 		Tag();
 		~Tag();

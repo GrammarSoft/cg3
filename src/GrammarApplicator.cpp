@@ -183,25 +183,30 @@ void GrammarApplicator::disableStatistics() {
 }
 
 Tag *GrammarApplicator::addTag(const UChar *txt) {
-	uint32_t hash = hash_sdbm_uchar(txt);
-	if (single_tags.find(hash) != single_tags.end()) {
-		Tag *t = single_tags[hash];
-		if (t->tag && u_strcmp(t->tag, txt) != 0) {
-			u_fprintf(ux_stderr, "Warning: Hash collision between %S and %S - both hash to %u. Removing existing.\n", txt, t->tag, hash);
-			u_fflush(ux_stderr);
-			//delete single_tags[hash]; // ToDo: Yes, that's a memory leak.
-			single_tags[hash] = 0;
-			single_tags.erase(hash);
-		}
-	}
-
 	Tag *tag = new Tag();
 	tag->parseTagRaw(txt);
-	hash = tag->rehash();
-	if (single_tags.find(hash) == single_tags.end()) {
-		single_tags[hash] = tag;
-	} else {
-		delete tag;
+	uint32_t hash = tag->rehash();
+	uint32_t seed = 0;
+	for ( ; seed < 10000 ; seed++) {
+		uint32_t ih = hash + seed;
+		if (single_tags.find(ih) != single_tags.end()) {
+			Tag *t = single_tags[ih];
+			if (t->tag && u_strcmp(t->tag, tag->tag) == 0) {
+				hash += seed;
+				delete tag;
+				break;
+			}
+		}
+		else {
+			if (seed) {
+				u_fprintf(ux_stderr, "Warning: Tag %S got hash seed %u.\n", txt, seed);
+				u_fflush(ux_stderr);
+			}
+			tag->seed = seed;
+			hash = tag->rehash();
+			single_tags[hash] = tag;
+			break;
+		}
 	}
 	return single_tags[hash];
 }
