@@ -191,7 +191,10 @@ void GrammarApplicator::addTagToReading(Reading *reading, uint32_t utag, bool re
 		reading->parent->possible_sets.insert(grammar->sets_by_tag.find(utag)->second->begin(), grammar->sets_by_tag.find(utag)->second->end());
 		reading->possible_sets.insert(grammar->sets_by_tag.find(utag)->second->begin(), grammar->sets_by_tag.find(utag)->second->end());
 	}
-	reading->tags.insert(utag);
+	if (reading->tags.find(utag) == reading->tags.end()) {
+		reading->tags.insert(utag);
+		reading->tags_list.push_back(utag);
+	}
 	Tag *tag = single_tags.find(utag)->second;
 
 	if (tag->type & T_MAPPING || tag->tag[0] == grammar->mapping_prefix) {
@@ -231,7 +234,6 @@ void GrammarApplicator::addTagToReading(Reading *reading, uint32_t utag, bool re
 		reading->tags_plain.insert(utag);
 	}
 	if (rehash) {
-		reading->tags_list.push_back(utag);
 		reading->rehash();
 	}
 }
