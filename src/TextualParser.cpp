@@ -1417,6 +1417,7 @@ int TextualParser::parseFromUChar(UChar *input) {
 
 				if (left && right) {
 					result->parentheses[left->hash] = right->hash;
+					result->parentheses_reverse[right->hash] = left->hash;
 				}
 			}
 

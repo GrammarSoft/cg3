@@ -45,6 +45,8 @@ namespace CG3 {
 		uint32_t dep_parent;
 		uint32HashSet dep_children;
 
+		uint32_t is_pleft, is_pright;
+
 		Cohort *prev, *next;
 		void detach();
 

@@ -1,9 +1,9 @@
 "<there>"
-	"there" word
+	"there" word <pleft>
 "<once>"
 	"once" word
 "<were>"
-	"are" word
+	"are" word <pright>
 "<$(>"
 "<two>"
 	"two" word
