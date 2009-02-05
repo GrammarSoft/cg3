@@ -73,6 +73,7 @@ namespace CG3 {
 		uint32_t tag_any;
 		uint32Vector preferred_targets;
 		uint32Map parentheses;
+		uint32Map parentheses_reverse;
 
 		uint32Vector sections;
 		uint32Map anchor_by_hash;

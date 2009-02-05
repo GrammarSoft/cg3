@@ -180,6 +180,7 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 		fread(&u32tmp, sizeof(uint32_t), 1, input);
 		uint32_t right = (uint32_t)ntohl(u32tmp);
 		grammar->parentheses[left] = right;
+		grammar->parentheses_reverse[right] = left;
 	}
 
 	fread(&u32tmp, sizeof(uint32_t), 1, input);

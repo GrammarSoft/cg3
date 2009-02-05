@@ -195,6 +195,12 @@ void GrammarApplicator::addTagToReading(Reading *reading, uint32_t utag, bool re
 		reading->tags.insert(utag);
 		reading->tags_list.push_back(utag);
 	}
+	if (grammar->parentheses.find(utag) != grammar->parentheses.end()) {
+		reading->parent->is_pleft = utag;
+	}
+	if (grammar->parentheses_reverse.find(utag) != grammar->parentheses_reverse.end()) {
+		reading->parent->is_pright = utag;
+	}
 	Tag *tag = single_tags.find(utag)->second;
 
 	if (tag->type & T_MAPPING || tag->tag[0] == grammar->mapping_prefix) {
