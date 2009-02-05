@@ -708,7 +708,10 @@ int GrammarApplicator::runGrammarOnWindow(Window *window) {
 		label_scanParentheses:
 		reverse_foreach(std::vector<Cohort*>, current->cohorts, iter, iter_end) {
 			Cohort *c = *iter;
-			uint32Map::const_iterator p = grammar->parentheses.find(c->wordform);
+			if (c->is_pleft == 0) {
+				continue;
+			}
+			uint32Map::const_iterator p = grammar->parentheses.find(c->is_pleft);
 			if (p != grammar->parentheses.end()) {
 				std::vector<Cohort*>::iterator right = iter.base();
 				right--;
@@ -716,16 +719,17 @@ int GrammarApplicator::runGrammarOnWindow(Window *window) {
 				c = *right;
 				right++;
 				bool found = false;
+				std::vector<Cohort*> encs;
 				for (; right != current->cohorts.end() ; right++) {
 					Cohort *s = *right;
-					c->enclosed.push_back(s);
-					if (s->wordform == p->second) {
+					encs.push_back(s);
+					if (s->is_pright == p->second) {
 						found = true;
 						break;
 					}
 				}
 				if (!found) {
-					c->enclosed.clear();
+					encs.clear();
 				}
 				else {
 					std::vector<Cohort*>::iterator left = iter.base();
@@ -738,10 +742,14 @@ int GrammarApplicator::runGrammarOnWindow(Window *window) {
 						lc++;
 						left++;
 					}
-					current->cohorts.resize(current->cohorts.size() - c->enclosed.size());
-					foreach(std::vector<Cohort*>, c->enclosed, eiter, eiter_end) {
+					current->cohorts.resize(current->cohorts.size() - encs.size());
+					foreach(std::vector<Cohort*>, encs, eiter, eiter_end) {
 						(*eiter)->is_enclosed = true;
 					}
+					foreach(std::vector<Cohort*>, c->enclosed, eiter2, eiter2_end) {
+						encs.push_back(*eiter2);
+					}
+					c->enclosed = encs;
 					goto label_scanParentheses;
 				}
 			}
@@ -778,8 +786,8 @@ label_runGrammarOnWindow_begin:
 					current->cohorts[i+j+1]->parent = current;
 					current->cohorts[i+j+1]->is_enclosed = false;
 				}
-				par_left_tag = c->enclosed[0]->wordform;
-				par_right_tag = c->enclosed[ne-1]->wordform;
+				par_left_tag = c->enclosed[0]->is_pleft;
+				par_right_tag = c->enclosed[ne-1]->is_pright;
 				par_left_pos = i+1;
 				par_right_pos = i+ne;
 				c->enclosed.clear();

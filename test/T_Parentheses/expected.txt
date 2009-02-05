@@ -1,57 +1,57 @@
 "<there>"
-	"there" word @first 
+	"there" word <pleft> @left @left-or-right @enclosed @second 
 "<once>"
-	"once" word @first 
+	"once" word @enclosed @second 
 "<were>"
-	"are" word @first 
+	"are" word <pright> @right @left-or-right @enclosed @second 
 "<$(>"
 	"<$(>" @first 
 "<two>"
 	"two" word @first 
 "<$[>"
-	"<$[>" @left @left-or-right @enclosed @sqbrck @second 
+	"<$[>" @left @left-or-right @enclosed @sqbrck @third 
 "<three>"
-	"three" word @enclosed @sqbrck @second 
+	"three" word @enclosed @sqbrck @third 
 "<$]>"
-	"<$]>" @right @left-or-right @right-sqbrck @enclosed @sqbrck @second 
+	"<$]>" @right @left-or-right @right-sqbrck @enclosed @sqbrck @third 
 "<long>"
 	"long" word @first 
 "<red>"
 	"red" word @first 
 "<$(>"
-	"<$(>" @left @left-or-right @left-paren @enclosed @paren @third 
-"<more>"
-	"more" word @enclosed @paren @third 
-"<like>"
-	"like" word @enclosed @paren @third 
-"<maroon>"
-	"maroon" word @enclosed @paren @third 
-"<$(>"
 	"<$(>" @left @left-or-right @left-paren @enclosed @paren @fourth 
+"<more>"
+	"more" word @enclosed @paren @fourth 
+"<like>"
+	"like" word @enclosed @paren @fourth 
+"<maroon>"
+	"maroon" word @enclosed @paren @fourth 
+"<$(>"
+	"<$(>" @left @left-or-right @left-paren @enclosed @paren @fifth 
 "<dark>"
-	"dark" word @enclosed @paren @fourth 
+	"dark" word @enclosed @paren @fifth 
 "<earthy>"
-	"earthy" word @enclosed @paren @fourth 
+	"earthy" word @enclosed @paren @fifth 
 "<red>"
-	"red" word @enclosed @paren @fourth 
+	"red" word @enclosed @paren @fifth 
 "<$]>"
-	"<$]>" @enclosed @paren @fourth 
+	"<$]>" @enclosed @paren @fifth 
+"<$)>"
+	"<$)>" @right @left-or-right @enclosed @paren @fifth 
+"<$,>"
+	"<$,>" @enclosed @paren @fourth 
+"<actually>"
+	"actual" word @enclosed @paren @fourth 
 "<$)>"
 	"<$)>" @right @left-or-right @enclosed @paren @fourth 
-"<$,>"
-	"<$,>" @enclosed @paren @third 
-"<actually>"
-	"actual" word @enclosed @paren @third 
-"<$)>"
-	"<$)>" @right @left-or-right @enclosed @paren @third 
 "<cars>"
 	"car" word @first 
 "<${>"
-	"<${>" @left @left-or-right @enclosed @clbrck @fifth 
+	"<${>" @left @left-or-right @enclosed @clbrck @sixth 
 "<trucks>"
-	"truck" word @enclosed @clbrck @fifth 
+	"truck" word @enclosed @clbrck @sixth 
 "<$}>"
-	"<$}>" @right @left-or-right @enclosed @clbrck @fifth 
+	"<$}>" @right @left-or-right @enclosed @clbrck @sixth 
 "<$.>"
 	"<$.>" @first 
 
