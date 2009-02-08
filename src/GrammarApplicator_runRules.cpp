@@ -421,11 +421,13 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, uint32Set *r
 					}
 					else if (type == K_SETPARENT || type == K_SETCHILD) {
 						int32_t orgoffset = rule->dep_target->offset;
+						std::set<uint32_t> seen_targets;
 
 						bool attached = false;
 						Cohort *target = cohort;
 						while (!attached) {
 							Cohort *attach = 0;
+							seen_targets.insert(target->global_number);
 							if (runContextualTest(target->parent, target->local_number, rule->dep_target, &attach) && attach) {
 								bool good = true;
 								ContextualTest *test = rule->dep_test_head;
@@ -453,8 +455,8 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, uint32Set *r
 								if (rule->flags & RF_NEAREST) {
 									break;
 								}
-								if (target == attach) {
-									// We've found the same cohort as we originated from...
+								if (seen_targets.find(attach->global_number) != seen_targets.end()) {
+									// We've found a cohort we have seen before...
 									// We assume running the test again would result in the same, so don't bother.
 									break;
 								}
