@@ -23,7 +23,7 @@
 
 using namespace CG3;
 
-Cohort *GrammarApplicator::runSingleTest(SingleWindow *sWindow, size_t i, const ContextualTest *test, bool *brk, bool *retval, Cohort **deep, Cohort *origin) {
+inline Cohort *GrammarApplicator::runSingleTest(SingleWindow *sWindow, size_t i, const ContextualTest *test, bool *brk, bool *retval, Cohort **deep, Cohort *origin) {
 	if (i >= sWindow->cohorts.size()) {
 		*brk = true;
 		*retval = false;
