@@ -226,7 +226,8 @@ void GrammarApplicator::addTagToReading(Reading *reading, uint32_t utag, bool re
 		reading->parent->dep_self = tag->dep_self;
 		reading->parent->dep_parent = tag->dep_parent;
 		has_dep = true;
-		if (reading->parent->dep_self <= dep_highest_seen) {
+		// ToDo: FixMe: #x->y followed by a cohort of the same #x will be incorrect.
+		if (reading->parent->dep_self < dep_highest_seen) {
 			reflowDependencyWindow();
 			gWindow->dep_map.clear();
 			gWindow->dep_window.clear();
