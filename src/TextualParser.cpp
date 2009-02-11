@@ -686,10 +686,6 @@ int TextualParser::parseRule(KEYWORDS key, UChar **p) {
 }
 
 int TextualParser::parseFromUChar(UChar *input) {
-	if (!result) {
-		u_fprintf(ux_stderr, "Error: No preallocated grammar provided - cannot continue!\n");
-		CG3Quit(1);
-	}
 	if (!input || !input[0]) {
 		u_fprintf(ux_stderr, "Error: Input is empty - cannot continue!\n");
 		CG3Quit(1);
@@ -697,47 +693,6 @@ int TextualParser::parseFromUChar(UChar *input) {
 
 	UChar *p = input;
 	result->lines = 1;
-
-	result->addAnchor(keywords[K_START], result->lines);
-
-	// Create the magic set _LEFT_ containing the tag _LEFT_
-	Set *s_left = 0;
-	{
-		Set *set_c = s_left = result->allocateSet();
-		set_c->line = 0;
-		set_c->setName(stringbits[S_UU_LEFT]);
-		CompositeTag *ct = result->allocateCompositeTag();
-		u_strncpy(gbuffers[0], stringbits[S_UU_LEFT], stringbit_lengths[S_UU_LEFT]);
-		gbuffers[0][stringbit_lengths[S_UU_LEFT]] = 0;
-		Tag *t = result->allocateTag(gbuffers[0]);
-		result->addTagToCompositeTag(t, ct);
-		ct = result->addCompositeTagToSet(set_c, ct);
-		result->addSet(set_c);
-	}
-	// Create the magic set _RIGHT_ containing the tag _RIGHT_
-	Set *s_right = 0;
-	{
-		Set *set_c = s_right = result->allocateSet();
-		set_c->line = 0;
-		set_c->setName(stringbits[S_UU_RIGHT]);
-		CompositeTag *ct = result->allocateCompositeTag();
-		u_strncpy(gbuffers[0], stringbits[S_UU_RIGHT], stringbit_lengths[S_UU_RIGHT]);
-		gbuffers[0][stringbit_lengths[S_UU_RIGHT]] = 0;
-		Tag *t = result->allocateTag(gbuffers[0]);
-		result->addTagToCompositeTag(t, ct);
-		ct = result->addCompositeTagToSet(set_c, ct);
-		result->addSet(set_c);
-	}
-	// Create the magic set _PAREN_ containing (_LEFT_) OR (_RIGHT_)
-	{
-		Set *set_c = result->allocateSet();
-		set_c->line = 0;
-		set_c->setName(stringbits[S_UU_PAREN]);
-		set_c->set_ops.push_back(S_OR);
-		set_c->sets.push_back(s_left->hash);
-		set_c->sets.push_back(s_right->hash);
-		result->addSet(set_c);
-	}
 
 	uint32_t seen_mapping_prefix = 0;
 
@@ -1462,8 +1417,6 @@ int TextualParser::parseFromUChar(UChar *input) {
 		}
 	}
 	
-	result->addAnchor(keywords[K_END], result->lines);
-
 	return 0;
 }
 
@@ -1505,10 +1458,53 @@ int TextualParser::parse_grammar_from_file(const char *fname, const char *loc, c
 	}
 	u_fclose(grammar);
 
+	result->addAnchor(keywords[K_START], result->lines);
+
+	// Create the magic set _LEFT_ containing the tag _LEFT_
+	Set *s_left = 0;
+	{
+		Set *set_c = s_left = result->allocateSet();
+		set_c->line = 0;
+		set_c->setName(stringbits[S_UU_LEFT]);
+		CompositeTag *ct = result->allocateCompositeTag();
+		u_strncpy(gbuffers[0], stringbits[S_UU_LEFT], stringbit_lengths[S_UU_LEFT]);
+		gbuffers[0][stringbit_lengths[S_UU_LEFT]] = 0;
+		Tag *t = result->allocateTag(gbuffers[0]);
+		result->addTagToCompositeTag(t, ct);
+		ct = result->addCompositeTagToSet(set_c, ct);
+		result->addSet(set_c);
+	}
+	// Create the magic set _RIGHT_ containing the tag _RIGHT_
+	Set *s_right = 0;
+	{
+		Set *set_c = s_right = result->allocateSet();
+		set_c->line = 0;
+		set_c->setName(stringbits[S_UU_RIGHT]);
+		CompositeTag *ct = result->allocateCompositeTag();
+		u_strncpy(gbuffers[0], stringbits[S_UU_RIGHT], stringbit_lengths[S_UU_RIGHT]);
+		gbuffers[0][stringbit_lengths[S_UU_RIGHT]] = 0;
+		Tag *t = result->allocateTag(gbuffers[0]);
+		result->addTagToCompositeTag(t, ct);
+		ct = result->addCompositeTagToSet(set_c, ct);
+		result->addSet(set_c);
+	}
+	// Create the magic set _PAREN_ containing (_LEFT_) OR (_RIGHT_)
+	{
+		Set *set_c = result->allocateSet();
+		set_c->line = 0;
+		set_c->setName(stringbits[S_UU_PAREN]);
+		set_c->set_ops.push_back(S_OR);
+		set_c->sets.push_back(s_left->hash);
+		set_c->sets.push_back(s_right->hash);
+		result->addSet(set_c);
+	}
+
 	error = parseFromUChar((data+4));
 	if (error) {
 		return error;
 	}
+
+	result->addAnchor(keywords[K_END], result->lines);
 
 	delete[] data;
 	return 0;
