@@ -48,6 +48,13 @@
       and 'r' for a regular expression match.
       Using these modifiers will significantly slow down the matching as a hash lookup will no
       longer be enough. You can combine 'ir' for case-insensitive regular expressions.
+      Regular expressions are evaluated via ICU, so
+      <ulink url="http://icu-project.org/userguide/regexp.html">their documentation</ulink> is a good source.
+    </para>
+    <para>
+      Due to tags themselves needing the occasional escaping, regular expressions need double-escaping of
+      some special symbols. E.g. grouping with () needs to be written as "a\(b|c\)d"r, while literal non-grouping ()
+      need to be written as "a\\(b\\)c"r. Metacharacters also need double-escaping, so \w needs to be written as \\w.
     </para>
     <para>
       This will not work for wordforms used as the first qualifier of a rule, e.g:
