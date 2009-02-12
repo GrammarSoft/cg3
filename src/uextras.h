@@ -40,5 +40,6 @@ UChar *ux_append(UChar *target, const UChar data);
 
 UChar *ux_substr(UChar *string, int start, int end);
 
+char *ux_dirname(const char *in);
 
 #endif

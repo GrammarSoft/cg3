@@ -26,10 +26,7 @@ using namespace CG3;
 Grammar::Grammar() {
 	has_dep = false;
 	is_binary = false;
-	last_modified = 0;
-	name = 0;
 	lines = 0;
-	curline = 0;
 	total_time = 0;
 	delimiters = 0;
 	soft_delimiters = 0;
@@ -41,10 +38,6 @@ Grammar::Grammar() {
 }
 
 Grammar::~Grammar() {
-	if (name) {
-		delete[] name;
-	}
-
 	foreach (std::vector<Set*>, sets_list, iter_set, iter_set_end) {
 		destroySet(*iter_set);
 	}
@@ -341,16 +334,6 @@ void Grammar::addAnchor(const UChar *to, uint32_t line) {
 	anc->line = line;
 	anchor_by_hash[ah] = line;
 	anchor_by_line[line] = anc;
-}
-
-void Grammar::setName(const char *to) {
-	name = new UChar[strlen(to)+1];
-	u_uastrcpy(name, to);
-}
-
-void Grammar::setName(const UChar *to) {
-	name = new UChar[u_strlen(to)+1];
-	u_strcpy(name, to);
 }
 
 void Grammar::resetStatistics() {
