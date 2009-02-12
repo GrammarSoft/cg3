@@ -64,6 +64,8 @@
     #include <hash_set>
 #endif
 #ifdef __GNUC__
+	#include <unistd.h>
+    #include <libgen.h>
 	#include <netinet/in.h> // for hton() and family.
     #include <ext/hash_map>
     #include <ext/hash_set>

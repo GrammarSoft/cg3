@@ -40,6 +40,7 @@ namespace CG3 {
 		UFILE *ux_stderr;
 		uint32_t verbosity_level;
 		uint32_t sets_counter;
+		uint32_t seen_mapping_prefix;
 		bool option_vislcg_compat;
 		bool in_section, in_before_sections, in_after_sections, in_null_section;
 		const char *filename;
@@ -47,7 +48,7 @@ namespace CG3 {
 		const char *codepage;
 		CG3::Grammar *result;
 
-		int parseFromUChar(UChar *input);
+		int parseFromUChar(UChar *input, const char *fname = 0);
 		void addRuleToGrammar(Rule *rule);
 
 		int parseTagList(Set *s, UChar **p, const bool isinline);
