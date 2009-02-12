@@ -229,3 +229,25 @@ UChar *ux_substr(UChar *string, int start, int end)
 
 	return tmp;
 }
+
+char *ux_dirname(const char *in) {
+	char *tmp = new char[32768];
+#ifdef _MSC_VER
+	char *fname = 0;
+	GetFullPathNameA(in, 32767, tmp, &fname);
+	if (fname) {
+		fname[0] = 0;
+	}
+#else
+	strcpy(tmp, in);
+	char *dir = dirname(tmp);
+	if (dir != tmp) {
+		strcpy(tmp, dir);
+	}
+#endif
+	if (tmp[strlen(tmp)-1] != '/' && tmp[strlen(tmp)-1] != '\\') {
+		tmp[strlen(tmp)+1] = 0;
+		tmp[strlen(tmp)] = '/';
+	}
+	return tmp;
+}

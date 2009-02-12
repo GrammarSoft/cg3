@@ -36,6 +36,7 @@ TextualParser::TextualParser(UFILE *ux_err) {
 	in_null_section = false;
 	in_section = false;
 	verbosity_level = 0;
+	seen_mapping_prefix = 0;
 	sets_counter = 100;
 }
 
@@ -697,7 +698,7 @@ int TextualParser::parseRule(KEYWORDS key, UChar **p) {
 	return 0;
 }
 
-int TextualParser::parseFromUChar(UChar *input) {
+int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 	if (!input || !input[0]) {
 		u_fprintf(ux_stderr, "Error: Input is empty - cannot continue!\n");
 		CG3Quit(1);
@@ -705,8 +706,6 @@ int TextualParser::parseFromUChar(UChar *input) {
 
 	UChar *p = input;
 	result->lines = 1;
-
-	uint32_t seen_mapping_prefix = 0;
 
 	while (*p) {
 		if (result->lines % 100 == 0) {
@@ -1205,6 +1204,69 @@ int TextualParser::parseFromUChar(UChar *input) {
 			}
 			//*/
 		}
+		// INCLUDE
+		else if (ISCHR(*p,'I','i') && ISCHR(*(p+6),'E','e') && ISCHR(*(p+1),'N','n') && ISCHR(*(p+2),'C','c')
+			&& ISCHR(*(p+3),'L','l') && ISCHR(*(p+4),'U','u') && ISCHR(*(p+5),'D','d')
+			&& !ISSTRING(p, 6)) {
+			p += 7;
+			result->lines += SKIPWS(&p);
+			UChar *n = p;
+			result->lines += SKIPTOWS(&n, 0, true);
+			uint32_t c = (uint32_t)(n - p);
+			u_strncpy(gbuffers[0], p, c);
+			gbuffers[0][c] = 0;
+			uint32_t olines = result->lines;
+			p = n;
+			result->lines += SKIPWS(&p, ';');
+			if (*p != ';') {
+				u_fprintf(ux_stderr, "Error: Missing closing ; before line %u!\n", result->lines);
+				CG3Quit(1);
+			}
+
+			UErrorCode err = U_ZERO_ERROR;
+			UConverter *conv = ucnv_open("UTF-8", &err);
+			ucnv_fromUChars(conv, cbuffers[0], BUFFER_SIZE-1, gbuffers[0], u_strlen(gbuffers[0]), &err);
+			ucnv_close(conv);
+
+			char *absdir = ux_dirname(fname);
+			sprintf(cbuffers[1], "%s%s", absdir, cbuffers[0]);
+			delete[] absdir;
+			char *abspath = new char[strlen(cbuffers[1])+1];
+			strcpy(abspath, cbuffers[1]);
+
+			uint32_t grammar_size = 0;
+			struct stat _stat;
+			int error = stat(abspath, &_stat);
+
+			if (error != 0) {
+				u_fprintf(ux_stderr, "Error: Cannot stat %s due to error %d - bailing out!\n", abspath, error);
+				CG3Quit(1);
+			}
+			else {
+				grammar_size = _stat.st_size;
+			}
+
+			UFILE *grammar = u_fopen(abspath, "r", locale, codepage);
+			if (!grammar) {
+				u_fprintf(ux_stderr, "Error: Error opening %s for reading!\n", abspath);
+				CG3Quit(1);
+			}
+
+			UChar *data = new UChar[grammar_size*4];
+			memset(data, 0, grammar_size*4*sizeof(UChar));
+			uint32_t read = u_file_read((data+4), grammar_size*4, grammar);
+			if (read >= grammar_size*4-1) {
+				u_fprintf(ux_stderr, "Error: Converting from underlying codepage to UTF-16 exceeded factor 4 buffer.\n");
+				CG3Quit(1);
+			}
+			u_fclose(grammar);
+
+			parseFromUChar((data+4), abspath);
+			delete[] abspath;
+			delete[] data;
+
+			result->lines = olines;
+		}
 		// IFF
 		else if (ISCHR(*p,'I','i') && ISCHR(*(p+2),'F','f') && ISCHR(*(p+1),'F','f')
 			&& !ISSTRING(p, 2)) {
@@ -1448,12 +1510,10 @@ int TextualParser::parse_grammar_from_file(const char *fname, const char *loc, c
 	if (error != 0) {
 		u_fprintf(ux_stderr, "Error: Cannot stat %s due to error %d - bailing out!\n", filename, error);
 		CG3Quit(1);
-	} else {
-		result->last_modified = _stat.st_mtime;
+	}
+	else {
 		result->grammar_size = _stat.st_size;
 	}
-
-	result->setName(filename);
 
 	UFILE *grammar = u_fopen(filename, "r", locale, codepage);
 	if (!grammar) {
@@ -1465,7 +1525,7 @@ int TextualParser::parse_grammar_from_file(const char *fname, const char *loc, c
 	memset(data, 0, result->grammar_size*4*sizeof(UChar));
 	uint32_t read = u_file_read((data+4), result->grammar_size*4, grammar);
 	if (read >= result->grammar_size*4-1) {
-		u_fprintf(ux_stderr, "Error: Converting from underlying codepage to UTF-16 exceeded factor 4 buffer.\n", filename);
+		u_fprintf(ux_stderr, "Error: Converting from underlying codepage to UTF-16 exceeded factor 4 buffer.\n");
 		CG3Quit(1);
 	}
 	u_fclose(grammar);
@@ -1511,7 +1571,7 @@ int TextualParser::parse_grammar_from_file(const char *fname, const char *loc, c
 		result->addSet(set_c);
 	}
 
-	error = parseFromUChar((data+4));
+	error = parseFromUChar((data+4), filename);
 	if (error) {
 		return error;
 	}

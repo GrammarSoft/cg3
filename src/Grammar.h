@@ -38,11 +38,9 @@ namespace CG3 {
 
 		bool has_dep;
 		bool is_binary;
-		time_t last_modified;
 		uint32_t grammar_size;
 		UChar mapping_prefix;
-		UChar *name;
-		uint32_t lines, curline;
+		uint32_t lines;
 		mutable double total_time;
 
 		std::vector<Tag*> single_tags_list;
@@ -87,9 +85,6 @@ namespace CG3 {
 
 		Grammar();
 		~Grammar();
-
-		void setName(const char *to);
-		void setName(const UChar *to);
 
 		void addPreferredTarget(UChar *to);
 

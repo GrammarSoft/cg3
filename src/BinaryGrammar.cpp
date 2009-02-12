@@ -55,12 +55,10 @@ int BinaryGrammar::parse_grammar_from_file(const char *filename, const char *, c
 	if (error != 0) {
 		u_fprintf(ux_stderr, "Error: Cannot stat %s due to error %d - bailing out!\n", filename, error);
 		CG3Quit(1);
-	} else {
-		grammar->last_modified = (uint32_t)_stat.st_mtime;
+	}
+	else {
 		grammar->grammar_size = (uint32_t)_stat.st_size;
 	}
-
-	grammar->setName(filename);
 
 	FILE *input = fopen(filename, "rb");
 	if (!input) {
