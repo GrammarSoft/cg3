@@ -199,6 +199,19 @@
     </screen>
   </section>
 
+  <section id="keyword-include">
+    <title>INCLUDE</title>
+    <indexterm>
+      <primary>INCLUDE</primary>
+    </indexterm>
+    <para>
+      Loads and parses another grammar file as if it had been pasted in on the line of the INCLUDE statement.
+      <screen>
+        INCLUDE other-file-name ;
+      </screen>
+    </para>
+  </section>
+
   <section id="keyword-link">
     <title>LINK</title>
     <indexterm>
