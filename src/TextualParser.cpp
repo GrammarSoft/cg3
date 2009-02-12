@@ -523,6 +523,10 @@ int TextualParser::parseRule(KEYWORDS key, UChar **p) {
 			u_fprintf(ux_stderr, "Error: Missing closing ) on line %u!\n", result->lines);
 			CG3Quit(1);
 		}
+		if (rule->sublist.empty()) {
+			u_fprintf(ux_stderr, "Error: Empty removal tag list on line %u!\n", result->lines);
+			CG3Quit(1);
+		}
 		(*p)++;
 	}
 
@@ -550,6 +554,10 @@ int TextualParser::parseRule(KEYWORDS key, UChar **p) {
 			u_fprintf(ux_stderr, "Error: Missing closing ) on line %u!\n", result->lines);
 			CG3Quit(1);
 		}
+		if (rule->maplist.empty()) {
+			u_fprintf(ux_stderr, "Error: Empty tag list on line %u!\n", result->lines);
+			CG3Quit(1);
+		}
 		(*p)++;
 	}
 
@@ -574,6 +582,10 @@ int TextualParser::parseRule(KEYWORDS key, UChar **p) {
 		}
 		if (**p != ')') {
 			u_fprintf(ux_stderr, "Error: Missing closing ) on line %u!\n", result->lines);
+			CG3Quit(1);
+		}
+		if (rule->sublist.empty()) {
+			u_fprintf(ux_stderr, "Error: Empty relation tag list on line %u!\n", result->lines);
 			CG3Quit(1);
 		}
 		(*p)++;
