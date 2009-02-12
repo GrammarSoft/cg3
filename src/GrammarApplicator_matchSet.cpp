@@ -260,10 +260,10 @@ bool GrammarApplicator::doesTagMatchReading(const Reading *reading, const Tag *t
 	else if (tag->regexp && !reading->tags_textual.empty()) {
 		const_foreach(uint32HashSet, reading->tags_textual, mter, mter_end) {
 			uint32_t ih = hash_sdbm_uint32_t(tag->hash, *mter);
-			if (__index_matches(index_regexp_yes, ih)) {
+			if (index_matches(index_regexp_yes, ih)) {
 				match = true;
 			}
-			else if (__index_matches(index_regexp_no, ih)) {
+			else if (index_matches(index_regexp_no, ih)) {
 				match = false;
 			}
 			else {
@@ -403,10 +403,10 @@ bool GrammarApplicator::doesSetMatchReading(Reading *reading, const uint32_t set
 	}
 	// ToDo: This is not good enough...while numeric tags are special, their failures can be indexed.
 	uint32_t ih = hash_sdbm_uint32_t(reading->hash, set);
-	if (!bypass_index && __index_matches(index_reading_no, ih)) {
+	if (!bypass_index && index_matches(index_reading_no, ih)) {
 		return false;
 	}
-	if (!bypass_index && __index_matches(index_reading_yes, ih)) {
+	if (!bypass_index && index_matches(index_reading_yes, ih)) {
 		return true;
 	}
 

@@ -698,11 +698,26 @@ int GrammarApplicator::runGrammarOnSingleWindow(SingleWindow *current) {
 }
 
 int GrammarApplicator::runGrammarOnWindow(Window *window) {
+	SingleWindow *current = window->current;
+
 	if (has_dep) {
+		foreach(std::vector<Cohort*>, current->cohorts, iter, iter_end) {
+			Cohort *c = *iter;
+			if (c->dep_self == 0) {
+				continue;
+			}
+			if (c->dep_self <= dep_highest_seen) {
+				reflowDependencyWindow(c->global_number);
+				gWindow->dep_map.clear();
+				gWindow->dep_window.clear();
+				dep_highest_seen = 0;
+			}
+			else {
+				dep_highest_seen = c->dep_self;
+			}
+		}
 		reflowDependencyWindow();
 	}
-
-	SingleWindow *current = window->current;
 
 	indexSingleWindow(current);
 

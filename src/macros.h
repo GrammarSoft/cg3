@@ -22,6 +22,8 @@
 #ifndef __MACROS_H
 #define __MACROS_H
 
+#define index_matches(a, b) ((a).find(b) != (a).end())
+
 #define foreach(a, b, c, d) \
 	a::iterator c; \
 	a::iterator d = (b).end(); \
