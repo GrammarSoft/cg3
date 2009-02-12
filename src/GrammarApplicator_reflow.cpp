@@ -99,7 +99,7 @@ bool GrammarApplicator::attachParentChild(Cohort *parent, Cohort *child, bool al
 	return true;
 }
 
-void GrammarApplicator::reflowDependencyWindow() {
+void GrammarApplicator::reflowDependencyWindow(uint32_t max) {
 	bool did_dep = false;
 	if (gWindow->dep_window.empty()) {
 		gWindow->dep_window[0] = gWindow->current->cohorts.at(0);
@@ -123,6 +123,9 @@ void GrammarApplicator::reflowDependencyWindow() {
 		if (cohort->dep_done) {
 			continue;
 		}
+		if (max && cohort->global_number >= max) {
+			break;
+		}
 
 		if (cohort->dep_self) {
 			did_dep = true;
@@ -137,6 +140,9 @@ void GrammarApplicator::reflowDependencyWindow() {
 		gWindow->dep_map[0] = 0;
 		for (dIter = gWindow->dep_window.begin() ; dIter != gWindow->dep_window.end() ; dIter++) {
 			Cohort *cohort = dIter->second;
+			if (max && cohort->global_number >= max) {
+				break;
+			}
 			if (cohort->dep_self == cohort->global_number) {
 				if (!cohort->dep_done && gWindow->dep_map.find(cohort->dep_parent) == gWindow->dep_map.end()) {
 					if (verbosity_level > 0) {
@@ -226,17 +232,6 @@ void GrammarApplicator::addTagToReading(Reading *reading, uint32_t utag, bool re
 		reading->parent->dep_self = tag->dep_self;
 		reading->parent->dep_parent = tag->dep_parent;
 		has_dep = true;
-		// ToDo: FixMe: #x->y followed by a cohort of the same #x will be incorrect.
-		// ToDo: Move reflowDependencyWindow() to a post-processing per-cohort step; not per reading.
-		if (reading->parent->dep_self < dep_highest_seen) {
-			reflowDependencyWindow();
-			gWindow->dep_map.clear();
-			gWindow->dep_window.clear();
-			dep_highest_seen = 0;
-		}
-		else {
-			dep_highest_seen = reading->parent->dep_self;
-		}
 	}
 	if (!tag->is_special) {
 		reading->tags_plain.insert(utag);

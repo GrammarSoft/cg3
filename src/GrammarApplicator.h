@@ -145,13 +145,12 @@ namespace CG3 {
 		bool statistics;
 		ticks gtimer;
 
-#define __index_matches(a,b) ((a).find(b) != (a).end())
 		void reflowReading(Reading *reading);
 		void addTagToReading(Reading *reading, uint32_t tag, bool rehash = true);
 		void delTagFromReading(Reading *reading, uint32_t tag);
 		void splitMappings(TagList mappings, Cohort *cohort, Reading *reading, bool mapped = false);
 		void mergeMappings(Cohort *cohort);
-		void reflowDependencyWindow();
+		void reflowDependencyWindow(uint32_t max = 0);
 		bool wouldParentChildLoop(Cohort *parent, Cohort *child);
 		bool attachParentChild(Cohort *parent, Cohort *child, bool allowloop = false);
 	};
