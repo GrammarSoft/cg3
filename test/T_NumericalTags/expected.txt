@@ -1,13 +1,22 @@
 "<word>"
-	"word" <VALUE=50> @fifty 
-	"word" <VALUE:50> @fifty 
-	"word" <VALUE>50> @moreThanFifty @moreThanSixty 
-	"word" <VALUE<50> @lessThanFifty @lessThanForty @-fifty @zero 
-	"word" <VALUE>40> @fifty @moreThanFifty @lessThanFifty @moreThanSixty 
-	"word" <VALUE<60> @fifty @moreThanFifty @lessThanFifty @lessThanForty @-fifty @zero 
-	"word" <VALUE=-50> @lessThanFifty @lessThanForty @-fifty 
-	"word" <VALUE>-50> @fifty @moreThanFifty @lessThanFifty @moreThanSixty @lessThanForty @zero 
-	"word" <VALUE=0> @lessThanFifty @lessThanForty @zero 
-	"word" <VALUE:NotNumeric> 
+	"word" <VALUE=50> @fifty ADD:5 
+	"word" <VALUE:50> @fifty ADD:5 
+	"word" <VALUE>50> @moreThanFifty @moreThanSixty @max ADD:6 ADD:8 ADD:14 
+	"word" <VALUE<50> @lessThanFifty @lessThanForty @-fifty @zero @min ADD:7 ADD:9 ADD:11 ADD:12 ADD:15 
+	"word" <VALUE>40> @fifty @moreThanFifty @lessThanFifty @moreThanSixty @max ADD:5 ADD:6 ADD:7 ADD:8 ADD:14 
+	"word" <VALUE<60> @fifty @moreThanFifty @lessThanFifty @lessThanForty @-fifty @zero @min ADD:5 ADD:6 ADD:7 ADD:9 ADD:11 ADD:12 ADD:15 
+	"word" <VALUE=-50> @lessThanFifty @lessThanForty @-fifty @min ADD:7 ADD:9 ADD:11 ADD:15 
+	"word" <VALUE>-50> @fifty @moreThanFifty @lessThanFifty @moreThanSixty @lessThanForty @zero @max ADD:5 ADD:6 ADD:7 ADD:8 ADD:9 ADD:12 ADD:14 
+	"word" <VALUE=0> @lessThanFifty @lessThanForty @zero ADD:7 ADD:9 ADD:12 
+	"word" <VALUE:NotNumeric> @lessThanFifty @lessThanForty @zero ADD:7 ADD:9 ADD:12 
 	"word" <VALUE:x10> 
-
+"<max>"
+	"max" <X=1000> SELECT:20 
+;	"max" <X=-1000> REMOVE:19 
+;	"max" <X:0> SELECT:20 
+;	"max" <Waffles> SELECT:20 
+"<min>"
+	"min" <N=-1000> SELECT:23 
+;	"min" <N=1000> REMOVE:22 
+;	"min" <N:0> SELECT:23 
+;	"min" <Waffles> SELECT:23 

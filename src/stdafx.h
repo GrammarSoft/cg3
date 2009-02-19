@@ -38,6 +38,7 @@
 #include <bitset>
 #include <time.h>
 #include <math.h>
+#include <limits.h>
 #include <sys/stat.h>
 #include <assert.h>
 
@@ -84,10 +85,11 @@ namespace CG3 {
 	typedef std::list<uint32_t> uint32List;
 	typedef std::vector<uint32_t> uint32Vector;
 	typedef std::set<uint32_t> uint32Set;
-	typedef std::map<uint32_t, uint32_t> uint32Map;
+	typedef std::map<uint32_t,int32_t> uint32int32Map;
+	typedef std::map<uint32_t,uint32_t> uint32Map;
 	typedef std::map<uint32_t,uint32Set*> uint32Setuint32Map;
 	typedef stdext::hash_set<uint32_t> uint32HashSet;
-	typedef stdext::hash_map<uint32_t, uint32_t> uint32HashMap;
+	typedef stdext::hash_map<uint32_t,uint32_t> uint32HashMap;
 	typedef stdext::hash_map<uint32_t,uint32Set*> uint32Setuint32HashMap;
 	typedef stdext::hash_map<uint32_t,uint32HashSet*> uint32HashSetuint32HashMap;
 
@@ -113,11 +115,12 @@ namespace CG3 {
 	typedef std::vector<Rule*> RuleVector;
 	typedef std::set<Cohort*, compare_Cohort> CohortSet;
 	typedef std::set<Tag*> TagSet;
-	typedef std::map<uint32_t, Rule*> RuleByLineMap;
+	typedef std::map<uint32_t,Rule*> RuleByLineMap;
 	typedef stdext::hash_set<Tag*> TagHashSet;
 	typedef stdext::hash_set<CompositeTag*> CompositeTagHashSet;
-	typedef stdext::hash_map<uint32_t, Rule*> RuleByLineHashMap;
+	typedef stdext::hash_map<uint32_t,Rule*> RuleByLineHashMap;
 	typedef stdext::hash_map<uint32_t,Set*> Setuint32HashMap;
+	typedef stdext::hash_map<uint32_t,Tag*> Taguint32HashMap;
 	typedef stdext::hash_map<const Rule*, CohortSet*, compare_Rule> RuleToCohortsMap;
 }
 

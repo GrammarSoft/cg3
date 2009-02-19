@@ -22,26 +22,26 @@
 #ifndef __MACROS_H
 #define __MACROS_H
 
-#define index_matches(a, b) ((a).find(b) != (a).end())
+#define index_matches(index, entry) ((index).find(entry) != (index).end())
 
-#define foreach(a, b, c, d) \
-	a::iterator c; \
-	a::iterator d = (b).end(); \
-	for (c = (b).begin() ; c != d ; c++) 
+#define foreach(type, container, iter, iter_end) \
+	type::iterator iter; \
+	type::iterator iter_end = (container).end(); \
+	for (iter = (container).begin() ; iter != iter_end ; iter++) 
 
-#define const_foreach(a, b, c, d) \
-	a::const_iterator c; \
-	a::const_iterator d = (b).end(); \
-	for (c = (b).begin() ; c != d ; c++) 
+#define const_foreach(type, container, iter, iter_end) \
+	type::const_iterator iter; \
+	type::const_iterator iter_end = (container).end(); \
+	for (iter = (container).begin() ; iter != iter_end ; iter++) 
 
-#define reverse_foreach(a, b, c, d) \
-	a::reverse_iterator c; \
-	a::reverse_iterator d = (b).rend(); \
-	for (c = (b).rbegin() ; c != d ; c++) 
+#define reverse_foreach(type, container, iter, iter_end) \
+	type::reverse_iterator iter; \
+	type::reverse_iterator iter_end = (container).rend(); \
+	for (iter = (container).rbegin() ; iter != iter_end ; iter++) 
 
-#define reverse_const_foreach(a, b, c, d) \
-	a::reverse_const_iterator c; \
-	a::reverse_const_iterator d = (b).rend(); \
-	for (c = (b).rbegin() ; c != d ; c++) 
+#define reverse_const_foreach(type, container, iter, iter_end) \
+	type::reverse_const_iterator iter; \
+	type::reverse_const_iterator iter_end = (container).rend(); \
+	for (iter = (container).rbegin() ; iter != iter_end ; iter++) 
 
 #endif
