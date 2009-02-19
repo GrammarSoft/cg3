@@ -12,7 +12,6 @@ ToDo: "X Marks the Spot": Using x without setting a new X is equivalent to writi
 ToDo: Optimize-unsafe by eliminating tests which do no good (either always true or never the only one to block).
 ToDo: Investigate effects of SetParent/Child and Xx.
 ToDo: Make SOFT-DELIMITERS look back.
-ToDo: Select highest/lowest numerical value of a reading
 ToDo: Rule option blocks: OPTIONS +NEAREST -DELAYED
 ToDo: Transaction blocks: TRANSACTION, COMMIT, ROLLBACK
 ToDo: Binary input/output stream for lossless chaining of multiple CG-3
