@@ -625,9 +625,11 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, uint32Set *r
 					cohort->readings.remove(removed.back());
 					removed.pop_back();
 				}
+				cohort->num_is_current = false;
 			}
 			if (!selected.empty()) {
 				cohort->readings = selected;
+				cohort->num_is_current = false;
 			}
 
 			if (delimited) {

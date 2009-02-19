@@ -40,6 +40,12 @@ namespace CG3 {
 		std::list<Reading*> delayed;
 		UChar *text_pre, *text_post;
 
+		bool num_is_current;
+		uint32int32Map num_max, num_min;
+		void updateMinMax();
+		int32_t getMin(uint32_t key);
+		int32_t getMax(uint32_t key);
+
 		bool dep_done;
 		uint32_t dep_self;
 		uint32_t dep_parent;
