@@ -151,6 +151,15 @@ void Grammar::addSet(Set *to) {
 	if (sets_by_contents.find(chash) == sets_by_contents.end()) {
 		sets_by_contents[chash] = to;
 	}
+	else {
+		Set *a = sets_by_contents.find(chash)->second;
+		if (a->is_special != to->is_special || a->is_unified != to->is_unified || a->is_child_unified != to->is_child_unified
+		|| a->set_ops.size() != to->set_ops.size() || a->sets.size() != to->sets.size()
+		|| a->single_tags.size() != to->single_tags.size() || a->tags.size() != to->tags.size()) {
+			u_fprintf(ux_stderr, "Error: Content hash collision between set %S line %u and %S line %u!\n", a->name, a->line, to->name, to->line);
+			CG3Quit(1);
+		}
+	}
 }
 Set *Grammar::getSet(uint32_t which) {
 	Set *retval = 0;
