@@ -31,6 +31,7 @@ Cohort::Cohort(SingleWindow *p) {
 	dep_done = false;
 	is_related = false;
 	is_enclosed = false;
+	num_is_current = false;
 	text_pre = 0;
 	text_post = 0;
 	dep_self = 0;
@@ -67,6 +68,7 @@ void Cohort::clear(SingleWindow *p) {
 	dep_done = false;
 	is_related = false;
 	is_enclosed = false;
+	num_is_current = false;
 	if (text_pre) {
 		delete[] text_pre;
 	}
@@ -83,6 +85,8 @@ void Cohort::clear(SingleWindow *p) {
 	dep_children.clear();
 	enclosed.clear();
 	detach();
+	num_max.clear();
+	num_min.clear();
 }
 
 Cohort::~Cohort() {
@@ -132,6 +136,7 @@ void Cohort::appendReading(Reading *read) {
 	if (read->number == 0) {
 		read->number = (uint32_t)readings.size();
 	}
+	num_is_current = false;
 }
 
 Reading* Cohort::allocateAppendReading() {
@@ -141,5 +146,42 @@ Reading* Cohort::allocateAppendReading() {
 	if (read->number == 0) {
 		read->number = (uint32_t)readings.size();
 	}
+	num_is_current = false;
 	return read;
+}
+
+inline void Cohort::updateMinMax() {
+	if (num_is_current) {
+		return;
+	}
+	num_min.clear();
+	num_max.clear();
+	const_foreach(std::list<Reading*>, readings, rter, rter_end) {
+		const_foreach(Taguint32HashMap, (*rter)->tags_numerical, nter, nter_end) {
+			const Tag *tag = nter->second;
+			if (num_min.find(tag->comparison_hash) == num_min.end() || tag->comparison_val < num_min[tag->comparison_hash]) {
+				num_min[tag->comparison_hash] = tag->comparison_val;
+			}
+			if (num_max.find(tag->comparison_hash) == num_max.end() || tag->comparison_val > num_max[tag->comparison_hash]) {
+				num_max[tag->comparison_hash] = tag->comparison_val;
+			}
+		}
+	}
+	num_is_current = true;
+}
+
+int32_t Cohort::getMin(uint32_t key) {
+	updateMinMax();
+	if (num_min.find(key) != num_min.end()) {
+		return num_min[key];
+	}
+	return INT_MIN;
+}
+
+int32_t Cohort::getMax(uint32_t key) {
+	updateMinMax();
+	if (num_max.find(key) != num_max.end()) {
+		return num_max[key];
+	}
+	return INT_MAX;
 }

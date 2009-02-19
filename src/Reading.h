@@ -44,7 +44,7 @@ namespace CG3 {
 		uint32Set tags;
 		uint32HashSet tags_plain;
 		uint32HashSet tags_textual;
-		uint32HashSet tags_numerical;
+		Taguint32HashMap tags_numerical;
 		Tag *mapping;
 
 		uint32HashSet possible_sets;

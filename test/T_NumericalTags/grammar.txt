@@ -10,3 +10,14 @@ ADD (@lessThanForty) (<VALUE<40>) ;
 
 ADD (@-fifty) (<VALUE=-50>) ;
 ADD (@zero) (<VALUE=0>) ;
+
+ADD (@max) (<VALUE=MAX>) ;
+ADD (@min) (<VALUE=MIN>) ;
+
+SECTION
+
+REMOVE (<X=MIN>) ;
+SELECT (<X=MAX>) ;
+
+REMOVE (<N=MAX>) ;
+SELECT (<N=MIN>) ;

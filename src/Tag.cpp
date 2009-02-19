@@ -216,10 +216,16 @@ void Tag::parseNumeric(Tag *tag, const UChar *txt) {
 	tkey[0] = 0;
 	top[0] = 0;
 	txval[0] = 0;
-	if (u_sscanf(txt, "<%[^<>=:!]%[<>=:!]%[-0-9]>", &tkey, &top, &txval) == 3 && top[0] && u_strlen(top)) {
+	if (u_sscanf(txt, "<%[^<>=:!]%[<>=:!]%[-MAXIN0-9]>", &tkey, &top, &txval) == 3 && top[0] && u_strlen(top)) {
 		int tval = 0;
 		int32_t rv = u_sscanf(txval, "%d", &tval);
-		if (rv != 1) {
+		if (txval[0] == 'M' && txval[1] == 'A' && txval[2] == 'X') {
+			tval = INT_MAX;
+		}
+		else if (txval[0] == 'M' && txval[1] == 'I' && txval[2] == 'N') {
+			tval = INT_MIN;
+		}
+		else if (rv != 1) {
 			return;
 		}
 		if (top[0] == '<') {

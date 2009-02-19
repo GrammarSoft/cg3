@@ -220,7 +220,8 @@ void GrammarApplicator::addTagToReading(Reading *reading, uint32_t utag, bool re
 		reading->tags_textual.insert(utag);
 	}
 	if (tag->type & T_NUMERICAL) {
-		reading->tags_numerical.insert(utag);
+		reading->tags_numerical[utag] = tag;
+		reading->parent->num_is_current = false;
 	}
 	if (!reading->baseform && tag->type & T_BASEFORM) {
 		reading->baseform = tag->hash;
@@ -251,6 +252,7 @@ void GrammarApplicator::delTagFromReading(Reading *reading, uint32_t utag) {
 		reading->mapping = 0;
 	}
 	reading->rehash();
+	reading->parent->num_is_current = false;
 }
 
 void GrammarApplicator::splitMappings(TagList mappings, Cohort *cohort, Reading *reading, bool mapped) {
