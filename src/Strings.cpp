@@ -146,10 +146,10 @@ namespace CG3 {
 			init_string_single("<<<",        S_ENDTAG);
 			init_string_single("_S_DELIMITERS_", S_DELIMITSET);
 			init_string_single("_S_SOFT_DELIMITERS_", S_SOFTDELIMITSET);
-			init_string_single("CGCMD:FLUSH",  S_CMD_FLUSH);
-			init_string_single("CGCMD:EXIT",   S_CMD_EXIT);
-			init_string_single("CGCMD:IGNORE", S_CMD_IGNORE);
-			init_string_single("CGCMD:RESUME", S_CMD_RESUME);
+			init_string_single("<STREAMCMD:FLUSH>",   S_CMD_FLUSH);
+			init_string_single("<STREAMCMD:EXIT>",    S_CMD_EXIT);
+			init_string_single("<STREAMCMD:IGNORE>",  S_CMD_IGNORE);
+			init_string_single("<STREAMCMD:RESUME>",  S_CMD_RESUME);
 			init_string_single("TARGET",       S_TARGET);
 			init_string_single("AND",          S_AND);
 			init_string_single("IF",           S_IF);
