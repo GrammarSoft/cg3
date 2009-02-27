@@ -456,6 +456,10 @@ int TextualParser::parseRule(KEYWORDS key, UChar **p) {
 			result->lines += SKIPWS(p);
 		}
 	}
+	if (rule->flags & RF_REMEMBERX && rule->flags & RF_RESETX) {
+		u_fprintf(ux_stderr, "Error: Line %u: REMEMBERX and RESETX are mutually exclusive!\n", result->lines);
+		CG3Quit(1);
+	}
 	if (rule->flags & RF_NEAREST && rule->flags & RF_ALLOWLOOP) {
 		u_fprintf(ux_stderr, "Error: Line %u: NEAREST and ALLOWLOOP are mutually exclusive!\n", result->lines);
 		CG3Quit(1);

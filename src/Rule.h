@@ -40,7 +40,9 @@ namespace CG3 {
 		RF_LOOKDELETED  = 16U,
 		RF_LOOKDELAYED  = 32U,
 		RF_UNSAFE       = 64U,
-		RF_SAFE         = 128U
+		RF_SAFE         = 128U,
+		RF_REMEMBERX    = 256U,
+		RF_RESETX       = 512U
 	};
 
 	class Rule {
