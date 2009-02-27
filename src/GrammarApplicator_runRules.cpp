@@ -164,13 +164,16 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, uint32Set *r
 					unif_tags.clear();
 				}
 
+				mark = cohort;
 				if (rule->target && doesSetMatchReading(reading, rule->target, set->is_child_unified|set->is_special)) {
 					reading->matched_target = true;
 					bool good = true;
 					if (!did_test) {
 						ContextualTest *test = rule->test_head;
 						while (test) {
-							mark = cohort;
+							if (rule->flags & RF_RESETX || !(rule->flags & RF_REMEMBERX)) {
+								mark = cohort;
+							}
 							if (!(test->pos & POS_PASS_ORIGIN) && (no_pass_origin || (test->pos & POS_NO_PASS_ORIGIN))) {
 								test_good = (runContextualTest(current, c, test, 0, cohort) != 0);
 							}

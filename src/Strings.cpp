@@ -204,6 +204,8 @@ namespace CG3 {
 			init_flag_single("LOOKDELAYED",   FL_LOOKDELAYED);
 			init_flag_single("UNSAFE",        FL_UNSAFE);
 			init_flag_single("SAFE",          FL_SAFE);
+			init_flag_single("REMEMBERX",     FL_REMEMBERX);
+			init_flag_single("RESETX",        FL_RESETX);
 
 			for (unsigned int i=0;i<FLAGS_COUNT;i++) {
 				if (!flags[i]) {
