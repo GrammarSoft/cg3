@@ -42,7 +42,6 @@ namespace CG3 {
 
 		bool num_is_current;
 		uint32int32Map num_max, num_min;
-		void updateMinMax();
 		int32_t getMin(uint32_t key);
 		int32_t getMax(uint32_t key);
 
@@ -72,6 +71,9 @@ namespace CG3 {
 		void remChild(uint32_t child);
 		void appendReading(Reading *read);
 		Reading *allocateAppendReading();
+
+	private:
+		inline void updateMinMax();
 	};
 
 	struct compare_Cohort {

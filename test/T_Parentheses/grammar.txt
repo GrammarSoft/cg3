@@ -24,3 +24,9 @@ MAP (@fourth) (*) (0** (@third)) ;
 MAP (@third) (*) (0** (@second)) ;
 MAP (@second) (*) (0** (@first)) ;
 MAP (@first) (*) ;
+
+# Rule options
+# In this case, they have to be substitute since the reading may already be mapped
+SUBSTITUTE ENCL_INNER (word) (word @inner) (*) ;
+SUBSTITUTE ENCL_OUTER (word) (word @outer) (*) ;
+SUBSTITUTE ENCL_FINAL (word) (word @final) (*) ;

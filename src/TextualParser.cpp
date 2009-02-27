@@ -456,6 +456,15 @@ int TextualParser::parseRule(KEYWORDS key, UChar **p) {
 			result->lines += SKIPWS(p);
 		}
 	}
+	// ToDo: ENCL_* are exclusive...detect multiple of them better.
+	if (rule->flags & RF_ENCL_OUTER && rule->flags & RF_ENCL_INNER) {
+		u_fprintf(ux_stderr, "Error: Line %u: ENCL_OUTER and ENCL_INNER are mutually exclusive!\n", result->lines);
+		CG3Quit(1);
+	}
+	if (rule->flags & RF_KEEPORDER && rule->flags & RF_VARYORDER) {
+		u_fprintf(ux_stderr, "Error: Line %u: KEEPORDER and VARYORDER are mutually exclusive!\n", result->lines);
+		CG3Quit(1);
+	}
 	if (rule->flags & RF_REMEMBERX && rule->flags & RF_RESETX) {
 		u_fprintf(ux_stderr, "Error: Line %u: REMEMBERX and RESETX are mutually exclusive!\n", result->lines);
 		CG3Quit(1);
@@ -471,6 +480,9 @@ int TextualParser::parseRule(KEYWORDS key, UChar **p) {
 	if (rule->flags & RF_DELAYED && rule->flags & RF_IMMEDIATE) {
 		u_fprintf(ux_stderr, "Error: Line %u: IMMEDIATE and DELAYED are mutually exclusive!\n", result->lines);
 		CG3Quit(1);
+	}
+	if (rule->flags & RF_ENCL_FINAL) {
+		result->has_encl_final = true;
 	}
 	result->lines += SKIPWS(p);
 

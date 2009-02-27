@@ -93,6 +93,14 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, uint32Set *r
 		if (!apply_corrections && (rule->type == K_SUBSTITUTE || rule->type == K_APPEND)) {
 			continue;
 		}
+		if (has_enclosures) {
+			if (rule->flags & RF_ENCL_FINAL && !did_final_enclosure) {
+				continue;
+			}
+			else if (did_final_enclosure && !(rule->flags & RF_ENCL_FINAL)) {
+				continue;
+			}
+		}
 		if (statistics) {
 			tstamp = getticks();
 		}
@@ -133,6 +141,20 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, uint32Set *r
 			if (rule->wordform && rule->wordform != cohort->wordform) {
 				rule->num_fail++;
 				continue;
+			}
+
+			if (rule->flags & RF_ENCL_INNER) {
+				if (!par_left_pos) {
+					continue;
+				}
+				if (cohort->local_number < par_left_pos || cohort->local_number > par_right_pos) {
+					continue;
+				}
+			}
+			else if (rule->flags & RF_ENCL_OUTER) {
+				if (par_left_pos && cohort->local_number >= par_left_pos && cohort->local_number <= par_right_pos) {
+					continue;
+				}
 			}
 
 			size_t num_active = 0;
@@ -185,7 +207,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, uint32Set *r
 							}
 							if (!test_good) {
 								good = test_good;
-								if (test != rule->test_head && !(rule->flags & RF_REMEMBERX)) {
+								if (test != rule->test_head && !(rule->flags & (RF_REMEMBERX|RF_KEEPORDER))) {
 									test->detach();
 									if (rule->test_head) {
 										rule->test_head->prev = test;
@@ -729,6 +751,7 @@ int GrammarApplicator::runGrammarOnWindow(Window *window) {
 
 	indexSingleWindow(current);
 
+	has_enclosures = false;
 	if (!grammar->parentheses.empty()) {
 		label_scanParentheses:
 		reverse_foreach(std::vector<Cohort*>, current->cohorts, iter, iter_end) {
@@ -775,6 +798,7 @@ int GrammarApplicator::runGrammarOnWindow(Window *window) {
 						encs.push_back(*eiter2);
 					}
 					c->enclosed = encs;
+					has_enclosures = true;
 					goto label_scanParentheses;
 				}
 			}
@@ -794,7 +818,8 @@ label_runGrammarOnWindow_begin:
 		goto label_runGrammarOnWindow_begin;
 	}
 
-	if (!grammar->parentheses.empty()) {
+	if (!grammar->parentheses.empty() && has_enclosures) {
+		bool found = false;
 		size_t nc = current->cohorts.size();
 		for (size_t i=0 ; i<nc ; i++) {
 			Cohort *c = current->cohorts[i];
@@ -816,8 +841,17 @@ label_runGrammarOnWindow_begin:
 				par_left_pos = i+1;
 				par_right_pos = i+ne;
 				c->enclosed.clear();
+				found = true;
 				goto label_runGrammarOnWindow_begin;
 			}
+		}
+		if (!found && !did_final_enclosure) {
+			par_left_tag = 0;
+			par_right_tag = 0;
+			par_left_pos = 0;
+			par_right_pos = 0;
+			did_final_enclosure = true;
+			goto label_runGrammarOnWindow_begin;
 		}
 	}
 

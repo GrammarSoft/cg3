@@ -206,6 +206,12 @@ namespace CG3 {
 			init_flag_single("SAFE",          FL_SAFE);
 			init_flag_single("REMEMBERX",     FL_REMEMBERX);
 			init_flag_single("RESETX",        FL_RESETX);
+			init_flag_single("KEEPORDER",     FL_KEEPORDER);
+			init_flag_single("VARYORDER",     FL_VARYORDER);
+			init_flag_single("ENCL_INNER",    FL_ENCL_INNER);
+			init_flag_single("ENCL_OUTER",    FL_ENCL_OUTER);
+			init_flag_single("ENCL_FINAL",    FL_ENCL_FINAL);
+			init_flag_single("ENCL_ANY",      FL_ENCL_ANY);
 
 			for (unsigned int i=0;i<FLAGS_COUNT;i++) {
 				if (!flags[i]) {

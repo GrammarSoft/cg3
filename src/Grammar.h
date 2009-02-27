@@ -37,6 +37,7 @@ namespace CG3 {
 		UFILE *ux_stderr;
 
 		bool has_dep;
+		bool has_encl_final;
 		bool is_binary;
 		uint32_t grammar_size;
 		UChar mapping_prefix;

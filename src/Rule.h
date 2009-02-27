@@ -33,16 +33,22 @@ namespace CG3 {
 	class Grammar;
 
 	enum RULE_FLAGS {
-		RF_NEAREST      =  1U,
-		RF_ALLOWLOOP    =  2U,
-		RF_DELAYED      =  4U,
-		RF_IMMEDIATE    =  8U,
-		RF_LOOKDELETED  = 16U,
-		RF_LOOKDELAYED  = 32U,
-		RF_UNSAFE       = 64U,
-		RF_SAFE         = 128U,
-		RF_REMEMBERX    = 256U,
-		RF_RESETX       = 512U
+		RF_NEAREST      =     1U,
+		RF_ALLOWLOOP    =     2U,
+		RF_DELAYED      =     4U,
+		RF_IMMEDIATE    =     8U,
+		RF_LOOKDELETED  =    16U,
+		RF_LOOKDELAYED  =    32U,
+		RF_UNSAFE       =    64U,
+		RF_SAFE         =   128U,
+		RF_REMEMBERX    =   256U,
+		RF_RESETX       =   512U,
+		RF_KEEPORDER    =  1024U,
+		RF_VARYORDER    =  2048U,
+		RF_ENCL_INNER   =  4096U,
+		RF_ENCL_OUTER   =  8192U,
+		RF_ENCL_FINAL   = 16384U,
+		RF_ENCL_ANY     = 32768U
 	};
 
 	class Rule {

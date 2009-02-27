@@ -1,39 +1,39 @@
 "<there>"
-	"there" word <pleft> @left @left-or-right @enclosed @second 
+	"there" word <pleft> @left @left-or-right @enclosed @second @inner @outer @final 
 "<once>"
-	"once" word @enclosed @second 
+	"once" word @enclosed @second @inner @outer @final 
 "<were>"
-	"are" word <pright> @right @left-or-right @enclosed @second 
+	"are" word <pright> @right @left-or-right @enclosed @second @inner @outer @final 
 "<$(>"
 	"<$(>" @first 
 "<two>"
-	"two" word @first 
+	"two" word @first @outer @final 
 "<$[>"
 	"<$[>" @left @left-or-right @enclosed @sqbrck @third 
 "<three>"
-	"three" word @enclosed @sqbrck @third 
+	"three" word @enclosed @sqbrck @third @inner @outer @final 
 "<$]>"
 	"<$]>" @right @left-or-right @right-sqbrck @enclosed @sqbrck @third 
 "<long>"
-	"long" word @first 
+	"long" word @first @outer @final 
 "<red>"
-	"red" word @first 
+	"red" word @first @outer @final 
 "<$(>"
 	"<$(>" @left @left-or-right @left-paren @enclosed @paren @fourth 
 "<more>"
-	"more" word @enclosed @paren @fourth 
+	"more" word @enclosed @paren @fourth @inner @outer @final 
 "<like>"
-	"like" word @enclosed @paren @fourth 
+	"like" word @enclosed @paren @fourth @inner @outer @final 
 "<maroon>"
-	"maroon" word @enclosed @paren @fourth 
+	"maroon" word @enclosed @paren @fourth @inner @outer @final 
 "<$(>"
 	"<$(>" @left @left-or-right @left-paren @enclosed @paren @fifth 
 "<dark>"
-	"dark" word @enclosed @paren @fifth 
+	"dark" word @enclosed @paren @fifth @inner @outer @final 
 "<earthy>"
-	"earthy" word @enclosed @paren @fifth 
+	"earthy" word @enclosed @paren @fifth @inner @outer @final 
 "<red>"
-	"red" word @enclosed @paren @fifth 
+	"red" word @enclosed @paren @fifth @inner @outer @final 
 "<$]>"
 	"<$]>" @enclosed @paren @fifth 
 "<$)>"
@@ -41,15 +41,15 @@
 "<$,>"
 	"<$,>" @enclosed @paren @fourth 
 "<actually>"
-	"actual" word @enclosed @paren @fourth 
+	"actual" word @enclosed @paren @fourth @inner @outer @final 
 "<$)>"
 	"<$)>" @right @left-or-right @enclosed @paren @fourth 
 "<cars>"
-	"car" word @first 
+	"car" word @first @outer @final 
 "<${>"
 	"<${>" @left @left-or-right @enclosed @clbrck @sixth 
 "<trucks>"
-	"truck" word @enclosed @clbrck @sixth 
+	"truck" word @enclosed @clbrck @sixth @inner @final 
 "<$}>"
 	"<$}>" @right @left-or-right @enclosed @clbrck @sixth 
 "<$.>"

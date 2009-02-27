@@ -68,6 +68,8 @@ GrammarApplicator::GrammarApplicator(UFILE *ux_in, UFILE *ux_out, UFILE *ux_err)
 	no_after_sections = false;
 	no_before_sections = false;
 	no_pass_origin = false;
+	has_enclosures = false;
+	did_final_enclosure = false;
 	did_index = false;
 	unsafe = false;
 }
