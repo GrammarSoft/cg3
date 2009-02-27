@@ -1,9 +1,9 @@
 "<word>"
-	"word" wanted first @two @one @jump-target @jump-mark 
+	"word" wanted first @two @one @jump-target @jump-mark @jump-remember 
 "<word>"
-	"word" wanted second @two @one @jump-target @jump-mark 
+	"word" wanted second @two @one @jump-target @jump-mark @jump-remember 
 "<word>"
-	"word" wanted third alsofindme @two @one @jump-mark 
+	"word" wanted third alsofindme @two @one @jump-mark @jump-remember 
 "<word>"
 	"word" wanted fourth findme @two 
 "<word>"
