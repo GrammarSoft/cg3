@@ -25,6 +25,7 @@ using namespace CG3;
 
 Grammar::Grammar() {
 	has_dep = false;
+	has_encl_final = false;
 	is_binary = false;
 	lines = 0;
 	total_time = 0;
