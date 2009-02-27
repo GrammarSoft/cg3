@@ -130,6 +130,8 @@ namespace CG3 {
 			FL_LOOKDELAYED,
 			FL_UNSAFE,
 			FL_SAFE,
+			FL_REMEMBERX,
+			FL_RESETX,
 			FLAGS_COUNT
 		};
 
