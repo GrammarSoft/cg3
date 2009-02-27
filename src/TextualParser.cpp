@@ -698,6 +698,7 @@ int TextualParser::parseRule(KEYWORDS key, UChar **p) {
 		result->has_dep = true;
 	}
 
+	rule->reverseContextualTests();
 	addRuleToGrammar(rule);
 	return 0;
 }

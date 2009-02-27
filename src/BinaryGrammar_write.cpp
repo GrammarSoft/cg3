@@ -292,7 +292,7 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 			fwrite(&u8tmp, sizeof(uint8_t), 1, output);
 		}
 
-
+		r->reverseContextualTests();
 		u32tmp = 0;
 		ContextualTest *test = r->dep_test_head;
 		while (test) {
