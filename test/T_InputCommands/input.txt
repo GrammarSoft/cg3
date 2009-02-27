@@ -17,7 +17,7 @@
 	"word" notmeeither @2
 "<$.>"
 
-CGCMD:FLUSH
+<STREAMCMD:FLUSH>
 test
 
 "<word>"
@@ -38,8 +38,8 @@ test
 	"word" notmeeither @4
 "<$.>"
 
-CGCMD:FLUSH
-CGCMD:IGNORE
+<STREAMCMD:FLUSH>
+<STREAMCMD:IGNORE>
 test2
 
 "<word>"
@@ -52,15 +52,15 @@ test2
 	"word" notmeeither @5
 "<$.>"
 
-CGCMD:RESUME
+<STREAMCMD:RESUME>
 
 "<word>"
 	"word" notwanted @5
 	"word" wanted @5
 	"word" notmeeither @5
 
-CGCMD:FLUSH
-CGCMD:EXIT
+<STREAMCMD:FLUSH>
+<STREAMCMD:EXIT>
 
 "<word>"
 	"word" notwanted @5
