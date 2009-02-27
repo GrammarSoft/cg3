@@ -7,3 +7,5 @@ ADD (@one) (*) (1* (findme)) ;
 
 ADD (@jump-target) (*) (1* (third) LINK 1* (seventh) LINK 1*x (fifth)) ;
 ADD (@jump-mark) (*) (1* (fourth) LINK 1*X (seventh) LINK -1* (fifth) LINK -1*x (sixth)) ;
+
+ADD REMEMBERX (@jump-remember) (*) (1* (fourth) LINK 1*X (seventh) LINK -1* (fifth)) (-1*x (sixth)) ;

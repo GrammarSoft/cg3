@@ -104,6 +104,9 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, uint32Set *r
 		//for (size_t c=1 ; c < current->cohorts.size() ; c++) {
 		foreach(CohortSet, (*(current->rule_to_cohorts.find(rule)->second)), rocit, rocit_end) {
 			Cohort *cohort = *rocit;
+			if (cohort->local_number == 0) {
+				continue;
+			}
 
 			uint32_t c = cohort->local_number;
 			if (cohort->is_enclosed || cohort->parent != current) {
@@ -182,7 +185,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, uint32Set *r
 							}
 							if (!test_good) {
 								good = test_good;
-								if (test != rule->test_head) {
+								if (test != rule->test_head && !(rule->flags & RF_REMEMBERX)) {
 									test->detach();
 									if (rule->test_head) {
 										rule->test_head->prev = test;

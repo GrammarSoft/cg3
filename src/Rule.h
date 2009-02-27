@@ -75,6 +75,7 @@ namespace CG3 {
 
 		ContextualTest *allocateContextualTest();
 		void addContextualTest(ContextualTest *to, ContextualTest **head);
+		void reverseContextualTests();
 
 		static bool cmp_quality(const Rule *a, const Rule *b);
 

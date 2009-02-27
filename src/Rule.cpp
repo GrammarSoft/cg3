@@ -84,6 +84,44 @@ void Rule::addContextualTest(ContextualTest *to, ContextualTest **head) {
 	*head = to;
 }
 
+void Rule::reverseContextualTests() {
+	ContextualTest *th;
+	ContextualTest *next;
+	ContextualTest *prev;
+
+	th = test_head;
+	if (th) {
+		next = th->next;
+		prev = th->prev;
+	}
+	while (th) {
+		th->next = prev;
+		th->prev = next;
+		th = next;
+		if (th) {
+			test_head = th;
+			next = th->next;
+			prev = th->prev;
+		}
+	}
+
+	th = dep_test_head;
+	if (th) {
+		next = th->next;
+		prev = th->prev;
+	}
+	while (th) {
+		th->next = prev;
+		th->prev = next;
+		th = next;
+		if (th) {
+			dep_test_head = th;
+			next = th->next;
+			prev = th->prev;
+		}
+	}
+}
+
 void Rule::resetStatistics() {
 	ContextualTest *t = test_head;
 	while (t) {
