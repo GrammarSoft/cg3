@@ -22,7 +22,7 @@
       <emphasis>It is strongly recommended to precede an Exit with a Flush.</emphasis>
     </para>
     <screen>
-      CGCMD:EXIT
+      &lt;STREAMCMD:EXIT&gt;
     </screen>
   </section>
 
@@ -37,7 +37,7 @@
       FLUSH point.
     </para>
     <screen>
-      CGCMD:FLUSH
+      &lt;STREAMCMD:FLUSH&gt;
     </screen>
   </section>
 
@@ -53,7 +53,7 @@
       <emphasis>It is strongly recommended to precede an Ignore with a Flush.</emphasis>
     </para>
     <screen>
-      CGCMD:IGNORE
+      &lt;STREAMCMD:IGNORE&gt;
     </screen>
   </section>
 
@@ -67,7 +67,7 @@
       it has no effect.
     </para>
     <screen>
-      CGCMD:RESUME
+      &lt;STREAMCMD:RESUME&gt;
     </screen>
   </section>
 
