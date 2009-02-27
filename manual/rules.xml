@@ -204,6 +204,128 @@
         Mainly used to selectively override global --unsafe mode.
       </para>
     </section>
+
+    <section id="rule-options-rememberx">
+      <title>REMEMBERX</title>
+      <indexterm>
+        <primary>REMEMBERX</primary>
+      </indexterm>
+      <para>
+        Applicable for all rules.
+        Not compatible with option RESETX.
+      </para>
+      <para>
+        Makes the contextual option X carry over to subsequent tests in the rule, as opposed to resetting itself
+        to the rule's target per test. Useful for complex jumps with the X and x options.
+      </para>
+    </section>
+
+    <section id="rule-options-resetx">
+      <title>RESETX</title>
+      <indexterm>
+        <primary>RESETX</primary>
+      </indexterm>
+      <para>
+        Applicable for all rules.
+        Not compatible with option REMEMBERX.
+      </para>
+      <para>
+        Default behavior.
+        Resets the mark for contextual option x to the rule's target on each test.
+        Used to counter a global REMEMBERX.
+      </para>
+    </section>
+
+    <section id="rule-options-keeporder">
+      <title>KEEPORDER</title>
+      <indexterm>
+        <primary>KEEPORDER</primary>
+      </indexterm>
+      <para>
+        Applicable for all rules.
+        Not compatible with option VARYORDER.
+      </para>
+      <para>
+        Prevents the re-ordering of contextual tests.
+        Useful in cases where a unifying set is not in the target of the rule.
+      </para>
+    </section>
+
+    <section id="rule-options-varyorder">
+      <title>VARYORDER</title>
+      <indexterm>
+        <primary>VARYORDER</primary>
+      </indexterm>
+      <para>
+        Applicable for all rules.
+        Not compatible with option KEEPORDER.
+      </para>
+      <para>
+        Allows the re-ordering of contextual tests.
+        Used to selectively override a global KEEPORDER flag as test order is by default fluid.
+      </para>
+    </section>
+
+    <section id="rule-options-encl-inner">
+      <title>ENCL_INNER</title>
+      <indexterm>
+        <primary>ENCL_INNER</primary>
+      </indexterm>
+      <para>
+        Applicable for all rules.
+        Not compatible with other ENCL_* options.
+      </para>
+      <para>
+        Rules with ENCL_INNER will only be run inside the currently active parantheses enclosure.
+        If the current window has no enclosures, the rule will not be run.
+      </para>
+    </section>
+
+    <section id="rule-options-encl-outer">
+      <title>ENCL_OUTER</title>
+      <indexterm>
+        <primary>ENCL_OUTER</primary>
+      </indexterm>
+      <para>
+        Applicable for all rules.
+        Not compatible with other ENCL_* options.
+      </para>
+      <para>
+        Rules with ENCL_OUTER will only be run outside the currently active parentheses enclosure.
+        Previously expanded enclosures will be seen as outside on subsequent runs.
+        If the current window has no enclosures, the rule will be run as normal.
+      </para>
+    </section>
+
+    <section id="rule-options-encl-final">
+      <title>ENCL_FINAL</title>
+      <indexterm>
+        <primary>ENCL_FINAL</primary>
+      </indexterm>
+      <para>
+        Applicable for all rules.
+        Not compatible with other ENCL_* options.
+      </para>
+      <para>
+        Rules with ENCL_FINAL will only be run once all parentheses enclosures have been expanded.
+        If the current window has no enclosures, the rule will be run as normal.
+      </para>
+    </section>
+
+    <section id="rule-options-encl-any">
+      <title>ENCL_ANY</title>
+      <indexterm>
+        <primary>ENCL_ANY</primary>
+      </indexterm>
+      <para>
+        Applicable for all rules.
+        Not compatible with other ENCL_* options.
+      </para>
+      <para>
+        The default behavior.
+        Used to counter other glocal ENCL_* flags.
+      </para>
+    </section>
   </section>
 
 </chapter>
