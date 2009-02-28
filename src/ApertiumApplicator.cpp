@@ -314,8 +314,10 @@ ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output)
 /*
  * Parse an Apertium reading into a CG Reading
  *
- * Example:
+ * Examples:
  *   venir<vblex><imp><p2><sg>
+ *   venir<vblex><inf>+lo<prn><enc><p3><nt><sg>
+ *   be<vblex><inf># happy
  */
 void
 ApertiumApplicator::processReading(Reading *cReading, UChar *reading_string)
@@ -408,18 +410,22 @@ ApertiumApplicator::processReading(Reading *cReading, UChar *reading_string)
 				continue;
 
 			} else {
-				if(joined) {
-					tmptag = ux_append(tmptag, '&');
-					tmptag = ux_append(tmptag, join_idx);
-				}
 
 				c++;
 				continue;
 			}
 
 		} else if(*c == '>') {
-
-			uint32_t tag = addTag(tmptag)->hash;
+			uint32_t shufty = addTag(tmptag)->hash;
+			UChar *newtag = 0;
+			if (cReading->tags.find(shufty) != cReading->tags.end()) {
+				newtag = ux_append(newtag, '&');	
+				newtag = ux_append(newtag, join_idx);
+				newtag = ux_append(newtag, tmptag);
+			} else {
+				newtag = ux_append(newtag, tmptag);
+			}
+			uint32_t tag = addTag(newtag)->hash;
 			addTagToReading(cReading, tag); // Add the baseform to the tag
 
 			delete[] tmptag;
@@ -431,6 +437,9 @@ ApertiumApplicator::processReading(Reading *cReading, UChar *reading_string)
 		tmptag = ux_append(tmptag, *c);
 		c++;
 	}
+	
+	joined = false;
+	join_idx = 48;
 
 	return;
 }
@@ -469,7 +478,7 @@ ApertiumApplicator::printReading(Reading *reading, UFILE *output)
 			} else if(tag->tag[0] == '&') {
 				u_fprintf(output, "<");
 				u_fprintf(output, "%S", ux_substr(tag->tag, 2, u_strlen(tag->tag)));	
-				u_fprintf(output, ">"); 
+				u_fprintf(output, ">");  
 			} else {
 				u_fprintf(output, "<");
 				Tag::printTagRaw(output, tag);
