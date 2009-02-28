@@ -327,6 +327,8 @@ ApertiumApplicator::processReading(Reading *cReading, UChar *reading_string)
 	UChar *suf = 0;
 	bool unknown = false;
 	bool multi = false;
+	bool joined = false;
+	int join_idx = 48; // Set the join index to the number '0' in ASCII/UTF-8
 
 	if (grammar->sets_any && !grammar->sets_any->empty()) {
 		cReading->parent->possible_sets.insert(grammar->sets_any->begin(), grammar->sets_any->end());
@@ -390,6 +392,8 @@ ApertiumApplicator::processReading(Reading *cReading, UChar *reading_string)
 
 		if(*c == '+') {
 			joiner = true;
+			joined = true;
+			join_idx++;
 		}
 
 		if(*c == '<') {
@@ -404,11 +408,17 @@ ApertiumApplicator::processReading(Reading *cReading, UChar *reading_string)
 				continue;
 
 			} else {
+				if(joined) {
+					tmptag = ux_append(tmptag, '&');
+					tmptag = ux_append(tmptag, join_idx);
+				}
+
 				c++;
 				continue;
 			}
 
 		} else if(*c == '>') {
+
 			uint32_t tag = addTag(tmptag)->hash;
 			addTagToReading(cReading, tag); // Add the baseform to the tag
 
@@ -456,6 +466,10 @@ ApertiumApplicator::printReading(Reading *reading, UFILE *output)
 		if (!(tag->type & T_BASEFORM) && !(tag->type & T_WORDFORM)) {
 			if(tag->tag[0] == '+') {
 				Tag::printTagRaw(output, tag);
+			} else if(tag->tag[0] == '&') {
+				u_fprintf(output, "<");
+				u_fprintf(output, "%S", ux_substr(tag->tag, 2, u_strlen(tag->tag)));	
+				u_fprintf(output, ">"); 
 			} else {
 				u_fprintf(output, "<");
 				Tag::printTagRaw(output, tag);
