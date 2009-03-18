@@ -23,6 +23,8 @@
 
 using namespace CG3::Strings;
 
+// ToDo: Make all of ux_* inline to get around possible memory errors.
+
 bool ux_isNewline(const UChar32 current, const UChar32 previous) {
 	return (current == 0x0D0AL // ASCII \r\n
 	|| current == 0x2028L // Unicode Line Seperator
