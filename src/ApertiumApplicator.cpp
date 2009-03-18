@@ -420,7 +420,7 @@ ApertiumApplicator::processReading(Reading *cReading, UChar *reading_string)
 			UChar *newtag = 0;
 			if (cReading->tags.find(shufty) != cReading->tags.end()) {
 				newtag = ux_append(newtag, '&');	
-				newtag = ux_append(newtag, join_idx);
+				newtag = ux_append(newtag, (UChar)join_idx);
 				newtag = ux_append(newtag, tmptag);
 			} else {
 				newtag = ux_append(newtag, tmptag);

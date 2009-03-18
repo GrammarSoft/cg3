@@ -69,6 +69,11 @@ namespace CG3 {
 
 		virtual int runGrammarOnText(UFILE *input, UFILE *output);
 
+		bool has_dep;
+		uint32_t dep_highest_seen;
+		Window *gWindow;
+		void reflowDependencyWindow(uint32_t max = 0);
+
 	protected:
 		void printReading(Reading *reading, UFILE *output);
 		void printSingleWindow(SingleWindow *window, UFILE *output);
@@ -141,9 +146,6 @@ namespace CG3 {
 
 		SingleWindow *initialiseSingleWindow(Recycler *r, Window *cWindow, SingleWindow *cSWindow);
 
-		bool has_dep;
-		uint32_t dep_highest_seen;
-		Window *gWindow;
 		bool statistics;
 		ticks gtimer;
 
@@ -152,7 +154,6 @@ namespace CG3 {
 		void delTagFromReading(Reading *reading, uint32_t tag);
 		void splitMappings(TagList mappings, Cohort *cohort, Reading *reading, bool mapped = false);
 		void mergeMappings(Cohort *cohort);
-		void reflowDependencyWindow(uint32_t max = 0);
 		bool wouldParentChildLoop(Cohort *parent, Cohort *child);
 		bool attachParentChild(Cohort *parent, Cohort *child, bool allowloop = false);
 	};
