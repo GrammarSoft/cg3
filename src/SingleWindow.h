@@ -23,6 +23,7 @@
 #define __SINGLEWINDOW_H
 
 #include "stdafx.h"
+#include "GrammarApplicator.h"
 #include "Window.h"
 #include "Cohort.h"
 #include "Rule.h"

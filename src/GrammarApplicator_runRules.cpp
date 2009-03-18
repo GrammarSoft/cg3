@@ -731,6 +731,7 @@ int GrammarApplicator::runGrammarOnWindow(Window *window) {
 	SingleWindow *current = window->current;
 
 	if (has_dep) {
+		/*
 		foreach(std::vector<Cohort*>, current->cohorts, iter, iter_end) {
 			Cohort *c = *iter;
 			if (c->dep_self == 0) {
@@ -746,6 +747,7 @@ int GrammarApplicator::runGrammarOnWindow(Window *window) {
 				dep_highest_seen = c->dep_self;
 			}
 		}
+		//*/
 		reflowDependencyWindow();
 	}
 
