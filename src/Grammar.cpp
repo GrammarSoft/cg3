@@ -362,7 +362,7 @@ void Grammar::renameAllRules() {
 	}
 };
 
-void Grammar::reindex() {
+void Grammar::reindex(bool unused_sets) {
 	set_alias.clear();
 	sets_by_name.clear();
 	rules.clear();
@@ -404,6 +404,19 @@ void Grammar::reindex() {
 	}
 	if (soft_delimiters) {
 		soft_delimiters->markUsed(this);
+	}
+
+	if (unused_sets) {
+		u_fprintf(ux_stderr, "Unused sets:\n");
+		foreach (Setuint32HashMap, sets_by_contents, rset, rset_end) {
+			if (!rset->second->is_used && rset->second->name) {
+				if (rset->second->name[0] != '_' || rset->second->name[1] != 'G' || rset->second->name[2] != '_') {
+					u_fprintf(ux_stderr, "Line %u set %S\n", rset->second->line, rset->second->name);
+				}
+			}
+		}
+		u_fprintf(ux_stderr, "End of unused sets.\n");
+		u_fflush(ux_stderr);
 	}
 
 	/*
@@ -506,6 +519,7 @@ void Grammar::reindex() {
 		}
 		else {
 			u_fprintf(ux_stderr, "Warning: Rule on line %u had no target.\n", iter_rule->second->line);
+			u_fflush(ux_stderr);
 		}
 	}
 
