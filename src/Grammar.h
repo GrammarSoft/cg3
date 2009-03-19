@@ -115,7 +115,7 @@ namespace CG3 {
 		void addContextualTest(ContextualTest *test, const UChar *name);
 
 		void resetStatistics();
-		void reindex();
+		void reindex(bool unused_sets=false);
 		void renameAllRules();
 
 		void indexSetToRule(uint32_t, Set*);

@@ -16,3 +16,4 @@ ToDo: Rule option blocks: OPTIONS +NEAREST -DELAYED
 ToDo: Transaction blocks: TRANSACTION, COMMIT, ROLLBACK
 ToDo: Binary input/output stream for lossless chaining of multiple CG-3
 ToDo: Make ANCHOR, JUMP, EXECUTE actually do something...
+ToDo: Add --ordered and ORDERED UNORDERED rule/set/list options.
