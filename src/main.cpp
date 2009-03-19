@@ -273,7 +273,7 @@ int main(int argc, char* argv[]) {
 	if (options[VERBOSE].doesOccur) {
 		std::cerr << "Reindexing grammar..." << std::endl;
 	}
-	grammar->reindex();
+	grammar->reindex(options[SHOW_UNUSED_SETS].doesOccur == 1);
 
 	delete parser;
 	parser = 0;
