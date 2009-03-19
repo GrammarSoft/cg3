@@ -128,7 +128,7 @@ namespace Options {
 
 		UOPTION_DEF_D("no-magic-readings",	0, UOPT_NO_ARG, "prevents running rules on magic readings"),
 		UOPTION_DEF_D("no-pass-origin",		'o', UOPT_NO_ARG, "prevents scanning tests from passing the point of origin"),
-		UOPTION_DEF_D("show-unused-sets",	0, UOPT_NO_ARG, "prints a list of unused sets and their line numbers")
+		UOPTION_DEF_D("show-unused-sets",	0, UOPT_NO_ARG, "prints a list of unused sets and their line numbers; implies --grammar-only")
 	};
 }
 
