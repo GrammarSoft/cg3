@@ -102,6 +102,10 @@ int main(int argc, char* argv[]) {
 
 	fflush(stderr);
 
+	if (options[SHOW_UNUSED_SETS].doesOccur) {
+		options[GRAMMAR_ONLY].doesOccur = true;
+	}
+
 	if (options[GRAMMAR_ONLY].doesOccur) {
 		if (!options[VERBOSE].doesOccur) {
 			options[VERBOSE].doesOccur = true;
@@ -247,6 +251,7 @@ int main(int argc, char* argv[]) {
 		}
 	}
 	grammar->ux_stderr = ux_stderr;
+	grammar->ux_stdout = ux_stdout;
 	CG3::Tag *tag_any = grammar->allocateTag(stringbits[S_ASTERIK]);
 	grammar->tag_any = tag_any->hash;
 	parser->setResult(grammar);
