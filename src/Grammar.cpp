@@ -407,16 +407,16 @@ void Grammar::reindex(bool unused_sets) {
 	}
 
 	if (unused_sets) {
-		u_fprintf(ux_stderr, "Unused sets:\n");
+		u_fprintf(ux_stdout, "Unused sets:\n");
 		foreach (Setuint32HashMap, sets_by_contents, rset, rset_end) {
 			if (!rset->second->is_used && rset->second->name) {
 				if (rset->second->name[0] != '_' || rset->second->name[1] != 'G' || rset->second->name[2] != '_') {
-					u_fprintf(ux_stderr, "Line %u set %S\n", rset->second->line, rset->second->name);
+					u_fprintf(ux_stdout, "Line %u set %S\n", rset->second->line, rset->second->name);
 				}
 			}
 		}
-		u_fprintf(ux_stderr, "End of unused sets.\n");
-		u_fflush(ux_stderr);
+		u_fprintf(ux_stdout, "End of unused sets.\n");
+		u_fflush(ux_stdout);
 	}
 
 	/*

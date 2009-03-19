@@ -34,7 +34,7 @@ namespace CG3 {
 
 	class Grammar {
 	public:
-		UFILE *ux_stderr;
+		UFILE *ux_stderr, *ux_stdout;
 
 		bool has_dep;
 		bool has_encl_final;
