@@ -38,7 +38,7 @@ bool GrammarApplicator::wouldParentChildLoop(Cohort *parent, Cohort *child) {
 		retval = true;
 	} else {
 		for (;i<1000;i++) {
-			if (parent->dep_parent == 0) {
+			if (parent->dep_parent == 0 || parent->dep_parent == UINT_MAX) {
 				retval = false;
 				break;
 			}
@@ -80,6 +80,9 @@ bool GrammarApplicator::attachParentChild(Cohort *parent, Cohort *child, bool al
 		return false;
 	}
 
+	if (child->dep_parent == UINT_MAX) {
+		child->dep_parent = child->dep_self;
+	}
 	gWindow->cohort_map.find(child->dep_parent)->second->remChild(child->dep_self);
 
 	child->dep_parent = parent->global_number;
@@ -143,6 +146,9 @@ void GrammarApplicator::reflowDependencyWindow(uint32_t max) {
 			if (max && cohort->global_number >= max) {
 				break;
 			}
+			if (cohort->dep_parent == UINT_MAX) {
+				continue;
+			}
 			if (cohort->dep_self == cohort->global_number) {
 				if (!cohort->dep_done && gWindow->dep_map.find(cohort->dep_parent) == gWindow->dep_map.end()) {
 					if (verbosity_level > 0) {
@@ -153,8 +159,7 @@ void GrammarApplicator::reflowDependencyWindow(uint32_t max) {
 							);
 						u_fflush(ux_stderr);
 					}
-					// ToDo: If parent is not found, it should be totally ignored, not just set to itself
-					cohort->dep_parent = cohort->dep_self;
+					cohort->dep_parent = UINT_MAX;
 				}
 				else {
 					if (!cohort->dep_done) {
@@ -232,6 +237,9 @@ void GrammarApplicator::addTagToReading(Reading *reading, uint32_t utag, bool re
 	if (grammar->has_dep && tag->type & T_DEPENDENCY && !reading->parent->dep_done) {
 		reading->parent->dep_self = tag->dep_self;
 		reading->parent->dep_parent = tag->dep_parent;
+		if (tag->dep_parent == tag->dep_self) {
+			reading->parent->dep_parent = UINT_MAX;
+		}
 		has_dep = true;
 	}
 	if (!tag->is_special) {

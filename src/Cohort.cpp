@@ -35,7 +35,7 @@ Cohort::Cohort(SingleWindow *p) {
 	text_pre = 0;
 	text_post = 0;
 	dep_self = 0;
-	dep_parent = 0;
+	dep_parent = UINT_MAX;
 	prev = 0;
 	next = 0;
 	is_pleft = 0;
@@ -78,7 +78,7 @@ void Cohort::clear(SingleWindow *p) {
 	}
 	text_post = 0;
 	dep_self = 0;
-	dep_parent = 0;
+	dep_parent = UINT_MAX;
 	is_pleft = 0;
 	is_pright = 0;
 	possible_sets.clear();

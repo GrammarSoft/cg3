@@ -253,16 +253,14 @@ void GrammarApplicator::printReading(Reading *reading, UFILE *output) {
 			reading->parent->dep_self = reading->parent->global_number;
 		}
 		const Cohort *pr = 0;
-		if (reading->parent->dep_parent) {
-			if (reading->parent->parent->parent->cohort_map.find(reading->parent->dep_parent) == reading->parent->parent->parent->cohort_map.end()) {
-				pr = reading->parent;
+		pr = reading->parent;
+		if (reading->parent->dep_parent != UINT_MAX) {
+			if (reading->parent->dep_parent == 0) {
+				pr = reading->parent->parent->cohorts.at(0);
 			}
-			else {
+			else if (reading->parent->parent->parent->cohort_map.find(reading->parent->dep_parent) != reading->parent->parent->parent->cohort_map.end()) {
 				pr = reading->parent->parent->parent->cohort_map[reading->parent->dep_parent];
 			}
-		}
-		else {
-			pr = reading->parent->parent->cohorts[0];
 		}
 		if (dep_humanize) {
 			u_fprintf(output, "#w%u,c%u->w%u,c%u ",
@@ -277,9 +275,16 @@ void GrammarApplicator::printReading(Reading *reading, UFILE *output) {
 				pr->local_number);
 		}
 		else {
-			u_fprintf(output, "#%u->%u ",
-				reading->parent->dep_self,
-				reading->parent->dep_parent);
+			if (reading->parent->dep_parent == UINT_MAX) {
+				u_fprintf(output, "#%u->%u ",
+					reading->parent->dep_self,
+					reading->parent->dep_self);
+			}
+			else {
+				u_fprintf(output, "#%u->%u ",
+					reading->parent->dep_self,
+					reading->parent->dep_parent);
+			}
 		}
 	}
 
