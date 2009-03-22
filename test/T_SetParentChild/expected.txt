@@ -1,17 +1,17 @@
 "<There>"
-	"there" <*> ADV @F-SUBJ #1->0 
+	"there" <*> ADV @F-SUBJ @notp @negatep #1->1 
 "<once>"
-	"once" ADV @ADVL #2->0 
+	"once" ADV @ADVL @notp @negatep #2->2 
 "<was>"
-	"be" <SVC/N> <SVC/A> V PAST SG1/3 VFIN IMP @FMV #3->0 
+	"be" <SVC/N> <SVC/A> V PAST SG1/3 VFIN IMP @FMV @notp @negatep #3->3 
 "<a>"
 	"a" <Indef> ART DET CENTRAL SG @>N #4->5 
 "<man>"
-	"man" N NOM SG @SC #5->0 
+	"man" N NOM SG @SC @notp @negatep #5->5 
 "<that>"
-	"that" <NonMod> <**CLB> <Rel> PRON INDP SG/PL @SUBJ #6->0 
+	"that" <NonMod> <**CLB> <Rel> PRON INDP SG/PL @SUBJ @notp @negatep #6->6 
 "<walked>"
-	"walk" <SV> <SVO> V PAST VFIN @FMV @#FS-N< #7->0 
+	"walk" <SV> <SVO> V PAST VFIN @FMV @notp @negatep #7->7 
 "<down>"
 	"down" <error> PRP @ADVL #8->2 
 "<the>"

@@ -315,7 +315,10 @@ Cohort *GrammarApplicator::runDependencyTest(SingleWindow *sWindow, const Cohort
 		}
 	}
 
-	if (test->pos & POS_DEP_PARENT && current->dep_self != current->dep_parent) {
+	if (test->pos & POS_DEP_PARENT) {
+		if (current->dep_parent == UINT_MAX) {
+			return 0;
+		}
 		if (sWindow->parent->cohort_map.find(current->dep_parent) == sWindow->parent->cohort_map.end()) {
 			if (verbosity_level > 0) {
 				u_fprintf(ux_stderr, "Warning: Parent dependency %u -> %u does not exist - ignoring.\n", current->dep_self, current->dep_parent);
@@ -325,6 +328,9 @@ Cohort *GrammarApplicator::runDependencyTest(SingleWindow *sWindow, const Cohort
 		}
 
 		Cohort *cohort = sWindow->parent->cohort_map.find(current->dep_parent)->second;
+		if (current->dep_parent == 0) {
+			cohort = current->parent->cohorts.at(0);
+		}
 		bool good = true;
 		if (current->parent != cohort->parent) {
 			if ((!(test->pos & (POS_SPAN_BOTH|POS_SPAN_LEFT))) && cohort->parent->number < current->parent->number) {
