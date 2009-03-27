@@ -47,7 +47,7 @@ inline uint32_t hash_sdbm_uint32_t(const uint32_t c, uint32_t hash = 0) {
                        +(uint32_t)(((const uint8_t *)(d))[0]) )
 #endif
 
-inline uint32_t SuperFastHash(const char *data, uint32_t hash = CG3_HASH_SEED, uint32_t len = 0) {
+inline uint32_t SuperFastHash_char(const char *data, uint32_t hash = CG3_HASH_SEED, uint32_t len = 0) {
 	uint32_t tmp;
 	uint32_t rem;
 
@@ -94,6 +94,45 @@ inline uint32_t SuperFastHash(const char *data, uint32_t hash = CG3_HASH_SEED, u
 	return hash;
 }
 
+inline uint32_t SuperFastHash_uchar(const UChar *data, uint32_t hash = CG3_HASH_SEED, uint32_t len = 0) {
+	uint32_t tmp;
+	uint32_t rem;
+
+	if (len == 0 || data == 0) {
+		return 0;
+	}
+
+	rem = len & 1;
+	len >>= 1;
+
+	/* Main loop */
+	for (;len > 0; len--) {
+		hash  += data[0];
+		tmp    = (data[1] << 11) ^ hash;
+		hash   = (hash << 16) ^ tmp;
+		data  += 2;
+		hash  += hash >> 11;
+	}
+
+	/* Handle end cases */
+	switch (rem) {
+		case 1:	hash += data[0];
+				hash ^= hash << 11;
+				hash += hash >> 17;
+				break;
+	}
+
+	/* Force "avalanching" of final 127 bits */
+	hash ^= hash << 3;
+	hash += hash >> 5;
+	hash ^= hash << 4;
+	hash += hash >> 17;
+	hash ^= hash << 25;
+	hash += hash >> 6;
+
+	return hash;
+}
+
 inline uint32_t hash_sdbm_uchar(const UChar *str, uint32_t hash = 0, size_t len = 0) {
 	if (hash == 0) {
 		hash = CG3_HASH_SEED;
@@ -101,7 +140,7 @@ inline uint32_t hash_sdbm_uchar(const UChar *str, uint32_t hash = 0, size_t len 
 	if (len == 0) {
 		len = u_strlen(str);
 	}
-	return SuperFastHash((const char*)str, hash, len*sizeof(UChar));
+	return SuperFastHash_uchar(str, hash, len);
 }
 
 inline uint32_t hash_sdbm_char(const char *str, uint32_t hash = 0, size_t len = 0) {
@@ -111,7 +150,7 @@ inline uint32_t hash_sdbm_char(const char *str, uint32_t hash = 0, size_t len = 
 	if (len == 0) {
 		len = strlen(str);
 	}
-	return SuperFastHash(str, hash, len);
+	return SuperFastHash_char(str, hash, len);
 }
 
 inline bool ISSTRING(UChar *p, uint32_t c) {

@@ -35,10 +35,16 @@ int main(int argc, char* argv[]) {
 	ucnv_setDefaultName("UTF-8");
 	uloc_setDefault("en_US_POSIX", &status);
 
+	char *s = new char[512];
+	memset(s, 0, sizeof(char)*512);
+	sprintf(s, "waffles with pancakes");
+	printf("Hash char : %u %u %u %u\n", sizeof(char), s[0], s[1], hash_sdbm_char(s));
+
 	UChar *t = new UChar[512];
 	memset(t, 0, sizeof(UChar)*512);
 	u_sprintf(t, "waffles with pancakes");
-	printf("Hash: %u\n", hash_sdbm_uchar(t));
+	char *c = reinterpret_cast<char*>(t);
+	printf("Hash UChar: %u %u %u %u\n", sizeof(UChar), c[0], c[1], hash_sdbm_uchar(t));
 
 	u_cleanup();
 
