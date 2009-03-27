@@ -282,7 +282,7 @@ int main(int argc, char* argv[]) {
 
 	delete parser;
 	parser = 0;
-	
+
 	std::cerr << "Parsing grammar took " << (clock()-main_timer)/(double)CLOCKS_PER_SEC << " seconds." << std::endl;
 	main_timer = clock();
 
@@ -563,4 +563,10 @@ void GAppSetOpts(CG3::GrammarApplicator *applicator) {
 	if (options[STATISTICS].doesOccur) {
 		applicator->enableStatistics();
 	}
+#ifndef HAVE_TICK_COUNTER
+	if (options[STATISTICS].doesOccur) {
+		std::cerr << "Error: Sorry, this build cannot gather statistics due to missing high resolution timers." << std::endl;
+		CG3Quit(1);
+	}
+#endif
 }
