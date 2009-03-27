@@ -17,3 +17,4 @@ ToDo: Transaction blocks: TRANSACTION, COMMIT, ROLLBACK
 ToDo: Binary input/output stream for lossless chaining of multiple CG-3
 ToDo: Make ANCHOR, JUMP, EXECUTE actually do something...
 ToDo: Add --ordered and ORDERED UNORDERED rule/set/list options.
+ToDo: Add --use-dep-windows by checking if new ID is lower than last seen max, or delta is too large

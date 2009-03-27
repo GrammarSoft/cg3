@@ -108,6 +108,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, uint32Set *r
 		const Set *set = grammar->sets_by_contents.find(rule->target)->second;
 
 		// ToDo: Update list of in/valid rules upon MAP, ADD, REPLACE, APPEND, SUBSTITUTE; add tags + always add tag_any
+		// ToDo: Make better use of rules_by_tag
 
 		//for (size_t c=1 ; c < current->cohorts.size() ; c++) {
 		foreach(CohortSet, (*(current->rule_to_cohorts.find(rule)->second)), rocit, rocit_end) {
@@ -731,23 +732,6 @@ int GrammarApplicator::runGrammarOnWindow(Window *window) {
 	SingleWindow *current = window->current;
 
 	if (has_dep) {
-		/*
-		foreach(std::vector<Cohort*>, current->cohorts, iter, iter_end) {
-			Cohort *c = *iter;
-			if (c->dep_self == 0) {
-				continue;
-			}
-			if (c->dep_self <= dep_highest_seen) {
-				reflowDependencyWindow(c->global_number);
-				gWindow->dep_map.clear();
-				gWindow->dep_window.clear();
-				dep_highest_seen = 0;
-			}
-			else {
-				dep_highest_seen = c->dep_self;
-			}
-		}
-		//*/
 		reflowDependencyWindow();
 	}
 
