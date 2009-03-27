@@ -30,6 +30,14 @@ cg_comp_SOURCES = cg_comp.cpp \
 cg_proc_SOURCES = cg_proc.cpp ApertiumApplicator.cpp \
 		$(cpp_sources)
 
+noinst_PROGRAMS = test_hashcol_dep test_hashcol_deptag test_hash_arch
+
+test_hashcol_deptag_SOURCES = test_hashcol_deptag.cpp Tag.cpp Strings.cpp uextras.cpp
+
+test_hashcol_dep_SOURCES = test_hashcol_dep.cpp Tag.cpp Strings.cpp uextras.cpp
+
+test_hash_arch_SOURCES = test_hash_arch.cpp
+
 man_MANS=vislcg3.1 cg-proc.1 cg-comp.1
 
 EXTRA_DIST = $(h_sources) $(man_MANS)
