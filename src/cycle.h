@@ -512,3 +512,12 @@ INLINE_ELAPSED(inline)
 #endif
 #endif /* HAVE_MIPS_ZBUS_TIMER */
 
+#ifndef HAVE_TICK_COUNTER
+typedef unsigned long long ticks;
+static inline ticks getticks() {
+	return 0;
+}
+static inline double elapsed(ticks t1, ticks t0) {
+	return 0.0;
+}
+#endif
