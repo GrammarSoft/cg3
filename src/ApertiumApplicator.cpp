@@ -36,7 +36,7 @@ ApertiumApplicator::ApertiumApplicator(UFILE *ux_in, UFILE *ux_out, UFILE *ux_er
  * Run a constraint grammar on an Apertium input stream
  */
 
-int 
+int
 ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output) 
 {
 	if (!input) {
@@ -49,21 +49,40 @@ ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output)
 		CG3Quit(1);
 	}
 	if (!output) {
-		u_fprintf(ux_stderr, "Error: Output is null - cannot write to anything!\n");
+		u_fprintf(ux_stderr, "Error: Output is null - cannot write to nothing!\n");
+		CG3Quit(1);
+	}
+	// not sure if I should keep this. TODO
+	if (!grammar) {
+		u_fprintf(ux_stderr, "Error: No grammar provided - cannot continue! Hint: call setGrammar() first.\n");
 		CG3Quit(1);
 	}
 
+	if (!grammar->delimiters || (grammar->delimiters->sets.empty() && grammar->delimiters->tags_set.empty())) {
+		if (!grammar->soft_delimiters || (grammar->soft_delimiters->sets.empty() && grammar->soft_delimiters->tags_set.empty())) {
+			u_fprintf(ux_stderr, "Warning: No soft or hard delimiters defined in grammar. Hard limit of %u cohorts may break windows in unintended places.\n", hard_limit);
+		}
+		else {
+			u_fprintf(ux_stderr, "Warning: No hard delimiters defined in grammar. Soft limit of %u cohorts may break windows in unintended places.\n", soft_limit);
+		}
+	}
+	/*
+--soft-limit          number of cohorts after which the SOFT-DELIMITERS kick in; defaults to 300
+
+--hard-limit          number of cohorts after which the window is forcefully cut; defaults to 500
+	*/
 #undef BUFFER_SIZE
 #define BUFFER_SIZE (131072L)
-	Recycler *r = Recycler::instance();
-	uint32_t resetAfter = ((num_windows + 4) * 2 + 1);
-
 	UChar inchar = 0; 		// Current character 
 	bool superblank = false; 	// Are we in a superblank ?
 	bool incohort = false; 		// Are we in a cohort ?
-
+	bool inreading = false;		// Are we in a reading ?
+	
 	index();
 
+	Recycler *r = Recycler::instance();
+	uint32_t resetAfter = ((num_windows+4)*2+1);
+	
 	begintag = addTag(stringbits[S_BEGINTAG])->hash; // Beginning of sentence tag
 	endtag = addTag(stringbits[S_ENDTAG])->hash; // End of sentence tag
 
@@ -78,47 +97,16 @@ ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output)
 	Cohort *lCohort = 0; 		// Left hand cohort
 	Reading *lReading = 0; 		// Left hand reading
 
-	cWindow->window_span = num_windows; 
-//	grammar->total_time = getticks();
+	cWindow->window_span = num_windows;
+	gtimer = getticks();
+	ticks timer(gtimer);
 
 	while((inchar = u_fgetc(input)) != 0) { 
 		if(u_feof(input)) {
 			break;
 		}
 
-		// If we don't have a current window, create one.
-		if (inchar == '^' && !cSWindow) {
-			cSWindow = new SingleWindow(cWindow);
-
-			cSWindow->text = 0;
-
-			// Create 0th Cohort which serves as the beginning of sentence
-			cCohort = r->new_Cohort(cSWindow);
-			cCohort->global_number = 0;
-			cCohort->wordform = begintag;
-
-			cReading = r->new_Reading(cCohort);
-			cReading->baseform = begintag;
-			cReading->wordform = begintag;
-
-			if (grammar->sets_any && !grammar->sets_any->empty()) {
-				cReading->parent->possible_sets.insert(grammar->sets_any->begin(), grammar->sets_any->end());
-				cReading->possible_sets.insert(grammar->sets_any->begin(), grammar->sets_any->end());
-			}
-
-			addTagToReading(cReading, begintag);
-			cCohort->appendReading(cReading);
-			cSWindow->appendCohort(cCohort);
-
-			lSWindow = cSWindow;
-			lReading = cReading;
-			lCohort = cCohort;
-			cCohort = 0;
-			numWindows++;
-		}
-
-		// Start of a superblank section
-		if(inchar == '[') {
+		if(inchar == '[') { // Start of a superblank section
 			superblank = true;	
 		}
 
@@ -129,7 +117,7 @@ ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output)
 		if(inchar == '^') {
 			incohort = true;
 		}
-
+		
 		if(superblank == true || inchar == ']' || incohort == false) {
 			if (cCohort) {
 				cCohort->text_pre = ux_append(cCohort->text_pre, inchar);
@@ -140,88 +128,99 @@ ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output)
 			}
 			continue;
 		}
-
-
-		// Beginning of a new cohort
-		// Ex.: ^la/el<det><def><f><sg>/lo<prn><pro><p3><f><sg>$
-		if(inchar == '^') {
-
-			// Initialise cohort
-			cCohort = r->new_Cohort(cSWindow);
-			cCohort->global_number = cWindow->cohort_counter++;
-			UChar *wordform = 0;
-			UChar *current_reading = 0;
-			Reading *cReading = 0;
-
-			// Read in the word form
-
-			wordform = ux_append(wordform, '"');
-			wordform = ux_append(wordform, '<'); // We encapsulate wordforms within '"<' and '>"' for internal processing.
-			while(inchar != '/') {
-				inchar = u_fgetc(input); 
-
-				if(inchar != '/') {
-					wordform = ux_append(wordform, inchar);
-				}
-			}
-			wordform = ux_append(wordform, '>');
-			wordform = ux_append(wordform, '"');
-
-			//u_fprintf(output, "# %S\n", wordform);
-			cCohort->wordform = addTag(wordform)->hash;
-	
-			// Read in the readings	
-			while(inchar != '$') {
-				inchar = u_fgetc(input);
-
-	 			if(inchar == '$') { // Reached the end of the cohort
-	
-					// Add the final reading of the cohort
+			
+		if (incohort) {
+			if (cCohort && cSWindow->cohorts.size() >= soft_limit && grammar->soft_delimiters && doesTagMatchSet(cCohort->wordform, grammar->soft_delimiters)) {
+			  // ie we've read some cohorts
+				if (cCohort->readings.empty()) {
 					cReading = r->new_Reading(cCohort);
 					cReading->wordform = cCohort->wordform;
-
+					cReading->baseform = cCohort->wordform;
 					if (grammar->sets_any && !grammar->sets_any->empty()) {
 						cReading->parent->possible_sets.insert(grammar->sets_any->begin(), grammar->sets_any->end());
 						cReading->possible_sets.insert(grammar->sets_any->begin(), grammar->sets_any->end());
 					}
-
-					addTagToReading(cReading, cReading->wordform);
-					processReading(cReading, current_reading);
-
+					addTagToReading(cReading, cCohort->wordform);
+					cReading->noprint = true;
 					cCohort->appendReading(cReading);
 					lReading = cReading;
 					numReadings++;
-
-					delete[] current_reading;
-					current_reading = 0;
-					wordform = 0;
-
-					incohort = false;
+				}
+				foreach (std::list<Reading*>, cCohort->readings, iter, iter_end) {
+					addTagToReading(*iter, endtag);
 				}
 
-				if(inchar == '/') { // Reached end of reading
-	
-					Reading *cReading = 0;
+				cSWindow->appendCohort(cCohort);
+				cWindow->appendSingleWindow(cSWindow);
+				lSWindow = cSWindow;
+				lCohort = cCohort;
+				cSWindow = 0;
+				cCohort = 0;
+				numCohorts++;
+			}
+			if (cCohort && (cSWindow->cohorts.size() >= hard_limit || (grammar->delimiters && doesTagMatchSet(cCohort->wordform, grammar->delimiters)))) {
+				if (cSWindow->cohorts.size() >= hard_limit) {
+					u_fprintf(ux_stderr, "Warning: Hard limit of %u cohorts reached at line %u - forcing break.\n", hard_limit, numLines);
+					u_fflush(ux_stderr);
+				}
+				if (cCohort->readings.empty()) {
 					cReading = r->new_Reading(cCohort);
 					cReading->wordform = cCohort->wordform;
-
-					addTagToReading(cReading, cReading->wordform);
-
-					processReading(cReading, current_reading);
-
+					cReading->baseform = cCohort->wordform;
+					if (grammar->sets_any && !grammar->sets_any->empty()) {
+						cReading->parent->possible_sets.insert(grammar->sets_any->begin(), grammar->sets_any->end());
+						cReading->possible_sets.insert(grammar->sets_any->begin(), grammar->sets_any->end());
+					}
+					addTagToReading(cReading, cCohort->wordform);
+					cReading->noprint = true;
 					cCohort->appendReading(cReading);
 					lReading = cReading;
 					numReadings++;
-	
-					delete[] current_reading;
-					current_reading = 0;
-					continue;
+				} 
+				foreach (std::list<Reading*>, cCohort->readings, iter, iter_end) {
+					addTagToReading(*iter, endtag);
 				}
-	
-				current_reading = ux_append(current_reading, inchar);
+				
+				cSWindow->appendCohort(cCohort);
+				cWindow->appendSingleWindow(cSWindow);
+				lSWindow = cSWindow;
+				lCohort = cCohort;
+				cSWindow = 0;
+				cCohort = 0;
+				numCohorts++;
 			}
+			// If we don't have a current window, create one.
+			if (!cSWindow) {
+				// Tino-ToDo: Refactor to allocate SingleWindow, Cohort, and Reading from their containers
+				cSWindow = new SingleWindow(cWindow);
 
+				cSWindow->text = 0; // necessary?  TODO -KBU
 
+				// Create 0th Cohort which serves as the beginning of sentence
+				cCohort = r->new_Cohort(cSWindow);
+				cCohort->global_number = 0;
+				cCohort->wordform = begintag;
+
+				cReading = r->new_Reading(cCohort);
+				cReading->baseform = begintag;
+				cReading->wordform = begintag;
+				if (grammar->sets_any && !grammar->sets_any->empty()) {
+					cReading->parent->possible_sets.insert(grammar->sets_any->begin(), grammar->sets_any->end());
+					cReading->possible_sets.insert(grammar->sets_any->begin(), grammar->sets_any->end());
+				}
+				addTagToReading(cReading, begintag);
+
+				cCohort->appendReading(cReading);
+
+				cSWindow->appendCohort(cCohort);
+
+				lSWindow = cSWindow;
+				lReading = cReading;
+				lCohort = cCohort;
+				cCohort = 0;
+				numWindows++;
+			} // created cSWindow by now
+			
 			// If the current cohort is looking ok, and we have an available
 			// window, add the cohort to the window.
 			if (cCohort && cSWindow) {
@@ -242,18 +241,132 @@ ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output)
 					numReadings++;
 				}
 			}
+			if (cWindow->next.size() > num_windows) {
+				while (!cWindow->previous.empty() && cWindow->previous.size() > num_windows) {
+					SingleWindow *tmp = cWindow->previous.front();
+					printSingleWindow(tmp, output);
+					delete tmp;
+					cWindow->previous.pop_front();
+				}
+				cWindow->shuffleWindowsDown();
+				runGrammarOnWindow(cWindow);
+				if (numWindows % resetAfter == 0) {
+					resetIndexes();
+					r->trim();
+				}
+			}
+			cCohort = r->new_Cohort(cSWindow);
+			cCohort->global_number = cWindow->cohort_counter++;
 
+			// Read in the word form
+			UChar *wordform = 0;
+
+			wordform = ux_append(wordform, '"');
+			// We encapsulate wordforms within '"<' and
+			// '>"' for internal processing.
+			wordform = ux_append(wordform, '<');
+			while(inchar != '/') {
+				inchar = u_fgetc(input); 
+
+				if(inchar != '/') {
+					wordform = ux_append(wordform, inchar);
+				}
+			}
+			inreading = true; //  TODO try without below -KBU
+			
+			wordform = ux_append(wordform, '>');
+			wordform = ux_append(wordform, '"');
+			
+			//u_fprintf(output, "# %S\n", wordform);
+			cCohort->wordform = addTag(wordform)->hash;
 			lCohort = cCohort;
 			lReading = 0;
+			wordform = 0;
 			numCohorts++;
-			continue;
-		}
-	} // End of input.
+
+			// We're now at the beginning of the readings
+			UChar *current_reading = 0;
+			Reading *cReading = 0;
+
+			// Read in the readings	
+			while(inchar != '$') {
+				inchar = u_fgetc(input);
+
+	 			if(inchar == '$') { 
+					// Add the final reading of the cohort
+					cReading = r->new_Reading(cCohort);
+					cReading->wordform = cCohort->wordform;
+
+					if (grammar->sets_any && !grammar->sets_any->empty()) {
+						cReading->parent->possible_sets.insert(grammar->sets_any->begin(), grammar->sets_any->end());
+						cReading->possible_sets.insert(grammar->sets_any->begin(), grammar->sets_any->end());
+					}
+
+					addTagToReading(cReading, cReading->wordform);
+					processReading(cReading, current_reading);
+
+					cCohort->appendReading(cReading);
+					lReading = cReading;
+					numReadings++;
+
+					delete[] current_reading;
+					current_reading = 0;
+
+					incohort = false;
+				}
+
+				if(inchar == '/') { // Reached end of reading
+	
+					Reading *cReading = 0;
+					cReading = r->new_Reading(cCohort);
+					cReading->wordform = cCohort->wordform;
+
+					addTagToReading(cReading, cReading->wordform);
+
+					processReading(cReading, current_reading);
+
+					cCohort->appendReading(cReading);
+					lReading = cReading;
+					numReadings++;
+	
+					delete[] current_reading;
+					current_reading = 0;
+					continue; // while not $
+				}
+	
+				current_reading = ux_append(current_reading, inchar);
+			} // end while not $
+
+
+			if (!cReading->baseform) {
+				u_fprintf(ux_stderr, "Warning: Line %u had no valid baseform.\n", numLines);
+				u_fflush(ux_stderr);
+			}
+		} // end reading
+		//  this _should_ be taken care of by superblanks, right? -KBU
+// 		else {
+// 			ux_trim(cleaned);
+// 			if (u_strlen(cleaned) > 0) {
+// 				if (lReading && lCohort) {
+// 					lCohort->text_post = ux_append(lCohort->text_post, line);
+// 				}
+// 				else if (lCohort) {
+// 					lCohort->text_pre = ux_append(lCohort->text_pre, line);
+// 				}
+// 				else if (lSWindow) {
+// 					lSWindow->text = ux_append(lSWindow->text, line);
+// 				}
+// 				else {
+// 					u_fprintf(output, "%S", line);
+// 				}
+// 			}
+// 		}
+		numLines++;
+		inchar = 0;	// needed? TODO -KBU 
+	} // end input loop
 
 	if (cCohort && cSWindow) {
-		//cSWindow->appendCohort(cCohort);
-
-		// Create magic reading
+		cSWindow->appendCohort(cCohort);
 		if (cCohort->readings.empty()) {
 			cReading = r->new_Reading(cCohort);
 			cReading->wordform = cCohort->wordform;
@@ -266,8 +379,7 @@ ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output)
 			cReading->noprint = true;
 			cCohort->appendReading(cReading);
 		}
-		std::list<Reading*>::iterator iter;
-		for (iter = cCohort->readings.begin() ; iter != cCohort->readings.end() ; iter++) {
+		foreach (std::list<Reading*>, cCohort->readings, iter, iter_end) {
 			addTagToReading(*iter, endtag);
 		}
 		cWindow->appendSingleWindow(cSWindow);
@@ -275,10 +387,8 @@ ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output)
 		cCohort = 0;
 		cSWindow = 0;
 	}
-
-	// Run the grammar
 	while (!cWindow->next.empty()) {
-		while (!cWindow->previous.empty() && (cWindow->previous.size() > num_windows)) {
+		while (!cWindow->previous.empty() && cWindow->previous.size() > num_windows) {
 			SingleWindow *tmp = cWindow->previous.front();
 			printSingleWindow(tmp, output);
 			delete tmp;
@@ -286,13 +396,8 @@ ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output)
 		}
 		cWindow->shuffleWindowsDown();
 		runGrammarOnWindow(cWindow);
-		if (numWindows % resetAfter == 0) {
-			resetIndexes();
-			r->trim();
-		}
 	}
 
-	// Print out the result
 	cWindow->shuffleWindowsDown();
 	while (!cWindow->previous.empty()) {
 		SingleWindow *tmp = cWindow->previous.front();
@@ -301,15 +406,14 @@ ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output)
 		cWindow->previous.pop_front();
 	}
 
-	if((inchar) && inchar != 0xffff) {
-		u_fprintf(output, "%C", inchar);
-	}
-	u_fflush(input);
-	u_fflush(ux_stderr);
 	u_fflush(output);
 
+	ticks tmp = getticks();
+	grammar->total_time = elapsed(tmp, timer);
+
 	return 0;
-}
+} // runGrammarOnText
+
 
 /*
  * Parse an Apertium reading into a CG Reading
@@ -456,8 +560,9 @@ ApertiumApplicator::printReading(Reading *reading, UFILE *output)
 		// Lop off the initial and final '"' characters 
 		UChar *bf = single_tags[reading->baseform]->tag;
 		u_fprintf(output, "%S", ux_substr(bf, 1, u_strlen(bf)-1));
-		bf = 0;
 
+		bf = 0;
+		
 //		Tag::printTagRaw(output, single_tags[reading->baseform]);
 	}
 
@@ -485,6 +590,7 @@ ApertiumApplicator::printReading(Reading *reading, UFILE *output)
 				u_fprintf(output, ">");
 			}
 		}
+
 	}
 }
 
@@ -529,5 +635,7 @@ ApertiumApplicator::printSingleWindow(SingleWindow *window, UFILE *output)
 		if (cohort->text_pre) {
 			u_fprintf(output, "%S", cohort->text_pre);
 		}
+		
+		u_fflush(output); // KBU
 	}
 }
