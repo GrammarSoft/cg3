@@ -24,6 +24,22 @@
 using namespace CG3;
 using namespace CG3::Strings;
 
+inline Reading *GrammarApplicator::initEmptyCohort(Cohort *cCohort) {
+	Recycler *r = Recycler::instance();
+	Reading *cReading = r->new_Reading(cCohort);
+	cReading->wordform = cCohort->wordform;
+	cReading->baseform = cCohort->wordform;
+	if (grammar->sets_any && !grammar->sets_any->empty()) {
+		cReading->parent->possible_sets.insert(grammar->sets_any->begin(), grammar->sets_any->end());
+		cReading->possible_sets.insert(grammar->sets_any->begin(), grammar->sets_any->end());
+	}
+	addTagToReading(cReading, cCohort->wordform);
+	cReading->noprint = true;
+	cCohort->appendReading(cReading);
+	numReadings++;
+	return cReading;
+}
+
 int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 	if (!input) {
 		u_fprintf(ux_stderr, "Error: Input is null - nothing to parse!\n");
@@ -100,18 +116,8 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 					}
 				}
 				if (cCohort->readings.empty()) {
-					cReading = r->new_Reading(cCohort);
-					cReading->wordform = cCohort->wordform;
-					cReading->baseform = cCohort->wordform;
-					if (grammar->sets_any && !grammar->sets_any->empty()) {
-						cReading->parent->possible_sets.insert(grammar->sets_any->begin(), grammar->sets_any->end());
-						cReading->possible_sets.insert(grammar->sets_any->begin(), grammar->sets_any->end());
-					}
-					addTagToReading(cReading, cCohort->wordform);
-					cReading->noprint = true;
-					cCohort->appendReading(cReading);
+					cReading = initEmptyCohort(cCohort);
 					lReading = cReading;
-					numReadings++;
 				}
 				foreach (std::list<Reading*>, cCohort->readings, iter, iter_end) {
 					addTagToReading(*iter, endtag);
@@ -131,18 +137,8 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 					u_fflush(ux_stderr);
 				}
 				if (cCohort->readings.empty()) {
-					cReading = r->new_Reading(cCohort);
-					cReading->wordform = cCohort->wordform;
-					cReading->baseform = cCohort->wordform;
-					if (grammar->sets_any && !grammar->sets_any->empty()) {
-						cReading->parent->possible_sets.insert(grammar->sets_any->begin(), grammar->sets_any->end());
-						cReading->possible_sets.insert(grammar->sets_any->begin(), grammar->sets_any->end());
-					}
-					addTagToReading(cReading, cCohort->wordform);
-					cReading->noprint = true;
-					cCohort->appendReading(cReading);
+					cReading = initEmptyCohort(cCohort);
 					lReading = cReading;
-					numReadings++;
 				}
 				foreach (std::list<Reading*>, cCohort->readings, iter, iter_end) {
 					addTagToReading(*iter, endtag);
@@ -187,18 +183,8 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 				cSWindow->appendCohort(cCohort);
 				lCohort = cCohort;
 				if (cCohort->readings.empty()) {
-					cReading = r->new_Reading(cCohort);
-					cReading->wordform = cCohort->wordform;
-					cReading->baseform = cCohort->wordform;
-					if (grammar->sets_any && !grammar->sets_any->empty()) {
-						cReading->parent->possible_sets.insert(grammar->sets_any->begin(), grammar->sets_any->end());
-						cReading->possible_sets.insert(grammar->sets_any->begin(), grammar->sets_any->end());
-					}
-					addTagToReading(cReading, cCohort->wordform);
-					cReading->noprint = true;
-					cCohort->appendReading(cReading);
+					cReading = initEmptyCohort(cCohort);
 					lReading = cReading;
-					numReadings++;
 				}
 			}
 			if (cWindow->next.size() > num_windows) {
@@ -297,16 +283,8 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 					if (cCohort && cSWindow) {
 						cSWindow->appendCohort(cCohort);
 						if (cCohort->readings.empty()) {
-							cReading = r->new_Reading(cCohort);
-							cReading->wordform = cCohort->wordform;
-							cReading->baseform = cCohort->wordform;
-							if (grammar->sets_any && !grammar->sets_any->empty()) {
-								cReading->parent->possible_sets.insert(grammar->sets_any->begin(), grammar->sets_any->end());
-								cReading->possible_sets.insert(grammar->sets_any->begin(), grammar->sets_any->end());
-							}
-							addTagToReading(cReading, cCohort->wordform);
-							cReading->noprint = true;
-							cCohort->appendReading(cReading);
+							cReading = initEmptyCohort(cCohort);
+							lReading = cReading;
 						}
 						foreach (std::list<Reading*>, cCohort->readings, iter, iter_end) {
 							addTagToReading(*iter, endtag);
@@ -378,16 +356,8 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 	if (cCohort && cSWindow) {
 		cSWindow->appendCohort(cCohort);
 		if (cCohort->readings.empty()) {
-			cReading = r->new_Reading(cCohort);
-			cReading->wordform = cCohort->wordform;
-			cReading->baseform = cCohort->wordform;
-			if (grammar->sets_any && !grammar->sets_any->empty()) {
-				cReading->parent->possible_sets.insert(grammar->sets_any->begin(), grammar->sets_any->end());
-				cReading->possible_sets.insert(grammar->sets_any->begin(), grammar->sets_any->end());
-			}
-			addTagToReading(cReading, cCohort->wordform);
-			cReading->noprint = true;
-			cCohort->appendReading(cReading);
+			cReading = initEmptyCohort(cCohort);
+			lReading = cReading;
 		}
 		foreach (std::list<Reading*>, cCohort->readings, iter, iter_end) {
 			addTagToReading(*iter, endtag);
