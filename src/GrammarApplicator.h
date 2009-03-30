@@ -156,6 +156,8 @@ namespace CG3 {
 		void mergeMappings(Cohort *cohort);
 		bool wouldParentChildLoop(Cohort *parent, Cohort *child);
 		bool attachParentChild(Cohort *parent, Cohort *child, bool allowloop = false);
+
+		inline Reading *initEmptyCohort(Cohort *cohort);
 	};
 }
 
