@@ -52,12 +52,15 @@ ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output)
 		u_fprintf(ux_stderr, "Error: Output is null - cannot write to nothing!\n");
 		CG3Quit(1);
 	}
-	// not sure if I should keep this. TODO
+	
 	if (!grammar) {
 		u_fprintf(ux_stderr, "Error: No grammar provided - cannot continue! Hint: call setGrammar() first.\n");
 		CG3Quit(1);
 	}
-
+	
+	// TODO: what do we use as delimiters? Currently we only get
+	// hard breaks, but this error never shows up since the "old"
+	// delimiters are inside superblanks. -KBU
 	if (!grammar->delimiters || (grammar->delimiters->sets.empty() && grammar->delimiters->tags_set.empty())) {
 		if (!grammar->soft_delimiters || (grammar->soft_delimiters->sets.empty() && grammar->soft_delimiters->tags_set.empty())) {
 			u_fprintf(ux_stderr, "Warning: No soft or hard delimiters defined in grammar. Hard limit of %u cohorts may break windows in unintended places.\n", hard_limit);
@@ -66,17 +69,12 @@ ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output)
 			u_fprintf(ux_stderr, "Warning: No hard delimiters defined in grammar. Soft limit of %u cohorts may break windows in unintended places.\n", soft_limit);
 		}
 	}
-	/*
---soft-limit          number of cohorts after which the SOFT-DELIMITERS kick in; defaults to 300
 
---hard-limit          number of cohorts after which the window is forcefully cut; defaults to 500
-	*/
 #undef BUFFER_SIZE
 #define BUFFER_SIZE (131072L)
 	UChar inchar = 0; 		// Current character 
 	bool superblank = false; 	// Are we in a superblank ?
 	bool incohort = false; 		// Are we in a cohort ?
-	bool inreading = false;		// Are we in a reading ?
 	
 	index();
 
@@ -131,7 +129,8 @@ ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output)
 			
 		if (incohort) {
 			if (cCohort && cSWindow->cohorts.size() >= soft_limit && grammar->soft_delimiters && doesTagMatchSet(cCohort->wordform, grammar->soft_delimiters)) {
-			  // ie we've read some cohorts
+			  // ie. we've read some cohorts
+				// Create magic reading
 				if (cCohort->readings.empty()) {
 					cReading = r->new_Reading(cCohort);
 					cReading->wordform = cCohort->wordform;
@@ -157,12 +156,13 @@ ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output)
 				cSWindow = 0;
 				cCohort = 0;
 				numCohorts++;
-			}
+			} // end >= soft_limit
 			if (cCohort && (cSWindow->cohorts.size() >= hard_limit || (grammar->delimiters && doesTagMatchSet(cCohort->wordform, grammar->delimiters)))) {
 				if (cSWindow->cohorts.size() >= hard_limit) {
 					u_fprintf(ux_stderr, "Warning: Hard limit of %u cohorts reached at line %u - forcing break.\n", hard_limit, numLines);
 					u_fflush(ux_stderr);
 				}
+				// Create magic reading
 				if (cCohort->readings.empty()) {
 					cReading = r->new_Reading(cCohort);
 					cReading->wordform = cCohort->wordform;
@@ -188,14 +188,14 @@ ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output)
 				cSWindow = 0;
 				cCohort = 0;
 				numCohorts++;
-			}
-			// If we don't have a current window, create one.
+			} // end >= hard_limit
+			// If we don't have a current window, create one
 			if (!cSWindow) {
-				// Tino-ToDo: Refactor to allocate SingleWindow, Cohort, and Reading from their containers
+				// ToDo: Refactor to allocate SingleWindow, Cohort, and Reading from their containers
 				cSWindow = new SingleWindow(cWindow);
-
-				cSWindow->text = 0; // necessary?  TODO -KBU
-
+				
+				cSWindow->text = 0; // necessary? TODO -KBU
+				
 				// Create 0th Cohort which serves as the beginning of sentence
 				cCohort = r->new_Cohort(cSWindow);
 				cCohort->global_number = 0;
@@ -219,13 +219,14 @@ ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output)
 				lCohort = cCohort;
 				cCohort = 0;
 				numWindows++;
-			} // created cSWindow by now
+			} // created at least one cSWindow by now
 			
 			// If the current cohort is looking ok, and we have an available
 			// window, add the cohort to the window.
 			if (cCohort && cSWindow) {
 				cSWindow->appendCohort(cCohort);
 				lCohort = cCohort;
+				// Create readings
 				if (cCohort->readings.empty()) {
 					cReading = r->new_Reading(cCohort);
 					cReading->wordform = cCohort->wordform;
@@ -240,7 +241,7 @@ ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output)
 					lReading = cReading;
 					numReadings++;
 				}
-			}
+			} 
 			if (cWindow->next.size() > num_windows) {
 				while (!cWindow->previous.empty() && cWindow->previous.size() > num_windows) {
 					SingleWindow *tmp = cWindow->previous.front();
@@ -272,7 +273,6 @@ ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output)
 					wordform = ux_append(wordform, inchar);
 				}
 			}
-			inreading = true; //  TODO try without below -KBU
 			
 			wordform = ux_append(wordform, '>');
 			wordform = ux_append(wordform, '"');
@@ -337,13 +337,12 @@ ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output)
 				current_reading = ux_append(current_reading, inchar);
 			} // end while not $
 
-
 			if (!cReading->baseform) {
 				u_fprintf(ux_stderr, "Warning: Line %u had no valid baseform.\n", numLines);
 				u_fflush(ux_stderr);
 			}
 		} // end reading
-		//  this _should_ be taken care of by superblanks, right? -KBU
+// TODO: This _should_ be taken care of by superblanks, right? -KBU
 // 		else {
 // 			ux_trim(cleaned);
 // 			if (u_strlen(cleaned) > 0) {
@@ -362,11 +361,14 @@ ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output)
 // 			}
 // 		}
 		numLines++;
-		inchar = 0;	// needed? TODO -KBU 
+		inchar = 0;
 	} // end input loop
 
 	if (cCohort && cSWindow) {
 		cSWindow->appendCohort(cCohort);
+		// Create magic reading
+		// This is the fourth time we have the exact same
+		// if(empty){}. TODO: time it as a function. -KBU
 		if (cCohort->readings.empty()) {
 			cReading = r->new_Reading(cCohort);
 			cReading->wordform = cCohort->wordform;
@@ -387,6 +389,8 @@ ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output)
 		cCohort = 0;
 		cSWindow = 0;
 	}
+	
+	// Run the grammar & print results
 	while (!cWindow->next.empty()) {
 		while (!cWindow->previous.empty() && cWindow->previous.size() > num_windows) {
 			SingleWindow *tmp = cWindow->previous.front();
@@ -397,7 +401,7 @@ ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output)
 		cWindow->shuffleWindowsDown();
 		runGrammarOnWindow(cWindow);
 	}
-
+	
 	cWindow->shuffleWindowsDown();
 	while (!cWindow->previous.empty()) {
 		SingleWindow *tmp = cWindow->previous.front();
@@ -407,7 +411,7 @@ ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output)
 	}
 	
 	if((inchar) && inchar != 0xffff) {
-		u_fprintf(output, "%C", inchar);
+		u_fprintf(output, "%C", inchar); // eg. final newline
 	}
 
 	u_fflush(output);
