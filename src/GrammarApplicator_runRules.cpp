@@ -730,6 +730,7 @@ int GrammarApplicator::runGrammarOnSingleWindow(SingleWindow *current) {
 
 int GrammarApplicator::runGrammarOnWindow(Window *window) {
 	SingleWindow *current = window->current;
+	did_final_enclosure = false;
 
 	if (has_dep) {
 		reflowDependencyWindow();
