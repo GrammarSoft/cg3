@@ -616,10 +616,11 @@ ApertiumApplicator::printSingleWindow(SingleWindow *window, UFILE *output)
 			continue;
 		}
 
+		Cohort *cohort = window->cohorts[c];
+
+
 		// Start of cohort 
 		u_fprintf(output, "^");
-
-		Cohort *cohort = window->cohorts[c];
 
 		// Lop off the initial and final '"' characters 
 		UChar *wf = single_tags[cohort->wordform]->tag;
@@ -639,9 +640,12 @@ ApertiumApplicator::printSingleWindow(SingleWindow *window, UFILE *output)
 		u_fprintf(output, "$");
 		// End of cohort
 
-		// Cohort text comes at the right.
 		if (cohort->text_pre) {
 			u_fprintf(output, "%S", cohort->text_pre);
+		}
+
+		if (cohort->text_post) {
+			u_fprintf(output, "%S", cohort->text_post);
 		}
 		
 		u_fflush(output); // KBU
