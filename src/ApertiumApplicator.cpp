@@ -132,18 +132,8 @@ ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output)
 			  // ie. we've read some cohorts
 				// Create magic reading
 				if (cCohort->readings.empty()) {
-					cReading = r->new_Reading(cCohort);
-					cReading->wordform = cCohort->wordform;
-					cReading->baseform = cCohort->wordform;
-					if (grammar->sets_any && !grammar->sets_any->empty()) {
-						cReading->parent->possible_sets.insert(grammar->sets_any->begin(), grammar->sets_any->end());
-						cReading->possible_sets.insert(grammar->sets_any->begin(), grammar->sets_any->end());
-					}
-					addTagToReading(cReading, cCohort->wordform);
-					cReading->noprint = true;
-					cCohort->appendReading(cReading);
+					cReading = initEmptyCohort(cCohort);
 					lReading = cReading;
-					numReadings++;
 				}
 				foreach (std::list<Reading*>, cCohort->readings, iter, iter_end) {
 					addTagToReading(*iter, endtag);
@@ -164,18 +154,8 @@ ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output)
 				}
 				// Create magic reading
 				if (cCohort->readings.empty()) {
-					cReading = r->new_Reading(cCohort);
-					cReading->wordform = cCohort->wordform;
-					cReading->baseform = cCohort->wordform;
-					if (grammar->sets_any && !grammar->sets_any->empty()) {
-						cReading->parent->possible_sets.insert(grammar->sets_any->begin(), grammar->sets_any->end());
-						cReading->possible_sets.insert(grammar->sets_any->begin(), grammar->sets_any->end());
-					}
-					addTagToReading(cReading, cCohort->wordform);
-					cReading->noprint = true;
-					cCohort->appendReading(cReading);
+					cReading = initEmptyCohort(cCohort);
 					lReading = cReading;
-					numReadings++;
 				} 
 				foreach (std::list<Reading*>, cCohort->readings, iter, iter_end) {
 					addTagToReading(*iter, endtag);
@@ -228,18 +208,8 @@ ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output)
 				lCohort = cCohort;
 				// Create readings
 				if (cCohort->readings.empty()) {
-					cReading = r->new_Reading(cCohort);
-					cReading->wordform = cCohort->wordform;
-					cReading->baseform = cCohort->wordform;
-					if (grammar->sets_any && !grammar->sets_any->empty()) {
-						cReading->parent->possible_sets.insert(grammar->sets_any->begin(), grammar->sets_any->end());
-						cReading->possible_sets.insert(grammar->sets_any->begin(), grammar->sets_any->end());
-					}
-					addTagToReading(cReading, cCohort->wordform);
-					cReading->noprint = true;
-					cCohort->appendReading(cReading);
+					cReading = initEmptyCohort(cCohort);
 					lReading = cReading;
-					numReadings++;
 				}
 			} 
 			if (cWindow->next.size() > num_windows) {
@@ -367,19 +337,8 @@ ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output)
 	if (cCohort && cSWindow) {
 		cSWindow->appendCohort(cCohort);
 		// Create magic reading
-		// This is the fourth time we have the exact same
-		// if(empty){}. TODO: time it as a function. -KBU
 		if (cCohort->readings.empty()) {
-			cReading = r->new_Reading(cCohort);
-			cReading->wordform = cCohort->wordform;
-			cReading->baseform = cCohort->wordform;
-			if (grammar->sets_any && !grammar->sets_any->empty()) {
-				cReading->parent->possible_sets.insert(grammar->sets_any->begin(), grammar->sets_any->end());
-				cReading->possible_sets.insert(grammar->sets_any->begin(), grammar->sets_any->end());
-			}
-			addTagToReading(cReading, cCohort->wordform);
-			cReading->noprint = true;
-			cCohort->appendReading(cReading);
+			cReading = initEmptyCohort(cCohort);
 		}
 		foreach (std::list<Reading*>, cCohort->readings, iter, iter_end) {
 			addTagToReading(*iter, endtag);
