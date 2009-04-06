@@ -357,7 +357,6 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 		cSWindow->appendCohort(cCohort);
 		if (cCohort->readings.empty()) {
 			cReading = initEmptyCohort(cCohort);
-			lReading = cReading;
 		}
 		foreach (std::list<Reading*>, cCohort->readings, iter, iter_end) {
 			addTagToReading(*iter, endtag);
