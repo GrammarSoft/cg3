@@ -85,9 +85,9 @@ void Rule::addContextualTest(ContextualTest *to, ContextualTest **head) {
 }
 
 void Rule::reverseContextualTests() {
-	ContextualTest *th;
-	ContextualTest *next;
-	ContextualTest *prev;
+	ContextualTest *th = 0;
+	ContextualTest *next = 0;
+	ContextualTest *prev = 0;
 
 	th = test_head;
 	if (th) {
