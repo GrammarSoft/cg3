@@ -28,19 +28,19 @@
 
 #include <algorithm>
 #include <iostream>
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
+#include <cstdlib>
+#include <cstdio>
+#include <cstring>
 #include <list>
 #include <vector>
 #include <set>
 #include <map>
 #include <bitset>
-#include <time.h>
-#include <math.h>
-#include <limits.h>
+#include <ctime>
+#include <cmath>
+#include <climits>
 #include <sys/stat.h>
-#include <assert.h>
+#include <cassert>
 
 // ICU includes
 #include <unicode/uchar.h>
