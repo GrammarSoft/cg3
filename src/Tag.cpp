@@ -110,8 +110,14 @@ void Tag::parseTag(const UChar *to, UFILE *ux_stderr) {
 		tag = new UChar[length+8];
 		u_memset(tag, 0, length+8);
 		u_strncpy(tag, tmp, length);
+
 		UChar *utag = gbuffers[0];
 		ux_unEscape(utag, tag);
+		if (utag[0] == 0 || u_strlen(utag) == 0) {
+			u_fprintf(ux_stderr, "Error: Parsing tag %S resulted in an empty tag - cannot continue!\n", tag);
+			CG3Quit(1);
+		}
+
 		u_strcpy(tag, utag);
 		utag = 0;
 		comparison_hash = hash_sdbm_uchar(tag);
