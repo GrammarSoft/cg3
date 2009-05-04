@@ -24,7 +24,7 @@
 using namespace CG3;
 using namespace CG3::Strings;
 
-inline Reading *GrammarApplicator::initEmptyCohort(Cohort *cCohort) {
+Reading *GrammarApplicator::initEmptyCohort(Cohort *cCohort) {
 	Recycler *r = Recycler::instance();
 	Reading *cReading = r->new_Reading(cCohort);
 	cReading->wordform = cCohort->wordform;
