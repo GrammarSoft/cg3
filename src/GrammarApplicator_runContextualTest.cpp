@@ -88,8 +88,26 @@ Cohort *GrammarApplicator::runContextualTest(SingleWindow *sWindow, size_t posit
 	}
 
 	if (test->tmpl) {
+		uint32_t orgpos = test->tmpl->pos;
+		int32_t orgoffset = test->tmpl->offset;
+		if (test->pos & POS_TMPL_OVERRIDE) {
+			test->tmpl->pos = test->pos;
+			test->tmpl->offset = test->offset;
+			if (test->offset < 0 && !(test->pos & (POS_SCANFIRST|POS_SCANALL))) {
+				test->tmpl->pos |= POS_SCANFIRST;
+			}
+		}
 		Cohort *cdeep = 0;
 		cohort = runContextualTest(sWindow, position, test->tmpl, &cdeep, origin);
+		if (test->pos & POS_TMPL_OVERRIDE) {
+			test->tmpl->pos = orgpos;
+			test->tmpl->offset = orgoffset;
+			if (cdeep && test->offset < 0 && !(test->pos & (POS_SCANFIRST|POS_SCANALL))) {
+				if ((cdeep->parent != sWindow) || (position - cdeep->local_number != (uint32_t)abs(test->offset))) {
+					cohort = 0;
+				}
+			}
+		}
 		if (cohort && cdeep && test->linked) {
 			cohort = runContextualTest(cdeep->parent, cdeep->local_number, test->linked, &cdeep, origin);
 		}
@@ -102,7 +120,26 @@ Cohort *GrammarApplicator::runContextualTest(SingleWindow *sWindow, size_t posit
 		Cohort *cdeep = 0;
 		std::list<ContextualTest*>::const_iterator iter;
 		for (iter = test->ors.begin() ; iter != test->ors.end() ; iter++) {
+			uint32_t orgpos = (*iter)->pos;
+			int32_t orgoffset = (*iter)->offset;
+			if (test->pos & POS_TMPL_OVERRIDE) {
+				(*iter)->pos = test->pos;
+				(*iter)->pos &= ~POS_TMPL_OVERRIDE;
+				(*iter)->offset = test->offset;
+				if (test->offset < 0 && !(test->pos & (POS_SCANFIRST|POS_SCANALL))) {
+					(*iter)->pos |= POS_SCANFIRST;
+				}
+			}
 			cohort = runContextualTest(sWindow, position, *iter, &cdeep, origin);
+			if (test->pos & POS_TMPL_OVERRIDE) {
+				(*iter)->pos = orgpos;
+				(*iter)->offset = orgoffset;
+				if (cdeep && test->offset < 0 && !(test->pos & (POS_SCANFIRST|POS_SCANALL))) {
+					if ((cdeep->parent != sWindow) || (position - cdeep->local_number != (uint32_t)abs(test->offset))) {
+						cohort = 0;
+					}
+				}
+			}
 			if (cohort) {
 				break;
 			}
