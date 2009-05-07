@@ -493,8 +493,8 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, uint32Set *r
 									// Did not successfully attach due to loop restrictions; look onwards from here
 									target = attach;
 									if (rule->dep_target->offset != 0) {
-										// Temporarily set offset to +/- 1 ... I'm sure there is a better way to reduce this, but eh.
-										rule->dep_target->offset = (int32_t)floor((double)rule->dep_target->offset / (double)abs(rule->dep_target->offset));
+										// Temporarily set offset to +/- 1
+										rule->dep_target->offset = ((rule->dep_target->offset < 0) ? -1 : 1);
 									}
 								}
 							}

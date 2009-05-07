@@ -117,6 +117,7 @@ namespace CG3 {
 			S_AFTER,
 			S_BEFORE,
 			S_WITH,
+			S_QUESTION,
 			STRINGS_COUNT
 		};
 

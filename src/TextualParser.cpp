@@ -278,6 +278,7 @@ int TextualParser::parseContextualTestList(Rule *rule, ContextualTest **head, CG
 		}
 	}
 	else if (gbuffers[0][0] == 'T' && gbuffers[0][1] == ':') {
+label_parseTemplate:
 		(*p) += 2;
 		n = *p;
 		result->lines += SKIPTOWS(&n, ')');
@@ -306,6 +307,11 @@ int TextualParser::parseContextualTestList(Rule *rule, ContextualTest **head, CG
 			result->has_dep = true;
 		}
 		result->lines += SKIPWS(p);
+
+		if ((*p)[0] == 'T' && (*p)[1] == ':') {
+			t->pos |= POS_TMPL_OVERRIDE;
+			goto label_parseTemplate;
+		}
 
 		Set *s = result->allocateSet();
 		s->line = result->lines;
