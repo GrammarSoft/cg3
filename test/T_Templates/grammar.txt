@@ -26,6 +26,11 @@ TEMPLATE A-link-B = (T:V-Prep LINK 1 (N) LINK T:NccN) ;
 ADD (@linkedGood) (*) IF (0 (SUBJ) LINK T:A-link-B LINK 1 (<<<)) ;
 ADD (@linkedBad) (*) IF (0 (SUBJ) LINK T:A-link-B LINK 1 (>>>)) ;
 
+TEMPLATE ArtN = (1* (ART) LINK 1* (N)) ;
+
+ADD (@artnGood) (*) IF (-1 T:ArtN) ;
+ADD (@artnBad) (*) IF (-2 T:ArtN) ;
+
 ## --- Following is an internal compiler stress test.
 
 LIST x = x;

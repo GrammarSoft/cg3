@@ -123,6 +123,9 @@ void ContextualTest::parsePosition(const UChar *input, UFILE *ux_stderr) {
 	if (u_strchr(input, 'd')) {
 		pos |= POS_LOOK_DELAYED;
 	}
+	if (u_strchr(input, '?')) {
+		pos |= POS_NONE;
+	}
 	UChar tmp[16];
 	tmp[0] = 0;
 	int32_t retval = u_sscanf(input, "%[^0-9]%d", &tmp, &offset);
@@ -162,6 +165,10 @@ void ContextualTest::parsePosition(const UChar *input, UFILE *ux_stderr) {
 	}
 	if ((pos & POS_DEP_ALL) && (pos & POS_DEP_NONE)) {
 		u_fprintf(ux_stderr, "Error: '%S' is not a valid position - cannot have both NOT and C for dependencies!\n", input);
+		CG3Quit(1);
+	}
+	if ((pos & POS_NONE) && (pos != POS_NONE || offset != 0 || u_strcmp(input, stringbits[S_QUESTION]) != 0)) {
+		u_fprintf(ux_stderr, "Error: '%S' is not a valid position - '?' cannot be combined with anything else!\n", input);
 		CG3Quit(1);
 	}
 }

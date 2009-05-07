@@ -162,6 +162,7 @@ namespace CG3 {
 			init_string_single("AFTER",        S_AFTER);
 			init_string_single("BEFORE",       S_BEFORE);
 			init_string_single("WITH",         S_WITH);
+			init_string_single("?",            S_QUESTION);
 
 			for (unsigned int i=0;i<STRINGS_COUNT;i++) {
 				if (!stringbits[i]) {
