@@ -28,8 +28,10 @@ ADD (@linkedBad) (*) IF (0 (SUBJ) LINK T:A-link-B LINK 1 (>>>)) ;
 
 TEMPLATE ArtN = (1* (ART) LINK 1* (N)) ;
 
-ADD (@artnGood) (*) IF (-1 T:ArtN) ;
-ADD (@artnBad) (*) IF (-2 T:ArtN) ;
+ADD (@artnGood) (PREP) IF (-1 T:ArtN) ;
+ADD (@artnBad) (PREP) IF (-2 T:ArtN) ;
+ADD (@artnBad) (PREP) IF (1 T:ArtN) ;
+ADD (@artnBad) (PREP) IF (2 T:ArtN) ;
 
 ## --- Following is an internal compiler stress test.
 

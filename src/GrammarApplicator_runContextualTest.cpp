@@ -82,6 +82,11 @@ inline Cohort *GrammarApplicator::runSingleTest(SingleWindow *sWindow, size_t i,
 Cohort *GrammarApplicator::runContextualTest(SingleWindow *sWindow, size_t position, const ContextualTest *test, Cohort **deep, Cohort *origin) {
 	Cohort *cohort = 0;
 
+	if (test->pos & POS_NONE) {
+		u_fprintf(ux_stderr, "Error: Contextual tests with position '?' cannot be used directly. Provide an override position.\n");
+		CG3Quit();
+	}
+
 	if (test->pos & POS_MARK_JUMP) {
 		sWindow = mark->parent;
 		position = mark->local_number;
