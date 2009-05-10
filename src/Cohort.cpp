@@ -20,6 +20,9 @@
 */
 
 #include "Cohort.h"
+#include "Window.h"
+#include "SingleWindow.h"
+#include "Recycler.h"
 
 using namespace CG3;
 

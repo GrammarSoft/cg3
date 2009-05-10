@@ -19,6 +19,7 @@
 * along with VISL CG-3.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#pragma once
 #ifndef __GRAMMAR_H
 #define __GRAMMAR_H
 
@@ -51,7 +52,7 @@ namespace CG3 {
 		stdext::hash_map<uint32_t, CompositeTag*> tags;
 
 		std::vector<Set*> sets_list;
-		std::set<Set*> sets_all;
+		SetSet sets_all;
 		uint32HashMap sets_by_name;
 		uint32HashMap set_name_seeds;
 		Setuint32HashMap sets_by_contents;

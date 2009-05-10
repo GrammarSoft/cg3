@@ -19,11 +19,11 @@
 * along with VISL CG-3.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#pragma once
 #ifndef __WINDOW_H
 #define __WINDOW_H
 
 #include "stdafx.h"
-#include "SingleWindow.h"
 
 namespace CG3 {
 

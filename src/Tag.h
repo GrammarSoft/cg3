@@ -19,6 +19,7 @@
 * along with VISL CG-3.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#pragma once
 #ifndef __TAG_H
 #define __TAG_H
 
@@ -86,6 +87,19 @@ namespace CG3 {
 
 		uint32_t rehash();
 		void markUsed();
+	};
+
+	struct compare_Tag {
+		static const size_t bucket_size = 4;
+		static const size_t min_buckets = 8;
+
+		inline size_t operator() (const Tag* x) const {
+			return x->hash;
+		}
+
+		inline bool operator() (const Tag* a, const Tag* b) const {
+			return a->hash < b->hash;
+		}
 	};
 
 }

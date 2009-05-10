@@ -15,13 +15,14 @@ ADD (@bothGoodBad) (*) IF (-3 (SUBJ) LINK T:V-Prep LINK 1 (Q)) ;
 ADD (@bothBadGood) (*) IF (-4 (Q) LINK T:V-Prep LINK 1 (N)) ;
 ADD (@bothBadBad) (*) IF (-4 (Q) LINK T:V-Prep LINK 1 (Q)) ;
 
-TEMPLATE NccN = (0 (N) LINK 1 (CC) LINK 1 (N)) ;
+LIST CC = CC ;
+TEMPLATE NccN = [(N), CC, (N)] ;
 
-ADD (@leftone) (*) IF (1 (*) LINK T:NccN) ;
-ADD (@startNccN) (*) IF (T:NccN) ;
-ADD (@endNccN) (*) IF (-2 (N) LINK T:NccN) ;
+ADD (@beforeNccN) (*) IF (T:NccN) ;
+ADD (@startNccN) (*) IF (0 T:NccN) ;
+ADD (@afterNccN) (*) IF (-1 T:NccN) ;
 
-TEMPLATE A-link-B = (T:V-Prep LINK 1 (N) LINK T:NccN) ;
+TEMPLATE A-link-B = (T:V-Prep LINK T:NccN) ;
 
 ADD (@linkedGood) (*) IF (0 (SUBJ) LINK T:A-link-B LINK 1 (<<<)) ;
 ADD (@linkedBad) (*) IF (0 (SUBJ) LINK T:A-link-B LINK 1 (>>>)) ;
