@@ -19,13 +19,12 @@
 * along with VISL CG-3.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#pragma once
 #ifndef __SET_H
 #define __SET_H
 
 #include "stdafx.h"
-#include "Grammar.h"
 #include "CompositeTag.h"
-#include "Strings.h"
 
 namespace CG3 {
 
@@ -63,6 +62,19 @@ namespace CG3 {
 		void resetStatistics();
 		void reindex(Grammar *grammar);
 		void markUsed(Grammar *grammar);
+	};
+
+	struct compare_Set {
+		static const size_t bucket_size = 4;
+		static const size_t min_buckets = 8;
+
+		inline size_t operator() (const Set* x) const {
+			return x->hash;
+		}
+
+		inline bool operator() (const Set* a, const Set* b) const {
+			return a->hash < b->hash;
+		}
 	};
 
 }

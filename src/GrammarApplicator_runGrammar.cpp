@@ -20,6 +20,7 @@
 */
 
 #include "GrammarApplicator.h"
+#include "Recycler.h"
 
 using namespace CG3;
 using namespace CG3::Strings;

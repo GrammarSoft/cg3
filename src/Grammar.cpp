@@ -43,7 +43,7 @@ Grammar::~Grammar() {
 		destroySet(*iter_set);
 	}
 
-	foreach (std::set<Set*>, sets_all, rsets, rsets_end) {
+	foreach (SetSet, sets_all, rsets, rsets_end) {
 		delete (*rsets);
 	}
 

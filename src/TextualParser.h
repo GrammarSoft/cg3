@@ -19,6 +19,7 @@
 * along with VISL CG-3.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#pragma once
 #ifndef __TEXTUALPARSER_H
 #define __TEXTUALPARSER_H
 
@@ -53,6 +54,7 @@ namespace CG3 {
 
 		int parseTagList(Set *s, UChar **p, const bool isinline);
 		int parseSetInline(Set *s, UChar **p);
+		Set *parseSetInlineWrapper(UChar **p);
 		int parseContextualTestList(Rule *rule = 0, ContextualTest **head = 0, CG3::ContextualTest *parentTest = 0, UChar **p = 0, CG3::ContextualTest *self = 0);
 		int parseContextualTests(Rule *rule, UChar **p);
 		int parseContextualDependencyTests(Rule *rule, UChar **p);

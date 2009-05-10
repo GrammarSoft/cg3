@@ -20,6 +20,9 @@
 */
 
 #include "SingleWindow.h"
+#include "GrammarApplicator.h"
+#include "Window.h"
+#include "Recycler.h"
 
 using namespace CG3;
 

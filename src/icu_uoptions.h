@@ -16,6 +16,7 @@
 *   This file provides a command line argument parser.
 */
 
+#pragma once
 #ifndef __UOPTIONS_H__
 #define __UOPTIONS_H__
 

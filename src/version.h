@@ -19,6 +19,7 @@
 * along with VISL CG-3.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#pragma once
 #ifndef __VERSION_H
 #define __VERSION_H
 
@@ -28,6 +29,6 @@
 #define CG3_VERSION_MAJOR 0
 #define CG3_VERSION_MINOR 9
 #define CG3_VERSION_PATCH 7
-#define CG3_REVISION 4767
+#define CG3_REVISION 4771
 
 #endif

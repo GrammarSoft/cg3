@@ -19,6 +19,7 @@
 * along with VISL CG-3.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#pragma once
 #ifndef __STDAFX_H
 #define __STDAFX_H
 
@@ -108,16 +109,20 @@ namespace CG3 {
 	class CompositeTag;
 	class ContextualTest;
 
+	struct compare_Tag;
+	struct compare_CompositeTag;
+	struct compare_Set;
 	struct compare_Cohort;
 	struct compare_Rule;
 
 	typedef std::list<Tag*> TagList;
 	typedef std::vector<Rule*> RuleVector;
 	typedef std::set<Cohort*, compare_Cohort> CohortSet;
-	typedef std::set<Tag*> TagSet;
+	typedef std::set<Tag*, compare_Tag> TagSet;
+	typedef std::set<Set*> SetSet;
 	typedef std::map<uint32_t,Rule*> RuleByLineMap;
-	typedef stdext::hash_set<Tag*> TagHashSet;
-	typedef stdext::hash_set<CompositeTag*> CompositeTagHashSet;
+	typedef stdext::hash_set<Tag*, compare_Tag> TagHashSet;
+	typedef stdext::hash_set<CompositeTag*, compare_CompositeTag> CompositeTagHashSet;
 	typedef stdext::hash_map<uint32_t,Rule*> RuleByLineHashMap;
 	typedef stdext::hash_map<uint32_t,Set*> Setuint32HashMap;
 	typedef stdext::hash_map<uint32_t,Tag*> Taguint32HashMap;

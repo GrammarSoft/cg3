@@ -19,6 +19,7 @@
 * along with VISL CG-3.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#pragma once
 #ifndef __GRAMMARWRITER_H
 #define __GRAMMARWRITER_H
 

@@ -19,13 +19,12 @@
 * along with VISL CG-3.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#pragma once
 #ifndef __COHORT_H
 #define __COHORT_H
 
 #include "stdafx.h"
-#include "Window.h"
 #include "Reading.h"
-#include "Recycler.h"
 
 namespace CG3 {
 

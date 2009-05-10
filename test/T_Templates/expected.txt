@@ -7,12 +7,13 @@
 "<cow>"
 	"cow" N NOM SG @bothGoodGood 
 "<with>"
-	"with" PREP @leftone @artnGood 
+	"with" PREP @beforeNccN @artnGood 
 "<biscuits>"
 	"biscuit" N NOM PL @startNccN 
 "<and>"
 	"and" CC 
 "<lemonade>"
-	"lemonade" <-Indef> N NOM SG @endNccN 
+	"lemonade" <-Indef> N NOM SG 
 "<$.>"
+	"<$.>" @afterNccN 
 

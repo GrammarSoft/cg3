@@ -20,6 +20,8 @@
 */
 
 #include "Set.h"
+#include "Strings.h"
+#include "Grammar.h"
 
 using namespace CG3;
 
