@@ -23,6 +23,7 @@
  *
  */
 
+#pragma once
 
 /* machine-dependent cycle counters code. Needs to be inlined. */
 

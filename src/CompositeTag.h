@@ -19,6 +19,7 @@
 * along with VISL CG-3.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#pragma once
 #ifndef __COMPOSITETAG_H
 #define __COMPOSITETAG_H
 
@@ -44,6 +45,19 @@ namespace CG3 {
 
 		uint32_t rehash();
 		void markUsed();
+	};
+
+	struct compare_CompositeTag {
+		static const size_t bucket_size = 4;
+		static const size_t min_buckets = 8;
+
+		inline size_t operator() (const CompositeTag* x) const {
+			return x->hash;
+		}
+
+		inline bool operator() (const CompositeTag* a, const CompositeTag* b) const {
+			return a->hash < b->hash;
+		}
 	};
 
 }

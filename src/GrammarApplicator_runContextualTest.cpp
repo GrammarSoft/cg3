@@ -99,7 +99,7 @@ Cohort *GrammarApplicator::runContextualTest(SingleWindow *sWindow, size_t posit
 			test->tmpl->pos = test->pos;
 			test->tmpl->offset = test->offset;
 			if (test->offset < 0 && !(test->pos & (POS_SCANFIRST|POS_SCANALL))) {
-				test->tmpl->pos |= POS_SCANFIRST;
+				test->tmpl->pos |= POS_SCANALL;
 			}
 		}
 		Cohort *cdeep = 0;
@@ -132,7 +132,7 @@ Cohort *GrammarApplicator::runContextualTest(SingleWindow *sWindow, size_t posit
 				(*iter)->pos &= ~POS_TMPL_OVERRIDE;
 				(*iter)->offset = test->offset;
 				if (test->offset < 0 && !(test->pos & (POS_SCANFIRST|POS_SCANALL))) {
-					(*iter)->pos |= POS_SCANFIRST;
+					(*iter)->pos |= POS_SCANALL;
 				}
 			}
 			cohort = runContextualTest(sWindow, position, *iter, &cdeep, origin);

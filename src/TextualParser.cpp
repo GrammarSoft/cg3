@@ -160,6 +160,9 @@ int TextualParser::parseSetInline(Set *s, UChar **p) {
 				else {
 					UChar *n = *p;
 					result->lines += SKIPTOWS(&n, ')', true);
+					if (n[-1] == ',') {
+						n--;
+					}
 					uint32_t c = (uint32_t)(n - *p);
 					u_strncpy(gbuffers[0], *p, c);
 					gbuffers[0][c] = 0;
@@ -224,6 +227,20 @@ int TextualParser::parseSetInline(Set *s, UChar **p) {
 	return 0;
 }
 
+Set *TextualParser::parseSetInlineWrapper(UChar **p) {
+	Set *s = result->allocateSet();
+	s->line = result->lines;
+	s->setName(sets_counter++);
+	parseSetInline(s, p);
+	if (s->sets.size() == 1 && !s->is_unified) {
+		Set *tmp = result->getSet(s->sets.back());
+		result->destroySet(s);
+		s = tmp;
+	}
+	result->addSet(s);
+	return s;
+}
+
 int TextualParser::parseContextualTestList(Rule *rule, ContextualTest **head, CG3::ContextualTest *parentTest, UChar **p, CG3::ContextualTest *self) {
 	ContextualTest *t = 0;
 	if (self) {
@@ -277,6 +294,30 @@ int TextualParser::parseContextualTestList(Rule *rule, ContextualTest **head, CG
 			result->lines += SKIPWS(p);
 		}
 	}
+	else if (gbuffers[0][0] == '[') {
+		(*p) += 1;
+		result->lines += SKIPWS(p);
+		Set *s = parseSetInlineWrapper(p);
+		t->offset = 1;
+		t->target = s->hash;
+		result->lines += SKIPWS(p);
+		while (**p == ',') {
+			(*p) += 1;
+			result->lines += SKIPWS(p);
+			ContextualTest *lnk = t->allocateContextualTest();
+			Set *s = parseSetInlineWrapper(p);
+			lnk->offset = 1;
+			lnk->target = s->hash;
+			t->linked = lnk;
+			t = lnk;
+			result->lines += SKIPWS(p);
+		}
+		if (**p != ']') {
+			u_fprintf(ux_stderr, "Error: Expected ']' but found '%C' on line %u!\n", **p, result->lines);
+			CG3Quit(1);
+		}
+		(*p) += 1;
+	}
 	else if (gbuffers[0][0] == 'T' && gbuffers[0][1] == ':') {
 label_parseTemplate:
 		(*p) += 2;
@@ -313,48 +354,21 @@ label_parseTemplate:
 			goto label_parseTemplate;
 		}
 
-		Set *s = result->allocateSet();
-		s->line = result->lines;
-		s->setName(sets_counter++);
-		parseSetInline(s, p);
-		if (s->sets.size() == 1 && !s->is_unified) {
-			Set *tmp = result->getSet(s->sets.back());
-			result->destroySet(s);
-			s = tmp;
-		}
-		result->addSet(s);
+		Set *s = parseSetInlineWrapper(p);
 		t->target = s->hash;
 
 		result->lines += SKIPWS(p);
 		if (u_strncasecmp(*p, stringbits[S_CBARRIER], stringbit_lengths[S_CBARRIER], U_FOLD_CASE_DEFAULT) == 0) {
 			(*p) += stringbit_lengths[S_CBARRIER];
 			result->lines += SKIPWS(p);
-			Set *s = result->allocateSet();
-			s->line = result->lines;
-			s->setName(sets_counter++);
-			parseSetInline(s, p);
-			if (s->sets.size() == 1 && !s->is_unified) {
-				Set *tmp = result->getSet(s->sets.back());
-				result->destroySet(s);
-				s = tmp;
-			}
-			result->addSet(s);
+			Set *s = parseSetInlineWrapper(p);
 			t->cbarrier = s->hash;
 		}
 		result->lines += SKIPWS(p);
 		if (u_strncasecmp(*p, stringbits[S_BARRIER], stringbit_lengths[S_BARRIER], U_FOLD_CASE_DEFAULT) == 0) {
 			(*p) += stringbit_lengths[S_BARRIER];
 			result->lines += SKIPWS(p);
-			Set *s = result->allocateSet();
-			s->line = result->lines;
-			s->setName(sets_counter++);
-			parseSetInline(s, p);
-			if (s->sets.size() == 1 && !s->is_unified) {
-				Set *tmp = result->getSet(s->sets.back());
-				result->destroySet(s);
-				s = tmp;
-			}
-			result->addSet(s);
+			Set *s = parseSetInlineWrapper(p);
 			t->barrier = s->hash;
 		}
 		result->lines += SKIPWS(p);
@@ -620,16 +634,7 @@ int TextualParser::parseRule(KEYWORDS key, UChar **p) {
 	}
 	result->lines += SKIPWS(p);
 
-	Set *s = result->allocateSet();
-	s->line = result->lines;
-	s->setName(sets_counter++);
-	parseSetInline(s, p);
-	if (s->sets.size() == 1 && !s->is_unified) {
-		Set *tmp = result->getSet(s->sets.back());
-		result->destroySet(s);
-		s = tmp;
-	}
-	result->addSet(s);
+	Set *s = parseSetInlineWrapper(p);
 	rule->target = s->hash;
 
 	result->lines += SKIPWS(p);

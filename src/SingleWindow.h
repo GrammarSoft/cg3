@@ -19,12 +19,11 @@
 * along with VISL CG-3.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#pragma once
 #ifndef __SINGLEWINDOW_H
 #define __SINGLEWINDOW_H
 
 #include "stdafx.h"
-#include "GrammarApplicator.h"
-#include "Window.h"
 #include "Cohort.h"
 #include "Rule.h"
 
