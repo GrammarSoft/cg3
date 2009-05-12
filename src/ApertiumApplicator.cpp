@@ -85,9 +85,6 @@ ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output)
 	begintag = addTag(stringbits[S_BEGINTAG])->hash; // Beginning of sentence tag
 	endtag = addTag(stringbits[S_ENDTAG])->hash; // End of sentence tag
 
-	gWindow = new Window(this); 	// Global window singleton
-
-	Window *cWindow = gWindow; 	// Set the current window to the global window
 	SingleWindow *cSWindow = 0; 	// Current single window (Cohort frame)
 	Cohort *cCohort = 0; 		// Current cohort
 	Reading *cReading = 0; 		// Current reading
@@ -96,7 +93,7 @@ ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output)
 	Cohort *lCohort = 0; 		// Left hand cohort
 	Reading *lReading = 0; 		// Left hand reading
 
-	cWindow->window_span = num_windows;
+	gWindow->window_span = num_windows;
 	gtimer = getticks();
 	ticks timer(gtimer);
 
@@ -141,7 +138,7 @@ ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output)
 				}
 
 				cSWindow->appendCohort(cCohort);
-				cWindow->appendSingleWindow(cSWindow);
+				gWindow->appendSingleWindow(cSWindow);
 				lSWindow = cSWindow;
 				lCohort = cCohort;
 				cSWindow = 0;
@@ -163,7 +160,7 @@ ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output)
 				}
 				
 				cSWindow->appendCohort(cCohort);
-				cWindow->appendSingleWindow(cSWindow);
+				gWindow->appendSingleWindow(cSWindow);
 				lSWindow = cSWindow;
 				lCohort = cCohort;
 				cSWindow = 0;
@@ -173,7 +170,7 @@ ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output)
 			// If we don't have a current window, create one
 			if (!cSWindow) {
 				// ToDo: Refactor to allocate SingleWindow, Cohort, and Reading from their containers
-				cSWindow = new SingleWindow(cWindow);
+				cSWindow = new SingleWindow(gWindow);
 				
 				cSWindow->text = 0; // necessary? TODO -KBU
 				
@@ -213,22 +210,22 @@ ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output)
 					lReading = cReading;
 				}
 			} 
-			if (cWindow->next.size() > num_windows) {
-				while (!cWindow->previous.empty() && cWindow->previous.size() > num_windows) {
-					SingleWindow *tmp = cWindow->previous.front();
+			if (gWindow->next.size() > num_windows) {
+				while (!gWindow->previous.empty() && gWindow->previous.size() > num_windows) {
+					SingleWindow *tmp = gWindow->previous.front();
 					printSingleWindow(tmp, output);
 					delete tmp;
-					cWindow->previous.pop_front();
+					gWindow->previous.pop_front();
 				}
-				cWindow->shuffleWindowsDown();
-				runGrammarOnWindow(cWindow);
+				gWindow->shuffleWindowsDown();
+				runGrammarOnWindow();
 				if (numWindows % resetAfter == 0) {
 					resetIndexes();
 					r->trim();
 				}
 			}
 			cCohort = r->new_Cohort(cSWindow);
-			cCohort->global_number = cWindow->cohort_counter++;
+			cCohort->global_number = gWindow->cohort_counter++;
 
 			// Read in the word form
 			UChar *wordform = 0;
@@ -344,30 +341,30 @@ ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output)
 		foreach (std::list<Reading*>, cCohort->readings, iter, iter_end) {
 			addTagToReading(*iter, endtag);
 		}
-		cWindow->appendSingleWindow(cSWindow);
+		gWindow->appendSingleWindow(cSWindow);
 		cReading = 0;
 		cCohort = 0;
 		cSWindow = 0;
 	}
 	
 	// Run the grammar & print results
-	while (!cWindow->next.empty()) {
-		while (!cWindow->previous.empty() && cWindow->previous.size() > num_windows) {
-			SingleWindow *tmp = cWindow->previous.front();
+	while (!gWindow->next.empty()) {
+		while (!gWindow->previous.empty() && gWindow->previous.size() > num_windows) {
+			SingleWindow *tmp = gWindow->previous.front();
 			printSingleWindow(tmp, output);
 			delete tmp;
-			cWindow->previous.pop_front();
+			gWindow->previous.pop_front();
 		}
-		cWindow->shuffleWindowsDown();
-		runGrammarOnWindow(cWindow);
+		gWindow->shuffleWindowsDown();
+		runGrammarOnWindow();
 	}
 	
-	cWindow->shuffleWindowsDown();
-	while (!cWindow->previous.empty()) {
-		SingleWindow *tmp = cWindow->previous.front();
+	gWindow->shuffleWindowsDown();
+	while (!gWindow->previous.empty()) {
+		SingleWindow *tmp = gWindow->previous.front();
 		printSingleWindow(tmp, output);
 		delete tmp;
-		cWindow->previous.pop_front();
+		gWindow->previous.pop_front();
 	}
 	
 	if((inchar) && inchar != 0xffff) {

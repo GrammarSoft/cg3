@@ -56,7 +56,6 @@ GrammarApplicator::GrammarApplicator(UFILE *ux_in, UFILE *ux_out, UFILE *ux_err)
 	match_sub = 0;
 	soft_limit = 300;
 	hard_limit = 500;
-	gWindow = 0;
 	numLines = 0;
 	numWindows = 0;
 	numCohorts = 0;
@@ -73,6 +72,7 @@ GrammarApplicator::GrammarApplicator(UFILE *ux_in, UFILE *ux_out, UFILE *ux_err)
 	did_final_enclosure = false;
 	did_index = false;
 	unsafe = false;
+	gWindow = new Window(this);
 }
 
 GrammarApplicator::~GrammarApplicator() {
