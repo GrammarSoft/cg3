@@ -24,12 +24,12 @@
 using namespace CG3;
 using namespace CG3::Strings;
 
-TextualParser::TextualParser(UFILE *ux_err) {
+TextualParser::TextualParser(Grammar &res, UFILE *ux_err) {
 	ux_stderr = ux_err;
+	result = &res;
 	filename = 0;
 	locale = 0;
 	codepage = 0;
-	result = 0;
 	option_vislcg_compat = false;
 	in_before_sections = false;
 	in_after_sections = false;
@@ -1614,10 +1614,6 @@ int TextualParser::parse_grammar_from_file(const char *fname, const char *loc, c
 
 	delete[] data;
 	return 0;
-}
-
-void TextualParser::setResult(CG3::Grammar *res) {
-	result = res;
 }
 
 void TextualParser::setCompatible(bool f) {

@@ -6,7 +6,7 @@
 
   <para>
     Sets up templates of alternative contextual tests which can later be referred to by multiple rules
-    or templates.
+    or other templates.
   </para>
   <screen>
     TEMPLATE name = (1 (N) LINK 1 (V)) OR (-1 (N) LINK 1 (V)) ;

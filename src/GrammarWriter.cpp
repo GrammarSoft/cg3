@@ -24,10 +24,10 @@
 using namespace CG3;
 using namespace CG3::Strings;
 
-GrammarWriter::GrammarWriter(Grammar *res, UFILE *ux_err) {
+GrammarWriter::GrammarWriter(Grammar &res, UFILE *ux_err) {
 	statistics = false;
 	ux_stderr = ux_err;
-	grammar = res;
+	grammar = &res;
 }
 
 GrammarWriter::~GrammarWriter() {

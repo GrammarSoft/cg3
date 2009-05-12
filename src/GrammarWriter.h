@@ -32,7 +32,7 @@ namespace CG3 {
 	public:
 		bool statistics;
 	
-		GrammarWriter(Grammar *res, UFILE *ux_err);
+		GrammarWriter(Grammar &res, UFILE *ux_err);
 		~GrammarWriter();
 
 		int writeGrammar(UFILE *output);
