@@ -28,17 +28,15 @@
 namespace CG3 {
 	class TextualParser : public IGrammarParser {
 	public:
-		TextualParser(UFILE *ux_err);
+		TextualParser(Grammar &result, UFILE *ux_err);
 		~TextualParser();
 
 		void setCompatible(bool compat);
 		void setVerbosity(uint32_t level);
-		void setResult(CG3::Grammar *result);
 
 		int parse_grammar_from_file(const char *filename, const char *locale, const char *codepage);
 
 	private:
-		UFILE *ux_stderr;
 		uint32_t verbosity_level;
 		uint32_t sets_counter;
 		uint32_t seen_mapping_prefix;
@@ -47,7 +45,6 @@ namespace CG3 {
 		const char *filename;
 		const char *locale;
 		const char *codepage;
-		CG3::Grammar *result;
 
 		int parseFromUChar(UChar *input, const char *fname = 0);
 		void addRuleToGrammar(Rule *rule);

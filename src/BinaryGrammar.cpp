@@ -24,12 +24,14 @@
 using namespace CG3;
 using namespace CG3::Strings;
 
-BinaryGrammar::BinaryGrammar(Grammar *res, UFILE *ux_err) {
+BinaryGrammar::BinaryGrammar(Grammar &res, UFILE *ux_err) {
 	ux_stderr = ux_err;
-	grammar = res;
+	result = &res;
+	grammar = result;
 }
 
 BinaryGrammar::~BinaryGrammar() {
+	result = 0;
 	grammar = 0;
 }
 
@@ -37,10 +39,6 @@ void BinaryGrammar::setCompatible(bool) {
 }
 
 void BinaryGrammar::setVerbosity(uint32_t) {
-}
-
-void BinaryGrammar::setResult(CG3::Grammar *result) {
-	grammar = result;
 }
 
 int BinaryGrammar::parse_grammar_from_file(const char *filename, const char *, const char *) {

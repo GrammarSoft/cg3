@@ -33,8 +33,10 @@ namespace CG3 {
 		virtual ~IGrammarParser() {};
 		virtual void setCompatible(bool compat) = 0;
 		virtual void setVerbosity(uint32_t level) = 0;
-		virtual void setResult(CG3::Grammar *result) = 0;
 		virtual int parse_grammar_from_file(const char *filename, const char *locale, const char *codepage) = 0;
+	protected:
+		UFILE *ux_stderr;
+		Grammar *result;
 	};
 }
 
