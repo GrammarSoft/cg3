@@ -128,7 +128,7 @@ namespace CG3 {
 
 		void updateRuleToCohorts(Cohort *c, uint32_t rsit);
 		void indexSingleWindow(SingleWindow *current);
-		int runGrammarOnWindow(Window *window);
+		int runGrammarOnWindow();
 		int runGrammarOnSingleWindow(SingleWindow *current);
 		void updateValidRules(uint32Set *rules, uint32Set *intersects, uint32_t hash, Reading *reading);
 		uint32_t runRulesOnWindow(SingleWindow *current, uint32Set *rules);
@@ -145,7 +145,7 @@ namespace CG3 {
 		bool doesSetMatchCohortNormal(Cohort *cohort, const uint32_t set, uint32_t options = 0);
 		bool doesSetMatchCohortCareful(const Cohort *cohort, const uint32_t set, uint32_t options = 0);
 
-		SingleWindow *initialiseSingleWindow(Recycler *r, Window *cWindow, SingleWindow *cSWindow);
+		SingleWindow *initialiseSingleWindow(Recycler *r, Window *gWindow, SingleWindow *cSWindow);
 
 		bool statistics;
 		ticks gtimer;

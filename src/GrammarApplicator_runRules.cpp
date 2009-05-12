@@ -729,8 +729,8 @@ int GrammarApplicator::runGrammarOnSingleWindow(SingleWindow *current) {
 	return 0;
 }
 
-int GrammarApplicator::runGrammarOnWindow(Window *window) {
-	SingleWindow *current = window->current;
+int GrammarApplicator::runGrammarOnWindow() {
+	SingleWindow *current = gWindow->current;
 	did_final_enclosure = false;
 
 	if (has_dep) {
@@ -799,7 +799,7 @@ int GrammarApplicator::runGrammarOnWindow(Window *window) {
 	par_right_pos = 0;
 
 label_runGrammarOnWindow_begin:
-	current = window->current;
+	current = gWindow->current;
 
 	int rv = runGrammarOnSingleWindow(current);
 	if (rv & RV_DELIMITED) {

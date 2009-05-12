@@ -514,11 +514,13 @@ INLINE_ELAPSED(inline)
 #endif /* HAVE_MIPS_ZBUS_TIMER */
 
 #ifndef HAVE_TICK_COUNTER
-typedef unsigned long long ticks;
+#warning "Due to lack of high resolution timers, standard clock() will be used."
+typedef clock_t ticks;
 static inline ticks getticks() {
-	return 0;
+	return clock();
 }
 static inline double elapsed(ticks t1, ticks t0) {
-	return 0.0;
+	return double(double(t1)-double(t0)) / double(CLOCKS_PER_SEC);
 }
+#define HAVE_TICK_COUNTER
 #endif
