@@ -224,7 +224,7 @@ int main(int argc, char* argv[]) {
 	init_strings();
 	init_keywords();
 	init_flags();
-	CG3::Grammar *grammar = new CG3::Grammar();
+	CG3::Grammar grammar;
 
 	CG3::IGrammarParser *parser = 0;
 	FILE *input = fopen(options[GRAMMAR].value, "rb");
@@ -240,7 +240,7 @@ int main(int argc, char* argv[]) {
 		parser = new CG3::BinaryGrammar(grammar, ux_stderr);
 	}
 	else {
-		parser = new CG3::TextualParser(ux_stderr);
+		parser = new CG3::TextualParser(grammar, ux_stderr);
 	}
 	if (options[VERBOSE].doesOccur) {
 		if (options[VERBOSE].value) {
@@ -250,11 +250,10 @@ int main(int argc, char* argv[]) {
 			parser->setVerbosity(1);
 		}
 	}
-	grammar->ux_stderr = ux_stderr;
-	grammar->ux_stdout = ux_stdout;
-	CG3::Tag *tag_any = grammar->allocateTag(stringbits[S_ASTERIK]);
-	grammar->tag_any = tag_any->hash;
-	parser->setResult(grammar);
+	grammar.ux_stderr = ux_stderr;
+	grammar.ux_stdout = ux_stdout;
+	CG3::Tag *tag_any = grammar.allocateTag(stringbits[S_ASTERIK]);
+	grammar.tag_any = tag_any->hash;
 	parser->setCompatible(options[VISLCGCOMPAT].doesOccur != 0);
 
 	if (options[VERBOSE].doesOccur) {
@@ -272,13 +271,13 @@ int main(int argc, char* argv[]) {
 		UChar *buf = new UChar[sn*3];
 		buf[0] = 0;
 		ucnv_toUChars(conv, buf, sn*3, options[MAPPING_PREFIX].value, sn, &status);
-		grammar->mapping_prefix = buf[0];
+		grammar.mapping_prefix = buf[0];
 		delete[] buf;
 	}
 	if (options[VERBOSE].doesOccur) {
 		std::cerr << "Reindexing grammar..." << std::endl;
 	}
-	grammar->reindex(options[SHOW_UNUSED_SETS].doesOccur == 1);
+	grammar.reindex(options[SHOW_UNUSED_SETS].doesOccur == 1);
 
 	delete parser;
 	parser = 0;
@@ -286,15 +285,15 @@ int main(int argc, char* argv[]) {
 	std::cerr << "Parsing grammar took " << (clock()-main_timer)/(double)CLOCKS_PER_SEC << " seconds." << std::endl;
 	main_timer = clock();
 
-	std::cerr << "Grammar has " << grammar->sections.size() << " sections, " << grammar->template_list.size() << " templates, " << grammar->rule_by_line.size() << " rules, " << grammar->sets_list.size() << " sets, " << grammar->tags.size() << " c-tags, " << grammar->single_tags.size() << " s-tags." << std::endl;
-	if (grammar->rules_by_tag.find(tag_any->hash) != grammar->rules_by_tag.end()) {
-		std::cerr << grammar->rules_by_tag.find(tag_any->hash)->second->size() << " rules cannot be skipped by index." << std::endl;
+	std::cerr << "Grammar has " << grammar.sections.size() << " sections, " << grammar.template_list.size() << " templates, " << grammar.rule_by_line.size() << " rules, " << grammar.sets_list.size() << " sets, " << grammar.tags.size() << " c-tags, " << grammar.single_tags.size() << " s-tags." << std::endl;
+	if (grammar.rules_by_tag.find(tag_any->hash) != grammar.rules_by_tag.end()) {
+		std::cerr << grammar.rules_by_tag.find(tag_any->hash)->second->size() << " rules cannot be skipped by index." << std::endl;
 	}
-	if (grammar->has_dep) {
+	if (grammar.has_dep) {
 		std::cerr << "Grammar has dependency rules." << std::endl;
 	}
 
-	if (grammar->is_binary) {
+	if (grammar.is_binary) {
 		if (options[GRAMMAR_BIN].doesOccur || options[GRAMMAR_OUT].doesOccur) {
 			std::cerr << "Error: Binary grammars cannot be rewritten." << std::endl;
 			CG3Quit(1);
@@ -323,12 +322,12 @@ int main(int argc, char* argv[]) {
 	}
 
 	if (options[STATISTICS].doesOccur) {
-		grammar->renameAllRules();
+		grammar.renameAllRules();
 	}
 
 	if (!options[GRAMMAR_ONLY].doesOccur) {
 		CG3::GrammarApplicator *applicator = new CG3::GrammarApplicator(ux_stdin, ux_stdout, ux_stderr);
-		applicator->setGrammar(grammar);
+		applicator->setGrammar(&grammar);
 		GAppSetOpts(applicator);
 		applicator->runGrammarOnText(ux_stdin, ux_stdout);
 		delete applicator;
@@ -342,36 +341,36 @@ int main(int argc, char* argv[]) {
 
 	if (options[OPTIMIZE_UNSAFE].doesOccur) {
 		std::vector<uint32_t> bad;
-		foreach(CG3::RuleByLineHashMap, grammar->rule_by_line, ir, ir_end) {
+		foreach(CG3::RuleByLineHashMap, grammar.rule_by_line, ir, ir_end) {
 			if (ir->second->num_match == 0) {
 				bad.push_back(ir->first);
 			}
 		}
 		foreach(std::vector<uint32_t>, bad, br, br_end) {
-			CG3::Rule *r = grammar->rule_by_line.find(*br)->second;
-			grammar->rule_by_line.erase(*br);
-			grammar->destroyRule(r);
+			CG3::Rule *r = grammar.rule_by_line.find(*br)->second;
+			grammar.rule_by_line.erase(*br);
+			grammar.destroyRule(r);
 		}
 		std::cerr << "Optimizer removed " << bad.size() << " rules." << std::endl;
-		grammar->reindex();
-		std::cerr << "Grammar has " << grammar->sections.size() << " sections, " << grammar->template_list.size() << " templates, " << grammar->rule_by_line.size() << " rules, " << grammar->sets_list.size() << " sets, " << grammar->tags.size() << " c-tags, " << grammar->single_tags.size() << " s-tags." << std::endl;
+		grammar.reindex();
+		std::cerr << "Grammar has " << grammar.sections.size() << " sections, " << grammar.template_list.size() << " templates, " << grammar.rule_by_line.size() << " rules, " << grammar.sets_list.size() << " sets, " << grammar.tags.size() << " c-tags, " << grammar.single_tags.size() << " s-tags." << std::endl;
 	}
 	if (options[OPTIMIZE_SAFE].doesOccur) {
 		std::vector<uint32_t> bad;
-		foreach(CG3::RuleByLineHashMap, grammar->rule_by_line, ir, ir_end) {
+		foreach(CG3::RuleByLineHashMap, grammar.rule_by_line, ir, ir_end) {
 			if (ir->second->num_match == 0) {
 				bad.push_back(ir->first);
 			}
 		}
 		foreach(std::vector<uint32_t>, bad, br, br_end) {
-			CG3::Rule *r = grammar->rule_by_line.find(*br)->second;
-			grammar->rule_by_line.erase(*br);
-			r->line += grammar->rule_by_line.size();
-			grammar->rule_by_line[r->line] = r;
+			CG3::Rule *r = grammar.rule_by_line.find(*br)->second;
+			grammar.rule_by_line.erase(*br);
+			r->line += grammar.rule_by_line.size();
+			grammar.rule_by_line[r->line] = r;
 		}
 		std::cerr << "Optimizer moved " << bad.size() << " rules." << std::endl;
-		grammar->reindex();
-		std::cerr << "Grammar has " << grammar->sections.size() << " sections, " << grammar->template_list.size() << " templates, " << grammar->rule_by_line.size() << " rules, " << grammar->sets_list.size() << " sets, " << grammar->tags.size() << " c-tags, " << grammar->single_tags.size() << " s-tags." << std::endl;
+		grammar.reindex();
+		std::cerr << "Grammar has " << grammar.sections.size() << " sections, " << grammar.template_list.size() << " templates, " << grammar.rule_by_line.size() << " rules, " << grammar.sets_list.size() << " sets, " << grammar.tags.size() << " c-tags, " << grammar.single_tags.size() << " s-tags." << std::endl;
 	}
 
 	if (options[GRAMMAR_OUT].doesOccur) {
@@ -414,9 +413,6 @@ int main(int argc, char* argv[]) {
 	u_fclose(ux_stdin);
 	u_fclose(ux_stdout);
 	u_fclose(ux_stderr);
-
-	delete grammar;
-	grammar = 0;
 
 	free_strings();
 	free_keywords();

@@ -166,7 +166,7 @@ main(int argc, char *argv[])
 	init_gbuffers();
 	init_strings();
 	init_keywords();
-	CG3::Grammar *grammar = new CG3::Grammar();
+	CG3::Grammar grammar;
 
 	CG3::IGrammarParser *parser = 0;
 	
@@ -233,16 +233,15 @@ main(int argc, char *argv[])
 		CG3Quit(1);
 	}
 
-	grammar->ux_stderr = ux_stderr;
-	CG3::Tag *tag_any = grammar->allocateTag(stringbits[S_ASTERIK]);
-	grammar->tag_any = tag_any->hash;
-	parser->setResult(grammar);
+	grammar.ux_stderr = ux_stderr;
+	CG3::Tag *tag_any = grammar.allocateTag(stringbits[S_ASTERIK]);
+	grammar.tag_any = tag_any->hash;
 	if (parser->parse_grammar_from_file(argv[optind], locale_default, codepage_default)) {
 		std::cerr << "Error: Grammar could not be parsed - exiting!" << std::endl;
 		CG3Quit(1);
 	}
 
-	grammar->reindex();
+	grammar.reindex();
 
 	delete parser;
 	parser = 0;
@@ -255,7 +254,7 @@ main(int argc, char *argv[])
 		applicator = new CG3::ApertiumApplicator(ux_stdin, ux_stdout, ux_stderr);
 	}
 
-	applicator->setGrammar(grammar);
+	applicator->setGrammar(&grammar);
 	for (int32_t i=1 ; i<=sections ; i++) {
 		applicator->sections.push_back(i);
 	}
@@ -284,9 +283,6 @@ main(int argc, char *argv[])
 	u_fclose(ux_stdin);
 	u_fclose(ux_stdout);
 	u_fclose(ux_stderr);
-
-	delete grammar;
-	grammar = 0;
 
 	free_strings();
 	free_keywords();

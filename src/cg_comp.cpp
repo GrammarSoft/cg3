@@ -83,7 +83,7 @@ main(int argc, char *argv[])
 	init_strings();
 	init_keywords();
 	init_flags();
-	CG3::Grammar *grammar = new CG3::Grammar();
+	CG3::Grammar grammar;
 
 	CG3::IGrammarParser *parser = 0;
 	FILE *input = fopen(argv[1], "rb");
@@ -100,29 +100,28 @@ main(int argc, char *argv[])
 		std::cerr << "Binary grammar detected. Cannot re-compile binary grammars." << std::endl;
 		CG3Quit(1);
 	} else {
-		parser = new CG3::TextualParser(ux_stderr);
+		parser = new CG3::TextualParser(grammar, ux_stderr);
 	}
 
-	grammar->ux_stderr = ux_stderr;
-	CG3::Tag *tag_any = grammar->allocateTag(stringbits[S_ASTERIK]);
-	grammar->tag_any = tag_any->hash;
-	parser->setResult(grammar);
+	grammar.ux_stderr = ux_stderr;
+	CG3::Tag *tag_any = grammar.allocateTag(stringbits[S_ASTERIK]);
+	grammar.tag_any = tag_any->hash;
 
 	if (parser->parse_grammar_from_file(argv[1], locale_default, codepage_default)) {
 		std::cerr << "Error: Grammar could not be parsed - exiting!" << std::endl;
 		CG3Quit(1);
 	}
 
-	grammar->reindex();
+	grammar.reindex();
 
-	std::cerr << "Sections: " << grammar->sections.size() << ", Rules: " << grammar->rule_by_line.size();
-	std::cerr << ", Sets: " << grammar->sets_by_contents.size() << ", Tags: " << grammar->single_tags.size() << std::endl;
+	std::cerr << "Sections: " << grammar.sections.size() << ", Rules: " << grammar.rule_by_line.size();
+	std::cerr << ", Sets: " << grammar.sets_by_contents.size() << ", Tags: " << grammar.single_tags.size() << std::endl;
 
-	if (grammar->rules_by_tag.find(tag_any->hash) != grammar->rules_by_tag.end()) {
-		std::cerr << grammar->rules_by_tag.find(tag_any->hash)->second->size() << " rules cannot be skipped by index." << std::endl;
+	if (grammar.rules_by_tag.find(tag_any->hash) != grammar.rules_by_tag.end()) {
+		std::cerr << grammar.rules_by_tag.find(tag_any->hash)->second->size() << " rules cannot be skipped by index." << std::endl;
 	}
 
-	if (grammar->has_dep) {
+	if (grammar.has_dep) {
 		std::cerr << "Grammar has dependency rules." << std::endl;
 	}
 
@@ -138,9 +137,6 @@ main(int argc, char *argv[])
 	}
 
 	u_fclose(ux_stderr);
-
-	delete grammar;
-	grammar = 0;
 
 	free_strings();
 	free_keywords();

@@ -25,11 +25,11 @@
 
 #include "IGrammarParser.h"
 #include "version.h"
- 
+
 namespace CG3 {
 	class BinaryGrammar : public IGrammarParser {
 	public:
-		BinaryGrammar(Grammar *res, UFILE *ux_err);
+		BinaryGrammar(Grammar &result, UFILE *ux_err);
 		~BinaryGrammar();
 
 		int writeBinaryGrammar(FILE *output);
@@ -37,10 +37,8 @@ namespace CG3 {
 
 		void setCompatible(bool compat);
 		void setVerbosity(uint32_t level);
-		void setResult(CG3::Grammar *result);
 		int parse_grammar_from_file(const char *filename, const char *locale, const char *codepage);
 	private:
-		UFILE *ux_stderr;
 		Grammar *grammar;
 		void writeContextualTest(ContextualTest *t, FILE *output);
 		void readContextualTest(ContextualTest *t, FILE *input);
