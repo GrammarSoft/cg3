@@ -5,17 +5,96 @@
   <title>Templates</title>
 
   <para>
-    Sets up templates of alternative contextual tests which can later be referred to by multiple rules
-    or other templates.
+    Sets up templates of alternative contextual tests which can later be referred to by multiple rules or other templates.
+    Templates support the full syntax of contextual tests, including all other new CG-3 features.
+    Best way to document them that I can think of at the moment is to give examples of equivalent constructions.
   </para>
-  <screen>
-    TEMPLATE name = (1 (N) LINK 1 (V)) OR (-1 (N) LINK 1 (V)) ;
-    TEMPLATE other = (T:name LINK 1 (P)) OR (1 (C)) ;
-    SELECT (x) IF ((T:name) OR (T:other)) ;
-  </screen>
+
   <para>
-    Documentation is lacking at the moment. See the ./test/T_Templates/grammar.txt, input.txt, and
-    expected.txt files.
+    For example, this construction
+    <screen>
+      TEMPLATE tmpl = 1 (a) LINK 1 B + C LINK 1 D - (e) ;
+      SELECT (tag) IF (T:tmpl) ;
+    </screen>
+    is equivalent to
+    <screen>
+      SELECT (tag) IF (1 (a) LINK 1 B + C LINK 1 D - (e)) ;
+    </screen>
+  </para>
+
+  <para>
+    But with the introduction of templates, CG-3 also allows alternative tests, so this construction
+    <screen>
+      TEMPLATE tmpl = (1 ASET LINK 1 BSET) OR (-1 BSET LINK -1 ASET) ;
+      SELECT (tag) IF (T:tmpl) ;
+    </screen>
+    is equivalent to
+    <screen>
+      # Yes, inline OR is allowed if you () the tests properly
+      SELECT (tag) IF ((1 ASET LINK 1 BSET) OR (-1 BSET LINK -1 ASET)) ;
+    </screen>
+    which in turn is equivalent to
+    <screen>
+      SELECT (tag) IF (1 ASET LINK 1 BSET) ;
+      SELECT (tag) IF (-1 BSET LINK -1 ASET) ;
+    </screen>
+  </para>
+
+  <para>
+    For very simple lists of LINK 1 constructs, there is a further simplification:
+    <screen>
+      # Note the use of [] and , instead of ()
+      TEMPLATE tmpl = [(a), BSET, CSET - (d)] ;
+    </screen>
+    is equivalent to
+    <screen>
+      TEMPLATE tmpl = 1 (a) LINK 1 BSET LINK 1 CSET - (d) ;
+    </screen>
+    However, the [] construct is not directly allowed in OR constructions, so you cannot write
+    <screen>
+      TEMPLATE tmpl = [a, b, c] OR [e, f, g] ; # invalid
+    </screen>
+    but you can instead write
+    <screen>
+      TEMPLATE tmpl = ([a, b, c]) OR ([e, f, g]) ; # valid
+    </screen>
+    The [] construct can also be linked to and from, so
+    <screen>
+      TEMPLATE tmpl = [a, b, c] LINK 1* d BARRIER h LINK [e, f, g] ;
+    </screen>
+    is equivalent to
+    <screen>
+      TEMPLATE tmpl = 1 a LINK 1 b LINK 1 c LINK 1* d BARRIER h LINK 1 e LINK 1 f LINK 1 g ;
+    </screen>
+  </para>
+
+  <para>
+    Templates can be used in place of any normal contextual test, and can be both linked to and from, so
+    <screen>
+      TEMPLATE tmpl = 1 (donut) BARRIER (waffle) ;
+      SELECT (tag) IF (1 VSET LINK T:tmpl LINK 1* FSET) ;
+    </screen>
+    is equivalent to
+    <screen>
+      SELECT (tag) IF (1 VSET LINK 1 (donut) BARRIER (waffle) LINK 1* FSET) ;
+    </screen>
+  </para>
+
+  <para>
+    It is also possible to override the position of a template, which changes their behavior. E.g:
+    <screen>
+      TEMPLATE tmpl = [N, CC, ADJ] ;
+      # ... or ...
+      TEMPLATE tmpl = 1 N LINK 1 CC LINK 1 ADJ ;
+      SELECT (tag) IF (-1 T:tmpl) ;
+    </screen>
+    is equivalent to
+    <screen>
+      SELECT (tag) IF (-1** N LINK 1 CC LINK 1 ADJ) ;
+    </screen>
+    but with a post-condition that the final cohort matched from the exit of the template must be at the position given relative to the origin.
+    In this case, a match of the template is only succesful if ADJ is in position -1 to the origin (tag).
+    This behavior is equivalent to how templates worked in Fred Karlsson's CG-1, but with more flexibility.
   </para>
 
 </chapter>
