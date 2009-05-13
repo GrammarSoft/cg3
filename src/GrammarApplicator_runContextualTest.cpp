@@ -108,7 +108,7 @@ Cohort *GrammarApplicator::runContextualTest(SingleWindow *sWindow, size_t posit
 			test->tmpl->pos = orgpos;
 			test->tmpl->offset = orgoffset;
 			if (cdeep && test->offset < 0 && !(test->pos & (POS_SCANFIRST|POS_SCANALL))) {
-				if ((cdeep->parent != sWindow) || (position - cdeep->local_number != (uint32_t)abs(test->offset))) {
+				if ((cdeep->parent != sWindow) || (int32_t(cdeep->local_number) - int32_t(position) != test->offset)) {
 					cohort = 0;
 				}
 			}
@@ -140,7 +140,7 @@ Cohort *GrammarApplicator::runContextualTest(SingleWindow *sWindow, size_t posit
 				(*iter)->pos = orgpos;
 				(*iter)->offset = orgoffset;
 				if (cdeep && test->offset < 0 && !(test->pos & (POS_SCANFIRST|POS_SCANALL))) {
-					if ((cdeep->parent != sWindow) || (position - cdeep->local_number != (uint32_t)abs(test->offset))) {
+					if ((cdeep->parent != sWindow) || (int32_t(cdeep->local_number) - int32_t(position) != test->offset)) {
 						cohort = 0;
 					}
 				}

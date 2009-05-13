@@ -160,7 +160,7 @@ int TextualParser::parseSetInline(Set *s, UChar **p) {
 				else {
 					UChar *n = *p;
 					result->lines += SKIPTOWS(&n, ')', true);
-					if (n[-1] == ',') {
+					while (n[-1] == ',' || n[-1] == ']') {
 						n--;
 					}
 					uint32_t c = (uint32_t)(n - *p);
@@ -947,7 +947,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 			result->lines += SKIPWS(&p);
 			UChar *n = p;
 			result->lines += SKIPTOWS(&n, 0, true);
-			if (n[-1] == ',') {
+			while (n[-1] == ',' || n[-1] == ']') {
 				n--;
 			}
 			uint32_t c = (uint32_t)(n - p);
@@ -1000,7 +1000,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 			result->lines += SKIPWS(&p);
 			UChar *n = p;
 			result->lines += SKIPTOWS(&n, 0, true);
-			if (n[-1] == ',') {
+			while (n[-1] == ',' || n[-1] == ']') {
 				n--;
 			}
 			uint32_t c = (uint32_t)(n - p);

@@ -4,7 +4,7 @@ TEMPLATE DefinedAnywhere = (1 (Q)) ;
 
 BEFORE-SECTIONS
 
-TEMPLATE V-Prep = (1 (V) LINK 1* (PREP)) ;
+TEMPLATE V-Prep = 1 (V) LINK 1* (PREP) ;
 
 ADD (@postGood) (*) IF (T:V-Prep LINK 1 (N)) ;
 ADD (@postBad) (*) IF (T:V-Prep LINK 1 (Q)) ;
@@ -22,12 +22,12 @@ ADD (@beforeNccN) (*) IF (T:NccN) ;
 ADD (@startNccN) (*) IF (0 T:NccN) ;
 ADD (@afterNccN) (*) IF (-1 T:NccN) ;
 
-TEMPLATE A-link-B = (T:V-Prep LINK T:NccN) ;
+TEMPLATE A-link-B = T:V-Prep LINK T:NccN ;
 
 ADD (@linkedGood) (*) IF (0 (SUBJ) LINK T:A-link-B LINK 1 (<<<)) ;
 ADD (@linkedBad) (*) IF (0 (SUBJ) LINK T:A-link-B LINK 1 (>>>)) ;
 
-TEMPLATE ArtN = (1* (ART) LINK 1* (N)) ;
+TEMPLATE ArtN = 1* (ART) LINK 1* (N) ;
 
 ADD (@artnGood) (PREP) IF (-1 T:ArtN) ;
 ADD (@artnBad) (PREP) IF (-2 T:ArtN) ;
@@ -44,6 +44,9 @@ LIST n = n;
 LIST k = k;
 LIST v = v;
 LIST f = f;
+
+TEMPLATE axtmpl = ([x, y, z]) OR ([m, n, k]) ;
+TEMPLATE bxtmpl = [x, y, z] LINK 1 z ;
 
 # Predefined templates for use in multiple rules.
 TEMPLATE alts =
