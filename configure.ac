@@ -48,7 +48,8 @@ else
   fi
 fi
 
-CXXFLAGS="-Wno-deprecated $CXXFLAGS"
+ICUCPPFLAGS=`icu-config --cppflags`
+CXXFLAGS="-Wno-deprecated $ICUCPPFLAGS $CXXFLAGS"
 
 AC_PROG_CXX
 AM_SANITY_CHECK
