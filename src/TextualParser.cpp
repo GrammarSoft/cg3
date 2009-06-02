@@ -736,7 +736,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 	result->lines = 1;
 
 	while (*p) {
-		if (result->lines % 100 == 0) {
+		if (verbosity_level > 0 && result->lines % 500 == 0) {
 			std::cerr << "Parsing line " << result->lines << "          \r" << std::flush;
 		}
 		result->lines += SKIPWS(&p);
