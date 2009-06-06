@@ -23,27 +23,27 @@ fi
 if test x$ARCH = xppc
 then
   AC_MSG_RESULT([PowerPC])
-  CFLAGS="-Wall -ansi -mpowerpc -maltivec -mdynamic-no-pic -fomit-frame-pointer $CFLAGS"
-  CXXFLAGS="-Wall -ansi -mpowerpc -maltivec -mdynamic-no-pic -fomit-frame-pointer $CXXFLAGS"
+  CFLAGS="-Wall -Wextra -ansi -mpowerpc -maltivec -mdynamic-no-pic -fomit-frame-pointer $CFLAGS"
+  CXXFLAGS="-Wall -Wextra -ansi -mpowerpc -maltivec -mdynamic-no-pic -fomit-frame-pointer $CXXFLAGS"
 else
   if test x$ARCH = xi686
   then
     AC_MSG_RESULT([i686])
-    CFLAGS="-Wall -ansi -march=i686 -O3 -fomit-frame-pointer -funroll-loops $CFLAGS"
-    CXXFLAGS="-Wall -ansi -march=i686 -O3 \
+    CFLAGS="-Wall -Wextra -ansi -march=i686 -O3 -fomit-frame-pointer -funroll-loops $CFLAGS"
+    CXXFLAGS="-Wall -Wextra -ansi -march=i686 -O3 \
               -fomit-frame-pointer -funroll-loops $CXXFLAGS"
   
   else
     if test x$ARCH = xx86_64
     then
       AC_MSG_RESULT([x86_64])
-      CFLAGS="-Wall -ansi -O3 -mtune=nocona -fomit-frame-pointer -funroll-loops $CFLAGS"
-      CXXFLAGS="-Wall -ansi -O3 -mtune=nocona \
+      CFLAGS="-Wall -Wextra -ansi -O3 -mtune=nocona -fomit-frame-pointer -funroll-loops $CFLAGS"
+      CXXFLAGS="-Wall -Wextra -ansi -O3 -mtune=nocona \
               -fomit-frame-pointer -funroll-loops $CXXFLAGS"
     else
       AC_MSG_RESULT([Other])
-      CFLAGS="-Wall -ansi -O3 $CFLAGS"
-      CXXFLAGS="-Wall -ansi -O3 $CXXFLAGS"
+      CFLAGS="-Wall -Wextra -ansi -O3 $CFLAGS"
+      CXXFLAGS="-Wall -Wextra -ansi -O3 $CXXFLAGS"
     fi
   fi
 fi
