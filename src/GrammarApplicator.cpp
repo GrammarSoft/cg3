@@ -92,8 +92,10 @@ GrammarApplicator::~GrammarApplicator() {
 }
 
 void GrammarApplicator::resetIndexes() {
-	index_reading_yes.clear();
-	index_reading_no.clear();
+	index_readingSet_yes.clear();
+	index_readingSet_no.clear();
+	index_readingTag_yes.clear();
+	index_readingTag_no.clear();
 	index_regexp_yes.clear();
 	index_regexp_no.clear();
 }

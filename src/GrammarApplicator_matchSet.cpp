@@ -349,17 +349,27 @@ bool GrammarApplicator::doesSetMatchReading_tags(const Reading *reading, const S
 	}
 	else {
 		TagHashSet::const_iterator ster;
-		for (ster = theset->ff_tags.begin() ; ster != theset->ff_tags.end() ; ster++) {
+		for (ster = theset->ff_tags.begin() ; ster != theset->ff_tags.end() ; ++ster) {
 			bool match = doesTagMatchReading(reading, (*ster));
 			if (match) {
 				return false;
 			}
 		}
-		for (ster = theset->single_tags.begin() ; ster != theset->single_tags.end() ; ster++) {
+		for (ster = theset->single_tags.begin() ; ster != theset->single_tags.end() ; ++ster) {
 			if ((*ster)->type & T_FAILFAST) {
 				continue;
 			}
-			bool match = doesTagMatchReading(reading, (*ster));
+			uint32_t ih = hash_sdbm_uint32_t(reading->hash, (*ster)->hash);
+			bool match;
+			if (!unif_mode && !(*ster)->is_special && index_matches(index_readingTag_yes, ih)) {
+				match = true;
+			}
+			else if (!unif_mode && !(*ster)->is_special && index_matches(index_readingTag_no, ih)) {
+				match = false;
+			}
+			else {
+				match = doesTagMatchReading(reading, (*ster));
+			}
 			if (match) {
 				if (unif_mode) {
 					if (unif_tags.find(theset->hash) != unif_tags.end() && unif_tags[theset->hash] != (*ster)->hash) {
@@ -368,14 +378,18 @@ bool GrammarApplicator::doesSetMatchReading_tags(const Reading *reading, const S
 					unif_tags[theset->hash] = (*ster)->hash;
 				}
 				retval = true;
+				index_readingTag_yes.insert(ih);
 				break;
+			}
+			else {
+				index_readingTag_no.insert(ih);
 			}
 		}
 	}
 
 	if (!retval && !theset->tags.empty()) {
 		CompositeTagHashSet::const_iterator ster;
-		for (ster = theset->tags.begin() ; ster != theset->tags.end() ; ster++) {
+		for (ster = theset->tags.begin() ; ster != theset->tags.end() ; ++ster) {
 			bool match = true;
 			const CompositeTag *ctag = *ster;
 
@@ -384,7 +398,7 @@ bool GrammarApplicator::doesSetMatchReading_tags(const Reading *reading, const S
 			}
 			else {
 				TagHashSet::const_iterator cter;
-				for (cter = ctag->tags.begin() ; cter != ctag->tags.end() ; cter++) {
+				for (cter = ctag->tags.begin() ; cter != ctag->tags.end() ; ++cter) {
 					bool inner = doesTagMatchReading(reading, (*cter));
 					if ((*cter)->type & T_FAILFAST) {
 						inner = !inner;
@@ -402,7 +416,7 @@ bool GrammarApplicator::doesSetMatchReading_tags(const Reading *reading, const S
 					}
 					unif_tags[theset->hash] = (*ster)->hash;
 				}
-				match_comp++;
+				++match_comp;
 				retval = true;
 				break;
 			}
@@ -418,10 +432,10 @@ bool GrammarApplicator::doesSetMatchReading(Reading *reading, const uint32_t set
 	}
 	// ToDo: This is not good enough...while numeric tags are special, their failures can be indexed.
 	uint32_t ih = hash_sdbm_uint32_t(reading->hash, set);
-	if (!bypass_index && index_matches(index_reading_no, ih)) {
+	if (!bypass_index && index_matches(index_readingSet_no, ih)) {
 		return false;
 	}
-	if (!bypass_index && index_matches(index_reading_yes, ih)) {
+	if (!bypass_index && index_matches(index_readingSet_yes, ih)) {
 		return true;
 	}
 
@@ -446,7 +460,7 @@ bool GrammarApplicator::doesSetMatchReading(Reading *reading, const uint32_t set
 	}
 	else {
 		size_t size = theset->sets.size();
-		for (size_t i=0;i<size;i++) {
+		for (size_t i=0;i<size;++i) {
 			bool match = doesSetMatchReading(reading, theset->sets.at(i), bypass_index);
 			bool failfast = false;
 			while (i < size-1 && theset->set_ops.at(i) != S_OR) {
@@ -479,7 +493,7 @@ bool GrammarApplicator::doesSetMatchReading(Reading *reading, const uint32_t set
 					default:
 						break;
 				}
-				i++;
+				++i;
 			}
 			if (match) {
 				match_sub++;
@@ -505,11 +519,11 @@ bool GrammarApplicator::doesSetMatchReading(Reading *reading, const uint32_t set
 	}
 
 	if (retval) {
-		index_reading_yes.insert(ih);
+		index_readingSet_yes.insert(ih);
 	}
 	else {
 		if (!unif_mode) {
-			index_reading_no.insert(ih);
+			index_readingSet_no.insert(ih);
 			/* This actually slows down the overall processing. Removing on cohort-level only is most efficient.
 			if (!grammar->sets_any || grammar->sets_any->find(set) == grammar->sets_any->end()) {
 				reading->possible_sets.erase(set);
