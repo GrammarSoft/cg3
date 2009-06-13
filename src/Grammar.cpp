@@ -224,20 +224,7 @@ CompositeTag *Grammar::addCompositeTagToSet(Set *set, CompositeTag *tag) {
 	if (tag && tag->tags.size()) {
 		if (tag->tags.size() == 1) {
 			Tag *rtag = *(tag->tags.begin());
-			set->tags_set.insert(rtag->hash);
-			set->single_tags.insert(rtag);
-			set->single_tags_hash.insert(rtag->hash);
-
-			if (rtag->type & T_ANY) {
-				set->match_any = true;
-			}
-			if (rtag->is_special) {
-				set->is_special = true;
-			}
-			if (rtag->type & T_FAILFAST) {
-				set->ff_tags.insert(rtag);
-				set->ff_tags_hash.insert(rtag->hash);
-			}
+			addTagToSet(rtag, set);
 			delete tag;
 			tag = 0;
 		} else {
@@ -314,6 +301,22 @@ void Grammar::addTagToCompositeTag(Tag *simpletag, CompositeTag *tag) {
 	} else {
 		u_fprintf(ux_stderr, "Error: Attempted to add empty tag to grammar and composite tag on line %u!\n", lines);
 		CG3Quit(1);
+	}
+}
+void Grammar::addTagToSet(Tag *rtag, Set *set) {
+	set->tags_set.insert(rtag->hash);
+	set->single_tags.insert(rtag);
+	set->single_tags_hash.insert(rtag->hash);
+
+	if (rtag->type & T_ANY) {
+		set->match_any = true;
+	}
+	if (rtag->is_special) {
+		set->is_special = true;
+	}
+	if (rtag->type & T_FAILFAST) {
+		set->ff_tags.insert(rtag);
+		set->ff_tags_hash.insert(rtag->hash);
 	}
 }
 void Grammar::destroyTag(Tag *tag) {
