@@ -102,6 +102,7 @@ namespace CG3 {
 		Tag *allocateTag(const UChar *tag);
 		void destroyTag(Tag *tag);
 		void addTagToCompositeTag(Tag *simpletag, CompositeTag *tag);
+		void addTagToSet(Tag *rtag, Set *set);
 
 		CompositeTag *addCompositeTag(CompositeTag *tag);
 		CompositeTag *addCompositeTagToSet(Set *set, CompositeTag *tag);

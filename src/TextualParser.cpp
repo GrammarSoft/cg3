@@ -96,10 +96,8 @@ int TextualParser::parseTagList(Set *s, UChar **p, const bool isinline) {
 				uint32_t c = (uint32_t)(n - *p);
 				u_strncpy(gbuffers[0], *p, c);
 				gbuffers[0][c] = 0;
-				CompositeTag *ct = result->allocateCompositeTag();
 				Tag *t = result->allocateTag(gbuffers[0]);
-				result->addTagToCompositeTag(t, ct);
-				ct = result->addCompositeTagToSet(s, ct);
+				result->addTagToSet(t, s);
 				*p = n;
 			}
 		}
