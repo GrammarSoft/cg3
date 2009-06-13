@@ -285,7 +285,7 @@ int main(int argc, char* argv[]) {
 	std::cerr << "Parsing grammar took " << (clock()-main_timer)/(double)CLOCKS_PER_SEC << " seconds." << std::endl;
 	main_timer = clock();
 
-	std::cerr << "Grammar has " << grammar.sections.size() << " sections, " << grammar.template_list.size() << " templates, " << grammar.rule_by_line.size() << " rules, " << grammar.sets_list.size() << " sets, " << grammar.tags.size() << " c-tags, " << grammar.single_tags.size() << " s-tags." << std::endl;
+	std::cerr << "Grammar has " << grammar.sections.size() << " sections, " << grammar.template_list.size() << " templates, " << grammar.rule_by_line.size() << " rules, " << grammar.sets_list.size() << " sets, " << grammar.sets_all.size() << " i-sets, " << grammar.tags.size() << " c-tags, " << grammar.single_tags.size() << " s-tags." << std::endl;
 	if (grammar.rules_by_tag.find(tag_any->hash) != grammar.rules_by_tag.end()) {
 		std::cerr << grammar.rules_by_tag.find(tag_any->hash)->second->size() << " rules cannot be skipped by index." << std::endl;
 	}
@@ -353,7 +353,7 @@ int main(int argc, char* argv[]) {
 		}
 		std::cerr << "Optimizer removed " << bad.size() << " rules." << std::endl;
 		grammar.reindex();
-		std::cerr << "Grammar has " << grammar.sections.size() << " sections, " << grammar.template_list.size() << " templates, " << grammar.rule_by_line.size() << " rules, " << grammar.sets_list.size() << " sets, " << grammar.tags.size() << " c-tags, " << grammar.single_tags.size() << " s-tags." << std::endl;
+		std::cerr << "Grammar has " << grammar.sections.size() << " sections, " << grammar.template_list.size() << " templates, " << grammar.rule_by_line.size() << " rules, " << grammar.sets_list.size() << " sets, " << grammar.sets_all.size() << " i-sets, " << grammar.tags.size() << " c-tags, " << grammar.single_tags.size() << " s-tags." << std::endl;
 	}
 	if (options[OPTIMIZE_SAFE].doesOccur) {
 		std::vector<uint32_t> bad;
