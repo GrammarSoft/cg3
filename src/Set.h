@@ -55,7 +55,7 @@ namespace CG3 {
 		Set();
 		~Set();
 
-		void setName(uint32_t to);
+		void setName(uint32_t to = 0);
 		void setName(const UChar *to);
 
 		uint32_t rehash();
