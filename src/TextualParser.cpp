@@ -47,7 +47,7 @@ TextualParser::~TextualParser() {
 	result = 0;
 }
 
-int TextualParser::parseTagList(Set *s, UChar **p, const bool isinline = false) {
+int TextualParser::parseTagList(Set *s, UChar **p, const bool isinline) {
 	while (**p && **p != ';' && **p != ')') {
 		result->lines += SKIPWS(p, ';', ')');
 		if (**p && **p != ';' && **p != ')') {
@@ -114,7 +114,10 @@ int TextualParser::parseTagList(Set *s, UChar **p, const bool isinline = false) 
 	return 0;
 }
 
-int TextualParser::parseSetInline(Set *s, UChar **p) {
+Set *TextualParser::parseSetInline(UChar **p, Set *s) {
+	uint32Vector set_ops;
+	uint32Vector sets;
+
 	bool wantop = false;
 	while (**p && **p != ';' && **p != ')') {
 		result->lines += SKIPWS(p, ';', ')');
@@ -155,7 +158,7 @@ int TextualParser::parseSetInline(Set *s, UChar **p) {
 
 					ct = result->addCompositeTagToSet(set_c, ct);
 					result->addSet(set_c);
-					s->sets.push_back(set_c->hash);
+					sets.push_back(set_c->hash);
 				}
 				else {
 					UChar *n = *p;
@@ -200,7 +203,7 @@ int TextualParser::parseSetInline(Set *s, UChar **p) {
 						CG3Quit(1);
 					}
 					sh = tmp->hash;
-					s->sets.push_back(sh);
+					sets.push_back(sh);
 					*p = n;
 				}
 				wantop = true;
@@ -214,7 +217,7 @@ int TextualParser::parseSetInline(Set *s, UChar **p) {
 				//dieIfKeyword(gbuffers[0]);
 				int sop = ux_isSetOp(gbuffers[0]);
 				if (sop != S_IGNORE) {
-					s->set_ops.push_back(sop);
+					set_ops.push_back(sop);
 					wantop = false;
 					*p = n;
 				}
@@ -224,19 +227,27 @@ int TextualParser::parseSetInline(Set *s, UChar **p) {
 			}
 		}
 	}
-	return 0;
+
+	if (s) {
+		s->sets = sets;
+		s->set_ops = set_ops;
+	}
+	else if (sets.size() == 1) {
+		s = result->getSet(sets.back());
+	}
+	else {
+		s = result->allocateSet();
+		s->sets = sets;
+		s->set_ops = set_ops;
+	}
+	return s;
 }
 
 Set *TextualParser::parseSetInlineWrapper(UChar **p) {
-	Set *s = result->allocateSet();
-	s->line = result->lines;
+	uint32_t tmplines = result->lines;
+	Set *s = parseSetInline(p);
+	s->line = tmplines;
 	s->setName(sets_counter++);
-	parseSetInline(s, p);
-	if (s->sets.size() == 1 && !s->is_unified) {
-		Set *tmp = result->getSet(s->sets.back());
-		result->destroySet(s);
-		s = tmp;
-	}
 	result->addSet(s);
 	return s;
 }
@@ -1015,7 +1026,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 				CG3Quit(1);
 			}
 			p++;
-			parseSetInline(s, &p);
+			parseSetInline(&p, s);
 			s->rehash();
 			Set *tmp = result->getSet(s->hash);
 			if (tmp) {
