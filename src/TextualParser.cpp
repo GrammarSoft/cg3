@@ -53,7 +53,7 @@ int TextualParser::parseTagList(Set *s, UChar **p, const bool isinline) {
 		if (**p && **p != ';' && **p != ')') {
 			if (**p == '(') {
 				(*p)++;
-				CompositeTag *ct = result->allocateCompositeTag();
+				TagVector tags;
 
 				while (**p && **p != ';' && **p != ')') {
 					UChar *n = *p;
@@ -70,7 +70,7 @@ int TextualParser::parseTagList(Set *s, UChar **p, const bool isinline) {
 					u_strncpy(gbuffers[0], *p, c);
 					gbuffers[0][c] = 0;
 					Tag *t = result->allocateTag(gbuffers[0]);
-					result->addTagToCompositeTag(t, ct);
+					tags.push_back(t);
 					*p = n;
 					result->lines += SKIPWS(p, ';', ')');
 				}
@@ -80,7 +80,16 @@ int TextualParser::parseTagList(Set *s, UChar **p, const bool isinline) {
 				}
 				(*p)++;
 
-				ct = result->addCompositeTagToSet(s, ct);
+				if (tags.size() == 1) {
+					result->addTagToSet(tags.back(), s);
+				}
+				else {
+					CompositeTag *ct = result->allocateCompositeTag();
+					foreach(TagVector, tags, tvi, tvi_end) {
+						result->addTagToCompositeTag(*tvi, ct);
+					}
+					result->addCompositeTagToSet(s, ct);
+				}
 			}
 			else {
 				UChar *n = *p;
@@ -126,7 +135,7 @@ Set *TextualParser::parseSetInline(UChar **p, Set *s) {
 					Set *set_c = result->allocateSet();
 					set_c->line = result->lines;
 					set_c->setName(sets_counter++);
-					CompositeTag *ct = result->allocateCompositeTag();
+					TagVector tags;
 
 					while (**p && **p != ';' && **p != ')') {
 						result->lines += SKIPWS(p, ';', ')');
@@ -144,7 +153,7 @@ Set *TextualParser::parseSetInline(UChar **p, Set *s) {
 						u_strncpy(gbuffers[0], *p, c);
 						gbuffers[0][c] = 0;
 						Tag *t = result->allocateTag(gbuffers[0]);
-						result->addTagToCompositeTag(t, ct);
+						tags.push_back(t);
 						*p = n;
 						result->lines += SKIPWS(p, ';', ')');
 					}
@@ -154,7 +163,16 @@ Set *TextualParser::parseSetInline(UChar **p, Set *s) {
 					}
 					(*p)++;
 
-					ct = result->addCompositeTagToSet(set_c, ct);
+					if (tags.size() == 1) {
+						result->addTagToSet(tags.back(), set_c);
+					}
+					else {
+						CompositeTag *ct = result->allocateCompositeTag();
+						foreach(TagVector, tags, tvi, tvi_end) {
+							result->addTagToCompositeTag(*tvi, ct);
+						}
+						result->addCompositeTagToSet(set_c, ct);
+					}
 					result->addSet(set_c);
 					sets.push_back(set_c->hash);
 				}
@@ -1581,12 +1599,10 @@ int TextualParser::parse_grammar_from_file(const char *fname, const char *loc, c
 		Set *set_c = s_left = result->allocateSet();
 		set_c->line = 0;
 		set_c->setName(stringbits[S_UU_LEFT]);
-		CompositeTag *ct = result->allocateCompositeTag();
 		u_strncpy(gbuffers[0], stringbits[S_UU_LEFT], stringbit_lengths[S_UU_LEFT]);
 		gbuffers[0][stringbit_lengths[S_UU_LEFT]] = 0;
 		Tag *t = result->allocateTag(gbuffers[0]);
-		result->addTagToCompositeTag(t, ct);
-		ct = result->addCompositeTagToSet(set_c, ct);
+		result->addTagToSet(t, set_c);
 		result->addSet(set_c);
 	}
 	// Create the magic set _RIGHT_ containing the tag _RIGHT_
@@ -1595,12 +1611,10 @@ int TextualParser::parse_grammar_from_file(const char *fname, const char *loc, c
 		Set *set_c = s_right = result->allocateSet();
 		set_c->line = 0;
 		set_c->setName(stringbits[S_UU_RIGHT]);
-		CompositeTag *ct = result->allocateCompositeTag();
 		u_strncpy(gbuffers[0], stringbits[S_UU_RIGHT], stringbit_lengths[S_UU_RIGHT]);
 		gbuffers[0][stringbit_lengths[S_UU_RIGHT]] = 0;
 		Tag *t = result->allocateTag(gbuffers[0]);
-		result->addTagToCompositeTag(t, ct);
-		ct = result->addCompositeTagToSet(set_c, ct);
+		result->addTagToSet(t, set_c);
 		result->addSet(set_c);
 	}
 	// Create the magic set _PAREN_ containing (_LEFT_) OR (_RIGHT_)
