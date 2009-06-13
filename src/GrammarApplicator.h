@@ -120,8 +120,10 @@ namespace CG3 {
 
 		uint32HashSet index_regexp_yes;
 		uint32HashSet index_regexp_no;
-		uint32HashSet index_reading_yes;
-		uint32HashSet index_reading_no;
+		uint32HashSet index_readingSet_yes;
+		uint32HashSet index_readingSet_no;
+		uint32HashSet index_readingTag_yes;
+		uint32HashSet index_readingTag_no;
 		void resetIndexes();
 	
 		Tag *addTag(const UChar *tag);

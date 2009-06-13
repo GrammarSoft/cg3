@@ -28,21 +28,21 @@
 #define foreach(type, container, iter, iter_end) \
 	type::iterator iter; \
 	type::iterator iter_end = (container).end(); \
-	for (iter = (container).begin() ; iter != iter_end ; iter++) 
+	for (iter = (container).begin() ; iter != iter_end ; ++iter) 
 
 #define const_foreach(type, container, iter, iter_end) \
 	type::const_iterator iter; \
 	type::const_iterator iter_end = (container).end(); \
-	for (iter = (container).begin() ; iter != iter_end ; iter++) 
+	for (iter = (container).begin() ; iter != iter_end ; ++iter) 
 
 #define reverse_foreach(type, container, iter, iter_end) \
 	type::reverse_iterator iter; \
 	type::reverse_iterator iter_end = (container).rend(); \
-	for (iter = (container).rbegin() ; iter != iter_end ; iter++) 
+	for (iter = (container).rbegin() ; iter != iter_end ; ++iter) 
 
 #define reverse_const_foreach(type, container, iter, iter_end) \
 	type::reverse_const_iterator iter; \
 	type::reverse_const_iterator iter_end = (container).rend(); \
-	for (iter = (container).rbegin() ; iter != iter_end ; iter++) 
+	for (iter = (container).rbegin() ; iter != iter_end ; ++iter) 
 
 #endif
