@@ -118,6 +118,7 @@ namespace CG3 {
 
 	typedef std::list<Tag*> TagList;
 	typedef std::vector<Rule*> RuleVector;
+	typedef std::vector<Tag*> TagVector;
 	typedef std::set<Cohort*, compare_Cohort> CohortSet;
 	typedef std::set<Tag*, compare_Tag> TagSet;
 	typedef std::set<Set*> SetSet;
