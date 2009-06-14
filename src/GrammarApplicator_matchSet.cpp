@@ -338,6 +338,7 @@ bool GrammarApplicator::doesTagMatchReading(const Reading *reading, const Tag *t
 		match_single++;
 		retval = true;
 	}
+
 	return retval;
 }
 
@@ -359,17 +360,7 @@ bool GrammarApplicator::doesSetMatchReading_tags(const Reading *reading, const S
 			if ((*ster)->type & T_FAILFAST) {
 				continue;
 			}
-			uint32_t ih = hash_sdbm_uint32_t(reading->hash, (*ster)->hash);
-			bool match;
-			if (!unif_mode && !(*ster)->is_special && index_matches(index_readingTag_yes, ih)) {
-				match = true;
-			}
-			else if (!unif_mode && !(*ster)->is_special && index_matches(index_readingTag_no, ih)) {
-				match = false;
-			}
-			else {
-				match = doesTagMatchReading(reading, (*ster));
-			}
+			bool match = doesTagMatchReading(reading, (*ster));
 			if (match) {
 				if (unif_mode) {
 					if (unif_tags.find(theset->hash) != unif_tags.end() && unif_tags[theset->hash] != (*ster)->hash) {
@@ -378,11 +369,7 @@ bool GrammarApplicator::doesSetMatchReading_tags(const Reading *reading, const S
 					unif_tags[theset->hash] = (*ster)->hash;
 				}
 				retval = true;
-				index_readingTag_yes.insert(ih);
 				break;
-			}
-			else {
-				index_readingTag_no.insert(ih);
 			}
 		}
 	}
