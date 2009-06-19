@@ -39,7 +39,10 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 	UErrorCode err = U_ZERO_ERROR;
 	UConverter *conv = ucnv_open("UTF-8", &err);
 
-	fread(cbuffers[0], 1, 4, input);
+	if (fread(cbuffers[0], 1, 4, input) != 4) {
+		std::cerr << "Error: Error reading first 4 bytes from grammar!" << std::endl;
+		CG3Quit(1);
+	}
 	if (cbuffers[0][0] != 'C' || cbuffers[0][1] != 'G' || cbuffers[0][2] != '3' || cbuffers[0][3] != 'B') {
 		u_fprintf(ux_stderr, "Error: Grammar does not begin with magic bytes - cannot load as binary!\n");
 		CG3Quit(1);

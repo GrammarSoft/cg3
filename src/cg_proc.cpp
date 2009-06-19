@@ -219,7 +219,10 @@ main(int argc, char *argv[])
 			endProgram(argv[0]);
 		}
 
-		fread(cbuffers[0], 1, 4, in);
+		if (fread(cbuffers[0], 1, 4, in) != 4) {
+			std::cerr << "Error: Error reading first 4 bytes from grammar!" << std::endl;
+			CG3Quit(1);
+		}
 		fclose(in);
 
 	} else {
