@@ -38,10 +38,23 @@ namespace CG3 {
 
 		virtual int runGrammarOnText(UFILE *input, UFILE *output);
 
+		bool getNullFlush();
+		void setNullFlush(bool pNullFlush);
+		
 	protected:
-
+		bool nullFlush;
+		bool runningWithNullFlush;
+	
 		void printReading(Reading *reading, UFILE *output);
 		void printSingleWindow(SingleWindow *window, UFILE *output);
+		
+		int runGrammarOnTextWrapperNullFlush(UFILE *input, UFILE *output);
+
+		UChar u_fgetc_wrapper(UFILE *input);
+		UConverter* fgetc_converter;
+		char fgetc_inputbuf[5];
+		UChar fgetc_outputbuf[5];
+		UErrorCode fgetc_error;
 
 	private:
 
