@@ -92,8 +92,10 @@ main(int argc, char *argv[])
 		std::cerr << "Error: Error opening " << argv[1] << " for reading!" << std::endl;
 		CG3Quit(1);
 	}
-
-	fread(cbuffers[0], 1, 4, input);
+	if (fread(cbuffers[0], 1, 4, input) != 4) {
+		std::cerr << "Error: Error reading first 4 bytes from grammar!" << std::endl;
+		CG3Quit(1);
+	}
 	fclose(input);
 
 	if (cbuffers[0][0] == 'C' && cbuffers[0][1] == 'G' && cbuffers[0][2] == '3' && cbuffers[0][3] == 'B') {
