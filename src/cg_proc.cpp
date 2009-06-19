@@ -79,6 +79,7 @@ main(int argc, char *argv[])
 	int cmd = 0;
 	int sections = 0;
 	int stream_format = 1;
+	bool nullFlush=false;
 
 	UErrorCode status = U_ZERO_ERROR;
 	UFILE *ux_stdin = 0;
@@ -94,7 +95,8 @@ main(int argc, char *argv[])
 		{"stream-format",	0, 0, 'f'},
 		{"trace", 		0, 0, 't'},
 		{"version",   		0, 0, 'v'},
-		{"help",		0, 0, 'h'}
+		{"help",		0, 0, 'h'},
+		{"null-flush",		0, 0, 'z'}
 	};
 #endif
 
@@ -103,9 +105,9 @@ main(int argc, char *argv[])
 	while(c != -1) {
 #if HAVE_GETOPT_LONG
 		int option_index;
-		c = getopt_long(argc, argv, "ds:f:tvh", long_options, &option_index);
+		c = getopt_long(argc, argv, "ds:f:tvhz", long_options, &option_index);
 #else
-		c = getopt(argc, argv, "ds:f:tvh");
+		c = getopt(argc, argv, "ds:f:tvhz");
 #endif		
 		if(c == -1) {
 			break;
@@ -139,7 +141,9 @@ main(int argc, char *argv[])
 	
 				exit(EXIT_SUCCESS);
 				break;
-
+			case 'z':
+				nullFlush=true;
+				break;
 			case 'h':
 			default:
 				endProgram(argv[0]);
@@ -250,8 +254,10 @@ main(int argc, char *argv[])
 
 	if(stream_format == 0) {
 		applicator = new CG3::GrammarApplicator(ux_stdin, ux_stdout, ux_stderr);
-	} else { 
-		applicator = new CG3::ApertiumApplicator(ux_stdin, ux_stdout, ux_stderr);
+	} else {
+		CG3::ApertiumApplicator* apertiumApplicator= new CG3::ApertiumApplicator(ux_stdin, ux_stdout, ux_stderr);
+		apertiumApplicator->setNullFlush(nullFlush);
+		applicator = apertiumApplicator;
 	}
 
 	applicator->setGrammar(&grammar);
