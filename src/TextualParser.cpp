@@ -346,21 +346,7 @@ int TextualParser::parseContextualTestList(Rule *rule, ContextualTest **head, CG
 		(*p) += 1;
 	}
 	else if (gbuffers[0][0] == 'T' && gbuffers[0][1] == ':') {
-label_parseTemplate:
-		(*p) += 2;
-		n = *p;
-		result->lines += SKIPTOWS(&n, ')');
-		uint32_t c = (uint32_t)(n - *p);
-		u_strncpy(gbuffers[0], *p, c);
-		gbuffers[0][c] = 0;
-		uint32_t cn = hash_sdbm_uchar(gbuffers[0]);
-		if (result->templates.find(cn) == result->templates.end()) {
-			u_fprintf(ux_stderr, "Error: Unknown template '%S' referenced on line %u!\n", gbuffers[0], result->lines);
-			CG3Quit(1);
-		}
-		t->tmpl = result->templates.find(cn)->second;
-		*p = n;
-		result->lines += SKIPWS(p);
+		goto label_parseTemplateRef;
 	}
 	else {
 		if (negated) {
@@ -378,11 +364,26 @@ label_parseTemplate:
 
 		if ((*p)[0] == 'T' && (*p)[1] == ':') {
 			t->pos |= POS_TMPL_OVERRIDE;
-			goto label_parseTemplate;
+label_parseTemplateRef:
+			(*p) += 2;
+			n = *p;
+			result->lines += SKIPTOWS(&n, ')');
+			uint32_t c = (uint32_t)(n - *p);
+			u_strncpy(gbuffers[0], *p, c);
+			gbuffers[0][c] = 0;
+			uint32_t cn = hash_sdbm_uchar(gbuffers[0]);
+			if (result->templates.find(cn) == result->templates.end()) {
+				u_fprintf(ux_stderr, "Error: Unknown template '%S' referenced on line %u!\n", gbuffers[0], result->lines);
+				CG3Quit(1);
+			}
+			t->tmpl = result->templates.find(cn)->second;
+			*p = n;
+			result->lines += SKIPWS(p);
 		}
-
-		Set *s = parseSetInlineWrapper(p);
-		t->target = s->hash;
+		else {
+			Set *s = parseSetInlineWrapper(p);
+			t->target = s->hash;
+		}
 
 		result->lines += SKIPWS(p);
 		if (u_strncasecmp(*p, stringbits[S_CBARRIER], stringbit_lengths[S_CBARRIER], U_FOLD_CASE_DEFAULT) == 0) {

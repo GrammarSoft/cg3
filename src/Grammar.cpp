@@ -121,6 +121,9 @@ void Grammar::addSet(Set *to) {
 	else if (!soft_delimiters && u_strcmp(to->name, stringbits[S_SOFTDELIMITSET]) == 0) {
 		soft_delimiters = to;
 	}
+	if (to->name[0] == 'T' && to->name[1] == ':') {
+		u_fprintf(ux_stderr, "Warning: Set name %S looks like a misattempt of template usage on line %u.\n", to->name, to->line);
+	}
 	uint32_t chash = to->rehash();
 	if (to->name[0] != '_' || to->name[1] != 'G' || to->name[2] != '_') {
 		uint32_t nhash = hash_sdbm_uchar(to->name);
