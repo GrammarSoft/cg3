@@ -72,6 +72,10 @@ void Tag::parseTag(const UChar *to, UFILE *ux_stderr) {
 
 		uint32_t length = u_strlen(tmp);
 
+		if (tmp[0] == 'T' && tmp[1] == ':') {
+			u_fprintf(ux_stderr, "Warning: Tag name %S looks like a misattempt of template usage.\n", tmp);
+		}
+
 		// ToDo: Implement META and VAR
 		if (tmp[0] == 'M' && tmp[1] == 'E' && tmp[2] == 'T' && tmp[3] == 'A' && tmp[4] == ':') {
 			type |= T_META;

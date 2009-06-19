@@ -61,25 +61,30 @@ ApertiumApplicator::u_fgetc_wrapper(UFILE *input)
 		do
 		{
 			ch = fgetc(u_fgetfile(input));
-			if(ch==0)
+			if(ch==0) {
 				return 0;
+			}
 			else
 			{	
-				fgetc_inputbuf[inputsize]=ch;
+				fgetc_inputbuf[inputsize]=static_cast<char>(ch);
 				inputsize++;
 				fgetc_error=U_ZERO_ERROR;
 				result = ucnv_toUChars(fgetc_converter,fgetc_outputbuf,5,fgetc_inputbuf,inputsize,&fgetc_error);
-				if(U_FAILURE(fgetc_error))
+				if(U_FAILURE(fgetc_error)) {
 					u_fprintf(ux_stderr,"Error conversion: %d\n",fgetc_error);
+				}
 			}
 		}
 		while(( ((result>=1 && fgetc_outputbuf[0]==0xFFFD))  || result<1 || U_FAILURE(fgetc_error) ) && !u_feof(input) && inputsize<5);
-		if(fgetc_outputbuf[0]==0xFFFD && u_feof(input))
+
+		if(fgetc_outputbuf[0]==0xFFFD && u_feof(input)) {
 			return U_EOF;
+		}
 		return fgetc_outputbuf[0];
 	}
-	else
+	else {
 		return u_fgetc(input);
+	}
  }
  
  

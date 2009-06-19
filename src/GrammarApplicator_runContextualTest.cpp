@@ -103,6 +103,8 @@ Cohort *GrammarApplicator::runContextualTest(SingleWindow *sWindow, size_t posit
 	if (test->tmpl) {
 		uint32_t orgpos = test->tmpl->pos;
 		int32_t orgoffset = test->tmpl->offset;
+		uint32_t orgcbar = test->tmpl->cbarrier;
+		uint32_t orgbar = test->tmpl->barrier;
 		if (test->pos & POS_TMPL_OVERRIDE) {
 			test->tmpl->pos = test->pos;
 			test->tmpl->pos &= ~(POS_NEGATED|POS_NEGATIVE|POS_MARK_JUMP);
@@ -110,15 +112,35 @@ Cohort *GrammarApplicator::runContextualTest(SingleWindow *sWindow, size_t posit
 			if (test->offset != 0 && !(test->pos & (POS_SCANFIRST|POS_SCANALL))) {
 				test->tmpl->pos |= POS_SCANALL;
 			}
+			if (test->cbarrier) {
+				test->tmpl->cbarrier = test->cbarrier;
+			}
+			if (test->barrier) {
+				test->tmpl->barrier = test->barrier;
+			}
 		}
 		Cohort *cdeep = 0;
 		cohort = runContextualTest(sWindow, position, test->tmpl, &cdeep, origin);
 		if (test->pos & POS_TMPL_OVERRIDE) {
 			test->tmpl->pos = orgpos;
 			test->tmpl->offset = orgoffset;
-			if (cdeep && test->offset != 0 && !(test->pos & (POS_SCANFIRST|POS_SCANALL))) {
-				if ((cdeep->parent != sWindow) || (int32_t(cdeep->local_number) - int32_t(position) != test->offset)) {
-					cohort = 0;
+			test->tmpl->cbarrier = orgcbar;
+			test->tmpl->barrier = orgbar;
+			// ToDo: Being in a different window is not strictly a problem, so fix this assumption...
+			if (cdeep && test->offset != 0) {
+				int32_t reloff = int32_t(cdeep->local_number) - int32_t(position);
+				if (!(test->pos & (POS_SCANFIRST|POS_SCANALL))) {
+					if (cdeep->parent != sWindow || reloff != test->offset) {
+						cohort = 0;
+					}
+				}
+				if (!(test->pos & POS_PASS_ORIGIN)) {
+					if (test->offset < 0 && reloff >= 0) {
+						cohort = 0;
+					}
+					else if (test->offset > 0 && reloff <= 0) {
+						cohort = 0;
+					}
 				}
 			}
 		}
@@ -135,6 +157,8 @@ Cohort *GrammarApplicator::runContextualTest(SingleWindow *sWindow, size_t posit
 		for (iter = test->ors.begin() ; iter != test->ors.end() ; iter++) {
 			uint32_t orgpos = (*iter)->pos;
 			int32_t orgoffset = (*iter)->offset;
+			uint32_t orgcbar = (*iter)->cbarrier;
+			uint32_t orgbar = (*iter)->barrier;
 			if (test->pos & POS_TMPL_OVERRIDE) {
 				(*iter)->pos = test->pos;
 				(*iter)->pos &= ~(POS_TMPL_OVERRIDE|POS_NEGATED|POS_NEGATIVE|POS_MARK_JUMP);
@@ -142,14 +166,33 @@ Cohort *GrammarApplicator::runContextualTest(SingleWindow *sWindow, size_t posit
 				if (test->offset != 0 && !(test->pos & (POS_SCANFIRST|POS_SCANALL))) {
 					(*iter)->pos |= POS_SCANALL;
 				}
+				if (test->cbarrier) {
+					(*iter)->cbarrier = test->cbarrier;
+				}
+				if (test->barrier) {
+					(*iter)->barrier = test->barrier;
+				}
 			}
 			cohort = runContextualTest(sWindow, position, *iter, &cdeep, origin);
 			if (test->pos & POS_TMPL_OVERRIDE) {
 				(*iter)->pos = orgpos;
 				(*iter)->offset = orgoffset;
-				if (cdeep && test->offset != 0 && !(test->pos & (POS_SCANFIRST|POS_SCANALL))) {
-					if ((cdeep->parent != sWindow) || (int32_t(cdeep->local_number) - int32_t(position) != test->offset)) {
-						cohort = 0;
+				(*iter)->cbarrier = orgcbar;
+				(*iter)->barrier = orgbar;
+				if (cdeep && test->offset != 0) {
+					int32_t reloff = int32_t(cdeep->local_number) - int32_t(position);
+					if (!(test->pos & (POS_SCANFIRST|POS_SCANALL))) {
+						if (cdeep->parent != sWindow || reloff != test->offset) {
+							cohort = 0;
+						}
+					}
+					if (!(test->pos & POS_PASS_ORIGIN)) {
+						if (test->offset < 0 && reloff >= 0) {
+							cohort = 0;
+						}
+						else if (test->offset > 0 && reloff <= 0) {
+							cohort = 0;
+						}
 					}
 				}
 			}
