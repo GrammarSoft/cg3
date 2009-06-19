@@ -29,9 +29,74 @@ using namespace CG3::Strings;
 ApertiumApplicator::ApertiumApplicator(UFILE *ux_in, UFILE *ux_out, UFILE *ux_err) 
 	: GrammarApplicator(ux_in, ux_out, ux_err) 
 {
-
+	nullFlush=false;
+	runningWithNullFlush=false;
+	fgetc_converter=0;
 }
 
+
+bool ApertiumApplicator::getNullFlush()
+{
+	return nullFlush;
+}
+
+void ApertiumApplicator::setNullFlush(bool pNullFlush)
+{
+	nullFlush=pNullFlush;
+}
+
+UChar
+ApertiumApplicator::u_fgetc_wrapper(UFILE *input)
+{
+	if(runningWithNullFlush)
+	{
+		if(!fgetc_converter)
+		{
+			fgetc_converter = ucnv_open(ucnv_getDefaultName(),&fgetc_error);
+		}
+		int ch;
+		int result;
+		int inputsize=0;
+		
+		do
+		{
+			ch = fgetc(u_fgetfile(input));
+			if(ch==0)
+				return 0;
+			else
+			{	
+				fgetc_inputbuf[inputsize]=ch;
+				inputsize++;
+				fgetc_error=U_ZERO_ERROR;
+				result = ucnv_toUChars(fgetc_converter,fgetc_outputbuf,5,fgetc_inputbuf,inputsize,&fgetc_error);
+				if(U_FAILURE(fgetc_error))
+					u_fprintf(ux_stderr,"Error conversion: %d\n",fgetc_error);
+			}
+		}
+		while(( ((result>=1 && fgetc_outputbuf[0]==0xFFFD))  || result<1 || U_FAILURE(fgetc_error) ) && !u_feof(input) && inputsize<5);
+		if(fgetc_outputbuf[0]==0xFFFD && u_feof(input))
+			return U_EOF;
+		return fgetc_outputbuf[0];
+	}
+	else
+		return u_fgetc(input);
+ }
+ 
+ 
+int 
+ApertiumApplicator::runGrammarOnTextWrapperNullFlush(UFILE *input, UFILE *output)
+{
+	setNullFlush(false);
+	runningWithNullFlush=true;
+	while(!u_feof(input))
+	{
+		runGrammarOnText(input,output);
+		u_fputc('\0',output);
+		u_fflush(output);
+	}
+	runningWithNullFlush=false;
+	return 0;
+}
 
 /* 
  * Run a constraint grammar on an Apertium input stream
@@ -40,6 +105,12 @@ ApertiumApplicator::ApertiumApplicator(UFILE *ux_in, UFILE *ux_out, UFILE *ux_er
 int
 ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output) 
 {
+	if(getNullFlush())
+	{
+		return runGrammarOnTextWrapperNullFlush(input,output);
+	}
+	else
+	{
 	if (!input) {
 		u_fprintf(ux_stderr, "Error: Input is null - nothing to parse!\n");
 		CG3Quit(1);
@@ -97,7 +168,7 @@ ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output)
 	gtimer = getticks();
 	ticks timer(gtimer);
 
-	while((inchar = u_fgetc(input)) != 0) { 
+	while((inchar = u_fgetc_wrapper(input)) != 0) { 
 		if(u_feof(input)) {
 			break;
 		}
@@ -235,7 +306,7 @@ ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output)
 			// '>"' for internal processing.
 			wordform = ux_append(wordform, '<');
 			while(inchar != '/') {
-				inchar = u_fgetc(input); 
+				inchar = u_fgetc_wrapper(input); 
 
 				if(inchar != '/') {
 					wordform = ux_append(wordform, inchar);
@@ -258,7 +329,7 @@ ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output)
 
 			// Read in the readings	
 			while(inchar != '$') {
-				inchar = u_fgetc(input);
+				inchar = u_fgetc_wrapper(input);
 
 	 			if(inchar == '$') { 
 					// Add the final reading of the cohort
@@ -377,6 +448,7 @@ ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output)
 	grammar->total_time = elapsed(tmp, timer);
 
 	return 0;
+	}
 } // runGrammarOnText
 
 
