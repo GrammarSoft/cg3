@@ -20,6 +20,8 @@
 */
 
 #include "SingleWindow.h"
+#include "Cohort.h"
+#include "Rule.h"
 #include "GrammarApplicator.h"
 #include "Window.h"
 #include "Recycler.h"

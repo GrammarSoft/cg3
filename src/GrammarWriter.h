@@ -24,8 +24,6 @@
 #define __GRAMMARWRITER_H
 
 #include "stdafx.h"
-#include "Strings.h"
-#include "Grammar.h"
  
 namespace CG3 {
 	class GrammarWriter {

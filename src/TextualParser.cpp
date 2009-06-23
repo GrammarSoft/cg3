@@ -20,6 +20,9 @@
 */
 
 #include "TextualParser.h"
+#include "Strings.h"
+#include "Grammar.h"
+#include "ContextualTest.h"
 
 using namespace CG3;
 using namespace CG3::Strings;
@@ -1287,7 +1290,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 
 			UErrorCode err = U_ZERO_ERROR;
 			UConverter *conv = ucnv_open("UTF-8", &err);
-			ucnv_fromUChars(conv, cbuffers[0], BUFFER_SIZE-1, gbuffers[0], u_strlen(gbuffers[0]), &err);
+			ucnv_fromUChars(conv, cbuffers[0], CG3_BUFFER_SIZE-1, gbuffers[0], u_strlen(gbuffers[0]), &err);
 			ucnv_close(conv);
 
 			char *absdir = ux_dirname(fname);

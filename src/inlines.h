@@ -23,6 +23,8 @@
 #ifndef __INLINES_H
 #define __INLINES_H
 
+namespace CG3 {
+
 #define CG3_HASH_SEED 705577479
 
 inline uint32_t hash_sdbm_uint32_t(const uint32_t c, uint32_t hash = 0) {
@@ -271,5 +273,7 @@ inline void CG3Quit(const int32_t c = 0, const char* file = 0, const uint32_t li
 	exit(c);
 }
 // #define CG3Quit(a) CG3Quit((a), __FILE__, __LINE__)
+
+}
 
 #endif

@@ -20,6 +20,9 @@
 */
 
 #include "Grammar.h"
+#include "Strings.h"
+#include "ContextualTest.h"
+#include "Anchor.h"
 
 using namespace CG3;
 
@@ -410,6 +413,12 @@ void Grammar::reindex(bool unused_sets) {
 	}
 	if (soft_delimiters) {
 		soft_delimiters->markUsed(this);
+	}
+
+	// This is only necessary due to binary grammars.
+	// Sets used in unused templates may otherwise crash the loading of a binary grammar.
+	foreach(std::vector<ContextualTest*>, template_list, tmpls, tmpls_end) {
+		(*tmpls)->markUsed(this);
 	}
 
 	if (unused_sets) {

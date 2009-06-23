@@ -20,6 +20,7 @@
 */
 
 #include "Set.h"
+#include "CompositeTag.h"
 #include "Strings.h"
 #include "Grammar.h"
 

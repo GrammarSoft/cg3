@@ -19,7 +19,13 @@
 * along with VISL CG-3.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#ifdef _MSC_VER
+	#define WIN32_LEAN_AND_MEAN
+	#include <windows.h>
+#endif
+
 #include "uextras.h"
+#include "Strings.h"
 
 using namespace CG3::Strings;
 

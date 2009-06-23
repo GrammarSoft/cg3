@@ -20,6 +20,10 @@
 */
 
 #include "BinaryGrammar.h"
+#include "Strings.h"
+#include "Grammar.h"
+#include "ContextualTest.h"
+#include "version.h"
 
 using namespace CG3;
 using namespace CG3::Strings;
@@ -103,7 +107,7 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 			fread(&u32tmp, sizeof(uint32_t), 1, input);
 			u32tmp = (uint32_t)ntohl(u32tmp);
 			fread(cbuffers[0], 1, u32tmp, input);
-			i32tmp = ucnv_toUChars(conv, gbuffers[0], BUFFER_SIZE-1, cbuffers[0], u32tmp, &err);
+			i32tmp = ucnv_toUChars(conv, gbuffers[0], CG3_BUFFER_SIZE-1, cbuffers[0], u32tmp, &err);
 			t->comparison_key = t->allocateUChars(i32tmp+1);
 			u_strcpy(t->comparison_key, gbuffers[0]);
 		}
@@ -113,7 +117,7 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 		if (u32tmp) {
 			ucnv_reset(conv);
 			fread(cbuffers[0], 1, u32tmp, input);
-			i32tmp = ucnv_toUChars(conv, gbuffers[0], BUFFER_SIZE-1, cbuffers[0], u32tmp, &err);
+			i32tmp = ucnv_toUChars(conv, gbuffers[0], CG3_BUFFER_SIZE-1, cbuffers[0], u32tmp, &err);
 			t->tag = t->allocateUChars(i32tmp+1);
 			u_strcpy(t->tag, gbuffers[0]);
 		}
@@ -309,7 +313,7 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 		if (u32tmp) {
 			ucnv_reset(conv);
 			fread(cbuffers[0], 1, u32tmp, input);
-			i32tmp = ucnv_toUChars(conv, gbuffers[0], BUFFER_SIZE-1, cbuffers[0], u32tmp, &err);
+			i32tmp = ucnv_toUChars(conv, gbuffers[0], CG3_BUFFER_SIZE-1, cbuffers[0], u32tmp, &err);
 			r->setName(gbuffers[0]);
 		}
 		fread(&u32tmp, sizeof(uint32_t), 1, input);

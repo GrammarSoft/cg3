@@ -24,7 +24,6 @@
 #define __TAG_H
 
 #include "stdafx.h"
-#include "Strings.h"
 
 namespace CG3 {
 

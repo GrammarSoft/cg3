@@ -25,9 +25,6 @@
 
 #include "stdafx.h"
 #include "Strings.h"
-#include "ContextualTest.h"
-#include "Tag.h"
-#include "ContextualTest.h"
 
 namespace CG3 {
 

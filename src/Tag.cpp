@@ -20,6 +20,7 @@
 */
 
 #include "Tag.h"
+#include "Strings.h"
 
 using namespace CG3;
 

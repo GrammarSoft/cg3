@@ -41,8 +41,23 @@
 #include <ctime>
 #include <cmath>
 #include <climits>
-#include <sys/stat.h>
 #include <cassert>
+#include <sys/stat.h>
+
+#ifdef _MSC_VER
+	#define WIN32_LEAN_AND_MEAN
+	#include <winsock.h> // for hton() and family.
+    #include <hash_map>
+    #include <hash_set>
+#endif
+#ifdef __GNUC__
+	#include <unistd.h>
+    #include <libgen.h>
+	#include <netinet/in.h> // for hton() and family.
+    #include <ext/hash_map>
+    #include <ext/hash_set>
+    #define stdext __gnu_cxx
+#endif
 
 // ICU includes
 #include <unicode/uchar.h>
@@ -60,20 +75,6 @@
 #include "macros.h"
 #include "inlines.h"
 #include "uextras.h"
-
-#ifdef _MSC_VER
-	#include <winsock.h> // for hton() and family.
-    #include <hash_map>
-    #include <hash_set>
-#endif
-#ifdef __GNUC__
-	#include <unistd.h>
-    #include <libgen.h>
-	#include <netinet/in.h> // for hton() and family.
-    #include <ext/hash_map>
-    #include <ext/hash_set>
-    #define stdext __gnu_cxx
-#endif
 
 #ifndef MAX
 	#define MAX(a,b)  (((a) > (b)) ? (a) : (b))

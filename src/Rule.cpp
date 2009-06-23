@@ -20,6 +20,9 @@
 */
 
 #include "Rule.h"
+#include "ContextualTest.h"
+#include "Strings.h"
+#include "Tag.h"
 
 using namespace CG3;
 using namespace CG3::Strings;
