@@ -47,16 +47,16 @@
 #ifdef _MSC_VER
 	#define WIN32_LEAN_AND_MEAN
 	#include <winsock.h> // for hton() and family.
-    #include <hash_map>
-    #include <hash_set>
+	#include <hash_map>
+	#include <hash_set>
 #endif
 #ifdef __GNUC__
 	#include <unistd.h>
-    #include <libgen.h>
+	#include <libgen.h>
 	#include <netinet/in.h> // for hton() and family.
-    #include <ext/hash_map>
-    #include <ext/hash_set>
-    #define stdext __gnu_cxx
+	#include <ext/hash_map>
+	#include <ext/hash_set>
+	#define stdext __gnu_cxx
 #endif
 
 // ICU includes
