@@ -27,8 +27,6 @@
 
 namespace CG3 {
 
-	class Reading;
-
 	class Cohort {
 	public:
 		uint32_t global_number;
