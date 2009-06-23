@@ -20,6 +20,8 @@
 */
 
 #include "Recycler.h"
+#include "Cohort.h"
+#include "Reading.h"
 
 using namespace CG3;
 

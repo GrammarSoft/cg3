@@ -20,6 +20,7 @@
 */
 
 #include "CompositeTag.h"
+#include "Tag.h"
 
 using namespace CG3;
 

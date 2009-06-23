@@ -24,6 +24,7 @@
 #define __TEXTUALPARSER_H
 
 #include "IGrammarParser.h"
+#include "Strings.h"
 
 namespace CG3 {
 	class TextualParser : public IGrammarParser {

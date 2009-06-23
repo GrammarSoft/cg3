@@ -24,7 +24,6 @@
 #define __CONTEXTUALTEST_H
 
 #include "stdafx.h"
-#include "Strings.h"
 
 namespace CG3 {
 

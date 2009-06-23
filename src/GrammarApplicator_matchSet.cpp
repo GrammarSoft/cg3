@@ -20,6 +20,13 @@
 */
 
 #include "GrammarApplicator.h"
+#include "Strings.h"
+#include "Tag.h"
+#include "Grammar.h"
+#include "Window.h"
+#include "SingleWindow.h"
+#include "Reading.h"
+#include "ContextualTest.h"
 
 using namespace CG3;
 using namespace CG3::Strings;

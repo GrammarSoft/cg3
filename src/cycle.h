@@ -25,6 +25,8 @@
 
 #pragma once
 
+namespace CG3 {
+
 /* machine-dependent cycle counters code. Needs to be inlined. */
 
 /***************************************************************************/
@@ -524,3 +526,5 @@ static inline double elapsed(ticks t1, ticks t0) {
 }
 #define HAVE_TICK_COUNTER
 #endif
+
+}

@@ -20,6 +20,8 @@
 */
 
 #include "BinaryGrammar.h"
+#include "Strings.h"
+#include "Grammar.h"
 
 using namespace CG3;
 using namespace CG3::Strings;

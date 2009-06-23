@@ -24,8 +24,6 @@
 #define __RECYCLER_H
 
 #include "stdafx.h"
-#include "Cohort.h"
-#include "Reading.h"
 
 namespace CG3 {
 

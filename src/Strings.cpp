@@ -237,10 +237,10 @@ namespace CG3 {
 
 		int init_gbuffers() {
 			for (uint32_t i=0;i<NUM_GBUFFERS;i++) {
-				gbuffers[i] = new UChar[BUFFER_SIZE];
+				gbuffers[i] = new UChar[CG3_BUFFER_SIZE];
 			}
 			for (uint32_t i=0;i<NUM_CBUFFERS;i++) {
-				cbuffers[i] = new char[BUFFER_SIZE];
+				cbuffers[i] = new char[CG3_BUFFER_SIZE];
 			}
 			return 0;
 		}

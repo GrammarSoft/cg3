@@ -21,6 +21,12 @@
 
 #include "ApertiumApplicator.h"
 #include "GrammarApplicator.h"
+#include "Strings.h"
+#include "Tag.h"
+#include "Grammar.h"
+#include "Window.h"
+#include "SingleWindow.h"
+#include "Reading.h"
 #include "Recycler.h"
 
 using namespace CG3;
@@ -147,8 +153,6 @@ ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output)
 		}
 	}
 
-#undef BUFFER_SIZE
-#define BUFFER_SIZE (131072L)
 	UChar inchar = 0; 		// Current character 
 	bool superblank = false; 	// Are we in a superblank ?
 	bool incohort = false; 		// Are we in a cohort ?

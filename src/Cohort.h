@@ -24,9 +24,10 @@
 #define __COHORT_H
 
 #include "stdafx.h"
-#include "Reading.h"
 
 namespace CG3 {
+
+	class Reading;
 
 	class Cohort {
 	public:

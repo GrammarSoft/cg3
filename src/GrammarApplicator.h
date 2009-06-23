@@ -24,11 +24,6 @@
 #define __GRAMMARAPPLICATOR_H
 
 #include "stdafx.h"
-#include "Strings.h"
-#include "Tag.h"
-#include "Grammar.h"
-#include "Window.h"
-#include "SingleWindow.h"
 
 namespace CG3 {
 	class GrammarApplicator {

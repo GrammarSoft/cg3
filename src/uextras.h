@@ -24,7 +24,6 @@
 #define __UEXTRAS_H
 
 #include "stdafx.h"
-#include "Strings.h"
 
 bool ux_isNewline(const UChar32 current, const UChar32 previous);
 bool ux_isEmpty(const UChar *text);
