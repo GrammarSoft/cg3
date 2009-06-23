@@ -37,6 +37,7 @@
 #include "version.h"
 
 using namespace std;
+using CG3::CG3Quit;
 
 void endProgram(char *name);
 

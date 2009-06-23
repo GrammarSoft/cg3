@@ -28,8 +28,6 @@
 #include "Tag.h"
 #include "CompositeTag.h"
 #include "Rule.h"
-#include "Anchor.h"
-#include "ContextualTest.h"
 
 namespace CG3 {
 

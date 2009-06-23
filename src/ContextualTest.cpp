@@ -19,8 +19,9 @@
 * along with VISL CG-3.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "Grammar.h"
 #include "ContextualTest.h"
+#include "Grammar.h"
+#include "Strings.h"
 
 using namespace CG3;
 using namespace CG3::Strings;

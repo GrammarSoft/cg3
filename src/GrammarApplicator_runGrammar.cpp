@@ -20,6 +20,12 @@
 */
 
 #include "GrammarApplicator.h"
+#include "Strings.h"
+#include "Tag.h"
+#include "Grammar.h"
+#include "Window.h"
+#include "SingleWindow.h"
+#include "Reading.h"
 #include "Recycler.h"
 
 using namespace CG3;
@@ -69,11 +75,9 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 		}
 	}
 
-#undef BUFFER_SIZE
-#define BUFFER_SIZE (131072L)
-	UChar _line[BUFFER_SIZE];
+	UChar _line[CG3_BUFFER_SIZE];
 	UChar *line = _line;
-	UChar _cleaned[BUFFER_SIZE];
+	UChar _cleaned[CG3_BUFFER_SIZE];
 	UChar *cleaned = _cleaned;
 	bool ignoreinput = false;
 
@@ -100,7 +104,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 
 	while (!u_feof(input)) {
 		lines++;
-		u_fgets(line, BUFFER_SIZE-1, input);
+		u_fgets(line, CG3_BUFFER_SIZE-1, input);
 		u_strcpy(cleaned, line);
 		ux_packWhitespace(cleaned);
 

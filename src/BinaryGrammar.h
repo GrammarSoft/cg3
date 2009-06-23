@@ -24,7 +24,6 @@
 #define __BINARYGRAMMAR_H
 
 #include "IGrammarParser.h"
-#include "version.h"
 
 namespace CG3 {
 	class BinaryGrammar : public IGrammarParser {
