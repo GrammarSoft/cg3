@@ -96,7 +96,6 @@ namespace CG3 {
 	typedef stdext::hash_map<uint32_t,uint32Set*> uint32Setuint32HashMap;
 	typedef stdext::hash_map<uint32_t,uint32HashSet*> uint32HashSetuint32HashMap;
 
-	class Recycler;
 	class Grammar;
 	class Set;
 	class Rule;

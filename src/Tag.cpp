@@ -155,23 +155,20 @@ void Tag::parseTag(const UChar *to, UFILE *ux_stderr) {
 				type &= ~T_REGEXP;
 			}
 			else {
-				UParseError *pe = new UParseError;
+				UParseError pe;
 				UErrorCode status = U_ZERO_ERROR;
-
-				memset(pe, 0, sizeof(UParseError));
 				status = U_ZERO_ERROR;
+
 				if (type & T_CASE_INSENSITIVE) {
-					regexp = uregex_open(tag, u_strlen(tag), UREGEX_CASE_INSENSITIVE, pe, &status);
+					regexp = uregex_open(tag, u_strlen(tag), UREGEX_CASE_INSENSITIVE, &pe, &status);
 				}
 				else {
-					regexp = uregex_open(tag, u_strlen(tag), 0, pe, &status);
+					regexp = uregex_open(tag, u_strlen(tag), 0, &pe, &status);
 				}
 				if (status != U_ZERO_ERROR) {
 					u_fprintf(ux_stderr, "Error: uregex_open returned %s trying to parse tag %S - cannot continue!\n", u_errorName(status), tag);
 					CG3Quit(1);
 				}
-				delete pe;
-				pe = 0;
 			}
 		}
 	}

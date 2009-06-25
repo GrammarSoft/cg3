@@ -26,7 +26,6 @@
 #include "Window.h"
 #include "SingleWindow.h"
 #include "Reading.h"
-#include "Recycler.h"
 #include "ContextualTest.h"
 
 using namespace CG3;
@@ -78,7 +77,6 @@ void GrammarApplicator::indexSingleWindow(SingleWindow *current) {
 }
 
 uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, uint32Set *rules) {
-	Recycler *r = Recycler::instance();
 	uint32_t retval = RV_NOTHING;
 	bool section_did_good = false;
 	bool delimited = false;
@@ -309,11 +307,11 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, uint32Set *r
 						current->parent->pushSingleWindow(nwin);
 
 						current->parent->cohort_counter++;
-						Cohort *cCohort = r->new_Cohort(nwin);
+						Cohort *cCohort = new Cohort(nwin);
 						cCohort->global_number = 0;
 						cCohort->wordform = begintag;
 
-						Reading *cReading = r->new_Reading(cCohort);
+						Reading *cReading = new Reading(cCohort);
 						cReading->baseform = begintag;
 						cReading->wordform = begintag;
 						if (grammar->sets_any && !grammar->sets_any->empty()) {
@@ -702,13 +700,13 @@ int GrammarApplicator::runGrammarOnSingleWindow(SingleWindow *current) {
 	}
 
 	if (!grammar->rules.empty() && !no_sections) {
-		std::map<int32_t, uint32Set*>::iterator iter_end = runsections.end();
+		RSType::iterator iter_end = runsections.end();
 		if (single_run) {
 			iter_end--;
 			runRulesOnWindow(current, iter_end->second);
 		}
 		else {
-			std::map<int32_t, uint32Set*>::iterator iter = runsections.begin();
+			RSType::iterator iter = runsections.begin();
 			for (; iter != iter_end ;) {
 				if (iter->first < 0) {
 					iter++;

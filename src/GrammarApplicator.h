@@ -86,7 +86,8 @@ namespace CG3 {
 		bool did_index;
 
 		uint32_t numsections;
-		std::map<int32_t, uint32Set*> runsections;
+		typedef std::map<int32_t,uint32Set*> RSType;
+		RSType runsections;
 
 		static const uint32_t RV_NOTHING = 1;
 		static const uint32_t RV_SOMETHING = 2;
@@ -139,8 +140,6 @@ namespace CG3 {
 		bool doesSetMatchReading(Reading *reading, const uint32_t set, bool bypass_index = false);
 		bool doesSetMatchCohortNormal(Cohort *cohort, const uint32_t set, uint32_t options = 0);
 		bool doesSetMatchCohortCareful(const Cohort *cohort, const uint32_t set, uint32_t options = 0);
-
-		SingleWindow *initialiseSingleWindow(Recycler *r, Window *gWindow, SingleWindow *cSWindow);
 
 		bool statistics;
 		ticks gtimer;

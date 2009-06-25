@@ -1597,15 +1597,18 @@ int TextualParser::parse_grammar_from_file(const char *fname, const char *loc, c
 
 	result->addAnchor(keywords[K_START], result->lines);
 
+	// Allocate the magic * tag
+	{
+		Tag *tany = result->allocateTag(stringbits[S_ASTERIK]);
+		result->tag_any = tany->hash;
+	}
 	// Create the magic set _LEFT_ containing the tag _LEFT_
 	Set *s_left = 0;
 	{
 		Set *set_c = s_left = result->allocateSet();
 		set_c->line = 0;
 		set_c->setName(stringbits[S_UU_LEFT]);
-		u_strncpy(gbuffers[0], stringbits[S_UU_LEFT], stringbit_lengths[S_UU_LEFT]);
-		gbuffers[0][stringbit_lengths[S_UU_LEFT]] = 0;
-		Tag *t = result->allocateTag(gbuffers[0]);
+		Tag *t = result->allocateTag(stringbits[S_UU_LEFT]);
 		result->addTagToSet(t, set_c);
 		result->addSet(set_c);
 	}
@@ -1615,9 +1618,7 @@ int TextualParser::parse_grammar_from_file(const char *fname, const char *loc, c
 		Set *set_c = s_right = result->allocateSet();
 		set_c->line = 0;
 		set_c->setName(stringbits[S_UU_RIGHT]);
-		u_strncpy(gbuffers[0], stringbits[S_UU_RIGHT], stringbit_lengths[S_UU_RIGHT]);
-		gbuffers[0][stringbit_lengths[S_UU_RIGHT]] = 0;
-		Tag *t = result->allocateTag(gbuffers[0]);
+		Tag *t = result->allocateTag(stringbits[S_UU_RIGHT]);
 		result->addTagToSet(t, set_c);
 		result->addSet(set_c);
 	}

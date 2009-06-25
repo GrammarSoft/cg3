@@ -1,11 +1,11 @@
 h_sources = Anchor.h BinaryGrammar.h Cohort.h CompositeTag.h ContextualTest.h \
 	    GrammarApplicator.h Grammar.h GrammarWriter.h icu_uoptions.h \
-	    IGrammarParser.h options.h Reading.h Recycler.h Rule.h Set.h \
+	    IGrammarParser.h options.h Reading.h Rule.h Set.h \
 	    SingleWindow.h stdafx.h Strings.h Tag.h TextualParser.h uextras.h \
 	    version.h Window.h ApertiumApplicator.h inlines.h macros.h cycle.h
 
 cpp_shared_sources = Anchor.cpp BinaryGrammar.cpp Cohort.cpp CompositeTag.cpp \
-	    ContextualTest.cpp Grammar.cpp Reading.cpp Recycler.cpp Rule.cpp \
+	    ContextualTest.cpp Grammar.cpp Reading.cpp Rule.cpp \
 		Set.cpp Strings.cpp Tag.cpp TextualParser.cpp uextras.cpp \
 	    BinaryGrammar_read.cpp BinaryGrammar_write.cpp
 

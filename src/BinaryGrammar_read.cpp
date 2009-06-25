@@ -122,16 +122,14 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 			u_strcpy(t->tag, gbuffers[0]);
 		}
 		if (t->type & T_REGEXP) {
-			UParseError *pe = new UParseError;
+			UParseError pe;
 			UErrorCode status = U_ZERO_ERROR;
 
-			memset(pe, 0, sizeof(UParseError));
-			status = U_ZERO_ERROR;
 			if (t->type & T_CASE_INSENSITIVE) {
-				t->regexp = uregex_open(t->tag, u_strlen(t->tag), UREGEX_CASE_INSENSITIVE, pe, &status);
+				t->regexp = uregex_open(t->tag, u_strlen(t->tag), UREGEX_CASE_INSENSITIVE, &pe, &status);
 			}
 			else {
-				t->regexp = uregex_open(t->tag, u_strlen(t->tag), 0, pe, &status);
+				t->regexp = uregex_open(t->tag, u_strlen(t->tag), 0, &pe, &status);
 			}
 			if (status != U_ZERO_ERROR) {
 				u_fprintf(ux_stderr, "Error: uregex_open returned %s trying to parse tag %S - cannot continue!\n", u_errorName(status), t->tag);
@@ -140,6 +138,9 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 		}
 		grammar->single_tags[t->hash] = t;
 		grammar->single_tags_list[t->number] = t;
+		if (t->tag && t->tag[0] == '*' && u_strcmp(t->tag, stringbits[S_ASTERIK]) == 0) {
+			grammar->tag_any = t->hash;
+		}
 	}
 
 	fread(&u32tmp, sizeof(uint32_t), 1, input);
