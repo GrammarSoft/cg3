@@ -230,10 +230,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\src\Recycler.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\src\Rule.cpp"
 				>
 			</File>
@@ -317,10 +313,6 @@
 			</File>
 			<File
 				RelativePath=".\src\Reading.h"
-				>
-			</File>
-			<File
-				RelativePath=".\src\Recycler.h"
 				>
 			</File>
 			<File

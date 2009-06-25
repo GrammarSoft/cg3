@@ -24,7 +24,6 @@
 #include "Rule.h"
 #include "GrammarApplicator.h"
 #include "Window.h"
-#include "Recycler.h"
 
 using namespace CG3;
 
@@ -37,9 +36,8 @@ SingleWindow::SingleWindow(Window *p) {
 }
 
 SingleWindow::~SingleWindow() {
-	Recycler *r = Recycler::instance();
 	foreach(std::vector<Cohort*>, cohorts, iter, iter_end) {
-		r->delete_Cohort(*iter);
+		delete (*iter);
 	}
 	if (next && previous) {
 		next->previous = previous;

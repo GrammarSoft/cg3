@@ -26,14 +26,12 @@
 #include "Window.h"
 #include "SingleWindow.h"
 #include "Reading.h"
-#include "Recycler.h"
 
 using namespace CG3;
 using namespace CG3::Strings;
 
 Reading *GrammarApplicator::initEmptyCohort(Cohort *cCohort) {
-	Recycler *r = Recycler::instance();
-	Reading *cReading = r->new_Reading(cCohort);
+	Reading *cReading = new Reading(cCohort);
 	cReading->wordform = cCohort->wordform;
 	cReading->baseform = cCohort->wordform;
 	if (grammar->sets_any && !grammar->sets_any->empty()) {
@@ -83,7 +81,6 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 
 	index();
 
-	Recycler *r = Recycler::instance();
 	uint32_t resetAfter = ((num_windows+4)*2+1);
 	uint32_t lines = 0;
 
@@ -158,11 +155,11 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 				// ToDo: Refactor to allocate SingleWindow, Cohort, and Reading from their containers
 				cSWindow = new SingleWindow(gWindow);
 
-				cCohort = r->new_Cohort(cSWindow);
+				cCohort = new Cohort(cSWindow);
 				cCohort->global_number = 0;
 				cCohort->wordform = begintag;
 
-				cReading = r->new_Reading(cCohort);
+				cReading = new Reading(cCohort);
 				cReading->baseform = begintag;
 				cReading->wordform = begintag;
 				if (grammar->sets_any && !grammar->sets_any->empty()) {
@@ -200,14 +197,13 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 				runGrammarOnWindow();
 				if (numWindows % resetAfter == 0) {
 					resetIndexes();
-					r->trim();
 				}
 				if (verbosity_level > 0) {
 					u_fprintf(ux_stderr, "Progress: L:%u, W:%u, C:%u, R:%u\r", lines, numWindows, numCohorts, numReadings);
 					u_fflush(ux_stderr);
 				}
 			}
-			cCohort = r->new_Cohort(cSWindow);
+			cCohort = new Cohort(cSWindow);
 			cCohort->global_number = gWindow->cohort_counter++;
 			cCohort->wordform = addTag(cleaned)->hash;
 			lCohort = cCohort;
@@ -215,7 +211,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 			numCohorts++;
 		}
 		else if (cleaned[0] == ' ' && cleaned[1] == '"' && cCohort) {
-			cReading = r->new_Reading(cCohort);
+			cReading = new Reading(cCohort);
 			cReading->wordform = cCohort->wordform;
 			if (grammar->sets_any && !grammar->sets_any->empty()) {
 				cReading->parent->possible_sets.insert(grammar->sets_any->begin(), grammar->sets_any->end());
@@ -307,7 +303,6 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 						runGrammarOnWindow();
 						if (numWindows % resetAfter == 0) {
 							resetIndexes();
-							r->trim();
 						}
 						if (verbosity_level > 0) {
 							u_fprintf(ux_stderr, "Progress: L:%u, W:%u, C:%u, R:%u\r", lines, numWindows, numCohorts, numReadings);

@@ -27,7 +27,6 @@
 #include "Window.h"
 #include "SingleWindow.h"
 #include "Reading.h"
-#include "Recycler.h"
 
 using namespace CG3;
 using namespace CG3::Strings;
@@ -159,7 +158,6 @@ ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output)
 	
 	index();
 
-	Recycler *r = Recycler::instance();
 	uint32_t resetAfter = ((num_windows+4)*2+1);
 	
 	begintag = addTag(stringbits[S_BEGINTAG])->hash; // Beginning of sentence tag
@@ -255,11 +253,11 @@ ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output)
 				cSWindow->text = 0; // necessary? TODO -KBU
 				
 				// Create 0th Cohort which serves as the beginning of sentence
-				cCohort = r->new_Cohort(cSWindow);
+				cCohort = new Cohort(cSWindow);
 				cCohort->global_number = 0;
 				cCohort->wordform = begintag;
 
-				cReading = r->new_Reading(cCohort);
+				cReading = new Reading(cCohort);
 				cReading->baseform = begintag;
 				cReading->wordform = begintag;
 				if (grammar->sets_any && !grammar->sets_any->empty()) {
@@ -301,10 +299,9 @@ ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output)
 				runGrammarOnWindow();
 				if (numWindows % resetAfter == 0) {
 					resetIndexes();
-					r->trim();
 				}
 			}
-			cCohort = r->new_Cohort(cSWindow);
+			cCohort = new Cohort(cSWindow);
 			cCohort->global_number = gWindow->cohort_counter++;
 
 			// Read in the word form
@@ -342,7 +339,7 @@ ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output)
 
 	 			if(inchar == '$') { 
 					// Add the final reading of the cohort
-					cReading = r->new_Reading(cCohort);
+					cReading = new Reading(cCohort);
 					cReading->wordform = cCohort->wordform;
 
 					if (grammar->sets_any && !grammar->sets_any->empty()) {
@@ -366,7 +363,7 @@ ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output)
 				if(inchar == '/') { // Reached end of reading
 	
 					Reading *cReading = 0;
-					cReading = r->new_Reading(cCohort);
+					cReading = new Reading(cCohort);
 					cReading->wordform = cCohort->wordform;
 
 					addTagToReading(cReading, cReading->wordform);

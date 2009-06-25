@@ -25,7 +25,6 @@
 
 #include "stdafx.h"
 #include "icu_uoptions.h"
-#include "Recycler.h"
 #include "Grammar.h"
 #include "BinaryGrammar.h"
 #include "ApertiumApplicator.h"
@@ -167,7 +166,6 @@ main(int argc, char *argv[])
 	ux_stdout = u_finit(stdout, locale_default, codepage_default);
 	ux_stderr = u_finit(stderr, locale_default, codepage_default);
 
-	CG3::Recycler::instance();
 	init_gbuffers();
 	init_strings();
 	init_keywords();
@@ -242,8 +240,7 @@ main(int argc, char *argv[])
 	}
 
 	grammar.ux_stderr = ux_stderr;
-	CG3::Tag *tag_any = grammar.allocateTag(stringbits[S_ASTERIK]);
-	grammar.tag_any = tag_any->hash;
+
 	if (parser->parse_grammar_from_file(argv[optind], locale_default, codepage_default)) {
 		std::cerr << "Error: Grammar could not be parsed - exiting!" << std::endl;
 		CG3Quit(1);
@@ -297,8 +294,6 @@ main(int argc, char *argv[])
 	free_strings();
 	free_keywords();
 	free_gbuffers();
-
-	CG3::Recycler::cleanup();
 
 	u_cleanup();
 

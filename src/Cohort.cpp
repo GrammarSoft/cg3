@@ -29,7 +29,6 @@
 #include "Reading.h"
 #include "Window.h"
 #include "SingleWindow.h"
-#include "Recycler.h"
 
 using namespace CG3;
 
@@ -53,17 +52,16 @@ Cohort::Cohort(SingleWindow *p) {
 }
 
 void Cohort::clear(SingleWindow *p) {
-	Recycler *r = Recycler::instance();
 	foreach (std::list<Reading*>, readings, iter1, iter1_end) {
-		r->delete_Reading(*iter1);
+		delete (*iter1);
 	}
 	readings.clear();
 	foreach (std::list<Reading*>, deleted, iter2, iter2_end) {
-		r->delete_Reading(*iter2);
+		delete (*iter2);
 	}
 	deleted.clear();
 	foreach (std::list<Reading*>, delayed, iter3, iter3_end) {
-		r->delete_Reading(*iter3);
+		delete (*iter3);
 	}
 	delayed.clear();
 	if (parent) {
@@ -100,15 +98,14 @@ void Cohort::clear(SingleWindow *p) {
 }
 
 Cohort::~Cohort() {
-	Recycler *r = Recycler::instance();
 	foreach (std::list<Reading*>, readings, iter1, iter1_end) {
-		r->delete_Reading(*iter1);
+		delete (*iter1);
 	}
 	foreach (std::list<Reading*>, deleted, iter2, iter2_end) {
-		r->delete_Reading(*iter2);
+		delete (*iter2);
 	}
 	foreach (std::list<Reading*>, delayed, iter3, iter3_end) {
-		r->delete_Reading(*iter3);
+		delete (*iter3);
 	}
 	if (parent) {
 		parent->parent->cohort_map.erase(global_number);
@@ -150,8 +147,7 @@ void Cohort::appendReading(Reading *read) {
 }
 
 Reading* Cohort::allocateAppendReading() {
-	Recycler *r = Recycler::instance();
-	Reading *read = r->new_Reading(this);
+	Reading *read = new Reading(this);
 	readings.push_back(read);
 	if (read->number == 0) {
 		read->number = (uint32_t)readings.size();
