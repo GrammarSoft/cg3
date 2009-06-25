@@ -111,6 +111,10 @@ Grammar::~Grammar() {
 		delete irbs->second;
 		irbs->second = 0;
 	}
+
+	foreach(std::vector<ContextualTest*>, template_list, tmpls, tmpls_end) {
+		delete (*tmpls);
+	}
 }
 
 void Grammar::addPreferredTarget(UChar *to) {

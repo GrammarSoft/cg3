@@ -21,7 +21,6 @@
 
 #include "stdafx.h"
 #include "icu_uoptions.h"
-#include "Recycler.h"
 #include "Grammar.h"
 #include "TextualParser.h"
 #include "GrammarWriter.h"
@@ -220,7 +219,6 @@ int main(int argc, char* argv[]) {
 		CG3Quit(1);
 	}
 
-	CG3::Recycler::instance();
 	init_gbuffers();
 	init_strings();
 	init_keywords();
@@ -256,8 +254,6 @@ int main(int argc, char* argv[]) {
 	}
 	grammar.ux_stderr = ux_stderr;
 	grammar.ux_stdout = ux_stdout;
-	CG3::Tag *tag_any = grammar.allocateTag(stringbits[S_ASTERIK]);
-	grammar.tag_any = tag_any->hash;
 	parser->setCompatible(options[VISLCGCOMPAT].doesOccur != 0);
 
 	if (options[VERBOSE].doesOccur) {
@@ -290,8 +286,8 @@ int main(int argc, char* argv[]) {
 	main_timer = clock();
 
 	std::cerr << "Grammar has " << grammar.sections.size() << " sections, " << grammar.template_list.size() << " templates, " << grammar.rule_by_line.size() << " rules, " << grammar.sets_list.size() << " sets, " << grammar.tags.size() << " c-tags, " << grammar.single_tags.size() << " s-tags." << std::endl;
-	if (grammar.rules_by_tag.find(tag_any->hash) != grammar.rules_by_tag.end()) {
-		std::cerr << grammar.rules_by_tag.find(tag_any->hash)->second->size() << " rules cannot be skipped by index." << std::endl;
+	if (grammar.rules_by_tag.find(grammar.tag_any) != grammar.rules_by_tag.end()) {
+		std::cerr << grammar.rules_by_tag.find(grammar.tag_any)->second->size() << " rules cannot be skipped by index." << std::endl;
 	}
 	if (grammar.has_dep) {
 		std::cerr << "Grammar has dependency rules." << std::endl;
@@ -422,8 +418,6 @@ int main(int argc, char* argv[]) {
 	free_keywords();
 	free_gbuffers();
 	free_flags();
-
-	CG3::Recycler::cleanup();
 
 	u_cleanup();
 

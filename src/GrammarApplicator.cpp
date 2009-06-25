@@ -26,7 +26,6 @@
 #include "Window.h"
 #include "SingleWindow.h"
 #include "Reading.h"
-#include "Recycler.h"
 
 using namespace CG3;
 using namespace CG3::Strings;
@@ -88,6 +87,11 @@ GrammarApplicator::~GrammarApplicator() {
 			delete iter_stag->second;
 			iter_stag->second = 0;
 		}
+	}
+
+	foreach(RSType, runsections, rsi, rsi_end) {
+		delete rsi->second;
+		rsi->second = 0;
 	}
 
 	if (gWindow) {
@@ -154,7 +158,9 @@ void GrammarApplicator::index() {
 					m = new uint32Set;
 					runsections[i] = m;
 				}
-				m = runsections[i];
+				else {
+					m = runsections[i];
+				}
 				m->insert(r->line);
 			}
 		}
@@ -173,7 +179,9 @@ void GrammarApplicator::index() {
 						m = new uint32Set;
 						runsections[n] = m;
 					}
-					m = runsections[n];
+					else {
+						m = runsections[n];
+					}
 					m->insert(r->line);
 				}
 			}

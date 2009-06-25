@@ -26,7 +26,6 @@
 #include "Window.h"
 #include "SingleWindow.h"
 #include "Reading.h"
-#include "Recycler.h"
 
 using namespace CG3;
 using namespace CG3::Strings;
@@ -271,7 +270,6 @@ void GrammarApplicator::delTagFromReading(Reading *reading, uint32_t utag) {
 }
 
 void GrammarApplicator::splitMappings(TagList mappings, Cohort *cohort, Reading *reading, bool mapped) {
-	Recycler *r = Recycler::instance();
 	if (reading->mapping) {
 		mappings.push_back(reading->mapping);
 		delTagFromReading(reading, reading->mapping->hash);
@@ -293,7 +291,7 @@ void GrammarApplicator::splitMappings(TagList mappings, Cohort *cohort, Reading 
 		if (found) {
 			continue;
 		}
-		Reading *nr = r->new_Reading(cohort);
+		Reading *nr = new Reading(cohort);
 		nr->duplicateFrom(reading);
 		nr->mapped = mapped;
 		addTagToReading(nr, (*ttag)->hash);
@@ -307,8 +305,6 @@ void GrammarApplicator::splitMappings(TagList mappings, Cohort *cohort, Reading 
 }
 
 void GrammarApplicator::mergeMappings(Cohort *cohort) {
-	Recycler *r = Recycler::instance();
-
 	std::map<uint32_t, std::list<Reading*> > mlist;
 	foreach (std::list<Reading*>, cohort->readings, iter, iter_end) {
 		Reading *r = *iter;
@@ -331,7 +327,7 @@ void GrammarApplicator::mergeMappings(Cohort *cohort) {
 	std::map<uint32_t, std::list<Reading*> >::iterator miter;
 	for (miter = mlist.begin() ; miter != mlist.end() ; miter++) {
 		std::list<Reading*> clist = miter->second;
-		Reading *nr = r->new_Reading(cohort);
+		Reading *nr = new Reading(cohort);
 		nr->duplicateFrom(clist.front());
 		if (nr->mapping) {
 			nr->tags_list.remove(nr->mapping->hash);
@@ -340,7 +336,7 @@ void GrammarApplicator::mergeMappings(Cohort *cohort) {
 			if ((*iter1)->mapping) {
 				nr->tags_list.push_back((*iter1)->mapping->hash);
 			}
-			r->delete_Reading(*iter1);
+			delete (*iter1);
 		}
 		order.push_back(nr);
 	}
