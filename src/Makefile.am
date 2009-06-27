@@ -4,8 +4,8 @@ h_sources = Anchor.h BinaryGrammar.h Cohort.h CompositeTag.h ContextualTest.h \
 	    SingleWindow.h stdafx.h Strings.h Tag.h TextualParser.h uextras.h \
 	    version.h Window.h ApertiumApplicator.h inlines.h macros.h cycle.h
 
-cpp_shared_sources = Anchor.cpp BinaryGrammar.cpp Cohort.cpp CompositeTag.cpp \
-	    ContextualTest.cpp Grammar.cpp Reading.cpp Rule.cpp \
+cpp_shared_sources = Anchor.cpp BinaryGrammar.cpp CompositeTag.cpp \
+	    ContextualTest.cpp Grammar.cpp Rule.cpp \
 		Set.cpp Strings.cpp Tag.cpp TextualParser.cpp uextras.cpp \
 	    BinaryGrammar_read.cpp BinaryGrammar_write.cpp
 
@@ -16,7 +16,7 @@ cpp_sources = GrammarApplicator_runGrammar.cpp \
 	    GrammarApplicator_runRules.cpp \
 	    GrammarWriter.cpp icu_uoptions.cpp \
 	    SingleWindow.cpp \
-	    Window.cpp \
+	    Window.cpp Cohort.cpp Reading.cpp \
 		$(cpp_shared_sources)
 
 bin_PROGRAMS = cg-comp cg-proc vislcg3

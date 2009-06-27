@@ -202,10 +202,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\src\Cohort.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\src\CompositeTag.cpp"
 				>
 			</File>
@@ -223,10 +219,6 @@
 			</File>
 			<File
 				RelativePath=".\win32\libgen.c"
-				>
-			</File>
-			<File
-				RelativePath=".\src\Reading.cpp"
 				>
 			</File>
 			<File
@@ -268,10 +260,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\src\Cohort.h"
-				>
-			</File>
-			<File
 				RelativePath=".\src\CompositeTag.h"
 				>
 			</File>
@@ -309,10 +297,6 @@
 			</File>
 			<File
 				RelativePath=".\win32\libgen.h"
-				>
-			</File>
-			<File
-				RelativePath=".\src\Reading.h"
 				>
 			</File>
 			<File
