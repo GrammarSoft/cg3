@@ -39,11 +39,13 @@
 	#include <libgen.h>
 	#include <netinet/in.h> // for hton() and family.
 	// Test for GCC >= 4.3.0
-	#if __GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ > 3 || (__GNUC_MINOR__ == 3 && __GNUC_PATCHLEVEL__ >= 0)))
+	#define GCC_VERSION (__GNUC__ * 10000 + __GNUC_MINOR__ * 100 + __GNUC_PATCHLEVEL__)
+	#if GCC_VERSION >= 40300
 		#include <tr1/unordered_set>
 		#include <tr1/unordered_map>
-		#define stdext::hash_map std::tr1::unordered_map
-		#define stdext::hash_set std::tr1::unordered_set
+		#define stdext std::tr1
+		#define hash_map unordered_map
+		#define hash_set unordered_set
 	#else
 		#include <ext/hash_map>
 		#include <ext/hash_set>

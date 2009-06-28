@@ -104,6 +104,7 @@ namespace CG3 {
 }
 
 #ifdef __GNUC__
+#if GCC_VERSION < 40300
 namespace __gnu_cxx {
 	template<> struct hash< CG3::Tag* > {
 		size_t operator()( const CG3::Tag *x ) const {
@@ -111,6 +112,7 @@ namespace __gnu_cxx {
 		}
 	};
 }
+#endif
 #endif
 
 #endif
