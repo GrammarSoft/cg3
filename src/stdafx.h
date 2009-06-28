@@ -23,10 +23,25 @@
 #ifndef __STDAFX_H
 #define __STDAFX_H
 
-// MSVC 2005 (MSVC 8) fix.
-#define _SECURE_SCL 0
-#define _CRT_SECURE_NO_DEPRECATE 1
-#define _CRT_NONSTDC_NO_DEPRECATE 1
+#ifdef _MSC_VER
+	// MSVC 2005 (MSVC 8) fix.
+	#define _SECURE_SCL 0
+	#define _CRT_SECURE_NO_DEPRECATE 1
+	#define _CRT_NONSTDC_NO_DEPRECATE 1
+	#define WIN32_LEAN_AND_MEAN
+	#define NOMINMAX
+	#include <winsock.h> // for hton() and family.
+	#include <hash_map>
+	#include <hash_set>
+#endif
+#ifdef __GNUC__
+	#include <unistd.h>
+	#include <libgen.h>
+	#include <netinet/in.h> // for hton() and family.
+	#include <ext/hash_map>
+	#include <ext/hash_set>
+	#define stdext __gnu_cxx
+#endif
 
 #include <algorithm>
 #include <iostream>
@@ -44,21 +59,6 @@
 #include <cassert>
 #include <sys/stat.h>
 
-#ifdef _MSC_VER
-	#define WIN32_LEAN_AND_MEAN
-	#include <winsock.h> // for hton() and family.
-	#include <hash_map>
-	#include <hash_set>
-#endif
-#ifdef __GNUC__
-	#include <unistd.h>
-	#include <libgen.h>
-	#include <netinet/in.h> // for hton() and family.
-	#include <ext/hash_map>
-	#include <ext/hash_set>
-	#define stdext __gnu_cxx
-#endif
-
 // ICU includes
 #include <unicode/uchar.h>
 #include <unicode/uclean.h>
@@ -75,13 +75,6 @@
 #include "macros.h"
 #include "inlines.h"
 #include "uextras.h"
-
-#ifndef MAX
-	#define MAX(a,b)  (((a) > (b)) ? (a) : (b))
-#endif
-#ifndef MIN
-	#define MIN(a,b)  (((a) < (b)) ? (a) : (b))
-#endif
 
 // Forward declarations
 namespace CG3 {
