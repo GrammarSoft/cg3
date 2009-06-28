@@ -73,8 +73,8 @@ int main(int argc, char* argv[]) {
 		uint32_t longest = 0;
 		for (uint32_t i=0 ; i<NUM_OPTIONS ; i++) {
 			if (options[i].description) {
-				size_t len = strlen(options[i].longName);
-				longest = MAX(longest, len);
+				uint32_t len = static_cast<uint32_t>(strlen(options[i].longName));
+				longest = std::max(longest, len);
 			}
 		}
 		for (uint32_t i=0 ; i<NUM_OPTIONS ; i++) {
