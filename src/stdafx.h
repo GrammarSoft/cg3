@@ -38,9 +38,17 @@
 	#include <unistd.h>
 	#include <libgen.h>
 	#include <netinet/in.h> // for hton() and family.
-	#include <ext/hash_map>
-	#include <ext/hash_set>
-	#define stdext __gnu_cxx
+	// Test for GCC >= 4.3.0
+	#if __GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ > 3 || (__GNUC_MINOR__ == 3 && __GNUC_PATCHLEVEL__ >= 0)))
+		#include <tr1/unordered_set>
+		#include <tr1/unordered_map>
+		#define stdext::hash_map std::tr1::unordered_map
+		#define stdext::hash_set std::tr1::unordered_set
+	#else
+		#include <ext/hash_map>
+		#include <ext/hash_set>
+		#define stdext __gnu_cxx
+	#endif
 #endif
 
 #include <algorithm>
