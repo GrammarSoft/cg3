@@ -110,7 +110,7 @@ void GrammarApplicator::resetIndexes() {
 
 void GrammarApplicator::setGrammar(const Grammar *res) {
 	grammar = res;
-	single_tags.insert(grammar->single_tags.begin(), grammar->single_tags.end());
+	single_tags = grammar->single_tags;
 }
 
 void GrammarApplicator::index() {
