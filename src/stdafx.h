@@ -24,20 +24,25 @@
 #define __STDAFX_H
 
 #ifdef _MSC_VER
-	// MSVC 2005 (MSVC 8) fix.
 	#define _SECURE_SCL 0
 	#define _CRT_SECURE_NO_DEPRECATE 1
 	#define _CRT_NONSTDC_NO_DEPRECATE 1
 	#define WIN32_LEAN_AND_MEAN
 	#define NOMINMAX
+	// Test for MSVC++ >= 10.0 (MSVS 2010)
+	#if _MSC_VER >= 1600
+		#include <unordered_set>
+		#include <unordered_map>
+		#define stdext std::tr1
+		#define hash_map unordered_map
+		#define hash_set unordered_set
+	#else
+		#include <hash_map>
+		#include <hash_set>
+	#endif
 	#include <winsock.h> // for hton() and family.
-	#include <hash_map>
-	#include <hash_set>
 #endif
 #ifdef __GNUC__
-	#include <unistd.h>
-	#include <libgen.h>
-	#include <netinet/in.h> // for hton() and family.
 	// Test for GCC >= 4.3.0
 	#define GCC_VERSION (__GNUC__ * 10000 + __GNUC_MINOR__ * 100 + __GNUC_PATCHLEVEL__)
 	#if GCC_VERSION >= 40300
@@ -51,9 +56,13 @@
 		#include <ext/hash_set>
 		#define stdext __gnu_cxx
 	#endif
+	#include <unistd.h>
+	#include <libgen.h>
+	#include <netinet/in.h> // for hton() and family.
 #endif
 
 #include <algorithm>
+#include <iterator>
 #include <iostream>
 #include <cstdlib>
 #include <cstdio>
