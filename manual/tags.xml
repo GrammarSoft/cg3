@@ -50,6 +50,7 @@
       longer be enough. You can combine 'ir' for case-insensitive regular expressions.
       Regular expressions are evaluated via ICU, so
       <ulink url="http://icu-project.org/userguide/regexp.html">their documentation</ulink> is a good source.
+      Regular expressions may also contain groupings that can later be used in variable string tags (see below).
     </para>
     <para>
       Due to tags themselves needing the occasional escaping, regular expressions need double-escaping of
@@ -66,6 +67,38 @@
         SELECT ("&lt;wordform&gt;"i) + (tag) ;
       </screen>
       which will work, but be slightly slower.
+    </para>
+  </section>
+
+  <section id="variable-strings">
+    <title>Variable Strings</title>
+    <para>
+      Variable string tags contain markers that are replaced with matches from the previously run grouping regular expression tag.
+      Regular expression tags with no groupings will not have any effect on this behavior.
+      Time also has no effect, so one could theoretically perform a group match in a previous rule and use the results later,
+      though that would be highly unpredictable in practice.
+    </para>
+    <para>
+      Variable string tags are in the form of "string"v, "&lt;string&gt;"v, and &lt;string&gt;v, where variables matching
+      $1 through $9 will be replaced with the corresponding group from the regular expression match.
+      Multiple occurances of a single variable is allowed, so e.g. "$1$2$1"v would contain group 1 twice.
+    </para>
+    <para>
+      One can also manipulate the case of the resulting tag via %U, %u, %L, and %l.
+      %U upper-cases the entire following string.
+      %u upper-cases the following single letter.
+      %L lower-cases the entire following string.
+      %l lower-cases the following single letter.
+      The case folding is performed right-to-left one-by-one.
+    </para>
+    <para>
+      <screen>
+        # Adds a lower-case &lt;wordform&gt; to all readings.
+        ADD (&lt;%L$1&gt;v) TARGET ("&lt;(.*)&gt;"r) ;
+
+        # Adds a reading with a normalized baseform for all suspicious wordforms ending in 'ies'
+        APPEND ("$1y"v N P NOM) TARGET N + ("&lt;(.*)ies&gt;"r) IF (1 VFIN) ;
+      </screen>
     </para>
   </section>
 

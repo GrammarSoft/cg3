@@ -127,6 +127,10 @@ namespace CG3 {
 			S_VS7,
 			S_VS8,
 			S_VS9,
+			S_VSu,
+			S_VSU,
+			S_VSl,
+			S_VSL,
 			STRINGS_COUNT
 		};
 
