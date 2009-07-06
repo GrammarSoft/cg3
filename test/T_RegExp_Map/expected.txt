@@ -1,4 +1,4 @@
 "<word>"
 	"word" notwanted 
-	"matchme" wanted @tag 
+	"matchme" wanted <atchat> @tag 
 	"word" notmeeither 

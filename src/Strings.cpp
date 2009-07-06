@@ -163,6 +163,15 @@ namespace CG3 {
 			init_string_single("BEFORE",       S_BEFORE);
 			init_string_single("WITH",         S_WITH);
 			init_string_single("?",            S_QUESTION);
+			init_string_single("%1%",          S_VS1);
+			init_string_single("%2%",          S_VS2);
+			init_string_single("%3%",          S_VS3);
+			init_string_single("%4%",          S_VS4);
+			init_string_single("%5%",          S_VS5);
+			init_string_single("%6%",          S_VS6);
+			init_string_single("%7%",          S_VS7);
+			init_string_single("%8%",          S_VS8);
+			init_string_single("%9%",          S_VS9);
 
 			for (unsigned int i=0;i<STRINGS_COUNT;i++) {
 				if (!stringbits[i]) {

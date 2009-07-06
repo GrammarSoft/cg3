@@ -4,4 +4,5 @@ LIST ASet = ".atc[hm]{2}.*"r ;
 
 SECTION
 
+ADD (<%1%%2%%1%>v) (".(at)(ch).*"r) ;
 MAP (@tag) ASet ;
