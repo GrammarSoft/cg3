@@ -208,9 +208,58 @@ void GrammarApplicator::addTagToReading(Reading *reading, uint32_t utag, bool re
 
 	if (tag->type & T_VARSTRING && !regexgrps.empty()) {
 		UnicodeString tmp(tag->tag);
+		// Replace $1-$9 with their respective match groups
 		for (size_t i=0 ; i<regexgrps.size()-1 ; ++i) {
 			tmp.findAndReplace(stringbits[S_VS1+i], regexgrps[1+i]);
 		}
+		// Handle %U %u %L %l markers.
+		bool found;
+		do {
+			found = false;
+			int32_t pos = -1, mpos = -1;
+			if ((pos = tmp.lastIndexOf(stringbits[S_VSu], stringbit_lengths[S_VSu], 0)) != -1) {
+				found = true;
+				mpos = std::max(mpos, pos);
+			}
+			if ((pos = tmp.lastIndexOf(stringbits[S_VSU], stringbit_lengths[S_VSU], mpos)) != -1) {
+				found = true;
+				mpos = std::max(mpos, pos);
+			}
+			if ((pos = tmp.lastIndexOf(stringbits[S_VSl], stringbit_lengths[S_VSl], mpos)) != -1) {
+				found = true;
+				mpos = std::max(mpos, pos);
+			}
+			if ((pos = tmp.lastIndexOf(stringbits[S_VSL], stringbit_lengths[S_VSL], mpos)) != -1) {
+				found = true;
+				mpos = std::max(mpos, pos);
+			}
+			if (found && mpos != -1) {
+				UChar mode = tmp[mpos+1];
+				tmp.remove(mpos, 2);
+				if (mode == 'u') {
+					UnicodeString range(tmp, mpos, 1);
+					range.toUpper();
+					tmp.setCharAt(mpos, range[0]);
+				}
+				else if (mode == 'U') {
+					UnicodeString range(tmp, mpos);
+					range.toUpper();
+					tmp.truncate(mpos);
+					tmp.append(range);
+				}
+				else if (mode == 'l') {
+					UnicodeString range(tmp, mpos, 1);
+					range.toLower();
+					tmp.setCharAt(mpos, range[0]);
+				}
+				else if (mode == 'L') {
+					UnicodeString range(tmp, mpos);
+					range.toLower();
+					tmp.truncate(mpos);
+					tmp.append(range);
+				}
+			}
+		} while(found);
 		const UChar *nt = tmp.getTerminatedBuffer();
 		tag = addTag(nt);
 		utag = tag->hash;

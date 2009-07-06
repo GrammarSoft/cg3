@@ -183,6 +183,11 @@ void Tag::parseTag(const UChar *to, UFILE *ux_stderr) {
 	if (type & (T_ANY|T_PAR_LEFT|T_PAR_RIGHT|T_NUMERICAL|T_VARIABLE|T_META|T_NEGATIVE|T_FAILFAST|T_CASE_INSENSITIVE|T_REGEXP|T_REGEXP_ANY|T_VARSTRING)) {
 		is_special = true;
 	}
+
+	if (type & T_VARSTRING && type & (T_REGEXP|T_REGEXP_ANY|T_CASE_INSENSITIVE|T_NUMERICAL|T_VARIABLE|T_META)) {
+		u_fprintf(ux_stderr, "Error: Tag %S cannot mix varstring with any other special feature!\n", to);
+		CG3Quit(1);
+	}
 }
 
 void Tag::parseTagRaw(const UChar *to) {
