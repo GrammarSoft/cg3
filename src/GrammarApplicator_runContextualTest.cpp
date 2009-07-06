@@ -86,6 +86,36 @@ inline Cohort *GrammarApplicator::runSingleTest(SingleWindow *sWindow, size_t i,
 	return cohort;
 }
 
+inline Cohort *getCohortInWindow(SingleWindow *& sWindow, size_t position, const ContextualTest *test, int32_t &pos) {
+	Cohort *cohort = 0;
+	pos = int32_t(position) + test->offset;
+	// ToDo: (NOT *) and (*C) tests can be cached
+	if (test->pos & POS_ABSOLUTE) {
+		if (test->offset < 0) {
+			pos = (int32_t(sWindow->cohorts.size()-1)) - test->offset;
+		}
+		else {
+			pos = test->offset;
+		}
+	}
+	if (pos >= 0) {
+		if (pos >= int32_t(sWindow->cohorts.size()) && (test->pos & (POS_SPAN_RIGHT|POS_SPAN_BOTH)) && sWindow->next) {
+			sWindow = sWindow->next;
+			pos = 0;
+		}
+	}
+	else {
+		if ((test->pos & (POS_SPAN_LEFT|POS_SPAN_BOTH)) && sWindow->previous) {
+			sWindow = sWindow->previous;
+			pos = int32_t(sWindow->cohorts.size()-1);
+		}
+	}
+	if (pos >= 0 && pos < int32_t(sWindow->cohorts.size())) {
+		cohort = sWindow->cohorts.at(pos);
+	}
+	return cohort;
+}
+
 Cohort *GrammarApplicator::runContextualTest(SingleWindow *sWindow, size_t position, const ContextualTest *test, Cohort **deep, Cohort *origin) {
 	Cohort *cohort = 0;
 
@@ -105,18 +135,19 @@ Cohort *GrammarApplicator::runContextualTest(SingleWindow *sWindow, size_t posit
 		sWindow = mark->parent;
 		position = mark->local_number;
 	}
-	int32_t pos = (int32_t)(position + test->offset);
+	int32_t pos = int32_t(position) + test->offset;
 
 	if (test->tmpl) {
 		uint32_t orgpos = test->tmpl->pos;
 		int32_t orgoffset = test->tmpl->offset;
 		uint32_t orgcbar = test->tmpl->cbarrier;
 		uint32_t orgbar = test->tmpl->barrier;
+		Cohort *entry = 0;
 		if (test->pos & POS_TMPL_OVERRIDE) {
 			test->tmpl->pos = test->pos;
 			test->tmpl->pos &= ~(POS_NEGATED|POS_NEGATIVE|POS_MARK_JUMP);
 			test->tmpl->offset = test->offset;
-			if (test->offset != 0 && !(test->pos & (POS_SCANFIRST|POS_SCANALL))) {
+			if (test->offset != 0 && !(test->pos & (POS_SCANFIRST|POS_SCANALL|POS_ABSOLUTE))) {
 				test->tmpl->pos |= POS_SCANALL;
 			}
 			if (test->cbarrier) {
@@ -125,6 +156,9 @@ Cohort *GrammarApplicator::runContextualTest(SingleWindow *sWindow, size_t posit
 			if (test->barrier) {
 				test->tmpl->barrier = test->barrier;
 			}
+			SingleWindow *eWindow = sWindow;
+			int32_t pos = 0;
+			entry = getCohortInWindow(eWindow, position, test->tmpl, pos);
 		}
 		Cohort *cdeep = 0;
 		cohort = runContextualTest(sWindow, position, test->tmpl, &cdeep, origin);
@@ -136,7 +170,7 @@ Cohort *GrammarApplicator::runContextualTest(SingleWindow *sWindow, size_t posit
 			// ToDo: Being in a different window is not strictly a problem, so fix this assumption...
 			if (cdeep && test->offset != 0) {
 				int32_t reloff = int32_t(cdeep->local_number) - int32_t(position);
-				if (!(test->pos & (POS_SCANFIRST|POS_SCANALL))) {
+				if (!(test->pos & (POS_SCANFIRST|POS_SCANALL|POS_ABSOLUTE))) {
 					if (cdeep->parent != sWindow || reloff != test->offset) {
 						cohort = 0;
 					}
@@ -170,7 +204,7 @@ Cohort *GrammarApplicator::runContextualTest(SingleWindow *sWindow, size_t posit
 				(*iter)->pos = test->pos;
 				(*iter)->pos &= ~(POS_TMPL_OVERRIDE|POS_NEGATED|POS_NEGATIVE|POS_MARK_JUMP);
 				(*iter)->offset = test->offset;
-				if (test->offset != 0 && !(test->pos & (POS_SCANFIRST|POS_SCANALL))) {
+				if (test->offset != 0 && !(test->pos & (POS_SCANFIRST|POS_SCANALL|POS_ABSOLUTE))) {
 					(*iter)->pos |= POS_SCANALL;
 				}
 				if (test->cbarrier) {
@@ -188,7 +222,7 @@ Cohort *GrammarApplicator::runContextualTest(SingleWindow *sWindow, size_t posit
 				(*iter)->barrier = orgbar;
 				if (cdeep && test->offset != 0) {
 					int32_t reloff = int32_t(cdeep->local_number) - int32_t(position);
-					if (!(test->pos & (POS_SCANFIRST|POS_SCANALL))) {
+					if (!(test->pos & (POS_SCANFIRST|POS_SCANALL|POS_ABSOLUTE))) {
 						if (cdeep->parent != sWindow || reloff != test->offset) {
 							cohort = 0;
 						}
@@ -215,30 +249,7 @@ Cohort *GrammarApplicator::runContextualTest(SingleWindow *sWindow, size_t posit
 		}
 	}
 	else {
-		// ToDo: (NOT *) and (*C) tests can be cached
-		if (test->pos & POS_ABSOLUTE) {
-			if (test->offset < 0) {
-				pos = ((int32_t)sWindow->cohorts.size()-1) - test->offset;
-			}
-			else {
-				pos = test->offset;
-			}
-		}
-		if (pos >= 0) {
-			if (pos >= (int32_t)sWindow->cohorts.size() && (test->pos & (POS_SPAN_RIGHT|POS_SPAN_BOTH)) && sWindow->next) {
-				sWindow = sWindow->next;
-				pos = 0;
-			}
-		}
-		else {
-			if ((test->pos & (POS_SPAN_LEFT|POS_SPAN_BOTH)) && sWindow->previous) {
-				sWindow = sWindow->previous;
-				pos = (int32_t)sWindow->cohorts.size()-1;
-			}
-		}
-		if (pos >= 0 && pos < (int32_t)sWindow->cohorts.size()) {
-			cohort = sWindow->cohorts.at(pos);
-		}
+		cohort = getCohortInWindow(sWindow, position, test, pos);
 	}
 
 	if (!cohort) {
