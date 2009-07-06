@@ -45,12 +45,15 @@ Tag::Tag() {
 Tag::~Tag() {
 	if (tag) {
 		delete[] tag;
+		tag = 0;
 	}
 	if (comparison_key) {
 		delete[] comparison_key;
+		comparison_key = 0;
 	}
 	if (regexp) {
 		uregex_close(regexp);
+		regexp = 0;
 	}
 }
 
@@ -92,7 +95,11 @@ void Tag::parseTag(const UChar *to, UFILE *ux_stderr) {
 		if (tmp[0] && (tmp[0] == '"' || tmp[0] == '<')) {
 			type |= T_TEXTUAL;
 		}
-		while (tmp[0] && (tmp[0] == '"' || tmp[0] == '<') && (tmp[length-1] == 'i' || tmp[length-1] == 'r')) {
+		while (tmp[0] && (tmp[0] == '"' || tmp[0] == '<') && (tmp[length-1] == 'i' || tmp[length-1] == 'r' || tmp[length-1] == 'v')) {
+			if (tmp[length-1] == 'v') {
+				type |= T_VARSTRING;
+				length--;
+			}
 			if (tmp[length-1] == 'r') {
 				type |= T_REGEXP;
 				length--;
@@ -173,7 +180,7 @@ void Tag::parseTag(const UChar *to, UFILE *ux_stderr) {
 		}
 	}
 	is_special = false;
-	if (type & (T_ANY|T_PAR_LEFT|T_PAR_RIGHT|T_NUMERICAL|T_VARIABLE|T_META|T_NEGATIVE|T_FAILFAST|T_CASE_INSENSITIVE|T_REGEXP|T_REGEXP_ANY)) {
+	if (type & (T_ANY|T_PAR_LEFT|T_PAR_RIGHT|T_NUMERICAL|T_VARIABLE|T_META|T_NEGATIVE|T_FAILFAST|T_CASE_INSENSITIVE|T_REGEXP|T_REGEXP_ANY|T_VARSTRING)) {
 		is_special = true;
 	}
 }
@@ -325,7 +332,7 @@ uint32_t Tag::rehash() {
 	}
 
 	is_special = false;
-	if (type & (T_ANY|T_PAR_LEFT|T_PAR_RIGHT|T_NUMERICAL|T_VARIABLE|T_META|T_NEGATIVE|T_FAILFAST|T_CASE_INSENSITIVE|T_REGEXP|T_REGEXP_ANY)) {
+	if (type & (T_ANY|T_PAR_LEFT|T_PAR_RIGHT|T_NUMERICAL|T_VARIABLE|T_META|T_NEGATIVE|T_FAILFAST|T_CASE_INSENSITIVE|T_REGEXP|T_REGEXP_ANY|T_VARSTRING)) {
 		is_special = true;
 	}
 
@@ -357,6 +364,9 @@ void Tag::printTagRaw(UFILE *to, const Tag *tag) {
 	}
 	if (tag->type & T_REGEXP) {
 		u_fprintf(to, "r");
+	}
+	if (tag->type & T_VARSTRING) {
+		u_fprintf(to, "v");
 	}
 }
 

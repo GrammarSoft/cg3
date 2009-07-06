@@ -118,6 +118,15 @@ namespace CG3 {
 			S_BEFORE,
 			S_WITH,
 			S_QUESTION,
+			S_VS1,
+			S_VS2,
+			S_VS3,
+			S_VS4,
+			S_VS5,
+			S_VS6,
+			S_VS7,
+			S_VS8,
+			S_VS9,
 			STRINGS_COUNT
 		};
 

@@ -54,7 +54,8 @@ namespace CG3 {
 		T_REGEXP     =  4096U,
 		T_PAR_LEFT   =  8192U,
 		T_PAR_RIGHT  = 16384U,
-		T_REGEXP_ANY = 32768U
+		T_REGEXP_ANY = 32768U,
+		T_VARSTRING  = 65536U
 	};
 
 	class Tag {
