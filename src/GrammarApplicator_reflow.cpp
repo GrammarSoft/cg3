@@ -204,6 +204,18 @@ void GrammarApplicator::reflowReading(Reading *reading) {
 }
 
 void GrammarApplicator::addTagToReading(Reading *reading, uint32_t utag, bool rehash) {
+	Tag *tag = single_tags.find(utag)->second;
+
+	if (tag->type & T_VARSTRING && !regexgrps.empty()) {
+		UnicodeString tmp(tag->tag);
+		for (size_t i=0 ; i<regexgrps.size()-1 ; ++i) {
+			tmp.findAndReplace(stringbits[S_VS1+i], regexgrps[1+i]);
+		}
+		const UChar *nt = tmp.getTerminatedBuffer();
+		tag = addTag(nt);
+		utag = tag->hash;
+	}
+
 	if (grammar->sets_by_tag.find(utag) != grammar->sets_by_tag.end()) {
 		reading->parent->possible_sets.insert(grammar->sets_by_tag.find(utag)->second->begin(), grammar->sets_by_tag.find(utag)->second->end());
 		reading->possible_sets.insert(grammar->sets_by_tag.find(utag)->second->begin(), grammar->sets_by_tag.find(utag)->second->end());
@@ -218,7 +230,6 @@ void GrammarApplicator::addTagToReading(Reading *reading, uint32_t utag, bool re
 	if (grammar->parentheses_reverse.find(utag) != grammar->parentheses_reverse.end()) {
 		reading->parent->is_pright = utag;
 	}
-	Tag *tag = single_tags.find(utag)->second;
 
 	if (tag->type & T_MAPPING || tag->tag[0] == grammar->mapping_prefix) {
 		if (reading->mapping && reading->mapping != tag) {

@@ -102,6 +102,7 @@ namespace CG3 {
 
 		const Grammar *grammar;
 
+		std::map<uint32_t,UnicodeString> regexgrps;
 		uint32HashMap variables;
 		uint32HashMap metas;
 		Cohort *mark;
