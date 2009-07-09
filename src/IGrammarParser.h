@@ -24,7 +24,7 @@
 #define __IGRAMMARPARSER_H
 
 #include "stdafx.h"
- 
+
 namespace CG3 {
 	class IGrammarParser {
 	public:
