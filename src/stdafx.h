@@ -61,6 +61,8 @@
 	#include <netinet/in.h> // for hton() and family.
 #endif
 
+#include <exception>
+#include <stdexcept>
 #include <algorithm>
 #include <iterator>
 #include <iostream>

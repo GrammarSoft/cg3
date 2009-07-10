@@ -121,7 +121,7 @@ Cohort *GrammarApplicator::runContextualTest(SingleWindow *sWindow, size_t posit
 
 	if (test->pos & POS_NONE) {
 		u_fprintf(ux_stderr, "Error: Contextual tests with position '?' cannot be used directly. Provide an override position.\n");
-		CG3Quit();
+		CG3Quit(1);
 	}
 
 	bool retval = true;

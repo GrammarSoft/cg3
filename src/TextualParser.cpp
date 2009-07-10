@@ -408,7 +408,7 @@ label_parseTemplateRef:
 	bool linked = false;
 	result->lines += SKIPWS(p);
 	if (u_strncasecmp(*p, stringbits[S_AND], stringbit_lengths[S_AND], U_FOLD_CASE_DEFAULT) == 0) {
-		u_fprintf(ux_stderr, "Error: 'AND' is deprecated; use 'LINK 0' instead. Found on line %u!\n", result->lines);
+		u_fprintf(ux_stderr, "Error: 'AND' is deprecated; use 'LINK 0' or operator '+' instead. Found on line %u!\n", result->lines);
 		CG3Quit(1);
 	}
 	if (u_strncasecmp(*p, stringbits[S_LINK], stringbit_lengths[S_LINK], U_FOLD_CASE_DEFAULT) == 0) {
@@ -1317,18 +1317,16 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 				CG3Quit(1);
 			}
 
-			UChar *data = new UChar[grammar_size*4];
-			memset(data, 0, grammar_size*4*sizeof(UChar));
-			uint32_t read = u_file_read((data+4), grammar_size*4, grammar);
+			std::vector<UChar> data(grammar_size*4, 0);
+			uint32_t read = u_file_read(&data[0], grammar_size*4, grammar);
+			u_fclose(grammar);
 			if (read >= grammar_size*4-1) {
 				u_fprintf(ux_stderr, "Error: Converting from underlying codepage to UTF-16 exceeded factor 4 buffer.\n");
 				CG3Quit(1);
 			}
-			u_fclose(grammar);
 
-			parseFromUChar((data+4), abspath);
+			parseFromUChar(&data[0], abspath);
 			delete[] abspath;
-			delete[] data;
 
 			result->lines = olines;
 		}
@@ -1586,14 +1584,13 @@ int TextualParser::parse_grammar_from_file(const char *fname, const char *loc, c
 		CG3Quit(1);
 	}
 
-	UChar *data = new UChar[result->grammar_size*4];
-	memset(data, 0, result->grammar_size*4*sizeof(UChar));
-	uint32_t read = u_file_read((data+4), result->grammar_size*4, grammar);
+	std::vector<UChar> data(result->grammar_size*4, 0);
+	uint32_t read = u_file_read(&data[0], result->grammar_size*4, grammar);
+	u_fclose(grammar);
 	if (read >= result->grammar_size*4-1) {
 		u_fprintf(ux_stderr, "Error: Converting from underlying codepage to UTF-16 exceeded factor 4 buffer.\n");
 		CG3Quit(1);
 	}
-	u_fclose(grammar);
 
 	result->addAnchor(keywords[K_START], result->lines);
 
@@ -1633,14 +1630,13 @@ int TextualParser::parse_grammar_from_file(const char *fname, const char *loc, c
 		result->addSet(set_c);
 	}
 
-	error = parseFromUChar((data+4), filename);
+	error = parseFromUChar(&data[0], filename);
 	if (error) {
 		return error;
 	}
 
 	result->addAnchor(keywords[K_END], result->lines);
 
-	delete[] data;
 	return 0;
 }
 
@@ -1670,6 +1666,7 @@ void TextualParser::addRuleToGrammar(Rule *rule) {
 		result->addRule(rule);
 	}
 	else {
+		result->destroyRule(rule);
 		u_fprintf(ux_stderr, "Error: Rule definition attempted outside a section on line %u!\n", result->lines);
 		CG3Quit(1);
 	}
