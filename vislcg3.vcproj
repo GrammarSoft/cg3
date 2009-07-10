@@ -69,13 +69,9 @@
 				AdditionalDependencies="icuuc.lib icuio.lib icuin.lib WSock32.Lib"
 				OutputFile="$(OutDir)/vislcg3.exe"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories=""
-				IgnoreDefaultLibraryNames=""
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(OutDir)/vislcg3.pdb"
 				SubSystem="1"
-				RandomizedBaseAddress="1"
-				DataExecutionPrevention="0"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -131,7 +127,7 @@
 				MinimalRebuild="true"
 				BufferSecurityCheck="false"
 				ForceConformanceInForLoopScope="true"
-				WarningLevel="3"
+				WarningLevel="4"
 				DebugInformationFormat="3"
 			/>
 			<Tool
