@@ -37,6 +37,7 @@ ApertiumApplicator::ApertiumApplicator(UFILE *ux_in, UFILE *ux_out, UFILE *ux_er
 	: GrammarApplicator(ux_in, ux_out, ux_err) 
 {
 	nullFlush=false;
+	wordform_case = false;
 	runningWithNullFlush=false;
 	fgetc_converter=0;
 }
@@ -586,35 +587,37 @@ ApertiumApplicator::printReading(Reading *reading, UFILE *output)
 		UChar *bf = single_tags[reading->baseform]->tag;
 		// Lop off the initial and final '"' characters
 		bf = ux_substr(bf, 1, u_strlen(bf)-1);
-		
-		// Use surface/wordform case, since lt-proc might've
-		// been called with "-w" option (dictionary case on
-		// lemma/basefrom)
-		UChar *wf = single_tags[reading->wordform]->tag;
-		// Lop off the initial and final '"<>' characters
-		wf = ux_substr(wf, 2, u_strlen(wf)-2);
 
-		// this corresponds to fst_processor.cc in lttoolbox:
- 		bool firstupper = iswupper(wf[0]);
-		bool uppercase = firstupper && iswupper(wf[u_strlen(wf)-1]);
+		if (wordform_case) {
+			// Use surface/wordform case, eg. if lt-proc
+			// was called with "-w" option (which puts
+			// dictionary case on lemma/basefrom)
+			UChar *wf = single_tags[reading->wordform]->tag;
+			// Lop off the initial and final '"<>' characters
+			wf = ux_substr(wf, 2, u_strlen(wf)-2);
 
-		if (uppercase) {
-			for(int i=0; i<u_strlen(bf); i++) {
-				bf[i] = u_toupper(bf[i]);
+			// this corresponds to fst_processor.cc in lttoolbox:
+			bool firstupper = iswupper(wf[0]);
+			bool uppercase = firstupper && iswupper(wf[u_strlen(wf)-1]);
+
+			if (uppercase) {
+				for(int i=0; i<u_strlen(bf); i++) {
+					bf[i] = u_toupper(bf[i]);
+				}
+			} else {
+				if (firstupper) {
+					bf[0] = u_toupper(bf[0]);
+				}			
+				for(int i=1; i<u_strlen(bf); i++) {
+					bf[i] = u_tolower(bf[i]);
+				}
 			}
-		} else {
-			if (firstupper) {
-				bf[0] = u_toupper(bf[0]);
-			}			
-			for(int i=1; i<u_strlen(bf); i++) {
-				bf[i] = u_tolower(bf[i]);
-			}
-		}
+			wf = 0;
+		} // if (wordform_case)
 		
 		u_fprintf(output, "%S", bf);
 		
 		bf = 0;
-		wf = 0;
 		
 		// Tag::printTagRaw(output, single_tags[reading->baseform]);
 	}

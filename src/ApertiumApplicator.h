@@ -39,6 +39,7 @@ namespace CG3 {
 		virtual int runGrammarOnText(UFILE *input, UFILE *output);
 
 		bool getNullFlush();
+		bool wordform_case;
 		void setNullFlush(bool pNullFlush);
 		
 	protected:
