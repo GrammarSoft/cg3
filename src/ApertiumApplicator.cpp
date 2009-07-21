@@ -28,6 +28,8 @@
 #include "SingleWindow.h"
 #include "Reading.h"
 
+#define LENGTHOF(array) (sizeof(array)/sizeof((array)[0]))
+
 using namespace CG3;
 using namespace CG3::Strings;
 
@@ -387,24 +389,6 @@ ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output)
 				u_fflush(ux_stderr);
 			}
 		} // end reading
-// TODO: This _should_ be taken care of by superblanks, right? -KBU
-// 		else {
-// 			ux_trim(cleaned);
-// 			if (u_strlen(cleaned) > 0) {
-// 				if (lReading && lCohort) {
-// 					lCohort->text_post = ux_append(lCohort->text_post, line);
-// 				}
-// 				else if (lCohort) {
-// 					lCohort->text_pre = ux_append(lCohort->text_pre, line);
-// 				}
-// 				else if (lSWindow) {
-// 					lSWindow->text = ux_append(lSWindow->text, line);
-// 				}
-// 				else {
-// 					u_fprintf(output, "%S", line);
-// 				}
-// 			}
-// 		}
 		numLines++;
 		inchar = 0;
 	} // end input loop
@@ -599,14 +583,40 @@ ApertiumApplicator::printReading(Reading *reading, UFILE *output)
 	}
 
 	if (reading->baseform) {
-
-		// Lop off the initial and final '"' characters 
 		UChar *bf = single_tags[reading->baseform]->tag;
-		u_fprintf(output, "%S", ux_substr(bf, 1, u_strlen(bf)-1));
-
-		bf = 0;
+		// Lop off the initial and final '"' characters
+		bf = ux_substr(bf, 1, u_strlen(bf)-1);
 		
-//		Tag::printTagRaw(output, single_tags[reading->baseform]);
+		// Use surface/wordform case, since lt-proc might've
+		// been called with "-w" option (dictionary case on
+		// lemma/basefrom)
+		UChar *wf = single_tags[reading->wordform]->tag;
+		// Lop off the initial and final '"<>' characters
+		wf = ux_substr(wf, 2, u_strlen(wf)-2);
+
+		// this corresponds to fst_processor.cc in lttoolbox:
+ 		bool firstupper = iswupper(wf[0]);
+		bool uppercase = firstupper && iswupper(wf[u_strlen(wf)-1]);
+
+		if (uppercase) {
+			for(int i=0; i<u_strlen(bf); i++) {
+				bf[i] = u_toupper(bf[i]);
+			}
+		} else {
+			if (firstupper) {
+				bf[0] = u_toupper(bf[0]);
+			}			
+			for(int i=1; i<u_strlen(bf); i++) {
+				bf[i] = u_tolower(bf[i]);
+			}
+		}
+		
+		u_fprintf(output, "%S", bf);
+		
+		bf = 0;
+		wf = 0;
+		
+		// Tag::printTagRaw(output, single_tags[reading->baseform]);
 	}
 
 	uint32HashMap used_tags;
@@ -683,6 +693,6 @@ ApertiumApplicator::printSingleWindow(SingleWindow *window, UFILE *output)
 			u_fprintf(output, "%S", cohort->text_post);
 		}
 		
-		u_fflush(output); // KBU
+		u_fflush(output); 
 	}
 }
