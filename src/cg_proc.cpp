@@ -57,6 +57,8 @@ endProgram(char *name)
 	cout << "				   where `0' is VISL format and `1' is " << endl;
 	cout << "				   Apertium format (default: 1)" << endl;
 	cout << "	-t, --trace:		 print debug output on stderr" << endl;
+	cout << "	-w, --wordform-case:	 enforce surface case on lemma/baseform " << endl;
+	cout << "				   (to work with -w option of lt-proc)" << endl;
 	cout << "	-v, --version:	 	 version" << endl;
 	cout << "	-h, --help:		 show this help" << endl;
 #else
@@ -66,6 +68,8 @@ endProgram(char *name)
 	cout << "		   where `0' is VISL format and `1' is " << endl;
 	cout << "		   Apertium format (default: 1)" << endl;
 	cout << "	-t:	 print debug output on stderr" << endl;
+	cout << "	-w:	 enforce surface case on lemma/baseform " << endl;
+	cout << "		   (to work with -w option of lt-proc)" << endl;
 	cout << "	-v:	 version" << endl;
 	cout << "	-h:	 show this help" << endl;
 #endif
@@ -76,6 +80,7 @@ int
 main(int argc, char *argv[])
 {
 	int trace = 0;
+	int wordform_case = 0;
 	int cmd = 0;
 	int sections = 0;
 	int stream_format = 1;
@@ -94,6 +99,7 @@ main(int argc, char *argv[])
 		{"sections", 		0, 0, 's'},
 		{"stream-format",	0, 0, 'f'},
 		{"trace", 		0, 0, 't'},
+		{"wordform-case",	0, 0, 'w'},
 		{"version",   		0, 0, 'v'},
 		{"help",		0, 0, 'h'},
 		{"null-flush",		0, 0, 'z'}
@@ -105,9 +111,9 @@ main(int argc, char *argv[])
 	while(c != -1) {
 #if HAVE_GETOPT_LONG
 		int option_index;
-		c = getopt_long(argc, argv, "ds:f:tvhz", long_options, &option_index);
+		c = getopt_long(argc, argv, "ds:f:twvhz", long_options, &option_index);
 #else
-		c = getopt(argc, argv, "ds:f:tvhz");
+		c = getopt(argc, argv, "ds:f:twvhz");
 #endif		
 		if(c == -1) {
 			break;
@@ -133,6 +139,10 @@ main(int argc, char *argv[])
 
 			case 's':
 				sections = atoi(optarg);
+				break;
+				
+			case 'w':
+				wordform_case = 1;
 				break;
 
 			case 'v':
@@ -259,6 +269,9 @@ main(int argc, char *argv[])
 		CG3::ApertiumApplicator* apertiumApplicator= new CG3::ApertiumApplicator(ux_stdin, ux_stdout, ux_stderr);
 		apertiumApplicator->setNullFlush(nullFlush);
 		applicator = apertiumApplicator;
+		if(wordform_case == 1) {
+			apertiumApplicator->wordform_case = true;
+		}
 	}
 
 	applicator->setGrammar(&grammar);
