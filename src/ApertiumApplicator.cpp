@@ -597,19 +597,19 @@ ApertiumApplicator::printReading(Reading *reading, UFILE *output)
 			wf = ux_substr(wf, 2, u_strlen(wf)-2);
 
 			// this corresponds to fst_processor.cc in lttoolbox:
-			bool firstupper = iswupper(wf[0]);
-			bool uppercase = firstupper && iswupper(wf[u_strlen(wf)-1]);
+			bool firstupper = (u_isupper(wf[0]) != 0); // simply casting will not silence the warning - Tino Didriksen
+			bool uppercase = firstupper && u_isupper(wf[u_strlen(wf)-1]);
 
 			if (uppercase) {
 				for(int i=0; i<u_strlen(bf); i++) {
-					bf[i] = u_toupper(bf[i]);
+					bf[i] = static_cast<UChar>(u_toupper(bf[i]));
 				}
 			} else {
 				if (firstupper) {
-					bf[0] = u_toupper(bf[0]);
+					bf[0] = static_cast<UChar>(u_toupper(bf[0]));
 				}			
 				for(int i=1; i<u_strlen(bf); i++) {
-					bf[i] = u_tolower(bf[i]);
+					bf[i] = static_cast<UChar>(u_tolower(bf[i]));
 				}
 			}
 			wf = 0;
