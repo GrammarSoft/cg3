@@ -40,10 +40,8 @@ using CG3::CG3Quit;
 
 void endProgram(char *name);
 
-void 
-endProgram(char *name)
-{
-	if(name != NULL) {
+void endProgram(char *name) {
+	if (name != NULL) {
 		fprintf(stdout, "VISL CG-3 Compiler version %u.%u.%u.%u\n",
 			CG3_VERSION_MAJOR, CG3_VERSION_MINOR, CG3_VERSION_PATCH, CG3_REVISION);
 		cout << basename(name) << ": compile a binary grammar from a text file" << endl;
@@ -52,15 +50,13 @@ endProgram(char *name)
 	exit(EXIT_FAILURE);
 }
 
-int 
-main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
 	UFILE *ux_stderr = 0;
 	UErrorCode status = U_ZERO_ERROR;
 
 	U_MAIN_INIT_ARGS(argc, argv);
 
-	if(argc != 3) {
+	if (argc != 3) {
 		endProgram(argv[0]);
 	}
 

@@ -109,7 +109,7 @@ int GrammarWriter::writeGrammar(UFILE *output) {
 	if (!grammar->preferred_targets.empty()) {
 		u_fprintf(output, "PREFERRED-TARGETS = ");
 		uint32Vector::const_iterator iter;
-		for(iter = grammar->preferred_targets.begin() ; iter != grammar->preferred_targets.end() ; iter++ ) {
+		for (iter = grammar->preferred_targets.begin() ; iter != grammar->preferred_targets.end() ; iter++ ) {
 			printTag(output, grammar->single_tags.find(*iter)->second);
 			u_fprintf(output, " ");
 		}
@@ -138,7 +138,7 @@ int GrammarWriter::writeGrammar(UFILE *output) {
 	bool found = false;
 	RuleByLineMap rule_by_line;
 	rule_by_line.insert(grammar->rule_by_line.begin(), grammar->rule_by_line.end());
-	const_foreach(RuleByLineMap, rule_by_line, rule_iter, rule_iter_end) {
+	const_foreach (RuleByLineMap, rule_by_line, rule_iter, rule_iter_end) {
 		const Rule *r = rule_iter->second;
 		if (r->section == -1) {
 			if (!found) {
@@ -149,7 +149,7 @@ int GrammarWriter::writeGrammar(UFILE *output) {
 			u_fprintf(output, " ;\n");
 		}
 	}
-	const_foreach(uint32Vector, grammar->sections, isec, isec_end) {
+	const_foreach (uint32Vector, grammar->sections, isec, isec_end) {
 		found = false;
 		for (rule_iter = rule_by_line.begin() ; rule_iter != rule_by_line.end() ; rule_iter++) {
 			const Rule *r = rule_iter->second;

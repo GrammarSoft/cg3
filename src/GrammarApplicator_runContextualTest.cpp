@@ -488,7 +488,7 @@ Cohort *GrammarApplicator::runDependencyTest(SingleWindow *sWindow, const Cohort
 			}
 		}
 
-		const_foreach(uint32HashSet, *deps, dter, dter_end) {
+		const_foreach (uint32HashSet, *deps, dter, dter_end) {
 			if (*dter == current->global_number) {
 				continue;
 			}

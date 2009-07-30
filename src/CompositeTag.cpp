@@ -54,7 +54,7 @@ uint32_t CompositeTag::rehash() {
 
 void CompositeTag::markUsed() {
 	is_used = true;
-	foreach(TagSet, tags_set, itag, itag_end) {
+	foreach (TagSet, tags_set, itag, itag_end) {
 		(*itag)->markUsed();
 	}
 }

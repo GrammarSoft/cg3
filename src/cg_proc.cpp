@@ -42,9 +42,7 @@ using CG3::CG3Quit;
 void endProgram(char *name);
 
 
-void 
-endProgram(char *name)
-{
+void endProgram(char *name) {
 	fprintf(stdout, "VISL CG-3 Disambiguator version %u.%u.%u.%u\n",
 		CG3_VERSION_MAJOR, CG3_VERSION_MINOR, CG3_VERSION_PATCH, CG3_REVISION);
 	cout << basename(name) <<": process a stream with a constraint grammar" << endl;
@@ -76,9 +74,7 @@ endProgram(char *name)
 	exit(EXIT_FAILURE);
 }
 
-int 
-main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
 	int trace = 0;
 	int wordform_case = 0;
 	int cmd = 0;
@@ -106,23 +102,23 @@ main(int argc, char *argv[])
 	};
 #endif
 
-	// This is to make pedantic compilers not complain about the while(true) condition...silly MSVC.
+	// This is to make pedantic compilers not complain about the while (true) condition...silly MSVC.
 	int c = 0;
-	while(c != -1) {
+	while (c != -1) {
 #if HAVE_GETOPT_LONG
 		int option_index;
 		c = getopt_long(argc, argv, "ds:f:twvhz", long_options, &option_index);
 #else
 		c = getopt(argc, argv, "ds:f:twvhz");
 #endif		
-		if(c == -1) {
+		if (c == -1) {
 			break;
 		}
 			
 		switch(c) {
 
 			case 'd':
-				if(cmd == 0) {
+				if (cmd == 0) {
 					cmd = c;
 				}
 				else {
@@ -184,22 +180,22 @@ main(int argc, char *argv[])
 
 	CG3::IGrammarParser *parser = 0;
 	
-	if(optind == (argc - 3)) {
+	if (optind == (argc - 3)) {
 
 		FILE *in = fopen(argv[optind], "rb");
-		if(in == NULL || ferror(in)) {
+		if (in == NULL || ferror(in)) {
 			endProgram(argv[0]);
 		}
 		
 		u_fclose(ux_stdin);
 		ux_stdin = u_fopen(argv[optind+1], "rb", locale_default, codepage_default);
-		if(ux_stdin == NULL) {
+		if (ux_stdin == NULL) {
 			endProgram(argv[0]);
 		}
 		
 		u_fclose(ux_stdout);
 		ux_stdout = u_fopen(argv[optind+2], "wb", locale_default, codepage_default);
-		if(ux_stdout == NULL) {
+		if (ux_stdout == NULL) {
 			endProgram(argv[0]);
 		}
 
@@ -207,16 +203,16 @@ main(int argc, char *argv[])
 		fclose(in);
 
 	}
-	else if(optind == (argc -2)) {
+	else if (optind == (argc -2)) {
 
 		FILE *in = fopen(argv[optind], "rb");
-		if(in == NULL || ferror(in)) {
+		if (in == NULL || ferror(in)) {
 			endProgram(argv[0]);
 		}
 		
 		u_fclose(ux_stdin);
 		ux_stdin = u_fopen(argv[optind+1], "rb", locale_default, codepage_default);
-		if(ux_stdin == NULL) {
+		if (ux_stdin == NULL) {
 			endProgram(argv[0]);
 		}
 		
@@ -224,10 +220,10 @@ main(int argc, char *argv[])
 		fclose(in);
 		
 	}
-	else if(optind == (argc - 1)) {
+	else if (optind == (argc - 1)) {
 
 		FILE *in = fopen(argv[optind], "rb");
-		if(in == NULL || ferror(in)) {
+		if (in == NULL || ferror(in)) {
 			endProgram(argv[0]);
 		}
 

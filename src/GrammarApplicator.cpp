@@ -89,7 +89,7 @@ GrammarApplicator::~GrammarApplicator() {
 		}
 	}
 
-	foreach(RSType, runsections, rsi, rsi_end) {
+	foreach (RSType, runsections, rsi, rsi_end) {
 		delete rsi->second;
 		rsi->second = 0;
 	}

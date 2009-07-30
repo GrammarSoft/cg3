@@ -36,7 +36,7 @@ SingleWindow::SingleWindow(Window *p) {
 }
 
 SingleWindow::~SingleWindow() {
-	foreach(std::vector<Cohort*>, cohorts, iter, iter_end) {
+	foreach (std::vector<Cohort*>, cohorts, iter, iter_end) {
 		delete (*iter);
 	}
 	if (next && previous) {
@@ -51,7 +51,7 @@ SingleWindow::~SingleWindow() {
 			previous->next = 0;
 		}
 	}
-	foreach(RuleToCohortsMap, rule_to_cohorts, rocit, rocit_end) {
+	foreach (RuleToCohortsMap, rule_to_cohorts, rocit, rocit_end) {
 		//rocit->second->clear();
 		delete rocit->second;
 		rocit->second = 0;
