@@ -38,7 +38,6 @@ Grammar::Grammar() {
 	sets_any = 0;
 	rules_any = 0;
 	mapping_prefix = '@';
-	srand((unsigned int)time(0));
 }
 
 Grammar::~Grammar() {
@@ -224,7 +223,8 @@ CompositeTag *Grammar::addCompositeTag(CompositeTag *tag) {
 			tags_list.push_back(tag);
 			tag->number = (uint32_t)tags_list.size()-1;
 		}
-	} else {
+	}
+	else {
 		u_fprintf(ux_stderr, "Error: Attempted to add empty composite tag to grammar on line %u!\n", lines);
 		CG3Quit(1);
 	}
@@ -237,7 +237,8 @@ CompositeTag *Grammar::addCompositeTagToSet(Set *set, CompositeTag *tag) {
 			addTagToSet(rtag, set);
 			delete tag;
 			tag = 0;
-		} else {
+		}
+		else {
 			tag = addCompositeTag(tag);
 			set->tags_set.insert(tag->hash);
 			set->tags.insert(tag);
@@ -245,7 +246,8 @@ CompositeTag *Grammar::addCompositeTagToSet(Set *set, CompositeTag *tag) {
 				set->is_special = true;
 			}
 		}
-	} else {
+	}
+	else {
 		u_fprintf(ux_stderr, "Error: Attempted to add empty composite tag to grammar and set on line %u!\n", lines);
 		CG3Quit(1);
 	}
@@ -308,7 +310,8 @@ Tag *Grammar::allocateTag(const UChar *txt) {
 void Grammar::addTagToCompositeTag(Tag *simpletag, CompositeTag *tag) {
 	if (simpletag && simpletag->tag) {
 		tag->addTag(simpletag);
-	} else {
+	}
+	else {
 		u_fprintf(ux_stderr, "Error: Attempted to add empty tag to grammar and composite tag on line %u!\n", lines);
 		CG3Quit(1);
 	}
@@ -567,14 +570,16 @@ void Grammar::indexSetToRule(uint32_t r, Set *s) {
 			CompositeTag *curcomptag = *comp_iter;
 			if (curcomptag->tags.size() == 1) {
 				indexTagToRule((*(curcomptag->tags.begin()))->hash, r);
-			} else {
+			}
+			else {
 				TagSet::const_iterator tag_iter;
 				for (tag_iter = curcomptag->tags_set.begin() ; tag_iter != curcomptag->tags_set.end() ; tag_iter++) {
 					indexTagToRule((*tag_iter)->hash, r);
 				}
 			}
 		}
-	} else if (!s->sets.empty()) {
+	}
+	else if (!s->sets.empty()) {
 		for (uint32_t i=0;i<s->sets.size();i++) {
 			Set *set = sets_by_contents.find(s->sets.at(i))->second;
 			indexSetToRule(r, set);
@@ -607,14 +612,16 @@ void Grammar::indexSets(uint32_t r, Set *s) {
 			CompositeTag *curcomptag = *comp_iter;
 			if (curcomptag->tags.size() == 1) {
 				indexTagToSet((*(curcomptag->tags.begin()))->hash, r);
-			} else {
+			}
+			else {
 				TagSet::const_iterator tag_iter;
 				for (tag_iter = curcomptag->tags_set.begin() ; tag_iter != curcomptag->tags_set.end() ; tag_iter++) {
 					indexTagToSet((*tag_iter)->hash, r);
 				}
 			}
 		}
-	} else if (!s->sets.empty()) {
+	}
+	else if (!s->sets.empty()) {
 		for (uint32_t i=0;i<s->sets.size();i++) {
 			Set *set = sets_by_contents.find(s->sets.at(i))->second;
 			indexSets(r, set);

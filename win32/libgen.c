@@ -15,11 +15,13 @@ char* basename(char *path) {
 			else
 				return pos; // else return a pointer to \
 
-		} else { // If a \ char was NOT found
+		}
+		else { // If a \ char was NOT found
 			return path; // return the pointer passed to basename (this is probably non-conformant)
 		}
 
-	} else { // If path == NULL, return "."
+	}
+	else { // If path == NULL, return "."
 		return ".";
 	}
 }

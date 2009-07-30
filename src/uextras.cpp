@@ -181,7 +181,8 @@ UChar *ux_append(UChar *target, const UChar *data) {
 		tmp[0] = 0;
 		u_strcat(tmp, data);
 		target = tmp;
-	} else {
+	}
+	else {
 		uint32_t length = u_strlen(target)+u_strlen(data)+1;
 		tmp = new UChar[length];
 		tmp[0] = 0;
@@ -208,7 +209,8 @@ UChar *ux_append(UChar *target, const UChar data)
 		u_strcat(tmp, char_tmp);
 		delete[] target;
 		target = tmp;
-	} else {
+	}
+	else {
 		uint32_t length = u_strlen(target)+u_strlen(char_tmp)+1;
 		tmp = new UChar[length];
 		tmp[0] = 0;

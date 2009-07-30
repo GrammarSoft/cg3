@@ -36,13 +36,17 @@ bool GrammarApplicator::wouldParentChildLoop(Cohort *parent, Cohort *child) {
 
 	if (parent->global_number == child->global_number) {
 		retval = true;
-	} else if (parent->global_number == child->dep_parent) {
+	}
+	else if (parent->global_number == child->dep_parent) {
 		retval = false;
-	} else if (parent->global_number == parent->dep_parent) {
+	}
+	else if (parent->global_number == parent->dep_parent) {
 		retval = false;
-	} else if (parent->dep_parent == child->global_number) {
+	}
+	else if (parent->dep_parent == child->global_number) {
 		retval = true;
-	} else {
+	}
+	else {
 		for (;i<1000;i++) {
 			if (parent->dep_parent == 0 || parent->dep_parent == UINT_MAX) {
 				retval = false;
@@ -50,7 +54,8 @@ bool GrammarApplicator::wouldParentChildLoop(Cohort *parent, Cohort *child) {
 			}
 			if (gWindow->cohort_map.find(parent->dep_parent) != gWindow->cohort_map.end()) {
 				parent = gWindow->cohort_map.find(parent->dep_parent)->second;
-			} else {
+			}
+			else {
 				break;
 			}
 			if (parent->dep_parent == child->global_number) {
@@ -71,37 +76,37 @@ bool GrammarApplicator::wouldParentChildLoop(Cohort *parent, Cohort *child) {
 	return retval;
 }
 
-bool GrammarApplicator::attachParentChild(Cohort *parent, Cohort *child, bool allowloop) {
-	parent->dep_self = parent->global_number;
-	child->dep_self = child->global_number;
+bool GrammarApplicator::attachParentChild(Cohort &parent, Cohort &child, bool allowloop) {
+	parent.dep_self = parent.global_number;
+	child.dep_self = child.global_number;
 
-	if (!allowloop && dep_block_loops && wouldParentChildLoop(parent, child)) {
+	if (!allowloop && dep_block_loops && wouldParentChildLoop(&parent, &child)) {
 		if (verbosity_level > 0) {
 			u_fprintf(
 				ux_stderr,
 				"Warning: Dependency between %u and %u would cause a loop. Will not attach them.\n",
-				child->global_number, parent->global_number
+				child.global_number, parent.global_number
 				);
 		}
 		return false;
 	}
 
-	if (child->dep_parent == UINT_MAX) {
-		child->dep_parent = child->dep_self;
+	if (child.dep_parent == UINT_MAX) {
+		child.dep_parent = child.dep_self;
 	}
-	gWindow->cohort_map.find(child->dep_parent)->second->remChild(child->dep_self);
+	gWindow->cohort_map.find(child.dep_parent)->second->remChild(child.dep_self);
 
-	child->dep_parent = parent->global_number;
-	parent->addChild(child->global_number);
+	child.dep_parent = parent.global_number;
+	parent.addChild(child.global_number);
 
-	parent->dep_done = true;
-	child->dep_done = true;
+	parent.dep_done = true;
+	child.dep_done = true;
 
-	if (!dep_has_spanned && child->parent != parent->parent) {
+	if (!dep_has_spanned && child.parent != parent.parent) {
 		u_fprintf(
 			ux_stderr,
 			"Info: Dependency between %u and %u spans the window boundaries. Enumeration will be global from here on.\n",
-			child->global_number, parent->global_number
+			child.global_number, parent.global_number
 			);
 		dep_has_spanned = true;
 	}
@@ -183,27 +188,27 @@ void GrammarApplicator::reflowDependencyWindow(uint32_t max) {
 	}
 }
 
-void GrammarApplicator::reflowReading(Reading *reading) {
-	reading->tags.clear();
-	reading->tags_plain.clear();
-	reading->tags_textual.clear();
-	reading->tags_numerical.clear();
-	reading->possible_sets.clear();
-	reading->mapping = 0;
+void GrammarApplicator::reflowReading(Reading &reading) {
+	reading.tags.clear();
+	reading.tags_plain.clear();
+	reading.tags_textual.clear();
+	reading.tags_numerical.clear();
+	reading.possible_sets.clear();
+	reading.mapping = 0;
 
 	if (grammar->sets_any && !grammar->sets_any->empty()) {
-		reading->parent->possible_sets.insert(grammar->sets_any->begin(), grammar->sets_any->end());
-		reading->possible_sets.insert(grammar->sets_any->begin(), grammar->sets_any->end());
+		reading.parent->possible_sets.insert(grammar->sets_any->begin(), grammar->sets_any->end());
+		reading.possible_sets.insert(grammar->sets_any->begin(), grammar->sets_any->end());
 	}
 
-	const_foreach (uint32List, reading->tags_list, tter, tter_end) {
+	const_foreach (uint32List, reading.tags_list, tter, tter_end) {
 		addTagToReading(reading, *tter, false);
 	}
 
-	reading->rehash();
+	reading.rehash();
 }
 
-void GrammarApplicator::addTagToReading(Reading *reading, uint32_t utag, bool rehash) {
+void GrammarApplicator::addTagToReading(Reading &reading, uint32_t utag, bool rehash) {
 	Tag *tag = single_tags.find(utag)->second;
 
 	if (tag->type & T_VARSTRING && !regexgrps.empty()) {
@@ -266,81 +271,81 @@ void GrammarApplicator::addTagToReading(Reading *reading, uint32_t utag, bool re
 	}
 
 	if (grammar->sets_by_tag.find(utag) != grammar->sets_by_tag.end()) {
-		reading->parent->possible_sets.insert(grammar->sets_by_tag.find(utag)->second->begin(), grammar->sets_by_tag.find(utag)->second->end());
-		reading->possible_sets.insert(grammar->sets_by_tag.find(utag)->second->begin(), grammar->sets_by_tag.find(utag)->second->end());
+		reading.parent->possible_sets.insert(grammar->sets_by_tag.find(utag)->second->begin(), grammar->sets_by_tag.find(utag)->second->end());
+		reading.possible_sets.insert(grammar->sets_by_tag.find(utag)->second->begin(), grammar->sets_by_tag.find(utag)->second->end());
 	}
-	if (reading->tags.find(utag) == reading->tags.end()) {
-		reading->tags.insert(utag);
-		reading->tags_list.push_back(utag);
+	if (reading.tags.find(utag) == reading.tags.end()) {
+		reading.tags.insert(utag);
+		reading.tags_list.push_back(utag);
 	}
 	if (grammar->parentheses.find(utag) != grammar->parentheses.end()) {
-		reading->parent->is_pleft = utag;
+		reading.parent->is_pleft = utag;
 	}
 	if (grammar->parentheses_reverse.find(utag) != grammar->parentheses_reverse.end()) {
-		reading->parent->is_pright = utag;
+		reading.parent->is_pright = utag;
 	}
 
 	if (tag->type & T_MAPPING || tag->tag[0] == grammar->mapping_prefix) {
-		if (reading->mapping && reading->mapping != tag) {
+		if (reading.mapping && reading.mapping != tag) {
 			u_fprintf(ux_stderr, "Error: addTagToReading() cannot add a mapping tag to a reading which already is mapped!\n");
 			CG3Quit(1);
 		}
-		reading->mapping = tag;
+		reading.mapping = tag;
 	}
 	if (tag->type & (T_TEXTUAL|T_WORDFORM|T_BASEFORM)) {
-		reading->tags_textual.insert(utag);
+		reading.tags_textual.insert(utag);
 	}
 	if (tag->type & T_NUMERICAL) {
-		reading->tags_numerical[utag] = tag;
-		reading->parent->num_is_current = false;
+		reading.tags_numerical[utag] = tag;
+		reading.parent->num_is_current = false;
 	}
-	if (!reading->baseform && tag->type & T_BASEFORM) {
-		reading->baseform = tag->hash;
+	if (!reading.baseform && tag->type & T_BASEFORM) {
+		reading.baseform = tag->hash;
 	}
-	if (!reading->wordform && tag->type & T_WORDFORM) {
-		reading->wordform = tag->hash;
+	if (!reading.wordform && tag->type & T_WORDFORM) {
+		reading.wordform = tag->hash;
 	}
-	if (grammar->has_dep && tag->type & T_DEPENDENCY && !reading->parent->dep_done) {
-		reading->parent->dep_self = tag->dep_self;
-		reading->parent->dep_parent = tag->dep_parent;
+	if (grammar->has_dep && tag->type & T_DEPENDENCY && !reading.parent->dep_done) {
+		reading.parent->dep_self = tag->dep_self;
+		reading.parent->dep_parent = tag->dep_parent;
 		if (tag->dep_parent == tag->dep_self) {
-			reading->parent->dep_parent = UINT_MAX;
+			reading.parent->dep_parent = UINT_MAX;
 		}
 		has_dep = true;
 	}
 	if (!tag->is_special) {
-		reading->tags_plain.insert(utag);
+		reading.tags_plain.insert(utag);
 	}
 	if (rehash) {
-		reading->rehash();
+		reading.rehash();
 	}
 }
 
-void GrammarApplicator::delTagFromReading(Reading *reading, uint32_t utag) {
-	reading->tags_list.remove(utag);
-	reading->tags.erase(utag);
-	reading->tags_textual.erase(utag);
-	reading->tags_numerical.erase(utag);
-	reading->tags_plain.erase(utag);
-	if (utag == reading->mapping->hash) {
-		reading->mapping = 0;
+void GrammarApplicator::delTagFromReading(Reading &reading, uint32_t utag) {
+	reading.tags_list.remove(utag);
+	reading.tags.erase(utag);
+	reading.tags_textual.erase(utag);
+	reading.tags_numerical.erase(utag);
+	reading.tags_plain.erase(utag);
+	if (utag == reading.mapping->hash) {
+		reading.mapping = 0;
 	}
-	reading->rehash();
-	reading->parent->num_is_current = false;
+	reading.rehash();
+	reading.parent->num_is_current = false;
 }
 
-void GrammarApplicator::splitMappings(TagList mappings, Cohort *cohort, Reading *reading, bool mapped) {
-	if (reading->mapping) {
-		mappings.push_back(reading->mapping);
-		delTagFromReading(reading, reading->mapping->hash);
+void GrammarApplicator::splitMappings(TagList mappings, Cohort &cohort, Reading &reading, bool mapped) {
+	if (reading.mapping) {
+		mappings.push_back(reading.mapping);
+		delTagFromReading(reading, reading.mapping->hash);
 	}
 	Tag *tag = mappings.back();
 	mappings.pop_back();
 	foreach (TagList, mappings, ttag, ttag_end) {
 		// To avoid duplicating needlessly many times, check for a similar reading in the cohort that's already got this mapping
 		bool found = false;
-		foreach(std::list<Reading*>, cohort->readings, itr, itr_end) {
-			if ((*itr)->hash_plain == reading->hash_plain
+		foreach(std::list<Reading*>, cohort.readings, itr, itr_end) {
+			if ((*itr)->hash_plain == reading.hash_plain
 				&& (*itr)->mapping
 				&& (*itr)->mapping->hash == (*ttag)->hash
 				) {
@@ -351,22 +356,22 @@ void GrammarApplicator::splitMappings(TagList mappings, Cohort *cohort, Reading 
 		if (found) {
 			continue;
 		}
-		Reading *nr = new Reading(cohort);
+		Reading *nr = new Reading(&cohort);
 		nr->duplicateFrom(reading);
 		nr->mapped = mapped;
-		addTagToReading(nr, (*ttag)->hash);
+		addTagToReading(*nr, (*ttag)->hash);
 		nr->mapping = *ttag;
-		cohort->appendReading(nr);
+		cohort.appendReading(nr);
 		numReadings++;
 	}
-	reading->mapped = mapped;
+	reading.mapped = mapped;
 	addTagToReading(reading, tag->hash);
-	reading->mapping = tag;
+	reading.mapping = tag;
 }
 
-void GrammarApplicator::mergeMappings(Cohort *cohort) {
+void GrammarApplicator::mergeMappings(Cohort &cohort) {
 	std::map<uint32_t, std::list<Reading*> > mlist;
-	foreach (std::list<Reading*>, cohort->readings, iter, iter_end) {
+	foreach (std::list<Reading*>, cohort.readings, iter, iter_end) {
 		Reading *r = *iter;
 		uint32_t hp = r->hash_plain;
 		if (trace) {
@@ -377,18 +382,18 @@ void GrammarApplicator::mergeMappings(Cohort *cohort) {
 		mlist[hp].push_back(r);
 	}
 
-	if (mlist.size() == cohort->readings.size()) {
+	if (mlist.size() == cohort.readings.size()) {
 		return;
 	}
 
-	cohort->readings.clear();
+	cohort.readings.clear();
 	std::vector<Reading*> order;
 
 	std::map<uint32_t, std::list<Reading*> >::iterator miter;
 	for (miter = mlist.begin() ; miter != mlist.end() ; miter++) {
 		std::list<Reading*> clist = miter->second;
-		Reading *nr = new Reading(cohort);
-		nr->duplicateFrom(clist.front());
+		Reading *nr = new Reading(&cohort);
+		nr->duplicateFrom(*(clist.front()));
 		if (nr->mapping) {
 			nr->tags_list.remove(nr->mapping->hash);
 		}
@@ -402,5 +407,5 @@ void GrammarApplicator::mergeMappings(Cohort *cohort) {
 	}
 
 	std::sort(order.begin(), order.end(), CG3::Reading::cmp_number);
-	cohort->readings.insert(cohort->readings.begin(), order.begin(), order.end());
+	cohort.readings.insert(cohort.readings.begin(), order.begin(), order.end());
 }

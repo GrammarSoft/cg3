@@ -55,7 +55,8 @@ void GrammarWriter::printSet(UFILE *output, const Set *curset) {
 			if (curcomptag->tags.size() == 1) {
 				printTag(output, *(curcomptag->tags.begin()));
 				u_fprintf(output, " ");
-			} else {
+			}
+			else {
 				u_fprintf(output, "(");
 				TagSet::const_iterator tag_iter;
 				for (tag_iter = curcomptag->tags_set.begin() ; tag_iter != curcomptag->tags_set.end() ; tag_iter++) {
@@ -66,7 +67,8 @@ void GrammarWriter::printSet(UFILE *output, const Set *curset) {
 			}
 		}
 		u_fprintf(output, " ;\n");
-	} else if (!curset->sets.empty() && used_sets.find(curset->hash) == used_sets.end()) {
+	}
+	else if (!curset->sets.empty() && used_sets.find(curset->hash) == used_sets.end()) {
 		used_sets.insert(curset->hash);
 		for (uint32_t i=0;i<curset->sets.size();i++) {
 			printSet(output, grammar->sets_by_contents.find(curset->sets.at(i))->second);

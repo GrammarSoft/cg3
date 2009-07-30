@@ -80,25 +80,25 @@ uint32_t Reading::rehash() {
 	return hash;
 }
 
-void Reading::duplicateFrom(Reading *r) {
-	wordform = r->wordform;
-	baseform = r->baseform;
-	hash = r->hash;
-	hash_plain = r->hash_plain;
-	parent = r->parent;
-	mapped = r->mapped;
-	deleted = r->deleted;
-	noprint = r->noprint;
-	mapping = r->mapping;
-	number = r->number;
+void Reading::duplicateFrom(Reading &r) {
+	wordform = r.wordform;
+	baseform = r.baseform;
+	hash = r.hash;
+	hash_plain = r.hash_plain;
+	parent = r.parent;
+	mapped = r.mapped;
+	deleted = r.deleted;
+	noprint = r.noprint;
+	mapping = r.mapping;
+	number = r.number;
 
-	hit_by = r->hit_by;
-	tags_list = r->tags_list;
-	tags = r->tags;
-	tags_plain = r->tags_plain;
-	tags_textual = r->tags_textual;
-	tags_numerical = r->tags_numerical;
-	possible_sets = r->possible_sets;
+	hit_by = r.hit_by;
+	tags_list = r.tags_list;
+	tags = r.tags;
+	tags_plain = r.tags_plain;
+	tags_textual = r.tags_textual;
+	tags_numerical = r.tags_numerical;
+	possible_sets = r.possible_sets;
 }
 
 bool Reading::cmp_number(Reading *a, Reading *b) {

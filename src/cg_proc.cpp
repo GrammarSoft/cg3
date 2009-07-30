@@ -124,7 +124,8 @@ main(int argc, char *argv[])
 			case 'd':
 				if(cmd == 0) {
 					cmd = c;
-				} else {
+				}
+				else {
 					endProgram(argv[0]);
 				}
 				break;
@@ -205,7 +206,8 @@ main(int argc, char *argv[])
 		fread(cbuffers[0], 1, 4, in);
 		fclose(in);
 
-	} else if(optind == (argc -2)) {
+	}
+	else if(optind == (argc -2)) {
 
 		FILE *in = fopen(argv[optind], "rb");
 		if(in == NULL || ferror(in)) {
@@ -221,7 +223,8 @@ main(int argc, char *argv[])
 		fread(cbuffers[0], 1, 4, in);
 		fclose(in);
 		
-	} else if(optind == (argc - 1)) {
+	}
+	else if(optind == (argc - 1)) {
 
 		FILE *in = fopen(argv[optind], "rb");
 		if(in == NULL || ferror(in)) {
@@ -234,16 +237,18 @@ main(int argc, char *argv[])
 		}
 		fclose(in);
 
-	} else {
+	}
+	else {
 		endProgram(argv[0]);
 	}
 
 	if (cbuffers[0][0] == 'C' && cbuffers[0][1] == 'G' && cbuffers[0][2] == '3' && cbuffers[0][3] == 'B') {
 		//std::cerr << "Info: Binary grammar detected." << std::endl;
 		parser = new CG3::BinaryGrammar(grammar, ux_stderr);
-	} else {
+	}
+	else {
 		std::cerr << "Info: Text grammar detected -- to process textual " << std::endl;
-		std::cerr << "grammars, use `vislcg', to compile this grammar, use `cg-comp'" << std::endl;
+		std::cerr << "grammars, use `vislcg3', to compile this grammar, use `cg-comp'" << std::endl;
 
 		//parser = new CG3::TextualParser(ux_stderr);
 		CG3Quit(1);
@@ -263,13 +268,14 @@ main(int argc, char *argv[])
 
 	CG3::GrammarApplicator *applicator = 0;
 
-	if(stream_format == 0) {
+	if (stream_format == 0) {
 		applicator = new CG3::GrammarApplicator(ux_stdin, ux_stdout, ux_stderr);
-	} else {
+	}
+	else {
 		CG3::ApertiumApplicator* apertiumApplicator= new CG3::ApertiumApplicator(ux_stdin, ux_stdout, ux_stderr);
 		apertiumApplicator->setNullFlush(nullFlush);
 		applicator = apertiumApplicator;
-		if(wordform_case == 1) {
+		if (wordform_case == 1) {
 			apertiumApplicator->wordform_case = true;
 		}
 	}
@@ -279,7 +285,7 @@ main(int argc, char *argv[])
 		applicator->sections.push_back(i);
 	}
 
-	if(trace == 1) {
+	if (trace == 1) {
 		applicator->trace = true;
 	}
 
@@ -292,7 +298,8 @@ main(int argc, char *argv[])
 				break;
 		}
 
-	} catch (exception& e) {
+	}
+	catch (exception& e) {
 		cerr << e.what();
 		exit(1);
 	}

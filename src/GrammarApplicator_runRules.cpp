@@ -318,7 +318,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, uint32Set *r
 							cReading->parent->possible_sets.insert(grammar->sets_any->begin(), grammar->sets_any->end());
 							cReading->possible_sets.insert(grammar->sets_any->begin(), grammar->sets_any->end());
 						}
-						addTagToReading(cReading, begintag);
+						addTagToReading(*cReading, begintag);
 
 						cCohort->appendReading(cReading);
 
@@ -337,7 +337,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, uint32Set *r
 						cohort = current->cohorts.back();
 						foreach (std::list<Reading*>, cohort->readings, rter3, rter3_end) {
 							Reading *reading = *rter3;
-							addTagToReading(reading, endtag);
+							addTagToReading(*reading, endtag);
 						}
 						delimited = true;
 						break;
@@ -351,12 +351,12 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, uint32Set *r
 								mappings.push_back(*tter);
 							}
 							else {
-								addTagToReading(reading, (*tter)->hash);
+								addTagToReading(*reading, (*tter)->hash);
 							}
 							updateValidRules(rules, &intersects, (*tter)->hash, reading);
 						}
 						if (!mappings.empty()) {
-							splitMappings(mappings, cohort, reading, rule->type == K_MAP);
+							splitMappings(mappings, *cohort, *reading, rule->type == K_MAP);
 						}
 						if (rule->type == K_MAP) {
 							reading->mapped = true;
@@ -378,9 +378,9 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, uint32Set *r
 							}
 							updateValidRules(rules, &intersects, (*tter)->hash, reading);
 						}
-						reflowReading(reading);
+						reflowReading(*reading);
 						if (!mappings.empty()) {
-							splitMappings(mappings, cohort, reading, true);
+							splitMappings(mappings, *cohort, *reading, true);
 						}
 					}
 					else if (rule->type == K_SUBSTITUTE) {
@@ -427,9 +427,9 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, uint32Set *r
 								}
 								updateValidRules(rules, &intersects, (*tter)->hash, reading);
 							}
-							reflowReading(reading);
+							reflowReading(*reading);
 							if (!mappings.empty()) {
-								splitMappings(mappings, cohort, reading, true);
+								splitMappings(mappings, *cohort, *reading, true);
 							}
 						}
 					}
@@ -438,19 +438,19 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, uint32Set *r
 						numReadings++;
 						reading->hit_by.push_back(rule->line);
 						reading->noprint = false;
-						addTagToReading(reading, cohort->wordform);
+						addTagToReading(*reading, cohort->wordform);
 						TagList mappings;
 						const_foreach (TagList, rule->maplist, tter, tter_end) {
 							if ((*tter)->type & T_MAPPING || (*tter)->tag[0] == grammar->mapping_prefix) {
 								mappings.push_back(*tter);
 							}
 							else {
-								addTagToReading(reading, (*tter)->hash);
+								addTagToReading(*reading, (*tter)->hash);
 							}
 							updateValidRules(rules, &intersects, (*tter)->hash, reading);
 						}
 						if (!mappings.empty()) {
-							splitMappings(mappings, cohort, reading, true);
+							splitMappings(mappings, *cohort, *reading, true);
 						}
 						did_append = rule->line;
 					}
@@ -477,10 +477,10 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, uint32Set *r
 								}
 								if (good) {
 									if (type == K_SETPARENT) {
-										attached = attachParentChild(attach, cohort, (rule->flags & RF_ALLOWLOOP) != 0);
+										attached = attachParentChild(*attach, *cohort, (rule->flags & RF_ALLOWLOOP) != 0);
 									}
 									else {
-										attached = attachParentChild(cohort, attach, (rule->flags & RF_ALLOWLOOP) != 0);
+										attached = attachParentChild(*cohort, *attach, (rule->flags & RF_ALLOWLOOP) != 0);
 									}
 									if (attached) {
 										reading->hit_by.push_back(rule->line);

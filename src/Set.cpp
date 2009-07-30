@@ -65,7 +65,8 @@ void Set::setName(const UChar *to) {
 	if (to) {
 		name = new UChar[u_strlen(to)+1];
 		u_strcpy(name, to);
-	} else {
+	}
+	else {
 		setName((uint32_t)rand());
 	}
 }
@@ -113,7 +114,8 @@ void Set::reindex(Grammar *grammar) {
 				if (tag->is_special) {
 					is_special = true;
 				}
-			} else {
+			}
+			else {
 				TagSet::const_iterator tag_iter;
 				for (tag_iter = curcomptag->tags_set.begin() ; tag_iter != curcomptag->tags_set.end() ; tag_iter++) {
 					Tag *tag = *tag_iter;
@@ -123,7 +125,8 @@ void Set::reindex(Grammar *grammar) {
 				}
 			}
 		}
-	} else if (!sets.empty()) {
+	}
+	else if (!sets.empty()) {
 		for (uint32_t i=0;i<sets.size();i++) {
 			Set *set = grammar->sets_by_contents.find(sets.at(i))->second;
 			set->reindex(grammar);
@@ -151,7 +154,8 @@ void Set::markUsed(Grammar *grammar) {
 			CompositeTag *curcomptag = *comp_iter;
 			curcomptag->markUsed();
 		}
-	} else if (!sets.empty()) {
+	}
+	else if (!sets.empty()) {
 		for (uint32_t i=0;i<sets.size();i++) {
 			Set *set = grammar->sets_by_contents.find(sets.at(i))->second;
 			set->markUsed(grammar);
