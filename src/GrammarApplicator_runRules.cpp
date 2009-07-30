@@ -49,7 +49,7 @@ void GrammarApplicator::updateValidRules(uint32Set *rules, uint32Set *intersects
 	if (grammar->rules_by_tag.find(hash) != grammar->rules_by_tag.end()) {
 		SingleWindow *current = reading->parent->parent;
 		Cohort *c = reading->parent;
-		const_foreach(uint32HashSet, (*(grammar->rules_by_tag.find(hash)->second)), rsit, rsit_end) {
+		const_foreach (uint32HashSet, (*(grammar->rules_by_tag.find(hash)->second)), rsit, rsit_end) {
 			updateRuleToCohorts(c, *rsit);
 		}
 
@@ -62,14 +62,14 @@ void GrammarApplicator::updateValidRules(uint32Set *rules, uint32Set *intersects
 void GrammarApplicator::indexSingleWindow(SingleWindow *current) {
 	current->valid_rules.clear();
 
-	foreach(std::vector<Cohort*>, current->cohorts, iter, iter_end) {
+	foreach (std::vector<Cohort*>, current->cohorts, iter, iter_end) {
 		Cohort *c = *iter;
-		foreach(uint32HashSet, c->possible_sets, psit, psit_end) {
+		foreach (uint32HashSet, c->possible_sets, psit, psit_end) {
 			if (grammar->rules_by_set.find(*psit) == grammar->rules_by_set.end()) {
 				continue;
 			}
 			const uint32Set *rules = grammar->rules_by_set.find(*psit)->second;
-			const_foreach(uint32Set, (*rules), rsit, rsir_end) {
+			const_foreach (uint32Set, (*rules), rsit, rsir_end) {
 				updateRuleToCohorts(c, *rsit);
 			}
 		}
@@ -117,7 +117,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, uint32Set *r
 		// ToDo: Make better use of rules_by_tag
 
 		//for (size_t c=1 ; c < current->cohorts.size() ; c++) {
-		foreach(CohortSet, (*(current->rule_to_cohorts.find(rule)->second)), rocit, rocit_end) {
+		foreach (CohortSet, (*(current->rule_to_cohorts.find(rule)->second)), rocit, rocit_end) {
 			Cohort *cohort = *rocit;
 			if (cohort->local_number == 0) {
 				continue;
@@ -747,7 +747,7 @@ int GrammarApplicator::runGrammarOnWindow() {
 	has_enclosures = false;
 	if (!grammar->parentheses.empty()) {
 		label_scanParentheses:
-		reverse_foreach(std::vector<Cohort*>, current->cohorts, iter, iter_end) {
+		reverse_foreach (std::vector<Cohort*>, current->cohorts, iter, iter_end) {
 			Cohort *c = *iter;
 			if (c->is_pleft == 0) {
 				continue;
@@ -784,10 +784,10 @@ int GrammarApplicator::runGrammarOnWindow() {
 						left++;
 					}
 					current->cohorts.resize(current->cohorts.size() - encs.size());
-					foreach(std::vector<Cohort*>, encs, eiter, eiter_end) {
+					foreach (std::vector<Cohort*>, encs, eiter, eiter_end) {
 						(*eiter)->is_enclosed = true;
 					}
-					foreach(std::vector<Cohort*>, c->enclosed, eiter2, eiter2_end) {
+					foreach (std::vector<Cohort*>, c->enclosed, eiter2, eiter2_end) {
 						encs.push_back(*eiter2);
 					}
 					c->enclosed = encs;

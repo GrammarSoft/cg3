@@ -88,7 +88,7 @@ int TextualParser::parseTagList(Set *s, UChar **p, const bool isinline) {
 				}
 				else {
 					CompositeTag *ct = result->allocateCompositeTag();
-					foreach(TagVector, tags, tvi, tvi_end) {
+					foreach (TagVector, tags, tvi, tvi_end) {
 						result->addTagToCompositeTag(*tvi, ct);
 					}
 					result->addCompositeTagToSet(s, ct);
@@ -171,7 +171,7 @@ Set *TextualParser::parseSetInline(UChar **p, Set *s) {
 					}
 					else {
 						CompositeTag *ct = result->allocateCompositeTag();
-						foreach(TagVector, tags, tvi, tvi_end) {
+						foreach (TagVector, tags, tvi, tvi_end) {
 							result->addTagToCompositeTag(*tvi, ct);
 						}
 						result->addCompositeTagToSet(set_c, ct);

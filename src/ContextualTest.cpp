@@ -200,7 +200,7 @@ void ContextualTest::resetStatistics() {
 	if (tmpl) {
 		tmpl->resetStatistics();
 	}
-	foreach(std::list<ContextualTest*>, ors, idts, idts_end) {
+	foreach (std::list<ContextualTest*>, ors, idts, idts_end) {
 		(*idts)->resetStatistics();
 	}
 	if (linked) {
@@ -227,7 +227,7 @@ void ContextualTest::markUsed(Grammar *grammar) {
 	if (tmpl) {
 		tmpl->markUsed(grammar);
 	}
-	foreach(std::list<ContextualTest*>, ors, idts, idts_end) {
+	foreach (std::list<ContextualTest*>, ors, idts, idts_end) {
 		(*idts)->markUsed(grammar);
 	}
 	if (linked) {

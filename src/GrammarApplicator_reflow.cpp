@@ -264,7 +264,7 @@ void GrammarApplicator::addTagToReading(Reading &reading, uint32_t utag, bool re
 					tmp.append(range);
 				}
 			}
-		} while(found);
+		} while (found);
 		const UChar *nt = tmp.getTerminatedBuffer();
 		tag = addTag(nt);
 		utag = tag->hash;
@@ -344,7 +344,7 @@ void GrammarApplicator::splitMappings(TagList mappings, Cohort &cohort, Reading 
 	foreach (TagList, mappings, ttag, ttag_end) {
 		// To avoid duplicating needlessly many times, check for a similar reading in the cohort that's already got this mapping
 		bool found = false;
-		foreach(std::list<Reading*>, cohort.readings, itr, itr_end) {
+		foreach (std::list<Reading*>, cohort.readings, itr, itr_end) {
 			if ((*itr)->hash_plain == reading.hash_plain
 				&& (*itr)->mapping
 				&& (*itr)->mapping->hash == (*ttag)->hash

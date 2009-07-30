@@ -106,12 +106,12 @@ Grammar::~Grammar() {
 		xset->second = 0;
 	}
 
-	foreach(uint32Setuint32HashMap, rules_by_set, irbs, irbs_end) {
+	foreach (uint32Setuint32HashMap, rules_by_set, irbs, irbs_end) {
 		delete irbs->second;
 		irbs->second = 0;
 	}
 
-	foreach(std::vector<ContextualTest*>, template_list, tmpls, tmpls_end) {
+	foreach (std::vector<ContextualTest*>, template_list, tmpls, tmpls_end) {
 		delete (*tmpls);
 	}
 }
@@ -370,7 +370,7 @@ void Grammar::resetStatistics() {
 }
 
 void Grammar::renameAllRules() {
-	foreach(RuleByLineHashMap, rule_by_line, iter_rule, iter_rule_end) {
+	foreach (RuleByLineHashMap, rule_by_line, iter_rule, iter_rule_end) {
 		Rule *r = iter_rule->second;
 		gbuffers[0][0] = 0;
 		u_sprintf(gbuffers[0], "L%u", r->line);
@@ -397,7 +397,7 @@ void Grammar::reindex(bool unused_sets) {
 
 	RuleByLineMap rule_by_line;
 	rule_by_line.insert(this->rule_by_line.begin(), this->rule_by_line.end());
-	foreach(RuleByLineMap, rule_by_line, iter_rule, iter_rule_end) {
+	foreach (RuleByLineMap, rule_by_line, iter_rule, iter_rule_end) {
 		Set *s = 0;
 		s = getSet(iter_rule->second->target);
 		s->markUsed(this);
@@ -424,7 +424,7 @@ void Grammar::reindex(bool unused_sets) {
 
 	// This is only necessary due to binary grammars.
 	// Sets used in unused templates may otherwise crash the loading of a binary grammar.
-	foreach(std::vector<ContextualTest*>, template_list, tmpls, tmpls_end) {
+	foreach (std::vector<ContextualTest*>, template_list, tmpls, tmpls_end) {
 		(*tmpls)->markUsed(this);
 	}
 
@@ -452,12 +452,12 @@ void Grammar::reindex(bool unused_sets) {
 	}
 
 	sets_by_contents.clear();
-	foreach(std::set<Set*>, sets_all, sall, sall_end) {
+	foreach (std::set<Set*>, sets_all, sall, sall_end) {
 		sets_by_contents[(*sall)->hash] = *sall;
 	}
 
 	std::vector<CompositeTag*> ctmp;
-	foreach(std::vector<CompositeTag*>, tags_list, citer, citer_end) {
+	foreach (std::vector<CompositeTag*>, tags_list, citer, citer_end) {
 		if ((*citer)->is_used) {
 			ctmp.push_back(*citer);
 		}
@@ -468,12 +468,12 @@ void Grammar::reindex(bool unused_sets) {
 	}
 	tags_list.clear();
 	tags.clear();
-	foreach(std::vector<CompositeTag*>, ctmp, cniter, cniter_end) {
+	foreach (std::vector<CompositeTag*>, ctmp, cniter, cniter_end) {
 		addCompositeTag(*cniter);
 	}
 
 	std::vector<Tag*> stmp;
-	foreach(std::vector<Tag*>, single_tags_list, siter, siter_end) {
+	foreach (std::vector<Tag*>, single_tags_list, siter, siter_end) {
 		if ((*siter)->is_used) {
 			stmp.push_back(*siter);
 		}
@@ -484,7 +484,7 @@ void Grammar::reindex(bool unused_sets) {
 	}
 	single_tags_list.clear();
 	single_tags.clear();
-	foreach(std::vector<Tag*>, stmp, sniter, sniter_end) {
+	foreach (std::vector<Tag*>, stmp, sniter, sniter_end) {
 		addTag(*sniter);
 	}
 
