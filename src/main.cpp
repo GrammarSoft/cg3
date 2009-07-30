@@ -335,7 +335,7 @@ int main(int argc, char* argv[]) {
 	}
 
 	if (!options[GRAMMAR_ONLY].doesOccur) {
-		CG3::GrammarApplicator applicator(ux_stdin, ux_stdout, ux_stderr);
+		CG3::GrammarApplicator applicator(ux_stderr);
 		applicator.setGrammar(&grammar);
 		GAppSetOpts(applicator);
 		applicator.runGrammarOnText(ux_stdin, ux_stdout);

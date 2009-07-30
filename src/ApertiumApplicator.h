@@ -34,7 +34,7 @@
 namespace CG3 {
 	class ApertiumApplicator : public GrammarApplicator {
 	public:
-		ApertiumApplicator(UFILE *ux_in, UFILE *ux_out, UFILE *ux_err);
+		ApertiumApplicator(UFILE *ux_err);
 
 		virtual int runGrammarOnText(UFILE *input, UFILE *output);
 

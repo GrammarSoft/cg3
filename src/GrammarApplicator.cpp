@@ -30,9 +30,7 @@
 using namespace CG3;
 using namespace CG3::Strings;
 
-GrammarApplicator::GrammarApplicator(UFILE *ux_in, UFILE *ux_out, UFILE *ux_err) {
-	ux_stdin = ux_in;
-	ux_stdout = ux_out;
+GrammarApplicator::GrammarApplicator(UFILE *ux_err) {
 	ux_stderr = ux_err;
 	always_span = false;
 	apply_mappings = true;
@@ -98,7 +96,7 @@ GrammarApplicator::~GrammarApplicator() {
 		delete gWindow;
 	}
 	grammar = 0;
-	ux_stdin = ux_stderr = ux_stdout = 0;
+	ux_stderr = 0;
 }
 
 void GrammarApplicator::resetIndexes() {

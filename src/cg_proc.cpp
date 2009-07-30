@@ -265,10 +265,10 @@ int main(int argc, char *argv[]) {
 	CG3::GrammarApplicator *applicator = 0;
 
 	if (stream_format == 0) {
-		applicator = new CG3::GrammarApplicator(ux_stdin, ux_stdout, ux_stderr);
+		applicator = new CG3::GrammarApplicator(ux_stderr);
 	}
 	else {
-		CG3::ApertiumApplicator* apertiumApplicator= new CG3::ApertiumApplicator(ux_stdin, ux_stdout, ux_stderr);
+		CG3::ApertiumApplicator* apertiumApplicator= new CG3::ApertiumApplicator(ux_stderr);
 		apertiumApplicator->setNullFlush(nullFlush);
 		applicator = apertiumApplicator;
 		if (wordform_case == 1) {

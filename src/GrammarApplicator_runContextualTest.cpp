@@ -43,11 +43,11 @@ inline Cohort *GrammarApplicator::runSingleTest(SingleWindow *sWindow, size_t i,
 	if (deep) {
 		*deep = cohort;
 	}
-	*retval = doesSetMatchCohortNormal(cohort, test->target, test->pos);
+	*retval = doesSetMatchCohortNormal(*cohort, test->target, test->pos);
 	bool foundfirst = *retval;
 	if (*retval && (test->pos & POS_CAREFUL)) {
 		if (cohort->readings.size() > 1 || test->pos & (POS_LOOK_DELETED|POS_LOOK_DELAYED)) {
-			*retval = doesSetMatchCohortCareful(cohort, test->target, test->pos);
+			*retval = doesSetMatchCohortCareful(*cohort, test->target, test->pos);
 		}
 	}
 	if (origin && (test->offset != 0 || (test->pos & (POS_SCANALL|POS_SCANFIRST))) && origin == cohort && origin->local_number != 0) {
@@ -69,13 +69,13 @@ inline Cohort *GrammarApplicator::runSingleTest(SingleWindow *sWindow, size_t i,
 		*brk = true;
 	}
 	if (test->barrier) {
-		bool barrier = doesSetMatchCohortNormal(cohort, test->barrier, test->pos);
+		bool barrier = doesSetMatchCohortNormal(*cohort, test->barrier, test->pos);
 		if (barrier) {
 			*brk = true;
 		}
 	}
 	if (test->cbarrier) {
-		bool cbarrier = doesSetMatchCohortCareful(cohort, test->cbarrier, test->pos);
+		bool cbarrier = doesSetMatchCohortCareful(*cohort, test->cbarrier, test->pos);
 		if (cbarrier) {
 			*brk = true;
 		}
