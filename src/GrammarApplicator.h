@@ -54,7 +54,7 @@ namespace CG3 {
 		std::vector<uint32_t> sections;
 		uint32_t verbosity_level;
 
-		GrammarApplicator(UFILE *ux_in, UFILE *ux_out, UFILE *ux_err);
+		GrammarApplicator(UFILE *ux_err);
 		virtual ~GrammarApplicator();
 
 		void enableStatistics();
@@ -74,8 +74,6 @@ namespace CG3 {
 		void printReading(Reading *reading, UFILE *output);
 		void printSingleWindow(SingleWindow *window, UFILE *output);
 
-		UFILE *ux_stdin;
-		UFILE *ux_stdout;
 		UFILE *ux_stderr;
 
 		uint32_t numLines;
@@ -123,24 +121,24 @@ namespace CG3 {
 	
 		Tag *addTag(const UChar *tag);
 
-		void updateRuleToCohorts(Cohort *c, uint32_t rsit);
-		void indexSingleWindow(SingleWindow *current);
+		void updateRuleToCohorts(Cohort &c, uint32_t rsit);
+		void indexSingleWindow(SingleWindow &current);
 		int runGrammarOnWindow();
-		int runGrammarOnSingleWindow(SingleWindow *current);
+		int runGrammarOnSingleWindow(SingleWindow &current);
 		void updateValidRules(uint32Set *rules, uint32Set *intersects, uint32_t hash, Reading *reading);
-		uint32_t runRulesOnWindow(SingleWindow *current, uint32Set *rules);
+		uint32_t runRulesOnWindow(SingleWindow &current, uint32Set *rules);
 
 		Cohort *runSingleTest(SingleWindow *sWindow, size_t i, const ContextualTest *test, bool *brk, bool *retval, Cohort **deep = 0, Cohort *origin = 0);
 		Cohort *runContextualTest(SingleWindow *sWindow, size_t position, const ContextualTest *test, Cohort **deep = 0, Cohort *origin = 0);
 		Cohort *runDependencyTest(SingleWindow *sWindow, const Cohort *current, const ContextualTest *test, Cohort **deep = 0, Cohort *origin = 0, const Cohort *self = 0);
 		Cohort *runParenthesisTest(SingleWindow *sWindow, const Cohort *current, const ContextualTest *test, Cohort **deep = 0, Cohort *origin = 0);
 
-		bool doesTagMatchSet(const uint32_t tag, const Set *set);
-		bool doesTagMatchReading(const Reading *reading, const Tag *tag);
-		bool doesSetMatchReading_tags(const Reading *reading, const Set *theset);
-		bool doesSetMatchReading(Reading *reading, const uint32_t set, bool bypass_index = false);
-		bool doesSetMatchCohortNormal(Cohort *cohort, const uint32_t set, uint32_t options = 0);
-		bool doesSetMatchCohortCareful(const Cohort *cohort, const uint32_t set, uint32_t options = 0);
+		bool doesTagMatchSet(const uint32_t tag, const Set &set);
+		bool doesTagMatchReading(const Reading &reading, const Tag &tag);
+		bool doesSetMatchReading_tags(const Reading &reading, const Set &theset);
+		bool doesSetMatchReading(Reading &reading, const uint32_t set, bool bypass_index = false);
+		bool doesSetMatchCohortNormal(Cohort &cohort, const uint32_t set, uint32_t options = 0);
+		bool doesSetMatchCohortCareful(const Cohort &cohort, const uint32_t set, uint32_t options = 0);
 
 		bool statistics;
 		ticks gtimer;

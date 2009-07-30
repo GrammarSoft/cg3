@@ -67,7 +67,7 @@ inline bool TagSet_SubsetOf_uint32Set(const TagSet *a, const uint32Set *b) {
 	return true;
 }
 
-bool GrammarApplicator::doesTagMatchSet(const uint32_t tag, const Set *set) {
+bool GrammarApplicator::doesTagMatchSet(const uint32_t tag, const Set &set) {
 	bool retval = false;
 	
 	stdext::hash_map<uint32_t, Tag*>::const_iterator itag = grammar->single_tags.find(tag);
@@ -76,7 +76,7 @@ bool GrammarApplicator::doesTagMatchSet(const uint32_t tag, const Set *set) {
 	}
 
 	Tag *t = itag->second;
-	if (set->single_tags.find(t) != set->single_tags.end()) {
+	if (set.single_tags.find(t) != set.single_tags.end()) {
 		retval = true;
 	}
 	else {
@@ -84,7 +84,7 @@ bool GrammarApplicator::doesTagMatchSet(const uint32_t tag, const Set *set) {
 		ctag->addTag(t);
 		ctag->rehash();
 
-		if (set->tags.find(ctag) != set->tags.end()) {
+		if (set.tags.find(ctag) != set.tags.end()) {
 			retval = true;
 		}
 		delete ctag;
@@ -92,136 +92,136 @@ bool GrammarApplicator::doesTagMatchSet(const uint32_t tag, const Set *set) {
 	return retval;
 }
 
-bool GrammarApplicator::doesTagMatchReading(const Reading *reading, const Tag *tag) {
+bool GrammarApplicator::doesTagMatchReading(const Reading &reading, const Tag &tag) {
 	bool retval = false;
 	bool match = true;
 
-	bool raw_in = (reading->tags_plain.find(tag->hash) != reading->tags_plain.end());
-	if (tag->type & T_FAILFAST) {
-		raw_in = (reading->tags_plain.find(tag->plain_hash) != reading->tags_plain.end());
+	bool raw_in = (reading.tags_plain.find(tag.hash) != reading.tags_plain.end());
+	if (tag.type & T_FAILFAST) {
+		raw_in = (reading.tags_plain.find(tag.plain_hash) != reading.tags_plain.end());
 	}
 
-	if (!tag->is_special || tag->type == T_FAILFAST) {
+	if (!tag.is_special || tag.type == T_FAILFAST) {
 		match = raw_in;
 	}
-	else if (tag->type & T_NUMERICAL && !reading->tags_numerical.empty()) {
+	else if (tag.type & T_NUMERICAL && !reading.tags_numerical.empty()) {
 		match = false;
-		const_foreach (Taguint32HashMap, reading->tags_numerical, mter, mter_end) {
+		const_foreach (Taguint32HashMap, reading.tags_numerical, mter, mter_end) {
 			const Tag *itag = mter->second;
-			int32_t compval = tag->comparison_val;
+			int32_t compval = tag.comparison_val;
 			if (compval == INT_MIN) {
-				compval = reading->parent->getMin(tag->comparison_hash);
+				compval = reading.parent->getMin(tag.comparison_hash);
 			}
 			else if (compval == INT_MAX) {
-				compval = reading->parent->getMax(tag->comparison_hash);
+				compval = reading.parent->getMax(tag.comparison_hash);
 			}
-			if (tag->comparison_hash == itag->comparison_hash) {
-				if (tag->comparison_op == OP_EQUALS && itag->comparison_op == OP_EQUALS && compval == itag->comparison_val) {
+			if (tag.comparison_hash == itag->comparison_hash) {
+				if (tag.comparison_op == OP_EQUALS && itag->comparison_op == OP_EQUALS && compval == itag->comparison_val) {
 					match = true;
 				}
-				else if (tag->comparison_op == OP_NOTEQUALS && itag->comparison_op == OP_EQUALS && compval != itag->comparison_val) {
+				else if (tag.comparison_op == OP_NOTEQUALS && itag->comparison_op == OP_EQUALS && compval != itag->comparison_val) {
 					match = true;
 				}
-				else if (tag->comparison_op == OP_EQUALS && itag->comparison_op == OP_NOTEQUALS && compval != itag->comparison_val) {
+				else if (tag.comparison_op == OP_EQUALS && itag->comparison_op == OP_NOTEQUALS && compval != itag->comparison_val) {
 					match = true;
 				}
-				else if (tag->comparison_op == OP_NOTEQUALS && itag->comparison_op == OP_NOTEQUALS && compval == itag->comparison_val) {
+				else if (tag.comparison_op == OP_NOTEQUALS && itag->comparison_op == OP_NOTEQUALS && compval == itag->comparison_val) {
 					match = true;
 				}
-				else if (tag->comparison_op == OP_EQUALS && itag->comparison_op == OP_LESSTHAN && compval < itag->comparison_val) {
+				else if (tag.comparison_op == OP_EQUALS && itag->comparison_op == OP_LESSTHAN && compval < itag->comparison_val) {
 					match = true;
 				}
-				else if (tag->comparison_op == OP_EQUALS && itag->comparison_op == OP_LESSEQUALS && compval <= itag->comparison_val) {
+				else if (tag.comparison_op == OP_EQUALS && itag->comparison_op == OP_LESSEQUALS && compval <= itag->comparison_val) {
 					match = true;
 				}
-				else if (tag->comparison_op == OP_EQUALS && itag->comparison_op == OP_GREATERTHAN && compval > itag->comparison_val) {
+				else if (tag.comparison_op == OP_EQUALS && itag->comparison_op == OP_GREATERTHAN && compval > itag->comparison_val) {
 					match = true;
 				}
-				else if (tag->comparison_op == OP_EQUALS && itag->comparison_op == OP_GREATEREQUALS && compval >= itag->comparison_val) {
+				else if (tag.comparison_op == OP_EQUALS && itag->comparison_op == OP_GREATEREQUALS && compval >= itag->comparison_val) {
 					match = true;
 				}
-				else if (tag->comparison_op == OP_NOTEQUALS && itag->comparison_op == OP_LESSTHAN) {
+				else if (tag.comparison_op == OP_NOTEQUALS && itag->comparison_op == OP_LESSTHAN) {
 					match = true;
 				}
-				else if (tag->comparison_op == OP_NOTEQUALS && itag->comparison_op == OP_LESSEQUALS) {
+				else if (tag.comparison_op == OP_NOTEQUALS && itag->comparison_op == OP_LESSEQUALS) {
 					match = true;
 				}
-				else if (tag->comparison_op == OP_NOTEQUALS && itag->comparison_op == OP_GREATERTHAN) {
+				else if (tag.comparison_op == OP_NOTEQUALS && itag->comparison_op == OP_GREATERTHAN) {
 					match = true;
 				}
-				else if (tag->comparison_op == OP_NOTEQUALS && itag->comparison_op == OP_GREATEREQUALS) {
+				else if (tag.comparison_op == OP_NOTEQUALS && itag->comparison_op == OP_GREATEREQUALS) {
 					match = true;
 				}
-				else if (tag->comparison_op == OP_LESSTHAN && itag->comparison_op == OP_NOTEQUALS) {
+				else if (tag.comparison_op == OP_LESSTHAN && itag->comparison_op == OP_NOTEQUALS) {
 					match = true;
 				}
-				else if (tag->comparison_op == OP_LESSEQUALS && itag->comparison_op == OP_NOTEQUALS) {
+				else if (tag.comparison_op == OP_LESSEQUALS && itag->comparison_op == OP_NOTEQUALS) {
 					match = true;
 				}
-				else if (tag->comparison_op == OP_GREATERTHAN && itag->comparison_op == OP_NOTEQUALS) {
+				else if (tag.comparison_op == OP_GREATERTHAN && itag->comparison_op == OP_NOTEQUALS) {
 					match = true;
 				}
-				else if (tag->comparison_op == OP_GREATEREQUALS && itag->comparison_op == OP_NOTEQUALS) {
+				else if (tag.comparison_op == OP_GREATEREQUALS && itag->comparison_op == OP_NOTEQUALS) {
 					match = true;
 				}
-				else if (tag->comparison_op == OP_LESSTHAN && itag->comparison_op == OP_EQUALS && compval > itag->comparison_val) {
+				else if (tag.comparison_op == OP_LESSTHAN && itag->comparison_op == OP_EQUALS && compval > itag->comparison_val) {
 					match = true;
 				}
-				else if (tag->comparison_op == OP_LESSEQUALS && itag->comparison_op == OP_EQUALS && compval >= itag->comparison_val) {
+				else if (tag.comparison_op == OP_LESSEQUALS && itag->comparison_op == OP_EQUALS && compval >= itag->comparison_val) {
 					match = true;
 				}
-				else if (tag->comparison_op == OP_LESSTHAN && itag->comparison_op == OP_LESSTHAN) {
+				else if (tag.comparison_op == OP_LESSTHAN && itag->comparison_op == OP_LESSTHAN) {
 					match = true;
 				}
-				else if (tag->comparison_op == OP_LESSEQUALS && itag->comparison_op == OP_LESSEQUALS) {
+				else if (tag.comparison_op == OP_LESSEQUALS && itag->comparison_op == OP_LESSEQUALS) {
 					match = true;
 				}
-				else if (tag->comparison_op == OP_LESSEQUALS && itag->comparison_op == OP_LESSTHAN) {
+				else if (tag.comparison_op == OP_LESSEQUALS && itag->comparison_op == OP_LESSTHAN) {
 					match = true;
 				}
-				else if (tag->comparison_op == OP_LESSTHAN && itag->comparison_op == OP_LESSEQUALS) {
+				else if (tag.comparison_op == OP_LESSTHAN && itag->comparison_op == OP_LESSEQUALS) {
 					match = true;
 				}
-				else if (tag->comparison_op == OP_LESSTHAN && itag->comparison_op == OP_GREATERTHAN && compval > itag->comparison_val) {
+				else if (tag.comparison_op == OP_LESSTHAN && itag->comparison_op == OP_GREATERTHAN && compval > itag->comparison_val) {
 					match = true;
 				}
-				else if (tag->comparison_op == OP_LESSTHAN && itag->comparison_op == OP_GREATEREQUALS && compval > itag->comparison_val) {
+				else if (tag.comparison_op == OP_LESSTHAN && itag->comparison_op == OP_GREATEREQUALS && compval > itag->comparison_val) {
 					match = true;
 				}
-				else if (tag->comparison_op == OP_LESSEQUALS && itag->comparison_op == OP_GREATERTHAN && compval > itag->comparison_val) {
+				else if (tag.comparison_op == OP_LESSEQUALS && itag->comparison_op == OP_GREATERTHAN && compval > itag->comparison_val) {
 					match = true;
 				}
-				else if (tag->comparison_op == OP_LESSEQUALS && itag->comparison_op == OP_GREATEREQUALS && compval >= itag->comparison_val) {
+				else if (tag.comparison_op == OP_LESSEQUALS && itag->comparison_op == OP_GREATEREQUALS && compval >= itag->comparison_val) {
 					match = true;
 				}
-				else if (tag->comparison_op == OP_GREATERTHAN && itag->comparison_op == OP_EQUALS && compval < itag->comparison_val) {
+				else if (tag.comparison_op == OP_GREATERTHAN && itag->comparison_op == OP_EQUALS && compval < itag->comparison_val) {
 					match = true;
 				}
-				else if (tag->comparison_op == OP_GREATEREQUALS && itag->comparison_op == OP_EQUALS && compval <= itag->comparison_val) {
+				else if (tag.comparison_op == OP_GREATEREQUALS && itag->comparison_op == OP_EQUALS && compval <= itag->comparison_val) {
 					match = true;
 				}
-				else if (tag->comparison_op == OP_GREATERTHAN && itag->comparison_op == OP_GREATERTHAN) {
+				else if (tag.comparison_op == OP_GREATERTHAN && itag->comparison_op == OP_GREATERTHAN) {
 					match = true;
 				}
-				else if (tag->comparison_op == OP_GREATEREQUALS && itag->comparison_op == OP_GREATEREQUALS) {
+				else if (tag.comparison_op == OP_GREATEREQUALS && itag->comparison_op == OP_GREATEREQUALS) {
 					match = true;
 				}
-				else if (tag->comparison_op == OP_GREATEREQUALS && itag->comparison_op == OP_GREATERTHAN) {
+				else if (tag.comparison_op == OP_GREATEREQUALS && itag->comparison_op == OP_GREATERTHAN) {
 					match = true;
 				}
-				else if (tag->comparison_op == OP_GREATERTHAN && itag->comparison_op == OP_GREATEREQUALS) {
+				else if (tag.comparison_op == OP_GREATERTHAN && itag->comparison_op == OP_GREATEREQUALS) {
 					match = true;
 				}
-				else if (tag->comparison_op == OP_GREATERTHAN && itag->comparison_op == OP_LESSTHAN && compval < itag->comparison_val) {
+				else if (tag.comparison_op == OP_GREATERTHAN && itag->comparison_op == OP_LESSTHAN && compval < itag->comparison_val) {
 					match = true;
 				}
-				else if (tag->comparison_op == OP_GREATERTHAN && itag->comparison_op == OP_LESSEQUALS && compval < itag->comparison_val) {
+				else if (tag.comparison_op == OP_GREATERTHAN && itag->comparison_op == OP_LESSEQUALS && compval < itag->comparison_val) {
 					match = true;
 				}
-				else if (tag->comparison_op == OP_GREATEREQUALS && itag->comparison_op == OP_LESSTHAN && compval < itag->comparison_val) {
+				else if (tag.comparison_op == OP_GREATEREQUALS && itag->comparison_op == OP_LESSTHAN && compval < itag->comparison_val) {
 					match = true;
 				}
-				else if (tag->comparison_op == OP_GREATEREQUALS && itag->comparison_op == OP_LESSEQUALS && compval <= itag->comparison_val) {
+				else if (tag.comparison_op == OP_GREATEREQUALS && itag->comparison_op == OP_LESSEQUALS && compval <= itag->comparison_val) {
 					match = true;
 				}
 				if (match) {
@@ -230,35 +230,35 @@ bool GrammarApplicator::doesTagMatchReading(const Reading *reading, const Tag *t
 			}
 		}
 	}
-	else if (tag->type & T_REGEXP_ANY) {
-		if (tag->type & T_WORDFORM) {
+	else if (tag.type & T_REGEXP_ANY) {
+		if (tag.type & T_WORDFORM) {
 			match = true;
 			if (unif_mode) {
 				if (unif_last_wordform) {
-					if (unif_last_wordform != reading->wordform) {
+					if (unif_last_wordform != reading.wordform) {
 						match = false;
 					}
 				}
 				else {
-					unif_last_wordform = reading->wordform;
+					unif_last_wordform = reading.wordform;
 				}
 			}
 		}
-		else if (tag->type & T_BASEFORM) {
+		else if (tag.type & T_BASEFORM) {
 			match = true;
 			if (unif_mode) {
 				if (unif_last_baseform) {
-					if (unif_last_baseform != reading->baseform) {
+					if (unif_last_baseform != reading.baseform) {
 						match = false;
 					}
 				}
 				else {
-					unif_last_baseform = reading->baseform;
+					unif_last_baseform = reading.baseform;
 				}
 			}
 		}
 		else {
-			const_foreach (uint32HashSet, reading->tags_textual, mter, mter_end) {
+			const_foreach (uint32HashSet, reading.tags_textual, mter, mter_end) {
 				const Tag *itag = single_tags.find(*mter)->second;
 				if (!(itag->type & (T_BASEFORM|T_WORDFORM))) {
 					match = true;
@@ -279,9 +279,9 @@ bool GrammarApplicator::doesTagMatchReading(const Reading *reading, const Tag *t
 			}
 		}
 	}
-	else if (tag->regexp && !reading->tags_textual.empty()) {
-		const_foreach (uint32HashSet, reading->tags_textual, mter, mter_end) {
-			uint32_t ih = hash_sdbm_uint32_t(tag->hash, *mter);
+	else if (tag.regexp && !reading.tags_textual.empty()) {
+		const_foreach (uint32HashSet, reading.tags_textual, mter, mter_end) {
+			uint32_t ih = hash_sdbm_uint32_t(tag.hash, *mter);
 			if (index_matches(index_regexp_yes, ih)) {
 				match = true;
 			}
@@ -291,25 +291,25 @@ bool GrammarApplicator::doesTagMatchReading(const Reading *reading, const Tag *t
 			else {
 				const Tag *itag = single_tags.find(*mter)->second;
 				UErrorCode status = U_ZERO_ERROR;
-				uregex_setText(tag->regexp, itag->tag, u_strlen(itag->tag), &status);
+				uregex_setText(tag.regexp, itag->tag, u_strlen(itag->tag), &status);
 				if (status != U_ZERO_ERROR) {
 					u_fprintf(ux_stderr, "Error: uregex_setText(MatchSet) returned %s - cannot continue!\n", u_errorName(status));
 					CG3Quit(1);
 				}
 				status = U_ZERO_ERROR;
-				match = (uregex_matches(tag->regexp, 0, &status) == TRUE);
+				match = (uregex_matches(tag.regexp, 0, &status) == TRUE);
 				if (status != U_ZERO_ERROR) {
 					u_fprintf(ux_stderr, "Error: uregex_matches(MatchSet) returned %s - cannot continue!\n", u_errorName(status));
 					CG3Quit(1);
 				}
 				if (match) {
-					int32_t gc = uregex_groupCount(tag->regexp, &status);
+					int32_t gc = uregex_groupCount(tag.regexp, &status);
 					if (gc > 0) {
 						UChar tmp[1024];
 						regexgrps.clear();
 						for (int i=0 ; i<=gc ; ++i) {
 							tmp[0] = 0;
-							uregex_group(tag->regexp, i, tmp, 1024, &status);
+							uregex_group(tag.regexp, i, tmp, 1024, &status);
 							regexgrps[i] = UnicodeString(tmp);
 						}
 					}
@@ -324,30 +324,30 @@ bool GrammarApplicator::doesTagMatchReading(const Reading *reading, const Tag *t
 			}
 		}
 	}
-	else if (tag->type & T_VARIABLE) {
-		if (variables.find(tag->comparison_hash) == variables.end()) {
-			u_fprintf(ux_stderr, "Info: %u failed.\n", tag->comparison_hash);
+	else if (tag.type & T_VARIABLE) {
+		if (variables.find(tag.comparison_hash) == variables.end()) {
+			u_fprintf(ux_stderr, "Info: %u failed.\n", tag.comparison_hash);
 			match = false;
 		}
 		else {
-			u_fprintf(ux_stderr, "Info: %u matched.\n", tag->comparison_hash);
+			u_fprintf(ux_stderr, "Info: %u matched.\n", tag.comparison_hash);
 			match = true;
 		}
 	}
-	else if (par_left_tag && tag->type & T_PAR_LEFT && reading->parent->local_number == par_left_pos) {
-		match = (reading->tags.find(par_left_tag) != reading->tags.end());
+	else if (par_left_tag && tag.type & T_PAR_LEFT && reading.parent->local_number == par_left_pos) {
+		match = (reading.tags.find(par_left_tag) != reading.tags.end());
 	}
-	else if (par_right_tag && tag->type & T_PAR_RIGHT && reading->parent->local_number == par_right_pos) {
-		match = (reading->tags.find(par_right_tag) != reading->tags.end());
+	else if (par_right_tag && tag.type & T_PAR_RIGHT && reading.parent->local_number == par_right_pos) {
+		match = (reading.tags.find(par_right_tag) != reading.tags.end());
 	}
 	else if (!raw_in) {
 		match = false;
-		if (tag->type & T_NEGATIVE) {
+		if (tag.type & T_NEGATIVE) {
 			match = true;
 		}
 	}
 
-	if (tag->type & T_NEGATIVE) {
+	if (tag.type & T_NEGATIVE) {
 		match = !match;
 	}
 
@@ -359,31 +359,31 @@ bool GrammarApplicator::doesTagMatchReading(const Reading *reading, const Tag *t
 	return retval;
 }
 
-bool GrammarApplicator::doesSetMatchReading_tags(const Reading *reading, const Set *theset) {
+bool GrammarApplicator::doesSetMatchReading_tags(const Reading &reading, const Set &theset) {
 	bool retval = false;
 
-	if (!(theset->is_special|unif_mode)) {
-		retval = uint32HashSet_Intersects(&theset->single_tags_hash, &reading->tags_plain);
+	if (!(theset.is_special|unif_mode)) {
+		retval = uint32HashSet_Intersects(&theset.single_tags_hash, &reading.tags_plain);
 	}
 	else {
 		TagHashSet::const_iterator ster;
-		for (ster = theset->ff_tags.begin() ; ster != theset->ff_tags.end() ; ++ster) {
-			bool match = doesTagMatchReading(reading, (*ster));
+		for (ster = theset.ff_tags.begin() ; ster != theset.ff_tags.end() ; ++ster) {
+			bool match = doesTagMatchReading(reading, **ster);
 			if (match) {
 				return false;
 			}
 		}
-		for (ster = theset->single_tags.begin() ; ster != theset->single_tags.end() ; ++ster) {
+		for (ster = theset.single_tags.begin() ; ster != theset.single_tags.end() ; ++ster) {
 			if ((*ster)->type & T_FAILFAST) {
 				continue;
 			}
-			bool match = doesTagMatchReading(reading, (*ster));
+			bool match = doesTagMatchReading(reading, **ster);
 			if (match) {
 				if (unif_mode) {
-					if (unif_tags.find(theset->hash) != unif_tags.end() && unif_tags[theset->hash] != (*ster)->hash) {
+					if (unif_tags.find(theset.hash) != unif_tags.end() && unif_tags[theset.hash] != (*ster)->hash) {
 						continue;
 					}
-					unif_tags[theset->hash] = (*ster)->hash;
+					unif_tags[theset.hash] = (*ster)->hash;
 				}
 				retval = true;
 				break;
@@ -391,19 +391,19 @@ bool GrammarApplicator::doesSetMatchReading_tags(const Reading *reading, const S
 		}
 	}
 
-	if (!retval && !theset->tags.empty()) {
+	if (!retval && !theset.tags.empty()) {
 		CompositeTagHashSet::const_iterator ster;
-		for (ster = theset->tags.begin() ; ster != theset->tags.end() ; ++ster) {
+		for (ster = theset.tags.begin() ; ster != theset.tags.end() ; ++ster) {
 			bool match = true;
 			const CompositeTag *ctag = *ster;
 
 			if (!(ctag->is_special|unif_mode)) {
-				match = TagSet_SubsetOf_uint32Set(&ctag->tags_set, &reading->tags);
+				match = TagSet_SubsetOf_uint32Set(&ctag->tags_set, &reading.tags);
 			}
 			else {
 				TagHashSet::const_iterator cter;
 				for (cter = ctag->tags.begin() ; cter != ctag->tags.end() ; ++cter) {
-					bool inner = doesTagMatchReading(reading, (*cter));
+					bool inner = doesTagMatchReading(reading, **cter);
 					if ((*cter)->type & T_FAILFAST) {
 						inner = !inner;
 					}
@@ -415,10 +415,10 @@ bool GrammarApplicator::doesSetMatchReading_tags(const Reading *reading, const S
 			}
 			if (match) {
 				if (unif_mode) {
-					if (unif_tags.find(theset->hash) != unif_tags.end() && unif_tags[theset->hash] != (*ster)->hash) {
+					if (unif_tags.find(theset.hash) != unif_tags.end() && unif_tags[theset.hash] != (*ster)->hash) {
 						continue;
 					}
-					unif_tags[theset->hash] = (*ster)->hash;
+					unif_tags[theset.hash] = (*ster)->hash;
 				}
 				++match_comp;
 				retval = true;
@@ -430,12 +430,12 @@ bool GrammarApplicator::doesSetMatchReading_tags(const Reading *reading, const S
 	return retval;
 }
 
-bool GrammarApplicator::doesSetMatchReading(Reading *reading, const uint32_t set, bool bypass_index) {
-	if (reading->possible_sets.find(set) == reading->possible_sets.end()) {
+bool GrammarApplicator::doesSetMatchReading(Reading &reading, const uint32_t set, bool bypass_index) {
+	if (reading.possible_sets.find(set) == reading.possible_sets.end()) {
 		return false;
 	}
 	// ToDo: This is not good enough...while numeric tags are special, their failures can be indexed.
-	uint32_t ih = hash_sdbm_uint32_t(reading->hash, set);
+	uint32_t ih = hash_sdbm_uint32_t(reading.hash, set);
 	if (!bypass_index && index_matches(index_readingSet_no, ih)) {
 		return false;
 	}
@@ -460,7 +460,7 @@ bool GrammarApplicator::doesSetMatchReading(Reading *reading, const uint32_t set
 		retval = true;
 	}
 	else if (theset->sets.empty()) {
-		retval = doesSetMatchReading_tags(reading, theset);
+		retval = doesSetMatchReading_tags(reading, *theset);
 	}
 	else {
 		size_t size = theset->sets.size();
@@ -530,7 +530,7 @@ bool GrammarApplicator::doesSetMatchReading(Reading *reading, const uint32_t set
 			index_readingSet_no.insert(ih);
 			/* This actually slows down the overall processing. Removing on cohort-level only is most efficient.
 			if (!grammar->sets_any || grammar->sets_any->find(set) == grammar->sets_any->end()) {
-				reading->possible_sets.erase(set);
+				reading.possible_sets.erase(set);
 			}
 			//*/
 		}
@@ -539,32 +539,32 @@ bool GrammarApplicator::doesSetMatchReading(Reading *reading, const uint32_t set
 	return retval;
 }
 
-bool GrammarApplicator::doesSetMatchCohortNormal(Cohort *cohort, const uint32_t set, uint32_t options) {
-	if (cohort->possible_sets.find(set) == cohort->possible_sets.end()) {
+bool GrammarApplicator::doesSetMatchCohortNormal(Cohort &cohort, const uint32_t set, uint32_t options) {
+	if (cohort.possible_sets.find(set) == cohort.possible_sets.end()) {
 		return false;
 	}
 	bool retval = false;
 	const Set *theset = grammar->sets_by_contents.find(set)->second;
-	const_foreach (std::list<Reading*>, cohort->readings, iter, iter_end) {
+	const_foreach (std::list<Reading*>, cohort.readings, iter, iter_end) {
 		Reading *reading = *iter;
-		if (doesSetMatchReading(reading, set, theset->is_child_unified|theset->is_special)) {
+		if (doesSetMatchReading(*reading, set, theset->is_child_unified|theset->is_special)) {
 			retval = true;
 			break;
 		}
 	}
 	if (!retval && options & POS_LOOK_DELETED) {
-		const_foreach (std::list<Reading*>, cohort->deleted, iter, iter_end) {
+		const_foreach (std::list<Reading*>, cohort.deleted, iter, iter_end) {
 			Reading *reading = *iter;
-			if (doesSetMatchReading(reading, set, theset->is_child_unified|theset->is_special)) {
+			if (doesSetMatchReading(*reading, set, theset->is_child_unified|theset->is_special)) {
 				retval = true;
 				break;
 			}
 		}
 	}
 	if (!retval && options & POS_LOOK_DELAYED) {
-		const_foreach (std::list<Reading*>, cohort->delayed, iter, iter_end) {
+		const_foreach (std::list<Reading*>, cohort.delayed, iter, iter_end) {
 			Reading *reading = *iter;
-			if (doesSetMatchReading(reading, set, theset->is_child_unified|theset->is_special)) {
+			if (doesSetMatchReading(*reading, set, theset->is_child_unified|theset->is_special)) {
 				retval = true;
 				break;
 			}
@@ -572,38 +572,38 @@ bool GrammarApplicator::doesSetMatchCohortNormal(Cohort *cohort, const uint32_t 
 	}
 	if (!retval) {
 		if (!grammar->sets_any || grammar->sets_any->find(set) == grammar->sets_any->end()) {
-			cohort->possible_sets.erase(set);
+			cohort.possible_sets.erase(set);
 		}
 	}
 	return retval;
 }
 
-bool GrammarApplicator::doesSetMatchCohortCareful(const Cohort *cohort, const uint32_t set, uint32_t options) {
-	if (cohort->possible_sets.find(set) == cohort->possible_sets.end()) {
+bool GrammarApplicator::doesSetMatchCohortCareful(const Cohort &cohort, const uint32_t set, uint32_t options) {
+	if (cohort.possible_sets.find(set) == cohort.possible_sets.end()) {
 		return false;
 	}
 	bool retval = true;
 	const Set *theset = grammar->sets_by_contents.find(set)->second;
-	const_foreach (std::list<Reading*>, cohort->readings, iter, iter_end) {
+	const_foreach (std::list<Reading*>, cohort.readings, iter, iter_end) {
 		Reading *reading = *iter;
-		if (!doesSetMatchReading(reading, set, theset->is_child_unified|theset->is_special)) {
+		if (!doesSetMatchReading(*reading, set, theset->is_child_unified|theset->is_special)) {
 			retval = false;
 			break;
 		}
 	}
 	if (retval && options & POS_LOOK_DELETED) {
-		const_foreach (std::list<Reading*>, cohort->deleted, iter, iter_end) {
+		const_foreach (std::list<Reading*>, cohort.deleted, iter, iter_end) {
 			Reading *reading = *iter;
-			if (!doesSetMatchReading(reading, set, theset->is_child_unified|theset->is_special)) {
+			if (!doesSetMatchReading(*reading, set, theset->is_child_unified|theset->is_special)) {
 				retval = false;
 				break;
 			}
 		}
 	}
 	if (retval && options & POS_LOOK_DELAYED) {
-		const_foreach (std::list<Reading*>, cohort->delayed, iter, iter_end) {
+		const_foreach (std::list<Reading*>, cohort.delayed, iter, iter_end) {
 			Reading *reading = *iter;
-			if (!doesSetMatchReading(reading, set, theset->is_child_unified|theset->is_special)) {
+			if (!doesSetMatchReading(*reading, set, theset->is_child_unified|theset->is_special)) {
 				retval = false;
 				break;
 			}

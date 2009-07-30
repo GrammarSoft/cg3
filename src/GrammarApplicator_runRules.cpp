@@ -31,17 +31,17 @@
 using namespace CG3;
 using namespace CG3::Strings;
 
-void GrammarApplicator::updateRuleToCohorts(Cohort *c, uint32_t rsit) {
-	SingleWindow *current = c->parent;
+void GrammarApplicator::updateRuleToCohorts(Cohort &c, uint32_t rsit) {
+	SingleWindow *current = c.parent;
 	const Rule *r = grammar->rule_by_line.find(rsit)->second;
-	if (r->wordform && r->wordform != c->wordform) {
+	if (r->wordform && r->wordform != c.wordform) {
 		return;
 	}
 	if (current->rule_to_cohorts.find(r) == current->rule_to_cohorts.end()) {
 		current->rule_to_cohorts[r] = new CohortSet;
 	}
 	CohortSet *s = current->rule_to_cohorts[r];
-	s->insert(c);
+	s->insert(&c);
 	current->valid_rules.insert(r->line);
 }
 
@@ -50,7 +50,7 @@ void GrammarApplicator::updateValidRules(uint32Set *rules, uint32Set *intersects
 		SingleWindow *current = reading->parent->parent;
 		Cohort *c = reading->parent;
 		const_foreach (uint32HashSet, (*(grammar->rules_by_tag.find(hash)->second)), rsit, rsit_end) {
-			updateRuleToCohorts(c, *rsit);
+			updateRuleToCohorts(*c, *rsit);
 		}
 
 		std::set_intersection(rules->begin(), rules->end(),
@@ -59,10 +59,10 @@ void GrammarApplicator::updateValidRules(uint32Set *rules, uint32Set *intersects
 	}
 }
 
-void GrammarApplicator::indexSingleWindow(SingleWindow *current) {
-	current->valid_rules.clear();
+void GrammarApplicator::indexSingleWindow(SingleWindow &current) {
+	current.valid_rules.clear();
 
-	foreach (std::vector<Cohort*>, current->cohorts, iter, iter_end) {
+	foreach (std::vector<Cohort*>, current.cohorts, iter, iter_end) {
 		Cohort *c = *iter;
 		foreach (uint32HashSet, c->possible_sets, psit, psit_end) {
 			if (grammar->rules_by_set.find(*psit) == grammar->rules_by_set.end()) {
@@ -70,20 +70,20 @@ void GrammarApplicator::indexSingleWindow(SingleWindow *current) {
 			}
 			const uint32Set *rules = grammar->rules_by_set.find(*psit)->second;
 			const_foreach (uint32Set, (*rules), rsit, rsir_end) {
-				updateRuleToCohorts(c, *rsit);
+				updateRuleToCohorts(*c, *rsit);
 			}
 		}
 	}
 }
 
-uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, uint32Set *rules) {
+uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow &current, uint32Set *rules) {
 	uint32_t retval = RV_NOTHING;
 	bool section_did_good = false;
 	bool delimited = false;
 
 	uint32Set intersects;
 	std::set_intersection(rules->begin(), rules->end(),
-		current->valid_rules.begin(), current->valid_rules.end(),
+		current.valid_rules.begin(), current.valid_rules.end(),
 		std::inserter(intersects, intersects.begin()));
 
 	foreach (uint32Set, intersects, iter_rules, iter_rules_end) {
@@ -116,15 +116,15 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, uint32Set *r
 		// ToDo: Update list of in/valid rules upon MAP, ADD, REPLACE, APPEND, SUBSTITUTE; add tags + always add tag_any
 		// ToDo: Make better use of rules_by_tag
 
-		//for (size_t c=1 ; c < current->cohorts.size() ; c++) {
-		foreach (CohortSet, (*(current->rule_to_cohorts.find(rule)->second)), rocit, rocit_end) {
+		//for (size_t c=1 ; c < current.cohorts.size() ; c++) {
+		foreach (CohortSet, (*(current.rule_to_cohorts.find(rule)->second)), rocit, rocit_end) {
 			Cohort *cohort = *rocit;
 			if (cohort->local_number == 0) {
 				continue;
 			}
 
 			uint32_t c = cohort->local_number;
-			if (cohort->is_enclosed || cohort->parent != current) {
+			if (cohort->is_enclosed || cohort->parent != &current) {
 				continue;
 			}
 			if (cohort->readings.empty()) {
@@ -142,7 +142,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, uint32Set *r
 					continue;
 				}
 			}
-			if (type == K_DELIMIT && c == current->cohorts.size()-1) {
+			if (type == K_DELIMIT && c == current.cohorts.size()-1) {
 				continue;
 			}
 			if (rule->wordform && rule->wordform != cohort->wordform) {
@@ -197,7 +197,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, uint32Set *r
 				}
 
 				mark = cohort;
-				if (rule->target && doesSetMatchReading(reading, rule->target, set->is_child_unified|set->is_special)) {
+				if (rule->target && doesSetMatchReading(*reading, rule->target, set->is_child_unified|set->is_special)) {
 					reading->matched_target = true;
 					bool good = true;
 					if (!did_test) {
@@ -207,10 +207,10 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, uint32Set *r
 								mark = cohort;
 							}
 							if (!(test->pos & POS_PASS_ORIGIN) && (no_pass_origin || (test->pos & POS_NO_PASS_ORIGIN))) {
-								test_good = (runContextualTest(current, c, test, 0, cohort) != 0);
+								test_good = (runContextualTest(&current, c, test, 0, cohort) != 0);
 							}
 							else {
-								test_good = (runContextualTest(current, c, test) != 0);
+								test_good = (runContextualTest(&current, c, test) != 0);
 							}
 							if (!test_good) {
 								good = test_good;
@@ -303,10 +303,10 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, uint32Set *r
 						variables[rule->varname] = 1;
 					}
 					else if (type == K_DELIMIT) {
-						SingleWindow *nwin = new SingleWindow(current->parent);
-						current->parent->pushSingleWindow(nwin);
+						SingleWindow *nwin = new SingleWindow(current.parent);
+						current.parent->pushSingleWindow(nwin);
 
-						current->parent->cohort_counter++;
+						current.parent->cohort_counter++;
 						Cohort *cCohort = new Cohort(nwin);
 						cCohort->global_number = 0;
 						cCohort->wordform = begintag;
@@ -325,16 +325,16 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, uint32Set *r
 						nwin->appendCohort(cCohort);
 
 						size_t nc = c+1;
-						for ( ; nc < current->cohorts.size() ; nc++) {
-							current->cohorts.at(nc)->parent = nwin;
-							nwin->appendCohort(current->cohorts.at(nc));
+						for ( ; nc < current.cohorts.size() ; nc++) {
+							current.cohorts.at(nc)->parent = nwin;
+							nwin->appendCohort(current.cohorts.at(nc));
 						}
-						c = current->cohorts.size()-c;
+						c = current.cohorts.size()-c;
 						for (nc = 0 ; nc < c-1 ; nc++) {
-							current->cohorts.pop_back();
+							current.cohorts.pop_back();
 						}
 
-						cohort = current->cohorts.back();
+						cohort = current.cohorts.back();
 						foreach (std::list<Reading*>, cohort->readings, rter3, rter3_end) {
 							Reading *reading = *rter3;
 							addTagToReading(*reading, endtag);
@@ -514,7 +514,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, uint32Set *r
 					else if (type == K_MOVE_AFTER || type == K_MOVE_BEFORE || type == K_SWITCH) {
 						// ToDo: ** tests will not correctly work for MOVE/SWITCH; cannot move cohorts between windows
 						Cohort *attach = 0;
-						if (runContextualTest(current, c, rule->dep_target, &attach) && attach && cohort->parent == attach->parent) {
+						if (runContextualTest(&current, c, rule->dep_target, &attach) && attach && cohort->parent == attach->parent) {
 							bool good = true;
 							ContextualTest *test = rule->dep_test_head;
 							while (test) {
@@ -528,7 +528,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, uint32Set *r
 							}
 							uint32_t a = cohort->local_number;
 							uint32_t b = attach->local_number;
-							uint32_t max = current->cohorts.size()-1;
+							uint32_t max = current.cohorts.size()-1;
 							if (type == K_MOVE_BEFORE && b == 0) {
 								good = false;
 							}
@@ -537,26 +537,26 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, uint32Set *r
 							}
 							if (good && a != b) {
 								if (type == K_SWITCH && a != 0 && b != 0) {
-									current->cohorts[a] = attach;
-									current->cohorts[b] = cohort;
+									current.cohorts[a] = attach;
+									current.cohorts[b] = cohort;
 								}
 								else {
 									if (a != max) {
 										for (uint32_t i = a ; i < max ; i++) {
-											current->cohorts[i] = current->cohorts[i+1];
+											current.cohorts[i] = current.cohorts[i+1];
 										}
 									}
-									current->cohorts[max] = 0;
+									current.cohorts[max] = 0;
 									if (b != max) {
 										for (uint32_t i = max ; i > b ; i--) {
-											current->cohorts[i] = current->cohorts[i-1];
+											current.cohorts[i] = current.cohorts[i-1];
 										}
 									}
-									current->cohorts[b] = 0;
-									current->cohorts[b] = cohort;
+									current.cohorts[b] = 0;
+									current.cohorts[b] = cohort;
 								}
 								for (uint32_t i = 0 ; i <= max ; i++) {
-									current->cohorts[i]->local_number = i;
+									current.cohorts[i]->local_number = i;
 								}
 								a=a;
 							}
@@ -565,7 +565,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, uint32Set *r
 					}
 					else if (type == K_SETRELATION || type == K_REMRELATION) {
 						Cohort *attach = 0;
-						if (runContextualTest(current, c, rule->dep_target, &attach) && attach) {
+						if (runContextualTest(&current, c, rule->dep_target, &attach) && attach) {
 							bool good = true;
 							ContextualTest *test = rule->dep_test_head;
 							while (test) {
@@ -598,7 +598,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, uint32Set *r
 						break;
 					}
 					else if (type == K_SETRELATIONS || type == K_REMRELATIONS) {
-						Cohort *attach = runContextualTest(current, c, rule->dep_target);
+						Cohort *attach = runContextualTest(&current, c, rule->dep_target);
 						if (attach) {
 							bool good = true;
 							ContextualTest *test = rule->dep_test_head;
@@ -691,7 +691,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow *current, uint32Set *r
 	return retval;
 }
 
-int GrammarApplicator::runGrammarOnSingleWindow(SingleWindow *current) {
+int GrammarApplicator::runGrammarOnSingleWindow(SingleWindow &current) {
 	if (!grammar->before_sections.empty() && !no_before_sections) {
 		uint32_t rv = runRulesOnWindow(current, runsections[-1]);
 		if (rv & RV_DELIMITED) {
@@ -742,7 +742,7 @@ int GrammarApplicator::runGrammarOnWindow() {
 		reflowDependencyWindow();
 	}
 
-	indexSingleWindow(current);
+	indexSingleWindow(*current);
 
 	has_enclosures = false;
 	if (!grammar->parentheses.empty()) {
@@ -806,7 +806,7 @@ int GrammarApplicator::runGrammarOnWindow() {
 label_runGrammarOnWindow_begin:
 	current = gWindow->current;
 
-	int rv = runGrammarOnSingleWindow(current);
+	int rv = runGrammarOnSingleWindow(*current);
 	if (rv & RV_DELIMITED) {
 		goto label_runGrammarOnWindow_begin;
 	}
