@@ -198,9 +198,11 @@ ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output)
 		if(superblank == true || inchar == ']' || incohort == false) {
 			if (cCohort) {
 				cCohort->text_pre = ux_append(cCohort->text_pre, inchar);
-			} else if (lSWindow) {
+			}
+			else if (lSWindow) {
 				lSWindow->text = ux_append(lSWindow->text, inchar);
-			} else {
+			}
+			else {
 				u_fprintf(output, "%C", inchar);
 			}
 			continue;
@@ -211,11 +213,11 @@ ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output)
 			  // ie. we've read some cohorts
 				// Create magic reading
 				if (cCohort->readings.empty()) {
-					cReading = initEmptyCohort(cCohort);
+					cReading = initEmptyCohort(*cCohort);
 					lReading = cReading;
 				}
 				foreach (std::list<Reading*>, cCohort->readings, iter, iter_end) {
-					addTagToReading(*iter, endtag);
+					addTagToReading(**iter, endtag);
 				}
 
 				cSWindow->appendCohort(cCohort);
@@ -233,11 +235,11 @@ ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output)
 				}
 				// Create magic reading
 				if (cCohort->readings.empty()) {
-					cReading = initEmptyCohort(cCohort);
+					cReading = initEmptyCohort(*cCohort);
 					lReading = cReading;
 				} 
 				foreach (std::list<Reading*>, cCohort->readings, iter, iter_end) {
-					addTagToReading(*iter, endtag);
+					addTagToReading(**iter, endtag);
 				}
 				
 				cSWindow->appendCohort(cCohort);
@@ -267,7 +269,7 @@ ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output)
 					cReading->parent->possible_sets.insert(grammar->sets_any->begin(), grammar->sets_any->end());
 					cReading->possible_sets.insert(grammar->sets_any->begin(), grammar->sets_any->end());
 				}
-				addTagToReading(cReading, begintag);
+				addTagToReading(*cReading, begintag);
 
 				cCohort->appendReading(cReading);
 
@@ -287,7 +289,7 @@ ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output)
 				lCohort = cCohort;
 				// Create readings
 				if (cCohort->readings.empty()) {
-					cReading = initEmptyCohort(cCohort);
+					cReading = initEmptyCohort(*cCohort);
 					lReading = cReading;
 				}
 			} 
@@ -350,7 +352,7 @@ ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output)
 						cReading->possible_sets.insert(grammar->sets_any->begin(), grammar->sets_any->end());
 					}
 
-					addTagToReading(cReading, cReading->wordform);
+					addTagToReading(*cReading, cReading->wordform);
 					processReading(cReading, current_reading);
 
 					cCohort->appendReading(cReading);
@@ -369,7 +371,7 @@ ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output)
 					cReading = new Reading(cCohort);
 					cReading->wordform = cCohort->wordform;
 
-					addTagToReading(cReading, cReading->wordform);
+					addTagToReading(*cReading, cReading->wordform);
 
 					processReading(cReading, current_reading);
 
@@ -398,10 +400,10 @@ ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output)
 		cSWindow->appendCohort(cCohort);
 		// Create magic reading
 		if (cCohort->readings.empty()) {
-			cReading = initEmptyCohort(cCohort);
+			cReading = initEmptyCohort(*cCohort);
 		}
 		foreach (std::list<Reading*>, cCohort->readings, iter, iter_end) {
-			addTagToReading(*iter, endtag);
+			addTagToReading(**iter, endtag);
 		}
 		gWindow->appendSingleWindow(cSWindow);
 		cReading = 0;
@@ -510,7 +512,7 @@ ApertiumApplicator::processReading(Reading *cReading, UChar *reading_string)
 
 	uint32_t tag = addTag(base)->hash;
 	cReading->baseform = tag;
-	addTagToReading(cReading, tag);
+	addTagToReading(*cReading, tag);
 
 	if(unknown) {
 		return;
@@ -533,7 +535,7 @@ ApertiumApplicator::processReading(Reading *cReading, UChar *reading_string)
 		if(*c == '<') {
 			if(joiner == true) {
 				uint32_t tag = addTag(tmptag)->hash;
-				addTagToReading(cReading, tag); // Add the baseform to the tag
+				addTagToReading(*cReading, tag); // Add the baseform to the tag
 
 				delete[] tmptag;
 				tmptag = 0;
@@ -541,24 +543,27 @@ ApertiumApplicator::processReading(Reading *cReading, UChar *reading_string)
 				c++;
 				continue;
 
-			} else {
+			}
+			else {
 
 				c++;
 				continue;
 			}
 
-		} else if(*c == '>') {
+		}
+		else if(*c == '>') {
 			uint32_t shufty = addTag(tmptag)->hash;
 			UChar *newtag = 0;
 			if (cReading->tags.find(shufty) != cReading->tags.end()) {
 				newtag = ux_append(newtag, '&');	
 				newtag = ux_append(newtag, (UChar)join_idx);
 				newtag = ux_append(newtag, tmptag);
-			} else {
+			}
+			else {
 				newtag = ux_append(newtag, tmptag);
 			}
 			uint32_t tag = addTag(newtag)->hash;
-			addTagToReading(cReading, tag); // Add the baseform to the tag
+			addTagToReading(*cReading, tag); // Add the baseform to the tag
 
 			delete[] tmptag;
 			tmptag = 0;
@@ -604,7 +609,8 @@ ApertiumApplicator::printReading(Reading *reading, UFILE *output)
 				for(int i=0; i<u_strlen(bf); i++) {
 					bf[i] = static_cast<UChar>(u_toupper(bf[i]));
 				}
-			} else {
+			}
+			else {
 				if (firstupper) {
 					bf[0] = static_cast<UChar>(u_toupper(bf[0]));
 				}			
@@ -636,11 +642,13 @@ ApertiumApplicator::printReading(Reading *reading, UFILE *output)
 		if (!(tag->type & T_BASEFORM) && !(tag->type & T_WORDFORM)) {
 			if(tag->tag[0] == '+') {
 				Tag::printTagRaw(output, tag);
-			} else if(tag->tag[0] == '&') {
+			}
+			else if(tag->tag[0] == '&') {
 				u_fprintf(output, "<");
 				u_fprintf(output, "%S", ux_substr(tag->tag, 2, u_strlen(tag->tag)));	
 				u_fprintf(output, ">");  
-			} else {
+			}
+			else {
 				u_fprintf(output, "<");
 				Tag::printTagRaw(output, tag);
 				u_fprintf(output, ">");

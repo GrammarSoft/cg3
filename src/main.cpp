@@ -32,7 +32,7 @@
 #include "options.h"
 using namespace Options;
 using CG3::CG3Quit;
-void GAppSetOpts(CG3::GrammarApplicator *applicator);
+void GAppSetOpts(CG3::GrammarApplicator &applicator);
 
 int main(int argc, char* argv[]) {
 	UFILE *ux_stdin = 0;
@@ -128,19 +128,22 @@ int main(int argc, char* argv[]) {
 
 	if (options[CODEPAGE_GRAMMAR].doesOccur) {
 		codepage_grammar = options[CODEPAGE_GRAMMAR].value;
-	} else if (options[CODEPAGE_GLOBAL].doesOccur) {
+	}
+	else if (options[CODEPAGE_GLOBAL].doesOccur) {
 		codepage_grammar = options[CODEPAGE_GLOBAL].value;
 	}
 
 	if (options[CODEPAGE_INPUT].doesOccur) {
 		codepage_input = options[CODEPAGE_INPUT].value;
-	} else if (options[CODEPAGE_GLOBAL].doesOccur) {
+	}
+	else if (options[CODEPAGE_GLOBAL].doesOccur) {
 		codepage_input = options[CODEPAGE_GLOBAL].value;
 	}
 
 	if (options[CODEPAGE_OUTPUT].doesOccur) {
 		codepage_output = options[CODEPAGE_OUTPUT].value;
-	} else if (options[CODEPAGE_GLOBAL].doesOccur) {
+	}
+	else if (options[CODEPAGE_GLOBAL].doesOccur) {
 		codepage_output = options[CODEPAGE_GLOBAL].value;
 	}
 
@@ -154,19 +157,22 @@ int main(int argc, char* argv[]) {
 
 	if (options[LOCALE_GRAMMAR].doesOccur) {
 		locale_grammar = options[LOCALE_GRAMMAR].value;
-	} else if (options[LOCALE_GLOBAL].doesOccur) {
+	}
+	else if (options[LOCALE_GLOBAL].doesOccur) {
 		locale_grammar = options[LOCALE_GLOBAL].value;
 	}
 
 	if (options[LOCALE_INPUT].doesOccur) {
 		locale_input = options[LOCALE_INPUT].value;
-	} else if (options[LOCALE_GLOBAL].doesOccur) {
+	}
+	else if (options[LOCALE_GLOBAL].doesOccur) {
 		locale_input = options[LOCALE_GLOBAL].value;
 	}
 
 	if (options[LOCALE_OUTPUT].doesOccur) {
 		locale_output = options[LOCALE_OUTPUT].value;
-	} else if (options[LOCALE_GLOBAL].doesOccur) {
+	}
+	else if (options[LOCALE_GLOBAL].doesOccur) {
 		locale_output = options[LOCALE_GLOBAL].value;
 	}
 
@@ -182,7 +188,8 @@ int main(int argc, char* argv[]) {
 
 	if (!options[STDOUT].doesOccur) {
 		ux_stdout = u_finit(stdout, locale_output, codepage_output);
-	} else {
+	}
+	else {
 		stdout_isfile = true;
 		ux_stdout = u_fopen(options[STDOUT].value, "wb", locale_output, codepage_output);
 	}
@@ -193,7 +200,8 @@ int main(int argc, char* argv[]) {
 
 	if (!options[STDERR].doesOccur) {
 		ux_stderr = u_finit(stderr, locale_output, codepage_output);
-	} else {
+	}
+	else {
 		stderr_isfile = true;
 		ux_stderr = u_fopen(options[STDERR].value, "wb", locale_output, codepage_output);
 	}
@@ -204,7 +212,8 @@ int main(int argc, char* argv[]) {
 
 	if (!options[STDIN].doesOccur) {
 		ux_stdin = u_finit(stdin, locale_input, codepage_input);
-	} else {
+	}
+	else {
 		struct stat info;
 		int serr = stat(options[STDIN].value, &info);
 		if (serr) {
@@ -326,12 +335,10 @@ int main(int argc, char* argv[]) {
 	}
 
 	if (!options[GRAMMAR_ONLY].doesOccur) {
-		CG3::GrammarApplicator *applicator = new CG3::GrammarApplicator(ux_stdin, ux_stdout, ux_stderr);
-		applicator->setGrammar(&grammar);
+		CG3::GrammarApplicator applicator(ux_stdin, ux_stdout, ux_stderr);
+		applicator.setGrammar(&grammar);
 		GAppSetOpts(applicator);
-		applicator->runGrammarOnText(ux_stdin, ux_stdout);
-		delete applicator;
-		applicator = 0;
+		applicator.runGrammarOnText(ux_stdin, ux_stdout);
 
 		if (options[VERBOSE].doesOccur) {
 			std::cerr << "Applying grammar on input took " << (clock()-main_timer)/(double)CLOCKS_PER_SEC << " seconds." << std::endl;
@@ -341,6 +348,7 @@ int main(int argc, char* argv[]) {
 
 	if (options[OPTIMIZE_UNSAFE].doesOccur) {
 		std::vector<uint32_t> bad;
+		bad.reserve(grammar.rule_by_line.size());
 		foreach(CG3::RuleByLineHashMap, grammar.rule_by_line, ir, ir_end) {
 			if (ir->second->num_match == 0) {
 				bad.push_back(ir->first);
@@ -376,19 +384,18 @@ int main(int argc, char* argv[]) {
 	if (options[GRAMMAR_OUT].doesOccur) {
 		UFILE *gout = u_fopen(options[GRAMMAR_OUT].value, "w", locale_output, codepage_output);
 		if (gout) {
-			CG3::GrammarWriter *writer = new CG3::GrammarWriter(grammar, ux_stderr);
+			CG3::GrammarWriter writer(grammar, ux_stderr);
 			if (options[STATISTICS].doesOccur) {
-				writer->statistics = true;
+				writer.statistics = true;
 			}
-			writer->writeGrammar(gout);
-			delete writer;
-			writer = 0;
+			writer.writeGrammar(gout);
 
 			if (options[VERBOSE].doesOccur) {
 				std::cerr << "Writing textual grammar took " << (clock()-main_timer)/(double)CLOCKS_PER_SEC << " seconds." << std::endl;
 			}
 			main_timer = clock();
-		} else {
+		}
+		else {
 			std::cerr << "Could not write grammar to " << options[GRAMMAR_OUT].value << std::endl;
 		}
 	}
@@ -396,16 +403,15 @@ int main(int argc, char* argv[]) {
 	if (options[GRAMMAR_BIN].doesOccur) {
 		FILE *gout = fopen(options[GRAMMAR_BIN].value, "wb");
 		if (gout) {
-			CG3::BinaryGrammar *writer = new CG3::BinaryGrammar(grammar, ux_stderr);
-			writer->writeBinaryGrammar(gout);
-			delete writer;
-			writer = 0;
+			CG3::BinaryGrammar writer(grammar, ux_stderr);
+			writer.writeBinaryGrammar(gout);
 
 			if (options[VERBOSE].doesOccur) {
 				std::cerr << "Writing binary grammar took " << (clock()-main_timer)/(double)CLOCKS_PER_SEC << " seconds." << std::endl;
 			}
 			main_timer = clock();
-		} else {
+		}
+		else {
 			std::cerr << "Could not write grammar to " << options[GRAMMAR_BIN].value << std::endl;
 		}
 	}
@@ -428,57 +434,57 @@ int main(int argc, char* argv[]) {
 	return status;
 }
 
-void GAppSetOpts(CG3::GrammarApplicator *applicator) {
+void GAppSetOpts(CG3::GrammarApplicator &applicator) {
 	if (options[ALWAYS_SPAN].doesOccur) {
-		applicator->always_span = true;
+		applicator.always_span = true;
 	}
-	applicator->apply_mappings = true;
+	applicator.apply_mappings = true;
 	if (options[NOMAPPINGS].doesOccur) {
-		applicator->apply_mappings = false;
+		applicator.apply_mappings = false;
 	}
-	applicator->apply_corrections = true;
+	applicator.apply_corrections = true;
 	if (options[NOCORRECTIONS].doesOccur) {
-		applicator->apply_corrections = false;
+		applicator.apply_corrections = false;
 	}
-	applicator->no_before_sections = false;
+	applicator.no_before_sections = false;
 	if (options[NOBEFORESECTIONS].doesOccur) {
-		applicator->no_before_sections = true;
+		applicator.no_before_sections = true;
 	}
-	applicator->no_sections = false;
+	applicator.no_sections = false;
 	if (options[NOSECTIONS].doesOccur) {
-		applicator->no_sections = true;
+		applicator.no_sections = true;
 	}
-	applicator->no_after_sections = false;
+	applicator.no_after_sections = false;
 	if (options[NOAFTERSECTIONS].doesOccur) {
-		applicator->no_after_sections = true;
+		applicator.no_after_sections = true;
 	}
-	applicator->unsafe = false;
+	applicator.unsafe = false;
 	if (options[UNSAFE].doesOccur) {
-		applicator->unsafe = true;
+		applicator.unsafe = true;
 	}
 	if (options[TRACE].doesOccur) {
-		applicator->trace = true;
+		applicator.trace = true;
 	}
 	if (options[TRACE_NAME_ONLY].doesOccur) {
-		applicator->trace = true;
-		applicator->trace_name_only = true;
+		applicator.trace = true;
+		applicator.trace_name_only = true;
 	}
 	if (options[TRACE_NO_REMOVED].doesOccur) {
-		applicator->trace = true;
-		applicator->trace_no_removed = true;
+		applicator.trace = true;
+		applicator.trace_no_removed = true;
 	}
 	if (options[SINGLERUN].doesOccur) {
-		applicator->single_run = true;
+		applicator.single_run = true;
 	}
 	if (options[SECTIONS].doesOccur) {
-		applicator->sections.clear();
+		applicator.sections.clear();
 		const char *s = options[SECTIONS].value;
 		const char *c = strchr(s, ',');
 		const char *d = strchr(s, '-');
 		if (c == 0 && d == 0) {
 			uint32_t a = abs(atoi(s));
 			for (uint32_t i=1 ; i<=a ; i++) {
-				applicator->sections.push_back(i);
+				applicator.sections.push_back(i);
 			}
 		}
 		else {
@@ -495,20 +501,20 @@ void GAppSetOpts(CG3::GrammarApplicator *applicator) {
 						s = 0;
 					}
 					for (uint32_t i=a ; i<=b ; i++) {
-						applicator->sections.push_back(i);
+						applicator.sections.push_back(i);
 					}
 				}
 				else if (c && (c < d || d == 0)) {
 					a = abs(atoi(s));
 					s = c+1;
-					applicator->sections.push_back(a);
+					applicator.sections.push_back(a);
 				}
 				if (s) {
 					c = strchr(s, ',');
 					d = strchr(s, '-');
 					if (c == 0 && d == 0) {
 						a = abs(atoi(s));
-						applicator->sections.push_back(a);
+						applicator.sections.push_back(a);
 						s = 0;
 					}
 				}
@@ -518,35 +524,35 @@ void GAppSetOpts(CG3::GrammarApplicator *applicator) {
 	}
 	if (options[VERBOSE].doesOccur) {
 		if (options[VERBOSE].value) {
-			applicator->verbosity_level = abs(atoi(options[VERBOSE].value));
+			applicator.verbosity_level = abs(atoi(options[VERBOSE].value));
 		}
 		else {
-			applicator->verbosity_level = 1;
+			applicator.verbosity_level = 1;
 		}
 	}
 	if (options[NUM_WINDOWS].doesOccur) {
-		applicator->num_windows = abs(atoi(options[NUM_WINDOWS].value));
+		applicator.num_windows = abs(atoi(options[NUM_WINDOWS].value));
 	}
 	if (options[SOFT_LIMIT].doesOccur) {
-		applicator->soft_limit = abs(atoi(options[SOFT_LIMIT].value));
+		applicator.soft_limit = abs(atoi(options[SOFT_LIMIT].value));
 	}
 	if (options[HARD_LIMIT].doesOccur) {
-		applicator->hard_limit = abs(atoi(options[HARD_LIMIT].value));
+		applicator.hard_limit = abs(atoi(options[HARD_LIMIT].value));
 	}
 	if (options[DEP_HUMANIZE].doesOccur) {
-		applicator->dep_humanize = true;
+		applicator.dep_humanize = true;
 	}
 	if (options[DEP_ORIGINAL].doesOccur) {
-		applicator->dep_original = true;
+		applicator.dep_original = true;
 	}
 	if (options[DEP_ALLOW_LOOPS].doesOccur) {
-		applicator->dep_block_loops = false;
+		applicator.dep_block_loops = false;
 	}
 	if (options[MAGIC_READINGS].doesOccur) {
-		applicator->allow_magic_readings = false;
+		applicator.allow_magic_readings = false;
 	}
 	if (options[NO_PASS_ORIGIN].doesOccur) {
-		applicator->no_pass_origin = true;
+		applicator.no_pass_origin = true;
 	}
 	if (options[OPTIMIZE_UNSAFE].doesOccur) {
 		options[STATISTICS].doesOccur = true;
@@ -555,7 +561,7 @@ void GAppSetOpts(CG3::GrammarApplicator *applicator) {
 		options[STATISTICS].doesOccur = true;
 	}
 	if (options[STATISTICS].doesOccur) {
-		applicator->enableStatistics();
+		applicator.enableStatistics();
 	}
 #ifndef HAVE_TICK_COUNTER
 	if (options[STATISTICS].doesOccur) {

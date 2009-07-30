@@ -145,15 +145,15 @@ namespace CG3 {
 		bool statistics;
 		ticks gtimer;
 
-		void reflowReading(Reading *reading);
-		void addTagToReading(Reading *reading, uint32_t tag, bool rehash = true);
-		void delTagFromReading(Reading *reading, uint32_t tag);
-		void splitMappings(TagList mappings, Cohort *cohort, Reading *reading, bool mapped = false);
-		void mergeMappings(Cohort *cohort);
+		void reflowReading(Reading &reading);
+		void addTagToReading(Reading &reading, uint32_t tag, bool rehash = true);
+		void delTagFromReading(Reading &reading, uint32_t tag);
+		void splitMappings(TagList mappings, Cohort &cohort, Reading &reading, bool mapped = false);
+		void mergeMappings(Cohort &cohort);
 		bool wouldParentChildLoop(Cohort *parent, Cohort *child);
-		bool attachParentChild(Cohort *parent, Cohort *child, bool allowloop = false);
+		bool attachParentChild(Cohort &parent, Cohort &child, bool allowloop = false);
 
-		Reading *initEmptyCohort(Cohort *cohort);
+		Reading *initEmptyCohort(Cohort &cohort);
 	};
 }
 

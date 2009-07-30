@@ -347,7 +347,7 @@ void GrammarApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 			u_fprintf(output, "%S", cohort->text_pre);
 		}
 
-		mergeMappings(cohort);
+		mergeMappings(*cohort);
 
 		foreach (std::list<Reading*>, cohort->readings, rter1, rter1_end) {
 			printReading(*rter1, output);

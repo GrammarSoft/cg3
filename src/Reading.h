@@ -56,7 +56,7 @@ namespace CG3 {
 		Reading(Cohort *p);
 		~Reading();
 		void clear(Cohort *p);
-		void duplicateFrom(Reading *r);
+		void duplicateFrom(Reading &r);
 
 		uint32_t rehash();
 		static bool cmp_number(Reading *a, Reading *b);

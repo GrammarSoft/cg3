@@ -46,7 +46,8 @@ void Anchor::setName(const UChar *to) {
 	if (to) {
 		name = new UChar[u_strlen(to)+1];
 		u_strcpy(name, to);
-	} else {
+	}
+	else {
 		setName((uint32_t)rand());
 	}
 }

@@ -380,7 +380,8 @@ Cohort *GrammarApplicator::runContextualTest(SingleWindow *sWindow, size_t posit
 	}
 	if (retval) {
 		test->num_match++;
-	} else {
+	}
+	else {
 		test->num_fail++;
 	}
 
