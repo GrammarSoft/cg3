@@ -50,7 +50,7 @@
 				BufferSecurityCheck="true"
 				EnableFunctionLevelLinking="true"
 				ForceConformanceInForLoopScope="true"
-				RuntimeTypeInfo="true"
+				RuntimeTypeInfo="false"
 				UsePrecompiledHeader="0"
 				WarningLevel="4"
 				DebugInformationFormat="3"
@@ -127,6 +127,7 @@
 				MinimalRebuild="true"
 				BufferSecurityCheck="false"
 				ForceConformanceInForLoopScope="true"
+				RuntimeTypeInfo="false"
 				WarningLevel="4"
 				DebugInformationFormat="3"
 			/>
