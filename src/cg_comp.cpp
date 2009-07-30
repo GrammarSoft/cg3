@@ -100,7 +100,8 @@ main(int argc, char *argv[])
 	if (cbuffers[0][0] == 'C' && cbuffers[0][1] == 'G' && cbuffers[0][2] == '3' && cbuffers[0][3] == 'B') {
 		std::cerr << "Binary grammar detected. Cannot re-compile binary grammars." << std::endl;
 		CG3Quit(1);
-	} else {
+	}
+	else {
 		parser = new CG3::TextualParser(grammar, ux_stderr);
 	}
 
@@ -127,11 +128,10 @@ main(int argc, char *argv[])
 	FILE *gout = fopen(argv[2], "wb");
 
 	if (gout) {
-		CG3::BinaryGrammar *writer = new CG3::BinaryGrammar(grammar, ux_stderr);
-		writer->writeBinaryGrammar(gout);
-		delete writer;
-		writer = 0;
-	} else {
+		CG3::BinaryGrammar writer(grammar, ux_stderr);
+		writer.writeBinaryGrammar(gout);
+	}
+	else {
 		std::cerr << "Could not write grammar to " << argv[2] << std::endl;
 	}
 

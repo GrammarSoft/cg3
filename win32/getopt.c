@@ -59,10 +59,13 @@ getopt(int argc, char **argv, char *opts)
 			ERR(": option requires an argument -- ", (char)c);
 			sp = 1;
 			return('?');
-		} else
+		}
+		else {
 			optarg = argv[optind++];
+		}
 		sp = 1;
-	} else {
+	}
+	else {
 		if(argv[optind][++sp] == '\0') {
 			sp = 1;
 			optind++;
