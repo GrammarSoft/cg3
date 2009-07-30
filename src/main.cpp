@@ -349,12 +349,12 @@ int main(int argc, char* argv[]) {
 	if (options[OPTIMIZE_UNSAFE].doesOccur) {
 		std::vector<uint32_t> bad;
 		bad.reserve(grammar.rule_by_line.size());
-		foreach(CG3::RuleByLineHashMap, grammar.rule_by_line, ir, ir_end) {
+		foreach (CG3::RuleByLineHashMap, grammar.rule_by_line, ir, ir_end) {
 			if (ir->second->num_match == 0) {
 				bad.push_back(ir->first);
 			}
 		}
-		foreach(std::vector<uint32_t>, bad, br, br_end) {
+		foreach (std::vector<uint32_t>, bad, br, br_end) {
 			CG3::Rule *r = grammar.rule_by_line.find(*br)->second;
 			grammar.rule_by_line.erase(*br);
 			grammar.destroyRule(r);
@@ -365,12 +365,12 @@ int main(int argc, char* argv[]) {
 	}
 	if (options[OPTIMIZE_SAFE].doesOccur) {
 		std::vector<uint32_t> bad;
-		foreach(CG3::RuleByLineHashMap, grammar.rule_by_line, ir, ir_end) {
+		foreach (CG3::RuleByLineHashMap, grammar.rule_by_line, ir, ir_end) {
 			if (ir->second->num_match == 0) {
 				bad.push_back(ir->first);
 			}
 		}
-		foreach(std::vector<uint32_t>, bad, br, br_end) {
+		foreach (std::vector<uint32_t>, bad, br, br_end) {
 			CG3::Rule *r = grammar.rule_by_line.find(*br)->second;
 			grammar.rule_by_line.erase(*br);
 			r->line += grammar.rule_by_line.size();

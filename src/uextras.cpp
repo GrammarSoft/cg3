@@ -58,7 +58,7 @@ bool ux_trim(UChar *totrim) {
 	bool retval = false;
 	unsigned int length = u_strlen(totrim);
 	if (totrim && length) {
-		while(length >= 1 && u_isWhitespace(totrim[length-1])) {
+		while (length >= 1 && u_isWhitespace(totrim[length-1])) {
 			length--;
 		}
 		if (u_isWhitespace(totrim[length])) {
@@ -68,7 +68,7 @@ bool ux_trim(UChar *totrim) {
 		if (u_isWhitespace(totrim[0])) {
 			retval = true;
 			UChar *current = totrim;
-			while(u_isWhitespace(current[0])) {
+			while (u_isWhitespace(current[0])) {
 				current++;
 			}
 			size_t num_spaces = ((current-totrim)-1);
@@ -195,8 +195,7 @@ UChar *ux_append(UChar *target, const UChar *data) {
 }
 
 
-UChar *ux_append(UChar *target, const UChar data)
-{
+UChar *ux_append(UChar *target, const UChar data) {
 	UChar *tmp = 0;
 	UChar *char_tmp = new UChar[2];
 	char_tmp[0] = data;
@@ -223,18 +222,17 @@ UChar *ux_append(UChar *target, const UChar data)
 	return tmp;
 }
 
-UChar *ux_substr(UChar *string, int start, int end) 
-{
+UChar *ux_substr(UChar *string, int start, int end) {
 	UChar *tmp = 0;
 	int i = 0;
 
 	int len = u_strlen(string);
 	
-	if(end > len) {
+	if (end > len) {
 		return tmp;
 	}
 
-	for(i = start; i < end; i++) {
+	for (i = start; i < end; i++) {
 		tmp = ux_append(tmp, string[i]);
 	}
 

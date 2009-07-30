@@ -34,7 +34,7 @@ using namespace CG3;
 using namespace CG3::Strings;
 
 ApertiumApplicator::ApertiumApplicator(UFILE *ux_in, UFILE *ux_out, UFILE *ux_err) 
-	: GrammarApplicator(ux_in, ux_out, ux_err) 
+	: GrammarApplicator(ux_in, ux_out, ux_err)
 {
 	nullFlush=false;
 	wordform_case = false;
@@ -43,49 +43,41 @@ ApertiumApplicator::ApertiumApplicator(UFILE *ux_in, UFILE *ux_out, UFILE *ux_er
 }
 
 
-bool ApertiumApplicator::getNullFlush()
-{
+bool ApertiumApplicator::getNullFlush() {
 	return nullFlush;
 }
 
-void ApertiumApplicator::setNullFlush(bool pNullFlush)
-{
+void ApertiumApplicator::setNullFlush(bool pNullFlush) {
 	nullFlush=pNullFlush;
 }
 
-UChar
-ApertiumApplicator::u_fgetc_wrapper(UFILE *input)
-{
-	if(runningWithNullFlush)
-	{
-		if(!fgetc_converter)
-		{
-			fgetc_converter = ucnv_open(ucnv_getDefaultName(),&fgetc_error);
+UChar ApertiumApplicator::u_fgetc_wrapper(UFILE *input) {
+	if (runningWithNullFlush) {
+		if (!fgetc_converter) {
+			fgetc_converter = ucnv_open(ucnv_getDefaultName(), &fgetc_error);
 		}
 		int ch;
 		int result;
 		int inputsize=0;
 		
-		do
-		{
+		do {
 			ch = fgetc(u_fgetfile(input));
-			if(ch==0) {
+			if (ch==0) {
 				return 0;
 			}
-			else
-			{	
+			else {
 				fgetc_inputbuf[inputsize]=static_cast<char>(ch);
 				inputsize++;
 				fgetc_error=U_ZERO_ERROR;
-				result = ucnv_toUChars(fgetc_converter,fgetc_outputbuf,5,fgetc_inputbuf,inputsize,&fgetc_error);
-				if(U_FAILURE(fgetc_error)) {
-					u_fprintf(ux_stderr,"Error conversion: %d\n",fgetc_error);
+				result = ucnv_toUChars(fgetc_converter, fgetc_outputbuf, 5, fgetc_inputbuf, inputsize, &fgetc_error);
+				if (U_FAILURE(fgetc_error)) {
+					u_fprintf(ux_stderr, "Error conversion: %d\n", fgetc_error);
 				}
 			}
 		}
-		while(( ((result>=1 && fgetc_outputbuf[0]==0xFFFD))  || result<1 || U_FAILURE(fgetc_error) ) && !u_feof(input) && inputsize<5);
+		while (( ((result>=1 && fgetc_outputbuf[0]==0xFFFD))  || result<1 || U_FAILURE(fgetc_error) ) && !u_feof(input) && inputsize<5);
 
-		if(fgetc_outputbuf[0]==0xFFFD && u_feof(input)) {
+		if (fgetc_outputbuf[0]==0xFFFD && u_feof(input)) {
 			return U_EOF;
 		}
 		return fgetc_outputbuf[0];
@@ -96,15 +88,12 @@ ApertiumApplicator::u_fgetc_wrapper(UFILE *input)
  }
  
  
-int 
-ApertiumApplicator::runGrammarOnTextWrapperNullFlush(UFILE *input, UFILE *output)
-{
+int ApertiumApplicator::runGrammarOnTextWrapperNullFlush(UFILE *input, UFILE *output) {
 	setNullFlush(false);
 	runningWithNullFlush=true;
-	while(!u_feof(input))
-	{
-		runGrammarOnText(input,output);
-		u_fputc('\0',output);
+	while (!u_feof(input)) {
+		runGrammarOnText(input, output);
+		u_fputc('\0', output);
 		u_fflush(output);
 	}
 	runningWithNullFlush=false;
@@ -115,15 +104,11 @@ ApertiumApplicator::runGrammarOnTextWrapperNullFlush(UFILE *input, UFILE *output
  * Run a constraint grammar on an Apertium input stream
  */
 
-int
-ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output) 
-{
-	if(getNullFlush())
-	{
-		return runGrammarOnTextWrapperNullFlush(input,output);
+int ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
+	if (getNullFlush()) {
+		return runGrammarOnTextWrapperNullFlush(input, output);
 	}
-	else
-	{
+
 	if (!input) {
 		u_fprintf(ux_stderr, "Error: Input is null - nothing to parse!\n");
 		CG3Quit(1);
@@ -178,24 +163,24 @@ ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output)
 	gtimer = getticks();
 	ticks timer(gtimer);
 
-	while((inchar = u_fgetc_wrapper(input)) != 0) { 
-		if(u_feof(input)) {
+	while ((inchar = u_fgetc_wrapper(input)) != 0) { 
+		if (u_feof(input)) {
 			break;
 		}
 
-		if(inchar == '[') { // Start of a superblank section
+		if (inchar == '[') { // Start of a superblank section
 			superblank = true;	
 		}
 
-		if(inchar == ']') { // End of a superblank section
+		if (inchar == ']') { // End of a superblank section
 			superblank = false;
 		}
 
-		if(inchar == '^') {
+		if (inchar == '^') {
 			incohort = true;
 		}
 		
-		if(superblank == true || inchar == ']' || incohort == false) {
+		if (superblank == true || inchar == ']' || incohort == false) {
 			if (cCohort) {
 				cCohort->text_pre = ux_append(cCohort->text_pre, inchar);
 			}
@@ -316,10 +301,10 @@ ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output)
 			// We encapsulate wordforms within '"<' and
 			// '>"' for internal processing.
 			wordform = ux_append(wordform, '<');
-			while(inchar != '/') {
+			while (inchar != '/') {
 				inchar = u_fgetc_wrapper(input); 
 
-				if(inchar != '/') {
+				if (inchar != '/') {
 					wordform = ux_append(wordform, inchar);
 				}
 			}
@@ -339,10 +324,10 @@ ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output)
 			Reading *cReading = 0;
 
 			// Read in the readings	
-			while(inchar != '$') {
+			while (inchar != '$') {
 				inchar = u_fgetc_wrapper(input);
 
-	 			if(inchar == '$') { 
+	 			if (inchar == '$') {
 					// Add the final reading of the cohort
 					cReading = new Reading(cCohort);
 					cReading->wordform = cCohort->wordform;
@@ -365,7 +350,7 @@ ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output)
 					incohort = false;
 				}
 
-				if(inchar == '/') { // Reached end of reading
+				if (inchar == '/') { // Reached end of reading
 	
 					Reading *cReading = 0;
 					cReading = new Reading(cCohort);
@@ -431,7 +416,7 @@ ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output)
 		gWindow->previous.pop_front();
 	}
 	
-	if((inchar) && inchar != 0xffff) {
+	if ((inchar) && inchar != 0xffff) {
 		u_fprintf(output, "%C", inchar); // eg. final newline
 	}
 
@@ -441,7 +426,6 @@ ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output)
 	grammar->total_time = elapsed(tmp, timer);
 
 	return 0;
-	}
 } // runGrammarOnText
 
 
@@ -453,9 +437,7 @@ ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output)
  *   venir<vblex><inf>+lo<prn><enc><p3><nt><sg>
  *   be<vblex><inf># happy
  */
-void
-ApertiumApplicator::processReading(Reading *cReading, UChar *reading_string)
-{
+void ApertiumApplicator::processReading(Reading *cReading, UChar *reading_string) {
 	UChar *m = reading_string;
 	UChar *c = reading_string;
 	UChar *tmptag = 0;
@@ -473,16 +455,16 @@ ApertiumApplicator::processReading(Reading *cReading, UChar *reading_string)
 
 	// Look through the reading for the '#' symbol signifying that
 	// this is a multiword.
-	while(*m != '\0') {
-		if(*m == '\0') {
+	while (*m != '\0') {
+		if (*m == '\0') {
 			break;
 		}
 
-		if(*m == '#') {
+		if (*m == '#') {
 			multi = true;
 		}
 
-		if(multi) {
+		if (multi) {
 			suf = ux_append(suf, *m);
 		}
 
@@ -491,19 +473,19 @@ ApertiumApplicator::processReading(Reading *cReading, UChar *reading_string)
 
 	// We encapsulate baseforms within '"' for internal processing.
 	base = ux_append(base, '"');
-	while(*c != '\0') {
-		if(*c == '*') { // Initial asterisk means word is unknown, and 
+	while (*c != '\0') {
+		if (*c == '*') { // Initial asterisk means word is unknown, and 
 				// should just be copied in the output.
 			unknown = true;
 		}
-		if(*c == '<' || *c == '\0') {
+		if (*c == '<' || *c == '\0') {
 			break;
 		}
 		base = ux_append(base, *c);
 		c++;
 	}
 
-	if(suf != 0) { // Append the multiword suffix to the baseform
+	if (suf != 0) { // Append the multiword suffix to the baseform
 		       // (this is normally done in pretransfer)
 
 		base = ux_append(base, suf);
@@ -514,26 +496,26 @@ ApertiumApplicator::processReading(Reading *cReading, UChar *reading_string)
 	cReading->baseform = tag;
 	addTagToReading(*cReading, tag);
 
-	if(unknown) {
+	if (unknown) {
 		return;
 	}
 
 	bool joiner = false;
 
 	// Now read in the tags
-	while(*c != '\0') {
-		if(*c == '\0') {
+	while (*c != '\0') {
+		if (*c == '\0') {
 			return;
 		}
 
-		if(*c == '+') {
+		if (*c == '+') {
 			joiner = true;
 			joined = true;
 			join_idx++;
 		}
 
-		if(*c == '<') {
-			if(joiner == true) {
+		if (*c == '<') {
+			if (joiner == true) {
 				uint32_t tag = addTag(tmptag)->hash;
 				addTagToReading(*cReading, tag); // Add the baseform to the tag
 
@@ -551,7 +533,7 @@ ApertiumApplicator::processReading(Reading *cReading, UChar *reading_string)
 			}
 
 		}
-		else if(*c == '>') {
+		else if (*c == '>') {
 			uint32_t shufty = addTag(tmptag)->hash;
 			UChar *newtag = 0;
 			if (cReading->tags.find(shufty) != cReading->tags.end()) {
@@ -581,9 +563,7 @@ ApertiumApplicator::processReading(Reading *cReading, UChar *reading_string)
 	return;
 }
 
-void 
-ApertiumApplicator::printReading(Reading *reading, UFILE *output) 
-{
+void ApertiumApplicator::printReading(Reading *reading, UFILE *output) {
 	if (reading->noprint) {
 		return;
 	}
@@ -606,7 +586,7 @@ ApertiumApplicator::printReading(Reading *reading, UFILE *output)
 			bool uppercase = firstupper && u_isupper(wf[u_strlen(wf)-1]);
 
 			if (uppercase) {
-				for(int i=0; i<u_strlen(bf); i++) {
+				for (int i=0; i<u_strlen(bf); i++) {
 					bf[i] = static_cast<UChar>(u_toupper(bf[i]));
 				}
 			}
@@ -614,7 +594,7 @@ ApertiumApplicator::printReading(Reading *reading, UFILE *output)
 				if (firstupper) {
 					bf[0] = static_cast<UChar>(u_toupper(bf[0]));
 				}			
-				for(int i=1; i<u_strlen(bf); i++) {
+				for (int i=1; i<u_strlen(bf); i++) {
 					bf[i] = static_cast<UChar>(u_tolower(bf[i]));
 				}
 			}
@@ -640,10 +620,10 @@ ApertiumApplicator::printReading(Reading *reading, UFILE *output)
 		used_tags[*tter] = *tter;
 		const Tag *tag = single_tags[*tter];
 		if (!(tag->type & T_BASEFORM) && !(tag->type & T_WORDFORM)) {
-			if(tag->tag[0] == '+') {
+			if (tag->tag[0] == '+') {
 				Tag::printTagRaw(output, tag);
 			}
-			else if(tag->tag[0] == '&') {
+			else if (tag->tag[0] == '&') {
 				u_fprintf(output, "<");
 				u_fprintf(output, "%S", ux_substr(tag->tag, 2, u_strlen(tag->tag)));	
 				u_fprintf(output, ">");  
@@ -658,9 +638,7 @@ ApertiumApplicator::printReading(Reading *reading, UFILE *output)
 	}
 }
 
-void 
-ApertiumApplicator::printSingleWindow(SingleWindow *window, UFILE *output) 
-{
+void ApertiumApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 
 	// Window text comes at the left
 	if (window->text) {
@@ -688,7 +666,7 @@ ApertiumApplicator::printSingleWindow(SingleWindow *window, UFILE *output)
 		std::list<Reading*>::iterator rter;
 		for (rter = cohort->readings.begin() ; rter != cohort->readings.end() ; rter++) {
 			printReading(*rter, output);
-			if(*rter != cohort->readings.back()) {
+			if (*rter != cohort->readings.back()) {
 				u_fprintf(output, "/");
 			}
 		}

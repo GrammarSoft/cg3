@@ -162,8 +162,8 @@ inline void Cohort::updateMinMax() {
 	}
 	num_min.clear();
 	num_max.clear();
-	const_foreach(std::list<Reading*>, readings, rter, rter_end) {
-		const_foreach(Taguint32HashMap, (*rter)->tags_numerical, nter, nter_end) {
+	const_foreach (std::list<Reading*>, readings, rter, rter_end) {
+		const_foreach (Taguint32HashMap, (*rter)->tags_numerical, nter, nter_end) {
 			const Tag *tag = nter->second;
 			if (num_min.find(tag->comparison_hash) == num_min.end() || tag->comparison_val < num_min[tag->comparison_hash]) {
 				num_min[tag->comparison_hash] = tag->comparison_val;

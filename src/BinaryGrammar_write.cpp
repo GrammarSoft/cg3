@@ -127,14 +127,14 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 	u32tmp = (uint32_t)htonl((uint32_t)grammar->preferred_targets.size());
 	fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 	uint32Vector::const_iterator iter;
-	for(iter = grammar->preferred_targets.begin() ; iter != grammar->preferred_targets.end() ; iter++ ) {
+	for (iter = grammar->preferred_targets.begin() ; iter != grammar->preferred_targets.end() ; iter++ ) {
 		u32tmp = (uint32_t)htonl((uint32_t)*iter);
 		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 	}
 
 	u32tmp = (uint32_t)htonl((uint32_t)grammar->parentheses.size());
 	fwrite(&u32tmp, sizeof(uint32_t), 1, output);
-	const_foreach(uint32Map, grammar->parentheses, iter_par, iter_par_end) {
+	const_foreach (uint32Map, grammar->parentheses, iter_par, iter_par_end) {
 		u32tmp = (uint32_t)htonl((uint32_t)iter_par->first);
 		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 		u32tmp = (uint32_t)htonl((uint32_t)iter_par->second);
@@ -143,7 +143,7 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 
 	u32tmp = (uint32_t)htonl((uint32_t)grammar->anchor_by_hash.size());
 	fwrite(&u32tmp, sizeof(uint32_t), 1, output);
-	const_foreach(uint32Map, grammar->anchor_by_hash, iter_anchor, iter_anchor_end) {
+	const_foreach (uint32Map, grammar->anchor_by_hash, iter_anchor, iter_anchor_end) {
 		u32tmp = (uint32_t)htonl((uint32_t)iter_anchor->first);
 		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 		u32tmp = (uint32_t)htonl((uint32_t)iter_anchor->second);
@@ -239,7 +239,7 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 	fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 	RuleByLineMap rule_by_line;
 	rule_by_line.insert(grammar->rule_by_line.begin(), grammar->rule_by_line.end());
-	const_foreach(RuleByLineMap, rule_by_line, rule_iter, rule_iter_end) {
+	const_foreach (RuleByLineMap, rule_by_line, rule_iter, rule_iter_end) {
 		Rule *r = rule_iter->second;
 		i32tmp = (int32_t)htonl(r->section);
 		fwrite(&i32tmp, sizeof(int32_t), 1, output);

@@ -178,7 +178,7 @@ inline bool ISNL(const UChar c) {
 
 inline bool ISESC(UChar *p) {
 	uint32_t a=1;
-	while(*(p-a) && *(p-a) == '\\') {
+	while (*(p-a) && *(p-a) == '\\') {
 		a++;
 	}
 	return (a%2==0);

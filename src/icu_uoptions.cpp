@@ -24,40 +24,40 @@ int u_parseArgs(int argc, char* argv[],
     int i=1, remaining=1;
     char c, stopOptions=0;
 
-    while(i<argc) {
+    while (i<argc) {
         arg=argv[i];
-        if(!stopOptions && *arg=='-' && (c=arg[1])!=0) {
+        if (!stopOptions && *arg=='-' && (c=arg[1])!=0) {
             /* process an option */
             UOption *option=NULL;
             arg+=2;
-            if(c=='-') {
+            if (c=='-') {
                 /* process a long option */
-                if(*arg==0) {
+                if (*arg==0) {
                     /* stop processing options after "--" */
                     stopOptions=1;
                 }
 				else {
                     /* search for the option string */
                     int j;
-                    for(j=0; j<optionCount; ++j) {
-                        if(options[j].longName && uprv_strcmp(arg, options[j].longName)==0) {
+                    for (j=0; j<optionCount; ++j) {
+                        if (options[j].longName && uprv_strcmp(arg, options[j].longName)==0) {
                             option=options+j;
                             break;
                         }
                     }
-                    if(option==NULL) {
+                    if (option==NULL) {
                         /* no option matches */
                         return -i;
                     }
                     option->doesOccur=1;
 
-                    if(option->hasArg!=UOPT_NO_ARG) {
+                    if (option->hasArg!=UOPT_NO_ARG) {
                         /* parse the argument for the option, if any */
-                        if(i+1<argc && !(argv[i+1][0]=='-' && argv[i+1][1]!=0)) {
+                        if (i+1<argc && !(argv[i+1][0]=='-' && argv[i+1][1]!=0)) {
                             /* argument in the next argv[], and there is not an option in there */
                             option->value=argv[++i];
                         }
-						else if(option->hasArg==UOPT_REQUIRES_ARG) {
+						else if (option->hasArg==UOPT_REQUIRES_ARG) {
                             /* there is no argument, but one is required: return with error */
                             return -i;
                         }
@@ -69,33 +69,33 @@ int u_parseArgs(int argc, char* argv[],
                 do {
                     /* search for the option letter */
                     int j;
-                    for(j=0; j<optionCount; ++j) {
-                        if(c==options[j].shortName) {
+                    for (j=0; j<optionCount; ++j) {
+                        if (c==options[j].shortName) {
                             option=options+j;
                             break;
                         }
                     }
-                    if(option==NULL) {
+                    if (option==NULL) {
                         /* no option matches */
                         return -i;
                     }
                     option->doesOccur=1;
 
-                    if(option->hasArg!=UOPT_NO_ARG) {
+                    if (option->hasArg!=UOPT_NO_ARG) {
                         /* parse the argument for the option, if any */
-                        if(*arg!=0) {
+                        if (*arg!=0) {
                             /* argument following in the same argv[] */
                             option->value=arg;
                             /* do not process the rest of this arg as option letters */
                             break;
                         }
-						else if(i+1<argc && !(argv[i+1][0]=='-' && argv[i+1][1]!=0)) {
+						else if (i+1<argc && !(argv[i+1][0]=='-' && argv[i+1][1]!=0)) {
                             /* argument in the next argv[], and there is not an option in there */
                             option->value=argv[++i];
                             /* this break is redundant because we know that *arg==0 */
                             break;
                         }
-						else if(option->hasArg==UOPT_REQUIRES_ARG) {
+						else if (option->hasArg==UOPT_REQUIRES_ARG) {
                             /* there is no argument, but one is required: return with error */
                             return -i;
                         }
@@ -104,10 +104,10 @@ int u_parseArgs(int argc, char* argv[],
                     /* get the next option letter */
                     option=NULL;
                     c=*arg++;
-                } while(c!=0);
+                } while (c!=0);
             }
 
-            if(option!=0 && option->optionFn!=0 && option->optionFn(option->context, option)<0) {
+            if (option!=0 && option->optionFn!=0 && option->optionFn(option->context, option)<0) {
                 /* the option function was called and returned an error */
                 return -i;
             }
