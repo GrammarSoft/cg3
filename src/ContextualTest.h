@@ -88,7 +88,7 @@ namespace CG3 {
 		
 		uint32_t rehash();
 		void resetStatistics();
-		void markUsed(Grammar *grammar);
+		void markUsed(Grammar &grammar);
 
 		static bool cmp_quality(ContextualTest *a, ContextualTest *b);
 	};

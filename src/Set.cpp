@@ -92,7 +92,7 @@ uint32_t Set::rehash() {
 	return retval;
 }
 
-void Set::reindex(Grammar *grammar) {
+void Set::reindex(Grammar &grammar) {
 	if (is_unified || is_child_unified) {
 		is_special = true;
 		is_child_unified = true;
@@ -128,7 +128,7 @@ void Set::reindex(Grammar *grammar) {
 	}
 	else if (!sets.empty()) {
 		for (uint32_t i=0;i<sets.size();i++) {
-			Set *set = grammar->sets_by_contents.find(sets.at(i))->second;
+			Set *set = grammar.sets_by_contents.find(sets.at(i))->second;
 			set->reindex(grammar);
 			if (set->is_special) {
 				is_special = true;
@@ -140,7 +140,7 @@ void Set::reindex(Grammar *grammar) {
 	}
 }
 
-void Set::markUsed(Grammar *grammar) {
+void Set::markUsed(Grammar &grammar) {
 	is_used = true;
 
 	if (sets.empty()) {
@@ -157,7 +157,7 @@ void Set::markUsed(Grammar *grammar) {
 	}
 	else if (!sets.empty()) {
 		for (uint32_t i=0;i<sets.size();i++) {
-			Set *set = grammar->sets_by_contents.find(sets.at(i))->second;
+			Set *set = grammar.sets_by_contents.find(sets.at(i))->second;
 			set->markUsed(grammar);
 		}
 	}

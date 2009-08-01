@@ -208,20 +208,20 @@ void ContextualTest::resetStatistics() {
 	}
 }
 
-void ContextualTest::markUsed(Grammar *grammar) {
+void ContextualTest::markUsed(Grammar &grammar) {
 	is_used = true;
 
 	Set *s = 0;
 	if (target) {
-		s = grammar->getSet(target);
+		s = grammar.getSet(target);
 		s->markUsed(grammar);
 	}
 	if (barrier) {
-		s = grammar->getSet(barrier);
+		s = grammar.getSet(barrier);
 		s->markUsed(grammar);
 	}
 	if (cbarrier) {
-		s = grammar->getSet(cbarrier);
+		s = grammar.getSet(cbarrier);
 		s->markUsed(grammar);
 	}
 	if (tmpl) {
