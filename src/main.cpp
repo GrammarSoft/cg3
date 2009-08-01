@@ -365,6 +365,7 @@ int main(int argc, char* argv[]) {
 	}
 	if (options[OPTIMIZE_SAFE].doesOccur) {
 		std::vector<uint32_t> bad;
+		bad.reserve(grammar.rule_by_line.size());
 		foreach (CG3::RuleByLineHashMap, grammar.rule_by_line, ir, ir_end) {
 			if (ir->second->num_match == 0) {
 				bad.push_back(ir->first);
