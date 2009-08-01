@@ -400,32 +400,32 @@ void Grammar::reindex(bool unused_sets) {
 	foreach (RuleByLineMap, rule_by_line, iter_rule, iter_rule_end) {
 		Set *s = 0;
 		s = getSet(iter_rule->second->target);
-		s->markUsed(this);
+		s->markUsed(*this);
 		if (iter_rule->second->dep_target) {
-			iter_rule->second->dep_target->markUsed(this);
+			iter_rule->second->dep_target->markUsed(*this);
 		}
 		ContextualTest *test = iter_rule->second->dep_test_head;
 		while (test) {
-			test->markUsed(this);
+			test->markUsed(*this);
 			test = test->next;
 		}
 		test = iter_rule->second->test_head;
 		while (test) {
-			test->markUsed(this);
+			test->markUsed(*this);
 			test = test->next;
 		}
 	}
 	if (delimiters) {
-		delimiters->markUsed(this);
+		delimiters->markUsed(*this);
 	}
 	if (soft_delimiters) {
-		soft_delimiters->markUsed(this);
+		soft_delimiters->markUsed(*this);
 	}
 
 	// This is only necessary due to binary grammars.
 	// Sets used in unused templates may otherwise crash the loading of a binary grammar.
 	foreach (std::vector<ContextualTest*>, template_list, tmpls, tmpls_end) {
-		(*tmpls)->markUsed(this);
+		(*tmpls)->markUsed(*this);
 	}
 
 	if (unused_sets) {
@@ -511,7 +511,7 @@ void Grammar::reindex(bool unused_sets) {
 
 	foreach (Setuint32HashMap, sets_by_contents, iter_sets, iter_sets_end) {
 		if (iter_sets->second->is_used) {
-			iter_sets->second->reindex(this);
+			iter_sets->second->reindex(*this);
 			indexSets(iter_sets->first, iter_sets->second);
 		}
 	}

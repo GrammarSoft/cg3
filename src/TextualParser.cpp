@@ -50,7 +50,7 @@ TextualParser::~TextualParser() {
 	result = 0;
 }
 
-int TextualParser::parseTagList(Set *s, UChar *& p, const bool isinline) {
+int TextualParser::parseTagList(UChar *& p, Set *s, const bool isinline) {
 	while (*p && *p != ';' && *p != ')') {
 		result->lines += SKIPWS(p, ';', ')');
 		if (*p && *p != ';' && *p != ')') {
@@ -271,7 +271,7 @@ Set *TextualParser::parseSetInlineWrapper(UChar *& p) {
 	return s;
 }
 
-int TextualParser::parseContextualTestList(Rule *rule, ContextualTest **head, CG3::ContextualTest *parentTest, UChar *& p, CG3::ContextualTest *self) {
+int TextualParser::parseContextualTestList(UChar *& p, Rule *rule, ContextualTest **head, CG3::ContextualTest *parentTest, CG3::ContextualTest *self) {
 	ContextualTest *t = 0;
 	if (self) {
 		t = self;
@@ -311,7 +311,7 @@ int TextualParser::parseContextualTestList(Rule *rule, ContextualTest **head, CG
 				CG3Quit(1);
 			}
 			p++;
-			parseContextualTestList(rule, 0, 0, p, ored);
+			parseContextualTestList(p, rule, 0, 0, ored);
 			p++;
 			t->ors.push_back(ored);
 			result->lines += SKIPWS(p);
@@ -418,7 +418,7 @@ label_parseTemplateRef:
 	result->lines += SKIPWS(p);
 
 	if (linked) {
-		parseContextualTestList(rule, 0, t, p);
+		parseContextualTestList(p, rule, 0, t);
 	}
 
 	if (self) {
@@ -445,15 +445,15 @@ label_parseTemplateRef:
 	return 0;
 }
 
-int TextualParser::parseContextualTests(Rule *rule, UChar *& p) {
-	return parseContextualTestList(rule, &rule->test_head, 0, p);
+int TextualParser::parseContextualTests(UChar *& p, Rule *rule) {
+	return parseContextualTestList(p, rule, &rule->test_head, 0);
 }
 
-int TextualParser::parseContextualDependencyTests(Rule *rule, UChar *& p) {
-	return parseContextualTestList(rule, &rule->dep_test_head, 0, p);
+int TextualParser::parseContextualDependencyTests(UChar *& p, Rule *rule) {
+	return parseContextualTestList(p, rule, &rule->dep_test_head, 0);
 }
 
-int TextualParser::parseRule(KEYWORDS key, UChar *& p) {
+int TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 	Rule *rule = result->allocateRule();
 	rule->line = result->lines;
 	rule->type = key;
@@ -677,7 +677,7 @@ int TextualParser::parseRule(KEYWORDS key, UChar *& p) {
 	while (*p && *p == '(') {
 		p++;
 		result->lines += SKIPWS(p);
-		parseContextualTests(rule, p);
+		parseContextualTests(p, rule);
 		result->lines += SKIPWS(p);
 		if (*p != ')') {
 			u_fprintf(ux_stderr, "Error: Missing closing ) on line %u!\n", result->lines);
@@ -726,7 +726,7 @@ int TextualParser::parseRule(KEYWORDS key, UChar *& p) {
 		while (*p && *p == '(') {
 			p++;
 			result->lines += SKIPWS(p);
-			parseContextualDependencyTests(rule, p);
+			parseContextualDependencyTests(p, rule);
 			result->lines += SKIPWS(p);
 			if (*p != ')') {
 				u_fprintf(ux_stderr, "Error: Missing closing ) on line %u!\n", result->lines);
@@ -790,7 +790,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 				CG3Quit(1);
 			}
 			p++;
-			parseTagList(result->delimiters, p);
+			parseTagList(p, result->delimiters);
 			result->addSet(result->delimiters);
 			if (result->delimiters->tags.empty() && result->delimiters->single_tags.empty()) {
 				u_fprintf(ux_stderr, "Error: DELIMITERS declared, but no definitions given, on line %u!\n", result->lines);
@@ -823,7 +823,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 				CG3Quit(1);
 			}
 			p++;
-			parseTagList(result->soft_delimiters, p);
+			parseTagList(p, result->soft_delimiters);
 			result->addSet(result->soft_delimiters);
 			if (result->soft_delimiters->tags.empty() && result->soft_delimiters->single_tags.empty()) {
 				u_fprintf(ux_stderr, "Error: SOFT-DELIMITERS declared, but no definitions given, on line %u!\n", result->lines);
@@ -928,41 +928,41 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 			&& ISCHR(*(p+3),'R','r') && ISCHR(*(p+4),'E','e') && ISCHR(*(p+5),'L','l') && ISCHR(*(p+6),'A','a')
 			&& ISCHR(*(p+7),'T','t') && ISCHR(*(p+8),'I','i') && ISCHR(*(p+9),'O','o') && ISCHR(*(p+10),'N','n')
 			&& !ISSTRING(p, 11)) {
-			parseRule(K_SETRELATIONS, p);
+			parseRule(p, K_SETRELATIONS);
 		}
 		// REMRELATIONS
 		else if (ISCHR(*p,'R','r') && ISCHR(*(p+11),'S','s') && ISCHR(*(p+1),'E','e') && ISCHR(*(p+2),'M','m')
 			&& ISCHR(*(p+3),'R','r') && ISCHR(*(p+4),'E','e') && ISCHR(*(p+5),'L','l') && ISCHR(*(p+6),'A','a')
 			&& ISCHR(*(p+7),'T','t') && ISCHR(*(p+8),'I','i') && ISCHR(*(p+9),'O','o') && ISCHR(*(p+10),'N','n')
 			&& !ISSTRING(p, 11)) {
-			parseRule(K_REMRELATIONS, p);
+			parseRule(p, K_REMRELATIONS);
 		}
 		// SETRELATION
 		else if (ISCHR(*p,'S','s') && ISCHR(*(p+10),'N','n') && ISCHR(*(p+1),'E','e') && ISCHR(*(p+2),'T','t')
 			&& ISCHR(*(p+3),'R','r') && ISCHR(*(p+4),'E','e') && ISCHR(*(p+5),'L','l') && ISCHR(*(p+6),'A','a')
 			&& ISCHR(*(p+7),'T','t') && ISCHR(*(p+8),'I','i') && ISCHR(*(p+9),'O','o')
 			&& !ISSTRING(p, 10)) {
-			parseRule(K_SETRELATION, p);
+			parseRule(p, K_SETRELATION);
 		}
 		// REMRELATION
 		else if (ISCHR(*p,'R','r') && ISCHR(*(p+10),'N','n') && ISCHR(*(p+1),'E','e') && ISCHR(*(p+2),'M','m')
 			&& ISCHR(*(p+3),'R','r') && ISCHR(*(p+4),'E','e') && ISCHR(*(p+5),'L','l') && ISCHR(*(p+6),'A','a')
 			&& ISCHR(*(p+7),'T','t') && ISCHR(*(p+8),'I','i') && ISCHR(*(p+9),'O','o')
 			&& !ISSTRING(p, 10)) {
-			parseRule(K_REMRELATION, p);
+			parseRule(p, K_REMRELATION);
 		}
 		// SETPARENT
 		else if (ISCHR(*p,'S','s') && ISCHR(*(p+8),'T','t') && ISCHR(*(p+1),'E','e') && ISCHR(*(p+2),'T','t')
 			&& ISCHR(*(p+3),'P','p') && ISCHR(*(p+4),'A','a') && ISCHR(*(p+5),'R','r') && ISCHR(*(p+6),'E','e')
 			&& ISCHR(*(p+7),'N','n')
 			&& !ISSTRING(p, 8)) {
-			parseRule(K_SETPARENT, p);
+			parseRule(p, K_SETPARENT);
 		}
 		// SETCHILD
 		else if (ISCHR(*p,'S','s') && ISCHR(*(p+7),'D','d') && ISCHR(*(p+1),'E','e') && ISCHR(*(p+2),'T','t')
 			&& ISCHR(*(p+3),'C','c') && ISCHR(*(p+4),'H','h') && ISCHR(*(p+5),'I','i') && ISCHR(*(p+6),'L','l')
 			&& !ISSTRING(p, 7)) {
-			parseRule(K_SETCHILD, p);
+			parseRule(p, K_SETCHILD);
 		}
 		// SETS
 		else if (ISCHR(*p,'S','s') && ISCHR(*(p+3),'S','s') && ISCHR(*(p+1),'E','e') && ISCHR(*(p+2),'T','t')
@@ -993,7 +993,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 				CG3Quit(1);
 			}
 			p++;
-			parseTagList(s, p);
+			parseTagList(p, s);
 			s->rehash();
 			Set *tmp = result->getSet(s->hash);
 			if (tmp) {
@@ -1333,76 +1333,76 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 		// IFF
 		else if (ISCHR(*p,'I','i') && ISCHR(*(p+2),'F','f') && ISCHR(*(p+1),'F','f')
 			&& !ISSTRING(p, 2)) {
-			parseRule(K_IFF, p);
+			parseRule(p, K_IFF);
 		}
 		// MAP
 		else if (ISCHR(*p,'M','m') && ISCHR(*(p+2),'P','p') && ISCHR(*(p+1),'A','a')
 			&& !ISSTRING(p, 2)) {
-			parseRule(K_MAP, p);
+			parseRule(p, K_MAP);
 		}
 		// ADD
 		else if (ISCHR(*p,'A','a') && ISCHR(*(p+2),'D','d') && ISCHR(*(p+1),'D','d')
 			&& !ISSTRING(p, 2)) {
-			parseRule(K_ADD, p);
+			parseRule(p, K_ADD);
 		}
 		// APPEND
 		else if (ISCHR(*p,'A','a') && ISCHR(*(p+5),'D','d') && ISCHR(*(p+1),'P','p') && ISCHR(*(p+2),'P','p')
 			&& ISCHR(*(p+3),'E','e') && ISCHR(*(p+4),'N','n')
 			&& !ISSTRING(p, 5)) {
-			parseRule(K_APPEND, p);
+			parseRule(p, K_APPEND);
 		}
 		// SELECT
 		else if (ISCHR(*p,'S','s') && ISCHR(*(p+5),'T','t') && ISCHR(*(p+1),'E','e') && ISCHR(*(p+2),'L','l')
 			&& ISCHR(*(p+3),'E','e') && ISCHR(*(p+4),'C','c')
 			&& !ISSTRING(p, 5)) {
-			parseRule(K_SELECT, p);
+			parseRule(p, K_SELECT);
 		}
 		// REMOVE
 		else if (ISCHR(*p,'R','r') && ISCHR(*(p+5),'E','e') && ISCHR(*(p+1),'E','e') && ISCHR(*(p+2),'M','m')
 			&& ISCHR(*(p+3),'O','o') && ISCHR(*(p+4),'V','v')
 			&& !ISSTRING(p, 5)) {
-			parseRule(K_REMOVE, p);
+			parseRule(p, K_REMOVE);
 		}
 		// REPLACE
 		else if (ISCHR(*p,'R','r') && ISCHR(*(p+6),'E','e') && ISCHR(*(p+1),'E','e') && ISCHR(*(p+2),'P','p')
 			&& ISCHR(*(p+3),'L','l') && ISCHR(*(p+4),'A','a') && ISCHR(*(p+5),'C','c')
 			&& !ISSTRING(p, 6)) {
-			parseRule(K_REPLACE, p);
+			parseRule(p, K_REPLACE);
 		}
 		// DELIMIT
 		else if (ISCHR(*p,'D','d') && ISCHR(*(p+6),'T','t') && ISCHR(*(p+1),'E','e') && ISCHR(*(p+2),'L','l')
 			&& ISCHR(*(p+3),'I','i') && ISCHR(*(p+4),'M','m') && ISCHR(*(p+5),'I','i')
 			&& !ISSTRING(p, 6)) {
-			parseRule(K_DELIMIT, p);
+			parseRule(p, K_DELIMIT);
 		}
 		// SUBSTITUTE
 		else if (ISCHR(*p,'S','s') && ISCHR(*(p+9),'E','e') && ISCHR(*(p+1),'U','u') && ISCHR(*(p+2),'B','b')
 			&& ISCHR(*(p+3),'S','s') && ISCHR(*(p+4),'T','t') && ISCHR(*(p+5),'I','i') && ISCHR(*(p+6),'T','t')
 			&& ISCHR(*(p+7),'U','u') && ISCHR(*(p+8),'T','t')
 			&& !ISSTRING(p, 9)) {
-			parseRule(K_SUBSTITUTE, p);
+			parseRule(p, K_SUBSTITUTE);
 		}
 		// JUMP
 		else if (ISCHR(*p,'J','j') && ISCHR(*(p+3),'P','p') && ISCHR(*(p+1),'U','u') && ISCHR(*(p+2),'M','m')
 			&& !ISSTRING(p, 4)) {
-			parseRule(K_JUMP, p);
+			parseRule(p, K_JUMP);
 		}
 		// MOVE
 		else if (ISCHR(*p,'M','m') && ISCHR(*(p+3),'E','e') && ISCHR(*(p+1),'O','o') && ISCHR(*(p+2),'V','v')
 			&& !ISSTRING(p, 4)) {
-			parseRule(K_MOVE, p);
+			parseRule(p, K_MOVE);
 		}
 		// SWITCH
 		else if (ISCHR(*p,'S','s') && ISCHR(*(p+5),'H','h') && ISCHR(*(p+1),'W','w') && ISCHR(*(p+2),'I','i')
 			&& ISCHR(*(p+3),'T','t') && ISCHR(*(p+4),'C','c')
 			&& !ISSTRING(p, 5)) {
-			parseRule(K_SWITCH, p);
+			parseRule(p, K_SWITCH);
 		}
 		// EXECUTE
 		else if (ISCHR(*p,'E','e') && ISCHR(*(p+6),'E','e') && ISCHR(*(p+1),'X','x') && ISCHR(*(p+2),'E','e')
 			&& ISCHR(*(p+3),'C','c') && ISCHR(*(p+4),'U','u') && ISCHR(*(p+5),'T','t')
 			&& !ISSTRING(p, 7)) {
-			parseRule(K_EXECUTE, p);
+			parseRule(p, K_EXECUTE);
 		}
 		// TEMPLATE
 		else if (ISCHR(*p,'T','t') && ISCHR(*(p+7),'E','e') && ISCHR(*(p+1),'E','e') && ISCHR(*(p+2),'M','m')
@@ -1428,7 +1428,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 			}
 			p++;
 
-			parseContextualTestList(0, 0, 0, p, t);
+			parseContextualTestList(p, 0, 0, 0, t);
 
 			result->lines += SKIPWS(p, ';');
 			if (*p != ';') {
