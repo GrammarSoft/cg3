@@ -156,6 +156,10 @@ inline uint32_t hash_sdbm_char(const char *str, uint32_t hash = 0, size_t len = 
 	return SuperFastHash_char(str, hash, len);
 }
 
+inline bool ISSPACE(const UChar c) {
+	return (c == 0x20 || c == 0x09 || u_isWhitespace(c));
+}
+
 inline bool ISSTRING(UChar *p, uint32_t c) {
 	if (*(p-1) == '"' && *(p+c+1) == '"') {
 		return true;
@@ -213,7 +217,7 @@ inline uint32_t SKIPWS(UChar *& p, const UChar a = 0, const UChar b = 0) {
 			s += SKIPLN(p);
 			p--;
 		}
-		if (!u_isWhitespace(*p)) {
+		if (!ISSPACE(*p)) {
 			break;
 		}
 		p++;
@@ -223,7 +227,7 @@ inline uint32_t SKIPWS(UChar *& p, const UChar a = 0, const UChar b = 0) {
 
 inline uint32_t SKIPTOWS(UChar *& p, const UChar a = 0, const bool allowhash = false) {
 	uint32_t s = 0;
-	while (*p && !u_isWhitespace(*p)) {
+	while (*p && !ISSPACE(*p)) {
 		if (!allowhash && *p == '#' && !ISESC(p)) {
 			s += SKIPLN(p);
 			p--;

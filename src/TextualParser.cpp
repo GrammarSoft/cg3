@@ -1317,13 +1317,14 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 				CG3Quit(1);
 			}
 
-			std::vector<UChar> data(grammar_size*4, 0);
-			uint32_t read = u_file_read(&data[0], grammar_size*4, grammar);
+			std::vector<UChar> data(grammar_size*2, 0);
+			uint32_t read = u_file_read(&data[0], grammar_size*2, grammar);
 			u_fclose(grammar);
-			if (read >= grammar_size*4-1) {
-				u_fprintf(ux_stderr, "Error: Converting from underlying codepage to UTF-16 exceeded factor 4 buffer.\n");
+			if (read >= grammar_size*2-1) {
+				u_fprintf(ux_stderr, "Error: Converting from underlying codepage to UTF-16 exceeded factor 2 buffer.\n");
 				CG3Quit(1);
 			}
+			data.resize(read+1);
 
 			parseFromUChar(&data[0], abspath);
 			delete[] abspath;
@@ -1525,8 +1526,8 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 		}
 		// END
 		else if (ISCHR(*p,'E','e') && ISCHR(*(p+2),'D','d') && ISCHR(*(p+1),'N','n')) {
-			if (ISNL(*(p-1)) || u_isWhitespace(*(p-1))) {
-				if (*(p+3) == 0 || ISNL(*(p+3)) || u_isWhitespace(*(p+3))) {
+			if (ISNL(*(p-1)) || ISSPACE(*(p-1))) {
+				if (*(p+3) == 0 || ISNL(*(p+3)) || ISSPACE(*(p+3))) {
 					break;
 				}
 			}
@@ -1545,7 +1546,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 				}
 				result->lines += SKIPTOWS(p);
 			}
-			if (*p && *p != ';' && *p != '"' && *p != '<' && !ISNL(*p) && !u_isWhitespace(*p)) {
+			if (*p && *p != ';' && *p != '"' && *p != '<' && !ISNL(*p) && !ISSPACE(*p)) {
 				p[16] = 0;
 				u_fprintf(ux_stderr, "Error: Garbage data '%S...' encountered on line %u!\n", p, result->lines);
 				CG3Quit(1);
@@ -1584,13 +1585,14 @@ int TextualParser::parse_grammar_from_file(const char *fname, const char *loc, c
 		CG3Quit(1);
 	}
 
-	std::vector<UChar> data(result->grammar_size*4, 0);
-	uint32_t read = u_file_read(&data[0], result->grammar_size*4, grammar);
+	std::vector<UChar> data(result->grammar_size*2, 0);
+	uint32_t read = u_file_read(&data[0], result->grammar_size*2, grammar);
 	u_fclose(grammar);
-	if (read >= result->grammar_size*4-1) {
-		u_fprintf(ux_stderr, "Error: Converting from underlying codepage to UTF-16 exceeded factor 4 buffer.\n");
+	if (read >= result->grammar_size*2-1) {
+		u_fprintf(ux_stderr, "Error: Converting from underlying codepage to UTF-16 exceeded factor 2 buffer.\n");
 		CG3Quit(1);
 	}
+	data.resize(read+1);
 
 	result->addAnchor(keywords[K_START], result->lines);
 
