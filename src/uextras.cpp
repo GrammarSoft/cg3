@@ -27,26 +27,18 @@
 
 #include "uextras.h"
 #include "Strings.h"
+#include "inlines.h"
 
+using namespace CG3;
 using namespace CG3::Strings;
 
 // ToDo: Make all of ux_* inline to get around possible memory errors.
-
-bool ux_isNewline(const UChar32 current, const UChar32 previous) {
-	return (current == 0x0D0AL // ASCII \r\n
-	|| current == 0x2028L // Unicode Line Seperator
-	|| current == 0x2029L // Unicode Paragraph Seperator
-	|| current == 0x0085L // EBCDIC NEL
-	|| current == 0x000CL // Form Feed
-	|| current == 0x000AL // ASCII \n
-	|| previous == 0x000DL); // ASCII \r
-}
 
 bool ux_isEmpty(const UChar *text) {
 	size_t length = u_strlen(text);
 	if (length > 0) {
 		for (size_t i=0 ; i<=length ; i++) {
-			if (!u_isWhitespace(text[i])) {
+			if (!ISSPACE(text[i])) {
 				return false;
 			}
 		}
@@ -58,17 +50,17 @@ bool ux_trim(UChar *totrim) {
 	bool retval = false;
 	unsigned int length = u_strlen(totrim);
 	if (totrim && length) {
-		while (length >= 1 && u_isWhitespace(totrim[length-1])) {
+		while (length >= 1 && ISSPACE(totrim[length-1])) {
 			length--;
 		}
-		if (u_isWhitespace(totrim[length])) {
+		if (ISSPACE(totrim[length])) {
 			totrim[length] = 0;
 			retval = true;
 		}
-		if (u_isWhitespace(totrim[0])) {
+		if (ISSPACE(totrim[0])) {
 			retval = true;
 			UChar *current = totrim;
-			while (u_isWhitespace(current[0])) {
+			while (ISSPACE(current[0])) {
 				current++;
 			}
 			size_t num_spaces = ((current-totrim)-1);
@@ -89,12 +81,12 @@ bool ux_packWhitespace(UChar *totrim) {
 		UChar previous = 0;
 		uint32_t num_spaces = 0;
 		while (current[0]) {
-			if (u_isWhitespace(current[0]) && !u_isWhitespace(previous)) {
+			if (ISSPACE(current[0]) && !ISSPACE(previous)) {
 				current[0] = ' ';
 				space = current+1;
 				num_spaces = 1;
 			}
-			else if (!u_isWhitespace(current[0]) && u_isWhitespace(previous)) {
+			else if (!ISSPACE(current[0]) && ISSPACE(previous)) {
 				if (num_spaces > 1) {
 					num_spaces--;
 					retval = true;
@@ -105,7 +97,7 @@ bool ux_packWhitespace(UChar *totrim) {
 					current = space;
 				}
 			}
-			else if (u_isWhitespace(current[0]) && u_isWhitespace(previous)) {
+			else if (ISSPACE(current[0]) && ISSPACE(previous)) {
 				num_spaces++;
 			}
 			previous = current[0];
