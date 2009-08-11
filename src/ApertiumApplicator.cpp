@@ -182,7 +182,7 @@ int ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 		
 		if (superblank == true || inchar == ']' || incohort == false) {
 			if (cCohort) {
-				cCohort->text_pre = ux_append(cCohort->text_pre, inchar);
+				cCohort->text = ux_append(cCohort->text, inchar);
 			}
 			else if (lSWindow) {
 				lSWindow->text = ux_append(lSWindow->text, inchar);
@@ -674,12 +674,8 @@ void ApertiumApplicator::printSingleWindow(SingleWindow *window, UFILE *output) 
 		u_fprintf(output, "$");
 		// End of cohort
 
-		if (cohort->text_pre) {
-			u_fprintf(output, "%S", cohort->text_pre);
-		}
-
-		if (cohort->text_post) {
-			u_fprintf(output, "%S", cohort->text_post);
+		if (cohort->text) {
+			u_fprintf(output, "%S", cohort->text);
 		}
 		
 		u_fflush(output); 
