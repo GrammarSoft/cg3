@@ -484,6 +484,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow &current, uint32Set &r
 									}
 									if (attached) {
 										reading.hit_by.push_back(rule.line);
+										reading.noprint = false;
 										has_dep = true;
 									}
 								}
@@ -579,6 +580,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow &current, uint32Set &r
 							}
 							if (good) {
 								reading.hit_by.push_back(rule.line);
+								reading.noprint = false;
 								if (type == K_SETRELATION) {
 									attach->is_related = true;
 									cohort->is_related = true;
@@ -613,6 +615,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow &current, uint32Set &r
 							}
 							if (good) {
 								reading.hit_by.push_back(rule.line);
+								reading.noprint = false;
 								if (type == K_SETRELATIONS) {
 									attach->is_related = true;
 									cohort->is_related = true;
