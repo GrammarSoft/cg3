@@ -94,7 +94,9 @@ bool GrammarApplicator::attachParentChild(Cohort &parent, Cohort &child, bool al
 	if (child.dep_parent == UINT_MAX) {
 		child.dep_parent = child.dep_self;
 	}
-	gWindow->cohort_map.find(child.dep_parent)->second->remChild(child.dep_self);
+	if (gWindow->cohort_map.find(child.dep_parent) != gWindow->cohort_map.end()) {
+		gWindow->cohort_map.find(child.dep_parent)->second->remChild(child.dep_self);
+	}
 
 	child.dep_parent = parent.global_number;
 	parent.addChild(child.global_number);
