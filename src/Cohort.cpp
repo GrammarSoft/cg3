@@ -41,8 +41,7 @@ Cohort::Cohort(SingleWindow *p) {
 	is_related = false;
 	is_enclosed = false;
 	num_is_current = false;
-	text_pre = 0;
-	text_post = 0;
+	text = 0;
 	dep_self = 0;
 	dep_parent = UINT_MAX;
 	prev = 0;
@@ -77,14 +76,10 @@ void Cohort::clear(SingleWindow *p) {
 	is_related = false;
 	is_enclosed = false;
 	num_is_current = false;
-	if (text_pre) {
-		delete[] text_pre;
+	if (text) {
+		delete[] text;
 	}
-	text_pre = 0;
-	if (text_post) {
-		delete[] text_post;
-	}
-	text_post = 0;
+	text = 0;
 	dep_self = 0;
 	dep_parent = UINT_MAX;
 	is_pleft = 0;
@@ -111,11 +106,8 @@ Cohort::~Cohort() {
 		parent->parent->cohort_map.erase(global_number);
 		parent->parent->dep_window.erase(global_number);
 	}
-	if (text_pre) {
-		delete[] text_pre;
-	}
-	if (text_post) {
-		delete[] text_post;
+	if (text) {
+		delete[] text;
 	}
 	detach();
 }
