@@ -1318,15 +1318,15 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 			}
 
 			std::vector<UChar> data(grammar_size*2, 0);
-			uint32_t read = u_file_read(&data[0], grammar_size*2, grammar);
+			uint32_t read = u_file_read(&data[4], grammar_size*2, grammar);
 			u_fclose(grammar);
 			if (read >= grammar_size*2-1) {
 				u_fprintf(ux_stderr, "Error: Converting from underlying codepage to UTF-16 exceeded factor 2 buffer.\n");
 				CG3Quit(1);
 			}
-			data.resize(read+1);
+			data.resize(read+4+1);
 
-			parseFromUChar(&data[0], abspath);
+			parseFromUChar(&data[4], abspath);
 			delete[] abspath;
 
 			result->lines = olines;
@@ -1585,14 +1585,15 @@ int TextualParser::parse_grammar_from_file(const char *fname, const char *loc, c
 		CG3Quit(1);
 	}
 
+	// It reads into the buffer at offset 4 because certain functions may look back, so we need some nulls in front.
 	std::vector<UChar> data(result->grammar_size*2, 0);
-	uint32_t read = u_file_read(&data[0], result->grammar_size*2, grammar);
+	uint32_t read = u_file_read(&data[4], result->grammar_size*2, grammar);
 	u_fclose(grammar);
 	if (read >= result->grammar_size*2-1) {
 		u_fprintf(ux_stderr, "Error: Converting from underlying codepage to UTF-16 exceeded factor 2 buffer.\n");
 		CG3Quit(1);
 	}
-	data.resize(read+1);
+	data.resize(read+4+1);
 
 	result->addAnchor(keywords[K_START], result->lines);
 
@@ -1632,7 +1633,7 @@ int TextualParser::parse_grammar_from_file(const char *fname, const char *loc, c
 		result->addSet(set_c);
 	}
 
-	error = parseFromUChar(&data[0], filename);
+	error = parseFromUChar(&data[4], filename);
 	if (error) {
 		return error;
 	}
