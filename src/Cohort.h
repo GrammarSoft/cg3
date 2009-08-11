@@ -36,7 +36,7 @@ namespace CG3 {
 		std::list<Reading*> readings;
 		std::list<Reading*> deleted;
 		std::list<Reading*> delayed;
-		UChar *text_pre, *text_post;
+		UChar *text;
 
 		bool num_is_current;
 		uint32int32Map num_max, num_min;
