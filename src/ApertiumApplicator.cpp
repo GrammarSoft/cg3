@@ -131,6 +131,7 @@ int ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 	// TODO: what do we use as delimiters? Currently we only get
 	// hard breaks, but this error never shows up since the "old"
 	// delimiters are inside superblanks. -KBU
+	// ToDo: Relying on hard breaks is bad...if data is available to do so, chunk sententes into their own SingleWindow. -- Tino Didriksen
 	if (!grammar->delimiters || (grammar->delimiters->sets.empty() && grammar->delimiters->tags_set.empty())) {
 		if (!grammar->soft_delimiters || (grammar->soft_delimiters->sets.empty() && grammar->soft_delimiters->tags_set.empty())) {
 			u_fprintf(ux_stderr, "Warning: No soft or hard delimiters defined in grammar. Hard limit of %u cohorts may break windows in unintended places.\n", hard_limit);
@@ -237,10 +238,9 @@ int ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 			} // end >= hard_limit
 			// If we don't have a current window, create one
 			if (!cSWindow) {
-				// ToDo: Refactor to allocate SingleWindow, Cohort, and Reading from their containers
 				cSWindow = new SingleWindow(gWindow);
 				
-				cSWindow->text = 0; // necessary? TODO -KBU
+				cSWindow->text = 0; // necessary? TODO -KBU // TD says: Necessary, because you don't chunk into seperate SingleWindow per sentence, so you need to clear it for every new sentence. Regular CG-3 keeps several SingleWindow in the Window container.
 				
 				// Create 0th Cohort which serves as the beginning of sentence
 				cCohort = new Cohort(cSWindow);
