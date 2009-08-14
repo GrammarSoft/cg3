@@ -580,9 +580,16 @@ void ApertiumApplicator::printReading(Reading *reading, UFILE *output) {
 			UChar *wf = single_tags[reading->wordform]->tag;
 			// Lop off the initial and final '"<>' characters
 			wf = ux_substr(wf, 2, u_strlen(wf)-2);
-
+			
+			int first = 0; // first occurrence of a lowercase character in baseform
+			for (; first<u_strlen(bf); first++) {
+				if(u_islower(bf[first]) != 0) {
+					break;
+				}
+			}
+			
 			// this corresponds to fst_processor.cc in lttoolbox:
-			bool firstupper = (u_isupper(wf[0]) != 0); // simply casting will not silence the warning - Tino Didriksen
+			bool firstupper = (u_isupper(wf[first]) != 0); // simply casting will not silence the warning - Tino Didriksen
 			bool uppercase = firstupper && u_isupper(wf[u_strlen(wf)-1]);
 
 			if (uppercase) {
@@ -592,9 +599,9 @@ void ApertiumApplicator::printReading(Reading *reading, UFILE *output) {
 			}
 			else {
 				if (firstupper) {
-					bf[0] = static_cast<UChar>(u_toupper(bf[0]));
-				}			
-				for (int i=1; i<u_strlen(bf); i++) {
+					bf[first] = static_cast<UChar>(u_toupper(bf[first]));
+				} 
+				for (int i=first+1; i<u_strlen(bf); i++) {
 					bf[i] = static_cast<UChar>(u_tolower(bf[i]));
 				}
 			}
