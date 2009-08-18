@@ -601,9 +601,6 @@ void ApertiumApplicator::printReading(Reading *reading, UFILE *output) {
 				if (firstupper) {
 					bf[first] = static_cast<UChar>(u_toupper(bf[first]));
 				} 
-				for (int i=first+1; i<u_strlen(bf); i++) {
-					bf[i] = static_cast<UChar>(u_tolower(bf[i]));
-				}
 			}
 			wf = 0;
 		} // if (wordform_case)
