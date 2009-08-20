@@ -70,10 +70,10 @@ int main(int argc, char* argv[]) {
 		fprintf(stderr, "\n");
 		fprintf(stderr, "Options:\n");
 
-		uint32_t longest = 0;
+		size_t longest = 0;
 		for (uint32_t i=0 ; i<NUM_OPTIONS ; i++) {
 			if (options[i].description) {
-				uint32_t len = static_cast<uint32_t>(strlen(options[i].longName));
+				size_t len = strlen(options[i].longName);
 				longest = std::max(longest, len);
 			}
 		}
@@ -87,10 +87,9 @@ int main(int argc, char* argv[]) {
 					fprintf(stderr, "   ");
 				}
 				fprintf(stderr, " --%s", options[i].longName);
-				uint32_t ldiff = longest - strlen(options[i].longName);
-				while (ldiff) {
+				size_t ldiff = longest - strlen(options[i].longName);
+				while (ldiff--) {
 					fprintf(stderr, " ");
-					ldiff--;
 				}
 				fprintf(stderr, "  %s", options[i].description);
 				fprintf(stderr, "\n");
