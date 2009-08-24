@@ -41,8 +41,14 @@
 		#include <hash_set>
 	#endif
 	#include <winsock.h> // for hton() and family.
-#endif
-#ifdef __GNUC__
+#elif defined(__INTEL_COMPILER)
+	#include <ext/hash_map>
+	#include <ext/hash_set>
+	#define stdext __gnu_cxx
+	#include <unistd.h>
+	#include <libgen.h>
+	#include <netinet/in.h> // for hton() and family.
+#elif defined(__GNUC__)
 	// Test for GCC >= 4.3.0
 	#define GCC_VERSION (__GNUC__ * 10000 + __GNUC_MINOR__ * 100 + __GNUC_PATCHLEVEL__)
 	#if GCC_VERSION >= 40300
@@ -59,6 +65,8 @@
 	#include <unistd.h>
 	#include <libgen.h>
 	#include <netinet/in.h> // for hton() and family.
+#else
+	#error "Unknown compiler...please customize stdafx.h for it."
 #endif
 
 #include <exception>
