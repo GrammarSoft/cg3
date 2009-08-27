@@ -29,8 +29,30 @@
 	#define _CRT_NONSTDC_NO_DEPRECATE 1
 	#define WIN32_LEAN_AND_MEAN
 	#define NOMINMAX
-	// Test for MSVC++ >= 10.0 (MSVS 2010)
-	#if _MSC_VER >= 1600
+#endif
+
+#include <exception>
+#include <stdexcept>
+#include <algorithm>
+#include <iterator>
+#include <iostream>
+#include <cstdlib>
+#include <cstdio>
+#include <cstring>
+#include <list>
+#include <vector>
+#include <set>
+#include <map>
+#include <bitset>
+#include <ctime>
+#include <cmath>
+#include <climits>
+#include <cassert>
+#include <sys/stat.h>
+
+#ifdef _MSC_VER
+	// Test for MSVC++ >= 9.0 (MSVS 2008)
+	#if _MSC_VER >= 1500
 		#include <unordered_set>
 		#include <unordered_map>
 		#define stdext std::tr1
@@ -68,25 +90,6 @@
 #else
 	#error "Unknown compiler...please customize stdafx.h for it."
 #endif
-
-#include <exception>
-#include <stdexcept>
-#include <algorithm>
-#include <iterator>
-#include <iostream>
-#include <cstdlib>
-#include <cstdio>
-#include <cstring>
-#include <list>
-#include <vector>
-#include <set>
-#include <map>
-#include <bitset>
-#include <ctime>
-#include <cmath>
-#include <climits>
-#include <cassert>
-#include <sys/stat.h>
 
 // ICU includes
 #include <unicode/unistr.h>
