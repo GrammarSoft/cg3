@@ -195,12 +195,10 @@ void GrammarApplicator::reflowReading(Reading &reading) {
 	reading.tags_plain.clear();
 	reading.tags_textual.clear();
 	reading.tags_numerical.clear();
-	reading.possible_sets.clear();
 	reading.mapping = 0;
 
 	if (grammar->sets_any && !grammar->sets_any->empty()) {
 		reading.parent->possible_sets.insert(grammar->sets_any->begin(), grammar->sets_any->end());
-		reading.possible_sets.insert(grammar->sets_any->begin(), grammar->sets_any->end());
 	}
 
 	const_foreach (uint32List, reading.tags_list, tter, tter_end) {
@@ -274,7 +272,6 @@ void GrammarApplicator::addTagToReading(Reading &reading, uint32_t utag, bool re
 
 	if (grammar->sets_by_tag.find(utag) != grammar->sets_by_tag.end()) {
 		reading.parent->possible_sets.insert(grammar->sets_by_tag.find(utag)->second->begin(), grammar->sets_by_tag.find(utag)->second->end());
-		reading.possible_sets.insert(grammar->sets_by_tag.find(utag)->second->begin(), grammar->sets_by_tag.find(utag)->second->end());
 	}
 	if (reading.tags.find(utag) == reading.tags.end()) {
 		reading.tags.insert(utag);

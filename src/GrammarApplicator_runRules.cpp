@@ -316,7 +316,6 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow &current, uint32Set &r
 						cReading->wordform = begintag;
 						if (grammar->sets_any && !grammar->sets_any->empty()) {
 							cReading->parent->possible_sets.insert(grammar->sets_any->begin(), grammar->sets_any->end());
-							cReading->possible_sets.insert(grammar->sets_any->begin(), grammar->sets_any->end());
 						}
 						addTagToReading(*cReading, begintag);
 
