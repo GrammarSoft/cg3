@@ -48,8 +48,6 @@ namespace CG3 {
 		Taguint32HashMap tags_numerical;
 		Tag *mapping;
 
-		uint32HashSet possible_sets;
-
 		bool matched_target;
 		bool matched_tests;
 

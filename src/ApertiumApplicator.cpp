@@ -252,7 +252,6 @@ int ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 				cReading->wordform = begintag;
 				if (grammar->sets_any && !grammar->sets_any->empty()) {
 					cReading->parent->possible_sets.insert(grammar->sets_any->begin(), grammar->sets_any->end());
-					cReading->possible_sets.insert(grammar->sets_any->begin(), grammar->sets_any->end());
 				}
 				addTagToReading(*cReading, begintag);
 
@@ -334,7 +333,6 @@ int ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 
 					if (grammar->sets_any && !grammar->sets_any->empty()) {
 						cReading->parent->possible_sets.insert(grammar->sets_any->begin(), grammar->sets_any->end());
-						cReading->possible_sets.insert(grammar->sets_any->begin(), grammar->sets_any->end());
 					}
 
 					addTagToReading(*cReading, cReading->wordform);
@@ -450,7 +448,6 @@ void ApertiumApplicator::processReading(Reading *cReading, UChar *reading_string
 
 	if (grammar->sets_any && !grammar->sets_any->empty()) {
 		cReading->parent->possible_sets.insert(grammar->sets_any->begin(), grammar->sets_any->end());
-		cReading->possible_sets.insert(grammar->sets_any->begin(), grammar->sets_any->end());
 	}
 
 	// Look through the reading for the '#' symbol signifying that

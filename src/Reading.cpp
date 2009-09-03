@@ -57,7 +57,6 @@ void Reading::clear(Cohort *p) {
 	tags_plain.clear();
 	tags_textual.clear();
 	tags_numerical.clear();
-	possible_sets.clear();
 	mapping = 0;
 }
 
@@ -98,7 +97,6 @@ void Reading::duplicateFrom(Reading &r) {
 	tags_plain = r.tags_plain;
 	tags_textual = r.tags_textual;
 	tags_numerical = r.tags_numerical;
-	possible_sets = r.possible_sets;
 }
 
 bool Reading::cmp_number(Reading *a, Reading *b) {

@@ -36,7 +36,6 @@ Reading *GrammarApplicator::initEmptyCohort(Cohort &cCohort) {
 	cReading->baseform = cCohort.wordform;
 	if (grammar->sets_any && !grammar->sets_any->empty()) {
 		cReading->parent->possible_sets.insert(grammar->sets_any->begin(), grammar->sets_any->end());
-		cReading->possible_sets.insert(grammar->sets_any->begin(), grammar->sets_any->end());
 	}
 	addTagToReading(*cReading, cCohort.wordform);
 	cReading->noprint = true;
@@ -164,7 +163,6 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 				cReading->wordform = begintag;
 				if (grammar->sets_any && !grammar->sets_any->empty()) {
 					cReading->parent->possible_sets.insert(grammar->sets_any->begin(), grammar->sets_any->end());
-					cReading->possible_sets.insert(grammar->sets_any->begin(), grammar->sets_any->end());
 				}
 				addTagToReading(*cReading, begintag);
 
@@ -215,7 +213,6 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 			cReading->wordform = cCohort->wordform;
 			if (grammar->sets_any && !grammar->sets_any->empty()) {
 				cReading->parent->possible_sets.insert(grammar->sets_any->begin(), grammar->sets_any->end());
-				cReading->possible_sets.insert(grammar->sets_any->begin(), grammar->sets_any->end());
 			}
 			addTagToReading(*cReading, cReading->wordform);
 

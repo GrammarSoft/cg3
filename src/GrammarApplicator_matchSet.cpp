@@ -431,16 +431,20 @@ bool GrammarApplicator::doesSetMatchReading_tags(const Reading &reading, const S
 }
 
 bool GrammarApplicator::doesSetMatchReading(Reading &reading, const uint32_t set, bool bypass_index) {
+	/*
 	if (reading.possible_sets.find(set) == reading.possible_sets.end()) {
 		return false;
 	}
+	//*/
 	// ToDo: This is not good enough...while numeric tags are special, their failures can be indexed.
 	uint32_t ih = hash_sdbm_uint32_t(reading.hash, set);
-	if (!bypass_index && index_matches(index_readingSet_no, ih)) {
-		return false;
-	}
-	if (!bypass_index && index_matches(index_readingSet_yes, ih)) {
-		return true;
+	if (!bypass_index) {
+		if (index_matches(index_readingSet_yes, ih)) {
+			return true;
+		}
+		else if (index_matches(index_readingSet_no, ih)) {
+			return false;
+		}
 	}
 
 	bool retval = false;
