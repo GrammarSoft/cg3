@@ -36,7 +36,6 @@ CompositeTag::~CompositeTag() {
 
 void CompositeTag::addTag(Tag *tag) {
 	tags.insert(tag);
-	tags_hash.insert(tag->hash);
 	tags_set.insert(tag);
 	if (tag->is_special) {
 		is_special = true;

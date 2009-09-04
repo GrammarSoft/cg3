@@ -26,23 +26,11 @@
 using namespace CG3;
 using namespace CG3::Strings;
 
-ContextualTest::ContextualTest() {
-	pos = 0;
-	offset = 0;
-	target = 0;
-	barrier = 0;
-	cbarrier = 0;
-	linked = 0;
-	hash = 0;
-	name = 0;
-	line = 0;
-	num_fail = 0;
-	num_match = 0;
-	total_time = 0;
-	tmpl = 0;
-	prev = 0;
-	next = 0;
-	is_used = false;
+ContextualTest::ContextualTest()
+: pos(0), offset(0), target(0), barrier(0), cbarrier(0),
+linked(0), hash(0), name(0), line(0), num_fail(0), num_match(0),
+total_time(0), tmpl(0), prev(0), next(0), is_used(false) {
+	// Nothing in the actual body...
 }
 
 ContextualTest::~ContextualTest() {
@@ -189,6 +177,13 @@ uint32_t ContextualTest::rehash() {
 	}
 	if (linked) {
 		hash = hash_sdbm_uint32_t(hash, linked->rehash());
+	}
+	return hash;
+}
+
+uint32_t ContextualTest::getHash() {
+	if (hash == 0) {
+		rehash();
 	}
 	return hash;
 }

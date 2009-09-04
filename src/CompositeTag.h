@@ -34,7 +34,6 @@ namespace CG3 {
 		uint32_t number;
 		TagSet tags_set;
 		TagHashSet tags;
-		uint32HashSet tags_hash;
 		bool is_used;
 		bool is_special;
 
@@ -60,6 +59,7 @@ namespace CG3 {
 		}
 	};
 
+	typedef stdext::hash_set<CompositeTag*, compare_CompositeTag> CompositeTagHashSet;
 }
 
 #ifdef __GNUC__
