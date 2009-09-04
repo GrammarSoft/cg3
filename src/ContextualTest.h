@@ -87,6 +87,7 @@ namespace CG3 {
 		ContextualTest *allocateContextualTest();
 		
 		uint32_t rehash();
+		uint32_t getHash();
 		void resetStatistics();
 		void markUsed(Grammar &grammar);
 
