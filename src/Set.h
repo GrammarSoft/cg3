@@ -77,6 +77,8 @@ namespace CG3 {
 		}
 	};
 
+	typedef std::set<Set*> SetSet;
+	typedef stdext::hash_map<uint32_t,Set*> Setuint32HashMap;
 }
 
 #endif

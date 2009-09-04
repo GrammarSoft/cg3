@@ -58,6 +58,8 @@
 		#define stdext std::tr1
 		#define hash_map unordered_map
 		#define hash_set unordered_set
+		#define hash_multimap unordered_multimap
+		#define hash_multiset unordered_multiset
 	#else
 		#include <hash_map>
 		#include <hash_set>
@@ -79,6 +81,8 @@
 		#define stdext std::tr1
 		#define hash_map unordered_map
 		#define hash_set unordered_set
+		#define hash_multimap unordered_multimap
+		#define hash_multiset unordered_multiset
 	#else
 		#include <ext/hash_map>
 		#include <ext/hash_set>
@@ -135,26 +139,6 @@ namespace CG3 {
 	class GrammarWriter;
 	class CompositeTag;
 	class ContextualTest;
-
-	struct compare_Tag;
-	struct compare_CompositeTag;
-	struct compare_Set;
-	struct compare_Cohort;
-	struct compare_Rule;
-
-	typedef std::list<Tag*> TagList;
-	typedef std::vector<Rule*> RuleVector;
-	typedef std::vector<Tag*> TagVector;
-	typedef std::set<Cohort*, compare_Cohort> CohortSet;
-	typedef std::set<Tag*, compare_Tag> TagSet;
-	typedef std::set<Set*> SetSet;
-	typedef std::map<uint32_t,Rule*> RuleByLineMap;
-	typedef stdext::hash_set<Tag*, compare_Tag> TagHashSet;
-	typedef stdext::hash_set<CompositeTag*, compare_CompositeTag> CompositeTagHashSet;
-	typedef stdext::hash_map<uint32_t,Rule*> RuleByLineHashMap;
-	typedef stdext::hash_map<uint32_t,Set*> Setuint32HashMap;
-	typedef stdext::hash_map<uint32_t,Tag*> Taguint32HashMap;
-	typedef stdext::hash_map<const Rule*, CohortSet*, compare_Rule> RuleToCohortsMap;
 }
 
 #endif

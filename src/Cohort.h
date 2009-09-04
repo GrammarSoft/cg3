@@ -80,6 +80,7 @@ namespace CG3 {
 		}
 	};
 
+	typedef std::set<Cohort*, compare_Cohort> CohortSet;
 }
 
 #endif
