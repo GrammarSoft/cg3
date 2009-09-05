@@ -58,25 +58,22 @@ namespace CG3 {
 
 	class ContextualTest {
 	public:
+		bool is_used;
+		int32_t offset;
 		uint32_t line;
 		uint32_t name;
 		uint32_t hash;
 		uint32_t pos;
-		int32_t offset;
-		bool is_used;
-
 		uint32_t target;
 		uint32_t barrier;
 		uint32_t cbarrier;
-
 		mutable uint32_t num_fail, num_match;
 		mutable double total_time;
-
 		ContextualTest *tmpl;
-		std::list<ContextualTest*> ors;
 		ContextualTest *linked;
-
 		ContextualTest *prev, *next;
+
+		std::list<ContextualTest*> ors;
 		void detach();
 
 		ContextualTest();
@@ -90,8 +87,6 @@ namespace CG3 {
 		uint32_t getHash();
 		void resetStatistics();
 		void markUsed(Grammar &grammar);
-
-		static bool cmp_quality(ContextualTest *a, ContextualTest *b);
 	};
 
 }

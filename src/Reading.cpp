@@ -24,19 +24,21 @@
 
 using namespace CG3;
 
-Reading::Reading(Cohort *p) {
-	wordform = 0;
-	baseform = 0;
-	hash = 0;
-	hash_plain = 0;
-	parent = p;
-	number = 0;
-	mapped = false;
-	deleted = false;
-	noprint = false;
-	matched_target = false;
-	matched_tests = false;
-	mapping = 0;
+Reading::Reading(Cohort *p) :
+mapped(false),
+deleted(false),
+noprint(false),
+matched_target(false),
+matched_tests(false),
+wordform(0),
+baseform(0),
+hash(0),
+hash_plain(0),
+number(0),
+mapping(0),
+parent(p)
+{
+	// Nothing in the actual body...
 }
 
 void Reading::clear(Cohort *p) {

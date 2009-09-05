@@ -30,12 +30,12 @@ namespace CG3 {
 
 	class CompositeTag {
 	public:
+		bool is_used;
+		bool is_special;
 		uint32_t hash;
 		uint32_t number;
 		TagSet tags_set;
 		TagHashSet tags;
-		bool is_used;
-		bool is_special;
 
 		CompositeTag();
 		~CompositeTag();
