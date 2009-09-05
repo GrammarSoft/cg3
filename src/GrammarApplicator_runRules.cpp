@@ -46,10 +46,11 @@ void GrammarApplicator::updateRuleToCohorts(Cohort &c, uint32_t rsit) {
 }
 
 void GrammarApplicator::updateValidRules(uint32Set &rules, uint32Set &intersects, uint32_t hash, Reading &reading) {
-	if (grammar->rules_by_tag.find(hash) != grammar->rules_by_tag.end()) {
+	uint32HashSetuint32HashMap::const_iterator it = grammar->rules_by_tag.find(hash);
+	if (it != grammar->rules_by_tag.end()) {
 		SingleWindow &current = *(reading.parent->parent);
 		Cohort &c = *(reading.parent);
-		const_foreach (uint32HashSet, (*(grammar->rules_by_tag.find(hash)->second)), rsit, rsit_end) {
+		const_foreach (uint32HashSet, (*(it->second)), rsit, rsit_end) {
 			updateRuleToCohorts(c, *rsit);
 		}
 
