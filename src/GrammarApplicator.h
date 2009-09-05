@@ -122,11 +122,11 @@ namespace CG3 {
 	
 		Tag *addTag(const UChar *tag);
 
-		void updateRuleToCohorts(Cohort &c, uint32_t rsit);
+		void updateRuleToCohorts(Cohort& c, const uint32_t& rsit);
 		void indexSingleWindow(SingleWindow &current);
 		int runGrammarOnWindow();
 		int runGrammarOnSingleWindow(SingleWindow &current);
-		void updateValidRules(uint32Set &rules, uint32Set &intersects, uint32_t hash, Reading &reading);
+		void updateValidRules(const uint32Set& rules, uint32Set &intersects, const uint32_t& hash, Reading &reading);
 		uint32_t runRulesOnWindow(SingleWindow &current, uint32Set &rules);
 
 		Cohort *runSingleTest(SingleWindow *sWindow, size_t i, const ContextualTest *test, bool *brk, bool *retval, Cohort **deep = 0, Cohort *origin = 0);
