@@ -24,22 +24,25 @@
 
 using namespace CG3;
 
-Tag::Tag() {
-	type = 0;
-	in_grammar = false;
-	is_special = false;
-	is_used = false;
-	comparison_key = 0;
-	comparison_op = OP_NOP;
-	comparison_val = 0;
-	tag = 0;
-	regexp = 0;
-	dep_self = 0;
-	dep_parent = 0;
-	number = 0;
-	hash = 0;
-	plain_hash = 0;
-	seed = 0;
+Tag::Tag() :
+in_grammar(false),
+is_special(false),
+is_used(false),
+comparison_op(OP_NOP),
+comparison_val(0),
+type(0),
+comparison_hash(0),
+dep_self(0),
+dep_parent(0),
+hash(0),
+plain_hash(0),
+number(0),
+seed(0),
+comparison_key(0),
+tag(0),
+regexp(0)
+{
+	// Nothing in the actual body...
 }
 
 Tag::~Tag() {

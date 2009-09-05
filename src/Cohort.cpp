@@ -32,22 +32,24 @@
 
 using namespace CG3;
 
-Cohort::Cohort(SingleWindow *p) {
-	wordform = 0;
-	global_number = 0;
-	local_number = 0;
-	parent = p;
-	dep_done = false;
-	is_related = false;
-	is_enclosed = false;
-	num_is_current = false;
-	text = 0;
-	dep_self = 0;
-	dep_parent = UINT_MAX;
-	prev = 0;
-	next = 0;
-	is_pleft = 0;
-	is_pright = 0;
+Cohort::Cohort(SingleWindow *p) :
+num_is_current(false),
+dep_done(false),
+is_enclosed(false),
+is_related(false),
+global_number(0),
+local_number(0),
+wordform(0),
+dep_self(0),
+dep_parent(UINT_MAX),
+is_pleft(0),
+is_pright(0),
+parent(p),
+text(0),
+prev(0),
+next(0)
+{
+	// Nothing in the actual body...
 }
 
 void Cohort::clear(SingleWindow *p) {

@@ -34,10 +34,8 @@ namespace CG3 {
 		uint32_t number;
 		SingleWindow *next, *previous;
 		Window *parent;
-
-		std::vector<Cohort*> cohorts;
 		UChar *text;
-		uint32_t hash, hash_tags, hash_mapped, hash_plain, hash_textual;
+		std::vector<Cohort*> cohorts;
 		uint32Set valid_rules;
 		RuleToCohortsMap rule_to_cohorts;
 

@@ -29,37 +29,32 @@ namespace CG3 {
 
 	class Cohort {
 	public:
+		bool num_is_current;
+		bool dep_done;
+		bool is_enclosed;
+		bool is_related;
 		uint32_t global_number;
 		uint32_t local_number;
 		uint32_t wordform;
+		uint32_t dep_self;
+		uint32_t dep_parent;
+		uint32_t is_pleft, is_pright;
 		SingleWindow *parent;
+		UChar *text;
+		Cohort *prev, *next;
 		std::list<Reading*> readings;
 		std::list<Reading*> deleted;
 		std::list<Reading*> delayed;
-		UChar *text;
-
-		bool num_is_current;
 		uint32int32Map num_max, num_min;
+		uint32HashSet dep_children;
+		uint32HashSet possible_sets;
+		std::vector<Cohort*> enclosed;
+		std::multimap<uint32_t, uint32_t> relations;
+
 		int32_t getMin(uint32_t key);
 		int32_t getMax(uint32_t key);
 
-		bool dep_done;
-		uint32_t dep_self;
-		uint32_t dep_parent;
-		uint32HashSet dep_children;
-
-		uint32_t is_pleft, is_pright;
-
-		Cohort *prev, *next;
 		void detach();
-
-		uint32HashSet possible_sets;
-
-		bool is_enclosed;
-		std::vector<Cohort*> enclosed;
-
-		bool is_related;
-		std::multimap<uint32_t, uint32_t> relations;
 
 		Cohort(SingleWindow *p);
 		~Cohort();

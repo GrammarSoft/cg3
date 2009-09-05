@@ -27,12 +27,14 @@
 
 using namespace CG3;
 
-SingleWindow::SingleWindow(Window *p) {
-	text = 0;
-	next = 0;
-	previous = 0;
-	number = 0;
-	parent = p;
+SingleWindow::SingleWindow(Window *p) :
+number(0),
+next(0),
+previous(0),
+parent(p),
+text(0)
+{
+	// Nothing in the actual body...
 }
 
 SingleWindow::~SingleWindow() {

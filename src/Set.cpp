@@ -26,19 +26,21 @@
 
 using namespace CG3;
 
-Set::Set() {
-	match_any = false;
-	is_special = false;
-	is_unified = false;
-	is_child_unified = false;
-	is_used = false;
-	name = 0;
-	line = 0;
-	hash = 0;
-	num_fail = 0;
-	num_match = 0;
-	total_time = 0;
-	number = 0;
+Set::Set() :
+match_any(false),
+is_special(false),
+is_unified(false),
+is_child_unified(false),
+is_used(false),
+line(0),
+hash(0),
+number(0),
+num_fail(0),
+num_match(0),
+total_time(0),
+name(0)
+{
+	// Nothing in the actual body...
 }
 
 Set::~Set() {

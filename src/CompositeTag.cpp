@@ -24,11 +24,13 @@
 
 using namespace CG3;
 
-CompositeTag::CompositeTag() {
-	is_used = false;
-	is_special = false;
-	hash = 0;
-	number = 0;
+CompositeTag::CompositeTag() :
+is_used(false),
+is_special(false),
+hash(0),
+number(0)
+{
+	// Nothing in the actual body...
 }
 
 CompositeTag::~CompositeTag() {
