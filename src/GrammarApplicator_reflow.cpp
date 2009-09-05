@@ -52,8 +52,9 @@ bool GrammarApplicator::wouldParentChildLoop(Cohort *parent, Cohort *child) {
 				retval = false;
 				break;
 			}
-			if (gWindow->cohort_map.find(parent->dep_parent) != gWindow->cohort_map.end()) {
-				parent = gWindow->cohort_map.find(parent->dep_parent)->second;
+			std::map<uint32_t,Cohort*>::iterator it = gWindow->cohort_map.find(parent->dep_parent);
+			if (it != gWindow->cohort_map.end()) {
+				parent = it->second;
 			}
 			else {
 				break;
@@ -94,8 +95,9 @@ bool GrammarApplicator::attachParentChild(Cohort &parent, Cohort &child, bool al
 	if (child.dep_parent == UINT_MAX) {
 		child.dep_parent = child.dep_self;
 	}
-	if (gWindow->cohort_map.find(child.dep_parent) != gWindow->cohort_map.end()) {
-		gWindow->cohort_map.find(child.dep_parent)->second->remChild(child.dep_self);
+	std::map<uint32_t,Cohort*>::iterator it = gWindow->cohort_map.find(child.dep_parent);
+	if (it != gWindow->cohort_map.end()) {
+		it->second->remChild(child.dep_self);
 	}
 
 	child.dep_parent = parent.global_number;
@@ -270,8 +272,9 @@ void GrammarApplicator::addTagToReading(Reading &reading, uint32_t utag, bool re
 		utag = tag->hash;
 	}
 
-	if (grammar->sets_by_tag.find(utag) != grammar->sets_by_tag.end()) {
-		reading.parent->possible_sets.insert(grammar->sets_by_tag.find(utag)->second->begin(), grammar->sets_by_tag.find(utag)->second->end());
+	uint32HashSetuint32HashMap::const_iterator it = grammar->sets_by_tag.find(utag);
+	if (it != grammar->sets_by_tag.end()) {
+		reading.parent->possible_sets.insert(it->second->begin(), it->second->end());
 	}
 	if (reading.tags.find(utag) == reading.tags.end()) {
 		reading.tags.insert(utag);

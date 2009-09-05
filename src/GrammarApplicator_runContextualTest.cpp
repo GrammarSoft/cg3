@@ -471,12 +471,13 @@ Cohort *GrammarApplicator::runDependencyTest(SingleWindow *sWindow, const Cohort
 				deps = &(current->parent->cohorts.at(0)->dep_children);
 			}
 			else {
+				std::map<uint32_t,Cohort*>::iterator it = current->parent->parent->cohort_map.find(current->dep_parent);
 				if (current && current->parent && current->parent->parent
-					&& current->parent->parent->cohort_map.find(current->dep_parent) != current->parent->parent->cohort_map.end()
-					&& current->parent->parent->cohort_map.find(current->dep_parent)->second
-					&& !current->parent->parent->cohort_map.find(current->dep_parent)->second->dep_children.empty()
+					&& it != current->parent->parent->cohort_map.end()
+					&& it->second
+					&& !it->second->dep_children.empty()
 					) {
-					deps = &(current->parent->parent->cohort_map.find(current->dep_parent)->second->dep_children);
+					deps = &(it->second->dep_children);
 				}
 				else {
 					if (verbosity_level > 0) {
