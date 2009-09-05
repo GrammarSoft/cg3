@@ -35,12 +35,12 @@ namespace CG3 {
 		bool is_unified;
 		bool is_child_unified;
 		bool is_used;
-		mutable uint32_t num_fail, num_match;
-		mutable double total_time;
-		UChar *name;
 		uint32_t line;
 		uint32_t hash;
 		uint32_t number;
+		mutable uint32_t num_fail, num_match;
+		mutable double total_time;
+		UChar *name;
 
 		uint32Set tags_set;
 		CompositeTagHashSet tags;

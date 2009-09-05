@@ -26,10 +26,24 @@
 using namespace CG3;
 using namespace CG3::Strings;
 
-ContextualTest::ContextualTest()
-: pos(0), offset(0), target(0), barrier(0), cbarrier(0),
-linked(0), hash(0), name(0), line(0), num_fail(0), num_match(0),
-total_time(0), tmpl(0), prev(0), next(0), is_used(false) {
+ContextualTest::ContextualTest() :
+is_used(false),
+offset(0),
+line(0),
+name(0),
+hash(0),
+pos(0),
+target(0),
+barrier(0),
+cbarrier(0),
+num_fail(0),
+num_match(0),
+total_time(0),
+tmpl(0),
+linked(0),
+prev(0),
+next(0)
+{
 	// Nothing in the actual body...
 }
 
@@ -228,8 +242,4 @@ void ContextualTest::markUsed(Grammar &grammar) {
 	if (linked) {
 		linked->markUsed(grammar);
 	}
-}
-
-bool ContextualTest::cmp_quality(ContextualTest *a, ContextualTest *b) {
-	return a->total_time > b->total_time;
 }

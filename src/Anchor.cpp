@@ -23,9 +23,11 @@
 
 using namespace CG3;
 
-Anchor::Anchor() {
-	name = 0;
-	line = 0;
+Anchor::Anchor() :
+line(0),
+name(0)
+{
+	// Nothing in the actual body...
 }
 
 Anchor::~Anchor() {

@@ -60,22 +60,21 @@ namespace CG3 {
 
 	class Tag {
 	public:
-		uint32_t type;
-		mutable URegularExpression *regexp;
-
 		bool in_grammar;
 		bool is_special;
 		bool is_used;
-		uint32_t comparison_hash;
-		UChar *comparison_key;
 		C_OPS comparison_op;
 		int32_t comparison_val;
+		uint32_t type;
+		uint32_t comparison_hash;
 		uint32_t dep_self, dep_parent;
-		UChar *tag;
 		uint32_t hash;
 		uint32_t plain_hash;
 		uint32_t number;
 		uint32_t seed;
+		UChar *comparison_key;
+		UChar *tag;
+		mutable URegularExpression *regexp;
 
 		Tag();
 		~Tag();

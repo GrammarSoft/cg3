@@ -30,26 +30,24 @@ namespace CG3 {
 
 	class Reading {
 	public:
-		Cohort *parent;
-
+		bool mapped;
+		bool deleted;
+		bool noprint;
+		bool matched_target;
+		bool matched_tests;
 		uint32_t wordform;
 		uint32_t baseform;
 		uint32_t hash;
 		uint32_t hash_plain;
 		uint32_t number;
-		bool mapped;
-		bool deleted;
+		Tag *mapping;
+		Cohort *parent;
 		uint32Vector hit_by;
-		bool noprint;
 		uint32List tags_list;
 		uint32Set tags;
 		uint32HashSet tags_plain;
 		uint32HashSet tags_textual;
 		Taguint32HashMap tags_numerical;
-		Tag *mapping;
-
-		bool matched_target;
-		bool matched_tests;
 
 		Reading(Cohort *p);
 		~Reading();
