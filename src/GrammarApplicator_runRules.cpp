@@ -31,7 +31,7 @@
 using namespace CG3;
 using namespace CG3::Strings;
 
-void GrammarApplicator::updateRuleToCohorts(Cohort &c, uint32_t rsit) {
+void GrammarApplicator::updateRuleToCohorts(Cohort& c, const uint32_t& rsit) {
 	SingleWindow *current = c.parent;
 	const Rule *r = grammar->rule_by_line.find(rsit)->second;
 	if (r->wordform && r->wordform != c.wordform) {
@@ -45,7 +45,7 @@ void GrammarApplicator::updateRuleToCohorts(Cohort &c, uint32_t rsit) {
 	current->valid_rules.insert(r->line);
 }
 
-void GrammarApplicator::updateValidRules(uint32Set &rules, uint32Set &intersects, uint32_t hash, Reading &reading) {
+void GrammarApplicator::updateValidRules(const uint32Set& rules, uint32Set &intersects, const uint32_t& hash, Reading &reading) {
 	uint32HashSetuint32HashMap::const_iterator it = grammar->rules_by_tag.find(hash);
 	if (it != grammar->rules_by_tag.end()) {
 		SingleWindow &current = *(reading.parent->parent);
