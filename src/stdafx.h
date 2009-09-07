@@ -43,7 +43,6 @@
 #include <vector>
 #include <set>
 #include <map>
-#include <bitset>
 #include <ctime>
 #include <cmath>
 #include <climits>
