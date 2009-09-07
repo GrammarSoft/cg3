@@ -31,6 +31,7 @@
 namespace CG3 {
 
 	class Grammar;
+	class ContextualTest;
 
 	enum RULE_FLAGS {
 		RF_NEAREST      =     1U,

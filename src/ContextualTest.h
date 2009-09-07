@@ -26,6 +26,7 @@
 #include "stdafx.h"
 
 namespace CG3 {
+	class Grammar;
 
 	enum CT_POS {
 		POS_CAREFUL        =        1U,

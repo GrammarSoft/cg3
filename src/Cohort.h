@@ -26,6 +26,8 @@
 #include "stdafx.h"
 
 namespace CG3 {
+	class SingleWindow;
+	class Reading;
 
 	class Cohort {
 	public:

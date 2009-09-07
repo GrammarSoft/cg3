@@ -27,6 +27,7 @@
 #include "Tag.h"
 
 namespace CG3 {
+	class Cohort;
 
 	class Reading {
 	public:

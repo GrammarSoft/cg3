@@ -26,6 +26,9 @@
 #include "stdafx.h"
 
 namespace CG3 {
+	class GrammarApplicator;
+	class Cohort;
+	class SingleWindow;
 
 	class Window {
 	public:

@@ -28,6 +28,7 @@
 #include "Rule.h"
 
 namespace CG3 {
+	class Window;
 
 	class SingleWindow {
 	public:
