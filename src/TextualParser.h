@@ -27,6 +27,10 @@
 #include "Strings.h"
 
 namespace CG3 {
+	class Rule;
+	class Set;
+	class ContextualTest;
+
 	class TextualParser : public IGrammarParser {
 	public:
 		TextualParser(Grammar &result, UFILE *ux_err);

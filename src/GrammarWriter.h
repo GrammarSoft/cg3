@@ -26,6 +26,12 @@
 #include "stdafx.h"
  
 namespace CG3 {
+	class Grammar;
+	class Tag;
+	class Set;
+	class Rule;
+	class ContextualTest;
+
 	class GrammarWriter {
 	public:
 		bool statistics;

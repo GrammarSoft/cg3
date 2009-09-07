@@ -30,6 +30,7 @@
 #include "Rule.h"
 
 namespace CG3 {
+	class Anchor;
 
 	class Grammar {
 	public:

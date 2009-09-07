@@ -144,6 +144,8 @@
 				Name="VCLinkerTool"
 				AdditionalDependencies="icuuc.lib icuio.lib icuin.lib WSock32.Lib"
 				AdditionalLibraryDirectories=""
+				OptimizeReferences="2"
+				EnableCOMDATFolding="2"
 			/>
 			<Tool
 				Name="VCALinkTool"

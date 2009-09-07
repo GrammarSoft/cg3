@@ -26,6 +26,8 @@
 #include "stdafx.h"
 
 namespace CG3 {
+	class Grammar;
+
 	class IGrammarParser {
 	public:
 		virtual ~IGrammarParser() {};

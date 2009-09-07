@@ -27,6 +27,14 @@
 #include "Tag.h"
 
 namespace CG3 {
+	class Window;
+	class Grammar;
+	class Reading;
+	class SingleWindow;
+	class Cohort;
+	class ContextualTest;
+	class Set;
+
 	class GrammarApplicator {
 	public:
 		bool always_span;

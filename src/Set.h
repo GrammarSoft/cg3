@@ -27,6 +27,7 @@
 #include "CompositeTag.h"
 
 namespace CG3 {
+	class Grammar;
 
 	class Set {
 	public:

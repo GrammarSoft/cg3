@@ -125,20 +125,6 @@ namespace CG3 {
 	typedef stdext::hash_map<uint32_t,uint32_t> uint32HashMap;
 	typedef stdext::hash_map<uint32_t,uint32Set*> uint32Setuint32HashMap;
 	typedef stdext::hash_map<uint32_t,uint32HashSet*> uint32HashSetuint32HashMap;
-
-	class Grammar;
-	class Set;
-	class Rule;
-	class Cohort;
-	class Anchor;
-	class Tag;
-	class Window;
-	class SingleWindow;
-	class Reading;
-	class GrammarApplicator;
-	class GrammarWriter;
-	class CompositeTag;
-	class ContextualTest;
 }
 
 #endif
