@@ -380,7 +380,8 @@ bool GrammarApplicator::doesSetMatchReading_tags(const Reading &reading, const S
 			bool match = doesTagMatchReading(reading, **ster);
 			if (match) {
 				if (unif_mode) {
-					if (unif_tags.find(theset.hash) != unif_tags.end() && unif_tags[theset.hash] != (*ster)->hash) {
+					uint32HashMap::const_iterator it = unif_tags.find(theset.hash);
+					if (it != unif_tags.end() && it->second != (*ster)->hash) {
 						continue;
 					}
 					unif_tags[theset.hash] = (*ster)->hash;
@@ -415,7 +416,8 @@ bool GrammarApplicator::doesSetMatchReading_tags(const Reading &reading, const S
 			}
 			if (match) {
 				if (unif_mode) {
-					if (unif_tags.find(theset.hash) != unif_tags.end() && unif_tags[theset.hash] != (*ster)->hash) {
+					uint32HashMap::const_iterator it = unif_tags.find(theset.hash);
+					if (it != unif_tags.end() && it->second != (*ster)->hash) {
 						continue;
 					}
 					unif_tags[theset.hash] = (*ster)->hash;
