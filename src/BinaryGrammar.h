@@ -26,6 +26,8 @@
 #include "IGrammarParser.h"
 
 namespace CG3 {
+	class ContextualTest;
+
 	class BinaryGrammar : public IGrammarParser {
 	public:
 		BinaryGrammar(Grammar &result, UFILE *ux_err);
