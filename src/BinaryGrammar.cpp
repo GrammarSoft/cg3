@@ -57,7 +57,7 @@ int BinaryGrammar::parse_grammar_from_file(const char *filename, const char *, c
 		CG3Quit(1);
 	}
 	else {
-		grammar->grammar_size = (uint32_t)_stat.st_size;
+		grammar->grammar_size = static_cast<size_t>(_stat.st_size);
 	}
 
 	FILE *input = fopen(filename, "rb");

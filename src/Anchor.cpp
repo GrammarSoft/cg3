@@ -38,7 +38,7 @@ Anchor::~Anchor() {
 
 void Anchor::setName(uint32_t to) {
 	if (!to) {
-		to = (uint32_t)rand();
+		to = static_cast<uint32_t>(rand());
 	}
 	name = new UChar[32];
 	memset(name, 0, 32);
@@ -50,6 +50,6 @@ void Anchor::setName(const UChar *to) {
 		u_strcpy(name, to);
 	}
 	else {
-		setName((uint32_t)rand());
+		setName(static_cast<uint32_t>(rand()));
 	}
 }
