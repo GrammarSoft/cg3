@@ -39,7 +39,7 @@ namespace CG3 {
 		bool has_dep;
 		bool has_encl_final;
 		bool is_binary;
-		uint32_t grammar_size;
+		size_t grammar_size;
 		UChar mapping_prefix;
 		uint32_t lines;
 		mutable double total_time;
