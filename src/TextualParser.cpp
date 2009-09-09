@@ -69,7 +69,7 @@ int TextualParser::parseTagList(UChar *& p, Set *s, const bool isinline) {
 						}
 					}
 					result->lines += SKIPTOWS(n, ')', true);
-					uint32_t c = (uint32_t)(n - p);
+					ptrdiff_t c = n - p;
 					u_strncpy(gbuffers[0], p, c);
 					gbuffers[0][c] = 0;
 					Tag *t = result->allocateTag(gbuffers[0]);
@@ -105,7 +105,7 @@ int TextualParser::parseTagList(UChar *& p, Set *s, const bool isinline) {
 					}
 				}
 				result->lines += SKIPTOWS(n, 0, true);
-				uint32_t c = (uint32_t)(n - p);
+				ptrdiff_t c = n - p;
 				u_strncpy(gbuffers[0], p, c);
 				gbuffers[0][c] = 0;
 				Tag *t = result->allocateTag(gbuffers[0]);
@@ -152,7 +152,7 @@ Set *TextualParser::parseSetInline(UChar *& p, Set *s) {
 							}
 						}
 						result->lines += SKIPTOWS(n, ')', true);
-						uint32_t c = (uint32_t)(n - p);
+						ptrdiff_t c = n - p;
 						u_strncpy(gbuffers[0], p, c);
 						gbuffers[0][c] = 0;
 						Tag *t = result->allocateTag(gbuffers[0]);
@@ -185,7 +185,7 @@ Set *TextualParser::parseSetInline(UChar *& p, Set *s) {
 					while (n[-1] == ',' || n[-1] == ']') {
 						n--;
 					}
-					uint32_t c = (uint32_t)(n - p);
+					ptrdiff_t c = n - p;
 					u_strncpy(gbuffers[0], p, c);
 					gbuffers[0][c] = 0;
 					uint32_t sh = hash_sdbm_uchar(gbuffers[0]);
@@ -230,7 +230,7 @@ Set *TextualParser::parseSetInline(UChar *& p, Set *s) {
 			else {
 				UChar *n = p;
 				result->lines += SKIPTOWS(n, 0, true);
-				uint32_t c = (uint32_t)(n - p);
+				ptrdiff_t c = n - p;
 				u_strncpy(gbuffers[0], p, c);
 				gbuffers[0][c] = 0;
 				//dieIfKeyword(gbuffers[0]);
@@ -299,7 +299,7 @@ int TextualParser::parseContextualTestList(UChar *& p, Rule *rule, ContextualTes
 
 	UChar *n = p;
 	result->lines += SKIPTOWS(n, '(');
-	uint32_t c = (uint32_t)(n - p);
+	ptrdiff_t c = n - p;
 	u_strncpy(gbuffers[0], p, c);
 	gbuffers[0][c] = 0;
 	if (ux_isEmpty(gbuffers[0])) {
@@ -371,7 +371,7 @@ label_parseTemplateRef:
 			p += 2;
 			n = p;
 			result->lines += SKIPTOWS(n, ')');
-			uint32_t c = (uint32_t)(n - p);
+			ptrdiff_t c = n - p;
 			u_strncpy(gbuffers[0], p, c);
 			gbuffers[0][c] = 0;
 			uint32_t cn = hash_sdbm_uchar(gbuffers[0]);
@@ -473,7 +473,7 @@ int TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 			}
 		}
 		result->lines += SKIPTOWS(n, 0, true);
-		uint32_t c = (uint32_t)(n - lp);
+		ptrdiff_t c = n - lp;
 		u_strncpy(gbuffers[0], lp, c);
 		gbuffers[0][c] = 0;
 		Tag *wform = result->allocateTag(gbuffers[0]);
@@ -487,7 +487,7 @@ int TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 		p++;
 		UChar *n = p;
 		result->lines += SKIPTOWS(n, '(');
-		uint32_t c = (uint32_t)(n - p);
+		ptrdiff_t c = n - p;
 		u_strncpy(gbuffers[0], p, c);
 		gbuffers[0][c] = 0;
 		rule->setName(gbuffers[0]);
@@ -544,7 +544,7 @@ int TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 			u_fprintf(ux_stderr, "Error: Anchor name for %S must be alphanumeric on line %u!\n", keywords[key], result->lines);
 			CG3Quit(1);
 		}
-		uint32_t c = (uint32_t)(n - p);
+		ptrdiff_t c = n - p;
 		u_strncpy(gbuffers[0], p, c);
 		gbuffers[0][c] = 0;
 		uint32_t sh = hash_sdbm_uchar(gbuffers[0]);
@@ -560,7 +560,7 @@ int TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 			u_fprintf(ux_stderr, "Error: Anchor name for %S must be alphanumeric on line %u!\n", keywords[key], result->lines);
 			CG3Quit(1);
 		}
-		uint32_t c = (uint32_t)(n - p);
+		ptrdiff_t c = n - p;
 		u_strncpy(gbuffers[0], p, c);
 		gbuffers[0][c] = 0;
 		uint32_t sh = hash_sdbm_uchar(gbuffers[0]);
@@ -579,7 +579,7 @@ int TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 		while (*p && *p != ';' && *p != ')') {
 			UChar *n = p;
 			result->lines += SKIPTOWS(n, ')', true);
-			uint32_t c = (uint32_t)(n - p);
+			ptrdiff_t c = n - p;
 			u_strncpy(gbuffers[0], p, c);
 			gbuffers[0][c] = 0;
 			Tag *wform = result->allocateTag(gbuffers[0]);
@@ -610,7 +610,7 @@ int TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 		while (*p && *p != ';' && *p != ')') {
 			UChar *n = p;
 			result->lines += SKIPTOWS(n, ')', true);
-			uint32_t c = (uint32_t)(n - p);
+			ptrdiff_t c = n - p;
 			u_strncpy(gbuffers[0], p, c);
 			gbuffers[0][c] = 0;
 			Tag *wform = result->allocateTag(gbuffers[0]);
@@ -640,7 +640,7 @@ int TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 		while (*p && *p != ';' && *p != ')') {
 			UChar *n = p;
 			result->lines += SKIPTOWS(n, ')', true);
-			uint32_t c = (uint32_t)(n - p);
+			ptrdiff_t c = n - p;
 			u_strncpy(gbuffers[0], p, c);
 			gbuffers[0][c] = 0;
 			Tag *wform = result->allocateTag(gbuffers[0]);
@@ -860,7 +860,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 
 			UChar *n = p;
 			result->lines += SKIPTOWS(n, ';');
-			uint32_t c = (uint32_t)(n - p);
+			ptrdiff_t c = n - p;
 			u_strncpy(gbuffers[0], p, c);
 			gbuffers[0][c] = 0;
 			p = n;
@@ -904,7 +904,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 					}
 				}
 				result->lines += SKIPTOWS(n, ';', true);
-				uint32_t c = (uint32_t)(n - p);
+				ptrdiff_t c = n - p;
 				u_strncpy(gbuffers[0], p, c);
 				gbuffers[0][c] = 0;
 				Tag *t = result->allocateTag(gbuffers[0]);
@@ -981,7 +981,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 			while (n[-1] == ',' || n[-1] == ']') {
 				n--;
 			}
-			uint32_t c = (uint32_t)(n - p);
+			ptrdiff_t c = n - p;
 			u_strncpy(gbuffers[0], p, c);
 			gbuffers[0][c] = 0;
 			s->setName(gbuffers[0]);
@@ -1034,7 +1034,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 			while (n[-1] == ',' || n[-1] == ']') {
 				n--;
 			}
-			uint32_t c = (uint32_t)(n - p);
+			ptrdiff_t c = n - p;
 			u_strncpy(gbuffers[0], p, c);
 			gbuffers[0][c] = 0;
 			s->setName(gbuffers[0]);
@@ -1092,7 +1092,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 			if (p != s) {
 				UChar *n = p;
 				result->lines += SKIPTOWS(n, 0, true);
-				uint32_t c = (uint32_t)(n - p);
+				ptrdiff_t c = n - p;
 				u_strncpy(gbuffers[0], p, c);
 				gbuffers[0][c] = 0;
 				result->addAnchor(gbuffers[0], result->lines);
@@ -1116,7 +1116,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 			if (p != s) {
 				UChar *n = p;
 				result->lines += SKIPTOWS(n, 0, true);
-				uint32_t c = (uint32_t)(n - p);
+				ptrdiff_t c = n - p;
 				u_strncpy(gbuffers[0], p, c);
 				gbuffers[0][c] = 0;
 				result->addAnchor(gbuffers[0], result->lines);
@@ -1141,7 +1141,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 			if (p != s) {
 				UChar *n = p;
 				result->lines += SKIPTOWS(n, 0, true);
-				uint32_t c = (uint32_t)(n - p);
+				ptrdiff_t c = n - p;
 				u_strncpy(gbuffers[0], p, c);
 				gbuffers[0][c] = 0;
 				result->addAnchor(gbuffers[0], result->lines);
@@ -1165,7 +1165,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 			if (p != s) {
 				UChar *n = p;
 				result->lines += SKIPTOWS(n, 0, true);
-				uint32_t c = (uint32_t)(n - p);
+				ptrdiff_t c = n - p;
 				u_strncpy(gbuffers[0], p, c);
 				gbuffers[0][c] = 0;
 				result->addAnchor(gbuffers[0], result->lines);
@@ -1190,7 +1190,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 			if (p != s) {
 				UChar *n = p;
 				result->lines += SKIPTOWS(n, 0, true);
-				uint32_t c = (uint32_t)(n - p);
+				ptrdiff_t c = n - p;
 				u_strncpy(gbuffers[0], p, c);
 				gbuffers[0][c] = 0;
 				result->addAnchor(gbuffers[0], result->lines);
@@ -1215,7 +1215,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 			if (p != s) {
 				UChar *n = p;
 				result->lines += SKIPTOWS(n, 0, true);
-				uint32_t c = (uint32_t)(n - p);
+				ptrdiff_t c = n - p;
 				u_strncpy(gbuffers[0], p, c);
 				gbuffers[0][c] = 0;
 				result->addAnchor(gbuffers[0], result->lines);
@@ -1240,7 +1240,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 			if (p != s) {
 				UChar *n = p;
 				result->lines += SKIPTOWS(n, 0, true);
-				uint32_t c = (uint32_t)(n - p);
+				ptrdiff_t c = n - p;
 				u_strncpy(gbuffers[0], p, c);
 				gbuffers[0][c] = 0;
 				result->addAnchor(gbuffers[0], result->lines);
@@ -1255,7 +1255,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 			result->lines += SKIPWS(p);
 			UChar *n = p;
 			result->lines += SKIPTOWS(n, 0, true);
-			uint32_t c = (uint32_t)(n - p);
+			ptrdiff_t c = n - p;
 			u_strncpy(gbuffers[0], p, c);
 			gbuffers[0][c] = 0;
 			result->addAnchor(gbuffers[0], result->lines);
@@ -1277,7 +1277,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 			result->lines += SKIPWS(p);
 			UChar *n = p;
 			result->lines += SKIPTOWS(n, 0, true);
-			uint32_t c = (uint32_t)(n - p);
+			ptrdiff_t c = n - p;
 			u_strncpy(gbuffers[0], p, c);
 			gbuffers[0][c] = 0;
 			uint32_t olines = result->lines;
@@ -1415,7 +1415,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 			result->lines += SKIPWS(p);
 			UChar *n = p;
 			result->lines += SKIPTOWS(n, 0, true);
-			uint32_t c = (uint32_t)(n - p);
+			ptrdiff_t c = n - p;
 			u_strncpy(gbuffers[0], p, c);
 			gbuffers[0][c] = 0;
 			uint32_t cn = hash_sdbm_uchar(gbuffers[0]);
@@ -1452,7 +1452,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 			result->lines += SKIPWS(p);
 
 			while (*p && *p != ';') {
-				uint32_t c = 0;
+				ptrdiff_t c = 0;
 				Tag *left = 0;
 				Tag *right = 0;
 				UChar *n = p;
@@ -1473,7 +1473,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 					}
 				}
 				result->lines += SKIPTOWS(n, ')', true);
-				c = (uint32_t)(n - p);
+				c = n - p;
 				u_strncpy(gbuffers[0], p, c);
 				gbuffers[0][c] = 0;
 				left = result->allocateTag(gbuffers[0]);
@@ -1494,7 +1494,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 					}
 				}
 				result->lines += SKIPTOWS(n, ')', true);
-				c = (uint32_t)(n - p);
+				c = n - p;
 				u_strncpy(gbuffers[0], p, c);
 				gbuffers[0][c] = 0;
 				right = result->allocateTag(gbuffers[0]);
