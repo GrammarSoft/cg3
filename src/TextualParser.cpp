@@ -1299,7 +1299,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 			char *abspath = new char[strlen(cbuffers[1])+1];
 			strcpy(abspath, cbuffers[1]);
 
-			uint32_t grammar_size = 0;
+			size_t grammar_size = 0;
 			struct stat _stat;
 			int error = stat(abspath, &_stat);
 
@@ -1308,7 +1308,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 				CG3Quit(1);
 			}
 			else {
-				grammar_size = _stat.st_size;
+				grammar_size = static_cast<size_t>(_stat.st_size);
 			}
 
 			UFILE *grammar = u_fopen(abspath, "r", locale, codepage);
@@ -1576,7 +1576,7 @@ int TextualParser::parse_grammar_from_file(const char *fname, const char *loc, c
 		CG3Quit(1);
 	}
 	else {
-		result->grammar_size = _stat.st_size;
+		result->grammar_size = static_cast<size_t>(_stat.st_size);
 	}
 
 	UFILE *grammar = u_fopen(filename, "r", locale, codepage);
