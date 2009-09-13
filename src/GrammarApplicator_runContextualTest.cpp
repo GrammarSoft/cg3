@@ -117,13 +117,12 @@ inline Cohort *getCohortInWindow(SingleWindow *& sWindow, size_t position, const
 }
 
 Cohort *GrammarApplicator::runContextualTest(SingleWindow *sWindow, size_t position, const ContextualTest *test, Cohort **deep, Cohort *origin) {
-	Cohort *cohort = 0;
-
 	if (test->pos & POS_NONE) {
 		u_fprintf(ux_stderr, "Error: Contextual tests with position '?' cannot be used directly. Provide an override position.\n");
 		CG3Quit(1);
 	}
 
+	Cohort *cohort = 0;
 	bool retval = true;
 
 	ticks tstamp(gtimer);
@@ -411,6 +410,13 @@ Cohort *GrammarApplicator::runDependencyTest(SingleWindow *sWindow, const Cohort
 	}
 	else {
 		self = current;
+	}
+
+	if (test->pos & POS_DEP_DEEP) {
+		if (dep_deep_seen.find(current->global_number) != dep_deep_seen.end()) {
+			return 0;
+		}
+		dep_deep_seen.insert(current->global_number);
 	}
 
 	bool retval = false;

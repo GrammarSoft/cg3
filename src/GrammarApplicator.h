@@ -60,7 +60,7 @@ namespace CG3 {
 		uint32_t num_windows;
 		uint32_t soft_limit;
 		uint32_t hard_limit;
-		std::vector<uint32_t> sections;
+		uint32Vector sections;
 		uint32_t verbosity_level;
 
 		GrammarApplicator(UFILE *ux_err);
@@ -91,6 +91,7 @@ namespace CG3 {
 		uint32_t numReadings;
 
 		bool did_index;
+		uint32Set dep_deep_seen;
 
 		uint32_t numsections;
 		typedef std::map<int32_t,uint32Set*> RSType;

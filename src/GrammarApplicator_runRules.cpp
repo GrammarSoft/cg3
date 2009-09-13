@@ -198,6 +198,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow &current, uint32Set &r
 				}
 
 				mark = cohort;
+				dep_deep_seen.clear();
 				if (rule.target && doesSetMatchReading(*reading, rule.target, set.is_child_unified|set.is_special)) {
 					reading->matched_target = true;
 					bool good = true;
@@ -456,7 +457,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow &current, uint32Set &r
 					}
 					else if (type == K_SETPARENT || type == K_SETCHILD) {
 						int32_t orgoffset = rule.dep_target->offset;
-						std::set<uint32_t> seen_targets;
+						uint32Set seen_targets;
 
 						bool attached = false;
 						Cohort *target = cohort;
