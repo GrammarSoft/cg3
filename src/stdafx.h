@@ -112,7 +112,6 @@
 #include "inlines.h"
 #include "uextras.h"
 
-// Forward declarations
 namespace CG3 {
 	typedef std::list<uint32_t> uint32List;
 	typedef std::vector<uint32_t> uint32Vector;
