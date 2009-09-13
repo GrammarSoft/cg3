@@ -198,7 +198,6 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow &current, uint32Set &r
 				}
 
 				mark = cohort;
-				dep_deep_seen.clear();
 				if (rule.target && doesSetMatchReading(*reading, rule.target, set.is_child_unified|set.is_special)) {
 					reading->matched_target = true;
 					bool good = true;
@@ -208,6 +207,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow &current, uint32Set &r
 							if (rule.flags & RF_RESETX || !(rule.flags & RF_REMEMBERX)) {
 								mark = cohort;
 							}
+							dep_deep_seen.clear();
 							if (!(test->pos & POS_PASS_ORIGIN) && (no_pass_origin || (test->pos & POS_NO_PASS_ORIGIN))) {
 								test_good = (runContextualTest(&current, c, test, 0, cohort) != 0);
 							}
