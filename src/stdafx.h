@@ -118,6 +118,7 @@ namespace CG3 {
 	typedef std::set<uint32_t> uint32Set;
 	typedef std::map<uint32_t,int32_t> uint32int32Map;
 	typedef std::map<uint32_t,uint32_t> uint32Map;
+	typedef std::multimap<uint32_t,uint32_t> uint32MultiMap;
 	typedef std::map<uint32_t,uint32Set*> uint32Setuint32Map;
 	typedef stdext::hash_set<uint32_t> uint32HashSet;
 	typedef stdext::hash_map<uint32_t,uint32_t> uint32HashMap;

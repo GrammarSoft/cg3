@@ -51,7 +51,7 @@ namespace CG3 {
 		uint32HashSet dep_children;
 		uint32HashSet possible_sets;
 		std::vector<Cohort*> enclosed;
-		std::multimap<uint32_t, uint32_t> relations;
+		uint32MultiMap relations;
 
 		int32_t getMin(uint32_t key);
 		int32_t getMax(uint32_t key);
