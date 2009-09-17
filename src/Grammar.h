@@ -98,7 +98,7 @@ namespace CG3 {
 		void addAnchor(const UChar *to, const uint32_t line);
 
 		Tag *allocateTag();
-		Tag *allocateTag(const UChar *tag);
+		Tag *allocateTag(const UChar *tag, bool raw = false);
 		void destroyTag(Tag *tag);
 		void addTagToCompositeTag(Tag *simpletag, CompositeTag *tag);
 		void addTagToSet(Tag *rtag, Set *set);

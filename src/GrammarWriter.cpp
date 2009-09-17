@@ -339,6 +339,9 @@ void GrammarWriter::printContextualTest(UFILE *to, const ContextualTest &test) {
 		if (test.pos & POS_LOOK_DELAYED) {
 			u_fprintf(to, "d");
 		}
+		if (test.pos & POS_RELATION) {
+			u_fprintf(to, "r:%S", grammar->single_tags.find(test.relation)->second->tag);
+		}
 
 		u_fprintf(to, " ");
 
@@ -382,5 +385,8 @@ void GrammarWriter::printTag(UFILE *to, const Tag &tag) {
 	}
 	if (tag.type & T_REGEXP) {
 		u_fprintf(to, "r");
+	}
+	if (tag.type & T_VARSTRING) {
+		u_fprintf(to, "v");
 	}
 }

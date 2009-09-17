@@ -271,6 +271,158 @@ Set *TextualParser::parseSetInlineWrapper(UChar *& p) {
 	return s;
 }
 
+int TextualParser::parseContextualTestPosition(UChar *& p, ContextualTest& t) {
+	bool negative = false;
+
+	while (*p != ' ' && *p != '(') {
+		if (*p == '*' && *(p+1) == '*') {
+			t.pos |= POS_SCANALL;
+			p += 2;
+		}
+		if (*p == '*') {
+			t.pos |= POS_SCANFIRST;
+			p++;
+		}
+		if (*p == 'C') {
+			t.pos |= POS_CAREFUL;
+			p++;
+		}
+		if (*p == 'c') {
+			t.pos |= POS_DEP_CHILD;
+			p++;
+		}
+		if (*p == 'p') {
+			t.pos |= POS_DEP_PARENT;
+			p++;
+		}
+		if (*p == 's') {
+			t.pos |= POS_DEP_SIBLING;
+			p++;
+		}
+		if (*p == 'S') {
+			t.pos |= POS_DEP_SELF;
+			p++;
+		}
+		if (*p == '<') {
+			t.pos |= POS_SPAN_LEFT;
+			p++;
+		}
+		if (*p == '>') {
+			t.pos |= POS_SPAN_RIGHT;
+			p++;
+		}
+		if (*p == 'W') {
+			t.pos |= POS_SPAN_BOTH;
+			p++;
+		}
+		if (*p == '@') {
+			t.pos |= POS_ABSOLUTE;
+			p++;
+		}
+		if (*p == 'O') {
+			t.pos |= POS_NO_PASS_ORIGIN;
+			p++;
+		}
+		if (*p == 'o') {
+			t.pos |= POS_PASS_ORIGIN;
+			p++;
+		}
+		if (*p == 'L') {
+			t.pos |= POS_LEFT_PAR;
+			p++;
+		}
+		if (*p == 'R') {
+			t.pos |= POS_RIGHT_PAR;
+			p++;
+		}
+		if (*p == 'X') {
+			t.pos |= POS_MARK_SET;
+			p++;
+		}
+		if (*p == 'x') {
+			t.pos |= POS_MARK_JUMP;
+			p++;
+		}
+		if (*p == 'D') {
+			t.pos |= POS_LOOK_DELETED;
+			p++;
+		}
+		if (*p == 'd') {
+			t.pos |= POS_LOOK_DELAYED;
+			p++;
+		}
+		if (*p == '?') {
+			t.pos |= POS_NONE;
+			p++;
+		}
+		if (*p == '-') {
+			negative = true;
+			p++;
+		}
+		if (u_isdigit(*p)) {
+			int32_t retval = 0;
+			if ((retval = u_sscanf(p, "%d", &(t.offset))) == EOF) {
+				u_fprintf(ux_stderr, "Error: Invalid position on line %u!\n", result->lines);
+				CG3Quit(1);
+			}
+			p += retval;
+		}
+		if (*p == 'r' && *(p+1) == ':') {
+			t.pos |= POS_RELATION;
+			p += 2;
+			UChar *n = p;
+			SKIPTOWS(n, '(');
+			ptrdiff_t c = n - p;
+			u_strncpy(gbuffers[0], p, c);
+			gbuffers[0][c] = 0;
+			Tag *tag = result->allocateTag(gbuffers[0], true);
+			t.relation = tag->hash;
+			p = n;
+		}
+	}
+
+	if (negative) {
+		t.offset = (-1) * abs(t.offset);
+	}
+
+	if ((t.pos & (POS_DEP_CHILD|POS_DEP_SIBLING|POS_DEP_PARENT)) && (t.pos & (POS_SCANFIRST|POS_SCANALL))) {
+		t.pos &= ~POS_SCANFIRST;
+		t.pos &= ~POS_SCANALL;
+		t.pos |= POS_DEP_DEEP;
+	}
+	if ((t.pos & (POS_DEP_CHILD|POS_DEP_SIBLING|POS_DEP_PARENT)) && (t.pos & POS_CAREFUL)) {
+		t.pos &= ~POS_CAREFUL;
+		t.pos |= POS_DEP_ALL;
+	}
+	if ((t.pos & (POS_DEP_CHILD|POS_DEP_SIBLING|POS_DEP_PARENT)) && (t.pos & POS_NEGATIVE)) {
+		t.pos &= ~POS_NEGATIVE;
+		t.pos |= POS_DEP_NONE;
+	}
+
+	if ((t.pos & (POS_LEFT_PAR|POS_RIGHT_PAR)) && (t.pos & (POS_SCANFIRST|POS_SCANALL))) {
+		u_fprintf(ux_stderr, "Error: Invalid position on line %u - cannot have both enclosure and scan!\n", result->lines);
+		CG3Quit(1);
+	}
+	if ((t.pos & POS_PASS_ORIGIN) && (t.pos & POS_NO_PASS_ORIGIN)) {
+		u_fprintf(ux_stderr, "Error: Invalid position on line %u - cannot have both O and o!\n", result->lines);
+		CG3Quit(1);
+	}
+	if ((t.pos & POS_LEFT_PAR) && (t.pos & POS_RIGHT_PAR)) {
+		u_fprintf(ux_stderr, "Error: Invalid position on line %u - cannot have both L and R!\n", result->lines);
+		CG3Quit(1);
+	}
+	if ((t.pos & POS_DEP_ALL) && (t.pos & POS_DEP_NONE)) {
+		u_fprintf(ux_stderr, "Error: Invalid position on line %u - cannot have both NOT and C for dependencies!\n", result->lines);
+		CG3Quit(1);
+	}
+	if ((t.pos & POS_NONE) && (t.pos != POS_NONE || t.offset != 0)) {
+		u_fprintf(ux_stderr, "Error: Invalid position on line %u - '?' cannot be combined with anything else!\n", result->lines);
+		CG3Quit(1);
+	}
+
+	return 0;
+}
+
 int TextualParser::parseContextualTestList(UChar *& p, Rule *rule, ContextualTest **head, CG3::ContextualTest *parentTest, CG3::ContextualTest *self) {
 	ContextualTest *t = 0;
 	if (self) {
@@ -358,7 +510,7 @@ int TextualParser::parseContextualTestList(UChar *& p, Rule *rule, ContextualTes
 		if (negative) {
 			t->pos |= POS_NEGATIVE;
 		}
-		t->parsePosition(gbuffers[0], ux_stderr);
+		parseContextualTestPosition(p, *t);
 		p = n;
 		if (t->pos & (POS_DEP_CHILD|POS_DEP_PARENT|POS_DEP_SIBLING)) {
 			result->has_dep = true;

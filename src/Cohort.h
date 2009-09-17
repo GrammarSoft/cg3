@@ -28,6 +28,7 @@
 namespace CG3 {
 	class SingleWindow;
 	class Reading;
+	typedef std::map<uint32_t,uint32Set> RelationCtn;
 
 	class Cohort {
 	public:
@@ -51,7 +52,7 @@ namespace CG3 {
 		uint32HashSet dep_children;
 		uint32HashSet possible_sets;
 		std::vector<Cohort*> enclosed;
-		uint32MultiMap relations;
+		RelationCtn relations;
 
 		int32_t getMin(uint32_t key);
 		int32_t getMax(uint32_t key);
@@ -66,6 +67,8 @@ namespace CG3 {
 		void remChild(uint32_t child);
 		void appendReading(Reading *read);
 		Reading *allocateAppendReading();
+		void addRelation(uint32_t rel, uint32_t cohort);
+		void remRelation(uint32_t rel, uint32_t cohort);
 
 	private:
 		inline void updateMinMax();

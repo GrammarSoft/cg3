@@ -290,6 +290,17 @@ Cohort *GrammarApplicator::runContextualTest(SingleWindow *sWindow, size_t posit
 				retval = false;
 			}
 		}
+		else if (test->pos & POS_RELATION) {
+			Cohort *nc = runRelationTest(sWindow, cohort, test, deep, origin);
+			if (nc) {
+				cohort = nc;
+				retval = true;
+				pos = (int32_t)cohort->local_number;
+			}
+			else {
+				retval = false;
+			}
+		}
 		else if (test->offset == 0 && (test->pos & (POS_SCANFIRST|POS_SCANALL))) {
 			SingleWindow *right, *left;
 			int32_t rpos, lpos;
@@ -570,6 +581,32 @@ Cohort *GrammarApplicator::runParenthesisTest(SingleWindow *sWindow, const Cohor
 	tmc = runSingleTest(cohort->parent, cohort->local_number, test, &brk, &retval, deep, origin);
 	if (retval) {
 		rv = cohort;
+	}
+
+	return rv;
+}
+
+Cohort *GrammarApplicator::runRelationTest(SingleWindow *sWindow, const Cohort *current, const ContextualTest *test, Cohort **deep, Cohort *origin) {
+	if (!current->is_related || current->relations.empty() || current->relations.find(test->relation) == current->relations.end()) {
+		return 0;
+	}
+	Cohort *rv = 0;
+	Cohort *tmc = 0;
+
+	bool retval = false;
+	bool brk = false;
+	Cohort *cohort = 0;
+
+	const_foreach(uint32Set, current->relations.find(test->relation)->second, citer, citer_end) {
+		std::map<uint32_t,Cohort*>::iterator it = sWindow->parent->cohort_map.find(*citer);
+		if (it != sWindow->parent->cohort_map.end()) {
+			cohort = it->second;
+			tmc = runSingleTest(cohort->parent, cohort->local_number, test, &brk, &retval, deep, origin);
+			if (retval) {
+				rv = cohort;
+				break;
+			}
+		}
 	}
 
 	return rv;

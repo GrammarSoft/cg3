@@ -185,3 +185,16 @@ int32_t Cohort::getMax(uint32_t key) {
 	}
 	return INT_MAX;
 }
+
+void Cohort::addRelation(uint32_t rel, uint32_t cohort) {
+	if (relations.find(rel) == relations.end()) {
+		relations[rel];
+	}
+	relations.find(rel)->second.insert(cohort);
+}
+
+void Cohort::remRelation(uint32_t rel, uint32_t cohort) {
+	if (relations.find(rel) != relations.end()) {
+		relations.find(rel)->second.erase(cohort);
+	}
+}

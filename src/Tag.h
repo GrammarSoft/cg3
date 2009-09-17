@@ -82,7 +82,6 @@ namespace CG3 {
 		void parseTag(const UChar *to, UFILE *ux_stderr);
 		void parseTagRaw(const UChar *to);
 		static void parseNumeric(Tag *tag, const UChar *txt);
-		static void printTagRaw(UFILE *out, const Tag *tag);
 
 		uint32_t rehash();
 		void markUsed();

@@ -34,6 +34,7 @@ name(0),
 hash(0),
 pos(0),
 target(0),
+relation(0),
 barrier(0),
 cbarrier(0),
 num_fail(0),
@@ -66,114 +67,6 @@ void ContextualTest::detach() {
 		next->prev = prev;
 	}
 	prev = next = 0;
-}
-
-void ContextualTest::parsePosition(const UChar *input, UFILE *ux_stderr) {
-	if (u_strstr(input, stringbits[S_ASTERIKTWO])) {
-		pos |= POS_SCANALL;
-	}
-	else if (u_strstr(input, stringbits[S_ASTERIK])) {
-		pos |= POS_SCANFIRST;
-	}
-	if (u_strchr(input, 'C')) {
-		pos |= POS_CAREFUL;
-	}
-	if (u_strchr(input, 'c')) {
-		pos |= POS_DEP_CHILD;
-	}
-	if (u_strchr(input, 'p')) {
-		pos |= POS_DEP_PARENT;
-	}
-	if (u_strchr(input, 's')) {
-		pos |= POS_DEP_SIBLING;
-	}
-	if (u_strchr(input, 'S')) {
-		pos |= POS_DEP_SELF;
-	}
-	if (u_strchr(input, '<')) {
-		pos |= POS_SPAN_LEFT;
-	}
-	if (u_strchr(input, '>')) {
-		pos |= POS_SPAN_RIGHT;
-	}
-	if (u_strchr(input, 'W')) {
-		pos |= POS_SPAN_BOTH;
-	}
-	if (u_strchr(input, '@')) {
-		pos |= POS_ABSOLUTE;
-	}
-	if (u_strchr(input, 'O')) {
-		pos |= POS_NO_PASS_ORIGIN;
-	}
-	if (u_strchr(input, 'o')) {
-		pos |= POS_PASS_ORIGIN;
-	}
-	if (u_strchr(input, 'L')) {
-		pos |= POS_LEFT_PAR;
-	}
-	if (u_strchr(input, 'R')) {
-		pos |= POS_RIGHT_PAR;
-	}
-	if (u_strchr(input, 'X')) {
-		pos |= POS_MARK_SET;
-	}
-	if (u_strchr(input, 'x')) {
-		pos |= POS_MARK_JUMP;
-	}
-	if (u_strchr(input, 'D')) {
-		pos |= POS_LOOK_DELETED;
-	}
-	if (u_strchr(input, 'd')) {
-		pos |= POS_LOOK_DELAYED;
-	}
-	if (u_strchr(input, '?')) {
-		pos |= POS_NONE;
-	}
-	UChar tmp[16];
-	tmp[0] = 0;
-	int32_t retval = u_sscanf(input, "%[^0-9]%d", &tmp, &offset);
-	if (u_strchr(input, '-')) {
-		offset = (-1) * abs(offset);
-	}
-
-	if ((pos & (POS_DEP_CHILD|POS_DEP_SIBLING|POS_DEP_PARENT)) && (pos & (POS_SCANFIRST|POS_SCANALL))) {
-		pos &= ~POS_SCANFIRST;
-		pos &= ~POS_SCANALL;
-		pos |= POS_DEP_DEEP;
-	}
-	if ((pos & (POS_DEP_CHILD|POS_DEP_SIBLING|POS_DEP_PARENT)) && (pos & POS_CAREFUL)) {
-		pos &= ~POS_CAREFUL;
-		pos |= POS_DEP_ALL;
-	}
-	if ((pos & (POS_DEP_CHILD|POS_DEP_SIBLING|POS_DEP_PARENT)) && (pos & POS_NEGATIVE)) {
-		pos &= ~POS_NEGATIVE;
-		pos |= POS_DEP_NONE;
-	}
-
-	if ((!(pos & (POS_DEP_CHILD|POS_DEP_SIBLING|POS_DEP_PARENT))) && (retval == EOF || (offset == 0 && tmp[0] == 0 && retval < 1))) {
-		u_fprintf(ux_stderr, "Error: '%S' is not a valid position!\n", input);
-		CG3Quit(1);
-	}
-	if ((pos & (POS_LEFT_PAR|POS_RIGHT_PAR)) && (pos & (POS_SCANFIRST|POS_SCANALL))) {
-		u_fprintf(ux_stderr, "Error: '%S' is not a valid position - cannot have both enclosure and scan!\n", input);
-		CG3Quit(1);
-	}
-	if ((pos & POS_PASS_ORIGIN) && (pos & POS_NO_PASS_ORIGIN)) {
-		u_fprintf(ux_stderr, "Error: '%S' is not a valid position - cannot have both O and o!\n", input);
-		CG3Quit(1);
-	}
-	if ((pos & POS_LEFT_PAR) && (pos & POS_RIGHT_PAR)) {
-		u_fprintf(ux_stderr, "Error: '%S' is not a valid position - cannot have both L and R!\n", input);
-		CG3Quit(1);
-	}
-	if ((pos & POS_DEP_ALL) && (pos & POS_DEP_NONE)) {
-		u_fprintf(ux_stderr, "Error: '%S' is not a valid position - cannot have both NOT and C for dependencies!\n", input);
-		CG3Quit(1);
-	}
-	if ((pos & POS_NONE) && (pos != POS_NONE || offset != 0 || u_strcmp(input, stringbits[S_QUESTION]) != 0)) {
-		u_fprintf(ux_stderr, "Error: '%S' is not a valid position - '?' cannot be combined with anything else!\n", input);
-		CG3Quit(1);
-	}
 }
 
 ContextualTest *ContextualTest::allocateContextualTest() {

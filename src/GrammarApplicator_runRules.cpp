@@ -585,16 +585,10 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow &current, uint32Set &r
 								if (type == K_SETRELATION) {
 									attach->is_related = true;
 									cohort->is_related = true;
-									cohort->relations.insert( std::pair<uint32_t,uint32_t>(attach->global_number, (rule.maplist.front())->hash) );
+									cohort->addRelation(rule.maplist.front()->hash, attach->global_number);
 								}
 								else {
-									uint32MultiMap::iterator miter = cohort->relations.find(attach->global_number);
-									while (miter != cohort->relations.end()
-										&& miter->first == attach->global_number
-										&& miter->second == (rule.maplist.front())->hash) {
-											cohort->relations.erase(miter);
-											miter = cohort->relations.find(attach->global_number);
-									}
+									cohort->remRelation(rule.maplist.front()->hash, attach->global_number);
 								}
 							}
 						}
@@ -620,25 +614,12 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow &current, uint32Set &r
 								if (type == K_SETRELATIONS) {
 									attach->is_related = true;
 									cohort->is_related = true;
-									cohort->relations.insert( std::pair<uint32_t,uint32_t>(attach->global_number, (rule.maplist.front())->hash) );
-									attach->relations.insert( std::pair<uint32_t,uint32_t>(cohort->global_number, rule.sublist.front()) );
+									cohort->addRelation(rule.maplist.front()->hash, attach->global_number);
+									attach->addRelation(rule.sublist.front(), cohort->global_number);
 								}
 								else {
-									uint32MultiMap::iterator miter = cohort->relations.find(attach->global_number);
-									while (miter != cohort->relations.end()
-										&& miter->first == attach->global_number
-										&& miter->second == (rule.maplist.front())->hash) {
-											cohort->relations.erase(miter);
-											miter = cohort->relations.find(attach->global_number);
-									}
-									
-									miter = attach->relations.find(cohort->global_number);
-									while (miter != attach->relations.end()
-										&& miter->first == cohort->global_number
-										&& miter->second == rule.sublist.front()) {
-											attach->relations.erase(miter);
-											miter = attach->relations.find(cohort->global_number);
-									}
+									cohort->remRelation(rule.maplist.front()->hash, attach->global_number);
+									attach->remRelation(rule.sublist.front(), cohort->global_number);
 								}
 							}
 						}
