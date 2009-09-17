@@ -57,6 +57,7 @@ namespace CG3 {
 		int parseTagList(UChar *& p, Set *s, const bool isinline = false);
 		Set *parseSetInline(UChar *& p, Set *s = 0);
 		Set *parseSetInlineWrapper(UChar *& p);
+		int parseContextualTestPosition(UChar *& p, ContextualTest& t);
 		int parseContextualTestList(UChar *& p, Rule *rule, ContextualTest **head, CG3::ContextualTest *parentTest, CG3::ContextualTest *self = 0);
 		int parseContextualTests(UChar *& p, Rule *rule);
 		int parseContextualDependencyTests(UChar *& p, Rule *rule);

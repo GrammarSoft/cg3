@@ -351,33 +351,6 @@ void Tag::markUsed() {
 	is_used = true;
 }
 
-void Tag::printTagRaw(UFILE *to, const Tag *tag) {
-	if (tag->type & T_NEGATIVE) {
-		u_fprintf(to, "!");
-	}
-	if (tag->type & T_FAILFAST) {
-		u_fprintf(to, "^");
-	}
-	if (tag->type & T_META) {
-		u_fprintf(to, "META:");
-	}
-	if (tag->type & T_VARIABLE) {
-		u_fprintf(to, "VAR:");
-	}
-
-	u_fprintf(to, "%S", tag->tag);
-
-	if (tag->type & T_CASE_INSENSITIVE) {
-		u_fprintf(to, "i");
-	}
-	if (tag->type & T_REGEXP) {
-		u_fprintf(to, "r");
-	}
-	if (tag->type & T_VARSTRING) {
-		u_fprintf(to, "v");
-	}
-}
-
 UChar *Tag::allocateUChars(uint32_t n) {
 	return new UChar[n];
 }

@@ -238,7 +238,7 @@ void GrammarApplicator::printReading(Reading *reading, UFILE *output) {
 	u_fprintf(output, "\t");
 
 	if (reading->baseform) {
-		Tag::printTagRaw(output, single_tags[reading->baseform]);
+		u_fprintf(output, "%S", single_tags.find(reading->baseform)->second->tag);
 		u_fprintf(output, " ");
 	}
 
@@ -256,7 +256,7 @@ void GrammarApplicator::printReading(Reading *reading, UFILE *output) {
 			continue;
 		}
 		if (!(tag->type & T_BASEFORM) && !(tag->type & T_WORDFORM)) {
-			Tag::printTagRaw(output, tag);
+			u_fprintf(output, "%S", tag->tag);
 			u_fprintf(output, " ");
 		}
 	}
@@ -304,11 +304,10 @@ void GrammarApplicator::printReading(Reading *reading, UFILE *output) {
 	if (reading->parent->is_related) {
 		u_fprintf(output, "ID:%u ", reading->parent->global_number);
 		if (!reading->parent->relations.empty()) {
-			uint32MultiMap::iterator miter;
-			for (miter = reading->parent->relations.begin() ; miter != reading->parent->relations.end() ; miter++) {
-				u_fprintf(output, "R:");
-				Tag::printTagRaw(output, single_tags[miter->second]);
-				u_fprintf(output, ":%u ", miter->first);
+			foreach(RelationCtn, reading->parent->relations, miter, miter_end) {
+				foreach(uint32Set, miter->second, siter, siter_end) {
+					u_fprintf(output, "R:%S:%u ", grammar->single_tags.find(miter->first)->second->tag, *siter);
+				}
 			}
 		}
 	}
@@ -338,7 +337,7 @@ void GrammarApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 	uint32_t cs = (uint32_t)window->cohorts.size();
 	for (uint32_t c=1 ; c < cs ; c++) {
 		Cohort *cohort = window->cohorts.at(c);
-		Tag::printTagRaw(output, single_tags[cohort->wordform]);
+		u_fprintf(output, "%S", single_tags.find(cohort->wordform)->second->tag);
 		//u_fprintf(output, " %u", cohort->number);
 		u_fprintf(output, "\n");
 

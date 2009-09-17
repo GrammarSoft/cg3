@@ -17,7 +17,7 @@
 "<word>"
 	"word" first ID:9 
 "<word>"
-	"word" startfourth ID:10 R:Begin4:2 R:Begin4:20 
+	"word" startfourth @4to3 ID:10 R:Begin4:2 R:Begin4:20 
 "<word>"
 	"word" startfirst ID:11 
 "<word>"

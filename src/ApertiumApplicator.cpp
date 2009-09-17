@@ -622,7 +622,7 @@ void ApertiumApplicator::printReading(Reading *reading, UFILE *output) {
 		const Tag *tag = single_tags[*tter];
 		if (!(tag->type & T_BASEFORM) && !(tag->type & T_WORDFORM)) {
 			if (tag->tag[0] == '+') {
-				Tag::printTagRaw(output, tag);
+				u_fprintf(output, "%S", tag->tag);	
 			}
 			else if (tag->tag[0] == '&') {
 				u_fprintf(output, "<");
@@ -631,7 +631,7 @@ void ApertiumApplicator::printReading(Reading *reading, UFILE *output) {
 			}
 			else {
 				u_fprintf(output, "<");
-				Tag::printTagRaw(output, tag);
+				u_fprintf(output, "%S", tag->tag);	
 				u_fprintf(output, ">");
 			}
 		}
