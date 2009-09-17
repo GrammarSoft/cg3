@@ -304,7 +304,7 @@ void GrammarApplicator::printReading(Reading *reading, UFILE *output) {
 	if (reading->parent->is_related) {
 		u_fprintf(output, "ID:%u ", reading->parent->global_number);
 		if (!reading->parent->relations.empty()) {
-			std::multimap<uint32_t,uint32_t>::iterator miter;
+			uint32MultiMap::iterator miter;
 			for (miter = reading->parent->relations.begin() ; miter != reading->parent->relations.end() ; miter++) {
 				u_fprintf(output, "R:");
 				Tag::printTagRaw(output, single_tags[miter->second]);

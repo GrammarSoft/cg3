@@ -588,7 +588,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow &current, uint32Set &r
 									cohort->relations.insert( std::pair<uint32_t,uint32_t>(attach->global_number, (rule.maplist.front())->hash) );
 								}
 								else {
-									std::multimap<uint32_t,uint32_t>::iterator miter = cohort->relations.find(attach->global_number);
+									uint32MultiMap::iterator miter = cohort->relations.find(attach->global_number);
 									while (miter != cohort->relations.end()
 										&& miter->first == attach->global_number
 										&& miter->second == (rule.maplist.front())->hash) {
@@ -624,7 +624,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow &current, uint32Set &r
 									attach->relations.insert( std::pair<uint32_t,uint32_t>(cohort->global_number, rule.sublist.front()) );
 								}
 								else {
-									std::multimap<uint32_t,uint32_t>::iterator miter = cohort->relations.find(attach->global_number);
+									uint32MultiMap::iterator miter = cohort->relations.find(attach->global_number);
 									while (miter != cohort->relations.end()
 										&& miter->first == attach->global_number
 										&& miter->second == (rule.maplist.front())->hash) {
