@@ -423,6 +423,7 @@ Cohort *GrammarApplicator::runDependencyTest(SingleWindow *sWindow, const Cohort
 		self = current;
 	}
 
+	// ToDo: Make the dep_deep_seen key a composite of cohort number and test hash so we don't have to clear as often
 	if (test->pos & POS_DEP_DEEP) {
 		if (dep_deep_seen.find(current->global_number) != dep_deep_seen.end()) {
 			return 0;

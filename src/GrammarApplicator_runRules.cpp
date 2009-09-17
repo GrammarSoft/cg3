@@ -464,11 +464,13 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow &current, uint32Set &r
 						while (!attached) {
 							Cohort *attach = 0;
 							seen_targets.insert(target->global_number);
+							dep_deep_seen.clear();
 							if (runContextualTest(target->parent, target->local_number, rule.dep_target, &attach) && attach) {
 								bool good = true;
 								ContextualTest *test = rule.dep_test_head;
 								while (test) {
 									mark = attach;
+									dep_deep_seen.clear();
 									test_good = (runContextualTest(attach->parent, attach->local_number, test) != 0);
 									if (!test_good) {
 										good = test_good;
@@ -516,11 +518,13 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow &current, uint32Set &r
 					else if (type == K_MOVE_AFTER || type == K_MOVE_BEFORE || type == K_SWITCH) {
 						// ToDo: ** tests will not correctly work for MOVE/SWITCH; cannot move cohorts between windows
 						Cohort *attach = 0;
+						dep_deep_seen.clear();
 						if (runContextualTest(&current, c, rule.dep_target, &attach) && attach && cohort->parent == attach->parent) {
 							bool good = true;
 							ContextualTest *test = rule.dep_test_head;
 							while (test) {
 								mark = attach;
+								dep_deep_seen.clear();
 								test_good = (runContextualTest(attach->parent, attach->local_number, test) != 0);
 								if (!test_good) {
 									good = test_good;
@@ -567,11 +571,13 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow &current, uint32Set &r
 					}
 					else if (type == K_SETRELATION || type == K_REMRELATION) {
 						Cohort *attach = 0;
+						dep_deep_seen.clear();
 						if (runContextualTest(&current, c, rule.dep_target, &attach) && attach) {
 							bool good = true;
 							ContextualTest *test = rule.dep_test_head;
 							while (test) {
 								mark = attach;
+								dep_deep_seen.clear();
 								test_good = (runContextualTest(attach->parent, attach->local_number, test) != 0);
 								if (!test_good) {
 									good = test_good;
@@ -595,12 +601,14 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow &current, uint32Set &r
 						break;
 					}
 					else if (type == K_SETRELATIONS || type == K_REMRELATIONS) {
+						dep_deep_seen.clear();
 						Cohort *attach = runContextualTest(&current, c, rule.dep_target);
 						if (attach) {
 							bool good = true;
 							ContextualTest *test = rule.dep_test_head;
 							while (test) {
 								mark = attach;
+								dep_deep_seen.clear();
 								test_good = (runContextualTest(attach->parent, attach->local_number, test) != 0);
 								if (!test_good) {
 									good = test_good;
