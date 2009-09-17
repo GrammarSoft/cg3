@@ -52,7 +52,7 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 		CG3Quit(1);
 	}
 
-#define B_TOO_OLD 4767
+#define B_TOO_OLD 5085
 	fread(&u32tmp, sizeof(uint32_t), 1, input);
 	u32tmp = (uint32_t)ntohl(u32tmp);
 	if (u32tmp < B_TOO_OLD) {
@@ -409,6 +409,8 @@ void BinaryGrammar::readContextualTest(ContextualTest *t, FILE *input) {
 		t->line = (uint32_t)ntohl(u32tmp);
 		fread(&u32tmp, sizeof(uint32_t), 1, input);
 		t->target = (uint32_t)ntohl(u32tmp);
+		fread(&u32tmp, sizeof(uint32_t), 1, input);
+		t->relation = (uint32_t)ntohl(u32tmp);
 		fread(&u32tmp, sizeof(uint32_t), 1, input);
 		t->barrier = (uint32_t)ntohl(u32tmp);
 		fread(&u32tmp, sizeof(uint32_t), 1, input);

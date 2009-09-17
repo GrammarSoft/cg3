@@ -277,9 +277,14 @@ void Grammar::destroyRule(Rule *rule) {
 Tag *Grammar::allocateTag() {
 	return new Tag;
 }
-Tag *Grammar::allocateTag(const UChar *txt) {
+Tag *Grammar::allocateTag(const UChar *txt, bool raw) {
 	Tag *tag = new Tag();
-	tag->parseTag(txt, ux_stderr);
+	if (raw) {
+		tag->parseTagRaw(txt);
+	}
+	else {
+		tag->parseTag(txt, ux_stderr);
+	}
 	uint32_t hash = tag->rehash();
 	uint32_t seed = 0;
 	for ( ; seed < 10000 ; seed++) {
