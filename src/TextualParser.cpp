@@ -274,7 +274,8 @@ Set *TextualParser::parseSetInlineWrapper(UChar *& p) {
 int TextualParser::parseContextualTestPosition(UChar *& p, ContextualTest& t) {
 	bool negative = false;
 
-	while (*p != ' ' && *p != '(') {
+	size_t tries;
+	for (tries=0 ; *p != ' ' && *p != '(' && tries < 2000 ; ++tries) {
 		if (*p == '*' && *(p+1) == '*') {
 			t.pos |= POS_SCANALL;
 			p += 2;
@@ -399,6 +400,10 @@ int TextualParser::parseContextualTestPosition(UChar *& p, ContextualTest& t) {
 		t.pos |= POS_DEP_NONE;
 	}
 
+	if (tries >= 2000) {
+		u_fprintf(ux_stderr, "Error: Invalid position on line %u - caused endless loop!\n", result->lines);
+		CG3Quit(1);
+	}
 	if ((t.pos & (POS_LEFT_PAR|POS_RIGHT_PAR)) && (t.pos & (POS_SCANFIRST|POS_SCANALL))) {
 		u_fprintf(ux_stderr, "Error: Invalid position on line %u - cannot have both enclosure and scan!\n", result->lines);
 		CG3Quit(1);
