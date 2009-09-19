@@ -41,7 +41,7 @@ namespace CG3 {
 		uint32_t number;
 		mutable uint32_t num_fail, num_match;
 		mutable double total_time;
-		UChar *name;
+		UString name;
 
 		uint32Set tags_set;
 		CompositeTagHashSet tags;

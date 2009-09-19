@@ -23,7 +23,7 @@
 #include "Grammar.h"
 #include "Strings.h"
 
-using namespace CG3;
+namespace CG3 {
 using namespace CG3::Strings;
 
 ContextualTest::ContextualTest() :
@@ -135,4 +135,6 @@ void ContextualTest::markUsed(Grammar &grammar) {
 	if (linked) {
 		linked->markUsed(grammar);
 	}
+}
+
 }

@@ -23,7 +23,7 @@
 #include "Strings.h"
 #include "Grammar.h"
 
-using namespace CG3;
+namespace CG3 {
 using namespace CG3::Strings;
 
 BinaryGrammar::BinaryGrammar(Grammar &res, UFILE *ux_err) {
@@ -66,4 +66,6 @@ int BinaryGrammar::parse_grammar_from_file(const char *filename, const char *, c
 		CG3Quit(1);
 	}
 	return readBinaryGrammar(input);
+}
+
 }

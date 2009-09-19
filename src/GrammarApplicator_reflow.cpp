@@ -27,7 +27,7 @@
 #include "SingleWindow.h"
 #include "Reading.h"
 
-using namespace CG3;
+namespace CG3 {
 using namespace CG3::Strings;
 
 bool GrammarApplicator::wouldParentChildLoop(Cohort *parent, Cohort *child) {
@@ -410,4 +410,6 @@ void GrammarApplicator::mergeMappings(Cohort &cohort) {
 
 	std::sort(order.begin(), order.end(), CG3::Reading::cmp_number);
 	cohort.readings.insert(cohort.readings.begin(), order.begin(), order.end());
+}
+
 }

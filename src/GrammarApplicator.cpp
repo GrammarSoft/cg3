@@ -27,7 +27,7 @@
 #include "SingleWindow.h"
 #include "Reading.h"
 
-using namespace CG3;
+namespace CG3 {
 using namespace CG3::Strings;
 
 GrammarApplicator::GrammarApplicator(UFILE *ux_err) {
@@ -360,4 +360,6 @@ void GrammarApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 	}
 	u_fprintf(output, "\n");
 	u_fflush(output);
+}
+
 }

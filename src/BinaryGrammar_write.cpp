@@ -25,7 +25,7 @@
 #include "ContextualTest.h"
 #include "version.h"
 
-using namespace CG3;
+namespace CG3 {
 using namespace CG3::Strings;
 
 int BinaryGrammar::writeBinaryGrammar(FILE *output) {
@@ -386,4 +386,6 @@ void BinaryGrammar::writeContextualTest(ContextualTest *t, FILE *output) {
 		u8tmp = (uint8_t)0;
 		fwrite(&u8tmp, sizeof(uint8_t), 1, output);
 	}
+}
+
 }
