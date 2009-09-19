@@ -22,7 +22,7 @@
 #include "Tag.h"
 #include "Strings.h"
 
-using namespace CG3;
+namespace CG3 {
 
 Tag::Tag() :
 in_grammar(false),
@@ -353,4 +353,6 @@ void Tag::markUsed() {
 
 UChar *Tag::allocateUChars(uint32_t n) {
 	return new UChar[n];
+}
+
 }

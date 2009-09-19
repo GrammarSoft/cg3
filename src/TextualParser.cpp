@@ -24,7 +24,7 @@
 #include "Grammar.h"
 #include "ContextualTest.h"
 
-using namespace CG3;
+namespace CG3 {
 using namespace CG3::Strings;
 
 TextualParser::TextualParser(Grammar &res, UFILE *ux_err) {
@@ -1155,13 +1155,13 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 			Set *tmp = result->getSet(s->hash);
 			if (tmp) {
 				if (verbosity_level > 0) {
-					u_fprintf(ux_stderr, "Warning: LIST %S was defined twice with the same contents: Lines %u and %u.\n", s->name, tmp->line, s->line);
+					u_fprintf(ux_stderr, "Warning: LIST %S was defined twice with the same contents: Lines %u and %u.\n", s->name.c_str(), tmp->line, s->line);
 					u_fflush(ux_stderr);
 				}
 			}
 			else if (tmp) {
 				if (verbosity_level > 0) {
-					u_fprintf(ux_stderr, "Warning: Set %S (L:%u) has been aliased to %S (L:%u).\n", s->name, s->line, tmp->name, tmp->line);
+					u_fprintf(ux_stderr, "Warning: Set %S (L:%u) has been aliased to %S (L:%u).\n", s->name.c_str(), s->line, tmp->name.c_str(), tmp->line);
 					u_fflush(ux_stderr);
 				}
 				result->set_alias[sh] = tmp->hash;
@@ -1170,7 +1170,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 			}
 			result->addSet(s);
 			if (s->tags.empty() && s->single_tags.empty()) {
-				u_fprintf(ux_stderr, "Error: LIST %S declared, but no definitions given, on line %u!\n", s->name, result->lines);
+				u_fprintf(ux_stderr, "Error: LIST %S declared, but no definitions given, on line %u!\n", s->name.c_str(), result->lines);
 				CG3Quit(1);
 			}
 			result->lines += SKIPWS(p, ';');
@@ -1208,14 +1208,14 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 			Set *tmp = result->getSet(s->hash);
 			if (tmp) {
 				if (verbosity_level > 0) {
-					u_fprintf(ux_stderr, "Warning: SET %S was defined twice with the same contents: Lines %u and %u.\n", s->name, tmp->line, s->line);
+					u_fprintf(ux_stderr, "Warning: SET %S was defined twice with the same contents: Lines %u and %u.\n", s->name.c_str(), tmp->line, s->line);
 					u_fflush(ux_stderr);
 				}
 			}
 			else if (s->sets.size() == 1 && !s->is_unified) {
 				tmp = result->getSet(s->sets.back());
 				if (verbosity_level > 0) {
-					u_fprintf(ux_stderr, "Warning: Set %S (L:%u) has been aliased to %S (L:%u).\n", s->name, s->line, tmp->name, tmp->line);
+					u_fprintf(ux_stderr, "Warning: Set %S (L:%u) has been aliased to %S (L:%u).\n", s->name.c_str(), s->line, tmp->name.c_str(), tmp->line);
 					u_fflush(ux_stderr);
 				}
 				result->set_alias[sh] = tmp->hash;
@@ -1224,7 +1224,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 			}
 			result->addSet(s);
 			if (s->sets.empty() && s->tags.empty() && s->single_tags.empty()) {
-				u_fprintf(ux_stderr, "Error: SET %S declared, but no definitions given, on line %u!\n", s->name, result->lines);
+				u_fprintf(ux_stderr, "Error: SET %S declared, but no definitions given, on line %u!\n", s->name.c_str(), result->lines);
 				CG3Quit(1);
 			}
 			result->lines += SKIPWS(p, ';');
@@ -1830,4 +1830,6 @@ void TextualParser::addRuleToGrammar(Rule *rule) {
 		u_fprintf(ux_stderr, "Error: Rule definition attempted outside a section on line %u!\n", result->lines);
 		CG3Quit(1);
 	}
+}
+
 }

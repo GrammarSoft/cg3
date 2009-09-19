@@ -27,7 +27,7 @@
 #include "SingleWindow.h"
 #include "Reading.h"
 
-using namespace CG3;
+namespace CG3 {
 using namespace CG3::Strings;
 
 Reading *GrammarApplicator::initEmptyCohort(Cohort &cCohort) {
@@ -391,4 +391,6 @@ CGCMD_EXIT:
 	}
 
 	return 0;
+}
+
 }

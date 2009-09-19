@@ -30,7 +30,7 @@ namespace CG3 {
 	class Anchor {
 	public:
 		uint32_t line;
-		UChar *name;
+		UString name;
 
 		Anchor();
 		~Anchor();

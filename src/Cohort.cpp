@@ -30,7 +30,7 @@
 #include "Window.h"
 #include "SingleWindow.h"
 
-using namespace CG3;
+namespace CG3 {
 
 Cohort::Cohort(SingleWindow *p) :
 num_is_current(false),
@@ -197,4 +197,6 @@ void Cohort::remRelation(uint32_t rel, uint32_t cohort) {
 	if (relations.find(rel) != relations.end()) {
 		relations.find(rel)->second.erase(cohort);
 	}
+}
+
 }

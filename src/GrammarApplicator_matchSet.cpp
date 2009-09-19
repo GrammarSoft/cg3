@@ -28,7 +28,7 @@
 #include "Reading.h"
 #include "ContextualTest.h"
 
-using namespace CG3;
+namespace CG3 {
 using namespace CG3::Strings;
 
 inline bool uint32HashSet_Intersects(const uint32HashSet &a, const uint32HashSet &b) {
@@ -611,4 +611,6 @@ bool GrammarApplicator::doesSetMatchCohortCareful(const Cohort &cohort, const ui
 		}
 	}
 	return retval;
+}
+
 }

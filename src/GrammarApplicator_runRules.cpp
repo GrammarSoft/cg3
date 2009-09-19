@@ -28,7 +28,7 @@
 #include "Reading.h"
 #include "ContextualTest.h"
 
-using namespace CG3;
+namespace CG3 {
 using namespace CG3::Strings;
 
 void GrammarApplicator::updateRuleToCohorts(Cohort& c, const uint32_t& rsit) {
@@ -842,4 +842,6 @@ label_runGrammarOnWindow_begin:
 	}
 
 	return 0;
+}
+
 }

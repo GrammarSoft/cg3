@@ -22,7 +22,7 @@
 #include "CompositeTag.h"
 #include "Tag.h"
 
-using namespace CG3;
+namespace CG3 {
 
 CompositeTag::CompositeTag() :
 is_used(false),
@@ -58,4 +58,6 @@ void CompositeTag::markUsed() {
 	foreach (TagSet, tags_set, itag, itag_end) {
 		(*itag)->markUsed();
 	}
+}
+
 }

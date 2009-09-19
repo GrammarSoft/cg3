@@ -21,7 +21,7 @@
 
 #include "Reading.h"
 
-using namespace CG3;
+namespace CG3 {
 
 Reading::Reading(Cohort *p) :
 mapped(false),
@@ -102,4 +102,6 @@ void Reading::duplicateFrom(Reading &r) {
 
 bool Reading::cmp_number(Reading *a, Reading *b) {
 	return a->number < b->number;
+}
+
 }

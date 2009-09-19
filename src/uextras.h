@@ -25,6 +25,8 @@
 
 #include "stdafx.h"
 
+namespace CG3 {
+
 bool ux_isEmpty(const UChar *text);
 
 bool ux_trim(UChar *totrim);
@@ -40,5 +42,7 @@ UChar *ux_append(UChar *target, const UChar data);
 UChar *ux_substr(UChar *string, int start, int end);
 
 char *ux_dirname(const char *in);
+
+}
 
 #endif

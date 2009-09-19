@@ -24,7 +24,7 @@
 #include "ContextualTest.h"
 #include "Anchor.h"
 
-using namespace CG3;
+namespace CG3 {
 
 Grammar::Grammar() {
 	has_dep = false;
@@ -121,18 +121,18 @@ void Grammar::addPreferredTarget(UChar *to) {
 	preferred_targets.push_back(tag->hash);
 }
 void Grammar::addSet(Set *to) {
-	if (!delimiters && u_strcmp(to->name, stringbits[S_DELIMITSET]) == 0) {
+	if (!delimiters && u_strcmp(to->name.c_str(), stringbits[S_DELIMITSET]) == 0) {
 		delimiters = to;
 	}
-	else if (!soft_delimiters && u_strcmp(to->name, stringbits[S_SOFTDELIMITSET]) == 0) {
+	else if (!soft_delimiters && u_strcmp(to->name.c_str(), stringbits[S_SOFTDELIMITSET]) == 0) {
 		soft_delimiters = to;
 	}
 	if (to->name[0] == 'T' && to->name[1] == ':') {
-		u_fprintf(ux_stderr, "Warning: Set name %S looks like a misattempt of template usage on line %u.\n", to->name, to->line);
+		u_fprintf(ux_stderr, "Warning: Set name %S looks like a misattempt of template usage on line %u.\n", to->name.c_str(), to->line);
 	}
 	uint32_t chash = to->rehash();
 	if (to->name[0] != '_' || to->name[1] != 'G' || to->name[2] != '_') {
-		uint32_t nhash = hash_sdbm_uchar(to->name);
+		uint32_t nhash = hash_sdbm_uchar(to->name.c_str());
 		if (set_name_seeds.find(nhash) != set_name_seeds.end()) {
 			nhash += set_name_seeds[nhash];
 		}
@@ -141,14 +141,14 @@ void Grammar::addSet(Set *to) {
 		}
 		else if (chash != sets_by_contents.find(sets_by_name.find(nhash)->second)->second->hash) {
 			Set *a = sets_by_contents.find(sets_by_name.find(nhash)->second)->second;
-			if (u_strcmp(a->name, to->name) == 0) {
-				u_fprintf(ux_stderr, "Error: Set %S already defined at line %u. Redefinition attempted at line %u!\n", a->name, a->line, to->line);
+			if (a->name == to->name) {
+				u_fprintf(ux_stderr, "Error: Set %S already defined at line %u. Redefinition attempted at line %u!\n", a->name.c_str(), a->line, to->line);
 				CG3Quit(1);
 			}
 			else {
 				for (uint32_t seed=0 ; seed<1000 ; seed++) {
 					if (sets_by_name.find(nhash+seed) == sets_by_name.end()) {
-						u_fprintf(ux_stderr, "Warning: Set %S got hash seed %u.\n", to->name, seed);
+						u_fprintf(ux_stderr, "Warning: Set %S got hash seed %u.\n", to->name.c_str(), seed);
 						u_fflush(ux_stderr);
 						set_name_seeds[nhash] = seed;
 						sets_by_name[nhash+seed] = chash;
@@ -166,7 +166,7 @@ void Grammar::addSet(Set *to) {
 		if (a->is_special != to->is_special || a->is_unified != to->is_unified || a->is_child_unified != to->is_child_unified
 		|| a->set_ops.size() != to->set_ops.size() || a->sets.size() != to->sets.size()
 		|| a->single_tags.size() != to->single_tags.size() || a->tags.size() != to->tags.size()) {
-			u_fprintf(ux_stderr, "Error: Content hash collision between set %S line %u and %S line %u!\n", a->name, a->line, to->name, to->line);
+			u_fprintf(ux_stderr, "Error: Content hash collision between set %S line %u and %S line %u!\n", a->name.c_str(), a->line, to->name.c_str(), to->line);
 			CG3Quit(1);
 		}
 	}
@@ -436,9 +436,9 @@ void Grammar::reindex(bool unused_sets) {
 	if (unused_sets) {
 		u_fprintf(ux_stdout, "Unused sets:\n");
 		foreach (Setuint32HashMap, sets_by_contents, rset, rset_end) {
-			if (!rset->second->is_used && rset->second->name) {
+			if (!rset->second->is_used && !rset->second->name.empty()) {
 				if (rset->second->name[0] != '_' || rset->second->name[1] != 'G' || rset->second->name[2] != '_') {
-					u_fprintf(ux_stdout, "Line %u set %S\n", rset->second->line, rset->second->name);
+					u_fprintf(ux_stdout, "Line %u set %S\n", rset->second->line, rset->second->name.c_str());
 				}
 			}
 		}
@@ -642,4 +642,6 @@ void Grammar::indexTagToSet(uint32_t t, uint32_t r) {
 		sets_by_tag.insert(p);
 	}
 	sets_by_tag.find(t)->second->insert(r);
+}
+
 }

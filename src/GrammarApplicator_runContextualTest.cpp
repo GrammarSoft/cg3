@@ -28,7 +28,7 @@
 #include "Reading.h"
 #include "ContextualTest.h"
 
-using namespace CG3;
+namespace CG3 {
 
 inline Cohort *GrammarApplicator::runSingleTest(SingleWindow *sWindow, size_t i, const ContextualTest *test, bool *brk, bool *retval, Cohort **deep, Cohort *origin) {
 	if (i >= sWindow->cohorts.size()) {
@@ -611,4 +611,6 @@ Cohort *GrammarApplicator::runRelationTest(SingleWindow *sWindow, const Cohort *
 	}
 
 	return rv;
+}
+
 }

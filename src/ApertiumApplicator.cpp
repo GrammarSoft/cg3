@@ -30,7 +30,7 @@
 
 #define LENGTHOF(array) (sizeof(array)/sizeof((array)[0]))
 
-using namespace CG3;
+namespace CG3 {
 using namespace CG3::Strings;
 
 ApertiumApplicator::ApertiumApplicator(UFILE *ux_err) 
@@ -681,4 +681,6 @@ void ApertiumApplicator::printSingleWindow(SingleWindow *window, UFILE *output) 
 		
 		u_fflush(output); 
 	}
+}
+
 }
