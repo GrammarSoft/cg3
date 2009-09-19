@@ -21,35 +21,32 @@
 
 #include "Anchor.h"
 
-using namespace CG3;
+namespace CG3 {
 
 Anchor::Anchor() :
-line(0),
-name(0)
+line(0)
 {
 	// Nothing in the actual body...
 }
 
 Anchor::~Anchor() {
-	if (name) {
-		delete[] name;
-	}
 }
 
 void Anchor::setName(uint32_t to) {
 	if (!to) {
 		to = static_cast<uint32_t>(rand());
 	}
-	name = new UChar[32];
-	memset(name, 0, 32);
-	u_sprintf(name, "_G_%u_%u_", line, to);
+	name.resize(26);
+	size_t n = u_sprintf(&name[0], "_G_%u_%u_", line, to);
+	name.resize(n);
 }
 void Anchor::setName(const UChar *to) {
 	if (to) {
-		name = new UChar[u_strlen(to)+1];
-		u_strcpy(name, to);
+		name = to;
 	}
 	else {
 		setName(static_cast<uint32_t>(rand()));
 	}
+}
+
 }

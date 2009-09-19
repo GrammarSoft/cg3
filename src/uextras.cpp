@@ -29,7 +29,7 @@
 #include "Strings.h"
 #include "inlines.h"
 
-using namespace CG3;
+namespace CG3 {
 using namespace CG3::Strings;
 
 // ToDo: Make all of ux_* inline to get around possible memory errors.
@@ -251,4 +251,6 @@ char *ux_dirname(const char *in) {
 		tmp[strlen(tmp)] = '/';
 	}
 	return tmp;
+}
+
 }

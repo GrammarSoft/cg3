@@ -23,7 +23,7 @@
 #include "GrammarApplicator.h"
 #include "Window.h"
 
-using namespace CG3;
+namespace CG3 {
 
 SingleWindow::SingleWindow(Window *p) :
 number(0),
@@ -86,4 +86,6 @@ void SingleWindow::appendCohort(Cohort *cohort) {
 	if (cohort->local_number == 0) {
 		parent->cohort_map[0] = cohort;
 	}
+}
+
 }

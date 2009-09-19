@@ -24,7 +24,7 @@
 #include "Grammar.h"
 #include "ContextualTest.h"
 
-using namespace CG3;
+namespace CG3 {
 using namespace CG3::Strings;
 
 GrammarWriter::GrammarWriter(Grammar &res, UFILE *ux_err) {
@@ -43,7 +43,7 @@ void GrammarWriter::printSet(UFILE *output, const Set &curset) {
 			u_fprintf(output, "#List Matched: %u ; NoMatch: %u ; TotalTime: %f\n", curset.num_match, curset.num_fail, curset.total_time);
 		}
 		used_sets.insert(curset.hash);
-		u_fprintf(output, "LIST %S = ", curset.name);
+		u_fprintf(output, "LIST %S = ", curset.name.c_str());
 		TagHashSet::const_iterator tomp_iter;
 		for (tomp_iter = curset.single_tags.begin() ; tomp_iter != curset.single_tags.end() ; tomp_iter++) {
 			printTag(output, **tomp_iter);
@@ -76,10 +76,10 @@ void GrammarWriter::printSet(UFILE *output, const Set &curset) {
 		if (statistics) {
 			u_fprintf(output, "#Set Matched: %u ; NoMatch: %u ; TotalTime: %f\n", curset.num_match, curset.num_fail, curset.total_time);
 		}
-		u_fprintf(output, "SET %S = ", curset.name);
-		u_fprintf(output, "%S ", grammar->sets_by_contents.find(curset.sets.at(0))->second->name);
+		u_fprintf(output, "SET %S = ", curset.name.c_str());
+		u_fprintf(output, "%S ", grammar->sets_by_contents.find(curset.sets.at(0))->second->name.c_str());
 		for (uint32_t i=0;i<curset.sets.size()-1;i++) {
-			u_fprintf(output, "%S %S ", stringbits[curset.set_ops.at(i)], grammar->sets_by_contents.find(curset.sets.at(i+1))->second->name);
+			u_fprintf(output, "%S %S ", stringbits[curset.set_ops.at(i)], grammar->sets_by_contents.find(curset.sets.at(i+1))->second->name.c_str());
 		}
 		u_fprintf(output, " ;\n\n");
 	}
@@ -227,7 +227,7 @@ void GrammarWriter::printRule(UFILE *to, const Rule &rule) {
 	}
 
 	if (rule.target) {
-		u_fprintf(to, "%S ", grammar->sets_by_contents.find(rule.target)->second->name);
+		u_fprintf(to, "%S ", grammar->sets_by_contents.find(rule.target)->second->name.c_str());
 	}
 
 	ContextualTest *test = rule.test_head;
@@ -346,13 +346,13 @@ void GrammarWriter::printContextualTest(UFILE *to, const ContextualTest &test) {
 		u_fprintf(to, " ");
 
 		if (test.target) {
-			u_fprintf(to, "%S ", grammar->sets_by_contents.find(test.target)->second->name);
+			u_fprintf(to, "%S ", grammar->sets_by_contents.find(test.target)->second->name.c_str());
 		}
 		if (test.cbarrier) {
-			u_fprintf(to, "CBARRIER %S ", grammar->sets_by_contents.find(test.cbarrier)->second->name);
+			u_fprintf(to, "CBARRIER %S ", grammar->sets_by_contents.find(test.cbarrier)->second->name.c_str());
 		}
 		if (test.barrier) {
-			u_fprintf(to, "BARRIER %S ", grammar->sets_by_contents.find(test.barrier)->second->name);
+			u_fprintf(to, "BARRIER %S ", grammar->sets_by_contents.find(test.barrier)->second->name.c_str());
 		}
 	}
 
@@ -389,4 +389,6 @@ void GrammarWriter::printTag(UFILE *to, const Tag &tag) {
 	if (tag.type & T_VARSTRING) {
 		u_fprintf(to, "v");
 	}
+}
+
 }

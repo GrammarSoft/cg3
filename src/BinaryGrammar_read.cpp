@@ -25,7 +25,7 @@
 #include "ContextualTest.h"
 #include "version.h"
 
-using namespace CG3;
+namespace CG3 {
 using namespace CG3::Strings;
 
 int BinaryGrammar::readBinaryGrammar(FILE *input) {
@@ -425,4 +425,6 @@ void BinaryGrammar::readContextualTest(ContextualTest *t, FILE *input) {
 	else {
 		t->linked = 0;
 	}
+}
+
 }

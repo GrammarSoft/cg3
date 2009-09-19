@@ -22,7 +22,7 @@
 #include "Window.h"
 #include "SingleWindow.h"
 
-using namespace CG3;
+namespace CG3 {
 
 Window::Window(GrammarApplicator *p) {
 	parent = p;
@@ -84,4 +84,6 @@ void Window::shuffleWindowsDown() {
 		current = next.front();
 		next.pop_front();
 	}
+}
+
 }
