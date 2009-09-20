@@ -196,14 +196,14 @@ inline void BACKTONL(UChar *& p) {
 	while (*p && !ISNL(*p) && (*p != ';' || ISESC(p))) {
 		p--;
 	}
-	p++;
+	++p;
 }
 
 inline uint32_t SKIPLN(UChar *& p) {
 	while (*p && !ISNL(*p)) {
-		p++;
+		++p;
 	}
-	p++;
+	++p;
 	return 1;
 }
 
@@ -211,7 +211,7 @@ inline uint32_t SKIPWS(UChar *& p, const UChar a = 0, const UChar b = 0) {
 	uint32_t s = 0;
 	while (*p && *p != a && *p != b) {
 		if (ISNL(*p)) {
-			s++;
+			++s;
 		}
 		if (*p == '#' && !ISESC(p)) {
 			s += SKIPLN(p);
@@ -220,7 +220,7 @@ inline uint32_t SKIPWS(UChar *& p, const UChar a = 0, const UChar b = 0) {
 		if (!ISSPACE(*p)) {
 			break;
 		}
-		p++;
+		++p;
 	}
 	return s;
 }
@@ -233,8 +233,8 @@ inline uint32_t SKIPTOWS(UChar *& p, const UChar a = 0, const bool allowhash = f
 			p--;
 		}
 		if (ISNL(*p)) {
-			s++;
-			p++;
+			++s;
+			++p;
 		}
 		if (*p == ';' && !ISESC(p)) {
 			break;
@@ -242,7 +242,7 @@ inline uint32_t SKIPTOWS(UChar *& p, const UChar a = 0, const bool allowhash = f
 		if (*p == a && !ISESC(p)) {
 			break;
 		}
-		p++;
+		++p;
 	}
 	return s;
 }
@@ -251,9 +251,9 @@ inline uint32_t SKIPTO(UChar *& p, const UChar a) {
 	uint32_t s = 0;
 	while (*p && (*p != a || ISESC(p))) {
 		if (ISNL(*p)) {
-			s++;
+			++s;
 		}
-		p++;
+		++p;
 	}
 	return s;
 }
@@ -264,7 +264,7 @@ inline uint32_t SKIPTO_NOSPAN(UChar *& p, const UChar a) {
 		if (ISNL(*p)) {
 			break;
 		}
-		p++;
+		++p;
 	}
 	return s;
 }

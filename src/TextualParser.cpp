@@ -54,7 +54,7 @@ int TextualParser::parseTagList(UChar *& p, Set *s, const bool isinline) {
 		result->lines += SKIPWS(p, ';', ')');
 		if (*p && *p != ';' && *p != ')') {
 			if (*p == '(') {
-				p++;
+				++p;
 				TagVector tags;
 
 				while (*p && *p != ';' && *p != ')') {
@@ -80,7 +80,7 @@ int TextualParser::parseTagList(UChar *& p, Set *s, const bool isinline) {
 					u_fprintf(ux_stderr, "Error: Missing closing ) on line %u!\n", result->lines);
 					CG3Quit(1);
 				}
-				p++;
+				++p;
 
 				if (tags.size() == 1) {
 					result->addTagToSet(tags.back(), s);
@@ -118,7 +118,7 @@ int TextualParser::parseTagList(UChar *& p, Set *s, const bool isinline) {
 			u_fprintf(ux_stderr, "Error: Missing closing ) on line %u!\n", result->lines);
 			CG3Quit(1);
 		}
-		p++;
+		++p;
 	}
 	return 0;
 }
@@ -133,7 +133,7 @@ Set *TextualParser::parseSetInline(UChar *& p, Set *s) {
 		if (*p && *p != ';' && *p != ')') {
 			if (!wantop) {
 				if (*p == '(') {
-					p++;
+					++p;
 					Set *set_c = result->allocateSet();
 					set_c->line = result->lines;
 					set_c->setName(sets_counter++);
@@ -163,7 +163,7 @@ Set *TextualParser::parseSetInline(UChar *& p, Set *s) {
 						u_fprintf(ux_stderr, "Error: Missing closing ) on line %u!\n", result->lines);
 						CG3Quit(1);
 					}
-					p++;
+					++p;
 
 					if (tags.size() == 1) {
 						result->addTagToSet(tags.back(), set_c);
@@ -281,94 +281,89 @@ int TextualParser::parseContextualTestPosition(UChar *& p, ContextualTest& t) {
 		}
 		if (*p == '*') {
 			t.pos |= POS_SCANFIRST;
-			p++;
+			++p;
 		}
 		if (*p == 'C') {
 			t.pos |= POS_CAREFUL;
-			p++;
+			++p;
 		}
 		if (*p == 'c') {
 			t.pos |= POS_DEP_CHILD;
-			p++;
+			++p;
 		}
 		if (*p == 'p') {
 			t.pos |= POS_DEP_PARENT;
-			p++;
+			++p;
 		}
 		if (*p == 's') {
 			t.pos |= POS_DEP_SIBLING;
-			p++;
+			++p;
 		}
 		if (*p == 'S') {
 			t.pos |= POS_DEP_SELF;
-			p++;
+			++p;
 		}
 		if (*p == '<') {
 			t.pos |= POS_SPAN_LEFT;
-			p++;
+			++p;
 		}
 		if (*p == '>') {
 			t.pos |= POS_SPAN_RIGHT;
-			p++;
+			++p;
 		}
 		if (*p == 'W') {
 			t.pos |= POS_SPAN_BOTH;
-			p++;
+			++p;
 		}
 		if (*p == '@') {
 			t.pos |= POS_ABSOLUTE;
-			p++;
+			++p;
 		}
 		if (*p == 'O') {
 			t.pos |= POS_NO_PASS_ORIGIN;
-			p++;
+			++p;
 		}
 		if (*p == 'o') {
 			t.pos |= POS_PASS_ORIGIN;
-			p++;
+			++p;
 		}
 		if (*p == 'L') {
 			t.pos |= POS_LEFT_PAR;
-			p++;
+			++p;
 		}
 		if (*p == 'R') {
 			t.pos |= POS_RIGHT_PAR;
-			p++;
+			++p;
 		}
 		if (*p == 'X') {
 			t.pos |= POS_MARK_SET;
-			p++;
+			++p;
 		}
 		if (*p == 'x') {
 			t.pos |= POS_MARK_JUMP;
-			p++;
+			++p;
 		}
 		if (*p == 'D') {
 			t.pos |= POS_LOOK_DELETED;
-			p++;
+			++p;
 		}
 		if (*p == 'd') {
 			t.pos |= POS_LOOK_DELAYED;
-			p++;
+			++p;
 		}
 		if (*p == '?') {
 			t.pos |= POS_NONE;
-			p++;
+			++p;
 		}
 		if (*p == '-') {
 			negative = true;
-			p++;
+			++p;
 		}
 		if (u_isdigit(*p)) {
-			int32_t retval = 0;
-			UChar tmp = p[10];
-			p[10] = 0;
-			if ((retval = u_sscanf(p, "%d", &(t.offset))) == EOF) {
-				u_fprintf(ux_stderr, "Error: Invalid position on line %u!\n", result->lines);
-				CG3Quit(1);
+			while (*p >= '0' && *p <= '9') {
+				t.offset = (t.offset*10) + (*p - '0');
+				++p;
 			}
-			p[10] = tmp;
-			p += retval;
 		}
 		if (*p == 'r' && *(p+1) == ':') {
 			t.pos |= POS_RELATION;
@@ -472,9 +467,9 @@ int TextualParser::parseContextualTestList(UChar *& p, Rule *rule, ContextualTes
 				u_fprintf(ux_stderr, "Error: Expected '(' but found '%C' on line %u!\n", *p, result->lines);
 				CG3Quit(1);
 			}
-			p++;
+			++p;
 			parseContextualTestList(p, rule, 0, 0, ored);
-			p++;
+			++p;
 			t->ors.push_back(ored);
 			result->lines += SKIPWS(p);
 			if (u_strncasecmp(p, stringbits[S_OR].getTerminatedBuffer(), stringbits[S_OR].length(), U_FOLD_CASE_DEFAULT) == 0) {
@@ -487,14 +482,14 @@ int TextualParser::parseContextualTestList(UChar *& p, Rule *rule, ContextualTes
 		}
 	}
 	else if (gbuffers[0][0] == '[') {
-		p++;
+		++p;
 		result->lines += SKIPWS(p);
 		Set *s = parseSetInlineWrapper(p);
 		t->offset = 1;
 		t->target = s->hash;
 		result->lines += SKIPWS(p);
 		while (*p == ',') {
-			p++;
+			++p;
 			result->lines += SKIPWS(p);
 			ContextualTest *lnk = t->allocateContextualTest();
 			Set *s = parseSetInlineWrapper(p);
@@ -508,7 +503,7 @@ int TextualParser::parseContextualTestList(UChar *& p, Rule *rule, ContextualTes
 			u_fprintf(ux_stderr, "Error: Expected ']' but found '%C' on line %u!\n", *p, result->lines);
 			CG3Quit(1);
 		}
-		p++;
+		++p;
 	}
 	else if (gbuffers[0][0] == 'T' && gbuffers[0][1] == ':') {
 		goto label_parseTemplateRef;
@@ -646,7 +641,7 @@ int TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 	result->lines += SKIPWS(p);
 
 	if (*p == ':') {
-		p++;
+		++p;
 		UChar *n = p;
 		result->lines += SKIPTOWS(n, '(');
 		ptrdiff_t c = n - p;
@@ -736,7 +731,7 @@ int TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 			u_fprintf(ux_stderr, "Error: Tag list for %S must be in () on line %u!\n", keywords[key].getTerminatedBuffer(), result->lines);
 			CG3Quit(1);
 		}
-		p++;
+		++p;
 		result->lines += SKIPWS(p, ';', ')');
 		while (*p && *p != ';' && *p != ')') {
 			UChar *n = p;
@@ -757,7 +752,7 @@ int TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 			u_fprintf(ux_stderr, "Error: Empty removal tag list on line %u!\n", result->lines);
 			CG3Quit(1);
 		}
-		p++;
+		++p;
 	}
 
 	result->lines += SKIPWS(p);
@@ -767,7 +762,7 @@ int TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 			u_fprintf(ux_stderr, "Error: Tag list for %S must be in () on line %u!\n", keywords[key].getTerminatedBuffer(), result->lines);
 			CG3Quit(1);
 		}
-		p++;
+		++p;
 		result->lines += SKIPWS(p, ';', ')');
 		while (*p && *p != ';' && *p != ')') {
 			UChar *n = p;
@@ -788,7 +783,7 @@ int TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 			u_fprintf(ux_stderr, "Error: Empty tag list on line %u!\n", result->lines);
 			CG3Quit(1);
 		}
-		p++;
+		++p;
 	}
 
 	result->lines += SKIPWS(p);
@@ -797,7 +792,7 @@ int TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 			u_fprintf(ux_stderr, "Error: Tag list for %S must be in () on line %u!\n", keywords[key].getTerminatedBuffer(), result->lines);
 			CG3Quit(1);
 		}
-		p++;
+		++p;
 		result->lines += SKIPWS(p, ';', ')');
 		while (*p && *p != ';' && *p != ')') {
 			UChar *n = p;
@@ -818,7 +813,7 @@ int TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 			u_fprintf(ux_stderr, "Error: Empty relation tag list on line %u!\n", result->lines);
 			CG3Quit(1);
 		}
-		p++;
+		++p;
 	}
 
 	result->lines += SKIPWS(p);
@@ -837,7 +832,7 @@ int TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 	result->lines += SKIPWS(p);
 
 	while (*p && *p == '(') {
-		p++;
+		++p;
 		result->lines += SKIPWS(p);
 		parseContextualTests(p, rule);
 		result->lines += SKIPWS(p);
@@ -845,7 +840,7 @@ int TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 			u_fprintf(ux_stderr, "Error: Missing closing ) on line %u!\n", result->lines);
 			CG3Quit(1);
 		}
-		p++;
+		++p;
 		result->lines += SKIPWS(p);
 	}
 
@@ -886,7 +881,7 @@ int TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 		}
 		result->lines += SKIPWS(p);
 		while (*p && *p == '(') {
-			p++;
+			++p;
 			result->lines += SKIPWS(p);
 			parseContextualDependencyTests(p, rule);
 			result->lines += SKIPWS(p);
@@ -894,7 +889,7 @@ int TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 				u_fprintf(ux_stderr, "Error: Missing closing ) on line %u!\n", result->lines);
 				CG3Quit(1);
 			}
-			p++;
+			++p;
 			result->lines += SKIPWS(p);
 		}
 		if (!rule->dep_test_head) {
@@ -951,7 +946,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 				u_fprintf(ux_stderr, "Error: Encountered a %C before the expected = on line %u!\n", *p, result->lines);
 				CG3Quit(1);
 			}
-			p++;
+			++p;
 			parseTagList(p, result->delimiters);
 			result->addSet(result->delimiters);
 			if (result->delimiters->tags.empty() && result->delimiters->single_tags.empty()) {
@@ -984,7 +979,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 				u_fprintf(ux_stderr, "Error: Encountered a %C before the expected = on line %u!\n", *p, result->lines);
 				CG3Quit(1);
 			}
-			p++;
+			++p;
 			parseTagList(p, result->soft_delimiters);
 			result->addSet(result->soft_delimiters);
 			if (result->soft_delimiters->tags.empty() && result->soft_delimiters->single_tags.empty()) {
@@ -1017,7 +1012,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 				u_fprintf(ux_stderr, "Error: Encountered a %C before the expected = on line %u!\n", *p, result->lines);
 				CG3Quit(1);
 			}
-			p++;
+			++p;
 			result->lines += SKIPWS(p);
 
 			UChar *n = p;
@@ -1052,7 +1047,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 				u_fprintf(ux_stderr, "Error: Encountered a %C before the expected = on line %u!\n", *p, result->lines);
 				CG3Quit(1);
 			}
-			p++;
+			++p;
 			result->lines += SKIPWS(p);
 
 			while (*p && *p != ';') {
@@ -1154,7 +1149,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 				u_fprintf(ux_stderr, "Error: Encountered a %C before the expected = on line %u!\n", *p, result->lines);
 				CG3Quit(1);
 			}
-			p++;
+			++p;
 			parseTagList(p, s);
 			s->rehash();
 			Set *tmp = result->getSet(s->hash);
@@ -1207,7 +1202,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 				u_fprintf(ux_stderr, "Error: Encountered a %C before the expected = on line %u!\n", *p, result->lines);
 				CG3Quit(1);
 			}
-			p++;
+			++p;
 			parseSetInline(p, s);
 			s->rehash();
 			Set *tmp = result->getSet(s->hash);
@@ -1589,7 +1584,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 				u_fprintf(ux_stderr, "Error: Encountered a %C before the expected = on line %u!\n", *p, result->lines);
 				CG3Quit(1);
 			}
-			p++;
+			++p;
 
 			parseContextualTestList(p, 0, 0, 0, t);
 
@@ -1610,7 +1605,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 				u_fprintf(ux_stderr, "Error: Encountered a %C before the expected = on line %u!\n", *p, result->lines);
 				CG3Quit(1);
 			}
-			p++;
+			++p;
 			result->lines += SKIPWS(p);
 
 			while (*p && *p != ';') {
@@ -1667,7 +1662,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 					u_fprintf(ux_stderr, "Error: Encountered %C before the expected ) on line %u!\n", *p, result->lines);
 					CG3Quit(1);
 				}
-				p++;
+				++p;
 				result->lines += SKIPWS(p);
 
 				if (left && right) {
@@ -1693,13 +1688,13 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 					break;
 				}
 			}
-			p++;
+			++p;
 		}
 		// No keyword found at this position, skip a character.
 		else {
 			if (*p == ';' || *p == '"' || *p == '<') {
 				if (*p == '"') {
-					p++;
+					++p;
 					result->lines += SKIPTO_NOSPAN(p, '"');
 					if (*p != '"') {
 						u_fprintf(ux_stderr, "Error: Missing closing \" on line %u!\n", result->lines);
@@ -1713,7 +1708,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 				u_fprintf(ux_stderr, "Error: Garbage data '%S...' encountered on line %u!\n", p, result->lines);
 				CG3Quit(1);
 			}
-			p++;
+			++p;
 		}
 	}
 	
