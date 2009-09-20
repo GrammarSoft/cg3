@@ -25,7 +25,6 @@
 #include "ContextualTest.h"
 
 namespace CG3 {
-using namespace CG3::Strings;
 
 GrammarWriter::GrammarWriter(Grammar &res, UFILE *ux_err) {
 	statistics = false;
@@ -79,7 +78,7 @@ void GrammarWriter::printSet(UFILE *output, const Set &curset) {
 		u_fprintf(output, "SET %S = ", curset.name.c_str());
 		u_fprintf(output, "%S ", grammar->sets_by_contents.find(curset.sets.at(0))->second->name.c_str());
 		for (uint32_t i=0;i<curset.sets.size()-1;i++) {
-			u_fprintf(output, "%S %S ", stringbits[curset.set_ops.at(i)], grammar->sets_by_contents.find(curset.sets.at(i+1))->second->name.c_str());
+			u_fprintf(output, "%S %S ", stringbits[curset.set_ops.at(i)].getTerminatedBuffer(), grammar->sets_by_contents.find(curset.sets.at(i+1))->second->name.c_str());
 		}
 		u_fprintf(output, " ;\n\n");
 	}
@@ -200,12 +199,18 @@ void GrammarWriter::printRule(UFILE *to, const Rule &rule) {
 		u_fprintf(to, " ");
 	}
 
-	u_fprintf(to, "%S", keywords[rule.type]);
+	u_fprintf(to, "%S", keywords[rule.type].getTerminatedBuffer());
 
 	if (rule.name && !(rule.name[0] == '_' && rule.name[1] == 'R' && rule.name[2] == '_')) {
 		u_fprintf(to, ":%S", rule.name);
 	}
 	u_fprintf(to, " ");
+
+	for (uint32_t i=0 ; i<FLAGS_COUNT ; i++) {
+		if (rule.flags & (1 << i)) {
+			u_fprintf(to, "%S", flags[i].getTerminatedBuffer());
+		}
+	}
 
 	if (!rule.sublist.empty()) {
 		uint32List::const_iterator iter;

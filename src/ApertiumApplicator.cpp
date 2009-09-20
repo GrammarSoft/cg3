@@ -31,7 +31,6 @@
 #define LENGTHOF(array) (sizeof(array)/sizeof((array)[0]))
 
 namespace CG3 {
-using namespace CG3::Strings;
 
 ApertiumApplicator::ApertiumApplicator(UFILE *ux_err) 
 	: GrammarApplicator(ux_err)
@@ -149,8 +148,8 @@ int ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 
 	uint32_t resetAfter = ((num_windows+4)*2+1);
 	
-	begintag = addTag(stringbits[S_BEGINTAG])->hash; // Beginning of sentence tag
-	endtag = addTag(stringbits[S_ENDTAG])->hash; // End of sentence tag
+	begintag = addTag(stringbits[S_BEGINTAG].getTerminatedBuffer())->hash; // Beginning of sentence tag
+	endtag = addTag(stringbits[S_ENDTAG].getTerminatedBuffer())->hash; // End of sentence tag
 
 	SingleWindow *cSWindow = 0; 	// Current single window (Cohort frame)
 	Cohort *cCohort = 0; 		// Current cohort

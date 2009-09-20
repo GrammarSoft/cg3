@@ -24,7 +24,6 @@
 #include "Strings.h"
 
 namespace CG3 {
-using namespace CG3::Strings;
 
 ContextualTest::ContextualTest() :
 is_used(false),
