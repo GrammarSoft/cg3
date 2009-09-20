@@ -121,10 +121,10 @@ void Grammar::addPreferredTarget(UChar *to) {
 	preferred_targets.push_back(tag->hash);
 }
 void Grammar::addSet(Set *to) {
-	if (!delimiters && u_strcmp(to->name.c_str(), stringbits[S_DELIMITSET]) == 0) {
+	if (!delimiters && u_strcmp(to->name.c_str(), stringbits[S_DELIMITSET].getTerminatedBuffer()) == 0) {
 		delimiters = to;
 	}
-	else if (!soft_delimiters && u_strcmp(to->name.c_str(), stringbits[S_SOFTDELIMITSET]) == 0) {
+	else if (!soft_delimiters && u_strcmp(to->name.c_str(), stringbits[S_SOFTDELIMITSET].getTerminatedBuffer()) == 0) {
 		soft_delimiters = to;
 	}
 	if (to->name[0] == 'T' && to->name[1] == ':') {

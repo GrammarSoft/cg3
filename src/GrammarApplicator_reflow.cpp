@@ -28,7 +28,6 @@
 #include "Reading.h"
 
 namespace CG3 {
-using namespace CG3::Strings;
 
 bool GrammarApplicator::wouldParentChildLoop(Cohort *parent, Cohort *child) {
 	bool retval = false;
@@ -217,26 +216,26 @@ void GrammarApplicator::addTagToReading(Reading &reading, uint32_t utag, bool re
 		UnicodeString tmp(tag->tag);
 		// Replace $1-$9 with their respective match groups
 		for (size_t i=0 ; i<regexgrps.size()-1 ; ++i) {
-			tmp.findAndReplace(stringbits[S_VS1+i], regexgrps[1+i]);
+			tmp.findAndReplace(stringbits[S_VS1+i].getTerminatedBuffer(), regexgrps[1+i]);
 		}
 		// Handle %U %u %L %l markers.
 		bool found;
 		do {
 			found = false;
 			int32_t pos = -1, mpos = -1;
-			if ((pos = tmp.lastIndexOf(stringbits[S_VSu], stringbit_lengths[S_VSu], 0)) != -1) {
+			if ((pos = tmp.lastIndexOf(stringbits[S_VSu].getTerminatedBuffer(), stringbits[S_VSu].length(), 0)) != -1) {
 				found = true;
 				mpos = std::max(mpos, pos);
 			}
-			if ((pos = tmp.lastIndexOf(stringbits[S_VSU], stringbit_lengths[S_VSU], mpos)) != -1) {
+			if ((pos = tmp.lastIndexOf(stringbits[S_VSU].getTerminatedBuffer(), stringbits[S_VSU].length(), mpos)) != -1) {
 				found = true;
 				mpos = std::max(mpos, pos);
 			}
-			if ((pos = tmp.lastIndexOf(stringbits[S_VSl], stringbit_lengths[S_VSl], mpos)) != -1) {
+			if ((pos = tmp.lastIndexOf(stringbits[S_VSl].getTerminatedBuffer(), stringbits[S_VSl].length(), mpos)) != -1) {
 				found = true;
 				mpos = std::max(mpos, pos);
 			}
-			if ((pos = tmp.lastIndexOf(stringbits[S_VSL], stringbit_lengths[S_VSL], mpos)) != -1) {
+			if ((pos = tmp.lastIndexOf(stringbits[S_VSL].getTerminatedBuffer(), stringbits[S_VSL].length(), mpos)) != -1) {
 				found = true;
 				mpos = std::max(mpos, pos);
 			}

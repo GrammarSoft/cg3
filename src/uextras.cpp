@@ -30,7 +30,6 @@
 #include "inlines.h"
 
 namespace CG3 {
-using namespace CG3::Strings;
 
 // ToDo: Make all of ux_* inline to get around possible memory errors.
 
@@ -109,22 +108,22 @@ bool ux_packWhitespace(UChar *totrim) {
 
 int ux_isSetOp(const UChar *it) {
 	int retval = S_IGNORE;
-	if (u_strcasecmp(it, stringbits[S_OR], 0) == 0 || u_strcmp(it, stringbits[S_PIPE]) == 0) {
+	if (u_strcasecmp(it, stringbits[S_OR].getTerminatedBuffer(), 0) == 0 || u_strcmp(it, stringbits[S_PIPE].getTerminatedBuffer()) == 0) {
 		retval = S_OR;
 	}
-	else if (u_strcmp(it, stringbits[S_PLUS]) == 0) {
+	else if (u_strcmp(it, stringbits[S_PLUS].getTerminatedBuffer()) == 0) {
 		retval = S_PLUS;
 	}
-	else if (u_strcmp(it, stringbits[S_MINUS]) == 0) {
+	else if (u_strcmp(it, stringbits[S_MINUS].getTerminatedBuffer()) == 0) {
 		retval = S_MINUS;
 	}
-	else if (u_strcmp(it, stringbits[S_MULTIPLY]) == 0) {
+	else if (u_strcmp(it, stringbits[S_MULTIPLY].getTerminatedBuffer()) == 0) {
 		retval = S_MULTIPLY;
 	}
-	else if (u_strcmp(it, stringbits[S_FAILFAST]) == 0) {
+	else if (u_strcmp(it, stringbits[S_FAILFAST].getTerminatedBuffer()) == 0) {
 		retval = S_FAILFAST;
 	}
-	else if (u_strcmp(it, stringbits[S_NOT]) == 0) {
+	else if (u_strcmp(it, stringbits[S_NOT].getTerminatedBuffer()) == 0) {
 		retval = S_NOT;
 	}
 	return retval;

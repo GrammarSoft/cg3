@@ -22,252 +22,152 @@
 #include "Strings.h"
 
 namespace CG3 {
-	namespace Strings {
-		UChar *keywords[KEYWORD_COUNT];
-		uint32_t keyword_lengths[KEYWORD_COUNT];
-		UChar *stringbits[STRINGS_COUNT];
-		uint32_t stringbit_lengths[STRINGS_COUNT];
-		UChar *flags[FLAGS_COUNT];
-		uint32_t flag_lengths[FLAGS_COUNT];
 
-		inline int init_keyword_single(const char *keyword, const uint32_t entry) {
-			if (entry >= KEYWORD_COUNT) {
-				CG3Quit(1); // Out of bounds
-			}
-			UChar *buffer = gbuffers[0];
-			u_memset(buffer, 0, 1024);
-			u_uastrcpy(buffer, keyword);
-			keywords[entry] = new UChar[u_strlen(buffer)+1];
-			u_strcpy(keywords[entry], buffer);
-			keyword_lengths[entry] = u_strlen(keywords[entry]);
-			return 0;
-		}
-		
-		int init_keywords() {
-			free_keywords();
-			init_keyword_single("1f283fc29adb937a892e09bbc124b85c this is a dummy keyword to hold position 0", K_IGNORE);
-			init_keyword_single("SETS",              K_SETS);
-			init_keyword_single("LIST",              K_LIST);
-			init_keyword_single("SET",               K_SET);
-			init_keyword_single("DELIMITERS",        K_DELIMITERS);
-			init_keyword_single("SOFT-DELIMITERS",   K_SOFT_DELIMITERS);
-			init_keyword_single("PREFERRED-TARGETS", K_PREFERRED_TARGETS);
-			init_keyword_single("MAPPING-PREFIX",    K_MAPPING_PREFIX);
-			init_keyword_single("MAPPINGS",          K_MAPPINGS);
-			init_keyword_single("CONSTRAINTS",       K_CONSTRAINTS);
-			init_keyword_single("CORRECTIONS",       K_CORRECTIONS);
-			init_keyword_single("SECTION",           K_SECTION);
-			init_keyword_single("BEFORE-SECTIONS",   K_BEFORE_SECTIONS);
-			init_keyword_single("AFTER-SECTIONS",    K_AFTER_SECTIONS);
-			init_keyword_single("NULL-SECTION",      K_NULL_SECTION);
-			init_keyword_single("ADD",               K_ADD);
-			init_keyword_single("MAP",               K_MAP);
-			init_keyword_single("REPLACE",           K_REPLACE);
-			init_keyword_single("SELECT",            K_SELECT);
-			init_keyword_single("REMOVE",            K_REMOVE);
-			init_keyword_single("IFF",               K_IFF);
-			init_keyword_single("APPEND",            K_APPEND);
-			init_keyword_single("SUBSTITUTE",        K_SUBSTITUTE);
-			init_keyword_single("START",             K_START);
-			init_keyword_single("END",               K_END);
-			init_keyword_single("ANCHOR",            K_ANCHOR);
-			init_keyword_single("EXECUTE",           K_EXECUTE);
-			init_keyword_single("JUMP",              K_JUMP);
-			init_keyword_single("REMVARIABLE",       K_REMVARIABLE);
-			init_keyword_single("SETVARIABLE",       K_SETVARIABLE);
-			init_keyword_single("DELIMIT",           K_DELIMIT);
-			init_keyword_single("MATCH",             K_MATCH);
-			init_keyword_single("SETPARENT",         K_SETPARENT);
-			init_keyword_single("SETCHILD",          K_SETCHILD);
-			init_keyword_single("SETRELATION",       K_SETRELATION);
-			init_keyword_single("REMRELATION",       K_REMRELATION);
-			init_keyword_single("SETRELATIONS",      K_SETRELATIONS);
-			init_keyword_single("REMRELATIONS",      K_REMRELATIONS);
-			init_keyword_single("TEMPLATE",          K_TEMPLATE);
-			init_keyword_single("MOVE",              K_MOVE);
-			init_keyword_single("MOVE-AFTER",        K_MOVE_AFTER);
-			init_keyword_single("MOVE-BEFORE",       K_MOVE_BEFORE);
-			init_keyword_single("SWITCH",            K_SWITCH);
+UnicodeString flags[FLAGS_COUNT] = {
+	UNICODE_STRING_SIMPLE("NEAREST"),
+	UNICODE_STRING_SIMPLE("ALLOWLOOP"),
+	UNICODE_STRING_SIMPLE("DELAYED"),
+	UNICODE_STRING_SIMPLE("IMMEDIATE"),
+	UNICODE_STRING_SIMPLE("LOOKDELETED"),
+	UNICODE_STRING_SIMPLE("LOOKDELAYED"),
+	UNICODE_STRING_SIMPLE("UNSAFE"),
+	UNICODE_STRING_SIMPLE("SAFE"),
+	UNICODE_STRING_SIMPLE("REMEMBERX"),
+	UNICODE_STRING_SIMPLE("RESETX"),
+	UNICODE_STRING_SIMPLE("KEEPORDER"),
+	UNICODE_STRING_SIMPLE("VARYORDER"),
+	UNICODE_STRING_SIMPLE("ENCL_INNER"),
+	UNICODE_STRING_SIMPLE("ENCL_OUTER"),
+	UNICODE_STRING_SIMPLE("ENCL_FINAL"),
+	UNICODE_STRING_SIMPLE("ENCL_ANY")
+};
 
-			for (unsigned int i=0;i<KEYWORD_COUNT;i++) {
-				if (!keywords[i]) {
-					return i; // One did not get set properly. Returns i to pinpoint which.
-				}
-			}
-			return 0;
-		}
+UnicodeString keywords[KEYWORD_COUNT] = {
+	UNICODE_STRING_SIMPLE("1f283fc29adb937a892e09bbc124b85c this is a dummy keyword to hold position 0"),
+	UNICODE_STRING_SIMPLE("SETS"),
+	UNICODE_STRING_SIMPLE("LIST"),
+	UNICODE_STRING_SIMPLE("SET"),
+	UNICODE_STRING_SIMPLE("DELIMITERS"),
+	UNICODE_STRING_SIMPLE("SOFT-DELIMITERS"),
+	UNICODE_STRING_SIMPLE("PREFERRED-TARGETS"),
+	UNICODE_STRING_SIMPLE("MAPPING-PREFIX"),
+	UNICODE_STRING_SIMPLE("MAPPINGS"),
+	UNICODE_STRING_SIMPLE("CONSTRAINTS"),
+	UNICODE_STRING_SIMPLE("CORRECTIONS"),
+	UNICODE_STRING_SIMPLE("SECTION"),
+	UNICODE_STRING_SIMPLE("BEFORE-SECTIONS"),
+	UNICODE_STRING_SIMPLE("AFTER-SECTIONS"),
+	UNICODE_STRING_SIMPLE("NULL-SECTION"),
+	UNICODE_STRING_SIMPLE("ADD"),
+	UNICODE_STRING_SIMPLE("MAP"),
+	UNICODE_STRING_SIMPLE("REPLACE"),
+	UNICODE_STRING_SIMPLE("SELECT"),
+	UNICODE_STRING_SIMPLE("REMOVE"),
+	UNICODE_STRING_SIMPLE("IFF"),
+	UNICODE_STRING_SIMPLE("APPEND"),
+	UNICODE_STRING_SIMPLE("SUBSTITUTE"),
+	UNICODE_STRING_SIMPLE("START"),
+	UNICODE_STRING_SIMPLE("END"),
+	UNICODE_STRING_SIMPLE("ANCHOR"),
+	UNICODE_STRING_SIMPLE("EXECUTE"),
+	UNICODE_STRING_SIMPLE("JUMP"),
+	UNICODE_STRING_SIMPLE("REMVARIABLE"),
+	UNICODE_STRING_SIMPLE("SETVARIABLE"),
+	UNICODE_STRING_SIMPLE("DELIMIT"),
+	UNICODE_STRING_SIMPLE("MATCH"),
+	UNICODE_STRING_SIMPLE("SETPARENT"),
+	UNICODE_STRING_SIMPLE("SETCHILD"),
+	UNICODE_STRING_SIMPLE("SETRELATION"),
+	UNICODE_STRING_SIMPLE("REMRELATION"),
+	UNICODE_STRING_SIMPLE("SETRELATIONS"),
+	UNICODE_STRING_SIMPLE("REMRELATIONS"),
+	UNICODE_STRING_SIMPLE("TEMPLATE"),
+	UNICODE_STRING_SIMPLE("MOVE"),
+	UNICODE_STRING_SIMPLE("MOVE-AFTER"),
+	UNICODE_STRING_SIMPLE("MOVE-BEFORE"),
+	UNICODE_STRING_SIMPLE("SWITCH")
+};
 
-		int free_keywords() {
-			for (unsigned int i=0;i<KEYWORD_COUNT;i++) {
-				if (keywords[i]) {
-					delete[] keywords[i];
-				}
-				keywords[i] = 0;
-			}
-			return 0;
-		}
+UnicodeString stringbits[STRINGS_COUNT] = {
+	UNICODE_STRING_SIMPLE("1f283fc29adb937a892e09bbc124b85c this is a dummy string to hold position 0"),
+	UNICODE_STRING_SIMPLE("|"),
+	UNICODE_STRING_SIMPLE("TO"),
+	UNICODE_STRING_SIMPLE("OR"),
+	UNICODE_STRING_SIMPLE("+"),
+	UNICODE_STRING_SIMPLE("-"),
+	UNICODE_STRING_SIMPLE("*"),
+	UNICODE_STRING_SIMPLE("^"),
+	UNICODE_STRING_SIMPLE("\\"),
+	UNICODE_STRING_SIMPLE("#"),
+	UNICODE_STRING_SIMPLE("!"),
+	UNICODE_STRING_SIMPLE("NOT"),
+	UNICODE_STRING_SIMPLE("NEGATE"),
+	UNICODE_STRING_SIMPLE("LINK"),
+	UNICODE_STRING_SIMPLE("BARRIER"),
+	UNICODE_STRING_SIMPLE("CBARRIER"),
+	UNICODE_STRING_SIMPLE("*"),
+	UNICODE_STRING_SIMPLE("**"),
+	UNICODE_STRING_SIMPLE("<STREAMCMD:FLUSH>"),
+	UNICODE_STRING_SIMPLE("<STREAMCMD:EXIT>"),
+	UNICODE_STRING_SIMPLE("<STREAMCMD:IGNORE>"),
+	UNICODE_STRING_SIMPLE("<STREAMCMD:RESUME>"),
+	UNICODE_STRING_SIMPLE("TARGET"),
+	UNICODE_STRING_SIMPLE("AND"),
+	UNICODE_STRING_SIMPLE("IF"),
+	UNICODE_STRING_SIMPLE("_S_DELIMITERS_"),
+	UNICODE_STRING_SIMPLE("_S_SOFT_DELIMITERS_"),
+	UNICODE_STRING_SIMPLE(">>>"),
+	UNICODE_STRING_SIMPLE("<<<"),
+	UNICODE_STRING_SIMPLE(" LINK 0 "),
+	UNICODE_STRING_SIMPLE(" "),
+	UNICODE_STRING_SIMPLE("_LEFT_"),
+	UNICODE_STRING_SIMPLE("_RIGHT_"),
+	UNICODE_STRING_SIMPLE("_PAREN_"),
+	UNICODE_STRING_SIMPLE("<.*>"),
+	UNICODE_STRING_SIMPLE("\".*\""),
+	UNICODE_STRING_SIMPLE("\"<.*>\""),
+	UNICODE_STRING_SIMPLE("AFTER"),
+	UNICODE_STRING_SIMPLE("BEFORE"),
+	UNICODE_STRING_SIMPLE("WITH"),
+	UNICODE_STRING_SIMPLE("?"),
+	UNICODE_STRING_SIMPLE("$1"),
+	UNICODE_STRING_SIMPLE("$2"),
+	UNICODE_STRING_SIMPLE("$3"),
+	UNICODE_STRING_SIMPLE("$4"),
+	UNICODE_STRING_SIMPLE("$5"),
+	UNICODE_STRING_SIMPLE("$6"),
+	UNICODE_STRING_SIMPLE("$7"),
+	UNICODE_STRING_SIMPLE("$8"),
+	UNICODE_STRING_SIMPLE("$9"),
+	UNICODE_STRING_SIMPLE("%u"),
+	UNICODE_STRING_SIMPLE("%U"),
+	UNICODE_STRING_SIMPLE("%l"),
+	UNICODE_STRING_SIMPLE("%L")
+};
 
-		inline int init_string_single(const char *keyword, const uint32_t entry) {
-			if (entry >= STRINGS_COUNT) {
-				CG3Quit(1); // Out of bounds
-			}
-			UChar *buffer = gbuffers[0];
-			u_memset(buffer, 0, 1024);
-			u_uastrcpy(buffer, keyword);
-			stringbits[entry] = new UChar[u_strlen(buffer)+1];
-			u_strcpy(stringbits[entry], buffer);
-			stringbit_lengths[entry] = u_strlen(stringbits[entry]);
-			return 0;
-		}
-		
-		int init_strings() {
-			free_strings();
-			init_string_single("1f283fc29adb937a892e09bbc124b85c this is a dummy string to hold position 0", S_IGNORE);
-			init_string_single("|",          S_PIPE);
-			init_string_single("TO",         S_TO);
-			init_string_single("OR",         S_OR);
-			init_string_single("+",          S_PLUS);
-			init_string_single("-",          S_MINUS);
-			init_string_single("*",          S_MULTIPLY);
-			init_string_single("^",          S_FAILFAST);
-			init_string_single("\\",         S_BACKSLASH);
-			init_string_single("#",          S_HASH);
-			init_string_single("!",          S_NOT);
-			init_string_single("NOT",        S_TEXTNOT);
-			init_string_single("NEGATE",     S_TEXTNEGATE);
-			init_string_single(" ",          S_SPACE);
-			init_string_single("LINK",       S_LINK);
-			init_string_single(" LINK 0 ",   S_LINKZ);
-			init_string_single("BARRIER",    S_BARRIER);
-			init_string_single("CBARRIER",   S_CBARRIER);
-			init_string_single("*",          S_ASTERIK);
-			init_string_single("**",         S_ASTERIKTWO);
-			init_string_single(">>>",        S_BEGINTAG);
-			init_string_single("<<<",        S_ENDTAG);
-			init_string_single("_S_DELIMITERS_", S_DELIMITSET);
-			init_string_single("_S_SOFT_DELIMITERS_", S_SOFTDELIMITSET);
-			init_string_single("<STREAMCMD:FLUSH>",   S_CMD_FLUSH);
-			init_string_single("<STREAMCMD:EXIT>",    S_CMD_EXIT);
-			init_string_single("<STREAMCMD:IGNORE>",  S_CMD_IGNORE);
-			init_string_single("<STREAMCMD:RESUME>",  S_CMD_RESUME);
-			init_string_single("TARGET",       S_TARGET);
-			init_string_single("AND",          S_AND);
-			init_string_single("IF",           S_IF);
-			init_string_single("_LEFT_",       S_UU_LEFT);
-			init_string_single("_RIGHT_",      S_UU_RIGHT);
-			init_string_single("_PAREN_",      S_UU_PAREN);
-			init_string_single("<.*>",         S_RXTEXT_ANY);
-			init_string_single("\".*\"",       S_RXBASE_ANY);
-			init_string_single("\"<.*>\"",     S_RXWORD_ANY);
-			init_string_single("AFTER",        S_AFTER);
-			init_string_single("BEFORE",       S_BEFORE);
-			init_string_single("WITH",         S_WITH);
-			init_string_single("?",            S_QUESTION);
-			init_string_single("$1",           S_VS1);
-			init_string_single("$2",           S_VS2);
-			init_string_single("$3",           S_VS3);
-			init_string_single("$4",           S_VS4);
-			init_string_single("$5",           S_VS5);
-			init_string_single("$6",           S_VS6);
-			init_string_single("$7",           S_VS7);
-			init_string_single("$8",           S_VS8);
-			init_string_single("$9",           S_VS9);
-			init_string_single("%u",           S_VSu);
-			init_string_single("%U",           S_VSU);
-			init_string_single("%l",           S_VSl);
-			init_string_single("%L",           S_VSL);
+UChar *gbuffers[NUM_GBUFFERS];
+char *cbuffers[NUM_CBUFFERS];
 
-			for (unsigned int i=0;i<STRINGS_COUNT;i++) {
-				if (!stringbits[i]) {
-					return i; // One did not get set properly. Returns i to pinpoint which.
-				}
-			}
-			return 0;
-		}
-
-		int free_strings() {
-			for (unsigned int i=0;i<STRINGS_COUNT;i++) {
-				if (stringbits[i]) {
-					delete[] stringbits[i];
-				}
-				stringbits[i] = 0;
-			}
-			return 0;
-		}
-
-		inline int init_flag_single(const char *keyword, const uint32_t entry) {
-			if (entry >= FLAGS_COUNT) {
-				CG3Quit(1); // Out of bounds
-			}
-			UChar *buffer = gbuffers[0];
-			u_memset(buffer, 0, 1024);
-			u_uastrcpy(buffer, keyword);
-			flags[entry] = new UChar[u_strlen(buffer)+1];
-			u_strcpy(flags[entry], buffer);
-			flag_lengths[entry] = u_strlen(flags[entry]);
-			return 0;
-		}
-
-		int init_flags() {
-			free_flags();
-			init_flag_single("NEAREST",       FL_NEAREST);
-			init_flag_single("ALLOWLOOP",     FL_ALLOWLOOP);
-			init_flag_single("DELAYED",       FL_DELAYED);
-			init_flag_single("IMMEDIATE",     FL_IMMEDIATE);
-			init_flag_single("LOOKDELETED",   FL_LOOKDELETED);
-			init_flag_single("LOOKDELAYED",   FL_LOOKDELAYED);
-			init_flag_single("UNSAFE",        FL_UNSAFE);
-			init_flag_single("SAFE",          FL_SAFE);
-			init_flag_single("REMEMBERX",     FL_REMEMBERX);
-			init_flag_single("RESETX",        FL_RESETX);
-			init_flag_single("KEEPORDER",     FL_KEEPORDER);
-			init_flag_single("VARYORDER",     FL_VARYORDER);
-			init_flag_single("ENCL_INNER",    FL_ENCL_INNER);
-			init_flag_single("ENCL_OUTER",    FL_ENCL_OUTER);
-			init_flag_single("ENCL_FINAL",    FL_ENCL_FINAL);
-			init_flag_single("ENCL_ANY",      FL_ENCL_ANY);
-
-			for (unsigned int i=0;i<FLAGS_COUNT;i++) {
-				if (!flags[i]) {
-					return i; // One did not get set properly. Returns i to pinpoint which.
-				}
-			}
-			return 0;
-		}
-
-		int free_flags() {
-			for (unsigned int i=0;i<FLAGS_COUNT;i++) {
-				if (flags[i]) {
-					delete[] flags[i];
-				}
-				flags[i] = 0;
-			}
-			return 0;
-		}
-
-		UChar *gbuffers[NUM_GBUFFERS];
-		char *cbuffers[NUM_CBUFFERS];
-
-		int init_gbuffers() {
-			for (uint32_t i=0;i<NUM_GBUFFERS;i++) {
-				gbuffers[i] = new UChar[CG3_BUFFER_SIZE];
-			}
-			for (uint32_t i=0;i<NUM_CBUFFERS;i++) {
-				cbuffers[i] = new char[CG3_BUFFER_SIZE];
-			}
-			return 0;
-		}
-
-		int free_gbuffers() {
-			for (uint32_t i=0;i<NUM_GBUFFERS;i++) {
-				delete[] gbuffers[i];
-				gbuffers[i] = 0;
-			}
-			for (uint32_t i=0;i<NUM_CBUFFERS;i++) {
-				delete[] cbuffers[i];
-				cbuffers[i] = 0;
-			}
-			return 0;
-		}
+int init_gbuffers() {
+	for (uint32_t i=0;i<NUM_GBUFFERS;i++) {
+		gbuffers[i] = new UChar[CG3_BUFFER_SIZE];
 	}
+	for (uint32_t i=0;i<NUM_CBUFFERS;i++) {
+		cbuffers[i] = new char[CG3_BUFFER_SIZE];
+	}
+	return 0;
+}
+
+int free_gbuffers() {
+	for (uint32_t i=0;i<NUM_GBUFFERS;i++) {
+		delete[] gbuffers[i];
+		gbuffers[i] = 0;
+	}
+	for (uint32_t i=0;i<NUM_CBUFFERS;i++) {
+		delete[] cbuffers[i];
+		cbuffers[i] = 0;
+	}
+	return 0;
+}
+
 }

@@ -27,159 +27,143 @@
 #define CG3_BUFFER_SIZE (131072L)
 
 namespace CG3 {
-	namespace Strings {
-		// ToDo: Add ABORT
-		enum KEYWORDS {
-			K_IGNORE,
-			K_SETS,
-			K_LIST,
-			K_SET,
-			K_DELIMITERS,
-			K_SOFT_DELIMITERS,
-			K_PREFERRED_TARGETS,
-			K_MAPPING_PREFIX,
-			K_MAPPINGS,
-			K_CONSTRAINTS,
-			K_CORRECTIONS,
-			K_SECTION,
-			K_BEFORE_SECTIONS,
-			K_AFTER_SECTIONS,
-			K_NULL_SECTION,
-			K_ADD,
-			K_MAP,
-			K_REPLACE,
-			K_SELECT,
-			K_REMOVE,
-			K_IFF,
-			K_APPEND,
-			K_SUBSTITUTE,
-			K_START,
-			K_END,
-			K_ANCHOR,
-			K_EXECUTE,
-			K_JUMP,
-			K_REMVARIABLE,
-			K_SETVARIABLE,
-			K_DELIMIT,
-			K_MATCH,
-			K_SETPARENT,
-			K_SETCHILD,
-			K_SETRELATION,
-			K_REMRELATION,
-			K_SETRELATIONS,
-			K_REMRELATIONS,
-			K_TEMPLATE,
-			K_MOVE,
-			K_MOVE_AFTER,
-			K_MOVE_BEFORE,
-			K_SWITCH,
-			KEYWORD_COUNT
-		};
+	// ToDo: Add ABORT
+	enum KEYWORDS {
+		K_IGNORE,
+		K_SETS,
+		K_LIST,
+		K_SET,
+		K_DELIMITERS,
+		K_SOFT_DELIMITERS,
+		K_PREFERRED_TARGETS,
+		K_MAPPING_PREFIX,
+		K_MAPPINGS,
+		K_CONSTRAINTS,
+		K_CORRECTIONS,
+		K_SECTION,
+		K_BEFORE_SECTIONS,
+		K_AFTER_SECTIONS,
+		K_NULL_SECTION,
+		K_ADD,
+		K_MAP,
+		K_REPLACE,
+		K_SELECT,
+		K_REMOVE,
+		K_IFF,
+		K_APPEND,
+		K_SUBSTITUTE,
+		K_START,
+		K_END,
+		K_ANCHOR,
+		K_EXECUTE,
+		K_JUMP,
+		K_REMVARIABLE,
+		K_SETVARIABLE,
+		K_DELIMIT,
+		K_MATCH,
+		K_SETPARENT,
+		K_SETCHILD,
+		K_SETRELATION,
+		K_REMRELATION,
+		K_SETRELATIONS,
+		K_REMRELATIONS,
+		K_TEMPLATE,
+		K_MOVE,
+		K_MOVE_AFTER,
+		K_MOVE_BEFORE,
+		K_SWITCH,
+		KEYWORD_COUNT
+	};
 
-		enum STRINGS {
-			S_IGNORE,
-			S_PIPE,
-			S_TO,
-			S_OR,
-			S_PLUS,
-			S_MINUS,
-			S_MULTIPLY,
-			S_FAILFAST,
-			S_BACKSLASH,
-			S_HASH,
-			S_NOT,
-			S_TEXTNOT,
-			S_TEXTNEGATE,
-			S_LINK,
-			S_BARRIER,
-			S_CBARRIER,
-			S_ASTERIK,
-			S_ASTERIKTWO,
-			S_CMD_FLUSH,
-			S_CMD_EXIT,
-			S_CMD_IGNORE,
-			S_CMD_RESUME,
-			S_TARGET,
-			S_AND,
-			S_IF,
-			S_DELIMITSET,
-			S_SOFTDELIMITSET,
-			S_BEGINTAG,
-			S_ENDTAG,
-			S_LINKZ,
-			S_SPACE,
-			S_UU_LEFT,
-			S_UU_RIGHT,
-			S_UU_PAREN,
-			S_RXTEXT_ANY,
-			S_RXBASE_ANY,
-			S_RXWORD_ANY,
-			S_AFTER,
-			S_BEFORE,
-			S_WITH,
-			S_QUESTION,
-			S_VS1,
-			S_VS2,
-			S_VS3,
-			S_VS4,
-			S_VS5,
-			S_VS6,
-			S_VS7,
-			S_VS8,
-			S_VS9,
-			S_VSu,
-			S_VSU,
-			S_VSl,
-			S_VSL,
-			STRINGS_COUNT
-		};
+	enum STRINGS {
+		S_IGNORE,
+		S_PIPE,
+		S_TO,
+		S_OR,
+		S_PLUS,
+		S_MINUS,
+		S_MULTIPLY,
+		S_FAILFAST,
+		S_BACKSLASH,
+		S_HASH,
+		S_NOT,
+		S_TEXTNOT,
+		S_TEXTNEGATE,
+		S_LINK,
+		S_BARRIER,
+		S_CBARRIER,
+		S_ASTERIK,
+		S_ASTERIKTWO,
+		S_CMD_FLUSH,
+		S_CMD_EXIT,
+		S_CMD_IGNORE,
+		S_CMD_RESUME,
+		S_TARGET,
+		S_AND,
+		S_IF,
+		S_DELIMITSET,
+		S_SOFTDELIMITSET,
+		S_BEGINTAG,
+		S_ENDTAG,
+		S_LINKZ,
+		S_SPACE,
+		S_UU_LEFT,
+		S_UU_RIGHT,
+		S_UU_PAREN,
+		S_RXTEXT_ANY,
+		S_RXBASE_ANY,
+		S_RXWORD_ANY,
+		S_AFTER,
+		S_BEFORE,
+		S_WITH,
+		S_QUESTION,
+		S_VS1,
+		S_VS2,
+		S_VS3,
+		S_VS4,
+		S_VS5,
+		S_VS6,
+		S_VS7,
+		S_VS8,
+		S_VS9,
+		S_VSu,
+		S_VSU,
+		S_VSl,
+		S_VSL,
+		STRINGS_COUNT
+	};
 
-		// This must be kept in lock-step with Rule.h's RULE_FLAGS
-		enum FLAGS {
-			FL_NEAREST,
-			FL_ALLOWLOOP,
-			FL_DELAYED,
-			FL_IMMEDIATE,
-			FL_LOOKDELETED,
-			FL_LOOKDELAYED,
-			FL_UNSAFE,
-			FL_SAFE,
-			FL_REMEMBERX,
-			FL_RESETX,
-			FL_KEEPORDER,
-			FL_VARYORDER,
-			FL_ENCL_INNER,
-			FL_ENCL_OUTER,
-			FL_ENCL_FINAL,
-			FL_ENCL_ANY,
-			FLAGS_COUNT
-		};
+	// This must be kept in lock-step with Rule.h's RULE_FLAGS
+	enum FLAGS {
+		FL_NEAREST,
+		FL_ALLOWLOOP,
+		FL_DELAYED,
+		FL_IMMEDIATE,
+		FL_LOOKDELETED,
+		FL_LOOKDELAYED,
+		FL_UNSAFE,
+		FL_SAFE,
+		FL_REMEMBERX,
+		FL_RESETX,
+		FL_KEEPORDER,
+		FL_VARYORDER,
+		FL_ENCL_INNER,
+		FL_ENCL_OUTER,
+		FL_ENCL_FINAL,
+		FL_ENCL_ANY,
+		FLAGS_COUNT
+	};
 
-		extern UChar *keywords[KEYWORD_COUNT];
-		extern uint32_t keyword_lengths[KEYWORD_COUNT];
-		extern UChar *stringbits[STRINGS_COUNT];
-		extern uint32_t stringbit_lengths[STRINGS_COUNT];
-		extern UChar *flags[FLAGS_COUNT];
-		extern uint32_t flag_lengths[FLAGS_COUNT];
+	extern UnicodeString keywords[KEYWORD_COUNT];
+	extern UnicodeString stringbits[STRINGS_COUNT];
+	extern UnicodeString flags[FLAGS_COUNT];
 
-		int init_keywords();
-		int free_keywords();
-
-		int init_strings();
-		int free_strings();
-
-		int init_flags();
-		int free_flags();
-
-		#define NUM_GBUFFERS 5
-		extern UChar *gbuffers[NUM_GBUFFERS];
-		#define NUM_CBUFFERS 2
-		extern char *cbuffers[NUM_CBUFFERS];
-		int init_gbuffers();
-		int free_gbuffers();
-	}
+	#define NUM_GBUFFERS 5
+	extern UChar *gbuffers[NUM_GBUFFERS];
+	#define NUM_CBUFFERS 2
+	extern char *cbuffers[NUM_CBUFFERS];
+	int init_gbuffers();
+	int free_gbuffers();
 }
-
-using namespace CG3::Strings;
 
 #endif
