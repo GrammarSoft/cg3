@@ -123,8 +123,8 @@ void Tag::parseTag(const UChar *to, UFILE *ux_stderr) {
 		}
 
 		tag = new UChar[length+8];
-		u_memset(tag, 0, length+8);
 		u_strncpy(tag, tmp, length);
+		tag[length] = 0;
 
 		UChar *utag = gbuffers[0];
 		ux_unEscape(utag, tag);
@@ -140,6 +140,7 @@ void Tag::parseTag(const UChar *to, UFILE *ux_stderr) {
 		if (tag && tag[0] == '<' && tag[length-1] == '>') {
 			parseNumeric(this, tag);
 		}
+		// ToDo: Grammar tags surely have no need to be dependency tags...?
 		if (tag && tag[0] == '#') {
 			if (u_sscanf(tag, "#%i->%i", &dep_self, &dep_parent) == 2 && dep_self != 0) {
 				type |= T_DEPENDENCY;

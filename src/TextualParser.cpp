@@ -274,7 +274,7 @@ int TextualParser::parseContextualTestPosition(UChar *& p, ContextualTest& t) {
 	bool negative = false;
 
 	size_t tries;
-	for (tries=0 ; *p != ' ' && *p != '(' && tries < 2000 ; ++tries) {
+	for (tries=0 ; *p != ' ' && *p != '(' && tries < 100 ; ++tries) {
 		if (*p == '*' && *(p+1) == '*') {
 			t.pos |= POS_SCANALL;
 			p += 2;
@@ -361,10 +361,13 @@ int TextualParser::parseContextualTestPosition(UChar *& p, ContextualTest& t) {
 		}
 		if (u_isdigit(*p)) {
 			int32_t retval = 0;
+			UChar tmp = p[10];
+			p[10] = 0;
 			if ((retval = u_sscanf(p, "%d", &(t.offset))) == EOF) {
 				u_fprintf(ux_stderr, "Error: Invalid position on line %u!\n", result->lines);
 				CG3Quit(1);
 			}
+			p[10] = tmp;
 			p += retval;
 		}
 		if (*p == 'r' && *(p+1) == ':') {
@@ -399,7 +402,10 @@ int TextualParser::parseContextualTestPosition(UChar *& p, ContextualTest& t) {
 		t.pos |= POS_DEP_NONE;
 	}
 
-	if (tries >= 2000) {
+	if (tries >= 5) {
+		u_fprintf(ux_stderr, "Warning: Position on line %u took many loops.\n", result->lines);
+	}
+	if (tries >= 100) {
 		u_fprintf(ux_stderr, "Error: Invalid position on line %u - caused endless loop!\n", result->lines);
 		CG3Quit(1);
 	}
