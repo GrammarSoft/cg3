@@ -36,8 +36,9 @@ void Anchor::setName(uint32_t to) {
 	if (!to) {
 		to = static_cast<uint32_t>(rand());
 	}
+	name.reserve(26);
 	name.resize(26);
-	size_t n = u_sprintf(&name[0], "_G_%u_%u_", line, to);
+	size_t n = u_snprintf(&name[0], 26, "_G_%u_%u_", line, to);
 	name.resize(n);
 }
 void Anchor::setName(const UChar *to) {
