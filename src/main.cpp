@@ -227,10 +227,7 @@ int main(int argc, char* argv[]) {
 		CG3Quit(1);
 	}
 
-	init_gbuffers();
-	init_strings();
-	init_keywords();
-	init_flags();
+	CG3::init_gbuffers();
 	CG3::Grammar grammar;
 
 	CG3::IGrammarParser *parser = 0;
@@ -239,13 +236,13 @@ int main(int argc, char* argv[]) {
 		std::cerr << "Error: Error opening " << options[GRAMMAR].value << " for reading!" << std::endl;
 		CG3Quit(1);
 	}
-	if (fread(cbuffers[0], 1, 4, input) != 4) {
+	if (fread(CG3::cbuffers[0], 1, 4, input) != 4) {
 		std::cerr << "Error: Error reading first 4 bytes from grammar!" << std::endl;
 		CG3Quit(1);
 	}
 	fclose(input);
 
-	if (cbuffers[0][0] == 'C' && cbuffers[0][1] == 'G' && cbuffers[0][2] == '3' && cbuffers[0][3] == 'B') {
+	if (CG3::cbuffers[0][0] == 'C' && CG3::cbuffers[0][1] == 'G' && CG3::cbuffers[0][2] == '3' && CG3::cbuffers[0][3] == 'B') {
 		std::cerr << "Info: Binary grammar detected." << std::endl;
 		parser = new CG3::BinaryGrammar(grammar, ux_stderr);
 	}
@@ -420,10 +417,7 @@ int main(int argc, char* argv[]) {
 	u_fclose(ux_stdout);
 	u_fclose(ux_stderr);
 
-	free_strings();
-	free_keywords();
-	free_gbuffers();
-	free_flags();
+	CG3::free_gbuffers();
 
 	u_cleanup();
 

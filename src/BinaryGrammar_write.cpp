@@ -26,7 +26,6 @@
 #include "version.h"
 
 namespace CG3 {
-using namespace CG3::Strings;
 
 int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 	if (!output) {

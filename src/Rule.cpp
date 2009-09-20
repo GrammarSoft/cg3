@@ -25,7 +25,6 @@
 #include "Tag.h"
 
 namespace CG3 {
-using namespace CG3::Strings;
 
 Rule::Rule() {
 	name = 0;

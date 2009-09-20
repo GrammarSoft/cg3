@@ -24,7 +24,6 @@
 #include "Grammar.h"
 
 namespace CG3 {
-using namespace CG3::Strings;
 
 BinaryGrammar::BinaryGrammar(Grammar &res, UFILE *ux_err) {
 	ux_stderr = ux_err;

@@ -28,7 +28,6 @@
 #include "Reading.h"
 
 namespace CG3 {
-using namespace CG3::Strings;
 
 Reading *GrammarApplicator::initEmptyCohort(Cohort &cCohort) {
 	Reading *cReading = new Reading(&cCohort);
@@ -83,8 +82,8 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 	uint32_t resetAfter = ((num_windows+4)*2+1);
 	uint32_t lines = 0;
 
-	begintag = addTag(stringbits[S_BEGINTAG])->hash;
-	endtag = addTag(stringbits[S_ENDTAG])->hash;
+	begintag = addTag(stringbits[S_BEGINTAG].getTerminatedBuffer())->hash;
+	endtag = addTag(stringbits[S_ENDTAG].getTerminatedBuffer())->hash;
 
 	SingleWindow *cSWindow = 0;
 	Cohort *cCohort = 0;
@@ -273,7 +272,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 			}
 			ux_trim(cleaned);
 			if (u_strlen(cleaned) > 0) {
-				if (u_strcmp(cleaned, stringbits[S_CMD_FLUSH]) == 0) {
+				if (u_strcmp(cleaned, stringbits[S_CMD_FLUSH].getTerminatedBuffer()) == 0) {
 					u_fprintf(ux_stderr, "Info: CGCMD:FLUSH encountered on line %u. Flushing...\n", numLines);
 					if (cCohort && cSWindow) {
 						cSWindow->appendCohort(cCohort);
@@ -315,15 +314,15 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 					}
 					u_fflush(output);
 				}
-				else if (u_strcmp(cleaned, stringbits[S_CMD_IGNORE]) == 0) {
+				else if (u_strcmp(cleaned, stringbits[S_CMD_IGNORE].getTerminatedBuffer()) == 0) {
 					u_fprintf(ux_stderr, "Info: CGCMD:IGNORE encountered on line %u. Passing through all input...\n", numLines);
 					ignoreinput = true;
 				}
-				else if (u_strcmp(cleaned, stringbits[S_CMD_RESUME]) == 0) {
+				else if (u_strcmp(cleaned, stringbits[S_CMD_RESUME].getTerminatedBuffer()) == 0) {
 					u_fprintf(ux_stderr, "Info: CGCMD:RESUME encountered on line %u. Resuming CG...\n", numLines);
 					ignoreinput = false;
 				}
-				else if (u_strcmp(cleaned, stringbits[S_CMD_EXIT]) == 0) {
+				else if (u_strcmp(cleaned, stringbits[S_CMD_EXIT].getTerminatedBuffer()) == 0) {
 					u_fprintf(ux_stderr, "Info: CGCMD:EXIT encountered on line %u. Exiting...\n", numLines);
 					u_fprintf(output, "%S", line);
 					goto CGCMD_EXIT;

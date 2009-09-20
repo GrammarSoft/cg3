@@ -26,7 +26,6 @@
 #include "version.h"
 
 namespace CG3 {
-using namespace CG3::Strings;
 
 int BinaryGrammar::readBinaryGrammar(FILE *input) {
 	if (!input) {
@@ -138,7 +137,7 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 		}
 		grammar->single_tags[t->hash] = t;
 		grammar->single_tags_list[t->number] = t;
-		if (t->tag && t->tag[0] == '*' && u_strcmp(t->tag, stringbits[S_ASTERIK]) == 0) {
+		if (t->tag && t->tag[0] == '*' && u_strcmp(t->tag, stringbits[S_ASTERIK].getTerminatedBuffer()) == 0) {
 			grammar->tag_any = t->hash;
 		}
 	}

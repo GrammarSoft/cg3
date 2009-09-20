@@ -146,21 +146,21 @@ void Tag::parseTag(const UChar *to, UFILE *ux_stderr) {
 			}
 		}
 
-		if (u_strcmp(tag, stringbits[S_ASTERIK]) == 0) {
+		if (u_strcmp(tag, stringbits[S_ASTERIK].getTerminatedBuffer()) == 0) {
 			type |= T_ANY;
 		}
-		else if (u_strcmp(tag, stringbits[S_UU_LEFT]) == 0) {
+		else if (u_strcmp(tag, stringbits[S_UU_LEFT].getTerminatedBuffer()) == 0) {
 			type |= T_PAR_LEFT;
 		}
-		else if (u_strcmp(tag, stringbits[S_UU_RIGHT]) == 0) {
+		else if (u_strcmp(tag, stringbits[S_UU_RIGHT].getTerminatedBuffer()) == 0) {
 			type |= T_PAR_RIGHT;
 		}
 
 		// ToDo: Add ICASE: REGEXP: and //r //ri //i to tags
 		if (type & T_REGEXP) {
-			if (u_strcmp(tag, stringbits[S_RXTEXT_ANY]) == 0
-			|| u_strcmp(tag, stringbits[S_RXBASE_ANY]) == 0
-			|| u_strcmp(tag, stringbits[S_RXWORD_ANY]) == 0) {
+			if (u_strcmp(tag, stringbits[S_RXTEXT_ANY].getTerminatedBuffer()) == 0
+			|| u_strcmp(tag, stringbits[S_RXBASE_ANY].getTerminatedBuffer()) == 0
+			|| u_strcmp(tag, stringbits[S_RXWORD_ANY].getTerminatedBuffer()) == 0) {
 				type |= T_REGEXP_ANY;
 				type &= ~T_REGEXP;
 			}

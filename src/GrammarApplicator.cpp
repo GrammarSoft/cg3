@@ -28,7 +28,6 @@
 #include "Reading.h"
 
 namespace CG3 {
-using namespace CG3::Strings;
 
 GrammarApplicator::GrammarApplicator(UFILE *ux_err) {
 	ux_stderr = ux_err;
@@ -315,7 +314,7 @@ void GrammarApplicator::printReading(Reading *reading, UFILE *output) {
 	if (trace) {
 		foreach (uint32Vector, reading->hit_by, iter_hb, iter_hb_end) {
 			const Rule *r = grammar->rule_by_line.find(*iter_hb)->second;
-			u_fprintf(output, "%S", keywords[r->type]);
+			u_fprintf(output, "%S", keywords[r->type].getTerminatedBuffer());
 			if (!trace_name_only || !r->name) {
 				u_fprintf(output, ":%u", *iter_hb);
 			}
