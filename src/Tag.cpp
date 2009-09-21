@@ -77,10 +77,10 @@ void Tag::parseTag(const UChar *to, UFILE *ux_stderr) {
 			}
 		}
 
-		uint32_t length = u_strlen(tmp);
+		size_t length = u_strlen(tmp);
 
 		if (tmp[0] == 'T' && tmp[1] == ':') {
-			u_fprintf(ux_stderr, "Warning: Tag name %S looks like a misattempt of template usage.\n", tmp);
+			u_fprintf(ux_stderr, "Warning: Tag %S looks like a misattempt of template usage.\n", tmp);
 		}
 
 		// ToDo: Implement META and VAR
@@ -95,9 +95,8 @@ void Tag::parseTag(const UChar *to, UFILE *ux_stderr) {
 			length -= 4;
 		}
 		
-		if (tmp[0] && (tmp[0] == '"' || tmp[0] == '<')) {
-			type |= T_TEXTUAL;
-		}
+		size_t oldlength = length;
+
 		while (tmp[0] && (tmp[0] == '"' || tmp[0] == '<') && (tmp[length-1] == 'i' || tmp[length-1] == 'r' || tmp[length-1] == 'v')) {
 			if (tmp[length-1] == 'v') {
 				type |= T_VARSTRING;
@@ -113,12 +112,23 @@ void Tag::parseTag(const UChar *to, UFILE *ux_stderr) {
 			}
 		}
 
-		if (tmp[0] == '"' && tmp[length-1] == '"') {
-			if (tmp[1] == '<' && tmp[length-2] == '>') {
-				type |= T_WORDFORM;
+		if (tmp[0] && (tmp[0] == '"' || tmp[0] == '<')) {
+			if ((tmp[0] == '"' && tmp[length-1] == '"') || (tmp[0] == '<' && tmp[length-1] == '>')) {
+				type |= T_TEXTUAL;
+				if (tmp[0] == '"' && tmp[length-1] == '"') {
+					if (tmp[1] == '<' && tmp[length-2] == '>') {
+						type |= T_WORDFORM;
+					}
+					else {
+						type |= T_BASEFORM;
+					}
+				}
 			}
 			else {
-				type |= T_BASEFORM;
+				type &= ~T_VARSTRING;
+				type &= ~T_REGEXP;
+				type &= ~T_CASE_INSENSITIVE;
+				length = oldlength;
 			}
 		}
 
