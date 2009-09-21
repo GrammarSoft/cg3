@@ -600,9 +600,9 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow &current, uint32Set &r
 						break;
 					}
 					else if (type == K_SETRELATIONS || type == K_REMRELATIONS) {
+						Cohort *attach = 0;
 						dep_deep_seen.clear();
-						Cohort *attach = runContextualTest(&current, c, rule.dep_target);
-						if (attach) {
+						if (runContextualTest(&current, c, rule.dep_target, &attach) && attach) {
 							bool good = true;
 							ContextualTest *test = rule.dep_test_head;
 							while (test) {
