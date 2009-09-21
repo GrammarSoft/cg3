@@ -108,7 +108,7 @@ bool ux_packWhitespace(UChar *totrim) {
 
 int ux_isSetOp(const UChar *it) {
 	int retval = S_IGNORE;
-	if (u_strcasecmp(it, stringbits[S_OR].getTerminatedBuffer(), 0) == 0 || u_strcmp(it, stringbits[S_PIPE].getTerminatedBuffer()) == 0) {
+	if (u_strncasecmp(it, stringbits[S_OR].getTerminatedBuffer(), stringbits[S_OR].length(), 0) == 0 || u_strcmp(it, stringbits[S_PIPE].getTerminatedBuffer()) == 0) {
 		retval = S_OR;
 	}
 	else if (u_strcmp(it, stringbits[S_PLUS].getTerminatedBuffer()) == 0) {
