@@ -23,4 +23,3 @@ ToDo: Allow multiple contextual position per test via ,
 ToDo: Allow using LIST sets in MAP/ADD/SUBSTITUTE
 ToDo: Dynamic window buffers based on dependency / relation links
 ToDo: Make all tag containers have Tag* instead of uint32_t
-ToDo: Find a faster way to do u_strncasecmp()
