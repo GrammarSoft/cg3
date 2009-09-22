@@ -443,12 +443,12 @@ int TextualParser::parseContextualTestList(UChar *& p, Rule *rule, ContextualTes
 	bool negated = false, negative = false;
 
 	result->lines += SKIPWS(p);
-	if (ux_simplecasecmp(p, stringbits[S_TEXTNEGATE].getTerminatedBuffer(), stringbits[S_TEXTNEGATE].length()) == 0) {
+	if (ux_simplecasecmp(p, stringbits[S_TEXTNEGATE].getTerminatedBuffer(), stringbits[S_TEXTNEGATE].length())) {
 		p += stringbits[S_TEXTNEGATE].length();
 		negated = true;
 	}
 	result->lines += SKIPWS(p);
-	if (ux_simplecasecmp(p, stringbits[S_TEXTNOT].getTerminatedBuffer(), stringbits[S_TEXTNOT].length()) == 0) {
+	if (ux_simplecasecmp(p, stringbits[S_TEXTNOT].getTerminatedBuffer(), stringbits[S_TEXTNOT].length())) {
 		p += stringbits[S_TEXTNOT].length();
 		negative = true;
 	}
@@ -472,7 +472,7 @@ int TextualParser::parseContextualTestList(UChar *& p, Rule *rule, ContextualTes
 			++p;
 			t->ors.push_back(ored);
 			result->lines += SKIPWS(p);
-			if (ux_simplecasecmp(p, stringbits[S_OR].getTerminatedBuffer(), stringbits[S_OR].length()) == 0) {
+			if (ux_simplecasecmp(p, stringbits[S_OR].getTerminatedBuffer(), stringbits[S_OR].length())) {
 				p += stringbits[S_OR].length();
 			}
 			else {
@@ -546,14 +546,14 @@ label_parseTemplateRef:
 		}
 
 		result->lines += SKIPWS(p);
-		if (ux_simplecasecmp(p, stringbits[S_CBARRIER].getTerminatedBuffer(), stringbits[S_CBARRIER].length()) == 0) {
+		if (ux_simplecasecmp(p, stringbits[S_CBARRIER].getTerminatedBuffer(), stringbits[S_CBARRIER].length())) {
 			p += stringbits[S_CBARRIER].length();
 			result->lines += SKIPWS(p);
 			Set *s = parseSetInlineWrapper(p);
 			t->cbarrier = s->hash;
 		}
 		result->lines += SKIPWS(p);
-		if (ux_simplecasecmp(p, stringbits[S_BARRIER].getTerminatedBuffer(), stringbits[S_BARRIER].length()) == 0) {
+		if (ux_simplecasecmp(p, stringbits[S_BARRIER].getTerminatedBuffer(), stringbits[S_BARRIER].length())) {
 			p += stringbits[S_BARRIER].length();
 			result->lines += SKIPWS(p);
 			Set *s = parseSetInlineWrapper(p);
@@ -564,11 +564,11 @@ label_parseTemplateRef:
 
 	bool linked = false;
 	result->lines += SKIPWS(p);
-	if (ux_simplecasecmp(p, stringbits[S_AND].getTerminatedBuffer(), stringbits[S_AND].length()) == 0) {
+	if (ux_simplecasecmp(p, stringbits[S_AND].getTerminatedBuffer(), stringbits[S_AND].length())) {
 		u_fprintf(ux_stderr, "Error: 'AND' is deprecated; use 'LINK 0' or operator '+' instead. Found on line %u!\n", result->lines);
 		CG3Quit(1);
 	}
-	if (ux_simplecasecmp(p, stringbits[S_LINK].getTerminatedBuffer(), stringbits[S_LINK].length()) == 0) {
+	if (ux_simplecasecmp(p, stringbits[S_LINK].getTerminatedBuffer(), stringbits[S_LINK].length())) {
 		p += stringbits[S_LINK].length();
 		linked = true;
 	}
@@ -656,7 +656,7 @@ int TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 	while (setflag) {
 		setflag = false;
 		for (uint32_t i=0 ; i<FLAGS_COUNT ; i++) {
-			if (ux_simplecasecmp(p, flags[i].getTerminatedBuffer(), flags[i].length()) == 0) {
+			if (ux_simplecasecmp(p, flags[i].getTerminatedBuffer(), flags[i].length())) {
 				p += flags[i].length();
 				rule->flags |= (1 << i);
 				setflag = true;
@@ -817,7 +817,7 @@ int TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 	}
 
 	result->lines += SKIPWS(p);
-	if (ux_simplecasecmp(p, stringbits[S_TARGET].getTerminatedBuffer(), stringbits[S_TARGET].length()) == 0) {
+	if (ux_simplecasecmp(p, stringbits[S_TARGET].getTerminatedBuffer(), stringbits[S_TARGET].length())) {
 		p += stringbits[S_TARGET].length();
 	}
 	result->lines += SKIPWS(p);
@@ -826,7 +826,7 @@ int TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 	rule->target = s->hash;
 
 	result->lines += SKIPWS(p);
-	if (ux_simplecasecmp(p, stringbits[S_IF].getTerminatedBuffer(), stringbits[S_IF].length()) == 0) {
+	if (ux_simplecasecmp(p, stringbits[S_IF].getTerminatedBuffer(), stringbits[S_IF].length())) {
 		p += stringbits[S_IF].length();
 	}
 	result->lines += SKIPWS(p);
@@ -848,11 +848,11 @@ int TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 		|| key == K_SETRELATIONS || key == K_REMRELATIONS || key == K_MOVE || key == K_SWITCH) {
 		result->lines += SKIPWS(p);
 		if (key == K_MOVE) {
-			if (ux_simplecasecmp(p, stringbits[S_AFTER].getTerminatedBuffer(), stringbits[S_AFTER].length()) == 0) {
+			if (ux_simplecasecmp(p, stringbits[S_AFTER].getTerminatedBuffer(), stringbits[S_AFTER].length())) {
 				p += stringbits[S_AFTER].length();
 				rule->type = K_MOVE_AFTER;
 			}
-			else if (ux_simplecasecmp(p, stringbits[S_BEFORE].getTerminatedBuffer(), stringbits[S_BEFORE].length()) == 0) {
+			else if (ux_simplecasecmp(p, stringbits[S_BEFORE].getTerminatedBuffer(), stringbits[S_BEFORE].length())) {
 				p += stringbits[S_BEFORE].length();
 				rule->type = K_MOVE_BEFORE;
 			}
@@ -862,7 +862,7 @@ int TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 			}
 		}
 		else if (key == K_SWITCH) {
-			if (ux_simplecasecmp(p, stringbits[S_WITH].getTerminatedBuffer(), stringbits[S_WITH].length()) == 0) {
+			if (ux_simplecasecmp(p, stringbits[S_WITH].getTerminatedBuffer(), stringbits[S_WITH].length())) {
 				p += stringbits[S_WITH].length();
 			}
 			else {
@@ -871,7 +871,7 @@ int TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 			}
 		}
 		else {
-			if (ux_simplecasecmp(p, stringbits[S_TO].getTerminatedBuffer(), stringbits[S_TO].length()) == 0) {
+			if (ux_simplecasecmp(p, stringbits[S_TO].getTerminatedBuffer(), stringbits[S_TO].length())) {
 				p += stringbits[S_TO].length();
 			}
 			else {
