@@ -43,6 +43,8 @@ UChar *ux_substr(UChar *string, int start, int end);
 
 char *ux_dirname(const char *in);
 
+bool ux_simplecasecmp(const UChar *a, const UChar *b, const size_t n);
+
 }
 
 #endif
