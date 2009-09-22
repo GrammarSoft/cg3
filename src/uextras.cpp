@@ -256,11 +256,11 @@ char *ux_dirname(const char *in) {
 bool ux_simplecasecmp(const UChar *a, const UChar *b, const size_t n) {
 	for (size_t i = 0 ; i < n ; ++i) {
 		if (a[i] != b[i] && a[i] != b[i]+32) {
-			return true;
+			return false;
 		}
 	}
 
-	return false;
+	return true;
 }
 
 }
