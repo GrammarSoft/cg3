@@ -47,7 +47,7 @@ bool ux_isEmpty(const UChar *text) {
 
 bool ux_trim(UChar *totrim) {
 	bool retval = false;
-	unsigned int length = u_strlen(totrim);
+	size_t length = u_strlen(totrim);
 	if (totrim && length) {
 		while (length >= 1 && ISSPACE(totrim[length-1])) {
 			length--;
@@ -63,7 +63,7 @@ bool ux_trim(UChar *totrim) {
 				current++;
 			}
 			size_t num_spaces = ((current-totrim)-1);
-			for (unsigned int i=0;i<length;i++) {
+			for (size_t i=0 ; i<length ; ++i) {
 				totrim[i] = totrim[i+num_spaces+1];
 			}
 		}
@@ -73,7 +73,7 @@ bool ux_trim(UChar *totrim) {
 
 bool ux_packWhitespace(UChar *totrim) {
 	bool retval = false;
-	unsigned int length = u_strlen(totrim);
+	size_t length = u_strlen(totrim);
 	if (totrim && length) {
 		UChar *space = 0;
 		UChar *current = totrim;
@@ -90,7 +90,7 @@ bool ux_packWhitespace(UChar *totrim) {
 					num_spaces--;
 					retval = true;
 					length = u_strlen(current);
-					for (unsigned int i=0;i<=length;i++) {
+					for (size_t i=0 ; i<=length ; ++i) {
 						space[i] = current[i];
 					}
 					current = space;
@@ -214,11 +214,12 @@ UChar *ux_append(UChar *target, const UChar data) {
 	return tmp;
 }
 
-UChar *ux_substr(UChar *string, int start, int end) {
+UChar *ux_substr(UChar *string, const size_t start, const size_t end) {
+	// ToDo: Surely this whole function can be replaced with u_strncpy(tmp, &string[start], end-start) or similar?
 	UChar *tmp = 0;
-	int i = 0;
+	size_t i = 0;
 
-	int len = u_strlen(string);
+	size_t len = u_strlen(string);
 	
 	if (end > len) {
 		return tmp;
