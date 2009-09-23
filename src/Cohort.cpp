@@ -78,9 +78,8 @@ void Cohort::clear(SingleWindow *p) {
 	is_related = false;
 	is_enclosed = false;
 	num_is_current = false;
-	if (text) {
-		delete[] text;
-	}
+	delete[] text;
+
 	text = 0;
 	dep_self = 0;
 	dep_parent = UINT_MAX;
@@ -108,9 +107,7 @@ Cohort::~Cohort() {
 		parent->parent->cohort_map.erase(global_number);
 		parent->parent->dep_window.erase(global_number);
 	}
-	if (text) {
-		delete[] text;
-	}
+	delete[] text;
 	detach();
 }
 

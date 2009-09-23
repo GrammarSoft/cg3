@@ -39,7 +39,7 @@ bool ux_unEscape(UChar *target, const UChar *source);
 UChar *ux_append(UChar *target, const UChar *data);
 UChar *ux_append(UChar *target, const UChar data);
 
-UChar *ux_substr(UChar *string, int start, int end);
+UChar *ux_substr(UChar *string, const size_t start, const size_t end);
 
 char *ux_dirname(const char *in);
 

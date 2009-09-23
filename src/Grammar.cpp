@@ -38,6 +38,8 @@ Grammar::Grammar() {
 	sets_any = 0;
 	rules_any = 0;
 	mapping_prefix = '@';
+	ux_stderr = 0;
+	ux_stdout = 0;
 }
 
 Grammar::~Grammar() {
