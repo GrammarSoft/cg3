@@ -133,6 +133,50 @@
         (r:* (ADJ))
       </screen>
     </section>
+
+    <section id="rel-ct-all">
+      <title>All Scan</title>
+      <indexterm>
+        <primary>ALL</primary>
+      </indexterm>
+      <indexterm>
+        <primary>C</primary>
+      </indexterm>
+      <para>
+        The 'C' option behaves differently when dealing with relations.
+        Here, the 'C' option will require that all of the relations match the set.
+        For example, position 'Cr:rel' requires that all of the 'rel' relations match the set.
+        This means that if you wish to find a relation where all readings have a set you must do e.g.
+        (r:rel (ADJ) LINK 0C (ADJ)).
+		A new option 'ALL' allows one to express this in a more readable form.
+      </para>
+      <screen>
+        (Cr:rel (ADJ))
+        (ALL r:rel (ADJ))
+      </screen>
+    </section>
+
+    <section id="rel-ct-not">
+      <title>None Scan</title>
+      <indexterm>
+        <primary>NONE</primary>
+      </indexterm>
+      <indexterm>
+        <primary>NOT</primary>
+      </indexterm>
+      <para>
+        The 'NOT' option behaves differently when dealing with relations.
+        Here, the 'NOT' option will require that none of the relations match the set.
+        For example, position 'NOT r:rel' requires that none of the 'rel' relations match the set.
+        This means that if you wish to find a relation that does not match the set you must do e.g.
+        (r:rel (*) LINK NOT 0 (ADJ)).
+		A new option 'NONE' allows one to express this in a more readable form.
+      </para>
+      <screen>
+        (NOT r:rel (ADJ))
+        (NONE r:rel (ADJ))
+      </screen>
+    </section>
   </section>
 
 </chapter>

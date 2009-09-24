@@ -313,6 +313,15 @@ void GrammarApplicator::printReading(Reading *reading, UFILE *output) {
 		foreach (uint32Vector, reading->hit_by, iter_hb, iter_hb_end) {
 			const Rule *r = grammar->rule_by_line.find(*iter_hb)->second;
 			u_fprintf(output, "%S", keywords[r->type].getTerminatedBuffer());
+			if (r->type == K_ADDRELATION || r->type == K_SETRELATION || r->type == K_REMRELATION
+			|| r->type == K_ADDRELATIONS || r->type == K_SETRELATIONS || r->type == K_REMRELATIONS
+				) {
+					u_fprintf(output, "(%S", grammar->single_tags.find(r->maplist.front()->hash)->second->tag);
+					if (r->type == K_ADDRELATIONS || r->type == K_SETRELATIONS || r->type == K_REMRELATIONS) {
+						u_fprintf(output, ",%S", grammar->single_tags.find(r->sublist.front())->second->tag);
+					}
+					u_fprintf(output, ")");
+			}
 			if (!trace_name_only || !r->name) {
 				u_fprintf(output, ":%u", *iter_hb);
 			}

@@ -182,6 +182,9 @@
     <section id="dep-ct-all">
       <title>All Scan</title>
       <indexterm>
+        <primary>ALL</primary>
+      </indexterm>
+      <indexterm>
         <primary>C</primary>
       </indexterm>
       <para>
@@ -190,14 +193,19 @@
         For example, position 'sC' requires that all of the siblings match the set.
         This means that if you wish to find a relation where all readings have a set you must do e.g.
         (c (ADJ) LINK 0C (ADJ)).
+		A new option 'ALL' allows one to express this in a more readable form.
       </para>
       <screen>
         (sC (ADJ))
+        (ALL s (ADJ))
       </screen>
     </section>
 
     <section id="dep-ct-not">
       <title>None Scan</title>
+      <indexterm>
+        <primary>NONE</primary>
+      </indexterm>
       <indexterm>
         <primary>NOT</primary>
       </indexterm>
@@ -207,9 +215,11 @@
         For example, position 'NOT c' requires that none of the children match the set.
         This means that if you wish to find a relation that does not match the set you must do e.g.
         (c (*) LINK NOT 0 (ADJ)).
+		A new option 'NONE' allows one to express this in a more readable form.
       </para>
       <screen>
         (NOT c (ADJ))
+        (NONE c (ADJ))
       </screen>
     </section>
   </section>

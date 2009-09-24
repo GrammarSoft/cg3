@@ -286,6 +286,12 @@ void GrammarWriter::printContextualTest(UFILE *to, const ContextualTest &test) {
 		if (test.pos & POS_NEGATIVE) {
 			u_fprintf(to, "NOT ");
 		}
+		if (test.pos & POS_DEP_ALL) {
+			u_fprintf(to, "ALL ");
+		}
+		if (test.pos & POS_DEP_NONE) {
+			u_fprintf(to, "NONE ");
+		}
 		if (test.pos & POS_ABSOLUTE) {
 			u_fprintf(to, "@");
 		}

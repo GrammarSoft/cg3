@@ -1,46 +1,49 @@
 "<word>"
-	"word" none 
+	"word" none @none 
 "<word>"
-	"word" third ID:2 R:End3:10 
+	"word" third @none ID:2 R:End3:10 
 "<word>"
-	"word" none 
+	"word" none @none 
 "<word>"
-	"word" none 
+	"word" none @none 
 "<$.>"
+	"<$.>" @none 
 
 "<word>"
-	"word" none 
+	"word" none @none 
 "<word>"
-	"word" second ID:7 
+	"word" second @none ID:7 
 "<word>"
-	"word" none 
+	"word" none @none 
 "<word>"
-	"word" first ID:9 
+	"word" first @none ID:9 
 "<word>"
 	"word" startfourth @4to3 @*to3 ID:10 R:Begin4:2 R:Begin4:20 
 "<word>"
-	"word" startfirst ID:11 
+	"word" startfirst @none ID:11 
 "<word>"
-	"word" startsecond ID:12 R:OtherSecond:7 R:Second:14 
+	"word" startsecond @careful @none ID:12 R:OtherSecond:7 R:Second:14 
 "<word>"
-	"word" startthird ID:13 
+	"word" startthird @none ID:13 
 "<word>"
-	"word" second ID:14 
+	"word" second @none ID:14 
 "<word>"
-	"word" first 
+	"word" first @none 
 "<word>"
-	"word" none 
+	"word" none @none 
 "<word>"
-	"word" none 
+	"word" none @none 
 "<$.>"
+	"<$.>" @none 
 
 "<word>"
-	"word" none 
+	"word" none @none 
 "<word>"
-	"word" fourth ID:20 R:End4:10 
+	"word" fourth @none ID:20 R:End4:10 
 "<word>"
-	"word" none 
+	"word" none @none 
 "<word>"
-	"word" fourth 
+	"word" fourth @none 
 "<$.>"
+	"<$.>" @none 
 
