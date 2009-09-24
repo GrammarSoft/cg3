@@ -68,6 +68,7 @@ namespace CG3 {
 		void appendReading(Reading *read);
 		Reading *allocateAppendReading();
 		void addRelation(uint32_t rel, uint32_t cohort);
+		void setRelation(uint32_t rel, uint32_t cohort);
 		void remRelation(uint32_t rel, uint32_t cohort);
 
 	private:

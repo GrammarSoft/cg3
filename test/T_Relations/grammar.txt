@@ -2,14 +2,15 @@ DELIMITERS = "<$.>" ;
 
 BEFORE-SECTIONS
 
-SETRELATION (First) (startfirst) TO (0** (first)) ;
-SETRELATION (Second) (startsecond) TO (0** (second)) ;
+ADDRELATION (First) (startfirst) TO (0** (first)) ;
+ADDRELATION (Second) (startsecond) TO (0** (second)) ;
+ADDRELATION (OtherSecond) (startsecond) TO (**-1 (first)) ;
 SETRELATION (OtherSecond) (startsecond) TO (**-1 (second)) ;
 REMRELATION (First) (startfirst) TO (0** (first)) ;
 
-SETRELATIONS (Begin3) (End3) (startthird) TO (0**W (third)) ;
-SETRELATIONS (Begin4) (End4) (startfourth) TO (0**W (fourth)) ;
-SETRELATIONS (Begin4) (End3) (startfourth) TO (**-1W (third)) ;
+ADDRELATIONS (Begin3) (End3) (startthird) TO (0**W (third)) ;
+ADDRELATIONS (Begin4) (End4) (startfourth) TO (0**W (fourth)) ;
+ADDRELATIONS (Begin4) (End3) (startfourth) TO (**-1W (third)) ;
 REMRELATIONS (Begin3) (End3) (startthird) TO (0**W (third)) ;
 
 ADD (@4to3) (*) (r:Begin4 (third)) ;

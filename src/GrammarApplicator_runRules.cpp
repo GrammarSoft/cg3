@@ -566,7 +566,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow &current, uint32Set &r
 						}
 						break;
 					}
-					else if (type == K_SETRELATION || type == K_REMRELATION) {
+					else if (type == K_ADDRELATION || type == K_SETRELATION || type == K_REMRELATION) {
 						Cohort *attach = 0;
 						dep_deep_seen.clear();
 						if (runContextualTest(&current, c, rule.dep_target, &attach) && attach) {
@@ -585,10 +585,15 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow &current, uint32Set &r
 							if (good) {
 								reading.hit_by.push_back(rule.line);
 								reading.noprint = false;
-								if (type == K_SETRELATION) {
+								if (type == K_ADDRELATION) {
 									attach->is_related = true;
 									cohort->is_related = true;
 									cohort->addRelation(rule.maplist.front()->hash, attach->global_number);
+								}
+								else if (type == K_SETRELATION) {
+									attach->is_related = true;
+									cohort->is_related = true;
+									cohort->setRelation(rule.maplist.front()->hash, attach->global_number);
 								}
 								else {
 									cohort->remRelation(rule.maplist.front()->hash, attach->global_number);
@@ -597,7 +602,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow &current, uint32Set &r
 						}
 						break;
 					}
-					else if (type == K_SETRELATIONS || type == K_REMRELATIONS) {
+					else if (type == K_ADDRELATIONS || type == K_SETRELATIONS || type == K_REMRELATIONS) {
 						Cohort *attach = 0;
 						dep_deep_seen.clear();
 						if (runContextualTest(&current, c, rule.dep_target, &attach) && attach) {
@@ -616,11 +621,17 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow &current, uint32Set &r
 							if (good) {
 								reading.hit_by.push_back(rule.line);
 								reading.noprint = false;
-								if (type == K_SETRELATIONS) {
+								if (type == K_ADDRELATIONS) {
 									attach->is_related = true;
 									cohort->is_related = true;
 									cohort->addRelation(rule.maplist.front()->hash, attach->global_number);
 									attach->addRelation(rule.sublist.front(), cohort->global_number);
+								}
+								else if (type == K_SETRELATIONS) {
+									attach->is_related = true;
+									cohort->is_related = true;
+									cohort->setRelation(rule.maplist.front()->hash, attach->global_number);
+									attach->setRelation(rule.sublist.front(), cohort->global_number);
 								}
 								else {
 									cohort->remRelation(rule.maplist.front()->hash, attach->global_number);
