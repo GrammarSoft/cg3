@@ -187,8 +187,6 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow &current, uint32Set &r
 					continue;
 				}
 
-				// ToDo: Enable/Disable unif_mode per top-level set
-				unif_mode = false;
 				unif_last_wordform = 0;
 				unif_last_baseform = 0;
 				unif_last_textual = 0;
@@ -634,6 +632,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow &current, uint32Set &r
 				}
 			}
 
+			// ToDo: SETRELATION and others may block for reruns...
 			if (!good_mapping && removed.empty()) {
 				section_did_good = false;
 			}

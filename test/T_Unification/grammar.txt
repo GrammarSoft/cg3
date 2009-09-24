@@ -6,8 +6,10 @@ LIST Hums = <H.*>r ;
 LIST TSet = THIS NOTTHIS ALSONOTTHIS ;
 LIST SameBase = ".*"r ;
 
-SECTION
+BEFORE-SECTIONS
+SETRELATIONS (from) (to) ("worda") + $$ACESet TO (1* ("wordc") + $$ACESet) ;
 
+SECTION
 SELECT:this $$TSet (-1C (some) + $$TSet) ;
 SELECT:one $$ACESet (1 $$ACESet) (2 $$ACESet) ;
 SELECT:two $$ACESet + $$BDFSet (1 $$ACESet + $$BDFSet) ;
