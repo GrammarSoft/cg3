@@ -300,6 +300,9 @@ Cohort *GrammarApplicator::runContextualTest(SingleWindow *sWindow, size_t posit
 			else {
 				retval = false;
 			}
+			if (test->pos & POS_DEP_NONE) {
+				retval = !retval;
+			}
 		}
 		else if (test->offset == 0 && (test->pos & (POS_SCANFIRST|POS_SCANALL))) {
 			SingleWindow *right, *left;
@@ -587,7 +590,7 @@ Cohort *GrammarApplicator::runParenthesisTest(SingleWindow *sWindow, const Cohor
 	return rv;
 }
 
-Cohort *GrammarApplicator::runRelationTest(SingleWindow *sWindow, const Cohort *current, const ContextualTest *test, Cohort **deep, Cohort *origin) {
+Cohort *GrammarApplicator::runRelationTest(SingleWindow *sWindow, Cohort *current, const ContextualTest *test, Cohort **deep, Cohort *origin) {
 	if (!current->is_related || current->relations.empty()) {
 		return 0;
 	}
@@ -605,7 +608,16 @@ Cohort *GrammarApplicator::runRelationTest(SingleWindow *sWindow, const Cohort *
 				if (it != sWindow->parent->cohort_map.end()) {
 					cohort = it->second;
 					tmc = runSingleTest(cohort->parent, cohort->local_number, test, &brk, &retval, deep, origin);
-					if (retval) {
+					if (test->pos & POS_DEP_ALL) {
+						if (!retval) {
+							rv = 0;
+							break;
+						}
+						else {
+							rv = cohort;
+						}
+					}
+					else if (retval) {
 						rv = cohort;
 						break;
 					}
@@ -621,7 +633,16 @@ Cohort *GrammarApplicator::runRelationTest(SingleWindow *sWindow, const Cohort *
 				if (it != sWindow->parent->cohort_map.end()) {
 					cohort = it->second;
 					tmc = runSingleTest(cohort->parent, cohort->local_number, test, &brk, &retval, deep, origin);
-					if (retval) {
+					if (test->pos & POS_DEP_ALL) {
+						if (!retval) {
+							rv = 0;
+							break;
+						}
+						else {
+							rv = cohort;
+						}
+					}
+					else if (retval) {
 						rv = cohort;
 						break;
 					}

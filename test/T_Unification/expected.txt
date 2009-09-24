@@ -1,10 +1,10 @@
 "<worda>"
-	"worda" some tags AA ID:1 R:from:3 ADDRELATIONS:10 SELECT:SameBase 
+	"worda" some tags AA ID:1 R:from:3 ADDRELATIONS(from,to):10 SELECT:SameBase 
 ;	"wordc" some tags ID:1 R:from:3 SELECT:SameBase 
 ;	"wordc" some tags ID:1 R:from:3 SELECT:SameBase 
 "<wordb>"
 	"wordb" some tags ID:2 R:from:3 
-	"worda" some tags CC ID:2 R:from:3 ADDRELATIONS:10 
+	"worda" some tags CC ID:2 R:from:3 ADDRELATIONS(from,to):10 
 "<wordc>"
 	"wordc" some tags BB EE ID:3 R:to:1 R:to:2 SELECT:two 
 ;	"wordc" some tags ID:3 R:to:1 R:to:2 SELECT:two 
