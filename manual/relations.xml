@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE chapter SYSTEM "docbook-dtd-45/docbookx.dtd">
+
+<chapter id="relations">
+  <title>Making use of Relations</title>
+
+  <para>
+    CG-3 can also work with generic relations. These are analogous to dependency relations,
+	but can have any name, overlap, are directional, and can point to multiple cohorts.
+  </para>
+
+  <section id="rel-setrelation">
+    <title>SETRELATION, SETRELATIONS</title>
+    <indexterm>
+      <primary>SETRELATION</primary>
+    </indexterm>
+    <indexterm>
+      <primary>SETRELATIONS</primary>
+    </indexterm>
+    <para>
+      SETRELATION creates a one-way named relation from the current cohort to the found cohort.
+      The name must be an alphanumeric string with no whitespace.
+    </para>
+    <screen>
+      SETRELATION (name) targetset (-1* ("someword"))
+      &nbsp; TO (1* (@candidate)) (2 SomeSet) ;
+    </screen>
+    <para>
+      SETRELATIONS creates two one-way named relation; one from the current cohort to the found cohort,
+      and one the other way. The names can be the same if so desired.
+    </para>
+    <screen>
+      SETRELATIONS (name) (name) targetset (-1* ("someword"))
+      &nbsp; TO (1* (@candidate)) (2 SomeSet) ;
+    </screen>
+  </section>
+
+  <section id="rel-remrelation">
+    <title>REMRELATION, REMRELATIONS</title>
+    <indexterm>
+      <primary>REMRELATION</primary>
+    </indexterm>
+    <indexterm>
+      <primary>REMRELATIONS</primary>
+    </indexterm>
+    <para>
+      REMRELATION destroys one direction of a relation previously created with either
+      <link linkend="rel-setrelation">SETRELATION or SETRELATIONS</link>.
+    </para>
+    <screen>
+      REMRELATION (name) targetset (-1* ("someword"))
+      &nbsp; TO (1* (@candidate)) (2 SomeSet) ;
+    </screen>
+    <para>
+      REMRELATIONS destroys both directions of a relation previously created with either
+      <link linkend="rel-setrelation">SETRELATION or SETRELATIONS</link>.
+    </para>
+    <screen>
+      REMRELATIONS (name) (name) targetset (-1* ("someword"))
+      &nbsp; TO (1* (@candidate)) (2 SomeSet) ;
+    </screen>
+  </section>
+
+  <section id="rel-input">
+    <title>Existing Relations in Input</title>
+    <para>
+	  Not currently supported; relations from input are ignored at present stage of development.
+    </para>
+  </section>
+
+  <section id="rel-contextual-tests">
+    <title>Contextual Tests</title>
+    <para>
+      Once you have relations to work with,
+      you can use that in subsequent contextual tests as seen below.
+      These positions can be combined with the window spanning options.
+    </para>
+
+    <section id="rel-ct-specific">
+      <title>Specific Relation</title>
+      <indexterm>
+        <primary>r:rel</primary>
+      </indexterm>
+      <para>
+        The 'r:rel' position asks for cohorts found via the 'rel' relation.
+		'rel' can be any name previously given via
+		<link linkend="rel-setrelation">SETRELATION or SETRELATIONS</link>.
+		Be aware that for combining positional options, 'r:rel' should be the last in the position;
+		'r:' will eat anything following it until it meets a space.
+      </para>
+      <screen>
+        (r:rel (ADJ))
+      </screen>
+    </section>
+
+    <section id="rel-ct-any">
+      <title>Any Relation</title>
+      <indexterm>
+        <primary>r:*</primary>
+      </indexterm>
+      <para>
+        The 'r:*' position asks for cohorts found via any relation.
+      </para>
+      <screen>
+        (r:* (ADJ))
+      </screen>
+    </section>
+  </section>
+
+</chapter>

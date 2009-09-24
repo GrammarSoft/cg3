@@ -27,8 +27,7 @@
   <section id="binaryspeed">
     <title>Loading Speed of Binary Grammars</title>
     <para>
-      Due to my current CG-3 textual parser being awfully slow, it is not recommended for production use;
-      the startup overhead is simply too great.
+      Due to the current CG-3 textual parser being a bit slow, it is not recommended for production use.
       Binary grammars, however, are nearly instantaneous to load; there is only a minor re-indexing step
       after the grammar itself is loaded.
     </para>
@@ -42,14 +41,14 @@
     <para>
       To compile a textual grammar to a binary form, use
       <screen>
-        vislcg3 --grammar inputgrammar.txt --grammar-only --grammar-bin binarygrammar.cg3b
+        vislcg3 --grammar inputgrammar.txt --grammar-only --grammar-bin binarygrammar.bin3
       </screen>
       (remember to set codepage if needed)
     </para>
     <para>
       To later on use the binary grammar, simply do
       <screen>
-        vislcg3 --grammar binarygrammar.cg3b
+        vislcg3 --grammar binarygrammar.bin3
       </screen>
     </para>
     <para>
