@@ -155,6 +155,7 @@ namespace CG3 {
 		FL_ENCL_OUTER,
 		FL_ENCL_FINAL,
 		FL_ENCL_ANY,
+		FL_ALLOWCROSS,
 		FLAGS_COUNT
 	};
 

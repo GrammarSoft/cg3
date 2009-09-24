@@ -112,6 +112,21 @@
       </para>
     </section>
 
+    <section id="rule-options-allowcross">
+      <title>ALLOWCROSS</title>
+      <indexterm>
+        <primary>ALLOWCROSS</primary>
+      </indexterm>
+      <para>
+        Applicable for rules SETPARENT and SETCHILD.
+      </para>
+      <para>
+        If command line flag --dep-no-crossing is on,
+		SETPARENT and SETCHILD cannot attach if doing so would cause crossing branches.
+        Setting ALLOWCROSS forces the attachment even in such a case.
+      </para>
+    </section>
+
     <section id="rule-options-delayed">
       <title>DELAYED</title>
       <indexterm>

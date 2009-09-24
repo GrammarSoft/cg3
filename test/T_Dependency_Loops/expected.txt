@@ -17,7 +17,7 @@
 "<the>"
 	"the" <Def> ART DET CENTRAL SG/PL @>N #9->10 
 "<street>"
-	"street" N NOM SG @P< #10->8 
+	"street" N NOM SG @P< #10->5 
 "<$.>"
 	"<$.>" vis #11->0 
 

@@ -59,8 +59,10 @@ Options:
      --dep-humanize        forces enumeration of dependencies to human-readable; will not be valid for chained CG-3s
      --dep-original        outputs the original input dependency tag even if it is no longer valid
      --dep-allow-loops     allows the creation of circular dependencies
+     --dep-no-crossing     prevents the creation of dependencies that would result in crossing branches
      --no-magic-readings   prevents running rules on magic readings
  -o, --no-pass-origin      prevents scanning tests from passing the point of origin
+     --show-unused-sets    prints a list of unused sets and their line numbers; implies --grammar-only
     </screen>
   </section>
 
