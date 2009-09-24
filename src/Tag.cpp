@@ -212,15 +212,16 @@ void Tag::parseTagRaw(const UChar *to) {
 		uint32_t length = u_strlen(tmp);
 
 		if (tmp[0] && (tmp[0] == '"' || tmp[0] == '<')) {
-			type |= T_TEXTUAL;
-		}
-
-		if (tmp[0] == '"' && tmp[length-1] == '"') {
-			if (tmp[1] == '<' && tmp[length-2] == '>') {
-				type |= T_WORDFORM;
-			}
-			else {
-				type |= T_BASEFORM;
+			if ((tmp[0] == '"' && tmp[length-1] == '"') || (tmp[0] == '<' && tmp[length-1] == '>')) {
+				type |= T_TEXTUAL;
+				if (tmp[0] == '"' && tmp[length-1] == '"') {
+					if (tmp[1] == '<' && tmp[length-2] == '>') {
+						type |= T_WORDFORM;
+					}
+					else {
+						type |= T_BASEFORM;
+					}
+				}
 			}
 		}
 

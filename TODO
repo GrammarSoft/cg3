@@ -27,3 +27,4 @@ ToDo: SELECT $$@FUNC + $$sem IF (*1 V LINK 0 (<f($$@FUNC)/($$sem)>=50>)) ;
 ToDo: SELECT $$sem IF (-1 N LINK 0 (<+($$sem)>)) ;
 ToDo: Somehow refer to left / right sibling
 ToDo: Movement of entire sub-trees
+ToDo: Use Cohort iterator instead of subfunctions
