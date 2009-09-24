@@ -588,7 +588,7 @@ Cohort *GrammarApplicator::runParenthesisTest(SingleWindow *sWindow, const Cohor
 }
 
 Cohort *GrammarApplicator::runRelationTest(SingleWindow *sWindow, const Cohort *current, const ContextualTest *test, Cohort **deep, Cohort *origin) {
-	if (!current->is_related || current->relations.empty() || current->relations.find(test->relation) == current->relations.end()) {
+	if (!current->is_related || current->relations.empty()) {
 		return 0;
 	}
 	Cohort *rv = 0;
@@ -598,14 +598,34 @@ Cohort *GrammarApplicator::runRelationTest(SingleWindow *sWindow, const Cohort *
 	bool brk = false;
 	Cohort *cohort = 0;
 
-	const_foreach(uint32Set, current->relations.find(test->relation)->second, citer, citer_end) {
-		std::map<uint32_t,Cohort*>::iterator it = sWindow->parent->cohort_map.find(*citer);
-		if (it != sWindow->parent->cohort_map.end()) {
-			cohort = it->second;
-			tmc = runSingleTest(cohort->parent, cohort->local_number, test, &brk, &retval, deep, origin);
-			if (retval) {
-				rv = cohort;
-				break;
+	if (test->relation == grammar->tag_any) {
+		const_foreach(RelationCtn, current->relations, riter, riter_end) {
+			const_foreach(uint32Set, riter->second, citer, citer_end) {
+				std::map<uint32_t,Cohort*>::iterator it = sWindow->parent->cohort_map.find(*citer);
+				if (it != sWindow->parent->cohort_map.end()) {
+					cohort = it->second;
+					tmc = runSingleTest(cohort->parent, cohort->local_number, test, &brk, &retval, deep, origin);
+					if (retval) {
+						rv = cohort;
+						break;
+					}
+				}
+			}
+		}
+	}
+	else {
+		RelationCtn::const_iterator riter = current->relations.find(test->relation);
+		if (riter != current->relations.end()) {
+			const_foreach(uint32Set, riter->second, citer, citer_end) {
+				std::map<uint32_t,Cohort*>::iterator it = sWindow->parent->cohort_map.find(*citer);
+				if (it != sWindow->parent->cohort_map.end()) {
+					cohort = it->second;
+					tmc = runSingleTest(cohort->parent, cohort->local_number, test, &brk, &retval, deep, origin);
+					if (retval) {
+						rv = cohort;
+						break;
+					}
+				}
 			}
 		}
 	}
