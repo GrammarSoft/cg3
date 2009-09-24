@@ -12,4 +12,5 @@ SETRELATIONS (Begin4) (End4) (startfourth) TO (0**W (fourth)) ;
 SETRELATIONS (Begin4) (End3) (startfourth) TO (**-1W (third)) ;
 REMRELATIONS (Begin3) (End3) (startthird) TO (0**W (third)) ;
 
-MAP (@4to3) (*) (r:Begin4 (third)) ;
+ADD (@4to3) (*) (r:Begin4 (third)) ;
+ADD (@*to3) (*) (r:* (third)) ;
