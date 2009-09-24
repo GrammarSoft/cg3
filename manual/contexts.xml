@@ -266,4 +266,18 @@
     </para>
   </section>
 
+  <section id="test-relations">
+    <title>Relations</title>
+    <indexterm>
+      <primary>r:rel</primary>
+    </indexterm>
+    <indexterm>
+      <primary>r:*</primary>
+    </indexterm>
+    <para>
+      CG-3 also introduces the r:rel and r:* positions.
+      See the section about those in the <link linkend="rel-contextual-tests">Relations</link> chapter.
+    </para>
+  </section>
+
 </chapter>

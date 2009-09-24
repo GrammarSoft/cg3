@@ -7,7 +7,6 @@
   <para>
     CG-3 can work with dependency trees in various ways. The input cohorts can have existing
     dependencies; the grammar can create new attachments; or a combination of the two.
-    <emphasis>It should be noted that mixing the two sources is not recommended.</emphasis>
   </para>
 
   <section id="dep-setparent">
