@@ -56,6 +56,7 @@ namespace CG3 {
 		bool dep_humanize;
 		bool dep_original;
 		bool dep_block_loops;
+		bool dep_block_crossing;
 
 		uint32_t num_windows;
 		uint32_t soft_limit;
@@ -159,7 +160,8 @@ namespace CG3 {
 		void splitMappings(TagList mappings, Cohort &cohort, Reading &reading, bool mapped = false);
 		void mergeMappings(Cohort &cohort);
 		bool wouldParentChildLoop(Cohort *parent, Cohort *child);
-		bool attachParentChild(Cohort &parent, Cohort &child, bool allowloop = false);
+		bool wouldParentChildCross(Cohort *parent, Cohort *child);
+		bool attachParentChild(Cohort &parent, Cohort &child, bool allowloop = false, bool allowcrossing = false);
 
 		Reading *initEmptyCohort(Cohort &cohort);
 	};

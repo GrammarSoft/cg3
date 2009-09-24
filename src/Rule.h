@@ -49,7 +49,8 @@ namespace CG3 {
 		RF_ENCL_INNER   =  4096U,
 		RF_ENCL_OUTER   =  8192U,
 		RF_ENCL_FINAL   = 16384U,
-		RF_ENCL_ANY     = 32768U
+		RF_ENCL_ANY     = 32768U,
+		RF_ALLOWCROSS   = 65536U
 	};
 
 	class Rule {

@@ -45,6 +45,7 @@ GrammarApplicator::GrammarApplicator(UFILE *ux_err) {
 	dep_humanize = false;
 	dep_original = false;
 	dep_block_loops = true;
+	dep_block_crossing = false;
 	dep_highest_seen = 0;
 	has_dep = false;
 	verbosity_level = 0;

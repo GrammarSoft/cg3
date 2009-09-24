@@ -76,7 +76,23 @@ bool GrammarApplicator::wouldParentChildLoop(Cohort *parent, Cohort *child) {
 	return retval;
 }
 
-bool GrammarApplicator::attachParentChild(Cohort &parent, Cohort &child, bool allowloop) {
+bool GrammarApplicator::wouldParentChildCross(Cohort *parent, Cohort *child) {
+	uint32_t mn = std::min(parent->global_number, child->global_number);
+	uint32_t mx = std::max(parent->global_number, child->global_number);
+
+	for (uint32_t i = mn+1 ; i<mx ; ++i) {
+		std::map<uint32_t,Cohort*>::iterator it = gWindow->cohort_map.find(parent->dep_parent);
+		if (it != gWindow->cohort_map.end() && it->second->dep_parent != UINT_MAX) {
+			if (it->second->dep_parent < mn || it->second->dep_parent > mx) {
+				return true;
+			}
+		}
+	}
+
+	return false;
+}
+
+bool GrammarApplicator::attachParentChild(Cohort &parent, Cohort &child, bool allowloop, bool allowcrossing) {
 	parent.dep_self = parent.global_number;
 	child.dep_self = child.global_number;
 
@@ -85,6 +101,17 @@ bool GrammarApplicator::attachParentChild(Cohort &parent, Cohort &child, bool al
 			u_fprintf(
 				ux_stderr,
 				"Warning: Dependency between %u and %u would cause a loop. Will not attach them.\n",
+				child.global_number, parent.global_number
+				);
+		}
+		return false;
+	}
+
+	if (!allowcrossing && dep_block_crossing && wouldParentChildCross(&parent, &child)) {
+		if (verbosity_level > 0) {
+			u_fprintf(
+				ux_stderr,
+				"Warning: Dependency between %u and %u would cause crossing branches. Will not attach them.\n",
 				child.global_number, parent.global_number
 				);
 		}
