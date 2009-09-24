@@ -15,3 +15,8 @@ REMRELATIONS (Begin3) (End3) (startthird) TO (0**W (third)) ;
 
 ADD (@4to3) (*) (r:Begin4 (third)) ;
 ADD (@*to3) (*) (r:* (third)) ;
+
+ADD (@careful-error) (*) (Cr:Begin4 (third)) ;
+ADD (@careful) (*) (Cr:OtherSecond (second)) ;
+
+ADD (@none) (*) (NOT r:Begin4 (third)) ;

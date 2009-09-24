@@ -93,6 +93,8 @@ namespace CG3 {
 		S_NOT,
 		S_TEXTNOT,
 		S_TEXTNEGATE,
+		S_ALL,
+		S_NONE,
 		S_LINK,
 		S_BARRIER,
 		S_CBARRIER,

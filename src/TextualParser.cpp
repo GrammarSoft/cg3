@@ -396,6 +396,14 @@ int TextualParser::parseContextualTestPosition(UChar *& p, ContextualTest& t) {
 		t.pos &= ~POS_NEGATIVE;
 		t.pos |= POS_DEP_NONE;
 	}
+	if ((t.pos & POS_RELATION) && (t.pos & POS_CAREFUL)) {
+		t.pos &= ~POS_CAREFUL;
+		t.pos |= POS_DEP_ALL;
+	}
+	if ((t.pos & POS_RELATION) && (t.pos & POS_NEGATIVE)) {
+		t.pos &= ~POS_NEGATIVE;
+		t.pos |= POS_DEP_NONE;
+	}
 
 	if (tries >= 5) {
 		u_fprintf(ux_stderr, "Warning: Position on line %u took many loops.\n", result->lines);
@@ -417,7 +425,7 @@ int TextualParser::parseContextualTestPosition(UChar *& p, ContextualTest& t) {
 		CG3Quit(1);
 	}
 	if ((t.pos & POS_DEP_ALL) && (t.pos & POS_DEP_NONE)) {
-		u_fprintf(ux_stderr, "Error: Invalid position on line %u - cannot have both NOT and C for dependencies!\n", result->lines);
+		u_fprintf(ux_stderr, "Error: Invalid position on line %u - cannot have both NONE/NOT and ALL/C for dependencies/relations!\n", result->lines);
 		CG3Quit(1);
 	}
 	if ((t.pos & POS_NONE) && (t.pos != POS_NONE || t.offset != 0)) {
@@ -440,7 +448,7 @@ int TextualParser::parseContextualTestList(UChar *& p, Rule *rule, ContextualTes
 		t = rule->allocateContextualTest();
 	}
 	t->line = result->lines;
-	bool negated = false, negative = false;
+	bool negated = false, negative = false, all = false, none = false;
 
 	result->lines += SKIPWS(p);
 	if (ux_simplecasecmp(p, stringbits[S_TEXTNEGATE].getTerminatedBuffer(), stringbits[S_TEXTNEGATE].length())) {
@@ -451,6 +459,16 @@ int TextualParser::parseContextualTestList(UChar *& p, Rule *rule, ContextualTes
 	if (ux_simplecasecmp(p, stringbits[S_TEXTNOT].getTerminatedBuffer(), stringbits[S_TEXTNOT].length())) {
 		p += stringbits[S_TEXTNOT].length();
 		negative = true;
+	}
+	result->lines += SKIPWS(p);
+	if (ux_simplecasecmp(p, stringbits[S_ALL].getTerminatedBuffer(), stringbits[S_ALL].length())) {
+		p += stringbits[S_ALL].length();
+		all = true;
+	}
+	result->lines += SKIPWS(p);
+	if (ux_simplecasecmp(p, stringbits[S_NONE].getTerminatedBuffer(), stringbits[S_NONE].length())) {
+		p += stringbits[S_NONE].length();
+		none = true;
 	}
 	result->lines += SKIPWS(p);
 
@@ -509,6 +527,12 @@ int TextualParser::parseContextualTestList(UChar *& p, Rule *rule, ContextualTes
 		goto label_parseTemplateRef;
 	}
 	else {
+		if (all) {
+			t->pos |= POS_DEP_ALL;
+		}
+		if (none) {
+			t->pos |= POS_DEP_NONE;
+		}
 		if (negated) {
 			t->pos |= POS_NEGATED;
 		}
