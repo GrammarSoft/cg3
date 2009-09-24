@@ -115,7 +115,6 @@ namespace CG3 {
 		uint32HashMap metas;
 		Cohort *mark;
 
-		bool unif_mode;
 		uint32HashMap unif_tags;
 		uint32_t unif_last_wordform;
 		uint32_t unif_last_baseform;
@@ -145,9 +144,9 @@ namespace CG3 {
 		Cohort *runRelationTest(SingleWindow *sWindow, const Cohort *current, const ContextualTest *test, Cohort **deep = 0, Cohort *origin = 0);
 
 		bool doesTagMatchSet(const uint32_t tag, const Set &set);
-		bool doesTagMatchReading(const Reading &reading, const Tag &tag);
-		bool doesSetMatchReading_tags(const Reading &reading, const Set &theset);
-		bool doesSetMatchReading(Reading &reading, const uint32_t set, bool bypass_index = false);
+		bool doesTagMatchReading(const Reading &reading, const Tag &tag, bool unif_mode = false);
+		bool doesSetMatchReading_tags(const Reading &reading, const Set &theset, bool unif_mode = false);
+		bool doesSetMatchReading(Reading &reading, const uint32_t set, bool bypass_index = false, bool unif_mode = false);
 		bool doesSetMatchCohortNormal(Cohort &cohort, const uint32_t set, uint32_t options = 0);
 		bool doesSetMatchCohortCareful(const Cohort &cohort, const uint32_t set, uint32_t options = 0);
 
