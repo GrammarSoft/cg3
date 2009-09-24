@@ -30,16 +30,13 @@ else
   then
     AC_MSG_RESULT([i686])
     CFLAGS="-Wall -Wextra -ansi -march=i686 -O3 -fno-rtti -fomit-frame-pointer -funroll-loops $CFLAGS"
-    CXXFLAGS="-Wall -Wextra -ansi -march=i686 -O3 \
-              -fno-rtti -fomit-frame-pointer -funroll-loops $CXXFLAGS"
-  
+    CXXFLAGS="-Wall -Wextra -ansi -march=i686 -O3 -fno-rtti -fomit-frame-pointer -funroll-loops $CXXFLAGS"
   else
     if test x$ARCH = xx86_64
     then
       AC_MSG_RESULT([x86_64])
-      CFLAGS="-Wall -Wextra -ansi -O3 -mtune=nocona -fno-rtti -fomit-frame-pointer -funroll-loops $CFLAGS"
-      CXXFLAGS="-Wall -Wextra -ansi -O3 -mtune=nocona \
-              -fno-rtti -fomit-frame-pointer -funroll-loops $CXXFLAGS"
+      CFLAGS="-Wall -Wextra -ansi -O3 -march=nocona -fno-rtti -fomit-frame-pointer -funroll-loops $CFLAGS"
+      CXXFLAGS="-Wall -Wextra -ansi -O3 -march=nocona -fno-rtti -fomit-frame-pointer -funroll-loops $CXXFLAGS"
     else
       AC_MSG_RESULT([Other])
       CFLAGS="-Wall -Wextra -ansi -O3 $CFLAGS"
