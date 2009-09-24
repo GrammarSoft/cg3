@@ -428,6 +428,10 @@ int TextualParser::parseContextualTestPosition(UChar *& p, ContextualTest& t) {
 		u_fprintf(ux_stderr, "Error: Invalid position on line %u - cannot have both NONE/NOT and ALL/C for dependencies/relations!\n", result->lines);
 		CG3Quit(1);
 	}
+	if ((t.pos & (POS_DEP_ALL|POS_DEP_NONE)) && !(t.pos & (POS_DEP_CHILD|POS_DEP_SIBLING|POS_DEP_PARENT|POS_RELATION))) {
+		u_fprintf(ux_stderr, "Error: Invalid position on line %u - NONE/ALL are only useful with dependencies/relations!\n", result->lines);
+		CG3Quit(1);
+	}
 	if ((t.pos & POS_NONE) && (t.pos != POS_NONE || t.offset != 0)) {
 		u_fprintf(ux_stderr, "Error: Invalid position on line %u - '?' cannot be combined with anything else!\n", result->lines);
 		CG3Quit(1);
