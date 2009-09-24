@@ -122,7 +122,7 @@
       </para>
       <para>
         If command line flag --dep-no-crossing is on,
-		SETPARENT and SETCHILD cannot attach if doing so would cause crossing branches.
+        SETPARENT and SETCHILD cannot attach if doing so would cause crossing branches.
         Setting ALLOWCROSS forces the attachment even in such a case.
       </para>
     </section>
