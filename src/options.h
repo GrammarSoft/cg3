@@ -69,6 +69,7 @@ namespace Options {
 		DEP_HUMANIZE,
 		DEP_ORIGINAL,
 		DEP_ALLOW_LOOPS,
+		DEP_BLOCK_CROSSING,
 		MAGIC_READINGS,
 		NO_PASS_ORIGIN,
 		SHOW_UNUSED_SETS,
@@ -126,6 +127,7 @@ namespace Options {
 		UOPTION_DEF_D("dep-humanize",		0, UOPT_NO_ARG, "forces enumeration of dependencies to human-readable; will not be valid for chained CG-3s"),
 		UOPTION_DEF_D("dep-original",		0, UOPT_NO_ARG, "outputs the original input dependency tag even if it is no longer valid"),
 		UOPTION_DEF_D("dep-allow-loops",	0, UOPT_NO_ARG, "allows the creation of circular dependencies"),
+		UOPTION_DEF_D("dep-no-crossing",	0, UOPT_NO_ARG, "prevents the creation of dependencies that would result in crossing branches"),
 
 		UOPTION_DEF_D("no-magic-readings",	0, UOPT_NO_ARG, "prevents running rules on magic readings"),
 		UOPTION_DEF_D("no-pass-origin",		'o', UOPT_NO_ARG, "prevents scanning tests from passing the point of origin"),

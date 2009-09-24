@@ -477,10 +477,10 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow &current, uint32Set &r
 								}
 								if (good) {
 									if (type == K_SETPARENT) {
-										attached = attachParentChild(*attach, *cohort, (rule.flags & RF_ALLOWLOOP) != 0);
+										attached = attachParentChild(*attach, *cohort, (rule.flags & RF_ALLOWLOOP) != 0, (rule.flags & RF_ALLOWCROSS) != 0);
 									}
 									else {
-										attached = attachParentChild(*cohort, *attach, (rule.flags & RF_ALLOWLOOP) != 0);
+										attached = attachParentChild(*cohort, *attach, (rule.flags & RF_ALLOWLOOP) != 0, (rule.flags & RF_ALLOWCROSS) != 0);
 									}
 									if (attached) {
 										reading.hit_by.push_back(rule.line);

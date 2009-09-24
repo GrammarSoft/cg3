@@ -542,6 +542,9 @@ void GAppSetOpts(CG3::GrammarApplicator &applicator) {
 	if (options[DEP_ALLOW_LOOPS].doesOccur) {
 		applicator.dep_block_loops = false;
 	}
+	if (options[DEP_BLOCK_CROSSING].doesOccur) {
+		applicator.dep_block_crossing = true;
+	}
 	if (options[MAGIC_READINGS].doesOccur) {
 		applicator.allow_magic_readings = false;
 	}

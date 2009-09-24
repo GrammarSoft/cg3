@@ -18,4 +18,8 @@ SETPARENT ("once") TO (1* ("down")) ; # Immediate parent->child = child->parent 
 SETPARENT ("once") TO (1* ("the")) ; # Deeper loop detection, blocks.
 SETPARENT ("man") TO (-1* ("there")) ; # Finds an existing loop, but won't block.
 
+SETPARENT ("street") TO (-1* ("man")) ;
+
 SETPARENT ("down") TO (*2 (*)) ;
+
+SETPARENT ALLOWCROSS ("street") TO (-1* ("man")) ;
