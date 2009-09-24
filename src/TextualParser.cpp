@@ -757,7 +757,9 @@ int TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 
 	result->lines += SKIPWS(p);
 	if (key == K_MAP || key == K_ADD || key == K_REPLACE || key == K_APPEND || key == K_SUBSTITUTE
-		|| key == K_SETRELATIONS || key == K_SETRELATION || key == K_REMRELATIONS || key == K_REMRELATION) {
+	|| key == K_ADDRELATIONS || key == K_ADDRELATION
+	|| key == K_SETRELATIONS || key == K_SETRELATION
+	|| key == K_REMRELATIONS || key == K_REMRELATION) {
 		if (*p != '(') {
 			u_fprintf(ux_stderr, "Error: Tag list for %S must be in () on line %u!\n", keywords[key].getTerminatedBuffer(), result->lines);
 			CG3Quit(1);
@@ -787,7 +789,7 @@ int TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 	}
 
 	result->lines += SKIPWS(p);
-	if (key == K_SETRELATIONS || key == K_REMRELATIONS) {
+	if (key == K_ADDRELATIONS || key == K_SETRELATIONS || key == K_REMRELATIONS) {
 		if (*p != '(') {
 			u_fprintf(ux_stderr, "Error: Tag list for %S must be in () on line %u!\n", keywords[key].getTerminatedBuffer(), result->lines);
 			CG3Quit(1);
@@ -844,8 +846,11 @@ int TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 		result->lines += SKIPWS(p);
 	}
 
-	if (key == K_SETPARENT || key == K_SETCHILD || key == K_SETRELATION || key == K_REMRELATION
-		|| key == K_SETRELATIONS || key == K_REMRELATIONS || key == K_MOVE || key == K_SWITCH) {
+	if (key == K_SETPARENT || key == K_SETCHILD
+	|| key == K_ADDRELATIONS || key == K_ADDRELATION
+	|| key == K_SETRELATIONS || key == K_SETRELATION
+	|| key == K_REMRELATIONS || key == K_REMRELATION
+	|| key == K_MOVE || key == K_SWITCH) {
 		result->lines += SKIPWS(p);
 		if (key == K_MOVE) {
 			if (ux_simplecasecmp(p, stringbits[S_AFTER].getTerminatedBuffer(), stringbits[S_AFTER].length())) {
@@ -1080,6 +1085,13 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 				CG3Quit(1);
 			}
 		}
+		// ADDRELATIONS
+		else if (ISCHR(*p,'A','a') && ISCHR(*(p+11),'S','s') && ISCHR(*(p+1),'D','d') && ISCHR(*(p+2),'D','d')
+			&& ISCHR(*(p+3),'R','r') && ISCHR(*(p+4),'E','e') && ISCHR(*(p+5),'L','l') && ISCHR(*(p+6),'A','a')
+			&& ISCHR(*(p+7),'T','t') && ISCHR(*(p+8),'I','i') && ISCHR(*(p+9),'O','o') && ISCHR(*(p+10),'N','n')
+			&& !ISSTRING(p, 11)) {
+			parseRule(p, K_ADDRELATIONS);
+		}
 		// SETRELATIONS
 		else if (ISCHR(*p,'S','s') && ISCHR(*(p+11),'S','s') && ISCHR(*(p+1),'E','e') && ISCHR(*(p+2),'T','t')
 			&& ISCHR(*(p+3),'R','r') && ISCHR(*(p+4),'E','e') && ISCHR(*(p+5),'L','l') && ISCHR(*(p+6),'A','a')
@@ -1093,6 +1105,13 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 			&& ISCHR(*(p+7),'T','t') && ISCHR(*(p+8),'I','i') && ISCHR(*(p+9),'O','o') && ISCHR(*(p+10),'N','n')
 			&& !ISSTRING(p, 11)) {
 			parseRule(p, K_REMRELATIONS);
+		}
+		// ADDRELATION
+		else if (ISCHR(*p,'A','a') && ISCHR(*(p+10),'N','n') && ISCHR(*(p+1),'D','d') && ISCHR(*(p+2),'D','d')
+			&& ISCHR(*(p+3),'R','r') && ISCHR(*(p+4),'E','e') && ISCHR(*(p+5),'L','l') && ISCHR(*(p+6),'A','a')
+			&& ISCHR(*(p+7),'T','t') && ISCHR(*(p+8),'I','i') && ISCHR(*(p+9),'O','o')
+			&& !ISSTRING(p, 10)) {
+			parseRule(p, K_ADDRELATION);
 		}
 		// SETRELATION
 		else if (ISCHR(*p,'S','s') && ISCHR(*(p+10),'N','n') && ISCHR(*(p+1),'E','e') && ISCHR(*(p+2),'T','t')
