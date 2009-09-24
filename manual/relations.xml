@@ -9,6 +9,32 @@
 	but can have any name, overlap, are directional, and can point to multiple cohorts.
   </para>
 
+  <section id="rel-addrelation">
+    <title>ADDRELATION, ADDRELATIONS</title>
+    <indexterm>
+      <primary>ADDRELATION</primary>
+    </indexterm>
+    <indexterm>
+      <primary>ADDRELATIONS</primary>
+    </indexterm>
+    <para>
+      ADDRELATION creates a one-way named relation from the current cohort to the found cohort.
+      The name must be an alphanumeric string with no whitespace.
+    </para>
+    <screen>
+      ADDRELATION (name) targetset (-1* ("someword"))
+      &nbsp; TO (1* (@candidate)) (2 SomeSet) ;
+    </screen>
+    <para>
+      ADDRELATIONS creates two one-way named relation; one from the current cohort to the found cohort,
+      and one the other way. The names can be the same if so desired.
+    </para>
+    <screen>
+      ADDRELATIONS (name) (name) targetset (-1* ("someword"))
+      &nbsp; TO (1* (@candidate)) (2 SomeSet) ;
+    </screen>
+  </section>
+
   <section id="rel-setrelation">
     <title>SETRELATION, SETRELATIONS</title>
     <indexterm>
@@ -18,7 +44,8 @@
       <primary>SETRELATIONS</primary>
     </indexterm>
     <para>
-      SETRELATION creates a one-way named relation from the current cohort to the found cohort.
+      SETRELATION removes all previous relations with the name,
+	  then creates a one-way named relation from the current cohort to the found cohort.
       The name must be an alphanumeric string with no whitespace.
     </para>
     <screen>
@@ -26,7 +53,8 @@
       &nbsp; TO (1* (@candidate)) (2 SomeSet) ;
     </screen>
     <para>
-      SETRELATIONS creates two one-way named relation; one from the current cohort to the found cohort,
+      SETRELATIONS removes all previous relations in the respective cohorts with the respective names,
+	  then creates two one-way named relation; one from the current cohort to the found cohort,
       and one the other way. The names can be the same if so desired.
     </para>
     <screen>
@@ -45,7 +73,7 @@
     </indexterm>
     <para>
       REMRELATION destroys one direction of a relation previously created with either
-      <link linkend="rel-setrelation">SETRELATION or SETRELATIONS</link>.
+      <link linkend="rel-addrelation">ADDRELATION</link> or <link linkend="rel-setrelation">SETRELATION</link>.
     </para>
     <screen>
       REMRELATION (name) targetset (-1* ("someword"))
@@ -53,7 +81,7 @@
     </screen>
     <para>
       REMRELATIONS destroys both directions of a relation previously created with either
-      <link linkend="rel-setrelation">SETRELATION or SETRELATIONS</link>.
+      <link linkend="rel-addrelation">ADDRELATION</link> or <link linkend="rel-setrelation">SETRELATION</link>.
     </para>
     <screen>
       REMRELATIONS (name) (name) targetset (-1* ("someword"))
@@ -84,7 +112,7 @@
       <para>
         The 'r:rel' position asks for cohorts found via the 'rel' relation.
 		'rel' can be any name previously given via
-		<link linkend="rel-setrelation">SETRELATION or SETRELATIONS</link>.
+        <link linkend="rel-addrelation">ADDRELATION</link> or <link linkend="rel-setrelation">SETRELATION</link>.
 		Be aware that for combining positional options, 'r:rel' should be the last in the position;
 		'r:' will eat anything following it until it meets a space.
       </para>

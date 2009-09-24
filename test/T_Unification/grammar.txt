@@ -7,7 +7,7 @@ LIST TSet = THIS NOTTHIS ALSONOTTHIS ;
 LIST SameBase = ".*"r ;
 
 BEFORE-SECTIONS
-SETRELATIONS (from) (to) ("worda") + $$ACESet TO (1* ("wordc") + $$ACESet) ;
+ADDRELATIONS (from) (to) ("worda") + $$ACESet TO (1* ("wordc") + $$ACESet) ;
 
 SECTION
 SELECT:this $$TSet (-1C (some) + $$TSet) ;

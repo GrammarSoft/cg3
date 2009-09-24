@@ -24,6 +24,36 @@
     </screen>
   </section>
 
+  <section id="keyword-addrelation">
+    <title>ADDRELATION</title>
+    <indexterm>
+      <primary>ADDRELATION</primary>
+    </indexterm>
+    <para>
+      ADDRELATION creates a one-way named relation from the current cohort to the found cohort.
+      The name must be an alphanumeric string with no whitespace.
+    </para>
+    <screen>
+      ADDRELATION (name) targetset (-1* ("someword"))
+      &nbsp; TO (1* (@candidate)) (2 SomeSet) ;
+    </screen>
+  </section>
+
+  <section id="keyword-addrelations">
+    <title>ADDRELATIONS</title>
+    <indexterm>
+      <primary>ADDRELATIONS</primary>
+    </indexterm>
+    <para>
+      ADDRELATIONS creates two one-way named relation; one from the current cohort to the found cohort,
+      and one the other way. The names can be the same if so desired.
+    </para>
+    <screen>
+      ADDRELATIONS (name) (name) targetset (-1* ("someword"))
+      &nbsp; TO (1* (@candidate)) (2 SomeSet) ;
+    </screen>
+  </section>
+
   <section id="keyword-after-sections">
     <title>AFTER-SECTIONS</title>
     <indexterm>

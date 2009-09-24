@@ -190,6 +190,14 @@ void Cohort::addRelation(uint32_t rel, uint32_t cohort) {
 	relations.find(rel)->second.insert(cohort);
 }
 
+void Cohort::setRelation(uint32_t rel, uint32_t cohort) {
+	if (relations.find(rel) == relations.end()) {
+		relations[rel];
+	}
+	relations.find(rel)->second.clear();
+	relations.find(rel)->second.insert(cohort);
+}
+
 void Cohort::remRelation(uint32_t rel, uint32_t cohort) {
 	if (relations.find(rel) != relations.end()) {
 		relations.find(rel)->second.erase(cohort);
