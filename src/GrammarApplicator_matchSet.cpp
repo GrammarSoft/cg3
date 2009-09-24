@@ -91,7 +91,7 @@ bool GrammarApplicator::doesTagMatchSet(const uint32_t tag, const Set &set) {
 	return retval;
 }
 
-bool GrammarApplicator::doesTagMatchReading(const Reading &reading, const Tag &tag) {
+bool GrammarApplicator::doesTagMatchReading(const Reading &reading, const Tag &tag, bool unif_mode) {
 	bool retval = false;
 	bool match = true;
 
@@ -358,7 +358,7 @@ bool GrammarApplicator::doesTagMatchReading(const Reading &reading, const Tag &t
 	return retval;
 }
 
-bool GrammarApplicator::doesSetMatchReading_tags(const Reading &reading, const Set &theset) {
+bool GrammarApplicator::doesSetMatchReading_tags(const Reading &reading, const Set &theset, bool unif_mode) {
 	bool retval = false;
 
 	if (!(theset.is_special|unif_mode)) {
@@ -367,7 +367,7 @@ bool GrammarApplicator::doesSetMatchReading_tags(const Reading &reading, const S
 	else {
 		TagHashSet::const_iterator ster;
 		for (ster = theset.ff_tags.begin() ; ster != theset.ff_tags.end() ; ++ster) {
-			bool match = doesTagMatchReading(reading, **ster);
+			bool match = doesTagMatchReading(reading, **ster, unif_mode);
 			if (match) {
 				return false;
 			}
@@ -376,7 +376,7 @@ bool GrammarApplicator::doesSetMatchReading_tags(const Reading &reading, const S
 			if ((*ster)->type & T_FAILFAST) {
 				continue;
 			}
-			bool match = doesTagMatchReading(reading, **ster);
+			bool match = doesTagMatchReading(reading, **ster, unif_mode);
 			if (match) {
 				if (unif_mode) {
 					uint32HashMap::const_iterator it = unif_tags.find(theset.hash);
@@ -403,7 +403,7 @@ bool GrammarApplicator::doesSetMatchReading_tags(const Reading &reading, const S
 			else {
 				TagHashSet::const_iterator cter;
 				for (cter = ctag->tags.begin() ; cter != ctag->tags.end() ; ++cter) {
-					bool inner = doesTagMatchReading(reading, **cter);
+					bool inner = doesTagMatchReading(reading, **cter, unif_mode);
 					if ((*cter)->type & T_FAILFAST) {
 						inner = !inner;
 					}
@@ -431,10 +431,10 @@ bool GrammarApplicator::doesSetMatchReading_tags(const Reading &reading, const S
 	return retval;
 }
 
-bool GrammarApplicator::doesSetMatchReading(Reading &reading, const uint32_t set, bool bypass_index) {
+bool GrammarApplicator::doesSetMatchReading(Reading &reading, const uint32_t set, bool bypass_index, bool unif_mode) {
 	// ToDo: This is not good enough...while numeric tags are special, their failures can be indexed.
 	uint32_t ih = hash_sdbm_uint32_t(reading.hash, set);
-	if (!bypass_index) {
+	if (!bypass_index && !unif_mode) {
 		if (index_matches(index_readingSet_yes, ih)) {
 			return true;
 		}
@@ -452,44 +452,41 @@ bool GrammarApplicator::doesSetMatchReading(Reading &reading, const uint32_t set
 
 	Setuint32HashMap::const_iterator iter = grammar->sets_by_contents.find(set);
 	const Set &theset = *(iter->second);
-	if (theset.is_unified) {
-		unif_mode = true;
-	}
 
 	if (theset.match_any) {
 		retval = true;
 	}
 	else if (theset.sets.empty()) {
-		retval = doesSetMatchReading_tags(reading, theset);
+		retval = doesSetMatchReading_tags(reading, theset, theset.is_unified|unif_mode);
 	}
 	else {
 		size_t size = theset.sets.size();
 		for (size_t i=0;i<size;++i) {
-			bool match = doesSetMatchReading(reading, theset.sets.at(i), bypass_index);
+			bool match = doesSetMatchReading(reading, theset.sets.at(i), bypass_index, theset.is_unified|unif_mode);
 			bool failfast = false;
 			while (i < size-1 && theset.set_ops.at(i) != S_OR) {
 				switch (theset.set_ops.at(i)) {
 					case S_PLUS:
 						if (match) {
-							match = doesSetMatchReading(reading, theset.sets.at(i+1), bypass_index);
+							match = doesSetMatchReading(reading, theset.sets.at(i+1), bypass_index, theset.is_unified|unif_mode);
 						}
 						break;
 					case S_FAILFAST:
-						if (doesSetMatchReading(reading, theset.sets.at(i+1), bypass_index)) {
+						if (doesSetMatchReading(reading, theset.sets.at(i+1), bypass_index, theset.is_unified|unif_mode)) {
 							match = false;
 							failfast = true;
 						}
 						break;
 					case S_MINUS:
 						if (match) {
-							if (doesSetMatchReading(reading, theset.sets.at(i+1), bypass_index)) {
+							if (doesSetMatchReading(reading, theset.sets.at(i+1), bypass_index, theset.is_unified|unif_mode)) {
 								match = false;
 							}
 						}
 						break;
 					case S_NOT:
 						if (!match) {
-							if (!doesSetMatchReading(reading, theset.sets.at(i+1), bypass_index)) {
+							if (!doesSetMatchReading(reading, theset.sets.at(i+1), bypass_index, theset.is_unified|unif_mode)) {
 								match = true;
 							}
 						}
@@ -526,7 +523,7 @@ bool GrammarApplicator::doesSetMatchReading(Reading &reading, const uint32_t set
 		index_readingSet_yes.insert(ih);
 	}
 	else {
-		if (!unif_mode) {
+		if (!(theset.is_unified|unif_mode)) {
 			index_readingSet_no.insert(ih);
 			/* This actually slows down the overall processing. Removing on cohort-level only is most efficient.
 			if (!grammar->sets_any || grammar->sets_any->find(set) == grammar->sets_any->end()) {

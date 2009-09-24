@@ -1,24 +1,36 @@
 "<worda>"
-	"worda" some tags AA 
+	"worda" some tags AA ID:1 R:from:3 SETRELATIONS:10 SELECT:SameBase 
+;	"wordc" some tags ID:1 R:from:3 SELECT:SameBase 
+;	"wordc" some tags ID:1 R:from:3 SELECT:SameBase 
 "<wordb>"
-	"wordb" some tags 
-	"worda" some tags CC 
+	"wordb" some tags ID:2 R:from:3 
+	"worda" some tags CC ID:2 R:from:3 SETRELATIONS:10 
 "<wordc>"
-	"wordc" some tags BB EE 
+	"wordc" some tags BB EE ID:3 R:to:1 R:to:2 SELECT:two 
+;	"wordc" some tags ID:3 R:to:1 R:to:2 SELECT:two 
+;	"wordc" some tags ID:3 R:to:1 R:to:2 SELECT:two 
 "<wordd>"
 	"wordd" some tags 
 	"wordd" some tags BB EE 
 "<worde>"
-	"worde" some tags CC 
+	"worde" some tags CC SELECT:one 
+;	"worde" some tags SELECT:one 
+;	"worde" some tags SELECT:one 
 "<wordf>"
 	"wordf" some tags CC THIS 
 	"wordf" some tags THIS 
+;	"wordf" some tags NOTTHIS REMOVE:18 
 "<wordg>"
-	"wordg" some tags CC THIS 
+	"wordg" some tags CC THIS SELECT:this 
+;	"wordg" some tags SELECT:this 
+;	"wordg" some tags ALSONOTTHIS SELECT:this 
 "<wordh>"
-	"wordh" some tags <Hprof> 
+	"wordh" some tags <Hprof> SELECT:regex 
+;	"wordh" some tags SELECT:regex 
+;	"wordh" some tags SELECT:regex 
 "<wordi>"
 	"wordi" some tags 
 	"wordi" some tags <Hfam> 
 "<$.>"
 	"." 
+
