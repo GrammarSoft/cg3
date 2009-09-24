@@ -6,7 +6,7 @@ use Getopt::Long;
 use Digest::SHA qw(sha1_hex);
 
 # This is updated by the update-revision.pl script.
-my $revision = 5109;
+my $revision = 5112;
 
 # Generate list with:
 # vislcg3 --help 2>&1 | perl -wpne 'if (/^ / && /-(\w), --([-\w]+)/) {print "$2|$1=s\n"} elsif (/^ / && /--([-\w]+)/) {print "$1=s\n"} s/^.*$//s;' | perl -wpne 's/^/"/; s/$/",/;'
