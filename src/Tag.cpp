@@ -61,7 +61,6 @@ Tag::~Tag() {
 }
 
 void Tag::parseTag(const UChar *to, UFILE *ux_stderr) {
-	in_grammar = true;
 	type = 0;
 
 	if (u_strlen(to)) {
@@ -205,7 +204,6 @@ void Tag::parseTag(const UChar *to, UFILE *ux_stderr) {
 }
 
 void Tag::parseTagRaw(const UChar *to) {
-	in_grammar = false;
 	type = 0;
 	if (u_strlen(to)) {
 		const UChar *tmp = to;
