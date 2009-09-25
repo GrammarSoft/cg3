@@ -287,6 +287,7 @@ Tag *Grammar::allocateTag(const UChar *txt, bool raw) {
 	else {
 		tag->parseTag(txt, ux_stderr);
 	}
+	tag->in_grammar = true;
 	uint32_t hash = tag->rehash();
 	uint32_t seed = 0;
 	for ( ; seed < 10000 ; seed++) {
