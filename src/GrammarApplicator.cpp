@@ -75,6 +75,7 @@ GrammarApplicator::GrammarApplicator(UFILE *ux_err) {
 	did_final_enclosure = false;
 	did_index = false;
 	unsafe = false;
+	ordered = false;
 	gWindow = new Window(this);
 }
 

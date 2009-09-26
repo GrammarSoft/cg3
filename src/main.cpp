@@ -456,6 +456,9 @@ void GAppSetOpts(CG3::GrammarApplicator &applicator) {
 	if (options[UNSAFE].doesOccur) {
 		applicator.unsafe = true;
 	}
+	if (options[ORDERED].doesOccur) {
+		applicator.ordered = true;
+	}
 	if (options[TRACE].doesOccur) {
 		applicator.trace = true;
 	}
