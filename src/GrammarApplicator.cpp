@@ -243,13 +243,15 @@ void GrammarApplicator::printReading(Reading *reading, UFILE *output) {
 
 	uint32HashMap used_tags;
 	foreach (uint32List, reading->tags_list, tter, tter_end) {
-		if (used_tags.find(*tter) != used_tags.end()) {
-			continue;
-		}
 		if (*tter == endtag || *tter == begintag) {
 			continue;
 		}
-		used_tags[*tter] = *tter;
+		if (!ordered) {
+			if (used_tags.find(*tter) != used_tags.end()) {
+				continue;
+			}
+			used_tags[*tter] = *tter;
+		}
 		const Tag *tag = single_tags[*tter];
 		if (tag->type & T_DEPENDENCY && has_dep && !dep_original) {
 			continue;
