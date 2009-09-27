@@ -389,18 +389,22 @@ int TextualParser::parseContextualTestPosition(UChar *& p, ContextualTest& t) {
 		t.pos |= POS_DEP_DEEP;
 	}
 	if ((t.pos & (POS_DEP_CHILD|POS_DEP_SIBLING|POS_DEP_PARENT)) && (t.pos & POS_CAREFUL)) {
+		u_fprintf(ux_stderr, "Warning: Deprecated conversion from C to ALL on line %u.\n", result->lines);
 		t.pos &= ~POS_CAREFUL;
 		t.pos |= POS_DEP_ALL;
 	}
 	if ((t.pos & (POS_DEP_CHILD|POS_DEP_SIBLING|POS_DEP_PARENT)) && (t.pos & POS_NEGATIVE)) {
+		u_fprintf(ux_stderr, "Warning: Deprecated conversion from NOT to NONE on line %u.\n", result->lines);
 		t.pos &= ~POS_NEGATIVE;
 		t.pos |= POS_DEP_NONE;
 	}
 	if ((t.pos & POS_RELATION) && (t.pos & POS_CAREFUL)) {
+		u_fprintf(ux_stderr, "Warning: Deprecated conversion from C to ALL on line %u.\n", result->lines);
 		t.pos &= ~POS_CAREFUL;
 		t.pos |= POS_DEP_ALL;
 	}
 	if ((t.pos & POS_RELATION) && (t.pos & POS_NEGATIVE)) {
+		u_fprintf(ux_stderr, "Warning: Deprecated conversion from NOT to NONE on line %u.\n", result->lines);
 		t.pos &= ~POS_NEGATIVE;
 		t.pos |= POS_DEP_NONE;
 	}
@@ -460,11 +464,6 @@ int TextualParser::parseContextualTestList(UChar *& p, Rule *rule, ContextualTes
 		negated = true;
 	}
 	result->lines += SKIPWS(p);
-	if (ux_simplecasecmp(p, stringbits[S_TEXTNOT].getTerminatedBuffer(), stringbits[S_TEXTNOT].length())) {
-		p += stringbits[S_TEXTNOT].length();
-		negative = true;
-	}
-	result->lines += SKIPWS(p);
 	if (ux_simplecasecmp(p, stringbits[S_ALL].getTerminatedBuffer(), stringbits[S_ALL].length())) {
 		p += stringbits[S_ALL].length();
 		all = true;
@@ -473,6 +472,11 @@ int TextualParser::parseContextualTestList(UChar *& p, Rule *rule, ContextualTes
 	if (ux_simplecasecmp(p, stringbits[S_NONE].getTerminatedBuffer(), stringbits[S_NONE].length())) {
 		p += stringbits[S_NONE].length();
 		none = true;
+	}
+	result->lines += SKIPWS(p);
+	if (ux_simplecasecmp(p, stringbits[S_TEXTNOT].getTerminatedBuffer(), stringbits[S_TEXTNOT].length())) {
+		p += stringbits[S_TEXTNOT].length();
+		negative = true;
 	}
 	result->lines += SKIPWS(p);
 
