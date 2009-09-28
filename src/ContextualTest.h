@@ -55,7 +55,8 @@ namespace CG3 {
 		POS_LOOK_DELAYED   =   0x800000,
 		POS_TMPL_OVERRIDE  =  0x1000000,
 		POS_NONE           =  0x2000000,
-		POS_RELATION       =  0x4000000
+		POS_RELATION       =  0x4000000,
+		POS_ATTACH_TO      =  0x8000000,
 	};
 
 	class ContextualTest {

@@ -63,13 +63,13 @@ namespace CG3 {
 		~Cohort();
 		void clear(SingleWindow *p);
 
-		void addChild(uint32_t child);
-		void remChild(uint32_t child);
+		bool addChild(uint32_t child);
+		bool remChild(uint32_t child);
 		void appendReading(Reading *read);
 		Reading *allocateAppendReading();
-		void addRelation(uint32_t rel, uint32_t cohort);
-		void setRelation(uint32_t rel, uint32_t cohort);
-		void remRelation(uint32_t rel, uint32_t cohort);
+		bool addRelation(uint32_t rel, uint32_t cohort);
+		bool setRelation(uint32_t rel, uint32_t cohort);
+		bool remRelation(uint32_t rel, uint32_t cohort);
 
 	private:
 		inline void updateMinMax();

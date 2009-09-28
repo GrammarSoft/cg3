@@ -40,6 +40,9 @@ inline Cohort *GrammarApplicator::runSingleTest(SingleWindow *sWindow, size_t i,
 	if (test->pos & POS_MARK_SET) {
 		mark = cohort;
 	}
+	if (test->pos & POS_ATTACH_TO) {
+		attach_to = cohort;
+	}
 	if (deep) {
 		*deep = cohort;
 	}
