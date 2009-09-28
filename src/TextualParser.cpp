@@ -351,6 +351,10 @@ int TextualParser::parseContextualTestPosition(UChar *& p, ContextualTest& t) {
 			t.pos |= POS_LOOK_DELAYED;
 			++p;
 		}
+		if (*p == 'A') {
+			t.pos |= POS_ATTACH_TO;
+			++p;
+		}
 		if (*p == '?') {
 			t.pos |= POS_NONE;
 			++p;
@@ -429,11 +433,11 @@ int TextualParser::parseContextualTestPosition(UChar *& p, ContextualTest& t) {
 		CG3Quit(1);
 	}
 	if ((t.pos & POS_DEP_ALL) && (t.pos & POS_DEP_NONE)) {
-		u_fprintf(ux_stderr, "Error: Invalid position on line %u - cannot have both NONE/NOT and ALL/C for dependencies/relations!\n", result->lines);
+		u_fprintf(ux_stderr, "Error: Invalid position on line %u - cannot have both NONE and ALL!\n", result->lines);
 		CG3Quit(1);
 	}
 	if ((t.pos & (POS_DEP_ALL|POS_DEP_NONE)) && !(t.pos & (POS_DEP_CHILD|POS_DEP_SIBLING|POS_DEP_PARENT|POS_RELATION))) {
-		u_fprintf(ux_stderr, "Error: Invalid position on line %u - NONE/ALL are only useful with dependencies/relations!\n", result->lines);
+		u_fprintf(ux_stderr, "Error: Invalid position on line %u - NONE/ALL are currently only useful with dependencies/relations!\n", result->lines);
 		CG3Quit(1);
 	}
 	if ((t.pos & POS_NONE) && (t.pos != POS_NONE || t.offset != 0)) {

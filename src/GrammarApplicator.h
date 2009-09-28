@@ -116,6 +116,7 @@ namespace CG3 {
 		uint32HashMap variables;
 		uint32HashMap metas;
 		Cohort *mark;
+		Cohort *attach_to;
 
 		uint32HashMap unif_tags;
 		uint32_t unif_last_wordform;
