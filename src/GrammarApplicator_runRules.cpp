@@ -171,7 +171,6 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow &current, uint32Set &r
 				type = K_REMOVE;
 			}
 
-			bool good_mapping = false;
 			bool did_test = false;
 			bool test_good = false;
 
@@ -293,6 +292,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow &current, uint32Set &r
 					}
 				}
 				else if (good) {
+					section_did_good = false;
 					if (type == K_REMVARIABLE) {
 						u_fprintf(ux_stderr, "Info: RemVariable fired for %u.\n", rule.varname);
 						variables.erase(rule.varname);
@@ -462,7 +462,11 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow &current, uint32Set &r
 							Cohort *attach = 0;
 							seen_targets.insert(target->global_number);
 							dep_deep_seen.clear();
+							attach_to = 0;
 							if (runContextualTest(target->parent, target->local_number, rule.dep_target, &attach) && attach) {
+								if (attach_to) {
+									attach = attach_to;
+								}
 								bool good = true;
 								ContextualTest *test = rule.dep_test_head;
 								while (test) {
@@ -483,6 +487,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow &current, uint32Set &r
 										attached = attachParentChild(*cohort, *attach, (rule.flags & RF_ALLOWLOOP) != 0, (rule.flags & RF_ALLOWCROSS) != 0);
 									}
 									if (attached) {
+										section_did_good = true;
 										reading.hit_by.push_back(rule.line);
 										reading.noprint = false;
 										has_dep = true;
@@ -516,7 +521,11 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow &current, uint32Set &r
 						// ToDo: ** tests will not correctly work for MOVE/SWITCH; cannot move cohorts between windows
 						Cohort *attach = 0;
 						dep_deep_seen.clear();
+						attach_to = 0;
 						if (runContextualTest(&current, c, rule.dep_target, &attach) && attach && cohort->parent == attach->parent) {
+							if (attach_to) {
+								attach = attach_to;
+							}
 							bool good = true;
 							ContextualTest *test = rule.dep_test_head;
 							while (test) {
@@ -569,7 +578,11 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow &current, uint32Set &r
 					else if (type == K_ADDRELATION || type == K_SETRELATION || type == K_REMRELATION) {
 						Cohort *attach = 0;
 						dep_deep_seen.clear();
+						attach_to = 0;
 						if (runContextualTest(&current, c, rule.dep_target, &attach) && attach) {
+							if (attach_to) {
+								attach = attach_to;
+							}
 							bool good = true;
 							ContextualTest *test = rule.dep_test_head;
 							while (test) {
@@ -605,7 +618,11 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow &current, uint32Set &r
 					else if (type == K_ADDRELATIONS || type == K_SETRELATIONS || type == K_REMRELATIONS) {
 						Cohort *attach = 0;
 						dep_deep_seen.clear();
+						attach_to = 0;
 						if (runContextualTest(&current, c, rule.dep_target, &attach) && attach) {
+							if (attach_to) {
+								attach = attach_to;
+							}
 							bool good = true;
 							ContextualTest *test = rule.dep_test_head;
 							while (test) {
@@ -644,9 +661,6 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow &current, uint32Set &r
 			}
 
 			// ToDo: SETRELATION and others may block for reruns...
-			if (!good_mapping && removed.empty()) {
-				section_did_good = false;
-			}
 			if (single_run) {
 				section_did_good = false;
 			}
@@ -663,6 +677,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow &current, uint32Set &r
 					removed.pop_back();
 				}
 				cohort->num_is_current = false;
+				section_did_good = true;
 			}
 			if (!selected.empty()) {
 				cohort->readings = selected;

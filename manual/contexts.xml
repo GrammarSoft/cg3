@@ -112,6 +112,9 @@
     <indexterm>
       <primary>x</primary>
     </indexterm>
+    <indexterm>
+      <primary>A</primary>
+    </indexterm>
     <para>
       By default, linked tests continue from the immediately preceding test.
       These options affect behavior.
@@ -139,6 +142,13 @@
       <title>Jump to Mark</title>
       <para>
         'x' jumps back to the previously set mark (or the rule's target if no mark is set), then proceeds from there.
+      </para>
+    </section>
+
+    <section id="test-mark-attach-to">
+      <title>Attach To</title>
+      <para>
+        'A' sets the cohort to be attached or related against to the currently active cohort of the test's target.
       </para>
     </section>
   </section>

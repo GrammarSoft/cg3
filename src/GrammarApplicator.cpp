@@ -54,6 +54,7 @@ GrammarApplicator::GrammarApplicator(UFILE *ux_err) {
 	endtag = 0;
 	grammar = 0;
 	mark = 0;
+	attach_to = 0;
 	match_single = 0;
 	match_comp = 0;
 	match_sub = 0;
