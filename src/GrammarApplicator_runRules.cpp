@@ -487,7 +487,6 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow &current, uint32Set &r
 										attached = attachParentChild(*cohort, *attach, (rule.flags & RF_ALLOWLOOP) != 0, (rule.flags & RF_ALLOWCROSS) != 0);
 									}
 									if (attached) {
-										section_did_good = true;
 										reading.hit_by.push_back(rule.line);
 										reading.noprint = false;
 										has_dep = true;
