@@ -27,6 +27,7 @@
 #include "SingleWindow.h"
 #include "Reading.h"
 #include "ContextualTest.h"
+#include "CohortIterator.h"
 
 namespace CG3 {
 
