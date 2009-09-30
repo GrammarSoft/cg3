@@ -308,6 +308,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\CohortIterator.h"
+				>
+			</File>
+			<File
 				RelativePath=".\src\CompositeTag.h"
 				>
 			</File>
