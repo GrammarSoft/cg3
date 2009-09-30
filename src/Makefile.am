@@ -1,6 +1,6 @@
 h_sources = Anchor.h BinaryGrammar.h Cohort.h CompositeTag.h ContextualTest.h \
 	    GrammarApplicator.h Grammar.h GrammarWriter.h icu_uoptions.h \
-	    IGrammarParser.h options.h Reading.h Rule.h Set.h \
+	    IGrammarParser.h options.h Reading.h Rule.h Set.h CohortIterator.h \
 	    SingleWindow.h stdafx.h Strings.h Tag.h TextualParser.h uextras.h \
 	    version.h Window.h ApertiumApplicator.h inlines.h macros.h cycle.h
 
