@@ -718,14 +718,14 @@ int GrammarApplicator::runGrammarOnSingleWindow(SingleWindow &current) {
 	if (!grammar->rules.empty() && !no_sections) {
 		RSType::iterator iter_end = runsections.end();
 		if (single_run) {
-			iter_end--;
+			--iter_end;
 			runRulesOnWindow(current, *(iter_end->second));
 		}
 		else {
 			RSType::iterator iter = runsections.begin();
 			for (; iter != iter_end ;) {
 				if (iter->first < 0) {
-					iter++;
+					++iter;
 					continue;
 				}
 				uint32_t rv = 0;
@@ -734,7 +734,7 @@ int GrammarApplicator::runGrammarOnSingleWindow(SingleWindow &current) {
 					return rv;
 				}
 				if (!(rv & RV_SOMETHING)) {
-					iter++;
+					++iter;
 				}
 			}
 		}
@@ -771,13 +771,13 @@ int GrammarApplicator::runGrammarOnWindow() {
 			uint32Map::const_iterator p = grammar->parentheses.find(c->is_pleft);
 			if (p != grammar->parentheses.end()) {
 				std::vector<Cohort*>::iterator right = iter.base();
-				right--;
-				right--;
+				--right;
+				--right;
 				c = *right;
-				right++;
+				++right;
 				bool found = false;
 				std::vector<Cohort*> encs;
-				for (; right != current->cohorts.end() ; right++) {
+				for (; right != current->cohorts.end() ; ++right) {
 					Cohort *s = *right;
 					encs.push_back(s);
 					if (s->is_pright == p->second) {
@@ -790,14 +790,14 @@ int GrammarApplicator::runGrammarOnWindow() {
 				}
 				else {
 					std::vector<Cohort*>::iterator left = iter.base();
-					left--;
+					--left;
 					uint32_t lc = (*left)->local_number;
-					right++;
-					for (; right != current->cohorts.end() ; right++) {
+					++right;
+					for (; right != current->cohorts.end() ; ++right) {
 						*left = *right;
 						(*left)->local_number = lc;
-						lc++;
-						left++;
+						++lc;
+						++left;
 					}
 					current->cohorts.resize(current->cohorts.size() - encs.size());
 					foreach (std::vector<Cohort*>, encs, eiter, eiter_end) {
@@ -830,16 +830,16 @@ label_runGrammarOnWindow_begin:
 	if (!grammar->parentheses.empty() && has_enclosures) {
 		bool found = false;
 		size_t nc = current->cohorts.size();
-		for (size_t i=0 ; i<nc ; i++) {
+		for (size_t i=0 ; i<nc ; ++i) {
 			Cohort *c = current->cohorts[i];
 			if (!c->enclosed.empty()) {
 				current->cohorts.resize(current->cohorts.size() + c->enclosed.size(), 0);
 				size_t ne = c->enclosed.size();
-				for (size_t j=nc-1 ; j>i ; j--) {
+				for (size_t j=nc-1 ; j>i ; --j) {
 					current->cohorts[j+ne] = current->cohorts[j];
 					current->cohorts[j+ne]->local_number = j+ne;
 				}
-				for (size_t j=0 ; j<ne ; j++) {
+				for (size_t j=0 ; j<ne ; ++j) {
 					current->cohorts[i+j+1] = c->enclosed[j];
 					current->cohorts[i+j+1]->local_number = i+j+1;
 					current->cohorts[i+j+1]->parent = current;
