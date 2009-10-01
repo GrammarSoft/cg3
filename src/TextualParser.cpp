@@ -1814,6 +1814,33 @@ int TextualParser::parse_grammar_from_file(const char *fname, const char *loc, c
 		Tag *tany = result->allocateTag(stringbits[S_ASTERIK].getTerminatedBuffer());
 		result->tag_any = tany->hash;
 	}
+	// Create the magic set _TARGET_ containing the tag _TARGET_
+	{
+		Set *set_c = result->allocateSet();
+		set_c->line = 0;
+		set_c->setName(stringbits[S_UU_TARGET].getTerminatedBuffer());
+		Tag *t = result->allocateTag(stringbits[S_UU_TARGET].getTerminatedBuffer());
+		result->addTagToSet(t, set_c);
+		result->addSet(set_c);
+	}
+	// Create the magic set _MARK_ containing the tag _MARK_
+	{
+		Set *set_c = result->allocateSet();
+		set_c->line = 0;
+		set_c->setName(stringbits[S_UU_MARK].getTerminatedBuffer());
+		Tag *t = result->allocateTag(stringbits[S_UU_MARK].getTerminatedBuffer());
+		result->addTagToSet(t, set_c);
+		result->addSet(set_c);
+	}
+	// Create the magic set _ATTACHTO_ containing the tag _ATTACHTO_
+	{
+		Set *set_c = result->allocateSet();
+		set_c->line = 0;
+		set_c->setName(stringbits[S_UU_ATTACHTO].getTerminatedBuffer());
+		Tag *t = result->allocateTag(stringbits[S_UU_ATTACHTO].getTerminatedBuffer());
+		result->addTagToSet(t, set_c);
+		result->addSet(set_c);
+	}
 	// Create the magic set _LEFT_ containing the tag _LEFT_
 	Set *s_left = 0;
 	{

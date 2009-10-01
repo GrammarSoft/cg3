@@ -52,47 +52,6 @@ next(0)
 	// Nothing in the actual body...
 }
 
-void Cohort::clear(SingleWindow *p) {
-	foreach (std::list<Reading*>, readings, iter1, iter1_end) {
-		delete (*iter1);
-	}
-	readings.clear();
-	foreach (std::list<Reading*>, deleted, iter2, iter2_end) {
-		delete (*iter2);
-	}
-	deleted.clear();
-	foreach (std::list<Reading*>, delayed, iter3, iter3_end) {
-		delete (*iter3);
-	}
-	delayed.clear();
-	if (parent) {
-		parent->parent->cohort_map.erase(global_number);
-		parent->parent->dep_window.erase(global_number);
-	}
-
-	wordform = 0;
-	global_number = 0;
-	local_number = 0;
-	parent = p;
-	dep_done = false;
-	is_related = false;
-	is_enclosed = false;
-	num_is_current = false;
-	delete[] text;
-
-	text = 0;
-	dep_self = 0;
-	dep_parent = UINT_MAX;
-	is_pleft = 0;
-	is_pright = 0;
-	possible_sets.clear();
-	dep_children.clear();
-	enclosed.clear();
-	detach();
-	num_max.clear();
-	num_min.clear();
-}
-
 Cohort::~Cohort() {
 	foreach (std::list<Reading*>, readings, iter1, iter1_end) {
 		delete (*iter1);

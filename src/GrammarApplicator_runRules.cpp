@@ -193,8 +193,10 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow &current, uint32Set &r
 					unif_tags.clear();
 				}
 
+				target = 0;
 				mark = cohort;
 				if (rule.target && doesSetMatchReading(*reading, rule.target, set.is_child_unified|set.is_special)) {
+					target = cohort;
 					reading->matched_target = true;
 					bool good = true;
 					if (!did_test) {
