@@ -39,23 +39,26 @@ namespace CG3 {
 	};
 
 	enum TAG_TYPE {
-		T_ANY        =  1U,
-		T_NUMERICAL  =  2U,
-		T_MAPPING    =  4U,
-		T_VARIABLE   =  8U,
-		T_META       = 16U,
-		T_WORDFORM   = 32U,
-		T_BASEFORM   = 64U,
-		T_TEXTUAL    = 128U,
-		T_DEPENDENCY = 256U,
-		T_NEGATIVE   =  512U,
-		T_FAILFAST   =  1024U,
+		T_ANY        =      1U,
+		T_NUMERICAL  =      2U,
+		T_MAPPING    =      4U,
+		T_VARIABLE   =      8U,
+		T_META       =     16U,
+		T_WORDFORM   =     32U,
+		T_BASEFORM   =     64U,
+		T_TEXTUAL    =    128U,
+		T_DEPENDENCY =    256U,
+		T_NEGATIVE   =    512U,
+		T_FAILFAST   =   1024U,
 		T_CASE_INSENSITIVE = 2048U,
-		T_REGEXP     =  4096U,
-		T_PAR_LEFT   =  8192U,
-		T_PAR_RIGHT  = 16384U,
-		T_REGEXP_ANY = 32768U,
-		T_VARSTRING  = 65536U
+		T_REGEXP     =   4096U,
+		T_PAR_LEFT   =   8192U,
+		T_PAR_RIGHT  =  16384U,
+		T_REGEXP_ANY =  32768U,
+		T_VARSTRING  =  65536U,
+		T_TARGET     = 131072U,
+		T_MARK       = 262144U,
+		T_ATTACHTO   = 524288U,
 	};
 
 	class Tag {

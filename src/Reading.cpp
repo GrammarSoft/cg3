@@ -40,27 +40,6 @@ parent(p)
 	// Nothing in the actual body...
 }
 
-void Reading::clear(Cohort *p) {
-	wordform = 0;
-	baseform = 0;
-	hash = 0;
-	hash_plain = 0;
-	parent = p;
-	number = 0;
-	mapped = false;
-	deleted = false;
-	noprint = false;
-	matched_target = false;
-	matched_tests = false;
-	hit_by.clear();
-	tags_list.clear();
-	tags.clear();
-	tags_plain.clear();
-	tags_textual.clear();
-	tags_numerical.clear();
-	mapping = 0;
-}
-
 Reading::~Reading() {
 }
 

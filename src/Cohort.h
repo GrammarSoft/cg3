@@ -61,7 +61,6 @@ namespace CG3 {
 
 		Cohort(SingleWindow *p);
 		~Cohort();
-		void clear(SingleWindow *p);
 
 		bool addChild(uint32_t child);
 		bool remChild(uint32_t child);
