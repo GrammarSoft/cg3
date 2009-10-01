@@ -31,7 +31,7 @@
 
 namespace CG3 {
 
-inline Cohort *GrammarApplicator::runSingleTest(SingleWindow *sWindow, size_t i, const ContextualTest *test, bool *brk, bool *retval, Cohort **deep, Cohort *origin) {
+Cohort *GrammarApplicator::runSingleTest(SingleWindow *sWindow, size_t i, const ContextualTest *test, bool *brk, bool *retval, Cohort **deep, Cohort *origin) {
 	if (i >= sWindow->cohorts.size()) {
 		*brk = true;
 		*retval = false;
@@ -90,7 +90,7 @@ inline Cohort *GrammarApplicator::runSingleTest(SingleWindow *sWindow, size_t i,
 	return cohort;
 }
 
-inline Cohort *getCohortInWindow(SingleWindow *& sWindow, size_t position, const ContextualTest *test, int32_t &pos) {
+Cohort *getCohortInWindow(SingleWindow *& sWindow, size_t position, const ContextualTest *test, int32_t &pos) {
 	Cohort *cohort = 0;
 	pos = int32_t(position) + test->offset;
 	// ToDo: (NOT *) and (*C) tests can be cached
