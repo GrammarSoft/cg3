@@ -52,7 +52,6 @@ namespace CG3 {
 
 		Reading(Cohort *p);
 		~Reading();
-		void clear(Cohort *p);
 		void duplicateFrom(Reading &r);
 
 		uint32_t rehash();

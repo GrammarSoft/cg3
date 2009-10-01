@@ -339,6 +339,15 @@ bool GrammarApplicator::doesTagMatchReading(const Reading &reading, const Tag &t
 	else if (par_right_tag && tag.type & T_PAR_RIGHT && reading.parent->local_number == par_right_pos) {
 		match = (reading.tags.find(par_right_tag) != reading.tags.end());
 	}
+	else if (target && tag.type & T_TARGET && reading.parent == target) {
+		match = true;
+	}
+	else if (mark && tag.type & T_MARK && reading.parent == mark) {
+		match = true;
+	}
+	else if (attach_to && tag.type & T_ATTACHTO && reading.parent == attach_to) {
+		match = true;
+	}
 	else if (!raw_in) {
 		match = false;
 		if (tag.type & T_NEGATIVE) {

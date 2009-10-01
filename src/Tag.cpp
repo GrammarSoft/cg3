@@ -165,6 +165,15 @@ void Tag::parseTag(const UChar *to, UFILE *ux_stderr) {
 		else if (u_strcmp(tag, stringbits[S_UU_RIGHT].getTerminatedBuffer()) == 0) {
 			type |= T_PAR_RIGHT;
 		}
+		else if (u_strcmp(tag, stringbits[S_UU_TARGET].getTerminatedBuffer()) == 0) {
+			type |= T_TARGET;
+		}
+		else if (u_strcmp(tag, stringbits[S_UU_MARK].getTerminatedBuffer()) == 0) {
+			type |= T_MARK;
+		}
+		else if (u_strcmp(tag, stringbits[S_UU_ATTACHTO].getTerminatedBuffer()) == 0) {
+			type |= T_ATTACHTO;
+		}
 
 		// ToDo: Add ICASE: REGEXP: and //r //ri //i to tags
 		if (type & T_REGEXP) {
