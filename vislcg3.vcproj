@@ -20,7 +20,7 @@
 			OutputDirectory="Debug"
 			IntermediateDirectory="Debug"
 			ConfigurationType="1"
-			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops;.\Boost.vsprops"
+			InheritedPropertySheets=".\Boost.vsprops"
 			CharacterSet="2"
 			>
 			<Tool
@@ -100,7 +100,7 @@
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="1"
-			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops;.\Boost.vsprops"
+			InheritedPropertySheets=".\Boost.vsprops"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
