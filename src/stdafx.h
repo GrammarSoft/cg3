@@ -49,8 +49,19 @@
 #include <sys/stat.h>
 
 #ifdef _MSC_VER
+	#if _MSC_VER >= 1600
+		#include <cstdint>
+	#endif
+	#ifdef HAVE_BOOST
+		#include <boost/unordered_set.hpp>
+		#include <boost/unordered_map.hpp>
+		#define stdext boost
+		#define hash_map unordered_map
+		#define hash_set unordered_set
+		#define hash_multimap unordered_multimap
+		#define hash_multiset unordered_multiset
 	// Test for MSVC++ >= 9.0 (MSVS 2008)
-	#if _MSC_VER >= 1500
+	#elif _MSC_VER >= 1500
 		#include <unordered_set>
 		#include <unordered_map>
 		#define stdext std::tr1
@@ -71,9 +82,17 @@
 	#include <libgen.h>
 	#include <netinet/in.h> // for hton() and family.
 #elif defined(__GNUC__)
-	// Test for GCC >= 4.3.0
 	#define GCC_VERSION (__GNUC__ * 10000 + __GNUC_MINOR__ * 100 + __GNUC_PATCHLEVEL__)
-	#if GCC_VERSION >= 40300
+	#ifdef HAVE_BOOST
+		#include <boost/unordered_set.hpp>
+		#include <boost/unordered_map.hpp>
+		#define stdext boost
+		#define hash_map unordered_map
+		#define hash_set unordered_set
+		#define hash_multimap unordered_multimap
+		#define hash_multiset unordered_multiset
+	// Test for GCC >= 4.3.0
+	#elif GCC_VERSION >= 40300
 		#include <tr1/unordered_set>
 		#include <tr1/unordered_map>
 		#define stdext std::tr1
