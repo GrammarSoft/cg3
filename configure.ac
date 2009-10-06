@@ -51,6 +51,7 @@ CXXFLAGS="-Wno-deprecated $ICUCPPFLAGS $CXXFLAGS"
 AC_PROG_CXX
 AM_SANITY_CHECK
 AC_LANG_CPLUSPLUS
+AX_BOOST_BASE([1.36.0])
 
 AC_ARG_ENABLE(debug,
               [  --enable-debug  Enable "-g -Wall" compiler options],
