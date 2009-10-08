@@ -42,11 +42,11 @@ AC_ARG_WITH([boost],
         want_boost="yes"
         ac_boost_path=""
     else
-	    want_boost="yes"
+	    want_boost="no"
         ac_boost_path="$withval"
 	fi
     ],
-    [want_boost="yes"])
+    [want_boost="no"])
 
 
 AC_ARG_WITH([boost-libdir],
