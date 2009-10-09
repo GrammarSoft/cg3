@@ -57,6 +57,7 @@ void endProgram(char *name) {
 	cout << "	-t, --trace:		 print debug output on stderr" << endl;
 	cout << "	-w, --wordform-case:	 enforce surface case on lemma/baseform " << endl;
 	cout << "				   (to work with -w option of lt-proc)" << endl;
+	cout << "	-n, --no-word-forms:	 do not print out the word form of each cohort" << endl;
 	cout << "	-v, --version:	 	 version" << endl;
 	cout << "	-h, --help:		 show this help" << endl;
 #else
@@ -68,6 +69,7 @@ void endProgram(char *name) {
 	cout << "	-t:	 print debug output on stderr" << endl;
 	cout << "	-w:	 enforce surface case on lemma/baseform " << endl;
 	cout << "		   (to work with -w option of lt-proc)" << endl;
+	cout << "	-n:	 do not print out the word form of each cohort" << endl;
 	cout << "	-v:	 version" << endl;
 	cout << "	-h:	 show this help" << endl;
 #endif
@@ -77,6 +79,7 @@ void endProgram(char *name) {
 int main(int argc, char *argv[]) {
 	int trace = 0;
 	int wordform_case = 0;
+	int print_word_forms = 1;
 	int cmd = 0;
 	int sections = 0;
 	int stream_format = 1;
@@ -96,6 +99,7 @@ int main(int argc, char *argv[]) {
 		{"stream-format",	0, 0, 'f'},
 		{"trace", 		0, 0, 't'},
 		{"wordform-case",	0, 0, 'w'},
+		{"no-word-forms",	0, 0, 'n'},
 		{"version",   		0, 0, 'v'},
 		{"help",		0, 0, 'h'},
 		{"null-flush",		0, 0, 'z'}
@@ -107,9 +111,9 @@ int main(int argc, char *argv[]) {
 	while (c != -1) {
 #if HAVE_GETOPT_LONG
 		int option_index;
-		c = getopt_long(argc, argv, "ds:f:twvhz", long_options, &option_index);
+		c = getopt_long(argc, argv, "ds:f:tnwvhz", long_options, &option_index);
 #else
-		c = getopt(argc, argv, "ds:f:twvhz");
+		c = getopt(argc, argv, "ds:f:tinwvhz");
 #endif		
 		if (c == -1) {
 			break;
@@ -138,6 +142,10 @@ int main(int argc, char *argv[]) {
 				sections = atoi(optarg);
 				break;
 				
+			case 'n':
+				print_word_forms = 0;
+				break;
+
 			case 'w':
 				wordform_case = 1;
 				break;
@@ -271,6 +279,9 @@ int main(int argc, char *argv[]) {
 		applicator = apertiumApplicator;
 		if (wordform_case == 1) {
 			apertiumApplicator->wordform_case = true;
+		}
+		if (print_word_forms == 0) {
+			apertiumApplicator->print_word_forms = false;
 		}
 	}
 

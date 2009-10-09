@@ -40,6 +40,7 @@ namespace CG3 {
 
 		bool getNullFlush();
 		bool wordform_case;
+		bool print_word_forms;
 		void setNullFlush(bool pNullFlush);
 		
 	protected:

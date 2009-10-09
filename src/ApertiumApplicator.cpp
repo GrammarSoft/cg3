@@ -37,6 +37,7 @@ ApertiumApplicator::ApertiumApplicator(UFILE *ux_err)
 {
 	nullFlush=false;
 	wordform_case = false;
+	print_word_forms = true;
 	runningWithNullFlush=false;
 	fgetc_converter=0;
 }
@@ -656,10 +657,12 @@ void ApertiumApplicator::printSingleWindow(SingleWindow *window, UFILE *output) 
 		// Start of cohort 
 		u_fprintf(output, "^");
 
-		// Lop off the initial and final '"' characters 
-		UChar *wf = single_tags[cohort->wordform]->tag;
-		u_fprintf(output, "%S/", ux_substr(wf, 2, u_strlen(wf)-2));
-		wf = 0;
+		if(print_word_forms == true) {
+			// Lop off the initial and final '"' characters 
+			UChar *wf = single_tags[cohort->wordform]->tag;
+			u_fprintf(output, "%S/", ux_substr(wf, 2, u_strlen(wf)-2));
+			wf = 0;
+		}
 
 		//Tag::printTagRaw(output, single_tags[cohort->wordform]);
 
