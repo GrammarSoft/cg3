@@ -27,6 +27,7 @@
 	#define _SECURE_SCL 0
 	#define _CRT_SECURE_NO_DEPRECATE 1
 	#define WIN32_LEAN_AND_MEAN
+	#define VC_EXTRALEAN
 	#define NOMINMAX
 #endif
 
@@ -35,6 +36,7 @@
 #include <algorithm>
 #include <iterator>
 #include <iostream>
+#include <ostream>
 #include <cstdlib>
 #include <cstdio>
 #include <cstring>
