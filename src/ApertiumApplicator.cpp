@@ -164,7 +164,7 @@ int ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 	gtimer = getticks();
 	ticks timer(gtimer);
 
-	while ((inchar = u_fgetc_wrapper(input)) != 0) { 
+	while ((inchar = u_fgetc_wrapper(input)) != 0) {
 		if (u_feof(input)) {
 			break;
 		}
@@ -177,6 +177,13 @@ int ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 			superblank = false;
 		}
 
+		if (inchar == '\\' && not incohort) {
+			u_fprintf(output, "%C", inchar);
+			inchar = u_fgetc_wrapper(input); 
+			u_fprintf(output, "%C", inchar);
+			continue;
+		}
+		
 		if (inchar == '^') {
 			incohort = true;
 		}
