@@ -505,6 +505,7 @@ void ApertiumApplicator::processReading(Reading *cReading, UChar *reading_string
 	}
 
 	bool joiner = false;
+	bool intag = false;
 
 	// Now read in the tags
 	while (*c != '\0') {
@@ -519,6 +520,13 @@ void ApertiumApplicator::processReading(Reading *cReading, UChar *reading_string
 		}
 
 		if (*c == '<') {
+			if (intag == true) {
+				u_fprintf(ux_stderr, "Error: The Apertium stream format does not allow '<' in tag names.\n");
+				c++;
+				continue;
+			}
+			intag = true;
+
 			if (joiner == true) {
 				uint32_t tag = addTag(tmptag)->hash;
 				addTagToReading(*cReading, tag); // Add the baseform to the tag
@@ -538,6 +546,13 @@ void ApertiumApplicator::processReading(Reading *cReading, UChar *reading_string
 
 		}
 		else if (*c == '>') {
+			if (intag == false) {
+				u_fprintf(ux_stderr, "Error: The Apertium stream format does not allow '>' in tag names.\n");
+				c++;
+				continue;
+			}
+			intag = false;
+
 			uint32_t shufty = addTag(tmptag)->hash;
 			UChar *newtag = 0;
 			if (cReading->tags.find(shufty) != cReading->tags.end()) {
