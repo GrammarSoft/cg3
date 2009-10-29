@@ -36,7 +36,7 @@ text(0)
 }
 
 SingleWindow::~SingleWindow() {
-	foreach (std::vector<Cohort*>, cohorts, iter, iter_end) {
+	foreach (CohortVector, cohorts, iter, iter_end) {
 		delete (*iter);
 	}
 	if (next && previous) {
@@ -50,11 +50,6 @@ SingleWindow::~SingleWindow() {
 		if (previous) {
 			previous->next = 0;
 		}
-	}
-	foreach (RuleToCohortsMap, rule_to_cohorts, rocit, rocit_end) {
-		//rocit->second->clear();
-		delete rocit->second;
-		rocit->second = 0;
 	}
 }
 
@@ -74,11 +69,18 @@ void SingleWindow::appendCohort(Cohort *cohort) {
 	}
 
 	if (cohorts.empty()) {
-		cohort->prev = 0;
+		if (previous && !previous->cohorts.empty()) {
+			previous->cohorts.back()->next = cohort;
+			cohort->prev = previous->cohorts.back();
+		}
 	}
 	else {
 		cohort->prev = cohorts.back();
 		cohorts.back()->next = cohort;
+	}
+	if (next && !next->cohorts.empty()) {
+		next->cohorts.front()->prev = cohort;
+		cohort->next = next->cohorts.front();
 	}
 	cohorts.push_back(cohort);
 	parent->cohort_map[cohort->global_number] = cohort;

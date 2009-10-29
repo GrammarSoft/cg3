@@ -500,9 +500,26 @@ void Grammar::reindex(bool unused_sets) {
 
 	// Stuff below this line is not optional...
 
+	size_t num_sets = 0, num_lists = 0;
+	size_t num_is = 0, num_it = 0;
+	size_t max_is = 0, max_it = 0;
+	std::map<size_t,size_t> cnt_is, cnt_it;
+
 	foreach (Setuint32HashMap, sets_by_contents, tset, tset_end) {
 		if (tset->second->is_used) {
 			addSetToList(tset->second);
+			if (tset->second->sets.empty()) {
+				++num_lists;
+				num_it += tset->second->tags_set.size();
+				max_it = std::max(max_it, tset->second->tags_set.size());
+				cnt_it[tset->second->tags_set.size()]++;
+			}
+			else {
+				++num_sets;
+				num_is += tset->second->sets.size();
+				max_is = std::max(max_is, tset->second->sets.size());
+				cnt_is[tset->second->sets.size()]++;
+			}
 		}
 	}
 

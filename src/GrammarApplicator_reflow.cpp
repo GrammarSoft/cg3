@@ -438,4 +438,30 @@ void GrammarApplicator::mergeMappings(Cohort &cohort) {
 	cohort.readings.insert(cohort.readings.begin(), order.begin(), order.end());
 }
 
+void GrammarApplicator::rebuildCohortLinks() {
+	SingleWindow *sWindow = 0;
+	if (!gWindow->previous.empty()) {
+		sWindow = gWindow->previous.front();
+	}
+	else if (gWindow->current) {
+		sWindow = gWindow->current;
+	}
+	else if (!gWindow->next.empty()) {
+		sWindow = gWindow->next.front();
+	}
+
+	Cohort *prev = 0;
+	while (sWindow) {
+		foreach (CohortVector, sWindow->cohorts, citer, citer_end) {
+			(*citer)->prev = prev;
+			(*citer)->next = 0;
+			if (prev) {
+				prev->next = *citer;
+			}
+			prev = *citer;
+		}
+		sWindow = sWindow->next;
+	}
+}
+
 }

@@ -36,7 +36,7 @@ namespace CG3 {
 		SingleWindow *next, *previous;
 		Window *parent;
 		UChar *text;
-		std::vector<Cohort*> cohorts;
+		CohortVector cohorts;
 		uint32Set valid_rules;
 		RuleToCohortsMap rule_to_cohorts;
 
