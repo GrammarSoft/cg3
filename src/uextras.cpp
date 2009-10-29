@@ -250,9 +250,10 @@ char *ux_dirname(const char *in) {
 		strcpy(tmp, dir);
 	}
 #endif
-	if (tmp[strlen(tmp)-1] != '/' && tmp[strlen(tmp)-1] != '\\') {
-		tmp[strlen(tmp)+1] = 0;
-		tmp[strlen(tmp)] = '/';
+	size_t tlen = strlen(tmp);
+	if (tmp[tlen-1] != '/' && tmp[tlen-1] != '\\') {
+		tmp[tlen+1] = 0;
+		tmp[tlen] = '/';
 	}
 	return tmp;
 }

@@ -214,7 +214,6 @@ int ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 				}
 
 				cSWindow->appendCohort(cCohort);
-				gWindow->appendSingleWindow(cSWindow);
 				lSWindow = cSWindow;
 				lCohort = cCohort;
 				cSWindow = 0;
@@ -236,7 +235,6 @@ int ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 				}
 				
 				cSWindow->appendCohort(cCohort);
-				gWindow->appendSingleWindow(cSWindow);
 				lSWindow = cSWindow;
 				lCohort = cCohort;
 				cSWindow = 0;
@@ -245,7 +243,7 @@ int ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 			} // end >= hard_limit
 			// If we don't have a current window, create one
 			if (!cSWindow) {
-				cSWindow = new SingleWindow(gWindow);
+				cSWindow = gWindow->allocAppendSingleWindow();
 				
 				cSWindow->text = 0; // necessary? TODO -KBU // TD says: Necessary, because you don't chunk into seperate SingleWindow per sentence, so you need to clear it for every new sentence. Regular CG-3 keeps several SingleWindow in the Window container.
 				
@@ -395,7 +393,6 @@ int ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 		foreach (std::list<Reading*>, cCohort->readings, iter, iter_end) {
 			addTagToReading(**iter, endtag);
 		}
-		gWindow->appendSingleWindow(cSWindow);
 		cReading = 0;
 		cCohort = 0;
 		cSWindow = 0;

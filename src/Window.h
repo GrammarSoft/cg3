@@ -48,8 +48,8 @@ namespace CG3 {
 		Window(GrammarApplicator *p);
 		~Window();
 
-		void pushSingleWindow(SingleWindow *swindow);
-		void appendSingleWindow(SingleWindow *swindow);
+		SingleWindow *allocPushSingleWindow();
+		SingleWindow *allocAppendSingleWindow();
 		void shuffleWindowsDown();
 	};
 

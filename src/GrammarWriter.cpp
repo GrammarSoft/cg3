@@ -283,14 +283,14 @@ void GrammarWriter::printContextualTest(UFILE *to, const ContextualTest &test) {
 		if (test.pos & POS_NEGATED) {
 			u_fprintf(to, "NEGATE ");
 		}
-		if (test.pos & POS_NEGATIVE) {
-			u_fprintf(to, "NOT ");
-		}
-		if (test.pos & POS_DEP_ALL) {
+		if (test.pos & POS_ALL) {
 			u_fprintf(to, "ALL ");
 		}
-		if (test.pos & POS_DEP_NONE) {
+		if (test.pos & POS_NONE) {
 			u_fprintf(to, "NONE ");
+		}
+		if (test.pos & POS_NEGATIVE) {
+			u_fprintf(to, "NOT ");
 		}
 		if (test.pos & POS_ABSOLUTE) {
 			u_fprintf(to, "@");
@@ -349,6 +349,9 @@ void GrammarWriter::printContextualTest(UFILE *to, const ContextualTest &test) {
 		}
 		if (test.pos & POS_LOOK_DELAYED) {
 			u_fprintf(to, "d");
+		}
+		if (test.pos & POS_UNKNOWN) {
+			u_fprintf(to, "?");
 		}
 		if (test.pos & POS_RELATION) {
 			u_fprintf(to, "r:%S", grammar->single_tags.find(test.relation)->second->tag);
