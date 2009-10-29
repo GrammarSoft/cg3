@@ -182,7 +182,7 @@ Set *TextualParser::parseSetInline(UChar *& p, Set *s) {
 					UChar *n = p;
 					result->lines += SKIPTOWS(n, ')', true);
 					while (n[-1] == ',' || n[-1] == ']') {
-						n--;
+						--n;
 					}
 					ptrdiff_t c = n - p;
 					u_strncpy(gbuffers[0], p, c);
@@ -300,7 +300,7 @@ int TextualParser::parseContextualTestPosition(UChar *& p, ContextualTest& t) {
 			++p;
 		}
 		if (*p == 'S') {
-			t.pos |= POS_DEP_SELF;
+			t.pos |= POS_SELF;
 			++p;
 		}
 		if (*p == '<') {
@@ -356,7 +356,7 @@ int TextualParser::parseContextualTestPosition(UChar *& p, ContextualTest& t) {
 			++p;
 		}
 		if (*p == '?') {
-			t.pos |= POS_NONE;
+			t.pos |= POS_UNKNOWN;
 			++p;
 		}
 		if (*p == '-') {
@@ -387,30 +387,30 @@ int TextualParser::parseContextualTestPosition(UChar *& p, ContextualTest& t) {
 		t.offset = (-1) * abs(t.offset);
 	}
 
-	if ((t.pos & (POS_DEP_CHILD|POS_DEP_SIBLING|POS_DEP_PARENT)) && (t.pos & (POS_SCANFIRST|POS_SCANALL))) {
+	if ((t.pos & (POS_DEP_CHILD|POS_DEP_SIBLING)) && (t.pos & (POS_SCANFIRST|POS_SCANALL))) {
 		t.pos &= ~POS_SCANFIRST;
 		t.pos &= ~POS_SCANALL;
 		t.pos |= POS_DEP_DEEP;
 	}
-	if ((t.pos & (POS_DEP_CHILD|POS_DEP_SIBLING|POS_DEP_PARENT)) && (t.pos & POS_CAREFUL)) {
+	if ((t.pos & (POS_DEP_CHILD|POS_DEP_SIBLING)) && (t.pos & POS_CAREFUL)) {
 		u_fprintf(ux_stderr, "Warning: Deprecated conversion from C to ALL on line %u.\n", result->lines);
 		t.pos &= ~POS_CAREFUL;
-		t.pos |= POS_DEP_ALL;
+		t.pos |= POS_ALL;
 	}
-	if ((t.pos & (POS_DEP_CHILD|POS_DEP_SIBLING|POS_DEP_PARENT)) && (t.pos & POS_NEGATIVE)) {
+	if ((t.pos & (POS_DEP_CHILD|POS_DEP_SIBLING)) && (t.pos & POS_NEGATIVE)) {
 		u_fprintf(ux_stderr, "Warning: Deprecated conversion from NOT to NONE on line %u.\n", result->lines);
 		t.pos &= ~POS_NEGATIVE;
-		t.pos |= POS_DEP_NONE;
+		t.pos |= POS_NONE;
 	}
 	if ((t.pos & POS_RELATION) && (t.pos & POS_CAREFUL)) {
 		u_fprintf(ux_stderr, "Warning: Deprecated conversion from C to ALL on line %u.\n", result->lines);
 		t.pos &= ~POS_CAREFUL;
-		t.pos |= POS_DEP_ALL;
+		t.pos |= POS_ALL;
 	}
 	if ((t.pos & POS_RELATION) && (t.pos & POS_NEGATIVE)) {
 		u_fprintf(ux_stderr, "Warning: Deprecated conversion from NOT to NONE on line %u.\n", result->lines);
 		t.pos &= ~POS_NEGATIVE;
-		t.pos |= POS_DEP_NONE;
+		t.pos |= POS_NONE;
 	}
 
 	if (tries >= 5) {
@@ -432,15 +432,11 @@ int TextualParser::parseContextualTestPosition(UChar *& p, ContextualTest& t) {
 		u_fprintf(ux_stderr, "Error: Invalid position on line %u - cannot have both L and R!\n", result->lines);
 		CG3Quit(1);
 	}
-	if ((t.pos & POS_DEP_ALL) && (t.pos & POS_DEP_NONE)) {
+	if ((t.pos & POS_ALL) && (t.pos & POS_NONE)) {
 		u_fprintf(ux_stderr, "Error: Invalid position on line %u - cannot have both NONE and ALL!\n", result->lines);
 		CG3Quit(1);
 	}
-	if ((t.pos & (POS_DEP_ALL|POS_DEP_NONE)) && !(t.pos & (POS_DEP_CHILD|POS_DEP_SIBLING|POS_DEP_PARENT|POS_RELATION))) {
-		u_fprintf(ux_stderr, "Error: Invalid position on line %u - NONE/ALL are currently only useful with dependencies/relations!\n", result->lines);
-		CG3Quit(1);
-	}
-	if ((t.pos & POS_NONE) && (t.pos != POS_NONE || t.offset != 0)) {
+	if ((t.pos & POS_UNKNOWN) && (t.pos != POS_UNKNOWN || t.offset != 0)) {
 		u_fprintf(ux_stderr, "Error: Invalid position on line %u - '?' cannot be combined with anything else!\n", result->lines);
 		CG3Quit(1);
 	}
@@ -540,10 +536,10 @@ int TextualParser::parseContextualTestList(UChar *& p, Rule *rule, ContextualTes
 	}
 	else {
 		if (all) {
-			t->pos |= POS_DEP_ALL;
+			t->pos |= POS_ALL;
 		}
 		if (none) {
-			t->pos |= POS_DEP_NONE;
+			t->pos |= POS_NONE;
 		}
 		if (negated) {
 			t->pos |= POS_NEGATED;
@@ -1191,7 +1187,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 			UChar *n = p;
 			result->lines += SKIPTOWS(n, 0, true);
 			while (n[-1] == ',' || n[-1] == ']') {
-				n--;
+				--n;
 			}
 			ptrdiff_t c = n - p;
 			u_strncpy(gbuffers[0], p, c);
@@ -1244,7 +1240,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 			UChar *n = p;
 			result->lines += SKIPTOWS(n, 0, true);
 			while (n[-1] == ',' || n[-1] == ']') {
-				n--;
+				--n;
 			}
 			ptrdiff_t c = n - p;
 			u_strncpy(gbuffers[0], p, c);

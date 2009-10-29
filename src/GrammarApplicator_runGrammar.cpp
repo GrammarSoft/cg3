@@ -121,7 +121,6 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 				}
 
 				cSWindow->appendCohort(cCohort);
-				gWindow->appendSingleWindow(cSWindow);
 				lSWindow = cSWindow;
 				lCohort = cCohort;
 				cSWindow = 0;
@@ -142,7 +141,6 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 				}
 
 				cSWindow->appendCohort(cCohort);
-				gWindow->appendSingleWindow(cSWindow);
 				lSWindow = cSWindow;
 				lCohort = cCohort;
 				cSWindow = 0;
@@ -151,7 +149,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 			}
 			if (!cSWindow) {
 				// ToDo: Refactor to allocate SingleWindow, Cohort, and Reading from their containers
-				cSWindow = new SingleWindow(gWindow);
+				cSWindow = gWindow->allocAppendSingleWindow();
 
 				cCohort = new Cohort(cSWindow);
 				cCohort->global_number = 0;
@@ -273,7 +271,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 			ux_trim(cleaned);
 			if (u_strlen(cleaned) > 0) {
 				if (u_strcmp(cleaned, stringbits[S_CMD_FLUSH].getTerminatedBuffer()) == 0) {
-					u_fprintf(ux_stderr, "Info: CGCMD:FLUSH encountered on line %u. Flushing...\n", numLines);
+					u_fprintf(ux_stderr, "Info: FLUSH encountered on line %u. Flushing...\n", numLines);
 					if (cCohort && cSWindow) {
 						cSWindow->appendCohort(cCohort);
 						if (cCohort->readings.empty()) {
@@ -283,7 +281,6 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 						foreach (std::list<Reading*>, cCohort->readings, iter, iter_end) {
 							addTagToReading(**iter, endtag);
 						}
-						gWindow->appendSingleWindow(cSWindow);
 						cReading = lReading = 0;
 						cCohort = lCohort = 0;
 						cSWindow = lSWindow = 0;
@@ -315,15 +312,15 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 					u_fflush(output);
 				}
 				else if (u_strcmp(cleaned, stringbits[S_CMD_IGNORE].getTerminatedBuffer()) == 0) {
-					u_fprintf(ux_stderr, "Info: CGCMD:IGNORE encountered on line %u. Passing through all input...\n", numLines);
+					u_fprintf(ux_stderr, "Info: IGNORE encountered on line %u. Passing through all input...\n", numLines);
 					ignoreinput = true;
 				}
 				else if (u_strcmp(cleaned, stringbits[S_CMD_RESUME].getTerminatedBuffer()) == 0) {
-					u_fprintf(ux_stderr, "Info: CGCMD:RESUME encountered on line %u. Resuming CG...\n", numLines);
+					u_fprintf(ux_stderr, "Info: RESUME encountered on line %u. Resuming CG...\n", numLines);
 					ignoreinput = false;
 				}
 				else if (u_strcmp(cleaned, stringbits[S_CMD_EXIT].getTerminatedBuffer()) == 0) {
-					u_fprintf(ux_stderr, "Info: CGCMD:EXIT encountered on line %u. Exiting...\n", numLines);
+					u_fprintf(ux_stderr, "Info: EXIT encountered on line %u. Exiting...\n", numLines);
 					u_fprintf(output, "%S", line);
 					goto CGCMD_EXIT;
 				}
@@ -351,7 +348,6 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 		foreach (std::list<Reading*>, cCohort->readings, iter, iter_end) {
 			addTagToReading(**iter, endtag);
 		}
-		gWindow->appendSingleWindow(cSWindow);
 		cReading = 0;
 		cCohort = 0;
 		cSWindow = 0;
