@@ -6,7 +6,7 @@
 
   <para>
     CG-3 can also work with generic relations. These are analogous to dependency relations,
-	but can have any name, overlap, are directional, and can point to multiple cohorts.
+    but can have any name, overlap, are directional, and can point to multiple cohorts.
   </para>
 
   <section id="rel-addrelation">
@@ -45,7 +45,7 @@
     </indexterm>
     <para>
       SETRELATION removes all previous relations with the name,
-	  then creates a one-way named relation from the current cohort to the found cohort.
+      then creates a one-way named relation from the current cohort to the found cohort.
       The name must be an alphanumeric string with no whitespace.
     </para>
     <screen>
@@ -54,7 +54,7 @@
     </screen>
     <para>
       SETRELATIONS removes all previous relations in the respective cohorts with the respective names,
-	  then creates two one-way named relation; one from the current cohort to the found cohort,
+      then creates two one-way named relation; one from the current cohort to the found cohort,
       and one the other way. The names can be the same if so desired.
     </para>
     <screen>
@@ -92,7 +92,7 @@
   <section id="rel-input">
     <title>Existing Relations in Input</title>
     <para>
-	  Not currently supported; relations from input are ignored at present stage of development.
+      Not currently supported; relations from input are ignored at present stage of development.
     </para>
   </section>
 
@@ -111,10 +111,10 @@
       </indexterm>
       <para>
         The 'r:rel' position asks for cohorts found via the 'rel' relation.
-		'rel' can be any name previously given via
+        'rel' can be any name previously given via
         <link linkend="rel-addrelation">ADDRELATION</link> or <link linkend="rel-setrelation">SETRELATION</link>.
-		Be aware that for combining positional options, 'r:rel' should be the last in the position;
-		'r:' will eat anything following it until it meets a space.
+        Be aware that for combining positional options, 'r:rel' should be the last in the position;
+        'r:' will eat anything following it until it meets a space.
       </para>
       <screen>
         (r:rel (ADJ))
