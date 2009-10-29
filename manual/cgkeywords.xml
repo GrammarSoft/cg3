@@ -72,7 +72,7 @@
     </indexterm>
     <para>
       An inline keyword put at the start of a contextual test to mandate that all cohorts found via the
-	  dependency or relation must match the set. This is a more readable way of saying 'C'.
+      dependency or relation must match the set. This is a more readable way of saying 'C'.
     </para>
     <screen>
       SELECT targetset (ALL c (tag)) ;
@@ -350,7 +350,7 @@
     </indexterm>
     <para>
       An inline keyword put at the start of a contextual test to mandate that none of the cohorts found via the
-	  dependency or relation must match the set. This is a more readable way of saying 'NOT'.
+      dependency or relation must match the set. This is a more readable way of saying 'NOT'.
     </para>
     <screen>
       SELECT targetset (NONE c (tag)) ;
