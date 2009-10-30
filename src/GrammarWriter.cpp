@@ -280,7 +280,7 @@ void GrammarWriter::printContextualTest(UFILE *to, const ContextualTest &test) {
 		}
 	}
 	else {
-		if (test.pos & POS_NEGATED) {
+		if (test.pos & POS_NEGATE) {
 			u_fprintf(to, "NEGATE ");
 		}
 		if (test.pos & POS_ALL) {
@@ -289,7 +289,7 @@ void GrammarWriter::printContextualTest(UFILE *to, const ContextualTest &test) {
 		if (test.pos & POS_NONE) {
 			u_fprintf(to, "NONE ");
 		}
-		if (test.pos & POS_NEGATIVE) {
+		if (test.pos & POS_NOT) {
 			u_fprintf(to, "NOT ");
 		}
 		if (test.pos & POS_ABSOLUTE) {

@@ -397,9 +397,9 @@ int TextualParser::parseContextualTestPosition(UChar *& p, ContextualTest& t) {
 		t.pos &= ~POS_CAREFUL;
 		t.pos |= POS_ALL;
 	}
-	if ((t.pos & (POS_DEP_CHILD|POS_DEP_SIBLING)) && (t.pos & POS_NEGATIVE)) {
+	if ((t.pos & (POS_DEP_CHILD|POS_DEP_SIBLING)) && (t.pos & POS_NOT)) {
 		u_fprintf(ux_stderr, "Warning: Deprecated conversion from NOT to NONE on line %u.\n", result->lines);
-		t.pos &= ~POS_NEGATIVE;
+		t.pos &= ~POS_NOT;
 		t.pos |= POS_NONE;
 	}
 	if ((t.pos & POS_RELATION) && (t.pos & POS_CAREFUL)) {
@@ -407,9 +407,9 @@ int TextualParser::parseContextualTestPosition(UChar *& p, ContextualTest& t) {
 		t.pos &= ~POS_CAREFUL;
 		t.pos |= POS_ALL;
 	}
-	if ((t.pos & POS_RELATION) && (t.pos & POS_NEGATIVE)) {
+	if ((t.pos & POS_RELATION) && (t.pos & POS_NOT)) {
 		u_fprintf(ux_stderr, "Warning: Deprecated conversion from NOT to NONE on line %u.\n", result->lines);
-		t.pos &= ~POS_NEGATIVE;
+		t.pos &= ~POS_NOT;
 		t.pos |= POS_NONE;
 	}
 
@@ -542,10 +542,10 @@ int TextualParser::parseContextualTestList(UChar *& p, Rule *rule, ContextualTes
 			t->pos |= POS_NONE;
 		}
 		if (negated) {
-			t->pos |= POS_NEGATED;
+			t->pos |= POS_NEGATE;
 		}
 		if (negative) {
-			t->pos |= POS_NEGATIVE;
+			t->pos |= POS_NOT;
 		}
 		parseContextualTestPosition(p, *t);
 		p = n;
@@ -607,6 +607,10 @@ label_parseTemplateRef:
 	result->lines += SKIPWS(p);
 
 	if (linked) {
+		if (t->pos & POS_NONE) {
+			u_fprintf(ux_stderr, "Error: It does not make sense to LINK from a NONE test; perhaps you meant NOT or NEGATE on line %u?\n", result->lines);
+			CG3Quit(1);
+		}
 		parseContextualTestList(p, rule, 0, t);
 	}
 
@@ -617,9 +621,9 @@ label_parseTemplateRef:
 		parentTest->linked = t;
 	}
 	else {
-		if (option_vislcg_compat && t->pos & POS_NEGATIVE) {
-			t->pos &= ~POS_NEGATIVE;
-			t->pos |= POS_NEGATED;
+		if (option_vislcg_compat && t->pos & POS_NOT) {
+			t->pos &= ~POS_NOT;
+			t->pos |= POS_NEGATE;
 		}
 		rule->addContextualTest(t, head);
 	}

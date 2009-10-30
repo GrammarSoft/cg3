@@ -58,7 +58,7 @@ Cohort *GrammarApplicator::runSingleTest(SingleWindow *sWindow, size_t i, const 
 		*retval = false;
 		*brk = true;
 	}
-	if (test->pos & POS_NEGATIVE) {
+	if (test->pos & POS_NOT) {
 		*retval = !*retval;
 	}
 	if (*retval && test->linked) {
@@ -151,7 +151,7 @@ Cohort *GrammarApplicator::runContextualTest(SingleWindow *sWindow, size_t posit
 		Cohort *entry = 0;
 		if (test->pos & POS_TMPL_OVERRIDE) {
 			test->tmpl->pos = test->pos;
-			test->tmpl->pos &= ~(POS_NEGATED|POS_NEGATIVE|POS_MARK_JUMP);
+			test->tmpl->pos &= ~(POS_NEGATE|POS_NOT|POS_MARK_JUMP);
 			test->tmpl->offset = test->offset;
 			if (test->offset != 0 && !(test->pos & (POS_SCANFIRST|POS_SCANALL|POS_ABSOLUTE))) {
 				test->tmpl->pos |= POS_SCANALL;
@@ -208,7 +208,7 @@ Cohort *GrammarApplicator::runContextualTest(SingleWindow *sWindow, size_t posit
 			uint32_t orgbar = (*iter)->barrier;
 			if (test->pos & POS_TMPL_OVERRIDE) {
 				(*iter)->pos = test->pos;
-				(*iter)->pos &= ~(POS_TMPL_OVERRIDE|POS_NEGATED|POS_NEGATIVE|POS_MARK_JUMP);
+				(*iter)->pos &= ~(POS_TMPL_OVERRIDE|POS_NEGATE|POS_NOT|POS_MARK_JUMP);
 				(*iter)->offset = test->offset;
 				if (test->offset != 0 && !(test->pos & (POS_SCANFIRST|POS_SCANALL|POS_ABSOLUTE))) {
 					(*iter)->pos |= POS_SCANALL;
@@ -378,11 +378,14 @@ Cohort *GrammarApplicator::runContextualTest(SingleWindow *sWindow, size_t posit
 		if (it) {
 			Cohort *nc = 0;
 			bool brk = false;
+			size_t seen = 0;
 			if (test->pos & POS_SELF) {
+				++seen;
 				nc = runSingleTest(cohort->parent, cohort->local_number, test, &brk, &retval, deep, origin);
 			}
 			if (!brk) {
 				for (; *it != CohortIterator(0) ; ++(*it)) {
+					++seen;
 					nc = runSingleTest((**it)->parent, (**it)->local_number, test, &brk, &retval, deep, origin);
 					if (test->pos & POS_ALL && !retval) {
 						nc = 0;
@@ -397,6 +400,10 @@ Cohort *GrammarApplicator::runContextualTest(SingleWindow *sWindow, size_t posit
 					}
 				}
 			}
+			if (seen == 0 && test->pos & POS_NONE) {
+				retval = true;
+				nc = cohort;
+			}
 			cohort = nc;
 			delete it;
 		}
@@ -404,10 +411,10 @@ Cohort *GrammarApplicator::runContextualTest(SingleWindow *sWindow, size_t posit
 	if (!cohort) {
 		retval = false;
 	}
-	if (!cohort && test->pos & POS_NEGATIVE) {
+	if (!cohort && test->pos & POS_NOT && !test->linked) {
 		retval = !retval;
 	}
-	if (test->pos & POS_NEGATED) {
+	if (test->pos & POS_NEGATE) {
 		retval = !retval;
 	}
 	if (retval) {
