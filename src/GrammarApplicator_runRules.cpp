@@ -756,6 +756,9 @@ int GrammarApplicator::runGrammarOnWindow() {
 
 	if (has_dep) {
 		reflowDependencyWindow();
+		gWindow->dep_map.clear();
+		gWindow->dep_window.clear();
+		dep_highest_seen = 0;
 	}
 
 	indexSingleWindow(*current);

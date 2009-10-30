@@ -15,4 +15,5 @@ SETPARENT (@P<) TO (-1* (PRP)) ;
 SETPARENT (@ADVL) (0 (PRP)) TO (-1* (ADV)) (0 (@ADVL)) ;
 
 ADD (@notp) (*) (NOT p (*)) ;
+ADD (@nonep) (*) (NONE p (*)) ;
 ADD (@negatep) (*) (NEGATE p (*)) ;

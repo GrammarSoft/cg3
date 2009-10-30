@@ -1,6 +1,7 @@
 "<word>"
-	"word" wanted 
+	"word" wanted @good-not-link 
 "<word>"
 	"word" notwanted 
 	"word" maybe 
 	"word" notmeeither 
+
