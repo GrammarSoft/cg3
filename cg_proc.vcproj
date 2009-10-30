@@ -254,6 +254,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\MatxinApplicator.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\Reading.cpp"
 				>
 			</File>
@@ -349,6 +353,10 @@
 			</File>
 			<File
 				RelativePath=".\win32\libgen.h"
+				>
+			</File>
+			<File
+				RelativePath=".\src\MatxinApplicator.h"
 				>
 			</File>
 			<File
