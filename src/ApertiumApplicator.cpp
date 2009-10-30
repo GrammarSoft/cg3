@@ -28,8 +28,6 @@
 #include "SingleWindow.h"
 #include "Reading.h"
 
-#define LENGTHOF(array) (sizeof(array)/sizeof((array)[0]))
-
 namespace CG3 {
 
 ApertiumApplicator::ApertiumApplicator(UFILE *ux_err) 

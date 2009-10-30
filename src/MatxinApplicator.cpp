@@ -27,10 +27,6 @@
 #include "Window.h"
 #include "SingleWindow.h"
 #include "Reading.h"
-#include <stack>
-#include "unicode/ubrk.h"
-
-#define LENGTHOF(array) (sizeof(array)/sizeof((array)[0]))
 
 namespace CG3 {
 
@@ -185,7 +181,7 @@ int MatxinApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 			superblank = false;
 		}
 
-		if (inchar == '\\' && not incohort) {
+		if (inchar == '\\' && !incohort) {
 			u_fprintf(output, "%C", inchar);
 			inchar = u_fgetc_wrapper(input); 
 			u_fprintf(output, "%C", inchar);
