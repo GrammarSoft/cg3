@@ -137,6 +137,7 @@ namespace CG3 {
 		CohortSet m_seen;
 	};
 
+	// ToDo: Iterative deepening depth-first search
 	class DependencyIterator : public CohortIterator {
 	public:
 		DependencyIterator(Cohort *cohort = 0, const ContextualTest *test = 0, bool span = false) :
