@@ -28,6 +28,7 @@
 #include "Grammar.h"
 #include "BinaryGrammar.h"
 #include "ApertiumApplicator.h"
+#include "MatxinApplicator.h"
 #include "GrammarApplicator.h"
 #include "uextras.h"
 
@@ -52,8 +53,9 @@ void endProgram(char *name) {
 	cout << "	-d, --disambiguation:	 morphological disambiguation" << endl;
 	cout << "	-s, --sections=NUM:	 specify number of sections to process" << endl;
 	cout << "	-f, --stream-format=NUM: set the format of the I/O stream to NUM," << endl;
-	cout << "				   where `0' is VISL format and `1' is " << endl;
-	cout << "				   Apertium format (default: 1)" << endl;
+	cout << "				   where `0' is VISL format, `1' is Apertium" << endl;
+	cout << "				   format and `2' is Apertium format as input," << endl;
+	cout << "				   Matxin format as output (default: 1)" << endl;
 	cout << "	-t, --trace:		 print debug output on stderr" << endl;
 	cout << "	-w, --wordform-case:	 enforce surface case on lemma/baseform " << endl;
 	cout << "				   (to work with -w option of lt-proc)" << endl;
@@ -96,7 +98,7 @@ int main(int argc, char *argv[]) {
 	static struct option long_options[] = {
 		{"disambiguation",	0, 0, 'd'},
 		{"sections", 		0, 0, 's'},
-		{"stream-format",	0, 0, 'f'},
+		{"stream-format",	required_argument, 0, 'f'},
 		{"trace", 		0, 0, 't'},
 		{"wordform-case",	0, 0, 'w'},
 		{"no-word-forms",	0, 0, 'n'},
@@ -273,16 +275,27 @@ int main(int argc, char *argv[]) {
 	if (stream_format == 0) {
 		applicator = new CG3::GrammarApplicator(ux_stderr);
 	}
+	else if (stream_format == 2) {
+		CG3::MatxinApplicator* matxinApplicator= new CG3::MatxinApplicator(ux_stderr);
+		matxinApplicator->setNullFlush(nullFlush);
+		if (wordform_case == 1) {
+			matxinApplicator->wordform_case = true;
+		}
+		if (print_word_forms == 0) {
+			matxinApplicator->print_word_forms = false;
+		}
+		applicator = matxinApplicator;
+	}
 	else {
 		CG3::ApertiumApplicator* apertiumApplicator= new CG3::ApertiumApplicator(ux_stderr);
 		apertiumApplicator->setNullFlush(nullFlush);
-		applicator = apertiumApplicator;
 		if (wordform_case == 1) {
 			apertiumApplicator->wordform_case = true;
 		}
 		if (print_word_forms == 0) {
 			apertiumApplicator->print_word_forms = false;
 		}
+		applicator = apertiumApplicator;
 	}
 
 	applicator->setGrammar(&grammar);
