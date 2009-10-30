@@ -3,6 +3,11 @@ DELIMITERS = "<$.>" ;
 LIST ASet = wanted ;
 LIST BSet = maybe ;
 
+BEFORE-SECTIONS
+
+ADD (@good-not-link) (*) (NOT 1 (something) LINK -1* (wanted)) ;
+ADD (@bad-not-link) (*) (NOT 5 (something) LINK -1* (wanted)) ;
+
 SECTION
 
 SELECT ASet (1 BSet) ;

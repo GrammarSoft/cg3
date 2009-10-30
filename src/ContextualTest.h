@@ -30,8 +30,8 @@ namespace CG3 {
 
 	enum CT_POS {
 		POS_CAREFUL        =        0x1,
-		POS_NEGATED        =        0x2,
-		POS_NEGATIVE       =        0x4,
+		POS_NEGATE         =        0x2,
+		POS_NOT            =        0x4,
 		POS_SCANFIRST      =        0x8,
 		POS_SCANALL        =       0x10,
 		POS_ABSOLUTE       =       0x20,
