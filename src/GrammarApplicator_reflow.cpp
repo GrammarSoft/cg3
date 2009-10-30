@@ -150,6 +150,7 @@ void GrammarApplicator::reflowDependencyWindow(uint32_t max) {
 	}
 	else if (gWindow->dep_window.find(0) == gWindow->dep_window.end()) {
 		// This has to be done in 2 steps or it will segfault on Linux for some reason...
+		// Turns out g++ evaluates left side of = first, and MSVC++ does right side first, so g++ accessed its own newly created [0] at .begin()
 		Cohort *tmp = gWindow->dep_window.begin()->second->parent->cohorts.at(0);
 		gWindow->dep_window[0] = tmp;
 	}

@@ -189,7 +189,6 @@ UChar *ux_append(UChar *target, const UChar *data) {
 	return tmp;
 }
 
-
 UChar *ux_append(UChar *target, const UChar data) {
 	UChar *tmp = 0;
 	UChar *char_tmp = new UChar[2];
