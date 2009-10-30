@@ -44,6 +44,7 @@
 #include <vector>
 #include <set>
 #include <map>
+#include <stack>
 #include <ctime>
 #include <cmath>
 #include <climits>
@@ -126,6 +127,7 @@
 #include <unicode/utrans.h>
 #include <unicode/ustring.h>
 #include <unicode/uregex.h>
+#include <unicode/ubrk.h>
 
 #include "cycle.h"
 #include "macros.h"
