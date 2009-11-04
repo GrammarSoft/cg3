@@ -137,6 +137,40 @@ namespace CG3 {
 		CohortSet m_seen;
 	};
 
+	class MultiCohortIterator : public std::iterator<std::input_iterator_tag, Cohort*> {
+	public:
+		MultiCohortIterator(Cohort *cohort = 0, const ContextualTest *test = 0, bool span = false) :
+		m_span(span),
+		m_cohort(cohort),
+		m_test(test)
+		{
+		}
+
+		virtual ~MultiCohortIterator() {
+		}
+
+		bool operator ==(const MultiCohortIterator& other) {
+			return (m_cohort == other.m_cohort);
+		}
+		bool operator !=(const MultiCohortIterator& other) {
+			return (m_cohort != other.m_cohort);
+		}
+
+		virtual MultiCohortIterator& operator++() {
+			m_cohort = 0;
+			return *this;
+		}
+
+		Cohort* operator*() {
+			return m_cohort;
+		}
+
+	protected:
+		bool m_span;
+		Cohort *m_cohort;
+		const ContextualTest *m_test;
+	};
+
 	// ToDo: Iterative deepening depth-first search
 	class DependencyIterator : public CohortIterator {
 	public:
