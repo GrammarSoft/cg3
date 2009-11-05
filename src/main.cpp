@@ -470,6 +470,10 @@ void GAppSetOpts(CG3::GrammarApplicator &applicator) {
 		applicator.trace = true;
 		applicator.trace_no_removed = true;
 	}
+	if (options[TRACE_ENCL].doesOccur) {
+		applicator.trace = true;
+		applicator.trace_encl = true;
+	}
 	if (options[SINGLERUN].doesOccur) {
 		applicator.single_run = true;
 	}

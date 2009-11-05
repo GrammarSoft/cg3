@@ -213,7 +213,7 @@ int MatxinApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 					cReading = initEmptyCohort(*cCohort);
 					lReading = cReading;
 				}
-				foreach (std::list<Reading*>, cCohort->readings, iter, iter_end) {
+				foreach (ReadingList, cCohort->readings, iter, iter_end) {
 					addTagToReading(**iter, endtag);
 				}
 
@@ -234,7 +234,7 @@ int MatxinApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 					cReading = initEmptyCohort(*cCohort);
 					lReading = cReading;
 				} 
-				foreach (std::list<Reading*>, cCohort->readings, iter, iter_end) {
+				foreach (ReadingList, cCohort->readings, iter, iter_end) {
 					addTagToReading(**iter, endtag);
 				}
 				
@@ -394,7 +394,7 @@ int MatxinApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 		if (cCohort->readings.empty()) {
 			cReading = initEmptyCohort(*cCohort);
 		}
-		foreach (std::list<Reading*>, cCohort->readings, iter, iter_end) {
+		foreach (ReadingList, cCohort->readings, iter, iter_end) {
 			addTagToReading(**iter, endtag);
 		}
 		cReading = 0;
@@ -713,7 +713,7 @@ void MatxinApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 			continue;
 		}
 		cohort = window->cohorts[c];
-		if (cohort->dep_parent == UINT_MAX || cohort->dep_parent == 0) {
+		if (cohort->dep_parent == std::numeric_limits<uint32_t>::max() || cohort->dep_parent == 0) {
 			tree.push(cohort);
 		}
 	}
@@ -736,7 +736,7 @@ void MatxinApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 		tree.push(0);	// add end of cohort-marker before adding children
 		// Alternative method: don't pop current cohort yet; add the children first, then when we see a number we've seen before, pop and print /NODE
 		
-		std::list<Reading*>::iterator rter;
+		ReadingList::iterator rter;
 		rter = cohort->readings.begin();
 
 		// Check if this syntactic function should be a CHUNK
@@ -755,7 +755,7 @@ void MatxinApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 				syntags = ux_append(syntags, '.');
 			}
 		}
-		if (cohort->dep_parent == UINT_MAX || cohort->dep_parent == 0) {
+		if (cohort->dep_parent == std::numeric_limits<uint32_t>::max() || cohort->dep_parent == 0) {
 			nodetype = 1;
 		}
 		ntypetree.push(nodetype);

@@ -41,7 +41,7 @@ global_number(0),
 local_number(0),
 wordform(0),
 dep_self(0),
-dep_parent(UINT_MAX),
+dep_parent(std::numeric_limits<uint32_t>::max()),
 is_pleft(0),
 is_pright(0),
 parent(p),
@@ -53,13 +53,13 @@ next(0)
 }
 
 Cohort::~Cohort() {
-	foreach (std::list<Reading*>, readings, iter1, iter1_end) {
+	foreach (ReadingList, readings, iter1, iter1_end) {
 		delete (*iter1);
 	}
-	foreach (std::list<Reading*>, deleted, iter2, iter2_end) {
+	foreach (ReadingList, deleted, iter2, iter2_end) {
 		delete (*iter2);
 	}
-	foreach (std::list<Reading*>, delayed, iter3, iter3_end) {
+	foreach (ReadingList, delayed, iter3, iter3_end) {
 		delete (*iter3);
 	}
 	if (parent) {
@@ -112,7 +112,7 @@ inline void Cohort::updateMinMax() {
 	}
 	num_min.clear();
 	num_max.clear();
-	const_foreach (std::list<Reading*>, readings, rter, rter_end) {
+	const_foreach (ReadingList, readings, rter, rter_end) {
 		const_foreach (Taguint32HashMap, (*rter)->tags_numerical, nter, nter_end) {
 			const Tag *tag = nter->second;
 			if (num_min.find(tag->comparison_hash) == num_min.end() || tag->comparison_val < num_min[tag->comparison_hash]) {

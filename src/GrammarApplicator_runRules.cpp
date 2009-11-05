@@ -171,7 +171,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow &current, uint32Set &r
 			bool did_test = false;
 			bool test_good = false;
 
-			foreach (std::list<Reading*>, cohort->readings, rter1, rter1_end) {
+			foreach (ReadingList, cohort->readings, rter1, rter1_end) {
 				Reading *reading = *rter1;
 				reading->matched_target = false;
 				reading->matched_tests = false;
@@ -255,11 +255,11 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow &current, uint32Set &r
 			}
 
 			uint32_t did_append = 0;
-			std::list<Reading*> removed;
-			std::list<Reading*> selected;
+			ReadingList removed;
+			ReadingList selected;
 
 			// ToDo: Test APPEND followed by MAP
-			foreach (std::list<Reading*>, cohort->readings, rter2, rter2_end) {
+			foreach (ReadingList, cohort->readings, rter2, rter2_end) {
 				Reading &reading = **rter2;
 				bool good = reading.matched_tests;
 
@@ -331,7 +331,7 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow &current, uint32Set &r
 						}
 
 						cohort = current.cohorts.back();
-						foreach (std::list<Reading*>, cohort->readings, rter3, rter3_end) {
+						foreach (ReadingList, cohort->readings, rter3, rter3_end) {
 							Reading *reading = *rter3;
 							addTagToReading(*reading, endtag);
 						}
@@ -821,9 +821,22 @@ int GrammarApplicator::runGrammarOnWindow() {
 	par_right_tag = 0;
 	par_left_pos = 0;
 	par_right_pos = 0;
+	uint32_t pass = 0;
 
 label_runGrammarOnWindow_begin:
 	current = gWindow->current;
+
+	++pass;
+	if (trace_encl) {
+		uint32_t hitpass = std::numeric_limits<uint32_t>::max() - pass;
+		size_t nc = current->cohorts.size();
+		for (size_t i=0 ; i<nc ; ++i) {
+			Cohort *c = current->cohorts[i];
+			foreach (ReadingList, c->readings, rit, rit_end) {
+				(*rit)->hit_by.push_back(hitpass);
+			}
+		}
+	}
 
 	int rv = runGrammarOnSingleWindow(*current);
 	if (rv & RV_DELIMITED) {

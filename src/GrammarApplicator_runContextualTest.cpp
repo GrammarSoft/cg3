@@ -470,7 +470,7 @@ Cohort *GrammarApplicator::runDependencyTest(SingleWindow *sWindow, const Cohort
 	}
 
 	if (test->pos & POS_DEP_PARENT) {
-		if (current->dep_parent == UINT_MAX) {
+		if (current->dep_parent == std::numeric_limits<uint32_t>::max()) {
 			return 0;
 		}
 		if (sWindow->parent->cohort_map.find(current->dep_parent) == sWindow->parent->cohort_map.end()) {

@@ -24,6 +24,7 @@
 #define __COHORT_H
 
 #include "stdafx.h"
+#include "Reading.h"
 
 namespace CG3 {
 	class SingleWindow;
@@ -47,9 +48,9 @@ namespace CG3 {
 		SingleWindow *parent;
 		UChar *text;
 		Cohort *prev, *next;
-		std::list<Reading*> readings;
-		std::list<Reading*> deleted;
-		std::list<Reading*> delayed;
+		ReadingList readings;
+		ReadingList deleted;
+		ReadingList delayed;
 		uint32int32Map num_max, num_min;
 		uint32HashSet dep_children;
 		uint32HashSet possible_sets;
