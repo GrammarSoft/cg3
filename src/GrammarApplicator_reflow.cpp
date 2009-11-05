@@ -47,7 +47,7 @@ bool GrammarApplicator::wouldParentChildLoop(Cohort *parent, Cohort *child) {
 	}
 	else {
 		for (;i<1000;i++) {
-			if (parent->dep_parent == 0 || parent->dep_parent == UINT_MAX) {
+			if (parent->dep_parent == 0 || parent->dep_parent == std::numeric_limits<uint32_t>::max()) {
 				retval = false;
 				break;
 			}
@@ -82,7 +82,7 @@ bool GrammarApplicator::wouldParentChildCross(Cohort *parent, Cohort *child) {
 
 	for (uint32_t i = mn+1 ; i<mx ; ++i) {
 		std::map<uint32_t,Cohort*>::iterator it = gWindow->cohort_map.find(parent->dep_parent);
-		if (it != gWindow->cohort_map.end() && it->second->dep_parent != UINT_MAX) {
+		if (it != gWindow->cohort_map.end() && it->second->dep_parent != std::numeric_limits<uint32_t>::max()) {
 			if (it->second->dep_parent < mn || it->second->dep_parent > mx) {
 				return true;
 			}
@@ -118,7 +118,7 @@ bool GrammarApplicator::attachParentChild(Cohort &parent, Cohort &child, bool al
 		return false;
 	}
 
-	if (child.dep_parent == UINT_MAX) {
+	if (child.dep_parent == std::numeric_limits<uint32_t>::max()) {
 		child.dep_parent = child.dep_self;
 	}
 	std::map<uint32_t,Cohort*>::iterator it = gWindow->cohort_map.find(child.dep_parent);
@@ -188,7 +188,7 @@ void GrammarApplicator::reflowDependencyWindow(uint32_t max) {
 			if (max && cohort->global_number >= max) {
 				break;
 			}
-			if (cohort->dep_parent == UINT_MAX) {
+			if (cohort->dep_parent == std::numeric_limits<uint32_t>::max()) {
 				continue;
 			}
 			if (cohort->dep_self == cohort->global_number) {
@@ -201,7 +201,7 @@ void GrammarApplicator::reflowDependencyWindow(uint32_t max) {
 							);
 						u_fflush(ux_stderr);
 					}
-					cohort->dep_parent = UINT_MAX;
+					cohort->dep_parent = std::numeric_limits<uint32_t>::max();
 				}
 				else {
 					if (!cohort->dep_done) {
@@ -338,7 +338,7 @@ void GrammarApplicator::addTagToReading(Reading &reading, uint32_t utag, bool re
 		reading.parent->dep_self = tag->dep_self;
 		reading.parent->dep_parent = tag->dep_parent;
 		if (tag->dep_parent == tag->dep_self) {
-			reading.parent->dep_parent = UINT_MAX;
+			reading.parent->dep_parent = std::numeric_limits<uint32_t>::max();
 		}
 		has_dep = true;
 	}
@@ -373,7 +373,7 @@ void GrammarApplicator::splitMappings(TagList mappings, Cohort &cohort, Reading 
 	foreach (TagList, mappings, ttag, ttag_end) {
 		// To avoid duplicating needlessly many times, check for a similar reading in the cohort that's already got this mapping
 		bool found = false;
-		foreach (std::list<Reading*>, cohort.readings, itr, itr_end) {
+		foreach (ReadingList, cohort.readings, itr, itr_end) {
 			if ((*itr)->hash_plain == reading.hash_plain
 				&& (*itr)->mapping
 				&& (*itr)->mapping->hash == (*ttag)->hash
@@ -399,8 +399,8 @@ void GrammarApplicator::splitMappings(TagList mappings, Cohort &cohort, Reading 
 }
 
 void GrammarApplicator::mergeMappings(Cohort &cohort) {
-	std::map<uint32_t, std::list<Reading*> > mlist;
-	foreach (std::list<Reading*>, cohort.readings, iter, iter_end) {
+	std::map<uint32_t, ReadingList > mlist;
+	foreach (ReadingList, cohort.readings, iter, iter_end) {
 		Reading *r = *iter;
 		uint32_t hp = r->hash_plain;
 		if (trace) {
@@ -418,15 +418,15 @@ void GrammarApplicator::mergeMappings(Cohort &cohort) {
 	cohort.readings.clear();
 	std::vector<Reading*> order;
 
-	std::map<uint32_t, std::list<Reading*> >::iterator miter;
+	std::map<uint32_t, ReadingList >::iterator miter;
 	for (miter = mlist.begin() ; miter != mlist.end() ; miter++) {
-		std::list<Reading*> clist = miter->second;
+		ReadingList clist = miter->second;
 		Reading *nr = new Reading(&cohort);
 		nr->duplicateFrom(*(clist.front()));
 		if (nr->mapping) {
 			nr->tags_list.remove(nr->mapping->hash);
 		}
-		foreach (std::list<Reading*>, clist, iter1, iter1_end) {
+		foreach (ReadingList, clist, iter1, iter1_end) {
 			if ((*iter1)->mapping) {
 				nr->tags_list.push_back((*iter1)->mapping->hash);
 			}

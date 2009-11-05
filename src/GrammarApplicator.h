@@ -46,6 +46,7 @@ namespace CG3 {
 		bool trace;
 		bool trace_name_only;
 		bool trace_no_removed;
+		bool trace_encl;
 		bool single_run;
 		bool allow_magic_readings;
 		bool no_pass_origin;

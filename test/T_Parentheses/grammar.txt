@@ -17,6 +17,13 @@ ADD (@sqbrck) (*) (L ("<$[>")) ;
 ADD (@paren) (*) (R ("<$)>")) ;
 ADD (@clbrck) (*) (R ("<$}>")) ;
 
+# Rule options
+# In this case, they have to be substitute since the reading may already be mapped
+SUBSTITUTE ENCL_INNER (word) (word @inner) (*) ;
+SUBSTITUTE ENCL_OUTER (word) (word @outer) (*) ;
+SUBSTITUTE ENCL_FINAL (word) (word @final) (*) ;
+
+END
 # Marking the order of application
 MAP (@sixth) (*) (0** (@fifth)) ;
 MAP (@fifth) (*) (0** (@fourth)) ;
@@ -25,8 +32,3 @@ MAP (@third) (*) (0** (@second)) ;
 MAP (@second) (*) (0** (@first)) ;
 MAP (@first) (*) ;
 
-# Rule options
-# In this case, they have to be substitute since the reading may already be mapped
-SUBSTITUTE ENCL_INNER (word) (word @inner) (*) ;
-SUBSTITUTE ENCL_OUTER (word) (word @outer) (*) ;
-SUBSTITUTE ENCL_FINAL (word) (word @final) (*) ;
