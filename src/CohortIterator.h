@@ -137,16 +137,58 @@ namespace CG3 {
 		CohortSet m_seen;
 	};
 
+	class CohortSetIter : public CohortIterator {
+	public:
+		CohortSetIter(Cohort *cohort = 0, const ContextualTest *test = 0, bool span = false) :
+		CohortIterator(cohort, test, span),
+		m_origcohort(cohort),
+		m_cohortsetiter(m_cohortset.end())
+		{
+		}
+
+		void addCohort(Cohort *cohort) {
+			m_cohortset.insert(cohort);
+			m_cohortsetiter = m_cohortset.begin();
+		}
+
+		CohortSetIter& operator++() {
+			m_cohort = 0;
+			for (; m_cohortsetiter != m_cohortset.end() ; ++m_cohortsetiter) {
+				Cohort *cohort = *m_cohortsetiter;
+				if (cohort->parent == m_origcohort->parent || (m_test->pos & POS_SPAN_BOTH) || m_span) {
+					m_cohort = cohort;
+					break;
+				}
+				else if (cohort->parent->number < m_origcohort->parent->number && (m_test->pos & POS_SPAN_LEFT)) {
+					m_cohort = cohort;
+					break;
+				}
+				else if (cohort->parent->number > m_origcohort->parent->number && (m_test->pos & POS_SPAN_RIGHT)) {
+					m_cohort = cohort;
+					break;
+				}
+			}
+			return *this;
+		}
+
+	protected:
+		Cohort *m_origcohort;
+		CohortSet m_cohortset;
+		CohortSet::iterator m_cohortsetiter;
+	};
+
 	class MultiCohortIterator : public std::iterator<std::input_iterator_tag, Cohort*> {
 	public:
 		MultiCohortIterator(Cohort *cohort = 0, const ContextualTest *test = 0, bool span = false) :
 		m_span(span),
 		m_cohort(cohort),
-		m_test(test)
+		m_test(test),
+		m_cohortiter(0)
 		{
 		}
 
 		virtual ~MultiCohortIterator() {
+			delete m_cohortiter;
 		}
 
 		bool operator ==(const MultiCohortIterator& other) {
@@ -161,26 +203,40 @@ namespace CG3 {
 			return *this;
 		}
 
-		Cohort* operator*() {
-			return m_cohort;
+		CohortIterator* operator*() {
+			return m_cohortiter;
 		}
 
 	protected:
 		bool m_span;
 		Cohort *m_cohort;
 		const ContextualTest *m_test;
+		CohortSet m_seen;
+		CohortSetIter *m_cohortiter;
 	};
 
 	// ToDo: Iterative deepening depth-first search
-	class DependencyIterator : public CohortIterator {
+	class ChildrenIterator : public MultiCohortIterator {
 	public:
-		DependencyIterator(Cohort *cohort = 0, const ContextualTest *test = 0, bool span = false) :
-		CohortIterator(cohort, test, span)
+		ChildrenIterator(Cohort *cohort = 0, const ContextualTest *test = 0, bool span = false) :
+		MultiCohortIterator(cohort, test, span),
+		m_depth(0)
 		{
 		}
 
+		ChildrenIterator& operator++() {
+			delete m_cohortiter;
+			m_cohortiter = 0;
+			++m_depth;
+			uint32HashSet *top = &(m_cohort->dep_children);
+			if (!top->empty()) {
+				m_cohortiter = new CohortSetIter(m_cohort, m_test, m_span);
+			}
+			return *this;
+		}
+
 	protected:
-		uint32HashSet::iterator m_childiter;
+		uint32_t m_depth;
 	};
 }
 
