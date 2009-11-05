@@ -116,7 +116,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 					cReading = initEmptyCohort(*cCohort);
 					lReading = cReading;
 				}
-				foreach (std::list<Reading*>, cCohort->readings, iter, iter_end) {
+				foreach (ReadingList, cCohort->readings, iter, iter_end) {
 					addTagToReading(**iter, endtag);
 				}
 
@@ -136,7 +136,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 					cReading = initEmptyCohort(*cCohort);
 					lReading = cReading;
 				}
-				foreach (std::list<Reading*>, cCohort->readings, iter, iter_end) {
+				foreach (ReadingList, cCohort->readings, iter, iter_end) {
 					addTagToReading(**iter, endtag);
 				}
 
@@ -278,7 +278,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 							cReading = initEmptyCohort(*cCohort);
 							lReading = cReading;
 						}
-						foreach (std::list<Reading*>, cCohort->readings, iter, iter_end) {
+						foreach (ReadingList, cCohort->readings, iter, iter_end) {
 							addTagToReading(**iter, endtag);
 						}
 						cReading = lReading = 0;
@@ -345,7 +345,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 		if (cCohort->readings.empty()) {
 			cReading = initEmptyCohort(*cCohort);
 		}
-		foreach (std::list<Reading*>, cCohort->readings, iter, iter_end) {
+		foreach (ReadingList, cCohort->readings, iter, iter_end) {
 			addTagToReading(**iter, endtag);
 		}
 		cReading = 0;

@@ -58,6 +58,7 @@ namespace CG3 {
 		static bool cmp_number(Reading *a, Reading *b);
 	};
 
+	typedef std::list<Reading*> ReadingList;
 }
 
 #endif

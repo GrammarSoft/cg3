@@ -107,7 +107,7 @@ namespace CG3 {
 		}
 
 		DepParentIter& operator++() {
-			if (m_cohort->dep_parent != UINT_MAX) {
+			if (m_cohort->dep_parent != std::numeric_limits<uint32_t>::max()) {
 				std::map<uint32_t,Cohort*>::iterator it = m_cohort->parent->parent->cohort_map.find(m_cohort->dep_parent);
 				if (it != m_cohort->parent->parent->cohort_map.end()) {
 					Cohort *cohort = it->second;

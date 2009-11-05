@@ -38,6 +38,7 @@ GrammarApplicator::GrammarApplicator(UFILE *ux_err) {
 	trace = false;
 	trace_name_only = false;
 	trace_no_removed = false;
+	trace_encl = false;
 	single_run = false;
 	statistics = false;
 	dep_has_spanned = false;
@@ -270,7 +271,7 @@ void GrammarApplicator::printReading(Reading *reading, UFILE *output) {
 		}
 		const Cohort *pr = 0;
 		pr = reading->parent;
-		if (reading->parent->dep_parent != UINT_MAX) {
+		if (reading->parent->dep_parent != std::numeric_limits<uint32_t>::max()) {
 			if (reading->parent->dep_parent == 0) {
 				pr = reading->parent->parent->cohorts.at(0);
 			}
@@ -291,7 +292,7 @@ void GrammarApplicator::printReading(Reading *reading, UFILE *output) {
 				pr->local_number);
 		}
 		else {
-			if (reading->parent->dep_parent == UINT_MAX) {
+			if (reading->parent->dep_parent == std::numeric_limits<uint32_t>::max()) {
 				u_fprintf(output, "#%u->%u ",
 					reading->parent->dep_self,
 					reading->parent->dep_self);
@@ -317,22 +318,29 @@ void GrammarApplicator::printReading(Reading *reading, UFILE *output) {
 
 	if (trace) {
 		foreach (uint32Vector, reading->hit_by, iter_hb, iter_hb_end) {
-			const Rule *r = grammar->rule_by_line.find(*iter_hb)->second;
-			u_fprintf(output, "%S", keywords[r->type].getTerminatedBuffer());
-			if (r->type == K_ADDRELATION || r->type == K_SETRELATION || r->type == K_REMRELATION
-			|| r->type == K_ADDRELATIONS || r->type == K_SETRELATIONS || r->type == K_REMRELATIONS
-				) {
-					u_fprintf(output, "(%S", grammar->single_tags.find(r->maplist.front()->hash)->second->tag);
-					if (r->type == K_ADDRELATIONS || r->type == K_SETRELATIONS || r->type == K_REMRELATIONS) {
-						u_fprintf(output, ",%S", grammar->single_tags.find(r->sublist.front())->second->tag);
-					}
-					u_fprintf(output, ")");
+			RuleByLineHashMap::const_iterator ruit = grammar->rule_by_line.find(*iter_hb);
+			if (ruit != grammar->rule_by_line.end()) {
+				const Rule *r = ruit->second;
+				u_fprintf(output, "%S", keywords[r->type].getTerminatedBuffer());
+				if (r->type == K_ADDRELATION || r->type == K_SETRELATION || r->type == K_REMRELATION
+				|| r->type == K_ADDRELATIONS || r->type == K_SETRELATIONS || r->type == K_REMRELATIONS
+					) {
+						u_fprintf(output, "(%S", grammar->single_tags.find(r->maplist.front()->hash)->second->tag);
+						if (r->type == K_ADDRELATIONS || r->type == K_SETRELATIONS || r->type == K_REMRELATIONS) {
+							u_fprintf(output, ",%S", grammar->single_tags.find(r->sublist.front())->second->tag);
+						}
+						u_fprintf(output, ")");
+				}
+				if (!trace_name_only || !r->name) {
+					u_fprintf(output, ":%u", *iter_hb);
+				}
+				if (r->name) {
+					u_fprintf(output, ":%S", r->name);
+				}
 			}
-			if (!trace_name_only || !r->name) {
-				u_fprintf(output, ":%u", *iter_hb);
-			}
-			if (r->name) {
-				u_fprintf(output, ":%S", r->name);
+			else {
+				uint32_t pass = std::numeric_limits<uint32_t>::max() - (*iter_hb);
+				u_fprintf(output, "ENCL:%u", pass);
 			}
 			u_fprintf(output, " ");
 		}
@@ -355,14 +363,14 @@ void GrammarApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 
 		mergeMappings(*cohort);
 
-		foreach (std::list<Reading*>, cohort->readings, rter1, rter1_end) {
+		foreach (ReadingList, cohort->readings, rter1, rter1_end) {
 			printReading(*rter1, output);
 		}
 		if (trace && !trace_no_removed) {
-			foreach (std::list<Reading*>, cohort->delayed, rter3, rter3_end) {
+			foreach (ReadingList, cohort->delayed, rter3, rter3_end) {
 				printReading(*rter3, output);
 			}
-			foreach (std::list<Reading*>, cohort->deleted, rter2, rter2_end) {
+			foreach (ReadingList, cohort->deleted, rter2, rter2_end) {
 				printReading(*rter2, output);
 			}
 		}

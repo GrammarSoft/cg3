@@ -207,7 +207,7 @@ int ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 					cReading = initEmptyCohort(*cCohort);
 					lReading = cReading;
 				}
-				foreach (std::list<Reading*>, cCohort->readings, iter, iter_end) {
+				foreach (ReadingList, cCohort->readings, iter, iter_end) {
 					addTagToReading(**iter, endtag);
 				}
 
@@ -228,7 +228,7 @@ int ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 					cReading = initEmptyCohort(*cCohort);
 					lReading = cReading;
 				} 
-				foreach (std::list<Reading*>, cCohort->readings, iter, iter_end) {
+				foreach (ReadingList, cCohort->readings, iter, iter_end) {
 					addTagToReading(**iter, endtag);
 				}
 				
@@ -388,7 +388,7 @@ int ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 		if (cCohort->readings.empty()) {
 			cReading = initEmptyCohort(*cCohort);
 		}
-		foreach (std::list<Reading*>, cCohort->readings, iter, iter_end) {
+		foreach (ReadingList, cCohort->readings, iter, iter_end) {
 			addTagToReading(**iter, endtag);
 		}
 		cReading = 0;
@@ -683,7 +683,7 @@ void ApertiumApplicator::printSingleWindow(SingleWindow *window, UFILE *output) 
 
 		//Tag::printTagRaw(output, single_tags[cohort->wordform]);
 
-		std::list<Reading*>::iterator rter;
+		ReadingList::iterator rter;
 		for (rter = cohort->readings.begin() ; rter != cohort->readings.end() ; rter++) {
 			printReading(*rter, output);
 			if (*rter != cohort->readings.back()) {
