@@ -162,7 +162,7 @@ int MatxinApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 
 	gWindow->window_span = num_windows;
 
-	u_fprintf(output, "<?xml version='1.0' encoding='iso-8859-1'?>\n<?xml-stylesheet type='text/xsl' href='profit.xsl'?>\n<corpus>\n");
+	u_fprintf(output, "<?xml version='1.0' encoding='utf-8'?>\n<corpus>\n");
 
 	gtimer = getticks();
 	ticks timer(gtimer);
@@ -727,9 +727,10 @@ void MatxinApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 			nodetype = ntypetree.top();
 			ntypetree.pop();
 			if (nodetype == 1) {
+				u_fprintf(output, "  </NODE>\n");
 				u_fprintf(output, "</CHUNK>\n");
 			} else {
-				u_fprintf(output, "</NODE>\n");
+				u_fprintf(output, "    </NODE>\n");
 			}
 			continue;
 		}
@@ -769,7 +770,7 @@ void MatxinApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 			}
 			u_fprintf(output, ">\n  <NODE");
 		} else {
-			u_fprintf(output, "<NODE");
+			u_fprintf(output, "\n    <NODE");
 		}
 		// TODO: we only ever print one reading anyway, refactor? -KBU
 		printReading(*rter, output);
@@ -786,9 +787,6 @@ void MatxinApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 		}
 		
 		u_fprintf(output, ">");
-		if (nodetype == 1) { 
-			u_fprintf(output, "\n  </NODE>\n");
-		}
 				
 		if (cohort->text) {
 			u_fprintf(output, "%S", cohort->text);
