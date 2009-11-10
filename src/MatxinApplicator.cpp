@@ -585,13 +585,66 @@ void MatxinApplicator::processReading(Reading *cReading, UChar *reading_string) 
 	return;
 }
 
-void MatxinApplicator::printReading(Reading *reading, UFILE *output) {
+int MatxinApplicator::printReading(Reading *reading, UFILE *output, int nodetype, int ord, int alloc) {
 	if (reading->noprint) {
-		return;
+		return ord;
 	}
 
 	// CHUNK was just null's when I had this line in the constructor, why? -KBU
 	CHUNK = UNICODE_STRING_SIMPLE("CHUNK").getTerminatedBuffer();
+
+	uint32HashMap used_tags;
+	uint32List::iterator tter;
+	UChar *tags = 0;
+	UChar *syntags = 0;
+	for (tter = reading->tags_list.begin() ; tter != reading->tags_list.end() ; tter++) {
+		if (used_tags.find(*tter) != used_tags.end()) {
+			continue;
+		}
+		if (*tter == endtag || *tter == begintag) {
+			continue;
+		}
+		used_tags[*tter] = *tter;
+		const Tag *tag = single_tags[*tter];
+		if (!(tag->type & T_BASEFORM) && !(tag->type & T_WORDFORM)) {
+			if (tag->tag[0] == '+') {
+				tags = ux_append(tags, tag->tag);
+			}
+			else if (tag->tag[0] == '&') {
+				tags = ux_append(tags, '[');
+				tags = ux_append(tags, ux_substr(tag->tag, 2, u_strlen(tag->tag)));
+				tags = ux_append(tags, ']');
+			}
+			else if(tag->tag[0] == '@') {
+				syntags = ux_append(syntags, tag->tag);	
+				syntags = ux_append(syntags, '.');
+			}
+			else if(*tag->tag != *CHUNK) {
+				tags = ux_append(tags, '[');
+				tags = ux_append(tags, tag->tag);
+				tags = ux_append(tags, ']');
+			}
+		}
+	} // for tags
+
+	if (nodetype == 1) {
+		ord++;
+		// TODO: chunks are currently _not_ output with the correct order of ord -KBU
+		u_fprintf(output, "<CHUNK ord=\"%d\" alloc=\"%d\"", ord, alloc);
+		if(syntags) {
+			u_fprintf(output, " si='%S'", ux_substr(syntags, 0, u_strlen(syntags)-1));
+		}
+		u_fprintf(output, ">\n  <NODE");
+	} else {
+		u_fprintf(output, "\n    <NODE");
+	}
+		
+	if(tags) {
+		u_fprintf(output, " mi='%S'", tags);
+	}
+	if(syntags) {
+		u_fprintf(output, " si='%S'", ux_substr(syntags, 0, u_strlen(syntags)-1));
+	}
 
 	// ord: order in source sentence. local_number is x in the #x->y dependency output so we use that
 	// alloc: character position in source sentence, TODO! (using string length)
@@ -640,52 +693,7 @@ void MatxinApplicator::printReading(Reading *reading, UFILE *output) {
                 // Tag::printTagRaw(output, single_tags[reading->baseform]);
 	}
 
-	uint32HashMap used_tags;
-	uint32List::iterator tter;
-	UChar *tags = 0;
-	UChar *syntags = 0;
-	for (tter = reading->tags_list.begin() ; tter != reading->tags_list.end() ; tter++) {
-		if (used_tags.find(*tter) != used_tags.end()) {
-			continue;
-		}
-		if (*tter == endtag || *tter == begintag) {
-			continue;
-		}
-		used_tags[*tter] = *tter;
-		const Tag *tag = single_tags[*tter];
-		if (!(tag->type & T_BASEFORM) && !(tag->type & T_WORDFORM)) {
-			if (tag->tag[0] == '+') {
-				u_fprintf(output, "%S", tag->tag);	
-			}
-			else if (tag->tag[0] == '&') {
-				u_fprintf(output, "<");
-				u_fprintf(output, "%S", ux_substr(tag->tag, 2, u_strlen(tag->tag)));
-				u_fprintf(output, ">");  
-			}
-			else if(tag->tag[0] == '@') {
-				syntags = ux_append(syntags, tag->tag);	
-				syntags = ux_append(syntags, '.');
-			}
-			else if(*tag->tag != *CHUNK) {
-				tags = ux_append(tags, '[');
-				tags = ux_append(tags, tag->tag);
-				tags = ux_append(tags, ']');
-			}
-		}
-
-	}
-
-	if(tags) {
-		u_fprintf(output, " mi='%S'", tags);
-	}
-	if(syntags) {
-		u_fprintf(output, " si='%S'", ux_substr(syntags, 0, u_strlen(syntags)-1));
-		// KBU todo: figure out how to use u_strncpy instead of ux_substr, eg. using http://code.google.com/p/starling/source/browse/trunk/c_src/myicu.c?r=12#86 
-// 		UChar *tmp = new UChar[u_strlen(syntags)+1];
-// 		substr(syntags, 0, u_strlen(syntags)-1, tmp);
-// 		u_fprintf(output, " si='%S'", tmp);
-// 		delete tmp;
-	}
+	return ord;
 }
 
 void MatxinApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
@@ -704,10 +712,10 @@ void MatxinApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 		
 	std::stack<Cohort*> tree;	// dependency tree
  	Cohort *cohort = 0;		// e.g. head of a dependency relation
-	std::stack<int> ntypetree;	// 0 = NODE, 1 = CHUNK
-	int nodetype;
+	std::stack<int> endtagtree;	// i.e. nodetypes
+	int nodetype;	                // 0 = NODE, 1 = CHUNK
 	
-	// Add root (#x->0) and independent (#x->x) cohorts:
+	// Add root (#x->0) and independent (#x->x) cohorts, all as CHUNK:
 	for (uint32_t c=0 ; c < window->cohorts.size() ; c++) {
 		if (c == 0) { // Skip magic cohort
 			continue;
@@ -715,65 +723,54 @@ void MatxinApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 		cohort = window->cohorts[c];
 		if (cohort->dep_parent == std::numeric_limits<uint32_t>::max() || cohort->dep_parent == 0) {
 			tree.push(cohort);
+			endtagtree.push(1);
 		}
 	}
 	
 	// Print cohorts, adding their children to the stack
-	while(!tree.empty()) {
+	while (!tree.empty()) {
 		cohort = tree.top();
 		tree.pop();
 
+		// Check if this syntactic function should be a CHUNK
+		nodetype = endtagtree.top();
 		if (cohort == 0) { // Print end of cohort-marker
-			nodetype = ntypetree.top();
-			ntypetree.pop();
+			endtagtree.pop();
 			if (nodetype == 1) {
-				u_fprintf(output, "  </NODE>\n");
 				u_fprintf(output, "</CHUNK>\n");
 			} else {
-				u_fprintf(output, "    </NODE>\n");
+				u_fprintf(output, "  </NODE>\n");
 			}
 			continue;
 		}
+		
 		tree.push(0);	// add end of cohort-marker before adding children
 		// Alternative method: don't pop current cohort yet; add the children first, then when we see a number we've seen before, pop and print /NODE
-		
+
+		UChar *syntags = 0;
 		ReadingList::iterator rter;
 		rter = cohort->readings.begin();
-
-		// Check if this syntactic function should be a CHUNK
-		nodetype = 0;
-		UChar *syntags = 0;
 		Reading *reading = *rter;
-		// CHUNK was just null's when I had this line in the outer block, why? -KBU
-		CHUNK = UNICODE_STRING_SIMPLE("CHUNK").getTerminatedBuffer();
 		for (uint32List::iterator tter = reading->tags_list.begin() ; tter != reading->tags_list.end() ; tter++) {
 			const Tag *tag = single_tags[*tter];
-			if(*tag->tag == *CHUNK) {
-				nodetype = 1;
-			}
-			else if(tag->tag[0] == '@') {
+			if(tag->tag[0] == '@') {
 				syntags = ux_append(syntags, tag->tag);	
 				syntags = ux_append(syntags, '.');
 			}
 		}
-		if (cohort->dep_parent == std::numeric_limits<uint32_t>::max() || cohort->dep_parent == 0) {
-			nodetype = 1;
-		}
-		ntypetree.push(nodetype);
-
-		if (nodetype == 1) {
-			ord++;
-			// TODO: chunks are currently _not_ output with the correct order of ord -KBU
-			u_fprintf(output, "<CHUNK ord=\"%d\" alloc=\"%d\"", ord, alloc);
-			if(syntags) {
-				u_fprintf(output, " si='%S'", ux_substr(syntags, 0, u_strlen(syntags)-1));
-			}
-			u_fprintf(output, ">\n  <NODE");
-		} else {
-			u_fprintf(output, "\n    <NODE");
-		}
+// 		if (nodetype == 1) {
+// 			ord++;
+// 			// TODO: chunks are currently _not_ output with the correct order of ord -KBU
+// 			u_fprintf(output, "<CHUNK ord=\"%d\" alloc=\"%d\"", ord, alloc);
+// 			if(syntags) {
+// 				u_fprintf(output, " si='%S'", ux_substr(syntags, 0, u_strlen(syntags)-1));
+// 			}
+// 			u_fprintf(output, ">\n  <NODE");
+// 		} else {
+// 			u_fprintf(output, "\n    <NODE");
+// 		}
 		// TODO: we only ever print one reading anyway, refactor? -KBU
-		printReading(*rter, output);
+		ord = printReading(*rter, output, nodetype, ord, alloc);
 		
 		if (*rter != cohort->readings.back()) {
 			u_fprintf(ux_stderr, "Warning: Ambiguous cohort. The Matxin stream-format expects one reading per cohort, only printing the first reading.\n");
@@ -792,17 +789,44 @@ void MatxinApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 			u_fprintf(output, "%S", cohort->text);
 		}
 		
-		u_fflush(output); 
-		
+		u_fflush(output);
+				
+		std::stack<Cohort*> nchildtree; // children of type NODE must be printed first
 		const uint32HashSet *deps = &cohort->dep_children;
 		const_foreach (uint32HashSet, *deps, dter, dter_end) {
 			Cohort *child = window->parent->cohort_map.find(*dter)->second;
-			tree.push(child);
+			ReadingList::iterator rter;
+			rter = child->readings.begin();
+			Reading *reading = *rter;
+			int childtype = 0;
+			CHUNK = UNICODE_STRING_SIMPLE("CHUNK").getTerminatedBuffer();
+			for (uint32List::iterator tter = reading->tags_list.begin() ; tter != reading->tags_list.end() ; tter++) {
+				const Tag *tag = single_tags[*tter];
+				if(*tag->tag == *CHUNK) {
+					childtype = 1;					
+				}
+			}
+			if (childtype == 1) {
+				tree.push(child);
+				endtagtree.push(1);
+			}
+			else {
+				nchildtree.push(child);
+			}
 			child = 0;
 		}
+		if (nodetype == 1) {
+			tree.push(0);
+			endtagtree.push(0);
+		}
+		while (!nchildtree.empty()) {
+			tree.push(nchildtree.top());
+			endtagtree.push(0);
+			nchildtree.pop();
+		}		
 		deps = 0;
 		syntags = 0;
-	}
+	} // while !tree.empty
 	cohort = 0;
 	
 	u_fprintf(output, "\n</SENTENCE>\n"); 
