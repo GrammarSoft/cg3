@@ -399,7 +399,7 @@ void GrammarApplicator::splitMappings(TagList mappings, Cohort &cohort, Reading 
 }
 
 void GrammarApplicator::mergeMappings(Cohort &cohort) {
-	std::map<uint32_t, ReadingList > mlist;
+	std::map<uint32_t, ReadingList> mlist;
 	foreach (ReadingList, cohort.readings, iter, iter_end) {
 		Reading *r = *iter;
 		uint32_t hp = r->hash_plain;
@@ -418,7 +418,7 @@ void GrammarApplicator::mergeMappings(Cohort &cohort) {
 	cohort.readings.clear();
 	std::vector<Reading*> order;
 
-	std::map<uint32_t, ReadingList >::iterator miter;
+	std::map<uint32_t, ReadingList>::iterator miter;
 	for (miter = mlist.begin() ; miter != mlist.end() ; miter++) {
 		ReadingList clist = miter->second;
 		Reading *nr = new Reading(&cohort);
@@ -427,7 +427,7 @@ void GrammarApplicator::mergeMappings(Cohort &cohort) {
 			nr->tags_list.remove(nr->mapping->hash);
 		}
 		foreach (ReadingList, clist, iter1, iter1_end) {
-			if ((*iter1)->mapping) {
+			if ((*iter1)->mapping && std::find(nr->tags_list.begin(), nr->tags_list.end(), (*iter1)->mapping->hash) == nr->tags_list.end()) {
 				nr->tags_list.push_back((*iter1)->mapping->hash);
 			}
 			delete (*iter1);
