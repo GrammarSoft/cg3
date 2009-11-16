@@ -33,6 +33,7 @@
 
 namespace CG3 {
 	enum CG_FORMATS {
+		FMT_INVALID,
 		FMT_VISL,
 		FMT_APERTIUM,
 		FMT_MATXIN,
