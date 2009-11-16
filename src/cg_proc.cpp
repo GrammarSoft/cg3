@@ -19,18 +19,12 @@
 * along with VISL CG-3.	If not, see <http://www.gnu.org/licenses/>.
 */
 
-// MSVC 2005 (MSVC 8) fix.
-#define _CRT_SECURE_NO_DEPRECATE 1
-#define _CRT_NONSTDC_NO_DEPRECATE 1
-
 #include "stdafx.h"
-#include "icu_uoptions.h"
 #include "Grammar.h"
 #include "BinaryGrammar.h"
 #include "ApertiumApplicator.h"
 #include "MatxinApplicator.h"
 #include "GrammarApplicator.h"
-#include "uextras.h"
 
 #include <getopt.h>
 #include <libgen.h>
@@ -91,8 +85,6 @@ int main(int argc, char *argv[]) {
 	UFILE *ux_stdin = 0;
 	UFILE *ux_stdout = 0;
 	UFILE *ux_stderr = 0;
-
-	U_MAIN_INIT_ARGS(argc, argv);
 
 #if HAVE_GETOPT_LONG
 	static struct option long_options[] = {

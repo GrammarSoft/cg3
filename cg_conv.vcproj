@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9,00"
-	Name="cg-comp"
-	ProjectGUID="{78B338E7-9AF6-4CB7-818C-9A4E2765D527}"
-	RootNamespace="cg-comp"
+	Name="cg-conv"
+	ProjectGUID="{D30E6E4E-AFB3-4A83-88AF-42471438B29B}"
+	RootNamespace="cg-conv"
 	Keyword="Win32Proj"
 	TargetFrameworkVersion="131072"
 	>
@@ -68,12 +68,12 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="icuuc.lib icuio.lib icuin.lib WSock32.Lib"
-				OutputFile="$(OutDir)/cg-comp.exe"
+				OutputFile="$(OutDir)/cg-conv.exe"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories=""
 				IgnoreDefaultLibraryNames=""
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile="$(OutDir)/cg_comp.pdb"
+				ProgramDatabaseFile="$(OutDir)/cg_conv.pdb"
 				SubSystem="1"
 			/>
 			<Tool
@@ -146,6 +146,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="icuuc.lib icuio.lib icuin.lib WSock32.Lib"
+				AdditionalLibraryDirectories=""
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
 			/>
@@ -185,6 +186,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\ApertiumApplicator.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\BinaryGrammar.cpp"
 				>
 			</File>
@@ -197,7 +202,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\src\cg_comp.cpp"
+				RelativePath=".\src\cg_conv.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\Cohort.cpp"
 				>
 			</File>
 			<File
@@ -209,7 +218,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\win32\getopt.c"
+				RelativePath=".\src\FormatConverter.cpp"
 				>
 			</File>
 			<File
@@ -217,7 +226,35 @@
 				>
 			</File>
 			<File
-				RelativePath=".\win32\libgen.c"
+				RelativePath=".\src\GrammarApplicator.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\GrammarApplicator_matchSet.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\GrammarApplicator_reflow.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\GrammarApplicator_runContextualTest.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\GrammarApplicator_runGrammar.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\GrammarApplicator_runRules.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\MatxinApplicator.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\Reading.cpp"
 				>
 			</File>
 			<File
@@ -229,6 +266,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\SingleWindow.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\Strings.cpp"
 				>
 			</File>
@@ -237,11 +278,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\src\TextualParser.cpp"
+				RelativePath=".\src\uextras.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\uextras.cpp"
+				RelativePath=".\src\Window.cpp"
 				>
 			</File>
 		</Filter>
@@ -255,7 +296,19 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\ApertiumApplicator.h"
+				>
+			</File>
+			<File
 				RelativePath=".\src\BinaryGrammar.h"
+				>
+			</File>
+			<File
+				RelativePath=".\src\Cohort.h"
+				>
+			</File>
+			<File
+				RelativePath=".\src\CohortIterator.h"
 				>
 			</File>
 			<File
@@ -271,6 +324,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\FormatConverter.h"
+				>
+			</File>
+			<File
 				RelativePath=".\win32\getopt.h"
 				>
 			</File>
@@ -279,7 +336,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\src\GrammarWriter.h"
+				RelativePath=".\src\GrammarApplicator.h"
 				>
 			</File>
 			<File
@@ -299,11 +356,23 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\MatxinApplicator.h"
+				>
+			</File>
+			<File
+				RelativePath=".\src\Reading.h"
+				>
+			</File>
+			<File
 				RelativePath=".\src\Rule.h"
 				>
 			</File>
 			<File
 				RelativePath=".\src\Set.h"
+				>
+			</File>
+			<File
+				RelativePath=".\src\SingleWindow.h"
 				>
 			</File>
 			<File
@@ -319,15 +388,15 @@
 				>
 			</File>
 			<File
-				RelativePath=".\src\TextualParser.h"
-				>
-			</File>
-			<File
 				RelativePath=".\src\uextras.h"
 				>
 			</File>
 			<File
 				RelativePath=".\src\version.h"
+				>
+			</File>
+			<File
+				RelativePath=".\src\Window.h"
 				>
 			</File>
 		</Filter>
