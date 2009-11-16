@@ -2,9 +2,11 @@ Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual C++ Express 2008
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vislcg3", "vislcg3.vcproj", "{439A194D-EC3B-42A4-8BD2-CADD9CB6087C}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cg_comp", "cg_comp.vcproj", "{78B338E7-9AF6-4CB7-818C-9A4E2765D527}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cg-comp", "cg_comp.vcproj", "{78B338E7-9AF6-4CB7-818C-9A4E2765D527}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cg_proc", "cg_proc.vcproj", "{2498EF8F-0AEF-4EBD-9C5B-5B7FBADFAD9F}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cg-proc", "cg_proc.vcproj", "{2498EF8F-0AEF-4EBD-9C5B-5B7FBADFAD9F}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cg-conv", "cg_conv.vcproj", "{D30E6E4E-AFB3-4A83-88AF-42471438B29B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -24,6 +26,10 @@ Global
 		{2498EF8F-0AEF-4EBD-9C5B-5B7FBADFAD9F}.Debug|Win32.Build.0 = Debug|Win32
 		{2498EF8F-0AEF-4EBD-9C5B-5B7FBADFAD9F}.Release|Win32.ActiveCfg = Release|Win32
 		{2498EF8F-0AEF-4EBD-9C5B-5B7FBADFAD9F}.Release|Win32.Build.0 = Release|Win32
+		{D30E6E4E-AFB3-4A83-88AF-42471438B29B}.Debug|Win32.ActiveCfg = Debug|Win32
+		{D30E6E4E-AFB3-4A83-88AF-42471438B29B}.Debug|Win32.Build.0 = Debug|Win32
+		{D30E6E4E-AFB3-4A83-88AF-42471438B29B}.Release|Win32.ActiveCfg = Release|Win32
+		{D30E6E4E-AFB3-4A83-88AF-42471438B29B}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

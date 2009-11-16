@@ -32,7 +32,7 @@
 #include "GrammarApplicator.h"
 
 namespace CG3 {
-	class MatxinApplicator : public GrammarApplicator {
+	class MatxinApplicator : public virtual GrammarApplicator {
 	public:
 		MatxinApplicator(UFILE *ux_err);
 
@@ -50,7 +50,7 @@ namespace CG3 {
 		bool runningWithNullFlush;
 	
 		int printReading(Reading *reading, UFILE *output, int nodetype, int ord, int alloc);
-		void printSingleWindow(SingleWindow *window, UFILE *output);
+		virtual void printSingleWindow(SingleWindow *window, UFILE *output);
 		
 		int runGrammarOnTextWrapperNullFlush(UFILE *input, UFILE *output);
 

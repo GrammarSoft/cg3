@@ -20,8 +20,8 @@
 */
 
 #pragma once
-#ifndef __GRAMMARAPPLICATORAPERTIUM_H
-#define __GRAMMARAPPLICATORAPERTIUM_H
+#ifndef __FORMATCONVERTER_H
+#define __FORMATCONVERTER_H
 
 #include "stdafx.h"
 #include "Strings.h"
@@ -29,39 +29,27 @@
 #include "Grammar.h"
 #include "Window.h"
 #include "SingleWindow.h"
-#include "GrammarApplicator.h"
+#include "ApertiumApplicator.h"
 
 namespace CG3 {
-	class ApertiumApplicator : public virtual GrammarApplicator {
+	enum CG_FORMATS {
+		FMT_VISL,
+		FMT_APERTIUM,
+		FMT_MATXIN,
+		NUM_FORMATS
+	};
+
+	class FormatConverter : public ApertiumApplicator, public virtual GrammarApplicator {
 	public:
-		ApertiumApplicator(UFILE *ux_err);
+		FormatConverter(UFILE *ux_err);
 
 		virtual int runGrammarOnText(UFILE *input, UFILE *output);
+		bool setInputFormat(CG_FORMATS format);
+		bool setOutputFormat(CG_FORMATS format);
 
-		bool getNullFlush();
-		bool wordform_case;
-		bool print_word_forms;
-		void setNullFlush(bool pNullFlush);
-		
 	protected:
-		bool nullFlush;
-		bool runningWithNullFlush;
-	
-		void printReading(Reading *reading, UFILE *output);
+		CG_FORMATS informat, outformat;
 		virtual void printSingleWindow(SingleWindow *window, UFILE *output);
-		
-		int runGrammarOnTextWrapperNullFlush(UFILE *input, UFILE *output);
-
-		UChar u_fgetc_wrapper(UFILE *input);
-		UConverter* fgetc_converter;
-		char fgetc_inputbuf[5];
-		UChar fgetc_outputbuf[5];
-		UErrorCode fgetc_error;
-
-	private:
-
-		void processReading(Reading *cReading, UChar *reading_string);
-
 	};
 }
 
