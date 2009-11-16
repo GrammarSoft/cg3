@@ -24,7 +24,7 @@
 #define __VERSION_H
 
 #define CG3_COPYRIGHT_STRING \
-	"Copyright (C) 2007 GrammarSoft ApS. All Rights Reserved."
+	"Copyright (C) 2007-2009 GrammarSoft ApS. All Rights Reserved."
 
 #define CG3_VERSION_MAJOR 0
 #define CG3_VERSION_MINOR 9
