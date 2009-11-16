@@ -19,12 +19,7 @@
  * along with VISL CG-3.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// MSVC 2005 (MSVC 8) fix.
-#define _CRT_SECURE_NO_DEPRECATE 1
-#define _CRT_NONSTDC_NO_DEPRECATE 1
-
 #include "stdafx.h"
-#include "icu_uoptions.h"
 #include "Grammar.h"
 #include "TextualParser.h"
 #include "GrammarWriter.h"
@@ -53,8 +48,6 @@ void endProgram(char *name) {
 int main(int argc, char *argv[]) {
 	UFILE *ux_stderr = 0;
 	UErrorCode status = U_ZERO_ERROR;
-
-	U_MAIN_INIT_ARGS(argc, argv);
 
 	if (argc != 3) {
 		endProgram(argv[0]);
