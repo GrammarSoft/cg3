@@ -630,7 +630,7 @@ int MatxinApplicator::printReading(Reading *reading, UFILE *output, int nodetype
 	if (nodetype == 1) {
 		ord++;
 		// TODO: chunks are currently _not_ output with the correct order of ord -KBU
-		u_fprintf(output, "<CHUNK ord=\"%d\" alloc=\"%d\"", ord, alloc);
+		u_fprintf(output, "<CHUNK ord='%d' alloc='%d'", ord, alloc);
 		if(syntags) {
 			u_fprintf(output, " si='%S'", ux_substr(syntags, 0, u_strlen(syntags)-1));
 		}
@@ -707,7 +707,7 @@ void MatxinApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 
 	int ord = 0; // order of SENTENCE/CHUNK (the NODE ord tag is just sentence position)
 	int alloc = 0;
-	u_fprintf(output, "<SENTENCE ord=\"%d\" alloc=\"%d\">\n", ord, alloc);
+	u_fprintf(output, "<SENTENCE ord='%d' alloc='%d'>\n", ord, alloc);
 	// TODO: alloc of SENTENCE should be the alloc of the first word, nodetype 3?
 		
 	std::stack<Cohort*> tree;	// dependency tree
@@ -758,18 +758,6 @@ void MatxinApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 				syntags = ux_append(syntags, '.');
 			}
 		}
-// 		if (nodetype == 1) {
-// 			ord++;
-// 			// TODO: chunks are currently _not_ output with the correct order of ord -KBU
-// 			u_fprintf(output, "<CHUNK ord=\"%d\" alloc=\"%d\"", ord, alloc);
-// 			if(syntags) {
-// 				u_fprintf(output, " si='%S'", ux_substr(syntags, 0, u_strlen(syntags)-1));
-// 			}
-// 			u_fprintf(output, ">\n  <NODE");
-// 		} else {
-// 			u_fprintf(output, "\n    <NODE");
-// 		}
-		// TODO: we only ever print one reading anyway, refactor? -KBU
 		ord = printReading(*rter, output, nodetype, ord, alloc);
 		
 		if (*rter != cohort->readings.back()) {
