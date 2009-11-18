@@ -585,7 +585,7 @@ void MatxinApplicator::processReading(Reading *cReading, UChar *reading_string) 
 	return;
 }
 
-int MatxinApplicator::printReading(Reading *reading, UFILE *output, int nodetype, int ord, int alloc) {
+int MatxinApplicator::printReading(Reading *reading, UFILE *output, int ischunk, int ord, int alloc) {
 	if (reading->noprint) {
 		return ord;
 	}
@@ -627,9 +627,7 @@ int MatxinApplicator::printReading(Reading *reading, UFILE *output, int nodetype
 		}
 	} // for tags
 
-	if (nodetype == 1) {
-		ord++;
-		// TODO: chunks are currently _not_ output with the correct order of ord -KBU
+	if (ischunk) {
 		u_fprintf(output, "<CHUNK ord='%d' alloc='%d'", ord, alloc);
 		if(syntags) {
 			u_fprintf(output, " si='%S'", ux_substr(syntags, 0, u_strlen(syntags)-1));
@@ -705,27 +703,49 @@ void MatxinApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 		u_fprintf(output, "%S", window->text); // what's this? -KBU
 	}
 
-	int ord = 0; // order of SENTENCE/CHUNK (the NODE ord tag is just sentence position)
 	int alloc = 0;
-	u_fprintf(output, "<SENTENCE ord='%d' alloc='%d'>\n", ord, alloc);
-	// TODO: alloc of SENTENCE should be the alloc of the first word, nodetype 3?
+	u_fprintf(output, "<SENTENCE ord='%d' alloc='%d'>\n", window->number, alloc);
+	// TODO: alloc of SENTENCE should be the alloc of the first word, ischunk=3?
 		
 	std::stack<Cohort*> tree;	// dependency tree
  	Cohort *cohort = 0;		// e.g. head of a dependency relation
-	std::stack<int> endtagtree;	// i.e. nodetypes
-	int nodetype;	                // 0 = NODE, 1 = CHUNK
+	std::stack<int> endtagtree;	// i.e. ischunk markers 
+	int ischunk;	                // 0 = NODE, 1 = CHUNK
 	
-	// Add root (#x->0) and independent (#x->x) cohorts, all as CHUNK:
+        // chunk_ord[X]==ord if cohort with local_number X is a CHUNK, otherwise 0:
+	uint32_t chunk_ord[window->cohorts.size()]; 
+	int ord = 1;		        // Relative order of CHUNK cohorts in window
+	// Add top nodes to the stack, and store ord of chunks in chunk_ord:
 	for (uint32_t c=0 ; c < window->cohorts.size() ; c++) {
 		if (c == 0) { // Skip magic cohort
 			continue;
 		}
 		cohort = window->cohorts[c];
+		ischunk = 0;
+		// Add root (#x->0) and independent (#x->x) cohorts to the stack, all as CHUNK:
 		if (cohort->dep_parent == std::numeric_limits<uint32_t>::max() || cohort->dep_parent == 0) {
 			tree.push(cohort);
-			endtagtree.push(1);
+			ischunk = 1;
+			endtagtree.push(ischunk);
 		}
-	}
+		// If CHUNK, mark as such (we need to look this up using local_number)
+		ReadingList::iterator rter;
+		rter = cohort->readings.begin();
+		Reading *reading = *rter;
+		for (uint32List::iterator tter = reading->tags_list.begin() ; tter != reading->tags_list.end() ; tter++) {
+			const Tag *tag = single_tags[*tter];
+			if(*tag->tag == *CHUNK) {
+				ischunk = 1;
+			}
+		}
+		if (ischunk) {
+			chunk_ord[cohort->local_number] = ord;
+			ord++;
+		} else {
+			chunk_ord[cohort->local_number] = 0;
+		}
+	} // for cohorts
+	
 	
 	// Print cohorts, adding their children to the stack
 	while (!tree.empty()) {
@@ -733,17 +753,16 @@ void MatxinApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 		tree.pop();
 
 		// Check if this syntactic function should be a CHUNK
-		nodetype = endtagtree.top();
+		ischunk = endtagtree.top();
 		if (cohort == 0) { // Print end of cohort-marker
 			endtagtree.pop();
-			if (nodetype == 1) {
+			if (ischunk == 1) {
 				u_fprintf(output, "</CHUNK>\n");
 			} else {
 				u_fprintf(output, "  </NODE>\n");
 			}
 			continue;
 		}
-		
 		tree.push(0);	// add end of cohort-marker before adding children
 		// Alternative method: don't pop current cohort yet; add the children first, then when we see a number we've seen before, pop and print /NODE
 
@@ -758,7 +777,7 @@ void MatxinApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 				syntags = ux_append(syntags, '.');
 			}
 		}
-		ord = printReading(*rter, output, nodetype, ord, alloc);
+		printReading(*rter, output, ischunk, chunk_ord[cohort->local_number], alloc); 
 		
 		if (*rter != cohort->readings.back()) {
 			u_fprintf(ux_stderr, "Warning: Ambiguous cohort. The Matxin stream-format expects one reading per cohort, only printing the first reading.\n");
@@ -783,18 +802,7 @@ void MatxinApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 		const uint32HashSet *deps = &cohort->dep_children;
 		const_foreach (uint32HashSet, *deps, dter, dter_end) {
 			Cohort *child = window->parent->cohort_map.find(*dter)->second;
-			ReadingList::iterator rter;
-			rter = child->readings.begin();
-			Reading *reading = *rter;
-			int childtype = 0;
-			CHUNK = UNICODE_STRING_SIMPLE("CHUNK").getTerminatedBuffer();
-			for (uint32List::iterator tter = reading->tags_list.begin() ; tter != reading->tags_list.end() ; tter++) {
-				const Tag *tag = single_tags[*tter];
-				if(*tag->tag == *CHUNK) {
-					childtype = 1;					
-				}
-			}
-			if (childtype == 1) {
+			if (chunk_ord[child->local_number]) {
 				tree.push(child);
 				endtagtree.push(1);
 			}
@@ -803,7 +811,7 @@ void MatxinApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 			}
 			child = 0;
 		}
-		if (nodetype == 1) {
+		if (ischunk) {
 			tree.push(0);
 			endtagtree.push(0);
 		}

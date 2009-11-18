@@ -49,7 +49,7 @@ namespace CG3 {
 		bool nullFlush;
 		bool runningWithNullFlush;
 	
-		int printReading(Reading *reading, UFILE *output, int nodetype, int ord, int alloc);
+		int printReading(Reading *reading, UFILE *output, int ischunk, int ord, int alloc);
 		virtual void printSingleWindow(SingleWindow *window, UFILE *output);
 		
 		int runGrammarOnTextWrapperNullFlush(UFILE *input, UFILE *output);
