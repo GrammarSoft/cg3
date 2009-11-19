@@ -713,7 +713,8 @@ void MatxinApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 	int ischunk;	                // 0 = NODE, 1 = CHUNK
 	
         // chunk_ord[X]==ord if cohort with local_number X is a CHUNK, otherwise 0:
-	uint32_t chunk_ord[window->cohorts.size()]; 
+	// C++ does not allow variable length arrays (that is a gcc extension); converted to std::vector - Tino
+	std::vector<uint32_t> chunk_ord(window->cohorts.size());
 	int ord = 1;		        // Relative order of CHUNK cohorts in window
 	// Add top nodes to the stack, and store ord of chunks in chunk_ord:
 	for (uint32_t c=0 ; c < window->cohorts.size() ; c++) {
