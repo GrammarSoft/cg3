@@ -47,6 +47,9 @@ int main(int argc, char *argv[]) {
 	const char *codepage_default = ucnv_getDefaultName();
 	ucnv_setDefaultName("UTF-8");
 	const char *locale_default = "en_US_POSIX"; //uloc_getDefault();
+	uloc_setDefault("en_US_POSIX", &status);
+
+	std::cerr << "Codepage " << codepage_default << ", locale " << locale_default << std::endl;
 
 	ux_stdin = u_finit(stdin, locale_default, codepage_default);
 	ux_stdout = u_finit(stdout, locale_default, codepage_default);
@@ -62,6 +65,7 @@ int main(int argc, char *argv[]) {
 	applicator.setGrammar(&grammar);
 	applicator.setInputFormat(CG3::FMT_VISL);
 	applicator.setOutputFormat(CG3::FMT_APERTIUM);
+	applicator.verbosity_level = 0;
 	applicator.runGrammarOnText(ux_stdin, ux_stdout);
 
 	u_fclose(ux_stdin);
