@@ -176,9 +176,21 @@ int ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 		}
 
 		if (inchar == '\\' && !incohort) {
-			u_fprintf(output, "%C", inchar);
-			inchar = u_fgetc_wrapper(input); 
-			u_fprintf(output, "%C", inchar);
+			if (cCohort) {
+				cCohort->text = ux_append(cCohort->text, inchar);
+				inchar = u_fgetc_wrapper(input); 
+				cCohort->text = ux_append(cCohort->text, inchar);
+			}
+			else if (lSWindow) {
+				lSWindow->text = ux_append(lSWindow->text, inchar);
+				inchar = u_fgetc_wrapper(input); 
+				lSWindow->text = ux_append(lSWindow->text, inchar);
+			}
+			else {
+				u_fprintf(output, "%C", inchar);
+				inchar = u_fgetc_wrapper(input); 
+				u_fprintf(output, "%C", inchar);
+			}
 			continue;
 		}
 		
