@@ -456,6 +456,7 @@ int MatxinApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
  *   venir<vblex><imp><p2><sg>
  *   venir<vblex><inf>+lo<prn><enc><p3><nt><sg>
  *   be<vblex><inf># happy
+ *   be# happy<vblex><inf> (for chaining cg-proc)
  */
 void MatxinApplicator::processReading(Reading *cReading, UChar *reading_string) {
 	UChar *m = reading_string;
@@ -463,6 +464,7 @@ void MatxinApplicator::processReading(Reading *cReading, UChar *reading_string) 
 	UChar *tmptag = 0;
 	UChar *base = 0;
 	UChar *suf = 0;
+	bool tags = false; 
 	bool unknown = false;
 	bool multi = false;
 	bool joined = false;
@@ -479,7 +481,11 @@ void MatxinApplicator::processReading(Reading *cReading, UChar *reading_string) 
 			break;
 		}
 
-		if (*m == '#') {
+		if (*m == '<') {
+			tags = true;
+		}
+
+		if (*m == '#' && tags == true) { // We only want to shift the lemq if we have seen tags
 			multi = true;
 		}
 
