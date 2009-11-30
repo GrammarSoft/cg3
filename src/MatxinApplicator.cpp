@@ -38,6 +38,7 @@ MatxinApplicator::MatxinApplicator(UFILE *ux_err)
 	print_word_forms = true;
 	runningWithNullFlush=false;
 	fgetc_converter=0;
+	window_alloc=0;
 }
 
 
@@ -664,7 +665,7 @@ int MatxinApplicator::printReading(Reading *reading, UFILE *output, int ischunk,
 
 	// ord: order in source sentence. local_number is x in the #x->y dependency output so we use that
 	// alloc: character position in source sentence, TODO! (using string length)
-	u_fprintf(output, " ord='%u' alloc='%u'", reading->parent->local_number, reading->parent->local_number);
+	u_fprintf(output, " ord='%u' alloc='%u'", reading->parent->local_number, alloc);
 
 	if (reading->baseform) {
 		UChar *bf = single_tags[reading->baseform]->tag;
@@ -703,7 +704,7 @@ int MatxinApplicator::printReading(Reading *reading, UFILE *output, int ischunk,
 			wf = 0;
 		} // if (wordform_case)
 		
-		if (*bf == '*') {
+		if ((*bf) && (*bf == '*')) {
 			u_fprintf(output, " lem='%S'", bf+1);
 			u_fprintf(output, " unknown='analysis'");
 		}
@@ -722,14 +723,19 @@ void MatxinApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 	// CHUNK was just null's when I had this line in the constructor, why? -KBU
 	CHUNK = UNICODE_STRING_SIMPLE("CHUNK").getTerminatedBuffer();
 
+	std::vector<size_t> alloc(window->cohorts.size());
+
 	// Window text comes at the left
 	if (window->text) {
 		u_fprintf(output, "%S", window->text);
+		 // todo: find test case
+		alloc[1] = u_strlen(window->text) + window_alloc;
+	} else {
+		alloc[1] = window_alloc;
 	}
-
-	int alloc = 0;
-	u_fprintf(output, "<SENTENCE ord='%d' alloc='%d'>\n", window->number, alloc);
-	// TODO: alloc of SENTENCE should be the alloc of the first word, ischunk=3?
+		
+	// alloc of sentence is alloc of first cohort:
+	u_fprintf(output, "<SENTENCE ord='%d' alloc='%d'>\n", window->number, alloc[1]);
 		
 	std::stack<Cohort*> tree;	// dependency tree
  	Cohort *cohort = 0;		// e.g. head of a dependency relation
@@ -746,6 +752,12 @@ void MatxinApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 			continue;
 		}
 		cohort = window->cohorts[c];
+
+		UChar *wf = single_tags[cohort->wordform]->tag;
+		// remove "< and >", +1 for space (trusting the deformatter) + what we've seen:
+		alloc[c+1] = u_strlen(wf)-4 + 1 + alloc[c]; 
+		wf = 0;
+
 		ischunk = 0;
 		// Add root (#x->0) and independent (#x->x) cohorts to the stack, all as CHUNK:
 		if (cohort->dep_parent == std::numeric_limits<uint32_t>::max() || cohort->dep_parent == 0) {
@@ -770,7 +782,8 @@ void MatxinApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 			chunk_ord[cohort->local_number] = 0;
 		}
 	} // for cohorts
-	
+
+	window_alloc = alloc[window->cohorts.size()];
 	
 	// Print cohorts, adding their children to the stack
 	while (!tree.empty()) {
@@ -802,7 +815,7 @@ void MatxinApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 				syntags = ux_append(syntags, '.');
 			}
 		}
-		printReading(*rter, output, ischunk, chunk_ord[cohort->local_number], alloc); 
+		printReading(*rter, output, ischunk, chunk_ord[cohort->local_number], alloc[cohort->local_number]); 
 		
 		if (*rter != cohort->readings.back()) {
 			u_fprintf(ux_stderr, "Warning: Ambiguous cohort. The Matxin stream-format expects one reading per cohort, only printing the first reading.\n");
@@ -814,7 +827,7 @@ void MatxinApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 			u_fprintf(output, " form='%S'", ux_substr(wf, 2, u_strlen(wf)-2));
 			wf = 0;
 		}
-		
+				
 		u_fprintf(output, ">");
 				
 		if (cohort->text) {
