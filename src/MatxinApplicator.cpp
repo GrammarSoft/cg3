@@ -101,7 +101,7 @@ int MatxinApplicator::runGrammarOnTextWrapperNullFlush(UFILE *input, UFILE *outp
 
 /* 
  * Run a constraint grammar on an Apertium input stream
- * todo KBU: if this remains all more or less the same as in ApertiumApplicator, we could probably subclass it
+ * TODO KBU: if this remains all more or less the same as in ApertiumApplicator, we could probably subclass it
  * (they read the same type of input, just have different output)
  */
 
@@ -664,7 +664,7 @@ int MatxinApplicator::printReading(Reading *reading, UFILE *output, int ischunk,
 	}
 
 	// ord: order in source sentence. local_number is x in the #x->y dependency output so we use that
-	// alloc: character position in source sentence, TODO! (using string length)
+	// alloc: character position in source sentence
 	u_fprintf(output, " ord='%u' alloc='%u'", reading->parent->local_number, alloc);
 
 	if (reading->baseform) {
@@ -723,16 +723,13 @@ void MatxinApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 	// CHUNK was just null's when I had this line in the constructor, why? -KBU
 	CHUNK = UNICODE_STRING_SIMPLE("CHUNK").getTerminatedBuffer();
 
-	std::vector<size_t> alloc(window->cohorts.size());
-
+	std::vector<size_t> alloc(window->cohorts.size()+1);
+	alloc[1] = window_alloc;
 	// Window text comes at the left
 	if (window->text) {
+		// TODO: warn if this (or cohort->text) is non-whitespace? or wrap it in a tag? o/w it's removed by later matxin modules
 		u_fprintf(output, "%S", window->text);
-		 // todo: find test case
-		alloc[1] = u_strlen(window->text) + window_alloc;
-	} else {
-		alloc[1] = window_alloc;
-	}
+	} 
 		
 	// alloc of sentence is alloc of first cohort:
 	u_fprintf(output, "<SENTENCE ord='%d' alloc='%d'>\n", window->number, alloc[1]);
@@ -755,7 +752,8 @@ void MatxinApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 
 		UChar *wf = single_tags[cohort->wordform]->tag;
 		// remove "< and >", +1 for space (trusting the deformatter) + what we've seen:
-		alloc[c+1] = u_strlen(wf)-4 + 1 + alloc[c]; 
+		alloc[cohort->local_number] = u_strlen(wf)-4 + 1 + alloc[cohort->local_number];
+		// TODO: we _could_ use cohort->text instead of 1, but cohort->text is removed by later matxin modules
 		wf = 0;
 
 		ischunk = 0;
@@ -841,6 +839,9 @@ void MatxinApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 		const_foreach (uint32HashSet, *deps, dter, dter_end) {
 			Cohort *child = window->parent->cohort_map.find(*dter)->second;
 			if (chunk_ord[child->local_number]) {
+				if (!ischunk) {
+					u_fprintf(ux_stderr, "Warning: NODE ord='%d' has CHUNK child.\n", cohort->local_number);
+				}
 				tree.push(child);
 				endtagtree.push(1);
 			}
@@ -862,7 +863,7 @@ void MatxinApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 		syntags = 0;
 	} // while !tree.empty
 	cohort = 0;
-	
+		
 	u_fprintf(output, "\n</SENTENCE>\n"); 
 }
 
