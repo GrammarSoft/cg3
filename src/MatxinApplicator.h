@@ -61,7 +61,7 @@ namespace CG3 {
 		UErrorCode fgetc_error;
 
 	private:
-
+		size_t window_alloc;
 		void processReading(Reading *cReading, UChar *reading_string);
 
 	};
