@@ -654,7 +654,7 @@ int MatxinApplicator::printReading(Reading *reading, UFILE *output, int ischunk,
 	} else {
 		u_fprintf(output, "\n    <NODE");
 	}
-		
+
 	if(tags) {
 		u_fprintf(output, " mi='%S'", tags);
 	}
@@ -703,8 +703,14 @@ int MatxinApplicator::printReading(Reading *reading, UFILE *output, int ischunk,
 			wf = 0;
 		} // if (wordform_case)
 		
-                u_fprintf(output, " lem='%S'", bf);
-		
+		if (*bf == '*') {
+			u_fprintf(output, " lem='%S'", bf+1);
+			u_fprintf(output, " unknown='analysis'");
+		}
+		else {
+			u_fprintf(output, " lem='%S'", bf);
+		}
+						
 		bf = 0;
                 // Tag::printTagRaw(output, single_tags[reading->baseform]);
 	}
