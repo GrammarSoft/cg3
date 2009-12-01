@@ -752,7 +752,7 @@ void MatxinApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 
 		UChar *wf = single_tags[cohort->wordform]->tag;
 		// remove "< and >", +1 for space (trusting the deformatter) + what we've seen:
-		alloc[cohort->local_number] = u_strlen(wf)-4 + 1 + alloc[cohort->local_number];
+		alloc[cohort->local_number+1] = u_strlen(wf)-4 + 1 + alloc[cohort->local_number];
 		// TODO: we _could_ use cohort->text instead of 1, but cohort->text is removed by later matxin modules
 		wf = 0;
 
