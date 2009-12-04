@@ -272,6 +272,7 @@ Set *TextualParser::parseSetInlineWrapper(UChar *& p) {
 
 int TextualParser::parseContextualTestPosition(UChar *& p, ContextualTest& t) {
 	bool negative = false;
+	bool had_digits = false;
 
 	size_t tries;
 	for (tries=0 ; *p != ' ' && *p != '(' && tries < 100 ; ++tries) {
@@ -364,6 +365,7 @@ int TextualParser::parseContextualTestPosition(UChar *& p, ContextualTest& t) {
 			++p;
 		}
 		if (u_isdigit(*p)) {
+			had_digits = true;
 			while (*p >= '0' && *p <= '9') {
 				t.offset = (t.offset*10) + (*p - '0');
 				++p;
@@ -420,6 +422,20 @@ int TextualParser::parseContextualTestPosition(UChar *& p, ContextualTest& t) {
 		u_fprintf(ux_stderr, "Error: Invalid position on line %u - caused endless loop!\n", result->lines);
 		CG3Quit(1);
 	}
+	if (had_digits) {
+		if (t.pos & (POS_DEP_CHILD|POS_DEP_SIBLING|POS_DEP_PARENT)) {
+			u_fprintf(ux_stderr, "Error: Invalid position on line %u - cannot combine offsets with dependency!\n", result->lines);
+			CG3Quit(1);
+		}
+		if (t.pos & (POS_LEFT_PAR|POS_RIGHT_PAR)) {
+			u_fprintf(ux_stderr, "Error: Invalid position on line %u - cannot combine offsets with enclosures!\n", result->lines);
+			CG3Quit(1);
+		}
+		if (t.pos & POS_RELATION) {
+			u_fprintf(ux_stderr, "Error: Invalid position on line %u - cannot combine offsets with relations!\n", result->lines);
+			CG3Quit(1);
+		}
+	}
 	if ((t.pos & (POS_LEFT_PAR|POS_RIGHT_PAR)) && (t.pos & (POS_SCANFIRST|POS_SCANALL))) {
 		u_fprintf(ux_stderr, "Error: Invalid position on line %u - cannot have both enclosure and scan!\n", result->lines);
 		CG3Quit(1);
@@ -436,7 +452,7 @@ int TextualParser::parseContextualTestPosition(UChar *& p, ContextualTest& t) {
 		u_fprintf(ux_stderr, "Error: Invalid position on line %u - cannot have both NONE and ALL!\n", result->lines);
 		CG3Quit(1);
 	}
-	if ((t.pos & POS_UNKNOWN) && (t.pos != POS_UNKNOWN || t.offset != 0)) {
+	if ((t.pos & POS_UNKNOWN) && (t.pos != POS_UNKNOWN || had_digits)) {
 		u_fprintf(ux_stderr, "Error: Invalid position on line %u - '?' cannot be combined with anything else!\n", result->lines);
 		CG3Quit(1);
 	}
