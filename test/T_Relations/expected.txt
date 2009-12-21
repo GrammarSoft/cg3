@@ -7,7 +7,7 @@
 "<word>"
 	"word" none @none 
 "<$.>"
-	"<$.>" @none 
+	"$." @none 
 
 "<word>"
 	"word" none @none 
@@ -34,7 +34,7 @@
 "<word>"
 	"word" none @none 
 "<$.>"
-	"<$.>" @none 
+	"$." @none 
 
 "<word>"
 	"word" none @none 
@@ -45,5 +45,5 @@
 "<word>"
 	"word" fourth @none 
 "<$.>"
-	"<$.>" @none 
+	"$." @none 
 

@@ -134,6 +134,8 @@ namespace CG3 {
 		void resetIndexes();
 	
 		Tag *addTag(const UChar *tag);
+		Tag *makeBaseFromWord(uint32_t tag);
+		Tag *makeBaseFromWord(Tag *tag);
 
 		void updateRuleToCohorts(Cohort& c, const uint32_t& rsit);
 		void indexSingleWindow(SingleWindow &current);
