@@ -364,17 +364,18 @@ void BinaryGrammar::writeContextualTest(ContextualTest *t, FILE *output) {
 		u32tmp = 0;
 		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 
-		u32tmp = (uint32_t)htonl((uint32_t)t->line);
-		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 		u32tmp = (uint32_t)htonl((uint32_t)t->target);
 		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
-		u32tmp = (uint32_t)htonl((uint32_t)t->relation);
-		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
-		u32tmp = (uint32_t)htonl((uint32_t)t->barrier);
-		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
-		u32tmp = (uint32_t)htonl((uint32_t)t->cbarrier);
-		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 	}
+
+	u32tmp = (uint32_t)htonl((uint32_t)t->line);
+	fwrite(&u32tmp, sizeof(uint32_t), 1, output);
+	u32tmp = (uint32_t)htonl((uint32_t)t->relation);
+	fwrite(&u32tmp, sizeof(uint32_t), 1, output);
+	u32tmp = (uint32_t)htonl((uint32_t)t->barrier);
+	fwrite(&u32tmp, sizeof(uint32_t), 1, output);
+	u32tmp = (uint32_t)htonl((uint32_t)t->cbarrier);
+	fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 
 	if (t->linked) {
 		u8tmp = (uint8_t)1;
