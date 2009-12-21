@@ -1,0 +1,160 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectName>cg-proc</ProjectName>
+    <ProjectGuid>{2498EF8F-0AEF-4EBD-9C5B-5B7FBADFAD9F}</ProjectGuid>
+    <RootNamespace>cg-proc</RootNamespace>
+    <Keyword>Win32Proj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+    <Import Project="Boost.props" />
+    <Import Project="ICU.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+    <Import Project="Boost.props" />
+    <Import Project="ICU.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.21006.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Debug\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Debug\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>./win32/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <SmallerTypeCheck>true</SmallerTypeCheck>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <BufferSecurityCheck>true</BufferSecurityCheck>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level4</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>WSock32.Lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)cg-proc.exe</OutputFile>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ProgramDatabaseFile>$(OutDir)cg_proc.pdb</ProgramDatabaseFile>
+      <SubSystem>Console</SubSystem>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <Optimization>Full</Optimization>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <AdditionalIncludeDirectories>./win32/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <WarningLevel>Level4</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>WSock32.Lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="src\Anchor.cpp" />
+    <ClCompile Include="src\ApertiumApplicator.cpp" />
+    <ClCompile Include="src\BinaryGrammar.cpp" />
+    <ClCompile Include="src\BinaryGrammar_read.cpp" />
+    <ClCompile Include="src\BinaryGrammar_write.cpp" />
+    <ClCompile Include="src\cg_proc.cpp" />
+    <ClCompile Include="src\Cohort.cpp" />
+    <ClCompile Include="src\CompositeTag.cpp" />
+    <ClCompile Include="src\ContextualTest.cpp" />
+    <ClCompile Include="win32\getopt.c" />
+    <ClCompile Include="src\Grammar.cpp" />
+    <ClCompile Include="src\GrammarApplicator.cpp" />
+    <ClCompile Include="src\GrammarApplicator_matchSet.cpp" />
+    <ClCompile Include="src\GrammarApplicator_reflow.cpp" />
+    <ClCompile Include="src\GrammarApplicator_runContextualTest.cpp" />
+    <ClCompile Include="src\GrammarApplicator_runGrammar.cpp" />
+    <ClCompile Include="src\GrammarApplicator_runRules.cpp" />
+    <ClCompile Include="win32\libgen.c" />
+    <ClCompile Include="src\MatxinApplicator.cpp" />
+    <ClCompile Include="src\Reading.cpp" />
+    <ClCompile Include="src\Rule.cpp" />
+    <ClCompile Include="src\Set.cpp" />
+    <ClCompile Include="src\SingleWindow.cpp" />
+    <ClCompile Include="src\Strings.cpp" />
+    <ClCompile Include="src\Tag.cpp" />
+    <ClCompile Include="src\uextras.cpp" />
+    <ClCompile Include="src\Window.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\Anchor.h" />
+    <ClInclude Include="src\ApertiumApplicator.h" />
+    <ClInclude Include="src\BinaryGrammar.h" />
+    <ClInclude Include="src\Cohort.h" />
+    <ClInclude Include="src\CohortIterator.h" />
+    <ClInclude Include="src\CompositeTag.h" />
+    <ClInclude Include="src\ContextualTest.h" />
+    <ClInclude Include="src\cycle.h" />
+    <ClInclude Include="win32\getopt.h" />
+    <ClInclude Include="src\Grammar.h" />
+    <ClInclude Include="src\GrammarApplicator.h" />
+    <ClInclude Include="src\icu_uoptions.h" />
+    <ClInclude Include="src\IGrammarParser.h" />
+    <ClInclude Include="src\inlines.h" />
+    <ClInclude Include="win32\libgen.h" />
+    <ClInclude Include="src\MatxinApplicator.h" />
+    <ClInclude Include="src\Reading.h" />
+    <ClInclude Include="src\Rule.h" />
+    <ClInclude Include="src\Set.h" />
+    <ClInclude Include="src\SingleWindow.h" />
+    <ClInclude Include="src\stdafx.h" />
+    <ClInclude Include="src\Strings.h" />
+    <ClInclude Include="src\Tag.h" />
+    <ClInclude Include="src\uextras.h" />
+    <ClInclude Include="src\version.h" />
+    <ClInclude Include="src\Window.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
