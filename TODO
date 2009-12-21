@@ -28,5 +28,4 @@ ToDo: SELECT $$sem IF (-1 N LINK 0 (<+($$sem)>)) ;
 ToDo: Somehow refer to left / right sibling
 ToDo: Movement of entire sub-trees
 ToDo: Use Cohort iterator instead of subfunctions
-ToDo: Check interaction between magic readings and passing to next vislcg3; seems wordforms are passed on but then discarded
 ToDo: Unification on set-level instead of on tag-level
