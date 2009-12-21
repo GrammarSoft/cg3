@@ -32,7 +32,12 @@ namespace CG3 {
 Reading *GrammarApplicator::initEmptyCohort(Cohort &cCohort) {
 	Reading *cReading = new Reading(&cCohort);
 	cReading->wordform = cCohort.wordform;
-	cReading->baseform = cCohort.wordform;
+	if (allow_magic_readings) {
+		cReading->baseform = makeBaseFromWord(cCohort.wordform)->hash;
+	}
+	else {
+		cReading->baseform = cCohort.wordform;
+	}
 	if (grammar->sets_any && !grammar->sets_any->empty()) {
 		cReading->parent->possible_sets.insert(grammar->sets_any->begin(), grammar->sets_any->end());
 	}

@@ -15,5 +15,5 @@
 "<lemonade>"
 	"lemonade" <-Indef> N NOM SG 
 "<$.>"
-	"<$.>" @afterNccN 
+	"$." @afterNccN 
 
