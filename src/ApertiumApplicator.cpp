@@ -52,7 +52,11 @@ void ApertiumApplicator::setNullFlush(bool pNullFlush) {
 UChar ApertiumApplicator::u_fgetc_wrapper(UFILE *input) {
 	if (runningWithNullFlush) {
 		if (!fgetc_converter) {
+			fgetc_error=U_ZERO_ERROR;
 			fgetc_converter = ucnv_open(ucnv_getDefaultName(), &fgetc_error);
+			if (U_FAILURE(fgetc_error)) {
+					u_fprintf(ux_stderr, "Error in ucnv_open: %d\n", fgetc_error);
+				}
 		}
 		int ch;
 		int result;
