@@ -217,19 +217,12 @@ UChar *ux_append(UChar *target, const UChar data) {
 }
 
 UChar *ux_substr(UChar *string, const size_t start, const size_t end) {
-	// ToDo: Surely this whole function can be replaced with u_strncpy(tmp, &string[start], end-start) or similar?
-	UChar *tmp = 0;
-	size_t i = 0;
+	assert((size_t)u_strlen(string) >= end);
+	assert((size_t)u_strlen(string) >= start);
+	assert((size_t)u_strlen(string) >= end-start);
 
-	size_t len = u_strlen(string);
-	
-	if (end > len) {
-		return tmp;
-	}
-
-	for (i = start; i < end; i++) {
-		tmp = ux_append(tmp, string[i]);
-	}
+	UChar *tmp = new UChar[end-start+1];
+	u_strncpy(tmp, &string[start], end-start);
 
 	return tmp;
 }
