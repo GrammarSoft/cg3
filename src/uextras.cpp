@@ -222,6 +222,7 @@ UChar *ux_substr(UChar *string, const size_t start, const size_t end) {
 	assert((size_t)u_strlen(string) >= end-start);
 
 	UChar *tmp = new UChar[end-start+1];
+	memset(tmp, '\0', sizeof(UChar) * (end - start + 1));
 	u_strncpy(tmp, &string[start], end-start);
 
 	return tmp;
