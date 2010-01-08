@@ -452,6 +452,7 @@ int ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
  *   venir<vblex><imp><p2><sg>
  *   venir<vblex><inf>+lo<prn><enc><p3><nt><sg>
  *   be<vblex><inf># happy
+ *   sellout<vblex><imp><p2><sg># ouzh+indirect<prn><obj><p3><m><sg>
  *   be# happy<vblex><inf> (for chaining cg-proc)
  */
 void ApertiumApplicator::processReading(Reading *cReading, UChar *reading_string) {
@@ -485,6 +486,10 @@ void ApertiumApplicator::processReading(Reading *cReading, UChar *reading_string
 			multi = true;
 		}
 
+		if(*m == '+' && multi == true) { // If we see a '+' and we are in a multiword queue, we want to stop appending
+			multi = false;
+		} 
+
 		if (multi) {
 			suf = ux_append(suf, *m);
 		}
@@ -513,6 +518,8 @@ void ApertiumApplicator::processReading(Reading *cReading, UChar *reading_string
 	}
 	base = ux_append(base, '"');
 
+//	u_fprintf(ux_stderr, ">> b: %S s: %S\n", base, suf);
+
 	uint32_t tag = addTag(base)->hash;
 	cReading->baseform = tag;
 	addTagToReading(*cReading, tag);
@@ -531,12 +538,17 @@ void ApertiumApplicator::processReading(Reading *cReading, UChar *reading_string
 		}
 
 		if (*c == '+') {
+			multi = false;
 			joiner = true;
 			joined = true;
 			join_idx++;
 		}
+		if (*c == '#' && intag == false) { // If we're outside a tag, and we see #, don't append
+			multi = true;
+		}
 
 		if (*c == '<') {
+			multi = false;
 			if (intag == true) {
 				u_fprintf(ux_stderr, "Error: The Apertium stream format does not allow '<' in tag names.\n");
 				c++;
@@ -556,13 +568,13 @@ void ApertiumApplicator::processReading(Reading *cReading, UChar *reading_string
 
 			}
 			else {
-
 				c++;
 				continue;
 			}
 
 		}
 		else if (*c == '>') {
+			multi = false;
 			if (intag == false) {
 				u_fprintf(ux_stderr, "Error: The Apertium stream format does not allow '>' in tag names.\n");
 				c++;
@@ -573,7 +585,7 @@ void ApertiumApplicator::processReading(Reading *cReading, UChar *reading_string
 			uint32_t shufty = addTag(tmptag)->hash;
 			UChar *newtag = 0;
 			if (cReading->tags.find(shufty) != cReading->tags.end()) {
-				newtag = ux_append(newtag, '&');	
+				newtag = ux_append(newtag, '&');
 				newtag = ux_append(newtag, (UChar)join_idx);
 				newtag = ux_append(newtag, tmptag);
 			}
@@ -589,6 +601,12 @@ void ApertiumApplicator::processReading(Reading *cReading, UChar *reading_string
 			c++;
 			continue;
 		}
+
+		if(multi == true) { // Multiword queue is not part of a tag
+			c++;
+			continue;
+		}
+
 		tmptag = ux_append(tmptag, *c);
 		c++;
 	}
