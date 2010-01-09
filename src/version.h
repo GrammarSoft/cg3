@@ -23,12 +23,12 @@
 #ifndef __VERSION_H
 #define __VERSION_H
 
-#define CG3_COPYRIGHT_STRING \
-	"Copyright (C) 2007-2009 GrammarSoft ApS. All Rights Reserved."
+static const char CG3_COPYRIGHT_STRING[] = "Copyright (C) 2007-2009 GrammarSoft ApS. All Rights Reserved.";
 
-#define CG3_VERSION_MAJOR 0
-#define CG3_VERSION_MINOR 9
-#define CG3_VERSION_PATCH 7
-#define CG3_REVISION 5459
+static const uint32_t CG3_VERSION_MAJOR = 0;
+static const uint32_t CG3_VERSION_MINOR = 9;
+static const uint32_t CG3_VERSION_PATCH = 7;
+static const uint32_t CG3_REVISION = 5465;
+static const uint32_t CG3_TOO_OLD = 5465;
 
 #endif

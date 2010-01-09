@@ -24,6 +24,9 @@
 
 namespace CG3 {
 
+bool Tag::dump_hashes = false;
+UFILE* Tag::dump_hashes_out = 0;
+
 Tag::Tag() :
 in_grammar(false),
 is_special(false),
@@ -361,6 +364,11 @@ uint32_t Tag::rehash() {
 	is_special = false;
 	if (type & (T_ANY|T_TARGET|T_MARK|T_ATTACHTO|T_PAR_LEFT|T_PAR_RIGHT|T_NUMERICAL|T_VARIABLE|T_META|T_NEGATIVE|T_FAILFAST|T_CASE_INSENSITIVE|T_REGEXP|T_REGEXP_ANY|T_VARSTRING)) {
 		is_special = true;
+	}
+
+	if (dump_hashes && dump_hashes_out) {
+		u_fprintf(dump_hashes_out, "DEBUG: Hash %u with seed %u for tag %S\n", hash, seed, tag);
+		u_fprintf(dump_hashes_out, "DEBUG: Plain hash %u with seed %u for tag %S\n", plain_hash, seed, tag);
 	}
 
 	return hash;

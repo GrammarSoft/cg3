@@ -466,36 +466,59 @@ bool GrammarApplicator::doesSetMatchReading(Reading &reading, const uint32_t set
 		retval = true;
 	}
 	else if (theset.sets.empty()) {
-		retval = doesSetMatchReading_tags(reading, theset, theset.is_unified|unif_mode);
+		retval = doesSetMatchReading_tags(reading, theset, theset.is_tag_unified|unif_mode);
+	}
+	else if (theset.is_set_unified) {
+		if (unif_sets_firstrun) {
+			unif_sets_firstrun = false;
+			Setuint32HashMap::const_iterator iter = grammar->sets_by_contents.find(theset.sets.at(0));
+			const Set &uset = *(iter->second);
+			size_t size = uset.sets.size();
+			for (size_t i=0;i<size;++i) {
+				if (doesSetMatchReading(reading, uset.sets.at(i), bypass_index, uset.is_tag_unified|unif_mode)) {
+					unif_sets.insert(uset.hash);
+				}
+			}
+			retval = !unif_sets.empty();
+		}
+		else {
+			uint32Set sets;
+			foreach (uint32Set, unif_sets, usi, usi_end) {
+				if (doesSetMatchReading(reading, *usi, bypass_index, unif_mode)) {
+					sets.insert(*usi);
+				}
+			}
+			retval = !sets.empty();
+		}
 	}
 	else {
 		size_t size = theset.sets.size();
 		for (size_t i=0;i<size;++i) {
-			bool match = doesSetMatchReading(reading, theset.sets.at(i), bypass_index, theset.is_unified|unif_mode);
+			bool match = doesSetMatchReading(reading, theset.sets.at(i), bypass_index, theset.is_tag_unified|unif_mode);
 			bool failfast = false;
 			while (i < size-1 && theset.set_ops.at(i) != S_OR) {
 				switch (theset.set_ops.at(i)) {
 					case S_PLUS:
 						if (match) {
-							match = doesSetMatchReading(reading, theset.sets.at(i+1), bypass_index, theset.is_unified|unif_mode);
+							match = doesSetMatchReading(reading, theset.sets.at(i+1), bypass_index, theset.is_tag_unified|unif_mode);
 						}
 						break;
 					case S_FAILFAST:
-						if (doesSetMatchReading(reading, theset.sets.at(i+1), bypass_index, theset.is_unified|unif_mode)) {
+						if (doesSetMatchReading(reading, theset.sets.at(i+1), bypass_index, theset.is_tag_unified|unif_mode)) {
 							match = false;
 							failfast = true;
 						}
 						break;
 					case S_MINUS:
 						if (match) {
-							if (doesSetMatchReading(reading, theset.sets.at(i+1), bypass_index, theset.is_unified|unif_mode)) {
+							if (doesSetMatchReading(reading, theset.sets.at(i+1), bypass_index, theset.is_tag_unified|unif_mode)) {
 								match = false;
 							}
 						}
 						break;
 					case S_NOT:
 						if (!match) {
-							if (!doesSetMatchReading(reading, theset.sets.at(i+1), bypass_index, theset.is_unified|unif_mode)) {
+							if (!doesSetMatchReading(reading, theset.sets.at(i+1), bypass_index, theset.is_tag_unified|unif_mode)) {
 								match = true;
 							}
 						}
@@ -532,13 +555,8 @@ bool GrammarApplicator::doesSetMatchReading(Reading &reading, const uint32_t set
 		index_readingSet_yes.insert(ih);
 	}
 	else {
-		if (!(theset.is_unified|unif_mode)) {
+		if (!(theset.is_tag_unified|unif_mode)) {
 			index_readingSet_no.insert(ih);
-			/* This actually slows down the overall processing. Removing on cohort-level only is most efficient.
-			if (!grammar->sets_any || grammar->sets_any->find(set) == grammar->sets_any->end()) {
-				reading.possible_sets.erase(set);
-			}
-			//*/
 		}
 	}
 

@@ -74,7 +74,9 @@ namespace CG3 {
 				m_cohort = 0;
 			}
 			else {
-				m_cohort = m_cohort->prev;
+				do {
+					m_cohort = m_cohort->prev;
+				} while (m_cohort && m_cohort->is_enclosed);
 			}
 			return *this;
 		}
@@ -92,7 +94,9 @@ namespace CG3 {
 				m_cohort = 0;
 			}
 			else {
-				m_cohort = m_cohort->next;
+				do {
+					m_cohort = m_cohort->next;
+				} while (m_cohort && m_cohort->is_enclosed);
 			}
 			return *this;
 		}

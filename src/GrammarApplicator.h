@@ -124,6 +124,8 @@ namespace CG3 {
 		uint32_t unif_last_wordform;
 		uint32_t unif_last_baseform;
 		uint32_t unif_last_textual;
+		uint32Set unif_sets;
+		bool unif_sets_firstrun;
 
 		stdext::hash_map<uint32_t, Tag*> single_tags;
 
@@ -144,9 +146,10 @@ namespace CG3 {
 		void updateValidRules(const uint32Set& rules, uint32Set &intersects, const uint32_t& hash, Reading &reading);
 		uint32_t runRulesOnWindow(SingleWindow &current, uint32Set &rules);
 
+		Cohort *runSingleTest(Cohort *cohort, const ContextualTest *test, bool *brk, bool *retval, Cohort **deep = 0, Cohort *origin = 0);
 		Cohort *runSingleTest(SingleWindow *sWindow, size_t i, const ContextualTest *test, bool *brk, bool *retval, Cohort **deep = 0, Cohort *origin = 0);
 		Cohort *runContextualTest(SingleWindow *sWindow, size_t position, const ContextualTest *test, Cohort **deep = 0, Cohort *origin = 0);
-		Cohort *runDependencyTest(SingleWindow *sWindow, const Cohort *current, const ContextualTest *test, Cohort **deep = 0, Cohort *origin = 0, const Cohort *self = 0);
+		Cohort *runDependencyTest(SingleWindow *sWindow, Cohort *current, const ContextualTest *test, Cohort **deep = 0, Cohort *origin = 0, const Cohort *self = 0);
 		Cohort *runParenthesisTest(SingleWindow *sWindow, const Cohort *current, const ContextualTest *test, Cohort **deep = 0, Cohort *origin = 0);
 		Cohort *runRelationTest(SingleWindow *sWindow, Cohort *current, const ContextualTest *test, Cohort **deep = 0, Cohort *origin = 0);
 

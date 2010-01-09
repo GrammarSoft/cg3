@@ -26,10 +26,14 @@
 
 namespace CG3 {
 
+bool Set::dump_hashes = false;
+UFILE* Set::dump_hashes_out = 0;
+
 Set::Set() :
 match_any(false),
 is_special(false),
-is_unified(false),
+is_tag_unified(false),
+is_set_unified(false),
 is_child_unified(false),
 is_used(false),
 line(0),
@@ -81,11 +85,21 @@ uint32_t Set::rehash() {
 		}
 	}
 	hash = retval;
+
+	if (dump_hashes && dump_hashes_out) {
+		if (sets.empty()) {
+			u_fprintf(dump_hashes_out, "DEBUG: Hash %u for set %S (LIST)\n", hash, name.c_str());
+		}
+		else {
+			u_fprintf(dump_hashes_out, "DEBUG: Hash %u for set %S (SET)\n", hash, name.c_str());
+		}
+	}
+
 	return retval;
 }
 
 void Set::reindex(Grammar &grammar) {
-	if (is_unified || is_child_unified) {
+	if (is_tag_unified || is_set_unified || is_child_unified) {
 		is_special = true;
 		is_child_unified = true;
 	}
@@ -118,14 +132,14 @@ void Set::reindex(Grammar &grammar) {
 			}
 		}
 	}
-	else if (!sets.empty()) {
+	else {
 		for (uint32_t i=0;i<sets.size();i++) {
 			Set *set = grammar.sets_by_contents.find(sets.at(i))->second;
 			set->reindex(grammar);
 			if (set->is_special) {
 				is_special = true;
 			}
-			if (set->is_unified || set->is_child_unified) {
+			if (set->is_tag_unified || set->is_set_unified || set->is_child_unified) {
 				is_child_unified = true;
 			}
 		}
@@ -147,7 +161,7 @@ void Set::markUsed(Grammar &grammar) {
 			curcomptag->markUsed();
 		}
 	}
-	else if (!sets.empty()) {
+	else {
 		for (uint32_t i=0;i<sets.size();i++) {
 			Set *set = grammar.sets_by_contents.find(sets.at(i))->second;
 			set->markUsed(grammar);

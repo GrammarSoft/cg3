@@ -63,6 +63,9 @@ namespace CG3 {
 
 	class Tag {
 	public:
+		static bool dump_hashes;
+		static UFILE* dump_hashes_out;
+
 		bool in_grammar;
 		bool is_special;
 		bool is_used;

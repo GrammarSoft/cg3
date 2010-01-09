@@ -5,8 +5,10 @@ LIST BDFSet = BB DD FF ;
 LIST Hums = <H.*>r ;
 LIST TSet = THIS NOTTHIS ALSONOTTHIS ;
 LIST SameBase = ".*"r ;
+SET USET = ACESet OR BDFSet ;
 
 BEFORE-SECTIONS
+ADD (@UnifSet) &&USET (1 &&USET) ;
 ADDRELATIONS (from) (to) ("worda") + $$ACESet TO (1* ("wordc") + $$ACESet) ;
 
 SECTION
