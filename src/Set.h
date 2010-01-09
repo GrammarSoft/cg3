@@ -31,9 +31,13 @@ namespace CG3 {
 
 	class Set {
 	public:
+		static bool dump_hashes;
+		static UFILE* dump_hashes_out;
+
 		bool match_any;
 		bool is_special;
-		bool is_unified;
+		bool is_tag_unified;
+		bool is_set_unified;
 		bool is_child_unified;
 		bool is_used;
 		uint32_t line;

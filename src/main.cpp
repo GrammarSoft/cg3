@@ -101,7 +101,7 @@ int main(int argc, char* argv[]) {
 
 	fflush(stderr);
 
-	if (options[SHOW_UNUSED_SETS].doesOccur) {
+	if (options[SHOW_UNUSED_SETS].doesOccur || options[SHOW_SET_HASHES].doesOccur) {
 		options[GRAMMAR_ONLY].doesOccur = true;
 	}
 
@@ -229,6 +229,15 @@ int main(int argc, char* argv[]) {
 
 	CG3::init_gbuffers();
 	CG3::Grammar grammar;
+
+	if (options[SHOW_TAG_HASHES].doesOccur) {
+		CG3::Tag::dump_hashes = true;
+		CG3::Tag::dump_hashes_out = ux_stderr;
+	}
+	if (options[SHOW_SET_HASHES].doesOccur) {
+		CG3::Set::dump_hashes = true;
+		CG3::Set::dump_hashes_out = ux_stderr;
+	}
 
 	CG3::IGrammarParser *parser = 0;
 	FILE *input = fopen(options[GRAMMAR].value, "rb");

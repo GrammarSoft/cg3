@@ -70,6 +70,7 @@ GrammarApplicator::GrammarApplicator(UFILE *ux_err) {
 	unif_last_wordform = 0;
 	unif_last_baseform = 0;
 	unif_last_textual = 0;
+	unif_sets_firstrun = false;
 	no_sections = false;
 	no_after_sections = false;
 	no_before_sections = false;

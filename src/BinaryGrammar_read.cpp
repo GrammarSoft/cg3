@@ -51,11 +51,10 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 		CG3Quit(1);
 	}
 
-#define B_TOO_OLD 5459
 	fread(&u32tmp, sizeof(uint32_t), 1, input);
 	u32tmp = (uint32_t)ntohl(u32tmp);
-	if (u32tmp < B_TOO_OLD) {
-		u_fprintf(ux_stderr, "Error: Grammar revision is %u, but this loader requires %u or later!\n", u32tmp, B_TOO_OLD);
+	if (u32tmp < CG3_TOO_OLD) {
+		u_fprintf(ux_stderr, "Error: Grammar revision is %u, but this loader requires %u or later!\n", u32tmp, CG3_TOO_OLD);
 		CG3Quit(1);
 	}
 	if (u32tmp > CG3_REVISION) {
@@ -212,10 +211,14 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 		s->hash = (uint32_t)ntohl(u32tmp);
 		fread(&u8tmp, sizeof(uint8_t), 1, input);
 		s->match_any = (u8tmp == 1);
+		/*
 		fread(&u8tmp, sizeof(uint8_t), 1, input);
 		s->is_special = (u8tmp == 1);
+		//*/
 		fread(&u8tmp, sizeof(uint8_t), 1, input);
-		s->is_unified = (u8tmp == 1);
+		s->is_tag_unified = (u8tmp == 1);
+		fread(&u8tmp, sizeof(uint8_t), 1, input);
+		s->is_set_unified = (u8tmp == 1);
 
 		fread(&u8tmp, sizeof(uint8_t), 1, input);
 		if (u8tmp == 0) {
