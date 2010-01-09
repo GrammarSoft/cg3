@@ -165,7 +165,8 @@ void Grammar::addSet(Set *to) {
 	}
 	else {
 		Set *a = sets_by_contents.find(chash)->second;
-		if (a->is_special != to->is_special || a->is_unified != to->is_unified || a->is_child_unified != to->is_child_unified
+		if (a->is_special != to->is_special || a->is_tag_unified != to->is_tag_unified || a->is_child_unified != to->is_child_unified
+		|| a->is_set_unified != to->is_set_unified
 		|| a->set_ops.size() != to->set_ops.size() || a->sets.size() != to->sets.size()
 		|| a->single_tags.size() != to->single_tags.size() || a->tags.size() != to->tags.size()) {
 			u_fprintf(ux_stderr, "Error: Content hash collision between set %S line %u and %S line %u!\n", a->name.c_str(), a->line, to->name.c_str(), to->line);
@@ -581,7 +582,7 @@ void Grammar::reindex(bool unused_sets) {
 }
 
 void Grammar::indexSetToRule(uint32_t r, Set *s) {
-	if (s->is_special || s->is_unified) {
+	if (s->is_special || s->is_tag_unified) {
 		indexTagToRule(tag_any, r);
 		return;
 	}
@@ -604,7 +605,7 @@ void Grammar::indexSetToRule(uint32_t r, Set *s) {
 			}
 		}
 	}
-	else if (!s->sets.empty()) {
+	else {
 		for (uint32_t i=0;i<s->sets.size();i++) {
 			Set *set = sets_by_contents.find(s->sets.at(i))->second;
 			indexSetToRule(r, set);
@@ -623,7 +624,7 @@ void Grammar::indexTagToRule(uint32_t t, uint32_t r) {
 }
 
 void Grammar::indexSets(uint32_t r, Set *s) {
-	if (s->is_special || s->is_unified) {
+	if (s->is_special || s->is_tag_unified) {
 		indexTagToSet(tag_any, r);
 		return;
 	}
@@ -646,7 +647,7 @@ void Grammar::indexSets(uint32_t r, Set *s) {
 			}
 		}
 	}
-	else if (!s->sets.empty()) {
+	else {
 		for (uint32_t i=0;i<s->sets.size();i++) {
 			Set *set = sets_by_contents.find(s->sets.at(i))->second;
 			indexSets(r, set);

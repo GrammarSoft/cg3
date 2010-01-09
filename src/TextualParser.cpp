@@ -194,7 +194,10 @@ Set *TextualParser::parseSetInline(UChar *& p, Set *s) {
 						CG3Quit(1);
 					}
 
-					if (gbuffers[0] && gbuffers[0][0] == '$' && gbuffers[0][1] == '$' && gbuffers[0][2]) {
+					if (gbuffers[0] && (
+					(gbuffers[0][0] == '$' && gbuffers[0][1] == '$')
+					|| (gbuffers[0][0] == '&' && gbuffers[0][1] == '&')
+					) && gbuffers[0][2]) {
 						const UChar *wname = &(gbuffers[0][2]);
 						uint32_t wrap = hash_sdbm_uchar(wname);
 						Set *wtmp = result->getSet(wrap);
@@ -208,7 +211,12 @@ Set *TextualParser::parseSetInline(UChar *& p, Set *s) {
 							ns->line = result->lines;
 							ns->setName(gbuffers[0]);
 							ns->sets.push_back(wtmp->hash);
-							ns->is_unified = true;
+							if (gbuffers[0][0] == '$' && gbuffers[0][1] == '$') {
+								ns->is_tag_unified = true;
+							}
+							else if (gbuffers[0][0] == '&' && gbuffers[0][1] == '&') {
+								ns->is_set_unified = true;
+							}
 							result->addSet(ns);
 						}
 					}
@@ -1213,7 +1221,6 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 			u_strncpy(gbuffers[0], p, c);
 			gbuffers[0][c] = 0;
 			s->setName(gbuffers[0]);
-			uint32_t sh = hash_sdbm_uchar(gbuffers[0]);
 			p = n;
 			result->lines += SKIPWS(p, '=');
 			if (*p != '=') {
@@ -1229,15 +1236,6 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 					u_fprintf(ux_stderr, "Warning: LIST %S was defined twice with the same contents: Lines %u and %u.\n", s->name.c_str(), tmp->line, s->line);
 					u_fflush(ux_stderr);
 				}
-			}
-			else if (tmp) {
-				if (verbosity_level > 0) {
-					u_fprintf(ux_stderr, "Warning: Set %S (L:%u) has been aliased to %S (L:%u).\n", s->name.c_str(), s->line, tmp->name.c_str(), tmp->line);
-					u_fflush(ux_stderr);
-				}
-				result->set_alias[sh] = tmp->hash;
-				result->destroySet(s);
-				s = tmp;
 			}
 			result->addSet(s);
 			if (s->tags.empty() && s->single_tags.empty()) {
@@ -1283,7 +1281,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 					u_fflush(ux_stderr);
 				}
 			}
-			else if (s->sets.size() == 1 && !s->is_unified) {
+			else if (s->sets.size() == 1 && !s->is_tag_unified) {
 				tmp = result->getSet(s->sets.back());
 				if (verbosity_level > 0) {
 					u_fprintf(ux_stderr, "Warning: Set %S (L:%u) has been aliased to %S (L:%u).\n", s->name.c_str(), s->line, tmp->name.c_str(), tmp->line);

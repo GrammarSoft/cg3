@@ -189,6 +189,10 @@ uint32_t GrammarApplicator::runRulesOnWindow(SingleWindow &current, uint32Set &r
 				if (!unif_tags.empty()) {
 					unif_tags.clear();
 				}
+				unif_sets_firstrun = true;
+				if (!unif_sets.empty()) {
+					unif_sets.clear();
+				}
 
 				target = 0;
 				mark = cohort;

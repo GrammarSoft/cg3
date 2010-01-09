@@ -160,9 +160,13 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 		u8tmp = (uint8_t)s->match_any;
 		fwrite(&u8tmp, sizeof(uint8_t), 1, output);
+		/*
 		u8tmp = (uint8_t)s->is_special;
 		fwrite(&u8tmp, sizeof(uint8_t), 1, output);
-		u8tmp = (uint8_t)s->is_unified;
+		//*/
+		u8tmp = (uint8_t)s->is_tag_unified;
+		fwrite(&u8tmp, sizeof(uint8_t), 1, output);
+		u8tmp = (uint8_t)s->is_set_unified;
 		fwrite(&u8tmp, sizeof(uint8_t), 1, output);
 
 		if (s->sets.empty()) {
