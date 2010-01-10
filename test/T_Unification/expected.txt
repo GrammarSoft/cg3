@@ -1,25 +1,25 @@
 "<worda>"
-	"worda" some tags AA ID:1 R:from:3 ADDRELATIONS(from,to):10 SELECT:SameBase 
+	"worda" some tags AA @UnifSet ID:1 R:from:3 ADD:11 ADDRELATIONS(from,to):12 SELECT:SameBase 
 ;	"wordc" some tags ID:1 R:from:3 SELECT:SameBase 
 ;	"wordc" some tags ID:1 R:from:3 SELECT:SameBase 
 "<wordb>"
 	"wordb" some tags ID:2 R:from:3 
-	"worda" some tags CC ID:2 R:from:3 ADDRELATIONS(from,to):10 
+	"worda" some tags CC @UnifSet ID:2 R:from:3 ADD:11 ADDRELATIONS(from,to):12 
 "<wordc>"
-	"wordc" some tags BB EE ID:3 R:to:1 R:to:2 SELECT:two 
+	"wordc" some tags BB EE @UnifSet ID:3 R:to:1 R:to:2 ADD:11 SELECT:two 
 ;	"wordc" some tags ID:3 R:to:1 R:to:2 SELECT:two 
 ;	"wordc" some tags ID:3 R:to:1 R:to:2 SELECT:two 
 "<wordd>"
 	"wordd" some tags 
-	"wordd" some tags BB EE 
+	"wordd" some tags BB EE @UnifSet ADD:11 
 "<worde>"
-	"worde" some tags CC SELECT:one 
+	"worde" some tags CC @UnifSet ADD:11 SELECT:one 
 ;	"worde" some tags SELECT:one 
 ;	"worde" some tags SELECT:one 
 "<wordf>"
-	"wordf" some tags CC THIS 
+	"wordf" some tags CC THIS @UnifSet ADD:11 
 	"wordf" some tags THIS 
-;	"wordf" some tags NOTTHIS REMOVE:18 
+;	"wordf" some tags NOTTHIS REMOVE:20 
 "<wordg>"
 	"wordg" some tags CC THIS SELECT:this 
 ;	"wordg" some tags SELECT:this 
