@@ -472,7 +472,7 @@ bool GrammarApplicator::doesSetMatchReading(Reading &reading, const uint32_t set
 		if (unif_sets_firstrun) {
 			Setuint32HashMap::const_iterator iter = grammar->sets_by_contents.find(theset.sets.at(0));
 			const Set &uset = *(iter->second);
-			size_t size = uset.sets.size();
+			const size_t size = uset.sets.size();
 			for (size_t i=0;i<size;++i) {
 				if (doesSetMatchReading(reading, uset.sets.at(i), bypass_index, uset.is_tag_unified|unif_mode)) {
 					unif_sets.insert(uset.hash);
@@ -492,7 +492,7 @@ bool GrammarApplicator::doesSetMatchReading(Reading &reading, const uint32_t set
 		}
 	}
 	else {
-		size_t size = theset.sets.size();
+		const size_t size = theset.sets.size();
 		for (size_t i=0;i<size;++i) {
 			bool match = doesSetMatchReading(reading, theset.sets.at(i), bypass_index, theset.is_tag_unified|unif_mode);
 			bool failfast = false;
