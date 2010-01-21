@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2007, GrammarSoft ApS
+* Copyright (C) 2007-2010, GrammarSoft ApS
 * Developed by Tino Didriksen <tino@didriksen.cc>
 * Design by Eckhard Bick <eckhard.bick@mail.dk>, Tino Didriksen <tino@didriksen.cc>
 *
@@ -23,7 +23,7 @@
 #ifndef __VERSION_H
 #define __VERSION_H
 
-static const char CG3_COPYRIGHT_STRING[] = "Copyright (C) 2007-2009 GrammarSoft ApS. All Rights Reserved.";
+static const char CG3_COPYRIGHT_STRING[] = "Copyright (C) 2007-2010 GrammarSoft ApS. All Rights Reserved.";
 
 static const uint32_t CG3_VERSION_MAJOR = 0;
 static const uint32_t CG3_VERSION_MINOR = 9;
