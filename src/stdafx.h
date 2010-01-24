@@ -53,6 +53,7 @@
 #include <sys/stat.h>
 
 #ifdef _MSC_VER
+	// Test for MSVC++ >= 10.0 (MSVS 2010)
 	#if _MSC_VER >= 1600
 		#include <cstdint>
 	#endif
