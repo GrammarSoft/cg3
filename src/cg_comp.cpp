@@ -67,7 +67,6 @@ int main(int argc, char *argv[]) {
 
 	ux_stderr = u_finit(stderr, locale_default, codepage_default);
 
-	CG3::init_gbuffers();
 	CG3::Grammar grammar;
 
 	CG3::IGrammarParser *parser = 0;
@@ -77,7 +76,7 @@ int main(int argc, char *argv[]) {
 		std::cerr << "Error: Error opening " << argv[1] << " for reading!" << std::endl;
 		CG3Quit(1);
 	}
-	if (fread(CG3::cbuffers[0], 1, 4, input) != 4) {
+	if (fread(&CG3::cbuffers[0][0], 1, 4, input) != 4) {
 		std::cerr << "Error: Error reading first 4 bytes from grammar!" << std::endl;
 		CG3Quit(1);
 	}
@@ -122,8 +121,6 @@ int main(int argc, char *argv[]) {
 	}
 
 	u_fclose(ux_stderr);
-
-	CG3::free_gbuffers();
 
 	u_cleanup();
 

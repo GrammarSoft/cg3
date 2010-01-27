@@ -152,29 +152,7 @@ UnicodeString stringbits[STRINGS_COUNT] = {
 	UNICODE_STRING_SIMPLE("%L")
 };
 
-UChar *gbuffers[NUM_GBUFFERS];
-char *cbuffers[NUM_CBUFFERS];
-
-int init_gbuffers() {
-	for (uint32_t i=0;i<NUM_GBUFFERS;i++) {
-		gbuffers[i] = new UChar[CG3_BUFFER_SIZE];
-	}
-	for (uint32_t i=0;i<NUM_CBUFFERS;i++) {
-		cbuffers[i] = new char[CG3_BUFFER_SIZE];
-	}
-	return 0;
-}
-
-int free_gbuffers() {
-	for (uint32_t i=0;i<NUM_GBUFFERS;i++) {
-		delete[] gbuffers[i];
-		gbuffers[i] = 0;
-	}
-	for (uint32_t i=0;i<NUM_CBUFFERS;i++) {
-		delete[] cbuffers[i];
-		cbuffers[i] = 0;
-	}
-	return 0;
-}
+std::vector< std::vector<UChar> > gbuffers(NUM_GBUFFERS, std::vector<UChar>(CG3_BUFFER_SIZE, 0));
+std::vector<std::string> cbuffers(NUM_CBUFFERS, std::string(CG3_BUFFER_SIZE, 0));
 
 }

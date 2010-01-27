@@ -42,7 +42,7 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 	UErrorCode err = U_ZERO_ERROR;
 	UConverter *conv = ucnv_open("UTF-8", &err);
 
-	if (fread(cbuffers[0], 1, 4, input) != 4) {
+	if (fread(&cbuffers[0][0], 1, 4, input) != 4) {
 		std::cerr << "Error: Error reading first 4 bytes from grammar!" << std::endl;
 		CG3Quit(1);
 	}
@@ -70,8 +70,8 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 	ucnv_reset(conv);
 	fread(&u32tmp, sizeof(uint32_t), 1, input);
 	u32tmp = (uint32_t)ntohl(u32tmp);
-	fread(cbuffers[0], 1, u32tmp, input);
-	i32tmp = ucnv_toUChars(conv, &grammar->mapping_prefix, 1, cbuffers[0], u32tmp, &err);
+	fread(&cbuffers[0][0], 1, u32tmp, input);
+	i32tmp = ucnv_toUChars(conv, &grammar->mapping_prefix, 1, &cbuffers[0][0], u32tmp, &err);
 
 	fread(&u32tmp, sizeof(uint32_t), 1, input);
 	u32tmp = (uint32_t)ntohl(u32tmp);
@@ -104,20 +104,20 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 			ucnv_reset(conv);
 			fread(&u32tmp, sizeof(uint32_t), 1, input);
 			u32tmp = (uint32_t)ntohl(u32tmp);
-			fread(cbuffers[0], 1, u32tmp, input);
-			i32tmp = ucnv_toUChars(conv, gbuffers[0], CG3_BUFFER_SIZE-1, cbuffers[0], u32tmp, &err);
+			fread(&cbuffers[0][0], 1, u32tmp, input);
+			i32tmp = ucnv_toUChars(conv, &gbuffers[0][0], CG3_BUFFER_SIZE-1, &cbuffers[0][0], u32tmp, &err);
 			t->comparison_key = t->allocateUChars(i32tmp+1);
-			u_strcpy(t->comparison_key, gbuffers[0]);
+			u_strcpy(t->comparison_key, &gbuffers[0][0]);
 		}
 
 		fread(&u32tmp, sizeof(uint32_t), 1, input);
 		u32tmp = (uint32_t)ntohl(u32tmp);
 		if (u32tmp) {
 			ucnv_reset(conv);
-			fread(cbuffers[0], 1, u32tmp, input);
-			i32tmp = ucnv_toUChars(conv, gbuffers[0], CG3_BUFFER_SIZE-1, cbuffers[0], u32tmp, &err);
+			fread(&cbuffers[0][0], 1, u32tmp, input);
+			i32tmp = ucnv_toUChars(conv, &gbuffers[0][0], CG3_BUFFER_SIZE-1, &cbuffers[0][0], u32tmp, &err);
 			t->tag = t->allocateUChars(i32tmp+1);
-			u_strcpy(t->tag, gbuffers[0]);
+			u_strcpy(t->tag, &gbuffers[0][0]);
 		}
 		if (t->type & T_REGEXP) {
 			UParseError pe;
@@ -314,9 +314,9 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 		u32tmp = (uint32_t)ntohl(u32tmp);
 		if (u32tmp) {
 			ucnv_reset(conv);
-			fread(cbuffers[0], 1, u32tmp, input);
-			i32tmp = ucnv_toUChars(conv, gbuffers[0], CG3_BUFFER_SIZE-1, cbuffers[0], u32tmp, &err);
-			r->setName(gbuffers[0]);
+			fread(&cbuffers[0][0], 1, u32tmp, input);
+			i32tmp = ucnv_toUChars(conv, &gbuffers[0][0], CG3_BUFFER_SIZE-1, &cbuffers[0][0], u32tmp, &err);
+			r->setName(&gbuffers[0][0]);
 		}
 		fread(&u32tmp, sizeof(uint32_t), 1, input);
 		r->target = (uint32_t)ntohl(u32tmp);
