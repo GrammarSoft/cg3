@@ -394,7 +394,7 @@ void GrammarWriter::printTag(UFILE *to, const Tag &tag) {
 		u_fprintf(to, "VAR:");
 	}
 
-	UChar *tmp = gbuffers[0];
+	UChar *tmp = &gbuffers[0][0];
 	ux_escape(tmp, tag.tag);
 	u_fprintf(to, "%S", tmp);
 

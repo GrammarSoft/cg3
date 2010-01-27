@@ -382,8 +382,8 @@ void Grammar::renameAllRules() {
 	foreach (RuleByLineHashMap, rule_by_line, iter_rule, iter_rule_end) {
 		Rule *r = iter_rule->second;
 		gbuffers[0][0] = 0;
-		u_sprintf(gbuffers[0], "L%u", r->line);
-		r->setName(gbuffers[0]);
+		u_sprintf(&gbuffers[0][0], "L%u", r->line);
+		r->setName(&gbuffers[0][0]);
 	}
 };
 

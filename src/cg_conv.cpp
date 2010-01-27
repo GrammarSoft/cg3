@@ -55,7 +55,6 @@ int main(int argc, char *argv[]) {
 	ux_stdout = u_finit(stdout, locale_default, codepage_default);
 	ux_stderr = u_finit(stderr, locale_default, codepage_default);
 
-	CG3::init_gbuffers();
 	CG3::Grammar grammar;
 
 	grammar.ux_stderr = ux_stderr;
@@ -71,8 +70,6 @@ int main(int argc, char *argv[]) {
 	u_fclose(ux_stdin);
 	u_fclose(ux_stdout);
 	u_fclose(ux_stderr);
-
-	CG3::free_gbuffers();
 
 	u_cleanup();
 
