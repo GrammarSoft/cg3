@@ -127,7 +127,7 @@ namespace CG3 {
 		uint32Set unif_sets;
 		bool unif_sets_firstrun;
 
-		stdext::hash_map<uint32_t, Tag*> single_tags;
+		Taguint32HashMap single_tags;
 
 		uint32HashSet index_regexp_yes;
 		uint32HashSet index_regexp_no;

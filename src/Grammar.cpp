@@ -65,7 +65,7 @@ Grammar::~Grammar() {
 		}
 	}
 
-	stdext::hash_map<uint32_t, Tag*>::iterator iter_stag;
+	Taguint32HashMap::iterator iter_stag;
 	for (iter_stag = single_tags.begin() ; iter_stag != single_tags.end() ; iter_stag++) {
 		if (iter_stag->second) {
 			delete iter_stag->second;
@@ -524,7 +524,7 @@ void Grammar::reindex(bool unused_sets) {
 		}
 	}
 
-	stdext::hash_map<uint32_t, Tag*>::iterator iter_tags;
+	Taguint32HashMap::iterator iter_tags;
 	for (iter_tags = single_tags.begin() ; iter_tags != single_tags.end() ; iter_tags++) {
 		Tag *tag = iter_tags->second;
 		if (tag->tag[0] == mapping_prefix) {
