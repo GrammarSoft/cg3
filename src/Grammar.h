@@ -45,7 +45,7 @@ namespace CG3 {
 		mutable double total_time;
 
 		std::vector<Tag*> single_tags_list;
-		stdext::hash_map<uint32_t, Tag*> single_tags;
+		Taguint32HashMap single_tags;
 
 		std::vector<CompositeTag*> tags_list;
 		stdext::hash_map<uint32_t, CompositeTag*> tags;
