@@ -138,7 +138,7 @@ void Tag::parseTag(const UChar *to, UFILE *ux_stderr) {
 		u_strncpy(tag, tmp, length);
 		tag[length] = 0;
 
-		UChar *utag = gbuffers[0];
+		UChar *utag = &gbuffers[0][0];
 		ux_unEscape(utag, tag);
 		if (utag[0] == 0 || u_strlen(utag) == 0) {
 			u_fprintf(ux_stderr, "Error: Parsing tag %S resulted in an empty tag - cannot continue!\n", tag);

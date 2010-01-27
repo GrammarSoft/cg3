@@ -76,10 +76,10 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 		}
 	}
 
-	UChar _line[CG3_BUFFER_SIZE];
-	UChar *line = _line;
-	UChar _cleaned[CG3_BUFFER_SIZE];
-	UChar *cleaned = _cleaned;
+	std::vector<UChar> _line(CG3_BUFFER_SIZE, 0);
+	UChar *line = &_line[0];
+	std::vector<UChar> _cleaned(CG3_BUFFER_SIZE, 0);
+	UChar *cleaned = &_cleaned[0];
 	bool ignoreinput = false;
 
 	index();
@@ -104,6 +104,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 
 	while (!u_feof(input)) {
 		lines++;
+		// ToDo: Read any line length dynamically
 		u_fgets(line, CG3_BUFFER_SIZE-1, input);
 		u_strcpy(cleaned, line);
 		ux_packWhitespace(cleaned);
