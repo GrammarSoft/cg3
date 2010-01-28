@@ -165,7 +165,7 @@ namespace CG3 {
 	extern UnicodeString stringbits[STRINGS_COUNT];
 	extern UnicodeString flags[FLAGS_COUNT];
 
-	static const size_t CG3_BUFFER_SIZE = 131072;
+	static const size_t CG3_BUFFER_SIZE = 8192;
 	static const size_t NUM_GBUFFERS = 1;
 	extern std::vector< std::vector<UChar> > gbuffers;
 	static const size_t NUM_CBUFFERS = 2;
