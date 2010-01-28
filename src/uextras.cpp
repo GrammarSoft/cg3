@@ -48,67 +48,6 @@ bool ux_isEmpty(const UChar *text) {
 	return true;
 }
 
-bool ux_trim(UChar *totrim) {
-	bool retval = false;
-	size_t length = u_strlen(totrim);
-	if (totrim && length) {
-		while (length >= 1 && ISSPACE(totrim[length-1])) {
-			length--;
-		}
-		if (ISSPACE(totrim[length])) {
-			totrim[length] = 0;
-			retval = true;
-		}
-		if (ISSPACE(totrim[0])) {
-			retval = true;
-			UChar *current = totrim;
-			while (ISSPACE(current[0])) {
-				current++;
-			}
-			size_t num_spaces = ((current-totrim)-1);
-			for (size_t i=0 ; i<length ; ++i) {
-				totrim[i] = totrim[i+num_spaces+1];
-			}
-		}
-	}
-	return retval;
-}
-
-bool ux_packWhitespace(UChar *totrim) {
-	bool retval = false;
-	size_t length = u_strlen(totrim);
-	if (totrim && length) {
-		UChar *space = 0;
-		UChar *current = totrim;
-		UChar previous = 0;
-		uint32_t num_spaces = 0;
-		while (current[0]) {
-			if (ISSPACE(current[0]) && !ISSPACE(previous)) {
-				current[0] = ' ';
-				space = current+1;
-				num_spaces = 1;
-			}
-			else if (!ISSPACE(current[0]) && ISSPACE(previous)) {
-				if (num_spaces > 1) {
-					num_spaces--;
-					retval = true;
-					length = u_strlen(current);
-					for (size_t i=0 ; i<=length ; ++i) {
-						space[i] = current[i];
-					}
-					current = space;
-				}
-			}
-			else if (ISSPACE(current[0]) && ISSPACE(previous)) {
-				num_spaces++;
-			}
-			previous = current[0];
-			current++;
-		}
-	}
-	return retval;
-}
-
 int ux_isSetOp(const UChar *it) {
 	int retval = S_IGNORE;
 	// u_strncasecmp will mistake set ORA for operator OR

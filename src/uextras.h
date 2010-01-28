@@ -29,8 +29,6 @@ namespace CG3 {
 
 bool ux_isEmpty(const UChar *text);
 
-bool ux_trim(UChar *totrim);
-bool ux_packWhitespace(UChar *totrim);
 int ux_isSetOp(const UChar *it);
 
 bool ux_escape(UChar *target, const UChar *source);

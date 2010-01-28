@@ -76,10 +76,8 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 		}
 	}
 
-	std::vector<UChar> _line(CG3_BUFFER_SIZE, 0);
-	UChar *line = &_line[0];
-	std::vector<UChar> _cleaned(CG3_BUFFER_SIZE, 0);
-	UChar *cleaned = &_cleaned[0];
+	std::vector<UChar> line(1024, 0);
+	std::vector<UChar> cleaned(line.size(), 0);
 	bool ignoreinput = false;
 
 	index();
@@ -104,13 +102,42 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 
 	while (!u_feof(input)) {
 		lines++;
-		// ToDo: Read any line length dynamically
-		u_fgets(line, CG3_BUFFER_SIZE-1, input);
-		u_strcpy(cleaned, line);
-		ux_packWhitespace(cleaned);
+		size_t offset = 0, packoff = 0;
+		// Read as much of the next line as will fit in the current buffer
+		while (u_fgets(&line[offset], line.size()-offset, input)) {
+			// Copy the segment just read to cleaned
+			for (size_t i=offset ; i<line.size() ; ++i) {
+				// Only copy one space character, regardless of how many are in input
+				if (ISSPACE(line[i]) && !ISNL(line[i])) {
+					cleaned[packoff++] = ' ';
+					while (ISSPACE(line[i]) && !ISNL(line[i])) {
+						++i;
+					}
+				}
+				// Break if there is a newline
+				if (ISNL(line[i])) {
+					cleaned[packoff] = 0;
+					goto gotaline; // Oh how I wish C++ had break 2;
+				}
+				if (line[i] == 0) {
+					cleaned[packoff] = 0;
+					break;
+				}
+				cleaned[packoff++] = line[i];
+			}
+			// If we reached this, buffer wasn't big enough. Double the size of the buffer and try again.
+			offset = line.size()-1;
+			line.resize(line.size()*2, 0);
+			cleaned.resize(line.size(), 0);
+		}
 
+gotaline:
+		// Trim trailing whitespace
+		while (cleaned[0] && ISSPACE(cleaned[packoff-1])) {
+			cleaned[packoff-1] = 0;
+			--packoff;
+		}
 		if (!ignoreinput && cleaned[0] == '"' && cleaned[1] == '<') {
-			ux_trim(cleaned);
 			if (cCohort && cSWindow->cohorts.size() >= soft_limit && grammar->soft_delimiters && doesTagMatchSet(cCohort->wordform, *(grammar->soft_delimiters))) {
 				if (cSWindow->cohorts.size() >= soft_limit) {
 					if (verbosity_level > 0) {
@@ -206,7 +233,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 			}
 			cCohort = new Cohort(cSWindow);
 			cCohort->global_number = gWindow->cohort_counter++;
-			cCohort->wordform = addTag(cleaned)->hash;
+			cCohort->wordform = addTag(&cleaned[0])->hash;
 			lCohort = cCohort;
 			lReading = 0;
 			numCohorts++;
@@ -219,8 +246,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 			}
 			addTagToReading(*cReading, cReading->wordform);
 
-			ux_trim(cleaned);
-			UChar *space = cleaned;
+			UChar *space = &cleaned[1];
 			UChar *base = space;
 			if (*space == '"') {
 				space++;
@@ -274,9 +300,8 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 					u_fflush(ux_stderr);
 				}
 			}
-			ux_trim(cleaned);
-			if (u_strlen(cleaned) > 0) {
-				if (u_strcmp(cleaned, stringbits[S_CMD_FLUSH].getTerminatedBuffer()) == 0) {
+			if (cleaned[0]) {
+				if (u_strcmp(&cleaned[0], stringbits[S_CMD_FLUSH].getTerminatedBuffer()) == 0) {
 					u_fprintf(ux_stderr, "Info: FLUSH encountered on line %u. Flushing...\n", numLines);
 					if (cCohort && cSWindow) {
 						cSWindow->appendCohort(cCohort);
@@ -317,28 +342,28 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 					}
 					u_fflush(output);
 				}
-				else if (u_strcmp(cleaned, stringbits[S_CMD_IGNORE].getTerminatedBuffer()) == 0) {
+				else if (u_strcmp(&cleaned[0], stringbits[S_CMD_IGNORE].getTerminatedBuffer()) == 0) {
 					u_fprintf(ux_stderr, "Info: IGNORE encountered on line %u. Passing through all input...\n", numLines);
 					ignoreinput = true;
 				}
-				else if (u_strcmp(cleaned, stringbits[S_CMD_RESUME].getTerminatedBuffer()) == 0) {
+				else if (u_strcmp(&cleaned[0], stringbits[S_CMD_RESUME].getTerminatedBuffer()) == 0) {
 					u_fprintf(ux_stderr, "Info: RESUME encountered on line %u. Resuming CG...\n", numLines);
 					ignoreinput = false;
 				}
-				else if (u_strcmp(cleaned, stringbits[S_CMD_EXIT].getTerminatedBuffer()) == 0) {
+				else if (u_strcmp(&cleaned[0], stringbits[S_CMD_EXIT].getTerminatedBuffer()) == 0) {
 					u_fprintf(ux_stderr, "Info: EXIT encountered on line %u. Exiting...\n", numLines);
-					u_fprintf(output, "%S", line);
+					u_fprintf(output, "%S", &line[0]);
 					goto CGCMD_EXIT;
 				}
 				
 				if (lCohort) {
-					lCohort->text = ux_append(lCohort->text, line);
+					lCohort->text = ux_append(lCohort->text, &line[0]);
 				}
 				else if (lSWindow) {
-					lSWindow->text = ux_append(lSWindow->text, line);
+					lSWindow->text = ux_append(lSWindow->text, &line[0]);
 				}
 				else {
-					u_fprintf(output, "%S", line);
+					u_fprintf(output, "%S", &line[0]);
 				}
 			}
 		}
