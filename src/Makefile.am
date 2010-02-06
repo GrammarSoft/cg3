@@ -16,7 +16,7 @@ cpp_sources = GrammarApplicator_runGrammar.cpp \
 	    GrammarApplicator_reflow.cpp GrammarApplicator_runContextualTest.cpp \
 	    GrammarApplicator_runRules.cpp \
 	    GrammarWriter.cpp icu_uoptions.cpp \
-	    SingleWindow.cpp \
+	    SingleWindow.cpp CohortIterator.cpp \
 	    Window.cpp Cohort.cpp Reading.cpp \
 		$(cpp_shared_sources)
 

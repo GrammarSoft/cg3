@@ -63,6 +63,7 @@ namespace CG3 {
 }
 
 #ifdef __GNUC__
+#ifndef HAVE_BOOST
 #if GCC_VERSION < 40300
 namespace __gnu_cxx {
 	template<> struct hash< CG3::CompositeTag* > {
@@ -71,6 +72,7 @@ namespace __gnu_cxx {
 		}
 	};
 }
+#endif
 #endif
 #endif
 

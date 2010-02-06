@@ -25,36 +25,22 @@
 
 #include "stdafx.h"
 #include "Cohort.h"
-#include "ContextualTest.h"
 
 namespace CG3 {
+	class ContextualTest;
+
 	class CohortIterator : public std::iterator<std::input_iterator_tag, Cohort*> {
 	public:
-		CohortIterator(Cohort *cohort = 0, const ContextualTest *test = 0, bool span = false) :
-		m_span(span),
-		m_cohort(cohort),
-		m_test(test)
-		{
-		}
+		CohortIterator(Cohort *cohort = 0, const ContextualTest *test = 0, bool span = false);
 
-		virtual ~CohortIterator() {
-		}
+		virtual ~CohortIterator();
 
-		bool operator ==(const CohortIterator& other) {
-			return (m_cohort == other.m_cohort);
-		}
-		bool operator !=(const CohortIterator& other) {
-			return (m_cohort != other.m_cohort);
-		}
+		bool operator==(const CohortIterator& other);
+		bool operator!=(const CohortIterator& other);
 
-		virtual CohortIterator& operator++() {
-			m_cohort = 0;
-			return *this;
-		}
+		virtual CohortIterator& operator++();
 
-		Cohort* operator*() {
-			return m_cohort;
-		}
+		Cohort* operator*();
 
 	protected:
 		bool m_span;
@@ -64,78 +50,23 @@ namespace CG3 {
 
 	class TopologyLeftIter : public CohortIterator {
 	public:
-		TopologyLeftIter(Cohort *cohort = 0, const ContextualTest *test = 0, bool span = false) :
-		CohortIterator(cohort, test, span)
-		{
-		}
+		TopologyLeftIter(Cohort *cohort = 0, const ContextualTest *test = 0, bool span = false);
 
-		TopologyLeftIter& operator++() {
-			if (m_cohort->prev && m_cohort->prev->parent != m_cohort->parent && !(m_test->pos & (POS_SPAN_BOTH|POS_SPAN_LEFT) || m_span)) {
-				m_cohort = 0;
-			}
-			else {
-				do {
-					m_cohort = m_cohort->prev;
-				} while (m_cohort && m_cohort->is_enclosed);
-			}
-			return *this;
-		}
+		TopologyLeftIter& operator++();
 	};
 
 	class TopologyRightIter : public CohortIterator {
 	public:
-		TopologyRightIter(Cohort *cohort = 0, const ContextualTest *test = 0, bool span = false) :
-		CohortIterator(cohort, test, span)
-		{
-		}
+		TopologyRightIter(Cohort *cohort = 0, const ContextualTest *test = 0, bool span = false);
 
-		TopologyRightIter& operator++() {
-			if (m_cohort->next && m_cohort->next->parent != m_cohort->parent && !(m_test->pos & (POS_SPAN_BOTH|POS_SPAN_RIGHT) || m_span)) {
-				m_cohort = 0;
-			}
-			else {
-				do {
-					m_cohort = m_cohort->next;
-				} while (m_cohort && m_cohort->is_enclosed);
-			}
-			return *this;
-		}
+		TopologyRightIter& operator++();
 	};
 
 	class DepParentIter : public CohortIterator {
 	public:
-		DepParentIter(Cohort *cohort = 0, const ContextualTest *test = 0, bool span = false) :
-		CohortIterator(cohort, test, span)
-		{
-			++(*this);
-		}
+		DepParentIter(Cohort *cohort = 0, const ContextualTest *test = 0, bool span = false);
 
-		DepParentIter& operator++() {
-			if (m_cohort->dep_parent != std::numeric_limits<uint32_t>::max()) {
-				std::map<uint32_t,Cohort*>::iterator it = m_cohort->parent->parent->cohort_map.find(m_cohort->dep_parent);
-				if (it != m_cohort->parent->parent->cohort_map.end()) {
-					Cohort *cohort = it->second;
-					if (m_seen.find(cohort) == m_seen.end()) {
-						m_seen.insert(m_cohort);
-						if (cohort->parent == m_cohort->parent || (m_test->pos & POS_SPAN_BOTH) || m_span) {
-							m_cohort = cohort;
-						}
-						else if (cohort->parent->number < m_cohort->parent->number && (m_test->pos & POS_SPAN_LEFT)) {
-							m_cohort = cohort;
-						}
-						else if (cohort->parent->number > m_cohort->parent->number && (m_test->pos & POS_SPAN_RIGHT)) {
-							m_cohort = cohort;
-						}
-						else {
-							m_cohort = 0;
-						}
-						return *this;
-					}
-				}
-			}
-			m_cohort = 0;
-			return *this;
-		}
+		DepParentIter& operator++();
 
 	protected:
 		CohortSet m_seen;
@@ -143,37 +74,11 @@ namespace CG3 {
 
 	class CohortSetIter : public CohortIterator {
 	public:
-		CohortSetIter(Cohort *cohort = 0, const ContextualTest *test = 0, bool span = false) :
-		CohortIterator(cohort, test, span),
-		m_origcohort(cohort),
-		m_cohortsetiter(m_cohortset.end())
-		{
-		}
+		CohortSetIter(Cohort *cohort = 0, const ContextualTest *test = 0, bool span = false);
 
-		void addCohort(Cohort *cohort) {
-			m_cohortset.insert(cohort);
-			m_cohortsetiter = m_cohortset.begin();
-		}
+		void addCohort(Cohort *cohort);
 
-		CohortSetIter& operator++() {
-			m_cohort = 0;
-			for (; m_cohortsetiter != m_cohortset.end() ; ++m_cohortsetiter) {
-				Cohort *cohort = *m_cohortsetiter;
-				if (cohort->parent == m_origcohort->parent || (m_test->pos & POS_SPAN_BOTH) || m_span) {
-					m_cohort = cohort;
-					break;
-				}
-				else if (cohort->parent->number < m_origcohort->parent->number && (m_test->pos & POS_SPAN_LEFT)) {
-					m_cohort = cohort;
-					break;
-				}
-				else if (cohort->parent->number > m_origcohort->parent->number && (m_test->pos & POS_SPAN_RIGHT)) {
-					m_cohort = cohort;
-					break;
-				}
-			}
-			return *this;
-		}
+		CohortSetIter& operator++();
 
 	protected:
 		Cohort *m_origcohort;
@@ -183,33 +88,16 @@ namespace CG3 {
 
 	class MultiCohortIterator : public std::iterator<std::input_iterator_tag, Cohort*> {
 	public:
-		MultiCohortIterator(Cohort *cohort = 0, const ContextualTest *test = 0, bool span = false) :
-		m_span(span),
-		m_cohort(cohort),
-		m_test(test),
-		m_cohortiter(0)
-		{
-		}
+		MultiCohortIterator(Cohort *cohort = 0, const ContextualTest *test = 0, bool span = false);
 
-		virtual ~MultiCohortIterator() {
-			delete m_cohortiter;
-		}
+		virtual ~MultiCohortIterator();
 
-		bool operator ==(const MultiCohortIterator& other) {
-			return (m_cohort == other.m_cohort);
-		}
-		bool operator !=(const MultiCohortIterator& other) {
-			return (m_cohort != other.m_cohort);
-		}
+		bool operator==(const MultiCohortIterator& other);
+		bool operator!=(const MultiCohortIterator& other);
 
-		virtual MultiCohortIterator& operator++() {
-			m_cohort = 0;
-			return *this;
-		}
+		virtual MultiCohortIterator& operator++();
 
-		CohortIterator* operator*() {
-			return m_cohortiter;
-		}
+		CohortIterator* operator*();
 
 	protected:
 		bool m_span;
@@ -219,25 +107,11 @@ namespace CG3 {
 		CohortSetIter *m_cohortiter;
 	};
 
-	// ToDo: Iterative deepening depth-first search
 	class ChildrenIterator : public MultiCohortIterator {
 	public:
-		ChildrenIterator(Cohort *cohort = 0, const ContextualTest *test = 0, bool span = false) :
-		MultiCohortIterator(cohort, test, span),
-		m_depth(0)
-		{
-		}
+		ChildrenIterator(Cohort *cohort = 0, const ContextualTest *test = 0, bool span = false);
 
-		ChildrenIterator& operator++() {
-			delete m_cohortiter;
-			m_cohortiter = 0;
-			++m_depth;
-			uint32HashSet *top = &(m_cohort->dep_children);
-			if (!top->empty()) {
-				m_cohortiter = new CohortSetIter(m_cohort, m_test, m_span);
-			}
-			return *this;
-		}
+		ChildrenIterator& operator++();
 
 	protected:
 		uint32_t m_depth;

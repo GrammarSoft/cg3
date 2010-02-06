@@ -99,6 +99,7 @@
     <ClCompile Include="src\BinaryGrammar_read.cpp" />
     <ClCompile Include="src\BinaryGrammar_write.cpp" />
     <ClCompile Include="src\Cohort.cpp" />
+    <ClCompile Include="src\CohortIterator.cpp" />
     <ClCompile Include="src\CompositeTag.cpp" />
     <ClCompile Include="src\ContextualTest.cpp" />
     <ClCompile Include="src\Grammar.cpp" />
