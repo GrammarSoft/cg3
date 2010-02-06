@@ -160,7 +160,7 @@ inline bool ISSPACE(const UChar c) {
 	return (c == 0x20 || c == 0x09 || u_isWhitespace(c));
 }
 
-inline bool ISSTRING(UChar *p, uint32_t c) {
+inline bool ISSTRING(const UChar *p, const uint32_t c) {
 	if (*(p-1) == '"' && *(p+c+1) == '"') {
 		return true;
 	}
