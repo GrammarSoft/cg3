@@ -25,7 +25,8 @@
 
 #ifdef _MSC_VER
 	#define _SECURE_SCL 0
-	#define _CRT_SECURE_NO_DEPRECATE 1
+	#define _ITERATOR_DEBUG_LEVEL 0
+	#define _CRT_SECURE_NO_DEPRECATE
 	#define WIN32_LEAN_AND_MEAN
 	#define VC_EXTRALEAN
 	#define NOMINMAX
