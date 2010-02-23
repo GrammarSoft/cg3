@@ -666,9 +666,31 @@ void ApertiumApplicator::printReading(Reading *reading, UFILE *output) {
 		// Tag::printTagRaw(output, single_tags[reading->baseform]);
 	}
 
-	uint32HashMap used_tags;
+	// Reorder: MAPPING tags should appear before the join of multiword tags,
+	// turn <vblex><actv><pri><p3><pl>+í<pr><@FMAINV><@FOO>$ 
+	// into <vblex><actv><pri><p3><pl><@FMAINV><@FOO>+í<pr>$ 
+	uint32List tags_list;
+	uint32List multitags_list; // everything after a +, until the first MAPPING tag
 	uint32List::iterator tter;
+	bool multi = false;
 	for (tter = reading->tags_list.begin() ; tter != reading->tags_list.end() ; tter++) {
+		const Tag *tag = single_tags[*tter];
+		if (tag->tag[0] == '+') {
+			multi = true;
+		} else if (tag->type & T_MAPPING) {
+			multi = false;
+		}
+		
+		if (multi) {
+			multitags_list.push_back(*tter);
+		} else {
+			tags_list.push_back(*tter);
+		}
+	}
+	tags_list.insert(tags_list.end(),multitags_list.begin(),multitags_list.end());
+		
+	uint32HashMap used_tags;
+	for (tter = tags_list.begin() ; tter != tags_list.end() ; tter++) {
 		if (used_tags.find(*tter) != used_tags.end()) {
 			continue;
 		}
@@ -678,21 +700,20 @@ void ApertiumApplicator::printReading(Reading *reading, UFILE *output) {
 		used_tags[*tter] = *tter;
 		const Tag *tag = single_tags[*tter];
 		if (!(tag->type & T_BASEFORM) && !(tag->type & T_WORDFORM)) {
-			if (tag->tag[0] == '+') {
+ 			if (tag->tag[0] == '+') {
 				u_fprintf(output, "%S", tag->tag);	
-			}
+ 			}
 			else if (tag->tag[0] == '&') {
 				u_fprintf(output, "<");
 				u_fprintf(output, "%S", ux_substr(tag->tag, 2, u_strlen(tag->tag)));	
 				u_fprintf(output, ">");  
-			}
-			else {
+ 			}
+ 			else {
 				u_fprintf(output, "<");
 				u_fprintf(output, "%S", tag->tag);	
 				u_fprintf(output, ">");
-			}
-		}
-
+ 			}
+ 		}
 	}
 }
 
