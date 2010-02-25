@@ -312,7 +312,9 @@ bool GrammarApplicator::doesTagMatchReading(const Reading &reading, const Tag &t
 							regexgrps[i] = UnicodeString(tmp);
 						}
 					}
-					index_regexp_yes.insert(ih);
+					else {
+						index_regexp_yes.insert(ih);
+					}
 				}
 				else {
 					index_regexp_no.insert(ih);
