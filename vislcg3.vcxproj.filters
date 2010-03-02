@@ -136,6 +136,9 @@
     <ClInclude Include="src\macros.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\miniset.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="src\options.h">
       <Filter>Header Files</Filter>
     </ClInclude>

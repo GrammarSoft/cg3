@@ -48,13 +48,14 @@ inline bool uint32HashSet_Intersects(const uint32HashSet &a, const uint32HashSet
 	return false;
 }
 
-inline bool TagSet_SubsetOf_uint32Set(const TagSet &a, const uint32Set &b) {
+template<typename T>
+inline bool TagSet_SubsetOf_TSet(const TagSet &a, const T &b) {
 	/* This test is true 0.1% of the time. Not worth the trouble.
 	if (a.size() > b.size()) {
 		return false;
 	}
 	//*/
-	uint32Set::const_iterator bi = b.begin();
+	typename T::const_iterator bi = b.begin();
 	const_foreach (TagSet, a, ai, ai_end) {
 		while (bi != b.end() && *bi < (*ai)->hash) {
 			++bi;
@@ -409,7 +410,7 @@ bool GrammarApplicator::doesSetMatchReading_tags(const Reading &reading, const S
 			const CompositeTag *ctag = *ster;
 
 			if (!(ctag->is_special|unif_mode)) {
-				match = TagSet_SubsetOf_uint32Set(ctag->tags_set, reading.tags);
+				match = TagSet_SubsetOf_TSet(ctag->tags_set, reading.tags);
 			}
 			else {
 				TagHashSet::const_iterator cter;

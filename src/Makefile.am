@@ -3,7 +3,7 @@ h_sources = Anchor.h BinaryGrammar.h Cohort.h CompositeTag.h ContextualTest.h \
 	    IGrammarParser.h options.h Reading.h Rule.h Set.h CohortIterator.h \
 	    SingleWindow.h stdafx.h Strings.h Tag.h TextualParser.h uextras.h \
 	    version.h Window.h ApertiumApplicator.h inlines.h macros.h cycle.h MatxinApplicator.h \
-		FormatConverter.h
+		FormatConverter.h miniset.h
 
 cpp_shared_sources = Anchor.cpp BinaryGrammar.cpp CompositeTag.cpp \
 	    ContextualTest.cpp Grammar.cpp Rule.cpp \
