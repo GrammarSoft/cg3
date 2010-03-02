@@ -319,7 +319,7 @@ void GrammarApplicator::addTagToReading(Reading &reading, uint32_t utag, bool re
 
 	uint32HashSetuint32HashMap::const_iterator it = grammar->sets_by_tag.find(utag);
 	if (it != grammar->sets_by_tag.end()) {
-		reading.parent->possible_sets.insert(it->second->begin(), it->second->end());
+		reading.parent->possible_sets.insert(it->second.begin(), it->second.end());
 	}
 	if (ordered || reading.tags.find(utag) == reading.tags.end()) {
 		reading.tags.insert(utag);

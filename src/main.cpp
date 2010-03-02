@@ -300,7 +300,7 @@ int main(int argc, char* argv[]) {
 
 	std::cerr << "Grammar has " << grammar.sections.size() << " sections, " << grammar.template_list.size() << " templates, " << grammar.rule_by_line.size() << " rules, " << grammar.sets_list.size() << " sets, " << grammar.tags.size() << " c-tags, " << grammar.single_tags.size() << " s-tags." << std::endl;
 	if (grammar.rules_by_tag.find(grammar.tag_any) != grammar.rules_by_tag.end()) {
-		std::cerr << grammar.rules_by_tag.find(grammar.tag_any)->second->size() << " rules cannot be skipped by index." << std::endl;
+		std::cerr << grammar.rules_by_tag.find(grammar.tag_any)->second.size() << " rules cannot be skipped by index." << std::endl;
 	}
 	if (grammar.has_dep) {
 		std::cerr << "Grammar has dependency rules." << std::endl;

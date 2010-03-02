@@ -96,23 +96,6 @@ Grammar::~Grammar() {
 		}
 	}
 
-	uint32HashSetuint32HashMap::iterator xrule;
-	for (xrule = rules_by_tag.begin() ; xrule != rules_by_tag.end() ; xrule++) {
-		delete xrule->second;
-		xrule->second = 0;
-	}
-
-	uint32HashSetuint32HashMap::iterator xset;
-	for (xset = sets_by_tag.begin() ; xset != sets_by_tag.end() ; xset++) {
-		delete xset->second;
-		xset->second = 0;
-	}
-
-	foreach (uint32Setuint32HashMap, rules_by_set, irbs, irbs_end) {
-		delete irbs->second;
-		irbs->second = 0;
-	}
-
 	foreach (std::vector<ContextualTest*>, template_list, tmpls, tmpls_end) {
 		delete (*tmpls);
 	}
@@ -566,10 +549,7 @@ void Grammar::reindex(bool unused_sets) {
 		}
 		if (iter_rule->second->target) {
 			indexSetToRule(iter_rule->second->line, getSet(iter_rule->second->target));
-			if (rules_by_set.find(iter_rule->second->target) == rules_by_set.end()) {
-				rules_by_set[iter_rule->second->target] = new uint32Set;
-			}
-			rules_by_set[iter_rule->second->target]->insert(iter_rule->first);
+			rules_by_set[iter_rule->second->target].insert(iter_rule->first);
 		}
 		else {
 			u_fprintf(ux_stderr, "Warning: Rule on line %u had no target.\n", iter_rule->second->line);
@@ -580,10 +560,10 @@ void Grammar::reindex(bool unused_sets) {
 	sections.insert(sections.end(), sects.begin(), sects.end());
 
 	if (sets_by_tag.find(tag_any) != sets_by_tag.end()) {
-		sets_any = sets_by_tag.find(tag_any)->second;
+		sets_any = &sets_by_tag[tag_any];
 	}
 	if (rules_by_tag.find(tag_any) != rules_by_tag.end()) {
-		rules_any = rules_by_tag.find(tag_any)->second;
+		rules_any = &rules_by_tag[tag_any];
 	}
 }
 
@@ -620,13 +600,7 @@ void Grammar::indexSetToRule(uint32_t r, Set *s) {
 }
 
 void Grammar::indexTagToRule(uint32_t t, uint32_t r) {
-	if (rules_by_tag.find(t) == rules_by_tag.end()) {
-		std::pair<uint32_t,uint32HashSet*> p;
-		p.first = t;
-		p.second = new uint32HashSet;
-		rules_by_tag.insert(p);
-	}
-	rules_by_tag.find(t)->second->insert(r);
+	rules_by_tag[t].insert(r);
 }
 
 void Grammar::indexSets(uint32_t r, Set *s) {
@@ -662,13 +636,7 @@ void Grammar::indexSets(uint32_t r, Set *s) {
 }
 
 void Grammar::indexTagToSet(uint32_t t, uint32_t r) {
-	if (sets_by_tag.find(t) == sets_by_tag.end()) {
-		std::pair<uint32_t,uint32HashSet*> p;
-		p.first = t;
-		p.second = new uint32HashSet;
-		sets_by_tag.insert(p);
-	}
-	sets_by_tag.find(t)->second->insert(r);
+	sets_by_tag[t].insert(r);
 }
 
 }
