@@ -103,7 +103,7 @@ int main(int argc, char *argv[]) {
 	std::cerr << ", Sets: " << grammar.sets_by_contents.size() << ", Tags: " << grammar.single_tags.size() << std::endl;
 
 	if (grammar.rules_by_tag.find(grammar.tag_any) != grammar.rules_by_tag.end()) {
-		std::cerr << grammar.rules_by_tag.find(grammar.tag_any)->second->size() << " rules cannot be skipped by index." << std::endl;
+		std::cerr << grammar.rules_by_tag.find(grammar.tag_any)->second.size() << " rules cannot be skipped by index." << std::endl;
 	}
 
 	if (grammar.has_dep) {
