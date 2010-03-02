@@ -42,13 +42,6 @@ TextualParser::TextualParser(Grammar &res, UFILE *ux_err) {
 	sets_counter = 100;
 }
 
-TextualParser::~TextualParser() {
-	filename = 0;
-	locale = 0;
-	codepage = 0;
-	result = 0;
-}
-
 int TextualParser::parseTagList(UChar *& p, Set *s, const bool isinline) {
 	while (*p && *p != ';' && *p != ')') {
 		result->lines += SKIPWS(p, ';', ')');

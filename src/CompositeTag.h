@@ -38,7 +38,6 @@ namespace CG3 {
 		TagHashSet tags;
 
 		CompositeTag();
-		~CompositeTag();
 
 		void addTag(Tag *tag);
 

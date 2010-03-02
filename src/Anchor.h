@@ -33,7 +33,6 @@ namespace CG3 {
 		UString name;
 
 		Anchor();
-		~Anchor();
 
 		void setName(const UChar *to);
 		void setName(uint32_t to);

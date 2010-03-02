@@ -31,11 +31,6 @@ BinaryGrammar::BinaryGrammar(Grammar &res, UFILE *ux_err) {
 	grammar = result;
 }
 
-BinaryGrammar::~BinaryGrammar() {
-	result = 0;
-	grammar = 0;
-}
-
 void BinaryGrammar::setCompatible(bool) {
 }
 

@@ -29,9 +29,6 @@ line(0)
 	// Nothing in the actual body...
 }
 
-Anchor::~Anchor() {
-}
-
 void Anchor::setName(uint32_t to) {
 	if (!to) {
 		to = static_cast<uint32_t>(rand());
