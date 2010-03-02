@@ -46,9 +46,6 @@ total_time(0)
 	// Nothing in the actual body...
 }
 
-Set::~Set() {
-}
-
 void Set::setName(uint32_t to) {
 	if (!to) {
 		to = (uint32_t)rand();

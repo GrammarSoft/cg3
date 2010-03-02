@@ -58,7 +58,6 @@ namespace CG3 {
 		uint32Vector sets;
 
 		Set();
-		~Set();
 
 		void setName(uint32_t to = 0);
 		void setName(const UChar *to);

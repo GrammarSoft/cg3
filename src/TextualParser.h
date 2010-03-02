@@ -34,7 +34,6 @@ namespace CG3 {
 	class TextualParser : public IGrammarParser {
 	public:
 		TextualParser(Grammar &result, UFILE *ux_err);
-		~TextualParser();
 
 		void setCompatible(bool compat);
 		void setVerbosity(uint32_t level);
