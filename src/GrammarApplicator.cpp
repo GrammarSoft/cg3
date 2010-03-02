@@ -247,7 +247,7 @@ void GrammarApplicator::printReading(Reading *reading, UFILE *output) {
 	u_fputc('\t', output);
 
 	if (reading->baseform) {
-		ux_fputs(single_tags.find(reading->baseform)->second->tag, output);
+		u_fprintf(output, "%S", single_tags.find(reading->baseform)->second->tag);
 		u_fputc(' ', output);
 	}
 
@@ -267,7 +267,7 @@ void GrammarApplicator::printReading(Reading *reading, UFILE *output) {
 			continue;
 		}
 		if (!(tag->type & T_BASEFORM) && !(tag->type & T_WORDFORM)) {
-			ux_fputs(tag->tag, output);
+			u_fprintf(output, "%S", tag->tag);
 			u_fputc(' ', output);
 		}
 	}
@@ -343,7 +343,7 @@ void GrammarApplicator::printReading(Reading *reading, UFILE *output) {
 				}
 				if (r->name) {
 					u_fputc(':', output);
-					ux_fputs(r->name, output);
+					u_fprintf(output, "%S", r->name);
 				}
 			}
 			else {
@@ -359,13 +359,13 @@ void GrammarApplicator::printReading(Reading *reading, UFILE *output) {
 
 void GrammarApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 	if (window->text) {
-		ux_fputs(window->text, output);
+		u_fprintf(output, "%S", window->text);
 	}
 
 	uint32_t cs = (uint32_t)window->cohorts.size();
 	for (uint32_t c=1 ; c < cs ; c++) {
 		Cohort *cohort = window->cohorts.at(c);
-		ux_fputs(single_tags.find(cohort->wordform)->second->tag, output);
+		u_fprintf(output, "%S", single_tags.find(cohort->wordform)->second->tag);
 		//u_fprintf(output, " %u", cohort->number);
 		u_fputc('\n', output);
 
@@ -383,7 +383,7 @@ void GrammarApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 			}
 		}
 		if (cohort->text) {
-			ux_fputs(cohort->text, output);
+			u_fprintf(output, "%S", cohort->text);
 		}
 	}
 	u_fputc('\n', output);
