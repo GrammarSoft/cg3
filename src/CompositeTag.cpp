@@ -33,9 +33,6 @@ number(0)
 	// Nothing in the actual body...
 }
 
-CompositeTag::~CompositeTag() {
-}
-
 void CompositeTag::addTag(Tag *tag) {
 	tags.insert(tag);
 	tags_set.insert(tag);
