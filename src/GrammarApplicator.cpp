@@ -241,14 +241,14 @@ void GrammarApplicator::printReading(Reading *reading, UFILE *output) {
 	}
 
 	if (reading->deleted) {
-		u_fprintf(output, ";");
+		u_fputc(';', output);
 	}
 
-	u_fprintf(output, "\t");
+	u_fputc('\t', output);
 
 	if (reading->baseform) {
-		u_fprintf(output, "%S", single_tags.find(reading->baseform)->second->tag);
-		u_fprintf(output, " ");
+		ux_fputs(single_tags.find(reading->baseform)->second->tag, output);
+		u_fputc(' ', output);
 	}
 
 	uint32HashMap used_tags;
@@ -267,8 +267,8 @@ void GrammarApplicator::printReading(Reading *reading, UFILE *output) {
 			continue;
 		}
 		if (!(tag->type & T_BASEFORM) && !(tag->type & T_WORDFORM)) {
-			u_fprintf(output, "%S", tag->tag);
-			u_fprintf(output, " ");
+			ux_fputs(tag->tag, output);
+			u_fputc(' ', output);
 		}
 	}
 
@@ -342,31 +342,32 @@ void GrammarApplicator::printReading(Reading *reading, UFILE *output) {
 					u_fprintf(output, ":%u", *iter_hb);
 				}
 				if (r->name) {
-					u_fprintf(output, ":%S", r->name);
+					u_fputc(':', output);
+					ux_fputs(r->name, output);
 				}
 			}
 			else {
 				uint32_t pass = std::numeric_limits<uint32_t>::max() - (*iter_hb);
 				u_fprintf(output, "ENCL:%u", pass);
 			}
-			u_fprintf(output, " ");
+			u_fputc(' ', output);
 		}
 	}
 
-	u_fprintf(output, "\n");
+	u_fputc('\n', output);
 }
 
 void GrammarApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 	if (window->text) {
-		u_fprintf(output, "%S", window->text);
+		ux_fputs(window->text, output);
 	}
 
 	uint32_t cs = (uint32_t)window->cohorts.size();
 	for (uint32_t c=1 ; c < cs ; c++) {
 		Cohort *cohort = window->cohorts.at(c);
-		u_fprintf(output, "%S", single_tags.find(cohort->wordform)->second->tag);
+		ux_fputs(single_tags.find(cohort->wordform)->second->tag, output);
 		//u_fprintf(output, " %u", cohort->number);
-		u_fprintf(output, "\n");
+		u_fputc('\n', output);
 
 		mergeMappings(*cohort);
 
@@ -382,10 +383,10 @@ void GrammarApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 			}
 		}
 		if (cohort->text) {
-			u_fprintf(output, "%S", cohort->text);
+			ux_fputs(cohort->text, output);
 		}
 	}
-	u_fprintf(output, "\n");
+	u_fputc('\n', output);
 	u_fflush(output);
 }
 
