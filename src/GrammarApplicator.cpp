@@ -201,14 +201,20 @@ void GrammarApplicator::disableStatistics() {
 }
 
 Tag *GrammarApplicator::addTag(const UChar *txt) {
+	Taguint32HashMap::iterator it;
+	uint32_t thash = hash_sdbm_uchar(txt);
+	if ((it = single_tags.find(thash)) != single_tags.end() && it->second->tag && u_strcmp(it->second->tag, txt) == 0) {
+		return it->second;
+	}
+
 	Tag *tag = new Tag();
 	tag->parseTagRaw(txt);
 	uint32_t hash = tag->rehash();
 	uint32_t seed = 0;
 	for ( ; seed < 10000 ; seed++) {
 		uint32_t ih = hash + seed;
-		if (single_tags.find(ih) != single_tags.end()) {
-			Tag *t = single_tags[ih];
+		if ((it = single_tags.find(ih)) != single_tags.end()) {
+			Tag *t = it->second;
 			if (t->tag && u_strcmp(t->tag, tag->tag) == 0) {
 				hash += seed;
 				delete tag;
