@@ -60,7 +60,7 @@ namespace CG3 {
 		std::vector<ContextualTest*> template_list;
 		stdext::hash_map<uint32_t, ContextualTest*> templates;
 
-		stdext::hash_map<uint32_t, uint32Set*> rules_by_set;
+		uint32Setuint32HashMap rules_by_set;
 		uint32HashSetuint32HashMap rules_by_tag;
 		uint32HashSetuint32HashMap sets_by_tag;
 

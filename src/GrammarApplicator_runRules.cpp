@@ -46,7 +46,7 @@ void GrammarApplicator::updateValidRules(const uint32Set& rules, uint32Set &inte
 	if (it != grammar->rules_by_tag.end()) {
 		SingleWindow &current = *(reading.parent->parent);
 		Cohort &c = *(reading.parent);
-		const_foreach (uint32HashSet, (*(it->second)), rsit, rsit_end) {
+		const_foreach (uint32HashSet, (it->second), rsit, rsit_end) {
 			updateRuleToCohorts(c, *rsit);
 		}
 
@@ -65,8 +65,8 @@ void GrammarApplicator::indexSingleWindow(SingleWindow &current) {
 			if (grammar->rules_by_set.find(*psit) == grammar->rules_by_set.end()) {
 				continue;
 			}
-			const uint32Set *rules = grammar->rules_by_set.find(*psit)->second;
-			const_foreach (uint32Set, (*rules), rsit, rsir_end) {
+			const uint32Set& rules = grammar->rules_by_set.find(*psit)->second;
+			const_foreach (uint32Set, rules, rsit, rsir_end) {
 				updateRuleToCohorts(*c, *rsit);
 			}
 		}
