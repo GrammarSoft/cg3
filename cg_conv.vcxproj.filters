@@ -32,6 +32,9 @@
     <ClCompile Include="src\Cohort.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\CohortIterator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="src\CompositeTag.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -134,6 +137,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\MatxinApplicator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\miniset.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Reading.h">

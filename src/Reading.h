@@ -25,6 +25,7 @@
 
 #include "stdafx.h"
 #include "Tag.h"
+#include "miniset.h"
 
 namespace CG3 {
 	class Cohort;
@@ -45,14 +46,13 @@ namespace CG3 {
 		Cohort *parent;
 		uint32Vector hit_by;
 		uint32List tags_list;
-		uint32Set tags;
+		uint32MiniSet tags;
 		uint32HashSet tags_plain;
 		uint32HashSet tags_textual;
 		Taguint32HashMap tags_numerical;
 
 		Reading(Cohort *p);
-		~Reading();
-		void duplicateFrom(Reading &r);
+		Reading(const Reading &r);
 
 		uint32_t rehash();
 		static bool cmp_number(Reading *a, Reading *b);
