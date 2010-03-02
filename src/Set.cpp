@@ -53,10 +53,12 @@ void Set::setName(uint32_t to) {
 	if (!to) {
 		to = (uint32_t)rand();
 	}
-	name.reserve(26);
-	name.resize(26);
-	size_t n = u_snprintf(&name[0], 26, "_G_%u_%u_", line, to);
-	name.resize(n);
+	size_t n = sprintf(&cbuffers[0][0], "_G_%u_%u_", line, to);
+	name.clear();
+	name.reserve(n);
+	for (size_t i=0 ; i<n ; ++i) {
+		name.push_back(cbuffers[0][i]);
+	}
 }
 void Set::setName(const UChar *to) {
 	if (to) {
