@@ -132,6 +132,7 @@
     <ClInclude Include="src\CompositeTag.h" />
     <ClInclude Include="src\ContextualTest.h" />
     <ClInclude Include="src\cycle.h" />
+    <ClInclude Include="src\miniset.h" />
     <ClInclude Include="win32\getopt.h" />
     <ClInclude Include="src\Grammar.h" />
     <ClInclude Include="src\GrammarApplicator.h" />

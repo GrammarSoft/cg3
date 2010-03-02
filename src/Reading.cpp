@@ -40,13 +40,33 @@ parent(p)
 	// Nothing in the actual body...
 }
 
-Reading::~Reading() {
+Reading::Reading(const Reading& r) :
+mapped(r.mapped),
+deleted(r.deleted),
+noprint(r.noprint),
+matched_target(false),
+matched_tests(false),
+wordform(r.wordform),
+baseform(r.baseform),
+hash(r.hash),
+hash_plain(r.hash_plain),
+number(r.number),
+mapping(r.mapping),
+parent(r.parent),
+hit_by(r.hit_by),
+tags_list(r.tags_list),
+tags(r.tags),
+tags_plain(r.tags_plain),
+tags_textual(r.tags_textual),
+tags_numerical(r.tags_numerical)
+{
+	// Nothing in the actual body...
 }
 
 uint32_t Reading::rehash() {
 	hash = 0;
 	hash_plain = 0;
-	uint32Set::const_iterator iter;
+	uint32MiniSet::const_iterator iter;
 	for (iter = tags.begin() ; iter != tags.end() ; iter++) {
 		if (!mapping || mapping->hash != *iter) {
 			hash = hash_sdbm_uint32_t(*iter, hash);
@@ -57,26 +77,6 @@ uint32_t Reading::rehash() {
 		hash = hash_sdbm_uint32_t(mapping->hash, hash);
 	}
 	return hash;
-}
-
-void Reading::duplicateFrom(Reading &r) {
-	wordform = r.wordform;
-	baseform = r.baseform;
-	hash = r.hash;
-	hash_plain = r.hash_plain;
-	parent = r.parent;
-	mapped = r.mapped;
-	deleted = r.deleted;
-	noprint = r.noprint;
-	mapping = r.mapping;
-	number = r.number;
-
-	hit_by = r.hit_by;
-	tags_list = r.tags_list;
-	tags = r.tags;
-	tags_plain = r.tags_plain;
-	tags_textual = r.tags_textual;
-	tags_numerical = r.tags_numerical;
 }
 
 bool Reading::cmp_number(Reading *a, Reading *b) {

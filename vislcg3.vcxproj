@@ -137,6 +137,7 @@
     <ClInclude Include="src\IGrammarParser.h" />
     <ClInclude Include="src\inlines.h" />
     <ClInclude Include="src\macros.h" />
+    <ClInclude Include="src\miniset.h" />
     <ClInclude Include="src\options.h" />
     <ClInclude Include="src\Reading.h" />
     <ClInclude Include="src\Rule.h" />
