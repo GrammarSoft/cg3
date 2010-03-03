@@ -634,11 +634,11 @@ int MatxinApplicator::printReading(Reading *reading, UFILE *output, int ischunk,
 				tags = ux_append(tags, ux_substr(tag->tag, 2, u_strlen(tag->tag)));
 				tags = ux_append(tags, ']');
 			}
-			else if(tag->tag[0] == '@') {
+			else if (tag->type & T_MAPPING) {
 				syntags = ux_append(syntags, tag->tag);	
 				syntags = ux_append(syntags, '.');
 			}
-			else if(*tag->tag != *CHUNK) {
+			else if (*tag->tag != *CHUNK) {
 				tags = ux_append(tags, '[');
 				tags = ux_append(tags, tag->tag);
 				tags = ux_append(tags, ']');
@@ -808,7 +808,7 @@ void MatxinApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 		Reading *reading = *rter;
 		for (uint32List::iterator tter = reading->tags_list.begin() ; tter != reading->tags_list.end() ; tter++) {
 			const Tag *tag = single_tags[*tter];
-			if(tag->tag[0] == '@') {
+			if (tag->type & T_MAPPING) {
 				syntags = ux_append(syntags, tag->tag);	
 				syntags = ux_append(syntags, '.');
 			}
