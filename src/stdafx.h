@@ -43,6 +43,7 @@
 #include <cstring>
 #include <list>
 #include <vector>
+#include <string>
 #include <set>
 #include <map>
 #include <stack>

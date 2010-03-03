@@ -269,13 +269,6 @@ inline uint32_t SKIPTO_NOSPAN(UChar *& p, const UChar a) {
 	return s;
 }
 
-inline void ux_fputs(const UChar *str, UFILE *file) {
-	while (*str) {
-		u_fputc(*str, file);
-		++str;
-	}
-}
-
 inline void CG3Quit(const int32_t c = 0, const char* file = 0, const uint32_t line = 0) {
 	if (file && line) {
 		std::cerr << std::flush;
