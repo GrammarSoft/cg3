@@ -7,8 +7,8 @@
   <para>
     First some example tags as we know them from CG-2 and VISLCG:
     <screen>
-    ”&lt;wordform&gt;”
-    ”baseform”
+    "&lt;wordform&gt;"
+    "baseform"
     &lt;W-max&gt;
     ADV
     @error
@@ -18,8 +18,8 @@
   <para>
     Now some example tags as they may look in VISL CG-3:
     <screen>
-    ”&lt;Wordform&gt;”i
-    ”^[Bb]ase.*”r
+    "&lt;Wordform&gt;"i
+    "^[Bb]ase.*"r
     &lt;W&gt;65&gt;
     (&lt;F&gt;=15&gt; &lt;F&lt;=30&gt;)
     !ADV
@@ -113,7 +113,7 @@
     <para>
       The two special values MIN and MAX (both case-sensitive) will scan the cohort for their respective minimum
       or maximum value, and use that for the comparison.
-      Internally, MIN is equal to –2147483648 and MAX is 2147483647, and using those values will also act such.
+      Internally, MIN is equal to -2147483648 and MAX is 2147483647, and using those values will also act such.
       <screen>
         # Select the maximum value of W. Readings with no W will also be removed.
         SELECT (&lt;W=MAX&gt;) ;
