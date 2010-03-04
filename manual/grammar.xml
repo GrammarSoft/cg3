@@ -68,7 +68,7 @@
   
         SECTION
         LIST ThisIsAlsoASet = atag btag ctag ;
-        SET Hubba =  ThisIsASet – (ctag) ;
+        SET Hubba = ThisIsASet - (ctag) ;
         SELECT ThisIsASet IF (-1 (dtag)) ;
   
         LIST AnotherSet =  "&lt;youknowthedrill&gt;" ;
