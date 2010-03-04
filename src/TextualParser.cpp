@@ -788,6 +788,14 @@ int TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 		result->lines += SKIPWS(p, ';', ')');
 		while (*p && *p != ';' && *p != ')') {
 			UChar *n = p;
+			if (*n == '"') {
+				n++;
+				result->lines += SKIPTO_NOSPAN(n, '"');
+				if (*n != '"') {
+					u_fprintf(ux_stderr, "Error: Missing closing \" on line %u!\n", result->lines);
+					CG3Quit(1);
+				}
+			}
 			result->lines += SKIPTOWS(n, ')', true);
 			ptrdiff_t c = n - p;
 			u_strncpy(&gbuffers[0][0], p, c);
@@ -821,6 +829,14 @@ int TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 		result->lines += SKIPWS(p, ';', ')');
 		while (*p && *p != ';' && *p != ')') {
 			UChar *n = p;
+			if (*n == '"') {
+				n++;
+				result->lines += SKIPTO_NOSPAN(n, '"');
+				if (*n != '"') {
+					u_fprintf(ux_stderr, "Error: Missing closing \" on line %u!\n", result->lines);
+					CG3Quit(1);
+				}
+			}
 			result->lines += SKIPTOWS(n, ')', true);
 			ptrdiff_t c = n - p;
 			u_strncpy(&gbuffers[0][0], p, c);
