@@ -12,5 +12,7 @@ ADD (@quotes) ("words"with"quotes"inside") ;
 # This is actually not allowed; cannot have multiple baseforms in a reading, but it's a good test.
 ADD (@normal) ("normal tag") ;
 
+SUBSTITUTE ("word with spaces") ("substituted muchly") ("word with spaces") ;
+
 SECTION
 "<word with spaces>" REMOVE (with) ;
