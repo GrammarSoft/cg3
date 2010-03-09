@@ -80,6 +80,7 @@ GrammarApplicator::GrammarApplicator(UFILE *ux_err) {
 	did_index = false;
 	unsafe = false;
 	ordered = false;
+	show_end_tags = false;
 	gWindow = new Window(this);
 }
 
@@ -253,7 +254,7 @@ void GrammarApplicator::printReading(Reading *reading, UFILE *output) {
 
 	uint32HashMap used_tags;
 	foreach (uint32List, reading->tags_list, tter, tter_end) {
-		if (*tter == endtag || *tter == begintag) {
+		if ((!show_end_tags && *tter == endtag) || *tter == begintag) {
 			continue;
 		}
 		if (!ordered) {

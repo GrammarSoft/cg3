@@ -564,6 +564,9 @@ void GAppSetOpts(CG3::GrammarApplicator &applicator) {
 	if (options[NO_PASS_ORIGIN].doesOccur) {
 		applicator.no_pass_origin = true;
 	}
+	if (options[SHOW_END_TAGS].doesOccur) {
+		applicator.show_end_tags = true;
+	}
 	if (options[OPTIMIZE_UNSAFE].doesOccur) {
 		options[STATISTICS].doesOccur = true;
 	}
