@@ -74,6 +74,7 @@ namespace Options {
 		DEP_BLOCK_CROSSING,
 		MAGIC_READINGS,
 		NO_PASS_ORIGIN,
+		SHOW_END_TAGS,
 		SHOW_UNUSED_SETS,
 		SHOW_TAG_HASHES,
 		SHOW_SET_HASHES,
@@ -138,6 +139,7 @@ namespace Options {
 
 		UOPTION_DEF_D("no-magic-readings",	0, UOPT_NO_ARG, "prevents running rules on magic readings"),
 		UOPTION_DEF_D("no-pass-origin",		'o', UOPT_NO_ARG, "prevents scanning tests from passing the point of origin"),
+		UOPTION_DEF_D("show-end-tags",		'e', UOPT_NO_ARG, "allows the <<< tags to appear in output"),
 		UOPTION_DEF_D("show-unused-sets",	0, UOPT_NO_ARG, "prints a list of unused sets and their line numbers; implies --grammar-only"),
 		UOPTION_DEF_D("show-tag-hashes",	0, UOPT_NO_ARG, "prints a list of tags and their hashes as they are parsed during the run"),
 		UOPTION_DEF_D("show-set-hashes",	0, UOPT_NO_ARG, "prints a list of sets and their hashes; implies --grammar-only")
