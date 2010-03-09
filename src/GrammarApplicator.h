@@ -52,6 +52,7 @@ namespace CG3 {
 		bool no_pass_origin;
 		bool unsafe;
 		bool ordered;
+		bool show_end_tags;
 
 		bool dep_has_spanned;
 		bool dep_delimit;

@@ -3,7 +3,7 @@
 "<word>"
 	"word" mapped @A @B 
 "<word>"
-	"word" notwanted 
-	"word" mapped @D @E @X 
-	"word" notmeeither 
+	"word" notwanted <<< 
+	"word" mapped <<< @D @E @X 
+	"word" notmeeither <<< 
 
