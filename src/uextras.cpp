@@ -130,38 +130,30 @@ UChar *ux_append(UChar *target, const UChar *data) {
 
 UChar *ux_append(UChar *target, const UChar data) {
 	UChar *tmp = 0;
-	UChar *char_tmp = new UChar[2];
-	char_tmp[0] = data;
-	char_tmp[1] = '\0';
 
 	if (!target) {
-		uint32_t length = u_strlen(char_tmp)+1;
-		tmp = new UChar[length];
-		tmp[0] = 0;
-		u_strcat(tmp, char_tmp);
-		delete[] target;
-		target = tmp;
+		tmp = new UChar[2];
+		tmp[0] = data;
+		tmp[1] = 0;
 	}
 	else {
-		uint32_t length = u_strlen(target)+u_strlen(char_tmp)+1;
-		tmp = new UChar[length];
-		tmp[0] = 0;
-		u_strcat(tmp, target);
-		u_strcat(tmp, char_tmp);
+		size_t length = u_strlen(target);
+		tmp = new UChar[length+2];
+		std::copy(target, target+length, tmp);
 		delete[] target;
-		target = tmp;
+		tmp[length] = data;
+		tmp[length+1] = 0;
 	}
-	delete[] char_tmp;
 	return tmp;
 }
 
-UChar *ux_substr(UChar *string, const size_t start, const size_t end) {
+UChar *ux_substr(const UChar *string, const size_t start, const size_t end) {
 	assert((size_t)u_strlen(string) >= end);
 	assert((size_t)u_strlen(string) >= start);
 	assert((size_t)u_strlen(string) >= end-start);
 
 	UChar *tmp = new UChar[end-start+1];
-	memset(tmp, '\0', sizeof(UChar) * (end - start + 1));
+	std::fill(tmp, tmp+(end-start+1), 0);
 	u_strncpy(tmp, &string[start], end-start);
 
 	return tmp;
