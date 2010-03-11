@@ -28,7 +28,7 @@ static const char CG3_COPYRIGHT_STRING[] = "Copyright (C) 2007-2010 GrammarSoft 
 static const uint32_t CG3_VERSION_MAJOR = 0;
 static const uint32_t CG3_VERSION_MINOR = 9;
 static const uint32_t CG3_VERSION_PATCH = 7;
-static const uint32_t CG3_REVISION = 5711;
+static const uint32_t CG3_REVISION = 5715;
 static const uint32_t CG3_TOO_OLD = 5465;
 
 #endif
