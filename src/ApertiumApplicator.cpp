@@ -328,6 +328,8 @@ int ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 			
 			//u_fprintf(output, "# %S\n", wordform);
 			cCohort->wordform = addTag(wordform)->hash;
+			delete[] wordform;
+			wordform = 0;
 			lCohort = cCohort;
 			lReading = 0;
 			wordform = 0;
@@ -384,6 +386,8 @@ int ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 	
 				current_reading = ux_append(current_reading, inchar);
 			} // end while not $
+			delete[] current_reading;
+			current_reading = 0;
 
 			if (!cReading->baseform) {
 				u_fprintf(ux_stderr, "Warning: Line %u had no valid baseform.\n", numLines);
@@ -517,6 +521,8 @@ void ApertiumApplicator::processReading(Reading *cReading, UChar *reading_string
 //	u_fprintf(ux_stderr, ">> b: %S s: %S\n", base, suf);
 
 	uint32_t tag = addTag(base)->hash;
+	delete[] base;
+	base = 0;
 	cReading->baseform = tag;
 	addTagToReading(*cReading, tag);
 
@@ -589,6 +595,8 @@ void ApertiumApplicator::processReading(Reading *cReading, UChar *reading_string
 				newtag = ux_append(newtag, tmptag);
 			}
 			uint32_t tag = addTag(newtag)->hash;
+			delete[] newtag;
+			newtag = 0;
 			addTagToReading(*cReading, tag); // Add the baseform to the tag
 
 			delete[] tmptag;
@@ -657,6 +665,7 @@ void ApertiumApplicator::printReading(Reading *reading, UFILE *output) {
 		
 		u_fprintf(output, "%S", bf);
 		
+		delete[] bf;
 		bf = 0;
 		
 		// Tag::printTagRaw(output, single_tags[reading->baseform]);
@@ -734,8 +743,9 @@ void ApertiumApplicator::printSingleWindow(SingleWindow *window, UFILE *output) 
 		if(print_word_forms == true) {
 			// Lop off the initial and final '"' characters 
 			UChar *wf = single_tags[cohort->wordform]->tag;
-			u_fprintf(output, "%S/", ux_substr(wf, 2, u_strlen(wf)-2));
-			wf = 0;
+			wf = ux_substr(wf, 2, u_strlen(wf)-2);
+			u_fprintf(output, "%S/", wf);
+			delete[] wf;
 		}
 
 		//Tag::printTagRaw(output, single_tags[cohort->wordform]);
