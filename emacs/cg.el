@@ -104,6 +104,10 @@
     (modify-syntax-entry ?\n ">#" table)
     ;; todo: better/possible to conflate \\s_ and \\sw into one class?
     (modify-syntax-entry ?@ "_" table)
+    ;; using syntactic keywords for "
+    (modify-syntax-entry ?\" "." table)
+    (modify-syntax-entry ?» "." table)
+    (modify-syntax-entry ?« "." table)
     table))
 
 ;;;###autoload
@@ -143,13 +147,19 @@ Only does basic syntax highlighting at the moment."
 
 
 (defconst cg-font-lock-syntactic-keywords
-  ;; A `#' begins a comment when it is unquoted and at the beginning
-  ;; of a word; otherwise it is a symbol.
-  ;; For this to work, we also add # into the syntax-table as a
-  ;; comment, with \n to turn it off, and also need
-  ;; (set (make-local-variable 'parse-sexp-lookup-properties) t)
-  ;; to avoid parser problems.
-  '(("[^|&;<>()`\\\"' \t\n]\\(#+\\)" 1 "_")
+  ;; We can have ("words"with"quotes"inside"")! Quote rule: is it a ",
+  ;; if yes then jump to next unescaped ". Then regardless, jump to
+  ;; next whitespace, but don't cross an unescaped )
+  '(("\\(\"\\)[^\"\n]*\\(?:\"\\(?:\\\\)\\|[^) \n\t]\\)*\\)?\\(\"\\)\\(r\\(i\\)?\\)?[); \n\t]"
+     (1 "\"")
+     (2 "\""))
+    ;; A `#' begins a comment when it is unquoted and at the beginning
+    ;; of a word; otherwise it is a symbol.
+    ;; For this to work, we also add # into the syntax-table as a
+    ;; comment, with \n to turn it off, and also need
+    ;; (set (make-local-variable 'parse-sexp-lookup-properties) t)
+    ;; to avoid parser problems.
+    ("[^|&;<>()`\\\"' \t\n]\\(#+\\)" 1 "_")
     ;; fail-fast, at the beginning of a word:
     ("[( \t\n]\\(\\^\\)" 1 "'")))
 
