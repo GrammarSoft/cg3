@@ -340,7 +340,12 @@ gotaline:
 						delete tmp;
 						gWindow->previous.pop_front();
 					}
+					u_fprintf(output, "%S", &line[0]);
+					line[0] = 0;
 					u_fflush(output);
+					u_fflush(ux_stderr);
+					fflush(stdout);
+					fflush(stderr);
 				}
 				else if (u_strcmp(&cleaned[0], stringbits[S_CMD_IGNORE].getTerminatedBuffer()) == 0) {
 					u_fprintf(ux_stderr, "Info: IGNORE encountered on line %u. Passing through all input...\n", numLines);
@@ -356,14 +361,16 @@ gotaline:
 					goto CGCMD_EXIT;
 				}
 				
-				if (lCohort) {
-					lCohort->text = ux_append(lCohort->text, &line[0]);
-				}
-				else if (lSWindow) {
-					lSWindow->text = ux_append(lSWindow->text, &line[0]);
-				}
-				else {
-					u_fprintf(output, "%S", &line[0]);
+				if (line[0]) {
+					if (lCohort) {
+						lCohort->text = ux_append(lCohort->text, &line[0]);
+					}
+					else if (lSWindow) {
+						lSWindow->text = ux_append(lSWindow->text, &line[0]);
+					}
+					else {
+						u_fprintf(output, "%S", &line[0]);
+					}
 				}
 			}
 		}
