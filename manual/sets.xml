@@ -5,7 +5,7 @@
   <title>Sets</title>
 
   <para>
-    Describes various magic sets.
+    Describes various magic sets and unification strategies.
   </para>
 
   <section id="set-any">
@@ -70,14 +70,14 @@
     </para>
   </section>
 
-  <section id="set-unification">
-    <title>Set Unification</title>
+  <section id="tag-unification">
+    <title>Tag Unification</title>
     <para>
       Each time a rule is run on a reading, the tag that first satisfied the set must be the same
       as all subsequent matches of the same set in tests.
     </para>
     <para>
-      A set is marked as a unification set by prefixing $$ to the name when used in a rule.
+      A set is marked as a tag unification set by prefixing $$ to the name when used in a rule.
       You can only prefix existing sets; inline sets in the form of $$(tag tags) will not work,
       but $$Set + $$OtherSet will; that method will make 2 unification sets, though.
     </para>
@@ -102,8 +102,7 @@
     <para>
       Caveat: The exploded form is not identical to the unified form. Unification rules are run as normal
       rules, meaning once per reading. The exploded form would be run in-order as seperate rules per reading.
-      There may be side effects due to that. Also, unification of complex and deep sets have not been
-      thoroughly tested yet, so expect some issues.
+      There may be side effects due to that.
     </para>
     <para>
       Caveat 2: The behavior of this next rule is undefined:
@@ -118,8 +117,48 @@
 
         # Only refer to $$UNISET in a single linked chain of tests
         SELECT (tag) IF (0 $$UNISET LINK -2* $$UNISET LINK 1** $$UNISET) ;
+        
+        # Use rule option KEEPORDER
+        SELECT KEEPORDER (tag) IF (0 $$UNISET) (-2* $$UNISET) (1** $$UNISET) ;
       </screen>
       Having the unifier in the target is usually the best way to enforce behavior.
+    </para>
+  </section>
+
+  <section id="set-unification">
+    <title>Top-Level Set Unification</title>
+    <para>
+      Each time a rule is run on a reading, the top-level set that first satisfied the match must be the same
+      as all subsequent matches of the same set in tests.
+    </para>
+    <para>
+      A set is marked as a top-level set unification set by prefixing &amp;&amp; to the name when used in a rule.
+      You can only prefix existing sets; inline sets in the form of &amp;&amp;(tag tags) will not work,
+      but &amp;&amp;Set + &amp;&amp;OtherSet will; that method will make 2 unification sets, though.
+    </para>
+    <para>
+      For example
+      <screen>
+        LIST SEM-HUM = &lt;human&gt; &lt;person&gt; &lt;sapien&gt; ;
+        LIST SEM-ANIM = &lt;animal&gt; &lt;beast&gt; &lt;draconic&gt; ;
+        LIST SEM-INSECT = &lt;insect&gt; &lt;buzzers&gt; ;
+        SET SEM-SMARTBUG = SEM-INSECT + (&lt;sapien&gt;) ;
+        SET SAME-SEM = SEM-HUM OR SEM-ANIM + SEM-SMARTBUG ; # During unification, OR and + are ignored
+        SELECT &amp;&amp;SAME-SEM (-1 KC) (-2C &amp;&amp;SAME-SEM) ;
+      </screen>
+      which would logically be the same as
+      <screen>
+        SELECT SEM-HUM (-1 KC) (-2C SEM-HUM) ;
+        SELECT SEM-ANIM (-1 KC) (-2C SEM-ANIM) ;
+        SELECT SEM-SMARTBUG (-1 KC) (-2C SEM-SMARTBUG) ;
+      </screen>
+    </para>
+    <para>
+      Note that the unification only happens on the first level of sets, hence named top-level unification.
+      Note also that the set operators in the prefixed set are ignored during unification.
+    </para>
+    <para>
+      The same caveats as for <link linkend="tag-unification">Tag Unification</link> apply.
     </para>
   </section>
 
