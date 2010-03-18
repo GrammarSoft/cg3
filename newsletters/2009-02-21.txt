@@ -1,0 +1,22 @@
+A new release of CG-3 has been tagged v0.9.7.4545
+
+Main site is http://beta.visl.sdu.dk/cg3.html
+Google Group is http://groups.google.com/group/constraint-grammar
+Source snapshots available at http://beta.visl.sdu.dk/download/vislcg3/
+Windows binary is at http://beta.visl.sdu.dk/download/vislcg3/vislcg3-0.9.7.4545-win32.zip
+Mirror at http://groups.google.com/group/constraint-grammar/files
+
+New features:
+- Implemented INCLUDE statement to load and parse other grammar files. See http://beta.visl.sdu.dk/cg3/chunked/grammar.html#grammar-include for details.
+- Implemented MIN and MAX for numerical values to more easily select/ remove readings based on them without having to know the range. See http://beta.visl.sdu.dk/cg3/chunked/tags.html#numerical-matches
+- Parenthesis Enclosures now works with any tag, not just wordforms.
+
+Bug fixes:
+- Fixed duplicate tags sometimes surviving. This would confuse substitute rules.
+- Fixed endless loop for SETPARENT/CHILD when looking at dependencies for an attachment target.
+- Fixed handling of multiple readings with dependency information. Now, last seen dependency tag in a cohort wins, regardless of how many readings there are.
+- Added an error on empty tag lists for rules that use them (map, add, substitute, replace, relations, etc).
+- Added a content hash check for sets. It should never happen, but just in case.
+
+-- Tino Didriksen
+CG-3 Developer

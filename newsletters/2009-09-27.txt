@@ -1,0 +1,35 @@
+A new release of CG-3 has been tagged v0.9.7.5129.
+
+Main site is http://beta.visl.sdu.dk/cg3.html
+Google Group is http://groups.google.com/group/constraint-grammar
+Source snapshots available at http://beta.visl.sdu.dk/download/vislcg3/
+Windows binary is at http://beta.visl.sdu.dk/download/vislcg3/vislcg3-0.9.7.5129-win32.zip
+Mirror at http://groups.google.com/group/constraint-grammar/files
+
+Deprecation:
+- For dependencies and relations, it is currently allowed to write "cC (tag)" meaning you want all children to have (tag). You should instead now write "ALL c (tag)". Similarly, "NOT c (tag)" should be rewritten to be "NONE c (tag)". A warning is thrown showing you which positions must be changed.
+In future versions of CG-3, "cC (tag)" will change meaning to allow constructs such as "ALL cC (tag)" demanding that all readings of all children must match (tag).
+
+New Features:
+- Relations can now be created and referred to in a manner similar to dependencies. See http://beta.visl.sdu.dk/cg3/chunked/relations.html for more information.
+- Variable Strings, allowing you to map/add/replace/append/substitute with tags created on the fly from grouping regular expressions in the condition or target. See http://beta.visl.sdu.dk/cg3/chunked/tags.html#variable-strings for more information.
+- New cmdline option --dep-no-crossing which will prevent the creation of dependencies if those would cause the tree to have crossing branches. This can be countered by marking the rule ALLOWCROSS. See http://beta.visl.sdu.dk/cg3/chunked/rules.html#rule-options-allowcross
+- New cmdline option --ordered which will allow multiple identical tags to survive in the output. This is work-in-progress to a full order-matters mode.
+
+Optimization:
+- Removed a reading-level index, resulting in a rough 20% speed boost.
+- Minor other improvements and slightly lower memory usage.
+
+Changes:
+- Cohorts no longer remember the position of text that was mixed between its readings; it is now all appended and output together after all the cohort's readings.
+- SETPARENT/CHILD/RELATION now mark their touched readings as visible, so magic readings touched by these will be output.
+- Deep dependency scans now detect and break on endless loops.
+- Tightened some assumptions about which tags are textual. Previously any tags starting with " or < was considered textual; it now checksfor the matching " or > at the end of the tag.
+- Unification should now be considerably more predictable when dealing with complex sets and multiple unification sets in a single rule.
+- Tracing the relation rules will output which relation they are responsible for in the form of SETRELATIONS(rel,ler):1234:name
+
+Bug Fixed:
+- Fixed a few more segfaults to do with dependency handling.
+
+-- Tino Didriksen
+CG-3 Developer

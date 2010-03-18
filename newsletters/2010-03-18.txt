@@ -1,0 +1,36 @@
+A new release of CG-3 has been tagged v0.9.7.5729.
+
+Main site is http://beta.visl.sdu.dk/cg3.html
+Google Group is http://groups.google.com/group/constraint-grammar
+Source snapshots available at http://beta.visl.sdu.dk/download/vislcg3/
+Windows binary is at http://beta.visl.sdu.dk/download/vislcg3/vislcg3-0.9.7.5729-win32.zip
+Mirror at http://groups.google.com/group/constraint-grammar/files
+
+Optimizations:
+- Parsing grammars is now 50% faster. This drastically narrows the gap between textual and binary grammars to a mere twice as fast (down from 10x faster).
+- Applying grammars is 2% faster, mainly due to I/O related optimizations. For grammars with very few rules this is upwards 20% faster, but can't expect more than 2%.
+
+New Features:
+- Set Unification (prefix &&) which unifies at a set level, as a counterpart to $$ which does at tag level. See http://beta.visl.sdu.dk/cg3/chunked/sets.html#set-unification
+- New contextual position A which marks the cohort that should be attached to. See http://beta.visl.sdu.dk/cg3/chunked/contexts.html#test-mark-attach-to
+- New sets _TARGET_, _MARK_, and _ATTACHTO_ which only match if the current cohort is the target, X, or A respectively. See http://beta.visl.sdu.dk/cg3/chunked/sets.html#set-target
+- Allowed linking from NOT tests, by stating that it should fail when the cohort to be linked from doesn't exist.
+- New cmdline flag --trace-encl to debug enclosure levels.
+- New cmdline flag -e, --show-end-tags that allows the <<< tags to appear in output.
+- New tool cg-conv to convert from VISL to Apertium format on-the-fly.
+- Emacs: Kevin B. Unhammer added a major mode for syntax highlighting of CG-3 files in Emacs. Look in the emacs/ folder in the trunk.
+
+Changes:
+- Windows: Updated project files to MSVC++ 2010
+- Windows: Upgraded ICU to 4.4.0
+- Auto-generate baseforms from wordforms when they're missing. Is linked to magic readings, so can be disabled with --no-magic-readings
+- Renamed prefix $$ to Tag Unification since && is more deserving of the Set Unification name.
+- Made tag lists for MAP, ADD, REPLACE, APPEND, SUBSTITUTE respect tags with spaces in them.
+
+Bug fixes:
+- Fix --ordered to disallow duplicate mapping tags.
+- Fixed bug where barriers for overridden templates where not saved in binary format.
+- Fix enclosures bug where cohort numbers would get mixed up and match in bizarre manners.
+
+-- Tino Didriksen
+CG-3 Developer

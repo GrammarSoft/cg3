@@ -1,0 +1,26 @@
+A new release of CG-3 has been tagged v0.9.6.3991
+
+Main site is http://beta.visl.sdu.dk/cg3.html
+Google Group is http://groups.google.com/group/constraint-grammar
+Source snapshots available at http://beta.visl.sdu.dk/download/vislcg3/
+Windows binary is at http://beta.visl.sdu.dk/download/vislcg3/vislcg3-0.9.6.3991-win32.zip
+
+New tool:
+-- I have added the script cg3-autobin.pl which will be installed alongside the normal binaries during 'make install'. It is a thin Perl wrapper for the vislcg3 binary that will automatically compile the grammar to binary form and reuse it on subsequent calls. This should make it faster to develop and test grammars.
+In most cases it is enough to replace vislcg3 with cg3-autobin.pl in your call; all arguments can remain the same.
+The binary grammar is compiled in the environment's temporary folder with a filename of components Hash.Revision.ModificationTime.bin3 - if any arguments changes, or the revision, or the grammar's modification time, the binary grammar will be recompiled with a new name. This may litter your temp folder considerably if you edit grammars often and do not have cleanup services.
+The Perl script requires modules File::Spec, Getopt::Long, and Digest::SHA. It is not well tested...but the worst it could do is eat your temp folder.
+
+Changes:
+-- Binary is now linked, tested, and shipped with ICU 4.0. CG-3 can build with ICU 3.6, 3.8, or 4.0 on all platforms.
+-- Around 5% speed optimization by checking the cohort index when running contextual tests.
+-- Disallowed newlines in baseforms, but kept other whitespace allowed. If you forget to close a "tag it will now throw an error instead of eating subsequent lines until it can find a matching ".
+-- Formally deprecated 'AND' in favour of 'LINK 0'. Will now throw an error if AND is found.
+-- Allowed more operators for numeric tags. See http://beta.visl.sdu.dk/cg3/chunked/tags.html#numerical-matches for details and tables.
+
+Bugfixes:
+-- Fixed parsing of numeric tags when value was 0.
+-- Fixed some <a:b> style tags being wrongfully detected as numeric even when no numbers were in them.
+
+-- Tino Didriksen
+CG-3 Developer
