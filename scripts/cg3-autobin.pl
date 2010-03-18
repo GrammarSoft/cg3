@@ -1,4 +1,5 @@
 #!/usr/bin/perl
+BEGIN { $| = 1; }
 use warnings;
 use strict;
 use File::Spec;
