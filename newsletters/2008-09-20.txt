@@ -1,0 +1,22 @@
+A new release of CG-3 has been tagged v0.9.7.4031
+
+Main site is http://beta.visl.sdu.dk/cg3.html
+Google Group is http://groups.google.com/group/constraint-grammar
+Source snapshots available at http://beta.visl.sdu.dk/download/vislcg3/
+Windows binary is at http://beta.visl.sdu.dk/download/vislcg3/vislcg3-0.9.7.4031-win32.zip
+
+Big new feature is parenthesis handling. See http://beta.visl.sdu.dk/cg3/chunked/parentheses.html for details, which also has 4 new reserved keywords PARENTHESES, _LEFT_, _RIGHT_, and _PAREN_.
+
+Other new features:
+-- The --sections parameter now takes lists and ranges of sections to run, enabling users to skip sections. Documentation at http://beta.visl.sdu.dk/cg3/chunked/sections.html#sections-range
+
+Changes:
+-- On Win32, renamed cg_proc.exe and cg_comp.exe to be cg-proc.exe and cg-comp.exe in order to keep wrapper scripts compatible across platforms. Not even sure why I had underscores in the first place.
+-- Now parses and stores ANCHOR, JUMP, and EXECUTE, but they are not yet used by the grammar; will have that functionality in next release.
+-- Added mirror of core files at http://groups.google.com/group/constraint-grammar/files
+
+Documentation changes:
+-- Added command line reference http://beta.visl.sdu.dk/cg3/chunked/cmdreference.html
+
+-- Tino Didriksen
+CG-3 Developer

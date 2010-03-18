@@ -1,0 +1,27 @@
+A new release of CG-3 has been tagged v0.9.7.4879.
+
+Main site is http://beta.visl.sdu.dk/cg3.html
+Google Group is http://groups.google.com/group/constraint-grammar
+Source snapshots available at http://beta.visl.sdu.dk/download/vislcg3/
+Windows binary is at http://beta.visl.sdu.dk/download/vislcg3/vislcg3-0.9.7.4879-win32.zip
+Mirror at http://groups.google.com/group/constraint-grammar/files
+
+Optimizations:
+- All the platforms building with GCC 4.3.0 or newer will benefit from std::tr1::unordered_map and std::tr1::unordered_set which yields a 15% faster execution speed than previous GCC version's __gnu_cxx::hash_map.
+- Windows build is now made with _SECURE_SCL disabled, which yields 15-35% faster execution speed.
+- Parsing grammars is at least 15% faster even without above capabilties, due to cleanup of parsing algorithm.
+- Disambiguation is similarly at least 2% faster, due to change of subset matching algorithm.
+- Done a full Valgrind memory check and fixed all found leaks (were only minor ones).
+
+Changes:
+- Compilation is now with -Wextra for the fun of it. GCC 4.4.0 and newer may complain about not checking return value of a lot of functions, but I'm ignoring those for now...
+- Windows binary is now built with ICU 4.2.0.1.
+- Now builds and installs cleanly on FreeBSD 7.2.
+- Source has been considerably cleaned up by removing the Recycler class and cleaning up what is included where. Still a bit of work to be done, though.
+- Position overridden templates now also allow overriding the first BARRIER and CBARRIER, plus they will by default have no-pass-origin enabled. Documentation is currently missing for this.
+
+Bug fixes:
+- Position overridden templates now work in both directions.
+
+-- Tino Didriksen
+CG-3 Developer

@@ -1,0 +1,32 @@
+A new release of CG-3 has been tagged v0.9.7.779 in preparation for the NoDaLiDa 2009 CG-3 Workshop ( http://giellatekno.uit.no/cg/09/ ) which takes place tomorrow.
+
+Main site is http://beta.visl.sdu.dk/cg3.html
+Google Group is http://groups.google.com/group/constraint-grammar
+Source snapshots available at http://beta.visl.sdu.dk/download/vislcg3/
+Windows binary is at http://beta.visl.sdu.dk/download/vislcg3/vislcg3-0.9.7.4779-win32.zip
+Mirror at http://groups.google.com/group/constraint-grammar/files
+
+New features:
+- Implemented shorthand templates in the form of [a, b, c].
+- Implemented position override for templates which makes them behave almost identical to CG-1 templates.
+- See http://beta.visl.sdu.dk/cg3/chunked/templates.html for documentation on templates.
+
+- Rule options KEEPORDER, VARYORDER which affects whether re-ordering of contextual tests is allowed. When using set unification in the tests but not the target, it is advised to also have KEEPORDER on the rule to prevent side effects.
+- Rule options ENCL_INNER, ENCL_OUTER, ENCL_FINAL, ENCL_ANY which affects when a rule is run under the influence of enclosures.
+- Rule options REMEMBERX, RESETX which affects the behavior of the contextual position options X and x.
+- See http://beta.visl.sdu.dk/cg3/chunked/rules.html#rule-options for a full list of rule options and futher explanation.
+
+- Implemented runtime option --show-unused-sets which compiles the grammar and then outputs a list of unused sets. Useful for cleaning up grammars.
+
+Changes:
+- Changed input stream commands from CGCMD:* to <STREAMCMD;*> to better co-exist with existing toolchains.
+- Dependency output format and behavior has changed to now differentiate between being attached to the root (cohort 0) and not being attached at all. When not attached at all, the output will show an attachment to the cohort itself, a'la #3->3. This change was necessary to prevent sibling checks from declaring everything sibling to everything else simply because it was all default attached to the same root.
+- Set names may no longer end in comma , or right-square-bracket ]. This was necessary for the shorthand templates to function properly.
+
+Bug fixes:
+- Fixed the hash function to be cross-arch compatible. It previously hashed differently on big-endian versus little-endian machines. Binary grammars are now fully endian neutral.
+- Fixed bug where only the first sentence was run when enclosures were in effect.
+- Fixed parsing of empty tags. Such tags will now throw an error.
+
+-- Tino Didriksen
+CG-3 Developer
