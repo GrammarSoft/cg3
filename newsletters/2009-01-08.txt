@@ -1,0 +1,21 @@
+A new release of CG-3 has been tagged v0.9.7.4410
+
+Main site is http://beta.visl.sdu.dk/cg3.html
+Google Group is http://groups.google.com/group/constraint-grammar
+Source snapshots available at http://beta.visl.sdu.dk/download/vislcg3/
+Windows binary is at http://beta.visl.sdu.dk/download/vislcg3/vislcg3-0.9.7.4410-win32.zip
+Mirror at http://groups.google.com/group/constraint-grammar/files
+
+Major change of this release is the handling of hash collisions. Output from previous releases should quite frankly be considered suspect in certain areas as it could silently drop or mangle certain tags that clashed with previous tags with the same hash.
+
+CG-3 now handles hash collisions through linear probing, and with the better hash function by Paul Hsieh there are much fewer such collisions.
+
+This also bumps the binary grammar version, so existing binary grammars should be recompiled.
+
+Bug fixes:
+- Several dependency related segfaults have been fixed.
+- Some infinite loop prevention regarding dependency deep scans.
+- cg3-autobin.pl now properly pipes data. It would bundle it all up in a single variable before.
+
+-- Tino Didriksen
+CG-3 Developer

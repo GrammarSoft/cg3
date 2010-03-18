@@ -1,0 +1,32 @@
+A new release of VISL CG-3 has been tagged v0.9.5.3617
+Main site is http://beta.visl.sdu.dk/cg3.html
+Source snapshots available at http://beta.visl.sdu.dk/download/vislcg3/
+
+Compatibility:
+- It is possible to write endless loops into the grammar. See http://beta.visl.sdu.dk/cg3/chunked/compatibility.html#gotcha-endless-loops for a heads-up.
+- Binary grammar revision has been bumped and is not compatible in any direction.
+
+Changes:
+- Templating has been implemented and works as detailed in previous post http://groups.google.com/group/constraint-grammar/browse_thread/thread/d73714851a14045d
+Example of how it works can also be seen in the ./test/T_Templates/ folder of the source.
+Documentation placeholder: http://beta.visl.sdu.dk/cg3/chunked/templates.html
+
+- Francis Tyers has added support for the Apertium toolchain format via the cg-comp and cg-proc utilities.
+
+- Tyers has also added proper configure and make scripts, so fresh installations can be done via a more familiar
+$ cd trunk && ./autogen.sh && make && ./test/runall.pl
+...check all tests are good...
+$ sudo make install
+If that should fail the old ./compile-x.sh scripts are still there for now; expect them to vanish in next release though.
+
+- All regression tests now run both a normal version and are re-run with binary grammars. All tests now print e.g. "Success Success." where first is the normal result and second is the binary result. If either fails, the whole test should be considered failed.
+
+- SUBSTITUTE can now use the magic tag * to denote nothing as a replacement. Useful for clean removal of tags from a reading. See http://beta.visl.sdu.dk/cg3/chunked/rules.html#substitute
+
+Bug fixes:
+- --single-run should now actually work.
+- Made it compile on latest Visual Studio Express (MSVC 9.0). Microsoft has the bright idea of stealing the LOCALE_ALL keyword, so had to change mine.
+- Fixed nearest-neighbor scan with barriers. Barriers would block in both directions even if only met in one direction.
+
+-- Tino Didriksen
+CG-3 Developer

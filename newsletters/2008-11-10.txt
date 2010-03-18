@@ -1,0 +1,55 @@
+A new release of CG-3 has been tagged v0.9.7.4292
+
+Main site is http://beta.visl.sdu.dk/cg3.html
+Google Group is http://groups.google.com/group/constraint-grammar
+Source snapshots available at http://beta.visl.sdu.dk/download/vislcg3/
+Windows binary is at http://beta.visl.sdu.dk/download/vislcg3/vislcg3-0.9.7.4292-win32.zip
+Mirror at http://groups.google.com/group/constraint-grammar/files
+
+Optimizations:
+- Sped up basic sets by 15%. Basic sets are those without CG-3 features such as regexp, failfast, and unification - should be the majority of existing sets, thus most will benefit from it.
+
+- Sped up regexp matches.
+
+- Sped up set matching by omitting unused sets from the indexes.
+
+- Failed contextual tests are now moved to the head of the line, in the hope they will fail faster in the future; only had a 0.5% speed boost on tested grammars, but it will help prevent worst case scenarios.
+
+
+New features:
+- Dependency positional options to allow checking self, checking grandchildren/grandparents, and different handling of NOT. See http://beta.visl.sdu.dk/cg3/chunked/dependencies.html#dep-ct-self and rest of that page.
+
+- Added special unification tags for wordforms "<.*>"r , baseforms ".*"r , and secondary tags <.*>r . See http://groups.google.com/group/constraint-grammar/browse_thread/thread/23ad2fc64b3802eb for details.
+
+- Added contextual option X and x for setting a mark and jumping back to that mark. Can be used to reduce the amount of duplicate testing that needs to be done and to make rules more strict. See http://beta.visl.sdu.dk/cg3/chunked/contexts.html#test-mark for details.
+
+- Added contextual option D and d for looking at deleted and delayed readings. See http://beta.visl.sdu.dk/cg3/chunked/contexts.html#test-deleted for details.
+
+- Added rule options that affect how a rule behaves, for example REMOVE UNSAFE to remove even if it is the last reading of the cohort. See http://beta.visl.sdu.dk/cg3/chunked/rules.html#rule-options for details.
+
+- Flag --unsafe now works.
+
+- Added flag --optimize-unsafe which after processing will eliminate unused rules from the grammar. Useful for generating a binary grammar for distribution.
+
+- Added flag --optimize-safe which moves unused rules to the end of their section; this can cause different behavior on a re-run and doesn't really make it much faster.
+
+
+Changes:
+- SETPARENT/SETCHILD now uses the deep cohort as their TO target. A deep cohort is the last linked cohort of the first test. E.g. rule SETPARENT (one) TO (1* (two) LINK 1* (three)) (1 (four)) would attach to (one) to (three).
+
+- SETPARENT/SETCHILD will now look onwards if the attachment would violate the loop constraint.
+
+- Under --statistics, all rules are renamed to have their original line number as name. That should make them easier to correlate to the original grammar from the --grammar-out format.
+
+- Also under --statistics, the timing has been changed to a higher resolution timing method, but the numbers are now compiler and machine specific; cannot reliably compare numbers between machines.
+
+
+Bug fixes:
+- Hash-collision prevention. Inline sets' names removed from the index so they can't conflict with "real" sets. Collisions can still happen, but should be very rare.
+
+- --prefix should now work for non-unicode environments.
+
+- Many segfaults fixed.
+
+-- Tino Didriksen
+CG-3 Developer

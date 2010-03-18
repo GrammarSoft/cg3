@@ -1,0 +1,22 @@
+A new release of CG-3 has been tagged v0.9.6.3896
+
+Main site is http://beta.visl.sdu.dk/cg3.html
+Google Group is http://groups.google.com/group/constraint-grammar
+Source snapshots available at http://beta.visl.sdu.dk/download/vislcg3/
+Windows binary is at http://beta.visl.sdu.dk/download/vislcg3/vislcg3-0.9.6.3896-win32.zip
+
+Changes:
+- Slightly faster parsing of tags.
+
+- Implemented --no-pass-origin for CG-1 compatibility.
+See http://beta.visl.sdu.dk/cg3/chunked/compatibility.html#gotcha-origin-passing and http://beta.visl.sdu.dk/cg3/chunked/contexts.html#test-origin for details.
+
+- Implemented --vislcg-compat for CG-2 and vislcg compatibility.
+At the moment it handles vislcg's inconsistent way of how NOT works.
+See http://beta.visl.sdu.dk/cg3/chunked/compatibility.html#gotcha-not-negate for details.
+
+Also redid a full memory leak and inconsistency check with Valgrind;
+found no leaks nor memory handling errors on both 32 and 64bit archs.
+
+-- Tino Didriksen
+CG-3 Developer

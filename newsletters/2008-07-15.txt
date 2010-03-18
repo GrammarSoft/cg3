@@ -1,0 +1,21 @@
+A new release of CG-3 has been tagged v0.9.6.3800
+
+Main site is http://beta.visl.sdu.dk/cg3.html
+Google Group is http://groups.google.com/group/constraint-grammar
+Source snapshots available at http://beta.visl.sdu.dk/download/vislcg3/
+Windows binary is at http://beta.visl.sdu.dk/download/vislcg3/vislcg3-0.9.6.3800-win32.zip
+
+Bug fixes:
+- Fixed compilation and execution on Mac G5.
+- Fixed out-of-bounds error.
+- Fixed handling of mappings. One side effect is that duplicate readings may be removed, and some readings may be split when tracing. See http://groups.google.com/group/constraint-grammar/t/a73f8f87285ce354
+- Fixed running AFTER-SECTIONS when defined out of order.
+
+Changes:
+- Will no longer allow multiple MAPPING-PREFIX to be defined in the grammar.
+- Documented that literal string modifiers will not work for wordforms when used as the first qualifier in a rule. See http://beta.visl.sdu.dk/cg3/chunked/tags.html#literal-string-modifiers
+
+...and I see Francis Tyers has made some changes to the Apertium tools, but I'll let him explain those.
+
+-- Tino Didriksen
+CG-3 Developer
