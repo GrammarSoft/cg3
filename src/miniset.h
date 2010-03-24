@@ -36,6 +36,7 @@ private:
 public:
 	typedef typename Cont::iterator iterator;
 	typedef typename Cont::const_iterator const_iterator;
+	typedef typename Cont::size_type size_type;
 	typedef T value_type;
 	typedef T key_type;
 
@@ -71,6 +72,10 @@ public:
 
 	const_iterator end() const {
 		return elements.end();
+	}
+
+	size_type size() const {
+		return elements.size();
 	}
 
 	void clear() {

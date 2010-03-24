@@ -93,11 +93,6 @@ GrammarApplicator::~GrammarApplicator() {
 		}
 	}
 
-	foreach (RSType, runsections, rsi, rsi_end) {
-		delete rsi->second;
-		rsi->second = 0;
-	}
-
 	delete gWindow;
 	grammar = 0;
 	ux_stderr = 0;
@@ -121,30 +116,27 @@ void GrammarApplicator::index() {
 	}
 
 	if (!grammar->before_sections.empty()) {
-		uint32Set *m = new uint32Set;
+		uint32MiniSet& m = runsections[-1];
 		const_foreach (RuleVector, grammar->before_sections, iter_rules, iter_rules_end) {
 			const Rule *r = *iter_rules;
-			m->insert(r->line);
+			m.insert(r->line);
 		}
-		runsections[-1] = m;
 	}
 
 	if (!grammar->after_sections.empty()) {
-		uint32Set *m = new uint32Set;
+		uint32MiniSet& m = runsections[-2];
 		const_foreach (RuleVector, grammar->after_sections, iter_rules, iter_rules_end) {
 			const Rule *r = *iter_rules;
-			m->insert(r->line);
+			m.insert(r->line);
 		}
-		runsections[-2] = m;
 	}
 
 	if (!grammar->null_section.empty()) {
-		uint32Set *m = new uint32Set;
+		uint32MiniSet& m = runsections[-3];
 		const_foreach (RuleVector, grammar->null_section, iter_rules, iter_rules_end) {
 			const Rule *r = *iter_rules;
-			m->insert(r->line);
+			m.insert(r->line);
 		}
-		runsections[-3] = m;
 	}
 
 	if (sections.empty()) {
@@ -155,15 +147,8 @@ void GrammarApplicator::index() {
 				if (r->section < 0 || r->section > i) {
 					continue;
 				}
-				uint32Set *m = 0;
-				if (runsections.find(i) == runsections.end()) {
-					m = new uint32Set;
-					runsections[i] = m;
-				}
-				else {
-					m = runsections[i];
-				}
-				m->insert(r->line);
+				uint32MiniSet& m = runsections[i];
+				m.insert(r->line);
 			}
 		}
 	}
@@ -176,15 +161,8 @@ void GrammarApplicator::index() {
 					if (r->section != (int32_t)sections.at(e)-1) {
 						continue;
 					}
-					uint32Set *m = 0;
-					if (runsections.find(n) == runsections.end()) {
-						m = new uint32Set;
-						runsections[n] = m;
-					}
-					else {
-						m = runsections[n];
-					}
-					m->insert(r->line);
+					uint32MiniSet& m = runsections[n];
+					m.insert(r->line);
 				}
 			}
 		}
