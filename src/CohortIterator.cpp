@@ -52,12 +52,21 @@ Cohort* CohortIterator::operator*() {
 	return m_cohort;
 }
 
+void CohortIterator::reset(Cohort *cohort, const ContextualTest *test, bool span) {
+	m_span = span;
+	m_cohort = cohort;
+	m_test = test;
+}
+
 TopologyLeftIter::TopologyLeftIter(Cohort *cohort, const ContextualTest *test, bool span) :
 CohortIterator(cohort, test, span)
 {
 }
 
 TopologyLeftIter& TopologyLeftIter::operator++() {
+	if (!m_cohort || !m_test) {
+		return *this;
+	}
 	if (m_cohort->prev && m_cohort->prev->parent != m_cohort->parent && !(m_test->pos & (POS_SPAN_BOTH|POS_SPAN_LEFT) || m_span)) {
 		m_cohort = 0;
 	}
@@ -75,6 +84,9 @@ CohortIterator(cohort, test, span)
 }
 
 TopologyRightIter& TopologyRightIter::operator++() {
+	if (!m_cohort || !m_test) {
+		return *this;
+	}
 	if (m_cohort->next && m_cohort->next->parent != m_cohort->parent && !(m_test->pos & (POS_SPAN_BOTH|POS_SPAN_RIGHT) || m_span)) {
 		m_cohort = 0;
 	}
@@ -93,6 +105,9 @@ CohortIterator(cohort, test, span)
 }
 
 DepParentIter& DepParentIter::operator++() {
+	if (!m_cohort || !m_test) {
+		return *this;
+	}
 	if (m_cohort->dep_parent != std::numeric_limits<uint32_t>::max()) {
 		std::map<uint32_t,Cohort*>::iterator it = m_cohort->parent->parent->cohort_map.find(m_cohort->dep_parent);
 		if (it != m_cohort->parent->parent->cohort_map.end()) {
@@ -117,6 +132,12 @@ DepParentIter& DepParentIter::operator++() {
 	}
 	m_cohort = 0;
 	return *this;
+}
+
+void DepParentIter::reset(Cohort *cohort, const ContextualTest *test, bool span) {
+	CohortIterator::reset(cohort, test, span);
+	++(*this);
+	m_seen.clear();
 }
 
 CohortSetIter::CohortSetIter(Cohort *cohort, const ContextualTest *test, bool span) :
