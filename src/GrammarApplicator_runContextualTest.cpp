@@ -27,7 +27,6 @@
 #include "SingleWindow.h"
 #include "Reading.h"
 #include "ContextualTest.h"
-#include "CohortIterator.h"
 
 namespace CG3 {
 
@@ -277,7 +276,8 @@ Cohort *GrammarApplicator::runContextualTest(SingleWindow *sWindow, size_t posit
 			*deep = cohort;
 		}
 		if (test->pos & POS_DEP_PARENT) {
-			it = new DepParentIter(cohort, test, always_span);
+			ci_DepParentIter.reset(cohort, test, always_span);
+			it = &ci_DepParentIter;
 		}
 		else if (test->pos & (POS_DEP_CHILD|POS_DEP_SIBLING)) {
 			Cohort *nc = runDependencyTest(sWindow, cohort, test, deep, origin);
@@ -370,13 +370,16 @@ Cohort *GrammarApplicator::runContextualTest(SingleWindow *sWindow, size_t posit
 			}
 		}
 		else if (test->offset < 0) {
-			it = new TopologyLeftIter(cohort, test, always_span);
+			ci_TopologyLeftIter.reset(cohort, test, always_span);
+			it = &ci_TopologyLeftIter;
 		}
 		else if (test->offset > 0) {
-			it = new TopologyRightIter(cohort, test, always_span);
+			ci_TopologyRightIter.reset(cohort, test, always_span);
+			it = &ci_TopologyRightIter;
 		}
 		else {
-			it = new CohortIterator(cohort, test, always_span);
+			ci_CohortIterator.reset(cohort, test, always_span);
+			it = &ci_CohortIterator;
 		}
 
 		if (it) {
@@ -409,7 +412,6 @@ Cohort *GrammarApplicator::runContextualTest(SingleWindow *sWindow, size_t posit
 				nc = cohort;
 			}
 			cohort = nc;
-			delete it;
 		}
 	}
 	if (!cohort) {

@@ -42,6 +42,8 @@ namespace CG3 {
 
 		Cohort* operator*();
 
+		virtual void reset(Cohort *cohort = 0, const ContextualTest *test = 0, bool span = false);
+
 	protected:
 		bool m_span;
 		Cohort *m_cohort;
@@ -67,6 +69,8 @@ namespace CG3 {
 		DepParentIter(Cohort *cohort = 0, const ContextualTest *test = 0, bool span = false);
 
 		DepParentIter& operator++();
+
+		void reset(Cohort *cohort = 0, const ContextualTest *test = 0, bool span = false);
 
 	protected:
 		CohortSet m_seen;
