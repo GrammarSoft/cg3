@@ -59,6 +59,7 @@ namespace Options {
 		TRACE_NO_REMOVED,
 		TRACE_ENCL,
 		SINGLERUN,
+		MAXRUNS,
 		STATISTICS,
 		OPTIMIZE_UNSAFE,
 		OPTIMIZE_SAFE,
@@ -92,7 +93,7 @@ namespace Options {
 		UOPTION_DEF_D("ordered",			0, UOPT_NO_ARG, "allows multiple identical tags (will in future allow full ordered matching)"),
 		UOPTION_DEF_D("unsafe",				'u', UOPT_NO_ARG, "allows the removal of all readings in a cohort, even the last one"),
 		UOPTION_DEF_D("sections",			's', UOPT_REQUIRES_ARG, "number of sections to run; defaults to all sections"),
-		UOPTION_DEF("debug",				'd', UOPT_OPTIONAL_ARG),
+		UOPTION_DEF_D("debug",				'd', UOPT_OPTIONAL_ARG, "enables debug output (very noisy)"),
 		UOPTION_DEF_D("verbose",			'v', UOPT_OPTIONAL_ARG, "increases verbosity"),
 		UOPTION_DEF_D("vislcg-compat",		'2', UOPT_NO_ARG, "enables compatibility mode for older CG-2 and vislcg grammars"),
 
@@ -121,7 +122,8 @@ namespace Options {
 		UOPTION_DEF_D("trace-no-removed",	0, UOPT_NO_ARG, "does not print removed readings; implies --trace"),
 		UOPTION_DEF_D("trace-encl",			0, UOPT_NO_ARG, "traces which enclosure pass is currently happening; implies --trace"),
 
-		UOPTION_DEF_D("single-run",			0, UOPT_NO_ARG, "runs each section only once"),
+		UOPTION_DEF_D("single-run",			0, UOPT_NO_ARG, "runs each section only once; same as --max-runs 1"),
+		UOPTION_DEF_D("max-runs",			0, UOPT_REQUIRES_ARG, "runs each section max N times; defaults to unlimited (0)"),
 		UOPTION_DEF_D("statistics",			'S', UOPT_NO_ARG, "gathers profiling statistics while applying grammar"),
 		UOPTION_DEF_D("optimize-unsafe",	'Z', UOPT_NO_ARG, "destructively optimize the profiled grammar to be faster"),
 		UOPTION_DEF_D("optimize-safe",		'z', UOPT_NO_ARG, "conservatively optimize the profiled grammar to be faster"),

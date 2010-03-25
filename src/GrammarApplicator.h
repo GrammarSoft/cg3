@@ -49,7 +49,6 @@ namespace CG3 {
 		bool trace_name_only;
 		bool trace_no_removed;
 		bool trace_encl;
-		bool single_run;
 		bool allow_magic_readings;
 		bool no_pass_origin;
 		bool unsafe;
@@ -68,6 +67,8 @@ namespace CG3 {
 		uint32_t hard_limit;
 		uint32Vector sections;
 		uint32_t verbosity_level;
+		uint32_t debug_level;
+		uint32_t section_max_count;
 
 		GrammarApplicator(UFILE *ux_err);
 		virtual ~GrammarApplicator();
@@ -152,7 +153,7 @@ namespace CG3 {
 		int runGrammarOnWindow();
 		int runGrammarOnSingleWindow(SingleWindow &current);
 		void updateValidRules(const uint32MiniSet& rules, uint32Vector &intersects, const uint32_t& hash, Reading &reading);
-		uint32_t runRulesOnWindow(SingleWindow &current, uint32MiniSet &rules);
+		uint32_t runRulesOnSingleWindow(SingleWindow &current, uint32MiniSet &rules);
 
 		Cohort *runSingleTest(Cohort *cohort, const ContextualTest *test, bool *brk, bool *retval, Cohort **deep = 0, Cohort *origin = 0);
 		Cohort *runSingleTest(SingleWindow *sWindow, size_t i, const ContextualTest *test, bool *brk, bool *retval, Cohort **deep = 0, Cohort *origin = 0);
