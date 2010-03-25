@@ -481,7 +481,10 @@ void GAppSetOpts(CG3::GrammarApplicator &applicator) {
 		applicator.trace_encl = true;
 	}
 	if (options[SINGLERUN].doesOccur) {
-		applicator.single_run = true;
+		applicator.section_max_count = 1;
+	}
+	if (options[MAXRUNS].doesOccur) {
+		applicator.section_max_count = abs(atoi(options[MAXRUNS].value));
 	}
 	if (options[SECTIONS].doesOccur) {
 		applicator.sections.clear();
@@ -535,6 +538,14 @@ void GAppSetOpts(CG3::GrammarApplicator &applicator) {
 		}
 		else {
 			applicator.verbosity_level = 1;
+		}
+	}
+	if (options[DODEBUG].doesOccur) {
+		if (options[DODEBUG].value) {
+			applicator.debug_level = abs(atoi(options[DODEBUG].value));
+		}
+		else {
+			applicator.debug_level = 1;
 		}
 	}
 	if (options[NUM_WINDOWS].doesOccur) {

@@ -39,7 +39,6 @@ GrammarApplicator::GrammarApplicator(UFILE *ux_err) {
 	trace_name_only = false;
 	trace_no_removed = false;
 	trace_encl = false;
-	single_run = false;
 	statistics = false;
 	dep_has_spanned = false;
 	dep_delimit = false;
@@ -50,6 +49,7 @@ GrammarApplicator::GrammarApplicator(UFILE *ux_err) {
 	dep_highest_seen = 0;
 	has_dep = false;
 	verbosity_level = 0;
+	debug_level = 0;
 	num_windows = 2;
 	begintag = 0;
 	endtag = 0;
@@ -62,6 +62,7 @@ GrammarApplicator::GrammarApplicator(UFILE *ux_err) {
 	match_sub = 0;
 	soft_limit = 300;
 	hard_limit = 500;
+	section_max_count = 0;
 	numLines = 0;
 	numWindows = 0;
 	numCohorts = 0;
