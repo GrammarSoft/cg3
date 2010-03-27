@@ -1,7 +1,11 @@
 DELIMITERS = "<$.>" ;
 
 LIST ASet = ".atc[hm]{2}.*"r ;
+LIST BSet = ".atc[HM]{2}.*"ri ;
+LIST CSet = "MaTcHmE"i ;
 
-SECTION
+BEFORE-SECTIONS
 
-SELECT ASet ;
+ADD (@r) ASet ;
+ADD (@ri) BSet ;
+ADD (@i) CSet ;

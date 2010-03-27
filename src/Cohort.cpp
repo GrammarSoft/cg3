@@ -106,7 +106,7 @@ Reading* Cohort::allocateAppendReading() {
 	return read;
 }
 
-inline void Cohort::updateMinMax() {
+void Cohort::updateMinMax() {
 	if (num_is_current) {
 		return;
 	}

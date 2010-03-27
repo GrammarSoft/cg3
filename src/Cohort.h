@@ -74,7 +74,7 @@ namespace CG3 {
 		bool remRelation(uint32_t rel, uint32_t cohort);
 
 	private:
-		inline void updateMinMax();
+		void updateMinMax();
 	};
 
 	struct compare_Cohort {

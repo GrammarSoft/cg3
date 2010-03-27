@@ -356,6 +356,9 @@ uint32_t Tag::rehash() {
 	if (type & T_REGEXP) {
 		hash = hash_sdbm_char("r", hash);
 	}
+	if (type & T_VARSTRING) {
+		hash = hash_sdbm_char("v", hash);
+	}
 
 	if (seed) {
 		hash += seed;
