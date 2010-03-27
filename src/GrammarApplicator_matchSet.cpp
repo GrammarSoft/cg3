@@ -30,26 +30,25 @@
 
 namespace CG3 {
 
-inline bool uint32HashSet_Intersects(const uint32HashSet &a, const uint32HashSet &b) {
-	if (a.size() > b.size()) {
-		const_foreach (uint32HashSet, b, oter, oter_end) {
-			if (a.find(*oter) != a.end()) {
-				return true;
-			}
+bool uint32MiniSet_Intersects(const uint32MiniSet& first, const uint32MiniSet& second) {
+	uint32MiniSet::const_iterator iiter = first.begin();
+	uint32MiniSet::const_iterator oiter = second.begin();
+	while (oiter != second.end() && iiter != first.end()) {
+		if (*oiter == *iiter) {
+			return true;
 		}
-	}
-	else {
-		const_foreach (uint32HashSet, a, oter, oter_end) {
-			if (b.find(*oter) != b.end()) {
-				return true;
-			}
+		while (oiter != second.end() && iiter != first.end() && *oiter < *iiter) {
+			++oiter;
+		}
+		while (oiter != second.end() && iiter != first.end() && *iiter < *oiter) {
+			++iiter;
 		}
 	}
 	return false;
 }
 
 template<typename T>
-inline bool TagSet_SubsetOf_TSet(const TagSet &a, const T &b) {
+bool TagSet_SubsetOf_TSet(const TagSet &a, const T &b) {
 	/* This test is true 0.1% of the time. Not worth the trouble.
 	if (a.size() > b.size()) {
 		return false;
@@ -95,14 +94,151 @@ bool GrammarApplicator::doesTagMatchSet(const uint32_t tag, const Set &set) {
 bool GrammarApplicator::doesTagMatchReading(const Reading &reading, const Tag &tag, bool unif_mode) {
 	bool retval = false;
 	bool match = true;
+	int32_t truth = 0;
+	uint32MiniSet::const_iterator itf, ite = reading.tags_plain.end();
 
-	bool raw_in = (reading.tags_plain.find(tag.hash) != reading.tags_plain.end());
+	bool raw_in = (reading.tags_plain_bloom & tag.hash) == tag.hash;
 	if (tag.type & T_FAILFAST) {
-		raw_in = (reading.tags_plain.find(tag.plain_hash) != reading.tags_plain.end());
+		itf = reading.tags_plain.find(tag.plain_hash);
+		raw_in = (itf != ite);
+	}
+	else if (raw_in) {
+		++truth;
+		itf = reading.tags_plain.find(tag.hash);
+		raw_in = (itf != ite);
+	}
+	else {
+		--truth;
 	}
 
 	if (!tag.is_special || tag.type == T_FAILFAST) {
 		match = raw_in;
+	}
+	else if ((tag.type & T_REGEXP) && !reading.tags_textual.empty()) {
+		const_foreach (uint32MiniSet, reading.tags_textual, mter, mter_end) {
+			uint32_t ih = hash_sdbm_uint32_t(tag.hash, *mter);
+			if (index_matches(index_regexp_no, ih)) {
+				match = false;
+			}
+			else if (index_matches(index_regexp_yes, ih)) {
+				match = true;
+			}
+			else {
+				const Tag &itag = *(single_tags.find(*mter)->second);
+				UErrorCode status = U_ZERO_ERROR;
+				uregex_setText(tag.regexp, itag.tag, u_strlen(itag.tag), &status);
+				if (status != U_ZERO_ERROR) {
+					u_fprintf(ux_stderr, "Error: uregex_setText(MatchSet) returned %s - cannot continue!\n", u_errorName(status));
+					CG3Quit(1);
+				}
+				status = U_ZERO_ERROR;
+				match = (uregex_matches(tag.regexp, 0, &status) == TRUE);
+				if (status != U_ZERO_ERROR) {
+					u_fprintf(ux_stderr, "Error: uregex_matches(MatchSet) returned %s - cannot continue!\n", u_errorName(status));
+					CG3Quit(1);
+				}
+				if (match) {
+					int32_t gc = uregex_groupCount(tag.regexp, &status);
+					if (gc > 0) {
+						UChar tmp[1024];
+						regexgrps.clear();
+						for (int i=0 ; i<=gc ; ++i) {
+							tmp[0] = 0;
+							uregex_group(tag.regexp, i, tmp, 1024, &status);
+							regexgrps[i] = UnicodeString(tmp);
+						}
+					}
+					else {
+						index_regexp_yes.insert(ih);
+					}
+				}
+				else {
+					index_regexp_no.insert(ih);
+				}
+			}
+			if (match) {
+				break;
+			}
+		}
+	}
+	else if ((tag.type & T_CASE_INSENSITIVE) && !reading.tags_textual.empty()) {
+		const_foreach (uint32MiniSet, reading.tags_textual, mter, mter_end) {
+			uint32_t ih = hash_sdbm_uint32_t(tag.hash, *mter);
+			if (index_matches(index_icase_no, ih)) {
+				match = false;
+			}
+			else if (index_matches(index_icase_yes, ih)) {
+				match = true;
+			}
+			else {
+				const Tag &itag = *(single_tags.find(*mter)->second);
+				UErrorCode status = U_ZERO_ERROR;
+				status = U_ZERO_ERROR;
+				match = (u_strCaseCompare(tag.tag, u_strlen(tag.tag), itag.tag, u_strlen(itag.tag), U_FOLD_CASE_DEFAULT, &status) == 0);
+				if (status != U_ZERO_ERROR) {
+					u_fprintf(ux_stderr, "Error: u_strCaseCompare() returned %s - cannot continue!\n", u_errorName(status));
+					CG3Quit(1);
+				}
+				if (match) {
+					index_icase_yes.insert(ih);
+				}
+				else {
+					index_icase_no.insert(ih);
+				}
+			}
+			if (match) {
+				break;
+			}
+		}
+	}
+	else if (tag.type & T_REGEXP_ANY) {
+		if (tag.type & T_BASEFORM) {
+			match = true;
+			if (unif_mode) {
+				if (unif_last_baseform) {
+					if (unif_last_baseform != reading.baseform) {
+						match = false;
+					}
+				}
+				else {
+					unif_last_baseform = reading.baseform;
+				}
+			}
+		}
+		else if (tag.type & T_WORDFORM) {
+			match = true;
+			if (unif_mode) {
+				if (unif_last_wordform) {
+					if (unif_last_wordform != reading.wordform) {
+						match = false;
+					}
+				}
+				else {
+					unif_last_wordform = reading.wordform;
+				}
+			}
+		}
+		else {
+			const_foreach (uint32MiniSet, reading.tags_textual, mter, mter_end) {
+				const Tag &itag = *(single_tags.find(*mter)->second);
+				if (!(itag.type & (T_BASEFORM|T_WORDFORM))) {
+					match = true;
+					if (unif_mode) {
+						if (unif_last_textual) {
+							if (unif_last_textual != *mter) {
+								match = false;
+							}
+						}
+						else {
+							unif_last_textual = *mter;
+						}
+					}
+				}
+				if (match) {
+					break;
+				}
+			}
+		}
 	}
 	else if (tag.type & T_NUMERICAL && !reading.tags_numerical.empty()) {
 		match = false;
@@ -230,102 +366,6 @@ bool GrammarApplicator::doesTagMatchReading(const Reading &reading, const Tag &t
 			}
 		}
 	}
-	else if (tag.type & T_REGEXP_ANY) {
-		if (tag.type & T_WORDFORM) {
-			match = true;
-			if (unif_mode) {
-				if (unif_last_wordform) {
-					if (unif_last_wordform != reading.wordform) {
-						match = false;
-					}
-				}
-				else {
-					unif_last_wordform = reading.wordform;
-				}
-			}
-		}
-		else if (tag.type & T_BASEFORM) {
-			match = true;
-			if (unif_mode) {
-				if (unif_last_baseform) {
-					if (unif_last_baseform != reading.baseform) {
-						match = false;
-					}
-				}
-				else {
-					unif_last_baseform = reading.baseform;
-				}
-			}
-		}
-		else {
-			const_foreach (uint32HashSet, reading.tags_textual, mter, mter_end) {
-				const Tag &itag = *(single_tags.find(*mter)->second);
-				if (!(itag.type & (T_BASEFORM|T_WORDFORM))) {
-					match = true;
-					if (unif_mode) {
-						if (unif_last_textual) {
-							if (unif_last_textual != *mter) {
-								match = false;
-							}
-						}
-						else {
-							unif_last_textual = *mter;
-						}
-					}
-				}
-				if (match) {
-					break;
-				}
-			}
-		}
-	}
-	else if (tag.regexp && !reading.tags_textual.empty()) {
-		const_foreach (uint32HashSet, reading.tags_textual, mter, mter_end) {
-			uint32_t ih = hash_sdbm_uint32_t(tag.hash, *mter);
-			if (index_matches(index_regexp_yes, ih)) {
-				match = true;
-			}
-			else if (index_matches(index_regexp_no, ih)) {
-				match = false;
-			}
-			else {
-				const Tag &itag = *(single_tags.find(*mter)->second);
-				UErrorCode status = U_ZERO_ERROR;
-				uregex_setText(tag.regexp, itag.tag, u_strlen(itag.tag), &status);
-				if (status != U_ZERO_ERROR) {
-					u_fprintf(ux_stderr, "Error: uregex_setText(MatchSet) returned %s - cannot continue!\n", u_errorName(status));
-					CG3Quit(1);
-				}
-				status = U_ZERO_ERROR;
-				match = (uregex_matches(tag.regexp, 0, &status) == TRUE);
-				if (status != U_ZERO_ERROR) {
-					u_fprintf(ux_stderr, "Error: uregex_matches(MatchSet) returned %s - cannot continue!\n", u_errorName(status));
-					CG3Quit(1);
-				}
-				if (match) {
-					int32_t gc = uregex_groupCount(tag.regexp, &status);
-					if (gc > 0) {
-						UChar tmp[1024];
-						regexgrps.clear();
-						for (int i=0 ; i<=gc ; ++i) {
-							tmp[0] = 0;
-							uregex_group(tag.regexp, i, tmp, 1024, &status);
-							regexgrps[i] = UnicodeString(tmp);
-						}
-					}
-					else {
-						index_regexp_yes.insert(ih);
-					}
-				}
-				else {
-					index_regexp_no.insert(ih);
-				}
-			}
-			if (match) {
-				break;
-			}
-		}
-	}
 	else if (tag.type & T_VARIABLE) {
 		if (variables.find(tag.comparison_hash) == variables.end()) {
 			u_fprintf(ux_stderr, "Info: %u failed.\n", tag.comparison_hash);
@@ -374,7 +414,7 @@ bool GrammarApplicator::doesSetMatchReading_tags(const Reading &reading, const S
 	bool retval = false;
 
 	if (!(theset.is_special|unif_mode)) {
-		retval = uint32HashSet_Intersects(theset.single_tags_hash, reading.tags_plain);
+		retval = uint32MiniSet_Intersects(theset.single_tags_hash, reading.tags_plain);
 	}
 	else {
 		TagHashSet::const_iterator ster;
@@ -447,11 +487,11 @@ bool GrammarApplicator::doesSetMatchReading(Reading &reading, const uint32_t set
 	// ToDo: This is not good enough...while numeric tags are special, their failures can be indexed.
 	uint32_t ih = hash_sdbm_uint32_t(reading.hash, set);
 	if (!bypass_index && !unif_mode) {
-		if (index_matches(index_readingSet_yes, ih)) {
-			return true;
-		}
-		else if (index_matches(index_readingSet_no, ih)) {
+		if (index_matches(index_readingSet_no, ih)) {
 			return false;
+		}
+		else if (index_matches(index_readingSet_yes, ih)) {
+			return true;
 		}
 	}
 

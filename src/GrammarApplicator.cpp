@@ -104,6 +104,8 @@ void GrammarApplicator::resetIndexes() {
 	index_readingSet_no.clear();
 	index_regexp_yes.clear();
 	index_regexp_no.clear();
+	index_icase_yes.clear();
+	index_icase_no.clear();
 }
 
 void GrammarApplicator::setGrammar(const Grammar *res) {
