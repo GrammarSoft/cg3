@@ -1,4 +1,3 @@
 "<word>"
-	"word" notwanted
+	"MatchMe" wanted
 	"matchme" wanted
-	"word" notmeeither

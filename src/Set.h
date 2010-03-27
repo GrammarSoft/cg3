@@ -25,6 +25,7 @@
 
 #include "stdafx.h"
 #include "CompositeTag.h"
+#include "miniset.h"
 
 namespace CG3 {
 	class Grammar;
@@ -50,9 +51,9 @@ namespace CG3 {
 		uint32Set tags_set;
 		CompositeTagHashSet tags;
 		TagHashSet single_tags;
-		uint32HashSet single_tags_hash;
+		uint32MiniSet single_tags_hash;
 		TagHashSet ff_tags;
-		uint32HashSet ff_tags_hash;
+		uint32MiniSet ff_tags_hash;
 
 		uint32Vector set_ops;
 		uint32Vector sets;

@@ -324,6 +324,7 @@ void GrammarApplicator::addTagToReading(Reading &reading, uint32_t utag, bool re
 	if (ordered || reading.tags.find(utag) == reading.tags.end()) {
 		reading.tags.insert(utag);
 		reading.tags_list.push_back(utag);
+		reading.tags_bloom |= utag;
 	}
 	if (grammar->parentheses.find(utag) != grammar->parentheses.end()) {
 		reading.parent->is_pleft = utag;
@@ -341,6 +342,7 @@ void GrammarApplicator::addTagToReading(Reading &reading, uint32_t utag, bool re
 	}
 	if (tag->type & (T_TEXTUAL|T_WORDFORM|T_BASEFORM)) {
 		reading.tags_textual.insert(utag);
+		reading.tags_textual_bloom |= utag;
 	}
 	if (tag->type & T_NUMERICAL) {
 		reading.tags_numerical[utag] = tag;
@@ -362,6 +364,7 @@ void GrammarApplicator::addTagToReading(Reading &reading, uint32_t utag, bool re
 	}
 	if (!tag->is_special) {
 		reading.tags_plain.insert(utag);
+		reading.tags_plain_bloom |= utag;
 	}
 	if (rehash) {
 		reading.rehash();

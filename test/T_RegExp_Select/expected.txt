@@ -1,2 +1,4 @@
 "<word>"
-	"matchme" wanted 
+	"MatchMe" wanted @ri @i 
+	"matchme" wanted @r @ri @i 
+

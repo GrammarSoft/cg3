@@ -78,6 +78,10 @@ public:
 		return elements.size();
 	}
 
+	bool empty() const {
+		return elements.empty();
+	}
+
 	void clear() {
 		elements.clear();
 	}
