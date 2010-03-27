@@ -1,8 +1,0 @@
-DELIMITERS = "<$.>" ;
-
-LIST ASet = ".atc[hm]{2}.*"r ;
-
-SECTION
-
-ADD (<%u$1%l%U$2%U$1>v) (".(at)(ch).*"r) ;
-MAP (@tag) ASet ;
