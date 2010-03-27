@@ -6,6 +6,7 @@ LIST CSet = "MaTcHmE"i ;
 
 BEFORE-SECTIONS
 
+ADD (<%u$1%l%U$2%U$1>v) (".(at)(ch).*"r) ;
 ADD (@r) ASet ;
 ADD (@ri) BSet ;
 ADD (@i) CSet ;

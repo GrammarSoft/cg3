@@ -1,4 +1,0 @@
-"<word>"
-	"word" notwanted
-	"matchme" wanted
-	"word" notmeeither
