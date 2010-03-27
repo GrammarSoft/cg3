@@ -46,13 +46,13 @@ void intersectInitialize(const uint32MiniSet& first, const uint32Set& second, ui
 	uint32MiniSet::const_iterator iiter = first.begin();
 	uint32Set::const_iterator oiter = second.begin();
 	while (oiter != second.end() && iiter != first.end()) {
-		while (oiter != second.end() && *oiter < *iiter) {
+		while (oiter != second.end() && iiter != first.end() && *oiter < *iiter) {
 			++oiter;
 		}
-		while (iiter != first.end() && *iiter < *oiter) {
+		while (oiter != second.end() && iiter != first.end() && *iiter < *oiter) {
 			++iiter;
 		}
-		if (*oiter == *iiter) {
+		if (oiter != second.end() && iiter != first.end() && *oiter == *iiter) {
 			intersects.push_back(*oiter);
 			++oiter;
 			++iiter;
@@ -69,13 +69,13 @@ void intersectUpdate(const uint32MiniSet& first, const uint32Set& second, uint32
 	uint32MiniSet::const_iterator iiter = first.begin();
 	uint32Set::const_iterator oiter = second.begin();
 	while (oiter != second.end() && iiter != first.end()) {
-		while (oiter != second.end() && *oiter < *iiter) {
+		while (oiter != second.end() && iiter != first.end() && *oiter < *iiter) {
 			++oiter;
 		}
-		while (iiter != first.end() && *iiter < *oiter) {
+		while (oiter != second.end() && iiter != first.end() && *iiter < *oiter) {
 			++iiter;
 		}
-		if (*oiter == *iiter) {
+		while (oiter != second.end() && iiter != first.end() && *oiter == *iiter) {
 			uint32Vector::iterator ins = std::lower_bound(intersects.begin(), intersects.end(), *oiter);
 			if (ins == intersects.end() || *ins != *oiter) {
 				intersects.insert(ins, *oiter);
