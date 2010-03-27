@@ -1,3 +1,0 @@
-"<word>"
-	"MatchMe" wanted
-	"matchme" wanted
