@@ -61,10 +61,12 @@ void intersectInitialize(const uint32MiniSet& first, const uint32Set& second, ui
 }
 
 void intersectUpdate(const uint32MiniSet& first, const uint32Set& second, uint32Vector& intersects) {
+	/* This is never true, so don't bother...would be a good optimization otherwise.
 	if (intersects.empty()) {
 		intersectInitialize(first, second, intersects);
 		return;
 	}
+	//*/
 	intersects.reserve(std::max(first.size(), second.size()));
 	uint32MiniSet::const_iterator iiter = first.begin();
 	uint32Set::const_iterator oiter = second.begin();
