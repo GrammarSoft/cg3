@@ -94,7 +94,6 @@ bool GrammarApplicator::doesTagMatchSet(const uint32_t tag, const Set &set) {
 bool GrammarApplicator::doesTagMatchReading(const Reading &reading, const Tag &tag, bool unif_mode) {
 	bool retval = false;
 	bool match = true;
-	int32_t truth = 0;
 	uint32MiniSet::const_iterator itf, ite = reading.tags_plain.end();
 
 	bool raw_in = (reading.tags_plain_bloom & tag.hash) == tag.hash;
@@ -103,12 +102,8 @@ bool GrammarApplicator::doesTagMatchReading(const Reading &reading, const Tag &t
 		raw_in = (itf != ite);
 	}
 	else if (raw_in) {
-		++truth;
 		itf = reading.tags_plain.find(tag.hash);
 		raw_in = (itf != ite);
-	}
-	else {
-		--truth;
 	}
 
 	if (!tag.is_special || tag.type == T_FAILFAST) {
