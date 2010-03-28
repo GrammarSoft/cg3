@@ -20,10 +20,11 @@
 */
 
 #pragma once
-#ifndef __SORTED_VECTOR_H
-#define __SORTED_VECTOR_H
+#ifndef __SORTED_VECTOR_HPP
+#define __SORTED_VECTOR_HPP
 #include <vector>
 #include <algorithm>
+#include <stdint.h> // C99 or C++0x or C++ TR1 will have this header. ToDo: Change to <cstdint> when C++0x broader support gets under way.
 
 namespace CG3 {
 
