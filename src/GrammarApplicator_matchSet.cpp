@@ -30,9 +30,9 @@
 
 namespace CG3 {
 
-bool uint32MiniSet_Intersects(const uint32MiniSet& first, const uint32MiniSet& second) {
-	uint32MiniSet::const_iterator iiter = first.begin();
-	uint32MiniSet::const_iterator oiter = second.begin();
+bool uint32SortedVector_Intersects(const uint32SortedVector& first, const uint32SortedVector& second) {
+	uint32SortedVector::const_iterator iiter = first.begin();
+	uint32SortedVector::const_iterator oiter = second.begin();
 	while (oiter != second.end() && iiter != first.end()) {
 		if (*oiter == *iiter) {
 			return true;
@@ -94,7 +94,7 @@ bool GrammarApplicator::doesTagMatchSet(const uint32_t tag, const Set &set) {
 bool GrammarApplicator::doesTagMatchReading(const Reading &reading, const Tag &tag, bool unif_mode) {
 	bool retval = false;
 	bool match = true;
-	uint32MiniSet::const_iterator itf, ite = reading.tags_plain.end();
+	uint32SortedVector::const_iterator itf, ite = reading.tags_plain.end();
 
 	bool raw_in = (reading.tags_plain_bloom & tag.hash) == tag.hash;
 	if (tag.type & T_FAILFAST) {
@@ -110,7 +110,7 @@ bool GrammarApplicator::doesTagMatchReading(const Reading &reading, const Tag &t
 		match = raw_in;
 	}
 	else if ((tag.type & T_REGEXP) && !reading.tags_textual.empty()) {
-		const_foreach (uint32MiniSet, reading.tags_textual, mter, mter_end) {
+		const_foreach (uint32SortedVector, reading.tags_textual, mter, mter_end) {
 			uint32_t ih = hash_sdbm_uint32_t(tag.hash, *mter);
 			if (index_matches(index_regexp_no, ih)) {
 				match = false;
@@ -157,7 +157,7 @@ bool GrammarApplicator::doesTagMatchReading(const Reading &reading, const Tag &t
 		}
 	}
 	else if ((tag.type & T_CASE_INSENSITIVE) && !reading.tags_textual.empty()) {
-		const_foreach (uint32MiniSet, reading.tags_textual, mter, mter_end) {
+		const_foreach (uint32SortedVector, reading.tags_textual, mter, mter_end) {
 			uint32_t ih = hash_sdbm_uint32_t(tag.hash, *mter);
 			if (index_matches(index_icase_no, ih)) {
 				match = false;
@@ -214,7 +214,7 @@ bool GrammarApplicator::doesTagMatchReading(const Reading &reading, const Tag &t
 			}
 		}
 		else {
-			const_foreach (uint32MiniSet, reading.tags_textual, mter, mter_end) {
+			const_foreach (uint32SortedVector, reading.tags_textual, mter, mter_end) {
 				const Tag &itag = *(single_tags.find(*mter)->second);
 				if (!(itag.type & (T_BASEFORM|T_WORDFORM))) {
 					match = true;
@@ -409,7 +409,7 @@ bool GrammarApplicator::doesSetMatchReading_tags(const Reading &reading, const S
 	bool retval = false;
 
 	if (!(theset.is_special|unif_mode)) {
-		retval = uint32MiniSet_Intersects(theset.single_tags_hash, reading.tags_plain);
+		retval = uint32SortedVector_Intersects(theset.single_tags_hash, reading.tags_plain);
 	}
 	else {
 		TagHashSet::const_iterator ster;

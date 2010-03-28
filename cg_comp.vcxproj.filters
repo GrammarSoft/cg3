@@ -97,6 +97,9 @@
     <ClInclude Include="src\Set.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\sorted_vector.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="src\stdafx.h">
       <Filter>Header Files</Filter>
     </ClInclude>

@@ -132,7 +132,6 @@
     <ClInclude Include="src\ContextualTest.h" />
     <ClInclude Include="src\cycle.h" />
     <ClInclude Include="src\FormatConverter.h" />
-    <ClInclude Include="src\miniset.h" />
     <ClInclude Include="win32\getopt.h" />
     <ClInclude Include="src\Grammar.h" />
     <ClInclude Include="src\GrammarApplicator.h" />
@@ -145,6 +144,7 @@
     <ClInclude Include="src\Rule.h" />
     <ClInclude Include="src\Set.h" />
     <ClInclude Include="src\SingleWindow.h" />
+    <ClInclude Include="src\sorted_vector.hpp" />
     <ClInclude Include="src\stdafx.h" />
     <ClInclude Include="src\Strings.h" />
     <ClInclude Include="src\Tag.h" />
