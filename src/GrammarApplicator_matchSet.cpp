@@ -93,24 +93,27 @@ bool GrammarApplicator::doesTagMatchSet(const uint32_t tag, const Set &set) {
 
 bool GrammarApplicator::doesTagMatchReading(const Reading &reading, const Tag &tag, bool unif_mode) {
 	bool retval = false;
-	bool match = true;
-	uint32SortedVector::const_iterator itf, ite = reading.tags_plain.end();
+	bool match = false;
 
-	bool raw_in = reading.tags_plain_bloom.matches(tag.hash);
-	if (tag.type & T_FAILFAST) {
-		itf = reading.tags_plain.find(tag.plain_hash);
-		raw_in = (itf != ite);
-	}
-	else if (raw_in && !tag.is_special) {
-		itf = reading.tags_plain.find(tag.hash);
-		raw_in = (itf != ite);
-	}
-
-	if (!tag.is_special || tag.type == T_FAILFAST) {
+	if (!tag.is_special || tag.type & T_FAILFAST) {
+		int32_t truth = 0;
+		uint32SortedVector::const_iterator itf, ite = reading.tags_plain.end();
+		bool raw_in = reading.tags_plain_bloom.matches(tag.hash);
+		if (tag.type & T_FAILFAST) {
+			itf = reading.tags_plain.find(tag.plain_hash);
+			raw_in = (itf != ite);
+		}
+		else if (raw_in) {
+			++truth;
+			itf = reading.tags_plain.find(tag.hash);
+			raw_in = (itf != ite);
+		}
+		else {
+			--truth;
+		}
 		match = raw_in;
 	}
 	else if (tag.type & T_REGEXP) {
-		match = false;
 		const_foreach (uint32SortedVector, reading.tags_textual, mter, mter_end) {
 			uint32_t ih = hash_sdbm_uint32_t(tag.hash, *mter);
 			if (index_matches(index_regexp_no, ih)) {
@@ -158,7 +161,6 @@ bool GrammarApplicator::doesTagMatchReading(const Reading &reading, const Tag &t
 		}
 	}
 	else if (tag.type & T_CASE_INSENSITIVE) {
-		match = false;
 		const_foreach (uint32SortedVector, reading.tags_textual, mter, mter_end) {
 			uint32_t ih = hash_sdbm_uint32_t(tag.hash, *mter);
 			if (index_matches(index_icase_no, ih)) {
@@ -189,7 +191,6 @@ bool GrammarApplicator::doesTagMatchReading(const Reading &reading, const Tag &t
 		}
 	}
 	else if (tag.type & T_REGEXP_ANY) {
-		match = false;
 		if (tag.type & T_BASEFORM) {
 			match = true;
 			if (unif_mode) {
@@ -239,7 +240,6 @@ bool GrammarApplicator::doesTagMatchReading(const Reading &reading, const Tag &t
 		}
 	}
 	else if (tag.type & T_NUMERICAL) {
-		match = false;
 		const_foreach (Taguint32HashMap, reading.tags_numerical, mter, mter_end) {
 			const Tag &itag = *(mter->second);
 			int32_t compval = tag.comparison_val;
@@ -389,19 +389,13 @@ bool GrammarApplicator::doesTagMatchReading(const Reading &reading, const Tag &t
 	else if (attach_to && tag.type & T_ATTACHTO && reading.parent == attach_to) {
 		match = true;
 	}
-	else if (!raw_in) {
-		match = false;
-		if (tag.type & T_NEGATIVE) {
-			match = true;
-		}
-	}
 
 	if (tag.type & T_NEGATIVE) {
 		match = !match;
 	}
 
 	if (match) {
-		match_single++;
+		++match_single;
 		retval = true;
 	}
 

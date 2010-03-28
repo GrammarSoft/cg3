@@ -154,7 +154,7 @@ int GrammarWriter::writeGrammar(UFILE *output) {
 	}
 	const_foreach (uint32Vector, grammar->sections, isec, isec_end) {
 		found = false;
-		for (rule_iter = rule_by_line.begin() ; rule_iter != rule_by_line.end() ; rule_iter++) {
+		const_foreach (RuleByLineMap, rule_by_line, rule_iter, rule_iter_end) {
 			const Rule &r = *(rule_iter->second);
 			if (r.section == (int32_t)*isec) {
 				if (!found) {
@@ -167,7 +167,7 @@ int GrammarWriter::writeGrammar(UFILE *output) {
 		}
 	}
 	found = false;
-	for (rule_iter = rule_by_line.begin() ; rule_iter != rule_by_line.end() ; rule_iter++) {
+	const_foreach (RuleByLineMap, rule_by_line, rule_iter, rule_iter_end) {
 		const Rule &r = *(rule_iter->second);
 		if (r.section == -2) {
 			if (!found) {
@@ -179,7 +179,7 @@ int GrammarWriter::writeGrammar(UFILE *output) {
 		}
 	}
 	found = false;
-	for (rule_iter = rule_by_line.begin() ; rule_iter != rule_by_line.end() ; rule_iter++) {
+	const_foreach (RuleByLineMap, rule_by_line, rule_iter, rule_iter_end) {
 		const Rule &r = *(rule_iter->second);
 		if (r.section == -3) {
 			if (!found) {
