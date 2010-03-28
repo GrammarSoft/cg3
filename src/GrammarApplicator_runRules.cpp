@@ -41,9 +41,9 @@ void GrammarApplicator::updateRuleToCohorts(Cohort& c, const uint32_t& rsit) {
 	current->valid_rules.insert(r->line);
 }
 
-void intersectInitialize(const uint32MiniSet& first, const uint32Set& second, uint32Vector& intersects) {
+void intersectInitialize(const uint32SortedVector& first, const uint32Set& second, uint32Vector& intersects) {
 	intersects.reserve(std::max(first.size(), second.size()));
-	uint32MiniSet::const_iterator iiter = first.begin();
+	uint32SortedVector::const_iterator iiter = first.begin();
 	uint32Set::const_iterator oiter = second.begin();
 	while (oiter != second.end() && iiter != first.end()) {
 		while (oiter != second.end() && iiter != first.end() && *oiter < *iiter) {
@@ -60,7 +60,7 @@ void intersectInitialize(const uint32MiniSet& first, const uint32Set& second, ui
 	}
 }
 
-void intersectUpdate(const uint32MiniSet& first, const uint32Set& second, uint32Vector& intersects) {
+void intersectUpdate(const uint32SortedVector& first, const uint32Set& second, uint32Vector& intersects) {
 	/* This is never true, so don't bother...would be a good optimization otherwise.
 	if (intersects.empty()) {
 		intersectInitialize(first, second, intersects);
@@ -68,7 +68,7 @@ void intersectUpdate(const uint32MiniSet& first, const uint32Set& second, uint32
 	}
 	//*/
 	intersects.reserve(std::max(first.size(), second.size()));
-	uint32MiniSet::const_iterator iiter = first.begin();
+	uint32SortedVector::const_iterator iiter = first.begin();
 	uint32Set::const_iterator oiter = second.begin();
 	uint32Vector::iterator ins = intersects.begin();
 	while (oiter != second.end() && iiter != first.end()) {
@@ -89,7 +89,7 @@ void intersectUpdate(const uint32MiniSet& first, const uint32Set& second, uint32
 	}
 }
 
-void GrammarApplicator::updateValidRules(const uint32MiniSet& rules, uint32Vector &intersects, const uint32_t& hash, Reading &reading) {
+void GrammarApplicator::updateValidRules(const uint32SortedVector& rules, uint32Vector &intersects, const uint32_t& hash, Reading &reading) {
 	uint32HashSetuint32HashMap::const_iterator it = grammar->rules_by_tag.find(hash);
 	if (it != grammar->rules_by_tag.end()) {
 		SingleWindow &current = *(reading.parent->parent);
@@ -118,7 +118,7 @@ void GrammarApplicator::indexSingleWindow(SingleWindow &current) {
 	}
 }
 
-uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow &current, uint32MiniSet &rules) {
+uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow &current, uint32SortedVector &rules) {
 	uint32_t retval = RV_NOTHING;
 	bool section_did_good = false;
 	bool delimited = false;

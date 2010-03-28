@@ -137,12 +137,12 @@
     <ClInclude Include="src\IGrammarParser.h" />
     <ClInclude Include="src\inlines.h" />
     <ClInclude Include="src\macros.h" />
-    <ClInclude Include="src\miniset.h" />
     <ClInclude Include="src\options.h" />
     <ClInclude Include="src\Reading.h" />
     <ClInclude Include="src\Rule.h" />
     <ClInclude Include="src\Set.h" />
     <ClInclude Include="src\SingleWindow.h" />
+    <ClInclude Include="src\sorted_vector.hpp" />
     <ClInclude Include="src\stdafx.h" />
     <ClInclude Include="src\Strings.h" />
     <ClInclude Include="src\Tag.h" />

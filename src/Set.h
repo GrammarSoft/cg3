@@ -25,7 +25,7 @@
 
 #include "stdafx.h"
 #include "CompositeTag.h"
-#include "miniset.h"
+#include "sorted_vector.hpp"
 
 namespace CG3 {
 	class Grammar;
@@ -51,9 +51,9 @@ namespace CG3 {
 		uint32Set tags_set;
 		CompositeTagHashSet tags;
 		TagHashSet single_tags;
-		uint32MiniSet single_tags_hash;
+		uint32SortedVector single_tags_hash;
 		TagHashSet ff_tags;
-		uint32MiniSet ff_tags_hash;
+		uint32SortedVector ff_tags_hash;
 
 		uint32Vector set_ops;
 		uint32Vector sets;
