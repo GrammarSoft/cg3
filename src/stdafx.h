@@ -53,12 +53,9 @@
 #include <climits>
 #include <cassert>
 #include <sys/stat.h>
+#include <stdint.h> // C99 or C++0x or C++ TR1 will have this header. ToDo: Change to <cstdint> when C++0x broader support gets under way.
 
 #ifdef _MSC_VER
-	// Test for MSVC++ >= 10.0 (MSVS 2010)
-	#if _MSC_VER >= 1600
-		#include <cstdint>
-	#endif
 	#ifdef HAVE_BOOST
 		#include <boost/unordered_set.hpp>
 		#include <boost/unordered_map.hpp>

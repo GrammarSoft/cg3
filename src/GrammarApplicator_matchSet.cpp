@@ -94,22 +94,28 @@ bool GrammarApplicator::doesTagMatchSet(const uint32_t tag, const Set &set) {
 bool GrammarApplicator::doesTagMatchReading(const Reading &reading, const Tag &tag, bool unif_mode) {
 	bool retval = false;
 	bool match = true;
+	int32_t truth = 0;
 	uint32SortedVector::const_iterator itf, ite = reading.tags_plain.end();
 
-	bool raw_in = (reading.tags_plain_bloom & tag.hash) == tag.hash;
+	bool raw_in = reading.tags_plain_bloom.matches(tag.hash);
 	if (tag.type & T_FAILFAST) {
 		itf = reading.tags_plain.find(tag.plain_hash);
 		raw_in = (itf != ite);
 	}
-	else if (raw_in) {
+	else if (raw_in && !tag.is_special) {
+		++truth;
 		itf = reading.tags_plain.find(tag.hash);
 		raw_in = (itf != ite);
+	}
+	else {
+		--truth;
 	}
 
 	if (!tag.is_special || tag.type == T_FAILFAST) {
 		match = raw_in;
 	}
-	else if ((tag.type & T_REGEXP) && !reading.tags_textual.empty()) {
+	else if (tag.type & T_REGEXP) {
+		match = false;
 		const_foreach (uint32SortedVector, reading.tags_textual, mter, mter_end) {
 			uint32_t ih = hash_sdbm_uint32_t(tag.hash, *mter);
 			if (index_matches(index_regexp_no, ih)) {
@@ -156,7 +162,8 @@ bool GrammarApplicator::doesTagMatchReading(const Reading &reading, const Tag &t
 			}
 		}
 	}
-	else if ((tag.type & T_CASE_INSENSITIVE) && !reading.tags_textual.empty()) {
+	else if (tag.type & T_CASE_INSENSITIVE) {
+		match = false;
 		const_foreach (uint32SortedVector, reading.tags_textual, mter, mter_end) {
 			uint32_t ih = hash_sdbm_uint32_t(tag.hash, *mter);
 			if (index_matches(index_icase_no, ih)) {
@@ -187,6 +194,7 @@ bool GrammarApplicator::doesTagMatchReading(const Reading &reading, const Tag &t
 		}
 	}
 	else if (tag.type & T_REGEXP_ANY) {
+		match = false;
 		if (tag.type & T_BASEFORM) {
 			match = true;
 			if (unif_mode) {
@@ -235,7 +243,7 @@ bool GrammarApplicator::doesTagMatchReading(const Reading &reading, const Tag &t
 			}
 		}
 	}
-	else if (tag.type & T_NUMERICAL && !reading.tags_numerical.empty()) {
+	else if (tag.type & T_NUMERICAL) {
 		match = false;
 		const_foreach (Taguint32HashMap, reading.tags_numerical, mter, mter_end) {
 			const Tag &itag = *(mter->second);
