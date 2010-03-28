@@ -125,6 +125,7 @@
   <ItemGroup>
     <ClInclude Include="src\Anchor.h" />
     <ClInclude Include="src\BinaryGrammar.h" />
+    <ClInclude Include="src\bloomish.hpp" />
     <ClInclude Include="src\Cohort.h" />
     <ClInclude Include="src\CohortIterator.h" />
     <ClInclude Include="src\CompositeTag.h" />

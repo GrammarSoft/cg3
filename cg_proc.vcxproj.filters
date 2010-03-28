@@ -106,6 +106,9 @@
     <ClInclude Include="src\BinaryGrammar.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\bloomish.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="src\Cohort.h">
       <Filter>Header Files</Filter>
     </ClInclude>
