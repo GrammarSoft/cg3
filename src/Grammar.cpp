@@ -533,7 +533,7 @@ void Grammar::reindex(bool unused_sets) {
 
 	uint32Set sects;
 
-	for (iter_rule = rule_by_line.begin() ; iter_rule != rule_by_line.end() ; iter_rule++) {
+	foreach (RuleByLineMap, rule_by_line, iter_rule, iter_rule_end) {
 		if (iter_rule->second->section == -1) {
 			before_sections.push_back(iter_rule->second);
 		}

@@ -52,7 +52,7 @@ void intersectInitialize(const uint32SortedVector& first, const uint32Set& secon
 		while (oiter != second.end() && iiter != first.end() && *iiter < *oiter) {
 			++iiter;
 		}
-		while (oiter != second.end() && iiter != first.end() && *oiter == *iiter) {
+		if (oiter != second.end() && iiter != first.end() && *oiter == *iiter) {
 			intersects.push_back(*oiter);
 			++oiter;
 			++iiter;
@@ -61,16 +61,13 @@ void intersectInitialize(const uint32SortedVector& first, const uint32Set& secon
 }
 
 void intersectUpdate(const uint32SortedVector& first, const uint32Set& second, uint32Vector& intersects) {
-	/* This is never true, so don't bother...would be a good optimization otherwise.
 	if (intersects.empty()) {
 		intersectInitialize(first, second, intersects);
 		return;
 	}
-	//*/
 	intersects.reserve(std::max(first.size(), second.size()));
 	uint32SortedVector::const_iterator iiter = first.begin();
 	uint32Set::const_iterator oiter = second.begin();
-	uint32Vector::iterator ins = intersects.begin();
 	while (oiter != second.end() && iiter != first.end()) {
 		while (oiter != second.end() && iiter != first.end() && *oiter < *iiter) {
 			++oiter;
@@ -79,9 +76,9 @@ void intersectUpdate(const uint32SortedVector& first, const uint32Set& second, u
 			++iiter;
 		}
 		while (oiter != second.end() && iiter != first.end() && *oiter == *iiter) {
-			ins = std::lower_bound(ins, intersects.end(), *oiter);
+			uint32Vector::iterator ins = std::lower_bound(intersects.begin(), intersects.end(), *oiter);
 			if (ins == intersects.end() || *ins != *oiter) {
-				ins = intersects.insert(ins, *oiter);
+				intersects.insert(ins, *oiter);
 			}
 			++oiter;
 			++iiter;
@@ -462,9 +459,10 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow &current, uint32
 						if (tagb != reading.tags_list.size()) {
 							reading.hit_by.push_back(rule.line);
 							reading.noprint = false;
+							uint32List::iterator tpos = reading.tags_list.end();
 							foreach (uint32List, reading.tags_list, tfind, tfind_end) {
 								if (*tfind == tloc) {
-									tfind++;
+									tpos = ++tfind;
 									break;
 								}
 							}
@@ -480,7 +478,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow &current, uint32
 									mappings.push_back(*tter);
 								}
 								else {
-									reading.tags_list.insert(tfind, (*tter)->hash);
+									reading.tags_list.insert(tpos, (*tter)->hash);
 								}
 								updateValidRules(rules, intersects, (*tter)->hash, reading);
 								iter_rules = std::lower_bound(intersects.begin(), intersects.end(), rule.line);
