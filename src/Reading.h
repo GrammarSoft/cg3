@@ -26,6 +26,7 @@
 #include "stdafx.h"
 #include "Tag.h"
 #include "sorted_vector.hpp"
+#include "bloomish.hpp"
 
 namespace CG3 {
 	class Cohort;
@@ -42,9 +43,9 @@ namespace CG3 {
 		uint32_t hash;
 		uint32_t hash_plain;
 		uint32_t number;
-		uint32_t tags_bloom;
-		uint32_t tags_plain_bloom;
-		uint32_t tags_textual_bloom;
+		uint32Bloomish tags_bloom;
+		uint32Bloomish tags_plain_bloom;
+		uint32Bloomish tags_textual_bloom;
 		Tag *mapping;
 		Cohort *parent;
 		uint32Vector hit_by;

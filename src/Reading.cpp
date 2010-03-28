@@ -34,9 +34,6 @@ baseform(0),
 hash(0),
 hash_plain(0),
 number(0),
-tags_bloom(0),
-tags_plain_bloom(0),
-tags_textual_bloom(0),
 mapping(0),
 parent(p)
 {
