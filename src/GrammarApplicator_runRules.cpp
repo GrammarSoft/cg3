@@ -52,7 +52,7 @@ void intersectInitialize(const uint32SortedVector& first, const uint32Set& secon
 		while (oiter != second.end() && iiter != first.end() && *iiter < *oiter) {
 			++iiter;
 		}
-		if (oiter != second.end() && iiter != first.end() && *oiter == *iiter) {
+		while (oiter != second.end() && iiter != first.end() && *oiter == *iiter) {
 			intersects.push_back(*oiter);
 			++oiter;
 			++iiter;
