@@ -25,7 +25,7 @@
 
 #include "stdafx.h"
 #include "Tag.h"
-#include "miniset.h"
+#include "sorted_vector.hpp"
 
 namespace CG3 {
 	class Cohort;
@@ -49,9 +49,9 @@ namespace CG3 {
 		Cohort *parent;
 		uint32Vector hit_by;
 		uint32List tags_list;
-		uint32MiniSet tags;
-		uint32MiniSet tags_plain;
-		uint32MiniSet tags_textual;
+		uint32SortedVector tags;
+		uint32SortedVector tags_plain;
+		uint32SortedVector tags_textual;
 		Taguint32HashMap tags_numerical;
 
 		Reading(Cohort *p);

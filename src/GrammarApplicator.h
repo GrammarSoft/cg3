@@ -26,7 +26,7 @@
 #include "stdafx.h"
 #include "Tag.h"
 #include "CohortIterator.h"
-#include "miniset.h"
+#include "sorted_vector.hpp"
 
 namespace CG3 {
 	class Window;
@@ -101,7 +101,7 @@ namespace CG3 {
 		uint32Set dep_deep_seen;
 
 		uint32_t numsections;
-		typedef std::map<int32_t,uint32MiniSet> RSType;
+		typedef std::map<int32_t,uint32SortedVector> RSType;
 		RSType runsections;
 
 		CohortIterator ci_CohortIterator;
@@ -154,8 +154,8 @@ namespace CG3 {
 		void indexSingleWindow(SingleWindow &current);
 		int runGrammarOnWindow();
 		int runGrammarOnSingleWindow(SingleWindow &current);
-		void updateValidRules(const uint32MiniSet& rules, uint32Vector &intersects, const uint32_t& hash, Reading &reading);
-		uint32_t runRulesOnSingleWindow(SingleWindow &current, uint32MiniSet &rules);
+		void updateValidRules(const uint32SortedVector& rules, uint32Vector &intersects, const uint32_t& hash, Reading &reading);
+		uint32_t runRulesOnSingleWindow(SingleWindow &current, uint32SortedVector &rules);
 
 		Cohort *runSingleTest(Cohort *cohort, const ContextualTest *test, bool *brk, bool *retval, Cohort **deep = 0, Cohort *origin = 0);
 		Cohort *runSingleTest(SingleWindow *sWindow, size_t i, const ContextualTest *test, bool *brk, bool *retval, Cohort **deep = 0, Cohort *origin = 0);

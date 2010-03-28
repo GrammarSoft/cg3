@@ -20,21 +20,21 @@
 */
 
 #pragma once
-#ifndef __MINISET_H
-#define __MINISET_H
+#ifndef __SORTED_VECTOR_H
+#define __SORTED_VECTOR_H
 #include <vector>
 #include <algorithm>
 
 namespace CG3 {
 
 template<typename T>
-class miniset {
+class sorted_vector {
 private:
 	typedef typename std::vector<T> Cont;
+	typedef typename Cont::iterator iterator;
 	Cont elements;
 
 public:
-	typedef typename Cont::iterator iterator;
 	typedef typename Cont::const_iterator const_iterator;
 	typedef typename Cont::size_type size_type;
 	typedef T value_type;
@@ -87,7 +87,7 @@ public:
 	}
 };
 
-typedef miniset<uint32_t> uint32MiniSet;
+typedef sorted_vector<uint32_t> uint32SortedVector;
 
 }
 

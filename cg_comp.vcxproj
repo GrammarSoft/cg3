@@ -126,6 +126,7 @@
     <ClInclude Include="win32\libgen.h" />
     <ClInclude Include="src\Rule.h" />
     <ClInclude Include="src\Set.h" />
+    <ClInclude Include="src\sorted_vector.hpp" />
     <ClInclude Include="src\stdafx.h" />
     <ClInclude Include="src\Strings.h" />
     <ClInclude Include="src\Tag.h" />

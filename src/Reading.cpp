@@ -72,7 +72,7 @@ tags_numerical(r.tags_numerical)
 uint32_t Reading::rehash() {
 	hash = 0;
 	hash_plain = 0;
-	uint32MiniSet::const_iterator iter;
+	uint32SortedVector::const_iterator iter;
 	for (iter = tags.begin() ; iter != tags.end() ; iter++) {
 		if (!mapping || mapping->hash != *iter) {
 			hash = hash_sdbm_uint32_t(*iter, hash);
