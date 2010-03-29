@@ -26,15 +26,19 @@
 #define index_matches(index, entry) ((index).find(entry) != (index).end())
 
 #define foreach(type, container, iter, iter_end) \
+	if (!(container).empty()) \
 	for (type::iterator iter = (container).begin(), iter_end = (container).end() ; iter != iter_end ; ++iter)
 
 #define const_foreach(type, container, iter, iter_end) \
+	if (!(container).empty()) \
 	for (type::const_iterator iter = (container).begin(), iter_end = (container).end() ; iter != iter_end ; ++iter)
 
 #define reverse_foreach(type, container, iter, iter_end) \
+	if (!(container).empty()) \
 	for (type::reverse_iterator iter = (container).rbegin(), iter_end = (container).rend() ; iter != iter_end ; ++iter)
 
 #define reverse_const_foreach(type, container, iter, iter_end) \
+	if (!(container).empty()) \
 	for (type::reverse_const_iterator iter = (container).rbegin(), iter_end = (container).rend() ; iter != iter_end ; ++iter)
 
 #endif
