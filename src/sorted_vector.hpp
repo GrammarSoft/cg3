@@ -42,6 +42,18 @@ public:
 	typedef T key_type;
 
 	bool insert(T t) {
+		if (elements.empty()) {
+			elements.push_back(t);
+			return true;
+		}
+		else if (elements.back() < t) {
+			elements.push_back(t);
+			return true;
+		}
+		else if (t < elements.front()) {
+			elements.insert(elements.begin(), t);
+			return true;
+		}
 		iterator it = std::lower_bound(elements.begin(), elements.end(), t);
 		if (it == elements.end() || *it != t) {
 			elements.insert(it, t);
@@ -51,6 +63,15 @@ public:
 	}
 
 	bool erase(T t) {
+		if (elements.empty()) {
+			return false;
+		}
+		else if (elements.back() < t) {
+			return false;
+		}
+		else if (t < elements.front()) {
+			return false;
+		}
 		iterator it = std::lower_bound(elements.begin(), elements.end(), t);
 		if (it != elements.end() && *it == t) {
 			elements.erase(it);
@@ -60,6 +81,15 @@ public:
 	}
 
 	const_iterator find(T t) const {
+		if (elements.empty()) {
+			return elements.end();
+		}
+		else if (elements.back() < t) {
+			return elements.end();
+		}
+		else if (t < elements.front()) {
+			return elements.end();
+		}
 		const_iterator it = std::lower_bound(elements.begin(), elements.end(), t);
 		if (it != elements.end() && *it != t) {
 			return elements.end();
