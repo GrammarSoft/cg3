@@ -61,13 +61,16 @@ void intersectInitialize(const uint32SortedVector& first, const uint32Set& secon
 }
 
 void intersectUpdate(const uint32SortedVector& first, const uint32Set& second, uint32Vector& intersects) {
+	/* This is never true, so don't bother...
 	if (intersects.empty()) {
 		intersectInitialize(first, second, intersects);
 		return;
 	}
+	//*/
 	intersects.reserve(std::max(first.size(), second.size()));
 	uint32SortedVector::const_iterator iiter = first.begin();
 	uint32Set::const_iterator oiter = second.begin();
+	uint32Vector::iterator ins = intersects.begin();
 	while (oiter != second.end() && iiter != first.end()) {
 		while (oiter != second.end() && iiter != first.end() && *oiter < *iiter) {
 			++oiter;
@@ -76,9 +79,9 @@ void intersectUpdate(const uint32SortedVector& first, const uint32Set& second, u
 			++iiter;
 		}
 		while (oiter != second.end() && iiter != first.end() && *oiter == *iiter) {
-			uint32Vector::iterator ins = std::lower_bound(intersects.begin(), intersects.end(), *oiter);
+			ins = std::lower_bound(ins, intersects.end(), *oiter);
 			if (ins == intersects.end() || *ins != *oiter) {
-				intersects.insert(ins, *oiter);
+				ins = intersects.insert(ins, *oiter);
 			}
 			++oiter;
 			++iiter;
