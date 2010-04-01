@@ -32,10 +32,16 @@ previous(0),
 parent(p),
 text(0)
 {
-	// Nothing in the actual body...
+	#ifdef CG_TRACE_OBJECTS
+	std::cerr << "OBJECT: " << __PRETTY_FUNCTION__ << std::endl;
+	#endif
 }
 
 SingleWindow::~SingleWindow() {
+	#ifdef CG_TRACE_OBJECTS
+	std::cerr << "OBJECT: " << __PRETTY_FUNCTION__ << ": " << cohorts.size() << std::endl;
+	#endif
+
 	foreach (CohortVector, cohorts, iter, iter_end) {
 		delete (*iter);
 	}
