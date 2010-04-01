@@ -22,6 +22,7 @@
 #pragma once
 #ifndef __SORTED_VECTOR_HPP
 #define __SORTED_VECTOR_HPP
+#include <iostream>
 #include <vector>
 #include <algorithm>
 #include <stdint.h> // C99 or C++0x or C++ TR1 will have this header. ToDo: Change to <cstdint> when C++0x broader support gets under way.
@@ -40,6 +41,16 @@ public:
 	typedef typename Cont::size_type size_type;
 	typedef T value_type;
 	typedef T key_type;
+
+	#ifdef CG_TRACE_OBJECTS
+	sorted_vector() {
+		std::cerr << "OBJECT: " << __PRETTY_FUNCTION__ << std::endl;
+	}
+
+	~sorted_vector() {
+		std::cerr << "OBJECT: " << __PRETTY_FUNCTION__ << ": " << elements.size() << std::endl;
+	}
+	#endif
 
 	bool insert(T t) {
 		if (elements.empty()) {

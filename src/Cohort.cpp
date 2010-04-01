@@ -49,10 +49,16 @@ text(0),
 prev(0),
 next(0)
 {
-	// Nothing in the actual body...
+	#ifdef CG_TRACE_OBJECTS
+	std::cerr << "OBJECT: " << __PRETTY_FUNCTION__ << std::endl;
+	#endif
 }
 
 Cohort::~Cohort() {
+	#ifdef CG_TRACE_OBJECTS
+	std::cerr << "OBJECT: " << __PRETTY_FUNCTION__ << ": " << readings.size() << ", " << deleted.size() << ", " << delayed.size() << std::endl;
+	#endif
+
 	foreach (ReadingList, readings, iter1, iter1_end) {
 		delete (*iter1);
 	}

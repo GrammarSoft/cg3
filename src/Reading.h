@@ -58,6 +58,12 @@ namespace CG3 {
 		Reading(Cohort *p);
 		Reading(const Reading &r);
 
+		#ifdef CG_TRACE_OBJECTS
+		~Reading() {
+			std::cerr << "OBJECT: " << __PRETTY_FUNCTION__ << ": " << tags.size() << ", " << hit_by.size() << std::endl;
+		}
+		#endif
+
 		uint32_t rehash();
 		static bool cmp_number(Reading *a, Reading *b);
 	};
