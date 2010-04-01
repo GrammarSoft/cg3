@@ -37,7 +37,9 @@ number(0),
 mapping(0),
 parent(p)
 {
-	// Nothing in the actual body...
+	#ifdef CG_TRACE_OBJECTS
+	std::cerr << "OBJECT: " << __PRETTY_FUNCTION__ << std::endl;
+	#endif
 }
 
 Reading::Reading(const Reading& r) :
@@ -63,7 +65,9 @@ tags_plain(r.tags_plain),
 tags_textual(r.tags_textual),
 tags_numerical(r.tags_numerical)
 {
-	// Nothing in the actual body...
+	#ifdef CG_TRACE_OBJECTS
+	std::cerr << "OBJECT: " << __PRETTY_FUNCTION__ << std::endl;
+	#endif
 }
 
 uint32_t Reading::rehash() {

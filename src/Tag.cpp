@@ -45,10 +45,16 @@ comparison_key(0),
 tag(0),
 regexp(0)
 {
-	// Nothing in the actual body...
+	#ifdef CG_TRACE_OBJECTS
+	std::cerr << "OBJECT: " << __PRETTY_FUNCTION__ << std::endl;
+	#endif
 }
 
 Tag::~Tag() {
+	#ifdef CG_TRACE_OBJECTS
+	std::cerr << "OBJECT: " << __PRETTY_FUNCTION__ << std::endl;
+	#endif
+
 	if (tag) {
 		delete[] tag;
 		tag = 0;
