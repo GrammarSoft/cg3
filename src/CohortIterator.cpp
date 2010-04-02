@@ -73,7 +73,7 @@ TopologyLeftIter& TopologyLeftIter::operator++() {
 	else {
 		do {
 			m_cohort = m_cohort->prev;
-		} while (m_cohort && m_cohort->is_enclosed);
+		} while (m_cohort && (m_cohort->type & CT_ENCLOSED));
 	}
 	return *this;
 }
@@ -93,7 +93,7 @@ TopologyRightIter& TopologyRightIter::operator++() {
 	else {
 		do {
 			m_cohort = m_cohort->next;
-		} while (m_cohort && m_cohort->is_enclosed);
+		} while (m_cohort && (m_cohort->type & CT_ENCLOSED));
 	}
 	return *this;
 }

@@ -35,8 +35,7 @@ namespace CG3 {
 Cohort::Cohort(SingleWindow *p) :
 num_is_current(false),
 dep_done(false),
-is_enclosed(false),
-is_related(false),
+type(0),
 global_number(0),
 local_number(0),
 wordform(0),

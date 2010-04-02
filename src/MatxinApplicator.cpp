@@ -219,7 +219,7 @@ int MatxinApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 		}
 			
 		if (incohort) {
-			if (cCohort && cSWindow->cohorts.size() >= soft_limit && grammar->soft_delimiters && doesTagMatchSet(cCohort->wordform, *(grammar->soft_delimiters))) {
+			if (cCohort && cSWindow->cohorts.size() >= soft_limit && grammar->soft_delimiters && doesSetMatchCohortNormal(*cCohort, grammar->soft_delimiters->hash)) {
 			  // ie. we've read some cohorts
 				// Create magic reading
 				if (cCohort->readings.empty()) {
@@ -237,7 +237,7 @@ int MatxinApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 				cCohort = 0;
 				numCohorts++;
 			} // end >= soft_limit
-			if (cCohort && (cSWindow->cohorts.size() >= hard_limit || (grammar->delimiters && doesTagMatchSet(cCohort->wordform, *(grammar->delimiters))))) {
+			if (cCohort && (cSWindow->cohorts.size() >= hard_limit || (grammar->delimiters && doesSetMatchCohortNormal(*cCohort, grammar->delimiters->hash)))) {
 				if (cSWindow->cohorts.size() >= hard_limit) {
 					u_fprintf(ux_stderr, "Warning: Hard limit of %u cohorts reached at line %u - forcing break.\n", hard_limit, numLines);
 					u_fflush(ux_stderr);
