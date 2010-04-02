@@ -164,7 +164,6 @@ namespace CG3 {
 		Cohort *runParenthesisTest(SingleWindow *sWindow, const Cohort *current, const ContextualTest *test, Cohort **deep = 0, Cohort *origin = 0);
 		Cohort *runRelationTest(SingleWindow *sWindow, Cohort *current, const ContextualTest *test, Cohort **deep = 0, Cohort *origin = 0);
 
-		bool doesTagMatchSet(const uint32_t tag, const Set &set);
 		bool doesTagMatchReading(const Reading &reading, const Tag &tag, bool unif_mode = false);
 		bool doesSetMatchReading_tags(const Reading &reading, const Set &theset, bool unif_mode = false);
 		bool doesSetMatchReading(Reading &reading, const uint32_t set, bool bypass_index = false, bool unif_mode = false);

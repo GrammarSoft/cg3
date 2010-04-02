@@ -33,12 +33,16 @@ namespace CG3 {
 	typedef std::map<uint32_t,uint32Set> RelationCtn;
 	typedef std::vector<Cohort*> CohortVector;
 
+	enum COHORT_TYPE {
+		CT_ENCLOSED       = 1u,
+		CT_RELATED        = 2u,
+	};
+
 	class Cohort {
 	public:
 		bool num_is_current;
 		bool dep_done;
-		bool is_enclosed;
-		bool is_related;
+		uint8_t type;
 		uint32_t global_number;
 		uint32_t local_number;
 		uint32_t wordform;

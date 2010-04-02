@@ -138,16 +138,16 @@ gotaline:
 			--packoff;
 		}
 		if (!ignoreinput && cleaned[0] == '"' && cleaned[1] == '<') {
-			if (cCohort && cSWindow->cohorts.size() >= soft_limit && grammar->soft_delimiters && doesTagMatchSet(cCohort->wordform, *(grammar->soft_delimiters))) {
+			if (cCohort && cCohort->readings.empty()) {
+				cReading = initEmptyCohort(*cCohort);
+				lReading = cReading;
+			}
+			if (cCohort && cSWindow->cohorts.size() >= soft_limit && grammar->soft_delimiters && doesSetMatchCohortNormal(*cCohort, grammar->soft_delimiters->hash)) {
 				if (cSWindow->cohorts.size() >= soft_limit) {
 					if (verbosity_level > 0) {
 						u_fprintf(ux_stderr, "Warning: Soft limit of %u cohorts reached at line %u but found suitable soft delimiter.\n", soft_limit, numLines);
 						u_fflush(ux_stderr);
 					}
-				}
-				if (cCohort->readings.empty()) {
-					cReading = initEmptyCohort(*cCohort);
-					lReading = cReading;
 				}
 				foreach (ReadingList, cCohort->readings, iter, iter_end) {
 					addTagToReading(**iter, endtag);
@@ -160,14 +160,10 @@ gotaline:
 				cCohort = 0;
 				numCohorts++;
 			}
-			if (cCohort && (cSWindow->cohorts.size() >= hard_limit || (grammar->delimiters && doesTagMatchSet(cCohort->wordform, *(grammar->delimiters))))) {
+			if (cCohort && (cSWindow->cohorts.size() >= hard_limit || (grammar->delimiters && doesSetMatchCohortNormal(*cCohort, grammar->delimiters->hash)))) {
 				if (cSWindow->cohorts.size() >= hard_limit) {
 					u_fprintf(ux_stderr, "Warning: Hard limit of %u cohorts reached at line %u - forcing break.\n", hard_limit, numLines);
 					u_fflush(ux_stderr);
-				}
-				if (cCohort->readings.empty()) {
-					cReading = initEmptyCohort(*cCohort);
-					lReading = cReading;
 				}
 				foreach (ReadingList, cCohort->readings, iter, iter_end) {
 					addTagToReading(**iter, endtag);
@@ -209,10 +205,6 @@ gotaline:
 			if (cCohort && cSWindow) {
 				cSWindow->appendCohort(cCohort);
 				lCohort = cCohort;
-				if (cCohort->readings.empty()) {
-					cReading = initEmptyCohort(*cCohort);
-					lReading = cReading;
-				}
 			}
 			if (gWindow->next.size() > num_windows) {
 				while (!gWindow->previous.empty() && gWindow->previous.size() > num_windows) {

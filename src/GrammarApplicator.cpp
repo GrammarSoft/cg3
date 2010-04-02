@@ -294,7 +294,7 @@ void GrammarApplicator::printReading(Reading *reading, UFILE *output) {
 		}
 	}
 
-	if (reading->parent->is_related) {
+	if (reading->parent->type & CT_RELATED) {
 		u_fprintf(output, "ID:%u ", reading->parent->global_number);
 		if (!reading->parent->relations.empty()) {
 			foreach(RelationCtn, reading->parent->relations, miter, miter_end) {
