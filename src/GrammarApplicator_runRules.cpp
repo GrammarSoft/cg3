@@ -167,7 +167,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow &current, uint32
 			}
 
 			uint32_t c = cohort->local_number;
-			if (cohort->is_enclosed || cohort->parent != &current) {
+			if ((cohort->type & CT_ENCLOSED) || cohort->parent != &current) {
 				continue;
 			}
 			if (cohort->readings.empty()) {
@@ -663,13 +663,13 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow &current, uint32
 								reading.hit_by.push_back(rule.line);
 								reading.noprint = false;
 								if (type == K_ADDRELATION) {
-									attach->is_related = true;
-									cohort->is_related = true;
+									attach->type |= CT_RELATED;
+									cohort->type |= CT_RELATED;
 									cohort->addRelation(rule.maplist.front()->hash, attach->global_number);
 								}
 								else if (type == K_SETRELATION) {
-									attach->is_related = true;
-									cohort->is_related = true;
+									attach->type |= CT_RELATED;
+									cohort->type |= CT_RELATED;
 									cohort->setRelation(rule.maplist.front()->hash, attach->global_number);
 								}
 								else {
@@ -703,14 +703,14 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow &current, uint32
 								reading.hit_by.push_back(rule.line);
 								reading.noprint = false;
 								if (type == K_ADDRELATIONS) {
-									attach->is_related = true;
-									cohort->is_related = true;
+									attach->type |= CT_RELATED;
+									cohort->type |= CT_RELATED;
 									cohort->addRelation(rule.maplist.front()->hash, attach->global_number);
 									attach->addRelation(rule.sublist.front(), cohort->global_number);
 								}
 								else if (type == K_SETRELATIONS) {
-									attach->is_related = true;
-									cohort->is_related = true;
+									attach->type |= CT_RELATED;
+									cohort->type |= CT_RELATED;
 									cohort->setRelation(rule.maplist.front()->hash, attach->global_number);
 									attach->setRelation(rule.sublist.front(), cohort->global_number);
 								}
@@ -872,7 +872,7 @@ int GrammarApplicator::runGrammarOnWindow() {
 					}
 					current->cohorts.resize(current->cohorts.size() - encs.size());
 					foreach (CohortVector, encs, eiter, eiter_end) {
-						(*eiter)->is_enclosed = true;
+						(*eiter)->type |= CT_ENCLOSED;
 					}
 					foreach (CohortVector, c->enclosed, eiter2, eiter2_end) {
 						encs.push_back(*eiter2);
@@ -927,7 +927,7 @@ label_runGrammarOnWindow_begin:
 					current->cohorts[i+j+1] = c->enclosed[j];
 					current->cohorts[i+j+1]->local_number = i+j+1;
 					current->cohorts[i+j+1]->parent = current;
-					current->cohorts[i+j+1]->is_enclosed = false;
+					current->cohorts[i+j+1]->type &= ~CT_ENCLOSED;
 				}
 				par_left_tag = c->enclosed[0]->is_pleft;
 				par_right_tag = c->enclosed[ne-1]->is_pright;

@@ -66,31 +66,6 @@ bool TagSet_SubsetOf_TSet(const TagSet &a, const T &b) {
 	return true;
 }
 
-bool GrammarApplicator::doesTagMatchSet(const uint32_t tag, const Set &set) {
-	bool retval = false;
-	
-	stdext::hash_map<uint32_t, Tag*>::const_iterator itag = grammar->single_tags.find(tag);
-	if (itag == grammar->single_tags.end()) {
-		return false;
-	}
-
-	Tag *t = itag->second;
-	if (set.single_tags.find(t) != set.single_tags.end()) {
-		retval = true;
-	}
-	else {
-		CompositeTag *ctag = new CompositeTag();
-		ctag->addTag(t);
-		ctag->rehash();
-
-		if (set.tags.find(ctag) != set.tags.end()) {
-			retval = true;
-		}
-		delete ctag;
-	}
-	return retval;
-}
-
 bool GrammarApplicator::doesTagMatchReading(const Reading &reading, const Tag &tag, bool unif_mode) {
 	bool retval = false;
 	bool match = false;

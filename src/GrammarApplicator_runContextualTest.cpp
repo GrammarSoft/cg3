@@ -623,7 +623,7 @@ Cohort *GrammarApplicator::runParenthesisTest(SingleWindow *sWindow, const Cohor
 }
 
 Cohort *GrammarApplicator::runRelationTest(SingleWindow *sWindow, Cohort *current, const ContextualTest *test, Cohort **deep, Cohort *origin) {
-	if (!current->is_related || current->relations.empty()) {
+	if (!(current->type & CT_RELATED) || current->relations.empty()) {
 		return 0;
 	}
 	Cohort *rv = 0;
