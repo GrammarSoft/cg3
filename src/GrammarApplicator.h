@@ -144,6 +144,7 @@ namespace CG3 {
 		uint32HashSet index_icase_no;
 		uint32HashSet index_readingSet_yes;
 		uint32HashSet index_readingSet_no;
+		uint32HashSet index_ruleCohort_no;
 		void resetIndexes();
 	
 		Tag *addTag(const UChar *tag);

@@ -144,7 +144,7 @@ Cohort *GrammarApplicator::runContextualTest(SingleWindow *sWindow, size_t posit
 		sWindow = mark->parent;
 		position = mark->local_number;
 	}
-	int32_t pos = int32_t(position) + test->offset;
+	int32_t pos = static_cast<int32_t>(position) + test->offset;
 
 	if (test->tmpl) {
 		uint32_t orgpos = test->tmpl->pos;

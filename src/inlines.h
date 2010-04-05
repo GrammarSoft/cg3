@@ -280,6 +280,11 @@ inline void CG3Quit(const int32_t c = 0, const char* file = 0, const uint32_t li
 }
 // #define CG3Quit(a) CG3Quit((a), __FILE__, __LINE__)
 
+template<typename Cont, typename VT>
+inline bool index_matches(const Cont& index, const VT& entry) {
+	return (index.find(entry) != index.end());
+}
+
 }
 
 #endif

@@ -71,7 +71,6 @@ bool GrammarApplicator::doesTagMatchReading(const Reading &reading, const Tag &t
 	bool match = false;
 
 	if (!tag.is_special || tag.type & T_FAILFAST) {
-		int32_t truth = 0;
 		uint32SortedVector::const_iterator itf, ite = reading.tags_plain.end();
 		bool raw_in = reading.tags_plain_bloom.matches(tag.hash);
 		if (tag.type & T_FAILFAST) {
@@ -79,12 +78,8 @@ bool GrammarApplicator::doesTagMatchReading(const Reading &reading, const Tag &t
 			raw_in = (itf != ite);
 		}
 		else if (raw_in) {
-			++truth;
 			itf = reading.tags_plain.find(tag.hash);
 			raw_in = (itf != ite);
-		}
-		else {
-			--truth;
 		}
 		match = raw_in;
 	}
