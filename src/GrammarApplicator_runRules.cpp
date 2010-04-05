@@ -207,6 +207,12 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow &current, uint32
 				}
 			}
 
+			uint32_t ih = hash_sdbm_uint32_t(rule.line, cohort->global_number);
+			if (index_matches(index_ruleCohort_no, ih)) {
+				continue;
+			}
+			index_ruleCohort_no.insert(ih);
+
 			size_t num_active = 0;
 			size_t num_iff = 0;
 
@@ -322,6 +328,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow &current, uint32
 					if (good) {
 						removed.push_back(&reading);
 						reading.deleted = true;
+						index_ruleCohort_no.clear();
 						reading.hit_by.push_back(rule.line);
 						section_did_good = true;
 						if (debug_level > 0) {
@@ -332,11 +339,13 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow &current, uint32
 				else if (type == K_SELECT) {
 					if (good) {
 						selected.push_back(&reading);
+						index_ruleCohort_no.clear();
 						reading.hit_by.push_back(rule.line);
 					}
 					else {
 						removed.push_back(&reading);
 						reading.deleted = true;
+						index_ruleCohort_no.clear();
 						reading.hit_by.push_back(rule.line);
 					}
 					if (good) {
@@ -396,6 +405,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow &current, uint32
 						break;
 					}
 					else if (rule.type == K_ADD || rule.type == K_MAP) {
+						index_ruleCohort_no.clear();
 						reading.hit_by.push_back(rule.line);
 						reading.noprint = false;
 						TagList mappings;
@@ -418,6 +428,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow &current, uint32
 						}
 					}
 					else if (rule.type == K_REPLACE) {
+						index_ruleCohort_no.clear();
 						reading.hit_by.push_back(rule.line);
 						reading.noprint = false;
 						reading.tags_list.clear();
@@ -460,6 +471,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow &current, uint32
 							}
 						}
 						if (tagb != reading.tags_list.size()) {
+							index_ruleCohort_no.clear();
 							reading.hit_by.push_back(rule.line);
 							reading.noprint = false;
 							uint32List::iterator tpos = reading.tags_list.end();
@@ -496,6 +508,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow &current, uint32
 					else if (rule.type == K_APPEND && rule.line != did_append) {
 						Reading *cReading = cohort->allocateAppendReading();
 						numReadings++;
+						index_ruleCohort_no.clear();
 						cReading->hit_by.push_back(rule.line);
 						cReading->noprint = false;
 						addTagToReading(*cReading, cohort->wordform);
@@ -551,6 +564,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow &current, uint32
 										attached = attachParentChild(*cohort, *attach, (rule.flags & RF_ALLOWLOOP) != 0, (rule.flags & RF_ALLOWCROSS) != 0);
 									}
 									if (attached) {
+										index_ruleCohort_no.clear();
 										reading.hit_by.push_back(rule.line);
 										reading.noprint = false;
 										has_dep = true;
@@ -660,6 +674,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow &current, uint32
 								test = test->next;
 							}
 							if (good) {
+								index_ruleCohort_no.clear();
 								reading.hit_by.push_back(rule.line);
 								reading.noprint = false;
 								if (type == K_ADDRELATION) {
@@ -700,6 +715,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow &current, uint32
 								test = test->next;
 							}
 							if (good) {
+								index_ruleCohort_no.clear();
 								reading.hit_by.push_back(rule.line);
 								reading.noprint = false;
 								if (type == K_ADDRELATIONS) {
@@ -892,6 +908,7 @@ int GrammarApplicator::runGrammarOnWindow() {
 	uint32_t pass = 0;
 
 label_runGrammarOnWindow_begin:
+	index_ruleCohort_no.clear();
 	current = gWindow->current;
 
 	++pass;
