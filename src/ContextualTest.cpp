@@ -77,6 +77,8 @@ uint32_t ContextualTest::rehash() {
 	hash = hash_sdbm_uint32_t(hash, pos);
 	hash = hash_sdbm_uint32_t(hash, target);
 	hash = hash_sdbm_uint32_t(hash, barrier);
+	hash = hash_sdbm_uint32_t(hash, cbarrier);
+	hash = hash_sdbm_uint32_t(hash, relation);
 	hash = hash_sdbm_uint32_t(hash, abs(offset));
 	if (offset < 0) {
 		hash = hash_sdbm_uint32_t(hash, 5000);
@@ -84,12 +86,11 @@ uint32_t ContextualTest::rehash() {
 	if (linked) {
 		hash = hash_sdbm_uint32_t(hash, linked->rehash());
 	}
-	return hash;
-}
-
-uint32_t ContextualTest::getHash() {
-	if (hash == 0) {
-		rehash();
+	if (tmpl) {
+		hash = hash_sdbm_uint32_t(hash, tmpl->rehash());
+	}
+	foreach (std::list<ContextualTest*>, ors, iter, iter_end) {
+		hash = hash_sdbm_uint32_t(hash, (*iter)->rehash());
 	}
 	return hash;
 }

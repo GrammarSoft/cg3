@@ -652,6 +652,7 @@ label_parseTemplateRef:
 			t->pos |= POS_LOOK_DELAYED;
 		}
 	}
+	t->rehash();
 	return 0;
 }
 

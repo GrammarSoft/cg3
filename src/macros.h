@@ -23,8 +23,6 @@
 #ifndef __MACROS_H
 #define __MACROS_H
 
-#define index_matches(index, entry) ((index).find(entry) != (index).end())
-
 #define foreach(type, container, iter, iter_end) \
 	if (!(container).empty()) \
 	for (type::iterator iter = (container).begin(), iter_end = (container).end() ; iter != iter_end ; ++iter)

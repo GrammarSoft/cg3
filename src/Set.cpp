@@ -98,35 +98,19 @@ uint32_t Set::rehash() {
 }
 
 void Set::reindex(Grammar &grammar) {
-	if (is_tag_unified || is_set_unified || is_child_unified) {
-		is_special = true;
-		is_child_unified = true;
-	}
+	is_special = false;
+	is_child_unified = false;
 
 	if (sets.empty()) {
-		TagHashSet::const_iterator tomp_iter;
-		for (tomp_iter = single_tags.begin() ; tomp_iter != single_tags.end() ; tomp_iter++) {
-			Tag *tag = *tomp_iter;
-			if (tag->is_special) {
+		const_foreach(TagHashSet, single_tags, tomp_iter, tomp_iter_end) {
+			if ((*tomp_iter)->is_special) {
 				is_special = true;
 			}
 		}
-		CompositeTagHashSet::const_iterator comp_iter;
-		for (comp_iter = tags.begin() ; comp_iter != tags.end() ; comp_iter++) {
-			CompositeTag *curcomptag = *comp_iter;
-			if (curcomptag->tags.size() == 1) {
-				Tag *tag = *(curcomptag->tags.begin());
-				if (tag->is_special) {
+		const_foreach(CompositeTagHashSet, tags, comp_iter, comp_iter_end) {
+			const_foreach(TagSet, (*comp_iter)->tags_set, tag_iter, tag_iter_end) {
+				if ((*tag_iter)->is_special) {
 					is_special = true;
-				}
-			}
-			else {
-				TagSet::const_iterator tag_iter;
-				for (tag_iter = curcomptag->tags_set.begin() ; tag_iter != curcomptag->tags_set.end() ; tag_iter++) {
-					Tag *tag = *tag_iter;
-					if (tag->is_special) {
-						is_special = true;
-					}
 				}
 			}
 		}
@@ -142,6 +126,11 @@ void Set::reindex(Grammar &grammar) {
 				is_child_unified = true;
 			}
 		}
+	}
+
+	if (is_tag_unified || is_set_unified || is_child_unified) {
+		is_special = true;
+		is_child_unified = true;
 	}
 }
 
