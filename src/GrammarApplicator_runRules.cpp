@@ -259,6 +259,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow &current, uint32
 								mark = cohort;
 							}
 							dep_deep_seen.clear();
+							ci_depths.clear();
 							if (!(test->pos & POS_PASS_ORIGIN) && (no_pass_origin || (test->pos & POS_NO_PASS_ORIGIN))) {
 								test_good = (runContextualTest(&current, c, test, 0, cohort) != 0);
 							}

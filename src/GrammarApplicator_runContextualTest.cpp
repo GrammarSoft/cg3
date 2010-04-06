@@ -276,8 +276,7 @@ Cohort *GrammarApplicator::runContextualTest(SingleWindow *sWindow, size_t posit
 			*deep = cohort;
 		}
 		if (test->pos & POS_DEP_PARENT) {
-			ci_DepParentIter.reset(cohort, test, always_span);
-			it = &ci_DepParentIter;
+			it = &depParentIters[ci_depths[3]++];
 		}
 		else if (test->pos & (POS_DEP_CHILD|POS_DEP_SIBLING)) {
 			Cohort *nc = runDependencyTest(sWindow, cohort, test, deep, origin);
@@ -370,19 +369,17 @@ Cohort *GrammarApplicator::runContextualTest(SingleWindow *sWindow, size_t posit
 			}
 		}
 		else if (test->offset < 0) {
-			ci_TopologyLeftIter.reset(cohort, test, always_span);
-			it = &ci_TopologyLeftIter;
+			it = &topologyLeftIters[ci_depths[1]++];
 		}
 		else if (test->offset > 0) {
-			ci_TopologyRightIter.reset(cohort, test, always_span);
-			it = &ci_TopologyRightIter;
+			it = &topologyRightIters[ci_depths[2]++];
 		}
 		else {
-			ci_CohortIterator.reset(cohort, test, always_span);
-			it = &ci_CohortIterator;
+			it = &cohortIterators[ci_depths[0]++];
 		}
 
 		if (it) {
+			it->reset(cohort, test, always_span);
 			Cohort *nc = 0;
 			bool brk = false;
 			size_t seen = 0;
