@@ -104,10 +104,11 @@ namespace CG3 {
 		typedef std::map<int32_t,uint32SortedVector> RSType;
 		RSType runsections;
 
-		CohortIterator ci_CohortIterator;
-		TopologyLeftIter ci_TopologyLeftIter;
-		TopologyRightIter ci_TopologyRightIter;
-		DepParentIter ci_DepParentIter;
+		uint32Map ci_depths;
+		stdext::hash_map<uint32_t,CohortIterator> cohortIterators;
+		stdext::hash_map<uint32_t,TopologyLeftIter> topologyLeftIters;
+		stdext::hash_map<uint32_t,TopologyRightIter> topologyRightIters;
+		stdext::hash_map<uint32_t,DepParentIter> depParentIters;
 
 		static const uint32_t RV_NOTHING = 1;
 		static const uint32_t RV_SOMETHING = 2;
