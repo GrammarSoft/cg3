@@ -83,6 +83,7 @@ GrammarApplicator::GrammarApplicator(UFILE *ux_err) {
 	ordered = false;
 	show_end_tags = false;
 	gWindow = new Window(this);
+	ci_depths.resize(4, 0);
 }
 
 GrammarApplicator::~GrammarApplicator() {
