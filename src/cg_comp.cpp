@@ -102,8 +102,8 @@ int main(int argc, char *argv[]) {
 	std::cerr << "Sections: " << grammar.sections.size() << ", Rules: " << grammar.rule_by_line.size();
 	std::cerr << ", Sets: " << grammar.sets_by_contents.size() << ", Tags: " << grammar.single_tags.size() << std::endl;
 
-	if (grammar.rules_by_tag.find(grammar.tag_any) != grammar.rules_by_tag.end()) {
-		std::cerr << grammar.rules_by_tag.find(grammar.tag_any)->second.size() << " rules cannot be skipped by index." << std::endl;
+	if (grammar.rules_any) {
+		std::cerr << grammar.rules_any->size() << " rules cannot be skipped by index." << std::endl;
 	}
 
 	if (grammar.has_dep) {
