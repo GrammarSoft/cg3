@@ -116,6 +116,57 @@ void Grammar::addSet(Set *to) {
 	if (to->name[0] == 'T' && to->name[1] == ':') {
 		u_fprintf(ux_stderr, "Warning: Set name %S looks like a misattempt of template usage on line %u.\n", to->name.c_str(), to->line);
 	}
+
+	// If there are failfast tags, and if they don't comprise the whole of the set, split the set into Positive - Negative
+	if (!to->ff_tags.empty() && to->ff_tags.size() < to->tags_set.size()) {
+		Set *positive = allocateSet(to);
+		Set *negative = allocateSet();
+
+		UString str;
+		str = stringbits[S_GPREFIX].getTerminatedBuffer();
+		str += to->name;
+		str += '_';
+		str += stringbits[S_POSITIVE].getTerminatedBuffer();
+		positive->setName(str);
+		str = stringbits[S_GPREFIX].getTerminatedBuffer();
+		str += to->name;
+		str += '_';
+		str += stringbits[S_NEGATIVE].getTerminatedBuffer();
+		negative->setName(str);
+
+		TagSet tags;
+		foreach(TagHashSet, to->ff_tags, iter, iter_end) {
+			positive->tags_set.erase((*iter)->hash);
+			positive->single_tags.erase(*iter);
+			positive->single_tags_hash.erase((*iter)->hash);
+			UString str = (*iter)->toUString();
+			str.erase(str.find('^'), 1);
+			str=str;
+			Tag *tag = allocateTag(str.c_str());
+			addTagToSet(tag, negative);
+		}
+		positive->ff_tags.clear();
+		positive->ff_tags_hash.clear();
+
+		addSet(positive);
+		addSet(negative);
+
+		to->tags.clear();
+		to->tags_set.clear();
+		to->single_tags.clear();
+		to->single_tags_hash.clear();
+		to->ff_tags.clear();
+		to->ff_tags_hash.clear();
+
+		to->sets.push_back(positive->hash);
+		to->sets.push_back(negative->hash);
+		to->set_ops.push_back(S_MINUS);
+
+		to->reindex(*this);
+		u_fprintf(ux_stderr, "Info: LIST %S on line %u was split into two sets.\n", to->name.c_str(), to->line);
+		u_fflush(ux_stderr);
+	}
+
 	uint32_t chash = to->rehash();
 	if (to->name[0] != '_' || to->name[1] != 'G' || to->name[2] != '_') {
 		uint32_t nhash = hash_sdbm_uchar(to->name.c_str());
@@ -175,8 +226,14 @@ Set *Grammar::getSet(uint32_t which) {
 	return retval;
 }
 
-Set *Grammar::allocateSet() {
-	Set *ns = new Set;
+Set *Grammar::allocateSet(Set *from) {
+	Set *ns = 0;
+	if (from) {
+		ns = new Set(*from);
+	}
+	else {
+		ns = new Set;
+	}
 	sets_all.insert(ns);
 	return ns;
 }

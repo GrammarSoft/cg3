@@ -136,6 +136,9 @@ namespace CG3 {
 		S_VSU,
 		S_VSl,
 		S_VSL,
+		S_GPREFIX,
+		S_POSITIVE,
+		S_NEGATIVE,
 		STRINGS_COUNT
 	};
 
