@@ -29,4 +29,3 @@ ToDo: Somehow refer to left / right sibling
 ToDo: Movement of entire sub-trees
 ToDo: Use Cohort iterator instead of subfunctions
 ToDo: Make things less magic (explain what magic means in the various contexts)
-ToDo: Automatically convert LISTs with ^tags to SET positive - negative
