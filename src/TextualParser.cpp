@@ -1248,7 +1248,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 				}
 			}
 			result->addSet(s);
-			if (s->tags.empty() && s->single_tags.empty()) {
+			if (s->tags.empty() && s->single_tags.empty() && s->sets.empty()) {
 				u_fprintf(ux_stderr, "Error: LIST %S declared, but no definitions given, on line %u!\n", s->name.c_str(), result->lines);
 				CG3Quit(1);
 			}

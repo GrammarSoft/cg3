@@ -391,4 +391,40 @@ UChar *Tag::allocateUChars(uint32_t n) {
 	return new UChar[n];
 }
 
+UString Tag::toUString() const {
+	UString str;
+	if (type & T_NEGATIVE) {
+		str += '!';
+	}
+	if (type & T_FAILFAST) {
+		str += '^';
+	}
+	if (type & T_META) {
+		str += 'M';
+		str += 'E';
+		str += 'T';
+		str += 'A';
+		str += ':';
+	}
+	if (type & T_VARIABLE) {
+		str += 'V';
+		str += 'A';
+		str += 'R';
+		str += ':';
+	}
+
+	str += tag;
+
+	if (type & T_CASE_INSENSITIVE) {
+		str += 'i';
+	}
+	if (type & T_REGEXP) {
+		str += 'r';
+	}
+	if (type & T_VARSTRING) {
+		str += 'v';
+	}
+	return str;
+}
+
 }

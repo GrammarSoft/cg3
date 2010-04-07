@@ -59,9 +59,11 @@ namespace CG3 {
 		uint32Vector sets;
 
 		Set();
+		Set(const Set& from);
 
 		void setName(uint32_t to = 0);
 		void setName(const UChar *to);
+		void setName(const UString& to);
 
 		uint32_t rehash();
 		void resetStatistics();
