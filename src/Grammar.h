@@ -91,7 +91,7 @@ namespace CG3 {
 
 		void addSet(Set *to);
 		Set *getSet(uint32_t which);
-		Set *allocateSet();
+		Set *allocateSet(Set *from = 0);
 		void destroySet(Set *set);
 		void addSetToList(Set *s);
 

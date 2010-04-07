@@ -46,6 +46,31 @@ total_time(0)
 	// Nothing in the actual body...
 }
 
+Set::Set(const Set& from) :
+match_any(from.match_any),
+is_special(from.is_special),
+is_tag_unified(from.is_tag_unified),
+is_set_unified(from.is_set_unified),
+is_child_unified(from.is_child_unified),
+is_used(from.is_used),
+line(from.line),
+hash(0),
+number(0),
+num_fail(0),
+num_match(0),
+total_time(0),
+tags_set(from.tags_set),
+tags(from.tags),
+single_tags(from.single_tags),
+single_tags_hash(from.single_tags_hash),
+ff_tags(from.ff_tags),
+ff_tags_hash(from.ff_tags_hash),
+set_ops(from.set_ops),
+sets(from.sets)
+{
+	// Nothing in the actual body...
+}
+
 void Set::setName(uint32_t to) {
 	if (!to) {
 		to = static_cast<uint32_t>(rand());
@@ -57,8 +82,18 @@ void Set::setName(uint32_t to) {
 		name.push_back(cbuffers[0][i]);
 	}
 }
+
 void Set::setName(const UChar *to) {
 	if (to) {
+		name = to;
+	}
+	else {
+		setName((uint32_t)rand());
+	}
+}
+
+void Set::setName(const UString& to) {
+	if (!to.empty()) {
 		name = to;
 	}
 	else {
