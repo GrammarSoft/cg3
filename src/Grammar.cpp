@@ -148,6 +148,8 @@ void Grammar::addSet(Set *to) {
 		positive->ff_tags.clear();
 		positive->ff_tags_hash.clear();
 
+		positive->reindex(*this);
+		negative->reindex(*this);
 		addSet(positive);
 		addSet(negative);
 
