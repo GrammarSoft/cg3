@@ -1771,7 +1771,9 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 		}
 		// No keyword found at this position, skip a character.
 		else {
-			if (*p == ';' || *p == '"' || *p == '<') {
+			// For some strange reason, '<' was explicitly allowed to exist without a purpose...
+			// I cannot recall why, so removed that since it caused line counting errors.
+			if (*p == ';' || *p == '"') {
 				if (*p == '"') {
 					++p;
 					result->lines += SKIPTO_NOSPAN(p, '"');
@@ -1782,10 +1784,13 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 				}
 				result->lines += SKIPTOWS(p);
 			}
-			if (*p && *p != ';' && *p != '"' && *p != '<' && !ISNL(*p) && !ISSPACE(*p)) {
+			if (*p && *p != ';' && *p != '"' && !ISNL(*p) && !ISSPACE(*p)) {
 				p[16] = 0;
 				u_fprintf(ux_stderr, "Error: Garbage data '%S...' encountered on line %u!\n", p, result->lines);
 				CG3Quit(1);
+			}
+			if (ISNL(*p)) {
+				result->lines += 1;
 			}
 			++p;
 		}
