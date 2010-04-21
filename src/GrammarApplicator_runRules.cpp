@@ -157,7 +157,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow &current, uint32
 		// ToDo: Make better use of rules_by_tag
 
 		//for (size_t c=1 ; c < current.cohorts.size() ; c++) {
-		if (debug_level > 0) {
+		if (debug_level > 1) {
 			std::cout << "DEBUG: " << current.rule_to_cohorts.find(&rule)->second.size() << "/" << current.cohorts.size() << " = " << double(current.rule_to_cohorts.find(&rule)->second.size())/double(current.cohorts.size()) << std::endl;
 		}
 		foreach (CohortSet, current.rule_to_cohorts.find(&rule)->second, rocit, rocit_end) {
@@ -303,10 +303,10 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow &current, uint32
 				continue;
 			}
 			if (num_active == cohort->readings.size()) {
-				if (rule.type == K_SELECT) {
+				if (type == K_SELECT) {
 					continue;
 				}
-				else if (rule.type == K_REMOVE && (!unsafe || (rule.flags & RF_SAFE)) && !(rule.flags & RF_UNSAFE)) {
+				else if (type == K_REMOVE && (!unsafe || (rule.flags & RF_SAFE)) && !(rule.flags & RF_UNSAFE)) {
 					continue;
 				}
 			}
@@ -333,7 +333,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow &current, uint32
 						reading.hit_by.push_back(rule.line);
 						section_did_good = true;
 						if (debug_level > 0) {
-							std::cerr << "DEBUG: Rule " << rule.line << " did something" << std::endl;
+							std::cerr << "DEBUG: Rule " << rule.line << " hit cohort " << cohort->local_number << std::endl;
 						}
 					}
 				}
@@ -352,7 +352,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow &current, uint32
 					if (good) {
 						section_did_good = true;
 						if (debug_level > 0) {
-							std::cerr << "DEBUG: Rule " << rule.line << " did something" << std::endl;
+							std::cerr << "DEBUG: Rule " << rule.line << " hit cohort " << cohort->local_number << std::endl;
 						}
 					}
 				}
@@ -760,7 +760,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow &current, uint32
 				cohort->num_is_current = false;
 				section_did_good = true;
 				if (debug_level > 0) {
-					std::cerr << "DEBUG: Rule " << rule.line << " did something" << std::endl;
+					std::cerr << "DEBUG: Rule " << rule.line << " hit cohort " << cohort->local_number << std::endl;
 				}
 			}
 			if (!selected.empty()) {
