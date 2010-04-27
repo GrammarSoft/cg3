@@ -5,7 +5,7 @@
   <title>Installation &amp; Updating</title>
   <para>
     These guidelines are primarily for Linux, although I develop on Windows
-    using <ulink url="http://www.microsoft.com/express/vc/">Microsoft Visual C++ 2008 Express Edition</ulink>.
+    using <ulink url="http://www.microsoft.com/express/Downloads/#2010-Visual-CPP">Microsoft Visual C++ 2010 Express</ulink>.
   </para>
 
   <section id="ubuntu-debian">

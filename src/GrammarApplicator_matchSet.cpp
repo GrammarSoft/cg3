@@ -479,8 +479,10 @@ bool GrammarApplicator::doesSetMatchReading(Reading &reading, const uint32_t set
 			const Set &uset = *(iter->second);
 			const size_t size = uset.sets.size();
 			for (size_t i=0;i<size;++i) {
-				if (doesSetMatchReading(reading, uset.sets.at(i), bypass_index, uset.is_tag_unified|unif_mode)) {
-					unif_sets.insert(uset.hash);
+				iter = grammar->sets_by_contents.find(uset.sets.at(i));
+				const Set &tset = *(iter->second);
+				if (doesSetMatchReading(reading, tset.hash, bypass_index, tset.is_tag_unified|unif_mode)) {
+					unif_sets.insert(tset.hash);
 				}
 			}
 			retval = !unif_sets.empty();
