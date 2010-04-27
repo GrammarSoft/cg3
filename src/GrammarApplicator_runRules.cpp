@@ -156,7 +156,6 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow &current, uint32
 		// ToDo: Update list of in/valid rules upon MAP, ADD, REPLACE, APPEND, SUBSTITUTE; add tags + always add tag_any
 		// ToDo: Make better use of rules_by_tag
 
-		//for (size_t c=1 ; c < current.cohorts.size() ; c++) {
 		if (debug_level > 1) {
 			std::cout << "DEBUG: " << current.rule_to_cohorts.find(&rule)->second.size() << "/" << current.cohorts.size() << " = " << double(current.rule_to_cohorts.find(&rule)->second.size())/double(current.cohorts.size()) << std::endl;
 		}
