@@ -159,8 +159,9 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow &current, uint32
 		if (debug_level > 1) {
 			std::cout << "DEBUG: " << current.rule_to_cohorts.find(&rule)->second.size() << "/" << current.cohorts.size() << " = " << double(current.rule_to_cohorts.find(&rule)->second.size())/double(current.cohorts.size()) << std::endl;
 		}
-		foreach (CohortSet, current.rule_to_cohorts.find(&rule)->second, rocit, rocit_end) {
+		for (CohortSet::iterator rocit = current.rule_to_cohorts.find(&rule)->second.begin() ; rocit != current.rule_to_cohorts.find(&rule)->second.end() ; ) {
 			Cohort *cohort = *rocit;
+			++rocit;
 			if (cohort->local_number == 0) {
 				continue;
 			}
@@ -221,6 +222,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow &current, uint32
 
 			bool did_test = false;
 			bool test_good = false;
+			bool matched_target = false;
 
 			foreach (ReadingList, cohort->readings, rter1, rter1_end) {
 				Reading *reading = *rter1;
@@ -250,6 +252,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow &current, uint32
 				if (rule.target && doesSetMatchReading(*reading, rule.target, set.is_child_unified|set.is_special)) {
 					target = cohort;
 					reading->matched_target = true;
+					matched_target = true;
 					bool good = true;
 					if (!did_test) {
 						ContextualTest *test = rule.test_head;
@@ -299,8 +302,13 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow &current, uint32
 			}
 
 			if (num_active == 0 && (num_iff == 0 || rule.type != K_IFF)) {
+				if (!matched_target) {
+					--rocit;
+					current.rule_to_cohorts.find(&rule)->second.erase(rocit++);
+				}
 				continue;
 			}
+
 			if (num_active == cohort->readings.size()) {
 				if (type == K_SELECT) {
 					continue;
