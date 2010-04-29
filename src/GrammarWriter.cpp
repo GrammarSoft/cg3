@@ -43,7 +43,12 @@ void GrammarWriter::printSet(UFILE *output, const Set &curset) {
 
 	if (curset.sets.empty()) {
 		if (statistics) {
-			u_fprintf(output, "#List Matched: %u ; NoMatch: %u ; TotalTime: %f\n", curset.num_match, curset.num_fail, curset.total_time);
+			if (ceil(curset.total_time) == floor(curset.total_time)) {
+				u_fprintf(output, "#List Matched: %u ; NoMatch: %u ; TotalTime: %.0f\n", curset.num_match, curset.num_fail, curset.total_time);
+			}
+			else {
+				u_fprintf(output, "#List Matched: %u ; NoMatch: %u ; TotalTime: %f\n", curset.num_match, curset.num_fail, curset.total_time);
+			}
 		}
 		used_sets.insert(curset.hash);
 		u_fprintf(output, "LIST %S = ", curset.name.c_str());
@@ -77,7 +82,12 @@ void GrammarWriter::printSet(UFILE *output, const Set &curset) {
 			printSet(output, *(grammar->sets_by_contents.find(curset.sets.at(i))->second));
 		}
 		if (statistics) {
-			u_fprintf(output, "#Set Matched: %u ; NoMatch: %u ; TotalTime: %f\n", curset.num_match, curset.num_fail, curset.total_time);
+			if (ceil(curset.total_time) == floor(curset.total_time)) {
+				u_fprintf(output, "#Set Matched: %u ; NoMatch: %u ; TotalTime: %.0f\n", curset.num_match, curset.num_fail, curset.total_time);
+			}
+			else {
+				u_fprintf(output, "#Set Matched: %u ; NoMatch: %u ; TotalTime: %f\n", curset.num_match, curset.num_fail, curset.total_time);
+			}
 		}
 		u_fprintf(output, "SET %S = ", curset.name.c_str());
 		u_fprintf(output, "%S ", grammar->sets_by_contents.find(curset.sets.at(0))->second->name.c_str());
@@ -103,7 +113,12 @@ int GrammarWriter::writeGrammar(UFILE *output) {
 	}
 
 	if (statistics) {
-		u_fprintf(output, "# Total ticks spent applying grammar: %f\n", grammar->total_time);
+		if (ceil(grammar->total_time) == floor(grammar->total_time)) {
+			u_fprintf(output, "# Total ticks spent applying grammar: %.0f\n", grammar->total_time);
+		}
+		else {
+			u_fprintf(output, "# Total ticks spent applying grammar: %f\n", grammar->total_time);
+		}
 	}
 	u_fprintf(output, "# DELIMITERS and SOFT-DELIMITERS do not exist. Instead, look for the sets _S_DELIMITERS_ and _S_SOFT_DELIMITERS_.\n");
 
@@ -196,7 +211,12 @@ int GrammarWriter::writeGrammar(UFILE *output) {
 
 void GrammarWriter::printRule(UFILE *to, const Rule &rule) {
 	if (statistics) {
-		u_fprintf(to, "\n#Rule Matched: %u ; NoMatch: %u ; TotalTime: %f\n", rule.num_match, rule.num_fail, rule.total_time);
+		if (ceil(rule.total_time) == floor(rule.total_time)) {
+			u_fprintf(to, "\n#Rule Matched: %u ; NoMatch: %u ; TotalTime: %.0f\n", rule.num_match, rule.num_fail, rule.total_time);
+		}
+		else {
+			u_fprintf(to, "\n#Rule Matched: %u ; NoMatch: %u ; TotalTime: %f\n", rule.num_match, rule.num_fail, rule.total_time);
+		}
 	}
 	if (rule.wordform) {
 		printTag(to, *(grammar->single_tags.find(rule.wordform)->second));
@@ -263,7 +283,12 @@ void GrammarWriter::printRule(UFILE *to, const Rule &rule) {
 
 void GrammarWriter::printContextualTest(UFILE *to, const ContextualTest &test) {
 	if (statistics) {
-		u_fprintf(to, "\n#Test Matched: %u ; NoMatch: %u ; TotalTime: %f\n", test.num_match, test.num_fail, test.total_time);
+		if (ceil(test.total_time) == floor(test.total_time)) {
+			u_fprintf(to, "\n#Test Matched: %u ; NoMatch: %u ; TotalTime: %.0f\n", test.num_match, test.num_fail, test.total_time);
+		}
+		else {
+			u_fprintf(to, "\n#Test Matched: %u ; NoMatch: %u ; TotalTime: %f\n", test.num_match, test.num_fail, test.total_time);
+		}
 	}
 	if (test.tmpl) {
 		u_fprintf(to, "T:%u ", test.tmpl->name);
