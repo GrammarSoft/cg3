@@ -270,15 +270,17 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow &current, uint32
 							}
 							if (!test_good) {
 								good = test_good;
-								if (test != rule.test_head && !(rule.flags & (RF_REMEMBERX|RF_KEEPORDER))) {
-									test->detach();
-									if (rule.test_head) {
-										rule.test_head->prev = test;
-										test->next = rule.test_head;
+								if (!statistics) {
+									if (test != rule.test_head && !(rule.flags & (RF_REMEMBERX|RF_KEEPORDER))) {
+										test->detach();
+										if (rule.test_head) {
+											rule.test_head->prev = test;
+											test->next = rule.test_head;
+										}
+										rule.test_head = test;
 									}
-									rule.test_head = test;
+									break;
 								}
-								break;
 							}
 							test = test->next;
 						}
