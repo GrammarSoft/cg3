@@ -41,6 +41,7 @@ namespace CG3 {
 		bool is_set_unified;
 		bool is_child_unified;
 		bool is_used;
+		bool has_mapped;
 		uint32_t line;
 		uint32_t hash;
 		uint32_t number;
