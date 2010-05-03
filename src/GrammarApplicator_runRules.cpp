@@ -123,6 +123,9 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow &current, uint32
 	bool section_did_good = false;
 	bool delimited = false;
 
+	typedef stdext::hash_map<uint32_t,Reading*> readings_plain_t;
+	readings_plain_t readings_plain;
+
 	uint32Vector intersects;
 	intersectInitialize(rules, current.valid_rules, intersects);
 
@@ -224,6 +227,8 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow &current, uint32
 			bool test_good = false;
 			bool matched_target = false;
 
+			readings_plain.clear();
+
 			foreach (ReadingList, cohort->readings, rter1, rter1_end) {
 				Reading *reading = *rter1;
 				reading->matched_target = false;
@@ -234,6 +239,17 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow &current, uint32
 				}
 				if (reading->noprint && !allow_magic_readings) {
 					continue;
+				}
+				if (!set.has_mapped && !set.is_child_unified && !readings_plain.empty()) {
+					readings_plain_t::const_iterator rpit = readings_plain.find(reading->hash_plain);
+					if (rpit != readings_plain.end()) {
+						reading->matched_target = rpit->second->matched_target;
+						reading->matched_tests = rpit->second->matched_tests;
+						if (reading->matched_tests) {
+							++num_active;
+						}
+						continue;
+					}
 				}
 
 				unif_last_wordform = 0;
@@ -301,6 +317,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow &current, uint32
 				else {
 					rule.num_fail++;
 				}
+				readings_plain[reading->hash_plain] = reading;
 			}
 
 			if (num_active == 0 && (num_iff == 0 || rule.type != K_IFF)) {

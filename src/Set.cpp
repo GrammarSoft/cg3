@@ -36,6 +36,7 @@ is_tag_unified(false),
 is_set_unified(false),
 is_child_unified(false),
 is_used(false),
+has_mapped(false),
 line(0),
 hash(0),
 number(0),
@@ -53,6 +54,7 @@ is_tag_unified(from.is_tag_unified),
 is_set_unified(from.is_set_unified),
 is_child_unified(from.is_child_unified),
 is_used(from.is_used),
+has_mapped(from.has_mapped),
 line(from.line),
 hash(0),
 number(0),
@@ -135,17 +137,24 @@ uint32_t Set::rehash() {
 void Set::reindex(Grammar &grammar) {
 	is_special = false;
 	is_child_unified = false;
+	has_mapped = false;
 
 	if (sets.empty()) {
 		const_foreach(TagHashSet, single_tags, tomp_iter, tomp_iter_end) {
 			if ((*tomp_iter)->is_special) {
 				is_special = true;
 			}
+			if ((*tomp_iter)->type & T_MAPPING) {
+				has_mapped = true;
+			}
 		}
 		const_foreach(CompositeTagHashSet, tags, comp_iter, comp_iter_end) {
 			const_foreach(TagSet, (*comp_iter)->tags_set, tag_iter, tag_iter_end) {
 				if ((*tag_iter)->is_special) {
 					is_special = true;
+				}
+				if ((*tag_iter)->type & T_MAPPING) {
+					has_mapped = true;
 				}
 			}
 		}
@@ -159,6 +168,9 @@ void Set::reindex(Grammar &grammar) {
 			}
 			if (set->is_tag_unified || set->is_set_unified || set->is_child_unified) {
 				is_child_unified = true;
+			}
+			if (set->has_mapped) {
+				has_mapped = true;
 			}
 		}
 	}
