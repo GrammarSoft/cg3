@@ -36,9 +36,9 @@ void GrammarApplicator::updateRuleToCohorts(Cohort& c, const uint32_t& rsit) {
 	if (r->wordform && r->wordform != c.wordform) {
 		return;
 	}
-	CohortSet& s = current->rule_to_cohorts[r];
+	CohortSet& s = current->rule_to_cohorts[rsit];
 	s.insert(&c);
-	current->valid_rules.insert(r->line);
+	current->valid_rules.insert(rsit);
 }
 
 void intersectInitialize(const uint32SortedVector& first, const uint32Set& second, uint32Vector& intersects) {
@@ -93,11 +93,14 @@ void GrammarApplicator::updateValidRules(const uint32SortedVector& rules, uint32
 	uint32HashSetuint32HashMap::const_iterator it = grammar->rules_by_tag.find(hash);
 	if (it != grammar->rules_by_tag.end()) {
 		SingleWindow &current = *(reading.parent->parent);
+		size_t cvrz = current.valid_rules.size();
 		Cohort &c = *(reading.parent);
 		const_foreach (uint32HashSet, (it->second), rsit, rsit_end) {
 			updateRuleToCohorts(c, *rsit);
 		}
-		intersectUpdate(rules, current.valid_rules, intersects);
+		if (cvrz != current.valid_rules.size()) {
+			intersectUpdate(rules, current.valid_rules, intersects);
+		}
 	}
 }
 
@@ -160,9 +163,9 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow &current, uint32
 		// ToDo: Make better use of rules_by_tag
 
 		if (debug_level > 1) {
-			std::cout << "DEBUG: " << current.rule_to_cohorts.find(&rule)->second.size() << "/" << current.cohorts.size() << " = " << double(current.rule_to_cohorts.find(&rule)->second.size())/double(current.cohorts.size()) << std::endl;
+			std::cout << "DEBUG: " << current.rule_to_cohorts.find(rule.line)->second.size() << "/" << current.cohorts.size() << " = " << double(current.rule_to_cohorts.find(rule.line)->second.size())/double(current.cohorts.size()) << std::endl;
 		}
-		for (CohortSet::iterator rocit = current.rule_to_cohorts.find(&rule)->second.begin() ; rocit != current.rule_to_cohorts.find(&rule)->second.end() ; ) {
+		for (CohortSet::iterator rocit = current.rule_to_cohorts.find(rule.line)->second.begin() ; rocit != current.rule_to_cohorts.find(rule.line)->second.end() ; ) {
 			Cohort *cohort = *rocit;
 			++rocit;
 			if (cohort->local_number == 0) {
@@ -323,7 +326,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow &current, uint32
 			if (num_active == 0 && (num_iff == 0 || rule.type != K_IFF)) {
 				if (!matched_target) {
 					--rocit;
-					current.rule_to_cohorts.find(&rule)->second.erase(rocit++);
+					current.rule_to_cohorts.find(rule.line)->second.erase(rocit++);
 				}
 				continue;
 			}
