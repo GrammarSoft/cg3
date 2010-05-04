@@ -38,7 +38,7 @@ namespace CG3 {
 		UChar *text;
 		CohortVector cohorts;
 		uint32Set valid_rules;
-		RuleToCohortsMap rule_to_cohorts;
+		uint32ToCohortsMap rule_to_cohorts;
 
 		SingleWindow(Window *p);
 		~SingleWindow();
