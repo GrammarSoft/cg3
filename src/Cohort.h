@@ -88,6 +88,7 @@ namespace CG3 {
 	};
 
 	typedef std::set<Cohort*, compare_Cohort> CohortSet;
+	typedef stdext::hash_map<uint32_t, CohortSet> uint32ToCohortsMap;
 }
 
 #endif
