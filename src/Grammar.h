@@ -42,6 +42,7 @@ namespace CG3 {
 		size_t grammar_size;
 		UChar mapping_prefix;
 		uint32_t lines;
+		uint32_t verbosity_level;
 		mutable double total_time;
 
 		std::vector<Tag*> single_tags_list;
