@@ -259,10 +259,13 @@ int main(int argc, char* argv[]) {
 	}
 	if (options[VERBOSE].doesOccur) {
 		if (options[VERBOSE].value) {
-			parser->setVerbosity(abs(atoi(options[VERBOSE].value)));
+			uint32_t verbosity_level = abs(atoi(options[VERBOSE].value));
+			parser->setVerbosity(verbosity_level);
+			grammar.verbosity_level = verbosity_level;
 		}
 		else {
 			parser->setVerbosity(1);
+			grammar.verbosity_level = 1;
 		}
 	}
 	grammar.ux_stderr = ux_stderr;
