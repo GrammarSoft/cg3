@@ -40,6 +40,7 @@ Grammar::Grammar() {
 	mapping_prefix = '@';
 	ux_stderr = 0;
 	ux_stdout = 0;
+	verbosity_level = 0;
 }
 
 Grammar::~Grammar() {
@@ -113,7 +114,7 @@ void Grammar::addSet(Set *to) {
 	else if (!soft_delimiters && u_strcmp(to->name.c_str(), stringbits[S_SOFTDELIMITSET].getTerminatedBuffer()) == 0) {
 		soft_delimiters = to;
 	}
-	if (to->name[0] == 'T' && to->name[1] == ':') {
+	if (verbosity_level > 0 && to->name[0] == 'T' && to->name[1] == ':') {
 		u_fprintf(ux_stderr, "Warning: Set name %S looks like a misattempt of template usage on line %u.\n", to->name.c_str(), to->line);
 	}
 
@@ -165,8 +166,10 @@ void Grammar::addSet(Set *to) {
 		to->set_ops.push_back(S_MINUS);
 
 		to->reindex(*this);
-		u_fprintf(ux_stderr, "Info: LIST %S on line %u was split into two sets.\n", to->name.c_str(), to->line);
-		u_fflush(ux_stderr);
+		if (verbosity_level > 0) {
+			u_fprintf(ux_stderr, "Info: LIST %S on line %u was split into two sets.\n", to->name.c_str(), to->line);
+			u_fflush(ux_stderr);
+		}
 	}
 
 	uint32_t chash = to->rehash();
@@ -187,8 +190,10 @@ void Grammar::addSet(Set *to) {
 			else {
 				for (uint32_t seed=0 ; seed<1000 ; seed++) {
 					if (sets_by_name.find(nhash+seed) == sets_by_name.end()) {
-						u_fprintf(ux_stderr, "Warning: Set %S got hash seed %u.\n", to->name.c_str(), seed);
-						u_fflush(ux_stderr);
+						if (verbosity_level > 0) {
+							u_fprintf(ux_stderr, "Warning: Set %S got hash seed %u.\n", to->name.c_str(), seed);
+							u_fflush(ux_stderr);
+						}
 						set_name_seeds[nhash] = seed;
 						sets_by_name[nhash+seed] = chash;
 						break;
@@ -360,7 +365,7 @@ Tag *Grammar::allocateTag(const UChar *txt, bool raw) {
 			}
 		}
 		else {
-			if (seed) {
+			if (verbosity_level > 0 && seed) {
 				u_fprintf(ux_stderr, "Warning: Tag %S got hash seed %u.\n", txt, seed);
 				u_fflush(ux_stderr);
 			}
