@@ -7,7 +7,7 @@ use Getopt::Long;
 use Digest::SHA qw(sha1_hex);
 
 # This is updated by the update-revision.pl script.
-my $revision = 5934;
+my $revision = 5943;
 
 # Generate list with:
 # vislcg3 --help 2>&1 | perl -wpne 'if (/^ / && /-(\w), --([-\w]+)/) {print "$2|$1=s\n"} elsif (/^ / && /--([-\w]+)/) {print "$1=s\n"} s/^.*$//s;' | perl -wpne 's/^/"/; s/$/",/;'
@@ -58,13 +58,13 @@ if (defined $h{'grammar-bin'}) {
 	die "Error: Cannot use --grammar-bin with the autobin wrapper !\n";
 }
 
-if (! defined $h{grammar}) {
+if (! defined $h{'grammar'}) {
 	die "Error: Missing --grammar or -g !\n";
 }
-my $grammar = $h{grammar};
+my $grammar = $h{'grammar'};
 
-if (! (-r $h{grammar})) {
-	die "Error: Cannot read file ".$h{grammar}." !\n";
+if (! (-r $h{'grammar'})) {
+	die "Error: Cannot read file ".$h{'grammar'}." !\n";
 }
 
 my $args = " ";
@@ -74,9 +74,9 @@ while (my ($k,$v) = each(%h)) {
 	}
 }
 
-my ($dev,$ino,$mode,$nlink,$uid,$gid,$rdev,$size,$atime,$mtime,$ctime,$blksize,$blocks) = stat($h{grammar});
+my ($dev,$ino,$mode,$nlink,$uid,$gid,$rdev,$size,$atime,$mtime,$ctime,$blksize,$blocks) = stat($h{'grammar'});
 
-my $bn = File::Spec->tmpdir()."/".sha1_hex($args.$h{grammar}).".".$revision.".".$mtime.".bin3";
+my $bn = File::Spec->tmpdir()."/".sha1_hex($args.$h{'grammar'}).".".$revision.".".$mtime.".bin3";
 
 my $bin = 'vislcg3';
 if (-x '/usr/bin/vislcg3') {
@@ -105,8 +105,12 @@ else {
 	$cmd = "cat /dev/stdin | $bin $args --grammar $grammar";
 }
 
+if (defined $h{'stdin'}) {
+	$cmd =~ s@^cat /dev/stdin | @@;
+}
+
 open CG, "$cmd|" or die $!;
 while (<CG>) {
-    print;
+	print;
 }
 close CG;
