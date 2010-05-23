@@ -57,7 +57,8 @@ namespace CG3 {
 		char fgetc_inputbuf[5];
 		UChar fgetc_outputbuf[5];
 		UErrorCode fgetc_error;
-
+		void mergeMappings(Cohort &cohort);
+		
 	private:
 
 		void processReading(Reading *cReading, UChar *reading_string);
