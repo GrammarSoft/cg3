@@ -760,4 +760,9 @@ void ApertiumApplicator::printSingleWindow(SingleWindow *window, UFILE *output) 
 	}
 }
 
+void ApertiumApplicator::mergeMappings(Cohort &cohort) 
+{
+	return;
+}
+  
 }
