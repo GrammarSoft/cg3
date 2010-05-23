@@ -1,3 +1,5 @@
+; -*- coding:utf-8 -*- 
+
 ; cg.el -- major mode for editing Constraint Grammar files
 
 ; See http://beta.visl.sdu.dk/constraint_grammar.html 
@@ -47,8 +49,10 @@
 ;;; - indentation function (based on prolog again?)
 ;;; - the rest of the keywords
 ;;; - keyword tab-completion 
+;;  - the quotes-within-quotes thing plays merry hell with
+;;    paredit-doublequote, write a new doublequote function? 
 
-(defconst cg-version "2010-03-04" "Version of cg-mode") 
+(defconst cg-version "2010-03-19" "Version of cg-mode") 
 
 ;;;============================================================================
 ;;;
@@ -87,7 +91,9 @@
 
 (defconst cg-font-lock-keywords-2
   (append cg-font-lock-keywords-1
-	  '(("\\<\\(\\$\\$\\(\\s_\\|\\sw\\)+\\)\\>"
+	  '(("\\<\\(&&\\(\\s_\\|\\sw\\)+\\)\\>"
+	     (1 font-lock-variable-name-face))
+	    ("\\<\\(\\$\\$\\(\\s_\\|\\sw\\)+\\)\\>"
 	     (1 font-lock-variable-name-face))
 	    ("\\<\\(NOT\\|NEGATE\\|NONE\\|LINK\\|BARRIER\\|CBARRIER\\|OR\\|TARGET\\|IF\\|TO\\|[psc]\\)\\>"
 	     1 font-lock-function-name-face)
@@ -290,7 +296,7 @@ etc."
       (setq regexp-history tmp))))
 
 ;;; Keybindings --------------------------------------------------------------
-(define-key cg-mode-map (kbd "C-c o") 'cg-occur-list)
+(define-key cg-mode-map (kbd "C-c C-o") 'cg-occur-list)
 
 ;;; Run hooks -----------------------------------------------------------------
 (run-hooks 'cg-load-hook)
