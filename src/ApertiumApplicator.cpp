@@ -760,9 +760,41 @@ void ApertiumApplicator::printSingleWindow(SingleWindow *window, UFILE *output) 
 	}
 }
 
-void ApertiumApplicator::mergeMappings(Cohort &cohort) 
-{
-	return;
+void ApertiumApplicator::mergeMappings(Cohort &cohort) {
+	// Only merge readings which are completely equal (including mapping tags)
+	// foo<N><Sg><Acc><@←OBJ>/foo<N><Sg><Acc><@←OBJ>
+	// => guovvamánnu<N><Sg><Acc><@←OBJ>
+	// foo<N><Sg><Acc><@←SUBJ>/foo<N><Sg><Acc><@←OBJ>
+	// => foo<N><Sg><Acc><@←SUBJ>/foo<N><Sg><Acc><@←OBJ>
+	std::map<uint32_t, ReadingList> mlist;
+	foreach (ReadingList, cohort.readings, iter, iter_end) {
+		Reading *r = *iter;
+		uint32_t hp = r->hash; // instead of hash_plain, which doesn't include mapping tags
+		if (trace) {
+			foreach (uint32Vector, r->hit_by, iter_hb, iter_hb_end) {
+				hp = hash_sdbm_uint32_t(*iter_hb, hp);
+			}
+		}
+		mlist[hp].push_back(r);
+	}
+
+	if (mlist.size() == cohort.readings.size()) {
+		return;
+	}
+
+	cohort.readings.clear();
+	std::vector<Reading*> order;
+
+	std::map<uint32_t, ReadingList>::iterator miter;
+	for (miter = mlist.begin() ; miter != mlist.end() ; miter++) {
+		ReadingList clist = miter->second;
+		Reading *nr = new Reading(*(clist.front()));
+		// no merging of mapping tags
+		order.push_back(nr);
+	}
+
+	std::sort(order.begin(), order.end(), CG3::Reading::cmp_number);
+	cohort.readings.insert(cohort.readings.begin(), order.begin(), order.end());
 }
   
 }
