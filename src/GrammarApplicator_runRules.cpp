@@ -435,9 +435,25 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow &current, uint32
 						break;
 					}
 					else if (rule.type == K_ADD || rule.type == K_MAP) {
+						if (rule.type == K_MAP) {
+							reading.mapped = true;
+						}
+						reading.noprint = false;
+
+						bool would_add = false;
+						const_foreach (TagList, rule.maplist, tter, tter_end) {
+							const Tag *tag = *tter;
+							if (tag->is_special || reading.tags.find(tag->hash) == reading.tags.end()) {
+								would_add = true;
+								break;
+							}
+						}
+						if (!would_add) {
+							continue;
+						}
+
 						index_ruleCohort_no.clear();
 						reading.hit_by.push_back(rule.line);
-						reading.noprint = false;
 						TagList mappings;
 						const_foreach (TagList, rule.maplist, tter, tter_end) {
 							if ((*tter)->type & T_MAPPING || (*tter)->tag[0] == grammar->mapping_prefix) {
@@ -452,9 +468,6 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow &current, uint32
 						}
 						if (!mappings.empty()) {
 							splitMappings(mappings, *cohort, reading, rule.type == K_MAP);
-						}
-						if (rule.type == K_MAP) {
-							reading.mapped = true;
 						}
 					}
 					else if (rule.type == K_REPLACE) {
