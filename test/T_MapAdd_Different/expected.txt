@@ -1,4 +1,5 @@
 "<word>"
 	"word" notwanted 
-	"matchme" wanted $tag £tag @mapped 
+	"matchme" wanted $tag £tag @tag @mapped ADD:8 ADD:9 ADD:10 MAP:17 
 	"word" notmeeither 
+
