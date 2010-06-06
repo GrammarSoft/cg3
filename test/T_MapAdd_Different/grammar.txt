@@ -9,9 +9,4 @@ ADD ($tag) ASet ;
 ADD (£tag) ASet ;
 ADD (@tag) ASet ;
 
-# Same again, but since the tags already exist in the reading they will not be added again.
-ADD ($tag) ASet ;
-ADD (£tag) ASet ;
-ADD (@tag) ASet ;
-
 MAP (@mapped) (£tag) ;
