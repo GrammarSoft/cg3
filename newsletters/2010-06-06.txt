@@ -1,0 +1,30 @@
+A new release of CG-3 has been tagged v0.9.7.6010.
+
+Main site is http://beta.visl.sdu.dk/cg3.html
+Google Group is http://groups.google.com/group/constraint-grammar
+Source snapshots available at http://beta.visl.sdu.dk/download/vislcg3/
+Windows binary is at http://beta.visl.sdu.dk/download/vislcg3/vislcg3-0.9.7.6010-win32.zip
+Mirror at http://groups.google.com/group/constraint-grammar/files
+
+Optimizations:
+- Almost doubled processing speed since last release; 176 cohorts per second, up from 95 cohorts per second in 0.9.7.5729. Numbers can be seen on http://beta.visl.sdu.dk/cg3_performance.html
+- Cut memory usage by almost half.
+- Automatic conversion of LIST with failfast tags to SET Positive - Negative.
+
+New Features:
+- Implemented separate literal string modifier "i" as the documentation ( http://beta.visl.sdu.dk/cg3/chunked/tags.html#literal-string-modifiers ) had promised for years but wasn't actually able to work without modifier "r" until now.
+- DELIMITERS and SOFT-DELIMITERS can now contain and operate with any tag, not just wordforms.
+
+Bug Fixes:
+- Made <STREAMCMD:FLUSH> actually forcefully flush instead of merely hinting its desire to do so...
+- Fixed IFF rules causing endless loops.
+- Fixed &&unification to actually work as advertised.
+- Fixed cmdline flag -I to not open and wait for stdin when going through cg3-autobin.pl.
+
+Other:
+- Windows binaries now link against ICU 4.4.1.
+
+Also, Kevin Donnelly wrote a nice beginner's tutorial which is available from http://kevindonnelly.org.uk/2010/05/constraint-grammar-tutorial/
+
+-- Tino Didriksen
+CG-3 Developer
