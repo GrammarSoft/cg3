@@ -166,7 +166,7 @@ void Grammar::addSet(Set *to) {
 		to->set_ops.push_back(S_MINUS);
 
 		to->reindex(*this);
-		if (verbosity_level > 0) {
+		if (verbosity_level > 1) {
 			u_fprintf(ux_stderr, "Info: LIST %S on line %u was split into two sets.\n", to->name.c_str(), to->line);
 			u_fflush(ux_stderr);
 		}
