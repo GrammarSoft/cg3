@@ -32,7 +32,7 @@
 #include "options.h"
 using namespace Options;
 using CG3::CG3Quit;
-void GAppSetOpts(CG3::GrammarApplicator &applicator);
+void GAppSetOpts(CG3::GrammarApplicator &applicator, UConverter *conv);
 
 int main(int argc, char* argv[]) {
 	UFILE *ux_stdin = 0;
@@ -344,7 +344,7 @@ int main(int argc, char* argv[]) {
 	if (!options[GRAMMAR_ONLY].doesOccur) {
 		CG3::GrammarApplicator applicator(ux_stderr);
 		applicator.setGrammar(&grammar);
-		GAppSetOpts(applicator);
+		GAppSetOpts(applicator, conv);
 		applicator.runGrammarOnText(ux_stdin, ux_stdout);
 
 		if (options[VERBOSE].doesOccur) {
@@ -437,7 +437,55 @@ int main(int argc, char* argv[]) {
 	return status;
 }
 
-void GAppSetOpts(CG3::GrammarApplicator &applicator) {
+template<typename Cont>
+void GAppSetOpts_ranged(const char *value, Cont& cont) {
+	cont.clear();
+	const char *s = value;
+	const char *c = strchr(s, ',');
+	const char *d = strchr(s, '-');
+	if (c == 0 && d == 0) {
+		uint32_t a = abs(atoi(s));
+		for (uint32_t i=1 ; i<=a ; i++) {
+			cont.push_back(i);
+		}
+	}
+	else {
+		uint32_t a = 0, b = 0;
+		while (c || d) {
+			if (d && (d < c || c == 0)) {
+				a = abs(atoi(s));
+				b = abs(atoi(d));
+				if (c) {
+					s = c+1;
+				}
+				else {
+					d = 0;
+					s = 0;
+				}
+				for (uint32_t i=a ; i<=b ; i++) {
+					cont.push_back(i);
+				}
+			}
+			else if (c && (c < d || d == 0)) {
+				a = abs(atoi(s));
+				s = c+1;
+				cont.push_back(a);
+			}
+			if (s) {
+				c = strchr(s, ',');
+				d = strchr(s, '-');
+				if (c == 0 && d == 0) {
+					a = abs(atoi(s));
+					cont.push_back(a);
+					s = 0;
+				}
+			}
+		}
+		a=a;
+	}
+}
+
+void GAppSetOpts(CG3::GrammarApplicator &applicator, UConverter *conv) {
 	if (options[ALWAYS_SPAN].doesOccur) {
 		applicator.always_span = true;
 	}
@@ -490,49 +538,30 @@ void GAppSetOpts(CG3::GrammarApplicator &applicator) {
 		applicator.section_max_count = abs(atoi(options[MAXRUNS].value));
 	}
 	if (options[SECTIONS].doesOccur) {
-		applicator.sections.clear();
-		const char *s = options[SECTIONS].value;
-		const char *c = strchr(s, ',');
-		const char *d = strchr(s, '-');
-		if (c == 0 && d == 0) {
-			uint32_t a = abs(atoi(s));
-			for (uint32_t i=1 ; i<=a ; i++) {
-				applicator.sections.push_back(i);
-			}
+		GAppSetOpts_ranged(options[SECTIONS].value, applicator.sections);
+	}
+	if (options[RULES].doesOccur) {
+		GAppSetOpts_ranged(options[RULES].value, applicator.rules);
+	}
+	if (options[RULE].doesOccur) {
+		if (options[RULE].value[0] >= '0' && options[RULE].value[0] <= '9') {
+			applicator.rules.push_back(atoi(options[RULE].value));
 		}
 		else {
-			uint32_t a = 0, b = 0;
-			while (c || d) {
-				if (d && (d < c || c == 0)) {
-					a = abs(atoi(s));
-					b = abs(atoi(d));
-					if (c) {
-						s = c+1;
-					}
-					else {
-						d = 0;
-						s = 0;
-					}
-					for (uint32_t i=a ; i<=b ; i++) {
-						applicator.sections.push_back(i);
-					}
-				}
-				else if (c && (c < d || d == 0)) {
-					a = abs(atoi(s));
-					s = c+1;
-					applicator.sections.push_back(a);
-				}
-				if (s) {
-					c = strchr(s, ',');
-					d = strchr(s, '-');
-					if (c == 0 && d == 0) {
-						a = abs(atoi(s));
-						applicator.sections.push_back(a);
-						s = 0;
-					}
+			UErrorCode status = U_ZERO_ERROR;
+			size_t sn = strlen(options[RULE].value);
+			UChar *buf = new UChar[sn*3];
+			buf[0] = 0;
+			ucnv_toUChars(conv, buf, sn*3, options[MAPPING_PREFIX].value, sn, &status);
+
+			const_foreach(CG3::RuleVector, applicator.grammar->rules, riter, riter_end) {
+				const CG3::Rule *rule = *riter;
+				if (rule->name && u_strcmp(rule->name, buf) == 0) {
+					applicator.rules.push_back(rule->line);
 				}
 			}
-			a=a;
+
+			delete[] buf;
 		}
 	}
 	if (options[VERBOSE].doesOccur) {

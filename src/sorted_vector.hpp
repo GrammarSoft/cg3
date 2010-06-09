@@ -73,6 +73,10 @@ public:
 		return false;
 	}
 
+	bool push_back(T t) {
+		return insert(t);
+	}
+
 	bool erase(T t) {
 		if (elements.empty()) {
 			return false;
