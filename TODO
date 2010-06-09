@@ -29,3 +29,4 @@ ToDo: Somehow refer to left / right sibling
 ToDo: Movement of entire sub-trees
 ToDo: Use Cohort iterator instead of subfunctions
 ToDo: Make things less magic (explain what magic means in the various contexts)
+ToDo: Handle duplicate different sets and delimiters from INCLUDE files. Possibly make new keyword or option for INCLUDE. Handle line numbering how?

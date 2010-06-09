@@ -66,6 +66,7 @@ namespace CG3 {
 		uint32_t soft_limit;
 		uint32_t hard_limit;
 		uint32Vector sections;
+		uint32SortedVector rules;
 		uint32_t verbosity_level;
 		uint32_t debug_level;
 		uint32_t section_max_count;
@@ -85,6 +86,8 @@ namespace CG3 {
 		uint32_t dep_highest_seen;
 		Window *gWindow;
 		void reflowDependencyWindow(uint32_t max = 0);
+
+		const Grammar *grammar;
 
 	protected:
 		void printReading(Reading *reading, UFILE *output);
@@ -120,8 +123,6 @@ namespace CG3 {
 		uint32_t par_left_pos, par_right_pos;
 		bool has_enclosures;
 		bool did_final_enclosure;
-
-		const Grammar *grammar;
 
 		std::map<uint32_t,UnicodeString> regexgrps;
 		uint32HashMap variables;

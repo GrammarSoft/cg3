@@ -134,6 +134,11 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow &current, uint32
 
 	foreach (uint32Vector, intersects, iter_rules, iter_rules_end) {
 		uint32_t j = (*iter_rules);
+
+		if (rules.find(j) == rules.end()) {
+			continue;
+		}
+
 		const Rule &rule = *(grammar->rule_by_line.find(j)->second);
 
 		ticks tstamp(gtimer);
