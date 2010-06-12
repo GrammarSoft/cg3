@@ -66,7 +66,7 @@ namespace CG3 {
 		uint32_t soft_limit;
 		uint32_t hard_limit;
 		uint32Vector sections;
-		uint32SortedVector rules;
+		uint32SortedVector valid_rules;
 		uint32_t verbosity_level;
 		uint32_t debug_level;
 		uint32_t section_max_count;
