@@ -541,23 +541,23 @@ void GAppSetOpts(CG3::GrammarApplicator &applicator, UConverter *conv) {
 		GAppSetOpts_ranged(options[SECTIONS].value, applicator.sections);
 	}
 	if (options[RULES].doesOccur) {
-		GAppSetOpts_ranged(options[RULES].value, applicator.rules);
+		GAppSetOpts_ranged(options[RULES].value, applicator.valid_rules);
 	}
 	if (options[RULE].doesOccur) {
 		if (options[RULE].value[0] >= '0' && options[RULE].value[0] <= '9') {
-			applicator.rules.push_back(atoi(options[RULE].value));
+			applicator.valid_rules.push_back(atoi(options[RULE].value));
 		}
 		else {
 			UErrorCode status = U_ZERO_ERROR;
 			size_t sn = strlen(options[RULE].value);
 			UChar *buf = new UChar[sn*3];
 			buf[0] = 0;
-			ucnv_toUChars(conv, buf, sn*3, options[MAPPING_PREFIX].value, sn, &status);
+			ucnv_toUChars(conv, buf, sn*3, options[RULE].value, sn, &status);
 
-			const_foreach(CG3::RuleVector, applicator.grammar->rules, riter, riter_end) {
-				const CG3::Rule *rule = *riter;
+			const_foreach(CG3::RuleByLineHashMap, applicator.grammar->rule_by_line, riter, riter_end) {
+				const CG3::Rule *rule = riter->second;
 				if (rule->name && u_strcmp(rule->name, buf) == 0) {
-					applicator.rules.push_back(rule->line);
+					applicator.valid_rules.push_back(rule->line);
 				}
 			}
 

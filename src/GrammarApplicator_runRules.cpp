@@ -135,7 +135,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow &current, uint32
 	foreach (uint32Vector, intersects, iter_rules, iter_rules_end) {
 		uint32_t j = (*iter_rules);
 
-		if (rules.find(j) == rules.end()) {
+		if (!valid_rules.empty() && valid_rules.find(j) == valid_rules.end()) {
 			continue;
 		}
 
