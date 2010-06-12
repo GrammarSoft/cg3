@@ -41,7 +41,7 @@ void endProgram(char *name) {
 	fprintf(stdout, "VISL CG-3 Disambiguator version %u.%u.%u.%u\n",
 		CG3_VERSION_MAJOR, CG3_VERSION_MINOR, CG3_VERSION_PATCH, CG3_REVISION);
 	cout << basename(name) <<": process a stream with a constraint grammar" << endl;
-	cout << "USAGE: " << basename(name) << " [-t] [-s] [-d] grammar_file [input_file [output_file]]" << endl;
+	cout << "USAGE: " << basename(name) << " [-t] [-s] [-d] [-r rule] grammar_file [input_file [output_file]]" << endl;
 	cout << "Options:" << endl;
 #if HAVE_GETOPT_LONG
 	cout << "	-d, --disambiguation:	 morphological disambiguation" << endl;
@@ -50,6 +50,7 @@ void endProgram(char *name) {
 	cout << "				   where `0' is VISL format, `1' is Apertium" << endl;
 	cout << "				   format and `2' is Apertium format as input," << endl;
 	cout << "				   Matxin format as output (default: 1)" << endl;
+	cout << "	-r, --rule=NAME:	 run only the named rule" << endl;
 	cout << "	-t, --trace:		 print debug output on stderr" << endl;
 	cout << "	-w, --wordform-case:	 enforce surface case on lemma/baseform " << endl;
 	cout << "				   (to work with -w option of lt-proc)" << endl;
@@ -62,6 +63,7 @@ void endProgram(char *name) {
 	cout << "	-f: 	 set the format of the I/O stream to NUM," << endl;
 	cout << "		   where `0' is VISL format and `1' is " << endl;
 	cout << "		   Apertium format (default: 1)" << endl;
+	cout << "	-r:	 run only the named rule" << endl;
 	cout << "	-t:	 print debug output on stderr" << endl;
 	cout << "	-w:	 enforce surface case on lemma/baseform " << endl;
 	cout << "		   (to work with -w option of lt-proc)" << endl;
@@ -80,6 +82,7 @@ int main(int argc, char *argv[]) {
 	int sections = 0;
 	int stream_format = 1;
 	bool nullFlush=false;
+	char* single_rule = 0;
 
 	UErrorCode status = U_ZERO_ERROR;
 	UFILE *ux_stdin = 0;
@@ -91,6 +94,7 @@ int main(int argc, char *argv[]) {
 		{"disambiguation",	0, 0, 'd'},
 		{"sections", 		0, 0, 's'},
 		{"stream-format",	required_argument, 0, 'f'},
+		{"rule", 		0, 0, 'r'},
 		{"trace", 		0, 0, 't'},
 		{"wordform-case",	0, 0, 'w'},
 		{"no-word-forms",	0, 0, 'n'},
@@ -105,9 +109,9 @@ int main(int argc, char *argv[]) {
 	while (c != -1) {
 #if HAVE_GETOPT_LONG
 		int option_index;
-		c = getopt_long(argc, argv, "ds:f:tnwvhz", long_options, &option_index);
+		c = getopt_long(argc, argv, "ds:f:tr:nwvhz", long_options, &option_index);
 #else
-		c = getopt(argc, argv, "ds:f:tinwvhz");
+		c = getopt(argc, argv, "ds:f:tr:inwvhz");
 #endif		
 		if (c == -1) {
 			break;
@@ -132,6 +136,8 @@ int main(int argc, char *argv[]) {
 				trace = 1;
 				break;
 
+			case 'r': 
+				single_rule = strdup(optarg);
 			case 's':
 				sections = atoi(optarg);
 				break;
@@ -296,6 +302,22 @@ int main(int argc, char *argv[]) {
 
 	if (trace == 1) {
 		applicator->trace = true;
+	}
+
+	// This is if we want to run a single rule  (-r option)
+	if (single_rule != 0) {
+		size_t sn = strlen(single_rule);
+		UChar *buf = new UChar[sn*3];
+		buf[0] = 0;
+		buf[sn] = 0;
+		u_charsToUChars(single_rule, buf, sn);
+		const_foreach(CG3::RuleVector, applicator->grammar->rules, riter, riter_end) {
+			const CG3::Rule *rule = *riter;
+			if (rule->name && u_strcmp(rule->name, buf) == 0) {
+				applicator->rules.push_back(rule->line);
+			}
+		}
+		delete[] buf;
 	}
 
 	try {
