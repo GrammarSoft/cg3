@@ -31,6 +31,9 @@
 namespace CG3 {
 
 void GrammarApplicator::updateRuleToCohorts(Cohort& c, const uint32_t& rsit) {
+	if (!valid_rules.empty() && valid_rules.find(rsit) == valid_rules.end()) {
+		return;
+	}
 	SingleWindow *current = c.parent;
 	const Rule *r = grammar->rule_by_line.find(rsit)->second;
 	if (r->wordform && r->wordform != c.wordform) {
