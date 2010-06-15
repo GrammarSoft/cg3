@@ -365,7 +365,6 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow &current, uint32
 				if (type == K_REMOVE) {
 					if (good) {
 						removed.push_back(&reading);
-						reading.deleted = true;
 						index_ruleCohort_no.clear();
 						reading.hit_by.push_back(rule.line);
 						section_did_good = true;
@@ -382,7 +381,6 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow &current, uint32
 					}
 					else {
 						removed.push_back(&reading);
-						reading.deleted = true;
 						index_ruleCohort_no.clear();
 						reading.hit_by.push_back(rule.line);
 					}
@@ -785,6 +783,11 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow &current, uint32
 				section_did_good = false;
 			}
 
+			if (type == K_REMOVE && removed.size() == cohort->readings.size() && (!unsafe || (rule.flags & RF_SAFE)) && !(rule.flags & RF_UNSAFE)) {
+				section_did_good = false;
+				removed.clear();
+			}
+
 			if (!removed.empty()) {
 				if (rule.flags & RF_DELAYED) {
 					cohort->delayed.insert(cohort->delayed.end(), removed.begin(), removed.end());
@@ -793,6 +796,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow &current, uint32
 					cohort->deleted.insert(cohort->deleted.end(), removed.begin(), removed.end());
 				}
 				while (!removed.empty()) {
+					removed.back()->deleted = true;
 					cohort->readings.remove(removed.back());
 					removed.pop_back();
 				}
