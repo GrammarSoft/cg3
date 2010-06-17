@@ -1,0 +1,7 @@
+"<word>"
+	"word" notwanted @stillhere 
+	"word" notmeeither @stillhere 
+"<word>"
+	"word" notwanted @stillhere 
+	"word" notmeeither @stillhere 
+
