@@ -36,6 +36,7 @@ namespace CG3 {
 	enum COHORT_TYPE {
 		CT_ENCLOSED       = 1u,
 		CT_RELATED        = 2u,
+		CT_REMOVED        = 4u,
 	};
 
 	class Cohort {
@@ -59,6 +60,7 @@ namespace CG3 {
 		uint32HashSet dep_children;
 		uint32HashSet possible_sets;
 		CohortVector enclosed;
+		CohortVector removed;
 		RelationCtn relations;
 
 		int32_t getMin(uint32_t key);

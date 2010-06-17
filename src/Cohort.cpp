@@ -67,6 +67,9 @@ Cohort::~Cohort() {
 	foreach (ReadingList, delayed, iter3, iter3_end) {
 		delete (*iter3);
 	}
+	foreach (CohortVector, removed, iter, iter_end) {
+		delete (*iter);
+	}
 	if (parent) {
 		parent->parent->cohort_map.erase(global_number);
 		parent->parent->dep_window.erase(global_number);
