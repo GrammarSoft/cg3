@@ -1210,6 +1210,13 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 			&& !ISSTRING(p, 7)) {
 			parseRule(p, K_SETCHILD);
 		}
+		// REMCOHORT
+		else if (ISCHR(*p,'R','r') && ISCHR(*(p+8),'T','t') && ISCHR(*(p+1),'E','e') && ISCHR(*(p+2),'M','m')
+			&& ISCHR(*(p+3),'C','c') && ISCHR(*(p+4),'O','o') && ISCHR(*(p+5),'H','h') && ISCHR(*(p+6),'O','o')
+			&& ISCHR(*(p+7),'R','r')
+			&& !ISSTRING(p, 8)) {
+			parseRule(p, K_REMCOHORT);
+		}
 		// SETS
 		else if (ISCHR(*p,'S','s') && ISCHR(*(p+3),'S','s') && ISCHR(*(p+1),'E','e') && ISCHR(*(p+2),'T','t')
 			&& !ISSTRING(p, 3)) {

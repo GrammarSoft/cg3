@@ -340,6 +340,43 @@ void GrammarApplicator::printReading(Reading *reading, UFILE *output) {
 	u_fputc('\n', output);
 }
 
+void GrammarApplicator::printCohort(Cohort *cohort, UFILE *output) {
+	if (cohort->type & CT_REMOVED) {
+		u_fputc(';', output);
+		u_fputc(' ', output);
+	}
+	u_fprintf(output, "%S", single_tags.find(cohort->wordform)->second->tag);
+	u_fputc('\n', output);
+
+	mergeMappings(*cohort);
+
+	foreach (ReadingList, cohort->readings, rter1, rter1_end) {
+		printReading(*rter1, output);
+	}
+	if (trace && !trace_no_removed) {
+		foreach (ReadingList, cohort->delayed, rter3, rter3_end) {
+			printReading(*rter3, output);
+		}
+		foreach (ReadingList, cohort->deleted, rter2, rter2_end) {
+			printReading(*rter2, output);
+		}
+	}
+	if (cohort->text) {
+		u_fprintf(output, "%S", cohort->text);
+	}
+
+	foreach(CohortVector, cohort->removed, iter, iter_end) {
+		if (trace && !trace_no_removed) {
+			printCohort(*iter, output);
+		}
+		else {
+			if ((*iter)->text) {
+				u_fprintf(output, "%S", (*iter)->text);
+			}
+		}
+	}
+}
+
 void GrammarApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 	if (window->text) {
 		u_fprintf(output, "%S", window->text);
@@ -348,26 +385,7 @@ void GrammarApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 	uint32_t cs = (uint32_t)window->cohorts.size();
 	for (uint32_t c=1 ; c < cs ; c++) {
 		Cohort *cohort = window->cohorts.at(c);
-		u_fprintf(output, "%S", single_tags.find(cohort->wordform)->second->tag);
-		//u_fprintf(output, " %u", cohort->number);
-		u_fputc('\n', output);
-
-		mergeMappings(*cohort);
-
-		foreach (ReadingList, cohort->readings, rter1, rter1_end) {
-			printReading(*rter1, output);
-		}
-		if (trace && !trace_no_removed) {
-			foreach (ReadingList, cohort->delayed, rter3, rter3_end) {
-				printReading(*rter3, output);
-			}
-			foreach (ReadingList, cohort->deleted, rter2, rter2_end) {
-				printReading(*rter2, output);
-			}
-		}
-		if (cohort->text) {
-			u_fprintf(output, "%S", cohort->text);
-		}
+		printCohort(cohort, output);
 	}
 	u_fputc('\n', output);
 	u_fflush(output);
