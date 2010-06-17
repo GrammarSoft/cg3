@@ -1,20 +1,20 @@
 "<word>"
-	"word" wanted first
+	"word" wanted first #1->4
 "<word>"
-	"word" wanted second
+	"word" wanted second #2->0
 "<word>"
-	"word" wanted third
+	"word" wanted third #3->5
 "<word>"
-	"word" wanted fourth
+	"word" wanted fourth #4->2
 "<word>"
-	"word" wanted fifth
+	"word" wanted fifth #5->0
 "<word>"
-	"word" wanted sixth
+	"word" wanted sixth #6->5
 "<word>"
-	"word" wanted seventh
+	"word" wanted seventh #7->9
 "<word>"
-	"word" wanted eighth
+	"word" wanted eighth #8->9
 "<word>"
-	"word" wanted ninth
+	"word" wanted ninth #9->0
 "<word>"
-	"word" wanted tenth
+	"word" wanted tenth #10->9

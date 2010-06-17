@@ -47,9 +47,49 @@ Tag *GrammarApplicator::makeBaseFromWord(Tag *tag) {
 	return nt;
 }
 
-bool GrammarApplicator::wouldParentChildLoop(Cohort *parent, Cohort *child) {
+bool GrammarApplicator::isChildOf(const Cohort *child, const Cohort *parent) {
 	bool retval = false;
-	int i = 0;
+
+	if (parent->global_number == child->global_number) {
+		retval = true;
+	}
+	else if (parent->global_number == child->dep_parent) {
+		retval = true;
+	}
+	else {
+		int i = 0;
+		for (const Cohort *inner = child ; i<1000;i++) {
+			if (inner->dep_parent == 0 || inner->dep_parent == std::numeric_limits<uint32_t>::max()) {
+				retval = false;
+				break;
+			}
+			std::map<uint32_t,Cohort*>::iterator it = gWindow->cohort_map.find(inner->dep_parent);
+			if (it != gWindow->cohort_map.end()) {
+				inner = it->second;
+			}
+			else {
+				break;
+			}
+			if (inner->dep_parent == parent->global_number) {
+				retval = true;
+				break;
+			}
+		}
+		if (i == 1000) {
+			if (verbosity_level > 0) {
+				u_fprintf(
+					ux_stderr,
+					"Warning: While testing whether %u is a child of %u the counter exceeded 1000 indicating a loop higher up in the tree.\n",
+					child->global_number, parent->global_number
+					);
+			}
+		}
+	}
+	return retval;
+}
+
+bool GrammarApplicator::wouldParentChildLoop(const Cohort *parent, const Cohort *child) {
+	bool retval = false;
 
 	if (parent->global_number == child->global_number) {
 		retval = true;
@@ -64,19 +104,20 @@ bool GrammarApplicator::wouldParentChildLoop(Cohort *parent, Cohort *child) {
 		retval = true;
 	}
 	else {
-		for (;i<1000;i++) {
-			if (parent->dep_parent == 0 || parent->dep_parent == std::numeric_limits<uint32_t>::max()) {
+		int i = 0;
+		for (const Cohort *inner = parent ;i<1000;i++) {
+			if (inner->dep_parent == 0 || inner->dep_parent == std::numeric_limits<uint32_t>::max()) {
 				retval = false;
 				break;
 			}
-			std::map<uint32_t,Cohort*>::iterator it = gWindow->cohort_map.find(parent->dep_parent);
+			std::map<uint32_t,Cohort*>::iterator it = gWindow->cohort_map.find(inner->dep_parent);
 			if (it != gWindow->cohort_map.end()) {
-				parent = it->second;
+				inner = it->second;
 			}
 			else {
 				break;
 			}
-			if (parent->dep_parent == child->global_number) {
+			if (inner->dep_parent == child->global_number) {
 				retval = true;
 				break;
 			}
@@ -94,7 +135,7 @@ bool GrammarApplicator::wouldParentChildLoop(Cohort *parent, Cohort *child) {
 	return retval;
 }
 
-bool GrammarApplicator::wouldParentChildCross(Cohort *parent, Cohort *child) {
+bool GrammarApplicator::wouldParentChildCross(const Cohort *parent, const Cohort *child) {
 	uint32_t mn = std::min(parent->global_number, child->global_number);
 	uint32_t mx = std::max(parent->global_number, child->global_number);
 

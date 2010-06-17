@@ -677,7 +677,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow &current, uint32
 								good = false;
 							}
 							else if (type == K_MOVE_BEFORE) {
-								b--;
+								--b;
 							}
 							if (good && a != b) {
 								if (type == K_SWITCH && a != 0 && b != 0) {
@@ -685,24 +685,30 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow &current, uint32
 									current.cohorts[b] = cohort;
 								}
 								else {
-									if (a != max) {
-										for (uint32_t i = a ; i < max ; i++) {
-											current.cohorts[i] = current.cohorts[i+1];
+									CohortVector cohorts;
+									if (rule.flags & RF_WITHCHILD) {
+										for (CohortVector::iterator iter = current.cohorts.begin() ; iter != current.cohorts.end() ; ) {
+											if (isChildOf(*iter, cohort)) {
+												cohorts.push_back(*iter);
+												iter = current.cohorts.erase(iter);
+											}
+											else {
+												++iter;
+											}
 										}
 									}
-									current.cohorts[max] = 0;
-									if (b != max) {
-										for (uint32_t i = max ; i > b ; i--) {
-											current.cohorts[i] = current.cohorts[i-1];
-										}
+									else {
+										cohorts.push_back(cohort);
+										current.cohorts.erase(current.cohorts.begin()+cohort->local_number);
 									}
-									current.cohorts[b] = 0;
-									current.cohorts[b] = cohort;
+									while (!cohorts.empty()) {
+										current.cohorts.insert(current.cohorts.begin()+b+1, cohorts.back());
+										cohorts.pop_back();
+									}
 								}
 								for (uint32_t i = 0 ; i <= max ; i++) {
 									current.cohorts[i]->local_number = i;
 								}
-								a=a;
 							}
 						}
 						rebuildCohortLinks();
