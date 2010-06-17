@@ -743,8 +743,15 @@ int TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 		u_fprintf(ux_stderr, "Error: Line %u: IMMEDIATE and DELAYED are mutually exclusive!\n", result->lines);
 		CG3Quit(1);
 	}
+	if (rule->flags & RF_WITHCHILD && rule->flags & RF_NOCHILD) {
+		u_fprintf(ux_stderr, "Error: Line %u: WITHCHILD and NOCHILD are mutually exclusive!\n", result->lines);
+		CG3Quit(1);
+	}
 	if (rule->flags & RF_ENCL_FINAL) {
 		result->has_encl_final = true;
+	}
+	if (rule->flags & RF_WITHCHILD) {
+		result->has_dep = true;
 	}
 	result->lines += SKIPWS(p);
 

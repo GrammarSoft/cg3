@@ -2,6 +2,11 @@ DELIMITERS = "<$.>" ;
 
 BEFORE-SECTIONS
 
+# Move whole
+MOVE WITHCHILD (second) AFTER (0* (seventh)) ;
+
+MOVE WITHCHILD (ninth) BEFORE (0* (third)) ;
+
 # Move from right to left
 MOVE (third) BEFORE (0* (tenth)) ;
 
@@ -10,7 +15,7 @@ MOVE (ninth) BEFORE (0* (second)) ;
 
 # Move from right to left
 MOVE (second) BEFORE (0* (fourth)) ;
-END
+
 # Move to absolute position; here the start of the window
 MOVE (third) AFTER (@0 (*)) ;
 

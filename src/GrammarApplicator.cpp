@@ -218,7 +218,7 @@ Tag *GrammarApplicator::addTag(const UChar *txt) {
 	return single_tags[hash];
 }
 
-void GrammarApplicator::printReading(Reading *reading, UFILE *output) {
+void GrammarApplicator::printReading(const Reading *reading, UFILE *output) {
 	if (reading->noprint) {
 		return;
 	}
@@ -235,7 +235,7 @@ void GrammarApplicator::printReading(Reading *reading, UFILE *output) {
 	}
 
 	uint32HashMap used_tags;
-	foreach (uint32List, reading->tags_list, tter, tter_end) {
+	const_foreach (uint32List, reading->tags_list, tter, tter_end) {
 		if ((!show_end_tags && *tter == endtag) || *tter == begintag) {
 			continue;
 		}
@@ -307,7 +307,7 @@ void GrammarApplicator::printReading(Reading *reading, UFILE *output) {
 	}
 
 	if (trace) {
-		foreach (uint32Vector, reading->hit_by, iter_hb, iter_hb_end) {
+		const_foreach (uint32Vector, reading->hit_by, iter_hb, iter_hb_end) {
 			RuleByLineHashMap::const_iterator ruit = grammar->rule_by_line.find(*iter_hb);
 			if (ruit != grammar->rule_by_line.end()) {
 				const Rule *r = ruit->second;
