@@ -179,6 +179,9 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow &current, uint32
 			if (cohort->local_number == 0) {
 				continue;
 			}
+			if (cohort->type & CT_REMOVED) {
+				continue;
+			}
 
 			uint32_t c = cohort->local_number;
 			if ((cohort->type & CT_ENCLOSED) || cohort->parent != &current) {
@@ -437,6 +440,20 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow &current, uint32
 							addTagToReading(*reading, endtag);
 						}
 						delimited = true;
+						rebuildCohortLinks();
+						break;
+					}
+					else if (type == K_REMCOHORT) {
+						foreach(ReadingList, cohort->readings, iter, iter_end) {
+							(*iter)->hit_by.push_back(rule.line);
+							(*iter)->deleted = true;
+						}
+						cohort->type |= CT_REMOVED;
+						cohort->prev->removed.push_back(cohort);
+						current.cohorts.erase(current.cohorts.begin()+cohort->local_number);
+						foreach(CohortVector, current.cohorts, iter, iter_end) {
+							(*iter)->local_number = std::distance(current.cohorts.begin(), iter);
+						}
 						rebuildCohortLinks();
 						break;
 					}
