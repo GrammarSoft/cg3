@@ -29,6 +29,19 @@
     </para>
   </section>
 
+  <section id="remcohort">
+    <title>REMCOHORT</title>
+    <indexterm>
+      <primary>REMCOHORT</primary>
+    </indexterm>
+    <screen>
+      [wordform] REMCOHORT &lt;target&gt; [contextual_tests] ;
+    </screen>
+    <para>
+      This will entirely remove a cohort with all its readings from the window.
+    </para>
+  </section>
+
   <section id="substitute">
     <title>SUBSTITUTE</title>
     <indexterm>
