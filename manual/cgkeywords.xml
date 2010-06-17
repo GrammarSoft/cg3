@@ -327,6 +327,21 @@
     </screen>
   </section>
 
+  <section id="keyword-move">
+    <title>MOVE</title>
+    <indexterm>
+      <primary>MOVE</primary>
+      <seealso>SWITCH</seealso>
+    </indexterm>
+    <para>
+      Moves cohorts and optionally all children of the cohort to a different position in the window.
+    </para>
+    <screen>
+      MOVE targetset (-1* ("someword")) AFTER (1* ("buffalo")) (-1 ("water")) ;
+      MOVE WITHCHILD targetset (-1* ("someword")) BEFORE (1* ("buffalo")) (-1 ("water")) ;
+    </screen>
+  </section>
+
   <section id="keyword-negate">
     <title>NEGATE</title>
     <indexterm>
@@ -623,6 +638,20 @@
     </para>
     <screen>
       SUBSTITUTE (search tags) (new tags) targetset (-1* ("someword")) ;
+    </screen>
+  </section>
+
+  <section id="keyword-switch">
+    <title>SWITCH</title>
+    <indexterm>
+      <primary>SWITCH</primary>
+      <seealso>MOVE</seealso>
+    </indexterm>
+    <para>
+      Switches the position of two cohorts in the window.
+    </para>
+    <screen>
+      SWITCH targetset (-1* ("someword")) WITH (1* ("buffalo")) (-1 ("water")) ;
     </screen>
   </section>
 
