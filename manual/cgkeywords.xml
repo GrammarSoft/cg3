@@ -405,6 +405,20 @@
     </screen>
   </section>
 
+  <section id="keyword-remcohort">
+    <title>REMCOHORT</title>
+    <indexterm>
+      <primary>REMCOHORT</primary>
+    </indexterm>
+    <para>
+      If it finds a reading which satisfies the target and the contextual tests, REMCOHORT will
+      remove the cohort and all its readings from the current disambiguation window.
+    </para>
+    <screen>
+      REMCOHORT targetset (-1* ("someword")) ;
+    </screen>
+  </section>
+
   <section id="keyword-remove">
     <title>REMOVE</title>
     <indexterm>
