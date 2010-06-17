@@ -42,6 +42,30 @@
     </para>
   </section>
 
+   <section id="move-switch">
+    <title>MOVE, SWITCH</title>
+    <indexterm>
+      <primary>MOVE</primary>
+    </indexterm>
+    <indexterm>
+      <primary>SWITCH</primary>
+    </indexterm>
+    <screen>
+      [wordform] MOVE [WITHCHILD|NOCHILD] &lt;target&gt; [contextual_tests] AFTER &lt;contextual_target&gt; [contextual_tests] ;
+      [wordform] MOVE [WITHCHILD|NOCHILD] &lt;target&gt; [contextual_tests] BEFORE &lt;contextual_target&gt; [contextual_tests] ;
+      [wordform] SWITCH &lt;target&gt; [contextual_tests] WITH &lt;contextual_target&gt; [contextual_tests] ;
+    </screen>
+    <para>
+      Allows re-arranging of cohorts. The option WITHCHILD will cause the movement of the cohort plus all children
+      of the cohort, maintaining their internal order. Default is NOCHILD which moves only the one cohort.
+      SWITCH does not take options.
+    </para>
+    <para>
+      Caveat: This does NOT affect the rule application order as that is tied to the input order of the cohorts,
+      so after movement you may see some rules touching later cohorts than you'd expect. 
+    </para>
+  </section>
+
   <section id="substitute">
     <title>SUBSTITUTE</title>
     <indexterm>
@@ -352,6 +376,34 @@
       <para>
         The default behavior.
         Used to counter other glocal ENCL_* flags.
+      </para>
+    </section>
+
+    <section id="rule-options-withchild">
+      <title>WITHCHILD</title>
+      <indexterm>
+        <primary>WITHCHILD</primary>
+      </indexterm>
+      <para>
+        Applicable for rule type MOVE.
+        Not compatible with option NOCHILD.
+      </para>
+      <para>
+        Normally, MOVE only moves a single cohort. Setting option WITHCHILD moves all its children along with it.
+      </para>
+    </section>
+
+    <section id="rule-options-nochild">
+      <title>NOCHILD</title>
+      <indexterm>
+        <primary>NOCHILD</primary>
+      </indexterm>
+      <para>
+        Applicable for rule type MOVE.
+        Not compatible with option WITHCHILD.
+      </para>
+      <para>
+        If the global option WITHCHILD is on, NOCHILD will turn it off for a single MOVE rule.
       </para>
     </section>
   </section>

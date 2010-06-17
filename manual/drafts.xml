@@ -19,24 +19,6 @@
     </para>
   </section>
 
-   <section id="draft-move">
-    <title>MOVE, SWITCH</title>
-    <indexterm>
-      <primary>MOVE</primary>
-    </indexterm>
-    <indexterm>
-      <primary>SWITCH</primary>
-    </indexterm>
-    <screen>
-      [wordform] MOVE &lt;target&gt; [contextual_tests] AFTER &lt;contextual_target&gt; [contextual_tests] ;
-      [wordform] MOVE &lt;target&gt; [contextual_tests] BEFORE &lt;contextual_target&gt; [contextual_tests] ;
-      [wordform] SWITCH &lt;target&gt; [contextual_tests] WITH &lt;contextual_target&gt; [contextual_tests] ;
-    </screen>
-    <para>
-      Allows re-arranging of cohorts.
-    </para>
-  </section>
-
   <section id="draft-match">
     <title>MATCH</title>
     <indexterm>
