@@ -90,7 +90,7 @@ namespace CG3 {
 		const Grammar *grammar;
 
 	protected:
-		void printReading(Reading *reading, UFILE *output);
+		void printReading(const Reading *reading, UFILE *output);
 		void printCohort(Cohort *cohort, UFILE *output);
 		virtual void printSingleWindow(SingleWindow *window, UFILE *output);
 
@@ -183,8 +183,9 @@ namespace CG3 {
 		void delTagFromReading(Reading &reading, uint32_t tag);
 		void splitMappings(TagList mappings, Cohort &cohort, Reading &reading, bool mapped = false);
 		void mergeMappings(Cohort &cohort);
-		bool wouldParentChildLoop(Cohort *parent, Cohort *child);
-		bool wouldParentChildCross(Cohort *parent, Cohort *child);
+		bool isChildOf(const Cohort *child, const Cohort *parent);
+		bool wouldParentChildLoop(const Cohort *parent, const Cohort *child);
+		bool wouldParentChildCross(const Cohort *parent, const Cohort *child);
 		bool attachParentChild(Cohort &parent, Cohort &child, bool allowloop = false, bool allowcrossing = false);
 
 		Reading *initEmptyCohort(Cohort &cohort);

@@ -1,17 +1,21 @@
 "<word>"
-	"word" wanted first @two @one @jump-target @jump-mark 
+	"word" wanted third #1->5 
 "<word>"
-	"word" wanted second @two @one @jump-target @jump-mark 
+	"word" wanted seventh #2->8 
 "<word>"
-	"word" wanted third alsofindme @two @one @jump-mark 
+	"word" wanted eighth #3->8 
 "<word>"
-	"word" wanted fourth findme @two 
+	"word" wanted tenth #4->8 
 "<word>"
-	"word" wanted fifth @two 
+	"word" wanted fifth #5->0 
 "<word>"
-	"word" wanted sixth alsofindme 
+	"word" wanted sixth #6->5 
 "<word>"
-	"word" wanted seventh alsofindme 
+	"word" wanted first #7->9 
 "<word>"
-	"word" wanted eighth 
+	"word" wanted ninth #8->0 
+"<word>"
+	"word" wanted fourth #9->10 
+"<word>"
+	"word" wanted second #10->0 
 
