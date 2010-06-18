@@ -136,8 +136,14 @@ int main(int argc, char *argv[]) {
 				trace = 1;
 				break;
 
-			case 'r': 
-				single_rule = strdup(optarg);
+			case 'r':
+				{
+					// strdup() is Posix
+					size_t len = strlen(optarg);
+					single_rule = new char[len];
+					std::copy(optarg, optarg+len, single_rule);
+					break;
+				}
 			case 's':
 				sections = atoi(optarg);
 				break;
@@ -303,9 +309,10 @@ int main(int argc, char *argv[]) {
 	if (trace == 1) {
 		applicator->trace = true;
 	}
+	applicator->unicode_tags = true;
 
 	// This is if we want to run a single rule  (-r option)
-	if (single_rule != 0) {
+	if (single_rule) {
 		size_t sn = strlen(single_rule);
 		UChar *buf = new UChar[sn*3];
 		buf[0] = 0;
@@ -319,6 +326,7 @@ int main(int argc, char *argv[]) {
 		}
 		delete[] buf;
 	}
+	delete[] single_rule;
 
 	try {
 		switch(cmd) {
