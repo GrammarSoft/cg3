@@ -51,10 +51,10 @@
       <primary>SWITCH</primary>
     </indexterm>
     <screen>
-      [wordform] MOVE [WITHCHILD &lt;target&gt;|NOCHILD] &lt;target&gt; [contextual_tests]
-          AFTER [WITHCHILD &lt;target&gt;|NOCHILD] &lt;contextual_target&gt; [contextual_tests] ;
-      [wordform] MOVE [WITHCHILD &lt;target&gt;|NOCHILD] &lt;target&gt; [contextual_tests]
-          BEFORE [WITHCHILD &lt;target&gt;|NOCHILD] &lt;contextual_target&gt; [contextual_tests] ;
+      [wordform] MOVE [WITHCHILD &lt;child_set&gt;|NOCHILD] &lt;target&gt; [contextual_tests]
+          AFTER [WITHCHILD &lt;child_set&gt;|NOCHILD] &lt;contextual_target&gt; [contextual_tests] ;
+      [wordform] MOVE [WITHCHILD &lt;child_set&gt;|NOCHILD] &lt;target&gt; [contextual_tests]
+          BEFORE [WITHCHILD &lt;child_set&gt;|NOCHILD] &lt;contextual_target&gt; [contextual_tests] ;
       [wordform] SWITCH &lt;target&gt; [contextual_tests] WITH &lt;contextual_target&gt; [contextual_tests] ;
     </screen>
     <para>
