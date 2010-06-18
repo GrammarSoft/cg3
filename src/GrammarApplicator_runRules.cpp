@@ -242,6 +242,9 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow &current, uint32
 			bool matched_target = false;
 
 			readings_plain.clear();
+			if (!regexgrps.empty()) {
+				regexgrps.clear();
+			}
 
 			foreach (ReadingList, cohort->readings, rter1, rter1_end) {
 				Reading *reading = *rter1;
@@ -275,9 +278,6 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow &current, uint32
 				unif_sets_firstrun = true;
 				if (!unif_sets.empty()) {
 					unif_sets.clear();
-				}
-				if (!regexgrps.empty()) {
-					regexgrps.clear();
 				}
 
 				target = 0;
@@ -466,13 +466,14 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow &current, uint32
 						reading.noprint = false;
 						TagList mappings;
 						const_foreach (TagList, rule.maplist, tter, tter_end) {
+							uint32_t hash = (*tter)->hash;
 							if ((*tter)->type & T_MAPPING || (*tter)->tag[0] == grammar->mapping_prefix) {
 								mappings.push_back(*tter);
 							}
 							else {
-								addTagToReading(reading, (*tter)->hash);
+								hash = addTagToReading(reading, hash);
 							}
-							updateValidRules(rules, intersects, (*tter)->hash, reading);
+							updateValidRules(rules, intersects, hash, reading);
 							iter_rules = std::lower_bound(intersects.begin(), intersects.end(), rule.line);
 							iter_rules_end = intersects.end();
 						}
@@ -492,17 +493,17 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow &current, uint32
 						reading.tags_list.push_back(reading.baseform);
 						TagList mappings;
 						const_foreach (TagList, rule.maplist, tter, tter_end) {
+							uint32_t hash = (*tter)->hash;
 							if ((*tter)->type & T_MAPPING || (*tter)->tag[0] == grammar->mapping_prefix) {
 								mappings.push_back(*tter);
 							}
 							else {
-								reading.tags_list.push_back((*tter)->hash);
+								hash = addTagToReading(reading, hash);
 							}
-							updateValidRules(rules, intersects, (*tter)->hash, reading);
+							updateValidRules(rules, intersects, hash, reading);
 							iter_rules = std::lower_bound(intersects.begin(), intersects.end(), rule.line);
 							iter_rules_end = intersects.end();
 						}
-						reflowReading(reading);
 						if (!mappings.empty()) {
 							splitMappings(mappings, *cohort, reading, true);
 						}
@@ -572,13 +573,14 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow &current, uint32
 						addTagToReading(*cReading, cohort->wordform);
 						TagList mappings;
 						const_foreach (TagList, rule.maplist, tter, tter_end) {
+							uint32_t hash = (*tter)->hash;
 							if ((*tter)->type & T_MAPPING || (*tter)->tag[0] == grammar->mapping_prefix) {
 								mappings.push_back(*tter);
 							}
 							else {
-								addTagToReading(*cReading, (*tter)->hash);
+								hash = addTagToReading(*cReading, hash);
 							}
-							updateValidRules(rules, intersects, (*tter)->hash, reading);
+							updateValidRules(rules, intersects, hash, reading);
 							iter_rules = std::lower_bound(intersects.begin(), intersects.end(), rule.line);
 							iter_rules_end = intersects.end();
 						}
