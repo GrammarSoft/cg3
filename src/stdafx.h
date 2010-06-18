@@ -30,6 +30,8 @@
 	#define WIN32_LEAN_AND_MEAN
 	#define VC_EXTRALEAN
 	#define NOMINMAX
+	// warning C4428: universal-character-name encountered in source
+	#pragma warning (disable: 4428)
 #endif
 
 #include <exception>
