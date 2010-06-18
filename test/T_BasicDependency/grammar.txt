@@ -1,6 +1,6 @@
 DELIMITERS = "<$.>" ;
 
-MAPPING-PREFIX = § ;
+MAPPING-PREFIX = Â§ ;
 
 LIST @ACC = @<ACC @ACC> ;
 LIST @PIV = @<PIV @PIV> ;
@@ -22,6 +22,6 @@ ADD (@self-or-child-error) ("em") (c (PRP)) ;
 ADD (@self-or-parent) ("em") (pS (PRP)) ;
 ADD (@self-or-parent-error) ("em") (p (PRP)) ;
 
-MAP (§DES) TARGET @P< (*-1 PRP LINK 0 ("em") LINK 0 @PIV LINK p ("bater")) (NOT 0 N-ANIM) ;
-MAP (§PAT) TARGET @P< (*-1 PRP LINK 0 ("em") LINK p ("bater") LINK NONE c @ACC) ;
-MAP (§PAT §EXP) TARGET @ACC (p ("bater")) ;
+MAP (Â§DES) TARGET @P< (*-1 PRP LINK 0 ("em") LINK 0 @PIV LINK p ("bater")) (NOT 0 N-ANIM) ;
+MAP (Â§PAT) TARGET @P< (*-1 PRP LINK 0 ("em") LINK p ("bater") LINK NONE c @ACC) ;
+MAP (Â§PAT Â§EXP) TARGET @ACC (p ("bater")) ;
