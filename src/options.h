@@ -66,6 +66,7 @@ namespace Options {
 		OPTIMIZE_UNSAFE,
 		OPTIMIZE_SAFE,
 		MAPPING_PREFIX,
+		UNICODE_TAGS,
 		NUM_WINDOWS,
 		ALWAYS_SPAN,
 		SOFT_LIMIT,
@@ -132,6 +133,7 @@ namespace Options {
 		UOPTION_DEF_D("optimize-unsafe",	'Z', UOPT_NO_ARG, "destructively optimize the profiled grammar to be faster"),
 		UOPTION_DEF_D("optimize-safe",		'z', UOPT_NO_ARG, "conservatively optimize the profiled grammar to be faster"),
 		UOPTION_DEF_D("prefix",			    'p', UOPT_REQUIRES_ARG, "sets the mapping prefix; defaults to @"),
+		UOPTION_DEF_D("unicode-tags",		0, UOPT_NO_ARG, "outputs Unicode code points for things like ->"),
 
 		UOPTION_DEF_D("num-windows",		0, UOPT_REQUIRES_ARG, "number of windows to keep in before/ahead buffers; defaults to 2"),
 		UOPTION_DEF_D("always-span",		0, UOPT_NO_ARG, "forces scanning tests to always span across window boundaries"),
