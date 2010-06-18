@@ -298,8 +298,8 @@ void GrammarApplicator::printReading(const Reading *reading, UFILE *output) {
 	if (reading->parent->type & CT_RELATED) {
 		u_fprintf(output, "ID:%u ", reading->parent->global_number);
 		if (!reading->parent->relations.empty()) {
-			foreach(RelationCtn, reading->parent->relations, miter, miter_end) {
-				foreach(uint32Set, miter->second, siter, siter_end) {
+			foreach (RelationCtn, reading->parent->relations, miter, miter_end) {
+				foreach (uint32Set, miter->second, siter, siter_end) {
 					u_fprintf(output, "R:%S:%u ", grammar->single_tags.find(miter->first)->second->tag, *siter);
 				}
 			}
@@ -365,7 +365,7 @@ void GrammarApplicator::printCohort(Cohort *cohort, UFILE *output) {
 		u_fprintf(output, "%S", cohort->text);
 	}
 
-	foreach(CohortVector, cohort->removed, iter, iter_end) {
+	foreach (CohortVector, cohort->removed, iter, iter_end) {
 		if (trace && !trace_no_removed) {
 			printCohort(*iter, output);
 		}

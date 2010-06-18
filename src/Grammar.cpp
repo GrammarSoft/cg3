@@ -136,7 +136,7 @@ void Grammar::addSet(Set *to) {
 		negative->setName(str);
 
 		TagSet tags;
-		foreach(TagHashSet, to->ff_tags, iter, iter_end) {
+		foreach (TagHashSet, to->ff_tags, iter, iter_end) {
 			positive->tags_set.erase((*iter)->hash);
 			positive->single_tags.erase(*iter);
 			positive->single_tags_hash.erase((*iter)->hash);
@@ -477,6 +477,14 @@ void Grammar::reindex(bool unused_sets) {
 		Set *s = 0;
 		s = getSet(iter_rule->second->target);
 		s->markUsed(*this);
+		if (iter_rule->second->childset1) {
+			s = getSet(iter_rule->second->childset1);
+			s->markUsed(*this);
+		}
+		if (iter_rule->second->childset2) {
+			s = getSet(iter_rule->second->childset2);
+			s->markUsed(*this);
+		}
 		if (iter_rule->second->dep_target) {
 			iter_rule->second->dep_target->markUsed(*this);
 		}

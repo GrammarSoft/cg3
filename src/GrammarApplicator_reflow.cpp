@@ -302,8 +302,8 @@ void GrammarApplicator::addTagToReading(Reading &reading, uint32_t utag, bool re
 	if (tag->type & T_VARSTRING && !regexgrps.empty()) {
 		UnicodeString tmp(tag->tag);
 		// Replace $1-$9 with their respective match groups
-		for (size_t i=0 ; i<regexgrps.size()-1 ; ++i) {
-			tmp.findAndReplace(stringbits[S_VS1+i].getTerminatedBuffer(), regexgrps[1+i]);
+		for (size_t i=0 ; i<regexgrps.size() ; ++i) {
+			tmp.findAndReplace(stringbits[S_VS1+i].getTerminatedBuffer(), regexgrps[i]);
 		}
 		// Handle %U %u %L %l markers.
 		bool found;

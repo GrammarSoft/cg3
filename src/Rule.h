@@ -61,6 +61,7 @@ namespace CG3 {
 		UChar *name;
 		uint32_t wordform;
 		uint32_t target;
+		uint32_t childset1, childset2;
 		uint32_t line;
 		uint32_t varname, varvalue;
 		uint32_t jumpstart, jumpend;

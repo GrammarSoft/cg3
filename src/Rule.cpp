@@ -45,6 +45,8 @@ Rule::Rule() {
 	flags = 0;
 	test_head = 0;
 	dep_test_head = 0;
+	childset1 = 0;
+	childset2 = 0;
 }
 
 Rule::~Rule() {

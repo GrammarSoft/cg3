@@ -276,6 +276,9 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow &current, uint32
 				if (!unif_sets.empty()) {
 					unif_sets.clear();
 				}
+				if (!regexgrps.empty()) {
+					regexgrps.clear();
+				}
 
 				target = 0;
 				mark = cohort;
@@ -444,14 +447,14 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow &current, uint32
 						break;
 					}
 					else if (type == K_REMCOHORT) {
-						foreach(ReadingList, cohort->readings, iter, iter_end) {
+						foreach (ReadingList, cohort->readings, iter, iter_end) {
 							(*iter)->hit_by.push_back(rule.line);
 							(*iter)->deleted = true;
 						}
 						cohort->type |= CT_REMOVED;
 						cohort->prev->removed.push_back(cohort);
 						current.cohorts.erase(current.cohorts.begin()+cohort->local_number);
-						foreach(CohortVector, current.cohorts, iter, iter_end) {
+						foreach (CohortVector, current.cohorts, iter, iter_end) {
 							(*iter)->local_number = std::distance(current.cohorts.begin(), iter);
 						}
 						rebuildCohortLinks();
@@ -670,45 +673,78 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow &current, uint32
 								}
 								test = test->next;
 							}
-							uint32_t a = cohort->local_number;
-							uint32_t b = attach->local_number;
-							uint32_t max = current.cohorts.size()-1;
-							if (type == K_MOVE_BEFORE && b == 0) {
-								good = false;
+
+							if (!good || cohort == attach || cohort->local_number == 0) {
+								break;
 							}
-							else if (type == K_MOVE_BEFORE) {
-								--b;
-							}
-							if (good && a != b) {
-								if (type == K_SWITCH && a != 0 && b != 0) {
-									current.cohorts[a] = attach;
-									current.cohorts[b] = cohort;
+
+							if (type == K_SWITCH) {
+								if (attach->local_number == 0) {
+									break;
 								}
-								else {
-									CohortVector cohorts;
-									if (rule.flags & RF_WITHCHILD) {
-										for (CohortVector::iterator iter = current.cohorts.begin() ; iter != current.cohorts.end() ; ) {
-											if (isChildOf(*iter, cohort)) {
-												cohorts.push_back(*iter);
-												iter = current.cohorts.erase(iter);
-											}
-											else {
-												++iter;
-											}
+								current.cohorts[cohort->local_number] = attach;
+								current.cohorts[attach->local_number] = cohort;
+								foreach (ReadingList, cohort->readings, iter, iter_end) {
+									(*iter)->hit_by.push_back(rule.line);
+								}
+								foreach (ReadingList, attach->readings, iter, iter_end) {
+									(*iter)->hit_by.push_back(rule.line);
+								}
+							}
+							else {
+								CohortVector cohorts;
+								if (rule.childset1) {
+									for (CohortVector::iterator iter = current.cohorts.begin() ; iter != current.cohorts.end() ; ) {
+										if (isChildOf(*iter, cohort) && doesSetMatchCohortNormal(**iter, rule.childset1)) {
+											cohorts.push_back(*iter);
+											iter = current.cohorts.erase(iter);
+										}
+										else {
+											++iter;
 										}
 									}
-									else {
-										cohorts.push_back(cohort);
-										current.cohorts.erase(current.cohorts.begin()+cohort->local_number);
-									}
-									while (!cohorts.empty()) {
-										current.cohorts.insert(current.cohorts.begin()+b+1, cohorts.back());
-										cohorts.pop_back();
+								}
+								else {
+									cohorts.push_back(cohort);
+									current.cohorts.erase(current.cohorts.begin()+cohort->local_number);
+								}
+
+								foreach (CohortVector, current.cohorts, iter, iter_end) {
+									(*iter)->local_number = std::distance(current.cohorts.begin(), iter);
+								}
+
+								CohortVector edges;
+								if (rule.childset2) {
+									foreach (CohortVector, current.cohorts, iter, iter_end) {
+										if (isChildOf(*iter, attach) && doesSetMatchCohortNormal(**iter, rule.childset2)) {
+											edges.push_back(*iter);
+										}
 									}
 								}
-								for (uint32_t i = 0 ; i <= max ; i++) {
-									current.cohorts[i]->local_number = i;
+								else {
+									edges.push_back(attach);
 								}
+								uint32_t spot = 0;
+								if (type == K_MOVE_BEFORE) {
+									spot = edges.front()->local_number;
+									if (spot == 0) {
+										spot = 1;
+									}
+								}
+								else if (type == K_MOVE_AFTER) {
+									spot = edges.back()->local_number+1;
+								}
+
+								while (!cohorts.empty()) {
+									foreach (ReadingList, cohorts.back()->readings, iter, iter_end) {
+										(*iter)->hit_by.push_back(rule.line);
+									}
+									current.cohorts.insert(current.cohorts.begin()+spot, cohorts.back());
+									cohorts.pop_back();
+								}
+							}
+							foreach (CohortVector, current.cohorts, iter, iter_end) {
+								(*iter)->local_number = std::distance(current.cohorts.begin(), iter);
 							}
 						}
 						rebuildCohortLinks();
