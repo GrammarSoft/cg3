@@ -125,7 +125,7 @@ namespace CG3 {
 		bool has_enclosures;
 		bool did_final_enclosure;
 
-		std::map<uint32_t,UnicodeString> regexgrps;
+		std::vector<UnicodeString> regexgrps;
 		uint32HashMap variables;
 		uint32HashMap metas;
 		Cohort *target;

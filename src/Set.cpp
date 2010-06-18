@@ -140,7 +140,7 @@ void Set::reindex(Grammar &grammar) {
 	has_mapped = false;
 
 	if (sets.empty()) {
-		const_foreach(TagHashSet, single_tags, tomp_iter, tomp_iter_end) {
+		const_foreach (TagHashSet, single_tags, tomp_iter, tomp_iter_end) {
 			if ((*tomp_iter)->is_special) {
 				is_special = true;
 			}
@@ -148,8 +148,8 @@ void Set::reindex(Grammar &grammar) {
 				has_mapped = true;
 			}
 		}
-		const_foreach(CompositeTagHashSet, tags, comp_iter, comp_iter_end) {
-			const_foreach(TagSet, (*comp_iter)->tags_set, tag_iter, tag_iter_end) {
+		const_foreach (CompositeTagHashSet, tags, comp_iter, comp_iter_end) {
+			const_foreach (TagSet, (*comp_iter)->tags_set, tag_iter, tag_iter_end) {
 				if ((*tag_iter)->is_special) {
 					is_special = true;
 				}

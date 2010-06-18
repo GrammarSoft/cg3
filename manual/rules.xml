@@ -51,14 +51,25 @@
       <primary>SWITCH</primary>
     </indexterm>
     <screen>
-      [wordform] MOVE [WITHCHILD|NOCHILD] &lt;target&gt; [contextual_tests] AFTER &lt;contextual_target&gt; [contextual_tests] ;
-      [wordform] MOVE [WITHCHILD|NOCHILD] &lt;target&gt; [contextual_tests] BEFORE &lt;contextual_target&gt; [contextual_tests] ;
+      [wordform] MOVE [WITHCHILD &lt;target&gt;|NOCHILD] &lt;target&gt; [contextual_tests]
+          AFTER [WITHCHILD &lt;target&gt;|NOCHILD] &lt;contextual_target&gt; [contextual_tests] ;
+      [wordform] MOVE [WITHCHILD &lt;target&gt;|NOCHILD] &lt;target&gt; [contextual_tests]
+          BEFORE [WITHCHILD &lt;target&gt;|NOCHILD] &lt;contextual_target&gt; [contextual_tests] ;
       [wordform] SWITCH &lt;target&gt; [contextual_tests] WITH &lt;contextual_target&gt; [contextual_tests] ;
     </screen>
     <para>
       Allows re-arranging of cohorts. The option WITHCHILD will cause the movement of the cohort plus all children
       of the cohort, maintaining their internal order. Default is NOCHILD which moves only the one cohort.
       SWITCH does not take options.
+    </para>
+    <para>
+      If you specify WITHCHILD you will need to provide a set that the children you want to apply must match.
+      The (*) set will match all children.
+    </para>
+    <para>
+      The first WITHCHILD specifies which children you want moved.
+      The second WITHCHILD uses the children of the cohort you're moving to as edges so you can avoid moving into
+      another dependency group.
     </para>
     <para>
       Caveat: This does NOT affect the rule application order as that is tied to the input order of the cohorts,
