@@ -2,10 +2,11 @@ DELIMITERS = "<$.>" ;
 
 BEFORE-SECTIONS
 
-# Move whole
-MOVE WITHCHILD (second) AFTER (0* (seventh)) ;
+# Move whole dep group where (second) is head except the child (first), to after the dep group where (ninth) is head
+MOVE WITHCHILD (*) - (first) (second) AFTER WITHCHILD (*) (0* (ninth)) ;
 
-MOVE WITHCHILD (ninth) BEFORE (0* (third)) ;
+# Move whole dep group where (ninth) is head to after cohort matching (third)
+MOVE WITHCHILD (*) (ninth) BEFORE (0* (third)) ;
 
 # Move from right to left
 MOVE (third) BEFORE (0* (tenth)) ;

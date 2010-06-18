@@ -631,8 +631,8 @@ Cohort *GrammarApplicator::runRelationTest(SingleWindow *sWindow, Cohort *curren
 	Cohort *cohort = 0;
 
 	if (test->relation == grammar->tag_any) {
-		const_foreach(RelationCtn, current->relations, riter, riter_end) {
-			const_foreach(uint32Set, riter->second, citer, citer_end) {
+		const_foreach (RelationCtn, current->relations, riter, riter_end) {
+			const_foreach (uint32Set, riter->second, citer, citer_end) {
 				std::map<uint32_t,Cohort*>::iterator it = sWindow->parent->cohort_map.find(*citer);
 				if (it != sWindow->parent->cohort_map.end()) {
 					cohort = it->second;
@@ -657,7 +657,7 @@ Cohort *GrammarApplicator::runRelationTest(SingleWindow *sWindow, Cohort *curren
 	else {
 		RelationCtn::const_iterator riter = current->relations.find(test->relation);
 		if (riter != current->relations.end()) {
-			const_foreach(uint32Set, riter->second, citer, citer_end) {
+			const_foreach (uint32Set, riter->second, citer, citer_end) {
 				std::map<uint32_t,Cohort*>::iterator it = sWindow->parent->cohort_map.find(*citer);
 				if (it != sWindow->parent->cohort_map.end()) {
 					cohort = it->second;

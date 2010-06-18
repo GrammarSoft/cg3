@@ -311,7 +311,7 @@ int main(int argc, char *argv[]) {
 		buf[0] = 0;
 		buf[sn] = 0;
 		u_charsToUChars(single_rule, buf, sn);
-		const_foreach(CG3::RuleByLineHashMap, applicator->grammar->rule_by_line, riter, riter_end) {
+		const_foreach (CG3::RuleByLineHashMap, applicator->grammar->rule_by_line, riter, riter_end) {
 			const CG3::Rule *rule = riter->second;
 			if (rule->name && u_strcmp(rule->name, buf) == 0) {
 				applicator->valid_rules.push_back(rule->line);

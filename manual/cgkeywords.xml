@@ -338,7 +338,9 @@
     </para>
     <screen>
       MOVE targetset (-1* ("someword")) AFTER (1* ("buffalo")) (-1 ("water")) ;
-      MOVE WITHCHILD targetset (-1* ("someword")) BEFORE (1* ("buffalo")) (-1 ("water")) ;
+      MOVE WITHCHILD (*) targetset (-1* ("someword")) BEFORE (1* ("buffalo")) (-1 ("water")) ;
+      MOVE targetset (-1* ("someword")) AFTER WITHCHILD (*) (1* ("buffalo")) (-1 ("water")) ;
+      MOVE WITHCHILD (*) targetset (-1* ("someword")) BEFORE WITHCHILD (*) (1* ("buffalo")) (-1 ("water")) ;
     </screen>
   </section>
 

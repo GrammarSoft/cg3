@@ -554,7 +554,7 @@ void GAppSetOpts(CG3::GrammarApplicator &applicator, UConverter *conv) {
 			buf[0] = 0;
 			ucnv_toUChars(conv, buf, sn*3, options[RULE].value, sn, &status);
 
-			const_foreach(CG3::RuleByLineHashMap, applicator.grammar->rule_by_line, riter, riter_end) {
+			const_foreach (CG3::RuleByLineHashMap, applicator.grammar->rule_by_line, riter, riter_end) {
 				const CG3::Rule *rule = riter->second;
 				if (rule->name && u_strcmp(rule->name, buf) == 0) {
 					applicator.valid_rules.push_back(rule->line);

@@ -110,11 +110,10 @@ bool GrammarApplicator::doesTagMatchReading(const Reading &reading, const Tag &t
 					int32_t gc = uregex_groupCount(tag.regexp, &status);
 					if (gc > 0) {
 						UChar tmp[1024];
-						regexgrps.clear();
-						for (int i=0 ; i<=gc ; ++i) {
+						for (int i=1 ; i<=gc ; ++i) {
 							tmp[0] = 0;
 							uregex_group(tag.regexp, i, tmp, 1024, &status);
-							regexgrps[i] = UnicodeString(tmp);
+							regexgrps.push_back(UnicodeString(tmp));
 						}
 					}
 					else {

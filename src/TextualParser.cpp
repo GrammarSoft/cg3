@@ -750,10 +750,17 @@ int TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 	if (rule->flags & RF_ENCL_FINAL) {
 		result->has_encl_final = true;
 	}
+	result->lines += SKIPWS(p);
+
 	if (rule->flags & RF_WITHCHILD) {
 		result->has_dep = true;
+		Set *s = parseSetInlineWrapper(p);
+		rule->childset1 = s->hash;
+		result->lines += SKIPWS(p);
 	}
-	result->lines += SKIPWS(p);
+	else if (rule->flags & RF_NOCHILD) {
+		rule->childset1 = 0;
+	}
 
 	if (key == K_JUMP || key == K_EXECUTE) {
 		UChar *n = p;
@@ -962,6 +969,22 @@ int TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 			}
 		}
 		result->lines += SKIPWS(p);
+
+		if (key == K_MOVE) {
+			if (ux_simplecasecmp(p, flags[FL_WITHCHILD].getTerminatedBuffer(), flags[FL_WITHCHILD].length())) {
+				p += flags[FL_WITHCHILD].length();
+				result->has_dep = true;
+				Set *s = parseSetInlineWrapper(p);
+				rule->childset2 = s->hash;
+				result->lines += SKIPWS(p);
+			}
+			else if (ux_simplecasecmp(p, flags[FL_NOCHILD].getTerminatedBuffer(), flags[FL_NOCHILD].length())) {
+				p += flags[FL_NOCHILD].length();
+				rule->childset2 = 0;
+				result->lines += SKIPWS(p);
+			}
+		}
+
 		while (*p && *p == '(') {
 			++p;
 			result->lines += SKIPWS(p);
