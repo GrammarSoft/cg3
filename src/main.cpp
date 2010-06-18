@@ -489,6 +489,10 @@ void GAppSetOpts(CG3::GrammarApplicator &applicator, UConverter *conv) {
 	if (options[ALWAYS_SPAN].doesOccur) {
 		applicator.always_span = true;
 	}
+	applicator.unicode_tags = false;
+	if (options[UNICODE_TAGS].doesOccur) {
+		applicator.unicode_tags = true;
+	}
 	applicator.apply_mappings = true;
 	if (options[NOMAPPINGS].doesOccur) {
 		applicator.apply_mappings = false;

@@ -82,6 +82,7 @@ GrammarApplicator::GrammarApplicator(UFILE *ux_err) {
 	unsafe = false;
 	ordered = false;
 	show_end_tags = false;
+	unicode_tags = false;
 	gWindow = new Window(this);
 	ci_depths.resize(4, 0);
 }
@@ -270,25 +271,41 @@ void GrammarApplicator::printReading(const Reading *reading, UFILE *output) {
 			}
 		}
 		if (dep_humanize) {
-			u_fprintf(output, "#w%u,c%u->w%u,c%u ",
+			const UChar *pattern = 0;
+			if (unicode_tags) {
+				const UChar local_pattern[] = {'#', 'w', '%', 'u', ',', 'c', '%', 'u', L'\u2192', 'w', '%', 'u', ',', 'c', '%', 'u', ' ', 0};
+				pattern = local_pattern;
+			}
+			else {
+				const UChar local_pattern[] = {'#', 'w', '%', 'u', ',', 'c', '%', 'u', '-', '>', 'w', '%', 'u', ',', 'c', '%', 'u', ' ', 0};
+				pattern = local_pattern;
+			}
+			u_fprintf_u(output, pattern,
 				pr->parent->number,
 				reading->parent->local_number,
 				reading->parent->parent->number,
 				pr->local_number);
 		}
+
+		const UChar local_utf_pattern[] = {'#', '%', 'u', L'\u2192', '%', 'u', ' ', 0};
+		const UChar local_latin_pattern[] = {'#', '%', 'u', '-', '>', '%', 'u', ' ', 0};
+		const UChar *pattern = local_latin_pattern;
+		if (unicode_tags) {
+			pattern = local_utf_pattern;
+		}
 		if (!dep_has_spanned) {
-			u_fprintf(output, "#%u->%u ",
+			u_fprintf_u(output, pattern,
 				reading->parent->local_number,
 				pr->local_number);
 		}
 		else {
 			if (reading->parent->dep_parent == std::numeric_limits<uint32_t>::max()) {
-				u_fprintf(output, "#%u->%u ",
+				u_fprintf_u(output, pattern,
 					reading->parent->dep_self,
 					reading->parent->dep_self);
 			}
 			else {
-				u_fprintf(output, "#%u->%u ",
+				u_fprintf_u(output, pattern,
 					reading->parent->dep_self,
 					reading->parent->dep_parent);
 			}

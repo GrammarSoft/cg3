@@ -69,7 +69,7 @@ Tag::~Tag() {
 	}
 }
 
-UChar local_dep_unicode[] = {'#', '%', 'i', L'\u2192', '%', 'i', 0};
+const UChar local_dep_unicode[] = {'#', '%', 'i', L'\u2192', '%', 'i', 0};
 
 void Tag::parseTag(const UChar *to, UFILE *ux_stderr) {
 	type = 0;
