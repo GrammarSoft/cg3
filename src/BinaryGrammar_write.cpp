@@ -275,6 +275,10 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 		u32tmp = (uint32_t)htonl((uint32_t)r->jumpend);
 		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
+		u32tmp = (uint32_t)htonl((uint32_t)r->childset1);
+		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
+		u32tmp = (uint32_t)htonl((uint32_t)r->childset2);
+		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 
 		u32tmp = (uint32_t)htonl((uint32_t)r->maplist.size());
 		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
