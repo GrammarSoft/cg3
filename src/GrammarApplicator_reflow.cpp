@@ -296,7 +296,7 @@ void GrammarApplicator::reflowReading(Reading &reading) {
 	reading.rehash();
 }
 
-void GrammarApplicator::addTagToReading(Reading &reading, uint32_t utag, bool rehash) {
+uint32_t GrammarApplicator::addTagToReading(Reading &reading, uint32_t utag, bool rehash) {
 	Tag *tag = single_tags.find(utag)->second;
 
 	if (tag->type & T_VARSTRING && !regexgrps.empty()) {
@@ -410,6 +410,7 @@ void GrammarApplicator::addTagToReading(Reading &reading, uint32_t utag, bool re
 	if (rehash) {
 		reading.rehash();
 	}
+	return tag->hash;
 }
 
 void GrammarApplicator::delTagFromReading(Reading &reading, uint32_t utag) {

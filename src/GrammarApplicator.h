@@ -180,7 +180,7 @@ namespace CG3 {
 
 		void rebuildCohortLinks();
 		void reflowReading(Reading &reading);
-		void addTagToReading(Reading &reading, uint32_t tag, bool rehash = true);
+		uint32_t addTagToReading(Reading &reading, uint32_t tag, bool rehash = true);
 		void delTagFromReading(Reading &reading, uint32_t tag);
 		void splitMappings(TagList mappings, Cohort &cohort, Reading &reading, bool mapped = false);
 		void mergeMappings(Cohort &cohort);
