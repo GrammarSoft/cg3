@@ -100,14 +100,6 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 			t->comparison_op = (C_OPS)ntohl(u32tmp);
 			fread(&i32tmp, sizeof(int32_t), 1, input);
 			t->comparison_val = (int32_t)ntohl(i32tmp);
-
-			ucnv_reset(conv);
-			fread(&u32tmp, sizeof(uint32_t), 1, input);
-			u32tmp = (uint32_t)ntohl(u32tmp);
-			fread(&cbuffers[0][0], 1, u32tmp, input);
-			i32tmp = ucnv_toUChars(conv, &gbuffers[0][0], CG3_BUFFER_SIZE-1, &cbuffers[0][0], u32tmp, &err);
-			t->comparison_key = t->allocateUChars(i32tmp+1);
-			u_strcpy(t->comparison_key, &gbuffers[0][0]);
 		}
 
 		fread(&u32tmp, sizeof(uint32_t), 1, input);
