@@ -82,11 +82,6 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 			fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 			i32tmp = (int32_t)htonl(t->comparison_val);
 			fwrite(&i32tmp, sizeof(int32_t), 1, output);
-			ucnv_reset(conv);
-			i32tmp = ucnv_fromUChars(conv, &cbuffers[0][0], CG3_BUFFER_SIZE-1, t->comparison_key, u_strlen(t->comparison_key), &err);
-			u32tmp = (uint32_t)htonl((uint32_t)i32tmp);
-			fwrite(&u32tmp, sizeof(uint32_t), 1, output);
-			fwrite(&cbuffers[0][0], i32tmp, 1, output);
 		}
 
 		if (t->tag) {

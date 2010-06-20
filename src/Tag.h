@@ -78,7 +78,6 @@ namespace CG3 {
 		uint32_t plain_hash;
 		uint32_t number;
 		uint32_t seed;
-		UChar *comparison_key;
 		UChar *tag;
 		mutable URegularExpression *regexp;
 

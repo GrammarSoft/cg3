@@ -41,7 +41,6 @@ hash(0),
 plain_hash(0),
 number(0),
 seed(0),
-comparison_key(0),
 tag(0),
 regexp(0)
 {
@@ -55,14 +54,9 @@ Tag::~Tag() {
 	std::cerr << "OBJECT: " << __PRETTY_FUNCTION__ << std::endl;
 	#endif
 
-	if (tag) {
-		delete[] tag;
-		tag = 0;
-	}
-	if (comparison_key) {
-		delete[] comparison_key;
-		comparison_key = 0;
-	}
+	delete[] tag;
+	tag = 0;
+
 	if (regexp) {
 		uregex_close(regexp);
 		regexp = 0;
@@ -329,10 +323,7 @@ void Tag::parseNumeric(Tag *tag, const UChar *txt) {
 			}
 		}
 		tag->comparison_val = tval;
-		uint32_t length = u_strlen(tkey);
-		tag->comparison_key = tag->allocateUChars(length+1);
-		u_strcpy(tag->comparison_key, tkey);
-		tag->comparison_hash = hash_sdbm_uchar(tag->comparison_key);
+		tag->comparison_hash = hash_sdbm_uchar(tkey);
 		tag->type |= T_NUMERICAL;
 		tag->type &= ~T_TEXTUAL;
 	}
