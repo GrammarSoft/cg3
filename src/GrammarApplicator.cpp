@@ -378,8 +378,8 @@ void GrammarApplicator::printCohort(Cohort *cohort, UFILE *output) {
 			printReading(*rter2, output);
 		}
 	}
-	if (cohort->text) {
-		u_fprintf(output, "%S", cohort->text);
+	if (!cohort->text.empty()) {
+		u_fprintf(output, "%S", cohort->text.c_str());
 	}
 
 	foreach (CohortVector, cohort->removed, iter, iter_end) {
@@ -387,16 +387,16 @@ void GrammarApplicator::printCohort(Cohort *cohort, UFILE *output) {
 			printCohort(*iter, output);
 		}
 		else {
-			if ((*iter)->text) {
-				u_fprintf(output, "%S", (*iter)->text);
+			if (!(*iter)->text.empty()) {
+				u_fprintf(output, "%S", (*iter)->text.c_str());
 			}
 		}
 	}
 }
 
 void GrammarApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
-	if (window->text) {
-		u_fprintf(output, "%S", window->text);
+	if (!window->text.empty()) {
+		u_fprintf(output, "%S", window->text.c_str());
 	}
 
 	uint32_t cs = (uint32_t)window->cohorts.size();

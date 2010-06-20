@@ -142,7 +142,6 @@ void Grammar::addSet(Set *to) {
 			positive->single_tags_hash.erase((*iter)->hash);
 			UString str = (*iter)->toUString();
 			str.erase(str.find('^'), 1);
-			str=str;
 			Tag *tag = allocateTag(str.c_str());
 			addTagToSet(tag, negative);
 		}
