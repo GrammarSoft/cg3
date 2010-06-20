@@ -44,7 +44,6 @@ dep_parent(std::numeric_limits<uint32_t>::max()),
 is_pleft(0),
 is_pright(0),
 parent(p),
-text(0),
 prev(0),
 next(0)
 {
@@ -74,7 +73,6 @@ Cohort::~Cohort() {
 		parent->parent->cohort_map.erase(global_number);
 		parent->parent->dep_window.erase(global_number);
 	}
-	delete[] text;
 	detach();
 }
 

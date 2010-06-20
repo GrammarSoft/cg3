@@ -35,7 +35,7 @@ namespace CG3 {
 		uint32_t number;
 		SingleWindow *next, *previous;
 		Window *parent;
-		UChar *text;
+		UString text;
 		CohortVector cohorts;
 		uint32Set valid_rules;
 		uint32ToCohortsMap rule_to_cohorts;

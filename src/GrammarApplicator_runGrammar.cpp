@@ -355,10 +355,10 @@ gotaline:
 				
 				if (line[0]) {
 					if (lCohort) {
-						lCohort->text = ux_append(lCohort->text, &line[0]);
+						lCohort->text += &line[0];
 					}
 					else if (lSWindow) {
-						lSWindow->text = ux_append(lSWindow->text, &line[0]);
+						lSWindow->text += &line[0];
 					}
 					else {
 						u_fprintf(output, "%S", &line[0]);

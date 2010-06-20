@@ -184,14 +184,14 @@ int MatxinApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 
 		if (inchar == '\\' && !incohort) {
 			if (cCohort) {
-				cCohort->text = ux_append(cCohort->text, inchar);
-				inchar = u_fgetc_wrapper(input); 
-				cCohort->text = ux_append(cCohort->text, inchar);
+				cCohort->text += inchar;
+				inchar = u_fgetc_wrapper(input);
+				cCohort->text += inchar;
 			}
 			else if (lSWindow) {
-				lSWindow->text = ux_append(lSWindow->text, inchar);
-				inchar = u_fgetc_wrapper(input); 
-				lSWindow->text = ux_append(lSWindow->text, inchar);
+				lSWindow->text += inchar;
+				inchar = u_fgetc_wrapper(input);
+				lSWindow->text += inchar;
 			}
 			else {
 				u_fprintf(output, "%C", inchar);
@@ -207,10 +207,10 @@ int MatxinApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 		
 		if (superblank == true || inchar == ']' || incohort == false) {
 			if (cCohort) {
-				cCohort->text = ux_append(cCohort->text, inchar);
+				cCohort->text += inchar;
 			}
 			else if (lSWindow) {
-				lSWindow->text = ux_append(lSWindow->text, inchar);
+				lSWindow->text += inchar;
 			}
 			else {
 				u_fprintf(output, "%C", inchar);
@@ -256,8 +256,6 @@ int MatxinApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 			// If we don't have a current window, create one
 			if (!cSWindow) {
 				cSWindow = gWindow->allocAppendSingleWindow();
-				
-				cSWindow->text = 0; // necessary? TODO -KBU // TD says: Necessary, because you don't chunk into seperate SingleWindow per sentence, so you need to clear it for every new sentence. Regular CG-3 keeps several SingleWindow in the Window container.
 				
 				// Create 0th Cohort which serves as the beginning of sentence
 				cCohort = new Cohort(cSWindow);
@@ -716,9 +714,9 @@ void MatxinApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 	std::vector<size_t> alloc(window->cohorts.size()+1);
 	alloc[1] = window_alloc;
 	// Window text comes at the left
-	if (window->text) {
+	if (!window->text.empty()) {
 		// TODO: warn if this (or cohort->text) is non-whitespace? or wrap it in a tag? o/w it's removed by later matxin modules
-		u_fprintf(output, "%S", window->text);
+		u_fprintf(output, "%S", window->text.c_str());
 	} 
 		
 	// alloc of sentence is alloc of first cohort:
@@ -818,8 +816,8 @@ void MatxinApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 				
 		u_fprintf(output, ">");
 				
-		if (cohort->text) {
-			u_fprintf(output, "%S", cohort->text);
+		if (!cohort->text.empty()) {
+			u_fprintf(output, "%S", cohort->text.c_str());
 		}
 		
 		u_fflush(output);
