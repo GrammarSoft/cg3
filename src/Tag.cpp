@@ -63,8 +63,6 @@ Tag::~Tag() {
 	}
 }
 
-const UChar local_dep_unicode[] = {'#', '%', 'i', L'\u2192', '%', 'i', 0};
-
 void Tag::parseTag(const UChar *to, UFILE *ux_stderr) {
 	type = 0;
 
@@ -154,15 +152,6 @@ void Tag::parseTag(const UChar *to, UFILE *ux_stderr) {
 		if (tag && tag[0] == '<' && tag[length-1] == '>') {
 			parseNumeric();
 		}
-		// ToDo: Grammar tags surely have no need to be dependency tags...?
-		if (tag && tag[0] == '#') {
-			if (u_sscanf(tag, "#%i->%i", &dep_self, &dep_parent) == 2 && dep_self != 0) {
-				type |= T_DEPENDENCY;
-			}
-			if (u_sscanf_u(tag, local_dep_unicode, &dep_self, &dep_parent) == 2 && dep_self != 0) {
-				type |= T_DEPENDENCY;
-			}
-		}
 
 		if (u_strcmp(tag, stringbits[S_ASTERIK].getTerminatedBuffer()) == 0) {
 			type |= T_ANY;
@@ -251,6 +240,7 @@ void Tag::parseTagRaw(const UChar *to) {
 			if (u_sscanf(tag, "#%i->%i", &dep_self, &dep_parent) == 2 && dep_self != 0) {
 				type |= T_DEPENDENCY;
 			}
+			const UChar local_dep_unicode[] = {'#', '%', 'i', L'\u2192', '%', 'i', 0};
 			if (u_sscanf_u(tag, local_dep_unicode, &dep_self, &dep_parent) == 2 && dep_self != 0) {
 				type |= T_DEPENDENCY;
 			}
