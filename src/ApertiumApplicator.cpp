@@ -177,14 +177,14 @@ int ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 
 		if (inchar == '\\' && !incohort) {
 			if (cCohort) {
-				cCohort->text = ux_append(cCohort->text, inchar);
+				cCohort->text += inchar;
 				inchar = u_fgetc_wrapper(input); 
-				cCohort->text = ux_append(cCohort->text, inchar);
+				cCohort->text += inchar;
 			}
 			else if (lSWindow) {
-				lSWindow->text = ux_append(lSWindow->text, inchar);
+				lSWindow->text += inchar;
 				inchar = u_fgetc_wrapper(input); 
-				lSWindow->text = ux_append(lSWindow->text, inchar);
+				lSWindow->text += inchar;
 			}
 			else {
 				u_fprintf(output, "%C", inchar);
@@ -200,10 +200,10 @@ int ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 		
 		if (superblank == true || inchar == ']' || incohort == false) {
 			if (cCohort) {
-				cCohort->text = ux_append(cCohort->text, inchar);
+				cCohort->text += inchar;
 			}
 			else if (lSWindow) {
-				lSWindow->text = ux_append(lSWindow->text, inchar);
+				lSWindow->text += inchar;
 			}
 			else {
 				u_fprintf(output, "%C", inchar);
@@ -249,8 +249,6 @@ int ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 			// If we don't have a current window, create one
 			if (!cSWindow) {
 				cSWindow = gWindow->allocAppendSingleWindow();
-				
-				cSWindow->text = 0;
 				
 				// Create 0th Cohort which serves as the beginning of sentence
 				cCohort = new Cohort(cSWindow);
@@ -715,8 +713,8 @@ void ApertiumApplicator::printReading(Reading *reading, UFILE *output) {
 void ApertiumApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 
 	// Window text comes at the left
-	if (window->text) {
-		u_fprintf(output, "%S", window->text);
+	if (!window->text.empty()) {
+		u_fprintf(output, "%S", window->text.c_str());
 	}
 
 	for (uint32_t c=0 ; c < window->cohorts.size() ; c++) {
@@ -752,8 +750,8 @@ void ApertiumApplicator::printSingleWindow(SingleWindow *window, UFILE *output) 
 		u_fprintf(output, "$");
 		// End of cohort
 
-		if (cohort->text) {
-			u_fprintf(output, "%S", cohort->text);
+		if (!cohort->text.empty()) {
+			u_fprintf(output, "%S", cohort->text.c_str());
 		}
 		
 		u_fflush(output); 

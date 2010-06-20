@@ -29,8 +29,7 @@ SingleWindow::SingleWindow(Window *p) :
 number(0),
 next(0),
 previous(0),
-parent(p),
-text(0)
+parent(p)
 {
 	#ifdef CG_TRACE_OBJECTS
 	std::cerr << "OBJECT: " << __PRETTY_FUNCTION__ << std::endl;

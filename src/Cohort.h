@@ -51,7 +51,7 @@ namespace CG3 {
 		uint32_t dep_parent;
 		uint32_t is_pleft, is_pright;
 		SingleWindow *parent;
-		UChar *text;
+		UString text;
 		Cohort *prev, *next;
 		ReadingList readings;
 		ReadingList deleted;
