@@ -1,5 +1,5 @@
 "<word>"
 	"word" @mapped
-	"word" £mapped
-	"word" §mapped
+	"word" Â£mapped
+	"word" Â§mapped
 	"word" $mapped
