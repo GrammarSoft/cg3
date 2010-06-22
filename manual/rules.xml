@@ -417,6 +417,35 @@
         If the global option WITHCHILD is on, NOCHILD will turn it off for a single MOVE rule.
       </para>
     </section>
+
+    <section id="rule-options-iterate">
+      <title>ITERATE</title>
+      <indexterm>
+        <primary>ITERATE</primary>
+      </indexterm>
+      <para>
+        Applicable for all rule types.
+        Not compatible with option NOITERATE.
+      </para>
+      <para>
+        If the rule does anything that changes the state of the window, ITERATE forces a reiteration of the sections.
+        Normally, only changes caused by rule types SELECT, REMOVE, IFF, DELIMIT, REMCOHORT, MOVE, and SWITCH will rerun the sections.
+      </para>
+    </section>
+
+    <section id="rule-options-noiterate">
+      <title>NOITERATE</title>
+      <indexterm>
+        <primary>NOITERATE</primary>
+      </indexterm>
+      <para>
+        Applicable for all rule types.
+        Not compatible with option ITERATE.
+      </para>
+      <para>
+        Even if the rule does change the state of the window, NOITERATE prevents the rule from causing a reiteration of the sections.
+      </para>
+    </section>
   </section>
 
 </chapter>

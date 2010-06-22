@@ -34,9 +34,9 @@ namespace CG3 {
 	typedef std::vector<Cohort*> CohortVector;
 
 	enum COHORT_TYPE {
-		CT_ENCLOSED       = 1u,
-		CT_RELATED        = 2u,
-		CT_REMOVED        = 4u,
+		CT_ENCLOSED       = (1 <<  0),
+		CT_RELATED        = (1 <<  1),
+		CT_REMOVED        = (1 <<  2),
 	};
 
 	class Cohort {

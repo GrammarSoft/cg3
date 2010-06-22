@@ -1,6 +1,6 @@
 "<word>"
-	"word" @mapped $tag §tag £tag @tag 
-	"word" £mapped 
-	"word" §mapped $tag §tag £tag @tag 
-	"word" $mapped $tag §tag £tag @tag 
+	"word" @mapped $tag Â§tag Â£tag @tag 
+	"word" Â£mapped 
+	"word" Â§mapped $tag Â§tag Â£tag @tag 
+	"word" $mapped $tag Â§tag Â£tag @tag 
 

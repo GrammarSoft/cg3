@@ -126,7 +126,7 @@ void GrammarApplicator::indexSingleWindow(SingleWindow &current) {
 
 uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow &current, uint32SortedVector &rules) {
 	uint32_t retval = RV_NOTHING;
-	bool section_did_good = false;
+	bool section_did_something = false;
 	bool delimited = false;
 
 	typedef stdext::hash_map<uint32_t,Reading*> readings_plain_t;
@@ -358,10 +358,16 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow &current, uint32
 			ReadingList removed;
 			ReadingList selected;
 
+			const size_t state_num_readings = cohort->readings.size();
+			const size_t state_num_removed = cohort->deleted.size();
+			const size_t state_num_delayed = cohort->delayed.size();
+			bool readings_changed = false;
+
 			// ToDo: Test APPEND followed by MAP
 			foreach (ReadingList, cohort->readings, rter2, rter2_end) {
 				Reading &reading = **rter2;
 				bool good = reading.matched_tests;
+				const uint32_t state_hash = reading.hash;
 
 				if (rule.type == K_IFF && type == K_REMOVE && reading.matched_target) {
 					rule.num_match++;
@@ -373,7 +379,6 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow &current, uint32
 						removed.push_back(&reading);
 						index_ruleCohort_no.clear();
 						reading.hit_by.push_back(rule.line);
-						section_did_good = true;
 						if (debug_level > 0) {
 							std::cerr << "DEBUG: Rule " << rule.line << " hit cohort " << cohort->local_number << std::endl;
 						}
@@ -391,14 +396,12 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow &current, uint32
 						reading.hit_by.push_back(rule.line);
 					}
 					if (good) {
-						section_did_good = true;
 						if (debug_level > 0) {
 							std::cerr << "DEBUG: Rule " << rule.line << " hit cohort " << cohort->local_number << std::endl;
 						}
 					}
 				}
 				else if (good) {
-					section_did_good = false;
 					if (type == K_REMVARIABLE) {
 						u_fprintf(ux_stderr, "Info: RemVariable fired for %u.\n", rule.varname);
 						variables.erase(rule.varname);
@@ -444,6 +447,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow &current, uint32
 						}
 						delimited = true;
 						rebuildCohortLinks();
+						readings_changed = true;
 						break;
 					}
 					else if (type == K_REMCOHORT) {
@@ -458,6 +462,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow &current, uint32
 							(*iter)->local_number = std::distance(current.cohorts.begin(), iter);
 						}
 						rebuildCohortLinks();
+						readings_changed = true;
 						break;
 					}
 					else if (rule.type == K_ADD || rule.type == K_MAP) {
@@ -483,6 +488,9 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow &current, uint32
 						if (rule.type == K_MAP) {
 							reading.mapped = true;
 						}
+						if (reading.hash != state_hash) {
+							readings_changed = true;
+						}
 					}
 					else if (rule.type == K_REPLACE) {
 						index_ruleCohort_no.clear();
@@ -506,6 +514,9 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow &current, uint32
 						}
 						if (!mappings.empty()) {
 							splitMappings(mappings, *cohort, reading, true);
+						}
+						if (reading.hash != state_hash) {
+							readings_changed = true;
 						}
 					}
 					else if (rule.type == K_SUBSTITUTE) {
@@ -563,6 +574,9 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow &current, uint32
 								splitMappings(mappings, *cohort, reading, true);
 							}
 						}
+						if (reading.hash != state_hash) {
+							readings_changed = true;
+						}
 					}
 					else if (rule.type == K_APPEND && rule.line != did_append) {
 						Reading *cReading = cohort->allocateAppendReading();
@@ -588,6 +602,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow &current, uint32
 							splitMappings(mappings, *cohort, *cReading, true);
 						}
 						did_append = rule.line;
+						readings_changed = true;
 					}
 					else if (type == K_SETPARENT || type == K_SETCHILD) {
 						int32_t orgoffset = rule.dep_target->offset;
@@ -628,6 +643,8 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow &current, uint32
 										reading.hit_by.push_back(rule.line);
 										reading.noprint = false;
 										has_dep = true;
+										readings_changed = true;
+										break;
 									}
 								}
 								if (rule.flags & RF_NEAREST) {
@@ -750,6 +767,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow &current, uint32
 							}
 						}
 						rebuildCohortLinks();
+						readings_changed = true;
 						break;
 					}
 					else if (type == K_ADDRELATION || type == K_SETRELATION || type == K_REMRELATION) {
@@ -789,6 +807,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow &current, uint32
 								else {
 									cohort->remRelation(rule.maplist.front()->hash, attach->global_number);
 								}
+								readings_changed = true;
 							}
 						}
 						break;
@@ -833,19 +852,14 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow &current, uint32
 									cohort->remRelation(rule.maplist.front()->hash, attach->global_number);
 									attach->remRelation(rule.sublist.front(), cohort->global_number);
 								}
+								readings_changed = true;
 							}
 						}
 					}
 				}
 			}
 
-			// ToDo: SETRELATION and others may block for reruns...
-			if (section_max_count == 1) {
-				section_did_good = false;
-			}
-
 			if (type == K_REMOVE && removed.size() == cohort->readings.size() && (!unsafe || (rule.flags & RF_SAFE)) && !(rule.flags & RF_UNSAFE)) {
-				section_did_good = false;
 				removed.clear();
 			}
 
@@ -861,14 +875,22 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow &current, uint32
 					cohort->readings.remove(removed.back());
 					removed.pop_back();
 				}
-				cohort->num_is_current = false;
-				section_did_good = true;
 				if (debug_level > 0) {
 					std::cerr << "DEBUG: Rule " << rule.line << " hit cohort " << cohort->local_number << std::endl;
 				}
 			}
 			if (!selected.empty()) {
 				cohort->readings = selected;
+			}
+
+			// Cohort state has changed, so mark that the section did something
+			if (state_num_readings != cohort->readings.size()
+				|| state_num_removed != cohort->deleted.size()
+				|| state_num_delayed != cohort->delayed.size()
+				|| readings_changed) {
+				if (!(rule.flags & RF_NOITERATE) && section_max_count != 1) {
+					section_did_something = true;
+				}
 				cohort->num_is_current = false;
 			}
 
@@ -887,7 +909,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow &current, uint32
 		}
 	}
 
-	if (section_did_good) {
+	if (section_did_something) {
 		retval |= RV_SOMETHING;
 	}
 	if (delimited) {
