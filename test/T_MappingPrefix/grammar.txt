@@ -1,9 +1,9 @@
-MAPPING-PREFIX = £ ;
+MAPPING-PREFIX = Â£ ;
 DELIMITERS = "<$.>" ;
 
 SECTION
 
 ADD ($tag) (*) ;
-ADD (§tag) (*) ;
-ADD (£tag) (*) ;
+ADD (Â§tag) (*) ;
+ADD (Â£tag) (*) ;
 ADD (@tag) (*) ;

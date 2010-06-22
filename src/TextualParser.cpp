@@ -747,6 +747,18 @@ int TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 		u_fprintf(ux_stderr, "Error: Line %u: WITHCHILD and NOCHILD are mutually exclusive!\n", result->lines);
 		CG3Quit(1);
 	}
+	if (rule->flags & RF_ITERATE && rule->flags & RF_NOITERATE) {
+		u_fprintf(ux_stderr, "Error: Line %u: ITERATE and NOITERATE are mutually exclusive!\n", result->lines);
+		CG3Quit(1);
+	}
+
+	if (!(rule->flags & (RF_ITERATE|RF_NOITERATE))) {
+		if (key != K_SELECT && key != K_REMOVE && key != K_IFF
+			&& key != K_DELIMIT && key != K_REMCOHORT
+			&& key != K_MOVE && key != K_SWITCH) {
+			rule->flags |= RF_NOITERATE;
+		}
+	}
 	if (rule->flags & RF_ENCL_FINAL) {
 		result->has_encl_final = true;
 	}

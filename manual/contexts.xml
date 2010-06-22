@@ -253,6 +253,10 @@
         had to scan entirely in one direction, then come back and do the other direction.
       </emphasis>
     </para>
+    <para>
+      Caveat: (NOT 0* V) will probably not work as you expect; it will be true if either direction doesn't find set V.
+      What you want instead is (NEGATE 0* V) or split into (NOT -1* V) (NOT 1* V).
+    </para>
     <screen>
       (0* (someset))
       (0**W (otherset))
