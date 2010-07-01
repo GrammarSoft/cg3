@@ -10,9 +10,9 @@ VERSION=0.9.7
 
 AM_INIT_AUTOMAKE($PACKAGE, $VERSION, no-define)
 
-ICU_VERSION=3.6.0
-
 # Checks for programs.
+
+AC_CHECK_ICU(3.6)
 
 AC_MSG_CHECKING([Compilation architecture: PPC, i686, x86_64, Other])
 if test x$(which arch) = x
@@ -60,7 +60,7 @@ AC_ARG_ENABLE(debug,
 AC_ARG_ENABLE(profile,
               [  --enable-profile  Enable "-pg -g -Wall" compiler options],
               [CXXFLAGS="-pg -g -Wall"; CFLAGS="-pg -g -Wall"; LDFLAGS="-pg"])
-                            
+
 # Checks for typedefs, structures, and compiler characteristics.
 AC_HEADER_STDBOOL
 AC_C_CONST
