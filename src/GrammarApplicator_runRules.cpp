@@ -463,6 +463,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow &current, uint32
 						reading.tags_list.clear();
 						reading.tags_list.push_back(reading.wordform);
 						reading.tags_list.push_back(reading.baseform);
+						reflowReading(reading);
 						TagList mappings;
 						const_foreach (TagList, rule.maplist, tter, tter_end) {
 							uint32_t hash = (*tter)->hash;
@@ -476,7 +477,6 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow &current, uint32
 							iter_rules = std::lower_bound(intersects.begin(), intersects.end(), rule.line);
 							iter_rules_end = intersects.end();
 						}
-						reflowReading(reading);
 						if (!mappings.empty()) {
 							splitMappings(mappings, *cohort, reading, true);
 						}
