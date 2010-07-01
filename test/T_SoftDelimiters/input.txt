@@ -1,37 +1,37 @@
 "<word>"
-	"word" wanted
+	"word" one
 "<word>"
-	"word" wanted
+	"word" two
 "<$.>"
 "<word>"
-	"word" wanted
+	"word" three
 "<word>"
-	"word" wanted
-"<word>"
-	"word" wanted
-"<word>"
-	"word" wanted
-"<word>"
-	"word" wanted
+	"word" four
 "<$soft>"
 "<word>"
-	"word" wanted
+	"word" five
 "<word>"
-	"word" wanted
+	"word" six
 "<word>"
-	"word" wanted
+	"word" seven
 "<word>"
-	"word" wanted
+	"word" eight
 "<word>"
-	"word" wanted
+	"word" nine
 "<word>"
-	"word" wanted
+	"word" ten
 "<word>"
-	"word" wanted
+	"word" eleven
 "<word>"
-	"word" wanted
+	"word" twelve
 "<word>"
-	"word" wanted
+	"word" thirteen
 "<word>"
-	"word" wanted
+	"word" fourteen
+"<word>"
+	"word" fifteen
+"<word>"
+	"word" sixteen
+"<word>"
+	"word" seventeen
 "<$.>"

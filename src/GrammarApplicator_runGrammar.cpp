@@ -143,7 +143,7 @@ gotaline:
 				cReading = initEmptyCohort(*cCohort);
 				lReading = cReading;
 			}
-			/*
+			//*
 			if (cSWindow && cSWindow->cohorts.size() >= soft_limit && grammar->soft_delimiters && !did_soft_lookback) {
 				did_soft_lookback = true;
 				reverse_foreach (CohortVector, cSWindow->cohorts, iter, iter_end) {
@@ -151,6 +151,9 @@ gotaline:
 						did_soft_lookback = false;
 						Cohort *cohort = delimitAt(*cSWindow, *iter);
 						cSWindow = cohort->parent->next;
+						if (cCohort) {
+							cCohort->parent = cSWindow;
+						}
 						if (verbosity_level > 0) {
 							u_fprintf(ux_stderr, "Warning: Soft limit of %u cohorts reached at line %u but found suitable soft delimiter in buffer.\n", soft_limit, numLines);
 							u_fflush(ux_stderr);
