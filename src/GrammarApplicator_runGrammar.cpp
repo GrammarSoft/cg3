@@ -79,6 +79,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 	std::vector<UChar> line(1024, 0);
 	std::vector<UChar> cleaned(line.size(), 0);
 	bool ignoreinput = false;
+	bool did_soft_lookback = false;
 
 	index();
 
@@ -142,12 +143,27 @@ gotaline:
 				cReading = initEmptyCohort(*cCohort);
 				lReading = cReading;
 			}
-			if (cCohort && cSWindow->cohorts.size() >= soft_limit && grammar->soft_delimiters && doesSetMatchCohortNormal(*cCohort, grammar->soft_delimiters->hash)) {
-				if (cSWindow->cohorts.size() >= soft_limit) {
-					if (verbosity_level > 0) {
-						u_fprintf(ux_stderr, "Warning: Soft limit of %u cohorts reached at line %u but found suitable soft delimiter.\n", soft_limit, numLines);
-						u_fflush(ux_stderr);
+			/*
+			if (cSWindow && cSWindow->cohorts.size() >= soft_limit && grammar->soft_delimiters && !did_soft_lookback) {
+				did_soft_lookback = true;
+				reverse_foreach (CohortVector, cSWindow->cohorts, iter, iter_end) {
+					if (doesSetMatchCohortNormal(**iter, grammar->soft_delimiters->hash)) {
+						did_soft_lookback = false;
+						Cohort *cohort = delimitAt(*cSWindow, *iter);
+						cSWindow = cohort->parent->next;
+						if (verbosity_level > 0) {
+							u_fprintf(ux_stderr, "Warning: Soft limit of %u cohorts reached at line %u but found suitable soft delimiter in buffer.\n", soft_limit, numLines);
+							u_fflush(ux_stderr);
+						}
+						break;
 					}
+				}
+			}
+			//*/
+			if (cCohort && cSWindow->cohorts.size() >= soft_limit && grammar->soft_delimiters && doesSetMatchCohortNormal(*cCohort, grammar->soft_delimiters->hash)) {
+				if (verbosity_level > 0) {
+					u_fprintf(ux_stderr, "Warning: Soft limit of %u cohorts reached at line %u but found suitable soft delimiter.\n", soft_limit, numLines);
+					u_fflush(ux_stderr);
 				}
 				foreach (ReadingList, cCohort->readings, iter, iter_end) {
 					addTagToReading(**iter, endtag);
@@ -159,6 +175,7 @@ gotaline:
 				cSWindow = 0;
 				cCohort = 0;
 				numCohorts++;
+				did_soft_lookback = false;
 			}
 			if (cCohort && (cSWindow->cohorts.size() >= hard_limit || (grammar->delimiters && doesSetMatchCohortNormal(*cCohort, grammar->delimiters->hash)))) {
 				if (cSWindow->cohorts.size() >= hard_limit) {
@@ -175,6 +192,7 @@ gotaline:
 				cSWindow = 0;
 				cCohort = 0;
 				numCohorts++;
+				did_soft_lookback = false;
 			}
 			if (!cSWindow) {
 				// ToDo: Refactor to allocate SingleWindow, Cohort, and Reading from their containers
@@ -201,6 +219,7 @@ gotaline:
 				lCohort = cCohort;
 				cCohort = 0;
 				numWindows++;
+				did_soft_lookback = false;
 			}
 			if (cCohort && cSWindow) {
 				cSWindow->appendCohort(cCohort);

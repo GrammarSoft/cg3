@@ -167,7 +167,6 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow &current, uint32
 
 		const Set &set = *(grammar->sets_by_contents.find(rule.target)->second);
 
-		// ToDo: Update list of in/valid rules upon MAP, ADD, REPLACE, APPEND, SUBSTITUTE; add tags + always add tag_any
 		// ToDo: Make better use of rules_by_tag
 
 		if (debug_level > 1) {
@@ -363,7 +362,6 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow &current, uint32
 			const size_t state_num_delayed = cohort->delayed.size();
 			bool readings_changed = false;
 
-			// ToDo: Test APPEND followed by MAP
 			foreach (ReadingList, cohort->readings, rter2, rter2_end) {
 				Reading &reading = **rter2;
 				bool good = reading.matched_tests;
@@ -411,42 +409,8 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow &current, uint32
 						variables[rule.varname] = 1;
 					}
 					else if (type == K_DELIMIT) {
-						SingleWindow *nwin = current.parent->allocPushSingleWindow();
-
-						current.parent->cohort_counter++;
-						Cohort *cCohort = new Cohort(nwin);
-						cCohort->global_number = 0;
-						cCohort->wordform = begintag;
-
-						Reading *cReading = new Reading(cCohort);
-						cReading->baseform = begintag;
-						cReading->wordform = begintag;
-						if (grammar->sets_any && !grammar->sets_any->empty()) {
-							cReading->parent->possible_sets.insert(grammar->sets_any->begin(), grammar->sets_any->end());
-						}
-						addTagToReading(*cReading, begintag);
-
-						cCohort->appendReading(cReading);
-
-						nwin->appendCohort(cCohort);
-
-						size_t nc = c+1;
-						for ( ; nc < current.cohorts.size() ; nc++) {
-							current.cohorts.at(nc)->parent = nwin;
-							nwin->appendCohort(current.cohorts.at(nc));
-						}
-						c = current.cohorts.size()-c;
-						for (nc = 0 ; nc < c-1 ; nc++) {
-							current.cohorts.pop_back();
-						}
-
-						cohort = current.cohorts.back();
-						foreach (ReadingList, cohort->readings, rter3, rter3_end) {
-							Reading *reading = *rter3;
-							addTagToReading(*reading, endtag);
-						}
+						delimitAt(current, cohort);
 						delimited = true;
-						rebuildCohortLinks();
 						readings_changed = true;
 						break;
 					}
@@ -461,7 +425,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow &current, uint32
 						foreach (CohortVector, current.cohorts, iter, iter_end) {
 							(*iter)->local_number = std::distance(current.cohorts.begin(), iter);
 						}
-						rebuildCohortLinks();
+						gWindow->rebuildCohortLinks();
 						readings_changed = true;
 						break;
 					}
@@ -512,6 +476,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow &current, uint32
 							iter_rules = std::lower_bound(intersects.begin(), intersects.end(), rule.line);
 							iter_rules_end = intersects.end();
 						}
+						reflowReading(reading);
 						if (!mappings.empty()) {
 							splitMappings(mappings, *cohort, reading, true);
 						}
@@ -765,10 +730,10 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow &current, uint32
 							foreach (CohortVector, current.cohorts, iter, iter_end) {
 								(*iter)->local_number = std::distance(current.cohorts.begin(), iter);
 							}
+							gWindow->rebuildCohortLinks();
+							readings_changed = true;
+							break;
 						}
-						rebuildCohortLinks();
-						readings_changed = true;
-						break;
 					}
 					else if (type == K_ADDRELATION || type == K_SETRELATION || type == K_REMRELATION) {
 						Cohort *attach = 0;

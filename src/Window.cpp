@@ -21,6 +21,7 @@
 
 #include "Window.h"
 #include "SingleWindow.h"
+#include "Cohort.h"
 
 namespace CG3 {
 
@@ -33,7 +34,7 @@ Window::Window(GrammarApplicator *p) {
 }
 
 Window::~Window() {
-	std::list<SingleWindow*>::iterator iter;
+	SingleWindowCont::iterator iter;
 	for (iter = previous.begin() ; iter != previous.end() ; iter++) {
 		delete *iter;
 	}
@@ -46,6 +47,13 @@ Window::~Window() {
 	for (iter = next.begin() ; iter != next.end() ; iter++) {
 		delete *iter;
 	}
+}
+
+SingleWindow *Window::allocSingleWindow() {
+	SingleWindow *swindow = new SingleWindow(this);
+	window_counter++;
+	swindow->number = window_counter;
+	return swindow;
 }
 
 SingleWindow *Window::allocPushSingleWindow() {
@@ -85,6 +93,64 @@ void Window::shuffleWindowsDown() {
 	if (!next.empty()) {
 		current = next.front();
 		next.pop_front();
+	}
+}
+
+void Window::rebuildSingleWindowLinks() {
+	SingleWindow *sWindow = 0;
+
+	foreach (SingleWindowCont, previous, iter, iter_end) {
+		(*iter)->previous = sWindow;
+		if (sWindow) {
+			sWindow->next = *iter;
+		}
+		sWindow = *iter;
+	}
+
+	if (current) {
+		current->previous = sWindow;
+		if (sWindow) {
+			sWindow->next = current;
+		}
+		sWindow = current;
+	}
+
+	foreach (SingleWindowCont, next, iter, iter_end) {
+		(*iter)->previous = sWindow;
+		if (sWindow) {
+			sWindow->next = *iter;
+		}
+		sWindow = *iter;
+	}
+
+	if (sWindow) {
+		sWindow->next = 0;
+	}
+}
+
+void Window::rebuildCohortLinks() {
+	SingleWindow *sWindow = 0;
+	if (!previous.empty()) {
+		sWindow = previous.front();
+	}
+	else if (current) {
+		sWindow = current;
+	}
+	else if (!next.empty()) {
+		sWindow = next.front();
+	}
+
+	Cohort *prev = 0;
+	while (sWindow) {
+		foreach (CohortVector, sWindow->cohorts, citer, citer_end) {
+			(*citer)->prev = prev;
+			(*citer)->next = 0;
+			if (prev) {
+				prev->next = *citer;
+			}
+			prev = *citer;
+		}
+		sWindow = sWindow->next;
 	}
 }
 
