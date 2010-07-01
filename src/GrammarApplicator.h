@@ -178,7 +178,7 @@ namespace CG3 {
 		bool statistics;
 		ticks gtimer;
 
-		void rebuildCohortLinks();
+		Cohort *delimitAt(SingleWindow& current, Cohort *cohort);
 		void reflowReading(Reading &reading);
 		uint32_t addTagToReading(Reading &reading, uint32_t tag, bool rehash = true);
 		void delTagFromReading(Reading &reading, uint32_t tag);

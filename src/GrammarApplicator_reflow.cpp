@@ -283,6 +283,9 @@ void GrammarApplicator::reflowReading(Reading &reading) {
 	reading.tags_plain.clear();
 	reading.tags_textual.clear();
 	reading.tags_numerical.clear();
+	reading.tags_bloom.clear();
+	reading.tags_textual_bloom.clear();
+	reading.tags_plain_bloom.clear();
 	reading.mapping = 0;
 
 	if (grammar->sets_any && !grammar->sets_any->empty()) {
@@ -291,6 +294,7 @@ void GrammarApplicator::reflowReading(Reading &reading) {
 
 	const_foreach (uint32List, reading.tags_list, tter, tter_end) {
 		addTagToReading(reading, *tter, false);
+		reading.tags_list.pop_back();
 	}
 
 	reading.rehash();
@@ -500,30 +504,69 @@ void GrammarApplicator::mergeMappings(Cohort &cohort) {
 	cohort.readings.insert(cohort.readings.begin(), order.begin(), order.end());
 }
 
-void GrammarApplicator::rebuildCohortLinks() {
-	SingleWindow *sWindow = 0;
-	if (!gWindow->previous.empty()) {
-		sWindow = gWindow->previous.front();
+Cohort *GrammarApplicator::delimitAt(SingleWindow& current, Cohort *cohort) {
+	SingleWindow *nwin = 0;
+	if (current.parent->current == &current) {
+		nwin = current.parent->allocPushSingleWindow();
 	}
-	else if (gWindow->current) {
-		sWindow = gWindow->current;
-	}
-	else if (!gWindow->next.empty()) {
-		sWindow = gWindow->next.front();
+	else {
+		foreach (SingleWindowCont, current.parent->next, iter, iter_end) {
+			if (*iter == &current) {
+				nwin = current.parent->allocSingleWindow();
+				current.parent->next.insert(++iter, nwin);
+				break;
+			}
+		}
+		if (!nwin) {
+			foreach (SingleWindowCont, current.parent->previous, iter, iter_end) {
+				if (*iter == &current) {
+					nwin = current.parent->allocSingleWindow();
+					current.parent->next.insert(iter, nwin);
+					break;
+				}
+			}
+		}
+		gWindow->rebuildSingleWindowLinks();
 	}
 
-	Cohort *prev = 0;
-	while (sWindow) {
-		foreach (CohortVector, sWindow->cohorts, citer, citer_end) {
-			(*citer)->prev = prev;
-			(*citer)->next = 0;
-			if (prev) {
-				prev->next = *citer;
-			}
-			prev = *citer;
-		}
-		sWindow = sWindow->next;
+	assert(nwin != 0);
+
+	current.parent->cohort_counter++;
+	Cohort *cCohort = new Cohort(nwin);
+	cCohort->global_number = 0;
+	cCohort->wordform = begintag;
+
+	Reading *cReading = new Reading(cCohort);
+	cReading->baseform = begintag;
+	cReading->wordform = begintag;
+	if (grammar->sets_any && !grammar->sets_any->empty()) {
+		cReading->parent->possible_sets.insert(grammar->sets_any->begin(), grammar->sets_any->end());
 	}
+	addTagToReading(*cReading, begintag);
+
+	cCohort->appendReading(cReading);
+
+	nwin->appendCohort(cCohort);
+
+	uint32_t c = cohort->local_number;
+	size_t nc = c+1;
+	for ( ; nc < current.cohorts.size() ; nc++) {
+		current.cohorts.at(nc)->parent = nwin;
+		nwin->appendCohort(current.cohorts.at(nc));
+	}
+	c = current.cohorts.size()-c;
+	for (nc = 0 ; nc < c-1 ; nc++) {
+		current.cohorts.pop_back();
+	}
+
+	cohort = current.cohorts.back();
+	foreach (ReadingList, cohort->readings, rter3, rter3_end) {
+		Reading *reading = *rter3;
+		addTagToReading(*reading, endtag);
+	}
+	gWindow->rebuildCohortLinks();
+
+	return cohort;
 }
 
 }

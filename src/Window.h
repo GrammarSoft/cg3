@@ -30,6 +30,8 @@ namespace CG3 {
 	class Cohort;
 	class SingleWindow;
 
+	typedef std::list<SingleWindow*> SingleWindowCont;
+
 	class Window {
 	public:
 		GrammarApplicator *parent;
@@ -41,16 +43,19 @@ namespace CG3 {
 		uint32HashMap dep_map;
 		std::map<uint32_t, Cohort*> dep_window;
 
-		std::list<SingleWindow*> previous;
+		SingleWindowCont previous;
 		SingleWindow *current;
-		std::list<SingleWindow*> next;
+		SingleWindowCont next;
 
 		Window(GrammarApplicator *p);
 		~Window();
 
+		SingleWindow *allocSingleWindow();
 		SingleWindow *allocPushSingleWindow();
 		SingleWindow *allocAppendSingleWindow();
 		void shuffleWindowsDown();
+		void rebuildSingleWindowLinks();
+		void rebuildCohortLinks();
 	};
 
 }

@@ -34,11 +34,15 @@ private:
 
 public:
 	bloomish() {
-		std::fill(value, value+4, 0);
+		clear();
 	}
 
 	bloomish(const bloomish<Cont>& other) {
 		std::copy(other.value, other.value+4, &value[0]);
+	}
+
+	void clear() {
+		std::fill(value, value+4, 0);
 	}
 
 	void insert(const Cont& v) {
