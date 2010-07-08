@@ -146,7 +146,6 @@ void Grammar::addSet(Set *to) {
 			addTagToSet(tag, negative);
 		}
 		positive->ff_tags.clear();
-		positive->ff_tags_hash.clear();
 
 		positive->reindex(*this);
 		negative->reindex(*this);
@@ -158,7 +157,6 @@ void Grammar::addSet(Set *to) {
 		to->single_tags.clear();
 		to->single_tags_hash.clear();
 		to->ff_tags.clear();
-		to->ff_tags_hash.clear();
 
 		to->sets.push_back(positive->hash);
 		to->sets.push_back(negative->hash);
@@ -206,8 +204,7 @@ void Grammar::addSet(Set *to) {
 	}
 	else {
 		Set *a = sets_by_contents.find(chash)->second;
-		if (a->is_special != to->is_special || a->is_tag_unified != to->is_tag_unified || a->is_child_unified != to->is_child_unified
-		|| a->is_set_unified != to->is_set_unified
+		if ((a->type & (ST_SPECIAL|ST_TAG_UNIFY|ST_CHILD_UNIFY|ST_SET_UNIFY)) != (to->type & (ST_SPECIAL|ST_TAG_UNIFY|ST_CHILD_UNIFY|ST_SET_UNIFY))
 		|| a->set_ops.size() != to->set_ops.size() || a->sets.size() != to->sets.size()
 		|| a->single_tags.size() != to->single_tags.size() || a->tags.size() != to->tags.size()) {
 			u_fprintf(ux_stderr, "Error: Content hash collision between set %S line %u and %S line %u!\n", a->name.c_str(), a->line, to->name.c_str(), to->line);
@@ -297,7 +294,7 @@ CompositeTag *Grammar::addCompositeTagToSet(Set *set, CompositeTag *tag) {
 			set->tags_set.insert(tag->hash);
 			set->tags.insert(tag);
 			if (tag->is_special) {
-				set->is_special = true;
+				set->type |= ST_SPECIAL;
 			}
 		}
 	}
@@ -350,7 +347,7 @@ Tag *Grammar::allocateTag(const UChar *txt, bool raw) {
 	else {
 		tag->parseTag(txt, ux_stderr);
 	}
-	tag->in_grammar = true;
+	tag->type |= T_GRAMMAR;
 	uint32_t hash = tag->rehash();
 	uint32_t seed = 0;
 	for ( ; seed < 10000 ; seed++) {
@@ -395,14 +392,13 @@ void Grammar::addTagToSet(Tag *rtag, Set *set) {
 	set->single_tags_hash.insert(rtag->hash);
 
 	if (rtag->type & T_ANY) {
-		set->match_any = true;
+		set->type |= ST_ANY;
 	}
-	if (rtag->is_special) {
-		set->is_special = true;
+	if (rtag->type & T_SPECIAL) {
+		set->type |= ST_SPECIAL;
 	}
 	if (rtag->type & T_FAILFAST) {
 		set->ff_tags.insert(rtag);
-		set->ff_tags_hash.insert(rtag->hash);
 	}
 }
 
@@ -466,7 +462,7 @@ void Grammar::reindex(bool unused_sets) {
 	rules_any = 0;
 
 	foreach (Setuint32HashMap, sets_by_contents, dset, dset_end) {
-		dset->second->is_used = false;
+		dset->second->type &= ~ST_USED;
 		dset->second->number = 0;
 	}
 
@@ -514,7 +510,7 @@ void Grammar::reindex(bool unused_sets) {
 	if (unused_sets) {
 		u_fprintf(ux_stdout, "Unused sets:\n");
 		foreach (Setuint32HashMap, sets_by_contents, rset, rset_end) {
-			if (!rset->second->is_used && !rset->second->name.empty()) {
+			if (!(rset->second->type & ST_USED) && !rset->second->name.empty()) {
 				if (rset->second->name[0] != '_' || rset->second->name[1] != 'G' || rset->second->name[2] != '_') {
 					u_fprintf(ux_stdout, "Line %u set %S\n", rset->second->line, rset->second->name.c_str());
 				}
@@ -581,7 +577,7 @@ void Grammar::reindex(bool unused_sets) {
 	std::map<size_t,size_t> cnt_is, cnt_it;
 
 	foreach (Setuint32HashMap, sets_by_contents, tset, tset_end) {
-		if (tset->second->is_used) {
+		if (tset->second->type & ST_USED) {
 			addSetToList(tset->second);
 			if (tset->second->sets.empty()) {
 				++num_lists;
@@ -610,7 +606,7 @@ void Grammar::reindex(bool unused_sets) {
 	}
 
 	foreach (Setuint32HashMap, sets_by_contents, iter_sets, iter_sets_end) {
-		if (iter_sets->second->is_used) {
+		if (iter_sets->second->type & ST_USED) {
 			iter_sets->second->reindex(*this);
 			indexSets(iter_sets->first, iter_sets->second);
 		}
@@ -653,7 +649,7 @@ void Grammar::reindex(bool unused_sets) {
 }
 
 void Grammar::indexSetToRule(uint32_t r, Set *s) {
-	if (s->is_special || s->is_tag_unified) {
+	if (s->type & (ST_SPECIAL|ST_TAG_UNIFY)) {
 		indexTagToRule(tag_any, r);
 		return;
 	}
@@ -689,7 +685,7 @@ void Grammar::indexTagToRule(uint32_t t, uint32_t r) {
 }
 
 void Grammar::indexSets(uint32_t r, Set *s) {
-	if (s->is_special || s->is_tag_unified) {
+	if (s->type & (ST_SPECIAL|ST_TAG_UNIFY)) {
 		indexTagToSet(tag_any, r);
 		return;
 	}

@@ -30,13 +30,7 @@ bool Set::dump_hashes = false;
 UFILE* Set::dump_hashes_out = 0;
 
 Set::Set() :
-match_any(false),
-is_special(false),
-is_tag_unified(false),
-is_set_unified(false),
-is_child_unified(false),
-is_used(false),
-has_mapped(false),
+type(0),
 line(0),
 hash(0),
 number(0),
@@ -48,13 +42,7 @@ total_time(0)
 }
 
 Set::Set(const Set& from) :
-match_any(from.match_any),
-is_special(from.is_special),
-is_tag_unified(from.is_tag_unified),
-is_set_unified(from.is_set_unified),
-is_child_unified(from.is_child_unified),
-is_used(from.is_used),
-has_mapped(from.has_mapped),
+type(from.type),
 line(from.line),
 hash(0),
 number(0),
@@ -66,7 +54,6 @@ tags(from.tags),
 single_tags(from.single_tags),
 single_tags_hash(from.single_tags_hash),
 ff_tags(from.ff_tags),
-ff_tags_hash(from.ff_tags_hash),
 set_ops(from.set_ops),
 sets(from.sets)
 {
@@ -135,26 +122,25 @@ uint32_t Set::rehash() {
 }
 
 void Set::reindex(Grammar &grammar) {
-	is_special = false;
-	is_child_unified = false;
-	has_mapped = false;
+	type &= ~ST_SPECIAL;
+	type &= ~ST_CHILD_UNIFY;
 
 	if (sets.empty()) {
 		const_foreach (TagHashSet, single_tags, tomp_iter, tomp_iter_end) {
-			if ((*tomp_iter)->is_special) {
-				is_special = true;
+			if ((*tomp_iter)->type & T_SPECIAL) {
+				type |= ST_SPECIAL;
 			}
 			if ((*tomp_iter)->type & T_MAPPING) {
-				has_mapped = true;
+				type |= ST_MAPPING;
 			}
 		}
 		const_foreach (CompositeTagHashSet, tags, comp_iter, comp_iter_end) {
 			const_foreach (TagSet, (*comp_iter)->tags_set, tag_iter, tag_iter_end) {
-				if ((*tag_iter)->is_special) {
-					is_special = true;
+				if ((*tag_iter)->type & T_SPECIAL) {
+					type |= ST_SPECIAL;
 				}
 				if ((*tag_iter)->type & T_MAPPING) {
-					has_mapped = true;
+					type |= ST_MAPPING;
 				}
 			}
 		}
@@ -163,26 +149,26 @@ void Set::reindex(Grammar &grammar) {
 		for (uint32_t i=0;i<sets.size();i++) {
 			Set *set = grammar.sets_by_contents.find(sets.at(i))->second;
 			set->reindex(grammar);
-			if (set->is_special) {
-				is_special = true;
+			if (set->type & ST_SPECIAL) {
+				type |= ST_SPECIAL;
 			}
-			if (set->is_tag_unified || set->is_set_unified || set->is_child_unified) {
-				is_child_unified = true;
+			if (set->type & (ST_TAG_UNIFY|ST_SET_UNIFY|ST_CHILD_UNIFY)) {
+				type |= ST_CHILD_UNIFY;
 			}
-			if (set->has_mapped) {
-				has_mapped = true;
+			if (set->type & ST_MAPPING) {
+				type |= ST_MAPPING;
 			}
 		}
 	}
 
-	if (is_tag_unified || is_set_unified || is_child_unified) {
-		is_special = true;
-		is_child_unified = true;
+	if (type & (ST_TAG_UNIFY|ST_SET_UNIFY|ST_CHILD_UNIFY)) {
+		type |= ST_SPECIAL;
+		type |= ST_CHILD_UNIFY;
 	}
 }
 
 void Set::markUsed(Grammar &grammar) {
-	is_used = true;
+	type |= ST_USED;
 
 	if (sets.empty()) {
 		TagHashSet::iterator tomp_iter;

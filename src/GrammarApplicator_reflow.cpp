@@ -407,7 +407,7 @@ uint32_t GrammarApplicator::addTagToReading(Reading &reading, uint32_t utag, boo
 		}
 		has_dep = true;
 	}
-	if (!tag->is_special) {
+	if (!(tag->type & T_SPECIAL)) {
 		reading.tags_plain.insert(utag);
 		reading.tags_plain_bloom.insert(utag);
 	}

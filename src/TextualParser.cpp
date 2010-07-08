@@ -205,10 +205,10 @@ Set *TextualParser::parseSetInline(UChar *& p, Set *s) {
 							ns->setName(&gbuffers[0][0]);
 							ns->sets.push_back(wtmp->hash);
 							if (gbuffers[0][0] == '$' && gbuffers[0][1] == '$') {
-								ns->is_tag_unified = true;
+								ns->type |= ST_TAG_UNIFY;
 							}
 							else if (gbuffers[0][0] == '&' && gbuffers[0][1] == '&') {
-								ns->is_set_unified = true;
+								ns->type |= ST_SET_UNIFY;
 							}
 							result->addSet(ns);
 						}
@@ -1340,7 +1340,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 					u_fflush(ux_stderr);
 				}
 			}
-			else if (s->sets.size() == 1 && !s->is_tag_unified) {
+			else if (s->sets.size() == 1 && !(s->type & ST_TAG_UNIFY)) {
 				tmp = result->getSet(s->sets.back());
 				if (verbosity_level > 0) {
 					u_fprintf(ux_stderr, "Warning: Set %S (L:%u) has been aliased to %S (L:%u).\n", s->name.c_str(), s->line, tmp->name.c_str(), tmp->line);

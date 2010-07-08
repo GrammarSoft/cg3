@@ -59,6 +59,9 @@ namespace CG3 {
 		T_TARGET     = (1 << 17),
 		T_MARK       = (1 << 18),
 		T_ATTACHTO   = (1 << 19),
+		T_SPECIAL    = (1 << 20),
+		T_USED       = (1 << 21),
+		T_GRAMMAR    = (1 << 22),
 	};
 
 	class Tag {
@@ -66,9 +69,6 @@ namespace CG3 {
 		static bool dump_hashes;
 		static UFILE* dump_hashes_out;
 
-		bool in_grammar;
-		bool is_special;
-		bool is_used;
 		C_OPS comparison_op;
 		int32_t comparison_val;
 		uint32_t type;

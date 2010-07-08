@@ -79,7 +79,7 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 	grammar->single_tags_list.resize(num_single_tags);
 	for (uint32_t i=0 ; i<num_single_tags ; i++) {
 		Tag *t = grammar->allocateTag();
-		t->in_grammar = true;
+		t->type |= T_GRAMMAR;
 		fread(&u32tmp, sizeof(uint32_t), 1, input);
 		t->number = (uint32_t)ntohl(u32tmp);
 		fread(&u32tmp, sizeof(uint32_t), 1, input);
@@ -90,8 +90,6 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 		t->seed = (uint32_t)ntohl(u32tmp);
 		fread(&u32tmp, sizeof(uint32_t), 1, input);
 		t->type = (uint32_t)ntohl(u32tmp);
-		fread(&u8tmp, sizeof(uint8_t), 1, input);
-		t->is_special = (u8tmp == 1);
 
 		if (t->type & T_NUMERICAL) {
 			fread(&u32tmp, sizeof(uint32_t), 1, input);
@@ -202,15 +200,7 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 		fread(&u32tmp, sizeof(uint32_t), 1, input);
 		s->hash = (uint32_t)ntohl(u32tmp);
 		fread(&u8tmp, sizeof(uint8_t), 1, input);
-		s->match_any = (u8tmp == 1);
-		/*
-		fread(&u8tmp, sizeof(uint8_t), 1, input);
-		s->is_special = (u8tmp == 1);
-		//*/
-		fread(&u8tmp, sizeof(uint8_t), 1, input);
-		s->is_tag_unified = (u8tmp == 1);
-		fread(&u8tmp, sizeof(uint8_t), 1, input);
-		s->is_set_unified = (u8tmp == 1);
+		s->type = u8tmp;
 
 		fread(&u8tmp, sizeof(uint8_t), 1, input);
 		if (u8tmp == 0) {
@@ -231,7 +221,6 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 				fread(&u32tmp, sizeof(uint32_t), 1, input);
 				u32tmp = (uint32_t)ntohl(u32tmp);
 				s->ff_tags.insert(grammar->single_tags_list.at(u32tmp));
-				s->ff_tags_hash.insert(grammar->single_tags_list.at(u32tmp)->hash);
 			}
 			fread(&u32tmp, sizeof(uint32_t), 1, input);
 			u32tmp = (uint32_t)ntohl(u32tmp);
