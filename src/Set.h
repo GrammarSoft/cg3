@@ -30,18 +30,22 @@
 namespace CG3 {
 	class Grammar;
 
+	enum SET_TYPE {
+		ST_ANY             = (1 <<  0),
+		ST_SPECIAL         = (1 <<  1),
+		ST_TAG_UNIFY       = (1 <<  2),
+		ST_SET_UNIFY       = (1 <<  3),
+		ST_CHILD_UNIFY     = (1 <<  4),
+		ST_MAPPING         = (1 <<  5),
+		ST_USED            = (1 <<  6),
+	};
+
 	class Set {
 	public:
 		static bool dump_hashes;
 		static UFILE* dump_hashes_out;
 
-		bool match_any;
-		bool is_special;
-		bool is_tag_unified;
-		bool is_set_unified;
-		bool is_child_unified;
-		bool is_used;
-		bool has_mapped;
+		uint8_t type;
 		uint32_t line;
 		uint32_t hash;
 		uint32_t number;
@@ -54,7 +58,6 @@ namespace CG3 {
 		TagHashSet single_tags;
 		uint32SortedVector single_tags_hash;
 		TagHashSet ff_tags;
-		uint32SortedVector ff_tags_hash;
 
 		uint32Vector set_ops;
 		uint32Vector sets;

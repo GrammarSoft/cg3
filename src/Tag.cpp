@@ -28,9 +28,6 @@ bool Tag::dump_hashes = false;
 UFILE* Tag::dump_hashes_out = 0;
 
 Tag::Tag() :
-in_grammar(false),
-is_special(false),
-is_used(false),
 comparison_op(OP_NOP),
 comparison_val(0),
 type(0),
@@ -198,9 +195,10 @@ void Tag::parseTag(const UChar *to, UFILE *ux_stderr) {
 			}
 		}
 	}
-	is_special = false;
+
+	type &= ~T_SPECIAL;
 	if (type & (T_ANY|T_TARGET|T_MARK|T_ATTACHTO|T_PAR_LEFT|T_PAR_RIGHT|T_NUMERICAL|T_VARIABLE|T_META|T_NEGATIVE|T_FAILFAST|T_CASE_INSENSITIVE|T_REGEXP|T_REGEXP_ANY|T_VARSTRING)) {
-		is_special = true;
+		type |= T_SPECIAL;
 	}
 
 	if (type & T_VARSTRING && type & (T_REGEXP|T_REGEXP_ANY|T_CASE_INSENSITIVE|T_NUMERICAL|T_VARIABLE|T_META)) {
@@ -246,9 +244,10 @@ void Tag::parseTagRaw(const UChar *to) {
 			}
 		}
 	}
-	is_special = false;
+
+	type &= ~T_SPECIAL;
 	if (type & (T_NUMERICAL)) {
-		is_special = true;
+		type |= T_SPECIAL;
 	}
 }
 
@@ -359,9 +358,9 @@ uint32_t Tag::rehash() {
 		hash += seed;
 	}
 
-	is_special = false;
+	type &= ~T_SPECIAL;
 	if (type & (T_ANY|T_TARGET|T_MARK|T_ATTACHTO|T_PAR_LEFT|T_PAR_RIGHT|T_NUMERICAL|T_VARIABLE|T_META|T_NEGATIVE|T_FAILFAST|T_CASE_INSENSITIVE|T_REGEXP|T_REGEXP_ANY|T_VARSTRING)) {
-		is_special = true;
+		type |= T_SPECIAL;
 	}
 
 	if (dump_hashes && dump_hashes_out) {
@@ -373,7 +372,7 @@ uint32_t Tag::rehash() {
 }
 
 void Tag::markUsed() {
-	is_used = true;
+	type |= T_USED;
 }
 
 UChar *Tag::allocateUChars(uint32_t n) {

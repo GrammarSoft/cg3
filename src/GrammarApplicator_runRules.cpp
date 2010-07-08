@@ -256,7 +256,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow &current, uint32
 				if (reading->noprint && !allow_magic_readings) {
 					continue;
 				}
-				if (!set.has_mapped && !set.is_child_unified && !readings_plain.empty()) {
+				if (!(set.type & (ST_MAPPING|ST_CHILD_UNIFY)) && !readings_plain.empty()) {
 					readings_plain_t::const_iterator rpit = readings_plain.find(reading->hash_plain);
 					if (rpit != readings_plain.end()) {
 						reading->matched_target = rpit->second->matched_target;
@@ -281,7 +281,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow &current, uint32
 
 				target = 0;
 				mark = cohort;
-				if (rule.target && doesSetMatchReading(*reading, rule.target, set.is_child_unified|set.is_special)) {
+				if (rule.target && doesSetMatchReading(*reading, rule.target, (set.type & (ST_CHILD_UNIFY|ST_SPECIAL)) != 0)) {
 					target = cohort;
 					reading->matched_target = true;
 					matched_target = true;

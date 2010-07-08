@@ -139,7 +139,7 @@ int GrammarWriter::writeGrammar(UFILE *output) {
 	used_sets.clear();
 	Setuint32HashMap::const_iterator set_iter;
 	for (set_iter = grammar->sets_by_contents.begin() ; set_iter != grammar->sets_by_contents.end() ; set_iter++) {
-		if (set_iter->second->is_used) {
+		if (set_iter->second->type & ST_USED) {
 			printSet(output, *(set_iter->second));
 		}
 	}
