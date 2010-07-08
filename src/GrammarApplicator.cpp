@@ -90,7 +90,7 @@ GrammarApplicator::GrammarApplicator(UFILE *ux_err) {
 GrammarApplicator::~GrammarApplicator() {
 	Taguint32HashMap::iterator iter_stag;
 	for (iter_stag = single_tags.begin() ; iter_stag != single_tags.end() ; iter_stag++) {
-		if (iter_stag->second && !iter_stag->second->in_grammar) {
+		if (iter_stag->second && !(iter_stag->second->type & T_GRAMMAR)) {
 			delete iter_stag->second;
 			iter_stag->second = 0;
 		}

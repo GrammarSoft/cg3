@@ -36,7 +36,7 @@ number(0)
 void CompositeTag::addTag(Tag *tag) {
 	tags.insert(tag);
 	tags_set.insert(tag);
-	if (tag->is_special) {
+	if (tag->type & T_SPECIAL) {
 		is_special = true;
 	}
 }

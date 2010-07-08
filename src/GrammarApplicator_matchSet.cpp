@@ -70,7 +70,7 @@ bool GrammarApplicator::doesTagMatchReading(const Reading &reading, const Tag &t
 	bool retval = false;
 	bool match = false;
 
-	if (!tag.is_special || tag.type & T_FAILFAST) {
+	if (!(tag.type & T_SPECIAL) || tag.type & T_FAILFAST) {
 		uint32SortedVector::const_iterator itf, ite = reading.tags_plain.end();
 		bool raw_in = reading.tags_plain_bloom.matches(tag.hash);
 		if (tag.type & T_FAILFAST) {
@@ -374,18 +374,17 @@ bool GrammarApplicator::doesTagMatchReading(const Reading &reading, const Tag &t
 bool GrammarApplicator::doesSetMatchReading_tags(const Reading &reading, const Set &theset, bool unif_mode) {
 	bool retval = false;
 
-	if (!(theset.is_special|unif_mode)) {
+	if (!(theset.type & ST_SPECIAL) && !unif_mode) {
 		retval = uint32SortedVector_Intersects(theset.single_tags_hash, reading.tags_plain);
 	}
 	else {
-		TagHashSet::const_iterator ster;
-		for (ster = theset.ff_tags.begin() ; ster != theset.ff_tags.end() ; ++ster) {
+		const_foreach (TagHashSet, theset.ff_tags, ster, ster_end) {
 			bool match = doesTagMatchReading(reading, **ster, unif_mode);
 			if (match) {
 				return false;
 			}
 		}
-		for (ster = theset.single_tags.begin() ; ster != theset.single_tags.end() ; ++ster) {
+		const_foreach (TagHashSet, theset.single_tags, ster, ster_end) {
 			if ((*ster)->type & T_FAILFAST) {
 				continue;
 			}
@@ -405,8 +404,7 @@ bool GrammarApplicator::doesSetMatchReading_tags(const Reading &reading, const S
 	}
 
 	if (!retval && !theset.tags.empty()) {
-		CompositeTagHashSet::const_iterator ster;
-		for (ster = theset.tags.begin() ; ster != theset.tags.end() ; ++ster) {
+		const_foreach (CompositeTagHashSet, theset.tags, ster, ster_end) {
 			bool match = true;
 			const CompositeTag *ctag = *ster;
 
@@ -414,8 +412,7 @@ bool GrammarApplicator::doesSetMatchReading_tags(const Reading &reading, const S
 				match = TagSet_SubsetOf_TSet(ctag->tags_set, reading.tags);
 			}
 			else {
-				TagHashSet::const_iterator cter;
-				for (cter = ctag->tags.begin() ; cter != ctag->tags.end() ; ++cter) {
+				const_foreach (TagHashSet, ctag->tags, cter, cter_end) {
 					bool inner = doesTagMatchReading(reading, **cter, unif_mode);
 					if ((*cter)->type & T_FAILFAST) {
 						inner = !inner;
@@ -466,13 +463,13 @@ bool GrammarApplicator::doesSetMatchReading(Reading &reading, const uint32_t set
 	Setuint32HashMap::const_iterator iter = grammar->sets_by_contents.find(set);
 	const Set &theset = *(iter->second);
 
-	if (theset.match_any) {
+	if (theset.type & ST_ANY) {
 		retval = true;
 	}
 	else if (theset.sets.empty()) {
-		retval = doesSetMatchReading_tags(reading, theset, theset.is_tag_unified|unif_mode);
+		retval = doesSetMatchReading_tags(reading, theset, ((theset.type & ST_TAG_UNIFY)!=0)|unif_mode);
 	}
-	else if (theset.is_set_unified) {
+	else if (theset.type & ST_SET_UNIFY) {
 		if (unif_sets_firstrun) {
 			Setuint32HashMap::const_iterator iter = grammar->sets_by_contents.find(theset.sets.at(0));
 			const Set &uset = *(iter->second);
@@ -480,7 +477,7 @@ bool GrammarApplicator::doesSetMatchReading(Reading &reading, const uint32_t set
 			for (size_t i=0;i<size;++i) {
 				iter = grammar->sets_by_contents.find(uset.sets.at(i));
 				const Set &tset = *(iter->second);
-				if (doesSetMatchReading(reading, tset.hash, bypass_index, tset.is_tag_unified|unif_mode)) {
+				if (doesSetMatchReading(reading, tset.hash, bypass_index, ((theset.type & ST_TAG_UNIFY)!=0)|unif_mode)) {
 					unif_sets.insert(tset.hash);
 				}
 			}
@@ -500,31 +497,31 @@ bool GrammarApplicator::doesSetMatchReading(Reading &reading, const uint32_t set
 	else {
 		const size_t size = theset.sets.size();
 		for (size_t i=0;i<size;++i) {
-			bool match = doesSetMatchReading(reading, theset.sets.at(i), bypass_index, theset.is_tag_unified|unif_mode);
+			bool match = doesSetMatchReading(reading, theset.sets.at(i), bypass_index, ((theset.type & ST_TAG_UNIFY)!=0)|unif_mode);
 			bool failfast = false;
 			while (i < size-1 && theset.set_ops.at(i) != S_OR) {
 				switch (theset.set_ops.at(i)) {
 					case S_PLUS:
 						if (match) {
-							match = doesSetMatchReading(reading, theset.sets.at(i+1), bypass_index, theset.is_tag_unified|unif_mode);
+							match = doesSetMatchReading(reading, theset.sets.at(i+1), bypass_index, ((theset.type & ST_TAG_UNIFY)!=0)|unif_mode);
 						}
 						break;
 					case S_FAILFAST:
-						if (doesSetMatchReading(reading, theset.sets.at(i+1), bypass_index, theset.is_tag_unified|unif_mode)) {
+						if (doesSetMatchReading(reading, theset.sets.at(i+1), bypass_index, ((theset.type & ST_TAG_UNIFY)!=0)|unif_mode)) {
 							match = false;
 							failfast = true;
 						}
 						break;
 					case S_MINUS:
 						if (match) {
-							if (doesSetMatchReading(reading, theset.sets.at(i+1), bypass_index, theset.is_tag_unified|unif_mode)) {
+							if (doesSetMatchReading(reading, theset.sets.at(i+1), bypass_index, ((theset.type & ST_TAG_UNIFY)!=0)|unif_mode)) {
 								match = false;
 							}
 						}
 						break;
 					case S_NOT:
 						if (!match) {
-							if (!doesSetMatchReading(reading, theset.sets.at(i+1), bypass_index, theset.is_tag_unified|unif_mode)) {
+							if (!doesSetMatchReading(reading, theset.sets.at(i+1), bypass_index, ((theset.type & ST_TAG_UNIFY)!=0)|unif_mode)) {
 								match = true;
 							}
 						}
@@ -561,7 +558,7 @@ bool GrammarApplicator::doesSetMatchReading(Reading &reading, const uint32_t set
 		index_readingSet_yes.insert(ih);
 	}
 	else {
-		if (!(theset.is_tag_unified|unif_mode)) {
+		if (!(theset.type & ST_TAG_UNIFY) && !unif_mode) {
 			index_readingSet_no.insert(ih);
 		}
 	}
@@ -577,7 +574,7 @@ bool GrammarApplicator::doesSetMatchCohortNormal(Cohort &cohort, const uint32_t 
 	const Set *theset = grammar->sets_by_contents.find(set)->second;
 	const_foreach (ReadingList, cohort.readings, iter, iter_end) {
 		Reading &reading = **iter;
-		if (doesSetMatchReading(reading, set, theset->is_child_unified|theset->is_special)) {
+		if (doesSetMatchReading(reading, set, (theset->type & (ST_CHILD_UNIFY|ST_SPECIAL)) != 0)) {
 			retval = true;
 			break;
 		}
@@ -585,7 +582,7 @@ bool GrammarApplicator::doesSetMatchCohortNormal(Cohort &cohort, const uint32_t 
 	if (!retval && options & POS_LOOK_DELETED) {
 		const_foreach (ReadingList, cohort.deleted, iter, iter_end) {
 			Reading &reading = **iter;
-			if (doesSetMatchReading(reading, set, theset->is_child_unified|theset->is_special)) {
+			if (doesSetMatchReading(reading, set, (theset->type & (ST_CHILD_UNIFY|ST_SPECIAL)) != 0)) {
 				retval = true;
 				break;
 			}
@@ -594,7 +591,7 @@ bool GrammarApplicator::doesSetMatchCohortNormal(Cohort &cohort, const uint32_t 
 	if (!retval && options & POS_LOOK_DELAYED) {
 		const_foreach (ReadingList, cohort.delayed, iter, iter_end) {
 			Reading &reading = **iter;
-			if (doesSetMatchReading(reading, set, theset->is_child_unified|theset->is_special)) {
+			if (doesSetMatchReading(reading, set, (theset->type & (ST_CHILD_UNIFY|ST_SPECIAL)) != 0)) {
 				retval = true;
 				break;
 			}
@@ -616,7 +613,7 @@ bool GrammarApplicator::doesSetMatchCohortCareful(const Cohort &cohort, const ui
 	const Set *theset = grammar->sets_by_contents.find(set)->second;
 	const_foreach (ReadingList, cohort.readings, iter, iter_end) {
 		Reading &reading = **iter;
-		if (!doesSetMatchReading(reading, set, theset->is_child_unified|theset->is_special)) {
+		if (!doesSetMatchReading(reading, set, (theset->type & (ST_CHILD_UNIFY|ST_SPECIAL)) != 0)) {
 			retval = false;
 			break;
 		}
@@ -624,7 +621,7 @@ bool GrammarApplicator::doesSetMatchCohortCareful(const Cohort &cohort, const ui
 	if (retval && options & POS_LOOK_DELETED) {
 		const_foreach (ReadingList, cohort.deleted, iter, iter_end) {
 			Reading &reading = **iter;
-			if (!doesSetMatchReading(reading, set, theset->is_child_unified|theset->is_special)) {
+			if (!doesSetMatchReading(reading, set, (theset->type & (ST_CHILD_UNIFY|ST_SPECIAL)) != 0)) {
 				retval = false;
 				break;
 			}
@@ -633,7 +630,7 @@ bool GrammarApplicator::doesSetMatchCohortCareful(const Cohort &cohort, const ui
 	if (retval && options & POS_LOOK_DELAYED) {
 		const_foreach (ReadingList, cohort.delayed, iter, iter_end) {
 			Reading &reading = **iter;
-			if (!doesSetMatchReading(reading, set, theset->is_child_unified|theset->is_special)) {
+			if (!doesSetMatchReading(reading, set, (theset->type & (ST_CHILD_UNIFY|ST_SPECIAL)) != 0)) {
 				retval = false;
 				break;
 			}
