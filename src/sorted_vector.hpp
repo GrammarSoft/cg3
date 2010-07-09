@@ -65,7 +65,7 @@ public:
 			elements.insert(elements.begin(), t);
 			return true;
 		}
-		iterator it = std::lower_bound(elements.begin(), elements.end(), t);
+		iterator it = std::lower_bound(elements.begin()+1, elements.end(), t);
 		if (it == elements.end() || *it != t) {
 			elements.insert(it, t);
 			return true;
