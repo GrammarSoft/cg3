@@ -600,46 +600,39 @@ void ApertiumApplicator::printReading(Reading *reading, UFILE *output) {
 	}
 
 	if (reading->baseform) {
-		UChar *bf = single_tags[reading->baseform]->tag;
 		// Lop off the initial and final '"' characters
-		bf = ux_substr(bf, 1, u_strlen(bf)-1);
+		UnicodeString bf(single_tags[reading->baseform]->tag+1, u_strlen(single_tags[reading->baseform]->tag)-2);
 
 		if (wordform_case) {
 			// Use surface/wordform case, eg. if lt-proc
 			// was called with "-w" option (which puts
 			// dictionary case on lemma/basefrom)
-			UChar *wf = single_tags[reading->wordform]->tag;
-			// Lop off the initial and final '"<>' characters
-			wf = ux_substr(wf, 2, u_strlen(wf)-2);
+			// Lop off the initial and final '"<>"' characters
+			UnicodeString wf(single_tags[reading->wordform]->tag+2, u_strlen(single_tags[reading->wordform]->tag)-4);
 			
 			int first = 0; // first occurrence of a lowercase character in baseform
-			for (; first<u_strlen(bf); first++) {
-				if(u_islower(bf[first]) != 0) {
+			for (; first<bf.length() ; ++first) {
+				if (u_islower(bf[first]) != 0) {
 					break;
 				}
 			}
 			
 			// this corresponds to fst_processor.cc in lttoolbox:
 			bool firstupper = (u_isupper(wf[first]) != 0); // simply casting will not silence the warning - Tino Didriksen
-			bool uppercase = firstupper && u_isupper(wf[u_strlen(wf)-1]);
+			bool uppercase = firstupper && u_isupper(wf[wf.length()-1]);
 
 			if (uppercase) {
-				for (int i=0; i<u_strlen(bf); i++) {
-					bf[i] = static_cast<UChar>(u_toupper(bf[i]));
-				}
+				bf.toUpper(); // Perform a Unicode case folding to upper case -- Tino Didriksen
 			}
-			else {
-				if (firstupper) {
-					bf[first] = static_cast<UChar>(u_toupper(bf[first]));
-				} 
+			else if (firstupper) {
+				int32_t len = bf.length();
+				UChar *buf = bf.getBuffer(len);
+				buf[first] = static_cast<UChar>(u_toupper(bf[first]));
+				bf.releaseBuffer(len);
 			}
-			wf = 0;
 		} // if (wordform_case)
 		
-		u_fprintf(output, "%S", bf);
-		
-		delete[] bf;
-		bf = 0;
+		u_fprintf(output, "%S", bf.getTerminatedBuffer());
 		
 		// Tag::printTagRaw(output, single_tags[reading->baseform]);
 	}
@@ -682,14 +675,12 @@ void ApertiumApplicator::printReading(Reading *reading, UFILE *output) {
 				u_fprintf(output, "%S", tag->tag);	
  			}
 			else if (tag->tag[0] == '&') {
-				u_fprintf(output, "<");
-				u_fprintf(output, "%S", ux_substr(tag->tag, 2, u_strlen(tag->tag)));	
-				u_fprintf(output, ">");  
+				UChar *buf = ux_substr(tag->tag, 2, u_strlen(tag->tag));
+				u_fprintf(output, "<%S>", buf);
+				delete[] buf;
  			}
  			else {
-				u_fprintf(output, "<");
-				u_fprintf(output, "%S", tag->tag);	
-				u_fprintf(output, ">");
+				u_fprintf(output, "<%S>", tag->tag);	
  			}
  		}
 	}
@@ -716,10 +707,8 @@ void ApertiumApplicator::printSingleWindow(SingleWindow *window, UFILE *output) 
 
 		if(print_word_forms == true) {
 			// Lop off the initial and final '"' characters 
-			UChar *wf = single_tags[cohort->wordform]->tag;
-			wf = ux_substr(wf, 2, u_strlen(wf)-2);
-			u_fprintf(output, "%S/", wf);
-			delete[] wf;
+			UString wf(single_tags[cohort->wordform]->tag+2, u_strlen(single_tags[cohort->wordform]->tag)-4);
+			u_fprintf(output, "%S/", wf.c_str());
 		}
 
 		//Tag::printTagRaw(output, single_tags[cohort->wordform]);
