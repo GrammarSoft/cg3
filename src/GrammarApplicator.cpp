@@ -219,6 +219,11 @@ Tag *GrammarApplicator::addTag(const UChar *txt) {
 	return single_tags[hash];
 }
 
+
+Tag *GrammarApplicator::addTag(const UString& txt) {
+	return addTag(txt.c_str());
+}
+
 void GrammarApplicator::printReading(const Reading *reading, UFILE *output) {
 	if (reading->noprint) {
 		return;
