@@ -445,7 +445,7 @@ void ApertiumApplicator::processReading(Reading *cReading, const UChar *reading_
 	bool unknown = false;
 	bool multi = false;
 	bool joined = false;
-	int join_idx = 48; // Set the join index to the number '0' in ASCII/UTF-8
+	UChar join_idx = '0'; // Set the join index to the number '0' in ASCII/UTF-8
 
 	if (grammar->sets_any && !grammar->sets_any->empty()) {
 		cReading->parent->possible_sets.insert(grammar->sets_any->begin(), grammar->sets_any->end());
@@ -531,7 +531,7 @@ void ApertiumApplicator::processReading(Reading *cReading, const UChar *reading_
 			multi = false;
 			if (intag == true) {
 				u_fprintf(ux_stderr, "Error: The Apertium stream format does not allow '<' in tag names.\n");
-				c++;
+				++c;
 				continue;
 			}
 			intag = true;
@@ -542,12 +542,12 @@ void ApertiumApplicator::processReading(Reading *cReading, const UChar *reading_
 
 				tmptag.clear();
 				joiner = false;
-				c++;
+				++c;
 				continue;
 
 			}
 			else {
-				c++;
+				++c;
 				continue;
 			}
 
@@ -556,7 +556,7 @@ void ApertiumApplicator::processReading(Reading *cReading, const UChar *reading_
 			multi = false;
 			if (intag == false) {
 				u_fprintf(ux_stderr, "Error: The Apertium stream format does not allow '>' in tag names.\n");
-				c++;
+				++c;
 				continue;
 			}
 			intag = false;
@@ -565,7 +565,7 @@ void ApertiumApplicator::processReading(Reading *cReading, const UChar *reading_
 			UString newtag;
 			if (cReading->tags.find(shufty) != cReading->tags.end()) {
 				newtag += '&';
-				newtag += UChar(join_idx);
+				newtag += join_idx;
 				newtag += tmptag;
 			}
 			else {
@@ -576,23 +576,18 @@ void ApertiumApplicator::processReading(Reading *cReading, const UChar *reading_
 
 			tmptag.clear();
 			joiner = false;
-			c++;
+			++c;
 			continue;
 		}
 
 		if(multi == true) { // Multiword queue is not part of a tag
-			c++;
+			++c;
 			continue;
 		}
 
 		tmptag += *c;
-		c++;
+		++c;
 	}
-	
-	joined = false;
-	join_idx = 48;
-
-	return;
 }
 
 void ApertiumApplicator::processReading(Reading *cReading, const UString& reading_string) {

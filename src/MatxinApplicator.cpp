@@ -304,32 +304,31 @@ int MatxinApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 			cCohort->global_number = gWindow->cohort_counter++;
 
 			// Read in the word form
-			UChar *wordform = 0;
+			UString wordform;
 
-			wordform = ux_append(wordform, '"');
+			wordform += '"';
 			// We encapsulate wordforms within '"<' and
 			// '>"' for internal processing.
-			wordform = ux_append(wordform, '<');
+			wordform += '<';
 			while (inchar != '/') {
 				inchar = u_fgetc_wrapper(input); 
 
 				if (inchar != '/') {
-					wordform = ux_append(wordform, inchar);
+					wordform += inchar;
 				}
 			}
 			
-			wordform = ux_append(wordform, '>');
-			wordform = ux_append(wordform, '"');
+			wordform += '>';
+			wordform += '"';
 			
 			//u_fprintf(output, "# %S\n", wordform);
 			cCohort->wordform = addTag(wordform)->hash;
 			lCohort = cCohort;
 			lReading = 0;
-			wordform = 0;
 			numCohorts++;
 
 			// We're now at the beginning of the readings
-			UChar *current_reading = 0;
+			UString current_reading;
 			Reading *cReading = 0;
 
 			// Read in the readings	
@@ -352,8 +351,7 @@ int MatxinApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 					lReading = cReading;
 					numReadings++;
 
-					delete[] current_reading;
-					current_reading = 0;
+					current_reading.clear();
 
 					incohort = false;
 				}
@@ -372,12 +370,11 @@ int MatxinApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 					lReading = cReading;
 					numReadings++;
 	
-					delete[] current_reading;
-					current_reading = 0;
+					current_reading.clear();
 					continue; // while not $
 				}
 	
-				current_reading = ux_append(current_reading, inchar);
+				current_reading += inchar;
 			} // end while not $
 
 			if (!cReading->baseform) {
@@ -447,17 +444,17 @@ int MatxinApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
  *   be<vblex><inf># happy
  *   be# happy<vblex><inf> (for chaining cg-proc)
  */
-void MatxinApplicator::processReading(Reading *cReading, UChar *reading_string) {
-	UChar *m = reading_string;
-	UChar *c = reading_string;
-	UChar *tmptag = 0;
-	UChar *base = 0;
-	UChar *suf = 0;
+void MatxinApplicator::processReading(Reading *cReading, const UChar *reading_string) {
+	const UChar *m = reading_string;
+	const UChar *c = reading_string;
+	UString tmptag;
+	UString base;
+	UString suf;
 	bool tags = false; 
 	bool unknown = false;
 	bool multi = false;
 	bool joined = false;
-	int join_idx = 48; // Set the join index to the number '0' in ASCII/UTF-8
+	UChar join_idx = '0'; // Set the join index to the number '0' in ASCII/UTF-8
 
 	if (grammar->sets_any && !grammar->sets_any->empty()) {
 		cReading->parent->possible_sets.insert(grammar->sets_any->begin(), grammar->sets_any->end());
@@ -479,14 +476,14 @@ void MatxinApplicator::processReading(Reading *cReading, UChar *reading_string) 
 		}
 
 		if (multi) {
-			suf = ux_append(suf, *m);
+			suf += *m;
 		}
 
 		m++;
 	}
 
 	// We encapsulate baseforms within '"' for internal processing.
-	base = ux_append(base, '"');
+	base += '"';
 	while (*c != '\0') {
 		if (*c == '*') { // Initial asterisk means word is unknown, and 
 				// should just be copied in the output.
@@ -495,16 +492,16 @@ void MatxinApplicator::processReading(Reading *cReading, UChar *reading_string) 
 		if (*c == '<' || *c == '\0') {
 			break;
 		}
-		base = ux_append(base, *c);
-		c++;
+		base += *c;
+		++c;
 	}
 
-	if (suf != 0) { // Append the multiword suffix to the baseform
+	if (!suf.empty()) { // Append the multiword suffix to the baseform
 		       // (this is normally done in pretransfer)
 
-		base = ux_append(base, suf);
+		base += suf;
 	}
-	base = ux_append(base, '"');
+	base += '"';
 
 	uint32_t tag = addTag(base)->hash;
 	cReading->baseform = tag;
@@ -526,13 +523,13 @@ void MatxinApplicator::processReading(Reading *cReading, UChar *reading_string) 
 		if (*c == '+') {
 			joiner = true;
 			joined = true;
-			join_idx++;
+			++join_idx;
 		}
 
 		if (*c == '<') {
 			if (intag == true) {
 				u_fprintf(ux_stderr, "Error: The Apertium stream format does not allow '<' in tag names.\n");
-				c++;
+				++c;
 				continue;
 			}
 			intag = true;
@@ -541,16 +538,15 @@ void MatxinApplicator::processReading(Reading *cReading, UChar *reading_string) 
 				uint32_t tag = addTag(tmptag)->hash;
 				addTagToReading(*cReading, tag); // Add the baseform to the tag
 
-				delete[] tmptag;
-				tmptag = 0;
+				tmptag.clear();
 				joiner = false;
-				c++;
+				++c;
 				continue;
 
 			}
 			else {
 
-				c++;
+				++c;
 				continue;
 			}
 
@@ -558,38 +554,36 @@ void MatxinApplicator::processReading(Reading *cReading, UChar *reading_string) 
 		else if (*c == '>') {
 			if (intag == false) {
 				u_fprintf(ux_stderr, "Error: The Apertium stream format does not allow '>' in tag names.\n");
-				c++;
+				++c;
 				continue;
 			}
 			intag = false;
 
 			uint32_t shufty = addTag(tmptag)->hash; 
-			UChar *newtag = 0;
+			UString newtag;
 			if (cReading->tags.find(shufty) != cReading->tags.end()) {
-				newtag = ux_append(newtag, '&');	
-				newtag = ux_append(newtag, (UChar)join_idx);
-				newtag = ux_append(newtag, tmptag);
+				newtag += '&';
+				newtag += join_idx;
+				newtag += tmptag;
 			}
 			else {
-				newtag = ux_append(newtag, tmptag);
+				newtag += tmptag;
 			}
 			uint32_t tag = addTag(newtag)->hash;
 			addTagToReading(*cReading, tag); // Add the baseform to the tag
 
-			delete[] tmptag;
-			tmptag = 0;
+			tmptag.clear();
 			joiner = false;
-			c++;
+			++c;
 			continue;
 		}
-		tmptag = ux_append(tmptag, *c);
-		c++;
+		tmptag += *c;
+		++c;
 	}
-	
-	joined = false;
-	join_idx = 48;
+}
 
-	return;
+void MatxinApplicator::processReading(Reading *cReading, const UString& reading_string) {
+	return processReading(cReading, reading_string.c_str());
 }
 
 int MatxinApplicator::printReading(Reading *reading, UFILE *output, int ischunk, int ord, int alloc) {
@@ -602,8 +596,8 @@ int MatxinApplicator::printReading(Reading *reading, UFILE *output, int ischunk,
 
 	uint32HashMap used_tags;
 	uint32List::iterator tter;
-	UChar *tags = 0;
-	UChar *syntags = 0;
+	UString tags;
+	UString syntags;
 	for (tter = reading->tags_list.begin() ; tter != reading->tags_list.end() ; tter++) {
 		if (used_tags.find(*tter) != used_tags.end()) {
 			continue;
@@ -615,40 +609,40 @@ int MatxinApplicator::printReading(Reading *reading, UFILE *output, int ischunk,
 		const Tag *tag = single_tags[*tter];
 		if (!(tag->type & T_BASEFORM) && !(tag->type & T_WORDFORM)) {
 			if (tag->tag[0] == '+') {
-				tags = ux_append(tags, tag->tag);
+				tags += tag->tag;
 			}
 			else if (tag->tag[0] == '&') {
-				tags = ux_append(tags, '[');
-				tags = ux_append(tags, ux_substr(tag->tag, 2, u_strlen(tag->tag)));
-				tags = ux_append(tags, ']');
+				tags += '[';
+				tags += ux_substr(tag->tag, 2, u_strlen(tag->tag));
+				tags += ']';
 			}
 			else if (tag->type & T_MAPPING) {
-				syntags = ux_append(syntags, tag->tag);	
-				syntags = ux_append(syntags, '.');
+				syntags += tag->tag;
+				syntags += '.';
 			}
 			else if (*tag->tag != *CHUNK) {
-				tags = ux_append(tags, '[');
-				tags = ux_append(tags, tag->tag);
-				tags = ux_append(tags, ']');
+				tags += '[';
+				tags += tag->tag;
+				tags += ']';
 			}
 		}
 	} // for tags
 
 	if (ischunk) {
 		u_fprintf(output, "<CHUNK ord='%d' alloc='%d'", ord, alloc);
-		if(syntags) {
-			u_fprintf(output, " si='%S'", ux_substr(syntags, 0, u_strlen(syntags)-1));
+		if (!syntags.empty()) {
+			u_fprintf(output, " si='%S'", ux_substr(syntags.c_str(), 0, syntags.size()-1));
 		}
 		u_fprintf(output, ">\n  <NODE");
 	} else {
 		u_fprintf(output, "\n    <NODE");
 	}
 
-	if(tags) {
+	if (!tags.empty()) {
 		u_fprintf(output, " mi='%S'", tags);
 	}
-	if(syntags) {
-		u_fprintf(output, " si='%S'", ux_substr(syntags, 0, u_strlen(syntags)-1));
+	if (!syntags.empty()) {
+		u_fprintf(output, " si='%S'", ux_substr(syntags.c_str(), 0, syntags.size()-1));
 	}
 
 	// ord: order in source sentence. local_number is x in the #x->y dependency output so we use that
@@ -790,15 +784,15 @@ void MatxinApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 		tree.push(0);	// add end of cohort-marker before adding children
 		// Alternative method: don't pop current cohort yet; add the children first, then when we see a number we've seen before, pop and print /NODE
 
-		UChar *syntags = 0;
+		UString syntags; // ToDo: What is this variable used for? -- Tino Didriksen
 		ReadingList::iterator rter;
 		rter = cohort->readings.begin();
 		Reading *reading = *rter;
 		for (uint32List::iterator tter = reading->tags_list.begin() ; tter != reading->tags_list.end() ; tter++) {
 			const Tag *tag = single_tags[*tter];
 			if (tag->type & T_MAPPING) {
-				syntags = ux_append(syntags, tag->tag);	
-				syntags = ux_append(syntags, '.');
+				syntags += tag->tag;
+				syntags += '.';
 			}
 		}
 		printReading(*rter, output, ischunk, chunk_ord[cohort->local_number], alloc[cohort->local_number]); 
@@ -848,7 +842,7 @@ void MatxinApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 			nchildtree.pop();
 		}		
 		deps = 0;
-		syntags = 0;
+		syntags.clear();
 	} // while !tree.empty
 	cohort = 0;
 		
