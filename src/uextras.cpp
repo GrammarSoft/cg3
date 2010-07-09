@@ -106,47 +106,6 @@ bool ux_escape(UChar *target, const UChar *source) {
 	return retval;
 }
 
-// ToDo: ux_append is unsafe and slow...must be a better way
-UChar *ux_append(UChar *target, const UChar *data) {
-	UChar *tmp = 0;
-	if (!target) {
-		uint32_t length = u_strlen(data)+1;
-		tmp = new UChar[length];
-		tmp[0] = 0;
-		u_strcat(tmp, data);
-		target = tmp;
-	}
-	else {
-		uint32_t length = u_strlen(target)+u_strlen(data)+1;
-		tmp = new UChar[length];
-		tmp[0] = 0;
-		u_strcat(tmp, target);
-		u_strcat(tmp, data);
-		delete[] target;
-		target = tmp;
-	}
-	return tmp;
-}
-
-UChar *ux_append(UChar *target, const UChar data) {
-	UChar *tmp = 0;
-
-	if (!target) {
-		tmp = new UChar[2];
-		tmp[0] = data;
-		tmp[1] = 0;
-	}
-	else {
-		size_t length = u_strlen(target);
-		tmp = new UChar[length+2];
-		std::copy(target, target+length, tmp);
-		delete[] target;
-		tmp[length] = data;
-		tmp[length+1] = 0;
-	}
-	return tmp;
-}
-
 UChar *ux_substr(const UChar *string, const size_t start, const size_t end) {
 	assert((size_t)u_strlen(string) >= end);
 	assert((size_t)u_strlen(string) >= start);
