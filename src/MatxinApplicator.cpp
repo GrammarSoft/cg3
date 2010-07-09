@@ -639,7 +639,7 @@ int MatxinApplicator::printReading(Reading *reading, UFILE *output, int ischunk,
 	}
 
 	if (!tags.empty()) {
-		u_fprintf(output, " mi='%S'", tags);
+		u_fprintf(output, " mi='%S'", tags.c_str());
 	}
 	if (!syntags.empty()) {
 		u_fprintf(output, " si='%S'", ux_substr(syntags.c_str(), 0, syntags.size()-1));
