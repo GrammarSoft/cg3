@@ -37,12 +37,12 @@ namespace CG3 {
 		CT_ENCLOSED       = (1 <<  0),
 		CT_RELATED        = (1 <<  1),
 		CT_REMOVED        = (1 <<  2),
+		CT_NUM_CURRENT    = (1 <<  3),
+		CT_DEP_DONE       = (1 <<  4),
 	};
 
 	class Cohort {
 	public:
-		bool num_is_current;
-		bool dep_done;
 		uint8_t type;
 		uint32_t global_number;
 		uint32_t local_number;

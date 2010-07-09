@@ -188,8 +188,8 @@ bool GrammarApplicator::attachParentChild(Cohort &parent, Cohort &child, bool al
 	child.dep_parent = parent.global_number;
 	parent.addChild(child.global_number);
 
-	parent.dep_done = true;
-	child.dep_done = true;
+	parent.type |= CT_DEP_DONE;
+	child.type |= CT_DEP_DONE;
 
 	if (!dep_has_spanned && child.parent != parent.parent) {
 		u_fprintf(
@@ -224,7 +224,7 @@ void GrammarApplicator::reflowDependencyWindow(uint32_t max) {
 	std::map<uint32_t, Cohort*>::iterator dIter;
 	for (dIter = gWindow->dep_window.begin() ; dIter != gWindow->dep_window.end() ; dIter++) {
 		Cohort *cohort = dIter->second;
-		if (cohort->dep_done) {
+		if (cohort->type & CT_DEP_DONE) {
 			continue;
 		}
 		if (max && cohort->global_number >= max) {
@@ -251,7 +251,7 @@ void GrammarApplicator::reflowDependencyWindow(uint32_t max) {
 				continue;
 			}
 			if (cohort->dep_self == cohort->global_number) {
-				if (!cohort->dep_done && gWindow->dep_map.find(cohort->dep_parent) == gWindow->dep_map.end()) {
+				if (!(cohort->type & CT_DEP_DONE) && gWindow->dep_map.find(cohort->dep_parent) == gWindow->dep_map.end()) {
 					if (verbosity_level > 0) {
 						u_fprintf(
 							ux_stderr,
@@ -263,7 +263,7 @@ void GrammarApplicator::reflowDependencyWindow(uint32_t max) {
 					cohort->dep_parent = std::numeric_limits<uint32_t>::max();
 				}
 				else {
-					if (!cohort->dep_done) {
+					if (!(cohort->type & CT_DEP_DONE)) {
 						uint32_t dep_real = gWindow->dep_map.find(cohort->dep_parent)->second;
 						cohort->dep_parent = dep_real;
 					}
@@ -271,7 +271,7 @@ void GrammarApplicator::reflowDependencyWindow(uint32_t max) {
 					if (tmp != gWindow->cohort_map.end()) {
 						tmp->second->addChild(cohort->dep_self);
 					}
-					cohort->dep_done = true;
+					cohort->type |= CT_DEP_DONE;
 				}
 			}
 		}
@@ -391,7 +391,7 @@ uint32_t GrammarApplicator::addTagToReading(Reading &reading, uint32_t utag, boo
 	}
 	if (tag->type & T_NUMERICAL) {
 		reading.tags_numerical[utag] = tag;
-		reading.parent->num_is_current = false;
+		reading.parent->type &= ~CT_NUM_CURRENT;
 	}
 	if (!reading.baseform && tag->type & T_BASEFORM) {
 		reading.baseform = tag->hash;
@@ -399,7 +399,7 @@ uint32_t GrammarApplicator::addTagToReading(Reading &reading, uint32_t utag, boo
 	if (!reading.wordform && tag->type & T_WORDFORM) {
 		reading.wordform = tag->hash;
 	}
-	if (grammar->has_dep && tag->type & T_DEPENDENCY && !reading.parent->dep_done) {
+	if (grammar->has_dep && tag->type & T_DEPENDENCY && !(reading.parent->type & CT_DEP_DONE)) {
 		reading.parent->dep_self = tag->dep_self;
 		reading.parent->dep_parent = tag->dep_parent;
 		if (tag->dep_parent == tag->dep_self) {
@@ -427,7 +427,7 @@ void GrammarApplicator::delTagFromReading(Reading &reading, uint32_t utag) {
 		reading.mapping = 0;
 	}
 	reading.rehash();
-	reading.parent->num_is_current = false;
+	reading.parent->type &= ~CT_NUM_CURRENT;
 }
 
 void GrammarApplicator::splitMappings(TagList mappings, Cohort &cohort, Reading &reading, bool mapped) {

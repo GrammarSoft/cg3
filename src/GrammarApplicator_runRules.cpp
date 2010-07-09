@@ -856,7 +856,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow &current, uint32
 				if (!(rule.flags & RF_NOITERATE) && section_max_count != 1) {
 					section_did_something = true;
 				}
-				cohort->num_is_current = false;
+				cohort->type &= ~CT_NUM_CURRENT;
 			}
 
 			if (delimited) {

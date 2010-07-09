@@ -33,8 +33,6 @@
 namespace CG3 {
 
 Cohort::Cohort(SingleWindow *p) :
-num_is_current(false),
-dep_done(false),
 type(0),
 global_number(0),
 local_number(0),
@@ -99,7 +97,7 @@ void Cohort::appendReading(Reading *read) {
 	if (read->number == 0) {
 		read->number = (uint32_t)readings.size();
 	}
-	num_is_current = false;
+	type &= ~CT_NUM_CURRENT;
 }
 
 Reading* Cohort::allocateAppendReading() {
@@ -108,12 +106,12 @@ Reading* Cohort::allocateAppendReading() {
 	if (read->number == 0) {
 		read->number = (uint32_t)readings.size();
 	}
-	num_is_current = false;
+	type &= ~CT_NUM_CURRENT;
 	return read;
 }
 
 void Cohort::updateMinMax() {
-	if (num_is_current) {
+	if (type & CT_NUM_CURRENT) {
 		return;
 	}
 	num_min.clear();
@@ -129,7 +127,7 @@ void Cohort::updateMinMax() {
 			}
 		}
 	}
-	num_is_current = true;
+	type |= CT_NUM_CURRENT;
 }
 
 int32_t Cohort::getMin(uint32_t key) {
