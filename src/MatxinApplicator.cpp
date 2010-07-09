@@ -613,7 +613,9 @@ int MatxinApplicator::printReading(Reading *reading, UFILE *output, int ischunk,
 			}
 			else if (tag->tag[0] == '&') {
 				tags += '[';
-				tags += ux_substr(tag->tag, 2, u_strlen(tag->tag));
+				UChar *buf = ux_substr(tag->tag, 2, u_strlen(tag->tag));
+				tags += buf;
+				delete[] buf;
 				tags += ']';
 			}
 			else if (tag->type & T_MAPPING) {
@@ -631,7 +633,9 @@ int MatxinApplicator::printReading(Reading *reading, UFILE *output, int ischunk,
 	if (ischunk) {
 		u_fprintf(output, "<CHUNK ord='%d' alloc='%d'", ord, alloc);
 		if (!syntags.empty()) {
-			u_fprintf(output, " si='%S'", ux_substr(syntags.c_str(), 0, syntags.size()-1));
+			UChar *buf = ux_substr(syntags.c_str(), 0, syntags.size()-1);
+			u_fprintf(output, " si='%S'", buf);
+			delete[] buf;
 		}
 		u_fprintf(output, ">\n  <NODE");
 	} else {
@@ -642,7 +646,9 @@ int MatxinApplicator::printReading(Reading *reading, UFILE *output, int ischunk,
 		u_fprintf(output, " mi='%S'", tags.c_str());
 	}
 	if (!syntags.empty()) {
-		u_fprintf(output, " si='%S'", ux_substr(syntags.c_str(), 0, syntags.size()-1));
+		UChar *buf = ux_substr(syntags.c_str(), 0, syntags.size()-1);
+		u_fprintf(output, " si='%S'", buf);
+		delete[] buf;
 	}
 
 	// ord: order in source sentence. local_number is x in the #x->y dependency output so we use that
@@ -683,6 +689,7 @@ int MatxinApplicator::printReading(Reading *reading, UFILE *output, int ischunk,
 					bf[first] = static_cast<UChar>(u_toupper(bf[first]));
 				} 
 			}
+			delete[] wf;
 			wf = 0;
 		} // if (wordform_case)
 		
@@ -694,6 +701,7 @@ int MatxinApplicator::printReading(Reading *reading, UFILE *output, int ischunk,
 			u_fprintf(output, " lem='%S'", bf);
 		}
 						
+		delete[] bf;
 		bf = 0;
                 // Tag::printTagRaw(output, single_tags[reading->baseform]);
 	}
@@ -803,9 +811,10 @@ void MatxinApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 		
 		if(print_word_forms == true) {
 			UChar *wf = single_tags[cohort->wordform]->tag;
-			// Lop off the initial and final '"' characters 
-			u_fprintf(output, " form='%S'", ux_substr(wf, 2, u_strlen(wf)-2));
-			wf = 0;
+			// Lop off the initial and final '"' characters
+			wf = ux_substr(wf, 2, u_strlen(wf)-2);
+			u_fprintf(output, " form='%S'", wf);
+			delete[] wf;
 		}
 				
 		u_fprintf(output, ">");
