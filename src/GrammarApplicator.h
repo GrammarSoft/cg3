@@ -152,6 +152,7 @@ namespace CG3 {
 		void resetIndexes();
 	
 		Tag *addTag(const UChar *tag);
+		Tag *addTag(const UString& txt);
 		Tag *makeBaseFromWord(uint32_t tag);
 		Tag *makeBaseFromWord(Tag *tag);
 

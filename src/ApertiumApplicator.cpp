@@ -297,34 +297,31 @@ int ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 			cCohort->global_number = gWindow->cohort_counter++;
 
 			// Read in the word form
-			UChar *wordform = 0;
+			UString wordform;
 
-			wordform = ux_append(wordform, '"');
+			wordform += '"';
 			// We encapsulate wordforms within '"<' and
 			// '>"' for internal processing.
-			wordform = ux_append(wordform, '<');
+			wordform += '<';
 			while (inchar != '/') {
 				inchar = u_fgetc_wrapper(input); 
 
 				if (inchar != '/') {
-					wordform = ux_append(wordform, inchar);
+					wordform += inchar;
 				}
 			}
 			
-			wordform = ux_append(wordform, '>');
-			wordform = ux_append(wordform, '"');
+			wordform += '>';
+			wordform += '"';
 			
 			//u_fprintf(output, "# %S\n", wordform);
 			cCohort->wordform = addTag(wordform)->hash;
-			delete[] wordform;
-			wordform = 0;
 			lCohort = cCohort;
 			lReading = 0;
-			wordform = 0;
 			numCohorts++;
 
 			// We're now at the beginning of the readings
-			UChar *current_reading = 0;
+			UString current_reading;
 			Reading *cReading = 0;
 
 			// Read in the readings	
@@ -347,14 +344,12 @@ int ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 					lReading = cReading;
 					numReadings++;
 
-					delete[] current_reading;
-					current_reading = 0;
+					current_reading.clear();
 
 					incohort = false;
 				}
 
 				if (inchar == '/') { // Reached end of reading
-	
 					Reading *cReading = 0;
 					cReading = new Reading(cCohort);
 					cReading->wordform = cCohort->wordform;
@@ -367,15 +362,12 @@ int ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 					lReading = cReading;
 					numReadings++;
 	
-					delete[] current_reading;
-					current_reading = 0;
+					current_reading.clear();
 					continue; // while not $
 				}
 	
-				current_reading = ux_append(current_reading, inchar);
+				current_reading += inchar;
 			} // end while not $
-			delete[] current_reading;
-			current_reading = 0;
 
 			if (!cReading->baseform) {
 				u_fprintf(ux_stderr, "Warning: Line %u had no valid baseform.\n", numLines);
@@ -443,12 +435,12 @@ int ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
  *   sellout<vblex><imp><p2><sg># ouzh+indirect<prn><obj><p3><m><sg>
  *   be# happy<vblex><inf> (for chaining cg-proc)
  */
-void ApertiumApplicator::processReading(Reading *cReading, UChar *reading_string) {
-	UChar *m = reading_string;
-	UChar *c = reading_string;
-	UChar *tmptag = 0;
-	UChar *base = 0;
-	UChar *suf = 0;
+void ApertiumApplicator::processReading(Reading *cReading, const UChar *reading_string) {
+	const UChar *m = reading_string;
+	const UChar *c = reading_string;
+	UString tmptag;
+	UString base;
+	UString suf;
 	bool tags = false; 
 	bool unknown = false;
 	bool multi = false;
@@ -479,14 +471,14 @@ void ApertiumApplicator::processReading(Reading *cReading, UChar *reading_string
 		} 
 
 		if (multi) {
-			suf = ux_append(suf, *m);
+			suf += *m;
 		}
 
-		m++;
+		++m;
 	}
 
 	// We encapsulate baseforms within '"' for internal processing.
-	base = ux_append(base, '"');
+	base += '"';
 	while (*c != '\0') {
 		if (*c == '*') { // Initial asterisk means word is unknown, and 
 				// should just be copied in the output.
@@ -495,22 +487,20 @@ void ApertiumApplicator::processReading(Reading *cReading, UChar *reading_string
 		if (*c == '<' || *c == '\0') {
 			break;
 		}
-		base = ux_append(base, *c);
-		c++;
+		base += *c;
+		++c;
 	}
 
-	if (suf != 0) { // Append the multiword suffix to the baseform
+	if (!suf.empty()) { // Append the multiword suffix to the baseform
 		       // (this is normally done in pretransfer)
 
-		base = ux_append(base, suf);
+		base += suf;
 	}
-	base = ux_append(base, '"');
+	base += '"';
 
-//	u_fprintf(ux_stderr, ">> b: %S s: %S\n", base, suf);
+//	u_fprintf(ux_stderr, ">> b: %S s: %S\n", base.c_str(), suf.c_str());
 
 	uint32_t tag = addTag(base)->hash;
-	delete[] base;
-	base = 0;
 	cReading->baseform = tag;
 	addTagToReading(*cReading, tag);
 
@@ -531,7 +521,7 @@ void ApertiumApplicator::processReading(Reading *cReading, UChar *reading_string
 			multi = false;
 			joiner = true;
 			joined = true;
-			join_idx++;
+			++join_idx;
 		}
 		if (*c == '#' && intag == false) { // If we're outside a tag, and we see #, don't append
 			multi = true;
@@ -548,10 +538,9 @@ void ApertiumApplicator::processReading(Reading *cReading, UChar *reading_string
 
 			if (joiner == true) {
 				uint32_t tag = addTag(tmptag)->hash;
-				addTagToReading(*cReading, tag); // Add the baseform to the tag
+				addTagToReading(*cReading, tag); // Add the baseform to the reading
 
-				delete[] tmptag;
-				tmptag = 0;
+				tmptag.clear();
 				joiner = false;
 				c++;
 				continue;
@@ -573,22 +562,19 @@ void ApertiumApplicator::processReading(Reading *cReading, UChar *reading_string
 			intag = false;
 
 			uint32_t shufty = addTag(tmptag)->hash;
-			UChar *newtag = 0;
+			UString newtag;
 			if (cReading->tags.find(shufty) != cReading->tags.end()) {
-				newtag = ux_append(newtag, '&');
-				newtag = ux_append(newtag, (UChar)join_idx);
-				newtag = ux_append(newtag, tmptag);
+				newtag += '&';
+				newtag += UChar(join_idx);
+				newtag += tmptag;
 			}
 			else {
-				newtag = ux_append(newtag, tmptag);
+				newtag += tmptag;
 			}
 			uint32_t tag = addTag(newtag)->hash;
-			delete[] newtag;
-			newtag = 0;
-			addTagToReading(*cReading, tag); // Add the baseform to the tag
+			addTagToReading(*cReading, tag); // Add the baseform to the reading
 
-			delete[] tmptag;
-			tmptag = 0;
+			tmptag.clear();
 			joiner = false;
 			c++;
 			continue;
@@ -599,7 +585,7 @@ void ApertiumApplicator::processReading(Reading *cReading, UChar *reading_string
 			continue;
 		}
 
-		tmptag = ux_append(tmptag, *c);
+		tmptag += *c;
 		c++;
 	}
 	
@@ -607,6 +593,10 @@ void ApertiumApplicator::processReading(Reading *cReading, UChar *reading_string
 	join_idx = 48;
 
 	return;
+}
+
+void ApertiumApplicator::processReading(Reading *cReading, const UString& reading_string) {
+	return processReading(cReading, reading_string.c_str());
 }
 
 void ApertiumApplicator::printReading(Reading *reading, UFILE *output) {
