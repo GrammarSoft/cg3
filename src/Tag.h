@@ -87,10 +87,12 @@ namespace CG3 {
 		void parseTag(const UChar *to, UFILE *ux_stderr);
 		void parseTagRaw(const UChar *to);
 		UString toUString() const;
-		void parseNumeric();
 
 		uint32_t rehash();
 		void markUsed();
+
+	private:
+		void parseNumeric();
 	};
 
 	struct compare_Tag {
