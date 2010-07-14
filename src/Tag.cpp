@@ -38,7 +38,6 @@ hash(0),
 plain_hash(0),
 number(0),
 seed(0),
-tag(0),
 regexp(0)
 {
 	#ifdef CG_TRACE_OBJECTS
@@ -51,9 +50,6 @@ Tag::~Tag() {
 	std::cerr << "OBJECT: " << __PRETTY_FUNCTION__ << std::endl;
 	#endif
 
-	delete[] tag;
-	tag = 0;
-
 	if (regexp) {
 		uregex_close(regexp);
 		regexp = 0;
@@ -63,7 +59,7 @@ Tag::~Tag() {
 void Tag::parseTag(const UChar *to, UFILE *ux_stderr) {
 	type = 0;
 
-	if (u_strlen(to)) {
+	if (to && to[0]) {
 		const UChar *tmp = to;
 		while (tmp[0] && (tmp[0] == '!' || tmp[0] == '^')) {
 			if (tmp[0] == '!') {
@@ -131,49 +127,50 @@ void Tag::parseTag(const UChar *to, UFILE *ux_stderr) {
 			}
 		}
 
-		tag = new UChar[length+8];
-		u_strncpy(tag, tmp, length);
-		tag[length] = 0;
-
-		UChar *utag = &gbuffers[0][0];
-		ux_unEscape(utag, tag);
-		if (utag[0] == 0 || u_strlen(utag) == 0) {
-			u_fprintf(ux_stderr, "Error: Parsing tag %S resulted in an empty tag - cannot continue!\n", tag);
+		for (size_t i=0 ; tmp[i] != 0 && i < length ; ++i) {
+			if (tmp[i] == '\\') {
+				++i;
+			}
+			if (tmp[i] == 0) {
+				break;
+			}
+			tag += tmp[i];
+		}
+		if (tag.empty()) {
+			u_fprintf(ux_stderr, "Error: Parsing tag %S resulted in an empty tag - cannot continue!\n", tag.c_str());
 			CG3Quit(1);
 		}
 
-		u_strcpy(tag, utag);
-		utag = 0;
 		comparison_hash = hash_sdbm_uchar(tag);
 
-		if (tag && tag[0] == '<' && tag[length-1] == '>') {
+		if (!tag.empty() && tag[0] == '<' && tag[length-1] == '>') {
 			parseNumeric();
 		}
 
-		if (u_strcmp(tag, stringbits[S_ASTERIK].getTerminatedBuffer()) == 0) {
+		if (u_strcmp(tag.c_str(), stringbits[S_ASTERIK].getTerminatedBuffer()) == 0) {
 			type |= T_ANY;
 		}
-		else if (u_strcmp(tag, stringbits[S_UU_LEFT].getTerminatedBuffer()) == 0) {
+		else if (u_strcmp(tag.c_str(), stringbits[S_UU_LEFT].getTerminatedBuffer()) == 0) {
 			type |= T_PAR_LEFT;
 		}
-		else if (u_strcmp(tag, stringbits[S_UU_RIGHT].getTerminatedBuffer()) == 0) {
+		else if (u_strcmp(tag.c_str(), stringbits[S_UU_RIGHT].getTerminatedBuffer()) == 0) {
 			type |= T_PAR_RIGHT;
 		}
-		else if (u_strcmp(tag, stringbits[S_UU_TARGET].getTerminatedBuffer()) == 0) {
+		else if (u_strcmp(tag.c_str(), stringbits[S_UU_TARGET].getTerminatedBuffer()) == 0) {
 			type |= T_TARGET;
 		}
-		else if (u_strcmp(tag, stringbits[S_UU_MARK].getTerminatedBuffer()) == 0) {
+		else if (u_strcmp(tag.c_str(), stringbits[S_UU_MARK].getTerminatedBuffer()) == 0) {
 			type |= T_MARK;
 		}
-		else if (u_strcmp(tag, stringbits[S_UU_ATTACHTO].getTerminatedBuffer()) == 0) {
+		else if (u_strcmp(tag.c_str(), stringbits[S_UU_ATTACHTO].getTerminatedBuffer()) == 0) {
 			type |= T_ATTACHTO;
 		}
 
 		// ToDo: Add ICASE: REGEXP: and //r //ri //i to tags
 		if (type & T_REGEXP) {
-			if (u_strcmp(tag, stringbits[S_RXTEXT_ANY].getTerminatedBuffer()) == 0
-			|| u_strcmp(tag, stringbits[S_RXBASE_ANY].getTerminatedBuffer()) == 0
-			|| u_strcmp(tag, stringbits[S_RXWORD_ANY].getTerminatedBuffer()) == 0) {
+			if (u_strcmp(tag.c_str(), stringbits[S_RXTEXT_ANY].getTerminatedBuffer()) == 0
+			|| u_strcmp(tag.c_str(), stringbits[S_RXBASE_ANY].getTerminatedBuffer()) == 0
+			|| u_strcmp(tag.c_str(), stringbits[S_RXWORD_ANY].getTerminatedBuffer()) == 0) {
 				type |= T_REGEXP_ANY;
 				type &= ~T_REGEXP;
 			}
@@ -183,13 +180,13 @@ void Tag::parseTag(const UChar *to, UFILE *ux_stderr) {
 				status = U_ZERO_ERROR;
 
 				if (type & T_CASE_INSENSITIVE) {
-					regexp = uregex_open(tag, u_strlen(tag), UREGEX_CASE_INSENSITIVE, &pe, &status);
+					regexp = uregex_open(tag.c_str(), tag.length(), UREGEX_CASE_INSENSITIVE, &pe, &status);
 				}
 				else {
-					regexp = uregex_open(tag, u_strlen(tag), 0, &pe, &status);
+					regexp = uregex_open(tag.c_str(), tag.length(), 0, &pe, &status);
 				}
 				if (status != U_ZERO_ERROR) {
-					u_fprintf(ux_stderr, "Error: uregex_open returned %s trying to parse tag %S - cannot continue!\n", u_errorName(status), tag);
+					u_fprintf(ux_stderr, "Error: uregex_open returned %s trying to parse tag %S - cannot continue!\n", u_errorName(status), tag.c_str());
 					CG3Quit(1);
 				}
 			}
@@ -211,7 +208,7 @@ void Tag::parseTagRaw(const UChar *to) {
 	type = 0;
 	if (u_strlen(to)) {
 		const UChar *tmp = to;
-		uint32_t length = u_strlen(tmp);
+		size_t length = u_strlen(tmp);
 
 		if (tmp[0] && (tmp[0] == '"' || tmp[0] == '<')) {
 			if ((tmp[0] == '"' && tmp[length-1] == '"') || (tmp[0] == '<' && tmp[length-1] == '>')) {
@@ -227,19 +224,17 @@ void Tag::parseTagRaw(const UChar *to) {
 			}
 		}
 
-		tag = new UChar[length+1];
-		tag[length] = 0;
-		u_strncpy(tag, tmp, length);
+		tag.assign(tmp, length);
 
-		if (tag && tag[0] == '<' && tag[length-1] == '>') {
+		if (!tag.empty() && tag[0] == '<' && tag[length-1] == '>') {
 			parseNumeric();
 		}
-		if (tag && tag[0] == '#') {
-			if (u_sscanf(tag, "#%i->%i", &dep_self, &dep_parent) == 2 && dep_self != 0) {
+		if (!tag.empty() && tag[0] == '#') {
+			if (u_sscanf(tag.c_str(), "#%i->%i", &dep_self, &dep_parent) == 2 && dep_self != 0) {
 				type |= T_DEPENDENCY;
 			}
 			const UChar local_dep_unicode[] = {'#', '%', 'i', L'\u2192', '%', 'i', 0};
-			if (u_sscanf_u(tag, local_dep_unicode, &dep_self, &dep_parent) == 2 && dep_self != 0) {
+			if (u_sscanf_u(tag.c_str(), local_dep_unicode, &dep_self, &dep_parent) == 2 && dep_self != 0) {
 				type |= T_DEPENDENCY;
 			}
 		}
@@ -258,7 +253,7 @@ void Tag::parseNumeric() {
 	tkey[0] = 0;
 	top[0] = 0;
 	txval[0] = 0;
-	if (u_sscanf(tag, "<%[^<>=:!]%[<>=:!]%[-MAXIN0-9]>", &tkey, &top, &txval) == 3 && top[0] && u_strlen(top)) {
+	if (u_sscanf(tag.c_str(), "<%[^<>=:!]%[<>=:!]%[-MAXIN0-9]>", &tkey, &top, &txval) == 3 && top[0] && u_strlen(top)) {
 		int tval = 0;
 		int32_t rv = u_sscanf(txval, "%d", &tval);
 		if (txval[0] == 'M' && txval[1] == 'A' && txval[2] == 'X') {
@@ -364,8 +359,8 @@ uint32_t Tag::rehash() {
 	}
 
 	if (dump_hashes && dump_hashes_out) {
-		u_fprintf(dump_hashes_out, "DEBUG: Hash %u with seed %u for tag %S\n", hash, seed, tag);
-		u_fprintf(dump_hashes_out, "DEBUG: Plain hash %u with seed %u for tag %S\n", plain_hash, seed, tag);
+		u_fprintf(dump_hashes_out, "DEBUG: Hash %u with seed %u for tag %S\n", hash, seed, tag.c_str());
+		u_fprintf(dump_hashes_out, "DEBUG: Plain hash %u with seed %u for tag %S\n", plain_hash, seed, tag.c_str());
 	}
 
 	return hash;
@@ -375,12 +370,10 @@ void Tag::markUsed() {
 	type |= T_USED;
 }
 
-UChar *Tag::allocateUChars(uint32_t n) {
-	return new UChar[n];
-}
-
-UString Tag::toUString() const {
+UString Tag::toUString(bool escape) const {
 	UString str;
+	str.reserve(tag.length());
+
 	if (type & T_NEGATIVE) {
 		str += '!';
 	}
@@ -401,7 +394,17 @@ UString Tag::toUString() const {
 		str += ':';
 	}
 
-	str += tag;
+	if (escape) {
+		for (size_t i=0 ; i<tag.length() ; ++i) {
+			if (tag[i] == '\\' || tag[i] == '(' || tag[i] == ')' || tag[i] == ';' || tag[i] == '#') {
+				str += '\\';
+			}
+			str += tag[i];
+		}
+	}
+	else {
+		str + tag;
+	}
 
 	if (type & T_CASE_INSENSITIVE) {
 		str += 'i';

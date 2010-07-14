@@ -34,14 +34,14 @@ Tag *GrammarApplicator::makeBaseFromWord(uint32_t tag) {
 }
 
 Tag *GrammarApplicator::makeBaseFromWord(Tag *tag) {
-	size_t len = u_strlen(tag->tag);
+	const size_t len = tag->tag.length();
 	if (len < 5) {
 		return tag;
 	}
 	UChar *n = new UChar[len-1];
 	n[0] = n[len-3] = '"';
 	n[len-2] = 0;
-	u_strncpy(n+1, tag->tag+2, len-4);
+	u_strncpy(n+1, tag->tag.c_str()+2, len-4);
 	Tag *nt = addTag(n);
 	delete[] n;
 	return nt;
@@ -304,7 +304,7 @@ uint32_t GrammarApplicator::addTagToReading(Reading &reading, uint32_t utag, boo
 	Tag *tag = single_tags.find(utag)->second;
 
 	if (tag->type & T_VARSTRING && !regexgrps.empty()) {
-		UnicodeString tmp(tag->tag);
+		UnicodeString tmp(tag->tag.c_str(), tag->tag.length());
 		// Replace $1-$9 with their respective match groups
 		for (size_t i=0 ; i<regexgrps.size() ; ++i) {
 			tmp.findAndReplace(stringbits[S_VS1+i].getTerminatedBuffer(), regexgrps[i]);

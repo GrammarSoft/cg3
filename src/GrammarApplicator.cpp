@@ -187,7 +187,7 @@ void GrammarApplicator::disableStatistics() {
 Tag *GrammarApplicator::addTag(const UChar *txt) {
 	Taguint32HashMap::iterator it;
 	uint32_t thash = hash_sdbm_uchar(txt);
-	if ((it = single_tags.find(thash)) != single_tags.end() && it->second->tag && u_strcmp(it->second->tag, txt) == 0) {
+	if ((it = single_tags.find(thash)) != single_tags.end() && !it->second->tag.empty() && u_strcmp(it->second->tag.c_str(), txt) == 0) {
 		return it->second;
 	}
 
@@ -199,7 +199,7 @@ Tag *GrammarApplicator::addTag(const UChar *txt) {
 		uint32_t ih = hash + seed;
 		if ((it = single_tags.find(ih)) != single_tags.end()) {
 			Tag *t = it->second;
-			if (t->tag && u_strcmp(t->tag, tag->tag) == 0) {
+			if (t->tag == tag->tag) {
 				hash += seed;
 				delete tag;
 				break;
@@ -236,7 +236,7 @@ void GrammarApplicator::printReading(const Reading *reading, UFILE *output) {
 	u_fputc('\t', output);
 
 	if (reading->baseform) {
-		u_fprintf(output, "%S", single_tags.find(reading->baseform)->second->tag);
+		u_fprintf(output, "%S", single_tags.find(reading->baseform)->second->tag.c_str());
 		u_fputc(' ', output);
 	}
 
@@ -256,7 +256,7 @@ void GrammarApplicator::printReading(const Reading *reading, UFILE *output) {
 			continue;
 		}
 		if (!(tag->type & T_BASEFORM) && !(tag->type & T_WORDFORM)) {
-			u_fprintf(output, "%S", tag->tag);
+			u_fprintf(output, "%S", tag->tag.c_str());
 			u_fputc(' ', output);
 		}
 	}
@@ -322,7 +322,7 @@ void GrammarApplicator::printReading(const Reading *reading, UFILE *output) {
 		if (!reading->parent->relations.empty()) {
 			foreach (RelationCtn, reading->parent->relations, miter, miter_end) {
 				foreach (uint32Set, miter->second, siter, siter_end) {
-					u_fprintf(output, "R:%S:%u ", grammar->single_tags.find(miter->first)->second->tag, *siter);
+					u_fprintf(output, "R:%S:%u ", grammar->single_tags.find(miter->first)->second->tag.c_str(), *siter);
 				}
 			}
 		}
@@ -337,9 +337,9 @@ void GrammarApplicator::printReading(const Reading *reading, UFILE *output) {
 				if (r->type == K_ADDRELATION || r->type == K_SETRELATION || r->type == K_REMRELATION
 				|| r->type == K_ADDRELATIONS || r->type == K_SETRELATIONS || r->type == K_REMRELATIONS
 					) {
-						u_fprintf(output, "(%S", grammar->single_tags.find(r->maplist.front()->hash)->second->tag);
+						u_fprintf(output, "(%S", grammar->single_tags.find(r->maplist.front()->hash)->second->tag.c_str());
 						if (r->type == K_ADDRELATIONS || r->type == K_SETRELATIONS || r->type == K_REMRELATIONS) {
-							u_fprintf(output, ",%S", grammar->single_tags.find(r->sublist.front())->second->tag);
+							u_fprintf(output, ",%S", grammar->single_tags.find(r->sublist.front())->second->tag.c_str());
 						}
 						u_fprintf(output, ")");
 				}
@@ -367,7 +367,7 @@ void GrammarApplicator::printCohort(Cohort *cohort, UFILE *output) {
 		u_fputc(';', output);
 		u_fputc(' ', output);
 	}
-	u_fprintf(output, "%S", single_tags.find(cohort->wordform)->second->tag);
+	u_fprintf(output, "%S", single_tags.find(cohort->wordform)->second->tag.c_str());
 	u_fputc('\n', output);
 
 	mergeMappings(*cohort);

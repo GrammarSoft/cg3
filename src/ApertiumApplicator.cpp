@@ -601,14 +601,14 @@ void ApertiumApplicator::printReading(Reading *reading, UFILE *output) {
 
 	if (reading->baseform) {
 		// Lop off the initial and final '"' characters
-		UnicodeString bf(single_tags[reading->baseform]->tag+1, u_strlen(single_tags[reading->baseform]->tag)-2);
+		UnicodeString bf(single_tags[reading->baseform]->tag.c_str()+1, single_tags[reading->baseform]->tag.length()-2);
 
 		if (wordform_case) {
 			// Use surface/wordform case, eg. if lt-proc
 			// was called with "-w" option (which puts
 			// dictionary case on lemma/basefrom)
 			// Lop off the initial and final '"<>"' characters
-			UnicodeString wf(single_tags[reading->wordform]->tag+2, u_strlen(single_tags[reading->wordform]->tag)-4);
+			UnicodeString wf(single_tags[reading->wordform]->tag.c_str()+2, single_tags[reading->baseform]->tag.length()-4);
 			
 			int first = 0; // first occurrence of a lowercase character in baseform
 			for (; first<bf.length() ; ++first) {
@@ -672,15 +672,15 @@ void ApertiumApplicator::printReading(Reading *reading, UFILE *output) {
 		const Tag *tag = single_tags[*tter];
 		if (!(tag->type & T_BASEFORM) && !(tag->type & T_WORDFORM)) {
  			if (tag->tag[0] == '+') {
-				u_fprintf(output, "%S", tag->tag);	
+				u_fprintf(output, "%S", tag->tag.c_str());	
  			}
 			else if (tag->tag[0] == '&') {
-				UChar *buf = ux_substr(tag->tag, 2, u_strlen(tag->tag));
+				UChar *buf = ux_substr(tag->tag.c_str(), 2, tag->tag.length());
 				u_fprintf(output, "<%S>", buf);
 				delete[] buf;
  			}
  			else {
-				u_fprintf(output, "<%S>", tag->tag);	
+				u_fprintf(output, "<%S>", tag->tag.c_str());	
  			}
  		}
 	}
@@ -707,7 +707,7 @@ void ApertiumApplicator::printSingleWindow(SingleWindow *window, UFILE *output) 
 
 		if(print_word_forms == true) {
 			// Lop off the initial and final '"' characters 
-			UString wf(single_tags[cohort->wordform]->tag+2, u_strlen(single_tags[cohort->wordform]->tag)-4);
+			UString wf(single_tags[cohort->wordform]->tag.c_str()+2, single_tags[cohort->wordform]->tag.length()-4);
 			u_fprintf(output, "%S/", wf.c_str());
 		}
 

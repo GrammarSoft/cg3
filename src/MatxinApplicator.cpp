@@ -613,7 +613,7 @@ int MatxinApplicator::printReading(Reading *reading, UFILE *output, int ischunk,
 			}
 			else if (tag->tag[0] == '&') {
 				tags += '[';
-				UChar *buf = ux_substr(tag->tag, 2, u_strlen(tag->tag));
+				UChar *buf = ux_substr(tag->tag.c_str(), 2, tag->tag.length());
 				tags += buf;
 				delete[] buf;
 				tags += ']';
@@ -622,7 +622,7 @@ int MatxinApplicator::printReading(Reading *reading, UFILE *output, int ischunk,
 				syntags += tag->tag;
 				syntags += '.';
 			}
-			else if (*tag->tag != *CHUNK) {
+			else if (tag->tag[0] != *CHUNK) {
 				tags += '[';
 				tags += tag->tag;
 				tags += ']';
@@ -656,17 +656,17 @@ int MatxinApplicator::printReading(Reading *reading, UFILE *output, int ischunk,
 	u_fprintf(output, " ord='%u' alloc='%u'", reading->parent->local_number, alloc);
 
 	if (reading->baseform) {
-		UChar *bf = single_tags[reading->baseform]->tag;
+		UChar *bf = 0;
 		// Lop off the initial and final '"' characters
-		bf = ux_substr(bf, 1, u_strlen(bf)-1);
+		bf = ux_substr(single_tags[reading->baseform]->tag.c_str(), 1, single_tags[reading->baseform]->tag.length()-1);
 
 		if (wordform_case) {
 			// Use surface/wordform case, eg. if lt-proc
 			// was called with "-w" option (which puts
 			// dictionary case on lemma/basefrom)
-			UChar *wf = single_tags[reading->wordform]->tag;
+			UChar *wf = 0;
 			// Lop off the initial and final '"<>' characters
-			wf = ux_substr(wf, 2, u_strlen(wf)-2);
+			wf = ux_substr(single_tags[reading->wordform]->tag.c_str(), 2, single_tags[reading->wordform]->tag.length()-2);
 			
 			int first = 0; // first occurrence of a lowercase character in baseform
 			for (; first<u_strlen(bf); first++) {
@@ -740,11 +740,9 @@ void MatxinApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 		}
 		cohort = window->cohorts[c];
 
-		UChar *wf = single_tags[cohort->wordform]->tag;
 		// remove "< and >", +1 for space (trusting the deformatter) + what we've seen:
-		alloc[cohort->local_number+1] = u_strlen(wf)-4 + 1 + alloc[cohort->local_number];
+		alloc[cohort->local_number+1] = single_tags[cohort->wordform]->tag.length()-4 + 1 + alloc[cohort->local_number];
 		// TODO: we _could_ use cohort->text instead of 1, but cohort->text is removed by later matxin modules
-		wf = 0;
 
 		ischunk = 0;
 		// Add root (#x->0) and independent (#x->x) cohorts to the stack, all as CHUNK:
@@ -759,7 +757,7 @@ void MatxinApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 		Reading *reading = *rter;
 		for (uint32List::iterator tter = reading->tags_list.begin() ; tter != reading->tags_list.end() ; tter++) {
 			const Tag *tag = single_tags[*tter];
-			if(*tag->tag == *CHUNK) {
+			if (tag->tag[0] == *CHUNK) {
 				ischunk = 1;
 			}
 		}
@@ -810,9 +808,8 @@ void MatxinApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 		}
 		
 		if(print_word_forms == true) {
-			UChar *wf = single_tags[cohort->wordform]->tag;
 			// Lop off the initial and final '"' characters
-			wf = ux_substr(wf, 2, u_strlen(wf)-2);
+			UChar *wf = ux_substr(single_tags[cohort->wordform]->tag.c_str(), 2, single_tags[cohort->wordform]->tag.length()-2);
 			u_fprintf(output, " form='%S'", wf);
 			delete[] wf;
 		}
