@@ -78,15 +78,14 @@ namespace CG3 {
 		uint32_t plain_hash;
 		uint32_t number;
 		uint32_t seed;
-		UChar *tag;
+		UString tag;
 		mutable URegularExpression *regexp;
 
 		Tag();
 		~Tag();
-		UChar *allocateUChars(uint32_t n);
 		void parseTag(const UChar *to, UFILE *ux_stderr);
 		void parseTagRaw(const UChar *to);
-		UString toUString() const;
+		UString toUString(bool escape = false) const;
 
 		uint32_t rehash();
 		void markUsed();

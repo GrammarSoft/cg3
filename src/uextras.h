@@ -31,9 +31,6 @@ bool ux_isEmpty(const UChar *text);
 
 int ux_isSetOp(const UChar *it);
 
-bool ux_escape(UChar *target, const UChar *source);
-bool ux_unEscape(UChar *target, const UChar *source);
-
 UChar *ux_substr(const UChar *string, const size_t start, const size_t end);
 
 char *ux_dirname(const char *in);

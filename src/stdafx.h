@@ -133,11 +133,6 @@
 #include <unicode/uregex.h>
 #include <unicode/ubrk.h>
 
-#include "cycle.h"
-#include "macros.h"
-#include "inlines.h"
-#include "uextras.h"
-
 namespace CG3 {
 	typedef std::basic_string<UChar> UString;
 	typedef std::list<uint32_t> uint32List;
@@ -150,5 +145,10 @@ namespace CG3 {
 	typedef stdext::hash_map<uint32_t,uint32Set> uint32Setuint32HashMap;
 	typedef stdext::hash_map<uint32_t,uint32HashSet> uint32HashSetuint32HashMap;
 }
+
+#include "cycle.h"
+#include "macros.h"
+#include "inlines.h"
+#include "uextras.h"
 
 #endif

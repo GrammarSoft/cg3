@@ -82,9 +82,9 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 			fwrite(&i32tmp, sizeof(int32_t), 1, output);
 		}
 
-		if (t->tag) {
+		if (!t->tag.empty()) {
 			ucnv_reset(conv);
-			i32tmp = ucnv_fromUChars(conv, &cbuffers[0][0], CG3_BUFFER_SIZE-1, t->tag, u_strlen(t->tag), &err);
+			i32tmp = ucnv_fromUChars(conv, &cbuffers[0][0], CG3_BUFFER_SIZE-1, t->tag.c_str(), t->tag.length(), &err);
 			u32tmp = (uint32_t)htonl((uint32_t)i32tmp);
 			fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 			fwrite(&cbuffers[0][0], i32tmp, 1, output);

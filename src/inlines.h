@@ -146,6 +146,10 @@ inline uint32_t hash_sdbm_uchar(const UChar *str, uint32_t hash = 0, size_t len 
 	return SuperFastHash_uchar(str, hash, len);
 }
 
+inline uint32_t hash_sdbm_uchar(const UString& str, uint32_t hash = 0) {
+	return hash_sdbm_uchar(str.c_str(), hash, str.length());
+}
+
 inline uint32_t hash_sdbm_char(const char *str, uint32_t hash = 0, size_t len = 0) {
 	if (hash == 0) {
 		hash = CG3_HASH_SEED;
