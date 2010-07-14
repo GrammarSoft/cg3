@@ -106,27 +106,26 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 			ucnv_reset(conv);
 			fread(&cbuffers[0][0], 1, u32tmp, input);
 			i32tmp = ucnv_toUChars(conv, &gbuffers[0][0], CG3_BUFFER_SIZE-1, &cbuffers[0][0], u32tmp, &err);
-			t->tag = t->allocateUChars(i32tmp+1);
-			u_strcpy(t->tag, &gbuffers[0][0]);
+			t->tag = &gbuffers[0][0];
 		}
 		if (t->type & T_REGEXP) {
 			UParseError pe;
 			UErrorCode status = U_ZERO_ERROR;
 
 			if (t->type & T_CASE_INSENSITIVE) {
-				t->regexp = uregex_open(t->tag, u_strlen(t->tag), UREGEX_CASE_INSENSITIVE, &pe, &status);
+				t->regexp = uregex_open(t->tag.c_str(), t->tag.length(), UREGEX_CASE_INSENSITIVE, &pe, &status);
 			}
 			else {
-				t->regexp = uregex_open(t->tag, u_strlen(t->tag), 0, &pe, &status);
+				t->regexp = uregex_open(t->tag.c_str(), t->tag.length(), 0, &pe, &status);
 			}
 			if (status != U_ZERO_ERROR) {
-				u_fprintf(ux_stderr, "Error: uregex_open returned %s trying to parse tag %S - cannot continue!\n", u_errorName(status), t->tag);
+				u_fprintf(ux_stderr, "Error: uregex_open returned %s trying to parse tag %S - cannot continue!\n", u_errorName(status), t->tag.c_str());
 				CG3Quit(1);
 			}
 		}
 		grammar->single_tags[t->hash] = t;
 		grammar->single_tags_list[t->number] = t;
-		if (t->tag && t->tag[0] == '*' && u_strcmp(t->tag, stringbits[S_ASTERIK].getTerminatedBuffer()) == 0) {
+		if (!t->tag.empty() && t->tag[0] == '*' && u_strcmp(t->tag.c_str(), stringbits[S_ASTERIK].getTerminatedBuffer()) == 0) {
 			grammar->tag_any = t->hash;
 		}
 	}

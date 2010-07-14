@@ -72,40 +72,6 @@ int ux_isSetOp(const UChar *it) {
 	return retval;
 }
 
-bool ux_unEscape(UChar *target, const UChar *source) {
-	bool retval = false;
-	uint32_t length = u_strlen(source);
-	if (length > 0) {
-		uint32_t i=0,j=0;
-		for (;i<=length;i++,j++) {
-			if (source[i] == '\\') {
-				retval = true;
-				i++;
-			}
-			target[j] = source[i];
-		}
-		target[j+1] = 0;
-	}
-	return retval;
-}
-
-bool ux_escape(UChar *target, const UChar *source) {
-	bool retval = false;
-	uint32_t length = u_strlen(source);
-	if (length > 0) {
-		uint32_t i=0,j=0;
-		for (;i<=length;i++,j++) {
-			if (source[i] == '\\' || source[i] == '(' || source[i] == ')' || source[i] == ';' || source[i] == '#') {
-				target[j] = '\\';
-				j++;
-			}
-			target[j] = source[i];
-		}
-		target[j+1] = 0;
-	}
-	return retval;
-}
-
 UChar *ux_substr(const UChar *string, const size_t start, const size_t end) {
 	assert((size_t)u_strlen(string) >= end);
 	assert((size_t)u_strlen(string) >= start);

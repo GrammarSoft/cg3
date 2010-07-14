@@ -95,7 +95,7 @@ bool GrammarApplicator::doesTagMatchReading(const Reading &reading, const Tag &t
 			else {
 				const Tag &itag = *(single_tags.find(*mter)->second);
 				UErrorCode status = U_ZERO_ERROR;
-				uregex_setText(tag.regexp, itag.tag, u_strlen(itag.tag), &status);
+				uregex_setText(tag.regexp, itag.tag.c_str(), itag.tag.length(), &status);
 				if (status != U_ZERO_ERROR) {
 					u_fprintf(ux_stderr, "Error: uregex_setText(MatchSet) returned %s - cannot continue!\n", u_errorName(status));
 					CG3Quit(1);
@@ -142,7 +142,7 @@ bool GrammarApplicator::doesTagMatchReading(const Reading &reading, const Tag &t
 				const Tag &itag = *(single_tags.find(*mter)->second);
 				UErrorCode status = U_ZERO_ERROR;
 				status = U_ZERO_ERROR;
-				match = (u_strCaseCompare(tag.tag, u_strlen(tag.tag), itag.tag, u_strlen(itag.tag), U_FOLD_CASE_DEFAULT, &status) == 0);
+				match = (u_strCaseCompare(tag.tag.c_str(), tag.tag.length(), itag.tag.c_str(), itag.tag.length(), U_FOLD_CASE_DEFAULT, &status) == 0);
 				if (status != U_ZERO_ERROR) {
 					u_fprintf(ux_stderr, "Error: u_strCaseCompare() returned %s - cannot continue!\n", u_errorName(status));
 					CG3Quit(1);

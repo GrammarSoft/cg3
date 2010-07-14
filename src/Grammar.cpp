@@ -140,7 +140,7 @@ void Grammar::addSet(Set *to) {
 			positive->tags_set.erase((*iter)->hash);
 			positive->single_tags.erase(*iter);
 			positive->single_tags_hash.erase((*iter)->hash);
-			UString str = (*iter)->toUString();
+			UString str = (*iter)->toUString(true);
 			str.erase(str.find('^'), 1);
 			Tag *tag = allocateTag(str.c_str());
 			addTagToSet(tag, negative);
@@ -336,7 +336,7 @@ Tag *Grammar::allocateTag() {
 Tag *Grammar::allocateTag(const UChar *txt, bool raw) {
 	Taguint32HashMap::iterator it;
 	uint32_t thash = hash_sdbm_uchar(txt);
-	if ((it = single_tags.find(thash)) != single_tags.end() && it->second->tag && u_strcmp(it->second->tag, txt) == 0) {
+	if ((it = single_tags.find(thash)) != single_tags.end() && !it->second->tag.empty() && u_strcmp(it->second->tag.c_str(), txt) == 0) {
 		return it->second;
 	}
 
@@ -354,7 +354,7 @@ Tag *Grammar::allocateTag(const UChar *txt, bool raw) {
 		uint32_t ih = hash + seed;
 		if ((it = single_tags.find(ih)) != single_tags.end()) {
 			Tag *t = it->second;
-			if (t->tag && u_strcmp(t->tag, tag->tag) == 0) {
+			if (t->tag == tag->tag) {
 				hash += seed;
 				delete tag;
 				break;
@@ -377,7 +377,7 @@ Tag *Grammar::allocateTag(const UChar *txt, bool raw) {
 }
 
 void Grammar::addTagToCompositeTag(Tag *simpletag, CompositeTag *tag) {
-	if (simpletag && simpletag->tag) {
+	if (simpletag && !simpletag->tag.empty()) {
 		tag->addTag(simpletag);
 	}
 	else {

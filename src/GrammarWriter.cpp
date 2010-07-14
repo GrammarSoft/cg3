@@ -383,7 +383,7 @@ void GrammarWriter::printContextualTest(UFILE *to, const ContextualTest &test) {
 			u_fprintf(to, "?");
 		}
 		if (test.pos & POS_RELATION) {
-			u_fprintf(to, "r:%S", grammar->single_tags.find(test.relation)->second->tag);
+			u_fprintf(to, "r:%S", grammar->single_tags.find(test.relation)->second->tag.c_str());
 		}
 
 		u_fprintf(to, " ");
@@ -406,7 +406,7 @@ void GrammarWriter::printContextualTest(UFILE *to, const ContextualTest &test) {
 }
 
 void GrammarWriter::printTag(UFILE *to, const Tag &tag) {
-	UString str = tag.toUString();
+	UString str = tag.toUString(true);
 	u_file_write(str.c_str(), str.length(), to);
 }
 
