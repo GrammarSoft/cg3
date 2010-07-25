@@ -303,7 +303,11 @@ void GrammarApplicator::reflowReading(Reading &reading) {
 uint32_t GrammarApplicator::addTagToReading(Reading &reading, uint32_t utag, bool rehash) {
 	Tag *tag = single_tags.find(utag)->second;
 
-	if (tag->type & T_VARSTRING && !regexgrps.empty()) {
+	if (tag->type & T_VARSTRING && regexgrps.empty()) {
+		u_fprintf(ux_stderr, "Warning: addTagToReading() cannot add a variable string tag when nothing is captured!\n");
+		u_fflush(ux_stderr);
+	}
+	else if (tag->type & T_VARSTRING) {
 		UnicodeString tmp(tag->tag.c_str(), tag->tag.length());
 		// Replace $1-$9 with their respective match groups
 		for (size_t i=0 ; i<regexgrps.size() ; ++i) {

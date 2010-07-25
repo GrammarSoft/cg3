@@ -245,6 +245,9 @@ void GrammarApplicator::printReading(const Reading *reading, UFILE *output) {
 		if ((!show_end_tags && *tter == endtag) || *tter == begintag) {
 			continue;
 		}
+		if (*tter == reading->baseform || *tter == reading->wordform) {
+			continue;
+		}
 		if (!ordered) {
 			if (used_tags.find(*tter) != used_tags.end()) {
 				continue;
@@ -255,10 +258,8 @@ void GrammarApplicator::printReading(const Reading *reading, UFILE *output) {
 		if (tag->type & T_DEPENDENCY && has_dep && !dep_original) {
 			continue;
 		}
-		if (!(tag->type & T_BASEFORM) && !(tag->type & T_WORDFORM)) {
-			u_fprintf(output, "%S", tag->tag.c_str());
-			u_fputc(' ', output);
-		}
+		u_fprintf(output, "%S", tag->tag.c_str());
+		u_fputc(' ', output);
 	}
 
 	if (has_dep) {

@@ -310,7 +310,6 @@ int ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 					wordform += inchar;
 				}
 			}
-			
 			wordform += '>';
 			wordform += '"';
 			
