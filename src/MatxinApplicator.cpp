@@ -670,7 +670,7 @@ int MatxinApplicator::printReading(Reading *reading, UFILE *output, int ischunk,
 			
 			int first = 0; // first occurrence of a lowercase character in baseform
 			for (; first<u_strlen(bf); first++) {
-				if(u_islower(bf[first]) != 0) {
+				if (u_islower(bf[first]) != 0) {
 					break;
 				}
 			}
@@ -807,7 +807,7 @@ void MatxinApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 			u_fprintf(ux_stderr, "Warning: Ambiguous cohort. The Matxin stream-format expects one reading per cohort, only printing the first reading.\n");
 		}
 		
-		if(print_word_forms == true) {
+		if (print_word_forms == true) {
 			// Lop off the initial and final '"' characters
 			UChar *wf = ux_substr(single_tags[cohort->wordform]->tag.c_str(), 2, single_tags[cohort->wordform]->tag.length()-2);
 			u_fprintf(output, " form='%S'", wf);

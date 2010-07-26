@@ -42,6 +42,8 @@ namespace CG3 {
 		bool wordform_case;
 		bool print_word_forms;
 		void setNullFlush(bool pNullFlush);
+
+		void testPR(UFILE *output);
 		
 	protected:
 		bool nullFlush;
