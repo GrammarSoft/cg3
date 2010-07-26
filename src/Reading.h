@@ -30,6 +30,9 @@
 
 namespace CG3 {
 	class Cohort;
+	class Reading;
+
+	typedef std::list<Reading*> ReadingList;
 
 	class Reading {
 	public:
@@ -54,21 +57,18 @@ namespace CG3 {
 		uint32SortedVector tags_plain;
 		uint32SortedVector tags_textual;
 		Taguint32HashMap tags_numerical;
+		ReadingList subs;
 
 		Reading(Cohort *p);
-		Reading(const Reading &r);
+		Reading(const Reading& r);
+		~Reading();
 
-		#ifdef CG_TRACE_OBJECTS
-		~Reading() {
-			std::cerr << "OBJECT: " << __PRETTY_FUNCTION__ << ": " << tags.size() << ", " << hit_by.size() << std::endl;
-		}
-		#endif
+		Reading *allocateReading(Cohort *p);
+		Reading *allocateReading(const Reading& r);
 
 		uint32_t rehash();
 		static bool cmp_number(Reading *a, Reading *b);
 	};
-
-	typedef std::list<Reading*> ReadingList;
 }
 
 #endif

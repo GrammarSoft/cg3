@@ -68,6 +68,28 @@ tags_numerical(r.tags_numerical)
 	#ifdef CG_TRACE_OBJECTS
 	std::cerr << "OBJECT: " << __PRETTY_FUNCTION__ << std::endl;
 	#endif
+
+	const_foreach (ReadingList, r.subs, iter, iter_end) {
+		subs.push_back(allocateReading(**iter));
+	}
+}
+
+Reading::~Reading() {
+	#ifdef CG_TRACE_OBJECTS
+		std::cerr << "OBJECT: " << __PRETTY_FUNCTION__ << ": " << tags.size() << ", " << hit_by.size() << std::endl;
+	#endif
+
+	foreach (ReadingList, subs, iter, iter_end) {
+		delete *iter;
+	}
+}
+
+Reading *Reading::allocateReading(Cohort *p) {
+	return new Reading(p);
+}
+
+Reading *Reading::allocateReading(const Reading& r) {
+	return new Reading(r);
 }
 
 uint32_t Reading::rehash() {

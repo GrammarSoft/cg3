@@ -465,7 +465,7 @@ void ApertiumApplicator::processReading(Reading *cReading, const UChar *reading_
 			multi = true;
 		}
 
-		if(*m == '+' && multi == true) { // If we see a '+' and we are in a multiword queue, we want to stop appending
+		if (*m == '+' && multi == true) { // If we see a '+' and we are in a multiword queue, we want to stop appending
 			multi = false;
 		} 
 
@@ -499,13 +499,17 @@ void ApertiumApplicator::processReading(Reading *cReading, const UChar *reading_
 
 //	u_fprintf(ux_stderr, ">> b: %S s: %S\n", base.c_str(), suf.c_str());
 
-	uint32_t tag = addTag(base)->hash;
-	cReading->baseform = tag;
-	addTagToReading(*cReading, tag);
+	TagVector taglist;
+
+	Tag *tag = addTag(base);
 
 	if (unknown) {
+		cReading->baseform = tag->hash;
+		addTagToReading(*cReading, tag->hash);
 		return;
 	}
+
+	taglist.push_back(tag);
 
 	bool joiner = false;
 	bool intag = false;
@@ -536,20 +540,22 @@ void ApertiumApplicator::processReading(Reading *cReading, const UChar *reading_
 			intag = true;
 
 			if (joiner == true) {
-				uint32_t tag = addTag(tmptag)->hash;
-				addTagToReading(*cReading, tag); // Add the baseform to the reading
+				UString bf;
+				bf += '"';
+				if (tmptag[0] == '+') {
+					bf.append(tmptag.begin()+1, tmptag.end());
+				}
+				else {
+					bf += tmptag;
+				}
+				bf += '"';
+				taglist.push_back(addTag(bf));
 
 				tmptag.clear();
 				joiner = false;
-				++c;
-				continue;
-
 			}
-			else {
-				++c;
-				continue;
-			}
-
+			++c;
+			continue;
 		}
 		else if (*c == '>') {
 			multi = false;
@@ -560,18 +566,7 @@ void ApertiumApplicator::processReading(Reading *cReading, const UChar *reading_
 			}
 			intag = false;
 
-			uint32_t shufty = addTag(tmptag)->hash;
-			UString newtag;
-			if (cReading->tags.find(shufty) != cReading->tags.end()) {
-				newtag += '&';
-				newtag += join_idx;
-				newtag += tmptag;
-			}
-			else {
-				newtag += tmptag;
-			}
-			uint32_t tag = addTag(newtag)->hash;
-			addTagToReading(*cReading, tag); // Add the baseform to the reading
+			taglist.push_back(addTag(tmptag));
 
 			tmptag.clear();
 			joiner = false;
@@ -579,7 +574,7 @@ void ApertiumApplicator::processReading(Reading *cReading, const UChar *reading_
 			continue;
 		}
 
-		if(multi == true) { // Multiword queue is not part of a tag
+		if (multi == true) { // Multiword queue is not part of a tag
 			++c;
 			continue;
 		}
@@ -587,15 +582,65 @@ void ApertiumApplicator::processReading(Reading *cReading, const UChar *reading_
 		tmptag += *c;
 		++c;
 	}
+
+	// Search from the back until we find a baseform, then add all tags from there until the end onto the reading
+	while (!taglist.empty()) {
+		Reading *reading = cReading;
+		reverse_foreach (TagVector, taglist, riter, riter_end) {
+			if ((*riter)->type & T_BASEFORM) {
+				// If current reading already has a baseform, instead create a sub-reading as target
+				if (reading->baseform) {
+					Reading *nr = reading->allocateReading(reading->parent);
+					reading->subs.push_back(nr);
+					reading = nr;
+				}
+				// Add tags
+				TagVector::iterator iter = riter.base();
+				for (--iter ; iter != taglist.end() ; ++iter) {
+					addTagToReading(*reading, (*iter)->hash);
+				}
+				// Remove tags from list
+				while (!taglist.empty() && !(taglist.back()->type & T_BASEFORM)) {
+					taglist.pop_back();
+				}
+				taglist.pop_back();
+			}
+		}
+	}
+
+	assert(taglist.empty() && "ApertiumApplicator::processReading() did not handle all tags.");
 }
 
 void ApertiumApplicator::processReading(Reading *cReading, const UString& reading_string) {
 	return processReading(cReading, reading_string.c_str());
 }
 
+void ApertiumApplicator::testPR(UFILE *output) {
+	std::string texts[] = {
+		"venir<vblex><imp><p2><sg>",
+		"venir<vblex><inf>+lo<prn><enc><p3><nt><sg>",
+		"be<vblex><inf># happy",
+		"sellout<vblex><imp><p2><sg># ouzh+indirect<prn><obj><p3><m><sg>",
+		"be# happy<vblex><inf>",
+	};
+	for (size_t i = 0 ; i<5 ; ++i) {
+		UString text(texts[i].begin(), texts[i].end());
+		Reading *reading = new Reading(0);
+		processReading(reading, text);
+		printReading(reading, output);
+		u_fprintf(output, "\n");
+		output = output;
+	}
+}
+
 void ApertiumApplicator::printReading(Reading *reading, UFILE *output) {
 	if (reading->noprint) {
 		return;
+	}
+
+	const_foreach (ReadingList, reading->subs, iter, iter_end) {
+		printReading(*iter, output);
+		u_fputc('+', output);
 	}
 
 	if (reading->baseform) {
@@ -671,7 +716,7 @@ void ApertiumApplicator::printReading(Reading *reading, UFILE *output) {
 		const Tag *tag = single_tags[*tter];
 		if (!(tag->type & T_BASEFORM) && !(tag->type & T_WORDFORM)) {
  			if (tag->tag[0] == '+') {
-				u_fprintf(output, "%S", tag->tag.c_str());	
+				u_fprintf(output, "%S", tag->tag.c_str());
  			}
 			else if (tag->tag[0] == '&') {
 				UChar *buf = ux_substr(tag->tag.c_str(), 2, tag->tag.length());
@@ -679,7 +724,7 @@ void ApertiumApplicator::printReading(Reading *reading, UFILE *output) {
 				delete[] buf;
  			}
  			else {
-				u_fprintf(output, "<%S>", tag->tag.c_str());	
+				u_fprintf(output, "<%S>", tag->tag.c_str());
  			}
  		}
 	}
@@ -704,7 +749,7 @@ void ApertiumApplicator::printSingleWindow(SingleWindow *window, UFILE *output) 
 		// Start of cohort 
 		u_fprintf(output, "^");
 
-		if(print_word_forms == true) {
+		if (print_word_forms == true) {
 			// Lop off the initial and final '"' characters 
 			UString wf(single_tags[cohort->wordform]->tag.c_str()+2, single_tags[cohort->wordform]->tag.length()-4);
 			u_fprintf(output, "%S/", wf.c_str());
