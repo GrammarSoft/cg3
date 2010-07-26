@@ -189,6 +189,15 @@ int main(int argc, char *argv[]) {
 
 	CG3::Grammar grammar;
 
+	/* Add a / in front to enable this test...
+	{
+		CG3::ApertiumApplicator a(0);
+		a.setGrammar(&grammar);
+		a.testPR(ux_stdout);
+		return 0;
+	}
+	//*/
+
 	CG3::IGrammarParser *parser = 0;
 	
 	if (optind == (argc - 3)) {
