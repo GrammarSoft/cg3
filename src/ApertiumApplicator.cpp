@@ -652,8 +652,8 @@ void ApertiumApplicator::printReading(Reading *reading, UFILE *output) {
 			// was called with "-w" option (which puts
 			// dictionary case on lemma/basefrom)
 			// Lop off the initial and final '"<>"' characters
-			UnicodeString wf(single_tags[reading->wordform]->tag.c_str()+2, single_tags[reading->baseform]->tag.length()-4);
-			
+			UnicodeString wf(single_tags[reading->wordform]->tag.c_str()+2, single_tags[reading->baseform]->tag.length()-2);
+
 			int first = 0; // first occurrence of a lowercase character in baseform
 			for (; first<bf.length() ; ++first) {
 				if (u_islower(bf[first]) != 0) {
@@ -669,13 +669,13 @@ void ApertiumApplicator::printReading(Reading *reading, UFILE *output) {
 				bf.toUpper(); // Perform a Unicode case folding to upper case -- Tino Didriksen
 			}
 			else if (firstupper) {
-				int32_t len = bf.length();
-				UChar *buf = bf.getBuffer(len);
-				buf[first] = static_cast<UChar>(u_toupper(bf[first]));
-				bf.releaseBuffer(len);
+				// static_cast<UChar>(u_toupper(bf[first])) gives strange output
+				UnicodeString range(bf, first, 1);
+				range.toUpper();
+				bf.setCharAt(first, range[0]);
 			}
 		} // if (wordform_case)
-		
+
 		u_fprintf(output, "%S", bf.getTerminatedBuffer());
 		
 		// Tag::printTagRaw(output, single_tags[reading->baseform]);
