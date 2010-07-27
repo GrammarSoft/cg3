@@ -647,12 +647,12 @@ void ApertiumApplicator::printReading(Reading *reading, UFILE *output) {
 		// Lop off the initial and final '"' characters
 		UnicodeString bf(single_tags[reading->baseform]->tag.c_str()+1, single_tags[reading->baseform]->tag.length()-2);
 
-		if (wordform_case) {
+		if (wordform_case && reading->subs.size() == 0) {
 			// Use surface/wordform case, eg. if lt-proc
 			// was called with "-w" option (which puts
 			// dictionary case on lemma/basefrom)
 			// Lop off the initial and final '"<>"' characters
-			UnicodeString wf(single_tags[reading->wordform]->tag.c_str()+2, single_tags[reading->baseform]->tag.length()-2);
+			UnicodeString wf(single_tags[reading->parent->wordform]->tag.c_str()+2, single_tags[reading->parent->wordform]->tag.length()-4);
 
 			int first = 0; // first occurrence of a lowercase character in baseform
 			for (; first<bf.length() ; ++first) {
