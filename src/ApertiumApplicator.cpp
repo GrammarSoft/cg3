@@ -605,7 +605,7 @@ void ApertiumApplicator::processReading(Reading *cReading, const UChar *reading_
 						UString newtag;
 						newtag += '&';
 						newtag += uniq_idx++;
-						newtag += single_tags[(*iter)->hash]->tag.c_str();
+						newtag += single_tags[(*iter)->hash]->tag;
 						addTagToReading(*reading, addTag(newtag)->hash);
 					}
 					else {
