@@ -35,7 +35,7 @@ function profile_revision($rev) {
 
 		echo "Applying...\n";
 		$start = microtime(true);
-		$time = shell_exec('head -n 2000 /home/tino/vislcg3/trunk/comparison/arboretum_stripped.txt | /usr/bin/time ./vislcg3 -C ISO-8859-1 -g dancg.cg3b 2>&1 | grep user | grep system');
+		$time = shell_exec('head -n 2000 /home/tino/vislcg3/trunk/comparison/arboretum_stripped.txt | u2i | /usr/bin/time ./vislcg3 -C ISO-8859-1 -g dancg.cg3b 2>&1 | grep user | grep system');
 		$times['apply'][$i]['microtime'] = microtime(true) - $start;
 		$times['apply'][$i]['time'] = trim($time);
 	}
@@ -45,7 +45,7 @@ function profile_revision($rev) {
 	$times['parse']['memory'] = trim($ticks);
 
 	echo "Applying via valgrind...\n";
-	$ticks = shell_exec('head -n 2000 /home/tino/vislcg3/trunk/comparison/arboretum_stripped.txt | valgrind ./vislcg3 -C ISO-8859-1 -g dancg.cg3b 2>&1 | grep "total heap usage"');
+	$ticks = shell_exec('head -n 2000 /home/tino/vislcg3/trunk/comparison/arboretum_stripped.txt | u2i | valgrind ./vislcg3 -C ISO-8859-1 -g dancg.cg3b 2>&1 | grep "total heap usage"');
 	$times['apply']['memory'] = trim($ticks);
 
 	echo "Parsing via callgrind...\n";
@@ -53,7 +53,7 @@ function profile_revision($rev) {
 	$times['parse']['ticks'] = trim($ticks);
 
 	echo "Applying via callgrind...\n";
-	$ticks = shell_exec('head -n 2000 /home/tino/vislcg3/trunk/comparison/arboretum_stripped.txt | valgrind --tool=callgrind --compress-strings=no --compress-pos=no --collect-jumps=yes --collect-systime=yes ./vislcg3 -C ISO-8859-1 -g dancg.cg3b 2>&1 | grep Collected');
+	$ticks = shell_exec('head -n 2000 /home/tino/vislcg3/trunk/comparison/arboretum_stripped.txt | u2i | valgrind --tool=callgrind --compress-strings=no --compress-pos=no --collect-jumps=yes --collect-systime=yes ./vislcg3 -C ISO-8859-1 -g dancg.cg3b 2>&1 | grep Collected');
 	$times['apply']['ticks'] = trim($ticks);
 
 	file_put_contents('/tmp/cg3-times-'.$rev.'.txt', var_export($times, true));
@@ -63,8 +63,8 @@ function profile_revision($rev) {
 	shell_exec('rm -rf '.$dir.' 2>&1 >/dev/null');
 }
 
-$revs = array(6242, 6170, 5932, 5930, 5926, 5918, 5839, 5810, 5773, 5729, 5431, 5129, 5042, 4879, 4779, 4545, 4513, 4493, 4474, 4410, 4292, 4031, 3991, 3896, 3852, 3800, 3689, 3682, 3617);
-$revs = array(6242);
+$revs = array(6268, 6242, 6170, 5932, 5930, 5926, 5918, 5839, 5810, 5773, 5729, 5431, 5129, 5042, 4879, 4779, 4545, 4513, 4493, 4474, 4410, 4292, 4031, 3991, 3896, 3852, 3800, 3689, 3682, 3617);
+$revs = array(6268);
 foreach ($revs as $rev) {
 	profile_revision($rev);
 }
