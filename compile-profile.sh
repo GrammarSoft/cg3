@@ -5,6 +5,7 @@ rm -fv gcov/*.gcno
 rm -fv gcov/vislcg3
 cd gcov
 g++ -DHAVE_BOOST -I~/tmp/boost_1_42_0 -pipe -Wall -Wextra -Wno-deprecated -O3 -g3 -fno-rtti -fprofile-arcs -ftest-coverage -ffor-scope -licuio -licuuc $(ls -1 ../src/*.cpp | egrep -v '/test_' | egrep -v '/cg_' | grep -v Apertium | grep -v Matxin | grep -v FormatConverter) -o vislcg3
+
 cd ..
 mkdir -p gprof
 rm -fv gprof/vislcg3
