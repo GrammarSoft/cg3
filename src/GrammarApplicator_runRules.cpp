@@ -31,6 +31,7 @@
 namespace CG3 {
 
 void GrammarApplicator::updateRuleToCohorts(Cohort& c, const uint32_t& rsit) {
+	// Check whether this rule is in the allowed rule list from cmdline flag --rule(s)
 	if (!valid_rules.empty() && valid_rules.find(rsit) == valid_rules.end()) {
 		return;
 	}
@@ -92,12 +93,12 @@ void intersectUpdate(const uint32SortedVector& first, const uint32Set& second, u
 	}
 }
 
-void GrammarApplicator::updateValidRules(const uint32SortedVector& rules, uint32Vector &intersects, const uint32_t& hash, Reading &reading) {
+void GrammarApplicator::updateValidRules(const uint32SortedVector& rules, uint32Vector& intersects, const uint32_t& hash, Reading& reading) {
 	uint32HashSetuint32HashMap::const_iterator it = grammar->rules_by_tag.find(hash);
 	if (it != grammar->rules_by_tag.end()) {
-		SingleWindow &current = *(reading.parent->parent);
-		size_t cvrz = current.valid_rules.size();
-		Cohort &c = *(reading.parent);
+		SingleWindow& current = *(reading.parent->parent);
+		const size_t cvrz = current.valid_rules.size();
+		Cohort& c = *(reading.parent);
 		const_foreach (uint32HashSet, (it->second), rsit, rsit_end) {
 			updateRuleToCohorts(c, *rsit);
 		}
@@ -107,7 +108,7 @@ void GrammarApplicator::updateValidRules(const uint32SortedVector& rules, uint32
 	}
 }
 
-void GrammarApplicator::indexSingleWindow(SingleWindow &current) {
+void GrammarApplicator::indexSingleWindow(SingleWindow& current) {
 	current.valid_rules.clear();
 
 	foreach (CohortVector, current.cohorts, iter, iter_end) {
@@ -124,7 +125,7 @@ void GrammarApplicator::indexSingleWindow(SingleWindow &current) {
 	}
 }
 
-uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow &current, uint32SortedVector &rules) {
+uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, uint32SortedVector& rules) {
 	uint32_t retval = RV_NOTHING;
 	bool section_did_something = false;
 	bool delimited = false;
@@ -138,11 +139,12 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow &current, uint32
 	foreach (uint32Vector, intersects, iter_rules, iter_rules_end) {
 		uint32_t j = (*iter_rules);
 
+		// Check whether this rule is in the allowed rule list from cmdline flag --rule(s)
 		if (!valid_rules.empty() && valid_rules.find(j) == valid_rules.end()) {
 			continue;
 		}
 
-		const Rule &rule = *(grammar->rule_by_line.find(j)->second);
+		const Rule& rule = *(grammar->rule_by_line.find(j)->second);
 
 		ticks tstamp(gtimer);
 		KEYWORDS type = rule.type;
@@ -165,7 +167,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow &current, uint32
 			tstamp = getticks();
 		}
 
-		const Set &set = *(grammar->sets_by_contents.find(rule.target)->second);
+		const Set& set = *(grammar->sets_by_contents.find(rule.target)->second);
 
 		// ToDo: Make better use of rules_by_tag
 
@@ -363,7 +365,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow &current, uint32
 			bool readings_changed = false;
 
 			foreach (ReadingList, cohort->readings, rter2, rter2_end) {
-				Reading &reading = **rter2;
+				Reading& reading = **rter2;
 				bool good = reading.matched_tests;
 				const uint32_t state_hash = reading.hash;
 
@@ -883,7 +885,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow &current, uint32
 	return retval;
 }
 
-int GrammarApplicator::runGrammarOnSingleWindow(SingleWindow &current) {
+int GrammarApplicator::runGrammarOnSingleWindow(SingleWindow& current) {
 	if (!grammar->before_sections.empty() && !no_before_sections) {
 		uint32_t rv = runRulesOnSingleWindow(current, runsections[-1]);
 		if (rv & RV_DELIMITED) {

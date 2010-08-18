@@ -29,7 +29,7 @@
 
 namespace CG3 {
 
-Reading *GrammarApplicator::initEmptyCohort(Cohort &cCohort) {
+Reading *GrammarApplicator::initEmptyCohort(Cohort& cCohort) {
 	Reading *cReading = new Reading(&cCohort);
 	cReading->wordform = cCohort.wordform;
 	if (allow_magic_readings) {

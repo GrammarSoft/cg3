@@ -30,7 +30,7 @@ namespace CG3 {
 
 	class BinaryGrammar : public IGrammarParser {
 	public:
-		BinaryGrammar(Grammar &result, UFILE *ux_err);
+		BinaryGrammar(Grammar& result, UFILE *ux_err);
 
 		int writeBinaryGrammar(FILE *output);
 		int readBinaryGrammar(FILE *input);

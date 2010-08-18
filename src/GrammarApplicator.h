@@ -157,11 +157,11 @@ namespace CG3 {
 		Tag *makeBaseFromWord(Tag *tag);
 
 		void updateRuleToCohorts(Cohort& c, const uint32_t& rsit);
-		void indexSingleWindow(SingleWindow &current);
+		void indexSingleWindow(SingleWindow& current);
 		int runGrammarOnWindow();
-		int runGrammarOnSingleWindow(SingleWindow &current);
-		void updateValidRules(const uint32SortedVector& rules, uint32Vector &intersects, const uint32_t& hash, Reading &reading);
-		uint32_t runRulesOnSingleWindow(SingleWindow &current, uint32SortedVector &rules);
+		int runGrammarOnSingleWindow(SingleWindow& current);
+		void updateValidRules(const uint32SortedVector& rules, uint32Vector& intersects, const uint32_t& hash, Reading& reading);
+		uint32_t runRulesOnSingleWindow(SingleWindow& current, uint32SortedVector& rules);
 
 		Cohort *runSingleTest(Cohort *cohort, const ContextualTest *test, bool *brk, bool *retval, Cohort **deep = 0, Cohort *origin = 0);
 		Cohort *runSingleTest(SingleWindow *sWindow, size_t i, const ContextualTest *test, bool *brk, bool *retval, Cohort **deep = 0, Cohort *origin = 0);
@@ -170,27 +170,27 @@ namespace CG3 {
 		Cohort *runParenthesisTest(SingleWindow *sWindow, const Cohort *current, const ContextualTest *test, Cohort **deep = 0, Cohort *origin = 0);
 		Cohort *runRelationTest(SingleWindow *sWindow, Cohort *current, const ContextualTest *test, Cohort **deep = 0, Cohort *origin = 0);
 
-		bool doesTagMatchReading(const Reading &reading, const Tag &tag, bool unif_mode = false);
-		bool doesSetMatchReading_tags(const Reading &reading, const Set &theset, bool unif_mode = false);
-		bool doesSetMatchReading(Reading &reading, const uint32_t set, bool bypass_index = false, bool unif_mode = false);
-		bool doesSetMatchCohortNormal(Cohort &cohort, const uint32_t set, uint32_t options = 0);
-		bool doesSetMatchCohortCareful(const Cohort &cohort, const uint32_t set, uint32_t options = 0);
+		bool doesTagMatchReading(const Reading& reading, const Tag& tag, bool unif_mode = false);
+		bool doesSetMatchReading_tags(const Reading& reading, const Set& theset, bool unif_mode = false);
+		bool doesSetMatchReading(Reading& reading, const uint32_t set, bool bypass_index = false, bool unif_mode = false);
+		bool doesSetMatchCohortNormal(Cohort& cohort, const uint32_t set, uint32_t options = 0);
+		bool doesSetMatchCohortCareful(const Cohort& cohort, const uint32_t set, uint32_t options = 0);
 
 		bool statistics;
 		ticks gtimer;
 
 		Cohort *delimitAt(SingleWindow& current, Cohort *cohort);
-		void reflowReading(Reading &reading);
-		uint32_t addTagToReading(Reading &reading, uint32_t tag, bool rehash = true);
-		void delTagFromReading(Reading &reading, uint32_t tag);
-		void splitMappings(TagList mappings, Cohort &cohort, Reading &reading, bool mapped = false);
-		void mergeMappings(Cohort &cohort);
+		void reflowReading(Reading& reading);
+		uint32_t addTagToReading(Reading& reading, uint32_t tag, bool rehash = true);
+		void delTagFromReading(Reading& reading, uint32_t tag);
+		void splitMappings(TagList mappings, Cohort& cohort, Reading& reading, bool mapped = false);
+		void mergeMappings(Cohort& cohort);
 		bool isChildOf(const Cohort *child, const Cohort *parent);
 		bool wouldParentChildLoop(const Cohort *parent, const Cohort *child);
 		bool wouldParentChildCross(const Cohort *parent, const Cohort *child);
-		bool attachParentChild(Cohort &parent, Cohort &child, bool allowloop = false, bool allowcrossing = false);
+		bool attachParentChild(Cohort& parent, Cohort& child, bool allowloop = false, bool allowcrossing = false);
 
-		Reading *initEmptyCohort(Cohort &cohort);
+		Reading *initEmptyCohort(Cohort& cohort);
 	};
 }
 

@@ -36,7 +36,7 @@ namespace CG3 {
 	public:
 		bool statistics;
 	
-		GrammarWriter(Grammar &res, UFILE *ux_err);
+		GrammarWriter(Grammar& res, UFILE *ux_err);
 		~GrammarWriter();
 
 		int writeGrammar(UFILE *output);
@@ -46,10 +46,10 @@ namespace CG3 {
 		uint32HashSet used_sets;
 		const Grammar *grammar;
 
-		void printTag(UFILE *out, const Tag &tag);
-		void printSet(UFILE *output, const Set &curset);
-		void printRule(UFILE *to, const Rule &rule);
-		void printContextualTest(UFILE *to, const ContextualTest &test);
+		void printTag(UFILE *out, const Tag& tag);
+		void printSet(UFILE *output, const Set& curset);
+		void printRule(UFILE *to, const Rule& rule);
+		void printContextualTest(UFILE *to, const ContextualTest& test);
 	};
 }
 

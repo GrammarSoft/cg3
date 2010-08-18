@@ -26,7 +26,7 @@
 
 namespace CG3 {
 
-TextualParser::TextualParser(Grammar &res, UFILE *ux_err) {
+TextualParser::TextualParser(Grammar& res, UFILE *ux_err) {
 	ux_stderr = ux_err;
 	result = &res;
 	filename = 0;

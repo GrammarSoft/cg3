@@ -121,7 +121,7 @@ uint32_t Set::rehash() {
 	return retval;
 }
 
-void Set::reindex(Grammar &grammar) {
+void Set::reindex(Grammar& grammar) {
 	type &= ~ST_SPECIAL;
 	type &= ~ST_CHILD_UNIFY;
 
@@ -167,7 +167,7 @@ void Set::reindex(Grammar &grammar) {
 	}
 }
 
-void Set::markUsed(Grammar &grammar) {
+void Set::markUsed(Grammar& grammar) {
 	type |= ST_USED;
 
 	if (sets.empty()) {

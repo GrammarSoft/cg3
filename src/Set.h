@@ -71,8 +71,8 @@ namespace CG3 {
 
 		uint32_t rehash();
 		void resetStatistics();
-		void reindex(Grammar &grammar);
-		void markUsed(Grammar &grammar);
+		void reindex(Grammar& grammar);
+		void markUsed(Grammar& grammar);
 	};
 
 	struct compare_Set {

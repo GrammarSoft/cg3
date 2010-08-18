@@ -96,7 +96,7 @@ Cohort *GrammarApplicator::runSingleTest(SingleWindow *sWindow, size_t i, const 
 	return runSingleTest(cohort, test, brk, retval, deep, origin);
 }
 
-Cohort *getCohortInWindow(SingleWindow *& sWindow, size_t position, const ContextualTest *test, int32_t &pos) {
+Cohort *getCohortInWindow(SingleWindow *& sWindow, size_t position, const ContextualTest *test, int32_t& pos) {
 	Cohort *cohort = 0;
 	pos = int32_t(position) + test->offset;
 	// ToDo: (NOT *) and (*C) tests can be cached
