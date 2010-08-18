@@ -789,7 +789,7 @@ void ApertiumApplicator::printSingleWindow(SingleWindow *window, UFILE *output) 
 	}
 }
 
-void ApertiumApplicator::mergeMappings(Cohort &cohort) {
+void ApertiumApplicator::mergeMappings(Cohort& cohort) {
 	// Only merge readings which are completely equal (including mapping tags)
 	// foo<N><Sg><Acc><@←OBJ>/foo<N><Sg><Acc><@←OBJ>
 	// => guovvamánnu<N><Sg><Acc><@←OBJ>

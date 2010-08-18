@@ -151,7 +151,7 @@ bool GrammarApplicator::wouldParentChildCross(const Cohort *parent, const Cohort
 	return false;
 }
 
-bool GrammarApplicator::attachParentChild(Cohort &parent, Cohort &child, bool allowloop, bool allowcrossing) {
+bool GrammarApplicator::attachParentChild(Cohort& parent, Cohort& child, bool allowloop, bool allowcrossing) {
 	parent.dep_self = parent.global_number;
 	child.dep_self = child.global_number;
 
@@ -278,7 +278,7 @@ void GrammarApplicator::reflowDependencyWindow(uint32_t max) {
 	}
 }
 
-void GrammarApplicator::reflowReading(Reading &reading) {
+void GrammarApplicator::reflowReading(Reading& reading) {
 	reading.tags.clear();
 	reading.tags_plain.clear();
 	reading.tags_textual.clear();
@@ -300,7 +300,7 @@ void GrammarApplicator::reflowReading(Reading &reading) {
 	reading.rehash();
 }
 
-uint32_t GrammarApplicator::addTagToReading(Reading &reading, uint32_t utag, bool rehash) {
+uint32_t GrammarApplicator::addTagToReading(Reading& reading, uint32_t utag, bool rehash) {
 	Tag *tag = single_tags.find(utag)->second;
 
 	if (tag->type & T_VARSTRING && regexgrps.empty()) {
@@ -421,7 +421,7 @@ uint32_t GrammarApplicator::addTagToReading(Reading &reading, uint32_t utag, boo
 	return tag->hash;
 }
 
-void GrammarApplicator::delTagFromReading(Reading &reading, uint32_t utag) {
+void GrammarApplicator::delTagFromReading(Reading& reading, uint32_t utag) {
 	reading.tags_list.remove(utag);
 	reading.tags.erase(utag);
 	reading.tags_textual.erase(utag);
@@ -434,7 +434,7 @@ void GrammarApplicator::delTagFromReading(Reading &reading, uint32_t utag) {
 	reading.parent->type &= ~CT_NUM_CURRENT;
 }
 
-void GrammarApplicator::splitMappings(TagList mappings, Cohort &cohort, Reading &reading, bool mapped) {
+void GrammarApplicator::splitMappings(TagList mappings, Cohort& cohort, Reading& reading, bool mapped) {
 	if (reading.mapping) {
 		mappings.push_back(reading.mapping);
 		delTagFromReading(reading, reading.mapping->hash);
@@ -468,7 +468,7 @@ void GrammarApplicator::splitMappings(TagList mappings, Cohort &cohort, Reading 
 	reading.mapping = tag;
 }
 
-void GrammarApplicator::mergeMappings(Cohort &cohort) {
+void GrammarApplicator::mergeMappings(Cohort& cohort) {
 	std::map<uint32_t, ReadingList> mlist;
 	foreach (ReadingList, cohort.readings, iter, iter_end) {
 		Reading *r = *iter;

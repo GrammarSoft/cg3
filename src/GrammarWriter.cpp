@@ -26,7 +26,7 @@
 
 namespace CG3 {
 
-GrammarWriter::GrammarWriter(Grammar &res, UFILE *ux_err) {
+GrammarWriter::GrammarWriter(Grammar& res, UFILE *ux_err) {
 	statistics = false;
 	ux_stderr = ux_err;
 	grammar = &res;
@@ -36,7 +36,7 @@ GrammarWriter::~GrammarWriter() {
 	grammar = 0;
 }
 
-void GrammarWriter::printSet(UFILE *output, const Set &curset) {
+void GrammarWriter::printSet(UFILE *output, const Set& curset) {
 	if (used_sets.find(curset.hash) != used_sets.end()) {
 		return;
 	}
@@ -157,7 +157,7 @@ int GrammarWriter::writeGrammar(UFILE *output) {
 	RuleByLineMap rule_by_line;
 	rule_by_line.insert(grammar->rule_by_line.begin(), grammar->rule_by_line.end());
 	const_foreach (RuleByLineMap, rule_by_line, rule_iter, rule_iter_end) {
-		const Rule &r = *(rule_iter->second);
+		const Rule& r = *(rule_iter->second);
 		if (r.section == -1) {
 			if (!found) {
 				u_fprintf(output, "\nBEFORE-SECTIONS\n");
@@ -170,7 +170,7 @@ int GrammarWriter::writeGrammar(UFILE *output) {
 	const_foreach (uint32Vector, grammar->sections, isec, isec_end) {
 		found = false;
 		const_foreach (RuleByLineMap, rule_by_line, rule_iter, rule_iter_end) {
-			const Rule &r = *(rule_iter->second);
+			const Rule& r = *(rule_iter->second);
 			if (r.section == (int32_t)*isec) {
 				if (!found) {
 					u_fprintf(output, "\nSECTION\n");
@@ -183,7 +183,7 @@ int GrammarWriter::writeGrammar(UFILE *output) {
 	}
 	found = false;
 	const_foreach (RuleByLineMap, rule_by_line, rule_iter, rule_iter_end) {
-		const Rule &r = *(rule_iter->second);
+		const Rule& r = *(rule_iter->second);
 		if (r.section == -2) {
 			if (!found) {
 				u_fprintf(output, "\nAFTER-SECTIONS\n");
@@ -195,7 +195,7 @@ int GrammarWriter::writeGrammar(UFILE *output) {
 	}
 	found = false;
 	const_foreach (RuleByLineMap, rule_by_line, rule_iter, rule_iter_end) {
-		const Rule &r = *(rule_iter->second);
+		const Rule& r = *(rule_iter->second);
 		if (r.section == -3) {
 			if (!found) {
 				u_fprintf(output, "\nNULL-SECTION\n");
@@ -209,7 +209,7 @@ int GrammarWriter::writeGrammar(UFILE *output) {
 	return 0;
 }
 
-void GrammarWriter::printRule(UFILE *to, const Rule &rule) {
+void GrammarWriter::printRule(UFILE *to, const Rule& rule) {
 	if (statistics) {
 		if (ceil(rule.total_time) == floor(rule.total_time)) {
 			u_fprintf(to, "\n#Rule Matched: %u ; NoMatch: %u ; TotalTime: %.0f\n", rule.num_match, rule.num_fail, rule.total_time);
@@ -281,7 +281,7 @@ void GrammarWriter::printRule(UFILE *to, const Rule &rule) {
 	}
 }
 
-void GrammarWriter::printContextualTest(UFILE *to, const ContextualTest &test) {
+void GrammarWriter::printContextualTest(UFILE *to, const ContextualTest& test) {
 	if (statistics) {
 		if (ceil(test.total_time) == floor(test.total_time)) {
 			u_fprintf(to, "\n#Test Matched: %u ; NoMatch: %u ; TotalTime: %.0f\n", test.num_match, test.num_fail, test.total_time);
@@ -405,7 +405,7 @@ void GrammarWriter::printContextualTest(UFILE *to, const ContextualTest &test) {
 	}
 }
 
-void GrammarWriter::printTag(UFILE *to, const Tag &tag) {
+void GrammarWriter::printTag(UFILE *to, const Tag& tag) {
 	UString str = tag.toUString(true);
 	u_file_write(str.c_str(), str.length(), to);
 }
