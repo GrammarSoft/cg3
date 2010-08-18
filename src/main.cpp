@@ -32,7 +32,7 @@
 #include "options.h"
 using namespace Options;
 using CG3::CG3Quit;
-void GAppSetOpts(CG3::GrammarApplicator &applicator, UConverter *conv);
+void GAppSetOpts(CG3::GrammarApplicator& applicator, UConverter *conv);
 
 int main(int argc, char* argv[]) {
 	UFILE *ux_stdin = 0;
@@ -485,7 +485,7 @@ void GAppSetOpts_ranged(const char *value, Cont& cont) {
 	}
 }
 
-void GAppSetOpts(CG3::GrammarApplicator &applicator, UConverter *conv) {
+void GAppSetOpts(CG3::GrammarApplicator& applicator, UConverter *conv) {
 	if (options[ALWAYS_SPAN].doesOccur) {
 		applicator.always_span = true;
 	}

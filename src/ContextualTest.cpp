@@ -110,7 +110,7 @@ void ContextualTest::resetStatistics() {
 	}
 }
 
-void ContextualTest::markUsed(Grammar &grammar) {
+void ContextualTest::markUsed(Grammar& grammar) {
 	is_used = true;
 
 	Set *s = 0;
