@@ -30,23 +30,23 @@
 
 namespace CG3 {
 
-void GrammarApplicator::updateRuleToCohorts(Cohort& c, const uint32_t& rsit) {
+bool GrammarApplicator::updateRuleToCohorts(Cohort& c, const uint32_t& rsit) {
 	// Check whether this rule is in the allowed rule list from cmdline flag --rule(s)
 	if (!valid_rules.empty() && valid_rules.find(rsit) == valid_rules.end()) {
-		return;
+		return false;
 	}
 	SingleWindow *current = c.parent;
 	const Rule *r = grammar->rule_by_line.find(rsit)->second;
 	if (r->wordform && r->wordform != c.wordform) {
-		return;
+		return false;
 	}
 	CohortSet& s = current->rule_to_cohorts[rsit];
 	s.insert(&c);
-	current->valid_rules.insert(rsit);
+	return current->valid_rules.insert(rsit).second;
 }
 
 void intersectInitialize(const uint32SortedVector& first, const uint32Set& second, uint32Vector& intersects) {
-	intersects.reserve(std::max(first.size(), second.size()));
+	//intersects.reserve(std::max(first.size(), second.size()));
 	uint32SortedVector::const_iterator iiter = first.begin();
 	uint32Set::const_iterator oiter = second.begin();
 	while (oiter != second.end() && iiter != first.end()) {
@@ -64,16 +64,17 @@ void intersectInitialize(const uint32SortedVector& first, const uint32Set& secon
 	}
 }
 
-void intersectUpdate(const uint32SortedVector& first, const uint32Set& second, uint32Vector& intersects) {
+template<typename TFirst, typename TSecond>
+void intersectUpdate(const TFirst& first, const TSecond& second, uint32Vector& intersects) {
 	/* This is never true, so don't bother...
 	if (intersects.empty()) {
 		intersectInitialize(first, second, intersects);
 		return;
 	}
 	//*/
-	intersects.reserve(std::max(first.size(), second.size()));
-	uint32SortedVector::const_iterator iiter = first.begin();
-	uint32Set::const_iterator oiter = second.begin();
+	//intersects.reserve(std::max(first.size(), second.size()));
+	typename TFirst::const_iterator iiter = first.begin();
+	typename TSecond::const_iterator oiter = second.begin();
 	uint32Vector::iterator ins = intersects.begin();
 	while (oiter != second.end() && iiter != first.end()) {
 		while (oiter != second.end() && iiter != first.end() && *oiter < *iiter) {
@@ -96,14 +97,15 @@ void intersectUpdate(const uint32SortedVector& first, const uint32Set& second, u
 void GrammarApplicator::updateValidRules(const uint32SortedVector& rules, uint32Vector& intersects, const uint32_t& hash, Reading& reading) {
 	uint32HashSetuint32HashMap::const_iterator it = grammar->rules_by_tag.find(hash);
 	if (it != grammar->rules_by_tag.end()) {
-		SingleWindow& current = *(reading.parent->parent);
-		const size_t cvrz = current.valid_rules.size();
 		Cohort& c = *(reading.parent);
+		uint32SortedVector inserted;
 		const_foreach (uint32HashSet, (it->second), rsit, rsit_end) {
-			updateRuleToCohorts(c, *rsit);
+			if (updateRuleToCohorts(c, *rsit)) {
+				inserted.push_back(*rsit);
+			}
 		}
-		if (cvrz != current.valid_rules.size()) {
-			intersectUpdate(rules, current.valid_rules, intersects);
+		if (!inserted.empty()) {
+			intersectUpdate(rules, inserted, intersects);
 		}
 	}
 }
