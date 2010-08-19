@@ -156,7 +156,7 @@ namespace CG3 {
 		Tag *makeBaseFromWord(uint32_t tag);
 		Tag *makeBaseFromWord(Tag *tag);
 
-		void updateRuleToCohorts(Cohort& c, const uint32_t& rsit);
+		bool updateRuleToCohorts(Cohort& c, const uint32_t& rsit);
 		void indexSingleWindow(SingleWindow& current);
 		int runGrammarOnWindow();
 		int runGrammarOnSingleWindow(SingleWindow& current);
