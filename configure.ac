@@ -79,5 +79,6 @@ ICUIO_LIBS=`icu-config --ldflags-icuio`
 LIBS="$ICU_LIBS $ICUIO_LIBS $LIBS"
 
 AC_CHECK_FUNCS([setlocale strdup getopt_long])
+AC_CHECK_LIB(tcmalloc, malloc)
 
 AC_OUTPUT([Makefile src/Makefile m4/Makefile])
