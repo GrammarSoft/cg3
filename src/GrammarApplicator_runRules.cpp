@@ -64,48 +64,17 @@ void intersectInitialize(const uint32SortedVector& first, const uint32Set& secon
 	}
 }
 
-template<typename TFirst, typename TSecond>
-void intersectUpdate(const TFirst& first, const TSecond& second, uint32Vector& intersects) {
-	/* This is never true, so don't bother...
-	if (intersects.empty()) {
-		intersectInitialize(first, second, intersects);
-		return;
-	}
-	//*/
-	//intersects.reserve(std::max(first.size(), second.size()));
-	typename TFirst::const_iterator iiter = first.begin();
-	typename TSecond::const_iterator oiter = second.begin();
-	uint32Vector::iterator ins = intersects.begin();
-	while (oiter != second.end() && iiter != first.end()) {
-		while (oiter != second.end() && iiter != first.end() && *oiter < *iiter) {
-			++oiter;
-		}
-		while (oiter != second.end() && iiter != first.end() && *iiter < *oiter) {
-			++iiter;
-		}
-		while (oiter != second.end() && iiter != first.end() && *oiter == *iiter) {
-			ins = std::lower_bound(ins, intersects.end(), *oiter);
-			if (ins == intersects.end() || *ins != *oiter) {
-				ins = intersects.insert(ins, *oiter);
-			}
-			++oiter;
-			++iiter;
-		}
-	}
-}
-
 void GrammarApplicator::updateValidRules(const uint32SortedVector& rules, uint32Vector& intersects, const uint32_t& hash, Reading& reading) {
 	uint32HashSetuint32HashMap::const_iterator it = grammar->rules_by_tag.find(hash);
 	if (it != grammar->rules_by_tag.end()) {
 		Cohort& c = *(reading.parent);
-		uint32SortedVector inserted;
 		const_foreach (uint32HashSet, (it->second), rsit, rsit_end) {
-			if (updateRuleToCohorts(c, *rsit)) {
-				inserted.push_back(*rsit);
+			if (updateRuleToCohorts(c, *rsit) && rules.find(*rsit) != rules.end()) {
+				uint32Vector::iterator ins = std::lower_bound(intersects.begin(), intersects.end(), *rsit);
+				if (ins == intersects.end() || *ins != *rsit) {
+					intersects.insert(ins, *rsit);
+				}
 			}
-		}
-		if (!inserted.empty()) {
-			intersectUpdate(rules, inserted, intersects);
 		}
 	}
 }
