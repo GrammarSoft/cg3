@@ -46,7 +46,7 @@ bool GrammarApplicator::updateRuleToCohorts(Cohort& c, const uint32_t& rsit) {
 }
 
 void intersectInitialize(const uint32SortedVector& first, const uint32Set& second, uint32Vector& intersects) {
-	//intersects.reserve(std::max(first.size(), second.size()));
+	intersects.reserve(std::min(first.size(), second.size()));
 	uint32SortedVector::const_iterator iiter = first.begin();
 	uint32Set::const_iterator oiter = second.begin();
 	while (oiter != second.end() && iiter != first.end()) {
