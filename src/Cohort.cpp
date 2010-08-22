@@ -84,12 +84,12 @@ void Cohort::detach() {
 	prev = next = 0;
 }
 
-bool Cohort::addChild(uint32_t child) {
-	return dep_children.insert(child).second;
+void Cohort::addChild(uint32_t child) {
+	dep_children.insert(child);
 }
 
-bool Cohort::remChild(uint32_t child) {
-	return (dep_children.erase(child) != 0);
+void Cohort::remChild(uint32_t child) {
+	dep_children.erase(child);
 }
 
 void Cohort::appendReading(Reading *read) {
@@ -146,26 +146,24 @@ int32_t Cohort::getMax(uint32_t key) {
 	return INT_MAX;
 }
 
-bool Cohort::addRelation(uint32_t rel, uint32_t cohort) {
+void Cohort::addRelation(uint32_t rel, uint32_t cohort) {
 	uint32Set& cohorts = relations[rel];
-	return cohorts.insert(cohort).second;
+	cohorts.insert(cohort);
 }
 
-bool Cohort::setRelation(uint32_t rel, uint32_t cohort) {
+void Cohort::setRelation(uint32_t rel, uint32_t cohort) {
 	uint32Set& cohorts = relations[rel];
 	if (cohorts.size() == 1 && cohorts.find(cohort) != cohorts.end()) {
-		return false;
+		return;
 	}
 	cohorts.clear();
 	cohorts.insert(cohort);
-	return true;
 }
 
-bool Cohort::remRelation(uint32_t rel, uint32_t cohort) {
+void Cohort::remRelation(uint32_t rel, uint32_t cohort) {
 	if (relations.find(rel) != relations.end()) {
-		return (relations.find(rel)->second.erase(cohort) != 0);
+		relations.find(rel)->second.erase(cohort);
 	}
-	return false;
 }
 
 }

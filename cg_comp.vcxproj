@@ -31,11 +31,13 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
     <Import Project="Boost.props" />
     <Import Project="ICU.props" />
+    <Import Project="Google.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
     <Import Project="Boost.props" />
     <Import Project="ICU.props" />
+    <Import Project="Google.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
@@ -117,6 +119,7 @@
     <ClInclude Include="src\CompositeTag.h" />
     <ClInclude Include="src\ContextualTest.h" />
     <ClInclude Include="src\cycle.h" />
+    <ClInclude Include="src\google_wrapper.hpp" />
     <ClInclude Include="win32\getopt.h" />
     <ClInclude Include="src\Grammar.h" />
     <ClInclude Include="src\GrammarWriter.h" />
