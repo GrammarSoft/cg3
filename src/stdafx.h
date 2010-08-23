@@ -32,8 +32,6 @@
 	#define NOMINMAX
 	// warning C4428: universal-character-name encountered in source
 	#pragma warning (disable: 4428)
-	// warning C4127: conditional expression is constant
-	#pragma warning (disable: 4127)
 #endif
 
 #include <exception>
@@ -135,10 +133,6 @@
 #include <unicode/uregex.h>
 #include <unicode/ubrk.h>
 
-#ifdef HAVE_GOOGLE
-	#include "google_wrapper.hpp"
-#endif
-
 namespace CG3 {
 	typedef std::basic_string<UChar> UString;
 	typedef std::list<uint32_t> uint32List;
@@ -146,17 +140,10 @@ namespace CG3 {
 	typedef std::set<uint32_t> uint32Set;
 	typedef std::map<uint32_t,int32_t> uint32int32Map;
 	typedef std::map<uint32_t,uint32_t> uint32Map;
-#ifdef HAVE_GOOGLE
-	typedef dense_hash_set<uint32_t> uint32HashSet;
-	typedef dense_hash_map<uint32_t,uint32_t> uint32HashMap;
-	typedef dense_hash_map<uint32_t,uint32Set> uint32Setuint32HashMap;
-	typedef dense_hash_map<uint32_t,uint32HashSet> uint32HashSetuint32HashMap;
-#else
 	typedef stdext::hash_set<uint32_t> uint32HashSet;
 	typedef stdext::hash_map<uint32_t,uint32_t> uint32HashMap;
 	typedef stdext::hash_map<uint32_t,uint32Set> uint32Setuint32HashMap;
 	typedef stdext::hash_map<uint32_t,uint32HashSet> uint32HashSetuint32HashMap;
-#endif
 }
 
 #include "cycle.h"
