@@ -11,7 +11,7 @@ function profile_revision($rev) {
 	chdir($dir);
 	shell_exec('svn export -r 3617 --ignore-externals http://beta.visl.sdu.dk/svn/visl/trunk/parsers/dansk/etc/dancg dancg >/dev/null 2>&1');
 	echo "Compiling...\n";
-	shell_exec('g++ -pipe -Wall -Wextra -Wno-deprecated -O3 -fno-rtti -ffor-scope -licuio -licuuc $(ls -1 ./src/*.cpp | egrep -v "/test_" | egrep -v "/cg_" | grep -v Apertium | grep -v Matxin | grep -v FormatConverter) -o vislcg3 >/dev/null 2>&1');
+	shell_exec('g++ -pipe -Wall -Wextra -Wno-deprecated -O3 -fno-rtti -ffor-scope -licuio -licuuc $(ls -1 ./src/*.cpp | egrep -v "/test_" | egrep -v "/cg_" | egrep -v "/all_" | grep -v Apertium | grep -v Matxin | grep -v FormatConverter) -o vislcg3 >/dev/null 2>&1');
 	
 	if (!file_exists('vislcg3')) {
 		echo "Revision $rev failed compilation!\n";
@@ -63,8 +63,8 @@ function profile_revision($rev) {
 	shell_exec('rm -rf '.$dir.' 2>&1 >/dev/null');
 }
 
-$revs = array(6268, 6242, 6170, 5932, 5930, 5926, 5918, 5839, 5810, 5773, 5729, 5431, 5129, 5042, 4879, 4779, 4545, 4513, 4493, 4474, 4410, 4292, 4031, 3991, 3896, 3852, 3800, 3689, 3682, 3617);
-$revs = array(6268);
+$revs = array(6328, 6268, 6242, 6170, 5932, 5930, 5926, 5918, 5839, 5810, 5773, 5729, 5431, 5129, 5042, 4879, 4779, 4545, 4513, 4493, 4474, 4410, 4292, 4031, 3991, 3896, 3852, 3800, 3689, 3682, 3617);
+$revs = array(6328);
 foreach ($revs as $rev) {
 	profile_revision($rev);
 }
