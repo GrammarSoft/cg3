@@ -20,8 +20,8 @@
 */
 
 #pragma once
-#ifndef __SORTED_VECTOR_HPP
-#define __SORTED_VECTOR_HPP
+#ifndef c6d28b7452ec699b_SORTED_VECTOR_HPP
+#define c6d28b7452ec699b_SORTED_VECTOR_HPP
 #include <iostream>
 #include <vector>
 #include <algorithm>

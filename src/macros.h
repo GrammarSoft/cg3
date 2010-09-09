@@ -20,8 +20,8 @@
 */
 
 #pragma once
-#ifndef __MACROS_H
-#define __MACROS_H
+#ifndef c6d28b7452ec699b_MACROS_H
+#define c6d28b7452ec699b_MACROS_H
 
 #define foreach(type, container, iter, iter_end) \
 	if (!(container).empty()) \

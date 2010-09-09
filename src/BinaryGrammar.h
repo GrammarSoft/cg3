@@ -20,8 +20,8 @@
 */
 
 #pragma once
-#ifndef __BINARYGRAMMAR_H
-#define __BINARYGRAMMAR_H
+#ifndef c6d28b7452ec699b_BINARYGRAMMAR_H
+#define c6d28b7452ec699b_BINARYGRAMMAR_H
 
 #include "IGrammarParser.h"
 

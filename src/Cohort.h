@@ -20,8 +20,8 @@
 */
 
 #pragma once
-#ifndef __COHORT_H
-#define __COHORT_H
+#ifndef c6d28b7452ec699b_COHORT_H
+#define c6d28b7452ec699b_COHORT_H
 
 #include "stdafx.h"
 #include "Reading.h"

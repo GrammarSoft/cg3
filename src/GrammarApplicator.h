@@ -20,8 +20,8 @@
 */
 
 #pragma once
-#ifndef __GRAMMARAPPLICATOR_H
-#define __GRAMMARAPPLICATOR_H
+#ifndef c6d28b7452ec699b_GRAMMARAPPLICATOR_H
+#define c6d28b7452ec699b_GRAMMARAPPLICATOR_H
 
 #include "stdafx.h"
 #include "Tag.h"

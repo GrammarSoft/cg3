@@ -20,8 +20,8 @@
 */
 
 #pragma once
-#ifndef __RULE_H
-#define __RULE_H
+#ifndef c6d28b7452ec699b_RULE_H
+#define c6d28b7452ec699b_RULE_H
 
 #include "stdafx.h"
 #include "Strings.h"

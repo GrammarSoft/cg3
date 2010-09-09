@@ -20,8 +20,8 @@
 */
 
 #pragma once
-#ifndef __GRAMMARWRITER_H
-#define __GRAMMARWRITER_H
+#ifndef c6d28b7452ec699b_GRAMMARWRITER_H
+#define c6d28b7452ec699b_GRAMMARWRITER_H
 
 #include "stdafx.h"
  

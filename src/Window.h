@@ -20,8 +20,8 @@
 */
 
 #pragma once
-#ifndef __WINDOW_H
-#define __WINDOW_H
+#ifndef c6d28b7452ec699b_WINDOW_H
+#define c6d28b7452ec699b_WINDOW_H
 
 #include "stdafx.h"
 

@@ -20,8 +20,8 @@
 */
 
 #pragma once
-#ifndef __ANCHOR_H
-#define __ANCHOR_H
+#ifndef c6d28b7452ec699b_ANCHOR_H
+#define c6d28b7452ec699b_ANCHOR_H
 
 #include "stdafx.h"
 
