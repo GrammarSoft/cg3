@@ -20,8 +20,8 @@
 */
 
 #pragma once
-#ifndef __GRAMMAR_H
-#define __GRAMMAR_H
+#ifndef c6d28b7452ec699b_GRAMMAR_H
+#define c6d28b7452ec699b_GRAMMAR_H
 
 #include "stdafx.h"
 #include "Set.h"

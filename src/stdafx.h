@@ -20,8 +20,8 @@
 */
 
 #pragma once
-#ifndef __STDAFX_H
-#define __STDAFX_H
+#ifndef c6d28b7452ec699b_STDAFX_H
+#define c6d28b7452ec699b_STDAFX_H
 
 #ifdef _MSC_VER
 	#define _SECURE_SCL 0

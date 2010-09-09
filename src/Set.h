@@ -20,8 +20,8 @@
 */
 
 #pragma once
-#ifndef __SET_H
-#define __SET_H
+#ifndef c6d28b7452ec699b_SET_H
+#define c6d28b7452ec699b_SET_H
 
 #include "stdafx.h"
 #include "CompositeTag.h"

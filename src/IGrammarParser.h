@@ -20,8 +20,8 @@
 */
 
 #pragma once
-#ifndef __IGRAMMARPARSER_H
-#define __IGRAMMARPARSER_H
+#ifndef c6d28b7452ec699b_IGRAMMARPARSER_H
+#define c6d28b7452ec699b_IGRAMMARPARSER_H
 
 #include "stdafx.h"
 

@@ -20,8 +20,8 @@
 */
 
 #pragma once
-#ifndef __VERSION_H
-#define __VERSION_H
+#ifndef c6d28b7452ec699b_VERSION_H
+#define c6d28b7452ec699b_VERSION_H
 
 const char CG3_COPYRIGHT_STRING[] = "Copyright (C) 2007-2010 GrammarSoft ApS. All Rights Reserved.";
 

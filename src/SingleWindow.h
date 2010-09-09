@@ -20,8 +20,8 @@
 */
 
 #pragma once
-#ifndef __SINGLEWINDOW_H
-#define __SINGLEWINDOW_H
+#ifndef c6d28b7452ec699b_SINGLEWINDOW_H
+#define c6d28b7452ec699b_SINGLEWINDOW_H
 
 #include "stdafx.h"
 #include "Cohort.h"

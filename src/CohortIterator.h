@@ -20,8 +20,8 @@
 */
 
 #pragma once
-#ifndef __COHORTITERATOR_H
-#define __COHORTITERATOR_H
+#ifndef c6d28b7452ec699b_COHORTITERATOR_H
+#define c6d28b7452ec699b_COHORTITERATOR_H
 
 #include "stdafx.h"
 #include "Cohort.h"

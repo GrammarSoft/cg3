@@ -20,8 +20,8 @@
 */
 
 #pragma once
-#ifndef __CONTEXTUALTEST_H
-#define __CONTEXTUALTEST_H
+#ifndef c6d28b7452ec699b_CONTEXTUALTEST_H
+#define c6d28b7452ec699b_CONTEXTUALTEST_H
 
 #include "stdafx.h"
 

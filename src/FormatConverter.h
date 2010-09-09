@@ -20,8 +20,8 @@
 */
 
 #pragma once
-#ifndef __FORMATCONVERTER_H
-#define __FORMATCONVERTER_H
+#ifndef c6d28b7452ec699b_FORMATCONVERTER_H
+#define c6d28b7452ec699b_FORMATCONVERTER_H
 
 #include "stdafx.h"
 #include "Strings.h"
