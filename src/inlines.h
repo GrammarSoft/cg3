@@ -20,8 +20,8 @@
 */
 
 #pragma once
-#ifndef __INLINES_H
-#define __INLINES_H
+#ifndef c6d28b7452ec699b_INLINES_H
+#define c6d28b7452ec699b_INLINES_H
 
 namespace CG3 {
 

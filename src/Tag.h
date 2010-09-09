@@ -20,8 +20,8 @@
 */
 
 #pragma once
-#ifndef __TAG_H
-#define __TAG_H
+#ifndef c6d28b7452ec699b_TAG_H
+#define c6d28b7452ec699b_TAG_H
 
 #include "stdafx.h"
 

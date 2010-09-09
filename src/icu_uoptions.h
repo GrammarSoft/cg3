@@ -17,8 +17,8 @@
 */
 
 #pragma once
-#ifndef __UOPTIONS_H__
-#define __UOPTIONS_H__
+#ifndef c6d28b7452ec699b_UOPTIONS_H__
+#define c6d28b7452ec699b_UOPTIONS_H__
 
 #include "stdafx.h"
 

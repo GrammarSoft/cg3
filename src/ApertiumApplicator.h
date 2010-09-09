@@ -20,8 +20,8 @@
 */
 
 #pragma once
-#ifndef __GRAMMARAPPLICATORAPERTIUM_H
-#define __GRAMMARAPPLICATORAPERTIUM_H
+#ifndef c6d28b7452ec699b_GRAMMARAPPLICATORAPERTIUM_H
+#define c6d28b7452ec699b_GRAMMARAPPLICATORAPERTIUM_H
 
 #include "stdafx.h"
 #include "Strings.h"

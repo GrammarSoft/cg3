@@ -20,8 +20,8 @@
 */
 
 #pragma once
-#ifndef __TEXTUALPARSER_H
-#define __TEXTUALPARSER_H
+#ifndef c6d28b7452ec699b_TEXTUALPARSER_H
+#define c6d28b7452ec699b_TEXTUALPARSER_H
 
 #include "IGrammarParser.h"
 #include "Strings.h"

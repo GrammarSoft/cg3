@@ -20,8 +20,8 @@
 */
 
 #pragma once
-#ifndef __UEXTRAS_H
-#define __UEXTRAS_H
+#ifndef c6d28b7452ec699b_UEXTRAS_H
+#define c6d28b7452ec699b_UEXTRAS_H
 
 #include "stdafx.h"
 
