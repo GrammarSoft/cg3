@@ -675,13 +675,13 @@ void ApertiumApplicator::printReading(Reading *reading, UFILE *output) {
 			}
 			
 			// this corresponds to fst_processor.cc in lttoolbox:
-			bool firstupper = (u_isupper(wf[first]) != 0); // simply casting will not silence the warning - Tino Didriksen
+			bool firstupper = first < wf.length() && (u_isupper(wf[first]) != 0);
 			bool uppercase = firstupper && u_isupper(wf[wf.length()-1]);
 
 			if (uppercase) {
 				bf.toUpper(); // Perform a Unicode case folding to upper case -- Tino Didriksen
 			}
-			else if (firstupper) {
+			else if (firstupper && first < bf.length()) {
 				// static_cast<UChar>(u_toupper(bf[first])) gives strange output
 				UnicodeString range(bf, first, 1);
 				range.toUpper();
