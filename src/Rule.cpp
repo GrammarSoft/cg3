@@ -47,6 +47,8 @@ Rule::Rule() {
 	dep_test_head = 0;
 	childset1 = 0;
 	childset2 = 0;
+	maplist = 0;
+	sublist = 0;
 }
 
 Rule::~Rule() {

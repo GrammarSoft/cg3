@@ -130,8 +130,8 @@ int ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 		CG3Quit(1);
 	}
 	
-	if (!grammar->delimiters || (grammar->delimiters->sets.empty() && grammar->delimiters->tags_set.empty())) {
-		if (!grammar->soft_delimiters || (grammar->soft_delimiters->sets.empty() && grammar->soft_delimiters->tags_set.empty())) {
+	if (!grammar->delimiters || grammar->delimiters->empty()) {
+		if (!grammar->soft_delimiters || grammar->soft_delimiters->empty()) {
 			u_fprintf(ux_stderr, "Warning: No soft or hard delimiters defined in grammar. Hard limit of %u cohorts may break windows in unintended places.\n", hard_limit);
 		}
 		else {

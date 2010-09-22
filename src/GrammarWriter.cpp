@@ -232,27 +232,16 @@ void GrammarWriter::printRule(UFILE *to, const Rule& rule) {
 
 	for (uint32_t i=0 ; i<FLAGS_COUNT ; i++) {
 		if (rule.flags & (1 << i)) {
-			u_fprintf(to, "%S", flags[i].getTerminatedBuffer());
+			u_fprintf(to, "%S ", flags[i].getTerminatedBuffer());
 		}
 	}
 
-	if (!rule.sublist.empty()) {
-		uint32List::const_iterator iter;
-		u_fprintf(to, "(");
-		for (iter = rule.sublist.begin() ; iter != rule.sublist.end() ; iter++) {
-			printTag(to, *(grammar->single_tags.find(*iter)->second));
-			u_fprintf(to, " ");
-		}
-		u_fprintf(to, ") ");
+	if (rule.sublist) {
+		u_fprintf(to, "%S ", grammar->sets_by_contents.find(rule.sublist)->second->name.c_str());
 	}
 
-	if (!rule.maplist.empty()) {
-		u_fprintf(to, "(");
-		const_foreach (TagList, rule.maplist, iter, iter_end) {
-			printTag(to, **iter);
-			u_fprintf(to, " ");
-		}
-		u_fprintf(to, ") ");
+	if (rule.maplist) {
+		u_fprintf(to, "%S ", grammar->sets_by_contents.find(rule.maplist)->second->name.c_str());
 	}
 
 	if (rule.target) {
