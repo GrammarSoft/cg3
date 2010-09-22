@@ -1,0 +1,34 @@
+A new release of CG-3 has been tagged v0.9.7.6359.
+
+Main site is http://beta.visl.sdu.dk/cg3.html
+Google Group is http://groups.google.com/group/constraint-grammar
+Source snapshots available at http://beta.visl.sdu.dk/download/vislcg3/
+Windows binary is at http://beta.visl.sdu.dk/download/vislcg3/vislcg3-0.9.7.6359-win32.zip
+Mirror at http://groups.google.com/group/constraint-grammar/files
+
+Optimizations:
+- 20% faster since last release; 224 cohorts per second, up from 176 cohorts per second in 0.9.7.6010.
+- Cut memory usage by 30%.
+- Numbers can be seen on http://beta.visl.sdu.dk/cg3_performance.html
+
+New Features:
+- Implemented cmdline flags --rules and --rule which can be used to run a select range of rules or a single rule.
+- Implemented REMCOHORT which completely removes a cohort and all its readings from the window. See http://beta.visl.sdu.dk/cg3/chunked/rules.html#remcohort
+- Implemented MOVE and SWITCH to re-arrange cohorts on-the-fly. See http://beta.visl.sdu.dk/cg3/chunked/rules.html#move-switch for how to use them. See the source test/T_Movement for example behavior.
+- Now handles Unicode arrows for dependency. E.g. #1->2 and #1→2 are the same. Cmdline flag --unicode-tags makes output use Unicode tags.
+- Implemented rule flags ITERATE and NOITERATE. See http://beta.visl.sdu.dk/cg3/chunked/rules.html#rule-options-iterate
+- Soft-Delimiters now look back once the threshold has been reached, and will delimit the window at the last found soft-delimiter tag (if any exist).
+- Implemented using sets for MAP/ADD/REPLACE/APPEND and Relation rules where previously a tag list was required. This means you can do things like MAP $$same TheTarget (-1* $$same) and have the mapping tag be chosen based on context.
+- Now allows composite tags in inline sets.
+
+Bug Fixes:
+- Fixed IFF sometimes removing all readings.
+- Allowed extra baseform-like tags to be output. Previously, only the first baseform-like tag was output.
+
+Other:
+- Binary grammars version has been bumped. Old binary grammars will need to be recompiled.
+- Windows binaries now link against ICU 4.5.1.
+- Compiling from source will now use TCMalloc if available; this yields roughly 10% speed boost.
+
+-- Tino Didriksen
+CG-3 Developer
