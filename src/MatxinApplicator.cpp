@@ -133,8 +133,8 @@ int MatxinApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 	// hard breaks, but this error never shows up since the "old"
 	// delimiters are inside superblanks. -KBU
 	// ToDo: Relying on hard breaks is bad...if data is available to do so, chunk sententes into their own SingleWindow. -- Tino Didriksen
-	if (!grammar->delimiters || (grammar->delimiters->sets.empty() && grammar->delimiters->tags_set.empty())) {
-		if (!grammar->soft_delimiters || (grammar->soft_delimiters->sets.empty() && grammar->soft_delimiters->tags_set.empty())) {
+	if (!grammar->delimiters || grammar->delimiters->empty()) {
+		if (!grammar->soft_delimiters || grammar->soft_delimiters->empty()) {
 			u_fprintf(ux_stderr, "Warning: No soft or hard delimiters defined in grammar. Hard limit of %u cohorts may break windows in unintended places.\n", hard_limit);
 		}
 		else {

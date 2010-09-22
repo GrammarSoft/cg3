@@ -49,7 +49,7 @@ number(0),
 num_fail(0),
 num_match(0),
 total_time(0),
-tags_set(from.tags_set),
+tags_list(from.tags_list),
 tags(from.tags),
 single_tags(from.single_tags),
 single_tags_hash(from.single_tags_hash),
@@ -58,6 +58,10 @@ set_ops(from.set_ops),
 sets(from.sets)
 {
 	// Nothing in the actual body...
+}
+
+bool Set::empty() const {
+	return (tags_list.empty() && sets.empty());
 }
 
 void Set::setName(uint32_t to) {
@@ -94,8 +98,8 @@ uint32_t Set::rehash() {
 	uint32_t retval = 0;
 	if (sets.empty()) {
 		retval = hash_sdbm_uint32_t(3499, retval); // Combat hash-collisions
-		foreach (uint32Set, tags_set, iter, iter_end) {
-			retval = hash_sdbm_uint32_t(*iter, retval);
+		foreach (AnyTagVector, tags_list, iter, iter_end) {
+			retval = hash_sdbm_uint32_t(iter->hash(), retval);
 		}
 	}
 	else {

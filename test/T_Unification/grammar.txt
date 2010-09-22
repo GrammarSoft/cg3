@@ -18,3 +18,9 @@ SELECT:two $$ACESet + $$BDFSet (1 $$ACESet + $$BDFSet) ;
 SELECT:regex $$Hums (1 $$Hums) ;
 SELECT:SameBase $$SameBase (1 $$SameBase) ;
 REMOVE (NOTTHIS) ;
+
+AFTER-SECTIONS
+ADD &&USET (tags) (-7 &&USET) ;
+ADD &&USET (tags) (-8 &&USET) ;
+ADD $$TSet ("wordh") (-2C (some) + $$TSet) ;
+SUBSTITUTE &&USET $$TSet ("wordi") (-8 &&USET) (-2C (some) + $$TSet) ;

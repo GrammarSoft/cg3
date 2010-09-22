@@ -58,7 +58,56 @@ namespace CG3 {
 		}
 	};
 
+	enum ANYTAG_TYPE {
+		ANYTAG_TAG = 0,
+		ANYTAG_COMPOSITE,
+		NUM_ANYTAG
+	};
+
+	class AnyTag {
+	public:
+		uint8_t which;
+
+		AnyTag(Tag *tag) :
+		which(ANYTAG_TAG),
+		tag(tag)
+		{
+		}
+
+		AnyTag(CompositeTag *tag) :
+		which(ANYTAG_COMPOSITE),
+		tag(tag)
+		{
+		}
+
+		Tag *getTag() const {
+			return static_cast<Tag*>(tag);
+		}
+
+		CompositeTag *getCompositeTag() const {
+			return static_cast<CompositeTag*>(tag);
+		}
+
+		uint32_t hash() const {
+			if (which == ANYTAG_TAG) {
+				return getTag()->hash;
+			}
+			return getCompositeTag()->hash;
+		}
+
+		uint32_t number() const {
+			if (which == ANYTAG_TAG) {
+				return getTag()->number;
+			}
+			return getCompositeTag()->number;
+		}
+
+	private:
+		void *tag;
+	};
+
 	typedef stdext::hash_set<CompositeTag*, compare_CompositeTag> CompositeTagHashSet;
+	typedef std::vector<AnyTag> AnyTagVector;
 }
 
 #ifdef __GNUC__

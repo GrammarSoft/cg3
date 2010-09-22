@@ -276,13 +276,10 @@ inline uint32_t SKIPTO_NOSPAN(UChar *& p, const UChar a) {
 inline void CG3Quit(const int32_t c = 0, const char* file = 0, const uint32_t line = 0) {
 	if (file && line) {
 		std::cerr << std::flush;
-	/* ToDo: clang++ croaks on this line...
 		std::cerr << "CG3Quit triggered from " << file << " line " << line << "." << std::endl;
-	//*/
 	}
 	exit(c);
 }
-// #define CG3Quit(a) CG3Quit((a), __FILE__, __LINE__)
 
 template<typename Cont, typename VT>
 inline bool index_matches(const Cont& index, const VT& entry) {
