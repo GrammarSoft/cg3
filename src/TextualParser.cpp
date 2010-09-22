@@ -138,10 +138,48 @@ Set *TextualParser::parseSetInline(UChar *& p, Set *s) {
 		if (*p && *p != ';' && *p != ')') {
 			if (!wantop) {
 				if (*p == '(') {
+					++p;
 					Set *set_c = result->allocateSet();
 					set_c->line = result->lines;
 					set_c->setName(sets_counter++);
-					parseTagList(p, set_c, true);
+					TagVector tags;
+
+					while (*p && *p != ';' && *p != ')') {
+						result->lines += SKIPWS(p, ';', ')');
+						UChar *n = p;
+						if (*n == '"') {
+							n++;
+							result->lines += SKIPTO_NOSPAN(n, '"');
+							if (*n != '"') {
+								u_fprintf(ux_stderr, "Error: Missing closing \" on line %u!\n", result->lines);
+								CG3Quit(1);
+							}
+						}
+						result->lines += SKIPTOWS(n, ')', true);
+						ptrdiff_t c = n - p;
+						u_strncpy(&gbuffers[0][0], p, c);
+						gbuffers[0][c] = 0;
+						Tag *t = result->allocateTag(&gbuffers[0][0]);
+						tags.push_back(t);
+						p = n;
+						result->lines += SKIPWS(p, ';', ')');
+					}
+					if (*p != ')') {
+						u_fprintf(ux_stderr, "Error: Missing closing ) on line %u!\n", result->lines);
+						CG3Quit(1);
+					}
+					++p;
+
+					if (tags.size() == 1) {
+						result->addTagToSet(tags.back(), set_c);
+					}
+					else {
+						CompositeTag *ct = result->allocateCompositeTag();
+						foreach (TagVector, tags, tvi, tvi_end) {
+							result->addTagToCompositeTag(*tvi, ct);
+						}
+						result->addCompositeTagToSet(set_c, ct);
+					}
 					result->addSet(set_c);
 					sets.push_back(set_c->hash);
 				}
