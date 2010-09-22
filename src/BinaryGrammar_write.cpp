@@ -157,36 +157,27 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 		if (s->sets.empty()) {
 			u8tmp = (uint8_t)0;
 			fwrite(&u8tmp, sizeof(uint8_t), 1, output);
-			u32tmp = (uint32_t)htonl((uint32_t)s->single_tags.size());
+
+			u32tmp = (uint32_t)htonl((uint32_t)s->tags_list.size());
 			fwrite(&u32tmp, sizeof(uint32_t), 1, output);
-			TagHashSet::const_iterator tomp_iter;
-			for (tomp_iter = s->single_tags.begin() ; tomp_iter != s->single_tags.end() ; tomp_iter++) {
-				u32tmp = (uint32_t)htonl((*tomp_iter)->number);
-				fwrite(&u32tmp, sizeof(uint32_t), 1, output);
-			}
-			u32tmp = (uint32_t)htonl((uint32_t)s->ff_tags.size());
-			fwrite(&u32tmp, sizeof(uint32_t), 1, output);
-			for (tomp_iter = s->ff_tags.begin() ; tomp_iter != s->ff_tags.end() ; tomp_iter++) {
-				u32tmp = (uint32_t)htonl((*tomp_iter)->number);
-				fwrite(&u32tmp, sizeof(uint32_t), 1, output);
-			}
-			u32tmp = (uint32_t)htonl((uint32_t)s->tags.size());
-			fwrite(&u32tmp, sizeof(uint32_t), 1, output);
-			CompositeTagHashSet::const_iterator comp_iter;
-			for (comp_iter = s->tags.begin() ; comp_iter != s->tags.end() ; comp_iter++) {
-				u32tmp = (uint32_t)htonl((*comp_iter)->number);
+			foreach (AnyTagVector, s->tags_list, iter, iter_end) {
+				u8tmp = iter->which;
+				fwrite(&u8tmp, sizeof(uint8_t), 1, output);
+				u32tmp = (uint32_t)htonl((uint32_t)iter->number());
 				fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 			}
 		}
 		else {
 			u8tmp = (uint8_t)1;
 			fwrite(&u8tmp, sizeof(uint8_t), 1, output);
+
 			u32tmp = (uint32_t)htonl((uint32_t)s->set_ops.size());
 			fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 			for (uint32_t i=0;i<s->set_ops.size();i++) {
 				u32tmp = (uint32_t)htonl((uint32_t)s->set_ops.at(i));
 				fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 			}
+
 			u32tmp = (uint32_t)htonl((uint32_t)s->sets.size());
 			fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 			for (uint32_t i=0;i<s->sets.size();i++) {
@@ -264,19 +255,10 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 		u32tmp = (uint32_t)htonl((uint32_t)r->childset2);
 		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
-
-		u32tmp = (uint32_t)htonl((uint32_t)r->maplist.size());
+		u32tmp = (uint32_t)htonl((uint32_t)r->maplist);
 		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
-		const_foreach (TagList, r->maplist, liter1, liter1_end) {
-			u32tmp = (uint32_t)htonl((*liter1)->hash);
-			fwrite(&u32tmp, sizeof(uint32_t), 1, output);
-		}
-		u32tmp = (uint32_t)htonl((uint32_t)r->sublist.size());
+		u32tmp = (uint32_t)htonl((uint32_t)r->sublist);
 		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
-		const_foreach (uint32List, r->sublist, liter2, liter2_end) {
-			u32tmp = (uint32_t)htonl((uint32_t)*liter2);
-			fwrite(&u32tmp, sizeof(uint32_t), 1, output);
-		}
 
 		if (r->dep_target) {
 			u8tmp = (uint8_t)1;

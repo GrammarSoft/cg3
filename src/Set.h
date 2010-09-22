@@ -53,7 +53,7 @@ namespace CG3 {
 		mutable double total_time;
 		UString name;
 
-		uint32Set tags_set;
+		AnyTagVector tags_list;
 		CompositeTagHashSet tags;
 		TagHashSet single_tags;
 		uint32SortedVector single_tags_hash;
@@ -69,6 +69,7 @@ namespace CG3 {
 		void setName(const UChar *to);
 		void setName(const UString& to);
 
+		bool empty() const;
 		uint32_t rehash();
 		void resetStatistics();
 		void reindex(Grammar& grammar);

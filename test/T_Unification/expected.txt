@@ -25,12 +25,12 @@
 ;	"wordg" some tags SELECT:this 
 ;	"wordg" some tags ALSONOTTHIS SELECT:this 
 "<wordh>"
-	"wordh" some tags <Hprof> SELECT:regex 
+	"wordh" some tags <Hprof> AA CC EE THIS SELECT:regex ADD:23 ADD:25 
 ;	"wordh" some tags SELECT:regex 
 ;	"wordh" some tags SELECT:regex 
 "<wordi>"
-	"wordi" some tags 
-	"wordi" some tags <Hfam> 
+	"wordi" some tags THIS ADD:23 ADD:24 SUBSTITUTE:26 
+	"wordi" some tags <Hfam> THIS ADD:23 ADD:24 SUBSTITUTE:26 
 "<$.>"
 	"." 
 

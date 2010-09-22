@@ -119,7 +119,7 @@ void Grammar::addSet(Set *to) {
 	}
 
 	// If there are failfast tags, and if they don't comprise the whole of the set, split the set into Positive - Negative
-	if (!to->ff_tags.empty() && to->ff_tags.size() < to->tags_set.size()) {
+	if (!to->ff_tags.empty() && to->ff_tags.size() < to->tags_list.size()) {
 		Set *positive = allocateSet(to);
 		Set *negative = allocateSet();
 
@@ -137,7 +137,14 @@ void Grammar::addSet(Set *to) {
 
 		TagSet tags;
 		foreach (TagHashSet, to->ff_tags, iter, iter_end) {
-			positive->tags_set.erase((*iter)->hash);
+			for (AnyTagVector::iterator ater = positive->tags_list.begin() ; ater != positive->tags_list.end() ; ) {
+				if (ater->hash() == (*iter)->hash) {
+					ater = positive->tags_list.erase(ater);
+				}
+				else {
+					++ater;
+				}
+			}
 			positive->single_tags.erase(*iter);
 			positive->single_tags_hash.erase((*iter)->hash);
 			UString str = (*iter)->toUString(true);
@@ -153,7 +160,7 @@ void Grammar::addSet(Set *to) {
 		addSet(negative);
 
 		to->tags.clear();
-		to->tags_set.clear();
+		to->tags_list.clear();
 		to->single_tags.clear();
 		to->single_tags_hash.clear();
 		to->ff_tags.clear();
@@ -213,20 +220,24 @@ void Grammar::addSet(Set *to) {
 	}
 }
 
-Set *Grammar::getSet(uint32_t which) {
-	Set *retval = 0;
-	if (sets_by_contents.find(which) != sets_by_contents.end()) {
-		retval = sets_by_contents[which];
+Set *Grammar::getSet(uint32_t which) const {
+	Setuint32HashMap::const_iterator iter = sets_by_contents.find(which);
+	if (iter != sets_by_contents.end()) {
+		return iter->second;
 	}
-	else if (sets_by_name.find(which) != sets_by_name.end()) {
-		if (set_name_seeds.find(which) != set_name_seeds.end()) {
-			retval = getSet(sets_by_name[which+set_name_seeds[which]]);
-		}
-		else {
-			retval = getSet(sets_by_name[which]);
+	else {
+		uint32HashMap::const_iterator iter = sets_by_name.find(which);
+		if (iter != sets_by_name.end()) {
+			uint32HashMap::const_iterator iter2 = set_name_seeds.find(which);
+			if (iter2 != set_name_seeds.end()) {
+				return getSet(iter->second + iter2->second);
+			}
+			else {
+				return getSet(iter->second);
+			}
 		}
 	}
-	return retval;
+	return 0;
 }
 
 Set *Grammar::allocateSet(Set *from) {
@@ -291,7 +302,7 @@ CompositeTag *Grammar::addCompositeTagToSet(Set *set, CompositeTag *tag) {
 		}
 		else {
 			tag = addCompositeTag(tag);
-			set->tags_set.insert(tag->hash);
+			set->tags_list.push_back(tag);
 			set->tags.insert(tag);
 			if (tag->is_special) {
 				set->type |= ST_SPECIAL;
@@ -387,7 +398,7 @@ void Grammar::addTagToCompositeTag(Tag *simpletag, CompositeTag *tag) {
 }
 
 void Grammar::addTagToSet(Tag *rtag, Set *set) {
-	set->tags_set.insert(rtag->hash);
+	set->tags_list.push_back(rtag);
 	set->single_tags.insert(rtag);
 	set->single_tags_hash.insert(rtag->hash);
 
@@ -478,6 +489,14 @@ void Grammar::reindex(bool unused_sets) {
 		}
 		if (iter_rule->second->childset2) {
 			s = getSet(iter_rule->second->childset2);
+			s->markUsed(*this);
+		}
+		if (iter_rule->second->maplist) {
+			s = getSet(iter_rule->second->maplist);
+			s->markUsed(*this);
+		}
+		if (iter_rule->second->sublist) {
+			s = getSet(iter_rule->second->sublist);
 			s->markUsed(*this);
 		}
 		if (iter_rule->second->dep_target) {
@@ -581,9 +600,9 @@ void Grammar::reindex(bool unused_sets) {
 			addSetToList(tset->second);
 			if (tset->second->sets.empty()) {
 				++num_lists;
-				num_it += tset->second->tags_set.size();
-				max_it = std::max(max_it, tset->second->tags_set.size());
-				cnt_it[tset->second->tags_set.size()]++;
+				num_it += tset->second->tags_list.size();
+				max_it = std::max(max_it, tset->second->tags_list.size());
+				cnt_it[tset->second->tags_list.size()]++;
 			}
 			else {
 				++num_sets;

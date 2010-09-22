@@ -43,6 +43,13 @@ TextualParser::TextualParser(Grammar& res, UFILE *ux_err) {
 }
 
 int TextualParser::parseTagList(UChar *& p, Set *s, const bool isinline) {
+	if (isinline) {
+		if (*p != '(') {
+			u_fprintf(ux_stderr, "Error: Missing opening ( on line %u!\n", result->lines);
+			CG3Quit(1);
+		}
+		++p;
+	}
 	while (*p && *p != ';' && *p != ')') {
 		result->lines += SKIPWS(p, ';', ')');
 		if (*p && *p != ';' && *p != ')') {
@@ -96,7 +103,12 @@ int TextualParser::parseTagList(UChar *& p, Set *s, const bool isinline) {
 						CG3Quit(1);
 					}
 				}
-				result->lines += SKIPTOWS(n, 0, true);
+				if (isinline) {
+					result->lines += SKIPTOWS(n, ')', true);
+				}
+				else {
+					result->lines += SKIPTOWS(n, 0, true);
+				}
 				ptrdiff_t c = n - p;
 				u_strncpy(&gbuffers[0][0], p, c);
 				gbuffers[0][c] = 0;
@@ -126,48 +138,10 @@ Set *TextualParser::parseSetInline(UChar *& p, Set *s) {
 		if (*p && *p != ';' && *p != ')') {
 			if (!wantop) {
 				if (*p == '(') {
-					++p;
 					Set *set_c = result->allocateSet();
 					set_c->line = result->lines;
 					set_c->setName(sets_counter++);
-					TagVector tags;
-
-					while (*p && *p != ';' && *p != ')') {
-						result->lines += SKIPWS(p, ';', ')');
-						UChar *n = p;
-						if (*n == '"') {
-							n++;
-							result->lines += SKIPTO_NOSPAN(n, '"');
-							if (*n != '"') {
-								u_fprintf(ux_stderr, "Error: Missing closing \" on line %u!\n", result->lines);
-								CG3Quit(1);
-							}
-						}
-						result->lines += SKIPTOWS(n, ')', true);
-						ptrdiff_t c = n - p;
-						u_strncpy(&gbuffers[0][0], p, c);
-						gbuffers[0][c] = 0;
-						Tag *t = result->allocateTag(&gbuffers[0][0]);
-						tags.push_back(t);
-						p = n;
-						result->lines += SKIPWS(p, ';', ')');
-					}
-					if (*p != ')') {
-						u_fprintf(ux_stderr, "Error: Missing closing ) on line %u!\n", result->lines);
-						CG3Quit(1);
-					}
-					++p;
-
-					if (tags.size() == 1) {
-						result->addTagToSet(tags.back(), set_c);
-					}
-					else {
-						CompositeTag *ct = result->allocateCompositeTag();
-						foreach (TagVector, tags, tvi, tvi_end) {
-							result->addTagToCompositeTag(*tvi, ct);
-						}
-						result->addCompositeTagToSet(set_c, ct);
-					}
+					parseTagList(p, set_c, true);
 					result->addSet(set_c);
 					sets.push_back(set_c->hash);
 				}
@@ -807,40 +781,16 @@ int TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 	result->lines += SKIPWS(p);
 
 	if (key == K_SUBSTITUTE) {
-		if (*p != '(') {
-			u_fprintf(ux_stderr, "Error: Tag list for %S must be in () on line %u!\n", keywords[key].getTerminatedBuffer(), result->lines);
+		Set *s = parseSetInlineWrapper(p);
+		rule->sublist = s->hash;
+		if (s->empty()) {
+			u_fprintf(ux_stderr, "Error: Empty substitute set on line %u!\n", result->lines);
 			CG3Quit(1);
 		}
-		++p;
-		result->lines += SKIPWS(p, ';', ')');
-		while (*p && *p != ';' && *p != ')') {
-			UChar *n = p;
-			if (*n == '"') {
-				n++;
-				result->lines += SKIPTO_NOSPAN(n, '"');
-				if (*n != '"') {
-					u_fprintf(ux_stderr, "Error: Missing closing \" on line %u!\n", result->lines);
-					CG3Quit(1);
-				}
-			}
-			result->lines += SKIPTOWS(n, ')', true);
-			ptrdiff_t c = n - p;
-			u_strncpy(&gbuffers[0][0], p, c);
-			gbuffers[0][c] = 0;
-			Tag *wform = result->allocateTag(&gbuffers[0][0]);
-			rule->sublist.push_back(wform->hash);
-			p = n;
-			result->lines += SKIPWS(p, ';', ')');
-		}
-		if (*p != ')') {
-			u_fprintf(ux_stderr, "Error: Missing closing ) on line %u!\n", result->lines);
+		if (s->tags_list.empty() && !(s->type & (ST_TAG_UNIFY|ST_SET_UNIFY|ST_CHILD_UNIFY))) {
+			u_fprintf(ux_stderr, "Error: Substitute set on line %u was neither unified nor of LIST type!\n", result->lines);
 			CG3Quit(1);
 		}
-		if (rule->sublist.empty()) {
-			u_fprintf(ux_stderr, "Error: Empty removal tag list on line %u!\n", result->lines);
-			CG3Quit(1);
-		}
-		++p;
 	}
 
 	result->lines += SKIPWS(p);
@@ -848,70 +798,30 @@ int TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 	|| key == K_ADDRELATIONS || key == K_ADDRELATION
 	|| key == K_SETRELATIONS || key == K_SETRELATION
 	|| key == K_REMRELATIONS || key == K_REMRELATION) {
-		if (*p != '(') {
-			u_fprintf(ux_stderr, "Error: Tag list for %S must be in () on line %u!\n", keywords[key].getTerminatedBuffer(), result->lines);
+		Set *s = parseSetInlineWrapper(p);
+		rule->maplist = s->hash;
+		if (s->empty()) {
+			u_fprintf(ux_stderr, "Error: Empty mapping set on line %u!\n", result->lines);
 			CG3Quit(1);
 		}
-		++p;
-		result->lines += SKIPWS(p, ';', ')');
-		while (*p && *p != ';' && *p != ')') {
-			UChar *n = p;
-			if (*n == '"') {
-				n++;
-				result->lines += SKIPTO_NOSPAN(n, '"');
-				if (*n != '"') {
-					u_fprintf(ux_stderr, "Error: Missing closing \" on line %u!\n", result->lines);
-					CG3Quit(1);
-				}
-			}
-			result->lines += SKIPTOWS(n, ')', true);
-			ptrdiff_t c = n - p;
-			u_strncpy(&gbuffers[0][0], p, c);
-			gbuffers[0][c] = 0;
-			Tag *wform = result->allocateTag(&gbuffers[0][0]);
-			rule->maplist.push_back(wform);
-			p = n;
-			result->lines += SKIPWS(p, ';', ')');
-		}
-		if (*p != ')') {
-			u_fprintf(ux_stderr, "Error: Missing closing ) on line %u!\n", result->lines);
+		if (s->tags_list.empty() && !(s->type & (ST_TAG_UNIFY|ST_SET_UNIFY|ST_CHILD_UNIFY))) {
+			u_fprintf(ux_stderr, "Error: Mapping set on line %u was neither unified nor of LIST type!\n", result->lines);
 			CG3Quit(1);
 		}
-		if (rule->maplist.empty()) {
-			u_fprintf(ux_stderr, "Error: Empty tag list on line %u!\n", result->lines);
-			CG3Quit(1);
-		}
-		++p;
 	}
 
 	result->lines += SKIPWS(p);
 	if (key == K_ADDRELATIONS || key == K_SETRELATIONS || key == K_REMRELATIONS) {
-		if (*p != '(') {
-			u_fprintf(ux_stderr, "Error: Tag list for %S must be in () on line %u!\n", keywords[key].getTerminatedBuffer(), result->lines);
+		Set *s = parseSetInlineWrapper(p);
+		rule->sublist = s->hash;
+		if (s->empty()) {
+			u_fprintf(ux_stderr, "Error: Empty relation set on line %u!\n", result->lines);
 			CG3Quit(1);
 		}
-		++p;
-		result->lines += SKIPWS(p, ';', ')');
-		while (*p && *p != ';' && *p != ')') {
-			UChar *n = p;
-			result->lines += SKIPTOWS(n, ')', true);
-			ptrdiff_t c = n - p;
-			u_strncpy(&gbuffers[0][0], p, c);
-			gbuffers[0][c] = 0;
-			Tag *wform = result->allocateTag(&gbuffers[0][0]);
-			rule->sublist.push_back(wform->hash);
-			p = n;
-			result->lines += SKIPWS(p, ';', ')');
-		}
-		if (*p != ')') {
-			u_fprintf(ux_stderr, "Error: Missing closing ) on line %u!\n", result->lines);
+		if (s->tags_list.empty() && !(s->type & (ST_TAG_UNIFY|ST_SET_UNIFY|ST_CHILD_UNIFY))) {
+			u_fprintf(ux_stderr, "Error: Relation set on line %u was neither unified nor of LIST type!\n", result->lines);
 			CG3Quit(1);
 		}
-		if (rule->sublist.empty()) {
-			u_fprintf(ux_stderr, "Error: Empty relation tag list on line %u!\n", result->lines);
-			CG3Quit(1);
-		}
-		++p;
 	}
 
 	result->lines += SKIPWS(p);

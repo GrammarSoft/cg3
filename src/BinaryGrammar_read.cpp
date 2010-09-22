@@ -205,30 +205,25 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 		if (u8tmp == 0) {
 			fread(&u32tmp, sizeof(uint32_t), 1, input);
 			u32tmp = (uint32_t)ntohl(u32tmp);
-			uint32_t num_single_tags = u32tmp;
-			for (uint32_t j=0 ; j<num_single_tags ; j++) {
+			uint32_t num_tags = u32tmp;
+			for (uint32_t j=0 ; j<num_tags ; j++) {
+				fread(&u8tmp, sizeof(uint8_t), 1, input);
 				fread(&u32tmp, sizeof(uint32_t), 1, input);
 				u32tmp = (uint32_t)ntohl(u32tmp);
-				s->single_tags.insert(grammar->single_tags_list.at(u32tmp));
-				s->single_tags_hash.insert(grammar->single_tags_list.at(u32tmp)->hash);
-				s->tags_set.insert(grammar->single_tags_list.at(u32tmp)->hash);
-			}
-			fread(&u32tmp, sizeof(uint32_t), 1, input);
-			u32tmp = (uint32_t)ntohl(u32tmp);
-			uint32_t num_ff_tags = u32tmp;
-			for (uint32_t j=0 ; j<num_ff_tags ; j++) {
-				fread(&u32tmp, sizeof(uint32_t), 1, input);
-				u32tmp = (uint32_t)ntohl(u32tmp);
-				s->ff_tags.insert(grammar->single_tags_list.at(u32tmp));
-			}
-			fread(&u32tmp, sizeof(uint32_t), 1, input);
-			u32tmp = (uint32_t)ntohl(u32tmp);
-			uint32_t num_comp_tags = u32tmp;
-			for (uint32_t j=0 ; j<num_comp_tags ; j++) {
-				fread(&u32tmp, sizeof(uint32_t), 1, input);
-				u32tmp = (uint32_t)ntohl(u32tmp);
-				s->tags.insert(grammar->tags_list.at(u32tmp));
-				s->tags_set.insert(grammar->tags_list.at(u32tmp)->hash);
+				if (u8tmp == ANYTAG_TAG) {
+					Tag *tag = grammar->single_tags_list.at(u32tmp);
+					s->single_tags.insert(tag);
+					s->single_tags_hash.insert(tag->hash);
+					s->tags_list.push_back(tag);
+					if (tag->type & T_FAILFAST) {
+						s->ff_tags.insert(tag);
+					}
+				}
+				else {
+					CompositeTag *tag = grammar->tags_list.at(u32tmp);
+					s->tags.insert(tag);
+					s->tags_list.push_back(tag);
+				}
 			}
 		}
 		else {
@@ -314,23 +309,10 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 		r->childset1 = (uint32_t)ntohl(u32tmp);
 		fread(&u32tmp, sizeof(uint32_t), 1, input);
 		r->childset2 = (uint32_t)ntohl(u32tmp);
-
 		fread(&u32tmp, sizeof(uint32_t), 1, input);
-		u32tmp = (uint32_t)ntohl(u32tmp);
-		uint32_t num_maps = u32tmp;
-		for (uint32_t j=0 ; j<num_maps ; j++) {
-			fread(&u32tmp, sizeof(uint32_t), 1, input);
-			u32tmp = (uint32_t)ntohl(u32tmp);
-			r->maplist.push_back(grammar->single_tags[u32tmp]);
-		}
+		r->maplist = (uint32_t)ntohl(u32tmp);
 		fread(&u32tmp, sizeof(uint32_t), 1, input);
-		u32tmp = (uint32_t)ntohl(u32tmp);
-		uint32_t num_subs = u32tmp;
-		for (uint32_t j=0 ; j<num_subs ; j++) {
-			fread(&u32tmp, sizeof(uint32_t), 1, input);
-			u32tmp = (uint32_t)ntohl(u32tmp);
-			r->sublist.push_back(u32tmp);
-		}
+		r->sublist = (uint32_t)ntohl(u32tmp);
 
 		fread(&u8tmp, sizeof(uint8_t), 1, input);
 		if (u8tmp == 1) {
