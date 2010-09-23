@@ -90,7 +90,7 @@ namespace CG3 {
 
 		void addPreferredTarget(UChar *to);
 
-		void addSet(Set *to);
+		void addSet(Set *& to);
 		Set *getSet(uint32_t which) const;
 		Set *allocateSet(Set *from = 0);
 		void destroySet(Set *set);

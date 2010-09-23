@@ -41,6 +41,7 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 	uint8_t u8tmp = 0;
 	UErrorCode err = U_ZERO_ERROR;
 	UConverter *conv = ucnv_open("UTF-8", &err);
+	std::ostringstream buffer;
 
 	fprintf(output, "CG3B");
 
@@ -219,45 +220,78 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 	rule_by_line.insert(grammar->rule_by_line.begin(), grammar->rule_by_line.end());
 	const_foreach (RuleByLineMap, rule_by_line, rule_iter, rule_iter_end) {
 		Rule *r = rule_iter->second;
-		i32tmp = (int32_t)htonl(r->section);
-		fwrite(&i32tmp, sizeof(int32_t), 1, output);
-		u32tmp = (uint32_t)htonl((uint32_t)r->type);
-		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
-		u32tmp = (uint32_t)htonl((uint32_t)r->line);
-		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
-		u32tmp = (uint32_t)htonl((uint32_t)r->flags);
-		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
+
+		uint32_t fields = 0;
+		buffer.str("");
+		buffer.clear();
+
+		if (r->section) {
+			fields |= (1 << 0);
+			writeSwapped(buffer, r->section);
+		}
+		if (r->type) {
+			fields |= (1 << 1);
+			writeSwapped(buffer, r->type);
+		}
+		if (r->line) {
+			fields |= (1 << 2);
+			writeSwapped(buffer, r->line);
+		}
+		if (r->flags) {
+			fields |= (1 << 3);
+			writeSwapped(buffer, r->flags);
+		}
 		if (r->name) {
+			fields |= (1 << 4);
 			ucnv_reset(conv);
 			i32tmp = ucnv_fromUChars(conv, &cbuffers[0][0], CG3_BUFFER_SIZE-1, r->name, u_strlen(r->name), &err);
-			u32tmp = (uint32_t)htonl((uint32_t)i32tmp);
-			fwrite(&u32tmp, sizeof(uint32_t), 1, output);
-			fwrite(&cbuffers[0][0], i32tmp, 1, output);
+			writeSwapped(buffer, i32tmp);
+			buffer.write(&cbuffers[0][0], i32tmp);
 		}
-		else {
-			u32tmp = (uint32_t)htonl((uint32_t)0);
-			fwrite(&u32tmp, sizeof(uint32_t), 1, output);
+		if (r->target) {
+			fields |= (1 << 5);
+			writeSwapped(buffer, r->target);
 		}
-		u32tmp = (uint32_t)htonl((uint32_t)r->target);
+		if (r->wordform) {
+			fields |= (1 << 6);
+			writeSwapped(buffer, r->wordform);
+		}
+		if (r->varname) {
+			fields |= (1 << 7);
+			writeSwapped(buffer, r->varname);
+		}
+		if (r->varvalue) {
+			fields |= (1 << 8);
+			writeSwapped(buffer, r->varvalue);
+		}
+		if (r->jumpstart) {
+			fields |= (1 << 9);
+			writeSwapped(buffer, r->jumpstart);
+		}
+		if (r->jumpend) {
+			fields |= (1 << 10);
+			writeSwapped(buffer, r->jumpend);
+		}
+		if (r->childset1) {
+			fields |= (1 << 11);
+			writeSwapped(buffer, r->childset1);
+		}
+		if (r->childset2) {
+			fields |= (1 << 12);
+			writeSwapped(buffer, r->childset2);
+		}
+		if (r->maplist) {
+			fields |= (1 << 13);
+			writeSwapped(buffer, r->maplist->number);
+		}
+		if (r->sublist) {
+			fields |= (1 << 14);
+			writeSwapped(buffer, r->sublist->number);
+		}
+
+		u32tmp = (uint32_t)htonl(fields);
 		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
-		u32tmp = (uint32_t)htonl((uint32_t)r->wordform);
-		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
-		u32tmp = (uint32_t)htonl((uint32_t)r->varname);
-		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
-		u32tmp = (uint32_t)htonl((uint32_t)r->varvalue);
-		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
-		u32tmp = (uint32_t)htonl((uint32_t)r->jumpstart);
-		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
-		u32tmp = (uint32_t)htonl((uint32_t)r->jumpend);
-		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
-		u32tmp = (uint32_t)htonl((uint32_t)r->childset1);
-		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
-		u32tmp = (uint32_t)htonl((uint32_t)r->childset2);
-		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
-		u32tmp = (uint32_t)htonl((uint32_t)r->maplist);
-		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
-		u32tmp = (uint32_t)htonl((uint32_t)r->sublist);
-		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
+		fwrite(buffer.str().c_str(), buffer.str().length(), 1, output);
 
 		if (r->dep_target) {
 			u8tmp = (uint8_t)1;
