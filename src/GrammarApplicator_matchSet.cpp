@@ -412,7 +412,7 @@ bool GrammarApplicator::doesSetMatchReading_tags(const Reading& reading, const S
 				match = TagSet_SubsetOf_TSet(ctag->tags_set, reading.tags);
 			}
 			else {
-				const_foreach (TagHashSet, ctag->tags, cter, cter_end) {
+				const_foreach (TagList, ctag->tags, cter, cter_end) {
 					bool inner = doesTagMatchReading(reading, **cter, unif_mode);
 					if ((*cter)->type & T_FAILFAST) {
 						inner = !inner;
