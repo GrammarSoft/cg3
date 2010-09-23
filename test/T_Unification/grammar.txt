@@ -23,4 +23,4 @@ AFTER-SECTIONS
 ADD &&USET (tags) (-7 &&USET) ;
 ADD &&USET (tags) (-8 &&USET) ;
 ADD $$TSet ("wordh") (-2C (some) + $$TSet) ;
-SUBSTITUTE &&USET $$TSet ("wordi") (-8 &&USET) (-2C (some) + $$TSet) ;
+SUBSTITUTE &&USET (<before>) + $$TSet + (<after>) ("wordi") (-8 &&USET) (-2C (some) + $$TSet) ;

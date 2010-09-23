@@ -29,8 +29,8 @@
 ;	"wordh" some tags SELECT:regex 
 ;	"wordh" some tags SELECT:regex 
 "<wordi>"
-	"wordi" some tags THIS ADD:23 ADD:24 SUBSTITUTE:26 
-	"wordi" some tags <Hfam> THIS ADD:23 ADD:24 SUBSTITUTE:26 
+	"wordi" some tags <before> THIS <after> ADD:23 ADD:24 SUBSTITUTE:26 
+	"wordi" some tags <Hfam> <before> THIS <after> ADD:23 ADD:24 SUBSTITUTE:26 
 "<$.>"
 	"." 
 
