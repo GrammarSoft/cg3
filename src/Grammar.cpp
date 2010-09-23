@@ -685,11 +685,11 @@ void Grammar::indexSetToRule(uint32_t r, Set *s) {
 		for (comp_iter = s->tags.begin() ; comp_iter != s->tags.end() ; comp_iter++) {
 			CompositeTag *curcomptag = *comp_iter;
 			if (curcomptag->tags.size() == 1) {
+				// ToDo: If this is ever run, something has gone wrong...
 				indexTagToRule((*(curcomptag->tags.begin()))->hash, r);
 			}
 			else {
-				TagSet::const_iterator tag_iter;
-				for (tag_iter = curcomptag->tags_set.begin() ; tag_iter != curcomptag->tags_set.end() ; tag_iter++) {
+				const_foreach (TagList, curcomptag->tags, tag_iter, tag_iter_end) {
 					indexTagToRule((*tag_iter)->hash, r);
 				}
 			}
@@ -721,11 +721,11 @@ void Grammar::indexSets(uint32_t r, Set *s) {
 		for (comp_iter = s->tags.begin() ; comp_iter != s->tags.end() ; comp_iter++) {
 			CompositeTag *curcomptag = *comp_iter;
 			if (curcomptag->tags.size() == 1) {
+				// ToDo: If this is ever run, something has gone wrong...
 				indexTagToSet((*(curcomptag->tags.begin()))->hash, r);
 			}
 			else {
-				TagSet::const_iterator tag_iter;
-				for (tag_iter = curcomptag->tags_set.begin() ; tag_iter != curcomptag->tags_set.end() ; tag_iter++) {
+				const_foreach (TagList, curcomptag->tags, tag_iter, tag_iter_end) {
 					indexTagToSet((*tag_iter)->hash, r);
 				}
 			}

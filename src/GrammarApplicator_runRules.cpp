@@ -122,7 +122,7 @@ TagList GrammarApplicator::getTagList(const Set& theSet, bool unif_mode) const {
 			}
 			else if (grammar->tags.find(ihash) != grammar->tags.end()) {
 				CompositeTag *tag = grammar->tags.find(ihash)->second;
-				const_foreach (TagSet, tag->tags_set, tter, tter_end) {
+				const_foreach (TagList, tag->tags, tter, tter_end) {
 					theTags.push_back(*tter);
 				}
 			}
@@ -135,7 +135,7 @@ TagList GrammarApplicator::getTagList(const Set& theSet, bool unif_mode) const {
 			}
 			else {
 				CompositeTag *tag = tter->getCompositeTag();
-				const_foreach (TagSet, tag->tags_set, tter, tter_end) {
+				const_foreach (TagList, tag->tags, tter, tter_end) {
 					theTags.push_back(*tter);
 				}
 			}

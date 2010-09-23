@@ -149,7 +149,7 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 		for (uint32_t j=0 ; j<num_single_tags ; j++) {
 			fread(&u32tmp, sizeof(uint32_t), 1, input);
 			u32tmp = (uint32_t)ntohl(u32tmp);
-			curcomptag->tags.insert(grammar->single_tags_list.at(u32tmp));
+			curcomptag->tags.push_back(grammar->single_tags_list.at(u32tmp));
 			curcomptag->tags_set.insert(grammar->single_tags_list.at(u32tmp));
 		}
 		grammar->tags[curcomptag->hash] = curcomptag;

@@ -107,10 +107,9 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 		u8tmp = (uint8_t)curcomptag->is_special;
 		fwrite(&u8tmp, sizeof(uint8_t), 1, output);
 
-		u32tmp = (uint32_t)htonl((uint32_t)curcomptag->tags_set.size());
+		u32tmp = (uint32_t)htonl((uint32_t)curcomptag->tags.size());
 		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
-		TagSet::const_iterator tag_iter;
-		for (tag_iter = curcomptag->tags_set.begin() ; tag_iter != curcomptag->tags_set.end() ; tag_iter++) {
+		const_foreach (TagList, curcomptag->tags, tag_iter, tag_iter_end) {
 			u32tmp = (uint32_t)htonl((*tag_iter)->number);
 			fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 		}
