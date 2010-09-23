@@ -17,11 +17,11 @@
 "<word>"
 	"word" first #9->9 
 "<word>"
-	"word" startfourth #10->20 
+	"word" startfourth @neighbour-right #10->20 
 "<word>"
-	"word" startfirst #11->9 
+	"word" startfirst @self #11->9 
 "<word>"
-	"word" startsecond #12->14 
+	"word" startsecond @neighbour-left #12->14 
 "<word>"
 	"word" startthird #13->2 
 "<word>"
