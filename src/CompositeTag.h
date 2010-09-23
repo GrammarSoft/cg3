@@ -35,7 +35,7 @@ namespace CG3 {
 		uint32_t hash;
 		uint32_t number;
 		TagSet tags_set;
-		TagHashSet tags;
+		TagList tags;
 
 		CompositeTag();
 

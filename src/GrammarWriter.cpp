@@ -61,13 +61,13 @@ void GrammarWriter::printSet(UFILE *output, const Set& curset) {
 		for (comp_iter = curset.tags.begin() ; comp_iter != curset.tags.end() ; comp_iter++) {
 			CompositeTag *curcomptag = *comp_iter;
 			if (curcomptag->tags.size() == 1) {
+				// ToDo: If this is ever run, something has gone wrong...
 				printTag(output, **(curcomptag->tags.begin()));
 				u_fprintf(output, " ");
 			}
 			else {
 				u_fprintf(output, "(");
-				TagSet::const_iterator tag_iter;
-				for (tag_iter = curcomptag->tags_set.begin() ; tag_iter != curcomptag->tags_set.end() ; tag_iter++) {
+				const_foreach (TagList, curcomptag->tags, tag_iter, tag_iter_end) {
 					printTag(output, **tag_iter);
 					u_fprintf(output, " ");
 				}

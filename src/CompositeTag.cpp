@@ -34,7 +34,7 @@ number(0)
 }
 
 void CompositeTag::addTag(Tag *tag) {
-	tags.insert(tag);
+	tags.push_back(tag);
 	tags_set.insert(tag);
 	if (tag->type & T_SPECIAL) {
 		is_special = true;
@@ -43,7 +43,7 @@ void CompositeTag::addTag(Tag *tag) {
 
 uint32_t CompositeTag::rehash() {
 	uint32_t retval = 0;
-	foreach (TagSet, tags_set, iter, iter_end) {
+	foreach (TagList, tags, iter, iter_end) {
 		retval = hash_sdbm_uint32_t((*iter)->hash, retval);
 	}
 	hash = retval;
@@ -52,7 +52,7 @@ uint32_t CompositeTag::rehash() {
 
 void CompositeTag::markUsed() {
 	is_used = true;
-	foreach (TagSet, tags_set, itag, itag_end) {
+	foreach (TagList, tags, itag, itag_end) {
 		(*itag)->markUsed();
 	}
 }
