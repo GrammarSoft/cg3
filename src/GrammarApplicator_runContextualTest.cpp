@@ -335,10 +335,10 @@ Cohort *GrammarApplicator::runContextualTest(SingleWindow *sWindow, size_t posit
 
 			for (uint32_t i=1 ; left || right ; i++) {
 				if (left) {
-					bool brk = false;
+					brk = false;
 					cohort = runSingleTest(left, lpos-i, test, &brk, &retval, deep, origin);
 					if (brk && retval) {
-						break;
+						goto label_gotACohort;
 					}
 					else if (brk) {
 						left = 0;
@@ -356,10 +356,10 @@ Cohort *GrammarApplicator::runContextualTest(SingleWindow *sWindow, size_t posit
 					}
 				}
 				if (right) {
-					bool brk = false;
+					brk = false;
 					cohort = runSingleTest(right, rpos+i, test, &brk, &retval, deep, origin);
 					if (brk && retval) {
-						break;
+						goto label_gotACohort;
 					}
 					else if (brk) {
 						right = 0;
