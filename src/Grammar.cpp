@@ -346,7 +346,7 @@ Tag *Grammar::allocateTag() {
 
 Tag *Grammar::allocateTag(const UChar *txt, bool raw) {
 	if (txt[0] == '(') {
-		u_fprintf(ux_stderr, "Error: Tag '%S' cannot start with ( on line %u! If you really meant it, escape it as \\(.\n", txt, lines);
+		u_fprintf(ux_stderr, "Error: Tag '%S' cannot start with ( on line %u! Possible extra opening ( or missing closing ) to the left. If you really meant it, escape it as \\(.\n", txt, lines);
 		CG3Quit(1);
 	}
 	Taguint32HashMap::iterator it;
