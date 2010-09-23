@@ -1,0 +1,14 @@
+A new release of CG-3 has been tagged v0.9.7.6370.
+
+Main site is http://beta.visl.sdu.dk/cg3.html
+Google Group is http://groups.google.com/group/constraint-grammar
+Source snapshots available at http://beta.visl.sdu.dk/download/vislcg3/
+Windows binary is at http://beta.visl.sdu.dk/download/vislcg3/vislcg3-0.9.7.6370-win32.zip
+Mirror at http://groups.google.com/group/constraint-grammar/files
+
+Changes:
+- All from v0.9.7.6359 ( http://groups.google.com/group/constraint-grammar/browse_thread/thread/d7feaa086ec043d2 ) but will all Optimizations and the "composite tags in inline sets" rolled back.
+- Now bails out if a tag starts with ( as that is almost always an error.
+
+-- Tino Didriksen
+CG-3 Developer
