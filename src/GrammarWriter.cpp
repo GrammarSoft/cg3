@@ -237,11 +237,11 @@ void GrammarWriter::printRule(UFILE *to, const Rule& rule) {
 	}
 
 	if (rule.sublist) {
-		u_fprintf(to, "%S ", grammar->sets_by_contents.find(rule.sublist)->second->name.c_str());
+		u_fprintf(to, "%S ", rule.sublist->name.c_str());
 	}
 
 	if (rule.maplist) {
-		u_fprintf(to, "%S ", grammar->sets_by_contents.find(rule.maplist)->second->name.c_str());
+		u_fprintf(to, "%S ", rule.maplist->name.c_str());
 	}
 
 	if (rule.target) {

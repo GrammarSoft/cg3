@@ -40,6 +40,7 @@
 #include <iterator>
 #include <iostream>
 #include <ostream>
+#include <sstream>
 #include <cstdlib>
 #include <cstdio>
 #include <cstring>

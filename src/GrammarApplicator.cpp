@@ -338,9 +338,9 @@ void GrammarApplicator::printReading(const Reading *reading, UFILE *output) {
 				if (r->type == K_ADDRELATION || r->type == K_SETRELATION || r->type == K_REMRELATION
 				|| r->type == K_ADDRELATIONS || r->type == K_SETRELATIONS || r->type == K_REMRELATIONS
 					) {
-						u_fprintf(output, "(%S", grammar->getSet(r->maplist)->tags_list.front().getTag()->tag.c_str());
+						u_fprintf(output, "(%S", r->maplist->tags_list.front().getTag()->tag.c_str());
 						if (r->type == K_ADDRELATIONS || r->type == K_SETRELATIONS || r->type == K_REMRELATIONS) {
-							u_fprintf(output, ",%S", grammar->getSet(r->sublist)->tags_list.front().getTag()->tag.c_str());
+							u_fprintf(output, ",%S", r->sublist->tags_list.front().getTag()->tag.c_str());
 						}
 						u_fprintf(output, ")");
 				}

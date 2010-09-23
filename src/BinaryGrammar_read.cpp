@@ -277,42 +277,77 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 	uint32_t num_rules = u32tmp;
 	for (uint32_t i=0 ; i<num_rules ; i++) {
 		Rule *r = grammar->allocateRule();
-		fread(&i32tmp, sizeof(int32_t), 1, input);
-		r->section = (int32_t)ntohl(i32tmp);
+
+		uint32_t fields = 0;
 		fread(&u32tmp, sizeof(uint32_t), 1, input);
-		r->type = (KEYWORDS)ntohl(u32tmp);
-		fread(&u32tmp, sizeof(uint32_t), 1, input);
-		r->line = (uint32_t)ntohl(u32tmp);
-		fread(&u32tmp, sizeof(uint32_t), 1, input);
-		r->flags = (uint32_t)ntohl(u32tmp);
-		fread(&u32tmp, sizeof(uint32_t), 1, input);
-		u32tmp = (uint32_t)ntohl(u32tmp);
-		if (u32tmp) {
-			ucnv_reset(conv);
-			fread(&cbuffers[0][0], 1, u32tmp, input);
-			i32tmp = ucnv_toUChars(conv, &gbuffers[0][0], CG3_BUFFER_SIZE-1, &cbuffers[0][0], u32tmp, &err);
-			r->setName(&gbuffers[0][0]);
+		fields = (uint32_t)ntohl(u32tmp);
+
+		if (fields & (1 << 0)) {
+			fread(&i32tmp, sizeof(int32_t), 1, input);
+			r->section = (int32_t)ntohl(i32tmp);
 		}
-		fread(&u32tmp, sizeof(uint32_t), 1, input);
-		r->target = (uint32_t)ntohl(u32tmp);
-		fread(&u32tmp, sizeof(uint32_t), 1, input);
-		r->wordform = (uint32_t)ntohl(u32tmp);
-		fread(&u32tmp, sizeof(uint32_t), 1, input);
-		r->varname = (uint32_t)ntohl(u32tmp);
-		fread(&u32tmp, sizeof(uint32_t), 1, input);
-		r->varvalue = (uint32_t)ntohl(u32tmp);
-		fread(&u32tmp, sizeof(uint32_t), 1, input);
-		r->jumpstart = (uint32_t)ntohl(u32tmp);
-		fread(&u32tmp, sizeof(uint32_t), 1, input);
-		r->jumpend = (uint32_t)ntohl(u32tmp);
-		fread(&u32tmp, sizeof(uint32_t), 1, input);
-		r->childset1 = (uint32_t)ntohl(u32tmp);
-		fread(&u32tmp, sizeof(uint32_t), 1, input);
-		r->childset2 = (uint32_t)ntohl(u32tmp);
-		fread(&u32tmp, sizeof(uint32_t), 1, input);
-		r->maplist = (uint32_t)ntohl(u32tmp);
-		fread(&u32tmp, sizeof(uint32_t), 1, input);
-		r->sublist = (uint32_t)ntohl(u32tmp);
+		if (fields & (1 << 1)) {
+			fread(&u32tmp, sizeof(uint32_t), 1, input);
+			r->type = (KEYWORDS)ntohl(u32tmp);
+		}
+		if (fields & (1 << 2)) {
+			fread(&u32tmp, sizeof(uint32_t), 1, input);
+			r->line = (uint32_t)ntohl(u32tmp);
+		}
+		if (fields & (1 << 3)) {
+			fread(&u32tmp, sizeof(uint32_t), 1, input);
+			r->flags = (uint32_t)ntohl(u32tmp);
+		}
+		if (fields & (1 << 4)) {
+			fread(&u32tmp, sizeof(uint32_t), 1, input);
+			u32tmp = (uint32_t)ntohl(u32tmp);
+			if (u32tmp) {
+				ucnv_reset(conv);
+				fread(&cbuffers[0][0], 1, u32tmp, input);
+				i32tmp = ucnv_toUChars(conv, &gbuffers[0][0], CG3_BUFFER_SIZE-1, &cbuffers[0][0], u32tmp, &err);
+				r->setName(&gbuffers[0][0]);
+			}
+		}
+		if (fields & (1 << 5)) {
+			fread(&u32tmp, sizeof(uint32_t), 1, input);
+			r->target = (uint32_t)ntohl(u32tmp);
+		}
+		if (fields & (1 << 6)) {
+			fread(&u32tmp, sizeof(uint32_t), 1, input);
+			r->wordform = (uint32_t)ntohl(u32tmp);
+		}
+		if (fields & (1 << 7)) {
+			fread(&u32tmp, sizeof(uint32_t), 1, input);
+			r->varname = (uint32_t)ntohl(u32tmp);
+		}
+		if (fields & (1 << 8)) {
+			fread(&u32tmp, sizeof(uint32_t), 1, input);
+			r->varvalue = (uint32_t)ntohl(u32tmp);
+		}
+		if (fields & (1 << 9)) {
+			fread(&u32tmp, sizeof(uint32_t), 1, input);
+			r->jumpstart = (uint32_t)ntohl(u32tmp);
+		}
+		if (fields & (1 << 10)) {
+			fread(&u32tmp, sizeof(uint32_t), 1, input);
+			r->jumpend = (uint32_t)ntohl(u32tmp);
+		}
+		if (fields & (1 << 11)) {
+			fread(&u32tmp, sizeof(uint32_t), 1, input);
+			r->childset1 = (uint32_t)ntohl(u32tmp);
+		}
+		if (fields & (1 << 12)) {
+			fread(&u32tmp, sizeof(uint32_t), 1, input);
+			r->childset2 = (uint32_t)ntohl(u32tmp);
+		}
+		if (fields & (1 << 13)) {
+			fread(&u32tmp, sizeof(uint32_t), 1, input);
+			r->maplist = grammar->sets_list.at((uint32_t)ntohl(u32tmp));
+		}
+		if (fields & (1 << 14)) {
+			fread(&u32tmp, sizeof(uint32_t), 1, input);
+			r->sublist = grammar->sets_list.at((uint32_t)ntohl(u32tmp));
+		}
 
 		fread(&u8tmp, sizeof(uint8_t), 1, input);
 		if (u8tmp == 1) {

@@ -158,6 +158,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, uint32
 	typedef stdext::hash_map<uint32_t,Reading*> readings_plain_t;
 	readings_plain_t readings_plain;
 
+	// ToDo: Must be able to eliminate this with using only valid_rules and a max
 	uint32Vector intersects;
 	intersectInitialize(rules, current.valid_rules, intersects);
 
@@ -192,7 +193,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, uint32
 			tstamp = getticks();
 		}
 
-		const Set& set = *(grammar->getSet(rule.target)); //*(grammar->sets_by_contents.find(rule.target)->second);
+		const Set& set = *(grammar->getSet(rule.target));
 
 		// ToDo: Make better use of rules_by_tag
 
@@ -461,7 +462,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, uint32
 						reading.hit_by.push_back(rule.line);
 						reading.noprint = false;
 						TagList mappings;
-						const TagList theTags = getTagList(*(grammar->getSet(rule.maplist)));
+						const TagList theTags = getTagList(*rule.maplist);
 						const_foreach (TagList, theTags, tter, tter_end) {
 							uint32_t hash = (*tter)->hash;
 							if ((*tter)->type & T_MAPPING || (*tter)->tag[0] == grammar->mapping_prefix) {
@@ -493,7 +494,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, uint32
 						reading.tags_list.push_back(reading.baseform);
 						reflowReading(reading);
 						TagList mappings;
-						TagList theTags = getTagList(*(grammar->getSet(rule.maplist)));
+						TagList theTags = getTagList(*rule.maplist);
 						const_foreach (TagList, theTags, tter, tter_end) {
 							uint32_t hash = (*tter)->hash;
 							if ((*tter)->type & T_MAPPING || (*tter)->tag[0] == grammar->mapping_prefix) {
@@ -519,7 +520,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, uint32
 
 						uint32_t tloc = 0;
 						size_t tagb = reading.tags_list.size();
-						TagList theTags = getTagList(*(grammar->getSet(rule.sublist)));
+						TagList theTags = getTagList(*rule.sublist);
 						const_foreach (TagList, theTags, tter, tter_end) {
 							if (!tloc) {
 								foreach (uint32List, reading.tags_list, tfind, tfind_end) {
@@ -547,7 +548,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, uint32
 								}
 							}
 							TagList mappings;
-							TagList theTags = getTagList(*(grammar->getSet(rule.maplist)));
+							TagList theTags = getTagList(*rule.maplist);
 							const_foreach (TagList, theTags, tter, tter_end) {
 								if ((*tter)->hash == grammar->tag_any) {
 									break;
@@ -582,7 +583,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, uint32
 						cReading->noprint = false;
 						addTagToReading(*cReading, cohort->wordform);
 						TagList mappings;
-						TagList theTags = getTagList(*(grammar->getSet(rule.maplist)));
+						TagList theTags = getTagList(*rule.maplist);
 						const_foreach (TagList, theTags, tter, tter_end) {
 							uint32_t hash = (*tter)->hash;
 							if ((*tter)->type & T_MAPPING || (*tter)->tag[0] == grammar->mapping_prefix) {
@@ -791,7 +792,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, uint32
 								index_ruleCohort_no.clear();
 								reading.hit_by.push_back(rule.line);
 								reading.noprint = false;
-								TagList theTags = getTagList(*(grammar->getSet(rule.maplist)));
+								TagList theTags = getTagList(*rule.maplist);
 								const_foreach (TagList, theTags, tter, tter_end) {
 									if (type == K_ADDRELATION) {
 										attach->type |= CT_RELATED;
@@ -836,8 +837,8 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, uint32
 								index_ruleCohort_no.clear();
 								reading.hit_by.push_back(rule.line);
 								reading.noprint = false;
-								TagList sublist = getTagList(*(grammar->getSet(rule.sublist)));
-								TagList maplist = getTagList(*(grammar->getSet(rule.maplist)));
+								TagList sublist = getTagList(*rule.sublist);
+								TagList maplist = getTagList(*rule.maplist);
 								for (TagList::const_iterator tter=maplist.begin(), ster=sublist.begin() ; tter != maplist.end() && ster != sublist.end() ; ++tter, ++ster) {
 									if (type == K_ADDRELATIONS) {
 										attach->type |= CT_RELATED;
