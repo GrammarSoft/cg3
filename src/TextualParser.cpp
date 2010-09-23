@@ -820,6 +820,7 @@ int TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 
 	if (key == K_SUBSTITUTE) {
 		Set *s = parseSetInlineWrapper(p);
+		s->reindex(*result);
 		rule->sublist = s->hash;
 		if (s->empty()) {
 			u_fprintf(ux_stderr, "Error: Empty substitute set on line %u!\n", result->lines);
@@ -837,6 +838,7 @@ int TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 	|| key == K_SETRELATIONS || key == K_SETRELATION
 	|| key == K_REMRELATIONS || key == K_REMRELATION) {
 		Set *s = parseSetInlineWrapper(p);
+		s->reindex(*result);
 		rule->maplist = s->hash;
 		if (s->empty()) {
 			u_fprintf(ux_stderr, "Error: Empty mapping set on line %u!\n", result->lines);
@@ -851,6 +853,7 @@ int TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 	result->lines += SKIPWS(p);
 	if (key == K_ADDRELATIONS || key == K_SETRELATIONS || key == K_REMRELATIONS) {
 		Set *s = parseSetInlineWrapper(p);
+		s->reindex(*result);
 		rule->sublist = s->hash;
 		if (s->empty()) {
 			u_fprintf(ux_stderr, "Error: Empty relation set on line %u!\n", result->lines);
