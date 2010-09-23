@@ -286,6 +286,62 @@ inline bool index_matches(const Cont& index, const VT& entry) {
 	return (index.find(entry) != index.end());
 }
 
+#ifdef _MSC_VER
+	// warning C4127: conditional expression is constant
+	#pragma warning (disable: 4127)
+#endif
+
+template<typename T>
+inline void writeSwapped(std::ostream& stream, const T& value) {
+	if (sizeof(T) == 1) {
+		stream.write(reinterpret_cast<const char*>(&value), sizeof(T));
+	}
+	else if (sizeof(T) == 2) {
+		uint16_t tmp = static_cast<uint16_t>(htons(static_cast<uint16_t>(value)));
+		stream.write(reinterpret_cast<const char*>(&tmp), sizeof(T));
+	}
+	else if (sizeof(T) == 4) {
+		uint32_t tmp = static_cast<uint32_t>(htonl(static_cast<uint32_t>(value)));
+		stream.write(reinterpret_cast<const char*>(&tmp), sizeof(T));
+	}
+	else {
+		throw std::runtime_error("Unhandled type size in writeSwapped()");
+	}
+	if (!stream) {
+		throw std::runtime_error("Stream was in bad state in writeSwapped()");
+	}
+}
+
+template<typename T>
+inline T readSwapped(std::istream& stream) {
+	if (sizeof(T) == 1) {
+		uint8_t tmp = 0;
+		stream.read(reinterpret_cast<const char*>(&tmp), sizeof(T));
+		return static_cast<T>(tmp);
+	}
+	else if (sizeof(T) == 2) {
+		uint16_t tmp = 0;
+		stream.read(reinterpret_cast<const char*>(&tmp), sizeof(T));
+		return static_cast<T>(ntohs(tmp));
+	}
+	else if (sizeof(T) == 4) {
+		uint32_t tmp = 0;
+		stream.read(reinterpret_cast<const char*>(&tmp), sizeof(T));
+		return static_cast<T>(ntohl(tmp));
+	}
+	else {
+		throw std::runtime_error("Unhandled type size in readSwapped()");
+	}
+	if (!stream) {
+		throw std::runtime_error("Stream was in bad state in readSwapped()");
+	}
+	return T();
+}
+
+#ifdef _MSC_VER
+	// warning C4127: conditional expression is constant
+	#pragma warning (default: 4127)
+#endif
 }
 
 #endif

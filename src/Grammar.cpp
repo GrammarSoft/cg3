@@ -107,7 +107,7 @@ void Grammar::addPreferredTarget(UChar *to) {
 	preferred_targets.push_back(tag->hash);
 }
 
-void Grammar::addSet(Set *to) {
+void Grammar::addSet(Set *& to) {
 	if (!delimiters && u_strcmp(to->name.c_str(), stringbits[S_DELIMITSET].getTerminatedBuffer()) == 0) {
 		delimiters = to;
 	}
@@ -211,13 +211,17 @@ void Grammar::addSet(Set *to) {
 	}
 	else {
 		Set *a = sets_by_contents.find(chash)->second;
-		if ((a->type & (ST_SPECIAL|ST_TAG_UNIFY|ST_CHILD_UNIFY|ST_SET_UNIFY)) != (to->type & (ST_SPECIAL|ST_TAG_UNIFY|ST_CHILD_UNIFY|ST_SET_UNIFY))
-		|| a->set_ops.size() != to->set_ops.size() || a->sets.size() != to->sets.size()
-		|| a->single_tags.size() != to->single_tags.size() || a->tags.size() != to->tags.size()) {
-			u_fprintf(ux_stderr, "Error: Content hash collision between set %S line %u and %S line %u!\n", a->name.c_str(), a->line, to->name.c_str(), to->line);
-			CG3Quit(1);
+		if (a != to) {
+			if ((a->type & (ST_SPECIAL|ST_TAG_UNIFY|ST_CHILD_UNIFY|ST_SET_UNIFY)) != (to->type & (ST_SPECIAL|ST_TAG_UNIFY|ST_CHILD_UNIFY|ST_SET_UNIFY))
+			|| a->set_ops.size() != to->set_ops.size() || a->sets.size() != to->sets.size()
+			|| a->single_tags.size() != to->single_tags.size() || a->tags.size() != to->tags.size()) {
+				u_fprintf(ux_stderr, "Error: Content hash collision between set %S line %u and %S line %u!\n", a->name.c_str(), a->line, to->name.c_str(), to->line);
+				CG3Quit(1);
+			}
+			destroySet(to);
 		}
 	}
+	to = sets_by_contents[chash];
 }
 
 Set *Grammar::getSet(uint32_t which) const {
@@ -496,12 +500,10 @@ void Grammar::reindex(bool unused_sets) {
 			s->markUsed(*this);
 		}
 		if (iter_rule->second->maplist) {
-			s = getSet(iter_rule->second->maplist);
-			s->markUsed(*this);
+			iter_rule->second->maplist->markUsed(*this);
 		}
 		if (iter_rule->second->sublist) {
-			s = getSet(iter_rule->second->sublist);
-			s->markUsed(*this);
+			iter_rule->second->sublist->markUsed(*this);
 		}
 		if (iter_rule->second->dep_target) {
 			iter_rule->second->dep_target->markUsed(*this);

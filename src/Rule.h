@@ -32,6 +32,7 @@ namespace CG3 {
 
 	class Grammar;
 	class ContextualTest;
+	class Set;
 
 	// This must be kept in lock-step with Strings.h's FLAGS
 	enum RULE_FLAGS {
@@ -72,8 +73,8 @@ namespace CG3 {
 		// ToDo: Add proper "quality" quantifier based on num_fail, num_match, total_time
 		double weight, quality;
 		KEYWORDS type;
-		uint32_t maplist;
-		uint32_t sublist;
+		Set *maplist;
+		Set *sublist;
 		
 		mutable ContextualTest *test_head;
 		mutable ContextualTest *dep_test_head;
