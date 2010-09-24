@@ -30,6 +30,15 @@
 
 namespace CG3 {
 
+/**
+ * Tests whether one uint32SortedVector intersects with another uint32SortedVector.
+ *
+ * In the http://beta.visl.sdu.dk/cg3_performance.html test data, this function is executed 845055 times,
+ * of which 54714 (6.5%) return true.
+ *
+ * @param[in] first A uint32SortedVector
+ * @param[in] second A uint32SortedVector
+ */
 bool uint32SortedVector_Intersects(const uint32SortedVector& first, const uint32SortedVector& second) {
 	uint32SortedVector::const_iterator iiter = first.begin();
 	uint32SortedVector::const_iterator oiter = second.begin();
@@ -47,6 +56,15 @@ bool uint32SortedVector_Intersects(const uint32SortedVector& first, const uint32
 	return false;
 }
 
+/**
+ * Tests whether one set is a subset of another set, specialized for TagSet.
+ *
+ * In the http://beta.visl.sdu.dk/cg3_performance.html test data, this function is executed 1516098 times,
+ * of which 23222 (1.5%) return true.
+ *
+ * @param[in] a The tags from the set
+ * @param[in] b The tags from the reading
+ */
 template<typename T>
 bool TagSet_SubsetOf_TSet(const TagSet& a, const T& b) {
 	/* This test is true 0.1% of the time. Not worth the trouble.
@@ -66,6 +84,16 @@ bool TagSet_SubsetOf_TSet(const TagSet& a, const T& b) {
 	return true;
 }
 
+/**
+ * Tests whether a given reading matches a given tag.
+ *
+ * In the http://beta.visl.sdu.dk/cg3_performance.html test data, this function is executed 1058428 times,
+ * of which 827259 are treated as raw tags.
+ *
+ * @param[in] reading The reading to test
+ * @param[in] tag The tag to test against
+ * @param[in] unif_mode Used to signal that a parent set was a $$unified set
+ */
 bool GrammarApplicator::doesTagMatchReading(const Reading& reading, const Tag& tag, bool unif_mode) {
 	bool retval = false;
 	bool match = false;
@@ -371,19 +399,33 @@ bool GrammarApplicator::doesTagMatchReading(const Reading& reading, const Tag& t
 	return retval;
 }
 
+/**
+ * Tests whether a given reading matches a given LIST set.
+ *
+ * In the http://beta.visl.sdu.dk/cg3_performance.html test data, this function is executed 1073969 times,
+ * of which 845055 are treated as simple intersect tests.
+ *
+ * @param[in] reading The reading to test
+ * @param[in] set The hash of the set to test against
+ * @param[in] unif_mode Used to signal that a parent set was a $$unified set
+ */
 bool GrammarApplicator::doesSetMatchReading_tags(const Reading& reading, const Set& theset, bool unif_mode) {
 	bool retval = false;
 
+	// If there are no special circumstances the first test boils down to finding whether the tag stores intersect
+	// 80% of calls try this first.
 	if (!(theset.type & ST_SPECIAL) && !unif_mode) {
 		retval = uint32SortedVector_Intersects(theset.single_tags_hash, reading.tags_plain);
 	}
 	else {
+		// Test whether any of the fail-fast tags match and bail out immediately if so
 		const_foreach (TagHashSet, theset.ff_tags, ster, ster_end) {
 			bool match = doesTagMatchReading(reading, **ster, unif_mode);
 			if (match) {
 				return false;
 			}
 		}
+		// Test whether any of the regular tags match
 		const_foreach (TagHashSet, theset.single_tags, ster, ster_end) {
 			if ((*ster)->type & T_FAILFAST) {
 				continue;
@@ -403,15 +445,19 @@ bool GrammarApplicator::doesSetMatchReading_tags(const Reading& reading, const S
 		}
 	}
 
+	// If we have still not reached a conclusion, it's time to test the composite tags.
 	if (!retval && !theset.tags.empty()) {
 		const_foreach (CompositeTagHashSet, theset.tags, ster, ster_end) {
 			bool match = true;
 			const CompositeTag *ctag = *ster;
 
+			// If no reason not to, try a simple subset test.
+			// 90% of all composite tags go straight in here.
 			if (!(ctag->is_special|unif_mode)) {
 				match = TagSet_SubsetOf_TSet(ctag->tags_set, reading.tags);
 			}
 			else {
+				// Check if any of the member tags do not match, and bail out of so.
 				const_foreach (TagList, ctag->tags, cter, cter_end) {
 					bool inner = doesTagMatchReading(reading, **cter, unif_mode);
 					if ((*cter)->type & T_FAILFAST) {
@@ -441,7 +487,21 @@ bool GrammarApplicator::doesSetMatchReading_tags(const Reading& reading, const S
 	return retval;
 }
 
-bool GrammarApplicator::doesSetMatchReading(Reading& reading, const uint32_t set, bool bypass_index, bool unif_mode) {
+/**
+ * Tests whether a given reading matches a given LIST or SET set.
+ *
+ * In the http://beta.visl.sdu.dk/cg3_performance.html test data, this function is executed 5746792 times,
+ * of which only 1700292 make it past the first index check.
+ *
+ * @param[in] reading The reading to test
+ * @param[in] set The hash of the set to test against
+ * @param[in] bypass_index Flag whether to bypass indexes; needed for certain tests, such as unification and sets with special tags
+ * @param[in] unif_mode Used to signal that a parent set was a $$unified set
+ */
+bool GrammarApplicator::doesSetMatchReading(const Reading& reading, const uint32_t set, bool bypass_index, bool unif_mode) {
+	// Check whether we have previously seen that this set matches or doesn't match this reading.
+	// These indexes are cleared every ((num_windows+4)*2+1) windows to avoid memory ballooning.
+	// Only 30% of tests get past this.
 	// ToDo: This is not good enough...while numeric tags are special, their failures can be indexed.
 	uint32_t ih = hash_sdbm_uint32_t(reading.hash, set);
 	if (!bypass_index && !unif_mode) {
@@ -460,16 +520,22 @@ bool GrammarApplicator::doesSetMatchReading(Reading& reading, const uint32_t set
 		tstamp = getticks();
 	}
 
+	// ToDo: Make all places have Set* directly so we don't need to perform this lookup.
 	Setuint32HashMap::const_iterator iter = grammar->sets_by_contents.find(set);
 	const Set& theset = *(iter->second);
 
+	// The (*) set always matches.
 	if (theset.type & ST_ANY) {
 		retval = true;
 	}
+	// If there are no sub-sets, it must be a LIST set.
 	else if (theset.sets.empty()) {
 		retval = doesSetMatchReading_tags(reading, theset, ((theset.type & ST_TAG_UNIFY)!=0)|unif_mode);
 	}
+	// &&unified sets
 	else if (theset.type & ST_SET_UNIFY) {
+		// ToDo: Handle multiple active &&sets at a time.
+		// First time, figure out all the sub-sets that match the reading and store them for later comparison
 		if (unif_sets_firstrun) {
 			Setuint32HashMap::const_iterator iter = grammar->sets_by_contents.find(theset.sets.at(0));
 			const Set& uset = *(iter->second);
@@ -484,6 +550,7 @@ bool GrammarApplicator::doesSetMatchReading(Reading& reading, const uint32_t set
 			retval = !unif_sets.empty();
 			unif_sets_firstrun = !retval;
 		}
+		// Subsequent times, test whether any of the previously stored sets match the reading
 		else {
 			uint32Set sets;
 			foreach (uint32Set, unif_sets, usi, usi_end) {
@@ -495,10 +562,14 @@ bool GrammarApplicator::doesSetMatchReading(Reading& reading, const uint32_t set
 		}
 	}
 	else {
+		// If all else fails, it must be a SET set.
+		// Loop through the sub-sets and apply the set operators
 		const size_t size = theset.sets.size();
 		for (size_t i=0;i<size;++i) {
 			bool match = doesSetMatchReading(reading, theset.sets.at(i), bypass_index, ((theset.type & ST_TAG_UNIFY)!=0)|unif_mode);
 			bool failfast = false;
+			// Operator OR does not modify match, so simply skip it.
+			// The result of doing so means that the other operators gain precedence.
 			while (i < size-1 && theset.set_ops.at(i) != S_OR) {
 				switch (theset.set_ops.at(i)) {
 					case S_PLUS:
@@ -554,6 +625,7 @@ bool GrammarApplicator::doesSetMatchReading(Reading& reading, const uint32_t set
 		theset.total_time += elapsed(tmp, tstamp);
 	}
 
+	// Store the result in the indexes in hopes that later runs can pull it directly from them.
 	if (retval) {
 		index_readingSet_yes.insert(ih);
 	}
