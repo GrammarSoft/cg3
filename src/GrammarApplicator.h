@@ -154,10 +154,10 @@ namespace CG3 {
 
 		bool updateRuleToCohorts(Cohort& c, const uint32_t& rsit);
 		void indexSingleWindow(SingleWindow& current);
-		int runGrammarOnWindow();
-		int runGrammarOnSingleWindow(SingleWindow& current);
+		void runGrammarOnWindow();
+		uint32_t runGrammarOnSingleWindow(SingleWindow& current);
 		void updateValidRules(const uint32SortedVector& rules, uint32Vector& intersects, const uint32_t& hash, Reading& reading);
-		uint32_t runRulesOnSingleWindow(SingleWindow& current, uint32SortedVector& rules);
+		uint32_t runRulesOnSingleWindow(SingleWindow& current, const uint32SortedVector& rules);
 
 		Cohort *runSingleTest(Cohort *cohort, const ContextualTest *test, bool *brk, bool *retval, Cohort **deep = 0, Cohort *origin = 0);
 		Cohort *runSingleTest(SingleWindow *sWindow, size_t i, const ContextualTest *test, bool *brk, bool *retval, Cohort **deep = 0, Cohort *origin = 0);
@@ -168,7 +168,7 @@ namespace CG3 {
 
 		bool doesTagMatchReading(const Reading& reading, const Tag& tag, bool unif_mode = false);
 		bool doesSetMatchReading_tags(const Reading& reading, const Set& theset, bool unif_mode = false);
-		bool doesSetMatchReading(Reading& reading, const uint32_t set, bool bypass_index = false, bool unif_mode = false);
+		bool doesSetMatchReading(const Reading& reading, const uint32_t set, bool bypass_index = false, bool unif_mode = false);
 		bool doesSetMatchCohortNormal(Cohort& cohort, const uint32_t set, uint32_t options = 0);
 		bool doesSetMatchCohortCareful(const Cohort& cohort, const uint32_t set, uint32_t options = 0);
 
