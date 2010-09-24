@@ -28,7 +28,7 @@
 namespace CG3 {
 	class Grammar;
 
-	enum CT_POS {
+	enum {
 		POS_CAREFUL        = (1 <<  0),
 		POS_NEGATE         = (1 <<  1),
 		POS_NOT            = (1 <<  2),

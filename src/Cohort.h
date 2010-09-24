@@ -33,7 +33,7 @@ namespace CG3 {
 	typedef std::map<uint32_t,uint32Set> RelationCtn;
 	typedef std::vector<Cohort*> CohortVector;
 
-	enum COHORT_TYPE {
+	enum {
 		CT_ENCLOSED       = (1 <<  0),
 		CT_RELATED        = (1 <<  1),
 		CT_REMOVED        = (1 <<  2),

@@ -26,29 +26,31 @@
 
 namespace CG3 {
 
-Rule::Rule() {
-	name = 0;
-	target = 0;
-	dep_target = 0;
-	line = 0;
-	wordform = 0;
-	num_fail = 0;
-	num_match = 0;
-	total_time = 0;
-	varname = 0;
-	varvalue = 0;
-	jumpstart = 0;
-	jumpend = 0;
-	weight = 0.0;
-	quality = 0.0;
-	type = K_IGNORE;
-	flags = 0;
-	test_head = 0;
-	dep_test_head = 0;
-	childset1 = 0;
-	childset2 = 0;
-	maplist = 0;
-	sublist = 0;
+Rule::Rule() :
+name(0),
+wordform(0),
+target(0),
+childset1(0),
+childset2(0),
+line(0),
+varname(0),
+varvalue(0),
+jumpstart(0),
+jumpend(0),
+flags(0),
+weight(0.0),
+quality(0.0),
+type(K_IGNORE),
+maplist(0),
+sublist(0),
+test_head(0),
+dep_test_head(0),
+num_fail(0),
+num_match(0),
+total_time(0),
+dep_target(0)
+{
+	// Nothing in the actual body...
 }
 
 Rule::~Rule() {
