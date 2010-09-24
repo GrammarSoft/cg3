@@ -156,7 +156,25 @@ TagList GrammarApplicator::getTagList(const Set& theSet, bool unif_mode) const {
 	return theTags;
 }
 
-uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, uint32SortedVector& rules) {
+/**
+ * Applies the passed rules to the passed SingleWindow.
+ *
+ * This function is called at least N*M times where N is number of sections in the grammar and M is the number of windows in the input.
+ * Possibly many more times, since if a section changes the state of the window the section is run again.
+ * Only when no further changes are caused at a level does it progress to next level.
+ *
+ * The loops in this function are increasingly explosive, despite efforts to contain them.
+ * In the http://beta.visl.sdu.dk/cg3_performance.html test data, this function is called 1015 times.
+ * The first loop (rules) is executed 3101728 times.
+ * The second loop (cohorts) is executed 11087278 times.
+ * The third loop (finding readings) is executed 11738927 times; of these, 1164585 (10%) match the rule target.
+ * The fourth loop (contextual test) is executed 1184009 times; of those, 1156322 (97%) fail their contexts.
+ * The fifth loop (acting on readings) is executed 41540 times.
+ *
+ * @param[in,out] current The window to apply rules on
+ * @param[in] rules The rules to apply
+ */
+uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const uint32SortedVector& rules) {
 	uint32_t retval = RV_NOTHING;
 	bool section_did_something = false;
 	bool delimited = false;
@@ -980,7 +998,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, uint32
 	return retval;
 }
 
-int GrammarApplicator::runGrammarOnSingleWindow(SingleWindow& current) {
+uint32_t GrammarApplicator::runGrammarOnSingleWindow(SingleWindow& current) {
 	if (!grammar->before_sections.empty() && !no_before_sections) {
 		uint32_t rv = runRulesOnSingleWindow(current, runsections[-1]);
 		if (rv & RV_DELIMITED) {
@@ -1023,7 +1041,7 @@ int GrammarApplicator::runGrammarOnSingleWindow(SingleWindow& current) {
 	return 0;
 }
 
-int GrammarApplicator::runGrammarOnWindow() {
+void GrammarApplicator::runGrammarOnWindow() {
 	SingleWindow *current = gWindow->current;
 	did_final_enclosure = false;
 
@@ -1112,7 +1130,7 @@ label_runGrammarOnWindow_begin:
 		}
 	}
 
-	int rv = runGrammarOnSingleWindow(*current);
+	uint32_t rv = runGrammarOnSingleWindow(*current);
 	if (rv & RV_DELIMITED) {
 		goto label_runGrammarOnWindow_begin;
 	}
@@ -1153,8 +1171,6 @@ label_runGrammarOnWindow_begin:
 			goto label_runGrammarOnWindow_begin;
 		}
 	}
-
-	return 0;
 }
 
 }
