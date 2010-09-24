@@ -187,6 +187,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, uint32
 		if (!apply_corrections && (rule.type == K_SUBSTITUTE || rule.type == K_APPEND)) {
 			continue;
 		}
+		// If there are parentheses and the rule is marked as only run on the final pass, skip if this is not it.
 		if (has_enclosures) {
 			if (rule.flags & RF_ENCL_FINAL && !did_final_enclosure) {
 				continue;
@@ -209,24 +210,35 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, uint32
 		for (CohortSet::iterator rocit = current.rule_to_cohorts.find(rule.line)->second.begin() ; rocit != current.rule_to_cohorts.find(rule.line)->second.end() ; ) {
 			Cohort *cohort = *rocit;
 			++rocit;
+			// If the current cohort is the initial >>> one, skip it.
 			if (cohort->local_number == 0) {
 				continue;
 			}
+			// If the cohort is removed, skip it...
+			// Removed cohorts are still in the precalculated rule_to_cohorts map,
+			// and it would take time to go through the whole map searching for the cohort.
+			// Haven't tested whether it is worth it...
 			if (cohort->type & CT_REMOVED) {
 				continue;
 			}
 
 			uint32_t c = cohort->local_number;
+			// If the cohort is temporarily unavailable due to parentheses, skip it.
 			if ((cohort->type & CT_ENCLOSED) || cohort->parent != &current) {
 				continue;
 			}
+			// If there are no readings, skip it.
+			// This is unlikely to happen as all cohorts will get a magic reading during input,
+			// and not many use the unsafe Remove rules.
 			if (cohort->readings.empty()) {
 				continue;
 			}
+			// If there is not even a remote chance the target set might match this cohort, skip it.
 			if (cohort->possible_sets.find(rule.target) == cohort->possible_sets.end()) {
 				continue;
 			}
 
+			// If there is only 1 reading left and it is a Select or safe Remove rule, skip it.
 			if (cohort->readings.size() == 1) {
 				if (type == K_SELECT) {
 					continue;
@@ -235,14 +247,18 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, uint32
 					continue;
 				}
 			}
+			// If it's a Delimit rule and we're at the final cohort, skip it.
 			if (type == K_DELIMIT && c == current.cohorts.size()-1) {
 				continue;
 			}
+			// If the rule has a wordform and it is not this one, skip it.
+			// ToDo: Is this even used still? updateRuleToCohorts() should handle this now.
 			if (rule.wordform && rule.wordform != cohort->wordform) {
 				rule.num_fail++;
 				continue;
 			}
 
+			// If the rule is only supposed to run inside a parentheses, check if cohort is.
 			if (rule.flags & RF_ENCL_INNER) {
 				if (!par_left_pos) {
 					continue;
@@ -251,12 +267,15 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, uint32
 					continue;
 				}
 			}
+			// ...and if the rule should only run outside parentheses, check if cohort is.
 			else if (rule.flags & RF_ENCL_OUTER) {
 				if (par_left_pos && cohort->local_number >= par_left_pos && cohort->local_number <= par_right_pos) {
 					continue;
 				}
 			}
 
+			// Check if on previous runs the rule did not match this cohort, and skip if that is the case.
+			// This cache is cleared if any rule causes any state change in the window.
 			uint32_t ih = hash_sdbm_uint32_t(rule.line, cohort->global_number);
 			if (index_matches(index_ruleCohort_no, ih)) {
 				continue;
@@ -266,6 +285,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, uint32
 			size_t num_active = 0;
 			size_t num_iff = 0;
 
+			// Assume that Iff rules are really Remove rules, until proven otherwise.
 			if (rule.type == K_IFF) {
 				type = K_REMOVE;
 			}
@@ -278,12 +298,16 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, uint32
 			if (!readings_plain.empty()) {
 				readings_plain.clear();
 			}
+			// Varstring capture groups exist on a per-cohort basis, since we may need them for mapping later.
 			if (!regexgrps.empty()) {
 				regexgrps.clear();
 			}
 
+			// This loop figures out which readings, if any, that are valid targets for the current rule
+			// Criteria for valid is that the reading must match both target and all contextual tests
 			foreach (ReadingList, cohort->readings, rter1, rter1_end) {
 				Reading *reading = *rter1;
+				// The state is stored in the readings themselves, so clear the old states
 				reading->matched_target = false;
 				reading->matched_tests = false;
 
@@ -293,6 +317,9 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, uint32
 				if (reading->noprint && !allow_magic_readings) {
 					continue;
 				}
+
+				// Check if any previous reading of this cohort had the same plain signature, and if so just copy their results
+				// This cache is cleared on a per-cohort basis
 				if (!(set.type & (ST_MAPPING|ST_CHILD_UNIFY)) && !readings_plain.empty()) {
 					readings_plain_t::const_iterator rpit = readings_plain.find(reading->hash_plain);
 					if (rpit != readings_plain.end()) {
@@ -305,6 +332,8 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, uint32
 					}
 				}
 
+				// Unification is done on a per-reading basis, so clear all unification state.
+				// ToDo: Doesn't this mess up the new sets-for-mapping?
 				unif_last_wordform = 0;
 				unif_last_baseform = 0;
 				unif_last_textual = 0;
@@ -318,19 +347,26 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, uint32
 
 				target = 0;
 				mark = cohort;
+				// Actually check if the reading is a valid target. First check if rule target matches...
 				if (rule.target && doesSetMatchReading(*reading, rule.target, (set.type & (ST_CHILD_UNIFY|ST_SPECIAL)) != 0)) {
 					target = cohort;
 					reading->matched_target = true;
 					matched_target = true;
 					bool good = true;
+					// If we didn't already run the contextual tests, run them now.
+					// This only needs to be done once per cohort as no current functionality exists to refer back to the exact reading.
 					if (!did_test) {
+						// Contextual tests are stored as a linked list, so looping through them looks a bit different.
 						ContextualTest *test = rule.test_head;
 						while (test) {
 							if (rule.flags & RF_RESETX || !(rule.flags & RF_REMEMBERX)) {
 								mark = cohort;
 							}
+							// Keeps track of where we have been, to prevent infinite recursion in trees with loops
 							dep_deep_seen.clear();
+							// Reset the counters for which types of CohortIterator we have in play
 							std::fill(ci_depths.begin(), ci_depths.end(), 0);
+							// Run the contextual test...
 							if (!(test->pos & POS_PASS_ORIGIN) && (no_pass_origin || (test->pos & POS_NO_PASS_ORIGIN))) {
 								test_good = (runContextualTest(&current, c, test, 0, cohort) != 0);
 							}
@@ -358,6 +394,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, uint32
 						good = test_good;
 					}
 					if (good) {
+						// We've found a match, so Iff should be treated as Select instead of Remove
 						if (rule.type == K_IFF) {
 							type = K_SELECT;
 						}
@@ -373,14 +410,16 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, uint32
 				readings_plain[reading->hash_plain] = reading;
 			}
 
+			// If none of the readings were valid targets, remove this cohort from the rule's possible cohorts.
 			if (num_active == 0 && (num_iff == 0 || rule.type != K_IFF)) {
 				if (!matched_target) {
-					--rocit;
-					current.rule_to_cohorts.find(rule.line)->second.erase(rocit++);
+					--rocit; // We have already incremented rocit earlier, so take one step back...
+					current.rule_to_cohorts.find(rule.line)->second.erase(rocit++); // ...and one step forward again
 				}
 				continue;
 			}
 
+			// All readings were valid targets, which means there is nothing to do for Select or safe Remove rules.
 			if (num_active == cohort->readings.size()) {
 				if (type == K_SELECT) {
 					continue;
@@ -390,36 +429,32 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, uint32
 				}
 			}
 
-			uint32_t did_append = 0;
+			uint32_t did_append = 0; // Only 1 Append per cohort should happen.
+			// Keep track of which readings got removed and selected
 			ReadingList removed;
 			ReadingList selected;
 
+			// Remember the current state so we can compare later to see if anything has changed
 			const size_t state_num_readings = cohort->readings.size();
 			const size_t state_num_removed = cohort->deleted.size();
 			const size_t state_num_delayed = cohort->delayed.size();
 			bool readings_changed = false;
 
+			// This loop acts on the result of the previous loop; letting the rules do their thing on the valid readings.
 			foreach (ReadingList, cohort->readings, rter2, rter2_end) {
 				Reading& reading = **rter2;
 				bool good = reading.matched_tests;
 				const uint32_t state_hash = reading.hash;
 
+				// Iff needs extra special care; if it is a Remove type and we matched the target, go ahead.
+				// If it had matched the tests it would have been Select type.
 				if (rule.type == K_IFF && type == K_REMOVE && reading.matched_target) {
 					rule.num_match++;
 					good = true;
 				}
 
-				if (type == K_REMOVE) {
-					if (good) {
-						removed.push_back(&reading);
-						index_ruleCohort_no.clear();
-						reading.hit_by.push_back(rule.line);
-						if (debug_level > 0) {
-							std::cerr << "DEBUG: Rule " << rule.line << " hit cohort " << cohort->local_number << std::endl;
-						}
-					}
-				}
-				else if (type == K_SELECT) {
+				// Select is also special as it will remove non-matching readings
+				if (type == K_SELECT) {
 					if (good) {
 						selected.push_back(&reading);
 						index_ruleCohort_no.clear();
@@ -436,8 +471,17 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, uint32
 						}
 					}
 				}
+				// Handle all other rule types normally, except that some will break out of the loop as they only make sense to do once per cohort.
 				else if (good) {
-					if (type == K_REMVARIABLE) {
+					if (type == K_REMOVE) {
+						removed.push_back(&reading);
+						index_ruleCohort_no.clear();
+						reading.hit_by.push_back(rule.line);
+						if (debug_level > 0) {
+							std::cerr << "DEBUG: Rule " << rule.line << " hit cohort " << cohort->local_number << std::endl;
+						}
+					}
+					else if (type == K_REMVARIABLE) {
 						u_fprintf(ux_stderr, "Info: RemVariable fired for %u.\n", rule.varname);
 						variables.erase(rule.varname);
 					}
@@ -873,10 +917,13 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, uint32
 				}
 			}
 
+			// We've marked all readings for removal, so check if the rule is unsafe and undo if not.
+			// Iff rules can slip through the previous checks and come all the way here.
 			if (type == K_REMOVE && removed.size() == cohort->readings.size() && (!unsafe || (rule.flags & RF_SAFE)) && !(rule.flags & RF_UNSAFE)) {
 				removed.clear();
 			}
 
+			// Actually remove readings from the cohort
 			if (!removed.empty()) {
 				if (rule.flags & RF_DELAYED) {
 					cohort->delayed.insert(cohort->delayed.end(), removed.begin(), removed.end());
@@ -893,8 +940,9 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, uint32
 					std::cerr << "DEBUG: Rule " << rule.line << " hit cohort " << cohort->local_number << std::endl;
 				}
 			}
+			// If there are any selected cohorts, just swap them in...
 			if (!selected.empty()) {
-				cohort->readings = selected;
+				cohort->readings.swap(selected);
 			}
 
 			// Cohort state has changed, so mark that the section did something
