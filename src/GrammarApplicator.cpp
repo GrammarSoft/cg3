@@ -29,62 +29,68 @@
 
 namespace CG3 {
 
-GrammarApplicator::GrammarApplicator(UFILE *ux_err) {
-	ux_stderr = ux_err;
-	always_span = false;
-	apply_mappings = true;
-	apply_corrections = true;
-	allow_magic_readings = true;
-	trace = false;
-	trace_name_only = false;
-	trace_no_removed = false;
-	trace_encl = false;
-	statistics = false;
-	dep_has_spanned = false;
-	dep_delimit = false;
-	dep_humanize = false;
-	dep_original = false;
-	dep_block_loops = true;
-	dep_block_crossing = false;
-	dep_highest_seen = 0;
-	has_dep = false;
-	verbosity_level = 0;
-	debug_level = 0;
-	num_windows = 2;
-	begintag = 0;
-	endtag = 0;
-	grammar = 0;
-	target = 0;
-	mark = 0;
-	attach_to = 0;
-	match_single = 0;
-	match_comp = 0;
-	match_sub = 0;
-	soft_limit = 300;
-	hard_limit = 500;
-	section_max_count = 0;
-	numLines = 0;
-	numWindows = 0;
-	numCohorts = 0;
-	numReadings = 0;
-	numsections = 0;
-	unif_last_wordform = 0;
-	unif_last_baseform = 0;
-	unif_last_textual = 0;
-	unif_sets_firstrun = false;
-	no_sections = false;
-	no_after_sections = false;
-	no_before_sections = false;
-	no_pass_origin = false;
-	has_enclosures = false;
-	did_final_enclosure = false;
-	did_index = false;
-	unsafe = false;
-	ordered = false;
-	show_end_tags = false;
-	unicode_tags = false;
+GrammarApplicator::GrammarApplicator(UFILE *ux_err) :
+always_span(false),
+apply_mappings(true),
+apply_corrections(true),
+no_before_sections(false),
+no_sections(false),
+no_after_sections(false),
+trace(false),
+trace_name_only(false),
+trace_no_removed(false),
+trace_encl(false),
+allow_magic_readings(true),
+no_pass_origin(false),
+unsafe(false),
+ordered(false),
+show_end_tags(false),
+unicode_tags(false),
+dep_has_spanned(false),
+dep_delimit(false),
+dep_humanize(false),
+dep_original(false),
+dep_block_loops(true),
+dep_block_crossing(false),
+num_windows(2),
+soft_limit(300),
+hard_limit(500),
+verbosity_level(0),
+debug_level(0),
+section_max_count(0),
+has_dep(false),
+dep_highest_seen(0),
+gWindow(0),
+grammar(0),
+ux_stderr(ux_err),
+numLines(0),
+numWindows(0),
+numCohorts(0),
+numReadings(0),
+did_index(false),
+numsections(0),
+ci_depths(4, 0),
+match_single(0),
+match_comp(0),
+match_sub(0),
+begintag(0),
+endtag(0),
+par_left_tag(0),
+par_right_tag(0),
+par_left_pos(0),
+par_right_pos(0),
+has_enclosures(false),
+did_final_enclosure(false),
+target(0),
+mark(0),
+attach_to(0),
+unif_last_wordform(0),
+unif_last_baseform(0),
+unif_last_textual(0),
+unif_sets_firstrun(false),
+statistics(false)
+{
 	gWindow = new Window(this);
-	ci_depths.resize(4, 0);
 }
 
 GrammarApplicator::~GrammarApplicator() {

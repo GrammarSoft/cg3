@@ -286,6 +286,13 @@ inline bool index_matches(const Cont& index, const VT& entry) {
 	return (index.find(entry) != index.end());
 }
 
+template<typename IT, typename OT>
+inline void insert_if_exists(IT& cont, const OT* other) {
+	if (other && !other->empty()) {
+		cont.insert(other->begin(), other->end());
+	}
+}
+
 #ifdef _MSC_VER
 	// warning C4127: conditional expression is constant
 	#pragma warning (disable: 4127)

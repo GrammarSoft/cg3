@@ -26,21 +26,24 @@
 
 namespace CG3 {
 
-Grammar::Grammar() {
-	has_dep = false;
-	has_encl_final = false;
-	is_binary = false;
-	lines = 0;
-	total_time = 0;
-	delimiters = 0;
-	soft_delimiters = 0;
-	tag_any = 0;
-	sets_any = 0;
-	rules_any = 0;
-	mapping_prefix = '@';
-	ux_stderr = 0;
-	ux_stdout = 0;
-	verbosity_level = 0;
+Grammar::Grammar() :
+ux_stderr(0),
+ux_stdout(0),
+has_dep(false),
+has_encl_final(false),
+is_binary(false),
+grammar_size(0),
+mapping_prefix('@'),
+lines(0),
+verbosity_level(0),
+total_time(0),
+rules_any(0),
+sets_any(0),
+delimiters(0),
+soft_delimiters(0),
+tag_any(0)
+{
+	// Nothing in the actual body...
 }
 
 Grammar::~Grammar() {

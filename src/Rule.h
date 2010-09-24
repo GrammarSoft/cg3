@@ -35,7 +35,7 @@ namespace CG3 {
 	class Set;
 
 	// This must be kept in lock-step with Strings.h's FLAGS
-	enum RULE_FLAGS {
+	enum {
 		RF_NEAREST      = (1 <<  0),
 		RF_ALLOWLOOP    = (1 <<  1),
 		RF_DELAYED      = (1 <<  2),

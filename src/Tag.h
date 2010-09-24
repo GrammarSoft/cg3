@@ -38,7 +38,7 @@ namespace CG3 {
 		NUM_OPS
 	};
 
-	enum TAG_TYPE {
+	enum {
 		T_ANY        = (1 <<  0),
 		T_NUMERICAL  = (1 <<  1),
 		T_MAPPING    = (1 <<  2),

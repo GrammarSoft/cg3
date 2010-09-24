@@ -258,9 +258,7 @@ int ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 				cReading = new Reading(cCohort);
 				cReading->baseform = begintag;
 				cReading->wordform = begintag;
-				if (grammar->sets_any && !grammar->sets_any->empty()) {
-					cReading->parent->possible_sets.insert(grammar->sets_any->begin(), grammar->sets_any->end());
-				}
+				insert_if_exists(cReading->parent->possible_sets, grammar->sets_any);
 				addTagToReading(*cReading, begintag);
 
 				cCohort->appendReading(cReading);
@@ -332,9 +330,7 @@ int ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 					cReading = new Reading(cCohort);
 					cReading->wordform = cCohort->wordform;
 
-					if (grammar->sets_any && !grammar->sets_any->empty()) {
-						cReading->parent->possible_sets.insert(grammar->sets_any->begin(), grammar->sets_any->end());
-					}
+					insert_if_exists(cReading->parent->possible_sets, grammar->sets_any);
 
 					addTagToReading(*cReading, cReading->wordform);
 					processReading(cReading, current_reading);
@@ -446,9 +442,7 @@ void ApertiumApplicator::processReading(Reading *cReading, const UChar *reading_
 	bool joined = false;
 	UChar join_idx = '0'; // Set the join index to the number '0' in ASCII/UTF-8
 
-	if (grammar->sets_any && !grammar->sets_any->empty()) {
-		cReading->parent->possible_sets.insert(grammar->sets_any->begin(), grammar->sets_any->end());
-	}
+	insert_if_exists(cReading->parent->possible_sets, grammar->sets_any);
 
 	// Look through the reading for the '#' symbol signifying that
 	// this is a multiword.

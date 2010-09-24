@@ -288,9 +288,7 @@ void GrammarApplicator::reflowReading(Reading& reading) {
 	reading.tags_plain_bloom.clear();
 	reading.mapping = 0;
 
-	if (grammar->sets_any && !grammar->sets_any->empty()) {
-		reading.parent->possible_sets.insert(grammar->sets_any->begin(), grammar->sets_any->end());
-	}
+	insert_if_exists(reading.parent->possible_sets, grammar->sets_any);
 
 	const_foreach (uint32List, reading.tags_list, tter, tter_end) {
 		addTagToReading(reading, *tter, false);
@@ -543,9 +541,7 @@ Cohort *GrammarApplicator::delimitAt(SingleWindow& current, Cohort *cohort) {
 	Reading *cReading = new Reading(cCohort);
 	cReading->baseform = begintag;
 	cReading->wordform = begintag;
-	if (grammar->sets_any && !grammar->sets_any->empty()) {
-		cReading->parent->possible_sets.insert(grammar->sets_any->begin(), grammar->sets_any->end());
-	}
+	insert_if_exists(cReading->parent->possible_sets, grammar->sets_any);
 	addTagToReading(*cReading, begintag);
 
 	cCohort->appendReading(cReading);

@@ -115,10 +115,6 @@ namespace CG3 {
 		stdext::hash_map<uint32_t,TopologyRightIter> topologyRightIters;
 		stdext::hash_map<uint32_t,DepParentIter> depParentIters;
 
-		static const uint32_t RV_NOTHING = 1;
-		static const uint32_t RV_SOMETHING = 2;
-		static const uint32_t RV_DELIMITED = 4;
-
 		uint32_t match_single, match_comp, match_sub;
 		uint32_t begintag, endtag;
 		uint32_t par_left_tag, par_right_tag;

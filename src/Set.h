@@ -30,7 +30,7 @@
 namespace CG3 {
 	class Grammar;
 
-	enum SET_TYPE {
+	enum {
 		ST_ANY             = (1 <<  0),
 		ST_SPECIAL         = (1 <<  1),
 		ST_TAG_UNIFY       = (1 <<  2),
