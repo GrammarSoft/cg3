@@ -77,7 +77,7 @@ namespace CG3 {
 		KEYWORD_COUNT
 	};
 
-	enum STRINGS {
+	enum {
 		S_IGNORE,
 		S_PIPE,
 		S_TO,
@@ -144,7 +144,7 @@ namespace CG3 {
 	};
 
 	// This must be kept in lock-step with Rule.h's RULE_FLAGS
-	enum FLAGS {
+	enum {
 		FL_NEAREST,
 		FL_ALLOWLOOP,
 		FL_DELAYED,

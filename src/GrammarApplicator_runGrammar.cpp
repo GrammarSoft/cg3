@@ -38,9 +38,7 @@ Reading *GrammarApplicator::initEmptyCohort(Cohort& cCohort) {
 	else {
 		cReading->baseform = cCohort.wordform;
 	}
-	if (grammar->sets_any && !grammar->sets_any->empty()) {
-		cReading->parent->possible_sets.insert(grammar->sets_any->begin(), grammar->sets_any->end());
-	}
+	insert_if_exists(cReading->parent->possible_sets, grammar->sets_any);
 	addTagToReading(*cReading, cCohort.wordform);
 	cReading->noprint = true;
 	cCohort.appendReading(cReading);
@@ -206,9 +204,7 @@ gotaline:
 				cReading = new Reading(cCohort);
 				cReading->baseform = begintag;
 				cReading->wordform = begintag;
-				if (grammar->sets_any && !grammar->sets_any->empty()) {
-					cReading->parent->possible_sets.insert(grammar->sets_any->begin(), grammar->sets_any->end());
-				}
+				insert_if_exists(cReading->parent->possible_sets, grammar->sets_any);
 				addTagToReading(*cReading, begintag);
 
 				cCohort->appendReading(cReading);
@@ -253,9 +249,7 @@ gotaline:
 		else if (cleaned[0] == ' ' && cleaned[1] == '"' && cCohort) {
 			cReading = new Reading(cCohort);
 			cReading->wordform = cCohort->wordform;
-			if (grammar->sets_any && !grammar->sets_any->empty()) {
-				cReading->parent->possible_sets.insert(grammar->sets_any->begin(), grammar->sets_any->end());
-			}
+			insert_if_exists(cReading->parent->possible_sets, grammar->sets_any);
 			addTagToReading(*cReading, cReading->wordform);
 
 			UChar *space = &cleaned[1];

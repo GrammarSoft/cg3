@@ -30,6 +30,12 @@
 
 namespace CG3 {
 
+enum {
+	RV_NOTHING = 1,
+	RV_SOMETHING = 2,
+	RV_DELIMITED = 4,
+};
+
 bool GrammarApplicator::updateRuleToCohorts(Cohort& c, const uint32_t& rsit) {
 	// Check whether this rule is in the allowed rule list from cmdline flag --rule(s)
 	if (!valid_rules.empty() && valid_rules.find(rsit) == valid_rules.end()) {
