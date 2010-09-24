@@ -201,7 +201,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, uint32
 
 		const Set& set = *(grammar->getSet(rule.target));
 
-		// ToDo: Make better use of rules_by_tag
+		// ToDo: Make better use of rules_by_tag; except, I can't remember why I wrote this comment...
 
 		if (debug_level > 1) {
 			std::cout << "DEBUG: " << current.rule_to_cohorts.find(rule.line)->second.size() << "/" << current.cohorts.size() << " = " << double(current.rule_to_cohorts.find(rule.line)->second.size())/double(current.cohorts.size()) << std::endl;
@@ -274,7 +274,10 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, uint32
 			bool test_good = false;
 			bool matched_target = false;
 
-			readings_plain.clear();
+			// Older g++ apparently don't check for empty themselves, so we have to.
+			if (!readings_plain.empty()) {
+				readings_plain.clear();
+			}
 			if (!regexgrps.empty()) {
 				regexgrps.clear();
 			}
