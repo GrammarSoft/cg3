@@ -402,8 +402,7 @@ bool GrammarApplicator::doesTagMatchReading(const Reading& reading, const Tag& t
 /**
  * Tests whether a given reading matches a given LIST set.
  *
- * In the http://beta.visl.sdu.dk/cg3_performance.html test data, this function is executed 1073969 times,
- * of which 845055 are treated as simple intersect tests.
+ * In the http://beta.visl.sdu.dk/cg3_performance.html test data, this function is executed 1073969 times.
  *
  * @param[in] reading The reading to test
  * @param[in] set The hash of the set to test against
