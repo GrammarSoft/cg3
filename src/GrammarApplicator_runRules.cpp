@@ -182,7 +182,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 	typedef stdext::hash_map<uint32_t,Reading*> readings_plain_t;
 	readings_plain_t readings_plain;
 
-	// ToDo: Must be able to eliminate this with using only valid_rules and a max
+	// It is possible to eliminate this, but that's a mere 1% speed gain and I'd have to do section ranges some other way. Not worth it.
 	uint32Vector intersects;
 	intersectInitialize(rules, current.valid_rules, intersects);
 

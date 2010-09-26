@@ -87,7 +87,7 @@ public:
 		else if (t < elements.front()) {
 			return false;
 		}
-		iterator it = std::lower_bound(elements.begin(), elements.end(), t);
+		iterator it = lower_bound(t);
 		if (it != elements.end() && *it == t) {
 			elements.erase(it);
 			return true;
@@ -105,7 +105,7 @@ public:
 		else if (t < elements.front()) {
 			return elements.end();
 		}
-		const_iterator it = std::lower_bound(elements.begin(), elements.end(), t);
+		const_iterator it = lower_bound(t);
 		if (it != elements.end() && *it != t) {
 			return elements.end();
 		}
@@ -118,6 +118,26 @@ public:
 
 	const_iterator end() const {
 		return elements.end();
+	}
+
+	T front() const {
+		return elements.front();
+	}
+
+	T back() const {
+		return elements.back();
+	}
+
+	iterator lower_bound(T t) {
+		return std::lower_bound(elements.begin(), elements.end(), t);
+	}
+
+	const_iterator lower_bound(T t) const {
+		return std::lower_bound(elements.begin(), elements.end(), t);
+	}
+
+	const_iterator upper_bound(T t) const {
+		return std::upper_bound(elements.begin(), elements.end(), t);
 	}
 
 	size_type size() const {
