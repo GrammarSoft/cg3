@@ -351,7 +351,8 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 				}
 
 				// Unification is done on a per-reading basis, so clear all unification state.
-				// ToDo: Doesn't this mess up the new sets-for-mapping?
+				// ToDo: Doesn't this mess up the new sets-for-mapping? Yes it does, but due a missing did_test = true it still works...
+				// ToDo: Need to tie unification data to the readings directly before fixing the did_test bug.
 				unif_last_wordform = 0;
 				unif_last_baseform = 0;
 				unif_last_textual = 0;
