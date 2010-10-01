@@ -95,6 +95,7 @@ namespace CG3 {
 		Set *allocateSet(Set *from = 0);
 		void destroySet(Set *set);
 		void addSetToList(Set *s);
+		Set *parseSet(const UChar *name);
 
 		void addAnchor(const UChar *to, const uint32_t line);
 

@@ -298,71 +298,84 @@ void GrammarApplicator::reflowReading(Reading& reading) {
 	reading.rehash();
 }
 
-uint32_t GrammarApplicator::addTagToReading(Reading& reading, uint32_t utag, bool rehash) {
-	Tag *tag = single_tags.find(utag)->second;
-
-	if (tag->type & T_VARSTRING && regexgrps.empty()) {
-		u_fprintf(ux_stderr, "Warning: addTagToReading() cannot add a variable string tag when nothing is captured!\n");
-		u_fflush(ux_stderr);
+Tag *GrammarApplicator::generateVarstringTag(Tag *tag) {
+	if (!(tag->type & T_VARSTRING)) {
+		return tag;
 	}
-	else if (tag->type & T_VARSTRING) {
-		UnicodeString tmp(tag->tag.c_str(), tag->tag.length());
+	UnicodeString tmp(tag->tag.c_str(), tag->tag.length());
+
+	if (!regexgrps.empty()) {
 		// Replace $1-$9 with their respective match groups
 		for (size_t i=0 ; i<regexgrps.size() ; ++i) {
 			tmp.findAndReplace(stringbits[S_VS1+i].getTerminatedBuffer(), regexgrps[i]);
 		}
-		// Handle %U %u %L %l markers.
-		bool found;
-		do {
-			found = false;
-			int32_t pos = -1, mpos = -1;
-			if ((pos = tmp.lastIndexOf(stringbits[S_VSu].getTerminatedBuffer(), stringbits[S_VSu].length(), 0)) != -1) {
-				found = true;
-				mpos = std::max(mpos, pos);
-			}
-			if ((pos = tmp.lastIndexOf(stringbits[S_VSU].getTerminatedBuffer(), stringbits[S_VSU].length(), mpos)) != -1) {
-				found = true;
-				mpos = std::max(mpos, pos);
-			}
-			if ((pos = tmp.lastIndexOf(stringbits[S_VSl].getTerminatedBuffer(), stringbits[S_VSl].length(), mpos)) != -1) {
-				found = true;
-				mpos = std::max(mpos, pos);
-			}
-			if ((pos = tmp.lastIndexOf(stringbits[S_VSL].getTerminatedBuffer(), stringbits[S_VSL].length(), mpos)) != -1) {
-				found = true;
-				mpos = std::max(mpos, pos);
-			}
-			if (found && mpos != -1) {
-				UChar mode = tmp[mpos+1];
-				tmp.remove(mpos, 2);
-				if (mode == 'u') {
-					UnicodeString range(tmp, mpos, 1);
-					range.toUpper();
-					tmp.setCharAt(mpos, range[0]);
-				}
-				else if (mode == 'U') {
-					UnicodeString range(tmp, mpos);
-					range.toUpper();
-					tmp.truncate(mpos);
-					tmp.append(range);
-				}
-				else if (mode == 'l') {
-					UnicodeString range(tmp, mpos, 1);
-					range.toLower();
-					tmp.setCharAt(mpos, range[0]);
-				}
-				else if (mode == 'L') {
-					UnicodeString range(tmp, mpos);
-					range.toLower();
-					tmp.truncate(mpos);
-					tmp.append(range);
-				}
-			}
-		} while (found);
-		const UChar *nt = tmp.getTerminatedBuffer();
-		tag = addTag(nt);
-		utag = tag->hash;
 	}
+
+	// Handle %U %u %L %l markers.
+	bool found;
+	do {
+		found = false;
+		int32_t pos = -1, mpos = -1;
+		if ((pos = tmp.lastIndexOf(stringbits[S_VSu].getTerminatedBuffer(), stringbits[S_VSu].length(), 0)) != -1) {
+			found = true;
+			mpos = std::max(mpos, pos);
+		}
+		if ((pos = tmp.lastIndexOf(stringbits[S_VSU].getTerminatedBuffer(), stringbits[S_VSU].length(), mpos)) != -1) {
+			found = true;
+			mpos = std::max(mpos, pos);
+		}
+		if ((pos = tmp.lastIndexOf(stringbits[S_VSl].getTerminatedBuffer(), stringbits[S_VSl].length(), mpos)) != -1) {
+			found = true;
+			mpos = std::max(mpos, pos);
+		}
+		if ((pos = tmp.lastIndexOf(stringbits[S_VSL].getTerminatedBuffer(), stringbits[S_VSL].length(), mpos)) != -1) {
+			found = true;
+			mpos = std::max(mpos, pos);
+		}
+		if (found && mpos != -1) {
+			UChar mode = tmp[mpos+1];
+			tmp.remove(mpos, 2);
+			if (mode == 'u') {
+				UnicodeString range(tmp, mpos, 1);
+				range.toUpper();
+				tmp.setCharAt(mpos, range[0]);
+			}
+			else if (mode == 'U') {
+				UnicodeString range(tmp, mpos);
+				range.toUpper();
+				tmp.truncate(mpos);
+				tmp.append(range);
+			}
+			else if (mode == 'l') {
+				UnicodeString range(tmp, mpos, 1);
+				range.toLower();
+				tmp.setCharAt(mpos, range[0]);
+			}
+			else if (mode == 'L') {
+				UnicodeString range(tmp, mpos);
+				range.toLower();
+				tmp.truncate(mpos);
+				tmp.append(range);
+			}
+		}
+	} while (found);
+
+	const UChar *nt = tmp.getTerminatedBuffer();
+	if (u_strcmp(nt, tag->tag.c_str()) != 0) {
+		tag = addTag(nt);
+	}
+	else {
+		u_fprintf(ux_stderr, "Warning: generateVarstringTag() was not able to generate anything for tag '%S'!\n", tag->tag.c_str());
+		u_fflush(ux_stderr);
+	}
+	return tag;
+}
+
+uint32_t GrammarApplicator::addTagToReading(Reading& reading, uint32_t utag, bool rehash) {
+	Tag *tag = single_tags.find(utag)->second;
+
+	tag = generateVarstringTag(tag);
+	utag = tag->hash;
 
 	uint32HashSetuint32HashMap::const_iterator it = grammar->sets_by_tag.find(utag);
 	if (it != grammar->sets_by_tag.end()) {
