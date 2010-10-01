@@ -29,6 +29,6 @@ const uint32_t CG3_VERSION_MAJOR = 0;
 const uint32_t CG3_VERSION_MINOR = 9;
 const uint32_t CG3_VERSION_PATCH = 7;
 const uint32_t CG3_REVISION = 6393;
-const uint32_t CG3_TOO_OLD = 6378;
+const uint32_t CG3_TOO_OLD = 6393;
 
 #endif
