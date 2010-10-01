@@ -278,6 +278,51 @@ void Grammar::addSetToList(Set *s) {
 	}
 }
 
+Set *Grammar::parseSet(const UChar *name) {
+	uint32_t sh = hash_sdbm_uchar(name);
+
+	if (ux_isSetOp(name) != S_IGNORE) {
+		u_fprintf(ux_stderr, "Error: Found set operator '%S' where set name expected on line %u!\n", name, lines);
+		CG3Quit(1);
+	}
+
+	if ((
+	(name[0] == '$' && name[1] == '$')
+	|| (name[0] == '&' && name[1] == '&')
+	) && name[2]) {
+		const UChar *wname = &(name[2]);
+		uint32_t wrap = hash_sdbm_uchar(wname);
+		Set *wtmp = getSet(wrap);
+		if (!wtmp) {
+			u_fprintf(ux_stderr, "Error: Attempted to reference undefined set '%S' on line %u!\n", wname, lines);
+			CG3Quit(1);
+		}
+		Set *tmp = getSet(sh);
+		if (!tmp) {
+			Set *ns = allocateSet();
+			ns->line = lines;
+			ns->setName(name);
+			ns->sets.push_back(wtmp->hash);
+			if (name[0] == '$' && name[1] == '$') {
+				ns->type |= ST_TAG_UNIFY;
+			}
+			else if (name[0] == '&' && name[1] == '&') {
+				ns->type |= ST_SET_UNIFY;
+			}
+			addSet(ns);
+		}
+	}
+	if (set_alias.find(sh) != set_alias.end()) {
+		sh = set_alias[sh];
+	}
+	Set *tmp = getSet(sh);
+	if (!tmp) {
+		u_fprintf(ux_stderr, "Error: Attempted to reference undefined set '%S' on line %u!\n", name, lines);
+		CG3Quit(1);
+	}
+	return tmp;
+}
+
 CompositeTag *Grammar::addCompositeTag(CompositeTag *tag) {
 	if (tag && tag->tags.size()) {
 		tag->rehash();
@@ -367,7 +412,7 @@ Tag *Grammar::allocateTag(const UChar *txt, bool raw) {
 		tag->parseTagRaw(txt);
 	}
 	else {
-		tag->parseTag(txt, ux_stderr);
+		tag->parseTag(txt, ux_stderr, this);
 	}
 	tag->type |= T_GRAMMAR;
 	uint32_t hash = tag->rehash();

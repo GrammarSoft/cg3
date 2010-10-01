@@ -26,6 +26,10 @@
 #include "stdafx.h"
 
 namespace CG3 {
+	class Grammar;
+	class Set;
+
+	typedef std::vector<Set*> SetVector;
 
 	enum C_OPS {
 		OP_NOP,
@@ -79,11 +83,12 @@ namespace CG3 {
 		uint32_t number;
 		uint32_t seed;
 		UString tag;
+		SetVector vs_sets;
 		mutable URegularExpression *regexp;
 
 		Tag();
 		~Tag();
-		void parseTag(const UChar *to, UFILE *ux_stderr);
+		void parseTag(const UChar *to, UFILE *ux_stderr, Grammar *grammar);
 		void parseTagRaw(const UChar *to);
 		UString toUString(bool escape = false) const;
 

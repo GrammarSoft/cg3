@@ -20,6 +20,8 @@
 */
 
 #include "Tag.h"
+#include "Set.h"
+#include "Grammar.h"
 #include "Strings.h"
 
 namespace CG3 {
@@ -56,7 +58,7 @@ Tag::~Tag() {
 	}
 }
 
-void Tag::parseTag(const UChar *to, UFILE *ux_stderr) {
+void Tag::parseTag(const UChar *to, UFILE *ux_stderr, Grammar *grammar) {
 	type = 0;
 
 	if (to && to[0]) {
@@ -191,6 +193,58 @@ void Tag::parseTag(const UChar *to, UFILE *ux_stderr) {
 				}
 			}
 		}
+
+		if ((type & T_VARSTRING) && tag.find('{') != UString::npos && tag.find('}') != UString::npos) {
+			UString wildcard;
+			wildcard.reserve(tag.length());
+			const char pfx[] = "^\\Q";
+			wildcard.append(pfx, pfx+sizeof(pfx)-1);
+			UChar *p = &tag[0];
+			UChar *n = 0;
+			bool wild = false;
+			do {
+				UChar *o = p;
+				SKIPTO(p, '{');
+				if (*p) {
+					n = p;
+					SKIPTO(n, '}');
+					if (*n) {
+						wildcard.append(o, p);
+						const char grp[] = "\\E(.+)\\Q";
+						wildcard.append(grp, grp+sizeof(grp)-1);
+						++p;
+						UString theSet(p, n);
+						Set *tmp = grammar->parseSet(theSet.c_str());
+						vs_sets.push_back(tmp);
+						p = n;
+						++p;
+						wild = true;
+					}
+				}
+				else {
+					wildcard.append(o);
+				}
+			} while(*p);
+			const char sfx[] = "\\E$";
+			wildcard.append(sfx, sfx+sizeof(sfx)-1);
+
+			if (wild) {
+				UParseError pe;
+				UErrorCode status = U_ZERO_ERROR;
+				status = U_ZERO_ERROR;
+
+				if (type & T_CASE_INSENSITIVE) {
+					regexp = uregex_open(wildcard.c_str(), wildcard.length(), UREGEX_CASE_INSENSITIVE, &pe, &status);
+				}
+				else {
+					regexp = uregex_open(wildcard.c_str(), wildcard.length(), 0, &pe, &status);
+				}
+				if (status != U_ZERO_ERROR) {
+					u_fprintf(ux_stderr, "Error: uregex_open returned %s trying to parse varstring wildcard %S - cannot continue!\n", u_errorName(status), wildcard.c_str());
+					CG3Quit(1);
+				}
+			}
+		}
 	}
 
 	type &= ~T_SPECIAL;
@@ -198,7 +252,7 @@ void Tag::parseTag(const UChar *to, UFILE *ux_stderr) {
 		type |= T_SPECIAL;
 	}
 
-	if (type & T_VARSTRING && type & (T_REGEXP|T_REGEXP_ANY|T_CASE_INSENSITIVE|T_NUMERICAL|T_VARIABLE|T_META)) {
+	if (type & T_VARSTRING && type & (T_REGEXP|T_REGEXP_ANY|T_VARIABLE|T_META)) {
 		u_fprintf(ux_stderr, "Error: Tag %S cannot mix varstring with any other special feature!\n", to);
 		CG3Quit(1);
 	}

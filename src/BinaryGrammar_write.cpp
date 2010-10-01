@@ -94,6 +94,20 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 			u32tmp = (uint32_t)htonl((uint32_t)0);
 			fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 		}
+
+		if (t->regexp) {
+			int32_t len = 0;
+			const UChar *p = uregex_pattern(t->regexp, &len, &err);
+			ucnv_reset(conv);
+			i32tmp = ucnv_fromUChars(conv, &cbuffers[0][0], CG3_BUFFER_SIZE-1, p, len, &err);
+			u32tmp = (uint32_t)htonl((uint32_t)i32tmp);
+			fwrite(&u32tmp, sizeof(uint32_t), 1, output);
+			fwrite(&cbuffers[0][0], i32tmp, 1, output);
+		}
+		else {
+			u32tmp = (uint32_t)htonl((uint32_t)0);
+			fwrite(&u32tmp, sizeof(uint32_t), 1, output);
+		}
 	}
 
 	u32tmp = (uint32_t)htonl((uint32_t)grammar->tags_list.size());

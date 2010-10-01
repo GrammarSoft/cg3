@@ -177,6 +177,7 @@ namespace CG3 {
 
 		Cohort *delimitAt(SingleWindow& current, Cohort *cohort);
 		void reflowReading(Reading& reading);
+		Tag *generateVarstringTag(Tag *tag);
 		uint32_t addTagToReading(Reading& reading, uint32_t tag, bool rehash = true);
 		void delTagFromReading(Reading& reading, uint32_t tag);
 		TagList getTagList(const Set& theSet, bool unif_mode = false) const;
