@@ -192,48 +192,8 @@ Set *TextualParser::parseSetInline(UChar *& p, Set *s) {
 					ptrdiff_t c = n - p;
 					u_strncpy(&gbuffers[0][0], p, c);
 					gbuffers[0][c] = 0;
-					uint32_t sh = hash_sdbm_uchar(&gbuffers[0][0]);
-
-					if (ux_isSetOp(&gbuffers[0][0]) != S_IGNORE) {
-						u_fprintf(ux_stderr, "Error: Found set operator '%S' where set name expected on line %u!\n", &gbuffers[0][0], result->lines);
-						CG3Quit(1);
-					}
-
-					if ((
-					(gbuffers[0][0] == '$' && gbuffers[0][1] == '$')
-					|| (gbuffers[0][0] == '&' && gbuffers[0][1] == '&')
-					) && gbuffers[0][2]) {
-						const UChar *wname = &(gbuffers[0][2]);
-						uint32_t wrap = hash_sdbm_uchar(wname);
-						Set *wtmp = result->getSet(wrap);
-						if (!wtmp) {
-							u_fprintf(ux_stderr, "Error: Attempted to reference undefined set '%S' on line %u!\n", wname, result->lines);
-							CG3Quit(1);
-						}
-						Set *tmp = result->getSet(sh);
-						if (!tmp) {
-							Set *ns = result->allocateSet();
-							ns->line = result->lines;
-							ns->setName(&gbuffers[0][0]);
-							ns->sets.push_back(wtmp->hash);
-							if (gbuffers[0][0] == '$' && gbuffers[0][1] == '$') {
-								ns->type |= ST_TAG_UNIFY;
-							}
-							else if (gbuffers[0][0] == '&' && gbuffers[0][1] == '&') {
-								ns->type |= ST_SET_UNIFY;
-							}
-							result->addSet(ns);
-						}
-					}
-					if (result->set_alias.find(sh) != result->set_alias.end()) {
-						sh = result->set_alias[sh];
-					}
-					Set *tmp = result->getSet(sh);
-					if (!tmp) {
-						u_fprintf(ux_stderr, "Error: Attempted to reference undefined set '%S' on line %u!\n", &gbuffers[0][0], result->lines);
-						CG3Quit(1);
-					}
-					sh = tmp->hash;
+					Set *tmp = result->parseSet(&gbuffers[0][0]);
+					uint32_t sh = tmp->hash;
 					sets.push_back(sh);
 					p = n;
 				}

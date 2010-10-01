@@ -108,15 +108,22 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 			i32tmp = ucnv_toUChars(conv, &gbuffers[0][0], CG3_BUFFER_SIZE-1, &cbuffers[0][0], u32tmp, &err);
 			t->tag = &gbuffers[0][0];
 		}
-		if (t->type & T_REGEXP) {
+
+		fread(&u32tmp, sizeof(uint32_t), 1, input);
+		u32tmp = (uint32_t)ntohl(u32tmp);
+		if (u32tmp) {
+			ucnv_reset(conv);
+			fread(&cbuffers[0][0], 1, u32tmp, input);
+			i32tmp = ucnv_toUChars(conv, &gbuffers[0][0], CG3_BUFFER_SIZE-1, &cbuffers[0][0], u32tmp, &err);
+
 			UParseError pe;
 			UErrorCode status = U_ZERO_ERROR;
 
 			if (t->type & T_CASE_INSENSITIVE) {
-				t->regexp = uregex_open(t->tag.c_str(), t->tag.length(), UREGEX_CASE_INSENSITIVE, &pe, &status);
+				t->regexp = uregex_open(&gbuffers[0][0], i32tmp, UREGEX_CASE_INSENSITIVE, &pe, &status);
 			}
 			else {
-				t->regexp = uregex_open(t->tag.c_str(), t->tag.length(), 0, &pe, &status);
+				t->regexp = uregex_open(&gbuffers[0][0], i32tmp, 0, &pe, &status);
 			}
 			if (status != U_ZERO_ERROR) {
 				u_fprintf(ux_stderr, "Error: uregex_open returned %s trying to parse tag %S - cannot continue!\n", u_errorName(status), t->tag.c_str());
