@@ -180,7 +180,7 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 		}
 		if (!s->tags_list.empty()) {
 			fields |= (1 << 3);
-			writeSwapped(buffer, s->tags_list.size());
+			writeSwapped<uint32_t>(buffer, s->tags_list.size());
 			const_foreach (AnyTagVector, s->tags_list, iter, iter_end) {
 				writeSwapped(buffer, iter->which);
 				writeSwapped(buffer, iter->number());
@@ -188,14 +188,14 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 		}
 		if (!s->set_ops.empty()) {
 			fields |= (1 << 4);
-			writeSwapped(buffer, s->set_ops.size());
+			writeSwapped<uint32_t>(buffer, s->set_ops.size());
 			const_foreach (uint32Vector, s->set_ops, iter, iter_end) {
 				writeSwapped(buffer, *iter);
 			}
 		}
 		if (!s->sets.empty()) {
 			fields |= (1 << 5);
-			writeSwapped(buffer, s->sets.size());
+			writeSwapped<uint32_t>(buffer, s->sets.size());
 			const_foreach (uint32Vector, s->sets, iter, iter_end) {
 				writeSwapped(buffer, *iter);
 			}
