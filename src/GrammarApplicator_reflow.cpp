@@ -304,8 +304,14 @@ Tag *GrammarApplicator::generateVarstringTag(Tag *tag) {
 	}
 	UnicodeString tmp(tag->tag.c_str(), tag->tag.length());
 
+	// Replace unified sets with their matching tags
+	const_foreach(SetVector, tag->vs_sets, iter, iter_end) {
+		TagList tags = getTagList(**iter);
+		tmp.findAndReplace((*iter)->name.c_str(), tags.front()->tag.c_str());
+	}
+
+	// Replace $1-$9 with their respective match groups
 	if (!regexgrps.empty()) {
-		// Replace $1-$9 with their respective match groups
 		for (size_t i=0 ; i<regexgrps.size() ; ++i) {
 			tmp.findAndReplace(stringbits[S_VS1+i].getTerminatedBuffer(), regexgrps[i]);
 		}
