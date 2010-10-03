@@ -304,7 +304,15 @@ Tag *GrammarApplicator::generateVarstringTag(const Tag *tag) {
 	// Replace unified sets with their matching tags
 	for (size_t i=0 ; i<tag->vs_sets.size() ; ++i) {
 		TagList tags = getTagList(*tag->vs_sets[i]);
-		tmp.findAndReplace(tag->vs_names[i].c_str(), tags.front()->tag.c_str());
+		UString rpl;
+		// If there are multiple tags, such as from CompositeTags, put _ between them
+		const_foreach (TagList, tags, iter, iter_end) {
+			rpl += (*iter)->tag;
+			if (std::distance(iter, iter_end) > 1) {
+				rpl += '_';
+			}
+		}
+		tmp.findAndReplace(tag->vs_names[i].c_str(), rpl.c_str());
 	}
 
 	// Replace $1-$9 with their respective match groups

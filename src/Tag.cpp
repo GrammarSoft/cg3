@@ -295,6 +295,11 @@ void Tag::parseTag(const UChar *to, UFILE *ux_stderr, Grammar *grammar) {
 			while ((pos = wildcard.find(eq)) != UString::npos) {
 				wildcard.erase(pos, 4);
 			}
+			// Eliminate consecutive .+
+			const UChar dotplus[] = {'.', '+', '.', '+', 0};
+			while ((pos = wildcard.find(dotplus)) != UString::npos) {
+				wildcard.erase(pos, 2);
+			}
 
 			if (wild) {
 				UParseError pe;
