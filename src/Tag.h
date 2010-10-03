@@ -84,6 +84,7 @@ namespace CG3 {
 		uint32_t seed;
 		UString tag;
 		SetVector vs_sets;
+		std::vector<UString> vs_names;
 		mutable URegularExpression *regexp;
 
 		Tag();

@@ -73,6 +73,10 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 	fread(&cbuffers[0][0], 1, u32tmp, input);
 	i32tmp = ucnv_toUChars(conv, &grammar->mapping_prefix, 1, &cbuffers[0][0], u32tmp, &err);
 
+	// Keep track of which sets that the varstring tags used; we can't just assign them as sets are not loaded yet
+	typedef std::map<uint32_t,uint32Vector> tag_varsets_t;
+	tag_varsets_t tag_varsets;
+
 	fread(&u32tmp, sizeof(uint32_t), 1, input);
 	u32tmp = (uint32_t)ntohl(u32tmp);
 	uint32_t num_single_tags = u32tmp;
@@ -80,56 +84,107 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 	for (uint32_t i=0 ; i<num_single_tags ; i++) {
 		Tag *t = grammar->allocateTag();
 		t->type |= T_GRAMMAR;
-		fread(&u32tmp, sizeof(uint32_t), 1, input);
-		t->number = (uint32_t)ntohl(u32tmp);
-		fread(&u32tmp, sizeof(uint32_t), 1, input);
-		t->hash = (uint32_t)ntohl(u32tmp);
-		fread(&u32tmp, sizeof(uint32_t), 1, input);
-		t->plain_hash = (uint32_t)ntohl(u32tmp);
-		fread(&u32tmp, sizeof(uint32_t), 1, input);
-		t->seed = (uint32_t)ntohl(u32tmp);
-		fread(&u32tmp, sizeof(uint32_t), 1, input);
-		t->type = (uint32_t)ntohl(u32tmp);
 
-		if (t->type & T_NUMERICAL) {
+		uint32_t fields = 0;
+		fread(&u32tmp, sizeof(uint32_t), 1, input);
+		fields = (uint32_t)ntohl(u32tmp);
+
+		if (fields & (1 << 0)) {
+			fread(&u32tmp, sizeof(uint32_t), 1, input);
+			t->number = (uint32_t)ntohl(u32tmp);
+		}
+		if (fields & (1 << 1)) {
+			fread(&u32tmp, sizeof(uint32_t), 1, input);
+			t->hash = (uint32_t)ntohl(u32tmp);
+		}
+		if (fields & (1 << 2)) {
+			fread(&u32tmp, sizeof(uint32_t), 1, input);
+			t->plain_hash = (uint32_t)ntohl(u32tmp);
+		}
+		if (fields & (1 << 3)) {
+			fread(&u32tmp, sizeof(uint32_t), 1, input);
+			t->seed = (uint32_t)ntohl(u32tmp);
+		}
+		if (fields & (1 << 4)) {
+			fread(&u32tmp, sizeof(uint32_t), 1, input);
+			t->type = (uint32_t)ntohl(u32tmp);
+		}
+
+		if (fields & (1 << 5)) {
 			fread(&u32tmp, sizeof(uint32_t), 1, input);
 			t->comparison_hash = (uint32_t)ntohl(u32tmp);
+		}
+		if (fields & (1 << 6)) {
 			fread(&u32tmp, sizeof(uint32_t), 1, input);
 			t->comparison_op = (C_OPS)ntohl(u32tmp);
+		}
+		if (fields & (1 << 7)) {
 			fread(&i32tmp, sizeof(int32_t), 1, input);
 			t->comparison_val = (int32_t)ntohl(i32tmp);
 		}
 
-		fread(&u32tmp, sizeof(uint32_t), 1, input);
-		u32tmp = (uint32_t)ntohl(u32tmp);
-		if (u32tmp) {
-			ucnv_reset(conv);
-			fread(&cbuffers[0][0], 1, u32tmp, input);
-			i32tmp = ucnv_toUChars(conv, &gbuffers[0][0], CG3_BUFFER_SIZE-1, &cbuffers[0][0], u32tmp, &err);
-			t->tag = &gbuffers[0][0];
-		}
-
-		fread(&u32tmp, sizeof(uint32_t), 1, input);
-		u32tmp = (uint32_t)ntohl(u32tmp);
-		if (u32tmp) {
-			ucnv_reset(conv);
-			fread(&cbuffers[0][0], 1, u32tmp, input);
-			i32tmp = ucnv_toUChars(conv, &gbuffers[0][0], CG3_BUFFER_SIZE-1, &cbuffers[0][0], u32tmp, &err);
-
-			UParseError pe;
-			UErrorCode status = U_ZERO_ERROR;
-
-			if (t->type & T_CASE_INSENSITIVE) {
-				t->regexp = uregex_open(&gbuffers[0][0], i32tmp, UREGEX_CASE_INSENSITIVE, &pe, &status);
-			}
-			else {
-				t->regexp = uregex_open(&gbuffers[0][0], i32tmp, 0, &pe, &status);
-			}
-			if (status != U_ZERO_ERROR) {
-				u_fprintf(ux_stderr, "Error: uregex_open returned %s trying to parse tag %S - cannot continue!\n", u_errorName(status), t->tag.c_str());
-				CG3Quit(1);
+		if (fields & (1 << 8)) {
+			fread(&u32tmp, sizeof(uint32_t), 1, input);
+			u32tmp = (uint32_t)ntohl(u32tmp);
+			if (u32tmp) {
+				ucnv_reset(conv);
+				fread(&cbuffers[0][0], 1, u32tmp, input);
+				i32tmp = ucnv_toUChars(conv, &gbuffers[0][0], CG3_BUFFER_SIZE-1, &cbuffers[0][0], u32tmp, &err);
+				t->tag = &gbuffers[0][0];
 			}
 		}
+
+		if (fields & (1 << 9)) {
+			fread(&u32tmp, sizeof(uint32_t), 1, input);
+			u32tmp = (uint32_t)ntohl(u32tmp);
+			if (u32tmp) {
+				ucnv_reset(conv);
+				fread(&cbuffers[0][0], 1, u32tmp, input);
+				i32tmp = ucnv_toUChars(conv, &gbuffers[0][0], CG3_BUFFER_SIZE-1, &cbuffers[0][0], u32tmp, &err);
+
+				UParseError pe;
+				UErrorCode status = U_ZERO_ERROR;
+
+				if (t->type & T_CASE_INSENSITIVE) {
+					t->regexp = uregex_open(&gbuffers[0][0], i32tmp, UREGEX_CASE_INSENSITIVE, &pe, &status);
+				}
+				else {
+					t->regexp = uregex_open(&gbuffers[0][0], i32tmp, 0, &pe, &status);
+				}
+				if (status != U_ZERO_ERROR) {
+					u_fprintf(ux_stderr, "Error: uregex_open returned %s trying to parse tag %S - cannot continue!\n", u_errorName(status), t->tag.c_str());
+					CG3Quit(1);
+				}
+			}
+		}
+
+		if (fields & (1 << 10)) {
+			fread(&u32tmp, sizeof(uint32_t), 1, input);
+			uint32_t num = (uint32_t)ntohl(u32tmp);
+			t->vs_sets.reserve(num);
+			tag_varsets[t->number].reserve(num);
+			for (size_t i=0 ; i<num ; ++i) {
+				fread(&u32tmp, sizeof(uint32_t), 1, input);
+				u32tmp = (uint32_t)ntohl(u32tmp);
+				tag_varsets[t->number].push_back(u32tmp);
+			}
+		}
+		if (fields & (1 << 11)) {
+			fread(&u32tmp, sizeof(uint32_t), 1, input);
+			uint32_t num = (uint32_t)ntohl(u32tmp);
+			t->vs_names.reserve(num);
+			for (size_t i=0 ; i<num ; ++i) {
+				fread(&u32tmp, sizeof(uint32_t), 1, input);
+				u32tmp = (uint32_t)ntohl(u32tmp);
+				if (u32tmp) {
+					ucnv_reset(conv);
+					fread(&cbuffers[0][0], 1, u32tmp, input);
+					i32tmp = ucnv_toUChars(conv, &gbuffers[0][0], CG3_BUFFER_SIZE-1, &cbuffers[0][0], u32tmp, &err);
+					t->vs_names.push_back(&gbuffers[0][0]);
+				}
+			}
+		}
+
 		grammar->single_tags[t->hash] = t;
 		grammar->single_tags_list[t->number] = t;
 		if (!t->tag.empty() && t->tag[0] == '*' && u_strcmp(t->tag.c_str(), stringbits[S_ASTERIK].getTerminatedBuffer()) == 0) {
@@ -263,18 +318,17 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 				s->sets.push_back(u32tmp);
 			}
 		}
-		if (fields & (1 << 6)) {
-			fread(&u32tmp, sizeof(uint32_t), 1, input);
-			u32tmp = (uint32_t)ntohl(u32tmp);
-			if (u32tmp) {
-				ucnv_reset(conv);
-				fread(&cbuffers[0][0], 1, u32tmp, input);
-				i32tmp = ucnv_toUChars(conv, &gbuffers[0][0], CG3_BUFFER_SIZE-1, &cbuffers[0][0], u32tmp, &err);
-				s->setName(&gbuffers[0][0]);
-			}
-		}
 		grammar->sets_by_contents[s->hash] = s;
 		grammar->sets_list[s->number] = s;
+	}
+
+	// Actually assign sets to the varstring tags now that sets are loaded
+	foreach (tag_varsets_t, tag_varsets, iter, iter_end) {
+		Tag *t = grammar->single_tags_list[iter->first];
+		foreach (uint32Vector, iter->second, uit, uit_end) {
+			Set *s = grammar->sets_list[*uit];
+			t->vs_sets.push_back(s);
+		}
 	}
 
 	fread(&u32tmp, sizeof(uint32_t), 1, input);
