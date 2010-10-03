@@ -136,6 +136,7 @@
 
 namespace CG3 {
 	typedef std::basic_string<UChar> UString;
+	typedef std::vector<UString> UStringVector;
 	typedef std::list<uint32_t> uint32List;
 	typedef std::vector<uint32_t> uint32Vector;
 	typedef std::set<uint32_t> uint32Set;

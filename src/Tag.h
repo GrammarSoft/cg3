@@ -83,8 +83,8 @@ namespace CG3 {
 		uint32_t number;
 		uint32_t seed;
 		UString tag;
-		SetVector vs_sets;
-		std::vector<UString> vs_names;
+		SetVector *vs_sets;
+		UStringVector *vs_names;
 		mutable URegularExpression *regexp;
 
 		Tag();
@@ -95,6 +95,8 @@ namespace CG3 {
 
 		uint32_t rehash();
 		void markUsed();
+		void allocateVsSets();
+		void allocateVsNames();
 
 	private:
 		void parseNumeric();
