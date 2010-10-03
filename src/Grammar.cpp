@@ -534,7 +534,10 @@ void Grammar::reindex(bool unused_sets) {
 	}
 
 	foreach (TagVector, single_tags_list, iter, iter_end) {
-		foreach (SetVector, (*iter)->vs_sets, sit, sit_end) {
+		if (!(*iter)->vs_sets) {
+			continue;
+		}
+		foreach (SetVector, *(*iter)->vs_sets, sit, sit_end) {
 			(*sit)->markUsed(*this);
 		}
 	}

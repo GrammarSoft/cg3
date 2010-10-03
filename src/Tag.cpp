@@ -40,6 +40,8 @@ hash(0),
 plain_hash(0),
 number(0),
 seed(0),
+vs_sets(0),
+vs_names(0),
 regexp(0)
 {
 	#ifdef CG_TRACE_OBJECTS
@@ -209,18 +211,20 @@ void Tag::parseTag(const UChar *to, UFILE *ux_stderr, Grammar *grammar) {
 					n = p;
 					SKIPTO(n, '}');
 					if (*n) {
+						allocateVsSets();
+						allocateVsNames();
 						wildcard.append(o, p);
 						const char grp[] = "\\E.+\\Q";
 						wildcard.append(grp, grp+sizeof(grp)-1);
 						++p;
 						UString theSet(p, n);
 						Set *tmp = grammar->parseSet(theSet.c_str());
-						vs_sets.push_back(tmp);
+						vs_sets->push_back(tmp);
 						UString old;
 						old += '{';
 						old += tmp->name;
 						old += '}';
-						vs_names.push_back(old);
+						vs_names->push_back(old);
 						p = n;
 						++p;
 						wild = true;
@@ -495,6 +499,18 @@ uint32_t Tag::rehash() {
 
 void Tag::markUsed() {
 	type |= T_USED;
+}
+
+void Tag::allocateVsSets() {
+	if (!vs_sets) {
+		vs_sets = new SetVector;
+	}
+}
+
+void Tag::allocateVsNames() {
+	if (!vs_names) {
+		vs_names = new UStringVector;
+	}
 }
 
 UString Tag::toUString(bool escape) const {

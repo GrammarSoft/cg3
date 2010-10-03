@@ -302,17 +302,19 @@ Tag *GrammarApplicator::generateVarstringTag(const Tag *tag) {
 	UnicodeString tmp(tag->tag.c_str(), tag->tag.length());
 
 	// Replace unified sets with their matching tags
-	for (size_t i=0 ; i<tag->vs_sets.size() ; ++i) {
-		TagList tags = getTagList(*tag->vs_sets[i]);
-		UString rpl;
-		// If there are multiple tags, such as from CompositeTags, put _ between them
-		const_foreach (TagList, tags, iter, iter_end) {
-			rpl += (*iter)->tag;
-			if (std::distance(iter, iter_end) > 1) {
-				rpl += '_';
+	if (tag->vs_sets) {
+		for (size_t i=0 ; i<tag->vs_sets->size() ; ++i) {
+			TagList tags = getTagList(*(*tag->vs_sets)[i]);
+			UString rpl;
+			// If there are multiple tags, such as from CompositeTags, put _ between them
+			const_foreach (TagList, tags, iter, iter_end) {
+				rpl += (*iter)->tag;
+				if (std::distance(iter, iter_end) > 1) {
+					rpl += '_';
+				}
 			}
+			tmp.findAndReplace((*tag->vs_names)[i].c_str(), rpl.c_str());
 		}
-		tmp.findAndReplace(tag->vs_names[i].c_str(), rpl.c_str());
 	}
 
 	// Replace $1-$9 with their respective match groups
