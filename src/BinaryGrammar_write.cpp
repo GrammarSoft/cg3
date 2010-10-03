@@ -63,51 +63,84 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 	std::vector<Tag*>::const_iterator tags_iter;
 	for (tags_iter = grammar->single_tags_list.begin() ; tags_iter != grammar->single_tags_list.end() ; tags_iter++) {
 		Tag *t = *tags_iter;
-		u32tmp = (uint32_t)htonl((uint32_t)t->number);
-		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
-		u32tmp = (uint32_t)htonl((uint32_t)t->hash);
-		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
-		u32tmp = (uint32_t)htonl((uint32_t)t->plain_hash);
-		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
-		u32tmp = (uint32_t)htonl((uint32_t)t->seed);
-		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
-		u32tmp = (uint32_t)htonl((uint32_t)t->type);
-		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 
-		if (t->type & T_NUMERICAL) {
-			u32tmp = (uint32_t)htonl((uint32_t)t->comparison_hash);
-			fwrite(&u32tmp, sizeof(uint32_t), 1, output);
-			u32tmp = (uint32_t)htonl((uint32_t)t->comparison_op);
-			fwrite(&u32tmp, sizeof(uint32_t), 1, output);
-			i32tmp = (int32_t)htonl(t->comparison_val);
-			fwrite(&i32tmp, sizeof(int32_t), 1, output);
+		uint32_t fields = 0;
+		buffer.str("");
+		buffer.clear();
+
+		if (t->number) {
+			fields |= (1 << 0);
+			writeSwapped(buffer, t->number);
+		}
+		if (t->hash) {
+			fields |= (1 << 1);
+			writeSwapped(buffer, t->hash);
+		}
+		if (t->plain_hash) {
+			fields |= (1 << 2);
+			writeSwapped(buffer, t->plain_hash);
+		}
+		if (t->seed) {
+			fields |= (1 << 3);
+			writeSwapped(buffer, t->seed);
+		}
+		if (t->type) {
+			fields |= (1 << 4);
+			writeSwapped(buffer, t->type);
+		}
+
+		if (t->comparison_hash) {
+			fields |= (1 << 5);
+			writeSwapped(buffer, t->comparison_hash);
+		}
+		if (t->comparison_op) {
+			fields |= (1 << 6);
+			writeSwapped<uint32_t>(buffer, t->comparison_op);
+		}
+		if (t->comparison_val) {
+			fields |= (1 << 7);
+			writeSwapped(buffer, t->comparison_val);
 		}
 
 		if (!t->tag.empty()) {
+			fields |= (1 << 8);
 			ucnv_reset(conv);
 			i32tmp = ucnv_fromUChars(conv, &cbuffers[0][0], CG3_BUFFER_SIZE-1, t->tag.c_str(), t->tag.length(), &err);
-			u32tmp = (uint32_t)htonl((uint32_t)i32tmp);
-			fwrite(&u32tmp, sizeof(uint32_t), 1, output);
-			fwrite(&cbuffers[0][0], i32tmp, 1, output);
-		}
-		else {
-			u32tmp = (uint32_t)htonl((uint32_t)0);
-			fwrite(&u32tmp, sizeof(uint32_t), 1, output);
+			writeSwapped(buffer, i32tmp);
+			buffer.write(&cbuffers[0][0], i32tmp);
 		}
 
 		if (t->regexp) {
+			fields |= (1 << 9);
 			int32_t len = 0;
 			const UChar *p = uregex_pattern(t->regexp, &len, &err);
 			ucnv_reset(conv);
 			i32tmp = ucnv_fromUChars(conv, &cbuffers[0][0], CG3_BUFFER_SIZE-1, p, len, &err);
-			u32tmp = (uint32_t)htonl((uint32_t)i32tmp);
-			fwrite(&u32tmp, sizeof(uint32_t), 1, output);
-			fwrite(&cbuffers[0][0], i32tmp, 1, output);
+			writeSwapped(buffer, i32tmp);
+			buffer.write(&cbuffers[0][0], i32tmp);
 		}
-		else {
-			u32tmp = (uint32_t)htonl((uint32_t)0);
-			fwrite(&u32tmp, sizeof(uint32_t), 1, output);
+
+		if (!t->vs_sets.empty()) {
+			fields |= (1 << 10);
+			writeSwapped<uint32_t>(buffer, t->vs_sets.size());
+			const_foreach (SetVector, t->vs_sets, iter, iter_end) {
+				writeSwapped(buffer, (*iter)->number);
+			}
 		}
+		if (!t->vs_names.empty()) {
+			fields |= (1 << 11);
+			writeSwapped<uint32_t>(buffer, t->vs_names.size());
+			const_foreach (std::vector<UString>, t->vs_names, iter, iter_end) {
+				ucnv_reset(conv);
+				i32tmp = ucnv_fromUChars(conv, &cbuffers[0][0], CG3_BUFFER_SIZE-1, (*iter).c_str(), (*iter).length(), &err);
+				writeSwapped(buffer, i32tmp);
+				buffer.write(&cbuffers[0][0], i32tmp);
+			}
+		}
+
+		u32tmp = (uint32_t)htonl(fields);
+		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
+		fwrite(buffer.str().c_str(), buffer.str().length(), 1, output);
 	}
 
 	u32tmp = (uint32_t)htonl((uint32_t)grammar->tags_list.size());
@@ -199,13 +232,6 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 			const_foreach (uint32Vector, s->sets, iter, iter_end) {
 				writeSwapped(buffer, *iter);
 			}
-		}
-		if (s->type & (ST_TAG_UNIFY|ST_SET_UNIFY)) {
-			fields |= (1 << 6);
-			ucnv_reset(conv);
-			i32tmp = ucnv_fromUChars(conv, &cbuffers[0][0], CG3_BUFFER_SIZE-1, s->name.c_str(), s->name.length(), &err);
-			writeSwapped(buffer, i32tmp);
-			buffer.write(&cbuffers[0][0], i32tmp);
 		}
 
 		u32tmp = (uint32_t)htonl(fields);

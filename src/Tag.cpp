@@ -194,7 +194,7 @@ void Tag::parseTag(const UChar *to, UFILE *ux_stderr, Grammar *grammar) {
 			}
 		}
 
-		if ((type & T_VARSTRING) && tag.find('{') != UString::npos && tag.find('}') != UString::npos) {
+		if (type & T_VARSTRING) {
 			UString wildcard;
 			wildcard.reserve(tag.length());
 			const char pfx[] = "^\\Q";
@@ -210,12 +210,17 @@ void Tag::parseTag(const UChar *to, UFILE *ux_stderr, Grammar *grammar) {
 					SKIPTO(n, '}');
 					if (*n) {
 						wildcard.append(o, p);
-						const char grp[] = "\\E(.+)\\Q";
+						const char grp[] = "\\E.+\\Q";
 						wildcard.append(grp, grp+sizeof(grp)-1);
 						++p;
 						UString theSet(p, n);
 						Set *tmp = grammar->parseSet(theSet.c_str());
 						vs_sets.push_back(tmp);
+						UString old;
+						old += '{';
+						old += tmp->name;
+						old += '}';
+						vs_names.push_back(old);
 						p = n;
 						++p;
 						wild = true;
@@ -227,6 +232,67 @@ void Tag::parseTag(const UChar *to, UFILE *ux_stderr, Grammar *grammar) {
 			} while(*p);
 			const char sfx[] = "\\E$";
 			wildcard.append(sfx, sfx+sizeof(sfx)-1);
+
+			// Replace numeric information with .+ to let the regex match easier
+			if (type & T_NUMERICAL) {
+				UString rpl(20, 0);
+				if (comparison_op == OP_EQUALS) {
+					rpl.resize(u_sprintf(&rpl[0], "=%d", comparison_val));
+				}
+				else if (comparison_op == OP_GREATEREQUALS) {
+					rpl.resize(u_sprintf(&rpl[0], ">=%d", comparison_val));
+				}
+				else if (comparison_op == OP_GREATERTHAN) {
+					rpl.resize(u_sprintf(&rpl[0], ">%d", comparison_val));
+				}
+				else if (comparison_op == OP_LESSEQUALS) {
+					rpl.resize(u_sprintf(&rpl[0], "<=%d", comparison_val));
+				}
+				else if (comparison_op == OP_LESSTHAN) {
+					rpl.resize(u_sprintf(&rpl[0], "<%d", comparison_val));
+				}
+				else if (comparison_op == OP_NOTEQUALS) {
+					rpl.resize(u_sprintf(&rpl[0], "!=%d", comparison_val));
+				}
+				size_t pos = wildcard.rfind(rpl);
+				if (pos != UString::npos) {
+					type &= ~T_NUMERICAL;
+					const char sfx[] = "\\E.+\\Q";
+					wildcard.replace(wildcard.begin()+pos, wildcard.begin()+pos+rpl.length(), sfx, sfx+sizeof(sfx)-1);
+				}
+				else {
+					u_fprintf(ux_stderr, "Warning: Couldn't extract numerics from varstring tag %S - will be slow.\n", tag.c_str());
+					u_fflush(ux_stderr);
+				}
+			}
+
+			// Replace $1-$9 with .+
+			size_t pos = 0;
+			for (size_t i=0 ; i<9 ; ++i) {
+				while ((pos = wildcard.find(stringbits[S_VS1+i].getTerminatedBuffer())) != UString::npos) {
+					const char sfx[] = "\\E.+\\Q";
+					wildcard.replace(wildcard.begin()+pos, wildcard.begin()+pos+stringbits[S_VS1+i].length(), sfx, sfx+sizeof(sfx)-1);
+				}
+			}
+			// Remove %l %L %u %U
+			while ((pos = wildcard.find(stringbits[S_VSu].getTerminatedBuffer())) != UString::npos) {
+				wildcard.erase(pos, stringbits[S_VSu].length());
+			}
+			while ((pos = wildcard.find(stringbits[S_VSU].getTerminatedBuffer())) != UString::npos) {
+				wildcard.erase(pos, stringbits[S_VSU].length());
+			}
+			while ((pos = wildcard.find(stringbits[S_VSl].getTerminatedBuffer())) != UString::npos) {
+				wildcard.erase(pos, stringbits[S_VSl].length());
+			}
+			while ((pos = wildcard.find(stringbits[S_VSL].getTerminatedBuffer())) != UString::npos) {
+				wildcard.erase(pos, stringbits[S_VSL].length());
+			}
+
+			// Eliminate \Q\E when they're not protecting anything
+			const UChar eq[] = {'\\', 'Q', '\\', 'E', 0};
+			while ((pos = wildcard.find(eq)) != UString::npos) {
+				wildcard.erase(pos, 4);
+			}
 
 			if (wild) {
 				UParseError pe;
@@ -363,7 +429,7 @@ void Tag::parseNumeric() {
 		comparison_val = tval;
 		comparison_hash = hash_sdbm_uchar(tkey);
 		type |= T_NUMERICAL;
-		type &= ~T_TEXTUAL;
+		//type &= ~T_TEXTUAL;
 	}
 }
 
