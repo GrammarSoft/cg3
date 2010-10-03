@@ -85,6 +85,63 @@ bool TagSet_SubsetOf_TSet(const TagSet& a, const T& b) {
 }
 
 /**
+ * Tests whether a given reading matches a given tag's stored regular expression.
+ *
+ * @param[in] reading The reading to test
+ * @param[in] tag The tag to test against; only uses the hash and regexp members
+ */
+bool GrammarApplicator::doesRegexpMatchReading(const Reading& reading, const Tag& tag) {
+	bool match = false;
+
+	const_foreach (uint32SortedVector, reading.tags_textual, mter, mter_end) {
+		uint32_t ih = hash_sdbm_uint32_t(tag.hash, *mter);
+		if (index_matches(index_regexp_no, ih)) {
+			match = false;
+		}
+		else if (index_matches(index_regexp_yes, ih)) {
+			match = true;
+		}
+		else {
+			const Tag& itag = *(single_tags.find(*mter)->second);
+			UErrorCode status = U_ZERO_ERROR;
+			uregex_setText(tag.regexp, itag.tag.c_str(), itag.tag.length(), &status);
+			if (status != U_ZERO_ERROR) {
+				u_fprintf(ux_stderr, "Error: uregex_setText(MatchSet) returned %s - cannot continue!\n", u_errorName(status));
+				CG3Quit(1);
+			}
+			status = U_ZERO_ERROR;
+			match = (uregex_matches(tag.regexp, 0, &status) == TRUE);
+			if (status != U_ZERO_ERROR) {
+				u_fprintf(ux_stderr, "Error: uregex_matches(MatchSet) returned %s - cannot continue!\n", u_errorName(status));
+				CG3Quit(1);
+			}
+			if (match) {
+				int32_t gc = uregex_groupCount(tag.regexp, &status);
+				if (gc > 0) {
+					UChar tmp[1024];
+					for (int i=1 ; i<=gc ; ++i) {
+						tmp[0] = 0;
+						uregex_group(tag.regexp, i, tmp, 1024, &status);
+						regexgrps.push_back(UnicodeString(tmp));
+					}
+				}
+				else {
+					index_regexp_yes.insert(ih);
+				}
+			}
+			else {
+				index_regexp_no.insert(ih);
+			}
+		}
+		if (match) {
+			break;
+		}
+	}
+
+	return match;
+}
+
+/**
  * Tests whether a given reading matches a given tag.
  *
  * In the http://beta.visl.sdu.dk/cg3_performance.html test data, this function is executed 1058428 times,
@@ -98,7 +155,19 @@ bool GrammarApplicator::doesTagMatchReading(const Reading& reading, const Tag& t
 	bool retval = false;
 	bool match = false;
 
-	if (!(tag.type & T_SPECIAL) || tag.type & T_FAILFAST) {
+	if (tag.type & T_VARSTRING) {
+		if (tag.type & T_NUMERICAL) {
+			match = true;
+		}
+		else {
+			match = doesRegexpMatchReading(reading, tag);
+		}
+		if (match) {
+			const Tag *nt = generateVarstringTag(&tag);
+			match = doesTagMatchReading(reading, *nt, unif_mode);
+		}
+	}
+	else if (!(tag.type & T_SPECIAL) || tag.type & T_FAILFAST) {
 		uint32SortedVector::const_iterator itf, ite = reading.tags_plain.end();
 		bool raw_in = reading.tags_plain_bloom.matches(tag.hash);
 		if (tag.type & T_FAILFAST) {
@@ -111,51 +180,8 @@ bool GrammarApplicator::doesTagMatchReading(const Reading& reading, const Tag& t
 		}
 		match = raw_in;
 	}
-	else if (tag.type & T_REGEXP) {
-		const_foreach (uint32SortedVector, reading.tags_textual, mter, mter_end) {
-			uint32_t ih = hash_sdbm_uint32_t(tag.hash, *mter);
-			if (index_matches(index_regexp_no, ih)) {
-				match = false;
-			}
-			else if (index_matches(index_regexp_yes, ih)) {
-				match = true;
-			}
-			else {
-				const Tag& itag = *(single_tags.find(*mter)->second);
-				UErrorCode status = U_ZERO_ERROR;
-				uregex_setText(tag.regexp, itag.tag.c_str(), itag.tag.length(), &status);
-				if (status != U_ZERO_ERROR) {
-					u_fprintf(ux_stderr, "Error: uregex_setText(MatchSet) returned %s - cannot continue!\n", u_errorName(status));
-					CG3Quit(1);
-				}
-				status = U_ZERO_ERROR;
-				match = (uregex_matches(tag.regexp, 0, &status) == TRUE);
-				if (status != U_ZERO_ERROR) {
-					u_fprintf(ux_stderr, "Error: uregex_matches(MatchSet) returned %s - cannot continue!\n", u_errorName(status));
-					CG3Quit(1);
-				}
-				if (match) {
-					int32_t gc = uregex_groupCount(tag.regexp, &status);
-					if (gc > 0) {
-						UChar tmp[1024];
-						for (int i=1 ; i<=gc ; ++i) {
-							tmp[0] = 0;
-							uregex_group(tag.regexp, i, tmp, 1024, &status);
-							regexgrps.push_back(UnicodeString(tmp));
-						}
-					}
-					else {
-						index_regexp_yes.insert(ih);
-					}
-				}
-				else {
-					index_regexp_no.insert(ih);
-				}
-			}
-			if (match) {
-				break;
-			}
-		}
+	else if (tag.regexp) {
+		match = doesRegexpMatchReading(reading, tag);
 	}
 	else if (tag.type & T_CASE_INSENSITIVE) {
 		const_foreach (uint32SortedVector, reading.tags_textual, mter, mter_end) {

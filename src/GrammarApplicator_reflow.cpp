@@ -298,16 +298,13 @@ void GrammarApplicator::reflowReading(Reading& reading) {
 	reading.rehash();
 }
 
-Tag *GrammarApplicator::generateVarstringTag(Tag *tag) {
-	if (!(tag->type & T_VARSTRING)) {
-		return tag;
-	}
+Tag *GrammarApplicator::generateVarstringTag(const Tag *tag) {
 	UnicodeString tmp(tag->tag.c_str(), tag->tag.length());
 
 	// Replace unified sets with their matching tags
-	const_foreach(SetVector, tag->vs_sets, iter, iter_end) {
-		TagList tags = getTagList(**iter);
-		tmp.findAndReplace((*iter)->name.c_str(), tags.front()->tag.c_str());
+	for (size_t i=0 ; i<tag->vs_sets.size() ; ++i) {
+		TagList tags = getTagList(*tag->vs_sets[i]);
+		tmp.findAndReplace(tag->vs_names[i].c_str(), tags.front()->tag.c_str());
 	}
 
 	// Replace $1-$9 with their respective match groups
@@ -366,21 +363,30 @@ Tag *GrammarApplicator::generateVarstringTag(Tag *tag) {
 		}
 	} while (found);
 
+	if (tag->type & T_CASE_INSENSITIVE) {
+		tmp += 'i';
+	}
+	if (tag->type & T_REGEXP) {
+		tmp += 'r';
+	}
+
 	const UChar *nt = tmp.getTerminatedBuffer();
 	if (u_strcmp(nt, tag->tag.c_str()) != 0) {
-		tag = addTag(nt);
+		return addTag(nt);
 	}
 	else {
 		u_fprintf(ux_stderr, "Warning: generateVarstringTag() was not able to generate anything for tag '%S'!\n", tag->tag.c_str());
 		u_fflush(ux_stderr);
 	}
-	return tag;
+	return single_tags.find(tag->hash)->second;
 }
 
 uint32_t GrammarApplicator::addTagToReading(Reading& reading, uint32_t utag, bool rehash) {
 	Tag *tag = single_tags.find(utag)->second;
 
-	tag = generateVarstringTag(tag);
+	if (tag->type & T_VARSTRING) {
+		tag = generateVarstringTag(tag);
+	}
 	utag = tag->hash;
 
 	uint32HashSetuint32HashMap::const_iterator it = grammar->sets_by_tag.find(utag);

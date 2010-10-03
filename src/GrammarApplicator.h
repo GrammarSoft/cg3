@@ -166,6 +166,7 @@ namespace CG3 {
 		Cohort *runParenthesisTest(SingleWindow *sWindow, const Cohort *current, const ContextualTest *test, Cohort **deep = 0, Cohort *origin = 0);
 		Cohort *runRelationTest(SingleWindow *sWindow, Cohort *current, const ContextualTest *test, Cohort **deep = 0, Cohort *origin = 0);
 
+		bool doesRegexpMatchReading(const Reading& reading, const Tag& tag);
 		bool doesTagMatchReading(const Reading& reading, const Tag& tag, bool unif_mode = false);
 		bool doesSetMatchReading_tags(const Reading& reading, const Set& theset, bool unif_mode = false);
 		bool doesSetMatchReading(const Reading& reading, const uint32_t set, bool bypass_index = false, bool unif_mode = false);
@@ -177,7 +178,7 @@ namespace CG3 {
 
 		Cohort *delimitAt(SingleWindow& current, Cohort *cohort);
 		void reflowReading(Reading& reading);
-		Tag *generateVarstringTag(Tag *tag);
+		Tag *generateVarstringTag(const Tag *tag);
 		uint32_t addTagToReading(Reading& reading, uint32_t tag, bool rehash = true);
 		void delTagFromReading(Reading& reading, uint32_t tag);
 		TagList getTagList(const Set& theSet, bool unif_mode = false) const;

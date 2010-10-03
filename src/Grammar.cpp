@@ -533,6 +533,12 @@ void Grammar::reindex(bool unused_sets) {
 		dset->second->number = 0;
 	}
 
+	foreach (TagVector, single_tags_list, iter, iter_end) {
+		foreach (SetVector, (*iter)->vs_sets, sit, sit_end) {
+			(*sit)->markUsed(*this);
+		}
+	}
+
 	RuleByLineMap rule_by_line;
 	rule_by_line.insert(this->rule_by_line.begin(), this->rule_by_line.end());
 	foreach (RuleByLineMap, rule_by_line, iter_rule, iter_rule_end) {
