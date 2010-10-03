@@ -155,19 +155,7 @@ bool GrammarApplicator::doesTagMatchReading(const Reading& reading, const Tag& t
 	bool retval = false;
 	bool match = false;
 
-	if (tag.type & T_VARSTRING) {
-		if (tag.type & T_NUMERICAL) {
-			match = true;
-		}
-		else {
-			match = doesRegexpMatchReading(reading, tag);
-		}
-		if (match) {
-			const Tag *nt = generateVarstringTag(&tag);
-			match = doesTagMatchReading(reading, *nt, unif_mode);
-		}
-	}
-	else if (!(tag.type & T_SPECIAL) || tag.type & T_FAILFAST) {
+	if (!(tag.type & T_SPECIAL) || tag.type & T_FAILFAST) {
 		uint32SortedVector::const_iterator itf, ite = reading.tags_plain.end();
 		bool raw_in = reading.tags_plain_bloom.matches(tag.hash);
 		if (tag.type & T_FAILFAST) {
@@ -179,6 +167,18 @@ bool GrammarApplicator::doesTagMatchReading(const Reading& reading, const Tag& t
 			raw_in = (itf != ite);
 		}
 		match = raw_in;
+	}
+	else if (tag.type & T_VARSTRING) {
+		if (tag.type & T_NUMERICAL) {
+			match = true;
+		}
+		else {
+			match = doesRegexpMatchReading(reading, tag);
+		}
+		if (match) {
+			const Tag *nt = generateVarstringTag(&tag);
+			match = doesTagMatchReading(reading, *nt, unif_mode);
+		}
 	}
 	else if (tag.regexp) {
 		match = doesRegexpMatchReading(reading, tag);
@@ -397,20 +397,30 @@ bool GrammarApplicator::doesTagMatchReading(const Reading& reading, const Tag& t
 			match = true;
 		}
 	}
-	else if (par_left_tag && tag.type & T_PAR_LEFT && reading.parent->local_number == par_left_pos) {
-		match = (reading.tags.find(par_left_tag) != reading.tags.end());
+	else if (tag.type & T_PAR_LEFT) {
+		if (par_left_tag && reading.parent->local_number == par_left_pos) {
+			match = (reading.tags.find(par_left_tag) != reading.tags.end());
+		}
 	}
-	else if (par_right_tag && tag.type & T_PAR_RIGHT && reading.parent->local_number == par_right_pos) {
-		match = (reading.tags.find(par_right_tag) != reading.tags.end());
+	else if (tag.type & T_PAR_RIGHT) {
+		if (par_right_tag && reading.parent->local_number == par_right_pos) {
+			match = (reading.tags.find(par_right_tag) != reading.tags.end());
+		}
 	}
-	else if (target && tag.type & T_TARGET && reading.parent == target) {
-		match = true;
+	else if (tag.type & T_TARGET) {
+		if (target && reading.parent == target) {
+			match = true;
+		}
 	}
-	else if (mark && tag.type & T_MARK && reading.parent == mark) {
-		match = true;
+	else if (tag.type & T_MARK) {
+		if (mark && reading.parent == mark) {
+			match = true;
+		}
 	}
-	else if (attach_to && tag.type & T_ATTACHTO && reading.parent == attach_to) {
-		match = true;
+	else if (tag.type & T_ATTACHTO) {
+		if (attach_to && reading.parent == attach_to) {
+			match = true;
+		}
 	}
 
 	if (tag.type & T_NEGATIVE) {
