@@ -161,7 +161,8 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 		if (fields & (1 << 10)) {
 			fread(&u32tmp, sizeof(uint32_t), 1, input);
 			uint32_t num = (uint32_t)ntohl(u32tmp);
-			t->vs_sets.reserve(num);
+			t->allocateVsSets();
+			t->vs_sets->reserve(num);
 			tag_varsets[t->number].reserve(num);
 			for (size_t i=0 ; i<num ; ++i) {
 				fread(&u32tmp, sizeof(uint32_t), 1, input);
@@ -172,7 +173,8 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 		if (fields & (1 << 11)) {
 			fread(&u32tmp, sizeof(uint32_t), 1, input);
 			uint32_t num = (uint32_t)ntohl(u32tmp);
-			t->vs_names.reserve(num);
+			t->allocateVsNames();
+			t->vs_names->reserve(num);
 			for (size_t i=0 ; i<num ; ++i) {
 				fread(&u32tmp, sizeof(uint32_t), 1, input);
 				u32tmp = (uint32_t)ntohl(u32tmp);
@@ -180,7 +182,7 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 					ucnv_reset(conv);
 					fread(&cbuffers[0][0], 1, u32tmp, input);
 					i32tmp = ucnv_toUChars(conv, &gbuffers[0][0], CG3_BUFFER_SIZE-1, &cbuffers[0][0], u32tmp, &err);
-					t->vs_names.push_back(&gbuffers[0][0]);
+					t->vs_names->push_back(&gbuffers[0][0]);
 				}
 			}
 		}
@@ -327,7 +329,7 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 		Tag *t = grammar->single_tags_list[iter->first];
 		foreach (uint32Vector, iter->second, uit, uit_end) {
 			Set *s = grammar->sets_list[*uit];
-			t->vs_sets.push_back(s);
+			t->vs_sets->push_back(s);
 		}
 	}
 

@@ -120,17 +120,17 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 			buffer.write(&cbuffers[0][0], i32tmp);
 		}
 
-		if (!t->vs_sets.empty()) {
+		if (t->vs_sets) {
 			fields |= (1 << 10);
-			writeSwapped<uint32_t>(buffer, t->vs_sets.size());
-			const_foreach (SetVector, t->vs_sets, iter, iter_end) {
+			writeSwapped<uint32_t>(buffer, t->vs_sets->size());
+			const_foreach (SetVector, *t->vs_sets, iter, iter_end) {
 				writeSwapped(buffer, (*iter)->number);
 			}
 		}
-		if (!t->vs_names.empty()) {
+		if (t->vs_names) {
 			fields |= (1 << 11);
-			writeSwapped<uint32_t>(buffer, t->vs_names.size());
-			const_foreach (std::vector<UString>, t->vs_names, iter, iter_end) {
+			writeSwapped<uint32_t>(buffer, t->vs_names->size());
+			const_foreach (std::vector<UString>, *t->vs_names, iter, iter_end) {
 				ucnv_reset(conv);
 				i32tmp = ucnv_fromUChars(conv, &cbuffers[0][0], CG3_BUFFER_SIZE-1, (*iter).c_str(), (*iter).length(), &err);
 				writeSwapped(buffer, i32tmp);
