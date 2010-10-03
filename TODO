@@ -21,7 +21,6 @@ ToDo: Boost's unordered_map/set are 20% faster than MSVC++'s hash_map/set - rete
 ToDo: Allow multiple contextual position per test via ,
 ToDo: Dynamic window buffers based on dependency / relation links
 ToDo: Make all tag containers have Tag* instead of uint32_t
-ToDo: SELECT $$@FUNC + $$sem IF (*1 V LINK 0 (<f{$$@FUNC}/{$$sem}>=50>)) ; where compositetags get _ between tags (requires ordering)
 ToDo: SELECT $$sem IF (-1 N LINK 0 (<+{$$sem,<(.*)>,$1}>)) ;
 ToDo: Somehow refer to left / right sibling
 ToDo: Use Cohort iterator instead of subfunctions
