@@ -259,6 +259,7 @@ void Tag::parseTag(const UChar *to, UFILE *ux_stderr, Grammar *grammar) {
 					type &= ~T_NUMERICAL;
 					const char sfx[] = "\\E.+\\Q";
 					wildcard.replace(wildcard.begin()+pos, wildcard.begin()+pos+rpl.length(), sfx, sfx+sizeof(sfx)-1);
+					wild = true;
 				}
 				else {
 					u_fprintf(ux_stderr, "Warning: Couldn't extract numerics from varstring tag %S - will be slow.\n", tag.c_str());
@@ -272,6 +273,7 @@ void Tag::parseTag(const UChar *to, UFILE *ux_stderr, Grammar *grammar) {
 				while ((pos = wildcard.find(stringbits[S_VS1+i].getTerminatedBuffer())) != UString::npos) {
 					const char sfx[] = "\\E.+\\Q";
 					wildcard.replace(wildcard.begin()+pos, wildcard.begin()+pos+stringbits[S_VS1+i].length(), sfx, sfx+sizeof(sfx)-1);
+					wild = true;
 				}
 			}
 			// Remove %l %L %u %U
