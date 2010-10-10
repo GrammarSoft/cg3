@@ -79,7 +79,7 @@ void Tag::parseTag(const UChar *to, UFILE *ux_stderr, Grammar *grammar) {
 		size_t length = u_strlen(tmp);
 
 		if (tmp[0] == 'T' && tmp[1] == ':') {
-			u_fprintf(ux_stderr, "Warning: Tag %S looks like a misattempt of template usage.\n", tmp);
+			u_fprintf(ux_stderr, "Warning: Tag %S looks like a misattempt of template usage on line %u.\n", tmp, grammar->lines);
 		}
 
 		// ToDo: Implement META and VAR
@@ -141,7 +141,7 @@ void Tag::parseTag(const UChar *to, UFILE *ux_stderr, Grammar *grammar) {
 			tag += tmp[i];
 		}
 		if (tag.empty()) {
-			u_fprintf(ux_stderr, "Error: Parsing tag %S resulted in an empty tag - cannot continue!\n", tag.c_str());
+			u_fprintf(ux_stderr, "Error: Parsing tag %S resulted in an empty tag on line %u - cannot continue!\n", tag.c_str(), grammar->lines);
 			CG3Quit(1);
 		}
 
@@ -190,7 +190,7 @@ void Tag::parseTag(const UChar *to, UFILE *ux_stderr, Grammar *grammar) {
 					regexp = uregex_open(tag.c_str(), tag.length(), 0, &pe, &status);
 				}
 				if (status != U_ZERO_ERROR) {
-					u_fprintf(ux_stderr, "Error: uregex_open returned %s trying to parse tag %S - cannot continue!\n", u_errorName(status), tag.c_str());
+					u_fprintf(ux_stderr, "Error: uregex_open returned %s trying to parse tag %S on line %u - cannot continue!\n", u_errorName(status), tag.c_str(), grammar->lines);
 					CG3Quit(1);
 				}
 			}
@@ -266,7 +266,7 @@ void Tag::parseTag(const UChar *to, UFILE *ux_stderr, Grammar *grammar) {
 					wild = true;
 				}
 				else {
-					u_fprintf(ux_stderr, "Warning: Couldn't extract numerics from varstring tag %S - will be slow.\n", tag.c_str());
+					u_fprintf(ux_stderr, "Warning: Couldn't extract numerics from varstring tag %S on line %u - will be slow.\n", tag.c_str(), grammar->lines);
 					u_fflush(ux_stderr);
 				}
 			}
@@ -317,7 +317,7 @@ void Tag::parseTag(const UChar *to, UFILE *ux_stderr, Grammar *grammar) {
 					regexp = uregex_open(wildcard.c_str(), wildcard.length(), 0, &pe, &status);
 				}
 				if (status != U_ZERO_ERROR) {
-					u_fprintf(ux_stderr, "Error: uregex_open returned %s trying to parse varstring wildcard %S - cannot continue!\n", u_errorName(status), wildcard.c_str());
+					u_fprintf(ux_stderr, "Error: uregex_open returned %s trying to parse varstring wildcard %S on line %u - cannot continue!\n", u_errorName(status), wildcard.c_str(), grammar->lines);
 					CG3Quit(1);
 				}
 			}
@@ -330,7 +330,7 @@ void Tag::parseTag(const UChar *to, UFILE *ux_stderr, Grammar *grammar) {
 	}
 
 	if (type & T_VARSTRING && type & (T_REGEXP|T_REGEXP_ANY|T_VARIABLE|T_META)) {
-		u_fprintf(ux_stderr, "Error: Tag %S cannot mix varstring with any other special feature!\n", to);
+		u_fprintf(ux_stderr, "Error: Tag %S cannot mix varstring with any other special feature on line %u!\n", to, grammar->lines);
 		CG3Quit(1);
 	}
 }
