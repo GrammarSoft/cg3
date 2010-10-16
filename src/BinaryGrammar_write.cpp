@@ -62,7 +62,7 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 	fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 	std::vector<Tag*>::const_iterator tags_iter;
 	for (tags_iter = grammar->single_tags_list.begin() ; tags_iter != grammar->single_tags_list.end() ; tags_iter++) {
-		Tag *t = *tags_iter;
+		const Tag *t = *tags_iter;
 
 		uint32_t fields = 0;
 		buffer.str("");
@@ -147,7 +147,7 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 	fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 	std::vector<CompositeTag*>::const_iterator comp_iter;
 	for (comp_iter = grammar->tags_list.begin() ; comp_iter != grammar->tags_list.end() ; comp_iter++) {
-		CompositeTag *curcomptag = *comp_iter;
+		const CompositeTag *curcomptag = *comp_iter;
 		u32tmp = (uint32_t)htonl((uint32_t)curcomptag->number);
 		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 		u32tmp = (uint32_t)htonl((uint32_t)curcomptag->hash);
