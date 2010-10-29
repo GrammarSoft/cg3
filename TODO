@@ -1,6 +1,6 @@
 ToDo: Rules can be dynamically reordered in "optimize correct" mode by moving the offending rule to the end of the section
 ToDo: Refactor statistics to be gathered in their own objects rather than inline with Grammar, Rules, ContextualTest, Set
-ToDo: Enable a daemonized version.
+ToDo: Enable a daemonized version. Easily doable via Perl's Net::Server::PreFork.
 ToDo: Add flag for using dependencies to delimit windows
 ToDo: Make old cohort -> rules order available via switch
 ToDo: Make use of Preferred-Targets
