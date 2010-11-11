@@ -92,12 +92,25 @@
       The case folding is performed right-to-left one-by-one.
     </para>
     <para>
+      It is also possible to include references to unified $$sets or &amp;&amp;sets in {} where they will be replaced
+      with the tags that the unification resulted in. If there are multiple tags, they will be delimited by an underscore _.
+    </para>
+    <para>
+      It should be noted that you can use varstring tags anywhere, not just when manipulating tags.
+      When used in a contextual test they are fleshed out with the information available at the time and then attempted matched.
+    </para>
+    <para>
       <screen>
         # Adds a lower-case &lt;wordform&gt; to all readings.
         ADD (&lt;%L$1&gt;v) TARGET ("&lt;(.*)&gt;"r) ;
 
         # Adds a reading with a normalized baseform for all suspicious wordforms ending in 'ies'
         APPEND ("$1y"v N P NOM) TARGET N + ("&lt;(.*)ies&gt;"r) IF (1 VFIN) ;
+
+        # Merge results from multiple unified $$sets into a single tag
+        LIST ROLE = human anim inanim (bench table) ;
+        LIST OTHER = crispy waffles butter ;
+        MAP (&lt;{$$ROLE}/{$$OTHER}&gt;v) (target tags) (-1 $$OTHER) (-2C $$ROLE) ;
       </screen>
     </para>
   </section>
