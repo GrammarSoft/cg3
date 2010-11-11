@@ -1,0 +1,18 @@
+A new release of CG-3 has been tagged v0.9.7.6500.
+
+Main site is http://beta.visl.sdu.dk/cg3.html
+Google Group is http://groups.google.com/group/constraint-grammar
+Source snapshots available at http://beta.visl.sdu.dk/download/vislcg3/
+Windows binary is at http://beta.visl.sdu.dk/download/vislcg3/vislcg3-0.9.7.6500-win32.zip
+Mirror at http://groups.google.com/group/constraint-grammar/files
+
+New features:
+- All tag lists for rules that use them can now be sets and unified &&sets or $$sets. See http://beta.visl.sdu.dk/cg3/chunked/rules.html#taglists-sets for details.
+- Varstring tags are now much more powerful. You can now mix in {$$sets} and {&&sets} for inline replacement, and varstrings can now be used in contextual tests. See http://beta.visl.sdu.dk/cg3/chunked/tags.html#variable-strings for details.
+
+Changes:
+- Binary grammar version bumped. All old grammars are incompatible. Work-in-progress on getting a stable format...
+- Numeric tags (e.g. <key:1234>) are now considered textual as well as numeric. This may subtly alter behavior and be a bit slower, but is necessary for the new varstring handling.
+
+-- Tino Didriksen
+CG-3 Developer
