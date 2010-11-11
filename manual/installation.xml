@@ -77,8 +77,8 @@
       <screen>
         # cd /tmp
         # wget -c
-        &nbsp; '<ulink url="http://icu-project.org/download/">http://download.icu-project.org/files/icu4c/4.0/icu4c-4_0-src.tgz</ulink>'
-        # tar -zxvf icu4c-4_0-src.tgz
+        &nbsp; '<ulink url="http://icu-project.org/download/">http://download.icu-project.org/files/icu4c/4.4.2/icu4c-4_4_2-src.tgz</ulink>'
+        # tar -zxvf icu4c-4_4_2-src.tgz
         # cd icu/source/
         # ./runConfigureICU Linux
         # make
