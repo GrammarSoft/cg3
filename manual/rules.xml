@@ -94,6 +94,24 @@
     </screen>
   </section>
 
+  <section id="taglists-sets">
+    <title>Tag Lists Can Be Sets</title>
+    <para>
+      For the rule types MAP, ADD, REPLACE, APPEND, SUBSTITUTE, ADDRELATION(S), SETRELATION(S), and REMRELATION(S),
+      the tag lists can be sets instead, including <link linkend="tag-unification">$$sets</link>
+      and <link linkend="set-unification">&amp;&amp;sets</link>.
+      This is useful for manipulating tags that you want to pull in from a context.
+    </para>
+    <para>
+      The sets are resolved and reduced to a list of tags during rule application. If the set reduces to multiple tags
+      where only one is required (such as for the Relation rules), only the first tag is used.
+    </para>
+    <screen>
+      LIST ROLE = &lt;human&gt; &lt;anim&gt; &lt;inanim&gt; (&lt;bench&gt; &lt;table&gt;) ;
+      MAP $$ROLE (target tags) (-1 KC) (-2C $$ROLE) ;
+    </screen>
+  </section>
+
   <section id="named-rules">
     <title>Named Rules</title>
     <indexterm>
