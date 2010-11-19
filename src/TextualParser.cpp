@@ -237,8 +237,12 @@ Set *TextualParser::parseSetInline(UChar *& p, Set *s) {
 Set *TextualParser::parseSetInlineWrapper(UChar *& p) {
 	uint32_t tmplines = result->lines;
 	Set *s = parseSetInline(p);
-	s->line = tmplines;
-	s->setName(sets_counter++);
+	if (!s->line) {
+		s->line = tmplines;
+	}
+	if (s->name.empty()) {
+		s->setName(sets_counter++);
+	}
 	result->addSet(s);
 	return s;
 }
