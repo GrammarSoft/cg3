@@ -88,47 +88,60 @@ void Tag::parseTag(const UChar *to, UFILE *ux_stderr, Grammar *grammar) {
 			tmp += 5;
 			length -= 5;
 		}
-		else if (tmp[0] == 'V' && tmp[1] == 'A' && tmp[2] == 'R' && tmp[3] == ':') {
+		if (tmp[0] == 'V' && tmp[1] == 'A' && tmp[2] == 'R' && tmp[3] == ':') {
 			type |= T_VARIABLE;
 			tmp += 4;
 			length -= 4;
 		}
+		if (tmp[0] == 'T' && tmp[1] == 'E' && tmp[2] == 'X' && tmp[3] == 'T' && tmp[4] == ':') {
+			type |= T_TEXTUAL;
+			tmp += 5;
+			length -= 5;
+		}
 		
 		size_t oldlength = length;
 
-		while (tmp[0] && (tmp[0] == '"' || tmp[0] == '<') && (tmp[length-1] == 'i' || tmp[length-1] == 'r' || tmp[length-1] == 'v')) {
-			if (tmp[length-1] == 'v') {
-				type |= T_VARSTRING;
-				length--;
+		while (tmp[0] && (tmp[0] == '"' || tmp[0] == '<')) {
+			while (tmp[length-1] == 'i' || tmp[length-1] == 'r' || tmp[length-1] == 'v') {
+				if (tmp[length-1] == 'v') {
+					type |= T_VARSTRING;
+					length--;
+				}
+				if (tmp[length-1] == 'r') {
+					type |= T_REGEXP;
+					length--;
+				}
+				if (tmp[length-1] == 'i') {
+					type |= T_CASE_INSENSITIVE;
+					length--;
+				}
 			}
-			if (tmp[length-1] == 'r') {
-				type |= T_REGEXP;
-				length--;
-			}
-			if (tmp[length-1] == 'i') {
-				type |= T_CASE_INSENSITIVE;
-				length--;
-			}
-		}
 
-		if (tmp[0] && (tmp[0] == '"' || tmp[0] == '<')) {
+			if (tmp[0] == '"' && tmp[length-1] == '"') {
+				if (tmp[1] == '<' && tmp[length-2] == '>') {
+					type |= T_WORDFORM;
+				}
+				else {
+					type |= T_BASEFORM;
+				}
+			}
+
+			if (type & T_TEXTUAL) {
+				break;
+			}
+
 			if ((tmp[0] == '"' && tmp[length-1] == '"') || (tmp[0] == '<' && tmp[length-1] == '>')) {
 				type |= T_TEXTUAL;
-				if (tmp[0] == '"' && tmp[length-1] == '"') {
-					if (tmp[1] == '<' && tmp[length-2] == '>') {
-						type |= T_WORDFORM;
-					}
-					else {
-						type |= T_BASEFORM;
-					}
-				}
 			}
 			else {
 				type &= ~T_VARSTRING;
 				type &= ~T_REGEXP;
 				type &= ~T_CASE_INSENSITIVE;
+				type &= ~T_WORDFORM;
+				type &= ~T_BASEFORM;
 				length = oldlength;
 			}
+			break;
 		}
 
 		for (size_t i=0 ; tmp[i] != 0 && i < length ; ++i) {
