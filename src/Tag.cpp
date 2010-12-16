@@ -102,19 +102,24 @@ void Tag::parseTag(const UChar *to, UFILE *ux_stderr, Grammar *grammar) {
 		size_t oldlength = length;
 
 		while (tmp[0] && (tmp[0] == '"' || tmp[0] == '<')) {
+			// Parse the suffixes r, i, v but max only one of each.
 			while (tmp[length-1] == 'i' || tmp[length-1] == 'r' || tmp[length-1] == 'v') {
-				if (tmp[length-1] == 'v') {
+				if (!(type & T_VARSTRING) && tmp[length-1] == 'v') {
 					type |= T_VARSTRING;
 					length--;
+					continue;
 				}
-				if (tmp[length-1] == 'r') {
+				if (!(type & T_REGEXP) && tmp[length-1] == 'r') {
 					type |= T_REGEXP;
 					length--;
+					continue;
 				}
-				if (tmp[length-1] == 'i') {
+				if (!(type & T_CASE_INSENSITIVE) && tmp[length-1] == 'i') {
 					type |= T_CASE_INSENSITIVE;
 					length--;
+					continue;
 				}
+				break;
 			}
 
 			if (tmp[0] == '"' && tmp[length-1] == '"') {
