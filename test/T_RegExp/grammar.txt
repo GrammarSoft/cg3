@@ -16,4 +16,5 @@ ADD (@i) CSet ;
 
 ADD (<{$$matchme}/%U{$$wanted}>v) $$wanted + $$matchme (0 (<{$$matchme}/%U{$$wanted}>=50>v)) ;
 
-ADD (TEXT:@$2$1v) (".(at)(ch).*"r) ;
+ADD (VSTR:@$2$1) (".(at)(ch).*"r) (0 ("m$1$2me"v)) ;
+ADD (VSTR:other-@$2$1) (".(at)(ch).*"r) (0 (VSTR:@$2$1)) ;

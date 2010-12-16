@@ -173,16 +173,8 @@ uint32_t GrammarApplicator::doesTagMatchReading(const Reading& reading, const Ta
 		}
 	}
 	else if (tag.type & T_VARSTRING) {
-		if (tag.type & T_NUMERICAL) {
-			match = grammar->tag_any;
-		}
-		else {
-			match = doesRegexpMatchReading(reading, tag, bypass_index);
-		}
-		if (match) {
-			const Tag *nt = generateVarstringTag(&tag);
-			match = doesTagMatchReading(reading, *nt, unif_mode, bypass_index);
-		}
+		const Tag *nt = generateVarstringTag(&tag);
+		match = doesTagMatchReading(reading, *nt, unif_mode, bypass_index);
 	}
 	else if (tag.regexp) {
 		match = doesRegexpMatchReading(reading, tag, bypass_index);
