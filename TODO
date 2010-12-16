@@ -29,3 +29,4 @@ ToDo: Make things less magic (explain what magic means in the various contexts)
 ToDo: Handle duplicate different sets and delimiters from INCLUDE files. Possibly make new keyword or option for INCLUDE. Handle line numbering how?
 ToDo: Add an insert position for MAP/ADD
 ToDo: Stabilize the binary grammar format or get to a point where old versions are easy to load
+ToDo: Don't output a warning if it is identical to last output warning.

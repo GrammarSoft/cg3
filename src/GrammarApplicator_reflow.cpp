@@ -290,9 +290,11 @@ void GrammarApplicator::reflowReading(Reading& reading) {
 
 	insert_if_exists(reading.parent->possible_sets, grammar->sets_any);
 
-	const_foreach (uint32List, reading.tags_list, tter, tter_end) {
+	uint32List tlist;
+	tlist.swap(reading.tags_list);
+
+	const_foreach (uint32List, tlist, tter, tter_end) {
 		addTagToReading(reading, *tter, false);
-		reading.tags_list.pop_back();
 	}
 
 	reading.rehash();
@@ -385,7 +387,7 @@ Tag *GrammarApplicator::generateVarstringTag(const Tag *tag) {
 		return addTag(nt);
 	}
 	else {
-		u_fprintf(ux_stderr, "Warning: generateVarstringTag() was not able to generate anything for tag '%S'!\n", tag->tag.c_str());
+		u_fprintf(ux_stderr, "Warning: Was not able to generate from tag '%S'! Possibly missing KEEPORDER and/or capturing regex.\n", tag->tag.c_str());
 		u_fflush(ux_stderr);
 	}
 	return single_tags.find(tag->hash)->second;
@@ -491,14 +493,25 @@ void GrammarApplicator::splitMappings(TagList mappings, Cohort& cohort, Reading&
 		}
 		Reading *nr = new Reading(reading);
 		nr->mapped = mapped;
-		addTagToReading(*nr, (*ttag)->hash);
-		nr->mapping = *ttag;
+		uint32_t mp = addTagToReading(*nr, (*ttag)->hash);
+		if (mp != (*ttag)->hash) {
+			nr->mapping = single_tags.find(mp)->second;
+		}
+		else {
+			nr->mapping = *ttag;
+		}
 		cohort.appendReading(nr);
 		numReadings++;
 	}
+
 	reading.mapped = mapped;
-	addTagToReading(reading, tag->hash);
-	reading.mapping = tag;
+	uint32_t mp = addTagToReading(reading, tag->hash);
+	if (mp != tag->hash) {
+		reading.mapping = single_tags.find(mp)->second;
+	}
+	else {
+		reading.mapping = tag;
+	}
 }
 
 void GrammarApplicator::mergeMappings(Cohort& cohort) {

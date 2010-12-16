@@ -13,19 +13,19 @@
 	"wordd" some tags 
 	"wordd" some tags BB EE @UnifSet ADD:11 
 "<worde>"
-	"worde" some tags CC @UnifSet ADD:11 SELECT:one 
+	"replaced:rde" some tags CC @UnifSet ADD:11 SELECT:one SUBSTITUTE:29 
 ;	"worde" some tags SELECT:one 
 ;	"worde" some tags SELECT:one 
 "<wordf>"
-	"wordf" some tags CC THIS @UnifSet ADD:11 
-	"wordf" some tags THIS 
+	"replaced:f" some tags CC THIS @UnifSet ADD:11 SUBSTITUTE:29 
+	"replaced:f" some tags THIS SUBSTITUTE:29 
 ;	"wordf" some tags NOTTHIS REMOVE:20 
 "<wordg>"
-	"wordg" some tags CC THIS SELECT:this 
+	"replaced:g" some tags CC THIS SELECT:this SUBSTITUTE:29 
 ;	"wordg" some tags SELECT:this 
 ;	"wordg" some tags ALSONOTTHIS SELECT:this 
 "<wordh>"
-	"wordh" some tags <Hprof> AA CC EE THIS SELECT:regex ADD:23 ADD:25 
+	"replaced:h" some tags <Hprof> AA CC EE THIS SELECT:regex ADD:23 ADD:25 SUBSTITUTE:29 
 ;	"wordh" some tags SELECT:regex 
 ;	"wordh" some tags SELECT:regex 
 "<wordi>"

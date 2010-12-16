@@ -24,3 +24,6 @@ ADD &&USET (tags) (-7 &&USET) ;
 ADD &&USET (tags) (-8 &&USET) ;
 ADD $$TSet ("wordh") (-2C (some) + $$TSet) ;
 SUBSTITUTE &&USET (<before>) + $$TSet + (<after>) ("wordi") (-8 &&USET) (-2C (some) + $$TSet) ;
+
+LIST REMSET = "word([fgh])"r "WO(RDE)"ri ;
+SUBSTITUTE $$REMSET ("replaced:$1"v) $$REMSET ;

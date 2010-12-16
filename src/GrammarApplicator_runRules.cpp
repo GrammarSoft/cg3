@@ -123,8 +123,8 @@ TagList GrammarApplicator::getTagList(const Set& theSet, bool unif_mode) const {
 		uint32HashMap::const_iterator iter = unif_tags.find(theSet.hash);
 		if (iter != unif_tags.end()) {
 			uint32_t ihash = iter->second;
-			if (grammar->single_tags.find(ihash) != grammar->single_tags.end()) {
-				theTags.push_back(grammar->single_tags.find(ihash)->second);
+			if (single_tags.find(ihash) != single_tags.end()) {
+				theTags.push_back(single_tags.find(ihash)->second);
 			}
 			else if (grammar->tags.find(ihash) != grammar->tags.end()) {
 				CompositeTag *tag = grammar->tags.find(ihash)->second;
@@ -593,6 +593,22 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						uint32_t tloc = 0;
 						size_t tagb = reading.tags_list.size();
 						TagList theTags = getTagList(*rule.sublist);
+
+						for (TagList::iterator it = theTags.begin() ; it != theTags.end() ; ) {
+							if (reading.tags.find((*it)->hash) == reading.tags.end()) {
+								const Tag* tt = *it;
+								it = theTags.erase(it);
+								if (tt->type & T_SPECIAL) {
+									uint32_t stag = doesTagMatchReading(reading, *tt, false, true);
+									if (stag) {
+										theTags.insert(it, single_tags.find(stag)->second);
+									}
+								}
+								continue;
+							}
+							++it;
+						}
+
 						const_foreach (TagList, theTags, tter, tter_end) {
 							if (!tloc) {
 								foreach (uint32List, reading.tags_list, tfind, tfind_end) {
