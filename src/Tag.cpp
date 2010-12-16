@@ -93,15 +93,15 @@ void Tag::parseTag(const UChar *to, UFILE *ux_stderr, Grammar *grammar) {
 			tmp += 4;
 			length -= 4;
 		}
-		if (tmp[0] == 'T' && tmp[1] == 'E' && tmp[2] == 'X' && tmp[3] == 'T' && tmp[4] == ':') {
-			type |= T_TEXTUAL;
+		if (tmp[0] == 'V' && tmp[1] == 'S' && tmp[2] == 'T' && tmp[3] == 'R' && tmp[4] == ':') {
+			type |= T_VARSTRING;
 			tmp += 5;
 			length -= 5;
 		}
 		
 		size_t oldlength = length;
 
-		while (tmp[0] && ((type & T_TEXTUAL) || tmp[0] == '"' || tmp[0] == '<')) {
+		while (tmp[0] && (tmp[0] == '"' || tmp[0] == '<')) {
 			// Parse the suffixes r, i, v but max only one of each.
 			while (tmp[length-1] == 'i' || tmp[length-1] == 'r' || tmp[length-1] == 'v') {
 				if (!(type & T_VARSTRING) && tmp[length-1] == 'v') {
@@ -215,15 +215,9 @@ void Tag::parseTag(const UChar *to, UFILE *ux_stderr, Grammar *grammar) {
 		}
 
 		if (type & T_VARSTRING) {
-			UString wildcard;
-			wildcard.reserve(tag.length());
-			const char pfx[] = "^\\Q";
-			wildcard.append(pfx, pfx+sizeof(pfx)-1);
 			UChar *p = &tag[0];
 			UChar *n = 0;
-			bool wild = false;
 			do {
-				UChar *o = p;
 				SKIPTO(p, '{');
 				if (*p) {
 					n = p;
@@ -231,9 +225,6 @@ void Tag::parseTag(const UChar *to, UFILE *ux_stderr, Grammar *grammar) {
 					if (*n) {
 						allocateVsSets();
 						allocateVsNames();
-						wildcard.append(o, p);
-						const char grp[] = "\\E.+\\Q";
-						wildcard.append(grp, grp+sizeof(grp)-1);
 						++p;
 						UString theSet(p, n);
 						Set *tmp = grammar->parseSet(theSet.c_str());
@@ -245,100 +236,9 @@ void Tag::parseTag(const UChar *to, UFILE *ux_stderr, Grammar *grammar) {
 						vs_names->push_back(old);
 						p = n;
 						++p;
-						wild = true;
 					}
 				}
-				else {
-					wildcard.append(o);
-				}
 			} while(*p);
-			const char sfx[] = "\\E$";
-			wildcard.append(sfx, sfx+sizeof(sfx)-1);
-
-			// Replace numeric information with .+ to let the regex match easier
-			if (type & T_NUMERICAL) {
-				UString rpl(20, 0);
-				if (comparison_op == OP_EQUALS) {
-					rpl.resize(u_sprintf(&rpl[0], "=%d", comparison_val));
-				}
-				else if (comparison_op == OP_GREATEREQUALS) {
-					rpl.resize(u_sprintf(&rpl[0], ">=%d", comparison_val));
-				}
-				else if (comparison_op == OP_GREATERTHAN) {
-					rpl.resize(u_sprintf(&rpl[0], ">%d", comparison_val));
-				}
-				else if (comparison_op == OP_LESSEQUALS) {
-					rpl.resize(u_sprintf(&rpl[0], "<=%d", comparison_val));
-				}
-				else if (comparison_op == OP_LESSTHAN) {
-					rpl.resize(u_sprintf(&rpl[0], "<%d", comparison_val));
-				}
-				else if (comparison_op == OP_NOTEQUALS) {
-					rpl.resize(u_sprintf(&rpl[0], "!=%d", comparison_val));
-				}
-				size_t pos = wildcard.rfind(rpl);
-				if (pos != UString::npos) {
-					type &= ~T_NUMERICAL;
-					const char sfx[] = "\\E.+\\Q";
-					wildcard.replace(wildcard.begin()+pos, wildcard.begin()+pos+rpl.length(), sfx, sfx+sizeof(sfx)-1);
-					wild = true;
-				}
-				else {
-					u_fprintf(ux_stderr, "Warning: Couldn't extract numerics from varstring tag %S on line %u - will be slow.\n", tag.c_str(), grammar->lines);
-					u_fflush(ux_stderr);
-				}
-			}
-
-			// Replace $1-$9 with .+
-			size_t pos = 0;
-			for (size_t i=0 ; i<9 ; ++i) {
-				while ((pos = wildcard.find(stringbits[S_VS1+i].getTerminatedBuffer())) != UString::npos) {
-					const char sfx[] = "\\E.+\\Q";
-					wildcard.replace(wildcard.begin()+pos, wildcard.begin()+pos+stringbits[S_VS1+i].length(), sfx, sfx+sizeof(sfx)-1);
-					wild = true;
-				}
-			}
-			// Remove %l %L %u %U
-			while ((pos = wildcard.find(stringbits[S_VSu].getTerminatedBuffer())) != UString::npos) {
-				wildcard.erase(pos, stringbits[S_VSu].length());
-			}
-			while ((pos = wildcard.find(stringbits[S_VSU].getTerminatedBuffer())) != UString::npos) {
-				wildcard.erase(pos, stringbits[S_VSU].length());
-			}
-			while ((pos = wildcard.find(stringbits[S_VSl].getTerminatedBuffer())) != UString::npos) {
-				wildcard.erase(pos, stringbits[S_VSl].length());
-			}
-			while ((pos = wildcard.find(stringbits[S_VSL].getTerminatedBuffer())) != UString::npos) {
-				wildcard.erase(pos, stringbits[S_VSL].length());
-			}
-
-			// Eliminate \Q\E when they're not protecting anything
-			const UChar eq[] = {'\\', 'Q', '\\', 'E', 0};
-			while ((pos = wildcard.find(eq)) != UString::npos) {
-				wildcard.erase(pos, 4);
-			}
-			// Eliminate consecutive .+
-			const UChar dotplus[] = {'.', '+', '.', '+', 0};
-			while ((pos = wildcard.find(dotplus)) != UString::npos) {
-				wildcard.erase(pos, 2);
-			}
-
-			if (wild) {
-				UParseError pe;
-				UErrorCode status = U_ZERO_ERROR;
-				status = U_ZERO_ERROR;
-
-				if (type & T_CASE_INSENSITIVE) {
-					regexp = uregex_open(wildcard.c_str(), wildcard.length(), UREGEX_CASE_INSENSITIVE, &pe, &status);
-				}
-				else {
-					regexp = uregex_open(wildcard.c_str(), wildcard.length(), 0, &pe, &status);
-				}
-				if (status != U_ZERO_ERROR) {
-					u_fprintf(ux_stderr, "Error: uregex_open returned %s trying to parse varstring wildcard %S on line %u - cannot continue!\n", u_errorName(status), wildcard.c_str(), grammar->lines);
-					CG3Quit(1);
-				}
-			}
 		}
 	}
 
