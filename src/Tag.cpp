@@ -97,11 +97,19 @@ void Tag::parseTag(const UChar *to, UFILE *ux_stderr, Grammar *grammar) {
 			type |= T_VARSTRING;
 			tmp += 5;
 			length -= 5;
+
+			tag.assign(tmp);
+			if (tag.empty()) {
+				u_fprintf(ux_stderr, "Error: Parsing tag %S resulted in an empty tag on line %u - cannot continue!\n", tag.c_str(), grammar->lines);
+				CG3Quit(1);
+			}
+
+			goto label_isVarstring;
 		}
 		
-		size_t oldlength = length;
+		if (tmp[0] && (tmp[0] == '"' || tmp[0] == '<')) {
+			size_t oldlength = length;
 
-		while (tmp[0] && (tmp[0] == '"' || tmp[0] == '<')) {
 			// Parse the suffixes r, i, v but max only one of each.
 			while (tmp[length-1] == 'i' || tmp[length-1] == 'r' || tmp[length-1] == 'v') {
 				if (!(type & T_VARSTRING) && tmp[length-1] == 'v') {
@@ -131,10 +139,6 @@ void Tag::parseTag(const UChar *to, UFILE *ux_stderr, Grammar *grammar) {
 				}
 			}
 
-			if (type & T_TEXTUAL) {
-				break;
-			}
-
 			if ((tmp[0] == '"' && tmp[length-1] == '"') || (tmp[0] == '<' && tmp[length-1] == '>')) {
 				type |= T_TEXTUAL;
 			}
@@ -146,7 +150,6 @@ void Tag::parseTag(const UChar *to, UFILE *ux_stderr, Grammar *grammar) {
 				type &= ~T_BASEFORM;
 				length = oldlength;
 			}
-			break;
 		}
 
 		for (size_t i=0 ; tmp[i] != 0 && i < length ; ++i) {
@@ -214,6 +217,7 @@ void Tag::parseTag(const UChar *to, UFILE *ux_stderr, Grammar *grammar) {
 			}
 		}
 
+label_isVarstring:
 		if (type & T_VARSTRING) {
 			UChar *p = &tag[0];
 			UChar *n = 0;
