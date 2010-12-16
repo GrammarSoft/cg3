@@ -15,3 +15,5 @@ ADD (@ri) BSet ;
 ADD (@i) CSet ;
 
 ADD (<{$$matchme}/%U{$$wanted}>v) $$wanted + $$matchme (0 (<{$$matchme}/%U{$$wanted}>=50>v)) ;
+
+ADD (TEXT:@$2$1v) (".(at)(ch).*"r) ;
