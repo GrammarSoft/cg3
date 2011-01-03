@@ -58,6 +58,9 @@ namespace CG3 {
 		Setuint32HashMap sets_by_contents;
 		uint32HashMap set_alias;
 
+		typedef stdext::hash_set<UString> static_sets_t;
+		static_sets_t static_sets;
+
 		std::vector<ContextualTest*> template_list;
 		stdext::hash_map<uint32_t, ContextualTest*> templates;
 

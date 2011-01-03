@@ -1,4 +1,4 @@
 "<word>"
-	"MatchMe" wanted <"matchme"/WANTED:100> <AtcHAT> other-@chat @ri @i @chat 
-	"matchme" wanted <AtcHAT> <"matchme"/WANTED> other-@chat @r @ri @i @chat 
+	"MatchMe" wanted <"matchme"/WANTED:100> <AtcHAT> other-@chat @ri @i @chat @gen-regex @vstr-set 
+	"matchme" wanted <AtcHAT> <"matchme"/WANTED> other-@chat @r @ri @i @chat @gen-regex @vstr-set 
 

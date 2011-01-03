@@ -1,4 +1,5 @@
 DELIMITERS = "<$.>" ;
+STATIC-SETS = @at ASet ;
 
 LIST ASet = ".atc[hm]{2}.*"r ;
 LIST BSet = ".atc[HM]{2}.*"ri ;
@@ -18,3 +19,7 @@ ADD (<{$$matchme}/%U{$$wanted}>v) $$wanted + $$matchme (0 (<{$$matchme}/%U{$$wan
 
 ADD (VSTR:@$2$1) (".(at)(ch).*"r) (0 ("m$1$2me"v)) ;
 ADD (VSTR:other-@$2$1) (".(at)(ch).*"r) (0 (VSTR:@$2$1)) ;
+ADD (@gen-regex) (".(at)(ch).*"r) (0 (VSTR:".*$1$2.*"r)) ;
+
+LIST @at = @chat ;
+ADD (@vstr-set) (".(at)(ch).*"r) (0 (VSTR:SET:\{@$1\})) ;

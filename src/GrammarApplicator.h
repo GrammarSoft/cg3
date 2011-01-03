@@ -78,7 +78,7 @@ namespace CG3 {
 		void enableStatistics();
 		void disableStatistics();
 
-		void setGrammar(const Grammar *res);
+		void setGrammar(Grammar *res);
 		void index();
 
 		virtual int runGrammarOnText(UFILE *input, UFILE *output);
@@ -88,7 +88,7 @@ namespace CG3 {
 		Window *gWindow;
 		void reflowDependencyWindow(uint32_t max = 0);
 
-		const Grammar *grammar;
+		Grammar *grammar;
 
 	protected:
 		void printReading(const Reading *reading, UFILE *output);
@@ -147,8 +147,8 @@ namespace CG3 {
 		uint32HashSet index_ruleCohort_no;
 		void resetIndexes();
 	
-		Tag *addTag(const UChar *tag);
-		Tag *addTag(const UString& txt);
+		Tag *addTag(const UChar *tag, bool vstr = false);
+		Tag *addTag(const UString& txt, bool vstr = false);
 		Tag *makeBaseFromWord(uint32_t tag);
 		Tag *makeBaseFromWord(Tag *tag);
 
