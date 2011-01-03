@@ -93,6 +93,11 @@ void Tag::parseTag(const UChar *to, UFILE *ux_stderr, Grammar *grammar) {
 			tmp += 4;
 			length -= 4;
 		}
+		if (tmp[0] == 'S' && tmp[1] == 'E' && tmp[2] == 'T' && tmp[3] == ':') {
+			type |= T_VARSTRING;
+			tmp += 4;
+			length -= 4;
+		}
 		if (tmp[0] == 'V' && tmp[1] == 'S' && tmp[2] == 'T' && tmp[3] == 'R' && tmp[4] == ':') {
 			type |= T_VARSTRING;
 			tmp += 5;

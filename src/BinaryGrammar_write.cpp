@@ -233,6 +233,13 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 				writeSwapped(buffer, *iter);
 			}
 		}
+		if (s->type & ST_STATIC) {
+			fields |= (1 << 6);
+			ucnv_reset(conv);
+			i32tmp = ucnv_fromUChars(conv, &cbuffers[0][0], CG3_BUFFER_SIZE-1, s->name.c_str(), s->name.length(), &err);
+			writeSwapped(buffer, i32tmp);
+			buffer.write(&cbuffers[0][0], i32tmp);
+		}
 
 		u32tmp = (uint32_t)htonl(fields);
 		fwrite(&u32tmp, sizeof(uint32_t), 1, output);

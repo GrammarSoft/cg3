@@ -320,6 +320,16 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 				s->sets.push_back(u32tmp);
 			}
 		}
+		if (fields & (1 << 6)) {
+			fread(&u32tmp, sizeof(uint32_t), 1, input);
+			u32tmp = (uint32_t)ntohl(u32tmp);
+			if (u32tmp) {
+				ucnv_reset(conv);
+				fread(&cbuffers[0][0], 1, u32tmp, input);
+				i32tmp = ucnv_toUChars(conv, &gbuffers[0][0], CG3_BUFFER_SIZE-1, &cbuffers[0][0], u32tmp, &err);
+				s->setName(&gbuffers[0][0]);
+			}
+		}
 		grammar->sets_by_contents[s->hash] = s;
 		grammar->sets_list[s->number] = s;
 	}

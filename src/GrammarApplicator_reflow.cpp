@@ -384,7 +384,7 @@ Tag *GrammarApplicator::generateVarstringTag(const Tag *tag) {
 
 	const UChar *nt = tmp.getTerminatedBuffer();
 	if (u_strcmp(nt, tag->tag.c_str()) != 0) {
-		return addTag(nt);
+		return addTag(nt, true);
 	}
 	else {
 		u_fprintf(ux_stderr, "Warning: Was not able to generate from tag '%S'! Possibly missing KEEPORDER and/or capturing regex.\n", tag->tag.c_str());
