@@ -1112,6 +1112,39 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 				CG3Quit(1);
 			}
 		}
+		// STATIC-SETS
+		else if (ISCHR(*p,'S','s') && ISCHR(*(p+10),'S','s') && ISCHR(*(p+1),'T','t') && ISCHR(*(p+2),'A','a')
+			&& ISCHR(*(p+3),'T','t') && ISCHR(*(p+4),'I','i') && ISCHR(*(p+5),'C','c') && ISCHR(*(p+6),'-','-')
+			&& ISCHR(*(p+7),'S','s') && ISCHR(*(p+8),'E','e') && ISCHR(*(p+9),'T','t')
+			&& !ISSTRING(p, 10)) {
+			p += 11;
+			result->lines += SKIPWS(p, '=');
+			if (*p != '=') {
+				u_fprintf(ux_stderr, "Error: Encountered a %C before the expected = on line %u!\n", *p, result->lines);
+				CG3Quit(1);
+			}
+			++p;
+			result->lines += SKIPWS(p);
+
+			while (*p && *p != ';') {
+				UChar *n = p;
+				result->lines += SKIPTOWS(n, ';', true);
+				const UString s(p, n);
+				result->static_sets.insert(s);
+				p = n;
+				result->lines += SKIPWS(p);
+			}
+
+			if (result->static_sets.empty()) {
+				u_fprintf(ux_stderr, "Error: STATIC-SETS declared, but no definitions given, on line %u!\n", result->lines);
+				CG3Quit(1);
+			}
+			result->lines += SKIPWS(p, ';');
+			if (*p != ';') {
+				u_fprintf(ux_stderr, "Error: Missing closing ; before line %u!\n", result->lines);
+				CG3Quit(1);
+			}
+		}
 		// ADDRELATIONS
 		else if (ISCHR(*p,'A','a') && ISCHR(*(p+11),'S','s') && ISCHR(*(p+1),'D','d') && ISCHR(*(p+2),'D','d')
 			&& ISCHR(*(p+3),'R','r') && ISCHR(*(p+4),'E','e') && ISCHR(*(p+5),'L','l') && ISCHR(*(p+6),'A','a')

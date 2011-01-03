@@ -195,7 +195,7 @@ void Grammar::addSet(Set *& to) {
 				CG3Quit(1);
 			}
 			else {
-				for (uint32_t seed=0 ; seed<1000 ; seed++) {
+				for (uint32_t seed=0 ; seed<1000 ; ++seed) {
 					if (sets_by_name.find(nhash+seed) == sets_by_name.end()) {
 						if (verbosity_level > 0) {
 							u_fprintf(ux_stderr, "Warning: Set %S got hash seed %u.\n", to->name.c_str(), seed);
@@ -517,6 +517,31 @@ void Grammar::renameAllRules() {
 };
 
 void Grammar::reindex(bool unused_sets) {
+	foreach (Setuint32HashMap, sets_by_contents, dset, dset_end) {
+		dset->second->type &= ~ST_USED;
+		dset->second->number = 0;
+	}
+
+	foreach (static_sets_t, static_sets, sset, sset_end) {
+		uint32_t sh = hash_sdbm_uchar(*sset);
+		if (set_alias.find(sh) != set_alias.end()) {
+			u_fprintf(ux_stderr, "Error: Static set %S is an alias; only real sets may be made static!\n", (*sset).c_str());
+			CG3Quit(1);
+		}
+		Set *s = getSet(sh);
+		if (!s) {
+			if (verbosity_level > 0) {
+				u_fprintf(ux_stderr, "Warning: Set %S was not defined, so cannot make it static.\n", (*sset).c_str());
+			}
+			continue;
+		}
+		if (s->name != *sset) {
+			s->setName(*sset);
+		}
+		s->markUsed(*this);
+		s->type |= ST_STATIC;
+	}
+
 	set_alias.clear();
 	sets_by_name.clear();
 	rules.clear();
@@ -525,12 +550,40 @@ void Grammar::reindex(bool unused_sets) {
 	null_section.clear();
 	sections.clear();
 	sets_list.clear();
+	set_name_seeds.clear();
 	sets_any = 0;
 	rules_any = 0;
 
 	foreach (Setuint32HashMap, sets_by_contents, dset, dset_end) {
-		dset->second->type &= ~ST_USED;
-		dset->second->number = 0;
+		Set *to = dset->second;
+		if (to->type & ST_STATIC) {
+			uint32_t nhash = hash_sdbm_uchar(to->name);
+			const uint32_t chash = to->hash;
+
+			if (sets_by_name.find(nhash) == sets_by_name.end()) {
+				sets_by_name[nhash] = chash;
+			}
+			else if (chash != sets_by_contents.find(sets_by_name.find(nhash)->second)->second->hash) {
+				Set *a = sets_by_contents.find(sets_by_name.find(nhash)->second)->second;
+				if (a->name == to->name) {
+					u_fprintf(ux_stderr, "Error: Static set %S already defined. Redefinition attempted!\n", a->name.c_str());
+					CG3Quit(1);
+				}
+				else {
+					for (uint32_t seed=0 ; seed<1000 ; ++seed) {
+						if (sets_by_name.find(nhash+seed) == sets_by_name.end()) {
+							if (verbosity_level > 0) {
+								u_fprintf(ux_stderr, "Warning: Static set %S got hash seed %u.\n", to->name.c_str(), seed);
+								u_fflush(ux_stderr);
+							}
+							set_name_seeds[nhash] = seed;
+							sets_by_name[nhash+seed] = chash;
+							break;
+						}
+					}
+				}
+			}
+		}
 	}
 
 	foreach (TagVector, single_tags_list, iter, iter_end) {

@@ -38,6 +38,7 @@ namespace CG3 {
 		ST_CHILD_UNIFY     = (1 <<  4),
 		ST_MAPPING         = (1 <<  5),
 		ST_USED            = (1 <<  6),
+		ST_STATIC          = (1 <<  7),
 	};
 
 	class Set {

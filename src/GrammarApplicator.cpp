@@ -116,7 +116,7 @@ void GrammarApplicator::resetIndexes() {
 	index_icase_no.clear();
 }
 
-void GrammarApplicator::setGrammar(const Grammar *res) {
+void GrammarApplicator::setGrammar(Grammar *res) {
 	grammar = res;
 	single_tags = grammar->single_tags;
 }
@@ -190,7 +190,7 @@ void GrammarApplicator::disableStatistics() {
 	statistics = false;
 }
 
-Tag *GrammarApplicator::addTag(const UChar *txt) {
+Tag *GrammarApplicator::addTag(const UChar *txt, bool vstr) {
 	Taguint32HashMap::iterator it;
 	uint32_t thash = hash_sdbm_uchar(txt);
 	if ((it = single_tags.find(thash)) != single_tags.end() && !it->second->tag.empty() && u_strcmp(it->second->tag.c_str(), txt) == 0) {
@@ -198,7 +198,12 @@ Tag *GrammarApplicator::addTag(const UChar *txt) {
 	}
 
 	Tag *tag = new Tag();
-	tag->parseTagRaw(txt);
+	if (vstr) {
+		tag->parseTag(txt, ux_stderr, grammar);
+	}
+	else {
+		tag->parseTagRaw(txt);
+	}
 	uint32_t hash = tag->rehash();
 	uint32_t seed = 0;
 	for ( ; seed < 10000 ; seed++) {
@@ -226,8 +231,8 @@ Tag *GrammarApplicator::addTag(const UChar *txt) {
 }
 
 
-Tag *GrammarApplicator::addTag(const UString& txt) {
-	return addTag(txt.c_str());
+Tag *GrammarApplicator::addTag(const UString& txt, bool vstr) {
+	return addTag(txt.c_str(), vstr);
 }
 
 void GrammarApplicator::printReading(const Reading *reading, UFILE *output) {

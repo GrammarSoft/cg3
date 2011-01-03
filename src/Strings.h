@@ -74,6 +74,7 @@ namespace CG3 {
 		K_MOVE_BEFORE,
 		K_SWITCH,
 		K_REMCOHORT,
+		K_STATIC_SETS,
 		KEYWORD_COUNT
 	};
 
