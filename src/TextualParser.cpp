@@ -1130,7 +1130,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 				UChar *n = p;
 				result->lines += SKIPTOWS(n, ';', true);
 				const UString s(p, n);
-				result->static_sets.insert(s);
+				result->static_sets.push_back(s);
 				p = n;
 				result->lines += SKIPWS(p);
 			}
