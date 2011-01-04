@@ -94,7 +94,7 @@ void Tag::parseTag(const UChar *to, UFILE *ux_stderr, Grammar *grammar) {
 			length -= 4;
 		}
 		if (tmp[0] == 'S' && tmp[1] == 'E' && tmp[2] == 'T' && tmp[3] == ':') {
-			type |= T_VARSTRING;
+			type |= T_SET;
 			tmp += 4;
 			length -= 4;
 		}
@@ -252,7 +252,7 @@ label_isVarstring:
 	}
 
 	type &= ~T_SPECIAL;
-	if (type & (T_ANY|T_TARGET|T_MARK|T_ATTACHTO|T_PAR_LEFT|T_PAR_RIGHT|T_NUMERICAL|T_VARIABLE|T_META|T_NEGATIVE|T_FAILFAST|T_CASE_INSENSITIVE|T_REGEXP|T_REGEXP_ANY|T_VARSTRING)) {
+	if (type & (T_ANY|T_TARGET|T_MARK|T_ATTACHTO|T_PAR_LEFT|T_PAR_RIGHT|T_NUMERICAL|T_VARIABLE|T_META|T_NEGATIVE|T_FAILFAST|T_CASE_INSENSITIVE|T_REGEXP|T_REGEXP_ANY|T_VARSTRING|T_SET)) {
 		type |= T_SPECIAL;
 	}
 
@@ -388,6 +388,9 @@ uint32_t Tag::rehash() {
 	if (type & T_VARIABLE) {
 		hash = hash_sdbm_char("VAR:", hash);
 	}
+	if (type & T_SET) {
+		hash = hash_sdbm_char("SET:", hash);
+	}
 
 	plain_hash = hash_sdbm_uchar(tag);
 	if (hash) {
@@ -412,7 +415,7 @@ uint32_t Tag::rehash() {
 	}
 
 	type &= ~T_SPECIAL;
-	if (type & (T_ANY|T_TARGET|T_MARK|T_ATTACHTO|T_PAR_LEFT|T_PAR_RIGHT|T_NUMERICAL|T_VARIABLE|T_META|T_NEGATIVE|T_FAILFAST|T_CASE_INSENSITIVE|T_REGEXP|T_REGEXP_ANY|T_VARSTRING)) {
+	if (type & (T_ANY|T_TARGET|T_MARK|T_ATTACHTO|T_PAR_LEFT|T_PAR_RIGHT|T_NUMERICAL|T_VARIABLE|T_META|T_NEGATIVE|T_FAILFAST|T_CASE_INSENSITIVE|T_REGEXP|T_REGEXP_ANY|T_VARSTRING|T_SET)) {
 		type |= T_SPECIAL;
 	}
 

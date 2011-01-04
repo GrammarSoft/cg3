@@ -22,4 +22,4 @@ ADD (VSTR:other-@$2$1) (".(at)(ch).*"r) (0 (VSTR:@$2$1)) ;
 ADD (@gen-regex) (".(at)(ch).*"r) (0 (VSTR:".*$1$2.*"r)) ;
 
 LIST @at = @chat ;
-ADD (@vstr-set) (".(at)(ch).*"r) (0 (VSTR:SET:\{@$1\})) ;
+ADD (@vstr-set) (".(at)(ch).*"r) (0 (VSTR:SET:@$1)) ;
