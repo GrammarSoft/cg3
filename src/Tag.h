@@ -66,6 +66,7 @@ namespace CG3 {
 		T_SPECIAL    = (1 << 20),
 		T_USED       = (1 << 21),
 		T_GRAMMAR    = (1 << 22),
+		T_SET        = (1 << 23),
 	};
 
 	class Tag {

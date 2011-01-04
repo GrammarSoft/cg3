@@ -172,6 +172,11 @@ uint32_t GrammarApplicator::doesTagMatchReading(const Reading& reading, const Ta
 			match = tag.hash;
 		}
 	}
+	else if (tag.type & T_SET) {
+		uint32_t sh = hash_sdbm_uchar(tag.tag);
+		Set *s = grammar->getSet(sh);
+		match = doesSetMatchReading(reading, s->hash, bypass_index, unif_mode);
+	}
 	else if (tag.type & T_VARSTRING) {
 		const Tag *nt = generateVarstringTag(&tag);
 		match = doesTagMatchReading(reading, *nt, unif_mode, bypass_index);
