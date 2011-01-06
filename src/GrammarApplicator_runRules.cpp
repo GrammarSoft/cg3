@@ -363,6 +363,12 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 				if (!unif_sets.empty()) {
 					unif_sets.clear();
 				}
+				if (rule.line == 13030) {
+					target = target;
+				}
+				if (rule.line == 13036) {
+					target = target;
+				}
 
 				target = 0;
 				mark = cohort;
