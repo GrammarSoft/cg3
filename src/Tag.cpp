@@ -209,11 +209,16 @@ void Tag::parseTag(const UChar *to, UFILE *ux_stderr, Grammar *grammar) {
 				UErrorCode status = U_ZERO_ERROR;
 				status = U_ZERO_ERROR;
 
+				UString rt;
+				rt += '^';
+				rt += tag;
+				rt += '$';
+
 				if (type & T_CASE_INSENSITIVE) {
-					regexp = uregex_open(tag.c_str(), tag.length(), UREGEX_CASE_INSENSITIVE, &pe, &status);
+					regexp = uregex_open(rt.c_str(), rt.length(), UREGEX_CASE_INSENSITIVE, &pe, &status);
 				}
 				else {
-					regexp = uregex_open(tag.c_str(), tag.length(), 0, &pe, &status);
+					regexp = uregex_open(rt.c_str(), rt.length(), 0, &pe, &status);
 				}
 				if (status != U_ZERO_ERROR) {
 					u_fprintf(ux_stderr, "Error: uregex_open returned %s trying to parse tag %S on line %u - cannot continue!\n", u_errorName(status), tag.c_str(), grammar->lines);
