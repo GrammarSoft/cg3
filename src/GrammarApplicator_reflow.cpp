@@ -469,7 +469,7 @@ void GrammarApplicator::delTagFromReading(Reading& reading, uint32_t utag) {
 	reading.parent->type &= ~CT_NUM_CURRENT;
 }
 
-void GrammarApplicator::splitMappings(TagList mappings, Cohort& cohort, Reading& reading, bool mapped) {
+void GrammarApplicator::splitMappings(TagList& mappings, Cohort& cohort, Reading& reading, bool mapped) {
 	if (reading.mapping) {
 		mappings.push_back(reading.mapping);
 		delTagFromReading(reading, reading.mapping->hash);
