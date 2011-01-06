@@ -119,6 +119,12 @@ TagList GrammarApplicator::getTagList(const Set& theSet, bool unif_mode) const {
 			theTags.splice(theTags.end(), recursiveTags);
 		}
 	}
+	else if (!theSet.sets.empty()) {
+		const_foreach (uint32Vector, theSet.sets, iter, iter_end) {
+			TagList recursiveTags = getTagList(*(grammar->getSet(*iter)), unif_mode);
+			theTags.splice(theTags.end(), recursiveTags);
+		}
+	}
 	else if (unif_mode) {
 		uint32HashMap::const_iterator iter = unif_tags.find(theSet.hash);
 		if (iter != unif_tags.end()) {
@@ -132,12 +138,6 @@ TagList GrammarApplicator::getTagList(const Set& theSet, bool unif_mode) const {
 					theTags.push_back(*tter);
 				}
 			}
-		}
-	}
-	else if (!theSet.sets.empty()) {
-		const_foreach (uint32Vector, theSet.sets, iter, iter_end) {
-			TagList recursiveTags = getTagList(*(grammar->getSet(*iter)));
-			theTags.splice(theTags.end(), recursiveTags);
 		}
 	}
 	else {
