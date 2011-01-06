@@ -182,7 +182,7 @@ namespace CG3 {
 		uint32_t addTagToReading(Reading& reading, uint32_t tag, bool rehash = true);
 		void delTagFromReading(Reading& reading, uint32_t tag);
 		TagList getTagList(const Set& theSet, bool unif_mode = false) const;
-		void splitMappings(TagList mappings, Cohort& cohort, Reading& reading, bool mapped = false);
+		void splitMappings(TagList& mappings, Cohort& cohort, Reading& reading, bool mapped = false);
 		void mergeMappings(Cohort& cohort);
 		bool isChildOf(const Cohort *child, const Cohort *parent);
 		bool wouldParentChildLoop(const Cohort *parent, const Cohort *child);
