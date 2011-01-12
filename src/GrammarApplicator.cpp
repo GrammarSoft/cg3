@@ -46,6 +46,7 @@ unsafe(false),
 ordered(false),
 show_end_tags(false),
 unicode_tags(false),
+owns_grammar(false),
 dep_has_spanned(false),
 dep_delimit(false),
 dep_humanize(false),
@@ -103,6 +104,10 @@ GrammarApplicator::~GrammarApplicator() {
 	}
 
 	delete gWindow;
+
+	if (owns_grammar) {
+		delete grammar;
+	}
 	grammar = 0;
 	ux_stderr = 0;
 }
