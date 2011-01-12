@@ -55,6 +55,7 @@ namespace CG3 {
 		bool ordered;
 		bool show_end_tags;
 		bool unicode_tags;
+		bool owns_grammar;
 
 		bool dep_has_spanned;
 		bool dep_delimit;
