@@ -636,7 +636,6 @@ void ApertiumApplicator::testPR(UFILE *output) {
 		processReading(reading, text);
 		printReading(reading, output);
 		u_fprintf(output, "\n");
-		output = output;
 	}
 }
 

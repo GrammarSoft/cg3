@@ -481,7 +481,6 @@ void GAppSetOpts_ranged(const char *value, Cont& cont) {
 				}
 			}
 		}
-		a=a;
 	}
 }
 
