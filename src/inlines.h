@@ -323,17 +323,17 @@ template<typename T>
 inline T readSwapped(std::istream& stream) {
 	if (sizeof(T) == 1) {
 		uint8_t tmp = 0;
-		stream.read(reinterpret_cast<const char*>(&tmp), sizeof(T));
+		stream.read(reinterpret_cast<char*>(&tmp), sizeof(T));
 		return static_cast<T>(tmp);
 	}
 	else if (sizeof(T) == 2) {
 		uint16_t tmp = 0;
-		stream.read(reinterpret_cast<const char*>(&tmp), sizeof(T));
+		stream.read(reinterpret_cast<char*>(&tmp), sizeof(T));
 		return static_cast<T>(ntohs(tmp));
 	}
 	else if (sizeof(T) == 4) {
 		uint32_t tmp = 0;
-		stream.read(reinterpret_cast<const char*>(&tmp), sizeof(T));
+		stream.read(reinterpret_cast<char*>(&tmp), sizeof(T));
 		return static_cast<T>(ntohl(tmp));
 	}
 	else {
