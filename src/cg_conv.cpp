@@ -28,14 +28,11 @@
 using namespace std;
 using CG3::CG3Quit;
 
-int main(int argc, char *argv[]) {
+int main() {
 	UErrorCode status = U_ZERO_ERROR;
 	UFILE *ux_stdin = 0;
 	UFILE *ux_stdout = 0;
 	UFILE *ux_stderr = 0;
-
-	argc=argc;
-	argv=argv;
 
 	/* Initialize ICU */
 	u_init(&status);
