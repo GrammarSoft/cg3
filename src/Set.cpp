@@ -69,11 +69,7 @@ void Set::setName(uint32_t to) {
 		to = static_cast<uint32_t>(rand());
 	}
 	size_t n = sprintf(&cbuffers[0][0], "_G_%u_%u_", line, to);
-	name.clear();
-	name.reserve(n);
-	for (size_t i=0 ; i<n ; ++i) {
-		name.push_back(cbuffers[0][i]);
-	}
+	name.assign(&cbuffers[0][0], &cbuffers[0][0]+n);
 }
 
 void Set::setName(const UChar *to) {
