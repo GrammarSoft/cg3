@@ -77,7 +77,7 @@ void Set::setName(const UChar *to) {
 		name = to;
 	}
 	else {
-		setName((uint32_t)rand());
+		setName();
 	}
 }
 
@@ -86,7 +86,7 @@ void Set::setName(const UString& to) {
 		name = to;
 	}
 	else {
-		setName((uint32_t)rand());
+		setName();
 	}
 }
 
