@@ -69,6 +69,7 @@ void Set::setName(uint32_t to) {
 		to = static_cast<uint32_t>(rand());
 	}
 	size_t n = sprintf(&cbuffers[0][0], "_G_%u_%u_", line, to);
+	name.reserve(n);
 	name.assign(&cbuffers[0][0], &cbuffers[0][0]+n);
 }
 
