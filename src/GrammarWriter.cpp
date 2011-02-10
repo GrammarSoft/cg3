@@ -89,7 +89,11 @@ void GrammarWriter::printSet(UFILE *output, const Set& curset) {
 				u_fprintf(output, "#Set Matched: %u ; NoMatch: %u ; TotalTime: %f\n", curset.num_match, curset.num_fail, curset.total_time);
 			}
 		}
-		u_fprintf(output, "SET %S = ", curset.name.c_str());
+		const UChar *n = curset.name.c_str();
+		if ((n[0] == '$' && n[1] == '$') || (n[0] == '&' && n[1] == '&')) {
+			u_fprintf(output, "# ");
+		}
+		u_fprintf(output, "SET %S = ", n);
 		u_fprintf(output, "%S ", grammar->sets_by_contents.find(curset.sets.at(0))->second->name.c_str());
 		for (uint32_t i=0;i<curset.sets.size()-1;i++) {
 			u_fprintf(output, "%S %S ", stringbits[curset.set_ops.at(i)].getTerminatedBuffer(), grammar->sets_by_contents.find(curset.sets.at(i+1))->second->name.c_str());
@@ -330,7 +334,12 @@ void GrammarWriter::printContextualTest(UFILE *to, const ContextualTest& test) {
 			u_fprintf(to, "s");
 		}
 
-		u_fprintf(to, "%d", test.offset);
+		if (test.pos & POS_UNKNOWN) {
+			u_fprintf(to, "?");
+		}
+		else {
+			u_fprintf(to, "%d", test.offset);
+		}
 
 		if (test.pos & POS_CAREFUL) {
 			u_fprintf(to, "C");
@@ -367,9 +376,6 @@ void GrammarWriter::printContextualTest(UFILE *to, const ContextualTest& test) {
 		}
 		if (test.pos & POS_LOOK_DELAYED) {
 			u_fprintf(to, "d");
-		}
-		if (test.pos & POS_UNKNOWN) {
-			u_fprintf(to, "?");
 		}
 		if (test.pos & POS_RELATION) {
 			u_fprintf(to, "r:%S", grammar->single_tags.find(test.relation)->second->tag.c_str());

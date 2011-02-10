@@ -100,6 +100,7 @@ void Tag::parseTag(const UChar *to, UFILE *ux_stderr, Grammar *grammar) {
 		}
 		if (tmp[0] == 'V' && tmp[1] == 'S' && tmp[2] == 'T' && tmp[3] == 'R' && tmp[4] == ':') {
 			type |= T_VARSTRING;
+			type |= T_VSTR;
 			tmp += 5;
 			length -= 5;
 
@@ -471,6 +472,19 @@ UString Tag::toUString(bool escape) const {
 		str += 'R';
 		str += ':';
 	}
+	if (type & T_SET) {
+		str += 'S';
+		str += 'E';
+		str += 'T';
+		str += ':';
+	}
+	if (type & T_VSTR) {
+		str += 'V';
+		str += 'S';
+		str += 'T';
+		str += 'R';
+		str += ':';
+	}
 
 	if (escape) {
 		for (size_t i=0 ; i<tag.length() ; ++i) {
@@ -490,7 +504,7 @@ UString Tag::toUString(bool escape) const {
 	if (type & T_REGEXP) {
 		str += 'r';
 	}
-	if (type & T_VARSTRING) {
+	if ((type & T_VARSTRING) && !(type & T_VSTR)) {
 		str += 'v';
 	}
 	return str;

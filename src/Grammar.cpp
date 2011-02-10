@@ -180,13 +180,20 @@ void Grammar::addSet(Set *& to) {
 	}
 
 	uint32_t chash = to->rehash();
-	if (to->name[0] != '_' || to->name[1] != 'G' || to->name[2] != '_') {
+	for (;;) {
 		uint32_t nhash = hash_sdbm_uchar(to->name.c_str());
+		if (sets_by_name.find(nhash) != sets_by_name.end()) {
+			Set *a = sets_by_contents.find(sets_by_name.find(nhash)->second)->second;
+			if (a == to || a->hash == to->hash) {
+				break;
+			}
+		}
 		if (set_name_seeds.find(nhash) != set_name_seeds.end()) {
 			nhash += set_name_seeds[nhash];
 		}
 		if (sets_by_name.find(nhash) == sets_by_name.end()) {
 			sets_by_name[nhash] = chash;
+			break;
 		}
 		else if (chash != sets_by_contents.find(sets_by_name.find(nhash)->second)->second->hash) {
 			Set *a = sets_by_contents.find(sets_by_name.find(nhash)->second)->second;
@@ -197,7 +204,7 @@ void Grammar::addSet(Set *& to) {
 			else {
 				for (uint32_t seed=0 ; seed<1000 ; ++seed) {
 					if (sets_by_name.find(nhash+seed) == sets_by_name.end()) {
-						if (verbosity_level > 0) {
+						if (verbosity_level > 0 && (to->name[0] != '_' || to->name[1] != 'G' || to->name[2] != '_')) {
 							u_fprintf(ux_stderr, "Warning: Set %S got hash seed %u.\n", to->name.c_str(), seed);
 							u_fflush(ux_stderr);
 						}
@@ -208,6 +215,7 @@ void Grammar::addSet(Set *& to) {
 				}
 			}
 		}
+		break;
 	}
 	if (sets_by_contents.find(chash) == sets_by_contents.end()) {
 		sets_by_contents[chash] = to;
