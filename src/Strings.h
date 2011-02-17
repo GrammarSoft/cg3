@@ -142,6 +142,8 @@ namespace CG3 {
 		S_GPREFIX,
 		S_POSITIVE,
 		S_NEGATIVE,
+		S_SET_ISECT_U,
+		S_SET_SYMDIFF_U,
 		STRINGS_COUNT
 	};
 

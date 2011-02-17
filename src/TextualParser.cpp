@@ -197,6 +197,40 @@ Set *TextualParser::parseSetInline(UChar *& p, Set *s) {
 					sets.push_back(sh);
 					p = n;
 				}
+
+				if (!set_ops.empty() && (set_ops.back() == S_SET_ISECT_U || set_ops.back() == S_SET_SYMDIFF_U)) {
+					const AnyTagSet a = result->getSet(sets.at(sets.size()-1))->getTagList(*result);
+					const AnyTagSet b = result->getSet(sets.at(sets.size()-2))->getTagList(*result);
+
+					AnyTagList r;
+					if (set_ops.back() == S_SET_ISECT_U) {
+						std::set_intersection(a.begin(), a.end(), b.begin(), b.end(), std::back_inserter(r));
+					}
+					else if (set_ops.back() == S_SET_SYMDIFF_U) {
+						std::set_symmetric_difference(a.begin(), a.end(), b.begin(), b.end(), std::back_inserter(r));
+					}
+
+					set_ops.pop_back();
+					sets.pop_back();
+					sets.pop_back();
+
+					Set *set_c = result->allocateSet();
+					set_c->line = result->lines;
+					set_c->setName(sets_counter++);
+					foreach (AnyTagList, r, iter, iter_end) {
+						if (iter->which == ANYTAG_TAG) {
+							Tag *t = iter->getTag();
+							result->addTagToSet(t, set_c);
+						}
+						else {
+							CompositeTag *t = iter->getCompositeTag();
+							result->addCompositeTagToSet(set_c, t);
+						}
+					}
+					result->addSet(set_c);
+					sets.push_back(set_c->hash);
+				}
+
 				wantop = true;
 			}
 			else {
