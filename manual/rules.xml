@@ -94,6 +94,25 @@
     </screen>
   </section>
 
+  <section id="unmap">
+    <title>UNMAP</title>
+    <indexterm>
+      <primary>UNMAP</primary>
+    </indexterm>
+    <screen>
+      [wordform] UNMAP &lt;target&gt; [contextual_tests] ;
+    </screen>
+    <para>
+      Removes the mapping tag of a reading and lets ADD and MAP target the reading again.
+      By default it will only act if the cohort has exactly one reading, but marking the rule UNSAFE
+      lets it act on multiple readings.
+    </para>
+    <screen>
+      UNMAP (TAG) ;
+      UNMAP UNSAFE (TAG) ;
+    </screen>
+  </section>
+
   <section id="taglists-sets">
     <title>Tag Lists Can Be Sets</title>
     <para>
@@ -262,12 +281,15 @@
         <primary>UNSAFE</primary>
       </indexterm>
       <para>
-        Applicable for rules REMOVE and IFF.
+        Applicable for rules REMOVE and IFF and UNMAP.
         Not compatible with option SAFE.
       </para>
       <para>
         Normally, REMOVE and IFF cannot remove the last reading of a cohort.
         Setting option UNSAFE allows them to do so.
+      </para>
+      <para>
+        For UNMAP, marking it UNSAFE allows it to work on more than the last reading in the cohort.
       </para>
     </section>
 
@@ -277,12 +299,15 @@
         <primary>SAFE</primary>
       </indexterm>
       <para>
-        Applicable for rules REMOVE and IFF.
+        Applicable for rules REMOVE and IFF and UNMAP.
         Not compatible with option UNSAFE.
       </para>
       <para>
         SAFE prevents REMOVE and IFF from removing the last reading of a cohort.
         Mainly used to selectively override global --unsafe mode.
+      </para>
+      <para>
+        For UNMAP, marking it SAFE only lets it act if the cohort has exactly one reading.
       </para>
     </section>
 
