@@ -265,6 +265,9 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 					continue;
 				}
 			}
+			else if (type == K_UNMAP && rule.flags & RF_SAFE) {
+				continue;
+			}
 			// If it's a Delimit rule and we're at the final cohort, skip it.
 			if (type == K_DELIMIT && c == current.cohorts.size()-1) {
 				continue;
@@ -554,6 +557,16 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 							reading.mapped = true;
 						}
 						if (reading.hash != state_hash) {
+							readings_changed = true;
+						}
+					}
+					else if (rule.type == K_UNMAP) {
+						if (reading.mapping) {
+							index_ruleCohort_no.clear();
+							reading.hit_by.push_back(rule.line);
+							reading.noprint = false;
+							delTagFromReading(reading, reading.mapping->hash);
+							reading.mapped = false;
 							readings_changed = true;
 						}
 					}
