@@ -1,9 +1,14 @@
 MAPPING-PREFIX = £ ;
 DELIMITERS = "<$.>" ;
 
-SECTION
+BEFORE-SECTIONS
 
-ADD ($tag) (*) ;
-ADD (§tag) (*) ;
-ADD (£tag) (*) ;
-ADD (@tag) (*) ;
+ADD ($tag) ("word") ;
+ADD (§tag) ("word") ;
+ADD (£tag) ("word") ;
+ADD (@tag) ("word") ;
+
+UNMAP:normal ("word2") ;
+UNMAP:unsafe UNSAFE ("word2") ;
+
+MAP (£re-mapped) ("word2") ;

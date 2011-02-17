@@ -735,6 +735,9 @@ int TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 			rule->flags |= RF_NOITERATE;
 		}
 	}
+	if (key == K_UNMAP && !(rule->flags & (RF_SAFE|RF_UNSAFE))) {
+		rule->flags |= RF_SAFE;
+	}
 	if (rule->flags & RF_ENCL_FINAL) {
 		result->has_encl_final = true;
 	}
@@ -1637,6 +1640,12 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 			&& ISCHR(*(p+3),'C','c') && ISCHR(*(p+4),'U','u') && ISCHR(*(p+5),'T','t')
 			&& !ISSTRING(p, 7)) {
 			parseRule(p, K_EXECUTE);
+		}
+		// UNMAP
+		else if (ISCHR(*p,'U','u') && ISCHR(*(p+4),'P','p') && ISCHR(*(p+1),'N','n') && ISCHR(*(p+2),'M','m')
+			&& ISCHR(*(p+3),'A','a')
+			&& !ISSTRING(p, 4)) {
+			parseRule(p, K_UNMAP);
 		}
 		// TEMPLATE
 		else if (ISCHR(*p,'T','t') && ISCHR(*(p+7),'E','e') && ISCHR(*(p+1),'E','e') && ISCHR(*(p+2),'M','m')

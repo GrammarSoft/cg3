@@ -3,3 +3,13 @@
 	"word" £mapped
 	"word" §mapped
 	"word" $mapped
+"<word2>"
+	"word2" a £1
+"<word2>"
+	"word2" a @1
+	"word2" b £2
+	"word2" c §3
+	"word2" d $4
+"<word2>"
+	"word2" a £1
+	"word2" b £2
