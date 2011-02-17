@@ -13,3 +13,5 @@
 "<word2>"
 	"word2" a £1
 	"word2" b £2
+"<word3>"
+	"word3" a b c £a £b £c £d

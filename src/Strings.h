@@ -168,6 +168,7 @@ namespace CG3 {
 		FL_NOCHILD,
 		FL_ITERATE,
 		FL_NOITERATE,
+		FL_UNMAPLAST,
 		FLAGS_COUNT
 	};
 

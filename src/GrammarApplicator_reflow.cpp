@@ -469,6 +469,23 @@ void GrammarApplicator::delTagFromReading(Reading& reading, uint32_t utag) {
 	reading.parent->type &= ~CT_NUM_CURRENT;
 }
 
+bool GrammarApplicator::unmapReading(Reading& reading, const uint32_t rule) {
+	bool readings_changed = false;
+	if (reading.mapping) {
+		reading.noprint = false;
+		delTagFromReading(reading, reading.mapping->hash);
+		readings_changed = true;
+	}
+	if (reading.mapped) {
+		reading.mapped = false;
+		readings_changed = true;
+	}
+	if (readings_changed) {
+		reading.hit_by.push_back(rule);
+	}
+	return readings_changed;
+}
+
 void GrammarApplicator::splitMappings(TagList& mappings, Cohort& cohort, Reading& reading, bool mapped) {
 	if (reading.mapping) {
 		mappings.push_back(reading.mapping);
