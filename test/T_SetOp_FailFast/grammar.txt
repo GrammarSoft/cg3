@@ -3,11 +3,9 @@ DELIMITERS = "<$.>" ;
 LIST ASet = wanted alsowanted ;
 LIST CSet = notreally ;
 SET ESet = ASet ^ CSet ;
-SET FSet = ASet - CSet ;
 
 LIST FFSet = one two ^three ;
 
 SECTION
-ADD (@diff) FSet ;
-ADD (@ff) ESet ;
+SELECT ESet ;
 SELECT FFSet ;
