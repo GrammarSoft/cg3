@@ -9,6 +9,8 @@
   </para>
 
   <section id="set-operators">
+    <title>Set Operators</title>
+
     <section id="set-operator-union">
       <title>Union: OR and |</title>
       <para>
