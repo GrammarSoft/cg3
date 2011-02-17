@@ -496,9 +496,16 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 				// Handle all other rule types normally, except that some will break out of the loop as they only make sense to do once per cohort.
 				else if (good) {
 					if (type == K_REMOVE) {
-						removed.push_back(&reading);
+						if ((rule.flags & RF_UNMAPLAST) && removed.size() == cohort->readings.size()-1) {
+							if (unmapReading(reading, rule.line)) {
+								readings_changed = true;
+							}
+						}
+						else {
+							removed.push_back(&reading);
+							reading.hit_by.push_back(rule.line);
+						}
 						index_ruleCohort_no.clear();
-						reading.hit_by.push_back(rule.line);
 						if (debug_level > 0) {
 							std::cerr << "DEBUG: Rule " << rule.line << " hit cohort " << cohort->local_number << std::endl;
 						}
@@ -561,12 +568,8 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						}
 					}
 					else if (rule.type == K_UNMAP) {
-						if (reading.mapping) {
+						if (unmapReading(reading, rule.line)) {
 							index_ruleCohort_no.clear();
-							reading.hit_by.push_back(rule.line);
-							reading.noprint = false;
-							delTagFromReading(reading, reading.mapping->hash);
-							reading.mapped = false;
 							readings_changed = true;
 						}
 					}

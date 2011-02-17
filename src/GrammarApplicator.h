@@ -182,6 +182,7 @@ namespace CG3 {
 		Tag *generateVarstringTag(const Tag *tag);
 		uint32_t addTagToReading(Reading& reading, uint32_t tag, bool rehash = true);
 		void delTagFromReading(Reading& reading, uint32_t tag);
+		bool unmapReading(Reading& reading, const uint32_t rule);
 		TagList getTagList(const Set& theSet, bool unif_mode = false) const;
 		void splitMappings(TagList& mappings, Cohort& cohort, Reading& reading, bool mapped = false);
 		void mergeMappings(Cohort& cohort);
