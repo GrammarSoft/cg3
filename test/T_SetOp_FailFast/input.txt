@@ -7,6 +7,6 @@
 	"word" wanted notreally
 	"word" notmeeither
 "<word>"
-	"word" alsowanted one two three
+	"word" alsowanted one two
 	"word" wanted four five six
 	"word" notmeeither

@@ -197,4 +197,18 @@ void Set::resetStatistics() {
 	total_time = 0;
 }
 
+AnyTagSet Set::getTagList(const Grammar& grammar) const {
+	AnyTagSet theTags;
+	if (!sets.empty()) {
+		const_foreach (uint32Vector, sets, iter, iter_end) {
+			AnyTagSet recursiveTags = grammar.getSet(*iter)->getTagList(grammar);
+			theTags.insert(recursiveTags.begin(), recursiveTags.end());
+		}
+	}
+	else {
+		theTags.insert(tags_list.begin(), tags_list.end());
+	}
+	return theTags;
+}
+
 }

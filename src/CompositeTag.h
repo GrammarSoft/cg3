@@ -102,12 +102,18 @@ namespace CG3 {
 			return getCompositeTag()->number;
 		}
 
+		bool operator<(const AnyTag& o) const {
+			return tag < o.tag;
+		}
+
 	private:
 		void *tag;
 	};
 
 	typedef stdext::hash_set<CompositeTag*, compare_CompositeTag> CompositeTagHashSet;
 	typedef std::vector<AnyTag> AnyTagVector;
+	typedef std::list<AnyTag> AnyTagList;
+	typedef std::set<AnyTag> AnyTagSet;
 }
 
 #ifdef __GNUC__

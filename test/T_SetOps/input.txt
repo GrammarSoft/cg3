@@ -1,4 +1,7 @@
-"<word>"
-	"word" notwanted
-	"word" wanted
-	"word" notmeeither
+"<setops>"
+	"setop" a
+	"setop" b
+	"setop" c
+	"setop" d
+	"setop" e
+	"setop" f
