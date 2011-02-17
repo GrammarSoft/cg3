@@ -1,8 +1,13 @@
 DELIMITERS = "<$.>" ;
 
-LIST ASet = wanted ;
-LIST BSet = notmeeither ;
+LIST A = a b c d ;
+LIST B = c d e f ;
 
-SECTION
+BEFORE-SECTIONS
 
-SELECT ASet OR BSet ;
+ADD (@union) A OR B ;
+ADD (@difference) A - B ;
+ADD (@symdiff) A ∆ B ;
+ADD (@intersect) A ∩ B ;
+ADD (@product) A + B ;
+ADD (@failfast) A ^ B ;

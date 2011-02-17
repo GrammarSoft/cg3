@@ -69,6 +69,12 @@ int ux_isSetOp(const UChar *it) {
 	else if (u_strcmp(it, stringbits[S_NOT].getTerminatedBuffer()) == 0) {
 		retval = S_NOT;
 	}
+	else if (u_strcmp(it, stringbits[S_SET_ISECT_U].getTerminatedBuffer()) == 0) {
+		retval = S_SET_ISECT_U;
+	}
+	else if (u_strcmp(it, stringbits[S_SET_SYMDIFF_U].getTerminatedBuffer()) == 0) {
+		retval = S_SET_SYMDIFF_U;
+	}
 	return retval;
 }
 

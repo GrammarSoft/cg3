@@ -99,6 +99,9 @@ UnicodeString keywords[KEYWORD_COUNT] = {
 	UNICODE_STRING_SIMPLE("UNMAP")
 };
 
+const UChar _S_SET_ISECT_U[] = {L'\u2229', 0};
+const UChar _S_SET_SYMDIFF_U[] = {L'\u2206', 0};
+
 UnicodeString stringbits[STRINGS_COUNT] = {
 	UNICODE_STRING_SIMPLE("1f283fc29adb937a892e09bbc124b85c this is a dummy string to hold position 0"),
 	UNICODE_STRING_SIMPLE("|"),
@@ -160,7 +163,9 @@ UnicodeString stringbits[STRINGS_COUNT] = {
 	UNICODE_STRING_SIMPLE("%L"),
 	UNICODE_STRING_SIMPLE("_G_"),
 	UNICODE_STRING_SIMPLE("POSITIVE"),
-	UNICODE_STRING_SIMPLE("NEGATIVE")
+	UNICODE_STRING_SIMPLE("NEGATIVE"),
+	_S_SET_ISECT_U,
+	_S_SET_SYMDIFF_U
 };
 
 std::vector< std::vector<UChar> > gbuffers(NUM_GBUFFERS, std::vector<UChar>(CG3_BUFFER_SIZE, 0));

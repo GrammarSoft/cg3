@@ -75,6 +75,8 @@ namespace CG3 {
 		void resetStatistics();
 		void reindex(Grammar& grammar);
 		void markUsed(Grammar& grammar);
+
+		AnyTagSet getTagList(const Grammar& grammar) const;
 	};
 
 	struct compare_Set {

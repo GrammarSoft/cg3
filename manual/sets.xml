@@ -8,6 +8,92 @@
     Describes various magic sets and unification strategies.
   </para>
 
+  <section id="set-operators">
+    <section id="set-operator-union">
+      <title>Union: OR and |</title>
+      <para>
+        Equivalent to the mathematical set union ∪ operator.
+      </para>
+      <screen>
+        LIST a = a b c d ;
+        LIST b = c d e f ;
+  
+        # Logically yields a set containing tags: a b c d e f
+        SET r = a OR b ;
+        SET r = a | b ;
+      </screen>
+    </section>
+
+    <section id="set-operator-difference">
+      <title>Difference: -</title>
+      <para>
+        Equivalent to the mathematical set complement ∖ operator.
+      </para>
+      <screen>
+        LIST a = a b c d ;
+        LIST b = c d e f ;
+  
+        # Logically yields a set containing tags: a b
+        SET r = a - b ;
+      </screen>
+    </section>
+
+    <section id="set-operator-symdiff">
+      <title>Symmetric Difference: ∆</title>
+      <para>
+        Equivalent to the mathematical set intersection ∆ operator.
+        The symbol is the Unicode code point U+2206.
+      </para>
+      <screen>
+        LIST a = a b c d ;
+        LIST b = c d e f ;
+  
+        # Logically yields a set containing tags: a b e f
+        SET r = a ∆ b ;
+      </screen>
+    </section>
+
+    <section id="set-operator-intersection">
+      <title>Intersection: ∩</title>
+      <para>
+        Equivalent to the mathematical set intersection ∩ operator.
+        The symbol is the Unicode code point U+2229.
+      </para>
+      <screen>
+        LIST a = a b c d ;
+        LIST b = c d e f ;
+  
+        # Logically yields a set containing tags: c d
+        SET r = a ∩ b ;
+      </screen>
+    </section>
+
+    <section id="set-operator-product">
+      <title>Cartesian Product: +</title>
+      <para>
+        Equivalent to the mathematical set cartesian product × operator.
+      </para>
+      <screen>
+        LIST a = a b c d ;
+        LIST b = c d e f ;
+  
+        # Logically yields a set containing tags: (a c) (b c) c (d c) (a d) (b d) d (a e)
+        #                                         (b e) (c e) (d e) (a f) (b f) (c f) (d f)
+        SET r = a + b ;
+      </screen>
+    </section>
+
+    <section id="set-operator-failfast">
+      <title>Fail-Fast: ^</title>
+      <para>
+        On its own, this is equivalent to set difference -. But, when followed by other sets it becomes a blocker.
+        In <code>A - B OR C + D</code> either <code>A - B</code> or <code>C + D</code> may suffice for a match.
+        However, in <code>A ^ B OR C + D</code>, if B matches then it blocks the rest and fails the entire set match
+        without considering C or D.
+      </para>
+    </section>
+  </section>
+
   <section id="set-any">
     <title>(*)</title>
     <para>
