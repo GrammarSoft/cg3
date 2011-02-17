@@ -275,6 +275,26 @@
       </para>
     </section>
 
+    <section id="rule-options-unmaplast">
+      <title>UNMAPLAST</title>
+      <indexterm>
+        <primary>UNMAPLAST</primary>
+      </indexterm>
+      <para>
+        Applicable for rules REMOVE and IFF.
+        Not compatible with option SAFE.
+      </para>
+      <para>
+        Normally, REMOVE and IFF will consider mapping tags as separate readings, and attempting to remove the last
+        mapping is the same as removing the last reading which requires UNSAFE. Setting flag UNMAPLAST causes it to
+        instead remove the final mapping tag but leave the reading otherwise untouched.
+      </para>
+      <para>
+        A rule <code>REMOVE UNMAPLAST @MappingList ;</code> is logically equivalent to
+        <code>REMOVE @MappingList ; UNMAP @MappingList ;</code>
+      </para>
+    </section>
+
     <section id="rule-options-unsafe">
       <title>UNSAFE</title>
       <indexterm>

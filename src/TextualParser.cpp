@@ -715,6 +715,10 @@ int TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 		u_fprintf(ux_stderr, "Error: Line %u: SAFE and UNSAFE are mutually exclusive!\n", result->lines);
 		CG3Quit(1);
 	}
+	if (rule->flags & RF_UNMAPLAST && rule->flags & RF_SAFE) {
+		u_fprintf(ux_stderr, "Error: Line %u: SAFE and UNMAPLAST are mutually exclusive!\n", result->lines);
+		CG3Quit(1);
+	}
 	if (rule->flags & RF_DELAYED && rule->flags & RF_IMMEDIATE) {
 		u_fprintf(ux_stderr, "Error: Line %u: IMMEDIATE and DELAYED are mutually exclusive!\n", result->lines);
 		CG3Quit(1);
@@ -737,6 +741,9 @@ int TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 	}
 	if (key == K_UNMAP && !(rule->flags & (RF_SAFE|RF_UNSAFE))) {
 		rule->flags |= RF_SAFE;
+	}
+	if (rule->flags & RF_UNMAPLAST) {
+		rule->flags |= RF_UNSAFE;
 	}
 	if (rule->flags & RF_ENCL_FINAL) {
 		result->has_encl_final = true;

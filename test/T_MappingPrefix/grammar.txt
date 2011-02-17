@@ -12,3 +12,6 @@ UNMAP:normal ("word2") ;
 UNMAP:unsafe UNSAFE ("word2") ;
 
 MAP (£re-mapped) ("word2") ;
+
+LIST £s = £a £b £c £d ;
+REMOVE UNMAPLAST £s ;
