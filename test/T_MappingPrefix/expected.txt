@@ -1,6 +1,16 @@
 "<word>"
-	"word" @mapped $tag §tag £tag @tag 
+	"word" @mapped $tag §tag £tag @tag ADD:6 ADD:7 ADD:8 ADD:9 
 	"word" £mapped 
-	"word" §mapped $tag §tag £tag @tag 
-	"word" $mapped $tag §tag £tag @tag 
+	"word" §mapped $tag §tag £tag @tag ADD:6 ADD:7 ADD:8 ADD:9 
+	"word" $mapped $tag §tag £tag @tag ADD:6 ADD:7 ADD:8 ADD:9 
+"<word2>"
+	"word2" a £re-mapped UNMAP:11:normal MAP:14 
+"<word2>"
+	"word2" a @1 £re-mapped MAP:14 
+	"word2" b £re-mapped UNMAP:12:unsafe MAP:14 
+	"word2" c §3 £re-mapped MAP:14 
+	"word2" d $4 £re-mapped MAP:14 
+"<word2>"
+	"word2" a £re-mapped UNMAP:12:unsafe MAP:14 
+	"word2" b £re-mapped UNMAP:12:unsafe MAP:14 
 

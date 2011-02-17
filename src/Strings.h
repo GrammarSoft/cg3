@@ -75,6 +75,7 @@ namespace CG3 {
 		K_SWITCH,
 		K_REMCOHORT,
 		K_STATIC_SETS,
+		K_UNMAP,
 		KEYWORD_COUNT
 	};
 
