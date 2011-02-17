@@ -1,8 +1,13 @@
 "<word>"
-	"word" alsowanted one two three 
-	"word" wanted four five six 
+	"word" alsowanted one two three SELECT:10 
+	"word" wanted four five six SELECT:10 
+;	"word" notmeeither SELECT:10 
 "<word>"
-	"word" alsowanted 
+	"word" alsowanted SELECT:10 
+;	"word" wanted notreally SELECT:10 
+;	"word" notmeeither SELECT:10 
 "<word>"
-	"word" alsowanted one two three 
-	"word" wanted four five six 
+	"word" alsowanted one two SELECT:10 SELECT:11 
+;	"word" notmeeither SELECT:10 
+;	"word" wanted four five six SELECT:10 SELECT:11 
+

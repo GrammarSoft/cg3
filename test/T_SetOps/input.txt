@@ -5,3 +5,17 @@
 	"setop" d
 	"setop" e
 	"setop" f
+"<setops>"
+	"setop" a b
+	"setop" b c
+	"setop" c d
+	"setop" d e
+	"setop" e f
+	"setop" f a
+"<setops>"
+	"setop" a e
+	"setop" b f
+	"setop" c a
+	"setop" d b
+	"setop" e c
+	"setop" f d

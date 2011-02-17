@@ -10,4 +10,3 @@ ADD (@difference) A - B ;
 ADD (@symdiff) A ∆ B ;
 ADD (@intersect) A ∩ B ;
 ADD (@product) A + B ;
-ADD (@failfast) A ^ B ;
