@@ -43,7 +43,7 @@
     <section id="set-operator-symdiff">
       <title>Symmetric Difference: ∆</title>
       <para>
-        Equivalent to the mathematical set intersection ∆ operator.
+        Equivalent to the mathematical set symmetric difference ∆ operator.
         The symbol is the Unicode code point U+2206.
       </para>
       <screen>
