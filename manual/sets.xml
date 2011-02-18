@@ -249,7 +249,7 @@
         Note also that the set operators in the prefixed set are ignored during unification.
       </para>
       <para>
-        The same caveats as for <link linkend="tag-unification">Tag Unification</link> apply.
+        The same caveats as for <link linkend="set-unification-tag">Tag Unification</link> apply.
       </para>
     </section>
   </section>
