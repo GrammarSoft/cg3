@@ -10,7 +10,7 @@
     <section id="set-operator-union">
       <title>Union: OR and |</title>
       <para>
-        Equivalent to the mathematical set union ∪ operator.
+        Equivalent to the mathematical set union &#x222a; operator.
       </para>
       <screen>
         LIST a = a b c d ;
@@ -25,7 +25,7 @@
     <section id="set-operator-difference">
       <title>Difference: -</title>
       <para>
-        Equivalent to the mathematical set complement ∖ operator.
+        Equivalent to the mathematical set complement &#x2216; operator.
       </para>
       <screen>
         LIST a = a b c d ;
@@ -37,9 +37,9 @@
     </section>
 
     <section id="set-operator-symdiff">
-      <title>Symmetric Difference: ∆</title>
+      <title>Symmetric Difference: &#x2206;</title>
       <para>
-        Equivalent to the mathematical set symmetric difference ∆ operator.
+        Equivalent to the mathematical set symmetric difference &#x2206; operator.
         The symbol is the Unicode code point U+2206.
       </para>
       <screen>
@@ -47,14 +47,14 @@
         LIST b = c d e f ;
   
         # Logically yields a set containing tags: a b e f
-        SET r = a ∆ b ;
+        SET r = a &#x2206; b ;
       </screen>
     </section>
 
     <section id="set-operator-intersection">
-      <title>Intersection: ∩</title>
+      <title>Intersection: &#x2229;</title>
       <para>
-        Equivalent to the mathematical set intersection ∩ operator.
+        Equivalent to the mathematical set intersection &#x2229; operator.
         The symbol is the Unicode code point U+2229.
       </para>
       <screen>
@@ -62,14 +62,14 @@
         LIST b = c d e f ;
   
         # Logically yields a set containing tags: c d
-        SET r = a ∩ b ;
+        SET r = a &#x2229; b ;
       </screen>
     </section>
 
     <section id="set-operator-product">
       <title>Cartesian Product: +</title>
       <para>
-        Equivalent to the mathematical set cartesian product × operator.
+        Equivalent to the mathematical set cartesian product &#x00d7; operator.
       </para>
       <screen>
         LIST a = a b c d ;
