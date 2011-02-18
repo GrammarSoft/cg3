@@ -4,10 +4,6 @@
 <chapter id="sets">
   <title>Sets</title>
 
-  <para>
-    Describes various magic sets and unification strategies.
-  </para>
-
   <section id="set-operators">
     <title>Set Operators</title>
 
@@ -96,158 +92,166 @@
     </section>
   </section>
 
-  <section id="set-any">
-    <title>(*)</title>
-    <para>
-      A set containing the (*) tag becomes a magic "any" set and will always match.
-      This saves having to declare a dummy set containing all imaginable tags.
-      Useful for testing whether a cohort exists at a position, without needing details about it.
-      Can also be used to match everything except a few tags with the set operator -.
-    </para>
-    <screen>
-      (*-1 (*) LINK 1* SomeSet)
-      SELECT (*) - NotTheseTags ;
-    </screen>
-  </section>
+  <section id="set-magic">
+    <title>Magic Sets</title>
 
-  <section id="set-delimiters">
-    <title>_S_DELIMITERS_</title>
-    <para>
-      The magic set _S_DELIMITERS_ is created from the
-      <link linkend="keyword-delimiters">DELIMITERS</link> definition.
-      This saves having to declare and maintain a seperate set for matching delimiters in tests.
-    </para>
-    <screen>
-      SET SomeSet = OtherSet OR _S_DELIMITERS_ ;
-    </screen>
-  </section>
-
-  <section id="set-soft-delimiters">
-    <title>_S_SOFT_DELIMITERS_</title>
-    <para>
-      The magic set _S_SOFT_DELIMITERS_ is created from the
-      <link linkend="keyword-soft-delimiters">SOFT-DELIMITERS</link> definition.
-    </para>
-    <screen>
-      (**1 _S_SOFT_DELIMITERS_ BARRIER BoogieSet)
-    </screen>
-  </section>
-
-  <section id="set-target">
-    <title>Magic Set _TARGET_</title>
-    <para>
-      A magic set containing the single tag (_TARGET_).
-      This set and tag will only match when the currently active cohort is the target of the rule.
-    </para>
-  </section>
-
-  <section id="set-mark">
-    <title>Magic Set _MARK_</title>
-    <para>
-      A magic set containing the single tag (_MARK_).
-      This set and tag will only match when the currently active cohort is the mark set with X,
-      or if no such mark is set it will only match the target of the rule.
-    </para>
-  </section>
-
-  <section id="set-attachto">
-    <title>Magic Set _ATTACHTO_</title>
-    <para>
-      A magic set containing the single tag (_ATTACHTO_).
-      This set and tag will only match when the currently active cohort is the mark set with A.
-    </para>
-  </section>
-
-  <section id="tag-unification">
-    <title>Tag Unification</title>
-    <para>
-      Each time a rule is run on a reading, the tag that first satisfied the set must be the same
-      as all subsequent matches of the same set in tests.
-    </para>
-    <para>
-      A set is marked as a tag unification set by prefixing $$ to the name when used in a rule.
-      You can only prefix existing sets; inline sets in the form of $$(tag tags) will not work,
-      but $$Set + $$OtherSet will; that method will make 2 unification sets, though.
-    </para>
-    <para>
-      The regex tags &lt;.*&gt;r ".*"r "&lt;.*&gt;"r are special and will unify to the same exact tag of that type.
-      This is useful for e.g. mandating that the baseform must be exactly the same in all places.
-    </para>
-    <para>
-      For example
+    <section id="set-any">
+      <title>(*)</title>
+      <para>
+        A set containing the (*) tag becomes a magic "any" set and will always match.
+        This saves having to declare a dummy set containing all imaginable tags.
+        Useful for testing whether a cohort exists at a position, without needing details about it.
+        Can also be used to match everything except a few tags with the set operator -.
+      </para>
       <screen>
-        LIST ROLE = &lt;human&gt; &lt;anim&gt; &lt;inanim&gt; (&lt;bench&gt; &lt;table&gt;) ;
-        SELECT $$ROLE (-1 KC) (-2C $$ROLE) ;
+        (*-1 (*) LINK 1* SomeSet)
+        SELECT (*) - NotTheseTags ;
       </screen>
-      which would logically be the same as
+    </section>
+  
+    <section id="set-delimiters">
+      <title>_S_DELIMITERS_</title>
+      <para>
+        The magic set _S_DELIMITERS_ is created from the
+        <link linkend="keyword-delimiters">DELIMITERS</link> definition.
+        This saves having to declare and maintain a seperate set for matching delimiters in tests.
+      </para>
       <screen>
-        SELECT (&lt;human&gt;) (-1 KC) (-2C (&lt;human&gt;)) ;
-        SELECT (&lt;anim&gt;) (-1 KC) (-2C (&lt;anim&gt;)) ;
-        SELECT (&lt;inanim&gt;) (-1 KC) (-2C (&lt;inanim&gt;)) ;
-        SELECT (&lt;bench&gt; &lt;table&gt;) (-1 KC) (-2C (&lt;bench&gt; &lt;table&gt;)) ;
+        SET SomeSet = OtherSet OR _S_DELIMITERS_ ;
       </screen>
-    </para>
-    <para>
-      Caveat: The exploded form is not identical to the unified form. Unification rules are run as normal
-      rules, meaning once per reading. The exploded form would be run in-order as seperate rules per reading.
-      There may be side effects due to that.
-    </para>
-    <para>
-      Caveat 2: The behavior of this next rule is undefined:
+    </section>
+  
+    <section id="set-soft-delimiters">
+      <title>_S_SOFT_DELIMITERS_</title>
+      <para>
+        The magic set _S_SOFT_DELIMITERS_ is created from the
+        <link linkend="keyword-soft-delimiters">SOFT-DELIMITERS</link> definition.
+      </para>
       <screen>
-        SELECT (tag) IF (0 $$UNISET) (-2* $$UNISET) (1** $$UNISET) ;
+        (**1 _S_SOFT_DELIMITERS_ BARRIER BoogieSet)
       </screen>
-      Since the order of tests is dynamic, the unification of $$UNISET will be initialized with essentially random
-      data, and as such cannot be guaranteed to unify properly. Well defined behavior can be enforced in various ways:
-      <screen>
-        # Put $$UNISET in the target
-        SELECT (tag) + $$UNISET IF (-2* $$UNISET) (1** $$UNISET) ;
-
-        # Only refer to $$UNISET in a single linked chain of tests
-        SELECT (tag) IF (0 $$UNISET LINK -2* $$UNISET LINK 1** $$UNISET) ;
-        
-        # Use rule option KEEPORDER
-        SELECT KEEPORDER (tag) IF (0 $$UNISET) (-2* $$UNISET) (1** $$UNISET) ;
-      </screen>
-      Having the unifier in the target is usually the best way to enforce behavior.
-    </para>
+    </section>
+  
+    <section id="set-target">
+      <title>Magic Set _TARGET_</title>
+      <para>
+        A magic set containing the single tag (_TARGET_).
+        This set and tag will only match when the currently active cohort is the target of the rule.
+      </para>
+    </section>
+  
+    <section id="set-mark">
+      <title>Magic Set _MARK_</title>
+      <para>
+        A magic set containing the single tag (_MARK_).
+        This set and tag will only match when the currently active cohort is the mark set with X,
+        or if no such mark is set it will only match the target of the rule.
+      </para>
+    </section>
+  
+    <section id="set-attachto">
+      <title>Magic Set _ATTACHTO_</title>
+      <para>
+        A magic set containing the single tag (_ATTACHTO_).
+        This set and tag will only match when the currently active cohort is the mark set with A.
+      </para>
+    </section>
   </section>
 
   <section id="set-unification">
-    <title>Top-Level Set Unification</title>
-    <para>
-      Each time a rule is run on a reading, the top-level set that first satisfied the match must be the same
-      as all subsequent matches of the same set in tests.
-    </para>
-    <para>
-      A set is marked as a top-level set unification set by prefixing &amp;&amp; to the name when used in a rule.
-      You can only prefix existing sets; inline sets in the form of &amp;&amp;(tag tags) will not work,
-      but &amp;&amp;Set + &amp;&amp;OtherSet will; that method will make 2 unification sets, though.
-    </para>
-    <para>
-      For example
-      <screen>
-        LIST SEM-HUM = &lt;human&gt; &lt;person&gt; &lt;sapien&gt; ;
-        LIST SEM-ANIM = &lt;animal&gt; &lt;beast&gt; &lt;draconic&gt; ;
-        LIST SEM-INSECT = &lt;insect&gt; &lt;buzzers&gt; ;
-        SET SEM-SMARTBUG = SEM-INSECT + (&lt;sapien&gt;) ;
-        SET SAME-SEM = SEM-HUM OR SEM-ANIM + SEM-SMARTBUG ; # During unification, OR and + are ignored
-        SELECT &amp;&amp;SAME-SEM (-1 KC) (-2C &amp;&amp;SAME-SEM) ;
-      </screen>
-      which would logically be the same as
-      <screen>
-        SELECT SEM-HUM (-1 KC) (-2C SEM-HUM) ;
-        SELECT SEM-ANIM (-1 KC) (-2C SEM-ANIM) ;
-        SELECT SEM-SMARTBUG (-1 KC) (-2C SEM-SMARTBUG) ;
-      </screen>
-    </para>
-    <para>
-      Note that the unification only happens on the first level of sets, hence named top-level unification.
-      Note also that the set operators in the prefixed set are ignored during unification.
-    </para>
-    <para>
-      The same caveats as for <link linkend="tag-unification">Tag Unification</link> apply.
-    </para>
+    <title>Unification</title>
+
+    <section id="set-unification-tag">
+      <title>Tag Unification</title>
+      <para>
+        Each time a rule is run on a reading, the tag that first satisfied the set must be the same
+        as all subsequent matches of the same set in tests.
+      </para>
+      <para>
+        A set is marked as a tag unification set by prefixing $$ to the name when used in a rule.
+        You can only prefix existing sets; inline sets in the form of $$(tag tags) will not work,
+        but $$Set + $$OtherSet will; that method will make 2 unification sets, though.
+      </para>
+      <para>
+        The regex tags &lt;.*&gt;r ".*"r "&lt;.*&gt;"r are special and will unify to the same exact tag of that type.
+        This is useful for e.g. mandating that the baseform must be exactly the same in all places.
+      </para>
+      <para>
+        For example
+        <screen>
+          LIST ROLE = &lt;human&gt; &lt;anim&gt; &lt;inanim&gt; (&lt;bench&gt; &lt;table&gt;) ;
+          SELECT $$ROLE (-1 KC) (-2C $$ROLE) ;
+        </screen>
+        which would logically be the same as
+        <screen>
+          SELECT (&lt;human&gt;) (-1 KC) (-2C (&lt;human&gt;)) ;
+          SELECT (&lt;anim&gt;) (-1 KC) (-2C (&lt;anim&gt;)) ;
+          SELECT (&lt;inanim&gt;) (-1 KC) (-2C (&lt;inanim&gt;)) ;
+          SELECT (&lt;bench&gt; &lt;table&gt;) (-1 KC) (-2C (&lt;bench&gt; &lt;table&gt;)) ;
+        </screen>
+      </para>
+      <para>
+        Caveat: The exploded form is not identical to the unified form. Unification rules are run as normal
+        rules, meaning once per reading. The exploded form would be run in-order as seperate rules per reading.
+        There may be side effects due to that.
+      </para>
+      <para>
+        Caveat 2: The behavior of this next rule is undefined:
+        <screen>
+          SELECT (tag) IF (0 $$UNISET) (-2* $$UNISET) (1** $$UNISET) ;
+        </screen>
+        Since the order of tests is dynamic, the unification of $$UNISET will be initialized with essentially random
+        data, and as such cannot be guaranteed to unify properly. Well defined behavior can be enforced in various ways:
+        <screen>
+          # Put $$UNISET in the target
+          SELECT (tag) + $$UNISET IF (-2* $$UNISET) (1** $$UNISET) ;
+  
+          # Only refer to $$UNISET in a single linked chain of tests
+          SELECT (tag) IF (0 $$UNISET LINK -2* $$UNISET LINK 1** $$UNISET) ;
+          
+          # Use rule option KEEPORDER
+          SELECT KEEPORDER (tag) IF (0 $$UNISET) (-2* $$UNISET) (1** $$UNISET) ;
+        </screen>
+        Having the unifier in the target is usually the best way to enforce behavior.
+      </para>
+    </section>
+  
+    <section id="set-unification-set">
+      <title>Top-Level Set Unification</title>
+      <para>
+        Each time a rule is run on a reading, the top-level set that first satisfied the match must be the same
+        as all subsequent matches of the same set in tests.
+      </para>
+      <para>
+        A set is marked as a top-level set unification set by prefixing &amp;&amp; to the name when used in a rule.
+        You can only prefix existing sets; inline sets in the form of &amp;&amp;(tag tags) will not work,
+        but &amp;&amp;Set + &amp;&amp;OtherSet will; that method will make 2 unification sets, though.
+      </para>
+      <para>
+        For example
+        <screen>
+          LIST SEM-HUM = &lt;human&gt; &lt;person&gt; &lt;sapien&gt; ;
+          LIST SEM-ANIM = &lt;animal&gt; &lt;beast&gt; &lt;draconic&gt; ;
+          LIST SEM-INSECT = &lt;insect&gt; &lt;buzzers&gt; ;
+          SET SEM-SMARTBUG = SEM-INSECT + (&lt;sapien&gt;) ;
+          SET SAME-SEM = SEM-HUM OR SEM-ANIM + SEM-SMARTBUG ; # During unification, OR and + are ignored
+          SELECT &amp;&amp;SAME-SEM (-1 KC) (-2C &amp;&amp;SAME-SEM) ;
+        </screen>
+        which would logically be the same as
+        <screen>
+          SELECT SEM-HUM (-1 KC) (-2C SEM-HUM) ;
+          SELECT SEM-ANIM (-1 KC) (-2C SEM-ANIM) ;
+          SELECT SEM-SMARTBUG (-1 KC) (-2C SEM-SMARTBUG) ;
+        </screen>
+      </para>
+      <para>
+        Note that the unification only happens on the first level of sets, hence named top-level unification.
+        Note also that the set operators in the prefixed set are ignored during unification.
+      </para>
+      <para>
+        The same caveats as for <link linkend="tag-unification">Tag Unification</link> apply.
+      </para>
+    </section>
   </section>
 
 </chapter>
