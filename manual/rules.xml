@@ -117,8 +117,8 @@
     <title>Tag Lists Can Be Sets</title>
     <para>
       For the rule types MAP, ADD, REPLACE, APPEND, SUBSTITUTE, ADDRELATION(S), SETRELATION(S), and REMRELATION(S),
-      the tag lists can be sets instead, including <link linkend="tag-unification">$$sets</link>
-      and <link linkend="set-unification">&amp;&amp;sets</link>.
+      the tag lists can be sets instead, including <link linkend="set-unification-tag">$$sets</link>
+      and <link linkend="set-unification-set">&amp;&amp;sets</link>.
       This is useful for manipulating tags that you want to pull in from a context.
     </para>
     <para>
