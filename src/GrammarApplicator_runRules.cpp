@@ -219,6 +219,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 		}
 
 		const Set& set = *(grammar->getSet(rule.target));
+		active_rule = &rule;
 
 		// ToDo: Make better use of rules_by_tag; except, I can't remember why I wrote this comment...
 
