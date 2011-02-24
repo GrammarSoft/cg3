@@ -387,7 +387,7 @@ Tag *GrammarApplicator::generateVarstringTag(const Tag *tag) {
 		return addTag(nt, true);
 	}
 	else {
-		u_fprintf(ux_stderr, "Warning: Was not able to generate from tag '%S'! Possibly missing KEEPORDER and/or capturing regex.\n", tag->tag.c_str());
+		u_fprintf(ux_stderr, "Warning: Unable to generate from tag '%S'! Possibly missing KEEPORDER and/or capturing regex on line %u.\n", tag->tag.c_str(), active_rule->line);
 		u_fflush(ux_stderr);
 	}
 	return single_tags.find(tag->hash)->second;
