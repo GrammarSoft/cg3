@@ -383,10 +383,7 @@ Tag *GrammarApplicator::generateVarstringTag(const Tag *tag) {
 	}
 
 	const UChar *nt = tmp.getTerminatedBuffer();
-	if (u_strcmp(nt, tag->tag.c_str()) != 0) {
-		return addTag(nt, true);
-	}
-	else {
+	if (u_strcmp(nt, tag->tag.c_str()) == 0) {
 		u_fprintf(ux_stderr, "Warning: Unable to generate from tag '%S'! Possibly missing KEEPORDER and/or capturing regex", tag->tag.c_str());
 		if (active_rule && active_rule->line) {
 			u_fprintf(ux_stderr, " on line %u", active_rule->line);
@@ -394,7 +391,7 @@ Tag *GrammarApplicator::generateVarstringTag(const Tag *tag) {
 		u_fprintf(ux_stderr, ".\n");
 		u_fflush(ux_stderr);
 	}
-	return single_tags.find(tag->hash)->second;
+	return addTag(nt, true);
 }
 
 uint32_t GrammarApplicator::addTagToReading(Reading& reading, uint32_t utag, bool rehash) {
