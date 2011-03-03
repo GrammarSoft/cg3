@@ -273,12 +273,10 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 		writeContextualTest(*tmpl_iter, output);
 	}
 
-	u32tmp = (uint32_t)htonl((uint32_t)grammar->rule_by_line.size());
+	u32tmp = (uint32_t)htonl((uint32_t)grammar->rule_by_number.size());
 	fwrite(&u32tmp, sizeof(uint32_t), 1, output);
-	RuleByLineMap rule_by_line;
-	rule_by_line.insert(grammar->rule_by_line.begin(), grammar->rule_by_line.end());
-	const_foreach (RuleByLineMap, rule_by_line, rule_iter, rule_iter_end) {
-		Rule *r = rule_iter->second;
+	const_foreach (RuleVector, grammar->rule_by_number, rule_iter, rule_iter_end) {
+		Rule *r = *rule_iter;
 
 		uint32_t fields = 0;
 		buffer.str("");
@@ -346,6 +344,10 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 		if (r->sublist) {
 			fields |= (1 << 14);
 			writeSwapped(buffer, r->sublist->number);
+		}
+		if (r->number) {
+			fields |= (1 << 15);
+			writeSwapped(buffer, r->number);
 		}
 
 		u32tmp = (uint32_t)htonl(fields);

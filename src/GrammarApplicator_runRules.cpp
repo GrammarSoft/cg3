@@ -42,7 +42,7 @@ bool GrammarApplicator::updateRuleToCohorts(Cohort& c, const uint32_t& rsit) {
 		return false;
 	}
 	SingleWindow *current = c.parent;
-	const Rule *r = grammar->rule_by_line.find(rsit)->second;
+	const Rule *r = grammar->rule_by_number[rsit];
 	if (r->wordform && r->wordform != c.wordform) {
 		return false;
 	}
@@ -194,7 +194,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 			continue;
 		}
 
-		const Rule& rule = *(grammar->rule_by_line.find(j)->second);
+		const Rule& rule = *(grammar->rule_by_number[j]);
 
 		ticks tstamp(gtimer);
 		KEYWORDS type = rule.type;
@@ -224,9 +224,9 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 		// ToDo: Make better use of rules_by_tag; except, I can't remember why I wrote this comment...
 
 		if (debug_level > 1) {
-			std::cout << "DEBUG: " << current.rule_to_cohorts.find(rule.line)->second.size() << "/" << current.cohorts.size() << " = " << double(current.rule_to_cohorts.find(rule.line)->second.size())/double(current.cohorts.size()) << std::endl;
+			std::cout << "DEBUG: " << current.rule_to_cohorts.find(rule.number)->second.size() << "/" << current.cohorts.size() << " = " << double(current.rule_to_cohorts.find(rule.number)->second.size())/double(current.cohorts.size()) << std::endl;
 		}
-		for (CohortSet::iterator rocit = current.rule_to_cohorts.find(rule.line)->second.begin() ; rocit != current.rule_to_cohorts.find(rule.line)->second.end() ; ) {
+		for (CohortSet::iterator rocit = current.rule_to_cohorts.find(rule.number)->second.begin() ; rocit != current.rule_to_cohorts.find(rule.number)->second.end() ; ) {
 			Cohort *cohort = *rocit;
 			++rocit;
 			// If the current cohort is the initial >>> one, skip it.
@@ -298,7 +298,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 
 			// Check if on previous runs the rule did not match this cohort, and skip if that is the case.
 			// This cache is cleared if any rule causes any state change in the window.
-			uint32_t ih = hash_sdbm_uint32_t(rule.line, cohort->global_number);
+			uint32_t ih = hash_sdbm_uint32_t(rule.number, cohort->global_number);
 			if (index_matches(index_ruleCohort_no, ih)) {
 				continue;
 			}
@@ -437,7 +437,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 			if (num_active == 0 && (num_iff == 0 || rule.type != K_IFF)) {
 				if (!matched_target) {
 					--rocit; // We have already incremented rocit earlier, so take one step back...
-					current.rule_to_cohorts.find(rule.line)->second.erase(rocit++); // ...and one step forward again
+					current.rule_to_cohorts.find(rule.number)->second.erase(rocit++); // ...and one step forward again
 				}
 				continue;
 			}
@@ -452,7 +452,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 				}
 			}
 
-			uint32_t did_append = 0; // Only 1 Append per cohort should happen.
+			uint32_t did_append = std::numeric_limits<uint32_t>::max(); // Only 1 Append per cohort should happen.
 			// Keep track of which readings got removed and selected
 			ReadingList removed;
 			ReadingList selected;
@@ -481,12 +481,12 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 					if (good) {
 						selected.push_back(&reading);
 						index_ruleCohort_no.clear();
-						reading.hit_by.push_back(rule.line);
+						reading.hit_by.push_back(rule.number);
 					}
 					else {
 						removed.push_back(&reading);
 						index_ruleCohort_no.clear();
-						reading.hit_by.push_back(rule.line);
+						reading.hit_by.push_back(rule.number);
 					}
 					if (good) {
 						if (debug_level > 0) {
@@ -498,13 +498,13 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 				else if (good) {
 					if (type == K_REMOVE) {
 						if ((rule.flags & RF_UNMAPLAST) && removed.size() == cohort->readings.size()-1) {
-							if (unmapReading(reading, rule.line)) {
+							if (unmapReading(reading, rule.number)) {
 								readings_changed = true;
 							}
 						}
 						else {
 							removed.push_back(&reading);
-							reading.hit_by.push_back(rule.line);
+							reading.hit_by.push_back(rule.number);
 						}
 						index_ruleCohort_no.clear();
 						if (debug_level > 0) {
@@ -527,7 +527,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 					}
 					else if (type == K_REMCOHORT) {
 						foreach (ReadingList, cohort->readings, iter, iter_end) {
-							(*iter)->hit_by.push_back(rule.line);
+							(*iter)->hit_by.push_back(rule.number);
 							(*iter)->deleted = true;
 						}
 						cohort->type |= CT_REMOVED;
@@ -542,7 +542,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 					}
 					else if (rule.type == K_ADD || rule.type == K_MAP) {
 						index_ruleCohort_no.clear();
-						reading.hit_by.push_back(rule.line);
+						reading.hit_by.push_back(rule.number);
 						reading.noprint = false;
 						TagList mappings;
 						const TagList theTags = getTagList(*rule.maplist);
@@ -555,7 +555,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 								hash = addTagToReading(reading, hash);
 							}
 							updateValidRules(rules, intersects, hash, reading);
-							iter_rules = std::lower_bound(intersects.begin(), intersects.end(), rule.line);
+							iter_rules = std::lower_bound(intersects.begin(), intersects.end(), rule.number);
 							iter_rules_end = intersects.end();
 						}
 						if (!mappings.empty()) {
@@ -569,14 +569,14 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						}
 					}
 					else if (rule.type == K_UNMAP) {
-						if (unmapReading(reading, rule.line)) {
+						if (unmapReading(reading, rule.number)) {
 							index_ruleCohort_no.clear();
 							readings_changed = true;
 						}
 					}
 					else if (rule.type == K_REPLACE) {
 						index_ruleCohort_no.clear();
-						reading.hit_by.push_back(rule.line);
+						reading.hit_by.push_back(rule.number);
 						reading.noprint = false;
 						reading.tags_list.clear();
 						reading.tags_list.push_back(reading.wordform);
@@ -593,7 +593,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 								hash = addTagToReading(reading, hash);
 							}
 							updateValidRules(rules, intersects, hash, reading);
-							iter_rules = std::lower_bound(intersects.begin(), intersects.end(), rule.line);
+							iter_rules = std::lower_bound(intersects.begin(), intersects.end(), rule.number);
 							iter_rules_end = intersects.end();
 						}
 						if (!mappings.empty()) {
@@ -643,7 +643,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						}
 						if (tagb != reading.tags_list.size()) {
 							index_ruleCohort_no.clear();
-							reading.hit_by.push_back(rule.line);
+							reading.hit_by.push_back(rule.number);
 							reading.noprint = false;
 							uint32List::iterator tpos = reading.tags_list.end();
 							foreach (uint32List, reading.tags_list, tfind, tfind_end) {
@@ -668,7 +668,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 									reading.tags_list.insert(tpos, (*tter)->hash);
 								}
 								updateValidRules(rules, intersects, (*tter)->hash, reading);
-								iter_rules = std::lower_bound(intersects.begin(), intersects.end(), rule.line);
+								iter_rules = std::lower_bound(intersects.begin(), intersects.end(), rule.number);
 								iter_rules_end = intersects.end();
 							}
 							reflowReading(reading);
@@ -680,11 +680,11 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 							readings_changed = true;
 						}
 					}
-					else if (rule.type == K_APPEND && rule.line != did_append) {
+					else if (rule.type == K_APPEND && rule.number != did_append) {
 						Reading *cReading = cohort->allocateAppendReading();
 						numReadings++;
 						index_ruleCohort_no.clear();
-						cReading->hit_by.push_back(rule.line);
+						cReading->hit_by.push_back(rule.number);
 						cReading->noprint = false;
 						addTagToReading(*cReading, cohort->wordform);
 						TagList mappings;
@@ -698,13 +698,13 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 								hash = addTagToReading(*cReading, hash);
 							}
 							updateValidRules(rules, intersects, hash, reading);
-							iter_rules = std::lower_bound(intersects.begin(), intersects.end(), rule.line);
+							iter_rules = std::lower_bound(intersects.begin(), intersects.end(), rule.number);
 							iter_rules_end = intersects.end();
 						}
 						if (!mappings.empty()) {
 							splitMappings(mappings, *cohort, *cReading, true);
 						}
-						did_append = rule.line;
+						did_append = rule.number;
 						readings_changed = true;
 					}
 					else if (type == K_SETPARENT || type == K_SETCHILD) {
@@ -743,7 +743,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 									}
 									if (attached) {
 										index_ruleCohort_no.clear();
-										reading.hit_by.push_back(rule.line);
+										reading.hit_by.push_back(rule.number);
 										reading.noprint = false;
 										has_dep = true;
 										readings_changed = true;
@@ -807,10 +807,10 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 								current.cohorts[cohort->local_number] = attach;
 								current.cohorts[attach->local_number] = cohort;
 								foreach (ReadingList, cohort->readings, iter, iter_end) {
-									(*iter)->hit_by.push_back(rule.line);
+									(*iter)->hit_by.push_back(rule.number);
 								}
 								foreach (ReadingList, attach->readings, iter, iter_end) {
-									(*iter)->hit_by.push_back(rule.line);
+									(*iter)->hit_by.push_back(rule.number);
 								}
 							}
 							else {
@@ -859,7 +859,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 
 								while (!cohorts.empty()) {
 									foreach (ReadingList, cohorts.back()->readings, iter, iter_end) {
-										(*iter)->hit_by.push_back(rule.line);
+										(*iter)->hit_by.push_back(rule.number);
 									}
 									current.cohorts.insert(current.cohorts.begin()+spot, cohorts.back());
 									cohorts.pop_back();
@@ -895,7 +895,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 							}
 							if (good) {
 								index_ruleCohort_no.clear();
-								reading.hit_by.push_back(rule.line);
+								reading.hit_by.push_back(rule.number);
 								reading.noprint = false;
 								TagList theTags = getTagList(*rule.maplist);
 								const_foreach (TagList, theTags, tter, tter_end) {
@@ -940,7 +940,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 							}
 							if (good) {
 								index_ruleCohort_no.clear();
-								reading.hit_by.push_back(rule.line);
+								reading.hit_by.push_back(rule.number);
 								reading.noprint = false;
 								TagList sublist = getTagList(*rule.sublist);
 								TagList maplist = getTagList(*rule.maplist);
