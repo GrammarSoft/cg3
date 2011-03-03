@@ -301,7 +301,7 @@ int main(int argc, char* argv[]) {
 	std::cerr << "Parsing grammar took " << (clock()-main_timer)/(double)CLOCKS_PER_SEC << " seconds." << std::endl;
 	main_timer = clock();
 
-	std::cerr << "Grammar has " << grammar.sections.size() << " sections, " << grammar.template_list.size() << " templates, " << grammar.rule_by_line.size() << " rules, " << grammar.sets_list.size() << " sets, " << grammar.tags.size() << " c-tags, " << grammar.single_tags.size() << " s-tags." << std::endl;
+	std::cerr << "Grammar has " << grammar.sections.size() << " sections, " << grammar.template_list.size() << " templates, " << grammar.rule_by_number.size() << " rules, " << grammar.sets_list.size() << " sets, " << grammar.tags.size() << " c-tags, " << grammar.single_tags.size() << " s-tags." << std::endl;
 	if (grammar.rules_any) {
 		std::cerr << grammar.rules_any->size() << " rules cannot be skipped by index." << std::endl;
 	}
@@ -355,38 +355,37 @@ int main(int argc, char* argv[]) {
 
 	if (options[OPTIMIZE_UNSAFE].doesOccur) {
 		std::vector<uint32_t> bad;
-		bad.reserve(grammar.rule_by_line.size());
-		foreach (CG3::RuleByLineHashMap, grammar.rule_by_line, ir, ir_end) {
-			if (ir->second->num_match == 0) {
-				bad.push_back(ir->first);
+		foreach (CG3::RuleVector, grammar.rule_by_number, ir, ir_end) {
+			if ((*ir)->num_match == 0) {
+				bad.push_back((*ir)->number);
 			}
 		}
-		foreach (std::vector<uint32_t>, bad, br, br_end) {
-			CG3::Rule *r = grammar.rule_by_line.find(*br)->second;
-			grammar.rule_by_line.erase(*br);
+		reverse_foreach (std::vector<uint32_t>, bad, br, br_end) {
+			CG3::Rule *r = grammar.rule_by_number[*br];
+			grammar.rule_by_number.erase(grammar.rule_by_number.begin()+*br);
 			grammar.destroyRule(r);
 		}
 		std::cerr << "Optimizer removed " << bad.size() << " rules." << std::endl;
 		grammar.reindex();
-		std::cerr << "Grammar has " << grammar.sections.size() << " sections, " << grammar.template_list.size() << " templates, " << grammar.rule_by_line.size() << " rules, " << grammar.sets_list.size() << " sets, " << grammar.tags.size() << " c-tags, " << grammar.single_tags.size() << " s-tags." << std::endl;
+		std::cerr << "Grammar has " << grammar.sections.size() << " sections, " << grammar.template_list.size() << " templates, " << grammar.rule_by_number.size() << " rules, " << grammar.sets_list.size() << " sets, " << grammar.tags.size() << " c-tags, " << grammar.single_tags.size() << " s-tags." << std::endl;
 	}
 	if (options[OPTIMIZE_SAFE].doesOccur) {
-		std::vector<uint32_t> bad;
-		bad.reserve(grammar.rule_by_line.size());
-		foreach (CG3::RuleByLineHashMap, grammar.rule_by_line, ir, ir_end) {
-			if (ir->second->num_match == 0) {
-				bad.push_back(ir->first);
+		CG3::RuleVector bad;
+		foreach (CG3::RuleVector, grammar.rule_by_number, ir, ir_end) {
+			if ((*ir)->num_match == 0) {
+				bad.push_back(*ir);
 			}
 		}
-		foreach (std::vector<uint32_t>, bad, br, br_end) {
-			CG3::Rule *r = grammar.rule_by_line.find(*br)->second;
-			grammar.rule_by_line.erase(*br);
-			r->line += grammar.rule_by_line.size();
-			grammar.rule_by_line[r->line] = r;
+		reverse_foreach (CG3::RuleVector, bad, br, br_end) {
+			grammar.rule_by_number.erase(grammar.rule_by_number.begin() + (*br)->number);
+		}
+		foreach (CG3::RuleVector, bad, br, br_end) {
+			(*br)->number = grammar.rule_by_number.size();
+			grammar.rule_by_number.push_back(*br);
 		}
 		std::cerr << "Optimizer moved " << bad.size() << " rules." << std::endl;
 		grammar.reindex();
-		std::cerr << "Grammar has " << grammar.sections.size() << " sections, " << grammar.template_list.size() << " templates, " << grammar.rule_by_line.size() << " rules, " << grammar.sets_list.size() << " sets, " << grammar.tags.size() << " c-tags, " << grammar.single_tags.size() << " s-tags." << std::endl;
+		std::cerr << "Grammar has " << grammar.sections.size() << " sections, " << grammar.template_list.size() << " templates, " << grammar.rule_by_number.size() << " rules, " << grammar.sets_list.size() << " sets, " << grammar.tags.size() << " c-tags, " << grammar.single_tags.size() << " s-tags." << std::endl;
 	}
 
 	if (options[GRAMMAR_OUT].doesOccur) {
@@ -557,10 +556,10 @@ void GAppSetOpts(CG3::GrammarApplicator& applicator, UConverter *conv) {
 			buf[0] = 0;
 			ucnv_toUChars(conv, buf, sn*3, options[RULE].value, sn, &status);
 
-			const_foreach (CG3::RuleByLineHashMap, applicator.grammar->rule_by_line, riter, riter_end) {
-				const CG3::Rule *rule = riter->second;
+			const_foreach (CG3::RuleVector, applicator.grammar->rule_by_number, riter, riter_end) {
+				const CG3::Rule *rule = *riter;
 				if (rule->name && u_strcmp(rule->name, buf) == 0) {
-					applicator.valid_rules.push_back(rule->line);
+					applicator.valid_rules.push_back(rule->number);
 				}
 			}
 

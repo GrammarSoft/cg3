@@ -66,7 +66,7 @@ namespace CG3 {
 		uint32_t wordform;
 		uint32_t target;
 		uint32_t childset1, childset2;
-		uint32_t line;
+		uint32_t line, number;
 		uint32_t varname, varvalue;
 		uint32_t jumpstart, jumpend;
 		uint32_t flags;
@@ -96,10 +96,10 @@ namespace CG3 {
 		static bool cmp_quality(const Rule *a, const Rule *b);
 
 		static inline size_t cmp_hash(const Rule* r) {
-			return hash_sdbm_uint32_t(r->line);
+			return hash_sdbm_uint32_t(r->number);
 		}
 		static inline bool cmp_compare(const Rule* a, const Rule* b) {
-			return a->line < b->line;
+			return a->number < b->number;
 		}
 	};
 

@@ -3,5 +3,4 @@ INCLUDE sets.inc ;
 SECTION
 
 SELECT ASet ;
-SELECT BSet ;
-SELECT CSet ;
+INCLUDE rules.inc ;

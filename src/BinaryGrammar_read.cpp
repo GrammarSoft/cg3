@@ -370,6 +370,7 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 	fread(&u32tmp, sizeof(uint32_t), 1, input);
 	u32tmp = (uint32_t)ntohl(u32tmp);
 	uint32_t num_rules = u32tmp;
+	grammar->rule_by_number.resize(num_rules);
 	for (uint32_t i=0 ; i<num_rules ; i++) {
 		Rule *r = grammar->allocateRule();
 
@@ -443,6 +444,10 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 			fread(&u32tmp, sizeof(uint32_t), 1, input);
 			r->sublist = grammar->sets_list.at((uint32_t)ntohl(u32tmp));
 		}
+		if (fields & (1 << 15)) {
+			fread(&u32tmp, sizeof(uint32_t), 1, input);
+			r->number = (uint32_t)ntohl(u32tmp);
+		}
 
 		fread(&u8tmp, sizeof(uint8_t), 1, input);
 		if (u8tmp == 1) {
@@ -467,7 +472,7 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 			readContextualTest(t, input);
 			r->addContextualTest(t, &r->test_head);
 		}
-		grammar->rule_by_line[r->line] = r;
+		grammar->rule_by_number[r->number] = r;
 	}
 
 	ucnv_close(conv);

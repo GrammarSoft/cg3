@@ -76,28 +76,8 @@ Grammar::~Grammar() {
 		}
 	}
 
-	foreach (RuleVector, rules, iter_rules1, iter_rules1_end) {
-		if (*iter_rules1) {
-			delete *iter_rules1;
-		}
-	}
-
-	foreach (RuleVector, before_sections, iter_rules2, iter_rules2_end) {
-		if (*iter_rules2) {
-			delete *iter_rules2;
-		}
-	}
-
-	foreach (RuleVector, after_sections, iter_rules3, iter_rules3_end) {
-		if (*iter_rules3) {
-			delete *iter_rules3;
-		}
-	}
-
-	foreach (RuleVector, null_section, iter_rules4, iter_rules4_end) {
-		if (*iter_rules4) {
-			delete *iter_rules4;
-		}
+	foreach (RuleVector, rule_by_number, iter_rules, iter_rules_end) {
+		delete *iter_rules;
 	}
 
 	foreach (std::vector<ContextualTest*>, template_list, tmpls, tmpls_end) {
@@ -389,11 +369,8 @@ Rule *Grammar::allocateRule() {
 }
 
 void Grammar::addRule(Rule *rule) {
-	if (rule_by_line.find(rule->line) != rule_by_line.end()) {
-		u_fprintf(ux_stderr, "Error: Multiple rules defined on line %u - cannot currently handle multiple rules per line!\n", rule->line);
-		CG3Quit(1);
-	}
-	rule_by_line[rule->line] = rule;
+	rule->number = rule_by_number.size();
+	rule_by_number.push_back(rule);
 }
 
 void Grammar::destroyRule(Rule *rule) {
@@ -516,8 +493,8 @@ void Grammar::resetStatistics() {
 }
 
 void Grammar::renameAllRules() {
-	foreach (RuleByLineHashMap, rule_by_line, iter_rule, iter_rule_end) {
-		Rule *r = iter_rule->second;
+	foreach (RuleVector, rule_by_number, iter_rule, iter_rule_end) {
+		Rule *r = *iter_rule;
 		gbuffers[0][0] = 0;
 		u_sprintf(&gbuffers[0][0], "L%u", r->line);
 		r->setName(&gbuffers[0][0]);
@@ -603,35 +580,33 @@ void Grammar::reindex(bool unused_sets) {
 		}
 	}
 
-	RuleByLineMap rule_by_line;
-	rule_by_line.insert(this->rule_by_line.begin(), this->rule_by_line.end());
-	foreach (RuleByLineMap, rule_by_line, iter_rule, iter_rule_end) {
+	foreach (RuleVector, rule_by_number, iter_rule, iter_rule_end) {
 		Set *s = 0;
-		s = getSet(iter_rule->second->target);
+		s = getSet((*iter_rule)->target);
 		s->markUsed(*this);
-		if (iter_rule->second->childset1) {
-			s = getSet(iter_rule->second->childset1);
+		if ((*iter_rule)->childset1) {
+			s = getSet((*iter_rule)->childset1);
 			s->markUsed(*this);
 		}
-		if (iter_rule->second->childset2) {
-			s = getSet(iter_rule->second->childset2);
+		if ((*iter_rule)->childset2) {
+			s = getSet((*iter_rule)->childset2);
 			s->markUsed(*this);
 		}
-		if (iter_rule->second->maplist) {
-			iter_rule->second->maplist->markUsed(*this);
+		if ((*iter_rule)->maplist) {
+			(*iter_rule)->maplist->markUsed(*this);
 		}
-		if (iter_rule->second->sublist) {
-			iter_rule->second->sublist->markUsed(*this);
+		if ((*iter_rule)->sublist) {
+			(*iter_rule)->sublist->markUsed(*this);
 		}
-		if (iter_rule->second->dep_target) {
-			iter_rule->second->dep_target->markUsed(*this);
+		if ((*iter_rule)->dep_target) {
+			(*iter_rule)->dep_target->markUsed(*this);
 		}
-		ContextualTest *test = iter_rule->second->dep_test_head;
+		ContextualTest *test = (*iter_rule)->dep_test_head;
 		while (test) {
 			test->markUsed(*this);
 			test = test->next;
 		}
-		test = iter_rule->second->test_head;
+		test = (*iter_rule)->test_head;
 		while (test) {
 			test->markUsed(*this);
 			test = test->next;
@@ -757,26 +732,26 @@ void Grammar::reindex(bool unused_sets) {
 
 	uint32Set sects;
 
-	foreach (RuleByLineMap, rule_by_line, iter_rule, iter_rule_end) {
-		if (iter_rule->second->section == -1) {
-			before_sections.push_back(iter_rule->second);
+	foreach (RuleVector, rule_by_number, iter_rule, iter_rule_end) {
+		if ((*iter_rule)->section == -1) {
+			before_sections.push_back(*iter_rule);
 		}
-		else if (iter_rule->second->section == -2) {
-			after_sections.push_back(iter_rule->second);
+		else if ((*iter_rule)->section == -2) {
+			after_sections.push_back(*iter_rule);
 		}
-		else if (iter_rule->second->section == -3) {
-			null_section.push_back(iter_rule->second);
-		}
-		else {
-			sects.insert(iter_rule->second->section);
-			rules.push_back(iter_rule->second);
-		}
-		if (iter_rule->second->target) {
-			indexSetToRule(iter_rule->second->line, getSet(iter_rule->second->target));
-			rules_by_set[iter_rule->second->target].insert(iter_rule->first);
+		else if ((*iter_rule)->section == -3) {
+			null_section.push_back(*iter_rule);
 		}
 		else {
-			u_fprintf(ux_stderr, "Warning: Rule on line %u had no target.\n", iter_rule->second->line);
+			sects.insert((*iter_rule)->section);
+			rules.push_back(*iter_rule);
+		}
+		if ((*iter_rule)->target) {
+			indexSetToRule((*iter_rule)->number, getSet((*iter_rule)->target));
+			rules_by_set[(*iter_rule)->target].insert((*iter_rule)->number);
+		}
+		else {
+			u_fprintf(ux_stderr, "Warning: Rule on line %u had no target.\n", (*iter_rule)->line);
 			u_fflush(ux_stderr);
 		}
 	}
