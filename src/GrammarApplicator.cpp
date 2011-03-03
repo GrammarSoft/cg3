@@ -136,7 +136,7 @@ void GrammarApplicator::index() {
 		uint32SortedVector& m = runsections[-1];
 		const_foreach (RuleVector, grammar->before_sections, iter_rules, iter_rules_end) {
 			const Rule *r = *iter_rules;
-			m.insert(r->line);
+			m.insert(r->number);
 		}
 	}
 
@@ -144,7 +144,7 @@ void GrammarApplicator::index() {
 		uint32SortedVector& m = runsections[-2];
 		const_foreach (RuleVector, grammar->after_sections, iter_rules, iter_rules_end) {
 			const Rule *r = *iter_rules;
-			m.insert(r->line);
+			m.insert(r->number);
 		}
 	}
 
@@ -152,7 +152,7 @@ void GrammarApplicator::index() {
 		uint32SortedVector& m = runsections[-3];
 		const_foreach (RuleVector, grammar->null_section, iter_rules, iter_rules_end) {
 			const Rule *r = *iter_rules;
-			m.insert(r->line);
+			m.insert(r->number);
 		}
 	}
 
@@ -165,7 +165,7 @@ void GrammarApplicator::index() {
 					continue;
 				}
 				uint32SortedVector& m = runsections[i];
-				m.insert(r->line);
+				m.insert(r->number);
 			}
 		}
 	}
@@ -179,10 +179,20 @@ void GrammarApplicator::index() {
 						continue;
 					}
 					uint32SortedVector& m = runsections[n];
-					m.insert(r->line);
+					m.insert(r->number);
 				}
 			}
 		}
+	}
+
+	if (!valid_rules.empty()) {
+		uint32SortedVector vr;
+		const_foreach (RuleVector, grammar->rule_by_number, iter, iter_end) {
+			if (valid_rules.find((*iter)->line) != valid_rules.end()) {
+				vr.push_back((*iter)->number);
+			}
+		}
+		valid_rules = vr;
 	}
 
 	did_index = true;
@@ -348,9 +358,8 @@ void GrammarApplicator::printReading(const Reading *reading, UFILE *output) {
 
 	if (trace) {
 		const_foreach (uint32Vector, reading->hit_by, iter_hb, iter_hb_end) {
-			RuleByLineHashMap::const_iterator ruit = grammar->rule_by_line.find(*iter_hb);
-			if (ruit != grammar->rule_by_line.end()) {
-				const Rule *r = ruit->second;
+			if (*iter_hb < grammar->rule_by_number.size()) {
+				const Rule *r = grammar->rule_by_number[*iter_hb];
 				u_fprintf(output, "%S", keywords[r->type].getTerminatedBuffer());
 				if (r->type == K_ADDRELATION || r->type == K_SETRELATION || r->type == K_REMRELATION
 				|| r->type == K_ADDRELATIONS || r->type == K_SETRELATIONS || r->type == K_REMRELATIONS
@@ -362,7 +371,7 @@ void GrammarApplicator::printReading(const Reading *reading, UFILE *output) {
 						u_fprintf(output, ")");
 				}
 				if (!trace_name_only || !r->name) {
-					u_fprintf(output, ":%u", *iter_hb);
+					u_fprintf(output, ":%u", r->line);
 				}
 				if (r->name) {
 					u_fputc(':', output);

@@ -99,7 +99,7 @@ int main(int argc, char *argv[]) {
 
 	grammar.reindex();
 
-	std::cerr << "Sections: " << grammar.sections.size() << ", Rules: " << grammar.rule_by_line.size();
+	std::cerr << "Sections: " << grammar.sections.size() << ", Rules: " << grammar.rule_by_number.size();
 	std::cerr << ", Sets: " << grammar.sets_by_contents.size() << ", Tags: " << grammar.single_tags.size() << std::endl;
 
 	if (grammar.rules_any) {

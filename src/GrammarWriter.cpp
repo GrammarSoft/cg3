@@ -158,10 +158,8 @@ int GrammarWriter::writeGrammar(UFILE *output) {
 	u_fprintf(output, "\n");
 
 	bool found = false;
-	RuleByLineMap rule_by_line;
-	rule_by_line.insert(grammar->rule_by_line.begin(), grammar->rule_by_line.end());
-	const_foreach (RuleByLineMap, rule_by_line, rule_iter, rule_iter_end) {
-		const Rule& r = *(rule_iter->second);
+	const_foreach (RuleVector, grammar->rule_by_number, rule_iter, rule_iter_end) {
+		const Rule& r = **rule_iter;
 		if (r.section == -1) {
 			if (!found) {
 				u_fprintf(output, "\nBEFORE-SECTIONS\n");
@@ -173,8 +171,8 @@ int GrammarWriter::writeGrammar(UFILE *output) {
 	}
 	const_foreach (uint32Vector, grammar->sections, isec, isec_end) {
 		found = false;
-		const_foreach (RuleByLineMap, rule_by_line, rule_iter, rule_iter_end) {
-			const Rule& r = *(rule_iter->second);
+		const_foreach (RuleVector, grammar->rule_by_number, rule_iter, rule_iter_end) {
+			const Rule& r = **rule_iter;
 			if (r.section == (int32_t)*isec) {
 				if (!found) {
 					u_fprintf(output, "\nSECTION\n");
@@ -186,8 +184,8 @@ int GrammarWriter::writeGrammar(UFILE *output) {
 		}
 	}
 	found = false;
-	const_foreach (RuleByLineMap, rule_by_line, rule_iter, rule_iter_end) {
-		const Rule& r = *(rule_iter->second);
+	const_foreach (RuleVector, grammar->rule_by_number, rule_iter, rule_iter_end) {
+		const Rule& r = **rule_iter;
 		if (r.section == -2) {
 			if (!found) {
 				u_fprintf(output, "\nAFTER-SECTIONS\n");
@@ -198,8 +196,8 @@ int GrammarWriter::writeGrammar(UFILE *output) {
 		}
 	}
 	found = false;
-	const_foreach (RuleByLineMap, rule_by_line, rule_iter, rule_iter_end) {
-		const Rule& r = *(rule_iter->second);
+	const_foreach (RuleVector, grammar->rule_by_number, rule_iter, rule_iter_end) {
+		const Rule& r = **rule_iter;
 		if (r.section == -3) {
 			if (!found) {
 				u_fprintf(output, "\nNULL-SECTION\n");
