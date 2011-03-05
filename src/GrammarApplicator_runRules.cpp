@@ -38,7 +38,7 @@ enum {
 
 bool GrammarApplicator::updateRuleToCohorts(Cohort& c, const uint32_t& rsit) {
 	// Check whether this rule is in the allowed rule list from cmdline flag --rule(s)
-	if (!valid_rules.empty() && valid_rules.find(rsit) == valid_rules.end()) {
+	if (!valid_rules.empty() && !valid_rules.contains(rsit)) {
 		return false;
 	}
 	SingleWindow *current = c.parent;
@@ -48,38 +48,16 @@ bool GrammarApplicator::updateRuleToCohorts(Cohort& c, const uint32_t& rsit) {
 	}
 	CohortSet& s = current->rule_to_cohorts[rsit];
 	s.insert(&c);
-	return current->valid_rules.insert(rsit).second;
+	return current->valid_rules.insert(rsit);
 }
 
-void intersectInitialize(const uint32SortedVector& first, const uint32Set& second, uint32Vector& intersects) {
-	intersects.reserve(std::min(first.size(), second.size()));
-	uint32SortedVector::const_iterator iiter = first.begin();
-	uint32Set::const_iterator oiter = second.begin();
-	while (oiter != second.end() && iiter != first.end()) {
-		while (oiter != second.end() && iiter != first.end() && *oiter < *iiter) {
-			++oiter;
-		}
-		while (oiter != second.end() && iiter != first.end() && *iiter < *oiter) {
-			++iiter;
-		}
-		while (oiter != second.end() && iiter != first.end() && *oiter == *iiter) {
-			intersects.push_back(*oiter);
-			++oiter;
-			++iiter;
-		}
-	}
-}
-
-void GrammarApplicator::updateValidRules(const uint32SortedVector& rules, uint32Vector& intersects, const uint32_t& hash, Reading& reading) {
-	uint32HashSetuint32HashMap::const_iterator it = grammar->rules_by_tag.find(hash);
+void GrammarApplicator::updateValidRules(const uint32IntervalVector& rules, uint32IntervalVector& intersects, const uint32_t& hash, Reading& reading) {
+	Grammar::rules_by_tag_t::const_iterator it = grammar->rules_by_tag.find(hash);
 	if (it != grammar->rules_by_tag.end()) {
 		Cohort& c = *(reading.parent);
-		const_foreach (uint32HashSet, (it->second), rsit, rsit_end) {
-			if (updateRuleToCohorts(c, *rsit) && rules.find(*rsit) != rules.end()) {
-				uint32Vector::iterator ins = std::lower_bound(intersects.begin(), intersects.end(), *rsit);
-				if (ins == intersects.end() || *ins != *rsit) {
-					intersects.insert(ins, *rsit);
-				}
+		const_foreach (uint32IntervalVector, (it->second), rsit, rsit_end) {
+			if (updateRuleToCohorts(c, *rsit) && rules.contains(*rsit)) {
+				intersects.insert(*rsit);
 			}
 		}
 	}
@@ -94,8 +72,8 @@ void GrammarApplicator::indexSingleWindow(SingleWindow& current) {
 			if (grammar->rules_by_set.find(*psit) == grammar->rules_by_set.end()) {
 				continue;
 			}
-			const uint32Set& rules = grammar->rules_by_set.find(*psit)->second;
-			const_foreach (uint32Set, rules, rsit, rsir_end) {
+			const Grammar::rules_by_set_t::mapped_type& rules = grammar->rules_by_set.find(*psit)->second;
+			const_foreach (Grammar::rules_by_set_t::mapped_type, rules, rsit, rsir_end) {
 				updateRuleToCohorts(*c, *rsit);
 			}
 		}
@@ -174,7 +152,7 @@ TagList GrammarApplicator::getTagList(const Set& theSet, bool unif_mode) const {
  * @param[in,out] current The window to apply rules on
  * @param[in] rules The rules to apply
  */
-uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const uint32SortedVector& rules) {
+uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const uint32IntervalVector& rules) {
 	uint32_t retval = RV_NOTHING;
 	bool section_did_something = false;
 	bool delimited = false;
@@ -182,15 +160,13 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 	typedef stdext::hash_map<uint32_t,Reading*> readings_plain_t;
 	readings_plain_t readings_plain;
 
-	// It is possible to eliminate this, but that's a mere 1% speed gain and I'd have to do section ranges some other way. Not worth it.
-	uint32Vector intersects;
-	intersectInitialize(rules, current.valid_rules, intersects);
+	uint32IntervalVector intersects = current.valid_rules.intersect(rules);
 
-	foreach (uint32Vector, intersects, iter_rules, iter_rules_end) {
+	const_foreach (uint32IntervalVector, intersects, iter_rules, iter_rules_end) {
 		uint32_t j = (*iter_rules);
 
 		// Check whether this rule is in the allowed rule list from cmdline flag --rule(s)
-		if (!valid_rules.empty() && valid_rules.find(j) == valid_rules.end()) {
+		if (!valid_rules.empty() && !valid_rules.contains(j)) {
 			continue;
 		}
 
@@ -555,7 +531,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 								hash = addTagToReading(reading, hash);
 							}
 							updateValidRules(rules, intersects, hash, reading);
-							iter_rules = std::lower_bound(intersects.begin(), intersects.end(), rule.number);
+							iter_rules = intersects.find(rule.number);
 							iter_rules_end = intersects.end();
 						}
 						if (!mappings.empty()) {
@@ -593,7 +569,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 								hash = addTagToReading(reading, hash);
 							}
 							updateValidRules(rules, intersects, hash, reading);
-							iter_rules = std::lower_bound(intersects.begin(), intersects.end(), rule.number);
+							iter_rules = intersects.find(rule.number);
 							iter_rules_end = intersects.end();
 						}
 						if (!mappings.empty()) {
@@ -668,7 +644,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 									reading.tags_list.insert(tpos, (*tter)->hash);
 								}
 								updateValidRules(rules, intersects, (*tter)->hash, reading);
-								iter_rules = std::lower_bound(intersects.begin(), intersects.end(), rule.number);
+								iter_rules = intersects.find(rule.number);
 								iter_rules_end = intersects.end();
 							}
 							reflowReading(reading);
@@ -698,7 +674,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 								hash = addTagToReading(*cReading, hash);
 							}
 							updateValidRules(rules, intersects, hash, reading);
-							iter_rules = std::lower_bound(intersects.begin(), intersects.end(), rule.number);
+							iter_rules = intersects.find(rule.number);
 							iter_rules_end = intersects.end();
 						}
 						if (!mappings.empty()) {
