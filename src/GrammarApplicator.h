@@ -26,7 +26,7 @@
 #include "stdafx.h"
 #include "Tag.h"
 #include "CohortIterator.h"
-#include "sorted_vector.hpp"
+#include "interval_vector.hpp"
 
 namespace CG3 {
 	class Window;
@@ -69,7 +69,7 @@ namespace CG3 {
 		uint32_t soft_limit;
 		uint32_t hard_limit;
 		uint32Vector sections;
-		uint32SortedVector valid_rules;
+		uint32IntervalVector valid_rules;
 		uint32_t verbosity_level;
 		uint32_t debug_level;
 		uint32_t section_max_count;
@@ -108,7 +108,7 @@ namespace CG3 {
 		uint32Set dep_deep_seen;
 
 		uint32_t numsections;
-		typedef std::map<int32_t,uint32SortedVector> RSType;
+		typedef std::map<int32_t,uint32IntervalVector> RSType;
 		RSType runsections;
 
 		uint32Vector ci_depths;
@@ -159,8 +159,8 @@ namespace CG3 {
 		void indexSingleWindow(SingleWindow& current);
 		void runGrammarOnWindow();
 		uint32_t runGrammarOnSingleWindow(SingleWindow& current);
-		void updateValidRules(const uint32SortedVector& rules, uint32Vector& intersects, const uint32_t& hash, Reading& reading);
-		uint32_t runRulesOnSingleWindow(SingleWindow& current, const uint32SortedVector& rules);
+		void updateValidRules(const uint32IntervalVector& rules, uint32IntervalVector& intersects, const uint32_t& hash, Reading& reading);
+		uint32_t runRulesOnSingleWindow(SingleWindow& current, const uint32IntervalVector& rules);
 
 		Cohort *runSingleTest(Cohort *cohort, const ContextualTest *test, bool *brk, bool *retval, Cohort **deep = 0, Cohort *origin = 0);
 		Cohort *runSingleTest(SingleWindow *sWindow, size_t i, const ContextualTest *test, bool *brk, bool *retval, Cohort **deep = 0, Cohort *origin = 0);

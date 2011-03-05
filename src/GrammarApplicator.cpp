@@ -133,7 +133,7 @@ void GrammarApplicator::index() {
 	}
 
 	if (!grammar->before_sections.empty()) {
-		uint32SortedVector& m = runsections[-1];
+		uint32IntervalVector& m = runsections[-1];
 		const_foreach (RuleVector, grammar->before_sections, iter_rules, iter_rules_end) {
 			const Rule *r = *iter_rules;
 			m.insert(r->number);
@@ -141,7 +141,7 @@ void GrammarApplicator::index() {
 	}
 
 	if (!grammar->after_sections.empty()) {
-		uint32SortedVector& m = runsections[-2];
+		uint32IntervalVector& m = runsections[-2];
 		const_foreach (RuleVector, grammar->after_sections, iter_rules, iter_rules_end) {
 			const Rule *r = *iter_rules;
 			m.insert(r->number);
@@ -149,7 +149,7 @@ void GrammarApplicator::index() {
 	}
 
 	if (!grammar->null_section.empty()) {
-		uint32SortedVector& m = runsections[-3];
+		uint32IntervalVector& m = runsections[-3];
 		const_foreach (RuleVector, grammar->null_section, iter_rules, iter_rules_end) {
 			const Rule *r = *iter_rules;
 			m.insert(r->number);
@@ -164,7 +164,7 @@ void GrammarApplicator::index() {
 				if (r->section < 0 || r->section > i) {
 					continue;
 				}
-				uint32SortedVector& m = runsections[i];
+				uint32IntervalVector& m = runsections[i];
 				m.insert(r->number);
 			}
 		}
@@ -178,7 +178,7 @@ void GrammarApplicator::index() {
 					if (r->section != (int32_t)sections.at(e)-1) {
 						continue;
 					}
-					uint32SortedVector& m = runsections[n];
+					uint32IntervalVector& m = runsections[n];
 					m.insert(r->number);
 				}
 			}
@@ -186,9 +186,9 @@ void GrammarApplicator::index() {
 	}
 
 	if (!valid_rules.empty()) {
-		uint32SortedVector vr;
+		uint32IntervalVector vr;
 		const_foreach (RuleVector, grammar->rule_by_number, iter, iter_end) {
-			if (valid_rules.find((*iter)->line) != valid_rules.end()) {
+			if (valid_rules.contains((*iter)->line)) {
 				vr.push_back((*iter)->number);
 			}
 		}

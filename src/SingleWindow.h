@@ -26,6 +26,7 @@
 #include "stdafx.h"
 #include "Cohort.h"
 #include "Rule.h"
+#include "interval_vector.hpp"
 
 namespace CG3 {
 	class Window;
@@ -37,7 +38,7 @@ namespace CG3 {
 		Window *parent;
 		UString text;
 		CohortVector cohorts;
-		uint32Set valid_rules;
+		uint32IntervalVector valid_rules;
 		uint32ToCohortsMap rule_to_cohorts;
 
 		SingleWindow(Window *p);

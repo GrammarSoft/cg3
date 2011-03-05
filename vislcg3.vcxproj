@@ -142,6 +142,7 @@
     <ClInclude Include="src\icu_uoptions.h" />
     <ClInclude Include="src\IGrammarParser.h" />
     <ClInclude Include="src\inlines.h" />
+    <ClInclude Include="src\interval_vector.hpp" />
     <ClInclude Include="src\macros.h" />
     <ClInclude Include="src\options.h" />
     <ClInclude Include="src\Reading.h" />
