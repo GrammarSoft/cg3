@@ -164,33 +164,28 @@ public:
 	}
 
 	bool insert(T t) {
-		if (!elements.empty()) {
-			ContIter it = std::lower_bound(elements.begin(), elements.end(), t);
-			if (it != elements.end() && t >= it->lb && t <= it->ub) {
-				return false;
-			}
-			ContIter pr = it-1;
-			if (it != elements.begin() && pr->ub+1 == t) {
-				++pr->ub;
-				if (it != elements.end() && pr->ub+1 == it->lb) {
-					pr->ub = it->ub;
-					elements.erase(it);
-				}
-			}
-			else if (it != elements.end() && it->lb == t+1) {
-				--it->lb;
-				if (it != elements.begin() && pr->ub+1 == it->lb) {
-					pr->ub = it->ub;
-					elements.erase(it);
-				}
-			}
-			else {
-				elements.insert(it, interval(t));
-			}
-			++_size;
-			return true;
+		ContIter it = std::lower_bound(elements.begin(), elements.end(), t);
+		if (it != elements.end() && t >= it->lb && t <= it->ub) {
+			return false;
 		}
-		elements.push_back(interval(t));
+		ContIter pr = it-1;
+		if (it != elements.begin() && pr->ub+1 == t) {
+			++pr->ub;
+			if (it != elements.end() && pr->ub+1 == it->lb) {
+				pr->ub = it->ub;
+				elements.erase(it);
+			}
+		}
+		else if (it != elements.end() && it->lb == t+1) {
+			--it->lb;
+			if (it != elements.begin() && pr->ub+1 == it->lb) {
+				pr->ub = it->ub;
+				elements.erase(it);
+			}
+		}
+		else {
+			elements.insert(it, interval(t));
+		}
 		++_size;
 		return true;
 	}
