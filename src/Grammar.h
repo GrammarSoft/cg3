@@ -28,6 +28,8 @@
 #include "Tag.h"
 #include "CompositeTag.h"
 #include "Rule.h"
+#include "sorted_vector.hpp"
+#include "interval_vector.hpp"
 
 namespace CG3 {
 	class Anchor;
@@ -64,11 +66,13 @@ namespace CG3 {
 		std::vector<ContextualTest*> template_list;
 		stdext::hash_map<uint32_t, ContextualTest*> templates;
 
-		uint32Setuint32HashMap rules_by_set;
-		uint32HashSetuint32HashMap rules_by_tag;
+		typedef stdext::hash_map<uint32_t, uint32IntervalVector> rules_by_set_t;
+		rules_by_set_t rules_by_set;
+		typedef stdext::hash_map<uint32_t, uint32IntervalVector> rules_by_tag_t;
+		rules_by_tag_t rules_by_tag;
 		uint32HashSetuint32HashMap sets_by_tag;
 
-		uint32HashSet *rules_any;
+		uint32IntervalVector *rules_any;
 		uint32HashSet *sets_any;
 
 		Set *delimiters;
