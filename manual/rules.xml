@@ -12,6 +12,23 @@
     </screen>
   </para>
 
+  <section id="copy">
+    <title>COPY</title>
+    <indexterm>
+      <primary>COPY</primary>
+    </indexterm>
+    <screen>
+      [wordform] COPY &lt;extra tags&gt; &lt;target&gt; [contextual_tests] ;
+    </screen>
+    <para>
+      Duplicates a reading and adds tags to it. If you don't want to copy previously copied readings,
+      you will have to keep track of that yourself by adding a marker tag.
+    </para>
+    <screen>
+      COPY (¤copy tags) TARGET (target) - (¤copy) ;
+    </screen>
+  </section>
+
   <section id="delimit">
     <title>DELIMIT</title>
     <indexterm>
