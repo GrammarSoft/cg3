@@ -841,7 +841,7 @@ int TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 	}
 
 	result->lines += SKIPWS(p);
-	if (key == K_MAP || key == K_ADD || key == K_REPLACE || key == K_APPEND || key == K_SUBSTITUTE
+	if (key == K_MAP || key == K_ADD || key == K_REPLACE || key == K_APPEND || key == K_SUBSTITUTE || key == K_COPY
 	|| key == K_ADDRELATIONS || key == K_ADDRELATION
 	|| key == K_SETRELATIONS || key == K_SETRELATION
 	|| key == K_REMRELATIONS || key == K_REMRELATION) {
@@ -1659,6 +1659,11 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 			&& ISCHR(*(p+7),'U','u') && ISCHR(*(p+8),'T','t')
 			&& !ISSTRING(p, 9)) {
 			parseRule(p, K_SUBSTITUTE);
+		}
+		// COPY
+		else if (ISCHR(*p,'C','c') && ISCHR(*(p+3),'Y','y') && ISCHR(*(p+1),'O','o') && ISCHR(*(p+2),'P','p')
+			&& !ISSTRING(p, 4)) {
+			parseRule(p, K_COPY);
 		}
 		// JUMP
 		else if (ISCHR(*p,'J','j') && ISCHR(*(p+3),'P','p') && ISCHR(*(p+1),'U','u') && ISCHR(*(p+2),'M','m')
