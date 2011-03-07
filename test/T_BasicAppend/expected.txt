@@ -4,4 +4,9 @@
 	"word" notmeeither 
 	"newword" appended1 @B @A 
 	"newword" appended2 
+	"word" wanted copy copied 
+	"word" wanted copy also-copied 
+	"word" wanted noguard-copied 
+	"word" wanted copy copied noguard-copied 
+	"word" wanted copy also-copied noguard-copied 
 

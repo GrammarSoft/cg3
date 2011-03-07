@@ -658,7 +658,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 					}
 					else if (rule.type == K_APPEND && rule.number != did_append) {
 						Reading *cReading = cohort->allocateAppendReading();
-						numReadings++;
+						++numReadings;
 						index_ruleCohort_no.clear();
 						cReading->hit_by.push_back(rule.number);
 						cReading->noprint = false;
@@ -681,6 +681,34 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 							splitMappings(mappings, *cohort, *cReading, true);
 						}
 						did_append = rule.number;
+						readings_changed = true;
+					}
+					else if (rule.type == K_COPY) {
+						Reading *cReading = cohort->allocateAppendReading();
+						++numReadings;
+						index_ruleCohort_no.clear();
+						cReading->hit_by.push_back(rule.number);
+						cReading->noprint = false;
+						const_foreach (uint32List, reading.tags_list, iter, iter_end) {
+							addTagToReading(*cReading, *iter);
+						}
+						TagList mappings;
+						TagList theTags = getTagList(*rule.maplist);
+						const_foreach (TagList, theTags, tter, tter_end) {
+							uint32_t hash = (*tter)->hash;
+							if ((*tter)->type & T_MAPPING || (*tter)->tag[0] == grammar->mapping_prefix) {
+								mappings.push_back(*tter);
+							}
+							else {
+								hash = addTagToReading(*cReading, hash);
+							}
+							updateValidRules(rules, intersects, hash, reading);
+							iter_rules = intersects.find(rule.number);
+							iter_rules_end = intersects.end();
+						}
+						if (!mappings.empty()) {
+							splitMappings(mappings, *cohort, *cReading, true);
+						}
 						readings_changed = true;
 					}
 					else if (type == K_SETPARENT || type == K_SETCHILD) {
