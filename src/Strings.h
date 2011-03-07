@@ -76,6 +76,7 @@ namespace CG3 {
 		K_REMCOHORT,
 		K_STATIC_SETS,
 		K_UNMAP,
+		K_COPY,
 		KEYWORD_COUNT
 	};
 

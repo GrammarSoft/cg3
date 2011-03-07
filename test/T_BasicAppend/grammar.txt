@@ -4,3 +4,7 @@ BEFORE-SECTIONS
 
 "<word>" APPEND ("newword" appended1 @A @B) (*) (NOT 0 (appended1)) ;
 "<word>" APPEND ("newword" appended2) (*) (NOT 0 (appended2)) ;
+
+COPY (copy copied) (wanted) - (copy) ;
+COPY (copy also-copied) (wanted) - (copy) ;
+COPY (noguard-copied) (wanted) ;
