@@ -7,7 +7,7 @@
 "<cow>"
 	"cow" N NOM SG @bothGoodGood 
 "<with>"
-	"with" PREP @beforeNccN @artnGood 
+	"with" PREP @beforeNccN @artnGood @artnNegateGood @artnNegateGoodOffset 
 "<biscuits>"
 	"biscuit" N NOM PL @startNccN 
 "<and>"
