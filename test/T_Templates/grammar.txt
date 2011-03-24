@@ -33,6 +33,9 @@ ADD (@artnGood) (PREP) IF (-1 T:ArtN) ;
 ADD (@artnBad) (PREP) IF (-2 T:ArtN) ;
 ADD (@artnBad) (PREP) IF (1 T:ArtN) ;
 ADD (@artnBad) (PREP) IF (2 T:ArtN) ;
+ADD (@artnNegateGood) (PREP) IF (NEGATE T:ArtN) ;
+ADD (@artnNegateGoodOffset) (PREP) IF (NEGATE 1 T:ArtN) ;
+ADD (@artnNegateBad) (PREP) IF (NEGATE -1 T:ArtN) ;
 
 ## --- Following is an internal compiler stress test.
 

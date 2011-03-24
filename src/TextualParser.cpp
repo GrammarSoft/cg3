@@ -483,27 +483,26 @@ int TextualParser::parseContextualTestList(UChar *& p, Rule *rule, ContextualTes
 		t = rule->allocateContextualTest();
 	}
 	t->line = result->lines;
-	bool negated = false, negative = false, all = false, none = false;
 
 	result->lines += SKIPWS(p);
 	if (ux_simplecasecmp(p, stringbits[S_TEXTNEGATE].getTerminatedBuffer(), stringbits[S_TEXTNEGATE].length())) {
 		p += stringbits[S_TEXTNEGATE].length();
-		negated = true;
+		t->pos |= POS_NEGATE;
 	}
 	result->lines += SKIPWS(p);
 	if (ux_simplecasecmp(p, stringbits[S_ALL].getTerminatedBuffer(), stringbits[S_ALL].length())) {
 		p += stringbits[S_ALL].length();
-		all = true;
+		t->pos |= POS_ALL;
 	}
 	result->lines += SKIPWS(p);
 	if (ux_simplecasecmp(p, stringbits[S_NONE].getTerminatedBuffer(), stringbits[S_NONE].length())) {
 		p += stringbits[S_NONE].length();
-		none = true;
+		t->pos |= POS_NONE;
 	}
 	result->lines += SKIPWS(p);
 	if (ux_simplecasecmp(p, stringbits[S_TEXTNOT].getTerminatedBuffer(), stringbits[S_TEXTNOT].length())) {
 		p += stringbits[S_TEXTNOT].length();
-		negative = true;
+		t->pos |= POS_NOT;
 	}
 	result->lines += SKIPWS(p);
 
@@ -562,18 +561,6 @@ int TextualParser::parseContextualTestList(UChar *& p, Rule *rule, ContextualTes
 		goto label_parseTemplateRef;
 	}
 	else {
-		if (all) {
-			t->pos |= POS_ALL;
-		}
-		if (none) {
-			t->pos |= POS_NONE;
-		}
-		if (negated) {
-			t->pos |= POS_NEGATE;
-		}
-		if (negative) {
-			t->pos |= POS_NOT;
-		}
 		parseContextualTestPosition(p, *t);
 		p = n;
 		if (t->pos & (POS_DEP_CHILD|POS_DEP_PARENT|POS_DEP_SIBLING)) {
