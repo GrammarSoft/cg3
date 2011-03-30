@@ -237,6 +237,7 @@ indentation."
 
 (defvar cg-occur-history nil)
 (defvar cg-occur-prefix-history nil)
+(defvar cg-goto-history nil)
 
 (defun cg-permute (input)
   "From http://www.emacswiki.org/emacs/StringPermutations"
@@ -295,8 +296,39 @@ etc."
       (occur (concat "\\(LIST\\|SET\\) +" prefix ".*\\(" perm-disj "\\).*="))
       (setq regexp-history tmp))))
 
+(defun cg-goto-rule (&optional input)
+  "Go to the line number of the rule described by `input', where
+`input' is the rule info from vislcg3 --trace.  E.g. if `input'
+is \"SELECT:1022:rulename\", go to the rule on line number
+1022. Interactively, use a prefix argument to paste `input'
+manually, otherwise this function uses the most recently copied
+line in the X clipboard.
+
+This makes switching between the terminal and the file slightly
+faster (since double-clicking the rule info -- in Konsole at
+least -- selects the whole string \"SELECT:1022:rulename\").
+
+Ideally we should have some sort of comint interpreter to make
+trace output clickable, but since we're often switching between
+_several_ CG files in a pipeline, that could get complicated
+before getting useful..."
+  (interactive (list (when current-prefix-arg
+		       (cg-read-arg "Paste rule info from --trace here: "
+				    cg-goto-history))))
+  (let ((errmsg (if input (concat "Unrecognised rule/trace format: " input)
+		  "X clipboard does not seem to contain vislcg3 --trace rule info"))
+	(rule (or input (x-selection-value 'CLIPBOARD))))
+    (if (string-match
+	 "\\(\\(select\\|remove\\|map\\|add\\|substitute\\):\\)?\\([0-9]+\\)"
+	 rule)
+	(progn (goto-line (string-to-number (match-string 3 rule)))
+	       (setq cg-goto-history (cons rule cg-goto-history)))
+      (message errmsg))))
+
+
 ;;; Keybindings --------------------------------------------------------------
 (define-key cg-mode-map (kbd "C-c C-o") 'cg-occur-list)
+(define-key cg-mode-map (kbd "C-c C-c") 'cg-goto-rule)
 
 ;;; Run hooks -----------------------------------------------------------------
 (run-hooks 'cg-load-hook)
