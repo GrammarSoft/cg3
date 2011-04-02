@@ -199,10 +199,11 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 
 		// ToDo: Make better use of rules_by_tag; except, I can't remember why I wrote this comment...
 
+		CohortSet& s = current.rule_to_cohorts.find(rule.number)->second;
 		if (debug_level > 1) {
-			std::cout << "DEBUG: " << current.rule_to_cohorts.find(rule.number)->second.size() << "/" << current.cohorts.size() << " = " << double(current.rule_to_cohorts.find(rule.number)->second.size())/double(current.cohorts.size()) << std::endl;
+			std::cout << "DEBUG: " << s.size() << "/" << current.cohorts.size() << " = " << double(s.size())/double(current.cohorts.size()) << std::endl;
 		}
-		for (CohortSet::iterator rocit = current.rule_to_cohorts.find(rule.number)->second.begin() ; rocit != current.rule_to_cohorts.find(rule.number)->second.end() ; ) {
+		for (CohortSet::iterator rocit = s.begin(), rocite = s.end() ; rocit != rocite ; ) {
 			Cohort *cohort = *rocit;
 			++rocit;
 			// If the current cohort is the initial >>> one, skip it.
