@@ -1,12 +1,24 @@
 Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual C++ Express 2010
+# Visual Studio 2010
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vislcg3", "vislcg3.vcxproj", "{439A194D-EC3B-42A4-8BD2-CADD9CB6087C}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cg-comp", "cg_comp.vcxproj", "{78B338E7-9AF6-4CB7-818C-9A4E2765D527}"
+	ProjectSection(ProjectDependencies) = postProject
+		{439A194D-EC3B-42A4-8BD2-CADD9CB6087C} = {439A194D-EC3B-42A4-8BD2-CADD9CB6087C}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cg-proc", "cg_proc.vcxproj", "{2498EF8F-0AEF-4EBD-9C5B-5B7FBADFAD9F}"
+	ProjectSection(ProjectDependencies) = postProject
+		{439A194D-EC3B-42A4-8BD2-CADD9CB6087C} = {439A194D-EC3B-42A4-8BD2-CADD9CB6087C}
+		{78B338E7-9AF6-4CB7-818C-9A4E2765D527} = {78B338E7-9AF6-4CB7-818C-9A4E2765D527}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cg-conv", "cg_conv.vcxproj", "{D30E6E4E-AFB3-4A83-88AF-42471438B29B}"
+	ProjectSection(ProjectDependencies) = postProject
+		{439A194D-EC3B-42A4-8BD2-CADD9CB6087C} = {439A194D-EC3B-42A4-8BD2-CADD9CB6087C}
+		{2498EF8F-0AEF-4EBD-9C5B-5B7FBADFAD9F} = {2498EF8F-0AEF-4EBD-9C5B-5B7FBADFAD9F}
+		{78B338E7-9AF6-4CB7-818C-9A4E2765D527} = {78B338E7-9AF6-4CB7-818C-9A4E2765D527}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
