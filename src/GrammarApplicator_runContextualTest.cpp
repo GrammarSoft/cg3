@@ -92,7 +92,7 @@ Cohort *GrammarApplicator::runSingleTest(SingleWindow *sWindow, size_t i, const 
 		*retval = false;
 		return 0;
 	}
-	Cohort *cohort = sWindow->cohorts.at(i);
+	Cohort *cohort = sWindow->cohorts[i];
 	return runSingleTest(cohort, test, brk, retval, deep, origin);
 }
 
@@ -121,7 +121,7 @@ Cohort *getCohortInWindow(SingleWindow *& sWindow, size_t position, const Contex
 		}
 	}
 	if (pos >= 0 && pos < int32_t(sWindow->cohorts.size())) {
-		cohort = sWindow->cohorts.at(pos);
+		cohort = sWindow->cohorts[pos];
 	}
 	return cohort;
 }
@@ -270,7 +270,7 @@ Cohort *GrammarApplicator::runContextualTest(SingleWindow *sWindow, size_t posit
 	}
 	else {
 		if (test->pos & POS_PASS_ORIGIN) {
-			origin = sWindow->cohorts.at(0);
+			origin = sWindow->cohorts[0];
 		}
 		if (deep) {
 			*deep = cohort;
@@ -446,7 +446,7 @@ label_gotACohort:
 		cohort = 0;
 	}
 	else if (!cohort) {
-		cohort = sWindow->cohorts.at(0);
+		cohort = sWindow->cohorts[0];
 	}
 
 	return cohort;
@@ -496,7 +496,7 @@ Cohort *GrammarApplicator::runDependencyTest(SingleWindow *sWindow, Cohort *curr
 
 		Cohort *cohort = sWindow->parent->cohort_map.find(current->dep_parent)->second;
 		if (current->dep_parent == 0) {
-			cohort = current->parent->cohorts.at(0);
+			cohort = current->parent->cohorts[0];
 		}
 		bool good = true;
 		if (current->parent != cohort->parent) {
@@ -528,7 +528,7 @@ Cohort *GrammarApplicator::runDependencyTest(SingleWindow *sWindow, Cohort *curr
 		}
 		else {
 			if (current->dep_parent == 0) {
-				deps = &(current->parent->cohorts.at(0)->dep_children);
+				deps = &(current->parent->cohorts[0]->dep_children);
 			}
 			else {
 				std::map<uint32_t,Cohort*>::iterator it = current->parent->parent->cohort_map.find(current->dep_parent);
@@ -616,10 +616,10 @@ Cohort *GrammarApplicator::runParenthesisTest(SingleWindow *sWindow, const Cohor
 	bool brk = false;
 	Cohort *cohort = 0;
 	if (test->pos & POS_LEFT_PAR) {
-		cohort = sWindow->cohorts.at(par_left_pos);
+		cohort = sWindow->cohorts[par_left_pos];
 	}
 	else if (test->pos & POS_RIGHT_PAR) {
-		cohort = sWindow->cohorts.at(par_right_pos);
+		cohort = sWindow->cohorts[par_right_pos];
 	}
 	tmc = runSingleTest(cohort, test, &brk, &retval, deep, origin);
 	if (retval) {

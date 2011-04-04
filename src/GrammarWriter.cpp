@@ -79,7 +79,7 @@ void GrammarWriter::printSet(UFILE *output, const Set& curset) {
 	else {
 		used_sets.insert(curset.hash);
 		for (uint32_t i=0;i<curset.sets.size();i++) {
-			printSet(output, *(grammar->sets_by_contents.find(curset.sets.at(i))->second));
+			printSet(output, *(grammar->sets_by_contents.find(curset.sets[i])->second));
 		}
 		if (statistics) {
 			if (ceil(curset.total_time) == floor(curset.total_time)) {
@@ -94,9 +94,9 @@ void GrammarWriter::printSet(UFILE *output, const Set& curset) {
 			u_fprintf(output, "# ");
 		}
 		u_fprintf(output, "SET %S = ", n);
-		u_fprintf(output, "%S ", grammar->sets_by_contents.find(curset.sets.at(0))->second->name.c_str());
+		u_fprintf(output, "%S ", grammar->sets_by_contents.find(curset.sets[0])->second->name.c_str());
 		for (uint32_t i=0;i<curset.sets.size()-1;i++) {
-			u_fprintf(output, "%S %S ", stringbits[curset.set_ops.at(i)].getTerminatedBuffer(), grammar->sets_by_contents.find(curset.sets.at(i+1))->second->name.c_str());
+			u_fprintf(output, "%S %S ", stringbits[curset.set_ops[i]].getTerminatedBuffer(), grammar->sets_by_contents.find(curset.sets[i+1])->second->name.c_str());
 		}
 		u_fprintf(output, " ;\n\n");
 	}

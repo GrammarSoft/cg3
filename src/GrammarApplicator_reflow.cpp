@@ -205,19 +205,19 @@ bool GrammarApplicator::attachParentChild(Cohort& parent, Cohort& child, bool al
 void GrammarApplicator::reflowDependencyWindow(uint32_t max) {
 	bool did_dep = false;
 	if (gWindow->dep_window.empty()) {
-		gWindow->dep_window[0] = gWindow->current->cohorts.at(0);
+		gWindow->dep_window[0] = gWindow->current->cohorts[0];
 	}
 	else if (gWindow->dep_window.find(0) == gWindow->dep_window.end()) {
 		// This has to be done in 2 steps or it will segfault on Linux for some reason...
 		// Turns out g++ evaluates left side of = first, and MSVC++ does right side first, so g++ accessed its own newly created [0] at .begin()
-		Cohort *tmp = gWindow->dep_window.begin()->second->parent->cohorts.at(0);
+		Cohort *tmp = gWindow->dep_window.begin()->second->parent->cohorts[0];
 		gWindow->dep_window[0] = tmp;
 	}
 	if (gWindow->cohort_map.empty()) {
-		gWindow->cohort_map[0] = gWindow->current->cohorts.at(0);
+		gWindow->cohort_map[0] = gWindow->current->cohorts[0];
 	}
 	else if (gWindow->cohort_map.find(0) == gWindow->cohort_map.end()) {
-		Cohort *tmp = gWindow->cohort_map.begin()->second->parent->cohorts.at(0);
+		Cohort *tmp = gWindow->cohort_map.begin()->second->parent->cohorts[0];
 		gWindow->cohort_map[0] = tmp;
 	}
 
@@ -617,8 +617,8 @@ Cohort *GrammarApplicator::delimitAt(SingleWindow& current, Cohort *cohort) {
 	uint32_t c = cohort->local_number;
 	size_t nc = c+1;
 	for ( ; nc < current.cohorts.size() ; nc++) {
-		current.cohorts.at(nc)->parent = nwin;
-		nwin->appendCohort(current.cohorts.at(nc));
+		current.cohorts[nc]->parent = nwin;
+		nwin->appendCohort(current.cohorts[nc]);
 	}
 	c = current.cohorts.size()-c;
 	for (nc = 0 ; nc < c-1 ; nc++) {

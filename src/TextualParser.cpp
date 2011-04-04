@@ -199,8 +199,8 @@ Set *TextualParser::parseSetInline(UChar *& p, Set *s) {
 				}
 
 				if (!set_ops.empty() && (set_ops.back() == S_SET_ISECT_U || set_ops.back() == S_SET_SYMDIFF_U)) {
-					const AnyTagSet a = result->getSet(sets.at(sets.size()-1))->getTagList(*result);
-					const AnyTagSet b = result->getSet(sets.at(sets.size()-2))->getTagList(*result);
+					const AnyTagSet a = result->getSet(sets[sets.size()-1])->getTagList(*result);
+					const AnyTagSet b = result->getSet(sets[sets.size()-2])->getTagList(*result);
 
 					AnyTagList r;
 					if (set_ops.back() == S_SET_ISECT_U) {
