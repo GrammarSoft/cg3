@@ -175,7 +175,7 @@ void GrammarApplicator::index() {
 			for (uint32_t e=0 ; e<=n ; e++) {
 				const_foreach (RuleVector, grammar->rules, iter_rules, iter_rules_end) {
 					const Rule *r = *iter_rules;
-					if (r->section != (int32_t)sections.at(e)-1) {
+					if (r->section != (int32_t)sections[e]-1) {
 						continue;
 					}
 					uint32IntervalVector& m = runsections[n];
@@ -297,7 +297,7 @@ void GrammarApplicator::printReading(const Reading *reading, UFILE *output) {
 		pr = reading->parent;
 		if (reading->parent->dep_parent != std::numeric_limits<uint32_t>::max()) {
 			if (reading->parent->dep_parent == 0) {
-				pr = reading->parent->parent->cohorts.at(0);
+				pr = reading->parent->parent->cohorts[0];
 			}
 			else if (reading->parent->parent->parent->cohort_map.find(reading->parent->dep_parent) != reading->parent->parent->parent->cohort_map.end()) {
 				pr = reading->parent->parent->parent->cohort_map[reading->parent->dep_parent];
@@ -433,7 +433,7 @@ void GrammarApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 
 	uint32_t cs = (uint32_t)window->cohorts.size();
 	for (uint32_t c=1 ; c < cs ; c++) {
-		Cohort *cohort = window->cohorts.at(c);
+		Cohort *cohort = window->cohorts[c];
 		printCohort(cohort, output);
 	}
 	u_fputc('\n', output);

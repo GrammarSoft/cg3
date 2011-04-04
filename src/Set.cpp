@@ -102,10 +102,10 @@ uint32_t Set::rehash() {
 	else {
 		retval = hash_sdbm_uint32_t(2683, retval); // Combat hash-collisions
 		for (uint32_t i=0;i<sets.size();i++) {
-			retval = hash_sdbm_uint32_t(sets.at(i), retval);
+			retval = hash_sdbm_uint32_t(sets[i], retval);
 		}
 		for (uint32_t i=0;i<set_ops.size();i++) {
-			retval = hash_sdbm_uint32_t(set_ops.at(i), retval);
+			retval = hash_sdbm_uint32_t(set_ops[i], retval);
 		}
 	}
 	hash = retval;
@@ -148,7 +148,7 @@ void Set::reindex(Grammar& grammar) {
 	}
 	else {
 		for (uint32_t i=0;i<sets.size();i++) {
-			Set *set = grammar.sets_by_contents.find(sets.at(i))->second;
+			Set *set = grammar.sets_by_contents.find(sets[i])->second;
 			set->reindex(grammar);
 			if (set->type & ST_SPECIAL) {
 				type |= ST_SPECIAL;
@@ -185,7 +185,7 @@ void Set::markUsed(Grammar& grammar) {
 	}
 	else {
 		for (uint32_t i=0;i<sets.size();i++) {
-			Set *set = grammar.sets_by_contents.find(sets.at(i))->second;
+			Set *set = grammar.sets_by_contents.find(sets[i])->second;
 			set->markUsed(grammar);
 		}
 	}

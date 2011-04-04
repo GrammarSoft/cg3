@@ -213,8 +213,8 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 		for (uint32_t j=0 ; j<num_single_tags ; j++) {
 			fread(&u32tmp, sizeof(uint32_t), 1, input);
 			u32tmp = (uint32_t)ntohl(u32tmp);
-			curcomptag->tags.push_back(grammar->single_tags_list.at(u32tmp));
-			curcomptag->tags_set.insert(grammar->single_tags_list.at(u32tmp));
+			curcomptag->tags.push_back(grammar->single_tags_list[u32tmp]);
+			curcomptag->tags_set.insert(grammar->single_tags_list[u32tmp]);
 		}
 		grammar->tags[curcomptag->hash] = curcomptag;
 		grammar->tags_list[curcomptag->number] = curcomptag;
@@ -285,7 +285,7 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 				fread(&u32tmp, sizeof(uint32_t), 1, input);
 				u32tmp = (uint32_t)ntohl(u32tmp);
 				if (u8tmp == ANYTAG_TAG) {
-					Tag *tag = grammar->single_tags_list.at(u32tmp);
+					Tag *tag = grammar->single_tags_list[u32tmp];
 					s->single_tags.insert(tag);
 					s->single_tags_hash.insert(tag->hash);
 					s->tags_list.push_back(tag);
@@ -294,7 +294,7 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 					}
 				}
 				else {
-					CompositeTag *tag = grammar->tags_list.at(u32tmp);
+					CompositeTag *tag = grammar->tags_list[u32tmp];
 					s->tags.insert(tag);
 					s->tags_list.push_back(tag);
 				}
@@ -438,11 +438,11 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 		}
 		if (fields & (1 << 13)) {
 			fread(&u32tmp, sizeof(uint32_t), 1, input);
-			r->maplist = grammar->sets_list.at((uint32_t)ntohl(u32tmp));
+			r->maplist = grammar->sets_list[(uint32_t)ntohl(u32tmp)];
 		}
 		if (fields & (1 << 14)) {
 			fread(&u32tmp, sizeof(uint32_t), 1, input);
-			r->sublist = grammar->sets_list.at((uint32_t)ntohl(u32tmp));
+			r->sublist = grammar->sets_list[(uint32_t)ntohl(u32tmp)];
 		}
 		if (fields & (1 << 15)) {
 			fread(&u32tmp, sizeof(uint32_t), 1, input);
