@@ -584,7 +584,7 @@ bool GrammarApplicator::doesSetMatchReading(const Reading& reading, const uint32
 			const Set& uset = *(iter->second);
 			const size_t size = uset.sets.size();
 			for (size_t i=0;i<size;++i) {
-				iter = grammar->sets_by_contents.find(uset.sets.at(i));
+				iter = grammar->sets_by_contents.find(uset.sets[i]);
 				const Set& tset = *(iter->second);
 				if (doesSetMatchReading(reading, tset.hash, bypass_index, ((theset.type & ST_TAG_UNIFY)!=0)|unif_mode)) {
 					unif_sets.insert(tset.hash);
@@ -609,33 +609,34 @@ bool GrammarApplicator::doesSetMatchReading(const Reading& reading, const uint32
 		// Loop through the sub-sets and apply the set operators
 		const size_t size = theset.sets.size();
 		for (size_t i=0;i<size;++i) {
-			bool match = doesSetMatchReading(reading, theset.sets.at(i), bypass_index, ((theset.type & ST_TAG_UNIFY)!=0)|unif_mode);
+			bool match = doesSetMatchReading(reading, theset.sets[i], bypass_index, ((theset.type & ST_TAG_UNIFY)!=0)|unif_mode);
 			bool failfast = false;
 			// Operator OR does not modify match, so simply skip it.
 			// The result of doing so means that the other operators gain precedence.
-			while (i < size-1 && theset.set_ops.at(i) != S_OR) {
-				switch (theset.set_ops.at(i)) {
+			while (i < size-1 && theset.set_ops[i] != S_OR) {
+				switch (theset.set_ops[i]) {
 					case S_PLUS:
 						if (match) {
-							match = doesSetMatchReading(reading, theset.sets.at(i+1), bypass_index, ((theset.type & ST_TAG_UNIFY)!=0)|unif_mode);
+							match = doesSetMatchReading(reading, theset.sets[i+1], bypass_index, ((theset.type & ST_TAG_UNIFY)!=0)|unif_mode);
 						}
 						break;
+					// ToDo: Document: Failfast makes a difference in A OR B ^ C OR D, where - does not.
 					case S_FAILFAST:
-						if (doesSetMatchReading(reading, theset.sets.at(i+1), bypass_index, ((theset.type & ST_TAG_UNIFY)!=0)|unif_mode)) {
+						if (doesSetMatchReading(reading, theset.sets[i+1], bypass_index, ((theset.type & ST_TAG_UNIFY)!=0)|unif_mode)) {
 							match = false;
 							failfast = true;
 						}
 						break;
 					case S_MINUS:
 						if (match) {
-							if (doesSetMatchReading(reading, theset.sets.at(i+1), bypass_index, ((theset.type & ST_TAG_UNIFY)!=0)|unif_mode)) {
+							if (doesSetMatchReading(reading, theset.sets[i+1], bypass_index, ((theset.type & ST_TAG_UNIFY)!=0)|unif_mode)) {
 								match = false;
 							}
 						}
 						break;
 					case S_NOT:
 						if (!match) {
-							if (!doesSetMatchReading(reading, theset.sets.at(i+1), bypass_index, ((theset.type & ST_TAG_UNIFY)!=0)|unif_mode)) {
+							if (!doesSetMatchReading(reading, theset.sets[i+1], bypass_index, ((theset.type & ST_TAG_UNIFY)!=0)|unif_mode)) {
 								match = true;
 							}
 						}
