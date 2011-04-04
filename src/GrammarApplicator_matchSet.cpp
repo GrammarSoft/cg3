@@ -580,7 +580,7 @@ bool GrammarApplicator::doesSetMatchReading(const Reading& reading, const uint32
 		// ToDo: Handle multiple active &&sets at a time.
 		// First time, figure out all the sub-sets that match the reading and store them for later comparison
 		if (unif_sets_firstrun) {
-			Setuint32HashMap::const_iterator iter = grammar->sets_by_contents.find(theset.sets.at(0));
+			Setuint32HashMap::const_iterator iter = grammar->sets_by_contents.find(theset.sets[0]);
 			const Set& uset = *(iter->second);
 			const size_t size = uset.sets.size();
 			for (size_t i=0;i<size;++i) {

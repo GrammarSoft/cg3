@@ -254,7 +254,7 @@ void Grammar::destroySet(Set *set) {
 
 void Grammar::addSetToList(Set *s) {
 	if (s->number == 0) {
-		if (sets_list.empty() || sets_list.at(0) != s) {
+		if (sets_list.empty() || sets_list[0] != s) {
 			if (!s->sets.empty()) {
 				foreach (uint32Vector, s->sets, sit, sit_end) {
 					addSetToList(getSet(*sit));
@@ -792,7 +792,7 @@ void Grammar::indexSetToRule(uint32_t r, Set *s) {
 	}
 	else {
 		for (uint32_t i=0;i<s->sets.size();i++) {
-			Set *set = sets_by_contents.find(s->sets.at(i))->second;
+			Set *set = sets_by_contents.find(s->sets[i])->second;
 			indexSetToRule(r, set);
 		}
 	}
@@ -828,7 +828,7 @@ void Grammar::indexSets(uint32_t r, Set *s) {
 	}
 	else {
 		for (uint32_t i=0;i<s->sets.size();i++) {
-			Set *set = sets_by_contents.find(s->sets.at(i))->second;
+			Set *set = sets_by_contents.find(s->sets[i])->second;
 			indexSets(r, set);
 		}
 	}
