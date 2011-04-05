@@ -25,6 +25,7 @@
 
 #include "stdafx.h"
 #include "Reading.h"
+#include "sorted_vector.hpp"
 
 namespace CG3 {
 	class SingleWindow;
@@ -89,7 +90,7 @@ namespace CG3 {
 		}
 	};
 
-	typedef std::set<Cohort*, compare_Cohort> CohortSet;
+	typedef sorted_vector<Cohort*, compare_Cohort> CohortSet;
 	typedef stdext::hash_map<uint32_t, CohortSet> uint32ToCohortsMap;
 }
 
