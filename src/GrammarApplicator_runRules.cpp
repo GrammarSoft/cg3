@@ -51,7 +51,8 @@ bool GrammarApplicator::updateRuleToCohorts(Cohort& c, const uint32_t& rsit) {
 	return current->valid_rules.insert(rsit);
 }
 
-void GrammarApplicator::updateValidRules(const uint32IntervalVector& rules, uint32IntervalVector& intersects, const uint32_t& hash, Reading& reading) {
+bool GrammarApplicator::updateValidRules(const uint32IntervalVector& rules, uint32IntervalVector& intersects, const uint32_t& hash, Reading& reading) {
+	size_t os = intersects.size();
 	Grammar::rules_by_tag_t::const_iterator it = grammar->rules_by_tag.find(hash);
 	if (it != grammar->rules_by_tag.end()) {
 		Cohort& c = *(reading.parent);
@@ -61,6 +62,7 @@ void GrammarApplicator::updateValidRules(const uint32IntervalVector& rules, uint
 			}
 		}
 	}
+	return (os != intersects.size());
 }
 
 void GrammarApplicator::indexSingleWindow(SingleWindow& current) {
@@ -203,7 +205,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 		if (debug_level > 1) {
 			std::cout << "DEBUG: " << s.size() << "/" << current.cohorts.size() << " = " << double(s.size())/double(current.cohorts.size()) << std::endl;
 		}
-		for (CohortSet::iterator rocit = s.begin(), rocite = s.end() ; rocit != rocite ; ) {
+		for (CohortSet::const_iterator rocit = s.begin() ; rocit != s.end() ; ) {
 			Cohort *cohort = *rocit;
 			++rocit;
 			// If the current cohort is the initial >>> one, skip it.
@@ -407,14 +409,14 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 				else {
 					rule.num_fail++;
 				}
-				readings_plain[reading->hash_plain] = reading;
+				readings_plain.insert(std::make_pair(reading->hash_plain,reading));
 			}
 
 			// If none of the readings were valid targets, remove this cohort from the rule's possible cohorts.
 			if (num_active == 0 && (num_iff == 0 || rule.type != K_IFF)) {
 				if (!matched_target) {
 					--rocit; // We have already incremented rocit earlier, so take one step back...
-					current.rule_to_cohorts.find(rule.number)->second.erase(rocit++); // ...and one step forward again
+					rocit = current.rule_to_cohorts.find(rule.number)->second.erase(rocit); // ...and one step forward again
 				}
 				continue;
 			}
@@ -531,9 +533,10 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 							else {
 								hash = addTagToReading(reading, hash);
 							}
-							updateValidRules(rules, intersects, hash, reading);
-							iter_rules = intersects.find(rule.number);
-							iter_rules_end = intersects.end();
+							if (updateValidRules(rules, intersects, hash, reading)) {
+								iter_rules = intersects.find(rule.number);
+								iter_rules_end = intersects.end();
+							}
 						}
 						if (!mappings.empty()) {
 							splitMappings(mappings, *cohort, reading, rule.type == K_MAP);
@@ -569,9 +572,10 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 							else {
 								hash = addTagToReading(reading, hash);
 							}
-							updateValidRules(rules, intersects, hash, reading);
-							iter_rules = intersects.find(rule.number);
-							iter_rules_end = intersects.end();
+							if (updateValidRules(rules, intersects, hash, reading)) {
+								iter_rules = intersects.find(rule.number);
+								iter_rules_end = intersects.end();
+							}
 						}
 						if (!mappings.empty()) {
 							splitMappings(mappings, *cohort, reading, true);
@@ -644,9 +648,10 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 								else {
 									reading.tags_list.insert(tpos, (*tter)->hash);
 								}
-								updateValidRules(rules, intersects, (*tter)->hash, reading);
-								iter_rules = intersects.find(rule.number);
-								iter_rules_end = intersects.end();
+								if (updateValidRules(rules, intersects, (*tter)->hash, reading)) {
+									iter_rules = intersects.find(rule.number);
+									iter_rules_end = intersects.end();
+								}
 							}
 							reflowReading(reading);
 							if (!mappings.empty()) {
@@ -674,9 +679,10 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 							else {
 								hash = addTagToReading(*cReading, hash);
 							}
-							updateValidRules(rules, intersects, hash, reading);
-							iter_rules = intersects.find(rule.number);
-							iter_rules_end = intersects.end();
+							if (updateValidRules(rules, intersects, hash, reading)) {
+								iter_rules = intersects.find(rule.number);
+								iter_rules_end = intersects.end();
+							}
 						}
 						if (!mappings.empty()) {
 							splitMappings(mappings, *cohort, *cReading, true);
@@ -703,9 +709,10 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 							else {
 								hash = addTagToReading(*cReading, hash);
 							}
-							updateValidRules(rules, intersects, hash, reading);
-							iter_rules = intersects.find(rule.number);
-							iter_rules_end = intersects.end();
+							if (updateValidRules(rules, intersects, hash, reading)) {
+								iter_rules = intersects.find(rule.number);
+								iter_rules_end = intersects.end();
+							}
 						}
 						if (!mappings.empty()) {
 							splitMappings(mappings, *cohort, *cReading, true);

@@ -25,16 +25,18 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
+#include <functional>
 #include <stdint.h> // C99 or C++0x or C++ TR1 will have this header. ToDo: Change to <cstdint> when C++0x broader support gets under way.
 
 namespace CG3 {
 
-template<typename T>
+template<typename T, typename Comp = std::less<T> >
 class sorted_vector {
 private:
 	typedef typename std::vector<T> Cont;
 	typedef typename Cont::iterator iterator;
 	Cont elements;
+	Comp comp;
 
 public:
 	typedef typename Cont::const_iterator const_iterator;
@@ -57,16 +59,18 @@ public:
 			elements.push_back(t);
 			return true;
 		}
-		else if (elements.back() < t) {
+		/*
+		else if (comp(elements.back(), t)) {
 			elements.push_back(t);
 			return true;
 		}
-		else if (t < elements.front()) {
+		else if (comp(t, elements.front())) {
 			elements.insert(elements.begin(), t);
 			return true;
 		}
-		iterator it = std::lower_bound(elements.begin()+1, elements.end(), t);
-		if (it == elements.end() || *it != t) {
+		//*/
+		iterator it = std::lower_bound(elements.begin(), elements.end(), t, comp);
+		if (it == elements.end() || comp(*it, t) || comp(t, *it)) {
 			elements.insert(it, t);
 			return true;
 		}
@@ -81,32 +85,37 @@ public:
 		if (elements.empty()) {
 			return false;
 		}
-		else if (elements.back() < t) {
+		else if (comp(elements.back(), t)) {
 			return false;
 		}
-		else if (t < elements.front()) {
+		else if (comp(t, elements.front())) {
 			return false;
 		}
 		iterator it = lower_bound(t);
-		if (it != elements.end() && *it == t) {
+		if (it != elements.end() && !comp(*it, t) && !comp(t, *it)) {
 			elements.erase(it);
 			return true;
 		}
 		return false;
 	}
 
+	const_iterator erase(const_iterator it) {
+		size_type o = std::distance<const_iterator>(elements.begin(), it);
+		return elements.erase(elements.begin() + o);
+	}
+
 	const_iterator find(T t) const {
 		if (elements.empty()) {
 			return elements.end();
 		}
-		else if (elements.back() < t) {
+		else if (comp(elements.back(), t)) {
 			return elements.end();
 		}
-		else if (t < elements.front()) {
+		else if (comp(t, elements.front())) {
 			return elements.end();
 		}
 		const_iterator it = lower_bound(t);
-		if (it != elements.end() && *it != t) {
+		if (it != elements.end() && (comp(*it, t) || comp(t, *it))) {
 			return elements.end();
 		}
 		return it;
@@ -129,15 +138,15 @@ public:
 	}
 
 	iterator lower_bound(T t) {
-		return std::lower_bound(elements.begin(), elements.end(), t);
+		return std::lower_bound(elements.begin(), elements.end(), t, comp);
 	}
 
 	const_iterator lower_bound(T t) const {
-		return std::lower_bound(elements.begin(), elements.end(), t);
+		return std::lower_bound(elements.begin(), elements.end(), t, comp);
 	}
 
 	const_iterator upper_bound(T t) const {
-		return std::upper_bound(elements.begin(), elements.end(), t);
+		return std::upper_bound(elements.begin(), elements.end(), t, comp);
 	}
 
 	size_type size() const {

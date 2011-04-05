@@ -87,7 +87,7 @@ namespace CG3 {
 	protected:
 		Cohort *m_origcohort;
 		CohortSet m_cohortset;
-		CohortSet::iterator m_cohortsetiter;
+		CohortSet::const_iterator m_cohortsetiter;
 	};
 
 	class MultiCohortIterator : public std::iterator<std::input_iterator_tag, Cohort*> {

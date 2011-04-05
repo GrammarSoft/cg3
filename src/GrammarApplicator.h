@@ -159,7 +159,7 @@ namespace CG3 {
 		void indexSingleWindow(SingleWindow& current);
 		void runGrammarOnWindow();
 		uint32_t runGrammarOnSingleWindow(SingleWindow& current);
-		void updateValidRules(const uint32IntervalVector& rules, uint32IntervalVector& intersects, const uint32_t& hash, Reading& reading);
+		bool updateValidRules(const uint32IntervalVector& rules, uint32IntervalVector& intersects, const uint32_t& hash, Reading& reading);
 		uint32_t runRulesOnSingleWindow(SingleWindow& current, const uint32IntervalVector& rules);
 
 		Cohort *runSingleTest(Cohort *cohort, const ContextualTest *test, bool *brk, bool *retval, Cohort **deep = 0, Cohort *origin = 0);
