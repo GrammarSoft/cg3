@@ -211,6 +211,7 @@ int GrammarWriter::writeGrammar(UFILE *output) {
 	return 0;
 }
 
+// ToDo: Make printRule do the right thing for MOVE_ and ADDCOHORT_ BEFORE|AFTER
 void GrammarWriter::printRule(UFILE *to, const Rule& rule) {
 	if (statistics) {
 		if (ceil(rule.total_time) == floor(rule.total_time)) {

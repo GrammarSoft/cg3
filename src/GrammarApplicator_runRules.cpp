@@ -519,6 +519,56 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						readings_changed = true;
 						break;
 					}
+					else if (type == K_ADDCOHORT_AFTER || type == K_ADDCOHORT_BEFORE) {
+						reading.hit_by.push_back(rule.number);
+
+						Cohort *cCohort = new Cohort(&current);
+						cCohort->global_number = gWindow->cohort_counter++;
+						Reading *cReading = new Reading(cCohort);
+						insert_if_exists(cReading->parent->possible_sets, grammar->sets_any);
+
+						index_ruleCohort_no.clear();
+						cReading->hit_by.push_back(rule.number);
+						cReading->noprint = false;
+						TagList mappings;
+						const TagList theTags = getTagList(*rule.maplist);
+						const_foreach (TagList, theTags, tter, tter_end) {
+							uint32_t hash = (*tter)->hash;
+							if ((*tter)->type & T_MAPPING || (*tter)->tag[0] == grammar->mapping_prefix) {
+								mappings.push_back(*tter);
+							}
+							else {
+								hash = addTagToReading(*cReading, hash);
+							}
+							if (updateValidRules(rules, intersects, hash, *cReading)) {
+								iter_rules = intersects.find(rule.number);
+								iter_rules_end = intersects.end();
+							}
+						}
+						if (!mappings.empty()) {
+							splitMappings(mappings, *cCohort, *cReading);
+						}
+						cCohort->appendReading(cReading);
+						cCohort->wordform = cReading->wordform;
+
+						current.parent->cohort_map[cCohort->global_number] = cCohort;
+						current.parent->dep_window[cCohort->global_number] = cCohort;
+
+						if (type == K_ADDCOHORT_BEFORE) {
+							current.cohorts.insert(current.cohorts.begin() + cohort->local_number, cCohort);
+						}
+						else {
+							current.cohorts.insert(current.cohorts.begin() + cohort->local_number + 1, cCohort);
+						}
+
+						foreach (CohortVector, current.cohorts, iter, iter_end) {
+							(*iter)->local_number = std::distance(current.cohorts.begin(), iter);
+						}
+						gWindow->rebuildCohortLinks();
+						indexSingleWindow(current);
+						readings_changed = true;
+						break;
+					}
 					else if (rule.type == K_ADD || rule.type == K_MAP) {
 						index_ruleCohort_no.clear();
 						reading.hit_by.push_back(rule.number);
