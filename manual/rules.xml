@@ -46,6 +46,27 @@
     </para>
   </section>
 
+  <section id="addcohort">
+    <title>ADDCOHORT</title>
+    <indexterm>
+      <primary>ADDCOHORT</primary>
+    </indexterm>
+    <screen>
+      [wordform] ADDCOHORT &lt;cohort tags&gt; BEFORE|AFTER &lt;target&gt; [contextual_tests] ;
+    </screen>
+    <para>
+      Inserts a new cohort before or after the target.
+    </para>
+    <para>
+      Caveat: This does NOT affect the rule application order as that is tied to the input order of the cohorts,
+      so inserted cohorts are always last. 
+    </para>
+    <screen>
+      ADDCOHORT ("&lt;wordform&gt;" "baseform" tags) BEFORE (@waffles) ;
+      ADDCOHORT ("&lt;wordform&gt;" "baseform" tags) AFTER (@waffles) ;
+    </screen>
+  </section>
+
   <section id="remcohort">
     <title>REMCOHORT</title>
     <indexterm>

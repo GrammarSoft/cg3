@@ -661,7 +661,7 @@ int TextualParser::parseContextualDependencyTests(UChar *& p, Rule *rule) {
 	return parseContextualTestList(p, rule, &rule->dep_test_head, 0);
 }
 
-int TextualParser::parseRule(UChar *& p, KEYWORDS key) {
+void TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 	Rule *rule = result->allocateRule();
 	rule->line = result->lines;
 	rule->type = key;
@@ -831,7 +831,8 @@ int TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 	if (key == K_MAP || key == K_ADD || key == K_REPLACE || key == K_APPEND || key == K_SUBSTITUTE || key == K_COPY
 	|| key == K_ADDRELATIONS || key == K_ADDRELATION
 	|| key == K_SETRELATIONS || key == K_SETRELATION
-	|| key == K_REMRELATIONS || key == K_REMRELATION) {
+	|| key == K_REMRELATIONS || key == K_REMRELATION
+	|| key == K_ADDCOHORT) {
 		Set *s = parseSetInlineWrapper(p);
 		s->reindex(*result);
 		rule->maplist = s;
@@ -856,6 +857,21 @@ int TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 		}
 		if (s->tags_list.empty() && !(s->type & (ST_TAG_UNIFY|ST_SET_UNIFY|ST_CHILD_UNIFY))) {
 			u_fprintf(ux_stderr, "Error: Relation set on line %u was neither unified nor of LIST type!\n", result->lines);
+			CG3Quit(1);
+		}
+	}
+
+	if (key == K_ADDCOHORT) {
+		if (ux_simplecasecmp(p, stringbits[S_AFTER].getTerminatedBuffer(), stringbits[S_AFTER].length())) {
+			p += stringbits[S_AFTER].length();
+			rule->type = K_ADDCOHORT_AFTER;
+		}
+		else if (ux_simplecasecmp(p, stringbits[S_BEFORE].getTerminatedBuffer(), stringbits[S_BEFORE].length())) {
+			p += stringbits[S_BEFORE].length();
+			rule->type = K_ADDCOHORT_BEFORE;
+		}
+		else {
+			u_fprintf(ux_stderr, "Error: Missing position keyword AFTER or BEFORE on line %u!\n", result->lines);
 			CG3Quit(1);
 		}
 	}
@@ -974,7 +990,6 @@ int TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 
 	rule->reverseContextualTests();
 	addRuleToGrammar(rule);
-	return 0;
 }
 
 int TextualParser::parseFromUChar(UChar *input, const char *fname) {
@@ -1237,6 +1252,13 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 			&& ISCHR(*(p+7),'R','r')
 			&& !ISSTRING(p, 8)) {
 			parseRule(p, K_REMCOHORT);
+		}
+		// ADDCOHORT
+		else if (ISCHR(*p,'A','a') && ISCHR(*(p+8),'T','t') && ISCHR(*(p+1),'D','d') && ISCHR(*(p+2),'D','d')
+			&& ISCHR(*(p+3),'C','c') && ISCHR(*(p+4),'O','o') && ISCHR(*(p+5),'H','h') && ISCHR(*(p+6),'O','o')
+			&& ISCHR(*(p+7),'R','r')
+			&& !ISSTRING(p, 8)) {
+			parseRule(p, K_ADDCOHORT);
 		}
 		// SETS
 		else if (ISCHR(*p,'S','s') && ISCHR(*(p+3),'S','s') && ISCHR(*(p+1),'E','e') && ISCHR(*(p+2),'T','t')
