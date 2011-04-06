@@ -520,6 +520,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						break;
 					}
 					else if (type == K_ADDCOHORT_AFTER || type == K_ADDCOHORT_BEFORE) {
+						Cohort *c = *rocit;
 						reading.hit_by.push_back(rule.number);
 
 						Cohort *cCohort = new Cohort(&current);
@@ -567,6 +568,8 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						gWindow->rebuildCohortLinks();
 						indexSingleWindow(current);
 						readings_changed = true;
+
+						rocit = s.find(c);
 						break;
 					}
 					else if (rule.type == K_ADD || rule.type == K_MAP) {
