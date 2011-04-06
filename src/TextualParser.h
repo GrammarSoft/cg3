@@ -60,7 +60,7 @@ namespace CG3 {
 		int parseContextualTestList(UChar *& p, Rule *rule, ContextualTest **head, CG3::ContextualTest *parentTest, CG3::ContextualTest *self = 0);
 		int parseContextualTests(UChar *& p, Rule *rule);
 		int parseContextualDependencyTests(UChar *& p, Rule *rule);
-		int parseRule(UChar *& p, KEYWORDS key);
+		void parseRule(UChar *& p, KEYWORDS key);
 	};
 }
 
