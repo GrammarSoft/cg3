@@ -181,15 +181,10 @@ int main(int argc, char* argv[]) {
 
 	UConverter *conv = ucnv_open(codepage_default, &status);
 
-	bool stdin_isfile = false;
-	bool stdout_isfile = false;
-	bool stderr_isfile = false;
-
 	if (!options[STDOUT].doesOccur) {
 		ux_stdout = u_finit(stdout, locale_output, codepage_output);
 	}
 	else {
-		stdout_isfile = true;
 		ux_stdout = u_fopen(options[STDOUT].value, "wb", locale_output, codepage_output);
 	}
 	if (!ux_stdout) {
@@ -201,7 +196,6 @@ int main(int argc, char* argv[]) {
 		ux_stderr = u_finit(stderr, locale_output, codepage_output);
 	}
 	else {
-		stderr_isfile = true;
 		ux_stderr = u_fopen(options[STDERR].value, "wb", locale_output, codepage_output);
 	}
 	if (!ux_stdout) {
@@ -219,7 +213,6 @@ int main(int argc, char* argv[]) {
 			std::cerr << "Error: Cannot stat " << options[STDIN].value << " due to error " << serr << "!" << std::endl;
 			return serr;
 		}
-		stdin_isfile = true;
 		ux_stdin = u_fopen(options[STDIN].value, "rb", locale_input, codepage_input);
 	}
 	if (!ux_stdin) {

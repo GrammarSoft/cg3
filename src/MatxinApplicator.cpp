@@ -158,8 +158,6 @@ int MatxinApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 	Reading *cReading = 0; 		// Current reading
 
 	SingleWindow *lSWindow = 0; 	// Left hand single window
-	Cohort *lCohort = 0; 		// Left hand cohort
-	Reading *lReading = 0; 		// Left hand reading
 
 	gWindow->window_span = num_windows;
 
@@ -222,7 +220,6 @@ int MatxinApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 			// Create magic reading
 			if (cCohort && cCohort->readings.empty()) {
 				cReading = initEmptyCohort(*cCohort);
-				lReading = cReading;
 			}
 			if (cCohort && cSWindow->cohorts.size() >= soft_limit && grammar->soft_delimiters && doesSetMatchCohortNormal(*cCohort, grammar->soft_delimiters->hash)) {
 			  // ie. we've read some cohorts
@@ -232,7 +229,6 @@ int MatxinApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 
 				cSWindow->appendCohort(cCohort);
 				lSWindow = cSWindow;
-				lCohort = cCohort;
 				cSWindow = 0;
 				cCohort = 0;
 				numCohorts++;
@@ -248,7 +244,6 @@ int MatxinApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 				
 				cSWindow->appendCohort(cCohort);
 				lSWindow = cSWindow;
-				lCohort = cCohort;
 				cSWindow = 0;
 				cCohort = 0;
 				numCohorts++;
@@ -273,8 +268,6 @@ int MatxinApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 				cSWindow->appendCohort(cCohort);
 
 				lSWindow = cSWindow;
-				lReading = cReading;
-				lCohort = cCohort;
 				cCohort = 0;
 				numWindows++;
 			} // created at least one cSWindow by now
@@ -283,7 +276,6 @@ int MatxinApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 			// window, add the cohort to the window.
 			if (cCohort && cSWindow) {
 				cSWindow->appendCohort(cCohort);
-				lCohort = cCohort;
 			} 
 			if (gWindow->next.size() > num_windows) {
 				while (!gWindow->previous.empty() && gWindow->previous.size() > num_windows) {
@@ -321,8 +313,6 @@ int MatxinApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 			
 			//u_fprintf(output, "# %S\n", wordform);
 			cCohort->wordform = addTag(wordform)->hash;
-			lCohort = cCohort;
-			lReading = 0;
 			numCohorts++;
 
 			// We're now at the beginning of the readings
@@ -344,7 +334,6 @@ int MatxinApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 					processReading(cReading, current_reading);
 
 					cCohort->appendReading(cReading);
-					lReading = cReading;
 					numReadings++;
 
 					current_reading.clear();
@@ -363,7 +352,6 @@ int MatxinApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 					processReading(cReading, current_reading);
 
 					cCohort->appendReading(cReading);
-					lReading = cReading;
 					numReadings++;
 	
 					current_reading.clear();
@@ -449,7 +437,6 @@ void MatxinApplicator::processReading(Reading *cReading, const UChar *reading_st
 	bool tags = false; 
 	bool unknown = false;
 	bool multi = false;
-	bool joined = false;
 	UChar join_idx = '0'; // Set the join index to the number '0' in ASCII/UTF-8
 
 	insert_if_exists(cReading->parent->possible_sets, grammar->sets_any);
@@ -516,7 +503,6 @@ void MatxinApplicator::processReading(Reading *cReading, const UChar *reading_st
 
 		if (*c == '+') {
 			joiner = true;
-			joined = true;
 			++join_idx;
 		}
 
