@@ -713,6 +713,10 @@ void TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 				setflag = true;
 			}
 			result->lines += SKIPWS(p);
+			// If any of these is the next char, there cannot possibly be more rule options...
+			if (*p == '(' || *p == 'T' || *p == 't' || *p == ';') {
+				break;
+			}
 		}
 	}
 	// ToDo: ENCL_* are exclusive...detect multiple of them better.
