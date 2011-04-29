@@ -612,6 +612,7 @@ void Grammar::reindex(bool unused_sets) {
 			test = test->next;
 		}
 	}
+
 	if (delimiters) {
 		delimiters->markUsed(*this);
 	}
