@@ -162,6 +162,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 	typedef stdext::hash_map<uint32_t,Reading*> readings_plain_t;
 	readings_plain_t readings_plain;
 
+	// ToDo: Now that numbering is used, can't this be made a normal max? Hm, maybe not since --sections can still force another order...but if we're smart, then we re-enumerate rules based on --sections
 	uint32IntervalVector intersects = current.valid_rules.intersect(rules);
 
 	const_foreach (uint32IntervalVector, intersects, iter_rules, iter_rules_end) {
@@ -255,7 +256,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 			// If the rule has a wordform and it is not this one, skip it.
 			// ToDo: Is this even used still? updateRuleToCohorts() should handle this now.
 			if (rule.wordform && rule.wordform != cohort->wordform) {
-				rule.num_fail++;
+				++rule.num_fail;
 				continue;
 			}
 
@@ -401,13 +402,13 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 							type = K_SELECT;
 						}
 						reading->matched_tests = true;
-						num_active++;
-						rule.num_match++;
+						++num_active;
+						++rule.num_match;
 					}
-					num_iff++;
+					++num_iff;
 				}
 				else {
-					rule.num_fail++;
+					++rule.num_fail;
 				}
 				readings_plain.insert(std::make_pair(reading->hash_plain,reading));
 			}
@@ -451,7 +452,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 				// Iff needs extra special care; if it is a Remove type and we matched the target, go ahead.
 				// If it had matched the tests it would have been Select type.
 				if (rule.type == K_IFF && type == K_REMOVE && reading.matched_target) {
-					rule.num_match++;
+					++rule.num_match;
 					good = true;
 				}
 
@@ -1120,7 +1121,7 @@ uint32_t GrammarApplicator::runGrammarOnSingleWindow(SingleWindow& current) {
 				std::cerr << "Running section " << iter->first << " (rules " << *(iter->second.begin()) << " through " << *(--(iter->second.end())) << ") on window " << current.number << std::endl;
 			}
 			rv = runRulesOnSingleWindow(current, iter->second);
-			counter[iter->first]++;
+			++counter[iter->first];
 			if (rv & RV_DELIMITED) {
 				return rv;
 			}
