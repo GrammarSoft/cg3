@@ -32,5 +32,4 @@ ToDo: Stabilize the binary grammar format or get to a point where old versions a
 ToDo: Don't output a warning if it is identical to last output warning.
 ToDo: Allow rules to be run on contextual test targets, if all tests are true.
 ToDo: Rules don't currently require ; termination...should they?
-ToDo: Rules that have no C or NOT contexts only need to be rerun if tags are added anywhere
 ToDo: Cache shared contexts between close rules

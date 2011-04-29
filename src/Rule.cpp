@@ -152,49 +152,6 @@ inline bool isSetSpecial(uint32_t s, const Grammar& g) {
 	return s && (g.getSet(s)->type & ST_SPECIAL);
 }
 
-/*
-void Rule::checkNaive(const Grammar& grammar) {
-	flags |= RF_NAIVE;
-
-	if (isSetSpecial(target, grammar)) {
-		flags &= ~RF_NAIVE;
-		return;
-	}
-	ContextualTest *t = test_head;
-	while (t) {
-		if (isSetSpecial(t->target, grammar) || isSetSpecial(t->cbarrier, grammar)) {
-			flags &= ~RF_NAIVE;
-			return;
-		}
-		if (t->pos & (POS_CAREFUL|POS_NEGATE|POS_NOT|POS_LEFT_PAR|POS_RIGHT_PAR|POS_NONE|POS_ALL|POS_TMPL_OVERRIDE|POS_UNKNOWN)) {
-			flags &= ~RF_NAIVE;
-			return;
-		}
-		if (t->tmpl || t->barrier) {
-			flags &= ~RF_NAIVE;
-			return;
-		}
-		t = t->next;
-	}
-	t = dep_test_head;
-	while (t) {
-		if (isSetSpecial(t->target, grammar) || isSetSpecial(t->cbarrier, grammar)) {
-			flags &= ~RF_NAIVE;
-			return;
-		}
-		if (t->pos & (POS_CAREFUL|POS_NEGATE|POS_NOT|POS_LEFT_PAR|POS_RIGHT_PAR|POS_NONE|POS_ALL|POS_TMPL_OVERRIDE|POS_UNKNOWN)) {
-			flags &= ~RF_NAIVE;
-			return;
-		}
-		if (t->tmpl || t->barrier) {
-			flags &= ~RF_NAIVE;
-			return;
-		}
-		t = t->next;
-	}
-}
-//*/
-
 bool Rule::cmp_quality(const Rule *a, const Rule *b) {
 	return a->total_time > b->total_time;
 }
