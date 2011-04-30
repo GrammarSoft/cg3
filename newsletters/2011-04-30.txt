@@ -1,0 +1,29 @@
+A new release of CG-3 has been tagged v0.9.7.7000.
+
+Main site is http://beta.visl.sdu.dk/cg3.html
+Google Group is http://groups.google.com/group/constraint-grammar
+Source snapshots available at http://beta.visl.sdu.dk/download/vislcg3/
+Windows binary is at http://beta.visl.sdu.dk/download/vislcg3/vislcg3-0.9.7.7000-win32.zip
+
+New features:
+- New rule type ADDCOHORT that adds a cohort to the window. Documented at http://beta.visl.sdu.dk/cg3/chunked/rules.html#addcohort
+- New rule type COPY that makes a copy of a reading and appends tags. Documented at http://beta.visl.sdu.dk/cg3/chunked/rules.html#copy
+- New rule type UNMAP that removes all mapping tags for the matching reading. Documented at http://beta.visl.sdu.dk/cg3/chunked/rules.html#unmap
+- New rule option UNMAPLAST that removes the last mapping tag from a reading instead of the whole reading. Documented at http://beta.visl.sdu.dk/cg3/chunked/rules.html#rule-options-unmaplast
+- Varstrings can now be used to generate varstrings based on regex and unification with prefix VSTR:.
+- Varstrings can also be used to generate set matching with prefix SET:.
+- To help with that, keyword STATIC-SETS was added where you can give a list of set names that need to be visible at runtime (default behavior is that set names are stripped).
+- Added two new set operators to perform Symmetric Difference and Intersection. Documented at http://beta.visl.sdu.dk/cg3/chunked/sets.html#set-operators
+- Emacs: Kevin Unhammer added a cg-goto-rule command to the extension.
+
+Changes:
+- Binary grammar version bumped. Grammars from before r6770 are incompatible.
+- There can now be multiple rules per line. This is especially useful for those who Include multiple grammars with rules.
+- NEGATE, NOT, NONE, ALL may now be used with templates as position overrides.
+- Speed is 30% faster than previous release. Memory usage is 12% lower than previous release. If you build with Boost and TCMalloc it will be another 15% faster.
+
+Fixed Bugs:
+- Parsing inline sets that were identical to named sets would rename the latter, causing errors.
+
+-- Tino Didriksen
+CG-3 Developer
