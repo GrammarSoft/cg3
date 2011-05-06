@@ -338,6 +338,9 @@ Cohort *GrammarApplicator::runContextualTest(SingleWindow *sWindow, size_t posit
 					}
 					else if (brk) {
 						left = 0;
+						if (test->pos & POS_NOT) {
+							right = 0;
+						}
 					}
 					else if (lpos-i == 0) {
 						if ((test->pos & (POS_SPAN_BOTH|POS_SPAN_LEFT) || always_span)) {
@@ -359,6 +362,9 @@ Cohort *GrammarApplicator::runContextualTest(SingleWindow *sWindow, size_t posit
 					}
 					else if (brk) {
 						right = 0;
+						if (test->pos & POS_NOT) {
+							left = 0;
+						}
 					}
 					else if (rpos+i == right->cohorts.size()-1) {
 						if ((test->pos & (POS_SPAN_BOTH|POS_SPAN_RIGHT) || always_span)) {
@@ -420,7 +426,7 @@ label_gotACohort:
 	if (!cohort) {
 		retval = false;
 	}
-	if (!cohort && test->pos & POS_NOT && !test->linked) {
+	if (!cohort && (test->pos & POS_NOT) && !test->linked) {
 		retval = !retval;
 	}
 	if (test->pos & POS_NEGATE) {

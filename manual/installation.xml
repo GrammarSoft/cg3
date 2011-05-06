@@ -18,10 +18,16 @@
       Launch a Terminal from Applications -&gt; Accessories, and in that do
       <screen>
         sudo apt-get install g++ libicu-dev subversion autoconf automake
+        # For Boost
+        sudo apt-get install libboost-dev
+        # For TCMalloc
+        sudo apt-get install libgoogle-perftools0
         cd /tmp/
         svn export --ignore-externals --username anonymous --password anonymous http://beta.visl.sdu.dk/svn/visl/tools/vislcg3/trunk vislcg3
         cd vislcg3/
         ./autogen.sh
+        # Reconfigure if Boost was installed
+        ./configure --with-boost
         make -j3
         ./test/runall.pl
         sudo make install
