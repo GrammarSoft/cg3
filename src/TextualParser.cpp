@@ -467,6 +467,9 @@ int TextualParser::parseContextualTestPosition(UChar *& p, ContextualTest& t) {
 		u_fprintf(ux_stderr, "Error: Invalid position on line %u - '?' cannot be combined with anything else!\n", result->lines);
 		CG3Quit(1);
 	}
+	if ((t.pos & POS_SCANALL) && (t.pos & POS_NOT)) {
+		u_fprintf(ux_stderr, "Warning: Line %u: We don't think mixing NOT and ** makes sense...\n", result->lines);
+	}
 
 	return 0;
 }
