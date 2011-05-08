@@ -19,16 +19,14 @@
 * along with VISL CG-3.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#pragma once
-#ifndef c6d28b7452ec699b_VERSION_H
-#define c6d28b7452ec699b_VERSION_H
+#include "stdafx.h"
+#include "icu_uoptions.h"
+#include "Grammar.h"
+#include "TextualParser.h"
+#include "GrammarWriter.h"
+#include "BinaryGrammar.h"
+#include "GrammarApplicator.h"
 
-const char CG3_COPYRIGHT_STRING[] = "Copyright (C) 2007-2011 GrammarSoft ApS. All Rights Reserved.";
+#include "version.h"
 
-const uint32_t CG3_VERSION_MAJOR = 0;
-const uint32_t CG3_VERSION_MINOR = 9;
-const uint32_t CG3_VERSION_PATCH = 7;
-const uint32_t CG3_REVISION = 7102;
-const uint32_t CG3_TOO_OLD = 6770;
-
-#endif
+using CG3::CG3Quit;
