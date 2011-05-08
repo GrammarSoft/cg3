@@ -51,17 +51,23 @@ endif(MSVC)
 
 SET(CXX_SOURCES GrammarApplicator_runGrammar.cpp GrammarApplicator.cpp GrammarApplicator_matchSet.cpp GrammarApplicator_reflow.cpp GrammarApplicator_runContextualTest.cpp GrammarApplicator_runRules.cpp GrammarWriter.cpp icu_uoptions.cpp SingleWindow.cpp CohortIterator.cpp Window.cpp Cohort.cpp Reading.cpp ${CXX_SHARED_SOURCES})
 
-ADD_EXECUTABLE(cg-comp cg_comp.cpp ${CXX_SHARED_SOURCES})
-ADD_EXECUTABLE(cg-proc cg_proc.cpp ApertiumApplicator.cpp MatxinApplicator.cpp ${CXX_SOURCES})
-ADD_EXECUTABLE(cg-conv cg_conv.cpp FormatConverter.cpp ApertiumApplicator.cpp MatxinApplicator.cpp ${CXX_SOURCES})
-ADD_EXECUTABLE(vislcg3 main.cpp ${CXX_SOURCES})
-
 ADD_LIBRARY(libcg3 STATIC libcg3.cpp ${CXX_SOURCES})
 SET_TARGET_PROPERTIES(libcg3 PROPERTIES OUTPUT_NAME "cg3")
 SET_TARGET_PROPERTIES(libcg3 PROPERTIES PREFIX "lib")
-
-cg3_link(cg-comp)
-cg3_link(cg-proc)
-cg3_link(cg-conv)
-cg3_link(vislcg3)
 cg3_link(libcg3)
+
+ADD_EXECUTABLE(cg-comp cg_comp.cpp)
+cg3_link(cg-comp)
+target_link_libraries(cg-comp libcg3)
+
+ADD_EXECUTABLE(cg-proc cg_proc.cpp ApertiumApplicator.cpp MatxinApplicator.cpp)
+cg3_link(cg-proc)
+target_link_libraries(cg-proc libcg3)
+
+ADD_EXECUTABLE(cg-conv cg_conv.cpp FormatConverter.cpp ApertiumApplicator.cpp MatxinApplicator.cpp)
+cg3_link(cg-conv)
+target_link_libraries(cg-conv libcg3)
+
+ADD_EXECUTABLE(vislcg3 main.cpp)
+cg3_link(vislcg3)
+target_link_libraries(vislcg3 libcg3)
