@@ -9,6 +9,8 @@ chdir $bindir or die("Error: Could not change directory to $bindir !");
 
 # Search paths for the binary
 my @binlist = (
+	"../src/Debug/vislcg3",
+	"../src/Release/vislcg3",
 	"../Debug/vislcg3",
 	"../Release/vislcg3",
 	"../src/vislcg3",
