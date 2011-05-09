@@ -40,9 +40,11 @@ typedef Tag               cg3_tag_t;
 #define _CG3_INTERNAL
 #include "cg3.h"
 
-UFILE *ux_stdin = 0;
-UFILE *ux_stdout = 0;
-UFILE *ux_stderr = 0;
+namespace {
+	UFILE *ux_stdin = 0;
+	UFILE *ux_stdout = 0;
+	UFILE *ux_stderr = 0;
+}
 
 cg3_status_t cg3_init(FILE *in, FILE *out, FILE *err) {
 	UErrorCode status = U_ZERO_ERROR;
@@ -144,18 +146,19 @@ void cg3_applicator_free(cg3_applicator_t *applicator) {
 }
 
 cg3_sentence_t *cg3_sentence_new(cg3_applicator_t *applicator) {
-	delete applicator->gWindow->current;
-	applicator->gWindow->current = 0;
-	return cg3_sentence_state(applicator);
+	SingleWindow *current = applicator->gWindow->allocSingleWindow();
+	applicator->initEmptySingleWindow(current);
+	return current;
 }
 
-cg3_sentence_t *cg3_sentence_state(cg3_applicator_t *applicator) {
-	SingleWindow *current = applicator->gWindow->current;
-	if (!current) {
-		current = applicator->gWindow->current = applicator->gWindow->allocSingleWindow();
-		applicator->initEmptySingleWindow(current);
-	}
-	return current;
+void cg3_sentence_runrules(cg3_applicator_t *applicator, cg3_sentence_t *sentence) {
+	applicator->gWindow->current = sentence;
+	applicator->runGrammarOnWindow();
+	applicator->gWindow->current = 0;
+}
+
+void cg3_sentence_free(cg3_sentence_t *sentence) {
+	delete sentence;
 }
 
 void cg3_sentence_addcohort(cg3_sentence_t *sentence, cg3_cohort_t *cohort) {
@@ -195,11 +198,72 @@ cg3_reading_t *cg3_reading_create(cg3_cohort_t *cohort) {
 	return reading;
 }
 
-void cg3_reading_addtag(cg3_reading_t *reading, cg3_tag_t *tag) {
+cg3_status_t cg3_reading_addtag(cg3_reading_t *reading, cg3_tag_t *tag) {
+	if (tag->type & T_MAPPING) {
+		if (reading->mapping && reading->mapping != tag) {
+			u_fprintf(ux_stderr, "CG3 Error: Cannot add a mapping tag to a reading which already is mapped!\n");
+			return CG3_ERROR;
+		}
+	}
+
 	GrammarApplicator *ga = reading->parent->parent->parent->parent;
 	ga->addTagToReading(*reading, tag->hash);
+
+	return CG3_SUCCESS;
 }
 
 void cg3_reading_free(cg3_reading_t *reading) {
 	delete reading;
+}
+
+cg3_tag_t *cg3_tag_create_u(cg3_applicator_t *applicator, const UChar *text) {
+	return applicator->addTag(text);
+}
+
+cg3_tag_t *cg3_tag_create_u8(cg3_applicator_t *applicator, const char *text) {
+	UErrorCode status = U_ZERO_ERROR;
+
+	u_strFromUTF8(&gbuffers[0][0], CG3_BUFFER_SIZE-1, 0, text, strlen(text), &status);
+	if (U_FAILURE(status)) {
+		u_fprintf(ux_stderr, "CG3 Error: Failed to convert text from UTF-8 to UTF-16. Status = %s\n", u_errorName(status));
+		return 0;
+	}
+	status = U_ZERO_ERROR;
+
+	return cg3_tag_create_u(applicator, &gbuffers[0][0]);
+}
+
+cg3_tag_t *cg3_tag_create_u16(cg3_applicator_t *applicator, const uint16_t *text) {
+	return cg3_tag_create_u(applicator, reinterpret_cast<const UChar*>(text));
+}
+
+cg3_tag_t *cg3_tag_create_u32(cg3_applicator_t *applicator, const uint32_t *text) {
+	UErrorCode status = U_ZERO_ERROR;
+
+	size_t length = 0;
+	while (text[length]) {
+		++length;
+	}
+
+	u_strFromUTF32(&gbuffers[0][0], CG3_BUFFER_SIZE-1, 0, reinterpret_cast<const UChar32*>(text), length, &status);
+	if (U_FAILURE(status)) {
+		u_fprintf(ux_stderr, "CG3 Error: Failed to convert text from UTF-32 to UTF-16. Status = %s\n", u_errorName(status));
+		return 0;
+	}
+	status = U_ZERO_ERROR;
+
+	return cg3_tag_create_u(applicator, &gbuffers[0][0]);
+}
+
+cg3_tag_t *cg3_tag_create_w(cg3_applicator_t *applicator, const wchar_t *text) {
+	UErrorCode status = U_ZERO_ERROR;
+
+	u_strFromWCS(&gbuffers[0][0], CG3_BUFFER_SIZE-1, 0, text, wcslen(text), &status);
+	if (U_FAILURE(status)) {
+		u_fprintf(ux_stderr, "CG3 Error: Failed to convert text from wchar_t to UTF-16. Status = %s\n", u_errorName(status));
+		return 0;
+	}
+	status = U_ZERO_ERROR;
+
+	return cg3_tag_create_u(applicator, &gbuffers[0][0]);
 }
