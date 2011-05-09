@@ -39,6 +39,7 @@
 #include <algorithm>
 #include <iterator>
 #include <iostream>
+#include <fstream>
 #include <ostream>
 #include <sstream>
 #include <cstdlib>
