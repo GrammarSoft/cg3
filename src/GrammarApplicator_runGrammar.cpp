@@ -29,6 +29,22 @@
 
 namespace CG3 {
 
+void GrammarApplicator::initEmptySingleWindow(SingleWindow *cSWindow) {
+	Cohort *cCohort = new Cohort(cSWindow);
+	cCohort->global_number = 0;
+	cCohort->wordform = begintag;
+
+	Reading *cReading = new Reading(cCohort);
+	cReading->baseform = begintag;
+	cReading->wordform = begintag;
+	insert_if_exists(cReading->parent->possible_sets, grammar->sets_any);
+	addTagToReading(*cReading, begintag);
+
+	cCohort->appendReading(cReading);
+
+	cSWindow->appendCohort(cCohort);
+}
+
 Reading *GrammarApplicator::initEmptyCohort(Cohort& cCohort) {
 	Reading *cReading = new Reading(&cCohort);
 	cReading->wordform = cCohort.wordform;
@@ -196,24 +212,11 @@ gotaline:
 			if (!cSWindow) {
 				// ToDo: Refactor to allocate SingleWindow, Cohort, and Reading from their containers
 				cSWindow = gWindow->allocAppendSingleWindow();
-
-				cCohort = new Cohort(cSWindow);
-				cCohort->global_number = 0;
-				cCohort->wordform = begintag;
-
-				cReading = new Reading(cCohort);
-				cReading->baseform = begintag;
-				cReading->wordform = begintag;
-				insert_if_exists(cReading->parent->possible_sets, grammar->sets_any);
-				addTagToReading(*cReading, begintag);
-
-				cCohort->appendReading(cReading);
-
-				cSWindow->appendCohort(cCohort);
+				initEmptySingleWindow(cSWindow);
 
 				lSWindow = cSWindow;
-				lReading = cReading;
-				lCohort = cCohort;
+				lReading = cSWindow->cohorts[0]->readings.front();
+				lCohort = cSWindow->cohorts[0];
 				cCohort = 0;
 				numWindows++;
 				did_soft_lookback = false;

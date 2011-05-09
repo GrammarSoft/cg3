@@ -92,6 +92,9 @@ namespace CG3 {
 
 		Grammar *grammar;
 
+		void initEmptySingleWindow(SingleWindow *cSWindow);
+		uint32_t addTagToReading(Reading& reading, uint32_t tag, bool rehash = true);
+
 	protected:
 		void printReading(const Reading *reading, UFILE *output);
 		void printCohort(Cohort *cohort, UFILE *output);
@@ -182,7 +185,6 @@ namespace CG3 {
 		Cohort *delimitAt(SingleWindow& current, Cohort *cohort);
 		void reflowReading(Reading& reading);
 		Tag *generateVarstringTag(const Tag *tag);
-		uint32_t addTagToReading(Reading& reading, uint32_t tag, bool rehash = true);
 		void delTagFromReading(Reading& reading, uint32_t tag);
 		bool unmapReading(Reading& reading, const uint32_t rule);
 		TagList getTagList(const Set& theSet, bool unif_mode = false) const;
