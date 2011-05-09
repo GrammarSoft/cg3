@@ -100,9 +100,6 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 	uint32_t resetAfter = ((num_windows+4)*2+1);
 	uint32_t lines = 0;
 
-	begintag = addTag(stringbits[S_BEGINTAG].getTerminatedBuffer())->hash;
-	endtag = addTag(stringbits[S_ENDTAG].getTerminatedBuffer())->hash;
-
 	SingleWindow *cSWindow = 0;
 	Cohort *cCohort = 0;
 	Reading *cReading = 0;
