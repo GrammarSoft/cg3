@@ -30,14 +30,6 @@
 #include "version.h"
 using namespace CG3;
 
-typedef Grammar           cg3_grammar_t;
-typedef GrammarApplicator cg3_applicator_t;
-typedef SingleWindow      cg3_sentence_t;
-typedef Cohort            cg3_cohort_t;
-typedef Reading           cg3_reading_t;
-typedef Tag               cg3_tag_t;
-
-#define _CG3_INTERNAL
 #include "cg3.h"
 
 namespace {
@@ -46,7 +38,7 @@ namespace {
 	UFILE *ux_stderr = 0;
 }
 
-cg3_status_t cg3_init(FILE *in, FILE *out, FILE *err) {
+cg3_status cg3_init(FILE *in, FILE *out, FILE *err) {
 	UErrorCode status = U_ZERO_ERROR;
 	u_init(&status);
 	if (U_FAILURE(status) && status != U_FILE_ACCESS_ERROR) {
@@ -85,7 +77,7 @@ cg3_status_t cg3_init(FILE *in, FILE *out, FILE *err) {
 	return CG3_SUCCESS;
 }
 
-cg3_status_t cg3_cleanup(void) {
+cg3_status cg3_cleanup(void) {
 	u_fclose(ux_stdin);
 	u_fclose(ux_stdout);
 	u_fclose(ux_stderr);
@@ -95,7 +87,7 @@ cg3_status_t cg3_cleanup(void) {
 	return CG3_SUCCESS;
 }
 
-cg3_grammar_t *cg3_grammar_load(const char *filename) {
+cg3_grammar *cg3_grammar_load(const char *filename) {
 	std::ifstream input(filename, std::ios::binary);
 	if (!input) {
 		u_fprintf(ux_stderr, "CG3 Error: Error opening %s for reading!\n", filename);
@@ -130,84 +122,111 @@ cg3_grammar_t *cg3_grammar_load(const char *filename) {
 	return grammar;
 }
 
-void cg3_grammar_free(cg3_grammar_t *grammar) {
+void cg3_grammar_free(cg3_grammar *grammar_) {
+	Grammar *grammar = static_cast<Grammar*>(grammar_);
 	delete grammar;
 }
 
-cg3_applicator_t *cg3_applicator_create(cg3_grammar_t *grammar) {
+cg3_applicator *cg3_applicator_create(cg3_grammar *grammar_) {
+	Grammar *grammar = static_cast<Grammar*>(grammar_);
 	GrammarApplicator *applicator = new GrammarApplicator(ux_stderr);
 	applicator->setGrammar(grammar);
 	applicator->index();
 	return applicator;
 }
 
-void cg3_applicator_free(cg3_applicator_t *applicator) {
+void cg3_applicator_free(cg3_applicator *applicator_) {
+	GrammarApplicator *applicator = static_cast<GrammarApplicator*>(applicator_);
 	delete applicator;
 }
 
-cg3_sentence_t *cg3_sentence_new(cg3_applicator_t *applicator) {
+cg3_sentence *cg3_sentence_new(cg3_applicator *applicator_) {
+	GrammarApplicator *applicator = static_cast<GrammarApplicator*>(applicator_);
 	SingleWindow *current = applicator->gWindow->allocSingleWindow();
 	applicator->initEmptySingleWindow(current);
 	return current;
 }
 
-void cg3_sentence_runrules(cg3_applicator_t *applicator, cg3_sentence_t *sentence) {
+void cg3_sentence_runrules(cg3_applicator *applicator_, cg3_sentence *sentence_) {
+	GrammarApplicator *applicator = static_cast<GrammarApplicator*>(applicator_);
+	SingleWindow *sentence = static_cast<SingleWindow*>(sentence_);
 	applicator->gWindow->current = sentence;
 	applicator->runGrammarOnWindow();
 	applicator->gWindow->current = 0;
 }
 
-size_t cg3_sentence_numcohorts(cg3_sentence_t *sentence) {
+size_t cg3_sentence_numcohorts(cg3_sentence *sentence_) {
+	SingleWindow *sentence = static_cast<SingleWindow*>(sentence_);
 	return sentence->cohorts.size();
 }
 
-cg3_cohort_t *cg3_sentence_getcohort(cg3_sentence_t *sentence, size_t which) {
+cg3_cohort *cg3_sentence_getcohort(cg3_sentence *sentence_, size_t which) {
+	SingleWindow *sentence = static_cast<SingleWindow*>(sentence_);
 	return sentence->cohorts[which];
 }
 
-void cg3_sentence_free(cg3_sentence_t *sentence) {
+void cg3_sentence_free(cg3_sentence *sentence_) {
+	SingleWindow *sentence = static_cast<SingleWindow*>(sentence_);
 	delete sentence;
 }
 
-void cg3_sentence_addcohort(cg3_sentence_t *sentence, cg3_cohort_t *cohort) {
+void cg3_sentence_addcohort(cg3_sentence *sentence_, cg3_cohort *cohort_) {
+	SingleWindow *sentence = static_cast<SingleWindow*>(sentence_);
+	Cohort *cohort = static_cast<Cohort*>(cohort_);
 	sentence->appendCohort(cohort);
 }
 
-cg3_cohort_t *cg3_cohort_create(cg3_sentence_t *sentence) {
+cg3_cohort *cg3_cohort_create(cg3_sentence *sentence_) {
+	SingleWindow *sentence = static_cast<SingleWindow*>(sentence_);
 	Cohort *cohort = new Cohort(sentence);
 	cohort->global_number = sentence->parent->cohort_counter++;
 	return cohort;
 }
 
-void cg3_cohort_setwordform(cg3_cohort_t *cohort, cg3_tag_t *wordform) {
-	cohort->wordform = wordform->hash;
+void cg3_cohort_setwordform(cg3_cohort *cohort_, cg3_tag *tag_) {
+	Cohort *cohort = static_cast<Cohort*>(cohort_);
+	Tag *tag = static_cast<Tag*>(tag_);
+	cohort->wordform = tag->hash;
 }
 
-void cg3_cohort_setdependency(cg3_cohort_t *cohort, uint32_t dep_self, uint32_t dep_parent) {
+cg3_tag *cg3_cohort_getwordform(cg3_cohort *cohort_) {
+	Cohort *cohort = static_cast<Cohort*>(cohort_);
+	GrammarApplicator *ga = cohort->parent->parent->parent;
+	return ga->single_tags.find(cohort->wordform)->second;
+}
+
+void cg3_cohort_setdependency(cg3_cohort *cohort_, uint32_t dep_self, uint32_t dep_parent) {
+	Cohort *cohort = static_cast<Cohort*>(cohort_);
 	cohort->parent->parent->parent->has_dep = true;
 	cohort->dep_self = dep_self;
 	cohort->dep_parent = dep_parent;
 }
 
-void cg3_cohort_addreading(cg3_cohort_t *cohort, cg3_reading_t *reading) {
+void cg3_cohort_addreading(cg3_cohort *cohort_, cg3_reading *reading_) {
+	Cohort *cohort = static_cast<Cohort*>(cohort_);
+	Reading *reading = static_cast<Reading*>(reading_);
 	cohort->appendReading(reading);
 }
 
-size_t cg3_cohort_numreadings(cg3_cohort_t *cohort) {
+size_t cg3_cohort_numreadings(cg3_cohort *cohort_) {
+	Cohort *cohort = static_cast<Cohort*>(cohort_);
 	return cohort->readings.size();
 }
 
-cg3_reading_t *cg3_cohort_getreading(cg3_cohort_t *cohort, size_t which) {
+cg3_reading *cg3_cohort_getreading(cg3_cohort *cohort_, size_t which) {
+	Cohort *cohort = static_cast<Cohort*>(cohort_);
 	ReadingList::iterator it = cohort->readings.begin();
 	std::advance(it, which);
 	return *it;
 }
 
-void cg3_cohort_free(cg3_cohort_t *cohort) {
+void cg3_cohort_free(cg3_cohort *cohort_) {
+	Cohort *cohort = static_cast<Cohort*>(cohort_);
 	delete cohort;
 }
 
-cg3_reading_t *cg3_reading_create(cg3_cohort_t *cohort) {
+cg3_reading *cg3_reading_create(cg3_cohort *cohort_) {
+	Cohort *cohort = static_cast<Cohort*>(cohort_);
 	GrammarApplicator *ga = cohort->parent->parent->parent;
 	Reading *reading = new Reading(cohort);
 	reading->wordform = cohort->wordform;
@@ -216,7 +235,9 @@ cg3_reading_t *cg3_reading_create(cg3_cohort_t *cohort) {
 	return reading;
 }
 
-cg3_status_t cg3_reading_addtag(cg3_reading_t *reading, cg3_tag_t *tag) {
+cg3_status cg3_reading_addtag(cg3_reading *reading_, cg3_tag *tag_) {
+	Reading *reading = static_cast<Reading*>(reading_);
+	Tag *tag = static_cast<Tag*>(tag_);
 	if (tag->type & T_MAPPING) {
 		if (reading->mapping && reading->mapping != tag) {
 			u_fprintf(ux_stderr, "CG3 Error: Cannot add a mapping tag to a reading which already is mapped!\n");
@@ -230,26 +251,30 @@ cg3_status_t cg3_reading_addtag(cg3_reading_t *reading, cg3_tag_t *tag) {
 	return CG3_SUCCESS;
 }
 
-size_t cg3_reading_numtags(cg3_reading_t *reading) {
+size_t cg3_reading_numtags(cg3_reading *reading_) {
+	Reading *reading = static_cast<Reading*>(reading_);
 	return reading->tags_list.size();
 }
 
-cg3_tag_t *cg3_reading_gettag(cg3_reading_t *reading, size_t which) {
+cg3_tag *cg3_reading_gettag(cg3_reading *reading_, size_t which) {
+	Reading *reading = static_cast<Reading*>(reading_);
 	uint32List::iterator it = reading->tags_list.begin();
 	std::advance(it, which);
 	GrammarApplicator *ga = reading->parent->parent->parent->parent;
 	return ga->single_tags.find(*it)->second;
 }
 
-void cg3_reading_free(cg3_reading_t *reading) {
+void cg3_reading_free(cg3_reading *reading_) {
+	Reading *reading = static_cast<Reading*>(reading_);
 	delete reading;
 }
 
-cg3_tag_t *cg3_tag_create_u(cg3_applicator_t *applicator, const UChar *text) {
+cg3_tag *cg3_tag_create_u(cg3_applicator *applicator_, const UChar *text) {
+	GrammarApplicator *applicator = static_cast<GrammarApplicator*>(applicator_);
 	return applicator->addTag(text);
 }
 
-cg3_tag_t *cg3_tag_create_u8(cg3_applicator_t *applicator, const char *text) {
+cg3_tag *cg3_tag_create_u8(cg3_applicator *applicator, const char *text) {
 	UErrorCode status = U_ZERO_ERROR;
 
 	u_strFromUTF8(&gbuffers[0][0], CG3_BUFFER_SIZE-1, 0, text, strlen(text), &status);
@@ -262,11 +287,11 @@ cg3_tag_t *cg3_tag_create_u8(cg3_applicator_t *applicator, const char *text) {
 	return cg3_tag_create_u(applicator, &gbuffers[0][0]);
 }
 
-cg3_tag_t *cg3_tag_create_u16(cg3_applicator_t *applicator, const uint16_t *text) {
+cg3_tag *cg3_tag_create_u16(cg3_applicator *applicator, const uint16_t *text) {
 	return cg3_tag_create_u(applicator, reinterpret_cast<const UChar*>(text));
 }
 
-cg3_tag_t *cg3_tag_create_u32(cg3_applicator_t *applicator, const uint32_t *text) {
+cg3_tag *cg3_tag_create_u32(cg3_applicator *applicator, const uint32_t *text) {
 	UErrorCode status = U_ZERO_ERROR;
 
 	size_t length = 0;
@@ -284,7 +309,7 @@ cg3_tag_t *cg3_tag_create_u32(cg3_applicator_t *applicator, const uint32_t *text
 	return cg3_tag_create_u(applicator, &gbuffers[0][0]);
 }
 
-cg3_tag_t *cg3_tag_create_w(cg3_applicator_t *applicator, const wchar_t *text) {
+cg3_tag *cg3_tag_create_w(cg3_applicator *applicator, const wchar_t *text) {
 	UErrorCode status = U_ZERO_ERROR;
 
 	u_strFromWCS(&gbuffers[0][0], CG3_BUFFER_SIZE-1, 0, text, wcslen(text), &status);
@@ -297,11 +322,13 @@ cg3_tag_t *cg3_tag_create_w(cg3_applicator_t *applicator, const wchar_t *text) {
 	return cg3_tag_create_u(applicator, &gbuffers[0][0]);
 }
 
-const UChar *cg3_tag_gettext_u(cg3_tag_t *tag) {
+const UChar *cg3_tag_gettext_u(cg3_tag *tag_) {
+	Tag *tag = static_cast<Tag*>(tag_);
 	return tag->tag.c_str();
 }
 
-const char *cg3_tag_gettext_u8(cg3_tag_t *tag) {
+const char *cg3_tag_gettext_u8(cg3_tag *tag_) {
+	Tag *tag = static_cast<Tag*>(tag_);
 	UErrorCode status = U_ZERO_ERROR;
 
 	u_strToUTF8(&cbuffers[0][0], CG3_BUFFER_SIZE-1, 0, tag->tag.c_str(), tag->tag.length(), &status);
@@ -314,11 +341,13 @@ const char *cg3_tag_gettext_u8(cg3_tag_t *tag) {
 	return &cbuffers[0][0];
 }
 
-const uint16_t *cg3_tag_gettext_u16(cg3_tag_t *tag) {
+const uint16_t *cg3_tag_gettext_u16(cg3_tag *tag_) {
+	Tag *tag = static_cast<Tag*>(tag_);
 	return reinterpret_cast<const uint16_t*>(tag->tag.c_str());
 }
 
-const uint32_t *cg3_tag_gettext_u32(cg3_tag_t *tag) {
+const uint32_t *cg3_tag_gettext_u32(cg3_tag *tag_) {
+	Tag *tag = static_cast<Tag*>(tag_);
 	UErrorCode status = U_ZERO_ERROR;
 
 	UChar32 *tmp = reinterpret_cast<UChar32*>(&cbuffers[0][0]);
@@ -333,7 +362,8 @@ const uint32_t *cg3_tag_gettext_u32(cg3_tag_t *tag) {
 	return reinterpret_cast<const uint32_t*>(tmp);
 }
 
-const wchar_t *cg3_tag_gettext_w(cg3_tag_t *tag) {
+const wchar_t *cg3_tag_gettext_w(cg3_tag *tag_) {
+	Tag *tag = static_cast<Tag*>(tag_);
 	UErrorCode status = U_ZERO_ERROR;
 
 	wchar_t *tmp = reinterpret_cast<wchar_t*>(&cbuffers[0][0]);
