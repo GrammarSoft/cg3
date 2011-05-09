@@ -192,6 +192,7 @@ cg3_reading_t *cg3_reading_create(cg3_cohort_t *cohort) {
 	reading->wordform = cohort->wordform;
 	insert_if_exists(reading->parent->possible_sets, ga->grammar->sets_any);
 	ga->addTagToReading(*reading, reading->wordform);
+	return reading;
 }
 
 void cg3_reading_addtag(cg3_reading_t *reading, cg3_tag_t *tag) {
