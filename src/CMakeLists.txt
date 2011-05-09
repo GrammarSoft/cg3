@@ -75,5 +75,9 @@ ADD_EXECUTABLE(vislcg3 main.cpp)
 cg3_link(vislcg3)
 target_link_libraries(vislcg3 libcg3)
 
+ADD_EXECUTABLE(test_libcg3 test_libcg3.cpp)
+#cg3_link(test_libcg3)
+target_link_libraries(test_libcg3 libcg3)
+
 install(TARGETS libcg3 ARCHIVE DESTINATION lib)
 install(TARGETS cg-comp cg-proc cg-conv vislcg3 RUNTIME DESTINATION bin)
