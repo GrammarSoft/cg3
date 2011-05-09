@@ -60,6 +60,8 @@ cg3_sentence_t *cg3_sentence_new(cg3_applicator_t *applicator);
 void cg3_sentence_runrules(cg3_applicator_t *applicator, cg3_sentence_t *sentence);
 // The Sentence takes ownership of the Cohort here.
 void cg3_sentence_addcohort(cg3_sentence_t *sentence, cg3_cohort_t *cohort);
+size_t cg3_sentence_numcohorts(cg3_sentence_t *sentence);
+cg3_cohort_t *cg3_sentence_getcohort(cg3_sentence_t *sentence, size_t which);
 void cg3_sentence_free(cg3_sentence_t *sentence);
 
 cg3_cohort_t *cg3_cohort_create(cg3_sentence_t *sentence);
@@ -67,11 +69,15 @@ void cg3_cohort_setwordform(cg3_cohort_t *cohort, cg3_tag_t *wordform);
 void cg3_cohort_setdependency(cg3_cohort_t *cohort, uint32_t dep_self, uint32_t dep_parent);
 // The Cohort takes ownership of the Reading here.
 void cg3_cohort_addreading(cg3_cohort_t *cohort, cg3_reading_t *reading);
+size_t cg3_cohort_numreadings(cg3_cohort_t *cohort);
+cg3_reading_t *cg3_cohort_getreading(cg3_cohort_t *cohort, size_t which);
 // This is usually not to be used. The Sentence will take ownership of the Cohort and free it on destruction
 void cg3_cohort_free(cg3_cohort_t *cohort);
 
 cg3_reading_t *cg3_reading_create(cg3_cohort_t *cohort);
 cg3_status_t cg3_reading_addtag(cg3_reading_t *reading, cg3_tag_t *tag);
+size_t cg3_reading_numtags(cg3_reading_t *reading);
+cg3_tag_t *cg3_reading_gettag(cg3_reading_t *reading, size_t which);
 // This is usually not to be used. The Cohort will take ownership of the Reading and free it on destruction
 void cg3_reading_free(cg3_reading_t *reading);
 
@@ -82,6 +88,14 @@ cg3_tag_t *cg3_tag_create_u8(cg3_applicator_t *applicator, const char *text);
 cg3_tag_t *cg3_tag_create_u16(cg3_applicator_t *applicator, const uint16_t *text);
 cg3_tag_t *cg3_tag_create_u32(cg3_applicator_t *applicator, const uint32_t *text);
 cg3_tag_t *cg3_tag_create_w(cg3_applicator_t *applicator, const wchar_t *text);
+
+#ifdef U_ICU_VERSION_MAJOR_NUM
+const UChar *cg3_tag_gettext_u(cg3_tag_t *tag);
+#endif
+const char *cg3_tag_gettext_u8(cg3_tag_t *tag);
+const uint16_t *cg3_tag_gettext_u16(cg3_tag_t *tag);
+const uint32_t *cg3_tag_gettext_u32(cg3_tag_t *tag);
+const wchar_t *cg3_tag_gettext_w(cg3_tag_t *tag);
 
 #ifdef __cplusplus
 }
