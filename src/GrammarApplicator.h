@@ -92,10 +92,12 @@ namespace CG3 {
 
 		Grammar *grammar;
 
+		// Moved these public to help the library API
 		Tag *addTag(const UChar *tag, bool vstr = false);
 		void initEmptySingleWindow(SingleWindow *cSWindow);
 		uint32_t addTagToReading(Reading& reading, uint32_t tag, bool rehash = true);
 		void runGrammarOnWindow();
+		Taguint32HashMap single_tags;
 
 	protected:
 		void printReading(const Reading *reading, UFILE *output);
@@ -143,8 +145,6 @@ namespace CG3 {
 		uint32_t unif_last_textual;
 		uint32Set unif_sets;
 		bool unif_sets_firstrun;
-
-		Taguint32HashMap single_tags;
 
 		uint32HashSet index_regexp_yes;
 		uint32HashSet index_regexp_no;

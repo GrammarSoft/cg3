@@ -157,6 +157,14 @@ void cg3_sentence_runrules(cg3_applicator_t *applicator, cg3_sentence_t *sentenc
 	applicator->gWindow->current = 0;
 }
 
+size_t cg3_sentence_numcohorts(cg3_sentence_t *sentence) {
+	return sentence->cohorts.size();
+}
+
+cg3_cohort_t *cg3_sentence_getcohort(cg3_sentence_t *sentence, size_t which) {
+	return sentence->cohorts[which];
+}
+
 void cg3_sentence_free(cg3_sentence_t *sentence) {
 	delete sentence;
 }
@@ -185,6 +193,16 @@ void cg3_cohort_addreading(cg3_cohort_t *cohort, cg3_reading_t *reading) {
 	cohort->appendReading(reading);
 }
 
+size_t cg3_cohort_numreadings(cg3_cohort_t *cohort) {
+	return cohort->readings.size();
+}
+
+cg3_reading_t *cg3_cohort_getreading(cg3_cohort_t *cohort, size_t which) {
+	ReadingList::iterator it = cohort->readings.begin();
+	std::advance(it, which);
+	return *it;
+}
+
 void cg3_cohort_free(cg3_cohort_t *cohort) {
 	delete cohort;
 }
@@ -210,6 +228,17 @@ cg3_status_t cg3_reading_addtag(cg3_reading_t *reading, cg3_tag_t *tag) {
 	ga->addTagToReading(*reading, tag->hash);
 
 	return CG3_SUCCESS;
+}
+
+size_t cg3_reading_numtags(cg3_reading_t *reading) {
+	return reading->tags_list.size();
+}
+
+cg3_tag_t *cg3_reading_gettag(cg3_reading_t *reading, size_t which) {
+	uint32List::iterator it = reading->tags_list.begin();
+	std::advance(it, which);
+	GrammarApplicator *ga = reading->parent->parent->parent->parent;
+	return ga->single_tags.find(*it)->second;
 }
 
 void cg3_reading_free(cg3_reading_t *reading) {
@@ -266,4 +295,55 @@ cg3_tag_t *cg3_tag_create_w(cg3_applicator_t *applicator, const wchar_t *text) {
 	status = U_ZERO_ERROR;
 
 	return cg3_tag_create_u(applicator, &gbuffers[0][0]);
+}
+
+const UChar *cg3_tag_gettext_u(cg3_tag_t *tag) {
+	return tag->tag.c_str();
+}
+
+const char *cg3_tag_gettext_u8(cg3_tag_t *tag) {
+	UErrorCode status = U_ZERO_ERROR;
+
+	u_strToUTF8(&cbuffers[0][0], CG3_BUFFER_SIZE-1, 0, tag->tag.c_str(), tag->tag.length(), &status);
+	if (U_FAILURE(status)) {
+		u_fprintf(ux_stderr, "CG3 Error: Failed to convert text from UChar to UTF-8. Status = %s\n", u_errorName(status));
+		return 0;
+	}
+	status = U_ZERO_ERROR;
+
+	return &cbuffers[0][0];
+}
+
+const uint16_t *cg3_tag_gettext_u16(cg3_tag_t *tag) {
+	return reinterpret_cast<const uint16_t*>(tag->tag.c_str());
+}
+
+const uint32_t *cg3_tag_gettext_u32(cg3_tag_t *tag) {
+	UErrorCode status = U_ZERO_ERROR;
+
+	UChar32 *tmp = reinterpret_cast<UChar32*>(&cbuffers[0][0]);
+
+	u_strToUTF32(tmp, (CG3_BUFFER_SIZE/sizeof(UChar32))-1, 0, tag->tag.c_str(), tag->tag.length(), &status);
+	if (U_FAILURE(status)) {
+		u_fprintf(ux_stderr, "CG3 Error: Failed to convert text from UChar to UTF-32. Status = %s\n", u_errorName(status));
+		return 0;
+	}
+	status = U_ZERO_ERROR;
+
+	return reinterpret_cast<const uint32_t*>(tmp);
+}
+
+const wchar_t *cg3_tag_gettext_w(cg3_tag_t *tag) {
+	UErrorCode status = U_ZERO_ERROR;
+
+	wchar_t *tmp = reinterpret_cast<wchar_t*>(&cbuffers[0][0]);
+
+	u_strToWCS(tmp, (CG3_BUFFER_SIZE/sizeof(wchar_t))-1, 0, tag->tag.c_str(), tag->tag.length(), &status);
+	if (U_FAILURE(status)) {
+		u_fprintf(ux_stderr, "CG3 Error: Failed to convert text from UChar to UTF-32. Status = %s\n", u_errorName(status));
+		return 0;
+	}
+	status = U_ZERO_ERROR;
+
+	return reinterpret_cast<const wchar_t*>(tmp);
 }
