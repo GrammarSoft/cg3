@@ -92,8 +92,10 @@ namespace CG3 {
 
 		Grammar *grammar;
 
+		Tag *addTag(const UChar *tag, bool vstr = false);
 		void initEmptySingleWindow(SingleWindow *cSWindow);
 		uint32_t addTagToReading(Reading& reading, uint32_t tag, bool rehash = true);
+		void runGrammarOnWindow();
 
 	protected:
 		void printReading(const Reading *reading, UFILE *output);
@@ -153,14 +155,12 @@ namespace CG3 {
 		uint32HashSet index_ruleCohort_no;
 		void resetIndexes();
 	
-		Tag *addTag(const UChar *tag, bool vstr = false);
 		Tag *addTag(const UString& txt, bool vstr = false);
 		Tag *makeBaseFromWord(uint32_t tag);
 		Tag *makeBaseFromWord(Tag *tag);
 
 		bool updateRuleToCohorts(Cohort& c, const uint32_t& rsit);
 		void indexSingleWindow(SingleWindow& current);
-		void runGrammarOnWindow();
 		uint32_t runGrammarOnSingleWindow(SingleWindow& current);
 		bool updateValidRules(const uint32IntervalVector& rules, uint32IntervalVector& intersects, const uint32_t& hash, Reading& reading);
 		uint32_t runRulesOnSingleWindow(SingleWindow& current, const uint32IntervalVector& rules);

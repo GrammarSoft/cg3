@@ -23,6 +23,7 @@
 #ifndef c6d28b7452ec699b_CG3_H
 #define c6d28b7452ec699b_CG3_H
 
+#include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>
 
@@ -56,9 +57,10 @@ cg3_applicator_t *cg3_applicator_create(cg3_grammar_t *grammar);
 void cg3_applicator_free(cg3_applicator_t *applicator);
 
 cg3_sentence_t *cg3_sentence_new(cg3_applicator_t *applicator);
-cg3_sentence_t *cg3_sentence_state(cg3_applicator_t *applicator);
+void cg3_sentence_runrules(cg3_applicator_t *applicator, cg3_sentence_t *sentence);
 // The Sentence takes ownership of the Cohort here.
 void cg3_sentence_addcohort(cg3_sentence_t *sentence, cg3_cohort_t *cohort);
+void cg3_sentence_free(cg3_sentence_t *sentence);
 
 cg3_cohort_t *cg3_cohort_create(cg3_sentence_t *sentence);
 void cg3_cohort_setwordform(cg3_cohort_t *cohort, cg3_tag_t *wordform);
@@ -69,9 +71,17 @@ void cg3_cohort_addreading(cg3_cohort_t *cohort, cg3_reading_t *reading);
 void cg3_cohort_free(cg3_cohort_t *cohort);
 
 cg3_reading_t *cg3_reading_create(cg3_cohort_t *cohort);
-void cg3_reading_addtag(cg3_reading_t *reading, cg3_tag_t *tag);
-// This is usually not to be used. The Cohrt will take ownership of the Reading and free it on destruction
+cg3_status_t cg3_reading_addtag(cg3_reading_t *reading, cg3_tag_t *tag);
+// This is usually not to be used. The Cohort will take ownership of the Reading and free it on destruction
 void cg3_reading_free(cg3_reading_t *reading);
+
+#ifdef U_ICU_VERSION_MAJOR_NUM
+cg3_tag_t *cg3_tag_create_u(cg3_applicator_t *applicator, const UChar *text);
+#endif
+cg3_tag_t *cg3_tag_create_u8(cg3_applicator_t *applicator, const char *text);
+cg3_tag_t *cg3_tag_create_u16(cg3_applicator_t *applicator, const uint16_t *text);
+cg3_tag_t *cg3_tag_create_u32(cg3_applicator_t *applicator, const uint32_t *text);
+cg3_tag_t *cg3_tag_create_w(cg3_applicator_t *applicator, const wchar_t *text);
 
 #ifdef __cplusplus
 }
