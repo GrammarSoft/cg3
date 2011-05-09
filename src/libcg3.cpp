@@ -23,14 +23,19 @@
 #include "icu_uoptions.h"
 #include "Grammar.h"
 #include "TextualParser.h"
-#include "GrammarWriter.h"
 #include "BinaryGrammar.h"
 #include "GrammarApplicator.h"
+#include "Window.h"
+#include "SingleWindow.h"
 #include "version.h"
 using namespace CG3;
 
-typedef Grammar cg3_grammar_t;
+typedef Grammar           cg3_grammar_t;
 typedef GrammarApplicator cg3_applicator_t;
+typedef SingleWindow      cg3_sentence_t;
+typedef Cohort            cg3_cohort_t;
+typedef Reading           cg3_reading_t;
+typedef Tag               cg3_tag_t;
 
 #define _CG3_INTERNAL
 #include "cg3.h"
@@ -39,7 +44,7 @@ UFILE *ux_stdin = 0;
 UFILE *ux_stdout = 0;
 UFILE *ux_stderr = 0;
 
-int cg3_init(FILE *in, FILE *out, FILE *err) {
+cg3_status_t cg3_init(FILE *in, FILE *out, FILE *err) {
 	UErrorCode status = U_ZERO_ERROR;
 	u_init(&status);
 	if (U_FAILURE(status) && status != U_FILE_ACCESS_ERROR) {
@@ -78,7 +83,7 @@ int cg3_init(FILE *in, FILE *out, FILE *err) {
 	return CG3_SUCCESS;
 }
 
-int cg3_cleanup(void) {
+cg3_status_t cg3_cleanup(void) {
 	u_fclose(ux_stdin);
 	u_fclose(ux_stdout);
 	u_fclose(ux_stderr);
@@ -136,4 +141,64 @@ cg3_applicator_t *cg3_applicator_create(cg3_grammar_t *grammar) {
 
 void cg3_applicator_free(cg3_applicator_t *applicator) {
 	delete applicator;
+}
+
+cg3_sentence_t *cg3_sentence_new(cg3_applicator_t *applicator) {
+	delete applicator->gWindow->current;
+	applicator->gWindow->current = 0;
+	return cg3_sentence_state(applicator);
+}
+
+cg3_sentence_t *cg3_sentence_state(cg3_applicator_t *applicator) {
+	SingleWindow *current = applicator->gWindow->current;
+	if (!current) {
+		current = applicator->gWindow->current = applicator->gWindow->allocSingleWindow();
+		applicator->initEmptySingleWindow(current);
+	}
+	return current;
+}
+
+void cg3_sentence_addcohort(cg3_sentence_t *sentence, cg3_cohort_t *cohort) {
+	sentence->appendCohort(cohort);
+}
+
+cg3_cohort_t *cg3_cohort_create(cg3_sentence_t *sentence) {
+	Cohort *cohort = new Cohort(sentence);
+	cohort->global_number = sentence->parent->cohort_counter++;
+	return cohort;
+}
+
+void cg3_cohort_setwordform(cg3_cohort_t *cohort, cg3_tag_t *wordform) {
+	cohort->wordform = wordform->hash;
+}
+
+void cg3_cohort_setdependency(cg3_cohort_t *cohort, uint32_t dep_self, uint32_t dep_parent) {
+	cohort->parent->parent->parent->has_dep = true;
+	cohort->dep_self = dep_self;
+	cohort->dep_parent = dep_parent;
+}
+
+void cg3_cohort_addreading(cg3_cohort_t *cohort, cg3_reading_t *reading) {
+	cohort->appendReading(reading);
+}
+
+void cg3_cohort_free(cg3_cohort_t *cohort) {
+	delete cohort;
+}
+
+cg3_reading_t *cg3_reading_create(cg3_cohort_t *cohort) {
+	GrammarApplicator *ga = cohort->parent->parent->parent;
+	Reading *reading = new Reading(cohort);
+	reading->wordform = cohort->wordform;
+	insert_if_exists(reading->parent->possible_sets, ga->grammar->sets_any);
+	ga->addTagToReading(*reading, reading->wordform);
+}
+
+void cg3_reading_addtag(cg3_reading_t *reading, cg3_tag_t *tag) {
+	GrammarApplicator *ga = reading->parent->parent->parent->parent;
+	ga->addTagToReading(*reading, tag->hash);
+}
+
+void cg3_reading_free(cg3_reading_t *reading) {
+	delete reading;
 }
