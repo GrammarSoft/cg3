@@ -93,8 +93,6 @@ unif_sets_firstrun(false),
 statistics(false)
 {
 	gWindow = new Window(this);
-	begintag = addTag(stringbits[S_BEGINTAG].getTerminatedBuffer())->hash;
-	endtag = addTag(stringbits[S_ENDTAG].getTerminatedBuffer())->hash;
 }
 
 GrammarApplicator::~GrammarApplicator() {
@@ -127,6 +125,8 @@ void GrammarApplicator::resetIndexes() {
 void GrammarApplicator::setGrammar(Grammar *res) {
 	grammar = res;
 	single_tags = grammar->single_tags;
+	begintag = addTag(stringbits[S_BEGINTAG].getTerminatedBuffer())->hash;
+	endtag = addTag(stringbits[S_ENDTAG].getTerminatedBuffer())->hash;
 }
 
 void GrammarApplicator::index() {
