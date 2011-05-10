@@ -66,6 +66,7 @@ cg3_cohort *cg3_cohort_create(cg3_sentence *sentence);
 void cg3_cohort_setwordform(cg3_cohort *cohort, cg3_tag *wordform);
 cg3_tag *cg3_cohort_getwordform(cg3_cohort *cohort);
 void cg3_cohort_setdependency(cg3_cohort *cohort, uint32_t dep_self, uint32_t dep_parent);
+void cg3_cohort_getdependency(cg3_cohort *cohort, uint32_t *dep_self, uint32_t *dep_parent);
 // The Cohort takes ownership of the Reading here.
 void cg3_cohort_addreading(cg3_cohort *cohort, cg3_reading *reading);
 size_t cg3_cohort_numreadings(cg3_cohort *cohort);

@@ -202,6 +202,16 @@ void cg3_cohort_setdependency(cg3_cohort *cohort_, uint32_t dep_self, uint32_t d
 	cohort->dep_parent = dep_parent;
 }
 
+void cg3_cohort_getdependency(cg3_cohort *cohort_, uint32_t *dep_self, uint32_t *dep_parent) {
+	Cohort *cohort = static_cast<Cohort*>(cohort_);
+	if (dep_self) {
+		*dep_self = cohort->dep_self;
+	}
+	if (dep_parent) {
+		*dep_parent = cohort->dep_parent;
+	}
+}
+
 void cg3_cohort_addreading(cg3_cohort *cohort_, cg3_reading *reading_) {
 	Cohort *cohort = static_cast<Cohort*>(cohort_);
 	Reading *reading = static_cast<Reading*>(reading_);
