@@ -58,9 +58,23 @@ int main(int argc, char *argv[]) {
 	reading = cg3_reading_create(cohort);
 	tag = cg3_tag_create_w(applicator, L"\"baseform\"");
 	cg3_reading_addtag(reading, tag);
-	tag = cg3_tag_create_u8(applicator, "tag");
+	tag = cg3_tag_create_u8(applicator, "notwanted");
 	cg3_reading_addtag(reading, tag);
 	tag = cg3_tag_create_w(applicator, L"@mapping");
+	cg3_reading_addtag(reading, tag);
+	cg3_cohort_addreading(cohort, reading);
+
+	reading = cg3_reading_create(cohort);
+	tag = cg3_tag_create_w(applicator, L"\"baseform\"");
+	cg3_reading_addtag(reading, tag);
+	tag = cg3_tag_create_u8(applicator, "wanted");
+	cg3_reading_addtag(reading, tag);
+	cg3_cohort_addreading(cohort, reading);
+
+	reading = cg3_reading_create(cohort);
+	tag = cg3_tag_create_w(applicator, L"\"baseform\"");
+	cg3_reading_addtag(reading, tag);
+	tag = cg3_tag_create_u8(applicator, "alsonotwanted");
 	cg3_reading_addtag(reading, tag);
 	cg3_cohort_addreading(cohort, reading);
 
