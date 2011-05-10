@@ -78,5 +78,8 @@ target_link_libraries(vislcg3 libcg3)
 ADD_EXECUTABLE(test_libcg3 test_libcg3.c)
 target_link_libraries(test_libcg3 libcg3)
 
+enable_testing()
+ADD_TEST(NAME t_libcg3 COMMAND $<TARGET_FILE:test_libcg3> "${CMAKE_CURRENT_SOURCE_DIR}/../test/T_BasicSelect/grammar.txt")
+
 install(TARGETS libcg3 ARCHIVE DESTINATION lib)
 install(TARGETS cg-comp cg-proc cg-conv vislcg3 RUNTIME DESTINATION bin)
