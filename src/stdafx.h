@@ -42,6 +42,7 @@
 #include <fstream>
 #include <ostream>
 #include <sstream>
+#include <memory>
 #include <cstdlib>
 #include <cstdio>
 #include <cstring>
