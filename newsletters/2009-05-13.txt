@@ -1,4 +1,4 @@
-A new release of CG-3 has been tagged v0.9.7.779 in preparation for the NoDaLiDa 2009 CG-3 Workshop ( http://giellatekno.uit.no/cg/09/ ) which takes place tomorrow.
+A new release of CG-3 has been tagged v0.9.7.4779 in preparation for the NoDaLiDa 2009 CG-3 Workshop ( http://giellatekno.uit.no/cg/09/ ) which takes place tomorrow.
 
 Main site is http://beta.visl.sdu.dk/cg3.html
 Google Group is http://groups.google.com/group/constraint-grammar
@@ -19,7 +19,7 @@ New features:
 - Implemented runtime option --show-unused-sets which compiles the grammar and then outputs a list of unused sets. Useful for cleaning up grammars.
 
 Changes:
-- Changed input stream commands from CGCMD:* to <STREAMCMD;*> to better co-exist with existing toolchains.
+- Changed input stream commands from CGCMD:* to <STREAMCMD:*> to better co-exist with existing toolchains.
 - Dependency output format and behavior has changed to now differentiate between being attached to the root (cohort 0) and not being attached at all. When not attached at all, the output will show an attachment to the cohort itself, a'la #3->3. This change was necessary to prevent sibling checks from declaring everything sibling to everything else simply because it was all default attached to the same root.
 - Set names may no longer end in comma , or right-square-bracket ]. This was necessary for the shorthand templates to function properly.
 
