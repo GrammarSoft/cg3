@@ -7,7 +7,7 @@ Windows binary is at http://beta.visl.sdu.dk/download/vislcg3/vislcg3-0.9.7.6370
 Mirror at http://groups.google.com/group/constraint-grammar/files
 
 Changes:
-- All from v0.9.7.6359 ( http://groups.google.com/group/constraint-grammar/browse_thread/thread/d7feaa086ec043d2 ) but will all Optimizations and the "composite tags in inline sets" rolled back.
+- All from v0.9.7.6359 ( http://groups.google.com/group/constraint-grammar/browse_thread/thread/d7feaa086ec043d2 ) but with all Optimizations and the "composite tags in inline sets" rolled back.
 - Now bails out if a tag starts with ( as that is almost always an error.
 
 -- Tino Didriksen
