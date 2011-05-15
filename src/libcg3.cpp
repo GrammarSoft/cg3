@@ -135,6 +135,23 @@ cg3_applicator *cg3_applicator_create(cg3_grammar *grammar_) {
 	return applicator;
 }
 
+void cg3_applicator_setflags(cg3_applicator *applicator_, uint32_t flags) {
+	GrammarApplicator *applicator = static_cast<GrammarApplicator*>(applicator_);
+	applicator->ordered            = (flags & CG3O_ORDERED)            != 0;
+	applicator->unsafe             = (flags & CG3O_UNSAFE)             != 0;
+	applicator->apply_mappings     = (flags & CG3O_NO_MAPPINGS)        == 0;
+	applicator->apply_corrections  = (flags & CG3O_NO_CORRECTIONS)     == 0;
+	applicator->no_before_sections = (flags & CG3O_NO_BEFORE_SECTIONS) != 0;
+	applicator->no_sections        = (flags & CG3O_NO_SECTIONS)        != 0;
+	applicator->no_after_sections  = (flags & CG3O_NO_AFTER_SECTIONS)  != 0;
+	applicator->trace              = (flags & CG3O_TRACE)              != 0;
+	applicator->section_max_count  = (flags & CG3O_SINGLE_RUN)         != 0;
+	applicator->always_span        = (flags & CG3O_ALWAYS_SPAN)        != 0;
+	applicator->dep_block_loops    = (flags & CG3O_DEP_ALLOW_LOOPS)    == 0;
+	applicator->dep_block_crossing = (flags & CG3O_DEP_NO_CROSSING)    != 0;
+	applicator->no_pass_origin     = (flags & CG3O_NO_PASS_ORIGIN)     != 0;
+}
+
 void cg3_applicator_free(cg3_applicator *applicator_) {
 	GrammarApplicator *applicator = static_cast<GrammarApplicator*>(applicator_);
 	delete applicator;
