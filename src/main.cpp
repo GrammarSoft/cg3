@@ -429,53 +429,6 @@ int main(int argc, char* argv[]) {
 	return status;
 }
 
-template<typename Cont>
-void GAppSetOpts_ranged(const char *value, Cont& cont) {
-	cont.clear();
-	const char *s = value;
-	const char *c = strchr(s, ',');
-	const char *d = strchr(s, '-');
-	if (c == 0 && d == 0) {
-		uint32_t a = abs(atoi(s));
-		for (uint32_t i=1 ; i<=a ; i++) {
-			cont.push_back(i);
-		}
-	}
-	else {
-		uint32_t a = 0, b = 0;
-		while (c || d) {
-			if (d && (d < c || c == 0)) {
-				a = abs(atoi(s));
-				b = abs(atoi(d));
-				if (c) {
-					s = c+1;
-				}
-				else {
-					d = 0;
-					s = 0;
-				}
-				for (uint32_t i=a ; i<=b ; i++) {
-					cont.push_back(i);
-				}
-			}
-			else if (c && (c < d || d == 0)) {
-				a = abs(atoi(s));
-				s = c+1;
-				cont.push_back(a);
-			}
-			if (s) {
-				c = strchr(s, ',');
-				d = strchr(s, '-');
-				if (c == 0 && d == 0) {
-					a = abs(atoi(s));
-					cont.push_back(a);
-					s = 0;
-				}
-			}
-		}
-	}
-}
-
 void GAppSetOpts(CG3::GrammarApplicator& applicator, UConverter *conv) {
 	if (options[ALWAYS_SPAN].doesOccur) {
 		applicator.always_span = true;
@@ -533,10 +486,10 @@ void GAppSetOpts(CG3::GrammarApplicator& applicator, UConverter *conv) {
 		applicator.section_max_count = abs(atoi(options[MAXRUNS].value));
 	}
 	if (options[SECTIONS].doesOccur) {
-		GAppSetOpts_ranged(options[SECTIONS].value, applicator.sections);
+		CG3::GAppSetOpts_ranged(options[SECTIONS].value, applicator.sections);
 	}
 	if (options[RULES].doesOccur) {
-		GAppSetOpts_ranged(options[RULES].value, applicator.valid_rules);
+		CG3::GAppSetOpts_ranged(options[RULES].value, applicator.valid_rules);
 	}
 	if (options[RULE].doesOccur) {
 		if (options[RULE].value[0] >= '0' && options[RULE].value[0] <= '9') {

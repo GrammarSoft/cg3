@@ -44,21 +44,25 @@ typedef enum {
 } cg3_status;
 
 typedef enum {
-	CG3O_ORDERED            = (1 <<  0),
-	CG3O_UNSAFE             = (1 <<  1),
-	CG3O_NO_MAPPINGS        = (1 <<  2),
-	CG3O_NO_CORRECTIONS     = (1 <<  3),
-	CG3O_NO_BEFORE_SECTIONS = (1 <<  4),
-	CG3O_NO_SECTIONS        = (1 <<  5),
-	CG3O_NO_AFTER_SECTIONS  = (1 <<  6),
-	CG3O_TRACE              = (1 <<  7),
-	CG3O_SINGLE_RUN         = (1 <<  8),
-	CG3O_ALWAYS_SPAN        = (1 <<  9),
-	CG3O_DEP_ALLOW_LOOPS    = (1 << 10),
-	CG3O_DEP_NO_CROSSING    = (1 << 11),
-	CG3O_NO_MAGIC_READINGS  = (1 << 12),
-	CG3O_NO_PASS_ORIGIN     = (1 << 13),
+	CG3F_ORDERED            = (1 <<  0),
+	CG3F_UNSAFE             = (1 <<  1),
+	CG3F_NO_MAPPINGS        = (1 <<  2),
+	CG3F_NO_CORRECTIONS     = (1 <<  3),
+	CG3F_NO_BEFORE_SECTIONS = (1 <<  4),
+	CG3F_NO_SECTIONS        = (1 <<  5),
+	CG3F_NO_AFTER_SECTIONS  = (1 <<  6),
+	CG3F_TRACE              = (1 <<  7),
+	CG3F_SINGLE_RUN         = (1 <<  8),
+	CG3F_ALWAYS_SPAN        = (1 <<  9),
+	CG3F_DEP_ALLOW_LOOPS    = (1 << 10),
+	CG3F_DEP_NO_CROSSING    = (1 << 11),
+	CG3F_NO_PASS_ORIGIN     = (1 << 13),
 } cg3_flags;
+
+typedef enum {
+	CG3O_SECTIONS      = 1,
+	CG3O_SECTIONS_TEXT = 2,
+} cg3_option;
 
 // Default usage: if (!cg3_init(stdin, stdout, stderr)) { exit(1); }
 cg3_status cg3_init(FILE *in, FILE *out, FILE *err);
@@ -71,6 +75,14 @@ void cg3_grammar_free(cg3_grammar *grammar);
 cg3_applicator *cg3_applicator_create(cg3_grammar *grammar);
 // Pass in OR'ed values from cg3_flags; each call resets flags, so set all needed ones in a single call.
 void cg3_applicator_setflags(cg3_applicator *applicator, uint32_t flags);
+/*
+Valid signatures:
+- cg3_applicator_setoption(aplc, CG3O_SECTIONS, uint32_t*);
+	Pointer to an uint32_t stating the max section to run; akin to --sections 6
+- cg3_applicator_setoption(aplc, CG3O_SECTIONS_TEXT, const char*);
+	Pointer to cstring with ranges; akin to --sections "2,4-6,8-9"
+//*/
+void cg3_applicator_setoption(cg3_applicator *applicator, cg3_option option, void *value);
 void cg3_applicator_free(cg3_applicator *applicator);
 
 cg3_sentence *cg3_sentence_new(cg3_applicator *applicator);
