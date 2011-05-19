@@ -31,8 +31,8 @@ inline uint32_t hash_sdbm_uint32_t(const uint32_t c, uint32_t hash = 0) {
 	if (hash == 0) {
 		hash = CG3_HASH_SEED;
 	}
-    hash = c + (hash << 6U) + (hash << 16U) - hash;
-    return hash;
+	hash = c + (hash << 6U) + (hash << 16U) - hash;
+	return hash;
 }
 
 /*
@@ -47,7 +47,7 @@ inline uint32_t hash_sdbm_uint32_t(const uint32_t c, uint32_t hash = 0) {
 
 #if !defined (get16bits)
 #define get16bits(d) ((((uint32_t)(((const uint8_t *)(d))[1])) << 8) \
-                       +(uint32_t)(((const uint8_t *)(d))[0]) )
+					   +(uint32_t)(((const uint8_t *)(d))[0]) )
 #endif
 
 inline uint32_t SuperFastHash_char(const char *data, uint32_t hash = CG3_HASH_SEED, uint32_t len = 0) {
@@ -349,6 +349,54 @@ inline T readSwapped(std::istream& stream) {
 	// warning C4127: conditional expression is constant
 	#pragma warning (default: 4127)
 #endif
+
+template<typename Cont>
+inline void GAppSetOpts_ranged(const char *value, Cont& cont) {
+	cont.clear();
+	const char *s = value;
+	const char *c = strchr(s, ',');
+	const char *d = strchr(s, '-');
+	if (c == 0 && d == 0) {
+		uint32_t a = abs(atoi(s));
+		for (uint32_t i=1 ; i<=a ; ++i) {
+			cont.push_back(i);
+		}
+	}
+	else {
+		uint32_t a = 0, b = 0;
+		while (c || d) {
+			if (d && (d < c || c == 0)) {
+				a = abs(atoi(s));
+				b = abs(atoi(d));
+				if (c) {
+					s = c+1;
+				}
+				else {
+					d = 0;
+					s = 0;
+				}
+				for (uint32_t i=a ; i<=b ; ++i) {
+					cont.push_back(i);
+				}
+			}
+			else if (c && (c < d || d == 0)) {
+				a = abs(atoi(s));
+				s = c+1;
+				cont.push_back(a);
+			}
+			if (s) {
+				c = strchr(s, ',');
+				d = strchr(s, '-');
+				if (c == 0 && d == 0) {
+					a = abs(atoi(s));
+					cont.push_back(a);
+					s = 0;
+				}
+			}
+		}
+	}
+}
+
 }
 
 #endif
