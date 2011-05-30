@@ -1,6 +1,11 @@
 # Boost
 SET(Boost_ADDITIONAL_VERSIONS "1.42" "1.42.0" "1.43" "1.43.0" "1.44" "1.44.0" "1.45" "1.45.0" "1.46" "1.46.0" "1.46.1")
 find_package(Boost 1.36.0)
+if (NOT Boost_FOUND)
+	SET(BOOST_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/../include")
+	message(STATUS "Did not find Boost globally; trying locally...")
+	find_package(Boost 1.36.0 REQUIRED)
+endif()
 if(Boost_FOUND)
 	include_directories(${Boost_INCLUDE_DIRS})
 	link_directories(${Boost_LIBRARY_DIRS})
