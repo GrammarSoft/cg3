@@ -311,6 +311,18 @@ cg3_tag *cg3_reading_gettag(cg3_reading *reading_, size_t which) {
 	return ga->single_tags.find(*it)->second;
 }
 
+size_t cg3_reading_numtraces(cg3_reading *reading_) {
+	Reading *reading = static_cast<Reading*>(reading_);
+	return reading->hit_by.size();
+}
+
+uint32_t cg3_reading_gettrace(cg3_reading *reading_, size_t which) {
+	Reading *reading = static_cast<Reading*>(reading_);
+	Grammar *grammar = reading->parent->parent->parent->parent->grammar;
+	const Rule *r = grammar->rule_by_number[reading->hit_by[which]];
+	return r->line;
+}
+
 void cg3_reading_free(cg3_reading *reading_) {
 	Reading *reading = static_cast<Reading*>(reading_);
 	delete reading;
