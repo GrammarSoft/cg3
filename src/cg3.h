@@ -109,6 +109,8 @@ cg3_reading *cg3_reading_create(cg3_cohort *cohort);
 cg3_status cg3_reading_addtag(cg3_reading *reading, cg3_tag *tag);
 size_t cg3_reading_numtags(cg3_reading *reading);
 cg3_tag *cg3_reading_gettag(cg3_reading *reading, size_t which);
+size_t cg3_reading_numtraces(cg3_reading *reading);
+uint32_t cg3_reading_gettrace(cg3_reading *reading, size_t which);
 // This is usually not to be used. The Cohort will take ownership of the Reading and free it on destruction
 void cg3_reading_free(cg3_reading *reading);
 

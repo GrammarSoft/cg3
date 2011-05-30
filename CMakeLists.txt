@@ -20,6 +20,8 @@ else(MSVC)
 	SET(CMAKE_CXX_FLAGS_RELEASE "-O3")
 endif(MSVC)
 
+include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
+
 enable_testing()
 
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src)
