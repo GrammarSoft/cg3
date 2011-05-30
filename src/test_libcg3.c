@@ -49,6 +49,7 @@ int main(int argc, char *argv[]) {
 	}
 
 	applicator = cg3_applicator_create(grammar);
+	cg3_applicator_setflags(applicator, CG3F_TRACE);
 	sentence = cg3_sentence_new(applicator);
 
 	cohort = cg3_cohort_create(sentence);
@@ -95,6 +96,10 @@ int main(int argc, char *argv[]) {
 				tag = cg3_reading_gettag(reading, ti);
 				tmp = cg3_tag_gettext_u8(tag);
 				fprintf(stdout, "%s ", tmp);
+			}
+			for (ti = 0, te = cg3_reading_numtraces(reading) ; ti != te ; ++ti) {
+				uint32_t rule_line = cg3_reading_gettrace(reading, ti);
+				fprintf(stdout, "TRACE:%u ", rule_line);
 			}
 			fprintf(stdout, "\n");
 		}
