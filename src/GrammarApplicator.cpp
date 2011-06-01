@@ -104,6 +104,11 @@ GrammarApplicator::~GrammarApplicator() {
 		}
 	}
 
+	foreach (externals_t, externals, ei, ei_end) {
+		writeRaw(ei->second->in(), static_cast<uint32_t>(0));
+		delete ei->second;
+	}
+
 	delete gWindow;
 
 	if (owns_grammar) {
@@ -440,6 +445,222 @@ void GrammarApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 	}
 	u_fputc('\n', output);
 	u_fflush(output);
+}
+
+void GrammarApplicator::pipeOutReading(const Reading *reading, std::ostream& output) {
+	std::ostringstream ss;
+
+	uint32_t flags = 0;
+
+	if (reading->noprint) {
+		flags |= (1 << 1);
+	}
+	if (reading->deleted) {
+		flags |= (1 << 2);
+	}
+	if (reading->baseform) {
+		flags |= (1 << 3);
+	}
+
+	writeRaw(ss, flags);
+
+	if (reading->baseform) {
+		writeUTF8String(ss, single_tags.find(reading->baseform)->second->tag);
+	}
+
+	uint32_t cs = 0;
+	const_foreach (uint32List, reading->tags_list, tter, tter_end) {
+		if (*tter == reading->baseform || *tter == reading->wordform) {
+			continue;
+		}
+		const Tag *tag = single_tags.find(*tter)->second;
+		if (tag->type & T_DEPENDENCY && has_dep) {
+			continue;
+		}
+		++cs;
+	}
+
+	writeRaw(ss, cs);
+	const_foreach (uint32List, reading->tags_list, tter, tter_end) {
+		if (*tter == reading->baseform || *tter == reading->wordform) {
+			continue;
+		}
+		const Tag *tag = single_tags.find(*tter)->second;
+		if (tag->type & T_DEPENDENCY && has_dep) {
+			continue;
+		}
+		writeUTF8String(ss, tag->tag);
+	}
+
+	std::string str = ss.str();
+	cs = str.length();
+	writeRaw(output, cs);
+	output.write(str.c_str(), str.length());
+}
+
+void GrammarApplicator::pipeOutCohort(const Cohort *cohort, std::ostream& output) {
+	std::ostringstream ss;
+
+	writeRaw(ss, cohort->global_number);
+
+	uint32_t flags = 0;
+	if (!cohort->text.empty()) {
+		flags |= (1 << 0);
+	}
+	if (has_dep && cohort->dep_parent != std::numeric_limits<uint32_t>::max()) {
+		flags |= (1 << 1);
+	}
+	writeRaw(ss, flags);
+
+	if (has_dep && cohort->dep_parent != std::numeric_limits<uint32_t>::max()) {
+		writeRaw(ss, cohort->dep_parent);
+	}
+
+	writeUTF8String(ss, single_tags.find(cohort->wordform)->second->tag);
+
+	uint32_t cs = cohort->readings.size();
+	writeRaw(ss, cs);
+	const_foreach (ReadingList, cohort->readings, rter1, rter1_end) {
+		pipeOutReading(*rter1, ss);
+	}
+	if (!cohort->text.empty()) {
+		writeUTF8String(ss, cohort->text);
+	}
+
+	std::string str = ss.str();
+	cs = str.length();
+	writeRaw(output, cs);
+	output.write(str.c_str(), str.length());
+}
+
+void GrammarApplicator::pipeOutSingleWindow(const SingleWindow& window, std::ostream& output) {
+	std::ostringstream ss;
+
+	writeRaw(ss, window.number);
+
+	uint32_t cs = (uint32_t)window.cohorts.size()-1;
+	writeRaw(ss, cs);
+
+	for (uint32_t c=1 ; c < cs+1 ; c++) {
+		pipeOutCohort(window.cohorts[c], ss);
+	}
+
+	std::string str = ss.str();
+	cs = str.length();
+	writeRaw(output, cs);
+	output.write(str.c_str(), str.length());
+
+	output << std::flush;
+}
+
+void GrammarApplicator::pipeInReading(Reading *reading, std::istream& input, bool force) {
+	uint32_t cs = 0;
+	readRaw(input, cs);
+
+	std::string buf(cs, 0);
+	input.read(&buf[0], cs);
+	std::istringstream ss(buf);
+
+	uint32_t flags = 0;
+	readRaw(ss, flags);
+
+	// Not marked modified, so don't bother with the heavy lifting...
+	if (!force && !(flags & (1 << 0))) {
+		return;
+	}
+
+	reading->noprint = (flags & (1 << 1)) != 0;
+	reading->deleted = (flags & (1 << 2)) != 0;
+
+	if (flags & (1 << 3)) {
+		UString str = readUTF8String(ss);
+		if (str != single_tags.find(reading->baseform)->second->tag) {
+			Tag *tag = addTag(str);
+			reading->baseform = tag->hash;
+		}
+	}
+	else {
+		reading->baseform = 0;
+	}
+
+	reading->tags_list.clear();
+	reading->tags_list.push_back(reading->parent->wordform);
+	if (reading->baseform) {
+		reading->tags_list.push_back(reading->baseform);
+	}
+
+	readRaw(input, cs);
+	for (size_t i=0 ; i<cs ; ++i) {
+		UString str = readUTF8String(ss);
+		Tag *tag = addTag(str);
+		reading->tags_list.push_back(tag->hash);
+	}
+
+	reflowReading(*reading);
+}
+
+void GrammarApplicator::pipeInCohort(Cohort *cohort, std::istream& input) {
+	uint32_t cs = 0;
+	readRaw(input, cs);
+
+	std::string buf(cs, 0);
+	input.read(&buf[0], cs);
+	std::istringstream ss(buf);
+
+	readRaw(ss, cs);
+	if (cs != cohort->global_number) {
+		u_fprintf(ux_stderr, "Error: External returned data for cohort %u but we expected cohort %u!\n", cs, cohort->global_number);
+		CG3Quit(1);
+	}
+
+	uint32_t flags = 0;
+	readRaw(ss, flags);
+	if (flags & (1 << 1)) {
+		readRaw(ss, cohort->dep_parent);
+	}
+
+	bool force_readings = false;
+	UString str = readUTF8String(ss);
+	if (str != single_tags.find(cohort->wordform)->second->tag) {
+		Tag *tag = addTag(str);
+		cohort->wordform = tag->hash;
+		force_readings = true;
+	}
+
+	readRaw(ss, cs);
+	for (size_t i=0 ; i<cs ; ++i) {
+		ReadingList::iterator ri = cohort->readings.begin();
+		std::advance(ri, i);
+		pipeInReading(*ri, ss, force_readings);
+	}
+
+	if (flags & (1 << 0)) {
+		cohort->text = readUTF8String(ss);
+	}
+}
+
+void GrammarApplicator::pipeInSingleWindow(SingleWindow& window, std::istream& input) {
+	uint32_t cs = 0;
+	readRaw(input, cs);
+
+	if (cs == 0) {
+		return;
+	}
+
+	std::string buf(cs, 0);
+	input.read(&buf[0], cs);
+	std::istringstream ss(buf);
+
+	readRaw(ss, cs);
+	if (cs != window.number) {
+		u_fprintf(ux_stderr, "Error: External returned data for window %u but we expected window %u!\n", cs, window.number);
+		CG3Quit(1);
+	}
+
+	readRaw(ss, cs);
+	for (size_t i=0 ; i<cs ; ++i) {
+		pipeInCohort(window.cohorts[i+1], ss);
+	}
 }
 
 }

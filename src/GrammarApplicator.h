@@ -27,6 +27,7 @@
 #include "Tag.h"
 #include "CohortIterator.h"
 #include "interval_vector.hpp"
+#include "exec-stream.h"
 
 namespace CG3 {
 	class Window;
@@ -104,6 +105,14 @@ namespace CG3 {
 		void printCohort(Cohort *cohort, UFILE *output);
 		virtual void printSingleWindow(SingleWindow *window, UFILE *output);
 
+		void pipeOutReading(const Reading *reading, std::ostream& output);
+		void pipeOutCohort(const Cohort *cohort, std::ostream& output);
+		void pipeOutSingleWindow(const SingleWindow& window, std::ostream& output);
+
+		void pipeInReading(Reading *reading, std::istream& input, bool force = false);
+		void pipeInCohort(Cohort *cohort, std::istream& input);
+		void pipeInSingleWindow(SingleWindow& window, std::istream& input);
+
 		UFILE *ux_stderr;
 
 		uint32_t numLines;
@@ -117,6 +126,9 @@ namespace CG3 {
 		uint32_t numsections;
 		typedef std::map<int32_t,uint32IntervalVector> RSType;
 		RSType runsections;
+
+		typedef std::map<uint32_t,exec_stream_t*> externals_t;
+		externals_t externals;
 
 		uint32Vector ci_depths;
 		stdext::hash_map<uint32_t,CohortIterator> cohortIterators;

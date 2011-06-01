@@ -706,6 +706,47 @@ void TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 	}
 	result->lines += SKIPWS(p);
 
+	if (key == K_EXTERNAL) {
+		if (ux_simplecasecmp(p, stringbits[S_ONCE].getTerminatedBuffer(), stringbits[S_ONCE].length())) {
+			p += stringbits[S_ONCE].length();
+			rule->type = K_EXTERNAL_ONCE;
+		}
+		else if (ux_simplecasecmp(p, stringbits[S_ALWAYS].getTerminatedBuffer(), stringbits[S_ALWAYS].length())) {
+			p += stringbits[S_ALWAYS].length();
+			rule->type = K_EXTERNAL_ALWAYS;
+		}
+		else {
+			u_fprintf(ux_stderr, "Error: Missing keyword ONCE or ALWAYS on line %u!\n", result->lines);
+			CG3Quit(1);
+		}
+
+		result->lines += SKIPWS(p);
+
+		UChar *n = p;
+		if (*n == '"') {
+			++n;
+			result->lines += SKIPTO_NOSPAN(n, '"');
+			if (*n != '"') {
+				u_fprintf(ux_stderr, "Error: Missing closing \" on line %u!\n", result->lines);
+				CG3Quit(1);
+			}
+		}
+		result->lines += SKIPTOWS(n, 0, true);
+		ptrdiff_t c = n - p;
+		if (*p == '"') {
+			u_strncpy(&gbuffers[0][0], p+1, c-1);
+			gbuffers[0][c-2] = 0;
+		}
+		else {
+			u_strncpy(&gbuffers[0][0], p, c);
+			gbuffers[0][c] = 0;
+		}
+
+		Tag *ext = result->allocateTag(&gbuffers[0][0], true);
+		rule->varname = ext->hash;
+		p = n;
+	}
+
 	bool setflag = true;
 	while (setflag) {
 		setflag = false;
@@ -1253,6 +1294,12 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 			&& !ISSTRING(p, 7)) {
 			parseRule(p, K_SETCHILD);
 		}
+		// EXTERNAL
+		else if (ISCHR(*p,'E','e') && ISCHR(*(p+7),'L','l') && ISCHR(*(p+1),'X','x') && ISCHR(*(p+2),'T','t')
+			&& ISCHR(*(p+3),'E','e') && ISCHR(*(p+4),'R','r') && ISCHR(*(p+5),'N','n') && ISCHR(*(p+6),'A','a')
+			&& !ISSTRING(p, 7)) {
+			parseRule(p, K_EXTERNAL);
+		}
 		// REMCOHORT
 		else if (ISCHR(*p,'R','r') && ISCHR(*(p+8),'T','t') && ISCHR(*(p+1),'E','e') && ISCHR(*(p+2),'M','m')
 			&& ISCHR(*(p+3),'C','c') && ISCHR(*(p+4),'O','o') && ISCHR(*(p+5),'H','h') && ISCHR(*(p+6),'O','o')
@@ -1582,31 +1629,32 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 			}
 
 			UErrorCode err = U_ZERO_ERROR;
-			UConverter *conv = ucnv_open("UTF-8", &err);
-			ucnv_fromUChars(conv, &cbuffers[0][0], CG3_BUFFER_SIZE-1, &gbuffers[0][0], u_strlen(&gbuffers[0][0]), &err);
-			ucnv_close(conv);
+			u_strToUTF8(&cbuffers[0][0], CG3_BUFFER_SIZE-1, 0, &gbuffers[0][0], u_strlen(&gbuffers[0][0]), &err);
 
-			char *absdir = ux_dirname(fname);
-			sprintf(&cbuffers[1][0], "%s%s", absdir, &cbuffers[0][0]);
-			delete[] absdir;
-			char *abspath = new char[strlen(&cbuffers[1][0])+1];
-			strcpy(abspath, &cbuffers[1][0]);
+			std::string abspath;
+			if (cbuffers[0][0] == '/') {
+				abspath = &cbuffers[0][0];
+			}
+			else {
+				abspath = ux_dirname(fname);
+				abspath += &cbuffers[0][0];
+			}
 
 			size_t grammar_size = 0;
 			struct stat _stat;
-			int error = stat(abspath, &_stat);
+			int error = stat(abspath.c_str(), &_stat);
 
 			if (error != 0) {
-				u_fprintf(ux_stderr, "Error: Cannot stat %s due to error %d - bailing out!\n", abspath, error);
+				u_fprintf(ux_stderr, "Error: Cannot stat %s due to error %d - bailing out!\n", abspath.c_str(), error);
 				CG3Quit(1);
 			}
 			else {
 				grammar_size = static_cast<size_t>(_stat.st_size);
 			}
 
-			UFILE *grammar = u_fopen(abspath, "r", locale, codepage);
+			UFILE *grammar = u_fopen(abspath.c_str(), "r", locale, codepage);
 			if (!grammar) {
-				u_fprintf(ux_stderr, "Error: Error opening %s for reading!\n", abspath);
+				u_fprintf(ux_stderr, "Error: Error opening %s for reading!\n", abspath.c_str());
 				CG3Quit(1);
 			}
 
@@ -1619,8 +1667,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 			}
 			data.resize(read+4+1);
 
-			parseFromUChar(&data[4], abspath);
-			delete[] abspath;
+			parseFromUChar(&data[4], abspath.c_str());
 
 			result->lines = olines;
 		}

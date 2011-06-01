@@ -1,3 +1,6 @@
+# Threading, for exec-stream
+find_package(Threads REQUIRED)
+
 # Boost
 SET(Boost_ADDITIONAL_VERSIONS "1.42" "1.42.0" "1.43" "1.43.0" "1.44" "1.44.0" "1.45" "1.45.0" "1.46" "1.46.0" "1.46.1")
 find_package(Boost 1.36.0)
@@ -46,11 +49,12 @@ macro(cg3_link target)
 		target_link_libraries(${target} "wsock32.lib")
 	endif(MSVC)
 
+	target_link_libraries(${target} ${CMAKE_THREAD_LIBS_INIT})
 	target_link_libraries(${target} ${Boost_LIBRARIES})
 	target_link_libraries(${target} ${ICU_LIBRARIES} ${ICU_IO_LIBRARIES} ${ICU_I18N_LIBRARIES})
 endmacro()
 
-SET(CXX_SHARED_SOURCES Anchor.cpp BinaryGrammar.cpp CompositeTag.cpp ContextualTest.cpp Grammar.cpp Rule.cpp Set.cpp Strings.cpp Tag.cpp TextualParser.cpp uextras.cpp BinaryGrammar_read.cpp BinaryGrammar_write.cpp)
+SET(CXX_SHARED_SOURCES Anchor.cpp BinaryGrammar.cpp CompositeTag.cpp ContextualTest.cpp Grammar.cpp Rule.cpp Set.cpp Strings.cpp Tag.cpp TextualParser.cpp uextras.cpp BinaryGrammar_read.cpp BinaryGrammar_write.cpp exec-stream.cpp)
 if(MSVC)
 	SET(CXX_SHARED_SOURCES ../win32/libgen.c ../win32/getopt.c ${CXX_SHARED_SOURCES})
 endif(MSVC)

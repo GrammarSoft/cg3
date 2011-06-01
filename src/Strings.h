@@ -80,6 +80,9 @@ namespace CG3 {
 		K_ADDCOHORT,
 		K_ADDCOHORT_AFTER,
 		K_ADDCOHORT_BEFORE,
+		K_EXTERNAL,
+		K_EXTERNAL_ONCE,
+		K_EXTERNAL_ALWAYS,
 		KEYWORD_COUNT
 	};
 
@@ -146,6 +149,8 @@ namespace CG3 {
 		S_GPREFIX,
 		S_POSITIVE,
 		S_NEGATIVE,
+		S_ONCE,
+		S_ALWAYS,
 		S_SET_ISECT_U,
 		S_SET_SYMDIFF_U,
 		STRINGS_COUNT
@@ -185,7 +190,7 @@ namespace CG3 {
 	const size_t CG3_BUFFER_SIZE = 8192;
 	const size_t NUM_GBUFFERS = 1;
 	extern std::vector< std::vector<UChar> > gbuffers;
-	const size_t NUM_CBUFFERS = 2;
+	const size_t NUM_CBUFFERS = 1;
 	extern std::vector<std::string> cbuffers;
 }
 
