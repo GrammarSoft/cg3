@@ -293,6 +293,52 @@ inline void insert_if_exists(IT& cont, const OT* other) {
 	}
 }
 
+template<typename T>
+inline void writeRaw(std::ostream& stream, const T& value) {
+	stream.write(reinterpret_cast<const char*>(&value), sizeof(T));
+}
+
+template<typename T>
+inline void readRaw(std::istream& stream, T& value) {
+	stream.read(reinterpret_cast<char*>(&value), sizeof(T));
+}
+
+inline void writeUTF8String(std::ostream& output, const UChar *str, size_t len = 0) {
+	if (len == 0) {
+		len = u_strlen(str);
+	}
+
+	std::vector<char> buffer(len*4);
+	int32_t olen = 0;
+	UErrorCode status = U_ZERO_ERROR;
+	u_strToUTF8(&buffer[0], len*4-1, &olen, str, len, &status);
+
+	uint16_t cs = static_cast<uint16_t>(olen);
+	writeRaw(output, cs);
+	output.write(&buffer[0], cs);
+}
+
+inline void writeUTF8String(std::ostream& output, const UString& str) {
+	writeUTF8String(output, str.c_str(), str.length());
+}
+
+inline UString readUTF8String(std::istream& input) {
+	uint16_t len = 0;
+	readRaw(input, len);
+
+	UString rv(len, 0);
+	std::vector<char> buffer(len);
+	input.read(&buffer[0], len);
+
+	int32_t olen = 0;
+	UErrorCode status = U_ZERO_ERROR;
+	u_strFromUTF8(&rv[0], len, &olen, &buffer[0], len, &status);
+
+	rv.resize(olen);
+
+	return rv;
+}
+
 #ifdef _MSC_VER
 	// warning C4127: conditional expression is constant
 	#pragma warning (disable: 4127)

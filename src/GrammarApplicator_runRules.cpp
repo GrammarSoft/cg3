@@ -27,6 +27,7 @@
 #include "SingleWindow.h"
 #include "Reading.h"
 #include "ContextualTest.h"
+#include "version.h"
 
 namespace CG3 {
 
@@ -503,6 +504,44 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						delimitAt(current, cohort);
 						delimited = true;
 						readings_changed = true;
+						break;
+					}
+					else if (type == K_EXTERNAL_ONCE || type == K_EXTERNAL_ALWAYS) {
+						if (type == K_EXTERNAL_ONCE && !current.hit_external.insert(rule.varname)) {
+							break;
+						}
+
+						externals_t::iterator ei = externals.find(rule.varname);
+						if (ei == externals.end()) {
+							Tag *ext = single_tags.find(rule.varname)->second;
+							UErrorCode err = U_ZERO_ERROR;
+							u_strToUTF8(&cbuffers[0][0], CG3_BUFFER_SIZE-1, 0, ext->tag.c_str(), ext->tag.length(), &err);
+
+							exec_stream_t *es = 0;
+							try {
+								es = new exec_stream_t;
+								es->set_binary_mode(exec_stream_t::s_in);
+								es->set_binary_mode(exec_stream_t::s_out);
+								es->set_wait_timeout(exec_stream_t::s_in, 10000);
+								es->set_wait_timeout(exec_stream_t::s_out, 10000);
+								es->start(&cbuffers[0][0], "");
+								writeRaw(es->in(), CG3_EXTERNAL_PROTOCOL);
+							}
+							catch (std::exception& e) {
+								u_fprintf(ux_stderr, "Error: External on line %u resulted in error: %s\n", rule.line, e.what());
+								CG3Quit(1);
+							}
+							externals[rule.varname] = es;
+							ei = externals.find(rule.varname);
+						}
+
+						pipeOutSingleWindow(current, ei->second->in());
+						pipeInSingleWindow(current, ei->second->out());
+
+						indexSingleWindow(current);
+						readings_changed = true;
+						rocit = s.find(cohort);
+						++rocit;
 						break;
 					}
 					else if (type == K_REMCOHORT) {

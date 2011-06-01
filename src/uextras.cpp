@@ -90,8 +90,8 @@ UChar *ux_substr(const UChar *string, const size_t start, const size_t end) {
 	return tmp;
 }
 
-char *ux_dirname(const char *in) {
-	char *tmp = new char[32768];
+std::string ux_dirname(const char *in) {
+	char tmp[32768] = {0};
 #ifdef _MSC_VER
 	char *fname = 0;
 	GetFullPathNameA(in, 32767, tmp, &fname);

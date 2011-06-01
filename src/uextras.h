@@ -33,7 +33,7 @@ int ux_isSetOp(const UChar *it);
 
 UChar *ux_substr(const UChar *string, const size_t start, const size_t end);
 
-char *ux_dirname(const char *in);
+std::string ux_dirname(const char *in);
 
 bool ux_simplecasecmp(const UChar *a, const UChar *b, const size_t n);
 
