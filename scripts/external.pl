@@ -1,0 +1,38 @@
+#!/usr/bin/perl
+# -*- mode: cperl; indent-tabs-mode: nil; tab-width: 3; cperl-indent-level: 3; -*-
+BEGIN {
+   $| = 1;
+};
+use warnings;
+use strict;
+use utf8;
+use feature 'unicode_strings';
+
+use FindBin;
+use lib $FindBin::Bin.'/';
+use CG3_External qw(check_protocol read_window write_window);
+
+binmode(STDIN);
+binmode(STDOUT);
+
+sub handle_window {
+   my ($w) = @_;
+   foreach my $c (@{$w->{'cohorts'}}) {
+      print $c->{'wordform'}, "\n";
+      foreach my $r (@{$c->{'readings'}}) {
+         print "\t", $r->{'baseform'}, "\n";
+         foreach my $t (@{$r->{'tags'}}) {
+            print "\t\t", $t, "\n";
+         }
+      }
+   }
+}
+
+if (!check_protocol(*STDIN)) {
+   die("Out of date protocol!\n");
+}
+
+while (my $window = read_window(*STDIN)) {
+   handle_window($window);
+   write_window(*STDOUT, $window);
+}
