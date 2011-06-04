@@ -556,6 +556,7 @@ void GrammarApplicator::pipeOutSingleWindow(const SingleWindow& window, std::ost
 void GrammarApplicator::pipeInReading(Reading *reading, std::istream& input, bool force) {
 	uint32_t cs = 0;
 	readRaw(input, cs);
+	if (debug_level > 1) u_fprintf(ux_stderr, "DEBUG: reading packet length %u\n", cs);
 
 	std::string buf(cs, 0);
 	input.read(&buf[0], cs);
@@ -563,6 +564,7 @@ void GrammarApplicator::pipeInReading(Reading *reading, std::istream& input, boo
 
 	uint32_t flags = 0;
 	readRaw(ss, flags);
+	if (debug_level > 1) u_fprintf(ux_stderr, "DEBUG: reading flags %u\n", flags);
 
 	// Not marked modified, so don't bother with the heavy lifting...
 	if (!force && !(flags & (1 << 0))) {
@@ -578,6 +580,7 @@ void GrammarApplicator::pipeInReading(Reading *reading, std::istream& input, boo
 			Tag *tag = addTag(str);
 			reading->baseform = tag->hash;
 		}
+		if (debug_level > 1) u_fprintf(ux_stderr, "DEBUG: reading baseform %S\n", str.c_str());
 	}
 	else {
 		reading->baseform = 0;
@@ -589,11 +592,14 @@ void GrammarApplicator::pipeInReading(Reading *reading, std::istream& input, boo
 		reading->tags_list.push_back(reading->baseform);
 	}
 
-	readRaw(input, cs);
+	readRaw(ss, cs);
+	if (debug_level > 1) u_fprintf(ux_stderr, "DEBUG: num tags %u\n", cs);
+
 	for (size_t i=0 ; i<cs ; ++i) {
 		UString str = readUTF8String(ss);
 		Tag *tag = addTag(str);
 		reading->tags_list.push_back(tag->hash);
+		if (debug_level > 1) u_fprintf(ux_stderr, "DEBUG: tag %S\n", tag->tag.c_str());
 	}
 
 	reflowReading(*reading);
@@ -602,6 +608,7 @@ void GrammarApplicator::pipeInReading(Reading *reading, std::istream& input, boo
 void GrammarApplicator::pipeInCohort(Cohort *cohort, std::istream& input) {
 	uint32_t cs = 0;
 	readRaw(input, cs);
+	if (debug_level > 1) u_fprintf(ux_stderr, "DEBUG: cohort packet length %u\n", cs);
 
 	std::string buf(cs, 0);
 	input.read(&buf[0], cs);
@@ -612,11 +619,15 @@ void GrammarApplicator::pipeInCohort(Cohort *cohort, std::istream& input) {
 		u_fprintf(ux_stderr, "Error: External returned data for cohort %u but we expected cohort %u!\n", cs, cohort->global_number);
 		CG3Quit(1);
 	}
+	if (debug_level > 1) u_fprintf(ux_stderr, "DEBUG: cohort number %u\n", cohort->global_number);
 
 	uint32_t flags = 0;
 	readRaw(ss, flags);
+	if (debug_level > 1) u_fprintf(ux_stderr, "DEBUG: cohort flags %u\n", flags);
+
 	if (flags & (1 << 1)) {
 		readRaw(ss, cohort->dep_parent);
+		if (debug_level > 1) u_fprintf(ux_stderr, "DEBUG: cohort parent %u\n", cohort->dep_parent);
 	}
 
 	bool force_readings = false;
@@ -625,9 +636,11 @@ void GrammarApplicator::pipeInCohort(Cohort *cohort, std::istream& input) {
 		Tag *tag = addTag(str);
 		cohort->wordform = tag->hash;
 		force_readings = true;
+		if (debug_level > 1) u_fprintf(ux_stderr, "DEBUG: cohort wordform %S\n", tag->tag.c_str());
 	}
 
 	readRaw(ss, cs);
+	if (debug_level > 1) u_fprintf(ux_stderr, "DEBUG: num readings %u\n", cs);
 	for (size_t i=0 ; i<cs ; ++i) {
 		ReadingList::iterator ri = cohort->readings.begin();
 		std::advance(ri, i);
@@ -636,12 +649,14 @@ void GrammarApplicator::pipeInCohort(Cohort *cohort, std::istream& input) {
 
 	if (flags & (1 << 0)) {
 		cohort->text = readUTF8String(ss);
+		if (debug_level > 1) u_fprintf(ux_stderr, "DEBUG: cohort text %S\n", cohort->text.c_str());
 	}
 }
 
 void GrammarApplicator::pipeInSingleWindow(SingleWindow& window, std::istream& input) {
 	uint32_t cs = 0;
 	readRaw(input, cs);
+	if (debug_level > 1) u_fprintf(ux_stderr, "DEBUG: window packet length %u\n", cs);
 
 	if (cs == 0) {
 		return;
@@ -656,6 +671,7 @@ void GrammarApplicator::pipeInSingleWindow(SingleWindow& window, std::istream& i
 		u_fprintf(ux_stderr, "Error: External returned data for window %u but we expected window %u!\n", cs, window.number);
 		CG3Quit(1);
 	}
+	if (debug_level > 1) u_fprintf(ux_stderr, "DEBUG: window number %u\n", window.number);
 
 	readRaw(ss, cs);
 	for (size_t i=0 ; i<cs ; ++i) {
