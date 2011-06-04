@@ -3,8 +3,8 @@ use strict;
 use warnings;
 use Cwd qw(realpath);
 
-if ($ENV{'WINDIR'} && $ENV{'OSTYPE'} ne 'cygwin') {
-   print "skipping skipping.\n";
+if (exists($ENV{'WINDIR'})) {
+   print STDERR "Skipped on Windows.\n";
    exit(0);
 }
 
