@@ -1,0 +1,5 @@
+DELIMITERS = "<$.>" ;
+
+SECTION
+
+EXTERNAL ONCE ../../scripts/external.pl (*) ;

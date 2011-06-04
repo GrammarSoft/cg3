@@ -6,33 +6,30 @@ BEGIN {
 use warnings;
 use strict;
 use utf8;
-use feature 'unicode_strings';
+#use feature 'unicode_strings';
 
 use FindBin;
 use lib $FindBin::Bin.'/';
-use CG3_External qw(check_protocol read_window write_window);
+use CG3_External qw(check_protocol read_window write_window write_null_response);
 
 binmode(STDIN);
 binmode(STDOUT);
-
-sub handle_window {
-   my ($w) = @_;
-   foreach my $c (@{$w->{'cohorts'}}) {
-      print $c->{'wordform'}, "\n";
-      foreach my $r (@{$c->{'readings'}}) {
-         print "\t", $r->{'baseform'}, "\n";
-         foreach my $t (@{$r->{'tags'}}) {
-            print "\t\t", $t, "\n";
-         }
-      }
-   }
-}
 
 if (!check_protocol(*STDIN)) {
    die("Out of date protocol!\n");
 }
 
-while (my $window = read_window(*STDIN)) {
-   handle_window($window);
-   write_window(*STDOUT, $window);
+while (my $w = read_window(*STDIN)) {
+   foreach my $c (@{$w->{'cohorts'}}) {
+      #print $c->{'wordform'}, "\n";
+      foreach my $r (@{$c->{'readings'}}) {
+         #print "\t", $r->{'baseform'}, "\n";
+         $r->{'flags'} |= (1 << 0);
+         push @{$r->{'tags'}}, "æ発ø";
+         foreach my $t (@{$r->{'tags'}}) {
+            #print "\t\t", $t, "\n";
+         }
+      }
+   }
+   write_window(*STDOUT, $w);
 }
