@@ -46,6 +46,33 @@
     </para>
   </section>
 
+  <section id="external">
+    <title>EXTERNAL</title>
+    <indexterm>
+      <primary>EXTERNAL</primary>
+    </indexterm>
+    <indexterm>
+      <primary>EXTERNAL ONCE</primary>
+    </indexterm>
+    <indexterm>
+      <primary>EXTERNAL ALWAYS</primary>
+    </indexterm>
+    <screen>
+      [wordform] EXTERNAL ONCE &lt;program&gt; &lt;target&gt; [contextual_tests] ;
+      [wordform] EXTERNAL ALWAYS &lt;program&gt; &lt;target&gt; [contextual_tests] ;
+    </screen>
+    <para>
+      Opens up a persistent pipe to the program and passes it the current window.
+      The ONCE version will only be run once per window, while ALWAYS will be run every time the rule is seen.
+      See the <link linkend="externals">Externals chapter</link> for technical and protocol information.
+    </para>
+    <screen>
+      EXTERNAL ONCE /usr/local/bin/waffles (V) (-1 N) ;
+      EXTERNAL ALWAYS program-in-path (V) (-1 N) ;
+      EXTERNAL ONCE "program with spaces" (V) (-1 N) ;
+    </screen>
+  </section>
+
   <section id="addcohort">
     <title>ADDCOHORT</title>
     <indexterm>
