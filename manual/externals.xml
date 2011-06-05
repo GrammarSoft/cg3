@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE chapter SYSTEM "docbook-dtd-45/docbookx.dtd">
+
+<chapter id="externals">
+  <title>External Callbacks and Processors</title>
+
+  <para>
+    The <link linkend="external">EXTERNAL rule types</link> spawn and pass a window to an external process,
+    and expect a modified window in return. The external process is spawned only once the first time the rule hits,
+    is then sent an initial message of the current protocol version, and subseqently passed only windows.
+    It is expected that the reply from a window is another window, or a null reply if there are no changes.
+  </para>
+
+  <para>
+    What follows is a description of the protocol using C++ structs. For those who want a more hands-on example,
+    the source tree scripts/CG3_External.pm and scripts/external.pl and test/T_External/* is a working example of
+    calling a Perl program that simply adds a tag to every reading.
+  </para>
+
+  <para>
+    All datatypes correspond to the C and C++ &lt;stdint.h&gt; types, and no endianness conversion is performed;
+    it is assumed that the external program is native to the same arch as CG-3 is running on.
+    Fields marked 'const' denote they may not be changed by the external.
+    Notice that you may not change the number of cohorts or readings, but you may change the number of tags per reading.
+  </para>
+  
+  <section id="external-datatypes">
+    <title>Protocol Datatypes</title>
+
+    <screen>
+      uint32_t protocol_version = 7226;
+      uint32_t null_response = 0;
+  
+      struct Text {
+        uint16_t length;
+        char *utf8_bytes;
+      };
+      
+      enum READING_FLAGS {
+        R_WAS_MODIFIED = (1 &lt;&lt; 0),
+        R_INVISIBLE    = (1 &lt;&lt; 1),
+        R_DELETED      = (1 &lt;&lt; 2),
+        R_HAS_BASEFORM = (1 &lt;&lt; 3),
+      };
+      
+      struct Reading {
+        uint32_t reading_length; // sum of all data here plus data from all tags
+        uint32_t flags;
+        Text *baseform; // optional, depends on (flags &amp; R_HAS_BASEFORM)
+  
+        uint32_t num_tags;
+        Text *tags;
+      };
+      
+      enum COHORT_FLAGS {
+        C_HAS_TEXT   = (1 &lt;&lt; 0),
+        C_HAS_PARENT = (1 &lt;&lt; 1),
+      };
+      
+      struct Cohort {
+        uint32_t cohort_length; // sum of all data here plus data from all readings
+        const uint32_t number; // which cohort is this
+        uint32_t flags;
+        uint32_t parent; // optional, depends on (flags &amp; C_HAS_PARENT)
+        Text wordform;
+        
+        const uint32_t num_readings;
+        Reading *readings;
+        
+        Text *text; // optional, depends on (flags &amp; C_HAS_TEXT)
+      };
+      
+      struct Window {
+        uint32_t window_length; // sum of all data here plus data from all cohorts
+        const uint32_t number; // which window is this
+  
+        const uint32_t num_cohorts;
+        Cohort *cohorts;
+      };
+    </screen>
+  </section>
+
+  <section id="external-dataflow">
+    <title>Protocol Flow</title>
+    
+    <orderedlist numeration="arabic">
+      <listitem>
+        <para>
+          Initial packet is simply the protocol_version. This is used to detect when an external may be out of date.
+          If an external cannot reliably handle a protocol, I recommend that it terminates to avoid subtle bugs.
+          Protocol version is only sent once and no response is allowed.
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          Every time an EXTERNAL rule hits, a Window is sent. If you make no changes to the window, send a null_response.
+          If you do change the window, you must compose a whole Window as response.
+          If you change anything in a Reading, you must set the R_WAS_MODIFIED flag on the Reading.
+          If you change a Cohort's wordform, that automatically sets the R_WAS_MODIFIED flags on all Readings.
+          You must send some response for every window.
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          When CG-3 is shutting down, the final thing it sends to the external is a null_reponse.
+          Use this to clean up if necessary. Any data output after the null_response is ignored.
+        </para>
+      </listitem>
+    </orderedlist>
+  </section>
+
+</chapter>
