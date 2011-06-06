@@ -11,23 +11,19 @@
   <section id="ubuntu-debian">
     <title>Ubuntu / Debian</title>
     <para>
-      Steps tested on a clean install of Ubuntu 8.10, but should work on any version.
+      Steps tested on a clean install of Ubuntu 10.10, but should work on any version.
       It is assumed you have a working network connection.
     </para>
     <para>
       Launch a Terminal from Applications -&gt; Accessories, and in that do
       <screen>
-        sudo apt-get install g++ libicu-dev subversion autoconf automake
-        # For Boost
-        sudo apt-get install libboost-dev
+        sudo apt-get install g++ libicu-dev subversion cmake libboost-dev
         # For TCMalloc
         sudo apt-get install libgoogle-perftools0
         cd /tmp/
         svn export --ignore-externals --username anonymous --password anonymous http://beta.visl.sdu.dk/svn/visl/tools/vislcg3/trunk vislcg3
         cd vislcg3/
-        ./autogen.sh
-        # Reconfigure if Boost was installed
-        ./configure --with-boost
+        ./cmake.sh
         make -j3
         ./test/runall.pl
         sudo make install
@@ -39,18 +35,20 @@
   <section id="fedora">
     <title>Fedora / Red Hat</title>
     <para>
-      Steps tested on a clean install of Fedora 9, but should work on any version.
+      Steps tested on a clean install of Fedora 14, but should work on any version.
       It is assumed you have a working network connection.
     </para>
     <para>
-      Launch a Terminal from Applications -&gt; Accessories, and in that do
+      Launch a Terminal from Applications -&gt; System Tools, and in that do
       <screen>
         su -
-        yum install gcc-c++ libicu-devel subversion autoconf automake
+        yum install gcc-c++ libicu-devel subversion cmake boost-devel
+        # For TCMalloc
+        yum install google-perftools-devel
         cd /tmp/
         svn export --ignore-externals --username anonymous --password anonymous http://beta.visl.sdu.dk/svn/visl/tools/vislcg3/trunk vislcg3
         cd vislcg3/
-        ./autogen.sh
+        ./cmake.sh
         make -j3
         ./test/runall.pl
         make install
@@ -81,16 +79,16 @@
     <para>
       As root:
       <screen>
-        # cd /tmp
-        # wget -c
-        &nbsp; '<ulink url="http://icu-project.org/download/">http://download.icu-project.org/files/icu4c/4.6/icu4c-4_6-src.tgz</ulink>'
-        # tar -zxvf icu4c-4_6-src.tgz
-        # cd icu/source/
-        # ./runConfigureICU Linux
-        # make
-        # make install
-        # echo "/usr/local/lib" &gt;&gt; /etc/ld.so.conf
-        # ldconfig
+        cd /tmp
+        wget -c \
+        &nbsp; '<ulink url="http://icu-project.org/download/">http://download.icu-project.org/files/icu4c/4.8/icu4c-4_8-src.tgz</ulink>'
+        tar -zxvf icu4c-4_8-src.tgz
+        cd icu/source/
+        ./runConfigureICU Linux
+        make
+        make install
+        echo "/usr/local/lib" &gt;&gt; /etc/ld.so.conf
+        ldconfig
       </screen>
     </para>
   </section>
@@ -104,20 +102,16 @@
       package manager your distribution uses.
     </para>
     <para>
-      When there are feature complete releases of VISL CG-3 I will also be making
-      proper tarballs of those.
-    </para>
-    <para>
       As any user in any folder where you can find it again:
       <screen>
-        $ svn co --username anonymous --password anonymous
+        svn co --username anonymous --password anonymous \
         &nbsp; <ulink url="http://anonymous:anonymous@beta.visl.sdu.dk/svn/visl/tools/vislcg3/trunk/">http://beta.visl.sdu.dk/svn/visl/tools/vislcg3/trunk</ulink> vislcg3
-        $ cd vislcg3/
-        $ ./autogen.sh
-        $ make
-        $ ./test/runall.pl
+        cd vislcg3/
+        ./cmake.sh
+        make
+        ./test/runall.pl
         ... and if all tests succeed ...
-        $ make install
+        make install
       </screen>
     </para>
   </section>
@@ -129,7 +123,7 @@
       <screen>
         $ svn up
         $ make clean
-        $ ./autogen.sh
+        $ ./cmake.sh
         $ make
         $ ./test/runall.pl
         ... and if all tests succeed ...
@@ -144,7 +138,7 @@
       After successfully compiling the binary, you can run the regression test suite
       with the command:
       <screen>
-        $ ./test/runall.pl
+        ./test/runall.pl
       </screen>
     </para>
     <para>
@@ -157,7 +151,7 @@
   <section id="cygwin">
     <title>Cygwin</title>
     <para>
-      While Cygwin can compile and run VISL CG-3 via the automake toolchain, it cannot be recommended
+      While Cygwin can compile and run VISL CG-3 via the cmake toolchain, it cannot be recommended
       as it is very slow (even when using GCC 4.3).
       Instead, compile with Microsoft Visual C++ or use the latest precompiled binary.
     </para>
