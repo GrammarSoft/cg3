@@ -105,8 +105,13 @@ GrammarApplicator::~GrammarApplicator() {
 	}
 
 	foreach (externals_t, externals, ei, ei_end) {
-		writeRaw(ei->second->in(), static_cast<uint32_t>(0));
-		delete ei->second;
+		try {
+			writeRaw(ei->second->in(), static_cast<uint32_t>(0));
+			delete ei->second;
+		}
+		catch (...) {
+			// We don't really care about errors since we're shutting down anyway.
+		}
 	}
 
 	delete gWindow;

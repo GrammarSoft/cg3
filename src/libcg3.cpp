@@ -232,6 +232,11 @@ cg3_tag *cg3_cohort_getwordform(cg3_cohort *cohort_) {
 	return ga->single_tags.find(cohort->wordform)->second;
 }
 
+uint32_t cg3_cohort_getid(cg3_cohort *cohort_) {
+	Cohort *cohort = static_cast<Cohort*>(cohort_);
+	return cohort->global_number;
+}
+
 void cg3_cohort_setdependency(cg3_cohort *cohort_, uint32_t dep_self, uint32_t dep_parent) {
 	Cohort *cohort = static_cast<Cohort*>(cohort_);
 	cohort->parent->parent->parent->has_dep = true;
