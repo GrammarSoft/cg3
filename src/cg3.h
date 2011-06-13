@@ -96,6 +96,7 @@ void cg3_sentence_free(cg3_sentence *sentence);
 cg3_cohort *cg3_cohort_create(cg3_sentence *sentence);
 void cg3_cohort_setwordform(cg3_cohort *cohort, cg3_tag *wordform);
 cg3_tag *cg3_cohort_getwordform(cg3_cohort *cohort);
+uint32_t cg3_cohort_getid(cg3_cohort *cohort);
 void cg3_cohort_setdependency(cg3_cohort *cohort, uint32_t dep_self, uint32_t dep_parent);
 void cg3_cohort_getdependency(cg3_cohort *cohort, uint32_t *dep_self, uint32_t *dep_parent);
 // The Cohort takes ownership of the Reading here.

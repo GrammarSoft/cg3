@@ -58,6 +58,7 @@ TEMPLATE alts =
 	OR (1 m LINK 1 k)
 	# Alternatives within alternatives...this can get very complex.
 	OR ((2** x BARRIER v) OR (-2** x LINK 1 f))
+	OR (T:alts)
 	;
 TEMPLATE another =
 	   (1*C x LINK 1 y LINK 2 z)
