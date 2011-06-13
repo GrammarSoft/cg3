@@ -73,7 +73,10 @@ ContextualTest *ContextualTest::allocateContextualTest() {
 }
 
 uint32_t ContextualTest::rehash() {
-	hash = 0;
+	if (hash) {
+		return hash;
+	}
+
 	hash = hash_sdbm_uint32_t(hash, pos);
 	hash = hash_sdbm_uint32_t(hash, target);
 	hash = hash_sdbm_uint32_t(hash, barrier);
@@ -111,6 +114,9 @@ void ContextualTest::resetStatistics() {
 }
 
 void ContextualTest::markUsed(Grammar& grammar) {
+	if (is_used) {
+		return;
+	}
 	is_used = true;
 
 	Set *s = 0;
