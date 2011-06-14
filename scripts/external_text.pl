@@ -118,6 +118,7 @@ while (my $w = read_window(*STDIN)) {
                next;
             }
             my $r = @{$c->{'readings'}}[$rc-1];
+            $r->{'flags'} |= (1 << 0);
 
             $in[$j] =~ s/^\s+//g;
             $in[$j] =~ s/\s+$//g;
