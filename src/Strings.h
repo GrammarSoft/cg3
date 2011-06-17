@@ -153,6 +153,7 @@ namespace CG3 {
 		S_ALWAYS,
 		S_SET_ISECT_U,
 		S_SET_SYMDIFF_U,
+		S_FROM,
 		STRINGS_COUNT
 	};
 
@@ -180,6 +181,7 @@ namespace CG3 {
 		FL_ITERATE,
 		FL_NOITERATE,
 		FL_UNMAPLAST,
+		FL_REVERSE,
 		FLAGS_COUNT
 	};
 

@@ -443,6 +443,31 @@ inline void GAppSetOpts_ranged(const char *value, Cont& cont) {
 	}
 }
 
+template<typename T>
+class swapper {
+public:
+	swapper(bool cond, T& a, T& b) :
+	cond(cond),
+	a(a),
+	b(b)
+	{
+		if (cond) {
+			std::swap(a, b);
+		}
+	}
+
+	~swapper() {
+		if (cond) {
+			std::swap(a, b);
+		}
+	}
+
+private:
+	bool cond;
+	T& a;
+	T& b;
+};
+
 }
 
 #endif
