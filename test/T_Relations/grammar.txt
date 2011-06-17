@@ -6,6 +6,7 @@ ADDRELATION (First) (startfirst) TO (0** (first)) ;
 ADDRELATION (Second) (startsecond) TO (0** (second)) ;
 ADDRELATION (OtherSecond) (startsecond) TO (**-1 (first)) ;
 SETRELATION (OtherSecond) (startsecond) TO (**-1 (second)) ;
+SETRELATION (OtherSecond) (startsecond) FROM (**-1 (second)) ;
 REMRELATION (First) (startfirst) TO (0** (first)) ;
 
 ADDRELATIONS (Begin3) (End3) (startthird) TO (0**W (third)) ;

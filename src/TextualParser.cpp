@@ -985,8 +985,12 @@ void TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 			if (ux_simplecasecmp(p, stringbits[S_TO].getTerminatedBuffer(), stringbits[S_TO].length())) {
 				p += stringbits[S_TO].length();
 			}
+			else if (ux_simplecasecmp(p, stringbits[S_FROM].getTerminatedBuffer(), stringbits[S_FROM].length())) {
+				p += stringbits[S_FROM].length();
+				rule->flags |= RF_REVERSE;
+			}
 			else {
-				u_fprintf(ux_stderr, "Error: Missing dependency keyword TO on line %u!\n", result->lines);
+				u_fprintf(ux_stderr, "Error: Missing dependency keyword TO or FROM on line %u!\n", result->lines);
 				CG3Quit(1);
 			}
 		}

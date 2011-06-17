@@ -58,6 +58,7 @@ namespace CG3 {
 		RF_ITERATE      = (1 << 19),
 		RF_NOITERATE    = (1 << 20),
 		RF_UNMAPLAST    = (1 << 21),
+		RF_REVERSE      = (1 << 22),
 	};
 
 	class Rule {

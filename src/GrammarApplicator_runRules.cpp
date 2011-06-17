@@ -840,6 +840,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 									test = test->next;
 								}
 								if (good) {
+									swapper<Cohort*> sw((rule.flags & RF_REVERSE) != 0, attach, cohort);
 									if (type == K_SETPARENT) {
 										attached = attachParentChild(*attach, *cohort, (rule.flags & RF_ALLOWLOOP) != 0, (rule.flags & RF_ALLOWCROSS) != 0);
 									}
@@ -904,6 +905,8 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 							if (!good || cohort == attach || cohort->local_number == 0) {
 								break;
 							}
+
+							swapper<Cohort*> sw((rule.flags & RF_REVERSE) != 0, attach, cohort);
 
 							if (type == K_SWITCH) {
 								if (attach->local_number == 0) {
@@ -999,6 +1002,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 								test = test->next;
 							}
 							if (good) {
+								swapper<Cohort*> sw((rule.flags & RF_REVERSE) != 0, attach, cohort);
 								index_ruleCohort_no.clear();
 								reading.hit_by.push_back(rule.number);
 								reading.noprint = false;
@@ -1044,6 +1048,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 								test = test->next;
 							}
 							if (good) {
+								swapper<Cohort*> sw((rule.flags & RF_REVERSE) != 0, attach, cohort);
 								index_ruleCohort_no.clear();
 								reading.hit_by.push_back(rule.number);
 								reading.noprint = false;
