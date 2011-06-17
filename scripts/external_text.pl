@@ -8,6 +8,10 @@ use strict;
 use utf8;
 #use feature 'unicode_strings';
 
+use IO::Handle;
+autoflush STDOUT 1;
+autoflush STDERR 1;
+
 use FindBin;
 use lib $FindBin::Bin.'/';
 use CG3_External qw(check_protocol read_window write_window write_null_response);
