@@ -507,13 +507,13 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						break;
 					}
 					else if (type == K_EXTERNAL_ONCE || type == K_EXTERNAL_ALWAYS) {
-						if (type == K_EXTERNAL_ONCE && !current.hit_external.insert(rule.varname)) {
+						if (type == K_EXTERNAL_ONCE && !current.hit_external.insert(rule.line)) {
 							break;
 						}
 
-						externals_t::iterator ei = externals.find(rule.varname);
+						externals_t::iterator ei = externals.find(rule.line);
 						if (ei == externals.end()) {
-							Tag *ext = single_tags.find(rule.varname)->second;
+							Tag *ext = single_tags.find(rule.line)->second;
 							UErrorCode err = U_ZERO_ERROR;
 							u_strToUTF8(&cbuffers[0][0], CG3_BUFFER_SIZE-1, 0, ext->tag.c_str(), ext->tag.length(), &err);
 
@@ -531,8 +531,8 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 								u_fprintf(ux_stderr, "Error: External on line %u resulted in error: %s\n", rule.line, e.what());
 								CG3Quit(1);
 							}
-							externals[rule.varname] = es;
-							ei = externals.find(rule.varname);
+							externals[rule.line] = es;
+							ei = externals.find(rule.line);
 						}
 
 						pipeOutSingleWindow(current, ei->second->in());
