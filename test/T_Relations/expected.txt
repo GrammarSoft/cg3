@@ -12,7 +12,7 @@
 "<word>"
 	"word" none @none 
 "<word>"
-	"word" second @none ID:7 
+	"word" second @none ID:7 R:OtherSecond:12 
 "<word>"
 	"word" none @none 
 "<word>"
