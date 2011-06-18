@@ -3,6 +3,10 @@
 	"word" notmeeither @stillhere 
 "<wordform1>"
 	"baseform1" tag1 @stillhere 
+"<wordform3>"
+	"baseform3" tag3 @stillhere 
+	"baseform4" tag4 @stillhere 
+	"baseform5" @stillhere 
 "<wordform2>"
 	"baseform2" tag2 @stillhere 
 "<word>"

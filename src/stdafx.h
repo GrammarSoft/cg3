@@ -32,6 +32,8 @@
 	#define NOMINMAX
 	// warning C4428: universal-character-name encountered in source
 	#pragma warning (disable: 4428)
+	// warning C4512: assignment operator could not be generated
+	#pragma warning (disable: 4512)
 #endif
 
 #include <exception>
