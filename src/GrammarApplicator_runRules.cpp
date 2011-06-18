@@ -561,35 +561,52 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 					}
 					else if (type == K_ADDCOHORT_AFTER || type == K_ADDCOHORT_BEFORE) {
 						reading.hit_by.push_back(rule.number);
+						index_ruleCohort_no.clear();
 
 						Cohort *cCohort = new Cohort(&current);
 						cCohort->global_number = gWindow->cohort_counter++;
-						Reading *cReading = new Reading(cCohort);
-						insert_if_exists(cReading->parent->possible_sets, grammar->sets_any);
 
-						index_ruleCohort_no.clear();
-						cReading->hit_by.push_back(rule.number);
-						cReading->noprint = false;
-						TagList mappings;
+						Tag *wf = 0;
+						std::vector<TagList> readings;
 						const TagList theTags = getTagList(*rule.maplist);
 						const_foreach (TagList, theTags, tter, tter_end) {
-							uint32_t hash = (*tter)->hash;
-							if ((*tter)->type & T_MAPPING || (*tter)->tag[0] == grammar->mapping_prefix) {
-								mappings.push_back(*tter);
+							if ((*tter)->type & T_WORDFORM) {
+								cCohort->wordform = (*tter)->hash;
+								wf = *tter;
+								continue;
 							}
-							else {
-								hash = addTagToReading(*cReading, hash);
+							if ((*tter)->type & T_BASEFORM) {
+								assert(wf && "There must be a wordform before any other tags in ADDCOHORT.");
+								readings.resize(readings.size()+1);
+								readings.back().push_back(wf);
 							}
-							if (updateValidRules(rules, intersects, hash, *cReading)) {
-								iter_rules = intersects.find(rule.number);
-								iter_rules_end = intersects.end();
-							}
+							readings.back().push_back(*tter);
 						}
-						if (!mappings.empty()) {
-							splitMappings(mappings, *cCohort, *cReading);
+
+						foreach(std::vector<TagList>, readings, rit, rit_end) {
+							Reading *cReading = new Reading(cCohort);
+							insert_if_exists(cReading->parent->possible_sets, grammar->sets_any);
+							cReading->hit_by.push_back(rule.number);
+							cReading->noprint = false;
+							TagList mappings;
+							const_foreach (TagList, *rit, tter, tter_end) {
+								uint32_t hash = (*tter)->hash;
+								if ((*tter)->type & T_MAPPING || (*tter)->tag[0] == grammar->mapping_prefix) {
+									mappings.push_back(*tter);
+								}
+								else {
+									hash = addTagToReading(*cReading, hash);
+								}
+								if (updateValidRules(rules, intersects, hash, *cReading)) {
+									iter_rules = intersects.find(rule.number);
+									iter_rules_end = intersects.end();
+								}
+							}
+							if (!mappings.empty()) {
+								splitMappings(mappings, *cCohort, *cReading);
+							}
+							cCohort->appendReading(cReading);
 						}
-						cCohort->appendReading(cReading);
-						cCohort->wordform = cReading->wordform;
 
 						current.parent->cohort_map[cCohort->global_number] = cCohort;
 						current.parent->dep_window[cCohort->global_number] = cCohort;
