@@ -402,6 +402,8 @@ void GrammarApplicator::printReading(const Reading *reading, UFILE *output) {
 }
 
 void GrammarApplicator::printCohort(Cohort *cohort, UFILE *output) {
+	const UChar ws[] = {' ', '\t', 0};
+
 	if (cohort->type & CT_REMOVED) {
 		u_fputc(';', output);
 		u_fputc(' ', output);
@@ -422,9 +424,9 @@ void GrammarApplicator::printCohort(Cohort *cohort, UFILE *output) {
 			printReading(*rter2, output);
 		}
 	}
-	if (!cohort->text.empty()) {
+	if (!cohort->text.empty() && cohort->text.find_first_not_of(ws) != UString::npos) {
 		u_fprintf(output, "%S", cohort->text.c_str());
-		if (cohort->text.back() != '\n') {
+		if (!ISNL(cohort->text.back())) {
 			u_fputc('\n', output);
 		}
 	}
