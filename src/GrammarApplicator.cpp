@@ -424,6 +424,9 @@ void GrammarApplicator::printCohort(Cohort *cohort, UFILE *output) {
 	}
 	if (!cohort->text.empty()) {
 		u_fprintf(output, "%S", cohort->text.c_str());
+		if (cohort->text.back() != '\n') {
+			u_fputc('\n', output);
+		}
 	}
 
 	foreach (CohortVector, cohort->removed, iter, iter_end) {
