@@ -426,7 +426,7 @@ void GrammarApplicator::printCohort(Cohort *cohort, UFILE *output) {
 	}
 	if (!cohort->text.empty() && cohort->text.find_first_not_of(ws) != UString::npos) {
 		u_fprintf(output, "%S", cohort->text.c_str());
-		if (!ISNL(cohort->text.back())) {
+		if (!ISNL(cohort->text[cohort->text.length()-1])) {
 			u_fputc('\n', output);
 		}
 	}
