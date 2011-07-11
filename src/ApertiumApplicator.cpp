@@ -315,7 +315,7 @@ int ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 			while (inchar != '$') {
 				inchar = u_fgetc_wrapper(input);
 
-	 			if (inchar == '$') {
+				if (inchar == '$') {
 					// Add the final reading of the cohort
 					cReading = new Reading(cCohort);
 					cReading->wordform = cCohort->wordform;
@@ -472,7 +472,7 @@ void ApertiumApplicator::processReading(Reading *cReading, const UChar *reading_
 	}
 
 	if (!suf.empty()) { // Append the multiword suffix to the baseform
-		       // (this is normally done in pretransfer)
+			   // (this is normally done in pretransfer)
 
 		base += suf;
 	}
@@ -707,18 +707,26 @@ void ApertiumApplicator::printReading(Reading *reading, UFILE *output) {
 		used_tags[*tter] = *tter;
 		const Tag *tag = single_tags[*tter];
 		if (!(tag->type & T_BASEFORM) && !(tag->type & T_WORDFORM)) {
- 			if (tag->tag[0] == '+') {
+			if (tag->tag[0] == '+') {
 				u_fprintf(output, "%S", tag->tag.c_str());
- 			}
+			}
 			else if (tag->tag[0] == '&') {
 				UChar *buf = ux_substr(tag->tag.c_str(), 2, tag->tag.length());
 				u_fprintf(output, "<%S>", buf);
 				delete[] buf;
- 			}
- 			else {
+			}
+			else {
 				u_fprintf(output, "<%S>", tag->tag.c_str());
- 			}
- 		}
+			}
+		}
+	}
+
+	if (trace) {
+		const_foreach (uint32Vector, reading->hit_by, iter_hb, iter_hb_end) {
+			u_fputc('<', output);
+			printTrace(output, *iter_hb);
+			u_fputc('>', output);
+		}
 	}
 }
 

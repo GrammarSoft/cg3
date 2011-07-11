@@ -263,6 +263,33 @@ Tag *GrammarApplicator::addTag(const UString& txt, bool vstr) {
 	return addTag(txt.c_str(), vstr);
 }
 
+void GrammarApplicator::printTrace(UFILE *output, uint32_t hit_by) {
+	if (hit_by < grammar->rule_by_number.size()) {
+		const Rule *r = grammar->rule_by_number[hit_by];
+		u_fprintf(output, "%S", keywords[r->type].getTerminatedBuffer());
+		if (r->type == K_ADDRELATION || r->type == K_SETRELATION || r->type == K_REMRELATION
+		|| r->type == K_ADDRELATIONS || r->type == K_SETRELATIONS || r->type == K_REMRELATIONS
+			) {
+				u_fprintf(output, "(%S", r->maplist->tags_list.front().getTag()->tag.c_str());
+				if (r->type == K_ADDRELATIONS || r->type == K_SETRELATIONS || r->type == K_REMRELATIONS) {
+					u_fprintf(output, ",%S", r->sublist->tags_list.front().getTag()->tag.c_str());
+				}
+				u_fprintf(output, ")");
+		}
+		if (!trace_name_only || !r->name) {
+			u_fprintf(output, ":%u", r->line);
+		}
+		if (r->name) {
+			u_fputc(':', output);
+			u_fprintf(output, "%S", r->name);
+		}
+	}
+	else {
+		uint32_t pass = std::numeric_limits<uint32_t>::max() - (hit_by);
+		u_fprintf(output, "ENCL:%u", pass);
+	}
+}
+
 void GrammarApplicator::printReading(const Reading *reading, UFILE *output) {
 	if (reading->noprint) {
 		return;
@@ -370,30 +397,7 @@ void GrammarApplicator::printReading(const Reading *reading, UFILE *output) {
 
 	if (trace) {
 		const_foreach (uint32Vector, reading->hit_by, iter_hb, iter_hb_end) {
-			if (*iter_hb < grammar->rule_by_number.size()) {
-				const Rule *r = grammar->rule_by_number[*iter_hb];
-				u_fprintf(output, "%S", keywords[r->type].getTerminatedBuffer());
-				if (r->type == K_ADDRELATION || r->type == K_SETRELATION || r->type == K_REMRELATION
-				|| r->type == K_ADDRELATIONS || r->type == K_SETRELATIONS || r->type == K_REMRELATIONS
-					) {
-						u_fprintf(output, "(%S", r->maplist->tags_list.front().getTag()->tag.c_str());
-						if (r->type == K_ADDRELATIONS || r->type == K_SETRELATIONS || r->type == K_REMRELATIONS) {
-							u_fprintf(output, ",%S", r->sublist->tags_list.front().getTag()->tag.c_str());
-						}
-						u_fprintf(output, ")");
-				}
-				if (!trace_name_only || !r->name) {
-					u_fprintf(output, ":%u", r->line);
-				}
-				if (r->name) {
-					u_fputc(':', output);
-					u_fprintf(output, "%S", r->name);
-				}
-			}
-			else {
-				uint32_t pass = std::numeric_limits<uint32_t>::max() - (*iter_hb);
-				u_fprintf(output, "ENCL:%u", pass);
-			}
+			printTrace(output, *iter_hb);
 			u_fputc(' ', output);
 		}
 	}

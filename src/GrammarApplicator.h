@@ -101,6 +101,7 @@ namespace CG3 {
 		Taguint32HashMap single_tags;
 
 	protected:
+		void printTrace(UFILE *output, uint32_t hit_by);
 		void printReading(const Reading *reading, UFILE *output);
 		void printCohort(Cohort *cohort, UFILE *output);
 		virtual void printSingleWindow(SingleWindow *window, UFILE *output);
