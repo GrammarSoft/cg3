@@ -7,5 +7,5 @@ elif test -x "/usr/bin/curl"; then
 	curl -L --max-redirs 10 http://sourceforge.net/projects/boost/files/boost/1.47.0/boost_1_47_0.tar.bz2/download > boost_1_47_0.tar.bz2
 fi
 tar -jxvf boost_1_47_0.tar.bz2 boost_1_47_0/boost
-cp -av boost_1_47_0/boost include/
+cp -avf boost_1_47_0/boost include/
 rm -rfv boost*
