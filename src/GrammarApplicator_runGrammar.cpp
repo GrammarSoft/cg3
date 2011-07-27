@@ -150,6 +150,18 @@ gotaline:
 			--packoff;
 		}
 		if (!ignoreinput && cleaned[0] == '"' && cleaned[1] == '<') {
+			UChar *space = &cleaned[0];
+			if (space[0] == '"' && space[1] == '<') {
+				space++;
+				SKIPTO_NOSPAN(space, '"');
+			}
+			if (space[0] != '"' || space[-1] != '>') {
+				u_fprintf(ux_stderr, "Warning: Line %u looked like a cohort but wasn't - treated as text.\n", numLines);
+				u_fflush(ux_stderr);
+				goto istext;
+			}
+			// ToDo: Discard or store text after the word form
+
 			if (cCohort && cCohort->readings.empty()) {
 				cReading = initEmptyCohort(*cCohort);
 				lReading = cReading;
@@ -259,6 +271,12 @@ gotaline:
 				SKIPTO_NOSPAN(space, '"');
 			}
 
+			if (*space != '"') {
+				u_fprintf(ux_stderr, "Warning: Line %u looked like a reading but wasn't - treated as text.\n", numLines);
+				u_fflush(ux_stderr);
+				goto istext;
+			}
+
 			TagList mappings;
 
 			while (space && (space = u_strchr(space, ' ')) != 0) {
@@ -306,6 +324,7 @@ gotaline:
 					u_fflush(ux_stderr);
 				}
 			}
+istext:
 			if (cleaned[0]) {
 				if (u_strcmp(&cleaned[0], stringbits[S_CMD_FLUSH].getTerminatedBuffer()) == 0) {
 					u_fprintf(ux_stderr, "Info: FLUSH encountered on line %u. Flushing...\n", numLines);

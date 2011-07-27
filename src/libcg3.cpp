@@ -254,6 +254,34 @@ void cg3_cohort_getdependency(cg3_cohort *cohort_, uint32_t *dep_self, uint32_t 
 	}
 }
 
+/*
+void cg3_cohort_getrelation_u(cg3_cohort *cohort_, const UChar *rel, uint32_t *rel_parent) {
+	Cohort *cohort = static_cast<Cohort*>(cohort_);
+	GrammarApplicator *ga = cohort->parent->parent->parent;
+
+	if ((cohort->type & CT_RELATED) && !cohort->relations.empty()) {
+		foreach (RelationCtn, cohort->relations, miter, miter_end) {
+			foreach (uint32Set, miter->second, siter, siter_end) {
+				if (u_strcmp(ga->single_tags.find(miter->first)->second->tag.c_str(), rel) == 0) {
+					*rel_parent = *siter;
+				}
+			}
+		}
+	}
+}
+
+void cg3_cohort_getrelation_u8(cg3_cohort *cohort_, const char *rel, uint32_t *rel_parent) {
+	UErrorCode status = U_ZERO_ERROR;
+
+	u_strFromUTF8(&gbuffers[0][0], CG3_BUFFER_SIZE-1, 0, rel, strlen(rel), &status);
+	if (U_FAILURE(status)) {
+		u_fprintf(ux_stderr, "CG3 Error: Failed to convert text from UTF-8 to UTF-16. Status = %s\n", u_errorName(status));
+		return;
+	}
+	cg3_cohort_getrelation_u(cohort_, &gbuffers[0][0], rel_parent);
+}
+//*/
+
 void cg3_cohort_addreading(cg3_cohort *cohort_, cg3_reading *reading_) {
 	Cohort *cohort = static_cast<Cohort*>(cohort_);
 	Reading *reading = static_cast<Reading*>(reading_);

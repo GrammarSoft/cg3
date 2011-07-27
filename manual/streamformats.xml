@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE chapter SYSTEM "docbook-dtd-45/docbookx.dtd">
+
+<chapter id="streamformats">
+  <title>Input/Output Stream Format</title>
+
+  <para>
+    Currently, there are two supported data stream formats. Adding more as needed is not a major task, though.
+  </para>
+
+  <section id="stream-apertium">
+    <title>Apertium Format</title>
+    <indexterm>
+      <primary>Apertium Format</primary>
+    </indexterm>
+    <para>
+      The <link linkend="cg-proc">cg-proc</link> front-end processes the
+      <ulink url="http://wiki.apertium.org/wiki/Apertium_stream_format">Apertium stream format</ulink>.
+    </para>
+  </section>
+
+  <section id="stream-vislcg">
+    <title>VISL CG Format</title>
+    <indexterm>
+      <primary>VISL CG Format</primary>
+    </indexterm>
+    <para>
+      The VISL CG stream format is a verticalized list of word forms with readings and optional plain text in between.
+      For example, the sentence "<emphasis>They went to the zoo to look at the bear.</emphasis>" would in VISL format look akin to:
+      <screen>
+        "&lt;They&gt;"
+            "they" &lt;*&gt; PRON PERS NOM PL3 SUBJ
+        "&lt;went&gt;"
+            "go" V PAST VFIN
+        "&lt;to&gt;"
+            "to" PREP
+        "&lt;the&gt;"
+            "the" DET CENTRAL ART SG/PL
+        "&lt;zoo&gt;"
+            "zoo" N NOM SG
+        "&lt;to&gt;"
+            "to" INFMARK&gt;
+        "&lt;look&gt;"
+            "look" V INF
+        "&lt;at&gt;"
+            "at" PREP
+        "&lt;the&gt;"
+            "the" DET CENTRAL ART SG/PL
+        "&lt;bear&gt;"
+            "bear" N NOM SG
+        "&lt;.&gt;"
+      </screen>
+
+      Or in CG terms:
+      <screen>
+        "&lt;word form&gt;"
+            "base form" tags
+      </screen>
+
+      Also known as:
+      <screen>
+        "&lt;surface form&gt;"
+            "lexeme" tags
+      </screen>
+    </para>
+
+    <para>
+      In more formal rules:
+      <itemizedlist mark='bullet'>
+        <listitem><para>
+          If the line begins with "&lt; followed by non-quotes and/or escaped quotes followed by &gt;"
+          (regex /^"&lt;(.|\\")*&gt;"/) then it opens a new cohort.
+        </para></listitem>
+        <listitem><para>
+          If the line begins with whitespace followed by " followed by non-quotes and/or escaped quotes followed by "
+          (regex /^\s+"(.|\\")*"/) then it is parsed as a reading, but only if a cohort is open at the time.
+          Thus, any such lines seen before the first cohort is treated as text.
+        </para></listitem>
+        <listitem><para>
+          Any line not matching the above is treated as text. Text is handled in two ways: If no cohort is open at the time,
+          then it is output immediately. If a cohort is open, then it is appended to that cohort's buffer and output after
+          the cohort. Note that text between readings will thus be moved to after the readings.
+          Re-arranging cohorts will also re-arrange the text attached to them.
+          Removed cohorts will still output their text.
+        </para></listitem>
+      </itemizedlist>
+      
+      This means that you can embed all kinda of extra information in the stream as long as you don't hit those exact
+      patterns. For example, we use &lt;s id="unique-1234"&gt; &lt;/s&gt; tags around sentences to keep track of them
+      for corpus markup.
+    </para>
+  </section>
+
+</chapter>
