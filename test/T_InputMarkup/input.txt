@@ -1,15 +1,17 @@
 This is some text that should not interfere with the run.
-"<word>"
-	"word" notwanted
+"<wo\"rd>"
+	"wo\"rd" notwanted
 	"word" wanted
 Some more text.
 	"word" notmeeither
 <tag>
 Text.
+"<text that looks like a cohort
 "<word>"
 You guessed it, text.
 	"word" notwanted
 	"word" wanted
+	"text that looks like a reading
 	"word" notmeeither
 </tag>
 "<word>"
