@@ -66,6 +66,21 @@ Options:
     </screen>
   </section>
 
+  <section id="cg-conv">
+    <title>cg-conv</title>
+    <para>
+      cg-conv converts between the <link linkend="streamformats">Apertium and VISL CG stream formats</link>.
+      By default it converts from VISL CG to Apertium, but option -a inverses that.
+      Currently only meant for use in a pipe.
+    </para>
+    <screen>
+USAGE: cg-conv [-a]
+
+Options:
+ -a, --a2v:    convert from Apertium to VISL format
+    </screen>
+  </section>
+
   <section id="cg-comp">
     <title>cg-comp</title>
     <para>

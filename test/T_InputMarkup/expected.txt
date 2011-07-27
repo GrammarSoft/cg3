@@ -1,12 +1,14 @@
 This is some text that should not interfere with the run.
-"<word>"
+"<wo\"rd>"
 	"word" wanted 
 Some more text.
 <tag>
 Text.
+"<text that looks like a cohort
 "<word>"
 	"word" wanted 
 You guessed it, text.
+	"text that looks like a reading
 </tag>
 "<word>"
 	"word" wanted 

@@ -41,6 +41,7 @@
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="contributing.xml" />
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="compatibility.xml" />
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="cmdreference.xml" />
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="streamformats.xml" />
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="grammar.xml" />
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="rules.xml" />
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="contexts.xml" />
