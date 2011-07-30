@@ -7,10 +7,11 @@
 "<word>"
 	"word" wanted fourth findme
 "<word>"
-	"word" wanted fifth
+	"word" wanted careful fifth
+	"word" notcareful
 "<word>"
 	"word" wanted sixth alsofindme 
 "<word>"
-	"word" wanted seventh alsofindme
+	"word" wanted careful seventh alsofindme
 "<word>"
 	"word" wanted eighth

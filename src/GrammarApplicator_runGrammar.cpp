@@ -271,6 +271,7 @@ gotaline:
 				SKIPTO_NOSPAN(space, '"');
 			}
 
+			// This does not consider wordforms as invalid readings since chained CG-3 may produce such
 			if (*space != '"') {
 				u_fprintf(ux_stderr, "Warning: Line %u looked like a reading but wasn't - treated as text.\n", numLines);
 				u_fflush(ux_stderr);

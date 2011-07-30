@@ -1,5 +1,5 @@
 "<word>"
-	"word" wanted first @two @one @jump-target @jump-mark @jump-remember 
+	"word" wanted first @two @one @jump-target @jump-mark @jump-remember @careful 
 "<word>"
 	"word" wanted second @two @one @jump-target @jump-mark @jump-remember 
 "<word>"
@@ -7,11 +7,12 @@
 "<word>"
 	"word" wanted fourth findme @two 
 "<word>"
-	"word" wanted fifth @two 
+	"word" wanted careful fifth @two 
+	"word" notcareful @two 
 "<word>"
 	"word" wanted sixth alsofindme 
 "<word>"
-	"word" wanted seventh alsofindme 
+	"word" wanted careful seventh alsofindme 
 "<word>"
 	"word" wanted eighth 
 
