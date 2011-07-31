@@ -12,6 +12,23 @@
     </screen>
   </para>
 
+  <section id="add">
+    <title>ADD</title>
+    <indexterm>
+      <primary>ADD</primary>
+    </indexterm>
+    <screen>
+      [wordform] ADD &lt;tags&gt; &lt;target&gt; [contextual_tests] ;
+    </screen>
+    <para>
+      Appends tags to matching readings. Will not block for adding further tags, but can be blocked if a reading
+      is considered mapped either via rule type MAP or from input.
+    </para>
+    <screen>
+      ADD (@func £other) TARGET (target) IF (-1 KC) ;
+    </screen>
+  </section>
+
   <section id="copy">
     <title>COPY</title>
     <indexterm>
@@ -142,6 +159,39 @@
     </para>
   </section>
 
+  <section id="replace">
+    <title>REPLACE</title>
+    <indexterm>
+      <primary>REPLACE</primary>
+    </indexterm>
+    <screen>
+      [wordform] REPLACE &lt;tags&gt; &lt;target&gt; [contextual_tests] ;
+    </screen>
+    <para>
+      Removes all tags from a reading except the base form, then appends the given tags.
+      Cannot target readings that are considered mapped due to earlier MAP rules or from input.
+    </para>
+    <screen>
+      REPLACE (&lt;v-act&gt; V INF @func) TARGET (target);
+    </screen>
+  </section>
+
+  <section id="append">
+    <title>APPEND</title>
+    <indexterm>
+      <primary>APPEND</primary>
+    </indexterm>
+    <screen>
+      [wordform] APPEND &lt;tags&gt; &lt;target&gt; [contextual_tests] ;
+    </screen>
+    <para>
+      Appends a reading to the matched cohort, so be sure the tags include a baseform.
+    </para>
+    <screen>
+      APPEND ("jump" &lt;v-act&gt; V INF @func) TARGET (target);
+    </screen>
+  </section>
+
   <section id="substitute">
     <title>SUBSTITUTE</title>
     <indexterm>
@@ -151,11 +201,31 @@
       [wordform] SUBSTITUTE &lt;locate tags&gt; &lt;replacement tags&gt; &lt;target&gt; [contextual_tests] ;
     </screen>
     <para>
+      Replaces the tags in the first list with the tags in the second list.
+      If none of the tags in the first list are found, the insertion tags are simply appended.
+      To prevent this, also have important tags as part of the target.
       This works as in VISLCG, but the replacement tags may be the * tag to signify a nil replacement,
       allowing for clean removal of tags in a reading. For example, to remove TAG do:
     </para>
     <screen>
       SUBSTITUTE (TAG) (*) TARGET (TAG) ;
+    </screen>
+  </section>
+
+  <section id="map">
+    <title>MAP</title>
+    <indexterm>
+      <primary>MAP</primary>
+    </indexterm>
+    <screen>
+      [wordform] MAP &lt;tags&gt; &lt;target&gt; [contextual_tests] ;
+    </screen>
+    <para>
+      Appends tags to matching readings, and blocks other MAP, ADD, and REPLACE rules from targetting those readings.
+      Cannot target readings that are considered mapped due to earlier MAP rules or from input.
+    </para>
+    <screen>
+      MAP (@func £other) TARGET (target) IF (-1 KC) ;
     </screen>
   </section>
 
@@ -221,7 +291,7 @@
     <title>Rule Options</title>
     <para>
       Rules can have options that affect their behavior.
-      Multiple options can be combined per rule and the order is not important, just seperate them with space.
+      Multiple options can be combined per rule and the order is not important, just separate them with space.
     </para>
     <screen>
       # Remove readings with (unwanted) even if it is the last reading.

@@ -69,11 +69,11 @@
       <itemizedlist mark='bullet'>
         <listitem><para>
           If the line begins with "&lt; followed by non-quotes and/or escaped quotes followed by &gt;"
-          (regex /^"&lt;(.|\\")*&gt;"/) then it opens a new cohort.
+          (regex <code>/^"&lt;(.|\\")*&gt;"/</code>) then it opens a new cohort.
         </para></listitem>
         <listitem><para>
           If the line begins with whitespace followed by " followed by non-quotes and/or escaped quotes followed by "
-          (regex /^\s+"(.|\\")*"/) then it is parsed as a reading, but only if a cohort is open at the time.
+          (regex <code>/^\s+"(.|\\")*"/</code>) then it is parsed as a reading, but only if a cohort is open at the time.
           Thus, any such lines seen before the first cohort is treated as text.
         </para></listitem>
         <listitem><para>
@@ -81,12 +81,12 @@
           then it is output immediately. If a cohort is open, then it is appended to that cohort's buffer and output after
           the cohort. Note that text between readings will thus be moved to after the readings.
           Re-arranging cohorts will also re-arrange the text attached to them.
-          Removed cohorts will still output their text.
+          Removed cohorts will still output their attached text.
         </para></listitem>
       </itemizedlist>
       
       This means that you can embed all kinda of extra information in the stream as long as you don't hit those exact
-      patterns. For example, we use &lt;s id="unique-1234"&gt; &lt;/s&gt; tags around sentences to keep track of them
+      patterns. For example, we use <code>&lt;s id="unique-1234"&gt; &lt;/s&gt;</code> tags around sentences to keep track of them
       for corpus markup.
     </para>
   </section>

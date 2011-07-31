@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE chapter SYSTEM "docbook-dtd-45/docbookx.dtd">
+
+<chapter id="faq">
+  <title>FAQ &amp; Tips &amp; Tricks</title>
+
+  <section id="faq-faq">
+    <title>FAQ</title>
+
+    <section id="faq-careful-scan">
+      <title>How far will a <code>(*-1C A)</code> test scan?</title>
+      
+      <para>
+        The CG-2 spec dictates that for a test <code>(*-1C A)</code>:
+        "There is a cohort to the left containing a reading which has a tag belonging to the set A.
+        The <emphasis>first such cohort</emphasis> must have a tag belonging to the set A in all its readings."
+        ...meaning scanning stops at the first A regardless of whether it is carefully A.
+        To scan further than the first A you must use **.
+      </para>
+      <para>
+        VISLCG2 was not compliant with that and would scan until it found a "careful A".
+        This caused the need for ugly hacks such as <code>(*1C A BARRIER A)</code> to emulate the correct behavior.
+      </para>
+      <para>
+        See <ulink url="http://groups.google.com/group/constraint-grammar/browse_thread/thread/45a00e1ea99bc4ad">this reference thread</ulink>.
+      </para>
+    </section>
+
+    <section id="faq-matching-asterisk">
+      <title>How can I match the tag <code>*</code> from my input?</title>
+      
+      <para>
+        You can't. The single <code>*</code> symbol is reserved for many special meanings in CG-3.
+        I suggest replacing it with <code>**</code> or <code>&lt;*&gt;</code> or anything that isn't
+        a single <code>*</code> if you need to work with it in CG.
+      </para>
+    </section>
+  </section>
+
+  <section id="faq-tips">
+    <title>Tips</title>
+
+    <section id="faq-tips-TODO">
+      <title>Tips TODO</title>
+    </section>
+  </section>
+
+  <section id="faq-tricks">
+    <title>Tricks</title>
+
+    <section id="faq-multi-base-forms">
+      <title>Determining whether a cohort has (un)ambiguous base forms</title>
+      
+      <para>
+      </para>
+    </section>
+  </section>
+
+</chapter>
