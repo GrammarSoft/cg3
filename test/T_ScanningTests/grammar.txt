@@ -10,5 +10,6 @@ ADD (@jump-mark) (*) (1* (fourth) LINK 1*X (seventh) LINK -1* (fifth) LINK -1*x 
 
 ADD REMEMBERX (@jump-remember) (*) (1* (fourth) LINK 1*X (seventh) LINK -1* (fifth)) (-1*x (sixth)) ;
 
-ADD (@careful) (first) (1*C (careful)) ;
-ADD (@careful-error) (first) (1*C (careful) BARRIER (careful)) ;
+ADD (@careful) (first) (1**C (careful)) ;
+ADD (@careful-error) (first) (1**C (careful) BARRIER (careful)) ;
+ADD (@careful-error) (first) (1*C (careful)) ;

@@ -43,10 +43,13 @@ Cohort *GrammarApplicator::runSingleTest(Cohort *cohort, const ContextualTest *t
 	if (test->pos & POS_CAREFUL) {
 		*retval = doesSetMatchCohortCareful(*cohort, test->target, test->pos);
 	}
-	else {
-		*retval = doesSetMatchCohortNormal(*cohort, test->target, test->pos);
-	}
 	bool foundfirst = *retval;
+	if (!foundfirst || !(test->pos & POS_CAREFUL)) {
+		foundfirst = doesSetMatchCohortNormal(*cohort, test->target, test->pos);
+		if (!(test->pos & POS_CAREFUL)) {
+			*retval = foundfirst;
+		}
+	}
 	if (origin && (test->offset != 0 || (test->pos & (POS_SCANALL|POS_SCANFIRST))) && origin == cohort && origin->local_number != 0) {
 		*retval = false;
 		*brk = true;
