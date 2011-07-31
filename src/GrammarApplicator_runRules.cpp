@@ -773,6 +773,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						}
 					}
 					else if (rule.type == K_APPEND && rule.number != did_append) {
+						// ToDo: Let APPEND add multiple readings a'la ADDCOHORT
 						Reading *cReading = cohort->allocateAppendReading();
 						++numReadings;
 						index_ruleCohort_no.clear();
