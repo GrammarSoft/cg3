@@ -8,6 +8,9 @@ LIST CSet = "MaTcHmE"i ;
 LIST wanted = wanted other waffles ;
 list matchme = "MatchMe" "matchme" ;
 
+LIST bform = ".*"r ;
+LIST ibform = ".*"ri ;
+
 BEFORE-SECTIONS
 
 ADD (<%u$1%l%U$2%U$1>v) (".(at)(ch).*"r) ;
@@ -23,3 +26,8 @@ ADD (@gen-regex) (".(at)(ch).*"r) (0 (VSTR:".*$1$2.*"r)) ;
 
 LIST @at = @chat ;
 ADD (@vstr-set) (".(at)(ch).*"r) (0 (VSTR:SET:@$1)) ;
+
+ADD (@baseform-diff) $$bform (0 (*) - $$bform) ;
+ADD (@baseform-icdiff) $$ibform (0 (*) - $$ibform) ;
+ADD (@baseform-same) $$bform (NEGATE 0 (*) - $$bform) ;
+ADD (@baseform-icsame) $$ibform (NEGATE 0 (*) - $$ibform) ;

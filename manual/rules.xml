@@ -9,8 +9,63 @@
     so only use them for readability. The definitions are given in the following format:
     <screen>
       KEYWORD &lt;required_element&gt; [optional_element] ;
+      ...and | separates mutually exclusive choices.
     </screen>
   </para>
+
+  <section id="rules-cheatsheet">
+    <title>Cheat Sheet</title>
+    <para>
+      All rules can take an optional wordform tag before the rule keyword.
+    </para>
+    <screen>
+  Reading &amp; Tag manipulations:
+      ADD &lt;tags&gt; &lt;target&gt; [contextual_tests] ;
+      MAP &lt;tags&gt; &lt;target&gt; [contextual_tests] ;
+      SUBSTITUTE &lt;locate tags&gt; &lt;replacement tags&gt; &lt;target&gt; [contextual_tests] ;
+      UNMAP &lt;target&gt; [contextual_tests] ;
+
+      REPLACE &lt;tags&gt; &lt;target&gt; [contextual_tests] ;
+      APPEND &lt;tags&gt; &lt;target&gt; [contextual_tests] ;
+      COPY &lt;extra tags&gt; &lt;target&gt; [contextual_tests] ;
+      
+      SELECT &lt;target&gt; [contextual_tests] ;
+      REMOVE &lt;target&gt; [contextual_tests] ;
+      IFF &lt;target&gt; [contextual_tests] ;
+
+  Dependency manipulation:
+      SETPARENT &lt;target&gt; [contextual_tests]
+          TO|FROM &lt;contextual_target&gt; [contextual_tests] ;
+      SETCHILD &lt;target&gt; [contextual_tests]
+          TO|FROM &lt;contextual_target&gt; [contextual_tests] ;
+
+  Relation manipulation:
+      ADDRELATION &lt;name&gt; &lt;target&gt; [contextual_tests]
+          TO|FROM &lt;contextual_target&gt; [contextual_tests] ;
+      ADDRELATIONS &lt;name&gt; &lt;name&gt; &lt;target&gt; [contextual_tests]
+          TO|FROM &lt;contextual_target&gt; [contextual_tests] ;
+      SETRELATION &lt;name&gt; &lt;target&gt; [contextual_tests]
+          TO|FROM &lt;contextual_target&gt; [contextual_tests] ;
+      SETRELATIONS &lt;name&gt; &lt;name&gt; &lt;target&gt; [contextual_tests]
+          TO|FROM &lt;contextual_target&gt; [contextual_tests] ;
+      REMRELATION &lt;name&gt; &lt;target&gt; [contextual_tests]
+          TO|FROM &lt;contextual_target&gt; [contextual_tests] ;
+      REMRELATIONS &lt;name&gt; &lt;name&gt; &lt;target&gt; [contextual_tests]
+          TO|FROM &lt;contextual_target&gt; [contextual_tests] ;
+
+  Cohort manipulation:
+      ADDCOHORT &lt;cohort tags&gt; BEFORE|AFTER &lt;target&gt; [contextual_tests] ;
+      REMCOHORT &lt;target&gt; [contextual_tests] ;
+
+      MOVE [WITHCHILD &lt;child_set&gt;|NOCHILD] &lt;target&gt; [contextual_tests]
+          BEFORE|AFTER [WITHCHILD &lt;child_set&gt;|NOCHILD] &lt;contextual_target&gt; [contextual_tests] ;
+      SWITCH &lt;target&gt; [contextual_tests] WITH &lt;contextual_target&gt; [contextual_tests] ;
+
+  Window manipulation:
+      DELIMIT &lt;target&gt; [contextual_tests] ;
+      EXTERNAL ONCE|ALWAYS &lt;program&gt; &lt;target&gt; [contextual_tests] ;
+    </screen>
+  </section>
 
   <section id="add">
     <title>ADD</title>
@@ -103,7 +158,7 @@
     </para>
     <para>
       Caveat: This does NOT affect the rule application order as that is tied to the input order of the cohorts,
-      so inserted cohorts are always last. 
+      so inserted cohorts are always last.
     </para>
     <screen>
       ADDCOHORT ("&lt;wordform&gt;" "baseform" tags) BEFORE (@waffles) ;
@@ -251,7 +306,7 @@
   <section id="taglists-sets">
     <title>Tag Lists Can Be Sets</title>
     <para>
-      For the rule types MAP, ADD, REPLACE, APPEND, SUBSTITUTE, ADDRELATION(S), SETRELATION(S), and REMRELATION(S),
+      For the rule types MAP, ADD, REPLACE, APPEND, COPY, SUBSTITUTE, ADDRELATION(S), SETRELATION(S), and REMRELATION(S),
       the tag lists can be sets instead, including <link linkend="set-unification-tag">$$sets</link>
       and <link linkend="set-unification-set">&amp;&amp;sets</link>.
       This is useful for manipulating tags that you want to pull in from a context.
@@ -642,6 +697,19 @@
       </para>
       <para>
         Even if the rule does change the state of the window, NOITERATE prevents the rule from causing a reiteration of the sections.
+      </para>
+    </section>
+
+    <section id="rule-options-reverse">
+      <title>REVERSE</title>
+      <indexterm>
+        <primary>REVERSE</primary>
+      </indexterm>
+      <para>
+        Applicable for rule types SETPARENT, SETCHILD, MOVE, SWITCH, ADDRELATION(S), SETRELATION(S), REMRELATION(S).
+      </para>
+      <para>
+        Reverses the active cohorts. E.g., effectively turns a SETPARENT into a SETCHILD.
       </para>
     </section>
   </section>

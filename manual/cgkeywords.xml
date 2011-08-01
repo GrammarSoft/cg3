@@ -24,6 +24,20 @@
     </screen>
   </section>
 
+  <section id="keyword-addcohort">
+    <title>ADDCOHORT</title>
+    <indexterm>
+      <primary>ADDCOHORT</primary>
+    </indexterm>
+    <para>
+      Inserts a new cohort before or after the target.
+    </para>
+    <screen>
+      ADDCOHORT ("&lt;wordform&gt;" "baseform" tags) BEFORE (@waffles) ;
+      ADDCOHORT ("&lt;wordform&gt;" "baseform" tags) AFTER (@waffles) ;
+    </screen>
+  </section>
+
   <section id="keyword-addrelation">
     <title>ADDRELATION</title>
     <indexterm>
@@ -155,6 +169,20 @@
     </para>
   </section>
 
+  <section id="keyword-copy">
+    <title>COPY</title>
+    <indexterm>
+      <primary>COPY</primary>
+    </indexterm>
+    <para>
+      Duplicates a reading and adds tags to it. If you don't want to copy previously copied readings,
+      you will have to keep track of that yourself by adding a marker tag.
+    </para>
+    <screen>
+      COPY (¤copy tags) TARGET (target) - (¤copy) ;
+    </screen>
+  </section>
+
   <section id="keyword-corrections">
     <title>CORRECTIONS</title>
     <indexterm>
@@ -215,6 +243,21 @@
         the end of the file will do just fine.
       </emphasis>
     </para>
+  </section>
+
+  <section id="keyword-external">
+    <title>EXTERNAL</title>
+    <indexterm>
+      <primary>EXTERNAL</primary>
+    </indexterm>
+    <para>
+      Opens up a persistent pipe to the program and passes it the current window.
+    </para>
+    <screen>
+      EXTERNAL ONCE /usr/local/bin/waffles (V) (-1 N) ;
+      EXTERNAL ALWAYS program-in-path (V) (-1 N) ;
+      EXTERNAL ONCE "program with spaces" (V) (-1 N) ;
+    </screen>
   </section>
 
   <section id="keyword-if">
@@ -622,6 +665,20 @@
     </screen>
   </section>
 
+  <section id="keyword-static-sets">
+    <title>STATIC-SETS</title>
+    <indexterm>
+      <primary>STATIC-SETS</primary>
+    </indexterm>
+    <para>
+      A list of set names that need to be preserved at runtime to be used with
+      <link linkend="variable-strings">advanced variable strings</link>.
+    </para>
+    <screen>
+      STATIC-SETS = VINF ADV ;
+    </screen>
+  </section>
+
   <section id="keyword-substitute">
     <title>SUBSTITUTE</title>
     <indexterm>
@@ -694,6 +751,23 @@
     <para>
       An inline keyword put before the contextual target of a SETPARENT or SETCHILD rule.
     </para>
+  </section>
+
+  <section id="keyword-unmap">
+    <title>UNMAP</title>
+    <indexterm>
+      <primary>UNMAP</primary>
+      <seealso>MAP</seealso>
+    </indexterm>
+    <para>
+      Removes the mapping tag of a reading and lets ADD and MAP target the reading again.
+      By default it will only act if the cohort has exactly one reading, but marking the rule UNSAFE
+      lets it act on multiple readings.
+    </para>
+    <screen>
+      UNMAP (TAG) ;
+      UNMAP UNSAFE (TAG) ;
+    </screen>
   </section>
 
 </chapter>
