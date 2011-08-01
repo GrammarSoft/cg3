@@ -202,6 +202,7 @@ void Tag::parseTag(const UChar *to, UFILE *ux_stderr, Grammar *grammar) {
 			if (u_strcmp(tag.c_str(), stringbits[S_RXTEXT_ANY].getTerminatedBuffer()) == 0
 			|| u_strcmp(tag.c_str(), stringbits[S_RXBASE_ANY].getTerminatedBuffer()) == 0
 			|| u_strcmp(tag.c_str(), stringbits[S_RXWORD_ANY].getTerminatedBuffer()) == 0) {
+				// ToDo: Add a case-insensitive version of T_REGEXP_ANY
 				type |= T_REGEXP_ANY;
 				type &= ~T_REGEXP;
 			}

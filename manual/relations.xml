@@ -17,6 +17,12 @@
     <indexterm>
       <primary>ADDRELATIONS</primary>
     </indexterm>
+    <screen>
+      [wordform] ADDRELATION &lt;name&gt; &lt;target&gt; [contextual_tests]
+          TO|FROM &lt;contextual_target&gt; [contextual_tests] ;
+      [wordform] ADDRELATIONS &lt;name&gt; &lt;name&gt; &lt;target&gt; [contextual_tests]
+          TO|FROM &lt;contextual_target&gt; [contextual_tests] ;
+    </screen>
     <para>
       ADDRELATION creates a one-way named relation from the current cohort to the found cohort.
       The name must be an alphanumeric string with no whitespace.
@@ -43,6 +49,12 @@
     <indexterm>
       <primary>SETRELATIONS</primary>
     </indexterm>
+    <screen>
+      [wordform] SETRELATION &lt;name&gt; &lt;target&gt; [contextual_tests]
+          TO|FROM &lt;contextual_target&gt; [contextual_tests] ;
+      [wordform] SETRELATIONS &lt;name&gt; &lt;name&gt; &lt;target&gt; [contextual_tests]
+          TO|FROM &lt;contextual_target&gt; [contextual_tests] ;
+    </screen>
     <para>
       SETRELATION removes all previous relations with the name,
       then creates a one-way named relation from the current cohort to the found cohort.
@@ -71,6 +83,12 @@
     <indexterm>
       <primary>REMRELATIONS</primary>
     </indexterm>
+    <screen>
+      [wordform] REMRELATION &lt;name&gt; &lt;target&gt; [contextual_tests]
+          TO|FROM &lt;contextual_target&gt; [contextual_tests] ;
+      [wordform] REMRELATIONS &lt;name&gt; &lt;name&gt; &lt;target&gt; [contextual_tests]
+          TO|FROM &lt;contextual_target&gt; [contextual_tests] ;
+    </screen>
     <para>
       REMRELATION destroys one direction of a relation previously created with either
       <link linkend="rel-addrelation">ADDRELATION</link> or <link linkend="rel-setrelation">SETRELATION</link>.

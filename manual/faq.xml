@@ -37,13 +37,13 @@
     </section>
   </section>
 
-  <section id="faq-tips">
+  <!-- section id="faq-tips">
     <title>Tips</title>
 
     <section id="faq-tips-TODO">
       <title>Tips TODO</title>
     </section>
-  </section>
+  </section -->
 
   <section id="faq-tricks">
     <title>Tricks</title>
@@ -52,7 +52,18 @@
       <title>Determining whether a cohort has (un)ambiguous base forms</title>
       
       <para>
+        If you for whatever reason need to determine whether a cohort has readings with (un)ambiguous base forms,
+        the following is how:
       </para>
+      <screen>
+        LIST bform = ".*"r ;
+        
+        # Determines ambiguous base forms
+        ADD (@baseform-diff) $$bform (0 (*) - $$bform) ;
+        
+        # ...so NEGATE to determine unambigious base forms
+        ADD (@baseform-same) $$bform (NEGATE 0 (*) - $$bform) ;
+      </screen>
     </section>
   </section>
 
