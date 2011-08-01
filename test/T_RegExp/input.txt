@@ -1,3 +1,12 @@
 "<word>"
 	"MatchMe" wanted <"matchme"/WANTED:100>
 	"matchme" wanted
+"<word>"
+	"baseform" a
+	"baseform" b
+"<word>"
+	"baseform" c
+	"BaseForm" d
+"<word>"
+	"baseform" e
+	"form" f

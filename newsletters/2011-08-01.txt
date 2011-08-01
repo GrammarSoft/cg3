@@ -1,0 +1,27 @@
+A new release of CG-3 has been tagged v0.9.7.7397.
+
+Main site is http://beta.visl.sdu.dk/cg3.html
+Google Group is http://groups.google.com/group/constraint-grammar
+Source snapshots available at http://beta.visl.sdu.dk/download/vislcg3/
+Windows binary is at http://beta.visl.sdu.dk/download/vislcg3/vislcg3-0.9.7.7397-win32.zip
+
+Major change:
+- CG-3 now uses CMake ( http://cmake.org/ ) to build. Easiest way is to ./cmake.sh && make -j3 && make install
+- We now require Boost ( http://boost.org/ ) to build, but there is a script get-boost.sh to fetch a usable version.
+- Thanks to the above, there is a library version with a C89 API, though it is not exactly documented yet. See src/cg3.h
+
+New features:
+- New rule type EXTERNAL that calls an external program. Performance is currently horrendous, but it works. See http://beta.visl.sdu.dk/cg3/chunked/externals.html
+- The cg-conv tool can now convert from Apertium to VISL stream format with cmdline flag -a or --a2v
+- Rule option REVERSE and keyword FROM as an alternate way of phrasing certain rules.
+
+Changes:
+- ADDCOHORT can now append multiple readings to the new cohort. Each baseform in the list opens a new reading.
+- Windows version is now built with Boost 1.47.0 and ICU 4.8.1.
+
+Fixed Bugs:
+- NOT 0* X tests now halts if either direction matches X.
+- Fixed (-1*C A) style tests scanning too far.
+
+-- Tino Didriksen
+CG-3 Developer

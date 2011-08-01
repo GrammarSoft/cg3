@@ -14,6 +14,10 @@
     <indexterm>
       <primary>SETPARENT</primary>
     </indexterm>
+    <screen>
+      [wordform] SETPARENT &lt;target&gt; [contextual_tests]
+          TO|FROM &lt;contextual_target&gt; [contextual_tests] ;
+    </screen>
     <para>
       Attaches the matching reading to the contextually targetted cohort as a child.
       The last link of the contextual test is used as target.
@@ -35,6 +39,10 @@
     <indexterm>
       <primary>SETCHILD</primary>
     </indexterm>
+    <screen>
+      [wordform] SETCHILD &lt;target&gt; [contextual_tests]
+          TO|FROM &lt;contextual_target&gt; [contextual_tests] ;
+    </screen>
     <para>
       Attaches the matching reading to the contextually targetted cohort as the parent.
       The last link of the contextual test is used as target.
