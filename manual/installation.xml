@@ -21,7 +21,7 @@
         # For TCMalloc
         sudo apt-get install libgoogle-perftools0
         cd /tmp/
-        svn export --ignore-externals --username anonymous --password anonymous http://beta.visl.sdu.dk/svn/visl/tools/vislcg3/trunk vislcg3
+        svn co --ignore-externals http://beta.visl.sdu.dk/svn/visl/tools/vislcg3/trunk vislcg3
         cd vislcg3/
         ./cmake.sh
         make -j3
@@ -46,7 +46,7 @@
         # For TCMalloc
         yum install google-perftools-devel
         cd /tmp/
-        svn export --ignore-externals --username anonymous --password anonymous http://beta.visl.sdu.dk/svn/visl/tools/vislcg3/trunk vislcg3
+        svn co --ignore-externals http://beta.visl.sdu.dk/svn/visl/tools/vislcg3/trunk vislcg3
         cd vislcg3/
         ./cmake.sh
         make -j3
@@ -104,7 +104,7 @@
     <para>
       As any user in any folder where you can find it again:
       <screen>
-        svn co --username anonymous --password anonymous \
+        svn co \
         &nbsp; <ulink url="http://anonymous:anonymous@beta.visl.sdu.dk/svn/visl/tools/vislcg3/trunk/">http://beta.visl.sdu.dk/svn/visl/tools/vislcg3/trunk</ulink> vislcg3
         cd vislcg3/
         ./cmake.sh
