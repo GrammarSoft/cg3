@@ -122,8 +122,6 @@
       In the same folder you chose above, as the same user:
       <screen>
         $ svn up
-        $ make clean
-        $ ./cmake.sh
         $ make
         $ ./test/runall.pl
         ... and if all tests succeed ...
