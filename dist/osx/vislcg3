@@ -1,0 +1,6 @@
+#!/bin/sh
+CPATH=`dirname "$0"`
+BNAME=`basename "$0"`
+cd $CPATH
+export DYLD_LIBRARY_PATH="$CPATH/lib/"
+./bin/$BNAME $@
