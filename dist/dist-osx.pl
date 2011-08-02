@@ -3,6 +3,7 @@ use strict;
 use warnings;
 
 my $dname = `dirname "$0"`;
+chomp($dname);
 chdir($dname);
 
 print `svn up --ignore-externals`;
@@ -11,10 +12,10 @@ $revision =~ s/^([0-9]+).*/$1/g;
 
 print `rm -rfv '/tmp/vislcg3-0.9.7.$revision-osx*' 2>&1`;
 mkdir('/tmp/vislcg3-0.9.7.'.$revision.'-osx');
+print `cp -av ./osx/* /tmp/vislcg3-0.9.7.$revision-osx 2>&1`;
 chdir('/tmp/vislcg3-0.9.7.'.$revision.'-osx');
 mkdir('lib');
 mkdir('bin');
-print `cp -av "$dname/osx/*" ./ 2>&1`;
 print `cp -av /usr/local/bin/vislcg3 ./bin/ 2>&1`;
 print `cp -av /usr/local/bin/cg-* ./bin/ 2>&1`;
 print `cp -av /usr/local/bin/cg3* ./bin/ 2>&1`;
