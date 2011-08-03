@@ -152,8 +152,10 @@ gotaline:
 		if (!ignoreinput && cleaned[0] == '"' && cleaned[1] == '<') {
 			UChar *space = &cleaned[0];
 			if (space[0] == '"' && space[1] == '<') {
-				space++;
+				++space;
 				SKIPTO_NOSPAN(space, '"');
+				SKIPTOWS(space, 0, true);
+				--space;
 			}
 			if (space[0] != '"' || space[-1] != '>') {
 				u_fprintf(ux_stderr, "Warning: %S on line %u looked like a cohort but wasn't - treated as text.\n", &cleaned[0], numLines);
@@ -267,8 +269,10 @@ gotaline:
 			UChar *space = &cleaned[1];
 			UChar *base = space;
 			if (*space == '"') {
-				space++;
+				++space;
 				SKIPTO_NOSPAN(space, '"');
+				SKIPTOWS(space, 0, true);
+				--space;
 			}
 
 			// This does not consider wordforms as invalid readings since chained CG-3 may produce such
