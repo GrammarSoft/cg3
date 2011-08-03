@@ -2,7 +2,7 @@
 find_package(Threads REQUIRED)
 
 # Boost
-SET(Boost_ADDITIONAL_VERSIONS "1.42" "1.42.0" "1.43" "1.43.0" "1.44" "1.44.0" "1.45" "1.45.0" "1.46" "1.46.0" "1.46.1")
+SET(Boost_ADDITIONAL_VERSIONS "1.42" "1.42.0" "1.43" "1.43.0" "1.44" "1.44.0" "1.45" "1.45.0" "1.46" "1.46.0" "1.46.1" "1.47" "1.47.0")
 find_package(Boost 1.36.0)
 if (NOT Boost_FOUND)
 	SET(BOOST_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/../include")
@@ -103,6 +103,6 @@ ADD_TEST(t_libcg3 test_libcg3 "${CMAKE_CURRENT_SOURCE_DIR}/../test/T_BasicSelect
 
 install(TARGETS libcg3 ARCHIVE DESTINATION lib)
 if(NOT MSVC)
-	install(TARGETS libcg3-shared LIBRARY DESTINATION lib)
+	install(TARGETS libcg3-shared ARCHIVE DESTINATION lib LIBRARY DESTINATION lib)
 endif()
 install(TARGETS cg-comp cg-proc cg-conv vislcg3 RUNTIME DESTINATION bin)
