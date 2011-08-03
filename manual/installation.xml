@@ -86,7 +86,7 @@
       Only need to do this once, however it must be done unless you already have a recent
       (newer or equal to <ulink url="http://icu-project.org/">ICU</ulink> 3.6) version installed. <ulink url="http://icu-project.org/">ICU</ulink> 3.4 may also work, but is
       considerably slower. Latest info on <ulink url="http://icu-project.org/">ICU</ulink> can be found at <ulink url="http://icu-project.org/">http://icu-project.org/</ulink>.
-      ICU 3.8 and 4.0 have also been tested and works.
+      I always develop and test with the latest version available.
     </para>
     <para>
       Newer distributions may have a usable version of ICU available for install via the usual yum or apt managers.
