@@ -27,4 +27,4 @@ enable_testing()
 
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src)
 
-install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/scripts/cg3-autobin.pl" DESTINATION bin)
+install(PROGRAMS "${CMAKE_CURRENT_SOURCE_DIR}/scripts/cg3-autobin.pl" DESTINATION bin)
