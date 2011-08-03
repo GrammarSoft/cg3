@@ -29,7 +29,6 @@
 #endif
 
 #include "uextras.h"
-#include "Strings.h"
 #include "inlines.h"
 
 namespace CG3 {
@@ -46,36 +45,6 @@ bool ux_isEmpty(const UChar *text) {
 		}
 	}
 	return true;
-}
-
-int ux_isSetOp(const UChar *it) {
-	int retval = S_IGNORE;
-	// u_strncasecmp will mistake set ORA for operator OR
-	if (u_strcasecmp(it, stringbits[S_OR].getTerminatedBuffer(), 0) == 0 || u_strcmp(it, stringbits[S_PIPE].getTerminatedBuffer()) == 0) {
-		retval = S_OR;
-	}
-	else if (u_strcmp(it, stringbits[S_PLUS].getTerminatedBuffer()) == 0) {
-		retval = S_PLUS;
-	}
-	else if (u_strcmp(it, stringbits[S_MINUS].getTerminatedBuffer()) == 0) {
-		retval = S_MINUS;
-	}
-	else if (u_strcmp(it, stringbits[S_MULTIPLY].getTerminatedBuffer()) == 0) {
-		retval = S_MULTIPLY;
-	}
-	else if (u_strcmp(it, stringbits[S_FAILFAST].getTerminatedBuffer()) == 0) {
-		retval = S_FAILFAST;
-	}
-	else if (u_strcmp(it, stringbits[S_NOT].getTerminatedBuffer()) == 0) {
-		retval = S_NOT;
-	}
-	else if (u_strcmp(it, stringbits[S_SET_ISECT_U].getTerminatedBuffer()) == 0) {
-		retval = S_SET_ISECT_U;
-	}
-	else if (u_strcmp(it, stringbits[S_SET_SYMDIFF_U].getTerminatedBuffer()) == 0) {
-		retval = S_SET_SYMDIFF_U;
-	}
-	return retval;
 }
 
 UChar *ux_substr(const UChar *string, const size_t start, const size_t end) {

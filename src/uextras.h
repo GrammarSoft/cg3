@@ -24,12 +24,53 @@
 #define c6d28b7452ec699b_UEXTRAS_H
 
 #include "stdafx.h"
+#include "Strings.h"
 
 namespace CG3 {
 
 bool ux_isEmpty(const UChar *text);
 
-int ux_isSetOp(const UChar *it);
+inline int ux_isSetOp(const UChar *it) {
+	switch (it[1]) {
+	case 0:
+		switch (it[0]) {
+		case '|':
+			return S_OR;
+		case '+':
+			return S_PLUS;
+		case '-':
+			return S_MINUS;
+		case '^':
+			return S_FAILFAST;
+		case 8745:
+			return S_SET_ISECT_U;
+		case 8710:
+			return S_SET_SYMDIFF_U;
+		default:
+			break;
+		}
+		break;
+	case 'R':
+	case 'r':
+		switch (it[0]) {
+		case 'O':
+		case 'o':
+			switch (it[2]) {
+			case 0:
+				return S_OR;
+			default:
+				break;
+			}
+			break;
+		default:
+			break;
+		}
+		break;
+	default:
+		break;
+	}
+	return S_IGNORE;
+}
 
 UChar *ux_substr(const UChar *string, const size_t start, const size_t end);
 

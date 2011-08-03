@@ -8,6 +8,18 @@
     using <ulink url="http://www.microsoft.com/express/Downloads/#2010-Visual-CPP">Microsoft Visual C++ 2010 Express</ulink>.
   </para>
 
+  <section id="cmake">
+    <title>CMake Notes</title>
+    <para>
+      A few have wondered how one installs into a different folder than the default /usr/local when there is no --prefix option to CMake.
+      Well, <ulink url="http://www.vtk.org/Wiki/CMake_FAQ#Does_CMake.27s_.22make_install.22_support_DESTDIR.3F">CMake supports the common DESTDIR environment variable</ulink>.
+    </para>
+    <para>
+      Also, you do not need to run cmake.sh at every build; make will detect stale files and re-run CMake as needed,
+      just like automake. The cmake.sh script is to force a completely clean rebuild.
+    </para>
+  </section>
+
   <section id="ubuntu-debian">
     <title>Ubuntu / Debian</title>
     <para>

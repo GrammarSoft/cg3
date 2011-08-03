@@ -386,6 +386,10 @@ Tag *Grammar::allocateTag(const UChar *txt, bool raw) {
 		u_fprintf(ux_stderr, "Error: Tag '%S' cannot start with ( on line %u! Possible extra opening ( or missing closing ) to the left. If you really meant it, escape it as \\(.\n", txt, lines);
 		CG3Quit(1);
 	}
+	if (!raw && ux_isSetOp(txt) != S_IGNORE) {
+		u_fprintf(ux_stderr, "Warning: Tag '%S' on line %u looks like a set operator. Maybe you meant to do SET instead of LIST?\n", txt, lines);
+		u_fflush(ux_stderr);
+	}
 	Taguint32HashMap::iterator it;
 	uint32_t thash = hash_sdbm_uchar(txt);
 	if ((it = single_tags.find(thash)) != single_tags.end() && !it->second->tag.empty() && u_strcmp(it->second->tag.c_str(), txt) == 0) {
