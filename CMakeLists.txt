@@ -1,3 +1,4 @@
+SET(CMAKE_LEGACY_CYGWIN_WIN32 0)
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6.4 FATAL_ERROR)
 PROJECT(cg3 CXX C)
 
@@ -25,3 +26,5 @@ include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
 enable_testing()
 
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src)
+
+install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/scripts/cg3-autobin.pl" DESTINATION bin)
