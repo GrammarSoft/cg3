@@ -156,7 +156,7 @@ gotaline:
 				SKIPTO_NOSPAN(space, '"');
 			}
 			if (space[0] != '"' || space[-1] != '>') {
-				u_fprintf(ux_stderr, "Warning: Line %u looked like a cohort but wasn't - treated as text.\n", numLines);
+				u_fprintf(ux_stderr, "Warning: %S on line %u looked like a cohort but wasn't - treated as text.\n", &cleaned[0], numLines);
 				u_fflush(ux_stderr);
 				goto istext;
 			}
@@ -273,7 +273,7 @@ gotaline:
 
 			// This does not consider wordforms as invalid readings since chained CG-3 may produce such
 			if (*space != '"') {
-				u_fprintf(ux_stderr, "Warning: Line %u looked like a reading but wasn't - treated as text.\n", numLines);
+				u_fprintf(ux_stderr, "Warning: %S on line %u looked like a reading but wasn't - treated as text.\n", &cleaned[0], numLines);
 				u_fflush(ux_stderr);
 				goto istext;
 			}
@@ -321,7 +321,7 @@ gotaline:
 		else {
 			if (!ignoreinput && cleaned[0] == ' ' && cleaned[1] == '"') {
 				if (verbosity_level > 0) {
-					u_fprintf(ux_stderr, "Warning: Line %u looked like a reading but there was no containing cohort - treated as plain text.\n", numLines);
+					u_fprintf(ux_stderr, "Warning: %S on line %u looked like a reading but there was no containing cohort - treated as plain text.\n", &cleaned[0], numLines);
 					u_fflush(ux_stderr);
 				}
 			}

@@ -17,6 +17,7 @@
         LIST b = c d e f ;
   
         # Logically yields a set containing tags: a b c d e f
+        # Practically a reading must match either set
         SET r = a OR b ;
         SET r = a | b ;
       </screen>
@@ -31,7 +32,8 @@
         LIST a = a b c d ;
         LIST b = c d e f ;
   
-        # Logically yields a set containing tags: a b
+        # Logically yields a set containing tags: a b !c !d !e !f
+        # Practically a reading must match the first set and must not match the second set
         SET r = a - b ;
       </screen>
     </section>
@@ -77,6 +79,7 @@
   
         # Logically yields a set containing tags: (a c) (b c) c (d c) (a d) (b d) d (a e)
         #                                         (b e) (c e) (d e) (a f) (b f) (c f) (d f)
+        # Practically a reading must match both sets
         SET r = a + b ;
       </screen>
     </section>
