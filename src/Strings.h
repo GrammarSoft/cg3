@@ -23,8 +23,6 @@
 #ifndef c6d28b7452ec699b_STRINGS_H
 #define c6d28b7452ec699b_STRINGS_H
 
-#include "stdafx.h"
-
 namespace CG3 {
 	// ToDo: Add ABORT
 	enum KEYWORDS {
@@ -184,7 +182,11 @@ namespace CG3 {
 		FL_REVERSE,
 		FLAGS_COUNT
 	};
+}
 
+#include "stdafx.h"
+
+namespace CG3 {
 	extern UnicodeString keywords[KEYWORD_COUNT];
 	extern UnicodeString stringbits[STRINGS_COUNT];
 	extern UnicodeString flags[FLAGS_COUNT];
