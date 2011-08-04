@@ -44,11 +44,13 @@ int main(int argc, char* argv[]) {
 	UErrorCode status = U_ZERO_ERROR;
 	srand((uint32_t)time(0));
 
-	fprintf(stderr, "VISL CG-3 Disambiguator version %u.%u.%u.%u\n",
-		CG3_VERSION_MAJOR, CG3_VERSION_MINOR, CG3_VERSION_PATCH, CG3_REVISION);
 	U_MAIN_INIT_ARGS(argc, argv);
 
 	argc = u_parseArgs(argc, argv, NUM_OPTIONS, options);
+
+	if (options[VERBOSE].doesOccur || options[VERSION].doesOccur || options[HELP1].doesOccur || options[HELP2].doesOccur) {
+		fprintf(stderr, "VISL CG-3 Disambiguator version %u.%u.%u.%u\n", CG3_VERSION_MAJOR, CG3_VERSION_MINOR, CG3_VERSION_PATCH, CG3_REVISION);
+	}
 
 	if (argc < 0) {
 		fprintf(stderr, "%s: error in command line argument \"%s\"\n", argv[0], argv[-argc]);
@@ -146,7 +148,9 @@ int main(int argc, char* argv[]) {
 		codepage_output = options[CODEPAGE_GLOBAL].value;
 	}
 
-	std::cerr << "Codepage: default " << codepage_default << ", input " << codepage_input << ", output " << codepage_output << ", grammar " << codepage_grammar << std::endl;
+	if (options[VERBOSE].doesOccur) {
+		std::cerr << "Codepage: default " << codepage_default << ", input " << codepage_input << ", output " << codepage_output << ", grammar " << codepage_grammar << std::endl;
+	}
 
 	const char *locale_default = "en_US_POSIX"; //uloc_getDefault();
 	const char *locale_grammar = locale_default;
@@ -291,15 +295,19 @@ int main(int argc, char* argv[]) {
 	delete parser;
 	parser = 0;
 
-	std::cerr << "Parsing grammar took " << (clock()-main_timer)/(double)CLOCKS_PER_SEC << " seconds." << std::endl;
+	if (options[VERBOSE].doesOccur) {
+		std::cerr << "Parsing grammar took " << (clock()-main_timer)/(double)CLOCKS_PER_SEC << " seconds." << std::endl;
+	}
 	main_timer = clock();
 
-	std::cerr << "Grammar has " << grammar.sections.size() << " sections, " << grammar.template_list.size() << " templates, " << grammar.rule_by_number.size() << " rules, " << grammar.sets_list.size() << " sets, " << grammar.tags.size() << " c-tags, " << grammar.single_tags.size() << " s-tags." << std::endl;
-	if (grammar.rules_any) {
-		std::cerr << grammar.rules_any->size() << " rules cannot be skipped by index." << std::endl;
-	}
-	if (grammar.has_dep) {
-		std::cerr << "Grammar has dependency rules." << std::endl;
+	if (options[VERBOSE].doesOccur) {
+		std::cerr << "Grammar has " << grammar.sections.size() << " sections, " << grammar.template_list.size() << " templates, " << grammar.rule_by_number.size() << " rules, " << grammar.sets_list.size() << " sets, " << grammar.tags.size() << " c-tags, " << grammar.single_tags.size() << " s-tags." << std::endl;
+		if (grammar.rules_any) {
+			std::cerr << grammar.rules_any->size() << " rules cannot be skipped by index." << std::endl;
+		}
+		if (grammar.has_dep) {
+			std::cerr << "Grammar has dependency rules." << std::endl;
+		}
 	}
 
 	if (grammar.is_binary) {
