@@ -65,6 +65,19 @@
         ADD (@baseform-same) $$bform (NEGATE 0 (*) - $$bform) ;
       </screen>
     </section>
+
+    <section id="faq-default-parent-root">
+      <title>Attach all cohorts without a parent to the root</title>
+      
+      <para>
+        A final cleanup step of many dependency grammars is to attach anything that was not assigned a parent to the
+        root of the window. This can be done easily with:
+      </para>
+      <screen>
+        # For all cohorts that has no parent, attach to 0th cohort
+        SETPARENT (*) (NEGATE p (*)) TO (@0 (*)) ;
+      </screen>
+    </section>
   </section>
 
 </chapter>
