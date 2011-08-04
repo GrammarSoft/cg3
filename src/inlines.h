@@ -161,7 +161,10 @@ inline uint32_t hash_sdbm_char(const char *str, uint32_t hash = 0, size_t len = 
 }
 
 inline bool ISSPACE(const UChar c) {
-	return (c == 0x20 || c == 0x09 || u_isWhitespace(c));
+	if (c <= 0xFF && c != 0x09 && c != 0x0A && c != 0x0D && c != 0x20 && c != 0xA0) {
+		return false;
+	}
+	return (c == 0x20 || c == 0x09 || c == 0x0A || c == 0x0D || c == 0xA0 || u_isWhitespace(c));
 }
 
 inline bool ISSTRING(const UChar *p, const uint32_t c) {
