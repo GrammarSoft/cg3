@@ -295,9 +295,7 @@ size_t cg3_cohort_numreadings(cg3_cohort *cohort_) {
 
 cg3_reading *cg3_cohort_getreading(cg3_cohort *cohort_, size_t which) {
 	Cohort *cohort = static_cast<Cohort*>(cohort_);
-	ReadingList::iterator it = cohort->readings.begin();
-	std::advance(it, which);
-	return *it;
+	return cohort->readings[which];
 }
 
 void cg3_cohort_free(cg3_cohort *cohort_) {

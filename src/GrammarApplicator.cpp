@@ -652,9 +652,7 @@ void GrammarApplicator::pipeInCohort(Cohort *cohort, std::istream& input) {
 	readRaw(input, cs);
 	if (debug_level > 1) u_fprintf(ux_stderr, "DEBUG: num readings %u\n", cs);
 	for (size_t i=0 ; i<cs ; ++i) {
-		ReadingList::iterator ri = cohort->readings.begin();
-		std::advance(ri, i);
-		pipeInReading(*ri, input, force_readings);
+		pipeInReading(cohort->readings[i], input, force_readings);
 	}
 
 	if (flags & (1 << 0)) {

@@ -32,7 +32,7 @@ namespace CG3 {
 	class Cohort;
 	class Reading;
 
-	typedef std::list<Reading*> ReadingList;
+	typedef std::vector<Reading*> ReadingList;
 
 	class Reading {
 	public:
