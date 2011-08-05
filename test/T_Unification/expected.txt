@@ -17,8 +17,8 @@
 ;	"worde" some tags SELECT:one 
 ;	"worde" some tags SELECT:one 
 "<wordf>"
-	"replaced:f" some tags CC THIS @UnifSet ADD:11 SUBSTITUTE:29 
 	"replaced:f" some tags THIS SUBSTITUTE:29 
+	"replaced:f" some tags CC THIS @UnifSet ADD:11 SUBSTITUTE:29 
 ;	"wordf" some tags NOTTHIS REMOVE:20 
 "<wordg>"
 	"replaced:g" some tags CC THIS SELECT:this SUBSTITUTE:29 
