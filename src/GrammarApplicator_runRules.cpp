@@ -445,8 +445,8 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 			bool readings_changed = false;
 
 			// This loop acts on the result of the previous loop; letting the rules do their thing on the valid readings.
-			foreach (ReadingList, cohort->readings, rter2, rter2_end) {
-				Reading& reading = **rter2;
+			for (size_t i=0 ; i<cohort->readings.size() ; ++i) {
+				Reading& reading = *cohort->readings[i];
 				bool good = reading.matched_tests;
 				const uint32_t state_hash = reading.hash;
 
@@ -1003,6 +1003,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						Cohort *attach = 0;
 						dep_deep_seen.clear();
 						attach_to = 0;
+						// ToDo: Maybe allow SetRelation family to scan on after failed tests?
 						if (runContextualTest(&current, c, rule.dep_target, &attach) && attach) {
 							if (attach_to) {
 								attach = attach_to;
@@ -1111,11 +1112,18 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 				else {
 					cohort->deleted.insert(cohort->deleted.end(), removed.begin(), removed.end());
 				}
+				size_t oz = cohort->readings.size();
 				while (!removed.empty()) {
 					removed.back()->deleted = true;
-					cohort->readings.remove(removed.back());
+					for (size_t i=0 ; i<oz ; ++i) {
+						if (cohort->readings[i] == removed.back()) {
+							--oz;
+							std::swap(cohort->readings[i], cohort->readings[oz]);
+						}
+					}
 					removed.pop_back();
 				}
+				cohort->readings.resize(oz);
 				if (debug_level > 0) {
 					std::cerr << "DEBUG: Rule " << rule.line << " hit cohort " << cohort->local_number << std::endl;
 				}
