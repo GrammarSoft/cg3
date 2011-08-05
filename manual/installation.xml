@@ -12,7 +12,9 @@
     <title>CMake Notes</title>
     <para>
       A few have wondered how one installs into a different folder than the default /usr/local when there is no --prefix option to CMake.
-      Well, <ulink url="http://www.vtk.org/Wiki/CMake_FAQ#Does_CMake.27s_.22make_install.22_support_DESTDIR.3F">CMake supports the common DESTDIR environment variable</ulink>.
+      Pass <code>-DCMAKE_INSTALL_PREFIX=/your/folder/here</code> to <code>./cmake.sh</code>
+      or run <code>cmake -DCMAKE_INSTALL_PREFIX=/your/folder/here .</code> if you have already run cmake.sh.
+      <!-- Also, <ulink url="http://www.vtk.org/Wiki/CMake_FAQ#Does_CMake.27s_.22make_install.22_support_DESTDIR.3F">CMake supports the common DESTDIR environment variable</ulink>. -->
     </para>
     <para>
       Also, you do not need to run cmake.sh at every build; make will detect stale files and re-run CMake as needed,
