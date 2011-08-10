@@ -535,6 +535,7 @@ void GAppSetOpts(CG3::GrammarApplicator& applicator, UConverter *conv) {
 		else {
 			applicator.debug_level = 1;
 		}
+		std::cerr << "Debug level set to " << applicator.debug_level << std::endl;
 	}
 	if (options[NUM_WINDOWS].doesOccur) {
 		applicator.num_windows = abs(atoi(options[NUM_WINDOWS].value));

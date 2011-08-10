@@ -166,6 +166,10 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 	// ToDo: Now that numbering is used, can't this be made a normal max? Hm, maybe not since --sections can still force another order...but if we're smart, then we re-enumerate rules based on --sections
 	uint32IntervalVector intersects = current.valid_rules.intersect(rules);
 
+	if (debug_level > 1) {
+		std::cerr << "DEBUG: Trying window " << current.number << std::endl;
+	}
+
 	const_foreach (uint32IntervalVector, intersects, iter_rules, iter_rules_end) {
 		uint32_t j = (*iter_rules);
 
@@ -175,6 +179,9 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 		}
 
 		const Rule& rule = *(grammar->rule_by_number[j]);
+		if (debug_level > 1) {
+			std::cerr << "DEBUG: Trying rule " << rule.line << std::endl;
+		}
 
 		ticks tstamp(gtimer);
 		KEYWORDS type = rule.type;
@@ -205,11 +212,16 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 
 		CohortSet& s = current.rule_to_cohorts.find(rule.number)->second;
 		if (debug_level > 1) {
-			std::cout << "DEBUG: " << s.size() << "/" << current.cohorts.size() << " = " << double(s.size())/double(current.cohorts.size()) << std::endl;
+			std::cerr << "DEBUG: " << s.size() << "/" << current.cohorts.size() << " = " << double(s.size())/double(current.cohorts.size()) << std::endl;
 		}
 		for (CohortSet::const_iterator rocit = s.begin() ; rocit != s.end() ; ) {
 			Cohort *cohort = *rocit;
 			++rocit;
+
+			if (debug_level > 1) {
+				std::cerr << "DEBUG: Trying cohort " << cohort->local_number << std::endl;
+			}
+
 			// If the current cohort is the initial >>> one, skip it.
 			if (cohort->local_number == 0) {
 				continue;
@@ -540,6 +552,10 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 
 						indexSingleWindow(current);
 						readings_changed = true;
+						index_ruleCohort_no.clear();
+						intersects = current.valid_rules.intersect(rules);
+						iter_rules = intersects.find(rule.number);
+						iter_rules_end = intersects.end();
 						rocit = s.find(cohort);
 						++rocit;
 						break;
