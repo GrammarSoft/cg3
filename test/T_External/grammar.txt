@@ -3,3 +3,5 @@ DELIMITERS = "<$.>" ;
 SECTION
 
 EXTERNAL ONCE ../../scripts/external.pl (*) ;
+
+"<word>" ADD (@after-æ発ø) (æ発ø) ;

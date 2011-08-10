@@ -1,6 +1,0 @@
-
-
-
-
-SELECT BSet ;
-SELECT CSet ;
