@@ -1,13 +1,13 @@
 "<word>"
-	"word" å予æ æ発ø 
-	"word" wanted æ発ø 
-	"word" notmeeither æ発ø 
+	"word" å予æ æ発ø abc @after-æ発ø 
+	"word" wanted æ発ø abc @after-æ発ø 
+	"word" notmeeither æ発ø abc @after-æ発ø 
 "<word>"
-	"word" æøå æ発ø 
-	"word" mapped æ発ø @A @B @X 
-	"word" notmeeither æ発ø 
+	"word" æøå æ発ø abc @after-æ発ø 
+	"word" mapped æ発ø abc @A @B @X 
+	"word" notmeeither æ発ø abc @after-æ発ø 
 "<word>"
-	"word" notwanted æ発ø 
-	"word" mapped æ発ø @D @E @X 
-	"word" notmeeither æ発ø 
+	"word" notwanted æ発ø abc @after-æ発ø 
+	"word" mapped æ発ø abc @D @E @X 
+	"word" notmeeither æ発ø abc @after-æ発ø 
 
