@@ -187,6 +187,9 @@ void Tag::parseTag(const UChar *to, UFILE *ux_stderr, Grammar *grammar) {
 		else if (u_strcmp(tag.c_str(), stringbits[S_UU_RIGHT].getTerminatedBuffer()) == 0) {
 			type |= T_PAR_RIGHT;
 		}
+		else if (u_strcmp(tag.c_str(), stringbits[S_UU_ENCL].getTerminatedBuffer()) == 0) {
+			type |= T_ENCL;
+		}
 		else if (u_strcmp(tag.c_str(), stringbits[S_UU_TARGET].getTerminatedBuffer()) == 0) {
 			type |= T_TARGET;
 		}
@@ -259,7 +262,7 @@ label_isVarstring:
 	}
 
 	type &= ~T_SPECIAL;
-	if (type & (T_ANY|T_TARGET|T_MARK|T_ATTACHTO|T_PAR_LEFT|T_PAR_RIGHT|T_NUMERICAL|T_VARIABLE|T_META|T_NEGATIVE|T_FAILFAST|T_CASE_INSENSITIVE|T_REGEXP|T_REGEXP_ANY|T_VARSTRING|T_SET)) {
+	if (type & MASK_TAG_SPECIAL) {
 		type |= T_SPECIAL;
 	}
 
@@ -422,7 +425,7 @@ uint32_t Tag::rehash() {
 	}
 
 	type &= ~T_SPECIAL;
-	if (type & (T_ANY|T_TARGET|T_MARK|T_ATTACHTO|T_PAR_LEFT|T_PAR_RIGHT|T_NUMERICAL|T_VARIABLE|T_META|T_NEGATIVE|T_FAILFAST|T_CASE_INSENSITIVE|T_REGEXP|T_REGEXP_ANY|T_VARSTRING|T_SET)) {
+	if (type & MASK_TAG_SPECIAL) {
 		type |= T_SPECIAL;
 	}
 
