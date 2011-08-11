@@ -68,6 +68,7 @@ bool GrammarApplicator::updateValidRules(const uint32IntervalVector& rules, uint
 
 void GrammarApplicator::indexSingleWindow(SingleWindow& current) {
 	current.valid_rules.clear();
+	current.rule_to_cohorts.clear();
 
 	foreach (CohortVector, current.cohorts, iter, iter_end) {
 		Cohort *c = *iter;
@@ -210,11 +211,11 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 
 		// ToDo: Make better use of rules_by_tag; except, I can't remember why I wrote this comment...
 
-		CohortSet& s = current.rule_to_cohorts.find(rule.number)->second;
+		CohortSet *s = &current.rule_to_cohorts.find(rule.number)->second;
 		if (debug_level > 1) {
-			std::cerr << "DEBUG: " << s.size() << "/" << current.cohorts.size() << " = " << double(s.size())/double(current.cohorts.size()) << std::endl;
+			std::cerr << "DEBUG: " << s->size() << "/" << current.cohorts.size() << " = " << double(s->size())/double(current.cohorts.size()) << std::endl;
 		}
-		for (CohortSet::const_iterator rocit = s.begin() ; rocit != s.end() ; ) {
+		for (CohortSet::const_iterator rocit = s->begin() ; rocit != s->end() ; ) {
 			Cohort *cohort = *rocit;
 			++rocit;
 
@@ -430,7 +431,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 			if (num_active == 0 && (num_iff == 0 || rule.type != K_IFF)) {
 				if (!matched_target) {
 					--rocit; // We have already incremented rocit earlier, so take one step back...
-					rocit = current.rule_to_cohorts.find(rule.number)->second.erase(rocit); // ...and one step forward again
+					rocit = s->erase(rocit); // ...and one step forward again
 				}
 				continue;
 			}
@@ -556,7 +557,8 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						intersects = current.valid_rules.intersect(rules);
 						iter_rules = intersects.find(rule.number);
 						iter_rules_end = intersects.end();
-						rocit = s.find(cohort);
+						s = &current.rule_to_cohorts.find(rule.number)->second;
+						rocit = s->find(cohort);
 						++rocit;
 						break;
 					}
@@ -641,7 +643,8 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						indexSingleWindow(current);
 						readings_changed = true;
 
-						rocit = s.find(cohort);
+						s = &current.rule_to_cohorts.find(rule.number)->second;
+						rocit = s->find(cohort);
 						++rocit;
 						break;
 					}
@@ -1238,8 +1241,6 @@ void GrammarApplicator::runGrammarOnWindow() {
 		dep_highest_seen = 0;
 	}
 
-	indexSingleWindow(*current);
-
 	has_enclosures = false;
 	if (!grammar->parentheses.empty()) {
 		label_scanParentheses:
@@ -1303,6 +1304,8 @@ void GrammarApplicator::runGrammarOnWindow() {
 label_runGrammarOnWindow_begin:
 	index_ruleCohort_no.clear();
 	current = gWindow->current;
+	indexSingleWindow(*current);
+	current->hit_external.clear();
 
 	++pass;
 	if (trace_encl) {
