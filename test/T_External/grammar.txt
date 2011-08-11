@@ -2,6 +2,8 @@ DELIMITERS = "<$.>" ;
 
 SECTION
 
+"<word>" ADD (@after-æ発ø) (æ発ø) ;
+
 EXTERNAL ONCE ../../scripts/external.pl (*) ;
 
-"<word>" ADD (@after-æ発ø) (æ発ø) ;
+REMOVE (mapped) ;
