@@ -72,13 +72,13 @@ Cohort *GrammarApplicator::runSingleTest(Cohort *cohort, const ContextualTest *t
 		*brk = true;
 	}
 	if (test->barrier) {
-		bool barrier = doesSetMatchCohortNormal(*cohort, test->barrier, test->pos);
+		bool barrier = doesSetMatchCohortNormal(*cohort, test->barrier, test->pos & ~POS_CAREFUL);
 		if (barrier) {
 			*brk = true;
 		}
 	}
 	if (test->cbarrier) {
-		bool cbarrier = doesSetMatchCohortCareful(*cohort, test->cbarrier, test->pos);
+		bool cbarrier = doesSetMatchCohortCareful(*cohort, test->cbarrier, test->pos | POS_CAREFUL);
 		if (cbarrier) {
 			*brk = true;
 		}

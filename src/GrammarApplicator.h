@@ -189,8 +189,10 @@ namespace CG3 {
 		uint32_t doesTagMatchReading(const Reading& reading, const Tag& tag, bool unif_mode = false, bool bypass_index = false);
 		bool doesSetMatchReading_tags(const Reading& reading, const Set& theset, bool unif_mode = false);
 		bool doesSetMatchReading(const Reading& reading, const uint32_t set, bool bypass_index = false, bool unif_mode = false);
+		inline void doesSetMatchCohortHelper(std::vector<Reading*>& rv, const ReadingList& readings, const Set *theset, uint32_t options);
+		std::vector<Reading*> doesSetMatchCohort(Cohort& cohort, const uint32_t set, uint32_t options = 0);
 		bool doesSetMatchCohortNormal(Cohort& cohort, const uint32_t set, uint32_t options = 0);
-		bool doesSetMatchCohortCareful(const Cohort& cohort, const uint32_t set, uint32_t options = 0);
+		bool doesSetMatchCohortCareful(Cohort& cohort, const uint32_t set, uint32_t options = 0);
 
 		bool statistics;
 		ticks gtimer;

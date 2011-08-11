@@ -78,6 +78,19 @@
         SETPARENT (*) (NEGATE p (*)) TO (@0 (*)) ;
       </screen>
     </section>
+
+    <section id="faq-barrier-multiple-cohorts">
+      <title>Use multiple cohorts as a barrier</title>
+      
+      <para>
+        The BARRIER and CBARRIER behavior may only refer to a single cohort, but often you want to stop because of
+        a condition expressed in multiple cohorts. This can be solved in a flat manner via MAP, ADD, or SUBSTITUTE.
+      </para>
+      <screen>
+        ADD (¤list) Noun (1 Comma) ;
+        SELECT Noun (-1* Adj BARRIER (¤list)) ;
+      </screen>
+    </section>
   </section>
 
 </chapter>

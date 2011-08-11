@@ -176,7 +176,8 @@ UnicodeString stringbits[STRINGS_COUNT] = {
 	UNICODE_STRING_SIMPLE("ALWAYS"),
 	_S_SET_ISECT_U,
 	_S_SET_SYMDIFF_U,
-	UNICODE_STRING_SIMPLE("FROM")
+	UNICODE_STRING_SIMPLE("FROM"),
+	UNICODE_STRING_SIMPLE("_ENCL_")
 };
 
 std::vector< std::vector<UChar> > gbuffers(NUM_GBUFFERS, std::vector<UChar>(CG3_BUFFER_SIZE, 0));

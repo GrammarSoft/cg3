@@ -2009,6 +2009,15 @@ int TextualParser::parse_grammar_from_file(const char *fname, const char *loc, c
 		result->addTagToSet(t, set_c);
 		result->addSet(set_c);
 	}
+	// Create the magic set _ENCL_ containing the tag _ENCL_
+	{
+		Set *set_c = result->allocateSet();
+		set_c->line = 0;
+		set_c->setName(stringbits[S_UU_ENCL].getTerminatedBuffer());
+		Tag *t = result->allocateTag(stringbits[S_UU_ENCL].getTerminatedBuffer());
+		result->addTagToSet(t, set_c);
+		result->addSet(set_c);
+	}
 	// Create the magic set _PAREN_ containing (_LEFT_) OR (_RIGHT_)
 	{
 		Set *set_c = result->allocateSet();

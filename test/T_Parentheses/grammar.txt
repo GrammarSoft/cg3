@@ -1,8 +1,9 @@
 DELIMITERS = "<$.>" ;
-PARENTHESES = ("<$(>" "<$)>") ("<$[>" "<$]>") ("<${>" "<$}>") ("<$<>" "<$>>") ("<$«>" "<$»>") (<pleft> <pright>) ;
+PARENTHESES = ("<$(>" "<$)>") ("<$[>" "<$]>") ("<${>" "<$}>") ("<$<>" "<$>>") ("<$Â«>" "<$Â»>") (<pleft> <pright>) ;
 
 BEFORE-SECTIONS
-# Special sets _LEFT_, _RIGHT_, and _PAREN_
+# Special sets _ENCL_, _LEFT_, _RIGHT_, and _PAREN_
+ADD (@encl) _ENCL_ ;
 ADD (@left) _LEFT_ ;
 ADD (@right) _RIGHT_ ;
 ADD (@left-or-right) _PAREN_ ;
