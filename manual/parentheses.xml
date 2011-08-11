@@ -98,6 +98,14 @@
     </para>
   </section>
 
+  <section id="parentheses-tag-encl">
+    <title>Magic Tag _ENCL_</title>
+    <para>
+      This tag is only valid when an enclosure is hidden away and only on cohorts that own hidden cohorts.
+      Useful for preventing scanning tests from crossing hidden enclosures with a barrier.
+    </para>
+  </section>
+
   <section id="parentheses-set-left">
     <title>Magic Set _LEFT_</title>
     <para>
@@ -109,6 +117,13 @@
     <title>Magic Set _RIGHT_</title>
     <para>
       A magic set containing the single tag (_RIGHT_).
+    </para>
+  </section>
+
+  <section id="parentheses-set-encl">
+    <title>Magic Set _ENCL_</title>
+    <para>
+      A magic set containing the single tag (_ENCL_).
     </para>
   </section>
 

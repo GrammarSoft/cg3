@@ -58,6 +58,9 @@ Tag::~Tag() {
 		uregex_close(regexp);
 		regexp = 0;
 	}
+
+	delete vs_sets;
+	delete vs_names;
 }
 
 void Tag::parseTag(const UChar *to, UFILE *ux_stderr, Grammar *grammar) {
@@ -158,9 +161,10 @@ void Tag::parseTag(const UChar *to, UFILE *ux_stderr, Grammar *grammar) {
 			}
 		}
 
-		for (size_t i=0 ; tmp[i] != 0 && i < length ; ++i) {
+		for (size_t i=0, oldlength = length ; tmp[i] != 0 && i < oldlength ; ++i) {
 			if (tmp[i] == '\\') {
 				++i;
+				--length;
 			}
 			if (tmp[i] == 0) {
 				break;
@@ -174,7 +178,7 @@ void Tag::parseTag(const UChar *to, UFILE *ux_stderr, Grammar *grammar) {
 
 		comparison_hash = hash_sdbm_uchar(tag);
 
-		if (!tag.empty() && tag[0] == '<' && tag[length-1] == '>') {
+		if (tag[0] == '<' && tag[length-1] == '>') {
 			parseNumeric();
 		}
 
