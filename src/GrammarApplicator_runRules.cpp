@@ -1306,6 +1306,7 @@ label_runGrammarOnWindow_begin:
 	current = gWindow->current;
 	indexSingleWindow(*current);
 	current->hit_external.clear();
+	gWindow->rebuildCohortLinks(); // ToDo: Hack. This can be done better...
 
 	++pass;
 	if (trace_encl) {

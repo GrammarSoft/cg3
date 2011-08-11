@@ -427,6 +427,7 @@ int main(int argc, char* argv[]) {
 	u_fclose(ux_stdin);
 	u_fclose(ux_stdout);
 	u_fclose(ux_stderr);
+	ucnv_close(conv);
 
 	u_cleanup();
 
