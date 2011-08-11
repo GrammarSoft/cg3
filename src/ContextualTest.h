@@ -57,6 +57,10 @@ namespace CG3 {
 		POS_UNKNOWN        = (1 << 25),
 		POS_RELATION       = (1 << 26),
 		POS_ATTACH_TO      = (1 << 27),
+
+		MASK_POS_DEP       = POS_DEP_PARENT|POS_DEP_SIBLING|POS_DEP_CHILD,
+		MASK_POS_DEPREL    = MASK_POS_DEP|POS_RELATION,
+		MASK_POS_CDEPREL   = MASK_POS_DEPREL|POS_CAREFUL,
 	};
 
 	class ContextualTest {

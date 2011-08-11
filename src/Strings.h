@@ -152,6 +152,7 @@ namespace CG3 {
 		S_SET_ISECT_U,
 		S_SET_SYMDIFF_U,
 		S_FROM,
+		S_UU_ENCL,
 		STRINGS_COUNT
 	};
 

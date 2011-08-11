@@ -410,6 +410,11 @@ uint32_t GrammarApplicator::doesTagMatchReading(const Reading& reading, const Ta
 			match = grammar->tag_any;
 		}
 	}
+	else if (tag.type & T_ENCL) {
+		if (!reading.parent->enclosed.empty()) {
+			match = true;
+		}
+	}
 	else if (tag.type & T_TARGET) {
 		if (target && reading.parent == target) {
 			match = grammar->tag_any;
@@ -682,7 +687,59 @@ bool GrammarApplicator::doesSetMatchReading(const Reading& reading, const uint32
 	return retval;
 }
 
+inline void GrammarApplicator::doesSetMatchCohortHelper(std::vector<Reading*>& rv, const ReadingList& readings, const Set *theset, uint32_t options) {
+	const_foreach (ReadingList, readings, iter, iter_end) {
+		Reading& reading = **iter;
+		if (doesSetMatchReading(reading, theset->hash, (theset->type & (ST_CHILD_UNIFY|ST_SPECIAL)) != 0)) {
+			rv.push_back(&reading);
+			if (!(options & MASK_POS_CDEPREL)) {
+				break;
+			}
+		}
+		else if (options & POS_CAREFUL) {
+			rv.clear();
+			break;
+		}
+	}
+}
+
+inline bool _check_options(std::vector<Reading*>& rv, uint32_t options, size_t nr) {
+	if ((options & POS_CAREFUL) && rv.size() != nr) {
+		return false;
+	}
+	if (options & MASK_POS_DEPREL) {
+		return true;
+	}
+	return !rv.empty();
+}
+
+std::vector<Reading*> GrammarApplicator::doesSetMatchCohort(Cohort& cohort, const uint32_t set, uint32_t options) {
+	std::vector<Reading*> rv;
+	if (cohort.possible_sets.find(set) == cohort.possible_sets.end()) {
+		return rv;
+	}
+
+	const Set *theset = grammar->sets_by_contents.find(set)->second;
+	doesSetMatchCohortHelper(rv, cohort.readings, theset, options);
+	if ((options & POS_LOOK_DELETED) && _check_options(rv, options, cohort.readings.size())) {
+		doesSetMatchCohortHelper(rv, cohort.deleted, theset, options);
+	}
+	if ((options & POS_LOOK_DELAYED)
+		&& (!(options & POS_LOOK_DELETED) || _check_options(rv, options, cohort.readings.size()+cohort.deleted.size()))) {
+		doesSetMatchCohortHelper(rv, cohort.delayed, theset, options);
+	}
+	if (rv.empty()) {
+		if (!grammar->sets_any || grammar->sets_any->find(set) == grammar->sets_any->end()) {
+			cohort.possible_sets.erase(set);
+		}
+	}
+	return rv;
+}
+
 bool GrammarApplicator::doesSetMatchCohortNormal(Cohort& cohort, const uint32_t set, uint32_t options) {
+	/*
+	return !doesSetMatchCohort(cohort, set, options).empty();
+	/*/
 	if (cohort.possible_sets.find(set) == cohort.possible_sets.end()) {
 		return false;
 	}
@@ -719,9 +776,13 @@ bool GrammarApplicator::doesSetMatchCohortNormal(Cohort& cohort, const uint32_t 
 		}
 	}
 	return retval;
+	//*/
 }
 
-bool GrammarApplicator::doesSetMatchCohortCareful(const Cohort& cohort, const uint32_t set, uint32_t options) {
+bool GrammarApplicator::doesSetMatchCohortCareful(Cohort& cohort, const uint32_t set, uint32_t options) {
+	/*
+	return !doesSetMatchCohort(cohort, set, options).empty();
+	/*/
 	if (cohort.possible_sets.find(set) == cohort.possible_sets.end()) {
 		return false;
 	}
@@ -753,6 +814,7 @@ bool GrammarApplicator::doesSetMatchCohortCareful(const Cohort& cohort, const ui
 		}
 	}
 	return retval;
+	//*/
 }
 
 }
