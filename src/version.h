@@ -28,7 +28,7 @@ const char CG3_COPYRIGHT_STRING[] = "Copyright (C) 2007-2011 GrammarSoft ApS. Al
 const uint32_t CG3_VERSION_MAJOR = 0;
 const uint32_t CG3_VERSION_MINOR = 9;
 const uint32_t CG3_VERSION_PATCH = 7;
-const uint32_t CG3_REVISION = 7434;
+const uint32_t CG3_REVISION = 7436;
 const uint32_t CG3_TOO_OLD = 6770;
 const uint32_t CG3_EXTERNAL_PROTOCOL = 7226;
 
