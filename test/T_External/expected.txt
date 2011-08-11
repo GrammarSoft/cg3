@@ -4,10 +4,8 @@
 	"word" notmeeither æ発ø @after-æ発ø 
 "<word>"
 	"word" æøå æ発ø @after-æ発ø 
-	"word" mapped æ発ø @A @B @X 
 	"word" notmeeither æ発ø @after-æ発ø 
 "<word>"
 	"word" notwanted æ発ø @after-æ発ø 
-	"word" mapped æ発ø @D @E @X 
 	"word" notmeeither æ発ø @after-æ発ø 
 
