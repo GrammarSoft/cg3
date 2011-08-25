@@ -1,6 +1,4 @@
 This is some text that should not interfere with the run.
-"<wo\"rd>"
-	"word" wanted 
 Some more text.
 <tag>
 Text.
