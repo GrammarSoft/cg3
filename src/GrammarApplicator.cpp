@@ -408,7 +408,14 @@ void GrammarApplicator::printReading(const Reading *reading, UFILE *output) {
 void GrammarApplicator::printCohort(Cohort *cohort, UFILE *output) {
 	const UChar ws[] = {' ', '\t', 0};
 
+	if (cohort->local_number == 0) {
+		goto removed;
+	}
+
 	if (cohort->type & CT_REMOVED) {
+		if (!trace || trace_no_removed) {
+			goto removed;
+		}
 		u_fputc(';', output);
 		u_fputc(' ', output);
 	}
@@ -428,6 +435,8 @@ void GrammarApplicator::printCohort(Cohort *cohort, UFILE *output) {
 			printReading(*rter2, output);
 		}
 	}
+
+removed:
 	if (!cohort->text.empty() && cohort->text.find_first_not_of(ws) != UString::npos) {
 		u_fprintf(output, "%S", cohort->text.c_str());
 		if (!ISNL(cohort->text[cohort->text.length()-1])) {
@@ -436,14 +445,7 @@ void GrammarApplicator::printCohort(Cohort *cohort, UFILE *output) {
 	}
 
 	foreach (CohortVector, cohort->removed, iter, iter_end) {
-		if (trace && !trace_no_removed) {
-			printCohort(*iter, output);
-		}
-		else {
-			if (!(*iter)->text.empty()) {
-				u_fprintf(output, "%S", (*iter)->text.c_str());
-			}
-		}
+		printCohort(*iter, output);
 	}
 }
 
@@ -453,7 +455,7 @@ void GrammarApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 	}
 
 	uint32_t cs = (uint32_t)window->cohorts.size();
-	for (uint32_t c=1 ; c < cs ; c++) {
+	for (uint32_t c=0 ; c < cs ; c++) {
 		Cohort *cohort = window->cohorts[c];
 		printCohort(cohort, output);
 	}
