@@ -446,7 +446,6 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 				}
 			}
 
-			uint32_t did_append = std::numeric_limits<uint32_t>::max(); // Only 1 Append per cohort should happen.
 			// Keep track of which readings got removed and selected
 			ReadingList removed;
 			ReadingList selected;
@@ -603,6 +602,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 
 						foreach(std::vector<TagList>, readings, rit, rit_end) {
 							Reading *cReading = new Reading(cCohort);
+							++numReadings;
 							insert_if_exists(cReading->parent->possible_sets, grammar->sets_any);
 							cReading->hit_by.push_back(rule.number);
 							cReading->noprint = false;
@@ -791,34 +791,60 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 							readings_changed = true;
 						}
 					}
-					else if (rule.type == K_APPEND && rule.number != did_append) {
-						// ToDo: Let APPEND add multiple readings a'la ADDCOHORT
-						Reading *cReading = cohort->allocateAppendReading();
-						++numReadings;
+					else if (rule.type == K_APPEND) {
 						index_ruleCohort_no.clear();
-						cReading->hit_by.push_back(rule.number);
-						cReading->noprint = false;
-						addTagToReading(*cReading, cohort->wordform);
-						TagList mappings;
-						TagList theTags = getTagList(*rule.maplist);
+
+						Tag *bf = 0;
+						std::vector<TagList> readings;
+						const TagList theTags = getTagList(*rule.maplist);
 						const_foreach (TagList, theTags, tter, tter_end) {
-							uint32_t hash = (*tter)->hash;
-							if ((*tter)->type & T_MAPPING || (*tter)->tag[0] == grammar->mapping_prefix) {
-								mappings.push_back(*tter);
+							if ((*tter)->type & T_BASEFORM) {
+								bf = *tter;
+								readings.resize(readings.size()+1);
 							}
-							else {
-								hash = addTagToReading(*cReading, hash);
+							assert(bf && "There must be a baseform before any other tags in APPEND.");
+							readings.back().push_back(*tter);
+						}
+
+						foreach(std::vector<TagList>, readings, rit, rit_end) {
+							Reading *cReading = new Reading(cohort);
+							++numReadings;
+							insert_if_exists(cReading->parent->possible_sets, grammar->sets_any);
+							addTagToReading(*cReading, cohort->wordform);
+							cReading->hit_by.push_back(rule.number);
+							cReading->noprint = false;
+							TagList mappings;
+							const_foreach (TagList, *rit, tter, tter_end) {
+								uint32_t hash = (*tter)->hash;
+								if ((*tter)->type & T_MAPPING || (*tter)->tag[0] == grammar->mapping_prefix) {
+									mappings.push_back(*tter);
+								}
+								else {
+									hash = addTagToReading(*cReading, hash);
+								}
+								if (updateValidRules(rules, intersects, hash, *cReading)) {
+									iter_rules = intersects.find(rule.number);
+									iter_rules_end = intersects.end();
+								}
 							}
-							if (updateValidRules(rules, intersects, hash, reading)) {
-								iter_rules = intersects.find(rule.number);
-								iter_rules_end = intersects.end();
+							if (!mappings.empty()) {
+								splitMappings(mappings, *cohort, *cReading);
+							}
+							cohort->appendReading(cReading);
+						}
+
+						if (cohort->readings.size() > 1) {
+							foreach (ReadingList, cohort->readings, rit, rit_end) {
+								if ((*rit)->noprint) {
+									delete *rit;
+									rit = cohort->readings.erase(rit);
+									rit_end = cohort->readings.end();
+								}
 							}
 						}
-						if (!mappings.empty()) {
-							splitMappings(mappings, *cohort, *cReading, true);
-						}
-						did_append = rule.number;
+
 						readings_changed = true;
+						break;
 					}
 					else if (rule.type == K_COPY) {
 						Reading *cReading = cohort->allocateAppendReading();
@@ -1150,6 +1176,10 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 			// If there are any selected cohorts, just swap them in...
 			if (!selected.empty()) {
 				cohort->readings.swap(selected);
+			}
+
+			if (cohort->readings.empty()) {
+				initEmptyCohort(*cohort);
 			}
 
 			// Cohort state has changed, so mark that the section did something
