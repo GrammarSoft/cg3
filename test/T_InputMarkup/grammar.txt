@@ -5,3 +5,5 @@ LIST ASet = wanted ;
 SECTION
 
 SELECT ASet ;
+
+REMCOHORT ("<wo\\"rd>") ;
