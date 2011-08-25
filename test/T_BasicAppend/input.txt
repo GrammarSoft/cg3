@@ -2,3 +2,4 @@
 	"word" notwanted
 	"word" wanted
 	"word" notmeeither
+"<waffle>"
