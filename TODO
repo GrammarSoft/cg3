@@ -34,3 +34,4 @@ ToDo: Allow rules to be run on contextual test targets, if all tests are true.
 ToDo: Rules don't currently require ; termination...should they?
 ToDo: Cache shared contexts between close rules
 ToDo: Document VSTR and STATIC-SETS
+ToDo: Implement meta information and variables; <STREAMCMD:SETVAR:var,var,var> and <STREAMCMD:REMVAR:var,var,var> ?
