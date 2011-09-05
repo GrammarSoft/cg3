@@ -880,6 +880,7 @@ void TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 	|| key == K_ADDRELATIONS || key == K_ADDRELATION
 	|| key == K_SETRELATIONS || key == K_SETRELATION
 	|| key == K_REMRELATIONS || key == K_REMRELATION
+	|| key == K_SETVARIABLE || key == K_REMVARIABLE
 	|| key == K_ADDCOHORT) {
 		Set *s = parseSetInlineWrapper(p);
 		s->reindex(*result);
@@ -895,7 +896,7 @@ void TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 	}
 
 	result->lines += SKIPWS(p);
-	if (key == K_ADDRELATIONS || key == K_SETRELATIONS || key == K_REMRELATIONS) {
+	if (key == K_ADDRELATIONS || key == K_SETRELATIONS || key == K_REMRELATIONS || key == K_SETVARIABLE) {
 		Set *s = parseSetInlineWrapper(p);
 		s->reindex(*result);
 		rule->sublist = s;
@@ -904,7 +905,7 @@ void TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 			CG3Quit(1);
 		}
 		if (s->tags_list.empty() && !(s->type & (ST_TAG_UNIFY|ST_SET_UNIFY|ST_CHILD_UNIFY))) {
-			u_fprintf(ux_stderr, "Error: Relation set on line %u was neither unified nor of LIST type!\n", result->lines);
+			u_fprintf(ux_stderr, "Error: Relation/Value set on line %u was neither unified nor of LIST type!\n", result->lines);
 			CG3Quit(1);
 		}
 	}
@@ -1284,6 +1285,20 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 			&& ISCHR(*(p+7),'T','t') && ISCHR(*(p+8),'I','i') && ISCHR(*(p+9),'O','o')
 			&& !ISSTRING(p, 10)) {
 			parseRule(p, K_REMRELATION);
+		}
+		// SETVARIABLE
+		else if (ISCHR(*p,'S','s') && ISCHR(*(p+10),'E','e') && ISCHR(*(p+1),'E','e') && ISCHR(*(p+2),'T','t')
+			&& ISCHR(*(p+3),'V','v') && ISCHR(*(p+4),'A','a') && ISCHR(*(p+5),'R','r') && ISCHR(*(p+6),'I','i')
+			&& ISCHR(*(p+7),'A','a') && ISCHR(*(p+8),'B','b') && ISCHR(*(p+9),'L','l')
+			&& !ISSTRING(p, 10)) {
+			parseRule(p, K_SETVARIABLE);
+		}
+		// REMVARIABLE
+		else if (ISCHR(*p,'R','r') && ISCHR(*(p+10),'E','e') && ISCHR(*(p+1),'E','e') && ISCHR(*(p+2),'M','m')
+			&& ISCHR(*(p+3),'V','v') && ISCHR(*(p+4),'A','a') && ISCHR(*(p+5),'R','r') && ISCHR(*(p+6),'I','i')
+			&& ISCHR(*(p+7),'A','a') && ISCHR(*(p+8),'B','b') && ISCHR(*(p+9),'L','l')
+			&& !ISSTRING(p, 10)) {
+			parseRule(p, K_REMVARIABLE);
 		}
 		// SETPARENT
 		else if (ISCHR(*p,'S','s') && ISCHR(*(p+8),'T','t') && ISCHR(*(p+1),'E','e') && ISCHR(*(p+2),'T','t')

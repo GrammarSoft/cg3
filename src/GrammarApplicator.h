@@ -146,7 +146,6 @@ namespace CG3 {
 
 		std::vector<UnicodeString> regexgrps;
 		uint32HashMap variables;
-		uint32HashMap metas;
 		Cohort *target;
 		Cohort *mark;
 		Cohort *attach_to;

@@ -505,12 +505,22 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						}
 					}
 					else if (type == K_REMVARIABLE) {
-						u_fprintf(ux_stderr, "Info: RemVariable fired for %u.\n", rule.varname);
-						variables.erase(rule.varname);
+						reading.hit_by.push_back(rule.number);
+						const TagList names = getTagList(*rule.maplist);
+						const_foreach (TagList, names, tter, tter_end) {
+							const Tag *tag = *tter;
+							variables.erase(tag->hash);
+							//u_fprintf(ux_stderr, "Info: RemVariable fired for %S.\n", tag->tag.c_str());
+						}
+						break;
 					}
 					else if (type == K_SETVARIABLE) {
-						u_fprintf(ux_stderr, "Info: SetVariable fired for %u.\n", rule.varname);
-						variables[rule.varname] = 1;
+						reading.hit_by.push_back(rule.number);
+						const TagList names = getTagList(*rule.maplist);
+						const TagList values = getTagList(*rule.sublist);
+						variables[names.front()->hash] = values.front()->hash;
+						//u_fprintf(ux_stderr, "Info: SetVariable fired for %S.\n", names.front()->tag.c_str());
+						break;
 					}
 					else if (type == K_DELIMIT) {
 						delimitAt(current, cohort);
@@ -1263,6 +1273,13 @@ uint32_t GrammarApplicator::runGrammarOnSingleWindow(SingleWindow& current) {
 void GrammarApplicator::runGrammarOnWindow() {
 	SingleWindow *current = gWindow->current;
 	did_final_enclosure = false;
+
+	const_foreach (uint32HashMap, current->variables_set, vit, vit_end) {
+		variables[vit->first] = vit->second;
+	}
+	const_foreach (uint32HashSet, current->variables_rem, vit, vit_end) {
+		variables.erase(*vit);
+	}
 
 	if (has_dep) {
 		reflowDependencyWindow();

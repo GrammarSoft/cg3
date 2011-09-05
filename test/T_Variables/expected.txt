@@ -1,2 +1,42 @@
-"<word>"
-	"word" wanted 
+<STREAMCMD:SETVAR:news>
+<STREAMCMD:SETVAR:poetry>
+"<They>"
+	"they" PERS @poetry 
+"<say>"
+	"say" V @poetry 
+"<the>"
+	"the" ART @poetry 
+"<Lion>"
+	"lion" N @poetry 
+"<and>"
+	"and" KC @poetry 
+"<the>"
+	"the" ART @poetry 
+"<Lizard>"
+	"lizard" N @poetry 
+"<keep>"
+	"keep" V @poetry 
+"<.>"
+	"." @poetry 
+<STREAMCMD:REMVAR:poetry>
+<STREAMCMD:SETVAR:drama>
+
+"<Do>"
+	"do" V @drama 
+"<you>"
+	"you" PERS @drama 
+"<really>"
+	"really" ADV @drama 
+"<think>"
+	"think" V @drama 
+"<it>"
+	"it" PERS @drama 
+"<needs>"
+	"need" V @drama 
+"<a>"
+	"a" ART @drama 
+"<scarf>"
+	"scarf" N @drama 
+"<?>"
+	"?" @drama 
+
