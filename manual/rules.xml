@@ -64,6 +64,10 @@
   Window manipulation:
       DELIMIT &lt;target&gt; [contextual_tests] ;
       EXTERNAL ONCE|ALWAYS &lt;program&gt; &lt;target&gt; [contextual_tests] ;
+
+  Variable manipulation:
+      SETVARIABLE &lt;name&gt; &lt;value&gt; &lt;target&gt; [contextual_tests] ;
+      REMVARIABLE &lt;name&gt; &lt;target&gt; [contextual_tests] ;
     </screen>
   </section>
 
@@ -264,6 +268,41 @@
     </para>
     <screen>
       SUBSTITUTE (TAG) (*) TARGET (TAG) ;
+    </screen>
+  </section>
+
+  <section id="setvariable">
+    <title>SETVARIABLE</title>
+    <indexterm>
+      <primary>SETVARIABLE</primary>
+    </indexterm>
+    <screen>
+      [wordform] SETVARIABLE &lt;name&gt; &lt;value&gt; &lt;target&gt; [contextual_tests] ;
+    </screen>
+    <para>
+      Sets a <link linkend="global-variables">global variable</link> to a given value.
+      If you don't care about the value you can just set it to 1 or *.
+    </para>
+    <screen>
+      SETVARIABLE (news) (*) (@headline) ;
+      SETVARIABLE (year) (1764) ("Jozef") (-2 ("Arch") LINK 1 ("Duke")) ;
+    </screen>
+  </section>
+
+  <section id="remvariable">
+    <title>REMVARIABLE</title>
+    <indexterm>
+      <primary>REMVARIABLE</primary>
+    </indexterm>
+    <screen>
+      [wordform] REMVARIABLE &lt;name&gt; &lt;target&gt; [contextual_tests] ;
+    </screen>
+    <para>
+      Unsets a <link linkend="global-variables">global variable</link>.
+    </para>
+    <screen>
+      REMVARIABLE (news) (@stanza) ;
+      REMVARIABLE (year) (@timeless) ;
     </screen>
   </section>
 
