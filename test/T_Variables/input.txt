@@ -1,45 +1,40 @@
-"<word>"
-	"word" male
-"<word>"
-	"word" unknown
-"<$.>"
+<STREAMCMD:SETVAR:news>
 
-"<word>"
-	"word" unknown
-"<word>"
-	"word" unknown
-"<word>"
-	"word" female
-"<word>"
-	"word" unknown
-"<$.>"
+<STREAMCMD:SETVAR:poetry>
+"<They>"
+	"they" PERS
+"<say>"
+	"say" V
+"<the>"
+	"the" ART
+"<Lion>"
+	"lion" N
+"<and>"
+	"and" KC
+"<the>"
+	"the" ART
+"<Lizard>"
+	"lizard" N
+"<keep>"
+	"keep" V
+"<.>"
+<STREAMCMD:REMVAR:poetry>
 
-"<word>"
-	"word" unknown
-"<word>"
-	"word" unknown
-"<word>"
-	"word" female
-"<word>"
-	"word" unknown
-"<$.>"
-
-"<word>"
-	"word" unknown
-"<word>"
-	"word" unknown
-"<word>"
-	"word" male
-"<word>"
-	"word" unknown
-"<$.>"
-
-"<word>"
-	"word" unknown
-"<word>"
-	"word" unknown
-"<word>"
-	"word" female
-"<word>"
-	"word" unknown
-"<$.>"
+<STREAMCMD:SETVAR:drama>
+"<Do>"
+	"do" V
+"<you>"
+	"you" PERS
+"<really>"
+	"really" ADV
+"<think>"
+	"think" V
+"<it>"
+	"it" PERS
+"<needs>"
+	"need" V
+"<a>"
+	"a" ART
+"<scarf>"
+	"scarf" N
+"<?>"

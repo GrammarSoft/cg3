@@ -112,6 +112,9 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 	gtimer = getticks();
 	ticks timer(gtimer);
 
+	uint32HashMap variables_set;
+	uint32HashSet variables_rem;
+
 	while (!u_feof(input)) {
 		lines++;
 		size_t offset = 0, packoff = 0;
@@ -224,6 +227,11 @@ gotaline:
 				// ToDo: Refactor to allocate SingleWindow, Cohort, and Reading from their containers
 				cSWindow = gWindow->allocAppendSingleWindow();
 				initEmptySingleWindow(cSWindow);
+
+				cSWindow->variables_set = variables_set;
+				variables_set.clear();
+				cSWindow->variables_rem = variables_rem;
+				variables_rem.clear();
 
 				lSWindow = cSWindow;
 				lReading = cSWindow->cohorts[0]->readings.front();
@@ -391,6 +399,98 @@ istext:
 					u_fprintf(ux_stderr, "Info: EXIT encountered on line %u. Exiting...\n", numLines);
 					u_fprintf(output, "%S", &line[0]);
 					goto CGCMD_EXIT;
+				}
+				else if (u_strncmp(&cleaned[0], stringbits[S_CMD_SETVAR].getTerminatedBuffer(), stringbits[S_CMD_SETVAR].length()) == 0) {
+					u_fprintf(ux_stderr, "Info: SETVAR encountered on line %u.\n", numLines);
+					cleaned[packoff-1] = 0;
+
+					UChar *s = &cleaned[stringbits[S_CMD_SETVAR].length()];
+					UChar *c = u_strchr(s, ',');
+					UChar *d = u_strchr(s, '=');
+					if (c == 0 && d == 0) {
+						Tag *tag = addTag(s);
+						variables_set[tag->hash] = grammar->tag_any;
+						variables_rem.erase(tag->hash);
+					}
+					else {
+						uint32_t a = 0, b = 0;
+						while (c || d) {
+							if (d && (d < c || c == 0)) {
+								d[0] = 0;
+								if (!s[0]) {
+									u_fprintf(ux_stderr, "Warning: SETVAR on line %u had no identifier before the =! Defaulting to identifier *.\n", numLines);
+									a = grammar->tag_any;
+								}
+								else {
+									a = addTag(s)->hash;
+								}
+								if (c) {
+									c[0] = 0;
+									s = c+1;
+								}
+								if (!d[1]) {
+									u_fprintf(ux_stderr, "Warning: SETVAR on line %u had no value after the =! Defaulting to value *.\n", numLines);
+									b = grammar->tag_any;
+								}
+								else {
+									b = addTag(d+1)->hash;
+								}
+								if (!c) {
+									d = 0;
+									s = 0;
+								}
+								variables_set[a] = b;
+								variables_rem.erase(a);
+							}
+							else if (c && (c < d || d == 0)) {
+								c[0] = 0;
+								if (!s[0]) {
+									u_fprintf(ux_stderr, "Warning: SETVAR on line %u had no identifier after the ,! Defaulting to identifier *.\n", numLines);
+									a = grammar->tag_any;
+								}
+								else {
+									a = addTag(s)->hash;
+								}
+								s = c+1;
+								variables_set[a] = grammar->tag_any;
+								variables_rem.erase(a);
+							}
+							if (s) {
+								c = u_strchr(s, ',');
+								d = u_strchr(s, '=');
+								if (c == 0 && d == 0) {
+									a = addTag(s)->hash;
+									variables_set[a] = grammar->tag_any;
+									variables_rem.erase(a);
+									s = 0;
+								}
+							}
+						}
+					}
+				}
+				else if (u_strncmp(&cleaned[0], stringbits[S_CMD_REMVAR].getTerminatedBuffer(), stringbits[S_CMD_REMVAR].length()) == 0) {
+					u_fprintf(ux_stderr, "Info: REMVAR encountered on line %u.\n", numLines);
+					cleaned[packoff-1] = 0;
+
+					UChar *s = &cleaned[stringbits[S_CMD_REMVAR].length()];
+					UChar *c = u_strchr(s, ',');
+					uint32_t a = grammar->tag_any;
+					while (c && *c) {
+						c[0] = 0;
+						a = grammar->tag_any;
+						if (s[0]) {
+							a = addTag(s)->hash;
+							variables_set.erase(a);
+							variables_rem.insert(a);
+						}
+						s = c+1;
+						c = u_strchr(s, ',');
+					}
+					if (s && s[0]) {
+						a = addTag(s)->hash;
+						variables_set.erase(a);
+						variables_rem.insert(a);
+					}
 				}
 				
 				if (line[0]) {

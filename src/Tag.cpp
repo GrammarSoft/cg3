@@ -80,6 +80,7 @@ void Tag::parseTag(const UChar *to, UFILE *ux_stderr, Grammar *grammar) {
 		}
 
 		size_t length = u_strlen(tmp);
+		assert(length && "parseTag() will not work with empty strings.");
 
 		if (tmp[0] == 'T' && tmp[1] == ':') {
 			u_fprintf(ux_stderr, "Warning: Tag %S looks like a misattempt of template usage on line %u.\n", tmp, grammar->lines);
@@ -278,37 +279,37 @@ label_isVarstring:
 
 void Tag::parseTagRaw(const UChar *to) {
 	type = 0;
-	if (u_strlen(to)) {
-		const UChar *tmp = to;
-		size_t length = u_strlen(tmp);
+	size_t length = u_strlen(to);
+	assert(length && "parseTagRaw() will not work with empty strings.");
 
-		if (tmp[0] && (tmp[0] == '"' || tmp[0] == '<')) {
-			if ((tmp[0] == '"' && tmp[length-1] == '"') || (tmp[0] == '<' && tmp[length-1] == '>')) {
-				type |= T_TEXTUAL;
-				if (tmp[0] == '"' && tmp[length-1] == '"') {
-					if (tmp[1] == '<' && tmp[length-2] == '>') {
-						type |= T_WORDFORM;
-					}
-					else {
-						type |= T_BASEFORM;
-					}
+	const UChar *tmp = to;
+
+	if (tmp[0] && (tmp[0] == '"' || tmp[0] == '<')) {
+		if ((tmp[0] == '"' && tmp[length-1] == '"') || (tmp[0] == '<' && tmp[length-1] == '>')) {
+			type |= T_TEXTUAL;
+			if (tmp[0] == '"' && tmp[length-1] == '"') {
+				if (tmp[1] == '<' && tmp[length-2] == '>') {
+					type |= T_WORDFORM;
+				}
+				else {
+					type |= T_BASEFORM;
 				}
 			}
 		}
+	}
 
-		tag.assign(tmp, length);
+	tag.assign(tmp, length);
 
-		if (!tag.empty() && tag[0] == '<' && tag[length-1] == '>') {
-			parseNumeric();
+	if (!tag.empty() && tag[0] == '<' && tag[length-1] == '>') {
+		parseNumeric();
+	}
+	if (!tag.empty() && tag[0] == '#') {
+		if (u_sscanf(tag.c_str(), "#%i->%i", &dep_self, &dep_parent) == 2 && dep_self != 0) {
+			type |= T_DEPENDENCY;
 		}
-		if (!tag.empty() && tag[0] == '#') {
-			if (u_sscanf(tag.c_str(), "#%i->%i", &dep_self, &dep_parent) == 2 && dep_self != 0) {
-				type |= T_DEPENDENCY;
-			}
-			const UChar local_dep_unicode[] = {'#', '%', 'i', L'\u2192', '%', 'i', 0};
-			if (u_sscanf_u(tag.c_str(), local_dep_unicode, &dep_self, &dep_parent) == 2 && dep_self != 0) {
-				type |= T_DEPENDENCY;
-			}
+		const UChar local_dep_unicode[] = {'#', '%', 'i', L'\u2192', '%', 'i', 0};
+		if (u_sscanf_u(tag.c_str(), local_dep_unicode, &dep_self, &dep_parent) == 2 && dep_self != 0) {
+			type |= T_DEPENDENCY;
 		}
 	}
 
