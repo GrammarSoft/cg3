@@ -71,4 +71,38 @@
     </screen>
   </section>
 
+  <section id="cmd-setvar">
+    <title>Set Variable</title>
+    <indexterm>
+      <primary>Set Variable</primary>
+    </indexterm>
+    <para>
+      Sets <link linkend="global-variables">global variables</link>. Same effect as the
+      <link linkend="setvariable">SETVARIABLE</link> rule type, but applicable for a whole parsing chain.
+      Takes a comma-separated list of variables to set, where each variable may have a value.
+    </para>
+    <screen>
+      &lt;STREAMCMD:SETVAR:poetry,year=1764&gt;
+      &lt;STREAMCMD:SETVAR:news&gt;
+      &lt;STREAMCMD:SETVAR:greek=ancient&gt;
+    </screen>
+  </section>
+
+  <section id="cmd-remvar">
+    <title>Unset Variable</title>
+    <indexterm>
+      <primary>Unset Variable</primary>
+    </indexterm>
+    <para>
+      Unsets <link linkend="global-variables">global variables</link>. Same effect as the
+      <link linkend="remvariable">REMVARIABLE</link> rule type, but applicable for a whole parsing chain.
+      Takes a comma-separated list of variables to unset.
+    </para>
+    <screen>
+      &lt;STREAMCMD:REMVAR:poetry,year&gt;
+      &lt;STREAMCMD:REMVAR:news&gt;
+      &lt;STREAMCMD:REMVAR:greek&gt;
+    </screen>
+  </section>
+
 </chapter>

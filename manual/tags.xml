@@ -317,6 +317,28 @@
     </para>
   </section>
 
+  <section id="global-variables">
+    <title>Global Variables</title>
+    <para>
+      Global variables are manipulated with rule types <link linkend="setvariable">SETVARIABLE</link> and
+      <link linkend="remvariable">REMVARIABLE</link>, plus the stream commands <link linkend="cmd-setvar">SETVAR</link>
+      and <link linkend="cmd-remvar">REMVAR</link>.
+      Global variables persist until unset and are not bound to any window, cohort, or reading.
+    </para>
+    <para>
+      You can query a global variable with the form VAR:name (implemented) or query whether a variable has a
+      specific value with VAR:name=value (not implemented just yet).
+    </para>
+    <screen>
+      REMOVE (@poetry) IF (0 (VAR:news)) ;
+      SELECT (&lt;historical&gt;) IF (0 (VAR:year=1764)) ;
+    </screen>
+    <para>
+      I recommend keeping VAR tags in the contextual tests, since they cannot currently be cached and will be checked
+      every time.
+    </para>
+  </section>
+
   <section id="fail-fast-tag">
     <title>Fail-Fast Tag</title>
     <para>
