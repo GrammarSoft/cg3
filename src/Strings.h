@@ -153,6 +153,8 @@ namespace CG3 {
 		S_SET_SYMDIFF_U,
 		S_FROM,
 		S_UU_ENCL,
+		S_CMD_SETVAR,
+		S_CMD_REMVAR,
 		STRINGS_COUNT
 	};
 

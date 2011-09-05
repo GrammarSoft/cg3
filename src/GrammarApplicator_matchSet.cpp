@@ -392,11 +392,11 @@ uint32_t GrammarApplicator::doesTagMatchReading(const Reading& reading, const Ta
 	}
 	else if (tag.type & T_VARIABLE) {
 		if (variables.find(tag.comparison_hash) == variables.end()) {
-			u_fprintf(ux_stderr, "Info: %u failed.\n", tag.comparison_hash);
+			//u_fprintf(ux_stderr, "Info: %S failed.\n", tag.tag.c_str());
 			match = 0;
 		}
 		else {
-			u_fprintf(ux_stderr, "Info: %u matched.\n", tag.comparison_hash);
+			//u_fprintf(ux_stderr, "Info: %S matched.\n", tag.tag.c_str());
 			match = tag.hash;
 		}
 	}

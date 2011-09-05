@@ -68,7 +68,7 @@ namespace CG3 {
 		uint32_t target;
 		uint32_t childset1, childset2;
 		uint32_t line, number;
-		uint32_t varname, varvalue;
+		uint32_t varname, varvalue; // ToDo: varvalue is unused
 		uint32_t jumpstart, jumpend;
 		uint32_t flags;
 		int32_t section;
