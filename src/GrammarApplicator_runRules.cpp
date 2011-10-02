@@ -47,8 +47,8 @@ bool GrammarApplicator::updateRuleToCohorts(Cohort& c, const uint32_t& rsit) {
 	if (r->wordform && r->wordform != c.wordform) {
 		return false;
 	}
-	CohortSet& s = current->rule_to_cohorts[rsit];
-	s.insert(&c);
+	CohortSet& cohortset = current->rule_to_cohorts[rsit];
+	cohortset.insert(&c);
 	return current->valid_rules.insert(rsit);
 }
 
@@ -211,11 +211,15 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 
 		// ToDo: Make better use of rules_by_tag; except, I can't remember why I wrote this comment...
 
-		CohortSet *s = &current.rule_to_cohorts.find(rule.number)->second;
-		if (debug_level > 1) {
-			std::cerr << "DEBUG: " << s->size() << "/" << current.cohorts.size() << " = " << double(s->size())/double(current.cohorts.size()) << std::endl;
+		uint32ToCohortsMap::iterator csit = current.rule_to_cohorts.find(rule.number);
+		if (csit == current.rule_to_cohorts.end()) {
+			continue;
 		}
-		for (CohortSet::const_iterator rocit = s->begin() ; rocit != s->end() ; ) {
+		CohortSet *cohortset = &csit->second;
+		if (debug_level > 1) {
+			std::cerr << "DEBUG: " << cohortset->size() << "/" << current.cohorts.size() << " = " << double(cohortset->size())/double(current.cohorts.size()) << std::endl;
+		}
+		for (CohortSet::const_iterator rocit = cohortset->begin() ; rocit != cohortset->end() ; ) {
 			Cohort *cohort = *rocit;
 			++rocit;
 
@@ -431,7 +435,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 			if (num_active == 0 && (num_iff == 0 || rule.type != K_IFF)) {
 				if (!matched_target) {
 					--rocit; // We have already incremented rocit earlier, so take one step back...
-					rocit = s->erase(rocit); // ...and one step forward again
+					rocit = cohortset->erase(rocit); // ...and one step forward again
 				}
 				continue;
 			}
@@ -566,8 +570,8 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						intersects = current.valid_rules.intersect(rules);
 						iter_rules = intersects.find(rule.number);
 						iter_rules_end = intersects.end();
-						s = &current.rule_to_cohorts.find(rule.number)->second;
-						rocit = s->find(cohort);
+						cohortset = &current.rule_to_cohorts.find(rule.number)->second;
+						rocit = cohortset->find(cohort);
 						++rocit;
 						break;
 					}
@@ -653,8 +657,8 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						indexSingleWindow(current);
 						readings_changed = true;
 
-						s = &current.rule_to_cohorts.find(rule.number)->second;
-						rocit = s->find(cohort);
+						cohortset = &current.rule_to_cohorts.find(rule.number)->second;
+						rocit = cohortset->find(cohort);
 						++rocit;
 						break;
 					}
