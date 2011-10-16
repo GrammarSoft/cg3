@@ -26,7 +26,6 @@
 
 namespace CG3 {
 
-bool Set::dump_hashes = false;
 UFILE* Set::dump_hashes_out = 0;
 
 Set::Set() :
@@ -110,7 +109,7 @@ uint32_t Set::rehash() {
 	}
 	hash = retval;
 
-	if (dump_hashes && dump_hashes_out) {
+	if (dump_hashes_out) {
 		if (sets.empty()) {
 			u_fprintf(dump_hashes_out, "DEBUG: Hash %u for set %S (LIST)\n", hash, name.c_str());
 		}

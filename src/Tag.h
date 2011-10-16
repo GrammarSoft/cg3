@@ -75,7 +75,6 @@ namespace CG3 {
 
 	class Tag {
 	public:
-		static bool dump_hashes;
 		static UFILE* dump_hashes_out;
 
 		C_OPS comparison_op;
