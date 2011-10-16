@@ -43,7 +43,6 @@ namespace CG3 {
 
 	class Set {
 	public:
-		static bool dump_hashes;
 		static UFILE* dump_hashes_out;
 
 		uint8_t type;

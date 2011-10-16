@@ -227,11 +227,9 @@ int main(int argc, char* argv[]) {
 	CG3::Grammar grammar;
 
 	if (options[SHOW_TAG_HASHES].doesOccur) {
-		CG3::Tag::dump_hashes = true;
 		CG3::Tag::dump_hashes_out = ux_stderr;
 	}
 	if (options[SHOW_SET_HASHES].doesOccur) {
-		CG3::Set::dump_hashes = true;
 		CG3::Set::dump_hashes_out = ux_stderr;
 	}
 

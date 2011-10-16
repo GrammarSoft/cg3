@@ -6,7 +6,7 @@ LIST BSet = ".atc[HM]{2}.*"ri ;
 LIST CSet = "MaTcHmE"i ;
 
 LIST wanted = wanted other waffles ;
-list matchme = "MatchMe" "matchme" ;
+LIST matchme = "MatchMe" "matchme" ;
 
 LIST bform = ".*"r ;
 LIST ibform = ".*"ri ;
