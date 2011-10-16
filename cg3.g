@@ -2,6 +2,32 @@ grammar cg3;
 
 // Caveat: All keywords are really case-insensitive. They're upper-case here only to make the grammar readable.
 
+/*
+Lines that should parse, but don't:
+
+# Set names that are also keywords. It is valid to name sets the same as almost any keyword (notably not TARGET or IF)
+LIST ALL = waffle ;
+SELECT ALL ;
+
+# Set names with # in them...
+LIST name# = waffle ;
+SELECT name# ;
+
+# Lower or mixed case keywords...
+list name = waffle ;
+Select name ;
+/*/
+
+/*
+Lines that should not parse, but do:
+
+# Missing set name. See contexttest
+SELECT x (-1 LINK 1 x) ;
+
+# See contexttest. I am considering disallowing ',' in set names to make it valid. Nobody uses ',' in set names anyway.
+TEMPLATE name = [x,y,z] ;
+/*/
+
 cg 	:	stat+ 'END'? ;
 
 stat 
@@ -199,6 +225,7 @@ prefix
 	;
 
 setname
+// Fixme: See SETNAME
 //	:	SETNAME
 	:	NTAG
 	;
@@ -249,6 +276,7 @@ ruleflag
 
 RULETYPE
 	:	(
+// Left all rule types in the list but commented out to keep track of them all
 //		'ADD'
 //	|	'MAP'
 //	|	'REPLACE'
@@ -391,7 +419,7 @@ NTAG
 QTAG
 // If a tag starts with " then the scanner skips to the next unescaped ", and from there skips to the next space or semicolon.
 // The entire such capture is one tag, and it eliminates the need for most escaping in strings.
-	:	'"' ('\\'~('\\'|'"')|~('\\'|'"'))+ '"' ~('('|')'|';'|SPACE)*
+	:	('^'|'!')? '"' ('\\' ~('\n'|'\r') | ~('\\'|'"'))+ '"' ~('('|')'|';'|SPACE)*
 	;
 
 COMMENT
