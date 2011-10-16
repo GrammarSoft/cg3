@@ -1,3 +1,4 @@
+// -*- encoding: UTF-8; tab-width: 4; -*-
 grammar cg3;
 
 // Caveat: All keywords are really case-insensitive. They're upper-case here only to make the grammar readable.
@@ -423,12 +424,12 @@ QTAG
 	;
 
 COMMENT
-    :   '#' ~('\n'|'\r')* '\r'? '\n' {$channel=HIDDEN;}
-    ;
+	:   '#' ~('\n'|'\r')* '\r'? '\n' {$channel=HIDDEN;}
+	;
 
 WS
 	:   SPACE {$channel=HIDDEN;}
-    ;
+	;
 
 fragment
 SPACE
