@@ -35,7 +35,8 @@ hash(0),
 hash_plain(0),
 number(0),
 mapping(0),
-parent(p)
+parent(p),
+next(0)
 {
 	#ifdef CG_TRACE_OBJECTS
 	std::cerr << "OBJECT: " << __PRETTY_FUNCTION__ << std::endl;
@@ -58,6 +59,7 @@ tags_plain_bloom(r.tags_plain_bloom),
 tags_textual_bloom(r.tags_textual_bloom),
 mapping(r.mapping),
 parent(r.parent),
+next(r.next),
 hit_by(r.hit_by),
 tags_list(r.tags_list),
 tags(r.tags),
@@ -69,8 +71,8 @@ tags_numerical(r.tags_numerical)
 	std::cerr << "OBJECT: " << __PRETTY_FUNCTION__ << std::endl;
 	#endif
 
-	const_foreach (ReadingList, r.subs, iter, iter_end) {
-		subs.push_back(allocateReading(**iter));
+	if (next) {
+		next = allocateReading(*next);
 	}
 }
 
@@ -79,9 +81,7 @@ Reading::~Reading() {
 		std::cerr << "OBJECT: " << __PRETTY_FUNCTION__ << ": " << tags.size() << ", " << hit_by.size() << std::endl;
 	#endif
 
-	foreach (ReadingList, subs, iter, iter_end) {
-		delete *iter;
-	}
+	delete next;
 }
 
 Reading *Reading::allocateReading(Cohort *p) {

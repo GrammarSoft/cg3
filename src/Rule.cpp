@@ -37,10 +37,9 @@ line(0),
 number(0),
 varname(0),
 varvalue(0),
-jumpstart(0),
-jumpend(0),
 flags(0),
 section(0),
+sub_reading(0),
 weight(0.0),
 quality(0.0),
 type(K_IGNORE),
@@ -96,39 +95,23 @@ void Rule::addContextualTest(ContextualTest *to, ContextualTest **head) {
 
 void Rule::reverseContextualTests() {
 	ContextualTest *th = 0;
-	ContextualTest *next = 0;
-	ContextualTest *prev = 0;
 
 	th = test_head;
-	if (th) {
-		next = th->next;
-		prev = th->prev;
-	}
 	while (th) {
-		th->next = prev;
-		th->prev = next;
-		th = next;
-		if (th) {
+		std::swap(th->next, th->prev);
+		if (!th->prev) {
 			test_head = th;
-			next = th->next;
-			prev = th->prev;
 		}
+		th = th->prev;
 	}
 
 	th = dep_test_head;
-	if (th) {
-		next = th->next;
-		prev = th->prev;
-	}
 	while (th) {
-		th->next = prev;
-		th->prev = next;
-		th = next;
-		if (th) {
+		std::swap(th->next, th->prev);
+		if (!th->prev) {
 			dep_test_head = th;
-			next = th->next;
-			prev = th->prev;
 		}
+		th = th->prev;
 	}
 }
 

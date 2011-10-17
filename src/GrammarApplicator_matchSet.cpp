@@ -687,11 +687,15 @@ bool GrammarApplicator::doesSetMatchReading(const Reading& reading, const uint32
 	return retval;
 }
 
-inline void GrammarApplicator::doesSetMatchCohortHelper(std::vector<Reading*>& rv, const ReadingList& readings, const Set *theset, uint32_t options) {
+inline void GrammarApplicator::doesSetMatchCohortHelper(std::vector<Reading*>& rv, const ReadingList& readings, const Set *theset, const ContextualTest *test, uint32_t options) {
 	const_foreach (ReadingList, readings, iter, iter_end) {
-		Reading& reading = **iter;
-		if (doesSetMatchReading(reading, theset->hash, (theset->type & (ST_CHILD_UNIFY|ST_SPECIAL)) != 0)) {
-			rv.push_back(&reading);
+		Reading *reading = *iter;
+		reading = get_sub_reading(reading, test->offset_sub);
+		if (!reading) {
+			continue;
+		}
+		if (doesSetMatchReading(*reading, theset->hash, (theset->type & (ST_CHILD_UNIFY|ST_SPECIAL)) != 0)) {
+			rv.push_back(reading);
 			if (!(options & MASK_POS_CDEPREL)) {
 				break;
 			}
@@ -713,20 +717,20 @@ inline bool _check_options(std::vector<Reading*>& rv, uint32_t options, size_t n
 	return !rv.empty();
 }
 
-std::vector<Reading*> GrammarApplicator::doesSetMatchCohort(Cohort& cohort, const uint32_t set, uint32_t options) {
+std::vector<Reading*> GrammarApplicator::doesSetMatchCohort(Cohort& cohort, const uint32_t set, const ContextualTest *test, uint32_t options) {
 	std::vector<Reading*> rv;
 	if (cohort.possible_sets.find(set) == cohort.possible_sets.end()) {
 		return rv;
 	}
 
 	const Set *theset = grammar->sets_by_contents.find(set)->second;
-	doesSetMatchCohortHelper(rv, cohort.readings, theset, options);
+	doesSetMatchCohortHelper(rv, cohort.readings, theset, test, options);
 	if ((options & POS_LOOK_DELETED) && _check_options(rv, options, cohort.readings.size())) {
-		doesSetMatchCohortHelper(rv, cohort.deleted, theset, options);
+		doesSetMatchCohortHelper(rv, cohort.deleted, theset, test, options);
 	}
 	if ((options & POS_LOOK_DELAYED)
 		&& (!(options & POS_LOOK_DELETED) || _check_options(rv, options, cohort.readings.size()+cohort.deleted.size()))) {
-		doesSetMatchCohortHelper(rv, cohort.delayed, theset, options);
+		doesSetMatchCohortHelper(rv, cohort.delayed, theset, test, options);
 	}
 	if (rv.empty()) {
 		if (!grammar->sets_any || grammar->sets_any->find(set) == grammar->sets_any->end()) {
@@ -736,7 +740,23 @@ std::vector<Reading*> GrammarApplicator::doesSetMatchCohort(Cohort& cohort, cons
 	return rv;
 }
 
-bool GrammarApplicator::doesSetMatchCohortNormal(Cohort& cohort, const uint32_t set, uint32_t options) {
+bool GrammarApplicator::doesSetMatchCohortNormal_helper(ReadingList& readings, const Set *theset, const ContextualTest *test) {
+	const_foreach (ReadingList, readings, iter, iter_end) {
+		Reading *reading = *iter;
+		if (test) {
+			reading = get_sub_reading(reading, test->offset_sub);
+			if (!reading) {
+				continue;
+			}
+		}
+		if (doesSetMatchReading(*reading, theset->hash, (theset->type & (ST_CHILD_UNIFY|ST_SPECIAL)) != 0)) {
+			return true;
+		}
+	}
+	return false;
+}
+
+bool GrammarApplicator::doesSetMatchCohortNormal(Cohort& cohort, const uint32_t set, const ContextualTest *test, uint32_t options) {
 	/*
 	return !doesSetMatchCohort(cohort, set, options).empty();
 	/*/
@@ -745,30 +765,14 @@ bool GrammarApplicator::doesSetMatchCohortNormal(Cohort& cohort, const uint32_t 
 	}
 	bool retval = false;
 	const Set *theset = grammar->sets_by_contents.find(set)->second;
-	const_foreach (ReadingList, cohort.readings, iter, iter_end) {
-		Reading& reading = **iter;
-		if (doesSetMatchReading(reading, set, (theset->type & (ST_CHILD_UNIFY|ST_SPECIAL)) != 0)) {
-			retval = true;
-			break;
-		}
+	if (doesSetMatchCohortNormal_helper(cohort.readings, theset, test)) {
+		retval = true;
 	}
-	if (!retval && options & POS_LOOK_DELETED) {
-		const_foreach (ReadingList, cohort.deleted, iter, iter_end) {
-			Reading& reading = **iter;
-			if (doesSetMatchReading(reading, set, (theset->type & (ST_CHILD_UNIFY|ST_SPECIAL)) != 0)) {
-				retval = true;
-				break;
-			}
-		}
+	if (!retval && (options & POS_LOOK_DELETED) && doesSetMatchCohortNormal_helper(cohort.deleted, theset, test)) {
+		retval = true;
 	}
-	if (!retval && options & POS_LOOK_DELAYED) {
-		const_foreach (ReadingList, cohort.delayed, iter, iter_end) {
-			Reading& reading = **iter;
-			if (doesSetMatchReading(reading, set, (theset->type & (ST_CHILD_UNIFY|ST_SPECIAL)) != 0)) {
-				retval = true;
-				break;
-			}
-		}
+	if (!retval && (options & POS_LOOK_DELAYED) && doesSetMatchCohortNormal_helper(cohort.delayed, theset, test)) {
+		retval = true;
 	}
 	if (!retval) {
 		if (!grammar->sets_any || grammar->sets_any->find(set) == grammar->sets_any->end()) {
@@ -779,7 +783,23 @@ bool GrammarApplicator::doesSetMatchCohortNormal(Cohort& cohort, const uint32_t 
 	//*/
 }
 
-bool GrammarApplicator::doesSetMatchCohortCareful(Cohort& cohort, const uint32_t set, uint32_t options) {
+bool GrammarApplicator::doesSetMatchCohortCareful_helper(ReadingList& readings, const Set *theset, const ContextualTest *test) {
+	const_foreach (ReadingList, readings, iter, iter_end) {
+		Reading *reading = *iter;
+		if (test) {
+			reading = get_sub_reading(reading, test->offset_sub);
+			if (!reading) {
+				return false;
+			}
+		}
+		if (!doesSetMatchReading(*reading, theset->hash, (theset->type & (ST_CHILD_UNIFY|ST_SPECIAL)) != 0)) {
+			return false;
+		}
+	}
+	return !readings.empty();
+}
+
+bool GrammarApplicator::doesSetMatchCohortCareful(Cohort& cohort, const uint32_t set, const ContextualTest *test, uint32_t options) {
 	/*
 	return !doesSetMatchCohort(cohort, set, options).empty();
 	/*/
@@ -788,30 +808,14 @@ bool GrammarApplicator::doesSetMatchCohortCareful(Cohort& cohort, const uint32_t
 	}
 	bool retval = true;
 	const Set *theset = grammar->sets_by_contents.find(set)->second;
-	const_foreach (ReadingList, cohort.readings, iter, iter_end) {
-		Reading& reading = **iter;
-		if (!doesSetMatchReading(reading, set, (theset->type & (ST_CHILD_UNIFY|ST_SPECIAL)) != 0)) {
-			retval = false;
-			break;
-		}
+	if (!doesSetMatchCohortCareful_helper(cohort.readings, theset, test)) {
+		retval = false;
 	}
-	if (retval && options & POS_LOOK_DELETED) {
-		const_foreach (ReadingList, cohort.deleted, iter, iter_end) {
-			Reading& reading = **iter;
-			if (!doesSetMatchReading(reading, set, (theset->type & (ST_CHILD_UNIFY|ST_SPECIAL)) != 0)) {
-				retval = false;
-				break;
-			}
-		}
+	if (retval && (options & POS_LOOK_DELETED) && !doesSetMatchCohortCareful_helper(cohort.deleted, theset, test)) {
+		retval = false;
 	}
-	if (retval && options & POS_LOOK_DELAYED) {
-		const_foreach (ReadingList, cohort.delayed, iter, iter_end) {
-			Reading& reading = **iter;
-			if (!doesSetMatchReading(reading, set, (theset->type & (ST_CHILD_UNIFY|ST_SPECIAL)) != 0)) {
-				retval = false;
-				break;
-			}
-		}
+	if (retval && (options & POS_LOOK_DELAYED) && !doesSetMatchCohortCareful_helper(cohort.delayed, theset, test)) {
+		retval = false;
 	}
 	return retval;
 	//*/

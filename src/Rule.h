@@ -59,6 +59,7 @@ namespace CG3 {
 		RF_NOITERATE    = (1 << 20),
 		RF_UNMAPLAST    = (1 << 21),
 		RF_REVERSE      = (1 << 22),
+		RF_SUB          = (1 << 23),
 	};
 
 	class Rule {
@@ -69,9 +70,9 @@ namespace CG3 {
 		uint32_t childset1, childset2;
 		uint32_t line, number;
 		uint32_t varname, varvalue; // ToDo: varvalue is unused
-		uint32_t jumpstart, jumpend;
 		uint32_t flags;
 		int32_t section;
+		int32_t sub_reading;
 		// ToDo: Add proper "quality" quantifier based on num_fail, num_match, total_time
 		double weight, quality;
 		KEYWORDS type;

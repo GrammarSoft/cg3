@@ -183,6 +183,7 @@ namespace CG3 {
 		FL_NOITERATE,
 		FL_UNMAPLAST,
 		FL_REVERSE,
+		FL_SUB,
 		FLAGS_COUNT
 	};
 }
