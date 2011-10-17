@@ -28,6 +28,7 @@ namespace CG3 {
 ContextualTest::ContextualTest() :
 is_used(false),
 offset(0),
+offset_sub(0),
 line(0),
 name(0),
 hash(0),
@@ -84,6 +85,10 @@ uint32_t ContextualTest::rehash() {
 	hash = hash_sdbm_uint32_t(hash, relation);
 	hash = hash_sdbm_uint32_t(hash, abs(offset));
 	if (offset < 0) {
+		hash = hash_sdbm_uint32_t(hash, 5000);
+	}
+	hash = hash_sdbm_uint32_t(hash, abs(offset_sub));
+	if (offset_sub < 0) {
 		hash = hash_sdbm_uint32_t(hash, 5000);
 	}
 	if (linked) {

@@ -327,6 +327,12 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 			// Criteria for valid is that the reading must match both target and all contextual tests
 			foreach (ReadingList, cohort->readings, rter1, rter1_end) {
 				Reading *reading = *rter1;
+
+				reading = get_sub_reading(reading, rule.sub_reading);
+				if (!reading) {
+					continue;
+				}
+
 				// The state is stored in the readings themselves, so clear the old states
 				reading->matched_target = false;
 				reading->matched_tests = false;
@@ -462,7 +468,13 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 
 			// This loop acts on the result of the previous loop; letting the rules do their thing on the valid readings.
 			for (size_t i=0 ; i<cohort->readings.size() ; ++i) {
-				Reading& reading = *cohort->readings[i];
+				Reading *tr = cohort->readings[i];
+				tr = get_sub_reading(tr, rule.sub_reading);
+				if (!tr) {
+					continue;
+				}
+
+				Reading& reading = *tr;
 				bool good = reading.matched_tests;
 				const uint32_t state_hash = reading.hash;
 

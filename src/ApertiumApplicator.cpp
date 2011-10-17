@@ -325,6 +325,10 @@ int ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 					addTagToReading(*cReading, cReading->wordform);
 					processReading(cReading, current_reading);
 
+					if (grammar->sub_readings_ltr && cReading->next) {
+						cReading = reverse(cReading);
+					}
+
 					cCohort->appendReading(cReading);
 					numReadings++;
 
@@ -341,6 +345,10 @@ int ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 					addTagToReading(*cReading, cReading->wordform);
 
 					processReading(cReading, current_reading);
+
+					if (grammar->sub_readings_ltr && cReading->next) {
+						cReading = reverse(cReading);
+					}
 
 					cCohort->appendReading(cReading);
 					numReadings++;
@@ -571,7 +579,7 @@ void ApertiumApplicator::processReading(Reading *cReading, const UChar *reading_
 				// If current reading already has a baseform, instead create a sub-reading as target
 				if (reading->baseform) {
 					Reading *nr = reading->allocateReading(reading->parent);
-					reading->subs.push_back(nr);
+					reading->next = nr;
 					reading = nr;
 				}
 				// Add tags
@@ -615,11 +623,15 @@ void ApertiumApplicator::testPR(UFILE *output) {
 		"be<vblex><inf># happy",
 		"sellout<vblex><imp><p2><sg># ouzh+indirect<prn><obj><p3><m><sg>",
 		"be# happy<vblex><inf>",
+		"aux3<tag>+aux2<tag>+aux1<tag>+main<tag>",
 	};
-	for (size_t i = 0 ; i<5 ; ++i) {
+	for (size_t i = 0 ; i<6 ; ++i) {
 		UString text(texts[i].begin(), texts[i].end());
 		Reading *reading = new Reading(0);
 		processReading(reading, text);
+		if (grammar->sub_readings_ltr && reading->next) {
+			reading = reverse(reading);
+		}
 		printReading(reading, output);
 		u_fprintf(output, "\n");
 	}
@@ -630,8 +642,8 @@ void ApertiumApplicator::printReading(Reading *reading, UFILE *output) {
 		return;
 	}
 
-	const_foreach (ReadingList, reading->subs, iter, iter_end) {
-		printReading(*iter, output);
+	if (reading->next) {
+		printReading(reading->next, output);
 		u_fputc('+', output);
 	}
 
@@ -639,7 +651,7 @@ void ApertiumApplicator::printReading(Reading *reading, UFILE *output) {
 		// Lop off the initial and final '"' characters
 		UnicodeString bf(single_tags[reading->baseform]->tag.c_str()+1, single_tags[reading->baseform]->tag.length()-2);
 
-		if (wordform_case && reading->subs.size() == 0) {
+		if (wordform_case && reading->next) {
 			// Use surface/wordform case, eg. if lt-proc
 			// was called with "-w" option (which puts
 			// dictionary case on lemma/basefrom)
@@ -759,7 +771,11 @@ void ApertiumApplicator::printSingleWindow(SingleWindow *window, UFILE *output) 
 
 		ReadingList::iterator rter;
 		for (rter = cohort->readings.begin() ; rter != cohort->readings.end() ; rter++) {
-			printReading(*rter, output);
+			Reading *reading = *rter;
+			if (grammar->sub_readings_ltr && reading->next) {
+				reading = reverse(reading);
+			}
+			printReading(reading, output);
 			if (*rter != cohort->readings.back()) {
 				u_fprintf(output, "/");
 			}

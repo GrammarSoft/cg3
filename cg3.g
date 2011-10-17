@@ -370,7 +370,8 @@ RULETYPE_EXTERNAL
 	;
 
 RULEFLAG
-	:	('NEAREST'
+	:	(
+		'NEAREST'
 	|	'ALLOWLOOP'
 	|	'DELAYED'
 	|	'IMMEDIATE'
@@ -392,7 +393,9 @@ RULEFLAG
 	|	'ITERATE'
 	|	'NOITERATE'
 	|	'UNMAPLAST'
-	|	'REVERSE') (':' NTAG)?
+	|	'REVERSE'
+	|	'SUB'
+	) (':' NTAG)?
 	;
 
 /*

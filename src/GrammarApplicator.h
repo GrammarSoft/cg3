@@ -26,6 +26,7 @@
 #include "stdafx.h"
 #include "Tag.h"
 #include "CohortIterator.h"
+#include "Rule.h"
 #include "interval_vector.hpp"
 #include "exec-stream.h"
 
@@ -188,10 +189,12 @@ namespace CG3 {
 		uint32_t doesTagMatchReading(const Reading& reading, const Tag& tag, bool unif_mode = false, bool bypass_index = false);
 		bool doesSetMatchReading_tags(const Reading& reading, const Set& theset, bool unif_mode = false);
 		bool doesSetMatchReading(const Reading& reading, const uint32_t set, bool bypass_index = false, bool unif_mode = false);
-		inline void doesSetMatchCohortHelper(std::vector<Reading*>& rv, const ReadingList& readings, const Set *theset, uint32_t options);
-		std::vector<Reading*> doesSetMatchCohort(Cohort& cohort, const uint32_t set, uint32_t options = 0);
-		bool doesSetMatchCohortNormal(Cohort& cohort, const uint32_t set, uint32_t options = 0);
-		bool doesSetMatchCohortCareful(Cohort& cohort, const uint32_t set, uint32_t options = 0);
+		inline void doesSetMatchCohortHelper(std::vector<Reading*>& rv, const ReadingList& readings, const Set *theset, const ContextualTest *test = 0, uint32_t options = 0);
+		std::vector<Reading*> doesSetMatchCohort(Cohort& cohort, const uint32_t set, const ContextualTest *test = 0, uint32_t options = 0);
+		bool doesSetMatchCohortNormal_helper(ReadingList& readings, const Set *theset, const ContextualTest *test);
+		bool doesSetMatchCohortNormal(Cohort& cohort, const uint32_t set, const ContextualTest *test = 0, uint32_t options = 0);
+		bool doesSetMatchCohortCareful_helper(ReadingList& readings, const Set *theset, const ContextualTest *test);
+		bool doesSetMatchCohortCareful(Cohort& cohort, const uint32_t set, const ContextualTest *test = 0, uint32_t options = 0);
 
 		bool statistics;
 		ticks gtimer;
@@ -211,6 +214,31 @@ namespace CG3 {
 
 		Reading *initEmptyCohort(Cohort& cohort);
 	};
+
+	inline Reading *get_sub_reading(Reading *tr, int sub_reading) {
+		if (sub_reading == 0) {
+			return tr;
+		}
+		if (sub_reading > 0) {
+			for (int i=0 ; i<sub_reading && tr ; ++i) {
+				tr = tr->next;
+			}
+			return tr;
+		}
+		if (sub_reading < 0) {
+			int ntr = 0;
+			Reading *ttr = tr;
+			while (ttr) {
+				ttr = ttr->next;
+				--ntr;
+			}
+			for (int i=ntr ; i<sub_reading && tr ; ++i) {
+				tr = tr->next;
+			}
+			return tr;
+		}
+		return tr;
+	}
 }
 
 #endif
