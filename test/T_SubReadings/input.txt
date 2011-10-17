@@ -1,0 +1,1 @@
+^word/aux3<tag>+aux2<tag>+aux1<tag>+main<tag>$

@@ -1,0 +1,19 @@
+DELIMITERS = "<$.>" ;
+# SUBREADINGS = LTR ; # Reverses order...
+
+BEFORE-SECTIONS
+
+ADD (nosub) (*) ;
+
+ADD SUB:-4 (sub-4) (*) ;
+ADD SUB:-3 (sub-3) (*) ;
+ADD SUB:-2 (sub-2) (*) ;
+ADD SUB:-1 (sub-1) (*) ;
+ADD SUB:0 (sub0) (*) ;
+ADD SUB:1 (sub1) (*) ;
+ADD SUB:2 (sub2) (*) ;
+ADD SUB:3 (sub3) (*) ;
+ADD SUB:4 (sub4) (*) ;
+
+ADD SUB:-2 (sub-2-good) (*) (0/1 (sub1)) ;
+ADD SUB:-2 (sub-2-bad) (*) (0/2 (sub1)) ;

@@ -38,6 +38,7 @@ stat
 	|	static_sets
 	|	parentheses
 	|	mapping_prefix
+	|	subreadings
 	|	'SETS'
 	|	list
 	|	set
@@ -80,6 +81,10 @@ static_sets
 
 mapping_prefix
 	:	'MAPPING-PREFIX' '=' prefix ';'
+	;
+
+subreadings
+	:	'SUBREADINGS' '=' ('RTL'|'LTR') ';'
 	;
 
 parentheses
