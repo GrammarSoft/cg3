@@ -286,7 +286,7 @@ int TextualParser::parseContextualTestPosition(UChar *& p, ContextualTest& t) {
 	bool had_digits = false;
 
 	size_t tries;
-	for (tries=0 ; *p != ' ' && *p != '(' && tries < 100 ; ++tries) {
+	for (tries=0 ; *p != ' ' && *p != '(' && *p != '/' && tries < 100 ; ++tries) {
 		if (*p == '*' && *(p+1) == '*') {
 			t.pos |= POS_SCANALL;
 			p += 2;
@@ -1618,6 +1618,38 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 				gbuffers[0][c] = 0;
 				result->addAnchor(&gbuffers[0][0], result->lines);
 				p = n;
+			}
+		}
+		// SUBREADINGS
+		else if (ISCHR(*p,'S','s') && ISCHR(*(p+10),'S','s') && ISCHR(*(p+1),'U','u') && ISCHR(*(p+2),'B','b')
+			&& ISCHR(*(p+3),'R','r') && ISCHR(*(p+4),'E','e') && ISCHR(*(p+5),'A','a')
+			&& ISCHR(*(p+6),'D','d') && ISCHR(*(p+7),'I','i') && ISCHR(*(p+8),'N','n') && ISCHR(*(p+9),'G','g')
+			&& !ISSTRING(p, 10)) {
+			p += 11;
+			result->lines += SKIPWS(p, '=');
+			if (*p != '=') {
+				u_fprintf(ux_stderr, "Error: Encountered a %C before the expected = on line %u!\n", *p, result->lines);
+				CG3Quit(1);
+			}
+			++p;
+			result->lines += SKIPWS(p);
+			if (p[0] == 'L' || p[0] == 'l') {
+				result->sub_readings_ltr = true;
+			}
+			else if (p[0] == 'R' || p[0] == 'r') {
+				result->sub_readings_ltr = false;
+			}
+			else {
+				u_fprintf(ux_stderr, "Error: Missing RTL or LTR on line %u!\n", *p, result->lines);
+				CG3Quit(1);
+			}
+			UChar *n = p;
+			result->lines += SKIPTOWS(n, 0, true);
+			p = n;
+			result->lines += SKIPWS(p, ';');
+			if (*p != ';') {
+				u_fprintf(ux_stderr, "Error: Missing closing ; before line %u!\n", result->lines);
+				CG3Quit(1);
 			}
 		}
 		// ANCHOR

@@ -1,0 +1,1 @@
+^word/aux3<tag><sub-1><sub3>+aux2<tag><sub-2><sub2><sub-2-good>+aux1<tag><sub-3><sub1>+main<tag><nosub><sub-4><sub0>$
