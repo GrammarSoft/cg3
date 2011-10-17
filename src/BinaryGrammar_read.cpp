@@ -36,6 +36,7 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 		u_fprintf(ux_stderr, "Error: No grammar provided - cannot continue!\n");
 		CG3Quit(1);
 	}
+	uint32_t fields = 0;
 	uint32_t u32tmp = 0;
 	int32_t i32tmp = 0;
 	uint8_t u8tmp = 0;
@@ -64,21 +65,29 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 
 	grammar->is_binary = true;
 
-	fread(&u8tmp, sizeof(uint8_t), 1, input);
-	grammar->has_dep = (u8tmp == 1);
-
-	ucnv_reset(conv);
 	fread(&u32tmp, sizeof(uint32_t), 1, input);
-	u32tmp = (uint32_t)ntohl(u32tmp);
-	fread(&cbuffers[0][0], 1, u32tmp, input);
-	i32tmp = ucnv_toUChars(conv, &grammar->mapping_prefix, 1, &cbuffers[0][0], u32tmp, &err);
+	fields = (uint32_t)ntohl(u32tmp);
+
+	grammar->has_dep = (fields & (1 << 0)) != 0;
+	grammar->sub_readings_ltr = (fields & (1 << 2)) != 0;
+
+	if (fields & (1 << 1)) {
+		ucnv_reset(conv);
+		fread(&u32tmp, sizeof(uint32_t), 1, input);
+		u32tmp = (uint32_t)ntohl(u32tmp);
+		fread(&cbuffers[0][0], 1, u32tmp, input);
+		i32tmp = ucnv_toUChars(conv, &grammar->mapping_prefix, 1, &cbuffers[0][0], u32tmp, &err);
+	}
 
 	// Keep track of which sets that the varstring tags used; we can't just assign them as sets are not loaded yet
 	typedef std::map<uint32_t,uint32Vector> tag_varsets_t;
 	tag_varsets_t tag_varsets;
 
-	fread(&u32tmp, sizeof(uint32_t), 1, input);
-	u32tmp = (uint32_t)ntohl(u32tmp);
+	u32tmp = 0;
+	if (fields & (1 << 3)) {
+		fread(&u32tmp, sizeof(uint32_t), 1, input);
+		u32tmp = (uint32_t)ntohl(u32tmp);
+	}
 	uint32_t num_single_tags = u32tmp;
 	grammar->single_tags_list.resize(num_single_tags);
 	for (uint32_t i=0 ; i<num_single_tags ; i++) {
@@ -194,8 +203,11 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 		}
 	}
 
-	fread(&u32tmp, sizeof(uint32_t), 1, input);
-	u32tmp = (uint32_t)ntohl(u32tmp);
+	u32tmp = 0;
+	if (fields & (1 << 4)) {
+		fread(&u32tmp, sizeof(uint32_t), 1, input);
+		u32tmp = (uint32_t)ntohl(u32tmp);
+	}
 	uint32_t num_comp_tags = u32tmp;
 	grammar->tags_list.resize(num_comp_tags);
 	for (uint32_t i=0 ; i<num_comp_tags ; i++) {
@@ -220,8 +232,11 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 		grammar->tags_list[curcomptag->number] = curcomptag;
 	}
 
-	fread(&u32tmp, sizeof(uint32_t), 1, input);
-	u32tmp = (uint32_t)ntohl(u32tmp);
+	u32tmp = 0;
+	if (fields & (1 << 5)) {
+		fread(&u32tmp, sizeof(uint32_t), 1, input);
+		u32tmp = (uint32_t)ntohl(u32tmp);
+	}
 	uint32_t num_pref_targets = u32tmp;
 	for (uint32_t i=0 ; i<num_pref_targets ; i++) {
 		fread(&u32tmp, sizeof(uint32_t), 1, input);
@@ -229,8 +244,11 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 		grammar->preferred_targets.push_back(u32tmp);
 	}
 
-	fread(&u32tmp, sizeof(uint32_t), 1, input);
-	u32tmp = (uint32_t)ntohl(u32tmp);
+	u32tmp = 0;
+	if (fields & (1 << 6)) {
+		fread(&u32tmp, sizeof(uint32_t), 1, input);
+		u32tmp = (uint32_t)ntohl(u32tmp);
+	}
 	uint32_t num_par_pairs = u32tmp;
 	for (uint32_t i=0 ; i<num_par_pairs ; i++) {
 		fread(&u32tmp, sizeof(uint32_t), 1, input);
@@ -241,8 +259,11 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 		grammar->parentheses_reverse[right] = left;
 	}
 
-	fread(&u32tmp, sizeof(uint32_t), 1, input);
-	u32tmp = (uint32_t)ntohl(u32tmp);
+	u32tmp = 0;
+	if (fields & (1 << 7)) {
+		fread(&u32tmp, sizeof(uint32_t), 1, input);
+		u32tmp = (uint32_t)ntohl(u32tmp);
+	}
 	uint32_t num_par_anchors = u32tmp;
 	for (uint32_t i=0 ; i<num_par_anchors ; i++) {
 		fread(&u32tmp, sizeof(uint32_t), 1, input);
@@ -252,8 +273,11 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 		grammar->anchor_by_hash[left] = right;
 	}
 
-	fread(&u32tmp, sizeof(uint32_t), 1, input);
-	u32tmp = (uint32_t)ntohl(u32tmp);
+	u32tmp = 0;
+	if (fields & (1 << 8)) {
+		fread(&u32tmp, sizeof(uint32_t), 1, input);
+		u32tmp = (uint32_t)ntohl(u32tmp);
+	}
 	uint32_t num_sets = u32tmp;
 	grammar->sets_list.resize(num_sets);
 	for (uint32_t i=0 ; i<num_sets ; i++) {
@@ -343,20 +367,23 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 		}
 	}
 
-	fread(&u32tmp, sizeof(uint32_t), 1, input);
-	u32tmp = (uint32_t)ntohl(u32tmp);
-	if (u32tmp) {
+	if (fields & (1 << 9)) {
+		fread(&u32tmp, sizeof(uint32_t), 1, input);
+		u32tmp = (uint32_t)ntohl(u32tmp);
 		grammar->delimiters = grammar->sets_by_contents.find(u32tmp)->second;
 	}
 
-	fread(&u32tmp, sizeof(uint32_t), 1, input);
-	u32tmp = (uint32_t)ntohl(u32tmp);
-	if (u32tmp) {
+	if (fields & (1 << 10)) {
+		fread(&u32tmp, sizeof(uint32_t), 1, input);
+		u32tmp = (uint32_t)ntohl(u32tmp);
 		grammar->soft_delimiters = grammar->sets_by_contents.find(u32tmp)->second;
 	}
 
-	fread(&u32tmp, sizeof(uint32_t), 1, input);
-	u32tmp = (uint32_t)ntohl(u32tmp);
+	u32tmp = 0;
+	if (fields & (1 << 11)) {
+		fread(&u32tmp, sizeof(uint32_t), 1, input);
+		u32tmp = (uint32_t)ntohl(u32tmp);
+	}
 	uint32_t num_templates = u32tmp;
 	for (uint32_t i=0 ; i<num_templates ; i++) {
 		ContextualTest *t = grammar->allocateContextualTest();
@@ -367,8 +394,11 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 		readContextualTest(t, input);
 	}
 
-	fread(&u32tmp, sizeof(uint32_t), 1, input);
-	u32tmp = (uint32_t)ntohl(u32tmp);
+	u32tmp = 0;
+	if (fields & (1 << 12)) {
+		fread(&u32tmp, sizeof(uint32_t), 1, input);
+		u32tmp = (uint32_t)ntohl(u32tmp);
+	}
 	uint32_t num_rules = u32tmp;
 	grammar->rule_by_number.resize(num_rules);
 	for (uint32_t i=0 ; i<num_rules ; i++) {
@@ -422,29 +452,32 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 		}
 		if (fields & (1 << 9)) {
 			fread(&u32tmp, sizeof(uint32_t), 1, input);
-			r->jumpstart = (uint32_t)ntohl(u32tmp);
+			u32tmp = (uint32_t)ntohl(u32tmp);
+			int32_t v = u32tmp;
+			if (u32tmp & (1 << 31)) {
+				u32tmp &= ~(1 << 31);
+				v = u32tmp;
+				v = -v;
+			}
+			r->sub_reading = v;
 		}
 		if (fields & (1 << 10)) {
 			fread(&u32tmp, sizeof(uint32_t), 1, input);
-			r->jumpend = (uint32_t)ntohl(u32tmp);
+			r->childset1 = (uint32_t)ntohl(u32tmp);
 		}
 		if (fields & (1 << 11)) {
 			fread(&u32tmp, sizeof(uint32_t), 1, input);
-			r->childset1 = (uint32_t)ntohl(u32tmp);
+			r->childset2 = (uint32_t)ntohl(u32tmp);
 		}
 		if (fields & (1 << 12)) {
 			fread(&u32tmp, sizeof(uint32_t), 1, input);
-			r->childset2 = (uint32_t)ntohl(u32tmp);
+			r->maplist = grammar->sets_list[(uint32_t)ntohl(u32tmp)];
 		}
 		if (fields & (1 << 13)) {
 			fread(&u32tmp, sizeof(uint32_t), 1, input);
-			r->maplist = grammar->sets_list[(uint32_t)ntohl(u32tmp)];
-		}
-		if (fields & (1 << 14)) {
-			fread(&u32tmp, sizeof(uint32_t), 1, input);
 			r->sublist = grammar->sets_list[(uint32_t)ntohl(u32tmp)];
 		}
-		if (fields & (1 << 15)) {
+		if (fields & (1 << 14)) {
 			fread(&u32tmp, sizeof(uint32_t), 1, input);
 			r->number = (uint32_t)ntohl(u32tmp);
 		}
@@ -480,54 +513,68 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 }
 
 void BinaryGrammar::readContextualTest(ContextualTest *t, FILE *input) {
+	uint32_t fields = 0;
 	uint32_t u32tmp = 0;
 	int32_t i32tmp = 0;
-	uint8_t u8tmp = 0;
 
 	fread(&u32tmp, sizeof(uint32_t), 1, input);
-	t->hash = (uint32_t)ntohl(u32tmp);
+	fields = (uint32_t)ntohl(u32tmp);
 
-	fread(&u32tmp, sizeof(uint32_t), 1, input);
-	t->pos = (uint32_t)ntohl(u32tmp);
-	fread(&i32tmp, sizeof(int32_t), 1, input);
-	t->offset = (int32_t)ntohl(i32tmp);
-
-	fread(&u32tmp, sizeof(uint32_t), 1, input);
-	u32tmp = (uint32_t)ntohl(u32tmp);
-	if (u32tmp) {
+	if (fields & (1 << 0)) {
+		fread(&u32tmp, sizeof(uint32_t), 1, input);
+		t->hash = (uint32_t)ntohl(u32tmp);
+	}
+	if (fields & (1 << 1)) {
+		fread(&u32tmp, sizeof(uint32_t), 1, input);
+		t->pos = (uint32_t)ntohl(u32tmp);
+	}
+	if (fields & (1 << 2)) {
+		fread(&i32tmp, sizeof(int32_t), 1, input);
+		t->offset = (int32_t)ntohl(i32tmp);
+	}
+	if (fields & (1 << 3)) {
+		fread(&u32tmp, sizeof(uint32_t), 1, input);
+		u32tmp = (uint32_t)ntohl(u32tmp);
 		t->tmpl = grammar->templates.find(u32tmp)->second;
 	}
-	fread(&u32tmp, sizeof(uint32_t), 1, input);
-	u32tmp = (uint32_t)ntohl(u32tmp);
-	if (u32tmp) {
-		for (uint32_t i=0 ; i<u32tmp ; i++) {
-			ContextualTest *to = t->allocateContextualTest();
-			readContextualTest(to, input);
-			t->ors.push_back(to);
-		}
-	}
-
-	if (!t->tmpl && t->ors.empty()) {
+	if (fields & (1 << 4)) {
 		fread(&u32tmp, sizeof(uint32_t), 1, input);
 		t->target = (uint32_t)ntohl(u32tmp);
 	}
-
-	fread(&u32tmp, sizeof(uint32_t), 1, input);
-	t->line = (uint32_t)ntohl(u32tmp);
-	fread(&u32tmp, sizeof(uint32_t), 1, input);
-	t->relation = (uint32_t)ntohl(u32tmp);
-	fread(&u32tmp, sizeof(uint32_t), 1, input);
-	t->barrier = (uint32_t)ntohl(u32tmp);
-	fread(&u32tmp, sizeof(uint32_t), 1, input);
-	t->cbarrier = (uint32_t)ntohl(u32tmp);
-
-	fread(&u8tmp, sizeof(uint8_t), 1, input);
-	if (u8tmp == 1) {
+	if (fields & (1 << 5)) {
+		fread(&u32tmp, sizeof(uint32_t), 1, input);
+		t->line = (uint32_t)ntohl(u32tmp);
+	}
+	if (fields & (1 << 6)) {
+		fread(&u32tmp, sizeof(uint32_t), 1, input);
+		t->relation = (uint32_t)ntohl(u32tmp);
+	}
+	if (fields & (1 << 7)) {
+		fread(&u32tmp, sizeof(uint32_t), 1, input);
+		t->barrier = (uint32_t)ntohl(u32tmp);
+	}
+	if (fields & (1 << 8)) {
+		fread(&u32tmp, sizeof(uint32_t), 1, input);
+		t->cbarrier = (uint32_t)ntohl(u32tmp);
+	}
+	if (fields & (1 << 9)) {
+		fread(&i32tmp, sizeof(int32_t), 1, input);
+		t->offset_sub = (int32_t)ntohl(i32tmp);
+	}
+	if (fields & (1 << 10)) {
+		fread(&u32tmp, sizeof(uint32_t), 1, input);
+		u32tmp = (uint32_t)ntohl(u32tmp);
+		if (u32tmp) {
+			for (uint32_t i=0 ; i<u32tmp ; ++i) {
+				ContextualTest *to = t->allocateContextualTest();
+				readContextualTest(to, input);
+				t->ors.push_back(to);
+			}
+		}
+	}
+	if (fields & (1 << 11)) {
 		t->linked = t->allocateContextualTest();
 		readContextualTest(t->linked, input);
-	}
-	else {
-		t->linked = 0;
 	}
 }
 

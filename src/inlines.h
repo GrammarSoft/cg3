@@ -471,6 +471,18 @@ private:
 	T& b;
 };
 
+template<typename T>
+inline T* reverse(T *head) {
+	T *nr = 0;
+	while (head) {
+		T *next = head->next;
+		head->next = nr;
+		nr = head;
+		head = next;
+	}
+	return nr;
+}
+
 }
 
 #endif

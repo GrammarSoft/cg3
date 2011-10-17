@@ -400,6 +400,37 @@ int TextualParser::parseContextualTestPosition(UChar *& p, ContextualTest& t) {
 		t.offset = (-1) * abs(t.offset);
 	}
 
+	if (*p == '/') {
+		++p;
+		bool negative = false;
+
+		size_t tries;
+		for (tries=0 ; *p != ' ' && *p != '(' && tries < 100 ; ++tries) {
+			if (*p == '*' && *(p+1) == '*') {
+				t.pos |= POS_SUB_SCANALL;
+				p += 2;
+			}
+			if (*p == '*') {
+				t.pos |= POS_SUB_SCANFIRST;
+				++p;
+			}
+			if (*p == '-') {
+				negative = true;
+				++p;
+			}
+			if (u_isdigit(*p)) {
+				while (*p >= '0' && *p <= '9') {
+					t.offset_sub = (t.offset_sub*10) + (*p - '0');
+					++p;
+				}
+			}
+		}
+
+		if (negative) {
+			t.offset_sub = (-1) * abs(t.offset_sub);
+		}
+	}
+
 	if ((t.pos & (POS_DEP_CHILD|POS_DEP_SIBLING)) && (t.pos & (POS_SCANFIRST|POS_SCANALL))) {
 		t.pos &= ~POS_SCANFIRST;
 		t.pos &= ~POS_SCANALL;
@@ -756,9 +787,24 @@ void TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 				rule->flags |= (1 << i);
 				setflag = true;
 			}
+			if (i == FL_SUB && rule->flags & (1 << i)) {
+				if (*p != ':') {
+					u_fprintf(ux_stderr, "Error: Line %u: Expected ':' followed by integer after SUB!\n", result->lines);
+					CG3Quit(1);
+				}
+				++p;
+				UChar *n = p;
+				result->lines += SKIPTOWS(n, 0, true);
+				ptrdiff_t c = n - p;
+				u_strncpy(&gbuffers[0][0], p, c);
+				gbuffers[0][c] = 0;
+				p = n;
+				u_sscanf(&gbuffers[0][0], "%d", &rule->sub_reading);
+			}
 			result->lines += SKIPWS(p);
 			// If any of these is the next char, there cannot possibly be more rule options...
 			if (*p == '(' || *p == 'T' || *p == 't' || *p == ';') {
+				setflag = false;
 				break;
 			}
 		}
@@ -829,39 +875,7 @@ void TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 		rule->childset1 = 0;
 	}
 
-	if (key == K_JUMP || key == K_EXECUTE) {
-		UChar *n = p;
-		result->lines += SKIPTOWS(n, '(');
-		if (!u_isalnum(*p)) {
-			u_fprintf(ux_stderr, "Error: Anchor name for %S must be alphanumeric on line %u!\n", keywords[key].getTerminatedBuffer(), result->lines);
-			CG3Quit(1);
-		}
-		ptrdiff_t c = n - p;
-		u_strncpy(&gbuffers[0][0], p, c);
-		gbuffers[0][c] = 0;
-		uint32_t sh = hash_sdbm_uchar(&gbuffers[0][0]);
-		rule->jumpstart = sh;
-		p = n;
-	}
-	result->lines += SKIPWS(p);
-
-	if (key == K_EXECUTE) {
-		UChar *n = p;
-		result->lines += SKIPTOWS(n, '(');
-		if (!u_isalnum(*p)) {
-			u_fprintf(ux_stderr, "Error: Anchor name for %S must be alphanumeric on line %u!\n", keywords[key].getTerminatedBuffer(), result->lines);
-			CG3Quit(1);
-		}
-		ptrdiff_t c = n - p;
-		u_strncpy(&gbuffers[0][0], p, c);
-		gbuffers[0][c] = 0;
-		uint32_t sh = hash_sdbm_uchar(&gbuffers[0][0]);
-		rule->jumpend = sh;
-		p = n;
-	}
-	result->lines += SKIPWS(p);
-
-	if (key == K_SUBSTITUTE) {
+	if (key == K_SUBSTITUTE || key == K_EXECUTE) {
 		Set *s = parseSetInlineWrapper(p);
 		s->reindex(*result);
 		rule->sublist = s;
@@ -881,7 +895,7 @@ void TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 	|| key == K_SETRELATIONS || key == K_SETRELATION
 	|| key == K_REMRELATIONS || key == K_REMRELATION
 	|| key == K_SETVARIABLE || key == K_REMVARIABLE
-	|| key == K_ADDCOHORT) {
+	|| key == K_ADDCOHORT || key == K_JUMP) {
 		Set *s = parseSetInlineWrapper(p);
 		s->reindex(*result);
 		rule->maplist = s;
@@ -1365,7 +1379,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 			s->rehash();
 			Set *tmp = result->getSet(s->hash);
 			if (tmp) {
-				if (verbosity_level > 0) {
+				if (verbosity_level > 0 && tmp->name[0] != '_' && tmp->name[1] != 'G' && tmp->name[2] != '_') {
 					u_fprintf(ux_stderr, "Warning: LIST %S was defined twice with the same contents: Lines %u and %u.\n", s->name.c_str(), tmp->line, s->line);
 					u_fflush(ux_stderr);
 				}
@@ -1409,7 +1423,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 			s->rehash();
 			Set *tmp = result->getSet(s->hash);
 			if (tmp) {
-				if (verbosity_level > 0) {
+				if (verbosity_level > 0 && tmp->name[0] != '_' && tmp->name[1] != 'G' && tmp->name[2] != '_') {
 					u_fprintf(ux_stderr, "Warning: SET %S was defined twice with the same contents: Lines %u and %u.\n", s->name.c_str(), tmp->line, s->line);
 					u_fflush(ux_stderr);
 				}

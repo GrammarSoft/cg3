@@ -36,6 +36,7 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 		u_fprintf(ux_stderr, "Error: No grammar provided - cannot continue!\n");
 		CG3Quit(1);
 	}
+	uint32_t fields = 0;
 	uint32_t u32tmp = 0;
 	int32_t i32tmp = 0;
 	uint8_t u8tmp = 0;
@@ -49,17 +50,61 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 	u32tmp = (uint32_t)htonl((uint32_t)CG3_REVISION);
 	fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 
-	u8tmp = (uint8_t)grammar->has_dep;
-	fwrite(&u8tmp, sizeof(uint8_t), 1, output);
+	if (grammar->has_dep) {
+		fields |= (1 << 0);
+	}
+	if (grammar->mapping_prefix) {
+		fields |= (1 << 1);
+	}
+	if (grammar->sub_readings_ltr) {
+		fields |= (1 << 2);
+	}
+	if (!grammar->single_tags_list.empty()) {
+		fields |= (1 << 3);
+	}
+	if (!grammar->tags_list.empty()) {
+		fields |= (1 << 4);
+	}
+	if (!grammar->preferred_targets.empty()) {
+		fields |= (1 << 5);
+	}
+	if (!grammar->parentheses.empty()) {
+		fields |= (1 << 6);
+	}
+	if (!grammar->anchor_by_hash.empty()) {
+		fields |= (1 << 7);
+	}
+	if (!grammar->sets_list.empty()) {
+		fields |= (1 << 8);
+	}
+	if (grammar->delimiters) {
+		fields |= (1 << 9);
+	}
+	if (grammar->soft_delimiters) {
+		fields |= (1 << 10);
+	}
+	if (!grammar->template_list.empty()) {
+		fields |= (1 << 11);
+	}
+	if (!grammar->rule_by_number.empty()) {
+		fields |= (1 << 12);
+	}
 
-	ucnv_reset(conv);
-	i32tmp = ucnv_fromUChars(conv, &cbuffers[0][0], CG3_BUFFER_SIZE-1, &grammar->mapping_prefix, 1, &err);
-	u32tmp = (uint32_t)htonl((uint32_t)i32tmp);
+	u32tmp = (uint32_t)htonl((uint32_t)fields);
 	fwrite(&u32tmp, sizeof(uint32_t), 1, output);
-	fwrite(&cbuffers[0][0], i32tmp, 1, output);
 
-	u32tmp = (uint32_t)htonl((uint32_t)grammar->single_tags_list.size());
-	fwrite(&u32tmp, sizeof(uint32_t), 1, output);
+	if (grammar->mapping_prefix) {
+		ucnv_reset(conv);
+		i32tmp = ucnv_fromUChars(conv, &cbuffers[0][0], CG3_BUFFER_SIZE-1, &grammar->mapping_prefix, 1, &err);
+		u32tmp = (uint32_t)htonl((uint32_t)i32tmp);
+		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
+		fwrite(&cbuffers[0][0], i32tmp, 1, output);
+	}
+
+	if (!grammar->single_tags_list.empty()) {
+		u32tmp = (uint32_t)htonl((uint32_t)grammar->single_tags_list.size());
+		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
+	}
 	std::vector<Tag*>::const_iterator tags_iter;
 	for (tags_iter = grammar->single_tags_list.begin() ; tags_iter != grammar->single_tags_list.end() ; tags_iter++) {
 		const Tag *t = *tags_iter;
@@ -143,8 +188,10 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 		fwrite(buffer.str().c_str(), buffer.str().length(), 1, output);
 	}
 
-	u32tmp = (uint32_t)htonl((uint32_t)grammar->tags_list.size());
-	fwrite(&u32tmp, sizeof(uint32_t), 1, output);
+	if (!grammar->tags_list.empty()) {
+		u32tmp = (uint32_t)htonl((uint32_t)grammar->tags_list.size());
+		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
+	}
 	std::vector<CompositeTag*>::const_iterator comp_iter;
 	for (comp_iter = grammar->tags_list.begin() ; comp_iter != grammar->tags_list.end() ; comp_iter++) {
 		const CompositeTag *curcomptag = *comp_iter;
@@ -163,16 +210,20 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 		}
 	}
 
-	u32tmp = (uint32_t)htonl((uint32_t)grammar->preferred_targets.size());
-	fwrite(&u32tmp, sizeof(uint32_t), 1, output);
+	if (!grammar->preferred_targets.empty()) {
+		u32tmp = (uint32_t)htonl((uint32_t)grammar->preferred_targets.size());
+		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
+	}
 	uint32Vector::const_iterator iter;
 	for (iter = grammar->preferred_targets.begin() ; iter != grammar->preferred_targets.end() ; iter++ ) {
 		u32tmp = (uint32_t)htonl((uint32_t)*iter);
 		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 	}
 
-	u32tmp = (uint32_t)htonl((uint32_t)grammar->parentheses.size());
-	fwrite(&u32tmp, sizeof(uint32_t), 1, output);
+	if (!grammar->parentheses.empty()) {
+		u32tmp = (uint32_t)htonl((uint32_t)grammar->parentheses.size());
+		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
+	}
 	const_foreach (uint32Map, grammar->parentheses, iter_par, iter_par_end) {
 		u32tmp = (uint32_t)htonl((uint32_t)iter_par->first);
 		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
@@ -180,8 +231,10 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 	}
 
-	u32tmp = (uint32_t)htonl((uint32_t)grammar->anchor_by_hash.size());
-	fwrite(&u32tmp, sizeof(uint32_t), 1, output);
+	if (!grammar->anchor_by_hash.empty()) {
+		u32tmp = (uint32_t)htonl((uint32_t)grammar->anchor_by_hash.size());
+		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
+	}
 	const_foreach (uint32Map, grammar->anchor_by_hash, iter_anchor, iter_anchor_end) {
 		u32tmp = (uint32_t)htonl((uint32_t)iter_anchor->first);
 		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
@@ -189,8 +242,10 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 	}
 
-	u32tmp = (uint32_t)htonl((uint32_t)grammar->sets_list.size());
-	fwrite(&u32tmp, sizeof(uint32_t), 1, output);
+	if (!grammar->sets_list.empty()) {
+		u32tmp = (uint32_t)htonl((uint32_t)grammar->sets_list.size());
+		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
+	}
 	std::vector<Set*>::const_iterator set_iter;
 	for (set_iter = grammar->sets_list.begin() ; set_iter != grammar->sets_list.end() ; set_iter++) {
 		Set *s = *set_iter;
@@ -250,22 +305,16 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 		u32tmp = (uint32_t)htonl((uint32_t)grammar->delimiters->hash);
 		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 	}
-	else {
-		u32tmp = (uint32_t)htonl((uint32_t)0);
-		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
-	}
 
 	if (grammar->soft_delimiters) {
 		u32tmp = (uint32_t)htonl((uint32_t)grammar->soft_delimiters->hash);
 		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 	}
-	else {
-		u32tmp = (uint32_t)htonl((uint32_t)0);
+
+	if (!grammar->template_list.empty()) {
+		u32tmp = (uint32_t)htonl((uint32_t)grammar->template_list.size());
 		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 	}
-
-	u32tmp = (uint32_t)htonl((uint32_t)grammar->template_list.size());
-	fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 	std::vector<ContextualTest*>::const_iterator tmpl_iter;
 	for (tmpl_iter = grammar->template_list.begin() ; tmpl_iter != grammar->template_list.end() ; tmpl_iter++) {
 		u32tmp = (uint32_t)htonl((uint32_t)(*tmpl_iter)->name);
@@ -273,8 +322,10 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 		writeContextualTest(*tmpl_iter, output);
 	}
 
-	u32tmp = (uint32_t)htonl((uint32_t)grammar->rule_by_number.size());
-	fwrite(&u32tmp, sizeof(uint32_t), 1, output);
+	if (!grammar->rule_by_number.empty()) {
+		u32tmp = (uint32_t)htonl((uint32_t)grammar->rule_by_number.size());
+		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
+	}
 	const_foreach (RuleVector, grammar->rule_by_number, rule_iter, rule_iter_end) {
 		Rule *r = *rule_iter;
 
@@ -321,32 +372,32 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 			fields |= (1 << 8);
 			writeSwapped(buffer, r->varvalue);
 		}
-		if (r->jumpstart) {
+		if (r->sub_reading) {
 			fields |= (1 << 9);
-			writeSwapped(buffer, r->jumpstart);
-		}
-		if (r->jumpend) {
-			fields |= (1 << 10);
-			writeSwapped(buffer, r->jumpend);
+			uint32_t v = std::abs(r->sub_reading);
+			if (r->sub_reading < 0) {
+				v |= (1 << 31);
+			}
+			writeSwapped(buffer, v);
 		}
 		if (r->childset1) {
-			fields |= (1 << 11);
+			fields |= (1 << 10);
 			writeSwapped(buffer, r->childset1);
 		}
 		if (r->childset2) {
-			fields |= (1 << 12);
+			fields |= (1 << 11);
 			writeSwapped(buffer, r->childset2);
 		}
 		if (r->maplist) {
-			fields |= (1 << 13);
+			fields |= (1 << 12);
 			writeSwapped(buffer, r->maplist->number);
 		}
 		if (r->sublist) {
-			fields |= (1 << 14);
+			fields |= (1 << 13);
 			writeSwapped(buffer, r->sublist->number);
 		}
 		if (r->number) {
-			fields |= (1 << 15);
+			fields |= (1 << 14);
 			writeSwapped(buffer, r->number);
 		}
 
@@ -399,61 +450,73 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 }
 
 void BinaryGrammar::writeContextualTest(ContextualTest *t, FILE *output) {
+	std::ostringstream buffer;
+	uint32_t fields = 0;
 	uint32_t u32tmp = 0;
-	int32_t i32tmp = 0;
-	uint8_t u8tmp = 0;
 
-	u32tmp = (uint32_t)htonl((uint32_t)t->hash);
-	fwrite(&u32tmp, sizeof(uint32_t), 1, output);
-
-	u32tmp = (uint32_t)htonl((uint32_t)t->pos);
-	fwrite(&u32tmp, sizeof(uint32_t), 1, output);
-	i32tmp = (int32_t)htonl(t->offset);
-	fwrite(&i32tmp, sizeof(int32_t), 1, output);
-
-	if (t->tmpl) {
-		u32tmp = (uint32_t)htonl((uint32_t)t->tmpl->name);
-		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
-		u32tmp = 0;
-		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
+	if (t->hash) {
+		fields |= (1 << 0);
+		writeSwapped(buffer, t->hash);
 	}
-	else if (!t->ors.empty()) {
-		u32tmp = 0;
-		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
+	if (t->pos) {
+		fields |= (1 << 1);
+		writeSwapped(buffer, t->pos);
+	}
+	if (t->offset) {
+		fields |= (1 << 2);
+		writeSwapped(buffer, t->offset);
+	}
+	if (t->tmpl) {
+		fields |= (1 << 3);
+		writeSwapped(buffer, t->tmpl->name);
+	}
+	if (t->target) {
+		fields |= (1 << 4);
+		writeSwapped(buffer, t->target);
+	}
+	if (t->line) {
+		fields |= (1 << 5);
+		writeSwapped(buffer, t->line);
+	}
+	if (t->relation) {
+		fields |= (1 << 6);
+		writeSwapped(buffer, t->relation);
+	}
+	if (t->barrier) {
+		fields |= (1 << 7);
+		writeSwapped(buffer, t->barrier);
+	}
+	if (t->cbarrier) {
+		fields |= (1 << 8);
+		writeSwapped(buffer, t->cbarrier);
+	}
+	if (t->offset_sub) {
+		fields |= (1 << 9);
+		writeSwapped(buffer, t->offset_sub);
+	}
+	if (!t->ors.empty()) {
+		fields |= (1 << 10);
+	}
+	if (t->linked) {
+		fields |= (1 << 11);
+	}
+
+	u32tmp = (uint32_t)htonl(fields);
+	fwrite(&u32tmp, sizeof(uint32_t), 1, output);
+	fwrite(buffer.str().c_str(), buffer.str().length(), 1, output);
+
+	if (!t->ors.empty()) {
 		u32tmp = (uint32_t)htonl((uint32_t)t->ors.size());
 		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
+
 		std::list<ContextualTest*>::const_iterator iter;
 		for (iter = t->ors.begin() ; iter != t->ors.end() ; iter++) {
 			writeContextualTest(*iter, output);
 		}
 	}
-	else {
-		u32tmp = 0;
-		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
-		u32tmp = 0;
-		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
-
-		u32tmp = (uint32_t)htonl((uint32_t)t->target);
-		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
-	}
-
-	u32tmp = (uint32_t)htonl((uint32_t)t->line);
-	fwrite(&u32tmp, sizeof(uint32_t), 1, output);
-	u32tmp = (uint32_t)htonl((uint32_t)t->relation);
-	fwrite(&u32tmp, sizeof(uint32_t), 1, output);
-	u32tmp = (uint32_t)htonl((uint32_t)t->barrier);
-	fwrite(&u32tmp, sizeof(uint32_t), 1, output);
-	u32tmp = (uint32_t)htonl((uint32_t)t->cbarrier);
-	fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 
 	if (t->linked) {
-		u8tmp = (uint8_t)1;
-		fwrite(&u8tmp, sizeof(uint8_t), 1, output);
 		writeContextualTest(t->linked, output);
-	}
-	else {
-		u8tmp = (uint8_t)0;
-		fwrite(&u8tmp, sizeof(uint8_t), 1, output);
 	}
 }
 

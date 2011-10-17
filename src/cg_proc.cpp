@@ -192,6 +192,7 @@ int main(int argc, char *argv[]) {
 	/* Add a / in front to enable this test...
 	{
 		CG3::ApertiumApplicator a(0);
+		//grammar.sub_readings_ltr = true;
 		a.setGrammar(&grammar);
 		a.testPR(ux_stdout);
 		return 0;

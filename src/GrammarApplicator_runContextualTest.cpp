@@ -41,11 +41,11 @@ Cohort *GrammarApplicator::runSingleTest(Cohort *cohort, const ContextualTest *t
 		*deep = cohort;
 	}
 	if (test->pos & POS_CAREFUL) {
-		*retval = doesSetMatchCohortCareful(*cohort, test->target, test->pos);
+		*retval = doesSetMatchCohortCareful(*cohort, test->target, test, test->pos);
 	}
 	bool foundfirst = *retval;
 	if (!foundfirst || !(test->pos & POS_CAREFUL)) {
-		foundfirst = doesSetMatchCohortNormal(*cohort, test->target, test->pos);
+		foundfirst = doesSetMatchCohortNormal(*cohort, test->target, test, test->pos);
 		if (!(test->pos & POS_CAREFUL)) {
 			*retval = foundfirst;
 		}
@@ -72,13 +72,13 @@ Cohort *GrammarApplicator::runSingleTest(Cohort *cohort, const ContextualTest *t
 		*brk = true;
 	}
 	if (test->barrier) {
-		bool barrier = doesSetMatchCohortNormal(*cohort, test->barrier, test->pos & ~POS_CAREFUL);
+		bool barrier = doesSetMatchCohortNormal(*cohort, test->barrier, test, test->pos & ~POS_CAREFUL);
 		if (barrier) {
 			*brk = true;
 		}
 	}
 	if (test->cbarrier) {
-		bool cbarrier = doesSetMatchCohortCareful(*cohort, test->cbarrier, test->pos | POS_CAREFUL);
+		bool cbarrier = doesSetMatchCohortCareful(*cohort, test->cbarrier, test, test->pos | POS_CAREFUL);
 		if (cbarrier) {
 			*brk = true;
 		}

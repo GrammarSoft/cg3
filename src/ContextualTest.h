@@ -57,6 +57,8 @@ namespace CG3 {
 		POS_UNKNOWN        = (1 << 25),
 		POS_RELATION       = (1 << 26),
 		POS_ATTACH_TO      = (1 << 27),
+		POS_SUB_SCANFIRST  = (1 << 28),
+		POS_SUB_SCANALL    = (1 << 29),
 
 		MASK_POS_DEP       = POS_DEP_PARENT|POS_DEP_SIBLING|POS_DEP_CHILD,
 		MASK_POS_DEPREL    = MASK_POS_DEP|POS_RELATION,
@@ -67,6 +69,7 @@ namespace CG3 {
 	public:
 		bool is_used;
 		int32_t offset;
+		int32_t offset_sub;
 		uint32_t line;
 		uint32_t name;
 		uint32_t hash;

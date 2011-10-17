@@ -51,13 +51,13 @@ namespace CG3 {
 		uint32Bloomish tags_textual_bloom;
 		Tag *mapping;
 		Cohort *parent;
+		Reading *next;
 		uint32Vector hit_by;
 		uint32List tags_list;
 		uint32SortedVector tags;
 		uint32SortedVector tags_plain;
 		uint32SortedVector tags_textual;
 		Taguint32HashMap tags_numerical;
-		ReadingList subs;
 
 		Reading(Cohort *p);
 		Reading(const Reading& r);
