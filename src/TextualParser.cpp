@@ -789,8 +789,9 @@ void TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 			}
 			if (i == FL_SUB && rule->flags & (1 << i)) {
 				if (*p != ':') {
-					u_fprintf(ux_stderr, "Error: Line %u: Expected ':' followed by integer after SUB!\n", result->lines);
-					CG3Quit(1);
+					rule->flags &= ~(1 << i);
+					setflag = false;
+					break;
 				}
 				++p;
 				UChar *n = p;
