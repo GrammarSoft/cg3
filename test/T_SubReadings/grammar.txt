@@ -17,3 +17,6 @@ ADD SUB:4 (sub4) (*) ;
 
 ADD SUB:-2 (sub-2-good) (*) (0/1 (sub1)) ;
 ADD SUB:-2 (sub-2-bad) (*) (0/2 (sub1)) ;
+
+SELECT SUB:1 ("fyg1") ;
+REMOVE SUB:1 ("aux1") ;
