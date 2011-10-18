@@ -1,1 +1,3 @@
 ^word/aux3<tag>+aux2<tag>+aux1<tag>+main<tag>$
+^word/aux3<tag>+aux2<tag>+aux1<tag>+main<tag>/btu3<waf>+btu2<waf>+btu1<waf>+main<waf>$
+^word/aux3<tag>+aux2<tag>+aux1<tag>+main<tag>/fyg3<wer>+fyg2<wer>+fyg1<wer>+main<wer>/btu3<wer>+btu2<wer>+btu1<wer>+main<wer>$
