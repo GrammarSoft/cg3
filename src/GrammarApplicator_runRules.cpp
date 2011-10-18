@@ -475,6 +475,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 				}
 
 				Reading& reading = *tr;
+				Reading& reading_head = *cohort->readings[i];
 				bool good = reading.matched_tests;
 				const uint32_t state_hash = reading.hash;
 
@@ -488,12 +489,12 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 				// Select is also special as it will remove non-matching readings
 				if (type == K_SELECT) {
 					if (good) {
-						selected.push_back(&reading);
+						selected.push_back(&reading_head);
 						index_ruleCohort_no.clear();
 						reading.hit_by.push_back(rule.number);
 					}
 					else {
-						removed.push_back(&reading);
+						removed.push_back(&reading_head);
 						index_ruleCohort_no.clear();
 						reading.hit_by.push_back(rule.number);
 					}
@@ -512,7 +513,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 							}
 						}
 						else {
-							removed.push_back(&reading);
+							removed.push_back(&reading_head);
 							reading.hit_by.push_back(rule.number);
 						}
 						index_ruleCohort_no.clear();
