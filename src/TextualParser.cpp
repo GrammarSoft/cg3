@@ -790,6 +790,7 @@ void TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 			if (i == FL_SUB && rule->flags & (1 << i)) {
 				if (*p != ':') {
 					rule->flags &= ~(1 << i);
+					p -= flags[i].length();
 					setflag = false;
 					break;
 				}
