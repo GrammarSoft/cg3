@@ -20,6 +20,13 @@ if (!$binary_proc || $binary_proc eq '' || !(-x $binary_proc)) {
 }
 
 `"$binary_comp" grammar.txt grammar.cg3b >stdout.txt 2>stderr.txt`;
+
+if (-s "grammar.cg3b") {
+	print STDERR "Success ";
+} else {
+	print STDERR "Fail ";
+}
+
 `"$binary_proc" grammar.cg3b input.txt output.txt >>stdout.txt 2>>stderr.txt`;
 `diff -B expected.txt output.txt >diff.txt`;
 

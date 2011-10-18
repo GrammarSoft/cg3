@@ -782,26 +782,32 @@ void TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 	while (setflag) {
 		setflag = false;
 		for (uint32_t i=0 ; i<FLAGS_COUNT ; i++) {
+			UChar *op = p;
 			if (ux_simplecasecmp(p, flags[i].getTerminatedBuffer(), flags[i].length())) {
 				p += flags[i].length();
 				rule->flags |= (1 << i);
 				setflag = true;
-			}
-			if (i == FL_SUB && rule->flags & (1 << i)) {
-				if (*p != ':') {
+
+				if (*p == ':') {
+					++p;
+					UChar *n = p;
+					result->lines += SKIPTOWS(n, 0, true);
+					ptrdiff_t c = n - p;
+					u_strncpy(&gbuffers[0][0], p, c);
+					gbuffers[0][c] = 0;
+					p = n;
+					if (i == FL_SUB) {
+						u_sscanf(&gbuffers[0][0], "%d", &rule->sub_reading);
+					}
+				}
+
+				// Rule flags followed by letters or valid set characters should not be flags.
+				if (*p != '(' && !ISSPACE(*p)) {
 					rule->flags &= ~(1 << i);
-					p -= flags[i].length();
+					p = op;
 					setflag = false;
 					break;
 				}
-				++p;
-				UChar *n = p;
-				result->lines += SKIPTOWS(n, 0, true);
-				ptrdiff_t c = n - p;
-				u_strncpy(&gbuffers[0][0], p, c);
-				gbuffers[0][c] = 0;
-				p = n;
-				u_sscanf(&gbuffers[0][0], "%d", &rule->sub_reading);
 			}
 			result->lines += SKIPWS(p);
 			// If any of these is the next char, there cannot possibly be more rule options...
