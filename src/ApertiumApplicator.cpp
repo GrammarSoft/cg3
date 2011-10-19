@@ -651,7 +651,7 @@ void ApertiumApplicator::printReading(Reading *reading, UFILE *output) {
 		// Lop off the initial and final '"' characters
 		UnicodeString bf(single_tags[reading->baseform]->tag.c_str()+1, single_tags[reading->baseform]->tag.length()-2);
 
-		if (wordform_case && reading->next) {
+		if (wordform_case && !reading->next) {
 			// Use surface/wordform case, eg. if lt-proc
 			// was called with "-w" option (which puts
 			// dictionary case on lemma/basefrom)
