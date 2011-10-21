@@ -1,17 +1,17 @@
 "<worda>"
-	"worda" some tags AA @UnifSet ID:1 R:from:3 ADD:11 ADDRELATIONS(from,to):12 SELECT:SameBase 
+	"worda" some tags AA @UnifSet @same-but-different ID:1 R:from:3 ADD:11 ADDRELATIONS(from,to):12 SELECT:SameBase ADD:31 
 ;	"wordc" some tags ID:1 R:from:3 SELECT:SameBase 
 ;	"wordc" some tags ID:1 R:from:3 SELECT:SameBase 
 "<wordb>"
 	"wordb" some tags ID:2 R:from:3 
-	"worda" some tags CC @UnifSet ID:2 R:from:3 ADD:11 ADDRELATIONS(from,to):12 
+	"worda" some tags CC @UnifSet @same-but-different ID:2 R:from:3 ADD:11 ADDRELATIONS(from,to):12 ADD:31 
 "<wordc>"
 	"wordc" some tags BB EE @UnifSet ID:3 R:to:1 R:to:2 ADD:11 SELECT:two 
 ;	"wordc" some tags ID:3 R:to:1 R:to:2 SELECT:two 
 ;	"wordc" some tags ID:3 R:to:1 R:to:2 SELECT:two 
 "<wordd>"
 	"wordd" some tags 
-	"wordd" some tags BB EE @UnifSet ADD:11 
+	"wordd" some tags BB EE @UnifSet @same-but-different ADD:11 ADD:31 
 "<worde>"
 	"replaced:rde" some tags CC @UnifSet ADD:11 SELECT:one SUBSTITUTE:29 
 ;	"worde" some tags SELECT:one 
