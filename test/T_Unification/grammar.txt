@@ -27,3 +27,6 @@ SUBSTITUTE &&USET (<before>) + $$TSet + (<after>) ("wordi") (-8 &&USET) (-2C (so
 
 LIST REMSET = "word([fgh])"r "WO(RDE)"ri ;
 SUBSTITUTE $$REMSET ("replaced:$1"v) $$REMSET ;
+
+ADD (@same-but-different) $$ACESet (1 ACESet - $$ACESet) ;
+ADD (@same-but-different-bad) $$BDFSet (1 BDFSet - $$BDFSet) ;
