@@ -28,3 +28,8 @@ enable_testing()
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 install(PROGRAMS "${CMAKE_CURRENT_SOURCE_DIR}/scripts/cg3-autobin.pl" DESTINATION bin)
+
+SET(CPACK_PACKAGE_NAME "CG3")
+SET(CPACK_PACKAGE_VENDOR "GrammarSoft ApS")
+SET(CPACK_PACKAGE_VERSION "0.9.7.7600")
+INCLUDE(CPack)
