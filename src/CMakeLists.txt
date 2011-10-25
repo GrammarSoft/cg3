@@ -3,7 +3,7 @@ find_package(Threads REQUIRED)
 
 # Boost
 SET(Boost_ADDITIONAL_VERSIONS "1.42" "1.42.0" "1.43" "1.43.0" "1.44" "1.44.0" "1.45" "1.45.0" "1.46" "1.46.0" "1.46.1" "1.47" "1.47.0")
-FIND_PATH(Boost_LOCAL NAMES boost/config.hpp HINTS "${CMAKE_CURRENT_SOURCE_DIR}/../include")
+FIND_PATH(Boost_LOCAL NAMES boost/config.hpp PATHS "${CMAKE_CURRENT_SOURCE_DIR}/../include" NO_DEFAULT_PATH)
 if (Boost_LOCAL)
 	SET(BOOST_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/../include")
 	find_package(Boost 1.36.0)
