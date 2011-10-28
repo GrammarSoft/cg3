@@ -625,7 +625,7 @@ bool GrammarApplicator::doesSetMatchReading(const Reading& reading, const uint32
 							match = doesSetMatchReading(reading, theset.sets[i+1], bypass_index, ((theset.type & ST_TAG_UNIFY)!=0)|unif_mode);
 						}
 						break;
-					// ToDo: Document: Failfast makes a difference in A OR B ^ C OR D, where - does not.
+					// Failfast makes a difference in A OR B ^ C OR D, where - does not.
 					case S_FAILFAST:
 						if (doesSetMatchReading(reading, theset.sets[i+1], bypass_index, ((theset.type & ST_TAG_UNIFY)!=0)|unif_mode)) {
 							match = false;
@@ -660,6 +660,22 @@ bool GrammarApplicator::doesSetMatchReading(const Reading& reading, const uint32
 				match_sub++;
 				retval = false;
 				break;
+			}
+		}
+		// Propagate unified tag to other sets of this set, if applicable
+		if (unif_mode || (theset.type & ST_TAG_UNIFY)) {
+			uint32_t tag = 0;
+			for (size_t i=0 ; i<size ; ++i) {
+				uint32HashMap::const_iterator it = unif_tags.find(theset.sets[i]);
+				if (it != unif_tags.end()) {
+					tag = it->second;
+					break;
+				}
+			}
+			if (tag) {
+				for (size_t i=0 ; i<size ; ++i) {
+					unif_tags[theset.sets[i]] = tag;
+				}
 			}
 		}
 	}
