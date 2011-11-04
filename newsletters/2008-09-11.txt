@@ -8,7 +8,7 @@ Windows binary is at http://beta.visl.sdu.dk/download/vislcg3/vislcg3-0.9.6.3991
 New tool:
 -- I have added the script cg3-autobin.pl which will be installed alongside the normal binaries during 'make install'. It is a thin Perl wrapper for the vislcg3 binary that will automatically compile the grammar to binary form and reuse it on subsequent calls. This should make it faster to develop and test grammars.
 In most cases it is enough to replace vislcg3 with cg3-autobin.pl in your call; all arguments can remain the same.
-The binary grammar is compiled in the environment's temporary folder with a filename of components Hash.Revision.ModificationTime.bin3 - if any arguments changes, or the revision, or the grammar's modification time, the binary grammar will be recompiled with a new name. This may litter your temp folder considerably if you edit grammars often and do not have cleanup services.
+The binary grammar is compiled in the environment's temporary folder with a filename of components Hash.Revision.ModificationTime.cg3b - if any arguments changes, or the revision, or the grammar's modification time, the binary grammar will be recompiled with a new name. This may litter your temp folder considerably if you edit grammars often and do not have cleanup services.
 The Perl script requires modules File::Spec, Getopt::Long, and Digest::SHA. It is not well tested...but the worst it could do is eat your temp folder.
 
 Changes:
