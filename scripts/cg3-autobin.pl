@@ -77,7 +77,7 @@ while (my ($k,$v) = each(%h)) {
 
 my ($dev,$ino,$mode,$nlink,$uid,$gid,$rdev,$size,$atime,$mtime,$ctime,$blksize,$blocks) = stat($h{'grammar'});
 
-my $bn = File::Spec->tmpdir()."/".sha1_hex($args.$h{'grammar'}).".".$revision.".".$mtime.".bin3";
+my $bn = File::Spec->tmpdir()."/".sha1_hex($args.$h{'grammar'}).".".$revision.".".$mtime.".cg3b";
 
 my $bin = 'vislcg3';
 if (-x '/usr/bin/vislcg3') {

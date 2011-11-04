@@ -61,8 +61,8 @@ foreach (@tests) {
 	if (-e "./".$test."/output.txt") {
 	    unlink "./".$test."/output.txt";
 	}
-	if (-e "./".$test."/grammar.bin3") {
-	    unlink "./".$test."/grammar.bin3";
+	if (-e "./".$test."/grammar.cg3b") {
+	    unlink "./".$test."/grammar.cg3b";
 	}
 	if (-e "./".$test."/grammar.cg3b") {
 	    unlink "./".$test."/grammar.cg3b";
