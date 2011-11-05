@@ -270,7 +270,7 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 		uint32_t left = (uint32_t)ntohl(u32tmp);
 		fread(&u32tmp, sizeof(uint32_t), 1, input);
 		uint32_t right = (uint32_t)ntohl(u32tmp);
-		grammar->anchor_by_hash[left] = right;
+		grammar->anchors[left] = right;
 	}
 
 	u32tmp = 0;

@@ -521,6 +521,16 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 							std::cerr << "DEBUG: Rule " << rule.line << " hit cohort " << cohort->local_number << std::endl;
 						}
 					}
+					else if (type == K_JUMP) {
+						reading.hit_by.push_back(rule.number);
+						const Tag *to = getTagList(*rule.maplist).front();
+						uint32HashMap::const_iterator it = grammar->anchors.find(to->hash);
+						if (it != grammar->anchors.end()) {
+							iter_rules = intersects.lower_bound(it->second);
+							--iter_rules;
+						}
+						break;
+					}
 					else if (type == K_REMVARIABLE) {
 						reading.hit_by.push_back(rule.number);
 						const TagList names = getTagList(*rule.maplist);

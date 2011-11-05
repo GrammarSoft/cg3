@@ -71,7 +71,7 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 	if (!grammar->parentheses.empty()) {
 		fields |= (1 << 6);
 	}
-	if (!grammar->anchor_by_hash.empty()) {
+	if (!grammar->anchors.empty()) {
 		fields |= (1 << 7);
 	}
 	if (!grammar->sets_list.empty()) {
@@ -231,11 +231,11 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 	}
 
-	if (!grammar->anchor_by_hash.empty()) {
-		u32tmp = (uint32_t)htonl((uint32_t)grammar->anchor_by_hash.size());
+	if (!grammar->anchors.empty()) {
+		u32tmp = (uint32_t)htonl((uint32_t)grammar->anchors.size());
 		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 	}
-	const_foreach (uint32Map, grammar->anchor_by_hash, iter_anchor, iter_anchor_end) {
+	const_foreach (uint32HashMap, grammar->anchors, iter_anchor, iter_anchor_end) {
 		u32tmp = (uint32_t)htonl((uint32_t)iter_anchor->first);
 		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 		u32tmp = (uint32_t)htonl((uint32_t)iter_anchor->second);

@@ -64,9 +64,6 @@ foreach (@tests) {
 	if (-e "./".$test."/grammar.cg3b") {
 	    unlink "./".$test."/grammar.cg3b";
 	}
-	if (-e "./".$test."/grammar.cg3b") {
-	    unlink "./".$test."/grammar.cg3b";
-	}
 	if (-e "./".$test."/diff.bin.txt") {
 	    unlink "./".$test."/diff.bin.txt";
 	}

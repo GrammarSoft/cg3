@@ -1067,6 +1067,21 @@ void TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 	addRuleToGrammar(rule);
 }
 
+void TextualParser::parseAnchorish(UChar *& p) {
+	UChar *n = p;
+	result->lines += SKIPTOWS(n, 0, true);
+	ptrdiff_t c = n - p;
+	u_strncpy(&gbuffers[0][0], p, c);
+	gbuffers[0][c] = 0;
+	result->addAnchor(&gbuffers[0][0], result->rule_by_number.size(), true);
+	p = n;
+	result->lines += SKIPWS(p, ';');
+	if (*p != ';') {
+		u_fprintf(ux_stderr, "Error: Missing closing ; on line %u after anchor/section name!\n", result->lines);
+		CG3Quit(1);
+	}
+}
+
 int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 	if (!input || !input[0]) {
 		u_fprintf(ux_stderr, "Error: Input is empty - cannot continue!\n");
@@ -1471,13 +1486,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 			SKIPWS(s);
 			result->lines += SKIPWS(p);
 			if (p != s) {
-				UChar *n = p;
-				result->lines += SKIPTOWS(n, 0, true);
-				ptrdiff_t c = n - p;
-				u_strncpy(&gbuffers[0][0], p, c);
-				gbuffers[0][c] = 0;
-				result->addAnchor(&gbuffers[0][0], result->lines);
-				p = n;
+				parseAnchorish(p);
 			}
 		}
 		// CORRECTIONS
@@ -1495,13 +1504,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 			SKIPWS(s);
 			result->lines += SKIPWS(p);
 			if (p != s) {
-				UChar *n = p;
-				result->lines += SKIPTOWS(n, 0, true);
-				ptrdiff_t c = n - p;
-				u_strncpy(&gbuffers[0][0], p, c);
-				gbuffers[0][c] = 0;
-				result->addAnchor(&gbuffers[0][0], result->lines);
-				p = n;
+				parseAnchorish(p);
 			}
 		}
 		// BEFORE-SECTIONS
@@ -1520,13 +1523,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 			SKIPWS(s);
 			result->lines += SKIPWS(p);
 			if (p != s) {
-				UChar *n = p;
-				result->lines += SKIPTOWS(n, 0, true);
-				ptrdiff_t c = n - p;
-				u_strncpy(&gbuffers[0][0], p, c);
-				gbuffers[0][c] = 0;
-				result->addAnchor(&gbuffers[0][0], result->lines);
-				p = n;
+				parseAnchorish(p);
 			}
 		}
 		// SECTION
@@ -1544,13 +1541,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 			SKIPWS(s);
 			result->lines += SKIPWS(p);
 			if (p != s) {
-				UChar *n = p;
-				result->lines += SKIPTOWS(n, 0, true);
-				ptrdiff_t c = n - p;
-				u_strncpy(&gbuffers[0][0], p, c);
-				gbuffers[0][c] = 0;
-				result->addAnchor(&gbuffers[0][0], result->lines);
-				p = n;
+				parseAnchorish(p);
 			}
 		}
 		// CONSTRAINTS
@@ -1569,13 +1560,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 			SKIPWS(s);
 			result->lines += SKIPWS(p);
 			if (p != s) {
-				UChar *n = p;
-				result->lines += SKIPTOWS(n, 0, true);
-				ptrdiff_t c = n - p;
-				u_strncpy(&gbuffers[0][0], p, c);
-				gbuffers[0][c] = 0;
-				result->addAnchor(&gbuffers[0][0], result->lines);
-				p = n;
+				parseAnchorish(p);
 			}
 		}
 		// AFTER-SECTIONS
@@ -1594,13 +1579,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 			SKIPWS(s);
 			result->lines += SKIPWS(p);
 			if (p != s) {
-				UChar *n = p;
-				result->lines += SKIPTOWS(n, 0, true);
-				ptrdiff_t c = n - p;
-				u_strncpy(&gbuffers[0][0], p, c);
-				gbuffers[0][c] = 0;
-				result->addAnchor(&gbuffers[0][0], result->lines);
-				p = n;
+				parseAnchorish(p);
 			}
 		}
 		// NULL-SECTION
@@ -1619,13 +1598,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 			SKIPWS(s);
 			result->lines += SKIPWS(p);
 			if (p != s) {
-				UChar *n = p;
-				result->lines += SKIPTOWS(n, 0, true);
-				ptrdiff_t c = n - p;
-				u_strncpy(&gbuffers[0][0], p, c);
-				gbuffers[0][c] = 0;
-				result->addAnchor(&gbuffers[0][0], result->lines);
-				p = n;
+				parseAnchorish(p);
 			}
 		}
 		// SUBREADINGS
@@ -1666,21 +1639,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 			&& !ISSTRING(p, 5)) {
 			p += 6;
 			result->lines += SKIPWS(p);
-			UChar *n = p;
-			result->lines += SKIPTOWS(n, 0, true);
-			ptrdiff_t c = n - p;
-			u_strncpy(&gbuffers[0][0], p, c);
-			gbuffers[0][c] = 0;
-			result->addAnchor(&gbuffers[0][0], result->lines);
-			p = n;
-			//*
-			// ToDo: Whether ANCHOR should require ; or not...
-			result->lines += SKIPWS(p, ';');
-			if (*p != ';') {
-				u_fprintf(ux_stderr, "Error: Missing closing ; before line %u!\n", result->lines);
-				CG3Quit(1);
-			}
-			//*/
+			parseAnchorish(p);
 		}
 		// INCLUDE
 		else if (ISCHR(*p,'I','i') && ISCHR(*(p+6),'E','e') && ISCHR(*(p+1),'N','n') && ISCHR(*(p+2),'C','c')
@@ -2024,7 +1983,7 @@ int TextualParser::parse_grammar_from_file(const char *fname, const char *loc, c
 	}
 	data.resize(read+4+1);
 
-	result->addAnchor(keywords[K_START].getTerminatedBuffer(), result->lines);
+	result->addAnchor(keywords[K_START].getTerminatedBuffer(), 0, true);
 
 	// Allocate the magic * tag
 	{
@@ -2103,7 +2062,13 @@ int TextualParser::parse_grammar_from_file(const char *fname, const char *loc, c
 		return error;
 	}
 
-	result->addAnchor(keywords[K_END].getTerminatedBuffer(), result->lines);
+	result->addAnchor(keywords[K_END].getTerminatedBuffer(), result->rule_by_number.size()-1, true);
+
+	const_foreach(RuleVector, result->rule_by_number, it, it_end) {
+		if ((*it)->name) {
+			result->addAnchor((*it)->name, (*it)->number, false);
+		}
+	}
 
 	return 0;
 }

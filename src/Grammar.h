@@ -84,8 +84,7 @@ namespace CG3 {
 		uint32Map parentheses_reverse;
 
 		uint32Vector sections;
-		uint32Map anchor_by_hash;
-		std::map<uint32_t, Anchor*> anchor_by_line;
+		uint32HashMap anchors;
 
 		RuleVector rule_by_number;
 		RuleVector before_sections;
@@ -105,7 +104,7 @@ namespace CG3 {
 		void addSetToList(Set *s);
 		Set *parseSet(const UChar *name);
 
-		void addAnchor(const UChar *to, const uint32_t line);
+		void addAnchor(const UChar *to, uint32_t at, bool primary = false);
 
 		Tag *allocateTag();
 		Tag *allocateTag(const UChar *tag, bool raw = false);
