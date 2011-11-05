@@ -61,6 +61,7 @@ namespace CG3 {
 		int parseContextualTests(UChar *& p, Rule *rule);
 		int parseContextualDependencyTests(UChar *& p, Rule *rule);
 		void parseRule(UChar *& p, KEYWORDS key);
+		void parseAnchorish(UChar *& p);
 	};
 }
 
