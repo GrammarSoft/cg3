@@ -24,7 +24,6 @@
 #include "Tag.h"
 #include "CompositeTag.h"
 #include "Rule.h"
-#include "Anchor.h"
 #include "ContextualTest.h"
 #include "Reading.h"
 #include "Window.h"

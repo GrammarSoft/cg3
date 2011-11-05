@@ -22,7 +22,6 @@
 #include "Grammar.h"
 #include "Strings.h"
 #include "ContextualTest.h"
-#include "Anchor.h"
 
 namespace CG3 {
 
@@ -54,13 +53,6 @@ Grammar::~Grammar() {
 
 	foreach (SetSet, sets_all, rsets, rsets_end) {
 		delete *rsets;
-	}
-
-	std::map<uint32_t, Anchor*>::iterator iter_anc;
-	for (iter_anc = anchor_by_line.begin() ; iter_anc != anchor_by_line.end() ; iter_anc++) {
-		if (iter_anc->second) {
-			delete iter_anc->second;
-		}
 	}
 	
 	stdext::hash_map<uint32_t, CompositeTag*>::iterator iter_ctag;
@@ -477,17 +469,17 @@ void Grammar::addContextualTest(ContextualTest *test, const UChar *name) {
 	template_list.push_back(test);
 }
 
-void Grammar::addAnchor(const UChar *to, uint32_t line) {
-	uint32_t ah = hash_sdbm_uchar(to);
-	if (anchor_by_hash.find(ah) != anchor_by_hash.end()) {
-		u_fprintf(ux_stderr, "Error: Redefinition attempt for anchor '%S' on line %u!\n", to, line);
+void Grammar::addAnchor(const UChar *to, uint32_t at, bool primary) {
+	uint32_t ah = allocateTag(to, true)->hash;
+	if (primary && anchors.find(ah) != anchors.end()) {
+		u_fprintf(ux_stderr, "Error: Redefinition attempt for anchor '%S' on line %u!\n", to, lines);
 		CG3Quit(1);
 	}
-	Anchor *anc = new Anchor;
-	anc->setName(to);
-	anc->line = line;
-	anchor_by_hash[ah] = line;
-	anchor_by_line[line] = anc;
+	if (at > rule_by_number.size()) {
+		u_fprintf(ux_stderr, "Warning: No corresponding rule available for anchor '%S' on line %u!\n", to, lines);
+		at = rule_by_number.size();
+	}
+	anchors[ah] = at;
 }
 
 void Grammar::resetStatistics() {

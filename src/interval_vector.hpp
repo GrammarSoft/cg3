@@ -239,6 +239,21 @@ public:
 		return const_iterator(elements, it, t);
 	}
 
+	const_iterator lower_bound(T t) const {
+		ContConstIter it = std::lower_bound(elements.begin(), elements.end(), t);
+		if (it == elements.end()) {
+			return end();
+		}
+		if (it->ub < t || it->lb > t) {
+			++it;
+			if (it == elements.end()) {
+				return end();
+			}
+			t = it->lb;
+		}
+		return const_iterator(elements, it, t);
+	}
+
 	bool contains(T t) const {
 		ContConstIter it = std::lower_bound(elements.begin(), elements.end(), t);
 		if (it == elements.end()) {
