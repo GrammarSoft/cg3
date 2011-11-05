@@ -471,7 +471,8 @@ void Grammar::addContextualTest(ContextualTest *test, const UChar *name) {
 
 void Grammar::addAnchor(const UChar *to, uint32_t at, bool primary) {
 	uint32_t ah = allocateTag(to, true)->hash;
-	if (primary && anchors.find(ah) != anchors.end()) {
+	uint32HashMap::iterator it = anchors.find(ah);
+	if (primary && it != anchors.end()) {
 		u_fprintf(ux_stderr, "Error: Redefinition attempt for anchor '%S' on line %u!\n", to, lines);
 		CG3Quit(1);
 	}
@@ -479,7 +480,9 @@ void Grammar::addAnchor(const UChar *to, uint32_t at, bool primary) {
 		u_fprintf(ux_stderr, "Warning: No corresponding rule available for anchor '%S' on line %u!\n", to, lines);
 		at = rule_by_number.size();
 	}
-	anchors[ah] = at;
+	if (it == anchors.end()) {
+		anchors[ah] = at;
+	}
 }
 
 void Grammar::resetStatistics() {
