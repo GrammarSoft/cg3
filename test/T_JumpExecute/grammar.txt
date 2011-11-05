@@ -9,4 +9,4 @@ ADD (@a) (*) ;
 ADD:named (@b) (*) ;
 JUMP (hubba) (*) (NOT 0 (@a)) ;
 ANCHOR bubba ;
-ADD (@c) (*) ;
+ADD:named (@c) (*) ;
