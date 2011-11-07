@@ -732,7 +732,12 @@ void TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 		ptrdiff_t c = n - p;
 		u_strncpy(&gbuffers[0][0], p, c);
 		gbuffers[0][c] = 0;
-		rule->setName(&gbuffers[0][0]);
+		if (!gbuffers[0][0]) {
+			u_fprintf(ux_stderr, "Warning: Rule on line %u had : but no name.\n", result->lines);
+		}
+		else {
+			rule->setName(&gbuffers[0][0]);
+		}
 		p = n;
 	}
 	result->lines += SKIPWS(p);
