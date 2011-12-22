@@ -115,6 +115,8 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 	uint32HashMap variables_set;
 	uint32HashSet variables_rem;
 
+	std::vector<std::pair<size_t,Reading*> > indents;
+
 	while (!u_feof(input)) {
 		lines++;
 		size_t offset = 0, packoff = 0;
@@ -266,10 +268,31 @@ gotaline:
 			cCohort->wordform = addTag(&cleaned[0])->hash;
 			lCohort = cCohort;
 			lReading = 0;
+			indents.clear();
 			numCohorts++;
 		}
 		else if (cleaned[0] == ' ' && cleaned[1] == '"' && cCohort) {
-			cReading = new Reading(cCohort);
+			// Count current indent level
+			size_t indent = 0;
+			while (ISSPACE(line[indent])) {
+				++indent;
+			}
+			while (!indents.empty() && indent <= indents.back().first) {
+				indents.pop_back();
+			}
+			if (!indents.empty() && indent > indents.back().first) {
+				if (indents.back().second->next) {
+					u_fprintf(ux_stderr, "Warning: Sub-reading %S on line %u will be ignored and lost as each reading currently only can have one sub-reading.\n", &cleaned[0], numLines);
+					u_fflush(ux_stderr);
+					cReading = 0;
+					continue;
+				}
+				cReading = indents.back().second->allocateReading(indents.back().second->parent);
+				indents.back().second->next = cReading;
+			}
+			else {
+				cReading = new Reading(cCohort);
+			}
 			cReading->wordform = cCohort->wordform;
 			insert_if_exists(cReading->parent->possible_sets, grammar->sets_any);
 			addTagToReading(*cReading, cReading->wordform);
@@ -328,7 +351,10 @@ gotaline:
 			if (!mappings.empty()) {
 				splitMappings(mappings, *cCohort, *cReading, true);
 			}
-			cCohort->appendReading(cReading);
+			if (indents.empty() || indent <= indents.back().first) {
+				cCohort->appendReading(cReading);
+			}
+			indents.push_back(std::make_pair(indent,cReading));
 			lReading = cReading;
 			numReadings++;
 		}

@@ -1,0 +1,23 @@
+"<word>"
+	"main" tag
+		"aux1" tag
+			"aux2" tag
+				"aux3" tag
+"<word>"
+	"main" tag
+		"aux1" tag
+			"aux2" tag
+				"aux3" tag
+	"main" waf
+		"btu1" waf
+			"btu2" waf
+				"btu3" waf
+"<word>"
+	"main" tag
+		"aux1" tag
+			"aux2" tag
+				"aux3" tag
+	"main" wer
+		"fyg1" wer
+			"fyg2" wer
+				"fyg3" wer
