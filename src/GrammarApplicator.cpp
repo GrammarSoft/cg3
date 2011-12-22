@@ -291,7 +291,7 @@ void GrammarApplicator::printTrace(UFILE *output, uint32_t hit_by) {
 	}
 }
 
-void GrammarApplicator::printReading(const Reading *reading, UFILE *output) {
+void GrammarApplicator::printReading(const Reading *reading, UFILE *output, size_t sub) {
 	if (reading->noprint) {
 		return;
 	}
@@ -300,7 +300,9 @@ void GrammarApplicator::printReading(const Reading *reading, UFILE *output) {
 		u_fputc(';', output);
 	}
 
-	u_fputc('\t', output);
+	for (size_t i=0 ; i<sub ; ++i) {
+		u_fputc('\t', output);
+	}
 
 	if (reading->baseform) {
 		u_fprintf(output, "%S", single_tags.find(reading->baseform)->second->tag.c_str());
@@ -404,6 +406,11 @@ void GrammarApplicator::printReading(const Reading *reading, UFILE *output) {
 	}
 
 	u_fputc('\n', output);
+
+	if (reading->next) {
+		reading->next->deleted = reading->deleted;
+		printReading(reading->next, output, sub+1);
+	}
 }
 
 void GrammarApplicator::printCohort(Cohort *cohort, UFILE *output) {
