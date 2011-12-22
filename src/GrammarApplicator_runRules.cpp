@@ -525,7 +525,10 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						reading.hit_by.push_back(rule.number);
 						const Tag *to = getTagList(*rule.maplist).front();
 						uint32HashMap::const_iterator it = grammar->anchors.find(to->hash);
-						if (it != grammar->anchors.end()) {
+						if (it == grammar->anchors.end()) {
+							u_fprintf(ux_stderr, "Warning: JUMP on line %u could not find anchor '%S'.\n", rule.line, to->tag.c_str());
+						}
+						else {
 							iter_rules = intersects.lower_bound(it->second);
 							--iter_rules;
 						}
