@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE chapter SYSTEM "docbook-dtd-45/docbookx.dtd">
+
+<chapter id="subreadings">
+  <title>Sub-Readings</title>
+
+  <para>
+    Sub-readings introduce a bit of hierarchy into readings, letting a reading have a hidden reading attached to it,
+    which in turn may have another hidden reading, and so on. See the <code>test/T_SubReading_Apertium</code> and
+    <code>test/T_SubReading_CG</code> tests for usage examples.
+  </para>
+
+  <section id="sub-stream-apertium">
+    <title>Apertium Format</title>
+
+    <para>
+      The Apertium stream format supports sub-readings via the + delimiter for readings. E.g.
+    </para>
+    <screen>
+      ^word/aux3&lt;tag&gt;+aux2&lt;tag&gt;+aux1&lt;tag&gt;+main&lt;tag&gt;$
+    </screen>
+    <para>
+      is a cohort with 1 reading which has a three level deep sub-reading. The order of which is the primary reading
+      vs. sub-readings depends on the grammar SUBREADINGS setting:
+    </para>
+    <screen>
+      SUBREADINGS = RTL ; # Default, right-to-left
+      SUBREADINGS = LTR ; # Alternate, left-to-right
+    </screen>
+    <para>
+      In default RTL mode, the above reading has the primary reading <code>"main"</code> with sub-reading
+      <code>"aux1"</code> with sub-reading <code>"aux2"</code> and finally sub-reading <code>"aux3"</code>.
+    </para>
+    <para>
+      In LTR mode, the above reading has the primary reading <code>"aux3"</code> with sub-reading
+      <code>"aux2"</code> with sub-reading <code>"aux1"</code> and finally sub-reading <code>"main"</code>.
+    </para>
+  </section>
+
+  <section id="sub-stream-cg">
+    <title>CG Format</title>
+
+    <para>
+      The CG stream format supports sub-readings via indentation level. E.g.
+    </para>
+    <screen>
+      "&lt;word&gt;"
+        "main" tag
+          "aux1" tag
+            "aux2" tag
+              "aux3" tag
+    </screen>
+    <para>
+      is a cohort with 1 reading which has a three level deep sub-reading. Unlike the Apertium format, the order is
+      strictly defined by indentation and cannot be changed. The above reading has the primary reading
+      <code>"main"</code> with sub-reading <code>"aux1"</code> with sub-reading <code>"aux2"</code>
+      and finally sub-reading <code>"aux3"</code>.
+    </para>
+    <para>
+      The indentation level is detected on a per-cohort basis. All whitespace counts the same for purpose of determining
+      indentation, so 1 tab is same as 1 space is same as 1 no-break space and so on. Since it is per-cohort, it won't
+      matter if previous cohorts has a different indentation style, so it is safe to mix cohorts from multiple sources.
+    </para>
+  </section>
+
+  <section id="sub-grammar">
+    <title>Grammar Syntax</title>
+
+    <para>
+      Working with sub-readings involves 2 new grammar features: Rule Option SUB:N and Contextual Option /N.
+    </para>
+
+    <section id="sub-grammar-subn">
+      <title>Rule Option SUB:N</title>
+      <indexterm>
+        <primary>SUB:N</primary>
+      </indexterm>
+  
+      <para>
+        Rule option SUB:N tells a rule which sub-reading it should operate on and which it should test as target.
+        The N is an integer in the range -2^31 to 2^31. SUB:0 is the primary reading and same as not specifying SUB.
+        Positive numbers refer to sub-readings starting from the primary and going deeper, while negative numbers start
+        from the last sub-reading and go towards the primary. Thus, SUB:-1 always refers to the deepest sub-reading.
+      </para>
+      <para>
+        Given the above CG input and the rules
+        <screen>
+          ADD SUB:-1 (mark) (*) ;
+          ADD SUB:1 (twain) (*) ;
+        </screen>
+        the output will be
+        <screen>
+          "&lt;word&gt;"
+            "main" tag
+              "aux1" tag twain
+                "aux2" tag
+                  "aux3" tag mark
+        </screen>
+        Note that SUB:N also determines which reading is looked at as target, so it will work for all rule types.
+      </para>
+    </section>
+
+    <section id="sub-grammar-slashn">
+      <title>Contextual Option /N</title>
+      <indexterm>
+        <primary>/N</primary>
+      </indexterm>
+
+      <para>
+        Context option /N tests the N'th sub-reading of the currently active reading, where N follows the same rules
+        as for SUB:N above. The /N must be last in the context position.
+      </para>
+      <para>
+        Given the above CG input and the rules
+        <screen>
+          ADD (mark) (*) (0/-1 ("aux3")) ; # matches 3rd sub-reading "aux3"
+          ADD (twain) (*) (0/1 ("aux1")) ; # matches 1st sub-reading "aux1"
+          ADD (writes) (*) (0/1 ("main")) ; # won't match as 1st sub-reading doesn't have tag "main"
+        </screen>
+        the output will be
+        <screen>
+          "&lt;word&gt;"
+            "main" tag mark twain
+              "aux1" tag
+                "aux2" tag
+                  "aux3" tag
+        </screen>
+      </para>
+    </section>
+  </section>
+
+</chapter>

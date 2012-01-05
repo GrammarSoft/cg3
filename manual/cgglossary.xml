@@ -84,7 +84,7 @@
       <primary>attachment</primary>
     </indexterm>
     <para>
-      A tag in #X-&gt;Y format denoting that this cohort is the child of another cohort.
+      A tag in #X-&gt;Y or #X→Y format denoting that this cohort is the child of another cohort.
     </para>
   </section>
 
@@ -113,9 +113,8 @@
     </indexterm>
     <para>
       A special type of tag, as defined by the mapping prefix.
-      If a reading contains more than one mapping tag, the reading is logically multiplied
+      If a reading contains more than one mapping tag, the reading is multiplied
       into several readings with one of the mapping tags each and all the normal tags copied.
-      <emphasis>Internally there is no duplication of readings, but it is a good way to think.</emphasis>
     </para>
   </section>
 
