@@ -751,6 +751,13 @@
         Reverses the active cohorts. E.g., effectively turns a SETPARENT into a SETCHILD.
       </para>
     </section>
+
+    <section id="rule-options-subn">
+      <title>SUB:N</title>
+      <para>
+        See the <link linkend="sub-grammar-subn">Sub-Readings SUB:N section</link>.
+      </para>
+    </section>
   </section>
 
 </chapter>
