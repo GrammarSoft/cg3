@@ -68,6 +68,9 @@
   Variable manipulation:
       SETVARIABLE &lt;name&gt; &lt;value&gt; &lt;target&gt; [contextual_tests] ;
       REMVARIABLE &lt;name&gt; &lt;target&gt; [contextual_tests] ;
+      
+  Flow control:
+      JUMP &lt;anchor_name&gt; &lt;target&gt; [contextual_tests] ;
     </screen>
   </section>
 
@@ -378,6 +381,33 @@
       It is optional to name rules, and names do not have to be unique which makes it easier to group
       rules for statistics or tracing purposes.
       The name of a rule is used in tracing and debug output in addition to the line number.
+    </para>
+  </section>
+
+  <section id="flow-control">
+    <title>Flow Control: JUMP, ANCHOR</title>
+    <indexterm>
+      <primary>JUMP</primary>
+    </indexterm>
+    <indexterm>
+      <primary>ANCHOR</primary>
+    </indexterm>
+    <para>
+      JUMP will allow you to mark named anchors and jump to them based on a context.
+      In this manner you can skip or repeat certain rules.
+    </para>
+    <screen>
+      ANCHOR &lt;anchor_name&gt; ;
+      SECTION [anchor_name ;]
+      [wordform] JUMP &lt;anchor_name&gt; &lt;target&gt; [contextual_tests] ;
+    </screen>
+    <para>
+      An anchor can be created explicitly with keyword ANCHOR. Sections can optionally be given a name which will make
+      them explicit anchor points. All named rules are also anchor points, but with lower precedence than explicit anchors,
+      and in the case of multiple rules with the same name the first such named rule is the anchor point for that name.
+      There are also two special anchors <code>START</code> and <code>END</code> which represent line 0 and infinity
+      respectively; jumping to START will re-run all currently active rules, while jumping to END will skip all remaining
+      rules.
     </para>
   </section>
 

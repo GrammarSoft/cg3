@@ -8,17 +8,6 @@
     Things that are planned but not yet implemented or not yet fully functional.
   </para>
 
-  <section id="draft-unification-mapping">
-    <title>Unifying Mapping Tags</title>
-    <screen>
-      LIST CASE = A B C ;
-      MAP $$CASE (target) IF (1 $$CASE) ;
-    </screen>
-    <para>
-      Allow unification of very simple sets to work as a tag to be mapped.
-    </para>
-  </section>
-
   <section id="draft-match">
     <title>MATCH</title>
     <indexterm>
@@ -40,21 +29,12 @@
     </para>
   </section>
 
-  <section id="draft-anchor-jump-execute">
-    <title>ANCHOR, JUMP, EXECUTE</title>
-    <indexterm>
-      <primary>ANCHOR</primary>
-    </indexterm>
-    <indexterm>
-      <primary>JUMP</primary>
-    </indexterm>
+  <section id="draft-execute">
+    <title>EXECUTE</title>
     <indexterm>
       <primary>EXECUTE</primary>
     </indexterm>
     <screen>
-      ANCHOR &lt;anchor_name&gt; ;
-      SECTION [anchor_name]
-      [wordform] JUMP &lt;anchor_name&gt; &lt;target&gt; [contextual_tests] ;
       [wordform] EXECUTE &lt;anchor_name&gt; &lt;anchor_name&gt; &lt;target&gt; [contextual_tests] ;
     </screen>
     <para>
@@ -63,29 +43,6 @@
       the grammar and run rules from there till the end (or another JUMP which sends it to
       a different location), while EXECUTE will run rules in between the two provided ANCHORs
       and then return to normal.
-    </para>
-  </section>
-
-  <section id="draft-setvariable-remvariable">
-    <title>SETVARIABLE, REMVARIABLE</title>
-    <indexterm>
-      <primary>SETVARIABLE</primary>
-    </indexterm>
-    <indexterm>
-      <primary>REMVARIABLE</primary>
-    </indexterm>
-    <screen>
-      [wordform] SETVARIABLE &lt;variable_name&gt; &lt;value&gt; &lt;target&gt; [contextual_tests] ;
-      [wordform] REMVARIABLE &lt;variable_name&gt; &lt;target&gt; [contextual_tests] ;
-    </screen>
-    <para>
-      Global variables complement and are very similar to Metadata, but are set
-      and unset on-the-fly via the grammar as opposed to input information. You
-      can set and unset the variable to these values based on contextual tests.
-      You can also test the value of a global variable in contextual tests via
-      VAR:variable_name:value or test if it is set at all with VAR:variable_name.
-      This is useful for sentences where you want to save certain states for later,
-      such as which gender the main actor of a paragraph is.
     </para>
   </section>
 
