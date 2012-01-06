@@ -1,0 +1,32 @@
+A new release of CG-3 has been tagged v0.9.7.7823.
+
+Main site is http://beta.visl.sdu.dk/cg3.html
+Google Group is http://groups.google.com/group/constraint-grammar
+Source snapshots available at http://beta.visl.sdu.dk/download/vislcg3/
+Windows binary is at http://beta.visl.sdu.dk/download/vislcg3/vislcg3-0.9.7.7823-win32.zip
+Ubuntu 11.10 package is at http://beta.visl.sdu.dk/download/vislcg3/CG3-0.9.7.7823-Linux.deb
+
+New features:
+- Implemented flow control. See http://beta.visl.sdu.dk/cg3/chunked/rules.html#flow-control
+- Implemented sub-readings. See http://beta.visl.sdu.dk/cg3/chunked/subreadings.html
+- Implemented global variables. See http://beta.visl.sdu.dk/cg3/chunked/tags.html#global-variables and http://beta.visl.sdu.dk/cg3/chunked/rules.html#setvariable and http://beta.visl.sdu.dk/cg3/chunked/streamcmds.html#cmd-setvar
+- Added special tag _ENCL_ and set _ENCL_ which only matches when on a cohort that has a hidden enclosure attached to it. See http://beta.visl.sdu.dk/cg3/chunked/parentheses.html#parentheses-tag-encl
+- APPEND may now add multiple readings. Each baseform in the tag list opens a new reading.
+
+Changes:
+- Now warns if a tag looks like a set operator. This is useful for those times where you've written LIST but almost certainly meant SET.
+- Grammar parsing is 8% faster, but makes assumptions about what whitespace is.
+- vislcg3 is now silent unless -v is enabled.
+- get-boost.sh now fetches Boost 1.48.0
+- Windows binary is now compiled with ICU 4.8.1 and Boost 1.48.0
+- Ubuntu 11.10 deb package provided thanks to CMake's CPack.
+
+Fixed Bugs:
+- Fixed using External sometimes skipping subsequent rules.
+- Removing all cohorts from a window now outputs any text attached to those cohorts, as it should.
+
+Other:
+- Added an ANTLR BNF grammar for the CG-3 grammar to help others correctly parse the grammar files. File is cg3.g in the source root.
+
+-- Tino Didriksen
+CG-3 Developer
