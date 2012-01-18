@@ -589,7 +589,7 @@ Cohort *GrammarApplicator::delimitAt(SingleWindow& current, Cohort *cohort) {
 			foreach (SingleWindowCont, current.parent->previous, iter, iter_end) {
 				if (*iter == &current) {
 					nwin = current.parent->allocSingleWindow();
-					current.parent->next.insert(iter, nwin);
+					current.parent->previous.insert(iter, nwin);
 					break;
 				}
 			}
@@ -598,6 +598,8 @@ Cohort *GrammarApplicator::delimitAt(SingleWindow& current, Cohort *cohort) {
 	}
 
 	assert(nwin != 0);
+
+	nwin->has_enclosures = current.has_enclosures;
 
 	current.parent->cohort_counter++;
 	Cohort *cCohort = new Cohort(nwin);

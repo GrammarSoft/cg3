@@ -27,6 +27,7 @@ namespace CG3 {
 
 SingleWindow::SingleWindow(Window *p) :
 number(0),
+has_enclosures(false),
 next(0),
 previous(0),
 parent(p)
