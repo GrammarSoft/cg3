@@ -194,7 +194,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 			continue;
 		}
 		// If there are parentheses and the rule is marked as only run on the final pass, skip if this is not it.
-		if (has_enclosures) {
+		if (current.has_enclosures) {
 			if (rule.flags & RF_ENCL_FINAL && !did_final_enclosure) {
 				continue;
 			}
@@ -1318,7 +1318,6 @@ void GrammarApplicator::runGrammarOnWindow() {
 		dep_highest_seen = 0;
 	}
 
-	has_enclosures = false;
 	if (!grammar->parentheses.empty()) {
 		label_scanParentheses:
 		reverse_foreach (CohortVector, current->cohorts, iter, iter_end) {
@@ -1365,7 +1364,7 @@ void GrammarApplicator::runGrammarOnWindow() {
 						encs.push_back(*eiter2);
 					}
 					c->enclosed = encs;
-					has_enclosures = true;
+					current->has_enclosures = true;
 					goto label_scanParentheses;
 				}
 			}
@@ -1402,7 +1401,7 @@ label_runGrammarOnWindow_begin:
 		goto label_runGrammarOnWindow_begin;
 	}
 
-	if (!grammar->parentheses.empty() && has_enclosures) {
+	if (!grammar->parentheses.empty() && current->has_enclosures) {
 		bool found = false;
 		size_t nc = current->cohorts.size();
 		for (size_t i=0 ; i<nc ; ++i) {

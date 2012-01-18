@@ -35,6 +35,7 @@ namespace CG3 {
 	class SingleWindow {
 	public:
 		uint32_t number;
+		bool has_enclosures;
 		SingleWindow *next, *previous;
 		Window *parent;
 		UString text;

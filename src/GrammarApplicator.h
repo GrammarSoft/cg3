@@ -142,7 +142,6 @@ namespace CG3 {
 		uint32_t begintag, endtag;
 		uint32_t par_left_tag, par_right_tag;
 		uint32_t par_left_pos, par_right_pos;
-		bool has_enclosures;
 		bool did_final_enclosure;
 
 		std::vector<UnicodeString> regexgrps;
