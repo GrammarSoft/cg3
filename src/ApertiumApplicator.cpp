@@ -36,6 +36,7 @@ ApertiumApplicator::ApertiumApplicator(UFILE *ux_err)
 	nullFlush=false;
 	wordform_case = false;
 	print_word_forms = true;
+	print_only_first = false;
 	runningWithNullFlush=false;
 	fgetc_converter=0;
 }
@@ -754,6 +755,7 @@ void ApertiumApplicator::printSingleWindow(SingleWindow *window, UFILE *output) 
 			continue;
 		}
 
+
 		Cohort *cohort = window->cohorts[c];
 
 		mergeMappings(*cohort);
@@ -768,17 +770,23 @@ void ApertiumApplicator::printSingleWindow(SingleWindow *window, UFILE *output) 
 		}
 
 		//Tag::printTagRaw(output, single_tags[cohort->wordform]);
-
+		bool is_first = true;
 		ReadingList::iterator rter;
 		for (rter = cohort->readings.begin() ; rter != cohort->readings.end() ; rter++) {
 			Reading *reading = *rter;
 			if (grammar->sub_readings_ltr && reading->next) {
 				reading = reverse(reading);
 			}
+
+			if(print_only_first == true && is_first == false)
+			{
+				break;
+			}
 			printReading(reading, output);
 			if (*rter != cohort->readings.back()) {
 				u_fprintf(output, "/");
 			}
+			is_first = false;
 		}
 
 		u_fprintf(output, "$");
