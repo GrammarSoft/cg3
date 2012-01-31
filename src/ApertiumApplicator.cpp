@@ -770,7 +770,6 @@ void ApertiumApplicator::printSingleWindow(SingleWindow *window, UFILE *output) 
 		}
 
 		//Tag::printTagRaw(output, single_tags[cohort->wordform]);
-		bool is_first = true;
 		ReadingList::iterator rter;
 		for (rter = cohort->readings.begin() ; rter != cohort->readings.end() ; rter++) {
 			Reading *reading = *rter;
@@ -778,15 +777,14 @@ void ApertiumApplicator::printSingleWindow(SingleWindow *window, UFILE *output) 
 				reading = reverse(reading);
 			}
 
-			if(print_only_first == true && is_first == false)
+			printReading(reading, output);
+			if(print_only_first == true)
 			{
 				break;
 			}
-			printReading(reading, output);
-			if (*rter != cohort->readings.back() && print_only_first == false) {
+			if (*rter != cohort->readings.back()) {
 				u_fprintf(output, "/");
 			}
-			is_first = false;
 		}
 
 		u_fprintf(output, "$");
