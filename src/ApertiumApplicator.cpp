@@ -783,7 +783,7 @@ void ApertiumApplicator::printSingleWindow(SingleWindow *window, UFILE *output) 
 				break;
 			}
 			printReading(reading, output);
-			if (*rter != cohort->readings.back()) {
+			if (*rter != cohort->readings.back() && print_only_first == false) {
 				u_fprintf(output, "/");
 			}
 			is_first = false;
