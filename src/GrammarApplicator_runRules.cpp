@@ -669,6 +669,10 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						current.parent->cohort_map[cCohort->global_number] = cCohort;
 						current.parent->dep_window[cCohort->global_number] = cCohort;
 
+						if (cCohort->readings.empty()) {
+							initEmptyCohort(*cCohort);
+						}
+
 						if (type == K_ADDCOHORT_BEFORE) {
 							current.cohorts.insert(current.cohorts.begin() + cohort->local_number, cCohort);
 						}
