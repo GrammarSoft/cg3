@@ -267,8 +267,8 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 			else if (type == K_UNMAP && rule.flags & RF_SAFE) {
 				continue;
 			}
-			// If it's a Delimit rule and we're at the final cohort, skip it.
-			if (type == K_DELIMIT && c == current.cohorts.size()-1) {
+			// If it's a Delimit rule and we're at the first or final cohort, skip it.
+			if (type == K_DELIMIT && (c == 1 || c == current.cohorts.size()-1)) {
 				continue;
 			}
 			// If the rule has a wordform and it is not this one, skip it.
@@ -484,6 +484,10 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 				if (rule.type == K_IFF && type == K_REMOVE && reading.matched_target) {
 					++rule.num_match;
 					good = true;
+				}
+
+				if (debug_level > 1) {
+					std::cerr << "DEBUG: Rule " << rule.line << " fired on reading " << i << std::endl;
 				}
 
 				// Select is also special as it will remove non-matching readings
