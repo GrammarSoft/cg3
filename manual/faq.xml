@@ -91,6 +91,21 @@
         SELECT Noun (-1* Adj BARRIER (¤list)) ;
       </screen>
     </section>
+
+    <section id="faq-add-delimiter-cohort">
+      <title>Add a delimiting cohort</title>
+      
+      <para>
+        ADDCOHORT can be used to add any type of cohort, including delimiter ones. But it will not automatically delimit
+        the window at such a cohort, so you need to add a DELIMIT rule after if that is your intended outcome.
+        Just be mindful that DELIMIT will restart the grammar, so ADDCOHORT may fire again causing an endless loop;
+        break it by conditioning ADDCOHORT, such as
+      </para>
+      <screen>
+        ADDCOHORT ("§") AFTER (@title-end) IF (NOT 1 (&lt;&lt;&lt;)) ;
+        DELIMIT _S_DELIMITERS_ ; # Use the magic set that contains what DELIMITERS defined
+      </screen>
+    </section>
   </section>
 
 </chapter>
