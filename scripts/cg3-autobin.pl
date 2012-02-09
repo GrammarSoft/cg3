@@ -11,6 +11,7 @@ my $revision = 7989;
 
 # Generate list with:
 # vislcg3 --help 2>&1 | perl -wpne 'if (/^ / && /-(\w), --([-\w]+)/) {print "$2|$1=s\n"} elsif (/^ / && /--([-\w]+)/) {print "$1=s\n"} s/^.*$//s;' | perl -wpne 's/^/"/; s/$/",/;'
+# and then trim =s from those that don't take args
 my %h = ();
 GetOptions (\%h,
 "help|h",
@@ -18,12 +19,14 @@ GetOptions (\%h,
 "grammar|g=s",
 "grammar-out=s",
 "grammar-bin=s",
-"grammar-info=s",
 "grammar-only",
-"check-only",
 "ordered",
+"unsafe|u",
 "sections|s=s",
-"verbose|v",
+"rules=s",
+"rule=s",
+"debug|d=s",
+"verbose|v=s",
 "vislcg-compat|2",
 "stdin|I=s",
 "stdout|O=s",
@@ -44,15 +47,28 @@ GetOptions (\%h,
 "trace|t",
 "trace-name-only",
 "trace-no-removed",
+"trace-encl",
 "single-run",
+"max-runs=s",
+"statistics|S",
+"optimize-unsafe|Z",
+"optimize-safe|z",
 "prefix|p=s",
+"unicode-tags",
 "num-windows=s",
 "always-span",
 "soft-limit=s",
 "hard-limit=s",
+"dep-humanize",
+"dep-original",
 "dep-allow-loops",
+"dep-no-crossing",
 "no-magic-readings",
-"no-pass-origin|o"
+"no-pass-origin|o",
+"show-end-tags|e",
+"show-unused-sets",
+"show-tag-hashes",
+"show-set-hashes"
 );
 
 if (defined $h{'grammar-bin'}) {
