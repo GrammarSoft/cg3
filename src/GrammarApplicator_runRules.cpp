@@ -267,8 +267,8 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 			else if (type == K_UNMAP && rule.flags & RF_SAFE) {
 				continue;
 			}
-			// If it's a Delimit rule and we're at the first or final cohort, skip it.
-			if (type == K_DELIMIT && (c == 1 || c == current.cohorts.size()-1)) {
+			// If it's a Delimit rule and we're at the final cohort, skip it.
+			if (type == K_DELIMIT && c == current.cohorts.size()-1) {
 				continue;
 			}
 			// If the rule has a wordform and it is not this one, skip it.
@@ -1393,6 +1393,11 @@ label_runGrammarOnWindow_begin:
 	gWindow->rebuildCohortLinks(); // ToDo: Hack. This can be done better...
 
 	++pass;
+	if (pass > 1000) {
+		u_fprintf(ux_stderr, "Warning: Endless loop detected before input line %u - will try to break it.\n", numLines);
+		return;
+	}
+
 	if (trace_encl) {
 		uint32_t hitpass = std::numeric_limits<uint32_t>::max() - pass;
 		size_t nc = current->cohorts.size();
