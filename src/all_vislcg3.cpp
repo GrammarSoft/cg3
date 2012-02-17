@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "exec-stream.cpp"
-#include "Anchor.cpp"
 #include "BinaryGrammar.cpp"
 #include "CompositeTag.cpp"
 #include "ContextualTest.cpp"
