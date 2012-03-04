@@ -372,7 +372,6 @@ cg3_tag *cg3_tag_create_u8(cg3_applicator *applicator, const char *text) {
 		u_fprintf(ux_stderr, "CG3 Error: Failed to convert text from UTF-8 to UTF-16. Status = %s\n", u_errorName(status));
 		return 0;
 	}
-	status = U_ZERO_ERROR;
 
 	return cg3_tag_create_u(applicator, &gbuffers[0][0]);
 }
@@ -394,7 +393,6 @@ cg3_tag *cg3_tag_create_u32(cg3_applicator *applicator, const uint32_t *text) {
 		u_fprintf(ux_stderr, "CG3 Error: Failed to convert text from UTF-32 to UTF-16. Status = %s\n", u_errorName(status));
 		return 0;
 	}
-	status = U_ZERO_ERROR;
 
 	return cg3_tag_create_u(applicator, &gbuffers[0][0]);
 }
@@ -407,7 +405,6 @@ cg3_tag *cg3_tag_create_w(cg3_applicator *applicator, const wchar_t *text) {
 		u_fprintf(ux_stderr, "CG3 Error: Failed to convert text from wchar_t to UTF-16. Status = %s\n", u_errorName(status));
 		return 0;
 	}
-	status = U_ZERO_ERROR;
 
 	return cg3_tag_create_u(applicator, &gbuffers[0][0]);
 }
@@ -426,7 +423,6 @@ const char *cg3_tag_gettext_u8(cg3_tag *tag_) {
 		u_fprintf(ux_stderr, "CG3 Error: Failed to convert text from UChar to UTF-8. Status = %s\n", u_errorName(status));
 		return 0;
 	}
-	status = U_ZERO_ERROR;
 
 	return &cbuffers[0][0];
 }
@@ -447,7 +443,6 @@ const uint32_t *cg3_tag_gettext_u32(cg3_tag *tag_) {
 		u_fprintf(ux_stderr, "CG3 Error: Failed to convert text from UChar to UTF-32. Status = %s\n", u_errorName(status));
 		return 0;
 	}
-	status = U_ZERO_ERROR;
 
 	return reinterpret_cast<const uint32_t*>(tmp);
 }
@@ -463,7 +458,6 @@ const wchar_t *cg3_tag_gettext_w(cg3_tag *tag_) {
 		u_fprintf(ux_stderr, "CG3 Error: Failed to convert text from UChar to UTF-32. Status = %s\n", u_errorName(status));
 		return 0;
 	}
-	status = U_ZERO_ERROR;
 
 	return reinterpret_cast<const wchar_t*>(tmp);
 }
