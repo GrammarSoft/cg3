@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2007-2011, GrammarSoft ApS
+* Copyright (C) 2007-2012, GrammarSoft ApS
 * Developed by Tino Didriksen <tino@didriksen.cc>
 * Design by Eckhard Bick <eckhard.bick@mail.dk>, Tino Didriksen <tino@didriksen.cc>
 *
@@ -23,7 +23,7 @@
 #ifndef c6d28b7452ec699b_VERSION_H
 #define c6d28b7452ec699b_VERSION_H
 
-const char CG3_COPYRIGHT_STRING[] = "Copyright (C) 2007-2011 GrammarSoft ApS. All Rights Reserved.";
+const char CG3_COPYRIGHT_STRING[] = "Copyright (C) 2007-2012 GrammarSoft ApS. All Rights Reserved.";
 
 const uint32_t CG3_VERSION_MAJOR = 0;
 const uint32_t CG3_VERSION_MINOR = 9;
