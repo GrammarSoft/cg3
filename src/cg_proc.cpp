@@ -56,6 +56,8 @@ void endProgram(char *name) {
 	cout << "				   (to work with -w option of lt-proc)" << endl;
 	cout << "	-n, --no-word-forms:	 do not print out the word form of each cohort" << endl;
 	cout << "	-1, --first:	 	 only output the first analysis if ambiguity remains" << endl;
+        cout << "       -z, --null-flush:        flush output on the null character" << endl;
+
 	cout << "	-v, --version:	 	 version" << endl;
 	cout << "	-h, --help:		 show this help" << endl;
 #else
@@ -70,6 +72,8 @@ void endProgram(char *name) {
 	cout << "		   (to work with -w option of lt-proc)" << endl;
 	cout << "	-n:	 do not print out the word form of each cohort" << endl;
 	cout << "	-1:	 only output the first analysis if ambiguity remains" << endl;
+        cout << "       -z:       flush output on the null character" << endl;
+
 	cout << "	-v:	 version" << endl;
 	cout << "	-h:	 show this help" << endl;
 #endif
