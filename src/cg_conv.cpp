@@ -59,6 +59,7 @@ int main(int argc, char *argv[]) {
 
 	CG3::FormatConverter applicator(ux_stderr);
 	applicator.setGrammar(&grammar);
+	// ToDo: Add flag to choose sub-reading order for conversion
 	if (argc > 1 && (strcmp(argv[1], "--a2v") == 0 || strcmp(argv[1], "-a") == 0)) {
 		std::cerr << "Converting Apertium to VISL..." << std::endl;
 		applicator.setInputFormat(CG3::FMT_APERTIUM);
