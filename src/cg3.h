@@ -106,6 +106,7 @@ cg3_reading *cg3_cohort_getreading(cg3_cohort *cohort, size_t which);
 // This is usually not to be used. The Sentence will take ownership of the Cohort and free it on destruction
 void cg3_cohort_free(cg3_cohort *cohort);
 
+// ToDo: Add sub-reading support to library
 cg3_reading *cg3_reading_create(cg3_cohort *cohort);
 cg3_status cg3_reading_addtag(cg3_reading *reading, cg3_tag *tag);
 size_t cg3_reading_numtags(cg3_reading *reading);

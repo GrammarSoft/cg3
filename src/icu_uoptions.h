@@ -164,6 +164,7 @@ int u_parseArgs(int argc, char* argv[],
 #define uprv_strtod(source, end) U_STANDARD_CPP_NAMESPACE strtod(source, end)
 #define uprv_strtoul(str, end, base) U_STANDARD_CPP_NAMESPACE strtoul(str, end, base)
 #define uprv_strtol(str, end, base) U_STANDARD_CPP_NAMESPACE strtol(str, end, base)
+#if !defined(uprv_stricmp) || !defined(uprv_strnicmp)
 #ifdef U_WINDOWS
 #   if defined(__BORLANDC__)
 #       define uprv_stricmp(str1, str2) U_STANDARD_CPP_NAMESPACE stricmp(str1, str2)
@@ -178,6 +179,7 @@ int u_parseArgs(int argc, char* argv[],
 #else
 #   define uprv_stricmp(str1, str2) T_CString_stricmp(str1, str2)
 #   define uprv_strnicmp(str1, str2, n) T_CString_strnicmp(str1, str2, n)
+#endif
 #endif
 
 /* Conversion from a digit to the character with radix base from 2-19 */
