@@ -417,7 +417,10 @@ Cohort *GrammarApplicator::runContextualTest(SingleWindow *sWindow, size_t posit
 					}
 				}
 			}
-			if (seen == 0 && test->pos & POS_NONE) {
+			if (seen == 0) {
+				retval = false;
+			}
+			if (!retval && test->pos & POS_NONE) {
 				retval = true;
 				nc = cohort;
 			}
