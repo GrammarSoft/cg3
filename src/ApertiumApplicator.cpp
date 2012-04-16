@@ -143,6 +143,7 @@ int ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 	UChar inchar = 0; 		// Current character 
 	bool superblank = false; 	// Are we in a superblank ?
 	bool incohort = false; 		// Are we in a cohort ?
+	UString firstblank;		// Blanks before the first window
 	
 	index();
 
@@ -205,7 +206,7 @@ int ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 				lSWindow->text += inchar;
 			}
 			else {
-				u_fprintf(output, "%C", inchar);
+				firstblank += inchar; // add to lSWindow when it is created
 			}
 			continue;
 		}
@@ -262,6 +263,8 @@ int ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 				cSWindow->appendCohort(cCohort);
 
 				lSWindow = cSWindow;
+				lSWindow->text = firstblank;
+				firstblank.clear();
 				cCohort = 0;
 				numWindows++;
 			} // created at least one cSWindow by now
@@ -375,6 +378,11 @@ int ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 		numLines++;
 		inchar = 0;
 	} // end input loop
+
+	if (!firstblank.empty()) {
+		u_fprintf(output, "%S", firstblank.c_str());
+		firstblank.clear();
+	}
 
 	if (cCohort && cSWindow) {
 		cSWindow->appendCohort(cCohort);
