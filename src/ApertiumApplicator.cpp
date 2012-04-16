@@ -313,9 +313,15 @@ int ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 			Reading *cReading = 0;
 
 			// Read in the readings	
-			while (inchar != '$') {
+			while (incohort) {
 				inchar = u_fgetc_wrapper(input);
 
+				if (inchar == '\\') {
+					inchar = u_fgetc_wrapper(input);
+					current_reading += inchar;
+					continue;
+				}
+				
 				if (inchar == '$') {
 					// Add the final reading of the cohort
 					cReading = new Reading(cCohort);
@@ -549,10 +555,11 @@ void ApertiumApplicator::processReading(Reading *cReading, const UChar *reading_
 		else if (*c == '>') {
 			multi = false;
 			if (intag == false) {
-				u_fprintf(ux_stderr, "Error: The Apertium stream format does not allow '>' in tag names.\n");
+				u_fprintf(ux_stderr, "Error: The Apertium stream format does not allow '>' outside tag names.\n");
 				++c;
 				continue;
 			}
+
 			intag = false;
 
 			taglist.push_back(addTag(tmptag));
