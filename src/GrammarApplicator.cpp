@@ -459,6 +459,9 @@ removed:
 void GrammarApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 	if (!window->text.empty()) {
 		u_fprintf(output, "%S", window->text.c_str());
+		if (!ISNL(window->text[window->text.length()-1])) {
+			u_fputc('\n', output);
+		}
 	}
 
 	uint32_t cs = (uint32_t)window->cohorts.size();
