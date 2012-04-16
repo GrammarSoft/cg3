@@ -74,7 +74,7 @@
 (put 'cg-indentation 'safe-local-variable 'integerp)
 
 (defvar cg-font-lock-keywords-1
-  (let ((<word>? "\\(?:\"<\\(\\s_\\|\\sw\\)+>\"\\)?"))
+  (let ((<word>? "\\(?:\"<[^>]+>\"\\)?"))
     `(("^[ \t]*\\(LIST\\|SET\\|TEMPLATE\\)[ \t]+\\(\\(\\sw\\|\\s_\\)+\\)"
        (1 font-lock-keyword-face)
        (2 font-lock-variable-name-face))
@@ -83,8 +83,8 @@
       ("^[ \t]*\\(SECTION\\|AFTER-SECTIONS\\|BEFORE-SECTIONS\\|MAPPINGS\\|CONSTRAINTS\\|CORRECTIONS\\)"
        1 font-lock-warning-face)
       (,(concat "^[ \t]*" <word>? "[ \t]*\\(SETPARENT\\|SETCHILD\\|ADDRELATIONS?\\|SETRELATIONS?\\|REMRELATIONS?\\|SUBSTITUTE\\|ADD\\|MAP\\|SELECT\\|REMOVE\\)\\(\\(:\\(\\s_\\|\\sw\\)+\\)?\\)")
-       (2 font-lock-keyword-face)
-       (3 font-lock-variable-name-face))
+       (1 font-lock-keyword-face)
+       (2 font-lock-variable-name-face))
       ("[ \t\n]\\([+-]\\)[ \t\n]"
        1 font-lock-function-name-face)))
   "Subdued level highlighting for CG mode.")
