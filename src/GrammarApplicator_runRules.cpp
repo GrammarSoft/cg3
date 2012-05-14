@@ -135,6 +135,19 @@ TagList GrammarApplicator::getTagList(const Set& theSet, bool unif_mode) const {
 			}
 		}
 	}
+	// Eliminate consecutive duplicates. Not all duplicates, since AddCohort and Append may have multiple readings with repeated tags
+	for (TagList::iterator ot = theTags.begin() ; theTags.size() > 1 && ot != theTags.end() ; ++ot) {
+		TagList::iterator it = ot;
+		++it;
+		for ( ; it != theTags.end() && std::distance(ot, it) == 1 ; ) {
+			if (*ot == *it) {
+				it = theTags.erase(it);
+			}
+			else {
+				++it;
+			}
+		}
+	}
 	return theTags;
 }
 
