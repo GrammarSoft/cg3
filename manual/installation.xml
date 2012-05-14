@@ -35,7 +35,7 @@
         # For TCMalloc
         sudo apt-get install libgoogle-perftools0
         cd /tmp/
-        svn co --ignore-externals http://beta.visl.sdu.dk/svn/visl/tools/vislcg3/trunk vislcg3
+        svn co http://beta.visl.sdu.dk/svn/visl/tools/vislcg3/trunk vislcg3
         cd vislcg3/
         ./cmake.sh
         make -j3
@@ -60,7 +60,7 @@
         # For TCMalloc
         yum install google-perftools-devel
         cd /tmp/
-        svn co --ignore-externals http://beta.visl.sdu.dk/svn/visl/tools/vislcg3/trunk vislcg3
+        svn co http://beta.visl.sdu.dk/svn/visl/tools/vislcg3/trunk vislcg3
         cd vislcg3/
         ./cmake.sh
         make -j3
@@ -73,12 +73,58 @@
 
   <section id="macosx">
     <title>Mac OS X</title>
-    <para>
-      Installing from source is very similar to Linux, but since the developer tools for OS X are so large,
-      we provide binaries from <ulink url="http://beta.visl.sdu.dk/download/vislcg3/">the download folder</ulink>.
-      Look for files named *-osx.tar.gz. The archive contains the vislcg3, cg-comp, cg-proc, and cg-conv tools,
-      the ICU library binaries, and wrapper scripts to enable running CG-3 from a self-contained folder.
-    </para>
+
+    <section id="macosx-brew">
+      <title>Homebrew</title>
+      <para>
+        Launch a Terminal and in that do
+        <screen>
+          brew install cmake
+          brew install boost
+          brew install icu4c
+          brew link icu4c
+          cd /tmp
+          svn co http://beta.visl.sdu.dk/svn/visl/tools/vislcg3/trunk vislcg3
+          cd vislcg3/
+          ./cmake.sh
+          make -j3
+          ./test/runall.pl
+          make install
+        </screen>
+        Rest of this page can be skipped.
+      </para>
+    </section>
+
+    <section id="macosx-ports">
+      <title>MacPorts</title>
+      <para>
+        Launch a Terminal and in that do
+        <screen>
+          sudo port install cmake
+          sudo port install boost
+          sudo port install icu
+          cd /tmp
+          svn co http://beta.visl.sdu.dk/svn/visl/tools/vislcg3/trunk vislcg3
+          cd vislcg3/
+          ./cmake.sh -DCMAKE_INSTALL_PREFIX=/opt/local
+          make -j3
+          ./test/runall.pl
+          sudo make install
+        </screen>
+        Rest of this page can be skipped.
+      </para>
+    </section>
+
+    <section id="macosx-other">
+      <title>Other</title>
+      <para>
+        Installing from source is very similar to Linux, but since the developer tools for OS X are so large,
+        we provide binaries from <ulink url="http://beta.visl.sdu.dk/download/vislcg3/">the download folder</ulink>.
+        Look for files named *-osx.tar.gz. The archive contains the vislcg3, cg-comp, cg-proc, and cg-conv tools,
+        the ICU library binaries, and wrapper scripts to enable running CG-3 from a self-contained folder.
+      </para>
+    </section>
+
   </section>
 
   <section id="windows">
