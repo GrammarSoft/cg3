@@ -575,7 +575,7 @@ void Grammar::reindex(bool unused_sets) {
 		if ((*iter)->regexp && (*iter)->tag[0] == '/') {
 			regex_tags.insert((*iter)->regexp);
 		}
-		if ((*iter)->type & T_CASE_INSENSITIVE) {
+		if (((*iter)->type & T_CASE_INSENSITIVE) && (*iter)->tag[0] == '/') {
 			icase_tags.insert((*iter));
 		}
 		if (!(*iter)->vs_sets) {
