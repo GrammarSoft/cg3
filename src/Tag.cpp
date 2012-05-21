@@ -116,7 +116,7 @@ void Tag::parseTag(const UChar *to, UFILE *ux_stderr, Grammar *grammar) {
 			goto label_isVarstring;
 		}
 		
-		if (tmp[0] && (tmp[0] == '"' || tmp[0] == '<')) {
+		if (tmp[0] && (tmp[0] == '"' || tmp[0] == '<' || tmp[0] == '/')) {
 			size_t oldlength = length;
 
 			// Parse the suffixes r, i, v but max only one of each.
@@ -148,8 +148,8 @@ void Tag::parseTag(const UChar *to, UFILE *ux_stderr, Grammar *grammar) {
 				}
 			}
 
-			if ((tmp[0] == '"' && tmp[length-1] == '"') || (tmp[0] == '<' && tmp[length-1] == '>')) {
-				type |= T_TEXTUAL;
+			if ((tmp[0] == '"' && tmp[length-1] == '"') || (tmp[0] == '<' && tmp[length-1] == '>') || (tmp[0] == '/' && tmp[length-1] == '/')) {
+				//type |= T_TEXTUAL;
 			}
 			else {
 				type &= ~T_VARSTRING;
@@ -174,6 +174,29 @@ void Tag::parseTag(const UChar *to, UFILE *ux_stderr, Grammar *grammar) {
 		if (tag.empty()) {
 			u_fprintf(ux_stderr, "Error: Parsing tag %S resulted in an empty tag on line %u - cannot continue!\n", tag.c_str(), grammar->lines);
 			CG3Quit(1);
+		}
+
+		foreach (Grammar::regex_tags_t, grammar->regex_tags, iter, iter_end) {
+			UErrorCode status = U_ZERO_ERROR;
+			uregex_setText(*iter, tag.c_str(), tag.length(), &status);
+			if (status != U_ZERO_ERROR) {
+				u_fprintf(ux_stderr, "Error: uregex_setText(parseTag) returned %s - cannot continue!\n", u_errorName(status));
+				CG3Quit(1);
+			}
+			status = U_ZERO_ERROR;
+			if (uregex_matches(*iter, 0, &status)) {
+				type |= T_TEXTUAL;
+			}
+		}
+		foreach (Grammar::icase_tags_t, grammar->icase_tags, iter, iter_end) {
+			UErrorCode status = U_ZERO_ERROR;
+			if (u_strCaseCompare(tag.c_str(), tag.length(), (*iter)->tag.c_str(), (*iter)->tag.length(), U_FOLD_CASE_DEFAULT, &status) == 0) {
+				type |= T_TEXTUAL;
+			}
+			if (status != U_ZERO_ERROR) {
+				u_fprintf(ux_stderr, "Error: u_strCaseCompare(parseTag) returned %s - cannot continue!\n", u_errorName(status));
+				CG3Quit(1);
+			}
 		}
 
 		comparison_hash = hash_sdbm_uchar(tag);
@@ -204,24 +227,27 @@ void Tag::parseTag(const UChar *to, UFILE *ux_stderr, Grammar *grammar) {
 			type |= T_ATTACHTO;
 		}
 
-		// ToDo: Add ICASE: REGEXP: and //r //ri //i to tags
 		if (type & T_REGEXP) {
 			if (u_strcmp(tag.c_str(), stringbits[S_RXTEXT_ANY].getTerminatedBuffer()) == 0
 			|| u_strcmp(tag.c_str(), stringbits[S_RXBASE_ANY].getTerminatedBuffer()) == 0
 			|| u_strcmp(tag.c_str(), stringbits[S_RXWORD_ANY].getTerminatedBuffer()) == 0) {
-				// ToDo: Add a case-insensitive version of T_REGEXP_ANY
+				// ToDo: Add a case-insensitive version of T_REGEXP_ANY for unification
 				type |= T_REGEXP_ANY;
 				type &= ~T_REGEXP;
 			}
 			else {
 				UParseError pe;
 				UErrorCode status = U_ZERO_ERROR;
-				status = U_ZERO_ERROR;
 
 				UString rt;
-				rt += '^';
-				rt += tag;
-				rt += '$';
+				if (tag[0] == '/' && tag[length-1] == '/') {
+					rt = tag.substr(1, length-2);
+				}
+				else {
+					rt += '^';
+					rt += tag;
+					rt += '$';
+				}
 
 				if (type & T_CASE_INSENSITIVE) {
 					regexp = uregex_open(rt.c_str(), rt.length(), UREGEX_CASE_INSENSITIVE, &pe, &status);
@@ -233,6 +259,12 @@ void Tag::parseTag(const UChar *to, UFILE *ux_stderr, Grammar *grammar) {
 					u_fprintf(ux_stderr, "Error: uregex_open returned %s trying to parse tag %S on line %u - cannot continue!\n", u_errorName(status), tag.c_str(), grammar->lines);
 					CG3Quit(1);
 				}
+			}
+		}
+		else if (type & T_CASE_INSENSITIVE) {
+			if (tag[0] == '/' && tag[length-1] == '/') {
+				tag = tag.substr(1, length-2);
+				length -= 2;
 			}
 		}
 
@@ -276,7 +308,7 @@ label_isVarstring:
 	}
 }
 
-void Tag::parseTagRaw(const UChar *to) {
+void Tag::parseTagRaw(const UChar *to, Grammar *grammar) {
 	type = 0;
 	size_t length = u_strlen(to);
 	assert(length && "parseTagRaw() will not work with empty strings.");
@@ -285,7 +317,7 @@ void Tag::parseTagRaw(const UChar *to) {
 
 	if (tmp[0] && (tmp[0] == '"' || tmp[0] == '<')) {
 		if ((tmp[0] == '"' && tmp[length-1] == '"') || (tmp[0] == '<' && tmp[length-1] == '>')) {
-			type |= T_TEXTUAL;
+			//type |= T_TEXTUAL;
 			if (tmp[0] == '"' && tmp[length-1] == '"') {
 				if (tmp[1] == '<' && tmp[length-2] == '>') {
 					type |= T_WORDFORM;
@@ -299,10 +331,26 @@ void Tag::parseTagRaw(const UChar *to) {
 
 	tag.assign(tmp, length);
 
-	if (!tag.empty() && tag[0] == '<' && tag[length-1] == '>') {
+	foreach (Grammar::regex_tags_t, grammar->regex_tags, iter, iter_end) {
+		UErrorCode status = U_ZERO_ERROR;
+		uregex_setText(*iter, tag.c_str(), tag.length(), &status);
+		if (status == U_ZERO_ERROR) {
+			if (uregex_matches(*iter, 0, &status)) {
+				type |= T_TEXTUAL;
+			}
+		}
+	}
+	foreach (Grammar::icase_tags_t, grammar->icase_tags, iter, iter_end) {
+		UErrorCode status = U_ZERO_ERROR;
+		if (u_strCaseCompare(tag.c_str(), tag.length(), (*iter)->tag.c_str(), (*iter)->tag.length(), U_FOLD_CASE_DEFAULT, &status) == 0) {
+			type |= T_TEXTUAL;
+		}
+	}
+
+	if (tag[0] == '<' && tag[length-1] == '>') {
 		parseNumeric();
 	}
-	if (!tag.empty() && tag[0] == '#') {
+	if (tag[0] == '#') {
 		if (u_sscanf(tag.c_str(), "#%i->%i", &dep_self, &dep_parent) == 2 && dep_self != 0) {
 			type |= T_DEPENDENCY;
 		}
@@ -381,7 +429,6 @@ void Tag::parseNumeric() {
 		comparison_val = tval;
 		comparison_hash = hash_sdbm_uchar(tkey);
 		type |= T_NUMERICAL;
-		//type &= ~T_TEXTUAL;
 	}
 }
 

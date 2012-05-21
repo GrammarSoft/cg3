@@ -94,7 +94,7 @@ namespace CG3 {
 		Tag();
 		~Tag();
 		void parseTag(const UChar *to, UFILE *ux_stderr, Grammar *grammar);
-		void parseTagRaw(const UChar *to);
+		void parseTagRaw(const UChar *to, Grammar *grammar);
 		UString toUString(bool escape = false) const;
 
 		uint32_t rehash();

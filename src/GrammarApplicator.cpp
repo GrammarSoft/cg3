@@ -229,7 +229,7 @@ Tag *GrammarApplicator::addTag(const UChar *txt, bool vstr) {
 		tag->parseTag(txt, ux_stderr, grammar);
 	}
 	else {
-		tag->parseTagRaw(txt);
+		tag->parseTagRaw(txt, grammar);
 	}
 	uint32_t hash = tag->rehash();
 	uint32_t seed = 0;
@@ -254,7 +254,51 @@ Tag *GrammarApplicator::addTag(const UChar *txt, bool vstr) {
 			break;
 		}
 	}
-	return single_tags[hash];
+	tag = single_tags[hash];
+	bool reflow = false;
+	if (tag->type & T_REGEXP) {
+		if (grammar->regex_tags.insert(tag->regexp).second) {
+			foreach (Taguint32HashMap, single_tags, titer, titer_end) {
+				if (titer->second->type & T_TEXTUAL) {
+					continue;
+				}
+				foreach (Grammar::regex_tags_t, grammar->regex_tags, iter, iter_end) {
+					UErrorCode status = U_ZERO_ERROR;
+					uregex_setText(*iter, titer->second->tag.c_str(), titer->second->tag.length(), &status);
+					if (status == U_ZERO_ERROR) {
+						if (uregex_find(*iter, -1, &status)) {
+							titer->second->type |= T_TEXTUAL;
+							reflow = true;
+						}
+					}
+				}
+			}
+		}
+	}
+	if (tag->type & T_CASE_INSENSITIVE) {
+		if (grammar->icase_tags.insert(tag).second) {
+			foreach (Taguint32HashMap, single_tags, titer, titer_end) {
+				if (titer->second->type & T_TEXTUAL) {
+					continue;
+				}
+				foreach (Grammar::icase_tags_t, grammar->icase_tags, iter, iter_end) {
+					UErrorCode status = U_ZERO_ERROR;
+					if (u_strCaseCompare(titer->second->tag.c_str(), titer->second->tag.length(), (*iter)->tag.c_str(), (*iter)->tag.length(), U_FOLD_CASE_DEFAULT, &status) == 0) {
+						titer->second->type |= T_TEXTUAL;
+						reflow = true;
+					}
+					if (status != U_ZERO_ERROR) {
+						u_fprintf(ux_stderr, "Error: u_strCaseCompare(addTag) returned %s - cannot continue!\n", u_errorName(status));
+						CG3Quit(1);
+					}
+				}
+			}
+		}
+	}
+	if (reflow) {
+		reflowTextuals();
+	}
+	return tag;
 }
 
 

@@ -637,4 +637,51 @@ Cohort *GrammarApplicator::delimitAt(SingleWindow& current, Cohort *cohort) {
 	return cohort;
 }
 
+void GrammarApplicator::reflowTextuals_Reading(Reading& r) {
+	if (r.next) {
+		reflowTextuals_Reading(*r.next);
+	}
+	const_foreach (uint32SortedVector, r.tags, it, it_end) {
+		Tag *tag = single_tags.find(*it)->second;
+		if (tag->type & T_TEXTUAL) {
+			r.tags_textual.insert(*it);
+			r.tags_textual_bloom.insert(*it);
+		}
+	}
+}
+
+void GrammarApplicator::reflowTextuals_Cohort(Cohort& c) {
+	foreach (CohortVector, c.enclosed, it, it_end) {
+		reflowTextuals_Cohort(**it);
+	}
+	foreach (CohortVector, c.removed, it, it_end) {
+		reflowTextuals_Cohort(**it);
+	}
+	foreach (ReadingList, c.readings, it, it_end) {
+		reflowTextuals_Reading(**it);
+	}
+	foreach (ReadingList, c.deleted, it, it_end) {
+		reflowTextuals_Reading(**it);
+	}
+	foreach (ReadingList, c.delayed, it, it_end) {
+		reflowTextuals_Reading(**it);
+	}
+}
+
+void GrammarApplicator::reflowTextuals_SingleWindow(SingleWindow& sw) {
+	foreach (CohortVector, sw.cohorts, it, it_end) {
+		reflowTextuals_Cohort(**it);
+	}
+}
+
+void GrammarApplicator::reflowTextuals() {
+	foreach (SingleWindowCont, gWindow->previous, swit, swit_end) {
+		reflowTextuals_SingleWindow(**swit);
+	}
+	reflowTextuals_SingleWindow(*gWindow->current);
+	foreach (SingleWindowCont, gWindow->next, swit, swit_end) {
+		reflowTextuals_SingleWindow(**swit);
+	}
+}
+
 }
