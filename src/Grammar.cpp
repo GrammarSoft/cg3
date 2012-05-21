@@ -391,7 +391,7 @@ Tag *Grammar::allocateTag(const UChar *txt, bool raw) {
 
 	Tag *tag = new Tag();
 	if (raw) {
-		tag->parseTagRaw(txt);
+		tag->parseTagRaw(txt, this);
 	}
 	else {
 		tag->parseTag(txt, ux_stderr, this);
@@ -572,11 +572,39 @@ void Grammar::reindex(bool unused_sets) {
 	}
 
 	foreach (TagVector, single_tags_list, iter, iter_end) {
+		if ((*iter)->regexp) {
+			regex_tags.insert((*iter)->regexp);
+		}
+		if ((*iter)->type & T_CASE_INSENSITIVE) {
+			icase_tags.insert((*iter));
+		}
 		if (!(*iter)->vs_sets) {
 			continue;
 		}
 		foreach (SetVector, *(*iter)->vs_sets, sit, sit_end) {
 			(*sit)->markUsed(*this);
+		}
+	}
+
+	foreach (TagVector, single_tags_list, titer, titer_end) {
+		foreach (Grammar::regex_tags_t, regex_tags, iter, iter_end) {
+			UErrorCode status = U_ZERO_ERROR;
+			uregex_setText(*iter, (*titer)->tag.c_str(), (*titer)->tag.length(), &status);
+			if (status == U_ZERO_ERROR) {
+				if (uregex_find(*iter, -1, &status)) {
+					(*titer)->type |= T_TEXTUAL;
+				}
+			}
+		}
+		foreach (Grammar::icase_tags_t, icase_tags, iter, iter_end) {
+			UErrorCode status = U_ZERO_ERROR;
+			if (u_strCaseCompare((*titer)->tag.c_str(), (*titer)->tag.length(), (*iter)->tag.c_str(), (*iter)->tag.length(), U_FOLD_CASE_DEFAULT, &status) == 0) {
+				(*titer)->type |= T_TEXTUAL;
+			}
+			if (status != U_ZERO_ERROR) {
+				u_fprintf(ux_stderr, "Error: u_strCaseCompare() returned %s - cannot continue!\n", u_errorName(status));
+				CG3Quit(1);
+			}
 		}
 	}
 

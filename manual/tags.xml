@@ -20,6 +20,7 @@
     <screen>
     "&lt;Wordform&gt;"i
     "^[Bb]ase.*"r
+    /^@&lt;?ADV&gt;?$/r
     &lt;W&gt;65&gt;
     (&lt;F&gt;=15&gt; &lt;F&lt;=30&gt;)
     !ADV
@@ -67,6 +68,17 @@
         SELECT ("&lt;wordform&gt;"i) + (tag) ;
       </screen>
       which will work, but be slightly slower.
+    </para>
+  </section>
+
+  <section id="regex-icase">
+    <title>Regular Expressions</title>
+    <para>
+      Tags in the form //r and //i and //ri are general purpose regular expression and case insensitive matches
+      that may act on any tag type, and unlike Literal String Modifiers they can do partial matches. Thus a tag like
+      /^@&lt;?ADV&gt;?$/r will match any of @&lt;ADV, @&lt;ADV&gt;, @ADV&gt;, and plain @ADV.
+      A tag like /word/ri will match any tag containing a substring with any case-variation of the text 'word'.
+      Asides from that, the rules and gotchas are the same as for Literal String Modifiers.
     </para>
   </section>
 
