@@ -136,8 +136,8 @@ DepParentIter& DepParentIter::operator++() {
 
 void DepParentIter::reset(Cohort *cohort, const ContextualTest *test, bool span) {
 	CohortIterator::reset(cohort, test, span);
-	++(*this);
 	m_seen.clear();
+	++(*this);
 }
 
 CohortSetIter::CohortSetIter(Cohort *cohort, const ContextualTest *test, bool span) :
