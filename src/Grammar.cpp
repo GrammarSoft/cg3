@@ -587,6 +587,9 @@ void Grammar::reindex(bool unused_sets) {
 	}
 
 	foreach (TagVector, single_tags_list, titer, titer_end) {
+		if ((*titer)->type & T_TEXTUAL) {
+			continue;
+		}
 		foreach (Grammar::regex_tags_t, regex_tags, iter, iter_end) {
 			UErrorCode status = U_ZERO_ERROR;
 			uregex_setText(*iter, (*titer)->tag.c_str(), (*titer)->tag.length(), &status);
