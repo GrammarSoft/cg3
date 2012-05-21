@@ -149,7 +149,7 @@ void Tag::parseTag(const UChar *to, UFILE *ux_stderr, Grammar *grammar) {
 			}
 
 			if ((tmp[0] == '"' && tmp[length-1] == '"') || (tmp[0] == '<' && tmp[length-1] == '>') || (tmp[0] == '/' && tmp[length-1] == '/')) {
-				//type |= T_TEXTUAL;
+				type |= T_TEXTUAL;
 			}
 			else {
 				type &= ~T_VARSTRING;
@@ -317,7 +317,7 @@ void Tag::parseTagRaw(const UChar *to, Grammar *grammar) {
 
 	if (tmp[0] && (tmp[0] == '"' || tmp[0] == '<')) {
 		if ((tmp[0] == '"' && tmp[length-1] == '"') || (tmp[0] == '<' && tmp[length-1] == '>')) {
-			//type |= T_TEXTUAL;
+			type |= T_TEXTUAL;
 			if (tmp[0] == '"' && tmp[length-1] == '"') {
 				if (tmp[1] == '<' && tmp[length-2] == '>') {
 					type |= T_WORDFORM;

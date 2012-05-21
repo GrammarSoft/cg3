@@ -572,7 +572,7 @@ void Grammar::reindex(bool unused_sets) {
 	}
 
 	foreach (TagVector, single_tags_list, iter, iter_end) {
-		if ((*iter)->regexp) {
+		if ((*iter)->regexp && (*iter)->tag[0] == '/') {
 			regex_tags.insert((*iter)->regexp);
 		}
 		if ((*iter)->type & T_CASE_INSENSITIVE) {
