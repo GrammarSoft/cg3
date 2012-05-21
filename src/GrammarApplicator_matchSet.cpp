@@ -110,11 +110,11 @@ uint32_t GrammarApplicator::doesRegexpMatchReading(const Reading& reading, const
 				CG3Quit(1);
 			}
 			status = U_ZERO_ERROR;
-			if (uregex_matches(tag.regexp, 0, &status)) {
+			if (uregex_find(tag.regexp, -1, &status)) {
 				match = itag.hash;
 			}
 			if (status != U_ZERO_ERROR) {
-				u_fprintf(ux_stderr, "Error: uregex_matches(MatchSet) returned %s - cannot continue!\n", u_errorName(status));
+				u_fprintf(ux_stderr, "Error: uregex_find(MatchSet) returned %s - cannot continue!\n", u_errorName(status));
 				CG3Quit(1);
 			}
 			if (match) {
@@ -196,7 +196,6 @@ uint32_t GrammarApplicator::doesTagMatchReading(const Reading& reading, const Ta
 			else {
 				const Tag& itag = *(single_tags.find(*mter)->second);
 				UErrorCode status = U_ZERO_ERROR;
-				status = U_ZERO_ERROR;
 				if (u_strCaseCompare(tag.tag.c_str(), tag.tag.length(), itag.tag.c_str(), itag.tag.length(), U_FOLD_CASE_DEFAULT, &status) == 0) {
 					match = itag.hash;
 				}

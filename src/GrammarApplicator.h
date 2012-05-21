@@ -211,6 +211,11 @@ namespace CG3 {
 		bool wouldParentChildCross(const Cohort *parent, const Cohort *child);
 		bool attachParentChild(Cohort& parent, Cohort& child, bool allowloop = false, bool allowcrossing = false);
 
+		void reflowTextuals_Reading(Reading& r);
+		void reflowTextuals_Cohort(Cohort& c);
+		void reflowTextuals_SingleWindow(SingleWindow& sw);
+		void reflowTextuals();
+
 		Reading *initEmptyCohort(Cohort& cohort);
 	};
 
