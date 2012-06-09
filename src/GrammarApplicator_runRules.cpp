@@ -626,6 +626,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						cohort->type |= CT_REMOVED;
 						cohort->prev->removed.push_back(cohort);
 						cohort->detach();
+						cohort->parent = 0;
 						current.cohorts.erase(current.cohorts.begin()+cohort->local_number);
 						foreach (CohortVector, current.cohorts, iter, iter_end) {
 							(*iter)->local_number = std::distance(current.cohorts.begin(), iter);
