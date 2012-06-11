@@ -143,6 +143,14 @@ int GrammarWriter::writeGrammar(UFILE *output) {
 	used_sets.clear();
 	Setuint32HashMap::const_iterator set_iter;
 	for (set_iter = grammar->sets_by_contents.begin() ; set_iter != grammar->sets_by_contents.end() ; set_iter++) {
+		Set *s = set_iter->second;
+		if (s->name[0] == '_' && s->name[1] == 'G' && s->name[2] == '_') {
+			s->name.insert(s->name.begin(), '3');
+			s->name.insert(s->name.begin(), 'G');
+			s->name.insert(s->name.begin(), 'C');
+		}
+	}
+	for (set_iter = grammar->sets_by_contents.begin() ; set_iter != grammar->sets_by_contents.end() ; set_iter++) {
 		if (set_iter->second->type & ST_USED) {
 			printSet(output, *(set_iter->second));
 		}
