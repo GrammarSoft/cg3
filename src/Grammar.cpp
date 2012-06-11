@@ -153,7 +153,7 @@ void Grammar::addSet(Set *& to) {
 	}
 
 	uint32_t chash = to->rehash();
-	for (;;) {
+	for (; to->name[0] != '_' || to->name[1] != 'G' || to->name[2] != '_' ;) {
 		uint32_t nhash = hash_sdbm_uchar(to->name.c_str());
 		if (sets_by_name.find(nhash) != sets_by_name.end()) {
 			Set *a = sets_by_contents.find(sets_by_name.find(nhash)->second)->second;
@@ -161,8 +161,8 @@ void Grammar::addSet(Set *& to) {
 				break;
 			}
 		}
-		if (set_name_seeds.find(nhash) != set_name_seeds.end()) {
-			nhash += set_name_seeds[nhash];
+		if (set_name_seeds.find(to->name) != set_name_seeds.end()) {
+			nhash += set_name_seeds[to->name];
 		}
 		if (sets_by_name.find(nhash) == sets_by_name.end()) {
 			sets_by_name[nhash] = chash;
@@ -181,7 +181,7 @@ void Grammar::addSet(Set *& to) {
 							u_fprintf(ux_stderr, "Warning: Set %S got hash seed %u.\n", to->name.c_str(), seed);
 							u_fflush(ux_stderr);
 						}
-						set_name_seeds[nhash] = seed;
+						set_name_seeds[to->name] = seed;
 						sets_by_name[nhash+seed] = chash;
 						break;
 					}
@@ -216,12 +216,15 @@ Set *Grammar::getSet(uint32_t which) const {
 	else {
 		uint32HashMap::const_iterator iter = sets_by_name.find(which);
 		if (iter != sets_by_name.end()) {
-			uint32HashMap::const_iterator iter2 = set_name_seeds.find(which);
-			if (iter2 != set_name_seeds.end()) {
-				return getSet(iter->second + iter2->second);
-			}
-			else {
-				return getSet(iter->second);
+			Setuint32HashMap::const_iterator citer = sets_by_contents.find(iter->second);
+			if (citer != sets_by_contents.end()) {
+				set_name_seeds_t::const_iterator iter2 = set_name_seeds.find(citer->second->name);
+				if (iter2 != set_name_seeds.end()) {
+					return getSet(iter->second + iter2->second);
+				}
+				else {
+					return citer->second;
+				}
 			}
 		}
 	}
@@ -561,7 +564,7 @@ void Grammar::reindex(bool unused_sets) {
 								u_fprintf(ux_stderr, "Warning: Static set %S got hash seed %u.\n", to->name.c_str(), seed);
 								u_fflush(ux_stderr);
 							}
-							set_name_seeds[nhash] = seed;
+							set_name_seeds[to->name] = seed;
 							sets_by_name[nhash+seed] = chash;
 							break;
 						}
