@@ -28,7 +28,7 @@
 namespace CG3 {
 	class Grammar;
 
-	enum {
+	enum : uint64_t {
 		POS_CAREFUL        = (1 <<  0),
 		POS_NEGATE         = (1 <<  1),
 		POS_NOT            = (1 <<  2),
@@ -59,10 +59,17 @@ namespace CG3 {
 		POS_ATTACH_TO      = (1 << 27),
 		POS_SUB_SCANFIRST  = (1 << 28),
 		POS_SUB_SCANALL    = (1 << 29),
+		POS_DEP_ANCESTOR   = (1 << 30),
+		POS_64BIT          = (1ull << 31),
+		POS_LEFT           = (1ull << 32),
+		POS_RIGHT          = (1ull << 33),
+		POS_LEFTMOST       = (1ull << 34),
+		POS_RIGHTMOST      = (1ull << 35),
 
-		MASK_POS_DEP       = POS_DEP_PARENT|POS_DEP_SIBLING|POS_DEP_CHILD,
+		MASK_POS_DEP       = POS_DEP_PARENT|POS_DEP_SIBLING|POS_DEP_CHILD|POS_DEP_ANCESTOR,
 		MASK_POS_DEPREL    = MASK_POS_DEP|POS_RELATION,
 		MASK_POS_CDEPREL   = MASK_POS_DEPREL|POS_CAREFUL,
+		MASK_POS_LORR      = POS_LEFT|POS_RIGHT|POS_LEFTMOST|POS_RIGHTMOST,
 	};
 
 	class ContextualTest {
@@ -73,7 +80,7 @@ namespace CG3 {
 		uint32_t line;
 		uint32_t name;
 		uint32_t hash;
-		uint32_t pos;
+		uint64_t pos;
 		uint32_t target;
 		uint32_t relation;
 		uint32_t barrier;

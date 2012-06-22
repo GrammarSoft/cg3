@@ -135,6 +135,7 @@
       <para>
         'X' sets the mark to the currently active cohort of the test's target.
         If no test sets X then the mark defaults to the cohort from the rule's target.
+        See also <link linkend="set-mark">magic set _MARK_</link>.
       </para>
     </section>
 
@@ -149,6 +150,7 @@
       <title>Attach To</title>
       <para>
         'A' sets the cohort to be attached or related against to the currently active cohort of the test's target.
+        See also <link linkend="set-attachto">magic set _ATTACHTO_</link>.
       </para>
     </section>
   </section>
@@ -242,6 +244,12 @@
 
   <section id="test-nearest">
     <title>Nearest Neighbor</title>
+    <indexterm>
+      <primary>0*</primary>
+    </indexterm>
+    <indexterm>
+      <primary>0**</primary>
+    </indexterm>
     <para>
       Usually a '*' or '**' test scans in only one direction, denoted by the value of the offset;
       if offset is positive it will scan rightwards, and if negative leftwards.
@@ -265,29 +273,14 @@
 
   <section id="test-dependency">
     <title>Dependencies</title>
-    <indexterm>
-      <primary>p</primary>
-    </indexterm>
-    <indexterm>
-      <primary>c</primary>
-    </indexterm>
-    <indexterm>
-      <primary>s</primary>
-    </indexterm>
     <para>
-      CG-3 also introduces the p, c, and s positions.
+      CG-3 also introduces the p, c, cc, and s positions.
       See the section about those in the <link linkend="dep-contextual-tests">Dependencies</link> chapter.
     </para>
   </section>
 
   <section id="test-relations">
     <title>Relations</title>
-    <indexterm>
-      <primary>r:rel</primary>
-    </indexterm>
-    <indexterm>
-      <primary>r:*</primary>
-    </indexterm>
     <para>
       CG-3 also introduces the r:rel and r:* positions.
       See the section about those in the <link linkend="rel-contextual-tests">Relations</link> chapter.

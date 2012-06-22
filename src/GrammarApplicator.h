@@ -137,6 +137,7 @@ namespace CG3 {
 		stdext::hash_map<uint32_t,TopologyLeftIter> topologyLeftIters;
 		stdext::hash_map<uint32_t,TopologyRightIter> topologyRightIters;
 		stdext::hash_map<uint32_t,DepParentIter> depParentIters;
+		stdext::hash_map<uint32_t,DepAncestorIter> depAncestorIters;
 
 		uint32_t match_single, match_comp, match_sub;
 		uint32_t begintag, endtag;
@@ -191,9 +192,9 @@ namespace CG3 {
 		inline void doesSetMatchCohortHelper(std::vector<Reading*>& rv, const ReadingList& readings, const Set *theset, const ContextualTest *test = 0, uint32_t options = 0);
 		std::vector<Reading*> doesSetMatchCohort(Cohort& cohort, const uint32_t set, const ContextualTest *test = 0, uint32_t options = 0);
 		bool doesSetMatchCohortNormal_helper(ReadingList& readings, const Set *theset, const ContextualTest *test);
-		bool doesSetMatchCohortNormal(Cohort& cohort, const uint32_t set, const ContextualTest *test = 0, uint32_t options = 0);
+		bool doesSetMatchCohortNormal(Cohort& cohort, const uint32_t set, const ContextualTest *test = 0, uint64_t options = 0);
 		bool doesSetMatchCohortCareful_helper(ReadingList& readings, const Set *theset, const ContextualTest *test);
-		bool doesSetMatchCohortCareful(Cohort& cohort, const uint32_t set, const ContextualTest *test = 0, uint32_t options = 0);
+		bool doesSetMatchCohortCareful(Cohort& cohort, const uint32_t set, const ContextualTest *test = 0, uint64_t options = 0);
 
 		bool statistics;
 		ticks gtimer;

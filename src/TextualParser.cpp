@@ -299,6 +299,11 @@ int TextualParser::parseContextualTestPosition(UChar *& p, ContextualTest& t) {
 			t.pos |= POS_CAREFUL;
 			++p;
 		}
+		if (*p == 'c' && (t.pos & POS_DEP_CHILD)) {
+			t.pos &= ~POS_DEP_CHILD;
+			t.pos |= POS_DEP_ANCESTOR;
+			++p;
+		}
 		if (*p == 'c') {
 			t.pos |= POS_DEP_CHILD;
 			++p;
@@ -394,6 +399,24 @@ int TextualParser::parseContextualTestPosition(UChar *& p, ContextualTest& t) {
 			t.relation = tag->hash;
 			p = n;
 		}
+		if (*p == 'r' && (t.pos & POS_RIGHT)) {
+			t.pos &= ~static_cast<uint64_t>(POS_RIGHT);
+			t.pos |= POS_RIGHTMOST;
+			++p;
+		}
+		if (*p == 'r') {
+			t.pos |= POS_RIGHT;
+			++p;
+		}
+		if (*p == 'l' && (t.pos & POS_LEFT)) {
+			t.pos &= ~static_cast<uint64_t>(POS_LEFT);
+			t.pos |= POS_LEFTMOST;
+			++p;
+		}
+		if (*p == 'l') {
+			t.pos |= POS_LEFT;
+			++p;
+		}
 	}
 
 	if (negative) {
@@ -478,10 +501,12 @@ int TextualParser::parseContextualTestPosition(UChar *& p, ContextualTest& t) {
 			CG3Quit(1);
 		}
 	}
+	/*
 	if ((t.pos & (POS_LEFT_PAR|POS_RIGHT_PAR)) && (t.pos & (POS_SCANFIRST|POS_SCANALL))) {
 		u_fprintf(ux_stderr, "Error: Invalid position on line %u - cannot have both enclosure and scan!\n", result->lines);
 		CG3Quit(1);
 	}
+	//*/
 	if ((t.pos & POS_PASS_ORIGIN) && (t.pos & POS_NO_PASS_ORIGIN)) {
 		u_fprintf(ux_stderr, "Error: Invalid position on line %u - cannot have both O and o!\n", result->lines);
 		CG3Quit(1);
@@ -500,6 +525,10 @@ int TextualParser::parseContextualTestPosition(UChar *& p, ContextualTest& t) {
 	}
 	if ((t.pos & POS_SCANALL) && (t.pos & POS_NOT)) {
 		u_fprintf(ux_stderr, "Warning: Line %u: We don't think mixing NOT and ** makes sense...\n", result->lines);
+	}
+
+	if (t.pos > POS_64BIT) {
+		t.pos |= POS_64BIT;
 	}
 
 	return 0;
