@@ -527,6 +527,10 @@ void BinaryGrammar::readContextualTest(ContextualTest *t, FILE *input) {
 	if (fields & (1 << 1)) {
 		fread(&u32tmp, sizeof(uint32_t), 1, input);
 		t->pos = (uint32_t)ntohl(u32tmp);
+		if (t->pos & POS_64BIT) {
+			fread(&u32tmp, sizeof(uint32_t), 1, input);
+			t->pos |= ((uint64_t)ntohl(u32tmp)) << 32;
+		}
 	}
 	if (fields & (1 << 2)) {
 		fread(&i32tmp, sizeof(int32_t), 1, input);

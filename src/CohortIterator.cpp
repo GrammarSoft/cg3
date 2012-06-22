@@ -140,6 +140,119 @@ void DepParentIter::reset(Cohort *cohort, const ContextualTest *test, bool span)
 	++(*this);
 }
 
+DepAncestorIter::DepAncestorIter(Cohort *cohort, const ContextualTest *test, bool span) :
+CohortIterator(cohort, test, span)
+{
+	reset(cohort, test, span);
+}
+
+DepAncestorIter& DepAncestorIter::operator++() {
+	++m_ai;
+	m_cohort = 0;
+	if (m_ai != m_ancestors.end()) {
+		m_cohort = *m_ai;
+	}
+	return *this;
+}
+
+void DepAncestorIter::reset(Cohort *cohort, const ContextualTest *test, bool span) {
+	CohortIterator::reset(cohort, test, span);
+	m_ancestors.clear();
+	m_cohort = 0;
+
+	if (cohort && test) {
+		CohortSet m_seen;
+
+		m_seen.insert(cohort);
+
+		const_foreach (uint32SortedVector, cohort->dep_children, dter, dter_end) {
+			if (cohort->parent->parent->cohort_map.find(*dter) == cohort->parent->parent->cohort_map.end()) {
+				continue;
+			}
+			Cohort *current = cohort->parent->parent->cohort_map.find(*dter)->second;
+			bool good = true;
+			if (current->parent != cohort->parent) {
+				if ((!(test->pos & (POS_SPAN_BOTH|POS_SPAN_LEFT))) && current->parent->number < cohort->parent->number) {
+					good = false;
+				}
+				else if ((!(test->pos & (POS_SPAN_BOTH|POS_SPAN_RIGHT))) && current->parent->number > cohort->parent->number) {
+					good = false;
+				}
+
+			}
+			if (good) {
+				m_ancestors.insert(current);
+			}
+		}
+
+		bool added = false;
+		do {
+			added = false;
+			CohortSet to_add;
+
+			const_foreach (CohortSet, m_ancestors, iter, iter_end) {
+				Cohort *cohort_inner = *iter;
+				if (m_seen.find(cohort_inner) != m_seen.end()) {
+					continue;
+				}
+				m_seen.insert(cohort_inner);
+
+				const_foreach (uint32SortedVector, cohort_inner->dep_children, dter, dter_end) {
+					if (cohort_inner->parent->parent->cohort_map.find(*dter) == cohort_inner->parent->parent->cohort_map.end()) {
+						continue;
+					}
+					Cohort *current = cohort_inner->parent->parent->cohort_map.find(*dter)->second;
+					bool good = true;
+					if (current->parent != cohort->parent) {
+						if ((!(test->pos & (POS_SPAN_BOTH|POS_SPAN_LEFT))) && current->parent->number < cohort->parent->number) {
+							good = false;
+						}
+						else if ((!(test->pos & (POS_SPAN_BOTH|POS_SPAN_RIGHT))) && current->parent->number > cohort->parent->number) {
+							good = false;
+						}
+
+					}
+					if (good) {
+						to_add.insert(current);
+						added = true;
+					}
+				}
+			}
+
+			const_foreach (CohortSet, to_add, iter, iter_end) {
+				m_ancestors.insert(*iter);
+			}
+		} while(added);
+
+		if (test->pos & POS_LEFT) {
+			m_seen.assign(m_ancestors.begin(), m_ancestors.lower_bound(cohort));
+			m_ancestors.swap(m_seen);
+		}
+		if (test->pos & POS_RIGHT) {
+			m_seen.assign(m_ancestors.lower_bound(cohort), m_ancestors.end());
+			m_ancestors.swap(m_seen);
+		}
+		if (test->pos & POS_SELF) {
+			m_ancestors.insert(cohort);
+		}
+		if ((test->pos & POS_LEFTMOST) && !m_ancestors.empty()) {
+			Cohort *c = m_ancestors.front();
+			m_ancestors.clear();
+			m_ancestors.insert(c);
+		}
+		if ((test->pos & POS_RIGHTMOST) && !m_ancestors.empty()) {
+			Cohort *c = m_ancestors.back();
+			m_ancestors.clear();
+			m_ancestors.insert(c);
+		}
+	}
+
+	m_ai = m_ancestors.begin();
+	if (m_ai != m_ancestors.end()) {
+		m_cohort = *m_ai;
+	}
+}
+
 CohortSetIter::CohortSetIter(Cohort *cohort, const ContextualTest *test, bool span) :
 CohortIterator(cohort, test, span),
 m_origcohort(cohort),
@@ -211,8 +324,7 @@ ChildrenIterator& ChildrenIterator::operator++() {
 	delete m_cohortiter;
 	m_cohortiter = 0;
 	++m_depth;
-	uint32HashSet *top = &(m_cohort->dep_children);
-	if (!top->empty()) {
+	if (!m_cohort->dep_children.empty()) {
 		m_cohortiter = new CohortSetIter(m_cohort, m_test, m_span);
 	}
 	return *this;

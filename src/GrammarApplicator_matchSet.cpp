@@ -771,7 +771,7 @@ bool GrammarApplicator::doesSetMatchCohortNormal_helper(ReadingList& readings, c
 	return false;
 }
 
-bool GrammarApplicator::doesSetMatchCohortNormal(Cohort& cohort, const uint32_t set, const ContextualTest *test, uint32_t options) {
+bool GrammarApplicator::doesSetMatchCohortNormal(Cohort& cohort, const uint32_t set, const ContextualTest *test, uint64_t options) {
 	/*
 	return !doesSetMatchCohort(cohort, set, options).empty();
 	/*/
@@ -814,7 +814,7 @@ bool GrammarApplicator::doesSetMatchCohortCareful_helper(ReadingList& readings, 
 	return !readings.empty();
 }
 
-bool GrammarApplicator::doesSetMatchCohortCareful(Cohort& cohort, const uint32_t set, const ContextualTest *test, uint32_t options) {
+bool GrammarApplicator::doesSetMatchCohortCareful(Cohort& cohort, const uint32_t set, const ContextualTest *test, uint64_t options) {
 	/*
 	return !doesSetMatchCohort(cohort, set, options).empty();
 	/*/

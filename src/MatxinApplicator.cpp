@@ -803,8 +803,7 @@ void MatxinApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 		u_fflush(output);
 				
 		std::stack<Cohort*> nchildtree; // children of type NODE must be printed first
-		const uint32HashSet *deps = &cohort->dep_children;
-		const_foreach (uint32HashSet, *deps, dter, dter_end) {
+		const_foreach (uint32SortedVector, cohort->dep_children, dter, dter_end) {
 			Cohort *child = window->parent->cohort_map.find(*dter)->second;
 			if (chunk_ord[child->local_number]) {
 				if (!ischunk) {
@@ -827,7 +826,6 @@ void MatxinApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 			endtagtree.push(0);
 			nchildtree.pop();
 		}		
-		deps = 0;
 		syntags.clear();
 	} // while !tree.empty
 	cohort = 0;

@@ -35,6 +35,14 @@ inline uint32_t hash_sdbm_uint32_t(const uint32_t c, uint32_t hash = 0) {
 	return hash;
 }
 
+inline uint32_t hash_sdbm_uint64_t(const uint32_t c, uint64_t hash = 0) {
+	if (hash == 0) {
+		hash = CG3_HASH_SEED;
+	}
+	hash = c + (hash << 6U) + (hash << 16U) - hash;
+	return hash & 0xFFFFFFFF;
+}
+
 /*
 	Paul Hsieh's SuperFastHash from http://www.azillionmonkeys.com/qed/hash.html
 	This version adapted from online on 2008-12-30
@@ -360,6 +368,12 @@ inline void writeSwapped(std::ostream& stream, const T& value) {
 		uint32_t tmp = static_cast<uint32_t>(htonl(static_cast<uint32_t>(value)));
 		stream.write(reinterpret_cast<const char*>(&tmp), sizeof(T));
 	}
+	/*
+	else if (sizeof(T) == 8) {
+		uint64_t tmp = static_cast<uint64_t>(htonll(static_cast<uint64_t>(value)));
+		stream.write(reinterpret_cast<const char*>(&tmp), sizeof(T));
+	}
+	//*/
 	else {
 		throw std::runtime_error("Unhandled type size in writeSwapped()");
 	}
@@ -385,6 +399,13 @@ inline T readSwapped(std::istream& stream) {
 		stream.read(reinterpret_cast<char*>(&tmp), sizeof(T));
 		return static_cast<T>(ntohl(tmp));
 	}
+	/*
+	else if (sizeof(T) == 8) {
+		uint64_t tmp = 0;
+		stream.read(reinterpret_cast<char*>(&tmp), sizeof(T));
+		return static_cast<T>(ntohll(tmp));
+	}
+	//*/
 	else {
 		throw std::runtime_error("Unhandled type size in readSwapped()");
 	}

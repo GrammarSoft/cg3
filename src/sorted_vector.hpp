@@ -77,6 +77,13 @@ public:
 		return false;
 	}
 
+	template<typename It>
+	void insert(It b, It e) {
+		for (; b != e ; ++b) {
+			insert(*b);
+		}
+	}
+
 	bool push_back(T t) {
 		return insert(t);
 	}
@@ -155,6 +162,20 @@ public:
 
 	bool empty() const {
 		return elements.empty();
+	}
+
+	template<typename It>
+	void assign(It b, It e) {
+		clear();
+		insert(b, e);
+	}
+
+	void assign(const_iterator b, const_iterator e) {
+		elements.assign(b, e);
+	}
+
+	void swap(sorted_vector& other) {
+		elements.swap(other.elements);
 	}
 
 	void clear() {
