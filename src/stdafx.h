@@ -34,6 +34,9 @@
 	#pragma warning (disable: 4428)
 	// warning C4512: assignment operator could not be generated
 	#pragma warning (disable: 4512)
+	// warning C4480: nonstandard extension used: specifying underlying type for enum
+	// 'cause that is actually standard in C++11
+	#pragma warning (disable: 4480)
 #endif
 
 #include <exception>
@@ -67,6 +70,7 @@
 	#ifdef HAVE_BOOST
 		#include <boost/unordered_set.hpp>
 		#include <boost/unordered_map.hpp>
+		#include <boost/scoped_ptr.hpp>
 		#define stdext boost
 		#define hash_map unordered_map
 		#define hash_set unordered_set
@@ -98,6 +102,7 @@
 	#ifdef HAVE_BOOST
 		#include <boost/unordered_set.hpp>
 		#include <boost/unordered_map.hpp>
+		#include <boost/scoped_ptr.hpp>
 		#define stdext boost
 		#define hash_map unordered_map
 		#define hash_set unordered_set

@@ -78,7 +78,7 @@ uint32_t ContextualTest::rehash() {
 		return hash;
 	}
 
-	hash = hash_sdbm_uint32_t(hash, pos);
+	hash = hash_sdbm_uint64_t(hash, pos);
 	hash = hash_sdbm_uint32_t(hash, target);
 	hash = hash_sdbm_uint32_t(hash, barrier);
 	hash = hash_sdbm_uint32_t(hash, cbarrier);

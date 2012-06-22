@@ -144,6 +144,20 @@
       </screen>
     </section>
 
+    <section id="dep-ct-ancestors">
+      <title>Ancestors</title>
+      <indexterm>
+        <primary>cc</primary>
+      </indexterm>
+      <para>
+        The 'cc' position asks for an ancestor of the current position,
+        where ancestor is defined as any child, grand-child, great-grand-child, etc...
+      </para>
+      <screen>
+        (-1* (N) LINK cc (ADJ))
+      </screen>
+    </section>
+
     <section id="dep-ct-siblings">
       <title>Siblings</title>
       <indexterm>
@@ -164,7 +178,7 @@
       </indexterm>
       <para>
         The 'S' option allows the test to look at the current target as well.
-        Used in conjunction with p, c, or s to test self and the relations.
+        Used in conjunction with p, c, cc, s, or r to test self and the relations.
       </para>
       <screen>
         (cS (ADJ))
@@ -184,6 +198,76 @@
       </para>
       <screen>
         (c* (ADJ))
+      </screen>
+    </section>
+
+    <section id="dep-ct-leftof">
+      <title>Left of</title>
+      <indexterm>
+        <primary>l</primary>
+      </indexterm>
+      <para>
+        The 'l' option limits the search to cohorts that are to the left of the current target.
+      </para>
+      <screen>
+        (lc (ADJ))
+      </screen>
+    </section>
+
+    <section id="dep-ct-rightof">
+      <title>Right of</title>
+      <indexterm>
+        <primary>r</primary>
+      </indexterm>
+      <para>
+        The 'r' option limits the search to cohorts that are to the right of the current target.
+      </para>
+      <screen>
+        (rc (ADJ))
+      </screen>
+    </section>
+
+    <section id="dep-ct-leftmost">
+      <title>Leftmost</title>
+      <indexterm>
+        <primary>ll</primary>
+      </indexterm>
+      <indexterm>
+        <primary>lll</primary>
+      </indexterm>
+      <indexterm>
+        <primary>llr</primary>
+      </indexterm>
+      <para>
+        The 'll' option limits the search to the leftmost cohort of the possible matches.
+        Note that this cohort may be to the right of the current target;
+        use 'lll' if you want the leftmost of the cohorts to the left of the current target,
+        or 'llr' if you want the leftmost of the cohorts to the right of the current target.
+      </para>
+      <screen>
+        (llc (ADJ))
+      </screen>
+    </section>
+
+    <section id="dep-ct-rightmost">
+      <title>Rightmost</title>
+      <indexterm>
+        <primary>rr</primary>
+      </indexterm>
+      <indexterm>
+        <primary>rrr</primary>
+      </indexterm>
+      <indexterm>
+        <primary>rrl</primary>
+      </indexterm>
+      <para>
+        The 'rr' option limits the search to the rightmost cohort of the possible matches.
+        Note that this cohort may be to the left of the current target;
+        use 'rrr' if you want the rightmost of the cohorts to the right of the current target,
+        or 'rrl' if you want the rightmost of the cohorts to the left of the current target.
+      </para>
+      <screen>
+        (rrc (ADJ))
       </screen>
     </section>
 

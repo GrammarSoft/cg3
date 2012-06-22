@@ -152,6 +152,56 @@
       </screen>
     </section>
 
+    <section id="rel-ct-self">
+      <title>Self</title>
+      <indexterm>
+        <primary>S</primary>
+      </indexterm>
+      <para>
+        The 'S' option allows the test to look at the current target as well.
+        Used in conjunction with p, c, cc, s, or r to test self and the relations.
+      </para>
+      <screen>
+        (Sr:rel (ADJ))
+      </screen>
+    </section>
+
+    <section id="rel-ct-leftright">
+      <title>Left/right of, Left/rightmost</title>
+      <indexterm>
+        <primary>l</primary>
+      </indexterm>
+      <indexterm>
+        <primary>r</primary>
+      </indexterm>
+      <indexterm>
+        <primary>ll</primary>
+      </indexterm>
+      <indexterm>
+        <primary>rr</primary>
+      </indexterm>
+      <indexterm>
+        <primary>lll</primary>
+      </indexterm>
+      <indexterm>
+        <primary>rrr</primary>
+      </indexterm>
+      <indexterm>
+        <primary>llr</primary>
+      </indexterm>
+      <indexterm>
+        <primary>rrl</primary>
+      </indexterm>
+      <para>
+        The <link linkend="dep-ct-leftof">r, l, rr, ll, rrr, lll, rrl, llr options</link>
+        documented at Dependencies also work for Relations.
+      </para>
+      <screen>
+        (rrrr:rel (ADJ))
+        (lr:rel (ADJ))
+      </screen>
+    </section>
+
     <section id="rel-ct-all">
       <title>All Scan</title>
       <indexterm>

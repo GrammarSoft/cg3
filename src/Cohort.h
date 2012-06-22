@@ -58,7 +58,7 @@ namespace CG3 {
 		ReadingList deleted;
 		ReadingList delayed;
 		uint32int32Map num_max, num_min;
-		uint32HashSet dep_children;
+		uint32SortedVector dep_children;
 		uint32HashSet possible_sets;
 		CohortVector enclosed;
 		CohortVector removed;

@@ -460,7 +460,10 @@ void BinaryGrammar::writeContextualTest(ContextualTest *t, FILE *output) {
 	}
 	if (t->pos) {
 		fields |= (1 << 1);
-		writeSwapped(buffer, t->pos);
+		writeSwapped(buffer, static_cast<uint32_t>(t->pos & 0xFFFFFFFF));
+		if (t->pos & POS_64BIT) {
+			writeSwapped(buffer, static_cast<uint32_t>((t->pos >> 32) & 0xFFFFFFFF));
+		}
 	}
 	if (t->offset) {
 		fields |= (1 << 2);

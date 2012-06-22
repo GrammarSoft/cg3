@@ -43,3 +43,19 @@
 "<$.>"
 	"$." PU @PU #47→0 
 
+"<root>"
+	"root" #1->0
+"<one>"
+	"one" #2->1
+"<two>"
+	"two" #3->1
+"<three>"
+	"three" #4->3
+"<four>"
+	"four" #5->6
+"<five>"
+	"five" #6->4
+"<six>"
+	"six" #7->5
+"<seven>"
+	"seven" #8->1
