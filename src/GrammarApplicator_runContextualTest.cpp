@@ -277,7 +277,7 @@ Cohort *GrammarApplicator::runContextualTest(SingleWindow *sWindow, size_t posit
 		if (test->pos & POS_DEP_PARENT) {
 			it = &depParentIters[ci_depths[3]++];
 		}
-		else if (test->pos & POS_DEP_ANCESTOR) {
+		else if (test->pos & POS_DEP_DESCENDENT) {
 			it = &DepDescendentIters[ci_depths[4]++];
 		}
 		else if (test->pos & (POS_DEP_CHILD|POS_DEP_SIBLING)) {
