@@ -591,7 +591,7 @@ Cohort *GrammarApplicator::runDependencyTest(SingleWindow *sWindow, Cohort *curr
 		}
 
 		const_foreach (uint32SortedVector, *deps, dter, dter_end) {
-			if (*dter == current->global_number) {
+			if (*dter == current->global_number && !(test->pos & POS_SELF)) {
 				continue;
 			}
 			if (sWindow->parent->cohort_map.find(*dter) == sWindow->parent->cohort_map.end()) {
