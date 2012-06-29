@@ -144,14 +144,14 @@
       </screen>
     </section>
 
-    <section id="dep-ct-ancestors">
-      <title>Ancestors</title>
+    <section id="dep-ct-descendents">
+      <title>Descendents</title>
       <indexterm>
         <primary>cc</primary>
       </indexterm>
       <para>
         The 'cc' position asks for an ancestor of the current position,
-        where ancestor is defined as any child, grand-child, great-grand-child, etc...
+        where descendent is defined as any child, grand-child, great-grand-child, etc...
       </para>
       <screen>
         (-1* (N) LINK cc (ADJ))
