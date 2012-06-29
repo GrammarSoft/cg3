@@ -76,11 +76,11 @@ namespace CG3 {
 		CohortSet m_seen;
 	};
 
-	class DepAncestorIter : public CohortIterator {
+	class DepDescendentIter : public CohortIterator {
 	public:
-		DepAncestorIter(Cohort *cohort = 0, const ContextualTest *test = 0, bool span = false);
+		DepDescendentIter(Cohort *cohort = 0, const ContextualTest *test = 0, bool span = false);
 
-		DepAncestorIter& operator++();
+		DepDescendentIter& operator++();
 
 		void reset(Cohort *cohort = 0, const ContextualTest *test = 0, bool span = false);
 
