@@ -32,15 +32,12 @@ namespace CG3 {
 
 template<typename T, typename Comp = std::less<T> >
 class sorted_vector {
-private:
-	typedef typename std::vector<T> Cont;
-	typedef typename Cont::iterator iterator;
-	Cont elements;
-	Comp comp;
-
 public:
-	typedef typename Cont::const_iterator const_iterator;
-	typedef typename Cont::size_type size_type;
+	typedef typename std::vector<T> container;
+	typedef typename container::iterator iterator;
+	typedef typename container::const_iterator const_iterator;
+	typedef typename container::const_reverse_iterator const_reverse_iterator;
+	typedef typename container::size_type size_type;
 	typedef T value_type;
 	typedef T key_type;
 
@@ -136,6 +133,14 @@ public:
 		return elements.end();
 	}
 
+	const_reverse_iterator rbegin() const {
+		return elements.rbegin();
+	}
+
+	const_reverse_iterator rend() const {
+		return elements.rend();
+	}
+
 	T front() const {
 		return elements.front();
 	}
@@ -181,6 +186,14 @@ public:
 	void clear() {
 		elements.clear();
 	}
+
+	container& get() {
+		return elements;
+	}
+
+private:
+	container elements;
+	Comp comp;
 };
 
 typedef sorted_vector<uint32_t> uint32SortedVector;

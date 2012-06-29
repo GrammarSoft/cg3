@@ -278,7 +278,7 @@ Cohort *GrammarApplicator::runContextualTest(SingleWindow *sWindow, size_t posit
 			it = &depParentIters[ci_depths[3]++];
 		}
 		else if (test->pos & POS_DEP_ANCESTOR) {
-			it = &depAncestorIters[ci_depths[4]++];
+			it = &DepDescendentIters[ci_depths[4]++];
 		}
 		else if (test->pos & (POS_DEP_CHILD|POS_DEP_SIBLING)) {
 			Cohort *nc = runDependencyTest(sWindow, cohort, test, deep, origin);
@@ -576,15 +576,9 @@ Cohort *GrammarApplicator::runDependencyTest(SingleWindow *sWindow, Cohort *curr
 			if (test->pos & POS_SELF) {
 				tmp_deps->insert(current->global_number);
 			}
-			if ((test->pos & POS_LEFTMOST) && !tmp_deps->empty()) {
-				uint32_t c = tmp_deps->front();
-				tmp_deps->clear();
-				tmp_deps->insert(c);
-			}
 			if ((test->pos & POS_RIGHTMOST) && !tmp_deps->empty()) {
-				uint32_t c = tmp_deps->back();
-				tmp_deps->clear();
-				tmp_deps->insert(c);
+				uint32SortedVector::container& cont = tmp_deps->get();
+				std::reverse(cont.begin(), cont.end());
 			}
 
 			deps = tmp_deps.get();

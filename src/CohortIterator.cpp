@@ -140,13 +140,13 @@ void DepParentIter::reset(Cohort *cohort, const ContextualTest *test, bool span)
 	++(*this);
 }
 
-DepAncestorIter::DepAncestorIter(Cohort *cohort, const ContextualTest *test, bool span) :
+DepDescendentIter::DepDescendentIter(Cohort *cohort, const ContextualTest *test, bool span) :
 CohortIterator(cohort, test, span)
 {
 	reset(cohort, test, span);
 }
 
-DepAncestorIter& DepAncestorIter::operator++() {
+DepDescendentIter& DepDescendentIter::operator++() {
 	++m_ai;
 	m_cohort = 0;
 	if (m_ai != m_ancestors.end()) {
@@ -155,7 +155,7 @@ DepAncestorIter& DepAncestorIter::operator++() {
 	return *this;
 }
 
-void DepAncestorIter::reset(Cohort *cohort, const ContextualTest *test, bool span) {
+void DepDescendentIter::reset(Cohort *cohort, const ContextualTest *test, bool span) {
 	CohortIterator::reset(cohort, test, span);
 	m_ancestors.clear();
 	m_cohort = 0;
@@ -235,15 +235,9 @@ void DepAncestorIter::reset(Cohort *cohort, const ContextualTest *test, bool spa
 		if (test->pos & POS_SELF) {
 			m_ancestors.insert(cohort);
 		}
-		if ((test->pos & POS_LEFTMOST) && !m_ancestors.empty()) {
-			Cohort *c = m_ancestors.front();
-			m_ancestors.clear();
-			m_ancestors.insert(c);
-		}
 		if ((test->pos & POS_RIGHTMOST) && !m_ancestors.empty()) {
-			Cohort *c = m_ancestors.back();
-			m_ancestors.clear();
-			m_ancestors.insert(c);
+			CohortSet::container& cont = m_ancestors.get();
+			std::reverse(cont.begin(), cont.end());
 		}
 	}
 

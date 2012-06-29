@@ -137,7 +137,7 @@ namespace CG3 {
 		stdext::hash_map<uint32_t,TopologyLeftIter> topologyLeftIters;
 		stdext::hash_map<uint32_t,TopologyRightIter> topologyRightIters;
 		stdext::hash_map<uint32_t,DepParentIter> depParentIters;
-		stdext::hash_map<uint32_t,DepAncestorIter> depAncestorIters;
+		stdext::hash_map<uint32_t,DepDescendentIter> DepDescendentIters;
 
 		uint32_t match_single, match_comp, match_sub;
 		uint32_t begintag, endtag;
