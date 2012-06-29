@@ -301,7 +301,7 @@ int TextualParser::parseContextualTestPosition(UChar *& p, ContextualTest& t) {
 		}
 		if (*p == 'c' && (t.pos & POS_DEP_CHILD)) {
 			t.pos &= ~POS_DEP_CHILD;
-			t.pos |= POS_DEP_ANCESTOR;
+			t.pos |= POS_DEP_DESCENDENT;
 			++p;
 		}
 		if (*p == 'c') {
@@ -480,7 +480,7 @@ int TextualParser::parseContextualTestPosition(UChar *& p, ContextualTest& t) {
 		t.pos |= POS_NONE;
 	}
 
-	if (tries >= 5) {
+	if (tries >= 20) {
 		u_fprintf(ux_stderr, "Warning: Position on line %u took many loops.\n", result->lines);
 	}
 	if (tries >= 100) {
