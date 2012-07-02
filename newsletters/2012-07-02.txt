@@ -1,0 +1,31 @@
+A new release of CG-3 has been tagged v0.9.7.8381.
+
+Main site is http://beta.visl.sdu.dk/cg3.html
+Google Group is http://groups.google.com/group/constraint-grammar
+Source snapshots available at http://beta.visl.sdu.dk/download/vislcg3/
+Windows binary is at http://beta.visl.sdu.dk/download/vislcg3/vislcg3-0.9.7.8381-win32.zip
+Ubuntu 12.04 package is at http://beta.visl.sdu.dk/download/vislcg3/CG3-0.9.7.8381-Linux.deb
+
+New features:
+- Raw regex tags in the form //r, //i, and //ri. See http://beta.visl.sdu.dk/cg3/chunked/tags.html#regex-icase for details.
+- Contextual position cc for any descendent. See http://beta.visl.sdu.dk/cg3/chunked/dependencies.html#dep-ct-descendents
+- Contextual tests for left/right and leftmost/rightmost children, descendents, or relations. See http://beta.visl.sdu.dk/cg3/chunked/dependencies.html#dep-ct-leftof
+
+Changes:
+- Endless loop detection and breaking added. If over 1000 iterations on a section occurs for a window, it will try to break the cycle and continue to next section.
+- Deprecations of conversions from test C to ALL and NOT to NONE will now error out to prepare for next release, where I will add in the behavior where e.g. ALL cC requires all children to carefully match. Please check that all your grammars compile and fix them if they don't.
+- Add/Set/RemRelations now allow the number of relations to and from the contextual target to differ.
+
+Fixed Bugs:
+- Fixed data loss bug when Delimit was used together with parentheses enclosures.
+- Fixed AddCohort to add an internal invisible reading when otherwise used without explicit readings, so rules can target such empty cohorts.
+- Fixed a RemCohort crash bug.
+- Fixed test NONE p to work as expected.
+- Fixed unification of sets in a mapping context to eliminate sequential duplicate tags.
+
+Other:
+- Now uses Boost 1.49.0
+- Now uses ICU 49.1.1
+
+-- Tino Didriksen
+CG-3 Developer
