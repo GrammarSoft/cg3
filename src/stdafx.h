@@ -66,67 +66,21 @@
 #include <sys/stat.h>
 #include <stdint.h> // C99 or C++0x or C++ TR1 will have this header. ToDo: Change to <cstdint> when C++0x broader support gets under way.
 
+#include <boost/unordered_set.hpp>
+#include <boost/unordered_map.hpp>
+#include <boost/scoped_ptr.hpp>
+#define stdext boost
+#define hash_map unordered_map
+#define hash_set unordered_set
+#define hash_multimap unordered_multimap
+#define hash_multiset unordered_multiset
+
 #ifdef _MSC_VER
-	#ifdef HAVE_BOOST
-		#include <boost/unordered_set.hpp>
-		#include <boost/unordered_map.hpp>
-		#include <boost/scoped_ptr.hpp>
-		#define stdext boost
-		#define hash_map unordered_map
-		#define hash_set unordered_set
-		#define hash_multimap unordered_multimap
-		#define hash_multiset unordered_multiset
-	// Test for MSVC++ >= 9.0 (MSVS 2008)
-	#elif _MSC_VER >= 1500
-		#include <unordered_set>
-		#include <unordered_map>
-		#define stdext std::tr1
-		#define hash_map unordered_map
-		#define hash_set unordered_set
-		#define hash_multimap unordered_multimap
-		#define hash_multiset unordered_multiset
-	#else
-		#include <hash_map>
-		#include <hash_set>
-	#endif
 	#include <winsock.h> // for hton() and family.
-#elif defined(__INTEL_COMPILER)
-	#include <ext/hash_map>
-	#include <ext/hash_set>
-	#define stdext __gnu_cxx
-	#include <unistd.h>
-	#include <libgen.h>
-	#include <netinet/in.h> // for hton() and family.
-#elif defined(__GNUC__)
-	#define GCC_VERSION (__GNUC__ * 10000 + __GNUC_MINOR__ * 100 + __GNUC_PATCHLEVEL__)
-	#ifdef HAVE_BOOST
-		#include <boost/unordered_set.hpp>
-		#include <boost/unordered_map.hpp>
-		#include <boost/scoped_ptr.hpp>
-		#define stdext boost
-		#define hash_map unordered_map
-		#define hash_set unordered_set
-		#define hash_multimap unordered_multimap
-		#define hash_multiset unordered_multiset
-	// Test for GCC >= 4.3.0
-	#elif GCC_VERSION >= 40300
-		#include <tr1/unordered_set>
-		#include <tr1/unordered_map>
-		#define stdext std::tr1
-		#define hash_map unordered_map
-		#define hash_set unordered_set
-		#define hash_multimap unordered_multimap
-		#define hash_multiset unordered_multiset
-	#else
-		#include <ext/hash_map>
-		#include <ext/hash_set>
-		#define stdext __gnu_cxx
-	#endif
-	#include <unistd.h>
-	#include <libgen.h>
-	#include <netinet/in.h> // for hton() and family.
 #else
-	#error "Unknown compiler...please customize stdafx.h for it."
+	#include <unistd.h>
+	#include <libgen.h>
+	#include <netinet/in.h> // for hton() and family.
 #endif
 
 // ICU includes
