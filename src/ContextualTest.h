@@ -28,7 +28,11 @@
 namespace CG3 {
 	class Grammar;
 
+#ifdef _MSC_VER
 	enum : uint64_t {
+#else
+	enum {
+#endif
 		POS_CAREFUL        = (1 <<  0),
 		POS_NEGATE         = (1 <<  1),
 		POS_NOT            = (1 <<  2),
