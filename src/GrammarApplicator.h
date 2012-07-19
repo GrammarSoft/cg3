@@ -59,6 +59,7 @@ namespace CG3 {
 		bool show_end_tags;
 		bool unicode_tags;
 		bool owns_grammar;
+		bool input_eof;
 
 		bool dep_has_spanned;
 		bool dep_delimit;

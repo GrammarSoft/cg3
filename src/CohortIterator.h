@@ -85,7 +85,7 @@ namespace CG3 {
 		void reset(Cohort *cohort = 0, const ContextualTest *test = 0, bool span = false);
 
 	protected:
-		CohortSet m_ancestors;
+		CohortSet m_descendents;
 		CohortSet::const_iterator m_ai;
 	};
 

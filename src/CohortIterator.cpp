@@ -149,7 +149,7 @@ CohortIterator(cohort, test, span)
 DepDescendentIter& DepDescendentIter::operator++() {
 	++m_ai;
 	m_cohort = 0;
-	if (m_ai != m_ancestors.end()) {
+	if (m_ai != m_descendents.end()) {
 		m_cohort = *m_ai;
 	}
 	return *this;
@@ -157,7 +157,7 @@ DepDescendentIter& DepDescendentIter::operator++() {
 
 void DepDescendentIter::reset(Cohort *cohort, const ContextualTest *test, bool span) {
 	CohortIterator::reset(cohort, test, span);
-	m_ancestors.clear();
+	m_descendents.clear();
 	m_cohort = 0;
 
 	if (cohort && test) {
@@ -181,7 +181,7 @@ void DepDescendentIter::reset(Cohort *cohort, const ContextualTest *test, bool s
 
 			}
 			if (good) {
-				m_ancestors.insert(current);
+				m_descendents.insert(current);
 			}
 		}
 
@@ -190,7 +190,7 @@ void DepDescendentIter::reset(Cohort *cohort, const ContextualTest *test, bool s
 			added = false;
 			CohortSet to_add;
 
-			const_foreach (CohortSet, m_ancestors, iter, iter_end) {
+			const_foreach (CohortSet, m_descendents, iter, iter_end) {
 				Cohort *cohort_inner = *iter;
 				if (m_seen.find(cohort_inner) != m_seen.end()) {
 					continue;
@@ -220,29 +220,29 @@ void DepDescendentIter::reset(Cohort *cohort, const ContextualTest *test, bool s
 			}
 
 			const_foreach (CohortSet, to_add, iter, iter_end) {
-				m_ancestors.insert(*iter);
+				m_descendents.insert(*iter);
 			}
 		} while(added);
 
 		if (test->pos & POS_LEFT) {
-			m_seen.assign(m_ancestors.begin(), m_ancestors.lower_bound(cohort));
-			m_ancestors.swap(m_seen);
+			m_seen.assign(m_descendents.begin(), m_descendents.lower_bound(cohort));
+			m_descendents.swap(m_seen);
 		}
 		if (test->pos & POS_RIGHT) {
-			m_seen.assign(m_ancestors.lower_bound(cohort), m_ancestors.end());
-			m_ancestors.swap(m_seen);
+			m_seen.assign(m_descendents.lower_bound(cohort), m_descendents.end());
+			m_descendents.swap(m_seen);
 		}
 		if (test->pos & POS_SELF) {
-			m_ancestors.insert(cohort);
+			m_descendents.insert(cohort);
 		}
-		if ((test->pos & POS_RIGHTMOST) && !m_ancestors.empty()) {
-			CohortSet::container& cont = m_ancestors.get();
+		if ((test->pos & POS_RIGHTMOST) && !m_descendents.empty()) {
+			CohortSet::container& cont = m_descendents.get();
 			std::reverse(cont.begin(), cont.end());
 		}
 	}
 
-	m_ai = m_ancestors.begin();
-	if (m_ai != m_ancestors.end()) {
+	m_ai = m_descendents.begin();
+	if (m_ai != m_descendents.end()) {
 		m_cohort = *m_ai;
 	}
 }

@@ -208,7 +208,7 @@ gotaline:
 				numCohorts++;
 				did_soft_lookback = false;
 			}
-			if (cCohort && (cSWindow->cohorts.size() >= hard_limit || (grammar->delimiters && doesSetMatchCohortNormal(*cCohort, grammar->delimiters->hash)))) {
+			if (cCohort && (cSWindow->cohorts.size() >= hard_limit || (!dep_delimit && grammar->delimiters && doesSetMatchCohortNormal(*cCohort, grammar->delimiters->hash)))) {
 				if (cSWindow->cohorts.size() >= hard_limit) {
 					u_fprintf(ux_stderr, "Warning: Hard limit of %u cohorts reached at line %u - forcing break.\n", hard_limit, numLines);
 					u_fflush(ux_stderr);
@@ -243,6 +243,20 @@ gotaline:
 				did_soft_lookback = false;
 			}
 			if (cCohort && cSWindow) {
+				if (dep_delimit && dep_highest_seen && (cCohort->dep_self <= dep_highest_seen || cCohort->dep_self - dep_highest_seen > 10)) {
+					cSWindow = gWindow->allocAppendSingleWindow();
+					initEmptySingleWindow(cSWindow);
+
+					cSWindow->variables_set = variables_set;
+					variables_set.clear();
+					cSWindow->variables_rem = variables_rem;
+					variables_rem.clear();
+
+					lSWindow = cSWindow;
+					lReading = cSWindow->cohorts[0]->readings.front();
+					++numWindows;
+					did_soft_lookback = false;
+				}
 				cSWindow->appendCohort(cCohort);
 				lCohort = cCohort;
 			}
@@ -535,6 +549,8 @@ istext:
 		numLines++;
 		line[0] = cleaned[0] = 0;
 	}
+
+	input_eof = true;
 
 	if (cCohort && cSWindow) {
 		cSWindow->appendCohort(cCohort);
