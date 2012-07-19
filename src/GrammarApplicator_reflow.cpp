@@ -203,6 +203,10 @@ bool GrammarApplicator::attachParentChild(Cohort& parent, Cohort& child, bool al
 }
 
 void GrammarApplicator::reflowDependencyWindow(uint32_t max) {
+	if (!max && !input_eof && !gWindow->next.empty() && gWindow->next.back()->cohorts.size() > 1) {
+		max = gWindow->next.back()->cohorts[1]->global_number;
+	}
+
 	bool did_dep = false;
 	if (gWindow->dep_window.empty()) {
 		gWindow->dep_window[0] = gWindow->current->cohorts[0];

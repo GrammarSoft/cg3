@@ -61,9 +61,10 @@ SingleWindow::~SingleWindow() {
 
 void SingleWindow::appendCohort(Cohort *cohort) {
 	cohort->local_number = (uint32_t)cohorts.size();
+	cohort->parent = this;
 
 	if (parent->parent->has_dep && cohort->dep_self) {
-		if (cohort->dep_self <= parent->parent->dep_highest_seen) {
+		if (cohort->dep_self <= parent->parent->dep_highest_seen || (parent->parent->dep_highest_seen && cohort->dep_self - parent->parent->dep_highest_seen > 10)) {
 			parent->parent->reflowDependencyWindow();
 			parent->parent->gWindow->dep_map.clear();
 			parent->parent->gWindow->dep_window.clear();
