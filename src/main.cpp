@@ -547,6 +547,9 @@ void GAppSetOpts(CG3::GrammarApplicator& applicator, UConverter *conv) {
 	if (options[HARD_LIMIT].doesOccur) {
 		applicator.hard_limit = abs(atoi(options[HARD_LIMIT].value));
 	}
+	if (options[DEP_DELIMIT].doesOccur) {
+		applicator.dep_delimit = true;
+	}
 	if (options[DEP_HUMANIZE].doesOccur) {
 		applicator.dep_humanize = true;
 	}

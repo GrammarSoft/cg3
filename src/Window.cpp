@@ -25,12 +25,13 @@
 
 namespace CG3 {
 
-Window::Window(GrammarApplicator *p) {
-	parent = p;
-	current = 0;
-	window_span = 0;
-	window_counter = 0;
-	cohort_counter = 1;
+Window::Window(GrammarApplicator *p) :
+parent(p),
+current(0),
+cohort_counter(1),
+window_counter(0),
+window_span(0)
+{
 }
 
 Window::~Window() {
@@ -39,10 +40,8 @@ Window::~Window() {
 		delete *iter;
 	}
 
-	if (current) {
-		delete current;
-		current = 0;
-	}
+	delete current;
+	current = 0;
 
 	for (iter = next.begin() ; iter != next.end() ; iter++) {
 		delete *iter;
