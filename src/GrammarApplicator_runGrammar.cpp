@@ -243,7 +243,7 @@ gotaline:
 				did_soft_lookback = false;
 			}
 			if (cCohort && cSWindow) {
-				if (dep_delimit && dep_highest_seen && (cCohort->dep_self <= dep_highest_seen || cCohort->dep_self - dep_highest_seen > 10)) {
+				if (dep_delimit && dep_highest_seen && (cCohort->dep_self <= dep_highest_seen || cCohort->dep_self - dep_highest_seen > dep_delimit)) {
 					cSWindow = gWindow->allocAppendSingleWindow();
 					initEmptySingleWindow(cSWindow);
 

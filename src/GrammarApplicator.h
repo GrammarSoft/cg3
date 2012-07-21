@@ -62,7 +62,7 @@ namespace CG3 {
 		bool input_eof;
 
 		bool dep_has_spanned;
-		bool dep_delimit;
+		uint32_t dep_delimit;
 		bool dep_humanize;
 		bool dep_original;
 		bool dep_block_loops;

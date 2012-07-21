@@ -548,7 +548,12 @@ void GAppSetOpts(CG3::GrammarApplicator& applicator, UConverter *conv) {
 		applicator.hard_limit = abs(atoi(options[HARD_LIMIT].value));
 	}
 	if (options[DEP_DELIMIT].doesOccur) {
-		applicator.dep_delimit = true;
+		if (options[DEP_DELIMIT].value) {
+			applicator.dep_delimit = abs(atoi(options[DEP_DELIMIT].value));
+		}
+		else {
+			applicator.dep_delimit = 10;
+		}
 	}
 	if (options[DEP_HUMANIZE].doesOccur) {
 		applicator.dep_humanize = true;
