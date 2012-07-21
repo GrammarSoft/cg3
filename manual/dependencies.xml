@@ -62,7 +62,7 @@
   <section id="dep-input">
     <title>Existing Trees in Input</title>
     <para>
-      Dependency attachments in input comes in the form of #X-&gt;Y tags where X the number of the current
+      Dependency attachments in input comes in the form of #X-&gt;Y or #X→Y tags where X is the number of the current
       node and Y is the number of the parent node. The X must be unique positive integers and should
       be sequentially enumerated. '0' is reserved and means the root of the tree, so no node may claim
       to be '0', but nodes may attach to '0'.
@@ -87,6 +87,31 @@
         &nbsp; "man" N NOM SG @SC #5-&gt;0
         "&lt;$.&gt;"
       </screen>
+    </para>
+  </section>
+
+  <section id="dep-delimit">
+    <title>Using Dependency as Delimiters</title>
+    <para>
+      Cmdline flag -D or --dep-delimit will enable the use of dependency information to delimit windows.
+      Enabling this will disable <link linkend="keyword-delimiters">DELIMITERS</link> entirely,
+      but will not affect the behavior of <link linkend="keyword-soft-delimiters">SOFT-DELIMITERS</link>
+      nor the hard/soft cohort limits.
+    </para>
+    <para>
+      Windows are delimited if a cohort has a node number less than or equal to
+      the highest previously seen node number, and also if a cohort has a node number that seems like a discontinuous
+      jump up in numbers.
+      The discontinuous limit is by default 10 but you can pass a number to -D/--dep-delimit to set it yourself.
+      Some systems do not output dependency numbers for punctuation, so setting it too low may break those;
+      the default 10 was chosen since it is unlikely any real text would have 10 sequential cohorts not part of the tree.
+    </para>
+    <para>
+      For example:
+      <emphasis>#4→5 followed by #3→4 will delimit.</emphasis>
+      <emphasis>#4→5 followed by #4→4 will delimit.</emphasis>
+      <emphasis>#4→5 followed by #15→4 will delimit.</emphasis>
+      <emphasis>#4→5 followed by #5→3 will not delimit.</emphasis>
     </para>
   </section>
 
