@@ -24,8 +24,12 @@ Options:
      --grammar-out         writes the compiled grammar in textual form to a file
      --grammar-bin         writes the compiled grammar in binary form to a file
      --grammar-only        only compiles the grammar; implies --verbose
+     --ordered             allows multiple identical tags (will in future allow full ordered matching)
  -u, --unsafe              allows the removal of all readings in a cohort, even the last one
- -s, --sections            number of sections to run; defaults to all sections
+ -s, --sections            number or ranges of sections to run; defaults to all sections
+     --rules               number or ranges of rules to run; defaults to all rules
+     --rule                a name or number of a single rule to run
+ -d, --debug               enables debug output (very noisy)
  -v, --verbose             increases verbosity
  -2, --vislcg-compat       enables compatibility mode for older CG-2 and vislcg grammars
  -I, --stdin               file to print output to instead of stdout
@@ -47,22 +51,29 @@ Options:
  -t, --trace               prints debug output alongside with normal output
      --trace-name-only     if a rule is named, omit the line number; implies --trace
      --trace-no-removed    does not print removed readings; implies --trace
-     --single-run          runs each section only once
+     --trace-encl          traces which enclosure pass is currently happening; implies --trace
+     --single-run          runs each section only once; same as --max-runs 1
+     --max-runs            runs each section max N times; defaults to unlimited (0)
  -S, --statistics          gathers profiling statistics while applying grammar
  -Z, --optimize-unsafe     destructively optimize the profiled grammar to be faster
  -z, --optimize-safe       conservatively optimize the profiled grammar to be faster
  -p, --prefix              sets the mapping prefix; defaults to @
+     --unicode-tags        outputs Unicode code points for things like -&gt;
      --num-windows         number of windows to keep in before/ahead buffers; defaults to 2
      --always-span         forces scanning tests to always span across window boundaries
      --soft-limit          number of cohorts after which the SOFT-DELIMITERS kick in; defaults to 300
      --hard-limit          number of cohorts after which the window is forcefully cut; defaults to 500
+ -D, --dep-delimit         delimit windows based on dependency instead of DELIMITERS; defaults to 10
      --dep-humanize        forces enumeration of dependencies to human-readable; will not be valid for chained CG-3s
      --dep-original        outputs the original input dependency tag even if it is no longer valid
      --dep-allow-loops     allows the creation of circular dependencies
      --dep-no-crossing     prevents the creation of dependencies that would result in crossing branches
      --no-magic-readings   prevents running rules on magic readings
  -o, --no-pass-origin      prevents scanning tests from passing the point of origin
+ -e, --show-end-tags       allows the &lt;&lt;&lt; tags to appear in output
      --show-unused-sets    prints a list of unused sets and their line numbers; implies --grammar-only
+     --show-tag-hashes     prints a list of tags and their hashes as they are parsed during the run
+     --show-set-hashes     prints a list of sets and their hashes; implies --grammar-only
     </screen>
   </section>
 
