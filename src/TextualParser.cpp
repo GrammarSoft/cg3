@@ -617,6 +617,9 @@ int TextualParser::parseContextualTestList(UChar *& p, Rule *rule, ContextualTes
 		if (t->pos & (POS_DEP_CHILD|POS_DEP_PARENT|POS_DEP_SIBLING)) {
 			result->has_dep = true;
 		}
+		if (t->pos & POS_RELATION) {
+			result->has_relations = true;
+		}
 		result->lines += SKIPWS(p);
 
 		if (p[0] == 'T' && p[1] == ':') {
@@ -1083,6 +1086,9 @@ void TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 	}
 	if (key == K_SETPARENT || key == K_SETCHILD) {
 		result->has_dep = true;
+	}
+	if (key == K_SETRELATION || key == K_SETRELATIONS || key == K_ADDRELATION || key == K_ADDRELATIONS || key == K_REMRELATION || key == K_REMRELATIONS) {
+		result->has_relations = true;
 	}
 
 	rule->reverseContextualTests();

@@ -39,6 +39,7 @@ namespace CG3 {
 		UFILE *ux_stderr, *ux_stdout;
 
 		bool has_dep;
+		bool has_relations;
 		bool has_encl_final;
 		bool is_binary;
 		bool sub_readings_ltr;
