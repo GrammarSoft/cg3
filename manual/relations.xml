@@ -110,7 +110,29 @@
   <section id="rel-input">
     <title>Existing Relations in Input</title>
     <para>
-      Not currently supported; relations from input are ignored at present stage of development.
+      Relational attachments are in the forms of ID:id and R:name:id tags. The ID tags are assumed to give the cohort
+      a globally unique numeric ID, and this number is what the id from R tags refer to. The name part must be
+      alphanumeric and must not start with a number.
+    </para>
+    <para>
+      It is normal for ID tags to exist without R tags for one-way relations,
+      but any line with an R tag must have its ID along.
+    </para>
+    <para>
+      For example:
+      <screen>
+        "&lt;There&gt;"
+        &nbsp; "there" &lt;*&gt; ADV @F-SUBJ ID:1056
+        "&lt;once&gt;"
+        &nbsp; "once" ADV @ADVL
+        "&lt;was&gt;"
+        &nbsp; "be" &lt;SVC/N&gt; &lt;SVC/A&gt; V PAST SG1/3 VFIN IMP @FMV
+        "&lt;a&gt;"
+        &nbsp; "a" &lt;Indef&gt; ART DET CENTRAL SG @&gt;N
+        "&lt;man&gt;"
+        &nbsp; "man" N NOM SG @SC ID:1060 R:Beginning:1056
+        "&lt;$.&gt;"
+      </screen>
     </para>
   </section>
 

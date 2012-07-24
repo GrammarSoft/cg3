@@ -1354,6 +1354,9 @@ void GrammarApplicator::runGrammarOnWindow() {
 			}
 		}
 	}
+	if (has_relations) {
+		reflowRelationWindow();
+	}
 
 	if (!grammar->parentheses.empty()) {
 		label_scanParentheses:

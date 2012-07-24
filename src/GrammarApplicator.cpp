@@ -54,7 +54,7 @@ dep_humanize(false),
 dep_original(false),
 dep_block_loops(true),
 dep_block_crossing(false),
-num_windows(2),
+num_windows(4),
 soft_limit(300),
 hard_limit(500),
 verbosity_level(0),
@@ -63,6 +63,7 @@ section_max_count(0),
 has_dep(false),
 dep_highest_seen(0),
 gWindow(0),
+has_relations(false),
 grammar(0),
 ux_stderr(ux_err),
 numLines(0),
@@ -369,6 +370,9 @@ void GrammarApplicator::printReading(const Reading *reading, UFILE *output, size
 		}
 		const Tag *tag = single_tags[*tter];
 		if (tag->type & T_DEPENDENCY && has_dep && !dep_original) {
+			continue;
+		}
+		if (tag->type & T_RELATION && has_relations) {
 			continue;
 		}
 		u_fprintf(output, "%S", tag->tag.c_str());

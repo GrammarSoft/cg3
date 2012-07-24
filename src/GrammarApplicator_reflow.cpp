@@ -282,6 +282,36 @@ void GrammarApplicator::reflowDependencyWindow(uint32_t max) {
 	}
 }
 
+void GrammarApplicator::reflowRelationWindow(uint32_t max) {
+	if (!max && !input_eof && !gWindow->next.empty() && gWindow->next.back()->cohorts.size() > 1) {
+		max = gWindow->next.back()->cohorts[1]->global_number;
+	}
+
+	for (Cohort *cohort = gWindow->current->cohorts[1] ; cohort ; cohort = cohort->next) {
+		if (cohort->type & CT_REL_DONE) {
+			continue;
+		}
+		if (max && cohort->global_number >= max) {
+			break;
+		}
+
+		if (!cohort->relations.empty()) {
+			foreach (RelationCtn, cohort->relations, rel, rel_end) {
+				uint32Set newrel;
+				foreach (uint32Set, rel->second, target, target_end) {
+					uint32HashMap::iterator it = gWindow->relation_map.find(*target);
+					if (it != gWindow->relation_map.end()) {
+						newrel.insert(it->second);
+					}
+				}
+				rel->second = newrel;
+			}
+		}
+
+		cohort->type |= CT_REL_DONE;
+	}
+}
+
 void GrammarApplicator::reflowReading(Reading& reading) {
 	reading.tags.clear();
 	reading.tags_plain.clear();
@@ -450,6 +480,16 @@ uint32_t GrammarApplicator::addTagToReading(Reading& reading, uint32_t utag, boo
 			reading.parent->dep_parent = std::numeric_limits<uint32_t>::max();
 		}
 		has_dep = true;
+	}
+	if (grammar->has_relations && tag->type & T_RELATION && !(reading.parent->type & CT_REL_DONE)) {
+		if (tag->dep_parent && tag->comparison_hash) {
+			reading.parent->relations[tag->comparison_hash].insert(tag->dep_parent);
+		}
+		if (tag->dep_self) {
+			gWindow->relation_map[tag->dep_self] = reading.parent->global_number;
+		}
+		has_relations = true;
+		reading.parent->type |= CT_RELATED;
 	}
 	if (!(tag->type & T_SPECIAL)) {
 		reading.tags_plain.insert(utag);

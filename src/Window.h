@@ -42,6 +42,7 @@ namespace CG3 {
 		std::map<uint32_t, Cohort*> cohort_map;
 		uint32HashMap dep_map;
 		std::map<uint32_t, Cohort*> dep_window;
+		uint32HashMap relation_map;
 
 		SingleWindowCont previous;
 		SingleWindow *current;

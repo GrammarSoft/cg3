@@ -93,6 +93,9 @@ namespace CG3 {
 		Window *gWindow;
 		void reflowDependencyWindow(uint32_t max = 0);
 
+		bool has_relations;
+		void reflowRelationWindow(uint32_t max = 0);
+
 		Grammar *grammar;
 
 		// Moved these public to help the library API

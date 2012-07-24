@@ -42,6 +42,17 @@ SingleWindow::~SingleWindow() {
 	std::cerr << "OBJECT: " << __PRETTY_FUNCTION__ << ": " << cohorts.size() << std::endl;
 	#endif
 
+	if (cohorts.size() > 1) {
+		for (uint32HashMap::iterator iter = parent->relation_map.begin() ; iter != parent->relation_map.end() ; ) {
+			if (iter->second <= cohorts.back()->global_number) {
+				iter = parent->relation_map.erase(iter);
+			}
+			else {
+				++iter;
+			}
+		}
+	}
+
 	foreach (CohortVector, cohorts, iter, iter_end) {
 		delete (*iter);
 	}
