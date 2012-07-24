@@ -29,6 +29,7 @@ Grammar::Grammar() :
 ux_stderr(0),
 ux_stdout(0),
 has_dep(false),
+has_relations(false),
 has_encl_final(false),
 is_binary(false),
 sub_readings_ltr(false),

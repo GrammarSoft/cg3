@@ -359,6 +359,19 @@ void Tag::parseTagRaw(const UChar *to, Grammar *grammar) {
 			type |= T_DEPENDENCY;
 		}
 	}
+	if (tag[0] == 'I' && tag[1] == 'D' && tag[2] == ':' && u_isdigit(tag[3])) {
+		if (u_sscanf(tag.c_str(), "ID:%i", &dep_self) == 1 && dep_self != 0) {
+			type |= T_RELATION;
+		}
+	}
+	if (tag[0] == 'R' && tag[1] == ':') {
+		UChar relname[256];
+		if (u_sscanf(tag.c_str(), "R:%[^:]:%i", &relname, &dep_parent) == 2 && dep_parent != 0) {
+			type |= T_RELATION;
+			Tag *reltag = grammar->allocateTag(relname, true);
+			comparison_hash = reltag->hash;
+		}
+	}
 
 	type &= ~T_SPECIAL;
 	if (type & (T_NUMERICAL)) {
@@ -373,14 +386,14 @@ void Tag::parseNumeric() {
 	tkey[0] = 0;
 	top[0] = 0;
 	txval[0] = 0;
-	if (u_sscanf(tag.c_str(), "<%[^<>=:!]%[<>=:!]%[-MAXIN0-9]>", &tkey, &top, &txval) == 3 && top[0] && u_strlen(top)) {
-		int tval = 0;
+	if (u_sscanf(tag.c_str(), "<%[^<>=:!]%[<>=:!]%[-MAXIN0-9]>", &tkey, &top, &txval) == 3 && top[0]) {
+		int32_t tval = 0;
 		int32_t rv = u_sscanf(txval, "%d", &tval);
 		if (txval[0] == 'M' && txval[1] == 'A' && txval[2] == 'X') {
-			tval = INT_MAX;
+			tval = std::numeric_limits<int32_t>::max();
 		}
 		else if (txval[0] == 'M' && txval[1] == 'I' && txval[2] == 'N') {
-			tval = INT_MIN;
+			tval = std::numeric_limits<int32_t>::min();
 		}
 		else if (rv != 1) {
 			return;

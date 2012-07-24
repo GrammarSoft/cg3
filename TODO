@@ -1,7 +1,6 @@
 ToDo: Rules can be dynamically reordered in "optimize correct" mode by moving the offending rule to the end of the section
 ToDo: Refactor statistics to be gathered in their own objects rather than inline with Grammar, Rules, ContextualTest, Set
 ToDo: Enable a daemonized version. Easily doable via Perl's Net::Server::PreFork.
-ToDo: Add flag for using dependencies to delimit windows
 ToDo: Make old cohort -> rules order available via switch
 ToDo: Make use of Preferred-Targets
 ToDo: Move DoesTagMatchSet to Grammar
@@ -16,14 +15,11 @@ ToDo: Transaction blocks: TRANSACTION, COMMIT, ROLLBACK
 ToDo: Binary input/output stream for lossless chaining of multiple CG-3
 ToDo: Make ANCHOR, JUMP, EXECUTE actually do something...
 ToDo: Add --ordered and ORDERED UNORDERED rule/set/list options.
-ToDo: Add --use-dep-windows by checking if new ID is lower than last seen max, or delta is too large
-ToDo: Boost's unordered_map/set are 20% faster than MSVC++'s hash_map/set - retest in MSVC++ 2010 when they finalize their unordered_map/set implementations.
 ToDo: Allow multiple contextual position per test via ,
 ToDo: Dynamic window buffers based on dependency / relation links
 ToDo: Make all tag containers have Tag* instead of uint32_t
 ToDo: Make all set containers have Set* instead of uint32_t
 ToDo: SELECT $$sem IF (-1 N LINK 0 (<+{$$sem,<(.*)>,$1}>)) ;
-ToDo: Somehow refer to left / right sibling
 ToDo: Use Cohort iterator instead of subfunctions
 ToDo: Make things less magic (explain what magic means in the various contexts)
 ToDo: Handle duplicate different sets and delimiters from INCLUDE files. Possibly make new keyword or option for INCLUDE. Handle line numbering how?
@@ -35,3 +31,4 @@ ToDo: Rules don't currently require ; termination...should they?
 ToDo: Cache shared contexts between close rules
 ToDo: Document VSTR and STATIC-SETS
 ToDo: Implement meta information and variables; <STREAMCMD:SETVAR:var,var,var> and <STREAMCMD:REMVAR:var,var,var> ?
+ToDo: Test what happens if you RemCohort a whole window

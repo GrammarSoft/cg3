@@ -308,6 +308,9 @@ int main(int argc, char* argv[]) {
 		if (grammar.has_dep) {
 			std::cerr << "Grammar has dependency rules." << std::endl;
 		}
+		if (grammar.has_relations) {
+			std::cerr << "Grammar has relation rules." << std::endl;
+		}
 	}
 
 	if (grammar.is_binary) {
