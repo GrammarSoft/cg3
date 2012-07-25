@@ -89,6 +89,9 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 	if (!grammar->rule_by_number.empty()) {
 		fields |= (1 << 12);
 	}
+	if (grammar->has_relations) {
+		fields |= (1 << 13);
+	}
 
 	u32tmp = (uint32_t)htonl((uint32_t)fields);
 	fwrite(&u32tmp, sizeof(uint32_t), 1, output);

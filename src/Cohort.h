@@ -40,7 +40,6 @@ namespace CG3 {
 		CT_REMOVED        = (1 <<  2),
 		CT_NUM_CURRENT    = (1 <<  3),
 		CT_DEP_DONE       = (1 <<  4),
-		CT_REL_DONE       = (1 <<  5),
 	};
 
 	class Cohort {
@@ -63,8 +62,8 @@ namespace CG3 {
 		uint32HashSet possible_sets;
 		CohortVector enclosed;
 		CohortVector removed;
-		// ToDo: Make an unresolved relation store for input relations
 		RelationCtn relations;
+		RelationCtn relations_input;
 
 		int32_t getMin(uint32_t key);
 		int32_t getMax(uint32_t key);
