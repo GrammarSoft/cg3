@@ -312,11 +312,11 @@ void GrammarApplicator::reflowRelationWindow(uint32_t max) {
 				}
 
 				if (newrel.empty()) {
-					rel = cohort->relations_input.erase(rel);
+					cohort->relations_input.erase(rel++);
 				}
 				else {
-					++rel;
 					rel->second = newrel;
+					++rel;
 				}
 			}
 		}
