@@ -70,6 +70,7 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 
 	grammar->has_dep = (fields & (1 << 0)) != 0;
 	grammar->sub_readings_ltr = (fields & (1 << 2)) != 0;
+	grammar->has_relations = (fields & (1 << 13)) != 0;
 
 	if (fields & (1 << 1)) {
 		ucnv_reset(conv);
