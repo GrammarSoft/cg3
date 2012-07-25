@@ -287,28 +287,39 @@ void GrammarApplicator::reflowRelationWindow(uint32_t max) {
 		max = gWindow->next.back()->cohorts[1]->global_number;
 	}
 
-	for (Cohort *cohort = gWindow->current->cohorts[1] ; cohort ; cohort = cohort->next) {
-		if (cohort->type & CT_REL_DONE) {
-			continue;
-		}
+	Cohort *cohort = gWindow->current->cohorts[1];
+	while (cohort->prev) {
+		cohort = cohort->prev;
+	}
+
+	for ( ; cohort ; cohort = cohort->next) {
 		if (max && cohort->global_number >= max) {
 			break;
 		}
 
-		if (!cohort->relations.empty()) {
-			foreach (RelationCtn, cohort->relations, rel, rel_end) {
+		if (!cohort->relations_input.empty()) {
+			for (RelationCtn::iterator rel = cohort->relations_input.begin() ; rel != cohort->relations_input.end() ; ) {
 				uint32Set newrel;
+
 				foreach (uint32Set, rel->second, target, target_end) {
 					uint32HashMap::iterator it = gWindow->relation_map.find(*target);
 					if (it != gWindow->relation_map.end()) {
-						newrel.insert(it->second);
+						cohort->relations[rel->first].insert(it->second);
+					}
+					else {
+						newrel.insert(*target);
 					}
 				}
-				rel->second = newrel;
+
+				if (newrel.empty()) {
+					rel = cohort->relations_input.erase(rel);
+				}
+				else {
+					++rel;
+					rel->second = newrel;
+				}
 			}
 		}
-
-		cohort->type |= CT_REL_DONE;
 	}
 }
 
@@ -481,9 +492,9 @@ uint32_t GrammarApplicator::addTagToReading(Reading& reading, uint32_t utag, boo
 		}
 		has_dep = true;
 	}
-	if (grammar->has_relations && tag->type & T_RELATION && !(reading.parent->type & CT_REL_DONE)) {
+	if (grammar->has_relations && tag->type & T_RELATION) {
 		if (tag->dep_parent && tag->comparison_hash) {
-			reading.parent->relations[tag->comparison_hash].insert(tag->dep_parent);
+			reading.parent->relations_input[tag->comparison_hash].insert(tag->dep_parent);
 		}
 		if (tag->dep_self) {
 			gWindow->relation_map[tag->dep_self] = reading.parent->global_number;
