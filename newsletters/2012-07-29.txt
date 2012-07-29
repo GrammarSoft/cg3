@@ -1,0 +1,21 @@
+A new release of CG-3 has been tagged v0.9.8.8406.
+
+Main site is http://beta.visl.sdu.dk/cg3.html
+Google Group is http://groups.google.com/group/constraint-grammar
+Source snapshots available at http://beta.visl.sdu.dk/download/vislcg3/
+Windows binary is at http://beta.visl.sdu.dk/download/vislcg3/vislcg3-0.9.8.8406-win32.zip
+Ubuntu 12.04 package is at http://beta.visl.sdu.dk/download/vislcg3/CG3-0.9.8.8406-Linux.deb
+
+New features:
+- --dep-delimit cmdline flag to enable the use of dependency as delimiters. See http://beta.visl.sdu.dk/cg3/chunked/dependencies.html#dep-delimit
+- Relations are now pipable and can thus be referenced in later CG-3 processes. See http://beta.visl.sdu.dk/cg3/chunked/relations.html#rel-input
+
+Changes:
+- The previous release's deprecation of C-to-ALL and NOT-to-NONE conversion has been actualized, so now it is valid to write e.g. ALL cC (ADJ) to require that all readings of all children match ADJ.
+
+Other:
+- Bumped minor version to 8, since these changes were important steps towards 1.0.
+- Now uses Boost 1.50.0
+
+-- Tino Didriksen
+CG-3 Developer
