@@ -459,14 +459,6 @@ int TextualParser::parseContextualTestPosition(UChar *& p, ContextualTest& t) {
 		t.pos &= ~POS_SCANALL;
 		t.pos |= POS_DEP_DEEP;
 	}
-	if ((t.pos & (POS_DEP_CHILD|POS_DEP_SIBLING|POS_RELATION)) && (t.pos & POS_CAREFUL)) {
-		u_fprintf(ux_stderr, "Error: Deprecated conversion from C to ALL on line %u.\n", result->lines);
-		CG3Quit(1);
-	}
-	if ((t.pos & (POS_DEP_CHILD|POS_DEP_SIBLING|POS_RELATION)) && (t.pos & POS_NOT)) {
-		u_fprintf(ux_stderr, "Error: Deprecated conversion from NOT to NONE on line %u.\n", result->lines);
-		CG3Quit(1);
-	}
 
 	if (tries >= 20) {
 		u_fprintf(ux_stderr, "Warning: Position on line %u took many loops.\n", result->lines);
