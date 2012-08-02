@@ -320,6 +320,7 @@ int ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 				inchar = u_fgetc_wrapper(input);
 
 				if (inchar == '\\') {
+					// TODO: \< in baseforms -- ^foo\<bars/foo\<bar$ currently outputs ^foo\<bars/foo$
 					inchar = u_fgetc_wrapper(input);
 					current_reading += inchar;
 					continue;
@@ -696,7 +697,14 @@ void ApertiumApplicator::printReading(Reading *reading, UFILE *output) {
 			}
 		} // if (wordform_case)
 
-		u_fprintf(output, "%S", bf.getTerminatedBuffer());
+		UString bf_escaped;
+		for (int i=0 ; i<bf.length() ; ++i) {
+			if (bf[i] == '^' || bf[i] == '\\' || bf[i] == '/' || bf[i] == '$' || bf[i] == '[' || bf[i] == ']' || bf[i] == '{' || bf[i] == '}' || bf[i] == '<' || bf[i] == '>') {
+				bf_escaped += '\\';
+			}
+			bf_escaped += bf[i];
+		}
+		u_fprintf(output, "%S", bf_escaped.c_str());
 		
 		// Tag::printTagRaw(output, single_tags[reading->baseform]);
 	}
