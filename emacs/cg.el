@@ -82,7 +82,7 @@
        1 font-lock-keyword-face)
       ("^[ \t]*\\(SECTION\\|AFTER-SECTIONS\\|BEFORE-SECTIONS\\|MAPPINGS\\|CONSTRAINTS\\|CORRECTIONS\\)"
        1 font-lock-warning-face)
-      (,(concat "^[ \t]*" <word>? "[ \t]*\\(SETPARENT\\|SETCHILD\\|ADDRELATIONS?\\|SETRELATIONS?\\|REMRELATIONS?\\|SUBSTITUTE\\|ADD\\|MAP\\|SELECT\\|REMOVE\\)\\(\\(:\\(\\s_\\|\\sw\\)+\\)?\\)")
+      (,(concat "^[ \t]*" <word>? "[ \t]*\\(SETPARENT\\|SETCHILD\\|ADDRELATIONS?\\|SETRELATIONS?\\|REMRELATIONS?\\|SUBSTITUTE\\|ADDCOHORT\\|REMCOHORT\\|MAP\\|IFF\\|ADD\\|SELECT\\|REMOVE\\)\\(\\(:\\(\\s_\\|\\sw\\)+\\)?\\)")
        (1 font-lock-keyword-face)
        (2 font-lock-variable-name-face))
       ("[ \t\n]\\([+-]\\)[ \t\n]"
@@ -95,7 +95,7 @@
 	     (1 font-lock-variable-name-face))
 	    ("\\<\\(\\$\\$\\(\\s_\\|\\sw\\)+\\)\\>"
 	     (1 font-lock-variable-name-face))
-	    ("\\<\\(NOT\\|NEGATE\\|NONE\\|LINK\\|BARRIER\\|CBARRIER\\|OR\\|TARGET\\|IF\\|TO\\|[psc]\\)\\>"
+	    ("\\<\\(NOT\\|NEGATE\\|NONE\\|LINK\\|BARRIER\\|CBARRIER\\|OR\\|TARGET\\|IF\\|AFTER\\|TO\\|[psc]\\)\\>"
 	     1 font-lock-function-name-face)
 	    ("\\B\\(\\^\\)"		; fail-fast
 	     1 font-lock-function-name-face)))
@@ -184,7 +184,8 @@ seems this function only runs on comments and strings..."
 ;;; Indentation 
 
 (defvar cg-kw-list
-  '("SUBSTITUTE"
+  '("SUBSTITUTE" "IFF"
+    "ADDCOHORT" "REMCOHORT"
     "MAP"    "ADD"
     "SELECT" "REMOVE"
     "LIST"   "SET"
@@ -319,7 +320,7 @@ before getting useful..."
 		  "X clipboard does not seem to contain vislcg3 --trace rule info"))
 	(rule (or input (x-selection-value 'CLIPBOARD))))
     (if (string-match
-	 "\\(\\(select\\|remove\\|map\\|add\\|substitute\\):\\)?\\([0-9]+\\)"
+	 "\\(\\(select\\|iff\\|remove\\|map\\|addcohort\\|remcohort\\|add\\|substitute\\):\\)?\\([0-9]+\\)"
 	 rule)
 	(progn (goto-line (string-to-number (match-string 3 rule)))
 	       (setq cg-goto-history (cons rule cg-goto-history)))
