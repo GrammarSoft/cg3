@@ -30,7 +30,7 @@
 
 namespace CG3 {
 
-ApertiumApplicator::ApertiumApplicator(UFILE *ux_err) 
+ApertiumApplicator::ApertiumApplicator(UFILE *ux_err)
 	: GrammarApplicator(ux_err)
 {
 	nullFlush=false;
@@ -62,7 +62,7 @@ UChar ApertiumApplicator::u_fgetc_wrapper(UFILE *input) {
 		int ch;
 		int result;
 		int inputsize=0;
-		
+
 		do {
 			ch = fgetc(u_fgetfile(input));
 			if (ch==0) {
@@ -89,8 +89,8 @@ UChar ApertiumApplicator::u_fgetc_wrapper(UFILE *input) {
 		return u_fgetc(input);
 	}
  }
- 
- 
+
+
 int ApertiumApplicator::runGrammarOnTextWrapperNullFlush(UFILE *input, UFILE *output) {
 	setNullFlush(false);
 	runningWithNullFlush=true;
@@ -103,7 +103,7 @@ int ApertiumApplicator::runGrammarOnTextWrapperNullFlush(UFILE *input, UFILE *ou
 	return 0;
 }
 
-/* 
+/*
  * Run a constraint grammar on an Apertium input stream
  */
 
@@ -125,12 +125,12 @@ int ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 		u_fprintf(ux_stderr, "Error: Output is null - cannot write to nothing!\n");
 		CG3Quit(1);
 	}
-	
+
 	if (!grammar) {
 		u_fprintf(ux_stderr, "Error: No grammar provided - cannot continue! Hint: call setGrammar() first.\n");
 		CG3Quit(1);
 	}
-	
+
 	if (!grammar->delimiters || grammar->delimiters->empty()) {
 		if (!grammar->soft_delimiters || grammar->soft_delimiters->empty()) {
 			u_fprintf(ux_stderr, "Warning: No soft or hard delimiters defined in grammar. Hard limit of %u cohorts may break windows in unintended places.\n", hard_limit);
@@ -140,15 +140,15 @@ int ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 		}
 	}
 
-	UChar inchar = 0; 		// Current character 
+	UChar inchar = 0; 		// Current character
 	bool superblank = false; 	// Are we in a superblank ?
 	bool incohort = false; 		// Are we in a cohort ?
 	UString firstblank;		// Blanks before the first window
-	
+
 	index();
 
 	uint32_t resetAfter = ((num_windows+4)*2+1);
-	
+
 	begintag = addTag(stringbits[S_BEGINTAG].getTerminatedBuffer())->hash; // Beginning of sentence tag
 	endtag = addTag(stringbits[S_ENDTAG].getTerminatedBuffer())->hash; // End of sentence tag
 
@@ -168,7 +168,7 @@ int ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 		}
 
 		if (inchar == '[') { // Start of a superblank section
-			superblank = true;	
+			superblank = true;
 		}
 
 		if (inchar == ']') { // End of a superblank section
@@ -178,26 +178,26 @@ int ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 		if (inchar == '\\' && !incohort) {
 			if (cCohort) {
 				cCohort->text += inchar;
-				inchar = u_fgetc_wrapper(input); 
+				inchar = u_fgetc_wrapper(input);
 				cCohort->text += inchar;
 			}
 			else if (lSWindow) {
 				lSWindow->text += inchar;
-				inchar = u_fgetc_wrapper(input); 
+				inchar = u_fgetc_wrapper(input);
 				lSWindow->text += inchar;
 			}
 			else {
 				u_fprintf(output, "%C", inchar);
-				inchar = u_fgetc_wrapper(input); 
+				inchar = u_fgetc_wrapper(input);
 				u_fprintf(output, "%C", inchar);
 			}
 			continue;
 		}
-		
+
 		if (inchar == '^') {
 			incohort = true;
 		}
-		
+
 		if (superblank == true || inchar == ']' || incohort == false) {
 			if (cCohort) {
 				cCohort->text += inchar;
@@ -210,7 +210,7 @@ int ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 			}
 			continue;
 		}
-			
+
 		if (incohort) {
 			// Create magic reading
 			if (cCohort && cCohort->readings.empty()) {
@@ -236,7 +236,7 @@ int ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 				foreach (ReadingList, cCohort->readings, iter, iter_end) {
 					addTagToReading(**iter, endtag);
 				}
-				
+
 				cSWindow->appendCohort(cCohort);
 				lSWindow = cSWindow;
 				cSWindow = 0;
@@ -246,7 +246,7 @@ int ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 			// If we don't have a current window, create one
 			if (!cSWindow) {
 				cSWindow = gWindow->allocAppendSingleWindow();
-				
+
 				// Create 0th Cohort which serves as the beginning of sentence
 				cCohort = new Cohort(cSWindow);
 				cCohort->global_number = 0;
@@ -268,12 +268,12 @@ int ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 				cCohort = 0;
 				numWindows++;
 			} // created at least one cSWindow by now
-			
+
 			// If the current cohort is looking ok, and we have an available
 			// window, add the cohort to the window.
 			if (cCohort && cSWindow) {
 				cSWindow->appendCohort(cCohort);
-			} 
+			}
 			if (gWindow->next.size() > num_windows) {
 				while (!gWindow->previous.empty() && gWindow->previous.size() > num_windows) {
 					SingleWindow *tmp = gWindow->previous.front();
@@ -297,16 +297,23 @@ int ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 			// We encapsulate wordforms within '"<' and
 			// '>"' for internal processing.
 			wordform += '<';
-			while (inchar != '/') {
-				inchar = u_fgetc_wrapper(input); 
+			while (true) {
+				inchar = u_fgetc_wrapper(input);
 
-				if (inchar != '/') {
+				if (inchar == '/') {
+					break;
+				}
+				else if (inchar == '\\') {
+					inchar = u_fgetc_wrapper(input);
+					wordform += inchar;
+				}
+				else {
 					wordform += inchar;
 				}
 			}
 			wordform += '>';
 			wordform += '"';
-			
+
 			//u_fprintf(output, "# %S\n", wordform);
 			cCohort->wordform = addTag(wordform)->hash;
 			numCohorts++;
@@ -315,7 +322,7 @@ int ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 			UString current_reading;
 			Reading *cReading = 0;
 
-			// Read in the readings	
+			// Read in the readings
 			while (incohort) {
 				inchar = u_fgetc_wrapper(input);
 
@@ -325,7 +332,7 @@ int ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 					current_reading += inchar;
 					continue;
 				}
-				
+
 				if (inchar == '$') {
 					// Add the final reading of the cohort
 					cReading = new Reading(cCohort);
@@ -363,11 +370,11 @@ int ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 
 					cCohort->appendReading(cReading);
 					numReadings++;
-	
+
 					current_reading.clear();
 					continue; // while not $
 				}
-	
+
 				current_reading += inchar;
 			} // end while not $
 
@@ -398,7 +405,7 @@ int ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 		cCohort = 0;
 		cSWindow = 0;
 	}
-	
+
 	// Run the grammar & print results
 	while (!gWindow->next.empty()) {
 		while (!gWindow->previous.empty() && gWindow->previous.size() > num_windows) {
@@ -410,7 +417,7 @@ int ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 		gWindow->shuffleWindowsDown();
 		runGrammarOnWindow();
 	}
-	
+
 	gWindow->shuffleWindowsDown();
 	while (!gWindow->previous.empty()) {
 		SingleWindow *tmp = gWindow->previous.front();
@@ -418,7 +425,7 @@ int ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 		delete tmp;
 		gWindow->previous.pop_front();
 	}
-	
+
 	if ((inchar) && inchar != 0xffff) {
 		u_fprintf(output, "%C", inchar); // eg. final newline
 	}
@@ -448,7 +455,7 @@ void ApertiumApplicator::processReading(Reading *cReading, const UChar *reading_
 	UString tmptag;
 	UString base;
 	UString suf;
-	bool tags = false; 
+	bool tags = false;
 	bool unknown = false;
 	bool multi = false;
 	UChar join_idx = '0'; // Set the join index to the number '0' in ASCII/UTF-8
@@ -472,7 +479,7 @@ void ApertiumApplicator::processReading(Reading *cReading, const UChar *reading_
 
 		if (*m == '+' && multi == true) { // If we see a '+' and we are in a multiword queue, we want to stop appending
 			multi = false;
-		} 
+		}
 
 		if (multi) {
 			suf += *m;
@@ -484,7 +491,7 @@ void ApertiumApplicator::processReading(Reading *cReading, const UChar *reading_
 	// We encapsulate baseforms within '"' for internal processing.
 	base += '"';
 	while (*c != '\0') {
-		if (*c == '*') { // Initial asterisk means word is unknown, and 
+		if (*c == '*') { // Initial asterisk means word is unknown, and
 				// should just be copied in the output.
 			unknown = true;
 		}
@@ -681,7 +688,7 @@ void ApertiumApplicator::printReading(Reading *reading, UFILE *output) {
 					break;
 				}
 			}
-			
+
 			// this corresponds to fst_processor.cc in lttoolbox:
 			bool firstupper = first < wf.length() && (u_isupper(wf[first]) != 0);
 			bool uppercase = firstupper && u_isupper(wf[wf.length()-1]);
@@ -705,13 +712,13 @@ void ApertiumApplicator::printReading(Reading *reading, UFILE *output) {
 			bf_escaped += bf[i];
 		}
 		u_fprintf(output, "%S", bf_escaped.c_str());
-		
+
 		// Tag::printTagRaw(output, single_tags[reading->baseform]);
 	}
 
 	// Reorder: MAPPING tags should appear before the join of multiword tags,
-	// turn <vblex><actv><pri><p3><pl>+í<pr><@FMAINV><@FOO>$ 
-	// into <vblex><actv><pri><p3><pl><@FMAINV><@FOO>+í<pr>$ 
+	// turn <vblex><actv><pri><p3><pl>+í<pr><@FMAINV><@FOO>$
+	// into <vblex><actv><pri><p3><pl><@FMAINV><@FOO>+í<pr>$
 	uint32List tags_list;
 	uint32List multitags_list; // everything after a +, until the first MAPPING tag
 	uint32List::iterator tter;
@@ -723,7 +730,7 @@ void ApertiumApplicator::printReading(Reading *reading, UFILE *output) {
 		} else if (tag->type & T_MAPPING) {
 			multi = false;
 		}
-		
+
 		if (multi) {
 			multitags_list.push_back(*tter);
 		} else {
@@ -731,7 +738,7 @@ void ApertiumApplicator::printReading(Reading *reading, UFILE *output) {
 		}
 	}
 	tags_list.insert(tags_list.end(),multitags_list.begin(),multitags_list.end());
-		
+
 	uint32HashMap used_tags;
 	for (tter = tags_list.begin() ; tter != tags_list.end() ; tter++) {
 		if (used_tags.find(*tter) != used_tags.end()) {
@@ -783,13 +790,20 @@ void ApertiumApplicator::printSingleWindow(SingleWindow *window, UFILE *output) 
 
 		mergeMappings(*cohort);
 
-		// Start of cohort 
+		// Start of cohort
 		u_fprintf(output, "^");
 
 		if (print_word_forms == true) {
-			// Lop off the initial and final '"' characters 
-			UString wf(single_tags[cohort->wordform]->tag.c_str()+2, single_tags[cohort->wordform]->tag.length()-4);
-			u_fprintf(output, "%S/", wf.c_str());
+			// Lop off the initial and final '"' characters
+			UnicodeString wf(single_tags[cohort->wordform]->tag.c_str()+2, single_tags[cohort->wordform]->tag.length()-4);
+			UString wf_escaped;
+			for (int i=0 ; i<wf.length() ; ++i) {
+				if (wf[i] == '^' || wf[i] == '\\' || wf[i] == '/' || wf[i] == '$' || wf[i] == '[' || wf[i] == ']' || wf[i] == '{' || wf[i] == '}' || wf[i] == '<' || wf[i] == '>') {
+					wf_escaped += '\\';
+				}
+				wf_escaped += wf[i];
+			}
+			u_fprintf(output, "%S/", wf_escaped.c_str());
 		}
 
 		//Tag::printTagRaw(output, single_tags[cohort->wordform]);
@@ -799,7 +813,6 @@ void ApertiumApplicator::printSingleWindow(SingleWindow *window, UFILE *output) 
 			if (grammar->sub_readings_ltr && reading->next) {
 				reading = reverse(reading);
 			}
-
 			printReading(reading, output);
 			if(print_only_first == true)
 			{
@@ -816,8 +829,8 @@ void ApertiumApplicator::printSingleWindow(SingleWindow *window, UFILE *output) 
 		if (!cohort->text.empty()) {
 			u_fprintf(output, "%S", cohort->text.c_str());
 		}
-		
-		u_fflush(output); 
+
+		u_fflush(output);
 	}
 }
 
@@ -857,5 +870,5 @@ void ApertiumApplicator::mergeMappings(Cohort& cohort) {
 	std::sort(order.begin(), order.end(), CG3::Reading::cmp_number);
 	cohort.readings.insert(cohort.readings.begin(), order.begin(), order.end());
 }
-  
+
 }
