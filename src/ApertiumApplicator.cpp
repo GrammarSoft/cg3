@@ -297,7 +297,7 @@ int ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 			// We encapsulate wordforms within '"<' and
 			// '>"' for internal processing.
 			wordform += '<';
-			while (true) {
+			for (;;) {
 				inchar = u_fgetc_wrapper(input);
 
 				if (inchar == '/') {
