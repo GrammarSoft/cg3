@@ -1,20 +1,17 @@
 "<worda>"
 	"worda" some tags AA @UnifSet @same-but-different-list @same-but-different-set ID:1 R:from:3 ADD:11 ADDRELATIONS(from,to):12 SELECT:SameBase ADD:34 ADD:36 
 ;	"wordc" some tags ID:1 R:from:3 SELECT:SameBase 
-;	"wordc" some tags ID:1 R:from:3 SELECT:SameBase 
 "<wordb>"
 	"wordb" some tags ID:2 R:from:3 
 	"worda" some tags CC @UnifSet @same-but-different-list @same-but-different-set ID:2 R:from:3 ADD:11 ADDRELATIONS(from,to):12 ADD:34 ADD:36 
 "<wordc>"
 	"wordc" some tags BB EE @UnifSet ID:3 R:to:1 R:to:2 ADD:11 SELECT:two 
 ;	"wordc" some tags ID:3 R:to:1 R:to:2 SELECT:two 
-;	"wordc" some tags ID:3 R:to:1 R:to:2 SELECT:two 
 "<wordd>"
 	"wordd" some tags 
 	"wordd" some tags BB EE @UnifSet @same-but-different-list @same-but-different-set ADD:11 ADD:34 ADD:36 
 "<worde>"
 	"replaced:rde" some tags CC @UnifSet ADD:11 SELECT:one SUBSTITUTE:29 
-;	"worde" some tags SELECT:one 
 ;	"worde" some tags SELECT:one 
 "<wordf>"
 	"replaced:f" some tags THIS SUBSTITUTE:29 
@@ -26,7 +23,6 @@
 ;	"wordg" some tags ALSONOTTHIS SELECT:this 
 "<wordh>"
 	"replaced:h" some tags <Hprof> AA CC EE THIS SELECT:regex ADD:23 ADD:25 SUBSTITUTE:29 
-;	"wordh" some tags SELECT:regex 
 ;	"wordh" some tags SELECT:regex 
 "<wordi>"
 	"wordi" some tags <before> THIS <after> ADD:23 ADD:24 SUBSTITUTE:26 
