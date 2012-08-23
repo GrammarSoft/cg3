@@ -210,6 +210,7 @@ namespace CG3 {
 		bool unmapReading(Reading& reading, const uint32_t rule);
 		TagList getTagList(const Set& theSet, bool unif_mode = false) const;
 		void splitMappings(TagList& mappings, Cohort& cohort, Reading& reading, bool mapped = false);
+		void mergeReadings(ReadingList& readings);
 		void mergeMappings(Cohort& cohort);
 		bool isChildOf(const Cohort *child, const Cohort *parent);
 		bool wouldParentChildLoop(const Cohort *parent, const Cohort *child);

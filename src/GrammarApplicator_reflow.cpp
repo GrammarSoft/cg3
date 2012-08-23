@@ -587,9 +587,9 @@ void GrammarApplicator::splitMappings(TagList& mappings, Cohort& cohort, Reading
 	}
 }
 
-void GrammarApplicator::mergeMappings(Cohort& cohort) {
+void GrammarApplicator::mergeReadings(ReadingList& readings) {
 	std::map<uint32_t, ReadingList> mlist;
-	foreach (ReadingList, cohort.readings, iter, iter_end) {
+	foreach (ReadingList, readings, iter, iter_end) {
 		Reading *r = *iter;
 		uint32_t hp = r->hash_plain;
 		if (trace) {
@@ -600,11 +600,11 @@ void GrammarApplicator::mergeMappings(Cohort& cohort) {
 		mlist[hp].push_back(r);
 	}
 
-	if (mlist.size() == cohort.readings.size()) {
+	if (mlist.size() == readings.size()) {
 		return;
 	}
 
-	cohort.readings.clear();
+	readings.clear();
 	std::vector<Reading*> order;
 
 	std::map<uint32_t, ReadingList>::iterator miter;
@@ -624,7 +624,15 @@ void GrammarApplicator::mergeMappings(Cohort& cohort) {
 	}
 
 	std::sort(order.begin(), order.end(), CG3::Reading::cmp_number);
-	cohort.readings.insert(cohort.readings.begin(), order.begin(), order.end());
+	readings.insert(readings.begin(), order.begin(), order.end());
+}
+
+void GrammarApplicator::mergeMappings(Cohort& cohort) {
+	mergeReadings(cohort.readings);
+	if (trace) {
+		mergeReadings(cohort.deleted);
+		mergeReadings(cohort.delayed);
+	}
 }
 
 Cohort *GrammarApplicator::delimitAt(SingleWindow& current, Cohort *cohort) {
