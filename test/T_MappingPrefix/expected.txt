@@ -15,7 +15,5 @@
 	"word2" b £re-mapped UNMAP:12:unsafe MAP:14 
 "<word3>"
 	"word3" a b c REMOVE:17 
-;	"word3" a b c £a REMOVE:17 
-;	"word3" a b c £b REMOVE:17 
-;	"word3" a b c £c REMOVE:17 
+;	"word3" a b c £a £b £c REMOVE:17 
 
