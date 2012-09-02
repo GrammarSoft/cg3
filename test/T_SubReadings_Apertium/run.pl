@@ -19,7 +19,7 @@ if (!$binary_proc || $binary_proc eq '' || !(-x $binary_proc)) {
 	die("Error: $binary_proc is not executable!");
 }
 
-`"$binary_comp" grammar.txt grammar.cg3b >stdout.txt 2>stderr.txt`;
+`"$binary_comp" grammar.cg3 grammar.cg3b >stdout.txt 2>stderr.txt`;
 
 if (-s "grammar.cg3b") {
 	print STDERR "Success ";

@@ -11,7 +11,7 @@ my $bpath = $ARGV[0];
 my $binary = $bpath."cg-proc";
 my $compiler = $bpath."cg-comp";
 
-`"$compiler" grammar.txt grammar.bin  >stdout.txt 2>stderr.txt`;
+`"$compiler" grammar.cg3 grammar.bin  >stdout.txt 2>stderr.txt`;
 `"$binary" -d grammar.bin  input.txt output.txt >>stdout.txt 2>>stderr.txt`;
 `diff -B expected.txt output.txt >diff.txt`;
 
