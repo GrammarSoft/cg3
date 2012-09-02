@@ -261,6 +261,10 @@ Set *TextualParser::parseSetInline(UChar *& p, Set *s) {
 				}
 			}
 		}
+		else if (!wantop) {
+			u_fprintf(ux_stderr, "Error: Missing set on line %u!\n", result->lines);
+			incErrorCount();
+		}
 	}
 
 	if (s) {

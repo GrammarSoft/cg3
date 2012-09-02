@@ -245,7 +245,7 @@ inline uint32_t SKIPTOWS(UChar *& p, const UChar a = 0, const bool allowhash = f
 	while (*p && !ISSPACE(*p)) {
 		if (!allowhash && *p == '#' && !ISESC(p)) {
 			s += SKIPLN(p);
-			p--;
+			--p;
 		}
 		if (ISNL(*p)) {
 			++s;
