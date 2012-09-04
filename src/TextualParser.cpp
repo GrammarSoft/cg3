@@ -1712,6 +1712,11 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 			int error = stat(abspath.c_str(), &_stat);
 
 			if (error != 0) {
+				abspath = &cbuffers[0][0];
+				error = stat(abspath.c_str(), &_stat);
+			}
+
+			if (error != 0) {
 				u_fprintf(ux_stderr, "Error: Cannot stat %s due to error %d - bailing out!\n", abspath.c_str(), error);
 				CG3Quit(1);
 			}
@@ -1792,17 +1797,17 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 		}
 		// COPY
 		else if (ISCHR(*p,'C','c') && ISCHR(*(p+3),'Y','y') && ISCHR(*(p+1),'O','o') && ISCHR(*(p+2),'P','p')
-			&& !ISSTRING(p, 4)) {
+			&& !ISSTRING(p, 3)) {
 			parseRule(p, K_COPY);
 		}
 		// JUMP
 		else if (ISCHR(*p,'J','j') && ISCHR(*(p+3),'P','p') && ISCHR(*(p+1),'U','u') && ISCHR(*(p+2),'M','m')
-			&& !ISSTRING(p, 4)) {
+			&& !ISSTRING(p, 3)) {
 			parseRule(p, K_JUMP);
 		}
 		// MOVE
 		else if (ISCHR(*p,'M','m') && ISCHR(*(p+3),'E','e') && ISCHR(*(p+1),'O','o') && ISCHR(*(p+2),'V','v')
-			&& !ISSTRING(p, 4)) {
+			&& !ISSTRING(p, 3)) {
 			parseRule(p, K_MOVE);
 		}
 		// SWITCH
@@ -1814,7 +1819,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 		// EXECUTE
 		else if (ISCHR(*p,'E','e') && ISCHR(*(p+6),'E','e') && ISCHR(*(p+1),'X','x') && ISCHR(*(p+2),'E','e')
 			&& ISCHR(*(p+3),'C','c') && ISCHR(*(p+4),'U','u') && ISCHR(*(p+5),'T','t')
-			&& !ISSTRING(p, 7)) {
+			&& !ISSTRING(p, 6)) {
 			parseRule(p, K_EXECUTE);
 		}
 		// UNMAP
