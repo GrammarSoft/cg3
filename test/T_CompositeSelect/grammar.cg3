@@ -1,7 +1,0 @@
-DELIMITERS = "<$.>" ;
-
-LIST ASet = (alsowanted wanted) ;
-
-SECTION
-
-SELECT ASet ;

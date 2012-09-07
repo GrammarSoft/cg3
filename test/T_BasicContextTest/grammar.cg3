@@ -7,6 +7,11 @@ BEFORE-SECTIONS
 
 ADD (@good-not-link) (*) (NOT 1 (something) LINK -1* (wanted)) ;
 ADD (@bad-not-link) (*) (NOT 5 (something) LINK -1* (wanted)) ;
+ADD (@seen-untouchable-good) (*) (0 (untouchable)) ;
+ADD (@seen-untouchable-good) (*) (-1 (untouchable)) ;
+ADD (@seen-untouchable-bad) (untouchable) ;
+ADD (@seen-untouchable-bad) (*) (0C (untouchable)) ;
+ADD (@seen-untouchable-bad) (*) (-1C (untouchable)) ;
 
 SECTION
 

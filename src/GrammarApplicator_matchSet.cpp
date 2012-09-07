@@ -780,6 +780,9 @@ bool GrammarApplicator::doesSetMatchCohortNormal(Cohort& cohort, const uint32_t 
 	}
 	bool retval = false;
 	const Set *theset = grammar->sets_by_contents.find(set)->second;
+	if (cohort.wread && doesSetMatchReading(*cohort.wread, theset->hash, (theset->type & (ST_CHILD_UNIFY|ST_SPECIAL)) != 0)) {
+		retval = true;
+	}
 	if (doesSetMatchCohortNormal_helper(cohort.readings, theset, test)) {
 		retval = true;
 	}

@@ -1,4 +1,0 @@
-"<word>"
-	"word" notwanted alsowanted
-	"word" wanted alsowanted
-	"word" notmeeither alsowanted
