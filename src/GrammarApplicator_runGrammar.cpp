@@ -133,11 +133,11 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 				}
 				// Break if there is a newline
 				if (ISNL(line[i])) {
-					cleaned[packoff] = 0;
+					cleaned[packoff+1] = cleaned[packoff] = 0;
 					goto gotaline; // Oh how I wish C++ had break 2;
 				}
 				if (line[i] == 0) {
-					cleaned[packoff] = 0;
+					cleaned[packoff+1] = cleaned[packoff] = 0;
 					break;
 				}
 				cleaned[packoff++] = line[i];
@@ -145,7 +145,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 			// If we reached this, buffer wasn't big enough. Double the size of the buffer and try again.
 			offset = line.size()-1;
 			line.resize(line.size()*2, 0);
-			cleaned.resize(line.size(), 0);
+			cleaned.resize(line.size()+1, 0);
 		}
 
 gotaline:
@@ -167,7 +167,7 @@ gotaline:
 				u_fflush(ux_stderr);
 				goto istext;
 			}
-			// ToDo: Discard or store text after the word form
+			space[1] = 0;
 
 			if (cCohort && cCohort->readings.empty()) {
 				cReading = initEmptyCohort(*cCohort);
@@ -284,6 +284,26 @@ gotaline:
 			lReading = 0;
 			indents.clear();
 			numCohorts++;
+
+			space += 2;
+			if (space[0]) {
+				cCohort->wread = new Reading(cCohort);
+				cCohort->wread->wordform = cCohort->wordform;
+				addTagToReading(*cCohort->wread, cCohort->wread->wordform);
+				while (space[0]) {
+					SKIPWS(space);
+					UChar *n = space;
+					if (*n == '"') {
+						++n;
+						SKIPTO_NOSPAN(n, '"');
+					}
+					SKIPTOWS(n);
+					n[0] = 0;
+					Tag *tag = addTag(space);
+					addTagToReading(*cCohort->wread, tag->hash);
+					space = ++n;
+				}
+			}
 		}
 		else if (cleaned[0] == ' ' && cleaned[1] == '"' && cCohort) {
 			// Count current indent level
@@ -333,7 +353,7 @@ gotaline:
 
 			while (space && (space = u_strchr(space, ' ')) != 0) {
 				space[0] = 0;
-				space++;
+				++space;
 				if (base && base[0]) {
 					Tag *tag = addTag(base);
 					if (tag->type & T_MAPPING || tag->tag[0] == grammar->mapping_prefix) {
@@ -345,7 +365,7 @@ gotaline:
 				}
 				base = space;
 				if (*space == '"') {
-					space++;
+					++space;
 					SKIPTO_NOSPAN(space, '"');
 				}
 			}

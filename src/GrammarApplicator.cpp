@@ -375,8 +375,7 @@ void GrammarApplicator::printReading(const Reading *reading, UFILE *output, size
 		if (tag->type & T_RELATION && has_relations) {
 			continue;
 		}
-		u_fprintf(output, "%S", tag->tag.c_str());
-		u_fputc(' ', output);
+		u_fprintf(output, "%S ", tag->tag.c_str());
 	}
 
 	if (has_dep) {
@@ -476,6 +475,15 @@ void GrammarApplicator::printCohort(Cohort *cohort, UFILE *output) {
 		u_fputc(' ', output);
 	}
 	u_fprintf(output, "%S", single_tags.find(cohort->wordform)->second->tag.c_str());
+	if (cohort->wread) {
+		const_foreach (uint32List, cohort->wread->tags_list, tter, tter_end) {
+			if (*tter == cohort->wread->wordform) {
+				continue;
+			}
+			const Tag *tag = single_tags[*tter];
+			u_fprintf(output, " %S", tag->tag.c_str());
+		}
+	}
 	u_fputc('\n', output);
 
 	mergeMappings(*cohort);

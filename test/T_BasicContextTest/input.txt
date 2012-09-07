@@ -1,4 +1,4 @@
-"<word>"
+"<word>" untouchable static tags
 	"word" notwanted
 	"word" wanted
 	"word" notmeeither
