@@ -304,10 +304,6 @@
       <para>
         The 'ALL' option will require that all of the relations match the set.
         For example, position 'ALL s' requires that all of the siblings match the set.
-        For now, you can still write 'sC' which will be converted to 'ALL s', but that is deprecated
-        and will change meaning in future versions of CG-3.
-        This still means that if you wish to find a relation where all readings have a set you must do e.g.
-        (c (ADJ) LINK 0C (ADJ)).
       </para>
       <screen>
         (ALL s (ADJ))
@@ -322,10 +318,6 @@
       <para>
         The 'NONE' option will require that none of the relations match the set.
         For example, position 'NONE c' requires that none of the children match the set.
-        For now, you can still write 'NOT c' which will be converted to 'NONE c', but that is deprecated
-        and will change meaning in future versions of CG-3.
-        This still means that if you wish to find a reading not matching a set you must do e.g.
-        (c (*) LINK NOT 0 (ADJ)).
       </para>
       <screen>
         (NONE c (ADJ))
