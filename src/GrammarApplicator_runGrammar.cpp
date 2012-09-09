@@ -287,7 +287,7 @@ gotaline:
 
 			space += 2;
 			if (space[0]) {
-				cCohort->wread = new Reading(cCohort);
+				cCohort->wread.reset(new Reading(cCohort));
 				cCohort->wread->wordform = cCohort->wordform;
 				addTagToReading(*cCohort->wread, cCohort->wread->wordform);
 				while (space[0]) {

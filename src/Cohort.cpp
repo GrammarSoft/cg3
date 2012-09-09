@@ -42,8 +42,7 @@ is_pleft(0),
 is_pright(0),
 parent(p),
 prev(0),
-next(0),
-wread(0)
+next(0)
 {
 	#ifdef CG_TRACE_OBJECTS
 	std::cerr << "OBJECT: " << __PRETTY_FUNCTION__ << std::endl;
