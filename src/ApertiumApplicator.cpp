@@ -300,7 +300,7 @@ int ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 			for (;;) {
 				inchar = u_fgetc_wrapper(input);
 
-				if (inchar == '/') {
+				if (inchar == '/' || inchar == '<') {
 					break;
 				}
 				else if (inchar == '\\') {
@@ -321,6 +321,36 @@ int ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 			// We're now at the beginning of the readings
 			UString current_reading;
 			Reading *cReading = 0;
+
+			// Handle the static reading of ^estació<n><f><sg>/season<n><sg>/station<n><sg>$
+			// Gobble up all <tags> until the first / or $ and stuff them in the static reading
+			if (inchar == '<') {
+				//u_fprintf(ux_stderr, "Static reading\n");
+				cCohort->wread.reset(new Reading(cCohort));
+				UString tag;
+				do {
+					inchar = u_fgetc_wrapper(input);
+					if (inchar == '\\') {
+						inchar = u_fgetc_wrapper(input);
+						tag += inchar;
+						continue;
+					}
+					if (inchar == '<') {
+						continue;
+					}
+					if (inchar == '>') {
+						Tag *t = addTag(tag);
+						addTagToReading(*cCohort->wread, t->hash);
+						//u_fprintf(ux_stderr, "Adding tag %S\n", tag.c_str());
+						tag.clear();
+						continue;
+					}
+					if (inchar == '/' || inchar == '$') {
+						break;
+					}
+					tag += inchar;
+				} while (inchar != '/' && inchar != '$');
+			}
 
 			// Read in the readings
 			while (incohort) {
@@ -504,7 +534,6 @@ void ApertiumApplicator::processReading(Reading *cReading, const UChar *reading_
 
 	if (!suf.empty()) { // Append the multiword suffix to the baseform
 			   // (this is normally done in pretransfer)
-
 		base += suf;
 	}
 	base += '"';
@@ -785,7 +814,6 @@ void ApertiumApplicator::printSingleWindow(SingleWindow *window, UFILE *output) 
 			continue;
 		}
 
-
 		Cohort *cohort = window->cohorts[c];
 
 		mergeMappings(*cohort);
@@ -803,7 +831,19 @@ void ApertiumApplicator::printSingleWindow(SingleWindow *window, UFILE *output) 
 				}
 				wf_escaped += wf[i];
 			}
-			u_fprintf(output, "%S/", wf_escaped.c_str());
+			u_fprintf(output, "%S", wf_escaped.c_str());
+
+			// Print the static reading tags
+			if (cohort->wread) {
+				const_foreach (uint32List, cohort->wread->tags_list, tter, tter_end) {
+					if (*tter == cohort->wread->wordform) {
+						continue;
+					}
+					const Tag *tag = single_tags[*tter];
+					u_fprintf(output, "<%S>", tag->tag.c_str());
+				}
+			}
+			u_fprintf(output, "/");
 		}
 
 		//Tag::printTagRaw(output, single_tags[cohort->wordform]);
