@@ -41,12 +41,10 @@ int main(int argc, char *argv[]) {
 		CG3Quit(1);
 	}
 
-	const char *codepage_default = ucnv_getDefaultName();
 	ucnv_setDefaultName("UTF-8");
-	const char *locale_default = "en_US_POSIX"; //uloc_getDefault();
+	const char *codepage_default = ucnv_getDefaultName();
 	uloc_setDefault("en_US_POSIX", &status);
-
-	std::cerr << "Codepage " << codepage_default << ", locale " << locale_default << std::endl;
+	const char *locale_default = uloc_getDefault();
 
 	ux_stdin = u_finit(stdin, locale_default, codepage_default);
 	ux_stdout = u_finit(stdout, locale_default, codepage_default);
@@ -78,6 +76,4 @@ int main(int argc, char *argv[]) {
 	u_fclose(ux_stderr);
 
 	u_cleanup();
-
-	return EXIT_SUCCESS;
 }

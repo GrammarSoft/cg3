@@ -54,7 +54,7 @@ namespace CG3 {
 		SingleWindow *parent;
 		UString text;
 		Cohort *prev, *next;
-		Reading *wread;
+		boost::scoped_ptr<Reading> wread;
 		ReadingList readings;
 		ReadingList deleted;
 		ReadingList delayed;
