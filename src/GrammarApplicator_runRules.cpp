@@ -942,6 +942,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						int32_t orgoffset = rule.dep_target->offset;
 						uint32Set seen_targets;
 
+						seen_barrier = false;
 						bool attached = false;
 						Cohort *target = cohort;
 						while (!attached) {
@@ -982,7 +983,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 										break;
 									}
 								}
-								if (rule.flags & RF_NEAREST) {
+								if (seen_barrier || (rule.flags & RF_NEAREST)) {
 									break;
 								}
 								if (seen_targets.find(attach->global_number) != seen_targets.end()) {
