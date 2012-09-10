@@ -175,7 +175,7 @@
         <primary>cc</primary>
       </indexterm>
       <para>
-        The 'cc' position asks for an ancestor of the current position,
+        The 'cc' position asks for a descendent of the current position,
         where descendent is defined as any child, grand-child, great-grand-child, etc...
       </para>
       <screen>
