@@ -1097,6 +1097,37 @@ void TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 		result->has_relations = true;
 	}
 
+	if (!(rule->flags & RF_REMEMBERX)) {
+		bool found = false;
+		if (rule->dep_target && (rule->dep_target->pos & POS_MARK_JUMP)) {
+			found = true;
+		}
+		else {
+			ContextualTest *th = 0;
+
+			th = rule->test_head;
+			while (th) {
+				if (th->pos & POS_MARK_JUMP) {
+					found = true;
+					break;
+				}
+				th = th->next;
+			}
+
+			th = rule->dep_test_head;
+			while (th) {
+				if (th->pos & POS_MARK_JUMP) {
+					found = true;
+					break;
+				}
+				th = th->next;
+			}
+		}
+		if (found) {
+			u_fprintf(ux_stderr, "Warning: Rule on line %u had 'x' in the first part of a contextual test, but no REMEMBERX flag.\n", result->lines);
+		}
+	}
+
 	rule->reverseContextualTests();
 	addRuleToGrammar(rule);
 }
