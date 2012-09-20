@@ -155,7 +155,6 @@ namespace CG3 {
 		Cohort *target;
 		Cohort *mark;
 		Cohort *attach_to;
-		const Rule *active_rule;
 
 		uint32HashMap unif_tags;
 		uint32_t unif_last_wordform;
