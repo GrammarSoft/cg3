@@ -32,7 +32,7 @@
       Launch a Terminal from Applications -&gt; Accessories, and in that do
       <screen>
         sudo apt-get install g++ libicu-dev subversion cmake libboost-dev
-        # For TCMalloc
+        # For TCMalloc, optional
         sudo apt-get install libgoogle-perftools0
         cd /tmp/
         svn co http://beta.visl.sdu.dk/svn/visl/tools/vislcg3/trunk vislcg3
@@ -47,17 +47,17 @@
   </section>
 
   <section id="fedora">
-    <title>Fedora / Red Hat</title>
+    <title>Fedora / Red Hat / CentOS</title>
     <para>
-      Steps tested on a clean install of Fedora 14, but should work on any version.
+      Steps tested on a clean install of CentOS 6.3, but should work on any version.
       It is assumed you have a working network connection.
     </para>
     <para>
       Launch a Terminal from Applications -&gt; System Tools, and in that do
       <screen>
         su -
-        yum install gcc-c++ libicu-devel subversion cmake boost-devel
-        # For TCMalloc
+        yum install gcc-c++ libicu-devel subversion cmake boost-devel make
+        # For TCMalloc, optional
         yum install google-perftools-devel
         cd /tmp/
         svn co http://beta.visl.sdu.dk/svn/visl/tools/vislcg3/trunk vislcg3
