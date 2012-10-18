@@ -190,7 +190,10 @@ inline bool ISNL(const UChar c) {
 	   c == 0x2028L // Unicode Line Seperator
 	|| c == 0x2029L // Unicode Paragraph Seperator
 	|| c == 0x0085L // EBCDIC NEL
+	|| c == 0x0D0AL // Carriage Return + Line Feed
+	|| c == 0x000DL // Carriage Return
 	|| c == 0x000CL // Form Feed
+	|| c == 0x000BL // Vertical Tab
 	|| c == 0x000AL // ASCII \n
 	);
 }
