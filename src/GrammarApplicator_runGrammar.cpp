@@ -118,10 +118,10 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 	std::vector<std::pair<size_t,Reading*> > indents;
 
 	while (!u_feof(input)) {
-		lines++;
+		++lines;
 		size_t offset = 0, packoff = 0;
 		// Read as much of the next line as will fit in the current buffer
-		while (u_fgets(&line[offset], line.size()-offset, input)) {
+		while (u_fgets(&line[offset], line.size()-offset-1, input)) {
 			// Copy the segment just read to cleaned
 			for (size_t i=offset ; i<line.size() ; ++i) {
 				// Only copy one space character, regardless of how many are in input
@@ -143,7 +143,7 @@ int GrammarApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 				cleaned[packoff++] = line[i];
 			}
 			// If we reached this, buffer wasn't big enough. Double the size of the buffer and try again.
-			offset = line.size()-1;
+			offset = line.size()-2;
 			line.resize(line.size()*2, 0);
 			cleaned.resize(line.size()+1, 0);
 		}
