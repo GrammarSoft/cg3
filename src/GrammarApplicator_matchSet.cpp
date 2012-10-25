@@ -775,7 +775,7 @@ bool GrammarApplicator::doesSetMatchCohortNormal(Cohort& cohort, const uint32_t 
 	/*
 	return !doesSetMatchCohort(cohort, set, options).empty();
 	/*/
-	if (cohort.possible_sets.find(set) == cohort.possible_sets.end()) {
+	if (!(options & (POS_LOOK_DELETED|POS_LOOK_DELAYED)) && cohort.possible_sets.find(set) == cohort.possible_sets.end()) {
 		return false;
 	}
 	bool retval = false;
@@ -821,7 +821,7 @@ bool GrammarApplicator::doesSetMatchCohortCareful(Cohort& cohort, const uint32_t
 	/*
 	return !doesSetMatchCohort(cohort, set, options).empty();
 	/*/
-	if (cohort.possible_sets.find(set) == cohort.possible_sets.end()) {
+	if (!(options & (POS_LOOK_DELETED|POS_LOOK_DELAYED)) && cohort.possible_sets.find(set) == cohort.possible_sets.end()) {
 		return false;
 	}
 	bool retval = true;
