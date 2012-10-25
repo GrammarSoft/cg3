@@ -77,7 +77,7 @@ void GrammarApplicator::indexSingleWindow(SingleWindow& current) {
 				continue;
 			}
 			const Grammar::rules_by_set_t::mapped_type& rules = grammar->rules_by_set.find(*psit)->second;
-			const_foreach (Grammar::rules_by_set_t::mapped_type, rules, rsit, rsir_end) {
+			const_foreach (Grammar::rules_by_set_t::mapped_type, rules, rsit, rsit_end) {
 				updateRuleToCohorts(*c, *rsit);
 			}
 		}
