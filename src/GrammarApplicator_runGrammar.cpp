@@ -291,13 +291,13 @@ gotaline:
 				cCohort->wread->wordform = cCohort->wordform;
 				addTagToReading(*cCohort->wread, cCohort->wread->wordform);
 				while (space[0]) {
-					SKIPWS(space);
+					SKIPWS(space, 0, 0, true);
 					UChar *n = space;
 					if (*n == '"') {
 						++n;
 						SKIPTO_NOSPAN(n, '"');
 					}
-					SKIPTOWS(n);
+					SKIPTOWS(n, 0, true);
 					n[0] = 0;
 					Tag *tag = addTag(space);
 					addTagToReading(*cCohort->wread, tag->hash);

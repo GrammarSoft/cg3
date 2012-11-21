@@ -225,13 +225,13 @@ inline uint32_t SKIPLN(UChar *& p) {
 	return 1;
 }
 
-inline uint32_t SKIPWS(UChar *& p, const UChar a = 0, const UChar b = 0) {
+inline uint32_t SKIPWS(UChar *& p, const UChar a = 0, const UChar b = 0, const bool allowhash = false) {
 	uint32_t s = 0;
 	while (*p && *p != a && *p != b) {
 		if (ISNL(*p)) {
 			++s;
 		}
-		if (*p == '#' && !ISESC(p)) {
+		if (!allowhash && *p == '#' && !ISESC(p)) {
 			s += SKIPLN(p);
 			p--;
 		}
