@@ -297,7 +297,7 @@ gotaline:
 						++n;
 						SKIPTO_NOSPAN(n, '"');
 					}
-					SKIPTOWS(n, 0, true);
+					SKIPTOWS(n, 0, true, true);
 					n[0] = 0;
 					Tag *tag = addTag(space);
 					addTagToReading(*cCohort->wread, tag->hash);
