@@ -159,7 +159,7 @@ gotaline:
 			if (space[0] == '"' && space[1] == '<') {
 				++space;
 				SKIPTO_NOSPAN(space, '"');
-				SKIPTOWS(space, 0, true);
+				SKIPTOWS(space, 0, true, true);
 				--space;
 			}
 			if (space[0] != '"' || space[-1] != '>') {
@@ -336,7 +336,7 @@ gotaline:
 			if (*space == '"') {
 				++space;
 				SKIPTO_NOSPAN(space, '"');
-				SKIPTOWS(space, 0, true);
+				SKIPTOWS(space, 0, true, true);
 				--space;
 			}
 
