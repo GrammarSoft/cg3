@@ -243,7 +243,7 @@ inline uint32_t SKIPWS(UChar *& p, const UChar a = 0, const UChar b = 0, const b
 	return s;
 }
 
-inline uint32_t SKIPTOWS(UChar *& p, const UChar a = 0, const bool allowhash = false) {
+inline uint32_t SKIPTOWS(UChar *& p, const UChar a = 0, const bool allowhash = false, const bool allowscol = false) {
 	uint32_t s = 0;
 	while (*p && !ISSPACE(*p)) {
 		if (!allowhash && *p == '#' && !ISESC(p)) {
@@ -254,7 +254,7 @@ inline uint32_t SKIPTOWS(UChar *& p, const UChar a = 0, const bool allowhash = f
 			++s;
 			++p;
 		}
-		if (*p == ';' && !ISESC(p)) {
+		if (!allowscol && *p == ';' && !ISESC(p)) {
 			break;
 		}
 		if (*p == a && !ISESC(p)) {
