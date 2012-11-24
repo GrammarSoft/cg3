@@ -25,13 +25,13 @@
   <section id="ubuntu-debian">
     <title>Ubuntu / Debian</title>
     <para>
-      Steps tested on a clean install of Ubuntu 10.10, but should work on any version.
+      Steps tested on a clean install of Ubuntu 12.10, but should work on any version.
       It is assumed you have a working network connection.
     </para>
     <para>
       Launch a Terminal from Applications -&gt; Accessories, and in that do
       <screen>
-        sudo apt-get install g++ libicu-dev subversion cmake libboost-dev
+        sudo apt-get install g++ libicu-dev subversion cmake libboost-dev build-essential
         # For TCMalloc, optional
         sudo apt-get install libgoogle-perftools0
         cd /tmp/
