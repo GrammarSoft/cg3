@@ -4,23 +4,32 @@ use warnings;
 
 my $dname = `dirname "$0"`;
 chomp($dname);
-chdir($dname);
+chdir($dname.'/..');
 
-print `svn up --ignore-externals`;
+print STDERR `svn up`;
+print STDERR `make -j5`;
 my $revision = `svnversion -n`;
 $revision =~ s/^([0-9]+).*/$1/g;
 
-print `rm -rfv '/tmp/vislcg3-0.9.8.$revision-osx*' 2>&1`;
+print STDERR `rm -rfv /tmp/vislcg3-0.9.8.$revision-osx* 2>&1`;
 mkdir('/tmp/vislcg3-0.9.8.'.$revision.'-osx');
-print `cp -av ./osx/* /tmp/vislcg3-0.9.8.$revision-osx 2>&1`;
 chdir('/tmp/vislcg3-0.9.8.'.$revision.'-osx');
 mkdir('lib');
 mkdir('bin');
-print `cp -av /usr/local/bin/vislcg3 ./bin/ 2>&1`;
-print `cp -av /usr/local/bin/cg-* ./bin/ 2>&1`;
-print `cp -av /usr/local/bin/cg3* ./bin/ 2>&1`;
-print `cp -av /usr/local/lib/libicu*.dylib ./lib/ 2>&1`;
+print STDERR `cp -av $dname/../src/vislcg3 ./bin/ 2>&1`;
+print STDERR `cp -av $dname/../src/cg-comp ./bin/ 2>&1`;
+print STDERR `cp -av $dname/../src/cg-proc ./bin/ 2>&1`;
+print STDERR `cp -av $dname/../src/cg-conv ./bin/ 2>&1`;
+foreach my $bin (('vislcg3','cg-comp','cg-proc','cg-conv')) {
+   print STDERR `ln -sv ./bin/$bin $bin`;
+   print STDERR `install_name_tool -change libicuuc.48.dylib \@executable_path/../lib/libicuuc.48.dylib ./bin/$bin`;
+   print STDERR `install_name_tool -change libicuio.48.dylib \@executable_path/../lib/libicuio.48.dylib ./bin/$bin`;
+   print STDERR `install_name_tool -change libicui18n.48.dylib \@executable_path/../lib/libicui18n.48.dylib ./bin/$bin`;
+}
+print STDERR `cp -av $dname/../scripts/cg3-autobin.pl ./bin/ 2>&1`;
+print STDERR `cp -av /usr/local/lib/libicu*.dylib ./lib/ 2>&1`;
 
 chdir('/tmp');
-print `tar -zcvf 'vislcg3-0.9.8.$revision-osx.tar.gz' 'vislcg3-0.9.8.$revision-osx' 2>&1`;
-print `ls -l '/tmp/vislcg3-0.9.8.$revision-osx.tar.gz'`;
+print STDERR `tar -zcvf 'vislcg3-0.9.8.$revision-osx.tar.gz' 'vislcg3-0.9.8.$revision-osx' 2>&1`;
+print STDERR `ls -l '/tmp/vislcg3-0.9.8.$revision-osx.tar.gz'`;
+print "/tmp/vislcg3-0.9.8.$revision-osx\n";
