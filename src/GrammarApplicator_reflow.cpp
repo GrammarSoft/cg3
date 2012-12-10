@@ -347,6 +347,7 @@ void GrammarApplicator::reflowReading(Reading& reading) {
 
 Tag *GrammarApplicator::generateVarstringTag(const Tag *tag) {
 	UnicodeString tmp(tag->tag.c_str(), tag->tag.length());
+	bool did_something = false;
 
 	// Replace unified sets with their matching tags
 	if (tag->vs_sets) {
@@ -361,6 +362,7 @@ Tag *GrammarApplicator::generateVarstringTag(const Tag *tag) {
 				}
 			}
 			tmp.findAndReplace((*tag->vs_names)[i].c_str(), rpl.c_str());
+			did_something = true;
 		}
 	}
 
@@ -368,6 +370,7 @@ Tag *GrammarApplicator::generateVarstringTag(const Tag *tag) {
 	if (!regexgrps.empty()) {
 		for (size_t i=0 ; i<regexgrps.size() ; ++i) {
 			tmp.findAndReplace(stringbits[S_VS1+i].getTerminatedBuffer(), regexgrps[i]);
+			did_something = true;
 		}
 	}
 
@@ -417,6 +420,7 @@ Tag *GrammarApplicator::generateVarstringTag(const Tag *tag) {
 				tmp.truncate(mpos);
 				tmp.append(range);
 			}
+			did_something = true;
 		}
 	} while (found);
 
@@ -428,7 +432,7 @@ Tag *GrammarApplicator::generateVarstringTag(const Tag *tag) {
 	}
 
 	const UChar *nt = tmp.getTerminatedBuffer();
-	if (u_strcmp(nt, tag->tag.c_str()) == 0) {
+	if (!did_something && u_strcmp(nt, tag->tag.c_str()) == 0) {
 		u_fprintf(ux_stderr, "Warning: Unable to generate from tag '%S'! Possibly missing KEEPORDER and/or capturing regex from grammar on line %u before input line %u.\n", tag->tag.c_str(), grammar->lines, numLines);
 		u_fflush(ux_stderr);
 	}
