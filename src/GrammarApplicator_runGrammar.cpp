@@ -442,6 +442,7 @@ istext:
 					}
 					u_fprintf(output, "%S", &line[0]);
 					line[0] = 0;
+					variables.clear();
 					u_fflush(output);
 					u_fflush(ux_stderr);
 					fflush(stdout);
