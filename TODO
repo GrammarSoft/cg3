@@ -32,3 +32,4 @@ ToDo: Cache shared contexts between close rules
 ToDo: Document VSTR and STATIC-SETS
 ToDo: Implement meta information and variables; <STREAMCMD:SETVAR:var,var,var> and <STREAMCMD:REMVAR:var,var,var> ?
 ToDo: Test what happens if you RemCohort a whole window
+ToDo: Runtime or section flag to disable or choose when re-running happens when enclosures get unpacked

@@ -33,7 +33,7 @@
       <screen>
         sudo apt-get install g++ libicu-dev subversion cmake libboost-dev build-essential
         # For TCMalloc, optional
-        sudo apt-get install libgoogle-perftools0
+        sudo apt-get install libgoogle-perftools-dev
         cd /tmp/
         svn co http://beta.visl.sdu.dk/svn/visl/tools/vislcg3/trunk vislcg3
         cd vislcg3/
