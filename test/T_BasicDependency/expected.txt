@@ -3,7 +3,7 @@
 "<bate>"
 	"bater" <fmc> <mv> V PR 3S IND VFIN @FS-STA @child-deep #2→0 
 "<em>"
-	"em" <sam-> PRP @<PIV @self-or-child @self-or-parent #3→2 
+	"em" <sam-> PRP @<PIV @self-or-child-S @self-or-child-c @self-or-parent-S @self-or-parent-p #3→2 
 "<a>"
 	"o" <artd> <-sam> DET F S @>N @parent-deep #4→5 
 "<mulher>"
@@ -19,7 +19,7 @@
 "<bateu>"
 	"bater" <fmc> <mv> V PS 3S IND VFIN @FS-STA @child-deep #3→0 
 "<em>"
-	"em" <sam-> PRP @<PIV @self-or-child @self-or-parent #4→3 
+	"em" <sam-> PRP @<PIV @self-or-child-S @self-or-child-c @self-or-parent-S @self-or-parent-p #4→3 
 "<uma>"
 	"um" <arti> <-sam> DET F S @>N #5→6 
 "<árvore>"
@@ -29,7 +29,7 @@
 </s>
 
 "<em>"
-	"em" PRP @ADVL> @self-or-child @self-or-parent #1→4 
+	"em" PRP @ADVL> @self-or-child-S @self-or-child-c @self-or-parent-S @self-or-parent-p #1→4 
 "<1993>"
 	"1993" <date> <card> <NER:date> NUM M/F S @P< #2→1 
 "<ele>"

@@ -68,7 +68,7 @@ Cohort *GrammarApplicator::runSingleTest(Cohort *cohort, const ContextualTest *t
 	if (foundfirst && (test->pos & POS_SCANFIRST)) {
 		*brk = true;
 	}
-	else if (!(test->pos & (POS_SCANALL|POS_SCANFIRST))) {
+	else if (!(test->pos & (POS_SCANALL|POS_SCANFIRST|POS_SELF))) {
 		*brk = true;
 	}
 	if (test->barrier) {

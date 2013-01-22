@@ -16,10 +16,12 @@ ADD (@parent-deep-error) ("o") (p ("bater")) ;
 ADD (@child-deep) ("bater") (c* ("o")) ;
 ADD (@child-deep-error) ("bater") (c ("o")) ;
 
-ADD (@self-or-child) ("em") (cS (PRP)) ;
+ADD (@self-or-child-S) ("em") (cS (PRP)) ;
+ADD (@self-or-child-c) ("em") (cS (S)) ;
 ADD (@self-or-child-error) ("em") (c (PRP)) ;
 
-ADD (@self-or-parent) ("em") (pS (PRP)) ;
+ADD (@self-or-parent-S) ("em") (pS (PRP)) ;
+ADD (@self-or-parent-p) ("em") (pS (IND)) ;
 ADD (@self-or-parent-error) ("em") (p (PRP)) ;
 
 MAP (§DES) TARGET @P< (*-1 PRP LINK 0 ("em") LINK 0 @PIV LINK p ("bater")) (NOT 0 N-ANIM) ;
