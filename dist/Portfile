@@ -2,10 +2,10 @@
 # $Id$
 
 PortSystem              1.0
+PortGroup               cmake 1.0
 
 name                    vislcg3
 version                 0.9.8.8406
-revision                4
 categories              textproc
 platforms               darwin
 maintainers             tinodidriksen.com:consult
@@ -37,5 +37,3 @@ checksums               md5    e4b9244d1d3074a49ead46819e880864 \
 
 depends_build           port:cmake
 depends_lib             port:icu port:boost
-
-configure.cmd           ./cmake.sh -DCMAKE_INSTALL_PREFIX=/opt/local
