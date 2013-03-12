@@ -48,15 +48,15 @@
 "<one>"
 	"one" #2→1 ID:22 R:leftmost-sibling:23 
 "<two>"
-	"two" #3→1 ID:23 R:leftmost-self-or-ancestor:23 
+	"two" #3→1 ID:23 R:leftmost-self-or-descendent:23 
 "<three>"
-	"three" #4→3 ID:24 R:right-ancestor:23 R:right-child:23 R:rightmost-right-direct-child:23 R:leftmost-direct-child:23 R:leftmost-ancestor:23 R:rightmost-direct-child:23 
+	"three" #4→3 ID:24 R:leftmost-descendent:23 R:right-descendent:23 R:right-child:23 R:rightmost-right-direct-child:23 R:leftmost-direct-child:23 R:rightmost-direct-child:23 
 "<four>"
 	"four" #5→6 
 "<five>"
 	"five" #6→4 ID:26 R:rightmost-right-deepest-child:23 
 "<six>"
-	"six" #7→5 ID:27 R:rightmost-deepest-child:23 R:rightmost-right-ancestor:23 R:rightmost-self-or-ancestor:23 R:leftmost-deepest-child:23 R:rightmost-ancestor:23 
+	"six" #7→5 ID:27 R:rightmost-descendent:23 R:rightmost-deepest-child:23 R:rightmost-self-or-descendent:23 R:rightmost-right-descendent:23 R:leftmost-deepest-child:23 
 "<seven>"
 	"seven" #8→1 ID:28 R:rightmost-sibling:23 
 
