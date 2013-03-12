@@ -82,6 +82,7 @@ Reading::~Reading() {
 	#endif
 
 	delete next;
+	next = 0;
 }
 
 Reading *Reading::allocateReading(Cohort *p) {
