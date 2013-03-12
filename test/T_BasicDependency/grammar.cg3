@@ -30,8 +30,8 @@ MAP (§PAT §EXP) TARGET @ACC (p ("bater")) ;
 
 ADDRELATION (left-child) ("two") FROM (lc ("three")) ;
 ADDRELATION (right-child) ("two") FROM (rc ("three")) ;
-ADDRELATION (left-ancestor) ("two") FROM (lcc ("three")) ;
-ADDRELATION (right-ancestor) ("two") FROM (rcc ("three")) ;
+ADDRELATION (left-descendent) ("two") FROM (lcc ("three")) ;
+ADDRELATION (right-descendent) ("two") FROM (rcc ("three")) ;
 ADDRELATION (leftmost-direct-child) ("two") FROM (llc (*)) ;
 ADDRELATION (rightmost-direct-child) ("two") FROM (rrc (*)) ;
 ADDRELATION (leftmost-left-direct-child) ("two") FROM (lllc (*)) ;
@@ -40,11 +40,11 @@ ADDRELATION (leftmost-deepest-child) ("two") FROM (ll*c (*) LINK NEGATE llc (*))
 ADDRELATION (rightmost-deepest-child) ("two") FROM (rr*c (*) LINK NEGATE rrc (*)) ;
 ADDRELATION (leftmost-left-deepest-child) ("two") FROM (lll*c (*) LINK NEGATE lllc (*)) ;
 ADDRELATION (rightmost-right-deepest-child) ("two") FROM (rrr*c (*) LINK NEGATE rrrc (*)) ;
-ADDRELATION (leftmost-ancestor) ("two") FROM (llcc (*)) ;
-ADDRELATION (rightmost-ancestor) ("two") FROM (rrcc (*)) ;
-ADDRELATION (leftmost-left-ancestor) ("two") FROM (lllcc (*)) ;
-ADDRELATION (rightmost-right-ancestor) ("two") FROM (rrrcc (*)) ;
-ADDRELATION (leftmost-self-or-ancestor) ("two") FROM (llccS (*)) ;
-ADDRELATION (rightmost-self-or-ancestor) ("two") FROM (rrccS (*)) ;
+ADDRELATION (leftmost-descendent) ("two") FROM (llcc (*)) ;
+ADDRELATION (rightmost-descendent) ("two") FROM (rrcc (*)) ;
+ADDRELATION (leftmost-left-descendent) ("two") FROM (lllcc (*)) ;
+ADDRELATION (rightmost-right-descendent) ("two") FROM (rrrcc (*)) ;
+ADDRELATION (leftmost-self-or-descendent) ("two") FROM (llccS (*)) ;
+ADDRELATION (rightmost-self-or-descendent) ("two") FROM (rrccS (*)) ;
 ADDRELATION (leftmost-sibling) ("two") FROM (lls (*)) ;
 ADDRELATION (rightmost-sibling) ("two") FROM (rrs (*)) ;

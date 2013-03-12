@@ -204,6 +204,25 @@
         grammar. In VISL CG-3 all changes to readings become visible to the rest of the grammar immediately.
       </para>
     </section>
+
+    <section id="gotcha-cc-vs-cstar">
+      <title>Contextual position 'cc' vs. 'c*'</title>
+      <para>
+        The contextual positions '<link linkend="dep-ct-descendents">cc</link>' and
+        '<link linkend="dep-ct-deep">c*</link>' may at first glance seem to behave exactly the same,
+        but there is a subtle difference when combined with the
+        <link linkend="dep-ct-leftof">left-of/right-of filters</link> that can lead to wildly different cohorts
+        being chosen in rules asking for TO/FROM contextual targets:
+      </para>
+      <para>
+        <emphasis>cc</emphasis> will first create a complete list of all children and grand-children, then apply
+        any left-of/right-of filters.
+      </para>
+      <para>
+        <emphasis>c*</emphasis> will apply left-of/right-of filters at each step down the child tree, not
+        following any branch which doesn't uphold the filter.
+      </para>
+    </section>
   </section>
 
   <section id="incompatibilites">

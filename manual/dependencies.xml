@@ -181,6 +181,9 @@
       <screen>
         (-1* (N) LINK cc (ADJ))
       </screen>
+      <para>
+        <emphasis><link linkend="gotcha-cc-vs-cstar">Difference between cc and c*</link></emphasis>
+      </para>
     </section>
 
     <section id="dep-ct-siblings">
@@ -219,11 +222,14 @@
         The '*' option behaves differently when dealing with dependencies.
         Here, the '*' option allows the test to perform a deep scan.
         Used in conjunction with p, c, or s to continue until there are no deeper relations.
-        For example, position 'c*' tests the children, grand-children, grand-grand-children, and so forth.
+        For example, position 'c*' tests the children, grand-children, great-grand-children, and so forth.
       </para>
       <screen>
         (c* (ADJ))
       </screen>
+      <para>
+        <emphasis><link linkend="gotcha-cc-vs-cstar">Difference between cc and c*</link></emphasis>
+      </para>
     </section>
 
     <section id="dep-ct-leftof">

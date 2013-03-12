@@ -496,23 +496,71 @@ Cohort *GrammarApplicator::runDependencyTest(SingleWindow *sWindow, Cohort *curr
 		}
 	}
 
-	/*
-	if (test->pos & POS_DEP_PARENT) {
-		if (current->dep_parent == std::numeric_limits<uint32_t>::max()) {
-			return 0;
+	boost::scoped_ptr<uint32SortedVector> tmp_deps;
+	uint32SortedVector *deps = 0;
+	if (test->pos & POS_DEP_CHILD) {
+		deps = &current->dep_children;
+	}
+	else {
+		if (current->dep_parent == 0) {
+			deps = &(current->parent->cohorts[0]->dep_children);
 		}
-		if (sWindow->parent->cohort_map.find(current->dep_parent) == sWindow->parent->cohort_map.end()) {
-			if (verbosity_level > 0) {
-				u_fprintf(ux_stderr, "Warning: Parent dependency %u -> %u does not exist - ignoring.\n", current->dep_self, current->dep_parent);
-				u_fflush(ux_stderr);
+		else {
+			std::map<uint32_t,Cohort*>::iterator it = current->parent->parent->cohort_map.find(current->dep_parent);
+			if (current && current->parent && current->parent->parent
+				&& it != current->parent->parent->cohort_map.end()
+				&& it->second
+				&& !it->second->dep_children.empty()
+				) {
+				deps = &(it->second->dep_children);
 			}
-			return 0;
+			else {
+				if (verbosity_level > 0) {
+					u_fprintf(ux_stderr, "Warning: Cohort %u (parent %u) did not have any siblings.\n", current->dep_self, current->dep_parent);
+					u_fflush(ux_stderr);
+				}
+				return 0;
+			}
+		}
+	}
+
+	if (test->pos & MASK_POS_LORR) {
+		tmp_deps.reset(new uint32SortedVector(*deps));
+
+		if (test->pos & POS_LEFT) {
+			tmp_deps->assign((*deps).begin(), (*deps).lower_bound(current->global_number));
+		}
+		if (test->pos & POS_RIGHT) {
+			tmp_deps->assign((*deps).lower_bound(current->global_number), (*deps).end());
+		}
+		if (test->pos & POS_SELF) {
+			tmp_deps->insert(current->global_number);
+		}
+		if ((test->pos & POS_RIGHTMOST) && !tmp_deps->empty()) {
+			uint32SortedVector::container& cont = tmp_deps->get();
+			std::reverse(cont.begin(), cont.end());
 		}
 
-		Cohort *cohort = sWindow->parent->cohort_map.find(current->dep_parent)->second;
-		if (current->dep_parent == 0) {
-			cohort = current->parent->cohorts[0];
+		deps = tmp_deps.get();
+	}
+
+	const_foreach (uint32SortedVector, *deps, dter, dter_end) {
+		if (*dter == current->global_number && !(test->pos & POS_SELF)) {
+			continue;
 		}
+		if (sWindow->parent->cohort_map.find(*dter) == sWindow->parent->cohort_map.end()) {
+			if (verbosity_level > 0) {
+				if (test->pos & POS_DEP_CHILD) {
+					u_fprintf(ux_stderr, "Warning: Child dependency %u -> %u does not exist - ignoring.\n", current->dep_self, *dter);
+				}
+				else {
+					u_fprintf(ux_stderr, "Warning: Sibling dependency %u -> %u does not exist - ignoring.\n", current->dep_self, *dter);
+				}
+				u_fflush(ux_stderr);
+			}
+			continue;
+		}
+		Cohort *cohort = sWindow->parent->cohort_map.find(*dter)->second;
 		bool good = true;
 		if (current->parent != cohort->parent) {
 			if ((!(test->pos & (POS_SPAN_BOTH|POS_SPAN_LEFT))) && cohort->parent->number < current->parent->number) {
@@ -526,118 +574,27 @@ Cohort *GrammarApplicator::runDependencyTest(SingleWindow *sWindow, Cohort *curr
 		if (good) {
 			tmc = runSingleTest(cohort, test, &brk, &retval, deep, origin);
 		}
-		if (retval) {
+		if (test->pos & POS_ALL) {
+			if (!retval) {
+				rv = 0;
+				break;
+			}
+			else {
+				rv = cohort;
+			}
+		}
+		else if (retval) {
 			rv = cohort;
+			break;
 		}
 		else if (test->pos & POS_DEP_DEEP) {
 			tmc = runDependencyTest(cohort->parent, cohort, test, deep, origin, self);
 			if (tmc) {
 				rv = tmc;
+				break;
 			}
 		}
 	}
-	else {
-	//*/
-		boost::scoped_ptr<uint32SortedVector> tmp_deps;
-		uint32SortedVector *deps = 0;
-		if (test->pos & POS_DEP_CHILD) {
-			deps = &current->dep_children;
-		}
-		else {
-			if (current->dep_parent == 0) {
-				deps = &(current->parent->cohorts[0]->dep_children);
-			}
-			else {
-				std::map<uint32_t,Cohort*>::iterator it = current->parent->parent->cohort_map.find(current->dep_parent);
-				if (current && current->parent && current->parent->parent
-					&& it != current->parent->parent->cohort_map.end()
-					&& it->second
-					&& !it->second->dep_children.empty()
-					) {
-					deps = &(it->second->dep_children);
-				}
-				else {
-					if (verbosity_level > 0) {
-						u_fprintf(ux_stderr, "Warning: Cohort %u (parent %u) did not have any siblings.\n", current->dep_self, current->dep_parent);
-						u_fflush(ux_stderr);
-					}
-					return 0;
-				}
-			}
-		}
-
-		if (test->pos & MASK_POS_LORR) {
-			tmp_deps.reset(new uint32SortedVector(*deps));
-
-			if (test->pos & POS_LEFT) {
-				tmp_deps->assign((*deps).begin(), (*deps).lower_bound(current->global_number));
-			}
-			if (test->pos & POS_RIGHT) {
-				tmp_deps->assign((*deps).lower_bound(current->global_number), (*deps).end());
-			}
-			if (test->pos & POS_SELF) {
-				tmp_deps->insert(current->global_number);
-			}
-			if ((test->pos & POS_RIGHTMOST) && !tmp_deps->empty()) {
-				uint32SortedVector::container& cont = tmp_deps->get();
-				std::reverse(cont.begin(), cont.end());
-			}
-
-			deps = tmp_deps.get();
-		}
-
-		const_foreach (uint32SortedVector, *deps, dter, dter_end) {
-			if (*dter == current->global_number && !(test->pos & POS_SELF)) {
-				continue;
-			}
-			if (sWindow->parent->cohort_map.find(*dter) == sWindow->parent->cohort_map.end()) {
-				if (verbosity_level > 0) {
-					if (test->pos & POS_DEP_CHILD) {
-						u_fprintf(ux_stderr, "Warning: Child dependency %u -> %u does not exist - ignoring.\n", current->dep_self, *dter);
-					}
-					else {
-						u_fprintf(ux_stderr, "Warning: Sibling dependency %u -> %u does not exist - ignoring.\n", current->dep_self, *dter);
-					}
-					u_fflush(ux_stderr);
-				}
-				continue;
-			}
-			Cohort *cohort = sWindow->parent->cohort_map.find(*dter)->second;
-			bool good = true;
-			if (current->parent != cohort->parent) {
-				if ((!(test->pos & (POS_SPAN_BOTH|POS_SPAN_LEFT))) && cohort->parent->number < current->parent->number) {
-					good = false;
-				}
-				else if ((!(test->pos & (POS_SPAN_BOTH|POS_SPAN_RIGHT))) && cohort->parent->number > current->parent->number) {
-					good = false;
-				}
-
-			}
-			if (good) {
-				tmc = runSingleTest(cohort, test, &brk, &retval, deep, origin);
-			}
-			if (test->pos & POS_ALL) {
-				if (!retval) {
-					rv = 0;
-					break;
-				}
-				else {
-					rv = cohort;
-				}
-			}
-			else if (retval) {
-				rv = cohort;
-				break;
-			}
-			else if (test->pos & POS_DEP_DEEP) {
-				tmc = runDependencyTest(cohort->parent, cohort, test, deep, origin, self);
-				if (tmc) {
-					rv = tmc;
-					break;
-				}
-			}
-		}
-	//}
 
 	return rv;
 }
