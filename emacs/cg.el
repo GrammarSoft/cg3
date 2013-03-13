@@ -52,7 +52,7 @@
 ;;  - the quotes-within-quotes thing plays merry hell with
 ;;    paredit-doublequote, write a new doublequote function? 
 
-(defconst cg-version "2010-03-19" "Version of cg-mode") 
+(defconst cg-version "2013-03-13" "Version of cg-mode") 
 
 ;;;============================================================================
 ;;;
@@ -318,7 +318,9 @@ before getting useful..."
 				    cg-goto-history))))
   (let ((errmsg (if input (concat "Unrecognised rule/trace format: " input)
 		  "X clipboard does not seem to contain vislcg3 --trace rule info"))
-	(rule (or input (x-selection-value 'CLIPBOARD))))
+	(rule (or input (with-temp-buffer
+			  (yank)
+			  (buffer-substring-no-properties (point-min)(point-max))))))
     (if (string-match
 	 "\\(\\(select\\|iff\\|remove\\|map\\|addcohort\\|remcohort\\|add\\|substitute\\):\\)?\\([0-9]+\\)"
 	 rule)
