@@ -1,7 +1,7 @@
 /*
-* Copyright (C) 2007-2012, GrammarSoft ApS
-* Developed by Tino Didriksen <tino@didriksen.cc>
-* Design by Eckhard Bick <eckhard.bick@mail.dk>, Tino Didriksen <tino@didriksen.cc>
+* Copyright (C) 2007-2013, GrammarSoft ApS
+* Developed by Tino Didriksen <mail@tinodidriksen.com>
+* Design by Eckhard Bick <eckhard.bick@mail.dk>, Tino Didriksen <mail@tinodidriksen.com>
 *
 * This file is part of VISL CG-3
 *
