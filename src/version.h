@@ -1,7 +1,7 @@
 /*
-* Copyright (C) 2007-2012, GrammarSoft ApS
-* Developed by Tino Didriksen <tino@didriksen.cc>
-* Design by Eckhard Bick <eckhard.bick@mail.dk>, Tino Didriksen <tino@didriksen.cc>
+* Copyright (C) 2007-2013, GrammarSoft ApS
+* Developed by Tino Didriksen <mail@tinodidriksen.com>
+* Design by Eckhard Bick <eckhard.bick@mail.dk>, Tino Didriksen <mail@tinodidriksen.com>
 *
 * This file is part of VISL CG-3
 *
@@ -23,7 +23,7 @@
 #ifndef c6d28b7452ec699b_VERSION_H
 #define c6d28b7452ec699b_VERSION_H
 
-const char CG3_COPYRIGHT_STRING[] = "Copyright (C) 2007-2012 GrammarSoft ApS. All Rights Reserved.";
+const char CG3_COPYRIGHT_STRING[] = "Copyright (C) 2007-2013 GrammarSoft ApS. All Rights Reserved.";
 
 const uint32_t CG3_VERSION_MAJOR = 0;
 const uint32_t CG3_VERSION_MINOR = 9;
