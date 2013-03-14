@@ -344,6 +344,9 @@ gotaline:
 			if (*space != '"') {
 				u_fprintf(ux_stderr, "Warning: %S on line %u looked like a reading but wasn't - treated as text.\n", &cleaned[0], numLines);
 				u_fflush(ux_stderr);
+				if (!indents.empty() && indents.back().second->next == cReading) {
+					indents.back().second->next = 0;
+				}
 				delete cReading;
 				cReading = 0;
 				goto istext;
