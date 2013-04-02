@@ -224,6 +224,7 @@ Cohort *GrammarApplicator::runContextualTest(SingleWindow *sWindow, size_t posit
 					(*iter)->barrier = test->barrier;
 				}
 			}
+			dep_deep_seen.clear();
 			cohort = runContextualTest(sWindow, position, *iter, &cdeep, origin);
 			if (test->pos & POS_TMPL_OVERRIDE) {
 				(*iter)->pos = orgpos;
