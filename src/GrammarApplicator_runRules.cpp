@@ -1131,26 +1131,29 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 							}
 							if (good) {
 								swapper<Cohort*> sw((rule.flags & RF_REVERSE) != 0, attach, cohort);
-								index_ruleCohort_no.clear();
-								reading.hit_by.push_back(rule.number);
-								reading.noprint = false;
+								bool rel_did_anything = false;
 								TagList theTags = getTagList(*rule.maplist);
 								const_foreach (TagList, theTags, tter, tter_end) {
 									if (type == K_ADDRELATION) {
 										attach->type |= CT_RELATED;
 										cohort->type |= CT_RELATED;
-										cohort->addRelation((*tter)->hash, attach->global_number);
+										rel_did_anything |= cohort->addRelation((*tter)->hash, attach->global_number);
 									}
 									else if (type == K_SETRELATION) {
 										attach->type |= CT_RELATED;
 										cohort->type |= CT_RELATED;
-										cohort->setRelation((*tter)->hash, attach->global_number);
+										rel_did_anything |= cohort->setRelation((*tter)->hash, attach->global_number);
 									}
 									else {
-										cohort->remRelation((*tter)->hash, attach->global_number);
+										rel_did_anything |= cohort->remRelation((*tter)->hash, attach->global_number);
 									}
 								}
-								readings_changed = true;
+								if (rel_did_anything) {
+									index_ruleCohort_no.clear();
+									reading.hit_by.push_back(rule.number);
+									reading.noprint = false;
+									readings_changed = true;
+								}
 							}
 						}
 						break;
@@ -1177,38 +1180,41 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 							}
 							if (good) {
 								swapper<Cohort*> sw((rule.flags & RF_REVERSE) != 0, attach, cohort);
-								index_ruleCohort_no.clear();
-								reading.hit_by.push_back(rule.number);
-								reading.noprint = false;
+								bool rel_did_anything = false;
 								TagList sublist = getTagList(*rule.sublist);
 								TagList maplist = getTagList(*rule.maplist);
 								const_foreach (TagList, maplist, tter, tter_end) {
 									if (type == K_ADDRELATIONS) {
 										cohort->type |= CT_RELATED;
-										cohort->addRelation((*tter)->hash, attach->global_number);
+										rel_did_anything |= cohort->addRelation((*tter)->hash, attach->global_number);
 									}
 									else if (type == K_SETRELATIONS) {
 										cohort->type |= CT_RELATED;
-										cohort->setRelation((*tter)->hash, attach->global_number);
+										rel_did_anything |= cohort->setRelation((*tter)->hash, attach->global_number);
 									}
 									else {
-										cohort->remRelation((*tter)->hash, attach->global_number);
+										rel_did_anything |= cohort->remRelation((*tter)->hash, attach->global_number);
 									}
 								}
 								const_foreach (TagList, sublist, tter, tter_end) {
 									if (type == K_ADDRELATIONS) {
 										attach->type |= CT_RELATED;
-										attach->addRelation((*tter)->hash, cohort->global_number);
+										rel_did_anything |= attach->addRelation((*tter)->hash, cohort->global_number);
 									}
 									else if (type == K_SETRELATIONS) {
 										attach->type |= CT_RELATED;
-										attach->setRelation((*tter)->hash, cohort->global_number);
+										rel_did_anything |= attach->setRelation((*tter)->hash, cohort->global_number);
 									}
 									else {
-										attach->remRelation((*tter)->hash, cohort->global_number);
+										rel_did_anything |= attach->remRelation((*tter)->hash, cohort->global_number);
 									}
 								}
-								readings_changed = true;
+								if (rel_did_anything) {
+									index_ruleCohort_no.clear();
+									reading.hit_by.push_back(rule.number);
+									reading.noprint = false;
+									readings_changed = true;
+								}
 							}
 						}
 					}
