@@ -145,24 +145,30 @@ int32_t Cohort::getMax(uint32_t key) {
 	return INT_MAX;
 }
 
-void Cohort::addRelation(uint32_t rel, uint32_t cohort) {
+bool Cohort::addRelation(uint32_t rel, uint32_t cohort) {
 	uint32Set& cohorts = relations[rel];
+	const size_t sz = cohorts.size();
 	cohorts.insert(cohort);
+	return (sz != cohorts.size());
 }
 
-void Cohort::setRelation(uint32_t rel, uint32_t cohort) {
+bool Cohort::setRelation(uint32_t rel, uint32_t cohort) {
 	uint32Set& cohorts = relations[rel];
 	if (cohorts.size() == 1 && cohorts.find(cohort) != cohorts.end()) {
-		return;
+		return false;
 	}
 	cohorts.clear();
 	cohorts.insert(cohort);
+	return true;
 }
 
-void Cohort::remRelation(uint32_t rel, uint32_t cohort) {
+bool Cohort::remRelation(uint32_t rel, uint32_t cohort) {
 	if (relations.find(rel) != relations.end()) {
+		const size_t sz = relations.find(rel)->second.size();
 		relations.find(rel)->second.erase(cohort);
+		return (sz != relations.find(rel)->second.size());
 	}
+	return false;
 }
 
 }

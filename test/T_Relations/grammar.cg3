@@ -21,3 +21,8 @@ ADD (@careful-error) (*) (ALL r:Begin4 (third)) ;
 ADD (@careful) (*) (ALL r:OtherSecond (second)) ;
 
 ADD (@none) (*) (NONE r:Begin4 (third)) ;
+
+REMRELATIONS (NoSuchRelation) (End3) (startthird) TO (0**W (third)) ;
+REMRELATIONS (Begin3) (NoSuchRelation) (startthird) TO (0**W (third)) ;
+REMRELATIONS (End3) (NoSuchRelation) (startthird) FROM (0**W (third)) ;
+REMRELATIONS (NoSuchRelation) (Begin3) (startthird) FROM (0**W (third)) ;
