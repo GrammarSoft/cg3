@@ -1,7 +1,5 @@
 DELIMITERS = "<$.>" ;
 
-BEFORE-SECTIONS
-
 SETPARENT (startfirst) TO (0** (first)) ;
 SETPARENT (startsecond) TO (0** (second)) ;
 

@@ -1,7 +1,5 @@
 DELIMITERS = "<$.>" ;
 
-BEFORE-SECTIONS
-
 ADD (nosub) (*) ;
 
 ADD SUB:-4 (sub-4) (*) ;

@@ -8,8 +8,6 @@ LIST @P< = @P< ;
 LIST N-ANIM = <H> <Hfam> <Hprof> <Hattr> <A> ;
 LIST PRP = PRP ;
 
-BEFORE-SECTIONS
-
 ADD (@parent-deep) ("o") (p* ("bater")) ;
 ADD (@parent-deep-error) ("o") (p ("bater")) ;
 

@@ -1,7 +1,5 @@
 DELIMITERS = "<$.>" ;
 
-BEFORE-SECTIONS
-
 ADDRELATION (First) (startfirst) TO (0** (first)) ;
 ADDRELATION (Second) (startsecond) TO (0** (second)) ;
 ADDRELATION (OtherSecond) (startsecond) TO (**-1 (first)) ;

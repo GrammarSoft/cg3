@@ -1,5 +1,3 @@
 DELIMITERS = "<$.>" ;
 
-BEFORE-SECTIONS
-
 SUBSTITUTE (wanted) (substituted) (wanted) ;
