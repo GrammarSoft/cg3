@@ -1,7 +1,5 @@
 DELIMITERS = "<$.>" ;
 
-BEFORE-SECTIONS
-
 ADD (@error-right) (four) (-1* (one) LINK 1* (five)) ;
 ADD (@not-right) (four) (-1* (one) LINK NOT 1* (five)) ;
 ADD (@passed-right) (four) (-1* (one) LINK 1*o (five)) ;

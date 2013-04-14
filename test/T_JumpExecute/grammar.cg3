@@ -1,6 +1,5 @@
 DELIMITERS = "<$.>" ;
 
-BEFORE-SECTIONS
 JUMP (named) (*) ;
 ADD (@jump-bad) (*) ;
 

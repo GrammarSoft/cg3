@@ -1,8 +1,6 @@
 MAPPING-PREFIX = £ ;
 DELIMITERS = "<$.>" ;
 
-BEFORE-SECTIONS
-
 ADD ($tag) ("word") ;
 ADD (§tag) ("word") ;
 ADD (£tag) ("word") ;

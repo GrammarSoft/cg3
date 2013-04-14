@@ -1,7 +1,5 @@
 DELIMITERS = "<$.>" ;
 
-BEFORE-SECTIONS
-
 ADD (@fifty) (<VALUE=50>) ;
 ADD (@moreThanFifty) (<VALUE>50>) ;
 ADD (@lessThanFifty) (<VALUE<50>) ;

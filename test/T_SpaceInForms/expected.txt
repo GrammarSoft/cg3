@@ -1,8 +1,8 @@
 "<word with spaces>"
-	"substituted muchly" wanted @found1 @found2 ADD:7 ADD:8 SUBSTITUTE:15 
-	"substituted muchly" notwanted @found1 ADD:7 SUBSTITUTE:15 
-	"words"with"quotes"inside" quotes @quotes ADD:10 
-	"baseform" "normal tag" @normal ADD:13 
-;	"word" with notwanted @other ADD:9 REMOVE:18 
-;	"word" with notmeeither @other ADD:9 REMOVE:18 
+	"substituted muchly" wanted @found1 @found2 ADD:6 ADD:7 SUBSTITUTE:14 
+	"substituted muchly" notwanted @found1 ADD:6 SUBSTITUTE:14 
+	"words"with"quotes"inside" quotes @quotes ADD:9 
+	"baseform" "normal tag" @normal ADD:12 
+;	"word" with notwanted @other ADD:8 REMOVE:17 
+;	"word" with notmeeither @other ADD:8 REMOVE:17 
 

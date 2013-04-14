@@ -1,7 +1,5 @@
 DELIMITERS = "<$.>" ;
 
-BEFORE-SECTIONS
-
 # Move whole dep group where (second) is head except the child (first), to after the dep group where (ninth) is head
 MOVE WITHCHILD (*) - (first) (second) AFTER WITHCHILD (*) (0* (ninth)) ;
 

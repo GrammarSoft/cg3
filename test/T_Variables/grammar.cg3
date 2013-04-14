@@ -1,7 +1,5 @@
 DELIMITERS = "<.>" "<?>" ;
 
-BEFORE-SECTIONS
-
 REMVARIABLE (news) (VAR:news) (0 (VAR:poetry) OR (VAR:drama)) ;
 
 ADD (@poetry) (VAR:poetry) ;

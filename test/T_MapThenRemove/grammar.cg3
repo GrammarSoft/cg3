@@ -2,7 +2,6 @@ DELIMITERS = "<$.>" ;
 
 LIST ASet = wanted ;
 
-BEFORE-SECTIONS
 MAP (@one @two @three) (*) ;
 
 SECTION
