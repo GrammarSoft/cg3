@@ -1,55 +1,55 @@
 "<there>"
-	"there" word <pleft> @left @left-or-right @enclosed @inner @outer @final ENCL:2 ADD:7 ADD:9 ADD:16 SUBSTITUTE:23 ENCL:3 SUBSTITUTE:24 ENCL:4 SUBSTITUTE:24 ENCL:5 SUBSTITUTE:24 ENCL:6 SUBSTITUTE:24 ENCL:7 SUBSTITUTE:25 
+	"there" word <pleft> @left @left-or-right @enclosed @inner @outer @final ENCL:2 ADD:6 ADD:8 ADD:15 SUBSTITUTE:22 ENCL:3 SUBSTITUTE:23 ENCL:4 SUBSTITUTE:23 ENCL:5 SUBSTITUTE:23 ENCL:6 SUBSTITUTE:23 ENCL:7 SUBSTITUTE:24 
 "<once>"
-	"once" word @enclosed @inner @outer @final ENCL:2 ADD:16 SUBSTITUTE:23 ENCL:3 SUBSTITUTE:24 ENCL:4 SUBSTITUTE:24 ENCL:5 SUBSTITUTE:24 ENCL:6 SUBSTITUTE:24 ENCL:7 SUBSTITUTE:25 
+	"once" word @enclosed @inner @outer @final ENCL:2 ADD:15 SUBSTITUTE:22 ENCL:3 SUBSTITUTE:23 ENCL:4 SUBSTITUTE:23 ENCL:5 SUBSTITUTE:23 ENCL:6 SUBSTITUTE:23 ENCL:7 SUBSTITUTE:24 
 "<were>"
-	"are" word <pright> @right @left-or-right @enclosed @inner @outer @final ENCL:2 ADD:8 ADD:9 ADD:16 SUBSTITUTE:23 ENCL:3 SUBSTITUTE:24 ENCL:4 SUBSTITUTE:24 ENCL:5 SUBSTITUTE:24 ENCL:6 SUBSTITUTE:24 ENCL:7 SUBSTITUTE:25 
+	"are" word <pright> @right @left-or-right @enclosed @inner @outer @final ENCL:2 ADD:7 ADD:8 ADD:15 SUBSTITUTE:22 ENCL:3 SUBSTITUTE:23 ENCL:4 SUBSTITUTE:23 ENCL:5 SUBSTITUTE:23 ENCL:6 SUBSTITUTE:23 ENCL:7 SUBSTITUTE:24 
 "<$(>"
 "<two>"
-	"two" word @encl @outer @final ENCL:1 ADD:6 SUBSTITUTE:24 ENCL:2 SUBSTITUTE:24 ENCL:3 SUBSTITUTE:24 ENCL:4 SUBSTITUTE:24 ENCL:5 SUBSTITUTE:24 ENCL:6 SUBSTITUTE:24 ENCL:7 SUBSTITUTE:25 
+	"two" word @encl @outer @final ENCL:1 ADD:5 SUBSTITUTE:23 ENCL:2 SUBSTITUTE:23 ENCL:3 SUBSTITUTE:23 ENCL:4 SUBSTITUTE:23 ENCL:5 SUBSTITUTE:23 ENCL:6 SUBSTITUTE:23 ENCL:7 SUBSTITUTE:24 
 "<$[>"
-	"$[" @left @left-or-right @enclosed @sqbrck ENCL:3 ADD:7 ADD:9 ADD:16 ADD:17 ENCL:4 ENCL:5 ENCL:6 ENCL:7 
+	"$[" @left @left-or-right @enclosed @sqbrck ENCL:3 ADD:6 ADD:8 ADD:15 ADD:16 ENCL:4 ENCL:5 ENCL:6 ENCL:7 
 "<three>"
-	"three" word @enclosed @sqbrck @inner @outer @final ENCL:3 ADD:16 ADD:17 SUBSTITUTE:23 ENCL:4 SUBSTITUTE:24 ENCL:5 SUBSTITUTE:24 ENCL:6 SUBSTITUTE:24 ENCL:7 SUBSTITUTE:25 
+	"three" word @enclosed @sqbrck @inner @outer @final ENCL:3 ADD:15 ADD:16 SUBSTITUTE:22 ENCL:4 SUBSTITUTE:23 ENCL:5 SUBSTITUTE:23 ENCL:6 SUBSTITUTE:23 ENCL:7 SUBSTITUTE:24 
 "<$]>"
-	"$]" @right @left-or-right @right-sqbrck @enclosed @sqbrck ENCL:3 ADD:8 ADD:9 ADD:13 ADD:16 ADD:17 ENCL:4 ENCL:5 ENCL:6 ENCL:7 
+	"$]" @right @left-or-right @right-sqbrck @enclosed @sqbrck ENCL:3 ADD:7 ADD:8 ADD:12 ADD:15 ADD:16 ENCL:4 ENCL:5 ENCL:6 ENCL:7 
 "<long>"
-	"long" word @outer @final ENCL:1 SUBSTITUTE:24 ENCL:2 SUBSTITUTE:24 ENCL:3 SUBSTITUTE:24 ENCL:4 SUBSTITUTE:24 ENCL:5 SUBSTITUTE:24 ENCL:6 SUBSTITUTE:24 ENCL:7 SUBSTITUTE:25 
+	"long" word @outer @final ENCL:1 SUBSTITUTE:23 ENCL:2 SUBSTITUTE:23 ENCL:3 SUBSTITUTE:23 ENCL:4 SUBSTITUTE:23 ENCL:5 SUBSTITUTE:23 ENCL:6 SUBSTITUTE:23 ENCL:7 SUBSTITUTE:24 
 "<red>"
-	"red" word @encl @outer @final ENCL:1 ADD:6 SUBSTITUTE:24 ENCL:2 SUBSTITUTE:24 ENCL:3 SUBSTITUTE:24 ENCL:4 SUBSTITUTE:24 ENCL:5 SUBSTITUTE:24 ENCL:6 SUBSTITUTE:24 ENCL:7 SUBSTITUTE:25 
+	"red" word @encl @outer @final ENCL:1 ADD:5 SUBSTITUTE:23 ENCL:2 SUBSTITUTE:23 ENCL:3 SUBSTITUTE:23 ENCL:4 SUBSTITUTE:23 ENCL:5 SUBSTITUTE:23 ENCL:6 SUBSTITUTE:23 ENCL:7 SUBSTITUTE:24 
 "<$(>"
-	"$(" @left @left-or-right @left-paren @enclosed @paren ENCL:4 ADD:7 ADD:9 ADD:12 ADD:16 ADD:18 ENCL:5 ENCL:6 ENCL:7 
+	"$(" @left @left-or-right @left-paren @enclosed @paren ENCL:4 ADD:6 ADD:8 ADD:11 ADD:15 ADD:17 ENCL:5 ENCL:6 ENCL:7 
 "<more>"
-	"more" word @enclosed @paren @inner @outer @final ENCL:4 ADD:16 ADD:18 SUBSTITUTE:23 ENCL:5 SUBSTITUTE:24 ENCL:6 SUBSTITUTE:24 ENCL:7 SUBSTITUTE:25 
+	"more" word @enclosed @paren @inner @outer @final ENCL:4 ADD:15 ADD:17 SUBSTITUTE:22 ENCL:5 SUBSTITUTE:23 ENCL:6 SUBSTITUTE:23 ENCL:7 SUBSTITUTE:24 
 "<like>"
-	"like" word @enclosed @paren @inner @outer @final ENCL:4 ADD:16 ADD:18 SUBSTITUTE:23 ENCL:5 SUBSTITUTE:24 ENCL:6 SUBSTITUTE:24 ENCL:7 SUBSTITUTE:25 
+	"like" word @enclosed @paren @inner @outer @final ENCL:4 ADD:15 ADD:17 SUBSTITUTE:22 ENCL:5 SUBSTITUTE:23 ENCL:6 SUBSTITUTE:23 ENCL:7 SUBSTITUTE:24 
 "<maroon>"
-	"maroon" word @encl @enclosed @paren @inner @outer @final ENCL:4 ADD:6 ADD:16 ADD:18 SUBSTITUTE:23 ENCL:5 SUBSTITUTE:24 ENCL:6 SUBSTITUTE:24 ENCL:7 SUBSTITUTE:25 
+	"maroon" word @encl @enclosed @paren @inner @outer @final ENCL:4 ADD:5 ADD:15 ADD:17 SUBSTITUTE:22 ENCL:5 SUBSTITUTE:23 ENCL:6 SUBSTITUTE:23 ENCL:7 SUBSTITUTE:24 
 "<$(>"
-	"$(" @left @left-or-right @left-paren @enclosed @paren ENCL:5 ADD:7 ADD:9 ADD:12 ADD:16 ADD:18 ENCL:6 ENCL:7 
+	"$(" @left @left-or-right @left-paren @enclosed @paren ENCL:5 ADD:6 ADD:8 ADD:11 ADD:15 ADD:17 ENCL:6 ENCL:7 
 "<dark>"
-	"dark" word @enclosed @paren @inner @outer @final ENCL:5 ADD:16 ADD:18 SUBSTITUTE:23 ENCL:6 SUBSTITUTE:24 ENCL:7 SUBSTITUTE:25 
+	"dark" word @enclosed @paren @inner @outer @final ENCL:5 ADD:15 ADD:17 SUBSTITUTE:22 ENCL:6 SUBSTITUTE:23 ENCL:7 SUBSTITUTE:24 
 "<earthy>"
-	"earthy" word @enclosed @paren @inner @outer @final ENCL:5 ADD:16 ADD:18 SUBSTITUTE:23 ENCL:6 SUBSTITUTE:24 ENCL:7 SUBSTITUTE:25 
+	"earthy" word @enclosed @paren @inner @outer @final ENCL:5 ADD:15 ADD:17 SUBSTITUTE:22 ENCL:6 SUBSTITUTE:23 ENCL:7 SUBSTITUTE:24 
 "<red>"
-	"red" word @enclosed @paren @inner @outer @final ENCL:5 ADD:16 ADD:18 SUBSTITUTE:23 ENCL:6 SUBSTITUTE:24 ENCL:7 SUBSTITUTE:25 
+	"red" word @enclosed @paren @inner @outer @final ENCL:5 ADD:15 ADD:17 SUBSTITUTE:22 ENCL:6 SUBSTITUTE:23 ENCL:7 SUBSTITUTE:24 
 "<$]>"
-	"$]" @enclosed @paren ENCL:5 ADD:16 ADD:18 ENCL:6 ENCL:7 
+	"$]" @enclosed @paren ENCL:5 ADD:15 ADD:17 ENCL:6 ENCL:7 
 "<$)>"
-	"$)" @right @left-or-right @enclosed @paren ENCL:5 ADD:8 ADD:9 ADD:16 ADD:18 ENCL:6 ENCL:7 
+	"$)" @right @left-or-right @enclosed @paren ENCL:5 ADD:7 ADD:8 ADD:15 ADD:17 ENCL:6 ENCL:7 
 "<$,>"
-	"$," @enclosed @paren ENCL:4 ADD:16 ADD:18 ENCL:5 ENCL:6 ENCL:7 
+	"$," @enclosed @paren ENCL:4 ADD:15 ADD:17 ENCL:5 ENCL:6 ENCL:7 
 "<actually>"
-	"actual" word @enclosed @paren @inner @outer @final ENCL:4 ADD:16 ADD:18 SUBSTITUTE:23 ENCL:5 SUBSTITUTE:24 ENCL:6 SUBSTITUTE:24 ENCL:7 SUBSTITUTE:25 
+	"actual" word @enclosed @paren @inner @outer @final ENCL:4 ADD:15 ADD:17 SUBSTITUTE:22 ENCL:5 SUBSTITUTE:23 ENCL:6 SUBSTITUTE:23 ENCL:7 SUBSTITUTE:24 
 "<$)>"
-	"$)" @right @left-or-right @enclosed @paren ENCL:4 ADD:8 ADD:9 ADD:16 ADD:18 ENCL:5 ENCL:6 ENCL:7 
+	"$)" @right @left-or-right @enclosed @paren ENCL:4 ADD:7 ADD:8 ADD:15 ADD:17 ENCL:5 ENCL:6 ENCL:7 
 "<cars>"
-	"car" word @encl @outer @final ENCL:1 ADD:6 SUBSTITUTE:24 ENCL:2 SUBSTITUTE:24 ENCL:3 SUBSTITUTE:24 ENCL:4 SUBSTITUTE:24 ENCL:5 SUBSTITUTE:24 ENCL:6 SUBSTITUTE:24 ENCL:7 SUBSTITUTE:25 
+	"car" word @encl @outer @final ENCL:1 ADD:5 SUBSTITUTE:23 ENCL:2 SUBSTITUTE:23 ENCL:3 SUBSTITUTE:23 ENCL:4 SUBSTITUTE:23 ENCL:5 SUBSTITUTE:23 ENCL:6 SUBSTITUTE:23 ENCL:7 SUBSTITUTE:24 
 "<${>"
-	"${" @left @left-or-right @enclosed @clbrck ENCL:6 ADD:7 ADD:9 ADD:16 ADD:19 ENCL:7 
+	"${" @left @left-or-right @enclosed @clbrck ENCL:6 ADD:6 ADD:8 ADD:15 ADD:18 ENCL:7 
 "<trucks>"
-	"truck" word @enclosed @clbrck @inner @final ENCL:6 ADD:16 ADD:19 SUBSTITUTE:23 ENCL:7 SUBSTITUTE:25 
+	"truck" word @enclosed @clbrck @inner @final ENCL:6 ADD:15 ADD:18 SUBSTITUTE:22 ENCL:7 SUBSTITUTE:24 
 "<$}>"
-	"$}" @right @left-or-right @enclosed @clbrck ENCL:6 ADD:8 ADD:9 ADD:16 ADD:19 ENCL:7 
+	"$}" @right @left-or-right @enclosed @clbrck ENCL:6 ADD:7 ADD:8 ADD:15 ADD:18 ENCL:7 
 "<$.>"
 

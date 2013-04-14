@@ -33,7 +33,7 @@ TextualParser::TextualParser(Grammar& res, UFILE *ux_err) {
 	locale = 0;
 	codepage = 0;
 	option_vislcg_compat = false;
-	in_before_sections = false;
+	in_before_sections = true;
 	in_after_sections = false;
 	in_null_section = false;
 	in_section = false;
@@ -2163,10 +2163,6 @@ void TextualParser::addRuleToGrammar(Rule *rule) {
 		rule->section = (int32_t)(result->sections.size()-1);
 		result->addRule(rule);
 	}
-	else if (in_before_sections) {
-		rule->section = -1;
-		result->addRule(rule);
-	}
 	else if (in_after_sections) {
 		rule->section = -2;
 		result->addRule(rule);
@@ -2175,10 +2171,9 @@ void TextualParser::addRuleToGrammar(Rule *rule) {
 		rule->section = -3;
 		result->addRule(rule);
 	}
-	else {
-		result->destroyRule(rule);
-		u_fprintf(ux_stderr, "Error: Rule definition attempted outside a section on line %u!\n", result->lines);
-		incErrorCount();
+	else { // in_before_sections
+		rule->section = -1;
+		result->addRule(rule);
 	}
 }
 

@@ -1,6 +1,5 @@
 DELIMITERS = "<$.>" ;
 
-BEFORE-SECTIONS
 MAP (@tag) (*) (NEGATE 1* ("blocker"))
 
 SECTION

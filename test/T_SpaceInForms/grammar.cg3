@@ -3,7 +3,6 @@ DELIMITERS = "<$.>" ;
 LIST ASet = "word with spaces" ;
 LIST BSet = ("word with spaces" wanted) ;
 
-BEFORE-SECTIONS
 ADD (@found1) ASet ;
 ADD (@found2) BSet ;
 ADD (@other) (with) ;

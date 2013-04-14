@@ -1,19 +1,19 @@
 "<word>"
-	"word" @mapped $tag §tag £tag @tag ADD:6 ADD:7 ADD:8 ADD:9 
+	"word" @mapped $tag §tag £tag @tag ADD:4 ADD:5 ADD:6 ADD:7 
 	"word" £mapped 
-	"word" §mapped $tag §tag £tag @tag ADD:6 ADD:7 ADD:8 ADD:9 
-	"word" $mapped $tag §tag £tag @tag ADD:6 ADD:7 ADD:8 ADD:9 
+	"word" §mapped $tag §tag £tag @tag ADD:4 ADD:5 ADD:6 ADD:7 
+	"word" $mapped $tag §tag £tag @tag ADD:4 ADD:5 ADD:6 ADD:7 
 "<word2>"
-	"word2" a £re-mapped UNMAP:11:normal MAP:14 
+	"word2" a £re-mapped UNMAP:9:normal MAP:12 
 "<word2>"
-	"word2" a @1 £re-mapped MAP:14 
-	"word2" b £re-mapped UNMAP:12:unsafe MAP:14 
-	"word2" c §3 £re-mapped MAP:14 
-	"word2" d $4 £re-mapped MAP:14 
+	"word2" a @1 £re-mapped MAP:12 
+	"word2" b £re-mapped UNMAP:10:unsafe MAP:12 
+	"word2" c §3 £re-mapped MAP:12 
+	"word2" d $4 £re-mapped MAP:12 
 "<word2>"
-	"word2" a £re-mapped UNMAP:12:unsafe MAP:14 
-	"word2" b £re-mapped UNMAP:12:unsafe MAP:14 
+	"word2" a £re-mapped UNMAP:10:unsafe MAP:12 
+	"word2" b £re-mapped UNMAP:10:unsafe MAP:12 
 "<word3>"
-	"word3" a b c REMOVE:17 
-;	"word3" a b c £a £b £c REMOVE:17 
+	"word3" a b c REMOVE:15 
+;	"word3" a b c £a £b £c REMOVE:15 
 

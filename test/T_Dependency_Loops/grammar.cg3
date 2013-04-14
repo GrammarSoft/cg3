@@ -1,7 +1,5 @@
 DELIMITERS = "<$.>" ;
 
-BEFORE-SECTIONS
-
 MAP (vis) _S_DELIMITERS_ ;
 SETPARENT _S_DELIMITERS_ TO (@0 (*)) ;
 

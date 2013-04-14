@@ -2,8 +2,6 @@ DELIMITERS = "<$.>" ;
 
 TEMPLATE DefinedAnywhere = (1 (Q)) ;
 
-BEFORE-SECTIONS
-
 TEMPLATE V-Prep = 1 (V) LINK 1* (PREP) ;
 
 ADD (@postGood) (*) IF (T:V-Prep LINK 1 (N)) ;
