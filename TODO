@@ -35,3 +35,4 @@ ToDo: Test what happens if you RemCohort a whole window
 ToDo: Runtime or section flag to disable or choose when re-running happens when enclosures get unpacked
 ToDo: Document how REMRELATIONS may operate only one-way if two-way doesn't exist.
 ToDo: Relation sets with either same head, or any head
+ToDo: Optimize chains of (a) | (b) | (etc) to a LIST set
