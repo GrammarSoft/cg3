@@ -95,6 +95,43 @@ void Grammar::addSet(Set *& to) {
 		u_fprintf(ux_stderr, "Warning: Set name %S looks like a misattempt of template usage on line %u.\n", to->name.c_str(), to->line);
 	}
 
+	if (!to->sets.empty() && !(to->type & (ST_TAG_UNIFY|ST_CHILD_UNIFY|ST_SET_UNIFY))) {
+		bool all_tags = true;
+		for (size_t i=0 ; i<to->sets.size() ; ++i) {
+			if (i > 0 && to->set_ops[i-1] != S_OR) {
+				all_tags = false;
+				break;
+			}
+			Set *s = getSet(to->sets[i]);
+			if (!s->sets.empty() || s->tags_list.size() != 1) {
+				all_tags = false;
+				break;
+			}
+		}
+
+		if (all_tags) {
+			for (size_t i=0 ; i<to->sets.size() ; ++i) {
+				Set *s = getSet(to->sets[i]);
+				for (size_t j=0 ; j<s->tags_list.size() ; ++j) {
+					if (s->tags_list[j].which == ANYTAG_TAG) {
+						addTagToSet(s->tags_list[j].getTag(), to);
+					}
+					else {
+						addCompositeTagToSet(to, s->tags_list[j].getCompositeTag());
+					}
+				}
+			}
+			to->sets.clear();
+			to->set_ops.clear();
+
+			to->reindex(*this);
+			if (verbosity_level > 1 && to->name[0] != '_' || to->name[1] != 'G' || to->name[2] != '_') {
+				u_fprintf(ux_stderr, "Info: SET %S on line %u changed to a LIST.\n", to->name.c_str(), to->line);
+				u_fflush(ux_stderr);
+			}
+		}
+	}
+
 	// If there are failfast tags, and if they don't comprise the whole of the set, split the set into Positive - Negative
 	if (!to->ff_tags.empty() && to->ff_tags.size() < to->tags_list.size()) {
 		Set *positive = allocateSet(to);
@@ -312,9 +349,11 @@ CompositeTag *Grammar::addCompositeTag(CompositeTag *tag) {
 	if (tag && tag->tags.size()) {
 		tag->rehash();
 		if (tags.find(tag->hash) != tags.end()) {
-			uint32_t ct = tag->hash;
-			delete tag;
-			tag = tags[ct];
+			if (tags[tag->hash] != tag) {
+				uint32_t ct = tag->hash;
+				delete tag;
+				tag = tags[ct];
+			}
 		}
 		else {
 			tags[tag->hash] = tag;
