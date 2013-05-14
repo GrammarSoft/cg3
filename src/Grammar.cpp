@@ -125,7 +125,7 @@ void Grammar::addSet(Set *& to) {
 			to->set_ops.clear();
 
 			to->reindex(*this);
-			if (verbosity_level > 1 && to->name[0] != '_' || to->name[1] != 'G' || to->name[2] != '_') {
+			if (verbosity_level > 1 && (to->name[0] != '_' || to->name[1] != 'G' || to->name[2] != '_')) {
 				u_fprintf(ux_stderr, "Info: SET %S on line %u changed to a LIST.\n", to->name.c_str(), to->line);
 				u_fflush(ux_stderr);
 			}
