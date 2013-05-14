@@ -45,7 +45,7 @@ if(OPT_CPACK)
 
 	SET(CPACK_DEBIAN_BUILD_DEPENDS debhelper cmake libicu-dev libboost-dev libgoogle-perftools-dev)
 	SET(CPACK_DEBIAN_PACKAGE_SOURCE_COPY svn export --force)
-	SET(CPACK_DEBIAN_CHANGELOG "  * Null for now.\n\n")
+	SET(CPACK_DEBIAN_CHANGELOG "  * Changelog is available at http://visl.sdu.dk/cg3/changelog.txt.\n\n")
 	EXECUTE_PROCESS(COMMAND lsb_release -is
 		OUTPUT_VARIABLE _lsb_distribution OUTPUT_STRIP_TRAILING_WHITESPACE
 		RESULT_VARIABLE _lsb_release_failed)
