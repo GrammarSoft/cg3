@@ -7,22 +7,19 @@ function profile_revision($rev) {
 	shell_exec('rm -rf '.$dir.' 2>&1 >/dev/null');
 
 	echo "Exporting revision $rev...\n";
-	shell_exec('svn export -r '.$rev.' --ignore-externals http://beta.visl.sdu.dk/svn/visl/tools/vislcg3/trunk '.$dir.' >/dev/null 2>&1');
+	shell_exec('svn export -r '.$rev.' --ignore-externals svn+ssh://beta.visl.sdu.dk/usr/local/svn/repos/visl/tools/vislcg3/trunk '.$dir.' >/dev/null 2>&1');
 	chdir($dir);
-	shell_exec('svn export -r 3617 --ignore-externals http://beta.visl.sdu.dk/svn/visl/trunk/parsers/dansk/etc/dancg dancg >/dev/null 2>&1');
+	shell_exec('svn export -r 3617 --ignore-externals svn+ssh://beta.visl.sdu.dk/usr/local/svn/repos/visl/trunk/parsers/dansk/etc/dancg dancg >/dev/null 2>&1');
 	echo "Compiling...\n";
-	/*
-	shell_exec('g++ -DHAVE_BOOST -I/home/tino/tmp/boost_1_46_1 -pipe -Wall -Wextra -Wno-deprecated -O3 -fno-rtti -ffor-scope -ltcmalloc -licuio -licuuc $(ls -1 ./src/*.cpp | egrep -v "/test_" | egrep -v "/cg_" | egrep -v "/all_" | grep -v Apertium | grep -v Matxin | grep -v FormatConverter) -o vislcg3 >/dev/null 2>&1');
-	/*/
+
 	if (file_exists('./src/all_vislcg3.cpp')) {
 		echo "Using all_vislcg3.cpp and Boost...\n";
-		echo shell_exec('g++ -DHAVE_BOOST -I~/tmp/boost_1_48_0 -pipe -Wall -Wextra -Wno-deprecated -O3 -fno-rtti -ffor-scope -L/usr/local/lib -licuio -licuuc ./src/all_vislcg3.cpp -o vislcg3 2>&1');
+		echo shell_exec('g++ -DHAVE_BOOST -I~/tmp/boost_1_49_0 -pipe -Wall -Wextra -Wno-deprecated -O3 -fno-rtti -ffor-scope -L/usr/local/lib -licuio -licuuc ./src/all_vislcg3.cpp -o vislcg3 2>&1');
 	}
 	else {
 		echo "Using old-style without Boost...\n";
 		echo shell_exec('g++ -pipe -Wall -Wextra -Wno-deprecated -O3 -fno-rtti -ffor-scope -licuio -licuuc $(ls -1 ./src/*.cpp | egrep -v "/test_" | egrep -v "/cg_" | egrep -v "/all_" | grep -v Apertium | grep -v Matxin | grep -v FormatConverter) -o vislcg3 2>&1');
 	}
-	//*/
 	
 	if (!file_exists('vislcg3')) {
 		echo "Revision $rev failed compilation!\n";
@@ -75,7 +72,7 @@ function profile_revision($rev) {
 }
 
 $revs = array(8001, 7397, 7134, 7000, 6987, 6898, 6885, 6781, 6692, 6500, 6328, 6268, 6242, 6170, 5932, 5930, 5926, 5918, 5839, 5810, 5773, 5729, 5431, 5129, 5042, 4879, 4779, 4545, 4513, 4493, 4474, 4410, 4292, 4031, 3991, 3896, 3852, 3800, 3689, 3682, 3617);
-$revs = array(8001);
+$revs = array(8923);
 foreach ($revs as $rev) {
 	profile_revision($rev);
 }
