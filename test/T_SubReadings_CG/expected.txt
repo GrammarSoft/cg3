@@ -8,6 +8,10 @@
 		"btu1" waf sub-3 sub1 ADD:6 ADD:10 
 			"btu2" waf sub-2 sub2 sub-2-good ADD:7 ADD:11 ADD:15 
 				"btu3" waf sub-1 sub3 ADD:8 ADD:12 
+	"main" waf nosub sub-4 sub0 ADD:3 ADD:5 ADD:9 
+		"btu2" waf sub-3 sub1 ADD:6 ADD:10 
+			"btu3" waf sub-2 sub2 sub-2-good ADD:7 ADD:11 ADD:15 
+				"btu4" waf sub-1 sub3 ADD:8 ADD:12 
 ;	"main" tag nosub sub-4 sub0 ADD:3 ADD:5 ADD:9 
 ;		"aux1" tag sub-3 sub1 ADD:6 ADD:10 REMOVE:19 
 ;			"aux2" tag sub-2 sub2 sub-2-good ADD:7 ADD:11 ADD:15 
