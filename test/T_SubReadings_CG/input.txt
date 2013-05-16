@@ -12,6 +12,14 @@
 		"btu1" waf
 			"btu2" waf
 				"btu3" waf
+	"main" waf
+		"btu1" waf
+			"btu2" waf
+				"btu3" waf
+	"main" waf
+		"btu2" waf
+			"btu3" waf
+				"btu4" waf
 "<word>"
  "main" tag
   "aux1" tag
