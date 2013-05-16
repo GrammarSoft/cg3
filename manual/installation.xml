@@ -5,7 +5,7 @@
   <title>Installation &amp; Updating</title>
   <para>
     These guidelines are primarily for Linux, although I develop on Windows
-    using <ulink url="http://www.microsoft.com/express/Downloads/#2010-Visual-CPP">Microsoft Visual C++ 2010 Express</ulink>.
+    using <ulink url="https://www.microsoft.com/visualstudio/eng/downloads#d-express-windows-desktop">Visual Studio 2012 Express for Windows Desktop</ulink>.
   </para>
 
   <section id="cmake">
@@ -14,7 +14,7 @@
       A few have wondered how one installs into a different folder than the default /usr/local when there is no --prefix option to CMake.
       Pass <code>-DCMAKE_INSTALL_PREFIX=/your/folder/here</code> to <code>./cmake.sh</code>
       or run <code>cmake -DCMAKE_INSTALL_PREFIX=/your/folder/here .</code> if you have already run cmake.sh.
-      <!-- Also, <ulink url="http://www.vtk.org/Wiki/CMake_FAQ#Does_CMake.27s_.22make_install.22_support_DESTDIR.3F">CMake supports the common DESTDIR environment variable</ulink>. -->
+      CMake also supports the common <ulink url="http://www.cmake.org/Wiki/CMake_FAQ#Does_CMake.27s_.22make_install.22_support_DESTDIR.3F">DESTDIR environment variable</ulink>.
     </para>
     <para>
       Also, you do not need to run cmake.sh at every build; make will detect stale files and re-run CMake as needed,
@@ -24,6 +24,17 @@
 
   <section id="ubuntu-debian">
     <title>Ubuntu / Debian</title>
+    <para>
+      For any currently supported version of Ubuntu or compatible derivatives thereof (such as Linux Mint),
+      there is a <ulink url="https://launchpad.net/~tinodidriksen/+archive/cg3">PPA available from Launchpad</ulink>,
+      easily installable via
+      <screen>
+        sudo add-apt-repository ppa:tinodidriksen/cg3
+        sudo apt-get update
+        sudo apt-get install cg3
+      </screen>
+      Rest of this page can be skipped.
+    </para>
     <para>
       Steps tested on a clean install of Ubuntu 12.10, but should work on any version.
       It is assumed you have a working network connection.
@@ -163,8 +174,8 @@
       <screen>
         cd /tmp
         wget -c \
-        &nbsp; '<ulink url="http://icu-project.org/download/">http://download.icu-project.org/files/icu4c/4.8/icu4c-4_8-src.tgz</ulink>'
-        tar -zxvf icu4c-4_8-src.tgz
+        &nbsp; '<ulink url="http://icu-project.org/download/">http://download.icu-project.org/files/icu4c/51.1/icu4c-51_1-src.tgz</ulink>'
+        tar -zxvf icu4c-51_1-src.tgz
         cd icu/source/
         ./runConfigureICU Linux
         make

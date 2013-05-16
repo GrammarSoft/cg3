@@ -85,10 +85,11 @@ Options:
       Currently only meant for use in a pipe.
     </para>
     <screen>
-USAGE: cg-conv [-a]
+USAGE: cg-conv [-a] [-l]
 
 Options:
  -a, --a2v:    convert from Apertium to VISL format
+ -l, --ltr:    sub-reading direction LTR instead of default RTL (only with -a)
     </screen>
   </section>
 
