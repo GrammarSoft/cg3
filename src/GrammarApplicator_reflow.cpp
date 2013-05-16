@@ -596,14 +596,16 @@ void GrammarApplicator::mergeReadings(ReadingList& readings) {
 			foreach (uint32Vector, r->hit_by, iter_hb, iter_hb_end) {
 				hp = hash_sdbm_uint32_t(*iter_hb, hp);
 			}
-			Reading *sub = r->next;
-			while (sub) {
-				hp = hash_sdbm_uint32_t(sub->hash_plain, hp);
+		}
+		Reading *sub = r->next;
+		while (sub) {
+			hp = hash_sdbm_uint32_t(sub->hash_plain, hp);
+			if (trace) {
 				foreach (uint32Vector, sub->hit_by, iter_hb, iter_hb_end) {
 					hp = hash_sdbm_uint32_t(*iter_hb, hp);
 				}
-				sub = sub->next;
 			}
+			sub = sub->next;
 		}
 		mlist[hp].push_back(r);
 	}
