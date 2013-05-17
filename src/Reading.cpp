@@ -105,6 +105,10 @@ uint32_t Reading::rehash() {
 	if (mapping) {
 		hash = hash_sdbm_uint32_t(mapping->hash, hash);
 	}
+	if (next) {
+		next->rehash();
+		hash = hash_sdbm_uint32_t(next->hash, hash);
+	}
 	return hash;
 }
 

@@ -704,8 +704,7 @@ bool GrammarApplicator::doesSetMatchReading(const Reading& reading, const uint32
 
 inline void GrammarApplicator::doesSetMatchCohortHelper(std::vector<Reading*>& rv, const ReadingList& readings, const Set *theset, const ContextualTest *test, uint32_t options) {
 	const_foreach (ReadingList, readings, iter, iter_end) {
-		Reading *reading = *iter;
-		reading = get_sub_reading(reading, test->offset_sub);
+		Reading *reading = get_sub_reading(*iter, test->offset_sub);
 		if (!reading) {
 			continue;
 		}
