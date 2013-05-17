@@ -391,6 +391,9 @@ gotaline:
 			if (indents.empty() || indent <= indents.back().first) {
 				cCohort->appendReading(cReading);
 			}
+			else {
+				cCohort->readings.back()->rehash();
+			}
 			indents.push_back(std::make_pair(indent,cReading));
 			lReading = cReading;
 			numReadings++;
