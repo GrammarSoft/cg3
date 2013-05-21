@@ -58,7 +58,7 @@ int main(int argc, char* argv[]) {
 	}
 
 	if (options[VERSION].doesOccur) {
-		fprintf(stderr, "%s\n", CG3_COPYRIGHT_STRING);
+		fprintf(stdout, "%s\n", CG3_COPYRIGHT_STRING);
 		return U_ZERO_ERROR;
 	}
 
@@ -68,9 +68,10 @@ int main(int argc, char* argv[]) {
 	}
 
 	if (argc < 0 || options[HELP1].doesOccur || options[HELP2].doesOccur) {
-		fprintf(stderr, "Usage: vislcg3 [OPTIONS]\n");
-		fprintf(stderr, "\n");
-		fprintf(stderr, "Options:\n");
+		FILE *out = (argc < 0) ? stderr : stdout;
+		fprintf(out, "Usage: vislcg3 [OPTIONS]\n");
+		fprintf(out, "\n");
+		fprintf(out, "Options:\n");
 
 		size_t longest = 0;
 		for (uint32_t i=0 ; i<NUM_OPTIONS ; i++) {
@@ -81,20 +82,20 @@ int main(int argc, char* argv[]) {
 		}
 		for (uint32_t i=0 ; i<NUM_OPTIONS ; i++) {
 			if (options[i].description) {
-				fprintf(stderr, " ");
+				fprintf(out, " ");
 				if (options[i].shortName) {
-					fprintf(stderr, "-%c,", options[i].shortName);
+					fprintf(out, "-%c,", options[i].shortName);
 				}
 				else {
-					fprintf(stderr, "   ");
+					fprintf(out, "   ");
 				}
-				fprintf(stderr, " --%s", options[i].longName);
+				fprintf(out, " --%s", options[i].longName);
 				size_t ldiff = longest - strlen(options[i].longName);
 				while (ldiff--) {
-					fprintf(stderr, " ");
+					fprintf(out, " ");
 				}
-				fprintf(stderr, "  %s", options[i].description);
-				fprintf(stderr, "\n");
+				fprintf(out, "  %s", options[i].description);
+				fprintf(out, "\n");
 			}
 		}
 
