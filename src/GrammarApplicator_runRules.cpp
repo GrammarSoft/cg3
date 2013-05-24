@@ -649,8 +649,8 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 								wf = *tter;
 								continue;
 							}
+							assert(wf && "There must be a wordform before any other tags in ADDCOHORT.");
 							if ((*tter)->type & T_BASEFORM) {
-								assert(wf && "There must be a wordform before any other tags in ADDCOHORT.");
 								readings.resize(readings.size()+1);
 								readings.back().push_back(wf);
 							}
