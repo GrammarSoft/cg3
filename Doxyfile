@@ -3,7 +3,7 @@
 #---------------------------------------------------------------------------
 # Project related configuration options
 #---------------------------------------------------------------------------
-PROJECT_NAME           = "VISL CG-3"
+PROJECT_NAME           = "CG-3"
 PROJECT_NUMBER         = 
 OUTPUT_DIRECTORY       = ./docs
 CREATE_SUBDIRS         = YES
