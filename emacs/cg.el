@@ -95,7 +95,7 @@
 	     (1 font-lock-variable-name-face))
 	    ("\\<\\(\\$\\$\\(\\s_\\|\\sw\\)+\\)\\>"
 	     (1 font-lock-variable-name-face))
-	    ("\\<\\(NOT\\|NEGATE\\|NONE\\|LINK\\|BARRIER\\|CBARRIER\\|OR\\|TARGET\\|IF\\|AFTER\\|TO\\|[psc]\\)\\>"
+	    ("\\<\\(NOT\\|NEGATE\\|NONE\\|LINK\\|BARRIER\\|CBARRIER\\|OR\\|TARGET\\|IF\\|AFTER\\|TO\\|[psc][oO]?\\)\\>"
 	     1 font-lock-function-name-face)
 	    ("\\B\\(\\^\\)"		; fail-fast
 	     1 font-lock-function-name-face)))
