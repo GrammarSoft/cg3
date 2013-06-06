@@ -191,9 +191,10 @@ int main(int argc, char *argv[]) {
 		CG3Quit(1);
 	}
 
-	const char *codepage_default = ucnv_getDefaultName();
 	ucnv_setDefaultName("UTF-8");
-	const char *locale_default = "en_US_POSIX"; //uloc_getDefault();
+	const char *codepage_default = ucnv_getDefaultName();
+	uloc_setDefault("en_US_POSIX", &status);
+	const char *locale_default = uloc_getDefault();
 
 	ux_stdin = u_finit(stdin, locale_default, codepage_default);
 	ux_stdout = u_finit(stdout, locale_default, codepage_default);
@@ -213,48 +214,7 @@ int main(int argc, char *argv[]) {
 
 	CG3::IGrammarParser *parser = 0;
 	
-	if (optind == (argc - 3)) {
-
-		FILE *in = fopen(argv[optind], "rb");
-		if (in == NULL || ferror(in)) {
-			endProgram(argv[0]);
-		}
-		
-		u_fclose(ux_stdin);
-		ux_stdin = u_fopen(argv[optind+1], "rb", locale_default, codepage_default);
-		if (ux_stdin == NULL) {
-			endProgram(argv[0]);
-		}
-		
-		u_fclose(ux_stdout);
-		ux_stdout = u_fopen(argv[optind+2], "wb", locale_default, codepage_default);
-		if (ux_stdout == NULL) {
-			endProgram(argv[0]);
-		}
-
-		fread(&CG3::cbuffers[0][0], 1, 4, in);
-		fclose(in);
-
-	}
-	else if (optind == (argc -2)) {
-
-		FILE *in = fopen(argv[optind], "rb");
-		if (in == NULL || ferror(in)) {
-			endProgram(argv[0]);
-		}
-		
-		u_fclose(ux_stdin);
-		ux_stdin = u_fopen(argv[optind+1], "rb", locale_default, codepage_default);
-		if (ux_stdin == NULL) {
-			endProgram(argv[0]);
-		}
-		
-		fread(&CG3::cbuffers[0][0], 1, 4, in);
-		fclose(in);
-		
-	}
-	else if (optind == (argc - 1)) {
-
+	if (optind <= (argc - 1)) {
 		FILE *in = fopen(argv[optind], "rb");
 		if (in == NULL || ferror(in)) {
 			endProgram(argv[0]);
@@ -265,10 +225,23 @@ int main(int argc, char *argv[]) {
 			CG3Quit(1);
 		}
 		fclose(in);
-
 	}
 	else {
 		endProgram(argv[0]);
+	}
+	if (optind <= (argc - 2)) {
+		u_fclose(ux_stdin);
+		ux_stdin = u_fopen(argv[optind+1], "rb", locale_default, codepage_default);
+		if (ux_stdin == NULL) {
+			endProgram(argv[0]);
+		}
+	}
+	if (optind <= (argc - 3)) {
+		u_fclose(ux_stdout);
+		ux_stdout = u_fopen(argv[optind+2], "wb", locale_default, codepage_default);
+		if (ux_stdout == NULL) {
+			endProgram(argv[0]);
+		}
 	}
 
 	if (CG3::cbuffers[0][0] == 'C' && CG3::cbuffers[0][1] == 'G' && CG3::cbuffers[0][2] == '3' && CG3::cbuffers[0][3] == 'B') {
@@ -358,7 +331,8 @@ int main(int argc, char *argv[]) {
 
 			case 'd':
 			default:
-				applicator->runGrammarOnText(ux_stdin, ux_stdout);
+				CG3::istream instream(ux_stdin);
+				applicator->runGrammarOnText(instream, ux_stdout);
 				break;
 		}
 
@@ -371,7 +345,6 @@ int main(int argc, char *argv[]) {
 	delete applicator;
 	applicator = 0;
 
-	u_fclose(ux_stdin);
 	u_fclose(ux_stdout);
 	u_fclose(ux_stderr);
 

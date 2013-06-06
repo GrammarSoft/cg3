@@ -20,7 +20,6 @@
 */
 
 #include "stdafx.h"
-#include "icu_uoptions.h"
 #include "Grammar.h"
 #include "TextualParser.h"
 #include "GrammarWriter.h"
@@ -45,7 +44,6 @@ int main(int argc, char* argv[]) {
 	srand((uint32_t)time(0));
 
 	U_MAIN_INIT_ARGS(argc, argv);
-
 	argc = u_parseArgs(argc, argv, NUM_OPTIONS, options);
 
 	if (options[VERBOSE].doesOccur || options[VERSION].doesOccur || options[HELP1].doesOccur || options[HELP2].doesOccur) {
@@ -350,7 +348,8 @@ int main(int argc, char* argv[]) {
 		CG3::GrammarApplicator applicator(ux_stderr);
 		applicator.setGrammar(&grammar);
 		GAppSetOpts(applicator, conv);
-		applicator.runGrammarOnText(ux_stdin, ux_stdout);
+		CG3::istream instream(ux_stdin);
+		applicator.runGrammarOnText(instream, ux_stdout);
 
 		if (options[VERBOSE].doesOccur) {
 			std::cerr << "Applying grammar on input took " << (clock()-main_timer)/(double)CLOCKS_PER_SEC << " seconds." << std::endl;
@@ -428,7 +427,6 @@ int main(int argc, char* argv[]) {
 		}
 	}
 
-	u_fclose(ux_stdin);
 	u_fclose(ux_stdout);
 	u_fclose(ux_stderr);
 	ucnv_close(conv);

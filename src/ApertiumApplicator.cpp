@@ -50,7 +50,7 @@ void ApertiumApplicator::setNullFlush(bool pNullFlush) {
 	nullFlush=pNullFlush;
 }
 
-UChar ApertiumApplicator::u_fgetc_wrapper(UFILE *input) {
+UChar ApertiumApplicator::u_fgetc_wrapper(istream& input) {
 	if (runningWithNullFlush) {
 		if (!fgetc_converter) {
 			fgetc_error=U_ZERO_ERROR;
@@ -64,7 +64,7 @@ UChar ApertiumApplicator::u_fgetc_wrapper(UFILE *input) {
 		int inputsize=0;
 
 		do {
-			ch = fgetc(u_fgetfile(input));
+			ch = input.getc_raw();
 			if (ch==0) {
 				return 0;
 			}
@@ -78,46 +78,45 @@ UChar ApertiumApplicator::u_fgetc_wrapper(UFILE *input) {
 				}
 			}
 		}
-		while (( ((result>=1 && fgetc_outputbuf[0]==0xFFFD))  || result<1 || U_FAILURE(fgetc_error) ) && !u_feof(input) && inputsize<5);
+		while (( ((result>=1 && fgetc_outputbuf[0]==0xFFFD))  || result<1 || U_FAILURE(fgetc_error) ) && !input.eof() && inputsize<5);
 
-		if (fgetc_outputbuf[0]==0xFFFD && u_feof(input)) {
+		if (fgetc_outputbuf[0]==0xFFFD && input.eof()) {
 			return U_EOF;
 		}
 		return fgetc_outputbuf[0];
 	}
 	else {
-		return u_fgetc(input);
+		return input.getc();
 	}
- }
+}
 
 
-int ApertiumApplicator::runGrammarOnTextWrapperNullFlush(UFILE *input, UFILE *output) {
+void ApertiumApplicator::runGrammarOnTextWrapperNullFlush(istream& input, UFILE *output) {
 	setNullFlush(false);
 	runningWithNullFlush=true;
-	while (!u_feof(input)) {
+	while (!input.eof()) {
 		runGrammarOnText(input, output);
 		u_fputc('\0', output);
 		u_fflush(output);
 	}
 	runningWithNullFlush=false;
-	return 0;
 }
 
 /*
  * Run a constraint grammar on an Apertium input stream
  */
 
-int ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
+void ApertiumApplicator::runGrammarOnText(istream& input, UFILE *output) {
 	if (getNullFlush()) {
-		return runGrammarOnTextWrapperNullFlush(input, output);
+		runGrammarOnTextWrapperNullFlush(input, output);
+		return;
 	}
 
-	if (!input) {
+	if (!input.good()) {
 		u_fprintf(ux_stderr, "Error: Input is null - nothing to parse!\n");
 		CG3Quit(1);
 	}
-	u_frewind(input);
-	if (u_feof(input)) {
+	if (input.eof()) {
 		u_fprintf(ux_stderr, "Error: Input is empty - nothing to parse!\n");
 		CG3Quit(1);
 	}
@@ -163,7 +162,7 @@ int ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 	ticks timer(gtimer);
 
 	while ((inchar = u_fgetc_wrapper(input)) != 0) {
-		if (u_feof(input)) {
+		if (input.eof()) {
 			break;
 		}
 
@@ -464,8 +463,6 @@ int ApertiumApplicator::runGrammarOnText(UFILE *input, UFILE *output) {
 
 	ticks tmp = getticks();
 	grammar->total_time = elapsed(tmp, timer);
-
-	return 0;
 } // runGrammarOnText
 
 
