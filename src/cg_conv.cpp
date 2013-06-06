@@ -25,6 +25,8 @@
 
 #include "version.h"
 
+#include "options_conv.hpp"
+using namespace Options;
 using namespace std;
 using CG3::CG3Quit;
 
@@ -39,6 +41,44 @@ int main(int argc, char *argv[]) {
 	if (U_FAILURE(status) && status != U_FILE_ACCESS_ERROR) {
 		std::cerr << "Error: Cannot initialize ICU. Status = " << u_errorName(status) << std::endl;
 		CG3Quit(1);
+	}
+
+	U_MAIN_INIT_ARGS(argc, argv);
+	argc = u_parseArgs(argc, argv, NUM_OPTIONS, options);
+
+	if (argc < 0 || options[HELP1].doesOccur || options[HELP2].doesOccur) {
+		FILE *out = (argc < 0) ? stderr : stdout;
+		fprintf(out, "Usage: cg-conv [OPTIONS]\n");
+		fprintf(out, "\n");
+		fprintf(out, "Options:\n");
+
+		size_t longest = 0;
+		for (uint32_t i=0 ; i<NUM_OPTIONS ; i++) {
+			if (options[i].description) {
+				size_t len = strlen(options[i].longName);
+				longest = std::max(longest, len);
+			}
+		}
+		for (uint32_t i=0 ; i<NUM_OPTIONS ; i++) {
+			if (options[i].description) {
+				fprintf(out, " ");
+				if (options[i].shortName) {
+					fprintf(out, "-%c,", options[i].shortName);
+				}
+				else {
+					fprintf(out, "   ");
+				}
+				fprintf(out, " --%s", options[i].longName);
+				size_t ldiff = longest - strlen(options[i].longName);
+				while (ldiff--) {
+					fprintf(out, " ");
+				}
+				fprintf(out, "  %s", options[i].description);
+				fprintf(out, "\n");
+			}
+		}
+
+		return argc < 0 ? U_ILLEGAL_ARGUMENT_ERROR : U_ZERO_ERROR;
 	}
 
 	ucnv_setDefaultName("UTF-8");
@@ -57,29 +97,98 @@ int main(int argc, char *argv[]) {
 
 	CG3::FormatConverter applicator(ux_stderr);
 	applicator.setGrammar(&grammar);
-	if (argc > 1 && (strcmp(argv[1], "--a2v") == 0 || strcmp(argv[1], "-a") == 0)) {
-		std::cerr << "Converting Apertium to VISL (";
-		applicator.setInputFormat(CG3::FMT_APERTIUM);
-		applicator.setOutputFormat(CG3::FMT_VISL);
-		if (argc > 2 && (strcmp(argv[2], "--ltr") == 0 || strcmp(argv[2], "-l") == 0)) {
-			std::cerr << "sub-reading direction LTR";
-			grammar.sub_readings_ltr = true;
+
+	boost::scoped_ptr<CG3::istream> instream;
+
+	CG3::CG_FORMATS fmt = CG3::FMT_INVALID;
+
+	if (options[IN_CG].doesOccur) {
+		fmt = CG3::FMT_CG;
+	}
+	else if (options[IN_NICELINE].doesOccur) {
+		fmt = CG3::FMT_NICELINE;
+	}
+	else if (options[IN_APERTIUM].doesOccur) {
+		fmt = CG3::FMT_APERTIUM;
+	}
+	else if (options[IN_MATXIN].doesOccur) {
+		fmt = CG3::FMT_MATXIN;
+	}
+	else if (options[IN_FST].doesOccur) {
+		fmt = CG3::FMT_FST;
+	}
+	else if (options[IN_PLAIN].doesOccur) {
+		fmt = CG3::FMT_PLAIN;
+	}
+
+	if (options[IN_AUTO].doesOccur || fmt == CG3::FMT_INVALID) {
+		CG3::UString buffer;
+		buffer.resize(1000);
+		int32_t nr = u_file_read(&buffer[0], buffer.size(), ux_stdin);
+		buffer.resize(nr);
+		URegularExpression *rx = 0;
+
+		for (;;) {
+			rx = uregex_openC("^\"<[^>]+>\".*?^\\s+\"[^\"]+\"", UREGEX_DOTALL|UREGEX_MULTILINE, 0, &status);
+			uregex_setText(rx, buffer.c_str(), buffer.size(), &status);
+			if (uregex_find(rx, -1, &status)) {
+				fmt = CG3::FMT_CG;
+				break;
+			}
+			uregex_close(rx);
+
+			rx = uregex_openC("^\\S+\t\\[\\S+\\]", UREGEX_DOTALL|UREGEX_MULTILINE, 0, &status);
+			uregex_setText(rx, buffer.c_str(), buffer.size(), &status);
+			if (uregex_find(rx, -1, &status)) {
+				fmt = CG3::FMT_NICELINE;
+				break;
+			}
+			uregex_close(rx);
+
+			rx = uregex_openC("\\^[^/]+/[^<]+<[^>]+>\\$", UREGEX_DOTALL|UREGEX_MULTILINE, 0, &status);
+			uregex_setText(rx, buffer.c_str(), buffer.size(), &status);
+			if (uregex_find(rx, -1, &status)) {
+				fmt = CG3::FMT_APERTIUM;
+				break;
+			}
+			uregex_close(rx);
+
+			rx = uregex_openC("^\\S+\t\\S+(\\+\\S+)+$", UREGEX_DOTALL|UREGEX_MULTILINE, 0, &status);
+			uregex_setText(rx, buffer.c_str(), buffer.size(), &status);
+			if (uregex_find(rx, -1, &status)) {
+				fmt = CG3::FMT_FST;
+				break;
+			}
+
+			fmt = CG3::FMT_PLAIN;
+			break;
 		}
-		else {
-			std::cerr << "sub-reading direction RTL";
-			grammar.sub_readings_ltr = false;
-		}
-		std::cerr << ")..." << std::endl;
+		uregex_close(rx);
+
+		instream.reset(new CG3::istream_buffer(ux_stdin, buffer));
 	}
 	else {
-		std::cerr << "Converting VISL to Apertium..." << std::endl;
-		applicator.setInputFormat(CG3::FMT_VISL);
+		instream.reset(new CG3::istream(ux_stdin));
+	}
+
+	applicator.setInputFormat(fmt);
+
+	if (options[SUB_LTR].doesOccur) {
+		grammar.sub_readings_ltr = true;
+	}
+
+	applicator.setOutputFormat(CG3::FMT_CG);
+
+	if (options[OUT_APERTIUM].doesOccur) {
 		applicator.setOutputFormat(CG3::FMT_APERTIUM);
 	}
-	applicator.verbosity_level = 0;
-	applicator.runGrammarOnText(ux_stdin, ux_stdout);
+	else if (options[OUT_MATXIN].doesOccur) {
+		applicator.setOutputFormat(CG3::FMT_MATXIN);
+	}
 
-	u_fclose(ux_stdin);
+	applicator.verbosity_level = 0;
+	applicator.runGrammarOnText(*instream.get(), ux_stdout);
+
 	u_fclose(ux_stdout);
 	u_fclose(ux_stderr);
 

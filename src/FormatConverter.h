@@ -30,27 +30,31 @@
 #include "Window.h"
 #include "SingleWindow.h"
 #include "ApertiumApplicator.h"
+#include "MatxinApplicator.h"
 
 namespace CG3 {
 	enum CG_FORMATS {
 		FMT_INVALID,
-		FMT_VISL,
+		FMT_CG,
+		FMT_NICELINE,
 		FMT_APERTIUM,
 		FMT_MATXIN,
+		FMT_FST,
+		FMT_PLAIN,
 		NUM_FORMATS
 	};
 
-	class FormatConverter : public ApertiumApplicator, public virtual GrammarApplicator {
+	class FormatConverter : public ApertiumApplicator, public MatxinApplicator {
 	public:
 		FormatConverter(UFILE *ux_err);
 
-		virtual int runGrammarOnText(UFILE *input, UFILE *output);
-		bool setInputFormat(CG_FORMATS format);
-		bool setOutputFormat(CG_FORMATS format);
+		void runGrammarOnText(istream& input, UFILE *output);
+		void setInputFormat(CG_FORMATS format);
+		void setOutputFormat(CG_FORMATS format);
 
 	protected:
 		CG_FORMATS informat, outformat;
-		virtual void printSingleWindow(SingleWindow *window, UFILE *output);
+		void printSingleWindow(SingleWindow *window, UFILE *output);
 	};
 }
 

@@ -61,9 +61,10 @@ int main(int argc, char *argv[]) {
 	}
 	status = U_ZERO_ERROR;
 
-	const char *locale_default = "en_US_POSIX"; //uloc_getDefault();
 	ucnv_setDefaultName("UTF-8");
 	const char *codepage_default = ucnv_getDefaultName();
+	uloc_setDefault("en_US_POSIX", &status);
+	const char *locale_default = uloc_getDefault();
 
 	ux_stderr = u_finit(stderr, locale_default, codepage_default);
 
