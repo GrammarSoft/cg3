@@ -36,7 +36,7 @@ namespace CG3 {
 	public:
 		ApertiumApplicator(UFILE *ux_err);
 
-		virtual int runGrammarOnText(UFILE *input, UFILE *output);
+		void runGrammarOnText(istream& input, UFILE *output);
 
 		bool getNullFlush();
 		bool wordform_case;
@@ -51,11 +51,11 @@ namespace CG3 {
 		bool runningWithNullFlush;
 	
 		void printReading(Reading *reading, UFILE *output);
-		virtual void printSingleWindow(SingleWindow *window, UFILE *output);
+		void printSingleWindow(SingleWindow *window, UFILE *output);
 		
-		int runGrammarOnTextWrapperNullFlush(UFILE *input, UFILE *output);
+		void runGrammarOnTextWrapperNullFlush(istream& input, UFILE *output);
 
-		UChar u_fgetc_wrapper(UFILE *input);
+		UChar u_fgetc_wrapper(istream& input);
 		UConverter* fgetc_converter;
 		char fgetc_inputbuf[5];
 		UChar fgetc_outputbuf[5];

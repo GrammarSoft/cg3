@@ -29,6 +29,7 @@
 #include "Rule.h"
 #include "interval_vector.hpp"
 #include "exec-stream.h"
+#include "istream.hpp"
 
 namespace CG3 {
 	class Window;
@@ -87,7 +88,7 @@ namespace CG3 {
 		void setGrammar(Grammar *res);
 		void index();
 
-		virtual int runGrammarOnText(UFILE *input, UFILE *output);
+		virtual void runGrammarOnText(istream& input, UFILE *output);
 
 		bool has_dep;
 		uint32_t dep_highest_seen;

@@ -26,24 +26,23 @@ namespace CG3 {
 FormatConverter::FormatConverter(UFILE *ux_err) :
 GrammarApplicator(ux_err),
 ApertiumApplicator(ux_err),
-informat(FMT_VISL),
-outformat(FMT_VISL)
+MatxinApplicator(ux_err),
+informat(FMT_CG),
+outformat(FMT_CG)
 {
 }
 
-bool FormatConverter::setInputFormat(CG_FORMATS format) {
+void FormatConverter::setInputFormat(CG_FORMATS format) {
 	informat = format;
-	return true;
 }
 
-bool FormatConverter::setOutputFormat(CG_FORMATS format) {
+void FormatConverter::setOutputFormat(CG_FORMATS format) {
 	outformat = format;
-	return true;
 }
 
-int FormatConverter::runGrammarOnText(UFILE *input, UFILE *output) {
+void FormatConverter::runGrammarOnText(istream& input, UFILE *output) {
 	switch (informat) {
-		case FMT_VISL: {
+		case FMT_CG: {
 			GrammarApplicator::runGrammarOnText(input, output);
 			break;
 		}
@@ -51,17 +50,18 @@ int FormatConverter::runGrammarOnText(UFILE *input, UFILE *output) {
 			ApertiumApplicator::runGrammarOnText(input, output);
 			break;
 		}
-		case FMT_MATXIN:
+		case FMT_MATXIN: {
+			MatxinApplicator::runGrammarOnText(input, output);
+			break;
+		}
 		default:
 			CG3Quit();
 	}
-
-	return 0;
 }
 
 void FormatConverter::printSingleWindow(SingleWindow *window, UFILE *output) {
 	switch (outformat) {
-		case FMT_VISL: {
+		case FMT_CG: {
 			GrammarApplicator::printSingleWindow(window, output);
 			break;
 		}
@@ -69,7 +69,10 @@ void FormatConverter::printSingleWindow(SingleWindow *window, UFILE *output) {
 			ApertiumApplicator::printSingleWindow(window, output);
 			break;
 		}
-		case FMT_MATXIN:
+		case FMT_MATXIN: {
+			MatxinApplicator::printSingleWindow(window, output);
+			break;
+		}
 		default:
 			CG3Quit();
 	}
