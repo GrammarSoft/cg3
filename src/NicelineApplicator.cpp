@@ -119,11 +119,11 @@ gotaline:
 			cleaned[packoff-1] = 0;
 			--packoff;
 		}
-		if (!ignoreinput && cleaned[0] != '<') {
+		if (!ignoreinput && cleaned[0] && cleaned[0] != '<') {
 			UChar *space = &cleaned[0];
 			SKIPTO_NOSPAN(space, '\t');
 
-			if (space[0] != '\t' || space[1] != '[') {
+			if (space[0] != '\t') {
 				u_fprintf(ux_stderr, "Warning: %S on line %u looked like a cohort but wasn't - treated as text.\n", &cleaned[0], numLines);
 				u_fflush(ux_stderr);
 				goto istext;
@@ -235,35 +235,23 @@ gotaline:
 			numCohorts++;
 
 			++space;
-			while (space && *space == '[') {
+			while (space) {
 				cReading = new Reading(cCohort);
 				cReading->wordform = cCohort->wordform;
 				insert_if_exists(cReading->parent->possible_sets, grammar->sets_any);
 				addTagToReading(*cReading, cReading->wordform);
 
-				UChar *base = ++space;
-				SKIPTO_NOSPAN(space, ']');
-
-				if (*space != ']') {
-					u_fprintf(ux_stderr, "Warning: %S on line %u looked like a reading but wasn't - treated as text.\n", &cleaned[0], numLines);
-					u_fflush(ux_stderr);
-					delete cReading;
-					cReading = 0;
-					goto istext;
+				UChar *base = space;
+				if (*space == '"') {
+					++space;
+					SKIPTO_NOSPAN(space, '"');
 				}
-				space[0] = 0;
-
-				tag.clear();
-				tag += '"';
-				tag += base;
-				tag += '"';
-				addTagToReading(*cReading, addTag(tag)->hash);
+				if (*space == '[') {
+					SKIPTO_NOSPAN(space, ']');
+				}
 
 				TagList mappings;
 
-				++space;
-				SKIPWS(space);
-				base = space;
 				UChar *tab = u_strchr(space, '\t');
 				if (tab) {
 					tab[0] = 0;
@@ -271,8 +259,10 @@ gotaline:
 
 				while (space && *space && (space = u_strchr(space, ' ')) != 0) {
 					space[0] = 0;
-					++space;
 					if (base && base[0]) {
+						if (base[0] == '[' && space[-1] == ']') {
+							base[0] = space[-1] = '"';
+						}
 						Tag *tag = addTag(base);
 						if (tag->type & T_MAPPING || tag->tag[0] == grammar->mapping_prefix) {
 							mappings.push_back(tag);
@@ -281,13 +271,19 @@ gotaline:
 							addTagToReading(*cReading, tag->hash);
 						}
 					}
-					base = space;
+					base = ++space;
 					if (*space == '"') {
 						++space;
 						SKIPTO_NOSPAN(space, '"');
 					}
+					if (*space == '[') {
+						SKIPTO_NOSPAN(space, ']');
+					}
 				}
 				if (base && base[0]) {
+					if (base[0] == '[' && space[-1] == ']') {
+						base[0] = space[-1] = '"';
+					}
 					Tag *tag = addTag(base);
 					if (tag->type & T_MAPPING || tag->tag[0] == grammar->mapping_prefix) {
 						mappings.push_back(tag);
@@ -297,6 +293,7 @@ gotaline:
 					}
 				}
 				if (!cReading->baseform) {
+					cReading->baseform = cReading->wordform;
 					u_fprintf(ux_stderr, "Warning: Line %u had no valid baseform.\n", numLines);
 					u_fflush(ux_stderr);
 				}
