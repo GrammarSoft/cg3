@@ -20,16 +20,19 @@
 */
 
 #pragma once
-#ifndef c6d28b7452ec699b_VERSION_H
-#define c6d28b7452ec699b_VERSION_H
+#ifndef c6d28b7452ec699b_PLAINTEXTAPPLICATOR_HPP
+#define c6d28b7452ec699b_PLAINTEXTAPPLICATOR_HPP
 
-const char CG3_COPYRIGHT_STRING[] = "Copyright (C) 2007-2013 GrammarSoft ApS. All Rights Reserved.";
+#include "GrammarApplicator.h"
 
-const uint32_t CG3_VERSION_MAJOR = 0;
-const uint32_t CG3_VERSION_MINOR = 9;
-const uint32_t CG3_VERSION_PATCH = 8;
-const uint32_t CG3_REVISION = 9036;
-const uint32_t CG3_TOO_OLD = 7591;
-const uint32_t CG3_EXTERNAL_PROTOCOL = 7226;
+namespace CG3 {
+
+class PlaintextApplicator : public virtual GrammarApplicator {
+public:
+	PlaintextApplicator(UFILE *ux_err);
+	void runGrammarOnText(istream& input, UFILE *output);
+};
+
+}
 
 #endif
