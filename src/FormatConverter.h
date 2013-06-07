@@ -23,15 +23,10 @@
 #ifndef c6d28b7452ec699b_FORMATCONVERTER_H
 #define c6d28b7452ec699b_FORMATCONVERTER_H
 
-#include "stdafx.h"
-#include "Strings.h"
-#include "Tag.h"
-#include "Grammar.h"
-#include "Window.h"
-#include "SingleWindow.h"
 #include "ApertiumApplicator.h"
 #include "MatxinApplicator.h"
 #include "NicelineApplicator.hpp"
+#include "PlaintextApplicator.hpp"
 
 namespace CG3 {
 	enum CG_FORMATS {
@@ -45,7 +40,7 @@ namespace CG3 {
 		NUM_FORMATS
 	};
 
-	class FormatConverter : public ApertiumApplicator, public MatxinApplicator, public NicelineApplicator {
+	class FormatConverter : public ApertiumApplicator, public MatxinApplicator, public NicelineApplicator, public PlaintextApplicator {
 	public:
 		FormatConverter(UFILE *ux_err);
 

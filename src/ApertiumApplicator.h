@@ -23,12 +23,6 @@
 #ifndef c6d28b7452ec699b_GRAMMARAPPLICATORAPERTIUM_H
 #define c6d28b7452ec699b_GRAMMARAPPLICATORAPERTIUM_H
 
-#include "stdafx.h"
-#include "Strings.h"
-#include "Tag.h"
-#include "Grammar.h"
-#include "Window.h"
-#include "SingleWindow.h"
 #include "GrammarApplicator.h"
 
 namespace CG3 {
