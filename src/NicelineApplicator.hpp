@@ -20,8 +20,8 @@
 */
 
 #pragma once
-#ifndef c6d28b7452ec699b_FORMATCONVERTER_H
-#define c6d28b7452ec699b_FORMATCONVERTER_H
+#ifndef c6d28b7452ec699b_NICELINEAPPLICATOR_HPP
+#define c6d28b7452ec699b_NICELINEAPPLICATOR_HPP
 
 #include "stdafx.h"
 #include "Strings.h"
@@ -29,34 +29,16 @@
 #include "Grammar.h"
 #include "Window.h"
 #include "SingleWindow.h"
-#include "ApertiumApplicator.h"
-#include "MatxinApplicator.h"
-#include "NicelineApplicator.hpp"
+#include "GrammarApplicator.h"
 
 namespace CG3 {
-	enum CG_FORMATS {
-		FMT_INVALID,
-		FMT_CG,
-		FMT_NICELINE,
-		FMT_APERTIUM,
-		FMT_MATXIN,
-		FMT_FST,
-		FMT_PLAIN,
-		NUM_FORMATS
-	};
 
-	class FormatConverter : public ApertiumApplicator, public MatxinApplicator, public NicelineApplicator {
-	public:
-		FormatConverter(UFILE *ux_err);
+class NicelineApplicator : public virtual GrammarApplicator {
+public:
+	NicelineApplicator(UFILE *ux_err);
+	void runGrammarOnText(istream& input, UFILE *output);
+};
 
-		void runGrammarOnText(istream& input, UFILE *output);
-		void setInputFormat(CG_FORMATS format);
-		void setOutputFormat(CG_FORMATS format);
-
-	protected:
-		CG_FORMATS informat, outformat;
-		void printSingleWindow(SingleWindow *window, UFILE *output);
-	};
 }
 
 #endif

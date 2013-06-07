@@ -137,6 +137,7 @@ int main(int argc, char *argv[]) {
 			}
 			uregex_close(rx);
 
+			// ToDo: Handle spaces in wordform and baseform
 			rx = uregex_openC("^\\S+\t\\[\\S+\\]", UREGEX_DOTALL|UREGEX_MULTILINE, 0, &status);
 			uregex_setText(rx, buffer.c_str(), buffer.size(), &status);
 			if (uregex_find(rx, -1, &status)) {

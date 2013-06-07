@@ -27,6 +27,7 @@ FormatConverter::FormatConverter(UFILE *ux_err) :
 GrammarApplicator(ux_err),
 ApertiumApplicator(ux_err),
 MatxinApplicator(ux_err),
+NicelineApplicator(ux_err),
 informat(FMT_CG),
 outformat(FMT_CG)
 {
@@ -52,6 +53,10 @@ void FormatConverter::runGrammarOnText(istream& input, UFILE *output) {
 		}
 		case FMT_MATXIN: {
 			MatxinApplicator::runGrammarOnText(input, output);
+			break;
+		}
+		case FMT_NICELINE: {
+			NicelineApplicator::runGrammarOnText(input, output);
 			break;
 		}
 		default:
