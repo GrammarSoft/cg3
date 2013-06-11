@@ -27,6 +27,7 @@
 #include "MatxinApplicator.h"
 #include "NicelineApplicator.hpp"
 #include "PlaintextApplicator.hpp"
+#include "FSTApplicator.hpp"
 
 namespace CG3 {
 	enum CG_FORMATS {
@@ -40,7 +41,7 @@ namespace CG3 {
 		NUM_FORMATS
 	};
 
-	class FormatConverter : public ApertiumApplicator, public MatxinApplicator, public NicelineApplicator, public PlaintextApplicator {
+	class FormatConverter : public ApertiumApplicator, public MatxinApplicator, public NicelineApplicator, public PlaintextApplicator, public FSTApplicator {
 	public:
 		FormatConverter(UFILE *ux_err);
 
