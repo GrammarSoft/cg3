@@ -19,7 +19,7 @@
 * along with VISL CG-3.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "NicelineApplicator.hpp"
+#include "FSTApplicator.hpp"
 #include "Strings.h"
 #include "Tag.h"
 #include "Grammar.h"
@@ -29,12 +29,12 @@
 
 namespace CG3 {
 
-NicelineApplicator::NicelineApplicator(UFILE *ux_err)
+FSTApplicator::FSTApplicator(UFILE *ux_err)
 	: GrammarApplicator(ux_err)
 {
 }
 
-void NicelineApplicator::runGrammarOnText(istream& input, UFILE *output) {
+void FSTApplicator::runGrammarOnText(istream& input, UFILE *output) {
 	if (!input.good()) {
 		u_fprintf(ux_stderr, "Error: Input is null - nothing to parse!\n");
 		CG3Quit(1);
@@ -128,6 +128,107 @@ gotaline:
 			}
 			space[0] = 0;
 
+			UString tag;
+			tag += '"';
+			tag += '<';
+			tag += &cleaned[0];
+			tag += '>';
+			tag += '"';
+
+			if (!cCohort) {
+				if (!cSWindow) {
+					// ToDo: Refactor to allocate SingleWindow, Cohort, and Reading from their containers
+					cSWindow = gWindow->allocAppendSingleWindow();
+					initEmptySingleWindow(cSWindow);
+
+					lSWindow = cSWindow;
+					lCohort = cSWindow->cohorts[0];
+					++numWindows;
+					did_soft_lookback = false;
+				}
+				cCohort = new Cohort(cSWindow);
+				cCohort->global_number = gWindow->cohort_counter++;
+				cCohort->wordform = addTag(tag)->hash;
+				lCohort = cCohort;
+				++numCohorts;
+			}
+
+			++space;
+			while (space) {
+				cReading = new Reading(cCohort);
+				cReading->wordform = cCohort->wordform;
+				insert_if_exists(cReading->parent->possible_sets, grammar->sets_any);
+				addTagToReading(*cReading, cReading->wordform);
+
+				const UChar *base = space;
+				TagList mappings;
+
+				UChar *tab = u_strchr(space, '\t');
+				if (tab) {
+					tab[0] = 0;
+				}
+
+				while (space && *space && (space = u_strchr(space, '+')) != 0) {
+					if (base && base[0]) {
+						UChar *hash = 0;
+						if ((hash = u_strchr(base, '#')) != 0 && hash != base && hash < space) {
+							size_t oh = hash - &cleaned[0];
+							size_t ob = base - &cleaned[0];
+							cleaned.resize(cleaned.size()+1, 0);
+							hash = &cleaned[oh];
+							base = &cleaned[ob];
+							std::copy_backward(hash, &cleaned[cleaned.size()-2], &cleaned[cleaned.size()-1]);
+							hash[0] = 0;
+							space = hash;
+						}
+						space[0] = 0;
+						if (cReading->baseform == 0) {
+							tag.clear();
+							tag += '"';
+							tag += base;
+							tag += '"';
+							base = tag.c_str();
+						}
+						Tag *tag = addTag(base);
+						if (tag->type & T_MAPPING || tag->tag[0] == grammar->mapping_prefix) {
+							mappings.push_back(tag);
+						}
+						else {
+							addTagToReading(*cReading, tag->hash);
+						}
+					}
+					base = ++space;
+				}
+				if (base && base[0]) {
+					if (cReading->baseform == 0) {
+						tag.clear();
+						tag += '"';
+						tag += base;
+						tag += '"';
+						base = tag.c_str();
+					}
+					Tag *tag = addTag(base);
+					if (tag->type & T_MAPPING || tag->tag[0] == grammar->mapping_prefix) {
+						mappings.push_back(tag);
+					}
+					else {
+						addTagToReading(*cReading, tag->hash);
+					}
+				}
+				if (!cReading->baseform) {
+					cReading->baseform = cReading->wordform;
+					u_fprintf(ux_stderr, "Warning: Line %u had no valid baseform.\n", numLines);
+					u_fflush(ux_stderr);
+				}
+				if (!mappings.empty()) {
+					splitMappings(mappings, *cCohort, *cReading, true);
+				}
+				cCohort->appendReading(cReading);
+				++numReadings;
+			}
+		}
+		else {
+istext:
 			if (cCohort && cCohort->readings.empty()) {
 				cReading = initEmptyCohort(*cCohort);
 			}
@@ -162,8 +263,6 @@ gotaline:
 				lSWindow = cSWindow;
 				lCohort = cCohort;
 				cSWindow = 0;
-				cCohort = 0;
-				numCohorts++;
 				did_soft_lookback = false;
 			}
 			if (cCohort && (cSWindow->cohorts.size() >= hard_limit || (!dep_delimit && grammar->delimiters && doesSetMatchCohortNormal(*cCohort, grammar->delimiters->hash)))) {
@@ -179,8 +278,6 @@ gotaline:
 				lSWindow = cSWindow;
 				lCohort = cCohort;
 				cSWindow = 0;
-				cCohort = 0;
-				numCohorts++;
 				did_soft_lookback = false;
 			}
 			if (!cSWindow) {
@@ -191,7 +288,7 @@ gotaline:
 				lSWindow = cSWindow;
 				lCohort = cSWindow->cohorts[0];
 				cCohort = 0;
-				numWindows++;
+				++numWindows;
 				did_soft_lookback = false;
 			}
 			if (cCohort && cSWindow) {
@@ -216,95 +313,8 @@ gotaline:
 				}
 			}
 
-			UString tag;
-			tag += '"';
-			tag += '<';
-			tag += &cleaned[0];
-			tag += '>';
-			tag += '"';
+			cCohort = 0;
 
-			cCohort = new Cohort(cSWindow);
-			cCohort->global_number = gWindow->cohort_counter++;
-			cCohort->wordform = addTag(tag)->hash;
-			lCohort = cCohort;
-			numCohorts++;
-
-			++space;
-			while (space) {
-				cReading = new Reading(cCohort);
-				cReading->wordform = cCohort->wordform;
-				insert_if_exists(cReading->parent->possible_sets, grammar->sets_any);
-				addTagToReading(*cReading, cReading->wordform);
-
-				UChar *base = space;
-				if (*space == '"') {
-					++space;
-					SKIPTO_NOSPAN(space, '"');
-				}
-				if (*space == '[') {
-					SKIPTO_NOSPAN(space, ']');
-				}
-
-				TagList mappings;
-
-				UChar *tab = u_strchr(space, '\t');
-				if (tab) {
-					tab[0] = 0;
-				}
-
-				while (space && *space && (space = u_strchr(space, ' ')) != 0) {
-					space[0] = 0;
-					if (base && base[0]) {
-						if (base[0] == '[' && space[-1] == ']') {
-							base[0] = space[-1] = '"';
-						}
-						Tag *tag = addTag(base);
-						if (tag->type & T_MAPPING || tag->tag[0] == grammar->mapping_prefix) {
-							mappings.push_back(tag);
-						}
-						else {
-							addTagToReading(*cReading, tag->hash);
-						}
-					}
-					base = ++space;
-					if (*space == '"') {
-						++space;
-						SKIPTO_NOSPAN(space, '"');
-					}
-					if (*space == '[') {
-						SKIPTO_NOSPAN(space, ']');
-					}
-				}
-				if (base && base[0]) {
-					if (base[0] == '[' && space[-1] == ']') {
-						base[0] = space[-1] = '"';
-					}
-					Tag *tag = addTag(base);
-					if (tag->type & T_MAPPING || tag->tag[0] == grammar->mapping_prefix) {
-						mappings.push_back(tag);
-					}
-					else {
-						addTagToReading(*cReading, tag->hash);
-					}
-				}
-				if (!cReading->baseform) {
-					cReading->baseform = cReading->wordform;
-					u_fprintf(ux_stderr, "Warning: Line %u had no valid baseform.\n", numLines);
-					u_fflush(ux_stderr);
-				}
-				if (!mappings.empty()) {
-					splitMappings(mappings, *cCohort, *cReading, true);
-				}
-				cCohort->appendReading(cReading);
-				numReadings++;
-
-				if (tab) {
-					space = ++tab;
-				}
-			}
-		}
-		else {
-istext:
 			if (cleaned[0] && line[0]) {
 				if (lCohort) {
 					lCohort->text += &line[0];

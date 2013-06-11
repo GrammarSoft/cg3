@@ -29,6 +29,7 @@ ApertiumApplicator(ux_err),
 MatxinApplicator(ux_err),
 NicelineApplicator(ux_err),
 PlaintextApplicator(ux_err),
+FSTApplicator(ux_err),
 informat(FMT_CG),
 outformat(FMT_CG)
 {
@@ -62,6 +63,10 @@ void FormatConverter::runGrammarOnText(istream& input, UFILE *output) {
 		}
 		case FMT_PLAIN: {
 			PlaintextApplicator::runGrammarOnText(input, output);
+			break;
+		}
+		case FMT_FST: {
+			FSTApplicator::runGrammarOnText(input, output);
 			break;
 		}
 		default:

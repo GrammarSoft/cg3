@@ -947,15 +947,15 @@ void TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 			incErrorCount();
 		}
 		if (key == K_APPEND && s->tags_list.size() >= 1) {
-			if (s->tags_list.front().which == ANYTAG_COMPOSITE && !(s->tags_list.front().getCompositeTag()->tags.front()->type & T_BASEFORM)
-				|| s->tags_list.front().which == ANYTAG_TAG && !(s->tags_list.front().getTag()->type & T_BASEFORM)) {
+			if ((s->tags_list.front().which == ANYTAG_COMPOSITE && !(s->tags_list.front().getCompositeTag()->tags.front()->type & T_BASEFORM))
+				|| (s->tags_list.front().which == ANYTAG_TAG && !(s->tags_list.front().getTag()->type & T_BASEFORM))) {
 				u_fprintf(ux_stderr, "Error: There must be a baseform before any other tags in APPEND on line %u!\n", result->lines);
 				incErrorCount();
 			}
 		}
 		if (key == K_ADDCOHORT && s->tags_list.size() >= 1) {
-			if (s->tags_list.front().which == ANYTAG_COMPOSITE && !(s->tags_list.front().getCompositeTag()->tags.front()->type & T_WORDFORM)
-				|| s->tags_list.front().which == ANYTAG_TAG && !(s->tags_list.front().getTag()->type & T_WORDFORM)) {
+			if ((s->tags_list.front().which == ANYTAG_COMPOSITE && !(s->tags_list.front().getCompositeTag()->tags.front()->type & T_WORDFORM))
+				|| (s->tags_list.front().which == ANYTAG_TAG && !(s->tags_list.front().getTag()->type & T_WORDFORM))) {
 				u_fprintf(ux_stderr, "Error: There must be a wordform before any other tags in ADDCOHORT on line %u!\n", result->lines);
 				incErrorCount();
 			}
