@@ -20,7 +20,6 @@
 */
 
 #include "ApertiumApplicator.h"
-#include "GrammarApplicator.h"
 #include "Strings.h"
 #include "Tag.h"
 #include "Grammar.h"
