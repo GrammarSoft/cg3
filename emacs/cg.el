@@ -95,7 +95,7 @@
 	     (1 font-lock-variable-name-face))
 	    ("\\<\\(\\$\\$\\(\\s_\\|\\sw\\)+\\)\\>"
 	     (1 font-lock-variable-name-face))
-	    ("\\<\\(NOT\\|NEGATE\\|NONE\\|LINK\\|BARRIER\\|CBARRIER\\|OR\\|TARGET\\|IF\\|AFTER\\|TO\\|[psc][oO]?\\)\\>"
+	    ("\\<\\(NOT\\|NEGATE\\|NONE\\|LINK\\|BARRIER\\|CBARRIER\\|OR\\|TARGET\\|IF\\|AFTER\\|TO\\|[psc][lroOxX]*\\)\\>"
 	     1 font-lock-function-name-face)
 	    ("\\B\\(\\^\\)"		; fail-fast
 	     1 font-lock-function-name-face)))
@@ -177,8 +177,29 @@ TODO: something like
 	((= 0 (nth 0 state)) font-lock-variable-name-face)
 would be great to differentiate SETs from their members, but it
 seems this function only runs on comments and strings..."
-  (cond ((nth 3 state) font-lock-string-face)
+  (cond ((nth 3 state)
+	 (if
+	     (save-excursion
+	       (goto-char (nth 8 state))
+	       (re-search-forward "\"[^\"\n]*\\(\"\\(\\\\)\\|[^) \n\t]\\)*\\)?\"\\(r\\(i\\)?\\)?[); \n\t]")
+	       (match-string 1))
+	     'cg-string-warning-face
+	   font-lock-string-face))
  	(t font-lock-comment-face)))
+
+(defface cg-string-warning-face
+  '((((class grayscale) (background light)) :foreground "DimGray" :slant italic :underline "orange")
+    (((class grayscale) (background dark))  :foreground "LightGray" :slant italic :underline "orange")
+    (((class color) (min-colors 88) (background light)) :foreground "VioletRed4" :underline "orange")
+    (((class color) (min-colors 88) (background dark))  :foreground "LightSalmon" :underline "orange")
+    (((class color) (min-colors 16) (background light)) :foreground "RosyBrown" :underline "orange")
+    (((class color) (min-colors 16) (background dark))  :foreground "LightSalmon" :underline "orange")
+    (((class color) (min-colors 8)) :foreground "green" :underline "orange")
+    (t :slant italic))
+  "CG mode face used to highlight troublesome strings with unescaped quotes in them."
+  :group 'cg-mode)
+
+
 
 
 ;;; Indentation 
