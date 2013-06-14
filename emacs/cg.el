@@ -182,7 +182,8 @@ seems this function only runs on comments and strings..."
 	     (save-excursion
 	       (goto-char (nth 8 state))
 	       (re-search-forward "\"[^\"\n]*\\(\"\\(\\\\)\\|[^) \n\t]\\)*\\)?\"\\(r\\(i\\)?\\)?[); \n\t]")
-	       (match-string 1))
+	       (and (match-string 1)
+		    (not (equal ?\\ (char-before (match-beginning 1))))))
 	     'cg-string-warning-face
 	   font-lock-string-face))
  	(t font-lock-comment-face)))
