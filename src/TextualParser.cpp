@@ -618,6 +618,7 @@ int TextualParser::parseContextualTestList(UChar *& p, Rule *rule, ContextualTes
 		goto label_parseTemplateRef;
 	}
 	else {
+		UChar *pos_p = p;
 		parseContextualTestPosition(p, *t);
 		p = n;
 		if (t->pos & (POS_DEP_CHILD|POS_DEP_PARENT|POS_DEP_SIBLING)) {
@@ -666,6 +667,14 @@ label_parseTemplateRef:
 			t->barrier = s->hash;
 		}
 		result->lines += SKIPWS(p);
+
+		if ((t->barrier || t->cbarrier) && !(t->pos & MASK_POS_SCAN)) {
+			UChar oldp = *p;
+			*p = 0;
+			u_fprintf(ux_stderr, "Error: Barriers only make sense for scanning tests on line %u at %S!\n", result->lines, pos_p);
+			*p = oldp;
+			incErrorCount();
+		}
 	}
 
 	bool linked = false;
