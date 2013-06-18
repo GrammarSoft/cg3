@@ -563,6 +563,7 @@ int TextualParser::parseContextualTestList(UChar *& p, Rule *rule, ContextualTes
 	}
 	result->lines += SKIPWS(p);
 
+	UChar *pos_p = p;
 	UChar *n = p;
 	result->lines += SKIPTOWS(n, '(');
 	ptrdiff_t c = n - p;
@@ -618,7 +619,7 @@ int TextualParser::parseContextualTestList(UChar *& p, Rule *rule, ContextualTes
 		goto label_parseTemplateRef;
 	}
 	else {
-		UChar *pos_p = p;
+		pos_p = p;
 		parseContextualTestPosition(p, *t);
 		p = n;
 		if (t->pos & (POS_DEP_CHILD|POS_DEP_PARENT|POS_DEP_SIBLING)) {
