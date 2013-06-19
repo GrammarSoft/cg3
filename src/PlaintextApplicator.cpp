@@ -32,6 +32,7 @@ namespace CG3 {
 PlaintextApplicator::PlaintextApplicator(UFILE *ux_err)
 	: GrammarApplicator(ux_err)
 {
+	allow_magic_readings = true;
 }
 
 void PlaintextApplicator::runGrammarOnText(istream& input, UFILE *output) {
@@ -77,7 +78,6 @@ void PlaintextApplicator::runGrammarOnText(istream& input, UFILE *output) {
 
 	SingleWindow *lSWindow = 0;
 	Cohort *lCohort = 0;
-	Reading *lReading = 0;
 
 	gWindow->window_span = num_windows;
 
@@ -121,7 +121,6 @@ gotaline:
 		if (!ignoreinput && cleaned[0] && cleaned[0] != '<') {
 			if (cCohort && cCohort->readings.empty()) {
 				cReading = initEmptyCohort(*cCohort);
-				lReading = cReading;
 			}
 			if (cSWindow && cSWindow->cohorts.size() >= soft_limit && grammar->soft_delimiters && !did_soft_lookback) {
 				did_soft_lookback = true;
@@ -181,7 +180,6 @@ gotaline:
 				initEmptySingleWindow(cSWindow);
 
 				lSWindow = cSWindow;
-				lReading = cSWindow->cohorts[0]->readings.front();
 				lCohort = cSWindow->cohorts[0];
 				cCohort = 0;
 				numWindows++;
@@ -208,45 +206,93 @@ gotaline:
 					u_fflush(ux_stderr);
 				}
 			}
-			UString tag;
+			std::vector<UChar*> tokens_raw;
 			UChar *base = &cleaned[0];
 			UChar *space = base;
 
 			while (space && *space && (space = u_strchr(space, ' ')) != 0) {
 				space[0] = 0;
 				if (base && base[0]) {
-					cCohort = new Cohort(cSWindow);
-					cCohort->global_number = gWindow->cohort_counter++;
-					tag.clear();
-					tag += '"';
-					tag += '<';
-					tag += base;
-					tag += '>';
-					tag += '"';
-					cCohort->wordform = addTag(tag)->hash;
-					lCohort = cCohort;
-					numCohorts++;
-					cReading = initEmptyCohort(*cCohort);
-					lReading = cReading;
-					cSWindow->appendCohort(cCohort);
-					cCohort = 0;
+					tokens_raw.push_back(base);
 				}
 				base = ++space;
 			}
 			if (base && base[0]) {
+				tokens_raw.push_back(base);
+			}
+
+			std::vector<UnicodeString> tokens;
+			for (size_t i=0 ; i<tokens_raw.size() ; ++i) {
+				UChar *p = tokens_raw[i];
+				size_t len = u_strlen(p);
+				while (*p && u_ispunct(p[0])) {
+					tokens.push_back(UnicodeString(p[0]));
+					++p;
+					--len;
+				}
+				size_t tkz = tokens.size();
+				while (*p && u_ispunct(p[len-1])) {
+					tokens.push_back(UnicodeString(p[len-1]));
+					p[len-1] = 0;
+					--len;
+				}
+				if (*p) {
+					tokens.insert(tokens.begin()+tkz, p);
+				}
+			}
+
+			UString tag;
+			for (size_t i=0 ; i<tokens.size() ; ++i) {
+				UnicodeString &token = tokens[i];
+				bool first_upper = (u_isupper(token[0]) != 0);
+				bool all_upper = first_upper;
+				bool mixed_upper = false;
+				for (int32_t i=1 ; i<token.length() ; ++i) {
+					if (u_isupper(token[i])) {
+						mixed_upper = true;
+					}
+					else {
+						all_upper = false;
+					}
+				}
+
 				cCohort = new Cohort(cSWindow);
 				cCohort->global_number = gWindow->cohort_counter++;
 				tag.clear();
 				tag += '"';
 				tag += '<';
-				tag += base;
+				tag += token.getTerminatedBuffer();
 				tag += '>';
 				tag += '"';
 				cCohort->wordform = addTag(tag)->hash;
 				lCohort = cCohort;
 				numCohorts++;
 				cReading = initEmptyCohort(*cCohort);
-				lReading = cReading;
+				cReading->noprint = false;
+				if (first_upper || all_upper || mixed_upper) {
+					delTagFromReading(*cReading, cReading->baseform);
+					token.toLower();
+					tag.clear();
+					tag += '"';
+					tag += token.getTerminatedBuffer();
+					tag += '"';
+					addTagToReading(*cReading, addTag(tag)->hash);
+					if (all_upper) {
+						static const char _tag[] = "<all-upper>";
+						tag.assign(_tag, _tag+sizeof(_tag)-1);
+						addTagToReading(*cReading, addTag(tag)->hash);
+					}
+					if (first_upper) {
+						static const char _tag[] = "<first-upper>";
+						tag.assign(_tag, _tag+sizeof(_tag)-1);
+						addTagToReading(*cReading, addTag(tag)->hash);
+					}
+					if (mixed_upper && !all_upper) {
+						static const char _tag[] = "<mixed-upper>";
+						tag.assign(_tag, _tag+sizeof(_tag)-1);
+						addTagToReading(*cReading, addTag(tag)->hash);
+					}
+				}
 				cSWindow->appendCohort(cCohort);
 				cCohort = 0;
 			}
