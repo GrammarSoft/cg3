@@ -516,8 +516,11 @@ void GrammarApplicator::delTagFromReading(Reading& reading, uint32_t utag) {
 	reading.tags_textual.erase(utag);
 	reading.tags_numerical.erase(utag);
 	reading.tags_plain.erase(utag);
-	if (utag == reading.mapping->hash) {
+	if (reading.mapping && utag == reading.mapping->hash) {
 		reading.mapping = 0;
+	}
+	if (utag == reading.baseform) {
+		reading.baseform = 0;
 	}
 	reading.rehash();
 	reading.parent->type &= ~CT_NUM_CURRENT;

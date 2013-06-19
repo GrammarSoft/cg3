@@ -291,7 +291,7 @@ bool exec_stream_buffer_t::send_buffer()
     if( pbase()!=pptr() ) {
         std::size_t write_size=pptr()-pbase();
         std::size_t n=write_size;
-        bool no_more;
+        bool no_more = false;
         m_thread_buffer.put( pbase(), n, no_more );
         if( no_more || n!=write_size ) {
             return false;
@@ -305,7 +305,7 @@ bool exec_stream_buffer_t::send_buffer()
 bool exec_stream_buffer_t::send_char( char c ) 
 {
     std::size_t write_size=1;
-    bool no_more;
+    bool no_more = false;
     m_thread_buffer.put( &c, write_size, no_more );
     return write_size==1 && !no_more;
 }
