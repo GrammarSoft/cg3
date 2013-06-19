@@ -80,16 +80,30 @@ Options:
   <section id="cg-conv">
     <title>cg-conv</title>
     <para>
-      cg-conv converts between the <link linkend="streamformats">Apertium and VISL CG stream formats</link>.
-      By default it converts from VISL CG to Apertium, but option -a inverses that.
+      cg-conv converts between <link linkend="streamformats">stream formats</link>.
+      It can currently convert from any of CG, Niceline CG, Apertium, Matxin, HFST/XFST, and plain text formats,
+      turning them into CG, Apertium, or Matxin format.
+      By default it tries to auto-detect the input format and convert that to CG.
       Currently only meant for use in a pipe.
     </para>
     <screen>
-USAGE: cg-conv [-a] [-l]
+Usage: cg-conv [OPTIONS]
 
 Options:
- -a, --a2v:    convert from Apertium to VISL format
- -l, --ltr:    sub-reading direction LTR instead of default RTL (only with -a)
+ -h, --help          shows this help
+ -?, --?             shows this help
+ -u, --in-auto       auto-detect input format (default)
+ -v, --in-cg         sets input format to CG
+ -n, --in-niceline   sets input format to Niceline CG
+ -a, --in-apertium   sets input format to Apertium
+ -m, --in-matxin     sets input format to Matxin
+ -f, --in-fst        sets input format to HFST/XFST
+ -p, --in-plain      sets input format to plain text
+     --out-cg        sets output format to CG (default)
+     --out-apertium  sets output format to Apertium
+     --out-matxin    sets output format to Matxin
+ -r, --rtl           sets sub-reading direction to RTL (default)
+ -l, --ltr           sets sub-reading direction to LTR
     </screen>
   </section>
 
