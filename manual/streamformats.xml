@@ -5,7 +5,7 @@
   <title>Input/Output Stream Format</title>
 
   <para>
-    Currently, there are two supported data stream formats. Adding more as needed is not a major task, though.
+    The <link linkend="cg-conv">cg-conv</link> tool converts between various stream formats.
   </para>
 
   <section id="stream-apertium">
@@ -15,7 +15,18 @@
     </indexterm>
     <para>
       The <link linkend="cg-proc">cg-proc</link> front-end processes the
-      <ulink url="http://wiki.apertium.org/wiki/Apertium_stream_format">Apertium stream format</ulink>.
+      <ulink url="http://wiki.apertium.org/wiki/Apertium_stream_format">Apertium stream format</ulink>,
+      or can convert for use via <link linkend="cg-conv">cg-conv</link>.
+    </para>
+  </section>
+
+  <section id="stream-fst">
+    <title>HFST/XFST Format</title>
+    <indexterm>
+      <primary>HFST/XFST Format</primary>
+    </indexterm>
+    <para>
+      HFST/XFST input can be converted for use via <link linkend="cg-conv">cg-conv</link>.
     </para>
   </section>
 
@@ -88,6 +99,87 @@
       This means that you can embed all kinda of extra information in the stream as long as you don't hit those exact
       patterns. For example, we use <code>&lt;s id="unique-1234"&gt; &lt;/s&gt;</code> tags around sentences to keep track of them
       for corpus markup.
+    </para>
+  </section>
+
+  <section id="stream-niceline">
+    <title>Niceline CG Format</title>
+    <indexterm>
+      <primary>Niceline CG Format</primary>
+    </indexterm>
+    <para>
+      Niceline input can be converted for use via <link linkend="cg-conv">cg-conv</link>.
+    </para>
+    <para>
+      The Niceline format is primarily used in VISL and GrammarSoft chains to make the output more readable.
+      Using the same example as for VISL CG format, that would look like:
+      <screen>
+        They  [they] &lt;*&gt; PRON PERS NOM PL3 SUBJ
+        went  [go] V PAST VFIN
+        to    [to] PREP
+        the   [the] DET CENTRAL ART SG/PL
+        zoo   [zoo] N NOM SG
+        to    [to] INFMARK&gt;
+        look  [look] V INF
+        at    [at] PREP
+        the   [the] DET CENTRAL ART SG/PL
+        bear  [bear] N NOM SG
+        .     
+      </screen>
+
+      Or in CG terms:
+      <screen>
+        word form TAB [base form] tags TAB [base form] tags
+        ...or quotes...
+        word form TAB "base form" tags TAB "base form" tags
+        ...or mixed...
+        word form TAB "base form" tags TAB [base form] tags
+      </screen>
+    </para>
+    <para>
+      In more formal rules:
+      <itemizedlist mark='bullet'>
+        <listitem><para>
+          If the line does not begin with &lt; and contains a tab (\t, 0x09), then it is a cohort.
+          Anything up to the first tab is the word form. Readings are tab delimited, where if the first tag is
+          contained in [] or "" then it is taken as the base form. Tags are otherwise whitespace delimited.
+        </para></listitem>
+        <listitem><para>
+          Any line not matching the above is treated as text, same rules as for VISL CG format.
+          Note that a tab character is required for it to be a cohort
+          - a word or punctuation without the tab will be treated as text.
+        </para></listitem>
+      </itemizedlist>
+    </para>
+  </section>
+
+  <section id="stream-plain">
+    <title>Plain Text Format</title>
+    <indexterm>
+      <primary>Plain Text Format</primary>
+    </indexterm>
+    <para>
+      Plain text can be tokenized for use via <link linkend="cg-conv">cg-conv</link>.
+      It is a naive tokenizer that you should not use, and is only included as a last resort.
+      Five minutes in any scripting language should give you a much better tokenizer.
+    </para>
+    <para>
+      The tokenization rules are simple:
+      <itemizedlist mark='bullet'>
+        <listitem><para>
+          Split tokens on any kind of whitespace.
+        </para></listitem>
+        <listitem><para>
+          Split punctuation from the start and end of tokens into tokens.
+          Each punctuation character becomes a separate token.
+        </para></listitem>
+        <listitem><para>
+          Detect whether the token is ALLUPPER, Firstupper, or MiXeDCaSe and add a tag denoting it.
+        </para></listitem>
+        <listitem><para>
+          The token then becomes a cohort with one reading with a lower-case variant of the token as base form.
+        </para></listitem>
+      </itemizedlist>
     </para>
   </section>
 
