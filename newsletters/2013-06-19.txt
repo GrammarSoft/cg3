@@ -1,0 +1,33 @@
+A new release of CG-3 has been tagged v0.9.8.9063.
+
+Main site is http://visl.sdu.dk/cg3.html
+Google Group is http://groups.google.com/group/constraint-grammar
+Source snapshots available at http://visl.sdu.dk/download/vislcg3/
+Windows binary is at http://visl.sdu.dk/download/vislcg3/vislcg3-0.9.8.9063-win32.zip
+Ubuntu packages are at http://launchpad.net/~tinodidriksen/+archive/cg3
+
+New features:
+- Tags on the word form line after the word form are now allowed and may be seen by non-careful contexts. Such static tags cannot be modified. The T_BasicContextTest test has an example of their use.
+- cg-conv is a whole new beast with more format conversions. See http://visl.sdu.dk/cg3/chunked/cmdreference.html#cg-conv for details.
+
+Changes:
+- Traced output is merged if only the mapping tag differs.
+- CG-3 now tries to parse past errors in order to show more errors in the IDE.
+- STREAMCMD:FLUSH now clears all stream variables.
+- Before-Sections, Section, etc are now optional. Any rule declared before any section is declared are assumed to belong to Before-Sections.
+- Duplicate tags now survive by default.
+- AddCohort and Append now have compile-time sanity checks to make sure they won't blow up.
+- Barrier and CBarrier now have sanity checks to make sure they are used in a scanning context.
+
+Fixed Bugs:
+- SetParent/Child will no longer apply if a barrier triggered during context resolution. This fixes cases where a ** test would seek onwards past a barrier due to the retry nature of SetParent/Child.
+- Vertical Tab (\v, U+000B, ^K) now counts as a line break.
+- Creating a varstring from literal $1 now realizes it worked, even though the result remains the same.
+- Parent-or-Self tests (pS) now work.
+- Many fixes for sub-readings.
+
+Other:
+- I consider file suffix .cg3 standard for textual grammars, and .cg3b standard for binary grammars.
+
+-- Tino Didriksen
+CG-3 Developer
