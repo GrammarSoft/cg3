@@ -672,9 +672,11 @@ label_parseTemplateRef:
 		if ((t->barrier || t->cbarrier) && !(t->pos & MASK_POS_SCAN)) {
 			UChar oldp = *p;
 			*p = 0;
-			u_fprintf(ux_stderr, "Error: Barriers only make sense for scanning tests on line %u at %S!\n", result->lines, pos_p);
+			u_fprintf(ux_stderr, "Warning: Barriers only make sense for scanning tests on line %u at %S.\n", result->lines, pos_p);
+			u_fflush(ux_stderr);
 			*p = oldp;
-			incErrorCount();
+			t->barrier = 0;
+			t->cbarrier = 0;
 		}
 	}
 
