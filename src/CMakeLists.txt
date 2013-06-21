@@ -116,9 +116,9 @@ if(NOT MSVC)
 endif()
 install(TARGETS cg-comp cg-proc cg-conv vislcg3 RUNTIME DESTINATION bin)
 
-if(UNIX AND NOT EXISTS ${CMAKE_PREFIX_PATH}/bin/cg3)
+if(UNIX AND NOT EXISTS ${CMAKE_INSTALL_PREFIX}/bin/cg3)
 	install(CODE "
 		EXECUTE_PROCESS(COMMAND ln -sfv vislcg3 cg3
-		WORKING_DIRECTORY ${CMAKE_PREFIX_PATH}/bin
+		WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX}/bin
 		)")
 endif()
