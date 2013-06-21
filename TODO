@@ -40,3 +40,5 @@ ToDo: Piping deleted/delayed readings
 ToDo: Template left/right edge for linking onwards
 ToDo: Insert tags a'la Substitute (before / after)
 ToDo: Optimize case-insensitive tags by pre-calculating the lower-case variants
+ToDo: --out-niceline
+ToDo: Document static tags
