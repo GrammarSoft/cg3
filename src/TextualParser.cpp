@@ -675,8 +675,10 @@ label_parseTemplateRef:
 			u_fprintf(ux_stderr, "Warning: Barriers only make sense for scanning tests on line %u at %S.\n", result->lines, pos_p);
 			u_fflush(ux_stderr);
 			*p = oldp;
+			/* ToDo: This is apparently not safe, even though it should be...
 			t->barrier = 0;
 			t->cbarrier = 0;
+			*/
 		}
 	}
 
