@@ -49,10 +49,12 @@
 ;;; - indentation function (based on prolog again?)
 ;;; - the rest of the keywords
 ;;; - keyword tab-completion 
-;;  - the quotes-within-quotes thing plays merry hell with
-;;    paredit-doublequote, write a new doublequote function? 
+;;; - the quotes-within-quotes thing plays merry hell with
+;;;   paredit-doublequote, write a new doublequote function? 
+;;; - font-lock-syntactic-keywords is obsolete since 24.1
+;;; - derive cg-mode from prog-mode?
 
-(defconst cg-version "2013-03-13" "Version of cg-mode") 
+(defconst cg-version "2013-06-22" "Version of cg-mode") 
 
 ;;;============================================================================
 ;;;
@@ -60,13 +62,28 @@
 ;;;
 
 (defvar cg-mode-map (make-sparse-keymap)
-  "Keymap for cg minor mode.")
+  "Keymap for CG mode.")
 
 (defgroup cg nil
   "Major mode for editing VISL CG-3 Constraint Grammar files."
   :tag "CG"
   :group 'languages)
 
+;;;###autoload
+(defcustom cg-pre-pipe "cg-conv"
+  "Pipeline to run before the vislcg3 command when testing a
+file. You can set this on a per-file basis by having a line like
+
+# -*- cg-pre-pipe: \"lt-proc foo.bin | cg-conv\"; coding: utf-8 -*-
+
+in your .cg3/.rlx file."
+  :group 'cg
+  :type 'string)
+(make-variable-buffer-local 'cg-pre-pipe)
+(put 'cg-pre-pipe 'safe-local-variable 'stringp)
+;; TODO: cg-post-pipe
+
+;;;###autoload
 (defcustom cg-indentation 8
   "The width for indentation in Constraint Grammar mode."
   :type 'integer
@@ -134,7 +151,8 @@ Only does basic syntax highlighting at the moment."
 	font-lock-defaults
 	`((cg-font-lock-keywords cg-font-lock-keywords-1 cg-font-lock-keywords-2)
 	  nil				; KEYWORDS-ONLY
-	  nil				; CASE-FOLD
+	  'case-fold ; some keywords (e.g. x vs X) are case-sensitive,
+		     ; but that doesn't matter for highlighting
 	  ((?/ . "w") (?~ . "w") (?. . "w") (?- . "w") (?_ . "w"))
 	  nil ;	  beginning-of-line		; SYNTAX-BEGIN
 	  (font-lock-syntactic-keywords . cg-font-lock-syntactic-keywords)
@@ -143,13 +161,14 @@ Only does basic syntax highlighting at the moment."
   (set-syntax-table cg-mode-syntax-table)
   (set (make-local-variable 'parse-sexp-ignore-comments) t)
   (set (make-local-variable 'parse-sexp-lookup-properties) t)
-  (setq indent-line-function 'cg-indent-line)
+  (setq indent-line-function #'cg-indent-line)
   (easy-mmode-pretty-mode-name 'cg-mode " cg")
   (when font-lock-mode
     (setq font-lock-set-defaults nil)
     (font-lock-set-defaults)
     (font-lock-fontify-buffer))
-  (run-mode-hooks 'cg-mode-hook))
+  (add-hook 'after-change-functions #'cg-after-change nil 'buffer-local)
+  (run-mode-hooks #'cg-mode-hook))
 
 
 (defconst cg-font-lock-syntactic-keywords
@@ -267,10 +286,10 @@ indentation."
   (require 'cl)
   (if (null input)
       (list input)
-    (mapcan '(lambda (elt)
-		(mapcan '(lambda (p)
-			    (list (cons elt p)))
-			(cg-permute (remove* elt input :count 1))))
+    (mapcan (lambda (elt)
+	      (mapcan (lambda (p)
+			(list (cons elt p)))
+		      (cg-permute (remove* elt input :count 1))))
 	    input)))
 
 (defun cg-read-arg (prompt history)
@@ -309,8 +328,8 @@ etc."
 		       cg-occur-history)))
   (let* ((words-perm (cg-permute (split-string words " " 'omitnulls)))
 	 ;; can't use regex-opt because we need .* between the words
-	 (perm-disj (mapconcat '(lambda (word)
-				  (mapconcat 'identity word ".*"))
+	 (perm-disj (mapconcat (lambda (word)
+				 (mapconcat 'identity word ".*"))
 			       words-perm
 			       "\\|")))
     (setq cg-occur-history (cons words cg-occur-history))
@@ -350,13 +369,164 @@ before getting useful..."
 	       (setq cg-goto-history (cons rule cg-goto-history)))
       (message errmsg))))
 
+;;; "Flycheck" ----------------------------------------------------------------
+(require 'compile)
 
-;;; Keybindings --------------------------------------------------------------
-(define-key cg-mode-map (kbd "C-c C-o") 'cg-occur-list)
-(define-key cg-mode-map (kbd "C-c C-c") 'cg-goto-rule)
+(defvar cg-file nil
+  "Private, used in `cg-output-mode' buffers to record which
+  user-edited grammar file was sent to the compilation")
+(defvar cg-tmp nil     ; TODO: could use cg-file iff buffer-modified-p
+  "Private, used in `cg-output-mode' buffers to record which
+  temporary file was sent in lieu of `cg-file' to the
+  compilation (in case the buffer of `cg-file' was not saved)")
+
+(defun cg-edit-input ()
+  "Open a buffer to edit the input sent when running `cg-check'."
+  (interactive)
+  (pop-to-buffer (cg-input-buffer (buffer-file-name))))
+
+(defvar cg-input-mode-map (make-sparse-keymap)
+  "Keymap for CG input mode.")
+
+(define-derived-mode cg-input-mode fundamental-mode "CG-in"
+  "Input for `cg-mode' buffers."
+  (use-local-map cg-input-mode-map))
+
+(defun cg-input-buffer (file)
+  (let ((buf (get-buffer-create (concat "*CG input for " (file-name-base file) "*"))))
+    (with-current-buffer buf
+      (cg-input-mode)
+      (setq cg-file file))
+    buf))
+
+(defun cg-get-file ()
+  (list cg-file))
+
+(defconst cg-output-regexp-alist
+  `(("\\(?:SETPARENT\\|SETCHILD\\|ADDRELATIONS?\\|SETRELATIONS?\\|REMRELATIONS?\\|SUBSTITUTE\\|ADDCOHORT\\|REMCOHORT\\|MAP\\|IFF\\|ADD\\|SELECT\\|REMOVE\\):\\([^ \n\t:]+\\)\\(?::[^ \n\t]+\\)?"
+     ,#'cg-get-file 1 nil 1)
+    ("^Warning: .*?line \\([0-9]+\\)"
+     ,#'cg-get-file 1 nil 1)
+    ("^Warning: .*"
+     ,#'cg-get-file nil nil 1)
+    ("^Error: .*?line \\([0-9]+\\)"
+     ,#'cg-get-file 1 nil 2)
+    ("^Error: .*"
+     ,#'cg-get-file nil nil 2))
+  "Regexp used to match vislcg3 --trace hits. See
+`compilation-error-regexp-alist'.")
+;; TODO: highlight strings and @'s and #1->0's in cg-output-mode ?
+
+;;;###autoload
+(defcustom cg-output-setup-hook nil
+  "List of hook functions run by `cg-output-process-setup' (see
+`run-hooks')."
+  :type 'hook
+  :group 'cg-mode)
+
+(defun cg-output-process-setup ()
+  "Runs `cg-output-setup-hook' for `cg-check'. That hook is
+useful for doing things like
+ (setenv \"PATH\" (concat \"~/local/stuff\" (getenv \"PATH\")))"
+  (run-hooks #'cg-output-setup-hook))
+
+(define-compilation-mode cg-output-mode "CG-out"
+  "Major mode for output of Constraint Grammar compilations and
+runs."
+  (set (make-local-variable 'compilation-skip-threshold)
+       1)
+  (set (make-local-variable 'compilation-error-regexp-alist)
+       cg-output-regexp-alist)
+  (set (make-local-variable 'cg-file)
+       nil)
+  (set (make-local-variable 'cg-tmp)
+       nil)
+  (set (make-local-variable 'compilation-disable-input)
+       nil)
+  ;; compilation-directory-matcher can't be nil, so we set it to a regexp that
+  ;; can never match.
+  (set (make-local-variable 'compilation-directory-matcher)
+       '("\\`a\\`"))
+  (set (make-local-variable 'compilation-process-setup-function)
+       #'cg-output-process-setup)
+  ;; (add-hook 'compilation-filter-hook 'cg-output-filter nil t)
+  ;; We send text to stdin:
+  (set (make-local-variable 'compilation-disable-input)
+       nil))
+
+
+(defun cg-after-change (a b c)
+  ;; TODO: create run cg-check if it's over 2 seconds since last? Or
+  ;; is that just annoying? Perhaps as a save-hook? Or perhaps just
+  ;; compile on save?
+  ; (cg-check)
+  )
+
+
+
+(defun cg-check ()
+  "Run vislcg3 --trace on the buffer (a temporary file is created
+in case you haven't saved yet). 
+
+If you've set `cg-pre-pipe', input will first be sent through
+that. Set your test input sentence(s) with `cg-edit-input'. If
+you want to send a whole file instead, just set `cg-pre-pipe' to
+something like 
+\"zcat corpus.gz | lt-proc analyser.bin | cg-conv\"."
+  (interactive)
+  (let* ((file (buffer-file-name))
+	 (tmp (make-temp-file "cg."))
+	 (pre-pipe (if (and cg-pre-pipe (not (equal "" cg-pre-pipe)))
+		       (concat cg-pre-pipe " | ")
+		     ""))
+	 (cmd (concat
+	       pre-pipe			; TODO: cache pre-output!
+	       "vislcg3 -tg " tmp))
+	 (in (cg-input-buffer file))
+	 (out-name (concat "*CG output for " (file-name-base file) "*"))
+	 (out (progn (write-region (point-min) (point-max) tmp)
+		     (compilation-start
+		      cmd
+		      'cg-output-mode
+		      (lambda (m) out-name))))
+	 (proc (get-buffer-process out)))
+    (with-current-buffer out
+      (setq cg-tmp tmp)
+      (setq cg-file file))
+    (with-current-buffer in
+      (process-send-region proc (point-min) (point-max))
+      (process-send-string proc "\n")
+      (process-send-eof proc))
+    (display-buffer out)
+    (set-process-sentinel proc (lambda (proc change)
+				 (with-current-buffer (process-buffer proc)
+				   (delete-file cg-tmp))))))
+
+(defun cg-back-to-file ()
+  (interactive)
+  (bury-buffer)
+  (pop-to-buffer (find-buffer-visiting cg-file)))
+
+(defun cg-back-to-file-and-check ()
+  (interactive)
+  (bury-buffer)
+  (pop-to-buffer (find-buffer-visiting cg-file))
+  (cg-check))
+
+
+
+
+;;; Keybindings ---------------------------------------------------------------
+(define-key cg-mode-map (kbd "C-c C-o") #'cg-occur-list)
+(define-key cg-mode-map (kbd "C-c g") #'cg-goto-rule)
+(define-key cg-mode-map (kbd "C-c C-c") #'cg-check)
+(define-key cg-mode-map (kbd "C-c C-i") #'cg-edit-input)
+
+(define-key cg-input-mode-map (kbd "C-c C-c") #'cg-back-to-file-and-check)
+(define-key cg-output-mode-map (kbd "C-c C-c") #'cg-back-to-file)
 
 ;;; Run hooks -----------------------------------------------------------------
-(run-hooks 'cg-load-hook)
+(run-hooks #'cg-load-hook)
 
 (provide 'cg)
 
