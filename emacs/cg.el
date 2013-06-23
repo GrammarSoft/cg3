@@ -70,18 +70,39 @@
   :group 'languages)
 
 ;;;###autoload
+(defcustom cg-command "vislcg3"
+  "The vislcg3 command, e.g. \"/usr/local/bin/vislcg3\"."
+  :group 'cg
+  :type 'string)
+
+;;;###autoload
+(defcustom cg-extra-args "--trace"
+  "Extra arguments sent to vislcg3 when running `cg-check'.
+
+Buffer-local, so use `setq-default' if you want to change the
+global default value."
+  :group 'cg
+  :type 'string)
+(make-variable-buffer-local 'cg-extra-args)
+
+;;;###autoload
 (defcustom cg-pre-pipe "cg-conv"
-  "Pipeline to run before the vislcg3 command when testing a
-file. You can set this on a per-file basis by having a line like
+  "Pipeline to run before the vislcg3 command when testing a file
+with `cg-check'. You can set this on a per-file basis by having a
+line like
 
 # -*- cg-pre-pipe: \"lt-proc foo.bin | cg-conv\"; coding: utf-8 -*-
 
-in your .cg3/.rlx file."
+in your .cg3/.rlx file.
+
+Buffer-local, so use `setq-default' if you want to change the
+global default value."
   :group 'cg
   :type 'string)
 (make-variable-buffer-local 'cg-pre-pipe)
-(put 'cg-pre-pipe 'safe-local-variable 'stringp)
+
 ;; TODO: cg-post-pipe
+
 
 ;;;###autoload
 (defcustom cg-indentation 8
@@ -382,6 +403,7 @@ before getting useful..."
 
 (defun cg-edit-input ()
   "Open a buffer to edit the input sent when running `cg-check'."
+  ;; TODO: save window configuration here, restore on C-c C-c
   (interactive)
   (pop-to-buffer (cg-input-buffer (buffer-file-name))))
 
@@ -481,7 +503,7 @@ something like
 		     ""))
 	 (cmd (concat
 	       pre-pipe			; TODO: cache pre-output!
-	       "vislcg3 -tg " tmp))
+	       cg-command " " cg-extra-args " --grammar " tmp))
 	 (in (cg-input-buffer file))
 	 (out-name (concat "*CG output for " (file-name-base file) "*"))
 	 (out (progn (write-region (point-min) (point-max) tmp)
