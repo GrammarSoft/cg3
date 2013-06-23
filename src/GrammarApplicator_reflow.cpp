@@ -451,9 +451,11 @@ uint32_t GrammarApplicator::addTagToReading(Reading& reading, uint32_t utag, boo
 	if (it != grammar->sets_by_tag.end()) {
 		reading.parent->possible_sets.insert(it->second.begin(), it->second.end());
 	}
-	reading.tags.insert(utag);
-	reading.tags_list.push_back(utag);
-	reading.tags_bloom.insert(utag);
+	if (ordered || reading.tags.find(utag) == reading.tags.end()) {
+		reading.tags.insert(utag);
+		reading.tags_list.push_back(utag);
+		reading.tags_bloom.insert(utag);
+	}
 	if (grammar->parentheses.find(utag) != grammar->parentheses.end()) {
 		reading.parent->is_pleft = utag;
 	}
