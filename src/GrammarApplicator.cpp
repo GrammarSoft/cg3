@@ -354,12 +354,19 @@ void GrammarApplicator::printReading(const Reading *reading, UFILE *output, size
 		u_fputc(' ', output);
 	}
 
+	uint32HashMap used_tags;
 	const_foreach (uint32List, reading->tags_list, tter, tter_end) {
 		if ((!show_end_tags && *tter == endtag) || *tter == begintag) {
 			continue;
 		}
 		if (*tter == reading->baseform || *tter == reading->wordform) {
 			continue;
+		}
+		if (!ordered) {
+			if (used_tags.find(*tter) != used_tags.end()) {
+				continue;
+			}
+			used_tags[*tter] = *tter;
 		}
 		const Tag *tag = single_tags[*tter];
 		if (tag->type & T_DEPENDENCY && has_dep && !dep_original) {
