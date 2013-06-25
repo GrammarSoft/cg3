@@ -1,25 +1,25 @@
-; -*- coding:utf-8 -*- 
+; -*- coding:utf-8 -*-
 
 ; cg.el -- major mode for editing Constraint Grammar files
 
-; See http://beta.visl.sdu.dk/constraint_grammar.html 
+; See http://beta.visl.sdu.dk/constraint_grammar.html
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
 ;; the Free Software Foundation; either version 2, or (at your option)
 ;; any later version.
-;; 
+;;
 ;; This program is distributed in the hope that it will be useful,
 ;; but WITHOUT ANY WARRANTY; without even the implied warranty of
 ;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ;; GNU General Public License for more details.
-;; 
+;;
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program; if not, write to the Free Software
 ;; Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-;;; Send bug reports and feature requests to: 
-;;; Kevin Brubeck Unhammer <unhammer hos gmail punktum com>
+;;; Send bug reports and feature requests to:
+;;; Kevin Brubeck Unhammer <surname at fsfe dot org>
 
 ;;; Usage:
 ;; (autoload 'cg-mode "/path/to/cg.el"
@@ -45,16 +45,18 @@
 ;;; TODO:
 ;;; - different syntax highlighting for sets and tags (difficult)
 ;;; - use something like prolog-clause-start to define M-a/e etc.
-;;; - run vislcg3 --show-unused-sets and buttonise with line numbers (like Occur does) 
+;;; - run vislcg3 --show-unused-sets and buttonise with line numbers (like Occur does)
 ;;; - indentation function (based on prolog again?)
 ;;; - the rest of the keywords
-;;; - keyword tab-completion 
+;;; - keyword tab-completion
 ;;; - the quotes-within-quotes thing plays merry hell with
-;;;   paredit-doublequote, write a new doublequote function? 
+;;;   paredit-doublequote, write a new doublequote function?
 ;;; - font-lock-syntactic-keywords is obsolete since 24.1
 ;;; - derive cg-mode from prog-mode?
+;;; - goto-set/list
+;;; - show definition of set/list-at-point in modeline
 
-(defconst cg-version "2013-06-22" "Version of cg-mode") 
+(defconst cg-version "2013-06-22" "Version of cg-mode")
 
 ;;;============================================================================
 ;;;
@@ -71,16 +73,24 @@
 
 ;;;###autoload
 (defcustom cg-command "vislcg3"
-  "The vislcg3 command, e.g. \"/usr/local/bin/vislcg3\"."
+  "The vislcg3 command, e.g. \"/usr/local/bin/vislcg3\".
+
+Buffer-local, so use `setq-default' if you want to change the
+global default value. 
+
+See also `cg-extra-args' and `cg-pre-pipe'."
   :group 'cg
   :type 'string)
+(make-variable-buffer-local 'cg-extra-args)
 
 ;;;###autoload
 (defcustom cg-extra-args "--trace"
   "Extra arguments sent to vislcg3 when running `cg-check'.
 
 Buffer-local, so use `setq-default' if you want to change the
-global default value."
+global default value. 
+
+See also `cg-command'."
   :group 'cg
   :type 'string)
 (make-variable-buffer-local 'cg-extra-args)
@@ -88,20 +98,38 @@ global default value."
 ;;;###autoload
 (defcustom cg-pre-pipe "cg-conv"
   "Pipeline to run before the vislcg3 command when testing a file
-with `cg-check'. You can set this on a per-file basis by having a
-line like
+with `cg-check'. 
 
-# -*- cg-pre-pipe: \"lt-proc foo.bin | cg-conv\"; coding: utf-8 -*-
+Buffer-local, so use `setq-default' if you want to change the
+global default value. If you want to set it on a per-file basis,
+put a line like
+
+# -*- cg-pre-pipe: \"lt-proc foo.bin | cg-conv\"; othervar: value; -*-
 
 in your .cg3/.rlx file.
 
-Buffer-local, so use `setq-default' if you want to change the
-global default value."
+See also `cg-command' and `cg-post-pipe'."
   :group 'cg
   :type 'string)
 (make-variable-buffer-local 'cg-pre-pipe)
 
-;; TODO: cg-post-pipe
+;;;###autoload
+(defcustom cg-post-pipe ""
+  "Pipeline to run after the vislcg3 command when testing a file
+with `cg-check'. 
+
+Buffer-local, so use `setq-default' if you want to change the
+global default value. If you want to set it on a per-file basis,
+put a line like
+
+# -*- cg-post-pipe: \"cg-conv --out-apertium | lt-proc -b foo.bin\"; -*-
+
+in your .cg3/.rlx file.
+
+See also `cg-command' and `cg-pre-pipe'."
+  :group 'cg
+  :type 'string)
+(make-variable-buffer-local 'cg-post-pipe)
 
 
 ;;;###autoload
@@ -144,7 +172,7 @@ global default value."
 
 (defvar cg-mode-syntax-table
   (let ((table (make-syntax-table)))
-    (modify-syntax-entry ?# "<" table) 
+    (modify-syntax-entry ?# "<" table)
     (modify-syntax-entry ?\n ">#" table)
     ;; todo: better/possible to conflate \\s_ and \\sw into one class?
     (modify-syntax-entry ?@ "_" table)
@@ -213,7 +241,7 @@ Only does basic syntax highlighting at the moment."
   "Determine which face to use when fontifying syntactically. See
 `font-lock-syntactic-face-function'.
 
-TODO: something like 
+TODO: something like
 	((= 0 (nth 0 state)) font-lock-variable-name-face)
 would be great to differentiate SETs from their members, but it
 seems this function only runs on comments and strings..."
@@ -223,7 +251,9 @@ seems this function only runs on comments and strings..."
 	       (goto-char (nth 8 state))
 	       (re-search-forward "\"[^\"\n]*\\(\"\\(\\\\)\\|[^) \n\t]\\)*\\)?\"\\(r\\(i\\)?\\)?[); \n\t]")
 	       (and (match-string 1)
-		    (not (equal ?\\ (char-before (match-beginning 1))))))
+		    (not (equal ?\\ (char-before (match-beginning 1))))
+		    ;; TODO: make next-error hit these too
+		    ))
 	     'cg-string-warning-face
 	   font-lock-string-face))
  	(t font-lock-comment-face)))
@@ -243,7 +273,7 @@ seems this function only runs on comments and strings..."
 
 
 
-;;; Indentation 
+;;; Indentation
 
 (defvar cg-kw-list
   '("SUBSTITUTE" "IFF"
@@ -434,7 +464,9 @@ before getting useful..."
     ("^Error: .*?line \\([0-9]+\\)"
      ,#'cg-get-file 1 nil 2)
     ("^Error: .*"
-     ,#'cg-get-file nil nil 2))
+     ,#'cg-get-file nil nil 2)
+    (".*?line \\([0-9]+\\)"		; some error messages span several lines
+     ,#'cg-get-file 1 nil 2))
   "Regexp used to match vislcg3 --trace hits. See
 `compilation-error-regexp-alist'.")
 ;; TODO: highlight strings and @'s and #1->0's in cg-output-mode ?
@@ -485,32 +517,41 @@ runs."
   )
 
 
+(defun cg-output-buffer-name (mode)
+  (if (equal mode "cg-output")
+      (concat "*CG output for " (file-name-base cg-file) "*")
+    (error "Unexpected mode %S" mode)))
 
 (defun cg-check ()
   "Run vislcg3 --trace on the buffer (a temporary file is created
-in case you haven't saved yet). 
+in case you haven't saved yet).
 
 If you've set `cg-pre-pipe', input will first be sent through
 that. Set your test input sentence(s) with `cg-edit-input'. If
 you want to send a whole file instead, just set `cg-pre-pipe' to
-something like 
-\"zcat corpus.gz | lt-proc analyser.bin | cg-conv\"."
+something like
+\"zcat corpus.gz | lt-proc analyser.bin | cg-conv\".
+
+Similarly, `cg-post-pipe' is run on output."
   (interactive)
   (let* ((file (buffer-file-name))
 	 (tmp (make-temp-file "cg."))
 	 (pre-pipe (if (and cg-pre-pipe (not (equal "" cg-pre-pipe)))
 		       (concat cg-pre-pipe " | ")
 		     ""))
+	 (post-pipe (if (and cg-post-pipe (not (equal "" cg-post-pipe)))
+			(concat " | " cg-post-pipe)
+		      ""))
 	 (cmd (concat
 	       pre-pipe			; TODO: cache pre-output!
-	       cg-command " " cg-extra-args " --grammar " tmp))
+	       cg-command " " cg-extra-args " --grammar " tmp
+	       post-pipe))
 	 (in (cg-input-buffer file))
-	 (out-name (concat "*CG output for " (file-name-base file) "*"))
 	 (out (progn (write-region (point-min) (point-max) tmp)
 		     (compilation-start
 		      cmd
 		      'cg-output-mode
-		      (lambda (m) out-name))))
+		      'cg-output-buffer-name)))
 	 (proc (get-buffer-process out)))
     (with-current-buffer out
       (setq cg-tmp tmp)
@@ -524,6 +565,11 @@ something like
 				 (with-current-buffer (process-buffer proc)
 				   (delete-file cg-tmp))))))
 
+(defun cg-back-to-file-and-edit-input ()
+  (interactive)
+  (cg-back-to-file)
+  (cg-edit-input))
+
 (defun cg-back-to-file ()
   (interactive)
   (bury-buffer)
@@ -531,8 +577,7 @@ something like
 
 (defun cg-back-to-file-and-check ()
   (interactive)
-  (bury-buffer)
-  (pop-to-buffer (find-buffer-visiting cg-file))
+  (cg-back-to-file)
   (cg-check))
 
 
@@ -543,9 +588,14 @@ something like
 (define-key cg-mode-map (kbd "C-c g") #'cg-goto-rule)
 (define-key cg-mode-map (kbd "C-c C-c") #'cg-check)
 (define-key cg-mode-map (kbd "C-c C-i") #'cg-edit-input)
+(define-key cg-output-mode-map (kbd "C-c C-i") #'cg-back-to-file-and-edit-input)
+(define-key cg-output-mode-map (kbd "i") #'cg-back-to-file-and-edit-input)
 
 (define-key cg-input-mode-map (kbd "C-c C-c") #'cg-back-to-file-and-check)
 (define-key cg-output-mode-map (kbd "C-c C-c") #'cg-back-to-file)
+
+(define-key cg-output-mode-map "n" 'next-error-no-select)
+(define-key cg-output-mode-map "p" 'previous-error-no-select)
 
 ;;; Run hooks -----------------------------------------------------------------
 (run-hooks #'cg-load-hook)
