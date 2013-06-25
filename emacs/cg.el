@@ -506,8 +506,9 @@ runs."
   ;; (add-hook 'compilation-filter-hook 'cg-output-filter nil t)
   ;; We send text to stdin:
   (set (make-local-variable 'compilation-disable-input)
-       nil))
-
+       nil)
+  (set (make-local-variable 'compilation-finish-functions)
+       (list #'cg-check-finish-function)))
 
 (defun cg-after-change (a b c)
   ;; TODO: create run cg-check if it's over 2 seconds since last? Or
@@ -560,10 +561,13 @@ Similarly, `cg-post-pipe' is run on output."
       (process-send-region proc (point-min) (point-max))
       (process-send-string proc "\n")
       (process-send-eof proc))
-    (display-buffer out)
-    (set-process-sentinel proc (lambda (proc change)
-				 (with-current-buffer (process-buffer proc)
-				   (delete-file cg-tmp))))))
+    (display-buffer out)))
+
+(defun cg-check-finish-function (buffer change)
+  ;; Note: this makes `recompile' not work, which is why `g' is
+  ;; rebound in `cg-output-mode'
+  (with-current-buffer buffer
+    (delete-file cg-tmp)))
 
 (defun cg-back-to-file-and-edit-input ()
   (interactive)
@@ -590,6 +594,7 @@ Similarly, `cg-post-pipe' is run on output."
 (define-key cg-mode-map (kbd "C-c C-i") #'cg-edit-input)
 (define-key cg-output-mode-map (kbd "C-c C-i") #'cg-back-to-file-and-edit-input)
 (define-key cg-output-mode-map (kbd "i") #'cg-back-to-file-and-edit-input)
+(define-key cg-output-mode-map (kbd "g") #'cg-back-to-file-and-check)
 
 (define-key cg-input-mode-map (kbd "C-c C-c") #'cg-back-to-file-and-check)
 (define-key cg-output-mode-map (kbd "C-c C-c") #'cg-back-to-file)
