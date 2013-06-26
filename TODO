@@ -42,3 +42,4 @@ ToDo: Insert tags a'la Substitute (before / after)
 ToDo: Optimize case-insensitive tags by pre-calculating the lower-case variants
 ToDo: --out-niceline
 ToDo: Document static tags
+ToDo: Make contextual tests optional but greedy with ?
