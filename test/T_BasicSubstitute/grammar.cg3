@@ -1,4 +1,6 @@
 DELIMITERS = "<$.>" ;
 
+SUBSTITUTE (doesnotexist) (error) (notwanted) ;
 SUBSTITUTE (wanted) (substituted) (wanted) ;
 SUBSTITUTE (2) (4 2) (2) ;
+SUBSTITUTE (notmeeither) (*) (*) ;
