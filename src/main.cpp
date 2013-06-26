@@ -214,7 +214,7 @@ int main(int argc, char* argv[]) {
 		int serr = stat(options[STDIN].value, &info);
 		if (serr) {
 			std::cerr << "Error: Cannot stat " << options[STDIN].value << " due to error " << serr << "!" << std::endl;
-			return serr;
+			CG3Quit(1);
 		}
 		ux_stdin = u_fopen(options[STDIN].value, "rb", locale_input, codepage_input);
 	}

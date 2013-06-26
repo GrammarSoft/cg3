@@ -163,12 +163,12 @@ void exec_stream_t::start( std::string const & program, std::string const & argu
         command+=' ';
         command+=arguments;
     }
-    STARTUPINFO si;
+    STARTUPINFOA si;
     ZeroMemory( &si, sizeof( si ) );
     si.cb=sizeof( si );
     PROCESS_INFORMATION pi;
     ZeroMemory( &pi, sizeof( pi ) );
-    if( !CreateProcess( 0, const_cast< char * >( command.c_str() ), 0, 0, TRUE, 0, 0, 0, &si, &pi ) ) {
+    if( !CreateProcessA( 0, const_cast< char * >( command.c_str() ), 0, 0, TRUE, 0, 0, 0, &si, &pi ) ) {
         throw os_error_t( "exec_stream_t::start: CreateProcess failed.\n command line was: "+command );
     }
 

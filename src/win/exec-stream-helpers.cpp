@@ -42,24 +42,24 @@ void os_error_t::compose( std::string const & msg, exec_stream_t::error_code_t c
     std::string s( msg );
     s+='\n';
     LPVOID buf;
-    if( FormatMessage( FORMAT_MESSAGE_ALLOCATE_BUFFER|FORMAT_MESSAGE_FROM_SYSTEM,
+    if( FormatMessageA( FORMAT_MESSAGE_ALLOCATE_BUFFER|FORMAT_MESSAGE_FROM_SYSTEM,
         0, 
         code, 
         MAKELANGID( LANG_NEUTRAL, SUBLANG_DEFAULT ), 
-        (LPTSTR) &buf,
+        (LPSTR) &buf,
         0,
         0 
         )==0 ) {
         s+="[unable to retrieve error description]";
     }else {
         // FormatMessage may return \n-terminated string
-        LPTSTR str_buf=(LPTSTR)buf;
+        LPSTR str_buf=(LPSTR)buf;
         std::size_t buf_len=strlen( str_buf );
         while( buf_len>0 && str_buf[buf_len-1]=='\n' ) {
             --buf_len;
             str_buf[buf_len]=0;
         }
-        s+=(LPTSTR)buf;
+        s+=(LPSTR)buf;
         LocalFree( buf );
     }
     exec_stream_t::error_t::compose( s, code );

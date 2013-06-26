@@ -1,4 +1,4 @@
 "<word>"
 	"word" notwanted
-	"word" before wanted after
+	"word" before 1 1 2 2 3 3 wanted 3 3 after
 	"word" notmeeither

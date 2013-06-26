@@ -778,7 +778,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						// ToDo: Check whether this substitution will do nothing at all to the end result
 						// ToDo: Not actually...instead, test whether any reading in the cohort already is the end result
 
-						uint32_t tloc = 0;
+						uint32List::iterator tpos = reading.tags_list.end();
 						size_t tagb = reading.tags_list.size();
 						TagList theTags = getTagList(*rule.sublist);
 
@@ -798,10 +798,11 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						}
 
 						const_foreach (TagList, theTags, tter, tter_end) {
-							if (!tloc) {
+							if (tpos == reading.tags_list.end()) {
 								foreach (uint32List, reading.tags_list, tfind, tfind_end) {
 									if (*tfind == (*tter)->hash) {
-										tloc = *(--tfind);
+										tpos = tfind;
+										--tpos;
 										break;
 									}
 								}
@@ -816,12 +817,8 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 							index_ruleCohort_no.clear();
 							reading.hit_by.push_back(rule.number);
 							reading.noprint = false;
-							uint32List::iterator tpos = reading.tags_list.end();
-							foreach (uint32List, reading.tags_list, tfind, tfind_end) {
-								if (*tfind == tloc) {
-									tpos = ++tfind;
-									break;
-								}
+							if (tpos != reading.tags_list.end()) {
+								++tpos;
 							}
 							TagList mappings;
 							TagList theTags = getTagList(*rule.maplist);
