@@ -1,5 +1,5 @@
 "<word>"
 	"word" notwanted 
-	"word" before 1 1 4 2 3 3 substituted 3 3 after 
-	"word" notmeeither 
+	"word" before 1 1 4 2 3 3 substituted 3 3 after SUBSTITUTE:4 SUBSTITUTE:5 
+	"word" SUBSTITUTE:6 
 
