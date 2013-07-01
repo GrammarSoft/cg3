@@ -371,7 +371,7 @@ void GrammarApplicator::printReading(const Reading *reading, UFILE *output, size
 		u_fprintf(output, "%S ", tag->tag.c_str());
 	}
 
-	if (has_dep) {
+	if (has_dep && !(reading->parent->type & CT_REMOVED)) {
 		if (!reading->parent->dep_self) {
 			reading->parent->dep_self = reading->parent->global_number;
 		}

@@ -590,6 +590,7 @@ int TextualParser::parseContextualTestList(UChar *& p, Rule *rule, ContextualTes
 			}
 			result->lines += SKIPWS(p);
 		}
+		// ToDo: If there is only 1 () test in an OR set, promote it
 	}
 	else if (gbuffers[0][0] == '[') {
 		++p;
