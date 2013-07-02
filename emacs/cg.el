@@ -25,7 +25,7 @@
 ;; (autoload 'cg-mode "/path/to/cg.el"
 ;;  "cg-mode is a major mode for editing Constraint Grammar files."  t)
 ;; ; whatever file ending you use:
-;; (add-to-list 'auto-mode-alist '("\\.cg\\'" . cg-mode))
+;; (add-to-list 'auto-mode-alist '("\\.cg3\\'" . cg-mode))
 
 ;;; I recommend using pabbrev-mode for tab-completion, and
 ;;; paredit-mode if you're used to it. However, if you have set names
@@ -56,7 +56,7 @@
 ;;; - goto-set/list
 ;;; - show definition of set/list-at-point in modeline
 
-(defconst cg-version "2013-06-22" "Version of cg-mode")
+(defconst cg-version "2013-07-02" "Version of cg-mode")
 
 ;;;============================================================================
 ;;;
@@ -148,7 +148,7 @@ See also `cg-command' and `cg-pre-pipe'."
        1 font-lock-keyword-face)
       ("^[ \t]*\\(SECTION\\|AFTER-SECTIONS\\|BEFORE-SECTIONS\\|MAPPINGS\\|CONSTRAINTS\\|CORRECTIONS\\)"
        1 font-lock-warning-face)
-      (,(concat "^[ \t]*" <word>? "[ \t]*\\(SETPARENT\\|SETCHILD\\|ADDRELATIONS?\\|SETRELATIONS?\\|REMRELATIONS?\\|SUBSTITUTE\\|ADDCOHORT\\|REMCOHORT\\|MAP\\|IFF\\|ADD\\|SELECT\\|REMOVE\\)\\(\\(:\\(\\s_\\|\\sw\\)+\\)?\\)")
+      (,(concat "^[ \t]*" <word>? "[ \t]*\\(SETPARENT\\|SETCHILD\\|ADDRELATIONS?\\|SETRELATIONS?\\|REMRELATIONS?\\|SUBSTITUTE\\|ADDCOHORT\\|REMCOHORT\\|COPY\\|MAP\\|IFF\\|ADD\\|SELECT\\|REMOVE\\)\\(\\(:\\(\\s_\\|\\sw\\)+\\)?\\)")
        (1 font-lock-keyword-face)
        (2 font-lock-variable-name-face))
       ("[ \t\n]\\([+-]\\)[ \t\n]"
@@ -278,6 +278,7 @@ seems this function only runs on comments and strings..."
 (defvar cg-kw-list
   '("SUBSTITUTE" "IFF"
     "ADDCOHORT" "REMCOHORT"
+    "COPY"
     "MAP"    "ADD"
     "SELECT" "REMOVE"
     "LIST"   "SET"
@@ -414,7 +415,7 @@ before getting useful..."
 			  (yank)
 			  (buffer-substring-no-properties (point-min)(point-max))))))
     (if (string-match
-	 "\\(\\(select\\|iff\\|remove\\|map\\|addcohort\\|remcohort\\|add\\|substitute\\):\\)?\\([0-9]+\\)"
+	 "\\(\\(select\\|iff\\|remove\\|map\\|addcohort\\|remcohort\\|copy\\|add\\|substitute\\):\\)?\\([0-9]+\\)"
 	 rule)
 	(progn (goto-line (string-to-number (match-string 3 rule)))
 	       (setq cg-goto-history (cons rule cg-goto-history)))
@@ -430,6 +431,11 @@ before getting useful..."
   "Private, used in `cg-output-mode' buffers to record which
   temporary file was sent in lieu of `cg-file' to the
   compilation (in case the buffer of `cg-file' was not saved)")
+
+(unless (fboundp 'file-name-base)	; shim for 24.3 function
+  (defun file-name-base (&optional filename)
+    (let ((filename (or filename (buffer-file-name))))
+      (file-name-nondirectory (file-name-sans-extension filename)))))
 
 (defun cg-edit-input ()
   "Open a buffer to edit the input sent when running `cg-check'."
@@ -455,7 +461,7 @@ before getting useful..."
   (list cg-file))
 
 (defconst cg-output-regexp-alist
-  `(("\\(?:SETPARENT\\|SETCHILD\\|ADDRELATIONS?\\|SETRELATIONS?\\|REMRELATIONS?\\|SUBSTITUTE\\|ADDCOHORT\\|REMCOHORT\\|MAP\\|IFF\\|ADD\\|SELECT\\|REMOVE\\):\\([^ \n\t:]+\\)\\(?::[^ \n\t]+\\)?"
+  `(("\\(?:SETPARENT\\|SETCHILD\\|ADDRELATIONS?\\|SETRELATIONS?\\|REMRELATIONS?\\|SUBSTITUTE\\|ADDCOHORT\\|ADDCOHORT-AFTER\\|ADDCOHORT-BEFORE\\|REMCOHORT\\|COPY\\|MAP\\|IFF\\|ADD\\|SELECT\\|REMOVE\\):\\([^ \n\t:]+\\)\\(?::[^ \n\t]+\\)?"
      ,#'cg-get-file 1 nil 1)
     ("^Warning: .*?line \\([0-9]+\\)"
      ,#'cg-get-file 1 nil 1)
