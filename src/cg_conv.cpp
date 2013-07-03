@@ -145,7 +145,7 @@ int main(int argc, char *argv[]) {
 			}
 			uregex_close(rx);
 
-			rx = uregex_openC("\\^[^/]+/[^<]+<[^>]+>\\$", UREGEX_DOTALL|UREGEX_MULTILINE, 0, &status);
+			rx = uregex_openC("\\^[^/]+/[^<]+(<[^>]+>)+\\$", UREGEX_DOTALL|UREGEX_MULTILINE, 0, &status);
 			uregex_setText(rx, buffer.c_str(), buffer.size(), &status);
 			if (uregex_find(rx, -1, &status)) {
 				fmt = CG3::FMT_APERTIUM;
@@ -175,6 +175,14 @@ int main(int argc, char *argv[]) {
 
 	if (options[SUB_LTR].doesOccur) {
 		grammar.sub_readings_ltr = true;
+	}
+	if (options[MAPPING_PREFIX].doesOccur) {
+		size_t sn = strlen(options[MAPPING_PREFIX].value);
+		CG3::UString buf(sn*3, 0);
+		UConverter *conv = ucnv_open(codepage_default, &status);
+		ucnv_toUChars(conv, &buf[0], buf.size(), options[MAPPING_PREFIX].value, sn, &status);
+		ucnv_close(conv);
+		grammar.mapping_prefix = buf[0];
 	}
 
 	applicator.setOutputFormat(CG3::FMT_CG);
