@@ -632,22 +632,18 @@ void ApertiumApplicator::processReading(Reading *cReading, const UChar *reading_
 					reading = nr;
 				}
 				// Add tags
+				TagList mappings;
 				TagVector::iterator iter = riter.base();
-				UChar uniq_idx = '0'; // number '0' in ASCII/UTF-8
 				for (--iter ; iter != taglist.end() ; ++iter) {
-					if (reading->tags.find((*iter)->hash) != reading->tags.end()) {
-						// To allow several identical tags to appear within a sub-reading, eg.
-						// ^gildojuvvui/gieldit<V><TV><Der2><Der_PassL><V><Ind><Prt><Sg3>$
-						// we prepend &uniq_idx to later tags to make them unique
-						UString newtag;
-						newtag += '&';
-						newtag += uniq_idx++;
-						newtag += single_tags[(*iter)->hash]->tag;
-						addTagToReading(*reading, addTag(newtag)->hash);
+					if ((*iter)->type & T_MAPPING || (*iter)->tag[0] == grammar->mapping_prefix) {
+						mappings.push_back(*iter);
 					}
 					else {
 						addTagToReading(*reading, (*iter)->hash);
 					}
+				}
+				if (!mappings.empty()) {
+					splitMappings(mappings, *reading->parent, *reading, true);
 				}
 				// Remove tags from list
 				while (!taglist.empty() && !(taglist.back()->type & T_BASEFORM)) {

@@ -29,6 +29,7 @@ namespace Options {
 	enum OPTIONS {
 		HELP1,
 		HELP2,
+		MAPPING_PREFIX,
 		IN_AUTO,
 		IN_CG,
 		IN_NICELINE,
@@ -47,6 +48,7 @@ namespace Options {
 	UOption options[]= {
 		UOPTION_DEF_D("help",				'h', UOPT_NO_ARG, "shows this help"),
 		UOPTION_DEF_D("?",					'?', UOPT_NO_ARG, "shows this help"),
+		UOPTION_DEF_D("prefix",			    'p', UOPT_REQUIRES_ARG, "sets the mapping prefix; defaults to @"),
 		UOPTION_DEF_D("in-auto",			'u', UOPT_NO_ARG, "auto-detect input format (default)"),
 		UOPTION_DEF_D("in-cg",				'v', UOPT_NO_ARG, "sets input format to CG"),
 		UOPTION_DEF_D("in-niceline",		'n', UOPT_NO_ARG, "sets input format to Niceline CG"),

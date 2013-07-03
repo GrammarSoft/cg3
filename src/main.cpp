@@ -280,11 +280,9 @@ int main(int argc, char* argv[]) {
 
 	if (options[MAPPING_PREFIX].doesOccur) {
 		size_t sn = strlen(options[MAPPING_PREFIX].value);
-		UChar *buf = new UChar[sn*3];
-		buf[0] = 0;
-		ucnv_toUChars(conv, buf, sn*3, options[MAPPING_PREFIX].value, sn, &status);
+		CG3::UString buf(sn*3, 0);
+		ucnv_toUChars(conv, &buf[0], buf.size(), options[MAPPING_PREFIX].value, sn, &status);
 		grammar.mapping_prefix = buf[0];
-		delete[] buf;
 	}
 	if (options[VERBOSE].doesOccur) {
 		std::cerr << "Reindexing grammar..." << std::endl;
