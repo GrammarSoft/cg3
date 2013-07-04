@@ -173,7 +173,7 @@ void ApertiumApplicator::runGrammarOnText(istream& input, UFILE *output) {
 			superblank = false;
 		}
 
-		if (inchar == '\\' && !incohort) {
+		if (inchar == '\\' && !incohort && !superblank) {
 			if (cCohort) {
 				cCohort->text += inchar;
 				inchar = u_fgetc_wrapper(input);
