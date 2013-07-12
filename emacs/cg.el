@@ -1,8 +1,13 @@
-; -*- coding:utf-8 -*-
+;;; cg.el -- major mode for editing Constraint Grammar files
 
-; cg.el -- major mode for editing Constraint Grammar files
+;; Copyright (C) 2010-2013 Kevin Brubeck Unhammer
 
-; See http://beta.visl.sdu.dk/constraint_grammar.html
+;; Author: Kevin Brubeck Unhammer <unhammer@fsfe.org>
+;; Version: 0.1.1
+;; Url: http://beta.visl.sdu.dk/constraint_grammar.html
+;; Keywords: languages
+
+;; This file is not part of GNU Emacs.
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -15,19 +20,17 @@
 ;; GNU General Public License for more details.
 ;;
 ;; You should have received a copy of the GNU General Public License
-;; along with this program; if not, write to the Free Software
-;; Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-;;; Send bug reports and feature requests to:
-;;; Kevin Brubeck Unhammer <surname at fsfe dot org>
+;;; Commentary:
 
-;;; Usage:
+;; Usage:
 ;; (autoload 'cg-mode "/path/to/cg.el"
 ;;  "cg-mode is a major mode for editing Constraint Grammar files."  t)
-;; ; whatever file ending you use:
-;; (add-to-list 'auto-mode-alist '("\\.cg3\\'" . cg-mode))
+;; ; If you use a non-standard file suffix, e.g. .rlx:
+;; (add-to-list 'auto-mode-alist '("\\.rlx\\'" . cg-mode))
 
-;;; I recommend using pabbrev-mode for tab-completion, and
+;;; I recommend using autocomplete-mode for tab-completion, and
 ;;; paredit-mode if you're used to it. However, if you have set names
 ;;; with hashes in them, like m#foo, paredit-mode may tell you that
 ;;; your parens are unbalenced if you have it in a mode hook. The
@@ -40,7 +43,8 @@
 ;; 	  (lambda nil
 ;; 	    (run-with-idle-timer 1 nil (lambda nil (paredit-mode 1)))))
 
-;;; sh-mode has the same problem, so I don't feel up to fixing it...
+;;; sh-mode has the same problem, so I don't feel up to fixing it. You
+;;; really should not use # in set names anyway.
 
 ;;; TODO:
 ;;; - different syntax highlighting for sets and tags (difficult)
@@ -56,7 +60,9 @@
 ;;; - goto-set/list
 ;;; - show definition of set/list-at-point in modeline
 
-(defconst cg-version "2013-07-02" "Version of cg-mode")
+;;; Code:
+
+(defconst cg-version "0.1.1" "Version of cg-mode")
 
 ;;;============================================================================
 ;;;
@@ -607,6 +613,10 @@ Similarly, `cg-post-pipe' is run on output."
 
 (define-key cg-output-mode-map "n" 'next-error-no-select)
 (define-key cg-output-mode-map "p" 'previous-error-no-select)
+
+;;; Turn on for .cg3 files ----------------------------------------------------
+(add-to-list 'auto-mode-alist '("\\.cg3\\'" . cg-mode))
+;; Tino Didriksen recommends this file suffix.
 
 ;;; Run hooks -----------------------------------------------------------------
 (run-hooks #'cg-load-hook)
