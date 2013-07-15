@@ -3,7 +3,7 @@
 ;; Copyright (C) 2010-2013 Kevin Brubeck Unhammer
 
 ;; Author: Kevin Brubeck Unhammer <unhammer@fsfe.org>
-;; Version: 0.1.1
+;; Version: 0.1.2
 ;; Url: http://beta.visl.sdu.dk/constraint_grammar.html
 ;; Keywords: languages
 
@@ -27,7 +27,8 @@
 ;; Usage:
 ;; (autoload 'cg-mode "/path/to/cg.el"
 ;;  "cg-mode is a major mode for editing Constraint Grammar files."  t)
-;; ; If you use a non-standard file suffix, e.g. .rlx:
+;; (add-to-list 'auto-mode-alist '("\\.cg3\\'" . cg-mode))
+;; ; Or if you use a non-standard file suffix, e.g. .rlx:
 ;; (add-to-list 'auto-mode-alist '("\\.rlx\\'" . cg-mode))
 
 ;;; I recommend using autocomplete-mode for tab-completion, and
@@ -59,10 +60,11 @@
 ;;; - derive cg-mode from prog-mode?
 ;;; - goto-set/list
 ;;; - show definition of set/list-at-point in modeline
+;;; - send dictionary to auto-complete
 
 ;;; Code:
 
-(defconst cg-version "0.1.1" "Version of cg-mode")
+(defconst cg-version "0.1.2" "Version of cg-mode")
 
 ;;;============================================================================
 ;;;
@@ -100,6 +102,7 @@ See also `cg-command'."
   :group 'cg
   :type 'string)
 (make-variable-buffer-local 'cg-extra-args)
+(setq-default cg-extra-args "--trace")
 
 ;;;###autoload
 (defcustom cg-pre-pipe "cg-conv"
@@ -145,7 +148,7 @@ See also `cg-command' and `cg-pre-pipe'."
   :group 'cg)
 (put 'cg-indentation 'safe-local-variable 'integerp)
 
-(defvar cg-font-lock-keywords-1
+(defconst cg-font-lock-keywords-1
   (let ((<word>? "\\(?:\"<[^>]+>\"\\)?"))
     `(("^[ \t]*\\(LIST\\|SET\\|TEMPLATE\\)[ \t]+\\(\\(\\sw\\|\\s_\\)+\\)"
        (1 font-lock-keyword-face)
@@ -191,7 +194,10 @@ See also `cg-command' and `cg-pre-pipe'."
 ;;;###autoload
 (defun cg-mode ()
   "Major mode for editing Constraint Grammar files.
-Only does basic syntax highlighting at the moment."
+
+CG-mode provides the following specific keyboard key bindings:
+
+\\{cg-mode-map}"
   (interactive)
   (kill-all-local-variables)
   (setq major-mode 'cg-mode
@@ -456,8 +462,20 @@ before getting useful..."
   "Input for `cg-mode' buffers."
   (use-local-map cg-input-mode-map))
 
+;;;###autoload
+(defcustom cg-per-buffer-input nil
+  "If this is non-nil, the input buffer created by
+`cg-edit-input' will be specific to the CG buffer it was called
+from, otherwise all CG buffers share one input buffer."
+  :group 'cg
+  :type 'string)
+
 (defun cg-input-buffer (file)
-  (let ((buf (get-buffer-create (concat "*CG input for " (file-name-base file) "*"))))
+  (let ((buf (get-buffer-create (concat "*CG input"
+					(if cg-per-buffer-input
+					    (concat " for " (file-name-base file))
+					  "")
+					"*"))))
     (with-current-buffer buf
       (cg-input-mode)
       (setq cg-file file))
@@ -496,9 +514,37 @@ useful for doing things like
  (setenv \"PATH\" (concat \"~/local/stuff\" (getenv \"PATH\")))"
   (run-hooks #'cg-output-setup-hook))
 
+(defvar cg-output-comment-face  font-lock-comment-face	;compilation-info-face
+  "Face name to use for comments in cg-output.")
+
+(defvar cg-output-form-face	'compilation-error
+  "Face name to use for forms in cg-output.")
+
+(defvar cg-output-lemma-face	font-lock-string-face
+  "Face name to use for lemmas in cg-output.")
+
+(defvar cg-output-mapping-face 'bold
+  "Face name to use for mapping tags in cg-output")
+
+(defvar cg-output-mode-font-lock-keywords 
+  '(("^;"
+     ;; hack alert! a colon in a tag will mess this up
+     ;; (hardly matters much though)
+     0 cg-output-comment-face)
+    ("\"<[^>\n]+>\""
+     0 cg-output-form-face)
+    ("\t\\(\".*\"\\) "
+     ;; easier to match "foo"bar" etc. here since it's always the first tag
+     1 cg-output-lemma-face)
+    ("\\_<@[^ \n]+"
+     0 cg-output-mapping-face))
+  "Additional things to highlight in CG output.
+This gets tacked on the end of the generated expressions.")
+
 (define-compilation-mode cg-output-mode "CG-out"
   "Major mode for output of Constraint Grammar compilations and
 runs."
+  ;; cg-output-mode-font-lock-keywords applied automagically
   (set (make-local-variable 'compilation-skip-threshold)
        1)
   (set (make-local-variable 'compilation-error-regexp-alist)
@@ -520,7 +566,9 @@ runs."
   (set (make-local-variable 'compilation-disable-input)
        nil)
   (set (make-local-variable 'compilation-finish-functions)
-       (list #'cg-check-finish-function)))
+       (list #'cg-check-finish-function))
+  (modify-syntax-entry ?§ "_")
+  (modify-syntax-entry ?@ "_"))
 
 (defun cg-after-change (a b c)
   ;; TODO: create run cg-check if it's over 2 seconds since last? Or
@@ -615,6 +663,7 @@ Similarly, `cg-post-pipe' is run on output."
 (define-key cg-output-mode-map "p" 'previous-error-no-select)
 
 ;;; Turn on for .cg3 files ----------------------------------------------------
+;;;###autoload
 (add-to-list 'auto-mode-alist '("\\.cg3\\'" . cg-mode))
 ;; Tino Didriksen recommends this file suffix.
 
