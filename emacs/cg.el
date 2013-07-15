@@ -659,8 +659,11 @@ Similarly, `cg-post-pipe' is run on output."
 (define-key cg-input-mode-map (kbd "C-c C-c") #'cg-back-to-file-and-check)
 (define-key cg-output-mode-map (kbd "C-c C-c") #'cg-back-to-file)
 
-(define-key cg-output-mode-map "n" 'next-error-no-select)
-(define-key cg-output-mode-map "p" 'previous-error-no-select)
+(define-key cg-output-mode-map (kbd "n") 'next-error-no-select)
+(define-key cg-output-mode-map (kbd "p") 'previous-error-no-select)
+
+(define-key cg-mode-map (kbd "C-c C-n") 'next-error)
+(define-key cg-mode-map (kbd "C-c C-p") 'previous-error)
 
 ;;; Turn on for .cg3 files ----------------------------------------------------
 ;;;###autoload
