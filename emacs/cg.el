@@ -527,7 +527,7 @@ useful for doing things like
   "Face name to use for mapping tags in cg-output")
 
 (defvar cg-output-mode-font-lock-keywords 
-  '(("^;"
+  '(("^;\\(?:[^:]* \\)"
      ;; hack alert! a colon in a tag will mess this up
      ;; (hardly matters much though)
      0 cg-output-comment-face)
