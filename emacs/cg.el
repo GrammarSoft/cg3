@@ -3,7 +3,7 @@
 ;; Copyright (C) 2010-2013 Kevin Brubeck Unhammer
 
 ;; Author: Kevin Brubeck Unhammer <unhammer@fsfe.org>
-;; Version: 0.1.2
+;; Version: 0.1.3
 ;; Url: http://beta.visl.sdu.dk/constraint_grammar.html
 ;; Keywords: languages
 
@@ -64,7 +64,7 @@
 
 ;;; Code:
 
-(defconst cg-version "0.1.2" "Version of cg-mode")
+(defconst cg-version "0.1.3" "Version of cg-mode")
 
 ;;;============================================================================
 ;;;
@@ -87,7 +87,6 @@ Buffer-local, so use `setq-default' if you want to change the
 global default value. 
 
 See also `cg-extra-args' and `cg-pre-pipe'."
-  :group 'cg
   :type 'string)
 (make-variable-buffer-local 'cg-extra-args)
 
@@ -99,7 +98,6 @@ Buffer-local, so use `setq-default' if you want to change the
 global default value. 
 
 See also `cg-command'."
-  :group 'cg
   :type 'string)
 (make-variable-buffer-local 'cg-extra-args)
 (setq-default cg-extra-args "--trace")
@@ -118,7 +116,6 @@ put a line like
 in your .cg3/.rlx file.
 
 See also `cg-command' and `cg-post-pipe'."
-  :group 'cg
   :type 'string)
 (make-variable-buffer-local 'cg-pre-pipe)
 
@@ -136,7 +133,6 @@ put a line like
 in your .cg3/.rlx file.
 
 See also `cg-command' and `cg-pre-pipe'."
-  :group 'cg
   :type 'string)
 (make-variable-buffer-local 'cg-post-pipe)
 
@@ -144,8 +140,7 @@ See also `cg-command' and `cg-pre-pipe'."
 ;;;###autoload
 (defcustom cg-indentation 8
   "The width for indentation in Constraint Grammar mode."
-  :type 'integer
-  :group 'cg)
+  :type 'integer)
 (put 'cg-indentation 'safe-local-variable 'integerp)
 
 (defconst cg-font-lock-keywords-1
@@ -279,8 +274,7 @@ seems this function only runs on comments and strings..."
     (((class color) (min-colors 16) (background dark))  :foreground "LightSalmon" :underline "orange")
     (((class color) (min-colors 8)) :foreground "green" :underline "orange")
     (t :slant italic))
-  "CG mode face used to highlight troublesome strings with unescaped quotes in them."
-  :group 'cg-mode)
+  "CG mode face used to highlight troublesome strings with unescaped quotes in them.")
 
 
 
@@ -437,12 +431,14 @@ before getting useful..."
 (require 'compile)
 
 (defvar cg--file nil
-  "Used in `cg-output-mode' buffers to record which
-  user-edited grammar file was sent to the compilation")
+  "Which CG file the `cg-output-mode' (and `cg--check-cache-buffer')
+buffer corresponds to.")
 (defvar cg--tmp nil     ; TODO: could use cg--file iff buffer-modified-p
-  "Used in `cg-output-mode' buffers to record which
-  temporary file was sent in lieu of `cg--file' to the
-  compilation (in case the buffer of `cg--file' was not saved)")
+  "Which temporary file was sent in lieu of `cg--file' to
+compilation (in case the buffer of `cg--file' was not saved)")
+(defvar cg--in nil
+  "Which input buffer the `cg--check-cache-buffer' corresponds
+to.")
 
 (unless (fboundp 'file-name-base)	; shim for 24.3 function
   (defun file-name-base (&optional filename)
@@ -457,12 +453,27 @@ before getting useful..."
 ;;;###autoload
 (defcustom cg-check-do-cache t
   "If non-nil, `cg-check' caches the output of `cg-pre-pipe' (the
-cache is emptied whenever you make a change in the input
-buffer). 
-
-Will not work unless `cg-per-buffer-input' is nil.")
+cache is emptied whenever you make a change in the input buffer,
+or call `cg-check' from another CG file).")
 
 (defvar cg--check-cache-buffer nil "See `cg-check-do-cache'.")
+
+(defun cg-input-mode-bork-cache (from to len)
+  "Since `cg-check' will not reuse a cache unless `cg--file' and
+`cg--in' match."
+  (when cg--check-cache-buffer
+    (with-current-buffer cg--check-cache-buffer
+      (setq cg--file nil
+	    cg--in nil))))
+
+(defun cg-pristine-cache-buffer (file in)
+  (with-current-buffer (setq cg--check-cache-buffer
+			     (get-buffer-create "*cg-pre-cache*"))
+    (widen)
+    (delete-region (point-min) (point-max))
+    (set (make-local-variable 'cg--file) file)
+    (set (make-local-variable 'cg--in) in)
+    (current-buffer)))
 
 (defvar cg-input-mode-map (make-sparse-keymap)
   "Keymap for CG input mode.")
@@ -470,22 +481,14 @@ Will not work unless `cg-per-buffer-input' is nil.")
 (define-derived-mode cg-input-mode fundamental-mode "CG-in"
   "Input for `cg-mode' buffers."
   (use-local-map cg-input-mode-map)
-  (add-hook 'after-change-functions #'cg-input-mode-kill-cache nil t))
-
-(defun cg-input-mode-kill-cache (from to len)
-  (when cg--check-cache-buffer
-    (kill-buffer cg--check-cache-buffer)
-    (setq cg--check-cache-buffer nil)))
+  (add-hook 'after-change-functions #'cg-input-mode-bork-cache nil t))
 
 
 ;;;###autoload
 (defcustom cg-per-buffer-input nil
   "If this is non-nil, the input buffer created by
 `cg-edit-input' will be specific to the CG buffer it was called
-from, otherwise all CG buffers share one input buffer.
-
-Affects `cg-check-do-cache'."
-  :group 'cg
+from, otherwise all CG buffers share one input buffer."
   :type 'string)
 
 (defun cg-input-buffer (file)
@@ -523,8 +526,7 @@ Affects `cg-check-do-cache'."
 (defcustom cg-output-setup-hook nil
   "List of hook functions run by `cg-output-process-setup' (see
 `run-hooks')."
-  :type 'hook
-  :group 'cg-mode)
+  :type 'hook)
 
 (defun cg-output-process-setup ()
   "Runs `cg-output-setup-hook' for `cg-check'. That hook is
@@ -593,11 +595,28 @@ runs."
   "If non-nil, run `cg-check' on grammar after each change to the
 buffer.")
 
+;;;###autoload
+(defcustom cg-check-after-change-secs 1
+  "Minimum seconds between each `cg-check' after a change to a CG
+buffer (so 0 is after each change)."
+  :type 'integer)
+
+(defvar cg--after-change-timer nil)
 (defun cg-after-change (from to len)
-  (when cg-check-after-change
-    (let ((proc (get-buffer-process (get-buffer-create (compilation-buffer-name "cg-output" 'cg-output-mode 'cg-output-buffer-name)))))
-      (unless (and proc (eq (process-status proc) 'run))
-	(with-demoted-errors (cg-check))))))
+  (when (and cg-check-after-change
+	     (not (member cg--after-change-timer timer-list)))
+    (setq
+     cg--after-change-timer
+     (run-at-time
+      cg-check-after-change-secs
+      nil
+      (lambda ()
+	(let ((proc (get-buffer-process (get-buffer-create (compilation-buffer-name
+							    "cg-output"
+							    'cg-output-mode
+							    'cg-output-buffer-name)))))
+	  (unless (and proc (eq (process-status proc) 'run))
+	    (with-demoted-errors (cg-check)))))))))
 
 
 
@@ -651,8 +670,11 @@ Similarly, `cg-post-pipe' is run on output."
       (setq cg--file file))
 
     (if (and cg-check-do-cache
-	     (not cg-per-buffer-input)
-	     (buffer-live-p cg--check-cache-buffer))
+	     (buffer-live-p cg--check-cache-buffer)
+	     (with-current-buffer cg--check-cache-buffer
+	       ;; Check that the cache is for this grammar and input:
+	       (and (equal cg--file file)
+		    (equal cg--in in))))
 
 	(with-current-buffer cg--check-cache-buffer
 	  (cg-end-process (get-buffer-process out) (buffer-string)))
@@ -660,14 +682,15 @@ Similarly, `cg-post-pipe' is run on output."
       (lexical-let ((cg-proc (get-buffer-process out))
 		    (pre-proc (start-process "cg-pre-pipe" "*cg-pre-pipe-output*"
 					     "/bin/bash" "-c" pre-pipe))
-		    (cache-buffer (setq cg--check-cache-buffer
-					(get-buffer-create "*cg-pre-cache*"))))
+		    (cache-buffer (cg-pristine-cache-buffer file in)))
 	(set-process-filter pre-proc (lambda (pre-proc string)
 				       (with-current-buffer cache-buffer
 					 (insert string))
-				       (process-send-string cg-proc string)))
+				       (when (eq (process-status cg-proc) 'run)
+					 (process-send-string cg-proc string))))
 	(set-process-sentinel pre-proc (lambda (pre-proc string)
-					 (cg-end-process cg-proc)))
+					 (when (eq (process-status cg-proc) 'run)
+					   (cg-end-process cg-proc))))
 	(with-current-buffer in
 	  (cg-end-process pre-proc (buffer-string)))))
 
@@ -676,8 +699,10 @@ Similarly, `cg-post-pipe' is run on output."
 (defun cg-check-finish-function (buffer change)
   ;; Note: this makes `recompile' not work, which is why `g' is
   ;; rebound in `cg-output-mode'
-  (with-selected-window (get-buffer-window buffer)
-    (scroll-up-line 4))
+  (let ((w (get-buffer-window buffer)))
+    (when w
+      (with-selected-window (get-buffer-window buffer)
+	(scroll-up-line 4))))
   (with-current-buffer buffer
     (delete-file cg--tmp)))
 
@@ -706,9 +731,9 @@ Similarly, `cg-post-pipe' is run on output."
 (defun cg-toggle-check-after-change ()
   (interactive)
   (setq cg-check-after-change (not cg-check-after-change))
-  (message "%s CG after each change" (if cg-check-after-change
-					 "Checking"
-				       "Not checking")))
+  (message "%s after each change" (if cg-check-after-change
+				      (format "Checking CG %s seconds" cg-check-after-change-secs)
+				       "Not checking CG")))
 
 
 ;;; Keybindings ---------------------------------------------------------------
