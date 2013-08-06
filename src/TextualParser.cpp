@@ -65,6 +65,7 @@ int TextualParser::parseTagList(UChar *& p, Set *s, const bool isinline) {
 		if (*p && *p != ';' && *p != ')') {
 			if (*p == '(') {
 				++p;
+				result->lines += SKIPWS(p, ';', ')');
 				TagVector tags;
 
 				while (*p && *p != ';' && *p != ')') {
