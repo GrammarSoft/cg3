@@ -775,7 +775,7 @@ void ApertiumApplicator::printReading(Reading *reading, UFILE *output) {
 				u_fprintf(output, "%S", tag->tag.c_str());
 			}
 			else if (tag->tag[0] == '&') {
-				u_fprintf(output, "<%S>", tag->tag.substr(2).c_str());
+				u_fprintf(output, "<%S>", substr(tag->tag, 2).c_str());
 			}
 			else {
 				u_fprintf(output, "<%S>", tag->tag.c_str());
