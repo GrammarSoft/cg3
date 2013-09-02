@@ -572,6 +572,7 @@ int TextualParser::parseContextualTestList(UChar *& p, Rule *rule, ContextualTes
 	gbuffers[0][c] = 0;
 	if (ux_isEmpty(&gbuffers[0][0])) {
 		p = n;
+		pos_p = p;
 		for (;;) {
 			ContextualTest *ored = t->allocateContextualTest();
 			if (*p != '(') {
@@ -591,7 +592,13 @@ int TextualParser::parseContextualTestList(UChar *& p, Rule *rule, ContextualTes
 			}
 			result->lines += SKIPWS(p);
 		}
-		// ToDo: If there is only 1 () test in an OR set, promote it
+		if (t->ors.size() == 1) {
+			UChar oldp = *p;
+			*p = 0;
+			u_fprintf(ux_stderr, "Warning: Inline templates only make sense if you OR them on line %u at %S.\n", result->lines, pos_p);
+			u_fflush(ux_stderr);
+			*p = oldp;
+		}
 	}
 	else if (gbuffers[0][0] == '[') {
 		++p;
