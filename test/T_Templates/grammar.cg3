@@ -1,6 +1,6 @@
 DELIMITERS = "<$.>" ;
 
-TEMPLATE DefinedAnywhere = (1 (Q)) ;
+TEMPLATE DefinedAnywhere = 1 (Q) ;
 
 TEMPLATE V-Prep = 1 (V) LINK 1* (PREP) ;
 
