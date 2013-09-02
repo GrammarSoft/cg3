@@ -222,8 +222,6 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 		const Set& set = *(grammar->getSet(rule.target));
 		grammar->lines = rule.line;
 
-		// ToDo: Make better use of rules_by_tag; except, I can't remember why I wrote this comment...
-
 		uint32ToCohortsMap::iterator csit = current.rule_to_cohorts.find(rule.number);
 		if (csit == current.rule_to_cohorts.end()) {
 			continue;
@@ -264,7 +262,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 				continue;
 			}
 			// If there is not even a remote chance the target set might match this cohort, skip it.
-			if (cohort->possible_sets.find(rule.target) == cohort->possible_sets.end()) {
+			if (rule.sub_reading == 0 && cohort->possible_sets.find(rule.target) == cohort->possible_sets.end()) {
 				continue;
 			}
 
