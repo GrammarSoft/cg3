@@ -82,19 +82,6 @@ inline bool ux_isEmpty(const UChar *text) {
 	return true;
 }
 
-inline UChar *ux_substr(const UChar *string, const size_t start, const size_t end) {
-	const size_t length = static_cast<size_t>(u_strlen(string));
-	assert(length >= end);
-	assert(length >= start);
-	assert(length >= end-start);
-
-	UChar *tmp = new UChar[end-start+1];
-	std::fill(tmp, tmp+(end-start+1), 0);
-	u_strncpy(tmp, &string[start], end-start);
-
-	return tmp;
-}
-
 inline bool ux_simplecasecmp(const UChar *a, const UChar *b, const size_t n) {
 	for (size_t i = 0 ; i < n ; ++i) {
 		if (a[i] != b[i] && a[i] != b[i]+32) {
