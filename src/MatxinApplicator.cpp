@@ -589,9 +589,7 @@ int MatxinApplicator::printReading(Reading *reading, UFILE *output, int ischunk,
 			}
 			else if (tag->tag[0] == '&') {
 				tags += '[';
-				UChar *buf = ux_substr(tag->tag.c_str(), 2, tag->tag.length());
-				tags += buf;
-				delete[] buf;
+				tags.append(tag->tag.begin()+2, tag->tag.end());
 				tags += ']';
 			}
 			else if (tag->type & T_MAPPING) {
@@ -609,9 +607,7 @@ int MatxinApplicator::printReading(Reading *reading, UFILE *output, int ischunk,
 	if (ischunk) {
 		u_fprintf(output, "<CHUNK ord='%d' alloc='%d'", ord, alloc);
 		if (!syntags.empty()) {
-			UChar *buf = ux_substr(syntags.c_str(), 0, syntags.size()-1);
-			u_fprintf(output, " si='%S'", buf);
-			delete[] buf;
+			u_fprintf(output, " si='%S'", syntags.substr(0, syntags.size()-1).c_str());
 		}
 		u_fprintf(output, ">\n  <NODE");
 	} else {
@@ -622,9 +618,7 @@ int MatxinApplicator::printReading(Reading *reading, UFILE *output, int ischunk,
 		u_fprintf(output, " mi='%S'", tags.c_str());
 	}
 	if (!syntags.empty()) {
-		UChar *buf = ux_substr(syntags.c_str(), 0, syntags.size()-1);
-		u_fprintf(output, " si='%S'", buf);
-		delete[] buf;
+		u_fprintf(output, " si='%S'", syntags.substr(0, syntags.size()-1).c_str());
 	}
 
 	// ord: order in source sentence. local_number is x in the #x->y dependency output so we use that
@@ -632,20 +626,18 @@ int MatxinApplicator::printReading(Reading *reading, UFILE *output, int ischunk,
 	u_fprintf(output, " ord='%u' alloc='%u'", reading->parent->local_number, alloc);
 
 	if (reading->baseform) {
-		UChar *bf = 0;
 		// Lop off the initial and final '"' characters
-		bf = ux_substr(single_tags[reading->baseform]->tag.c_str(), 1, single_tags[reading->baseform]->tag.length()-1);
+		UString bf(single_tags[reading->baseform]->tag.substr(1, single_tags[reading->baseform]->tag.size()-2));
 
 		if (wordform_case) {
 			// Use surface/wordform case, eg. if lt-proc
 			// was called with "-w" option (which puts
 			// dictionary case on lemma/basefrom)
-			UChar *wf = 0;
 			// Lop off the initial and final '"<>' characters
-			wf = ux_substr(single_tags[reading->wordform]->tag.c_str(), 2, single_tags[reading->wordform]->tag.length()-2);
+			const UString wf(single_tags[reading->wordform]->tag.substr(2, single_tags[reading->wordform]->tag.size()-4));
 			
-			int first = 0; // first occurrence of a lowercase character in baseform
-			for (; first<u_strlen(bf); first++) {
+			size_t first = 0; // first occurrence of a lowercase character in baseform
+			for (; first<bf.size(); first++) {
 				if (u_islower(bf[first]) != 0) {
 					break;
 				}
@@ -653,10 +645,10 @@ int MatxinApplicator::printReading(Reading *reading, UFILE *output, int ischunk,
 			
 			// this corresponds to fst_processor.cc in lttoolbox:
 			bool firstupper = (u_isupper(wf[first]) != 0); // simply casting will not silence the warning - Tino Didriksen
-			bool uppercase = firstupper && u_isupper(wf[u_strlen(wf)-1]);
+			bool uppercase = firstupper && u_isupper(wf[wf.size()-1]);
 
 			if (uppercase) {
-				for (int i=0; i<u_strlen(bf); i++) {
+				for (size_t i=0; i<bf.size(); i++) {
 					bf[i] = static_cast<UChar>(u_toupper(bf[i]));
 				}
 			}
@@ -665,21 +657,15 @@ int MatxinApplicator::printReading(Reading *reading, UFILE *output, int ischunk,
 					bf[first] = static_cast<UChar>(u_toupper(bf[first]));
 				} 
 			}
-			delete[] wf;
-			wf = 0;
 		} // if (wordform_case)
 		
-		if ((*bf) && (*bf == '*')) {
-			u_fprintf(output, " lem='%S'", bf+1);
+		if (!bf.empty() && (bf[0] == '*')) {
+			u_fprintf(output, " lem='%S'", bf.c_str()+1);
 			u_fprintf(output, " unknown='analysis'");
 		}
 		else {
-			u_fprintf(output, " lem='%S'", bf);
+			u_fprintf(output, " lem='%S'", bf.c_str());
 		}
-						
-		delete[] bf;
-		bf = 0;
-                // Tag::printTagRaw(output, single_tags[reading->baseform]);
 	}
 
 	return ord;
@@ -784,10 +770,8 @@ void MatxinApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 		}
 		
 		if (print_word_forms == true) {
-			// Lop off the initial and final '"' characters
-			UChar *wf = ux_substr(single_tags[cohort->wordform]->tag.c_str(), 2, single_tags[cohort->wordform]->tag.length()-2);
-			u_fprintf(output, " form='%S'", wf);
-			delete[] wf;
+			// Lop off the initial and final '"<>' characters
+			u_fprintf(output, " form='%S'", single_tags[cohort->wordform]->tag.substr(2, single_tags[cohort->wordform]->tag.size()-4).c_str());
 		}
 				
 		u_fprintf(output, ">");
