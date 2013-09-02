@@ -263,7 +263,8 @@ void Tag::parseTag(const UChar *to, UFILE *ux_stderr, Grammar *grammar) {
 		}
 		else if (type & T_CASE_INSENSITIVE) {
 			if (tag[0] == '/' && tag[length-1] == '/') {
-				tag = tag.substr(1, length-2);
+				tag.resize(tag.size()-1);
+				tag.erase(tag.begin());
 				length -= 2;
 			}
 		}

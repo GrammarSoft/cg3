@@ -607,7 +607,7 @@ int MatxinApplicator::printReading(Reading *reading, UFILE *output, int ischunk,
 	if (ischunk) {
 		u_fprintf(output, "<CHUNK ord='%d' alloc='%d'", ord, alloc);
 		if (!syntags.empty()) {
-			u_fprintf(output, " si='%S'", syntags.substr(0, syntags.size()-1).c_str());
+			u_fprintf(output, " si='%S'", substr(syntags, 0, syntags.size()-1).c_str());
 		}
 		u_fprintf(output, ">\n  <NODE");
 	} else {
@@ -618,7 +618,7 @@ int MatxinApplicator::printReading(Reading *reading, UFILE *output, int ischunk,
 		u_fprintf(output, " mi='%S'", tags.c_str());
 	}
 	if (!syntags.empty()) {
-		u_fprintf(output, " si='%S'", syntags.substr(0, syntags.size()-1).c_str());
+		u_fprintf(output, " si='%S'", substr(syntags, 0, syntags.size()-1).c_str());
 	}
 
 	// ord: order in source sentence. local_number is x in the #x->y dependency output so we use that
@@ -771,7 +771,7 @@ void MatxinApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 		
 		if (print_word_forms == true) {
 			// Lop off the initial and final '"<>' characters
-			u_fprintf(output, " form='%S'", single_tags[cohort->wordform]->tag.substr(2, single_tags[cohort->wordform]->tag.size()-4).c_str());
+			u_fprintf(output, " form='%S'", substr(single_tags[cohort->wordform]->tag, 2, single_tags[cohort->wordform]->tag.size()-4).c_str());
 		}
 				
 		u_fprintf(output, ">");

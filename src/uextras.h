@@ -92,6 +92,41 @@ inline bool ux_simplecasecmp(const UChar *a, const UChar *b, const size_t n) {
 	return true;
 }
 
+
+template<typename Str>
+struct substr_t {
+	typedef typename Str::value_type value_type;
+	const Str& str;
+	size_t offset, count;
+	value_type old_value;
+
+	substr_t(const Str& str, size_t offset=0, size_t count=Str::npos) :
+	str(str), offset(offset), count(count), old_value(0)
+	{
+		if (count != Str::npos) {
+			old_value = str[offset+count];
+		}
+	}
+
+	~substr_t() {
+		if (count != Str::npos) {
+			value_type *buf = const_cast<value_type*>(str.c_str()+offset);
+			buf[count] = old_value;
+		}
+	}
+
+	const value_type *c_str() const {
+		value_type *buf = const_cast<value_type*>(str.c_str()+offset);
+		buf[count] = 0;
+		return buf;
+	}
+};
+
+template<typename Str>
+inline substr_t<Str> substr(const Str& str, size_t offset=0, size_t count=0) {
+	return substr_t<Str>(str, offset, count);
+}
+
 std::string ux_dirname(const char *in);
 
 }
