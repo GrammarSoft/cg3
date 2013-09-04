@@ -592,10 +592,15 @@ int TextualParser::parseContextualTestList(UChar *& p, Rule *rule, ContextualTes
 			}
 			result->lines += SKIPWS(p);
 		}
-		if (t->ors.size() == 1) {
+		if (t->ors.size() == 1 && verbosity_level > 0) {
 			UChar oldp = *p;
 			*p = 0;
-			u_fprintf(ux_stderr, "Warning: Inline templates only make sense if you OR them on line %u at %S.\n", result->lines, pos_p);
+			if (t->ors.front()->ors.size() < 2) {
+				u_fprintf(ux_stderr, "Warning: Inline templates only make sense if you OR them on line %u at %S.\n", result->lines, pos_p);
+			}
+			else {
+				u_fprintf(ux_stderr, "Warning: Inline templates do not need () around the whole expression on line %u at %S.\n", result->lines, pos_p);
+			}
 			u_fflush(ux_stderr);
 			*p = oldp;
 		}
