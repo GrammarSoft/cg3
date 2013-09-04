@@ -26,17 +26,17 @@
     But with the introduction of templates, CG-3 also allows alternative tests, so this construction
     <screen>
       TEMPLATE tmpl = (1 ASET LINK 1 BSET) OR (-1 BSET LINK -1 ASET) ;
-      SELECT (tag) IF (T:tmpl) ;
+      SELECT (tag) IF (1 Before LINK T:tmpl LINK 1 After) ;
     </screen>
     is equivalent to
     <screen>
       # Yes, inline OR is allowed if you () the tests properly
-      SELECT (tag) IF ((1 ASET LINK 1 BSET) OR (-1 BSET LINK -1 ASET)) ;
+      SELECT (tag) IF (1 Before LINK (1 ASET LINK 1 BSET) OR (-1 BSET LINK -1 ASET) LINK 1 After) ;
     </screen>
     which in turn is equivalent to
     <screen>
-      SELECT (tag) IF (1 ASET LINK 1 BSET) ;
-      SELECT (tag) IF (-1 BSET LINK -1 ASET) ;
+      SELECT (tag) IF (1 Before LINK 1 ASET LINK 1 BSET LINK 1 After) ;
+      SELECT (tag) IF (1 Before LINK -1 BSET LINK -1 ASET LINK 1 After) ;
     </screen>
   </para>
 
