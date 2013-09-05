@@ -25,42 +25,32 @@
 ;;; Commentary:
 
 ;; Usage:
+;;
 ;; (autoload 'cg-mode "/path/to/cg.el"
 ;;  "cg-mode is a major mode for editing Constraint Grammar files."  t)
 ;; (add-to-list 'auto-mode-alist '("\\.cg3\\'" . cg-mode))
 ;; ; Or if you use a non-standard file suffix, e.g. .rlx:
 ;; (add-to-list 'auto-mode-alist '("\\.rlx\\'" . cg-mode))
 
-;;; I recommend using autocomplete-mode for tab-completion, and
-;;; paredit-mode if you're used to it. However, if you have set names
-;;; with hashes in them, like m#foo, paredit-mode may tell you that
-;;; your parens are unbalenced if you have it in a mode hook. The
-;;; reason is that such exceptions to the rule that # starts a comment
-;;; are handled in font-lock, and fontification happens after
-;;; run-mode-hooks. To get paredit-mode to turn on automatically in
-;;; cg-mode, you could use this hack:
+;; I recommend using autocomplete-mode for tab-completion, and
+;; smartparens-mode if you're used to it (paredit-mode does not work
+;; well if you have set names with the # character in them). Both are
+;; available from MELPA (see http://melpa.milkbox.net/).
 
-;; (add-hook 'cg-mode-hook
-;; 	  (lambda nil
-;; 	    (run-with-idle-timer 1 nil (lambda nil (paredit-mode 1)))))
-
-;;; sh-mode has the same problem, so I don't feel up to fixing it. You
-;;; really should not use # in set names anyway.
-
-;;; TODO:
-;;; - different syntax highlighting for sets and tags (difficult)
-;;; - use something like prolog-clause-start to define M-a/e etc.
-;;; - run vislcg3 --show-unused-sets and buttonise with line numbers (like Occur does)
-;;; - indentation function (based on prolog again?)
-;;; - the rest of the keywords
-;;; - keyword tab-completion
-;;; - the quotes-within-quotes thing plays merry hell with
-;;;   paredit-doublequote, write a new doublequote function?
-;;; - font-lock-syntactic-keywords is obsolete since 24.1
-;;; - derive cg-mode from prog-mode?
-;;; - goto-set/list
-;;; - show definition of set/list-at-point in modeline
-;;; - send dictionary to auto-complete
+;; TODO:
+;; - different syntax highlighting for sets and tags (difficult)
+;; - use something like prolog-clause-start to define M-a/e etc.
+;; - run vislcg3 --show-unused-sets and buttonise with line numbers (like Occur does)
+;; - indentation function (based on prolog again?)
+;; - the rest of the keywords
+;; - keyword tab-completion
+;; - the quotes-within-quotes thing plays merry hell with
+;;   paredit-doublequote, write a new doublequote function?
+;; - font-lock-syntactic-keywords is obsolete since 24.1
+;; - derive cg-mode from prog-mode?
+;; - goto-set/list
+;; - show definition of set/list-at-point in modeline
+;; - send dictionary to auto-complete
 
 ;;; Code:
 
