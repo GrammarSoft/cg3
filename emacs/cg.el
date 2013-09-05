@@ -161,14 +161,14 @@ See also `cg-command' and `cg-pre-pipe'."
 
 (defconst cg-font-lock-keywords-2
   (append cg-font-lock-keywords-1
-	  '(("\\<\\(&&\\(\\s_\\|\\sw\\)+\\)\\>"
-	     (1 font-lock-variable-name-face))
-	    ("\\<\\(\\$\\$\\(\\s_\\|\\sw\\)+\\)\\>"
-	     (1 font-lock-variable-name-face))
-	    ("\\<\\(NOT\\|NEGATE\\|NONE\\|LINK\\|BARRIER\\|CBARRIER\\|OR\\|TARGET\\|IF\\|AFTER\\|TO\\|[psc][lroOxX]*\\)\\>"
-	     1 font-lock-function-name-face)
-	    ("\\B\\(\\^\\)"		; fail-fast
-	     1 font-lock-function-name-face)))
+          '(("\\<\\(&&\\(\\s_\\|\\sw\\)+\\)\\>"
+             (1 font-lock-variable-name-face))
+            ("\\<\\(\\$\\$\\(\\s_\\|\\sw\\)+\\)\\>"
+             (1 font-lock-variable-name-face))
+            ("\\<\\(NOT\\|NEGATE\\|NONE\\|LINK\\|BARRIER\\|CBARRIER\\|OR\\|TARGET\\|IF\\|AFTER\\|TO\\|[psc][lroOxX]*\\)\\>"
+             1 font-lock-function-name-face)
+            ("\\B\\(\\^\\)"		; fail-fast
+             1 font-lock-function-name-face)))
   "Gaudy level highlighting for CG modes.")
 
 (defvar cg-font-lock-keywords cg-font-lock-keywords-1
@@ -183,8 +183,8 @@ See also `cg-command' and `cg-pre-pipe'."
     ;; using syntactic keywords for "
     (modify-syntax-entry ?\" "." table)
     (modify-syntax-entry ?» "." table)
-    (modify-syntax-entry ?« "." table)
-    table))
+  (modify-syntax-entry ?« "." table)
+                       table))
 
 ;;;###autoload
 (defun cg-mode ()
@@ -196,23 +196,23 @@ CG-mode provides the following specific keyboard key bindings:
   (interactive)
   (kill-all-local-variables)
   (setq major-mode 'cg-mode
-	mode-name "CG")
+        mode-name "CG")
   (use-local-map cg-mode-map)
   (make-local-variable 'comment-start)
   (make-local-variable 'comment-start-skip)
   (make-local-variable 'font-lock-defaults)
   (make-local-variable 'indent-line-function)
   (setq comment-start "#"
-	comment-start-skip "#+[\t ]*"
-	font-lock-defaults
-	`((cg-font-lock-keywords cg-font-lock-keywords-1 cg-font-lock-keywords-2)
-	  nil				; KEYWORDS-ONLY
-	  'case-fold ; some keywords (e.g. x vs X) are case-sensitive,
-		     ; but that doesn't matter for highlighting
-	  ((?/ . "w") (?~ . "w") (?. . "w") (?- . "w") (?_ . "w"))
-	  nil ;	  beginning-of-line		; SYNTAX-BEGIN
-	  (font-lock-syntactic-keywords . cg-font-lock-syntactic-keywords)
-	  (font-lock-syntactic-face-function . cg-font-lock-syntactic-face-function)))
+        comment-start-skip "#+[\t ]*"
+        font-lock-defaults
+        `((cg-font-lock-keywords cg-font-lock-keywords-1 cg-font-lock-keywords-2)
+          nil				; KEYWORDS-ONLY
+          'case-fold ; some keywords (e.g. x vs X) are case-sensitive,
+                                        ; but that doesn't matter for highlighting
+          ((?/ . "w") (?~ . "w") (?. . "w") (?- . "w") (?_ . "w"))
+          nil ;	  beginning-of-line		; SYNTAX-BEGIN
+          (font-lock-syntactic-keywords . cg-font-lock-syntactic-keywords)
+          (font-lock-syntactic-face-function . cg-font-lock-syntactic-face-function)))
   (make-local-variable 'cg-mode-syntax-table)
   (set-syntax-table cg-mode-syntax-table)
   (set (make-local-variable 'parse-sexp-ignore-comments) t)
@@ -253,17 +253,17 @@ TODO: something like
 would be great to differentiate SETs from their members, but it
 seems this function only runs on comments and strings..."
   (cond ((nth 3 state)
-	 (if
-	     (save-excursion
-	       (goto-char (nth 8 state))
-	       (re-search-forward "\"[^\"\n]*\\(\"\\(\\\\)\\|[^) \n\t]\\)*\\)?\"\\(r\\(i\\)?\\)?[); \n\t]")
-	       (and (match-string 1)
-		    (not (equal ?\\ (char-before (match-beginning 1))))
-		    ;; TODO: make next-error hit these too
-		    ))
-	     'cg-string-warning-face
-	   font-lock-string-face))
- 	(t font-lock-comment-face)))
+         (if
+             (save-excursion
+               (goto-char (nth 8 state))
+               (re-search-forward "\"[^\"\n]*\\(\"\\(\\\\)\\|[^) \n\t]\\)*\\)?\"\\(r\\(i\\)?\\)?[); \n\t]")
+               (and (match-string 1)
+                    (not (equal ?\\ (char-before (match-beginning 1))))
+                    ;; TODO: make next-error hit these too
+                    ))
+             'cg-string-warning-face
+           font-lock-string-face))
+        (t font-lock-comment-face)))
 
 (defface cg-string-warning-face
   '((((class grayscale) (background light)) :foreground "DimGray" :slant italic :underline "orange")
@@ -296,25 +296,25 @@ seems this function only runs on comments and strings..."
 (defun cg-calculate-indent ()
   "Return the indentation for the current line."
 ;;; idea from sh-mode, use font face?
-;; (or (and (boundp 'font-lock-string-face) (not (bobp))
-;; 		 (eq (get-text-property (1- (point)) 'face)
-;; 		     font-lock-string-face))
-;; 	    (eq (get-text-property (point) 'face) sh-heredoc-face))
+  ;; (or (and (boundp 'font-lock-string-face) (not (bobp))
+  ;; 		 (eq (get-text-property (1- (point)) 'face)
+  ;; 		     font-lock-string-face))
+  ;; 	    (eq (get-text-property (point) 'face) sh-heredoc-face))
   (let ((origin (point))
-	(old-case-fold-search case-fold-search))
+        (old-case-fold-search case-fold-search))
     (setq case-fold-search nil)		; for re-search-backward
     (save-excursion
       (let ((kw-pos (progn
-		      (goto-char (1- (or (search-forward ";" (line-end-position) t)
-					 (line-end-position))))
-		      (re-search-backward (regexp-opt cg-kw-list) nil 'noerror))))
-	(setq case-fold-search old-case-fold-search)
-	(when kw-pos
-	  (let* ((kw (match-string-no-properties 0)))
-	    (if (and (not (equal kw ";"))
-		     (> origin (line-end-position)))
-		cg-indentation
-	      0)))))))
+                      (goto-char (1- (or (search-forward ";" (line-end-position) t)
+                                         (line-end-position))))
+                      (re-search-backward (regexp-opt cg-kw-list) nil 'noerror))))
+        (setq case-fold-search old-case-fold-search)
+        (when kw-pos
+          (let* ((kw (match-string-no-properties 0)))
+            (if (and (not (equal kw ";"))
+                     (> origin (line-end-position)))
+                cg-indentation
+              0)))))))
 
 (defun cg-indent-line ()
   "Indent the current line. Very simple indentation: lines with
@@ -322,7 +322,7 @@ keywords from `cg-kw-list' get zero indentation, others get one
 indentation."
   (interactive)
   (let ((indent (cg-calculate-indent))
-	(pos (- (point-max) (point))))
+        (pos (- (point-max) (point))))
     (when indent
       (beginning-of-line)
       (skip-chars-forward " \t")
@@ -330,7 +330,7 @@ indentation."
       ;; If initial point was within line's indentation,
       ;; position after the indentation.  Else stay at same point in text.
       (if (> (- (point-max) pos) (point))
-	  (goto-char (- (point-max) pos))))))
+          (goto-char (- (point-max) pos))))))
 
 
 ;;; Interactive functions:
@@ -345,26 +345,26 @@ indentation."
   (if (null input)
       (list input)
     (mapcan (lambda (elt)
-	      (mapcan (lambda (p)
-			(list (cons elt p)))
-		      (cg-permute (remove* elt input :count 1))))
-	    input)))
+              (mapcan (lambda (p)
+                        (list (cons elt p)))
+                      (cg-permute (remove* elt input :count 1))))
+            input)))
 
 (defun cg-read-arg (prompt history)
   (let* ((default (car history))
-	 (input
-	  (read-from-minibuffer
-	   (concat prompt
-		   (if default
-		       (format " (default: %s): " (query-replace-descr default))
-		     ": "))
-	   nil
-	   nil
-	   nil
-	   (quote history)
-	   default)))
+         (input
+          (read-from-minibuffer
+           (concat prompt
+                   (if default
+                       (format " (default: %s): " (query-replace-descr default))
+                     ": "))
+           nil
+           nil
+           nil
+           (quote history)
+           default)))
     (if (equal input "")
-	default
+        default
       input)))
 
 (defun cg-occur-list (&optional prefix words)
@@ -378,18 +378,18 @@ LIST subst-mask/fem = (n m) (np m) (n f) (np f) ;
 LIST subst-mask/fem-eint = (n m sg) (np m sg) (n f sg) (np f sg) ;
 etc."
   (interactive (list (when current-prefix-arg
-		       (cg-read-arg
-			"Word to occur between LIST/SET and disjunction"
-			cg--occur-prefix-history))
-		     (cg-read-arg
-		       "Words to occur between LIST/SET and ="
-		       cg--occur-history)))
+                       (cg-read-arg
+                        "Word to occur between LIST/SET and disjunction"
+                        cg--occur-prefix-history))
+                     (cg-read-arg
+                      "Words to occur between LIST/SET and ="
+                      cg--occur-history)))
   (let* ((words-perm (cg-permute (split-string words " " 'omitnulls)))
-	 ;; can't use regex-opt because we need .* between the words
-	 (perm-disj (mapconcat (lambda (word)
-				 (mapconcat 'identity word ".*"))
-			       words-perm
-			       "\\|")))
+         ;; can't use regex-opt because we need .* between the words
+         (perm-disj (mapconcat (lambda (word)
+                                 (mapconcat 'identity word ".*"))
+                               words-perm
+                               "\\|")))
     (setq cg--occur-history (cons words cg--occur-history))
     (setq cg--occur-prefix-history (cons prefix cg--occur-prefix-history))
     (let ((tmp regexp-history))
@@ -413,18 +413,18 @@ trace output clickable, but since we're often switching between
 _several_ CG files in a pipeline, that could get complicated
 before getting useful..."
   (interactive (list (when current-prefix-arg
-		       (cg-read-arg "Paste rule info from --trace here: "
-				    cg--goto-history))))
+                       (cg-read-arg "Paste rule info from --trace here: "
+                                    cg--goto-history))))
   (let ((errmsg (if input (concat "Unrecognised rule/trace format: " input)
-		  "X clipboard does not seem to contain vislcg3 --trace rule info"))
-	(rule (or input (with-temp-buffer
-			  (yank)
-			  (buffer-substring-no-properties (point-min)(point-max))))))
+                  "X clipboard does not seem to contain vislcg3 --trace rule info"))
+        (rule (or input (with-temp-buffer
+                          (yank)
+                          (buffer-substring-no-properties (point-min)(point-max))))))
     (if (string-match
-	 "\\(\\(select\\|iff\\|remove\\|map\\|addcohort\\|remcohort\\|copy\\|add\\|substitute\\):\\)?\\([0-9]+\\)"
-	 rule)
-	(progn (goto-line (string-to-number (match-string 3 rule)))
-	       (setq cg--goto-history (cons rule cg--goto-history)))
+         "\\(\\(select\\|iff\\|remove\\|map\\|addcohort\\|remcohort\\|copy\\|add\\|substitute\\):\\)?\\([0-9]+\\)"
+         rule)
+        (progn (goto-line (string-to-number (match-string 3 rule)))
+               (setq cg--goto-history (cons rule cg--goto-history)))
       (message errmsg))))
 
 ;;; "Flycheck" ----------------------------------------------------------------
@@ -436,9 +436,11 @@ buffer corresponds to.")
 (defvar cg--tmp nil     ; TODO: could use cg--file iff buffer-modified-p
   "Which temporary file was sent in lieu of `cg--file' to
 compilation (in case the buffer of `cg--file' was not saved)")
-(defvar cg--in nil
+(defvar cg--cache-in nil
   "Which input buffer the `cg--check-cache-buffer' corresponds
 to.")
+(defvar cg--cache-pre-pipe nil
+  "Which pre-pipe the output of `cg--check-cache-buffer' had.")
 
 (unless (fboundp 'file-name-base)	; shim for 24.3 function
   (defun file-name-base (&optional filename)
@@ -460,19 +462,21 @@ or call `cg-check' from another CG file).")
 
 (defun cg-input-mode-bork-cache (from to len)
   "Since `cg-check' will not reuse a cache unless `cg--file' and
-`cg--in' match."
+`cg--cache-in' match."
   (when cg--check-cache-buffer
     (with-current-buffer cg--check-cache-buffer
       (setq cg--file nil
-	    cg--in nil))))
+            cg--cache-pre-pipe nil
+            cg--cache-in nil))))
 
-(defun cg-pristine-cache-buffer (file in)
+(defun cg-pristine-cache-buffer (file in pre-pipe)
   (with-current-buffer (setq cg--check-cache-buffer
-			     (get-buffer-create "*cg-pre-cache*"))
+                             (get-buffer-create "*cg-pre-cache*"))
     (widen)
     (delete-region (point-min) (point-max))
     (set (make-local-variable 'cg--file) file)
-    (set (make-local-variable 'cg--in) in)
+    (set (make-local-variable 'cg--cache-in) in)
+    (set (make-local-variable 'cg--cache-pre-pipe) pre-pipe)
     (current-buffer)))
 
 (defvar cg-input-mode-map (make-sparse-keymap)
@@ -493,10 +497,10 @@ from, otherwise all CG buffers share one input buffer."
 
 (defun cg-input-buffer (file)
   (let ((buf (get-buffer-create (concat "*CG input"
-					(if cg-per-buffer-input
-					    (concat " for " (file-name-base file))
-					  "")
-					"*"))))
+                                        (if cg-per-buffer-input
+                                            (concat " for " (file-name-base file))
+                                          "")
+                                        "*"))))
     (with-current-buffer buf
       (cg-input-mode)
       (setq cg--file file))
@@ -604,19 +608,19 @@ buffer (so 0 is after each change)."
 (defvar cg--after-change-timer nil)
 (defun cg-after-change (from to len)
   (when (and cg-check-after-change
-	     (not (member cg--after-change-timer timer-list)))
+             (not (member cg--after-change-timer timer-list)))
     (setq
      cg--after-change-timer
      (run-at-time
       cg-check-after-change-secs
       nil
       (lambda ()
-	(let ((proc (get-buffer-process (get-buffer-create (compilation-buffer-name
-							    "cg-output"
-							    'cg-output-mode
-							    'cg-output-buffer-name)))))
-	  (unless (and proc (eq (process-status proc) 'run))
-	    (with-demoted-errors (cg-check)))))))))
+        (let ((proc (get-buffer-process (get-buffer-create (compilation-buffer-name
+                                                            "cg-output"
+                                                            'cg-output-mode
+                                                            'cg-output-buffer-name)))))
+          (unless (and proc (eq (process-status proc) 'run))
+            (with-demoted-errors (cg-check)))))))))
 
 
 
@@ -649,50 +653,51 @@ Similarly, `cg-post-pipe' is run on output."
        (tmp (make-temp-file "cg."))
        ;; Run in a separate process buffer from cmd and post-pipe:
        (pre-pipe (if (and cg-pre-pipe (not (equal "" cg-pre-pipe)))
-		     cg-pre-pipe
-		   "cat"))
+                     cg-pre-pipe
+                   "cat"))
        ;; Tacked on to cmd, thus the |:
        (post-pipe (if (and cg-post-pipe (not (equal "" cg-post-pipe)))
-		      (concat " | " cg-post-pipe)
-		    ""))
+                      (concat " | " cg-post-pipe)
+                    ""))
        (cmd (concat
-	     cg-command " " cg-extra-args " --grammar " tmp
-	     post-pipe))
+             cg-command " " cg-extra-args " --grammar " tmp
+             post-pipe))
        (in (cg-input-buffer file))
        (out (progn (write-region (point-min) (point-max) tmp)
-		   (compilation-start
-		    cmd
-		    'cg-output-mode
-		    'cg-output-buffer-name))))
+                   (compilation-start
+                    cmd
+                    'cg-output-mode
+                    'cg-output-buffer-name))))
 
     (with-current-buffer out
       (setq cg--tmp tmp)
       (setq cg--file file))
 
     (if (and cg-check-do-cache
-	     (buffer-live-p cg--check-cache-buffer)
-	     (with-current-buffer cg--check-cache-buffer
-	       ;; Check that the cache is for this grammar and input:
-	       (and (equal cg--file file)
-		    (equal cg--in in))))
+             (buffer-live-p cg--check-cache-buffer)
+             (with-current-buffer cg--check-cache-buffer
+               ;; Check that the cache is for this grammar and input:
+               (and (equal cg--cache-pre-pipe pre-pipe)
+                    (equal cg--file file)
+                    (equal cg--cache-in in))))
 
-	(with-current-buffer cg--check-cache-buffer
-	  (cg-end-process (get-buffer-process out) (buffer-string)))
+        (with-current-buffer cg--check-cache-buffer
+          (cg-end-process (get-buffer-process out) (buffer-string)))
 
       (lexical-let ((cg-proc (get-buffer-process out))
-		    (pre-proc (start-process "cg-pre-pipe" "*cg-pre-pipe-output*"
-					     "/bin/bash" "-c" pre-pipe))
-		    (cache-buffer (cg-pristine-cache-buffer file in)))
-	(set-process-filter pre-proc (lambda (pre-proc string)
-				       (with-current-buffer cache-buffer
-					 (insert string))
-				       (when (eq (process-status cg-proc) 'run)
-					 (process-send-string cg-proc string))))
-	(set-process-sentinel pre-proc (lambda (pre-proc string)
-					 (when (eq (process-status cg-proc) 'run)
-					   (cg-end-process cg-proc))))
-	(with-current-buffer in
-	  (cg-end-process pre-proc (buffer-string)))))
+                    (pre-proc (start-process "cg-pre-pipe" "*cg-pre-pipe-output*"
+                                             "/bin/bash" "-c" pre-pipe))
+                    (cache-buffer (cg-pristine-cache-buffer file in pre-pipe)))
+        (set-process-filter pre-proc (lambda (pre-proc string)
+                                       (with-current-buffer cache-buffer
+                                         (insert string))
+                                       (when (eq (process-status cg-proc) 'run)
+                                         (process-send-string cg-proc string))))
+        (set-process-sentinel pre-proc (lambda (pre-proc string)
+                                         (when (eq (process-status cg-proc) 'run)
+                                           (cg-end-process cg-proc))))
+        (with-current-buffer in
+          (cg-end-process pre-proc (buffer-string)))))
 
     (display-buffer out)))
 
@@ -702,7 +707,7 @@ Similarly, `cg-post-pipe' is run on output."
   (let ((w (get-buffer-window buffer)))
     (when w
       (with-selected-window (get-buffer-window buffer)
-	(scroll-up-line 4))))
+        (scroll-up-line 4))))
   (with-current-buffer buffer
     (delete-file cg--tmp)))
 
@@ -715,10 +720,10 @@ Similarly, `cg-post-pipe' is run on output."
   (interactive)
   (bury-buffer)
   (let* ((cg-buffer (find-buffer-visiting cg--file))
-	 (cg-window (get-buffer-window cg-buffer)))
+         (cg-window (get-buffer-window cg-buffer)))
     
     (if cg-window
-	(select-window cg-window)
+        (select-window cg-window)
       (pop-to-buffer cg-buffer))))
 
 
@@ -732,8 +737,8 @@ Similarly, `cg-post-pipe' is run on output."
   (interactive)
   (setq cg-check-after-change (not cg-check-after-change))
   (message "%s after each change" (if cg-check-after-change
-				      (format "Checking CG %s seconds" cg-check-after-change-secs)
-				       "Not checking CG")))
+                                      (format "Checking CG %s seconds" cg-check-after-change-secs)
+                                    "Not checking CG")))
 
 
 ;;; Keybindings ---------------------------------------------------------------
