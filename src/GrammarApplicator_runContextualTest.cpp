@@ -508,7 +508,7 @@ Cohort *GrammarApplicator::runDependencyTest(SingleWindow *sWindow, Cohort *curr
 		}
 		else {
 			std::map<uint32_t,Cohort*>::iterator it = current->parent->parent->cohort_map.find(current->dep_parent);
-			if (current && current->parent && current->parent->parent
+			if (current->parent && current->parent->parent
 				&& it != current->parent->parent->cohort_map.end()
 				&& it->second
 				&& !it->second->dep_children.empty()

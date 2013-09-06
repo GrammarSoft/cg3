@@ -426,46 +426,25 @@ inline T readSwapped(std::istream& stream) {
 template<typename Cont>
 inline void GAppSetOpts_ranged(const char *value, Cont& cont) {
 	cont.clear();
-	const char *s = value;
-	const char *c = strchr(s, ',');
-	const char *d = strchr(s, '-');
-	if (c == 0 && d == 0) {
-		uint32_t a = abs(atoi(s));
-		for (uint32_t i=1 ; i<=a ; ++i) {
-			cont.push_back(i);
+
+	const char *comma = value;
+	do {
+		uint32_t low = abs(atoi(comma)), high = low;
+		const char *delim = strchr(comma, '-');
+		const char *nextc = strchr(comma, ',');
+		if (delim && (nextc == 0 || nextc > delim)) {
+			high = abs(atoi(delim+1));
 		}
-	}
-	else {
-		uint32_t a = 0, b = 0;
-		while (c || d) {
-			if (d && (d < c || c == 0)) {
-				a = abs(atoi(s));
-				b = abs(atoi(d));
-				if (c) {
-					s = c+1;
-				}
-				else {
-					d = 0;
-					s = 0;
-				}
-				for (uint32_t i=a ; i<=b ; ++i) {
-					cont.push_back(i);
-				}
-			}
-			else if (c && (c < d || d == 0)) {
-				a = abs(atoi(s));
-				s = c+1;
-				cont.push_back(a);
-			}
-			if (s) {
-				c = strchr(s, ',');
-				d = strchr(s, '-');
-				if (c == 0 && d == 0) {
-					a = abs(atoi(s));
-					cont.push_back(a);
-					s = 0;
-				}
-			}
+		for (; low <= high ; ++low) {
+			cont.push_back(low);
+		}
+	} while ((comma = strchr(comma, ',')) != 0 && ++comma && *comma != 0);
+
+	if (cont.size() == 1) {
+		uint32_t val = cont.front();
+		cont.clear();
+		for (uint32_t i=1 ; i<=val ; ++i) {
+			cont.push_back(i);
 		}
 	}
 }
