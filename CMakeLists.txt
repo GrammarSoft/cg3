@@ -1,6 +1,6 @@
 set(CMAKE_LEGACY_CYGWIN_WIN32 0)
-CMAKE_MINIMUM_REQUIRED(VERSION 2.6.4 FATAL_ERROR)
-PROJECT(cg3 CXX C)
+cmake_minimum_required(VERSION 2.6.4 FATAL_ERROR)
+project(cg3 CXX C)
 
 # Release or Debug
 if(NOT CMAKE_BUILD_TYPE)
@@ -10,9 +10,12 @@ endif()
 #set(CMAKE_VERBOSE_MAKEFILE 1)
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/CMake" ${CMAKE_MODULE_PATH})
 
-set(VISLCG3_MAJOR "0")
-set(VISLCG3_MINOR "9")
-set(VISLCG3_NAME vislcg3-${VISLCG3_MAJOR}.${VISLCG3_MINOR})
+file(READ "${CMAKE_CURRENT_SOURCE_DIR}/src/version.h" _cg3_VERSION_FILE)
+string(REGEX REPLACE ".*CG3_VERSION_MAJOR = ([0-9]+).*" "\\1" _cg3_VERSION_MAJOR "${_cg3_VERSION_FILE}")
+string(REGEX REPLACE ".*CG3_VERSION_MINOR = ([0-9]+).*" "\\1" _cg3_VERSION_MINOR "${_cg3_VERSION_FILE}")
+string(REGEX REPLACE ".*CG3_VERSION_PATCH = ([0-9]+).*" "\\1" _cg3_VERSION_PATCH "${_cg3_VERSION_FILE}")
+string(REGEX REPLACE ".*CG3_REVISION = ([0-9]+).*" "\\1" _cg3_REVISION "${_cg3_VERSION_FILE}")
+set(VERSION "${_cg3_VERSION_MAJOR}.${_cg3_VERSION_MINOR}.${_cg3_VERSION_PATCH}.${_cg3_REVISION}")
 
 if(MSVC)
 	set(CMAKE_CXX_FLAGS "/W4 /GR- /EHsc /MP")
@@ -24,6 +27,19 @@ else()
 	set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wno-deprecated")
 	set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g3")
 	set(CMAKE_CXX_FLAGS_RELEASE "-O3")
+
+	# Generate pkg-config file
+	if(NOT DEFINED CMAKE_INSTALL_LIBDIR)
+		set(CMAKE_INSTALL_LIBDIR lib)
+	endif()
+	set(prefix      ${CMAKE_INSTALL_PREFIX})
+	set(exec_prefix ${CMAKE_INSTALL_PREFIX})
+	set(libdir      ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR})
+	set(includedir  ${CMAKE_INSTALL_PREFIX}/include)
+	set(CG3_NAME cg3-${_cg3_VERSION_MAJOR}.${_cg3_VERSION_MINOR})
+	configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cg3.pc.in
+		${CMAKE_CURRENT_BINARY_DIR}/${CG3_NAME}.pc @ONLY)
+	install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/${CG3_NAME}.pc" DESTINATION lib/pkgconfig)
 endif()
 
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
@@ -31,21 +47,6 @@ include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
 enable_testing()
 
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src)
-
-# CREATE PKGCONFIG FILES
-# we use the same files like ./configure, so we have to set its vars
-if(NOT DEFINED CMAKE_INSTALL_LIBDIR)
-  set(CMAKE_INSTALL_LIBDIR lib)
-endif(NOT DEFINED CMAKE_INSTALL_LIBDIR)
-set(prefix      ${CMAKE_INSTALL_PREFIX})
-set(exec_prefix ${CMAKE_INSTALL_PREFIX})
-set(libdir      ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR})
-set(includedir  ${CMAKE_INSTALL_PREFIX}/include)
-set(LIBS        "-lz -lm")
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/${VISLCG3_NAME}.pc.in
-  ${CMAKE_CURRENT_BINARY_DIR}/${VISLCG3_NAME}.pc @ONLY)
-install(PROGRAMS "${CMAKE_CURRENT_SOURCE_DIR}/${VISLCG3_NAME}.pc" DESTINATION lib/pkgconfig)
-
 
 install(PROGRAMS "${CMAKE_CURRENT_SOURCE_DIR}/scripts/cg3-autobin.pl" DESTINATION bin)
 
@@ -56,25 +57,20 @@ if(OPT_CPACK)
 	set(CPACK_PACKAGE_VENDOR "http://tinodidriksen.com/")
 	set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "CG-3 is a compiler and applicator for the third edition of the Constraint Grammar formalism.")
 	set(CPACK_DEBIAN_PACKAGE_DEPENDS "libicu48, libgoogle-perftools0|libgoogle-perftools4, libstdc++6")
-	FILE(READ "${CMAKE_CURRENT_SOURCE_DIR}/src/version.h" _cg3_VERSION_FILE)
-	STRING(REGEX REPLACE ".*CG3_VERSION_MAJOR = ([0-9]+).*" "\\1" _cg3_VERSION_MAJOR "${_cg3_VERSION_FILE}")
-	STRING(REGEX REPLACE ".*CG3_VERSION_MINOR = ([0-9]+).*" "\\1" _cg3_VERSION_MINOR "${_cg3_VERSION_FILE}")
-	STRING(REGEX REPLACE ".*CG3_VERSION_PATCH = ([0-9]+).*" "\\1" _cg3_VERSION_PATCH "${_cg3_VERSION_FILE}")
-	STRING(REGEX REPLACE ".*CG3_REVISION = ([0-9]+).*" "\\1" _cg3_REVISION "${_cg3_VERSION_FILE}")
 	set(CPACK_PACKAGE_VERSION "${_cg3_VERSION_MAJOR}.${_cg3_VERSION_MINOR}.${_cg3_VERSION_PATCH}.${_cg3_REVISION}")
 
 	set(CPACK_DEBIAN_BUILD_DEPENDS debhelper cmake libicu-dev libboost-dev libgoogle-perftools-dev)
 	set(CPACK_DEBIAN_PACKAGE_SOURCE_COPY svn export --force)
 	set(CPACK_DEBIAN_CHANGELOG "  * Changelog is available at http://visl.sdu.dk/cg3/changelog.txt\n\n")
-	EXECUTE_PROCESS(COMMAND lsb_release -is
+	execute_process(COMMAND lsb_release -is
 		OUTPUT_VARIABLE _lsb_distribution OUTPUT_STRIP_TRAILING_WHITESPACE
 		RESULT_VARIABLE _lsb_release_failed)
 	set(CPACK_DEBIAN_DISTRIBUTION_NAME ${_lsb_distribution})
-	STRING(TOLOWER ${CPACK_DEBIAN_DISTRIBUTION_NAME} CPACK_DEBIAN_DISTRIBUTION_NAME)
+	string(TOLOWER ${CPACK_DEBIAN_DISTRIBUTION_NAME} CPACK_DEBIAN_DISTRIBUTION_NAME)
 	if( ${CPACK_DEBIAN_DISTRIBUTION_NAME} STREQUAL "ubuntu" )
 		set(CPACK_DEBIAN_DISTRIBUTION_RELEASES precise quantal raring)
 	endif()
 	set(DPUT_HOST "ppa:tinodidriksen/cg3")
-	INCLUDE(CPack)
-	INCLUDE(DebSourcePPA)
+	include(CPack)
+	include(DebSourcePPA)
 endif()

@@ -37,7 +37,7 @@ if (ICU_FOUND)
 	endif ()
 	include_directories(${ICU_INCLUDE_DIRS})
 	message(STATUS "Found ICU version ${ICU_VERSION}")
-endif(ICU_FOUND)
+endif()
 
 if (NOT CMAKE_BUILD_TYPE STREQUAL Debug)
 	FIND_LIBRARY(GOOGLE_TCMALLOC_LIB tcmalloc)
@@ -56,7 +56,7 @@ macro(cg3_link target)
 
 	if(MSVC)
 		target_link_libraries(${target} "wsock32.lib")
-	endif(MSVC)
+	endif()
 
 	target_link_libraries(${target} ${CMAKE_THREAD_LIBS_INIT})
 	target_link_libraries(${target} ${Boost_LIBRARIES})
@@ -66,7 +66,7 @@ endmacro()
 SET(CXX_SHARED_SOURCES BinaryGrammar.cpp CompositeTag.cpp ContextualTest.cpp Grammar.cpp Rule.cpp Set.cpp Strings.cpp Tag.cpp TextualParser.cpp uextras.cpp BinaryGrammar_read.cpp BinaryGrammar_write.cpp exec-stream.cpp)
 if(MSVC)
 	SET(CXX_SHARED_SOURCES ../win32/libgen.c ../win32/getopt.c ${CXX_SHARED_SOURCES})
-endif(MSVC)
+endif()
 
 SET(CXX_SOURCES GrammarApplicator_runGrammar.cpp GrammarApplicator.cpp GrammarApplicator_matchSet.cpp GrammarApplicator_reflow.cpp GrammarApplicator_runContextualTest.cpp GrammarApplicator_runRules.cpp GrammarWriter.cpp icu_uoptions.cpp SingleWindow.cpp CohortIterator.cpp Window.cpp Cohort.cpp Reading.cpp ${CXX_SHARED_SOURCES})
 
