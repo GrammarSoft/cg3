@@ -1,0 +1,10 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
+
+Name: vislcg3
+Description: VISL constraint grammar tools for natural language processing
+Version: @VERSION@
+Libs: -L${libdir} -l@GENERIC_LIBRARY_NAME@@GENERIC_MAJOR_VERSION@ @VISLCG3_LIBS@
+Cflags: -I${includedir}/@GENERIC_LIBRARY_NAME@-@GENERIC_API_VERSION@ -I${libdir}/@GENERIC_LIBRARY_NAME@-@GENERIC_API_VERSION@/include @VISLCG3_CFLAGS@
