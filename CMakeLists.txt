@@ -10,6 +10,10 @@ endif()
 #set(CMAKE_VERBOSE_MAKEFILE 1)
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/CMake" ${CMAKE_MODULE_PATH})
 
+set(VISLCG3_MAJOR "0")
+set(VISLCG3_MINOR "9")
+set(VISLCG3_NAME vislcg3-${VISLCG3_MAJOR}.${VISLCG3_MINOR})
+
 if(MSVC)
 	set(CMAKE_CXX_FLAGS "/W4 /GR- /EHsc /MP")
 	set(CMAKE_CXX_FLAGS_RELEASE "/MT /Ox /Ot /GL /GS-")
@@ -27,6 +31,21 @@ include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
 enable_testing()
 
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src)
+
+# CREATE PKGCONFIG FILES
+# we use the same files like ./configure, so we have to set its vars
+if(NOT DEFINED CMAKE_INSTALL_LIBDIR)
+  set(CMAKE_INSTALL_LIBDIR lib)
+endif(NOT DEFINED CMAKE_INSTALL_LIBDIR)
+set(prefix      ${CMAKE_INSTALL_PREFIX})
+set(exec_prefix ${CMAKE_INSTALL_PREFIX})
+set(libdir      ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR})
+set(includedir  ${CMAKE_INSTALL_PREFIX}/include)
+set(LIBS        "-lz -lm")
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/${VISLCG3_NAME}.pc.in
+  ${CMAKE_CURRENT_BINARY_DIR}/${VISLCG3_NAME}.pc @ONLY)
+install(PROGRAMS "${CMAKE_CURRENT_SOURCE_DIR}/${VISLCG3_NAME}.pc" DESTINATION lib/pkgconfig)
+
 
 install(PROGRAMS "${CMAKE_CURRENT_SOURCE_DIR}/scripts/cg3-autobin.pl" DESTINATION bin)
 
