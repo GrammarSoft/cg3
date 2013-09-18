@@ -459,5 +459,5 @@ const wchar_t *cg3_tag_gettext_w(cg3_tag *tag_) {
 		return 0;
 	}
 
-	return reinterpret_cast<const wchar_t*>(tmp);
+	return tmp;
 }
