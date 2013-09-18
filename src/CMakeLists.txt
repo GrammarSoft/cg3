@@ -113,6 +113,7 @@ ADD_TEST(t_libcg3 test_libcg3 "${CMAKE_CURRENT_SOURCE_DIR}/../test/T_BasicSelect
 install(TARGETS libcg3 ARCHIVE DESTINATION lib)
 if(NOT MSVC)
 	install(TARGETS libcg3-shared ARCHIVE DESTINATION lib LIBRARY DESTINATION lib)
+	install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/cg3.h" DESTINATION include)
 endif()
 install(TARGETS cg-comp cg-proc cg-conv vislcg3 RUNTIME DESTINATION bin)
 
