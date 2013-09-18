@@ -40,7 +40,7 @@ typedef void cg3_tag;
 
 typedef enum {
 	CG3_ERROR   = 0,
-	CG3_SUCCESS = 1,
+	CG3_SUCCESS = 1
 } cg3_status;
 
 typedef enum {
@@ -56,12 +56,12 @@ typedef enum {
 	CG3F_ALWAYS_SPAN        = (1 <<  9),
 	CG3F_DEP_ALLOW_LOOPS    = (1 << 10),
 	CG3F_DEP_NO_CROSSING    = (1 << 11),
-	CG3F_NO_PASS_ORIGIN     = (1 << 13),
+	CG3F_NO_PASS_ORIGIN     = (1 << 13)
 } cg3_flags;
 
 typedef enum {
 	CG3O_SECTIONS      = 1,
-	CG3O_SECTIONS_TEXT = 2,
+	CG3O_SECTIONS_TEXT = 2
 } cg3_option;
 
 // Default usage: if (!cg3_init(stdin, stdout, stderr)) { exit(1); }
