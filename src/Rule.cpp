@@ -81,10 +81,6 @@ void Rule::setName(const UChar *to) {
 	}
 }
 
-ContextualTest *Rule::allocateContextualTest() {
-	return new ContextualTest;
-}
-
 void Rule::addContextualTest(ContextualTest *to, ContextualTest **head) {
 	if (*head) {
 		(*head)->prev = to;

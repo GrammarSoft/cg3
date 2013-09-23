@@ -485,7 +485,7 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 
 		fread(&u8tmp, sizeof(uint8_t), 1, input);
 		if (u8tmp == 1) {
-			r->dep_target = r->allocateContextualTest();
+			r->dep_target = grammar->allocateContextualTest();
 			readContextualTest(r->dep_target, input);
 		}
 
@@ -493,7 +493,7 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 		u32tmp = (uint32_t)ntohl(u32tmp);
 		uint32_t num_dep_tests = u32tmp;
 		for (uint32_t j=0 ; j<num_dep_tests ; j++) {
-			ContextualTest *t = r->allocateContextualTest();
+			ContextualTest *t = grammar->allocateContextualTest();
 			readContextualTest(t, input);
 			r->addContextualTest(t, &r->dep_test_head);
 		}
@@ -502,7 +502,7 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 		u32tmp = (uint32_t)ntohl(u32tmp);
 		uint32_t num_tests = u32tmp;
 		for (uint32_t j=0 ; j<num_tests ; j++) {
-			ContextualTest *t = r->allocateContextualTest();
+			ContextualTest *t = grammar->allocateContextualTest();
 			readContextualTest(t, input);
 			r->addContextualTest(t, &r->test_head);
 		}
@@ -571,14 +571,14 @@ void BinaryGrammar::readContextualTest(ContextualTest *t, FILE *input) {
 		u32tmp = (uint32_t)ntohl(u32tmp);
 		if (u32tmp) {
 			for (uint32_t i=0 ; i<u32tmp ; ++i) {
-				ContextualTest *to = t->allocateContextualTest();
+				ContextualTest *to = grammar->allocateContextualTest();
 				readContextualTest(to, input);
 				t->ors.push_back(to);
 			}
 		}
 	}
 	if (fields & (1 << 11)) {
-		t->linked = t->allocateContextualTest();
+		t->linked = grammar->allocateContextualTest();
 		readContextualTest(t->linked, input);
 	}
 }

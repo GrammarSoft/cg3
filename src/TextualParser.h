@@ -50,6 +50,9 @@ namespace CG3 {
 		const char *locale;
 		const char *codepage;
 
+		typedef stdext::hash_map<ContextualTest*,std::pair<size_t,UString>> deferred_t;
+		deferred_t deferred_tmpls;
+
 		int parseFromUChar(UChar *input, const char *fname = 0);
 		void addRuleToGrammar(Rule *rule);
 
@@ -57,9 +60,9 @@ namespace CG3 {
 		Set *parseSetInline(UChar *& p, Set *s = 0);
 		Set *parseSetInlineWrapper(UChar *& p);
 		int parseContextualTestPosition(UChar *& p, ContextualTest& t);
-		int parseContextualTestList(UChar *& p, Rule *rule, ContextualTest **head, CG3::ContextualTest *parentTest, CG3::ContextualTest *self = 0);
-		int parseContextualTests(UChar *& p, Rule *rule);
-		int parseContextualDependencyTests(UChar *& p, Rule *rule);
+		ContextualTest *parseContextualTestList(UChar *& p, Rule *rule = 0);
+		void parseContextualTests(UChar *& p, Rule *rule);
+		void parseContextualDependencyTests(UChar *& p, Rule *rule);
 		void parseRule(UChar *& p, KEYWORDS key);
 		void parseAnchorish(UChar *& p);
 

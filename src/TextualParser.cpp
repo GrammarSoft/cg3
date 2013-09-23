@@ -44,6 +44,7 @@ TextualParser::TextualParser(Grammar& res, UFILE *ux_err) {
 }
 
 void TextualParser::incErrorCount() {
+	u_fflush(ux_stderr);
 	++error_counter;
 	if (error_counter >= 10) {
 		u_fprintf(ux_stderr, "Too many errors - giving up...\n");
@@ -529,17 +530,8 @@ int TextualParser::parseContextualTestPosition(UChar *& p, ContextualTest& t) {
 	return 0;
 }
 
-int TextualParser::parseContextualTestList(UChar *& p, Rule *rule, ContextualTest **head, CG3::ContextualTest *parentTest, CG3::ContextualTest *self) {
-	ContextualTest *t = 0;
-	if (self) {
-		t = self;
-	}
-	else if (parentTest) {
-		t = parentTest->allocateContextualTest();
-	}
-	else {
-		t = rule->allocateContextualTest();
-	}
+ContextualTest *TextualParser::parseContextualTestList(UChar *& p, Rule *rule) {
+	ContextualTest *t = result->allocateContextualTest();
 	t->line = result->lines;
 
 	result->lines += SKIPWS(p);
@@ -574,13 +566,12 @@ int TextualParser::parseContextualTestList(UChar *& p, Rule *rule, ContextualTes
 		p = n;
 		pos_p = p;
 		for (;;) {
-			ContextualTest *ored = t->allocateContextualTest();
 			if (*p != '(') {
 				u_fprintf(ux_stderr, "Error: Expected '(' but found '%C' on line %u!\n", *p, result->lines);
 				incErrorCount();
 			}
 			++p;
-			parseContextualTestList(p, rule, 0, 0, ored);
+			ContextualTest *ored = parseContextualTestList(p, rule);
 			++p;
 			t->ors.push_back(ored);
 			result->lines += SKIPWS(p);
@@ -612,15 +603,16 @@ int TextualParser::parseContextualTestList(UChar *& p, Rule *rule, ContextualTes
 		t->offset = 1;
 		t->target = s->hash;
 		result->lines += SKIPWS(p);
+		ContextualTest *nt = t;
 		while (*p == ',') {
 			++p;
 			result->lines += SKIPWS(p);
-			ContextualTest *lnk = t->allocateContextualTest();
+			ContextualTest *lnk = result->allocateContextualTest();
 			Set *s = parseSetInlineWrapper(p);
 			lnk->offset = 1;
 			lnk->target = s->hash;
-			t->linked = lnk;
-			t = lnk;
+			nt->linked = lnk;
+			nt = lnk;
 			result->lines += SKIPWS(p);
 		}
 		if (*p != ']') {
@@ -653,12 +645,7 @@ label_parseTemplateRef:
 			ptrdiff_t c = n - p;
 			u_strncpy(&gbuffers[0][0], p, c);
 			gbuffers[0][c] = 0;
-			uint32_t cn = hash_sdbm_uchar(&gbuffers[0][0]);
-			if (result->templates.find(cn) == result->templates.end()) {
-				u_fprintf(ux_stderr, "Error: Unknown template '%S' referenced on line %u!\n", &gbuffers[0][0], result->lines);
-				incErrorCount();
-			}
-			t->tmpl = result->templates.find(cn)->second;
+			deferred_tmpls[t] = std::make_pair(result->lines, &gbuffers[0][0]);
 			p = n;
 			result->lines += SKIPWS(p);
 		}
@@ -711,22 +698,9 @@ label_parseTemplateRef:
 			u_fprintf(ux_stderr, "Error: It does not make sense to LINK from a NONE test; perhaps you meant NOT or NEGATE on line %u?\n", result->lines);
 			incErrorCount();
 		}
-		parseContextualTestList(p, rule, 0, t);
+		t->linked = parseContextualTestList(p, rule);
 	}
 
-	if (self) {
-		// nothing...
-	}
-	else if (parentTest) {
-		parentTest->linked = t;
-	}
-	else {
-		if (option_vislcg_compat && t->pos & POS_NOT) {
-			t->pos &= ~POS_NOT;
-			t->pos |= POS_NEGATE;
-		}
-		rule->addContextualTest(t, head);
-	}
 	if (rule) {
 		if (rule->flags & RF_LOOKDELETED) {
 			t->pos |= POS_LOOK_DELETED;
@@ -735,16 +709,26 @@ label_parseTemplateRef:
 			t->pos |= POS_LOOK_DELAYED;
 		}
 	}
-	t->rehash();
-	return 0;
+
+	return t;
 }
 
-int TextualParser::parseContextualTests(UChar *& p, Rule *rule) {
-	return parseContextualTestList(p, rule, &rule->test_head, 0);
+void TextualParser::parseContextualTests(UChar *& p, Rule *rule) {
+	ContextualTest *t = parseContextualTestList(p, rule);
+	if (option_vislcg_compat && (t->pos & POS_NOT)) {
+		t->pos &= ~POS_NOT;
+		t->pos |= POS_NEGATE;
+	}
+	rule->addContextualTest(t, &rule->test_head);
 }
 
-int TextualParser::parseContextualDependencyTests(UChar *& p, Rule *rule) {
-	return parseContextualTestList(p, rule, &rule->dep_test_head, 0);
+void TextualParser::parseContextualDependencyTests(UChar *& p, Rule *rule) {
+	ContextualTest *t = parseContextualTestList(p, rule);
+	if (option_vislcg_compat && (t->pos & POS_NOT)) {
+		t->pos &= ~POS_NOT;
+		t->pos |= POS_NEGATE;
+	}
+	rule->addContextualTest(t, &rule->dep_test_head);
 }
 
 void TextualParser::parseRule(UChar *& p, KEYWORDS key) {
@@ -1903,8 +1887,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 		else if (ISCHR(*p,'T','t') && ISCHR(*(p+7),'E','e') && ISCHR(*(p+1),'E','e') && ISCHR(*(p+2),'M','m')
 			&& ISCHR(*(p+3),'P','p') && ISCHR(*(p+4),'L','l') && ISCHR(*(p+5),'A','a') && ISCHR(*(p+6),'T','t')
 			&& !ISSTRING(p, 7)) {
-			ContextualTest *t = result->allocateContextualTest();
-			t->line = result->lines;
+			size_t line = result->lines;
 			p += 8;
 			result->lines += SKIPWS(p);
 			UChar *n = p;
@@ -1913,8 +1896,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 			u_strncpy(&gbuffers[0][0], p, c);
 			gbuffers[0][c] = 0;
 			uint32_t cn = hash_sdbm_uchar(&gbuffers[0][0]);
-			t->name = cn;
-			result->addContextualTest(t, &gbuffers[0][0]);
+			UString name(&gbuffers[0][0]);
 			p = n;
 			result->lines += SKIPWS(p, '=');
 			if (*p != '=') {
@@ -1923,7 +1905,11 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 			}
 			++p;
 
-			parseContextualTestList(p, 0, 0, 0, t);
+			ContextualTest *t = parseContextualTestList(p);
+			t->line = line;
+			t->name = cn;
+			t->rehash();
+			result->addTemplate(t, name.c_str());
 
 			result->lines += SKIPWS(p, ';');
 			if (*p != ';') {
@@ -2185,6 +2171,16 @@ int TextualParser::parse_grammar_from_file(const char *fname, const char *loc, c
 		if ((*it)->name) {
 			result->addAnchor((*it)->name, (*it)->number, false);
 		}
+	}
+
+	const_foreach(deferred_t, deferred_tmpls, it, it_end) {
+		uint32_t cn = hash_sdbm_uchar(it->second.second);
+		if (result->templates.find(cn) == result->templates.end()) {
+			u_fprintf(ux_stderr, "Error: Unknown template '%S' referenced on line %u!\n", it->second.second.c_str(), it->second.first);
+			++error_counter;
+			continue;
+		}
+		it->first->tmpl = result->templates.find(cn)->second;
 	}
 
 	return error_counter;

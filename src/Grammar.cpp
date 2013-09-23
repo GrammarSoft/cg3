@@ -502,7 +502,24 @@ ContextualTest *Grammar::allocateContextualTest() {
 	return new ContextualTest;
 }
 
-void Grammar::addContextualTest(ContextualTest *test, const UChar *name) {
+ContextualTest *Grammar::addContextualTest(ContextualTest *t) {
+	t->rehash();
+	contexts_t::iterator cit = contexts.find(t->hash);
+	if (cit != contexts.end()) {
+		if (cit->second != contexts[t->hash]) {
+			u_fprintf(ux_stderr, "Error: Context hash collission on line %u!\n", lines);
+			CG3Quit(1);
+		}
+		delete t;
+		t = cit->second;
+	}
+	else {
+		contexts[t->hash] = t;
+	}
+	return t;
+}
+
+void Grammar::addTemplate(ContextualTest *test, const UChar *name) {
 	uint32_t cn = hash_sdbm_uchar(name);
 	if (templates.find(cn) != templates.end()) {
 		u_fprintf(ux_stderr, "Error: Redefinition attempt for template '%S' on line %u!\n", name, lines);
