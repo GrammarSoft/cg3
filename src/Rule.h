@@ -91,7 +91,6 @@ namespace CG3 {
 		
 		void resetStatistics();
 
-		ContextualTest *allocateContextualTest();
 		void addContextualTest(ContextualTest *to, ContextualTest **head);
 		void reverseContextualTests();
 

@@ -101,8 +101,6 @@ namespace CG3 {
 
 		ContextualTest();
 		~ContextualTest();
-
-		ContextualTest *allocateContextualTest();
 		
 		uint32_t rehash();
 		void resetStatistics();
