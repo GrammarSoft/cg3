@@ -69,10 +69,6 @@ void ContextualTest::detach() {
 	prev = next = 0;
 }
 
-ContextualTest *ContextualTest::allocateContextualTest() {
-	return new ContextualTest;
-}
-
 uint32_t ContextualTest::rehash() {
 	if (hash) {
 		return hash;

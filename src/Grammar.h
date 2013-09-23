@@ -72,7 +72,9 @@ namespace CG3 {
 		icase_tags_t icase_tags;
 
 		std::vector<ContextualTest*> template_list;
-		stdext::hash_map<uint32_t, ContextualTest*> templates;
+		typedef stdext::hash_map<uint32_t, ContextualTest*> contexts_t;
+		contexts_t templates;
+		contexts_t contexts;
 
 		typedef stdext::hash_map<uint32_t, uint32IntervalVector> rules_by_set_t;
 		rules_by_set_t rules_by_set;
@@ -129,7 +131,8 @@ namespace CG3 {
 		void destroyRule(Rule *rule);
 
 		ContextualTest *allocateContextualTest();
-		void addContextualTest(ContextualTest *test, const UChar *name);
+		ContextualTest *addContextualTest(ContextualTest *t);
+		void addTemplate(ContextualTest *test, const UChar *name);
 
 		void resetStatistics();
 		void reindex(bool unused_sets=false);
