@@ -692,15 +692,11 @@ void Grammar::reindex(bool unused_sets) {
 		if ((*iter_rule)->dep_target) {
 			(*iter_rule)->dep_target->markUsed(*this);
 		}
-		ContextualTest *test = (*iter_rule)->dep_test_head;
-		while (test) {
-			test->markUsed(*this);
-			test = test->next;
+		foreach (ContextList, (*iter_rule)->tests, it, it_end) {
+			(*it)->markUsed(*this);
 		}
-		test = (*iter_rule)->test_head;
-		while (test) {
-			test->markUsed(*this);
-			test = test->next;
+		foreach (ContextList, (*iter_rule)->dep_tests, it, it_end) {
+			(*it)->markUsed(*this);
 		}
 	}
 

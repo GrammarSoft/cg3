@@ -24,9 +24,13 @@
 #define c6d28b7452ec699b_CONTEXTUALTEST_H
 
 #include "stdafx.h"
+#include <list>
+#include <stdint.h>
 
 namespace CG3 {
 	class Grammar;
+	class ContextualTest;
+	typedef std::list<ContextualTest*> ContextList;
 
 #ifdef _MSC_VER
 	enum : uint64_t {
@@ -94,10 +98,8 @@ namespace CG3 {
 		mutable double total_time;
 		ContextualTest *tmpl;
 		ContextualTest *linked;
-		ContextualTest *prev, *next;
 
-		std::list<ContextualTest*> ors;
-		void detach();
+		ContextList ors;
 
 		ContextualTest();
 		~ContextualTest();

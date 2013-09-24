@@ -259,24 +259,20 @@ void GrammarWriter::printRule(UFILE *to, const Rule& rule) {
 		u_fprintf(to, "%S ", grammar->sets_by_contents.find(rule.target)->second->name.c_str());
 	}
 
-	ContextualTest *test = rule.test_head;
-	while (test) {
+	const_foreach (ContextList, rule.tests, it, it_end) {
 		u_fprintf(to, "(");
-		printContextualTest(to, *test);
+		printContextualTest(to, **it);
 		u_fprintf(to, ") ");
-		test = test->next;
 	}
 
 	if (rule.dep_target) {
 		u_fprintf(to, "TO (");
 		printContextualTest(to, *(rule.dep_target));
 		u_fprintf(to, ") ");
-		ContextualTest *test = rule.dep_test_head;
-		while (test) {
+		const_foreach(ContextList, rule.dep_tests, it, it_end) {
 			u_fprintf(to, "(");
-			printContextualTest(to, *test);
+			printContextualTest(to, **it);
 			u_fprintf(to, ") ");
-			test = test->next;
 		}
 	}
 }
