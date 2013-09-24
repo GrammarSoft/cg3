@@ -19,15 +19,15 @@
 * along with VISL CG-3.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "stdafx.h"
-#include "Grammar.h"
-#include "TextualParser.h"
-#include "GrammarWriter.h"
-#include "BinaryGrammar.h"
-#include "GrammarApplicator.h"
-#include "version.h"
+#include "stdafx.hpp"
+#include "Grammar.hpp"
+#include "TextualParser.hpp"
+#include "GrammarWriter.hpp"
+#include "BinaryGrammar.hpp"
+#include "GrammarApplicator.hpp"
+#include "version.hpp"
 
-#include "options.h"
+#include "options.hpp"
 using namespace Options;
 using CG3::CG3Quit;
 void GAppSetOpts(CG3::GrammarApplicator& applicator, UConverter *conv);

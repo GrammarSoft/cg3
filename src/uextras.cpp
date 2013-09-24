@@ -23,8 +23,8 @@
 	#include <windows.h>
 #endif
 
-#include "uextras.h"
-#include "inlines.h"
+#include "uextras.hpp"
+#include "inlines.hpp"
 
 namespace CG3 {
 

@@ -19,10 +19,10 @@
 * along with VISL CG-3.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "CohortIterator.h"
-#include "ContextualTest.h"
-#include "Window.h"
-#include "SingleWindow.h"
+#include "CohortIterator.hpp"
+#include "ContextualTest.hpp"
+#include "Window.hpp"
+#include "SingleWindow.hpp"
 
 namespace CG3 {
 

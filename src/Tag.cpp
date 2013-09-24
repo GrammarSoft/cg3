@@ -19,10 +19,10 @@
 * along with VISL CG-3.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "Tag.h"
-#include "Set.h"
-#include "Grammar.h"
-#include "Strings.h"
+#include "Tag.hpp"
+#include "Set.hpp"
+#include "Grammar.hpp"
+#include "Strings.hpp"
 
 namespace CG3 {
 

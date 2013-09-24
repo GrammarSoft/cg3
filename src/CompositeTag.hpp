@@ -23,8 +23,8 @@
 #ifndef c6d28b7452ec699b_COMPOSITETAG_H
 #define c6d28b7452ec699b_COMPOSITETAG_H
 
-#include "stdafx.h"
-#include "Tag.h"
+#include "stdafx.hpp"
+#include "Tag.hpp"
 
 namespace CG3 {
 

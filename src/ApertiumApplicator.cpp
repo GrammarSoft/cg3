@@ -19,13 +19,13 @@
 * along with VISL CG-3.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "ApertiumApplicator.h"
-#include "Strings.h"
-#include "Tag.h"
-#include "Grammar.h"
-#include "Window.h"
-#include "SingleWindow.h"
-#include "Reading.h"
+#include "ApertiumApplicator.hpp"
+#include "Strings.hpp"
+#include "Tag.hpp"
+#include "Grammar.hpp"
+#include "Window.hpp"
+#include "SingleWindow.hpp"
+#include "Reading.hpp"
 
 namespace CG3 {
 

@@ -19,8 +19,8 @@
 * along with VISL CG-3.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "CompositeTag.h"
-#include "Tag.h"
+#include "CompositeTag.hpp"
+#include "Tag.hpp"
 
 namespace CG3 {
 

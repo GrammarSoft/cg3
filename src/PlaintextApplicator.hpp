@@ -23,7 +23,7 @@
 #ifndef c6d28b7452ec699b_PLAINTEXTAPPLICATOR_HPP
 #define c6d28b7452ec699b_PLAINTEXTAPPLICATOR_HPP
 
-#include "GrammarApplicator.h"
+#include "GrammarApplicator.hpp"
 
 namespace CG3 {
 

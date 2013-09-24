@@ -23,7 +23,7 @@
 #ifndef c6d28b7452ec699b_CONTEXTUALTEST_H
 #define c6d28b7452ec699b_CONTEXTUALTEST_H
 
-#include "stdafx.h"
+#include "stdafx.hpp"
 #include <list>
 #include <stdint.h>
 

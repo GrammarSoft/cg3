@@ -23,8 +23,8 @@
 #ifndef c6d28b7452ec699b_COHORTITERATOR_H
 #define c6d28b7452ec699b_COHORTITERATOR_H
 
-#include "stdafx.h"
-#include "Cohort.h"
+#include "stdafx.hpp"
+#include "Cohort.hpp"
 
 namespace CG3 {
 	class ContextualTest;

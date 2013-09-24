@@ -19,9 +19,9 @@
 * along with VISL CG-3.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "Window.h"
-#include "SingleWindow.h"
-#include "Cohort.h"
+#include "Window.hpp"
+#include "SingleWindow.hpp"
+#include "Cohort.hpp"
 
 namespace CG3 {
 

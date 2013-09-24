@@ -23,10 +23,10 @@
 #ifndef c6d28b7452ec699b_GRAMMARAPPLICATOR_H
 #define c6d28b7452ec699b_GRAMMARAPPLICATOR_H
 
-#include "stdafx.h"
-#include "Tag.h"
-#include "CohortIterator.h"
-#include "Rule.h"
+#include "stdafx.hpp"
+#include "Tag.hpp"
+#include "CohortIterator.hpp"
+#include "Rule.hpp"
 #include "interval_vector.hpp"
 #include <exec-stream.h>
 #include "istream.hpp"

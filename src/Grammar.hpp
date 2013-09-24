@@ -23,11 +23,11 @@
 #ifndef c6d28b7452ec699b_GRAMMAR_H
 #define c6d28b7452ec699b_GRAMMAR_H
 
-#include "stdafx.h"
-#include "Set.h"
-#include "Tag.h"
-#include "CompositeTag.h"
-#include "Rule.h"
+#include "stdafx.hpp"
+#include "Set.hpp"
+#include "Tag.hpp"
+#include "CompositeTag.hpp"
+#include "Rule.hpp"
 #include "sorted_vector.hpp"
 #include "interval_vector.hpp"
 
