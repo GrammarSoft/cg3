@@ -25,7 +25,6 @@
 #include "GrammarWriter.h"
 #include "BinaryGrammar.h"
 #include "GrammarApplicator.h"
-
 #include "version.h"
 
 #include "options.h"
