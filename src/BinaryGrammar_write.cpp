@@ -419,32 +419,16 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 		}
 
 		r->reverseContextualTests();
-		u32tmp = 0;
-		ContextualTest *test = r->dep_test_head;
-		while (test) {
-			u32tmp++;
-			test = test->next;
-		}
-		u32tmp = (uint32_t)htonl(u32tmp);
+		u32tmp = (uint32_t)htonl(r->dep_tests.size());
 		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
-		test = r->dep_test_head;
-		while (test) {
-			writeContextualTest(test, output);
-			test = test->next;
+		foreach (ContextList, r->dep_tests, it, it_end) {
+			writeContextualTest(*it, output);
 		}
 
-		u32tmp = 0;
-		test = r->test_head;
-		while (test) {
-			u32tmp++;
-			test = test->next;
-		}
-		u32tmp = (uint32_t)htonl(u32tmp);
+		u32tmp = (uint32_t)htonl(r->tests.size());
 		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
-		test = r->test_head;
-		while (test) {
-			writeContextualTest(test, output);
-			test = test->next;
+		foreach (ContextList, r->tests, it, it_end) {
+			writeContextualTest(*it, output);
 		}
 	}
 

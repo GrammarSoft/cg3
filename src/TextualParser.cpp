@@ -719,7 +719,7 @@ void TextualParser::parseContextualTests(UChar *& p, Rule *rule) {
 		t->pos &= ~POS_NOT;
 		t->pos |= POS_NEGATE;
 	}
-	rule->addContextualTest(t, &rule->test_head);
+	rule->addContextualTest(t, rule->tests);
 }
 
 void TextualParser::parseContextualDependencyTests(UChar *& p, Rule *rule) {
@@ -728,7 +728,7 @@ void TextualParser::parseContextualDependencyTests(UChar *& p, Rule *rule) {
 		t->pos &= ~POS_NOT;
 		t->pos |= POS_NEGATE;
 	}
-	rule->addContextualTest(t, &rule->dep_test_head);
+	rule->addContextualTest(t, rule->dep_tests);
 }
 
 void TextualParser::parseRule(UChar *& p, KEYWORDS key) {
@@ -1101,18 +1101,12 @@ void TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 			++p;
 			result->lines += SKIPWS(p);
 		}
-		if (!rule->dep_test_head) {
+		if (rule->dep_tests.empty()) {
 			u_fprintf(ux_stderr, "Error: Missing dependency target on line %u!\n", result->lines);
 			incErrorCount();
 		}
-		rule->dep_target = rule->dep_test_head;
-		while (rule->dep_target->next) {
-			rule->dep_target = rule->dep_target->next;
-		}
-		rule->dep_target->detach();
-		if (rule->dep_target == rule->dep_test_head) {
-			rule->dep_test_head = 0;
-		}
+		rule->dep_target = rule->dep_tests.back();
+		rule->dep_tests.pop_back();
 	}
 	if (key == K_SETPARENT || key == K_SETCHILD) {
 		result->has_dep = true;
@@ -1127,24 +1121,17 @@ void TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 			found = true;
 		}
 		else {
-			ContextualTest *th = 0;
-
-			th = rule->test_head;
-			while (th) {
-				if (th->pos & POS_MARK_JUMP) {
+			foreach (ContextList, rule->tests, it, it_end) {
+				if ((*it)->pos & POS_MARK_JUMP) {
 					found = true;
 					break;
 				}
-				th = th->next;
 			}
-
-			th = rule->dep_test_head;
-			while (th) {
-				if (th->pos & POS_MARK_JUMP) {
+			foreach (ContextList, rule->dep_tests, it, it_end) {
+				if ((*it)->pos & POS_MARK_JUMP) {
 					found = true;
 					break;
 				}
-				th = th->next;
 			}
 		}
 		if (found) {

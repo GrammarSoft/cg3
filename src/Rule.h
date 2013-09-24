@@ -27,11 +27,11 @@
 #include "Strings.h"
 #include "Tag.h"
 #include "Cohort.h"
+#include "ContextualTest.h"
 
 namespace CG3 {
 
 	class Grammar;
-	class ContextualTest;
 	class Set;
 
 	// This must be kept in lock-step with Strings.h's FLAGS
@@ -79,8 +79,8 @@ namespace CG3 {
 		Set *maplist;
 		Set *sublist;
 		
-		mutable ContextualTest *test_head;
-		mutable ContextualTest *dep_test_head;
+		mutable ContextList tests;
+		mutable ContextList dep_tests;
 		mutable uint32_t num_fail, num_match;
 		mutable double total_time;
 		mutable ContextualTest *dep_target;
@@ -91,7 +91,7 @@ namespace CG3 {
 		
 		void resetStatistics();
 
-		void addContextualTest(ContextualTest *to, ContextualTest **head);
+		void addContextualTest(ContextualTest *to, ContextList& head);
 		void reverseContextualTests();
 
 		static bool cmp_quality(const Rule *a, const Rule *b);

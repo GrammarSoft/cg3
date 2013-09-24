@@ -393,8 +393,8 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 					// This only needs to be done once per cohort as no current functionality exists to refer back to the exact reading.
 					if (!did_test) {
 						// Contextual tests are stored as a linked list, so looping through them looks a bit different.
-						ContextualTest *test = rule.test_head;
-						while (test) {
+						foreach (ContextList, rule.tests, it, it_end) {
+							ContextualTest *test = *it;
 							if (rule.flags & RF_RESETX || !(rule.flags & RF_REMEMBERX)) {
 								mark = cohort;
 							}
@@ -412,18 +412,13 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 							if (!test_good) {
 								good = test_good;
 								if (!statistics) {
-									if (test != rule.test_head && !(rule.flags & (RF_REMEMBERX|RF_KEEPORDER))) {
-										test->detach();
-										if (rule.test_head) {
-											rule.test_head->prev = test;
-											test->next = rule.test_head;
-										}
-										rule.test_head = test;
+									if (it != rule.tests.begin() && !(rule.flags & (RF_REMEMBERX|RF_KEEPORDER))) {
+										rule.tests.erase(it);
+										rule.tests.push_front(test);
 									}
 									break;
 								}
 							}
-							test = test->next;
 						}
 					}
 					else if (did_test) {
@@ -948,16 +943,14 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 									attach = attach_to;
 								}
 								bool good = true;
-								ContextualTest *test = rule.dep_test_head;
-								while (test) {
+								foreach (ContextList, rule.dep_tests, it, it_end) {
 									mark = attach;
 									dep_deep_seen.clear();
-									test_good = (runContextualTest(attach->parent, attach->local_number, test) != 0);
+									test_good = (runContextualTest(attach->parent, attach->local_number, *it) != 0);
 									if (!test_good) {
 										good = test_good;
 										break;
 									}
-									test = test->next;
 								}
 								if (good) {
 									swapper<Cohort*> sw((rule.flags & RF_REVERSE) != 0, attach, cohort);
@@ -1010,16 +1003,14 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 								attach = attach_to;
 							}
 							bool good = true;
-							ContextualTest *test = rule.dep_test_head;
-							while (test) {
+							foreach (ContextList, rule.dep_tests, it, it_end) {
 								mark = attach;
 								dep_deep_seen.clear();
-								test_good = (runContextualTest(attach->parent, attach->local_number, test) != 0);
+								test_good = (runContextualTest(attach->parent, attach->local_number, *it) != 0);
 								if (!test_good) {
 									good = test_good;
 									break;
 								}
-								test = test->next;
 							}
 
 							if (!good || cohort == attach || cohort->local_number == 0) {
@@ -1111,16 +1102,14 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 								attach = attach_to;
 							}
 							bool good = true;
-							ContextualTest *test = rule.dep_test_head;
-							while (test) {
+							foreach (ContextList, rule.dep_tests, it, it_end) {
 								mark = attach;
 								dep_deep_seen.clear();
-								test_good = (runContextualTest(attach->parent, attach->local_number, test) != 0);
+								test_good = (runContextualTest(attach->parent, attach->local_number, *it) != 0);
 								if (!test_good) {
 									good = test_good;
 									break;
 								}
-								test = test->next;
 							}
 							if (good) {
 								swapper<Cohort*> sw((rule.flags & RF_REVERSE) != 0, attach, cohort);
@@ -1160,16 +1149,14 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 								attach = attach_to;
 							}
 							bool good = true;
-							ContextualTest *test = rule.dep_test_head;
-							while (test) {
+							foreach (ContextList, rule.dep_tests, it, it_end) {
 								mark = attach;
 								dep_deep_seen.clear();
-								test_good = (runContextualTest(attach->parent, attach->local_number, test) != 0);
+								test_good = (runContextualTest(attach->parent, attach->local_number, *it) != 0);
 								if (!test_good) {
 									good = test_good;
 									break;
 								}
-								test = test->next;
 							}
 							if (good) {
 								swapper<Cohort*> sw((rule.flags & RF_REVERSE) != 0, attach, cohort);
