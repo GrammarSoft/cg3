@@ -21,7 +21,7 @@ if(MSVC)
 	set(CMAKE_CXX_FLAGS "/W4 /GR- /EHsc /MP")
 	set(CMAKE_CXX_FLAGS_RELEASE "/MT /Ox /Ot /GL /GS-")
 	set(CMAKE_EXE_LINKER_FLAGS_RELEASE "/LTCG")
-	add_definitions(-DUNICODE -D_UNICODE)
+	add_definitions(-DUNICODE -D_UNICODE -D_SECURE_SCL=0 -D_ITERATOR_DEBUG_LEVEL=0 -D_CRT_SECURE_NO_DEPRECATE -DWIN32_LEAN_AND_MEAN -DVC_EXTRALEAN -DNOMINMAX)
 	include_directories("${CMAKE_CURRENT_SOURCE_DIR}/win32")
 else()
 	set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wno-deprecated")
@@ -51,6 +51,7 @@ else()
 endif()
 
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
+include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include/exec-stream")
 
 enable_testing()
 

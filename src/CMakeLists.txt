@@ -63,7 +63,7 @@ macro(cg3_link target)
 	target_link_libraries(${target} ${ICU_LIBRARIES} ${ICU_IO_LIBRARIES} ${ICU_I18N_LIBRARIES})
 endmacro()
 
-SET(CXX_SHARED_SOURCES BinaryGrammar.cpp CompositeTag.cpp ContextualTest.cpp Grammar.cpp Rule.cpp Set.cpp Strings.cpp Tag.cpp TextualParser.cpp uextras.cpp BinaryGrammar_read.cpp BinaryGrammar_write.cpp exec-stream.cpp)
+SET(CXX_SHARED_SOURCES BinaryGrammar.cpp CompositeTag.cpp ContextualTest.cpp Grammar.cpp Rule.cpp Set.cpp Strings.cpp Tag.cpp TextualParser.cpp uextras.cpp BinaryGrammar_read.cpp BinaryGrammar_write.cpp ../include/exec-stream/exec-stream.cpp)
 if(MSVC)
 	SET(CXX_SHARED_SOURCES ../win32/libgen.c ../win32/getopt.c ${CXX_SHARED_SOURCES})
 endif()
