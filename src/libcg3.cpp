@@ -20,7 +20,6 @@
 */
 
 #include "stdafx.h"
-#include "icu_uoptions.h"
 #include "Grammar.h"
 #include "TextualParser.h"
 #include "BinaryGrammar.h"

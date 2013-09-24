@@ -20,10 +20,10 @@
 */
 
 #pragma once
-#ifndef c6d28b7452ec699b_OPTIONS_H
-#define c6d28b7452ec699b_OPTIONS_H
+#ifndef c6d28b7452ec699b_OPTIONS_CONV_H
+#define c6d28b7452ec699b_OPTIONS_CONV_H
 
-#include "icu_uoptions.h"
+#include <uoptions.h>
 
 namespace Options {
 	enum OPTIONS {
