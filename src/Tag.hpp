@@ -23,7 +23,7 @@
 #ifndef c6d28b7452ec699b_TAG_H
 #define c6d28b7452ec699b_TAG_H
 
-#include "stdafx.h"
+#include "stdafx.hpp"
 
 namespace CG3 {
 	class Grammar;

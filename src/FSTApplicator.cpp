@@ -20,12 +20,12 @@
 */
 
 #include "FSTApplicator.hpp"
-#include "Strings.h"
-#include "Tag.h"
-#include "Grammar.h"
-#include "Window.h"
-#include "SingleWindow.h"
-#include "Reading.h"
+#include "Strings.hpp"
+#include "Tag.hpp"
+#include "Grammar.hpp"
+#include "Window.hpp"
+#include "SingleWindow.hpp"
+#include "Reading.hpp"
 
 namespace CG3 {
 

@@ -20,47 +20,38 @@
 */
 
 #pragma once
-#ifndef c6d28b7452ec699b_GRAMMARAPPLICATORAPERTIUM_H
-#define c6d28b7452ec699b_GRAMMARAPPLICATORAPERTIUM_H
+#ifndef c6d28b7452ec699b_FORMATCONVERTER_H
+#define c6d28b7452ec699b_FORMATCONVERTER_H
 
-#include "GrammarApplicator.h"
+#include "ApertiumApplicator.hpp"
+#include "MatxinApplicator.hpp"
+#include "NicelineApplicator.hpp"
+#include "PlaintextApplicator.hpp"
+#include "FSTApplicator.hpp"
 
 namespace CG3 {
-	class ApertiumApplicator : public virtual GrammarApplicator {
+	enum CG_FORMATS {
+		FMT_INVALID,
+		FMT_CG,
+		FMT_NICELINE,
+		FMT_APERTIUM,
+		FMT_MATXIN,
+		FMT_FST,
+		FMT_PLAIN,
+		NUM_FORMATS
+	};
+
+	class FormatConverter : public ApertiumApplicator, public MatxinApplicator, public NicelineApplicator, public PlaintextApplicator, public FSTApplicator {
 	public:
-		ApertiumApplicator(UFILE *ux_err);
+		FormatConverter(UFILE *ux_err);
 
 		void runGrammarOnText(istream& input, UFILE *output);
+		void setInputFormat(CG_FORMATS format);
+		void setOutputFormat(CG_FORMATS format);
 
-		bool getNullFlush();
-		bool wordform_case;
-		bool print_word_forms;
-		bool print_only_first;
-		void setNullFlush(bool pNullFlush);
-
-		void testPR(UFILE *output);
-		
 	protected:
-		bool nullFlush;
-		bool runningWithNullFlush;
-	
-		void printReading(Reading *reading, UFILE *output);
+		CG_FORMATS informat, outformat;
 		void printSingleWindow(SingleWindow *window, UFILE *output);
-		
-		void runGrammarOnTextWrapperNullFlush(istream& input, UFILE *output);
-
-		UChar u_fgetc_wrapper(istream& input);
-		UConverter* fgetc_converter;
-		char fgetc_inputbuf[5];
-		UChar fgetc_outputbuf[5];
-		UErrorCode fgetc_error;
-		void mergeMappings(Cohort& cohort);
-		
-	private:
-
-		void processReading(Reading *cReading, const UChar *reading_string);
-		void processReading(Reading *cReading, const UString& reading_string);
-
 	};
 }
 

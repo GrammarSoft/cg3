@@ -20,43 +20,36 @@
 */
 
 #pragma once
-#ifndef c6d28b7452ec699b_WINDOW_H
-#define c6d28b7452ec699b_WINDOW_H
+#ifndef c6d28b7452ec699b_SINGLEWINDOW_H
+#define c6d28b7452ec699b_SINGLEWINDOW_H
 
-#include "stdafx.h"
+#include "stdafx.hpp"
+#include "Cohort.hpp"
+#include "Rule.hpp"
+#include "interval_vector.hpp"
+#include "sorted_vector.hpp"
 
 namespace CG3 {
-	class GrammarApplicator;
-	class Cohort;
-	class SingleWindow;
+	class Window;
 
-	typedef std::list<SingleWindow*> SingleWindowCont;
-
-	class Window {
+	class SingleWindow {
 	public:
-		GrammarApplicator *parent;
-		uint32_t cohort_counter;
-		uint32_t window_counter;
-		uint32_t window_span;
+		uint32_t number;
+		bool has_enclosures;
+		SingleWindow *next, *previous;
+		Window *parent;
+		UString text;
+		CohortVector cohorts;
+		uint32IntervalVector valid_rules;
+		uint32SortedVector hit_external;
+		uint32ToCohortsMap rule_to_cohorts;
+		uint32HashMap variables_set;
+		uint32HashSet variables_rem;
 
-		std::map<uint32_t, Cohort*> cohort_map;
-		uint32HashMap dep_map;
-		std::map<uint32_t, Cohort*> dep_window;
-		uint32HashMap relation_map;
+		SingleWindow(Window *p);
+		~SingleWindow();
 
-		SingleWindowCont previous;
-		SingleWindow *current;
-		SingleWindowCont next;
-
-		Window(GrammarApplicator *p);
-		~Window();
-
-		SingleWindow *allocSingleWindow();
-		SingleWindow *allocPushSingleWindow();
-		SingleWindow *allocAppendSingleWindow();
-		void shuffleWindowsDown();
-		void rebuildSingleWindowLinks();
-		void rebuildCohortLinks();
+		void appendCohort(Cohort *cohort);
 	};
 
 }

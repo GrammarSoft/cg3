@@ -23,8 +23,8 @@
 #ifndef c6d28b7452ec699b_READING_H
 #define c6d28b7452ec699b_READING_H
 
-#include "stdafx.h"
-#include "Tag.h"
+#include "stdafx.hpp"
+#include "Tag.hpp"
 #include "sorted_vector.hpp"
 #include "bloomish.hpp"
 

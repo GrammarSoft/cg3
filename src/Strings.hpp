@@ -159,7 +159,7 @@ namespace CG3 {
 		STRINGS_COUNT
 	};
 
-	// This must be kept in lock-step with Rule.h's RULE_FLAGS
+	// This must be kept in lock-step with Rule.hpp's RULE_FLAGS
 	enum {
 		FL_NEAREST,
 		FL_ALLOWLOOP,
@@ -189,7 +189,7 @@ namespace CG3 {
 	};
 }
 
-#include "stdafx.h"
+#include "stdafx.hpp"
 
 namespace CG3 {
 	extern UnicodeString keywords[KEYWORD_COUNT];

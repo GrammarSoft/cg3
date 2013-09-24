@@ -19,14 +19,14 @@
 * along with VISL CG-3.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "GrammarApplicator.h"
-#include "Strings.h"
-#include "Tag.h"
-#include "Grammar.h"
-#include "Window.h"
-#include "SingleWindow.h"
-#include "Reading.h"
-#include "ContextualTest.h"
+#include "GrammarApplicator.hpp"
+#include "Strings.hpp"
+#include "Tag.hpp"
+#include "Grammar.hpp"
+#include "Window.hpp"
+#include "SingleWindow.hpp"
+#include "Reading.hpp"
+#include "ContextualTest.hpp"
 
 namespace CG3 {
 

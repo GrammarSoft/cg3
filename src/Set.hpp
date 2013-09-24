@@ -23,8 +23,8 @@
 #ifndef c6d28b7452ec699b_SET_H
 #define c6d28b7452ec699b_SET_H
 
-#include "stdafx.h"
-#include "CompositeTag.h"
+#include "stdafx.hpp"
+#include "CompositeTag.hpp"
 #include "sorted_vector.hpp"
 
 namespace CG3 {

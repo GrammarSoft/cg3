@@ -16,7 +16,7 @@
 *   This file provides a command line argument parser.
 */
 
-#include "icu_uoptions.h"
+#include "icu_uoptions.hpp"
 
 int u_parseArgs(int argc, char* argv[],
             int optionCount, UOption options[]) {

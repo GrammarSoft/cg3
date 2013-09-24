@@ -20,36 +20,31 @@
 */
 
 #pragma once
-#ifndef c6d28b7452ec699b_GRAMMARAPPLICATORMATXIN_H
-#define c6d28b7452ec699b_GRAMMARAPPLICATORMATXIN_H
+#ifndef c6d28b7452ec699b_GRAMMARAPPLICATORAPERTIUM_H
+#define c6d28b7452ec699b_GRAMMARAPPLICATORAPERTIUM_H
 
-#include "stdafx.h"
-#include "Strings.h"
-#include "Tag.h"
-#include "Grammar.h"
-#include "Window.h"
-#include "SingleWindow.h"
-#include "GrammarApplicator.h"
+#include "GrammarApplicator.hpp"
 
 namespace CG3 {
-	class MatxinApplicator : public virtual GrammarApplicator {
+	class ApertiumApplicator : public virtual GrammarApplicator {
 	public:
-		MatxinApplicator(UFILE *ux_err);
+		ApertiumApplicator(UFILE *ux_err);
 
 		void runGrammarOnText(istream& input, UFILE *output);
 
 		bool getNullFlush();
 		bool wordform_case;
 		bool print_word_forms;
+		bool print_only_first;
 		void setNullFlush(bool pNullFlush);
-		// Readings with this tag get their own chunk:
-		const UChar *CHUNK;
+
+		void testPR(UFILE *output);
 		
 	protected:
 		bool nullFlush;
 		bool runningWithNullFlush;
 	
-		int printReading(Reading *reading, UFILE *output, int ischunk, int ord, int alloc);
+		void printReading(Reading *reading, UFILE *output);
 		void printSingleWindow(SingleWindow *window, UFILE *output);
 		
 		void runGrammarOnTextWrapperNullFlush(istream& input, UFILE *output);
@@ -59,9 +54,10 @@ namespace CG3 {
 		char fgetc_inputbuf[5];
 		UChar fgetc_outputbuf[5];
 		UErrorCode fgetc_error;
-
+		void mergeMappings(Cohort& cohort);
+		
 	private:
-		size_t window_alloc;
+
 		void processReading(Reading *cReading, const UChar *reading_string);
 		void processReading(Reading *cReading, const UString& reading_string);
 

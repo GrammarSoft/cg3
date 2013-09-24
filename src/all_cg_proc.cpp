@@ -1,5 +1,5 @@
-#include "stdafx.h"
-#include "exec-stream.cpp"
+#include "stdafx.hpp"
+#include <exec-stream.cpp>
 #include "BinaryGrammar.cpp"
 #include "CompositeTag.cpp"
 #include "ContextualTest.cpp"
@@ -19,7 +19,6 @@
 #include "GrammarApplicator_runContextualTest.cpp"
 #include "GrammarApplicator_runRules.cpp"
 #include "GrammarWriter.cpp"
-#include "icu_uoptions.cpp"
 #include "SingleWindow.cpp"
 #include "CohortIterator.cpp"
 #include "Window.cpp"
