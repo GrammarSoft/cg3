@@ -33,7 +33,7 @@
 
 using CG3::CG3Quit;
 
-void endProgram(const char *name) {
+void endProgram(char *name) {
 	using namespace std;
 	fprintf(stdout, "VISL CG-3 Disambiguator version %u.%u.%u.%u\n",
 		CG3_VERSION_MAJOR, CG3_VERSION_MINOR, CG3_VERSION_PATCH, CG3_REVISION);
