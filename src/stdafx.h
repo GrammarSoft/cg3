@@ -65,6 +65,7 @@
 #include <ciso646>
 #include <sys/stat.h>
 #include <stdint.h> // C99 or C++0x or C++ TR1 will have this header. ToDo: Change to <cstdint> when C++0x broader support gets under way.
+#include <cycle.h>
 
 #include <boost/unordered_set.hpp>
 #include <boost/unordered_map.hpp>
@@ -111,7 +112,6 @@ namespace CG3 {
 	typedef stdext::hash_map<uint32_t,uint32HashSet> uint32HashSetuint32HashMap;
 }
 
-#include "cycle.h"
 #include "macros.h"
 #include "inlines.h"
 #include "uextras.h"
