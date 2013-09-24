@@ -28,7 +28,7 @@
 #include "CohortIterator.h"
 #include "Rule.h"
 #include "interval_vector.hpp"
-#include "exec-stream.h"
+#include <exec-stream.h>
 #include "istream.hpp"
 
 namespace CG3 {
