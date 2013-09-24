@@ -1,5 +1,5 @@
 set(CMAKE_LEGACY_CYGWIN_WIN32 0)
-cmake_minimum_required(VERSION 2.6.4 FATAL_ERROR)
+cmake_minimum_required(VERSION 2.8.0 FATAL_ERROR)
 project(cg3 CXX C)
 
 # Release or Debug
@@ -27,6 +27,14 @@ else()
 	set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wno-deprecated")
 	set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g3")
 	set(CMAKE_CXX_FLAGS_RELEASE "-O3")
+	
+	# Enable C++11 if possible
+	option(OPT_CXX11 "Set to OFF to disable use of C++11" ON)
+	if(OPT_CXX11 AND
+	((CMAKE_COMPILER_IS_GNUCXX AND NOT ${CMAKE_CXX_COMPILER_VERSION} VERSION_LESS 4.6) OR (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND NOT ${CMAKE_CXX_COMPILER_VERSION} VERSION_LESS 3.1)))
+		message(STATUS "Enabling C++11 for ${CMAKE_CXX_COMPILER_ID} v${CMAKE_CXX_COMPILER_VERSION}")
+		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
+	endif()
 
 	# Generate pkg-config file
 	if(NOT DEFINED CMAKE_INSTALL_LIBDIR)

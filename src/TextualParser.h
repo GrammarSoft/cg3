@@ -50,7 +50,7 @@ namespace CG3 {
 		const char *locale;
 		const char *codepage;
 
-		typedef stdext::hash_map<ContextualTest*,std::pair<size_t,UString>> deferred_t;
+		typedef stdext::hash_map<ContextualTest*,std::pair<size_t,UString> > deferred_t;
 		deferred_t deferred_tmpls;
 
 		int parseFromUChar(UChar *input, const char *fname = 0);
