@@ -30,17 +30,14 @@
 
 #include "version.h"
 
-using namespace std;
 using CG3::CG3Quit;
 
-void endProgram(char *name);
-
-void endProgram(char *name) {
+void endProgram(const char *name) {
 	if (name != NULL) {
 		fprintf(stdout, "VISL CG-3 Compiler version %u.%u.%u.%u\n",
 			CG3_VERSION_MAJOR, CG3_VERSION_MINOR, CG3_VERSION_PATCH, CG3_REVISION);
-		cout << basename(name) << ": compile a binary grammar from a text file" << endl;
-		cout << "USAGE: " << basename(name) << " grammar_file output_file" << endl;
+		std::cout << basename(name) << ": compile a binary grammar from a text file" << std::endl;
+		std::cout << "USAGE: " << basename(name) << " grammar_file output_file" << std::endl;
 	}
 	exit(EXIT_FAILURE);
 }
@@ -55,8 +52,8 @@ int main(int argc, char *argv[]) {
 
 	/* Initialize ICU */
 	u_init(&status);
-		if (U_FAILURE(status) && status != U_FILE_ACCESS_ERROR) {
-		cerr << "Error: Cannot initialize ICU. Status = " << u_errorName(status) << std::endl;
+	if (U_FAILURE(status) && status != U_FILE_ACCESS_ERROR) {
+		std::cerr << "Error: Cannot initialize ICU. Status = " << u_errorName(status) << std::endl;
 		CG3Quit(1);
 	}
 	status = U_ZERO_ERROR;
