@@ -5,7 +5,7 @@
 	extern "C" {
 #endif
 
-char  *basename(char *);
+const char *basename(const char*);
 
 #ifdef __cplusplus
 	}
