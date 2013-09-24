@@ -19,9 +19,9 @@
 * along with VISL CG-3.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "SingleWindow.h"
-#include "GrammarApplicator.h"
-#include "Window.h"
+#include "SingleWindow.hpp"
+#include "GrammarApplicator.hpp"
+#include "Window.hpp"
 
 namespace CG3 {
 

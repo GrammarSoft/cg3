@@ -23,18 +23,18 @@
 #ifndef c6d28b7452ec699b_RULE_H
 #define c6d28b7452ec699b_RULE_H
 
-#include "stdafx.h"
-#include "Strings.h"
-#include "Tag.h"
-#include "Cohort.h"
-#include "ContextualTest.h"
+#include "stdafx.hpp"
+#include "Strings.hpp"
+#include "Tag.hpp"
+#include "Cohort.hpp"
+#include "ContextualTest.hpp"
 
 namespace CG3 {
 
 	class Grammar;
 	class Set;
 
-	// This must be kept in lock-step with Strings.h's FLAGS
+	// This must be kept in lock-step with Strings.hpp's FLAGS
 	enum {
 		RF_NEAREST      = (1 <<  0),
 		RF_ALLOWLOOP    = (1 <<  1),

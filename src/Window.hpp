@@ -20,39 +20,45 @@
 */
 
 #pragma once
-#ifndef c6d28b7452ec699b_FORMATCONVERTER_H
-#define c6d28b7452ec699b_FORMATCONVERTER_H
+#ifndef c6d28b7452ec699b_WINDOW_H
+#define c6d28b7452ec699b_WINDOW_H
 
-#include "ApertiumApplicator.h"
-#include "MatxinApplicator.h"
-#include "NicelineApplicator.hpp"
-#include "PlaintextApplicator.hpp"
-#include "FSTApplicator.hpp"
+#include "stdafx.hpp"
 
 namespace CG3 {
-	enum CG_FORMATS {
-		FMT_INVALID,
-		FMT_CG,
-		FMT_NICELINE,
-		FMT_APERTIUM,
-		FMT_MATXIN,
-		FMT_FST,
-		FMT_PLAIN,
-		NUM_FORMATS
-	};
+	class GrammarApplicator;
+	class Cohort;
+	class SingleWindow;
 
-	class FormatConverter : public ApertiumApplicator, public MatxinApplicator, public NicelineApplicator, public PlaintextApplicator, public FSTApplicator {
+	typedef std::list<SingleWindow*> SingleWindowCont;
+
+	class Window {
 	public:
-		FormatConverter(UFILE *ux_err);
+		GrammarApplicator *parent;
+		uint32_t cohort_counter;
+		uint32_t window_counter;
+		uint32_t window_span;
 
-		void runGrammarOnText(istream& input, UFILE *output);
-		void setInputFormat(CG_FORMATS format);
-		void setOutputFormat(CG_FORMATS format);
+		std::map<uint32_t, Cohort*> cohort_map;
+		uint32HashMap dep_map;
+		std::map<uint32_t, Cohort*> dep_window;
+		uint32HashMap relation_map;
 
-	protected:
-		CG_FORMATS informat, outformat;
-		void printSingleWindow(SingleWindow *window, UFILE *output);
+		SingleWindowCont previous;
+		SingleWindow *current;
+		SingleWindowCont next;
+
+		Window(GrammarApplicator *p);
+		~Window();
+
+		SingleWindow *allocSingleWindow();
+		SingleWindow *allocPushSingleWindow();
+		SingleWindow *allocAppendSingleWindow();
+		void shuffleWindowsDown();
+		void rebuildSingleWindowLinks();
+		void rebuildCohortLinks();
 	};
+
 }
 
 #endif

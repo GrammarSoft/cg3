@@ -19,11 +19,11 @@
 * along with VISL CG-3.	If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "stdafx.h"
-#include "Grammar.h"
-#include "FormatConverter.h"
+#include "stdafx.hpp"
+#include "Grammar.hpp"
+#include "FormatConverter.hpp"
 
-#include "version.h"
+#include "version.hpp"
 
 #include "options_conv.hpp"
 using namespace Options;

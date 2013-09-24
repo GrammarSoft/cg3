@@ -23,8 +23,8 @@
 #ifndef c6d28b7452ec699b_COHORT_H
 #define c6d28b7452ec699b_COHORT_H
 
-#include "stdafx.h"
-#include "Reading.h"
+#include "stdafx.hpp"
+#include "Reading.hpp"
 #include "sorted_vector.hpp"
 
 namespace CG3 {

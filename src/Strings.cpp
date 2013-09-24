@@ -19,7 +19,7 @@
 * along with VISL CG-3.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "Strings.h"
+#include "Strings.hpp"
 
 namespace CG3 {
 

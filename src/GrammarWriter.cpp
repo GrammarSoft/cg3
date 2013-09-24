@@ -19,10 +19,10 @@
 * along with VISL CG-3.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "GrammarWriter.h"
-#include "Strings.h"
-#include "Grammar.h"
-#include "ContextualTest.h"
+#include "GrammarWriter.hpp"
+#include "Strings.hpp"
+#include "Grammar.hpp"
+#include "ContextualTest.hpp"
 
 namespace CG3 {
 

@@ -19,17 +19,17 @@
 * along with VISL CG-3.	If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "stdafx.h"
-#include "Grammar.h"
-#include "BinaryGrammar.h"
-#include "ApertiumApplicator.h"
-#include "MatxinApplicator.h"
-#include "GrammarApplicator.h"
+#include "stdafx.hpp"
+#include "Grammar.hpp"
+#include "BinaryGrammar.hpp"
+#include "ApertiumApplicator.hpp"
+#include "MatxinApplicator.hpp"
+#include "GrammarApplicator.hpp"
 
 #include <getopt.h>
 #include <libgen.h>
 
-#include "version.h"
+#include "version.hpp"
 
 using CG3::CG3Quit;
 

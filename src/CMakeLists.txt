@@ -63,31 +63,45 @@ macro(cg3_link target)
 	target_link_libraries(${target} ${ICU_LIBRARIES} ${ICU_IO_LIBRARIES} ${ICU_I18N_LIBRARIES})
 endmacro()
 
-SET(CXX_SHARED_SOURCES
+SET(LIBCG3_HEADERS
+	BinaryGrammar.hpp
+	Cohort.hpp
+	CohortIterator.hpp
+	CompositeTag.hpp
+	ContextualTest.hpp
+	Grammar.hpp
+	GrammarApplicator.hpp
+	GrammarWriter.hpp
+	IGrammarParser.hpp
+	Reading.hpp
+	Rule.hpp
+	Set.hpp
+	SingleWindow.hpp
+	Strings.hpp
+	Tag.hpp
+	TextualParser.hpp
+	Window.hpp
+	bloomish.hpp
+	cg3.h
+	inlines.hpp
+	interval_vector.hpp
+	istream.hpp
+	macros.hpp
+	sorted_vector.hpp
+	stdafx.hpp
+	uextras.hpp
+	version.hpp
+	../include/exec-stream/exec-stream.h
+	)
+SET(LIBCG3_SOURCES
 	BinaryGrammar.cpp
 	BinaryGrammar_read.cpp
 	BinaryGrammar_write.cpp
+	Cohort.cpp
+	CohortIterator.cpp
 	CompositeTag.cpp
 	ContextualTest.cpp
 	Grammar.cpp
-	Rule.cpp
-	Set.cpp
-	Strings.cpp
-	Tag.cpp
-	TextualParser.cpp
-	uextras.cpp
-	../include/exec-stream/exec-stream.cpp
-	)
-if(MSVC)
-	SET(CXX_SHARED_SOURCES
-		../win32/getopt.c
-		../win32/libgen.c
-		${CXX_SHARED_SOURCES})
-endif()
-
-SET(CXX_SOURCES
-	Cohort.cpp
-	CohortIterator.cpp
 	GrammarApplicator.cpp
 	GrammarApplicator_matchSet.cpp
 	GrammarApplicator_reflow.cpp
@@ -96,11 +110,28 @@ SET(CXX_SOURCES
 	GrammarApplicator_runRules.cpp
 	GrammarWriter.cpp
 	Reading.cpp
+	Rule.cpp
+	Set.cpp
 	SingleWindow.cpp
+	Strings.cpp
+	Tag.cpp
+	TextualParser.cpp
 	Window.cpp
-	${CXX_SHARED_SOURCES})
+	uextras.cpp
+	../include/exec-stream/exec-stream.cpp
+	${LIBCG3_HEADERS}
+	)
+if(MSVC)
+	SET(LIBCG3_SOURCES
+		../win32/getopt.c
+		../win32/getopt.h
+		../win32/libgen.c
+		../win32/libgen.h
+		${LIBCG3_SOURCES}
+		)
+endif()
 
-ADD_LIBRARY(libcg3 STATIC libcg3.cpp ${CXX_SOURCES})
+ADD_LIBRARY(libcg3 STATIC libcg3.cpp ${LIBCG3_SOURCES})
 SET_TARGET_PROPERTIES(libcg3 PROPERTIES OUTPUT_NAME "cg3")
 SET_TARGET_PROPERTIES(libcg3 PROPERTIES PREFIX "lib")
 if(MSVC AND NOT CMAKE_BUILD_TYPE STREQUAL Debug)
@@ -109,7 +140,7 @@ endif()
 cg3_link(libcg3)
 
 if(NOT MSVC)
-	ADD_LIBRARY(libcg3-shared SHARED libcg3.cpp ${CXX_SOURCES})
+	ADD_LIBRARY(libcg3-shared SHARED libcg3.cpp ${LIBCG3_SOURCES})
 	SET_TARGET_PROPERTIES(libcg3-shared PROPERTIES OUTPUT_NAME "cg3")
 	SET_TARGET_PROPERTIES(libcg3-shared PROPERTIES PREFIX "lib")
 	cg3_link(libcg3-shared)
@@ -122,7 +153,9 @@ target_link_libraries(cg-comp libcg3)
 ADD_EXECUTABLE(cg-proc
 	cg_proc.cpp
 	ApertiumApplicator.cpp
+	ApertiumApplicator.hpp
 	MatxinApplicator.cpp
+	MatxinApplicator.hpp
 	)
 cg3_link(cg-proc)
 target_link_libraries(cg-proc libcg3)
@@ -130,16 +163,23 @@ target_link_libraries(cg-proc libcg3)
 ADD_EXECUTABLE(cg-conv
 	cg_conv.cpp
 	ApertiumApplicator.cpp
+	ApertiumApplicator.hpp
 	FormatConverter.cpp
+	FormatConverter.hpp
 	FSTApplicator.cpp
+	FSTApplicator.hpp
 	MatxinApplicator.cpp
+	MatxinApplicator.hpp
 	NicelineApplicator.cpp
+	NicelineApplicator.hpp
 	PlaintextApplicator.cpp
+	PlaintextApplicator.hpp
+	options_conv.hpp
 	)
 cg3_link(cg-conv)
 target_link_libraries(cg-conv libcg3)
 
-ADD_EXECUTABLE(vislcg3 main.cpp)
+ADD_EXECUTABLE(vislcg3 main.cpp options.hpp)
 cg3_link(vislcg3)
 target_link_libraries(vislcg3 libcg3)
 

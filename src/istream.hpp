@@ -23,7 +23,7 @@
 #ifndef c6d28b7452ec699b_ISTREAM_HPP
 #define c6d28b7452ec699b_ISTREAM_HPP
 
-#include "stdafx.h"
+#include "stdafx.hpp"
 
 namespace CG3 {
 

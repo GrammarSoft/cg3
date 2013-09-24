@@ -106,8 +106,8 @@ namespace CG3 {
 	typedef stdext::hash_map<uint32_t,uint32HashSet> uint32HashSetuint32HashMap;
 }
 
-#include "macros.h"
-#include "inlines.h"
-#include "uextras.h"
+#include "macros.hpp"
+#include "inlines.hpp"
+#include "uextras.hpp"
 
 #endif

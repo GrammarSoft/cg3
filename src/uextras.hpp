@@ -23,8 +23,8 @@
 #ifndef c6d28b7452ec699b_UEXTRAS_H
 #define c6d28b7452ec699b_UEXTRAS_H
 
-#include "stdafx.h"
-#include "Strings.h"
+#include "stdafx.hpp"
+#include "Strings.hpp"
 
 namespace CG3 {
 

@@ -20,23 +20,28 @@
 */
 
 #pragma once
-#ifndef c6d28b7452ec699b_IGRAMMARPARSER_H
-#define c6d28b7452ec699b_IGRAMMARPARSER_H
+#ifndef c6d28b7452ec699b_BINARYGRAMMAR_H
+#define c6d28b7452ec699b_BINARYGRAMMAR_H
 
-#include "stdafx.h"
+#include "IGrammarParser.hpp"
 
 namespace CG3 {
-	class Grammar;
+	class ContextualTest;
 
-	class IGrammarParser {
+	class BinaryGrammar : public IGrammarParser {
 	public:
-		virtual ~IGrammarParser() {};
-		virtual void setCompatible(bool compat) = 0;
-		virtual void setVerbosity(uint32_t level) = 0;
-		virtual int parse_grammar_from_file(const char *filename, const char *locale, const char *codepage) = 0;
-	protected:
-		UFILE *ux_stderr;
-		Grammar *result;
+		BinaryGrammar(Grammar& result, UFILE *ux_err);
+
+		int writeBinaryGrammar(FILE *output);
+		int readBinaryGrammar(FILE *input);
+
+		void setCompatible(bool compat);
+		void setVerbosity(uint32_t level);
+		int parse_grammar_from_file(const char *filename, const char *locale, const char *codepage);
+	private:
+		Grammar *grammar;
+		void writeContextualTest(ContextualTest *t, FILE *output);
+		void readContextualTest(ContextualTest *t, FILE *input);
 	};
 }
 
