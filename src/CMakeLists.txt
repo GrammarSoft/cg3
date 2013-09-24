@@ -63,12 +63,42 @@ macro(cg3_link target)
 	target_link_libraries(${target} ${ICU_LIBRARIES} ${ICU_IO_LIBRARIES} ${ICU_I18N_LIBRARIES})
 endmacro()
 
-SET(CXX_SHARED_SOURCES BinaryGrammar.cpp CompositeTag.cpp ContextualTest.cpp Grammar.cpp Rule.cpp Set.cpp Strings.cpp Tag.cpp TextualParser.cpp uextras.cpp BinaryGrammar_read.cpp BinaryGrammar_write.cpp ../include/exec-stream/exec-stream.cpp)
+SET(CXX_SHARED_SOURCES
+	BinaryGrammar.cpp
+	BinaryGrammar_read.cpp
+	BinaryGrammar_write.cpp
+	CompositeTag.cpp
+	ContextualTest.cpp
+	Grammar.cpp
+	Rule.cpp
+	Set.cpp
+	Strings.cpp
+	Tag.cpp
+	TextualParser.cpp
+	uextras.cpp
+	../include/exec-stream/exec-stream.cpp
+	)
 if(MSVC)
-	SET(CXX_SHARED_SOURCES ../win32/libgen.c ../win32/getopt.c ${CXX_SHARED_SOURCES})
+	SET(CXX_SHARED_SOURCES
+		../win32/getopt.c
+		../win32/libgen.c
+		${CXX_SHARED_SOURCES})
 endif()
 
-SET(CXX_SOURCES GrammarApplicator_runGrammar.cpp GrammarApplicator.cpp GrammarApplicator_matchSet.cpp GrammarApplicator_reflow.cpp GrammarApplicator_runContextualTest.cpp GrammarApplicator_runRules.cpp GrammarWriter.cpp icu_uoptions.cpp SingleWindow.cpp CohortIterator.cpp Window.cpp Cohort.cpp Reading.cpp ${CXX_SHARED_SOURCES})
+SET(CXX_SOURCES
+	Cohort.cpp
+	CohortIterator.cpp
+	GrammarApplicator.cpp
+	GrammarApplicator_matchSet.cpp
+	GrammarApplicator_reflow.cpp
+	GrammarApplicator_runContextualTest.cpp
+	GrammarApplicator_runGrammar.cpp
+	GrammarApplicator_runRules.cpp
+	GrammarWriter.cpp
+	Reading.cpp
+	SingleWindow.cpp
+	Window.cpp
+	${CXX_SHARED_SOURCES})
 
 ADD_LIBRARY(libcg3 STATIC libcg3.cpp ${CXX_SOURCES})
 SET_TARGET_PROPERTIES(libcg3 PROPERTIES OUTPUT_NAME "cg3")
@@ -89,11 +119,23 @@ ADD_EXECUTABLE(cg-comp cg_comp.cpp)
 cg3_link(cg-comp)
 target_link_libraries(cg-comp libcg3)
 
-ADD_EXECUTABLE(cg-proc cg_proc.cpp ApertiumApplicator.cpp MatxinApplicator.cpp)
+ADD_EXECUTABLE(cg-proc
+	cg_proc.cpp
+	ApertiumApplicator.cpp
+	MatxinApplicator.cpp
+	)
 cg3_link(cg-proc)
 target_link_libraries(cg-proc libcg3)
 
-ADD_EXECUTABLE(cg-conv cg_conv.cpp FormatConverter.cpp ApertiumApplicator.cpp MatxinApplicator.cpp NicelineApplicator.cpp PlaintextApplicator.cpp FSTApplicator.cpp)
+ADD_EXECUTABLE(cg-conv
+	cg_conv.cpp
+	ApertiumApplicator.cpp
+	FormatConverter.cpp
+	FSTApplicator.cpp
+	MatxinApplicator.cpp
+	NicelineApplicator.cpp
+	PlaintextApplicator.cpp
+	)
 cg3_link(cg-conv)
 target_link_libraries(cg-conv libcg3)
 
