@@ -495,7 +495,7 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 		for (uint32_t j=0 ; j<num_dep_tests ; j++) {
 			ContextualTest *t = grammar->allocateContextualTest();
 			readContextualTest(t, input);
-			r->addContextualTest(t, &r->dep_test_head);
+			r->addContextualTest(t, r->dep_tests);
 		}
 
 		fread(&u32tmp, sizeof(uint32_t), 1, input);
@@ -504,7 +504,7 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 		for (uint32_t j=0 ; j<num_tests ; j++) {
 			ContextualTest *t = grammar->allocateContextualTest();
 			readContextualTest(t, input);
-			r->addContextualTest(t, &r->test_head);
+			r->addContextualTest(t, r->tests);
 		}
 		grammar->rule_by_number[r->number] = r;
 	}

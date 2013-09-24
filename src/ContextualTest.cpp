@@ -41,32 +41,19 @@ num_fail(0),
 num_match(0),
 total_time(0),
 tmpl(0),
-linked(0),
-prev(0),
-next(0)
+linked(0)
 {
 	// Nothing in the actual body...
 }
 
 ContextualTest::~ContextualTest() {
-	foreach (std::list<ContextualTest*>, ors, iter, iter_end) {
+	foreach(ContextList, ors, iter, iter_end) {
 		delete *iter;
 		*iter = 0;
 	}
-	detach();
 	ors.clear();
 	tmpl = 0;
 	delete linked;
-}
-
-void ContextualTest::detach() {
-	if (prev) {
-		prev->next = next;
-	}
-	if (next) {
-		next->prev = prev;
-	}
-	prev = next = 0;
 }
 
 uint32_t ContextualTest::rehash() {
@@ -93,7 +80,7 @@ uint32_t ContextualTest::rehash() {
 	if (tmpl) {
 		hash = hash_sdbm_uint32_t(hash, tmpl->rehash());
 	}
-	foreach (std::list<ContextualTest*>, ors, iter, iter_end) {
+	foreach (ContextList, ors, iter, iter_end) {
 		hash = hash_sdbm_uint32_t(hash, (*iter)->rehash());
 	}
 	return hash;
@@ -106,7 +93,7 @@ void ContextualTest::resetStatistics() {
 	if (tmpl) {
 		tmpl->resetStatistics();
 	}
-	foreach (std::list<ContextualTest*>, ors, idts, idts_end) {
+	foreach (ContextList, ors, idts, idts_end) {
 		(*idts)->resetStatistics();
 	}
 	if (linked) {
@@ -136,7 +123,7 @@ void ContextualTest::markUsed(Grammar& grammar) {
 	if (tmpl) {
 		tmpl->markUsed(grammar);
 	}
-	foreach (std::list<ContextualTest*>, ors, idts, idts_end) {
+	foreach (ContextList, ors, idts, idts_end) {
 		(*idts)->markUsed(grammar);
 	}
 	if (linked) {

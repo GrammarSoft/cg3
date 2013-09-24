@@ -21,7 +21,6 @@
 
 #include "Grammar.h"
 #include "Rule.h"
-#include "ContextualTest.h"
 #include "Strings.h"
 #include "Tag.h"
 
@@ -45,8 +44,6 @@ quality(0.0),
 type(K_IGNORE),
 maplist(0),
 sublist(0),
-test_head(0),
-dep_test_head(0),
 num_fail(0),
 num_match(0),
 total_time(0),
@@ -58,15 +55,11 @@ dep_target(0)
 Rule::~Rule() {
 	delete[] name;
 
-	while (test_head) {
-		ContextualTest *t = test_head->next;
-		delete test_head;
-		test_head = t;
+	foreach (ContextList, tests, it, it_end) {
+		delete *it;
 	}
-	while (dep_test_head) {
-		ContextualTest *t = dep_test_head->next;
-		delete dep_test_head;
-		dep_test_head = t;
+	foreach (ContextList, dep_tests, it, it_end) {
+		delete *it;
 	}
 
 	delete dep_target;
@@ -81,46 +74,21 @@ void Rule::setName(const UChar *to) {
 	}
 }
 
-void Rule::addContextualTest(ContextualTest *to, ContextualTest **head) {
-	if (*head) {
-		(*head)->prev = to;
-		to->next = *head;
-	}
-	*head = to;
+void Rule::addContextualTest(ContextualTest *to, ContextList& head) {
+	head.push_front(to);
 }
 
 void Rule::reverseContextualTests() {
-	ContextualTest *th = 0;
-
-	th = test_head;
-	while (th) {
-		std::swap(th->next, th->prev);
-		if (!th->prev) {
-			test_head = th;
-		}
-		th = th->prev;
-	}
-
-	th = dep_test_head;
-	while (th) {
-		std::swap(th->next, th->prev);
-		if (!th->prev) {
-			dep_test_head = th;
-		}
-		th = th->prev;
-	}
+	tests.reverse();
+	dep_tests.reverse();
 }
 
 void Rule::resetStatistics() {
-	ContextualTest *t = test_head;
-	while (t) {
-		t->resetStatistics();
-		t = t->next;
+	foreach (ContextList, tests, it, it_end) {
+		(*it)->resetStatistics();
 	}
-	t = dep_test_head;
-	while (t) {
-		t->resetStatistics();
-		t = t->next;
+	foreach (ContextList, dep_tests, it, it_end) {
+		(*it)->resetStatistics();
 	}
 	num_fail = 0;
 	num_match = 0;
