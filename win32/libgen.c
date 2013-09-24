@@ -1,13 +1,12 @@
-#include <string.h>
-
 #include "libgen.h"
+#include <string.h>
 
 // http://www.opengroup.org/onlinepubs/007908775/xsh/basename.html
 
-char* basename(char *path) {
+const char *basename(const char *path) {
 	if (path != NULL) {
 		// Find the last position of the \ in the path name
-		char* pos = strrchr(path, '\\');
+		const char *pos = strrchr(path, '\\');
 
 		if (pos != NULL) { // If a \ char was found...
 			if (pos + 1 != NULL) // If it is not the last character in the string...

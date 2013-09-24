@@ -31,13 +31,10 @@
 
 #include "version.h"
 
-using namespace std;
 using CG3::CG3Quit;
 
-void endProgram(char *name);
-
-
-void endProgram(char *name) {
+void endProgram(const char *name) {
+	using namespace std;
 	fprintf(stdout, "VISL CG-3 Disambiguator version %u.%u.%u.%u\n",
 		CG3_VERSION_MAJOR, CG3_VERSION_MINOR, CG3_VERSION_PATCH, CG3_REVISION);
 	cout << basename(name) <<": process a stream with a constraint grammar" << endl;
@@ -266,7 +263,6 @@ int main(int argc, char *argv[]) {
 	grammar.reindex();
 
 	delete parser;
-	parser = 0;
 
 	CG3::GrammarApplicator *applicator = 0;
 
@@ -337,13 +333,12 @@ int main(int argc, char *argv[]) {
 		}
 
 	}
-	catch (exception& e) {
-		cerr << e.what();
+	catch (std::exception& e) {
+		std::cerr << e.what();
 		exit(1);
 	}
 
 	delete applicator;
-	applicator = 0;
 
 	u_fclose(ux_stdout);
 	u_fclose(ux_stderr);
