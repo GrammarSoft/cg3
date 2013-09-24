@@ -24,12 +24,6 @@
 #define c6d28b7452ec699b_STDAFX_H
 
 #ifdef _MSC_VER
-	#define _SECURE_SCL 0
-	#define _ITERATOR_DEBUG_LEVEL 0
-	#define _CRT_SECURE_NO_DEPRECATE
-	#define WIN32_LEAN_AND_MEAN
-	#define VC_EXTRALEAN
-	#define NOMINMAX
 	// warning C4428: universal-character-name encountered in source
 	#pragma warning (disable: 4428)
 	// warning C4512: assignment operator could not be generated
