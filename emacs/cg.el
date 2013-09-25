@@ -396,12 +396,7 @@ line in the X clipboard.
 
 This makes switching between the terminal and the file slightly
 faster (since double-clicking the rule info -- in Konsole at
-least -- selects the whole string \"SELECT:1022:rulename\").
-
-Ideally we should have some sort of comint interpreter to make
-trace output clickable, but since we're often switching between
-_several_ CG files in a pipeline, that could get complicated
-before getting useful..."
+least -- selects the whole string \"SELECT:1022:rulename\")."
   (interactive (list (when current-prefix-arg
                        (cg-read-arg "Paste rule info from --trace here: "
                                     cg--goto-history))))
