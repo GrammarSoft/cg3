@@ -75,6 +75,7 @@ namespace CG3 {
 		typedef stdext::hash_map<uint32_t, ContextualTest*> contexts_t;
 		contexts_t templates;
 		contexts_t contexts;
+		ContextVector contexts_list;
 
 		typedef stdext::hash_map<uint32_t, uint32IntervalVector> rules_by_set_t;
 		rules_by_set_t rules_by_set;

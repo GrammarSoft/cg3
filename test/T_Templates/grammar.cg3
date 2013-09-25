@@ -57,6 +57,8 @@ TEMPLATE alts =
 	# Alternatives within alternatives...this can get very complex.
 	OR ((2** x BARRIER v) OR (-2** x LINK 1 f))
 	OR (T:alts)
+	# Templates are resolved later, so we can refer to currently unknown ones.
+	OR (T:another)
 	;
 TEMPLATE another =
 	   (1*C x LINK 1 y LINK 2 z)
