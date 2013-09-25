@@ -3,7 +3,7 @@ mkdir -p gprof
 mkdir -p gcov
 
 svn up
-make -j3
+make -j5
 ./src/vislcg3 -C UTF-8 -g ~/parsers/dansk/etc/dancg --grammar-only --grammar-bin dancg.cg3b
 ./compile-profile.sh
 
