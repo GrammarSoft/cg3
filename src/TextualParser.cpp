@@ -532,6 +532,7 @@ int TextualParser::parseContextualTestPosition(UChar *& p, ContextualTest& t) {
 
 ContextualTest *TextualParser::parseContextualTestList(UChar *& p, Rule *rule) {
 	ContextualTest *t = result->allocateContextualTest();
+	ContextualTest *ot = t;
 	t->line = result->lines;
 
 	result->lines += SKIPWS(p);
@@ -555,6 +556,8 @@ ContextualTest *TextualParser::parseContextualTestList(UChar *& p, Rule *rule) {
 		t->pos |= POS_NOT;
 	}
 	result->lines += SKIPWS(p);
+
+	std::pair<size_t,UString> tmpl_data;
 
 	UChar *pos_p = p;
 	UChar *n = p;
@@ -603,7 +606,6 @@ ContextualTest *TextualParser::parseContextualTestList(UChar *& p, Rule *rule) {
 		t->offset = 1;
 		t->target = s->hash;
 		result->lines += SKIPWS(p);
-		ContextualTest *nt = t;
 		while (*p == ',') {
 			++p;
 			result->lines += SKIPWS(p);
@@ -611,8 +613,8 @@ ContextualTest *TextualParser::parseContextualTestList(UChar *& p, Rule *rule) {
 			Set *s = parseSetInlineWrapper(p);
 			lnk->offset = 1;
 			lnk->target = s->hash;
-			nt->linked = lnk;
-			nt = lnk;
+			t->linked = lnk;
+			t = lnk;
 			result->lines += SKIPWS(p);
 		}
 		if (*p != ']') {
@@ -645,7 +647,9 @@ label_parseTemplateRef:
 			ptrdiff_t c = n - p;
 			u_strncpy(&gbuffers[0][0], p, c);
 			gbuffers[0][c] = 0;
-			deferred_tmpls[t] = std::make_pair(result->lines, &gbuffers[0][0]);
+			uint32_t cn = hash_sdbm_uchar(&gbuffers[0][0]);
+			t->tmpl = reinterpret_cast<ContextualTest*>(cn);
+			tmpl_data = std::make_pair(result->lines, &gbuffers[0][0]);
 			p = n;
 			result->lines += SKIPWS(p);
 		}
@@ -710,6 +714,10 @@ label_parseTemplateRef:
 		}
 	}
 
+	t = result->addContextualTest(ot);
+	if (t->tmpl) {
+		deferred_tmpls[t] = tmpl_data;
+	}
 	return t;
 }
 
@@ -1895,7 +1903,6 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 			ContextualTest *t = parseContextualTestList(p);
 			t->line = line;
 			t->name = cn;
-			t->rehash();
 			result->addTemplate(t, name.c_str());
 
 			result->lines += SKIPWS(p, ';');

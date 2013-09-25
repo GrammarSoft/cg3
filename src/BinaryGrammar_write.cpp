@@ -83,7 +83,7 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 	if (grammar->soft_delimiters) {
 		fields |= (1 << 10);
 	}
-	if (!grammar->template_list.empty()) {
+	if (!grammar->contexts_list.empty()) {
 		fields |= (1 << 11);
 	}
 	if (!grammar->rule_by_number.empty()) {
@@ -314,15 +314,12 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 	}
 
-	if (!grammar->template_list.empty()) {
-		u32tmp = (uint32_t)htonl((uint32_t)grammar->template_list.size());
+	if (!grammar->contexts_list.empty()) {
+		u32tmp = (uint32_t)htonl((uint32_t)grammar->contexts_list.size());
 		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 	}
-	std::vector<ContextualTest*>::const_iterator tmpl_iter;
-	for (tmpl_iter = grammar->template_list.begin() ; tmpl_iter != grammar->template_list.end() ; tmpl_iter++) {
-		u32tmp = (uint32_t)htonl((uint32_t)(*tmpl_iter)->name);
-		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
-		writeContextualTest(*tmpl_iter, output);
+	const_foreach (ContextVector, grammar->contexts_list, it, it_end) {
+		writeContextualTest(*it, output);
 	}
 
 	if (!grammar->rule_by_number.empty()) {
@@ -408,27 +405,25 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 		fwrite(buffer.str().c_str(), buffer.str().length(), 1, output);
 
+		u32tmp = 0;
 		if (r->dep_target) {
-			u8tmp = (uint8_t)1;
-			fwrite(&u8tmp, sizeof(uint8_t), 1, output);
-			writeContextualTest(r->dep_target, output);
+			u32tmp = (uint32_t)htonl(r->dep_target->number);
 		}
-		else {
-			u8tmp = (uint8_t)0;
-			fwrite(&u8tmp, sizeof(uint8_t), 1, output);
-		}
+		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 
 		r->reverseContextualTests();
 		u32tmp = (uint32_t)htonl(r->dep_tests.size());
 		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
-		foreach (ContextList, r->dep_tests, it, it_end) {
-			writeContextualTest(*it, output);
+		const_foreach (ContextList, r->dep_tests, it, it_end) {
+			u32tmp = (uint32_t)htonl((*it)->number);
+			fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 		}
 
 		u32tmp = (uint32_t)htonl(r->tests.size());
 		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
-		foreach (ContextList, r->tests, it, it_end) {
-			writeContextualTest(*it, output);
+		const_foreach (ContextList, r->tests, it, it_end) {
+			u32tmp = (uint32_t)htonl((*it)->number);
+			fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 		}
 	}
 
@@ -444,6 +439,10 @@ void BinaryGrammar::writeContextualTest(ContextualTest *t, FILE *output) {
 	if (t->hash) {
 		fields |= (1 << 0);
 		writeSwapped(buffer, t->hash);
+	}
+	else {
+		u_fprintf(ux_stderr, "Error: Context on line %u had hash 0!\n", t->line);
+		CG3Quit(1);
 	}
 	if (t->pos) {
 		fields |= (1 << 1);
@@ -490,6 +489,10 @@ void BinaryGrammar::writeContextualTest(ContextualTest *t, FILE *output) {
 	if (t->linked) {
 		fields |= (1 << 11);
 	}
+	if (t->name) {
+		fields |= (1 << 12);
+		writeSwapped(buffer, t->name);
+	}
 
 	u32tmp = (uint32_t)htonl(fields);
 	fwrite(&u32tmp, sizeof(uint32_t), 1, output);
@@ -499,14 +502,15 @@ void BinaryGrammar::writeContextualTest(ContextualTest *t, FILE *output) {
 		u32tmp = (uint32_t)htonl((uint32_t)t->ors.size());
 		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 
-		std::list<ContextualTest*>::const_iterator iter;
-		for (iter = t->ors.begin() ; iter != t->ors.end() ; iter++) {
-			writeContextualTest(*iter, output);
+		const_foreach (ContextList, t->ors, iter, iter_end) {
+			u32tmp = (uint32_t)htonl((*iter)->number);
+			fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 		}
 	}
 
 	if (t->linked) {
-		writeContextualTest(t->linked, output);
+		u32tmp = (uint32_t)htonl(t->linked->number);
+		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 	}
 }
 

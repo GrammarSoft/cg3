@@ -74,8 +74,8 @@ Grammar::~Grammar() {
 		delete *iter_rules;
 	}
 
-	foreach (std::vector<ContextualTest*>, template_list, tmpls, tmpls_end) {
-		delete *tmpls;
+	foreach (ContextVector, contexts_list, it, it_end) {
+		delete *it;
 	}
 }
 
@@ -441,8 +441,7 @@ Tag *Grammar::allocateTag(const UChar *txt, bool raw) {
 	}
 	tag->type |= T_GRAMMAR;
 	uint32_t hash = tag->rehash();
-	uint32_t seed = 0;
-	for ( ; seed < 10000 ; seed++) {
+	for (uint32_t seed = 0; seed < 10000; seed++) {
 		uint32_t ih = hash + seed;
 		if ((it = single_tags.find(ih)) != single_tags.end()) {
 			Tag *t = it->second;
@@ -503,18 +502,38 @@ ContextualTest *Grammar::allocateContextualTest() {
 }
 
 ContextualTest *Grammar::addContextualTest(ContextualTest *t) {
-	t->rehash();
-	contexts_t::iterator cit = contexts.find(t->hash);
-	if (cit != contexts.end()) {
-		if (cit->second != contexts[t->hash]) {
-			u_fprintf(ux_stderr, "Error: Context hash collission on line %u!\n", lines);
-			CG3Quit(1);
-		}
-		delete t;
-		t = cit->second;
+	if (t == 0) {
+		return 0;
 	}
-	else {
-		contexts[t->hash] = t;
+	t->rehash();
+
+	t->linked = addContextualTest(t->linked);
+	foreach (ContextList, t->ors, it, it_end) {
+		*it = addContextualTest(*it);
+	}
+
+	for (uint32_t seed = 0; seed < 1000; ++seed) {
+		contexts_t::iterator cit = contexts.find(t->hash+seed);
+		if (cit == contexts.end()) {
+			contexts[t->hash+seed] = t;
+			t->hash += seed;
+			t->seed = seed;
+			contexts_list.push_back(t);
+			t->number = contexts_list.size();
+			if (verbosity_level > 1 && seed) {
+				u_fprintf(ux_stderr, "Warning: Context on line %u got hash seed %u.\n", t->line, seed);
+				u_fflush(ux_stderr);
+			}
+			break;
+		}
+		if (t == cit->second) {
+			break;
+		}
+		if (*t == *cit->second) {
+			delete t;
+			t = cit->second;
+			break;
+		}
 	}
 	return t;
 }

@@ -32,6 +32,8 @@ offset_sub(0),
 line(0),
 name(0),
 hash(0),
+seed(0),
+number(0),
 pos(0),
 target(0),
 relation(0),
@@ -46,14 +48,43 @@ linked(0)
 	// Nothing in the actual body...
 }
 
-ContextualTest::~ContextualTest() {
-	foreach(ContextList, ors, iter, iter_end) {
-		delete *iter;
-		*iter = 0;
+bool ContextualTest::operator==(const ContextualTest& other) const {
+	if (hash != other.hash) {
+		return false;
 	}
-	ors.clear();
-	tmpl = 0;
-	delete linked;
+	if (pos != other.pos) {
+		return false;
+	}
+	if (target != other.target) {
+		return false;
+	}
+	if (barrier != other.barrier) {
+		return false;
+	}
+	if (cbarrier != other.cbarrier) {
+		return false;
+	}
+	if (relation != other.relation) {
+		return false;
+	}
+	if (offset != other.offset) {
+		return false;
+	}
+	if (offset_sub != other.offset_sub) {
+		return false;
+	}
+	if (linked != other.linked) {
+		if (!(linked && other.linked && linked->hash == other.linked->hash)) {
+			return false;
+		}
+	}
+	if (tmpl != other.tmpl) {
+		return false;
+	}
+	if (ors != other.ors) {
+		return false;
+	}
+	return true;
 }
 
 uint32_t ContextualTest::rehash() {
@@ -78,11 +109,14 @@ uint32_t ContextualTest::rehash() {
 		hash = hash_sdbm_uint32_t(hash, linked->rehash());
 	}
 	if (tmpl) {
-		hash = hash_sdbm_uint32_t(hash, tmpl->rehash());
+		hash = hash_sdbm_uint32_t(hash, static_cast<uint32_t>(reinterpret_cast<uintptr_t>(tmpl)));
 	}
 	foreach (ContextList, ors, iter, iter_end) {
 		hash = hash_sdbm_uint32_t(hash, (*iter)->rehash());
 	}
+
+	hash += seed;
+
 	return hash;
 }
 

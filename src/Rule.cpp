@@ -54,15 +54,6 @@ dep_target(0)
 
 Rule::~Rule() {
 	delete[] name;
-
-	foreach (ContextList, tests, it, it_end) {
-		delete *it;
-	}
-	foreach (ContextList, dep_tests, it, it_end) {
-		delete *it;
-	}
-
-	delete dep_target;
 }
 
 void Rule::setName(const UChar *to) {

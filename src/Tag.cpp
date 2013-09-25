@@ -485,9 +485,7 @@ uint32_t Tag::rehash() {
 		hash = hash_sdbm_char("v", hash);
 	}
 
-	if (seed) {
-		hash += seed;
-	}
+	hash += seed;
 
 	type &= ~T_SPECIAL;
 	if (type & MASK_TAG_SPECIAL) {
