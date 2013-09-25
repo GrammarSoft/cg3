@@ -24,12 +24,14 @@
 #define c6d28b7452ec699b_CONTEXTUALTEST_H
 
 #include "stdafx.hpp"
+#include <vector>
 #include <list>
 #include <stdint.h>
 
 namespace CG3 {
 	class Grammar;
 	class ContextualTest;
+	typedef std::vector<ContextualTest*> ContextVector;
 	typedef std::list<ContextualTest*> ContextList;
 
 #ifdef _MSC_VER
@@ -89,6 +91,8 @@ namespace CG3 {
 		uint32_t line;
 		uint32_t name;
 		uint32_t hash;
+		uint32_t seed;
+		uint32_t number;
 		uint64_t pos;
 		uint32_t target;
 		uint32_t relation;
@@ -102,8 +106,9 @@ namespace CG3 {
 		ContextList ors;
 
 		ContextualTest();
-		~ContextualTest();
 		
+		bool operator==(const ContextualTest&) const;
+		bool operator!=(const ContextualTest& o) const { return !(*this == o); }
 		uint32_t rehash();
 		void resetStatistics();
 		void markUsed(Grammar& grammar);

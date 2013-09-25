@@ -385,14 +385,16 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 		fread(&u32tmp, sizeof(uint32_t), 1, input);
 		u32tmp = (uint32_t)ntohl(u32tmp);
 	}
-	uint32_t num_templates = u32tmp;
-	for (uint32_t i=0 ; i<num_templates ; i++) {
-		ContextualTest *t = grammar->allocateContextualTest();
-		fread(&u32tmp, sizeof(uint32_t), 1, input);
-		t->name = (uint32_t)ntohl(u32tmp);
-		grammar->templates[t->name] = t;
-		grammar->template_list.push_back(t);
-		readContextualTest(t, input);
+	uint32_t num_contexts = u32tmp;
+	grammar->contexts_list.resize(num_contexts);
+	for (uint32_t i = 0; i < num_contexts; i++) {
+		ContextualTest *t = readContextualTest(input);
+		t->number = i + 1;
+		grammar->contexts_list[i] = t;
+		if (t->name) {
+			grammar->templates[t->name] = t;
+			grammar->template_list.push_back(t);
+		}
 	}
 
 	u32tmp = 0;
@@ -483,18 +485,19 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 			r->number = (uint32_t)ntohl(u32tmp);
 		}
 
-		fread(&u8tmp, sizeof(uint8_t), 1, input);
-		if (u8tmp == 1) {
-			r->dep_target = grammar->allocateContextualTest();
-			readContextualTest(r->dep_target, input);
+		fread(&u32tmp, sizeof(uint32_t), 1, input);
+		u32tmp = (uint32_t)ntohl(u32tmp);
+		if (u32tmp) {
+			r->dep_target = grammar->contexts_list[u32tmp-1];
 		}
 
 		fread(&u32tmp, sizeof(uint32_t), 1, input);
 		u32tmp = (uint32_t)ntohl(u32tmp);
 		uint32_t num_dep_tests = u32tmp;
 		for (uint32_t j=0 ; j<num_dep_tests ; j++) {
-			ContextualTest *t = grammar->allocateContextualTest();
-			readContextualTest(t, input);
+			fread(&u32tmp, sizeof(uint32_t), 1, input);
+			u32tmp = (uint32_t)ntohl(u32tmp);
+			ContextualTest *t = grammar->contexts_list[u32tmp - 1];
 			r->addContextualTest(t, r->dep_tests);
 		}
 
@@ -502,21 +505,29 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 		u32tmp = (uint32_t)ntohl(u32tmp);
 		uint32_t num_tests = u32tmp;
 		for (uint32_t j=0 ; j<num_tests ; j++) {
-			ContextualTest *t = grammar->allocateContextualTest();
-			readContextualTest(t, input);
+			fread(&u32tmp, sizeof(uint32_t), 1, input);
+			u32tmp = (uint32_t)ntohl(u32tmp);
+			ContextualTest *t = grammar->contexts_list[u32tmp - 1];
 			r->addContextualTest(t, r->tests);
 		}
 		grammar->rule_by_number[r->number] = r;
+	}
+
+	// Bind the named templates to where they are used
+	foreach(deferred_t, deferred_tmpls, it, it_end) {
+		it->first->tmpl = grammar->templates.find(it->second)->second;
 	}
 
 	ucnv_close(conv);
 	return 0;
 }
 
-void BinaryGrammar::readContextualTest(ContextualTest *t, FILE *input) {
+ContextualTest *BinaryGrammar::readContextualTest(FILE *input) {
+	ContextualTest *t = grammar->allocateContextualTest();
 	uint32_t fields = 0;
 	uint32_t u32tmp = 0;
 	int32_t i32tmp = 0;
+	uint32_t tmpl = 0;
 
 	fread(&u32tmp, sizeof(uint32_t), 1, input);
 	fields = (uint32_t)ntohl(u32tmp);
@@ -539,8 +550,8 @@ void BinaryGrammar::readContextualTest(ContextualTest *t, FILE *input) {
 	}
 	if (fields & (1 << 3)) {
 		fread(&u32tmp, sizeof(uint32_t), 1, input);
-		u32tmp = (uint32_t)ntohl(u32tmp);
-		t->tmpl = grammar->templates.find(u32tmp)->second;
+		tmpl = (uint32_t)ntohl(u32tmp);
+		t->tmpl = reinterpret_cast<ContextualTest*>(u32tmp);
 	}
 	if (fields & (1 << 4)) {
 		fread(&u32tmp, sizeof(uint32_t), 1, input);
@@ -566,21 +577,30 @@ void BinaryGrammar::readContextualTest(ContextualTest *t, FILE *input) {
 		fread(&i32tmp, sizeof(int32_t), 1, input);
 		t->offset_sub = (int32_t)ntohl(i32tmp);
 	}
+	if (fields & (1 << 12)) {
+		fread(&i32tmp, sizeof(int32_t), 1, input);
+		t->name = (int32_t)ntohl(i32tmp);
+	}
 	if (fields & (1 << 10)) {
 		fread(&u32tmp, sizeof(uint32_t), 1, input);
-		u32tmp = (uint32_t)ntohl(u32tmp);
-		if (u32tmp) {
-			for (uint32_t i=0 ; i<u32tmp ; ++i) {
-				ContextualTest *to = grammar->allocateContextualTest();
-				readContextualTest(to, input);
-				t->ors.push_back(to);
-			}
+		uint32_t num_ors = (uint32_t)ntohl(u32tmp);
+		for (uint32_t i=0 ; i<num_ors ; ++i) {
+			fread(&u32tmp, sizeof(uint32_t), 1, input);
+			u32tmp = (uint32_t)ntohl(u32tmp);
+			ContextualTest *to = grammar->contexts_list[u32tmp-1];
+			t->ors.push_back(to);
 		}
 	}
 	if (fields & (1 << 11)) {
-		t->linked = grammar->allocateContextualTest();
-		readContextualTest(t->linked, input);
+		fread(&u32tmp, sizeof(uint32_t), 1, input);
+		u32tmp = (uint32_t)ntohl(u32tmp);
+		t->linked = grammar->contexts_list[u32tmp - 1];
 	}
+
+	if (tmpl) {
+		deferred_tmpls[t] = tmpl;
+	}
+	return t;
 }
 
 }

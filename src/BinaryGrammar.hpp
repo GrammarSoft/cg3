@@ -41,7 +41,10 @@ namespace CG3 {
 	private:
 		Grammar *grammar;
 		void writeContextualTest(ContextualTest *t, FILE *output);
-		void readContextualTest(ContextualTest *t, FILE *input);
+		ContextualTest *readContextualTest(FILE *input);
+
+		typedef stdext::hash_map<ContextualTest*,uint32_t> deferred_t;
+		deferred_t deferred_tmpls;
 	};
 }
 

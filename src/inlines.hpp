@@ -35,12 +35,10 @@ inline uint32_t hash_sdbm_uint32_t(const uint32_t c, uint32_t hash = 0) {
 	return hash;
 }
 
-inline uint32_t hash_sdbm_uint64_t(const uint32_t c, uint64_t hash = 0) {
-	if (hash == 0) {
-		hash = CG3_HASH_SEED;
-	}
-	hash = c + (hash << 6U) + (hash << 16U) - hash;
-	return hash & 0xFFFFFFFF;
+inline uint32_t hash_sdbm_uint64_t(uint32_t c, uint64_t hash = 0) {
+	c = hash_sdbm_uint32_t(c, static_cast<uint32_t>(hash & 0xFFFFFFFF));
+	c = hash_sdbm_uint32_t(c, static_cast<uint32_t>((hash >> 32) & 0xFFFFFFFF));
+	return c;
 }
 
 /*
