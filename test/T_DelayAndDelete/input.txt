@@ -10,3 +10,5 @@
 	"word" third
 "<word>"
 	"word" fourth
+"<magicreading>"
+	"magicreading" with tags

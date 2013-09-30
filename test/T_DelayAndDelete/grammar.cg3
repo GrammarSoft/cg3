@@ -5,6 +5,7 @@ REMOVE (three) ;
 SELECT DELAYED (one) ;
 
 REMOVE UNSAFE (second) ;
+REMOVE UNSAFE ("magicreading") ;
 IFF UNSAFE (third) (-1 (wombat)) ;
 
 AFTER-SECTIONS

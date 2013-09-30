@@ -208,10 +208,10 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 		}
 		// If there are parentheses and the rule is marked as only run on the final pass, skip if this is not it.
 		if (current.has_enclosures) {
-			if (rule.flags & RF_ENCL_FINAL && !did_final_enclosure) {
+			if ((rule.flags & RF_ENCL_FINAL) && !did_final_enclosure) {
 				continue;
 			}
-			else if (did_final_enclosure && !(rule.flags & RF_ENCL_FINAL)) {
+			if (did_final_enclosure && !(rule.flags & RF_ENCL_FINAL)) {
 				continue;
 			}
 		}
@@ -271,8 +271,13 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 				if (type == K_SELECT) {
 					continue;
 				}
-				else if ((type == K_REMOVE || type == K_IFF) && (!unsafe || (rule.flags & RF_SAFE)) && !(rule.flags & RF_UNSAFE)) {
-					continue;
+				if (type == K_REMOVE || type == K_IFF) {
+					if (cohort->readings.front()->noprint) {
+						continue;
+					}
+					if ((!unsafe || (rule.flags & RF_SAFE)) && !(rule.flags & RF_UNSAFE)) {
+						continue;
+					}
 				}
 			}
 			else if (type == K_UNMAP && rule.flags & RF_SAFE) {
