@@ -1,6 +1,7 @@
 "<word>"
-	"word" first one 
+	"word" first one
 "<word>"
 "<word>"
 "<word>"
-	"word" fourth @c-one @lookdelayed @delayed @lookdeleted @deleted @unsafe 
+	"word" fourth @c-one @lookdelayed @delayed @lookdeleted @deleted @unsafe
+"<magicreading>"

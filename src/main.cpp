@@ -119,11 +119,11 @@ int main(int argc, char* argv[]) {
 	}
 	status = U_ZERO_ERROR;
 
+	ucnv_setDefaultName("UTF-8");
 	const char *codepage_default = ucnv_getDefaultName();
 	const char *codepage_grammar = codepage_default;
 	const char *codepage_input   = codepage_grammar;
 	const char *codepage_output  = codepage_grammar;
-	ucnv_setDefaultName("UTF-8");
 
 	if (options[CODEPAGE_GRAMMAR].doesOccur) {
 		codepage_grammar = options[CODEPAGE_GRAMMAR].value;
