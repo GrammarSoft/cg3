@@ -106,7 +106,6 @@ cg3_reading *cg3_cohort_getreading(cg3_cohort *cohort, size_t which);
 // This is usually not to be used. The Sentence will take ownership of the Cohort and free it on destruction
 void cg3_cohort_free(cg3_cohort *cohort);
 
-// ToDo: Add sub-reading support to library
 cg3_reading *cg3_reading_create(cg3_cohort *cohort);
 cg3_status cg3_reading_addtag(cg3_reading *reading, cg3_tag *tag);
 size_t cg3_reading_numtags(cg3_reading *reading);
@@ -115,6 +114,14 @@ size_t cg3_reading_numtraces(cg3_reading *reading);
 uint32_t cg3_reading_gettrace(cg3_reading *reading, size_t which);
 // This is usually not to be used. The Cohort will take ownership of the Reading and free it on destruction
 void cg3_reading_free(cg3_reading *reading);
+
+cg3_reading *cg3_subreading_create(cg3_reading *reading);
+// The Reading takes ownership of the Sub-Reading here.
+cg3_status cg3_reading_setsubreading(cg3_reading *reading, cg3_reading *subreading);
+size_t cg3_reading_numsubreadings(cg3_reading *reading);
+cg3_reading *cg3_reading_getsubreading(cg3_reading *reading, size_t which);
+// This is usually not to be used. The Reading will take ownership of the Sub-Reading and free it on destruction
+void cg3_subreading_free(cg3_reading *subreading);
 
 #ifdef U_ICU_VERSION_MAJOR_NUM
 cg3_tag *cg3_tag_create_u(cg3_applicator *applicator, const UChar *text);

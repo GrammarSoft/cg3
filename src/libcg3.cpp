@@ -358,6 +358,34 @@ void cg3_reading_free(cg3_reading *reading_) {
 	delete reading;
 }
 
+cg3_reading *cg3_subreading_create(cg3_reading *reading_) {
+	Reading *reading = static_cast<Reading*>(reading_);
+	return cg3_reading_create(reading->parent);
+}
+
+cg3_status cg3_reading_setsubreading(cg3_reading *reading_, cg3_reading *subreading_) {
+	Reading *reading = static_cast<Reading*>(reading_);
+	Reading *subreading = static_cast<Reading*>(subreading_);
+	delete reading->next;
+	reading->next = subreading;
+	return CG3_SUCCESS;
+}
+
+size_t cg3_reading_numsubreadings(cg3_reading *reading_) {
+	Reading *reading = static_cast<Reading*>(reading_);
+	return (reading->next != 0);
+}
+
+cg3_reading *cg3_reading_getsubreading(cg3_reading *reading_, size_t which) {
+	assert((which == 1) && "There can currently only be 1 sub-reading per reading, but the API is future-proof");
+	Reading *reading = static_cast<Reading*>(reading_);
+	return reading->next;
+}
+
+void cg3_subreading_free(cg3_reading *subreading_) {
+	return cg3_reading_free(subreading_);
+}
+
 cg3_tag *cg3_tag_create_u(cg3_applicator *applicator_, const UChar *text) {
 	GrammarApplicator *applicator = static_cast<GrammarApplicator*>(applicator_);
 	return applicator->addTag(text);
