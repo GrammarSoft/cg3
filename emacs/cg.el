@@ -3,7 +3,7 @@
 ;; Copyright (C) 2010-2013 Kevin Brubeck Unhammer
 
 ;; Author: Kevin Brubeck Unhammer <unhammer@fsfe.org>
-;; Version: 0.1.3
+;; Version: 0.1.4
 ;; Url: http://beta.visl.sdu.dk/constraint_grammar.html
 ;; Keywords: languages
 
@@ -54,7 +54,7 @@
 
 ;;; Code:
 
-(defconst cg-version "0.1.3" "Version of cg-mode")
+(defconst cg-version "0.1.4" "Version of cg-mode")
 
 ;;;============================================================================
 ;;;
@@ -340,8 +340,8 @@ indentation."
                       (cg-permute (remove* elt input :count 1))))
             input)))
 
-(defun cg-read-arg (prompt history)
-  (let* ((default (car history))
+(defun cg-read-arg (prompt history &optional default)
+  (let* ((default (or default (car history)))
          (input
           (read-from-minibuffer
            (concat prompt
@@ -411,6 +411,8 @@ least -- selects the whole string \"SELECT:1022:rulename\")."
         (progn (goto-line (string-to-number (match-string 3 rule)))
                (setq cg--goto-history (cons rule cg--goto-history)))
       (message errmsg))))
+
+
 
 ;;; "Flycheck" ----------------------------------------------------------------
 (require 'compile)
@@ -550,6 +552,26 @@ useful for doing things like
   "Additional things to highlight in CG output.
 This gets tacked on the end of the generated expressions.")
 
+(defvar cg--output-display-table (make-display-table)
+  "Used to turn ellipses into spaces when hiding analyses.")
+
+(defvar cg-sent-tag "\\bsent\\b"
+  "When using `cg-output-hide-analyses', any cohort matching this
+regex gets a newline tacked on after the wordform.")
+
+(defvar cg-output-unhide-regex nil
+  "Regular expression exempt from hiding when doing
+`cg-output-hide-analyses'.")
+
+(defvar cg--output-hiding-analyses nil
+  "If non-nil, re-hide analyses after `cg-check'. Saves you from
+having to re-enter the buffer and press `h' if you you want to
+keep analyses hidden most of the time.")
+
+(defvar cg--output-unhide-history nil)
+
+
+
 (define-compilation-mode cg-output-mode "CG-out"
   "Major mode for output of Constraint Grammar compilations and
 runs."
@@ -577,7 +599,94 @@ runs."
   (set (make-local-variable 'compilation-finish-functions)
        (list #'cg-check-finish-function))
   (modify-syntax-entry ?§ "_")
-  (modify-syntax-entry ?@ "_"))
+  (modify-syntax-entry ?@ "_")
+  ;; For cg-output-hide-analyses:
+  (add-to-invisibility-spec '(cg-output . t))
+  ;; snatched from `org-mode':
+  (when (and (fboundp 'set-display-table-slot) (boundp 'buffer-display-table)
+	     (fboundp 'make-glyph-code))
+    (set-display-table-slot cg--output-display-table
+			    4
+			    (vconcat (make-glyph-code " ")))
+    (setq buffer-display-table cg--output-display-table)))
+
+
+
+(defun cg-output-remove-overlay (overlay)
+  (remove-overlays (overlay-start overlay) (overlay-end overlay) 'invisible 'cg-output))
+
+(defun cg-output-hide-region (from to)
+  (remove-overlays from to 'invisible 'cg-output)
+  (let ((o (make-overlay from to nil)))
+    (overlay-put o 'evaporate t)
+    (overlay-put o 'invisible 'cg-output)
+    (overlay-put o 'isearch-open-invisible 'cg-output-remove-overlay)))
+
+(defun cg-output-show-all ()
+  "Undoes the effect of `cg-output-hide-analyses'."
+  (interactive)
+  (setq cg--output-hiding-analyses nil)
+  (remove-overlays (point-min) (point-max) 'invisible 'cg-output))
+
+(defun cg-output-hide-analyses ()
+  "Hides all analyses, turning the CG format back into input
+text (more or less). You can still isearch through the text for
+tags, REMOVE/SELECT keywords etc.
+
+Call `cg-output-set-unhide' to set a regex which will be exempt
+from hiding."
+  (interactive)
+  (setq cg--output-hiding-analyses t)
+  (lexical-let (last)
+    (save-excursion
+      (goto-char (point-min))
+      (while (re-search-forward "^\"<.*>\"$" nil 'noerror)
+	(let ((line-beg (match-beginning 0))
+	      (line-end (match-end 0)))
+	  (cg-output-hide-region line-beg (+ line-beg 2)) ; "<
+	  (cg-output-hide-region (- line-end 2) line-end) ; >"
+	  (when last
+	    (if (save-excursion (re-search-backward cg-sent-tag last 'noerror))
+		(cg-output-hide-region last (- line-beg 1))	; show newline
+	      (cg-output-hide-region last line-beg))) ; hide newline too
+	  (setq last line-end)))
+      (goto-char last)
+      (when (re-search-forward "^[^\t\"]" nil 'noerror)
+	(cg-output-hide-region last (match-beginning 0)))))
+  
+  (when cg-output-unhide-regex
+    (cg-output-unhide-some cg-output-unhide-regex)))
+
+(defun cg-output-unhide-some (needle)
+  (save-excursion
+    (goto-char (point-min))
+    (while (re-search-forward needle nil 'noerror)
+      (mapcar (lambda (o)
+		(when (eq 'cg-output (overlay-get o 'invisible))
+		  (remove-overlays (overlay-start o) (overlay-end o)
+				   'invisible 'cg-output)))
+	      (overlays-at (match-beginning 0))))))
+
+(defun cg-output-set-unhide (needle)
+  "Set some exeption to `cg-output-hide-analyses'. This is saved
+and reused whenever `cg-output-hide-analyses' is called."
+  (interactive (list (cg-read-arg
+		      "Regex to unhide, or empty to hide all"
+		      cg--output-unhide-history
+		      "")))
+  (if (equal needle "")
+      (setq cg-output-unhide-regex nil)
+    (setq cg-output-unhide-regex needle)
+    (setq cg--output-unhide-history (cons needle cg--output-unhide-history)))
+  (cg-output-hide-analyses))
+
+(defun cg-output-toggle-analyses ()
+  (interactive "P")
+  (if cg--output-hiding-analyses
+      (cg-output-show-all)
+    (cg-output-hide-analyses)))
+
+
 
 ;;;###autoload
 (defcustom cg-check-after-change nil
@@ -694,7 +803,9 @@ Similarly, `cg-post-pipe' is run on output."
       (with-selected-window (get-buffer-window buffer)
         (scroll-up-line 4))))
   (with-current-buffer buffer
-    (delete-file cg--tmp)))
+    (delete-file cg--tmp))
+  (when cg--output-hiding-analyses
+    (cg-output-hide-analyses)))
 
 (defun cg-back-to-file-and-edit-input ()
   (interactive)
@@ -735,6 +846,8 @@ Similarly, `cg-post-pipe' is run on output."
 (define-key cg-output-mode-map (kbd "C-c C-i") #'cg-back-to-file-and-edit-input)
 (define-key cg-output-mode-map (kbd "i") #'cg-back-to-file-and-edit-input)
 (define-key cg-output-mode-map (kbd "g") #'cg-back-to-file-and-check)
+(define-key cg-output-mode-map (kbd "h") #'cg-output-toggle-analyses)
+(define-key cg-output-mode-map (kbd "u") #'cg-output-set-unhide)
 
 (define-key cg-input-mode-map (kbd "C-c C-c") #'cg-back-to-file-and-check)
 (define-key cg-output-mode-map (kbd "C-c C-c") #'cg-back-to-file)
