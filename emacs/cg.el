@@ -634,7 +634,7 @@ text (more or less). You can still isearch through the text for
 tags, REMOVE/SELECT keywords etc.
 
 Call `cg-output-set-unhide' to set a regex which will be exempt
-from hiding."
+from hiding. Call `cg-output-show-all' to turn off all hiding."
   (interactive)
   (setq cg--output-hiding-analyses t)
   (lexical-let (last)
@@ -680,8 +680,11 @@ and reused whenever `cg-output-hide-analyses' is called."
     (setq cg--output-unhide-history (cons needle cg--output-unhide-history)))
   (cg-output-hide-analyses))
 
+;;; TODO: 
 (defun cg-output-toggle-analyses ()
-  (interactive "P")
+  "Hide or show analyses from output. See
+`cg-output-hide-analyses'."
+  (interactive)
   (if cg--output-hiding-analyses
       (cg-output-show-all)
     (cg-output-hide-analyses)))
@@ -848,6 +851,8 @@ Similarly, `cg-post-pipe' is run on output."
 (define-key cg-output-mode-map (kbd "g") #'cg-back-to-file-and-check)
 (define-key cg-output-mode-map (kbd "h") #'cg-output-toggle-analyses)
 (define-key cg-output-mode-map (kbd "u") #'cg-output-set-unhide)
+;;; TODO: C-c C-h for toggling hiding from grammar buffer? That'll
+;;; shadow the old C-c C-h binding though ("help for C-c prefix")
 
 (define-key cg-input-mode-map (kbd "C-c C-c") #'cg-back-to-file-and-check)
 (define-key cg-output-mode-map (kbd "C-c C-c") #'cg-back-to-file)
