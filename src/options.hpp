@@ -62,6 +62,7 @@ namespace Options {
 		TRACE_NAME_ONLY,
 		TRACE_NO_REMOVED,
 		TRACE_ENCL,
+		DRYRUN,
 		SINGLERUN,
 		MAXRUNS,
 		STATISTICS,
@@ -129,6 +130,7 @@ namespace Options {
 		UOPTION_DEF_D("trace-no-removed",	0, UOPT_NO_ARG, "does not print removed readings; implies --trace"),
 		UOPTION_DEF_D("trace-encl",			0, UOPT_NO_ARG, "traces which enclosure pass is currently happening; implies --trace"),
 
+		UOPTION_DEF_D("dry-run",            0, UOPT_NO_ARG, "make no actual changes to the input"),
 		UOPTION_DEF_D("single-run",			0, UOPT_NO_ARG, "runs each section only once; same as --max-runs 1"),
 		UOPTION_DEF_D("max-runs",			0, UOPT_REQUIRES_ARG, "runs each section max N times; defaults to unlimited (0)"),
 		UOPTION_DEF_D("statistics",			'S', UOPT_NO_ARG, "gathers profiling statistics while applying grammar"),
