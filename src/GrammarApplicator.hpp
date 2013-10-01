@@ -59,6 +59,7 @@ namespace CG3 {
 		bool ordered;
 		bool show_end_tags;
 		bool unicode_tags;
+		bool dry_run;
 		bool owns_grammar;
 		bool input_eof;
 		bool seen_barrier;
