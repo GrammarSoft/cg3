@@ -498,6 +498,12 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 				if (debug_level > 1) {
 					std::cerr << "DEBUG: Rule " << rule.line << " fired on reading " << i << std::endl;
 				}
+				if (dry_run) {
+					if (good) {
+						reading.hit_by.push_back(rule.number);
+					}
+					continue;
+				}
 
 				// Select is also special as it will remove non-matching readings
 				if (type == K_SELECT) {

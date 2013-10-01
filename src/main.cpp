@@ -487,6 +487,9 @@ void GAppSetOpts(CG3::GrammarApplicator& applicator, UConverter *conv) {
 		applicator.trace = true;
 		applicator.trace_encl = true;
 	}
+	if (options[DRYRUN].doesOccur) {
+		applicator.dry_run = true;
+	}
 	if (options[SINGLERUN].doesOccur) {
 		applicator.section_max_count = 1;
 	}
