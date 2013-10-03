@@ -207,7 +207,7 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 
 		u32tmp = (uint32_t)htonl((uint32_t)curcomptag->tags.size());
 		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
-		const_foreach (TagList, curcomptag->tags, tag_iter, tag_iter_end) {
+		const_foreach (CompositeTag::tags_t, curcomptag->tags, tag_iter, tag_iter_end) {
 			u32tmp = (uint32_t)htonl((*tag_iter)->number);
 			fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 		}

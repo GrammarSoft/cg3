@@ -470,7 +470,7 @@ void GrammarApplicator::printCohort(Cohort *cohort, UFILE *output) {
 	}
 	u_fprintf(output, "%S", single_tags.find(cohort->wordform)->second->tag.c_str());
 	if (cohort->wread) {
-		const_foreach(Reading::tags_list_t, cohort->wread->tags_list, tter, tter_end) {
+		const_foreach (Reading::tags_list_t, cohort->wread->tags_list, tter, tter_end) {
 			if (*tter == cohort->wread->wordform) {
 				continue;
 			}
@@ -546,7 +546,7 @@ void GrammarApplicator::pipeOutReading(const Reading *reading, std::ostream& out
 	}
 
 	uint32_t cs = 0;
-	const_foreach(Reading::tags_list_t, reading->tags_list, tter, tter_end) {
+	const_foreach (Reading::tags_list_t, reading->tags_list, tter, tter_end) {
 		if (*tter == reading->baseform || *tter == reading->wordform) {
 			continue;
 		}
@@ -558,7 +558,7 @@ void GrammarApplicator::pipeOutReading(const Reading *reading, std::ostream& out
 	}
 
 	writeRaw(ss, cs);
-	const_foreach(Reading::tags_list_t, reading->tags_list, tter, tter_end) {
+	const_foreach (Reading::tags_list_t, reading->tags_list, tter, tter_end) {
 		if (*tter == reading->baseform || *tter == reading->wordform) {
 			continue;
 		}

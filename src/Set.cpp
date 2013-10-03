@@ -135,7 +135,7 @@ void Set::reindex(Grammar& grammar) {
 			}
 		}
 		const_foreach (CompositeTagHashSet, tags, comp_iter, comp_iter_end) {
-			const_foreach (TagList, (*comp_iter)->tags, tag_iter, tag_iter_end) {
+			const_foreach (CompositeTag::tags_t, (*comp_iter)->tags, tag_iter, tag_iter_end) {
 				if ((*tag_iter)->type & T_SPECIAL) {
 					type |= ST_SPECIAL;
 				}

@@ -338,7 +338,7 @@ void GrammarApplicator::reflowReading(Reading& reading) {
 	Reading::tags_list_t tlist;
 	tlist.swap(reading.tags_list);
 
-	const_foreach(Reading::tags_list_t, tlist, tter, tter_end) {
+	const_foreach (Reading::tags_list_t, tlist, tter, tter_end) {
 		addTagToReading(reading, *tter, false);
 	}
 

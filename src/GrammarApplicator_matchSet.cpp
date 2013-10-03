@@ -505,7 +505,7 @@ bool GrammarApplicator::doesSetMatchReading_tags(const Reading& reading, const S
 			}
 			else {
 				// Check if any of the member tags do not match, and bail out of so.
-				const_foreach (TagList, ctag->tags, cter, cter_end) {
+				const_foreach (CompositeTag::tags_t, ctag->tags, cter, cter_end) {
 					bool inner = (doesTagMatchReading(reading, **cter, unif_mode) != 0);
 					if ((*cter)->type & T_FAILFAST) {
 						inner = !inner;

@@ -66,7 +66,7 @@ void GrammarWriter::printSet(UFILE *output, const Set& curset) {
 				}
 				else {
 					u_fprintf(output, "(");
-					const_foreach (TagList, curcomptag->tags, tag_iter, tag_iter_end) {
+					const_foreach (CompositeTag::tags_t, curcomptag->tags, tag_iter, tag_iter_end) {
 						printTag(output, **tag_iter);
 						u_fprintf(output, " ");
 					}
@@ -269,7 +269,7 @@ void GrammarWriter::printRule(UFILE *to, const Rule& rule) {
 		u_fprintf(to, "TO (");
 		printContextualTest(to, *(rule.dep_target));
 		u_fprintf(to, ") ");
-		const_foreach(ContextList, rule.dep_tests, it, it_end) {
+		const_foreach (ContextList, rule.dep_tests, it, it_end) {
 			u_fprintf(to, "(");
 			printContextualTest(to, **it);
 			u_fprintf(to, ") ");
