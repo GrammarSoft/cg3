@@ -35,7 +35,8 @@ namespace CG3 {
 		uint32_t hash;
 		uint32_t number;
 		TagSet tags_set;
-		TagList tags;
+		typedef TagVector tags_t;
+		tags_t tags;
 
 		CompositeTag();
 
@@ -112,7 +113,6 @@ namespace CG3 {
 
 	typedef stdext::hash_set<CompositeTag*, compare_CompositeTag> CompositeTagHashSet;
 	typedef std::vector<AnyTag> AnyTagVector;
-	typedef std::list<AnyTag> AnyTagList;
 	typedef std::set<AnyTag> AnyTagSet;
 }
 

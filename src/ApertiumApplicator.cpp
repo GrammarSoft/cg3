@@ -825,7 +825,7 @@ void ApertiumApplicator::printSingleWindow(SingleWindow *window, UFILE *output) 
 
 			// Print the static reading tags
 			if (cohort->wread) {
-				const_foreach(Reading::tags_list_t, cohort->wread->tags_list, tter, tter_end) {
+				const_foreach (Reading::tags_list_t, cohort->wread->tags_list, tter, tter_end) {
 					if (*tter == cohort->wread->wordform) {
 						continue;
 					}

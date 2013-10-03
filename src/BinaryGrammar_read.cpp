@@ -514,7 +514,7 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 	}
 
 	// Bind the named templates to where they are used
-	foreach(deferred_t, deferred_tmpls, it, it_end) {
+	foreach (deferred_t, deferred_tmpls, it, it_end) {
 		it->first->tmpl = grammar->templates.find(it->second)->second;
 	}
 
