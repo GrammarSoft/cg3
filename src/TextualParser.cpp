@@ -214,7 +214,7 @@ Set *TextualParser::parseSetInline(UChar *& p, Set *s) {
 					const AnyTagSet a = result->getSet(sets[sets.size()-1])->getTagList(*result);
 					const AnyTagSet b = result->getSet(sets[sets.size()-2])->getTagList(*result);
 
-					AnyTagList r;
+					AnyTagVector r;
 					if (set_ops.back() == S_SET_ISECT_U) {
 						std::set_intersection(a.begin(), a.end(), b.begin(), b.end(), std::back_inserter(r));
 					}
@@ -229,7 +229,7 @@ Set *TextualParser::parseSetInline(UChar *& p, Set *s) {
 					Set *set_c = result->allocateSet();
 					set_c->line = result->lines;
 					set_c->setName(sets_counter++);
-					foreach (AnyTagList, r, iter, iter_end) {
+					foreach (AnyTagVector, r, iter, iter_end) {
 						if (iter->which == ANYTAG_TAG) {
 							Tag *t = iter->getTag();
 							result->addTagToSet(t, set_c);

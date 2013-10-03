@@ -116,7 +116,7 @@ TagList GrammarApplicator::getTagList(const Set& theSet, bool unif_mode) const {
 			}
 			else if (grammar->tags.find(ihash) != grammar->tags.end()) {
 				CompositeTag *tag = grammar->tags.find(ihash)->second;
-				const_foreach (TagList, tag->tags, tter, tter_end) {
+				const_foreach (CompositeTag::tags_t, tag->tags, tter, tter_end) {
 					theTags.push_back(*tter);
 				}
 			}
@@ -129,7 +129,7 @@ TagList GrammarApplicator::getTagList(const Set& theSet, bool unif_mode) const {
 			}
 			else {
 				CompositeTag *tag = tter->getCompositeTag();
-				const_foreach (TagList, tag->tags, tter, tter_end) {
+				const_foreach (CompositeTag::tags_t, tag->tags, tter, tter_end) {
 					theTags.push_back(*tter);
 				}
 			}
@@ -661,7 +661,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 							readings.back().push_back(*tter);
 						}
 
-						foreach(std::vector<TagList>, readings, rit, rit_end) {
+						foreach (std::vector<TagList>, readings, rit, rit_end) {
 							Reading *cReading = new Reading(cCohort);
 							++numReadings;
 							insert_if_exists(cReading->parent->possible_sets, grammar->sets_any);
@@ -803,7 +803,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 
 						const_foreach (TagList, theTags, tter, tter_end) {
 							if (tpos == std::numeric_limits<size_t>::max()) {
-								foreach(Reading::tags_list_t, reading.tags_list, tfind, tfind_end) {
+								foreach (Reading::tags_list_t, reading.tags_list, tfind, tfind_end) {
 									if (*tfind == (*tter)->hash) {
 										tpos = std::distance(reading.tags_list.begin(), tfind);
 										--tpos;
@@ -870,7 +870,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 							readings.back().push_back(*tter);
 						}
 
-						foreach(std::vector<TagList>, readings, rit, rit_end) {
+						foreach (std::vector<TagList>, readings, rit, rit_end) {
 							Reading *cReading = new Reading(cohort);
 							++numReadings;
 							insert_if_exists(cReading->parent->possible_sets, grammar->sets_any);
@@ -916,7 +916,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						index_ruleCohort_no.clear();
 						cReading->hit_by.push_back(rule.number);
 						cReading->noprint = false;
-						const_foreach(Reading::tags_list_t, reading.tags_list, iter, iter_end) {
+						const_foreach (Reading::tags_list_t, reading.tags_list, iter, iter_end) {
 							addTagToReading(*cReading, *iter);
 						}
 						TagList mappings;

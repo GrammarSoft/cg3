@@ -891,7 +891,7 @@ void Grammar::indexSetToRule(uint32_t r, Set *s) {
 				indexTagToRule((*(curcomptag->tags.begin()))->hash, r);
 			}
 			else {
-				const_foreach (TagList, curcomptag->tags, tag_iter, tag_iter_end) {
+				const_foreach (CompositeTag::tags_t, curcomptag->tags, tag_iter, tag_iter_end) {
 					indexTagToRule((*tag_iter)->hash, r);
 				}
 			}
@@ -927,7 +927,7 @@ void Grammar::indexSets(uint32_t r, Set *s) {
 				indexTagToSet((*(curcomptag->tags.begin()))->hash, r);
 			}
 			else {
-				const_foreach (TagList, curcomptag->tags, tag_iter, tag_iter_end) {
+				const_foreach (CompositeTag::tags_t, curcomptag->tags, tag_iter, tag_iter_end) {
 					indexTagToSet((*tag_iter)->hash, r);
 				}
 			}
