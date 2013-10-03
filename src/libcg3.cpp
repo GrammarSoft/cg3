@@ -335,7 +335,7 @@ size_t cg3_reading_numtags(cg3_reading *reading_) {
 
 cg3_tag *cg3_reading_gettag(cg3_reading *reading_, size_t which) {
 	Reading *reading = static_cast<Reading*>(reading_);
-	uint32List::iterator it = reading->tags_list.begin();
+	Reading::tags_list_t::iterator it = reading->tags_list.begin();
 	std::advance(it, which);
 	GrammarApplicator *ga = reading->parent->parent->parent->parent;
 	return ga->single_tags.find(*it)->second;

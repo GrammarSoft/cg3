@@ -782,7 +782,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						// ToDo: Check whether this substitution will do nothing at all to the end result
 						// ToDo: Not actually...instead, test whether any reading in the cohort already is the end result
 
-						uint32List::iterator tpos = reading.tags_list.end();
+						size_t tpos = std::numeric_limits<size_t>::max();
 						size_t tagb = reading.tags_list.size();
 						TagList theTags = getTagList(*rule.sublist);
 
@@ -802,16 +802,16 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						}
 
 						const_foreach (TagList, theTags, tter, tter_end) {
-							if (tpos == reading.tags_list.end()) {
-								foreach (uint32List, reading.tags_list, tfind, tfind_end) {
+							if (tpos == std::numeric_limits<size_t>::max()) {
+								foreach(Reading::tags_list_t, reading.tags_list, tfind, tfind_end) {
 									if (*tfind == (*tter)->hash) {
-										tpos = tfind;
+										tpos = std::distance(reading.tags_list.begin(), tfind);
 										--tpos;
 										break;
 									}
 								}
 							}
-							reading.tags_list.remove((*tter)->hash);
+							erase(reading.tags_list, (*tter)->hash);
 							reading.tags.erase((*tter)->hash);
 							if (reading.baseform == (*tter)->hash) {
 								reading.baseform = 0;
@@ -821,9 +821,10 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 							index_ruleCohort_no.clear();
 							reading.hit_by.push_back(rule.number);
 							reading.noprint = false;
-							if (tpos != reading.tags_list.end()) {
-								++tpos;
+							if (tpos == std::numeric_limits<size_t>::max()) {
+								tpos = reading.tags_list.size() - 1;
 							}
+							++tpos;
 							TagList mappings;
 							TagList theTags = getTagList(*rule.maplist);
 							const_foreach (TagList, theTags, tter, tter_end) {
@@ -837,7 +838,8 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 									mappings.push_back(*tter);
 								}
 								else {
-									reading.tags_list.insert(tpos, (*tter)->hash);
+									reading.tags_list.insert(reading.tags_list.begin()+tpos, (*tter)->hash);
+									++tpos;
 								}
 								if (updateValidRules(rules, intersects, (*tter)->hash, reading)) {
 									iter_rules = intersects.find(rule.number);
@@ -914,7 +916,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						index_ruleCohort_no.clear();
 						cReading->hit_by.push_back(rule.number);
 						cReading->noprint = false;
-						const_foreach (uint32List, reading.tags_list, iter, iter_end) {
+						const_foreach(Reading::tags_list_t, reading.tags_list, iter, iter_end) {
 							addTagToReading(*cReading, *iter);
 						}
 						TagList mappings;
