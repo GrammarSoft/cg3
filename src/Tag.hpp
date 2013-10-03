@@ -88,8 +88,8 @@ namespace CG3 {
 		uint32_t number;
 		uint32_t seed;
 		UString tag;
-		SetVector *vs_sets;
-		UStringVector *vs_names;
+		boost::scoped_ptr<SetVector> vs_sets;
+		boost::scoped_ptr<UStringVector> vs_names;
 		mutable URegularExpression *regexp;
 
 		Tag();

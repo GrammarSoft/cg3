@@ -39,8 +39,6 @@ hash(0),
 plain_hash(0),
 number(0),
 seed(0),
-vs_sets(0),
-vs_names(0),
 regexp(0)
 {
 	#ifdef CG_TRACE_OBJECTS
@@ -57,9 +55,6 @@ Tag::~Tag() {
 		uregex_close(regexp);
 		regexp = 0;
 	}
-
-	delete vs_sets;
-	delete vs_names;
 }
 
 void Tag::parseTag(const UChar *to, UFILE *ux_stderr, Grammar *grammar) {
@@ -506,13 +501,13 @@ void Tag::markUsed() {
 
 void Tag::allocateVsSets() {
 	if (!vs_sets) {
-		vs_sets = new SetVector;
+		vs_sets.reset(new SetVector);
 	}
 }
 
 void Tag::allocateVsNames() {
 	if (!vs_names) {
-		vs_names = new UStringVector;
+		vs_names.reset(new UStringVector);
 	}
 }
 

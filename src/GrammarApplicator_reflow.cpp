@@ -335,10 +335,10 @@ void GrammarApplicator::reflowReading(Reading& reading) {
 
 	insert_if_exists(reading.parent->possible_sets, grammar->sets_any);
 
-	uint32List tlist;
+	Reading::tags_list_t tlist;
 	tlist.swap(reading.tags_list);
 
-	const_foreach (uint32List, tlist, tter, tter_end) {
+	const_foreach(Reading::tags_list_t, tlist, tter, tter_end) {
 		addTagToReading(reading, *tter, false);
 	}
 
@@ -447,7 +447,7 @@ uint32_t GrammarApplicator::addTagToReading(Reading& reading, uint32_t utag, boo
 	}
 	utag = tag->hash;
 
-	uint32HashSetuint32HashMap::const_iterator it = grammar->sets_by_tag.find(utag);
+	Grammar::sets_by_tag_t::const_iterator it = grammar->sets_by_tag.find(utag);
 	if (it != grammar->sets_by_tag.end()) {
 		reading.parent->possible_sets.insert(it->second.begin(), it->second.end());
 	}
@@ -511,7 +511,7 @@ uint32_t GrammarApplicator::addTagToReading(Reading& reading, uint32_t utag, boo
 }
 
 void GrammarApplicator::delTagFromReading(Reading& reading, uint32_t utag) {
-	reading.tags_list.remove(utag);
+	erase(reading.tags_list, utag);
 	reading.tags.erase(utag);
 	reading.tags_textual.erase(utag);
 	reading.tags_numerical.erase(utag);
@@ -623,7 +623,7 @@ void GrammarApplicator::mergeReadings(ReadingList& readings) {
 		ReadingList clist = miter->second;
 		Reading *nr = new Reading(*(clist.front()));
 		if (nr->mapping) {
-			nr->tags_list.remove(nr->mapping->hash);
+			erase(nr->tags_list, nr->mapping->hash);
 		}
 		foreach (ReadingList, clist, iter1, iter1_end) {
 			if ((*iter1)->mapping && std::find(nr->tags_list.begin(), nr->tags_list.end(), (*iter1)->mapping->hash) == nr->tags_list.end()) {

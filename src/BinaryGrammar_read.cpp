@@ -199,7 +199,7 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 
 		grammar->single_tags[t->hash] = t;
 		grammar->single_tags_list[t->number] = t;
-		if (!t->tag.empty() && t->tag[0] == '*' && u_strcmp(t->tag.c_str(), stringbits[S_ASTERIK].getTerminatedBuffer()) == 0) {
+		if (t->tag.size() == 1 && t->tag[0] == '*') {
 			grammar->tag_any = t->hash;
 		}
 	}
