@@ -53,7 +53,8 @@ namespace CG3 {
 		Cohort *parent;
 		Reading *next;
 		uint32Vector hit_by;
-		uint32List tags_list;
+		typedef uint32Vector tags_list_t;
+		tags_list_t tags_list;
 		uint32SortedVector tags;
 		uint32SortedVector tags_plain;
 		uint32SortedVector tags_textual;

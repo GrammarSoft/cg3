@@ -571,7 +571,7 @@ int MatxinApplicator::printReading(Reading *reading, UFILE *output, int ischunk,
 	CHUNK = UNICODE_STRING_SIMPLE("CHUNK").getTerminatedBuffer();
 
 	uint32HashMap used_tags;
-	uint32List::iterator tter;
+	Reading::tags_list_t::iterator tter;
 	UString tags;
 	UString syntags;
 	for (tter = reading->tags_list.begin() ; tter != reading->tags_list.end() ; tter++) {
@@ -717,7 +717,7 @@ void MatxinApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 		ReadingList::iterator rter;
 		rter = cohort->readings.begin();
 		Reading *reading = *rter;
-		for (uint32List::iterator tter = reading->tags_list.begin() ; tter != reading->tags_list.end() ; tter++) {
+		for (Reading::tags_list_t::iterator tter = reading->tags_list.begin(); tter != reading->tags_list.end(); tter++) {
 			const Tag *tag = single_tags[*tter];
 			if (tag->tag[0] == *CHUNK) {
 				ischunk = 1;
@@ -756,7 +756,7 @@ void MatxinApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 		ReadingList::iterator rter;
 		rter = cohort->readings.begin();
 		Reading *reading = *rter;
-		for (uint32List::iterator tter = reading->tags_list.begin() ; tter != reading->tags_list.end() ; tter++) {
+		for (Reading::tags_list_t::iterator tter = reading->tags_list.begin(); tter != reading->tags_list.end(); tter++) {
 			const Tag *tag = single_tags[*tter];
 			if (tag->type & T_MAPPING) {
 				syntags += tag->tag;

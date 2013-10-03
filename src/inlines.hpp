@@ -486,6 +486,11 @@ inline T* reverse(T *head) {
 	return nr;
 }
 
+template<typename Cont, typename T>
+inline void erase(Cont& cont, const T& val) {
+	cont.erase(std::remove(cont.begin(), cont.end(), val), cont.end());
+}
+
 }
 
 #endif

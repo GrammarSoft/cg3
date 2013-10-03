@@ -740,9 +740,9 @@ void ApertiumApplicator::printReading(Reading *reading, UFILE *output) {
 	// Reorder: MAPPING tags should appear before the join of multiword tags,
 	// turn <vblex><actv><pri><p3><pl>+í<pr><@FMAINV><@FOO>$
 	// into <vblex><actv><pri><p3><pl><@FMAINV><@FOO>+í<pr>$
-	uint32List tags_list;
-	uint32List multitags_list; // everything after a +, until the first MAPPING tag
-	uint32List::iterator tter;
+	Reading::tags_list_t tags_list;
+	Reading::tags_list_t multitags_list; // everything after a +, until the first MAPPING tag
+	Reading::tags_list_t::iterator tter;
 	bool multi = false;
 	for (tter = reading->tags_list.begin() ; tter != reading->tags_list.end() ; tter++) {
 		const Tag *tag = single_tags[*tter];
@@ -825,7 +825,7 @@ void ApertiumApplicator::printSingleWindow(SingleWindow *window, UFILE *output) 
 
 			// Print the static reading tags
 			if (cohort->wread) {
-				const_foreach (uint32List, cohort->wread->tags_list, tter, tter_end) {
+				const_foreach(Reading::tags_list_t, cohort->wread->tags_list, tter, tter_end) {
 					if (*tter == cohort->wread->wordform) {
 						continue;
 					}
