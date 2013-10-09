@@ -183,6 +183,62 @@ cg3_sentence *cg3_sentence_new(cg3_applicator *applicator_) {
 	return current;
 }
 
+inline Tag *_tag_copy(GrammarApplicator *from, GrammarApplicator *to, uint32_t hash) {
+	Tag *t = from->single_tags[hash];
+	Tag *nt = to->addTag(t->tag);
+	return nt;
+}
+
+inline Reading *_reading_copy(Cohort *nc, Reading *oldr, bool is_sub = false) {
+	Reading *nr = new Reading(nc);
+	GrammarApplicator *ga = nc->parent->parent->parent;
+	nr->wordform = nc->wordform;
+	insert_if_exists(nr->parent->possible_sets, ga->grammar->sets_any);
+	ga->addTagToReading(*nr, nr->wordform);
+	TagList mappings;
+	boost_foreach(uint32_t tag, oldr->tags_list) {
+		Tag *nt = _tag_copy(oldr->parent->parent->parent->parent, nc->parent->parent->parent, tag);
+		if (nt->type & T_MAPPING || nt->tag[0] == ga->grammar->mapping_prefix) {
+			mappings.push_back(nt);
+		}
+		else {
+			ga->addTagToReading(*nr, nt->hash);
+		}
+	}
+	if (!mappings.empty() && (!is_sub || mappings.size() == 1)) {
+		ga->splitMappings(mappings, *nc, *nr, true);
+	}
+	if (oldr->next) {
+		nr->next = _reading_copy(nc, oldr->next, true);
+	}
+	return nr;
+}
+
+inline Cohort *_cohort_copy(SingleWindow *ns, Cohort *oc) {
+	Cohort *nc = new Cohort(ns);
+	nc->wordform = _tag_copy(oc->parent->parent->parent, ns->parent->parent, oc->wordform)->hash;
+	boost_foreach (Reading *r, oc->readings) {
+		Reading *nr = _reading_copy(nc, r);
+		nc->appendReading(nr);
+	}
+	return nc;
+}
+
+cg3_sentence *cg3_sentence_copy(cg3_sentence *sentence_, cg3_applicator *applicator_) {
+	GrammarApplicator *applicator = static_cast<GrammarApplicator*>(applicator_);
+	SingleWindow *sentence = static_cast<SingleWindow*>(sentence_);
+
+	SingleWindow *current = applicator->gWindow->allocSingleWindow();
+	applicator->initEmptySingleWindow(current);
+	current->has_enclosures = sentence->has_enclosures;
+	current->text = sentence->text;
+	boost_foreach (Cohort *c, sentence->cohorts) {
+		Cohort *nc = _cohort_copy(current, c);
+		current->appendCohort(nc);
+	}
+	return current;
+}
+
 void cg3_sentence_runrules(cg3_applicator *applicator_, cg3_sentence *sentence_) {
 	GrammarApplicator *applicator = static_cast<GrammarApplicator*>(applicator_);
 	SingleWindow *sentence = static_cast<SingleWindow*>(sentence_);
