@@ -86,6 +86,7 @@ void cg3_applicator_setoption(cg3_applicator *applicator, cg3_option option, voi
 void cg3_applicator_free(cg3_applicator *applicator);
 
 cg3_sentence *cg3_sentence_new(cg3_applicator *applicator);
+cg3_sentence *cg3_sentence_copy(cg3_sentence *from, cg3_applicator *to);
 void cg3_sentence_runrules(cg3_applicator *applicator, cg3_sentence *sentence);
 // The Sentence takes ownership of the Cohort here.
 void cg3_sentence_addcohort(cg3_sentence *sentence, cg3_cohort *cohort);
