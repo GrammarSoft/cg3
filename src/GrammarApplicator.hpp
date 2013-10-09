@@ -106,6 +106,9 @@ namespace CG3 {
 		void initEmptySingleWindow(SingleWindow *cSWindow);
 		uint32_t addTagToReading(Reading& reading, uint32_t tag, bool rehash = true);
 		void runGrammarOnWindow();
+
+		Tag *addTag(const UString& txt, bool vstr = false);
+		void splitMappings(TagList& mappings, Cohort& cohort, Reading& reading, bool mapped = false);
 		Taguint32HashMap single_tags;
 
 	protected:
@@ -174,7 +177,6 @@ namespace CG3 {
 		uint32HashSet index_ruleCohort_no;
 		void resetIndexes();
 	
-		Tag *addTag(const UString& txt, bool vstr = false);
 		Tag *makeBaseFromWord(uint32_t tag);
 		Tag *makeBaseFromWord(Tag *tag);
 
@@ -211,7 +213,6 @@ namespace CG3 {
 		void delTagFromReading(Reading& reading, uint32_t tag);
 		bool unmapReading(Reading& reading, const uint32_t rule);
 		TagList getTagList(const Set& theSet, bool unif_mode = false) const;
-		void splitMappings(TagList& mappings, Cohort& cohort, Reading& reading, bool mapped = false);
 		void mergeReadings(ReadingList& readings);
 		void mergeMappings(Cohort& cohort);
 		bool isChildOf(const Cohort *child, const Cohort *parent);
