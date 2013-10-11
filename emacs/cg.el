@@ -1,4 +1,4 @@
-;;; cg.el -- major mode for editing Constraint Grammar files
+;;; cg.el --- major mode for editing Constraint Grammar files
 
 ;; Copyright (C) 2010-2013 Kevin Brubeck Unhammer
 
