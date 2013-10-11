@@ -3,7 +3,7 @@
 ;; Copyright (C) 2010-2013 Kevin Brubeck Unhammer
 
 ;; Author: Kevin Brubeck Unhammer <unhammer@fsfe.org>
-;; Version: 0.1.4
+;; Version: 0.1.5
 ;; Url: http://beta.visl.sdu.dk/constraint_grammar.html
 ;; Keywords: languages
 
@@ -54,7 +54,7 @@
 
 ;;; Code:
 
-(defconst cg-version "0.1.4" "Version of cg-mode")
+(defconst cg-version "0.1.5" "Version of cg-mode")
 
 ;;;============================================================================
 ;;;
@@ -331,7 +331,7 @@ indentation."
 
 (defun cg-permute (input)
   "From http://www.emacswiki.org/emacs/StringPermutations"
-  (require 'cl)
+  (require 'cl)	; TODO: require cl-lib for whole file when 24.3 in distros
   (if (null input)
       (list input)
     (mapcan (lambda (elt)
@@ -408,7 +408,8 @@ least -- selects the whole string \"SELECT:1022:rulename\")."
     (if (string-match
          "\\(\\(select\\|iff\\|remove\\|map\\|addcohort\\|remcohort\\|copy\\|add\\|substitute\\):\\)?\\([0-9]+\\)"
          rule)
-        (progn (goto-line (string-to-number (match-string 3 rule)))
+        (progn (goto-char (point-min))
+	       (forward-line (1- (string-to-number (match-string 3 rule))))
                (setq cg--goto-history (cons rule cg--goto-history)))
       (message errmsg))))
 
@@ -661,11 +662,11 @@ from hiding. Call `cg-output-show-all' to turn off all hiding."
   (save-excursion
     (goto-char (point-min))
     (while (re-search-forward needle nil 'noerror)
-      (mapcar (lambda (o)
-		(when (eq 'cg-output (overlay-get o 'invisible))
-		  (remove-overlays (overlay-start o) (overlay-end o)
-				   'invisible 'cg-output)))
-	      (overlays-at (match-beginning 0))))))
+      (mapc (lambda (o)
+	      (when (eq 'cg-output (overlay-get o 'invisible))
+		(remove-overlays (overlay-start o) (overlay-end o)
+				 'invisible 'cg-output)))
+	    (overlays-at (match-beginning 0))))))
 
 (defun cg-output-set-unhide (needle)
   "Set some exeption to `cg-output-hide-analyses'. This is saved
