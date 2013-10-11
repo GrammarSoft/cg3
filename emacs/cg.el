@@ -56,6 +56,8 @@
 
 (defconst cg-version "0.1.5" "Version of cg-mode")
 
+(eval-when-compile (require 'cl))
+
 ;;;============================================================================
 ;;;
 ;;; Define the formal stuff for a major mode named cg.
@@ -331,7 +333,7 @@ indentation."
 
 (defun cg-permute (input)
   "From http://www.emacswiki.org/emacs/StringPermutations"
-  (require 'cl)	; TODO: require cl-lib for whole file when 24.3 in distros
+  (require 'cl)	; TODO: (require 'cl-lib) for whole file when 24.3 in distros
   (if (null input)
       (list input)
     (mapcan (lambda (elt)
