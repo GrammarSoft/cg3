@@ -476,13 +476,13 @@ uint32_t GrammarApplicator::addTagToReading(Reading& reading, uint32_t utag, boo
 		reading.tags_numerical[utag] = tag;
 		reading.parent->type &= ~CT_NUM_CURRENT;
 	}
-	if (!reading.baseform && tag->type & T_BASEFORM) {
+	if (!reading.baseform && (tag->type & T_BASEFORM)) {
 		reading.baseform = tag->hash;
 	}
-	if (!reading.wordform && tag->type & T_WORDFORM) {
+	if (!reading.wordform && (tag->type & T_WORDFORM)) {
 		reading.wordform = tag->hash;
 	}
-	if (grammar->has_dep && tag->type & T_DEPENDENCY && !(reading.parent->type & CT_DEP_DONE)) {
+	if (grammar->has_dep && (tag->type & T_DEPENDENCY) && !(reading.parent->type & CT_DEP_DONE)) {
 		reading.parent->dep_self = tag->dep_self;
 		reading.parent->dep_parent = tag->dep_parent;
 		if (tag->dep_parent == tag->dep_self) {
@@ -490,7 +490,7 @@ uint32_t GrammarApplicator::addTagToReading(Reading& reading, uint32_t utag, boo
 		}
 		has_dep = true;
 	}
-	if (grammar->has_relations && tag->type & T_RELATION) {
+	if (grammar->has_relations && (tag->type & T_RELATION)) {
 		if (tag->dep_parent && tag->comparison_hash) {
 			reading.parent->relations_input[tag->comparison_hash].insert(tag->dep_parent);
 		}
@@ -521,6 +521,9 @@ void GrammarApplicator::delTagFromReading(Reading& reading, uint32_t utag) {
 	}
 	if (utag == reading.baseform) {
 		reading.baseform = 0;
+	}
+	if (utag == reading.wordform) {
+		reading.wordform = 0;
 	}
 	reading.rehash();
 	reading.parent->type &= ~CT_NUM_CURRENT;

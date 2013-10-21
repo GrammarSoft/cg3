@@ -786,6 +786,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						size_t tagb = reading.tags_list.size();
 						TagList theTags = getTagList(*rule.sublist);
 
+						// Modify the list of tags to remove to be the actual list of tags present, including matching regex and icase tags
 						for (TagList::iterator it = theTags.begin() ; it != theTags.end() ; ) {
 							if (reading.tags.find((*it)->hash) == reading.tags.end()) {
 								const Tag* tt = *it;
@@ -801,6 +802,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 							++it;
 						}
 
+						// Perform the tag removal, remembering the position of the final removed tag for use as insertion spot
 						const_foreach (TagList, theTags, tter, tter_end) {
 							if (tpos == std::numeric_limits<size_t>::max()) {
 								foreach (Reading::tags_list_t, reading.tags_list, tfind, tfind_end) {
@@ -817,7 +819,10 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 								reading.baseform = 0;
 							}
 						}
+
+						// Should Substitute really do nothing if no tags were removed? 2013-10-21, Eckhard says this is expected behavior.
 						if (tagb != reading.tags_list.size()) {
+							uint32_t wf = 0;
 							index_ruleCohort_no.clear();
 							reading.hit_by.push_back(rule.number);
 							reading.noprint = false;
@@ -838,6 +843,9 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 									mappings.push_back(*tter);
 								}
 								else {
+									if ((*tter)->type & T_WORDFORM) {
+										wf = (*tter)->hash;
+									}
 									reading.tags_list.insert(reading.tags_list.begin()+tpos, (*tter)->hash);
 									++tpos;
 								}
@@ -849,6 +857,21 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 							reflowReading(reading);
 							if (!mappings.empty()) {
 								splitMappings(mappings, *cohort, reading, true);
+							}
+							if (wf && wf != reading.parent->wordform) {
+								boost_foreach (Reading *r, reading.parent->readings) {
+									delTagFromReading(*r, reading.parent->wordform);
+									addTagToReading(*r, wf);
+								}
+								boost_foreach (Reading *r, reading.parent->deleted) {
+									delTagFromReading(*r, reading.parent->wordform);
+									addTagToReading(*r, wf);
+								}
+								boost_foreach (Reading *r, reading.parent->delayed) {
+									delTagFromReading(*r, reading.parent->wordform);
+									addTagToReading(*r, wf);
+								}
+								reading.parent->wordform = wf;
 							}
 						}
 						if (reading.hash != state_hash) {
