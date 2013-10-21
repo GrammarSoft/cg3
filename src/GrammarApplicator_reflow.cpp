@@ -441,24 +441,26 @@ Tag *GrammarApplicator::generateVarstringTag(const Tag *tag) {
 
 uint32_t GrammarApplicator::addTagToReading(Reading& reading, uint32_t utag, bool rehash) {
 	Tag *tag = single_tags.find(utag)->second;
+	return addTagToReading(reading, tag, rehash);
+}
 
+uint32_t GrammarApplicator::addTagToReading(Reading& reading, Tag *tag, bool rehash) {
 	if (tag->type & T_VARSTRING) {
 		tag = generateVarstringTag(tag);
 	}
-	utag = tag->hash;
 
-	Grammar::sets_by_tag_t::const_iterator it = grammar->sets_by_tag.find(utag);
+	Grammar::sets_by_tag_t::const_iterator it = grammar->sets_by_tag.find(tag->hash);
 	if (it != grammar->sets_by_tag.end()) {
 		reading.parent->possible_sets.insert(it->second.begin(), it->second.end());
 	}
-	reading.tags.insert(utag);
-	reading.tags_list.push_back(utag);
-	reading.tags_bloom.insert(utag);
-	if (grammar->parentheses.find(utag) != grammar->parentheses.end()) {
-		reading.parent->is_pleft = utag;
+	reading.tags.insert(tag->hash);
+	reading.tags_list.push_back(tag->hash);
+	reading.tags_bloom.insert(tag->hash);
+	if (grammar->parentheses.find(tag->hash) != grammar->parentheses.end()) {
+		reading.parent->is_pleft = tag->hash;
 	}
-	if (grammar->parentheses_reverse.find(utag) != grammar->parentheses_reverse.end()) {
-		reading.parent->is_pright = utag;
+	if (grammar->parentheses_reverse.find(tag->hash) != grammar->parentheses_reverse.end()) {
+		reading.parent->is_pright = tag->hash;
 	}
 
 	if (tag->type & T_MAPPING || tag->tag[0] == grammar->mapping_prefix) {
@@ -469,11 +471,11 @@ uint32_t GrammarApplicator::addTagToReading(Reading& reading, uint32_t utag, boo
 		reading.mapping = tag;
 	}
 	if (tag->type & (T_TEXTUAL|T_WORDFORM|T_BASEFORM)) {
-		reading.tags_textual.insert(utag);
-		reading.tags_textual_bloom.insert(utag);
+		reading.tags_textual.insert(tag->hash);
+		reading.tags_textual_bloom.insert(tag->hash);
 	}
 	if (tag->type & T_NUMERICAL) {
-		reading.tags_numerical[utag] = tag;
+		reading.tags_numerical[tag->hash] = tag;
 		reading.parent->type &= ~CT_NUM_CURRENT;
 	}
 	if (!reading.baseform && (tag->type & T_BASEFORM)) {
@@ -501,8 +503,8 @@ uint32_t GrammarApplicator::addTagToReading(Reading& reading, uint32_t utag, boo
 		reading.parent->type |= CT_RELATED;
 	}
 	if (!(tag->type & T_SPECIAL)) {
-		reading.tags_plain.insert(utag);
-		reading.tags_plain_bloom.insert(utag);
+		reading.tags_plain.insert(tag->hash);
+		reading.tags_plain_bloom.insert(tag->hash);
 	}
 	if (rehash) {
 		reading.rehash();
@@ -570,7 +572,7 @@ void GrammarApplicator::splitMappings(TagList& mappings, Cohort& cohort, Reading
 		}
 		Reading *nr = new Reading(reading);
 		nr->mapped = mapped;
-		uint32_t mp = addTagToReading(*nr, (*ttag)->hash);
+		uint32_t mp = addTagToReading(*nr, *ttag);
 		if (mp != (*ttag)->hash) {
 			nr->mapping = single_tags.find(mp)->second;
 		}
@@ -582,7 +584,7 @@ void GrammarApplicator::splitMappings(TagList& mappings, Cohort& cohort, Reading
 	}
 
 	reading.mapped = mapped;
-	uint32_t mp = addTagToReading(reading, tag->hash);
+	uint32_t mp = addTagToReading(reading, tag);
 	if (mp != tag->hash) {
 		reading.mapping = single_tags.find(mp)->second;
 	}

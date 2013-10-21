@@ -105,6 +105,7 @@ namespace CG3 {
 		Tag *addTag(const UChar *tag, bool vstr = false);
 		void initEmptySingleWindow(SingleWindow *cSWindow);
 		uint32_t addTagToReading(Reading& reading, uint32_t tag, bool rehash = true);
+		uint32_t addTagToReading(Reading& reading, Tag *tag, bool rehash = true);
 		void runGrammarOnWindow();
 
 		Tag *addTag(const UString& txt, bool vstr = false);
