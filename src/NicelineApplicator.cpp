@@ -263,7 +263,7 @@ gotaline:
 							mappings.push_back(tag);
 						}
 						else {
-							addTagToReading(*cReading, tag->hash);
+							addTagToReading(*cReading, tag);
 						}
 					}
 					base = ++space;
@@ -284,7 +284,7 @@ gotaline:
 						mappings.push_back(tag);
 					}
 					else {
-						addTagToReading(*cReading, tag->hash);
+						addTagToReading(*cReading, tag);
 					}
 				}
 				if (!cReading->baseform) {

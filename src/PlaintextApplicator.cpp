@@ -276,21 +276,21 @@ gotaline:
 					tag += '"';
 					tag += token.getTerminatedBuffer();
 					tag += '"';
-					addTagToReading(*cReading, addTag(tag)->hash);
+					addTagToReading(*cReading, addTag(tag));
 					if (all_upper) {
 						static const char _tag[] = "<all-upper>";
 						tag.assign(_tag, _tag+sizeof(_tag)-1);
-						addTagToReading(*cReading, addTag(tag)->hash);
+						addTagToReading(*cReading, addTag(tag));
 					}
 					if (first_upper) {
 						static const char _tag[] = "<first-upper>";
 						tag.assign(_tag, _tag+sizeof(_tag)-1);
-						addTagToReading(*cReading, addTag(tag)->hash);
+						addTagToReading(*cReading, addTag(tag));
 					}
 					if (mixed_upper && !all_upper) {
 						static const char _tag[] = "<mixed-upper>";
 						tag.assign(_tag, _tag+sizeof(_tag)-1);
-						addTagToReading(*cReading, addTag(tag)->hash);
+						addTagToReading(*cReading, addTag(tag));
 					}
 				}
 				cSWindow->appendCohort(cCohort);

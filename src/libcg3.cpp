@@ -202,7 +202,7 @@ inline Reading *_reading_copy(Cohort *nc, Reading *oldr, bool is_sub = false) {
 			mappings.push_back(nt);
 		}
 		else {
-			ga->addTagToReading(*nr, nt->hash);
+			ga->addTagToReading(*nr, nt);
 		}
 	}
 	if (!mappings.empty() && (!is_sub || mappings.size() == 1)) {
@@ -379,7 +379,7 @@ cg3_status cg3_reading_addtag(cg3_reading *reading_, cg3_tag *tag_) {
 	}
 
 	GrammarApplicator *ga = reading->parent->parent->parent->parent;
-	ga->addTagToReading(*reading, tag->hash);
+	ga->addTagToReading(*reading, tag);
 
 	return CG3_SUCCESS;
 }

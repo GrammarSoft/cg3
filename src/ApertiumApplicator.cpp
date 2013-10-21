@@ -338,7 +338,7 @@ void ApertiumApplicator::runGrammarOnText(istream& input, UFILE *output) {
 					}
 					if (inchar == '>') {
 						Tag *t = addTag(tag);
-						addTagToReading(*cCohort->wread, t->hash);
+						addTagToReading(*cCohort->wread, t);
 						//u_fprintf(ux_stderr, "Adding tag %S\n", tag.c_str());
 						tag.clear();
 						continue;
@@ -542,7 +542,7 @@ void ApertiumApplicator::processReading(Reading *cReading, const UChar *reading_
 
 	if (unknown) {
 		cReading->baseform = tag->hash;
-		addTagToReading(*cReading, tag->hash);
+		addTagToReading(*cReading, tag);
 		return;
 	}
 
@@ -639,7 +639,7 @@ void ApertiumApplicator::processReading(Reading *cReading, const UChar *reading_
 						mappings.push_back(*iter);
 					}
 					else {
-						addTagToReading(*reading, (*iter)->hash);
+						addTagToReading(*reading, *iter);
 					}
 				}
 				if (!mappings.empty()) {
