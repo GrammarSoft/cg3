@@ -6,5 +6,5 @@ SUBSTITUTE (2) (4 2) (2) ;
 SUBSTITUTE (notmeeither) (*) (*) ;
 
 "<word>" ADD (@add-good) (*) ;
-SUBSTITUTE ("<word>") ("<waffles>") ("<word>") ;
+SUBSTITUTE ("<.*>"r) ("<waffles>") ("<word>") ;
 "<word>" ADD (@add-bad) (*) ;

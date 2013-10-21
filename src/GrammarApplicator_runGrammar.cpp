@@ -299,7 +299,7 @@ gotaline:
 					SKIPTOWS(n, 0, true, true);
 					n[0] = 0;
 					Tag *tag = addTag(space);
-					addTagToReading(*cCohort->wread, tag->hash);
+					addTagToReading(*cCohort->wread, tag);
 					space = ++n;
 				}
 			}
@@ -362,7 +362,7 @@ gotaline:
 						mappings.push_back(tag);
 					}
 					else {
-						addTagToReading(*cReading, tag->hash);
+						addTagToReading(*cReading, tag);
 					}
 				}
 				base = space;
@@ -377,7 +377,7 @@ gotaline:
 					mappings.push_back(tag);
 				}
 				else {
-					addTagToReading(*cReading, tag->hash);
+					addTagToReading(*cReading, tag);
 				}
 			}
 			if (!cReading->baseform) {
