@@ -49,10 +49,9 @@ else()
 	set(exec_prefix ${CMAKE_INSTALL_PREFIX})
 	set(libdir      ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR})
 	set(includedir  ${CMAKE_INSTALL_PREFIX}/include)
-	set(CG3_NAME cg3-${_cg3_VERSION_MAJOR}.${_cg3_VERSION_MINOR})
 	configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cg3.pc.in
-		${CMAKE_CURRENT_BINARY_DIR}/${CG3_NAME}.pc @ONLY)
-	install(FILES "${CMAKE_CURRENT_BINARY_DIR}/${CG3_NAME}.pc" DESTINATION lib/pkgconfig)
+		${CMAKE_CURRENT_BINARY_DIR}/cg3.pc @ONLY)
+	install(FILES "${CMAKE_CURRENT_BINARY_DIR}/cg3.pc" DESTINATION lib/pkgconfig)
 endif()
 
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
