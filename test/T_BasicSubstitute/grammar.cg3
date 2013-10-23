@@ -6,5 +6,5 @@ SUBSTITUTE (2) (4 2) (2) ;
 SUBSTITUTE (notmeeither) (*) (*) ;
 
 "<word>" ADD (@add-good) (*) ;
-SUBSTITUTE ("<.*>"r) ("<waffles>") ("<word>") ;
+SUBSTITUTE ("<.*>"r) (VSTR:"<$1ed>") ("<(.+)>"r) ;
 "<word>" ADD (@add-bad) (*) ;

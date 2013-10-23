@@ -833,23 +833,27 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 							TagList mappings;
 							TagList theTags = getTagList(*rule.maplist);
 							const_foreach (TagList, theTags, tter, tter_end) {
-								if ((*tter)->hash == grammar->tag_any) {
+								Tag *tag = *tter;
+								if (tag->type & T_VARSTRING) {
+									tag = generateVarstringTag(tag);
+								}
+								if (tag->hash == grammar->tag_any) {
 									break;
 								}
-								if (reading.tags.find((*tter)->hash) != reading.tags.end()) {
+								if (reading.tags.find(tag->hash) != reading.tags.end()) {
 									continue;
 								}
-								if ((*tter)->type & T_MAPPING || (*tter)->tag[0] == grammar->mapping_prefix) {
-									mappings.push_back(*tter);
+								if (tag->type & T_MAPPING || tag->tag[0] == grammar->mapping_prefix) {
+									mappings.push_back(tag);
 								}
 								else {
-									if ((*tter)->type & T_WORDFORM) {
-										wf = (*tter)->hash;
+									if (tag->type & T_WORDFORM) {
+										wf = tag->hash;
 									}
-									reading.tags_list.insert(reading.tags_list.begin()+tpos, (*tter)->hash);
+									reading.tags_list.insert(reading.tags_list.begin()+tpos, tag->hash);
 									++tpos;
 								}
-								if (updateValidRules(rules, intersects, (*tter)->hash, reading)) {
+								if (updateValidRules(rules, intersects, tag->hash, reading)) {
 									iter_rules = intersects.find(rule.number);
 									iter_rules_end = intersects.end();
 								}
