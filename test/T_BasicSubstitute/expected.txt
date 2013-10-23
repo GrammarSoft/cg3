@@ -1,4 +1,4 @@
-"<waffles>"
+"<worded>"
 	"word" notwanted @add-good ADD:8 SUBSTITUTE:9
 	"word" before 1 1 4 2 3 3 substituted 3 3 after @add-good SUBSTITUTE:4 SUBSTITUTE:5 ADD:8 SUBSTITUTE:9
 	"word" @add-good SUBSTITUTE:6 ADD:8 SUBSTITUTE:9
