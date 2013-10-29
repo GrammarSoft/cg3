@@ -33,6 +33,10 @@ public:
 	stream(s),
 	raw(u_fgetfile(stream))
 	{
+		UChar32 bom = u_fgetcx(stream);
+		if (bom != 0xfeff && bom != 0xffffffff) {
+			u_fungetc(bom, stream);
+		}
 	}
 
 	virtual ~istream() {

@@ -1774,10 +1774,14 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 				grammar_size = static_cast<size_t>(_stat.st_size);
 			}
 
-			UFILE *grammar = u_fopen(abspath.c_str(), "r", locale, codepage);
+			UFILE *grammar = u_fopen(abspath.c_str(), "rb", locale, codepage);
 			if (!grammar) {
 				u_fprintf(ux_stderr, "Error: Error opening %s for reading!\n", abspath.c_str());
 				CG3Quit(1);
+			}
+			UChar32 bom = u_fgetcx(grammar);
+			if (bom != 0xfeff && bom != 0xffffffff) {
+				u_fungetc(bom, grammar);
 			}
 
 			std::vector<UChar> data(grammar_size*2, 0);
@@ -2064,10 +2068,14 @@ int TextualParser::parse_grammar_from_file(const char *fname, const char *loc, c
 		result->grammar_size = static_cast<size_t>(_stat.st_size);
 	}
 
-	UFILE *grammar = u_fopen(filename, "r", locale, codepage);
+	UFILE *grammar = u_fopen(filename, "rb", locale, codepage);
 	if (!grammar) {
 		u_fprintf(ux_stderr, "Error: Error opening %s for reading!\n", filename);
 		CG3Quit(1);
+	}
+	UChar32 bom = u_fgetcx(grammar);
+	if (bom != 0xfeff && bom != 0xffffffff) {
+		u_fungetc(bom, grammar);
 	}
 
 	// It reads into the buffer at offset 4 because certain functions may look back, so we need some nulls in front.
