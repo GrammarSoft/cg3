@@ -1780,7 +1780,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 				CG3Quit(1);
 			}
 			UChar32 bom = u_fgetcx(grammar);
-			if (bom != 0xfeff && bom != 0xffffffff) {
+			if (bom != 0xfeff && bom != static_cast<UChar32>(0xffffffff)) {
 				u_fungetc(bom, grammar);
 			}
 
@@ -2074,7 +2074,7 @@ int TextualParser::parse_grammar_from_file(const char *fname, const char *loc, c
 		CG3Quit(1);
 	}
 	UChar32 bom = u_fgetcx(grammar);
-	if (bom != 0xfeff && bom != 0xffffffff) {
+	if (bom != 0xfeff && bom != static_cast<UChar32>(0xffffffff)) {
 		u_fungetc(bom, grammar);
 	}
 
