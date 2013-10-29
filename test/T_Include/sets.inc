@@ -1,4 +1,4 @@
-DELIMITERS = "<$.>" ;
+﻿DELIMITERS = "<$.>" ;
 
 LIST ASet = wanted ;
 LIST BSet = @A @B @C ;
