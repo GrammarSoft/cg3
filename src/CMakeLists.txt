@@ -198,10 +198,3 @@ if(NOT MSVC)
 	install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/cg3.h" DESTINATION include)
 endif()
 install(TARGETS cg-comp cg-proc cg-conv vislcg3 RUNTIME DESTINATION bin)
-
-if(UNIX AND NOT EXISTS ${CMAKE_INSTALL_PREFIX}/bin/cg3)
-	install(CODE "
-		EXECUTE_PROCESS(COMMAND ln -sfv vislcg3 cg3
-		WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX}/bin
-		)")
-endif()
