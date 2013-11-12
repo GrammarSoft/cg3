@@ -1,12 +1,26 @@
 #!/bin/sh
-cd "`dirname "$0"`"
+export BOOSTVER=55
+export BDOT="1.$BOOSTVER.0"
+export BUC="boost_1_${BOOSTVER}_0"
+
+if [ ! -d include ]; then
+	echo "This should be run from the project root folder!"
+	exit
+fi
+
 rm -rfv boost*
 if test -x "/usr/bin/wget"; then
-	wget http://sourceforge.net/projects/boost/files/boost/1.54.0/boost_1_54_0.tar.bz2/download -O boost_1_54_0.tar.bz2
+	wget http://sourceforge.net/projects/boost/files/boost/$BDOT/$BUC.tar.bz2/download -O $BUC.tar.bz2
 elif test -x "/usr/bin/curl"; then
-	curl -L --max-redirs 10 http://sourceforge.net/projects/boost/files/boost/1.54.0/boost_1_54_0.tar.bz2/download > boost_1_54_0.tar.bz2
+	curl -L --max-redirs 10 http://sourceforge.net/projects/boost/files/boost/$BDOT/$BUC.tar.bz2/download > $BUC.tar.bz2
 fi
-tar -jxvf boost_1_54_0.tar.bz2 boost_1_54_0/boost ./boost_1_54_0/boost
+
+if [ ! -f $BUC.tar.bz2 ]; then
+	echo "Failed to fetch $BUC.tar.bz2!"
+	exit
+fi
+
+tar -jxvf $BUC.tar.bz2 $BUC/boost ./$BUC/boost
 rm -rfv include/boost
-mv -vf boost_1_54_0/boost include/
+mv -vf $BUC/boost include/
 rm -rfv boost*
