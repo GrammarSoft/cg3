@@ -46,6 +46,7 @@ unsafe(false),
 ordered(false),
 show_end_tags(false),
 unicode_tags(false),
+unique_tags(false),
 dry_run(false),
 owns_grammar(false),
 input_eof(false),
@@ -355,12 +356,19 @@ void GrammarApplicator::printReading(const Reading *reading, UFILE *output, size
 		u_fputc(' ', output);
 	}
 
+	uint32SortedVector unique;
 	const_foreach (Reading::tags_list_t, reading->tags_list, tter, tter_end) {
 		if ((!show_end_tags && *tter == endtag) || *tter == begintag) {
 			continue;
 		}
 		if (*tter == reading->baseform || *tter == reading->wordform) {
 			continue;
+		}
+		if (unique_tags) {
+			if (unique.find(*tter) != unique.end()) {
+				continue;
+			}
+			unique.insert(*tter);
 		}
 		const Tag *tag = single_tags[*tter];
 		if (tag->type & T_DEPENDENCY && has_dep && !dep_original) {
