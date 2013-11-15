@@ -34,3 +34,5 @@ ADD (@same-but-different-list) $$ACESet (1 ACESet - $$ACESet) ;
 ADD (@same-but-different-list-bad) $$BDFSet (1 BDFSet - $$BDFSet) ;
 ADD (@same-but-different-set) $$Sace (1 Sace - $$Sace) ;
 ADD (@same-but-different-set-bad) $$Sbdf (1 Sbdf - $$Sbdf) ;
+
+ADD (@vstr-safe-capture) ("wordi") (-1**C ("([^<].*)."r some tags) LINK -1 ("$1c"v)) ;

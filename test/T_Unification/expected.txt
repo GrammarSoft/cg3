@@ -1,32 +1,32 @@
 "<worda>"
-	"worda" some tags AA @UnifSet @same-but-different-list @same-but-different-set ID:1 R:from:3 ADD:10 ADDRELATIONS(from,to):11 SELECT:SameBase ADD:33 ADD:35 
-;	"wordc" some tags ID:1 R:from:3 SELECT:SameBase 
+	"worda" some tags AA @UnifSet @same-but-different-list @same-but-different-set ID:1 R:from:3 ADD:10 ADDRELATIONS(from,to):11 SELECT:SameBase ADD:33 ADD:35
+;	"wordc" some tags ID:1 R:from:3 SELECT:SameBase
 "<wordb>"
-	"wordb" some tags ID:2 R:from:3 
-	"worda" some tags CC @UnifSet @same-but-different-list @same-but-different-set ID:2 R:from:3 ADD:10 ADDRELATIONS(from,to):11 ADD:33 ADD:35 
+	"wordb" some tags ID:2 R:from:3
+	"worda" some tags CC @UnifSet @same-but-different-list @same-but-different-set ID:2 R:from:3 ADD:10 ADDRELATIONS(from,to):11 ADD:33 ADD:35
 "<wordc>"
-	"wordc" some tags BB EE @UnifSet ID:3 R:to:1 R:to:2 ADD:10 SELECT:two 
-;	"wordc" some tags ID:3 R:to:1 R:to:2 SELECT:two 
+	"wordc" some tags BB EE @UnifSet ID:3 R:to:1 R:to:2 ADD:10 SELECT:two
+;	"wordc" some tags ID:3 R:to:1 R:to:2 SELECT:two
 "<wordd>"
-	"wordd" some tags 
-	"wordd" some tags BB EE @UnifSet @same-but-different-list @same-but-different-set ADD:10 ADD:33 ADD:35 
+	"wordd" some tags
+	"wordd" some tags BB EE @UnifSet @same-but-different-list @same-but-different-set ADD:10 ADD:33 ADD:35
 "<worde>"
-	"replaced:rde" some tags CC @UnifSet ADD:10 SELECT:one SUBSTITUTE:28 
-;	"worde" some tags SELECT:one 
+	"replaced:rde" some tags CC @UnifSet ADD:10 SELECT:one SUBSTITUTE:28
+;	"worde" some tags SELECT:one
 "<wordf>"
-	"replaced:f" some tags THIS SUBSTITUTE:28 
-	"replaced:f" some tags CC THIS @UnifSet ADD:10 SUBSTITUTE:28 
-;	"wordf" some tags NOTTHIS REMOVE:19 
+	"replaced:f" some tags THIS SUBSTITUTE:28
+	"replaced:f" some tags CC THIS @UnifSet ADD:10 SUBSTITUTE:28
+;	"wordf" some tags NOTTHIS REMOVE:19
 "<wordg>"
-	"replaced:g" some tags CC THIS SELECT:this SUBSTITUTE:28 
-;	"wordg" some tags SELECT:this 
-;	"wordg" some tags ALSONOTTHIS SELECT:this 
+	"replaced:g" some tags CC THIS SELECT:this SUBSTITUTE:28
+;	"wordg" some tags SELECT:this
+;	"wordg" some tags ALSONOTTHIS SELECT:this
 "<wordh>"
-	"replaced:h" some tags <Hprof> AA CC EE THIS SELECT:regex ADD:22 ADD:24 SUBSTITUTE:28 
-;	"wordh" some tags SELECT:regex 
+	"replaced:h" some tags <Hprof> AA CC EE THIS SELECT:regex ADD:22 ADD:24 SUBSTITUTE:28
+;	"wordh" some tags SELECT:regex
 "<wordi>"
-	"wordi" some tags <before> THIS <after> ADD:22 ADD:23 SUBSTITUTE:25 
-	"wordi" some tags <Hfam> <before> THIS <after> ADD:22 ADD:23 SUBSTITUTE:25 
+	"wordi" some tags <before> THIS <after> @vstr-safe-capture ADD:22 ADD:23 SUBSTITUTE:25 ADD:38
+	"wordi" some tags <Hfam> <before> THIS <after> @vstr-safe-capture ADD:22 ADD:23 SUBSTITUTE:25 ADD:38
 "<$.>"
-	"." 
+	"."
 
