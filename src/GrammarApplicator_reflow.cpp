@@ -367,11 +367,9 @@ Tag *GrammarApplicator::generateVarstringTag(const Tag *tag) {
 	}
 
 	// Replace $1-$9 with their respective match groups
-	if (!regexgrps.empty()) {
-		for (size_t i=0 ; i<regexgrps.size() ; ++i) {
-			tmp.findAndReplace(stringbits[S_VS1+i].getTerminatedBuffer(), regexgrps[i]);
-			did_something = true;
-		}
+	for (size_t i=0 ; i<regexgrps.size() && i<9 ; ++i) {
+		tmp.findAndReplace(stringbits[S_VS1+i].getTerminatedBuffer(), regexgrps[i]);
+		did_something = true;
 	}
 
 	// Handle %U %u %L %l markers.
