@@ -634,6 +634,20 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 							(*iter)->local_number = std::distance(current.cohorts.begin(), iter);
 						}
 						gWindow->rebuildCohortLinks();
+						// If we just removed the last cohort, add <<< to the new last cohort
+						if (cohort->readings.front()->tags.count(endtag)) {
+							boost_foreach (Reading *r, current.cohorts.back()->readings) {
+								addTagToReading(*r, endtag);
+								if (updateValidRules(rules, intersects, endtag, *r)) {
+									iter_rules = intersects.find(rule.number);
+									iter_rules_end = intersects.end();
+								}
+							}
+							index_ruleCohort_no.clear();
+							cohortset = &current.rule_to_cohorts.find(rule.number)->second;
+							rocit = cohortset->find(cohort);
+							++rocit;
+						}
 						readings_changed = true;
 						break;
 					}
@@ -703,6 +717,19 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 
 						foreach (CohortVector, current.cohorts, iter, iter_end) {
 							(*iter)->local_number = std::distance(current.cohorts.begin(), iter);
+						}
+						// If the new cohort is now the last cohort, add <<< to it and remove <<< from previous last cohort
+						if (current.cohorts.back() == cCohort) {
+							boost_foreach (Reading *r, current.cohorts[current.cohorts.size()-2]->readings) {
+								delTagFromReading(*r, endtag);
+							}
+							boost_foreach (Reading *r, current.cohorts.back()->readings) {
+								addTagToReading(*r, endtag);
+								if (updateValidRules(rules, intersects, endtag, *r)) {
+									iter_rules = intersects.find(rule.number);
+									iter_rules_end = intersects.end();
+								}
+							}
 						}
 						gWindow->rebuildCohortLinks();
 						indexSingleWindow(current);

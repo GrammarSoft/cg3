@@ -125,6 +125,10 @@ public:
 		return it;
 	}
 
+	size_t count(T t) const {
+		return (find(t) != end());
+	}
+
 	const_iterator begin() const {
 		return elements.begin();
 	}
