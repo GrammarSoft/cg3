@@ -1,15 +1,23 @@
 "<word>"
-	"word" notwanted @stillhere 
-	"word" notmeeither @stillhere 
+	"word" notwanted @stillhere ADD:16 ADD:16
+	"word" notmeeither @stillhere ADD:16 ADD:16
 "<wordform1>"
-	"baseform1" tag1 @stillhere 
+	"baseform1" tag1 @stillhere ADDCOHORT-BEFORE:11 ADD:16 ADD:16
 "<wordform3>"
-	"baseform3" tag3 @stillhere 
-	"baseform4" tag4 @stillhere 
-	"baseform5" @stillhere 
+	"baseform3" tag3 @stillhere ADDCOHORT-BEFORE:13 ADD:16 ADD:16
+	"baseform4" tag4 @stillhere ADDCOHORT-BEFORE:13 ADD:16 ADD:16
+	"baseform5" @stillhere ADDCOHORT-BEFORE:13 ADD:16 ADD:16
+; "<word>"
+;	"word" notwanted REMCOHORT:15
+;	"matchme" wanted ADDCOHORT-BEFORE:11 ADDCOHORT-AFTER:12 ADDCOHORT-BEFORE:13 REMCOHORT:15
+;	"word" notmeeither REMCOHORT:15
 "<wordform2>"
-	"baseform2" tag2 @stillhere 
+	"baseform2" tag2 @stillhere ADDCOHORT-AFTER:12 ADD:16 ADD:16
 "<word>"
-	"word" notwanted @stillhere 
-	"word" notmeeither @stillhere 
+	"word" notwanted @last-after-rem @stillhere ADD:5 ADDCOHORT-AFTER:6 ADD:16 ADD:16
+	"word" notmeeither @last-after-rem @stillhere ADD:5 ADD:16 ADD:16
+; "<last>"
+;	"last" last cohort @last-old ADD:3 REMCOHORT:4
+"<new last>"
+	"new last" new last cohort @last-after-add @stillhere ADDCOHORT-AFTER:6 ADD:7 ADD:16 ADD:16
 

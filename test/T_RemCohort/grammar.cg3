@@ -1,5 +1,11 @@
 DELIMITERS = "<$.>" ;
 
+ADD (@last-old) (<<<) ;
+REMCOHORT (<<<) ;
+ADD (@last-after-rem) (<<<) ;
+ADDCOHORT ("<new last>" "new last" new last cohort) AFTER (<<<) - (new) ;
+ADD (@last-after-add) (<<<) ;
+
 SECTION
 
 ADDCOHORT ("<wordform1>" "baseform1" tag1) BEFORE ("matchme") ;
