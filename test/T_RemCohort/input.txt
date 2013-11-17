@@ -8,3 +8,5 @@
 "<word>"
 	"word" notwanted
 	"word" notmeeither
+"<last>"
+	"last" last cohort
