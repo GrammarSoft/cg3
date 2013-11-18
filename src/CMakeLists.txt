@@ -2,46 +2,33 @@
 find_package(Threads REQUIRED)
 
 # Boost
-SET(Boost_ADDITIONAL_VERSIONS "1.42" "1.42.0" "1.43" "1.43.0" "1.44" "1.44.0" "1.45" "1.45.0" "1.46" "1.46.0" "1.46.1" "1.47" "1.47.0" "1.48" "1.48.0" "1.49" "1.49.0")
-FIND_PATH(Boost_LOCAL NAMES boost/config.hpp PATHS "${CMAKE_CURRENT_SOURCE_DIR}/../include" NO_DEFAULT_PATH)
-if (Boost_LOCAL)
-	SET(BOOST_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/../include")
-	find_package(Boost 1.36.0)
+find_path(Boost_LOCAL NAMES boost/config.hpp PATHS "${CMAKE_CURRENT_SOURCE_DIR}/../include" NO_DEFAULT_PATH)
+if(Boost_LOCAL)
+	set(BOOST_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/../include")
+	find_package(Boost 1.40.0)
 endif()
-if (NOT Boost_FOUND)
+if(NOT Boost_FOUND)
+	unset(BOOST_ROOT)
 	message(STATUS "Did not find Boost locally; trying globally...")
 	message(STATUS "If this doesn't work, run ./get-boost.sh and try again.")
-	find_package(Boost 1.36.0 REQUIRED)
+	find_package(Boost 1.40.0 REQUIRED)
 endif()
-if(Boost_FOUND)
-	if (Boost_VERSION VERSION_LESS "103600")
-		unset(Boost_FOUND CACHE)
-		unset(Boost_INCLUDE_DIRS CACHE)
-		unset(Boost_LIBRARIES CACHE)
-		message(FATAL_ERROR "Boost is too old - ${Boost_VERSION} was found, but CG-3 requires 1.36.0 or newer")
-	endif ()
-	include_directories(${Boost_INCLUDE_DIRS})
-	link_directories(${Boost_LIBRARY_DIRS})
-	add_definitions(-DHAVE_BOOST=1)
-	message(STATUS "Found Boost version ${Boost_VERSION}")
-endif()
+include_directories(${Boost_INCLUDE_DIRS})
+link_directories(${Boost_LIBRARY_DIRS})
 
 # ICU
 find_package(ICU REQUIRED)
-if (ICU_FOUND)
-	if (ICU_VERSION VERSION_LESS "3.6")
-		unset(ICU_FOUND CACHE)
-		unset(ICU_INCLUDE_DIRS CACHE)
-		unset(ICU_LIBRARIES CACHE)
-		message(FATAL_ERROR "ICU is too old - ${ICU_VERSION} was found, but CG-3 requires 3.6 or newer")
-	endif ()
+if(ICU_FOUND)
+	if(ICU_VERSION VERSION_LESS "4.2")
+		message(FATAL_ERROR "ICU is too old - ${ICU_VERSION} was found, but CG-3 requires 4.2 or newer")
+	endif()
 	include_directories(${ICU_INCLUDE_DIRS})
 	message(STATUS "Found ICU version ${ICU_VERSION}")
 endif()
 
-if (NOT CMAKE_BUILD_TYPE STREQUAL Debug)
-	FIND_LIBRARY(GOOGLE_TCMALLOC_LIB tcmalloc)
-	if (GOOGLE_TCMALLOC_LIB)
+if(NOT CMAKE_BUILD_TYPE STREQUAL Debug)
+	find_library(GOOGLE_TCMALLOC_LIB tcmalloc)
+	if(GOOGLE_TCMALLOC_LIB)
 		message(STATUS "Found tcmalloc: ${GOOGLE_TCMALLOC_LIB}")
 		set(GOOGLE_TCMALLOC_ENABLED 1)
 	else()
@@ -50,7 +37,7 @@ if (NOT CMAKE_BUILD_TYPE STREQUAL Debug)
 endif()
 
 macro(cg3_link target)
-	if (GOOGLE_TCMALLOC_ENABLED)
+	if(GOOGLE_TCMALLOC_ENABLED)
 		target_link_libraries(${target} ${GOOGLE_TCMALLOC_LIB})
 	endif()
 
@@ -63,7 +50,7 @@ macro(cg3_link target)
 	target_link_libraries(${target} ${ICU_LIBRARIES} ${ICU_IO_LIBRARIES} ${ICU_I18N_LIBRARIES})
 endmacro()
 
-SET(LIBCG3_HEADERS
+set(LIBCG3_HEADERS
 	BinaryGrammar.hpp
 	Cohort.hpp
 	CohortIterator.hpp
@@ -93,7 +80,7 @@ SET(LIBCG3_HEADERS
 	version.hpp
 	../include/exec-stream/exec-stream.h
 	)
-SET(LIBCG3_SOURCES
+set(LIBCG3_SOURCES
 	BinaryGrammar.cpp
 	BinaryGrammar_read.cpp
 	BinaryGrammar_write.cpp
@@ -122,7 +109,7 @@ SET(LIBCG3_SOURCES
 	${LIBCG3_HEADERS}
 	)
 if(MSVC)
-	SET(LIBCG3_SOURCES
+	set(LIBCG3_SOURCES
 		../win32/getopt.c
 		../win32/getopt.h
 		../win32/libgen.c
@@ -131,26 +118,26 @@ if(MSVC)
 		)
 endif()
 
-ADD_LIBRARY(libcg3 STATIC libcg3.cpp ${LIBCG3_SOURCES})
-SET_TARGET_PROPERTIES(libcg3 PROPERTIES OUTPUT_NAME "cg3")
-SET_TARGET_PROPERTIES(libcg3 PROPERTIES PREFIX "lib")
+add_library(libcg3 STATIC libcg3.cpp ${LIBCG3_SOURCES})
+set_target_properties(libcg3 PROPERTIES OUTPUT_NAME "cg3")
+set_target_properties(libcg3 PROPERTIES PREFIX "lib")
 if(MSVC AND NOT CMAKE_BUILD_TYPE STREQUAL Debug)
-	SET_TARGET_PROPERTIES(libcg3 PROPERTIES STATIC_LIBRARY_FLAGS "/LTCG")
+	set_target_properties(libcg3 PROPERTIES STATIC_LIBRARY_FLAGS "/LTCG")
 endif()
 cg3_link(libcg3)
 
 if(NOT MSVC)
-	ADD_LIBRARY(libcg3-shared SHARED libcg3.cpp ${LIBCG3_SOURCES})
-	SET_TARGET_PROPERTIES(libcg3-shared PROPERTIES OUTPUT_NAME "cg3")
-	SET_TARGET_PROPERTIES(libcg3-shared PROPERTIES PREFIX "lib")
+	add_library(libcg3-shared SHARED libcg3.cpp ${LIBCG3_SOURCES})
+	set_target_properties(libcg3-shared PROPERTIES OUTPUT_NAME "cg3")
+	set_target_properties(libcg3-shared PROPERTIES PREFIX "lib")
 	cg3_link(libcg3-shared)
 endif()
 
-ADD_EXECUTABLE(cg-comp cg_comp.cpp)
+add_executable(cg-comp cg_comp.cpp)
 cg3_link(cg-comp)
 target_link_libraries(cg-comp libcg3)
 
-ADD_EXECUTABLE(cg-proc
+add_executable(cg-proc
 	cg_proc.cpp
 	ApertiumApplicator.cpp
 	ApertiumApplicator.hpp
@@ -160,7 +147,7 @@ ADD_EXECUTABLE(cg-proc
 cg3_link(cg-proc)
 target_link_libraries(cg-proc libcg3)
 
-ADD_EXECUTABLE(cg-conv
+add_executable(cg-conv
 	cg_conv.cpp
 	ApertiumApplicator.cpp
 	ApertiumApplicator.hpp
@@ -179,18 +166,18 @@ ADD_EXECUTABLE(cg-conv
 cg3_link(cg-conv)
 target_link_libraries(cg-conv libcg3)
 
-ADD_EXECUTABLE(vislcg3 main.cpp options.hpp)
+add_executable(vislcg3 main.cpp options.hpp)
 cg3_link(vislcg3)
 target_link_libraries(vislcg3 libcg3)
 
-ADD_EXECUTABLE(test_libcg3 test_libcg3.c)
+add_executable(test_libcg3 test_libcg3.c)
 if(NOT MSVC)
 	target_link_libraries(test_libcg3 libcg3-shared)
 else()
 	target_link_libraries(test_libcg3 libcg3)
 endif()
 
-ADD_TEST(t_libcg3 test_libcg3 "${CMAKE_CURRENT_SOURCE_DIR}/../test/T_BasicSelect/grammar.txt")
+add_test(t_libcg3 test_libcg3 "${CMAKE_CURRENT_SOURCE_DIR}/../test/T_BasicSelect/grammar.txt")
 
 install(TARGETS libcg3 ARCHIVE DESTINATION lib)
 if(NOT MSVC)
