@@ -78,7 +78,7 @@ namespace CG3 {
 		KEYWORDS type;
 		Set *maplist;
 		Set *sublist;
-		
+
 		mutable ContextList tests;
 		mutable ContextList dep_tests;
 		mutable uint32_t num_fail, num_match;
@@ -88,7 +88,7 @@ namespace CG3 {
 		Rule();
 		~Rule();
 		void setName(const UChar *to);
-		
+
 		void resetStatistics();
 
 		void addContextualTest(ContextualTest *to, ContextList& head);
@@ -122,19 +122,5 @@ namespace CG3 {
 	typedef stdext::hash_map<uint32_t,Rule*> RuleByLineHashMap;
 	typedef stdext::hash_map<const Rule*, CohortSet, compare_Rule> RuleToCohortsMap;
 }
-
-#ifdef __GNUC__
-#ifndef HAVE_BOOST
-#if GCC_VERSION < 40300
-namespace __gnu_cxx {
-	template<> struct hash< CG3::Rule* > {
-		size_t operator()( const CG3::Rule *x ) const {
-			return CG3::Rule::cmp_hash(x);
-		}
-	};
-}
-#endif
-#endif
-#endif
 
 #endif
