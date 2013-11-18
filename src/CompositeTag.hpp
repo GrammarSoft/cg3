@@ -116,18 +116,4 @@ namespace CG3 {
 	typedef std::set<AnyTag> AnyTagSet;
 }
 
-#ifdef __GNUC__
-#ifndef HAVE_BOOST
-#if GCC_VERSION < 40300
-namespace __gnu_cxx {
-	template<> struct hash< CG3::CompositeTag* > {
-		size_t operator()( const CG3::CompositeTag *x ) const {
-			return x->hash;
-		}
-	};
-}
-#endif
-#endif
-#endif
-
 #endif
