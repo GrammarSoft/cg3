@@ -293,7 +293,6 @@ Cohort *GrammarApplicator::runContextualTest(SingleWindow *sWindow, size_t posit
 				cohort = nc;
 				retval = true;
 				sWindow = cohort->parent;
-				pos = static_cast<int32_t>(cohort->local_number);
 			}
 			else {
 				retval = false;
@@ -308,7 +307,6 @@ Cohort *GrammarApplicator::runContextualTest(SingleWindow *sWindow, size_t posit
 			if (nc) {
 				cohort = nc;
 				retval = true;
-				pos = static_cast<int32_t>(cohort->local_number);
 			}
 			else {
 				retval = false;
@@ -319,7 +317,6 @@ Cohort *GrammarApplicator::runContextualTest(SingleWindow *sWindow, size_t posit
 			if (nc) {
 				cohort = nc;
 				retval = true;
-				pos = static_cast<int32_t>(cohort->local_number);
 			}
 			else {
 				retval = false;
@@ -577,7 +574,7 @@ Cohort *GrammarApplicator::runDependencyTest(SingleWindow *sWindow, Cohort *curr
 
 		}
 		if (good) {
-			tmc = runSingleTest(cohort, test, &brk, &retval, deep, origin);
+			runSingleTest(cohort, test, &brk, &retval, deep, origin);
 		}
 		if (test->pos & POS_ALL) {
 			if (!retval) {

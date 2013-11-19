@@ -100,7 +100,6 @@ void Tag::parseTag(const UChar *to, UFILE *ux_stderr, Grammar *grammar) {
 			type |= T_VARSTRING;
 			type |= T_VSTR;
 			tmp += 5;
-			length -= 5;
 
 			tag.assign(tmp);
 			if (tag.empty()) {
@@ -260,7 +259,6 @@ void Tag::parseTag(const UChar *to, UFILE *ux_stderr, Grammar *grammar) {
 			if (tag[0] == '/' && tag[length-1] == '/') {
 				tag.resize(tag.size()-1);
 				tag.erase(tag.begin());
-				length -= 2;
 			}
 		}
 

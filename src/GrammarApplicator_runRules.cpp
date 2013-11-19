@@ -1501,7 +1501,6 @@ label_runGrammarOnWindow_begin:
 	}
 
 	if (!grammar->parentheses.empty() && current->has_enclosures) {
-		bool found = false;
 		size_t nc = current->cohorts.size();
 		for (size_t i=0 ; i<nc ; ++i) {
 			Cohort *c = current->cohorts[i];
@@ -1523,11 +1522,10 @@ label_runGrammarOnWindow_begin:
 				par_left_pos = i+1;
 				par_right_pos = i+ne;
 				c->enclosed.clear();
-				found = true;
 				goto label_runGrammarOnWindow_begin;
 			}
 		}
-		if (!found && !did_final_enclosure) {
+		if (!did_final_enclosure) {
 			par_left_tag = 0;
 			par_right_tag = 0;
 			par_left_pos = 0;

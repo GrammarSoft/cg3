@@ -217,7 +217,7 @@ void MatxinApplicator::runGrammarOnText(istream& input, UFILE *output) {
 		if (incohort) {
 			// Create magic reading
 			if (cCohort && cCohort->readings.empty()) {
-				cReading = initEmptyCohort(*cCohort);
+				initEmptyCohort(*cCohort);
 			}
 			if (cCohort && cSWindow->cohorts.size() >= soft_limit && grammar->soft_delimiters && doesSetMatchCohortNormal(*cCohort, grammar->soft_delimiters->hash)) {
 			  // ie. we've read some cohorts
@@ -365,14 +365,13 @@ void MatxinApplicator::runGrammarOnText(istream& input, UFILE *output) {
 			}
 		} // end reading
 		numLines++;
-		inchar = 0;
 	} // end input loop
 
 	if (cCohort && cSWindow) {
 		cSWindow->appendCohort(cCohort);
 		// Create magic reading
 		if (cCohort->readings.empty()) {
-			cReading = initEmptyCohort(*cCohort);
+			initEmptyCohort(*cCohort);
 		}
 		foreach (ReadingList, cCohort->readings, iter, iter_end) {
 			addTagToReading(**iter, endtag);
