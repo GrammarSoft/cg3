@@ -120,7 +120,7 @@ gotaline:
 		}
 		if (!ignoreinput && cleaned[0] && cleaned[0] != '<') {
 			if (cCohort && cCohort->readings.empty()) {
-				cReading = initEmptyCohort(*cCohort);
+				initEmptyCohort(*cCohort);
 			}
 			if (cSWindow && cSWindow->cohorts.size() >= soft_limit && grammar->soft_delimiters && !did_soft_lookback) {
 				did_soft_lookback = true;
@@ -317,7 +317,7 @@ gotaline:
 	if (cCohort && cSWindow) {
 		cSWindow->appendCohort(cCohort);
 		if (cCohort->readings.empty()) {
-			cReading = initEmptyCohort(*cCohort);
+			initEmptyCohort(*cCohort);
 		}
 		foreach (ReadingList, cCohort->readings, iter, iter_end) {
 			addTagToReading(**iter, endtag);

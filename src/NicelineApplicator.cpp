@@ -129,7 +129,7 @@ gotaline:
 			space[0] = 0;
 
 			if (cCohort && cCohort->readings.empty()) {
-				cReading = initEmptyCohort(*cCohort);
+				initEmptyCohort(*cCohort);
 			}
 			if (cSWindow && cSWindow->cohorts.size() >= soft_limit && grammar->soft_delimiters && !did_soft_lookback) {
 				did_soft_lookback = true;
@@ -160,7 +160,6 @@ gotaline:
 
 				cSWindow->appendCohort(cCohort);
 				lSWindow = cSWindow;
-				lCohort = cCohort;
 				cSWindow = 0;
 				cCohort = 0;
 				numCohorts++;
@@ -177,7 +176,6 @@ gotaline:
 
 				cSWindow->appendCohort(cCohort);
 				lSWindow = cSWindow;
-				lCohort = cCohort;
 				cSWindow = 0;
 				cCohort = 0;
 				numCohorts++;
@@ -189,14 +187,12 @@ gotaline:
 				initEmptySingleWindow(cSWindow);
 
 				lSWindow = cSWindow;
-				lCohort = cSWindow->cohorts[0];
 				cCohort = 0;
 				numWindows++;
 				did_soft_lookback = false;
 			}
 			if (cCohort && cSWindow) {
 				cSWindow->appendCohort(cCohort);
-				lCohort = cCohort;
 			}
 			if (gWindow->next.size() > num_windows) {
 				while (!gWindow->previous.empty() && gWindow->previous.size() > num_windows) {
@@ -324,7 +320,7 @@ istext:
 	if (cCohort && cSWindow) {
 		cSWindow->appendCohort(cCohort);
 		if (cCohort->readings.empty()) {
-			cReading = initEmptyCohort(*cCohort);
+			initEmptyCohort(*cCohort);
 		}
 		foreach (ReadingList, cCohort->readings, iter, iter_end) {
 			addTagToReading(**iter, endtag);

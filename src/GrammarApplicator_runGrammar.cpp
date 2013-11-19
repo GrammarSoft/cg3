@@ -169,8 +169,7 @@ gotaline:
 			space[1] = 0;
 
 			if (cCohort && cCohort->readings.empty()) {
-				cReading = initEmptyCohort(*cCohort);
-				lReading = cReading;
+				initEmptyCohort(*cCohort);
 			}
 			if (cSWindow && cSWindow->cohorts.size() >= soft_limit && grammar->soft_delimiters && !did_soft_lookback) {
 				did_soft_lookback = true;
@@ -201,7 +200,6 @@ gotaline:
 
 				cSWindow->appendCohort(cCohort);
 				lSWindow = cSWindow;
-				lCohort = cCohort;
 				cSWindow = 0;
 				cCohort = 0;
 				numCohorts++;
@@ -218,7 +216,6 @@ gotaline:
 
 				cSWindow->appendCohort(cCohort);
 				lSWindow = cSWindow;
-				lCohort = cCohort;
 				cSWindow = 0;
 				cCohort = 0;
 				numCohorts++;
@@ -235,8 +232,6 @@ gotaline:
 				variables_rem.clear();
 
 				lSWindow = cSWindow;
-				lReading = cSWindow->cohorts[0]->readings.front();
-				lCohort = cSWindow->cohorts[0];
 				cCohort = 0;
 				numWindows++;
 				did_soft_lookback = false;
@@ -252,12 +247,10 @@ gotaline:
 					variables_rem.clear();
 
 					lSWindow = cSWindow;
-					lReading = cSWindow->cohorts[0]->readings.front();
 					++numWindows;
 					did_soft_lookback = false;
 				}
 				cSWindow->appendCohort(cCohort);
-				lCohort = cCohort;
 			}
 			if (gWindow->next.size() > num_windows) {
 				while (!gWindow->previous.empty() && gWindow->previous.size() > num_windows) {
@@ -394,7 +387,6 @@ gotaline:
 				cCohort->readings.back()->rehash();
 			}
 			indents.push_back(std::make_pair(indent,cReading));
-			lReading = cReading;
 			numReadings++;
 		}
 		else {
@@ -411,8 +403,7 @@ istext:
 					if (cCohort && cSWindow) {
 						cSWindow->appendCohort(cCohort);
 						if (cCohort->readings.empty()) {
-							cReading = initEmptyCohort(*cCohort);
-							lReading = cReading;
+							initEmptyCohort(*cCohort);
 						}
 						foreach (ReadingList, cCohort->readings, iter, iter_end) {
 							addTagToReading(**iter, endtag);
@@ -540,10 +531,9 @@ istext:
 
 					UChar *s = &cleaned[stringbits[S_CMD_REMVAR].length()];
 					UChar *c = u_strchr(s, ',');
-					uint32_t a = grammar->tag_any;
+					uint32_t a = 0;
 					while (c && *c) {
 						c[0] = 0;
-						a = grammar->tag_any;
 						if (s[0]) {
 							a = addTag(s)->hash;
 							variables_set.erase(a);
@@ -581,7 +571,7 @@ istext:
 	if (cCohort && cSWindow) {
 		cSWindow->appendCohort(cCohort);
 		if (cCohort->readings.empty()) {
-			cReading = initEmptyCohort(*cCohort);
+			initEmptyCohort(*cCohort);
 		}
 		foreach (ReadingList, cCohort->readings, iter, iter_end) {
 			addTagToReading(**iter, endtag);
