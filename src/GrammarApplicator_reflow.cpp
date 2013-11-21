@@ -529,6 +529,10 @@ void GrammarApplicator::delTagFromReading(Reading& reading, uint32_t utag) {
 	reading.parent->type &= ~CT_NUM_CURRENT;
 }
 
+void GrammarApplicator::delTagFromReading(Reading& reading, Tag *tag) {
+	return delTagFromReading(reading, tag->hash);
+}
+
 bool GrammarApplicator::unmapReading(Reading& reading, const uint32_t rule) {
 	bool readings_changed = false;
 	if (reading.mapping) {

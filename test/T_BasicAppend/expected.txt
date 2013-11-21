@@ -1,15 +1,16 @@
 "<word>"
-	"word" notwanted 
-	"word" wanted 
-	"word" notmeeither 
-	"newword" appended1 @A @B 
-	"newword" appended3 @A @C 
-	"newword" appended2 
-	"word" wanted copy copied 
-	"word" wanted copy also-copied 
-	"word" wanted noguard-copied 
-	"word" wanted copy copied noguard-copied 
-	"word" wanted copy also-copied noguard-copied 
+	"word" notwanted
+	"word" wanted
+	"word" notmeeither
+	"newword" appended1 @A @B
+	"newword" appended3 @A @C
+	"newword" appended2
+	"word" wanted copy copied
+	"word" wanted copy also-copied
+	"word" wanted noguard-copied
+	"word" wanted copy copied noguard-copied
+	"word" wanted copy also-copied noguard-copied
+	"word" wanted copied-except
+	"word" wanted copied copied-except
 "<waffle>"
-	"waffle" and cream @show 
-
+	"waffle" and cream @show

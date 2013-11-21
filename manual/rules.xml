@@ -27,8 +27,8 @@
 
       REPLACE &lt;tags&gt; &lt;target&gt; [contextual_tests] ;
       APPEND &lt;tags&gt; &lt;target&gt; [contextual_tests] ;
-      COPY &lt;extra tags&gt; &lt;target&gt; [contextual_tests] ;
-      
+      COPY &lt;extra tags&gt; [EXCEPT &lt;except tags&gt;] &lt;target&gt; [contextual_tests] ;
+
       SELECT &lt;target&gt; [contextual_tests] ;
       REMOVE &lt;target&gt; [contextual_tests] ;
       IFF &lt;target&gt; [contextual_tests] ;
@@ -68,7 +68,7 @@
   Variable manipulation:
       SETVARIABLE &lt;name&gt; &lt;value&gt; &lt;target&gt; [contextual_tests] ;
       REMVARIABLE &lt;name&gt; &lt;target&gt; [contextual_tests] ;
-      
+
   Flow control:
       JUMP &lt;anchor_name&gt; &lt;target&gt; [contextual_tests] ;
     </screen>
@@ -97,14 +97,16 @@
       <primary>COPY</primary>
     </indexterm>
     <screen>
-      [wordform] COPY &lt;extra tags&gt; &lt;target&gt; [contextual_tests] ;
+      [wordform] COPY &lt;extra tags&gt; [EXCEPT &lt;except tags&gt;] &lt;target&gt; [contextual_tests] ;
     </screen>
     <para>
       Duplicates a reading and adds tags to it. If you don't want to copy previously copied readings,
       you will have to keep track of that yourself by adding a marker tag.
+      Optionally excludes certain tags from the copy.
     </para>
     <screen>
       COPY (¤copy tags) TARGET (target) - (¤copy) ;
+      COPY (¤copy tags) EXCEPT (not these tags) TARGET (target) - (¤copy) ;
     </screen>
   </section>
 
@@ -217,7 +219,7 @@
     </para>
     <para>
       Caveat: This does NOT affect the rule application order as that is tied to the input order of the cohorts,
-      so after movement you may see some rules touching later cohorts than you'd expect. 
+      so after movement you may see some rules touching later cohorts than you'd expect.
     </para>
   </section>
 
