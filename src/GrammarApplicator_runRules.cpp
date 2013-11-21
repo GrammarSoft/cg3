@@ -973,6 +973,15 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						const_foreach (Reading::tags_list_t, reading.tags_list, iter, iter_end) {
 							addTagToReading(*cReading, *iter);
 						}
+
+						if (rule.sublist) {
+							// ToDo: Use the code from Substitute to make this match and remove special tags
+							TagList excepts = getTagList(*rule.sublist);
+							const_foreach(TagList, excepts, tter, tter_end) {
+								delTagFromReading(*cReading, *tter);
+							}
+						}
+
 						TagList mappings;
 						TagList theTags = getTagList(*rule.maplist);
 						const_foreach (TagList, theTags, tter, tter_end) {

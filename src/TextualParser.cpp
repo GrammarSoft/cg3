@@ -980,8 +980,14 @@ void TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 		}
 	}
 
+	bool copy_except = false;
+	if (key == K_COPY && ux_simplecasecmp(p, stringbits[S_EXCEPT].getTerminatedBuffer(), stringbits[S_EXCEPT].length())) {
+		p += stringbits[S_EXCEPT].length();
+		copy_except = true;
+	}
+
 	result->lines += SKIPWS(p);
-	if (key == K_ADDRELATIONS || key == K_SETRELATIONS || key == K_REMRELATIONS || key == K_SETVARIABLE) {
+	if (key == K_ADDRELATIONS || key == K_SETRELATIONS || key == K_REMRELATIONS || key == K_SETVARIABLE || copy_except) {
 		Set *s = parseSetInlineWrapper(p);
 		s->reindex(*result);
 		rule->sublist = s;

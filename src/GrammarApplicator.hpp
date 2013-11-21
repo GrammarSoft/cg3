@@ -213,6 +213,7 @@ namespace CG3 {
 		void reflowReading(Reading& reading);
 		Tag *generateVarstringTag(const Tag *tag);
 		void delTagFromReading(Reading& reading, uint32_t tag);
+		void delTagFromReading(Reading& reading, Tag *tag);
 		bool unmapReading(Reading& reading, const uint32_t rule);
 		TagList getTagList(const Set& theSet, bool unif_mode = false) const;
 		void mergeReadings(ReadingList& readings);
