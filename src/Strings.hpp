@@ -153,6 +153,7 @@ namespace CG3 {
 		S_SET_ISECT_U,
 		S_SET_SYMDIFF_U,
 		S_FROM,
+		S_EXCEPT,
 		S_UU_ENCL,
 		S_CMD_SETVAR,
 		S_CMD_REMVAR,
