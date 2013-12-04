@@ -1,23 +1,32 @@
 "<word>"
-	"word" notwanted @stillhere ADD:16 ADD:16
-	"word" notmeeither @stillhere ADD:16 ADD:16
+	"word" notwanted @stillhere ADD:17 ADD:17 ADD:17
+	"word" notmeeither @stillhere ADD:17 ADD:17 ADD:17
 "<wordform1>"
-	"baseform1" tag1 @stillhere ADDCOHORT-BEFORE:11 ADD:16 ADD:16
+	"baseform1" tag1 @stillhere ADDCOHORT-BEFORE:12 ADD:17 ADD:17 ADD:17
 "<wordform3>"
-	"baseform3" tag3 @stillhere ADDCOHORT-BEFORE:13 ADD:16 ADD:16
-	"baseform4" tag4 @stillhere ADDCOHORT-BEFORE:13 ADD:16 ADD:16
-	"baseform5" @stillhere ADDCOHORT-BEFORE:13 ADD:16 ADD:16
+	"baseform3" tag3 @stillhere ADDCOHORT-BEFORE:14 ADD:17 ADD:17 ADD:17
+	"baseform4" tag4 @stillhere ADDCOHORT-BEFORE:14 ADD:17 ADD:17 ADD:17
+	"baseform5" @stillhere ADDCOHORT-BEFORE:14 ADD:17 ADD:17 ADD:17
 ; "<word>"
-;	"word" notwanted REMCOHORT:15
-;	"matchme" wanted ADDCOHORT-BEFORE:11 ADDCOHORT-AFTER:12 ADDCOHORT-BEFORE:13 REMCOHORT:15
-;	"word" notmeeither REMCOHORT:15
+;	"word" notwanted REMCOHORT:16
+;	"matchme" wanted ADDCOHORT-BEFORE:12 ADDCOHORT-AFTER:13 ADDCOHORT-BEFORE:14 REMCOHORT:16
+;	"word" notmeeither REMCOHORT:16
+"<(>"
+	"(" @stillhere ADD:17
+"<inside>"
+	"inside" inside @stillhere ADD:17
+"<)>"
+	")" @stillhere ADD:17
 "<wordform2>"
-	"baseform2" tag2 @stillhere ADDCOHORT-AFTER:12 ADD:16 ADD:16
+	"baseform2" tag2 @stillhere ADDCOHORT-AFTER:13 ADD:17 ADD:17 ADD:17
 "<word>"
-	"word" notwanted @last-after-rem @stillhere ADD:5 ADDCOHORT-AFTER:6 ADD:16 ADD:16
-	"word" notmeeither @last-after-rem @stillhere ADD:5 ADD:16 ADD:16
+	"word" notwanted @last-after-rem ADD:6 ADDCOHORT-AFTER:7 ADD:17 ADD:17 ADD:6 ADDCOHORT-AFTER:7 ADD:17
+	"word" notwanted @stillhere @last-after-rem ADD:6 ADDCOHORT-AFTER:7 ADD:17 ADD:17 ADD:6 ADD:17
+	"word" notmeeither @last-after-rem @stillhere ADD:6 ADD:17 ADD:17 ADD:6 ADD:17
 ; "<last>"
-;	"last" last cohort @last-old ADD:3 REMCOHORT:4
+;	"last" last cohort @last-old ADD:4 REMCOHORT:5
+; "<new last>"
+;	"new last" new last cohort @last-after-add @stillhere @last-old ADDCOHORT-AFTER:7 ADD:8 ADD:17 ADD:17 ADD:4 REMCOHORT:5
 "<new last>"
-	"new last" new last cohort @last-after-add @stillhere ADDCOHORT-AFTER:6 ADD:7 ADD:16 ADD:16
+	"new last" new last cohort @last-after-add @stillhere ADDCOHORT-AFTER:7 ADD:8 ADD:17
 

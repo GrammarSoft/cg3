@@ -1,3 +1,9 @@
+2013-12-01  tino
+
+	* [r9454] CMakeLists.txt: cg3
+	* [r9453] ChangeLog, src/version.hpp, update-revision.pl: Use
+	  svn2cl to generate the ChangeLog
+
 2013-11-21  tino
 
 	* [r9406] manual/rules.xml, scripts/cg3-autobin.pl,
