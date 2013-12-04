@@ -5,6 +5,12 @@
 	"word" notwanted
 	"matchme" wanted
 	"word" notmeeither
+"<(>"
+	"("
+"<inside>"
+	"inside" inside
+"<)>"
+	")"
 "<word>"
 	"word" notwanted
 	"word" notmeeither

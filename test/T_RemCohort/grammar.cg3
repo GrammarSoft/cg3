@@ -1,4 +1,5 @@
 DELIMITERS = "<$.>" ;
+PARENTHESES = ("(" ")") ;
 
 ADD (@last-old) (<<<) ;
 REMCOHORT (<<<) ;
