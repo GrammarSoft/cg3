@@ -690,7 +690,11 @@ void Grammar::reindex(bool unused_sets) {
 		}
 	}
 
-	foreach (RuleVector, rule_by_number, iter_rule, iter_rule_end) {
+#ifdef TR_RATIO
+	boost::unordered_map<std::pair<uint32_t, uint32_t>, size_t> unique_targets;
+	size_t max_target = 0;
+#endif
+	foreach(RuleVector, rule_by_number, iter_rule, iter_rule_end) {
 		Set *s = 0;
 		s = getSet((*iter_rule)->target);
 		s->markUsed(*this);
@@ -717,7 +721,24 @@ void Grammar::reindex(bool unused_sets) {
 		foreach (ContextList, (*iter_rule)->dep_tests, it, it_end) {
 			(*it)->markUsed(*this);
 		}
+#ifdef TR_RATIO
+		size_t& ut = unique_targets[std::make_pair((*iter_rule)->wordform, (*iter_rule)->target)];
+		++ut;
+		max_target = std::max(max_target, ut);
+#endif
 	}
+
+#ifdef TR_RATIO
+	double avg = rule_by_number.size() / static_cast<double>(unique_targets.size());
+	double vsum = 0.0;
+	for (const auto& v : unique_targets) {
+		vsum += std::pow(v.second - avg, 2.0);
+	}
+	double var = vsum / unique_targets.size();
+
+	u_fprintf(ux_stderr, "Target:Rule ratios: %u rules, %u unique targets, %u max rules, %f average, %f variance, %f stddev\n", rule_by_number.size(), unique_targets.size(), max_target, avg, var, std::sqrt(var));
+	u_fflush(ux_stderr);
+#endif
 
 	if (delimiters) {
 		delimiters->markUsed(*this);
