@@ -29,13 +29,15 @@ namespace CG3 {
 
 class istream {
 public:
-	istream(UFILE *s) :
+	istream(UFILE *s, bool strip_bom=true) :
 	stream(s),
 	raw(u_fgetfile(stream))
 	{
-		UChar32 bom = u_fgetcx(stream);
-		if (bom != 0xfeff && bom != static_cast<UChar32>(0xffffffff)) {
-			u_fungetc(bom, stream);
+		if (strip_bom) {
+			UChar32 bom = u_fgetcx(stream);
+			if (bom != 0xfeff && bom != static_cast<UChar32>(0xffffffff)) {
+				u_fungetc(bom, stream);
+			}
 		}
 	}
 

@@ -242,14 +242,11 @@ int main(int argc, char *argv[]) {
 	}
 
 	if (CG3::cbuffers[0][0] == 'C' && CG3::cbuffers[0][1] == 'G' && CG3::cbuffers[0][2] == '3' && CG3::cbuffers[0][3] == 'B') {
-		//std::cerr << "Info: Binary grammar detected." << std::endl;
 		parser = new CG3::BinaryGrammar(grammar, ux_stderr);
 	}
 	else {
 		std::cerr << "Info: Text grammar detected -- to process textual " << std::endl;
 		std::cerr << "grammars, use `vislcg3', to compile this grammar, use `cg-comp'" << std::endl;
-
-		//parser = new CG3::TextualParser(ux_stderr);
 		CG3Quit(1);
 	}
 
@@ -327,7 +324,7 @@ int main(int argc, char *argv[]) {
 
 			case 'd':
 			default:
-				CG3::istream instream(ux_stdin);
+				CG3::istream instream(ux_stdin, !nullFlush);
 				applicator->runGrammarOnText(instream, ux_stdout);
 				break;
 		}
