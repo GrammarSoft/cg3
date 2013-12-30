@@ -1,3 +1,9 @@
+2013-12-24  tino
+
+	* [r9516] ChangeLog, scripts/cg3-autobin.pl, src/cg_proc.cpp,
+	  src/istream.hpp, src/version.hpp: Dirty fix: don't eat BOMs in
+	  the stream if null-flush is in effect.
+
 2013-12-10  tino
 
 	* [r9492] AUTHORS, CMake/DebSourcePPA.cmake, CMake/FindBoost.cmake,
