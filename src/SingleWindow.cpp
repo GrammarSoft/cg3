@@ -74,6 +74,10 @@ void SingleWindow::appendCohort(Cohort *cohort) {
 	cohort->local_number = (uint32_t)cohorts.size();
 	cohort->parent = this;
 
+	if (cohort->dep_self) {
+		parent->parent->dep_highest_seen = cohort->dep_self;
+	}
+
 	if (cohorts.empty()) {
 		if (previous && !previous->cohorts.empty()) {
 			previous->cohorts.back()->next = cohort;
