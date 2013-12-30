@@ -1,5 +1,8 @@
 2013-12-30  tino
 
+	* [r9524] ChangeLog, scripts/cg3-autobin.pl,
+	  src/GrammarApplicator_runGrammar.cpp, src/version.hpp: Fix
+	  --dep-delimit, again
 	* [r9522] ChangeLog, scripts/cg3-autobin.pl,
 	  src/GrammarApplicator_runGrammar.cpp,
 	  src/GrammarApplicator_runRules.cpp, src/SingleWindow.cpp,

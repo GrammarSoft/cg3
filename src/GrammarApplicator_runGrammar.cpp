@@ -394,9 +394,6 @@ gotaline:
 				++numWindows;
 				did_soft_lookback = false;
 			}
-			if (cCohort->dep_self) {
-				dep_highest_seen = cCohort->dep_self;
-			}
 		}
 		else {
 			if (!ignoreinput && cleaned[0] == ' ' && cleaned[1] == '"') {
