@@ -377,7 +377,11 @@ gotaline:
 			numReadings++;
 
 			// Check whether the cohort still belongs to the window, as per --dep-delimit
-			if (dep_delimit && dep_highest_seen && cCohort->local_number != 1 && (cCohort->dep_self <= dep_highest_seen || cCohort->dep_self - dep_highest_seen > dep_delimit)) {
+			if (dep_delimit && dep_highest_seen && (cCohort->dep_self <= dep_highest_seen || cCohort->dep_self - dep_highest_seen > dep_delimit)) {
+				reflowDependencyWindow(cCohort->global_number);
+				gWindow->dep_map.clear();
+				gWindow->dep_window.clear();
+
 				cSWindow = gWindow->allocAppendSingleWindow();
 				initEmptySingleWindow(cSWindow);
 

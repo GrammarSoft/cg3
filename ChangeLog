@@ -1,3 +1,10 @@
+2013-12-30  tino
+
+	* [r9522] ChangeLog, scripts/cg3-autobin.pl,
+	  src/GrammarApplicator_runGrammar.cpp,
+	  src/GrammarApplicator_runRules.cpp, src/SingleWindow.cpp,
+	  src/version.hpp: Fix --dep-delimit to react at a reading level
+
 2013-12-24  tino
 
 	* [r9516] ChangeLog, scripts/cg3-autobin.pl, src/cg_proc.cpp,
