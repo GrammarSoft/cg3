@@ -1413,7 +1413,6 @@ void GrammarApplicator::runGrammarOnWindow() {
 		reflowDependencyWindow();
 		gWindow->dep_map.clear();
 		gWindow->dep_window.clear();
-		dep_highest_seen = 0;
 		if (!input_eof && !gWindow->next.empty() && gWindow->next.back()->cohorts.size() > 1) {
 			foreach (CohortVector, gWindow->next.back()->cohorts, iter, iter_end) {
 				Cohort *cohort = *iter;

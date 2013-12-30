@@ -237,19 +237,6 @@ gotaline:
 				did_soft_lookback = false;
 			}
 			if (cCohort && cSWindow) {
-				if (dep_delimit && dep_highest_seen && (cCohort->dep_self <= dep_highest_seen || cCohort->dep_self - dep_highest_seen > dep_delimit)) {
-					cSWindow = gWindow->allocAppendSingleWindow();
-					initEmptySingleWindow(cSWindow);
-
-					cSWindow->variables_set = variables_set;
-					variables_set.clear();
-					cSWindow->variables_rem = variables_rem;
-					variables_rem.clear();
-
-					lSWindow = cSWindow;
-					++numWindows;
-					did_soft_lookback = false;
-				}
 				cSWindow->appendCohort(cCohort);
 			}
 			if (gWindow->next.size() > num_windows) {
@@ -388,6 +375,24 @@ gotaline:
 			}
 			indents.push_back(std::make_pair(indent,cReading));
 			numReadings++;
+
+			// Check whether the cohort still belongs to the window, as per --dep-delimit
+			if (dep_delimit && dep_highest_seen && cCohort->local_number != 1 && (cCohort->dep_self <= dep_highest_seen || cCohort->dep_self - dep_highest_seen > dep_delimit)) {
+				cSWindow = gWindow->allocAppendSingleWindow();
+				initEmptySingleWindow(cSWindow);
+
+				cSWindow->variables_set = variables_set;
+				variables_set.clear();
+				cSWindow->variables_rem = variables_rem;
+				variables_rem.clear();
+
+				lSWindow = cSWindow;
+				++numWindows;
+				did_soft_lookback = false;
+			}
+			if (cCohort->dep_self) {
+				dep_highest_seen = cCohort->dep_self;
+			}
 		}
 		else {
 			if (!ignoreinput && cleaned[0] == ' ' && cleaned[1] == '"') {
