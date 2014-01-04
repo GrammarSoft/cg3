@@ -91,6 +91,9 @@ void NicelineApplicator::runGrammarOnText(istream& input, UFILE *output) {
 				if (ISSPACE(line[i]) && !ISNL(line[i])) {
 					cleaned[packoff++] = (line[i] == '\t' ? '\t' : ' ');
 					while (ISSPACE(line[i]) && !ISNL(line[i])) {
+						if (line[i] == '\t') {
+							cleaned[packoff-1] = line[i];
+						}
 						++i;
 					}
 				}
