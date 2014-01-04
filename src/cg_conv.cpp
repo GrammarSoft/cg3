@@ -137,7 +137,15 @@ int main(int argc, char *argv[]) {
 			}
 			uregex_close(rx);
 
-			rx = uregex_openC("^\\S+\t\\[\\S+\\]", UREGEX_DOTALL|UREGEX_MULTILINE, 0, &status);
+			rx = uregex_openC("^\\S+ *\t *\\[\\S+\\]", UREGEX_DOTALL|UREGEX_MULTILINE, 0, &status);
+			uregex_setText(rx, buffer.c_str(), buffer.size(), &status);
+			if (uregex_find(rx, -1, &status)) {
+				fmt = CG3::FMT_NICELINE;
+				break;
+			}
+			uregex_close(rx);
+
+			rx = uregex_openC("^\\S+ *\t *\"\\S+\"", UREGEX_DOTALL | UREGEX_MULTILINE, 0, &status);
 			uregex_setText(rx, buffer.c_str(), buffer.size(), &status);
 			if (uregex_find(rx, -1, &status)) {
 				fmt = CG3::FMT_NICELINE;
