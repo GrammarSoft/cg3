@@ -64,6 +64,7 @@
 #include <boost/unordered_set.hpp>
 #include <boost/unordered_map.hpp>
 #include <boost/scoped_ptr.hpp>
+#include <boost/typeof/typeof.hpp>
 #include <boost/foreach.hpp>
 #define boost_foreach BOOST_FOREACH
 #define boost_reverse_foreach BOOST_REVERSE_FOREACH
