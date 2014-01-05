@@ -1,5 +1,8 @@
 2014-01-04  tino
 
+	* [r9568] ChangeLog, scripts/cg3-autobin.pl,
+	  src/NicelineApplicator.cpp, src/cg_conv.cpp, src/version.hpp,
+	  update-revision.pl: cg-conv now handles less clean Niceline input
 	* [r9567] manual/manual.xml, src/ApertiumApplicator.cpp,
 	  src/ApertiumApplicator.hpp, src/BinaryGrammar.cpp,
 	  src/BinaryGrammar.hpp, src/BinaryGrammar_read.cpp,
@@ -2321,10 +2324,4 @@
 
 	* [r6782] src/interval_vector.hpp: cg3
 	* [r6781] src/Makefile.am: cg3
-	* [r6780] scripts/cg3-autobin.pl, src/Grammar.h,
-	  src/GrammarApplicator.cpp, src/GrammarApplicator.h,
-	  src/GrammarApplicator_runRules.cpp, src/SingleWindow.h,
-	  src/interval_vector.hpp, src/version.h, vislcg3.vcxproj,
-	  vislcg3.vcxproj.filters: New interval_vector container for more
-	  compact storage of rule lists.
 

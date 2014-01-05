@@ -207,7 +207,6 @@ void GrammarApplicator::reflowDependencyWindow(uint32_t max) {
 		max = gWindow->next.back()->cohorts[1]->global_number;
 	}
 
-	bool did_dep = false;
 	if (gWindow->dep_window.empty()) {
 		gWindow->dep_window[0] = gWindow->current->cohorts[0];
 	}
@@ -225,29 +224,38 @@ void GrammarApplicator::reflowDependencyWindow(uint32_t max) {
 		gWindow->cohort_map[0] = tmp;
 	}
 
-	std::map<uint32_t, Cohort*>::iterator dIter;
-	for (dIter = gWindow->dep_window.begin() ; dIter != gWindow->dep_window.end() ; dIter++) {
-		Cohort *cohort = dIter->second;
-		if (cohort->type & CT_DEP_DONE) {
-			continue;
+	for (BOOST_AUTO(begin, gWindow->dep_window.begin()); begin != gWindow->dep_window.end();) {
+		while (begin != gWindow->dep_window.end() && (begin->second->type & CT_DEP_DONE || !begin->second->dep_self)) {
+			++begin;
 		}
-		if (max && cohort->global_number >= max) {
+		gWindow->dep_map.clear();
+
+		BOOST_AUTO(end, begin);
+		for (; end != gWindow->dep_window.end(); ++end) {
+			Cohort *cohort = end->second;
+			if (cohort->type & CT_DEP_DONE) {
+				continue;
+			}
+			if (!cohort->dep_self) {
+				continue;
+			}
+			if (max && cohort->global_number >= max) {
+				break;
+			}
+			if (gWindow->dep_map.find(cohort->dep_self) != gWindow->dep_map.end()) {
+				break;
+			}
+			gWindow->dep_map[cohort->dep_self] = cohort->global_number;
+			cohort->dep_self = cohort->global_number;
+		}
+
+		if (gWindow->dep_map.empty()) {
 			break;
 		}
 
-		if (cohort->dep_self) {
-			did_dep = true;
-			if (gWindow->dep_map.find(cohort->dep_self) == gWindow->dep_map.end()) {
-				gWindow->dep_map[cohort->dep_self] = cohort->global_number;
-				cohort->dep_self = cohort->global_number;
-			}
-		}
-	}
-
-	if (did_dep) {
 		gWindow->dep_map[0] = 0;
-		for (dIter = gWindow->dep_window.begin() ; dIter != gWindow->dep_window.end() ; dIter++) {
-			Cohort *cohort = dIter->second;
+		for (; begin != end; ++begin) {
+			Cohort *cohort = begin->second;
 			if (max && cohort->global_number >= max) {
 				break;
 			}
