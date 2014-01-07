@@ -44,9 +44,14 @@ int main(int argc, char* argv[]) {
 
 	U_MAIN_INIT_ARGS(argc, argv);
 	argc = u_parseArgs(argc, argv, NUM_OPTIONS, options);
+	FILE *out = stderr;
+
+	if (options[VERSION].doesOccur || options[HELP1].doesOccur || options[HELP2].doesOccur) {
+		out = stdout;
+	}
 
 	if (options[VERBOSE].doesOccur || options[VERSION].doesOccur || options[HELP1].doesOccur || options[HELP2].doesOccur) {
-		fprintf(stderr, "VISL CG-3 Disambiguator version %u.%u.%u.%u\n", CG3_VERSION_MAJOR, CG3_VERSION_MINOR, CG3_VERSION_PATCH, CG3_REVISION);
+		fprintf(out, "VISL CG-3 Disambiguator version %u.%u.%u.%u\n", CG3_VERSION_MAJOR, CG3_VERSION_MINOR, CG3_VERSION_PATCH, CG3_REVISION);
 	}
 
 	if (argc < 0) {
@@ -55,7 +60,7 @@ int main(int argc, char* argv[]) {
 	}
 
 	if (options[VERSION].doesOccur) {
-		fprintf(stdout, "%s\n", CG3_COPYRIGHT_STRING);
+		fprintf(out, "%s\n", CG3_COPYRIGHT_STRING);
 		return U_ZERO_ERROR;
 	}
 
@@ -65,7 +70,6 @@ int main(int argc, char* argv[]) {
 	}
 
 	if (argc < 0 || options[HELP1].doesOccur || options[HELP2].doesOccur) {
-		FILE *out = (argc < 0) ? stderr : stdout;
 		fprintf(out, "Usage: vislcg3 [OPTIONS]\n");
 		fprintf(out, "\n");
 		fprintf(out, "Options:\n");
