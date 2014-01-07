@@ -1,3 +1,10 @@
+2014-01-05  tino
+
+	* [r9570] ChangeLog, TODO, scripts/cg3-autobin.pl,
+	  src/GrammarApplicator_reflow.cpp, src/stdafx.hpp,
+	  src/version.hpp: All dependency tests now pass, with and without
+	  --dep-delimit
+
 2014-01-04  tino
 
 	* [r9568] ChangeLog, scripts/cg3-autobin.pl,
@@ -2323,5 +2330,4 @@
 2011-03-05  tino
 
 	* [r6782] src/interval_vector.hpp: cg3
-	* [r6781] src/Makefile.am: cg3
 
