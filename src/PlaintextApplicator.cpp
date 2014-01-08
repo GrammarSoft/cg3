@@ -348,4 +348,25 @@ gotaline:
 	u_fflush(output);
 }
 
+void PlaintextApplicator::printCohort(Cohort *cohort, UFILE *output) {
+	if (cohort->local_number == 0) {
+		return;
+	}
+	if (cohort->type & CT_REMOVED) {
+		return;
+	}
+
+	u_fprintf(output, "%.*S ", single_tags.find(cohort->wordform)->second->tag.size() - 4, single_tags.find(cohort->wordform)->second->tag.c_str() + 2);
+}
+
+void PlaintextApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
+	uint32_t cs = (uint32_t)window->cohorts.size();
+	for (uint32_t c = 0; c < cs; c++) {
+		Cohort *cohort = window->cohorts[c];
+		printCohort(cohort, output);
+	}
+	u_fputc('\n', output);
+	u_fflush(output);
+}
+
 }

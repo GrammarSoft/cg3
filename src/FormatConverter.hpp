@@ -24,7 +24,6 @@
 #define c6d28b7452ec699b_FORMATCONVERTER_H
 
 #include "ApertiumApplicator.hpp"
-#include "MatxinApplicator.hpp"
 #include "NicelineApplicator.hpp"
 #include "PlaintextApplicator.hpp"
 #include "FSTApplicator.hpp"
@@ -35,13 +34,12 @@ namespace CG3 {
 		FMT_CG,
 		FMT_NICELINE,
 		FMT_APERTIUM,
-		FMT_MATXIN,
 		FMT_FST,
 		FMT_PLAIN,
 		NUM_FORMATS
 	};
 
-	class FormatConverter : public ApertiumApplicator, public MatxinApplicator, public NicelineApplicator, public PlaintextApplicator, public FSTApplicator {
+	class FormatConverter : public ApertiumApplicator, public NicelineApplicator, public PlaintextApplicator, public FSTApplicator {
 	public:
 		FormatConverter(UFILE *ux_err);
 

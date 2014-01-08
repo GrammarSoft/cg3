@@ -51,6 +51,7 @@ int main(int argc, char* argv[]) {
 	}
 
 	if (options[VERBOSE].doesOccur || options[VERSION].doesOccur || options[HELP1].doesOccur || options[HELP2].doesOccur) {
+		// Keep the invocation vislcg3 --version | grep -Eo '[0-9]+$' holy so that it only outputs the revision regardless of other flags.
 		fprintf(out, "VISL CG-3 Disambiguator version %u.%u.%u.%u\n", CG3_VERSION_MAJOR, CG3_VERSION_MINOR, CG3_VERSION_PATCH, CG3_REVISION);
 	}
 

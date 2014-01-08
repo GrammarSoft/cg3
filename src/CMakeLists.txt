@@ -141,8 +141,6 @@ add_executable(cg-proc
 	cg_proc.cpp
 	ApertiumApplicator.cpp
 	ApertiumApplicator.hpp
-	MatxinApplicator.cpp
-	MatxinApplicator.hpp
 	)
 cg3_link(cg-proc)
 target_link_libraries(cg-proc libcg3)
@@ -155,8 +153,6 @@ add_executable(cg-conv
 	FormatConverter.hpp
 	FSTApplicator.cpp
 	FSTApplicator.hpp
-	MatxinApplicator.cpp
-	MatxinApplicator.hpp
 	NicelineApplicator.cpp
 	NicelineApplicator.hpp
 	PlaintextApplicator.cpp
