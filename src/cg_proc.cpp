@@ -44,8 +44,7 @@ void endProgram(char *name) {
 	cout << "	-s, --sections=NUM:	 specify number of sections to process" << endl;
 	cout << "	-f, --stream-format=NUM: set the format of the I/O stream to NUM," << endl;
 	cout << "				   where `0' is VISL format, `1' is Apertium" << endl;
-	cout << "				   format and `2' is Apertium format as input," << endl;
-	cout << "				   Matxin format as output (default: 1)" << endl;
+	cout << "				   format (default: 1)" << endl;
 	cout << "	-r, --rule=NAME:	 run only the named rule" << endl;
 	cout << "	-t, --trace:		 print debug output on stderr" << endl;
 	cout << "	-w, --wordform-case:	 enforce surface case on lemma/baseform " << endl;
@@ -116,11 +115,11 @@ int main(int argc, char *argv[]) {
 		c = getopt_long(argc, argv, "ds:f:tr:n1wvhz", long_options, &option_index);
 #else
 		c = getopt(argc, argv, "ds:f:tr:in1wvhz");
-#endif		
+#endif
 		if (c == -1) {
 			break;
 		}
-			
+
 		switch(c) {
 
 			case 'd':
@@ -135,7 +134,7 @@ int main(int argc, char *argv[]) {
 			case 'f':
 				stream_format = atoi(optarg);
 				break;
-	
+
 			case 't':
 				trace = 1;
 				break;
@@ -151,7 +150,7 @@ int main(int argc, char *argv[]) {
 			case 's':
 				sections = atoi(optarg);
 				break;
-				
+
 			case 'n':
 				print_word_forms = 0;
 				break;
@@ -167,7 +166,7 @@ int main(int argc, char *argv[]) {
 			case 'v':
 				fprintf(stdout, "VISL CG-3 Disambiguator version %u.%u.%u.%u\n",
 					CG3_VERSION_MAJOR, CG3_VERSION_MINOR, CG3_VERSION_PATCH, CG3_REVISION);
-	
+
 				exit(EXIT_SUCCESS);
 				break;
 			case 'z':
@@ -209,7 +208,7 @@ int main(int argc, char *argv[]) {
 	//*/
 
 	CG3::IGrammarParser *parser = 0;
-	
+
 	if (optind <= (argc - 1)) {
 		FILE *in = fopen(argv[optind], "rb");
 		if (in == NULL || ferror(in)) {

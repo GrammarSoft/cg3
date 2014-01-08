@@ -26,7 +26,6 @@
 #include "Reading.cpp"
 #include "FormatConverter.cpp"
 #include "ApertiumApplicator.cpp"
-#include "MatxinApplicator.cpp"
 #include "NicelineApplicator.cpp"
 #include "PlaintextApplicator.cpp"
 #include "FSTApplicator.cpp"
