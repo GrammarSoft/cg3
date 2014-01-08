@@ -26,7 +26,6 @@ namespace CG3 {
 FormatConverter::FormatConverter(UFILE *ux_err) :
 GrammarApplicator(ux_err),
 ApertiumApplicator(ux_err),
-MatxinApplicator(ux_err),
 NicelineApplicator(ux_err),
 PlaintextApplicator(ux_err),
 FSTApplicator(ux_err),
@@ -51,10 +50,6 @@ void FormatConverter::runGrammarOnText(istream& input, UFILE *output) {
 		}
 		case FMT_APERTIUM: {
 			ApertiumApplicator::runGrammarOnText(input, output);
-			break;
-		}
-		case FMT_MATXIN: {
-			MatxinApplicator::runGrammarOnText(input, output);
 			break;
 		}
 		case FMT_NICELINE: {
@@ -84,8 +79,12 @@ void FormatConverter::printSingleWindow(SingleWindow *window, UFILE *output) {
 			ApertiumApplicator::printSingleWindow(window, output);
 			break;
 		}
-		case FMT_MATXIN: {
-			MatxinApplicator::printSingleWindow(window, output);
+		case FMT_NICELINE: {
+			NicelineApplicator::printSingleWindow(window, output);
+			break;
+		}
+		case FMT_PLAIN: {
+			PlaintextApplicator::printSingleWindow(window, output);
 			break;
 		}
 		default:

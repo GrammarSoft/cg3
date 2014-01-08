@@ -31,6 +31,9 @@ class PlaintextApplicator : public virtual GrammarApplicator {
 public:
 	PlaintextApplicator(UFILE *ux_err);
 	void runGrammarOnText(istream& input, UFILE *output);
+
+	void printCohort(Cohort *cohort, UFILE *output);
+	void printSingleWindow(SingleWindow *window, UFILE *output);
 };
 
 }

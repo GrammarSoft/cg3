@@ -23,7 +23,6 @@
 #include "Grammar.hpp"
 #include "BinaryGrammar.hpp"
 #include "ApertiumApplicator.hpp"
-#include "MatxinApplicator.hpp"
 #include "GrammarApplicator.hpp"
 
 #include <getopt.h>
@@ -265,17 +264,6 @@ int main(int argc, char *argv[]) {
 
 	if (stream_format == 0) {
 		applicator = new CG3::GrammarApplicator(ux_stderr);
-	}
-	else if (stream_format == 2) {
-		CG3::MatxinApplicator* matxinApplicator= new CG3::MatxinApplicator(ux_stderr);
-		matxinApplicator->setNullFlush(nullFlush);
-		if (wordform_case == 1) {
-			matxinApplicator->wordform_case = true;
-		}
-		if (print_word_forms == 0) {
-			matxinApplicator->print_word_forms = false;
-		}
-		applicator = matxinApplicator;
 	}
 	else {
 		CG3::ApertiumApplicator* apertiumApplicator= new CG3::ApertiumApplicator(ux_stderr);
