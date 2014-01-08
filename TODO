@@ -44,4 +44,3 @@ ToDo: --out-niceline
 ToDo: Document static tags
 ToDo: Make contextual tests optional but greedy with ?
 ToDo: Add ICU_ROOT to FindICU
-ToDo: Enable Niceline output
