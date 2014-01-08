@@ -60,7 +60,7 @@ int main(int argc, char *argv[]) {
 			}
 		}
 		for (uint32_t i=0 ; i<NUM_OPTIONS ; i++) {
-			if (options[i].description) {
+			if (options[i].description && options[i].description[0] != '!') {
 				fprintf(out, " ");
 				if (options[i].shortName) {
 					fprintf(out, "-%c,", options[i].shortName);
@@ -79,6 +79,13 @@ int main(int argc, char *argv[]) {
 		}
 
 		return argc < 0 ? U_ILLEGAL_ARGUMENT_ERROR : U_ZERO_ERROR;
+	}
+
+	if (options[IN_CG2].doesOccur) {
+		options[IN_CG].doesOccur = true;
+	}
+	if (options[OUT_CG2].doesOccur) {
+		options[OUT_CG].doesOccur = true;
 	}
 
 	ucnv_setDefaultName("UTF-8");
@@ -110,9 +117,6 @@ int main(int argc, char *argv[]) {
 	}
 	else if (options[IN_APERTIUM].doesOccur) {
 		fmt = CG3::FMT_APERTIUM;
-	}
-	else if (options[IN_MATXIN].doesOccur) {
-		fmt = CG3::FMT_MATXIN;
 	}
 	else if (options[IN_FST].doesOccur) {
 		fmt = CG3::FMT_FST;
@@ -198,8 +202,11 @@ int main(int argc, char *argv[]) {
 	if (options[OUT_APERTIUM].doesOccur) {
 		applicator.setOutputFormat(CG3::FMT_APERTIUM);
 	}
-	else if (options[OUT_MATXIN].doesOccur) {
-		applicator.setOutputFormat(CG3::FMT_MATXIN);
+	else if (options[OUT_NICELINE].doesOccur) {
+		applicator.setOutputFormat(CG3::FMT_NICELINE);
+	}
+	else if (options[OUT_PLAIN].doesOccur) {
+		applicator.setOutputFormat(CG3::FMT_PLAIN);
 	}
 
 	applicator.verbosity_level = 0;

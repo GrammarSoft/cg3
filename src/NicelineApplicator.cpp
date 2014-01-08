@@ -30,7 +30,9 @@
 namespace CG3 {
 
 NicelineApplicator::NicelineApplicator(UFILE *ux_err)
-	: GrammarApplicator(ux_err)
+	: GrammarApplicator(ux_err),
+	did_warn_statictags(false),
+	did_warn_subreadings(false)
 {
 }
 
@@ -351,6 +353,160 @@ istext:
 		gWindow->previous.pop_front();
 	}
 
+	u_fflush(output);
+}
+
+void NicelineApplicator::printReading(const Reading *reading, UFILE *output) {
+	if (reading->noprint) {
+		return;
+	}
+	if (reading->deleted) {
+		return;
+	}
+	u_fputc('\t', output);
+	if (reading->baseform) {
+		u_fprintf(output, "[%.*S]", single_tags.find(reading->baseform)->second->tag.size()-2, single_tags.find(reading->baseform)->second->tag.c_str() + 1);
+	}
+
+	uint32SortedVector unique;
+	const_foreach(Reading::tags_list_t, reading->tags_list, tter, tter_end) {
+		if ((!show_end_tags && *tter == endtag) || *tter == begintag) {
+			continue;
+		}
+		if (*tter == reading->baseform || *tter == reading->wordform) {
+			continue;
+		}
+		if (unique_tags) {
+			if (unique.find(*tter) != unique.end()) {
+				continue;
+			}
+			unique.insert(*tter);
+		}
+		const Tag *tag = single_tags[*tter];
+		if (tag->type & T_DEPENDENCY && has_dep && !dep_original) {
+			continue;
+		}
+		if (tag->type & T_RELATION && has_relations) {
+			continue;
+		}
+		u_fprintf(output, " %S", tag->tag.c_str());
+	}
+
+	if (has_dep && !(reading->parent->type & CT_REMOVED)) {
+		if (!reading->parent->dep_self) {
+			reading->parent->dep_self = reading->parent->global_number;
+		}
+		const Cohort *pr = 0;
+		pr = reading->parent;
+		if (reading->parent->dep_parent != std::numeric_limits<uint32_t>::max()) {
+			if (reading->parent->dep_parent == 0) {
+				pr = reading->parent->parent->cohorts[0];
+			}
+			else if (reading->parent->parent->parent->cohort_map.find(reading->parent->dep_parent) != reading->parent->parent->parent->cohort_map.end()) {
+				pr = reading->parent->parent->parent->cohort_map[reading->parent->dep_parent];
+			}
+		}
+
+		const UChar local_utf_pattern[] = { ' ', '#', '%', 'u', L'\u2192', '%', 'u', 0 };
+		const UChar local_latin_pattern[] = { ' ', '#', '%', 'u', '-', '>', '%', 'u', 0 };
+		const UChar *pattern = local_latin_pattern;
+		if (unicode_tags) {
+			pattern = local_utf_pattern;
+		}
+		if (!dep_has_spanned) {
+			u_fprintf_u(output, pattern,
+				reading->parent->local_number,
+				pr->local_number);
+		}
+		else {
+			if (reading->parent->dep_parent == std::numeric_limits<uint32_t>::max()) {
+				u_fprintf_u(output, pattern,
+					reading->parent->dep_self,
+					reading->parent->dep_self);
+			}
+			else {
+				u_fprintf_u(output, pattern,
+					reading->parent->dep_self,
+					reading->parent->dep_parent);
+			}
+		}
+	}
+
+	if (reading->parent->type & CT_RELATED) {
+		u_fprintf(output, " ID:%u", reading->parent->global_number);
+		if (!reading->parent->relations.empty()) {
+			foreach(RelationCtn, reading->parent->relations, miter, miter_end) {
+				foreach(uint32Set, miter->second, siter, siter_end) {
+					u_fprintf(output, " R:%S:%u", grammar->single_tags.find(miter->first)->second->tag.c_str(), *siter);
+				}
+			}
+		}
+	}
+
+	if (trace) {
+		const_foreach(uint32Vector, reading->hit_by, iter_hb, iter_hb_end) {
+			u_fputc(' ', output);
+			printTrace(output, *iter_hb);
+		}
+	}
+
+	if (reading->next && !did_warn_subreadings) {
+		u_fprintf(ux_stderr, "Warning: Niceline CG format cannot output sub-readings! You are losing information!\n");
+		u_fflush(ux_stderr);
+		did_warn_subreadings = true;
+	}
+}
+
+void NicelineApplicator::printCohort(Cohort *cohort, UFILE *output) {
+	const UChar ws[] = { ' ', '\t', 0 };
+
+	if (cohort->local_number == 0) {
+		goto removed;
+	}
+	if (cohort->type & CT_REMOVED) {
+		goto removed;
+	}
+
+	u_fprintf(output, "%.*S", single_tags.find(cohort->wordform)->second->tag.size()-4, single_tags.find(cohort->wordform)->second->tag.c_str()+2);
+	if (cohort->wread && !did_warn_statictags) {
+		u_fprintf(ux_stderr, "Warning: Niceline CG format cannot output static tags! You are losing information!\n");
+		u_fflush(ux_stderr);
+		did_warn_statictags = true;
+	}
+
+	mergeMappings(*cohort);
+
+	if (cohort->readings.empty()) {
+		u_fputc('\t', output);
+	}
+	boost_foreach(Reading *rter, cohort->readings) {
+		printReading(rter, output);
+	}
+
+removed:
+	u_fputc('\n', output);
+	if (!cohort->text.empty() && cohort->text.find_first_not_of(ws) != UString::npos) {
+		u_fprintf(output, "%S", cohort->text.c_str());
+		if (!ISNL(cohort->text[cohort->text.length() - 1])) {
+			u_fputc('\n', output);
+		}
+	}
+}
+
+void NicelineApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
+	if (!window->text.empty()) {
+		u_fprintf(output, "%S", window->text.c_str());
+		if (!ISNL(window->text[window->text.length() - 1])) {
+			u_fputc('\n', output);
+		}
+	}
+
+	uint32_t cs = (uint32_t)window->cohorts.size();
+	for (uint32_t c = 0; c < cs; c++) {
+		Cohort *cohort = window->cohorts[c];
+		printCohort(cohort, output);
+	}
+	u_fputc('\n', output);
 	u_fflush(output);
 }
 
