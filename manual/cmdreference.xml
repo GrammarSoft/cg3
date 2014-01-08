@@ -81,8 +81,8 @@ Options:
     <title>cg-conv</title>
     <para>
       cg-conv converts between <link linkend="streamformats">stream formats</link>.
-      It can currently convert from any of CG, Niceline CG, Apertium, Matxin, HFST/XFST, and plain text formats,
-      turning them into CG, Apertium, or Matxin format.
+      It can currently convert from any of CG, Niceline CG, Apertium, HFST/XFST, and plain text formats,
+      turning them into CG, Niceline CG, Apertium, or plain text formats.
       By default it tries to auto-detect the input format and convert that to CG.
       Currently only meant for use in a pipe.
     </para>
@@ -92,16 +92,17 @@ Usage: cg-conv [OPTIONS]
 Options:
  -h, --help          shows this help
  -?, --?             shows this help
+ -p, --prefix        sets the mapping prefix; defaults to @
  -u, --in-auto       auto-detect input format (default)
- -v, --in-cg         sets input format to CG
+ -c, --in-cg         sets input format to CG
  -n, --in-niceline   sets input format to Niceline CG
  -a, --in-apertium   sets input format to Apertium
- -m, --in-matxin     sets input format to Matxin
  -f, --in-fst        sets input format to HFST/XFST
  -p, --in-plain      sets input format to plain text
-     --out-cg        sets output format to CG (default)
-     --out-apertium  sets output format to Apertium
-     --out-matxin    sets output format to Matxin
+ -C, --out-cg        sets output format to CG (default)
+ -A, --out-apertium  sets output format to Apertium
+ -N, --out-niceline  sets output format to Niceline CG
+ -P, --out-plain     sets output format to plain text
  -r, --rtl           sets sub-reading direction to RTL (default)
  -l, --ltr           sets sub-reading direction to LTR
     </screen>

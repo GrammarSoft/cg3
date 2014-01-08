@@ -25,5 +25,4 @@
 #include "Cohort.cpp"
 #include "Reading.cpp"
 #include "ApertiumApplicator.cpp"
-#include "MatxinApplicator.cpp"
 #include "cg_proc.cpp"
