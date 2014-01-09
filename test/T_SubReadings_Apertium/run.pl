@@ -28,7 +28,7 @@ if (-s "grammar.cg3b") {
 }
 
 `"$binary_proc" grammar.cg3b input.txt output.txt >>stdout.txt 2>>stderr.txt`;
-`diff -B -b expected.txt output.txt >diff.txt`;
+`diff -B expected.txt output.txt >diff.txt`;
 
 if (-s "diff.txt") {
 	print STDERR "Fail.\n";
