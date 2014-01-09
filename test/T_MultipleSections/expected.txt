@@ -1,7 +1,7 @@
 "<word>"
-	"word" wanted 
+	"word" wanted
 "<word>"
-	"word" wanted 
+	"word" wanted
 "<word>"
-	"word" notwanted 
-	"word" notmeeither 
+	"word" notwanted
+	"word" notmeeither
