@@ -53,7 +53,6 @@ input_eof(false),
 seen_barrier(false),
 dep_has_spanned(false),
 dep_delimit(0),
-dep_humanize(false),
 dep_original(false),
 dep_block_loops(true),
 dep_block_crossing(false),
@@ -393,22 +392,6 @@ void GrammarApplicator::printReading(const Reading *reading, UFILE *output, size
 			else if (reading->parent->parent->parent->cohort_map.find(reading->parent->dep_parent) != reading->parent->parent->parent->cohort_map.end()) {
 				pr = reading->parent->parent->parent->cohort_map[reading->parent->dep_parent];
 			}
-		}
-		if (dep_humanize) {
-			const UChar *pattern = 0;
-			if (unicode_tags) {
-				const UChar local_pattern[] = {'#', 'w', '%', 'u', ',', 'c', '%', 'u', L'\u2192', 'w', '%', 'u', ',', 'c', '%', 'u', ' ', 0};
-				pattern = local_pattern;
-			}
-			else {
-				const UChar local_pattern[] = {'#', 'w', '%', 'u', ',', 'c', '%', 'u', '-', '>', 'w', '%', 'u', ',', 'c', '%', 'u', ' ', 0};
-				pattern = local_pattern;
-			}
-			u_fprintf_u(output, pattern,
-				pr->parent->number,
-				reading->parent->local_number,
-				reading->parent->parent->number,
-				pr->local_number);
 		}
 
 		const UChar local_utf_pattern[] = {'#', '%', 'u', L'\u2192', '%', 'u', ' ', 0};
