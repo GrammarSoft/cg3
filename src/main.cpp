@@ -566,9 +566,6 @@ void GAppSetOpts(CG3::GrammarApplicator& applicator, UConverter *conv) {
 			applicator.dep_delimit = 10;
 		}
 	}
-	if (options[DEP_HUMANIZE].doesOccur) {
-		applicator.dep_humanize = true;
-	}
 	if (options[DEP_ORIGINAL].doesOccur) {
 		applicator.dep_original = true;
 	}
