@@ -1,42 +1,42 @@
 <STREAMCMD:SETVAR:news>
 <STREAMCMD:SETVAR:poetry>
 "<They>"
-	"they" PERS @poetry 
+	"they" PERS @poetry
 "<say>"
-	"say" V @poetry 
+	"say" V @poetry
 "<the>"
-	"the" ART @poetry 
+	"the" ART @poetry
 "<Lion>"
-	"lion" N @poetry 
+	"lion" N @poetry
 "<and>"
-	"and" KC @poetry 
+	"and" KC @poetry
 "<the>"
-	"the" ART @poetry 
+	"the" ART @poetry
 "<Lizard>"
-	"lizard" N @poetry 
+	"lizard" N @poetry
 "<keep>"
-	"keep" V @poetry 
+	"keep" V @poetry
 "<.>"
-	"." @poetry 
+	"." @poetry
 <STREAMCMD:REMVAR:poetry>
 <STREAMCMD:SETVAR:drama>
 
 "<Do>"
-	"do" V @drama 
+	"do" V @drama
 "<you>"
-	"you" PERS @drama 
+	"you" PERS @drama
 "<really>"
-	"really" ADV @drama 
+	"really" ADV @drama
 "<think>"
-	"think" V @drama 
+	"think" V @drama
 "<it>"
-	"it" PERS @drama 
+	"it" PERS @drama
 "<needs>"
-	"need" V @drama 
+	"need" V @drama
 "<a>"
-	"a" ART @drama 
+	"a" ART @drama
 "<scarf>"
-	"scarf" N @drama 
+	"scarf" N @drama
 "<?>"
-	"?" @drama 
+	"?" @drama
 

@@ -1,18 +1,18 @@
 "<word>"
-	"word" wanted first @two @one @jump-target @jump-mark @jump-remember @careful 
+	"word" wanted first @two @one @jump-target @jump-mark @jump-remember @careful
 "<word>"
-	"word" wanted second @two @one @jump-target @jump-mark @jump-remember 
+	"word" wanted second @two @one @jump-target @jump-mark @jump-remember
 "<word>"
-	"word" wanted third alsofindme @two @one @jump-mark @jump-remember 
+	"word" wanted third alsofindme @two @one @jump-mark @jump-remember
 "<word>"
-	"word" wanted fourth findme @two 
+	"word" wanted fourth findme @two
 "<word>"
-	"word" wanted careful fifth @two 
-	"word" notcareful @two 
+	"word" wanted careful fifth @two
+	"word" notcareful @two
 "<word>"
-	"word" wanted sixth alsofindme 
+	"word" wanted sixth alsofindme
 "<word>"
-	"word" wanted careful seventh alsofindme 
+	"word" wanted careful seventh alsofindme
 "<word>"
-	"word" wanted eighth 
+	"word" wanted eighth
 

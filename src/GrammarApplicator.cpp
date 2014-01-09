@@ -352,7 +352,6 @@ void GrammarApplicator::printReading(const Reading *reading, UFILE *output, size
 
 	if (reading->baseform) {
 		u_fprintf(output, "%S", single_tags.find(reading->baseform)->second->tag.c_str());
-		u_fputc(' ', output);
 	}
 
 	uint32SortedVector unique;
@@ -376,7 +375,7 @@ void GrammarApplicator::printReading(const Reading *reading, UFILE *output, size
 		if (tag->type & T_RELATION && has_relations) {
 			continue;
 		}
-		u_fprintf(output, "%S ", tag->tag.c_str());
+		u_fprintf(output, " %S", tag->tag.c_str());
 	}
 
 	if (has_dep && !(reading->parent->type & CT_REMOVED)) {
@@ -394,8 +393,8 @@ void GrammarApplicator::printReading(const Reading *reading, UFILE *output, size
 			}
 		}
 
-		const UChar local_utf_pattern[] = {'#', '%', 'u', L'\u2192', '%', 'u', ' ', 0};
-		const UChar local_latin_pattern[] = {'#', '%', 'u', '-', '>', '%', 'u', ' ', 0};
+		const UChar local_utf_pattern[] = { ' ', '#', '%', 'u', L'\u2192', '%', 'u', 0 };
+		const UChar local_latin_pattern[] = { ' ', '#', '%', 'u', '-', '>', '%', 'u', 0 };
 		const UChar *pattern = local_latin_pattern;
 		if (unicode_tags) {
 			pattern = local_utf_pattern;
@@ -420,11 +419,11 @@ void GrammarApplicator::printReading(const Reading *reading, UFILE *output, size
 	}
 
 	if (reading->parent->type & CT_RELATED) {
-		u_fprintf(output, "ID:%u ", reading->parent->global_number);
+		u_fprintf(output, " ID:%u", reading->parent->global_number);
 		if (!reading->parent->relations.empty()) {
 			foreach (RelationCtn, reading->parent->relations, miter, miter_end) {
 				foreach (uint32Set, miter->second, siter, siter_end) {
-					u_fprintf(output, "R:%S:%u ", grammar->single_tags.find(miter->first)->second->tag.c_str(), *siter);
+					u_fprintf(output, " R:%S:%u", grammar->single_tags.find(miter->first)->second->tag.c_str(), *siter);
 				}
 			}
 		}
@@ -432,8 +431,8 @@ void GrammarApplicator::printReading(const Reading *reading, UFILE *output, size
 
 	if (trace) {
 		const_foreach (uint32Vector, reading->hit_by, iter_hb, iter_hb_end) {
-			printTrace(output, *iter_hb);
 			u_fputc(' ', output);
+			printTrace(output, *iter_hb);
 		}
 	}
 

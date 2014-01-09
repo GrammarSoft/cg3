@@ -1,2 +1,2 @@
 "<word>"
-	"word" wanted @three 
+	"word" wanted @three

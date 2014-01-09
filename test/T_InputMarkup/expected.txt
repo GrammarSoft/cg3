@@ -4,11 +4,11 @@ Some more text.
 Text.
 "<text that looks like a cohort
 "<word>"
-	"word" wanted 
+	"word" wanted
 You guessed it, text.
 	"text that looks like a reading
 </tag>
 "<word>"
-	"word" wanted 
+	"word" wanted
 <fluffy>
 

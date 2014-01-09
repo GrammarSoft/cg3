@@ -1,45 +1,45 @@
 "<word>"
-	"word" one 
+	"word" one
 "<word>"
-	"word" two 
+	"word" two
 "<$.>"
-	"$." @breakhere 
+	"$." @breakhere
 
 "<word>"
-	"word" three 
+	"word" three
 "<word>"
-	"word" four 
+	"word" four
 "<$soft>"
-	"$soft" @breakhere 
+	"$soft" @breakhere
 
 "<word>"
-	"word" five 
+	"word" five
 "<word>"
-	"word" six 
+	"word" six
 "<word>"
-	"word" seven 
+	"word" seven
 "<word>"
-	"word" eight 
+	"word" eight
 "<word>"
-	"word" nine 
+	"word" nine
 "<word>"
-	"word" ten @breakhere 
+	"word" ten @breakhere
 
 "<word>"
-	"word" eleven 
+	"word" eleven
 "<word>"
-	"word" twelve 
+	"word" twelve
 "<word>"
-	"word" thirteen 
+	"word" thirteen
 "<word>"
-	"word" fourteen 
+	"word" fourteen
 "<word>"
-	"word" fifteen 
+	"word" fifteen
 "<word>"
-	"word" sixteen @breakhere 
+	"word" sixteen @breakhere
 
 "<word>"
-	"word" seventeen 
+	"word" seventeen
 "<$.>"
-	"$." @breakhere 
+	"$." @breakhere
 

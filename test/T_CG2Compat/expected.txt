@@ -1,17 +1,17 @@
 "<word>"
-	"word" notwanted notwanted 
-	"word" wanted wanted @not 
-	"word" notmeeither notmeeither 
+	"word" notwanted notwanted
+	"word" wanted wanted @not
+	"word" notmeeither notmeeither
 "<word>"
-	"word" notwanted notwanted 
-	"word" maybe maybe 
-	"word" notmeeither notmeeither 
+	"word" notwanted notwanted
+	"word" maybe maybe
+	"word" notmeeither notmeeither
 "<word>"
-	"word" notwanted notwanted 
-	"word" wanted wanted @not2negate 
-	"word" notmeeither notmeeither 
+	"word" notwanted notwanted
+	"word" wanted wanted @not2negate
+	"word" notmeeither notmeeither
 "<word>"
-	"word" notwanted notwanted 
-	"word" wanted wanted @not2negate 
-	"word" notmeeither notmeeither 
+	"word" notwanted notwanted
+	"word" wanted wanted @not2negate
+	"word" notmeeither notmeeither
 

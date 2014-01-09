@@ -1,23 +1,23 @@
 "<There>"
-	"there" <*> ADV @F-SUBJ #1->3 
+	"there" <*> ADV @F-SUBJ #1->3
 "<once>"
-	"once" ADV @ADVL #2->2 
+	"once" ADV @ADVL #2->2
 "<was>"
-	"be" <SVC/N> <SVC/A> V PAST SG1/3 VFIN IMP @FMV #3->1 
+	"be" <SVC/N> <SVC/A> V PAST SG1/3 VFIN IMP @FMV #3->1
 "<a>"
-	"a" <Indef> ART DET CENTRAL SG @>N #4->5 
+	"a" <Indef> ART DET CENTRAL SG @>N #4->5
 "<man>"
-	"man" N NOM SG @SC #5->1 
+	"man" N NOM SG @SC #5->1
 "<that>"
-	"that" <NonMod> <**CLB> <Rel> PRON INDP SG/PL @SUBJ #6->6 
+	"that" <NonMod> <**CLB> <Rel> PRON INDP SG/PL @SUBJ #6->6
 "<walked>"
-	"walk" <SV> <SVO> V PAST VFIN @FMV @#FS-N< #7->7 
+	"walk" <SV> <SVO> V PAST VFIN @FMV @#FS-N< #7->7
 "<down>"
-	"down" <error> PRP @ADVL #8->11 
+	"down" <error> PRP @ADVL #8->11
 "<the>"
-	"the" <Def> ART DET CENTRAL SG/PL @>N #9->10 
+	"the" <Def> ART DET CENTRAL SG/PL @>N #9->10
 "<street>"
-	"street" N NOM SG @P< #10->5 
+	"street" N NOM SG @P< #10->5
 "<$.>"
-	"$." vis #11->0 
+	"$." vis #11->0
 

@@ -1,46 +1,46 @@
 "<word>"
-	"word" none #1->1 
+	"word" none #1->1
 "<word>"
-	"word" third #2->2 
+	"word" third #2->2
 "<word>"
-	"word" none #3->3 
+	"word" none #3->3
 "<word>"
-	"word" none #4->4 
+	"word" none #4->4
 "<$.>"
 
 "<word>"
-	"word" none #6->6 
+	"word" none #6->6
 "<word>"
-	"word" second #7->7 
+	"word" second #7->7
 "<word>"
-	"word" none #8->8 
+	"word" none #8->8
 "<word>"
-	"word" first #9->9 
+	"word" first #9->9
 "<word>"
-	"word" startfourth @neighbour-right #10->20 
+	"word" startfourth @neighbour-right #10->20
 "<word>"
-	"word" startfirst @self #11->9 
+	"word" startfirst @self #11->9
 "<word>"
-	"word" startsecond @neighbour-left #12->14 
+	"word" startsecond @neighbour-left #12->14
 "<word>"
-	"word" startthird #13->2 
+	"word" startthird #13->2
 "<word>"
-	"word" second #14->14 
+	"word" second #14->14
 "<word>"
-	"word" first #15->15 
+	"word" first #15->15
 "<word>"
-	"word" none #16->16 
+	"word" none #16->16
 "<word>"
-	"word" none #17->17 
+	"word" none #17->17
 "<$.>"
 
 "<word>"
-	"word" none #19->19 
+	"word" none #19->19
 "<word>"
-	"word" fourth #20->20 
+	"word" fourth #20->20
 "<word>"
-	"word" none #21->21 
+	"word" none #21->21
 "<word>"
-	"word" fourth #22->22 
+	"word" fourth #22->22
 "<$.>"
 

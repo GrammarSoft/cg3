@@ -1,2 +1,2 @@
 "<word>"
-	"word" wanted 
+	"word" wanted
