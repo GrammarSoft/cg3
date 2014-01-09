@@ -1,36 +1,36 @@
 "<word>"
-	"word" wanted @1 
+	"word" wanted @1
 "<word>"
-	"word" notwanted @1 
-	"word" nomatch @1 
+	"word" notwanted @1
+	"word" nomatch @1
 "<$.>"
 
 "<word>"
-	"word" notwanted @2 
-	"word" wanted @2 
-	"word" notmeeither @2 
+	"word" notwanted @2
+	"word" wanted @2
+	"word" notmeeither @2
 "<word>"
-	"word" notwanted @2 
-	"word" wanted @2 
-	"word" notmeeither @2 
+	"word" notwanted @2
+	"word" wanted @2
+	"word" notmeeither @2
 "<$.>"
 
 <STREAMCMD:FLUSH>
 test
 "<word>"
-	"word" wanted @3 
+	"word" wanted @3
 "<word>"
-	"word" nomatch @3 
+	"word" nomatch @3
 "<$.>"
 
 "<word>"
-	"word" notwanted @4 
-	"word" wanted @4 
-	"word" notmeeither @4 
+	"word" notwanted @4
+	"word" wanted @4
+	"word" notmeeither @4
 "<word>"
-	"word" notwanted @4 
-	"word" wanted @4 
-	"word" notmeeither @4 
+	"word" notwanted @4
+	"word" wanted @4
+	"word" notmeeither @4
 "<$.>"
 
 <STREAMCMD:FLUSH>
@@ -47,7 +47,7 @@ test2
 "<$.>"
 <STREAMCMD:RESUME>
 "<word>"
-	"word" wanted @5 
+	"word" wanted @5
 
 <STREAMCMD:FLUSH>
 <STREAMCMD:EXIT>

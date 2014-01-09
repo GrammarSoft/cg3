@@ -1,11 +1,11 @@
 "<word>"
-	"word" å予æ æ発ø @after-æ発ø 
-	"word" wanted æ発ø @after-æ発ø 
-	"word" notmeeither æ発ø @after-æ発ø 
+	"word" å予æ æ発ø @after-æ発ø
+	"word" wanted æ発ø @after-æ発ø
+	"word" notmeeither æ発ø @after-æ発ø
 "<word>"
-	"word" æøå æ発ø @after-æ発ø 
-	"word" notmeeither æ発ø @after-æ発ø 
+	"word" æøå æ発ø @after-æ発ø
+	"word" notmeeither æ発ø @after-æ発ø
 "<word>"
-	"word" notwanted æ発ø @after-æ発ø 
-	"word" notmeeither æ発ø @after-æ発ø 
+	"word" notwanted æ発ø @after-æ発ø
+	"word" notmeeither æ発ø @after-æ発ø
 

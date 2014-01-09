@@ -1,13 +1,13 @@
 "<word>"
-	"word" wanted SELECT:6 
-;	"word" notwanted SELECT:6 
-;	"word" notmeeither SELECT:6 
+	"word" wanted SELECT:6
+;	"word" notwanted SELECT:6
+;	"word" notmeeither SELECT:6
 "<word>"
-	"word" wanted SELECT:6 
-;	"word" notwanted SELECT:6 
-;	"word" notmeeither SELECT:6 
+	"word" wanted SELECT:6
+;	"word" notwanted SELECT:6
+;	"word" notmeeither SELECT:6
 "<word>"
-	"word" notwanted @tag MAP:3 
-	"word" notmeeither @tag MAP:3 
-;	"blocker" block @tag MAP:3 REMOVE:9:named 
+	"word" notwanted @tag MAP:3
+	"word" notmeeither @tag MAP:3
+;	"blocker" block @tag MAP:3 REMOVE:9:named
 
