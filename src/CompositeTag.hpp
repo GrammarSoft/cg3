@@ -25,6 +25,7 @@
 
 #include "stdafx.hpp"
 #include "Tag.hpp"
+#include "sorted_vector.hpp"
 
 namespace CG3 {
 
@@ -112,6 +113,7 @@ namespace CG3 {
 	};
 
 	typedef stdext::hash_set<CompositeTag*, compare_CompositeTag> CompositeTagHashSet;
+	typedef sorted_vector<CompositeTag*, compare_CompositeTag> CompositeTagSortedVector;
 	typedef std::vector<AnyTag> AnyTagVector;
 	typedef std::set<AnyTag> AnyTagSet;
 }

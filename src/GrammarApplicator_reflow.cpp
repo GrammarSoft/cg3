@@ -307,15 +307,15 @@ void GrammarApplicator::reflowRelationWindow(uint32_t max) {
 
 		if (!cohort->relations_input.empty()) {
 			for (RelationCtn::iterator rel = cohort->relations_input.begin() ; rel != cohort->relations_input.end() ; ) {
-				uint32Set newrel;
+				uint32SortedVector newrel;
 
-				foreach (uint32Set, rel->second, target, target_end) {
-					uint32HashMap::iterator it = gWindow->relation_map.find(*target);
+				boost_foreach (uint32_t target, rel->second) {
+					uint32HashMap::iterator it = gWindow->relation_map.find(target);
 					if (it != gWindow->relation_map.end()) {
 						cohort->relations[rel->first].insert(it->second);
 					}
 					else {
-						newrel.insert(*target);
+						newrel.insert(target);
 					}
 				}
 

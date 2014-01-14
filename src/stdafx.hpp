@@ -63,6 +63,8 @@
 
 #include <boost/unordered_set.hpp>
 #include <boost/unordered_map.hpp>
+#include <boost/container/flat_set.hpp>
+#include <boost/container/flat_map.hpp>
 #include <boost/scoped_ptr.hpp>
 #include <boost/typeof/typeof.hpp>
 #include <boost/foreach.hpp>
@@ -105,6 +107,9 @@ namespace CG3 {
 	typedef std::map<uint32_t,uint32_t> uint32Map;
 	typedef stdext::hash_set<uint32_t> uint32HashSet;
 	typedef stdext::hash_map<uint32_t,uint32_t> uint32HashMap;
+	namespace bc = ::boost::container;
+	typedef bc::flat_set<uint32_t> uint32FlatSet;
+	typedef bc::flat_map<uint32_t,uint32_t> uint32FlatMap;
 }
 
 #include "macros.hpp"

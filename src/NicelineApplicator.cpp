@@ -369,7 +369,7 @@ void NicelineApplicator::printReading(const Reading *reading, UFILE *output) {
 	}
 
 	uint32SortedVector unique;
-	const_foreach(Reading::tags_list_t, reading->tags_list, tter, tter_end) {
+	const_foreach (Reading::tags_list_t, reading->tags_list, tter, tter_end) {
 		if ((!show_end_tags && *tter == endtag) || *tter == begintag) {
 			continue;
 		}
@@ -435,16 +435,16 @@ void NicelineApplicator::printReading(const Reading *reading, UFILE *output) {
 	if (reading->parent->type & CT_RELATED) {
 		u_fprintf(output, " ID:%u", reading->parent->global_number);
 		if (!reading->parent->relations.empty()) {
-			foreach(RelationCtn, reading->parent->relations, miter, miter_end) {
-				foreach(uint32Set, miter->second, siter, siter_end) {
-					u_fprintf(output, " R:%S:%u", grammar->single_tags.find(miter->first)->second->tag.c_str(), *siter);
+			foreach (RelationCtn, reading->parent->relations, miter, miter_end) {
+				boost_foreach (uint32_t siter, miter->second) {
+					u_fprintf(output, " R:%S:%u", grammar->single_tags.find(miter->first)->second->tag.c_str(), siter);
 				}
 			}
 		}
 	}
 
 	if (trace) {
-		const_foreach(uint32Vector, reading->hit_by, iter_hb, iter_hb_end) {
+		const_foreach (uint32Vector, reading->hit_by, iter_hb, iter_hb_end) {
 			u_fputc(' ', output);
 			printTrace(output, *iter_hb);
 		}
@@ -479,7 +479,7 @@ void NicelineApplicator::printCohort(Cohort *cohort, UFILE *output) {
 	if (cohort->readings.empty()) {
 		u_fputc('\t', output);
 	}
-	boost_foreach(Reading *rter, cohort->readings) {
+	boost_foreach (Reading *rter, cohort->readings) {
 		printReading(rter, output);
 	}
 

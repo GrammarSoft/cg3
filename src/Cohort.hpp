@@ -31,7 +31,7 @@ namespace CG3 {
 	class SingleWindow;
 	class Reading;
 	class Cohort;
-	typedef std::map<uint32_t,uint32Set> RelationCtn;
+	typedef bc::flat_map<uint32_t,uint32SortedVector> RelationCtn;
 	typedef std::vector<Cohort*> CohortVector;
 
 	enum {
@@ -58,7 +58,8 @@ namespace CG3 {
 		ReadingList readings;
 		ReadingList deleted;
 		ReadingList delayed;
-		uint32int32Map num_max, num_min;
+		typedef bc::flat_map<uint32_t,int32_t> num_t;
+		num_t num_max, num_min;
 		uint32SortedVector dep_children;
 		uint32HashSet possible_sets;
 		CohortVector enclosed;

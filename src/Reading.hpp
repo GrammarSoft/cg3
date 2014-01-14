@@ -58,7 +58,8 @@ namespace CG3 {
 		uint32SortedVector tags;
 		uint32SortedVector tags_plain;
 		uint32SortedVector tags_textual;
-		Taguint32HashMap tags_numerical;
+		typedef bc::flat_map<uint32_t,Tag*> tags_numerical_t;
+		tags_numerical_t tags_numerical;
 
 		Reading(Cohort *p);
 		Reading(const Reading& r);
