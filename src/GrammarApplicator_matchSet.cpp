@@ -265,8 +265,8 @@ uint32_t GrammarApplicator::doesTagMatchReading(const Reading& reading, const Ta
 		}
 	}
 	else if (tag.type & T_NUMERICAL) {
-		const_foreach (Taguint32HashMap, reading.tags_numerical, mter, mter_end) {
-			const Tag& itag = *(mter->second);
+		boost_foreach (const Reading::tags_numerical_t::value_type& mter, reading.tags_numerical) {
+			const Tag& itag = *(mter.second);
 			int32_t compval = tag.comparison_val;
 			if (compval == INT_MIN) {
 				compval = reading.parent->getMin(tag.comparison_hash);
@@ -466,25 +466,25 @@ bool GrammarApplicator::doesSetMatchReading_tags(const Reading& reading, const S
 	}
 	else {
 		// Test whether any of the fail-fast tags match and bail out immediately if so
-		const_foreach (TagHashSet, theset.ff_tags, ster, ster_end) {
-			bool match = (doesTagMatchReading(reading, **ster, unif_mode) != 0);
+		boost_foreach (const Tag *ster, theset.ff_tags) {
+			bool match = (doesTagMatchReading(reading, *ster, unif_mode) != 0);
 			if (match) {
 				return false;
 			}
 		}
 		// Test whether any of the regular tags match
-		const_foreach (TagHashSet, theset.single_tags, ster, ster_end) {
-			if ((*ster)->type & T_FAILFAST) {
+		boost_foreach (const Tag *ster, theset.single_tags) {
+			if (ster->type & T_FAILFAST) {
 				continue;
 			}
-			bool match = (doesTagMatchReading(reading, **ster, unif_mode) != 0);
+			bool match = (doesTagMatchReading(reading, *ster, unif_mode) != 0);
 			if (match) {
 				if (unif_mode) {
-					uint32HashMap::const_iterator it = unif_tags.find(theset.hash);
-					if (it != unif_tags.end() && it->second != (*ster)->hash) {
+					BOOST_AUTO(it, unif_tags->find(theset.hash));
+					if (it != unif_tags->end() && it->second != ster->hash) {
 						continue;
 					}
-					unif_tags[theset.hash] = (*ster)->hash;
+					(*unif_tags)[theset.hash] = ster->hash;
 				}
 				retval = true;
 				break;
@@ -494,13 +494,12 @@ bool GrammarApplicator::doesSetMatchReading_tags(const Reading& reading, const S
 
 	// If we have still not reached a conclusion, it's time to test the composite tags.
 	if (!retval && !theset.tags.empty()) {
-		const_foreach (CompositeTagHashSet, theset.tags, ster, ster_end) {
+		boost_foreach (const CompositeTag *ctag, theset.tags) {
 			bool match = true;
-			const CompositeTag *ctag = *ster;
 
 			// If no reason not to, try a simple subset test.
 			// 90% of all composite tags go straight in here.
-			if (!(ctag->is_special|unif_mode)) {
+			if (!(ctag->is_special || unif_mode)) {
 				match = TagSet_SubsetOf_TSet(ctag->tags_set, reading.tags);
 			}
 			else {
@@ -518,11 +517,11 @@ bool GrammarApplicator::doesSetMatchReading_tags(const Reading& reading, const S
 			}
 			if (match) {
 				if (unif_mode) {
-					uint32HashMap::const_iterator it = unif_tags.find(theset.hash);
-					if (it != unif_tags.end() && it->second != (*ster)->hash) {
+					BOOST_AUTO(it, unif_tags->find(theset.hash));
+					if (it != unif_tags->end() && it->second != ctag->hash) {
 						continue;
 					}
-					unif_tags[theset.hash] = (*ster)->hash;
+					(*unif_tags)[theset.hash] = ctag->hash;
 				}
 				++match_comp;
 				retval = true;
@@ -591,16 +590,16 @@ bool GrammarApplicator::doesSetMatchReading(const Reading& reading, const uint32
 				iter = grammar->sets_by_contents.find(uset.sets[i]);
 				const Set& tset = *(iter->second);
 				if (doesSetMatchReading(reading, tset.hash, bypass_index, ((theset.type & ST_TAG_UNIFY)!=0)|unif_mode)) {
-					unif_sets.insert(tset.hash);
+					unif_sets->insert(tset.hash);
 				}
 			}
-			retval = !unif_sets.empty();
+			retval = !unif_sets->empty();
 			unif_sets_firstrun = !retval;
 		}
 		// Subsequent times, test whether any of the previously stored sets match the reading
 		else {
 			uint32Set sets;
-			foreach (uint32Set, unif_sets, usi, usi_end) {
+			foreach (uint32Set, *unif_sets, usi, usi_end) {
 				if (doesSetMatchReading(reading, *usi, bypass_index, unif_mode)) {
 					sets.insert(*usi);
 				}
@@ -665,15 +664,15 @@ bool GrammarApplicator::doesSetMatchReading(const Reading& reading, const uint32
 		if (unif_mode || (theset.type & ST_TAG_UNIFY)) {
 			uint32_t tag = 0;
 			for (size_t i=0 ; i<size ; ++i) {
-				uint32HashMap::const_iterator it = unif_tags.find(theset.sets[i]);
-				if (it != unif_tags.end()) {
+				BOOST_AUTO(it, unif_tags->find(theset.sets[i]));
+				if (it != unif_tags->end()) {
 					tag = it->second;
 					break;
 				}
 			}
 			if (tag) {
 				for (size_t i=0 ; i<size ; ++i) {
-					unif_tags[theset.sets[i]] = tag;
+					(*unif_tags)[theset.sets[i]] = tag;
 				}
 			}
 		}

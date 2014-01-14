@@ -88,9 +88,11 @@ did_final_enclosure(false),
 target(0),
 mark(0),
 attach_to(0),
+unif_tags(0),
 unif_last_wordform(0),
 unif_last_baseform(0),
 unif_last_textual(0),
+unif_sets(0),
 unif_sets_firstrun(false),
 statistics(false)
 {
@@ -422,8 +424,8 @@ void GrammarApplicator::printReading(const Reading *reading, UFILE *output, size
 		u_fprintf(output, " ID:%u", reading->parent->global_number);
 		if (!reading->parent->relations.empty()) {
 			foreach (RelationCtn, reading->parent->relations, miter, miter_end) {
-				foreach (uint32Set, miter->second, siter, siter_end) {
-					u_fprintf(output, " R:%S:%u", grammar->single_tags.find(miter->first)->second->tag.c_str(), *siter);
+				boost_foreach (uint32_t siter, miter->second) {
+					u_fprintf(output, " R:%S:%u", grammar->single_tags.find(miter->first)->second->tag.c_str(), siter);
 				}
 			}
 		}

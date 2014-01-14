@@ -116,8 +116,8 @@ void Cohort::updateMinMax() {
 	num_min.clear();
 	num_max.clear();
 	const_foreach (ReadingList, readings, rter, rter_end) {
-		const_foreach (Taguint32HashMap, (*rter)->tags_numerical, nter, nter_end) {
-			const Tag *tag = nter->second;
+		boost_foreach (Reading::tags_numerical_t::value_type& nter, (*rter)->tags_numerical) {
+			const Tag *tag = nter.second;
 			if (num_min.find(tag->comparison_hash) == num_min.end() || tag->comparison_val < num_min[tag->comparison_hash]) {
 				num_min[tag->comparison_hash] = tag->comparison_val;
 			}
@@ -134,7 +134,7 @@ int32_t Cohort::getMin(uint32_t key) {
 	if (num_min.find(key) != num_min.end()) {
 		return num_min[key];
 	}
-	return INT_MIN;
+	return std::numeric_limits<int32_t>::min();
 }
 
 int32_t Cohort::getMax(uint32_t key) {
@@ -142,18 +142,18 @@ int32_t Cohort::getMax(uint32_t key) {
 	if (num_max.find(key) != num_max.end()) {
 		return num_max[key];
 	}
-	return INT_MAX;
+	return std::numeric_limits<int32_t>::max();
 }
 
 bool Cohort::addRelation(uint32_t rel, uint32_t cohort) {
-	uint32Set& cohorts = relations[rel];
+	BOOST_AUTO(&cohorts, relations[rel]);
 	const size_t sz = cohorts.size();
 	cohorts.insert(cohort);
 	return (sz != cohorts.size());
 }
 
 bool Cohort::setRelation(uint32_t rel, uint32_t cohort) {
-	uint32Set& cohorts = relations[rel];
+	BOOST_AUTO(&cohorts, relations[rel]);
 	if (cohorts.size() == 1 && cohorts.find(cohort) != cohorts.end()) {
 		return false;
 	}

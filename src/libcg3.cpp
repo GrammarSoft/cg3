@@ -196,7 +196,7 @@ inline Reading *_reading_copy(Cohort *nc, Reading *oldr, bool is_sub = false) {
 	insert_if_exists(nr->parent->possible_sets, ga->grammar->sets_any);
 	ga->addTagToReading(*nr, nr->wordform);
 	TagList mappings;
-	boost_foreach(uint32_t tag, oldr->tags_list) {
+	boost_foreach (uint32_t tag, oldr->tags_list) {
 		Tag *nt = _tag_copy(oldr->parent->parent->parent->parent, nc->parent->parent->parent, tag);
 		if (nt->type & T_MAPPING || nt->tag[0] == ga->grammar->mapping_prefix) {
 			mappings.push_back(nt);

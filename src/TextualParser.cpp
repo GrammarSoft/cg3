@@ -2175,13 +2175,13 @@ int TextualParser::parse_grammar_from_file(const char *fname, const char *loc, c
 
 	result->addAnchor(keywords[K_END].getTerminatedBuffer(), result->rule_by_number.size()-1, true);
 
-	const_foreach(RuleVector, result->rule_by_number, it, it_end) {
+	const_foreach (RuleVector, result->rule_by_number, it, it_end) {
 		if ((*it)->name) {
 			result->addAnchor((*it)->name, (*it)->number, false);
 		}
 	}
 
-	const_foreach(deferred_t, deferred_tmpls, it, it_end) {
+	const_foreach (deferred_t, deferred_tmpls, it, it_end) {
 		uint32_t cn = hash_sdbm_uchar(it->second.second);
 		if (result->templates.find(cn) == result->templates.end()) {
 			u_fprintf(ux_stderr, "Error: Unknown template '%S' referenced on line %u!\n", it->second.second.c_str(), it->second.first);

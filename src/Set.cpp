@@ -126,16 +126,16 @@ void Set::reindex(Grammar& grammar) {
 	type &= ~ST_CHILD_UNIFY;
 
 	if (sets.empty()) {
-		const_foreach (TagHashSet, single_tags, tomp_iter, tomp_iter_end) {
-			if ((*tomp_iter)->type & T_SPECIAL) {
+		boost_foreach (Tag *tomp_iter, single_tags) {
+			if (tomp_iter->type & T_SPECIAL) {
 				type |= ST_SPECIAL;
 			}
-			if ((*tomp_iter)->type & T_MAPPING) {
+			if (tomp_iter->type & T_MAPPING) {
 				type |= ST_MAPPING;
 			}
 		}
-		const_foreach (CompositeTagHashSet, tags, comp_iter, comp_iter_end) {
-			const_foreach (CompositeTag::tags_t, (*comp_iter)->tags, tag_iter, tag_iter_end) {
+		boost_foreach (CompositeTag *comp_iter, tags) {
+			const_foreach (CompositeTag::tags_t, comp_iter->tags, tag_iter, tag_iter_end) {
 				if ((*tag_iter)->type & T_SPECIAL) {
 					type |= ST_SPECIAL;
 				}
@@ -171,14 +171,10 @@ void Set::markUsed(Grammar& grammar) {
 	type |= ST_USED;
 
 	if (sets.empty()) {
-		TagHashSet::iterator tomp_iter;
-		for (tomp_iter = single_tags.begin() ; tomp_iter != single_tags.end() ; tomp_iter++) {
-			Tag *tag = *tomp_iter;
+		boost_foreach (Tag *tag, single_tags) {
 			tag->markUsed();
 		}
-		CompositeTagHashSet::iterator comp_iter;
-		for (comp_iter = tags.begin() ; comp_iter != tags.end() ; comp_iter++) {
-			CompositeTag *curcomptag = *comp_iter;
+		boost_foreach (CompositeTag *curcomptag, tags) {
 			curcomptag->markUsed();
 		}
 	}

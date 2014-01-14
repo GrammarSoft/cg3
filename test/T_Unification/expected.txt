@@ -27,6 +27,10 @@
 "<wordi>"
 	"wordi" some tags <before> THIS <after> @vstr-safe-capture ADD:22 ADD:23 SUBSTITUTE:25 ADD:38
 	"wordi" some tags <Hfam> <before> THIS <after> @vstr-safe-capture ADD:22 ADD:23 SUBSTITUTE:25 ADD:38
+"<wordj>"
+	"wordj" aaa <aaa> ADD:42
+	"wordj" bbb <bbb> ADD:42
+	"wordj" ccc <ccc> ADD:42
 "<$.>"
 	"."
 

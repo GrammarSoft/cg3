@@ -285,7 +285,7 @@ Cohort *GrammarApplicator::runContextualTest(SingleWindow *sWindow, size_t posit
 			it = &depParentIters[ci_depths[3]++];
 		}
 		else if (test->pos & POS_DEP_DESCENDENT) {
-			it = &DepDescendentIters[ci_depths[4]++];
+			it = &depDescendentIters[ci_depths[4]++];
 		}
 		else if (test->pos & (POS_DEP_CHILD|POS_DEP_SIBLING)) {
 			Cohort *nc = runDependencyTest(sWindow, cohort, test, deep, origin);
@@ -633,8 +633,8 @@ Cohort *GrammarApplicator::runRelationTest(SingleWindow *sWindow, Cohort *curren
 
 	if (test->relation == grammar->tag_any) {
 		const_foreach (RelationCtn, current->relations, riter, riter_end) {
-			const_foreach (uint32Set, riter->second, citer, citer_end) {
-				std::map<uint32_t,Cohort*>::iterator it = sWindow->parent->cohort_map.find(*citer);
+			boost_foreach (uint32_t citer, riter->second) {
+				std::map<uint32_t,Cohort*>::iterator it = sWindow->parent->cohort_map.find(citer);
 				if (it != sWindow->parent->cohort_map.end()) {
 					rels.insert(it->second);
 				}
@@ -644,8 +644,8 @@ Cohort *GrammarApplicator::runRelationTest(SingleWindow *sWindow, Cohort *curren
 	else {
 		RelationCtn::const_iterator riter = current->relations.find(test->relation);
 		if (riter != current->relations.end()) {
-			const_foreach (uint32Set, riter->second, citer, citer_end) {
-				std::map<uint32_t,Cohort*>::iterator it = sWindow->parent->cohort_map.find(*citer);
+			boost_foreach (uint32_t citer, riter->second) {
+				std::map<uint32_t, Cohort*>::iterator it = sWindow->parent->cohort_map.find(citer);
 				if (it != sWindow->parent->cohort_map.end()) {
 					rels.insert(it->second);
 				}

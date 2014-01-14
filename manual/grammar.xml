@@ -10,7 +10,7 @@
       <link linkend="keyword-include">INCLUDE</link> loads and parses another grammar file as if it had been pasted
       in on the line of the INCLUDE statement, with the exception that line numbers start again from 1.
       Included rules can thus conflict with rules in other files if they happen to occupy the same line in multiple files.
-      Until this is fixed, including only basic shared information such as delimiters and sets is advised.
+      It will still work as you expect, but --trace output won't show you which file the rules come from.
       <screen>
         INCLUDE other-file-name ;
       </screen>
@@ -65,12 +65,12 @@
       <screen>
         DELIMITERS = "&lt;$.&gt;" ;
         LIST ThisIsASet = "&lt;sometag&gt;" "&lt;othertag&gt;" ;
-  
+
         SECTION
         LIST ThisIsAlsoASet = atag btag ctag ;
         SET Hubba = ThisIsASet - (ctag) ;
         SELECT ThisIsASet IF (-1 (dtag)) ;
-  
+
         LIST AnotherSet =  "&lt;youknowthedrill&gt;" ;
         MAP (@bingo) TARGET AnotherSet ;
       </screen>
@@ -96,7 +96,7 @@
         but may contain any rule type.
       </para>
     </section>
-  
+
     <section id="grammar-section">
       <title>SECTION</title>
       <para>
@@ -105,7 +105,7 @@
         but may contain any rule type.
       </para>
     </section>
-  
+
     <section id="grammar-after-sections">
       <title>AFTER-SECTIONS</title>
       <para>
@@ -114,7 +114,7 @@
         This is new in CG-3.
       </para>
     </section>
-  
+
     <section id="grammar-null-section">
       <title>NULL-SECTION</title>
       <para>
@@ -123,7 +123,7 @@
         This is new in CG-3.
       </para>
     </section>
-  
+
     <section id="grammar-section-order">
       <title>Ordering of sections in grammar</title>
       <para>
@@ -156,7 +156,7 @@
         </screen>
       </para>
     </section>
-  
+
     <section id="sections-range">
       <title>--sections with ranges</title>
       <para>

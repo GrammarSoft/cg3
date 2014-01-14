@@ -34,5 +34,9 @@
 	"wordi" some tags
 	"wordi" some tags <Hfam>
 	"wordi" some tags
+"<wordj>"
+	"wordj" aaa
+	"wordj" bbb
+	"wordj" ccc
 "<$.>"
 	"."

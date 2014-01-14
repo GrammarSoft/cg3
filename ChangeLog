@@ -1,5 +1,7 @@
 2014-01-09  tino
 
+	* [r9595] ChangeLog, scripts/cg3-autobin.pl, src/version.hpp:
+	  Revision bump
 	* [r9594] test/T_AnyMinusSome/run.pl, test/T_Barrier/run.pl,
 	  test/T_BasicAppend/run.pl, test/T_BasicContextTest/run.pl,
 	  test/T_BasicDelimit/run.pl, test/T_BasicDependency/run.pl,
@@ -2408,5 +2410,4 @@
 	  more .at()
 	* [r6893] Boost.props, ICU.props, scripts/profile-revisions.php:
 	  cg3
-	* [r6892] src/GrammarApplicator_matchSet.cpp: cg3
 
