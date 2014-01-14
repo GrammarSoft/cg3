@@ -144,11 +144,11 @@ namespace CG3 {
 		externals_t externals;
 
 		uint32Vector ci_depths;
-		stdext::hash_map<uint32_t,CohortIterator> cohortIterators;
-		stdext::hash_map<uint32_t,TopologyLeftIter> topologyLeftIters;
-		stdext::hash_map<uint32_t,TopologyRightIter> topologyRightIters;
-		stdext::hash_map<uint32_t,DepParentIter> depParentIters;
-		stdext::hash_map<uint32_t,DepDescendentIter> DepDescendentIters;
+		std::map<uint32_t,CohortIterator> cohortIterators;
+		std::map<uint32_t,TopologyLeftIter> topologyLeftIters;
+		std::map<uint32_t,TopologyRightIter> topologyRightIters;
+		std::map<uint32_t,DepParentIter> depParentIters;
+		std::map<uint32_t,DepDescendentIter> depDescendentIters;
 
 		uint32_t match_single, match_comp, match_sub;
 		uint32_t begintag, endtag;
@@ -162,11 +162,19 @@ namespace CG3 {
 		Cohort *mark;
 		Cohort *attach_to;
 
-		uint32HashMap unif_tags;
+		typedef bc::flat_map<uint32_t,Reading*> readings_plain_t;
+		readings_plain_t readings_plain;
+
+		typedef uint32Map unif_tags_t;
+		bc::flat_map<uint32_t,unif_tags_t*> unif_tags_rs;
+		std::vector<unif_tags_t> unif_tags_store;
+		bc::flat_map<uint32_t,uint32Set*> unif_sets_rs;
+		std::vector<uint32Set> unif_sets_store;
+		unif_tags_t *unif_tags;
 		uint32_t unif_last_wordform;
 		uint32_t unif_last_baseform;
 		uint32_t unif_last_textual;
-		uint32Set unif_sets;
+		uint32Set *unif_sets;
 		bool unif_sets_firstrun;
 
 		uint32HashSet index_regexp_yes;

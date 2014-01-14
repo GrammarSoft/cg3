@@ -150,18 +150,18 @@ void Grammar::addSet(Set *& to) {
 		negative->setName(str);
 
 		TagSet tags;
-		foreach (TagHashSet, to->ff_tags, iter, iter_end) {
+		boost_foreach (Tag *iter, to->ff_tags) {
 			for (AnyTagVector::iterator ater = positive->tags_list.begin() ; ater != positive->tags_list.end() ; ) {
-				if (ater->hash() == (*iter)->hash) {
+				if (ater->hash() == iter->hash) {
 					ater = positive->tags_list.erase(ater);
 				}
 				else {
 					++ater;
 				}
 			}
-			positive->single_tags.erase(*iter);
-			positive->single_tags_hash.erase((*iter)->hash);
-			UString str = (*iter)->toUString(true);
+			positive->single_tags.erase(iter);
+			positive->single_tags_hash.erase(iter->hash);
+			UString str = iter->toUString(true);
 			str.erase(str.find('^'), 1);
 			Tag *tag = allocateTag(str.c_str());
 			addTagToSet(tag, negative);
@@ -694,7 +694,7 @@ void Grammar::reindex(bool unused_sets) {
 	boost::unordered_map<std::pair<uint32_t, uint32_t>, size_t> unique_targets;
 	size_t max_target = 0;
 #endif
-	foreach(RuleVector, rule_by_number, iter_rule, iter_rule_end) {
+	foreach (RuleVector, rule_by_number, iter_rule, iter_rule_end) {
 		Set *s = 0;
 		s = getSet((*iter_rule)->target);
 		s->markUsed(*this);
@@ -900,13 +900,10 @@ void Grammar::indexSetToRule(uint32_t r, Set *s) {
 		return;
 	}
 	if (s->sets.empty()) {
-		TagHashSet::const_iterator tomp_iter;
-		for (tomp_iter = s->single_tags.begin() ; tomp_iter != s->single_tags.end() ; tomp_iter++) {
-			indexTagToRule((*tomp_iter)->hash, r);
+		boost_foreach (Tag *tomp_iter, s->single_tags) {
+			indexTagToRule(tomp_iter->hash, r);
 		}
-		CompositeTagHashSet::const_iterator comp_iter;
-		for (comp_iter = s->tags.begin() ; comp_iter != s->tags.end() ; comp_iter++) {
-			CompositeTag *curcomptag = *comp_iter;
+		boost_foreach (CompositeTag *curcomptag, s->tags) {
 			if (curcomptag->tags.size() == 1) {
 				// ToDo: If this is ever run, something has gone wrong...
 				indexTagToRule((*(curcomptag->tags.begin()))->hash, r);
@@ -936,13 +933,10 @@ void Grammar::indexSets(uint32_t r, Set *s) {
 		return;
 	}
 	if (s->sets.empty()) {
-		TagHashSet::const_iterator tomp_iter;
-		for (tomp_iter = s->single_tags.begin() ; tomp_iter != s->single_tags.end() ; tomp_iter++) {
-			indexTagToSet((*tomp_iter)->hash, r);
+		boost_foreach (Tag *tomp_iter, s->single_tags) {
+			indexTagToSet(tomp_iter->hash, r);
 		}
-		CompositeTagHashSet::const_iterator comp_iter;
-		for (comp_iter = s->tags.begin() ; comp_iter != s->tags.end() ; comp_iter++) {
-			CompositeTag *curcomptag = *comp_iter;
+		boost_foreach (CompositeTag *curcomptag, s->tags) {
 			if (curcomptag->tags.size() == 1) {
 				// ToDo: If this is ever run, something has gone wrong...
 				indexTagToSet((*(curcomptag->tags.begin()))->hash, r);

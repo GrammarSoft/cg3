@@ -24,6 +24,7 @@
 #define c6d28b7452ec699b_TAG_H
 
 #include "stdafx.hpp"
+#include "sorted_vector.hpp"
 
 namespace CG3 {
 	class Grammar;
@@ -125,6 +126,7 @@ namespace CG3 {
 	typedef std::set<Tag*, compare_Tag> TagSet;
 	typedef stdext::hash_map<uint32_t,Tag*> Taguint32HashMap;
 	typedef stdext::hash_set<Tag*, compare_Tag> TagHashSet;
+	typedef sorted_vector<Tag*, compare_Tag> TagSortedVector;
 }
 
 #endif

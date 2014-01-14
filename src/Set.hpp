@@ -54,10 +54,10 @@ namespace CG3 {
 		UString name;
 
 		AnyTagVector tags_list;
-		CompositeTagHashSet tags;
-		TagHashSet single_tags;
+		CompositeTagSortedVector tags;
+		TagSortedVector single_tags;
 		uint32SortedVector single_tags_hash;
-		TagHashSet ff_tags;
+		TagSortedVector ff_tags;
 
 		uint32Vector set_ops;
 		uint32Vector sets;

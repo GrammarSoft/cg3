@@ -89,7 +89,7 @@ TagList GrammarApplicator::getTagList(const Set& theSet, bool unif_mode) const {
 	if (theSet.type & ST_SET_UNIFY) {
 		const Set& pSet = *(grammar->getSet(theSet.sets[0]));
 		const_foreach (uint32Vector, pSet.sets, iter, iter_end) {
-			if (unif_sets.find(*iter) != unif_sets.end()) {
+			if (unif_sets->count(*iter)) {
 				TagList recursiveTags = getTagList(*(grammar->getSet(*iter)));
 				theTags.splice(theTags.end(), recursiveTags);
 			}
@@ -108,8 +108,8 @@ TagList GrammarApplicator::getTagList(const Set& theSet, bool unif_mode) const {
 		}
 	}
 	else if (unif_mode) {
-		uint32HashMap::const_iterator iter = unif_tags.find(theSet.hash);
-		if (iter != unif_tags.end()) {
+		BOOST_AUTO(iter, unif_tags->find(theSet.hash));
+		if (iter != unif_tags->end()) {
 			uint32_t ihash = iter->second;
 			if (single_tags.find(ihash) != single_tags.end()) {
 				theTags.push_back(single_tags.find(ihash)->second);
@@ -173,9 +173,6 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 	uint32_t retval = RV_NOTHING;
 	bool section_did_something = false;
 	bool delimited = false;
-
-	typedef stdext::hash_map<uint32_t,Reading*> readings_plain_t;
-	readings_plain_t readings_plain;
 
 	// ToDo: Now that numbering is used, can't this be made a normal max? Hm, maybe not since --sections can still force another order...but if we're smart, then we re-enumerate rules based on --sections
 	uint32IntervalVector intersects = current.valid_rules.intersect(rules);
@@ -338,11 +335,21 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 			if (!regexgrps.empty()) {
 				regexgrps.clear();
 			}
+			if (!unif_tags_rs.empty()) {
+				unif_tags_rs.clear();
+			}
+			if (!unif_sets_rs.empty()) {
+				unif_sets_rs.clear();
+			}
+
+			size_t used_unif = 0;
+			unif_tags_store.resize(std::max(unif_tags_store.size(), cohort->readings.size()));
+			unif_sets_store.resize(std::max(unif_sets_store.size(), cohort->readings.size()));
 
 			// This loop figures out which readings, if any, that are valid targets for the current rule
 			// Criteria for valid is that the reading must match both target and all contextual tests
-			foreach (ReadingList, cohort->readings, rter1, rter1_end) {
-				Reading *reading = get_sub_reading(*rter1, rule.sub_reading);
+			for (size_t i = 0; i < cohort->readings.size(); ++i) {
+				Reading *reading = get_sub_reading(cohort->readings[i], rule.sub_reading);
 				if (!reading) {
 					continue;
 				}
@@ -373,17 +380,23 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 				}
 
 				// Unification is done on a per-reading basis, so clear all unification state.
-				// ToDo: Doesn't this mess up the new sets-for-mapping? Yes it does, but due a missing did_test = true it still works...
-				// ToDo: Need to tie unification data to the readings directly before fixing the did_test bug.
+				unif_tags = &unif_tags_store[used_unif];
+				unif_sets = &unif_sets_store[used_unif];
+				unif_tags_rs[reading->hash_plain] = unif_tags;
+				unif_sets_rs[reading->hash_plain] = unif_sets;
+				unif_tags_rs[reading->hash] = unif_tags;
+				unif_sets_rs[reading->hash] = unif_sets;
+				++used_unif;
+
 				unif_last_wordform = 0;
 				unif_last_baseform = 0;
 				unif_last_textual = 0;
-				if (!unif_tags.empty()) {
-					unif_tags.clear();
+				if (!unif_tags->empty()) {
+					unif_tags->clear();
 				}
 				unif_sets_firstrun = true;
-				if (!unif_sets.empty()) {
-					unif_sets.clear();
+				if (!unif_sets->empty()) {
+					unif_sets->clear();
 				}
 
 				target = 0;
@@ -397,7 +410,6 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 					// If we didn't already run the contextual tests, run them now.
 					// This only needs to be done once per cohort as no current functionality exists to refer back to the exact reading.
 					if (!did_test) {
-						// Contextual tests are stored as a linked list, so looping through them looks a bit different.
 						foreach (ContextList, rule.tests, it, it_end) {
 							ContextualTest *test = *it;
 							if (rule.flags & RF_RESETX || !(rule.flags & RF_REMEMBERX)) {
@@ -424,9 +436,10 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 									break;
 								}
 							}
+							did_test = ((set.type & (ST_CHILD_UNIFY | ST_SPECIAL)) == 0 && unif_tags->empty() && unif_sets->empty());
 						}
 					}
-					else if (did_test) {
+					else {
 						good = test_good;
 					}
 					if (good) {
@@ -503,6 +516,16 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						reading.hit_by.push_back(rule.number);
 					}
 					continue;
+				}
+				unif_tags = 0;
+				unif_sets = 0;
+				if (unif_tags_rs.count(reading.hash)) {
+					unif_tags = unif_tags_rs[reading.hash];
+					unif_sets = unif_sets_rs[reading.hash];
+				}
+				else if (unif_tags_rs.count(reading.hash_plain)) {
+					unif_tags = unif_tags_rs[reading.hash_plain];
+					unif_sets = unif_sets_rs[reading.hash_plain];
 				}
 
 				// Select is also special as it will remove non-matching readings
@@ -981,7 +1004,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						if (rule.sublist) {
 							// ToDo: Use the code from Substitute to make this match and remove special tags
 							TagList excepts = getTagList(*rule.sublist);
-							const_foreach(TagList, excepts, tter, tter_end) {
+							const_foreach (TagList, excepts, tter, tter_end) {
 								delTagFromReading(*cReading, *tter);
 							}
 						}

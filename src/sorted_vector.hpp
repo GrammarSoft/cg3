@@ -129,6 +129,14 @@ public:
 		return (find(t) != end());
 	}
 
+	iterator begin() {
+		return elements.begin();
+	}
+
+	iterator end() {
+		return elements.end();
+	}
+
 	const_iterator begin() const {
 		return elements.begin();
 	}

@@ -8,7 +8,7 @@ LIST SameBase = ".*"r ;
 SET USET = ACESet OR BDFSet ;
 
 ADD (@UnifSet) &&USET (1 &&USET) ;
-ADDRELATIONS (from) (to) ("worda") + $$ACESet TO (1* ("wordc") + $$ACESet) ;
+ADDRELATIONS (from) (to) ("worda") + &&USET TO (1* ("wordc") + &&USET) ;
 
 SECTION
 SELECT:this $$TSet (-1C (some) + $$TSet) ;
@@ -36,3 +36,7 @@ ADD (@same-but-different-set) $$Sace (1 Sace - $$Sace) ;
 ADD (@same-but-different-set-bad) $$Sbdf (1 Sbdf - $$Sbdf) ;
 
 ADD (@vstr-safe-capture) ("wordi") (-1**C ("([^<].*)."r some tags) LINK -1 ("$1c"v)) ;
+
+STATIC-SETS = each ;
+LIST each = aaa bbb ccc ;
+ADD (<{$$each}>v) $$each ;
