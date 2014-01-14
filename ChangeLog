@@ -1,3 +1,19 @@
+2014-01-14  tino
+
+	* [r9635] ChangeLog, manual/grammar.xml, scripts/cg3-autobin.pl,
+	  src/Cohort.cpp, src/Cohort.hpp, src/CompositeTag.hpp,
+	  src/Grammar.cpp, src/GrammarApplicator.cpp,
+	  src/GrammarApplicator.hpp, src/GrammarApplicator_matchSet.cpp,
+	  src/GrammarApplicator_reflow.cpp,
+	  src/GrammarApplicator_runContextualTest.cpp,
+	  src/GrammarApplicator_runRules.cpp, src/NicelineApplicator.cpp,
+	  src/Reading.hpp, src/Set.cpp, src/Set.hpp, src/Tag.hpp,
+	  src/TextualParser.cpp, src/libcg3.cpp, src/sorted_vector.hpp,
+	  src/stdafx.hpp, src/version.hpp, test/T_Unification/expected.txt,
+	  test/T_Unification/grammar.cg3, test/T_Unification/input.txt: Fix
+	  unification (11% slower); Use more Boost flat_map/set and
+	  sorted_vector (8% faster)
+
 2014-01-09  tino
 
 	* [r9595] ChangeLog, scripts/cg3-autobin.pl, src/version.hpp:
@@ -2408,6 +2424,4 @@
 	  src/GrammarApplicator_runContextualTest.cpp,
 	  src/GrammarWriter.cpp, src/Set.cpp, src/TextualParser.cpp: No
 	  more .at()
-	* [r6893] Boost.props, ICU.props, scripts/profile-revisions.php:
-	  cg3
 

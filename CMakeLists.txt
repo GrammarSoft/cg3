@@ -73,6 +73,7 @@ if(OPT_CPACK)
 	set(CPACK_PACKAGE_VERSION "${_cg3_VERSION_MAJOR}.${_cg3_VERSION_MINOR}.${_cg3_VERSION_PATCH}.${_cg3_REVISION}")
 
 	set(CPACK_DEBIAN_BUILD_DEPENDS debhelper cmake libicu-dev libboost-dev libgoogle-perftools-dev)
+	set(CPACK_DEBIAN_BUILD_DEPENDS_UBUNTU_PRECISE debhelper cmake libicu-dev libboost1.48-dev libgoogle-perftools-dev)
 	set(CPACK_DEBIAN_PACKAGE_SOURCE_COPY svn export --force)
 	set(CPACK_DEBIAN_CHANGELOG "  * Changelog is available at http://visl.sdu.dk/svn/visl/tools/vislcg3/trunk/ChangeLog\n\n")
 	execute_process(COMMAND lsb_release -is
