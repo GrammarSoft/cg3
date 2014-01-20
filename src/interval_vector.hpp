@@ -59,13 +59,15 @@ private:
 	size_t _size;
 
 public:
-	class const_iterator {
+	class const_iterator : public std::iterator<std::bidirectional_iterator_tag,T> {
 	private:
 		const Cont *elements;
 		ContConstIter it;
 		T t;
 
 	public:
+		typedef T reference;
+
 		const_iterator() :
 		elements(0),
 		t(T())
@@ -145,6 +147,7 @@ public:
 		}
 	};
 
+	typedef const_iterator iterator;
 	typedef size_t size_type;
 	typedef T value_type;
 	typedef T key_type;

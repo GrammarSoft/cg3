@@ -72,13 +72,13 @@ void GrammarApplicator::indexSingleWindow(SingleWindow& current) {
 
 	foreach (CohortVector, current.cohorts, iter, iter_end) {
 		Cohort *c = *iter;
-		foreach (uint32HashSet, c->possible_sets, psit, psit_end) {
-			if (grammar->rules_by_set.find(*psit) == grammar->rules_by_set.end()) {
+		boost_foreach (uint32_t psit, c->possible_sets) {
+			BOOST_AUTO(rules_it, grammar->rules_by_set.find(psit));
+			if (rules_it == grammar->rules_by_set.end()) {
 				continue;
 			}
-			const Grammar::rules_by_set_t::mapped_type& rules = grammar->rules_by_set.find(*psit)->second;
-			const_foreach (Grammar::rules_by_set_t::mapped_type, rules, rsit, rsit_end) {
-				updateRuleToCohorts(*c, *rsit);
+			boost_foreach (uint32_t rsit, rules_it->second) {
+				updateRuleToCohorts(*c, rsit);
 			}
 		}
 	}
