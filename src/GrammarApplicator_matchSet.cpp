@@ -39,9 +39,12 @@ namespace CG3 {
  * @param[in] first A uint32SortedVector
  * @param[in] second A uint32SortedVector
  */
-bool uint32SortedVector_Intersects(const uint32SortedVector& first, const uint32SortedVector& second) {
-	uint32SortedVector::const_iterator iiter = first.begin();
-	uint32SortedVector::const_iterator oiter = second.begin();
+inline bool uint32SortedVector_Intersects(const uint32SortedVector& first, const uint32SortedVector& second) {
+	if (first.empty() || second.empty()) {
+		return false;
+	}
+	uint32SortedVector::const_iterator iiter = first.lower_bound(second.front());
+	uint32SortedVector::const_iterator oiter = second.lower_bound(first.front());
 	while (oiter != second.end() && iiter != first.end()) {
 		if (*oiter == *iiter) {
 			return true;
@@ -66,13 +69,13 @@ bool uint32SortedVector_Intersects(const uint32SortedVector& first, const uint32
  * @param[in] b The tags from the reading
  */
 template<typename T>
-bool TagSet_SubsetOf_TSet(const TagSet& a, const T& b) {
+inline bool TagSet_SubsetOf_TSet(const TagSet& a, const T& b) {
 	/* This test is true 0.1% of the time. Not worth the trouble.
 	if (a.size() > b.size()) {
 		return false;
 	}
 	//*/
-	typename T::const_iterator bi = b.begin();
+	typename T::const_iterator bi = b.lower_bound((*a.begin())->hash);
 	const_foreach (TagSet, a, ai, ai_end) {
 		while (bi != b.end() && *bi < (*ai)->hash) {
 			++bi;
@@ -503,7 +506,7 @@ bool GrammarApplicator::doesSetMatchReading_tags(const Reading& reading, const S
 				match = TagSet_SubsetOf_TSet(ctag->tags_set, reading.tags);
 			}
 			else {
-				// Check if any of the member tags do not match, and bail out of so.
+				// Check if any of the member tags do not match, and bail out if so.
 				const_foreach (CompositeTag::tags_t, ctag->tags, cter, cter_end) {
 					bool inner = (doesTagMatchReading(reading, **cter, unif_mode) != 0);
 					if ((*cter)->type & T_FAILFAST) {

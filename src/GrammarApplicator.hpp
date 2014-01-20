@@ -134,7 +134,7 @@ namespace CG3 {
 		uint32_t numReadings;
 
 		bool did_index;
-		uint32Set dep_deep_seen;
+		uint32SortedVector dep_deep_seen;
 
 		uint32_t numsections;
 		typedef std::map<int32_t,uint32IntervalVector> RSType;
