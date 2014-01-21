@@ -193,7 +193,7 @@ void Tag::parseTag(const UChar *to, UFILE *ux_stderr, Grammar *grammar) {
 			}
 		}
 
-		comparison_hash = hash_sdbm_uchar(tag);
+		comparison_hash = hash_value(tag);
 
 		if (tag[0] == '<' && tag[length-1] == '>') {
 			parseNumeric();
@@ -434,7 +434,7 @@ void Tag::parseNumeric() {
 			}
 		}
 		comparison_val = tval;
-		comparison_hash = hash_sdbm_uchar(tkey);
+		comparison_hash = hash_value(tkey);
 		type |= T_NUMERICAL;
 	}
 }
@@ -444,38 +444,38 @@ uint32_t Tag::rehash() {
 	plain_hash = 0;
 
 	if (type & T_NEGATIVE) {
-		hash = hash_sdbm_char("!", hash);
+		hash = hash_value("!", hash);
 	}
 	if (type & T_FAILFAST) {
-		hash = hash_sdbm_char("^", hash);
+		hash = hash_value("^", hash);
 	}
 
 	if (type & T_META) {
-		hash = hash_sdbm_char("META:", hash);
+		hash = hash_value("META:", hash);
 	}
 	if (type & T_VARIABLE) {
-		hash = hash_sdbm_char("VAR:", hash);
+		hash = hash_value("VAR:", hash);
 	}
 	if (type & T_SET) {
-		hash = hash_sdbm_char("SET:", hash);
+		hash = hash_value("SET:", hash);
 	}
 
-	plain_hash = hash_sdbm_uchar(tag);
+	plain_hash = hash_value(tag);
 	if (hash) {
-		hash = hash_sdbm_uint32_t(plain_hash, hash);
+		hash = hash_value(plain_hash, hash);
 	}
 	else {
 		hash = plain_hash;
 	}
 
 	if (type & T_CASE_INSENSITIVE) {
-		hash = hash_sdbm_char("i", hash);
+		hash = hash_value("i", hash);
 	}
 	if (type & T_REGEXP) {
-		hash = hash_sdbm_char("r", hash);
+		hash = hash_value("r", hash);
 	}
 	if (type & T_VARSTRING) {
-		hash = hash_sdbm_char("v", hash);
+		hash = hash_value("v", hash);
 	}
 
 	hash += seed;

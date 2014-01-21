@@ -44,7 +44,7 @@ void CompositeTag::addTag(Tag *tag) {
 uint32_t CompositeTag::rehash() {
 	uint32_t retval = 0;
 	foreach (tags_t, tags, iter, iter_end) {
-		retval = hash_sdbm_uint32_t((*iter)->hash, retval);
+		retval = hash_value((*iter)->hash, retval);
 	}
 	hash = retval;
 	return retval;

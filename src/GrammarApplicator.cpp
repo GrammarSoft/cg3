@@ -224,7 +224,7 @@ void GrammarApplicator::disableStatistics() {
 
 Tag *GrammarApplicator::addTag(const UChar *txt, bool vstr) {
 	Taguint32HashMap::iterator it;
-	uint32_t thash = hash_sdbm_uchar(txt);
+	uint32_t thash = hash_value(txt);
 	if ((it = single_tags.find(thash)) != single_tags.end() && !it->second->tag.empty() && u_strcmp(it->second->tag.c_str(), txt) == 0) {
 		return it->second;
 	}

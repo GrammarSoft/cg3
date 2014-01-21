@@ -30,6 +30,7 @@
 #include "Rule.hpp"
 #include "sorted_vector.hpp"
 #include "interval_vector.hpp"
+#include "flat_unordered_set.hpp"
 
 namespace CG3 {
 	class Anchor;
@@ -81,11 +82,11 @@ namespace CG3 {
 		rules_by_set_t rules_by_set;
 		typedef stdext::hash_map<uint32_t, uint32IntervalVector> rules_by_tag_t;
 		rules_by_tag_t rules_by_tag;
-		typedef stdext::hash_map<uint32_t, uint32HashSet> sets_by_tag_t;
+		typedef stdext::hash_map<uint32_t, uint32FlatHashSet> sets_by_tag_t;
 		sets_by_tag_t sets_by_tag;
 
 		uint32IntervalVector *rules_any;
-		uint32HashSet *sets_any;
+		uint32FlatHashSet *sets_any;
 
 		Set *delimiters;
 		Set *soft_delimiters;

@@ -875,15 +875,15 @@ void ApertiumApplicator::mergeMappings(Cohort& cohort) {
 		uint32_t hp = r->hash; // instead of hash_plain, which doesn't include mapping tags
 		if (trace) {
 			foreach (uint32Vector, r->hit_by, iter_hb, iter_hb_end) {
-				hp = hash_sdbm_uint32_t(*iter_hb, hp);
+				hp = hash_value(*iter_hb, hp);
 			}
 		}
 		Reading *sub = r->next;
 		while (sub) {
-			hp = hash_sdbm_uint32_t(sub->hash, hp);
+			hp = hash_value(sub->hash, hp);
 			if (trace) {
 				foreach (uint32Vector, sub->hit_by, iter_hb, iter_hb_end) {
-					hp = hash_sdbm_uint32_t(*iter_hb, hp);
+					hp = hash_value(*iter_hb, hp);
 				}
 			}
 			sub = sub->next;

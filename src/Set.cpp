@@ -93,18 +93,18 @@ void Set::setName(const UString& to) {
 uint32_t Set::rehash() {
 	uint32_t retval = 0;
 	if (sets.empty()) {
-		retval = hash_sdbm_uint32_t(3499, retval); // Combat hash-collisions
+		retval = hash_value(3499, retval); // Combat hash-collisions
 		foreach (AnyTagVector, tags_list, iter, iter_end) {
-			retval = hash_sdbm_uint32_t(iter->hash(), retval);
+			retval = hash_value(iter->hash(), retval);
 		}
 	}
 	else {
-		retval = hash_sdbm_uint32_t(2683, retval); // Combat hash-collisions
+		retval = hash_value(2683, retval); // Combat hash-collisions
 		for (uint32_t i=0;i<sets.size();i++) {
-			retval = hash_sdbm_uint32_t(sets[i], retval);
+			retval = hash_value(sets[i], retval);
 		}
 		for (uint32_t i=0;i<set_ops.size();i++) {
-			retval = hash_sdbm_uint32_t(set_ops[i], retval);
+			retval = hash_value(set_ops[i], retval);
 		}
 	}
 	hash = retval;

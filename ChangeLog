@@ -1,5 +1,15 @@
+2014-01-20  tino
+
+	* [r9640] src/GrammarApplicator.hpp,
+	  src/GrammarApplicator_matchSet.cpp,
+	  src/GrammarApplicator_runRules.cpp, src/interval_vector.hpp:
+	  Minor cleanup
+
 2014-01-14  tino
 
+	* [r9637] CMakeLists.txt, ChangeLog, scripts/cg3-autobin.pl,
+	  src/version.hpp: Explicitly depend on Boost 1.48.0 for Ubuntu
+	  12.04
 	* [r9635] ChangeLog, manual/grammar.xml, scripts/cg3-autobin.pl,
 	  src/Cohort.cpp, src/Cohort.hpp, src/CompositeTag.hpp,
 	  src/Grammar.cpp, src/GrammarApplicator.cpp,
@@ -2412,16 +2422,4 @@
 2011-04-05  tino
 
 	* [r6899] scripts/profile-revisions.php: cg3
-	* [r6898] Boost.props, src/Cohort.h, src/CohortIterator.h,
-	  src/GrammarApplicator.h, src/GrammarApplicator_runRules.cpp,
-	  src/sorted_vector.hpp: Slightly faster
-
-2011-04-04  tino
-
-	* [r6894] src/BinaryGrammar_read.cpp, src/Grammar.cpp,
-	  src/GrammarApplicator.cpp, src/GrammarApplicator_matchSet.cpp,
-	  src/GrammarApplicator_reflow.cpp,
-	  src/GrammarApplicator_runContextualTest.cpp,
-	  src/GrammarWriter.cpp, src/Set.cpp, src/TextualParser.cpp: No
-	  more .at()
 

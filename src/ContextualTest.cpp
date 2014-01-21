@@ -92,27 +92,27 @@ uint32_t ContextualTest::rehash() {
 		return hash;
 	}
 
-	hash = hash_sdbm_uint64_t(hash, pos);
-	hash = hash_sdbm_uint32_t(hash, target);
-	hash = hash_sdbm_uint32_t(hash, barrier);
-	hash = hash_sdbm_uint32_t(hash, cbarrier);
-	hash = hash_sdbm_uint32_t(hash, relation);
-	hash = hash_sdbm_uint32_t(hash, abs(offset));
+	hash = hash_value(pos);
+	hash = hash_value(hash, target);
+	hash = hash_value(hash, barrier);
+	hash = hash_value(hash, cbarrier);
+	hash = hash_value(hash, relation);
+	hash = hash_value(hash, abs(offset));
 	if (offset < 0) {
-		hash = hash_sdbm_uint32_t(hash, 5000);
+		hash = hash_value(hash, 5000);
 	}
-	hash = hash_sdbm_uint32_t(hash, abs(offset_sub));
+	hash = hash_value(hash, abs(offset_sub));
 	if (offset_sub < 0) {
-		hash = hash_sdbm_uint32_t(hash, 5000);
+		hash = hash_value(hash, 5000);
 	}
 	if (linked) {
-		hash = hash_sdbm_uint32_t(hash, linked->rehash());
+		hash = hash_value(hash, linked->rehash());
 	}
 	if (tmpl) {
-		hash = hash_sdbm_uint32_t(hash, static_cast<uint32_t>(reinterpret_cast<uintptr_t>(tmpl)));
+		hash = hash_value(hash, static_cast<uint32_t>(reinterpret_cast<uintptr_t>(tmpl)));
 	}
 	foreach (ContextList, ors, iter, iter_end) {
-		hash = hash_sdbm_uint32_t(hash, (*iter)->rehash());
+		hash = hash_value(hash, (*iter)->rehash());
 	}
 
 	hash += seed;
