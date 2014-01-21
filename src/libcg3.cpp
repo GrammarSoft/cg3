@@ -433,6 +433,7 @@ size_t cg3_reading_numsubreadings(cg3_reading *reading_) {
 }
 
 cg3_reading *cg3_reading_getsubreading(cg3_reading *reading_, size_t which) {
+	(void)which;
 	assert((which == 1) && "There can currently only be 1 sub-reading per reading, but the API is future-proof");
 	Reading *reading = static_cast<Reading*>(reading_);
 	return reading->next;

@@ -647,7 +647,7 @@ label_parseTemplateRef:
 			ptrdiff_t c = n - p;
 			u_strncpy(&gbuffers[0][0], p, c);
 			gbuffers[0][c] = 0;
-			uint32_t cn = hash_sdbm_uchar(&gbuffers[0][0]);
+			uint32_t cn = hash_value(&gbuffers[0][0]);
 			t->tmpl = reinterpret_cast<ContextualTest*>(cn);
 			tmpl_data = std::make_pair(result->lines, &gbuffers[0][0]);
 			p = n;
@@ -1525,7 +1525,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 			u_strncpy(&gbuffers[0][0], p, c);
 			gbuffers[0][c] = 0;
 			s->setName(&gbuffers[0][0]);
-			uint32_t sh = hash_sdbm_uchar(&gbuffers[0][0]);
+			uint32_t sh = hash_value(&gbuffers[0][0]);
 			p = n;
 			result->lines += SKIPWS(p, '=');
 			if (*p != '=') {
@@ -1900,7 +1900,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 			ptrdiff_t c = n - p;
 			u_strncpy(&gbuffers[0][0], p, c);
 			gbuffers[0][c] = 0;
-			uint32_t cn = hash_sdbm_uchar(&gbuffers[0][0]);
+			uint32_t cn = hash_value(&gbuffers[0][0]);
 			UString name(&gbuffers[0][0]);
 			p = n;
 			result->lines += SKIPWS(p, '=');
@@ -2182,7 +2182,7 @@ int TextualParser::parse_grammar_from_file(const char *fname, const char *loc, c
 	}
 
 	const_foreach (deferred_t, deferred_tmpls, it, it_end) {
-		uint32_t cn = hash_sdbm_uchar(it->second.second);
+		uint32_t cn = hash_value(it->second.second);
 		if (result->templates.find(cn) == result->templates.end()) {
 			u_fprintf(ux_stderr, "Error: Unknown template '%S' referenced on line %u!\n", it->second.second.c_str(), it->second.first);
 			++error_counter;

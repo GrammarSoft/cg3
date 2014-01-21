@@ -28,8 +28,9 @@
 #include "CohortIterator.hpp"
 #include "Rule.hpp"
 #include "interval_vector.hpp"
-#include <exec-stream.h>
+#include "flat_unordered_set.hpp"
 #include "istream.hpp"
+#include <exec-stream.h>
 
 namespace CG3 {
 	class Window;
@@ -177,13 +178,13 @@ namespace CG3 {
 		uint32Set *unif_sets;
 		bool unif_sets_firstrun;
 
-		uint32HashSet index_regexp_yes;
-		uint32HashSet index_regexp_no;
-		uint32HashSet index_icase_yes;
-		uint32HashSet index_icase_no;
-		uint32HashSet index_readingSet_yes;
-		uint32HashSet index_readingSet_no;
-		uint32HashSet index_ruleCohort_no;
+		uint32FlatHashSet index_regexp_yes;
+		uint32FlatHashSet index_regexp_no;
+		uint32FlatHashSet index_icase_yes;
+		uint32FlatHashSet index_icase_no;
+		uint32FlatHashSet index_readingSet_yes;
+		uint32FlatHashSet index_readingSet_no;
+		uint32FlatHashSet index_ruleCohort_no;
 		void resetIndexes();
 	
 		Tag *makeBaseFromWord(uint32_t tag);

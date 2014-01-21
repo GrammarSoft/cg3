@@ -309,7 +309,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 
 			// Check if on previous runs the rule did not match this cohort, and skip if that is the case.
 			// This cache is cleared if any rule causes any state change in the window.
-			uint32_t ih = hash_sdbm_uint32_t(rule.number, cohort->global_number);
+			uint32_t ih = hash_value(rule.number, cohort->global_number);
 			if (index_matches(index_ruleCohort_no, ih)) {
 				continue;
 			}
@@ -947,7 +947,10 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 								bf = *tter;
 								readings.resize(readings.size()+1);
 							}
-							assert(bf && "There must be a baseform before any other tags in APPEND.");
+							if (bf == 0) {
+								u_fprintf(ux_stderr, "Error: There must be a baseform before any other tags in APPEND on line %u.\n", rule.line);
+								CG3Quit(1);
+							}
 							readings.back().push_back(*tter);
 						}
 

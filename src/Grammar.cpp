@@ -192,7 +192,7 @@ void Grammar::addSet(Set *& to) {
 
 	uint32_t chash = to->rehash();
 	for (; to->name[0] != '_' || to->name[1] != 'G' || to->name[2] != '_' ;) {
-		uint32_t nhash = hash_sdbm_uchar(to->name.c_str());
+		uint32_t nhash = hash_value(to->name.c_str());
 		if (sets_by_name.find(nhash) != sets_by_name.end()) {
 			Set *a = sets_by_contents.find(sets_by_name.find(nhash)->second)->second;
 			if (a == to || a->hash == to->hash) {
@@ -301,7 +301,7 @@ void Grammar::addSetToList(Set *s) {
 }
 
 Set *Grammar::parseSet(const UChar *name) {
-	uint32_t sh = hash_sdbm_uchar(name);
+	uint32_t sh = hash_value(name);
 
 	if (ux_isSetOp(name) != S_IGNORE) {
 		u_fprintf(ux_stderr, "Error: Found set operator '%S' where set name expected on line %u!\n", name, lines);
@@ -313,7 +313,7 @@ Set *Grammar::parseSet(const UChar *name) {
 	|| (name[0] == '&' && name[1] == '&')
 	) && name[2]) {
 		const UChar *wname = &(name[2]);
-		uint32_t wrap = hash_sdbm_uchar(wname);
+		uint32_t wrap = hash_value(wname);
 		Set *wtmp = getSet(wrap);
 		if (!wtmp) {
 			u_fprintf(ux_stderr, "Error: Attempted to reference undefined set '%S' on line %u!\n", wname, lines);
@@ -427,7 +427,7 @@ Tag *Grammar::allocateTag(const UChar *txt, bool raw) {
 		u_fflush(ux_stderr);
 	}
 	Taguint32HashMap::iterator it;
-	uint32_t thash = hash_sdbm_uchar(txt);
+	uint32_t thash = hash_value(txt);
 	if ((it = single_tags.find(thash)) != single_tags.end() && !it->second->tag.empty() && u_strcmp(it->second->tag.c_str(), txt) == 0) {
 		return it->second;
 	}
@@ -539,7 +539,7 @@ ContextualTest *Grammar::addContextualTest(ContextualTest *t) {
 }
 
 void Grammar::addTemplate(ContextualTest *test, const UChar *name) {
-	uint32_t cn = hash_sdbm_uchar(name);
+	uint32_t cn = hash_value(name);
 	if (templates.find(cn) != templates.end()) {
 		u_fprintf(ux_stderr, "Error: Redefinition attempt for template '%S' on line %u!\n", name, lines);
 		CG3Quit(1);
@@ -587,7 +587,7 @@ void Grammar::reindex(bool unused_sets) {
 	}
 
 	foreach (static_sets_t, static_sets, sset, sset_end) {
-		uint32_t sh = hash_sdbm_uchar(*sset);
+		uint32_t sh = hash_value(*sset);
 		if (set_alias.find(sh) != set_alias.end()) {
 			u_fprintf(ux_stderr, "Error: Static set %S is an alias; only real sets may be made static!\n", (*sset).c_str());
 			CG3Quit(1);
@@ -621,7 +621,7 @@ void Grammar::reindex(bool unused_sets) {
 	foreach (Setuint32HashMap, sets_by_contents, dset, dset_end) {
 		Set *to = dset->second;
 		if (to->type & ST_STATIC) {
-			uint32_t nhash = hash_sdbm_uchar(to->name);
+			uint32_t nhash = hash_value(to->name);
 			const uint32_t chash = to->hash;
 
 			if (sets_by_name.find(nhash) == sets_by_name.end()) {

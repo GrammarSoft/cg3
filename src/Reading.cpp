@@ -98,16 +98,16 @@ uint32_t Reading::rehash() {
 	hash_plain = 0;
 	const_foreach (uint32SortedVector, tags, iter, iter_end) {
 		if (!mapping || mapping->hash != *iter) {
-			hash = hash_sdbm_uint32_t(*iter, hash);
+			hash = hash_value(*iter, hash);
 		}
 	}
 	hash_plain = hash;
 	if (mapping) {
-		hash = hash_sdbm_uint32_t(mapping->hash, hash);
+		hash = hash_value(mapping->hash, hash);
 	}
 	if (next) {
 		next->rehash();
-		hash = hash_sdbm_uint32_t(next->hash, hash);
+		hash = hash_value(next->hash, hash);
 	}
 	return hash;
 }
