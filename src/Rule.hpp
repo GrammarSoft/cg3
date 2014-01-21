@@ -97,7 +97,7 @@ namespace CG3 {
 		static bool cmp_quality(const Rule *a, const Rule *b);
 
 		static inline size_t cmp_hash(const Rule* r) {
-			return hash_sdbm_uint32_t(r->number);
+			return hash_value(r->number);
 		}
 		static inline bool cmp_compare(const Rule* a, const Rule* b) {
 			return a->number < b->number;

@@ -25,21 +25,7 @@
 
 namespace CG3 {
 
-#define CG3_HASH_SEED 705577479
-
-inline uint32_t hash_sdbm_uint32_t(const uint32_t c, uint32_t hash = 0) {
-	if (hash == 0) {
-		hash = CG3_HASH_SEED;
-	}
-	hash = c + (hash << 6U) + (hash << 16U) - hash;
-	return hash;
-}
-
-inline uint32_t hash_sdbm_uint64_t(uint32_t c, uint64_t hash = 0) {
-	c = hash_sdbm_uint32_t(c, static_cast<uint32_t>(hash & 0xFFFFFFFF));
-	c = hash_sdbm_uint32_t(c, static_cast<uint32_t>((hash >> 32) & 0xFFFFFFFF));
-	return c;
-}
+const uint32_t CG3_HASH_SEED = 705577479u;
 
 /*
 	Paul Hsieh's SuperFastHash from http://www.azillionmonkeys.com/qed/hash.html
@@ -56,7 +42,10 @@ inline uint32_t hash_sdbm_uint64_t(uint32_t c, uint64_t hash = 0) {
 					   +(uint32_t)(((const uint8_t *)(d))[0]) )
 #endif
 
-inline uint32_t SuperFastHash_char(const char *data, uint32_t hash = CG3_HASH_SEED, uint32_t len = 0) {
+inline uint32_t SuperFastHash(const char *data, size_t len = 0, uint32_t hash = CG3_HASH_SEED) {
+	if (hash == 0) {
+		hash = len;
+	}
 	uint32_t tmp;
 	uint32_t rem;
 
@@ -100,10 +89,17 @@ inline uint32_t SuperFastHash_char(const char *data, uint32_t hash = CG3_HASH_SE
 	hash ^= hash << 25;
 	hash += hash >> 6;
 
+	if (hash == 0 || hash == 1) {
+		hash = CG3_HASH_SEED;
+	}
+
 	return hash;
 }
 
-inline uint32_t SuperFastHash_uchar(const UChar *data, uint32_t hash = CG3_HASH_SEED, uint32_t len = 0) {
+inline uint32_t SuperFastHash(const UChar *data, size_t len = 0, uint32_t hash = CG3_HASH_SEED) {
+	if (hash == 0) {
+		hash = len;
+	}
 	uint32_t tmp;
 	uint32_t rem;
 
@@ -139,31 +135,62 @@ inline uint32_t SuperFastHash_uchar(const UChar *data, uint32_t hash = CG3_HASH_
 	hash ^= hash << 25;
 	hash += hash >> 6;
 
+	if (hash == 0 || hash == 1) {
+		hash = CG3_HASH_SEED;
+	}
+
 	return hash;
 }
 
-inline uint32_t hash_sdbm_uchar(const UChar *str, uint32_t hash = 0, size_t len = 0) {
+inline uint32_t hash_value(const UChar *str, uint32_t hash = 0, size_t len = 0) {
 	if (hash == 0) {
 		hash = CG3_HASH_SEED;
 	}
 	if (len == 0) {
 		len = u_strlen(str);
 	}
-	return SuperFastHash_uchar(str, hash, len);
+	return SuperFastHash(str, len, hash);
 }
 
-inline uint32_t hash_sdbm_uchar(const UString& str, uint32_t hash = 0) {
-	return hash_sdbm_uchar(str.c_str(), hash, str.length());
+inline uint32_t hash_value(const UString& str, uint32_t h = 0) {
+	return hash_value(str.c_str(), h, str.length());
 }
 
-inline uint32_t hash_sdbm_char(const char *str, uint32_t hash = 0, size_t len = 0) {
+inline uint32_t hash_value(const char *str, uint32_t hash = 0, size_t len = 0) {
 	if (hash == 0) {
 		hash = CG3_HASH_SEED;
 	}
 	if (len == 0) {
 		len = strlen(str);
 	}
-	return SuperFastHash_char(str, hash, len);
+	return SuperFastHash(str, len, hash);
+}
+
+inline uint32_t hash_value(uint32_t c, uint32_t h = CG3_HASH_SEED) {
+	if (h == 0) {
+		h = CG3_HASH_SEED;
+	}
+	//*
+	h = c + (h << 6U) + (h << 16U) - h;
+	if (h == 0 || h == 1) {
+		h = CG3_HASH_SEED;
+	}
+	return h;
+	/*/
+	uint32_t tmp = SuperFastHash(reinterpret_cast<const char*>(&c), sizeof(c), h);
+	return tmp;
+	//*/
+}
+
+inline uint32_t hash_value(uint64_t c) {
+	/*
+	uint32_t tmp = hash_value(static_cast<uint32_t>(c & 0xFFFFFFFF));
+	tmp = hash_value(static_cast<uint32_t>((c >> 32) & 0xFFFFFFFF), tmp);
+	return tmp;
+	/*/
+	uint32_t tmp = SuperFastHash(reinterpret_cast<const char*>(&c), sizeof(c));
+	return tmp;
+	//*/
 }
 
 inline bool ISSPACE(const UChar c) {

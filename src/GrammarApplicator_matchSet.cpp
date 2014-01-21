@@ -97,7 +97,7 @@ uint32_t GrammarApplicator::doesRegexpMatchReading(const Reading& reading, const
 	uint32_t match = 0;
 
 	const_foreach (uint32SortedVector, reading.tags_textual, mter, mter_end) {
-		uint32_t ih = hash_sdbm_uint32_t(tag.hash, *mter);
+		uint32_t ih = hash_value(tag.hash, *mter);
 		if (!bypass_index && index_matches(index_regexp_no, ih)) {
 			match = 0;
 		}
@@ -176,7 +176,7 @@ uint32_t GrammarApplicator::doesTagMatchReading(const Reading& reading, const Ta
 		}
 	}
 	else if (tag.type & T_SET) {
-		uint32_t sh = hash_sdbm_uchar(tag.tag);
+		uint32_t sh = hash_value(tag.tag);
 		Set *s = grammar->getSet(sh);
 		match = doesSetMatchReading(reading, s->hash, bypass_index, unif_mode);
 	}
@@ -189,7 +189,7 @@ uint32_t GrammarApplicator::doesTagMatchReading(const Reading& reading, const Ta
 	}
 	else if (tag.type & T_CASE_INSENSITIVE) {
 		const_foreach (uint32SortedVector, reading.tags_textual, mter, mter_end) {
-			uint32_t ih = hash_sdbm_uint32_t(tag.hash, *mter);
+			uint32_t ih = hash_value(tag.hash, *mter);
 			if (!bypass_index && index_matches(index_icase_no, ih)) {
 				match = 0;
 			}
@@ -552,7 +552,7 @@ bool GrammarApplicator::doesSetMatchReading(const Reading& reading, const uint32
 	// These indexes are cleared every ((num_windows+4)*2+1) windows to avoid memory ballooning.
 	// Only 30% of tests get past this.
 	// ToDo: This is not good enough...while numeric tags are special, their failures can be indexed.
-	uint32_t ih = hash_sdbm_uint32_t(reading.hash, set);
+	uint32_t ih = hash_value(reading.hash, set);
 	if (!bypass_index && !unif_mode) {
 		if (index_matches(index_readingSet_no, ih)) {
 			return false;

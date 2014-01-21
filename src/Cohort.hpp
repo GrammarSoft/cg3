@@ -26,6 +26,7 @@
 #include "stdafx.hpp"
 #include "Reading.hpp"
 #include "sorted_vector.hpp"
+#include "flat_unordered_set.hpp"
 
 namespace CG3 {
 	class SingleWindow;
@@ -61,7 +62,7 @@ namespace CG3 {
 		typedef bc::flat_map<uint32_t,int32_t> num_t;
 		num_t num_max, num_min;
 		uint32SortedVector dep_children;
-		uint32HashSet possible_sets;
+		uint32FlatHashSet possible_sets;
 		CohortVector enclosed;
 		CohortVector removed;
 		RelationCtn relations;
