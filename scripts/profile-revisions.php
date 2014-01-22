@@ -14,13 +14,13 @@ function profile_revision($rev) {
 
 	if (file_exists('./src/all_vislcg3.cpp')) {
 		echo "Using all_vislcg3.cpp and Boost...\n";
-		echo shell_exec('g++ -std=c++11 -DHAVE_BOOST -I~/tmp/boost_1_54_0 -pipe -Wall -Wextra -Wno-deprecated -Wno-unused-local-typedefs -O3 -L/usr/local/lib64 -L/usr/local/lib -licuio -licuuc -Iinclude -Iinclude/exec-stream ./src/all_vislcg3.cpp -o vislcg3 2>&1');
-		echo shell_exec('g++ -std=c++11 -DHAVE_BOOST -I~/tmp/boost_1_54_0 -pipe -Wall -Wextra -Wno-deprecated -Wno-unused-local-typedefs -O3 -L/usr/local/lib64 -L/usr/local/lib -licuio -licuuc -ltcmalloc -Iinclude -Iinclude/exec-stream ./src/all_vislcg3.cpp -o vislcg3-tc 2>&1');
+		echo shell_exec('g++ -std=c++11 -DNDEBUG -pipe -Wall -Wextra -Wno-deprecated -O3 -L/usr/local/lib64 -L/usr/local/lib -licuio -licuuc -Iinclude -Iinclude/exec-stream ./src/all_vislcg3.cpp -o vislcg3 2>&1');
+		echo shell_exec('g++ -std=c++11 -DNDEBUG -pipe -Wall -Wextra -Wno-deprecated -O3 -L/usr/local/lib64 -L/usr/local/lib -licuio -licuuc -ltcmalloc -Iinclude -Iinclude/exec-stream ./src/all_vislcg3.cpp -o vislcg3-tc 2>&1');
 	}
 	else {
 		echo "Using old-style without Boost...\n";
-		echo shell_exec('g++ -std=c++11 -pipe -Wall -Wextra -Wno-deprecated -Wno-unused-local-typedefs -O3 -L/usr/local/lib64 -L/usr/local/lib -licuio -licuuc -Iinclude -Iinclude/exec-stream $(ls -1 ./src/*.cpp | egrep -v "/test_" | egrep -v "/cg_" | egrep -v "/all_" | grep -v Apertium | grep -v Matxin | grep -v FormatConverter) -o vislcg3 2>&1');
-		echo shell_exec('g++ -std=c++11 -pipe -Wall -Wextra -Wno-deprecated -Wno-unused-local-typedefs -O3 -L/usr/local/lib64 -L/usr/local/lib -licuio -licuuc -ltcmalloc -Iinclude -Iinclude/exec-stream $(ls -1 ./src/*.cpp | egrep -v "/test_" | egrep -v "/cg_" | egrep -v "/all_" | grep -v Apertium | grep -v Matxin | grep -v FormatConverter) -o vislcg3-tc 2>&1');
+		echo shell_exec('g++ -std=c++11 -pipe -Wall -Wextra -Wno-deprecated -O3 -L/usr/local/lib64 -L/usr/local/lib -licuio -licuuc -Iinclude -Iinclude/exec-stream $(ls -1 ./src/*.cpp | egrep -v "/test_" | egrep -v "/cg_" | egrep -v "/all_" | grep -v Apertium | grep -v Matxin | grep -v FormatConverter) -o vislcg3 2>&1');
+		echo shell_exec('g++ -std=c++11 -pipe -Wall -Wextra -Wno-deprecated -O3 -L/usr/local/lib64 -L/usr/local/lib -licuio -licuuc -ltcmalloc -Iinclude -Iinclude/exec-stream $(ls -1 ./src/*.cpp | egrep -v "/test_" | egrep -v "/cg_" | egrep -v "/all_" | grep -v Apertium | grep -v Matxin | grep -v FormatConverter) -o vislcg3-tc 2>&1');
 	}
 
 	if (!file_exists('vislcg3') || !file_exists('vislcg3-tc')) {
@@ -73,8 +73,8 @@ function profile_revision($rev) {
 	shell_exec('rm -rf '.$dir.' 2>&1 >/dev/null');
 }
 
-$revs = array(9274, 9249, 8923, 8001, 7397, 7134, 7000, 6987, 6898, 6885, 6781, 6692, 6500, 6328, 6268, 6242, 6170, 5932, 5930, 5926, 5918, 5839, 5810, 5773, 5729, 5431, 5129, 5042, 4879, 4779, 4545, 4513, 4493, 4474, 4410, 4292, 4031, 3991, 3896, 3852, 3800, 3689, 3682, 3617);
-$revs = array(8923, 9249, 9274);
+$revs = array(9635, 9645, 9274, 9249, 8923, 8001, 7397, 7134, 7000, 6987, 6898, 6885, 6781, 6692, 6500, 6328, 6268, 6242, 6170, 5932, 5930, 5926, 5918, 5839, 5810, 5773, 5729, 5431, 5129, 5042, 4879, 4779, 4545, 4513, 4493, 4474, 4410, 4292, 4031, 3991, 3896, 3852, 3800, 3689, 3682, 3617);
+$revs = array(9645);
 foreach ($revs as $rev) {
 	profile_revision($rev);
 }
