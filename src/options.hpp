@@ -109,7 +109,7 @@ namespace Options {
 		UOPTION_DEF_D("stdout",				'O', UOPT_REQUIRES_ARG, "file to print output to instead of stdout"),
 		UOPTION_DEF_D("stderr",				'E', UOPT_REQUIRES_ARG, "file to print errors to instead of stderr"),
 
-		UOPTION_DEF_D("codepage-all",		'C', UOPT_REQUIRES_ARG, "codepage to use for grammar, input, and output streams; defaults to environment settings"),
+		UOPTION_DEF_D("codepage-all",		'C', UOPT_REQUIRES_ARG, "codepage to use for grammar, input, and output streams; defaults to UTF-8"),
 		UOPTION_DEF_D("codepage-grammar",	0, UOPT_REQUIRES_ARG, "codepage to use for grammar; overrides --codepage-all"),
 		UOPTION_DEF_D("codepage-input",		0, UOPT_REQUIRES_ARG, "codepage to use for input; overrides --codepage-all"),
 		UOPTION_DEF_D("codepage-output",	0, UOPT_REQUIRES_ARG, "codepage to use for output and errors; overrides --codepage-all"),
