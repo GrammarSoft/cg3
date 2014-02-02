@@ -1,3 +1,32 @@
+2014-01-29  tino
+
+	* [r9684] CMakeLists.txt: PPAs can now be built for Ubuntu 14.04
+
+2014-01-28  tino
+
+	* [r9668] CMakeLists.txt: Ubuntu 13.04 is EOL, so drop from PPA
+
+2014-01-22  tino
+
+	* [r9647] src/options.hpp: Default has been UTF-8 for ages - better
+	  say so here as well.
+	* [r9646] scripts/profile-revisions.php, vapply.sh, vparse.sh:
+	  NDEBUG
+
+2014-01-21  tino
+
+	* [r9645] CMakeLists.txt, ChangeLog, scripts/cg3-autobin.pl,
+	  src/ApertiumApplicator.cpp, src/CMakeLists.txt, src/Cohort.hpp,
+	  src/CompositeTag.cpp, src/ContextualTest.cpp, src/Grammar.cpp,
+	  src/Grammar.hpp, src/GrammarApplicator.cpp,
+	  src/GrammarApplicator.hpp, src/GrammarApplicator_matchSet.cpp,
+	  src/GrammarApplicator_reflow.cpp,
+	  src/GrammarApplicator_runRules.cpp, src/Reading.cpp,
+	  src/Rule.hpp, src/Set.cpp, src/Tag.cpp, src/TextualParser.cpp,
+	  src/flat_unordered_set.hpp, src/inlines.hpp, src/libcg3.cpp,
+	  src/version.hpp: Added flat_unordered_set to reduce memory usage;
+	  Set NDEBUG for Release builds; Bumped binary revision
+
 2014-01-20  tino
 
 	* [r9640] src/GrammarApplicator.hpp,
@@ -2400,26 +2429,4 @@
 2011-04-27  tino
 
 	* [r6987] TODO, src/TextualParser.cpp: cg3
-
-2011-04-25  tino
-
-	* [r6980] scripts/cg3-autobin.pl, src/ApertiumApplicator.cpp,
-	  src/GrammarApplicator_runContextualTest.cpp,
-	  src/MatxinApplicator.cpp, src/main.cpp, src/version.h: Removed
-	  unused variables.
-
-2011-04-06  tino
-
-	* [r6904] src/GrammarApplicator_runRules.cpp: Fixed AddCohort
-	* [r6903] src/GrammarApplicator_runRules.cpp: Fixed AddCohort
-	* [r6902] manual/rules.xml, scripts/cg3-autobin.pl,
-	  src/GrammarApplicator_runRules.cpp, src/GrammarWriter.cpp,
-	  src/Strings.cpp, src/Strings.h, src/TextualParser.cpp,
-	  src/TextualParser.h, src/version.h,
-	  test/T_RemCohort/expected.txt, test/T_RemCohort/grammar.txt:
-	  Implemented and documented AddCohort.
-
-2011-04-05  tino
-
-	* [r6899] scripts/profile-revisions.php: cg3
 
