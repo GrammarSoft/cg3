@@ -17,6 +17,12 @@ string(REGEX REPLACE ".*CG3_VERSION_PATCH = ([0-9]+).*" "\\1" _cg3_VERSION_PATCH
 string(REGEX REPLACE ".*CG3_REVISION = ([0-9]+).*" "\\1" _cg3_REVISION "${_cg3_VERSION_FILE}")
 set(VERSION "${_cg3_VERSION_MAJOR}.${_cg3_VERSION_MINOR}.${_cg3_VERSION_PATCH}.${_cg3_REVISION}")
 
+option(OPT_TCMALLOC "Set to OFF to disable linking against TCMalloc" ON)
+if(APPLE)
+	message(STATUS "Disabling TCMalloc for OS X")
+	set(OPT_TCMALLOC OFF)
+endif()
+
 if(MSVC)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4 /GR- /EHsc /MP")
 	set(CMAKE_CXX_FLAGS_RELEASE "/MT /Ox /Ot /GL /GS- /DNDEBUG")

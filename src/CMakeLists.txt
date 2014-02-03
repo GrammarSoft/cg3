@@ -26,7 +26,7 @@ if(ICU_FOUND)
 	message(STATUS "Found ICU version ${ICU_VERSION}")
 endif()
 
-if(NOT CMAKE_BUILD_TYPE STREQUAL Debug)
+if(NOT CMAKE_BUILD_TYPE STREQUAL Debug AND OPT_TCMALLOC)
 	find_library(GOOGLE_TCMALLOC_LIB tcmalloc)
 	if(GOOGLE_TCMALLOC_LIB)
 		message(STATUS "Found tcmalloc: ${GOOGLE_TCMALLOC_LIB}")
