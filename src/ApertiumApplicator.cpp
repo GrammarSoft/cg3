@@ -759,15 +759,17 @@ void ApertiumApplicator::printReading(Reading *reading, UFILE *output) {
 	}
 	tags_list.insert(tags_list.end(),multitags_list.begin(),multitags_list.end());
 
-	uint32HashMap used_tags;
+	uint32SortedVector used_tags;
 	for (tter = tags_list.begin() ; tter != tags_list.end() ; tter++) {
-		if (used_tags.find(*tter) != used_tags.end()) {
-			continue;
+		if (unique_tags) {
+			if (used_tags.find(*tter) != used_tags.end()) {
+				continue;
+			}
+			used_tags.insert(*tter);
 		}
 		if (*tter == endtag || *tter == begintag) {
 			continue;
 		}
-		used_tags[*tter] = *tter;
 		const Tag *tag = single_tags[*tter];
 		if (!(tag->type & T_BASEFORM) && !(tag->type & T_WORDFORM)) {
 			if (tag->tag[0] == '+') {
