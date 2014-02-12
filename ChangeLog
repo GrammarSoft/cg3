@@ -1,3 +1,13 @@
+2014-02-03  tino
+
+	* [r9692] CMakeLists.txt, scripts/cg3-autobin.pl,
+	  src/CMakeLists.txt, src/version.hpp: Disable TCMalloc for OS X
+
+2014-02-02  tino
+
+	* [r9690] ChangeLog, scripts/cg3-autobin.pl, src/version.hpp:
+	  Revision bump
+
 2014-01-29  tino
 
 	* [r9684] CMakeLists.txt: PPAs can now be built for Ubuntu 14.04
@@ -2422,11 +2432,4 @@
 2011-04-29  tino
 
 	* [r6994] TODO, src/Rule.cpp: cg3
-	* [r6993] TODO, src/Grammar.cpp,
-	  src/GrammarApplicator_runRules.cpp, src/Rule.cpp:
-	  Rule::checkNaive() stored for later.
-
-2011-04-27  tino
-
-	* [r6987] TODO, src/TextualParser.cpp: cg3
 
