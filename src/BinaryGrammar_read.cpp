@@ -58,8 +58,8 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 		u_fprintf(ux_stderr, "Error: Grammar revision is %u, but this loader requires %u or later!\n", u32tmp, CG3_TOO_OLD);
 		CG3Quit(1);
 	}
-	if (u32tmp > CG3_REVISION) {
-		u_fprintf(ux_stderr, "Error: Grammar revision is %u, but this loader only knows up to revision %u!\n", u32tmp, CG3_REVISION);
+	if (u32tmp > CG3_FEATURE_REV) {
+		u_fprintf(ux_stderr, "Error: Grammar revision is %u, but this loader only knows up to revision %u!\n", u32tmp, CG3_FEATURE_REV);
 		CG3Quit(1);
 	}
 
