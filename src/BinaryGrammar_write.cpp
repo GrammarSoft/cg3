@@ -47,7 +47,7 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 	fprintf(output, "CG3B");
 
 	// Write out the revision of the binary format
-	u32tmp = (uint32_t)htonl((uint32_t)CG3_REVISION);
+	u32tmp = (uint32_t)htonl((uint32_t)CG3_FEATURE_REV);
 	fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 
 	if (grammar->has_dep) {
