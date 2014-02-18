@@ -1,3 +1,16 @@
+2014-02-17  tino
+
+	* [r9707] src/BinaryGrammar_read.cpp, src/BinaryGrammar_write.cpp,
+	  src/version.hpp: Track binary format separately from main
+	  revision - remember to bump CG3_FEATURE_REV when adding a new
+	  feature.
+
+2014-02-12  tino
+
+	* [r9705] CMakeLists.txt, ChangeLog, TODO, scripts/cg3-autobin.pl,
+	  src/ApertiumApplicator.cpp, src/version.hpp: Apertium unique_tags
+	  check; Remove /GR- for VC++
+
 2014-02-03  tino
 
 	* [r9692] CMakeLists.txt, scripts/cg3-autobin.pl,
@@ -2426,10 +2439,4 @@
 2011-04-30  tino
 
 	* [r7006] newsletters/2011-04-30.txt: Newsletter
-	* [r7000] scripts/cg3-autobin.pl, src/version.h: Let's call that a
-	  release...
-
-2011-04-29  tino
-
-	* [r6994] TODO, src/Rule.cpp: cg3
 
