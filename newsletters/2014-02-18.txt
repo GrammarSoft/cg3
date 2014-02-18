@@ -1,0 +1,32 @@
+A new release of CG-3 has been tagged v0.9.8.9708.
+
+Main site is http://visl.sdu.dk/cg3.html
+Google Group is http://groups.google.com/group/constraint-grammar
+Source snapshots available at http://visl.sdu.dk/download/vislcg3/
+Windows binary is at http://visl.sdu.dk/download/vislcg3/vislcg3-0.9.8.9708-win32.zip
+Ubuntu packages are at http://launchpad.net/~tinodidriksen/+archive/cg3
+
+New features:
+- Kevin Brubeck Unhammer has updated the Emacs mode to have IDE-like features.
+- Added option --dry-run to simulate a run. Useful with --trace.
+- Substitute can now replace word forms.
+- UTF BOMs in input and grammar streams will now be discarded.
+- COPY now has an EXCEPT clause.
+
+Changes:
+- Duplicate tags now survive by default. Added option --unique-tags to return to the old behavior.
+- Inline templates with superfluous () around will now warn.
+- Binary grammar feature version is now tracked separately from the main revision, so that only actual feature changes will prevent older CG-3 from loading grammars.
+- Building now requires at least CMake 2.8.0.
+- Building now uses C++11 if available.
+- The C library libcg3 now knows about sub-readings and can more optimally copy a window.
+
+Fixed Bugs:
+- Fixed segfault when tracing removed cohorts with dependency.
+- Fix parsing composite tags with space after opening (.
+- If a test does not succeed, discard any captures performed by that test.
+- Rem- and AddCohort now properly updates the endtag marker <<<.
+- RemCohort now hands off enclosed cohorts.
+
+-- Tino Didriksen
+CG-3 Developer
