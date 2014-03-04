@@ -150,6 +150,7 @@ namespace CG3 {
 		std::map<uint32_t,TopologyRightIter> topologyRightIters;
 		std::map<uint32_t,DepParentIter> depParentIters;
 		std::map<uint32_t,DepDescendentIter> depDescendentIters;
+		std::map<uint32_t,DepAncestorIter> depAncestorIters;
 
 		uint32_t match_single, match_comp, match_sub;
 		uint32_t begintag, endtag;

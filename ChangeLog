@@ -1,3 +1,9 @@
+2014-02-18  tino
+
+	* [r9709] newsletters/2014-02-18.txt: Newsletter
+	* [r9708] ChangeLog, scripts/cg3-autobin.pl, src/version.hpp: CG-3
+	  Release 0.9.8.9708
+
 2014-02-17  tino
 
 	* [r9707] src/BinaryGrammar_read.cpp, src/BinaryGrammar_write.cpp,
@@ -2427,16 +2433,4 @@
 	  scripts/profile-revisions.php, src/CMakeLists.txt,
 	  src/libcg3.cpp, src/version.h, vapply.sh, vparse.sh: Added CMake
 	  files in preparation for making a library.
-
-2011-05-06  tino
-
-	* [r7081] manual/installation.xml, scripts/cg3-autobin.pl,
-	  src/GrammarApplicator_runContextualTest.cpp,
-	  src/TextualParser.cpp, src/version.h,
-	  test/T_Omniscan/grammar.txt: Fixed NOT 0* tests to stop at first
-	  match in either direction.
-
-2011-04-30  tino
-
-	* [r7006] newsletters/2011-04-30.txt: Newsletter
 

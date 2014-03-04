@@ -156,6 +156,23 @@
       </screen>
     </section>
 
+    <section id="dep-ct-ancestors">
+      <title>Ancestors</title>
+      <indexterm>
+        <primary>pp</primary>
+      </indexterm>
+      <para>
+        The 'pp' position asks for an ancestor of the current position,
+        where ancestor is defined as any parent, grand-parent, great-grand-parent, etc...
+      </para>
+      <screen>
+        (-1* (N) LINK pp (ADJ))
+      </screen>
+      <para>
+        <emphasis>The analogue of <link linkend="gotcha-cc-vs-cstar">difference between cc and c*</link> applies to pp vs. p*</emphasis>
+      </para>
+    </section>
+
     <section id="dep-ct-children">
       <title>Children</title>
       <indexterm>

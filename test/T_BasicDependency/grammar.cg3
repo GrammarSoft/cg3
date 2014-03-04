@@ -44,5 +44,21 @@ ADDRELATION (leftmost-left-descendent) ("two") FROM (lllcc (*)) ;
 ADDRELATION (rightmost-right-descendent) ("two") FROM (rrrcc (*)) ;
 ADDRELATION (leftmost-self-or-descendent) ("two") FROM (llccS (*)) ;
 ADDRELATION (rightmost-self-or-descendent) ("two") FROM (rrccS (*)) ;
+
 ADDRELATION (leftmost-sibling) ("two") FROM (lls (*)) ;
 ADDRELATION (rightmost-sibling) ("two") FROM (rrs (*)) ;
+
+ADDRELATION (left-parent) ("four") TO (lp (*)) ;
+ADDRELATION (right-parent) ("four") TO (rp (*)) ;
+ADDRELATION (left-self-or-parent) ("four") TO (lpS ("four")) ;
+ADDRELATION (right-self-or-parent) ("four") TO (rpS ("four")) ;
+ADDRELATION (left-ancestor) ("four") TO (lpp (*)) ;
+ADDRELATION (right-ancestor) ("four") TO (rpp (*)) ;
+ADDRELATION (leftmost-deepest-parent) ("four") TO (l*p (*) LINK NEGATE lp (*)) ;
+ADDRELATION (rightmost-deepest-parent) ("four") TO (r*p (*) LINK NEGATE rp (*)) ;
+ADDRELATION (leftmost-ancestor) ("four") TO (llpp (*)) ;
+ADDRELATION (rightmost-ancestor) ("four") TO (rrpp (*)) ;
+ADDRELATION (leftmost-left-ancestor) ("four") TO (lllpp (*)) ;
+ADDRELATION (rightmost-right-ancestor) ("four") TO (rrrpp (*)) ;
+ADDRELATION (leftmost-self-or-ancestor) ("four") TO (llppS (*)) ;
+ADDRELATION (rightmost-self-or-ancestor) ("four") TO (rrppS (*)) ;
