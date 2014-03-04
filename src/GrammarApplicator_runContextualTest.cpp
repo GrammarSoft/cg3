@@ -267,7 +267,6 @@ Cohort *GrammarApplicator::runContextualTest(SingleWindow *sWindow, size_t posit
 		cohort = getCohortInWindow(sWindow, position, test, pos);
 	}
 
-	CohortIterator *it = 0;
 	if (!cohort) {
 		retval = false;
 	}
@@ -281,10 +280,15 @@ Cohort *GrammarApplicator::runContextualTest(SingleWindow *sWindow, size_t posit
 		if (deep) {
 			*deep = cohort;
 		}
-		if (test->pos & POS_DEP_PARENT) {
+
+		CohortIterator *it = 0;
+		if ((test->pos & POS_DEP_PARENT) && (test->pos & POS_DEP_GLOB)) {
+			it = &depAncestorIters[ci_depths[5]++];
+		}
+		else if (test->pos & POS_DEP_PARENT) {
 			it = &depParentIters[ci_depths[3]++];
 		}
-		else if (test->pos & POS_DEP_DESCENDENT) {
+		else if (test->pos & POS_DEP_GLOB) {
 			it = &depDescendentIters[ci_depths[4]++];
 		}
 		else if (test->pos & (POS_DEP_CHILD|POS_DEP_SIBLING)) {
@@ -301,7 +305,6 @@ Cohort *GrammarApplicator::runContextualTest(SingleWindow *sWindow, size_t posit
 				retval = !retval;
 			}
 		}
-		// Important that this is tested after dep, since dep uses the same flags in a different way
 		else if (test->pos & (POS_LEFT_PAR|POS_RIGHT_PAR)) {
 			Cohort *nc = runParenthesisTest(sWindow, cohort, test, deep, origin);
 			if (nc) {
@@ -404,13 +407,22 @@ Cohort *GrammarApplicator::runContextualTest(SingleWindow *sWindow, size_t posit
 			Cohort *nc = 0;
 			bool brk = false;
 			size_t seen = 0;
-			if ((test->pos & POS_SELF) && !(test->pos & MASK_POS_LORR)) {
+			if ((test->pos & POS_SELF) && (!(test->pos & MASK_POS_LORR) || ((test->pos & POS_DEP_PARENT) && !(test->pos & POS_DEP_GLOB)))) {
 				++seen;
 				nc = runSingleTest(cohort, test, &brk, &retval, deep, origin);
 			}
 			if (!brk) {
+				Cohort *current = cohort;
 				for (; *it != CohortIterator(0) ; ++(*it)) {
 					++seen;
+					if ((test->pos & POS_LEFT) && (**it)->global_number >= current->global_number) {
+						nc = 0;
+						break;
+					}
+					if ((test->pos & POS_RIGHT) && (**it)->global_number <= current->global_number) {
+						nc = 0;
+						break;
+					}
 					nc = runSingleTest(**it, test, &brk, &retval, deep, origin);
 					if (test->pos & POS_ALL && !retval) {
 						nc = 0;
@@ -423,6 +435,7 @@ Cohort *GrammarApplicator::runContextualTest(SingleWindow *sWindow, size_t posit
 					if (brk) {
 						break;
 					}
+					current = **it;
 				}
 			}
 			if (seen == 0) {

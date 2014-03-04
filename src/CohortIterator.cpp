@@ -161,10 +161,6 @@ void DepDescendentIter::reset(Cohort *cohort, const ContextualTest *test, bool s
 	m_cohort = 0;
 
 	if (cohort && test) {
-		CohortSet m_seen;
-
-		m_seen.insert(cohort);
-
 		const_foreach (uint32SortedVector, cohort->dep_children, dter, dter_end) {
 			if (cohort->parent->parent->cohort_map.find(*dter) == cohort->parent->parent->cohort_map.end()) {
 				continue;
@@ -184,6 +180,9 @@ void DepDescendentIter::reset(Cohort *cohort, const ContextualTest *test, bool s
 				m_descendents.insert(current);
 			}
 		}
+
+		CohortSet m_seen;
+		m_seen.insert(cohort);
 
 		bool added = false;
 		do {
@@ -243,6 +242,74 @@ void DepDescendentIter::reset(Cohort *cohort, const ContextualTest *test, bool s
 
 	m_ai = m_descendents.begin();
 	if (m_ai != m_descendents.end()) {
+		m_cohort = *m_ai;
+	}
+}
+
+DepAncestorIter::DepAncestorIter(Cohort *cohort, const ContextualTest *test, bool span) :
+CohortIterator(cohort, test, span) {
+	reset(cohort, test, span);
+}
+
+DepAncestorIter& DepAncestorIter::operator++() {
+	++m_ai;
+	m_cohort = 0;
+	if (m_ai != m_ancestors.end()) {
+		m_cohort = *m_ai;
+	}
+	return *this;
+}
+
+void DepAncestorIter::reset(Cohort *cohort, const ContextualTest *test, bool span) {
+	CohortIterator::reset(cohort, test, span);
+	m_ancestors.clear();
+	m_cohort = 0;
+
+	if (cohort && test) {
+		for (Cohort *current = cohort; current; ) {
+			if (cohort->parent->parent->cohort_map.find(current->dep_parent) == cohort->parent->parent->cohort_map.end()) {
+				break;
+			}
+			current = cohort->parent->parent->cohort_map.find(current->dep_parent)->second;
+			bool good = true;
+			if (current->parent != cohort->parent) {
+				if ((!(test->pos & (POS_SPAN_BOTH | POS_SPAN_LEFT))) && current->parent->number < cohort->parent->number) {
+					good = false;
+				}
+				else if ((!(test->pos & (POS_SPAN_BOTH | POS_SPAN_RIGHT))) && current->parent->number > cohort->parent->number) {
+					good = false;
+				}
+
+			}
+			if (good) {
+				// If insertion fails, we've come around in a loop, so don't continue looping
+				if (!m_ancestors.insert(current)) {
+					break;
+				}
+			}
+		}
+
+		if (test->pos & POS_LEFT) {
+			CohortSet tmp;
+			tmp.assign(m_ancestors.begin(), m_ancestors.lower_bound(cohort));
+			m_ancestors.swap(tmp);
+		}
+		if (test->pos & POS_RIGHT) {
+			CohortSet tmp;
+			tmp.assign(m_ancestors.lower_bound(cohort), m_ancestors.end());
+			m_ancestors.swap(tmp);
+		}
+		if (test->pos & POS_SELF) {
+			m_ancestors.insert(cohort);
+		}
+		if ((test->pos & POS_RIGHTMOST) && !m_ancestors.empty()) {
+			CohortSet::container& cont = m_ancestors.get();
+			std::reverse(cont.begin(), cont.end());
+		}
+	}
+
+	m_ai = m_ancestors.begin();
+	if (m_ai != m_ancestors.end()) {
 		m_cohort = *m_ai;
 	}
 }
