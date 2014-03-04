@@ -315,17 +315,21 @@ int TextualParser::parseContextualTestPosition(UChar *& p, ContextualTest& t) {
 			t.pos |= POS_CAREFUL;
 			++p;
 		}
-		if (*p == 'c' && (t.pos & POS_DEP_CHILD)) {
-			t.pos &= ~POS_DEP_CHILD;
-			t.pos |= POS_DEP_DESCENDENT;
-			++p;
-		}
 		if (*p == 'c') {
 			t.pos |= POS_DEP_CHILD;
 			++p;
 		}
+		if (*p == 'c' && (t.pos & POS_DEP_CHILD)) {
+			t.pos &= ~POS_DEP_CHILD;
+			t.pos |= POS_DEP_GLOB;
+			++p;
+		}
 		if (*p == 'p') {
 			t.pos |= POS_DEP_PARENT;
+			++p;
+		}
+		if (*p == 'p' && (t.pos & POS_DEP_PARENT)) {
+			t.pos |= POS_DEP_GLOB;
 			++p;
 		}
 		if (*p == 's') {
@@ -415,22 +419,22 @@ int TextualParser::parseContextualTestPosition(UChar *& p, ContextualTest& t) {
 			t.relation = tag->hash;
 			p = n;
 		}
+		if (*p == 'r') {
+			t.pos |= POS_RIGHT;
+			++p;
+		}
 		if (*p == 'r' && (t.pos & POS_RIGHT)) {
 			t.pos &= ~static_cast<uint64_t>(POS_RIGHT);
 			t.pos |= POS_RIGHTMOST;
 			++p;
 		}
-		if (*p == 'r') {
-			t.pos |= POS_RIGHT;
+		if (*p == 'l') {
+			t.pos |= POS_LEFT;
 			++p;
 		}
 		if (*p == 'l' && (t.pos & POS_LEFT)) {
 			t.pos &= ~static_cast<uint64_t>(POS_LEFT);
 			t.pos |= POS_LEFTMOST;
-			++p;
-		}
-		if (*p == 'l') {
-			t.pos |= POS_LEFT;
 			++p;
 		}
 	}
@@ -494,6 +498,12 @@ int TextualParser::parseContextualTestPosition(UChar *& p, ContextualTest& t) {
 		}
 		if (t.pos & POS_RELATION) {
 			u_fprintf(ux_stderr, "Error: Invalid position on line %u - cannot combine offsets with relations!\n", result->lines);
+			incErrorCount();
+		}
+	}
+	if ((t.pos & POS_DEP_PARENT) && !(t.pos & POS_DEP_GLOB)) {
+		if (t.pos & (POS_LEFTMOST|POS_RIGHTMOST)) {
+			u_fprintf(ux_stderr, "Error: Invalid position on line %u - leftmost/rightmost requires ancestor, not parent!\n", result->lines);
 			incErrorCount();
 		}
 	}

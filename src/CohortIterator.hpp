@@ -89,6 +89,19 @@ namespace CG3 {
 		CohortSet::const_iterator m_ai;
 	};
 
+	class DepAncestorIter : public CohortIterator {
+	public:
+		DepAncestorIter(Cohort *cohort = 0, const ContextualTest *test = 0, bool span = false);
+
+		DepAncestorIter& operator++();
+
+		void reset(Cohort *cohort = 0, const ContextualTest *test = 0, bool span = false);
+
+	protected:
+		CohortSet m_ancestors;
+		CohortSet::const_iterator m_ai;
+	};
+
 	class CohortSetIter : public CohortIterator {
 	public:
 		CohortSetIter(Cohort *cohort = 0, const ContextualTest *test = 0, bool span = false);

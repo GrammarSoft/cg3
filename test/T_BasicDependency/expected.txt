@@ -52,7 +52,7 @@
 "<three>"
 	"three" #4→3 ID:24 R:leftmost-descendent:23 R:right-descendent:23 R:right-child:23 R:rightmost-right-direct-child:23 R:leftmost-direct-child:23 R:rightmost-direct-child:23
 "<four>"
-	"four" #5→6
+	"four" #5→6 ID:25 R:leftmost-self-or-ancestor:0 R:left-self-or-parent:25 R:right-parent:26 R:rightmost-deepest-parent:26 R:leftmost-left-ancestor:0 R:right-ancestor:26 R:rightmost-right-ancestor:26 R:left-ancestor:0 R:rightmost-self-or-ancestor:26 R:leftmost-ancestor:0 R:right-self-or-parent:25 R:rightmost-ancestor:26
 "<five>"
 	"five" #6→4 ID:26 R:rightmost-right-deepest-child:23
 "<six>"
