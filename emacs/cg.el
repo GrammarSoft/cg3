@@ -38,6 +38,7 @@
 ;; available from MELPA (see http://melpa.milkbox.net/).
 
 ;; TODO:
+;; - optionally highlight any LIST/SET without ; at the end
 ;; - different syntax highlighting for sets and tags (difficult)
 ;; - use something like prolog-clause-start to define M-a/e etc.
 ;; - run vislcg3 --show-unused-sets and buttonise with line numbers (like Occur does)
@@ -51,6 +52,7 @@
 ;; - goto-set/list
 ;; - show definition of set/list-at-point in modeline
 ;; - send dictionary to auto-complete
+;; - show section name/number in modeline
 
 ;;; Code:
 
