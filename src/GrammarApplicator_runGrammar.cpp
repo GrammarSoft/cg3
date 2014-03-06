@@ -113,6 +113,7 @@ void GrammarApplicator::runGrammarOnText(istream& input, UFILE *output) {
 
 	uint32HashMap variables_set;
 	uint32HashSet variables_rem;
+	uint32SortedVector variables_output;
 
 	std::vector<std::pair<size_t,Reading*> > indents;
 
@@ -230,6 +231,8 @@ gotaline:
 				variables_set.clear();
 				cSWindow->variables_rem = variables_rem;
 				variables_rem.clear();
+				cSWindow->variables_output = variables_output;
+				variables_output.clear();
 
 				lSWindow = cSWindow;
 				cCohort = 0;
@@ -389,6 +392,8 @@ gotaline:
 				variables_set.clear();
 				cSWindow->variables_rem = variables_rem;
 				variables_rem.clear();
+				cSWindow->variables_output = variables_output;
+				variables_output.clear();
 
 				lSWindow = cSWindow;
 				++numWindows;
@@ -464,8 +469,9 @@ istext:
 					goto CGCMD_EXIT;
 				}
 				else if (u_strncmp(&cleaned[0], stringbits[S_CMD_SETVAR].getTerminatedBuffer(), stringbits[S_CMD_SETVAR].length()) == 0) {
-					u_fprintf(ux_stderr, "Info: SETVAR encountered on line %u.\n", numLines);
+					//u_fprintf(ux_stderr, "Info: SETVAR encountered on line %u.\n", numLines);
 					cleaned[packoff-1] = 0;
+					line[0] = 0;
 
 					UChar *s = &cleaned[stringbits[S_CMD_SETVAR].length()];
 					UChar *c = u_strchr(s, ',');
@@ -474,6 +480,7 @@ istext:
 						Tag *tag = addTag(s);
 						variables_set[tag->hash] = grammar->tag_any;
 						variables_rem.erase(tag->hash);
+						variables_output.insert(tag->hash);
 					}
 					else {
 						uint32_t a = 0, b = 0;
@@ -504,6 +511,7 @@ istext:
 								}
 								variables_set[a] = b;
 								variables_rem.erase(a);
+								variables_output.insert(a);
 							}
 							else if (c && (c < d || d == 0)) {
 								c[0] = 0;
@@ -517,6 +525,7 @@ istext:
 								s = c+1;
 								variables_set[a] = grammar->tag_any;
 								variables_rem.erase(a);
+								variables_output.insert(a);
 							}
 							if (s) {
 								c = u_strchr(s, ',');
@@ -525,6 +534,7 @@ istext:
 									a = addTag(s)->hash;
 									variables_set[a] = grammar->tag_any;
 									variables_rem.erase(a);
+									variables_output.insert(a);
 									s = 0;
 								}
 							}
@@ -532,8 +542,9 @@ istext:
 					}
 				}
 				else if (u_strncmp(&cleaned[0], stringbits[S_CMD_REMVAR].getTerminatedBuffer(), stringbits[S_CMD_REMVAR].length()) == 0) {
-					u_fprintf(ux_stderr, "Info: REMVAR encountered on line %u.\n", numLines);
+					//u_fprintf(ux_stderr, "Info: REMVAR encountered on line %u.\n", numLines);
 					cleaned[packoff-1] = 0;
+					line[0] = 0;
 
 					UChar *s = &cleaned[stringbits[S_CMD_REMVAR].length()];
 					UChar *c = u_strchr(s, ',');
@@ -544,6 +555,7 @@ istext:
 							a = addTag(s)->hash;
 							variables_set.erase(a);
 							variables_rem.insert(a);
+							variables_output.insert(a);
 						}
 						s = c+1;
 						c = u_strchr(s, ',');
@@ -552,6 +564,7 @@ istext:
 						a = addTag(s)->hash;
 						variables_set.erase(a);
 						variables_rem.insert(a);
+						variables_output.insert(a);
 					}
 				}
 				

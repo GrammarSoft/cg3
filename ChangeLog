@@ -1,3 +1,17 @@
+2014-03-04  tino
+
+	* [r9759] ChangeLog, TODO, manual/dependencies.xml,
+	  scripts/cg3-autobin.pl, src/CMakeLists.txt,
+	  src/CohortIterator.cpp, src/CohortIterator.hpp,
+	  src/ContextualTest.hpp, src/GrammarApplicator.cpp,
+	  src/GrammarApplicator.hpp,
+	  src/GrammarApplicator_runContextualTest.cpp,
+	  src/TextualParser.cpp, src/version.hpp,
+	  test/T_BasicDependency/expected.txt,
+	  test/T_BasicDependency/grammar.cg3: Implement ancestor search
+	  with 'pp'; Made right/left operators work with p, *p, pp; CMake
+	  bails out of Boost is older than 1.48.0
+
 2014-02-18  tino
 
 	* [r9709] newsletters/2014-02-18.txt: Newsletter
@@ -2428,9 +2442,4 @@
 	  CMake; Remember to set BOOST_ROOT and CMAKE_INCLUDE_PATH and
 	  CMAKE_LIBRARY_PATH if your Boost and/or ICU aren't in system
 	  paths.
-	* [r7102] CMake, CMake/FindBoost.cmake, CMake/FindICU.cmake,
-	  CMakeLists.txt, compile-profile.sh, scripts/cg3-autobin.pl,
-	  scripts/profile-revisions.php, src/CMakeLists.txt,
-	  src/libcg3.cpp, src/version.h, vapply.sh, vparse.sh: Added CMake
-	  files in preparation for making a library.
 
