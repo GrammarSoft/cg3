@@ -1,4 +1,4 @@
-<STREAMCMD:SETVAR:news>
+<STREAMCMD:REMVAR:news>
 <STREAMCMD:SETVAR:poetry>
 "<They>"
 	"they" PERS @poetry
@@ -18,8 +18,27 @@
 	"keep" V @poetry
 "<.>"
 	"." @poetry
-<STREAMCMD:REMVAR:poetry>
+
 <STREAMCMD:SETVAR:drama>
+<STREAMCMD:REMVAR:poetry>
+"<Do>"
+	"do" V @drama
+"<you>"
+	"you" PERS @drama
+"<really>"
+	"really" ADV @drama
+"<think>"
+	"think" V @drama
+"<it>"
+	"it" PERS @drama
+"<needs>"
+	"need" V @drama
+"<a>"
+	"a" ART @drama
+"<scarf>"
+	"scarf" N @drama
+"<?>"
+	"?" @drama
 
 "<Do>"
 	"do" V @drama
