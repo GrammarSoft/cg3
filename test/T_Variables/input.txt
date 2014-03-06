@@ -38,3 +38,21 @@
 "<scarf>"
 	"scarf" N
 "<?>"
+
+"<Do>"
+	"do" V
+"<you>"
+	"you" PERS
+"<really>"
+	"really" ADV
+"<think>"
+	"think" V
+"<it>"
+	"it" PERS
+"<needs>"
+	"need" V
+"<a>"
+	"a" ART
+"<scarf>"
+	"scarf" N
+"<?>"

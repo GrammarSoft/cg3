@@ -582,6 +582,9 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						const_foreach (TagList, names, tter, tter_end) {
 							const Tag *tag = *tter;
 							variables.erase(tag->hash);
+							if (rule.flags & RF_OUTPUT) {
+								current.variables_output.insert(tag->hash);
+							}
 							//u_fprintf(ux_stderr, "Info: RemVariable fired for %S.\n", tag->tag.c_str());
 						}
 						break;
@@ -591,6 +594,9 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						const TagList names = getTagList(*rule.maplist);
 						const TagList values = getTagList(*rule.sublist);
 						variables[names.front()->hash] = values.front()->hash;
+						if (rule.flags & RF_OUTPUT) {
+							current.variables_output.insert(names.front()->hash);
+						}
 						//u_fprintf(ux_stderr, "Info: SetVariable fired for %S.\n", names.front()->tag.c_str());
 						break;
 					}

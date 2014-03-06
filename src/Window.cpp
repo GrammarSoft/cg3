@@ -22,6 +22,7 @@
 #include "Window.hpp"
 #include "SingleWindow.hpp"
 #include "Cohort.hpp"
+#include "GrammarApplicator.hpp"
 
 namespace CG3 {
 
@@ -85,6 +86,8 @@ SingleWindow *Window::allocAppendSingleWindow() {
 
 void Window::shuffleWindowsDown() {
 	if (current) {
+		current->variables_set = parent->variables;
+		current->variables_rem.clear();
 		previous.push_back(current);
 		current = 0;
 	}

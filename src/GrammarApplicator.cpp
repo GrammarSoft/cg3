@@ -500,6 +500,23 @@ removed:
 }
 
 void GrammarApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
+	boost_foreach (uint32_t var, window->variables_output) {
+		Tag *key = single_tags[var];
+		BOOST_AUTO(iter, window->variables_set.find(var));
+		if (iter != window->variables_set.end()) {
+			if (iter->second != grammar->tag_any) {
+				Tag *value = single_tags[iter->second];
+				u_fprintf(output, "%S%S=%S>\n", stringbits[S_CMD_SETVAR].getTerminatedBuffer(), key->tag.c_str(), value->tag.c_str());
+			}
+			else {
+				u_fprintf(output, "%S%S>\n", stringbits[S_CMD_SETVAR].getTerminatedBuffer(), key->tag.c_str());
+			}
+		}
+		else {
+			u_fprintf(output, "%S%S>\n", stringbits[S_CMD_REMVAR].getTerminatedBuffer(), key->tag.c_str());
+		}
+	}
+
 	if (!window->text.empty()) {
 		u_fprintf(output, "%S", window->text.c_str());
 		if (!ISNL(window->text[window->text.length()-1])) {

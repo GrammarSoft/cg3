@@ -45,6 +45,7 @@ namespace CG3 {
 		uint32ToCohortsMap rule_to_cohorts;
 		uint32HashMap variables_set;
 		uint32HashSet variables_rem;
+		uint32SortedVector variables_output;
 
 		SingleWindow(Window *p);
 		~SingleWindow();

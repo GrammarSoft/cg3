@@ -66,8 +66,8 @@
       EXTERNAL ONCE|ALWAYS &lt;program&gt; &lt;target&gt; [contextual_tests] ;
 
   Variable manipulation:
-      SETVARIABLE &lt;name&gt; &lt;value&gt; &lt;target&gt; [contextual_tests] ;
-      REMVARIABLE &lt;name&gt; &lt;target&gt; [contextual_tests] ;
+      SETVARIABLE [OUTPUT] &lt;name&gt; &lt;value&gt; &lt;target&gt; [contextual_tests] ;
+      REMVARIABLE [OUTPUT] &lt;name&gt; &lt;target&gt; [contextual_tests] ;
 
   Flow control:
       JUMP &lt;anchor_name&gt; &lt;target&gt; [contextual_tests] ;
@@ -280,13 +280,18 @@
     <title>SETVARIABLE</title>
     <indexterm>
       <primary>SETVARIABLE</primary>
+      <secondary>OUTPUT</secondary>
     </indexterm>
     <screen>
-      [wordform] SETVARIABLE &lt;name&gt; &lt;value&gt; &lt;target&gt; [contextual_tests] ;
+      [wordform] SETVARIABLE [OUTPUT] &lt;name&gt; &lt;value&gt; &lt;target&gt; [contextual_tests] ;
     </screen>
     <para>
       Sets a <link linkend="global-variables">global variable</link> to a given value.
       If you don't care about the value you can just set it to 1 or *.
+    </para>
+    <para>
+      If you provide the optional OUTPUT flag, then an equivalent <link linkend="cmd-setvar">STREAMCMD:SETVAR</link>
+      will be output before the currently active window.
     </para>
     <screen>
       SETVARIABLE (news) (*) (@headline) ;
@@ -298,12 +303,17 @@
     <title>REMVARIABLE</title>
     <indexterm>
       <primary>REMVARIABLE</primary>
+      <secondary>OUTPUT</secondary>
     </indexterm>
     <screen>
-      [wordform] REMVARIABLE &lt;name&gt; &lt;target&gt; [contextual_tests] ;
+      [wordform] REMVARIABLE [OUTPUT] &lt;name&gt; &lt;target&gt; [contextual_tests] ;
     </screen>
     <para>
       Unsets a <link linkend="global-variables">global variable</link>.
+    </para>
+    <para>
+      If you provide the optional OUTPUT flag, then an equivalent <link linkend="cmd-remvar">STREAMCMD:REMVAR</link>
+      will be output before the currently active window.
     </para>
     <screen>
       REMVARIABLE (news) (@stanza) ;
@@ -788,6 +798,19 @@
       <title>SUB:N</title>
       <para>
         See the <link linkend="sub-grammar-subn">Sub-Readings SUB:N section</link>.
+      </para>
+    </section>
+
+    <section id="rule-options-output">
+      <title>OUTPUT</title>
+      <indexterm>
+        <primary>OUTPUT</primary>
+      </indexterm>
+      <para>
+        Applicable for rule types SETVARIABLE and REMVARIABLE.
+      </para>
+      <para>
+        Causes a <link linkend="cmd-setvar">STREAMCMD</link> to be output for the given action.
       </para>
     </section>
   </section>

@@ -60,6 +60,7 @@ namespace CG3 {
 		RF_UNMAPLAST    = (1 << 21),
 		RF_REVERSE      = (1 << 22),
 		RF_SUB          = (1 << 23),
+		RF_OUTPUT       = (1 << 24),
 	};
 
 	class Rule {
