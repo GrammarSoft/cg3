@@ -415,6 +415,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 							if (rule.flags & RF_RESETX || !(rule.flags & RF_REMEMBERX)) {
 								mark = cohort;
 							}
+							seen_barrier = false;
 							// Keeps track of where we have been, to prevent infinite recursion in trees with loops
 							dep_deep_seen.clear();
 							// Reset the counters for which types of CohortIterator we have in play

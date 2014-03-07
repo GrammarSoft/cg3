@@ -197,8 +197,12 @@ namespace CG3 {
 		bool updateValidRules(const uint32IntervalVector& rules, uint32IntervalVector& intersects, const uint32_t& hash, Reading& reading);
 		uint32_t runRulesOnSingleWindow(SingleWindow& current, const uint32IntervalVector& rules);
 
-		Cohort *runSingleTest(Cohort *cohort, const ContextualTest *test, bool *brk, bool *retval, Cohort **deep = 0, Cohort *origin = 0);
-		Cohort *runSingleTest(SingleWindow *sWindow, size_t i, const ContextualTest *test, bool *brk, bool *retval, Cohort **deep = 0, Cohort *origin = 0);
+		enum ST_RETVALS {
+			TRV_BREAK   = (1 << 0),
+			TRV_BARRIER = (1 << 1)
+		};
+		Cohort *runSingleTest(Cohort *cohort, const ContextualTest *test, uint8_t& rvs, bool *retval, Cohort **deep = 0, Cohort *origin = 0);
+		Cohort *runSingleTest(SingleWindow *sWindow, size_t i, const ContextualTest *test, uint8_t& rvs, bool *retval, Cohort **deep = 0, Cohort *origin = 0);
 		Cohort *runContextualTest(SingleWindow *sWindow, size_t position, const ContextualTest *test, Cohort **deep = 0, Cohort *origin = 0);
 		Cohort *runDependencyTest(SingleWindow *sWindow, Cohort *current, const ContextualTest *test, Cohort **deep = 0, Cohort *origin = 0, const Cohort *self = 0);
 		Cohort *runParenthesisTest(SingleWindow *sWindow, const Cohort *current, const ContextualTest *test, Cohort **deep = 0, Cohort *origin = 0);
