@@ -1,3 +1,18 @@
+2014-03-06  unhammer
+
+	* [r9763] emacs/cg.el: todo
+
+2014-03-06  tino
+
+	* [r9760] ChangeLog, manual/rules.xml, scripts/cg3-autobin.pl,
+	  src/GrammarApplicator.cpp, src/GrammarApplicator.hpp,
+	  src/GrammarApplicator_runGrammar.cpp,
+	  src/GrammarApplicator_runRules.cpp, src/Rule.hpp,
+	  src/SingleWindow.hpp, src/Strings.cpp, src/Strings.hpp,
+	  src/Window.cpp, src/version.hpp, test/T_Variables/expected.txt,
+	  test/T_Variables/input.txt: Set/RemVariable now optionally takes
+	  OUTPUT to commit the changes to the stream.
+
 2014-03-04  tino
 
 	* [r9759] ChangeLog, TODO, manual/dependencies.xml,
@@ -2436,10 +2451,4 @@
 	* [r7115] src/CMakeLists.txt: And make install now works...
 	* [r7114] src/CMakeLists.txt: Use the library instead of rebuilding
 	  everything
-	* [r7113] cmake.sh, src/CMakeLists.txt, test/runall.pl: A bit more
-	  CMake stuff...
-	* [r7106] CMakeLists.txt, src/CMakeLists.txt: MSVC additions to
-	  CMake; Remember to set BOOST_ROOT and CMAKE_INCLUDE_PATH and
-	  CMAKE_LIBRARY_PATH if your Boost and/or ICU aren't in system
-	  paths.
 

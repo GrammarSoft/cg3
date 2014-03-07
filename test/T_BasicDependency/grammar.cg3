@@ -12,6 +12,7 @@ ADD (@parent-deep) ("o") (p* ("bater")) ;
 ADD (@parent-deep-error) ("o") (p ("bater")) ;
 
 ADD (@child-deep) ("bater") (c* ("o")) ;
+ADD (@child-deep-error) ("bater") (c* ("o") BARRIER (N)) ;
 ADD (@child-deep-error) ("bater") (c ("o")) ;
 
 ADD (@self-or-child-S) ("em") (cS (PRP)) ;

@@ -46,3 +46,4 @@ ToDo: Make contextual tests optional but greedy with ?
 ToDo: Add ICU_ROOT to FindICU
 ToDo: COPY ONLY
 ToDo: Cohort-wide versions of set operators; use-case is testing multiple mapping tags at once, while that prefix is in effect
+ToDo: Add optimized keyword tag test, maybe only in --grammar-only mode.
