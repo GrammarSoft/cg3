@@ -128,6 +128,21 @@ int GrammarWriter::writeGrammar(UFILE *output) {
 
 	u_fprintf(output, "MAPPING-PREFIX = %C ;\n", grammar->mapping_prefix);
 
+	if (grammar->sub_readings_ltr) {
+		u_fprintf(output, "SUBREADINGS = LTR ;\n");
+	}
+	else {
+		u_fprintf(output, "SUBREADINGS = RTL ;\n");
+	}
+
+	if (!grammar->static_sets.empty()) {
+		u_fprintf(output, "STATIC-SETS =");
+		boost_foreach (const UString& str, grammar->static_sets) {
+			u_fprintf(output, " %S", str.c_str());
+		}
+		u_fprintf(output, " ;\n");
+	}
+
 	if (!grammar->preferred_targets.empty()) {
 		u_fprintf(output, "PREFERRED-TARGETS = ");
 		uint32Vector::const_iterator iter;
