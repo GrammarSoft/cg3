@@ -174,7 +174,7 @@ else()
 	target_link_libraries(test_libcg3 libcg3)
 endif()
 
-add_test(t_libcg3 test_libcg3 "${CMAKE_CURRENT_SOURCE_DIR}/../test/T_BasicSelect/grammar.txt")
+add_test(t_libcg3 test_libcg3 "${CMAKE_CURRENT_SOURCE_DIR}/../test/T_BasicSelect/grammar.cg3")
 
 install(TARGETS libcg3 ARCHIVE DESTINATION lib)
 if(NOT MSVC)
