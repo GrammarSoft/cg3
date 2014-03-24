@@ -124,6 +124,7 @@ int main(int argc, char* argv[]) {
 	}
 	status = U_ZERO_ERROR;
 
+	const char *codepage_cli = ucnv_getDefaultName();
 	ucnv_setDefaultName("UTF-8");
 	const char *codepage_default = ucnv_getDefaultName();
 	const char *codepage_grammar = codepage_default;
@@ -283,10 +284,12 @@ int main(int argc, char* argv[]) {
 	}
 
 	if (options[MAPPING_PREFIX].doesOccur) {
+		UConverter *conv = ucnv_open(codepage_cli, &status);
 		size_t sn = strlen(options[MAPPING_PREFIX].value);
 		CG3::UString buf(sn*3, 0);
 		ucnv_toUChars(conv, &buf[0], buf.size(), options[MAPPING_PREFIX].value, sn, &status);
 		grammar.mapping_prefix = buf[0];
+		ucnv_close(conv);
 	}
 	if (options[VERBOSE].doesOccur) {
 		std::cerr << "Reindexing grammar..." << std::endl;
