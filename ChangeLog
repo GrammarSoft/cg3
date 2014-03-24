@@ -1,3 +1,18 @@
+2014-03-11  tino
+
+	* [r9768] src/CMakeLists.txt: make test
+
+2014-03-07  tino
+
+	* [r9765] src/GrammarWriter.cpp: Remember subreadings and
+	  static-tags in textual writer
+	* [r9764] ChangeLog, TODO, scripts/cg3-autobin.pl,
+	  src/GrammarApplicator.hpp,
+	  src/GrammarApplicator_runContextualTest.cpp,
+	  src/GrammarApplicator_runRules.cpp, src/version.hpp,
+	  test/T_BasicDependency/grammar.cg3: Barriers now work for c*
+	  tests
+
 2014-03-06  unhammer
 
 	* [r9763] emacs/cg.el: todo
@@ -2443,12 +2458,4 @@
 	* [r7122] src/GrammarApplicator.h,
 	  src/GrammarApplicator_runGrammar.cpp, src/cg3.h, src/libcg3.cpp:
 	  More library body.
-	* [r7120] src/CMakeLists.txt, src/cg3.h, src/libcg3.cpp,
-	  src/stdafx.h: It's starting to look like a library...
-
-2011-05-08  tino
-
-	* [r7115] src/CMakeLists.txt: And make install now works...
-	* [r7114] src/CMakeLists.txt: Use the library instead of rebuilding
-	  everything
 
