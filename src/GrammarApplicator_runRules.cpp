@@ -367,7 +367,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 
 				// Check if any previous reading of this cohort had the same plain signature, and if so just copy their results
 				// This cache is cleared on a per-cohort basis
-				if (!(set.type & (ST_MAPPING|ST_CHILD_UNIFY)) && !readings_plain.empty()) {
+				if (!(set.type & (ST_SPECIAL|ST_MAPPING|ST_CHILD_UNIFY)) && !readings_plain.empty()) {
 					readings_plain_t::const_iterator rpit = readings_plain.find(reading->hash_plain);
 					if (rpit != readings_plain.end()) {
 						reading->matched_target = rpit->second->matched_target;

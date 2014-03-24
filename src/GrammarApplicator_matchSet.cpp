@@ -96,6 +96,7 @@ inline bool TagSet_SubsetOf_TSet(const TagSet& a, const T& b) {
 uint32_t GrammarApplicator::doesRegexpMatchReading(const Reading& reading, const Tag& tag, bool bypass_index) {
 	uint32_t match = 0;
 
+	// Grammar::reindex() will do a one-time pass to mark any potential matching tag as T_TEXTUAL
 	const_foreach (uint32SortedVector, reading.tags_textual, mter, mter_end) {
 		uint32_t ih = hash_value(tag.hash, *mter);
 		if (!bypass_index && index_matches(index_regexp_no, ih)) {

@@ -30,5 +30,5 @@ ADD (@baseform-icdiff) $$ibform (0 (*) - $$ibform) ;
 ADD (@baseform-same) $$bform (NEGATE 0 (*) - $$bform) ;
 ADD (@baseform-icsame) $$ibform (NEGATE 0 (*) - $$ibform) ;
 
-ADD (@slashes) (/@.*-SAM/ri) ;
+ADD (@slashes) (/^@.*-SAM/ri) ;
 ADD (@icase) (/@BASEFORM-SAME/i) ;

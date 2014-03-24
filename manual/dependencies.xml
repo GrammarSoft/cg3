@@ -225,6 +225,9 @@
         The 'S' option allows the test to look at the current target as well.
         Used in conjunction with p, c, cc, s, or r to test self and the relations.
       </para>
+      <para>
+        Be aware that BARRIER and CBARRIER will check and thus possibly stop at the current target when 'S' is in effect.
+      </para>
       <screen>
         (cS (ADJ))
       </screen>
