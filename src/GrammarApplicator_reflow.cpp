@@ -381,6 +381,7 @@ Tag *GrammarApplicator::generateVarstringTag(const Tag *tag) {
 	}
 
 	// Handle %U %u %L %l markers.
+	// ToDo: Split %[UuLl] markers from the main string to avoid having combined %$1 accidentally match %L
 	bool found;
 	do {
 		found = false;

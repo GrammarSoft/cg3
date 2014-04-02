@@ -29,6 +29,7 @@
       there is a <ulink url="https://launchpad.net/~tinodidriksen/+archive/cg3">PPA available from Launchpad</ulink>,
       easily installable via
       <screen>
+        sudo apt-get install software-properties-common
         sudo add-apt-repository ppa:tinodidriksen/cg3
         sudo apt-get update
         sudo apt-get install cg3
