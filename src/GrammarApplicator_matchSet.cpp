@@ -761,6 +761,7 @@ bool GrammarApplicator::doesSetMatchCohortNormal_helper(ReadingList& readings, c
 	const_foreach (ReadingList, readings, iter, iter_end) {
 		Reading *reading = *iter;
 		if (test) {
+			// ToDo: Barriers need some way to escape sub-readings
 			reading = get_sub_reading(reading, test->offset_sub);
 			if (!reading) {
 				continue;
