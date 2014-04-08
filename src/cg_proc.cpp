@@ -76,14 +76,14 @@ void endProgram(char *name) {
 }
 
 int main(int argc, char *argv[]) {
-	int trace = 0;
-	int wordform_case = 0;
-	int print_word_forms = 1;
-	int only_first = 0;
+	bool trace = false;
+	bool wordform_case = false;
+	bool print_word_forms = true;
+	bool only_first = false;
 	int cmd = 0;
 	int sections = 0;
 	int stream_format = 1;
-	bool nullFlush=false;
+	bool null_flush = false;
 	char* single_rule = 0;
 
 	UErrorCode status = U_ZERO_ERROR;
@@ -136,7 +136,7 @@ int main(int argc, char *argv[]) {
 				break;
 
 			case 't':
-				trace = 1;
+				trace = true;
 				break;
 
 			case 'r':
@@ -152,15 +152,15 @@ int main(int argc, char *argv[]) {
 				break;
 
 			case 'n':
-				print_word_forms = 0;
+				print_word_forms = false;
 				break;
 
 			case '1':
-				only_first = 1;
+				only_first = true;
 				break;
 
 			case 'w':
-				wordform_case = 1;
+				wordform_case = true;
 				break;
 
 			case 'v':
@@ -170,7 +170,7 @@ int main(int argc, char *argv[]) {
 				exit(EXIT_SUCCESS);
 				break;
 			case 'z':
-				nullFlush=true;
+				null_flush = true;
 				break;
 			case 'h':
 			default:
@@ -266,16 +266,10 @@ int main(int argc, char *argv[]) {
 	}
 	else {
 		CG3::ApertiumApplicator* apertiumApplicator= new CG3::ApertiumApplicator(ux_stderr);
-		apertiumApplicator->setNullFlush(nullFlush);
-		if (wordform_case == 1) {
-			apertiumApplicator->wordform_case = true;
-		}
-		if (print_word_forms == 0) {
-			apertiumApplicator->print_word_forms = false;
-		}
-		if (only_first == 1) {
-			apertiumApplicator->print_only_first = true;
-		}
+		apertiumApplicator->setNullFlush(null_flush);
+		apertiumApplicator->wordform_case = wordform_case;
+		apertiumApplicator->print_word_forms = print_word_forms;
+		apertiumApplicator->print_only_first = only_first;
 		applicator = apertiumApplicator;
 	}
 
@@ -284,9 +278,7 @@ int main(int argc, char *argv[]) {
 		applicator->sections.push_back(i);
 	}
 
-	if (trace == 1) {
-		applicator->trace = true;
-	}
+	applicator->trace = trace;
 	applicator->unicode_tags = true;
 
 	// This is if we want to run a single rule  (-r option)
@@ -311,7 +303,7 @@ int main(int argc, char *argv[]) {
 
 			case 'd':
 			default:
-				CG3::istream instream(ux_stdin, !nullFlush);
+				CG3::istream instream(ux_stdin, !null_flush);
 				applicator->runGrammarOnText(instream, ux_stdout);
 				break;
 		}
