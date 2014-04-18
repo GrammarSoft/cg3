@@ -1,3 +1,21 @@
+2014-04-10  tino
+
+	* [r9853] cmake.sh: cmake.sh now accepts --prefix X and --prefix=X
+
+2014-04-08  tino
+
+	* [r9848] src/cg_proc.cpp: Clean up flags to be bool instead of
+	  int, and just use them directly.
+
+2014-04-02  tino
+
+	* [r9840] ChangeLog, manual/installation.xml,
+	  scripts/cg3-autobin.pl, src/GrammarApplicator_matchSet.cpp,
+	  src/GrammarApplicator_reflow.cpp,
+	  src/GrammarApplicator_runContextualTest.cpp,
+	  src/TextualParser.cpp, src/version.hpp: Fix context S to actually
+	  test self, even if offset is non-zero
+
 2014-03-24  tino
 
 	* [r9815] ChangeLog, manual/dependencies.xml,
@@ -2457,11 +2475,4 @@
 	* [r7128] src/CMakeLists.txt, src/GrammarApplicator.cpp,
 	  src/GrammarApplicator_runGrammar.cpp, src/cg3.h, src/libcg3.cpp,
 	  src/test_libcg3.c, src/test_libcg3.cpp: More library
-	* [r7127] src/CMakeLists.txt, src/FormatConverter.cpp,
-	  src/FormatConverter.h, src/GrammarApplicator.h, src/cg3.h,
-	  src/cg_conv.cpp, src/interval_vector.hpp, src/libcg3.cpp,
-	  src/test_libcg3.cpp: Iteration over an output sentence
-	* [r7126] src/GrammarApplicator.h, src/cg3.h, src/libcg3.cpp: Just
-	  maybe, that's a usable first API...
-	* [r7123] src/libcg3.cpp: More library body.
 

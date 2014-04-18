@@ -75,7 +75,7 @@ if(OPT_CPACK)
 	set(CPACK_PACKAGE_CONTACT "Tino Didriksen <mail@tinodidriksen.com>")
 	set(CPACK_PACKAGE_VENDOR "http://tinodidriksen.com/")
 	set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "CG-3 is a compiler and applicator for the third edition of the Constraint Grammar formalism.")
-	set(CPACK_DEBIAN_PACKAGE_DEPENDS "libicu48, libgoogle-perftools0|libgoogle-perftools4, libstdc++6")
+	set(CPACK_DEBIAN_PACKAGE_DEPENDS "libicu52|libicu48, libgoogle-perftools0|libgoogle-perftools4, libstdc++6")
 	set(CPACK_PACKAGE_VERSION "${_cg3_VERSION_MAJOR}.${_cg3_VERSION_MINOR}.${_cg3_VERSION_PATCH}.${_cg3_REVISION}")
 
 	set(CPACK_DEBIAN_BUILD_DEPENDS debhelper cmake libicu-dev libboost-dev libgoogle-perftools-dev)
