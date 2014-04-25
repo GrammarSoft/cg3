@@ -61,6 +61,19 @@
 #include <stdint.h> // C99 or C++0x or C++ TR1 will have this header. ToDo: Change to <cstdint> when C++0x broader support gets under way.
 #include <cycle.h>
 
+// cycle.h doesn't know all platforms (such as ARM), so fall back on clock()
+#ifndef HAVE_TICK_COUNTER
+	typedef clock_t ticks;
+
+	inline ticks getticks() {
+		return clock();
+	}
+
+	INLINE_ELAPSED(inline);
+
+	#define HAVE_TICK_COUNTER
+#endif
+
 #include <boost/unordered_set.hpp>
 #include <boost/unordered_map.hpp>
 #include <boost/container/flat_set.hpp>
