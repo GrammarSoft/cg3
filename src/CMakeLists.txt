@@ -128,17 +128,20 @@ if(MSVC AND NOT CMAKE_BUILD_TYPE STREQUAL Debug)
 	set_target_properties(libcg3 PROPERTIES STATIC_LIBRARY_FLAGS "/LTCG")
 endif()
 cg3_link(libcg3)
+set(LINKLIB libcg3)
 
 if(NOT MSVC)
 	add_library(libcg3-shared SHARED $<TARGET_OBJECTS:libcg3-objs>)
+	set_target_properties(libcg3-shared PROPERTIES SOVERSION ${VERSION})
 	set_target_properties(libcg3-shared PROPERTIES OUTPUT_NAME "cg3")
 	set_target_properties(libcg3-shared PROPERTIES PREFIX "lib")
 	cg3_link(libcg3-shared)
+	set(LINKLIB libcg3-shared)
 endif()
 
 add_executable(cg-comp cg_comp.cpp)
 cg3_link(cg-comp)
-target_link_libraries(cg-comp libcg3)
+target_link_libraries(cg-comp ${LINKLIB})
 
 add_executable(cg-proc
 	cg_proc.cpp
@@ -146,7 +149,7 @@ add_executable(cg-proc
 	ApertiumApplicator.hpp
 	)
 cg3_link(cg-proc)
-target_link_libraries(cg-proc libcg3)
+target_link_libraries(cg-proc ${LINKLIB})
 
 add_executable(cg-conv
 	cg_conv.cpp
@@ -163,18 +166,14 @@ add_executable(cg-conv
 	options_conv.hpp
 	)
 cg3_link(cg-conv)
-target_link_libraries(cg-conv libcg3)
+target_link_libraries(cg-conv ${LINKLIB})
 
 add_executable(vislcg3 main.cpp options.hpp)
 cg3_link(vislcg3)
-target_link_libraries(vislcg3 libcg3)
+target_link_libraries(vislcg3 ${LINKLIB})
 
 add_executable(test_libcg3 test_libcg3.c)
-if(NOT MSVC)
-	target_link_libraries(test_libcg3 libcg3-shared)
-else()
-	target_link_libraries(test_libcg3 libcg3)
-endif()
+target_link_libraries(test_libcg3 ${LINKLIB})
 
 add_test(t_libcg3 test_libcg3 "${CMAKE_CURRENT_SOURCE_DIR}/../test/T_BasicSelect/grammar.cg3")
 
