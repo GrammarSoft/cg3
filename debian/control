@@ -1,0 +1,28 @@
+Source: cg3
+Section: misc
+Priority: extra
+Maintainer: Tino Didriksen <mail@tinodidriksen.com>
+Build-Depends: debhelper (>= 9.0), dpkg-dev, cmake, libboost-dev, libicu-dev
+Standards-Version: 3.9.3
+Homepage: http://visl.sdu.dk/cg3.html
+Vcs-Svn: http://visl.sdu.dk/svn/visl/tools/vislcg3/trunk/
+Vcs-Browser: http://visl.sdu.dk/svn/visl/tools/vislcg3/trunk/
+
+Package: cg3
+Architecture: any
+Depends: libcg3, ${shlibs:Depends}, ${misc:Depends}, ${perl:Depends}
+Description: <insert up to 60 chars description>
+ <insert long description, indented with spaces>
+
+Package: libcg3
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: <insert up to 60 chars description>
+ <insert long description, indented with spaces>
+
+Package: libcg3-dev
+Architecture: any
+Section: libdevel
+Depends: libcg3 (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}
+Description: <insert up to 60 chars description>
+ <insert long description, indented with spaces>
