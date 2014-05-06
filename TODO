@@ -40,10 +40,10 @@ ToDo: Piping deleted/delayed readings
 ToDo: Template left/right edge for linking onwards; 2 template types, add flag for free-form templates; check that +1 or -1 is target; stack for edges
 ToDo: Insert tags a'la Substitute (before / after)
 ToDo: Optimize case-insensitive tags by pre-calculating the lower-case variants
-ToDo: --out-niceline
 ToDo: Document static tags
 ToDo: Make contextual tests optional but greedy with ?
 ToDo: Add ICU_ROOT to FindICU
 ToDo: COPY ONLY
 ToDo: Cohort-wide versions of set operators; use-case is testing multiple mapping tags at once, while that prefix is in effect
 ToDo: Add optimized keyword tag test, maybe only in --grammar-only mode.
+ToDo: MOVE/SWITCH should leave stored cohorts where they were; optionally bring along with WITHPARENS flag
