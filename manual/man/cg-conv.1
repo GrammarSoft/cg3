@@ -1,0 +1,72 @@
+.TH cg-conv 1 2014-05-07 "" ""
+.SH NAME
+cg-conv \- This application is part of (
+.B cg3
+)
+.PP
+This tool is part of the CG-3
+constraint grammar system: \fBhttp://visl.sdu.dk/cg3.html\fR.
+.SH SYNOPSIS
+.B cg-conv
+[OPTIONS]
+.SH DESCRIPTION
+.BR cg-conv 
+is the program used to convert a text stream between various formats.
+By default it tries to auto-detect the input format and convert that to the
+CG-3 stream format.
+It will read from stdin and output to stdout.
+.RE
+.SH OPTIONS
+.TP
+\fB\-h\fR, \fB\-\-help\fR
+shows this help
+.TP
+\-?, \fB\-\-\fR?
+shows this help
+.TP
+\fB\-p\fR, \fB\-\-prefix\fR
+sets the mapping prefix; defaults to @
+.TP
+\fB\-u\fR, \fB\-\-in\-auto\fR
+auto\-detect input format (default)
+.TP
+\fB\-c\fR, \fB\-\-in\-cg\fR
+sets input format to CG
+.TP
+\fB\-n\fR, \fB\-\-in\-niceline\fR
+sets input format to Niceline CG
+.TP
+\fB\-a\fR, \fB\-\-in\-apertium\fR
+sets input format to Apertium
+.TP
+\fB\-f\fR, \fB\-\-in\-fst\fR
+sets input format to HFST/XFST
+.TP
+\fB\-p\fR, \fB\-\-in\-plain\fR
+sets input format to plain text
+.TP
+\fB\-C\fR, \fB\-\-out\-cg\fR
+sets output format to CG (default)
+.TP
+\fB\-A\fR, \fB\-\-out\-apertium\fR
+sets output format to Apertium
+.TP
+\fB\-N\fR, \fB\-\-out\-niceline\fR
+sets output format to Niceline CG
+.TP
+\fB\-P\fR, \fB\-\-out\-plain\fR
+sets output format to plain text
+.TP
+\fB\-r\fR, \fB\-\-rtl\fR
+sets sub\-reading direction to RTL (default)
+.TP
+\fB\-l\fR, \fB\-\-ltr\fR
+sets sub\-reading direction to LTR
+.RS
+.SH SEE ALSO
+.I vislcg3\fR(1),
+http://visl.sdu.dk/cg3/chunked/streamformats.html
+.SH BUGS
+Email to: Tino Didriksen <mail@tinodidriksen.com>
+.SH AUTHOR
+(c) 2010-2014 GrammarSoft ApS

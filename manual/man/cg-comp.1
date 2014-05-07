@@ -1,0 +1,28 @@
+.TH cg-comp 1 2014-05-07 "" ""
+.SH NAME
+cg-comp \- This application is part of (
+.B cg3
+)
+.PP
+This tool is part of the CG-3
+constraint grammar system: \fBhttp://visl.sdu.dk/cg3.html\fR.
+.SH SYNOPSIS
+.B cg-comp
+grammar_file [input_file [output_file]]
+.SH DESCRIPTION
+.BR cg-comp 
+is the program used to compile constraint grammars from a text format
+to a binary format that results in faster load times. It reads the 
+grammar file from \fBinput_file\fR and writes output
+to \fBoutput_file\fR. The binary grammar files generated can be used 
+in the \fBcg\-proc(1)\fR and \fBvislcg3(1)\fR disambiguators.
+.RE
+.RS
+.SH SEE ALSO
+.I cg-proc\fR(1),
+.I vislcg3\fR(1)
+.SH BUGS
+Email to: Tino Didriksen <mail@tinodidriksen.com>
+.SH AUTHOR
+(c) 2007-2014 GrammarSoft ApS
+
