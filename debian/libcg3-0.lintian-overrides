@@ -1,5 +1,0 @@
-# There is a private and a public API in the same library, and since the
-# public API is a very thin C wrapper on the private C++ API, it doesn't
-# make sense to further split them apart. So, the library name is the
-# public API version, but the soname is the private API version.
-package-name-doesnt-match-sonames
