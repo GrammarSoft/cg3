@@ -1,3 +1,30 @@
+2014-05-06  tino
+
+	* [r9891] debian, debian/cg3.install, debian/changelog,
+	  debian/compat, debian/control, debian/copyright,
+	  debian/libcg3-dev.install, debian/libcg3.install,
+	  debian/libcg3.postinst, debian/rules, debian/source,
+	  debian/source/format, src/CMakeLists.txt: Debian packaging is a
+	  nightmare
+	* [r9890] CMakeLists.txt: Force -fPIC for ancient setups
+	* [r9889] CMakeLists.txt, TODO, src/CMakeLists.txt: Build objects
+	  once and reuse for static/shared library
+
+2014-04-25  tino
+
+	* [r9873] src/stdafx.hpp: cycle.h doesn't know all platforms (such
+	  as ARM), so fall back on clock()
+
+2014-04-20  tino
+
+	* [r9867] todo.sh: Wipe TODO.list before regenerate
+
+2014-04-18  tino
+
+	* [r9864] CMakeLists.txt, ChangeLog, manual/installation.xml,
+	  scripts/cg3-autobin.pl, src/version.hpp: Ubuntu 14.04 has ICU 52,
+	  so depend on that instead of 4.8.
+
 2014-04-10  tino
 
 	* [r9853] cmake.sh: cmake.sh now accepts --prefix X and --prefix=X
@@ -2463,16 +2490,4 @@
 	* [r7135] scripts/cg3-autobin.pl, scripts/profile-revisions.php,
 	  src/stdafx.h, src/version.h: cg3
 	* [r7134] CMakeLists.txt, cmake.sh: CMake tuning
-	* [r7133] CMakeLists.txt: cg3
-	* [r7132] src/cg3.h, src/libcg3.cpp: cg3
-	* [r7131] CMakeLists.txt, src/CMakeLists.txt: Some testing
-	* [r7130] src/CMakeLists.txt, src/test_libcg3.c: cg3
-	* [r7129] src/GrammarApplicator.cpp: Library works. Now to
-	  polish...
-
-2011-05-09  tino
-
-	* [r7128] src/CMakeLists.txt, src/GrammarApplicator.cpp,
-	  src/GrammarApplicator_runGrammar.cpp, src/cg3.h, src/libcg3.cpp,
-	  src/test_libcg3.c, src/test_libcg3.cpp: More library
 

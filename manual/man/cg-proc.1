@@ -1,0 +1,70 @@
+.TH cg-proc 1 2014-05-07 "" ""
+.SH NAME
+cg-proc \- This application is part of (
+.B cg3
+)
+.PP
+This tool is part of the CG-3
+constraint grammar system: \fBhttp://visl.sdu.dk/cg3.html\fR.
+.SH SYNOPSIS
+.B cg-proc
+[OPTIONS] grammar_file [input_file [output_file]]
+.SH DESCRIPTION
+.BR cg-proc 
+is the grammar parser and disambiguator in the VISL
+constraint grammar system. It chooses between different analyses
+(or "readings") of a word delivered by a morphological analyser
+based on a set of grammatical rules.
+.PP
+By default, cg-proc reads input from stdin and writes output
+to stdout. The binary grammar files read by the parser are generated
+by \fBcg\-comp(1)\fR
+.RE
+.SH OPTIONS
+.TP
+\fB\-d\fR:
+morphological disambiguation (default behaviour)
+.TP
+\fB\-s\fR:
+specify number of sections to process
+.TP
+\fB\-f\fR:
+set the format of the I/O stream to NUM,
+.IP
+where `0' is VISL format and `1' is
+Apertium format (default: 1)
+.TP
+\fB\-r\fR:
+run only the named rule
+.TP
+\fB\-t\fR:
+print debug output on stderr
+.TP
+\fB\-w\fR:
+enforce surface case on lemma/baseform
+.IP
+(to work with \fB\-w\fR option of lt\-proc)
+.TP
+\fB\-n\fR:
+do not print out the word form of each cohort
+.TP
+\fB\-1\fR:
+only output the first analysis if ambiguity remains
+.TP
+\fB\-z\fR:
+flush output on the null character
+.TP
+\fB\-v\fR:
+version
+.TP
+\fB\-h\fR:
+show this help
+.RS
+.SH SEE ALSO
+.I cg-comp\fR(1),
+.I vislcg3\fR(1)
+.SH BUGS
+Email to: Tino Didriksen <mail@tinodidriksen.com>
+.SH AUTHOR
+(c) 2007-2014 GrammarSoft ApS
+

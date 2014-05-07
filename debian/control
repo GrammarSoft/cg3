@@ -2,7 +2,7 @@ Source: cg3
 Section: misc
 Priority: extra
 Maintainer: Tino Didriksen <mail@tinodidriksen.com>
-Build-Depends: debhelper (>= 9.0), dpkg-dev, cmake, libboost-dev, libicu-dev
+Build-Depends: debhelper (>= 9.0), cmake, libboost-dev, libicu-dev
 Standards-Version: 3.9.3
 Homepage: http://visl.sdu.dk/cg3.html
 Vcs-Svn: http://visl.sdu.dk/svn/visl/tools/vislcg3/trunk/
@@ -10,19 +10,19 @@ Vcs-Browser: http://visl.sdu.dk/svn/visl/tools/vislcg3/trunk/
 
 Package: cg3
 Architecture: any
-Depends: libcg3, ${shlibs:Depends}, ${misc:Depends}, ${perl:Depends}
-Description: <insert up to 60 chars description>
- <insert long description, indented with spaces>
+Depends: libcg3-0 (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}, ${perl:Depends}
+Description: Tools for using the 3rd edition of Constraint Grammar (CG-3)
+ See http://visl.sdu.dk/cg3.html for documentation
 
-Package: libcg3
+Package: libcg3-0
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
-Description: <insert up to 60 chars description>
- <insert long description, indented with spaces>
+Description: Runtime for CG-3
+ See http://visl.sdu.dk/cg3.html for documentation
 
 Package: libcg3-dev
 Architecture: any
 Section: libdevel
-Depends: libcg3 (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}
-Description: <insert up to 60 chars description>
- <insert long description, indented with spaces>
+Depends: libcg3-0 (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}
+Description: Headers and static library to develop using the CG-3 library
+ See http://visl.sdu.dk/cg3.html for documentation
