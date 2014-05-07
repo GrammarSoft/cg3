@@ -1,0 +1,201 @@
+.TH vislcg3 1 2014-05-07 "" ""
+.SH NAME
+vislcg3 \- This application is part of (
+.B cg3
+)
+.PP
+This tool is part of the CG-3
+constraint grammar system: \fBhttp://visl.sdu.dk/cg3.html\fR.
+.SH SYNOPSIS
+.B vislcg3
+[OPTIONS] 
+.SH DESCRIPTION
+.BR vislcg3 
+is the grammar parser and disambiguator in the VISL 
+constraint grammar system. It chooses between different analyses 
+(or "readings") of a word delivered by a morphological analyser
+based on a set of grammatical rules.
+.PP
+By default, vislcg3 reads input from stdin and writes output 
+to stdout.
+.RE
+.SH OPTIONS
+.TP
+\fB\-h\fR, \fB\-\-help\fR
+shows this help
+.TP
+\-?, \fB\-\-\fR?
+shows this help
+.TP
+\fB\-V\fR, \fB\-\-version\fR
+prints copyright and version information
+.TP
+\fB\-g\fR, \fB\-\-grammar\fR
+specifies the grammar file to use for disambiguation
+.TP
+\fB\-\-grammar\-out\fR
+writes the compiled grammar in textual form to a file
+.TP
+\fB\-\-grammar\-bin\fR
+writes the compiled grammar in binary form to a file
+.TP
+\fB\-\-grammar\-only\fR
+only compiles the grammar; implies \fB\-\-verbose\fR
+.TP
+\fB\-\-ordered\fR
+(will in future allow full ordered matching)
+.TP
+\fB\-u\fR, \fB\-\-unsafe\fR
+allows the removal of all readings in a cohort, even the last one
+.TP
+\fB\-s\fR, \fB\-\-sections\fR
+number or ranges of sections to run; defaults to all sections
+.TP
+\fB\-\-rules\fR
+number or ranges of rules to run; defaults to all rules
+.TP
+\fB\-\-rule\fR
+a name or number of a single rule to run
+.TP
+\fB\-d\fR, \fB\-\-debug\fR
+enables debug output (very noisy)
+.TP
+\fB\-v\fR, \fB\-\-verbose\fR
+increases verbosity
+.TP
+\fB\-2\fR, \fB\-\-vislcg\-compat\fR
+enables compatibility mode for older CG\-2 and vislcg grammars
+.TP
+\fB\-I\fR, \fB\-\-stdin\fR
+file to read input from instead of stdin
+.TP
+\fB\-O\fR, \fB\-\-stdout\fR
+file to print output to instead of stdout
+.TP
+\fB\-E\fR, \fB\-\-stderr\fR
+file to print errors to instead of stderr
+.TP
+\fB\-C\fR, \fB\-\-codepage\-all\fR
+codepage to use for grammar, input, and output streams; defaults to UTF\-8
+.TP
+\fB\-\-codepage\-grammar\fR
+codepage to use for grammar; overrides \fB\-\-codepage\-all\fR
+.TP
+\fB\-\-codepage\-input\fR
+codepage to use for input; overrides \fB\-\-codepage\-all\fR
+.TP
+\fB\-\-codepage\-output\fR
+codepage to use for output and errors; overrides \fB\-\-codepage\-all\fR
+.TP
+\fB\-L\fR, \fB\-\-locale\-all\fR
+locale to use for grammar, input, and output streams; defaults to en_US_POSIX
+.TP
+\fB\-\-locale\-grammar\fR
+locale to use for grammar; overrides \fB\-\-locale\-all\fR
+.TP
+\fB\-\-locale\-input\fR
+locale to use for input; overrides \fB\-\-locale\-all\fR
+.TP
+\fB\-\-locale\-output\fR
+locale to use for output and errors; overrides \fB\-\-locale\-all\fR
+.TP
+\fB\-\-no\-mappings\fR
+disables all MAP, ADD, and REPLACE rules
+.TP
+\fB\-\-no\-corrections\fR
+disables all SUBSTITUTE and APPEND rules
+.TP
+\fB\-\-no\-before\-sections\fR
+disables all rules in BEFORE\-SECTIONS parts
+.TP
+\fB\-\-no\-sections\fR
+disables all rules in SECTION parts
+.TP
+\fB\-\-no\-after\-sections\fR
+disables all rules in AFTER\-SECTIONS parts
+.TP
+\fB\-t\fR, \fB\-\-trace\fR
+prints debug output alongside with normal output
+.TP
+\fB\-\-trace\-name\-only\fR
+if a rule is named, omit the line number; implies \fB\-\-trace\fR
+.TP
+\fB\-\-trace\-no\-removed\fR
+does not print removed readings; implies \fB\-\-trace\fR
+.TP
+\fB\-\-trace\-encl\fR
+traces which enclosure pass is currently happening; implies \fB\-\-trace\fR
+.TP
+\fB\-\-dry\-run\fR
+make no actual changes to the input
+.TP
+\fB\-\-single\-run\fR
+runs each section only once; same as \fB\-\-max\-runs\fR 1
+.TP
+\fB\-\-max\-runs\fR
+runs each section max N times; defaults to unlimited (0)
+.TP
+\fB\-S\fR, \fB\-\-statistics\fR
+gathers profiling statistics while applying grammar
+.TP
+\fB\-Z\fR, \fB\-\-optimize\-unsafe\fR
+destructively optimize the profiled grammar to be faster
+.TP
+\fB\-z\fR, \fB\-\-optimize\-safe\fR
+conservatively optimize the profiled grammar to be faster
+.TP
+\fB\-p\fR, \fB\-\-prefix\fR
+sets the mapping prefix; defaults to @
+.TP
+\fB\-\-unicode\-tags\fR
+outputs Unicode code points for things like \->
+.TP
+\fB\-\-unique\-tags\fR
+outputs unique tags only once per reading
+.TP
+\fB\-\-num\-windows\fR
+number of windows to keep in before/ahead buffers; defaults to 2
+.TP
+\fB\-\-always\-span\fR
+forces scanning tests to always span across window boundaries
+.TP
+\fB\-\-soft\-limit\fR
+number of cohorts after which the SOFT\-DELIMITERS kick in; defaults to 300
+.TP
+\fB\-\-hard\-limit\fR
+number of cohorts after which the window is forcefully cut; defaults to 500
+.TP
+\fB\-D\fR, \fB\-\-dep\-delimit\fR
+delimit windows based on dependency instead of DELIMITERS; defaults to 10
+.TP
+\fB\-\-dep\-original\fR
+outputs the original input dependency tag even if it is no longer valid
+.TP
+\fB\-\-dep\-allow\-loops\fR
+allows the creation of circular dependencies
+.TP
+\fB\-\-dep\-no\-crossing\fR
+prevents the creation of dependencies that would result in crossing branches
+.TP
+\fB\-\-no\-magic\-readings\fR
+prevents running rules on magic readings
+.TP
+\fB\-o\fR, \fB\-\-no\-pass\-origin\fR
+prevents scanning tests from passing the point of origin
+.TP
+\fB\-e\fR, \fB\-\-show\-end\-tags\fR
+allows the <<< tags to appear in output
+.TP
+\fB\-\-show\-unused\-sets\fR
+prints a list of unused sets and their line numbers; implies \fB\-\-grammar\-only\fR
+.TP
+\fB\-\-show\-tag\-hashes\fR
+prints a list of tags and their hashes as they are parsed during the run
+.TP
+\fB\-\-show\-set\-hashes\fR
+prints a list of sets and their hashes; implies \fB\-\-grammar\-only\fR
+.RS
+.SH BUGS
+Email to: Tino Didriksen <mail@tinodidriksen.com>
+.SH AUTHOR
+(c) 2007-2014 GrammarSoft ApS
