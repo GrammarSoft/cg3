@@ -53,6 +53,7 @@
         make -j3
         ./test/runall.pl
         sudo make install
+        sudo ldconfig
       </screen>
       Rest of this page can be skipped.
     </para>
@@ -78,6 +79,7 @@
         make -j3
         ./test/runall.pl
         make install
+        ldconfig
       </screen>
       Rest of this page can be skipped.
     </para>
