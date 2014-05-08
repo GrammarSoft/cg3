@@ -14,13 +14,13 @@ function profile_revision($rev) {
 
 	if (file_exists('./src/all_vislcg3.cpp')) {
 		echo "Using all_vislcg3.cpp and Boost...\n";
-		echo shell_exec('g++ -std=c++11 -DNDEBUG -pipe -Wall -Wextra -Wno-deprecated -O3 -L/usr/local/lib64 -L/usr/local/lib -licuio -licuuc -Iinclude -Iinclude/exec-stream ./src/all_vislcg3.cpp -o vislcg3 2>&1');
-		echo shell_exec('g++ -std=c++11 -DNDEBUG -pipe -Wall -Wextra -Wno-deprecated -O3 -L/usr/local/lib64 -L/usr/local/lib -licuio -licuuc -ltcmalloc -Iinclude -Iinclude/exec-stream ./src/all_vislcg3.cpp -o vislcg3-tc 2>&1');
+		echo shell_exec('g++ -std=c++11 -DHAVE_BOOST -DNDEBUG -pipe -Wall -Wextra -Wno-deprecated -O3 -L/usr/local/lib64 -L/usr/local/lib -licuio -licuuc -Iinclude -Iinclude/exec-stream ./src/all_vislcg3.cpp -o vislcg3 2>&1');
+		echo shell_exec('g++ -std=c++11 -DHAVE_BOOST -DNDEBUG -pipe -Wall -Wextra -Wno-deprecated -O3 -L/usr/local/lib64 -L/usr/local/lib -licuio -licuuc -ltcmalloc -Iinclude -Iinclude/exec-stream ./src/all_vislcg3.cpp -o vislcg3-tc 2>&1');
 	}
 	else {
 		echo "Using old-style without Boost...\n";
-		echo shell_exec('g++ -std=c++11 -pipe -Wall -Wextra -Wno-deprecated -O3 -L/usr/local/lib64 -L/usr/local/lib -licuio -licuuc -Iinclude -Iinclude/exec-stream $(ls -1 ./src/*.cpp | egrep -v "/test_" | egrep -v "/cg_" | egrep -v "/all_" | grep -v Apertium | grep -v Matxin | grep -v FormatConverter) -o vislcg3 2>&1');
-		echo shell_exec('g++ -std=c++11 -pipe -Wall -Wextra -Wno-deprecated -O3 -L/usr/local/lib64 -L/usr/local/lib -licuio -licuuc -ltcmalloc -Iinclude -Iinclude/exec-stream $(ls -1 ./src/*.cpp | egrep -v "/test_" | egrep -v "/cg_" | egrep -v "/all_" | grep -v Apertium | grep -v Matxin | grep -v FormatConverter) -o vislcg3-tc 2>&1');
+		echo shell_exec('g++ -std=c++11 -DHAVE_BOOST -pipe -Wall -Wextra -Wno-deprecated -O3 -L/usr/local/lib64 -L/usr/local/lib -licuio -licuuc -Iinclude -Iinclude/exec-stream $(ls -1 ./src/*.cpp | egrep -v "/test_" | egrep -v "/cg_" | egrep -v "/all_" | grep -v Apertium | grep -v Matxin | grep -v FormatConverter) -o vislcg3 2>&1');
+		echo shell_exec('g++ -std=c++11 -DHAVE_BOOST -pipe -Wall -Wextra -Wno-deprecated -O3 -L/usr/local/lib64 -L/usr/local/lib -licuio -licuuc -ltcmalloc -Iinclude -Iinclude/exec-stream $(ls -1 ./src/*.cpp | egrep -v "/test_" | egrep -v "/cg_" | egrep -v "/all_" | grep -v Apertium | grep -v Matxin | grep -v FormatConverter) -o vislcg3-tc 2>&1');
 	}
 
 	if (!file_exists('vislcg3') || !file_exists('vislcg3-tc')) {
