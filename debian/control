@@ -1,9 +1,10 @@
 Source: cg3
 Section: science
 Priority: optional
-Maintainer: Tino Didriksen <mail@tinodidriksen.com>
-Build-Depends: debhelper (>= 9.0), cmake, libboost-dev, libicu-dev
-Standards-Version: 3.9.3
+Maintainer: Debian Science Team <debian-science-maintainers@lists.alioth.debian.org>
+Uploaders: Tino Didriksen <mail@tinodidriksen.com>
+Build-Depends: debhelper (>= 9.0), cmake, libboost-dev (>= 1.48.0) | libboost1.48-dev, libicu-dev (>= 4.8)
+Standards-Version: 3.9.5
 Homepage: http://visl.sdu.dk/cg3.html
 Vcs-Svn: http://visl.sdu.dk/svn/visl/tools/vislcg3/trunk/
 Vcs-Browser: http://visl.sdu.dk/svn/visl/tools/vislcg3/trunk/
@@ -12,17 +13,29 @@ Package: cg3
 Architecture: any
 Depends: libcg3-0 (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}, ${perl:Depends}
 Description: Tools for using the 3rd edition of Constraint Grammar (CG-3)
- See http://visl.sdu.dk/cg3.html for documentation
+ Constraint Grammar compiler and applicator for the 3rd edition of CG
+ that is developed and maintained by VISL SDU and GrammarSoft ApS.
+ .
+ CG-3 can be used for disambiguation of morphology, syntax, semantics, etc;
+ dependency markup, target language lemma choice for MT, QA systems, and
+ much more. The core idea is that you choose what to do based on the whole
+ available context, as opposed to n-grams.
+ .
+ See http://visl.sdu.dk/cg3.html for more documentation
 
 Package: libcg3-0
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: Runtime for CG-3
- See http://visl.sdu.dk/cg3.html for documentation
+ Runtime library for systems using the C API of CG-3.
+ .
+ See http://visl.sdu.dk/cg3.html for more documentation
 
 Package: libcg3-dev
 Architecture: any
 Section: libdevel
 Depends: libcg3-0 (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}
 Description: Headers and static library to develop using the CG-3 library
- See http://visl.sdu.dk/cg3.html for documentation
+ Development files to use the C API of CG-3.
+ .
+ See http://visl.sdu.dk/cg3.html for more documentation
