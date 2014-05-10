@@ -6,5 +6,5 @@ includedir=@includedir@
 Name: cg3
 Description: CG-3 is a compiler and applicator for the third edition of the Constraint Grammar formalism.
 Version: @VERSION@
-Libs: -L${libdir} -lcg3 @CG3_LIBS@
+Libs: -L${libdir} -lcg3-0 @CG3_LIBS@
 Cflags: -I${includedir}/ @CG3_CFLAGS@
