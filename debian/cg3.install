@@ -1,2 +1,2 @@
 debian/tmp/usr/bin
-manual/man/*.1 usr/share/man/man1/
+debian/tmp/usr/share/man/man1
