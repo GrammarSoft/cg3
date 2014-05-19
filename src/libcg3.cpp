@@ -183,6 +183,7 @@ cg3_sentence *cg3_sentence_new(cg3_applicator *applicator_) {
 	return current;
 }
 
+#pragma GCC visibility push(hidden)
 inline Tag *_tag_copy(GrammarApplicator *from, GrammarApplicator *to, uint32_t hash) {
 	Tag *t = from->single_tags[hash];
 	Tag *nt = to->addTag(t->tag);
@@ -223,6 +224,7 @@ inline Cohort *_cohort_copy(SingleWindow *ns, Cohort *oc) {
 	}
 	return nc;
 }
+#pragma GCC visibility pop
 
 cg3_sentence *cg3_sentence_copy(cg3_sentence *sentence_, cg3_applicator *applicator_) {
 	GrammarApplicator *applicator = static_cast<GrammarApplicator*>(applicator_);
