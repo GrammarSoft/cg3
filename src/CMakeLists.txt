@@ -133,6 +133,7 @@ set(LINKLIB_TEST libcg3)
 
 if(NOT MSVC)
 	add_library(cg3-private SHARED $<TARGET_OBJECTS:libcg3-objs>)
+	set_target_properties(cg3-private PROPERTIES NO_SONAME ON)
 	cg3_link(cg3-private)
 	set(LINKLIB cg3-private)
 
