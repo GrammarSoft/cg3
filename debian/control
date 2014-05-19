@@ -27,7 +27,9 @@ Package: libcg3-0
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: Runtime for CG-3
- Runtime library for systems using the C API of CG-3.
+ Runtime library for applications using the CG-3 API.
+ .
+ It is recommended to instrument the CLI tools instead of using this API.
  .
  See http://visl.sdu.dk/cg3.html for more documentation
 
@@ -36,6 +38,8 @@ Architecture: any
 Section: libdevel
 Depends: libcg3-0 (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}
 Description: Headers and static library to develop using the CG-3 library
- Development files to use the C API of CG-3.
+ Development files to use the CG-3 API.
+ .
+ It is recommended to instrument the CLI tools instead of using this API.
  .
  See http://visl.sdu.dk/cg3.html for more documentation

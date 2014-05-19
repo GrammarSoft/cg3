@@ -1,0 +1,57 @@
+libcg3.so.0 libcg3-0 #MINVER#
+ (optional=templinst|c++)"boost::unordered::detail::node_constructor<std::allocator<boost::unordered::detail::ptr_node<std::pair<unsigned int const, CG3::Tag*> > > >::~node_constructor()@Base" 0.9.8.9567
+ (optional=templinst|c++)"boost::unordered::detail::node_constructor<std::allocator<boost::unordered::detail::ptr_node<std::pair<unsigned int const, CG3::Tag*> > > >::~node_constructor()@Base" 0.9.8.9567
+ (optional=templinst|c++|regex)"^boost::unordered::detail::prime_list_template<.*?>::value@Base" 0.9.8.9567
+ (optional=templinst|c++)"std::basic_string<unsigned short, std::char_traits<unsigned short>, std::allocator<unsigned short> >::_Rep::_S_empty_rep_storage@Base" 0.9.8.9567
+ (optional=templinst|c++|regex)"^std::basic_string<unsigned short, std::char_traits<unsigned short>, std::allocator<unsigned short> >::_M_mutate(.*?)@Base" 0.9.8.9567
+ (optional=templinst|c++)"std::_List_base<CG3::Tag*, std::allocator<CG3::Tag*> >::_M_clear()@Base" 0.9.8.9567
+ (optional=templinst|c++|regex)"^std::vector<unsigned int, std::allocator<unsigned int> >::_M_fill_insert\(__gnu_cxx::__normal_iterator<unsigned int\*, std::vector<unsigned int, std::allocator<unsigned int> > >, .*?, unsigned int const&\)@Base" 0.9.8.9567
+ (optional=templinst|c++)"void std::vector<unsigned int, std::allocator<unsigned int> >::_M_emplace_back_aux<unsigned int const&>(unsigned int const&)@Base" 0.9.8.9567
+ (optional=templinst)_ZNSt6vectorIjSaIjEE19_M_emplace_back_auxIJRKjEEEvDpOT_@Base 0.9.8.9567
+ cg3_applicator_create@Base 0.9.8.9567
+ cg3_applicator_free@Base 0.9.8.9567
+ cg3_applicator_setflags@Base 0.9.8.9567
+ cg3_applicator_setoption@Base 0.9.8.9567
+ cg3_cleanup@Base 0.9.8.9567
+ cg3_cohort_addreading@Base 0.9.8.9567
+ cg3_cohort_create@Base 0.9.8.9567
+ cg3_cohort_free@Base 0.9.8.9567
+ cg3_cohort_getdependency@Base 0.9.8.9567
+ cg3_cohort_getid@Base 0.9.8.9567
+ cg3_cohort_getreading@Base 0.9.8.9567
+ cg3_cohort_getwordform@Base 0.9.8.9567
+ cg3_cohort_numreadings@Base 0.9.8.9567
+ cg3_cohort_setdependency@Base 0.9.8.9567
+ cg3_cohort_setwordform@Base 0.9.8.9567
+ cg3_grammar_free@Base 0.9.8.9567
+ cg3_grammar_load@Base 0.9.8.9567
+ cg3_init@Base 0.9.8.9567
+ cg3_reading_addtag@Base 0.9.8.9567
+ cg3_reading_create@Base 0.9.8.9567
+ cg3_reading_free@Base 0.9.8.9567
+ cg3_reading_getsubreading@Base 0.9.8.9567
+ cg3_reading_gettag@Base 0.9.8.9567
+ cg3_reading_gettrace@Base 0.9.8.9567
+ cg3_reading_numsubreadings@Base 0.9.8.9567
+ cg3_reading_numtags@Base 0.9.8.9567
+ cg3_reading_numtraces@Base 0.9.8.9567
+ cg3_reading_setsubreading@Base 0.9.8.9567
+ cg3_sentence_addcohort@Base 0.9.8.9567
+ cg3_sentence_copy@Base 0.9.8.9567
+ cg3_sentence_free@Base 0.9.8.9567
+ cg3_sentence_getcohort@Base 0.9.8.9567
+ cg3_sentence_new@Base 0.9.8.9567
+ cg3_sentence_numcohorts@Base 0.9.8.9567
+ cg3_sentence_runrules@Base 0.9.8.9567
+ cg3_subreading_create@Base 0.9.8.9567
+ cg3_subreading_free@Base 0.9.8.9567
+ cg3_tag_create_u16@Base 0.9.8.9567
+ cg3_tag_create_u32@Base 0.9.8.9567
+ cg3_tag_create_u8@Base 0.9.8.9567
+ cg3_tag_create_u@Base 0.9.8.9567
+ cg3_tag_create_w@Base 0.9.8.9567
+ cg3_tag_gettext_u16@Base 0.9.8.9567
+ cg3_tag_gettext_u32@Base 0.9.8.9567
+ cg3_tag_gettext_u8@Base 0.9.8.9567
+ cg3_tag_gettext_u@Base 0.9.8.9567
+ cg3_tag_gettext_w@Base 0.9.8.9567
