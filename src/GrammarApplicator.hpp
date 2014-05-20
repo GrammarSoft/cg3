@@ -105,13 +105,15 @@ namespace CG3 {
 
 		// Moved these public to help the library API
 		Tag *addTag(const UChar *tag, bool vstr = false);
+		Tag *addTag(const UString& txt, bool vstr = false);
 		void initEmptySingleWindow(SingleWindow *cSWindow);
 		uint32_t addTagToReading(Reading& reading, uint32_t tag, bool rehash = true);
 		uint32_t addTagToReading(Reading& reading, Tag *tag, bool rehash = true);
 		void runGrammarOnWindow();
 
-		Tag *addTag(const UString& txt, bool vstr = false);
+		typedef std::map<Reading*, TagList> all_mappings_t;
 		void splitMappings(TagList& mappings, Cohort& cohort, Reading& reading, bool mapped = false);
+		void splitAllMappings(all_mappings_t& all_mappings, Cohort& cohort, bool mapped = false);
 		Taguint32HashMap single_tags;
 
 	protected:

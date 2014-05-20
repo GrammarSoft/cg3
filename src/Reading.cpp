@@ -20,6 +20,7 @@
 */
 
 #include "Reading.hpp"
+#include "Cohort.hpp"
 
 namespace CG3 {
 
@@ -33,7 +34,7 @@ wordform(0),
 baseform(0),
 hash(0),
 hash_plain(0),
-number(0),
+number(p->readings.size() * 1000 + 1000),
 mapping(0),
 parent(p),
 next(0)
@@ -53,7 +54,7 @@ wordform(r.wordform),
 baseform(r.baseform),
 hash(r.hash),
 hash_plain(r.hash_plain),
-number(r.number),
+number(r.number + 100),
 tags_bloom(r.tags_bloom),
 tags_plain_bloom(r.tags_plain_bloom),
 tags_textual_bloom(r.tags_textual_bloom),

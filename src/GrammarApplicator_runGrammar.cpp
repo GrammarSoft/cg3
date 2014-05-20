@@ -116,6 +116,7 @@ void GrammarApplicator::runGrammarOnText(istream& input, UFILE *output) {
 	uint32SortedVector variables_output;
 
 	std::vector<std::pair<size_t,Reading*> > indents;
+	all_mappings_t all_mappings;
 
 	while (!input.eof()) {
 		++lines;
@@ -199,6 +200,7 @@ gotaline:
 					addTagToReading(**iter, endtag);
 				}
 
+				splitAllMappings(all_mappings, *cCohort, true);
 				cSWindow->appendCohort(cCohort);
 				lSWindow = cSWindow;
 				cSWindow = 0;
@@ -215,6 +217,7 @@ gotaline:
 					addTagToReading(**iter, endtag);
 				}
 
+				splitAllMappings(all_mappings, *cCohort, true);
 				cSWindow->appendCohort(cCohort);
 				lSWindow = cSWindow;
 				cSWindow = 0;
@@ -240,6 +243,7 @@ gotaline:
 				did_soft_lookback = false;
 			}
 			if (cCohort && cSWindow) {
+				splitAllMappings(all_mappings, *cCohort, true);
 				cSWindow->appendCohort(cCohort);
 			}
 			if (gWindow->next.size() > num_windows) {
@@ -334,15 +338,13 @@ gotaline:
 				goto istext;
 			}
 
-			TagList mappings;
-
 			while (space && (space = u_strchr(space, ' ')) != 0) {
 				space[0] = 0;
 				++space;
 				if (base && base[0]) {
 					Tag *tag = addTag(base);
 					if (tag->type & T_MAPPING || tag->tag[0] == grammar->mapping_prefix) {
-						mappings.push_back(tag);
+						all_mappings[cReading].push_back(tag);
 					}
 					else {
 						addTagToReading(*cReading, tag);
@@ -357,7 +359,7 @@ gotaline:
 			if (base && base[0]) {
 				Tag *tag = addTag(base);
 				if (tag->type & T_MAPPING || tag->tag[0] == grammar->mapping_prefix) {
-					mappings.push_back(tag);
+					all_mappings[cReading].push_back(tag);
 				}
 				else {
 					addTagToReading(*cReading, tag);
@@ -367,13 +369,20 @@ gotaline:
 				u_fprintf(ux_stderr, "Warning: Line %u had no valid baseform.\n", numLines);
 				u_fflush(ux_stderr);
 			}
-			if (!mappings.empty()) {
-				splitMappings(mappings, *cCohort, *cReading, true);
-			}
 			if (indents.empty() || indent <= indents.back().first) {
 				cCohort->appendReading(cReading);
 			}
 			else {
+				BOOST_AUTO(iter, all_mappings.find(cReading));
+				if (iter != all_mappings.end()) {
+					while (iter->second.size() > 1) {
+						u_fprintf(ux_stderr, "Warning: Sub-reading mapping %S on line %u will be discarded.\n", iter->second.back()->tag.c_str(), numLines);
+						u_fflush(ux_stderr);
+						iter->second.pop_back();
+					}
+					splitMappings(iter->second, *cCohort, *cReading, true);
+					all_mappings.erase(iter);
+				}
 				cCohort->readings.back()->rehash();
 			}
 			indents.push_back(std::make_pair(indent,cReading));
@@ -412,6 +421,7 @@ istext:
 				if (u_strcmp(&cleaned[0], stringbits[S_CMD_FLUSH].getTerminatedBuffer()) == 0) {
 					u_fprintf(ux_stderr, "Info: FLUSH encountered on line %u. Flushing...\n", numLines);
 					if (cCohort && cSWindow) {
+						splitAllMappings(all_mappings, *cCohort, true);
 						cSWindow->appendCohort(cCohort);
 						if (cCohort->readings.empty()) {
 							initEmptyCohort(*cCohort);
@@ -588,6 +598,7 @@ istext:
 	input_eof = true;
 
 	if (cCohort && cSWindow) {
+		splitAllMappings(all_mappings, *cCohort, true);
 		cSWindow->appendCohort(cCohort);
 		if (cCohort->readings.empty()) {
 			initEmptyCohort(*cCohort);

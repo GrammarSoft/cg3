@@ -20,8 +20,8 @@
 "<wordform2>"
 	"baseform2" tag2 @stillhere ADDCOHORT-AFTER:13 ADD:17 ADD:17 ADD:17
 "<word>"
-	"word" notwanted @last-after-rem ADD:6 ADDCOHORT-AFTER:7 ADD:17 ADD:17 ADD:6 ADDCOHORT-AFTER:7 ADD:17
 	"word" notwanted @stillhere @last-after-rem ADD:6 ADDCOHORT-AFTER:7 ADD:17 ADD:17 ADD:6 ADD:17
+	"word" notwanted @last-after-rem ADD:6 ADDCOHORT-AFTER:7 ADD:17 ADD:17 ADD:6 ADDCOHORT-AFTER:7 ADD:17
 	"word" notmeeither @last-after-rem @stillhere ADD:6 ADD:17 ADD:17 ADD:6 ADD:17
 ; "<last>"
 ;	"last" last cohort @last-old ADD:4 REMCOHORT:5
