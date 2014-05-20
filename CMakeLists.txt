@@ -1,5 +1,5 @@
 set(CMAKE_LEGACY_CYGWIN_WIN32 0)
-cmake_minimum_required(VERSION 2.8.8 FATAL_ERROR)
+cmake_minimum_required(VERSION 2.8.9 FATAL_ERROR)
 project(cg3 CXX C)
 
 # Release or Debug
@@ -75,29 +75,3 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/scripts/cg3-autobin.pl.in ${CMAKE_CURRENT_BINARY_DIR}/scripts/cg3-autobin.pl @ONLY)
 install(PROGRAMS "${CMAKE_CURRENT_BINARY_DIR}/scripts/cg3-autobin.pl" DESTINATION bin)
-
-option(OPT_CPACK "Set to ON to generate CPack configuration files" OFF)
-if(OPT_CPACK)
-	set(CPACK_PACKAGE_NAME "CG3")
-	set(CPACK_PACKAGE_CONTACT "Tino Didriksen <mail@tinodidriksen.com>")
-	set(CPACK_PACKAGE_VENDOR "http://tinodidriksen.com/")
-	set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "CG-3 is a compiler and applicator for the third edition of the Constraint Grammar formalism.")
-	set(CPACK_DEBIAN_PACKAGE_DEPENDS "libicu52|libicu48, libgoogle-perftools0|libgoogle-perftools4, libstdc++6")
-	set(CPACK_PACKAGE_VERSION "${_cg3_VERSION_MAJOR}.${_cg3_VERSION_MINOR}.${_cg3_VERSION_PATCH}.${_cg3_REVISION}")
-
-	set(CPACK_DEBIAN_BUILD_DEPENDS debhelper cmake libicu-dev libboost-dev libgoogle-perftools-dev)
-	set(CPACK_DEBIAN_BUILD_DEPENDS_UBUNTU_PRECISE debhelper cmake libicu-dev libboost1.48-dev libgoogle-perftools-dev)
-	set(CPACK_DEBIAN_PACKAGE_SOURCE_COPY svn export --force)
-	set(CPACK_DEBIAN_CHANGELOG "  * Changelog is available at http://visl.sdu.dk/svn/visl/tools/vislcg3/trunk/ChangeLog\n\n")
-	execute_process(COMMAND lsb_release -is
-		OUTPUT_VARIABLE _lsb_distribution OUTPUT_STRIP_TRAILING_WHITESPACE
-		RESULT_VARIABLE _lsb_release_failed)
-	set(CPACK_DEBIAN_DISTRIBUTION_NAME ${_lsb_distribution})
-	string(TOLOWER ${CPACK_DEBIAN_DISTRIBUTION_NAME} CPACK_DEBIAN_DISTRIBUTION_NAME)
-	if( ${CPACK_DEBIAN_DISTRIBUTION_NAME} STREQUAL "ubuntu" )
-		set(CPACK_DEBIAN_DISTRIBUTION_RELEASES precise saucy trusty)
-	endif()
-	set(DPUT_HOST "ppa:tinodidriksen/cg3")
-	include(CPack)
-	include(DebSourcePPA)
-endif()
