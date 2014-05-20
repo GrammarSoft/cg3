@@ -1,3 +1,16 @@
+2014-05-20  tino
+
+	* [r9926] CMakeLists.txt, debian/control, debian/libcg3-0.install,
+	  debian/libcg3-0.symbols, debian/libcg3-dev.install,
+	  src/CMakeLists.txt: Multiarch support
+	* [r9925] CMakeLists.txt, ChangeLog, scripts/cg3-autobin.pl,
+	  src/Cohort.cpp, src/GrammarApplicator.hpp,
+	  src/GrammarApplicator_reflow.cpp,
+	  src/GrammarApplicator_runGrammar.cpp, src/Reading.cpp,
+	  src/version.hpp, test/T_RemCohort/expected.txt: Handle readings
+	  with multiple mappings and sub-readings; Drop Ubuntu 12.10 from
+	  PPA
+
 2014-05-19  tino
 
 	* [r9924] debian/control, debian/libcg3-0.symbols: Symbols
@@ -2459,23 +2472,4 @@
 
 	* [r7228] Makefile.am, autogen.sh, configure.ac, m4,
 	  src/Makefile.am: CMake is the future.
-	* [r7227] src/exec-stream.cpp, src/exec-stream.h,
-	  src/posix/exec-stream-helpers.cpp,
-	  src/posix/exec-stream-helpers.h, src/posix/exec-stream-impl.cpp,
-	  src/win/exec-stream-helpers.cpp, src/win/exec-stream-helpers.h,
-	  src/win/exec-stream-impl.cpp: cg3
-	* [r7226] Boost.props, ICU.props, cg_comp.vcxproj,
-	  cg_comp.vcxproj.filters, cg_conv.vcxproj,
-	  cg_conv.vcxproj.filters, cg_proc.vcxproj,
-	  cg_proc.vcxproj.filters, include/boost, scripts/cg3-autobin.pl,
-	  src/CMakeLists.txt, src/GrammarApplicator.cpp,
-	  src/GrammarApplicator.h, src/GrammarApplicator_runRules.cpp,
-	  src/SingleWindow.h, src/Strings.cpp, src/Strings.h,
-	  src/TextualParser.cpp, src/exec-stream.cpp, src/exec-stream.h,
-	  src/inlines.h, src/posix, src/posix/exec-stream-helpers.cpp,
-	  src/posix/exec-stream-helpers.h, src/posix/exec-stream-impl.cpp,
-	  src/uextras.cpp, src/uextras.h, src/version.h, src/win,
-	  src/win/exec-stream-helpers.cpp, src/win/exec-stream-helpers.h,
-	  src/win/exec-stream-impl.cpp, vislcg3.sln, vislcg3.vcxproj,
-	  vislcg3.vcxproj.filters: WIP: External processes.
 
