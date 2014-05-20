@@ -57,7 +57,7 @@ else()
 	set(includedir  ${CMAKE_INSTALL_PREFIX}/include)
 	configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cg3.pc.in
 		${CMAKE_CURRENT_BINARY_DIR}/cg3.pc @ONLY)
-	install(FILES "${CMAKE_CURRENT_BINARY_DIR}/cg3.pc" DESTINATION lib/pkgconfig)
+	install(FILES "${CMAKE_CURRENT_BINARY_DIR}/cg3.pc" DESTINATION "lib/${CMAKE_LIBRARY_ARCHITECTURE}/pkgconfig")
 
 	install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/manual/man/"
 		DESTINATION share/man/man1
