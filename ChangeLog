@@ -1,3 +1,44 @@
+2014-05-19  tino
+
+	* [r9924] debian/control, debian/libcg3-0.symbols: Symbols
+	* [r9923] CMakeLists.txt, debian/changelog, debian/control,
+	  debian/libcg3-0.install, src/CMakeLists.txt, src/libcg3.cpp:
+	  CMake version, NO_SONAME, visibility
+	* [r9922] src/CMakeLists.txt: Split libcg3 further into a private
+	  and public part
+
+2014-05-12  tino
+
+	* [r9899] CMakeLists.txt, debian/cg3.install: Install man pages,
+	  now that they're up-to-date
+
+2014-05-10  tino
+
+	* [r9897] cg3.pc.in: Revert -0
+	* [r9896] cg3.pc.in, debian/changelog, debian/control, debian/docs,
+	  debian/watch: Debian fixes
+
+2014-05-08  tino
+
+	* [r9894] cmake.sh, manual/installation.xml,
+	  scripts/profile-revisions.php: Document that ldconfig is needed
+
+2014-05-07  tino
+
+	* [r9893] debian/control, debian/libcg3-0.lintian-overrides,
+	  src/CMakeLists.txt: Make soname match package name, since that
+	  depends on public C API version
+	* [r9892] ChangeLog, LICENSE, debian/cg3.install, debian/cg3.links,
+	  debian/cg3.lintian-overrides, debian/changelog, debian/control,
+	  debian/libcg3-0.install, debian/libcg3-0.lintian-overrides,
+	  debian/libcg3-0.postinst, debian/libcg3.install,
+	  debian/libcg3.postinst, manual/man, manual/man/cg-comp.1,
+	  manual/man/cg-conv.1, manual/man/cg-proc.1,
+	  manual/man/cg3-autobin.pl.1, manual/man/vislcg3.1,
+	  scripts/cg3-autobin.pl, src/CMakeLists.txt, src/cg-comp.1,
+	  src/cg-proc.1, src/version.hpp, src/vislcg3.1: Man pages,
+	  symlinks, overrides, oh my...
+
 2014-05-06  tino
 
 	* [r9891] debian, debian/cg3.install, debian/changelog,
@@ -2437,57 +2478,4 @@
 	  src/win/exec-stream-helpers.cpp, src/win/exec-stream-helpers.h,
 	  src/win/exec-stream-impl.cpp, vislcg3.sln, vislcg3.vcxproj,
 	  vislcg3.vcxproj.filters: WIP: External processes.
-
-2011-05-30  tino
-
-	* [r7222] src/CMakeLists.txt: cg3
-	* [r7221] get-boost.sh, src/CMakeLists.txt: Boost no longer
-	  optional, but there is a script to help download it for you.
-	* [r7220] CMakeLists.txt, include, include/boost,
-	  include/boost/process, include/boost/process.hpp,
-	  include/boost/process/child.hpp,
-	  include/boost/process/config.hpp,
-	  include/boost/process/context.hpp, include/boost/process/detail,
-	  include/boost/process/detail/file_handle.hpp,
-	  include/boost/process/detail/pipe.hpp,
-	  include/boost/process/detail/posix_ops.hpp,
-	  include/boost/process/detail/stream_info.hpp,
-	  include/boost/process/detail/systembuf.hpp,
-	  include/boost/process/detail/win32_ops.hpp,
-	  include/boost/process/environment.hpp,
-	  include/boost/process/operations.hpp,
-	  include/boost/process/pistream.hpp,
-	  include/boost/process/posix_child.hpp,
-	  include/boost/process/posix_context.hpp,
-	  include/boost/process/posix_operations.hpp,
-	  include/boost/process/posix_status.hpp,
-	  include/boost/process/postream.hpp,
-	  include/boost/process/process.hpp,
-	  include/boost/process/self.hpp, include/boost/process/status.hpp,
-	  include/boost/process/stream_behavior.hpp,
-	  include/boost/process/win32_child.hpp,
-	  include/boost/process/win32_context.hpp,
-	  include/boost/process/win32_operations.hpp, src/cg3.h,
-	  src/libcg3.cpp, src/test_libcg3.c: Going to depend on Boost
-	  shortly
-
-2011-05-19  tino
-
-	* [r7146] scripts/cg3-autobin.pl, src/cg3.h, src/inlines.h,
-	  src/libcg3.cpp, src/main.cpp, src/version.h: Added way to set
-	  --sections; renamed binary flags
-
-2011-05-15  tino
-
-	* [r7139] src/cg3.h, src/libcg3.cpp: Some binary flags can now be
-	  set
-	* [r7138] newsletters/2009-05-13.txt, newsletters/2010-09-23.txt,
-	  src/CMakeLists.txt: cg3
-	* [r7137] src/CMakeLists.txt: Also build shared
-
-2011-05-10  tino
-
-	* [r7135] scripts/cg3-autobin.pl, scripts/profile-revisions.php,
-	  src/stdafx.h, src/version.h: cg3
-	* [r7134] CMakeLists.txt, cmake.sh: CMake tuning
 
