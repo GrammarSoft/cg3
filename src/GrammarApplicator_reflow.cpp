@@ -566,6 +566,7 @@ void GrammarApplicator::splitMappings(TagList& mappings, Cohort& cohort, Reading
 	}
 	Tag *tag = mappings.back();
 	mappings.pop_back();
+	size_t i = mappings.size();
 	foreach (TagList, mappings, ttag, ttag_end) {
 		// To avoid duplicating needlessly many times, check for a similar reading in the cohort that's already got this mapping
 		bool found = false;
@@ -583,6 +584,7 @@ void GrammarApplicator::splitMappings(TagList& mappings, Cohort& cohort, Reading
 		}
 		Reading *nr = new Reading(reading);
 		nr->mapped = mapped;
+		nr->number = reading.number - i--;
 		uint32_t mp = addTagToReading(*nr, *ttag);
 		if (mp != (*ttag)->hash) {
 			nr->mapping = single_tags.find(mp)->second;
@@ -602,6 +604,22 @@ void GrammarApplicator::splitMappings(TagList& mappings, Cohort& cohort, Reading
 	else {
 		reading.mapping = tag;
 	}
+}
+
+void GrammarApplicator::splitAllMappings(all_mappings_t& all_mappings, Cohort& cohort, bool mapped) {
+	if (all_mappings.empty()) {
+		return;
+	}
+	ReadingList readings = cohort.readings;
+	boost_foreach (Reading *reading, readings) {
+		BOOST_AUTO(iter, all_mappings.find(reading));
+		if (iter == all_mappings.end()) {
+			continue;
+		}
+		splitMappings(iter->second, cohort, *reading, mapped);
+	}
+	std::sort(cohort.readings.begin(), cohort.readings.end(), CG3::Reading::cmp_number);
+	all_mappings.clear();
 }
 
 void GrammarApplicator::mergeReadings(ReadingList& readings) {

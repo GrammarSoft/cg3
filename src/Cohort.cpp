@@ -94,7 +94,7 @@ void Cohort::remChild(uint32_t child) {
 void Cohort::appendReading(Reading *read) {
 	readings.push_back(read);
 	if (read->number == 0) {
-		read->number = (uint32_t)readings.size();
+		read->number = (uint32_t)readings.size() * 1000 + 1000;
 	}
 	type &= ~CT_NUM_CURRENT;
 }
@@ -103,7 +103,7 @@ Reading* Cohort::allocateAppendReading() {
 	Reading *read = new Reading(this);
 	readings.push_back(read);
 	if (read->number == 0) {
-		read->number = (uint32_t)readings.size();
+		read->number = (uint32_t)readings.size() * 1000 + 1000;
 	}
 	type &= ~CT_NUM_CURRENT;
 	return read;
