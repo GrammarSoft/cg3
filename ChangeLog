@@ -1,5 +1,13 @@
 2014-05-20  tino
 
+	* [r9929] debian/control, dist/dist-debian-ubuntu.pl: Version
+	  trickery
+	* [r9928] CMake/DebSourcePPA.cmake, CMakeLists.txt,
+	  dist/dist-debian-ubuntu.pl: Better Debian/Ubuntu packaging
+	  script; CMake 2.8.9+ required
+	* [r9927] CMakeLists.txt, ChangeLog, scripts/cg3-autobin.pl,
+	  scripts/cg3-autobin.pl.in, src/version.hpp, update-revision.pl:
+	  Set cg3-autobin.pl revision during build instead of manually
 	* [r9926] CMakeLists.txt, debian/control, debian/libcg3-0.install,
 	  debian/libcg3-0.symbols, debian/libcg3-dev.install,
 	  src/CMakeLists.txt: Multiarch support
@@ -2461,15 +2469,4 @@
 	  test/T_External, test/T_External/expected.txt,
 	  test/T_External/grammar.txt, test/T_External/input.txt,
 	  test/T_External/run.pl: And now for some testing...
-
-2011-06-02  tino
-
-	* [r7230] scripts/CG3_External.pm, scripts/external.pl: WIP: Perl
-	  module for easier externals
-	* [r7229] CMake/FindBoost.cmake: Fix finding Boost for CMake 2.6.4
-
-2011-06-01  tino
-
-	* [r7228] Makefile.am, autogen.sh, configure.ac, m4,
-	  src/Makefile.am: CMake is the future.
 
