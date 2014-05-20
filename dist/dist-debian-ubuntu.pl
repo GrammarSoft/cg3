@@ -56,7 +56,7 @@ print `tar -zcvf 'cg3_$version.orig.tar.gz' 'cg3-$version'`;
 foreach my $distro (keys %distros) {
 	my $chver = $version;
 	if ($distros{$distro} eq 'ubuntu') {
-		$chver .= "-ubuntu1~".$distro."1";
+		$chver .= "-0ubuntu1~".$distro."1";
 	}
 	else {
 		$chver .= "-1~".$distro."1";
