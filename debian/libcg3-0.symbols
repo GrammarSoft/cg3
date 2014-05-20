@@ -1,4 +1,6 @@
 libcg3.so.0 libcg3-0 #MINVER#
+ (optional=templinst|c++)"std::basic_string<unsigned short, std::char_traits<unsigned short>, std::allocator<unsigned short> >::_M_leak_hard()@Base" 0.9.8.9567
+ (optional=templinst|c++)"std::basic_string<unsigned short, std::char_traits<unsigned short>, std::allocator<unsigned short> >::assign(std::basic_string<unsigned short, std::char_traits<unsigned short>, std::allocator<unsigned short> > const&)@Base" 0.9.8.9567
  (optional=templinst|c++)"boost::unordered::detail::node_constructor<std::allocator<boost::unordered::detail::ptr_node<std::pair<unsigned int const, CG3::Tag*> > > >::~node_constructor()@Base" 0.9.8.9567
  (optional=templinst|c++)"boost::unordered::detail::node_constructor<std::allocator<boost::unordered::detail::ptr_node<std::pair<unsigned int const, CG3::Tag*> > > >::~node_constructor()@Base" 0.9.8.9567
  (optional=templinst|c++|regex)"^boost::unordered::detail::prime_list_template<.*?>::value@Base" 0.9.8.9567
