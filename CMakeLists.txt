@@ -48,12 +48,9 @@ else()
 	endif()
 
 	# Generate pkg-config file
-	if(NOT DEFINED CMAKE_INSTALL_LIBDIR)
-		set(CMAKE_INSTALL_LIBDIR lib)
-	endif()
 	set(prefix      ${CMAKE_INSTALL_PREFIX})
 	set(exec_prefix ${CMAKE_INSTALL_PREFIX})
-	set(libdir      ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR})
+	set(libdir      ${CMAKE_INSTALL_PREFIX}/lib/${CMAKE_LIBRARY_ARCHITECTURE})
 	set(includedir  ${CMAKE_INSTALL_PREFIX}/include)
 	configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cg3.pc.in
 		${CMAKE_CURRENT_BINARY_DIR}/cg3.pc @ONLY)

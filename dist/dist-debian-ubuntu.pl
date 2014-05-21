@@ -14,10 +14,14 @@ use Getopt::Long;
 my %opts = (
 	'm' => 'Tino Didriksen <mail@tinodidriksen.com>',
 	'e' => 'Tino Didriksen <mail@tinodidriksen.com>',
+	'dv' => 1,
+	'fv' => 1,
 );
 GetOptions(
 	'm=s' => \$opts{'m'},
 	'e=s' => \$opts{'e'},
+	'distv=i' => \$opts{'dv'},
+	'flavv=i' => \$opts{'fv'},
 );
 
 my %distros = (
@@ -54,13 +58,11 @@ print `svn export http://visl.sdu.dk/svn/visl/tools/vislcg3/trunk/ 'cg3-$version
 print `tar -zcvf 'cg3_$version.orig.tar.gz' 'cg3-$version'`;
 
 foreach my $distro (keys %distros) {
-	my $chver = $version;
+	my $chver = $version.'-';
 	if ($distros{$distro} eq 'ubuntu') {
-		$chver .= "-0ubuntu1~".$distro."1";
+		$chver .= "0ubuntu";
 	}
-	else {
-		$chver .= "-1~".$distro."1";
-	}
+	$chver .= $opts{'dv'}."~".$distro.$opts{'fv'};
 	my $chlog = <<CHLOG;
 cg3 ($chver) $distro; urgency=low
 
@@ -70,6 +72,7 @@ cg3 ($chver) $distro; urgency=low
 CHLOG
 
 	`cp -al 'cg3-$version' 'cg3-$chver'`;
+	unlink "cg3-$chver/debian/changelog";
 	open FILE, ">cg3-$chver/debian/changelog" or die "Could not write to debian/changelog: $!\n";
 	print FILE $chlog;
 	close FILE;
