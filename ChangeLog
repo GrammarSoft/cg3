@@ -1,5 +1,13 @@
+2014-05-21  tino
+
+	* [r9932] CMakeLists.txt, debian/cg3.install: Install cg.el to
+	  global cg3-mode.el
+	* [r9931] debian/control: Dependency resolution is weird
+
 2014-05-20  tino
 
+	* [r9930] ChangeLog, src/version.hpp: Version bump, 'cause
+	  Launchpad
 	* [r9929] debian/control, dist/dist-debian-ubuntu.pl: Version
 	  trickery
 	* [r9928] CMake/DebSourcePPA.cmake, CMakeLists.txt,
@@ -2454,19 +2462,4 @@
 2011-06-06  tino
 
 	* [r7238] manual/installation.xml: Manual now says to use CMake
-
-2011-06-05  tino
-
-	* [r7235] manual/externals.xml, manual/manual.xml,
-	  manual/rules.xml: Documentation for EXTERNAL
-
-2011-06-04  tino
-
-	* [r7234] scripts/cg3-autobin.pl, src/version.h,
-	  test/T_External/run.pl: cg3
-	* [r7233] scripts/CG3_External.pm, scripts/cg3-autobin.pl,
-	  scripts/external.pl, src/GrammarApplicator.cpp, src/version.h,
-	  test/T_External, test/T_External/expected.txt,
-	  test/T_External/grammar.txt, test/T_External/input.txt,
-	  test/T_External/run.pl: And now for some testing...
 
