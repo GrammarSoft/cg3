@@ -182,6 +182,20 @@ target_link_libraries(vislcg3 ${LINKLIB})
 add_executable(test_libcg3 test_libcg3.c)
 target_link_libraries(test_libcg3 ${LINKLIB_TEST})
 
+if(APPLE)
+	foreach(t libcg3-shared cg-conv cg-comp cg-proc vislcg3)
+		get_property("_file_${t}" TARGET ${t} PROPERTY LOCATION)
+		add_custom_command(
+			TARGET ${t}
+			POST_BUILD
+			COMMAND install_name_tool -add_rpath ${CMAKE_CURRENT_BINARY_DIR} ${_file_${t}}
+			COMMAND install_name_tool -change libcg3-private.dylib @rpath/libcg3-private.dylib ${_file_${t}}
+			COMMENT "Adding @rpath to ${t}"
+			VERBATIM
+		)
+	endforeach()
+endif()
+
 add_test(t_libcg3 test_libcg3 "${CMAKE_CURRENT_SOURCE_DIR}/../test/T_BasicSelect/grammar.cg3")
 
 install(TARGETS libcg3 ARCHIVE DESTINATION "lib/${CMAKE_LIBRARY_ARCHITECTURE}")
@@ -192,11 +206,3 @@ if(NOT MSVC)
 	install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/cg3.h" DESTINATION include)
 endif()
 install(TARGETS cg-comp cg-proc cg-conv vislcg3 RUNTIME DESTINATION bin)
-
-if(APPLE)
-	install(CODE "execute_process(COMMAND install_name_tool -change libcg3-private.dylib @rpath/libcg3-private.dylib ${CMAKE_INSTALL_PREFIX}/lib/libcg3.dylib)")
-	install(CODE "execute_process(COMMAND install_name_tool -change libcg3-private.dylib @rpath/libcg3-private.dylib ${CMAKE_INSTALL_PREFIX}/bin/cg-comp)")
-	install(CODE "execute_process(COMMAND install_name_tool -change libcg3-private.dylib @rpath/libcg3-private.dylib ${CMAKE_INSTALL_PREFIX}/bin/cg-conv)")
-	install(CODE "execute_process(COMMAND install_name_tool -change libcg3-private.dylib @rpath/libcg3-private.dylib ${CMAKE_INSTALL_PREFIX}/bin/cg-proc)")
-	install(CODE "execute_process(COMMAND install_name_tool -change libcg3-private.dylib @rpath/libcg3-private.dylib ${CMAKE_INSTALL_PREFIX}/bin/vislcg3)")
-endif()
