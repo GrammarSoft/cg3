@@ -1,5 +1,18 @@
+2014-05-27  tino
+
+	* [r9938] src/CMakeLists.txt: Fix OS X @rpath to allow testing
+
+2014-05-26  tino
+
+	* [r9937] src/CMakeLists.txt: Fix OS X to use @rpath for finding
+	  libcg3-private.dylib
+
 2014-05-21  tino
 
+	* [r9934] dist/dist-debian-ubuntu.pl: Produce identical .tar.bz2
+	  across packaging changes
+	* [r9933] CMakeLists.txt, ChangeLog, dist/dist-debian-ubuntu.pl,
+	  src/version.hpp: Fix pkgconfig; Unlink before write
 	* [r9932] CMakeLists.txt, debian/cg3.install: Install cg.el to
 	  global cg3-mode.el
 	* [r9931] debian/control: Dependency resolution is weird
@@ -2447,19 +2460,4 @@
 
 	* [r7293] ., src: Ignores
 	* [r7292] ., src: Updated ignores
-
-2011-06-14  tino
-
-	* [r7289] scripts/external_text.pl: cg3
-
-2011-06-13  tino
-
-	* [r7286] scripts/external_text.pl: cg3
-	* [r7285] src/ContextualTest.cpp, src/GrammarApplicator.cpp,
-	  src/cg3.h, src/libcg3.cpp, test/T_Templates/grammar.txt:
-	  Templates may now recurse.
-
-2011-06-06  tino
-
-	* [r7238] manual/installation.xml: Manual now says to use CMake
 
