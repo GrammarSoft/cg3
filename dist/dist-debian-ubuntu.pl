@@ -79,7 +79,6 @@ CHLOG
 	print FILE $chlog;
 	close FILE;
 	print `dpkg-source '-DMaintainer=$opts{m}' '-DUploaders=$opts{e}' -b 'cg3-$chver'`;
-	#print `debsign 'cg3_$chver.dsc'`;
 	chdir "cg3-$chver";
 	print `dpkg-genchanges -S -sa '-m$opts{m}' '-e$opts{e}' > '../cg3_$chver\_source.changes'`;
 	chdir '..';
@@ -87,4 +86,3 @@ CHLOG
 }
 
 chdir "/tmp";
-#print `rm -rf /tmp/cg3-debian.$$`;
