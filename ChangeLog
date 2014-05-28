@@ -1,5 +1,10 @@
 2014-05-27  tino
 
+	* [r9940] dist/build-debian-ubuntu.sh, dist/dist-debian-ubuntu.pl:
+	  Build script for nightly fully automatic publishing
+	* [r9939] ChangeLog, src/CMakeLists.txt, src/version.hpp: rpath
+	  changes for *nix to allow for relocatable packages on all
+	  platforms
 	* [r9938] src/CMakeLists.txt: Fix OS X @rpath to allow testing
 
 2014-05-26  tino
@@ -2455,9 +2460,4 @@
 	  means once per that line; cg-conv now takes -a --a2v
 	* [r7294] scripts/external.pl, scripts/external_text.pl: Apparently
 	  stderr needs to be autoflushed as well...
-
-2011-06-15  tino
-
-	* [r7293] ., src: Ignores
-	* [r7292] ., src: Updated ignores
 

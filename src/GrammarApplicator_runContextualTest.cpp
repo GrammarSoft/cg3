@@ -111,7 +111,7 @@ Cohort *getCohortInWindow(SingleWindow *& sWindow, size_t position, const Contex
 	// ToDo: (NOT *) and (*C) tests can be cached
 	if (test->pos & POS_ABSOLUTE) {
 		if (test->offset < 0) {
-			pos = (static_cast<int32_t>(sWindow->cohorts.size())-1) - test->offset;
+			pos = static_cast<int32_t>(sWindow->cohorts.size()) + test->offset;
 		}
 		else {
 			pos = test->offset;
