@@ -1,3 +1,0 @@
-# cg3-autobin.pl is already widely used by tools building on CG-3,
-# so it would be quite messy to rename it
-script-with-language-extension
