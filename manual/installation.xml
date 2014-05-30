@@ -106,6 +106,9 @@
           make install
         </screen>
         Rest of this page can be skipped.
+        If you get errors that ICU cannot be found, you may have to add
+        -DCMAKE_INCLUDE_PATH=/usr/local/opt/icu4c/include -DCMAKE_LIBRARY_PATH=/usr/local/opt/icu4c/lib
+        to the cmake.sh line.
       </para>
     </section>
 
