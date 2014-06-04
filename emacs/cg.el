@@ -3,7 +3,7 @@
 ;; Copyright (C) 2010-2013 Kevin Brubeck Unhammer
 
 ;; Author: Kevin Brubeck Unhammer <unhammer@fsfe.org>
-;; Version: 0.1.5
+;; Version: 0.1.6
 ;; Url: http://beta.visl.sdu.dk/constraint_grammar.html
 ;; Keywords: languages
 
@@ -56,7 +56,7 @@
 
 ;;; Code:
 
-(defconst cg-version "0.1.5" "Version of cg-mode")
+(defconst cg-version "0.1.6" "Version of cg-mode")
 
 (eval-when-compile (require 'cl))
 
@@ -130,6 +130,29 @@ See also `cg-command' and `cg-pre-pipe'."
   :type 'string)
 (make-variable-buffer-local 'cg-post-pipe)
 
+(defconst cg-kw-set-list
+  '("LIST" "SET" "TEMPLATE")
+  "Used for indentation, highlighting etc.; don't change without
+re-evaluating `cg-kw-re' (or all of cg.el).")
+(defconst cg-kw-rule-list
+  '("SUBSTITUTE"
+    "IFF"
+    "ADDCOHORT" "ADDCOHORT-AFTER" "ADDCOHORT-BEFORE"
+    "REMCOHORT"
+    "COPY"
+    "MAP"    "ADD"
+    "SELECT" "REMOVE"
+    "SETPARENT"    "SETCHILD"
+    "ADDRELATION"  "REMRELATION"  "SETRELATION"
+    "ADDRELATIONS" "REMRELATIONS" "SETRELATIONS"
+    "APPEND")
+  "Used for indentation, highlighting etc.; don't change without
+re-evaluating `cg-kw-re' (or all of cg.el)." )
+
+(defconst cg-kw-set-re (regexp-opt cg-kw-set-list))
+(defconst cg-kw-rule-re (regexp-opt cg-kw-rule-list))
+(defconst cg-kw-re (regexp-opt (append cg-kw-set-list cg-kw-rule-list)))
+
 
 ;;;###autoload
 (defcustom cg-indentation 8
@@ -139,14 +162,14 @@ See also `cg-command' and `cg-pre-pipe'."
 
 (defconst cg-font-lock-keywords-1
   (let ((<word>? "\\(?:\"<[^>]+>\"\\)?"))
-    `(("^[ \t]*\\(LIST\\|SET\\|TEMPLATE\\)[ \t]+\\(\\(\\sw\\|\\s_\\)+\\)"
+    `((,(format "^[ \t]*\\(%s\\)[ \t]+\\(\\(\\sw\\|\\s_\\)+\\)" cg-kw-set-re)
        (1 font-lock-keyword-face)
        (2 font-lock-variable-name-face))
       ("^[ \t]*\\(MAPPING-PREFIX\\|DELIMITERS\\|SOFT-DELIMITERS\\)"
        1 font-lock-keyword-face)
       ("^[ \t]*\\(SECTION\\|AFTER-SECTIONS\\|BEFORE-SECTIONS\\|MAPPINGS\\|CONSTRAINTS\\|CORRECTIONS\\)"
        1 font-lock-warning-face)
-      (,(concat "^[ \t]*" <word>? "[ \t]*\\(SETPARENT\\|SETCHILD\\|ADDRELATIONS?\\|SETRELATIONS?\\|REMRELATIONS?\\|SUBSTITUTE\\|ADDCOHORT\\|REMCOHORT\\|COPY\\|MAP\\|IFF\\|ADD\\|SELECT\\|REMOVE\\)\\(\\(:\\(\\s_\\|\\sw\\)+\\)?\\)")
+      (,(format "^[ \t]*%s[ \t]*\\(%s\\)\\(\\(:\\(\\s_\\|\\sw\\)+\\)?\\)" <word>? cg-kw-rule-re)
        (1 font-lock-keyword-face)
        (2 font-lock-variable-name-face))
       ("[ \t\n]\\([+-]\\)[ \t\n]"
@@ -275,18 +298,6 @@ seems this function only runs on comments and strings..."
 
 ;;; Indentation
 
-(defvar cg-kw-list
-  '("SUBSTITUTE" "IFF"
-    "ADDCOHORT" "REMCOHORT"
-    "COPY"
-    "MAP"    "ADD"
-    "SELECT" "REMOVE"
-    "LIST"   "SET"
-    "SETPARENT"    "SETCHILD"
-    "ADDRELATION"  "REMRELATION"
-    "ADDRELATIONS" "REMRELATIONS"
-    ";"))
-
 (defun cg-calculate-indent ()
   "Return the indentation for the current line."
 ;;; idea from sh-mode, use font face?
@@ -301,7 +312,7 @@ seems this function only runs on comments and strings..."
       (let ((kw-pos (progn
                       (goto-char (1- (or (search-forward ";" (line-end-position) t)
                                          (line-end-position))))
-                      (re-search-backward (regexp-opt cg-kw-list) nil 'noerror))))
+                      (re-search-backward cg-kw-re nil 'noerror))))
         (setq case-fold-search old-case-fold-search)
         (when kw-pos
           (let* ((kw (match-string-no-properties 0)))
@@ -502,7 +513,7 @@ from, otherwise all CG buffers share one input buffer."
   (list cg--file))
 
 (defconst cg-output-regexp-alist
-  `(("\\(?:SETPARENT\\|SETCHILD\\|ADDRELATIONS?\\|SETRELATIONS?\\|REMRELATIONS?\\|SUBSTITUTE\\|ADDCOHORT\\|ADDCOHORT-AFTER\\|ADDCOHORT-BEFORE\\|REMCOHORT\\|COPY\\|MAP\\|IFF\\|ADD\\|SELECT\\|REMOVE\\):\\([^ \n\t:]+\\)\\(?::[^ \n\t]+\\)?"
+  `((,(format "%s:\\([^ \n\t:]+\\)\\(?::[^ \n\t]+\\)?" cg-kw-rule-re)
      ,#'cg-get-file 1 nil 1)
     ("^Warning: .*?line \\([0-9]+\\)"
      ,#'cg-get-file 1 nil 1)
