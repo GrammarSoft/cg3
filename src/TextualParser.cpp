@@ -449,13 +449,12 @@ int TextualParser::parseContextualTestPosition(UChar *& p, ContextualTest& t) {
 
 		size_t tries;
 		for (tries=0 ; *p != ' ' && *p != '(' && tries < 100 ; ++tries) {
-			// ToDo: SUB_SCANALL/FIRST does nothing at all - make them do something.
 			if (*p == '*' && *(p+1) == '*') {
-				t.pos |= POS_SUB_SCANALL;
+				t.offset_sub = GSR_ANY;
 				p += 2;
 			}
 			if (*p == '*') {
-				t.pos |= POS_SUB_SCANFIRST;
+				t.offset_sub = GSR_ANY;
 				++p;
 			}
 			if (*p == '-') {
