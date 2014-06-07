@@ -67,8 +67,8 @@ namespace CG3 {
 		POS_UNKNOWN        = (1 << 25),
 		POS_RELATION       = (1 << 26),
 		POS_ATTACH_TO      = (1 << 27),
-		POS_SUB_SCANFIRST  = (1 << 28),
-		POS_SUB_SCANALL    = (1 << 29),
+		// 28 unused
+		// 29 unused
 		POS_DEP_GLOB       = (1 << 30),
 		POS_64BIT          = (1ull << 31),
 		POS_LEFT           = (1ull << 32),
@@ -80,7 +80,11 @@ namespace CG3 {
 		MASK_POS_DEPREL    = MASK_POS_DEP|POS_RELATION,
 		MASK_POS_CDEPREL   = MASK_POS_DEPREL|POS_CAREFUL,
 		MASK_POS_LORR      = POS_LEFT|POS_RIGHT|POS_LEFTMOST|POS_RIGHTMOST,
-		MASK_POS_SCAN      = POS_SCANFIRST|POS_SCANALL|POS_DEP_DEEP|POS_SUB_SCANFIRST|POS_SUB_SCANALL|POS_DEP_GLOB,
+		MASK_POS_SCAN      = POS_SCANFIRST|POS_SCANALL|POS_DEP_DEEP|POS_DEP_GLOB,
+	};
+
+	enum GSR_SPECIALS {
+		GSR_ANY = 32767
 	};
 
 	class ContextualTest {

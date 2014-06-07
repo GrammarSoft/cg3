@@ -250,6 +250,37 @@ namespace CG3 {
 		if (sub_reading == 0) {
 			return tr;
 		}
+		if (sub_reading == GSR_ANY) {
+			static Reading reading(tr->parent);
+			reading = *tr;
+			reading.next = 0;
+			while (tr->next) {
+				tr = tr->next;
+				reading.tags_list.push_back(0);
+				reading.tags_list.insert(reading.tags_list.end(), tr->tags_list.begin(), tr->tags_list.end());
+				boost_foreach(uint32_t tag, tr->tags) {
+					reading.tags.insert(tag);
+					reading.tags_bloom.insert(tag);
+				}
+				boost_foreach(uint32_t tag, tr->tags_plain) {
+					reading.tags_plain.insert(tag);
+					reading.tags_plain_bloom.insert(tag);
+				}
+				boost_foreach(uint32_t tag, tr->tags_textual) {
+					reading.tags_textual.insert(tag);
+					reading.tags_textual_bloom.insert(tag);
+				}
+				reading.tags_numerical.insert(tr->tags_numerical.begin(), tr->tags_numerical.end());
+				if (tr->mapped) {
+					reading.mapped = true;
+				}
+				if (tr->mapping) {
+					reading.mapping = tr->mapping;
+				}
+			}
+			reading.rehash();
+			return &reading;
+		}
 		if (sub_reading > 0) {
 			for (int i=0 ; i<sub_reading && tr ; ++i) {
 				tr = tr->next;

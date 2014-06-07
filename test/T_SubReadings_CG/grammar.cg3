@@ -17,3 +17,6 @@ ADD SUB:-2 (sub-2-bad) (*) (0/2 (sub1)) ;
 
 SELECT SUB:1 ("fyg1") ;
 REMOVE SUB:1 ("aux1") ;
+
+ADD (any-good) (*) (0/* ("btu3")) ;
+ADD (any-good-negate) (*) (NEGATE 0/* ("btu3")) ;

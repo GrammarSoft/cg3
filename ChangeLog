@@ -1,3 +1,18 @@
+2014-06-04  unhammer
+
+	* [r9959] emacs/cg.el: list of ADD/REMOVE/etc. only defined one
+	  place
+
+2014-05-30  tino
+
+	* [r9944] manual/installation.xml: Homebrew workaround
+
+2014-05-28  tino
+
+	* [r9942] debian, dist: Moved packaging scripts
+	* [r9941] ChangeLog, src/GrammarApplicator_runContextualTest.cpp,
+	  src/version.hpp: Fix @-N
+
 2014-05-27  tino
 
 	* [r9940] dist/build-debian-ubuntu.sh, dist/dist-debian-ubuntu.pl:
@@ -2453,11 +2468,4 @@
 	  src/version.h, test/T_Relations/expected.txt,
 	  test/T_Relations/grammar.txt: Added rule flag REVERSE and it is
 	  now possible to use FROM instead of TO.
-	* [r7298] src/GrammarApplicator.cpp: Fewer temporary buffers
-	* [r7297] src/GrammarApplicator_runRules.cpp: ONCE means once per
-	  that line
-	* [r7295] src/GrammarApplicator_runRules.cpp, src/cg_conv.cpp: ONCE
-	  means once per that line; cg-conv now takes -a --a2v
-	* [r7294] scripts/external.pl, scripts/external_text.pl: Apparently
-	  stderr needs to be autoflushed as well...
 
