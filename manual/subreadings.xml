@@ -75,7 +75,7 @@
       <indexterm>
         <primary>SUB:N</primary>
       </indexterm>
-  
+
       <para>
         Rule option SUB:N tells a rule which sub-reading it should operate on and which it should test as target.
         The N is an integer in the range -2^31 to 2^31. SUB:0 is the primary reading and same as not specifying SUB.
@@ -104,11 +104,15 @@
       <title>Contextual Option /N</title>
       <indexterm>
         <primary>/N</primary>
+        <secondary>/*</secondary>
       </indexterm>
 
       <para>
         Context option /N tests the N'th sub-reading of the currently active reading, where N follows the same rules
         as for SUB:N above. The /N must be last in the context position.
+      </para>
+      <para>
+        If N is * then the test will search the main reading and all sub-readings.
       </para>
       <para>
         Given the above CG input and the rules
