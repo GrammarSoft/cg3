@@ -487,6 +487,12 @@ int TextualParser::parseContextualTestPosition(UChar *& p, ContextualTest& t) {
 		u_fprintf(ux_stderr, "Error: Invalid position on line %u - caused endless loop!\n", result->lines);
 		incErrorCount();
 	}
+	if (!ISSPACE(*p)) {
+		UChar op = 0;
+		swapper<UChar> swp(true, op, p[16]);
+		u_fprintf(ux_stderr, "Error: Garbage data '%S' encountered while parsing contextual position on line %u!\n", p, result->lines);
+		incErrorCount();
+	}
 	if (had_digits) {
 		if (t.pos & (POS_DEP_CHILD|POS_DEP_SIBLING|POS_DEP_PARENT)) {
 			u_fprintf(ux_stderr, "Error: Invalid position on line %u - cannot combine offsets with dependency!\n", result->lines);
@@ -2043,10 +2049,9 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 				result->lines += SKIPTOWS(p);
 			}
 			if (*p && *p != ';' && *p != '"' && !ISNL(*p) && !ISSPACE(*p)) {
-				UChar op = *p;
-				p[16] = 0;
+				UChar op = 0;
+				swapper<UChar> swp(true, op, p[16]);
 				u_fprintf(ux_stderr, "Error: Garbage data '%S...' encountered on line %u!\n", p, result->lines);
-				p[16] = op;
 				incErrorCount();
 			}
 			if (ISNL(*p)) {
