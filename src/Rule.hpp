@@ -61,6 +61,8 @@ namespace CG3 {
 		RF_REVERSE      = (1 << 22),
 		RF_SUB          = (1 << 23),
 		RF_OUTPUT       = (1 << 24),
+
+		MASK_ENCL = RF_ENCL_INNER | RF_ENCL_OUTER | RF_ENCL_FINAL | RF_ENCL_ANY,
 	};
 
 	class Rule {
