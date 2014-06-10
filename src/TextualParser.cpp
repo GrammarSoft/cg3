@@ -23,6 +23,7 @@
 #include "Strings.hpp"
 #include "Grammar.hpp"
 #include "ContextualTest.hpp"
+#include <bitset>
 
 namespace CG3 {
 
@@ -882,10 +883,12 @@ void TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 			}
 		}
 	}
-	// ToDo: ENCL_* are exclusive...detect multiple of them better.
-	if (rule->flags & RF_ENCL_OUTER && rule->flags & RF_ENCL_INNER) {
-		u_fprintf(ux_stderr, "Error: Line %u: ENCL_OUTER and ENCL_INNER are mutually exclusive!\n", result->lines);
-		incErrorCount();
+	if (rule->flags & MASK_ENCL) {
+		std::bitset<sizeof(rule->flags)*CHAR_BIT> bits(rule->flags & MASK_ENCL);
+		if (bits.count() > 1) {
+			u_fprintf(ux_stderr, "Error: Line %u: ENCL_* are all mutually exclusive!\n", result->lines);
+			incErrorCount();
+		}
 	}
 	if (rule->flags & RF_KEEPORDER && rule->flags & RF_VARYORDER) {
 		u_fprintf(ux_stderr, "Error: Line %u: KEEPORDER and VARYORDER are mutually exclusive!\n", result->lines);
