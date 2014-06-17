@@ -157,6 +157,7 @@ namespace CG3 {
 
 		uint32_t match_single, match_comp, match_sub;
 		uint32_t begintag, endtag;
+		Tag *tag_begin, *tag_end;
 		uint32_t par_left_tag, par_right_tag;
 		uint32_t par_left_pos, par_right_pos;
 		bool did_final_enclosure;
@@ -210,6 +211,9 @@ namespace CG3 {
 		Cohort *runParenthesisTest(SingleWindow *sWindow, const Cohort *current, const ContextualTest *test, Cohort **deep = 0, Cohort *origin = 0);
 		Cohort *runRelationTest(SingleWindow *sWindow, Cohort *current, const ContextualTest *test, Cohort **deep = 0, Cohort *origin = 0);
 
+		bool doesWordformsMatch(const Tag *cword, const Tag *rword);
+		uint32_t doesTagMatchRegexp(uint32_t test, const Tag& tag, bool bypass_index = false);
+		uint32_t doesTagMatchIcase(uint32_t test, const Tag& tag, bool bypass_index = false);
 		uint32_t doesRegexpMatchReading(const Reading& reading, const Tag& tag, bool bypass_index = false);
 		uint32_t doesTagMatchReading(const Reading& reading, const Tag& tag, bool unif_mode = false, bool bypass_index = false);
 		bool doesSetMatchReading_tags(const Reading& reading, const Set& theset, bool unif_mode = false);

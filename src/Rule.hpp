@@ -68,7 +68,7 @@ namespace CG3 {
 	class Rule {
 	public:
 		UChar *name;
-		uint32_t wordform;
+		Tag *wordform;
 		uint32_t target;
 		uint32_t childset1, childset2;
 		uint32_t line, number;

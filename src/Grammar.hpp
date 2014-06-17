@@ -103,6 +103,7 @@ namespace CG3 {
 		RuleVector rules;
 		RuleVector after_sections;
 		RuleVector null_section;
+		RuleVector wf_rules;
 
 		Grammar();
 		~Grammar();

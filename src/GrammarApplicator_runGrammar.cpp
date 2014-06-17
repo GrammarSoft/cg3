@@ -32,11 +32,10 @@ namespace CG3 {
 void GrammarApplicator::initEmptySingleWindow(SingleWindow *cSWindow) {
 	Cohort *cCohort = new Cohort(cSWindow);
 	cCohort->global_number = 0;
-	cCohort->wordform = begintag;
+	cCohort->wordform = tag_begin;
 
 	Reading *cReading = new Reading(cCohort);
 	cReading->baseform = begintag;
-	cReading->wordform = begintag;
 	insert_if_exists(cReading->parent->possible_sets, grammar->sets_any);
 	addTagToReading(*cReading, begintag);
 
@@ -47,12 +46,11 @@ void GrammarApplicator::initEmptySingleWindow(SingleWindow *cSWindow) {
 
 Reading *GrammarApplicator::initEmptyCohort(Cohort& cCohort) {
 	Reading *cReading = new Reading(&cCohort);
-	cReading->wordform = cCohort.wordform;
 	if (allow_magic_readings) {
 		cReading->baseform = makeBaseFromWord(cCohort.wordform)->hash;
 	}
 	else {
-		cReading->baseform = cCohort.wordform;
+		cReading->baseform = cCohort.wordform->hash;
 	}
 	insert_if_exists(cReading->parent->possible_sets, grammar->sets_any);
 	addTagToReading(*cReading, cCohort.wordform);
@@ -265,7 +263,7 @@ gotaline:
 			}
 			cCohort = new Cohort(cSWindow);
 			cCohort->global_number = gWindow->cohort_counter++;
-			cCohort->wordform = addTag(&cleaned[0])->hash;
+			cCohort->wordform = addTag(&cleaned[0]);
 			lCohort = cCohort;
 			lReading = 0;
 			indents.clear();
@@ -274,8 +272,7 @@ gotaline:
 			space += 2;
 			if (space[0]) {
 				cCohort->wread.reset(new Reading(cCohort));
-				cCohort->wread->wordform = cCohort->wordform;
-				addTagToReading(*cCohort->wread, cCohort->wread->wordform);
+				addTagToReading(*cCohort->wread, cCohort->wordform);
 				while (space[0]) {
 					SKIPWS(space, 0, 0, true);
 					UChar *n = space;
@@ -313,9 +310,8 @@ gotaline:
 			else {
 				cReading = new Reading(cCohort);
 			}
-			cReading->wordform = cCohort->wordform;
 			insert_if_exists(cReading->parent->possible_sets, grammar->sets_any);
-			addTagToReading(*cReading, cReading->wordform);
+			addTagToReading(*cReading, cCohort->wordform);
 
 			UChar *space = &cleaned[1];
 			UChar *base = space;

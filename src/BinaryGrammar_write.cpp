@@ -362,7 +362,7 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 		}
 		if (r->wordform) {
 			fields |= (1 << 6);
-			writeSwapped(buffer, r->wordform);
+			writeSwapped(buffer, r->wordform->number);
 		}
 		if (r->varname) {
 			fields |= (1 << 7);

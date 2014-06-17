@@ -37,6 +37,25 @@ enum {
 	RV_DELIMITED = 4,
 };
 
+bool GrammarApplicator::doesWordformsMatch(const Tag *cword, const Tag *rword) {
+	if (rword && rword != cword) {
+		if (rword->type & T_REGEXP) {
+			if (!doesTagMatchRegexp(cword->hash, *rword)) {
+				return false;
+			}
+		}
+		else if (rword->type & T_CASE_INSENSITIVE) {
+			if (!doesTagMatchIcase(cword->hash, *rword)) {
+				return false;
+			}
+		}
+		else {
+			return false;
+		}
+	}
+	return true;
+}
+
 bool GrammarApplicator::updateRuleToCohorts(Cohort& c, const uint32_t& rsit) {
 	// Check whether this rule is in the allowed rule list from cmdline flag --rule(s)
 	if (!valid_rules.empty() && !valid_rules.contains(rsit)) {
@@ -44,7 +63,7 @@ bool GrammarApplicator::updateRuleToCohorts(Cohort& c, const uint32_t& rsit) {
 	}
 	SingleWindow *current = c.parent;
 	const Rule *r = grammar->rule_by_number[rsit];
-	if (r->wordform && r->wordform != c.wordform) {
+	if (!doesWordformsMatch(c.wordform, r->wordform)) {
 		return false;
 	}
 	CohortSet& cohortset = current->rule_to_cohorts[rsit];
@@ -282,12 +301,6 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 			}
 			// If it's a Delimit rule and we're at the final cohort, skip it.
 			if (type == K_DELIMIT && c == current.cohorts.size()-1) {
-				continue;
-			}
-			// If the rule has a wordform and it is not this one, skip it.
-			// ToDo: Is this even used still? updateRuleToCohorts() should handle this now.
-			if (rule.wordform && rule.wordform != cohort->wordform) {
-				++rule.num_fail;
 				continue;
 			}
 
@@ -698,7 +711,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						const TagList theTags = getTagList(*rule.maplist);
 						const_foreach (TagList, theTags, tter, tter_end) {
 							if ((*tter)->type & T_WORDFORM) {
-								cCohort->wordform = (*tter)->hash;
+								cCohort->wordform = *tter;
 								wf = *tter;
 								continue;
 							}
@@ -815,7 +828,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						reading.hit_by.push_back(rule.number);
 						reading.noprint = false;
 						reading.tags_list.clear();
-						reading.tags_list.push_back(reading.wordform);
+						reading.tags_list.push_back(cohort->wordform->hash);
 						reading.tags_list.push_back(reading.baseform);
 						reflowReading(reading);
 						TagList mappings;
@@ -884,7 +897,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 
 						// Should Substitute really do nothing if no tags were removed? 2013-10-21, Eckhard says this is expected behavior.
 						if (tagb != reading.tags_list.size()) {
-							uint32_t wf = 0;
+							Tag *wf = 0;
 							index_ruleCohort_no.clear();
 							reading.hit_by.push_back(rule.number);
 							reading.noprint = false;
@@ -910,7 +923,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 								}
 								else {
 									if (tag->type & T_WORDFORM) {
-										wf = tag->hash;
+										wf = tag;
 									}
 									reading.tags_list.insert(reading.tags_list.begin()+tpos, tag->hash);
 									++tpos;
@@ -938,6 +951,18 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 									addTagToReading(*r, wf);
 								}
 								reading.parent->wordform = wf;
+								boost_foreach (Rule *r, grammar->wf_rules) {
+									if (doesWordformsMatch(wf, r->wordform)) {
+										current.rule_to_cohorts[r->number].insert(cohort);
+										intersects.insert(r->number);
+									}
+									else {
+										current.rule_to_cohorts[r->number].erase(cohort);
+									}
+								}
+								updateValidRules(rules, intersects, wf->hash, reading);
+								iter_rules = intersects.find(rule.number);
+								iter_rules_end = intersects.end();
 							}
 						}
 						if (reading.hash != state_hash) {

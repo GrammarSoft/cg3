@@ -41,7 +41,6 @@ namespace CG3 {
 		bool noprint;
 		bool matched_target;
 		bool matched_tests;
-		uint32_t wordform;
 		uint32_t baseform;
 		uint32_t hash;
 		uint32_t hash_plain;

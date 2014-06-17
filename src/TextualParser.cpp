@@ -780,7 +780,7 @@ void TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 		u_strncpy(&gbuffers[0][0], lp, c);
 		gbuffers[0][c] = 0;
 		Tag *wform = result->allocateTag(&gbuffers[0][0]);
-		rule->wordform = wform->hash;
+		rule->wordform = wform;
 	}
 
 	p += keywords[key].length();

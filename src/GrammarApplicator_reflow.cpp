@@ -488,9 +488,6 @@ uint32_t GrammarApplicator::addTagToReading(Reading& reading, Tag *tag, bool reh
 	if (!reading.baseform && (tag->type & T_BASEFORM)) {
 		reading.baseform = tag->hash;
 	}
-	if (!reading.wordform && (tag->type & T_WORDFORM)) {
-		reading.wordform = tag->hash;
-	}
 	if (grammar->has_dep && (tag->type & T_DEPENDENCY) && !(reading.parent->type & CT_DEP_DONE)) {
 		reading.parent->dep_self = tag->dep_self;
 		reading.parent->dep_parent = tag->dep_parent;
@@ -530,9 +527,6 @@ void GrammarApplicator::delTagFromReading(Reading& reading, uint32_t utag) {
 	}
 	if (utag == reading.baseform) {
 		reading.baseform = 0;
-	}
-	if (utag == reading.wordform) {
-		reading.wordform = 0;
 	}
 	reading.rehash();
 	reading.parent->type &= ~CT_NUM_CURRENT;
@@ -712,11 +706,10 @@ Cohort *GrammarApplicator::delimitAt(SingleWindow& current, Cohort *cohort) {
 	current.parent->cohort_counter++;
 	Cohort *cCohort = new Cohort(nwin);
 	cCohort->global_number = 0;
-	cCohort->wordform = begintag;
+	cCohort->wordform = tag_begin;
 
 	Reading *cReading = new Reading(cCohort);
 	cReading->baseform = begintag;
-	cReading->wordform = begintag;
 	insert_if_exists(cReading->parent->possible_sets, grammar->sets_any);
 	addTagToReading(*cReading, begintag);
 

@@ -88,6 +88,89 @@ inline bool TagSet_SubsetOf_TSet(const TagSet& a, const T& b) {
 }
 
 /**
+* Tests whether a given input tag matches a given tag's stored regular expression.
+*
+* @param[in] test The tag to be tested
+* @param[in] tag The tag to test against; only uses the hash and regexp members
+*/
+uint32_t GrammarApplicator::doesTagMatchRegexp(uint32_t test, const Tag& tag, bool bypass_index) {
+	uint32_t match = 0;
+	uint64_t ih = tag.hash;
+	ih |= static_cast<uint64_t>(test) << 32;
+	if (!bypass_index && index_matches(index_regexp_no, ih)) {
+		match = 0;
+	}
+	else if (!bypass_index && index_matches(index_regexp_yes, ih)) {
+		match = test;
+	}
+	else {
+		const Tag& itag = *(single_tags.find(test)->second);
+		UErrorCode status = U_ZERO_ERROR;
+		uregex_setText(tag.regexp, itag.tag.c_str(), itag.tag.length(), &status);
+		if (status != U_ZERO_ERROR) {
+			u_fprintf(ux_stderr, "Error: uregex_setText(MatchSet) returned %s - cannot continue!\n", u_errorName(status));
+			CG3Quit(1);
+		}
+		status = U_ZERO_ERROR;
+		if (uregex_find(tag.regexp, -1, &status)) {
+			match = itag.hash;
+		}
+		if (status != U_ZERO_ERROR) {
+			u_fprintf(ux_stderr, "Error: uregex_find(MatchSet) returned %s - cannot continue!\n", u_errorName(status));
+			CG3Quit(1);
+		}
+		if (match) {
+			int32_t gc = uregex_groupCount(tag.regexp, &status);
+			if (gc > 0) {
+				UChar tmp[1024];
+				for (int i = 1; i <= gc; ++i) {
+					tmp[0] = 0;
+					uregex_group(tag.regexp, i, tmp, 1024, &status);
+					regexgrps.push_back(tmp);
+				}
+			}
+			else {
+				index_regexp_yes.insert(ih);
+			}
+		}
+		else {
+			index_regexp_no.insert(ih);
+		}
+	}
+	return match;
+}
+
+uint32_t GrammarApplicator::doesTagMatchIcase(uint32_t test, const Tag& tag, bool bypass_index) {
+	uint32_t match = 0;
+	uint64_t ih = tag.hash;
+	ih |= static_cast<uint64_t>(test) << 32;
+	if (!bypass_index && index_matches(index_icase_no, ih)) {
+		match = 0;
+	}
+	else if (!bypass_index && index_matches(index_icase_yes, ih)) {
+		match = test;
+	}
+	else {
+		const Tag& itag = *(single_tags.find(test)->second);
+		UErrorCode status = U_ZERO_ERROR;
+		if (u_strCaseCompare(tag.tag.c_str(), tag.tag.length(), itag.tag.c_str(), itag.tag.length(), U_FOLD_CASE_DEFAULT, &status) == 0) {
+			match = itag.hash;
+		}
+		if (status != U_ZERO_ERROR) {
+			u_fprintf(ux_stderr, "Error: u_strCaseCompare() returned %s - cannot continue!\n", u_errorName(status));
+			CG3Quit(1);
+		}
+		if (match) {
+			index_icase_yes.insert(ih);
+		}
+		else {
+			index_icase_no.insert(ih);
+		}
+	}
+	return match;
+}
+
+/**
  * Tests whether a given reading matches a given tag's stored regular expression.
  *
  * @param[in] reading The reading to test
@@ -98,48 +181,7 @@ uint32_t GrammarApplicator::doesRegexpMatchReading(const Reading& reading, const
 
 	// Grammar::reindex() will do a one-time pass to mark any potential matching tag as T_TEXTUAL
 	const_foreach (uint32SortedVector, reading.tags_textual, mter, mter_end) {
-		uint64_t ih = tag.hash;
-		ih |= static_cast<uint64_t>(*mter) << 32;
-		if (!bypass_index && index_matches(index_regexp_no, ih)) {
-			match = 0;
-		}
-		else if (!bypass_index && index_matches(index_regexp_yes, ih)) {
-			match = grammar->tag_any;
-		}
-		else {
-			const Tag& itag = *(single_tags.find(*mter)->second);
-			UErrorCode status = U_ZERO_ERROR;
-			uregex_setText(tag.regexp, itag.tag.c_str(), itag.tag.length(), &status);
-			if (status != U_ZERO_ERROR) {
-				u_fprintf(ux_stderr, "Error: uregex_setText(MatchSet) returned %s - cannot continue!\n", u_errorName(status));
-				CG3Quit(1);
-			}
-			status = U_ZERO_ERROR;
-			if (uregex_find(tag.regexp, -1, &status)) {
-				match = itag.hash;
-			}
-			if (status != U_ZERO_ERROR) {
-				u_fprintf(ux_stderr, "Error: uregex_find(MatchSet) returned %s - cannot continue!\n", u_errorName(status));
-				CG3Quit(1);
-			}
-			if (match) {
-				int32_t gc = uregex_groupCount(tag.regexp, &status);
-				if (gc > 0) {
-					UChar tmp[1024];
-					for (int i=1 ; i<=gc ; ++i) {
-						tmp[0] = 0;
-						uregex_group(tag.regexp, i, tmp, 1024, &status);
-						regexgrps.push_back(tmp);
-					}
-				}
-				else {
-					index_regexp_yes.insert(ih);
-				}
-			}
-			else {
-				index_regexp_no.insert(ih);
-			}
-		}
+		match = doesTagMatchRegexp(*mter, tag, bypass_index);
 		if (match) {
 			break;
 		}
@@ -191,31 +233,7 @@ uint32_t GrammarApplicator::doesTagMatchReading(const Reading& reading, const Ta
 	}
 	else if (tag.type & T_CASE_INSENSITIVE) {
 		const_foreach (uint32SortedVector, reading.tags_textual, mter, mter_end) {
-			uint64_t ih = tag.hash;
-			ih |= static_cast<uint64_t>(*mter) << 32;
-			if (!bypass_index && index_matches(index_icase_no, ih)) {
-				match = 0;
-			}
-			else if (!bypass_index && index_matches(index_icase_yes, ih)) {
-				match = grammar->tag_any;
-			}
-			else {
-				const Tag& itag = *(single_tags.find(*mter)->second);
-				UErrorCode status = U_ZERO_ERROR;
-				if (u_strCaseCompare(tag.tag.c_str(), tag.tag.length(), itag.tag.c_str(), itag.tag.length(), U_FOLD_CASE_DEFAULT, &status) == 0) {
-					match = itag.hash;
-				}
-				if (status != U_ZERO_ERROR) {
-					u_fprintf(ux_stderr, "Error: u_strCaseCompare() returned %s - cannot continue!\n", u_errorName(status));
-					CG3Quit(1);
-				}
-				if (match) {
-					index_icase_yes.insert(ih);
-				}
-				else {
-					index_icase_no.insert(ih);
-				}
-			}
+			match = doesTagMatchIcase(*mter, tag, bypass_index);
 			if (match) {
 				break;
 			}
@@ -236,15 +254,15 @@ uint32_t GrammarApplicator::doesTagMatchReading(const Reading& reading, const Ta
 			}
 		}
 		else if (tag.type & T_WORDFORM) {
-			match = reading.wordform;
+			match = reading.parent->wordform->hash;
 			if (unif_mode) {
 				if (unif_last_wordform) {
-					if (unif_last_wordform != reading.wordform) {
+					if (unif_last_wordform != reading.parent->wordform->hash) {
 						match = 0;
 					}
 				}
 				else {
-					unif_last_wordform = reading.wordform;
+					unif_last_wordform = reading.parent->wordform->hash;
 				}
 			}
 		}
