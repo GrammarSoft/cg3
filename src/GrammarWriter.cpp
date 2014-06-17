@@ -245,7 +245,7 @@ void GrammarWriter::printRule(UFILE *to, const Rule& rule) {
 		}
 	}
 	if (rule.wordform) {
-		printTag(to, *(grammar->single_tags.find(rule.wordform)->second));
+		printTag(to, *rule.wordform);
 		u_fprintf(to, " ");
 	}
 

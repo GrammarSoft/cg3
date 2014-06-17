@@ -226,16 +226,14 @@ gotaline:
 
 			cCohort = new Cohort(cSWindow);
 			cCohort->global_number = gWindow->cohort_counter++;
-			cCohort->wordform = addTag(tag)->hash;
+			cCohort->wordform = addTag(tag);
 			lCohort = cCohort;
 			numCohorts++;
 
 			++space;
 			while (space) {
 				cReading = new Reading(cCohort);
-				cReading->wordform = cCohort->wordform;
 				insert_if_exists(cReading->parent->possible_sets, grammar->sets_any);
-				addTagToReading(*cReading, cReading->wordform);
 
 				UChar *base = space;
 				if (*space == '"') {
@@ -289,7 +287,7 @@ gotaline:
 					}
 				}
 				if (!cReading->baseform) {
-					cReading->baseform = cReading->wordform;
+					cReading->baseform = cReading->parent->wordform->hash;
 					u_fprintf(ux_stderr, "Warning: Line %u had no valid baseform.\n", numLines);
 					u_fflush(ux_stderr);
 				}
@@ -373,7 +371,7 @@ void NicelineApplicator::printReading(const Reading *reading, UFILE *output) {
 		if ((!show_end_tags && *tter == endtag) || *tter == begintag) {
 			continue;
 		}
-		if (*tter == reading->baseform || *tter == reading->wordform) {
+		if (*tter == reading->baseform || *tter == reading->parent->wordform->hash) {
 			continue;
 		}
 		if (unique_tags) {
@@ -467,7 +465,7 @@ void NicelineApplicator::printCohort(Cohort *cohort, UFILE *output) {
 		goto removed;
 	}
 
-	u_fprintf(output, "%.*S", single_tags.find(cohort->wordform)->second->tag.size()-4, single_tags.find(cohort->wordform)->second->tag.c_str()+2);
+	u_fprintf(output, "%.*S", cohort->wordform->tag.size()-4, cohort->wordform->tag.c_str()+2);
 	if (cohort->wread && !did_warn_statictags) {
 		u_fprintf(ux_stderr, "Warning: Niceline CG format cannot output static tags! You are losing information!\n");
 		u_fflush(ux_stderr);

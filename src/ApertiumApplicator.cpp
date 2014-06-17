@@ -248,11 +248,10 @@ void ApertiumApplicator::runGrammarOnText(istream& input, UFILE *output) {
 				// Create 0th Cohort which serves as the beginning of sentence
 				cCohort = new Cohort(cSWindow);
 				cCohort->global_number = 0;
-				cCohort->wordform = begintag;
+				cCohort->wordform = tag_begin;
 
 				cReading = new Reading(cCohort);
 				cReading->baseform = begintag;
-				cReading->wordform = begintag;
 				insert_if_exists(cReading->parent->possible_sets, grammar->sets_any);
 				addTagToReading(*cReading, begintag);
 
@@ -313,7 +312,7 @@ void ApertiumApplicator::runGrammarOnText(istream& input, UFILE *output) {
 			wordform += '"';
 
 			//u_fprintf(output, "# %S\n", wordform);
-			cCohort->wordform = addTag(wordform)->hash;
+			cCohort->wordform = addTag(wordform);
 			numCohorts++;
 
 			// We're now at the beginning of the readings
@@ -364,11 +363,10 @@ void ApertiumApplicator::runGrammarOnText(istream& input, UFILE *output) {
 				if (inchar == '$') {
 					// Add the final reading of the cohort
 					cReading = new Reading(cCohort);
-					cReading->wordform = cCohort->wordform;
 
 					insert_if_exists(cReading->parent->possible_sets, grammar->sets_any);
 
-					addTagToReading(*cReading, cReading->wordform);
+					addTagToReading(*cReading, cCohort->wordform);
 					processReading(cReading, current_reading);
 
 					if (grammar->sub_readings_ltr && cReading->next) {
@@ -386,9 +384,8 @@ void ApertiumApplicator::runGrammarOnText(istream& input, UFILE *output) {
 				if (inchar == '/') { // Reached end of reading
 					Reading *cReading = 0;
 					cReading = new Reading(cCohort);
-					cReading->wordform = cCohort->wordform;
 
-					addTagToReading(*cReading, cReading->wordform);
+					addTagToReading(*cReading, cCohort->wordform);
 
 					processReading(cReading, current_reading);
 
@@ -700,7 +697,7 @@ void ApertiumApplicator::printReading(Reading *reading, UFILE *output) {
 			// was called with "-w" option (which puts
 			// dictionary case on lemma/basefrom)
 			// Lop off the initial and final '"<>"' characters
-			UnicodeString wf(single_tags[reading->parent->wordform]->tag.c_str()+2, single_tags[reading->parent->wordform]->tag.length()-4);
+			UnicodeString wf(reading->parent->wordform->tag.c_str()+2, reading->parent->wordform->tag.length()-4);
 
 			int first = 0; // first occurrence of a lowercase character in baseform
 			for (; first<bf.length() ; ++first) {
@@ -814,7 +811,7 @@ void ApertiumApplicator::printSingleWindow(SingleWindow *window, UFILE *output) 
 
 		if (print_word_forms == true) {
 			// Lop off the initial and final '"' characters
-			UnicodeString wf(single_tags[cohort->wordform]->tag.c_str()+2, single_tags[cohort->wordform]->tag.length()-4);
+			UnicodeString wf(cohort->wordform->tag.c_str()+2, cohort->wordform->tag.length()-4);
 			UString wf_escaped;
 			for (int i=0 ; i<wf.length() ; ++i) {
 				if (wf[i] == '^' || wf[i] == '\\' || wf[i] == '/' || wf[i] == '$' || wf[i] == '[' || wf[i] == ']' || wf[i] == '{' || wf[i] == '}' || wf[i] == '<' || wf[i] == '>') {
@@ -827,7 +824,7 @@ void ApertiumApplicator::printSingleWindow(SingleWindow *window, UFILE *output) 
 			// Print the static reading tags
 			if (cohort->wread) {
 				const_foreach (Reading::tags_list_t, cohort->wread->tags_list, tter, tter_end) {
-					if (*tter == cohort->wread->wordform) {
+					if (*tter == cohort->wordform->hash) {
 						continue;
 					}
 					const Tag *tag = single_tags[*tter];

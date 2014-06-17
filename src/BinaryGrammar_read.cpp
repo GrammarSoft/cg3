@@ -443,7 +443,7 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 		}
 		if (fields & (1 << 6)) {
 			fread(&u32tmp, sizeof(uint32_t), 1, input);
-			r->wordform = (uint32_t)ntohl(u32tmp);
+			r->wordform = grammar->single_tags_list[(uint32_t)ntohl(u32tmp)];
 		}
 		if (fields & (1 << 7)) {
 			fread(&u32tmp, sizeof(uint32_t), 1, input);

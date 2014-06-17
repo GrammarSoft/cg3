@@ -139,8 +139,10 @@ void GrammarApplicator::resetIndexes() {
 void GrammarApplicator::setGrammar(Grammar *res) {
 	grammar = res;
 	single_tags = grammar->single_tags;
-	begintag = addTag(stringbits[S_BEGINTAG].getTerminatedBuffer())->hash;
-	endtag = addTag(stringbits[S_ENDTAG].getTerminatedBuffer())->hash;
+	tag_begin = addTag(stringbits[S_BEGINTAG].getTerminatedBuffer());
+	tag_end = addTag(stringbits[S_ENDTAG].getTerminatedBuffer());
+	begintag = tag_begin->hash;
+	endtag = tag_end->hash;
 }
 
 void GrammarApplicator::index() {
@@ -361,7 +363,7 @@ void GrammarApplicator::printReading(const Reading *reading, UFILE *output, size
 		if ((!show_end_tags && *tter == endtag) || *tter == begintag) {
 			continue;
 		}
-		if (*tter == reading->baseform || *tter == reading->wordform) {
+		if (*tter == reading->baseform || *tter == reading->parent->wordform->hash) {
 			continue;
 		}
 		if (unique_tags) {
@@ -460,10 +462,10 @@ void GrammarApplicator::printCohort(Cohort *cohort, UFILE *output) {
 		u_fputc(';', output);
 		u_fputc(' ', output);
 	}
-	u_fprintf(output, "%S", single_tags.find(cohort->wordform)->second->tag.c_str());
+	u_fprintf(output, "%S", cohort->wordform->tag.c_str());
 	if (cohort->wread) {
 		const_foreach (Reading::tags_list_t, cohort->wread->tags_list, tter, tter_end) {
-			if (*tter == cohort->wread->wordform) {
+			if (*tter == cohort->wordform->hash) {
 				continue;
 			}
 			const Tag *tag = single_tags[*tter];
@@ -556,7 +558,7 @@ void GrammarApplicator::pipeOutReading(const Reading *reading, std::ostream& out
 
 	uint32_t cs = 0;
 	const_foreach (Reading::tags_list_t, reading->tags_list, tter, tter_end) {
-		if (*tter == reading->baseform || *tter == reading->wordform) {
+		if (*tter == reading->baseform || *tter == reading->parent->wordform->hash) {
 			continue;
 		}
 		const Tag *tag = single_tags.find(*tter)->second;
@@ -568,7 +570,7 @@ void GrammarApplicator::pipeOutReading(const Reading *reading, std::ostream& out
 
 	writeRaw(ss, cs);
 	const_foreach (Reading::tags_list_t, reading->tags_list, tter, tter_end) {
-		if (*tter == reading->baseform || *tter == reading->wordform) {
+		if (*tter == reading->baseform || *tter == reading->parent->wordform->hash) {
 			continue;
 		}
 		const Tag *tag = single_tags.find(*tter)->second;
@@ -602,7 +604,7 @@ void GrammarApplicator::pipeOutCohort(const Cohort *cohort, std::ostream& output
 		writeRaw(ss, cohort->dep_parent);
 	}
 
-	writeUTF8String(ss, single_tags.find(cohort->wordform)->second->tag);
+	writeUTF8String(ss, cohort->wordform->tag);
 
 	uint32_t cs = cohort->readings.size();
 	writeRaw(ss, cs);
@@ -673,7 +675,7 @@ void GrammarApplicator::pipeInReading(Reading *reading, std::istream& input, boo
 	}
 
 	reading->tags_list.clear();
-	reading->tags_list.push_back(reading->parent->wordform);
+	reading->tags_list.push_back(reading->parent->wordform->hash);
 	if (reading->baseform) {
 		reading->tags_list.push_back(reading->baseform);
 	}
@@ -714,9 +716,9 @@ void GrammarApplicator::pipeInCohort(Cohort *cohort, std::istream& input) {
 
 	bool force_readings = false;
 	UString str = readUTF8String(input);
-	if (str != single_tags.find(cohort->wordform)->second->tag) {
+	if (str != cohort->wordform->tag) {
 		Tag *tag = addTag(str);
-		cohort->wordform = tag->hash;
+		cohort->wordform = tag;
 		force_readings = true;
 		if (debug_level > 1) u_fprintf(ux_stderr, "DEBUG: cohort wordform %S\n", tag->tag.c_str());
 	}

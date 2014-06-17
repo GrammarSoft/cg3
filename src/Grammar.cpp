@@ -695,6 +695,9 @@ void Grammar::reindex(bool unused_sets) {
 	size_t max_target = 0;
 #endif
 	foreach (RuleVector, rule_by_number, iter_rule, iter_rule_end) {
+		if ((*iter_rule)->wordform) {
+			wf_rules.push_back(*iter_rule);
+		}
 		Set *s = 0;
 		s = getSet((*iter_rule)->target);
 		s->markUsed(*this);

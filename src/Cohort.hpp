@@ -48,7 +48,7 @@ namespace CG3 {
 		uint8_t type;
 		uint32_t global_number;
 		uint32_t local_number;
-		uint32_t wordform;
+		Tag *wordform;
 		uint32_t dep_self;
 		uint32_t dep_parent;
 		uint32_t is_pleft, is_pright;
