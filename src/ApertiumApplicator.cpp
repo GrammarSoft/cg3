@@ -834,11 +834,16 @@ void ApertiumApplicator::printSingleWindow(SingleWindow *window, UFILE *output) 
 					u_fprintf(output, "<%S>", tag->tag.c_str());
 				}
 			}
-			u_fprintf(output, "/");
 		}
+
+		bool need_slash = print_word_forms;
 
 		//Tag::printTagRaw(output, single_tags[cohort->wordform]);
 		boost_foreach (Reading *reading, cohort->readings) {
+			if (need_slash) {
+				u_fprintf(output, "/");
+			}
+			need_slash = true;
 			if (grammar->sub_readings_ltr && reading->next) {
 				reading = reverse(reading);
 			}
@@ -847,22 +852,25 @@ void ApertiumApplicator::printSingleWindow(SingleWindow *window, UFILE *output) 
 			{
 				break;
 			}
-			if (reading != cohort->readings.back()) {
-				u_fprintf(output, "/");
-			}
 		}
 
 		if (trace) {
 			const UChar not_sign = L'\u00AC';
 			boost_foreach (Reading *reading, cohort->delayed) {
-				u_fputc(not_sign, output);
+				if (need_slash) {
+					u_fprintf(output, "/%C", not_sign);
+				}
+				need_slash = true;
 				if (grammar->sub_readings_ltr && reading->next) {
 					reading = reverse(reading);
 				}
 				printReading(reading, output);
 			}
 			boost_foreach (Reading *reading, cohort->deleted) {
-				u_fputc(not_sign, output);
+				if (need_slash) {
+					u_fprintf(output, "/%C", not_sign);
+				}
+				need_slash = true;
 				if (grammar->sub_readings_ltr && reading->next) {
 					reading = reverse(reading);
 				}
