@@ -838,9 +838,7 @@ void ApertiumApplicator::printSingleWindow(SingleWindow *window, UFILE *output) 
 		}
 
 		//Tag::printTagRaw(output, single_tags[cohort->wordform]);
-		ReadingList::iterator rter;
-		for (rter = cohort->readings.begin() ; rter != cohort->readings.end() ; rter++) {
-			Reading *reading = *rter;
+		boost_foreach (Reading *reading, cohort->readings) {
 			if (grammar->sub_readings_ltr && reading->next) {
 				reading = reverse(reading);
 			}
@@ -849,8 +847,26 @@ void ApertiumApplicator::printSingleWindow(SingleWindow *window, UFILE *output) 
 			{
 				break;
 			}
-			if (*rter != cohort->readings.back()) {
+			if (reading != cohort->readings.back()) {
 				u_fprintf(output, "/");
+			}
+		}
+
+		if (trace) {
+			const UChar not_sign = L'\u00AC';
+			boost_foreach (Reading *reading, cohort->delayed) {
+				u_fputc(not_sign, output);
+				if (grammar->sub_readings_ltr && reading->next) {
+					reading = reverse(reading);
+				}
+				printReading(reading, output);
+			}
+			boost_foreach (Reading *reading, cohort->deleted) {
+				u_fputc(not_sign, output);
+				if (grammar->sub_readings_ltr && reading->next) {
+					reading = reverse(reading);
+				}
+				printReading(reading, output);
 			}
 		}
 

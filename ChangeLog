@@ -1,3 +1,22 @@
+2014-06-10  tino
+
+	* [r9987] src/Rule.hpp, src/TextualParser.cpp: Detect ENCL_*
+	  overlap by counting bits
+	* [r9985] src/TextualParser.cpp: Throw an error for malformed /X
+	  positions
+
+2014-06-09  tino
+
+	* [r9984] manual/subreadings.xml: Document /*
+
+2014-06-07  tino
+
+	* [r9974] ChangeLog, src/ContextualTest.hpp,
+	  src/GrammarApplicator.hpp, src/TextualParser.cpp,
+	  src/version.hpp, test/T_SubReadings_CG/expected.txt,
+	  test/T_SubReadings_CG/grammar.cg3: Allow /* in contextual tests
+	  to look at any sub-reading
+
 2014-06-04  unhammer
 
 	* [r9959] emacs/cg.el: list of ADD/REMOVE/etc. only defined one
@@ -2447,25 +2466,4 @@
 2011-06-28  tino
 
 	* [r7330] src/GrammarApplicator.cpp: cg3
-
-2011-06-27  tino
-
-	* [r7329] src/GrammarApplicator.cpp: cg-conv fixup
-	* [r7328] src/GrammarApplicator.cpp, src/stdafx.h: cg-conv fixup
-
-2011-06-18  tino
-
-	* [r7301] src/GrammarApplicator_runRules.cpp, src/stdafx.h,
-	  test/T_RemCohort/expected.txt, test/T_RemCohort/grammar.txt:
-	  AddCohort now takes multiple readings, automatically splitting by
-	  baseforms
-
-2011-06-17  tino
-
-	* [r7299] scripts/cg3-autobin.pl,
-	  src/GrammarApplicator_runRules.cpp, src/Rule.h, src/Strings.cpp,
-	  src/Strings.h, src/TextualParser.cpp, src/inlines.h,
-	  src/version.h, test/T_Relations/expected.txt,
-	  test/T_Relations/grammar.txt: Added rule flag REVERSE and it is
-	  now possible to use FROM instead of TO.
 
