@@ -49,10 +49,6 @@ namespace Options {
 		CODEPAGE_GRAMMAR,
 		CODEPAGE_INPUT,
 		CODEPAGE_OUTPUT,
-		LOCALE_GLOBAL,
-		LOCALE_GRAMMAR,
-		LOCALE_INPUT,
-		LOCALE_OUTPUT,
 		NOMAPPINGS,
 		NOCORRECTIONS,
 		NOBEFORESECTIONS,
@@ -113,11 +109,6 @@ namespace Options {
 		UOPTION_DEF_D("codepage-grammar",	0, UOPT_REQUIRES_ARG, "codepage to use for grammar; overrides --codepage-all"),
 		UOPTION_DEF_D("codepage-input",		0, UOPT_REQUIRES_ARG, "codepage to use for input; overrides --codepage-all"),
 		UOPTION_DEF_D("codepage-output",	0, UOPT_REQUIRES_ARG, "codepage to use for output and errors; overrides --codepage-all"),
-
-		UOPTION_DEF_D("locale-all",			'L', UOPT_REQUIRES_ARG, "locale to use for grammar, input, and output streams; defaults to en_US_POSIX"),
-		UOPTION_DEF_D("locale-grammar",		0, UOPT_REQUIRES_ARG, "locale to use for grammar; overrides --locale-all"),
-		UOPTION_DEF_D("locale-input",		0, UOPT_REQUIRES_ARG, "locale to use for input; overrides --locale-all"),
-		UOPTION_DEF_D("locale-output",		0, UOPT_REQUIRES_ARG, "locale to use for output and errors; overrides --locale-all"),
 
 		UOPTION_DEF_D("no-mappings",		0, UOPT_NO_ARG, "disables all MAP, ADD, and REPLACE rules"),
 		UOPTION_DEF_D("no-corrections",		0, UOPT_NO_ARG, "disables all SUBSTITUTE and APPEND rules"),

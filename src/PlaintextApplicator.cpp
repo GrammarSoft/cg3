@@ -264,7 +264,7 @@ gotaline:
 				tag += token.getTerminatedBuffer();
 				tag += '>';
 				tag += '"';
-				cCohort->wordform = addTag(tag)->hash;
+				cCohort->wordform = addTag(tag);
 				lCohort = cCohort;
 				numCohorts++;
 				cReading = initEmptyCohort(*cCohort);
@@ -356,7 +356,7 @@ void PlaintextApplicator::printCohort(Cohort *cohort, UFILE *output) {
 		return;
 	}
 
-	u_fprintf(output, "%.*S ", single_tags.find(cohort->wordform)->second->tag.size() - 4, single_tags.find(cohort->wordform)->second->tag.c_str() + 2);
+	u_fprintf(output, "%.*S ", cohort->wordform->tag.size() - 4, cohort->wordform->tag.c_str() + 2);
 }
 
 void PlaintextApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {

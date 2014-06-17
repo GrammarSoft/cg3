@@ -147,7 +147,7 @@ gotaline:
 				}
 				cCohort = new Cohort(cSWindow);
 				cCohort->global_number = gWindow->cohort_counter++;
-				cCohort->wordform = addTag(tag)->hash;
+				cCohort->wordform = addTag(tag);
 				lCohort = cCohort;
 				++numCohorts;
 			}
@@ -155,9 +155,8 @@ gotaline:
 			++space;
 			while (space) {
 				cReading = new Reading(cCohort);
-				cReading->wordform = cCohort->wordform;
 				insert_if_exists(cReading->parent->possible_sets, grammar->sets_any);
-				addTagToReading(*cReading, cReading->wordform);
+				addTagToReading(*cReading, cCohort->wordform);
 
 				const UChar *base = space;
 				TagList mappings;
@@ -215,7 +214,7 @@ gotaline:
 					}
 				}
 				if (!cReading->baseform) {
-					cReading->baseform = cReading->wordform;
+					cReading->baseform = cCohort->wordform->hash;
 					u_fprintf(ux_stderr, "Warning: Line %u had no valid baseform.\n", numLines);
 					u_fflush(ux_stderr);
 				}

@@ -156,44 +156,16 @@ int main(int argc, char* argv[]) {
 		std::cerr << "Codepage: default " << codepage_default << ", input " << codepage_input << ", output " << codepage_output << ", grammar " << codepage_grammar << std::endl;
 	}
 
-	const char *locale_default = "en_US_POSIX"; //uloc_getDefault();
-	const char *locale_grammar = locale_default;
-	const char *locale_input   = locale_grammar;
-	const char *locale_output  = locale_grammar;
 	uloc_setDefault("en_US_POSIX", &status);
-
-	if (options[LOCALE_GRAMMAR].doesOccur) {
-		locale_grammar = options[LOCALE_GRAMMAR].value;
-	}
-	else if (options[LOCALE_GLOBAL].doesOccur) {
-		locale_grammar = options[LOCALE_GLOBAL].value;
-	}
-
-	if (options[LOCALE_INPUT].doesOccur) {
-		locale_input = options[LOCALE_INPUT].value;
-	}
-	else if (options[LOCALE_GLOBAL].doesOccur) {
-		locale_input = options[LOCALE_GLOBAL].value;
-	}
-
-	if (options[LOCALE_OUTPUT].doesOccur) {
-		locale_output = options[LOCALE_OUTPUT].value;
-	}
-	else if (options[LOCALE_GLOBAL].doesOccur) {
-		locale_output = options[LOCALE_GLOBAL].value;
-	}
-
-	if (options[VERBOSE].doesOccur) {
-		fprintf(stderr, "Locales: default %s, input %s, output %s, grammar %s\n", locale_default, locale_input, locale_output, locale_grammar);
-	}
+	const char *locale_default = uloc_getDefault();
 
 	UConverter *conv = ucnv_open(codepage_default, &status);
 
 	if (!options[STDOUT].doesOccur) {
-		ux_stdout = u_finit(stdout, locale_output, codepage_output);
+		ux_stdout = u_finit(stdout, locale_default, codepage_output);
 	}
 	else {
-		ux_stdout = u_fopen(options[STDOUT].value, "wb", locale_output, codepage_output);
+		ux_stdout = u_fopen(options[STDOUT].value, "wb", locale_default, codepage_output);
 	}
 	if (!ux_stdout) {
 		std::cerr << "Error: Failed to open the output stream for writing!" << std::endl;
@@ -201,10 +173,10 @@ int main(int argc, char* argv[]) {
 	}
 
 	if (!options[STDERR].doesOccur) {
-		ux_stderr = u_finit(stderr, locale_output, codepage_output);
+		ux_stderr = u_finit(stderr, locale_default, codepage_output);
 	}
 	else {
-		ux_stderr = u_fopen(options[STDERR].value, "wb", locale_output, codepage_output);
+		ux_stderr = u_fopen(options[STDERR].value, "wb", locale_default, codepage_output);
 	}
 	if (!ux_stdout) {
 		std::cerr << "Error: Failed to open the error stream for writing!" << std::endl;
@@ -212,7 +184,7 @@ int main(int argc, char* argv[]) {
 	}
 
 	if (!options[STDIN].doesOccur) {
-		ux_stdin = u_finit(stdin, locale_input, codepage_input);
+		ux_stdin = u_finit(stdin, locale_default, codepage_input);
 	}
 	else {
 		struct stat info;
@@ -221,7 +193,7 @@ int main(int argc, char* argv[]) {
 			std::cerr << "Error: Cannot stat " << options[STDIN].value << " due to error " << serr << "!" << std::endl;
 			CG3Quit(1);
 		}
-		ux_stdin = u_fopen(options[STDIN].value, "rb", locale_input, codepage_input);
+		ux_stdin = u_fopen(options[STDIN].value, "rb", locale_default, codepage_input);
 	}
 	if (!ux_stdin) {
 		std::cerr << "Error: Failed to open the input stream for reading!" << std::endl;
@@ -278,7 +250,7 @@ int main(int argc, char* argv[]) {
 	}
 	main_timer = clock();
 
-	if (parser->parse_grammar_from_file(options[GRAMMAR].value, locale_grammar, codepage_grammar)) {
+	if (parser->parse_grammar_from_file(options[GRAMMAR].value, locale_default, codepage_grammar)) {
 		std::cerr << "Error: Grammar could not be parsed - exiting!" << std::endl;
 		CG3Quit(1);
 	}
@@ -398,7 +370,7 @@ int main(int argc, char* argv[]) {
 	}
 
 	if (options[GRAMMAR_OUT].doesOccur) {
-		UFILE *gout = u_fopen(options[GRAMMAR_OUT].value, "w", locale_output, codepage_output);
+		UFILE *gout = u_fopen(options[GRAMMAR_OUT].value, "w", locale_default, codepage_output);
 		if (gout) {
 			CG3::GrammarWriter writer(grammar, ux_stderr);
 			if (options[STATISTICS].doesOccur) {
