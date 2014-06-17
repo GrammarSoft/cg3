@@ -98,7 +98,8 @@ uint32_t GrammarApplicator::doesRegexpMatchReading(const Reading& reading, const
 
 	// Grammar::reindex() will do a one-time pass to mark any potential matching tag as T_TEXTUAL
 	const_foreach (uint32SortedVector, reading.tags_textual, mter, mter_end) {
-		uint32_t ih = hash_value(tag.hash, *mter);
+		uint64_t ih = tag.hash;
+		ih |= static_cast<uint64_t>(*mter) << 32;
 		if (!bypass_index && index_matches(index_regexp_no, ih)) {
 			match = 0;
 		}
@@ -190,7 +191,8 @@ uint32_t GrammarApplicator::doesTagMatchReading(const Reading& reading, const Ta
 	}
 	else if (tag.type & T_CASE_INSENSITIVE) {
 		const_foreach (uint32SortedVector, reading.tags_textual, mter, mter_end) {
-			uint32_t ih = hash_value(tag.hash, *mter);
+			uint64_t ih = tag.hash;
+			ih |= static_cast<uint64_t>(*mter) << 32;
 			if (!bypass_index && index_matches(index_icase_no, ih)) {
 				match = 0;
 			}
@@ -553,7 +555,8 @@ bool GrammarApplicator::doesSetMatchReading(const Reading& reading, const uint32
 	// These indexes are cleared every ((num_windows+4)*2+1) windows to avoid memory ballooning.
 	// Only 30% of tests get past this.
 	// ToDo: This is not good enough...while numeric tags are special, their failures can be indexed.
-	uint32_t ih = hash_value(reading.hash, set);
+	uint64_t ih = reading.hash;
+	ih |= static_cast<uint64_t>(set) << 32;
 	if (!bypass_index && !unif_mode) {
 		if (index_matches(index_readingSet_no, ih)) {
 			return false;

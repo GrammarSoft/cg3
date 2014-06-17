@@ -47,3 +47,4 @@ ToDo: COPY ONLY
 ToDo: Cohort-wide versions of set operators; use-case is testing multiple mapping tags at once, while that prefix is in effect
 ToDo: Add optimized keyword tag test, maybe only in --grammar-only mode.
 ToDo: MOVE/SWITCH should leave stored cohorts where they were; optionally bring along with WITHPARENS flag
+ToDo: Check whether boost::dynamic_bitset makes more sense to store valid_rules in
