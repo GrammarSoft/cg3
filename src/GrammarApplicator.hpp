@@ -181,13 +181,13 @@ namespace CG3 {
 		uint32Set *unif_sets;
 		bool unif_sets_firstrun;
 
-		uint32FlatHashSet index_regexp_yes;
-		uint32FlatHashSet index_regexp_no;
-		uint32FlatHashSet index_icase_yes;
-		uint32FlatHashSet index_icase_no;
-		uint32FlatHashSet index_readingSet_yes;
-		uint32FlatHashSet index_readingSet_no;
-		uint32FlatHashSet index_ruleCohort_no;
+		uint64FlatHashSet index_regexp_yes;
+		uint64FlatHashSet index_regexp_no;
+		uint64FlatHashSet index_icase_yes;
+		uint64FlatHashSet index_icase_no;
+		uint64FlatHashSet index_readingSet_yes;
+		uint64FlatHashSet index_readingSet_no;
+		uint64FlatHashSet index_ruleCohort_no;
 		void resetIndexes();
 	
 		Tag *makeBaseFromWord(uint32_t tag);
