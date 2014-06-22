@@ -95,8 +95,7 @@ inline bool TagSet_SubsetOf_TSet(const TagSet& a, const T& b) {
 */
 uint32_t GrammarApplicator::doesTagMatchRegexp(uint32_t test, const Tag& tag, bool bypass_index) {
 	uint32_t match = 0;
-	uint64_t ih = tag.hash;
-	ih |= static_cast<uint64_t>(test) << 32;
+	uint32_t ih = hash_value(tag.hash, test);
 	if (!bypass_index && index_matches(index_regexp_no, ih)) {
 		match = 0;
 	}
@@ -142,8 +141,7 @@ uint32_t GrammarApplicator::doesTagMatchRegexp(uint32_t test, const Tag& tag, bo
 
 uint32_t GrammarApplicator::doesTagMatchIcase(uint32_t test, const Tag& tag, bool bypass_index) {
 	uint32_t match = 0;
-	uint64_t ih = tag.hash;
-	ih |= static_cast<uint64_t>(test) << 32;
+	uint32_t ih = hash_value(tag.hash, test);
 	if (!bypass_index && index_matches(index_icase_no, ih)) {
 		match = 0;
 	}
@@ -573,8 +571,7 @@ bool GrammarApplicator::doesSetMatchReading(const Reading& reading, const uint32
 	// These indexes are cleared every ((num_windows+4)*2+1) windows to avoid memory ballooning.
 	// Only 30% of tests get past this.
 	// ToDo: This is not good enough...while numeric tags are special, their failures can be indexed.
-	uint64_t ih = reading.hash;
-	ih |= static_cast<uint64_t>(set) << 32;
+	uint32_t ih = hash_value(reading.hash, set);
 	if (!bypass_index && !unif_mode) {
 		if (index_matches(index_readingSet_no, ih)) {
 			return false;
