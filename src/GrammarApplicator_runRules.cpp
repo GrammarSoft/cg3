@@ -322,8 +322,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 
 			// Check if on previous runs the rule did not match this cohort, and skip if that is the case.
 			// This cache is cleared if any rule causes any state change in the window.
-			uint64_t ih = rule.number;
-			ih |= static_cast<uint64_t>(cohort->global_number) << 32;
+			uint32_t ih = hash_value(rule.number, cohort->global_number);
 			if (index_matches(index_ruleCohort_no, ih)) {
 				continue;
 			}

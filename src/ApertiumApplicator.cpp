@@ -697,6 +697,7 @@ void ApertiumApplicator::printReading(Reading *reading, UFILE *output) {
 			// was called with "-w" option (which puts
 			// dictionary case on lemma/basefrom)
 			// Lop off the initial and final '"<>"' characters
+			// ToDo: A copy does not need to be made here - use pointer offsets
 			UnicodeString wf(reading->parent->wordform->tag.c_str()+2, reading->parent->wordform->tag.length()-4);
 
 			int first = 0; // first occurrence of a lowercase character in baseform
@@ -811,6 +812,7 @@ void ApertiumApplicator::printSingleWindow(SingleWindow *window, UFILE *output) 
 
 		if (print_word_forms == true) {
 			// Lop off the initial and final '"' characters
+			// ToDo: A copy does not need to be made here - use pointer offsets
 			UnicodeString wf(cohort->wordform->tag.c_str()+2, cohort->wordform->tag.length()-4);
 			UString wf_escaped;
 			for (int i=0 ; i<wf.length() ; ++i) {

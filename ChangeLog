@@ -1,5 +1,6 @@
 2014-06-17  tino
 
+	* [r10007] ChangeLog, src/version.hpp: Forgot revision
 	* [r10006] src/ApertiumApplicator.cpp, src/BinaryGrammar_read.cpp,
 	  src/BinaryGrammar_write.cpp, src/Cohort.hpp,
 	  src/FSTApplicator.cpp, src/Grammar.cpp, src/Grammar.hpp,
@@ -2478,5 +2479,4 @@
 
 	* [r7384] src/all_cg_comp.cpp, src/all_cg_conv.cpp,
 	  src/all_cg_proc.cpp, src/all_vislcg3.cpp: cg3
-	* [r7383] get-boost.sh: cg3
 
