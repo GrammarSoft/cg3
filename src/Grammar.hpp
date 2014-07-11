@@ -69,7 +69,7 @@ namespace CG3 {
 
 		typedef std::set<URegularExpression*> regex_tags_t;
 		regex_tags_t regex_tags;
-		typedef TagSet icase_tags_t;
+		typedef TagSortedVector icase_tags_t;
 		icase_tags_t icase_tags;
 
 		std::vector<ContextualTest*> template_list;

@@ -123,7 +123,6 @@ namespace CG3 {
 
 	typedef std::list<Tag*> TagList;
 	typedef std::vector<Tag*> TagVector;
-	typedef std::set<Tag*, compare_Tag> TagSet;
 	typedef stdext::hash_map<uint32_t,Tag*> Taguint32HashMap;
 	typedef stdext::hash_set<Tag*, compare_Tag> TagHashSet;
 	typedef sorted_vector<Tag*, compare_Tag> TagSortedVector;

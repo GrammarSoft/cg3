@@ -621,7 +621,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						break;
 					}
 					else if (type == K_EXTERNAL_ONCE || type == K_EXTERNAL_ALWAYS) {
-						if (type == K_EXTERNAL_ONCE && !current.hit_external.insert(rule.line)) {
+						if (type == K_EXTERNAL_ONCE && !current.hit_external.insert(rule.line).second) {
 							break;
 						}
 

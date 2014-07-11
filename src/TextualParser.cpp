@@ -100,8 +100,11 @@ int TextualParser::parseTagList(UChar *& p, Set *s, const bool isinline) {
 				}
 				else {
 					CompositeTag *ct = result->allocateCompositeTag();
-					foreach (TagVector, tags, tvi, tvi_end) {
-						result->addTagToCompositeTag(*tvi, ct);
+					std::sort(tags.begin(), tags.end(), compare_Tag());
+					BOOST_AUTO(iter, std::unique(tags.begin(), tags.end()));
+					tags.erase(iter, tags.end());
+					boost_foreach (Tag *tvi, tags) {
+						result->addTagToCompositeTag(tvi, ct);
 					}
 					result->addCompositeTagToSet(s, ct);
 				}

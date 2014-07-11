@@ -51,10 +51,10 @@ public:
 	}
 	#endif
 
-	bool insert(T t) {
+	std::pair<iterator,bool> insert(T t) {
 		if (elements.empty()) {
 			elements.push_back(t);
-			return true;
+			return std::make_pair(elements.begin(), true);
 		}
 		/*
 		else if (comp(elements.back(), t)) {
@@ -67,11 +67,12 @@ public:
 		}
 		//*/
 		iterator it = std::lower_bound(elements.begin(), elements.end(), t, comp);
+		size_t at = std::distance(elements.begin(), it);
 		if (it == elements.end() || comp(*it, t) || comp(t, *it)) {
 			elements.insert(it, t);
-			return true;
+			return std::make_pair(elements.begin()+at, true);
 		}
-		return false;
+		return std::make_pair(elements.begin() + at, false);
 	}
 
 	template<typename It>
