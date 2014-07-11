@@ -1,3 +1,30 @@
+2014-07-11  tino
+
+	* [r10033] src/BinaryGrammar_write.cpp, src/Grammar.cpp,
+	  src/Grammar.hpp, src/GrammarApplicator.hpp,
+	  src/GrammarApplicator_reflow.cpp,
+	  src/GrammarApplicator_runGrammar.cpp,
+	  src/GrammarApplicator_runRules.cpp, src/GrammarWriter.hpp,
+	  src/SingleWindow.cpp, src/SingleWindow.hpp, src/Window.hpp,
+	  src/flat_unordered_map.hpp, src/flat_unordered_set.hpp,
+	  src/stdafx.hpp: More flat unordered
+	* [r10032] src/Grammar.cpp, src/GrammarApplicator.cpp, src/Tag.hpp,
+	  src/flat_unordered_map.hpp, src/flat_unordered_set.hpp: New
+	  flat_unordered_map to hopefully reduce allocations
+	* [r10029] TODO, src/CohortIterator.cpp, src/CompositeTag.hpp,
+	  src/Grammar.cpp, src/Grammar.hpp,
+	  src/GrammarApplicator_matchSet.cpp,
+	  src/GrammarApplicator_runRules.cpp, src/Tag.hpp,
+	  src/TextualParser.cpp, src/sorted_vector.hpp, win32/libgen.c:
+	  Eliminate TagSet in favour of TagSortedVector
+
+2014-06-22  tino
+
+	* [r10016] ChangeLog, src/ApertiumApplicator.cpp,
+	  src/GrammarApplicator.hpp, src/GrammarApplicator_matchSet.cpp,
+	  src/GrammarApplicator_runRules.cpp, src/version.hpp: Double cache
+	  sizes => double runtimes, so undo that
+
 2014-06-17  tino
 
 	* [r10007] ChangeLog, src/version.hpp: Forgot revision
@@ -2449,34 +2476,4 @@
 	  src/version.h, test/T_RegExp/expected.txt,
 	  test/T_RegExp/grammar.txt, test/T_RegExp/input.txt: Release
 	  0.9.7.7397
-
-2011-07-31  tino
-
-	* [r7394] manual/faq.xml, manual/manual.xml, manual/rules.xml,
-	  manual/streamformats.xml, scripts/cg3-autobin.pl,
-	  src/GrammarApplicator_runContextualTest.cpp,
-	  src/GrammarApplicator_runRules.cpp, src/version.h,
-	  test/T_ScanningTests/grammar.txt: Fixed old bug with (*-1C A)
-	  scanning.
-
-2011-07-30  tino
-
-	* [r7391] src/GrammarApplicator_runGrammar.cpp,
-	  test/T_ScanningTests/expected.txt,
-	  test/T_ScanningTests/grammar.txt, test/T_ScanningTests/input.txt:
-	  cg3
-
-2011-07-27  tino
-
-	* [r7388] manual/cmdreference.xml, manual/manual.xml,
-	  manual/streamformats.xml, scripts/cg3-autobin.pl,
-	  src/GrammarApplicator_runGrammar.cpp, src/libcg3.cpp,
-	  src/version.h, test/T_InputMarkup/expected.txt,
-	  test/T_InputMarkup/input.txt: Tightened wordform and baseform
-	  assumptions; WIP documentation
-
-2011-07-26  tino
-
-	* [r7384] src/all_cg_comp.cpp, src/all_cg_conv.cpp,
-	  src/all_cg_proc.cpp, src/all_vislcg3.cpp: cg3
 
