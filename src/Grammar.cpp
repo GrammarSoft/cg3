@@ -860,7 +860,7 @@ void Grammar::reindex(bool unused_sets) {
 		}
 	}
 
-	uint32Set sects;
+	uint32SortedVector sects;
 
 	foreach (RuleVector, rule_by_number, iter_rule, iter_rule_end) {
 		if ((*iter_rule)->section == -1) {

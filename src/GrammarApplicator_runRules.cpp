@@ -1066,7 +1066,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 					}
 					else if (type == K_SETPARENT || type == K_SETCHILD) {
 						int32_t orgoffset = rule.dep_target->offset;
-						uint32Set seen_targets;
+						uint32SortedVector seen_targets;
 
 						seen_barrier = false;
 						bool attached = false;
