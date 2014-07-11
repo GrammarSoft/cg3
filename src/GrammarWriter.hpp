@@ -43,7 +43,7 @@ namespace CG3 {
 
 	private:
 		UFILE *ux_stderr;
-		uint32HashSet used_sets;
+		uint32FlatHashSet used_sets;
 		const Grammar *grammar;
 
 		void printTag(UFILE *out, const Tag& tag);

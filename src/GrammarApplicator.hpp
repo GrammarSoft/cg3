@@ -77,7 +77,7 @@ namespace CG3 {
 		uint32_t hard_limit;
 		uint32Vector sections;
 		uint32IntervalVector valid_rules;
-		uint32HashMap variables;
+		uint32FlatHashMap variables;
 		uint32_t verbosity_level;
 		uint32_t debug_level;
 		uint32_t section_max_count;

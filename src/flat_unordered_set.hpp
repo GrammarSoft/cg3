@@ -31,7 +31,7 @@
 
 namespace CG3 {
 
-template<typename T, T res_empty=0, T res_del=1>
+template<typename T, T res_empty = T(-1), T res_del = T(-1) - 1>
 class flat_unordered_set {
 public:
 
@@ -118,7 +118,7 @@ public:
 	}
 
 	void insert(T t) {
-		assert(t != res_empty && t != res_del && "Value cannot be res_empty or res_del (default 0 and 1)!");
+		assert(t != res_empty && t != res_del && "Value cannot be res_empty or res_del!");
 
 		if (size_ + 1 >= capacity() / 2) {
 			reserve(std::max(static_cast<size_type>(DEFAULT_CAP), capacity() * 2));
@@ -140,7 +140,7 @@ public:
 	}
 
 	void erase(T t) {
-		assert(t != res_empty && t != res_del && "Value cannot be res_empty or res_del (default 0 and 1)!");
+		assert(t != res_empty && t != res_del && "Value cannot be res_empty or res_del!");
 
 		if (size_ == 0) {
 			return;
@@ -162,7 +162,7 @@ public:
 	}
 
 	const_iterator find(T t) const {
-		assert(t != res_empty && t != res_del && "Value cannot be res_empty or res_del (default 0 and 1)!");
+		assert(t != res_empty && t != res_del && "Value cannot be res_empty or res_del!");
 
 		const_iterator it;
 
@@ -269,7 +269,6 @@ private:
 };
 
 typedef flat_unordered_set<uint32_t> uint32FlatHashSet;
-typedef flat_unordered_set<uint64_t> uint64FlatHashSet;
 
 }
 

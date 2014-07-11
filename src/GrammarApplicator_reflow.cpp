@@ -310,7 +310,7 @@ void GrammarApplicator::reflowRelationWindow(uint32_t max) {
 				uint32SortedVector newrel;
 
 				boost_foreach (uint32_t target, rel->second) {
-					uint32HashMap::iterator it = gWindow->relation_map.find(target);
+					uint32FlatHashMap::iterator it = gWindow->relation_map.find(target);
 					if (it != gWindow->relation_map.end()) {
 						cohort->relations[rel->first].insert(it->second);
 					}

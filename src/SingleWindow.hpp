@@ -43,8 +43,8 @@ namespace CG3 {
 		uint32IntervalVector valid_rules;
 		uint32SortedVector hit_external;
 		uint32ToCohortsMap rule_to_cohorts;
-		uint32HashMap variables_set;
-		uint32HashSet variables_rem;
+		uint32FlatHashMap variables_set;
+		uint32FlatHashSet variables_rem;
 		uint32SortedVector variables_output;
 
 		SingleWindow(Window *p);
