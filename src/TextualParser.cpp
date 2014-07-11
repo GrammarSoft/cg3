@@ -495,6 +495,7 @@ int TextualParser::parseContextualTestPosition(UChar *& p, ContextualTest& t) {
 		UChar op = 0;
 		swapper<UChar> swp(true, op, p[16]);
 		u_fprintf(ux_stderr, "Error: Garbage data '%S' encountered while parsing contextual position on line %u!\n", p, result->lines);
+		u_fflush(ux_stderr);
 		incErrorCount();
 	}
 	if (had_digits) {
