@@ -70,6 +70,7 @@ set(LIBCG3_HEADERS
 	Window.hpp
 	bloomish.hpp
 	cg3.h
+	flat_unordered_map.hpp
 	flat_unordered_set.hpp
 	inlines.hpp
 	interval_vector.hpp
