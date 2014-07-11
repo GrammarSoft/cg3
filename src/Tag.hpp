@@ -25,6 +25,7 @@
 
 #include "stdafx.hpp"
 #include "sorted_vector.hpp"
+#include "flat_unordered_map.hpp"
 
 namespace CG3 {
 	class Grammar;
@@ -123,8 +124,7 @@ namespace CG3 {
 
 	typedef std::list<Tag*> TagList;
 	typedef std::vector<Tag*> TagVector;
-	typedef stdext::hash_map<uint32_t,Tag*> Taguint32HashMap;
-	typedef stdext::hash_set<Tag*, compare_Tag> TagHashSet;
+	typedef flat_unordered_map<uint32_t,Tag*> Taguint32HashMap;
 	typedef sorted_vector<Tag*, compare_Tag> TagSortedVector;
 }
 
