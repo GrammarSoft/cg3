@@ -283,7 +283,7 @@ void DepAncestorIter::reset(Cohort *cohort, const ContextualTest *test, bool spa
 			}
 			if (good) {
 				// If insertion fails, we've come around in a loop, so don't continue looping
-				if (!m_ancestors.insert(current)) {
+				if (!m_ancestors.insert(current).second) {
 					break;
 				}
 			}

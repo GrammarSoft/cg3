@@ -69,18 +69,18 @@ inline bool uint32SortedVector_Intersects(const uint32SortedVector& first, const
  * @param[in] b The tags from the reading
  */
 template<typename T>
-inline bool TagSet_SubsetOf_TSet(const TagSet& a, const T& b) {
+inline bool TagSet_SubsetOf_TSet(const TagSortedVector& a, const T& b) {
 	/* This test is true 0.1% of the time. Not worth the trouble.
 	if (a.size() > b.size()) {
 		return false;
 	}
 	//*/
 	typename T::const_iterator bi = b.lower_bound((*a.begin())->hash);
-	const_foreach (TagSet, a, ai, ai_end) {
-		while (bi != b.end() && *bi < (*ai)->hash) {
+	boost_foreach (Tag *ai, a) {
+		while (bi != b.end() && *bi < ai->hash) {
 			++bi;
 		}
-		if (bi == b.end() || *bi != (*ai)->hash) {
+		if (bi == b.end() || *bi != ai->hash) {
 			return false;
 		}
 	}
@@ -526,9 +526,9 @@ bool GrammarApplicator::doesSetMatchReading_tags(const Reading& reading, const S
 			}
 			else {
 				// Check if any of the member tags do not match, and bail out if so.
-				const_foreach (CompositeTag::tags_t, ctag->tags, cter, cter_end) {
-					bool inner = (doesTagMatchReading(reading, **cter, unif_mode) != 0);
-					if ((*cter)->type & T_FAILFAST) {
+				boost_foreach (const Tag *cter, ctag->tags_set) {
+					bool inner = (doesTagMatchReading(reading, *cter, unif_mode) != 0);
+					if (cter->type & T_FAILFAST) {
 						inner = !inner;
 					}
 					if (!inner) {
