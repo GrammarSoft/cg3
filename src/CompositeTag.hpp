@@ -35,7 +35,7 @@ namespace CG3 {
 		bool is_special;
 		uint32_t hash;
 		uint32_t number;
-		TagSet tags_set;
+		TagSortedVector tags_set;
 		typedef TagVector tags_t;
 		tags_t tags;
 

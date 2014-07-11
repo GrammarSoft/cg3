@@ -12,8 +12,7 @@ const char *basename(const char *path) {
 			if (pos + 1 != NULL) // If it is not the last character in the string...
 				return pos + 1; // then return a pointer to the first character after \.
 			else
-				return pos; // else return a pointer to \
-
+				return pos; // else return a pointer to \.
 		}
 		else { // If a \ char was NOT found
 			return path; // return the pointer passed to basename (this is probably non-conformant)

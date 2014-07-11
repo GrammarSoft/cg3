@@ -149,7 +149,6 @@ void Grammar::addSet(Set *& to) {
 		str += stringbits[S_NEGATIVE].getTerminatedBuffer();
 		negative->setName(str);
 
-		TagSet tags;
 		boost_foreach (Tag *iter, to->ff_tags) {
 			for (AnyTagVector::iterator ater = positive->tags_list.begin() ; ater != positive->tags_list.end() ; ) {
 				if (ater->hash() == iter->hash) {
