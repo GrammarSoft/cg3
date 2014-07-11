@@ -41,6 +41,7 @@ foreach ($files as $file) {
 
 foreach ($times as $s => $t) {
 	echo "$s\n";
+	ksort($t);
 	foreach ($t as $r => $v) {
 		echo "[$r, $v],\n";
 	}
