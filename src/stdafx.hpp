@@ -118,8 +118,6 @@ namespace CG3 {
 	typedef std::set<uint32_t> uint32Set;
 	typedef std::map<uint32_t,int32_t> uint32int32Map;
 	typedef std::map<uint32_t,uint32_t> uint32Map;
-	typedef stdext::hash_set<uint32_t> uint32HashSet;
-	typedef stdext::hash_map<uint32_t,uint32_t> uint32HashMap;
 	namespace bc = ::boost::container;
 	typedef bc::flat_set<uint32_t> uint32FlatSet;
 	typedef bc::flat_map<uint32_t,uint32_t> uint32FlatMap;
@@ -128,5 +126,7 @@ namespace CG3 {
 #include "macros.hpp"
 #include "inlines.hpp"
 #include "uextras.hpp"
+#include "flat_unordered_map.hpp"
+#include "flat_unordered_set.hpp"
 
 #endif

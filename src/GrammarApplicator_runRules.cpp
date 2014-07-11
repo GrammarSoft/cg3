@@ -580,7 +580,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 					else if (type == K_JUMP) {
 						reading.hit_by.push_back(rule.number);
 						const Tag *to = getTagList(*rule.maplist).front();
-						uint32HashMap::const_iterator it = grammar->anchors.find(to->hash);
+						uint32FlatHashMap::const_iterator it = grammar->anchors.find(to->hash);
 						if (it == grammar->anchors.end()) {
 							u_fprintf(ux_stderr, "Warning: JUMP on line %u could not find anchor '%S'.\n", rule.line, to->tag.c_str());
 						}
@@ -1460,10 +1460,10 @@ void GrammarApplicator::runGrammarOnWindow() {
 	SingleWindow *current = gWindow->current;
 	did_final_enclosure = false;
 
-	const_foreach (uint32HashMap, current->variables_set, vit, vit_end) {
+	const_foreach (uint32FlatHashMap, current->variables_set, vit, vit_end) {
 		variables[vit->first] = vit->second;
 	}
-	const_foreach (uint32HashSet, current->variables_rem, vit, vit_end) {
+	const_foreach (uint32FlatHashSet, current->variables_rem, vit, vit_end) {
 		variables.erase(*vit);
 	}
 

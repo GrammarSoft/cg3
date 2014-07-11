@@ -251,7 +251,7 @@ Set *Grammar::getSet(uint32_t which) const {
 		return iter->second;
 	}
 	else {
-		uint32HashMap::const_iterator iter = sets_by_name.find(which);
+		uint32FlatHashMap::const_iterator iter = sets_by_name.find(which);
 		if (iter != sets_by_name.end()) {
 			Setuint32HashMap::const_iterator citer = sets_by_contents.find(iter->second);
 			if (citer != sets_by_contents.end()) {
@@ -549,7 +549,7 @@ void Grammar::addTemplate(ContextualTest *test, const UChar *name) {
 
 void Grammar::addAnchor(const UChar *to, uint32_t at, bool primary) {
 	uint32_t ah = allocateTag(to, true)->hash;
-	uint32HashMap::iterator it = anchors.find(ah);
+	uint32FlatHashMap::iterator it = anchors.find(ah);
 	if (primary && it != anchors.end()) {
 		u_fprintf(ux_stderr, "Error: Redefinition attempt for anchor '%S' on line %u!\n", to, lines);
 		CG3Quit(1);
