@@ -620,8 +620,8 @@ bool GrammarApplicator::doesSetMatchReading(const Reading& reading, const uint32
 		}
 		// Subsequent times, test whether any of the previously stored sets match the reading
 		else {
-			uint32Set sets;
-			foreach (uint32Set, *unif_sets, usi, usi_end) {
+			uint32SortedVector sets;
+			foreach(uint32SortedVector, *unif_sets, usi, usi_end) {
 				if (doesSetMatchReading(reading, *usi, bypass_index, unif_mode)) {
 					sets.insert(*usi);
 				}

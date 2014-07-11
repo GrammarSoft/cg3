@@ -173,13 +173,13 @@ namespace CG3 {
 		typedef uint32Map unif_tags_t;
 		bc::flat_map<uint32_t,unif_tags_t*> unif_tags_rs;
 		std::vector<unif_tags_t> unif_tags_store;
-		bc::flat_map<uint32_t,uint32Set*> unif_sets_rs;
-		std::vector<uint32Set> unif_sets_store;
+		bc::flat_map<uint32_t, uint32SortedVector*> unif_sets_rs;
+		std::vector<uint32SortedVector> unif_sets_store;
 		unif_tags_t *unif_tags;
 		uint32_t unif_last_wordform;
 		uint32_t unif_last_baseform;
 		uint32_t unif_last_textual;
-		uint32Set *unif_sets;
+		uint32SortedVector *unif_sets;
 		bool unif_sets_firstrun;
 
 		uint32FlatHashSet index_regexp_yes;
