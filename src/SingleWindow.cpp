@@ -43,7 +43,7 @@ SingleWindow::~SingleWindow() {
 	#endif
 
 	if (cohorts.size() > 1) {
-		for (uint32HashMap::iterator iter = parent->relation_map.begin() ; iter != parent->relation_map.end() ; ) {
+		for (uint32FlatHashMap::iterator iter = parent->relation_map.begin(); iter != parent->relation_map.end();) {
 			if (iter->second <= cohorts.back()->global_number) {
 				iter = parent->relation_map.erase(iter);
 			}

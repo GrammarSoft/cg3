@@ -58,11 +58,11 @@ namespace CG3 {
 
 		std::vector<Set*> sets_list;
 		SetSet sets_all;
-		uint32HashMap sets_by_name;
+		uint32FlatHashMap sets_by_name;
 		typedef stdext::hash_map<UString,uint32_t> set_name_seeds_t;
 		set_name_seeds_t set_name_seeds;
 		Setuint32HashMap sets_by_contents;
-		uint32HashMap set_alias;
+		uint32FlatHashMap set_alias;
 
 		typedef std::vector<UString> static_sets_t;
 		static_sets_t static_sets;
@@ -96,7 +96,7 @@ namespace CG3 {
 		uint32Map parentheses_reverse;
 
 		uint32Vector sections;
-		uint32HashMap anchors;
+		uint32FlatHashMap anchors;
 
 		RuleVector rule_by_number;
 		RuleVector before_sections;

@@ -109,8 +109,8 @@ void GrammarApplicator::runGrammarOnText(istream& input, UFILE *output) {
 	gtimer = getticks();
 	ticks timer(gtimer);
 
-	uint32HashMap variables_set;
-	uint32HashSet variables_rem;
+	uint32FlatHashMap variables_set;
+	uint32FlatHashSet variables_rem;
 	uint32SortedVector variables_output;
 
 	std::vector<std::pair<size_t,Reading*> > indents;

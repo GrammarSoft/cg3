@@ -238,7 +238,7 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 		u32tmp = (uint32_t)htonl((uint32_t)grammar->anchors.size());
 		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 	}
-	const_foreach (uint32HashMap, grammar->anchors, iter_anchor, iter_anchor_end) {
+	const_foreach (uint32FlatHashMap, grammar->anchors, iter_anchor, iter_anchor_end) {
 		u32tmp = (uint32_t)htonl((uint32_t)iter_anchor->first);
 		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 		u32tmp = (uint32_t)htonl((uint32_t)iter_anchor->second);

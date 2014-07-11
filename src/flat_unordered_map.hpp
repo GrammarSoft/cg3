@@ -32,7 +32,7 @@
 
 namespace CG3 {
 
-template<typename T, typename V, T res_empty=0, T res_del=1>
+template<typename T, typename V, T res_empty = T(-1), T res_del = T(-1) - 1>
 class flat_unordered_map {
 public:
 	typedef std::pair<const T, V> value_type;
@@ -126,7 +126,7 @@ public:
 	}
 
 	size_t insert(const value_type& t) {
-		assert(t.first != res_empty && t.first != res_del && "Key cannot be res_empty or res_del (default 0 and 1)!");
+		assert(t.first != res_empty && t.first != res_del && "Key cannot be res_empty or res_del!");
 
 		if (size_ + 1 >= capacity() / 2) {
 			reserve(std::max(static_cast<size_type>(DEFAULT_CAP), capacity() * 2));
@@ -149,7 +149,7 @@ public:
 	}
 
 	void erase(T t) {
-		assert(t != res_empty && t != res_del && "Key cannot be res_empty or res_del (default 0 and 1)!");
+		assert(t != res_empty && t != res_del && "Key cannot be res_empty or res_del!");
 
 		if (size_ == 0) {
 			return;
@@ -173,7 +173,7 @@ public:
 	}
 
 	const_iterator find(T t) const {
-		assert(t != res_empty && t != res_del && "Key cannot be res_empty or res_del (default 0 and 1)!");
+		assert(t != res_empty && t != res_del && "Key cannot be res_empty or res_del!");
 
 		const_iterator it;
 
@@ -197,7 +197,7 @@ public:
 	}
 
 	V& operator[](const T& t) {
-		assert(t != res_empty && t != res_del && "Key cannot be res_empty or res_del (default 0 and 1)!");
+		assert(t != res_empty && t != res_del && "Key cannot be res_empty or res_del!");
 
 		size_t at = std::numeric_limits<size_t>::max();
 		if (size_) {
@@ -299,6 +299,8 @@ private:
 
 	friend class const_iterator;
 };
+
+typedef flat_unordered_map<uint32_t,uint32_t> uint32FlatHashMap;
 
 }
 
