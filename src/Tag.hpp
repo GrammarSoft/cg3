@@ -54,6 +54,7 @@ namespace CG3 {
 		T_BASEFORM   = (1 <<  6),
 		T_TEXTUAL    = (1 <<  7),
 		T_DEPENDENCY = (1 <<  8),
+		// ToDo: Eliminate T_NEGATIVE
 		T_NEGATIVE   = (1 <<  9),
 		T_FAILFAST   = (1 << 10),
 		T_CASE_INSENSITIVE = (1 << 11),

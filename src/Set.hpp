@@ -91,7 +91,7 @@ namespace CG3 {
 		}
 	};
 
-	typedef std::set<Set*> SetSet;
+	typedef sorted_vector<Set*> SetSet;
 	typedef std::vector<Set*> SetVector;
 	typedef stdext::hash_map<uint32_t,Set*> Setuint32HashMap;
 }

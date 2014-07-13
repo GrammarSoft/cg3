@@ -779,7 +779,7 @@ void Grammar::reindex(bool unused_sets) {
 	}
 
 	sets_by_contents.clear();
-	foreach (std::set<Set*>, sets_all, sall, sall_end) {
+	foreach (SetSet, sets_all, sall, sall_end) {
 		sets_by_contents[(*sall)->hash] = *sall;
 	}
 
