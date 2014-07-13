@@ -31,35 +31,6 @@
 namespace CG3 {
 
 /**
- * Tests whether one uint32SortedVector intersects with another uint32SortedVector.
- *
- * In the http://beta.visl.sdu.dk/cg3_performance.html test data, this function is executed 845055 times,
- * of which 54714 (6.5%) return true.
- *
- * @param[in] first A uint32SortedVector
- * @param[in] second A uint32SortedVector
- */
-inline bool uint32SortedVector_Intersects(const uint32SortedVector& first, const uint32SortedVector& second) {
-	if (first.empty() || second.empty()) {
-		return false;
-	}
-	uint32SortedVector::const_iterator iiter = first.lower_bound(second.front());
-	uint32SortedVector::const_iterator oiter = second.lower_bound(first.front());
-	while (oiter != second.end() && iiter != first.end()) {
-		if (*oiter == *iiter) {
-			return true;
-		}
-		while (oiter != second.end() && iiter != first.end() && *oiter < *iiter) {
-			++oiter;
-		}
-		while (oiter != second.end() && iiter != first.end() && *iiter < *oiter) {
-			++iiter;
-		}
-	}
-	return false;
-}
-
-/**
  * Tests whether one set is a subset of another set, specialized for TagSet.
  *
  * In the http://beta.visl.sdu.dk/cg3_performance.html test data, this function is executed 1516098 times,
@@ -483,8 +454,31 @@ bool GrammarApplicator::doesSetMatchReading_tags(const Reading& reading, const S
 
 	// If there are no special circumstances the first test boils down to finding whether the tag stores intersect
 	// 80% of calls try this first.
-	if (!(theset.type & ST_SPECIAL) && !unif_mode) {
-		retval = uint32SortedVector_Intersects(theset.single_tags_hash, reading.tags_plain);
+	if (!(theset.type & ST_SPECIAL)) {
+		if (!theset.single_tags_hash.empty() && !reading.tags_plain.empty()) {
+			uint32SortedVector::const_iterator iiter = theset.single_tags_hash.lower_bound(reading.tags_plain.front());
+			uint32SortedVector::const_iterator oiter = reading.tags_plain.lower_bound(theset.single_tags_hash.front());
+			while (oiter != reading.tags_plain.end() && iiter != theset.single_tags_hash.end()) {
+				if (*oiter == *iiter) {
+					if (unif_mode) {
+						BOOST_AUTO(it, unif_tags->find(theset.hash));
+						if (it != unif_tags->end() && it->second != *oiter) {
+							++iiter;
+							continue;
+						}
+						(*unif_tags)[theset.hash] = *oiter;
+					}
+					retval = true;
+					break;
+				}
+				while (oiter != reading.tags_plain.end() && iiter != theset.single_tags_hash.end() && *oiter < *iiter) {
+					++oiter;
+				}
+				while (oiter != reading.tags_plain.end() && iiter != theset.single_tags_hash.end() && *iiter < *oiter) {
+					++iiter;
+				}
+			}
+		}
 	}
 	else {
 		// Test whether any of the fail-fast tags match and bail out immediately if so
