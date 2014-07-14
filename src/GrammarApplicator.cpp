@@ -320,9 +320,9 @@ void GrammarApplicator::printTrace(UFILE *output, uint32_t hit_by) {
 		if (r->type == K_ADDRELATION || r->type == K_SETRELATION || r->type == K_REMRELATION
 		|| r->type == K_ADDRELATIONS || r->type == K_SETRELATIONS || r->type == K_REMRELATIONS
 			) {
-				u_fprintf(output, "(%S", r->maplist->tags_list.front().getTag()->tag.c_str());
+				u_fprintf(output, "(%S", r->maplist->getNonEmpty().begin()->first->tag.c_str());
 				if (r->type == K_ADDRELATIONS || r->type == K_SETRELATIONS || r->type == K_REMRELATIONS) {
-					u_fprintf(output, ",%S", r->sublist->tags_list.front().getTag()->tag.c_str());
+					u_fprintf(output, ",%S", r->sublist->getNonEmpty().begin()->first->tag.c_str());
 				}
 				u_fprintf(output, ")");
 		}

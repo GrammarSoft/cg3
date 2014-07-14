@@ -27,6 +27,28 @@
 
 namespace CG3 {
 
+inline void trie_unserialize(trie_t& trie, FILE *input, Grammar& grammar, uint32_t num_tags) {
+	for (uint32_t i = 0; i < num_tags; ++i) {
+		uint32_t u32tmp = 0;
+		fread(&u32tmp, sizeof(uint32_t), 1, input);
+		u32tmp = (uint32_t)ntohl(u32tmp);
+		trie_node_t& node = trie[grammar.single_tags_list[u32tmp]];
+
+		uint8_t u8tmp = 0;
+		fread(&u8tmp, sizeof(uint8_t), 1, input);
+		node.terminal = (u8tmp != 0);
+
+		fread(&u32tmp, sizeof(uint32_t), 1, input);
+		u32tmp = (uint32_t)ntohl(u32tmp);
+		if (u32tmp) {
+			if (!node.trie) {
+				node.trie = new trie_t;
+			}
+			trie_unserialize(*node.trie, input, grammar, u32tmp);
+		}
+	}
+}
+
 int BinaryGrammar::readBinaryGrammar(FILE *input) {
 	if (!input) {
 		u_fprintf(ux_stderr, "Error: Input is null - cannot read from nothing!\n");
@@ -205,35 +227,6 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 	}
 
 	u32tmp = 0;
-	if (fields & (1 << 4)) {
-		fread(&u32tmp, sizeof(uint32_t), 1, input);
-		u32tmp = (uint32_t)ntohl(u32tmp);
-	}
-	uint32_t num_comp_tags = u32tmp;
-	grammar->tags_list.resize(num_comp_tags);
-	for (uint32_t i=0 ; i<num_comp_tags ; i++) {
-		CompositeTag *curcomptag = grammar->allocateCompositeTag();
-		fread(&u32tmp, sizeof(uint32_t), 1, input);
-		curcomptag->number = (uint32_t)ntohl(u32tmp);
-		fread(&u32tmp, sizeof(uint32_t), 1, input);
-		curcomptag->hash = (uint32_t)ntohl(u32tmp);
-		fread(&u8tmp, sizeof(uint8_t), 1, input);
-		curcomptag->is_special = (u8tmp == 1);
-
-		fread(&u32tmp, sizeof(uint32_t), 1, input);
-		u32tmp = (uint32_t)ntohl(u32tmp);
-		uint32_t num_single_tags = u32tmp;
-		for (uint32_t j=0 ; j<num_single_tags ; j++) {
-			fread(&u32tmp, sizeof(uint32_t), 1, input);
-			u32tmp = (uint32_t)ntohl(u32tmp);
-			curcomptag->tags.push_back(grammar->single_tags_list[u32tmp]);
-			curcomptag->tags_set.insert(grammar->single_tags_list[u32tmp]);
-		}
-		grammar->tags[curcomptag->hash] = curcomptag;
-		grammar->tags_list[curcomptag->number] = curcomptag;
-	}
-
-	u32tmp = 0;
 	if (fields & (1 << 5)) {
 		fread(&u32tmp, sizeof(uint32_t), 1, input);
 		u32tmp = (uint32_t)ntohl(u32tmp);
@@ -304,25 +297,13 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 		if (fields & (1 << 3)) {
 			fread(&u32tmp, sizeof(uint32_t), 1, input);
 			u32tmp = (uint32_t)ntohl(u32tmp);
-			uint32_t num_tags = u32tmp;
-			for (uint32_t j=0 ; j<num_tags ; j++) {
-				fread(&u8tmp, sizeof(uint8_t), 1, input);
-				fread(&u32tmp, sizeof(uint32_t), 1, input);
-				u32tmp = (uint32_t)ntohl(u32tmp);
-				if (u8tmp == ANYTAG_TAG) {
-					Tag *tag = grammar->single_tags_list[u32tmp];
-					s->single_tags.insert(tag);
-					s->single_tags_hash.insert(tag->hash);
-					s->tags_list.push_back(tag);
-					if (tag->type & T_FAILFAST) {
-						s->ff_tags.insert(tag);
-					}
-				}
-				else {
-					CompositeTag *tag = grammar->tags_list[u32tmp];
-					s->tags.insert(tag);
-					s->tags_list.push_back(tag);
-				}
+			if (u32tmp) {
+				trie_unserialize(s->trie, input, *grammar, u32tmp);
+			}
+			fread(&u32tmp, sizeof(uint32_t), 1, input);
+			u32tmp = (uint32_t)ntohl(u32tmp);
+			if (u32tmp) {
+				trie_unserialize(s->trie_special, input, *grammar, u32tmp);
 			}
 		}
 		if (fields & (1 << 4)) {

@@ -39,7 +39,6 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 	uint32_t fields = 0;
 	uint32_t u32tmp = 0;
 	int32_t i32tmp = 0;
-	uint8_t u8tmp = 0;
 	UErrorCode err = U_ZERO_ERROR;
 	UConverter *conv = ucnv_open("UTF-8", &err);
 	std::ostringstream buffer;
@@ -62,9 +61,11 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 	if (!grammar->single_tags_list.empty()) {
 		fields |= (1 << 3);
 	}
+	/*
 	if (!grammar->tags_list.empty()) {
 		fields |= (1 << 4);
 	}
+	//*/
 	if (!grammar->preferred_targets.empty()) {
 		fields |= (1 << 5);
 	}
@@ -191,28 +192,6 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 		fwrite(buffer.str().c_str(), buffer.str().length(), 1, output);
 	}
 
-	if (!grammar->tags_list.empty()) {
-		u32tmp = (uint32_t)htonl((uint32_t)grammar->tags_list.size());
-		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
-	}
-	std::vector<CompositeTag*>::const_iterator comp_iter;
-	for (comp_iter = grammar->tags_list.begin() ; comp_iter != grammar->tags_list.end() ; comp_iter++) {
-		const CompositeTag *curcomptag = *comp_iter;
-		u32tmp = (uint32_t)htonl((uint32_t)curcomptag->number);
-		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
-		u32tmp = (uint32_t)htonl((uint32_t)curcomptag->hash);
-		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
-		u8tmp = (uint8_t)curcomptag->is_special;
-		fwrite(&u8tmp, sizeof(uint8_t), 1, output);
-
-		u32tmp = (uint32_t)htonl((uint32_t)curcomptag->tags.size());
-		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
-		const_foreach (CompositeTag::tags_t, curcomptag->tags, tag_iter, tag_iter_end) {
-			u32tmp = (uint32_t)htonl((*tag_iter)->number);
-			fwrite(&u32tmp, sizeof(uint32_t), 1, output);
-		}
-	}
-
 	if (!grammar->preferred_targets.empty()) {
 		u32tmp = (uint32_t)htonl((uint32_t)grammar->preferred_targets.size());
 		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
@@ -269,13 +248,12 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 			fields |= (1 << 2);
 			writeSwapped(buffer, s->type);
 		}
-		if (!s->tags_list.empty()) {
+		if (!s->getNonEmpty().empty()) {
 			fields |= (1 << 3);
-			writeSwapped<uint32_t>(buffer, s->tags_list.size());
-			const_foreach (AnyTagVector, s->tags_list, iter, iter_end) {
-				writeSwapped(buffer, iter->which);
-				writeSwapped(buffer, iter->number());
-			}
+			writeSwapped<uint32_t>(buffer, s->trie.size());
+			trie_serialize(s->trie, buffer);
+			writeSwapped<uint32_t>(buffer, s->trie_special.size());
+			trie_serialize(s->trie_special, buffer);
 		}
 		if (!s->set_ops.empty()) {
 			fields |= (1 << 4);
