@@ -54,21 +54,29 @@ void TextualParser::incErrorCount() {
 	throw error_counter;
 }
 
-int TextualParser::parseTagList(UChar *& p, Set *s, const bool isinline) {
-	if (isinline) {
-		if (*p != '(') {
-			u_fprintf(ux_stderr, "Error: Missing opening ( on line %u!\n", result->lines);
-			incErrorCount();
-		}
-		++p;
+struct freq_sorter {
+	const bc::flat_map<Tag*, size_t>& tag_freq;
+
+	freq_sorter(const bc::flat_map<Tag*, size_t>& tag_freq) : tag_freq(tag_freq) {
 	}
+
+	bool operator()(Tag *a, Tag *b) const {
+		// Sort highest frequency first
+		return tag_freq.find(a)->second > tag_freq.find(b)->second;
+	}
+};
+
+void TextualParser::parseTagList(UChar *& p, Set *s) {
+	std::set<TagVector> taglists;
+	bc::flat_map<Tag*, size_t> tag_freq;
+
 	while (*p && *p != ';' && *p != ')') {
 		result->lines += SKIPWS(p, ';', ')');
 		if (*p && *p != ';' && *p != ')') {
+			TagVector tags;
 			if (*p == '(') {
 				++p;
 				result->lines += SKIPWS(p, ';', ')');
-				TagVector tags;
 
 				while (*p && *p != ';' && *p != ')') {
 					UChar *n = p;
@@ -94,20 +102,6 @@ int TextualParser::parseTagList(UChar *& p, Set *s, const bool isinline) {
 					incErrorCount();
 				}
 				++p;
-
-				if (tags.size() == 1) {
-					result->addTagToSet(tags.back(), s);
-				}
-				else {
-					CompositeTag *ct = result->allocateCompositeTag();
-					std::sort(tags.begin(), tags.end(), compare_Tag());
-					BOOST_AUTO(iter, std::unique(tags.begin(), tags.end()));
-					tags.erase(iter, tags.end());
-					boost_foreach (Tag *tvi, tags) {
-						result->addTagToCompositeTag(tvi, ct);
-					}
-					result->addCompositeTagToSet(s, ct);
-				}
 			}
 			else {
 				UChar *n = p;
@@ -119,29 +113,51 @@ int TextualParser::parseTagList(UChar *& p, Set *s, const bool isinline) {
 						incErrorCount();
 					}
 				}
-				if (isinline) {
-					result->lines += SKIPTOWS(n, ')', true);
-				}
-				else {
-					result->lines += SKIPTOWS(n, 0, true);
-				}
+				result->lines += SKIPTOWS(n, 0, true);
 				ptrdiff_t c = n - p;
 				u_strncpy(&gbuffers[0][0], p, c);
 				gbuffers[0][c] = 0;
 				Tag *t = result->allocateTag(&gbuffers[0][0]);
-				result->addTagToSet(t, s);
+				tags.push_back(t);
 				p = n;
+			}
+
+			// sort + uniq the tags
+			std::sort(tags.begin(), tags.end());
+			tags.erase(std::unique(tags.begin(), tags.end()), tags.end());
+			// If this particular list of tags hasn't already been seen, then increment their frequency counts
+			if (taglists.insert(tags).second) {
+				boost_foreach (Tag *t, tags) {
+					++tag_freq[t];
+				}
 			}
 		}
 	}
-	if (isinline) {
-		if (*p != ')') {
-			u_fprintf(ux_stderr, "Error: Missing closing ) on line %u!\n", result->lines);
-			incErrorCount();
+
+	freq_sorter fs(tag_freq);
+	boost_foreach (const TagVector& tvc, taglists) {
+		if (tvc.size() == 1) {
+			result->addTagToSet(tvc[0], s);
+			continue;
 		}
-		++p;
+		TagVector& tv = const_cast<TagVector&>(tvc);
+		// Sort tags by frequency, high-to-low
+		// Doing this yields a very cheap imperfect form of trie compression, but it's good enough
+		std::sort(tv.begin(), tv.end(), fs);
+		bool special = false;
+		boost_foreach (Tag *tag, tv) {
+			if (tag->type & T_SPECIAL) {
+				special = true;
+				break;
+			}
+		}
+		if (special) {
+			trie_insert(s->trie_special, tv);
+		}
+		else {
+			trie_insert(s->trie, tv);
+		}
 	}
-	return 0;
 }
 
 Set *TextualParser::parseSetInline(UChar *& p, Set *s) {
@@ -154,6 +170,9 @@ Set *TextualParser::parseSetInline(UChar *& p, Set *s) {
 		if (*p && *p != ';' && *p != ')') {
 			if (!wantop) {
 				if (*p == '(') {
+					// No, this can't just reuse parseTagList() because this will only ever parse a single CompositeTag,
+					// whereas parseTagList() will handle mixed Tag and CompositeTag
+					// Doubly so now that parseTagList() will sort+uniq the tags, which we don't want for MAP/ADD/SUBSTITUTE/etc
 					++p;
 					Set *set_c = result->allocateSet();
 					set_c->line = result->lines;
@@ -187,15 +206,24 @@ Set *TextualParser::parseSetInline(UChar *& p, Set *s) {
 					++p;
 
 					if (tags.size() == 1) {
-						result->addTagToSet(tags.back(), set_c);
+						result->addTagToSet(tags[0], set_c);
 					}
 					else {
-						CompositeTag *ct = result->allocateCompositeTag();
-						foreach (TagVector, tags, tvi, tvi_end) {
-							result->addTagToCompositeTag(*tvi, ct);
+						bool special = false;
+						boost_foreach(Tag *tag, tags) {
+							if (tag->type & T_SPECIAL) {
+								special = true;
+								break;
+							}
 						}
-						result->addCompositeTagToSet(set_c, ct);
+						if (special) {
+							trie_insert(set_c->trie_special, tags);
+						}
+						else {
+							trie_insert(set_c->trie, tags);
+						}
 					}
+
 					result->addSet(set_c);
 					sets.push_back(set_c->hash);
 				}
@@ -215,10 +243,16 @@ Set *TextualParser::parseSetInline(UChar *& p, Set *s) {
 				}
 
 				if (!set_ops.empty() && (set_ops.back() == S_SET_ISECT_U || set_ops.back() == S_SET_SYMDIFF_U)) {
-					const AnyTagSet a = result->getSet(sets[sets.size()-1])->getTagList(*result);
-					const AnyTagSet b = result->getSet(sets[sets.size()-2])->getTagList(*result);
+					TagVector tv;
+					std::set<TagVector> a;
+					trie_getTags(result->getSet(sets[sets.size() - 1])->trie, a, tv);
+					trie_getTags(result->getSet(sets[sets.size() - 1])->trie_special, a, tv);
+					tv.clear();
+					std::set<TagVector> b;
+					trie_getTags(result->getSet(sets[sets.size() - 2])->trie, b, tv);
+					trie_getTags(result->getSet(sets[sets.size() - 2])->trie_special, b, tv);
 
-					AnyTagVector r;
+					std::vector<TagVector> r;
 					if (set_ops.back() == S_SET_ISECT_U) {
 						std::set_intersection(a.begin(), a.end(), b.begin(), b.end(), std::back_inserter(r));
 					}
@@ -233,16 +267,39 @@ Set *TextualParser::parseSetInline(UChar *& p, Set *s) {
 					Set *set_c = result->allocateSet();
 					set_c->line = result->lines;
 					set_c->setName(sets_counter++);
-					foreach (AnyTagVector, r, iter, iter_end) {
-						if (iter->which == ANYTAG_TAG) {
-							Tag *t = iter->getTag();
-							result->addTagToSet(t, set_c);
-						}
-						else {
-							CompositeTag *t = iter->getCompositeTag();
-							result->addCompositeTagToSet(set_c, t);
+
+					bc::flat_map<Tag*, size_t> tag_freq;
+					boost_foreach (const TagVector& tags, r) {
+						boost_foreach (Tag *t, tags) {
+							++tag_freq[t];
 						}
 					}
+
+					freq_sorter fs(tag_freq);
+					boost_foreach (TagVector& tv, r) {
+						if (tv.size() == 1) {
+							result->addTagToSet(tv[0], set_c);
+							continue;
+						}
+
+						// Sort tags by frequency, high-to-low
+						// Doing this yields a very cheap imperfect form of trie compression, but it's good enough
+						std::sort(tv.begin(), tv.end(), fs);
+						bool special = false;
+						boost_foreach(Tag *tag, tv) {
+							if (tag->type & T_SPECIAL) {
+								special = true;
+								break;
+							}
+						}
+						if (special) {
+							trie_insert(set_c->trie_special, tv);
+						}
+						else {
+							trie_insert(set_c->trie, tv);
+						}
+					}
+
 					result->addSet(set_c);
 					sets.push_back(set_c->hash);
 				}
@@ -273,17 +330,15 @@ Set *TextualParser::parseSetInline(UChar *& p, Set *s) {
 		}
 	}
 
-	if (s) {
-		s->sets = sets;
-		s->set_ops = set_ops;
-	}
-	else if (sets.size() == 1) {
+	if (!s && sets.size() == 1) {
 		s = result->getSet(sets.back());
 	}
 	else {
-		s = result->allocateSet();
-		s->sets = sets;
-		s->set_ops = set_ops;
+		if (!s) {
+			s = result->allocateSet();
+		}
+		s->sets.swap(sets);
+		s->set_ops.swap(set_ops);
 	}
 	return s;
 }
@@ -301,7 +356,7 @@ Set *TextualParser::parseSetInlineWrapper(UChar *& p) {
 	return s;
 }
 
-int TextualParser::parseContextualTestPosition(UChar *& p, ContextualTest& t) {
+void TextualParser::parseContextualTestPosition(UChar *& p, ContextualTest& t) {
 	bool negative = false;
 	bool had_digits = false;
 
@@ -547,8 +602,6 @@ int TextualParser::parseContextualTestPosition(UChar *& p, ContextualTest& t) {
 	if (t.pos > POS_64BIT) {
 		t.pos |= POS_64BIT;
 	}
-
-	return 0;
 }
 
 ContextualTest *TextualParser::parseContextualTestList(UChar *& p, Rule *rule) {
@@ -963,7 +1016,7 @@ void TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 			u_fprintf(ux_stderr, "Error: Empty substitute set on line %u!\n", result->lines);
 			incErrorCount();
 		}
-		if (s->tags_list.empty() && !(s->type & (ST_TAG_UNIFY|ST_SET_UNIFY|ST_CHILD_UNIFY))) {
+		if (s->trie.empty() && s->trie_special.empty() && !(s->type & (ST_TAG_UNIFY | ST_SET_UNIFY | ST_CHILD_UNIFY))) {
 			u_fprintf(ux_stderr, "Error: Substitute set on line %u was neither unified nor of LIST type!\n", result->lines);
 			incErrorCount();
 		}
@@ -983,20 +1036,18 @@ void TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 			u_fprintf(ux_stderr, "Error: Empty mapping set on line %u!\n", result->lines);
 			incErrorCount();
 		}
-		if (s->tags_list.empty() && !(s->type & (ST_TAG_UNIFY|ST_SET_UNIFY|ST_CHILD_UNIFY))) {
+		if (s->trie.empty() && s->trie_special.empty() && !(s->type & (ST_TAG_UNIFY | ST_SET_UNIFY | ST_CHILD_UNIFY))) {
 			u_fprintf(ux_stderr, "Error: Mapping set on line %u was neither unified nor of LIST type!\n", result->lines);
 			incErrorCount();
 		}
-		if (key == K_APPEND && s->tags_list.size() >= 1) {
-			if ((s->tags_list.front().which == ANYTAG_COMPOSITE && !(s->tags_list.front().getCompositeTag()->tags.front()->type & T_BASEFORM))
-				|| (s->tags_list.front().which == ANYTAG_TAG && !(s->tags_list.front().getTag()->type & T_BASEFORM))) {
+		if (key == K_APPEND && !s->getNonEmpty().empty()) {
+			if (!(s->getNonEmpty().begin()->first->type & T_BASEFORM)) {
 				u_fprintf(ux_stderr, "Error: There must be a baseform before any other tags in APPEND on line %u!\n", result->lines);
 				incErrorCount();
 			}
 		}
-		if (key == K_ADDCOHORT && s->tags_list.size() >= 1) {
-			if ((s->tags_list.front().which == ANYTAG_COMPOSITE && !(s->tags_list.front().getCompositeTag()->tags.front()->type & T_WORDFORM))
-				|| (s->tags_list.front().which == ANYTAG_TAG && !(s->tags_list.front().getTag()->type & T_WORDFORM))) {
+		if (key == K_ADDCOHORT && !s->getNonEmpty().empty()) {
+			if (!(s->getNonEmpty().begin()->first->type & T_WORDFORM)) {
 				u_fprintf(ux_stderr, "Error: There must be a wordform before any other tags in ADDCOHORT on line %u!\n", result->lines);
 				incErrorCount();
 			}
@@ -1018,7 +1069,7 @@ void TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 			u_fprintf(ux_stderr, "Error: Empty relation set on line %u!\n", result->lines);
 			incErrorCount();
 		}
-		if (s->tags_list.empty() && !(s->type & (ST_TAG_UNIFY|ST_SET_UNIFY|ST_CHILD_UNIFY))) {
+		if (s->trie.empty() && s->trie_special.empty() && !(s->type & (ST_TAG_UNIFY | ST_SET_UNIFY | ST_CHILD_UNIFY))) {
 			u_fprintf(ux_stderr, "Error: Relation/Value set on line %u was neither unified nor of LIST type!\n", result->lines);
 			incErrorCount();
 		}
@@ -1231,7 +1282,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 			++p;
 			parseTagList(p, result->delimiters);
 			result->addSet(result->delimiters);
-			if (result->delimiters->tags.empty() && result->delimiters->single_tags.empty()) {
+			if (result->delimiters->trie.empty() && result->delimiters->trie_special.empty()) {
 				u_fprintf(ux_stderr, "Error: DELIMITERS declared, but no definitions given, on line %u!\n", result->lines);
 				incErrorCount();
 			}
@@ -1264,7 +1315,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 			++p;
 			parseTagList(p, result->soft_delimiters);
 			result->addSet(result->soft_delimiters);
-			if (result->soft_delimiters->tags.empty() && result->soft_delimiters->single_tags.empty()) {
+			if (result->soft_delimiters->trie.empty() && result->soft_delimiters->trie_special.empty()) {
 				u_fprintf(ux_stderr, "Error: SOFT-DELIMITERS declared, but no definitions given, on line %u!\n", result->lines);
 				incErrorCount();
 			}
@@ -1522,7 +1573,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 				}
 			}
 			result->addSet(s);
-			if (s->tags.empty() && s->single_tags.empty() && s->sets.empty()) {
+			if (s->empty()) {
 				u_fprintf(ux_stderr, "Error: LIST %S declared, but no definitions given, on line %u!\n", s->name.c_str(), result->lines);
 				incErrorCount();
 			}
@@ -1576,7 +1627,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 				s = tmp;
 			}
 			result->addSet(s);
-			if (s->sets.empty() && s->tags.empty() && s->single_tags.empty()) {
+			if (s->empty()) {
 				u_fprintf(ux_stderr, "Error: SET %S declared, but no definitions given, on line %u!\n", s->name.c_str(), result->lines);
 				incErrorCount();
 			}

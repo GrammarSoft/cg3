@@ -1,5 +1,20 @@
+2014-07-13  tino
+
+	* [r10038] src/GrammarApplicator_matchSet.cpp: Unification of plain
+	  tags don't need special handling
+	* [r10037] src/Grammar.cpp, src/Set.hpp, src/Tag.hpp: Minor stuff
+
 2014-07-11  tino
 
+	* [r10036] scripts/profile-revisions-tally.php,
+	  scripts/profile-revisions.php, src/TextualParser.cpp: Flush;
+	  Profiling
+	* [r10035] src/Grammar.cpp, src/GrammarApplicator.hpp,
+	  src/GrammarApplicator_matchSet.cpp,
+	  src/GrammarApplicator_runRules.cpp, src/stdafx.hpp: Eliminate
+	  uint32Set in favour of uint32SortedVector
+	* [r10034] ChangeLog, src/CMakeLists.txt, src/version.hpp: Flat is
+	  good
 	* [r10033] src/BinaryGrammar_write.cpp, src/Grammar.cpp,
 	  src/Grammar.hpp, src/GrammarApplicator.hpp,
 	  src/GrammarApplicator_reflow.cpp,
@@ -2461,19 +2476,4 @@
 
 	* [r7410] manual/installation.xml: cg3
 	* [r7409] dist/dist-osx.pl: Dist OS X
-	* [r7408] dist, dist-osx.pl, dist/dist-osx.pl, dist/osx,
-	  dist/osx/cg-comp, dist/osx/cg-conv, dist/osx/cg-proc,
-	  dist/osx/vislcg3: Dist OS X
-	* [r7407] manual/installation.xml: cg3
-	* [r7406] INSTALL, manual/installation.xml: cg3
-	* [r7403] dist-osx.pl: OS X dist script
-
-2011-08-01  tino
-
-	* [r7397] manual/cgkeywords.xml, manual/dependencies.xml,
-	  manual/faq.xml, manual/relations.xml, manual/rules.xml,
-	  newsletters/2011-08-01.txt, scripts/cg3-autobin.pl, src/Tag.cpp,
-	  src/version.h, test/T_RegExp/expected.txt,
-	  test/T_RegExp/grammar.txt, test/T_RegExp/input.txt: Release
-	  0.9.7.7397
 

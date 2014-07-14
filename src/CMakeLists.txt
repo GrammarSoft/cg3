@@ -54,7 +54,6 @@ set(LIBCG3_HEADERS
 	BinaryGrammar.hpp
 	Cohort.hpp
 	CohortIterator.hpp
-	CompositeTag.hpp
 	ContextualTest.hpp
 	Grammar.hpp
 	GrammarApplicator.hpp
@@ -66,6 +65,7 @@ set(LIBCG3_HEADERS
 	SingleWindow.hpp
 	Strings.hpp
 	Tag.hpp
+	TagTrie.hpp
 	TextualParser.hpp
 	Window.hpp
 	bloomish.hpp
@@ -88,7 +88,6 @@ set(LIBCG3_SOURCES
 	BinaryGrammar_write.cpp
 	Cohort.cpp
 	CohortIterator.cpp
-	CompositeTag.cpp
 	ContextualTest.cpp
 	Grammar.cpp
 	GrammarApplicator.cpp

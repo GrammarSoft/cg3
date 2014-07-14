@@ -133,26 +133,11 @@ TagList GrammarApplicator::getTagList(const Set& theSet, bool unif_mode) const {
 			if (single_tags.find(ihash) != single_tags.end()) {
 				theTags.push_back(single_tags.find(ihash)->second);
 			}
-			else if (grammar->tags.find(ihash) != grammar->tags.end()) {
-				CompositeTag *tag = grammar->tags.find(ihash)->second;
-				const_foreach (CompositeTag::tags_t, tag->tags, tter, tter_end) {
-					theTags.push_back(*tter);
-				}
-			}
 		}
 	}
 	else {
-		const_foreach (AnyTagVector, theSet.tags_list, tter, tter_end) {
-			if (tter->which == ANYTAG_TAG) {
-				theTags.push_back(tter->getTag());
-			}
-			else {
-				CompositeTag *tag = tter->getCompositeTag();
-				const_foreach (CompositeTag::tags_t, tag->tags, tter, tter_end) {
-					theTags.push_back(*tter);
-				}
-			}
-		}
+		trie_getTagList(theSet.trie, theTags);
+		trie_getTagList(theSet.trie_special, theTags);
 	}
 	// Eliminate consecutive duplicates. Not all duplicates, since AddCohort and Append may have multiple readings with repeated tags
 	for (TagList::iterator ot = theTags.begin() ; theTags.size() > 1 && ot != theTags.end() ; ++ot) {
