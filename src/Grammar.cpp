@@ -56,13 +56,6 @@ Grammar::~Grammar() {
 		delete *rsets;
 	}
 	
-	stdext::hash_map<uint32_t, CompositeTag*>::iterator iter_ctag;
-	for (iter_ctag = tags.begin() ; iter_ctag != tags.end() ; iter_ctag++) {
-		if (iter_ctag->second) {
-			delete iter_ctag->second;
-		}
-	}
-
 	Taguint32HashMap::iterator iter_stag;
 	for (iter_stag = single_tags.begin() ; iter_stag != single_tags.end() ; ++iter_stag) {
 		if (iter_stag->second) {
@@ -103,7 +96,16 @@ void Grammar::addSet(Set *& to) {
 				break;
 			}
 			Set *s = getSet(to->sets[i]);
-			if (!s->sets.empty() || s->tags_list.size() != 1) {
+			if (!s->sets.empty()) {
+				all_tags = false;
+				break;
+			}
+			if (!s->trie.empty() && !s->trie_special.empty()) {
+				all_tags = false;
+				break;
+			}
+			// ToDo: Single CompositeTag can also be merged
+			if (s->getNonEmpty().size() != 1 || !trie_singular(s->getNonEmpty())) {
 				all_tags = false;
 				break;
 			}
@@ -112,12 +114,23 @@ void Grammar::addSet(Set *& to) {
 		if (all_tags) {
 			for (size_t i=0 ; i<to->sets.size() ; ++i) {
 				Set *s = getSet(to->sets[i]);
-				for (size_t j=0 ; j<s->tags_list.size() ; ++j) {
-					if (s->tags_list[j].which == ANYTAG_TAG) {
-						addTagToSet(s->tags_list[j].getTag(), to);
+				TagVector tv = trie_getTagList(s->getNonEmpty());
+				if (tv.size() == 1) {
+					addTagToSet(tv[0], to);
+				}
+				else {
+					bool special = false;
+					boost_foreach (Tag *tag, tv) {
+						if (tag->type & T_SPECIAL) {
+							special = true;
+							break;
+						}
+					}
+					if (special) {
+						trie_insert(to->trie_special, tv);
 					}
 					else {
-						addCompositeTagToSet(to, s->tags_list[j].getCompositeTag());
+						trie_insert(to->trie, tv);
 					}
 				}
 			}
@@ -133,8 +146,8 @@ void Grammar::addSet(Set *& to) {
 	}
 
 	// If there are failfast tags, and if they don't comprise the whole of the set, split the set into Positive - Negative
-	if (!to->ff_tags.empty() && to->ff_tags.size() < to->tags_list.size()) {
-		Set *positive = allocateSet(to);
+	if (!to->ff_tags.empty() && to->ff_tags.size() < (to->trie.size() + to->trie_special.size())) {
+		Set *positive = allocateSet();
 		Set *negative = allocateSet();
 
 		UString str;
@@ -149,33 +162,30 @@ void Grammar::addSet(Set *& to) {
 		str += stringbits[S_NEGATIVE].getTerminatedBuffer();
 		negative->setName(str);
 
+		positive->trie.swap(to->trie);
+		positive->trie_special.swap(to->trie_special);
+
 		boost_foreach (Tag *iter, to->ff_tags) {
-			for (AnyTagVector::iterator ater = positive->tags_list.begin() ; ater != positive->tags_list.end() ; ) {
-				if (ater->hash() == iter->hash) {
-					ater = positive->tags_list.erase(ater);
-				}
-				else {
-					++ater;
+			BOOST_AUTO(pit, positive->trie_special.find(iter));
+			if (pit != positive->trie_special.end()) {
+				if (pit->second.terminal) {
+					if (pit->second.trie) {
+						trie_delete(*pit->second.trie);
+					}
+					positive->trie_special.erase(pit);
 				}
 			}
-			positive->single_tags.erase(iter);
-			positive->single_tags_hash.erase(iter->hash);
 			UString str = iter->toUString(true);
 			str.erase(str.find('^'), 1);
 			Tag *tag = allocateTag(str.c_str());
 			addTagToSet(tag, negative);
 		}
-		positive->ff_tags.clear();
 
 		positive->reindex(*this);
 		negative->reindex(*this);
 		addSet(positive);
 		addSet(negative);
 
-		to->tags.clear();
-		to->tags_list.clear();
-		to->single_tags.clear();
-		to->single_tags_hash.clear();
 		to->ff_tags.clear();
 
 		to->sets.push_back(positive->hash);
@@ -233,9 +243,11 @@ void Grammar::addSet(Set *& to) {
 	else {
 		Set *a = sets_by_contents.find(chash)->second;
 		if (a != to) {
+			a->reindex(*this);
+			to->reindex(*this);
 			if ((a->type & (ST_SPECIAL|ST_TAG_UNIFY|ST_CHILD_UNIFY|ST_SET_UNIFY)) != (to->type & (ST_SPECIAL|ST_TAG_UNIFY|ST_CHILD_UNIFY|ST_SET_UNIFY))
 			|| a->set_ops.size() != to->set_ops.size() || a->sets.size() != to->sets.size()
-			|| a->single_tags.size() != to->single_tags.size() || a->tags.size() != to->tags.size()) {
+			|| a->trie.size() != to->trie.size() || a->trie_special.size() != to->trie_special.size()) {
 				u_fprintf(ux_stderr, "Error: Content hash collision between set %S on line %u and %S on line %u!\n", a->name.c_str(), a->line, to->name.c_str(), to->line);
 				CG3Quit(1);
 			}
@@ -268,14 +280,8 @@ Set *Grammar::getSet(uint32_t which) const {
 	return 0;
 }
 
-Set *Grammar::allocateSet(Set *from) {
-	Set *ns = 0;
-	if (from) {
-		ns = new Set(*from);
-	}
-	else {
-		ns = new Set;
-	}
+Set *Grammar::allocateSet() {
+	Set *ns = new Set;
 	sets_all.insert(ns);
 	return ns;
 }
@@ -342,61 +348,6 @@ Set *Grammar::parseSet(const UChar *name) {
 		CG3Quit(1);
 	}
 	return tmp;
-}
-
-CompositeTag *Grammar::addCompositeTag(CompositeTag *tag) {
-	if (tag && tag->tags.size()) {
-		tag->rehash();
-		if (tags.find(tag->hash) != tags.end()) {
-			if (tags[tag->hash] != tag) {
-				uint32_t ct = tag->hash;
-				delete tag;
-				tag = tags[ct];
-			}
-		}
-		else {
-			tags[tag->hash] = tag;
-			tags_list.push_back(tag);
-			tag->number = (uint32_t)tags_list.size()-1;
-		}
-	}
-	else {
-		u_fprintf(ux_stderr, "Error: Attempted to add empty composite tag to grammar on line %u!\n", lines);
-		CG3Quit(1);
-	}
-	return tags[tag->hash];
-}
-
-CompositeTag *Grammar::addCompositeTagToSet(Set *set, CompositeTag *tag) {
-	if (tag && tag->tags.size()) {
-		if (tag->tags.size() == 1) {
-			Tag *rtag = *(tag->tags.begin());
-			addTagToSet(rtag, set);
-			delete tag;
-			tag = 0;
-		}
-		else {
-			tag = addCompositeTag(tag);
-			set->tags_list.push_back(tag);
-			set->tags.insert(tag);
-			if (tag->is_special) {
-				set->type |= ST_SPECIAL;
-			}
-		}
-	}
-	else {
-		u_fprintf(ux_stderr, "Error: Attempted to add empty composite tag to grammar and set on line %u!\n", lines);
-		CG3Quit(1);
-	}
-	return tag;
-}
-
-CompositeTag *Grammar::allocateCompositeTag() {
-	return new CompositeTag;
-}
-
-void Grammar::destroyCompositeTag(CompositeTag *tag) {
-	delete tag;
 }
 
 Rule *Grammar::allocateRule() {
@@ -466,29 +417,19 @@ Tag *Grammar::allocateTag(const UChar *txt, bool raw) {
 	return single_tags[hash];
 }
 
-void Grammar::addTagToCompositeTag(Tag *simpletag, CompositeTag *tag) {
-	if (simpletag && !simpletag->tag.empty()) {
-		tag->addTag(simpletag);
-	}
-	else {
-		u_fprintf(ux_stderr, "Error: Attempted to add empty tag to grammar and composite tag on line %u!\n", lines);
-		CG3Quit(1);
-	}
-}
-
 void Grammar::addTagToSet(Tag *rtag, Set *set) {
-	set->tags_list.push_back(rtag);
-	set->single_tags.insert(rtag);
-	set->single_tags_hash.insert(rtag->hash);
-
 	if (rtag->type & T_ANY) {
 		set->type |= ST_ANY;
 	}
-	if (rtag->type & T_SPECIAL) {
-		set->type |= ST_SPECIAL;
-	}
 	if (rtag->type & T_FAILFAST) {
 		set->ff_tags.insert(rtag);
+	}
+	if (rtag->type & T_SPECIAL) {
+		set->type |= ST_SPECIAL;
+		set->trie_special[rtag].terminal = true;
+	}
+	else {
+		set->trie[rtag].terminal = true;
 	}
 }
 
@@ -819,26 +760,9 @@ void Grammar::reindex(bool unused_sets) {
 
 	// Stuff below this line is not optional...
 
-	size_t num_sets = 0, num_lists = 0;
-	size_t num_is = 0, num_it = 0;
-	size_t max_is = 0, max_it = 0;
-	std::map<size_t,size_t> cnt_is, cnt_it;
-
 	foreach (Setuint32HashMap, sets_by_contents, tset, tset_end) {
 		if (tset->second->type & ST_USED) {
 			addSetToList(tset->second);
-			if (tset->second->sets.empty()) {
-				++num_lists;
-				num_it += tset->second->tags_list.size();
-				max_it = std::max(max_it, tset->second->tags_list.size());
-				cnt_it[tset->second->tags_list.size()]++;
-			}
-			else {
-				++num_sets;
-				num_is += tset->second->sets.size();
-				max_is = std::max(max_is, tset->second->sets.size());
-				cnt_is[tset->second->sets.size()]++;
-			}
 		}
 	}
 
@@ -896,32 +820,27 @@ void Grammar::reindex(bool unused_sets) {
 	}
 }
 
+inline void trie_indexToRule(const trie_t& trie, Grammar& grammar, uint32_t r) {
+	boost_foreach (const trie_t::value_type& kv, trie) {
+		grammar.indexTagToRule(kv.first->hash, r);
+		if (kv.second.trie) {
+			trie_indexToRule(*kv.second.trie, grammar, r);
+		}
+	}
+}
+
 void Grammar::indexSetToRule(uint32_t r, Set *s) {
 	if (s->type & (ST_SPECIAL|ST_TAG_UNIFY)) {
 		indexTagToRule(tag_any, r);
 		return;
 	}
-	if (s->sets.empty()) {
-		boost_foreach (Tag *tomp_iter, s->single_tags) {
-			indexTagToRule(tomp_iter->hash, r);
-		}
-		boost_foreach (CompositeTag *curcomptag, s->tags) {
-			if (curcomptag->tags.size() == 1) {
-				// ToDo: If this is ever run, something has gone wrong...
-				indexTagToRule((*(curcomptag->tags.begin()))->hash, r);
-			}
-			else {
-				const_foreach (CompositeTag::tags_t, curcomptag->tags, tag_iter, tag_iter_end) {
-					indexTagToRule((*tag_iter)->hash, r);
-				}
-			}
-		}
-	}
-	else {
-		for (uint32_t i=0;i<s->sets.size();i++) {
-			Set *set = sets_by_contents.find(s->sets[i])->second;
-			indexSetToRule(r, set);
-		}
+
+	trie_indexToRule(s->trie, *this, r);
+	trie_indexToRule(s->trie_special, *this, r);
+
+	for (uint32_t i=0 ; i<s->sets.size() ; ++i) {
+		Set *set = sets_by_contents.find(s->sets[i])->second;
+		indexSetToRule(r, set);
 	}
 }
 
@@ -929,32 +848,27 @@ void Grammar::indexTagToRule(uint32_t t, uint32_t r) {
 	rules_by_tag[t].insert(r);
 }
 
+inline void trie_indexToSet(const trie_t& trie, Grammar& grammar, uint32_t r) {
+	boost_foreach (const trie_t::value_type& kv, trie) {
+		grammar.indexTagToSet(kv.first->hash, r);
+		if (kv.second.trie) {
+			trie_indexToSet(*kv.second.trie, grammar, r);
+		}
+	}
+}
+
 void Grammar::indexSets(uint32_t r, Set *s) {
 	if (s->type & (ST_SPECIAL|ST_TAG_UNIFY)) {
 		indexTagToSet(tag_any, r);
 		return;
 	}
-	if (s->sets.empty()) {
-		boost_foreach (Tag *tomp_iter, s->single_tags) {
-			indexTagToSet(tomp_iter->hash, r);
-		}
-		boost_foreach (CompositeTag *curcomptag, s->tags) {
-			if (curcomptag->tags.size() == 1) {
-				// ToDo: If this is ever run, something has gone wrong...
-				indexTagToSet((*(curcomptag->tags.begin()))->hash, r);
-			}
-			else {
-				const_foreach (CompositeTag::tags_t, curcomptag->tags, tag_iter, tag_iter_end) {
-					indexTagToSet((*tag_iter)->hash, r);
-				}
-			}
-		}
-	}
-	else {
-		for (uint32_t i=0;i<s->sets.size();i++) {
-			Set *set = sets_by_contents.find(s->sets[i])->second;
-			indexSets(r, set);
-		}
+
+	trie_indexToSet(s->trie, *this, r);
+	trie_indexToSet(s->trie_special, *this, r);
+
+	for (uint32_t i=0 ; i<s->sets.size() ; ++i) {
+		Set *set = sets_by_contents.find(s->sets[i])->second;
+		indexSets(r, set);
 	}
 }
 

@@ -25,6 +25,7 @@
 
 #include "stdafx.hpp"
 #include "Tag.hpp"
+#include "TagTrie.hpp"
 #include "CohortIterator.hpp"
 #include "Rule.hpp"
 #include "interval_vector.hpp"
@@ -216,6 +217,7 @@ namespace CG3 {
 		uint32_t doesTagMatchIcase(uint32_t test, const Tag& tag, bool bypass_index = false);
 		uint32_t doesRegexpMatchReading(const Reading& reading, const Tag& tag, bool bypass_index = false);
 		uint32_t doesTagMatchReading(const Reading& reading, const Tag& tag, bool unif_mode = false, bool bypass_index = false);
+		bool doesSetMatchReading_trie(const Reading& reading, const Set& theset, const trie_t& trie, bool unif_mode = false);
 		bool doesSetMatchReading_tags(const Reading& reading, const Set& theset, bool unif_mode = false);
 		bool doesSetMatchReading(const Reading& reading, const uint32_t set, bool bypass_index = false, bool unif_mode = false);
 		inline void doesSetMatchCohortHelper(std::vector<Reading*>& rv, const ReadingList& readings, const Set *theset, const ContextualTest *test = 0, uint32_t options = 0);

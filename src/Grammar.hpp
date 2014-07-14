@@ -26,7 +26,6 @@
 #include "stdafx.hpp"
 #include "Set.hpp"
 #include "Tag.hpp"
-#include "CompositeTag.hpp"
 #include "Rule.hpp"
 #include "sorted_vector.hpp"
 #include "interval_vector.hpp"
@@ -52,9 +51,6 @@ namespace CG3 {
 
 		std::vector<Tag*> single_tags_list;
 		Taguint32HashMap single_tags;
-
-		std::vector<CompositeTag*> tags_list;
-		stdext::hash_map<uint32_t, CompositeTag*> tags;
 
 		std::vector<Set*> sets_list;
 		SetSet sets_all;
@@ -112,7 +108,7 @@ namespace CG3 {
 
 		void addSet(Set *& to);
 		Set *getSet(uint32_t which) const;
-		Set *allocateSet(Set *from = 0);
+		Set *allocateSet();
 		void destroySet(Set *set);
 		void addSetToList(Set *s);
 		Set *parseSet(const UChar *name);
@@ -122,13 +118,7 @@ namespace CG3 {
 		Tag *allocateTag();
 		Tag *allocateTag(const UChar *tag, bool raw = false);
 		void destroyTag(Tag *tag);
-		void addTagToCompositeTag(Tag *simpletag, CompositeTag *tag);
 		void addTagToSet(Tag *rtag, Set *set);
-
-		CompositeTag *addCompositeTag(CompositeTag *tag);
-		CompositeTag *addCompositeTagToSet(Set *set, CompositeTag *tag);
-		CompositeTag *allocateCompositeTag();
-		void destroyCompositeTag(CompositeTag *tag);
 
 		Rule *allocateRule();
 		void addRule(Rule *rule);

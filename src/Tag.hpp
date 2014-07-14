@@ -123,6 +123,7 @@ namespace CG3 {
 		}
 	};
 
+
 	typedef std::list<Tag*> TagList;
 	typedef std::vector<Tag*> TagVector;
 	typedef flat_unordered_map<uint32_t,Tag*> Taguint32HashMap;

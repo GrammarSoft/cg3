@@ -52,6 +52,8 @@ void GrammarWriter::printSet(UFILE *output, const Set& curset) {
 		}
 		used_sets.insert(curset.hash);
 		u_fprintf(output, "LIST %S = ", curset.name.c_str());
+		/*
+		// ToDo: Print trie sets
 		const_foreach (AnyTagVector, curset.tags_list, iter, iter_end) {
 			if (iter->which == ANYTAG_TAG) {
 				printTag(output, *(iter->getTag()));
@@ -74,6 +76,7 @@ void GrammarWriter::printSet(UFILE *output, const Set& curset) {
 				}
 			}
 		}
+		//*/
 		u_fprintf(output, " ;\n");
 	}
 	else {

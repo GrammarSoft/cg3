@@ -56,10 +56,10 @@ namespace CG3 {
 		int parseFromUChar(UChar *input, const char *fname = 0);
 		void addRuleToGrammar(Rule *rule);
 
-		int parseTagList(UChar *& p, Set *s, const bool isinline = false);
+		void parseTagList(UChar *& p, Set *s);
 		Set *parseSetInline(UChar *& p, Set *s = 0);
 		Set *parseSetInlineWrapper(UChar *& p);
-		int parseContextualTestPosition(UChar *& p, ContextualTest& t);
+		void parseContextualTestPosition(UChar *& p, ContextualTest& t);
 		ContextualTest *parseContextualTestList(UChar *& p, Rule *rule = 0);
 		void parseContextualTests(UChar *& p, Rule *rule);
 		void parseContextualDependencyTests(UChar *& p, Rule *rule);

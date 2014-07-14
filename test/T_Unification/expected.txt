@@ -22,7 +22,7 @@
 ;	"wordg" some tags SELECT:this
 ;	"wordg" some tags ALSONOTTHIS SELECT:this
 "<wordh>"
-	"replaced:h" some tags <Hprof> AA CC EE THIS SELECT:regex ADD:22 ADD:24 SUBSTITUTE:28
+	"replaced:h" some tags <Hprof> EE AA CC THIS SELECT:regex ADD:22 ADD:24 SUBSTITUTE:28
 ;	"wordh" some tags SELECT:regex
 "<wordi>"
 	"wordi" some tags <before> THIS <after> @vstr-safe-capture ADD:22 ADD:23 SUBSTITUTE:25 ADD:38

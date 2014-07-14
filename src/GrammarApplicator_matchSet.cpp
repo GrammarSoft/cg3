@@ -440,6 +440,31 @@ uint32_t GrammarApplicator::doesTagMatchReading(const Reading& reading, const Ta
 	return retval;
 }
 
+bool GrammarApplicator::doesSetMatchReading_trie(const Reading& reading, const Set& theset, const trie_t& trie, bool unif_mode) {
+	boost_foreach (const trie_t::value_type& kv, trie) {
+		bool match = (doesTagMatchReading(reading, *kv.first, unif_mode) != 0);
+		if (match) {
+			if (kv.first->type & T_FAILFAST) {
+				continue;
+			}
+			if (unif_mode) {
+				BOOST_AUTO(it, unif_tags->find(theset.hash));
+				if (it != unif_tags->end() && it->second != kv.first->hash) {
+					continue;
+				}
+				(*unif_tags)[theset.hash] = kv.first->hash;
+			}
+			if (kv.second.terminal) {
+				return true;
+			}
+			if (kv.second.trie && doesSetMatchReading_trie(reading, theset, *kv.second.trie, unif_mode)) {
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
 /**
  * Tests whether a given reading matches a given LIST set.
  *
@@ -452,98 +477,50 @@ uint32_t GrammarApplicator::doesTagMatchReading(const Reading& reading, const Ta
 bool GrammarApplicator::doesSetMatchReading_tags(const Reading& reading, const Set& theset, bool unif_mode) {
 	bool retval = false;
 
-	// If there are no special circumstances the first test boils down to finding whether the tag stores intersect
-	// 80% of calls try this first.
-	if (!(theset.type & ST_SPECIAL)) {
-		if (!theset.single_tags_hash.empty() && !reading.tags_plain.empty()) {
-			uint32SortedVector::const_iterator iiter = theset.single_tags_hash.lower_bound(reading.tags_plain.front());
-			uint32SortedVector::const_iterator oiter = reading.tags_plain.lower_bound(theset.single_tags_hash.front());
-			while (oiter != reading.tags_plain.end() && iiter != theset.single_tags_hash.end()) {
-				if (*oiter == *iiter) {
-					if (unif_mode) {
-						BOOST_AUTO(it, unif_tags->find(theset.hash));
-						if (it != unif_tags->end() && it->second != *oiter) {
-							++iiter;
-							continue;
-						}
-						(*unif_tags)[theset.hash] = *oiter;
-					}
-					retval = true;
-					break;
-				}
-				while (oiter != reading.tags_plain.end() && iiter != theset.single_tags_hash.end() && *oiter < *iiter) {
-					++oiter;
-				}
-				while (oiter != reading.tags_plain.end() && iiter != theset.single_tags_hash.end() && *iiter < *oiter) {
-					++iiter;
-				}
-			}
-		}
-	}
-	else {
-		// Test whether any of the fail-fast tags match and bail out immediately if so
-		boost_foreach (const Tag *ster, theset.ff_tags) {
-			bool match = (doesTagMatchReading(reading, *ster, unif_mode) != 0);
-			if (match) {
+	if (!theset.ff_tags.empty()) {
+		boost_foreach (const Tag *tag, theset.ff_tags) {
+			if (doesTagMatchReading(reading, *tag, unif_mode)) {
 				return false;
 			}
 		}
-		// Test whether any of the regular tags match
-		boost_foreach (const Tag *ster, theset.single_tags) {
-			if (ster->type & T_FAILFAST) {
-				continue;
-			}
-			bool match = (doesTagMatchReading(reading, *ster, unif_mode) != 0);
-			if (match) {
+	}
+
+	// If there are no special circumstances the first test boils down to finding whether the tag stores intersect
+	// 80% of calls try this first.
+	if (!theset.trie.empty() && !reading.tags_plain.empty()) {
+		trie_t::const_iterator iiter = theset.trie.lower_bound(single_tags.find(reading.tags_plain.front())->second);
+		uint32SortedVector::const_iterator oiter = reading.tags_plain.lower_bound(theset.trie.begin()->first->hash);
+		while (oiter != reading.tags_plain.end() && iiter != theset.trie.end()) {
+			if (*oiter == iiter->first->hash) {
 				if (unif_mode) {
 					BOOST_AUTO(it, unif_tags->find(theset.hash));
-					if (it != unif_tags->end() && it->second != ster->hash) {
+					if (it != unif_tags->end() && it->second != *oiter) {
+						++iiter;
 						continue;
 					}
-					(*unif_tags)[theset.hash] = ster->hash;
+					(*unif_tags)[theset.hash] = *oiter;
 				}
-				retval = true;
-				break;
+				if (iiter->second.terminal) {
+					retval = true;
+					break;
+				}
+				if (iiter->second.trie && doesSetMatchReading_trie(reading, theset, *iiter->second.trie, unif_mode)) {
+					retval = true;
+					break;
+				}
+				++iiter;
+			}
+			while (oiter != reading.tags_plain.end() && iiter != theset.trie.end() && *oiter < iiter->first->hash) {
+				++oiter;
+			}
+			while (oiter != reading.tags_plain.end() && iiter != theset.trie.end() && iiter->first->hash < *oiter) {
+				++iiter;
 			}
 		}
 	}
 
-	// If we have still not reached a conclusion, it's time to test the composite tags.
-	if (!retval && !theset.tags.empty()) {
-		boost_foreach (const CompositeTag *ctag, theset.tags) {
-			bool match = true;
-
-			// If no reason not to, try a simple subset test.
-			// 90% of all composite tags go straight in here.
-			if (!(ctag->is_special || unif_mode)) {
-				match = TagSet_SubsetOf_TSet(ctag->tags_set, reading.tags);
-			}
-			else {
-				// Check if any of the member tags do not match, and bail out if so.
-				boost_foreach (const Tag *cter, ctag->tags_set) {
-					bool inner = (doesTagMatchReading(reading, *cter, unif_mode) != 0);
-					if (cter->type & T_FAILFAST) {
-						inner = !inner;
-					}
-					if (!inner) {
-						match = false;
-						break;
-					}
-				}
-			}
-			if (match) {
-				if (unif_mode) {
-					BOOST_AUTO(it, unif_tags->find(theset.hash));
-					if (it != unif_tags->end() && it->second != ctag->hash) {
-						continue;
-					}
-					(*unif_tags)[theset.hash] = ctag->hash;
-				}
-				++match_comp;
-				retval = true;
-				break;
-			}
-		}
+	if (!retval && !theset.trie_special.empty()) {
+		retval = doesSetMatchReading_trie(reading, theset, theset.trie_special, unif_mode);
 	}
 
 	return retval;

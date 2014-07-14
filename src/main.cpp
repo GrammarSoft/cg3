@@ -277,7 +277,7 @@ int main(int argc, char* argv[]) {
 	main_timer = clock();
 
 	if (options[VERBOSE].doesOccur) {
-		std::cerr << "Grammar has " << grammar.sections.size() << " sections, " << grammar.template_list.size() << " templates, " << grammar.rule_by_number.size() << " rules, " << grammar.sets_list.size() << " sets, " << grammar.tags.size() << " c-tags, " << grammar.single_tags.size() << " s-tags." << std::endl;
+		std::cerr << "Grammar has " << grammar.sections.size() << " sections, " << grammar.template_list.size() << " templates, " << grammar.rule_by_number.size() << " rules, " << grammar.sets_list.size() << " sets, " << grammar.single_tags.size() << " tags." << std::endl;
 		if (grammar.rules_any) {
 			std::cerr << grammar.rules_any->size() << " rules cannot be skipped by index." << std::endl;
 		}
@@ -348,7 +348,7 @@ int main(int argc, char* argv[]) {
 		}
 		std::cerr << "Optimizer removed " << bad.size() << " rules." << std::endl;
 		grammar.reindex();
-		std::cerr << "Grammar has " << grammar.sections.size() << " sections, " << grammar.template_list.size() << " templates, " << grammar.rule_by_number.size() << " rules, " << grammar.sets_list.size() << " sets, " << grammar.tags.size() << " c-tags, " << grammar.single_tags.size() << " s-tags." << std::endl;
+		std::cerr << "Grammar has " << grammar.sections.size() << " sections, " << grammar.template_list.size() << " templates, " << grammar.rule_by_number.size() << " rules, " << grammar.sets_list.size() << " sets, " << grammar.single_tags.size() << " tags." << std::endl;
 	}
 	if (options[OPTIMIZE_SAFE].doesOccur) {
 		CG3::RuleVector bad;
@@ -366,7 +366,7 @@ int main(int argc, char* argv[]) {
 		}
 		std::cerr << "Optimizer moved " << bad.size() << " rules." << std::endl;
 		grammar.reindex();
-		std::cerr << "Grammar has " << grammar.sections.size() << " sections, " << grammar.template_list.size() << " templates, " << grammar.rule_by_number.size() << " rules, " << grammar.sets_list.size() << " sets, " << grammar.tags.size() << " c-tags, " << grammar.single_tags.size() << " s-tags." << std::endl;
+		std::cerr << "Grammar has " << grammar.sections.size() << " sections, " << grammar.template_list.size() << " templates, " << grammar.rule_by_number.size() << " rules, " << grammar.sets_list.size() << " sets, " << grammar.single_tags.size() << " tags." << std::endl;
 	}
 
 	if (options[GRAMMAR_OUT].doesOccur) {

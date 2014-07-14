@@ -22,7 +22,6 @@
 #include "Cohort.hpp"
 #include "Set.hpp"
 #include "Tag.hpp"
-#include "CompositeTag.hpp"
 #include "Rule.hpp"
 #include "ContextualTest.hpp"
 #include "Reading.hpp"

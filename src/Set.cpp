@@ -20,7 +20,6 @@
 */
 
 #include "Set.hpp"
-#include "CompositeTag.hpp"
 #include "Strings.hpp"
 #include "Grammar.hpp"
 
@@ -40,27 +39,8 @@ total_time(0)
 	// Nothing in the actual body...
 }
 
-Set::Set(const Set& from) :
-type(from.type),
-line(from.line),
-hash(0),
-number(0),
-num_fail(0),
-num_match(0),
-total_time(0),
-tags_list(from.tags_list),
-tags(from.tags),
-single_tags(from.single_tags),
-single_tags_hash(from.single_tags_hash),
-ff_tags(from.ff_tags),
-set_ops(from.set_ops),
-sets(from.sets)
-{
-	// Nothing in the actual body...
-}
-
 bool Set::empty() const {
-	return (tags_list.empty() && sets.empty());
+	return (ff_tags.empty() && trie.empty() && trie_special.empty() && sets.empty());
 }
 
 void Set::setName(uint32_t to) {
@@ -94,16 +74,19 @@ uint32_t Set::rehash() {
 	uint32_t retval = 0;
 	if (sets.empty()) {
 		retval = hash_value(3499, retval); // Combat hash-collisions
-		foreach (AnyTagVector, tags_list, iter, iter_end) {
-			retval = hash_value(iter->hash(), retval);
+		if (!trie.empty()) {
+			retval = hash_value(trie_rehash(trie), retval);
+		}
+		if (!trie_special.empty()) {
+			retval = hash_value(trie_rehash(trie_special), retval);
 		}
 	}
 	else {
 		retval = hash_value(2683, retval); // Combat hash-collisions
-		for (uint32_t i=0;i<sets.size();i++) {
+		for (uint32_t i=0 ; i<sets.size() ; ++i) {
 			retval = hash_value(sets[i], retval);
 		}
-		for (uint32_t i=0;i<set_ops.size();i++) {
+		for (uint32_t i=0 ; i<set_ops.size() ; ++i) {
 			retval = hash_value(set_ops[i], retval);
 		}
 	}
@@ -121,43 +104,40 @@ uint32_t Set::rehash() {
 	return retval;
 }
 
+uint8_t trie_reindex(const trie_t& trie) {
+	uint8_t type = 0;
+	boost_foreach (const trie_t::value_type& kv, trie) {
+		if (kv.first->type & T_SPECIAL) {
+			type |= ST_SPECIAL;
+		}
+		if (kv.first->type & T_MAPPING) {
+			type |= ST_MAPPING;
+		}
+		if (kv.second.trie) {
+			type |= trie_reindex(*kv.second.trie);
+		}
+	}
+	return type;
+}
+
 void Set::reindex(Grammar& grammar) {
 	type &= ~ST_SPECIAL;
 	type &= ~ST_CHILD_UNIFY;
 
-	if (sets.empty()) {
-		boost_foreach (Tag *tomp_iter, single_tags) {
-			if (tomp_iter->type & T_SPECIAL) {
-				type |= ST_SPECIAL;
-			}
-			if (tomp_iter->type & T_MAPPING) {
-				type |= ST_MAPPING;
-			}
+	type |= trie_reindex(trie);
+	type |= trie_reindex(trie_special);
+
+	for (uint32_t i=0 ; i<sets.size() ; ++i) {
+		Set *set = grammar.sets_by_contents.find(sets[i])->second;
+		set->reindex(grammar);
+		if (set->type & ST_SPECIAL) {
+			type |= ST_SPECIAL;
 		}
-		boost_foreach (CompositeTag *comp_iter, tags) {
-			const_foreach (CompositeTag::tags_t, comp_iter->tags, tag_iter, tag_iter_end) {
-				if ((*tag_iter)->type & T_SPECIAL) {
-					type |= ST_SPECIAL;
-				}
-				if ((*tag_iter)->type & T_MAPPING) {
-					type |= ST_MAPPING;
-				}
-			}
+		if (set->type & (ST_TAG_UNIFY|ST_SET_UNIFY|ST_CHILD_UNIFY)) {
+			type |= ST_CHILD_UNIFY;
 		}
-	}
-	else {
-		for (uint32_t i=0;i<sets.size();i++) {
-			Set *set = grammar.sets_by_contents.find(sets[i])->second;
-			set->reindex(grammar);
-			if (set->type & ST_SPECIAL) {
-				type |= ST_SPECIAL;
-			}
-			if (set->type & (ST_TAG_UNIFY|ST_SET_UNIFY|ST_CHILD_UNIFY)) {
-				type |= ST_CHILD_UNIFY;
-			}
-			if (set->type & ST_MAPPING) {
-				type |= ST_MAPPING;
-			}
+		if (set->type & ST_MAPPING) {
+			type |= ST_MAPPING;
 		}
 	}
 
@@ -170,19 +150,12 @@ void Set::reindex(Grammar& grammar) {
 void Set::markUsed(Grammar& grammar) {
 	type |= ST_USED;
 
-	if (sets.empty()) {
-		boost_foreach (Tag *tag, single_tags) {
-			tag->markUsed();
-		}
-		boost_foreach (CompositeTag *curcomptag, tags) {
-			curcomptag->markUsed();
-		}
-	}
-	else {
-		for (uint32_t i=0;i<sets.size();i++) {
-			Set *set = grammar.sets_by_contents.find(sets[i])->second;
-			set->markUsed(grammar);
-		}
+	trie_markused(trie);
+	trie_markused(trie_special);
+
+	for (uint32_t i=0 ; i<sets.size() ; ++i) {
+		Set *set = grammar.sets_by_contents.find(sets[i])->second;
+		set->markUsed(grammar);
 	}
 }
 
@@ -190,20 +163,6 @@ void Set::resetStatistics() {
 	num_fail = 0;
 	num_match = 0;
 	total_time = 0;
-}
-
-AnyTagSet Set::getTagList(const Grammar& grammar) const {
-	AnyTagSet theTags;
-	if (!sets.empty()) {
-		const_foreach (uint32Vector, sets, iter, iter_end) {
-			AnyTagSet recursiveTags = grammar.getSet(*iter)->getTagList(grammar);
-			theTags.insert(recursiveTags.begin(), recursiveTags.end());
-		}
-	}
-	else {
-		theTags.insert(tags_list.begin(), tags_list.end());
-	}
-	return theTags;
 }
 
 }

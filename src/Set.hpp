@@ -24,7 +24,7 @@
 #define c6d28b7452ec699b_SET_H
 
 #include "stdafx.hpp"
-#include "CompositeTag.hpp"
+#include "TagTrie.hpp"
 #include "sorted_vector.hpp"
 
 namespace CG3 {
@@ -53,17 +53,18 @@ namespace CG3 {
 		mutable double total_time;
 		UString name;
 
-		AnyTagVector tags_list;
-		CompositeTagSortedVector tags;
-		TagSortedVector single_tags;
-		uint32SortedVector single_tags_hash;
+		trie_t trie;
+		trie_t trie_special;
 		TagSortedVector ff_tags;
 
 		uint32Vector set_ops;
 		uint32Vector sets;
 
 		Set();
-		Set(const Set& from);
+		~Set() {
+			trie_delete(trie);
+			trie_delete(trie_special);
+		}
 
 		void setName(uint32_t to = 0);
 		void setName(const UChar *to);
@@ -75,7 +76,12 @@ namespace CG3 {
 		void reindex(Grammar& grammar);
 		void markUsed(Grammar& grammar);
 
-		AnyTagSet getTagList(const Grammar& grammar) const;
+		trie_t& getNonEmpty() {
+			if (!trie.empty()) {
+				return trie;
+			}
+			return trie_special;
+		}
 	};
 
 	struct compare_Set {
