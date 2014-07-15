@@ -141,6 +141,7 @@ re-evaluating `cg-kw-re' (or all of cg.el).")
     "REMCOHORT"
     "COPY"
     "MAP"    "ADD"
+    "UNMAP"
     "SELECT" "REMOVE"
     "SETPARENT"    "SETCHILD"
     "ADDRELATION"  "REMRELATION"  "SETRELATION"
@@ -182,7 +183,7 @@ re-evaluating `cg-kw-re' (or all of cg.el)." )
              (1 font-lock-variable-name-face))
             ("\\<\\(\\$\\$\\(\\s_\\|\\sw\\)+\\)\\>"
              (1 font-lock-variable-name-face))
-            ("\\<\\(NOT\\|NEGATE\\|NONE\\|LINK\\|BARRIER\\|CBARRIER\\|OR\\|TARGET\\|IF\\|AFTER\\|TO\\|[psc][lroOxX]*\\)\\>"
+            ("\\<\\(NOT\\|NEGATE\\|NONE\\|LINK\\|BARRIER\\|CBARRIER\\|OR\\|UNSAFE\\|TARGET\\|IF\\|AFTER\\|TO\\|[psc][lroOxX]*\\)\\>"
              1 font-lock-function-name-face)
             ("\\B\\(\\^\\)"		; fail-fast
              1 font-lock-function-name-face)))
