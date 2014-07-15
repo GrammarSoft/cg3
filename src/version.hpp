@@ -32,7 +32,7 @@ const uint32_t CG3_VERSION_MINOR = 9;
 const uint32_t CG3_VERSION_PATCH = 8;
 const uint32_t CG3_REVISION = 10043;
 const uint32_t CG3_FEATURE_REV = 10043;
-const uint32_t CG3_TOO_OLD = 9645;
+const uint32_t CG3_TOO_OLD = 10043;
 const uint32_t CG3_EXTERNAL_PROTOCOL = 7226;
 
 #endif
