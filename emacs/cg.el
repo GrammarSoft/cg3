@@ -134,6 +134,8 @@ See also `cg-command' and `cg-pre-pipe'."
   '("LIST" "SET" "TEMPLATE")
   "Used for indentation, highlighting etc.; don't change without
 re-evaluating `cg-kw-re' (or all of cg.el).")
+(defconst cg-kw-set-re (regexp-opt cg-kw-set-list))
+
 (defconst cg-kw-rule-list
   '("SUBSTITUTE"
     "IFF"
@@ -149,10 +151,51 @@ re-evaluating `cg-kw-re' (or all of cg.el).")
     "APPEND")
   "Used for indentation, highlighting etc.; don't change without
 re-evaluating `cg-kw-re' (or all of cg.el)." )
-
-(defconst cg-kw-set-re (regexp-opt cg-kw-set-list))
 (defconst cg-kw-rule-re (regexp-opt cg-kw-rule-list))
 (defconst cg-kw-re (regexp-opt (append cg-kw-set-list cg-kw-rule-list)))
+
+(defconst cg-kw-rule-flags '("NEAREST"
+			     "ALLOWLOOP"
+			     "DELAYED"
+			     "IMMEDIATE"
+			     "LOOKDELETED"
+			     "LOOKDELAYED"
+			     "UNSAFE" ; 
+			     "SAFE"
+			     "REMEMBERX"
+			     "RESETX"
+			     "KEEPORDER"
+			     "VARYORDER"
+			     "ENCL_INNER"
+			     "ENCL_OUTER"
+			     "ENCL_FINAL"
+			     "ENCL_ANY"
+			     "ALLOWCROSS"
+			     "WITHCHILD"
+			     "NOCHILD"
+			     "ITERATE"
+			     "NOITERATE"
+			     "UNMAPLAST"
+			     "REVERSE"
+			     "SUB"
+			     "OUTPUT")
+  "Used for highlighting, from
+  http://visl.sdu.dk/svn/visl/tools/vislcg3/trunk/src/Strings.cpp
+  Don't change without re-evaluating the file.")
+(defconst cg-kw-context-flags '("NOT"
+				"NEGATE"
+				"NONE"
+				"LINK"
+				"BARRIER"
+				"CBARRIER"
+				"OR"
+				"TARGET"
+				"IF"
+				"AFTER"
+				"TO")
+  "Used for highlighting; Don't change without re-evaluating the
+  file.")
+(defconst cg-kw-flags-re (regexp-opt (append cg-kw-rule-flags cg-kw-context-flags)))
 
 
 ;;;###autoload
@@ -179,11 +222,11 @@ re-evaluating `cg-kw-re' (or all of cg.el)." )
 
 (defconst cg-font-lock-keywords-2
   (append cg-font-lock-keywords-1
-          '(("\\<\\(&&\\(\\s_\\|\\sw\\)+\\)\\>"
+          `(("\\<\\(&&\\(\\s_\\|\\sw\\)+\\)\\>"
              (1 font-lock-variable-name-face))
             ("\\<\\(\\$\\$\\(\\s_\\|\\sw\\)+\\)\\>"
              (1 font-lock-variable-name-face))
-            ("\\<\\(NOT\\|NEGATE\\|NONE\\|LINK\\|BARRIER\\|CBARRIER\\|OR\\|UNSAFE\\|TARGET\\|IF\\|AFTER\\|TO\\|[psc][lroOxX]*\\)\\>"
+            (,(format "\\<\\(%s\\|[psc][lroOxX]*\\)\\>" cg-kw-flags-re)
              1 font-lock-function-name-face)
             ("\\B\\(\\^\\)"		; fail-fast
              1 font-lock-function-name-face)))
