@@ -46,6 +46,11 @@ int main(int argc, char* argv[]) {
 	argc = u_parseArgs(argc, argv, NUM_OPTIONS, options);
 	FILE *out = stderr;
 
+	if (options[VERSION_TOO_OLD].doesOccur) {
+		std::cout << CG3_TOO_OLD << std::endl;
+		return 0;
+	}
+
 	if (options[VERSION].doesOccur || options[HELP1].doesOccur || options[HELP2].doesOccur) {
 		out = stdout;
 	}
