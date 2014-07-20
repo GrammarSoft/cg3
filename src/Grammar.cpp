@@ -104,7 +104,6 @@ void Grammar::addSet(Set *& to) {
 				all_tags = false;
 				break;
 			}
-			// ToDo: Single CompositeTag can also be merged
 			if (s->getNonEmpty().size() != 1 || !trie_singular(s->getNonEmpty())) {
 				all_tags = false;
 				break;
@@ -708,55 +707,6 @@ void Grammar::reindex(bool unused_sets) {
 		u_fprintf(ux_stdout, "End of unused sets.\n");
 		u_fflush(ux_stdout);
 	}
-
-	/*
-	// ToDo: Actually destroying the data still needs more work to determine what is safe to kill off.
-
-	foreach (Setuint32HashMap, sets_by_contents, rset, rset_end) {
-		if (!rset->second->is_used) {
-			destroySet(rset->second);
-			rset->second = 0;
-		}
-	}
-
-	sets_by_contents.clear();
-	foreach (SetSet, sets_all, sall, sall_end) {
-		sets_by_contents[(*sall)->hash] = *sall;
-	}
-
-	std::vector<CompositeTag*> ctmp;
-	foreach (std::vector<CompositeTag*>, tags_list, citer, citer_end) {
-		if ((*citer)->is_used) {
-			ctmp.push_back(*citer);
-		}
-		else {
-			destroyCompositeTag(*citer);
-			*citer = 0;
-		}
-	}
-	tags_list.clear();
-	tags.clear();
-	foreach (std::vector<CompositeTag*>, ctmp, cniter, cniter_end) {
-		addCompositeTag(*cniter);
-	}
-
-	std::vector<Tag*> stmp;
-	foreach (std::vector<Tag*>, single_tags_list, siter, siter_end) {
-		if ((*siter)->is_used) {
-			stmp.push_back(*siter);
-		}
-		else {
-			destroyTag(*siter);
-			*siter = 0;
-		}
-	}
-	single_tags_list.clear();
-	single_tags.clear();
-	foreach (std::vector<Tag*>, stmp, sniter, sniter_end) {
-		addTag(*sniter);
-	}
-
-	//*/
 
 	// Stuff below this line is not optional...
 
