@@ -1,7 +1,6 @@
 #include "stdafx.hpp"
 #include <exec-stream.cpp>
 #include "BinaryGrammar.cpp"
-#include "CompositeTag.cpp"
 #include "ContextualTest.cpp"
 #include "Grammar.cpp"
 #include "Rule.cpp"

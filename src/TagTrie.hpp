@@ -173,6 +173,37 @@ namespace CG3 {
 		return rv;
 	}
 
+	inline void trie_getTagsOrdered(const trie_t& trie, std::set<TagVector>& rv, TagVector& tv) {
+		boost_foreach (const trie_t::value_type& kv, trie) {
+			tv.push_back(kv.first);
+			if (kv.second.terminal) {
+				rv.insert(tv);
+				tv.pop_back();
+				continue;
+			}
+			if (kv.second.trie) {
+				trie_getTagsOrdered(*kv.second.trie, rv, tv);
+			}
+		}
+	}
+
+	inline std::set<TagVector> trie_getTagsOrdered(const trie_t& trie) {
+		std::set<TagVector> rv;
+		boost_foreach (const trie_t::value_type& kv, trie) {
+			TagVector tv;
+			tv.push_back(kv.first);
+			if (kv.second.terminal) {
+				rv.insert(tv);
+				tv.pop_back();
+				continue;
+			}
+			if (kv.second.trie) {
+				trie_getTagsOrdered(*kv.second.trie, rv, tv);
+			}
+		}
+		return rv;
+	}
+
 	inline void trie_serialize(const trie_t& trie, std::ostream& out) {
 		boost_foreach (const trie_t::value_type& kv, trie) {
 			writeSwapped<uint32_t>(out, kv.first->number);
