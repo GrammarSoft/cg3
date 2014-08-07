@@ -185,6 +185,8 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 		std::cerr << "DEBUG: Trying window " << current.number << std::endl;
 	}
 
+	current.parent->cohort_map[0] = current.cohorts.front();
+
 	const_foreach (uint32IntervalVector, intersects, iter_rules, iter_rules_end) {
 		uint32_t j = (*iter_rules);
 
