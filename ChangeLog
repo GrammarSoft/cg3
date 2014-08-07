@@ -1,3 +1,47 @@
+2014-08-07  tino
+
+	* [r10054] src/TextualParser.cpp: VC10 needs a cast here
+
+2014-07-20  tino
+
+	* [r10051] src/Grammar.cpp, src/GrammarWriter.cpp, src/TagTrie.hpp,
+	  src/all_cg_comp.cpp, src/all_cg_conv.cpp, src/all_cg_proc.cpp:
+	  Remove more CompositeTag references; Fix GrammarWriter for new
+	  tag store
+
+2014-07-18  tino
+
+	* [r10049] src/main.cpp, src/options.hpp: Add --min-binary-revision
+	  to programatically determine if a grammar needs rebuilding
+
+2014-07-15  tino
+
+	* [r10048] cg3.magic: Add file(1) magic definition
+
+2014-07-15  unhammer
+
+	* [r10047] emacs/cg.el: more rule flags to highlight
+	* [r10046] emacs/cg.el: hl UNMAP UNSAFE
+
+2014-07-15  tino
+
+	* [r10045] src/version.hpp: Bump binary grammar revision
+
+2014-07-14  tino
+
+	* [r10044] src/all_vislcg3.cpp: Eliminate CompositeTag
+	* [r10043] ChangeLog, TODO, src/BinaryGrammar_read.cpp,
+	  src/BinaryGrammar_write.cpp, src/CMakeLists.txt, src/Cohort.cpp,
+	  src/CompositeTag.cpp, src/CompositeTag.hpp, src/Grammar.cpp,
+	  src/Grammar.hpp, src/GrammarApplicator.cpp,
+	  src/GrammarApplicator.hpp, src/GrammarApplicator_matchSet.cpp,
+	  src/GrammarApplicator_runRules.cpp, src/GrammarWriter.cpp,
+	  src/Set.cpp, src/Set.hpp, src/Tag.hpp, src/TagTrie.hpp,
+	  src/TextualParser.cpp, src/TextualParser.hpp, src/main.cpp,
+	  src/version.hpp, test/T_Unification/expected.txt: Use a trie for
+	  tag matching (6% faster normal, 70% faster worst); Eliminate
+	  CompositeTag; Bump binary revision
+
 2014-07-13  tino
 
 	* [r10038] src/GrammarApplicator_matchSet.cpp: Unification of plain
@@ -2457,23 +2501,4 @@
 
 	* [r7423] manual/faq.xml, scripts/cg3-autobin.pl, src/main.cpp,
 	  src/version.h: Silenced CG-3 unless -v is on.
-	* [r7422] src/inlines.h: 8% faster grammar parsing
-
-2011-08-03  tino
-
-	* [r7421] CMakeLists.txt, scripts/cg3-autobin.pl, src/version.h:
-	  CMake updates
-	* [r7420] CMakeLists.txt, src/CMakeLists.txt: cg3
-	* [r7419] scripts/cg3-autobin.pl, src/version.h: revision bump
-	* [r7418] manual/installation.xml, src/Grammar.cpp, src/Strings.h,
-	  src/uextras.cpp, src/uextras.h: Warn if a tag looks like a set
-	  operator
-	* [r7416] src/GrammarApplicator_runGrammar.cpp: cg3
-	* [r7415] manual/installation.xml, manual/sets.xml,
-	  src/GrammarApplicator_runGrammar.cpp: cg3
-
-2011-08-02  tino
-
-	* [r7410] manual/installation.xml: cg3
-	* [r7409] dist/dist-osx.pl: Dist OS X
 
