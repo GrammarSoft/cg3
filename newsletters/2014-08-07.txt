@@ -1,0 +1,33 @@
+A new release of CG-3 has been tagged v0.9.8.10063.
+
+Main site is http://visl.sdu.dk/cg3.html
+Google Group is http://groups.google.com/group/constraint-grammar
+Source snapshots available at http://visl.sdu.dk/download/vislcg3/
+Windows binary is at http://visl.sdu.dk/download/vislcg3/vislcg3-0.9.8.10063-win32.zip
+RHEL/CentOS 6.5 64bit is at http://visl.sdu.dk/download/vislcg3/cg3-0.9.8.10063-1.x86_64.rpm
+Debian/Ubuntu packages are at http://apertium.projectjj.com/apt/howto.txt
+
+New features:
+- Context test pp for ancestors, analogous to cc. See http://visl.sdu.dk/cg3/chunked/dependencies.html#dep-ct-ancestors
+- Set/RemVariable now takes rule option OUTPUT to commit a variable to the stream. See http://visl.sdu.dk/cg3/chunked/rules.html#rule-options-output
+- Barriers now work for c* tests
+- Sub-reading search with /* will now search all sub-readings. This is currently a very expensive operation.
+- Modifiers i, r, ri now work on rule wordforms
+- Added cmdline flag --min-binary-revision to programatically determine if a grammar needs rebuilding
+
+Changes:
+- CMake project building changed to fit Linux distro packaging
+- Now requires CMake 2.8.9+ due to the above
+- Now requires Boost 1.48.0+ due to using flat containers
+- Greatly optimized the performance of large sets of composite tags
+- Reduced memory usage and other performance optimizations
+
+Fixed Bugs:
+- Fixed context S to actually test self, even if offset is non-zero
+- Fixed handling of readings with multiple mappings and sub-readings
+- Fixed negative absolute context offset a'la @-2 to actually work
+- Fixed Substituted wordforms not updating the valid rules list
+- Fixed setting parent to 0 and later testing for parent
+
+-- Tino Didriksen
+CG-3 Developer
