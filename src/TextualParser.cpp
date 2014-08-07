@@ -941,7 +941,7 @@ void TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 		}
 	}
 	if (rule->flags & MASK_ENCL) {
-		std::bitset<sizeof(rule->flags)*CHAR_BIT> bits(rule->flags & MASK_ENCL);
+		std::bitset<sizeof(rule->flags)*CHAR_BIT> bits(static_cast<uint64_t>(rule->flags & MASK_ENCL));
 		if (bits.count() > 1) {
 			u_fprintf(ux_stderr, "Error: Line %u: ENCL_* are all mutually exclusive!\n", result->lines);
 			incErrorCount();
