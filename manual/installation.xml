@@ -93,6 +93,13 @@
       <para>
         Launch a Terminal and in that do
         <screen>
+          brew install homebrew/science/vislcg3
+        </screen>
+        Rest of this page can be skipped.
+      </para>
+      <para>
+        Or if you want to install from source, do
+        <screen>
           brew install cmake
           brew install boost
           brew install icu4c
