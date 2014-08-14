@@ -113,7 +113,7 @@ void NicelineApplicator::runGrammarOnText(istream& input, UFILE *output) {
 			// If we reached this, buffer wasn't big enough. Double the size of the buffer and try again.
 			offset = line.size()-2;
 			line.resize(line.size()*2, 0);
-			cleaned.resize(line.size()+1, 0);
+			cleaned.resize(line.size()+2, 0);
 		}
 
 gotaline:
@@ -126,16 +126,16 @@ gotaline:
 			UChar *space = &cleaned[0];
 			SKIPTO_NOSPAN(space, '\t');
 
-			if (space[0] != '\t') {
+			if (space[0] && space[0] != '\t') {
 				u_fprintf(ux_stderr, "Warning: %S on line %u looked like a cohort but wasn't - treated as text.\n", &cleaned[0], numLines);
 				u_fflush(ux_stderr);
 				goto istext;
 			}
+			if (!space[0]) {
+				space[1] = 0;
+			}
 			space[0] = 0;
 
-			if (cCohort && cCohort->readings.empty()) {
-				initEmptyCohort(*cCohort);
-			}
 			if (cSWindow && cSWindow->cohorts.size() >= soft_limit && grammar->soft_delimiters && !did_soft_lookback) {
 				did_soft_lookback = true;
 				reverse_foreach (CohortVector, cSWindow->cohorts, iter, iter_end) {
@@ -231,7 +231,7 @@ gotaline:
 			numCohorts++;
 
 			++space;
-			while (space) {
+			while (space && space[0]) {
 				cReading = new Reading(cCohort);
 				insert_if_exists(cReading->parent->possible_sets, grammar->sets_any);
 
@@ -300,6 +300,9 @@ gotaline:
 				if (tab) {
 					space = ++tab;
 				}
+			}
+			if (cCohort->readings.empty()) {
+				initEmptyCohort(*cCohort);
 			}
 		}
 		else {

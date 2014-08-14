@@ -63,11 +63,7 @@ void Tag::parseTag(const UChar *to, UFILE *ux_stderr, Grammar *grammar) {
 	if (to && to[0]) {
 		const UChar *tmp = to;
 		while (tmp[0] && (tmp[0] == '!' || tmp[0] == '^')) {
-			if (tmp[0] == '!') {
-				type |= T_NEGATIVE;
-				tmp++;
-			}
-			if (tmp[0] == '^') {
+			if (tmp[0] == '!' || tmp[0] == '^') {
 				type |= T_FAILFAST;
 				tmp++;
 			}
@@ -443,9 +439,6 @@ uint32_t Tag::rehash() {
 	hash = 0;
 	plain_hash = 0;
 
-	if (type & T_NEGATIVE) {
-		hash = hash_value("!", hash);
-	}
 	if (type & T_FAILFAST) {
 		hash = hash_value("^", hash);
 	}
@@ -513,9 +506,6 @@ UString Tag::toUString(bool escape) const {
 	UString str;
 	str.reserve(tag.length());
 
-	if (type & T_NEGATIVE) {
-		str += '!';
-	}
 	if (type & T_FAILFAST) {
 		str += '^';
 	}
