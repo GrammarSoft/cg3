@@ -138,7 +138,8 @@
     <para>
       The two special values MIN and MAX (both case-sensitive) will scan the cohort for their respective minimum
       or maximum value, and use that for the comparison.
-      Internally, MIN is equal to -2147483648 and MAX is 2147483647, and using those values will also act such.
+      Internally the value is stored in a 32bit signed integer, so usually MIN is equal to -2147483648 and MAX is 2147483647,
+      and using those values will also act such.
       <screen>
         # Select the maximum value of W. Readings with no W will also be removed.
         SELECT (&lt;W=MAX&gt;) ;

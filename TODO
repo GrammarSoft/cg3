@@ -48,3 +48,5 @@ ToDo: Cohort-wide versions of set operators; use-case is testing multiple mappin
 ToDo: Add optimized keyword tag test, maybe only in --grammar-only mode.
 ToDo: MOVE/SWITCH should leave stored cohorts where they were; optionally bring along with WITHPARENS flag
 ToDo: Check whether boost::dynamic_bitset makes more sense to store valid_rules in
+ToDo: Optimize (0 x LINK 0 x) to just be separate contexts
+ToDo: Update docs for regex on tag unification

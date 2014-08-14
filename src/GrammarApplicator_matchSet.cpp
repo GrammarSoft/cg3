@@ -423,15 +423,6 @@ uint32_t GrammarApplicator::doesTagMatchReading(const Reading& reading, const Ta
 		}
 	}
 
-	if (tag.type & T_NEGATIVE) {
-		if (match) {
-			match = 0;
-		}
-		else {
-			match = grammar->tag_any;
-		}
-	}
-
 	if (match) {
 		++match_single;
 		retval = match;
