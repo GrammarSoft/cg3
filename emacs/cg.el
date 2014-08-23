@@ -148,6 +148,7 @@ re-evaluating `cg-kw-re' (or all of cg.el).")
     "SETPARENT"    "SETCHILD"
     "ADDRELATION"  "REMRELATION"  "SETRELATION"
     "ADDRELATIONS" "REMRELATIONS" "SETRELATIONS"
+    "SETVARIABLE"  "REMVARIABLE"
     "APPEND")
   "Used for indentation, highlighting etc.; don't change without
 re-evaluating `cg-kw-re' (or all of cg.el)." )
