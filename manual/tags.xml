@@ -320,16 +320,6 @@
     </para>
   </section>
 
-  <section id="tag-inversion">
-    <title>Tag Inversion</title>
-    <para>
-      You can negate a tag by prepending a !, as in !ADV. This has the effect
-      of matching if some tag other than ADV exists in the reading, but won't
-      match if ADV is actually present. This is mostly useful in tags such as
-      (V TR !ADV) as !ADV alone would match quite a lot.
-    </para>
-  </section>
-
   <section id="global-variables">
     <title>Global Variables</title>
     <para>
