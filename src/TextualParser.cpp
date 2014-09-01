@@ -82,7 +82,7 @@ void TextualParser::parseTagList(UChar *& p, Set *s) {
 					UChar *n = p;
 					if (*n == '"') {
 						n++;
-						result->lines += SKIPTO_NOSPAN(n, '"');
+						SKIPTO_NOSPAN(n, '"');
 						if (*n != '"') {
 							u_fprintf(ux_stderr, "Error: Missing closing \" on line %u!\n", result->lines);
 							incErrorCount();
@@ -107,7 +107,7 @@ void TextualParser::parseTagList(UChar *& p, Set *s) {
 				UChar *n = p;
 				if (*n == '"') {
 					n++;
-					result->lines += SKIPTO_NOSPAN(n, '"');
+					SKIPTO_NOSPAN(n, '"');
 					if (*n != '"') {
 						u_fprintf(ux_stderr, "Error: Missing closing \" on line %u!\n", result->lines);
 						incErrorCount();
@@ -184,7 +184,7 @@ Set *TextualParser::parseSetInline(UChar *& p, Set *s) {
 						UChar *n = p;
 						if (*n == '"') {
 							n++;
-							result->lines += SKIPTO_NOSPAN(n, '"');
+							SKIPTO_NOSPAN(n, '"');
 							if (*n != '"') {
 								u_fprintf(ux_stderr, "Error: Missing closing \" on line %u!\n", result->lines);
 								incErrorCount();
@@ -826,7 +826,7 @@ void TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 		UChar *n = lp;
 		if (*n == '"') {
 			n++;
-			result->lines += SKIPTO_NOSPAN(n, '"');
+			SKIPTO_NOSPAN(n, '"');
 			if (*n != '"') {
 				u_fprintf(ux_stderr, "Error: Missing closing \" on line %u!\n", result->lines);
 				incErrorCount();
@@ -879,7 +879,7 @@ void TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 		UChar *n = p;
 		if (*n == '"') {
 			++n;
-			result->lines += SKIPTO_NOSPAN(n, '"');
+			SKIPTO_NOSPAN(n, '"');
 			if (*n != '"') {
 				u_fprintf(ux_stderr, "Error: Missing closing \" on line %u!\n", result->lines);
 				incErrorCount();
@@ -1387,7 +1387,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 				UChar *n = p;
 				if (*n == '"') {
 					n++;
-					result->lines += SKIPTO_NOSPAN(n, '"');
+					SKIPTO_NOSPAN(n, '"');
 					if (*n != '"') {
 						u_fprintf(ux_stderr, "Error: Missing closing \" on line %u!\n", result->lines);
 						incErrorCount();
@@ -2024,7 +2024,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 				p = n;
 				if (*n == '"') {
 					n++;
-					result->lines += SKIPTO_NOSPAN(n, '"');
+					SKIPTO_NOSPAN(n, '"');
 					if (*n != '"') {
 						u_fprintf(ux_stderr, "Error: Missing closing \" on line %u!\n", result->lines);
 						incErrorCount();
@@ -2045,7 +2045,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 
 				if (*n == '"') {
 					n++;
-					result->lines += SKIPTO_NOSPAN(n, '"');
+					SKIPTO_NOSPAN(n, '"');
 					if (*n != '"') {
 						u_fprintf(ux_stderr, "Error: Missing closing \" on line %u!\n", result->lines);
 						incErrorCount();
@@ -2098,7 +2098,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 			if (*p == ';' || *p == '"') {
 				if (*p == '"') {
 					++p;
-					result->lines += SKIPTO_NOSPAN(p, '"');
+					SKIPTO_NOSPAN(p, '"');
 					if (*p != '"') {
 						u_fprintf(ux_stderr, "Error: Missing closing \" on line %u!\n", result->lines);
 						incErrorCount();

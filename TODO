@@ -53,3 +53,4 @@ ToDo: Update docs for regex on tag unification
 ToDo: APPEND $$baseform + X test cases (see email 2014-08-20)
 ToDo: Better error for APPEND (non-baseform)
 ToDo: \u and \U escapes in textual tags; possibly only varstrings or "tags"
+ToDo: cg-conv should just convert cohorts directly - no need to build whole sentences.

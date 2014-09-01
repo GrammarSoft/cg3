@@ -301,15 +301,22 @@ inline uint32_t SKIPTO(UChar *& p, const UChar a) {
 	return s;
 }
 
-inline uint32_t SKIPTO_NOSPAN(UChar *& p, const UChar a) {
-	uint32_t s = 0;
+inline void SKIPTO_NOSPAN(UChar *& p, const UChar a) {
 	while (*p && (*p != a || ISESC(p))) {
 		if (ISNL(*p)) {
 			break;
 		}
 		++p;
 	}
-	return s;
+}
+
+inline void SKIPTO_NOSPAN_RAW(UChar *& p, const UChar a) {
+	while (*p && *p != a) {
+		if (ISNL(*p)) {
+			break;
+		}
+		++p;
+	}
 }
 
 inline void CG3Quit(const int32_t c = 0, const char* file = 0, const uint32_t line = 0) {
