@@ -121,13 +121,16 @@ gotaline:
 			cleaned[packoff-1] = 0;
 			--packoff;
 		}
-		if (!ignoreinput && cleaned[0] && cleaned[0] != '<') {
+		if (!ignoreinput && cleaned[0]) {
 			UChar *space = &cleaned[0];
 			SKIPTO_NOSPAN_RAW(space, '\t');
 
 			if (space[0] != '\t') {
-				u_fprintf(ux_stderr, "Warning: %S on line %u looked like a cohort but wasn't - treated as text.\n", &cleaned[0], numLines);
-				u_fflush(ux_stderr);
+				// If this line looks like markup, don't warn about it
+				if (cleaned[0] != '<') {
+					u_fprintf(ux_stderr, "Warning: %S on line %u looked like a cohort but wasn't - treated as text.\n", &cleaned[0], numLines);
+					u_fflush(ux_stderr);
+				}
 				goto istext;
 			}
 			space[0] = 0;
