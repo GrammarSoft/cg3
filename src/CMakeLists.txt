@@ -189,8 +189,8 @@ if(APPLE)
 			TARGET ${t}
 			POST_BUILD
 			COMMAND install_name_tool -add_rpath @executable_path/ ${_file_${t}}
-			COMMAND install_name_tool -add_rpath @executable_path/../lib/cg3 ${_file_${t}}
-			COMMAND install_name_tool -add_rpath @loader_path/../lib/cg3 ${_file_${t}}
+			COMMAND install_name_tool -add_rpath @executable_path/../${CG_LIBDIR}/cg3 ${_file_${t}}
+			COMMAND install_name_tool -add_rpath @loader_path/../${CG_LIBDIR}/cg3 ${_file_${t}}
 			COMMAND install_name_tool -change libcg3-private.dylib @rpath/libcg3-private.dylib ${_file_${t}}
 			COMMENT "Adding @rpath to ${t}"
 			VERBATIM
@@ -200,11 +200,11 @@ endif()
 
 add_test(t_libcg3 test_libcg3 "${CMAKE_CURRENT_SOURCE_DIR}/../test/T_BasicSelect/grammar.cg3")
 
-install(TARGETS libcg3 ARCHIVE DESTINATION "lib/${CMAKE_LIBRARY_ARCHITECTURE}")
+install(TARGETS libcg3 ARCHIVE DESTINATION "${CG_LIBDIR}/${CMAKE_LIBRARY_ARCHITECTURE}")
 if(NOT MSVC)
-	set_target_properties(libcg3-shared cg-comp cg-proc cg-conv vislcg3 PROPERTIES INSTALL_RPATH "$ORIGIN/../lib/${CMAKE_LIBRARY_ARCHITECTURE}/cg3;${CMAKE_INSTALL_PREFIX}/lib/${CMAKE_LIBRARY_ARCHITECTURE}/cg3")
-	install(TARGETS cg3-private ARCHIVE DESTINATION "lib/${CMAKE_LIBRARY_ARCHITECTURE}/cg3" LIBRARY DESTINATION "lib/${CMAKE_LIBRARY_ARCHITECTURE}/cg3")
-	install(TARGETS libcg3-shared ARCHIVE DESTINATION "lib/${CMAKE_LIBRARY_ARCHITECTURE}" LIBRARY DESTINATION "lib/${CMAKE_LIBRARY_ARCHITECTURE}")
+	set_target_properties(libcg3-shared cg-comp cg-proc cg-conv vislcg3 PROPERTIES INSTALL_RPATH "$ORIGIN/../${CG_LIBDIR}/${CMAKE_LIBRARY_ARCHITECTURE}/cg3;${CMAKE_INSTALL_PREFIX}/${CG_LIBDIR}/${CMAKE_LIBRARY_ARCHITECTURE}/cg3")
+	install(TARGETS cg3-private ARCHIVE DESTINATION "${CG_LIBDIR}/${CMAKE_LIBRARY_ARCHITECTURE}/cg3" LIBRARY DESTINATION "${CG_LIBDIR}/${CMAKE_LIBRARY_ARCHITECTURE}/cg3")
+	install(TARGETS libcg3-shared ARCHIVE DESTINATION "${CG_LIBDIR}/${CMAKE_LIBRARY_ARCHITECTURE}" LIBRARY DESTINATION "${CG_LIBDIR}/${CMAKE_LIBRARY_ARCHITECTURE}")
 	install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/cg3.h" DESTINATION include)
 endif()
 install(TARGETS cg-comp cg-proc cg-conv vislcg3 RUNTIME DESTINATION bin)
