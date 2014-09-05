@@ -11,11 +11,19 @@ endif()
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/CMake" ${CMAKE_MODULE_PATH})
 
 file(READ "${CMAKE_CURRENT_SOURCE_DIR}/src/version.hpp" _cg3_VERSION_FILE)
-string(REGEX REPLACE ".*CG3_VERSION_MAJOR = ([0-9]+).*" "\\1" _cg3_VERSION_MAJOR "${_cg3_VERSION_FILE}")
-string(REGEX REPLACE ".*CG3_VERSION_MINOR = ([0-9]+).*" "\\1" _cg3_VERSION_MINOR "${_cg3_VERSION_FILE}")
-string(REGEX REPLACE ".*CG3_VERSION_PATCH = ([0-9]+).*" "\\1" _cg3_VERSION_PATCH "${_cg3_VERSION_FILE}")
-string(REGEX REPLACE ".*CG3_REVISION = ([0-9]+).*" "\\1" REVISION "${_cg3_VERSION_FILE}")
+string(REGEX REPLACE ".*CG3_VERSION_MAJOR = ([0-9]+).*" "\\1" _cg3_VERSION_MAJOR ${_cg3_VERSION_FILE})
+string(REGEX REPLACE ".*CG3_VERSION_MINOR = ([0-9]+).*" "\\1" _cg3_VERSION_MINOR ${_cg3_VERSION_FILE})
+string(REGEX REPLACE ".*CG3_VERSION_PATCH = ([0-9]+).*" "\\1" _cg3_VERSION_PATCH ${_cg3_VERSION_FILE})
+string(REGEX REPLACE ".*CG3_REVISION = ([0-9]+).*" "\\1" REVISION ${_cg3_VERSION_FILE})
 set(VERSION "${_cg3_VERSION_MAJOR}.${_cg3_VERSION_MINOR}.${_cg3_VERSION_PATCH}.${REVISION}")
+
+# Because Fedora / CentOS / RHEL ...
+set(CG_LIBDIR "lib")
+if(LIB_INSTALL_DIR)
+	string(REGEX REPLACE "^${CMAKE_INSTALL_PREFIX}/" "" CG_LIBDIR ${LIB_INSTALL_DIR})
+elseif(LIB_SUFFIX)
+	set(CG_LIBDIR "${CG_LIBDIR}${LIB_SUFFIX}")
+endif()
 
 option(OPT_TCMALLOC "Set to OFF to disable linking against TCMalloc" ON)
 if(APPLE)
@@ -50,7 +58,7 @@ else()
 	# Generate pkg-config file
 	set(prefix      ${CMAKE_INSTALL_PREFIX})
 	set(exec_prefix ${CMAKE_INSTALL_PREFIX})
-	set(libdir      ${CMAKE_INSTALL_PREFIX}/lib/${CMAKE_LIBRARY_ARCHITECTURE})
+	set(libdir      ${CMAKE_INSTALL_PREFIX}/${CG_LIBDIR}/${CMAKE_LIBRARY_ARCHITECTURE})
 	set(includedir  ${CMAKE_INSTALL_PREFIX}/include)
 	configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cg3.pc.in
 		${CMAKE_CURRENT_BINARY_DIR}/cg3.pc @ONLY)
