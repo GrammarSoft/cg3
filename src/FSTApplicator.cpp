@@ -225,6 +225,10 @@ gotaline:
 					u_fprintf(ux_stderr, "Warning: Line %u had no valid baseform.\n", numLines);
 					u_fflush(ux_stderr);
 				}
+				if (single_tags[cReading->baseform]->tag.size() == 2) {
+					delTagFromReading(*cReading, cReading->baseform);
+					cReading->baseform = makeBaseFromWord(cCohort->wordform->hash)->hash;
+				}
 				if (!mappings.empty()) {
 					splitMappings(mappings, *cCohort, *cReading, true);
 				}
