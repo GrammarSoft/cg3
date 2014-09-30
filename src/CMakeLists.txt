@@ -129,21 +129,14 @@ if(MSVC AND NOT CMAKE_BUILD_TYPE STREQUAL Debug)
 endif()
 cg3_link(libcg3)
 set(LINKLIB libcg3)
-set(LINKLIB_TEST libcg3)
 
 if(NOT MSVC)
-	add_library(cg3-private SHARED $<TARGET_OBJECTS:libcg3-objs>)
-	set_target_properties(cg3-private PROPERTIES NO_SONAME ON)
-	cg3_link(cg3-private)
-	set(LINKLIB cg3-private)
-
-	add_library(libcg3-shared SHARED libcg3.cpp)
+	add_library(libcg3-shared SHARED libcg3.cpp $<TARGET_OBJECTS:libcg3-objs>)
 	set_target_properties(libcg3-shared PROPERTIES SOVERSION ${_cg3_VERSION_MAJOR})
 	set_target_properties(libcg3-shared PROPERTIES OUTPUT_NAME "cg3")
 	set_target_properties(libcg3-shared PROPERTIES PREFIX "lib")
 	cg3_link(libcg3-shared)
-	target_link_libraries(libcg3-shared cg3-private)
-	set(LINKLIB_TEST libcg3-shared)
+	set(LINKLIB libcg3-shared)
 endif()
 
 add_executable(cg-comp cg_comp.cpp)
@@ -180,7 +173,7 @@ cg3_link(vislcg3)
 target_link_libraries(vislcg3 ${LINKLIB})
 
 add_executable(test_libcg3 test_libcg3.c)
-target_link_libraries(test_libcg3 ${LINKLIB_TEST})
+target_link_libraries(test_libcg3 ${LINKLIB})
 
 if(APPLE)
 	foreach(t libcg3-shared cg-conv cg-comp cg-proc vislcg3)
@@ -189,9 +182,8 @@ if(APPLE)
 			TARGET ${t}
 			POST_BUILD
 			COMMAND install_name_tool -add_rpath @executable_path/ ${_file_${t}}
-			COMMAND install_name_tool -add_rpath @executable_path/../${CG_LIBDIR}/cg3 ${_file_${t}}
-			COMMAND install_name_tool -add_rpath @loader_path/../${CG_LIBDIR}/cg3 ${_file_${t}}
-			COMMAND install_name_tool -change libcg3-private.dylib @rpath/libcg3-private.dylib ${_file_${t}}
+			COMMAND install_name_tool -add_rpath @executable_path/../${CG_LIBDIR} ${_file_${t}}
+			COMMAND install_name_tool -add_rpath @loader_path/../${CG_LIBDIR} ${_file_${t}}
 			COMMENT "Adding @rpath to ${t}"
 			VERBATIM
 		)
@@ -202,8 +194,7 @@ add_test(t_libcg3 test_libcg3 "${CMAKE_CURRENT_SOURCE_DIR}/../test/T_BasicSelect
 
 install(TARGETS libcg3 ARCHIVE DESTINATION "${CG_LIBDIR}/${CMAKE_LIBRARY_ARCHITECTURE}")
 if(NOT MSVC)
-	set_target_properties(libcg3-shared cg-comp cg-proc cg-conv vislcg3 PROPERTIES INSTALL_RPATH "$ORIGIN/../${CG_LIBDIR}/${CMAKE_LIBRARY_ARCHITECTURE}/cg3;${CMAKE_INSTALL_PREFIX}/${CG_LIBDIR}/${CMAKE_LIBRARY_ARCHITECTURE}/cg3")
-	install(TARGETS cg3-private ARCHIVE DESTINATION "${CG_LIBDIR}/${CMAKE_LIBRARY_ARCHITECTURE}/cg3" LIBRARY DESTINATION "${CG_LIBDIR}/${CMAKE_LIBRARY_ARCHITECTURE}/cg3")
+	set_target_properties(libcg3-shared cg-comp cg-proc cg-conv vislcg3 PROPERTIES INSTALL_RPATH "$ORIGIN/../${CG_LIBDIR}/${CMAKE_LIBRARY_ARCHITECTURE};${CMAKE_INSTALL_PREFIX}/${CG_LIBDIR}/${CMAKE_LIBRARY_ARCHITECTURE}")
 	install(TARGETS libcg3-shared ARCHIVE DESTINATION "${CG_LIBDIR}/${CMAKE_LIBRARY_ARCHITECTURE}" LIBRARY DESTINATION "${CG_LIBDIR}/${CMAKE_LIBRARY_ARCHITECTURE}")
 	install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/cg3.h" DESTINATION include)
 endif()
