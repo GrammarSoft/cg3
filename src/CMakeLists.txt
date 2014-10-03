@@ -176,7 +176,7 @@ add_executable(test_libcg3 test_libcg3.c)
 target_link_libraries(test_libcg3 ${LINKLIB})
 
 if(APPLE)
-	foreach(t libcg3-shared cg-conv cg-comp cg-proc vislcg3)
+	foreach(t cg-conv cg-comp cg-proc vislcg3)
 		get_property("_file_${t}" TARGET ${t} PROPERTY LOCATION)
 		add_custom_command(
 			TARGET ${t}
@@ -194,7 +194,6 @@ add_test(t_libcg3 test_libcg3 "${CMAKE_CURRENT_SOURCE_DIR}/../test/T_BasicSelect
 
 install(TARGETS libcg3 ARCHIVE DESTINATION "${CG_LIBDIR}/${CMAKE_LIBRARY_ARCHITECTURE}")
 if(NOT MSVC)
-	set_target_properties(libcg3-shared cg-comp cg-proc cg-conv vislcg3 PROPERTIES INSTALL_RPATH "$ORIGIN/../${CG_LIBDIR}/${CMAKE_LIBRARY_ARCHITECTURE};${CMAKE_INSTALL_PREFIX}/${CG_LIBDIR}/${CMAKE_LIBRARY_ARCHITECTURE}")
 	install(TARGETS libcg3-shared ARCHIVE DESTINATION "${CG_LIBDIR}/${CMAKE_LIBRARY_ARCHITECTURE}" LIBRARY DESTINATION "${CG_LIBDIR}/${CMAKE_LIBRARY_ARCHITECTURE}")
 	install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/cg3.h" DESTINATION include)
 endif()
