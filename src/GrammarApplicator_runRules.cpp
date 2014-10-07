@@ -129,10 +129,8 @@ TagList GrammarApplicator::getTagList(const Set& theSet, bool unif_mode) const {
 	else if (unif_mode) {
 		BOOST_AUTO(iter, unif_tags->find(theSet.hash));
 		if (iter != unif_tags->end()) {
-			uint32_t ihash = iter->second;
-			if (single_tags.find(ihash) != single_tags.end()) {
-				theTags.push_back(single_tags.find(ihash)->second);
-			}
+			trie_getTagList(theSet.trie, theTags, iter->second);
+			trie_getTagList(theSet.trie_special, theTags, iter->second);
 		}
 	}
 	else {

@@ -120,6 +120,20 @@ namespace CG3 {
 		}
 	}
 
+	inline bool trie_getTagList(const trie_t& trie, TagList& theTags, const void *node) {
+		boost_foreach (const trie_t::value_type& kv, trie) {
+			theTags.push_back(kv.first);
+			if (node == &kv) {
+				return true;
+			}
+			if (kv.second.trie && trie_getTagList(*kv.second.trie, theTags, node)) {
+				return true;
+			}
+			theTags.pop_back();
+		}
+		return false;
+	}
+
 	inline void trie_getTagList(const trie_t& trie, TagVector& theTags) {
 		boost_foreach (const trie_t::value_type& kv, trie) {
 			theTags.push_back(kv.first);
