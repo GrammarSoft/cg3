@@ -1,3 +1,11 @@
+2014-10-07  tino
+
+	* [r10194] ChangeLog, src/GrammarApplicator.hpp,
+	  src/GrammarApplicator_matchSet.cpp,
+	  src/GrammarApplicator_runRules.cpp, src/TagTrie.hpp,
+	  src/version.hpp: Fix tag unification to actually work with new
+	  trie storage
+
 2014-10-06  tino
 
 	* [r10190] src/version.hpp: Version bump & change
@@ -2483,10 +2491,4 @@
 	* [r7587] cg3.g, src/Set.cpp, src/Set.h, src/Tag.cpp, src/Tag.h,
 	  src/main.cpp, test/T_RegExp/grammar.txt: Almost correct ANTLR BNF
 	  grammar of CG-3
-
-2011-10-02  tino
-
-	* [r7577] scripts/cg3-autobin.pl,
-	  src/GrammarApplicator_runRules.cpp, src/version.h: Segfault
-	  workaround
 
