@@ -440,10 +440,10 @@ bool GrammarApplicator::doesSetMatchReading_trie(const Reading& reading, const S
 			}
 			if (unif_mode) {
 				BOOST_AUTO(it, unif_tags->find(theset.hash));
-				if (it != unif_tags->end() && it->second != kv.first->hash) {
+				if (it != unif_tags->end() && it->second != &kv) {
 					continue;
 				}
-				(*unif_tags)[theset.hash] = kv.first->hash;
+				(*unif_tags)[theset.hash] = &kv;
 			}
 			if (kv.second.terminal) {
 				return true;
@@ -483,15 +483,15 @@ bool GrammarApplicator::doesSetMatchReading_tags(const Reading& reading, const S
 		uint32SortedVector::const_iterator oiter = reading.tags_plain.lower_bound(theset.trie.begin()->first->hash);
 		while (oiter != reading.tags_plain.end() && iiter != theset.trie.end()) {
 			if (*oiter == iiter->first->hash) {
-				if (unif_mode) {
-					BOOST_AUTO(it, unif_tags->find(theset.hash));
-					if (it != unif_tags->end() && it->second != *oiter) {
-						++iiter;
-						continue;
-					}
-					(*unif_tags)[theset.hash] = *oiter;
-				}
 				if (iiter->second.terminal) {
+					if (unif_mode) {
+						BOOST_AUTO(it, unif_tags->find(theset.hash));
+						if (it != unif_tags->end() && it->second != &*iiter) {
+							++iiter;
+							continue;
+						}
+						(*unif_tags)[theset.hash] = &*iiter;
+					}
 					retval = true;
 					break;
 				}
@@ -646,7 +646,7 @@ bool GrammarApplicator::doesSetMatchReading(const Reading& reading, const uint32
 		}
 		// Propagate unified tag to other sets of this set, if applicable
 		if (unif_mode || (theset.type & ST_TAG_UNIFY)) {
-			uint32_t tag = 0;
+			const void *tag = 0;
 			for (size_t i=0 ; i<size ; ++i) {
 				BOOST_AUTO(it, unif_tags->find(theset.sets[i]));
 				if (it != unif_tags->end()) {
