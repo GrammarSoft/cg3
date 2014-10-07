@@ -171,7 +171,7 @@ namespace CG3 {
 		typedef bc::flat_map<uint32_t,Reading*> readings_plain_t;
 		readings_plain_t readings_plain;
 
-		typedef uint32Map unif_tags_t;
+		typedef bc::flat_map<uint32_t, const void*> unif_tags_t;
 		bc::flat_map<uint32_t,unif_tags_t*> unif_tags_rs;
 		std::vector<unif_tags_t> unif_tags_store;
 		bc::flat_map<uint32_t, uint32SortedVector*> unif_sets_rs;

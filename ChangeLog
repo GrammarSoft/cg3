@@ -1,5 +1,66 @@
+2014-10-06  tino
+
+	* [r10190] src/version.hpp: Version bump & change
+
+2014-10-03  tino
+
+	* [r10184] src/CMakeLists.txt: No need to explicitly set rpath any
+	  longer
+
+2014-09-30  tino
+
+	* [r10157] TODO, src/CMakeLists.txt: Eliminate private library
+	  split
+
+2014-09-08  tino
+
+	* [r10134] src/FSTApplicator.cpp: cg-conv FST: Copy wordform ->
+	  baseform when missing
+
+2014-09-05  tino
+
+	* [r10125] src/FSTApplicator.cpp: cg-conv FST input < fix
+	* [r10123] CMakeLists.txt: RPM building fixes
+	* [r10122] CMakeLists.txt, get-boost.sh, src/CMakeLists.txt: RPM
+	  building fixes
+
+2014-09-01  tino
+
+	* [r10105] TODO, src/FSTApplicator.cpp, src/TextualParser.cpp,
+	  src/inlines.hpp: cg-conv FST input now handles trailing
+	  whitespace and \
+
+2014-08-27  tino
+
+	* [r10100] src/cg_conv.cpp: cg-conv: add dummy tag to delimiters to
+	  silence warning
+
+2014-08-23  tino
+
+	* [r10098] TODO, manual/tags.xml: ToDos; Undocument !tag
+
+2014-08-23  unhammer
+
+	* [r10097] emacs/cg.el: highlight SETVARIABLE
+
+2014-08-14  tino
+
+	* [r10080] TODO, manual/installation.xml, manual/probabilistic.xml,
+	  manual/tags.xml, src/GrammarApplicator_matchSet.cpp,
+	  src/NicelineApplicator.cpp, src/Tag.cpp, src/Tag.hpp: Tag prefix
+	  ! is now an alias for ^; cg-conv better handling of niceline
+	  format
+
+2014-08-11  tino
+
+	* [r10072] src/cg_conv.cpp: Better Apertium format detection
+
 2014-08-07  tino
 
+	* [r10065] newsletters/2014-08-07.txt: Newsletter
+	* [r10063] ChangeLog, src/GrammarApplicator_runRules.cpp,
+	  src/version.hpp: Fix setting parent to 0 and later testing for
+	  parent; Release 0.9.8.10063
 	* [r10054] src/TextualParser.cpp: VC10 needs a cast here
 
 2014-07-20  tino
@@ -2428,77 +2489,4 @@
 	* [r7577] scripts/cg3-autobin.pl,
 	  src/GrammarApplicator_runRules.cpp, src/version.h: Segfault
 	  workaround
-
-2011-09-05  tino
-
-	* [r7490] manual/rules.xml, manual/streamcmds.xml, manual/tags.xml:
-	  Documented variables
-	* [r7489] scripts/cg3-autobin.pl, src/GrammarApplicator.cpp,
-	  src/GrammarApplicator.h, src/GrammarApplicator_matchSet.cpp,
-	  src/GrammarApplicator_runGrammar.cpp,
-	  src/GrammarApplicator_runRules.cpp, src/Rule.h,
-	  src/SingleWindow.h, src/Strings.cpp, src/Strings.h, src/Tag.cpp,
-	  src/TextualParser.cpp, src/version.h,
-	  test/T_Variables/byline.txt, test/T_Variables/expected.txt,
-	  test/T_Variables/grammar.txt, test/T_Variables/input.txt:
-	  Partially implemented variables
-
-2011-09-02  tino
-
-	* [r7478] TODO, scripts/cg3-autobin.pl, src/main.cpp,
-	  src/version.h: cg3
-
-2011-08-25  tino
-
-	* [r7465] scripts/cg3-autobin.pl, src/GrammarApplicator.cpp,
-	  src/version.h, test/T_InputMarkup/expected.txt,
-	  test/T_InputMarkup/grammar.txt: Fixed RemCohort of the last
-	  cohort to still output text from the cohorts.
-	* [r7464] TODO, scripts/cg3-autobin.pl,
-	  src/GrammarApplicator_runRules.cpp, src/version.h,
-	  test/T_BasicAppend/expected.txt, test/T_BasicAppend/grammar.txt,
-	  test/T_BasicAppend/input.txt: Append can now append multiple
-	  readings in one line. Noprint/magic readings are removed after
-	  append. Noprint/magic readings are added after unsafe remove.
-
-2011-08-11  tino
-
-	* [r7436] manual/parentheses.xml, scripts/cg3-autobin.pl,
-	  src/GrammarApplicator_runGrammar.cpp,
-	  src/GrammarApplicator_runRules.cpp, src/Tag.cpp, src/main.cpp,
-	  src/version.h: Memory fixes
-	* [r7434] manual/faq.xml, scripts/cg3-autobin.pl,
-	  src/ContextualTest.h, src/GrammarApplicator.h,
-	  src/GrammarApplicator_matchSet.cpp,
-	  src/GrammarApplicator_runContextualTest.cpp, src/Strings.cpp,
-	  src/Strings.h, src/Tag.cpp, src/Tag.h, src/TextualParser.cpp,
-	  src/version.h, test/T_Parentheses/expected.txt,
-	  test/T_Parentheses/grammar.txt, test/T_Parentheses/run.pl:
-	  Implemented _ENCL_; WIP on reading-level dependency.
-	* [r7433] src/GrammarApplicator_runRules.cpp,
-	  test/T_External/expected.txt, test/T_External/grammar.txt: cg3
-
-2011-08-10  tino
-
-	* [r7432] test/T_External/expected.txt: cg3
-	* [r7431] test/T_External/expected.txt,
-	  test/T_External/grammar.txt, test/T_External/rules.inc: cg3
-	* [r7430] scripts/cg3-autobin.pl,
-	  src/GrammarApplicator_runRules.cpp, src/main.cpp, src/version.h:
-	  Fix rules after external
-
-2011-08-05  tino
-
-	* [r7426] scripts/cg3-autobin.pl, src/version.h: cg3
-	* [r7425] src/GrammarApplicator.cpp,
-	  src/GrammarApplicator_runRules.cpp, src/Reading.h,
-	  src/libcg3.cpp, test/T_NumericalTags/expected.txt,
-	  test/T_Unification/expected.txt: Changed ReadingList to a vector;
-	  1% faster, and easier to work with.
-	* [r7424] cmake.sh, manual/installation.xml: CMake fixes
-
-2011-08-04  tino
-
-	* [r7423] manual/faq.xml, scripts/cg3-autobin.pl, src/main.cpp,
-	  src/version.h: Silenced CG-3 unless -v is on.
 
