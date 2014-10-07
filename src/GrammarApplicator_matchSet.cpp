@@ -438,14 +438,14 @@ bool GrammarApplicator::doesSetMatchReading_trie(const Reading& reading, const S
 			if (kv.first->type & T_FAILFAST) {
 				continue;
 			}
-			if (unif_mode) {
-				BOOST_AUTO(it, unif_tags->find(theset.hash));
-				if (it != unif_tags->end() && it->second != &kv) {
-					continue;
-				}
-				(*unif_tags)[theset.hash] = &kv;
-			}
 			if (kv.second.terminal) {
+				if (unif_mode) {
+					BOOST_AUTO(it, unif_tags->find(theset.hash));
+					if (it != unif_tags->end() && it->second != &kv) {
+						continue;
+					}
+					(*unif_tags)[theset.hash] = &kv;
+				}
 				return true;
 			}
 			if (kv.second.trie && doesSetMatchReading_trie(reading, theset, *kv.second.trie, unif_mode)) {
