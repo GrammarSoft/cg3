@@ -1,5 +1,8 @@
 # Threading, for exec-stream
-find_package(Threads REQUIRED)
+# There's some weird bug/interaction with recent Apple toolchains and this, so disable for now.
+if(NOT APPLE)
+	find_package(Threads REQUIRED)
+endif()
 
 # Boost
 find_path(Boost_LOCAL NAMES boost/config.hpp PATHS "${CMAKE_CURRENT_SOURCE_DIR}/../include" NO_DEFAULT_PATH)
@@ -177,10 +180,11 @@ target_link_libraries(test_libcg3 ${LINKLIB})
 
 if(APPLE)
 	foreach(t cg-conv cg-comp cg-proc vislcg3)
-		get_property("_file_${t}" TARGET ${t} PROPERTY LOCATION)
+		set("_file_${t}" $<TARGET_FILE:${t}>)
 		add_custom_command(
 			TARGET ${t}
 			POST_BUILD
+			COMMAND install_name_tool -change libcg3.0.dylib @rpath/libcg3.0.dylib ${_file_${t}}
 			COMMAND install_name_tool -add_rpath @executable_path/ ${_file_${t}}
 			COMMAND install_name_tool -add_rpath @executable_path/../${CG_LIBDIR} ${_file_${t}}
 			COMMAND install_name_tool -add_rpath @loader_path/../${CG_LIBDIR} ${_file_${t}}
