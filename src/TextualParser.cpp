@@ -205,7 +205,11 @@ Set *TextualParser::parseSetInline(UChar *& p, Set *s) {
 					}
 					++p;
 
-					if (tags.size() == 1) {
+					if (tags.size() == 0) {
+						u_fprintf(ux_stderr, "Error: Empty inline set on line %u! Use (*) if you want to replace with nothing.\n", result->lines);
+						incErrorCount();
+					}
+					else if (tags.size() == 1) {
 						result->addTagToSet(tags[0], set_c);
 					}
 					else {
