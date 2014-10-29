@@ -25,13 +25,11 @@
   <section id="ubuntu-debian">
     <title>Ubuntu / Debian</title>
     <para>
-      For any currently supported version of Ubuntu or compatible derivatives thereof (such as Linux Mint),
-      there is a <ulink url="https://launchpad.net/~tinodidriksen/+archive/cg3">PPA available from Launchpad</ulink>,
+      For any currently supported version of Debian/Ubuntu or compatible derivatives thereof (such as Linux Mint),
+      there is a <ulink url="http://apertium.projectjj.com/apt/">ready-made nightly repository</ulink>,
       easily installable via
       <screen>
-        sudo apt-get install software-properties-common
-        sudo add-apt-repository ppa:tinodidriksen/cg3
-        sudo apt-get update
+        wget http://apertium.projectjj.com/apt/install-nightly.sh -O - | sudo bash
         sudo apt-get install cg3
       </screen>
       Rest of this page can be skipped.
@@ -60,7 +58,21 @@
   </section>
 
   <section id="fedora">
-    <title>Fedora / Red Hat / CentOS</title>
+    <title>Fedora / Red Hat / CentOS / OpenSUSE</title>
+    <para>
+      For any currently supported version of these RPM-based distros or compatible derivatives thereof, there is a
+      <ulink url="https://build.opensuse.org/project/show/home:TinoDidriksen:nightly">ready-made nightly repository</ulink>,
+      installable via e.g.
+      <screen>
+        su -
+        wget 'http://download.opensuse.org/repositories/home:/TinoDidriksen:/nightly/CentOS_7/home:TinoDidriksen:nightly.repo' -O /etc/yum.repos.d/td-nightly.repo
+        yum check-upgrade
+        yum install cg3
+      </screen>
+      See <ulink url="https://en.opensuse.org/openSUSE:Build_Service_Enduser_Info">openSUSE:Build_Service_Enduser_Info</ulink>
+      for how to use on other distros.
+      Rest of this page can be skipped.
+    </para>
     <para>
       Steps tested on a clean install of CentOS 6.3, but should work on any version.
       It is assumed you have a working network connection.
