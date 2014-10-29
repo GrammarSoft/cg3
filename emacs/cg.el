@@ -131,7 +131,10 @@ See also `cg-command' and `cg-pre-pipe'."
 (make-variable-buffer-local 'cg-post-pipe)
 
 (defconst cg-kw-set-list
-  '("LIST" "SET" "TEMPLATE")
+  '("LIST" "SET" "TEMPLATE"
+    ;; These are not sets (and don't have names after the kw) but we
+    ;; have them here to make beginning-of-defun work:
+    "MAPPING-PREFIX" "SOFT-DELIMITERS" "DELIMITERS")
   "Used for indentation, highlighting etc.; don't change without
 re-evaluating `cg-kw-re' (or all of cg.el).")
 (defconst cg-kw-set-re (regexp-opt cg-kw-set-list))
@@ -248,6 +251,28 @@ re-evaluating `cg-kw-re' (or all of cg.el)." )
   (modify-syntax-entry ?« "." table)
                        table))
 
+(defun cg-syntax-at-pos ()
+  (let ((ppss (syntax-ppss)))
+    (cond
+     ((nth 8 ppss) (if (nth 4 ppss) 'comment 'string))
+     ((nth 1 ppss) 'paren))))
+
+(defun cg-beginning-of-defun ()
+  (re-search-backward defun-prompt-regexp nil 'noerror)
+  (while (cg-syntax-at-pos)
+    (re-search-backward defun-prompt-regexp nil 'noerror))
+  (re-search-backward "\"<[^\"]>\"" (line-beginning-position) 'noerror))
+
+(defun cg-end-of-defun ()
+  (and (search-forward ";")
+       (re-search-forward defun-prompt-regexp nil 'noerror)
+       (goto-char (match-beginning 0)))
+  (while (cg-syntax-at-pos)
+    (and (search-forward ";")
+	 (re-search-forward defun-prompt-regexp nil 'noerror)
+	 (goto-char (match-beginning 0))))
+  (re-search-backward "\"<[^\"]>\"" (line-beginning-position) 'noerror))
+
 ;;;###autoload
 (defun cg-mode ()
   "Major mode for editing Constraint Grammar files.
@@ -279,6 +304,9 @@ CG-mode provides the following specific keyboard key bindings:
   (set-syntax-table cg-mode-syntax-table)
   (set (make-local-variable 'parse-sexp-ignore-comments) t)
   (set (make-local-variable 'parse-sexp-lookup-properties) t)
+  (set (make-local-variable 'defun-prompt-regexp) cg-kw-re)
+  (set (make-local-variable 'beginning-of-defun-function) #'cg-beginning-of-defun)
+  (set (make-local-variable 'end-of-defun-function) #'cg-end-of-defun)
   (setq indent-line-function #'cg-indent-line)
   (easy-mmode-pretty-mode-name 'cg-mode " cg")
   (when font-lock-mode
