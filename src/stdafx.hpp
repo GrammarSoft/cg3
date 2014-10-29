@@ -85,9 +85,6 @@
 #define boost_reverse_foreach BOOST_REVERSE_FOREACH
 #define stdext boost
 #define hash_map unordered_map
-#define hash_set unordered_set
-#define hash_multimap unordered_multimap
-#define hash_multiset unordered_multiset
 
 #ifdef _MSC_VER
 	#include <winsock.h> // for hton() and family.
@@ -115,8 +112,6 @@ namespace CG3 {
 	typedef std::basic_string<UChar> UString;
 	typedef std::vector<UString> UStringVector;
 	typedef std::vector<uint32_t> uint32Vector;
-	typedef std::map<uint32_t,int32_t> uint32int32Map;
-	typedef std::map<uint32_t,uint32_t> uint32Map;
 	namespace bc = ::boost::container;
 }
 

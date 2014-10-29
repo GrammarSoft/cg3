@@ -1474,7 +1474,7 @@ void GrammarApplicator::runGrammarOnWindow() {
 			if (c->is_pleft == 0) {
 				continue;
 			}
-			uint32Map::const_iterator p = grammar->parentheses.find(c->is_pleft);
+			Grammar::parentheses_t::const_iterator p = grammar->parentheses.find(c->is_pleft);
 			if (p != grammar->parentheses.end()) {
 				CohortVector::iterator right = iter.base();
 				--right;

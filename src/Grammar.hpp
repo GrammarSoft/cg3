@@ -88,8 +88,9 @@ namespace CG3 {
 		Set *soft_delimiters;
 		uint32_t tag_any;
 		uint32Vector preferred_targets;
-		uint32Map parentheses;
-		uint32Map parentheses_reverse;
+		typedef bc::flat_map<uint32_t,uint32_t> parentheses_t;
+		parentheses_t parentheses;
+		parentheses_t parentheses_reverse;
 
 		uint32Vector sections;
 		uint32FlatHashMap anchors;
