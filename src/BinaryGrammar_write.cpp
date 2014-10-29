@@ -206,10 +206,10 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 		u32tmp = (uint32_t)htonl((uint32_t)grammar->parentheses.size());
 		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 	}
-	const_foreach (uint32Map, grammar->parentheses, iter_par, iter_par_end) {
-		u32tmp = (uint32_t)htonl((uint32_t)iter_par->first);
+	boost_foreach (const Grammar::parentheses_t::value_type& iter_par, grammar->parentheses) {
+		u32tmp = (uint32_t)htonl(iter_par.first);
 		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
-		u32tmp = (uint32_t)htonl((uint32_t)iter_par->second);
+		u32tmp = (uint32_t)htonl(iter_par.second);
 		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 	}
 
