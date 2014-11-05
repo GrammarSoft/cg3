@@ -559,8 +559,8 @@ ContextualTest *BinaryGrammar::readContextualTest(FILE *input) {
 		t->offset_sub = (int32_t)ntohl(i32tmp);
 	}
 	if (fields & (1 << 12)) {
-		fread(&i32tmp, sizeof(int32_t), 1, input);
-		t->name = (int32_t)ntohl(i32tmp);
+		fread(&u32tmp, sizeof(uint32_t), 1, input);
+		t->name = (uint32_t)ntohl(u32tmp);
 	}
 	if (fields & (1 << 10)) {
 		fread(&u32tmp, sizeof(uint32_t), 1, input);
