@@ -142,9 +142,10 @@ re-evaluating `cg-kw-re' (or all of cg.el).")
 (defconst cg-kw-rule-list
   '("SUBSTITUTE"
     "IFF"
-    "ADDCOHORT" "ADDCOHORT-AFTER" "ADDCOHORT-BEFORE"
-    "REMCOHORT"
+    "ADDCOHORT" "REMCOHORT"
     "COPY"
+    "MOVE" "SWITCH"
+    "EXTERNAL" "DELIMIT"
     "MAP"    "ADD"
     "UNMAP"
     "SELECT" "REMOVE"
@@ -196,6 +197,8 @@ re-evaluating `cg-kw-re' (or all of cg.el)." )
 				"TARGET"
 				"IF"
 				"AFTER"
+				"BEFORE"
+				"WITH"
 				"TO")
   "Used for highlighting; Don't change without re-evaluating the
   file.")
@@ -314,6 +317,8 @@ CG-mode provides the following specific keyboard key bindings:
     (font-lock-set-defaults)
     (font-lock-fontify-buffer))
   (add-hook 'after-change-functions #'cg-after-change nil 'buffer-local)
+  (let ((buf (current-buffer)))
+    (run-with-idle-timer 1 'repeat 'cg-output-hl buf))
   (run-mode-hooks #'cg-mode-hook))
 
 
@@ -494,7 +499,7 @@ least -- selects the whole string \"SELECT:1022:rulename\")."
                           (yank)
                           (buffer-substring-no-properties (point-min)(point-max))))))
     (if (string-match
-         "\\(\\(select\\|iff\\|remove\\|map\\|addcohort\\|remcohort\\|copy\\|add\\|substitute\\):\\)?\\([0-9]+\\)"
+         "\\(\\(select\\|iff\\|remove\\|map\\|addcohort\\|remcohort\\|switch\\|copy\\|add\\|substitute\\):\\)?\\([0-9]+\\)"
          rule)
         (progn (goto-char (point-min))
 	       (forward-line (1- (string-to-number (match-string 3 rule))))
@@ -509,14 +514,18 @@ least -- selects the whole string \"SELECT:1022:rulename\")."
 (defvar cg--file nil
   "Which CG file the `cg-output-mode' (and `cg--check-cache-buffer')
 buffer corresponds to.")
+(make-variable-buffer-local 'cg--file)
 (defvar cg--tmp nil     ; TODO: could use cg--file iff buffer-modified-p
   "Which temporary file was sent in lieu of `cg--file' to
 compilation (in case the buffer of `cg--file' was not saved)")
+(make-variable-buffer-local 'cg--tmp)
 (defvar cg--cache-in nil
   "Which input buffer the `cg--check-cache-buffer' corresponds
 to.")
+(make-variable-buffer-local 'cg--cache-in)
 (defvar cg--cache-pre-pipe nil
   "Which pre-pipe the output of `cg--check-cache-buffer' had.")
+(make-variable-buffer-local 'cg--cache-pre-pipe)
 
 (unless (fboundp 'file-name-base)	; shim for 24.3 function
   (defun file-name-base (&optional filename)
@@ -801,19 +810,44 @@ buffer (so 0 is after each change)."
       cg-check-after-change-secs
       nil
       (lambda ()
-        (let ((proc (get-buffer-process (get-buffer-create (compilation-buffer-name
-                                                            "cg-output"
-                                                            'cg-output-mode
-                                                            'cg-output-buffer-name)))))
-          (unless (and proc (eq (process-status proc) 'run))
-            (with-demoted-errors (cg-check)))))))))
+        (unless (cg-output-running)
+	  (with-demoted-errors (cg-check))))))))
 
+(defun cg-output-hl (cg-buffer)
+  (when (eq (current-buffer) cg-buffer)
+    (let* ((sym (symbol-at-point))
+	   (sym-re (concat "[ \"]\\("
+			   (regexp-quote (symbol-name sym))
+			   "\\)\\([\" ]\\|$\\)")))
+      ;; TODO: make regexp-opts of the LIST definitions and search
+      ;; those as well?
+      (with-current-buffer (cg-output-buffer)
+	(when (and sym
+		   (get-buffer-window)
+		   (not (cg-output-running)))
+	  (remove-overlays (point-min) (point-max) 'face 'lazy-highlight)
+	  (goto-char (point-min))
+	  (while (re-search-forward sym-re nil 'noerror)
+	    (overlay-put (make-overlay (match-beginning 1) (match-end 1))
+			 'face 'lazy-highlight)))))))
 
+(defun cg-output-running ()
+  (let ((proc (get-buffer-process (cg-output-buffer))))
+    (and proc (eq (process-status proc) 'run))))
 
 (defun cg-output-buffer-name (mode)
   (if (equal mode "cg-output")
       (concat "*CG output for " (file-name-base cg--file) "*")
     (error "Unexpected mode %S" mode)))
+
+(defun cg-output-buffer ()
+  (let ((cg--file (if (eq major-mode 'cg-mode)
+		      (buffer-file-name)
+		    cg--file)))
+    (get-buffer-create (compilation-buffer-name
+			"cg-output"
+			'cg-output-mode
+			'cg-output-buffer-name))))
 
 (defun cg-end-process (proc &optional string)
   "End `proc', optionally first sending in `string'."
