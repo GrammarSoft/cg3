@@ -940,13 +940,13 @@ Similarly, `cg-post-pipe' is run on output."
 
 (defun cg-back-to-file ()
   (interactive)
-  (bury-buffer)
-  (let* ((cg-buffer (find-buffer-visiting cg--file))
-         (cg-window (get-buffer-window cg-buffer)))
-    
-    (if cg-window
-        (select-window cg-window)
-      (pop-to-buffer cg-buffer))))
+  (let ((cg-buffer (find-buffer-visiting cg--file)))
+    (bury-buffer)
+    (let ((cg-window (get-buffer-window cg-buffer)))
+      
+      (if cg-window
+	  (select-window cg-window)
+	(pop-to-buffer cg-buffer)))))
 
 
 (defun cg-back-to-file-and-check ()
