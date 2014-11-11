@@ -863,7 +863,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 
 						// Perform the tag removal, remembering the position of the final removed tag for use as insertion spot
 						const_foreach (TagList, theTags, tter, tter_end) {
-							if (tpos == std::numeric_limits<size_t>::max()) {
+							if (tpos >= reading.tags_list.size()) {
 								foreach (Reading::tags_list_t, reading.tags_list, tfind, tfind_end) {
 									if (*tfind == (*tter)->hash) {
 										tpos = std::distance(reading.tags_list.begin(), tfind);
@@ -885,7 +885,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 							index_ruleCohort_no.clear();
 							reading.hit_by.push_back(rule.number);
 							reading.noprint = false;
-							if (tpos == std::numeric_limits<size_t>::max()) {
+							if (tpos >= reading.tags_list.size()) {
 								tpos = reading.tags_list.size() - 1;
 							}
 							++tpos;
