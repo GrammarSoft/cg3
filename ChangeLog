@@ -1,5 +1,51 @@
+2014-11-06  unhammer
+
+	* [r10256] emacs/cg.el: cg--file now buffer-local everywhere, so
+	  grab it before burying buffer
+
+2014-11-05  unhammer
+
+	* [r10255] emacs/cg.el: more keywords; hl symbol-at-point in the
+	  output
+	  
+	  would be nice to highlight any members of LIST-at-point, but
+	  probably need to cache all lists then :-/
+
+2014-11-05  tino
+
+	* [r10254] src/BinaryGrammar_read.cpp: varint branch that reduces
+	  binary filesize by at least 25%; Fix tiny thing in ctest->name
+
+2014-10-29  tino
+
+	* [r10242] manual/installation.xml, src/BinaryGrammar_write.cpp,
+	  src/Grammar.hpp, src/GrammarApplicator_runRules.cpp,
+	  src/stdafx.hpp: Eliminate more std::map; Tell Debians to use
+	  Apertium Nightly; Tell RPMians to use OBS
+
+2014-10-29  unhammer
+
+	* [r10241] emacs/cg.el: beg/end-of-defun fn's; C-M-h now selects a
+	  rule/set
+	  
+	  and C-M-a / C-M-e works as expected
+
+2014-10-21  tino
+
+	* [r10235] src/Grammar.cpp, src/TextualParser.cpp: Error out when
+	  parsing empty ()
+
+2014-10-09  tino
+
+	* [r10218] CMakeLists.txt: Accidentally -fPIC
+	* [r10217] CMake/FindBoost.cmake, CMakeLists.txt,
+	  src/CMakeLists.txt: Mac RPATH and Threads fixes; If C++11 is
+	  possible, require it; Seperate C++ and C flags
+
 2014-10-07  tino
 
+	* [r10195] ChangeLog, src/GrammarApplicator_matchSet.cpp,
+	  src/version.hpp: Forgot the other half
 	* [r10194] ChangeLog, src/GrammarApplicator.hpp,
 	  src/GrammarApplicator_matchSet.cpp,
 	  src/GrammarApplicator_runRules.cpp, src/TagTrie.hpp,
@@ -2456,39 +2502,4 @@
 	* [r7599] scripts/cg3-autobin.pl,
 	  src/GrammarApplicator_runRules.cpp, src/TextualParser.cpp,
 	  src/version.h, test/T_SubReadings/run.pl: More sub-reading stuff.
-	* [r7598] test/T_SubReadings/grammar.txt: If SUB is not followed by
-	  : then it can't be a flag.
-	* [r7597] src/TextualParser.cpp, test/T_SubReadings/grammar.txt: If
-	  SUB is not followed by : then it can't be a flag.
-	* [r7596] src/TextualParser.cpp: If SUB is not followed by : then
-	  it can't be a flag.
-
-2011-10-17  tino
-
-	* [r7594] cg3.g, scripts/cg3-autobin.pl, src/Strings.cpp,
-	  src/Strings.h, src/TextualParser.cpp, src/version.h,
-	  test/T_SubReadings, test/T_SubReadings/expected.txt,
-	  test/T_SubReadings/grammar.txt, test/T_SubReadings/input.txt,
-	  test/T_SubReadings/run.pl, test/runall.pl: Second round of
-	  sub-reading support.
-	* [r7593] cg3.g, scripts/cg3-autobin.pl,
-	  src/ApertiumApplicator.cpp, src/BinaryGrammar_read.cpp,
-	  src/BinaryGrammar_write.cpp, src/ContextualTest.cpp,
-	  src/ContextualTest.h, src/Grammar.cpp, src/Grammar.h,
-	  src/GrammarApplicator.h, src/GrammarApplicator_matchSet.cpp,
-	  src/GrammarApplicator_runContextualTest.cpp,
-	  src/GrammarApplicator_runRules.cpp, src/Reading.cpp,
-	  src/Reading.h, src/Rule.cpp, src/Rule.h, src/Strings.cpp,
-	  src/Strings.h, src/TextualParser.cpp, src/cg_proc.cpp,
-	  src/inlines.h, src/version.h: First round of sub-reading support;
-	  Fewer parse warnings.
-
-2011-10-16  tino
-
-	* [r7590] cg3.g: Line endings...
-	* [r7589] cg3.g: Slightly better BNF
-	* [r7588] cg3.g:
-	* [r7587] cg3.g, src/Set.cpp, src/Set.h, src/Tag.cpp, src/Tag.h,
-	  src/main.cpp, test/T_RegExp/grammar.txt: Almost correct ANTLR BNF
-	  grammar of CG-3
 
