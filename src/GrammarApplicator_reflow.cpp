@@ -554,10 +554,25 @@ bool GrammarApplicator::unmapReading(Reading& reading, const uint32_t rule) {
 }
 
 void GrammarApplicator::splitMappings(TagList& mappings, Cohort& cohort, Reading& reading, bool mapped) {
+	for (TagList::iterator it = mappings.begin() ; it != mappings.end() ;) {
+		Tag *& tag = *it;
+		while (tag->type & T_VARSTRING) {
+			tag = generateVarstringTag(tag);
+		}
+		if (!(tag->type & T_MAPPING || tag->tag[0] == grammar->mapping_prefix)) {
+			addTagToReading(reading, tag);
+			it = mappings.erase(it);
+		}
+		else {
+			++it;
+		}
+	}
+
 	if (reading.mapping) {
 		mappings.push_back(reading.mapping);
 		delTagFromReading(reading, reading.mapping->hash);
 	}
+
 	Tag *tag = mappings.back();
 	mappings.pop_back();
 	size_t i = mappings.size();
