@@ -714,8 +714,11 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 							cReading->hit_by.push_back(rule.number);
 							cReading->noprint = false;
 							TagList mappings;
-							const_foreach (TagList, *rit, tter, tter_end) {
+							foreach (TagList, *rit, tter, tter_end) {
 								uint32_t hash = (*tter)->hash;
+								while ((*tter)->type & T_VARSTRING) {
+									*tter = generateVarstringTag(*tter);
+								}
 								if ((*tter)->type & T_MAPPING || (*tter)->tag[0] == grammar->mapping_prefix) {
 									mappings.push_back(*tter);
 								}
@@ -777,14 +780,17 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						reading.hit_by.push_back(rule.number);
 						reading.noprint = false;
 						TagList mappings;
-						const TagList theTags = getTagList(*rule.maplist);
-						const_foreach (TagList, theTags, tter, tter_end) {
+						TagList theTags = getTagList(*rule.maplist);
+						foreach (TagList, theTags, tter, tter_end) {
 							uint32_t hash = (*tter)->hash;
+							while ((*tter)->type & T_VARSTRING) {
+								*tter = generateVarstringTag(*tter);
+							}
 							if ((*tter)->type & T_MAPPING || (*tter)->tag[0] == grammar->mapping_prefix) {
 								mappings.push_back(*tter);
 							}
 							else {
-								hash = addTagToReading(reading, hash);
+								hash = addTagToReading(reading, *tter);
 							}
 							if (updateValidRules(rules, intersects, hash, reading)) {
 								iter_rules = intersects.find(rule.number);
@@ -817,13 +823,16 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						reflowReading(reading);
 						TagList mappings;
 						TagList theTags = getTagList(*rule.maplist);
-						const_foreach (TagList, theTags, tter, tter_end) {
+						foreach (TagList, theTags, tter, tter_end) {
 							uint32_t hash = (*tter)->hash;
+							while ((*tter)->type & T_VARSTRING) {
+								*tter = generateVarstringTag(*tter);
+							}
 							if ((*tter)->type & T_MAPPING || (*tter)->tag[0] == grammar->mapping_prefix) {
 								mappings.push_back(*tter);
 							}
 							else {
-								hash = addTagToReading(reading, hash);
+								hash = addTagToReading(reading, *tter);
 							}
 							if (updateValidRules(rules, intersects, hash, reading)) {
 								iter_rules = intersects.find(rule.number);
@@ -979,13 +988,16 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 							cReading->hit_by.push_back(rule.number);
 							cReading->noprint = false;
 							TagList mappings;
-							const_foreach (TagList, *rit, tter, tter_end) {
+							foreach (TagList, *rit, tter, tter_end) {
 								uint32_t hash = (*tter)->hash;
+								while ((*tter)->type & T_VARSTRING) {
+									*tter = generateVarstringTag(*tter);
+								}
 								if ((*tter)->type & T_MAPPING || (*tter)->tag[0] == grammar->mapping_prefix) {
 									mappings.push_back(*tter);
 								}
 								else {
-									hash = addTagToReading(*cReading, hash);
+									hash = addTagToReading(*cReading, *tter);
 								}
 								if (updateValidRules(rules, intersects, hash, *cReading)) {
 									iter_rules = intersects.find(rule.number);
@@ -1031,13 +1043,16 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 
 						TagList mappings;
 						TagList theTags = getTagList(*rule.maplist);
-						const_foreach (TagList, theTags, tter, tter_end) {
+						foreach (TagList, theTags, tter, tter_end) {
 							uint32_t hash = (*tter)->hash;
+							while ((*tter)->type & T_VARSTRING) {
+								*tter = generateVarstringTag(*tter);
+							}
 							if ((*tter)->type & T_MAPPING || (*tter)->tag[0] == grammar->mapping_prefix) {
 								mappings.push_back(*tter);
 							}
 							else {
-								hash = addTagToReading(*cReading, hash);
+								hash = addTagToReading(*cReading, *tter);
 							}
 							if (updateValidRules(rules, intersects, hash, reading)) {
 								iter_rules = intersects.find(rule.number);
