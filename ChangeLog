@@ -1,3 +1,9 @@
+2014-11-11  tino
+
+	* [r10272] ChangeLog, src/GrammarApplicator_runRules.cpp,
+	  src/version.hpp: Fixed Substitute in non-input-order segfault -
+	  how has nobody triggered this before?
+
 2014-11-06  unhammer
 
 	* [r10256] emacs/cg.el: cg--file now buffer-local everywhere, so
@@ -2499,7 +2505,4 @@
 	* [r7600] scripts/cg3-autobin.pl, src/version.h,
 	  test/T_SubReadings/expected.txt, test/T_SubReadings/grammar.txt,
 	  test/T_SubReadings/input.txt: More sub-reading stuff.
-	* [r7599] scripts/cg3-autobin.pl,
-	  src/GrammarApplicator_runRules.cpp, src/TextualParser.cpp,
-	  src/version.h, test/T_SubReadings/run.pl: More sub-reading stuff.
 
