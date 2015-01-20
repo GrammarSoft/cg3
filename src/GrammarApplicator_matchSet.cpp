@@ -533,12 +533,14 @@ bool GrammarApplicator::doesSetMatchReading(const Reading& reading, const uint32
 	// These indexes are cleared every ((num_windows+4)*2+1) windows to avoid memory ballooning.
 	// Only 30% of tests get past this.
 	// ToDo: This is not good enough...while numeric tags are special, their failures can be indexed.
-	uint64_t ih = (static_cast<uint64_t>(reading.hash) << 32) | set;
+	//uint64_t ih = (static_cast<uint64_t>(reading.hash) << 32) | set;
 	if (!bypass_index && !unif_mode) {
-		if (index_matches(index_readingSet_no, ih)) {
+		BOOST_AUTO(range, index_readingSet_no.find(reading.hash));
+		if (range != index_readingSet_no.end() && range->second.find(set) != range->second.end()) {
 			return false;
 		}
-		else if (index_matches(index_readingSet_yes, ih)) {
+		range = index_readingSet_yes.find(reading.hash);
+		if (range != index_readingSet_yes.end() && range->second.find(set) != range->second.end()) {
 			return true;
 		}
 	}
@@ -674,13 +676,11 @@ bool GrammarApplicator::doesSetMatchReading(const Reading& reading, const uint32
 
 	// Store the result in the indexes in hopes that later runs can pull it directly from them.
 	if (retval) {
-		index_readingSet_yes.insert(ih);
-		index_readingSet_no.erase(ih);
+		index_readingSet_yes[reading.hash].insert(set);
 	}
 	else {
 		if (!(theset.type & ST_TAG_UNIFY) && !unif_mode) {
-			index_readingSet_yes.erase(ih);
-			index_readingSet_no.insert(ih);
+			index_readingSet_no[reading.hash].insert(set);
 		}
 	}
 
