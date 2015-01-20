@@ -269,6 +269,7 @@ private:
 };
 
 typedef flat_unordered_set<uint32_t> uint32FlatHashSet;
+typedef flat_unordered_set<uint64_t> uint64FlatHashSet;
 
 }
 
