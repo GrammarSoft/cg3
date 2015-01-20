@@ -533,7 +533,7 @@ bool GrammarApplicator::doesSetMatchReading(const Reading& reading, const uint32
 	// These indexes are cleared every ((num_windows+4)*2+1) windows to avoid memory ballooning.
 	// Only 30% of tests get past this.
 	// ToDo: This is not good enough...while numeric tags are special, their failures can be indexed.
-	uint32_t ih = hash_value(reading.hash, set);
+	uint64_t ih = (static_cast<uint64_t>(reading.hash) << 32) | set;
 	if (!bypass_index && !unif_mode) {
 		if (index_matches(index_readingSet_no, ih)) {
 			return false;
@@ -675,9 +675,11 @@ bool GrammarApplicator::doesSetMatchReading(const Reading& reading, const uint32
 	// Store the result in the indexes in hopes that later runs can pull it directly from them.
 	if (retval) {
 		index_readingSet_yes.insert(ih);
+		index_readingSet_no.erase(ih);
 	}
 	else {
 		if (!(theset.type & ST_TAG_UNIFY) && !unif_mode) {
+			index_readingSet_yes.erase(ih);
 			index_readingSet_no.insert(ih);
 		}
 	}
