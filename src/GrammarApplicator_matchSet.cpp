@@ -190,8 +190,8 @@ uint32_t GrammarApplicator::doesTagMatchReading(const Reading& reading, const Ta
 	}
 	else if (tag.type & T_SET) {
 		uint32_t sh = hash_value(tag.tag);
-		Set *s = grammar->getSet(sh);
-		match = doesSetMatchReading(reading, s->hash, bypass_index, unif_mode);
+		sh = grammar->sets_by_name.find(sh)->second;
+		match = doesSetMatchReading(reading, sh, bypass_index, unif_mode);
 	}
 	else if (tag.type & T_VARSTRING) {
 		const Tag *nt = generateVarstringTag(&tag);
@@ -440,11 +440,11 @@ bool GrammarApplicator::doesSetMatchReading_trie(const Reading& reading, const S
 			}
 			if (kv.second.terminal) {
 				if (unif_mode) {
-					BOOST_AUTO(it, unif_tags->find(theset.hash));
+					BOOST_AUTO(it, unif_tags->find(theset.number));
 					if (it != unif_tags->end() && it->second != &kv) {
 						continue;
 					}
-					(*unif_tags)[theset.hash] = &kv;
+					(*unif_tags)[theset.number] = &kv;
 				}
 				return true;
 			}
@@ -485,12 +485,12 @@ bool GrammarApplicator::doesSetMatchReading_tags(const Reading& reading, const S
 			if (*oiter == iiter->first->hash) {
 				if (iiter->second.terminal) {
 					if (unif_mode) {
-						BOOST_AUTO(it, unif_tags->find(theset.hash));
+						BOOST_AUTO(it, unif_tags->find(theset.number));
 						if (it != unif_tags->end() && it->second != &*iiter) {
 							++iiter;
 							continue;
 						}
-						(*unif_tags)[theset.hash] = &*iiter;
+						(*unif_tags)[theset.number] = &*iiter;
 					}
 					retval = true;
 					break;
@@ -533,7 +533,6 @@ bool GrammarApplicator::doesSetMatchReading(const Reading& reading, const uint32
 	// These indexes are cleared every ((num_windows+4)*2+1) windows to avoid memory ballooning.
 	// Only 30% of tests get past this.
 	// ToDo: This is not good enough...while numeric tags are special, their failures can be indexed.
-	//uint64_t ih = (static_cast<uint64_t>(reading.hash) << 32) | set;
 	if (!bypass_index && !unif_mode) {
 		BOOST_AUTO(range, index_readingSet_no.find(reading.hash));
 		if (range != index_readingSet_no.end() && range->second.find(set) != range->second.end()) {
@@ -553,8 +552,7 @@ bool GrammarApplicator::doesSetMatchReading(const Reading& reading, const uint32
 	}
 
 	// ToDo: Make all places have Set* directly so we don't need to perform this lookup.
-	Setuint32HashMap::const_iterator iter = grammar->sets_by_contents.find(set);
-	const Set& theset = *(iter->second);
+	const Set& theset = *grammar->sets_list[set];
 
 	// The (*) set always matches.
 	if (theset.type & ST_ANY) {
@@ -569,14 +567,12 @@ bool GrammarApplicator::doesSetMatchReading(const Reading& reading, const uint32
 		// ToDo: Handle multiple active &&sets at a time.
 		// First time, figure out all the sub-sets that match the reading and store them for later comparison
 		if (unif_sets_firstrun) {
-			Setuint32HashMap::const_iterator iter = grammar->sets_by_contents.find(theset.sets[0]);
-			const Set& uset = *(iter->second);
+			const Set& uset = *grammar->sets_list[theset.sets[0]];
 			const size_t size = uset.sets.size();
 			for (size_t i=0;i<size;++i) {
-				iter = grammar->sets_by_contents.find(uset.sets[i]);
-				const Set& tset = *(iter->second);
-				if (doesSetMatchReading(reading, tset.hash, bypass_index, ((theset.type & ST_TAG_UNIFY)!=0)|unif_mode)) {
-					unif_sets->insert(tset.hash);
+				const Set& tset = *grammar->sets_list[uset.sets[i]];
+				if (doesSetMatchReading(reading, tset.number, bypass_index, ((theset.type & ST_TAG_UNIFY)!=0)|unif_mode)) {
+					unif_sets->insert(tset.number);
 				}
 			}
 			retval = !unif_sets->empty();
@@ -693,7 +689,7 @@ inline void GrammarApplicator::doesSetMatchCohortHelper(std::vector<Reading*>& r
 		if (!reading) {
 			continue;
 		}
-		if (doesSetMatchReading(*reading, theset->hash, (theset->type & (ST_CHILD_UNIFY|ST_SPECIAL)) != 0)) {
+		if (doesSetMatchReading(*reading, theset->number, (theset->type & (ST_CHILD_UNIFY|ST_SPECIAL)) != 0)) {
 			rv.push_back(reading);
 			if (!(options & MASK_POS_CDEPREL)) {
 				break;
@@ -722,7 +718,7 @@ std::vector<Reading*> GrammarApplicator::doesSetMatchCohort(Cohort& cohort, cons
 		return rv;
 	}
 
-	const Set *theset = grammar->sets_by_contents.find(set)->second;
+	const Set *theset = grammar->sets_list[set];
 	doesSetMatchCohortHelper(rv, cohort.readings, theset, test, options);
 	if ((options & POS_LOOK_DELETED) && _check_options(rv, options, cohort.readings.size())) {
 		doesSetMatchCohortHelper(rv, cohort.deleted, theset, test, options);
@@ -749,7 +745,7 @@ bool GrammarApplicator::doesSetMatchCohortNormal_helper(ReadingList& readings, c
 				continue;
 			}
 		}
-		if (doesSetMatchReading(*reading, theset->hash, (theset->type & (ST_CHILD_UNIFY|ST_SPECIAL)) != 0)) {
+		if (doesSetMatchReading(*reading, theset->number, (theset->type & (ST_CHILD_UNIFY|ST_SPECIAL)) != 0)) {
 			return true;
 		}
 	}
@@ -764,8 +760,8 @@ bool GrammarApplicator::doesSetMatchCohortNormal(Cohort& cohort, const uint32_t 
 		return false;
 	}
 	bool retval = false;
-	const Set *theset = grammar->sets_by_contents.find(set)->second;
-	if (cohort.wread && doesSetMatchReading(*cohort.wread, theset->hash, (theset->type & (ST_CHILD_UNIFY|ST_SPECIAL)) != 0)) {
+	const Set *theset = grammar->sets_list[set];
+	if (cohort.wread && doesSetMatchReading(*cohort.wread, theset->number, (theset->type & (ST_CHILD_UNIFY|ST_SPECIAL)) != 0)) {
 		retval = true;
 	}
 	if (doesSetMatchCohortNormal_helper(cohort.readings, theset, test)) {
@@ -795,7 +791,7 @@ bool GrammarApplicator::doesSetMatchCohortCareful_helper(ReadingList& readings, 
 				return false;
 			}
 		}
-		if (!doesSetMatchReading(*reading, theset->hash, (theset->type & (ST_CHILD_UNIFY|ST_SPECIAL)) != 0)) {
+		if (!doesSetMatchReading(*reading, theset->number, (theset->type & (ST_CHILD_UNIFY|ST_SPECIAL)) != 0)) {
 			return false;
 		}
 	}
@@ -810,7 +806,7 @@ bool GrammarApplicator::doesSetMatchCohortCareful(Cohort& cohort, const uint32_t
 		return false;
 	}
 	bool retval = true;
-	const Set *theset = grammar->sets_by_contents.find(set)->second;
+	const Set *theset = grammar->sets_list[set];
 	if (!doesSetMatchCohortCareful_helper(cohort.readings, theset, test)) {
 		retval = false;
 	}

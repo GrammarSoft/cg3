@@ -45,6 +45,8 @@ namespace CG3 {
 
 		typedef stdext::hash_map<ContextualTest*,uint32_t> deferred_t;
 		deferred_t deferred_tmpls;
+
+		uint32FlatHashSet seen_uint32;
 	};
 }
 
