@@ -534,12 +534,10 @@ bool GrammarApplicator::doesSetMatchReading(const Reading& reading, const uint32
 	// Only 30% of tests get past this.
 	// ToDo: This is not good enough...while numeric tags are special, their failures can be indexed.
 	if (!bypass_index && !unif_mode) {
-		BOOST_AUTO(range, index_readingSet_no.find(reading.hash));
-		if (range != index_readingSet_no.end() && range->second.find(set) != range->second.end()) {
+		if (index_readingSet_no[set].find(reading.hash) != index_readingSet_no[set].end()) {
 			return false;
 		}
-		range = index_readingSet_yes.find(reading.hash);
-		if (range != index_readingSet_yes.end() && range->second.find(set) != range->second.end()) {
+		if (index_readingSet_yes[set].find(reading.hash) != index_readingSet_yes[set].end()) {
 			return true;
 		}
 	}
@@ -672,11 +670,11 @@ bool GrammarApplicator::doesSetMatchReading(const Reading& reading, const uint32
 
 	// Store the result in the indexes in hopes that later runs can pull it directly from them.
 	if (retval) {
-		index_readingSet_yes[reading.hash].insert(set);
+		index_readingSet_yes[set].insert(reading.hash);
 	}
 	else {
 		if (!(theset.type & ST_TAG_UNIFY) && !unif_mode) {
-			index_readingSet_no[reading.hash].insert(set);
+			index_readingSet_no[set].insert(reading.hash);
 		}
 	}
 

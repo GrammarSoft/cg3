@@ -127,8 +127,12 @@ GrammarApplicator::~GrammarApplicator() {
 }
 
 void GrammarApplicator::resetIndexes() {
-	index_readingSet_yes.clear();
-	index_readingSet_no.clear();
+	boost_foreach (uint32FlatHashSet& sv, index_readingSet_yes) {
+		sv.clear();
+	}
+	boost_foreach (uint32FlatHashSet& sv, index_readingSet_no) {
+		sv.clear();
+	}
 	index_regexp_yes.clear();
 	index_regexp_no.clear();
 	index_icase_yes.clear();
@@ -142,6 +146,11 @@ void GrammarApplicator::setGrammar(Grammar *res) {
 	tag_end = addTag(stringbits[S_ENDTAG].getTerminatedBuffer());
 	begintag = tag_begin->hash;
 	endtag = tag_end->hash;
+
+	index_readingSet_yes.clear();
+	index_readingSet_yes.resize(grammar->sets_list.size());
+	index_readingSet_no.clear();
+	index_readingSet_no.resize(grammar->sets_list.size());
 }
 
 void GrammarApplicator::index() {
