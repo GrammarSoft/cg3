@@ -93,10 +93,8 @@ namespace CG3 {
 		int32_t offset;
 		int32_t offset_sub;
 		uint32_t line;
-		uint32_t name;
 		uint32_t hash;
 		uint32_t seed;
-		uint32_t number;
 		uint64_t pos;
 		uint32_t target;
 		uint32_t relation;

@@ -84,7 +84,7 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 	if (grammar->soft_delimiters) {
 		fields |= (1 << 10);
 	}
-	if (!grammar->contexts_list.empty()) {
+	if (!grammar->contexts.empty()) {
 		fields |= (1 << 11);
 	}
 	if (!grammar->rule_by_number.empty()) {
@@ -240,10 +240,7 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 			fields |= (1 << 0);
 			writeSwapped(buffer, s->number);
 		}
-		if (s->hash) {
-			fields |= (1 << 1);
-			writeSwapped(buffer, s->hash);
-		}
+		// Field 1 is unused
 		if (s->type) {
 			fields |= (1 << 2);
 			writeSwapped(buffer, s->type);
@@ -283,21 +280,22 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 	}
 
 	if (grammar->delimiters) {
-		u32tmp = (uint32_t)htonl((uint32_t)grammar->delimiters->hash);
+		u32tmp = (uint32_t)htonl((uint32_t)grammar->delimiters->number);
 		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 	}
 
 	if (grammar->soft_delimiters) {
-		u32tmp = (uint32_t)htonl((uint32_t)grammar->soft_delimiters->hash);
+		u32tmp = (uint32_t)htonl((uint32_t)grammar->soft_delimiters->number);
 		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 	}
 
-	if (!grammar->contexts_list.empty()) {
-		u32tmp = (uint32_t)htonl((uint32_t)grammar->contexts_list.size());
+	seen_uint32.clear();
+	if (!grammar->contexts.empty()) {
+		u32tmp = (uint32_t)htonl((uint32_t)grammar->contexts.size());
 		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 	}
-	const_foreach (ContextVector, grammar->contexts_list, it, it_end) {
-		writeContextualTest(*it, output);
+	for (BOOST_AUTO(cntx, grammar->contexts.begin()); cntx != grammar->contexts.end(); ++cntx) {
+		writeContextualTest(cntx->second, output);
 	}
 
 	if (!grammar->rule_by_number.empty()) {
@@ -385,7 +383,7 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 
 		u32tmp = 0;
 		if (r->dep_target) {
-			u32tmp = (uint32_t)htonl(r->dep_target->number);
+			u32tmp = (uint32_t)htonl(r->dep_target->hash);
 		}
 		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 
@@ -393,14 +391,14 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 		u32tmp = (uint32_t)htonl(r->dep_tests.size());
 		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 		const_foreach (ContextList, r->dep_tests, it, it_end) {
-			u32tmp = (uint32_t)htonl((*it)->number);
+			u32tmp = (uint32_t)htonl((*it)->hash);
 			fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 		}
 
 		u32tmp = (uint32_t)htonl(r->tests.size());
 		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 		const_foreach (ContextList, r->tests, it, it_end) {
-			u32tmp = (uint32_t)htonl((*it)->number);
+			u32tmp = (uint32_t)htonl((*it)->hash);
 			fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 		}
 	}
@@ -410,6 +408,21 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 }
 
 void BinaryGrammar::writeContextualTest(ContextualTest *t, FILE *output) {
+	if (seen_uint32.count(t->hash)) {
+		return;
+	}
+	seen_uint32.insert(t->hash);
+
+	if (t->tmpl) {
+		writeContextualTest(t->tmpl, output);
+	}
+	const_foreach(ContextList, t->ors, iter, iter_end) {
+		writeContextualTest(*iter, output);
+	}
+	if (t->linked) {
+		writeContextualTest(t->linked, output);
+	}
+
 	std::ostringstream buffer;
 	uint32_t fields = 0;
 	uint32_t u32tmp = 0;
@@ -435,7 +448,7 @@ void BinaryGrammar::writeContextualTest(ContextualTest *t, FILE *output) {
 	}
 	if (t->tmpl) {
 		fields |= (1 << 3);
-		writeSwapped(buffer, t->tmpl->name);
+		writeSwapped(buffer, t->tmpl->hash);
 	}
 	if (t->target) {
 		fields |= (1 << 4);
@@ -467,10 +480,6 @@ void BinaryGrammar::writeContextualTest(ContextualTest *t, FILE *output) {
 	if (t->linked) {
 		fields |= (1 << 11);
 	}
-	if (t->name) {
-		fields |= (1 << 12);
-		writeSwapped(buffer, t->name);
-	}
 
 	u32tmp = (uint32_t)htonl(fields);
 	fwrite(&u32tmp, sizeof(uint32_t), 1, output);
@@ -481,13 +490,13 @@ void BinaryGrammar::writeContextualTest(ContextualTest *t, FILE *output) {
 		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 
 		const_foreach (ContextList, t->ors, iter, iter_end) {
-			u32tmp = (uint32_t)htonl((*iter)->number);
+			u32tmp = (uint32_t)htonl((*iter)->hash);
 			fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 		}
 	}
 
 	if (t->linked) {
-		u32tmp = (uint32_t)htonl(t->linked->number);
+		u32tmp = (uint32_t)htonl(t->linked->hash);
 		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 	}
 }
