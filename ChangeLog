@@ -1,5 +1,41 @@
 2015-01-24  tino
 
+	* [r10378] ChangeLog, src/BinaryGrammar.hpp,
+	  src/BinaryGrammar_read.cpp, src/BinaryGrammar_read_10043.cpp,
+	  src/CMakeLists.txt, src/version.hpp: Add support for loading
+	  grammars from revision 10043 upwards
+	* [r10377] compile-profile.sh, scripts/profile-revisions.php,
+	  src/ApertiumApplicator.cpp, src/ApertiumApplicator.hpp,
+	  src/BinaryGrammar.cpp, src/BinaryGrammar.hpp,
+	  src/BinaryGrammar_read.cpp, src/BinaryGrammar_write.cpp,
+	  src/Cohort.cpp, src/Cohort.hpp, src/CohortIterator.cpp,
+	  src/CohortIterator.hpp, src/ContextualTest.cpp,
+	  src/ContextualTest.hpp, src/FSTApplicator.cpp,
+	  src/FSTApplicator.hpp, src/FormatConverter.cpp,
+	  src/FormatConverter.hpp, src/Grammar.cpp, src/Grammar.hpp,
+	  src/GrammarApplicator.cpp, src/GrammarApplicator.hpp,
+	  src/GrammarApplicator_matchSet.cpp,
+	  src/GrammarApplicator_reflow.cpp,
+	  src/GrammarApplicator_runContextualTest.cpp,
+	  src/GrammarApplicator_runGrammar.cpp,
+	  src/GrammarApplicator_runRules.cpp, src/GrammarWriter.cpp,
+	  src/GrammarWriter.hpp, src/IGrammarParser.hpp,
+	  src/NicelineApplicator.cpp, src/NicelineApplicator.hpp,
+	  src/PlaintextApplicator.cpp, src/PlaintextApplicator.hpp,
+	  src/Reading.cpp, src/Reading.hpp, src/Rule.cpp, src/Rule.hpp,
+	  src/Set.cpp, src/Set.hpp, src/SingleWindow.cpp,
+	  src/SingleWindow.hpp, src/Strings.cpp, src/Strings.hpp,
+	  src/Tag.cpp, src/Tag.hpp, src/TagTrie.hpp, src/TextualParser.cpp,
+	  src/TextualParser.hpp, src/Window.cpp, src/Window.hpp,
+	  src/bloomish.hpp, src/cg3.h, src/cg_comp.cpp, src/cg_conv.cpp,
+	  src/cg_proc.cpp, src/flat_unordered_map.hpp,
+	  src/flat_unordered_set.hpp, src/inlines.hpp,
+	  src/interval_vector.hpp, src/istream.hpp, src/libcg3.cpp,
+	  src/macros.hpp, src/main.cpp, src/options.hpp,
+	  src/options_conv.hpp, src/sorted_vector.hpp, src/stdafx.hpp,
+	  src/test_libcg3.c, src/uextras.cpp, src/uextras.hpp,
+	  src/version.hpp, vapply.sh, vparse.sh: Bump copyright to 2015;
+	  Fix profiling scripts
 	* [r10373] src/GrammarApplicator.cpp, src/GrammarApplicator.hpp,
 	  src/GrammarApplicator_matchSet.cpp, src/flat_unordered_map.hpp:
 	  Take advantage of known set numbers to speed up set-reading cache
@@ -2504,15 +2540,4 @@
 2011-11-01  tino
 
 	* [r7630] CMakeLists.txt: cg3
-
-2011-10-28  tino
-
-	* [r7621] scripts/cg3-autobin.pl,
-	  src/GrammarApplicator_matchSet.cpp, src/version.h,
-	  test/T_Unification/expected.txt, test/T_Unification/grammar.txt:
-	  Fixed tag unification of SET sets, I hope...
-
-2011-10-25  tino
-
-	* [r7609] CMakeLists.txt, src/CMakeLists.txt: CPack and Boost fixes
 
