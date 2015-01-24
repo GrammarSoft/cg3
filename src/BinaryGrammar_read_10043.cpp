@@ -83,10 +83,6 @@ int BinaryGrammar::readBinaryGrammar_10043(FILE *input) {
 		u_fprintf(ux_stderr, "Error: Grammar revision is %u, but this loader requires %u or later!\n", u32tmp, 10043);
 		CG3Quit(1);
 	}
-	if (u32tmp > 10043) {
-		u_fprintf(ux_stderr, "Error: Grammar revision is %u, but this loader only knows up to revision %u!\n", u32tmp, 10043);
-		CG3Quit(1);
-	}
 
 	grammar->is_binary = true;
 
@@ -372,7 +368,7 @@ int BinaryGrammar::readBinaryGrammar_10043(FILE *input) {
 	uint32_t num_contexts = u32tmp;
 	contexts_list.resize(num_contexts);
 	for (uint32_t i = 0; i < num_contexts; i++) {
-		ContextualTest *t = readContextualTest(input);
+		ContextualTest *t = readContextualTest_10043(input);
 		grammar->contexts[t->hash] = t;
 		contexts_list[i] = t;
 	}
@@ -495,10 +491,24 @@ int BinaryGrammar::readBinaryGrammar_10043(FILE *input) {
 
 	// Bind the named templates to where they are used
 	foreach (deferred_t, deferred_tmpls, it, it_end) {
-		it->first->tmpl = templates.find(it->second)->second;
+		BOOST_AUTO(tmt, templates.find(it->second));
+		it->first->tmpl = tmt->second;
 	}
 
 	ucnv_close(conv);
+	// Create the dummy set
+	{
+		Set *set_c = grammar->allocateSet();
+		set_c->line = 0;
+		set_c->setName(stringbits[S_IGNORE].getTerminatedBuffer());
+		Tag *t = grammar->allocateTag(stringbits[S_IGNORE].getTerminatedBuffer());
+		grammar->addTagToSet(t, set_c);
+		grammar->addSet(set_c);
+		set_c->number = std::numeric_limits<uint32_t>::max();
+		grammar->sets_list.clear();
+		grammar->sets_list.push_back(set_c);
+	}
+	grammar->is_binary = false;
 	return 0;
 }
 
@@ -559,7 +569,7 @@ ContextualTest *BinaryGrammar::readContextualTest_10043(FILE *input) {
 	}
 	if (fields & (1 << 12)) {
 		fread(&u32tmp, sizeof(uint32_t), 1, input);
-		templates[u32tmp] = t;
+		templates[(uint32_t)ntohl(u32tmp)] = t;
 	}
 	if (fields & (1 << 10)) {
 		fread(&u32tmp, sizeof(uint32_t), 1, input);
