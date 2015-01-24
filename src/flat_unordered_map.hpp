@@ -132,7 +132,7 @@ public:
 			reserve(std::max(static_cast<size_type>(DEFAULT_CAP), capacity() * 2));
 		}
 		size_t max = capacity() - 1;
-		size_t spot = t.first & max;
+		size_t spot = hash_value(t.first) & max;
 		while (elements[spot].first != res_empty) {
 			spot = (spot + 5) & max;
 		}
@@ -155,7 +155,7 @@ public:
 			return;
 		}
 		size_t max = capacity() - 1;
-		size_t spot = t & max;
+		size_t spot = hash_value(t) & max;
 		while (elements[spot].first != res_empty && elements[spot].first != t) {
 			spot = (spot + 5) & max;
 		}
@@ -179,7 +179,7 @@ public:
 
 		if (size_) {
 			size_t max = capacity() - 1;
-			size_t spot = t & max;
+			size_t spot = hash_value(t) & max;
 			while (elements[spot].first != res_empty && elements[spot].first != t) {
 				spot = (spot + 5) & max;
 			}
@@ -202,7 +202,7 @@ public:
 		size_t at = std::numeric_limits<size_t>::max();
 		if (size_) {
 			size_t max = capacity() - 1;
-			size_t spot = t & max;
+			size_t spot = hash_value(t) & max;
 			while (elements[spot].first != res_empty && elements[spot].first != t) {
 				spot = (spot + 5) & max;
 			}
@@ -259,7 +259,7 @@ public:
 		size_ = vals.size();
 		size_t max = capacity() - 1;
 		for (size_type i = 0, ie = vals.size(); i < ie; ++i) {
-			size_t spot = vals[i].first & max;
+			size_t spot = hash_value(vals[i].first) & max;
 			while (elements[spot].first != res_empty) {
 				spot = (spot + 5) & max;
 			}
@@ -296,6 +296,10 @@ public:
 private:
 	size_type size_;
 	container elements;
+
+	T hash_value(T t) const {
+		return (t << 8) | ((t >> 8) & 0xFF);
+	}
 
 	friend class const_iterator;
 };
