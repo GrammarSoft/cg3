@@ -106,28 +106,28 @@ void GrammarApplicator::indexSingleWindow(SingleWindow& current) {
 TagList GrammarApplicator::getTagList(const Set& theSet, bool unif_mode) const {
 	TagList theTags;
 	if (theSet.type & ST_SET_UNIFY) {
-		const Set& pSet = *(grammar->getSet(theSet.sets[0]));
+		const Set& pSet = *(grammar->sets_list[theSet.sets[0]]);
 		const_foreach (uint32Vector, pSet.sets, iter, iter_end) {
 			if (unif_sets->count(*iter)) {
-				TagList recursiveTags = getTagList(*(grammar->getSet(*iter)));
+				TagList recursiveTags = getTagList(*(grammar->sets_list[*iter]));
 				theTags.splice(theTags.end(), recursiveTags);
 			}
 		}
 	}
 	else if (theSet.type & ST_TAG_UNIFY) {
 		const_foreach (uint32Vector, theSet.sets, iter, iter_end) {
-			TagList recursiveTags = getTagList(*(grammar->getSet(*iter)), true);
+			TagList recursiveTags = getTagList(*(grammar->sets_list[*iter]), true);
 			theTags.splice(theTags.end(), recursiveTags);
 		}
 	}
 	else if (!theSet.sets.empty()) {
 		const_foreach (uint32Vector, theSet.sets, iter, iter_end) {
-			TagList recursiveTags = getTagList(*(grammar->getSet(*iter)), unif_mode);
+			TagList recursiveTags = getTagList(*(grammar->sets_list[*iter]), unif_mode);
 			theTags.splice(theTags.end(), recursiveTags);
 		}
 	}
 	else if (unif_mode) {
-		BOOST_AUTO(iter, unif_tags->find(theSet.hash));
+		BOOST_AUTO(iter, unif_tags->find(theSet.number));
 		if (iter != unif_tags->end()) {
 			trie_getTagList(theSet.trie, theTags, iter->second);
 			trie_getTagList(theSet.trie_special, theTags, iter->second);
@@ -220,7 +220,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 			tstamp = getticks();
 		}
 
-		const Set& set = *(grammar->getSet(rule.target));
+		const Set& set = *(grammar->sets_list[rule.target]);
 		grammar->lines = rule.line;
 
 		uint32ToCohortsMap::iterator csit = current.rule_to_cohorts.find(rule.number);

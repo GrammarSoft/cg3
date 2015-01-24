@@ -75,6 +75,12 @@ public:
 			return *this;
 		}
 
+		const_iterator operator++(int) {
+			const_iterator tmp(*this);
+			operator++();
+			return tmp;
+		}
+
 		const_iterator& operator--() {
 			if (i == 0) {
 				fus = 0;
@@ -124,7 +130,7 @@ public:
 			reserve(std::max(static_cast<size_type>(DEFAULT_CAP), capacity() * 2));
 		}
 		size_t max = capacity() - 1;
-		size_t spot = t & max;
+		size_t spot = hash_value(t) & max;
 		while (elements[spot] != res_empty) {
 			spot = (spot + 5) & max;
 		}
@@ -146,7 +152,7 @@ public:
 			return;
 		}
 		size_t max = capacity() - 1;
-		size_t spot = t & max;
+		size_t spot = hash_value(t) & max;
 		while (elements[spot] != res_empty && elements[spot] != t) {
 			spot = (spot + 5) & max;
 		}
@@ -168,7 +174,7 @@ public:
 
 		if (size_) {
 			size_t max = capacity() - 1;
-			size_t spot = t & max;
+			size_t spot = hash_value(t) & max;
 			while (elements[spot] != res_empty && elements[spot] != t) {
 				spot = (spot + 5) & max;
 			}
@@ -227,7 +233,7 @@ public:
 		size_ = vals.size();
 		size_t max = capacity() - 1;
 		for (size_type i = 0, ie = vals.size(); i < ie; ++i) {
-			size_t spot = vals[i] & max;
+			size_t spot = hash_value(vals[i]) & max;
 			while (elements[spot] != res_empty) {
 				spot = (spot + 5) & max;
 			}
@@ -265,11 +271,14 @@ private:
 	size_type size_;
 	container elements;
 
+	T hash_value(T t) const {
+		return (t << 8) | ((t >> 8) & 0xFF);
+	}
+
 	friend class const_iterator;
 };
 
 typedef flat_unordered_set<uint32_t> uint32FlatHashSet;
-typedef flat_unordered_set<uint64_t> uint64FlatHashSet;
 
 }
 

@@ -1978,7 +1978,6 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 			ptrdiff_t c = n - p;
 			u_strncpy(&gbuffers[0][0], p, c);
 			gbuffers[0][c] = 0;
-			uint32_t cn = hash_value(&gbuffers[0][0]);
 			UString name(&gbuffers[0][0]);
 			p = n;
 			result->lines += SKIPWS(p, '=');
@@ -1990,7 +1989,6 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 
 			ContextualTest *t = parseContextualTestList(p);
 			t->line = line;
-			t->name = cn;
 			result->addTemplate(t, name.c_str());
 
 			result->lines += SKIPWS(p, ';');
@@ -2177,6 +2175,17 @@ int TextualParser::parse_grammar_from_file(const char *fname, const char *loc, c
 	{
 		Tag *tany = result->allocateTag(stringbits[S_ASTERIK].getTerminatedBuffer());
 		result->tag_any = tany->hash;
+	}
+	// Create the dummy set
+	{
+		Set *set_c = result->allocateSet();
+		set_c->line = 0;
+		set_c->setName(stringbits[S_IGNORE].getTerminatedBuffer());
+		Tag *t = result->allocateTag(stringbits[S_IGNORE].getTerminatedBuffer());
+		result->addTagToSet(t, set_c);
+		result->addSet(set_c);
+		set_c->number = std::numeric_limits<uint32_t>::max();
+		result->sets_list.push_back(set_c);
 	}
 	// Create the magic set _TARGET_ containing the tag _TARGET_
 	{

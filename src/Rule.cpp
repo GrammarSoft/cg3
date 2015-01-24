@@ -86,10 +86,6 @@ void Rule::resetStatistics() {
 	total_time = 0;
 }
 
-inline bool isSetSpecial(uint32_t s, const Grammar& g) {
-	return s && (g.getSet(s)->type & ST_SPECIAL);
-}
-
 bool Rule::cmp_quality(const Rule *a, const Rule *b) {
 	return a->total_time > b->total_time;
 }

@@ -193,6 +193,13 @@ public:
 		return true;
 	}
 
+	template<typename It>
+	void insert(It b, It e) {
+		for (; b != e; ++b) {
+			insert(*b);
+		}
+	}
+
 	bool push_back(T t) {
 		return insert(t);
 	}

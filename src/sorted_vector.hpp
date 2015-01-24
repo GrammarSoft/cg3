@@ -29,6 +29,20 @@
 #include <stdint.h> // C99 or C++0x or C++ TR1 will have this header. ToDo: Change to <cstdint> when C++0x broader support gets under way.
 
 namespace CG3 {
+	namespace detail {
+		template<typename ForwardIt, typename Comp>
+		bool is_sorted(ForwardIt first, ForwardIt last, Comp comp) {
+			if (first != last) {
+				ForwardIt next = first;
+				while (++next != last) {
+					if (comp(*next, *first))
+						return false;
+					first = next;
+				}
+			}
+			return true;
+		}
+	}
 
 template<typename T, typename Comp = std::less<T> >
 class sorted_vector {
@@ -77,9 +91,29 @@ public:
 
 	template<typename It>
 	void insert(It b, It e) {
-		for (; b != e ; ++b) {
+		size_t d = std::distance(b, e);
+		if (d == 1) {
 			insert(*b);
+			return;
 		}
+
+		static container merged;
+		merged.resize(0);
+		merged.reserve(elements.size() + d);
+
+		if (detail::is_sorted(b, e, comp)) {
+			std::merge(elements.begin(), elements.end(), b, e, std::back_inserter(merged), comp);
+		}
+		else {
+			static container sorted;
+			sorted.assign(b, e);
+			std::sort(sorted.begin(), sorted.end(), comp);
+			std::merge(elements.begin(), elements.end(), sorted.begin(), sorted.end(), std::back_inserter(merged), comp);
+		}
+
+		merged.swap(elements);
+		iterator it = std::unique(elements.begin(), elements.end());
+		elements.erase(it, elements.end());
 	}
 
 	bool push_back(T t) {

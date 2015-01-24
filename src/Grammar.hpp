@@ -68,11 +68,9 @@ namespace CG3 {
 		typedef TagSortedVector icase_tags_t;
 		icase_tags_t icase_tags;
 
-		std::vector<ContextualTest*> template_list;
 		typedef stdext::hash_map<uint32_t, ContextualTest*> contexts_t;
 		contexts_t templates;
 		contexts_t contexts;
-		ContextVector contexts_list;
 
 		typedef stdext::hash_map<uint32_t, uint32IntervalVector> rules_by_set_t;
 		rules_by_set_t rules_by_set;
@@ -137,6 +135,8 @@ namespace CG3 {
 		void indexTagToRule(uint32_t, uint32_t);
 		void indexSets(uint32_t, Set*);
 		void indexTagToSet(uint32_t, uint32_t);
+		void setAdjustSets(Set*);
+		void contextAdjustTarget(ContextualTest*);
 	};
 
 }
