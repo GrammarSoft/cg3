@@ -88,6 +88,7 @@ set(LIBCG3_HEADERS
 set(LIBCG3_SOURCES
 	BinaryGrammar.cpp
 	BinaryGrammar_read.cpp
+	BinaryGrammar_read_10043.cpp
 	BinaryGrammar_write.cpp
 	Cohort.cpp
 	CohortIterator.cpp

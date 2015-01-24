@@ -30,9 +30,9 @@ const char* const CG3_COPYRIGHT_STRING = "Copyright (C) 2007-2015 GrammarSoft Ap
 const uint32_t CG3_VERSION_MAJOR = 0;
 const uint32_t CG3_VERSION_MINOR = 9;
 const uint32_t CG3_VERSION_PATCH = 9;
-const uint32_t CG3_REVISION = 10297;
-const uint32_t CG3_FEATURE_REV = 10043;
-const uint32_t CG3_TOO_OLD = 10043;
+const uint32_t CG3_REVISION = 10377;
+const uint32_t CG3_FEATURE_REV = 10373;
+const uint32_t CG3_TOO_OLD = 10373;
 const uint32_t CG3_EXTERNAL_PROTOCOL = 7226;
 
 #endif
