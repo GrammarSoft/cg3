@@ -187,8 +187,8 @@ namespace CG3 {
 		uint32FlatHashSet index_regexp_no;
 		uint32FlatHashSet index_icase_yes;
 		uint32FlatHashSet index_icase_no;
-		bc::flat_map<uint32_t,uint32SortedVector> index_readingSet_yes;
-		bc::flat_map<uint32_t,uint32SortedVector> index_readingSet_no;
+		std::vector<uint32FlatHashSet> index_readingSet_yes;
+		std::vector<uint32FlatHashSet> index_readingSet_no;
 		uint32FlatHashSet index_ruleCohort_no;
 		void resetIndexes();
 	
