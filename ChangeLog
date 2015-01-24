@@ -1,3 +1,38 @@
+2015-01-24  tino
+
+	* [r10373] src/GrammarApplicator.cpp, src/GrammarApplicator.hpp,
+	  src/GrammarApplicator_matchSet.cpp, src/flat_unordered_map.hpp:
+	  Take advantage of known set numbers to speed up set-reading cache
+	  to r10297 levels
+	* [r10372] src/ApertiumApplicator.cpp, src/BinaryGrammar.hpp,
+	  src/BinaryGrammar_read.cpp, src/BinaryGrammar_write.cpp,
+	  src/ContextualTest.cpp, src/ContextualTest.hpp,
+	  src/FSTApplicator.cpp, src/Grammar.cpp, src/Grammar.hpp,
+	  src/GrammarApplicator_matchSet.cpp,
+	  src/GrammarApplicator_runGrammar.cpp,
+	  src/GrammarApplicator_runRules.cpp, src/GrammarWriter.cpp,
+	  src/NicelineApplicator.cpp, src/PlaintextApplicator.cpp,
+	  src/Rule.cpp, src/TextualParser.cpp, src/cg_comp.cpp,
+	  src/flat_unordered_set.hpp, src/interval_vector.hpp,
+	  src/main.cpp, src/sorted_vector.hpp: Use set number instead of
+	  hash at runtime; Eliminat some data members and part of the
+	  binary format
+
+2015-01-20  tino
+
+	* [r10367] src/GrammarApplicator.hpp,
+	  src/GrammarApplicator_matchSet.cpp: ...but don't spend 32% extra
+	  time on it.
+	* [r10366] src/GrammarApplicator.hpp,
+	  src/GrammarApplicator_matchSet.cpp, src/flat_unordered_set.hpp:
+	  32bit hash collision seen in the wild - bump cache to 64bit
+
+2014-12-01  tino
+
+	* [r10297] ChangeLog, TODO, src/GrammarApplicator_reflow.cpp,
+	  src/GrammarApplicator_runRules.cpp, src/version.hpp: Handle
+	  mapping tags coming from varstrings
+
 2014-11-11  tino
 
 	* [r10272] ChangeLog, src/GrammarApplicator_runRules.cpp,
@@ -2480,29 +2515,4 @@
 2011-10-25  tino
 
 	* [r7609] CMakeLists.txt, src/CMakeLists.txt: CPack and Boost fixes
-	* [r7608] scripts/cg3-autobin.pl, src/CMakeLists.txt: Boost
-	  detection fix
-
-2011-10-24  tino
-
-	* [r7607] CMakeLists.txt: CPack test
-
-2011-10-21  tino
-
-	* [r7603] test/T_Unification/expected.txt,
-	  test/T_Unification/grammar.txt: Added test for $$ACESet (1 ACESet
-	  - $$ACESet)
-
-2011-10-19  tino
-
-	* [r7602] scripts/cg3-autobin.pl, src/ApertiumApplicator.cpp,
-	  src/exec-stream.h, src/inlines.h, src/interval_vector.hpp,
-	  src/version.h, src/win/exec-stream-impl.cpp: Line endings &
-	  missing not.
-
-2011-10-18  tino
-
-	* [r7600] scripts/cg3-autobin.pl, src/version.h,
-	  test/T_SubReadings/expected.txt, test/T_SubReadings/grammar.txt,
-	  test/T_SubReadings/input.txt: More sub-reading stuff.
 

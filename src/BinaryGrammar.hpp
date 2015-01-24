@@ -47,6 +47,9 @@ namespace CG3 {
 		deferred_t deferred_tmpls;
 
 		uint32FlatHashSet seen_uint32;
+
+		int readBinaryGrammar_10043(FILE *input);
+		ContextualTest *readContextualTest_10043(FILE *input);
 	};
 }
 
