@@ -37,6 +37,7 @@ namespace CG3 {
 	protected:
 		UFILE *ux_stderr;
 		Grammar *result;
+		uint32_t verbosity;
 	};
 }
 

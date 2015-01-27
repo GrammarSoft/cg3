@@ -29,12 +29,14 @@ BinaryGrammar::BinaryGrammar(Grammar& res, UFILE *ux_err) {
 	ux_stderr = ux_err;
 	result = &res;
 	grammar = result;
+	verbosity = 0;
 }
 
 void BinaryGrammar::setCompatible(bool) {
 }
 
-void BinaryGrammar::setVerbosity(uint32_t) {
+void BinaryGrammar::setVerbosity(uint32_t v) {
+	verbosity = v;
 }
 
 int BinaryGrammar::parse_grammar_from_file(const char *filename, const char *, const char *) {
