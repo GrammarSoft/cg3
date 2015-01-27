@@ -77,8 +77,10 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 	fread(&u32tmp, sizeof(uint32_t), 1, input);
 	u32tmp = (uint32_t)ntohl(u32tmp);
 	if (u32tmp <= 10297) {
-		u_fprintf(ux_stderr, "Warning: Grammar revision is %u, but current format is %u or later. Please recompile the binary grammar with latest CG-3.\n", u32tmp, CG3_FEATURE_REV);
-		u_fflush(ux_stderr);
+		if (verbosity >= 1) {
+			u_fprintf(ux_stderr, "Warning: Grammar revision is %u, but current format is %u or later. Please recompile the binary grammar with latest CG-3.\n", u32tmp, CG3_FEATURE_REV);
+			u_fflush(ux_stderr);
+		}
 		fseek(input, 0, SEEK_SET);
 		return readBinaryGrammar_10043(input);
 	}
