@@ -537,7 +537,9 @@ void Grammar::reindex(bool unused_sets) {
 			dset->second->type |= ST_USED;
 			continue;
 		}
-		dset->second->type &= ~ST_USED;
+		if (!(dset->second->type & ST_STATIC)) {
+			dset->second->type &= ~ST_USED;
+		}
 		dset->second->number = 0;
 	}
 
