@@ -357,7 +357,7 @@ void Grammar::allocateDummySet() {
 	addTagToSet(t, set_c);
 	addSet(set_c);
 	set_c->number = std::numeric_limits<uint32_t>::max();
-	sets_list.push_back(set_c);
+	sets_list.insert(sets_list.begin(), set_c);
 }
 
 Rule *Grammar::allocateRule() {
