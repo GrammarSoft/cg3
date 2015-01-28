@@ -100,6 +100,7 @@ int main(int argc, char *argv[]) {
 	CG3::Grammar grammar;
 
 	grammar.ux_stderr = ux_stderr;
+	grammar.allocateDummySet();
 	grammar.delimiters = grammar.allocateSet();
 	grammar.addTagToSet(grammar.allocateTag(CG3::stringbits[0].getTerminatedBuffer()), grammar.delimiters);
 	grammar.reindex();

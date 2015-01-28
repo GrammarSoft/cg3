@@ -111,6 +111,7 @@ namespace CG3 {
 		void destroySet(Set *set);
 		void addSetToList(Set *s);
 		Set *parseSet(const UChar *name);
+		void allocateDummySet();
 
 		void addAnchor(const UChar *to, uint32_t at, bool primary = false);
 

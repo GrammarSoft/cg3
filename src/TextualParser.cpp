@@ -2177,16 +2177,7 @@ int TextualParser::parse_grammar_from_file(const char *fname, const char *loc, c
 		result->tag_any = tany->hash;
 	}
 	// Create the dummy set
-	{
-		Set *set_c = result->allocateSet();
-		set_c->line = 0;
-		set_c->setName(stringbits[S_IGNORE].getTerminatedBuffer());
-		Tag *t = result->allocateTag(stringbits[S_IGNORE].getTerminatedBuffer());
-		result->addTagToSet(t, set_c);
-		result->addSet(set_c);
-		set_c->number = std::numeric_limits<uint32_t>::max();
-		result->sets_list.push_back(set_c);
-	}
+	result->allocateDummySet();
 	// Create the magic set _TARGET_ containing the tag _TARGET_
 	{
 		Set *set_c = result->allocateSet();
