@@ -349,6 +349,17 @@ Set *Grammar::parseSet(const UChar *name) {
 	return tmp;
 }
 
+void Grammar::allocateDummySet() {
+	Set *set_c = allocateSet();
+	set_c->line = 0;
+	set_c->setName(stringbits[S_IGNORE].getTerminatedBuffer());
+	Tag *t = allocateTag(stringbits[S_IGNORE].getTerminatedBuffer());
+	addTagToSet(t, set_c);
+	addSet(set_c);
+	set_c->number = std::numeric_limits<uint32_t>::max();
+	sets_list.push_back(set_c);
+}
+
 Rule *Grammar::allocateRule() {
 	return new Rule;
 }
