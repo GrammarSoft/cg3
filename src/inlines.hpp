@@ -89,7 +89,7 @@ inline uint32_t SuperFastHash(const char *data, size_t len = 0, uint32_t hash = 
 	hash ^= hash << 25;
 	hash += hash >> 6;
 
-	if (hash == 0 || hash == 1) {
+	if (hash == 0 || hash == std::numeric_limits<uint32_t>::max() || hash == std::numeric_limits<uint32_t>::max()-1) {
 		hash = CG3_HASH_SEED;
 	}
 
@@ -135,7 +135,7 @@ inline uint32_t SuperFastHash(const UChar *data, size_t len = 0, uint32_t hash =
 	hash ^= hash << 25;
 	hash += hash >> 6;
 
-	if (hash == 0 || hash == 1) {
+	if (hash == 0 || hash == std::numeric_limits<uint32_t>::max() || hash == std::numeric_limits<uint32_t>::max()-1) {
 		hash = CG3_HASH_SEED;
 	}
 
@@ -172,7 +172,7 @@ inline uint32_t hash_value(uint32_t c, uint32_t h = CG3_HASH_SEED) {
 	}
 	//*
 	h = c + (h << 6U) + (h << 16U) - h;
-	if (h == 0 || h == 1) {
+	if (h == 0 || h == std::numeric_limits<uint32_t>::max() || h == std::numeric_limits<uint32_t>::max()-1) {
 		h = CG3_HASH_SEED;
 	}
 	return h;
