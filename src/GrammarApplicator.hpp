@@ -105,6 +105,7 @@ namespace CG3 {
 		Grammar *grammar;
 
 		// Moved these public to help the library API
+		Tag *addTag(Tag *tag);
 		Tag *addTag(const UChar *tag, bool vstr = false);
 		Tag *addTag(const UString& txt, bool vstr = false);
 		void initEmptySingleWindow(SingleWindow *cSWindow);
@@ -116,6 +117,14 @@ namespace CG3 {
 		void splitMappings(TagList& mappings, Cohort& cohort, Reading& reading, bool mapped = false);
 		void splitAllMappings(all_mappings_t& all_mappings, Cohort& cohort, bool mapped = false);
 		Taguint32HashMap single_tags;
+
+		UFILE *ux_stderr;
+		UChar *filebase;
+		void error(const char *str, const UChar *p);
+		void error(const char *str, const char *s, const UChar *p);
+		void error(const char *str, const UChar *s, const UChar *p);
+		void error(const char *str, const char *s, const UChar *S, const UChar *p);
+		Grammar *get_grammar() { return grammar; }
 
 	protected:
 		void printTrace(UFILE *output, uint32_t hit_by);
@@ -130,8 +139,6 @@ namespace CG3 {
 		void pipeInReading(Reading *reading, std::istream& input, bool force = false);
 		void pipeInCohort(Cohort *cohort, std::istream& input);
 		void pipeInSingleWindow(SingleWindow& window, std::istream& input);
-
-		UFILE *ux_stderr;
 
 		uint32_t numLines;
 		uint32_t numWindows;

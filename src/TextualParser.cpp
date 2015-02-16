@@ -23,6 +23,7 @@
 #include "Strings.hpp"
 #include "Grammar.hpp"
 #include "ContextualTest.hpp"
+#include "parser_helpers.hpp"
 #include <bitset>
 
 namespace CG3 {
@@ -88,6 +89,32 @@ void TextualParser::error(const char *str, UChar c, const UChar *p) {
 	incErrorCount();
 }
 
+void TextualParser::error(const char *str, const char *s, const UChar *p) {
+	ux_bufcpy(nearbuf, p, 20);
+	u_fprintf(ux_stderr, str, filebase, s, result->lines, nearbuf);
+	incErrorCount();
+}
+
+void TextualParser::error(const char *str, const UChar *s, const UChar *p) {
+	ux_bufcpy(nearbuf, p, 20);
+	u_fprintf(ux_stderr, str, filebase, s, result->lines, nearbuf);
+	incErrorCount();
+}
+
+void TextualParser::error(const char *str, const char *s, const UChar *S, const UChar *p) {
+	ux_bufcpy(nearbuf, p, 20);
+	u_fprintf(ux_stderr, str, filebase, s, S, result->lines, nearbuf);
+	incErrorCount();
+}
+
+Tag *TextualParser::parseTag(const UChar *to, const UChar *p) {
+	return ::CG3::parseTag(to, p, *this);
+}
+
+Tag *TextualParser::addTag(Tag *tag) {
+	return result->addTag(tag);
+}
+
 void TextualParser::parseTagList(UChar *& p, Set *s) {
 	std::set<TagVector> taglists;
 	bc::flat_map<Tag*, size_t> tag_freq;
@@ -106,20 +133,20 @@ void TextualParser::parseTagList(UChar *& p, Set *s) {
 						n++;
 						SKIPTO_NOSPAN(n, '"');
 						if (*n != '"') {
-							error("%s: Error: Missing closing \" on line %u near `%S`!\n", p);
+							error("%s: Error: Expected closing \" on line %u near `%S`!\n", p);
 						}
 					}
 					result->lines += SKIPTOWS(n, ')', true);
 					ptrdiff_t c = n - p;
 					u_strncpy(&gbuffers[0][0], p, c);
 					gbuffers[0][c] = 0;
-					Tag *t = result->allocateTag(&gbuffers[0][0]);
+					Tag *t = parseTag(&gbuffers[0][0], p);
 					tags.push_back(t);
 					p = n;
 					result->lines += SKIPWS(p, ';', ')');
 				}
 				if (*p != ')') {
-					error("%s: Error: Missing closing ) on line %u near `%S`!\n", p);
+					error("%s: Error: Expected closing ) on line %u near `%S`!\n", p);
 				}
 				++p;
 			}
@@ -129,14 +156,14 @@ void TextualParser::parseTagList(UChar *& p, Set *s) {
 					n++;
 					SKIPTO_NOSPAN(n, '"');
 					if (*n != '"') {
-						error("%s: Error: Missing closing \" on line %u near `%S`!\n", p);
+						error("%s: Error: Expected closing \" on line %u near `%S`!\n", p);
 					}
 				}
 				result->lines += SKIPTOWS(n, 0, true);
 				ptrdiff_t c = n - p;
 				u_strncpy(&gbuffers[0][0], p, c);
 				gbuffers[0][c] = 0;
-				Tag *t = result->allocateTag(&gbuffers[0][0]);
+				Tag *t = parseTag(&gbuffers[0][0], p);
 				tags.push_back(t);
 				p = n;
 			}
@@ -179,6 +206,10 @@ void TextualParser::parseTagList(UChar *& p, Set *s) {
 	}
 }
 
+Set *TextualParser::parseSet(const UChar *name, const UChar *p) {
+	return ::CG3::parseSet(name, p, *this);
+}
+
 Set *TextualParser::parseSetInline(UChar *& p, Set *s) {
 	uint32Vector set_ops;
 	uint32Vector sets;
@@ -206,20 +237,20 @@ Set *TextualParser::parseSetInline(UChar *& p, Set *s) {
 							n++;
 							SKIPTO_NOSPAN(n, '"');
 							if (*n != '"') {
-								error("%s: Error: Missing closing \" on line %u near `%S`!\n", p);
+								error("%s: Error: Expected closing \" on line %u near `%S`!\n", p);
 							}
 						}
 						result->lines += SKIPTOWS(n, ')', true);
 						ptrdiff_t c = n - p;
 						u_strncpy(&gbuffers[0][0], p, c);
 						gbuffers[0][c] = 0;
-						Tag *t = result->allocateTag(&gbuffers[0][0]);
+						Tag *t = parseTag(&gbuffers[0][0], p);
 						tags.push_back(t);
 						p = n;
 						result->lines += SKIPWS(p, ';', ')');
 					}
 					if (*p != ')') {
-						error("%s: Error: Missing closing ) on line %u near `%S`!\n", p);
+						error("%s: Error: Expected closing ) on line %u near `%S`!\n", p);
 					}
 					++p;
 
@@ -257,7 +288,7 @@ Set *TextualParser::parseSetInline(UChar *& p, Set *s) {
 					ptrdiff_t c = n - p;
 					u_strncpy(&gbuffers[0][0], p, c);
 					gbuffers[0][c] = 0;
-					Set *tmp = result->parseSet(&gbuffers[0][0]);
+					Set *tmp = parseSet(&gbuffers[0][0], p);
 					uint32_t sh = tmp->hash;
 					sets.push_back(sh);
 					p = n;
@@ -496,7 +527,7 @@ void TextualParser::parseContextualTestPosition(UChar *& p, ContextualTest& t) {
 			ptrdiff_t c = n - p;
 			u_strncpy(&gbuffers[0][0], p, c);
 			gbuffers[0][c] = 0;
-			Tag *tag = result->allocateTag(&gbuffers[0][0], true);
+			Tag *tag = result->allocateTag(&gbuffers[0][0]);
 			t.relation = tag->hash;
 			p = n;
 		}
@@ -837,14 +868,14 @@ void TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 			n++;
 			SKIPTO_NOSPAN(n, '"');
 			if (*n != '"') {
-				error("%s: Error: Missing closing \" on line %u near `%S`!\n", lp);
+				error("%s: Error: Expected closing \" on line %u near `%S`!\n", lp);
 			}
 		}
 		result->lines += SKIPTOWS(n, 0, true);
 		ptrdiff_t c = n - lp;
 		u_strncpy(&gbuffers[0][0], lp, c);
 		gbuffers[0][c] = 0;
-		Tag *wform = result->allocateTag(&gbuffers[0][0]);
+		Tag *wform = parseTag(&gbuffers[0][0], lp);
 		rule->wordform = wform;
 	}
 
@@ -890,7 +921,7 @@ void TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 			++n;
 			SKIPTO_NOSPAN(n, '"');
 			if (*n != '"') {
-				error("%s: Error: Missing closing \" on line %u near `%S`!\n", p);
+				error("%s: Error: Expected closing \" on line %u near `%S`!\n", p);
 			}
 		}
 		result->lines += SKIPTOWS(n, 0, true);
@@ -904,7 +935,7 @@ void TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 			gbuffers[0][c] = 0;
 		}
 
-		Tag *ext = result->allocateTag(&gbuffers[0][0], true);
+		Tag *ext = result->allocateTag(&gbuffers[0][0]);
 		rule->varname = ext->hash;
 		p = n;
 	}
@@ -1105,7 +1136,7 @@ void TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 		parseContextualTests(p, rule);
 		result->lines += SKIPWS(p);
 		if (*p != ')') {
-			error("%s: Error: Missing closing ) on line %u near `%S`!\n", p);
+			error("%s: Error: Expected closing ) on line %u near `%S`! Probably caused by missing set operator.\n", p);
 		}
 		++p;
 		result->lines += SKIPWS(p);
@@ -1174,7 +1205,7 @@ void TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 			parseContextualDependencyTests(p, rule);
 			result->lines += SKIPWS(p);
 			if (*p != ')') {
-				error("%s: Error: Missing closing ) on line %u near `%S`!\n", p);
+				error("%s: Error: Expected closing ) on line %u near `%S`! Probably caused by missing set operator.\n", p);
 			}
 			++p;
 			result->lines += SKIPWS(p);
@@ -1231,7 +1262,7 @@ void TextualParser::parseAnchorish(UChar *& p) {
 	p = n;
 	result->lines += SKIPWS(p, ';');
 	if (*p != ';') {
-		error("%s: Error: Missing closing ; on line %u near `%S` after anchor/section name!\n", p);
+		error("%s: Error: Expected closing ; on line %u near `%S` after anchor/section name!\n", p);
 	}
 }
 
@@ -1275,7 +1306,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 			}
 			result->lines += SKIPWS(p, ';');
 			if (*p != ';') {
-				error("%s: Error: Missing closing ; before line %u!\n");
+				error("%s: Error: Expected closing ; before line %u!\n");
 			}
 		}
 		// SOFT-DELIMITERS
@@ -1304,7 +1335,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 			}
 			result->lines += SKIPWS(p, ';');
 			if (*p != ';') {
-				error("%s: Error: Missing closing ; before line %u!\n");
+				error("%s: Error: Expected closing ; before line %u!\n");
 			}
 		}
 		// MAPPING-PREFIX
@@ -1343,7 +1374,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 			}
 			result->lines += SKIPWS(p, ';');
 			if (*p != ';') {
-				error("%s: Error: Missing closing ; before line %u!\n");
+				error("%s: Error: Expected closing ; before line %u!\n");
 			}
 		}
 		// PREFERRED-TARGETS
@@ -1367,14 +1398,14 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 					n++;
 					SKIPTO_NOSPAN(n, '"');
 					if (*n != '"') {
-						error("%s: Error: Missing closing \" on line %u near `%S`!\n", p);
+						error("%s: Error: Expected closing \" on line %u near `%S`!\n", p);
 					}
 				}
 				result->lines += SKIPTOWS(n, ';', true);
 				ptrdiff_t c = n - p;
 				u_strncpy(&gbuffers[0][0], p, c);
 				gbuffers[0][c] = 0;
-				Tag *t = result->allocateTag(&gbuffers[0][0]);
+				Tag *t = parseTag(&gbuffers[0][0], p);
 				result->preferred_targets.push_back(t->hash);
 				p = n;
 				result->lines += SKIPWS(p);
@@ -1385,7 +1416,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 			}
 			result->lines += SKIPWS(p, ';');
 			if (*p != ';') {
-				error("%s: Error: Missing closing ; before line %u!\n");
+				error("%s: Error: Expected closing ; before line %u!\n");
 			}
 		}
 		// STATIC-SETS
@@ -1415,7 +1446,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 			}
 			result->lines += SKIPWS(p, ';');
 			if (*p != ';') {
-				error("%s: Error: Missing closing ; before line %u!\n");
+				error("%s: Error: Expected closing ; before line %u!\n");
 			}
 		}
 		// ADDRELATIONS
@@ -1549,7 +1580,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 			}
 			result->lines += SKIPWS(p, ';');
 			if (*p != ';') {
-				error("%s: Error: Missing closing ; before line %u!\n");
+				error("%s: Error: Expected closing ; before line %u!\n");
 			}
 		}
 		// SET
@@ -1600,7 +1631,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 			}
 			result->lines += SKIPWS(p, ';');
 			if (*p != ';') {
-				error("%s: Error: Missing closing ; before line %u! Probably caused by missing set operator.\n");
+				error("%s: Error: Expected closing ; before line %u! Probably caused by missing set operator.\n");
 			}
 		}
 		// MAPPINGS
@@ -1758,7 +1789,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 			p = n;
 			result->lines += SKIPWS(p, ';');
 			if (*p != ';') {
-				error("%s: Error: Missing closing ; before line %u!\n");
+				error("%s: Error: Expected closing ; before line %u!\n");
 			}
 		}
 		// ANCHOR
@@ -1783,7 +1814,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 			p = n;
 			result->lines += SKIPWS(p, ';');
 			if (*p != ';') {
-				error("%s: Error: Missing closing ; before line %u!\n");
+				error("%s: Error: Expected closing ; before line %u!\n");
 			}
 
 			UErrorCode err = U_ZERO_ERROR;
@@ -1952,7 +1983,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 
 			result->lines += SKIPWS(p, ';');
 			if (*p != ';') {
-				error("%s: Error: Missing closing ; before line %u! Probably caused by missing set operator.\n");
+				error("%s: Error: Expected closing ; before line %u! Probably caused by missing set operator.\n");
 			}
 		}
 		// PARENTHESES
@@ -1984,14 +2015,14 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 					n++;
 					SKIPTO_NOSPAN(n, '"');
 					if (*n != '"') {
-						error("%s: Error: Missing closing \" on line %u near `%S`!\n", p);
+						error("%s: Error: Expected closing \" on line %u near `%S`!\n", p);
 					}
 				}
 				result->lines += SKIPTOWS(n, ')', true);
 				c = n - p;
 				u_strncpy(&gbuffers[0][0], p, c);
 				gbuffers[0][c] = 0;
-				left = result->allocateTag(&gbuffers[0][0]);
+				left = parseTag(&gbuffers[0][0], p);
 				result->lines += SKIPWS(n);
 				p = n;
 
@@ -2003,14 +2034,14 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 					n++;
 					SKIPTO_NOSPAN(n, '"');
 					if (*n != '"') {
-						error("%s: Error: Missing closing \" on line %u!\n");
+						error("%s: Error: Expected closing \" on line %u!\n");
 					}
 				}
 				result->lines += SKIPTOWS(n, ')', true);
 				c = n - p;
 				u_strncpy(&gbuffers[0][0], p, c);
 				gbuffers[0][c] = 0;
-				right = result->allocateTag(&gbuffers[0][0]);
+				right = parseTag(&gbuffers[0][0], p);
 				result->lines += SKIPWS(n);
 				p = n;
 
@@ -2031,7 +2062,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 			}
 			result->lines += SKIPWS(p, ';');
 			if (*p != ';') {
-				error("%s: Error: Missing closing ; before line %u!\n");
+				error("%s: Error: Expected closing ; before line %u!\n");
 			}
 		}
 		// END
@@ -2051,7 +2082,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 					++p;
 					SKIPTO_NOSPAN(p, '"');
 					if (*p != '"') {
-						error("%s: Error: Missing closing \" on line %u near `%S`!\n", n);
+						error("%s: Error: Expected closing \" on line %u near `%S`!\n", n);
 					}
 				}
 				result->lines += SKIPTOWS(p);
@@ -2119,7 +2150,7 @@ int TextualParser::parse_grammar_from_file(const char *fname, const char *loc, c
 
 	// Allocate the magic * tag
 	{
-		Tag *tany = result->allocateTag(stringbits[S_ASTERIK].getTerminatedBuffer());
+		Tag *tany = parseTag(stringbits[S_ASTERIK].getTerminatedBuffer());
 		result->tag_any = tany->hash;
 	}
 	// Create the dummy set
@@ -2129,7 +2160,7 @@ int TextualParser::parse_grammar_from_file(const char *fname, const char *loc, c
 		Set *set_c = result->allocateSet();
 		set_c->line = 0;
 		set_c->setName(stringbits[S_UU_TARGET].getTerminatedBuffer());
-		Tag *t = result->allocateTag(stringbits[S_UU_TARGET].getTerminatedBuffer());
+		Tag *t = parseTag(stringbits[S_UU_TARGET].getTerminatedBuffer());
 		result->addTagToSet(t, set_c);
 		result->addSet(set_c);
 	}
@@ -2138,7 +2169,7 @@ int TextualParser::parse_grammar_from_file(const char *fname, const char *loc, c
 		Set *set_c = result->allocateSet();
 		set_c->line = 0;
 		set_c->setName(stringbits[S_UU_MARK].getTerminatedBuffer());
-		Tag *t = result->allocateTag(stringbits[S_UU_MARK].getTerminatedBuffer());
+		Tag *t = parseTag(stringbits[S_UU_MARK].getTerminatedBuffer());
 		result->addTagToSet(t, set_c);
 		result->addSet(set_c);
 	}
@@ -2147,7 +2178,7 @@ int TextualParser::parse_grammar_from_file(const char *fname, const char *loc, c
 		Set *set_c = result->allocateSet();
 		set_c->line = 0;
 		set_c->setName(stringbits[S_UU_ATTACHTO].getTerminatedBuffer());
-		Tag *t = result->allocateTag(stringbits[S_UU_ATTACHTO].getTerminatedBuffer());
+		Tag *t = parseTag(stringbits[S_UU_ATTACHTO].getTerminatedBuffer());
 		result->addTagToSet(t, set_c);
 		result->addSet(set_c);
 	}
@@ -2157,7 +2188,7 @@ int TextualParser::parse_grammar_from_file(const char *fname, const char *loc, c
 		Set *set_c = s_left = result->allocateSet();
 		set_c->line = 0;
 		set_c->setName(stringbits[S_UU_LEFT].getTerminatedBuffer());
-		Tag *t = result->allocateTag(stringbits[S_UU_LEFT].getTerminatedBuffer());
+		Tag *t = parseTag(stringbits[S_UU_LEFT].getTerminatedBuffer());
 		result->addTagToSet(t, set_c);
 		result->addSet(set_c);
 	}
@@ -2167,7 +2198,7 @@ int TextualParser::parse_grammar_from_file(const char *fname, const char *loc, c
 		Set *set_c = s_right = result->allocateSet();
 		set_c->line = 0;
 		set_c->setName(stringbits[S_UU_RIGHT].getTerminatedBuffer());
-		Tag *t = result->allocateTag(stringbits[S_UU_RIGHT].getTerminatedBuffer());
+		Tag *t = parseTag(stringbits[S_UU_RIGHT].getTerminatedBuffer());
 		result->addTagToSet(t, set_c);
 		result->addSet(set_c);
 	}
@@ -2176,7 +2207,7 @@ int TextualParser::parse_grammar_from_file(const char *fname, const char *loc, c
 		Set *set_c = result->allocateSet();
 		set_c->line = 0;
 		set_c->setName(stringbits[S_UU_ENCL].getTerminatedBuffer());
-		Tag *t = result->allocateTag(stringbits[S_UU_ENCL].getTerminatedBuffer());
+		Tag *t = parseTag(stringbits[S_UU_ENCL].getTerminatedBuffer());
 		result->addTagToSet(t, set_c);
 		result->addSet(set_c);
 	}

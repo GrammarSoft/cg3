@@ -29,6 +29,7 @@
 namespace CG3 {
 	class Rule;
 	class Set;
+	class Tag;
 	class ContextualTest;
 
 	class TextualParser : public IGrammarParser {
@@ -40,6 +41,17 @@ namespace CG3 {
 
 		int parse_grammar_from_file(const char *filename, const char *locale, const char *codepage);
 
+		void error(const char *str);
+		void error(const char *str, UChar c);
+		void error(const char *str, const UChar *p);
+		void error(const char *str, UChar c, const UChar *p);
+		void error(const char *str, const char *s, const UChar *p);
+		void error(const char *str, const UChar *s, const UChar *p);
+		void error(const char *str, const char *s, const UChar *S, const UChar *p);
+		Tag *addTag(Tag *tag);
+		Grammar *get_grammar() { return result; }
+		const char *filebase;
+
 	private:
 		UChar nearbuf[32];
 		uint32_t verbosity_level;
@@ -48,7 +60,6 @@ namespace CG3 {
 		bool option_vislcg_compat;
 		bool in_section, in_before_sections, in_after_sections, in_null_section;
 		const char *filename;
-		const char *filebase;
 		const char *locale;
 		const char *codepage;
 
@@ -58,7 +69,9 @@ namespace CG3 {
 		int parseFromUChar(UChar *input, const char *fname = 0);
 		void addRuleToGrammar(Rule *rule);
 
+		Tag *parseTag(const UChar *to, const UChar *p = 0);
 		void parseTagList(UChar *& p, Set *s);
+		Set *parseSet(const UChar *name, const UChar *p = 0);
 		Set *parseSetInline(UChar *& p, Set *s = 0);
 		Set *parseSetInlineWrapper(UChar *& p);
 		void parseContextualTestPosition(UChar *& p, ContextualTest& t);
@@ -70,10 +83,6 @@ namespace CG3 {
 
 		int error_counter;
 		void incErrorCount();
-		void error(const char *str);
-		void error(const char *str, UChar c);
-		void error(const char *str, const UChar *p);
-		void error(const char *str, UChar c, const UChar *p);
 	};
 }
 

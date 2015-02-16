@@ -34,8 +34,9 @@ namespace CG3 {
 		virtual void setCompatible(bool compat) = 0;
 		virtual void setVerbosity(uint32_t level) = 0;
 		virtual int parse_grammar_from_file(const char *filename, const char *locale, const char *codepage) = 0;
-	protected:
+
 		UFILE *ux_stderr;
+	protected:
 		Grammar *result;
 		uint32_t verbosity;
 	};

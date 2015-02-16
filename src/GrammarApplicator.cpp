@@ -26,6 +26,7 @@
 #include "Window.hpp"
 #include "SingleWindow.hpp"
 #include "Reading.hpp"
+#include "parser_helpers.hpp"
 
 namespace CG3 {
 
@@ -68,6 +69,7 @@ gWindow(0),
 has_relations(false),
 grammar(0),
 ux_stderr(ux_err),
+filebase(0),
 numLines(0),
 numWindows(0),
 numCohorts(0),
@@ -232,26 +234,17 @@ void GrammarApplicator::disableStatistics() {
 	statistics = false;
 }
 
-Tag *GrammarApplicator::addTag(const UChar *txt, bool vstr) {
-	Taguint32HashMap::iterator it;
-	uint32_t thash = hash_value(txt);
-	if ((it = single_tags.find(thash)) != single_tags.end() && !it->second->tag.empty() && u_strcmp(it->second->tag.c_str(), txt) == 0) {
-		return it->second;
-	}
-
-	Tag *tag = new Tag();
-	if (vstr) {
-		tag->parseTag(txt, ux_stderr, grammar);
-	}
-	else {
-		tag->parseTagRaw(txt, grammar);
-	}
+Tag *GrammarApplicator::addTag(Tag *tag) {
 	uint32_t hash = tag->rehash();
 	uint32_t seed = 0;
-	for ( ; seed < 10000 ; seed++) {
+	for (; seed < 10000; seed++) {
 		uint32_t ih = hash + seed;
+		Taguint32HashMap::iterator it;
 		if ((it = single_tags.find(ih)) != single_tags.end()) {
 			Tag *t = it->second;
+			if (t == tag) {
+				return tag;
+			}
 			if (t->tag == tag->tag) {
 				hash += seed;
 				delete tag;
@@ -260,7 +253,7 @@ Tag *GrammarApplicator::addTag(const UChar *txt, bool vstr) {
 		}
 		else {
 			if (seed && verbosity_level > 0) {
-				u_fprintf(ux_stderr, "Warning: Tag %S got hash seed %u.\n", txt, seed);
+				u_fprintf(ux_stderr, "Warning: Tag %S got hash seed %u.\n", tag->tag.c_str(), seed);
 				u_fflush(ux_stderr);
 			}
 			tag->seed = seed;
@@ -269,7 +262,26 @@ Tag *GrammarApplicator::addTag(const UChar *txt, bool vstr) {
 			break;
 		}
 	}
-	tag = single_tags[hash];
+	return single_tags[hash];
+}
+
+Tag *GrammarApplicator::addTag(const UChar *txt, bool vstr) {
+	Taguint32HashMap::iterator it;
+	uint32_t thash = hash_value(txt);
+	if ((it = single_tags.find(thash)) != single_tags.end() && !it->second->tag.empty() && u_strcmp(it->second->tag.c_str(), txt) == 0) {
+		return it->second;
+	}
+
+	Tag *tag = 0;
+	if (vstr) {
+		tag = ::CG3::parseTag(txt, 0, *this);
+	}
+	else {
+		tag = new Tag();
+		tag->parseTagRaw(txt, grammar);
+		tag = addTag(tag);
+	}
+
 	bool reflow = false;
 	if ((tag->type & T_REGEXP) && tag->tag[0] == '/') {
 		if (grammar->regex_tags.insert(tag->regexp).second) {
@@ -763,6 +775,30 @@ void GrammarApplicator::pipeInSingleWindow(SingleWindow& window, std::istream& i
 	for (size_t i=0 ; i<cs ; ++i) {
 		pipeInCohort(window.cohorts[i+1], input);
 	}
+}
+
+void GrammarApplicator::error(const char *str, const UChar *p) {
+	(void)p;
+	UChar buf[] = { L'R', L'U', L'N', L'T', L'I', L'M', L'E', 0 };
+	u_fprintf(ux_stderr, str, buf, 0, buf);
+}
+
+void GrammarApplicator::error(const char *str, const char *s, const UChar *p) {
+	(void)p;
+	UChar buf[] = { L'R', L'U', L'N', L'T', L'I', L'M', L'E', 0 };
+	u_fprintf(ux_stderr, str, buf, s, 0, buf);
+}
+
+void GrammarApplicator::error(const char *str, const UChar *s, const UChar *p) {
+	(void)p;
+	UChar buf[] = { L'R', L'U', L'N', L'T', L'I', L'M', L'E', 0 };
+	u_fprintf(ux_stderr, str, buf, s, 0, buf);
+}
+
+void GrammarApplicator::error(const char *str, const char *s, const UChar *S, const UChar *p) {
+	(void)p;
+	UChar buf[] = { L'R', L'U', L'N', L'T', L'I', L'M', L'E', 0 };
+	u_fprintf(ux_stderr, str, buf, s, S, 0, buf);
 }
 
 }

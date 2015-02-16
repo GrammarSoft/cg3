@@ -79,6 +79,7 @@ set(LIBCG3_HEADERS
 	interval_vector.hpp
 	istream.hpp
 	macros.hpp
+	parser_helpers.hpp
 	sorted_vector.hpp
 	stdafx.hpp
 	uextras.hpp
