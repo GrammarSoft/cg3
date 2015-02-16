@@ -48,6 +48,7 @@ namespace CG3 {
 		bool option_vislcg_compat;
 		bool in_section, in_before_sections, in_after_sections, in_null_section;
 		const char *filename;
+		const char *filebase;
 		const char *locale;
 		const char *codepage;
 
@@ -69,6 +70,10 @@ namespace CG3 {
 
 		int error_counter;
 		void incErrorCount();
+		void error(const char *str);
+		void error(const char *str, UChar c);
+		void error(const char *str, const UChar *p);
+		void error(const char *str, UChar c, const UChar *p);
 	};
 }
 
