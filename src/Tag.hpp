@@ -95,8 +95,8 @@ namespace CG3 {
 		mutable URegularExpression *regexp;
 
 		Tag();
+		Tag(const Tag& o);
 		~Tag();
-		void parseTag(const UChar *to, UFILE *ux_stderr, Grammar *grammar);
 		void parseTagRaw(const UChar *to, Grammar *grammar);
 		UString toUString(bool escape = false) const;
 
@@ -104,8 +104,6 @@ namespace CG3 {
 		void markUsed();
 		void allocateVsSets();
 		void allocateVsNames();
-
-	private:
 		void parseNumeric();
 	};
 
@@ -121,7 +119,6 @@ namespace CG3 {
 			return a->hash < b->hash;
 		}
 	};
-
 
 	typedef std::list<Tag*> TagList;
 	typedef std::vector<Tag*> TagVector;

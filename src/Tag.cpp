@@ -46,6 +46,34 @@ regexp(0)
 	#endif
 }
 
+Tag::Tag(const Tag& o) :
+comparison_op(o.comparison_op),
+comparison_val(o.comparison_val),
+type(o.type),
+comparison_hash(o.comparison_hash),
+dep_self(o.dep_self),
+dep_parent(o.dep_parent),
+hash(o.hash),
+plain_hash(o.plain_hash),
+number(o.number),
+seed(o.seed),
+tag(o.tag),
+regexp(o.regexp)
+{
+	#ifdef CG_TRACE_OBJECTS
+	std::cerr << "OBJECT: " << __PRETTY_FUNCTION__ << std::endl;
+	#endif
+
+	if (o.vs_names) {
+		allocateVsNames();
+		*vs_names.get() = *o.vs_names.get();
+	}
+	if (o.vs_sets) {
+		allocateVsSets();
+		*vs_sets.get() = *o.vs_sets.get();
+	}
+}
+
 Tag::~Tag() {
 	#ifdef CG_TRACE_OBJECTS
 	std::cerr << "OBJECT: " << __PRETTY_FUNCTION__ << std::endl;
@@ -54,247 +82,6 @@ Tag::~Tag() {
 	if (regexp) {
 		uregex_close(regexp);
 		regexp = 0;
-	}
-}
-
-void Tag::parseTag(const UChar *to, UFILE *ux_stderr, Grammar *grammar) {
-	type = 0;
-
-	if (to && to[0]) {
-		const UChar *tmp = to;
-		while (tmp[0] && (tmp[0] == '!' || tmp[0] == '^')) {
-			if (tmp[0] == '!' || tmp[0] == '^') {
-				type |= T_FAILFAST;
-				tmp++;
-			}
-		}
-
-		size_t length = u_strlen(tmp);
-		assert(length && "parseTag() will not work with empty strings.");
-
-		if (tmp[0] == 'T' && tmp[1] == ':') {
-			u_fprintf(ux_stderr, "Warning: Tag %S looks like a misattempt of template usage on line %u.\n", tmp, grammar->lines);
-		}
-
-		// ToDo: Implement META and VAR
-		if (tmp[0] == 'M' && tmp[1] == 'E' && tmp[2] == 'T' && tmp[3] == 'A' && tmp[4] == ':') {
-			type |= T_META;
-			tmp += 5;
-			length -= 5;
-		}
-		if (tmp[0] == 'V' && tmp[1] == 'A' && tmp[2] == 'R' && tmp[3] == ':') {
-			type |= T_VARIABLE;
-			tmp += 4;
-			length -= 4;
-		}
-		if (tmp[0] == 'S' && tmp[1] == 'E' && tmp[2] == 'T' && tmp[3] == ':') {
-			type |= T_SET;
-			tmp += 4;
-			length -= 4;
-		}
-		if (tmp[0] == 'V' && tmp[1] == 'S' && tmp[2] == 'T' && tmp[3] == 'R' && tmp[4] == ':') {
-			type |= T_VARSTRING;
-			type |= T_VSTR;
-			tmp += 5;
-
-			tag.assign(tmp);
-			if (tag.empty()) {
-				u_fprintf(ux_stderr, "Error: Parsing tag %S resulted in an empty tag on line %u - cannot continue!\n", tag.c_str(), grammar->lines);
-				CG3Quit(1);
-			}
-
-			goto label_isVarstring;
-		}
-		
-		if (tmp[0] && (tmp[0] == '"' || tmp[0] == '<' || tmp[0] == '/')) {
-			size_t oldlength = length;
-
-			// Parse the suffixes r, i, v but max only one of each.
-			while (tmp[length-1] == 'i' || tmp[length-1] == 'r' || tmp[length-1] == 'v') {
-				if (!(type & T_VARSTRING) && tmp[length-1] == 'v') {
-					type |= T_VARSTRING;
-					length--;
-					continue;
-				}
-				if (!(type & T_REGEXP) && tmp[length-1] == 'r') {
-					type |= T_REGEXP;
-					length--;
-					continue;
-				}
-				if (!(type & T_CASE_INSENSITIVE) && tmp[length-1] == 'i') {
-					type |= T_CASE_INSENSITIVE;
-					length--;
-					continue;
-				}
-				break;
-			}
-
-			if (tmp[0] == '"' && tmp[length-1] == '"') {
-				if (tmp[1] == '<' && tmp[length-2] == '>') {
-					type |= T_WORDFORM;
-				}
-				else {
-					type |= T_BASEFORM;
-				}
-			}
-
-			if ((tmp[0] == '"' && tmp[length-1] == '"') || (tmp[0] == '<' && tmp[length-1] == '>') || (tmp[0] == '/' && tmp[length-1] == '/')) {
-				type |= T_TEXTUAL;
-			}
-			else {
-				type &= ~T_VARSTRING;
-				type &= ~T_REGEXP;
-				type &= ~T_CASE_INSENSITIVE;
-				type &= ~T_WORDFORM;
-				type &= ~T_BASEFORM;
-				length = oldlength;
-			}
-		}
-
-		for (size_t i=0, oldlength = length ; tmp[i] != 0 && i < oldlength ; ++i) {
-			if (tmp[i] == '\\') {
-				++i;
-				--length;
-			}
-			if (tmp[i] == 0) {
-				break;
-			}
-			tag += tmp[i];
-		}
-		if (tag.empty()) {
-			u_fprintf(ux_stderr, "Error: Parsing tag %S resulted in an empty tag on line %u - cannot continue!\n", tag.c_str(), grammar->lines);
-			CG3Quit(1);
-		}
-
-		foreach (Grammar::regex_tags_t, grammar->regex_tags, iter, iter_end) {
-			UErrorCode status = U_ZERO_ERROR;
-			uregex_setText(*iter, tag.c_str(), tag.length(), &status);
-			if (status != U_ZERO_ERROR) {
-				u_fprintf(ux_stderr, "Error: uregex_setText(parseTag) returned %s - cannot continue!\n", u_errorName(status));
-				CG3Quit(1);
-			}
-			status = U_ZERO_ERROR;
-			if (uregex_matches(*iter, 0, &status)) {
-				type |= T_TEXTUAL;
-			}
-		}
-		foreach (Grammar::icase_tags_t, grammar->icase_tags, iter, iter_end) {
-			UErrorCode status = U_ZERO_ERROR;
-			if (u_strCaseCompare(tag.c_str(), tag.length(), (*iter)->tag.c_str(), (*iter)->tag.length(), U_FOLD_CASE_DEFAULT, &status) == 0) {
-				type |= T_TEXTUAL;
-			}
-			if (status != U_ZERO_ERROR) {
-				u_fprintf(ux_stderr, "Error: u_strCaseCompare(parseTag) returned %s - cannot continue!\n", u_errorName(status));
-				CG3Quit(1);
-			}
-		}
-
-		comparison_hash = hash_value(tag);
-
-		if (tag[0] == '<' && tag[length-1] == '>') {
-			parseNumeric();
-		}
-
-		if (u_strcmp(tag.c_str(), stringbits[S_ASTERIK].getTerminatedBuffer()) == 0) {
-			type |= T_ANY;
-		}
-		else if (u_strcmp(tag.c_str(), stringbits[S_UU_LEFT].getTerminatedBuffer()) == 0) {
-			type |= T_PAR_LEFT;
-		}
-		else if (u_strcmp(tag.c_str(), stringbits[S_UU_RIGHT].getTerminatedBuffer()) == 0) {
-			type |= T_PAR_RIGHT;
-		}
-		else if (u_strcmp(tag.c_str(), stringbits[S_UU_ENCL].getTerminatedBuffer()) == 0) {
-			type |= T_ENCL;
-		}
-		else if (u_strcmp(tag.c_str(), stringbits[S_UU_TARGET].getTerminatedBuffer()) == 0) {
-			type |= T_TARGET;
-		}
-		else if (u_strcmp(tag.c_str(), stringbits[S_UU_MARK].getTerminatedBuffer()) == 0) {
-			type |= T_MARK;
-		}
-		else if (u_strcmp(tag.c_str(), stringbits[S_UU_ATTACHTO].getTerminatedBuffer()) == 0) {
-			type |= T_ATTACHTO;
-		}
-
-		if (type & T_REGEXP) {
-			if (u_strcmp(tag.c_str(), stringbits[S_RXTEXT_ANY].getTerminatedBuffer()) == 0
-			|| u_strcmp(tag.c_str(), stringbits[S_RXBASE_ANY].getTerminatedBuffer()) == 0
-			|| u_strcmp(tag.c_str(), stringbits[S_RXWORD_ANY].getTerminatedBuffer()) == 0) {
-				// ToDo: Add a case-insensitive version of T_REGEXP_ANY for unification
-				type |= T_REGEXP_ANY;
-				type &= ~T_REGEXP;
-			}
-			else {
-				UParseError pe;
-				UErrorCode status = U_ZERO_ERROR;
-
-				UString rt;
-				if (tag[0] == '/' && tag[length-1] == '/') {
-					rt = tag.substr(1, length-2);
-				}
-				else {
-					rt += '^';
-					rt += tag;
-					rt += '$';
-				}
-
-				if (type & T_CASE_INSENSITIVE) {
-					regexp = uregex_open(rt.c_str(), rt.length(), UREGEX_CASE_INSENSITIVE, &pe, &status);
-				}
-				else {
-					regexp = uregex_open(rt.c_str(), rt.length(), 0, &pe, &status);
-				}
-				if (status != U_ZERO_ERROR) {
-					u_fprintf(ux_stderr, "Error: uregex_open returned %s trying to parse tag %S on line %u - cannot continue!\n", u_errorName(status), tag.c_str(), grammar->lines);
-					CG3Quit(1);
-				}
-			}
-		}
-		else if (type & T_CASE_INSENSITIVE) {
-			if (tag[0] == '/' && tag[length-1] == '/') {
-				tag.resize(tag.size()-1);
-				tag.erase(tag.begin());
-			}
-		}
-
-label_isVarstring:
-		if (type & T_VARSTRING) {
-			UChar *p = &tag[0];
-			UChar *n = 0;
-			do {
-				SKIPTO(p, '{');
-				if (*p) {
-					n = p;
-					SKIPTO(n, '}');
-					if (*n) {
-						allocateVsSets();
-						allocateVsNames();
-						++p;
-						UString theSet(p, n);
-						Set *tmp = grammar->parseSet(theSet.c_str());
-						vs_sets->push_back(tmp);
-						UString old;
-						old += '{';
-						old += tmp->name;
-						old += '}';
-						vs_names->push_back(old);
-						p = n;
-						++p;
-					}
-				}
-			} while(*p);
-		}
-	}
-
-	type &= ~T_SPECIAL;
-	if (type & MASK_TAG_SPECIAL) {
-		type |= T_SPECIAL;
-	}
-
-	if (type & T_VARSTRING && type & (T_REGEXP|T_REGEXP_ANY|T_VARIABLE|T_META)) {
-		u_fprintf(ux_stderr, "Error: Tag %S cannot mix varstring with any other special feature on line %u!\n", to, grammar->lines);
-		CG3Quit(1);
 	}
 }
 
@@ -358,7 +145,7 @@ void Tag::parseTagRaw(const UChar *to, Grammar *grammar) {
 		UChar relname[256];
 		if (u_sscanf(tag.c_str(), "R:%[^:]:%i", &relname, &dep_parent) == 2 && dep_parent != 0) {
 			type |= T_RELATION;
-			Tag *reltag = grammar->allocateTag(relname, true);
+			Tag *reltag = grammar->allocateTag(relname);
 			comparison_hash = reltag->hash;
 		}
 	}

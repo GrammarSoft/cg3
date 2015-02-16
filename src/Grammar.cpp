@@ -72,11 +72,6 @@ Grammar::~Grammar() {
 	}
 }
 
-void Grammar::addPreferredTarget(UChar *to) {
-	Tag *tag = allocateTag(to);
-	preferred_targets.push_back(tag->hash);
-}
-
 void Grammar::addSet(Set *& to) {
 	if (!delimiters && u_strcmp(to->name.c_str(), stringbits[S_DELIMITSET].getTerminatedBuffer()) == 0) {
 		delimiters = to;
@@ -174,9 +169,9 @@ void Grammar::addSet(Set *& to) {
 					positive->trie_special.erase(pit);
 				}
 			}
-			UString str = iter->toUString(true);
-			str.erase(str.find('^'), 1);
-			Tag *tag = allocateTag(str.c_str());
+			Tag *tag = new Tag(*iter);
+			tag->type &= ~T_FAILFAST;
+			tag = addTag(tag);
 			addTagToSet(tag, negative);
 		}
 
@@ -304,51 +299,6 @@ void Grammar::addSetToList(Set *s) {
 	}
 }
 
-Set *Grammar::parseSet(const UChar *name) {
-	uint32_t sh = hash_value(name);
-
-	if (ux_isSetOp(name) != S_IGNORE) {
-		u_fprintf(ux_stderr, "Error: Found set operator '%S' where set name expected on line %u!\n", name, lines);
-		CG3Quit(1);
-	}
-
-	if ((
-	(name[0] == '$' && name[1] == '$')
-	|| (name[0] == '&' && name[1] == '&')
-	) && name[2]) {
-		const UChar *wname = &(name[2]);
-		uint32_t wrap = hash_value(wname);
-		Set *wtmp = getSet(wrap);
-		if (!wtmp) {
-			u_fprintf(ux_stderr, "Error: Attempted to reference undefined set '%S' on line %u!\n", wname, lines);
-			CG3Quit(1);
-		}
-		Set *tmp = getSet(sh);
-		if (!tmp) {
-			Set *ns = allocateSet();
-			ns->line = lines;
-			ns->setName(name);
-			ns->sets.push_back(wtmp->hash);
-			if (name[0] == '$' && name[1] == '$') {
-				ns->type |= ST_TAG_UNIFY;
-			}
-			else if (name[0] == '&' && name[1] == '&') {
-				ns->type |= ST_SET_UNIFY;
-			}
-			addSet(ns);
-		}
-	}
-	if (set_alias.find(sh) != set_alias.end()) {
-		sh = set_alias[sh];
-	}
-	Set *tmp = getSet(sh);
-	if (!tmp) {
-		u_fprintf(ux_stderr, "Error: Attempted to reference undefined set '%S' on line %u!\n", name, lines);
-		CG3Quit(1);
-	}
-	return tmp;
-}
-
 void Grammar::allocateDummySet() {
 	Set *set_c = allocateSet();
 	set_c->line = 0;
@@ -377,7 +327,7 @@ Tag *Grammar::allocateTag() {
 	return new Tag;
 }
 
-Tag *Grammar::allocateTag(const UChar *txt, bool raw) {
+Tag *Grammar::allocateTag(const UChar *txt) {
 	if (txt[0] == 0) {
 		u_fprintf(ux_stderr, "Error: Empty tag on line %u! Forgot to fill in a ()?\n", lines);
 		CG3Quit(1);
@@ -386,10 +336,6 @@ Tag *Grammar::allocateTag(const UChar *txt, bool raw) {
 		u_fprintf(ux_stderr, "Error: Tag '%S' cannot start with ( on line %u! Possible extra opening ( or missing closing ) to the left. If you really meant it, escape it as \\(.\n", txt, lines);
 		CG3Quit(1);
 	}
-	if (!raw && ux_isSetOp(txt) != S_IGNORE) {
-		u_fprintf(ux_stderr, "Warning: Tag '%S' on line %u looks like a set operator. Maybe you meant to do SET instead of LIST?\n", txt, lines);
-		u_fflush(ux_stderr);
-	}
 	Taguint32HashMap::iterator it;
 	uint32_t thash = hash_value(txt);
 	if ((it = single_tags.find(thash)) != single_tags.end() && !it->second->tag.empty() && u_strcmp(it->second->tag.c_str(), txt) == 0) {
@@ -397,18 +343,21 @@ Tag *Grammar::allocateTag(const UChar *txt, bool raw) {
 	}
 
 	Tag *tag = new Tag();
-	if (raw) {
-		tag->parseTagRaw(txt, this);
-	}
-	else {
-		tag->parseTag(txt, ux_stderr, this);
-	}
+	tag->parseTagRaw(txt, this);
+	return addTag(tag);
+}
+
+Tag *Grammar::addTag(Tag *tag) {
 	tag->type |= T_GRAMMAR;
 	uint32_t hash = tag->rehash();
 	for (uint32_t seed = 0; seed < 10000; seed++) {
 		uint32_t ih = hash + seed;
+		Taguint32HashMap::iterator it;
 		if ((it = single_tags.find(ih)) != single_tags.end()) {
 			Tag *t = it->second;
+			if (t == tag) {
+				return tag;
+			}
 			if (t->tag == tag->tag) {
 				hash += seed;
 				delete tag;
@@ -417,13 +366,13 @@ Tag *Grammar::allocateTag(const UChar *txt, bool raw) {
 		}
 		else {
 			if (verbosity_level > 0 && seed) {
-				u_fprintf(ux_stderr, "Warning: Tag %S got hash seed %u.\n", txt, seed);
+				u_fprintf(ux_stderr, "Warning: Tag %S got hash seed %u.\n", tag->tag.c_str(), seed);
 				u_fflush(ux_stderr);
 			}
 			tag->seed = seed;
 			hash = tag->rehash();
 			single_tags_list.push_back(tag);
-			tag->number = (uint32_t)single_tags_list.size()-1;
+			tag->number = (uint32_t)single_tags_list.size() - 1;
 			single_tags[hash] = tag;
 			break;
 		}
@@ -500,7 +449,7 @@ void Grammar::addTemplate(ContextualTest *test, const UChar *name) {
 }
 
 void Grammar::addAnchor(const UChar *to, uint32_t at, bool primary) {
-	uint32_t ah = allocateTag(to, true)->hash;
+	uint32_t ah = allocateTag(to)->hash;
 	uint32FlatHashMap::iterator it = anchors.find(ah);
 	if (primary && it != anchors.end()) {
 		u_fprintf(ux_stderr, "Error: Redefinition attempt for anchor '%S' on line %u!\n", to, lines);
