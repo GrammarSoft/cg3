@@ -103,20 +103,18 @@ namespace CG3 {
 		Grammar();
 		~Grammar();
 
-		void addPreferredTarget(UChar *to);
-
 		void addSet(Set *& to);
 		Set *getSet(uint32_t which) const;
 		Set *allocateSet();
 		void destroySet(Set *set);
 		void addSetToList(Set *s);
-		Set *parseSet(const UChar *name);
 		void allocateDummySet();
 
 		void addAnchor(const UChar *to, uint32_t at, bool primary = false);
 
 		Tag *allocateTag();
-		Tag *allocateTag(const UChar *tag, bool raw = false);
+		Tag *allocateTag(const UChar *tag);
+		Tag *addTag(Tag *tag);
 		void destroyTag(Tag *tag);
 		void addTagToSet(Tag *rtag, Set *set);
 
