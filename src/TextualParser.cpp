@@ -84,7 +84,8 @@ void TextualParser::parseTagList(UChar *& p, Set *s) {
 						n++;
 						SKIPTO_NOSPAN(n, '"');
 						if (*n != '"') {
-							u_fprintf(ux_stderr, "Error: Missing closing \" on line %u!\n", result->lines);
+							ux_bufcpy(nearbuf, p, 20);
+							u_fprintf(ux_stderr, "Error: Missing closing \" on line %u near `%S`!\n", result->lines, nearbuf);
 							incErrorCount();
 						}
 					}
@@ -98,7 +99,8 @@ void TextualParser::parseTagList(UChar *& p, Set *s) {
 					result->lines += SKIPWS(p, ';', ')');
 				}
 				if (*p != ')') {
-					u_fprintf(ux_stderr, "Error: Missing closing ) on line %u!\n", result->lines);
+					ux_bufcpy(nearbuf, p, 20);
+					u_fprintf(ux_stderr, "Error: Missing closing ) on line %u near `%S`!\n", result->lines, nearbuf);
 					incErrorCount();
 				}
 				++p;
@@ -109,7 +111,8 @@ void TextualParser::parseTagList(UChar *& p, Set *s) {
 					n++;
 					SKIPTO_NOSPAN(n, '"');
 					if (*n != '"') {
-						u_fprintf(ux_stderr, "Error: Missing closing \" on line %u!\n", result->lines);
+						ux_bufcpy(nearbuf, p, 20);
+						u_fprintf(ux_stderr, "Error: Missing closing \" on line %u near `%S`!\n", result->lines, nearbuf);
 						incErrorCount();
 					}
 				}
@@ -173,6 +176,7 @@ Set *TextualParser::parseSetInline(UChar *& p, Set *s) {
 					// No, this can't just reuse parseTagList() because this will only ever parse a single CompositeTag,
 					// whereas parseTagList() will handle mixed Tag and CompositeTag
 					// Doubly so now that parseTagList() will sort+uniq the tags, which we don't want for MAP/ADD/SUBSTITUTE/etc
+					UChar *n = p;
 					++p;
 					Set *set_c = result->allocateSet();
 					set_c->line = result->lines;
@@ -186,7 +190,8 @@ Set *TextualParser::parseSetInline(UChar *& p, Set *s) {
 							n++;
 							SKIPTO_NOSPAN(n, '"');
 							if (*n != '"') {
-								u_fprintf(ux_stderr, "Error: Missing closing \" on line %u!\n", result->lines);
+								ux_bufcpy(nearbuf, p, 20);
+								u_fprintf(ux_stderr, "Error: Missing closing \" on line %u near `%S`!\n", result->lines, nearbuf);
 								incErrorCount();
 							}
 						}
@@ -200,13 +205,15 @@ Set *TextualParser::parseSetInline(UChar *& p, Set *s) {
 						result->lines += SKIPWS(p, ';', ')');
 					}
 					if (*p != ')') {
-						u_fprintf(ux_stderr, "Error: Missing closing ) on line %u!\n", result->lines);
+						ux_bufcpy(nearbuf, p, 20);
+						u_fprintf(ux_stderr, "Error: Missing closing ) on line %u near `%S`!\n", result->lines, nearbuf);
 						incErrorCount();
 					}
 					++p;
 
 					if (tags.size() == 0) {
-						u_fprintf(ux_stderr, "Error: Empty inline set on line %u! Use (*) if you want to replace with nothing.\n", result->lines);
+						ux_bufcpy(nearbuf, n, 20);
+						u_fprintf(ux_stderr, "Error: Empty inline set on line %u near `%S`! Use (*) if you want to replace with nothing.\n", result->lines, nearbuf);
 						incErrorCount();
 					}
 					else if (tags.size() == 1) {
@@ -329,7 +336,8 @@ Set *TextualParser::parseSetInline(UChar *& p, Set *s) {
 			}
 		}
 		else if (!wantop) {
-			u_fprintf(ux_stderr, "Error: Missing set on line %u!\n", result->lines);
+			ux_bufcpy(nearbuf, p, 20);
+			u_fprintf(ux_stderr, "Error: Missing set on line %u near `%S`!\n", result->lines, nearbuf);
 			incErrorCount();
 		}
 	}
@@ -363,6 +371,8 @@ Set *TextualParser::parseSetInlineWrapper(UChar *& p) {
 void TextualParser::parseContextualTestPosition(UChar *& p, ContextualTest& t) {
 	bool negative = false;
 	bool had_digits = false;
+
+	UChar *n = p;
 
 	size_t tries;
 	for (tries=0 ; *p != ' ' && *p != '(' && *p != '/' && tries < 100 ; ++tries) {
@@ -543,64 +553,75 @@ void TextualParser::parseContextualTestPosition(UChar *& p, ContextualTest& t) {
 		t.pos |= POS_DEP_DEEP;
 	}
 
-	if (tries >= 20) {
-		u_fprintf(ux_stderr, "Warning: Position on line %u took many loops.\n", result->lines);
-	}
 	if (tries >= 100) {
-		u_fprintf(ux_stderr, "Error: Invalid position on line %u - caused endless loop!\n", result->lines);
+		ux_bufcpy(nearbuf, n, 20);
+		u_fprintf(ux_stderr, "Error: Invalid position on line %u near `%S` - caused endless loop!\n", result->lines, nearbuf);
 		incErrorCount();
 	}
+	else if (tries >= 20) {
+		ux_bufcpy(nearbuf, n, 20);
+		u_fprintf(ux_stderr, "Warning: Position on line %u near `%S` took many loops.\n", result->lines, nearbuf);
+	}
 	if (!ISSPACE(*p)) {
-		UChar op = 0;
-		swapper<UChar> swp(true, op, p[16]);
-		u_fprintf(ux_stderr, "Error: Garbage data '%S' encountered while parsing contextual position on line %u!\n", p, result->lines);
+		ux_bufcpy(nearbuf, n, 20);
+		u_fprintf(ux_stderr, "Error: Invalid position on line %u near `%S` - garbage data!\n", result->lines, nearbuf);
 		u_fflush(ux_stderr);
 		incErrorCount();
 	}
 	if (had_digits) {
 		if (t.pos & (POS_DEP_CHILD|POS_DEP_SIBLING|POS_DEP_PARENT)) {
-			u_fprintf(ux_stderr, "Error: Invalid position on line %u - cannot combine offsets with dependency!\n", result->lines);
+			ux_bufcpy(nearbuf, n, 20);
+			u_fprintf(ux_stderr, "Error: Invalid position on line %u near `%S` - cannot combine offsets with dependency!\n", result->lines, nearbuf);
 			incErrorCount();
 		}
 		if (t.pos & (POS_LEFT_PAR|POS_RIGHT_PAR)) {
-			u_fprintf(ux_stderr, "Error: Invalid position on line %u - cannot combine offsets with enclosures!\n", result->lines);
+			ux_bufcpy(nearbuf, n, 20);
+			u_fprintf(ux_stderr, "Error: Invalid position on line %u near `%S` - cannot combine offsets with enclosures!\n", result->lines, nearbuf);
 			incErrorCount();
 		}
 		if (t.pos & POS_RELATION) {
-			u_fprintf(ux_stderr, "Error: Invalid position on line %u - cannot combine offsets with relations!\n", result->lines);
+			ux_bufcpy(nearbuf, n, 20);
+			u_fprintf(ux_stderr, "Error: Invalid position on line %u near `%S` - cannot combine offsets with relations!\n", result->lines, nearbuf);
 			incErrorCount();
 		}
 	}
 	if ((t.pos & POS_DEP_PARENT) && !(t.pos & POS_DEP_GLOB)) {
 		if (t.pos & (POS_LEFTMOST|POS_RIGHTMOST)) {
-			u_fprintf(ux_stderr, "Error: Invalid position on line %u - leftmost/rightmost requires ancestor, not parent!\n", result->lines);
+			ux_bufcpy(nearbuf, n, 20);
+			u_fprintf(ux_stderr, "Error: Invalid position on line %u near `%S` - leftmost/rightmost requires ancestor, not parent!\n", result->lines, nearbuf);
 			incErrorCount();
 		}
 	}
 	/*
 	if ((t.pos & (POS_LEFT_PAR|POS_RIGHT_PAR)) && (t.pos & (POS_SCANFIRST|POS_SCANALL))) {
-		u_fprintf(ux_stderr, "Error: Invalid position on line %u - cannot have both enclosure and scan!\n", result->lines);
+		ux_bufcpy(nearbuf, n, 20);
+		u_fprintf(ux_stderr, "Error: Invalid position on line %u near `%S` - cannot have both enclosure and scan!\n", result->lines);
 		incErrorCount();
 	}
 	//*/
 	if ((t.pos & POS_PASS_ORIGIN) && (t.pos & POS_NO_PASS_ORIGIN)) {
-		u_fprintf(ux_stderr, "Error: Invalid position on line %u - cannot have both O and o!\n", result->lines);
+		ux_bufcpy(nearbuf, n, 20);
+		u_fprintf(ux_stderr, "Error: Invalid position on line %u near `%S` - cannot have both O and o!\n", result->lines, nearbuf);
 		incErrorCount();
 	}
 	if ((t.pos & POS_LEFT_PAR) && (t.pos & POS_RIGHT_PAR)) {
-		u_fprintf(ux_stderr, "Error: Invalid position on line %u - cannot have both L and R!\n", result->lines);
+		ux_bufcpy(nearbuf, n, 20);
+		u_fprintf(ux_stderr, "Error: Invalid position on line %u near `%S` - cannot have both L and R!\n", result->lines, nearbuf);
 		incErrorCount();
 	}
 	if ((t.pos & POS_ALL) && (t.pos & POS_NONE)) {
-		u_fprintf(ux_stderr, "Error: Invalid position on line %u - cannot have both NONE and ALL!\n", result->lines);
+		ux_bufcpy(nearbuf, n, 20);
+		u_fprintf(ux_stderr, "Error: Invalid position on line %u near `%S` - cannot have both NONE and ALL!\n", result->lines, nearbuf);
 		incErrorCount();
 	}
 	if ((t.pos & POS_UNKNOWN) && (t.pos != POS_UNKNOWN || had_digits)) {
-		u_fprintf(ux_stderr, "Error: Invalid position on line %u - '?' cannot be combined with anything else!\n", result->lines);
+		ux_bufcpy(nearbuf, n, 20);
+		u_fprintf(ux_stderr, "Error: Invalid position on line %u near `%S` - '?' cannot be combined with anything else!\n", result->lines, nearbuf);
 		incErrorCount();
 	}
 	if ((t.pos & POS_SCANALL) && (t.pos & POS_NOT)) {
-		u_fprintf(ux_stderr, "Warning: Line %u: We don't think mixing NOT and ** makes sense...\n", result->lines);
+		ux_bufcpy(nearbuf, n, 20);
+		u_fprintf(ux_stderr, "Warning: Line %u near `%S`: We don't think mixing NOT and ** makes sense...\n", result->lines, nearbuf);
 	}
 
 	if (t.pos > POS_64BIT) {
@@ -648,7 +669,8 @@ ContextualTest *TextualParser::parseContextualTestList(UChar *& p, Rule *rule) {
 		pos_p = p;
 		for (;;) {
 			if (*p != '(') {
-				u_fprintf(ux_stderr, "Error: Expected '(' but found '%C' on line %u!\n", *p, result->lines);
+				ux_bufcpy(nearbuf, p, 20);
+				u_fprintf(ux_stderr, "Error: Expected '(' but found '%C' on line %u near `%S`!\n", *p, result->lines, nearbuf);
 				incErrorCount();
 			}
 			++p;
@@ -696,7 +718,8 @@ ContextualTest *TextualParser::parseContextualTestList(UChar *& p, Rule *rule) {
 			result->lines += SKIPWS(p);
 		}
 		if (*p != ']') {
-			u_fprintf(ux_stderr, "Error: Expected ']' but found '%C' on line %u!\n", *p, result->lines);
+			ux_bufcpy(nearbuf, p, 20);
+			u_fprintf(ux_stderr, "Error: Expected ']' but found '%C' on line %u near `%S`!\n", *p, result->lines, nearbuf);
 			incErrorCount();
 		}
 		++p;
@@ -766,7 +789,8 @@ label_parseTemplateRef:
 	bool linked = false;
 	result->lines += SKIPWS(p);
 	if (ux_simplecasecmp(p, stringbits[S_AND].getTerminatedBuffer(), stringbits[S_AND].length())) {
-		u_fprintf(ux_stderr, "Error: 'AND' is deprecated; use 'LINK 0' or operator '+' instead. Found on line %u!\n", result->lines);
+		ux_bufcpy(nearbuf, p, 20);
+		u_fprintf(ux_stderr, "Error: 'AND' is deprecated; use 'LINK 0' or operator '+' instead. Found on line %u near `%S`!\n", result->lines, nearbuf);
 		incErrorCount();
 	}
 	if (ux_simplecasecmp(p, stringbits[S_LINK].getTerminatedBuffer(), stringbits[S_LINK].length())) {
@@ -777,7 +801,8 @@ label_parseTemplateRef:
 
 	if (linked) {
 		if (t->pos & POS_NONE) {
-			u_fprintf(ux_stderr, "Error: It does not make sense to LINK from a NONE test; perhaps you meant NOT or NEGATE on line %u?\n", result->lines);
+			ux_bufcpy(nearbuf, p, 20);
+			u_fprintf(ux_stderr, "Error: It does not make sense to LINK from a NONE test; perhaps you meant NOT or NEGATE on line %u near `%S`?\n", result->lines, nearbuf);
 			incErrorCount();
 		}
 		t->linked = parseContextualTestList(p, rule);
@@ -832,7 +857,8 @@ void TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 			n++;
 			SKIPTO_NOSPAN(n, '"');
 			if (*n != '"') {
-				u_fprintf(ux_stderr, "Error: Missing closing \" on line %u!\n", result->lines);
+				ux_bufcpy(nearbuf, lp, 20);
+				u_fprintf(ux_stderr, "Error: Missing closing \" on line %u near `%S`!\n", result->lines, nearbuf);
 				incErrorCount();
 			}
 		}
@@ -855,7 +881,8 @@ void TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 		u_strncpy(&gbuffers[0][0], p, c);
 		gbuffers[0][c] = 0;
 		if (!gbuffers[0][0]) {
-			u_fprintf(ux_stderr, "Warning: Rule on line %u had : but no name.\n", result->lines);
+			ux_bufcpy(nearbuf, p, 20);
+			u_fprintf(ux_stderr, "Warning: Rule on line %u near `%S` had : but no name.\n", result->lines, nearbuf);
 		}
 		else {
 			rule->setName(&gbuffers[0][0]);
@@ -874,7 +901,8 @@ void TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 			rule->type = K_EXTERNAL_ALWAYS;
 		}
 		else {
-			u_fprintf(ux_stderr, "Error: Missing keyword ONCE or ALWAYS on line %u!\n", result->lines);
+			ux_bufcpy(nearbuf, p, 20);
+			u_fprintf(ux_stderr, "Error: Missing keyword ONCE or ALWAYS on line %u near `%S`!\n", result->lines, nearbuf);
 			incErrorCount();
 		}
 
@@ -885,7 +913,8 @@ void TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 			++n;
 			SKIPTO_NOSPAN(n, '"');
 			if (*n != '"') {
-				u_fprintf(ux_stderr, "Error: Missing closing \" on line %u!\n", result->lines);
+				ux_bufcpy(nearbuf, p, 20);
+				u_fprintf(ux_stderr, "Error: Missing closing \" on line %u near `%S`!\n", result->lines, nearbuf);
 				incErrorCount();
 			}
 		}
@@ -905,6 +934,7 @@ void TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 		p = n;
 	}
 
+	lp = p;
 	bool setflag = true;
 	while (setflag) {
 		setflag = false;
@@ -947,40 +977,49 @@ void TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 	if (rule->flags & MASK_ENCL) {
 		std::bitset<sizeof(rule->flags)*CHAR_BIT> bits(static_cast<uint64_t>(rule->flags & MASK_ENCL));
 		if (bits.count() > 1) {
-			u_fprintf(ux_stderr, "Error: Line %u: ENCL_* are all mutually exclusive!\n", result->lines);
+			ux_bufcpy(nearbuf, lp, 20);
+			u_fprintf(ux_stderr, "Error: Line %u near `%S`: ENCL_* are all mutually exclusive!\n", result->lines, nearbuf);
 			incErrorCount();
 		}
 	}
 	if (rule->flags & RF_KEEPORDER && rule->flags & RF_VARYORDER) {
-		u_fprintf(ux_stderr, "Error: Line %u: KEEPORDER and VARYORDER are mutually exclusive!\n", result->lines);
+		ux_bufcpy(nearbuf, lp, 20);
+		u_fprintf(ux_stderr, "Error: Line %u near `%S`: KEEPORDER and VARYORDER are mutually exclusive!\n", result->lines, nearbuf);
 		incErrorCount();
 	}
 	if (rule->flags & RF_REMEMBERX && rule->flags & RF_RESETX) {
-		u_fprintf(ux_stderr, "Error: Line %u: REMEMBERX and RESETX are mutually exclusive!\n", result->lines);
+		ux_bufcpy(nearbuf, lp, 20);
+		u_fprintf(ux_stderr, "Error: Line %u near `%S`: REMEMBERX and RESETX are mutually exclusive!\n", result->lines, nearbuf);
 		incErrorCount();
 	}
 	if (rule->flags & RF_NEAREST && rule->flags & RF_ALLOWLOOP) {
-		u_fprintf(ux_stderr, "Error: Line %u: NEAREST and ALLOWLOOP are mutually exclusive!\n", result->lines);
+		ux_bufcpy(nearbuf, lp, 20);
+		u_fprintf(ux_stderr, "Error: Line %u near `%S`: NEAREST and ALLOWLOOP are mutually exclusive!\n", result->lines, nearbuf);
 		incErrorCount();
 	}
 	if (rule->flags & RF_UNSAFE && rule->flags & RF_SAFE) {
-		u_fprintf(ux_stderr, "Error: Line %u: SAFE and UNSAFE are mutually exclusive!\n", result->lines);
+		ux_bufcpy(nearbuf, lp, 20);
+		u_fprintf(ux_stderr, "Error: Line %u near `%S`: SAFE and UNSAFE are mutually exclusive!\n", result->lines, nearbuf);
 		incErrorCount();
 	}
 	if (rule->flags & RF_UNMAPLAST && rule->flags & RF_SAFE) {
-		u_fprintf(ux_stderr, "Error: Line %u: SAFE and UNMAPLAST are mutually exclusive!\n", result->lines);
+		ux_bufcpy(nearbuf, lp, 20);
+		u_fprintf(ux_stderr, "Error: Line %u near `%S`: SAFE and UNMAPLAST are mutually exclusive!\n", result->lines, nearbuf);
 		incErrorCount();
 	}
 	if (rule->flags & RF_DELAYED && rule->flags & RF_IMMEDIATE) {
-		u_fprintf(ux_stderr, "Error: Line %u: IMMEDIATE and DELAYED are mutually exclusive!\n", result->lines);
+		ux_bufcpy(nearbuf, lp, 20);
+		u_fprintf(ux_stderr, "Error: Line %u near `%S`: IMMEDIATE and DELAYED are mutually exclusive!\n", result->lines, nearbuf);
 		incErrorCount();
 	}
 	if (rule->flags & RF_WITHCHILD && rule->flags & RF_NOCHILD) {
-		u_fprintf(ux_stderr, "Error: Line %u: WITHCHILD and NOCHILD are mutually exclusive!\n", result->lines);
+		ux_bufcpy(nearbuf, lp, 20);
+		u_fprintf(ux_stderr, "Error: Line %u near `%S`: WITHCHILD and NOCHILD are mutually exclusive!\n", result->lines, nearbuf);
 		incErrorCount();
 	}
 	if (rule->flags & RF_ITERATE && rule->flags & RF_NOITERATE) {
-		u_fprintf(ux_stderr, "Error: Line %u: ITERATE and NOITERATE are mutually exclusive!\n", result->lines);
+		ux_bufcpy(nearbuf, lp, 20);
+		u_fprintf(ux_stderr, "Error: Line %u near `%S`: ITERATE and NOITERATE are mutually exclusive!\n", result->lines, nearbuf);
 		incErrorCount();
 	}
 
@@ -1012,21 +1051,25 @@ void TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 		rule->childset1 = 0;
 	}
 
+	lp = p;
 	if (key == K_SUBSTITUTE || key == K_EXECUTE) {
 		Set *s = parseSetInlineWrapper(p);
 		s->reindex(*result);
 		rule->sublist = s;
 		if (s->empty()) {
-			u_fprintf(ux_stderr, "Error: Empty substitute set on line %u!\n", result->lines);
+			ux_bufcpy(nearbuf, lp, 20);
+			u_fprintf(ux_stderr, "Error: Empty substitute set on line %u near `%S`!\n", result->lines, nearbuf);
 			incErrorCount();
 		}
 		if (s->trie.empty() && s->trie_special.empty() && !(s->type & (ST_TAG_UNIFY | ST_SET_UNIFY | ST_CHILD_UNIFY))) {
-			u_fprintf(ux_stderr, "Error: Substitute set on line %u was neither unified nor of LIST type!\n", result->lines);
+			ux_bufcpy(nearbuf, lp, 20);
+			u_fprintf(ux_stderr, "Error: Substitute set on line %u near `%S` was neither unified nor of LIST type!\n", result->lines, nearbuf);
 			incErrorCount();
 		}
 	}
 
 	result->lines += SKIPWS(p);
+	lp = p;
 	if (key == K_MAP || key == K_ADD || key == K_REPLACE || key == K_APPEND || key == K_SUBSTITUTE || key == K_COPY
 	|| key == K_ADDRELATIONS || key == K_ADDRELATION
 	|| key == K_SETRELATIONS || key == K_SETRELATION
@@ -1037,22 +1080,26 @@ void TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 		s->reindex(*result);
 		rule->maplist = s;
 		if (s->empty()) {
-			u_fprintf(ux_stderr, "Error: Empty mapping set on line %u!\n", result->lines);
+			ux_bufcpy(nearbuf, lp, 20);
+			u_fprintf(ux_stderr, "Error: Empty mapping set on line %u near `%S`!\n", result->lines, nearbuf);
 			incErrorCount();
 		}
 		if (s->trie.empty() && s->trie_special.empty() && !(s->type & (ST_TAG_UNIFY | ST_SET_UNIFY | ST_CHILD_UNIFY))) {
-			u_fprintf(ux_stderr, "Error: Mapping set on line %u was neither unified nor of LIST type!\n", result->lines);
+			ux_bufcpy(nearbuf, lp, 20);
+			u_fprintf(ux_stderr, "Error: Mapping set on line %u near `%S` was neither unified nor of LIST type!\n", result->lines, nearbuf);
 			incErrorCount();
 		}
 		if (key == K_APPEND && !s->getNonEmpty().empty()) {
 			if (!(s->getNonEmpty().begin()->first->type & T_BASEFORM)) {
-				u_fprintf(ux_stderr, "Error: There must be a baseform before any other tags in APPEND on line %u!\n", result->lines);
+				ux_bufcpy(nearbuf, lp, 20);
+				u_fprintf(ux_stderr, "Error: There must be a baseform before any other tags in APPEND on line %u near `%S`!\n", result->lines, nearbuf);
 				incErrorCount();
 			}
 		}
 		if (key == K_ADDCOHORT && !s->getNonEmpty().empty()) {
 			if (!(s->getNonEmpty().begin()->first->type & T_WORDFORM)) {
-				u_fprintf(ux_stderr, "Error: There must be a wordform before any other tags in ADDCOHORT on line %u!\n", result->lines);
+				ux_bufcpy(nearbuf, lp, 20);
+				u_fprintf(ux_stderr, "Error: There must be a wordform before any other tags in ADDCOHORT on line %u near `%S`!\n", result->lines, nearbuf);
 				incErrorCount();
 			}
 		}
@@ -1065,16 +1112,19 @@ void TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 	}
 
 	result->lines += SKIPWS(p);
+	lp = p;
 	if (key == K_ADDRELATIONS || key == K_SETRELATIONS || key == K_REMRELATIONS || key == K_SETVARIABLE || copy_except) {
 		Set *s = parseSetInlineWrapper(p);
 		s->reindex(*result);
 		rule->sublist = s;
 		if (s->empty()) {
-			u_fprintf(ux_stderr, "Error: Empty relation set on line %u!\n", result->lines);
+			ux_bufcpy(nearbuf, lp, 20);
+			u_fprintf(ux_stderr, "Error: Empty relation set on line %u near `%S`!\n", result->lines, nearbuf);
 			incErrorCount();
 		}
 		if (s->trie.empty() && s->trie_special.empty() && !(s->type & (ST_TAG_UNIFY | ST_SET_UNIFY | ST_CHILD_UNIFY))) {
-			u_fprintf(ux_stderr, "Error: Relation/Value set on line %u was neither unified nor of LIST type!\n", result->lines);
+			ux_bufcpy(nearbuf, lp, 20);
+			u_fprintf(ux_stderr, "Error: Relation/Value set on line %u near `%S` was neither unified nor of LIST type!\n", result->lines, nearbuf);
 			incErrorCount();
 		}
 	}
@@ -1089,7 +1139,8 @@ void TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 			rule->type = K_ADDCOHORT_BEFORE;
 		}
 		else {
-			u_fprintf(ux_stderr, "Error: Missing position keyword AFTER or BEFORE on line %u!\n", result->lines);
+			ux_bufcpy(nearbuf, p, 20);
+			u_fprintf(ux_stderr, "Error: Missing position keyword AFTER or BEFORE on line %u near `%S`!\n", result->lines, nearbuf);
 			incErrorCount();
 		}
 	}
@@ -1115,7 +1166,8 @@ void TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 		parseContextualTests(p, rule);
 		result->lines += SKIPWS(p);
 		if (*p != ')') {
-			u_fprintf(ux_stderr, "Error: Missing closing ) on line %u!\n", result->lines);
+			ux_bufcpy(nearbuf, p, 20);
+			u_fprintf(ux_stderr, "Error: Missing closing ) on line %u near `%S`!\n", result->lines, nearbuf);
 			incErrorCount();
 		}
 		++p;
@@ -1138,7 +1190,8 @@ void TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 				rule->type = K_MOVE_BEFORE;
 			}
 			else {
-				u_fprintf(ux_stderr, "Error: Missing movement keyword AFTER or BEFORE on line %u!\n", result->lines);
+				ux_bufcpy(nearbuf, p, 20);
+				u_fprintf(ux_stderr, "Error: Missing movement keyword AFTER or BEFORE on line %u near `%S`!\n", result->lines, nearbuf);
 				incErrorCount();
 			}
 		}
@@ -1147,7 +1200,8 @@ void TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 				p += stringbits[S_WITH].length();
 			}
 			else {
-				u_fprintf(ux_stderr, "Error: Missing movement keyword WITH on line %u!\n", result->lines);
+				ux_bufcpy(nearbuf, p, 20);
+				u_fprintf(ux_stderr, "Error: Missing movement keyword WITH on line %u near `%S`!\n", result->lines, nearbuf);
 				incErrorCount();
 			}
 		}
@@ -1160,7 +1214,8 @@ void TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 				rule->flags |= RF_REVERSE;
 			}
 			else {
-				u_fprintf(ux_stderr, "Error: Missing dependency keyword TO or FROM on line %u!\n", result->lines);
+				ux_bufcpy(nearbuf, p, 20);
+				u_fprintf(ux_stderr, "Error: Missing dependency keyword TO or FROM on line %u near `%S`!\n", result->lines, nearbuf);
 				incErrorCount();
 			}
 		}
@@ -1181,20 +1236,23 @@ void TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 			}
 		}
 
+		lp = p;
 		while (*p && *p == '(') {
 			++p;
 			result->lines += SKIPWS(p);
 			parseContextualDependencyTests(p, rule);
 			result->lines += SKIPWS(p);
 			if (*p != ')') {
-				u_fprintf(ux_stderr, "Error: Missing closing ) on line %u!\n", result->lines);
+				ux_bufcpy(nearbuf, p, 20);
+				u_fprintf(ux_stderr, "Error: Missing closing ) on line %u near `%S`!\n", result->lines, nearbuf);
 				incErrorCount();
 			}
 			++p;
 			result->lines += SKIPWS(p);
 		}
 		if (rule->dep_tests.empty()) {
-			u_fprintf(ux_stderr, "Error: Missing dependency target on line %u!\n", result->lines);
+			ux_bufcpy(nearbuf, lp, 20);
+			u_fprintf(ux_stderr, "Error: Missing dependency target on line %u near `%S`!\n", result->lines, nearbuf);
 			incErrorCount();
 		}
 		rule->dep_target = rule->dep_tests.back();
@@ -1245,7 +1303,8 @@ void TextualParser::parseAnchorish(UChar *& p) {
 	p = n;
 	result->lines += SKIPWS(p, ';');
 	if (*p != ';') {
-		u_fprintf(ux_stderr, "Error: Missing closing ; on line %u after anchor/section name!\n", result->lines);
+		ux_bufcpy(nearbuf, p, 20);
+		u_fprintf(ux_stderr, "Error: Missing closing ; on line %u near `%S` after anchor/section name!\n", result->lines, nearbuf);
 		incErrorCount();
 	}
 }
@@ -1393,7 +1452,8 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 					n++;
 					SKIPTO_NOSPAN(n, '"');
 					if (*n != '"') {
-						u_fprintf(ux_stderr, "Error: Missing closing \" on line %u!\n", result->lines);
+						ux_bufcpy(nearbuf, p, 20);
+						u_fprintf(ux_stderr, "Error: Missing closing \" on line %u near `%S`!\n", result->lines, nearbuf);
 						incErrorCount();
 					}
 				}
@@ -1623,7 +1683,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 			else if (s->sets.size() == 1 && !(s->type & ST_TAG_UNIFY)) {
 				tmp = result->getSet(s->sets.back());
 				if (verbosity_level > 0) {
-					u_fprintf(ux_stderr, "Warning: Set %S (L:%u) has been aliased to %S (L:%u).\n", s->name.c_str(), s->line, tmp->name.c_str(), tmp->line);
+					u_fprintf(ux_stderr, "Warning: Set %S on line %u aliased to %S on line %u.\n", s->name.c_str(), s->line, tmp->name.c_str(), tmp->line);
 					u_fflush(ux_stderr);
 				}
 				result->set_alias[sh] = tmp->hash;
@@ -2028,7 +2088,8 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 					n++;
 					SKIPTO_NOSPAN(n, '"');
 					if (*n != '"') {
-						u_fprintf(ux_stderr, "Error: Missing closing \" on line %u!\n", result->lines);
+						ux_bufcpy(nearbuf, p, 20);
+						u_fprintf(ux_stderr, "Error: Missing closing \" on line %u near `%S`!\n", result->lines, nearbuf);
 						incErrorCount();
 					}
 				}
@@ -2041,7 +2102,8 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 				p = n;
 
 				if (*p == ')') {
-					u_fprintf(ux_stderr, "Error: Encountered ) before the expected Right tag on line %u!\n", result->lines);
+					ux_bufcpy(nearbuf, p, 20);
+					u_fprintf(ux_stderr, "Error: Encountered ) before the expected Right tag on line %u near `%S`!\n", result->lines, nearbuf);
 					incErrorCount();
 				}
 
@@ -2095,23 +2157,22 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 		}
 		// No keyword found at this position, skip a character.
 		else {
-			// For some strange reason, '<' was explicitly allowed to exist without a purpose...
-			// I cannot recall why, so removed that since it caused line counting errors.
+			UChar *n = p;
 			if (*p == ';' || *p == '"') {
 				if (*p == '"') {
 					++p;
 					SKIPTO_NOSPAN(p, '"');
 					if (*p != '"') {
-						u_fprintf(ux_stderr, "Error: Missing closing \" on line %u!\n", result->lines);
+						ux_bufcpy(nearbuf, n, 20);
+						u_fprintf(ux_stderr, "Error: Missing closing \" on line %u near `%S`!\n", result->lines, nearbuf);
 						incErrorCount();
 					}
 				}
 				result->lines += SKIPTOWS(p);
 			}
 			if (*p && *p != ';' && *p != '"' && !ISNL(*p) && !ISSPACE(*p)) {
-				UChar op = 0;
-				swapper<UChar> swp(true, op, p[16]);
-				u_fprintf(ux_stderr, "Error: Garbage data '%S...' encountered on line %u!\n", p, result->lines);
+				ux_bufcpy(nearbuf, p, 20);
+				u_fprintf(ux_stderr, "Error: Garbage data encountered on line %u near `%S`!\n", result->lines, nearbuf);
 				incErrorCount();
 			}
 			if (ISNL(*p)) {

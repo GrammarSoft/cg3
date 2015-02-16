@@ -127,6 +127,18 @@ inline substr_t<Str> substr(const Str& str, size_t offset=0, size_t count=0) {
 	return substr_t<Str>(str, offset, count);
 }
 
+inline UChar *ux_bufcpy(UChar *dst, const UChar *src, size_t n) {
+	size_t i = 0;
+	for (; i < n && src[i]; ++i) {
+		dst[i] = src[i];
+		if (dst[i] == 0x0A || dst[i] == 0x0D) {
+			dst[i] += 0x2400;
+		}
+	}
+	dst[i] = 0;
+	return dst;
+}
+
 std::string ux_dirname(const char *in);
 
 }

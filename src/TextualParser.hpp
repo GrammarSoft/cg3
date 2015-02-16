@@ -41,6 +41,7 @@ namespace CG3 {
 		int parse_grammar_from_file(const char *filename, const char *locale, const char *codepage);
 
 	private:
+		UChar nearbuf[32];
 		uint32_t verbosity_level;
 		uint32_t sets_counter;
 		uint32_t seen_mapping_prefix;
