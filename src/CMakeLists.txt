@@ -117,8 +117,6 @@ if(MSVC)
 	set(LIBCG3_SOURCES
 		../win32/getopt.c
 		../win32/getopt.h
-		../win32/libgen.c
-		../win32/libgen.h
 		${LIBCG3_SOURCES}
 		)
 endif()
