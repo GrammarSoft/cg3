@@ -1243,7 +1243,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 
 	UChar *p = input;
 	result->lines = 1;
-	filebase = basename(fname);
+	filebase = basename(const_cast<char*>(fname));
 
 	while (*p) {
 	try {
@@ -2075,7 +2075,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 
 int TextualParser::parse_grammar_from_file(const char *fname, const char *loc, const char *cpage) {
 	filename = fname;
-	filebase = basename(fname);
+	filebase = basename(const_cast<char*>(fname));
 	locale = loc;
 	codepage = cpage;
 
