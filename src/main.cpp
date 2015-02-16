@@ -121,6 +121,13 @@ int main(int argc, char* argv[]) {
 		}
 	}
 
+	if (options[QUIET].doesOccur) {
+		options[VERBOSE].doesOccur = false;
+	}
+	if (options[VERBOSE].doesOccur && options[VERBOSE].value && strcmp(options[VERBOSE].value, "0") == 0) {
+		options[VERBOSE].doesOccur = false;
+	}
+
 	/* Initialize ICU */
 	u_init(&status);
 	if (U_FAILURE(status) && status != U_FILE_ACCESS_ERROR) {
