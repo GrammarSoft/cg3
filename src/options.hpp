@@ -42,6 +42,7 @@ namespace Options {
 		RULE,
 		DODEBUG,
 		VERBOSE,
+		QUIET,
 		VISLCGCOMPAT,
 		STDIN,
 		STDOUT,
@@ -101,6 +102,7 @@ namespace Options {
 		UOPTION_DEF_D("rule",				0, UOPT_REQUIRES_ARG, "a name or number of a single rule to run"),
 		UOPTION_DEF_D("debug",				'd', UOPT_OPTIONAL_ARG, "enables debug output (very noisy)"),
 		UOPTION_DEF_D("verbose",			'v', UOPT_OPTIONAL_ARG, "increases verbosity"),
+		UOPTION_DEF_D("quiet",				0, UOPT_OPTIONAL_ARG, "squelches warnings (same as -v0)"),
 		UOPTION_DEF_D("vislcg-compat",		'2', UOPT_NO_ARG, "enables compatibility mode for older CG-2 and vislcg grammars"),
 
 		UOPTION_DEF_D("stdin",				'I', UOPT_REQUIRES_ARG, "file to read input from instead of stdin"),
