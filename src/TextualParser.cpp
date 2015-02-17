@@ -377,7 +377,7 @@ Set *TextualParser::parseSetInline(UChar *& p, Set *s) {
 			}
 		}
 		else if (!wantop) {
-			error("%s: Error: Missing set on line %u near `%S`!\n", p);
+			error("%s: Error: Expected set on line %u near `%S`!\n", p);
 		}
 	}
 
@@ -911,7 +911,7 @@ void TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 			rule->type = K_EXTERNAL_ALWAYS;
 		}
 		else {
-			error("%s: Error: Missing keyword ONCE or ALWAYS on line %u near `%S`!\n", p);
+			error("%s: Error: Expected keyword ONCE or ALWAYS on line %u near `%S`!\n", p);
 		}
 
 		result->lines += SKIPWS(p);
@@ -1111,7 +1111,7 @@ void TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 			rule->type = K_ADDCOHORT_BEFORE;
 		}
 		else {
-			error("%s: Error: Missing position keyword AFTER or BEFORE on line %u near `%S`!\n", p);
+			error("%s: Error: Expected position keyword AFTER or BEFORE on line %u near `%S`!\n", p);
 		}
 	}
 
@@ -1158,7 +1158,7 @@ void TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 				rule->type = K_MOVE_BEFORE;
 			}
 			else {
-				error("%s: Error: Missing movement keyword AFTER or BEFORE on line %u near `%S`!\n", p);
+				error("%s: Error: Expected movement keyword AFTER or BEFORE on line %u near `%S`!\n", p);
 			}
 		}
 		else if (key == K_SWITCH) {
@@ -1166,7 +1166,7 @@ void TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 				p += stringbits[S_WITH].length();
 			}
 			else {
-				error("%s: Error: Missing movement keyword WITH on line %u near `%S`!\n", p);
+				error("%s: Error: Expected movement keyword WITH on line %u near `%S`!\n", p);
 			}
 		}
 		else {
@@ -1178,7 +1178,7 @@ void TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 				rule->flags |= RF_REVERSE;
 			}
 			else {
-				error("%s: Error: Missing dependency keyword TO or FROM on line %u near `%S`!\n", p);
+				error("%s: Error: Expected dependency keyword TO or FROM on line %u near `%S`!\n", p);
 			}
 		}
 		result->lines += SKIPWS(p);
@@ -1211,7 +1211,7 @@ void TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 			result->lines += SKIPWS(p);
 		}
 		if (rule->dep_tests.empty()) {
-			error("%s: Error: Missing dependency target on line %u near `%S`!\n", lp);
+			error("%s: Error: Expected dependency target on line %u near `%S`!\n", lp);
 		}
 		rule->dep_target = rule->dep_tests.back();
 		rule->dep_tests.pop_back();
@@ -1782,7 +1782,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 				result->sub_readings_ltr = false;
 			}
 			else {
-				error("%s: Error: Missing RTL or LTR on line %u!\n", *p);
+				error("%s: Error: Expected RTL or LTR on line %u!\n", *p);
 			}
 			UChar *n = p;
 			result->lines += SKIPTOWS(n, 0, true);
