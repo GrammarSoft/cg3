@@ -212,6 +212,7 @@ int main(int argc, char *argv[]) {
 		applicator.setOutputFormat(CG3::FMT_PLAIN);
 	}
 
+	applicator.is_conv = true;
 	applicator.verbosity_level = 0;
 	applicator.runGrammarOnText(*instream.get(), ux_stdout);
 
