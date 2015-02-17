@@ -227,7 +227,7 @@ void ApertiumApplicator::runGrammarOnText(istream& input, UFILE *output) {
 				numCohorts++;
 			} // end >= soft_limit
 			if (cCohort && (cSWindow->cohorts.size() >= hard_limit || (grammar->delimiters && doesSetMatchCohortNormal(*cCohort, grammar->delimiters->number)))) {
-				if (cSWindow->cohorts.size() >= hard_limit) {
+				if (!is_conv && cSWindow->cohorts.size() >= hard_limit) {
 					u_fprintf(ux_stderr, "Warning: Hard limit of %u cohorts reached at line %u - forcing break.\n", hard_limit, numLines);
 					u_fflush(ux_stderr);
 				}

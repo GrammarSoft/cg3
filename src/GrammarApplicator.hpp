@@ -66,6 +66,7 @@ namespace CG3 {
 		bool owns_grammar;
 		bool input_eof;
 		bool seen_barrier;
+		bool is_conv;
 
 		bool dep_has_spanned;
 		uint32_t dep_delimit;
