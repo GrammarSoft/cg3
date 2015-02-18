@@ -31,7 +31,7 @@ TEMPLATE name = [x,y,z] ;
 
 cg 	:	stat+ 'END'? ;
 
-stat 
+stat
 	:	delimiters
 	|	soft_delimiters
 	|	preferred_targets
@@ -50,7 +50,6 @@ stat
 	|	after_sections
 	|	null_section
 
-// Fixme: It is not valid for any rules to appear before some section type has been seen
 	|	rule
 	|	rule_substitute_etc
 	|	rule_map_etc
@@ -166,7 +165,7 @@ rule_external
 template
 	:	'TEMPLATE' ntag '=' contexttest ';'
 	;
-	
+
 contexttest
 // Fixme: Not perfect. Parses, but goes in the wrong category...
 // Fixme: It really should be the contextpos that's optional, and that it is only optional if inlineset starts with T:, but dunno if that should be expressed in BNF
@@ -176,7 +175,7 @@ contexttest
 	|	'[' inlineset (',' inlineset)* ']' ('LINK' contexttest)?
 	|	'(' contexttest ')' ('OR' '(' contexttest ')')*
 	;
-	
+
 inlineset
 	:	inlineset_single (set_op inlineset_single)*
 	;
