@@ -508,6 +508,18 @@ private:
 	T& b;
 };
 
+class swapper_false {
+public:
+	swapper_false(bool cond, bool& b) :
+		val(false),
+		swp(cond, val, b)
+	{}
+
+private:
+	bool val;
+	swapper<bool> swp;
+};
+
 template<typename T>
 inline T* reverse(T *head) {
 	T *nr = 0;

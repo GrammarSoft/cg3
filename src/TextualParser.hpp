@@ -25,6 +25,7 @@
 
 #include "IGrammarParser.hpp"
 #include "Strings.hpp"
+#include "sorted_vector.hpp"
 
 namespace CG3 {
 	class Rule;
@@ -34,7 +35,7 @@ namespace CG3 {
 
 	class TextualParser : public IGrammarParser {
 	public:
-		TextualParser(Grammar& result, UFILE *ux_err);
+		TextualParser(Grammar& result, UFILE *ux_err, bool show_tags=false);
 
 		void setCompatible(bool compat);
 		void setVerbosity(uint32_t level);
@@ -54,11 +55,13 @@ namespace CG3 {
 
 	private:
 		UChar nearbuf[32];
+		uint32SortedVector strict_tags;
 		uint32_t verbosity_level;
 		uint32_t sets_counter;
 		uint32_t seen_mapping_prefix;
 		bool option_vislcg_compat;
 		bool in_section, in_before_sections, in_after_sections, in_null_section;
+		bool show_tags, no_isets, no_itmpls;
 		const char *filename;
 		const char *locale;
 		const char *codepage;

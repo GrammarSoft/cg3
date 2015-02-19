@@ -238,7 +238,7 @@ int main(int argc, char* argv[]) {
 		parser = new CG3::BinaryGrammar(grammar, ux_stderr);
 	}
 	else {
-		parser = new CG3::TextualParser(grammar, ux_stderr);
+		parser = new CG3::TextualParser(grammar, ux_stderr, options[SHOW_TAGS].doesOccur != 0);
 	}
 	if (options[VERBOSE].doesOccur) {
 		if (options[VERBOSE].value) {

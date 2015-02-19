@@ -1,5 +1,163 @@
+2015-02-18  tino
+
+	* [r10515] cg3.g: That comment is no longer true
+
+2015-02-17  tino
+
+	* [r10506] src/ApertiumApplicator.cpp, src/FSTApplicator.cpp,
+	  src/GrammarApplicator.cpp, src/GrammarApplicator.hpp,
+	  src/GrammarApplicator_runGrammar.cpp, src/NicelineApplicator.cpp,
+	  src/PlaintextApplicator.cpp, src/cg_conv.cpp: cg-conv less noisy
+	* [r10505] src/TextualParser.cpp: Missing -> Expected
+
+2015-02-16  tino
+
+	* [r10504] src/CMakeLists.txt, src/Grammar.cpp, src/Grammar.hpp,
+	  src/GrammarApplicator.cpp, src/GrammarApplicator.hpp,
+	  src/IGrammarParser.hpp, src/Tag.cpp, src/Tag.hpp,
+	  src/TextualParser.cpp, src/TextualParser.hpp,
+	  src/parser_helpers.hpp, src/uextras.hpp: Spread basename and
+	  context to more diagnostics
+	* [r10502] src/TextualParser.cpp: Posix basename() takes by
+	  non-const char* - crazy people
+	* [r10501] TODO, src/CMakeLists.txt, src/TextualParser.cpp,
+	  src/TextualParser.hpp, src/cg_comp.cpp, src/cg_proc.cpp,
+	  src/uextras.hpp, win32/libgen.c, win32/libgen.h: Print basename
+	  of grammar before most parsing diagnostics
+	* [r10499] src/TextualParser.cpp, src/TextualParser.hpp,
+	  src/uextras.hpp: Show "near `...`" for many parsing diagnostics
+	* [r10497] src/main.cpp, src/options.hpp: Minor fix
+	* [r10496] scripts/cg3-autobin.pl.in: Synchronize with reality
+	* [r10495] src/main.cpp, src/options.hpp: Add option --quiet and
+	  allow -v0
+
+2015-02-08  tino
+
+	* [r10439] src/inlines.hpp: Forgot to change hash to avoid MAX and
+	  MAX-1 back in r10033
+
+2015-01-28  tino
+
+	* [r10391] test/runall.pl: ...and now with all the code that got
+	  deleted.
+	* [r10390] test/helper.pl, test/runall.pl: Whoops, wrong svn rm.
+	  Also, now tests old grammars.
+	* [r10389] test/T_AnyMinusSome/args.txt,
+	  test/T_AnyMinusSome/grammar.cg3b.10043,
+	  test/T_AnyMinusSome/run.pl, test/T_Barrier/grammar.cg3b.10043,
+	  test/T_Barrier/run.pl, test/T_BasicAppend/grammar.cg3b.10043,
+	  test/T_BasicAppend/run.pl,
+	  test/T_BasicContextTest/grammar.cg3b.10043,
+	  test/T_BasicContextTest/run.pl, test/T_BasicDelimit/args.txt,
+	  test/T_BasicDelimit/expected.txt,
+	  test/T_BasicDelimit/grammar.cg3b.10043,
+	  test/T_BasicDelimit/run.pl, test/T_BasicDependency/args.txt,
+	  test/T_BasicDependency/grammar.cg3b.10043,
+	  test/T_BasicDependency/run.pl,
+	  test/T_BasicIff/grammar.cg3b.10043, test/T_BasicIff/run.pl,
+	  test/T_BasicSelect/args.txt,
+	  test/T_BasicSelect/grammar.cg3b.10043, test/T_BasicSelect/run.pl,
+	  test/T_BasicSubstitute/args.txt,
+	  test/T_BasicSubstitute/grammar.cg3b.10043,
+	  test/T_BasicSubstitute/run.pl, test/T_CG2Compat/args.txt,
+	  test/T_CG2Compat/grammar.cg3b.10043, test/T_CG2Compat/run.pl,
+	  test/T_CarefulBarrier/grammar.cg3b.10043,
+	  test/T_CarefulBarrier/run.pl,
+	  test/T_DelayAndDelete/grammar.cg3b.10043,
+	  test/T_DelayAndDelete/run.pl, test/T_Dependency_Loops/args.txt,
+	  test/T_Dependency_Loops/grammar.cg3b.10043,
+	  test/T_Dependency_Loops/run.pl,
+	  test/T_Dependency_OutOfRange/expected.txt,
+	  test/T_Dependency_OutOfRange/grammar.cg3,
+	  test/T_Dependency_OutOfRange/grammar.cg3b.10043,
+	  test/T_Dependency_OutOfRange/run.pl,
+	  test/T_DontMatchEmptySet/grammar.cg3b.10043,
+	  test/T_DontMatchEmptySet/run.pl,
+	  test/T_EndlessSelect/grammar.cg3b.10043,
+	  test/T_EndlessSelect/run.pl, test/T_External/grammar.cg3b.10043,
+	  test/T_Include/grammar.cg3b.10043, test/T_Include/run.pl,
+	  test/T_InputCommands/grammar.cg3b.10043,
+	  test/T_InputCommands/run.pl,
+	  test/T_InputMarkup/grammar.cg3b.10043, test/T_InputMarkup/run.pl,
+	  test/T_JumpExecute/args.txt,
+	  test/T_JumpExecute/grammar.cg3b.10043, test/T_JumpExecute/run.pl,
+	  test/T_MapAdd_Different/args.txt,
+	  test/T_MapAdd_Different/expected.txt,
+	  test/T_MapAdd_Different/grammar.cg3,
+	  test/T_MapAdd_Different/grammar.cg3b.10043,
+	  test/T_MapAdd_Different/run.pl,
+	  test/T_MapThenRemove/grammar.cg3b.10043,
+	  test/T_MapThenRemove/run.pl,
+	  test/T_MapThenSelect/grammar.cg3b.10043,
+	  test/T_MapThenSelect/run.pl, test/T_MappingPrefix/args.txt,
+	  test/T_MappingPrefix/grammar.cg3b.10043,
+	  test/T_MappingPrefix/run.pl, test/T_Movement/grammar.cg3b.10043,
+	  test/T_Movement/run.pl,
+	  test/T_MultipleSections/grammar.cg3b.10043,
+	  test/T_MultipleSections/run.pl,
+	  test/T_NegatedContextTest/grammar.cg3b.10043,
+	  test/T_NegatedContextTest/run.pl,
+	  test/T_NotContextTest/grammar.cg3b.10043,
+	  test/T_NotContextTest/run.pl, test/T_NumericalTags/args.txt,
+	  test/T_NumericalTags/grammar.cg3b.10043,
+	  test/T_NumericalTags/run.pl,
+	  test/T_OmniWithBarrier/grammar.cg3b.10043,
+	  test/T_OmniWithBarrier/run.pl,
+	  test/T_Omniscan/grammar.cg3b.10043, test/T_Omniscan/run.pl,
+	  test/T_OriginPassing/args.txt,
+	  test/T_OriginPassing/grammar.cg3b.10043,
+	  test/T_OriginPassing/run.pl, test/T_Parentheses/args.txt,
+	  test/T_Parentheses/grammar.cg3b.10043, test/T_Parentheses/run.pl,
+	  test/T_RegExp/grammar.cg3b.10043, test/T_RegExp/run.pl,
+	  test/T_Relations/args.txt, test/T_Relations/grammar.cg3b.10043,
+	  test/T_Relations/run.pl, test/T_RemCohort/args.txt,
+	  test/T_RemCohort/grammar.cg3b.10043, test/T_RemCohort/run.pl,
+	  test/T_RemoveSingleTag/grammar.cg3b.10043,
+	  test/T_RemoveSingleTag/run.pl,
+	  test/T_ScanningTests/grammar.cg3b.10043,
+	  test/T_ScanningTests/run.pl, test/T_SectionRanges/args.txt,
+	  test/T_SectionRanges/grammar.cg3b.10043,
+	  test/T_SectionRanges/run.pl, test/T_Sections/args.txt,
+	  test/T_Sections/grammar.cg3b.10043, test/T_Sections/run.pl,
+	  test/T_SetOp_FailFast/args.txt,
+	  test/T_SetOp_FailFast/grammar.cg3b.10043,
+	  test/T_SetOp_FailFast/run.pl, test/T_SetOps/grammar.cg3b.10043,
+	  test/T_SetOps/run.pl, test/T_SetParentChild/grammar.cg3b.10043,
+	  test/T_SetParentChild/run.pl, test/T_SoftDelimiters/args.txt,
+	  test/T_SoftDelimiters/grammar.cg3b.10043,
+	  test/T_SoftDelimiters/run.pl, test/T_SpaceInForms/args.txt,
+	  test/T_SpaceInForms/grammar.cg3b.10043,
+	  test/T_SpaceInForms/run.pl,
+	  test/T_SubReadings_Apertium/grammar.cg3b.10043,
+	  test/T_SubReadings_CG/args.txt,
+	  test/T_SubReadings_CG/grammar.cg3b.10043,
+	  test/T_SubReadings_CG/run.pl,
+	  test/T_SubstituteNil/grammar.cg3b.10043,
+	  test/T_SubstituteNil/run.pl, test/T_Templates/grammar.cg3b.10043,
+	  test/T_Templates/run.pl, test/T_Trace/args.txt,
+	  test/T_Trace/grammar.cg3b.10043, test/T_Trace/run.pl,
+	  test/T_Unification/args.txt,
+	  test/T_Unification/grammar.cg3b.10043, test/T_Unification/run.pl,
+	  test/T_Variables/grammar.cg3b.10043, test/T_Variables/run.pl,
+	  test/helper.pl, test/runall.pl: Tests now share run code where
+	  possible
+	* [r10388] src/Grammar.cpp: Let's not overwrite a random set when
+	  loading old grammars
+	* [r10387] src/Grammar.cpp: Remember old static sets
+	* [r10386] src/BinaryGrammar_read_10043.cpp, src/Grammar.cpp,
+	  src/Grammar.hpp, src/TextualParser.cpp, src/cg_conv.cpp: cg-conv
+	  also needs to create the dummy set
+
+2015-01-27  tino
+
+	* [r10384] src/BinaryGrammar.cpp, src/BinaryGrammar_read.cpp,
+	  src/IGrammarParser.hpp: Only warn about old grammars when -v is
+	  on
+
 2015-01-24  tino
 
+	* [r10379] ChangeLog, src/BinaryGrammar_read_10043.cpp,
+	  src/version.hpp: Old loader seems to work now
 	* [r10378] ChangeLog, src/BinaryGrammar.hpp,
 	  src/BinaryGrammar_read.cpp, src/BinaryGrammar_read_10043.cpp,
 	  src/CMakeLists.txt, src/version.hpp: Add support for loading
@@ -2417,127 +2575,4 @@
 
 	* [r7992] src/GrammarApplicator_runRules.cpp: Endless rule loop
 	  combo breaker
-	* [r7991] src/GrammarApplicator_runRules.cpp: Debug info; Delimit
-	  fix maybe
-	* [r7990] manual/faq.xml, scripts/cg3-autobin.pl: Autobin args and
-	  FAQ entry
-	* [r7989] scripts/cg3-autobin.pl,
-	  src/GrammarApplicator_runRules.cpp, src/version.h: Made AddCohort
-	  add magic reading if none were listed.
-
-2012-01-31  ftyers
-
-	* [r7933] src/ApertiumApplicator.cpp: the sound of code
-	  vanishing...
-	* [r7932] src/ApertiumApplicator.cpp: update so we don't get
-	  spurious '/'
-
-2012-01-29  ftyers
-
-	* [r7917] src/ApertiumApplicator.cpp, src/ApertiumApplicator.h,
-	  src/cg_proc.cpp: -1 option to only print out first analysis
-
-2012-01-18  tino
-
-	* [r7873] scripts/cg3-autobin.pl, src/GrammarApplicator.cpp,
-	  src/GrammarApplicator.h, src/GrammarApplicator_reflow.cpp,
-	  src/GrammarApplicator_runRules.cpp, src/SingleWindow.cpp,
-	  src/SingleWindow.h, src/version.h: CG3 fix Delimit eating
-	  enclosures
-
-2012-01-06  tino
-
-	* [r7824] newsletters/2012-01-06.txt: cg3 news
-	* [r7823] manual/drafts.xml, manual/rules.xml,
-	  scripts/cg3-autobin.pl, src/version.h: CG-3 Release 0.9.7.7823
-
-2012-01-05  tino
-
-	* [r7821] manual/bibliography.xml, manual/binarygrammar.xml,
-	  manual/cgglossary.xml, manual/cgkeywords.xml,
-	  manual/cmdreference.xml, manual/compatibility.xml,
-	  manual/contexts.xml, manual/contributing.xml,
-	  manual/dependencies.xml, manual/drafts.xml, manual/externals.xml,
-	  manual/faq.xml, manual/grammar.xml, manual/installation.xml,
-	  manual/intro.xml, manual/license.xml, manual/manual.xml,
-	  manual/parentheses.xml, manual/probabilistic.xml,
-	  manual/relations.xml, manual/rules.xml, manual/sets.xml,
-	  manual/streamcmds.xml, manual/streamformats.xml,
-	  manual/subreadings.xml, manual/tags.xml, manual/templates.xml,
-	  test/T_SubReadings_CG/input.txt: CG-3 docs
-
-2011-12-22  tino
-
-	* [r7814] scripts/cg3-autobin.pl, src/GrammarApplicator.cpp,
-	  src/GrammarApplicator.h, src/GrammarApplicator_runGrammar.cpp,
-	  src/GrammarApplicator_runRules.cpp, src/version.h,
-	  test/T_SubReadings, test/T_SubReadings_Apertium,
-	  test/T_SubReadings_CG, test/T_SubReadings_CG/expected.txt,
-	  test/T_SubReadings_CG/grammar.txt,
-	  test/T_SubReadings_CG/input.txt, test/T_SubReadings_CG/run.pl:
-	  Added sub-reading support to vislcg3 and cg-conv.
-
-2011-11-17  tino
-
-	* [r7697] get-boost.sh: Boost 1.48.0
-
-2011-11-07  tino
-
-	* [r7655] src/TextualParser.cpp: Add warning for unnamed named
-	  rules
-
-2011-11-05  tino
-
-	* [r7650] src/Grammar.cpp, test/T_JumpExecute/grammar.txt:
-	  Implemented JUMP; still need Execute and docs
-	* [r7649] test/T_JumpExecute/expected.txt: Implemented JUMP; still
-	  need Execute and docs
-	* [r7648] src/CMakeLists.txt: Implemented JUMP; still need Execute
-	  and docs
-	* [r7647] scripts/cg3-autobin.pl, src/Anchor.cpp, src/Anchor.h,
-	  src/BinaryGrammar_read.cpp, src/BinaryGrammar_write.cpp,
-	  src/Cohort.cpp, src/Grammar.cpp, src/Grammar.h,
-	  src/GrammarApplicator_runRules.cpp, src/TextualParser.cpp,
-	  src/TextualParser.h, src/interval_vector.hpp, src/version.h,
-	  test/T_JumpExecute, test/T_JumpExecute/grammar.txt,
-	  test/T_JumpExecute/input.txt, test/runall.pl: Implemented JUMP;
-	  still need Execute and docs
-
-2011-11-04  tino
-
-	* [r7641] compile-profile.sh, newsletters/2008-09-11.txt,
-	  profile-apply.sh, profile-parse.sh, scripts/cg3-autobin.pl,
-	  test/T_AnyMinusSome/run.pl, test/T_Barrier/run.pl,
-	  test/T_BasicAppend/run.pl, test/T_BasicContextTest/run.pl,
-	  test/T_BasicDelimit/run.pl, test/T_BasicDependency/run.pl,
-	  test/T_BasicIff/run.pl, test/T_BasicRemove/run.pl,
-	  test/T_BasicSelect/run.pl, test/T_BasicSubstitute/run.pl,
-	  test/T_CG2Compat/run.pl, test/T_CarefulBarrier/run.pl,
-	  test/T_CompositeSelect/run.pl, test/T_DelayAndDelete/run.pl,
-	  test/T_Dependency_Loops/run.pl,
-	  test/T_Dependency_OutOfRange/run.pl,
-	  test/T_DontMatchEmptySet/run.pl, test/T_EndlessSelect/run.pl,
-	  test/T_External/run.pl, test/T_Include/run.pl,
-	  test/T_InputCommands/run.pl, test/T_InputMarkup/run.pl,
-	  test/T_MapAdd_Different/run.pl, test/T_MapThenRemove/run.pl,
-	  test/T_MapThenSelect/run.pl, test/T_MappingPrefix/run.pl,
-	  test/T_Movement/run.pl, test/T_MultipleSections/run.pl,
-	  test/T_NegatedContextTest/run.pl, test/T_NotContextTest/run.pl,
-	  test/T_NumericalTags/run.pl, test/T_OmniWithBarrier/run.pl,
-	  test/T_Omniscan/run.pl, test/T_OriginPassing/run.pl,
-	  test/T_Parentheses/run.pl, test/T_RegExp/run.pl,
-	  test/T_Relations/run.pl, test/T_RemCohort/run.pl,
-	  test/T_RemoveSingleTag/run.pl, test/T_ScanningTests/run.pl,
-	  test/T_SectionRanges/run.pl, test/T_Sections/run.pl,
-	  test/T_SetOp_FailFast/run.pl, test/T_SetOps/run.pl,
-	  test/T_SetParentChild/run.pl, test/T_SoftDelimiters/run.pl,
-	  test/T_SpaceInForms/run.pl, test/T_SubstituteNil/run.pl,
-	  test/T_Templates/run.pl, test/T_Trace/run.pl,
-	  test/T_Unification/run.pl, test/T_Variables/run.pl,
-	  test/clean.sh, test/runall.pl, vapply.sh, vparse.sh: Changed
-	  .bin3 to .cg3b everywhere.
-
-2011-11-01  tino
-
-	* [r7630] CMakeLists.txt: cg3
 

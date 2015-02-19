@@ -235,7 +235,7 @@ Tag *parseTag(const UChar *to, const UChar *p, State& state) {
 				}
 			}
 		}
-		else if (tag->type & T_CASE_INSENSITIVE) {
+		if (tag->type & (T_CASE_INSENSITIVE|T_REGEXP)) {
 			if (tag->tag[0] == '/' && tag->tag[length - 1] == '/') {
 				tag->tag.resize(tag->tag.size() - 1);
 				tag->tag.erase(tag->tag.begin());
@@ -243,32 +243,7 @@ Tag *parseTag(const UChar *to, const UChar *p, State& state) {
 		}
 
 	label_isVarstring:
-		if (tag->type & T_VARSTRING) {
-			UChar *p = &tag->tag[0];
-			UChar *n = 0;
-			do {
-				SKIPTO(p, '{');
-				if (*p) {
-					n = p;
-					SKIPTO(n, '}');
-					if (*n) {
-						tag->allocateVsSets();
-						tag->allocateVsNames();
-						++p;
-						UString theSet(p, n);
-						Set *tmp = parseSet(theSet.c_str(), p, state);
-						tag->vs_sets->push_back(tmp);
-						UString old;
-						old += '{';
-						old += tmp->name;
-						old += '}';
-						tag->vs_names->push_back(old);
-						p = n;
-						++p;
-					}
-				}
-			} while (*p);
-		}
+		;
 	}
 
 	tag->type &= ~T_SPECIAL;

@@ -28,7 +28,11 @@
 
 namespace CG3 {
 
-TextualParser::TextualParser(Grammar& res, UFILE *ux_err) {
+TextualParser::TextualParser(Grammar& res, UFILE *ux_err, bool show_tags) :
+show_tags(show_tags),
+no_isets(false),
+no_itmpls(false)
+{
 	ux_stderr = ux_err;
 	result = &res;
 	filename = 0;
@@ -108,7 +112,12 @@ void TextualParser::error(const char *str, const char *s, const UChar *S, const 
 }
 
 Tag *TextualParser::parseTag(const UChar *to, const UChar *p) {
-	return ::CG3::parseTag(to, p, *this);
+	Tag *tag = ::CG3::parseTag(to, p, *this);
+	if (!strict_tags.empty() && !strict_tags.count(tag->hash)) {
+		error("%s: Error: Tag %S not on the strict-tags list, on line %u near `%S`!\n", tag->tag.c_str(), p);
+		incErrorCount();
+	}
+	return tag;
 }
 
 Tag *TextualParser::addTag(Tag *tag) {
@@ -262,7 +271,7 @@ Set *TextualParser::parseSetInline(UChar *& p, Set *s) {
 					}
 					else {
 						bool special = false;
-						boost_foreach(Tag *tag, tags) {
+						boost_foreach (Tag *tag, tags) {
 							if (tag->type & T_SPECIAL) {
 								special = true;
 								break;
@@ -338,7 +347,7 @@ Set *TextualParser::parseSetInline(UChar *& p, Set *s) {
 						// Doing this yields a very cheap imperfect form of trie compression, but it's good enough
 						std::sort(tv.begin(), tv.end(), fs);
 						bool special = false;
-						boost_foreach(Tag *tag, tv) {
+						boost_foreach (Tag *tag, tv) {
 							if (tag->type & T_SPECIAL) {
 								special = true;
 								break;
@@ -395,6 +404,7 @@ Set *TextualParser::parseSetInline(UChar *& p, Set *s) {
 }
 
 Set *TextualParser::parseSetInlineWrapper(UChar *& p) {
+	UChar *op = p;
 	uint32_t tmplines = result->lines;
 	Set *s = parseSetInline(p);
 	if (!s->line) {
@@ -404,6 +414,9 @@ Set *TextualParser::parseSetInlineWrapper(UChar *& p) {
 		s->setName(sets_counter++);
 	}
 	result->addSet(s);
+	if (no_isets && !(s->type & ST_ANY)) {
+		error("%s: Error: Inline set spotted on line %u near `%S`!\n", op);
+	}
 	return s;
 }
 
@@ -684,6 +697,9 @@ ContextualTest *TextualParser::parseContextualTestList(UChar *& p, Rule *rule) {
 	u_strncpy(&gbuffers[0][0], p, c);
 	gbuffers[0][c] = 0;
 	if (ux_isEmpty(&gbuffers[0][0])) {
+		if (no_itmpls) {
+			error("%s: Error: Inline template spotted on line %u near `%S`!\n", p);
+		}
 		p = n;
 		pos_p = p;
 		for (;;) {
@@ -1041,6 +1057,7 @@ void TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 
 	lp = p;
 	if (key == K_SUBSTITUTE || key == K_EXECUTE) {
+		swapper_false swp(no_isets, no_isets);
 		Set *s = parseSetInlineWrapper(p);
 		s->reindex(*result);
 		rule->sublist = s;
@@ -1060,6 +1077,7 @@ void TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 	|| key == K_REMRELATIONS || key == K_REMRELATION
 	|| key == K_SETVARIABLE || key == K_REMVARIABLE
 	|| key == K_ADDCOHORT || key == K_JUMP) {
+		swapper_false swp(no_isets, no_isets);
 		Set *s = parseSetInlineWrapper(p);
 		s->reindex(*result);
 		rule->maplist = s;
@@ -1090,6 +1108,7 @@ void TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 	result->lines += SKIPWS(p);
 	lp = p;
 	if (key == K_ADDRELATIONS || key == K_SETRELATIONS || key == K_REMRELATIONS || key == K_SETVARIABLE || copy_except) {
+		swapper_false swp(no_isets, no_isets);
 		Set *s = parseSetInlineWrapper(p);
 		s->reindex(*result);
 		rule->sublist = s;
@@ -1288,7 +1307,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 			&& ISCHR(*(p+7),'E','e') && ISCHR(*(p+8),'R','r')
 			&& !ISSTRING(p, 9)) {
 			if (result->delimiters) {
-				error("%s: Error: Cannot redefine DELIMITERS on line %u!\n");
+				error("%s: Error: Cannot redefine DELIMITERS on line %u near `%S`!\n", p);
 			}
 			result->delimiters = result->allocateSet();
 			result->delimiters->line = result->lines;
@@ -1296,17 +1315,17 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 			p += 10;
 			result->lines += SKIPWS(p, '=');
 			if (*p != '=') {
-				error("%s: Error: Encountered a %C before the expected = on line %u!\n", *p);
+				error("%s: Error: Encountered a %C before the expected = on line %u near `%S`!\n", *p, p);
 			}
 			++p;
 			parseTagList(p, result->delimiters);
 			result->addSet(result->delimiters);
 			if (result->delimiters->trie.empty() && result->delimiters->trie_special.empty()) {
-				error("%s: Error: DELIMITERS declared, but no definitions given, on line %u!\n");
+				error("%s: Error: DELIMITERS declared, but no definitions given, on line %u near `%S`!\n", p);
 			}
 			result->lines += SKIPWS(p, ';');
 			if (*p != ';') {
-				error("%s: Error: Expected closing ; before line %u!\n");
+				error("%s: Error: Expected closing ; before line %u near `%S`!\n", p);
 			}
 		}
 		// SOFT-DELIMITERS
@@ -1317,7 +1336,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 			&& ISCHR(*(p+12),'E','e') && ISCHR(*(p+13),'R','r')
 			&& !ISSTRING(p, 14)) {
 			if (result->soft_delimiters) {
-				error("%s: Error: Cannot redefine SOFT-DELIMITERS on line %u!\n");
+				error("%s: Error: Cannot redefine SOFT-DELIMITERS on line %u near `%S`!\n", p);
 			}
 			result->soft_delimiters = result->allocateSet();
 			result->soft_delimiters->line = result->lines;
@@ -1325,17 +1344,17 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 			p += 15;
 			result->lines += SKIPWS(p, '=');
 			if (*p != '=') {
-				error("%s: Error: Encountered a %C before the expected = on line %u!\n", *p);
+				error("%s: Error: Encountered a %C before the expected = on line %u near `%S`!\n", *p, p);
 			}
 			++p;
 			parseTagList(p, result->soft_delimiters);
 			result->addSet(result->soft_delimiters);
 			if (result->soft_delimiters->trie.empty() && result->soft_delimiters->trie_special.empty()) {
-				error("%s: Error: SOFT-DELIMITERS declared, but no definitions given, on line %u!\n");
+				error("%s: Error: SOFT-DELIMITERS declared, but no definitions given, on line %u near `%S`!\n", p);
 			}
 			result->lines += SKIPWS(p, ';');
 			if (*p != ';') {
-				error("%s: Error: Expected closing ; before line %u!\n");
+				error("%s: Error: Expected closing ; before line %u near `%S`!\n", p);
 			}
 		}
 		// MAPPING-PREFIX
@@ -1355,7 +1374,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 			p += 14;
 			result->lines += SKIPWS(p, '=');
 			if (*p != '=') {
-				error("%s: Error: Encountered a %C before the expected = on line %u!\n", *p);
+				error("%s: Error: Encountered a %C before the expected = on line %u near `%S`!\n", *p, p);
 			}
 			++p;
 			result->lines += SKIPWS(p);
@@ -1370,11 +1389,11 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 			result->mapping_prefix = gbuffers[0][0];
 
 			if (!result->mapping_prefix) {
-				error("%s: Error: MAPPING-PREFIX declared, but no definitions given, on line %u!\n");
+				error("%s: Error: MAPPING-PREFIX declared, but no definitions given, on line %u near `%S`!\n", p);
 			}
 			result->lines += SKIPWS(p, ';');
 			if (*p != ';') {
-				error("%s: Error: Expected closing ; before line %u!\n");
+				error("%s: Error: Expected closing ; before line %u near `%S`!\n", p);
 			}
 		}
 		// PREFERRED-TARGETS
@@ -1387,7 +1406,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 			p += 17;
 			result->lines += SKIPWS(p, '=');
 			if (*p != '=') {
-				error("%s: Error: Encountered a %C before the expected = on line %u!\n", *p);
+				error("%s: Error: Encountered a %C before the expected = on line %u near `%S`!\n", *p, p);
 			}
 			++p;
 			result->lines += SKIPWS(p);
@@ -1412,11 +1431,11 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 			}
 
 			if (result->preferred_targets.empty()) {
-				error("%s: Error: PREFERRED-TARGETS declared, but no definitions given, on line %u!\n");
+				error("%s: Error: PREFERRED-TARGETS declared, but no definitions given, on line %u near `%S`!\n", p);
 			}
 			result->lines += SKIPWS(p, ';');
 			if (*p != ';') {
-				error("%s: Error: Expected closing ; before line %u!\n");
+				error("%s: Error: Expected closing ; before line %u near `%S`!\n", p);
 			}
 		}
 		// STATIC-SETS
@@ -1427,7 +1446,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 			p += 11;
 			result->lines += SKIPWS(p, '=');
 			if (*p != '=') {
-				error("%s: Error: Encountered a %C before the expected = on line %u!\n", *p);
+				error("%s: Error: Encountered a %C before the expected = on line %u near `%S`!\n", *p, p);
 			}
 			++p;
 			result->lines += SKIPWS(p);
@@ -1435,18 +1454,17 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 			while (*p && *p != ';') {
 				UChar *n = p;
 				result->lines += SKIPTOWS(n, ';', true);
-				const UString s(p, n);
-				result->static_sets.push_back(s);
+				result->static_sets.push_back(UString(p, n));
 				p = n;
 				result->lines += SKIPWS(p);
 			}
 
 			if (result->static_sets.empty()) {
-				error("%s: Error: STATIC-SETS declared, but no definitions given, on line %u!\n");
+				error("%s: Error: STATIC-SETS declared, but no definitions given, on line %u near `%S`!\n", p);
 			}
 			result->lines += SKIPWS(p, ';');
 			if (*p != ';') {
-				error("%s: Error: Expected closing ; before line %u!\n");
+				error("%s: Error: Expected closing ; before line %u near `%S`!\n", p);
 			}
 		}
 		// ADDRELATIONS
@@ -1562,7 +1580,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 			p = n;
 			result->lines += SKIPWS(p, '=');
 			if (*p != '=') {
-				error("%s: Error: Encountered a %C before the expected = on line %u!\n", *p);
+				error("%s: Error: Encountered a %C before the expected = on line %u near `%S`!\n", *p, p);
 			}
 			++p;
 			parseTagList(p, s);
@@ -1576,11 +1594,11 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 			}
 			result->addSet(s);
 			if (s->empty()) {
-				error("%s: Error: LIST %S declared, but no definitions given, on line %u!\n", s->name.c_str());
+				error("%s: Error: LIST %S declared, but no definitions given, on line %u near `%S`!\n", s->name.c_str(), p);
 			}
 			result->lines += SKIPWS(p, ';');
 			if (*p != ';') {
-				error("%s: Error: Expected closing ; before line %u!\n");
+				error("%s: Error: Expected closing ; before line %u near `%S`!\n", p);
 			}
 		}
 		// SET
@@ -1603,9 +1621,12 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 			p = n;
 			result->lines += SKIPWS(p, '=');
 			if (*p != '=') {
-				error("%s: Error: Encountered a %C before the expected = on line %u!\n", *p);
+				error("%s: Error: Encountered a %C before the expected = on line %u near `%S`!\n", *p, p);
 			}
 			++p;
+
+			swapper_false swp(no_isets, no_isets);
+
 			parseSetInline(p, s);
 			s->rehash();
 			Set *tmp = result->getSet(s->hash);
@@ -1627,11 +1648,11 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 			}
 			result->addSet(s);
 			if (s->empty()) {
-				error("%s: Error: SET %S declared, but no definitions given, on line %u!\n", s->name.c_str());
+				error("%s: Error: SET %S declared, but no definitions given, on line %u near `%S`!\n", s->name.c_str(), p);
 			}
 			result->lines += SKIPWS(p, ';');
 			if (*p != ';') {
-				error("%s: Error: Expected closing ; before line %u! Probably caused by missing set operator.\n");
+				error("%s: Error: Expected closing ; before line %u near `%S`! Probably caused by missing set operator.\n", p);
 			}
 		}
 		// MAPPINGS
@@ -1771,7 +1792,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 			p += 11;
 			result->lines += SKIPWS(p, '=');
 			if (*p != '=') {
-				error("%s: Error: Encountered a %C before the expected = on line %u!\n", *p);
+				error("%s: Error: Encountered a %C before the expected = on line %u near `%S`!\n", *p, p);
 			}
 			++p;
 			result->lines += SKIPWS(p);
@@ -1782,15 +1803,89 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 				result->sub_readings_ltr = false;
 			}
 			else {
-				error("%s: Error: Expected RTL or LTR on line %u!\n", *p);
+				error("%s: Error: Expected RTL or LTR on line %u near `%S`!\n", *p, p);
 			}
 			UChar *n = p;
 			result->lines += SKIPTOWS(n, 0, true);
 			p = n;
 			result->lines += SKIPWS(p, ';');
 			if (*p != ';') {
-				error("%s: Error: Expected closing ; before line %u!\n");
+				error("%s: Error: Expected closing ; before line %u near `%S`!\n", p);
 			}
+		}
+		// OPTIONS
+		else if (ISCHR(*p, 'O', 'o') && ISCHR(*(p + 6), 'S', 's') && ISCHR(*(p + 1), 'P', 'p') && ISCHR(*(p + 2), 'T', 't')
+			&& ISCHR(*(p + 3), 'I', 'i') && ISCHR(*(p + 4), 'O', 'o') && ISCHR(*(p + 5), 'N', 'n')
+			&& !ISSTRING(p, 6)) {
+			p += 7;
+			result->lines += SKIPWS(p, '+');
+			if (p[0] != '+' || p[1] != '=') {
+				error("%s: Error: Encountered a %C before the expected += on line %u near `%S`!\n", *p, p);
+			}
+			p += 2;
+			result->lines += SKIPWS(p);
+
+			while (*p != ';') {
+				if (ux_simplecasecmp(p, stringbits[S_NO_ISETS].getTerminatedBuffer(), stringbits[S_NO_ISETS].length())) {
+					p += stringbits[S_NO_ISETS].length();
+					no_isets = true;
+				}
+				result->lines += SKIPWS(p);
+
+				if (ux_simplecasecmp(p, stringbits[S_NO_ITMPLS].getTerminatedBuffer(), stringbits[S_NO_ITMPLS].length())) {
+					p += stringbits[S_NO_ITMPLS].length();
+					no_itmpls = true;
+				}
+				result->lines += SKIPWS(p);
+			}
+
+			result->lines += SKIPWS(p, ';');
+			if (*p != ';') {
+				error("%s: Error: Expected closing ; before line %u near `%S`!\n", p);
+			}
+		}
+		// STRICT-TAGS
+		else if (ISCHR(*p, 'S', 's') && ISCHR(*(p + 10), 'S', 's') && ISCHR(*(p + 1), 'T', 't') && ISCHR(*(p + 2), 'R', 'r')
+			&& ISCHR(*(p + 3), 'I', 'i') && ISCHR(*(p + 4), 'C', 'c') && ISCHR(*(p + 5), 'T', 't')
+			&& ISCHR(*(p + 6), '-', '-') && ISCHR(*(p + 7), 'T', 't') && ISCHR(*(p + 8), 'A', 'a') && ISCHR(*(p + 9), 'G', 'g')
+			&& !ISSTRING(p, 10)) {
+			p += 11;
+			result->lines += SKIPWS(p, '+');
+			if (p[0] != '+' || p[1] != '=') {
+				error("%s: Error: Encountered a %C before the expected += on line %u near `%S`!\n", *p, p);
+			}
+			p += 2;
+			result->lines += SKIPWS(p);
+
+			uint32SortedVector tmp;
+			strict_tags.swap(tmp);
+			while (*p && *p != ';') {
+				UChar *n = p;
+				if (*n == '"') {
+					n++;
+					SKIPTO_NOSPAN(n, '"');
+					if (*n != '"') {
+						error("%s: Error: Expected closing \" on line %u near `%S`!\n", p);
+					}
+				}
+				result->lines += SKIPTOWS(n, ';', true);
+				ptrdiff_t c = n - p;
+				u_strncpy(&gbuffers[0][0], p, c);
+				gbuffers[0][c] = 0;
+				Tag *t = parseTag(&gbuffers[0][0], p);
+				tmp.insert(t->hash);
+				p = n;
+				result->lines += SKIPWS(p);
+			}
+
+			if (tmp.empty()) {
+				error("%s: Error: STRICT-TAGS declared, but no definitions given, on line %u near `%S`!\n", p);
+			}
+			result->lines += SKIPWS(p, ';');
+			if (*p != ';') {
+				error("%s: Error: Expected closing ; before line %u near `%S`!\n", p);
+			}
+			strict_tags.swap(tmp);
 		}
 		// ANCHOR
 		else if (ISCHR(*p,'A','a') && ISCHR(*(p+5),'R','r') && ISCHR(*(p+1),'N','n') && ISCHR(*(p+2),'C','c')
@@ -1814,7 +1909,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 			p = n;
 			result->lines += SKIPWS(p, ';');
 			if (*p != ';') {
-				error("%s: Error: Expected closing ; before line %u!\n");
+				error("%s: Error: Expected closing ; before line %u near `%S`!\n", p);
 			}
 
 			UErrorCode err = U_ZERO_ERROR;
@@ -1973,9 +2068,11 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 			p = n;
 			result->lines += SKIPWS(p, '=');
 			if (*p != '=') {
-				error("%s: Error: Encountered a %C before the expected = on line %u!\n", *p);
+				error("%s: Error: Encountered a %C before the expected = on line %u near `%S`!\n", *p, p);
 			}
 			++p;
+
+			swapper_false swp(no_itmpls, no_itmpls);
 
 			ContextualTest *t = parseContextualTestList(p);
 			t->line = line;
@@ -1983,7 +2080,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 
 			result->lines += SKIPWS(p, ';');
 			if (*p != ';') {
-				error("%s: Error: Expected closing ; before line %u! Probably caused by missing set operator.\n");
+				error("%s: Error: Expected closing ; before line %u near `%S`! Probably caused by missing set operator.\n", p);
 			}
 		}
 		// PARENTHESES
@@ -1994,7 +2091,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 			p += 11;
 			result->lines += SKIPWS(p, '=');
 			if (*p != '=') {
-				error("%s: Error: Encountered a %C before the expected = on line %u!\n", *p);
+				error("%s: Error: Encountered a %C before the expected = on line %u near `%S`!\n", *p, p);
 			}
 			++p;
 			result->lines += SKIPWS(p);
@@ -2006,7 +2103,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 				UChar *n = p;
 				result->lines += SKIPTOWS(n, '(', true);
 				if (*n != '(') {
-					error("%s: Error: Encountered %C before the expected ( on line %u!\n", *p);
+					error("%s: Error: Encountered %C before the expected ( on line %u near `%S`!\n", *p, p);
 				}
 				n++;
 				result->lines += SKIPWS(n);
@@ -2034,7 +2131,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 					n++;
 					SKIPTO_NOSPAN(n, '"');
 					if (*n != '"') {
-						error("%s: Error: Expected closing \" on line %u!\n");
+						error("%s: Error: Expected closing \" on line %u near `%S`!\n", p);
 					}
 				}
 				result->lines += SKIPTOWS(n, ')', true);
@@ -2046,7 +2143,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 				p = n;
 
 				if (*p != ')') {
-					error("%s: Error: Encountered %C before the expected ) on line %u!\n", *p);
+					error("%s: Error: Encountered %C before the expected ) on line %u near `%S`!\n", *p, p);
 				}
 				++p;
 				result->lines += SKIPWS(p);
@@ -2058,11 +2155,11 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 			}
 
 			if (result->parentheses.empty()) {
-				error("%s: Error: PARENTHESES declared, but no definitions given, on line %u!\n");
+				error("%s: Error: PARENTHESES declared, but no definitions given, on line %u near `%S`!\n", p);
 			}
 			result->lines += SKIPWS(p, ';');
 			if (*p != ';') {
-				error("%s: Error: Expected closing ; before line %u!\n");
+				error("%s: Error: Expected closing ; before line %u near `%S`!\n", p);
 			}
 		}
 		// END
@@ -2227,6 +2324,14 @@ int TextualParser::parse_grammar_from_file(const char *fname, const char *loc, c
 		return error;
 	}
 
+	if (show_tags) {
+		boost_foreach (Tag *tag, result->single_tags_list) {
+			UString tmp(tag->toUString(true));
+			u_fprintf(ux_stderr, "%S\n", tmp.c_str());
+		}
+		exit(0);
+	}
+
 	result->addAnchor(keywords[K_END].getTerminatedBuffer(), result->rule_by_number.size()-1, true);
 
 	const_foreach (RuleVector, result->rule_by_number, it, it_end) {
@@ -2235,10 +2340,40 @@ int TextualParser::parse_grammar_from_file(const char *fname, const char *loc, c
 		}
 	}
 
+	boost_foreach (Tag *tag, result->single_tags_list) {
+		if (!(tag->type & T_VARSTRING)) {
+			continue;
+		}
+		UChar *p = &tag->tag[0];
+		UChar *n = 0;
+		do {
+			SKIPTO(p, '{');
+			if (*p) {
+				n = p;
+				SKIPTO(n, '}');
+				if (*n) {
+					tag->allocateVsSets();
+					tag->allocateVsNames();
+					++p;
+					UString theSet(p, n);
+					Set *tmp = parseSet(theSet.c_str(), p);
+					tag->vs_sets->push_back(tmp);
+					UString old;
+					old += '{';
+					old += tmp->name;
+					old += '}';
+					tag->vs_names->push_back(old);
+					p = n;
+					++p;
+				}
+			}
+		} while (*p);
+	}
+
 	const_foreach (deferred_t, deferred_tmpls, it, it_end) {
 		uint32_t cn = hash_value(it->second.second);
 		if (result->templates.find(cn) == result->templates.end()) {
-			u_fprintf(ux_stderr, "%s: Error: Unknown template '%S' referenced on line %u!\n", filebase, it->second.second.c_str(), it->second.first);
+			u_fprintf(ux_stderr, "%s: Error: Unknown template '%S' referenced on line %u near `%S`!\n", filebase, it->second.second.c_str(), it->second.first);
 			++error_counter;
 			continue;
 		}
