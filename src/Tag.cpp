@@ -323,6 +323,10 @@ UString Tag::toUString(bool escape) const {
 		str += ':';
 	}
 
+	if (type & (T_CASE_INSENSITIVE|T_REGEXP) && tag[0] != '"') {
+		str += '/';
+	}
+
 	if (escape) {
 		for (size_t i=0 ; i<tag.length() ; ++i) {
 			if (tag[i] == '\\' || tag[i] == '(' || tag[i] == ')' || tag[i] == ';' || tag[i] == '#') {
@@ -335,6 +339,9 @@ UString Tag::toUString(bool escape) const {
 		str + tag;
 	}
 
+	if (type & (T_CASE_INSENSITIVE|T_REGEXP) && tag[0] != '"') {
+		str += '/';
+	}
 	if (type & T_CASE_INSENSITIVE) {
 		str += 'i';
 	}
