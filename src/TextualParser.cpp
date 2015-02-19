@@ -2373,7 +2373,7 @@ int TextualParser::parse_grammar_from_file(const char *fname, const char *loc, c
 	const_foreach (deferred_t, deferred_tmpls, it, it_end) {
 		uint32_t cn = hash_value(it->second.second);
 		if (result->templates.find(cn) == result->templates.end()) {
-			u_fprintf(ux_stderr, "%s: Error: Unknown template '%S' referenced on line %u near `%S`!\n", filebase, it->second.second.c_str(), it->second.first);
+			u_fprintf(ux_stderr, "%s: Error: Unknown template '%S' referenced on line %u!\n", filebase, it->second.second.c_str(), it->second.first);
 			++error_counter;
 			continue;
 		}
