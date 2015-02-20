@@ -528,10 +528,10 @@ void Grammar::reindex(bool unused_sets) {
 	rules_any = 0;
 
 	foreach (TagVector, single_tags_list, iter, iter_end) {
-		if ((*iter)->regexp) {
+		if ((*iter)->regexp && (*iter)->tag[0] != '"' && (*iter)->tag[0] != '<') {
 			regex_tags.insert((*iter)->regexp);
 		}
-		if ((*iter)->type & T_CASE_INSENSITIVE) {
+		if (((*iter)->type & T_CASE_INSENSITIVE) && (*iter)->tag[0] != '"' && (*iter)->tag[0] != '<') {
 			icase_tags.insert((*iter));
 		}
 		if (is_binary) {
