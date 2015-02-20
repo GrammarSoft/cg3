@@ -19,6 +19,10 @@
 * along with VISL CG-3.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#pragma once
+#ifndef c6d28b7452ec699b_PARSER_HELPERS_H
+#define c6d28b7452ec699b_PARSER_HELPERS_H
+
 #include "Tag.hpp"
 #include "Set.hpp"
 #include "Grammar.hpp"
@@ -302,3 +306,5 @@ Set *parseSet(const UChar *name, const UChar *p, State& state) {
 }
 
 }
+
+#endif
