@@ -443,6 +443,19 @@
     </para>
   </section>
 
+  <section id="keyword-options">
+    <title>OPTIONS</title>
+    <indexterm>
+      <primary>OPTIONS</primary>
+    </indexterm>
+    <para>
+      Global options that affect the grammar parsing.
+    </para>
+    <screen>
+      OPTIONS += no-inline-sets ;
+    </screen>
+  </section>
+
   <section id="keyword-preferred-targets">
     <title>PREFERRED-TARGETS</title>
     <indexterm>
