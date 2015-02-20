@@ -1,3 +1,31 @@
+2015-02-20  tino
+
+	* [r10534] src/TextualParser.cpp: no-isets allow (*)
+	* [r10533] src/TextualParser.cpp: Moved no-isets check to start of
+	  (
+	* [r10532] src/BinaryGrammar_read.cpp,
+	  src/BinaryGrammar_read_10043.cpp, src/Grammar.hpp: Deduplicate
+	  code
+	* [r10531] src/all_cg_comp.cpp, src/all_cg_conv.cpp,
+	  src/all_cg_proc.cpp, src/all_vislcg3.cpp: Add #include
+	  BinaryGrammar_read_10043.cpp
+	* [r10530] manual/cgkeywords.xml, manual/grammar.xml: Documented
+	  OPTIONS += no-inline-sets no-inline-templates
+	* [r10529] src/parser_helpers.hpp: Include guard
+	* [r10528] manual/cgkeywords.xml, manual/cmdreference.xml,
+	  manual/tags.xml: Document STRICT-TAGS
+
+2015-02-19  tino
+
+	* [r10525] src/TextualParser.cpp: You don't know context
+	* [r10524] ChangeLog, src/Grammar.cpp, src/GrammarApplicator.cpp,
+	  src/Strings.cpp, src/Strings.hpp, src/Tag.cpp,
+	  src/TextualParser.cpp, src/TextualParser.hpp, src/inlines.hpp,
+	  src/main.cpp, src/options.hpp, src/parser_helpers.hpp,
+	  src/version.hpp: Implemented STRICT-TAGS += ... ; Implemented
+	  --show-tags ; Implemented OPTIONS += no-inline-templates
+	  no-inline-sets ;
+
 2015-02-18  tino
 
 	* [r10515] cg3.g: That comment is no longer true
@@ -2512,67 +2540,4 @@
 	* [r8223] emacs/cg.el: allow spaces in "<word>"
 	* [r8222] src/ApertiumApplicator.cpp: handle escaped chars in
 	  tags/lemmas
-
-2012-04-12  tino
-
-	* [r8216] scripts/cg3-autobin.pl,
-	  src/GrammarApplicator_runContextualTest.cpp, src/version.h: Fixed
-	  NONE p Tag to be true if there is a parent but the parent does
-	  not match Tag.
-
-2012-03-22  tino
-
-	* [r8190] src/cg3.h, src/cg_conv.cpp, src/icu_uoptions.h: ICU 49.1
-	  redefinition warning fix
-
-2012-03-08  tino
-
-	* [r8114] manual: Unlinked externals
-
-2012-03-07  ftyers
-
-	* [r8105] src/cg_proc.cpp: document null flush option
-
-2012-03-04  tino
-
-	* [r8096] src/ApertiumApplicator.cpp, src/ApertiumApplicator.h,
-	  src/BinaryGrammar.cpp, src/BinaryGrammar.h,
-	  src/BinaryGrammar_read.cpp, src/BinaryGrammar_write.cpp,
-	  src/Cohort.cpp, src/Cohort.h, src/CohortIterator.cpp,
-	  src/CohortIterator.h, src/CompositeTag.cpp, src/CompositeTag.h,
-	  src/ContextualTest.cpp, src/ContextualTest.h,
-	  src/FormatConverter.cpp, src/FormatConverter.h, src/Grammar.cpp,
-	  src/Grammar.h, src/GrammarApplicator.cpp,
-	  src/GrammarApplicator.h, src/GrammarApplicator_matchSet.cpp,
-	  src/GrammarApplicator_reflow.cpp,
-	  src/GrammarApplicator_runContextualTest.cpp,
-	  src/GrammarApplicator_runGrammar.cpp,
-	  src/GrammarApplicator_runRules.cpp, src/GrammarWriter.cpp,
-	  src/GrammarWriter.h, src/IGrammarParser.h,
-	  src/MatxinApplicator.cpp, src/MatxinApplicator.h,
-	  src/Reading.cpp, src/Reading.h, src/Rule.cpp, src/Rule.h,
-	  src/Set.cpp, src/Set.h, src/SingleWindow.cpp, src/SingleWindow.h,
-	  src/Strings.cpp, src/Strings.h, src/Tag.cpp, src/Tag.h,
-	  src/TextualParser.cpp, src/TextualParser.h, src/Window.cpp,
-	  src/Window.h, src/bloomish.hpp, src/cg3.h, src/cg_comp.cpp,
-	  src/cg_conv.cpp, src/cg_proc.cpp, src/inlines.h,
-	  src/interval_vector.hpp, src/libcg3.cpp, src/macros.h,
-	  src/main.cpp, src/options.h, src/sorted_vector.hpp, src/stdafx.h,
-	  src/test_libcg3.c, src/uextras.cpp, src/uextras.h, src/version.h:
-	  Now in 2012
-	* [r8095] src/libcg3.cpp: cg3
-
-2012-02-25  tino
-
-	* [r8080] get-boost.sh, src/CMakeLists.txt: Boost 1.49.0
-
-2012-02-17  tino
-
-	* [r8001] compile-profile.sh, scripts/profile-revisions.php,
-	  src/all_vislcg3.cpp, vapply.sh, vparse.sh: cg3
-
-2012-02-09  tino
-
-	* [r7992] src/GrammarApplicator_runRules.cpp: Endless rule loop
-	  combo breaker
 
