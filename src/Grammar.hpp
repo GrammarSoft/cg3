@@ -138,6 +138,27 @@ namespace CG3 {
 		void contextAdjustTarget(ContextualTest*);
 	};
 
+	inline void trie_unserialize(trie_t& trie, FILE *input, Grammar& grammar, uint32_t num_tags) {
+		for (uint32_t i = 0; i < num_tags; ++i) {
+			uint32_t u32tmp = 0;
+			fread(&u32tmp, sizeof(uint32_t), 1, input);
+			u32tmp = (uint32_t)ntohl(u32tmp);
+			trie_node_t& node = trie[grammar.single_tags_list[u32tmp]];
+
+			uint8_t u8tmp = 0;
+			fread(&u8tmp, sizeof(uint8_t), 1, input);
+			node.terminal = (u8tmp != 0);
+
+			fread(&u32tmp, sizeof(uint32_t), 1, input);
+			u32tmp = (uint32_t)ntohl(u32tmp);
+			if (u32tmp) {
+				if (!node.trie) {
+					node.trie = new trie_t;
+				}
+				trie_unserialize(*node.trie, input, grammar, u32tmp);
+			}
+		}
+	}
 }
 
 #endif
