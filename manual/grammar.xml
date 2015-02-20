@@ -4,6 +4,38 @@
 <chapter id="grammar">
   <title>Grammar</title>
 
+  <section id="grammar-options">
+    <title>OPTIONS</title>
+    <para>
+      You can affect how the grammar should be parsed with <code>OPTIONS += ... ;</code>.
+      Currently options can only be added, hence <code>+=</code>, but removing and assignment can be implemented if needed.
+    </para>
+    <screen>
+      OPTIONS += no-inline-templates ;
+    </screen>
+
+    <section id="grammar-options-noisets">
+      <title>no-inline-sets</title>
+      <indexterm>
+        <primary>no-inline-sets</primary>
+      </indexterm>
+      <para>
+        Disallows the use of inline sets in most places. They're still allowed in places that CG-2 did not consider sets,
+        such as MAP, ADD, REPLACE, and ADDCOHORT tag lists, and in the context of a SET definition.
+      </para>
+    </section>
+
+    <section id="grammar-options-noitmpls">
+      <title>no-inline-templates</title>
+      <indexterm>
+        <primary>no-inline-templates</primary>
+      </indexterm>
+      <para>
+        Disallows the use of inline templates in most places. They're still allowed in the context of a TEMPLATE definition.
+      </para>
+    </section>
+  </section>
+
   <section id="grammar-include">
     <title>INCLUDE</title>
     <para>
