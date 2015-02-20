@@ -229,6 +229,9 @@ Set *TextualParser::parseSetInline(UChar *& p, Set *s) {
 		if (*p && *p != ';' && *p != ')') {
 			if (!wantop) {
 				if (*p == '(') {
+					if (no_isets) {
+						error("%s: Error: Inline set spotted on line %u near `%S`!\n", p);
+					}
 					// No, this can't just reuse parseTagList() because this will only ever parse a single CompositeTag,
 					// whereas parseTagList() will handle mixed Tag and CompositeTag
 					// Doubly so now that parseTagList() will sort+uniq the tags, which we don't want for MAP/ADD/SUBSTITUTE/etc
@@ -404,7 +407,6 @@ Set *TextualParser::parseSetInline(UChar *& p, Set *s) {
 }
 
 Set *TextualParser::parseSetInlineWrapper(UChar *& p) {
-	UChar *op = p;
 	uint32_t tmplines = result->lines;
 	Set *s = parseSetInline(p);
 	if (!s->line) {
@@ -414,9 +416,6 @@ Set *TextualParser::parseSetInlineWrapper(UChar *& p) {
 		s->setName(sets_counter++);
 	}
 	result->addSet(s);
-	if (no_isets && !(s->type & ST_ANY)) {
-		error("%s: Error: Inline set spotted on line %u near `%S`!\n", op);
-	}
 	return s;
 }
 
