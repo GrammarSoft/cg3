@@ -9,6 +9,7 @@
 #include "Tag.cpp"
 #include "TextualParser.cpp"
 #include "uextras.cpp"
+#include "BinaryGrammar_read_10043.cpp"
 #include "BinaryGrammar_read.cpp"
 #include "BinaryGrammar_write.cpp"
 #include "GrammarApplicator_runGrammar.cpp"
