@@ -679,6 +679,19 @@
     </screen>
   </section>
 
+  <section id="keyword-strict-tags">
+    <title>STRICT-TAGS</title>
+    <indexterm>
+      <primary>STRICT-TAGS</primary>
+    </indexterm>
+    <para>
+      A whitelist of allowed tags.
+    </para>
+    <screen>
+      STRICT-TAGS += N V ADJ ;
+    </screen>
+  </section>
+
   <section id="keyword-substitute">
     <title>SUBSTITUTE</title>
     <indexterm>

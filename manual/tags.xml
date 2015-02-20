@@ -352,4 +352,26 @@
       This set will never match a reading with a &lt;dem&gt; tag, even if the reading matches (V TR).
     </para>
   </section>
+
+  <section id="strict-tags">
+    <title>STRICT-TAGS</title>
+    <para>
+      If you are worried about typos or need to otherwise enforce a strict tagset, <code>STRICT-TAGS</code> is your friend.
+      You can add tags to the list of allowed tags with <code>STRICT-TAGS += ... ;</code> where <code>...</code> is a list
+      of tags to allow. Any tag parsed while the STRICT-TAGS list is non-empty will be checked against the list, and an
+      error will be thrown if the tag is not on the list.
+    </para>
+    <para>
+      It is currently only possible to add to the list, hence <code>+=</code>.
+      Removing and assigning can be added if anyone needs those.
+    </para>
+    <screen>
+      STRICT-TAGS += N V ADJ etc ... ;
+    </screen>
+    <para>
+      Because you are likely to have many thousand allowed tags, I recommend keeping a shared grammar with a common
+      <code>STRICT-TAGS</code> definition and <link linkend="grammar-include">INCLUDE</link> that in other grammars.
+      To get a list of used tags in a non-strict grammar, pass --show-tags to CG-3.
+    </para>
+  </section>
 </chapter>
