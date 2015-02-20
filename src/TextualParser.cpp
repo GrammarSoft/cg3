@@ -229,7 +229,7 @@ Set *TextualParser::parseSetInline(UChar *& p, Set *s) {
 		if (*p && *p != ';' && *p != ')') {
 			if (!wantop) {
 				if (*p == '(') {
-					if (no_isets) {
+					if (no_isets && p[1] != '*') {
 						error("%s: Error: Inline set spotted on line %u near `%S`!\n", p);
 					}
 					// No, this can't just reuse parseTagList() because this will only ever parse a single CompositeTag,
