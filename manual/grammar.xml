@@ -22,6 +22,7 @@
       <para>
         Disallows the use of inline sets in most places. They're still allowed in places that CG-2 did not consider sets,
         such as MAP, ADD, REPLACE, and ADDCOHORT tag lists, and in the context of a SET definition.
+        Also, the special set (*) remains valid.
       </para>
     </section>
 

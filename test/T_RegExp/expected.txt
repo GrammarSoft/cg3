@@ -9,5 +9,4 @@
 	"BaseForm" d @baseform-diff
 "<word>"
 	"baseform" e @baseform-diff
-	"form" f @baseform-diff
-
+	"form" f @baseform-diff @add-f

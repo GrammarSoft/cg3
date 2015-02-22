@@ -32,3 +32,5 @@ ADD (@baseform-icsame) $$ibform (NEGATE 0 (*) - $$ibform) ;
 
 ADD (@slashes) (/^@.*-SAM/ri) ;
 ADD (@icase) (/@BASEFORM-SAME/i) ;
+
+ADD (VSTR:@add-$1) ("(.*)orm"r f) ;
