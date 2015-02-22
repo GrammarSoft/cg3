@@ -1,5 +1,7 @@
 2015-02-20  tino
 
+	* [r10535] ChangeLog, src/Grammar.cpp, src/GrammarApplicator.cpp,
+	  src/version.hpp: Undo not checking tag[0] for regex/icase tags
 	* [r10534] src/TextualParser.cpp: no-isets allow (*)
 	* [r10533] src/TextualParser.cpp: Moved no-isets check to start of
 	  (
@@ -2538,6 +2540,4 @@
 	* [r8224] src/GrammarApplicator.cpp: ensure newlines after
 	  window->text
 	* [r8223] emacs/cg.el: allow spaces in "<word>"
-	* [r8222] src/ApertiumApplicator.cpp: handle escaped chars in
-	  tags/lemmas
 
