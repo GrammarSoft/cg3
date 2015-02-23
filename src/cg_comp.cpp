@@ -26,7 +26,7 @@
 #include "BinaryGrammar.hpp"
 #include "GrammarApplicator.hpp"
 
-#ifndef _MSC_VER
+#ifndef _WIN32
 #include <libgen.h>
 #endif
 

@@ -19,7 +19,7 @@
 * along with VISL CG-3.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifdef _MSC_VER
+#ifdef _WIN32
 	#include <windows.h>
 #endif
 
@@ -30,7 +30,7 @@ namespace CG3 {
 
 std::string ux_dirname(const char *in) {
 	char tmp[32768] = {0};
-#ifdef _MSC_VER
+#ifdef _WIN32
 	char *fname = 0;
 	GetFullPathNameA(in, 32767, tmp, &fname);
 	if (fname) {

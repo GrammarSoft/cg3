@@ -26,7 +26,7 @@
 #include "GrammarApplicator.hpp"
 
 #include <getopt.h>
-#ifndef _MSC_VER
+#ifndef _WIN32
 #include <libgen.h>
 #endif
 
