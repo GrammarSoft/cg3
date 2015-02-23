@@ -26,7 +26,7 @@
 #include "stdafx.hpp"
 #include "Strings.hpp"
 
-#ifdef _MSC_VER
+#ifdef _WIN32
 inline const char *basename(const char *path) {
 	if (path != NULL) {
 		// Find the last position of \ or / in the path name

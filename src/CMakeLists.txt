@@ -44,7 +44,7 @@ macro(cg3_link target)
 		target_link_libraries(${target} ${GOOGLE_TCMALLOC_LIB})
 	endif()
 
-	if(MSVC)
+	if(WIN32)
 		target_link_libraries(${target} "wsock32.lib")
 	endif()
 
@@ -114,7 +114,7 @@ set(LIBCG3_SOURCES
 	../include/exec-stream/exec-stream.cpp
 	${LIBCG3_HEADERS}
 	)
-if(MSVC)
+if(WIN32)
 	set(LIBCG3_SOURCES
 		../win32/getopt.c
 		../win32/getopt.h
@@ -133,7 +133,7 @@ endif()
 cg3_link(libcg3)
 set(LINKLIB libcg3)
 
-if(NOT MSVC)
+if(NOT WIN32)
 	add_library(libcg3-shared SHARED libcg3.cpp $<TARGET_OBJECTS:libcg3-objs>)
 	set_target_properties(libcg3-shared PROPERTIES SOVERSION ${_cg3_VERSION_MAJOR})
 	set_target_properties(libcg3-shared PROPERTIES OUTPUT_NAME "cg3")

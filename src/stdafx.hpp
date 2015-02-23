@@ -86,7 +86,7 @@
 #define stdext boost
 #define hash_map unordered_map
 
-#ifdef _MSC_VER
+#ifdef _WIN32
 	#include <winsock.h> // for hton() and family.
 #else
 	#include <unistd.h>
