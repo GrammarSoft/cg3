@@ -114,7 +114,7 @@ set(LIBCG3_SOURCES
 	../include/exec-stream/exec-stream.cpp
 	${LIBCG3_HEADERS}
 	)
-if(WIN32)
+if(MSVC)
 	set(LIBCG3_SOURCES
 		../win32/getopt.c
 		../win32/getopt.h
@@ -133,7 +133,7 @@ endif()
 cg3_link(libcg3)
 set(LINKLIB libcg3)
 
-if(NOT WIN32)
+if(NOT MSVC)
 	add_library(libcg3-shared SHARED libcg3.cpp $<TARGET_OBJECTS:libcg3-objs>)
 	set_target_properties(libcg3-shared PROPERTIES SOVERSION ${_cg3_VERSION_MAJOR})
 	set_target_properties(libcg3-shared PROPERTIES OUTPUT_NAME "cg3")
