@@ -1,3 +1,19 @@
+2015-02-23  tino
+
+	* [r10548] src/CMakeLists.txt: More MSVC vs WIN32
+	* [r10547] CMakeLists.txt, get-boost.sh, src/CMakeLists.txt,
+	  src/cg_comp.cpp, src/cg_proc.cpp, src/stdafx.hpp,
+	  src/uextras.cpp, src/uextras.hpp: Differentiate between MSVC and
+	  WIN32 to allow for cross-compiling
+
+2015-02-22  tino
+
+	* [r10543] ChangeLog, manual/grammar.xml,
+	  src/GrammarApplicator_runRules.cpp, src/version.hpp,
+	  test/T_RegExp/expected.txt, test/T_RegExp/grammar.cg3,
+	  test/T_RegExp/grammar.cg3b.10043: Fix regex capture groups
+	  remaining captured after a target match fail
+
 2015-02-20  tino
 
 	* [r10535] ChangeLog, src/Grammar.cpp, src/GrammarApplicator.cpp,
@@ -2532,12 +2548,4 @@
 	  src/GrammarApplicator_runRules.cpp, src/version.h: Made
 	  getTagList() eliminate consecutive duplicates to fix some
 	  unification issues.
-
-2012-04-16  unhammer
-
-	* [r8225] src/ApertiumApplicator.cpp: keep first seen
-	  blank/superblank in lSWindow->text, useful for cg-conv
-	* [r8224] src/GrammarApplicator.cpp: ensure newlines after
-	  window->text
-	* [r8223] emacs/cg.el: allow spaces in "<word>"
 
