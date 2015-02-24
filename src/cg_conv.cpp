@@ -199,6 +199,26 @@ int main(int argc, char *argv[]) {
 		ucnv_close(conv);
 		grammar.mapping_prefix = buf[0];
 	}
+	if (options[SUB_DELIMITER].doesOccur) {
+		size_t sn = strlen(options[SUB_DELIMITER].value);
+		applicator.sub_delims.resize(sn*2);
+		UConverter *conv = ucnv_open(codepage_default, &status);
+		sn = ucnv_toUChars(conv, &applicator.sub_delims[0], applicator.sub_delims.size(), options[SUB_DELIMITER].value, sn, &status);
+		applicator.sub_delims.resize(sn);
+		applicator.sub_delims += '+';
+		ucnv_close(conv);
+	}
+	if (options[FST_WTAG].doesOccur) {
+		size_t sn = strlen(options[FST_WTAG].value);
+		applicator.wtag.resize(sn * 2);
+		UConverter *conv = ucnv_open(codepage_default, &status);
+		sn = ucnv_toUChars(conv, &applicator.wtag[0], applicator.wtag.size(), options[FST_WTAG].value, sn, &status);
+		applicator.wtag.resize(sn);
+		ucnv_close(conv);
+	}
+	if (options[FST_WFACTOR].doesOccur) {
+		applicator.wfactor = strtof(options[FST_WFACTOR].value, 0);
+	}
 
 	applicator.setOutputFormat(CG3::FMT_CG);
 

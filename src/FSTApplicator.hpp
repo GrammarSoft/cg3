@@ -31,6 +31,10 @@ class FSTApplicator : public virtual GrammarApplicator {
 public:
 	FSTApplicator(UFILE *ux_err);
 	void runGrammarOnText(istream& input, UFILE *output);
+
+	double wfactor;
+	UString wtag;
+	UString sub_delims;
 };
 
 }

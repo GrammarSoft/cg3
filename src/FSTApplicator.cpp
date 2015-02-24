@@ -30,8 +30,12 @@
 namespace CG3 {
 
 FSTApplicator::FSTApplicator(UFILE *ux_err)
-	: GrammarApplicator(ux_err)
+	: GrammarApplicator(ux_err),
+	wfactor(100.0)
 {
+	wtag += 'W';
+	sub_delims += '#';
+	sub_delims += '+';
 }
 
 void FSTApplicator::runGrammarOnText(istream& input, UFILE *output) {
@@ -65,6 +69,8 @@ void FSTApplicator::runGrammarOnText(istream& input, UFILE *output) {
 	std::vector<UChar> cleaned(line.size(), 0);
 	bool ignoreinput = false;
 	bool did_soft_lookback = false;
+	UString wtag_buf;
+	Tag *wtag_tag;
 
 	index();
 
@@ -168,15 +174,41 @@ gotaline:
 				const UChar *base = space;
 				TagList mappings;
 
+				wtag_tag = 0;
+				double weight = 0.0;
 				UChar *tab = u_strchr(space, '\t');
 				if (tab) {
 					tab[0] = 0;
+					++tab;
+					UChar *comma = u_strchr(tab, ',');
+					if (comma) {
+						comma[0] = '.';
+					}
+					char buf[32];
+					size_t i = 0;
+					for (; i < 31 && tab[i]; ++i) {
+						buf[i] = static_cast<char>(tab[i]);
+					}
+					buf[i] = 0;
+					weight = strtof(buf, 0);
+					weight *= wfactor;
+					i = sprintf(buf, "%.0f", weight);
+					wtag_buf.clear();
+					wtag_buf.reserve(wtag.size() + i + 3);
+					wtag_buf += '<';
+					wtag_buf += wtag;
+					wtag_buf += ':';
+					std::copy(buf, buf + i, std::back_inserter(wtag_buf));
+					wtag_buf += '>';
+					wtag_tag = addTag(wtag_buf);
 				}
 
 				while (space && *space && (space = u_strchr(space, '+')) != 0) {
 					if (base && base[0]) {
+						int32_t f = u_strcspn(base, sub_delims.c_str());
 						UChar *hash = 0;
-						if ((hash = u_strchr(base, '#')) != 0 && hash != base && hash < space) {
+						if (f && base+f < space) {
+							hash = const_cast<UChar*>(base)+f;
 							size_t oh = hash - &cleaned[0];
 							size_t ob = base - &cleaned[0];
 							cleaned.resize(cleaned.size()+1, 0);
@@ -201,6 +233,15 @@ gotaline:
 						else {
 							addTagToReading(*cReading, tag);
 						}
+						if (hash && hash[0] == 0) {
+							if (wtag_tag) {
+								addTagToReading(*cReading, wtag_tag);
+							}
+							Reading *nr = cReading->allocateReading(cReading->parent);
+							nr->next = cReading;
+							cReading = nr;
+							++space;
+						}
 					}
 					base = ++space;
 				}
@@ -220,6 +261,9 @@ gotaline:
 						addTagToReading(*cReading, tag);
 					}
 				}
+				if (wtag_tag) {
+					addTagToReading(*cReading, wtag_tag);
+				}
 				if (!cReading->baseform) {
 					cReading->baseform = cCohort->wordform->hash;
 					u_fprintf(ux_stderr, "Warning: Line %u had no valid baseform.\n", numLines);
@@ -231,6 +275,9 @@ gotaline:
 				}
 				if (!mappings.empty()) {
 					splitMappings(mappings, *cCohort, *cReading, true);
+				}
+				if (grammar->sub_readings_ltr && cReading->next) {
+					cReading = reverse(cReading);
 				}
 				cCohort->appendReading(cReading);
 				++numReadings;
