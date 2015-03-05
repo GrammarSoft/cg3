@@ -416,8 +416,8 @@ void BinaryGrammar::writeContextualTest(ContextualTest *t, FILE *output) {
 	if (t->tmpl) {
 		writeContextualTest(t->tmpl, output);
 	}
-	const_foreach(ContextList, t->ors, iter, iter_end) {
-		writeContextualTest(*iter, output);
+	boost_foreach (ContextualTest *iter, t->ors) {
+		writeContextualTest(iter, output);
 	}
 	if (t->linked) {
 		writeContextualTest(t->linked, output);
@@ -489,8 +489,8 @@ void BinaryGrammar::writeContextualTest(ContextualTest *t, FILE *output) {
 		u32tmp = (uint32_t)htonl((uint32_t)t->ors.size());
 		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 
-		const_foreach (ContextList, t->ors, iter, iter_end) {
-			u32tmp = (uint32_t)htonl((*iter)->hash);
+		boost_foreach (ContextualTest *iter, t->ors) {
+			u32tmp = (uint32_t)htonl(iter->hash);
 			fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 		}
 	}

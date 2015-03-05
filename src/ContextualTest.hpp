@@ -67,7 +67,7 @@ namespace CG3 {
 		POS_UNKNOWN        = (1 << 25),
 		POS_RELATION       = (1 << 26),
 		POS_ATTACH_TO      = (1 << 27),
-		// 28 unused
+		POS_NUMERIC_BRANCH = (1 << 28),
 		// 29 unused
 		POS_DEP_GLOB       = (1 << 30),
 		POS_64BIT          = (1ull << 31),
@@ -105,7 +105,7 @@ namespace CG3 {
 		ContextualTest *tmpl;
 		ContextualTest *linked;
 
-		ContextList ors;
+		ContextVector ors;
 
 		ContextualTest();
 		
@@ -116,6 +116,20 @@ namespace CG3 {
 		void markUsed(Grammar& grammar);
 	};
 
+	inline void copy_cntx(const ContextualTest *src, ContextualTest *trg) {
+		trg->offset = src->offset;
+		trg->offset_sub = src->offset_sub;
+		trg->line = src->line;
+		trg->hash = src->hash;
+		trg->seed = src->seed;
+		trg->pos = src->pos;
+		trg->target = src->target;
+		trg->relation = src->relation;
+		trg->barrier = src->barrier;
+		trg->cbarrier = src->cbarrier;
+		trg->tmpl = src->tmpl;
+		trg->linked = src->linked;
+	}
 }
 
 #endif

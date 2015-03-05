@@ -67,6 +67,28 @@ namespace CG3 {
 		return true;
 	}
 
+	inline trie_t *_trie_copy_helper(const trie_t& trie) {
+		trie_t *nt = new trie_t;
+		boost_foreach (const trie_t::value_type& p, trie) {
+			(*nt)[p.first].terminal = p.second.terminal;
+			if (p.second.trie) {
+				(*nt)[p.first].trie = _trie_copy_helper(*p.second.trie);
+			}
+		}
+		return nt;
+	}
+
+	inline trie_t trie_copy(const trie_t& trie) {
+		trie_t nt;
+		boost_foreach (const trie_t::value_type& p, trie) {
+			nt[p.first].terminal = p.second.terminal;
+			if (p.second.trie) {
+				nt[p.first].trie = _trie_copy_helper(*p.second.trie);
+			}
+		}
+		return nt;
+	}
+
 	inline void trie_delete(trie_t& trie) {
 		boost_foreach (trie_t::value_type& p, trie) {
 			if (p.second.trie) {

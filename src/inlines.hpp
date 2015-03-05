@@ -521,6 +521,24 @@ private:
 };
 
 template<typename T>
+class uncond_swap {
+public:
+	uncond_swap(T& a, T b) :
+	a_(a),
+	b_(b)
+	{
+		std::swap(a_, b_);
+	}
+
+	~uncond_swap() {
+		std::swap(a_, b_);
+	}
+private:
+	T& a_;
+	T b_;
+};
+
+template<typename T>
 inline T* reverse(T *head) {
 	T *nr = 0;
 	while (head) {

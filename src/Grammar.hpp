@@ -109,6 +109,7 @@ namespace CG3 {
 		void destroySet(Set *set);
 		void addSetToList(Set *s);
 		void allocateDummySet();
+		uint32_t removeNumericTags(uint32_t s);
 
 		void addAnchor(const UChar *to, uint32_t at, bool primary = false);
 

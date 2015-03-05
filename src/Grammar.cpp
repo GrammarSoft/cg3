@@ -310,6 +310,122 @@ void Grammar::allocateDummySet() {
 	sets_list.insert(sets_list.begin(), set_c);
 }
 
+uint32_t Grammar::removeNumericTags(uint32_t s) {
+	Set *set = getSet(s);
+	if (!set->sets.empty()) {
+		bool did = false;
+		BOOST_AUTO(sets, set->sets);
+		for (size_t i = 0; i < sets.size(); ++i) {
+			uint32_t ns = removeNumericTags(sets[i]);
+			if (ns == 0) {
+				set = getSet(sets[i]);
+				u_fprintf(ux_stderr, "Error: Removing numeric tags for branch resulted in set %S on line %u being empty!\n", set->name.c_str(), set->line);
+				CG3Quit(1);
+			}
+			if (ns != sets[i]) {
+				sets[i] = ns;
+				did = true;
+			}
+		}
+		/*
+		// ToDo: We can remove empty sets, but have to examine context to do so safely
+		BOOST_AUTO(set_ops, set->set_ops);
+		for (size_t i = 0; i < sets.size();) {
+			if (sets[i] == 0) {
+				sets.erase(sets.begin() + i);
+				if (!set_ops.empty()) {
+					if (i == 0) {
+						set_ops.erase(set_ops.begin());
+					}
+					else {
+						set_ops.erase(set_ops.begin() + (i - 1));
+					}
+				}
+			}
+			++i;
+		}
+		if (sets.empty()) {
+			return 0;
+		}
+		//*/
+		if (did) {
+			Set *ns = allocateSet();
+			ns->type = set->type;
+			ns->line = set->line;
+			ns->name = stringbits[S_GPREFIX].getTerminatedBuffer();
+			ns->name += set->name;
+			ns->name += '_';
+			ns->name += 'B';
+			ns->name += '_';
+			ns->sets = sets;
+			ns->set_ops = set->set_ops;
+			addSet(ns);
+			set = ns;
+		}
+	}
+	else {
+		bool did = false;
+		std::map<TagVector, bool> ntags;
+		TagVector tags;
+		const trie_t* tries[2] = { &set->trie, &set->trie_special };
+		for (size_t i = 0; i < 2; ++i) {
+			if (tries[i]->empty()) {
+				continue;
+			}
+			BOOST_AUTO(ctags, trie_getTags(*tries[i]));
+			for (BOOST_AUTO(it, ctags.begin()); it != ctags.end(); ++it) {
+				bool special = false;
+				tags.clear();
+				fill_tagvector(*it, tags, did, special);
+				if (!tags.empty()) {
+					ntags[tags] = special;
+				}
+			}
+		}
+
+		if (!set->ff_tags.empty()) {
+			bool special = false;
+			tags.clear();
+			fill_tagvector(set->ff_tags, tags, did, special);
+			if (!tags.empty()) {
+				ntags[tags] = special;
+			}
+		}
+
+		if (did) {
+			if (ntags.empty()) {
+				u_fprintf(ux_stderr, "Error: Removing numeric tags for branch resulted in set %S on line %u being empty!\n", set->name.c_str(), set->line);
+				CG3Quit(1);
+			}
+			Set *ns = allocateSet();
+			ns->type = set->type;
+			ns->line = set->line;
+			ns->name = stringbits[S_GPREFIX].getTerminatedBuffer();
+			ns->name += set->name;
+			ns->name += '_';
+			ns->name += 'B';
+			ns->name += '_';
+
+			for (BOOST_AUTO(it, ntags.begin()); it != ntags.end(); ++it) {
+				if (it->second) {
+					if (it->first.size() == 1 && (it->first[0]->type & T_FAILFAST)) {
+						ns->ff_tags.insert(it->first[0]);
+					}
+					else {
+						trie_insert(ns->trie_special, it->first);
+					}
+				}
+				else {
+					trie_insert(ns->trie, it->first);
+				}
+			}
+			addSet(ns);
+			set = ns;
+		}
+	}
+	return set->hash;
+}
+
 Rule *Grammar::allocateRule() {
 	return new Rule;
 }
@@ -411,8 +527,8 @@ ContextualTest *Grammar::addContextualTest(ContextualTest *t) {
 	t->rehash();
 
 	t->linked = addContextualTest(t->linked);
-	foreach (ContextList, t->ors, it, it_end) {
-		*it = addContextualTest(*it);
+	boost_foreach (ContextualTest *& it, t->ors) {
+		it = addContextualTest(it);
 	}
 
 	for (uint32_t seed = 0; seed < 1000; ++seed) {
