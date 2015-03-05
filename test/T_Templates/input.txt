@@ -3,7 +3,8 @@
 "<ate>"
 	"eat" <SVO> <SV> V PAST VFIN
 "<a>"
-	"a" <Indef> DET CENTRAL ART SG
+	"a" <Indef> DET CENTRAL ART SG <W:60>
+	"a" <Indef> NDET CENTRAL ART SG <W:60>
 "<cow>"
 	"cow" N NOM SG
 "<with>"
@@ -11,7 +12,7 @@
 "<biscuits>"
 	"biscuit" N NOM PL
 "<and>"
-	"and" CC
+	"and" CC <W:20>
 "<lemonade>"
 	"lemonade" <-Indef> N NOM SG
 "<$.>"

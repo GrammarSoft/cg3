@@ -29,24 +29,24 @@
 namespace CG3 {
 
 TextualParser::TextualParser(Grammar& res, UFILE *ux_err, bool show_tags) :
+verbosity_level(0),
+sets_counter(100),
+seen_mapping_prefix(0),
+option_vislcg_compat(false),
+in_section(false),
+in_before_sections(true),
+in_after_sections(false),
+in_null_section(false),
 show_tags(show_tags),
 no_isets(false),
-no_itmpls(false)
+no_itmpls(false),
+filename(0),
+locale(0),
+codepage(0),
+error_counter(0)
 {
 	ux_stderr = ux_err;
 	result = &res;
-	filename = 0;
-	locale = 0;
-	codepage = 0;
-	option_vislcg_compat = false;
-	in_before_sections = true;
-	in_after_sections = false;
-	in_null_section = false;
-	in_section = false;
-	verbosity_level = 0;
-	seen_mapping_prefix = 0;
-	error_counter = 0;
-	sets_counter = 100;
 }
 
 void TextualParser::incErrorCount() {
@@ -520,6 +520,10 @@ void TextualParser::parseContextualTestPosition(UChar *& p, ContextualTest& t) {
 			t.pos |= POS_UNKNOWN;
 			++p;
 		}
+		if (*p == 'f') {
+			t.pos |= POS_NUMERIC_BRANCH;
+			++p;
+		}
 		if (*p == '-') {
 			negative = true;
 			++p;
@@ -719,8 +723,7 @@ ContextualTest *TextualParser::parseContextualTestList(UChar *& p, Rule *rule) {
 			result->lines += SKIPWS(p);
 		}
 		if (t->ors.size() == 1 && verbosity_level > 0) {
-			UChar oldp = *p;
-			*p = 0;
+			uncond_swap<UChar> swp(*p, 0);
 			if (t->ors.front()->ors.size() < 2) {
 				u_fprintf(ux_stderr, "%s: Warning: Inline templates only make sense if you OR them on line %u at %S.\n", filebase, result->lines, pos_p);
 			}
@@ -728,7 +731,6 @@ ContextualTest *TextualParser::parseContextualTestList(UChar *& p, Rule *rule) {
 				u_fprintf(ux_stderr, "%s: Warning: Inline templates do not need () around the whole expression on line %u at %S.\n", filebase, result->lines, pos_p);
 			}
 			u_fflush(ux_stderr);
-			*p = oldp;
 		}
 	}
 	else if (gbuffers[0][0] == '[') {
@@ -806,11 +808,9 @@ label_parseTemplateRef:
 		result->lines += SKIPWS(p);
 
 		if ((t->barrier || t->cbarrier) && !(t->pos & MASK_POS_SCAN)) {
-			UChar oldp = *p;
-			*p = 0;
+			uncond_swap<UChar> swp(*p, 0);
 			u_fprintf(ux_stderr, "%s: Warning: Barriers only make sense for scanning tests on line %u at %S.\n", filebase, result->lines, pos_p);
 			u_fflush(ux_stderr);
-			*p = oldp;
 			t->barrier = 0;
 			t->cbarrier = 0;
 		}
@@ -2377,6 +2377,57 @@ int TextualParser::parse_grammar_from_file(const char *fname, const char *loc, c
 			continue;
 		}
 		it->first->tmpl = result->templates.find(cn)->second;
+	}
+
+	bc::flat_map<uint32_t,uint32_t> sets;
+	for (BOOST_AUTO(cntx, result->contexts.begin()); cntx != result->contexts.end(); ) {
+		if (cntx->second->pos & POS_NUMERIC_BRANCH) {
+			ContextualTest *unsafec = cntx->second;
+			result->contexts.erase(cntx);
+
+			if (sets.find(unsafec->target) == sets.end()) {
+				sets[unsafec->target] = result->removeNumericTags(unsafec->target);
+			}
+			unsafec->pos &= ~POS_NUMERIC_BRANCH;
+
+			ContextualTest *safec = result->allocateContextualTest();
+			copy_cntx(unsafec, safec);
+			
+			safec->pos |= POS_CAREFUL;
+			safec->target = sets[unsafec->target];
+
+			ContextualTest *tmp = unsafec;
+			unsafec = result->addContextualTest(unsafec);
+			safec = result->addContextualTest(safec);
+
+			ContextualTest *orc = result->allocateContextualTest();
+			orc->ors.push_back(safec);
+			orc->ors.push_back(unsafec);
+			orc = result->addContextualTest(orc);
+
+			for (BOOST_AUTO(cntx, result->contexts.begin()); cntx != result->contexts.end(); ++cntx) {
+				if (cntx->second->linked == tmp) {
+					cntx->second->linked = orc;
+				}
+			}
+			for (BOOST_AUTO(it, result->rule_by_number.begin()); it != result->rule_by_number.end(); ++it) {
+				if ((*it)->dep_target == tmp) {
+					(*it)->dep_target = orc;
+				}
+				ContextList *cntxs[2] = { &(*it)->tests, &(*it)->dep_tests };
+				for (size_t i = 0; i < 2; ++i) {
+					boost_foreach (ContextualTest *& test, *cntxs[i]) {
+						if (test == tmp) {
+							test = orc;
+						}
+					}
+				}
+			}
+			cntx = result->contexts.begin();
+		}
+		else {
+			++cntx;
+		}
 	}
 
 	return error_counter;

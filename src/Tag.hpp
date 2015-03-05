@@ -124,6 +124,21 @@ namespace CG3 {
 	typedef std::vector<Tag*> TagVector;
 	typedef flat_unordered_map<uint32_t,Tag*> Taguint32HashMap;
 	typedef sorted_vector<Tag*, compare_Tag> TagSortedVector;
+
+	template<typename T>
+	inline void fill_tagvector(const T& in, TagVector& tags, bool& did, bool& special) {
+		boost_foreach(Tag *tag, in) {
+			if (tag->type & T_NUMERICAL) {
+				did = true;
+			}
+			else {
+				if (tag->type & T_SPECIAL) {
+					special = true;
+				}
+				tags.push_back(tag);
+			}
+		}
+	}
 }
 
 #endif

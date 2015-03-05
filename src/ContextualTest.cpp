@@ -109,8 +109,8 @@ uint32_t ContextualTest::rehash() {
 	if (tmpl) {
 		hash = hash_value(hash, static_cast<uint32_t>(reinterpret_cast<uintptr_t>(tmpl)));
 	}
-	foreach (ContextList, ors, iter, iter_end) {
-		hash = hash_value(hash, (*iter)->rehash());
+	boost_foreach (ContextualTest *iter, ors) {
+		hash = hash_value(hash, iter->rehash());
 	}
 
 	hash += seed;
@@ -125,8 +125,8 @@ void ContextualTest::resetStatistics() {
 	if (tmpl) {
 		tmpl->resetStatistics();
 	}
-	foreach (ContextList, ors, idts, idts_end) {
-		(*idts)->resetStatistics();
+	boost_foreach (ContextualTest *idts, ors) {
+		idts->resetStatistics();
 	}
 	if (linked) {
 		linked->resetStatistics();
@@ -155,8 +155,8 @@ void ContextualTest::markUsed(Grammar& grammar) {
 	if (tmpl) {
 		tmpl->markUsed(grammar);
 	}
-	foreach (ContextList, ors, idts, idts_end) {
-		(*idts)->markUsed(grammar);
+	boost_foreach (ContextualTest *idts, ors) {
+		idts->markUsed(grammar);
 	}
 	if (linked) {
 		linked->markUsed(grammar);
