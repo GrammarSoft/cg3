@@ -157,9 +157,7 @@ int GrammarWriter::writeGrammar(UFILE *output) {
 		}
 	}
 	boost_foreach (Set *s, grammar->sets_list) {
-		if (s->type & ST_USED) {
-			printSet(output, *s);
-		}
+		printSet(output, *s);
 	}
 	u_fprintf(output, "\n");
 
@@ -295,8 +293,7 @@ void GrammarWriter::printContextualTest(UFILE *to, const ContextualTest& test) {
 		u_fprintf(to, "T:%u ", test.tmpl->hash);
 	}
 	else if (!test.ors.empty()) {
-		std::list<ContextualTest*>::const_iterator iter;
-		for (iter = test.ors.begin() ; iter != test.ors.end() ; ) {
+		for (BOOST_AUTO(iter, test.ors.begin()) ; iter != test.ors.end() ; ) {
 			u_fprintf(to, "(");
 			printContextualTest(to, **iter);
 			u_fprintf(to, ")");

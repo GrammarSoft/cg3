@@ -208,33 +208,32 @@ Cohort *GrammarApplicator::runContextualTest(SingleWindow *sWindow, size_t posit
 	}
 	else if (!test->ors.empty()) {
 		Cohort *cdeep = 0;
-		std::list<ContextualTest*>::const_iterator iter;
-		for (iter = test->ors.begin() ; iter != test->ors.end() ; iter++) {
-			uint64_t orgpos = (*iter)->pos;
-			int32_t orgoffset = (*iter)->offset;
-			uint32_t orgcbar = (*iter)->cbarrier;
-			uint32_t orgbar = (*iter)->barrier;
+		boost_foreach (ContextualTest *iter, test->ors) {
+			uint64_t orgpos = iter->pos;
+			int32_t orgoffset = iter->offset;
+			uint32_t orgcbar = iter->cbarrier;
+			uint32_t orgbar = iter->barrier;
 			if (test->pos & POS_TMPL_OVERRIDE) {
-				(*iter)->pos = test->pos;
-				(*iter)->pos &= ~(POS_TMPL_OVERRIDE|POS_NEGATE|POS_NOT|POS_MARK_JUMP);
-				(*iter)->offset = test->offset;
+				iter->pos = test->pos;
+				iter->pos &= ~(POS_TMPL_OVERRIDE|POS_NEGATE|POS_NOT|POS_MARK_JUMP);
+				iter->offset = test->offset;
 				if (test->offset != 0 && !(test->pos & (POS_SCANFIRST|POS_SCANALL|POS_ABSOLUTE))) {
-					(*iter)->pos |= POS_SCANALL;
+					iter->pos |= POS_SCANALL;
 				}
 				if (test->cbarrier) {
-					(*iter)->cbarrier = test->cbarrier;
+					iter->cbarrier = test->cbarrier;
 				}
 				if (test->barrier) {
-					(*iter)->barrier = test->barrier;
+					iter->barrier = test->barrier;
 				}
 			}
 			dep_deep_seen.clear();
-			cohort = runContextualTest(sWindow, position, *iter, &cdeep, origin);
+			cohort = runContextualTest(sWindow, position, iter, &cdeep, origin);
 			if (test->pos & POS_TMPL_OVERRIDE) {
-				(*iter)->pos = orgpos;
-				(*iter)->offset = orgoffset;
-				(*iter)->cbarrier = orgcbar;
-				(*iter)->barrier = orgbar;
+				iter->pos = orgpos;
+				iter->offset = orgoffset;
+				iter->cbarrier = orgcbar;
+				iter->barrier = orgbar;
 				if (cdeep && test->offset != 0) {
 					int32_t reloff = int32_t(cdeep->local_number) - int32_t(position);
 					if (!(test->pos & (POS_SCANFIRST|POS_SCANALL|POS_ABSOLUTE))) {

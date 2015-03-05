@@ -1,3 +1,11 @@
+2015-02-24  tino
+
+	* [r10550] src/CMakeLists.txt: Actually install DLL
+	* [r10549] ChangeLog, manual/cmdreference.xml,
+	  src/FSTApplicator.cpp, src/FSTApplicator.hpp, src/cg_conv.cpp,
+	  src/options_conv.hpp, src/version.hpp: Added cg-conv --wfactor,-W
+	  --wtag --sub-delim,-S
+
 2015-02-23  tino
 
 	* [r10548] src/CMakeLists.txt: More MSVC vs WIN32
@@ -2538,14 +2546,4 @@
 	  src/version.h, test/T_RegExp/expected.txt,
 	  test/T_RegExp/grammar.txt: Added regular expressions in the usual
 	  // notation, though requiring suffix r or i or ri.
-	* [r8304] scripts/cg3-autobin.pl, src/CohortIterator.cpp,
-	  src/version.h: Fixed parent iterator's reset to clear seen before
-	  incrementing.
-
-2012-05-14  tino
-
-	* [r8288] manual/installation.xml, scripts/cg3-autobin.pl,
-	  src/GrammarApplicator_runRules.cpp, src/version.h: Made
-	  getTagList() eliminate consecutive duplicates to fix some
-	  unification issues.
 

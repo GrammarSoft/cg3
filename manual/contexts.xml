@@ -271,6 +271,23 @@
     </screen>
   </section>
 
+  <section id="test-branch">
+    <title>Optional Frequencies</title>
+    <indexterm>
+      <primary>f</primary>
+    </indexterm>
+    <para>
+      Position modifer 'f' creates two branches based on the current test. In the first, the test remains exactly as
+      is written. In the second, all <link linkend="numerical-matches">numeric tags</link> are removed and
+      modifier 'C' is added. This is equivalent to making an inline template with OR'ed tests.
+    </para>
+    <para>
+      E.g., test <code>(-1*f (N &lt;W>50&gt;))</code> is equivalent to <code>(-1* (N &lt;W>50&gt;)) OR (-1*C (N))</code>.
+      This is all done at compile time.
+      The numeric tag removal will dig down through the whole target set and create new sets along the way as needed.
+    </para>
+  </section>
+
   <section id="test-dependency">
     <title>Dependencies</title>
     <para>

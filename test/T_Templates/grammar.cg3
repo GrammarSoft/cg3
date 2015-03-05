@@ -35,6 +35,9 @@ ADD (@artnNegateGood) (PREP) IF (NEGATE T:ArtN) ;
 ADD (@artnNegateGoodOffset) (PREP) IF (NEGATE 1 T:ArtN) ;
 ADD (@artnNegateBad) (PREP) IF (NEGATE -1 T:ArtN) ;
 
+ADD (@branch-nonC) (PREP) IF (-1*f (DET <W>30>)) ;
+ADD (@branch-C) (PREP) IF (1*f (CC <W>30>)) ;
+
 ## --- Following is an internal compiler stress test.
 
 LIST x = x;

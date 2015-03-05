@@ -3,15 +3,16 @@
 "<ate>"
 	"eat" <SVO> <SV> V PAST VFIN
 "<a>"
-	"a" <Indef> DET CENTRAL ART SG @preGood
+	"a" <Indef> DET CENTRAL ART SG <W:60> @preGood
+	"a" <Indef> NDET CENTRAL ART SG <W:60> @preGood
 "<cow>"
 	"cow" N NOM SG @bothGoodGood
 "<with>"
-	"with" PREP @beforeNccN @artnGood @artnNegateGood @artnNegateGoodOffset
+	"with" PREP @beforeNccN @artnGood @artnNegateGood @artnNegateGoodOffset @branch-nonC @branch-C
 "<biscuits>"
 	"biscuit" N NOM PL @startNccN
 "<and>"
-	"and" CC
+	"and" CC <W:20>
 "<lemonade>"
 	"lemonade" <-Indef> N NOM SG
 "<$.>"
