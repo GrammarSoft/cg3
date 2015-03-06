@@ -172,6 +172,7 @@ namespace CG3 {
 		bool did_final_enclosure;
 
 		std::vector<UnicodeString> regexgrps;
+		bc::flat_map<uint32_t, std::vector<UnicodeString>> regexgrps_r;
 		Cohort *target;
 		Cohort *mark;
 		Cohort *attach_to;
