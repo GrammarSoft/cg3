@@ -205,6 +205,9 @@ Tag *parseTag(const UChar *to, const UChar *p, State& state) {
 		else if (u_strcmp(tag->tag.c_str(), stringbits[S_UU_ATTACHTO].getTerminatedBuffer()) == 0) {
 			tag->type |= T_ATTACHTO;
 		}
+		else if (u_strcmp(tag->tag.c_str(), stringbits[S_UU_SAME_BASIC].getTerminatedBuffer()) == 0) {
+			tag->type |= T_SAME_BASIC;
+		}
 
 		if (tag->type & T_REGEXP) {
 			if (u_strcmp(tag->tag.c_str(), stringbits[S_RXTEXT_ANY].getTerminatedBuffer()) == 0
