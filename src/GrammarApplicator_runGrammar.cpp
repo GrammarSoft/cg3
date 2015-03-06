@@ -158,6 +158,10 @@ gotaline:
 			if (space[0] == '"' && space[1] == '<') {
 				++space;
 				SKIPTO_NOSPAN(space, '"');
+				while (*space && space[-1] != '>') {
+					++space;
+					SKIPTO_NOSPAN(space, '"');
+				}
 				SKIPTOWS(space, 0, true, true);
 				--space;
 			}
