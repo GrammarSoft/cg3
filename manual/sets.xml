@@ -15,7 +15,7 @@
       <screen>
         LIST a = a b c d ;
         LIST b = c d e f ;
-  
+
         # Logically yields a set containing tags: a b c d e f
         # Practically a reading must match either set
         SET r = a OR b ;
@@ -31,7 +31,7 @@
       <screen>
         LIST a = a b c d ;
         LIST b = c d e f ;
-  
+
         # Logically yields a set containing tags: a b !c !d !e !f
         # Practically a reading must match the first set and must not match the second set
         SET r = a - b ;
@@ -47,7 +47,7 @@
       <screen>
         LIST a = a b c d ;
         LIST b = c d e f ;
-  
+
         # Logically yields a set containing tags: a b e f
         SET r = a &#x2206; b ;
       </screen>
@@ -62,7 +62,7 @@
       <screen>
         LIST a = a b c d ;
         LIST b = c d e f ;
-  
+
         # Logically yields a set containing tags: c d
         SET r = a &#x2229; b ;
       </screen>
@@ -76,7 +76,7 @@
       <screen>
         LIST a = a b c d ;
         LIST b = c d e f ;
-  
+
         # Logically yields a set containing tags: (a c) (b c) c (d c) (a d) (b d) d (a e)
         #                                         (b e) (c e) (d e) (a f) (b f) (c f) (d f)
         # Practically a reading must match both sets
@@ -111,7 +111,7 @@
         SELECT (*) - NotTheseTags ;
       </screen>
     </section>
-  
+
     <section id="set-delimiters">
       <title>_S_DELIMITERS_</title>
       <para>
@@ -123,7 +123,7 @@
         SET SomeSet = OtherSet OR _S_DELIMITERS_ ;
       </screen>
     </section>
-  
+
     <section id="set-soft-delimiters">
       <title>_S_SOFT_DELIMITERS_</title>
       <para>
@@ -134,7 +134,7 @@
         (**1 _S_SOFT_DELIMITERS_ BARRIER BoogieSet)
       </screen>
     </section>
-  
+
     <section id="set-target">
       <title>Magic Set _TARGET_</title>
       <para>
@@ -142,7 +142,7 @@
         This set and tag will only match when the currently active cohort is the target of the rule.
       </para>
     </section>
-  
+
     <section id="set-mark">
       <title>Magic Set _MARK_</title>
       <para>
@@ -151,12 +151,21 @@
         or if no such mark is set it will only match the target of the rule.
       </para>
     </section>
-  
+
     <section id="set-attachto">
       <title>Magic Set _ATTACHTO_</title>
       <para>
         A magic set containing the single tag (_ATTACHTO_).
         This set and tag will only match when the currently active cohort is the mark set with A.
+      </para>
+    </section>
+
+    <section id="set-same-basic">
+      <title>Magic Set _SAME_BASIC_</title>
+      <para>
+        A magic set containing the single tag (_SAME_BASIC_).
+        This set and tag will only match when the currently active reading has the same basic tags (non-mapping tags)
+        as the target reading.
       </para>
     </section>
   </section>
@@ -208,17 +217,17 @@
         <screen>
           # Put $$UNISET in the target
           SELECT (tag) + $$UNISET IF (-2* $$UNISET) (1** $$UNISET) ;
-  
+
           # Only refer to $$UNISET in a single linked chain of tests
           SELECT (tag) IF (0 $$UNISET LINK -2* $$UNISET LINK 1** $$UNISET) ;
-          
+
           # Use rule option KEEPORDER
           SELECT KEEPORDER (tag) IF (0 $$UNISET) (-2* $$UNISET) (1** $$UNISET) ;
         </screen>
         Having the unifier in the target is usually the best way to enforce behavior.
       </para>
     </section>
-  
+
     <section id="set-unification-set">
       <title>Top-Level Set Unification</title>
       <para>

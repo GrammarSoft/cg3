@@ -400,6 +400,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 					unif_sets->clear();
 				}
 
+				same_basic = reading->hash_plain;
 				target = 0;
 				mark = cohort;
 				size_t orz = regexgrps.size();
