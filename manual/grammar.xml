@@ -4,6 +4,17 @@
 <chapter id="grammar">
   <title>Grammar</title>
 
+  <section id="reopen-mappings">
+    <title>REOPEN-MAPPINGS</title>
+    <para>
+      A list of mapping tags that ADD/MAP/REPLACE should be able to operate on even though they were present on readings
+      in the input stream.
+    </para>
+    <screen>
+      REOPEN-MAPPINGS = @a @b @c ;
+    </screen>
+  </section>
+
   <section id="grammar-options">
     <title>OPTIONS</title>
     <para>

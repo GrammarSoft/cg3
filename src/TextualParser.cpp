@@ -1437,6 +1437,47 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 				error("%s: Error: Expected closing ; before line %u near `%S`!\n", p);
 			}
 		}
+		// REOPEN-MAPPINGS
+		else if (ISCHR(*p, 'R', 'r') && ISCHR(*(p + 14), 'S', 's') && ISCHR(*(p + 1), 'E', 'e') && ISCHR(*(p + 2), 'O', 'o')
+			&& ISCHR(*(p + 3), 'P', 'p') && ISCHR(*(p + 4), 'E', 'e') && ISCHR(*(p + 5), 'N', 'n') && ISCHR(*(p + 6), '-', '_')
+			&& ISCHR(*(p + 7), 'M', 'm') && ISCHR(*(p + 8), 'A', 'a') && ISCHR(*(p + 9), 'P', 'p') && ISCHR(*(p + 10), 'P', 'p')
+			&& ISCHR(*(p + 11), 'I', 'i') && ISCHR(*(p + 12), 'N', 'n') && ISCHR(*(p + 13), 'G', 'g')
+			&& !ISSTRING(p, 14)) {
+			p += 15;
+			result->lines += SKIPWS(p, '=');
+			if (*p != '=') {
+				error("%s: Error: Encountered a %C before the expected = on line %u near `%S`!\n", *p, p);
+			}
+			++p;
+			result->lines += SKIPWS(p);
+
+			while (*p && *p != ';') {
+				UChar *n = p;
+				if (*n == '"') {
+					n++;
+					SKIPTO_NOSPAN(n, '"');
+					if (*n != '"') {
+						error("%s: Error: Expected closing \" on line %u near `%S`!\n", p);
+					}
+				}
+				result->lines += SKIPTOWS(n, ';', true);
+				ptrdiff_t c = n - p;
+				u_strncpy(&gbuffers[0][0], p, c);
+				gbuffers[0][c] = 0;
+				Tag *t = parseTag(&gbuffers[0][0], p);
+				result->reopen_mappings.insert(t->hash);
+				p = n;
+				result->lines += SKIPWS(p);
+			}
+
+			if (result->reopen_mappings.empty()) {
+				error("%s: Error: REOPEN-MAPPINGS declared, but no definitions given, on line %u near `%S`!\n", p);
+			}
+			result->lines += SKIPWS(p, ';');
+			if (*p != ';') {
+				error("%s: Error: Expected closing ; before line %u near `%S`!\n", p);
+			}
+		}
 		// STATIC-SETS
 		else if (ISCHR(*p,'S','s') && ISCHR(*(p+10),'S','s') && ISCHR(*(p+1),'T','t') && ISCHR(*(p+2),'A','a')
 			&& ISCHR(*(p+3),'T','t') && ISCHR(*(p+4),'I','i') && ISCHR(*(p+5),'C','c') && ISCHR(*(p+6),'-','-')
