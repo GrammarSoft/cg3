@@ -333,6 +333,9 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 			if (!regexgrps.empty()) {
 				regexgrps.clear();
 			}
+			if (!regexgrps_r.empty()) {
+				regexgrps_r.clear();
+			}
 			if (!unif_tags_rs.empty()) {
 				unif_tags_rs.clear();
 			}
@@ -402,12 +405,16 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 				size_t orz = regexgrps.size();
 				// Actually check if the reading is a valid target. First check if rule target matches...
 				if (rule.target && doesSetMatchReading(*reading, rule.target, (set.type & (ST_CHILD_UNIFY|ST_SPECIAL)) != 0)) {
+					bool captured = false;
+					if (orz != regexgrps.size()) {
+						did_test = false;
+						captured = true;
+					}
 					target = cohort;
 					reading->matched_target = true;
 					matched_target = true;
 					bool good = true;
 					// If we didn't already run the contextual tests, run them now.
-					// This only needs to be done once per cohort as no current functionality exists to refer back to the exact reading.
 					if (!did_test) {
 						foreach (ContextList, rule.tests, it, it_end) {
 							ContextualTest *test = *it;
@@ -450,6 +457,12 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						reading->matched_tests = true;
 						++num_active;
 						++rule.num_match;
+						if (captured) {
+							regexgrps_r[reading->hash].swap(regexgrps);
+						}
+					}
+					else {
+						regexgrps.resize(orz);
 					}
 					++num_iff;
 				}
@@ -501,6 +514,10 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 				Reading& reading_head = *cohort->readings[i];
 				bool good = reading.matched_tests;
 				const uint32_t state_hash = reading.hash;
+
+				if (regexgrps_r.count(reading.hash)) {
+					regexgrps_r[reading.hash].swap(regexgrps);
+				}
 
 				// Iff needs extra special care; if it is a Remove type and we matched the target, go ahead.
 				// If it had matched the tests it would have been Select type.
