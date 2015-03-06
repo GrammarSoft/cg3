@@ -628,6 +628,13 @@ void GrammarApplicator::splitAllMappings(all_mappings_t& all_mappings, Cohort& c
 		splitMappings(iter->second, cohort, *reading, mapped);
 	}
 	std::sort(cohort.readings.begin(), cohort.readings.end(), CG3::Reading::cmp_number);
+	if (!grammar->reopen_mappings.empty()) {
+		boost_foreach (Reading *reading, cohort.readings) {
+			if (reading->mapping && grammar->reopen_mappings.count(reading->mapping->hash)) {
+				reading->mapped = false;
+			}
+		}
+	}
 	all_mappings.clear();
 }
 

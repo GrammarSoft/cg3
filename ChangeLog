@@ -1,3 +1,27 @@
+2015-03-06  tino
+
+	* [r10574] src/GrammarApplicator.hpp,
+	  src/GrammarApplicator_runRules.cpp: Regex captures are now
+	  per-reading
+	* [r10570] src/GrammarApplicator.cpp,
+	  src/GrammarApplicator_reflow.cpp, src/GrammarWriter.cpp: Readings
+	  that would be considered identical without --trace are now marked
+	  deleted under --trace. This is incorrect behavior, but being
+	  blessed because it makes things easier for grammarians.
+
+2015-03-05  tino
+
+	* [r10568] CMakeLists.txt, ChangeLog, manual/contexts.xml,
+	  src/BinaryGrammar_write.cpp, src/ContextualTest.cpp,
+	  src/ContextualTest.hpp, src/Grammar.cpp, src/Grammar.hpp,
+	  src/GrammarApplicator_runContextualTest.cpp,
+	  src/GrammarWriter.cpp, src/Tag.hpp, src/TagTrie.hpp,
+	  src/TextualParser.cpp, src/inlines.hpp, src/stdafx.hpp,
+	  src/version.hpp, test/T_Templates/expected.txt,
+	  test/T_Templates/grammar.cg3,
+	  test/T_Templates/grammar.cg3b.10043, test/T_Templates/input.txt:
+	  New context modifier 'f'
+
 2015-02-24  tino
 
 	* [r10550] src/CMakeLists.txt: Actually install DLL
@@ -2536,14 +2560,4 @@
 2012-05-21  tino
 
 	* [r8308] src/Grammar.cpp, src/GrammarApplicator.cpp: cg3
-	* [r8307] src/Grammar.cpp, src/Tag.cpp: cg3
-	* [r8306] scripts/cg3-autobin.pl, src/Grammar.cpp, src/version.h:
-	  cg3
-	* [r8305] manual/tags.xml, scripts/cg3-autobin.pl, src/Grammar.cpp,
-	  src/Grammar.h, src/GrammarApplicator.cpp,
-	  src/GrammarApplicator.h, src/GrammarApplicator_matchSet.cpp,
-	  src/GrammarApplicator_reflow.cpp, src/Tag.cpp, src/Tag.h,
-	  src/version.h, test/T_RegExp/expected.txt,
-	  test/T_RegExp/grammar.txt: Added regular expressions in the usual
-	  // notation, though requiring suffix r or i or ri.
 

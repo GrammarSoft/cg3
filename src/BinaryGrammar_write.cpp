@@ -61,11 +61,9 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 	if (!grammar->single_tags_list.empty()) {
 		fields |= (1 << 3);
 	}
-	/*
-	if (!grammar->tags_list.empty()) {
+	if (!grammar->reopen_mappings.empty()) {
 		fields |= (1 << 4);
 	}
-	//*/
 	if (!grammar->preferred_targets.empty()) {
 		fields |= (1 << 5);
 	}
@@ -192,12 +190,20 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 		fwrite(buffer.str().c_str(), buffer.str().length(), 1, output);
 	}
 
+	if (!grammar->reopen_mappings.empty()) {
+		u32tmp = (uint32_t)htonl((uint32_t)grammar->reopen_mappings.size());
+		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
+	}
+	for (BOOST_AUTO(iter, grammar->reopen_mappings.begin()); iter != grammar->reopen_mappings.end(); ++iter) {
+		u32tmp = (uint32_t)htonl((uint32_t)*iter);
+		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
+	}
+
 	if (!grammar->preferred_targets.empty()) {
 		u32tmp = (uint32_t)htonl((uint32_t)grammar->preferred_targets.size());
 		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 	}
-	uint32Vector::const_iterator iter;
-	for (iter = grammar->preferred_targets.begin() ; iter != grammar->preferred_targets.end() ; iter++ ) {
+	for (BOOST_AUTO(iter, grammar->preferred_targets.begin()) ; iter != grammar->preferred_targets.end() ; ++iter) {
 		u32tmp = (uint32_t)htonl((uint32_t)*iter);
 		fwrite(&u32tmp, sizeof(uint32_t), 1, output);
 	}
