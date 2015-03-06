@@ -213,6 +213,18 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 	}
 
 	u32tmp = 0;
+	if (fields & (1 << 4)) {
+		fread(&u32tmp, sizeof(uint32_t), 1, input);
+		u32tmp = (uint32_t)ntohl(u32tmp);
+	}
+	uint32_t num_remaps = u32tmp;
+	for (uint32_t i = 0; i<num_remaps; ++i) {
+		fread(&u32tmp, sizeof(uint32_t), 1, input);
+		u32tmp = (uint32_t)ntohl(u32tmp);
+		grammar->reopen_mappings.insert(u32tmp);
+	}
+
+	u32tmp = 0;
 	if (fields & (1 << 5)) {
 		fread(&u32tmp, sizeof(uint32_t), 1, input);
 		u32tmp = (uint32_t)ntohl(u32tmp);
