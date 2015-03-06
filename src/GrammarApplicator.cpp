@@ -368,6 +368,9 @@ void GrammarApplicator::printReading(const Reading *reading, UFILE *output, size
 	}
 
 	if (reading->deleted) {
+		if (!trace) {
+			return;
+		}
 		u_fputc(';', output);
 	}
 
