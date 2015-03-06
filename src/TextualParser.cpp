@@ -2358,6 +2358,15 @@ int TextualParser::parse_grammar_from_file(const char *fname, const char *loc, c
 		set_c->sets.push_back(s_right->hash);
 		result->addSet(set_c);
 	}
+	// Create the magic set _SAME_BASIC_ containing the tag _SAME_BASIC_
+	{
+		Set *set_c = result->allocateSet();
+		set_c->line = 0;
+		set_c->setName(stringbits[S_UU_SAME_BASIC].getTerminatedBuffer());
+		Tag *t = parseTag(stringbits[S_UU_SAME_BASIC].getTerminatedBuffer());
+		result->addTagToSet(t, set_c);
+		result->addSet(set_c);
+	}
 
 	error = parseFromUChar(&data[4], filename);
 	if (error) {

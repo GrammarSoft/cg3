@@ -1,5 +1,10 @@
 2015-03-06  tino
 
+	* [r10576] ChangeLog, manual/grammar.xml,
+	  src/BinaryGrammar_read.cpp, src/BinaryGrammar_write.cpp,
+	  src/Grammar.hpp, src/GrammarApplicator_reflow.cpp,
+	  src/Strings.cpp, src/Strings.hpp, src/TextualParser.cpp,
+	  src/version.hpp: Added REOPEN-MAPPINGS
 	* [r10574] src/GrammarApplicator.hpp,
 	  src/GrammarApplicator_runRules.cpp: Regex captures are now
 	  per-reading
@@ -2556,8 +2561,4 @@
 	* [r8352] src/GrammarApplicator_runRules.cpp: cg3
 	* [r8351] scripts/cg3-autobin.pl, src/Cohort.cpp,
 	  src/GrammarApplicator_runRules.cpp, src/version.h: cg3
-
-2012-05-21  tino
-
-	* [r8308] src/Grammar.cpp, src/GrammarApplicator.cpp: cg3
 

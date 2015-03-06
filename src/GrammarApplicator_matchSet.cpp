@@ -422,6 +422,11 @@ uint32_t GrammarApplicator::doesTagMatchReading(const Reading& reading, const Ta
 			match = grammar->tag_any;
 		}
 	}
+	else if (tag.type & T_SAME_BASIC) {
+		if (reading.hash_plain == same_basic) {
+			match = grammar->tag_any;
+		}
+	}
 
 	if (match) {
 		++match_single;

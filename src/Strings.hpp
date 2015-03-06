@@ -158,6 +158,7 @@ namespace CG3 {
 		S_FROM,
 		S_EXCEPT,
 		S_UU_ENCL,
+		S_UU_SAME_BASIC,
 		S_NO_ISETS,
 		S_NO_ITMPLS,
 		S_CMD_SETVAR,
