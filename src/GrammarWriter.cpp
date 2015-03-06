@@ -161,12 +161,14 @@ int GrammarWriter::writeGrammar(UFILE *output) {
 	}
 	u_fprintf(output, "\n");
 
+	/*
 	for (BOOST_AUTO(cntx, grammar->templates.begin()); cntx != grammar->templates.end(); ++cntx) {
 		u_fprintf(output, "TEMPLATE %u = ", cntx->second->hash);
 		printContextualTest(output, *cntx->second);
 		u_fprintf(output, " ;\n");
 	}
 	u_fprintf(output, "\n");
+	//*/
 
 	bool found = false;
 	const_foreach (RuleVector, grammar->rule_by_number, rule_iter, rule_iter_end) {

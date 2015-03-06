@@ -632,26 +632,46 @@ void GrammarApplicator::splitAllMappings(all_mappings_t& all_mappings, Cohort& c
 }
 
 void GrammarApplicator::mergeReadings(ReadingList& readings) {
-	std::map<uint32_t, ReadingList> mlist;
+	bc::flat_map<uint32_t, std::pair<uint32_t,Reading*>> mapped;
+	mapped.reserve(readings.size());
+	bc::flat_map<uint32_t, ReadingList> mlist;
+	mlist.reserve(readings.size());
 	foreach (ReadingList, readings, iter, iter_end) {
 		Reading *r = *iter;
-		uint32_t hp = r->hash_plain;
+		uint32_t hp = r->hash_plain, hplain = r->hash_plain;
+		uint32_t nm = 0;
 		if (trace) {
 			foreach (uint32Vector, r->hit_by, iter_hb, iter_hb_end) {
 				hp = hash_value(*iter_hb, hp);
 			}
 		}
+		if (r->mapping) {
+			++nm;
+		}
 		Reading *sub = r->next;
 		while (sub) {
 			hp = hash_value(sub->hash_plain, hp);
+			hplain = hash_value(sub->hash_plain, hplain);
 			if (trace) {
 				foreach (uint32Vector, sub->hit_by, iter_hb, iter_hb_end) {
 					hp = hash_value(*iter_hb, hp);
 				}
 			}
+			if (sub->mapping) {
+				++nm;
+			}
 			sub = sub->next;
 		}
-		mlist[hp].push_back(r);
+		if (mapped.count(hplain)) {
+			if (mapped[hplain].first != 0 && nm == 0) {
+				r->deleted = true;
+			}
+			else if (mapped[hplain].first != nm && mapped[hplain].first == 0) {
+				mapped[hplain].second->deleted = true;
+			}
+		}
+		mapped[hplain] = std::make_pair(nm, r);
+		mlist[hp+nm].push_back(r);
 	}
 
 	if (mlist.size() == readings.size()) {
@@ -661,8 +681,7 @@ void GrammarApplicator::mergeReadings(ReadingList& readings) {
 	readings.clear();
 	std::vector<Reading*> order;
 
-	std::map<uint32_t, ReadingList>::iterator miter;
-	for (miter = mlist.begin() ; miter != mlist.end() ; miter++) {
+	for (BOOST_AUTO(miter, mlist.begin()) ; miter != mlist.end() ; miter++) {
 		ReadingList clist = miter->second;
 		Reading *nr = new Reading(*(clist.front()));
 		if (nr->mapping) {
