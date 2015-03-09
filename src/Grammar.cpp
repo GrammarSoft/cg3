@@ -838,7 +838,11 @@ void Grammar::reindex(bool unused_sets) {
 		}
 	}
 
-	sections.insert(sections.end(), sects.begin(), sects.end());
+	if (!sects.empty()) {
+		for (uint32_t i = 0; i <= sects.back(); ++i) {
+			sections.push_back(i);
+		}
+	}
 
 	if (sets_by_tag.find(tag_any) != sets_by_tag.end()) {
 		sets_any = &sets_by_tag[tag_any];
