@@ -639,7 +639,7 @@ void GrammarApplicator::splitAllMappings(all_mappings_t& all_mappings, Cohort& c
 }
 
 void GrammarApplicator::mergeReadings(ReadingList& readings) {
-	bc::flat_map<uint32_t, std::pair<uint32_t,Reading*>> mapped;
+	bc::flat_map<uint32_t, std::pair<uint32_t,Reading*> > mapped;
 	mapped.reserve(readings.size());
 	bc::flat_map<uint32_t, ReadingList> mlist;
 	mlist.reserve(readings.size());
