@@ -270,6 +270,10 @@ int main(int argc, char* argv[]) {
 		size_t sn = strlen(options[MAPPING_PREFIX].value);
 		CG3::UString buf(sn*3, 0);
 		ucnv_toUChars(conv, &buf[0], buf.size(), options[MAPPING_PREFIX].value, sn, &status);
+		if (grammar.is_binary && grammar.mapping_prefix != buf[0]) {
+			std::cerr << "Error: Mapping prefix must match the one used for compiling the binary grammar!" << std::endl;
+			CG3Quit(1);
+		}
 		grammar.mapping_prefix = buf[0];
 		ucnv_close(conv);
 	}
