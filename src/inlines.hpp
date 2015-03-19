@@ -555,6 +555,22 @@ inline void erase(Cont& cont, const T& val) {
 	cont.erase(std::remove(cont.begin(), cont.end(), val), cont.end());
 }
 
+inline size_t fread_throw(void *buffer, size_t size, size_t count, FILE *stream) {
+	size_t rv = ::fread(buffer, size, count, stream);
+	if (rv != count) {
+		throw std::runtime_error("fread() did not read all requested objects");
+	}
+	return rv;
+}
+
+inline size_t fwrite_throw(const void *buffer, size_t size, size_t count, FILE *stream) {
+	size_t rv = ::fwrite(buffer, size, count, stream);
+	if (rv != count) {
+		throw std::runtime_error("fwrite() did not write all requested objects");
+	}
+	return rv;
+}
+
 }
 
 #endif
