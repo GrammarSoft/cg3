@@ -108,6 +108,7 @@ void Grammar::addSet(Set *& to) {
 		if (all_tags) {
 			for (size_t i=0 ; i<to->sets.size() ; ++i) {
 				Set *s = getSet(to->sets[i]);
+				maybe_used_sets.insert(s);
 				TagVector tv = trie_getTagList(s->getNonEmpty());
 				if (tv.size() == 1) {
 					addTagToSet(tv[0], to);
@@ -743,7 +744,7 @@ void Grammar::reindex(bool unused_sets) {
 	if (unused_sets) {
 		u_fprintf(ux_stdout, "Unused sets:\n");
 		foreach (Setuint32HashMap, sets_by_contents, rset, rset_end) {
-			if (!(rset->second->type & ST_USED) && !rset->second->name.empty()) {
+			if (!(rset->second->type & ST_USED) && !rset->second->name.empty() && maybe_used_sets.count(rset->second) == 0) {
 				if (rset->second->name[0] != '_' || rset->second->name[1] != 'G' || rset->second->name[2] != '_') {
 					u_fprintf(ux_stdout, "Line %u set %S\n", rset->second->line, rset->second->name.c_str());
 				}

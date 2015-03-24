@@ -59,6 +59,7 @@ namespace CG3 {
 		set_name_seeds_t set_name_seeds;
 		Setuint32HashMap sets_by_contents;
 		uint32FlatHashMap set_alias;
+		SetSet maybe_used_sets;
 
 		typedef std::vector<UString> static_sets_t;
 		static_sets_t static_sets;

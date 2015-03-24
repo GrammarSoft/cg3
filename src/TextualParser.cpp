@@ -1682,6 +1682,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 					u_fprintf(ux_stderr, "%s: Warning: Set %S on line %u aliased to %S on line %u.\n", filebase, s->name.c_str(), s->line, tmp->name.c_str(), tmp->line);
 					u_fflush(ux_stderr);
 				}
+				result->maybe_used_sets.insert(tmp);
 				result->set_alias[sh] = tmp->hash;
 				result->destroySet(s);
 				s = tmp;
