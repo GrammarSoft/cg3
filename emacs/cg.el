@@ -3,7 +3,7 @@
 ;; Copyright (C) 2010-2013 Kevin Brubeck Unhammer
 
 ;; Author: Kevin Brubeck Unhammer <unhammer@fsfe.org>
-;; Version: 0.1.6
+;; Version: 0.1.7
 ;; Url: http://beta.visl.sdu.dk/constraint_grammar.html
 ;; Keywords: languages
 
@@ -32,10 +32,14 @@
 ;; ; Or if you use a non-standard file suffix, e.g. .rlx:
 ;; (add-to-list 'auto-mode-alist '("\\.rlx\\'" . cg-mode))
 
-;; I recommend using autocomplete-mode for tab-completion, and
+;; I recommend using auto-complete-mode for tab-completion, and
 ;; smartparens-mode if you're used to it (paredit-mode does not work
 ;; well if you have set names with the # character in them). Both are
-;; available from MELPA (see http://melpa.milkbox.net/).
+;; available from MELPA (see http://melpa.milkbox.net/). You can
+;; lazy-load auto-complete for cg-mode like this:
+;;
+;; (eval-after-load 'auto-complete '(add-to-list 'ac-modes 'cg-mode))
+
 
 ;; TODO:
 ;; - optionally highlight any LIST/SET without ; at the end
@@ -56,7 +60,7 @@
 
 ;;; Code:
 
-(defconst cg-version "0.1.6" "Version of cg-mode")
+(defconst cg-version "0.1.7" "Version of cg-mode")
 
 (eval-when-compile (require 'cl))
 
@@ -78,7 +82,7 @@
   "The vislcg3 command, e.g. \"/usr/local/bin/vislcg3\".
 
 Buffer-local, so use `setq-default' if you want to change the
-global default value. 
+global default value.
 
 See also `cg-extra-args' and `cg-pre-pipe'."
   :type 'string)
@@ -89,7 +93,7 @@ See also `cg-extra-args' and `cg-pre-pipe'."
   "Extra arguments sent to vislcg3 when running `cg-check'.
 
 Buffer-local, so use `setq-default' if you want to change the
-global default value. 
+global default value.
 
 See also `cg-command'."
   :type 'string)
@@ -99,7 +103,7 @@ See also `cg-command'."
 ;;;###autoload
 (defcustom cg-pre-pipe "cg-conv"
   "Pipeline to run before the vislcg3 command when testing a file
-with `cg-check'. 
+with `cg-check'.
 
 Buffer-local, so use `setq-default' if you want to change the
 global default value. If you want to set it on a per-file basis,
@@ -116,7 +120,7 @@ See also `cg-command' and `cg-post-pipe'."
 ;;;###autoload
 (defcustom cg-post-pipe ""
   "Pipeline to run after the vislcg3 command when testing a file
-with `cg-check'. 
+with `cg-check'.
 
 Buffer-local, so use `setq-default' if you want to change the
 global default value. If you want to set it on a per-file basis,
@@ -165,7 +169,7 @@ re-evaluating `cg-kw-re' (or all of cg.el)." )
 			     "IMMEDIATE"
 			     "LOOKDELETED"
 			     "LOOKDELAYED"
-			     "UNSAFE" ; 
+			     "UNSAFE" ;
 			     "SAFE"
 			     "REMEMBERX"
 			     "RESETX"
@@ -311,7 +315,6 @@ CG-mode provides the following specific keyboard key bindings:
   (set (make-local-variable 'beginning-of-defun-function) #'cg-beginning-of-defun)
   (set (make-local-variable 'end-of-defun-function) #'cg-end-of-defun)
   (setq indent-line-function #'cg-indent-line)
-  (easy-mmode-pretty-mode-name 'cg-mode " cg")
   (when font-lock-mode
     (setq font-lock-set-defaults nil)
     (font-lock-set-defaults)
@@ -319,7 +322,7 @@ CG-mode provides the following specific keyboard key bindings:
   (add-hook 'after-change-functions #'cg-after-change nil 'buffer-local)
   (let ((buf (current-buffer)))
     (run-with-idle-timer 1 'repeat 'cg-output-hl buf))
-  (run-mode-hooks #'cg-mode-hook))
+  (run-mode-hooks 'cg-mode-hook))
 
 
 (defconst cg-font-lock-syntactic-keywords
@@ -621,7 +624,7 @@ from, otherwise all CG buffers share one input buffer."
   "Runs `cg-output-setup-hook' for `cg-check'. That hook is
 useful for doing things like
  (setenv \"PATH\" (concat \"~/local/stuff\" (getenv \"PATH\")))"
-  (run-hooks #'cg-output-setup-hook))
+  (run-hooks 'cg-output-setup-hook))
 
 (defvar cg-output-comment-face  font-lock-comment-face	;compilation-info-face
   "Face name to use for comments in cg-output.")
@@ -635,7 +638,7 @@ useful for doing things like
 (defvar cg-output-mapping-face 'bold
   "Face name to use for mapping tags in cg-output")
 
-(defvar cg-output-mode-font-lock-keywords 
+(defvar cg-output-mode-font-lock-keywords
   '(("^;\\(?:[^:]* \\)"
      ;; hack alert! a colon in a tag will mess this up
      ;; (hardly matters much though)
@@ -751,7 +754,7 @@ from hiding. Call `cg-output-show-all' to turn off all hiding."
       (goto-char last)
       (when (re-search-forward "^[^\t\"]" nil 'noerror)
 	(cg-output-hide-region last (match-beginning 0)))))
-  
+
   (when cg-output-unhide-regex
     (cg-output-unhide-some cg-output-unhide-regex)))
 
@@ -778,7 +781,7 @@ and reused whenever `cg-output-hide-analyses' is called."
     (setq cg--output-unhide-history (cons needle cg--output-unhide-history)))
   (cg-output-hide-analyses))
 
-;;; TODO: 
+;;; TODO:
 (defun cg-output-toggle-analyses ()
   "Hide or show analyses from output. See
 `cg-output-hide-analyses'."
@@ -943,7 +946,7 @@ Similarly, `cg-post-pipe' is run on output."
   (let ((cg-buffer (find-buffer-visiting cg--file)))
     (bury-buffer)
     (let ((cg-window (get-buffer-window cg-buffer)))
-      
+
       (if cg-window
 	  (select-window cg-window)
 	(pop-to-buffer cg-buffer)))))
@@ -992,7 +995,7 @@ Similarly, `cg-post-pipe' is run on output."
 ;; Tino Didriksen recommends this file suffix.
 
 ;;; Run hooks -----------------------------------------------------------------
-(run-hooks #'cg-load-hook)
+(run-hooks 'cg-load-hook)
 
 (provide 'cg)
 
