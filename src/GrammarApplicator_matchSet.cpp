@@ -686,25 +686,6 @@ bool GrammarApplicator::doesSetMatchReading(const Reading& reading, const uint32
 	return retval;
 }
 
-inline void GrammarApplicator::doesSetMatchCohortHelper(std::vector<Reading*>& rv, const ReadingList& readings, const Set *theset, const ContextualTest *test, uint32_t options) {
-	const_foreach (ReadingList, readings, iter, iter_end) {
-		Reading *reading = get_sub_reading(*iter, test->offset_sub);
-		if (!reading) {
-			continue;
-		}
-		if (doesSetMatchReading(*reading, theset->number, (theset->type & (ST_CHILD_UNIFY|ST_SPECIAL)) != 0)) {
-			rv.push_back(reading);
-			if (!(options & MASK_POS_CDEPREL)) {
-				break;
-			}
-		}
-		else if (options & POS_CAREFUL) {
-			rv.clear();
-			break;
-		}
-	}
-}
-
 inline bool _check_options(std::vector<Reading*>& rv, uint32_t options, size_t nr) {
 	if ((options & POS_CAREFUL) && rv.size() != nr) {
 		return false;
@@ -715,112 +696,148 @@ inline bool _check_options(std::vector<Reading*>& rv, uint32_t options, size_t n
 	return !rv.empty();
 }
 
-std::vector<Reading*> GrammarApplicator::doesSetMatchCohort(Cohort& cohort, const uint32_t set, const ContextualTest *test, uint32_t options) {
-	std::vector<Reading*> rv;
-	if (cohort.possible_sets.find(set) == cohort.possible_sets.end()) {
-		return rv;
-	}
-
-	const Set *theset = grammar->sets_list[set];
-	doesSetMatchCohortHelper(rv, cohort.readings, theset, test, options);
-	if ((options & POS_LOOK_DELETED) && _check_options(rv, options, cohort.readings.size())) {
-		doesSetMatchCohortHelper(rv, cohort.deleted, theset, test, options);
-	}
-	if ((options & POS_LOOK_DELAYED)
-		&& (!(options & POS_LOOK_DELETED) || _check_options(rv, options, cohort.readings.size()+cohort.deleted.size()))) {
-		doesSetMatchCohortHelper(rv, cohort.delayed, theset, test, options);
-	}
-	if (rv.empty()) {
-		if (!grammar->sets_any || grammar->sets_any->find(set) == grammar->sets_any->end()) {
-			cohort.possible_sets.erase(set);
-		}
-	}
-	return rv;
-}
-
-bool GrammarApplicator::doesSetMatchCohortNormal_helper(ReadingList& readings, const Set *theset, const ContextualTest *test) {
-	const_foreach (ReadingList, readings, iter, iter_end) {
-		Reading *reading = *iter;
-		if (test) {
-			// ToDo: Barriers need some way to escape sub-readings
-			reading = get_sub_reading(reading, test->offset_sub);
-			if (!reading) {
-				continue;
-			}
-		}
-		if (doesSetMatchReading(*reading, theset->number, (theset->type & (ST_CHILD_UNIFY|ST_SPECIAL)) != 0)) {
-			return true;
-		}
-	}
-	return false;
-}
-
-bool GrammarApplicator::doesSetMatchCohortNormal(Cohort& cohort, const uint32_t set, const ContextualTest *test, uint64_t options) {
-	/*
-	return !doesSetMatchCohort(cohort, set, options).empty();
-	/*/
-	if (!(options & (POS_LOOK_DELETED|POS_LOOK_DELAYED)) && cohort.possible_sets.find(set) == cohort.possible_sets.end()) {
-		return false;
-	}
-	bool retval = false;
-	const Set *theset = grammar->sets_list[set];
-	if (cohort.wread && doesSetMatchReading(*cohort.wread, theset->number, (theset->type & (ST_CHILD_UNIFY|ST_SPECIAL)) != 0)) {
-		retval = true;
-	}
-	if (doesSetMatchCohortNormal_helper(cohort.readings, theset, test)) {
-		retval = true;
-	}
-	if (!retval && (options & POS_LOOK_DELETED) && doesSetMatchCohortNormal_helper(cohort.deleted, theset, test)) {
-		retval = true;
-	}
-	if (!retval && (options & POS_LOOK_DELAYED) && doesSetMatchCohortNormal_helper(cohort.delayed, theset, test)) {
-		retval = true;
-	}
-	if (!retval) {
-		if (!grammar->sets_any || grammar->sets_any->find(set) == grammar->sets_any->end()) {
-			cohort.possible_sets.erase(set);
-		}
-	}
-	return retval;
-	//*/
-}
-
-bool GrammarApplicator::doesSetMatchCohortCareful_helper(ReadingList& readings, const Set *theset, const ContextualTest *test) {
-	const_foreach (ReadingList, readings, iter, iter_end) {
-		Reading *reading = *iter;
-		if (test) {
-			reading = get_sub_reading(reading, test->offset_sub);
-			if (!reading) {
-				return false;
-			}
-		}
-		if (!doesSetMatchReading(*reading, theset->number, (theset->type & (ST_CHILD_UNIFY|ST_SPECIAL)) != 0)) {
-			return false;
-		}
-	}
-	return !readings.empty();
-}
-
-bool GrammarApplicator::doesSetMatchCohortCareful(Cohort& cohort, const uint32_t set, const ContextualTest *test, uint64_t options) {
-	/*
-	return !doesSetMatchCohort(cohort, set, options).empty();
-	/*/
-	if (!(options & (POS_LOOK_DELETED|POS_LOOK_DELAYED)) && cohort.possible_sets.find(set) == cohort.possible_sets.end()) {
-		return false;
-	}
+inline bool GrammarApplicator::doesSetMatchCohort_testLinked(Cohort& cohort, const Set& theset, dSMC_Context *context) {
 	bool retval = true;
-	const Set *theset = grammar->sets_list[set];
-	if (!doesSetMatchCohortCareful_helper(cohort.readings, theset, test)) {
-		retval = false;
-	}
-	if (retval && (options & POS_LOOK_DELETED) && !doesSetMatchCohortCareful_helper(cohort.deleted, theset, test)) {
-		retval = false;
-	}
-	if (retval && (options & POS_LOOK_DELAYED) && !doesSetMatchCohortCareful_helper(cohort.delayed, theset, test)) {
-		retval = false;
+	if (context->test && context->test->linked) {
+		if (!context->did_test) {
+			if (context->test->linked->pos & POS_NO_PASS_ORIGIN) {
+				context->matched_tests = (runContextualTest(cohort.parent, cohort.local_number, context->test->linked, context->deep, &cohort) != 0);
+			}
+			else {
+				context->matched_tests = (runContextualTest(cohort.parent, cohort.local_number, context->test->linked, context->deep, context->origin) != 0);
+			}
+			if (!(theset.type & ST_CHILD_UNIFY)) {
+				context->did_test = true;
+			}
+		}
+		retval = context->matched_tests;
 	}
 	return retval;
-	//*/
+}
+
+inline bool GrammarApplicator::doesSetMatchCohort_helper(Cohort& cohort, const Reading& reading, const Set& theset, dSMC_Context *context) {
+	bool retval = false;
+	if (doesSetMatchReading(reading, theset.number, (theset.type & (ST_CHILD_UNIFY | ST_SPECIAL)) != 0)) {
+		retval = true;
+		if (context) {
+			context->matched_target = true;
+		}
+	}
+	if (retval && context && (context->options & POS_NOT)) {
+		retval = !retval;
+	}
+	if (retval && context) {
+		retval = doesSetMatchCohort_testLinked(cohort, theset, context);
+	}
+	return retval;
+}
+
+
+bool GrammarApplicator::doesSetMatchCohortNormal(Cohort& cohort, const uint32_t set, dSMC_Context *context) {
+	bool retval = false;
+
+	if (!(!context || (context->options & (POS_LOOK_DELETED | POS_LOOK_DELAYED | POS_NOT))) && cohort.possible_sets.find(set) == cohort.possible_sets.end()) {
+		return retval;
+	}
+
+	const Set *theset = grammar->sets_list[set];
+
+	if (cohort.wread) {
+		retval = doesSetMatchCohort_helper(cohort, *cohort.wread, *theset, context);
+	}
+
+	if (retval && (!context || context->did_test)) {
+		return retval;
+	}
+
+	ReadingList *lists[3] = { &cohort.readings };
+	if (context && (context->options & POS_LOOK_DELETED)) {
+		lists[1] = &cohort.deleted;
+	}
+	if (context && (context->options & POS_LOOK_DELAYED)) {
+		lists[2] = &cohort.delayed;
+	}
+
+	for (size_t i = 0; i < 3; ++i) {
+		if (lists[i] == 0) {
+			continue;
+		}
+		const_foreach (ReadingList, *lists[i], iter, iter_end) {
+			Reading *reading = *iter;
+			if (context && context->test) {
+				// ToDo: Barriers need some way to escape sub-readings
+				reading = get_sub_reading(reading, context->test->offset_sub);
+				if (!reading) {
+					continue;
+				}
+			}
+			if (doesSetMatchCohort_helper(cohort, *reading, *theset, context)) {
+				retval = true;
+			}
+			if (retval && (!context || !(context->test && context->test->linked) || context->did_test)) {
+				return retval;
+			}
+		}
+	}
+
+	if (context && !context->matched_target && (context->options & POS_NOT)) {
+		retval = doesSetMatchCohort_testLinked(cohort, *theset, context);
+	}
+
+	if (context && !context->matched_target) {
+		if (!grammar->sets_any || grammar->sets_any->find(set) == grammar->sets_any->end()) {
+			cohort.possible_sets.erase(set);
+		}
+	}
+
+	return retval;
+}
+
+bool GrammarApplicator::doesSetMatchCohortCareful(Cohort& cohort, const uint32_t set, dSMC_Context *context) {
+	bool retval = false;
+
+	if (!(!context || (context->options & (POS_LOOK_DELETED | POS_LOOK_DELAYED | POS_NOT))) && cohort.possible_sets.find(set) == cohort.possible_sets.end()) {
+		return retval;
+	}
+
+	const Set *theset = grammar->sets_list[set];
+
+	ReadingList *lists[3] = { &cohort.readings };
+	if (context && (context->options & POS_LOOK_DELETED)) {
+		lists[1] = &cohort.deleted;
+	}
+	if (context && (context->options & POS_LOOK_DELAYED)) {
+		lists[2] = &cohort.delayed;
+	}
+
+	for (size_t i = 0; i < 3; ++i) {
+		if (lists[i] == 0) {
+			continue;
+		}
+		const_foreach(ReadingList, *lists[i], iter, iter_end) {
+			Reading *reading = *iter;
+			if (context && context->test) {
+				// ToDo: Barriers need some way to escape sub-readings
+				reading = get_sub_reading(reading, context->test->offset_sub);
+				if (!reading) {
+					continue;
+				}
+			}
+			retval = doesSetMatchCohort_helper(cohort, *reading, *theset, context);
+			if (!retval) {
+				break;
+			}
+		}
+		if (!retval) {
+			break;
+		}
+	}
+
+	if (context && !context->matched_target && (context->options & POS_NOT)) {
+		retval = doesSetMatchCohort_testLinked(cohort, *theset, context);
+	}
+
+	return retval;
 }
 
 }
