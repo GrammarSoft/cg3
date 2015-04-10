@@ -193,6 +193,7 @@ namespace CG3 {
 		FL_REVERSE,
 		FL_SUB,
 		FL_OUTPUT,
+		FL_CAPTURE_UNIF,
 		FLAGS_COUNT
 	};
 }
