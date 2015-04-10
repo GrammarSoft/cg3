@@ -193,6 +193,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 			continue;
 		}
 
+		current_rule = grammar->rule_by_number[j];
 		const Rule& rule = *(grammar->rule_by_number[j]);
 		if (debug_level > 1) {
 			std::cerr << "DEBUG: Trying rule " << rule.line << std::endl;
