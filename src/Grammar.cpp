@@ -817,6 +817,9 @@ void Grammar::reindex(bool unused_sets) {
 			u_fprintf(ux_stderr, "Warning: Rule on line %u had no target.\n", (*iter_rule)->line);
 			u_fflush(ux_stderr);
 		}
+		if (((*iter_rule)->maplist && ((*iter_rule)->maplist->type & ST_CHILD_UNIFY)) || ((*iter_rule)->sublist && ((*iter_rule)->sublist->type & ST_CHILD_UNIFY))) {
+			(*iter_rule)->flags |= FL_CAPTURE_UNIF;
+		}
 		if (is_binary) {
 			continue;
 		}

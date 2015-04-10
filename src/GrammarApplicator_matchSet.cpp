@@ -717,6 +717,12 @@ inline bool GrammarApplicator::doesSetMatchCohort_testLinked(Cohort& cohort, con
 
 inline bool GrammarApplicator::doesSetMatchCohort_helper(Cohort& cohort, const Reading& reading, const Set& theset, dSMC_Context *context) {
 	bool retval = false;
+	unif_tags_t utags;
+	uint32SortedVector usets;
+	if (context && !(current_rule->flags & FL_CAPTURE_UNIF) && (theset.type & ST_CHILD_UNIFY)) {
+		utags = *unif_tags;
+		usets = *unif_sets;
+	}
 	if (doesSetMatchReading(reading, theset.number, (theset.type & (ST_CHILD_UNIFY | ST_SPECIAL)) != 0)) {
 		retval = true;
 		if (context) {
@@ -728,6 +734,12 @@ inline bool GrammarApplicator::doesSetMatchCohort_helper(Cohort& cohort, const R
 	}
 	if (retval && context) {
 		retval = doesSetMatchCohort_testLinked(cohort, theset, context);
+	}
+	if (context && !(current_rule->flags & FL_CAPTURE_UNIF) && (theset.type & ST_CHILD_UNIFY) && (utags.size() != unif_tags->size() || utags != *unif_tags)) {
+		unif_tags->swap(utags);
+	}
+	if (context && !(current_rule->flags & FL_CAPTURE_UNIF) && (theset.type & ST_CHILD_UNIFY) && usets.size() != unif_sets->size()) {
+		unif_sets->swap(usets);
 	}
 	return retval;
 }

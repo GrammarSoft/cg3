@@ -1,3 +1,13 @@
+2015-04-10  tino
+
+	* [r10639] src/GrammarApplicator_runRules.cpp: Remove debug
+	* [r10638] vapply.sh: Keep old output
+	* [r10637] ChangeLog, TODO, src/GrammarApplicator.hpp,
+	  src/GrammarApplicator_matchSet.cpp,
+	  src/GrammarApplicator_runContextualTest.cpp,
+	  src/GrammarApplicator_runRules.cpp, src/version.hpp: WIP to make
+	  unification truly per-reading
+
 2015-03-25  unhammer
 
 	* [r10629] emacs/cg.el: call it 0.1.7, since C-M-h now works, more
@@ -2551,15 +2561,4 @@
 2012-07-02  tino
 
 	* [r8382] newsletters/2012-07-02.txt: cg3
-	* [r8381] CMakeLists.txt, scripts/cg3-autobin.pl,
-	  src/ContextualTest.h, src/stdafx.h, src/version.h: Older compiler
-	  fixes
-
-2012-06-29  tino
-
-	* [r8373] scripts/cg3-autobin.pl, src/TextualParser.cpp,
-	  src/version.h: Actualize the deprecations
-	* [r8372] src/ContextualTest.h,
-	  src/GrammarApplicator_runContextualTest.cpp,
-	  src/TextualParser.cpp: Don't warn for complex positions.
 
