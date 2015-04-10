@@ -406,9 +406,6 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 				size_t orz = regexgrps.size();
 				// Actually check if the reading is a valid target. First check if rule target matches...
 				if (rule.target && doesSetMatchReading(*reading, rule.target, (set.type & (ST_CHILD_UNIFY|ST_SPECIAL)) != 0)) {
-					if (rule.line == 10838) {
-						mark = mark;
-					}
 					bool captured = false;
 					if (orz != regexgrps.size()) {
 						did_test = false;
