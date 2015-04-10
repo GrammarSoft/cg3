@@ -1,3 +1,38 @@
+2015-03-25  unhammer
+
+	* [r10629] emacs/cg.el: call it 0.1.7, since C-M-h now works, more
+	  keywords are matched, and we highlight symbol-at-point in output.
+	  
+	  +some nitpicking
+
+2015-03-25  tino
+
+	* [r10628] CMakeLists.txt: Don't rename cg.el to cg3-mode.el as it
+	  seems no current distro ships any package with a conflicting
+	  cg.el
+
+2015-03-24  tino
+
+	* [r10617] src/Grammar.cpp, src/Grammar.hpp, src/TextualParser.cpp:
+	  Don't report potentially used sets as unused. They might actually
+	  be unused, but that would take a lot more work to determine.
+
+2015-03-19  tino
+
+	* [r10601] CMakeLists.txt,
+	  include/exec-stream/posix/exec-stream-impl.cpp,
+	  src/BinaryGrammar_read.cpp, src/BinaryGrammar_read_10043.cpp,
+	  src/BinaryGrammar_write.cpp, src/Grammar.hpp, src/inlines.hpp:
+	  Remove -Wno-unused-result to help poor feeble GCC 4.2.1
+
+2015-03-09  tino
+
+	* [r10589] src/GrammarApplicator_reflow.cpp: Satisfy older
+	  compilers
+	* [r10588] src/Grammar.cpp: Respect empty sections
+	* [r10587] ChangeLog, src/GrammarApplicator.hpp, src/main.cpp,
+	  src/version.hpp: Enforce matching --prefix for binary grammars
+
 2015-03-06  tino
 
 	* [r10578] src/GrammarApplicator_runGrammar.cpp: Wordforms now
@@ -2527,43 +2562,4 @@
 	* [r8372] src/ContextualTest.h,
 	  src/GrammarApplicator_runContextualTest.cpp,
 	  src/TextualParser.cpp: Don't warn for complex positions.
-	* [r8371] src/CohortIterator.cpp, src/CohortIterator.h,
-	  src/GrammarApplicator.h,
-	  src/GrammarApplicator_runContextualTest.cpp,
-	  src/sorted_vector.hpp: Right/Leftmost now scans
-	* [r8370] src/GrammarApplicator_runContextualTest.cpp: Check Self
-	  when I say so...
-	* [r8369] manual/dependencies.xml,
-	  src/GrammarApplicator_runRules.cpp: Descendents, not Ancestors.
-	  Also allow relations rules to be asymmetric.
-
-2012-06-22  tino
-
-	* [r8368] CMakeLists.txt, manual/contexts.xml,
-	  manual/dependencies.xml, manual/relations.xml,
-	  scripts/cg3-autobin.pl, src/BinaryGrammar_read.cpp,
-	  src/BinaryGrammar_write.cpp, src/Cohort.h,
-	  src/CohortIterator.cpp, src/CohortIterator.h,
-	  src/ContextualTest.cpp, src/ContextualTest.h,
-	  src/GrammarApplicator.cpp, src/GrammarApplicator.h,
-	  src/GrammarApplicator_matchSet.cpp,
-	  src/GrammarApplicator_runContextualTest.cpp,
-	  src/MatxinApplicator.cpp, src/TextualParser.cpp, src/inlines.h,
-	  src/sorted_vector.hpp, src/stdafx.h, src/version.h,
-	  test/T_BasicDependency/expected.txt,
-	  test/T_BasicDependency/grammar.txt,
-	  test/T_BasicDependency/input.txt: Added context cc for ancestors,
-	  and (l,r,ll,rr,lll,rrr,llr,rrl) for left/right limits. Doesn't
-	  work for parents yet.
-
-2012-06-11  tino
-
-	* [r8357] scripts/cg3-autobin.pl, src/Grammar.cpp, src/Grammar.h,
-	  src/GrammarWriter.cpp, src/version.h: Fix set name hash collision
-
-2012-06-09  tino
-
-	* [r8354] scripts/cg3-autobin.pl, src/version.h: Fix RemCohort
-	  segfault
-	* [r8353] src/Cohort.cpp: cg3
 

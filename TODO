@@ -54,3 +54,5 @@ ToDo: \u and \U escapes in textual tags; possibly only varstrings or "tags"
 ToDo: cg-conv should just convert cohorts directly - no need to build whole sentences.
 ToDo: When going from section 1 to section 1+2 the first time, just skip right to the section 2 rules
 ToDo: Rule type MATH, ARITH or similar to manipulate numeric tag values.
+ToDo: Explain that SAFE vs. UNSAFE is about preserving the most information - SAFE is always least destructive
+ToDo: Document static tags / static reading

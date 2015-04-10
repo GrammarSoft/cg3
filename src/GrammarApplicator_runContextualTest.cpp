@@ -41,52 +41,54 @@ Cohort *GrammarApplicator::runSingleTest(Cohort *cohort, const ContextualTest *t
 	if (deep) {
 		*deep = cohort;
 	}
+
+	dSMC_Context context = { test, deep, origin, test->pos, false, false, false };
+
 	if (test->pos & POS_CAREFUL) {
-		*retval = doesSetMatchCohortCareful(*cohort, test->target, test, test->pos);
-	}
-	bool foundfirst = *retval;
-	if (!foundfirst || !(test->pos & POS_CAREFUL)) {
-		foundfirst = doesSetMatchCohortNormal(*cohort, test->target, test, test->pos);
-		if (!(test->pos & POS_CAREFUL)) {
-			*retval = foundfirst;
+		*retval = doesSetMatchCohortCareful(*cohort, test->target, &context);
+		if (!context.matched_target && (test->pos & POS_SCANFIRST)) {
+			context.did_test = true;
+			doesSetMatchCohortNormal(*cohort, test->target, &context);
 		}
 	}
+	else {
+		*retval = doesSetMatchCohortNormal(*cohort, test->target, &context);
+	}
+
 	if (origin && (test->offset != 0 || (test->pos & (POS_SCANALL|POS_SCANFIRST))) && origin == cohort && origin->local_number != 0) {
-		*retval = false;
+		if (!(test->pos & POS_NOT)) {
+			*retval = false;
+		}
 		rvs |= TRV_BREAK;
 	}
-	if (test->pos & POS_NOT) {
-		*retval = !*retval;
-	}
-	if (*retval && test->linked) {
-		if (test->linked->pos & POS_NO_PASS_ORIGIN) {
-			*retval = (runContextualTest(cohort->parent, cohort->local_number, test->linked, deep, cohort) != 0);
-		}
-		else {
-			*retval = (runContextualTest(cohort->parent, cohort->local_number, test->linked, deep, origin) != 0);
-		}
-	}
-	if (foundfirst && (test->pos & POS_SCANFIRST)) {
+	if (context.matched_target && (test->pos & POS_SCANFIRST)) {
 		rvs |= TRV_BREAK;
 	}
 	else if (!(test->pos & (POS_SCANALL|POS_SCANFIRST|POS_SELF))) {
 		rvs |= TRV_BREAK;
 	}
+
+	context.test = 0;
+	context.deep = 0;
+	context.origin = 0;
+	context.did_test = true;
 	if (test->barrier) {
-		bool barrier = doesSetMatchCohortNormal(*cohort, test->barrier, test, test->pos & ~POS_CAREFUL);
+		context.options = test->pos & ~POS_CAREFUL;
+		bool barrier = doesSetMatchCohortNormal(*cohort, test->barrier, &context);
 		if (barrier) {
 			seen_barrier = true;
 			rvs |= TRV_BREAK | TRV_BARRIER;
 		}
 	}
 	if (test->cbarrier) {
-		bool cbarrier = doesSetMatchCohortCareful(*cohort, test->cbarrier, test, test->pos | POS_CAREFUL);
+		context.options = test->pos | POS_CAREFUL;
+		bool cbarrier = doesSetMatchCohortCareful(*cohort, test->cbarrier, &context);
 		if (cbarrier) {
 			seen_barrier = true;
 			rvs |= TRV_BREAK | TRV_BARRIER;
 		}
 	}
-	if (foundfirst && *retval) {
+	if (context.matched_target && *retval) {
 		rvs |= TRV_BREAK;
 	}
 	if (!*retval) {
