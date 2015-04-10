@@ -43,6 +43,16 @@ namespace CG3 {
 	class Set;
 	class Rule;
 
+	struct dSMC_Context {
+		const ContextualTest *test;
+		Cohort **deep;
+		Cohort *origin;
+		uint64_t options;
+		bool did_test;
+		bool matched_target;
+		bool matched_tests;
+	};
+
 	class GrammarApplicator {
 	public:
 		bool always_span;
@@ -230,12 +240,11 @@ namespace CG3 {
 		bool doesSetMatchReading_trie(const Reading& reading, const Set& theset, const trie_t& trie, bool unif_mode = false);
 		bool doesSetMatchReading_tags(const Reading& reading, const Set& theset, bool unif_mode = false);
 		bool doesSetMatchReading(const Reading& reading, const uint32_t set, bool bypass_index = false, bool unif_mode = false);
-		inline void doesSetMatchCohortHelper(std::vector<Reading*>& rv, const ReadingList& readings, const Set *theset, const ContextualTest *test = 0, uint32_t options = 0);
-		std::vector<Reading*> doesSetMatchCohort(Cohort& cohort, const uint32_t set, const ContextualTest *test = 0, uint32_t options = 0);
-		bool doesSetMatchCohortNormal_helper(ReadingList& readings, const Set *theset, const ContextualTest *test);
-		bool doesSetMatchCohortNormal(Cohort& cohort, const uint32_t set, const ContextualTest *test = 0, uint64_t options = 0);
-		bool doesSetMatchCohortCareful_helper(ReadingList& readings, const Set *theset, const ContextualTest *test);
-		bool doesSetMatchCohortCareful(Cohort& cohort, const uint32_t set, const ContextualTest *test = 0, uint64_t options = 0);
+
+		inline bool doesSetMatchCohort_testLinked(Cohort& cohort, const Set& theset, dSMC_Context *context = 0);
+		inline bool doesSetMatchCohort_helper(Cohort& cohort, const Reading& reading, const Set& theset, dSMC_Context *context = 0);
+		bool doesSetMatchCohortNormal(Cohort& cohort, const uint32_t set, dSMC_Context *context = 0);
+		bool doesSetMatchCohortCareful(Cohort& cohort, const uint32_t set, dSMC_Context *context = 0);
 
 		bool statistics;
 		ticks gtimer;
