@@ -1,5 +1,10 @@
 2015-04-10  tino
 
+	* [r10640] ChangeLog, src/Grammar.cpp, src/GrammarApplicator.hpp,
+	  src/GrammarApplicator_matchSet.cpp,
+	  src/GrammarApplicator_runRules.cpp, src/Strings.cpp,
+	  src/Strings.hpp, src/version.hpp: Non-capturing unification is
+	  now done per reading
 	* [r10639] src/GrammarApplicator_runRules.cpp: Remove debug
 	* [r10638] vapply.sh: Keep old output
 	* [r10637] ChangeLog, TODO, src/GrammarApplicator.hpp,
@@ -2557,8 +2562,4 @@
 2012-07-18  tino
 
 	* [r8391] get-boost.sh: Boost 1.50.0
-
-2012-07-02  tino
-
-	* [r8382] newsletters/2012-07-02.txt: cg3
 
