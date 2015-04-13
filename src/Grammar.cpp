@@ -328,27 +328,6 @@ uint32_t Grammar::removeNumericTags(uint32_t s) {
 				did = true;
 			}
 		}
-		/*
-		// ToDo: We can remove empty sets, but have to examine context to do so safely
-		BOOST_AUTO(set_ops, set->set_ops);
-		for (size_t i = 0; i < sets.size();) {
-			if (sets[i] == 0) {
-				sets.erase(sets.begin() + i);
-				if (!set_ops.empty()) {
-					if (i == 0) {
-						set_ops.erase(set_ops.begin());
-					}
-					else {
-						set_ops.erase(set_ops.begin() + (i - 1));
-					}
-				}
-			}
-			++i;
-		}
-		if (sets.empty()) {
-			return 0;
-		}
-		//*/
 		if (did) {
 			Set *ns = allocateSet();
 			ns->type = set->type;
@@ -395,8 +374,13 @@ uint32_t Grammar::removeNumericTags(uint32_t s) {
 
 		if (did) {
 			if (ntags.empty()) {
-				u_fprintf(ux_stderr, "Error: Removing numeric tags for branch resulted in set %S on line %u being empty!\n", set->name.c_str(), set->line);
-				CG3Quit(1);
+				tags.clear();
+				tags.push_back(single_tags[tag_any]);
+				ntags[tags] = true;
+				if (verbosity_level > 0) {
+					u_fprintf(ux_stderr, "Warning: Set %S was empty and replaced with the * set in the C branch on line %u.\n", set->name.c_str(), set->line);
+					u_fflush(ux_stderr);
+				}
 			}
 			Set *ns = allocateSet();
 			ns->type = set->type;
