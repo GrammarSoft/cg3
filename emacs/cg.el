@@ -329,7 +329,7 @@ CG-mode provides the following specific keyboard key bindings:
   ;; We can have ("words"with"quotes"inside"")! Quote rule: is it a ",
   ;; if yes then jump to next unescaped ". Then regardless, jump to
   ;; next whitespace, but don't cross an unescaped )
-  '(("\\(\"\\)[^\"\n]*\\(?:\"\\(?:\\\\)\\|[^) \n\t]\\)*\\)?\\(\"\\)\\(r\\(i\\)?\\|i\\(r\\)?\\)?[); \n\t]"
+  '(("\\(\"\\)[^\"\n]*\\(?:\"\\(?:\\\\)\\|[^) \n\t]\\)*\\)?\\(\"\\)[irv]\\{0,3\\}[); \n\t]"
      (1 "\"")
      (2 "\""))
     ;; A `#' begins a comment when it is unquoted and at the beginning
@@ -354,7 +354,7 @@ seems this function only runs on comments and strings..."
          (if
              (save-excursion
                (goto-char (nth 8 state))
-               (re-search-forward "\"[^\"\n]*\\(\"\\(\\\\)\\|[^) \n\t]\\)*\\)?\"\\(r\\(i\\)?\\|i\\(r\\)?\\)?[); \n\t]")
+               (re-search-forward "\"[^\"\n]*\\(\"\\(\\\\)\\|[^) \n\t]\\)*\\)?\"[irv]\\{0,3\\}[); \n\t]")
                (and (match-string 1)
                     (not (equal ?\\ (char-before (match-beginning 1))))
                     ;; TODO: make next-error hit these too
