@@ -48,6 +48,7 @@
 ;; - run vislcg3 --show-unused-sets and buttonise with line numbers (like Occur does)
 ;; - indentation function (based on prolog again?)
 ;; - the rest of the keywords
+;; - http://beta.visl.sdu.dk/cg3/single/#regex-icase
 ;; - keyword tab-completion
 ;; - the quotes-within-quotes thing plays merry hell with
 ;;   paredit-doublequote, write a new doublequote function?
