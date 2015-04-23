@@ -742,7 +742,7 @@ from hiding. Call `cg-output-show-all' to turn off all hiding."
   (lexical-let (last)
     (save-excursion
       (goto-char (point-min))
-      (while (re-search-forward "^\"<.*>\"$" nil 'noerror)
+      (while (re-search-forward "^\"<.*>\"" nil 'noerror)
 	(let ((line-beg (match-beginning 0))
 	      (line-end (match-end 0)))
 	  (cg-output-hide-region line-beg (+ line-beg 2)) ; "<
