@@ -56,3 +56,7 @@ ToDo: When going from section 1 to section 1+2 the first time, just skip right t
 ToDo: Rule type MATH, ARITH or similar to manipulate numeric tag values.
 ToDo: Explain that SAFE vs. UNSAFE is about preserving the most information - SAFE is always least destructive
 ToDo: Document static tags / static reading
+ToDo: Section number in trace
+ToDo: Basque correct parse
+ToDo: Inline tag sets implicit strict
+ToDo: Dep on readings
