@@ -52,10 +52,10 @@ namespace CG3 {
 		Tag *addTag(Tag *tag);
 		Grammar *get_grammar() { return result; }
 		const char *filebase;
+		uint32SortedVector strict_tags;
 
 	private:
 		UChar nearbuf[32];
-		uint32SortedVector strict_tags;
 		uint32_t verbosity_level;
 		uint32_t sets_counter;
 		uint32_t seen_mapping_prefix;
