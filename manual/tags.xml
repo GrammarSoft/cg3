@@ -369,9 +369,27 @@
       STRICT-TAGS += N V ADJ etc ... ;
     </screen>
     <para>
-      Because you are likely to have many thousand allowed tags, I recommend keeping a shared grammar with a common
-      <code>STRICT-TAGS</code> definition and <link linkend="grammar-include">INCLUDE</link> that in other grammars.
-      To get a list of used tags in a non-strict grammar, pass --show-tags to CG-3.
+      By default, STRICT-TAGS always allows wordforms, baseforms, and VISL-style secondary tags
+      (<code>"&lt;…&gt;"</code>, <code>"…"</code>, <code>&lt;…&gt;</code>), since those are too prolific to list
+      individually. If you are extra paranoid, you can change that with <link linkend="grammar-options">OPTIONS</link>.
+    </para>
+    <para>
+      To get a list of unique used tags, pass --show-tags to CG-3. To filter this list to the default set of interesting tags,
+      something like this can be used:
+      <screen>
+        vislcg3 --show-tags -g grammar-goes-here | LC_ALL=C sort | egrep -v '^"' | egrep -v '^(/)?&lt;.*&gt;(/r|v)?$' | \
+        egrep -v '^\^' | egrep -v '^VSTR:' | egrep -v '^VAR:' | egrep -v '^_.*_$' | grep -v 'dummy string' | \
+        grep -v '^\*$' | grep -v '^&lt;&lt;&lt;$' | grep -v '^&gt;&gt;&gt;$' &gt; tags.txt
+      </screen>
+      <emphasis>For comparison, this yields 285 tags for VISL's 10000-rule Danish grammar.</emphasis>
+      Edit the resulting list to remove any tags you can see are typos or should otherwise not be allowed,
+      collapse the list to a line, stuff it at the top of the grammar with STRICT-TAGS, and recompile the grammar.
+      Any errors you get will be lines where forbidden tags are used, which can be whole sets if those sets aren't used in any rules.
+    </para>
+    <para>
+      Once you have a suitable STRICT-TAGS list, you can further trim the grammar by taking advantage the fact that any
+      tag listed in STRICT-TAGS may be used as an implicit set that contains only the tag itself.
+      No more need for <code>LIST N = N ;</code> constructs.
     </para>
   </section>
 </chapter>

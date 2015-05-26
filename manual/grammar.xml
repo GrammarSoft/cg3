@@ -46,6 +46,36 @@
         Disallows the use of inline templates in most places. They're still allowed in the context of a TEMPLATE definition.
       </para>
     </section>
+
+    <section id="grammar-options-strict-wforms">
+      <title>strict-wordforms</title>
+      <indexterm>
+        <primary>strict-wordforms</primary>
+      </indexterm>
+      <para>
+        Instructs STRICT-TAGS to forbid all wordform tags (<code>"&lt;…&gt;"</code>) by default.
+      </para>
+    </section>
+
+    <section id="grammar-options-strict-bforms">
+      <title>strict-baseforms</title>
+      <indexterm>
+        <primary>strict-baseforms</primary>
+      </indexterm>
+      <para>
+        Instructs STRICT-TAGS to forbid all baseform tags (<code>"…"</code>) by default.
+      </para>
+    </section>
+
+    <section id="grammar-options-strict-second">
+      <title>strict-secondary</title>
+      <indexterm>
+        <primary>strict-secondary</primary>
+      </indexterm>
+      <para>
+        Instructs STRICT-TAGS to forbid all secondary tags (<code>&lt;…&gt;</code>) by default.
+      </para>
+    </section>
   </section>
 
   <section id="grammar-include">
