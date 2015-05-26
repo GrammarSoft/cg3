@@ -581,7 +581,7 @@ void Grammar::renameAllRules() {
 	}
 };
 
-void Grammar::reindex(bool unused_sets) {
+void Grammar::reindex(bool unused_sets, bool used_tags) {
 	foreach (Setuint32HashMap, sets_by_contents, dset, dset_end) {
 		if (dset->second->number == std::numeric_limits<uint32_t>::max()) {
 			dset->second->type |= ST_USED;
@@ -671,6 +671,15 @@ void Grammar::reindex(bool unused_sets) {
 		}
 	}
 
+	for (BOOST_AUTO(it, parentheses.begin()); it != parentheses.end(); ++it) {
+		single_tags[it->first]->markUsed();
+		single_tags[it->second]->markUsed();
+	}
+
+	for (BOOST_AUTO(it, preferred_targets.begin()); it != preferred_targets.end(); ++it) {
+		single_tags[*it]->markUsed();
+	}
+
 	foreach (RuleVector, rule_by_number, iter_rule, iter_rule_end) {
 		if ((*iter_rule)->wordform) {
 			wf_rules.push_back(*iter_rule);
@@ -746,8 +755,7 @@ void Grammar::reindex(bool unused_sets) {
 		}
 	}
 
-	Taguint32HashMap::iterator iter_tags;
-	for (iter_tags = single_tags.begin() ; iter_tags != single_tags.end() ; ++iter_tags) {
+	for (BOOST_AUTO(iter_tags, single_tags.begin()) ; iter_tags != single_tags.end() ; ++iter_tags) {
 		Tag *tag = iter_tags->second;
 		if (tag->tag[0] == mapping_prefix) {
 			tag->type |= T_MAPPING;
@@ -870,6 +878,17 @@ void Grammar::reindex(bool unused_sets) {
 				}
 			}
 		}
+	}
+
+	if (used_tags) {
+		for (BOOST_AUTO(iter_tags, single_tags.begin()); iter_tags != single_tags.end(); ++iter_tags) {
+			Tag *tag = iter_tags->second;
+			if (tag->type & T_USED) {
+				UString tmp(tag->toUString(true));
+				u_fprintf(ux_stdout, "%S\n", tmp.c_str());
+			}
+		}
+		exit(0);
 	}
 }
 

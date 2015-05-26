@@ -153,6 +153,10 @@ void Set::markUsed(Grammar& grammar) {
 	trie_markused(trie);
 	trie_markused(trie_special);
 
+	boost_foreach(Tag *tag, ff_tags) {
+		tag->markUsed();
+	}
+
 	for (uint32_t i=0 ; i<sets.size() ; ++i) {
 		Set *set = grammar.sets_by_contents.find(sets[i])->second;
 		set->markUsed(grammar);
