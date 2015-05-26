@@ -116,9 +116,12 @@ void TextualParser::error(const char *str, const char *s, const UChar *S, const 
 
 Tag *TextualParser::parseTag(const UChar *to, const UChar *p) {
 	Tag *tag = ::CG3::parseTag(to, p, *this);
-	if (!strict_tags.empty() && !strict_tags.count(tag->hash)) {
+	if (!strict_tags.empty() && !strict_tags.count(tag->plain_hash)) {
 		if (tag->type & (T_ANY | T_VARSTRING | T_VSTR | T_META | T_VARIABLE | T_SET | T_PAR_LEFT | T_PAR_RIGHT | T_ENCL | T_TARGET | T_MARK | T_ATTACHTO | T_SAME_BASIC)) {
 			// Always allow...
+		}
+		else if (u_strcmp(tag->tag.c_str(), stringbits[S_BEGINTAG].getTerminatedBuffer()) == 0 || u_strcmp(tag->tag.c_str(), stringbits[S_ENDTAG].getTerminatedBuffer()) == 0) {
+			// Always allow >>> and <<<
 		}
 		else if (tag->type & T_WORDFORM) {
 			if (strict_wforms) {
