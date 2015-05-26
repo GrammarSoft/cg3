@@ -303,6 +303,17 @@ Set *parseSet(const UChar *name, const UChar *p, State& state) {
 	}
 	Set *tmp = state.get_grammar()->getSet(sh);
 	if (!tmp) {
+		if (!state.strict_tags.empty()) {
+			Tag *tag = parseTag(name, p, state);
+			if (state.strict_tags.count(tag->plain_hash)) {
+				Set *ns = state.get_grammar()->allocateSet();
+				ns->line = state.get_grammar()->lines;
+				ns->setName(name);
+				state.get_grammar()->addTagToSet(tag, ns);
+				state.get_grammar()->addSet(ns);
+				return ns;
+			}
+		}
 		state.error("%s: Error: Attempted to reference undefined set '%S' on line %u near `%S`!\n", name, p);
 	}
 	return tmp;
