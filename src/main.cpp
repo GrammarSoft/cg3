@@ -238,7 +238,7 @@ int main(int argc, char* argv[]) {
 		parser = new CG3::BinaryGrammar(grammar, ux_stderr);
 	}
 	else {
-		parser = new CG3::TextualParser(grammar, ux_stderr, options[SHOW_TAGS].doesOccur != 0);
+		parser = new CG3::TextualParser(grammar, ux_stderr);
 	}
 	if (options[VERBOSE].doesOccur) {
 		if (options[VERBOSE].value) {
@@ -280,7 +280,7 @@ int main(int argc, char* argv[]) {
 	if (options[VERBOSE].doesOccur) {
 		std::cerr << "Reindexing grammar..." << std::endl;
 	}
-	grammar.reindex(options[SHOW_UNUSED_SETS].doesOccur == 1);
+	grammar.reindex(options[SHOW_UNUSED_SETS].doesOccur == 1, options[SHOW_TAGS].doesOccur == 1);
 
 	delete parser;
 	parser = 0;
