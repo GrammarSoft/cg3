@@ -1,3 +1,44 @@
+2015-05-26  tino
+
+	* [r10729] manual/grammar.xml, manual/tags.xml: Document
+	  STRICT-TAGS and new options
+	* [r10728] src/TextualParser.hpp, src/parser_helpers.hpp,
+	  test/T_Dependency_Loops/grammar.cg3: Tags listed in Strict-Tags
+	  may now be used as implicit inline sets, where they are the only
+	  member
+	* [r10727] src/Grammar.cpp, src/Grammar.hpp, src/Set.cpp,
+	  src/TextualParser.cpp, src/TextualParser.hpp, src/main.cpp: Move
+	  --show-tags code to after grammar indexing, to only show used
+	  tags
+	* [r10725] src/TextualParser.cpp: Test the plain tag; Always allow
+	  >>> and <<<
+	* [r10724] src/TextualParser.cpp: Always allow many more special
+	  tag types
+	* [r10723] TODO, src/Strings.cpp, src/Strings.hpp,
+	  src/TextualParser.cpp, src/TextualParser.hpp,
+	  test/T_Dependency_Loops/grammar.cg3: Strict-Tags default allow
+	  wordforms, baseforms, secondary, and * tag
+
+2015-04-23  unhammer
+
+	* [r10651] emacs/cg.el: wordform-lines can have tags (lex.sel)
+
+2015-04-20  tino
+
+	* [r10649] CMakeLists.txt: Append to flags
+
+2015-04-17  unhammer
+
+	* [r10647] emacs/cg.el: todo
+	* [r10646] emacs/cg.el: "handle all the string
+	  modifiers"[irv]\{0,3\}
+	* [r10645] emacs/cg.el: "foo"i also possible, not just "foo"ri
+
+2015-04-13  tino
+
+	* [r10643] ChangeLog, src/Grammar.cpp, src/version.hpp: f branch
+	  empty sets turned into * instead of error
+
 2015-04-10  tino
 
 	* [r10640] ChangeLog, src/Grammar.cpp, src/GrammarApplicator.hpp,
@@ -2510,56 +2551,4 @@
 	* [r8429] src/ApertiumApplicator.cpp: When outputting
 	  baseforms/lemmas, escape apertium stream format reserved
 	  characters. Big if, but seems to have no impact on speed.
-	* [r8428] emacs/cg.el: highlight iff, remcohort, addcohort
-
-2012-07-29  tino
-
-	* [r8407] newsletters/2012-07-02.txt, newsletters/2012-07-29.txt:
-	  cg3 news
-	* [r8406] scripts/cg3-autobin.pl, src/TextualParser.cpp,
-	  src/version.h: Actualize the new behavior of ALL/NONE NOT C
-
-2012-07-25  tino
-
-	* [r8400] src/GrammarApplicator_reflow.cpp: cg3
-	* [r8399] dist/dist-osx.pl, scripts/cg3-autobin.pl,
-	  src/BinaryGrammar_read.cpp, src/BinaryGrammar_write.cpp,
-	  src/Cohort.h, src/GrammarApplicator_reflow.cpp, src/version.h:
-	  Relations are now pipable. Bumped minor version to 8, since
-	  --dep-delimit and relation piping are major steps towards 1.0.
-
-2012-07-24  tino
-
-	* [r8398] src/GrammarApplicator.cpp: cg3
-	* [r8397] TODO, manual/relations.xml, scripts/cg3-autobin.pl,
-	  src/Cohort.h, src/Grammar.cpp, src/Grammar.h,
-	  src/GrammarApplicator.cpp, src/GrammarApplicator.h,
-	  src/GrammarApplicator_reflow.cpp,
-	  src/GrammarApplicator_runRules.cpp, src/SingleWindow.cpp,
-	  src/Tag.cpp, src/Tag.h, src/TextualParser.cpp, src/Window.h,
-	  src/main.cpp, src/version.h: WIP: Allow piping relations to later
-	  CG-3 processes. Still needs some polishing, but basically works.
-
-2012-07-21  tino
-
-	* [r8395] manual/cmdreference.xml, manual/dependencies.xml: cg3
-	* [r8394] scripts/cg3-autobin.pl, src/GrammarApplicator.cpp,
-	  src/GrammarApplicator.h, src/GrammarApplicator_runGrammar.cpp,
-	  src/SingleWindow.cpp, src/main.cpp, src/options.h, src/version.h:
-	  Made --dep-delimit take an opt arg
-
-2012-07-19  tino
-
-	* [r8393] src/Window.cpp: cg3
-	* [r8392] scripts/cg3-autobin.pl, src/CohortIterator.cpp,
-	  src/CohortIterator.h, src/GrammarApplicator.cpp,
-	  src/GrammarApplicator.h, src/GrammarApplicator_reflow.cpp,
-	  src/GrammarApplicator_runGrammar.cpp,
-	  src/GrammarApplicator_runRules.cpp, src/SingleWindow.cpp,
-	  src/Window.cpp, src/main.cpp, src/options.h, src/version.h,
-	  test/T_BasicDependency/run.pl: Added -D, --dep-delimit
-
-2012-07-18  tino
-
-	* [r8391] get-boost.sh: Boost 1.50.0
 
