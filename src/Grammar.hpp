@@ -130,7 +130,7 @@ namespace CG3 {
 		void addTemplate(ContextualTest *test, const UChar *name);
 
 		void resetStatistics();
-		void reindex(bool unused_sets=false);
+		void reindex(bool unused_sets = false, bool used_tags = false);
 		void renameAllRules();
 
 		void indexSetToRule(uint32_t, Set*);

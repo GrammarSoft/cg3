@@ -28,7 +28,7 @@
 
 namespace CG3 {
 
-TextualParser::TextualParser(Grammar& res, UFILE *ux_err, bool show_tags) :
+TextualParser::TextualParser(Grammar& res, UFILE *ux_err) :
 verbosity_level(0),
 sets_counter(100),
 seen_mapping_prefix(0),
@@ -37,7 +37,6 @@ in_section(false),
 in_before_sections(true),
 in_after_sections(false),
 in_null_section(false),
-show_tags(show_tags),
 no_isets(false),
 no_itmpls(false),
 strict_wforms(false),
@@ -2419,14 +2418,6 @@ int TextualParser::parse_grammar_from_file(const char *fname, const char *loc, c
 	error = parseFromUChar(&data[4], filename);
 	if (error) {
 		return error;
-	}
-
-	if (show_tags) {
-		boost_foreach (Tag *tag, result->single_tags_list) {
-			UString tmp(tag->toUString(true));
-			u_fprintf(ux_stderr, "%S\n", tmp.c_str());
-		}
-		exit(0);
 	}
 
 	result->addAnchor(keywords[K_END].getTerminatedBuffer(), result->rule_by_number.size()-1, true);

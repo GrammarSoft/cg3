@@ -35,7 +35,7 @@ namespace CG3 {
 
 	class TextualParser : public IGrammarParser {
 	public:
-		TextualParser(Grammar& result, UFILE *ux_err, bool show_tags=false);
+		TextualParser(Grammar& result, UFILE *ux_err);
 
 		void setCompatible(bool compat);
 		void setVerbosity(uint32_t level);
@@ -61,7 +61,7 @@ namespace CG3 {
 		uint32_t seen_mapping_prefix;
 		bool option_vislcg_compat;
 		bool in_section, in_before_sections, in_after_sections, in_null_section;
-		bool show_tags, no_isets, no_itmpls, strict_wforms, strict_bforms, strict_second;
+		bool no_isets, no_itmpls, strict_wforms, strict_bforms, strict_second;
 		const char *filename;
 		const char *locale;
 		const char *codepage;
