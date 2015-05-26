@@ -40,6 +40,9 @@ in_null_section(false),
 show_tags(show_tags),
 no_isets(false),
 no_itmpls(false),
+strict_wforms(false),
+strict_bforms(false),
+strict_second(false),
 filename(0),
 locale(0),
 codepage(0),
@@ -114,8 +117,31 @@ void TextualParser::error(const char *str, const char *s, const UChar *S, const 
 Tag *TextualParser::parseTag(const UChar *to, const UChar *p) {
 	Tag *tag = ::CG3::parseTag(to, p, *this);
 	if (!strict_tags.empty() && !strict_tags.count(tag->hash)) {
-		error("%s: Error: Tag %S not on the strict-tags list, on line %u near `%S`!\n", tag->tag.c_str(), p);
-		incErrorCount();
+		if (tag->type & T_ANY) {
+			// Always allow...
+		}
+		else if (tag->type & T_WORDFORM) {
+			if (strict_wforms) {
+				error("%s: Error: Wordform tag %S not on the strict-tags list, on line %u near `%S`!\n", tag->tag.c_str(), p);
+				incErrorCount();
+			}
+		}
+		else if (tag->type & T_BASEFORM) {
+			if (strict_bforms) {
+				error("%s: Error: Baseform tag %S not on the strict-tags list, on line %u near `%S`!\n", tag->tag.c_str(), p);
+				incErrorCount();
+			}
+		}
+		else if (tag->tag[0] == '<' && tag->tag[tag->tag.size()-1] == '>') {
+			if (strict_second) {
+				error("%s: Error: Secondary tag %S not on the strict-tags list, on line %u near `%S`!\n", tag->tag.c_str(), p);
+				incErrorCount();
+			}
+		}
+		else {
+			error("%s: Error: Tag %S not on the strict-tags list, on line %u near `%S`!\n", tag->tag.c_str(), p);
+			incErrorCount();
+		}
 	}
 	return tag;
 }
@@ -1876,6 +1902,24 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 				if (ux_simplecasecmp(p, stringbits[S_NO_ITMPLS].getTerminatedBuffer(), stringbits[S_NO_ITMPLS].length())) {
 					p += stringbits[S_NO_ITMPLS].length();
 					no_itmpls = true;
+				}
+				result->lines += SKIPWS(p);
+
+				if (ux_simplecasecmp(p, stringbits[S_STRICT_WFORMS].getTerminatedBuffer(), stringbits[S_STRICT_WFORMS].length())) {
+					p += stringbits[S_STRICT_WFORMS].length();
+					strict_wforms = true;
+				}
+				result->lines += SKIPWS(p);
+
+				if (ux_simplecasecmp(p, stringbits[S_STRICT_BFORMS].getTerminatedBuffer(), stringbits[S_STRICT_BFORMS].length())) {
+					p += stringbits[S_STRICT_BFORMS].length();
+					strict_bforms = true;
+				}
+				result->lines += SKIPWS(p);
+
+				if (ux_simplecasecmp(p, stringbits[S_STRICT_SECOND].getTerminatedBuffer(), stringbits[S_STRICT_SECOND].length())) {
+					p += stringbits[S_STRICT_SECOND].length();
+					strict_second = true;
 				}
 				result->lines += SKIPWS(p);
 			}
