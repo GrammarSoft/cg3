@@ -178,6 +178,8 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 
 	// ToDo: Now that numbering is used, can't this be made a normal max? Hm, maybe not since --sections can still force another order...but if we're smart, then we re-enumerate rules based on --sections
 	uint32IntervalVector intersects = current.valid_rules.intersect(rules);
+	ReadingList removed;
+	ReadingList selected;
 
 	if (debug_level > 1) {
 		std::cerr << "DEBUG: Trying window " << current.number << std::endl;
@@ -353,6 +355,8 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 			for (size_t i = 0; i < cohort->readings.size(); ++i) {
 				Reading *reading = get_sub_reading(cohort->readings[i], rule.sub_reading);
 				if (!reading) {
+					cohort->readings[i]->matched_target = false;
+					cohort->readings[i]->matched_tests = false;
 					continue;
 				}
 
@@ -495,8 +499,8 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 			}
 
 			// Keep track of which readings got removed and selected
-			ReadingList removed;
-			ReadingList selected;
+			removed.resize(0);
+			selected.resize(0);
 
 			// Remember the current state so we can compare later to see if anything has changed
 			const size_t state_num_readings = cohort->readings.size();
