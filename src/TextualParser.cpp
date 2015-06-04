@@ -1901,36 +1901,28 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 			p += 2;
 			result->lines += SKIPWS(p);
 
+			typedef std::pair<size_t, bool&> pairs_t;
+			pairs_t pairs[] = {
+				{ S_NO_ISETS, no_isets },
+				{ S_NO_ITMPLS, no_itmpls },
+				{ S_STRICT_WFORMS, strict_wforms },
+				{ S_STRICT_BFORMS, strict_bforms },
+				{ S_STRICT_SECOND, strict_second },
+			};
+
 			while (*p != ';') {
-				if (ux_simplecasecmp(p, stringbits[S_NO_ISETS].getTerminatedBuffer(), stringbits[S_NO_ISETS].length())) {
-					p += stringbits[S_NO_ISETS].length();
-					no_isets = true;
+				bool found = false;
+				boost_foreach(pairs_t& pair, pairs) {
+					if (ux_simplecasecmp(p, stringbits[pair.first].getTerminatedBuffer(), stringbits[pair.first].length())) {
+						p += stringbits[pair.first].length();
+						pair.second = true;
+						result->lines += SKIPWS(p);
+						found = true;
+					}
 				}
-				result->lines += SKIPWS(p);
-
-				if (ux_simplecasecmp(p, stringbits[S_NO_ITMPLS].getTerminatedBuffer(), stringbits[S_NO_ITMPLS].length())) {
-					p += stringbits[S_NO_ITMPLS].length();
-					no_itmpls = true;
+				if (!found) {
+					error("%s: Error: Invalid option found on line %u near `%S`!\n", p);
 				}
-				result->lines += SKIPWS(p);
-
-				if (ux_simplecasecmp(p, stringbits[S_STRICT_WFORMS].getTerminatedBuffer(), stringbits[S_STRICT_WFORMS].length())) {
-					p += stringbits[S_STRICT_WFORMS].length();
-					strict_wforms = true;
-				}
-				result->lines += SKIPWS(p);
-
-				if (ux_simplecasecmp(p, stringbits[S_STRICT_BFORMS].getTerminatedBuffer(), stringbits[S_STRICT_BFORMS].length())) {
-					p += stringbits[S_STRICT_BFORMS].length();
-					strict_bforms = true;
-				}
-				result->lines += SKIPWS(p);
-
-				if (ux_simplecasecmp(p, stringbits[S_STRICT_SECOND].getTerminatedBuffer(), stringbits[S_STRICT_SECOND].length())) {
-					p += stringbits[S_STRICT_SECOND].length();
-					strict_second = true;
-				}
-				result->lines += SKIPWS(p);
 			}
 
 			result->lines += SKIPWS(p, ';');
