@@ -159,7 +159,7 @@ Reading *GrammarApplicator::get_sub_reading(Reading *tr, int sub_reading) {
 		return tr;
 	}
 	if (sub_reading == GSR_ANY) {
-		subs_any.resize(subs_any.size()+1);
+		subs_any.push_back(Reading());
 		Reading *reading = &subs_any.back();
 		*reading = *tr;
 		reading->next = 0;

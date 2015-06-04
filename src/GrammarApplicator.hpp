@@ -31,6 +31,7 @@
 #include "interval_vector.hpp"
 #include "flat_unordered_set.hpp"
 #include "istream.hpp"
+#include <deque>
 
 class Process;
 
