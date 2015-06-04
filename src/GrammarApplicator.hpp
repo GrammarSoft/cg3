@@ -157,8 +157,6 @@ namespace CG3 {
 		uint32_t numReadings;
 
 		bool did_index;
-		stdext::hash_map<Reading*, sorted_vector<Reading*>> dep_parents;
-		stdext::hash_map<Reading*, sorted_vector<Reading*>> dep_childs;
 		uint32SortedVector dep_deep_seen;
 
 		uint32_t numsections;
