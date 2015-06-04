@@ -14,6 +14,7 @@
 
 #include <errno.h>
 #include <sys/types.h>
+#include <sys/wait.h>
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -111,7 +112,7 @@ error_out:
 int popen_plus_close(popen_plus_process *process)
 {
     int pstat;
-    pid_t pid;
+    pid_t pid = 0;
     
     /**
      * If someone else destrys this mutex, then this call will fail and we know
