@@ -58,5 +58,5 @@ ToDo: Explain that SAFE vs. UNSAFE is about preserving the most information - SA
 ToDo: Document static tags / static reading
 ToDo: Section number in trace
 ToDo: Basque correct parse
-ToDo: Inline tag sets implicit strict
 ToDo: Dep on readings
+ToDo: CLINK to require that all paths satisfy the linked tests

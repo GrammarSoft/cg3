@@ -1005,7 +1005,12 @@ void TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 					u_strncpy(&gbuffers[0][0], p, c);
 					gbuffers[0][c] = 0;
 					p = n;
-					u_sscanf(&gbuffers[0][0], "%d", &rule->sub_reading);
+					if (gbuffers[0][0] == '*') {
+						rule->sub_reading = GSR_ANY;
+					}
+					else {
+						u_sscanf(&gbuffers[0][0], "%d", &rule->sub_reading);
+					}
 				}
 
 				// Rule flags followed by letters or valid set characters should not be flags.

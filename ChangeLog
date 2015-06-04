@@ -1,5 +1,15 @@
+2015-05-30  tino
+
+	* [r10738] src/TextualParser.cpp: Don't parse SUB as flag
+
+2015-05-28  tino
+
+	* [r10734] src/GrammarApplicator_runRules.cpp: Fix sub-reading
+	  still being active bug; Minor optiization
+
 2015-05-26  tino
 
+	* [r10730] ChangeLog, src/version.hpp: STRICT-TAGS done, so far
 	* [r10729] manual/grammar.xml, manual/tags.xml: Document
 	  STRICT-TAGS and new options
 	* [r10728] src/TextualParser.hpp, src/parser_helpers.hpp,
@@ -2535,20 +2545,4 @@
 	* [r8480] scripts/cg3-autobin.pl, src/GrammarApplicator.h,
 	  src/GrammarApplicator_reflow.cpp, src/version.h: Also merge trace
 	  lines.
-
-2012-08-22  tino
-
-	* [r8467] get-boost.sh, src/ApertiumApplicator.cpp: Boost 1.51.0
-
-2012-08-13  unhammer
-
-	* [r8450] src/ApertiumApplicator.cpp: When outputting
-	  wordforms/surface forms, escape apertium stream format reserved
-	  characters. As -r8429.
-
-2012-08-02  unhammer
-
-	* [r8429] src/ApertiumApplicator.cpp: When outputting
-	  baseforms/lemmas, escape apertium stream format reserved
-	  characters. Big if, but seems to have no impact on speed.
 

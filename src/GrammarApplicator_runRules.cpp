@@ -153,6 +153,69 @@ TagList GrammarApplicator::getTagList(const Set& theSet, bool unif_mode) const {
 	return theTags;
 }
 
+Reading *GrammarApplicator::get_sub_reading(Reading *tr, int sub_reading) {
+	if (sub_reading == 0) {
+		return tr;
+	}
+	if (sub_reading == GSR_ANY) {
+		subs_any.resize(subs_any.size()+1);
+		Reading *reading = &subs_any.back();
+		*reading = *tr;
+		reading->next = 0;
+		while (tr->next) {
+			tr = tr->next;
+			reading->tags_list.push_back(0);
+			reading->tags_list.insert(reading->tags_list.end(), tr->tags_list.begin(), tr->tags_list.end());
+			boost_foreach(uint32_t tag, tr->tags) {
+				reading->tags.insert(tag);
+				reading->tags_bloom.insert(tag);
+			}
+			boost_foreach(uint32_t tag, tr->tags_plain) {
+				reading->tags_plain.insert(tag);
+				reading->tags_plain_bloom.insert(tag);
+			}
+			boost_foreach(uint32_t tag, tr->tags_textual) {
+				reading->tags_textual.insert(tag);
+				reading->tags_textual_bloom.insert(tag);
+			}
+			reading->tags_numerical.insert(tr->tags_numerical.begin(), tr->tags_numerical.end());
+			if (tr->mapped) {
+				reading->mapped = true;
+			}
+			if (tr->mapping) {
+				reading->mapping = tr->mapping;
+			}
+			if (tr->matched_target) {
+				reading->matched_target = true;
+			}
+			if (tr->matched_tests) {
+				reading->matched_tests = true;
+			}
+		}
+		reading->rehash();
+		return reading;
+	}
+	if (sub_reading > 0) {
+		for (int i = 0; i<sub_reading && tr; ++i) {
+			tr = tr->next;
+		}
+		return tr;
+	}
+	if (sub_reading < 0) {
+		int ntr = 0;
+		Reading *ttr = tr;
+		while (ttr) {
+			ttr = ttr->next;
+			--ntr;
+		}
+		for (int i = ntr; i<sub_reading && tr; ++i) {
+			tr = tr->next;
+		}
+		return tr;
+	}
+	return tr;
+}
+
 /**
  * Applies the passed rules to the passed SingleWindow.
  *
@@ -332,6 +395,9 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 			if (!readings_plain.empty()) {
 				readings_plain.clear();
 			}
+			if (!subs_any.empty()) {
+				subs_any.clear();
+			}
 			// Varstring capture groups exist on a per-cohort basis, since we may need them for mapping later.
 			if (!regexgrps.empty()) {
 				regexgrps.clear();
@@ -477,6 +543,11 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 					++rule.num_fail;
 				}
 				readings_plain.insert(std::make_pair(reading->hash_plain,reading));
+
+				if (reading != cohort->readings[i]) {
+					cohort->readings[i]->matched_target = reading->matched_target;
+					cohort->readings[i]->matched_tests = reading->matched_tests;
+				}
 			}
 
 			// If none of the readings were valid targets, remove this cohort from the rule's possible cohorts.

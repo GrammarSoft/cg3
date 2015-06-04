@@ -24,6 +24,25 @@
 
 namespace CG3 {
 
+Reading::Reading() :
+mapped(false),
+deleted(false),
+noprint(false),
+matched_target(false),
+matched_tests(false),
+baseform(0),
+hash(0),
+hash_plain(0),
+number(0),
+mapping(0),
+parent(0),
+next(0)
+{
+	#ifdef CG_TRACE_OBJECTS
+	std::cerr << "OBJECT: " << __PRETTY_FUNCTION__ << std::endl;
+	#endif
+}
+
 Reading::Reading(Cohort *p) :
 mapped(false),
 deleted(false),
