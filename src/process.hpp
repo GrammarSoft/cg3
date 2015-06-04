@@ -136,6 +136,7 @@ private:
 
 #else
 #include <popen_plus.h>
+#include <cerrno>
 #include <cstdio>
 #include <cstring>
 
