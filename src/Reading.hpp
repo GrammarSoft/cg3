@@ -60,6 +60,7 @@ namespace CG3 {
 		typedef bc::flat_map<uint32_t,Tag*> tags_numerical_t;
 		tags_numerical_t tags_numerical;
 
+		Reading();
 		Reading(Cohort *p);
 		Reading(const Reading& r);
 		~Reading();
