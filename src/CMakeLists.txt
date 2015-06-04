@@ -80,11 +80,11 @@ set(LIBCG3_HEADERS
 	istream.hpp
 	macros.hpp
 	parser_helpers.hpp
+	process.hpp
 	sorted_vector.hpp
 	stdafx.hpp
 	uextras.hpp
 	version.hpp
-	../include/exec-stream/exec-stream.h
 	)
 set(LIBCG3_SOURCES
 	BinaryGrammar.cpp
@@ -111,13 +111,13 @@ set(LIBCG3_SOURCES
 	TextualParser.cpp
 	Window.cpp
 	uextras.cpp
-	../include/exec-stream/exec-stream.cpp
+	${POPEN_PLUS_C}
 	${LIBCG3_HEADERS}
 	)
 if(MSVC)
 	set(LIBCG3_SOURCES
-		../win32/getopt.c
-		../win32/getopt.h
+		"${CMAKE_SOURCE_DIR}/include/win32/getopt.c"
+		"${CMAKE_SOURCE_DIR}/include/win32/getopt.h"
 		${LIBCG3_SOURCES}
 		)
 endif()

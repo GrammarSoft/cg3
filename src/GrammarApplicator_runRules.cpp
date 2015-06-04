@@ -28,6 +28,7 @@
 #include "Reading.hpp"
 #include "ContextualTest.hpp"
 #include "version.hpp"
+#include "process.hpp"
 
 namespace CG3 {
 
@@ -712,26 +713,20 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 							UErrorCode err = U_ZERO_ERROR;
 							u_strToUTF8(&cbuffers[0][0], CG3_BUFFER_SIZE-1, 0, ext->tag.c_str(), ext->tag.length(), &err);
 
-							exec_stream_t *es = 0;
+							Process& es = externals[rule.varname];
 							try {
-								es = new exec_stream_t;
-								es->set_binary_mode(exec_stream_t::s_in);
-								es->set_binary_mode(exec_stream_t::s_out);
-								es->set_wait_timeout(exec_stream_t::s_in, 10000);
-								es->set_wait_timeout(exec_stream_t::s_out, 10000);
-								es->start(&cbuffers[0][0], "");
-								writeRaw(es->in(), CG3_EXTERNAL_PROTOCOL);
+								es.start(&cbuffers[0][0]);
+								writeRaw(es, CG3_EXTERNAL_PROTOCOL);
 							}
 							catch (std::exception& e) {
 								u_fprintf(ux_stderr, "Error: External on line %u resulted in error: %s\n", rule.line, e.what());
 								CG3Quit(1);
 							}
-							externals[rule.varname] = es;
 							ei = externals.find(rule.varname);
 						}
 
-						pipeOutSingleWindow(current, ei->second->in());
-						pipeInSingleWindow(current, ei->second->out());
+						pipeOutSingleWindow(current, ei->second);
+						pipeInSingleWindow(current, ei->second);
 
 						indexSingleWindow(current);
 						readings_changed = true;

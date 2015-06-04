@@ -70,11 +70,13 @@ endif()
 
 if(WIN32)
 	add_definitions(-DUNICODE -D_UNICODE -D_SECURE_SCL=0 -D_ITERATOR_DEBUG_LEVEL=0 -D_CRT_SECURE_NO_DEPRECATE -DWIN32_LEAN_AND_MEAN -DVC_EXTRALEAN -DNOMINMAX)
-	include_directories("${CMAKE_CURRENT_SOURCE_DIR}/win32")
+	include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include/win32")
+else()
+	set(POPEN_PLUS_C "${CMAKE_CURRENT_SOURCE_DIR}/include/posix/popen_plus.c" "${CMAKE_CURRENT_SOURCE_DIR}/include/posix/popen_plus.h")
+	include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include/posix")
 endif()
 
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
-include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include/exec-stream")
 
 enable_testing()
 
