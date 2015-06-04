@@ -339,13 +339,13 @@ inline void insert_if_exists(IT& cont, const OT* other) {
 	}
 }
 
-template<typename T>
-inline void writeRaw(std::ostream& stream, const T& value) {
+template<typename S, typename T>
+inline void writeRaw(S& stream, const T& value) {
 	stream.write(reinterpret_cast<const char*>(&value), sizeof(T));
 }
 
-template<typename T>
-inline void readRaw(std::istream& stream, T& value) {
+template<typename S, typename T>
+inline void readRaw(S& stream, T& value) {
 	stream.read(reinterpret_cast<char*>(&value), sizeof(T));
 }
 
@@ -368,7 +368,8 @@ inline void writeUTF8String(std::ostream& output, const UString& str) {
 	writeUTF8String(output, str.c_str(), str.length());
 }
 
-inline UString readUTF8String(std::istream& input) {
+template<typename S>
+inline UString readUTF8String(S& input) {
 	uint16_t len = 0;
 	readRaw(input, len);
 
