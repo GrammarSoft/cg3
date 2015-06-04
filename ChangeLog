@@ -1,3 +1,13 @@
+2015-06-04  tino
+
+	* [r10745] src/GrammarApplicator.hpp: Undo 2 lines
+	* [r10744] src/TextualParser.cpp: Throw on invalid options, rather
+	  than endless loop
+	* [r10742] ChangeLog, TODO, src/GrammarApplicator.hpp,
+	  src/GrammarApplicator_runRules.cpp, src/Reading.cpp,
+	  src/Reading.hpp, src/TextualParser.cpp, src/version.hpp: Add
+	  SUB:* to make rule targets look at any sub-reading
+
 2015-05-30  tino
 
 	* [r10738] src/TextualParser.cpp: Don't parse SUB as flag
@@ -2535,14 +2545,4 @@
 2012-08-25  tino
 
 	* [r8487] get-boost.sh: Fix get-boost
-	* [r8485] src/TextualParser.cpp, src/TextualParser.h: Continue
-	  parsing up to 10 errors.
-
-2012-08-23  tino
-
-	* [r8482] test/T_MappingPrefix/expected.txt,
-	  test/T_Unification/expected.txt: Also merge trace lines.
-	* [r8480] scripts/cg3-autobin.pl, src/GrammarApplicator.h,
-	  src/GrammarApplicator_reflow.cpp, src/version.h: Also merge trace
-	  lines.
 

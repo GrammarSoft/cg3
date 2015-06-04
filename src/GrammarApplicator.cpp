@@ -27,6 +27,7 @@
 #include "SingleWindow.hpp"
 #include "Reading.hpp"
 #include "parser_helpers.hpp"
+#include "process.hpp"
 
 namespace CG3 {
 
@@ -107,16 +108,6 @@ GrammarApplicator::~GrammarApplicator() {
 	for (iter_stag = single_tags.begin() ; iter_stag != single_tags.end() ; ++iter_stag) {
 		if (iter_stag->second && !(iter_stag->second->type & T_GRAMMAR)) {
 			delete iter_stag->second;
-		}
-	}
-
-	foreach (externals_t, externals, ei, ei_end) {
-		try {
-			writeRaw(ei->second->in(), static_cast<uint32_t>(0));
-			delete ei->second;
-		}
-		catch (...) {
-			// We don't really care about errors since we're shutting down anyway.
 		}
 	}
 
@@ -645,7 +636,7 @@ void GrammarApplicator::pipeOutCohort(const Cohort *cohort, std::ostream& output
 	output.write(str.c_str(), str.length());
 }
 
-void GrammarApplicator::pipeOutSingleWindow(const SingleWindow& window, std::ostream& output) {
+void GrammarApplicator::pipeOutSingleWindow(const SingleWindow& window, Process& output) {
 	std::ostringstream ss;
 
 	writeRaw(ss, window.number);
@@ -662,10 +653,10 @@ void GrammarApplicator::pipeOutSingleWindow(const SingleWindow& window, std::ost
 	writeRaw(output, cs);
 	output.write(str.c_str(), str.length());
 
-	output << std::flush;
+	output.flush();
 }
 
-void GrammarApplicator::pipeInReading(Reading *reading, std::istream& input, bool force) {
+void GrammarApplicator::pipeInReading(Reading *reading, Process& input, bool force) {
 	uint32_t cs = 0;
 	readRaw(input, cs);
 	if (debug_level > 1) u_fprintf(ux_stderr, "DEBUG: reading packet length %u\n", cs);
@@ -717,7 +708,7 @@ void GrammarApplicator::pipeInReading(Reading *reading, std::istream& input, boo
 	reflowReading(*reading);
 }
 
-void GrammarApplicator::pipeInCohort(Cohort *cohort, std::istream& input) {
+void GrammarApplicator::pipeInCohort(Cohort *cohort, Process& input) {
 	uint32_t cs = 0;
 	readRaw(input, cs);
 	if (debug_level > 1) u_fprintf(ux_stderr, "DEBUG: cohort packet length %u\n", cs);
@@ -759,7 +750,7 @@ void GrammarApplicator::pipeInCohort(Cohort *cohort, std::istream& input) {
 	}
 }
 
-void GrammarApplicator::pipeInSingleWindow(SingleWindow& window, std::istream& input) {
+void GrammarApplicator::pipeInSingleWindow(SingleWindow& window, Process& input) {
 	uint32_t cs = 0;
 	readRaw(input, cs);
 	if (debug_level > 1) u_fprintf(ux_stderr, "DEBUG: window packet length %u\n", cs);

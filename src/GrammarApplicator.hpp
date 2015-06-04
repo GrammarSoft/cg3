@@ -31,7 +31,8 @@
 #include "interval_vector.hpp"
 #include "flat_unordered_set.hpp"
 #include "istream.hpp"
-#include <exec-stream.h>
+
+class Process;
 
 namespace CG3 {
 	class Window;
@@ -145,11 +146,11 @@ namespace CG3 {
 
 		void pipeOutReading(const Reading *reading, std::ostream& output);
 		void pipeOutCohort(const Cohort *cohort, std::ostream& output);
-		void pipeOutSingleWindow(const SingleWindow& window, std::ostream& output);
+		void pipeOutSingleWindow(const SingleWindow& window, Process& output);
 
-		void pipeInReading(Reading *reading, std::istream& input, bool force = false);
-		void pipeInCohort(Cohort *cohort, std::istream& input);
-		void pipeInSingleWindow(SingleWindow& window, std::istream& input);
+		void pipeInReading(Reading *reading, Process& input, bool force = false);
+		void pipeInCohort(Cohort *cohort, Process& input);
+		void pipeInSingleWindow(SingleWindow& window, Process& input);
 
 		uint32_t numLines;
 		uint32_t numWindows;
@@ -163,7 +164,7 @@ namespace CG3 {
 		typedef std::map<int32_t,uint32IntervalVector> RSType;
 		RSType runsections;
 
-		typedef std::map<uint32_t,exec_stream_t*> externals_t;
+		typedef std::map<uint32_t,Process> externals_t;
 		externals_t externals;
 
 		uint32Vector ci_depths;
