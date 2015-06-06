@@ -54,6 +54,7 @@ owns_grammar(false),
 input_eof(false),
 seen_barrier(false),
 is_conv(false),
+split_mappings(false),
 dep_has_spanned(false),
 dep_delimit(0),
 dep_original(false),
@@ -489,7 +490,9 @@ void GrammarApplicator::printCohort(Cohort *cohort, UFILE *output) {
 	}
 	u_fputc('\n', output);
 
-	mergeMappings(*cohort);
+	if (!split_mappings) {
+		mergeMappings(*cohort);
+	}
 
 	foreach (ReadingList, cohort->readings, rter1, rter1_end) {
 		printReading(*rter1, output);

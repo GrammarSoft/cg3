@@ -475,7 +475,9 @@ void NicelineApplicator::printCohort(Cohort *cohort, UFILE *output) {
 		did_warn_statictags = true;
 	}
 
-	mergeMappings(*cohort);
+	if (!split_mappings) {
+		mergeMappings(*cohort);
+	}
 
 	if (cohort->readings.empty()) {
 		u_fputc('\t', output);

@@ -79,6 +79,7 @@ namespace CG3 {
 		bool input_eof;
 		bool seen_barrier;
 		bool is_conv;
+		bool split_mappings;
 
 		bool dep_has_spanned;
 		uint32_t dep_delimit;
