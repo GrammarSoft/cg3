@@ -570,6 +570,9 @@ void GAppSetOpts(CG3::GrammarApplicator& applicator, UConverter *conv) {
 	if (options[NO_PASS_ORIGIN].doesOccur) {
 		applicator.no_pass_origin = true;
 	}
+	if (options[SPLIT_MAPPINGS].doesOccur) {
+		applicator.split_mappings = true;
+	}
 	if (options[SHOW_END_TAGS].doesOccur) {
 		applicator.show_end_tags = true;
 	}

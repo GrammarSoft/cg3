@@ -805,7 +805,9 @@ void ApertiumApplicator::printSingleWindow(SingleWindow *window, UFILE *output) 
 
 		Cohort *cohort = window->cohorts[c];
 
-		mergeMappings(*cohort);
+		if (!split_mappings) {
+			mergeMappings(*cohort);
+		}
 
 		// Start of cohort
 		u_fprintf(output, "^");
