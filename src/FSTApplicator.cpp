@@ -190,9 +190,14 @@ gotaline:
 						buf[i] = static_cast<char>(tab[i]);
 					}
 					buf[i] = 0;
-					weight = strtof(buf, 0);
-					weight *= wfactor;
-					i = sprintf(buf, "%.0f", weight);
+					if (strcmp(buf, "inf") == 0) {
+						i = sprintf(buf, "%d", std::numeric_limits<int32_t>::max());
+					}
+					else {
+						weight = strtof(buf, 0);
+						weight *= wfactor;
+						i = sprintf(buf, "%.0f", weight);
+					}
 					wtag_buf.clear();
 					wtag_buf.reserve(wtag.size() + i + 3);
 					wtag_buf += '<';
