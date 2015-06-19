@@ -111,7 +111,7 @@ error_out:
 
 int popen_plus_close(popen_plus_process *process)
 {
-    int pstat;
+    int pstat = 0;
     pid_t pid = 0;
     
     /**
