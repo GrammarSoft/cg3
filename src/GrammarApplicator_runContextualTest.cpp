@@ -636,7 +636,7 @@ Cohort *GrammarApplicator::runParenthesisTest(SingleWindow *sWindow, const Cohor
 	if (test->pos & POS_LEFT_PAR) {
 		cohort = sWindow->cohorts[par_left_pos];
 	}
-	else if (test->pos & POS_RIGHT_PAR) {
+	else {
 		cohort = sWindow->cohorts[par_right_pos];
 	}
 	runSingleTest(cohort, test, rvs, &retval, deep, origin);
