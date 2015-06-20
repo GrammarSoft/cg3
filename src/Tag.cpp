@@ -58,7 +58,7 @@ plain_hash(o.plain_hash),
 number(o.number),
 seed(o.seed),
 tag(o.tag),
-regexp(o.regexp)
+regexp(0)
 {
 	#ifdef CG_TRACE_OBJECTS
 	std::cerr << "OBJECT: " << __PRETTY_FUNCTION__ << std::endl;
@@ -71,6 +71,10 @@ regexp(o.regexp)
 	if (o.vs_sets) {
 		allocateVsSets();
 		*vs_sets.get() = *o.vs_sets.get();
+	}
+	if (o.regexp) {
+		UErrorCode status = U_ZERO_ERROR;
+		regexp = uregex_clone(o.regexp, &status);
 	}
 }
 
