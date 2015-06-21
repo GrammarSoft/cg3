@@ -30,6 +30,8 @@
 
 namespace CG3 {
 
+static std::vector<uint32FlatHashSet> pool_ps;
+
 Cohort::Cohort(SingleWindow *p) :
 type(0),
 global_number(0),
@@ -46,6 +48,8 @@ next(0)
 	#ifdef CG_TRACE_OBJECTS
 	std::cerr << "OBJECT: " << __PRETTY_FUNCTION__ << std::endl;
 	#endif
+
+	pool_get(pool_ps, possible_sets);
 }
 
 Cohort::~Cohort() {
@@ -70,6 +74,7 @@ Cohort::~Cohort() {
 		parent->parent->dep_window.erase(global_number);
 	}
 	detach();
+	pool_put(pool_ps, possible_sets);
 }
 
 void Cohort::detach() {
