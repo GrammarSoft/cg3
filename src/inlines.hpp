@@ -572,6 +572,21 @@ inline size_t fwrite_throw(const void *buffer, size_t size, size_t count, FILE *
 	return rv;
 }
 
+template<typename Pool, typename Var>
+void pool_get(Pool& pool, Var& var) {
+	if (!pool.empty()) {
+		var.swap(pool.back());
+		var.clear();
+		pool.pop_back();
+	}
+}
+
+template<typename Pool, typename Var>
+void pool_put(Pool& pool, Var& var) {
+	pool.resize(pool.size()+1);
+	var.swap(pool.back());
+}
+
 }
 
 #endif

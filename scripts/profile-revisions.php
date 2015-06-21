@@ -14,8 +14,8 @@ function profile_revision($rev) {
 
 	if (file_exists('./src/all_vislcg3.cpp')) {
 		echo "Using all_vislcg3.cpp and Boost...\n";
-		echo shell_exec('g++ -std=c++11 -DHAVE_BOOST -DNDEBUG -pthread -pipe -Wall -Wextra -Wno-deprecated -fPIC -O3 -Iinclude -Iinclude/exec-stream ./src/all_vislcg3.cpp -o vislcg3 -L/usr/lib/x86_64-linux-gnu -licui18n -licudata -licuio -licuuc 2>&1');
-		echo shell_exec('g++ -std=c++11 -DHAVE_BOOST -DNDEBUG -pthread -pipe -Wall -Wextra -Wno-deprecated -fPIC -O3 -Iinclude -Iinclude/exec-stream ./src/all_vislcg3.cpp -o vislcg3-tc -L/usr/lib/x86_64-linux-gnu -licui18n -licudata -licuio -licuuc -ltcmalloc 2>&1');
+		echo shell_exec('g++ -std=c++11 -DHAVE_BOOST -DNDEBUG -pthread -pipe -Wall -Wextra -Wno-deprecated -fPIC -O3 -Iinclude -Iinclude/posix ./src/all_vislcg3.cpp -o vislcg3 -L/usr/lib/x86_64-linux-gnu -licui18n -licudata -licuio -licuuc 2>&1');
+		echo shell_exec('g++ -std=c++11 -DHAVE_BOOST -DNDEBUG -pthread -pipe -Wall -Wextra -Wno-deprecated -fPIC -O3 -Iinclude -Iinclude/posix ./src/all_vislcg3.cpp -o vislcg3-tc -L/usr/lib/x86_64-linux-gnu -licui18n -licudata -licuio -licuuc -ltcmalloc 2>&1');
 	}
 	else {
 		echo "Using old-style without Boost...\n";
