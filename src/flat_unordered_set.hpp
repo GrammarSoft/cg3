@@ -222,7 +222,7 @@ public:
 		}
 
 		static container vals;
-		vals.clear();
+		vals.resize(0);
 		vals.reserve(size_);
 		for (size_type i = 0, ie = capacity(); i < ie; ++i) {
 			if (elements[i] != res_empty && elements[i] != res_del) {

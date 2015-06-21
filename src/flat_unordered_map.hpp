@@ -247,7 +247,8 @@ public:
 			return;
 		}
 
-		container vals;
+		static container vals;
+		vals.resize(0);
 		vals.reserve(size_);
 		for (size_type i = 0, ie = capacity(); i < ie; ++i) {
 			if (elements[i].first != res_empty && elements[i].first != res_del) {
