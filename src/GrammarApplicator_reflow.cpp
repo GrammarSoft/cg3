@@ -592,7 +592,7 @@ void GrammarApplicator::splitMappings(TagList& mappings, Cohort& cohort, Reading
 		if (found) {
 			continue;
 		}
-		Reading *nr = new Reading(reading);
+		Reading *nr = alloc_reading(reading);
 		nr->mapped = mapped;
 		nr->number = reading.number - i--;
 		uint32_t mp = addTagToReading(*nr, *ttag);
@@ -691,7 +691,7 @@ void GrammarApplicator::mergeReadings(ReadingList& readings) {
 
 	for (BOOST_AUTO(miter, mlist.begin()) ; miter != mlist.end() ; miter++) {
 		ReadingList clist = miter->second;
-		Reading *nr = new Reading(*(clist.front()));
+		Reading *nr = alloc_reading(*(clist.front()));
 		if (nr->mapping) {
 			erase(nr->tags_list, nr->mapping->hash);
 		}
@@ -699,7 +699,7 @@ void GrammarApplicator::mergeReadings(ReadingList& readings) {
 			if ((*iter1)->mapping && std::find(nr->tags_list.begin(), nr->tags_list.end(), (*iter1)->mapping->hash) == nr->tags_list.end()) {
 				nr->tags_list.push_back((*iter1)->mapping->hash);
 			}
-			delete (*iter1);
+			free_reading(*iter1);
 		}
 		order.push_back(nr);
 	}
@@ -746,11 +746,11 @@ Cohort *GrammarApplicator::delimitAt(SingleWindow& current, Cohort *cohort) {
 	nwin->has_enclosures = current.has_enclosures;
 
 	current.parent->cohort_counter++;
-	Cohort *cCohort = new Cohort(nwin);
+	Cohort *cCohort = alloc_cohort(nwin);
 	cCohort->global_number = 0;
 	cCohort->wordform = tag_begin;
 
-	Reading *cReading = new Reading(cCohort);
+	Reading *cReading = alloc_reading(cCohort);
 	cReading->baseform = begintag;
 	insert_if_exists(cReading->parent->possible_sets, grammar->sets_any);
 	addTagToReading(*cReading, begintag);

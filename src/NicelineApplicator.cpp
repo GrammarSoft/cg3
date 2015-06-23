@@ -224,7 +224,7 @@ gotaline:
 			tag += '>';
 			tag += '"';
 
-			cCohort = new Cohort(cSWindow);
+			cCohort = alloc_cohort(cSWindow);
 			cCohort->global_number = gWindow->cohort_counter++;
 			cCohort->wordform = addTag(tag);
 			lCohort = cCohort;
@@ -232,7 +232,7 @@ gotaline:
 
 			++space;
 			while (space && space[0]) {
-				cReading = new Reading(cCohort);
+				cReading = alloc_reading(cCohort);
 				insert_if_exists(cReading->parent->possible_sets, grammar->sets_any);
 
 				UChar *base = space;

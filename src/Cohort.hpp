@@ -55,7 +55,7 @@ namespace CG3 {
 		SingleWindow *parent;
 		UString text;
 		Cohort *prev, *next;
-		boost::scoped_ptr<Reading> wread;
+		Reading *wread;
 		ReadingList readings;
 		ReadingList deleted;
 		ReadingList delayed;
@@ -75,6 +75,7 @@ namespace CG3 {
 
 		Cohort(SingleWindow *p);
 		~Cohort();
+		void clear();
 
 		void addChild(uint32_t child);
 		void remChild(uint32_t child);
@@ -96,6 +97,9 @@ namespace CG3 {
 
 	typedef sorted_vector<Cohort*, compare_Cohort> CohortSet;
 	typedef stdext::hash_map<uint32_t, CohortSet> uint32ToCohortsMap;
+
+	Cohort *alloc_cohort(SingleWindow *p);
+	void free_cohort(Cohort *c);
 }
 
 #endif

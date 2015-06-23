@@ -30,11 +30,11 @@
 namespace CG3 {
 
 void GrammarApplicator::initEmptySingleWindow(SingleWindow *cSWindow) {
-	Cohort *cCohort = new Cohort(cSWindow);
+	Cohort *cCohort = alloc_cohort(cSWindow);
 	cCohort->global_number = 0;
 	cCohort->wordform = tag_begin;
 
-	Reading *cReading = new Reading(cCohort);
+	Reading *cReading = alloc_reading(cCohort);
 	cReading->baseform = begintag;
 	insert_if_exists(cReading->parent->possible_sets, grammar->sets_any);
 	addTagToReading(*cReading, begintag);
@@ -45,7 +45,7 @@ void GrammarApplicator::initEmptySingleWindow(SingleWindow *cSWindow) {
 }
 
 Reading *GrammarApplicator::initEmptyCohort(Cohort& cCohort) {
-	Reading *cReading = new Reading(&cCohort);
+	Reading *cReading = alloc_reading(&cCohort);
 	if (allow_magic_readings) {
 		cReading->baseform = makeBaseFromWord(cCohort.wordform)->hash;
 	}
@@ -265,7 +265,7 @@ gotaline:
 					u_fflush(ux_stderr);
 				}
 			}
-			cCohort = new Cohort(cSWindow);
+			cCohort = alloc_cohort(cSWindow);
 			cCohort->global_number = gWindow->cohort_counter++;
 			cCohort->wordform = addTag(&cleaned[0]);
 			lCohort = cCohort;
@@ -275,7 +275,7 @@ gotaline:
 
 			space += 2;
 			if (space[0]) {
-				cCohort->wread.reset(new Reading(cCohort));
+				cCohort->wread = alloc_reading(cCohort);
 				addTagToReading(*cCohort->wread, cCohort->wordform);
 				while (space[0]) {
 					SKIPWS(space, 0, 0, true);
@@ -312,7 +312,7 @@ gotaline:
 				indents.back().second->next = cReading;
 			}
 			else {
-				cReading = new Reading(cCohort);
+				cReading = alloc_reading(cCohort);
 			}
 			insert_if_exists(cReading->parent->possible_sets, grammar->sets_any);
 			addTagToReading(*cReading, cCohort->wordform);

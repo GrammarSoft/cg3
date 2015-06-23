@@ -54,7 +54,7 @@ SingleWindow::~SingleWindow() {
 	}
 
 	foreach (CohortVector, cohorts, iter, iter_end) {
-		delete (*iter);
+		free_cohort(*iter);
 	}
 	if (next && previous) {
 		next->previous = previous;
