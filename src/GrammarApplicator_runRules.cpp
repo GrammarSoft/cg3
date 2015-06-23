@@ -92,7 +92,10 @@ void GrammarApplicator::indexSingleWindow(SingleWindow& current) {
 
 	foreach (CohortVector, current.cohorts, iter, iter_end) {
 		Cohort *c = *iter;
-		boost_foreach (uint32_t psit, c->possible_sets) {
+		for (uint32_t psit = 0; psit < c->possible_sets.size(); ++psit) {
+			if (c->possible_sets.test(psit) == false) {
+				continue;
+			}
 			BOOST_AUTO(rules_it, grammar->rules_by_set.find(psit));
 			if (rules_it == grammar->rules_by_set.end()) {
 				continue;
@@ -330,7 +333,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 				continue;
 			}
 			// If there is not even a remote chance the target set might match this cohort, skip it.
-			if (rule.sub_reading == 0 && cohort->possible_sets.find(rule.target) == cohort->possible_sets.end()) {
+			if (rule.sub_reading == 0 && (rule.target >= cohort->possible_sets.size() || !cohort->possible_sets.test(rule.target))) {
 				continue;
 			}
 

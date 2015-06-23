@@ -81,6 +81,7 @@
 #include <boost/unordered_map.hpp>
 #include <boost/container/flat_set.hpp>
 #include <boost/container/flat_map.hpp>
+#include <boost/dynamic_bitset.hpp>
 #include <boost/scoped_ptr.hpp>
 #include <boost/typeof/typeof.hpp>
 #include <boost/foreach.hpp>
