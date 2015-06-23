@@ -220,7 +220,11 @@ void GrammarApplicator::reflowDependencyWindow(uint32_t max) {
 		gWindow->cohort_map[0] = gWindow->current->cohorts[0];
 	}
 	else if (gWindow->cohort_map.find(0) == gWindow->cohort_map.end()) {
-		Cohort *tmp = gWindow->cohort_map.begin()->second->parent->cohorts[0];
+		Cohort *tmp = gWindow->current->cohorts[0];
+		Cohort *c = gWindow->cohort_map.begin()->second;
+		if (c->parent) {
+			tmp = c->parent->cohorts[0];
+		}
 		gWindow->cohort_map[0] = tmp;
 	}
 
