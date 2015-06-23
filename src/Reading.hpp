@@ -60,10 +60,10 @@ namespace CG3 {
 		typedef bc::flat_map<uint32_t,Tag*> tags_numerical_t;
 		tags_numerical_t tags_numerical;
 
-		Reading();
-		Reading(Cohort *p);
+		Reading(Cohort *p = 0);
 		Reading(const Reading& r);
 		~Reading();
+		void clear();
 
 		Reading *allocateReading(Cohort *p);
 		Reading *allocateReading(const Reading& r);
@@ -71,6 +71,10 @@ namespace CG3 {
 		uint32_t rehash();
 		static bool cmp_number(Reading *a, Reading *b);
 	};
+
+	Reading *alloc_reading(Cohort *p = 0);
+	Reading *alloc_reading(const Reading& r);
+	void free_reading(Reading *r);
 }
 
 #endif

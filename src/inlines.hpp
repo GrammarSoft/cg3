@@ -587,6 +587,47 @@ void pool_put(Pool& pool, Var& var) {
 	var.swap(pool.back());
 }
 
+template<typename Pool, typename Var>
+void pool_get(Pool& pool, Var *& var) {
+	var = 0;
+	if (!pool.empty()) {
+		var = pool.back();
+		pool.pop_back();
+	}
+}
+
+template<typename Pool>
+typename Pool::value_type pool_get(Pool& pool) {
+	typename Pool::value_type var = 0;
+	if (!pool.empty()) {
+		var = pool.back();
+		pool.pop_back();
+	}
+	return var;
+}
+
+template<typename Pool, typename Var>
+void pool_put(Pool& pool, Var *var) {
+	var->clear();
+	pool.push_back(var);
+}
+
+template<typename Pool>
+struct pool_cleaner {
+	Pool& pool;
+
+	pool_cleaner(Pool& pool) :
+		pool(pool)
+	{
+	}
+
+	~pool_cleaner() {
+		for (size_t i = 0; i < pool.size(); ++i) {
+			delete pool[i];
+		}
+	}
+};
+
 }
 
 #endif

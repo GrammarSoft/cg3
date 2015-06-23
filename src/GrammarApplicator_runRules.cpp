@@ -781,7 +781,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						reading.hit_by.push_back(rule.number);
 						index_ruleCohort_no.clear();
 
-						Cohort *cCohort = new Cohort(&current);
+						Cohort *cCohort = alloc_cohort(&current);
 						cCohort->global_number = gWindow->cohort_counter++;
 
 						Tag *wf = 0;
@@ -802,7 +802,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						}
 
 						foreach (std::vector<TagList>, readings, rit, rit_end) {
-							Reading *cReading = new Reading(cCohort);
+							Reading *cReading = alloc_reading(cCohort);
 							++numReadings;
 							insert_if_exists(cReading->parent->possible_sets, grammar->sets_any);
 							cReading->hit_by.push_back(rule.number);
@@ -1075,7 +1075,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						}
 
 						foreach (std::vector<TagList>, readings, rit, rit_end) {
-							Reading *cReading = new Reading(cohort);
+							Reading *cReading = alloc_reading(cohort);
 							++numReadings;
 							insert_if_exists(cReading->parent->possible_sets, grammar->sets_any);
 							addTagToReading(*cReading, cohort->wordform);

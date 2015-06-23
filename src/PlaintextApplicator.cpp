@@ -256,7 +256,7 @@ gotaline:
 					}
 				}
 
-				cCohort = new Cohort(cSWindow);
+				cCohort = alloc_cohort(cSWindow);
 				cCohort->global_number = gWindow->cohort_counter++;
 				tag.clear();
 				tag += '"';

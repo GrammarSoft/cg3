@@ -158,7 +158,7 @@ gotaline:
 					++numWindows;
 					did_soft_lookback = false;
 				}
-				cCohort = new Cohort(cSWindow);
+				cCohort = alloc_cohort(cSWindow);
 				cCohort->global_number = gWindow->cohort_counter++;
 				cCohort->wordform = addTag(tag);
 				lCohort = cCohort;
@@ -167,7 +167,7 @@ gotaline:
 
 			++space;
 			while (space && (space[0] != '+' || space[1] != '?' || space[2] != 0)) {
-				cReading = new Reading(cCohort);
+				cReading = alloc_reading(cCohort);
 				insert_if_exists(cReading->parent->possible_sets, grammar->sets_any);
 				addTagToReading(*cReading, cCohort->wordform);
 
