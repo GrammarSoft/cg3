@@ -1,5 +1,15 @@
 2015-06-23  tino
 
+	* [r10796] src/CohortIterator.cpp,
+	  src/GrammarApplicator_runContextualTest.cpp: Fix bad reaction
+	  between removed cohorts and dependency
+	* [r10793] ChangeLog, scripts/profile-revisions.php,
+	  src/Cohort.cpp, src/Cohort.hpp, src/Grammar.cpp, src/Grammar.hpp,
+	  src/GrammarApplicator_matchSet.cpp,
+	  src/GrammarApplicator_reflow.cpp,
+	  src/GrammarApplicator_runRules.cpp, src/inlines.hpp,
+	  src/stdafx.hpp, src/version.hpp: Instead of using upwards 128KB
+	  per cohort possible_sets cache, use 2KB
 	* [r10791] ChangeLog, src/Grammar.hpp, src/Reading.cpp,
 	  src/flat_unordered_map.hpp, src/flat_unordered_set.hpp,
 	  src/sorted_vector.hpp, src/version.hpp: Let's ship a complete
@@ -2314,17 +2324,4 @@
 2012-11-15  tino
 
 	* [r8691] src/options.h: Swapped text on -I -O
-
-2012-10-30  tino
-
-	* [r8665] scripts/cg3-autobin.pl, src/GrammarApplicator_reflow.cpp,
-	  src/version.h: Max cohort for reflowDep should only apply when
-	  dep-delimit is in effect.
-
-2012-10-25  tino
-
-	* [r8661] scripts/cg3-autobin.pl,
-	  src/GrammarApplicator_matchSet.cpp,
-	  src/GrammarApplicator_runRules.cpp, src/version.h: Context tests
-	  looking at Deleted and Delayed need to bypass the cache.
 

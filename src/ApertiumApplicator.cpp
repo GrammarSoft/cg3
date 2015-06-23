@@ -246,11 +246,11 @@ void ApertiumApplicator::runGrammarOnText(istream& input, UFILE *output) {
 				cSWindow = gWindow->allocAppendSingleWindow();
 
 				// Create 0th Cohort which serves as the beginning of sentence
-				cCohort = new Cohort(cSWindow);
+				cCohort = alloc_cohort(cSWindow);
 				cCohort->global_number = 0;
 				cCohort->wordform = tag_begin;
 
-				cReading = new Reading(cCohort);
+				cReading = alloc_reading(cCohort);
 				cReading->baseform = begintag;
 				insert_if_exists(cReading->parent->possible_sets, grammar->sets_any);
 				addTagToReading(*cReading, begintag);
@@ -284,7 +284,7 @@ void ApertiumApplicator::runGrammarOnText(istream& input, UFILE *output) {
 					resetIndexes();
 				}
 			}
-			cCohort = new Cohort(cSWindow);
+			cCohort = alloc_cohort(cSWindow);
 			cCohort->global_number = gWindow->cohort_counter++;
 
 			// Read in the word form
@@ -323,7 +323,7 @@ void ApertiumApplicator::runGrammarOnText(istream& input, UFILE *output) {
 			// Gobble up all <tags> until the first / or $ and stuff them in the static reading
 			if (inchar == '<') {
 				//u_fprintf(ux_stderr, "Static reading\n");
-				cCohort->wread.reset(new Reading(cCohort));
+				cCohort->wread = alloc_reading(cCohort);
 				UString tag;
 				do {
 					inchar = u_fgetc_wrapper(input);
@@ -362,7 +362,7 @@ void ApertiumApplicator::runGrammarOnText(istream& input, UFILE *output) {
 
 				if (inchar == '$') {
 					// Add the final reading of the cohort
-					cReading = new Reading(cCohort);
+					cReading = alloc_reading(cCohort);
 
 					insert_if_exists(cReading->parent->possible_sets, grammar->sets_any);
 
@@ -383,7 +383,7 @@ void ApertiumApplicator::runGrammarOnText(istream& input, UFILE *output) {
 
 				if (inchar == '/') { // Reached end of reading
 					Reading *cReading = 0;
-					cReading = new Reading(cCohort);
+					cReading = alloc_reading(cCohort);
 
 					addTagToReading(*cReading, cCohort->wordform);
 
@@ -668,7 +668,7 @@ void ApertiumApplicator::testPR(UFILE *output) {
 	};
 	for (size_t i = 0 ; i<6 ; ++i) {
 		UString text(texts[i].begin(), texts[i].end());
-		Reading *reading = new Reading(0);
+		Reading *reading = alloc_reading(0);
 		processReading(reading, text);
 		if (grammar->sub_readings_ltr && reading->next) {
 			reading = reverse(reading);
@@ -928,7 +928,7 @@ void ApertiumApplicator::mergeMappings(Cohort& cohort) {
 	std::map<uint32_t, ReadingList>::iterator miter;
 	for (miter = mlist.begin() ; miter != mlist.end() ; miter++) {
 		ReadingList clist = miter->second;
-		Reading *nr = new Reading(*(clist.front()));
+		Reading *nr = alloc_reading(*(clist.front()));
 		// no merging of mapping tags
 		order.push_back(nr);
 	}

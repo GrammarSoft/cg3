@@ -195,7 +195,7 @@ inline Tag *_tag_copy(GrammarApplicator *from, GrammarApplicator *to, uint32_t h
 }
 
 inline Reading *_reading_copy(Cohort *nc, Reading *oldr, bool is_sub = false) {
-	Reading *nr = new Reading(nc);
+	Reading *nr = alloc_reading(nc);
 	GrammarApplicator *ga = nc->parent->parent->parent;
 	insert_if_exists(nr->parent->possible_sets, ga->grammar->sets_any);
 	ga->addTagToReading(*nr, nc->wordform);
@@ -219,7 +219,7 @@ inline Reading *_reading_copy(Cohort *nc, Reading *oldr, bool is_sub = false) {
 }
 
 inline Cohort *_cohort_copy(SingleWindow *ns, Cohort *oc) {
-	Cohort *nc = new Cohort(ns);
+	Cohort *nc = alloc_cohort(ns);
 	nc->wordform = _tag_copy(ns->parent->parent, oc->wordform);
 	boost_foreach (Reading *r, oc->readings) {
 		Reading *nr = _reading_copy(nc, r);
@@ -275,7 +275,7 @@ void cg3_sentence_addcohort(cg3_sentence *sentence_, cg3_cohort *cohort_) {
 
 cg3_cohort *cg3_cohort_create(cg3_sentence *sentence_) {
 	SingleWindow *sentence = static_cast<SingleWindow*>(sentence_);
-	Cohort *cohort = new Cohort(sentence);
+	Cohort *cohort = alloc_cohort(sentence);
 	cohort->global_number = sentence->parent->cohort_counter++;
 	return cohort;
 }
@@ -365,7 +365,7 @@ void cg3_cohort_free(cg3_cohort *cohort_) {
 cg3_reading *cg3_reading_create(cg3_cohort *cohort_) {
 	Cohort *cohort = static_cast<Cohort*>(cohort_);
 	GrammarApplicator *ga = cohort->parent->parent->parent;
-	Reading *reading = new Reading(cohort);
+	Reading *reading = alloc_reading(cohort);
 	insert_if_exists(reading->parent->possible_sets, ga->grammar->sets_any);
 	ga->addTagToReading(*reading, cohort->wordform);
 	return reading;
