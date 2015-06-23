@@ -212,6 +212,10 @@ public:
 		return elements.size();
 	}
 
+	size_type capacity() const {
+		return elements.capacity();
+	}
+
 	bool empty() const {
 		return elements.empty();
 	}
