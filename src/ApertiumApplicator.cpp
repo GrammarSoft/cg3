@@ -275,7 +275,7 @@ void ApertiumApplicator::runGrammarOnText(istream& input, UFILE *output) {
 				while (!gWindow->previous.empty() && gWindow->previous.size() > num_windows) {
 					SingleWindow *tmp = gWindow->previous.front();
 					printSingleWindow(tmp, output);
-					delete tmp;
+					free_swindow(tmp);
 					gWindow->previous.pop_front();
 				}
 				gWindow->shuffleWindowsDown();
@@ -435,7 +435,7 @@ void ApertiumApplicator::runGrammarOnText(istream& input, UFILE *output) {
 		while (!gWindow->previous.empty() && gWindow->previous.size() > num_windows) {
 			SingleWindow *tmp = gWindow->previous.front();
 			printSingleWindow(tmp, output);
-			delete tmp;
+			free_swindow(tmp);
 			gWindow->previous.pop_front();
 		}
 		gWindow->shuffleWindowsDown();
@@ -446,7 +446,7 @@ void ApertiumApplicator::runGrammarOnText(istream& input, UFILE *output) {
 	while (!gWindow->previous.empty()) {
 		SingleWindow *tmp = gWindow->previous.front();
 		printSingleWindow(tmp, output);
-		delete tmp;
+		free_swindow(tmp);
 		gWindow->previous.pop_front();
 	}
 

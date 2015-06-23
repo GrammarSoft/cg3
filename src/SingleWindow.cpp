@@ -25,6 +25,27 @@
 
 namespace CG3 {
 
+std::vector<SingleWindow*> pool_swindows;
+pool_cleaner< std::vector<SingleWindow*> > cleaner_swindows(pool_swindows);
+
+SingleWindow *alloc_swindow(Window *p) {
+	SingleWindow *s = pool_get(pool_swindows);
+	if (s == 0) {
+		s = new SingleWindow(p);
+	}
+	else {
+		s->parent = p;
+	}
+	return s;
+}
+
+void free_swindow(SingleWindow *s) {
+	if (s == 0) {
+		return;
+	}
+	pool_put(pool_swindows, s);
+}
+
 SingleWindow::SingleWindow(Window *p) :
 number(0),
 has_enclosures(false),
@@ -54,6 +75,35 @@ SingleWindow::~SingleWindow() {
 	}
 
 	foreach (CohortVector, cohorts, iter, iter_end) {
+		delete *iter;
+	}
+	if (next && previous) {
+		next->previous = previous;
+		previous->next = next;
+	}
+	else {
+		if (next) {
+			next->previous = 0;
+		}
+		if (previous) {
+			previous->next = 0;
+		}
+	}
+}
+
+void SingleWindow::clear() {
+	if (cohorts.size() > 1) {
+		for (uint32FlatHashMap::iterator iter = parent->relation_map.begin(); iter != parent->relation_map.end();) {
+			if (iter->second <= cohorts.back()->global_number) {
+				iter = parent->relation_map.erase(iter);
+			}
+			else {
+				++iter;
+			}
+		}
+	}
+
+	foreach(CohortVector, cohorts, iter, iter_end) {
 		free_cohort(*iter);
 	}
 	if (next && previous) {
@@ -68,6 +118,22 @@ SingleWindow::~SingleWindow() {
 			previous->next = 0;
 		}
 	}
+
+	number = 0;
+	has_enclosures = false;
+	next = 0;
+	previous = 0;
+	parent = 0;
+	text.clear();
+	cohorts.clear();
+	valid_rules.clear();
+	hit_external.clear();
+	boost_foreach (CohortSet& cs, rule_to_cohorts) {
+		cs.clear();
+	}
+	variables_set.clear();
+	variables_rem.clear();
+	variables_output.clear();
 }
 
 void SingleWindow::appendCohort(Cohort *cohort) {
