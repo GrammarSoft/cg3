@@ -1,0 +1,53 @@
+A new release of CG-3 has been tagged v0.9.9.10800.
+
+Performance:
+- Rules application is now 60% faster than previous release. The reference test ( http://visl.sdu.dk/cg3_performance.html ) went from 390 cohorts/sec to 620, and performs 1/3rd the number of re-allocations. This was accomplished by taking advantage of an internal re-structuring of using sequential set numbers instead of their hashes, which in turn was initially implemented to eliminate some hash collisions.
+- EXTERNAL processing is now 20 times faster than previous release.
+
+New features:
+- Binary grammars are now kept forward compatible, to the best of my ability. Grammars compiled all the way back to r10043 will continue to load on latest versions.
+- Added cmdline option --quiet and alias -v0
+- Grammar compiling diagnostics now print what file the message is from, alongside better context
+- Added STRICT-TAGS to enforce a basic tag set. See http://visl.sdu.dk/cg3/chunked/tags.html#strict-tags
+- Added OPTIONS to enforce stricter cleaner grammars. See http://visl.sdu.dk/cg3/chunked/grammar.html#grammar-options
+- Added cg-conv cmdline options for handling weights and sub-readings (--wfactor, --wtag, --sub-delim)
+- Added REOPEN-MAPPINGS to let a grammar reuse a prefix for chosen tags. See http://visl.sdu.dk/cg3/chunked/grammar.html#reopen-mappings
+- Added magic set _SAME_BASIC_ to check for identical readings. See http://visl.sdu.dk/cg3/chunked/sets.html#set-same-basic
+- Added context modifier 'f' to automatically create an alternative branch where numeric tags don't apply. See http://visl.sdu.dk/cg3/chunked/contexts.html#test-branch
+- Added SUB:* to match any sub-reading. Can currently only be used for Select/Remove-like actions.
+- Added cmdline flag --split-mappings to keep mapping tags on a reading of their own in the output. Note that you MUST NOT treat this format as different from the merged format - they are logically identical.
+
+Changes:
+- cg-conv now auto-detects Apertium better
+- Tag prefix ! (inversion) removed in favour of ^ (fail-fast)
+- Empty composite tag is now an error
+- Readings that would be considered identical without --trace are now marked deleted under --trace. This is incorrect behavior, but being blessed because it makes things easier for grammarians.
+- Regex captures are now done on a true per-reading basis, which fixes a lot of quirks
+- Non-capturing unification is now also done on a true per-reading basis, and ditto
+- Cmdline flag --prefix must now match the loaded binary grammar's prefix
+- The Emacs major mode is now named cg.el again
+- CR and NEL are no longer considered separate newlines, which fixes line numbers for DOS/Windows files
+
+Fixed Bugs:
+- Substitute out-of-order tags no longer crashes
+- Mapping tags created via varstring now work like mapping tags
+- Regex captures no longer remain after a failed context
+- Fixed partial wordform parsing in the input stream
+- Fixed empty sections that caused --sections to skip last section
+- Fixed sub-readings remaining active in certain situations
+- Fixed parsing the set SUB as the SUB: flag
+- Fixed a minor memory leak regarding regexes
+- Fixed dependencies looking at removed cohorts and subsequently crashing
+
+Main site is http://visl.sdu.dk/cg3.html
+Google Group is http://groups.google.com/group/constraint-grammar
+Source snapshots available at http://visl.sdu.dk/download/cg3/
+Windows binary is at http://apertium.projectjj.com/win32/nightly/
+OS X binary is at http://apertium.projectjj.com/osx/nightly/
+RHEL/Fedora/CentOS/OpenSUSE packages are at http://apertium.projectjj.com/rpm/howto.txt
+Debian/Ubuntu packages are at http://apertium.projectjj.com/apt/howto.txt
+
+I strongly recommend everyone uses STRICT-TAGS in their grammars. It greatly reduces the risk of typos.
+
+-- Tino Didriksen
+CG-3 Developer
