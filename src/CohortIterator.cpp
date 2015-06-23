@@ -112,6 +112,10 @@ DepParentIter& DepParentIter::operator++() {
 		std::map<uint32_t,Cohort*>::iterator it = m_cohort->parent->parent->cohort_map.find(m_cohort->dep_parent);
 		if (it != m_cohort->parent->parent->cohort_map.end()) {
 			Cohort *cohort = it->second;
+			if (cohort->type & CT_REMOVED) {
+				m_cohort = 0;
+				return *this;
+			}
 			if (m_seen.find(cohort) == m_seen.end()) {
 				m_seen.insert(m_cohort);
 				if (cohort->parent == m_cohort->parent || (m_test->pos & POS_SPAN_BOTH) || m_span) {

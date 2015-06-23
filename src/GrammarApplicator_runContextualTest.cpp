@@ -581,6 +581,9 @@ Cohort *GrammarApplicator::runDependencyTest(SingleWindow *sWindow, Cohort *curr
 			continue;
 		}
 		Cohort *cohort = sWindow->parent->cohort_map.find(*dter)->second;
+		if (cohort->type & CT_REMOVED) {
+			continue;
+		}
 		bool good = true;
 		if (current->parent != cohort->parent) {
 			if ((!(test->pos & (POS_SPAN_BOTH|POS_SPAN_LEFT))) && cohort->parent->number < current->parent->number) {
