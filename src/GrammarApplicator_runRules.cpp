@@ -88,7 +88,10 @@ bool GrammarApplicator::updateValidRules(const uint32IntervalVector& rules, uint
 
 void GrammarApplicator::indexSingleWindow(SingleWindow& current) {
 	current.valid_rules.clear();
-	current.rule_to_cohorts.clear();
+	current.rule_to_cohorts.resize(grammar->rule_by_number.size());
+	boost_foreach(CohortSet& cs, current.rule_to_cohorts) {
+		cs.clear();
+	}
 
 	foreach (CohortVector, current.cohorts, iter, iter_end) {
 		Cohort *c = *iter;
@@ -293,11 +296,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 		const Set& set = *(grammar->sets_list[rule.target]);
 		grammar->lines = rule.line;
 
-		uint32ToCohortsMap::iterator csit = current.rule_to_cohorts.find(rule.number);
-		if (csit == current.rule_to_cohorts.end()) {
-			continue;
-		}
-		CohortSet *cohortset = &csit->second;
+		CohortSet *cohortset = &current.rule_to_cohorts[rule.number];
 		if (debug_level > 1) {
 			std::cerr << "DEBUG: " << cohortset->size() << "/" << current.cohorts.size() << " = " << double(cohortset->size())/double(current.cohorts.size()) << std::endl;
 		}
@@ -737,7 +736,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						intersects = current.valid_rules.intersect(rules);
 						iter_rules = intersects.find(rule.number);
 						iter_rules_end = intersects.end();
-						cohortset = &current.rule_to_cohorts.find(rule.number)->second;
+						cohortset = &current.rule_to_cohorts[rule.number];
 						rocit = cohortset->find(cohort);
 						++rocit;
 						break;
@@ -770,7 +769,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 								}
 							}
 							index_ruleCohort_no.clear();
-							cohortset = &current.rule_to_cohorts.find(rule.number)->second;
+							cohortset = &current.rule_to_cohorts[rule.number];
 							rocit = cohortset->find(cohort);
 							++rocit;
 						}
@@ -864,7 +863,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						indexSingleWindow(current);
 						readings_changed = true;
 
-						cohortset = &current.rule_to_cohorts.find(rule.number)->second;
+						cohortset = &current.rule_to_cohorts[rule.number];
 						rocit = cohortset->find(cohort);
 						++rocit;
 						break;
