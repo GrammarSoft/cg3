@@ -77,11 +77,11 @@ namespace CG3 {
 		rules_by_set_t rules_by_set;
 		typedef stdext::hash_map<uint32_t, uint32IntervalVector> rules_by_tag_t;
 		rules_by_tag_t rules_by_tag;
-		typedef stdext::hash_map<uint32_t, uint32FlatHashSet> sets_by_tag_t;
+		typedef stdext::hash_map<uint32_t, uint32SortedVector> sets_by_tag_t;
 		sets_by_tag_t sets_by_tag;
 
 		uint32IntervalVector *rules_any;
-		uint32FlatHashSet *sets_any;
+		uint32SortedVector *sets_any;
 
 		Set *delimiters;
 		Set *soft_delimiters;

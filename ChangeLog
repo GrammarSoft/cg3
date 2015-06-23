@@ -1,3 +1,35 @@
+2015-06-21  tino
+
+	* [r10787] scripts/profile-revisions.php,
+	  src/flat_unordered_map.hpp, src/flat_unordered_set.hpp:
+	  Consistency
+	* [r10786] compile-profile.sh, scripts/profile-revisions.php,
+	  src/Cohort.cpp, src/Reading.cpp, src/all_cg_comp.cpp,
+	  src/all_cg_conv.cpp, src/all_cg_proc.cpp, src/all_vislcg3.cpp,
+	  src/flat_unordered_set.hpp, src/inlines.hpp, vapply.sh,
+	  vparse.sh: WIP memory pooling hacks
+
+2015-06-20  tino
+
+	* [r10784] src/Tag.cpp: Clone regexes to avoid double-free
+
+2015-06-19  tino
+
+	* [r10782] include/posix/popen_plus.c,
+	  src/GrammarApplicator_runContextualTest.cpp: scan-build fixes
+
+2015-06-11  tino
+
+	* [r10763] src/FSTApplicator.cpp: inf weight -> 2147483647
+
+2015-06-06  tino
+
+	* [r10754] ChangeLog, src/ApertiumApplicator.cpp,
+	  src/GrammarApplicator.cpp, src/GrammarApplicator.hpp,
+	  src/NicelineApplicator.cpp, src/main.cpp, src/options.hpp,
+	  src/version.hpp, test/T_MapAdd_Different/args.txt,
+	  test/T_MapAdd_Different/expected.txt: Add option --split-mappings
+
 2015-06-04  tino
 
 	* [r10749] include/posix/popen_plus.c, src/GrammarApplicator.hpp,
@@ -2292,45 +2324,4 @@
 
 	* [r8630] src/GrammarApplicator_runGrammar.cpp, src/inlines.h: CG-3
 	  recognize \v as newline and fix buffer growth
-
-2012-09-30  tino
-
-	* [r8607] manual/installation.xml:
-
-2012-09-20  tino
-
-	* [r8556] scripts/cg3-autobin.pl, src/GrammarApplicator.cpp,
-	  src/GrammarApplicator.h, src/GrammarApplicator_reflow.cpp,
-	  src/GrammarApplicator_runRules.cpp, src/TextualParser.cpp,
-	  src/version.h: Better line numbers; Warn about 'x' misuse.
-
-2012-09-10  tino
-
-	* [r8543] manual/dependencies.xml: cg3
-	* [r8542] scripts/cg3-autobin.pl, src/GrammarApplicator.cpp,
-	  src/GrammarApplicator.h,
-	  src/GrammarApplicator_runContextualTest.cpp,
-	  src/GrammarApplicator_runRules.cpp, src/version.h:
-	  SetParent/Child bail out if barrier met
-
-2012-09-09  tino
-
-	* [r8538] scripts/cg3-autobin.pl, src/ApertiumApplicator.cpp,
-	  src/Cohort.cpp, src/Cohort.h,
-	  src/GrammarApplicator_runGrammar.cpp, src/cg_conv.cpp,
-	  src/cg_proc.cpp, src/version.h: Added static reading to cg-proc
-	  and verified it survives cg-conv -a | cg-conv
-
-2012-09-07  tino
-
-	* [r8536] manual/dependencies.xml, manual/relations.xml,
-	  scripts/cg3-autobin.pl, src/Cohort.cpp, src/Cohort.h,
-	  src/GrammarApplicator.cpp, src/GrammarApplicator_matchSet.cpp,
-	  src/GrammarApplicator_runGrammar.cpp, src/version.h,
-	  test/T_BasicContextTest/expected.txt,
-	  test/T_BasicContextTest/grammar.cg3,
-	  test/T_BasicContextTest/input.txt, test/T_BasicRemove,
-	  test/T_CompositeSelect: Allowed tags after the wordform, which
-	  will be visible only to non-C contexts (so they are not ambiguous
-	  or valid rule targets).
 
