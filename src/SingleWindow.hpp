@@ -42,17 +42,20 @@ namespace CG3 {
 		CohortVector cohorts;
 		uint32IntervalVector valid_rules;
 		uint32SortedVector hit_external;
-		uint32ToCohortsMap rule_to_cohorts;
+		std::vector<CohortSet> rule_to_cohorts;
 		uint32FlatHashMap variables_set;
 		uint32FlatHashSet variables_rem;
 		uint32SortedVector variables_output;
 
 		SingleWindow(Window *p);
 		~SingleWindow();
+		void clear();
 
 		void appendCohort(Cohort *cohort);
 	};
 
+	SingleWindow *alloc_swindow(Window *p);
+	void free_swindow(SingleWindow *s);
 }
 
 #endif

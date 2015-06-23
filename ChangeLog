@@ -1,5 +1,16 @@
 2015-06-23  tino
 
+	* [r10799] src/GrammarApplicator_reflow.cpp: More removed cohort
+	  badness
+	* [r10798] src/inlines.hpp: Demote CR and NEL to just spaces
+	* [r10797] ChangeLog, src/ApertiumApplicator.cpp, src/Cohort.cpp,
+	  src/Cohort.hpp, src/FSTApplicator.cpp,
+	  src/GrammarApplicator_reflow.cpp,
+	  src/GrammarApplicator_runGrammar.cpp,
+	  src/GrammarApplicator_runRules.cpp, src/NicelineApplicator.cpp,
+	  src/PlaintextApplicator.cpp, src/Reading.cpp, src/Reading.hpp,
+	  src/SingleWindow.cpp, src/inlines.hpp, src/libcg3.cpp,
+	  src/version.hpp: More pooling
 	* [r10796] src/CohortIterator.cpp,
 	  src/GrammarApplicator_runContextualTest.cpp: Fix bad reaction
 	  between removed cohorts and dependency
@@ -2311,17 +2322,4 @@
 
 	* [r8708] src/GrammarApplicator_runGrammar.cpp: ; in input does not
 	  mean end of line...
-	* [r8707] scripts/cg3-autobin.pl,
-	  src/GrammarApplicator_runGrammar.cpp, src/inlines.h,
-	  src/version.h: ; in input does not mean end of line...
-
-2012-11-21  tino
-
-	* [r8702] scripts/cg3-autobin.pl,
-	  src/GrammarApplicator_runGrammar.cpp, src/inlines.h,
-	  src/version.h: # in input does not mean comment...
-
-2012-11-15  tino
-
-	* [r8691] src/options.h: Swapped text on -I -O
 
