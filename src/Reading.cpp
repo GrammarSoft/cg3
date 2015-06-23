@@ -24,9 +24,6 @@
 
 namespace CG3 {
 
-static std::vector<uint32SortedVector> pool_u32sv;
-static std::vector<Reading::tags_list_t> pool_tags;
-
 Reading::Reading() :
 mapped(false),
 deleted(false),
@@ -44,11 +41,6 @@ next(0)
 	#ifdef CG_TRACE_OBJECTS
 	std::cerr << "OBJECT: " << __PRETTY_FUNCTION__ << std::endl;
 	#endif
-
-	pool_get(pool_tags, tags_list);
-	pool_get(pool_u32sv, tags);
-	pool_get(pool_u32sv, tags_plain);
-	pool_get(pool_u32sv, tags_textual);
 }
 
 Reading::Reading(Cohort *p) :
@@ -68,11 +60,6 @@ next(0)
 	#ifdef CG_TRACE_OBJECTS
 	std::cerr << "OBJECT: " << __PRETTY_FUNCTION__ << std::endl;
 	#endif
-
-	pool_get(pool_tags, tags_list);
-	pool_get(pool_u32sv, tags);
-	pool_get(pool_u32sv, tags_plain);
-	pool_get(pool_u32sv, tags_textual);
 }
 
 Reading::Reading(const Reading& r) :
@@ -92,6 +79,10 @@ mapping(r.mapping),
 parent(r.parent),
 next(r.next),
 hit_by(r.hit_by),
+tags_list(r.tags_list),
+tags(r.tags),
+tags_plain(r.tags_plain),
+tags_textual(r.tags_textual),
 tags_numerical(r.tags_numerical)
 {
 	#ifdef CG_TRACE_OBJECTS
@@ -101,16 +92,6 @@ tags_numerical(r.tags_numerical)
 	if (next) {
 		next = allocateReading(*next);
 	}
-
-	pool_get(pool_tags, tags_list);
-	pool_get(pool_u32sv, tags);
-	pool_get(pool_u32sv, tags_plain);
-	pool_get(pool_u32sv, tags_textual);
-
-	tags_list = r.tags_list;
-	tags = r.tags;
-	tags_plain = r.tags_plain;
-	tags_textual = r.tags_textual;
 }
 
 Reading::~Reading() {
@@ -120,11 +101,6 @@ Reading::~Reading() {
 
 	delete next;
 	next = 0;
-
-	pool_put(pool_tags, tags_list);
-	pool_put(pool_u32sv, tags_textual);
-	pool_put(pool_u32sv, tags_plain);
-	pool_put(pool_u32sv, tags);
 }
 
 Reading *Reading::allocateReading(Cohort *p) {

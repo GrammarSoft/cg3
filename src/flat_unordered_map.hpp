@@ -128,21 +128,32 @@ public:
 	size_t insert(const value_type& t) {
 		assert(t.first != res_empty && t.first != res_del && "Key cannot be res_empty or res_del!");
 
-		if (size_ + 1 >= capacity() / 2) {
+		if ((size_ + 1)*3/2 >= capacity() / 2) {
 			reserve(std::max(static_cast<size_type>(DEFAULT_CAP), capacity() * 2));
 		}
 		size_t max = capacity() - 1;
 		size_t spot = hash_value(t.first) & max;
-		while (elements[spot].first != res_empty) {
+		while (elements[spot].first != res_empty && elements[spot].first != t.first) {
 			spot = (spot + 5) & max;
 		}
-		elements[spot] = t;
-		++size_;
+		if (elements[spot].first != t.first) {
+			elements[spot] = t;
+			++size_;
+		}
 		return spot;
 	}
 
 	template<typename It>
 	void insert(It b, It e) {
+		size_t d = std::distance(b, e);
+		size_t c = capacity();
+		while ((size_ + d)*3/2 >= c / 2) {
+			c = std::max(static_cast<size_type>(DEFAULT_CAP), c*2);
+		}
+		if (c != capacity()) {
+			reserve(c);
+		}
+
 		for (; b != e ; ++b) {
 			insert(*b);
 		}
@@ -162,6 +173,7 @@ public:
 		if (elements[spot].first == t) {
 			elements[spot].first = res_del;
 			elements[spot].second = V();
+			--size_;
 		}
 	}
 
@@ -169,6 +181,7 @@ public:
 		elements[it.i].first = res_del;
 		elements[it.i].second = V();
 		++it;
+		--size_;
 		return it;
 	}
 
@@ -261,7 +274,7 @@ public:
 		size_t max = capacity() - 1;
 		for (size_type i = 0, ie = vals.size(); i < ie; ++i) {
 			size_t spot = hash_value(vals[i].first) & max;
-			while (elements[spot].first != res_empty) {
+			while (elements[spot].first != res_empty && elements[spot].first != vals[i].first) {
 				spot = (spot + 5) & max;
 			}
 			elements[spot] = vals[i];
@@ -285,7 +298,7 @@ public:
 
 	void clear(size_type n = 0) {
 		size_ = elements.size();
-		elements.clear();
+		elements.resize(0);
 		elements.resize(std::max(size_, n), std::make_pair(res_empty, V()));
 		size_ = 0;
 	}
