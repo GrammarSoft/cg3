@@ -62,7 +62,7 @@ namespace CG3 {
 		typedef bc::flat_map<uint32_t,int32_t> num_t;
 		num_t num_max, num_min;
 		uint32SortedVector dep_children;
-		uint32FlatHashSet possible_sets;
+		boost::dynamic_bitset<> possible_sets;
 		CohortVector enclosed;
 		CohortVector removed;
 		RelationCtn relations;

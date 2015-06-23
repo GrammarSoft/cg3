@@ -458,7 +458,8 @@ uint32_t GrammarApplicator::addTagToReading(Reading& reading, Tag *tag, bool reh
 
 	Grammar::sets_by_tag_t::const_iterator it = grammar->sets_by_tag.find(tag->hash);
 	if (it != grammar->sets_by_tag.end()) {
-		reading.parent->possible_sets.insert(it->second.begin(), it->second.end());
+		reading.parent->possible_sets.resize(std::max(reading.parent->possible_sets.size(), it->second.size()));
+		reading.parent->possible_sets |= it->second;
 	}
 	reading.tags.insert(tag->hash);
 	reading.tags_list.push_back(tag->hash);

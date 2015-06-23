@@ -748,7 +748,7 @@ inline bool GrammarApplicator::doesSetMatchCohort_helper(Cohort& cohort, const R
 bool GrammarApplicator::doesSetMatchCohortNormal(Cohort& cohort, const uint32_t set, dSMC_Context *context) {
 	bool retval = false;
 
-	if (!(!context || (context->options & (POS_LOOK_DELETED | POS_LOOK_DELAYED | POS_NOT))) && cohort.possible_sets.find(set) == cohort.possible_sets.end()) {
+	if (!(!context || (context->options & (POS_LOOK_DELETED | POS_LOOK_DELAYED | POS_NOT))) && (set >= cohort.possible_sets.size() || !cohort.possible_sets.test(set))) {
 		return retval;
 	}
 
@@ -797,8 +797,10 @@ bool GrammarApplicator::doesSetMatchCohortNormal(Cohort& cohort, const uint32_t 
 	}
 
 	if (context && !context->matched_target) {
-		if (!grammar->sets_any || grammar->sets_any->find(set) == grammar->sets_any->end()) {
-			cohort.possible_sets.erase(set);
+		if (!grammar->sets_any || set >= grammar->sets_any->size() || !grammar->sets_any->test(set)) {
+			if (set < cohort.possible_sets.size()) {
+				cohort.possible_sets.reset(set);
+			}
 		}
 	}
 
@@ -808,7 +810,7 @@ bool GrammarApplicator::doesSetMatchCohortNormal(Cohort& cohort, const uint32_t 
 bool GrammarApplicator::doesSetMatchCohortCareful(Cohort& cohort, const uint32_t set, dSMC_Context *context) {
 	bool retval = false;
 
-	if (!(!context || (context->options & (POS_LOOK_DELETED | POS_LOOK_DELAYED | POS_NOT))) && cohort.possible_sets.find(set) == cohort.possible_sets.end()) {
+	if (!(!context || (context->options & (POS_LOOK_DELETED | POS_LOOK_DELAYED | POS_NOT))) && (set >= cohort.possible_sets.size() || !cohort.possible_sets.test(set))) {
 		return retval;
 	}
 
