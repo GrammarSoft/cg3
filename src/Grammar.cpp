@@ -945,7 +945,10 @@ void Grammar::indexSets(uint32_t r, Set *s) {
 }
 
 void Grammar::indexTagToSet(uint32_t t, uint32_t r) {
-	sets_by_tag[t].insert(r);
+	if (sets_by_tag.find(t) == sets_by_tag.end()) {
+		sets_by_tag[t].resize(sets_list.size());
+	}
+	sets_by_tag[t].set(r);
 }
 
 void Grammar::setAdjustSets(Set *s) {

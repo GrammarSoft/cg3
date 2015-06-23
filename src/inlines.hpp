@@ -332,10 +332,10 @@ inline bool index_matches(const Cont& index, const VT& entry) {
 	return (index.find(entry) != index.end());
 }
 
-template<typename IT, typename OT>
-inline void insert_if_exists(IT& cont, const OT* other) {
+inline void insert_if_exists(boost::dynamic_bitset<>& cont, const boost::dynamic_bitset<>* other) {
 	if (other && !other->empty()) {
-		cont.insert(other->begin(), other->end());
+		cont.resize(std::max(cont.size(), other->size()));
+		cont |= *other;
 	}
 }
 

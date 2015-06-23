@@ -1,3 +1,11 @@
+2015-06-23  tino
+
+	* [r10791] ChangeLog, src/Grammar.hpp, src/Reading.cpp,
+	  src/flat_unordered_map.hpp, src/flat_unordered_set.hpp,
+	  src/sorted_vector.hpp, src/version.hpp: Let's ship a complete
+	  implementation of flat hash table, instead of the half-baked
+	  monster
+
 2015-06-21  tino
 
 	* [r10787] scripts/profile-revisions.php,
@@ -2319,9 +2327,4 @@
 	  src/GrammarApplicator_matchSet.cpp,
 	  src/GrammarApplicator_runRules.cpp, src/version.h: Context tests
 	  looking at Deleted and Delayed need to bypass the cache.
-
-2012-10-18  tino
-
-	* [r8630] src/GrammarApplicator_runGrammar.cpp, src/inlines.h: CG-3
-	  recognize \v as newline and fix buffer growth
 
