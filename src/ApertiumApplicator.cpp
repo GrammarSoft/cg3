@@ -276,7 +276,7 @@ void ApertiumApplicator::runGrammarOnText(istream& input, UFILE *output) {
 					SingleWindow *tmp = gWindow->previous.front();
 					printSingleWindow(tmp, output);
 					free_swindow(tmp);
-					gWindow->previous.pop_front();
+					gWindow->previous.erase(gWindow->previous.begin());
 				}
 				gWindow->shuffleWindowsDown();
 				runGrammarOnWindow();
@@ -436,7 +436,7 @@ void ApertiumApplicator::runGrammarOnText(istream& input, UFILE *output) {
 			SingleWindow *tmp = gWindow->previous.front();
 			printSingleWindow(tmp, output);
 			free_swindow(tmp);
-			gWindow->previous.pop_front();
+			gWindow->previous.erase(gWindow->previous.begin());
 		}
 		gWindow->shuffleWindowsDown();
 		runGrammarOnWindow();
@@ -447,7 +447,7 @@ void ApertiumApplicator::runGrammarOnText(istream& input, UFILE *output) {
 		SingleWindow *tmp = gWindow->previous.front();
 		printSingleWindow(tmp, output);
 		free_swindow(tmp);
-		gWindow->previous.pop_front();
+		gWindow->previous.erase(gWindow->previous.begin());
 	}
 
 	if ((inchar) && inchar != 0xffff) {

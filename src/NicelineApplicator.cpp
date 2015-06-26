@@ -204,7 +204,7 @@ gotaline:
 					SingleWindow *tmp = gWindow->previous.front();
 					printSingleWindow(tmp, output);
 					free_swindow(tmp);
-					gWindow->previous.pop_front();
+					gWindow->previous.erase(gWindow->previous.begin());
 				}
 				gWindow->shuffleWindowsDown();
 				runGrammarOnWindow();
@@ -340,7 +340,7 @@ istext:
 			SingleWindow *tmp = gWindow->previous.front();
 			printSingleWindow(tmp, output);
 			free_swindow(tmp);
-			gWindow->previous.pop_front();
+			gWindow->previous.erase(gWindow->previous.begin());
 		}
 		gWindow->shuffleWindowsDown();
 		runGrammarOnWindow();
@@ -351,7 +351,7 @@ istext:
 		SingleWindow *tmp = gWindow->previous.front();
 		printSingleWindow(tmp, output);
 		free_swindow(tmp);
-		gWindow->previous.pop_front();
+		gWindow->previous.erase(gWindow->previous.begin());
 	}
 
 	u_fflush(output);
