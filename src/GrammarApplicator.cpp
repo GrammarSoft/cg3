@@ -31,27 +31,6 @@
 
 namespace CG3 {
 
-std::vector<regexgrps_t*> pool_regexgrps;
-pool_cleaner< std::vector<regexgrps_t*> > cleaner_regexgrps(pool_regexgrps);
-
-regexgrps_t *alloc_regexgrps() {
-	regexgrps_t *r = pool_get(pool_regexgrps);
-	if (r == 0) {
-		r = new regexgrps_t;
-	}
-	return r;
-}
-
-void free_regexgrps(regexgrps_t *r) {
-	if (r == 0) {
-		return;
-	}
-	boost_foreach (UnicodeString& ucstr, *r) {
-		ucstr.remove();
-	}
-	pool_regexgrps.push_back(r);
-}
-
 GrammarApplicator::GrammarApplicator(UFILE *ux_err) :
 always_span(false),
 apply_mappings(true),

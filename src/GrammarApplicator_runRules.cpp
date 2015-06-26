@@ -403,14 +403,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 			}
 			// Varstring capture groups exist on a per-cohort basis, since we may need them for mapping later.
 			if (!regexgrps_r.empty()) {
-				for (BOOST_AUTO(iter, regexgrps_r.begin()); iter != regexgrps_r.end(); ++iter) {
-					free_regexgrps(iter->second.second);
-				}
 				regexgrps_r.clear();
-			}
-			regexgrps.first = 0;
-			if (regexgrps.second == 0) {
-				regexgrps.second = alloc_regexgrps();
 			}
 			if (!unif_tags_rs.empty()) {
 				unif_tags_rs.clear();
@@ -418,6 +411,9 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 			if (!unif_sets_rs.empty()) {
 				unif_sets_rs.clear();
 			}
+
+			size_t used_regex = 0;
+			regexgrps_store.resize(std::max(regexgrps_store.size(), cohort->readings.size()));
 
 			size_t used_unif = 0;
 			unif_tags_store.resize(std::max(unif_tags_store.size(), cohort->readings.size()));
@@ -458,6 +454,12 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 					}
 				}
 
+				// Regex capture is done on a per-reading basis, so clear all captured state.
+				regexgrps = &regexgrps_r[reading->number];
+				regexgrps->first = 0;
+				regexgrps->second = &regexgrps_store[used_regex];
+				++used_regex;
+
 				// Unification is done on a per-reading basis, so clear all unification state.
 				unif_tags = &unif_tags_store[used_unif];
 				unif_sets = &unif_sets_store[used_unif];
@@ -481,11 +483,11 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 				same_basic = reading->hash_plain;
 				target = 0;
 				mark = cohort;
-				size_t orz = regexgrps.first;
+				size_t orz = regexgrps->first;
 				// Actually check if the reading is a valid target. First check if rule target matches...
 				if (rule.target && doesSetMatchReading(*reading, rule.target, (set.type & (ST_CHILD_UNIFY|ST_SPECIAL)) != 0)) {
 					bool captured = false;
-					if (orz != regexgrps.first) {
+					if (orz != regexgrps->first) {
 						did_test = false;
 						captured = true;
 					}
@@ -536,20 +538,14 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						reading->matched_tests = true;
 						++num_active;
 						++rule.num_match;
-						if (captured) {
-							regexgrps_r[reading->hash].swap(regexgrps);
-							if (regexgrps.second == 0) {
-								regexgrps.second = alloc_regexgrps();
-							}
-						}
 					}
 					else {
-						regexgrps.first = orz;
+						regexgrps->first = orz;
 					}
 					++num_iff;
 				}
 				else {
-					regexgrps.first = orz;
+					regexgrps->first = orz;
 					++rule.num_fail;
 				}
 				readings_plain.insert(std::make_pair(reading->hash_plain,reading));
@@ -602,8 +598,9 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 				bool good = reading.matched_tests;
 				const uint32_t state_hash = reading.hash;
 
-				if (regexgrps_r.count(reading.hash)) {
-					regexgrps_r[reading.hash].swap(regexgrps);
+				regexgrps = 0;
+				if (regexgrps_r.count(reading.number)) {
+					regexgrps = &regexgrps_r[reading.number];
 				}
 
 				// Iff needs extra special care; if it is a Remove type and we matched the target, go ahead.
