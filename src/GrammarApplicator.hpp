@@ -45,6 +45,10 @@ namespace CG3 {
 	class Set;
 	class Rule;
 
+	typedef std::vector<UnicodeString> regexgrps_t;
+	regexgrps_t *alloc_regexgrps();
+	void free_regexgrps(regexgrps_t *r);
+
 	struct dSMC_Context {
 		const ContextualTest *test;
 		Cohort **deep;
@@ -184,8 +188,8 @@ namespace CG3 {
 		uint32_t par_left_pos, par_right_pos;
 		bool did_final_enclosure;
 
-		std::vector<UnicodeString> regexgrps;
-		bc::flat_map<uint32_t, std::vector<UnicodeString> > regexgrps_r;
+		std::pair<size_t,regexgrps_t*> regexgrps;
+		bc::flat_map<uint32_t, std::pair<size_t,regexgrps_t*> > regexgrps_r;
 		uint32_t same_basic;
 		Cohort *target;
 		Cohort *mark;
