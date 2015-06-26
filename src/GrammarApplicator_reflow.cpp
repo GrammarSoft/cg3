@@ -379,8 +379,8 @@ Tag *GrammarApplicator::generateVarstringTag(const Tag *tag) {
 	}
 
 	// Replace $1-$9 with their respective match groups
-	for (size_t i=0 ; i<regexgrps.size() && i<9 ; ++i) {
-		tmp.findAndReplace(stringbits[S_VS1+i].getTerminatedBuffer(), regexgrps[i]);
+	for (size_t i=0 ; i<regexgrps.first && i<9 ; ++i) {
+		tmp.findAndReplace(stringbits[S_VS1+i], (*regexgrps.second)[i]);
 		did_something = true;
 	}
 

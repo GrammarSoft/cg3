@@ -402,12 +402,14 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 				subs_any.clear();
 			}
 			// Varstring capture groups exist on a per-cohort basis, since we may need them for mapping later.
-			if (!regexgrps.empty()) {
-				regexgrps.clear();
-			}
 			if (!regexgrps_r.empty()) {
+				for (BOOST_AUTO(iter, regexgrps_r.begin()); iter != regexgrps_r.end(); ++iter) {
+					free_regexgrps(iter->second.second);
+				}
 				regexgrps_r.clear();
 			}
+			regexgrps.first = 0;
+			regexgrps.second = alloc_regexgrps();
 			if (!unif_tags_rs.empty()) {
 				unif_tags_rs.clear();
 			}
@@ -477,11 +479,11 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 				same_basic = reading->hash_plain;
 				target = 0;
 				mark = cohort;
-				size_t orz = regexgrps.size();
+				size_t orz = regexgrps.first;
 				// Actually check if the reading is a valid target. First check if rule target matches...
 				if (rule.target && doesSetMatchReading(*reading, rule.target, (set.type & (ST_CHILD_UNIFY|ST_SPECIAL)) != 0)) {
 					bool captured = false;
-					if (orz != regexgrps.size()) {
+					if (orz != regexgrps.first) {
 						did_test = false;
 						captured = true;
 					}
@@ -534,15 +536,18 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						++rule.num_match;
 						if (captured) {
 							regexgrps_r[reading->hash].swap(regexgrps);
+							if (regexgrps.second == 0) {
+								regexgrps.second = alloc_regexgrps();
+							}
 						}
 					}
 					else {
-						regexgrps.resize(orz);
+						regexgrps.first = orz;
 					}
 					++num_iff;
 				}
 				else {
-					regexgrps.resize(orz);
+					regexgrps.first = orz;
 					++rule.num_fail;
 				}
 				readings_plain.insert(std::make_pair(reading->hash_plain,reading));
