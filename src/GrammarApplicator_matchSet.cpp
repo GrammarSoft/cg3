@@ -96,11 +96,11 @@ uint32_t GrammarApplicator::doesTagMatchRegexp(uint32_t test, const Tag& tag, bo
 				for (int i = 1; i <= gc; ++i) {
 					tmp[0] = 0;
 					int32_t len = uregex_group(tag.regexp, i, tmp, 1024, &status);
-					regexgrps.second->resize(std::max(regexgrps.first+1, regexgrps.second->size()));
-					UnicodeString& ucstr = (*regexgrps.second)[regexgrps.first];
+					regexgrps->second->resize(std::max(regexgrps->first+1, regexgrps->second->size()));
+					UnicodeString& ucstr = (*regexgrps->second)[regexgrps->first];
 					ucstr.remove();
 					ucstr.append(tmp, len);
-					++regexgrps.first;
+					++regexgrps->first;
 				}
 			}
 			else {
