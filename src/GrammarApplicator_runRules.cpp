@@ -409,7 +409,9 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 				regexgrps_r.clear();
 			}
 			regexgrps.first = 0;
-			regexgrps.second = alloc_regexgrps();
+			if (regexgrps.second == 0) {
+				regexgrps.second = alloc_regexgrps();
+			}
 			if (!unif_tags_rs.empty()) {
 				unif_tags_rs.clear();
 			}
