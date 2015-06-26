@@ -68,7 +68,7 @@ SingleWindow *Window::allocPushSingleWindow() {
 		swindow->previous = current;
 		current->next = swindow;
 	}
-	next.push_front(swindow);
+	next.insert(next.begin(), swindow);
 	return swindow;
 }
 
@@ -94,7 +94,7 @@ void Window::shuffleWindowsDown() {
 
 	if (!next.empty()) {
 		current = next.front();
-		next.pop_front();
+		next.erase(next.begin());
 	}
 }
 

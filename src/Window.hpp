@@ -30,7 +30,7 @@ namespace CG3 {
 	class Cohort;
 	class SingleWindow;
 
-	typedef std::list<SingleWindow*> SingleWindowCont;
+	typedef std::vector<SingleWindow*> SingleWindowCont;
 
 	class Window {
 	public:
