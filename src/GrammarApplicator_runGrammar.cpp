@@ -253,7 +253,7 @@ gotaline:
 					SingleWindow *tmp = gWindow->previous.front();
 					printSingleWindow(tmp, output);
 					free_swindow(tmp);
-					gWindow->previous.pop_front();
+					gWindow->previous.erase(gWindow->previous.begin());
 				}
 				gWindow->shuffleWindowsDown();
 				runGrammarOnWindow();
@@ -438,7 +438,7 @@ istext:
 							SingleWindow *tmp = gWindow->previous.front();
 							printSingleWindow(tmp, output);
 							free_swindow(tmp);
-							gWindow->previous.pop_front();
+							gWindow->previous.erase(gWindow->previous.begin());
 						}
 						gWindow->shuffleWindowsDown();
 						runGrammarOnWindow();
@@ -455,7 +455,7 @@ istext:
 						SingleWindow *tmp = gWindow->previous.front();
 						printSingleWindow(tmp, output);
 						free_swindow(tmp);
-						gWindow->previous.pop_front();
+						gWindow->previous.erase(gWindow->previous.begin());
 					}
 					u_fprintf(output, "%S", &line[0]);
 					line[0] = 0;
@@ -615,7 +615,7 @@ istext:
 			SingleWindow *tmp = gWindow->previous.front();
 			printSingleWindow(tmp, output);
 			free_swindow(tmp);
-			gWindow->previous.pop_front();
+			gWindow->previous.erase(gWindow->previous.begin());
 		}
 		gWindow->shuffleWindowsDown();
 		runGrammarOnWindow();
@@ -630,7 +630,7 @@ istext:
 		SingleWindow *tmp = gWindow->previous.front();
 		printSingleWindow(tmp, output);
 		free_swindow(tmp);
-		gWindow->previous.pop_front();
+		gWindow->previous.erase(gWindow->previous.begin());
 	}
 
 	u_fflush(output);

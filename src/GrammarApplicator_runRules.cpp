@@ -117,20 +117,20 @@ TagList GrammarApplicator::getTagList(const Set& theSet, bool unif_mode) const {
 		const_foreach (uint32Vector, pSet.sets, iter, iter_end) {
 			if (unif_sets->count(*iter)) {
 				TagList recursiveTags = getTagList(*(grammar->sets_list[*iter]));
-				theTags.splice(theTags.end(), recursiveTags);
+				theTags.insert(theTags.end(), recursiveTags.begin(), recursiveTags.end());
 			}
 		}
 	}
 	else if (theSet.type & ST_TAG_UNIFY) {
 		const_foreach (uint32Vector, theSet.sets, iter, iter_end) {
 			TagList recursiveTags = getTagList(*(grammar->sets_list[*iter]), true);
-			theTags.splice(theTags.end(), recursiveTags);
+			theTags.insert(theTags.end(), recursiveTags.begin(), recursiveTags.end());
 		}
 	}
 	else if (!theSet.sets.empty()) {
 		const_foreach (uint32Vector, theSet.sets, iter, iter_end) {
 			TagList recursiveTags = getTagList(*(grammar->sets_list[*iter]), unif_mode);
-			theTags.splice(theTags.end(), recursiveTags);
+			theTags.insert(theTags.end(), recursiveTags.begin(), recursiveTags.end());
 		}
 	}
 	else if (unif_mode) {
@@ -486,10 +486,8 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 				size_t orz = regexgrps->first;
 				// Actually check if the reading is a valid target. First check if rule target matches...
 				if (rule.target && doesSetMatchReading(*reading, rule.target, (set.type & (ST_CHILD_UNIFY|ST_SPECIAL)) != 0)) {
-					bool captured = false;
 					if (orz != regexgrps->first) {
 						did_test = false;
-						captured = true;
 					}
 					target = cohort;
 					reading->matched_target = true;

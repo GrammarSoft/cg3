@@ -156,6 +156,7 @@ namespace CG3 {
 		return false;
 	}
 
+	/*
 	inline void trie_getTagList(const trie_t& trie, TagVector& theTags) {
 		boost_foreach (const trie_t::value_type& kv, trie) {
 			theTags.push_back(kv.first);
@@ -164,6 +165,7 @@ namespace CG3 {
 			}
 		}
 	}
+	//*/
 
 	inline TagVector trie_getTagList(const trie_t& trie) {
 		TagVector theTags;
