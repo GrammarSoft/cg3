@@ -31,7 +31,7 @@
 namespace CG3 {
 
 Cohort *GrammarApplicator::runSingleTest(Cohort *cohort, const ContextualTest *test, uint8_t& rvs, bool *retval, Cohort **deep, Cohort *origin) {
-	size_t regexgrpz = regexgrps.first;
+	size_t regexgrpz = regexgrps->first;
 	if (test->pos & POS_MARK_SET) {
 		mark = cohort;
 	}
@@ -92,7 +92,7 @@ Cohort *GrammarApplicator::runSingleTest(Cohort *cohort, const ContextualTest *t
 		rvs |= TRV_BREAK;
 	}
 	if (!*retval) {
-		regexgrps.first = regexgrpz;
+		regexgrps->first = regexgrpz;
 	}
 	return cohort;
 }
