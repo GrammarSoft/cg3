@@ -1,5 +1,31 @@
+2015-06-26  tino
+
+	* [r10811] src/ApertiumApplicator.cpp, src/FSTApplicator.cpp,
+	  src/GrammarApplicator_runGrammar.cpp,
+	  src/GrammarApplicator_runRules.cpp, src/NicelineApplicator.cpp,
+	  src/PlaintextApplicator.cpp, src/Tag.hpp, src/TagTrie.hpp,
+	  src/Window.cpp, src/Window.hpp: Eliminate std::list
+	* [r10810] src/GrammarApplicator.cpp, src/GrammarApplicator.hpp,
+	  src/GrammarApplicator_matchSet.cpp,
+	  src/GrammarApplicator_reflow.cpp,
+	  src/GrammarApplicator_runContextualTest.cpp,
+	  src/GrammarApplicator_runRules.cpp: Regex store as with unif
+	* [r10809] src/GrammarApplicator_runRules.cpp: Fix
+	* [r10808] src/GrammarApplicator.cpp, src/GrammarApplicator.hpp,
+	  src/GrammarApplicator_matchSet.cpp,
+	  src/GrammarApplicator_reflow.cpp,
+	  src/GrammarApplicator_runContextualTest.cpp,
+	  src/GrammarApplicator_runRules.cpp: Let's see if this works...
+
 2015-06-23  tino
 
+	* [r10802] newsletters/2015-06-23.txt: Newsletter
+	* [r10800] ChangeLog, src/ApertiumApplicator.cpp,
+	  src/FSTApplicator.cpp, src/GrammarApplicator_runGrammar.cpp,
+	  src/GrammarApplicator_runRules.cpp, src/NicelineApplicator.cpp,
+	  src/PlaintextApplicator.cpp, src/SingleWindow.cpp,
+	  src/SingleWindow.hpp, src/Window.cpp, src/version.hpp: Even more
+	  pooling
 	* [r10799] src/GrammarApplicator_reflow.cpp: More removed cohort
 	  badness
 	* [r10798] src/inlines.hpp: Demote CR and NEL to just spaces
@@ -2289,37 +2315,4 @@
 
 	* [r8813] dist/Portfile: MacPorts
 	* [r8812] dist/Portfile: MacPorts
-
-2013-01-22  tino
-
-	* [r8810] TODO, manual/installation.xml, scripts/cg3-autobin.pl,
-	  src/GrammarApplicator_runContextualTest.cpp, src/version.h,
-	  test/T_BasicDependency/expected.txt,
-	  test/T_BasicDependency/grammar.cg3: Fixed parent-or-self tests to
-	  not only test self
-
-2012-12-19  tino
-
-	* [r8752] scripts/cg3-autobin.pl,
-	  src/GrammarApplicator_runGrammar.cpp, src/version.h: FLUSH now
-	  clears variables
-
-2012-12-10  tino
-
-	* [r8734] scripts/cg3-autobin.pl, src/GrammarApplicator_reflow.cpp,
-	  src/version.h: When the text contains , don't say a varstring
-	  wasn't created just because it is identical to no result.
-
-2012-12-09  tino
-
-	* [r8732] dist/dist-osx.pl: OS X dist script
-
-2012-11-24  tino
-
-	* [r8709] manual/installation.xml: cg3
-
-2012-11-22  tino
-
-	* [r8708] src/GrammarApplicator_runGrammar.cpp: ; in input does not
-	  mean end of line...
 
