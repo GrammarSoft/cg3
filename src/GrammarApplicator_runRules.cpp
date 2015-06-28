@@ -450,6 +450,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						if (reading->matched_tests) {
 							++num_active;
 						}
+						regexgrps_r[reading->number] = regexgrps_r[rpit->second->number];
 						continue;
 					}
 				}
