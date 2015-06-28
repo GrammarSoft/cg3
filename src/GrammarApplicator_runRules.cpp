@@ -751,6 +751,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						// Move any enclosed parentheses to the previous cohort
 						if (!cohort->enclosed.empty()) {
 							cohort->prev->enclosed.insert(cohort->prev->enclosed.end(), cohort->enclosed.begin(), cohort->enclosed.end());
+							cohort->enclosed.clear();
 						}
 						cohort->type |= CT_REMOVED;
 						cohort->prev->removed.push_back(cohort);
