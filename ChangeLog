@@ -1,3 +1,14 @@
+2015-06-30  tino
+
+	* [r10821] CMakeLists.txt, vapply.sh, vparse.sh: Use C++14 where
+	  available
+	* [r10819] ChangeLog, scripts/profile-revisions.php,
+	  src/GrammarApplicator_matchSet.cpp,
+	  src/GrammarApplicator_reflow.cpp,
+	  src/GrammarApplicator_runContextualTest.cpp,
+	  src/GrammarApplicator_runRules.cpp, src/version.hpp: Fix
+	  segfault; Further reduce reallocations
+
 2015-06-28  tino
 
 	* [r10817] src/GrammarApplicator_runRules.cpp: Fix segfault
@@ -2304,16 +2315,4 @@
 	* [r8876] scripts/cg3-autobin.pl,
 	  src/GrammarApplicator_runGrammar.cpp, src/version.h: Fixed
 	  sub-readings breaking everything when they weren't real readings.
-
-2013-03-13  unhammer
-
-	* [r8875] emacs/cg.el: safer way to get x clipboard contents
-
-2013-03-12  tino
-
-	* [r8874] get-boost.sh, manual/compatibility.xml,
-	  manual/dependencies.xml,
-	  src/GrammarApplicator_runContextualTest.cpp, src/Reading.cpp,
-	  test/T_BasicDependency/expected.txt,
-	  test/T_BasicDependency/grammar.cg3: Document cc vs c*
 

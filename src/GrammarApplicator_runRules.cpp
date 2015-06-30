@@ -402,9 +402,8 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 				subs_any.clear();
 			}
 			// Varstring capture groups exist on a per-cohort basis, since we may need them for mapping later.
-			if (!regexgrps_r.empty()) {
-				regexgrps_r.clear();
-			}
+			regexgrps_z.clear();
+			regexgrps_c.clear();
 			if (!unif_tags_rs.empty()) {
 				unif_tags_rs.clear();
 			}
@@ -414,6 +413,8 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 
 			size_t used_regex = 0;
 			regexgrps_store.resize(std::max(regexgrps_store.size(), cohort->readings.size()));
+			regexgrps_z.reserve(std::max(regexgrps_z.size(), cohort->readings.size()));
+			regexgrps_c.reserve(std::max(regexgrps_c.size(), cohort->readings.size()));
 
 			size_t used_unif = 0;
 			unif_tags_store.resize(std::max(unif_tags_store.size(), cohort->readings.size()));
@@ -450,18 +451,19 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						if (reading->matched_tests) {
 							++num_active;
 						}
-						// Create the entry first, which will embiggen the container if needed, or we risk it resizing in mid-assignment
-						regexgrps_r[reading->number];
-						regexgrps_r[reading->number] = regexgrps_r[rpit->second->number];
+						if (regexgrps_c.count(rpit->second->number)) {
+							regexgrps_c[reading->number];
+							regexgrps_c[reading->number] = regexgrps_c[rpit->second->number];
+							regexgrps_z[reading->number];
+							regexgrps_z[reading->number] = regexgrps_z[rpit->second->number];
+						}
 						continue;
 					}
 				}
 
 				// Regex capture is done on a per-reading basis, so clear all captured state.
-				regexgrps = &regexgrps_r[reading->number];
-				regexgrps->first = 0;
-				regexgrps->second = &regexgrps_store[used_regex];
-				++used_regex;
+				regexgrps.first = 0;
+				regexgrps.second = &regexgrps_store[used_regex];
 
 				// Unification is done on a per-reading basis, so clear all unification state.
 				unif_tags = &unif_tags_store[used_unif];
@@ -486,10 +488,10 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 				same_basic = reading->hash_plain;
 				target = 0;
 				mark = cohort;
-				size_t orz = regexgrps->first;
+				uint8_t orz = regexgrps.first;
 				// Actually check if the reading is a valid target. First check if rule target matches...
 				if (rule.target && doesSetMatchReading(*reading, rule.target, (set.type & (ST_CHILD_UNIFY|ST_SPECIAL)) != 0)) {
-					if (orz != regexgrps->first) {
+					if (orz != regexgrps.first) {
 						did_test = false;
 					}
 					target = cohort;
@@ -541,12 +543,12 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						++rule.num_match;
 					}
 					else {
-						regexgrps->first = orz;
+						regexgrps.first = orz;
 					}
 					++num_iff;
 				}
 				else {
-					regexgrps->first = orz;
+					regexgrps.first = orz;
 					++rule.num_fail;
 				}
 				readings_plain.insert(std::make_pair(reading->hash_plain,reading));
@@ -554,6 +556,11 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 				if (reading != cohort->readings[i]) {
 					cohort->readings[i]->matched_target = reading->matched_target;
 					cohort->readings[i]->matched_tests = reading->matched_tests;
+				}
+				if (regexgrps.first) {
+					regexgrps_c[reading->number] = regexgrps.second;
+					regexgrps_z[reading->number] = regexgrps.first;
+					++used_regex;
 				}
 			}
 
@@ -599,9 +606,11 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 				bool good = reading.matched_tests;
 				const uint32_t state_hash = reading.hash;
 
-				regexgrps = 0;
-				if (regexgrps_r.count(reading.number)) {
-					regexgrps = &regexgrps_r[reading.number];
+				regexgrps.first = 0;
+				regexgrps.second = 0;
+				if (regexgrps_c.count(reading.number)) {
+					regexgrps.second = regexgrps_c[reading.number];
+					regexgrps.first = regexgrps_z[reading.number];
 				}
 
 				// Iff needs extra special care; if it is a Remove type and we matched the target, go ahead.
@@ -959,6 +968,9 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 								const Tag* tt = *it;
 								it = theTags.erase(it);
 								if (tt->type & T_SPECIAL) {
+									if (regexgrps.second == 0) {
+										regexgrps.second = &regexgrps_store[used_regex];
+									}
 									uint32_t stag = doesTagMatchReading(reading, *tt, false, true);
 									if (stag) {
 										theTags.insert(it, single_tags.find(stag)->second);
