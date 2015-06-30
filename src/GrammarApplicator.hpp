@@ -187,8 +187,9 @@ namespace CG3 {
 		bool did_final_enclosure;
 
 		std::vector<regexgrps_t> regexgrps_store;
-		std::pair<size_t, regexgrps_t*>* regexgrps;
-		bc::flat_map<uint32_t, std::pair<size_t,regexgrps_t*> > regexgrps_r;
+		std::pair<uint8_t, regexgrps_t*> regexgrps;
+		bc::flat_map<uint32_t, uint8_t> regexgrps_z;
+		bc::flat_map<uint32_t, regexgrps_t*> regexgrps_c;
 		uint32_t same_basic;
 		Cohort *target;
 		Cohort *mark;
