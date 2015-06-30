@@ -1,6 +1,6 @@
 #!/bin/bash
-# 98 or 11
-CXXV=11
+# 98 or 11 or 1y
+CXXV=1y
 #svn up
 mkdir -p vparse
 cd vparse
