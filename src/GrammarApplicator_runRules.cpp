@@ -450,6 +450,8 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						if (reading->matched_tests) {
 							++num_active;
 						}
+						// Create the entry first, which will embiggen the container if needed, or we risk it resizing in mid-assignment
+						regexgrps_r[reading->number];
 						regexgrps_r[reading->number] = regexgrps_r[rpit->second->number];
 						continue;
 					}

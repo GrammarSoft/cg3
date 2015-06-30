@@ -587,7 +587,8 @@ bool GrammarApplicator::doesSetMatchReading(const Reading& reading, const uint32
 		}
 		// Subsequent times, test whether any of the previously stored sets match the reading
 		else {
-			uint32SortedVector sets;
+			static uint32SortedVector sets;
+			sets.clear();
 			foreach(uint32SortedVector, *unif_sets, usi, usi_end) {
 				if (doesSetMatchReading(reading, *usi, bypass_index, unif_mode)) {
 					sets.insert(*usi);
@@ -721,8 +722,11 @@ inline bool GrammarApplicator::doesSetMatchCohort_testLinked(Cohort& cohort, con
 
 inline bool GrammarApplicator::doesSetMatchCohort_helper(Cohort& cohort, const Reading& reading, const Set& theset, dSMC_Context *context) {
 	bool retval = false;
-	unif_tags_t utags;
-	uint32SortedVector usets;
+	static unif_tags_t utags;
+	utags.clear();
+	static uint32SortedVector usets;
+	usets.clear();
+
 	if (context && !(current_rule->flags & FL_CAPTURE_UNIF) && (theset.type & ST_CHILD_UNIFY)) {
 		utags = *unif_tags;
 		usets = *unif_sets;
