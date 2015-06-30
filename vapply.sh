@@ -1,6 +1,6 @@
 #!/bin/bash
-# 98 or 11
-CXXV=11
+# 98 or 11 or 1y
+CXXV=1y
 #svn up
 make -j5
 ./src/vislcg3 -C UTF-8 -g ~/parsers/dansk/etc/dancg --grammar-only --grammar-bin dancg.cg3b
