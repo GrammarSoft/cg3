@@ -516,7 +516,8 @@ Cohort *GrammarApplicator::runDependencyTest(SingleWindow *sWindow, Cohort *curr
 		}
 	}
 
-	static uint32SortedVector tmp_deps;
+	// Recursion may happen, so can't be static
+	uint32SortedVector tmp_deps;
 	uint32SortedVector *deps = 0;
 	if (test->pos & POS_DEP_CHILD) {
 		deps = &current->dep_children;
@@ -655,8 +656,8 @@ Cohort *GrammarApplicator::runRelationTest(SingleWindow *sWindow, Cohort *curren
 		return 0;
 	}
 
-	static CohortSet rels;
-	rels.clear();
+	// Recursion may happen, so can't be static
+	CohortSet rels;
 
 	if (test->relation == grammar->tag_any) {
 		const_foreach (RelationCtn, current->relations, riter, riter_end) {

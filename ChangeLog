@@ -1,5 +1,15 @@
 2015-06-30  tino
 
+	* [r10822] ChangeLog, src/GrammarApplicator.hpp,
+	  src/GrammarApplicator_matchSet.cpp,
+	  src/GrammarApplicator_reflow.cpp,
+	  src/GrammarApplicator_runContextualTest.cpp,
+	  src/GrammarApplicator_runRules.cpp, src/version.hpp,
+	  test/T_BasicSubstitute/expected.txt,
+	  test/T_BasicSubstitute/grammar.cg3,
+	  test/T_BasicSubstitute/grammar.cg3b.10043: Eliminate the
+	  performance cost of segfault fixes; Test that so it doesn't
+	  happen again
 	* [r10821] CMakeLists.txt, vapply.sh, vparse.sh: Use C++14 where
 	  available
 	* [r10819] ChangeLog, scripts/profile-revisions.php,
@@ -2312,7 +2322,4 @@
 	  src/macros.h, src/main.cpp, src/options.h, src/sorted_vector.hpp,
 	  src/stdafx.h, src/test_libcg3.c, src/uextras.cpp, src/uextras.h,
 	  src/version.h: Yearly copyright refresh.
-	* [r8876] scripts/cg3-autobin.pl,
-	  src/GrammarApplicator_runGrammar.cpp, src/version.h: Fixed
-	  sub-readings breaking everything when they weren't real readings.
 

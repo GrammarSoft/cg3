@@ -367,7 +367,9 @@ Tag *GrammarApplicator::generateVarstringTag(const Tag *tag) {
 	// Replace unified sets with their matching tags
 	if (tag->vs_sets) {
 		for (size_t i=0 ; i<tag->vs_sets->size() ; ++i) {
-			TagList tags = getTagList(*(*tag->vs_sets)[i]);
+			static TagList tags;
+			tags.clear();
+			getTagList(*(*tag->vs_sets)[i], tags);
 			static UString rpl;
 			rpl.clear();
 			// If there are multiple tags, such as from CompositeTags, put _ between them
