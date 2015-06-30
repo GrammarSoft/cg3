@@ -11,3 +11,6 @@ SUBSTITUTE ("<.*>"r) (VSTR:"<$1ed>") ("<(.+)>"r) ;
 "<word>" ADD (@add-bad) (*) ;
 "<WoRdeD>"i ADD (@add-mixcase-2) (*) ;
 "<word.*>"r ADD (@add-regex) (*) ;
+
+SUBSTITUTE ("(.*)"r) ("$1-sub"v) (after) ;
+MAP (VSTR:@map-$1) ("word-sub") (0 ("(word)-sub"r)) ;
