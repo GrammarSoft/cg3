@@ -1,3 +1,9 @@
+2015-06-28  tino
+
+	* [r10817] src/GrammarApplicator_runRules.cpp: Fix segfault
+	* [r10815] ChangeLog, src/GrammarApplicator_runRules.cpp,
+	  src/version.hpp: Fix removing enclosure owner
+
 2015-06-26  tino
 
 	* [r10811] src/ApertiumApplicator.cpp, src/FSTApplicator.cpp,
@@ -2310,9 +2316,4 @@
 	  src/GrammarApplicator_runContextualTest.cpp, src/Reading.cpp,
 	  test/T_BasicDependency/expected.txt,
 	  test/T_BasicDependency/grammar.cg3: Document cc vs c*
-
-2013-01-24  tino
-
-	* [r8813] dist/Portfile: MacPorts
-	* [r8812] dist/Portfile: MacPorts
 

@@ -516,7 +516,7 @@ Cohort *GrammarApplicator::runDependencyTest(SingleWindow *sWindow, Cohort *curr
 		}
 	}
 
-	boost::scoped_ptr<uint32SortedVector> tmp_deps;
+	static uint32SortedVector tmp_deps;
 	uint32SortedVector *deps = 0;
 	if (test->pos & POS_DEP_CHILD) {
 		deps = &current->dep_children;
@@ -545,23 +545,23 @@ Cohort *GrammarApplicator::runDependencyTest(SingleWindow *sWindow, Cohort *curr
 	}
 
 	if (test->pos & MASK_POS_LORR) {
-		tmp_deps.reset(new uint32SortedVector(*deps));
+		tmp_deps = *deps;
 
 		if (test->pos & POS_LEFT) {
-			tmp_deps->assign((*deps).begin(), (*deps).lower_bound(current->global_number));
+			tmp_deps.assign(deps->begin(), deps->lower_bound(current->global_number));
 		}
 		if (test->pos & POS_RIGHT) {
-			tmp_deps->assign((*deps).lower_bound(current->global_number), (*deps).end());
+			tmp_deps.assign(deps->lower_bound(current->global_number), deps->end());
 		}
 		if (test->pos & POS_SELF) {
-			tmp_deps->insert(current->global_number);
+			tmp_deps.insert(current->global_number);
 		}
-		if ((test->pos & POS_RIGHTMOST) && !tmp_deps->empty()) {
-			uint32SortedVector::container& cont = tmp_deps->get();
+		if ((test->pos & POS_RIGHTMOST) && !tmp_deps.empty()) {
+			uint32SortedVector::container& cont = tmp_deps.get();
 			std::reverse(cont.begin(), cont.end());
 		}
 
-		deps = tmp_deps.get();
+		deps = &tmp_deps;
 	}
 
 	const_foreach (uint32SortedVector, *deps, dter, dter_end) {
@@ -655,7 +655,8 @@ Cohort *GrammarApplicator::runRelationTest(SingleWindow *sWindow, Cohort *curren
 		return 0;
 	}
 
-	CohortSet rels;
+	static CohortSet rels;
+	rels.clear();
 
 	if (test->relation == grammar->tag_any) {
 		const_foreach (RelationCtn, current->relations, riter, riter_end) {
@@ -680,12 +681,12 @@ Cohort *GrammarApplicator::runRelationTest(SingleWindow *sWindow, Cohort *curren
 	}
 
 	if (test->pos & POS_LEFT) {
-		CohortSet tmp;
+		static CohortSet tmp;
 		tmp.assign(rels.begin(), rels.lower_bound(current));
 		rels.swap(tmp);
 	}
 	if (test->pos & POS_RIGHT) {
-		CohortSet tmp;
+		static CohortSet tmp;
 		tmp.assign(rels.lower_bound(current), rels.end());
 		rels.swap(tmp);
 	}
