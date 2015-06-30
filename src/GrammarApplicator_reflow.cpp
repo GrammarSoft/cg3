@@ -38,12 +38,12 @@ Tag *GrammarApplicator::makeBaseFromWord(Tag *tag) {
 	if (len < 5) {
 		return tag;
 	}
-	UChar *n = new UChar[len-1];
+	static UString n;
+	n.clear();
+	n.resize(len-2);
 	n[0] = n[len-3] = '"';
-	n[len-2] = 0;
-	u_strncpy(n+1, tag->tag.c_str()+2, len-4);
+	u_strncpy(&n[1], tag->tag.c_str()+2, len-4);
 	Tag *nt = addTag(n);
-	delete[] n;
 	return nt;
 }
 
@@ -57,8 +57,8 @@ bool GrammarApplicator::isChildOf(const Cohort *child, const Cohort *parent) {
 		retval = true;
 	}
 	else {
-		int i = 0;
-		for (const Cohort *inner = child ; i<1000;i++) {
+		size_t i = 0;
+		for (const Cohort *inner = child ; i<1000 ; ++i) {
 			if (inner->dep_parent == 0 || inner->dep_parent == std::numeric_limits<uint32_t>::max()) {
 				retval = false;
 				break;
@@ -104,8 +104,8 @@ bool GrammarApplicator::wouldParentChildLoop(const Cohort *parent, const Cohort 
 		retval = true;
 	}
 	else {
-		int i = 0;
-		for (const Cohort *inner = parent ;i<1000;i++) {
+		size_t i = 0;
+		for (const Cohort *inner = parent ; i<1000 ; ++i) {
 			if (inner->dep_parent == 0 || inner->dep_parent == std::numeric_limits<uint32_t>::max()) {
 				retval = false;
 				break;
@@ -311,7 +311,8 @@ void GrammarApplicator::reflowRelationWindow(uint32_t max) {
 
 		if (!cohort->relations_input.empty()) {
 			for (RelationCtn::iterator rel = cohort->relations_input.begin() ; rel != cohort->relations_input.end() ; ) {
-				uint32SortedVector newrel;
+				static uint32SortedVector newrel;
+				newrel.clear();
 
 				boost_foreach (uint32_t target, rel->second) {
 					uint32FlatHashMap::iterator it = gWindow->relation_map.find(target);
@@ -358,14 +359,17 @@ void GrammarApplicator::reflowReading(Reading& reading) {
 }
 
 Tag *GrammarApplicator::generateVarstringTag(const Tag *tag) {
-	UnicodeString tmp(tag->tag.c_str(), tag->tag.length());
+	static UnicodeString tmp;
+	tmp.remove();
+	tmp.append(tag->tag.c_str(), tag->tag.length());
 	bool did_something = false;
 
 	// Replace unified sets with their matching tags
 	if (tag->vs_sets) {
 		for (size_t i=0 ; i<tag->vs_sets->size() ; ++i) {
 			TagList tags = getTagList(*(*tag->vs_sets)[i]);
-			UString rpl;
+			static UString rpl;
+			rpl.clear();
 			// If there are multiple tags, such as from CompositeTags, put _ between them
 			const_foreach (TagList, tags, iter, iter_end) {
 				rpl += (*iter)->tag;
@@ -624,7 +628,8 @@ void GrammarApplicator::splitAllMappings(all_mappings_t& all_mappings, Cohort& c
 	if (all_mappings.empty()) {
 		return;
 	}
-	ReadingList readings = cohort.readings;
+	static ReadingList readings;
+	readings = cohort.readings;
 	boost_foreach (Reading *reading, readings) {
 		BOOST_AUTO(iter, all_mappings.find(reading));
 		if (iter == all_mappings.end()) {
@@ -644,10 +649,13 @@ void GrammarApplicator::splitAllMappings(all_mappings_t& all_mappings, Cohort& c
 }
 
 void GrammarApplicator::mergeReadings(ReadingList& readings) {
-	bc::flat_map<uint32_t, std::pair<uint32_t,Reading*> > mapped;
+	static bc::flat_map<uint32_t, std::pair<uint32_t,Reading*> > mapped;
+	mapped.clear();
 	mapped.reserve(readings.size());
-	bc::flat_map<uint32_t, ReadingList> mlist;
+	static bc::flat_map<uint32_t, ReadingList> mlist;
+	mlist.clear();
 	mlist.reserve(readings.size());
+
 	foreach (ReadingList, readings, iter, iter_end) {
 		Reading *r = *iter;
 		uint32_t hp = r->hash_plain, hplain = r->hash_plain;
@@ -691,15 +699,16 @@ void GrammarApplicator::mergeReadings(ReadingList& readings) {
 	}
 
 	readings.clear();
-	std::vector<Reading*> order;
+	static std::vector<Reading*> order;
+	order.clear();
 
 	for (BOOST_AUTO(miter, mlist.begin()) ; miter != mlist.end() ; miter++) {
-		ReadingList clist = miter->second;
+		const ReadingList& clist = miter->second;
 		Reading *nr = alloc_reading(*(clist.front()));
 		if (nr->mapping) {
 			erase(nr->tags_list, nr->mapping->hash);
 		}
-		foreach (ReadingList, clist, iter1, iter1_end) {
+		const_foreach (ReadingList, clist, iter1, iter1_end) {
 			if ((*iter1)->mapping && std::find(nr->tags_list.begin(), nr->tags_list.end(), (*iter1)->mapping->hash) == nr->tags_list.end()) {
 				nr->tags_list.push_back((*iter1)->mapping->hash);
 			}
