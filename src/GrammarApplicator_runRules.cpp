@@ -112,25 +112,27 @@ void GrammarApplicator::indexSingleWindow(SingleWindow& current) {
 
 TagList GrammarApplicator::getTagList(const Set& theSet, bool unif_mode) const {
 	TagList theTags;
+	getTagList(theSet, theTags, unif_mode);
+	return theTags;
+}
+
+void GrammarApplicator::getTagList(const Set& theSet, TagList& theTags, bool unif_mode) const {
 	if (theSet.type & ST_SET_UNIFY) {
 		const Set& pSet = *(grammar->sets_list[theSet.sets[0]]);
 		const_foreach (uint32Vector, pSet.sets, iter, iter_end) {
 			if (unif_sets->count(*iter)) {
-				TagList recursiveTags = getTagList(*(grammar->sets_list[*iter]));
-				theTags.insert(theTags.end(), recursiveTags.begin(), recursiveTags.end());
+				getTagList(*(grammar->sets_list[*iter]), theTags);
 			}
 		}
 	}
 	else if (theSet.type & ST_TAG_UNIFY) {
 		const_foreach (uint32Vector, theSet.sets, iter, iter_end) {
-			TagList recursiveTags = getTagList(*(grammar->sets_list[*iter]), true);
-			theTags.insert(theTags.end(), recursiveTags.begin(), recursiveTags.end());
+			getTagList(*(grammar->sets_list[*iter]), theTags, true);
 		}
 	}
 	else if (!theSet.sets.empty()) {
 		const_foreach (uint32Vector, theSet.sets, iter, iter_end) {
-			TagList recursiveTags = getTagList(*(grammar->sets_list[*iter]), unif_mode);
-			theTags.insert(theTags.end(), recursiveTags.begin(), recursiveTags.end());
+			getTagList(*(grammar->sets_list[*iter]), theTags, unif_mode);
 		}
 	}
 	else if (unif_mode) {
@@ -157,7 +159,6 @@ TagList GrammarApplicator::getTagList(const Set& theSet, bool unif_mode) const {
 			}
 		}
 	}
-	return theTags;
 }
 
 Reading *GrammarApplicator::get_sub_reading(Reading *tr, int sub_reading) {
@@ -800,7 +801,10 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 
 						Tag *wf = 0;
 						std::vector<TagList> readings;
-						const TagList theTags = getTagList(*rule.maplist);
+						static TagList theTags;
+						theTags.clear();
+						getTagList(*rule.maplist, theTags);
+
 						const_foreach (TagList, theTags, tter, tter_end) {
 							if ((*tter)->type & T_WORDFORM) {
 								cCohort->wordform = *tter;
@@ -887,9 +891,13 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						index_ruleCohort_no.clear();
 						reading.hit_by.push_back(rule.number);
 						reading.noprint = false;
-						TagList mappings;
-						TagList theTags = getTagList(*rule.maplist);
-						foreach (TagList, theTags, tter, tter_end) {
+						static TagList mappings;
+						mappings.clear();
+						static TagList theTags;
+						theTags.clear();
+						getTagList(*rule.maplist, theTags);
+
+						foreach(TagList, theTags, tter, tter_end) {
 							uint32_t hash = (*tter)->hash;
 							while ((*tter)->type & T_VARSTRING) {
 								*tter = generateVarstringTag(*tter);
@@ -929,8 +937,12 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						reading.tags_list.push_back(cohort->wordform->hash);
 						reading.tags_list.push_back(reading.baseform);
 						reflowReading(reading);
-						TagList mappings;
-						TagList theTags = getTagList(*rule.maplist);
+						static TagList mappings;
+						mappings.clear();
+						static TagList theTags;
+						theTags.clear();
+						getTagList(*rule.maplist, theTags);
+
 						foreach (TagList, theTags, tter, tter_end) {
 							uint32_t hash = (*tter)->hash;
 							while ((*tter)->type & T_VARSTRING) {
@@ -960,7 +972,9 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 
 						size_t tpos = std::numeric_limits<size_t>::max();
 						size_t tagb = reading.tags_list.size();
-						TagList theTags = getTagList(*rule.sublist);
+						static TagList theTags;
+						theTags.clear();
+						getTagList(*rule.sublist, theTags);
 
 						// Modify the list of tags to remove to be the actual list of tags present, including matching regex and icase tags
 						for (TagList::iterator it = theTags.begin() ; it != theTags.end() ; ) {
@@ -1009,8 +1023,12 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 								tpos = reading.tags_list.size() - 1;
 							}
 							++tpos;
-							TagList mappings;
-							TagList theTags = getTagList(*rule.maplist);
+							static TagList mappings;
+							mappings.clear();
+							static TagList theTags;
+							theTags.clear();
+							getTagList(*rule.maplist, theTags);
+
 							const_foreach (TagList, theTags, tter, tter_end) {
 								Tag *tag = *tter;
 								if (tag->type & T_VARSTRING) {
@@ -1078,7 +1096,10 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 
 						Tag *bf = 0;
 						std::vector<TagList> readings;
-						const TagList theTags = getTagList(*rule.maplist);
+						static TagList theTags;
+						theTags.clear();
+						getTagList(*rule.maplist, theTags);
+
 						const_foreach (TagList, theTags, tter, tter_end) {
 							if ((*tter)->type & T_BASEFORM) {
 								bf = *tter;
@@ -1146,14 +1167,20 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 
 						if (rule.sublist) {
 							// ToDo: Use the code from Substitute to make this match and remove special tags
-							TagList excepts = getTagList(*rule.sublist);
+							static TagList excepts;
+							excepts.clear();
+							getTagList(*rule.sublist, excepts);
 							const_foreach (TagList, excepts, tter, tter_end) {
 								delTagFromReading(*cReading, *tter);
 							}
 						}
 
-						TagList mappings;
-						TagList theTags = getTagList(*rule.maplist);
+						static TagList mappings;
+						mappings.clear();
+						static TagList theTags;
+						theTags.clear();
+						getTagList(*rule.maplist, theTags);
+
 						foreach (TagList, theTags, tter, tter_end) {
 							uint32_t hash = (*tter)->hash;
 							while ((*tter)->type & T_VARSTRING) {
@@ -1363,7 +1390,9 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 							if (good) {
 								swapper<Cohort*> sw((rule.flags & RF_REVERSE) != 0, attach, cohort);
 								bool rel_did_anything = false;
-								TagList theTags = getTagList(*rule.maplist);
+								static TagList theTags;
+								theTags.clear();
+								getTagList(*rule.maplist, theTags);
 								const_foreach (TagList, theTags, tter, tter_end) {
 									if (type == K_ADDRELATION) {
 										attach->type |= CT_RELATED;
@@ -1410,8 +1439,15 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 							if (good) {
 								swapper<Cohort*> sw((rule.flags & RF_REVERSE) != 0, attach, cohort);
 								bool rel_did_anything = false;
-								TagList sublist = getTagList(*rule.sublist);
-								TagList maplist = getTagList(*rule.maplist);
+
+								static TagList sublist;
+								sublist.clear();
+								getTagList(*rule.sublist, sublist);
+
+								static TagList maplist;
+								maplist.clear();
+								getTagList(*rule.maplist, maplist);
+
 								const_foreach (TagList, maplist, tter, tter_end) {
 									if (type == K_ADDRELATIONS) {
 										cohort->type |= CT_RELATED;
