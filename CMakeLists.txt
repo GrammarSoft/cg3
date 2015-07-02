@@ -25,10 +25,11 @@ elseif(LIB_SUFFIX)
 	set(CG_LIBDIR "${CG_LIBDIR}${LIB_SUFFIX}")
 endif()
 
-option(OPT_TCMALLOC "Set to OFF to disable linking against TCMalloc" ON)
+option(INSTALL_STATIC "Set to ON to install the static library" OFF)
+option(USE_TCMALLOC "Set to OFF to disable linking against TCMalloc" ON)
 if(APPLE)
 	message(STATUS "Disabling TCMalloc for OS X")
-	set(OPT_TCMALLOC OFF)
+	set(USE_TCMALLOC OFF)
 endif()
 
 if(MSVC)
