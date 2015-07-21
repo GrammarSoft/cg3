@@ -23,7 +23,7 @@
 
 namespace CG3 {
 
-UnicodeString flags[FLAGS_COUNT] = {
+UnicodeString g_flags[FLAGS_COUNT] = {
 	UNICODE_STRING_SIMPLE("NEAREST"),
 	UNICODE_STRING_SIMPLE("ALLOWLOOP"),
 	UNICODE_STRING_SIMPLE("DELAYED"),

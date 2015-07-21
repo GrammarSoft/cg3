@@ -34,6 +34,10 @@
 	// warning C4480: nonstandard extension used: specifying underlying type for enum
 	// 'cause that is actually standard in C++11
 	#pragma warning (disable: 4480)
+	// warning C4456: declaration hides previous local declaration
+	#pragma warning (disable: 4456)
+	// warning C4458: declaration hides class member
+	#pragma warning (disable: 4458)
 #endif
 
 #include <exception>

@@ -248,7 +248,7 @@ void GrammarWriter::printRule(UFILE *to, const Rule& rule) {
 
 	for (uint32_t i=0 ; i<FLAGS_COUNT ; i++) {
 		if (rule.flags & (1 << i)) {
-			u_fprintf(to, "%S ", flags[i].getTerminatedBuffer());
+			u_fprintf(to, "%S ", g_flags[i].getTerminatedBuffer());
 		}
 	}
 
