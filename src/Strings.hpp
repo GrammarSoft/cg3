@@ -206,7 +206,7 @@ namespace CG3 {
 namespace CG3 {
 	extern UnicodeString keywords[KEYWORD_COUNT];
 	extern UnicodeString stringbits[STRINGS_COUNT];
-	extern UnicodeString flags[FLAGS_COUNT];
+	extern UnicodeString g_flags[FLAGS_COUNT];
 
 	const size_t CG3_BUFFER_SIZE = 8192;
 	const size_t NUM_GBUFFERS = 1;
