@@ -989,8 +989,8 @@ void TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 		setflag = false;
 		for (uint32_t i=0 ; i<FLAGS_COUNT ; i++) {
 			UChar *op = p;
-			if (ux_simplecasecmp(p, flags[i].getTerminatedBuffer(), flags[i].length())) {
-				p += flags[i].length();
+			if (ux_simplecasecmp(p, g_flags[i].getTerminatedBuffer(), g_flags[i].length())) {
+				p += g_flags[i].length();
 				rule->flags |= (1 << i);
 				setflag = true;
 
@@ -1237,15 +1237,15 @@ void TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 		result->lines += SKIPWS(p);
 
 		if (key == K_MOVE) {
-			if (ux_simplecasecmp(p, flags[FL_WITHCHILD].getTerminatedBuffer(), flags[FL_WITHCHILD].length())) {
-				p += flags[FL_WITHCHILD].length();
+			if (ux_simplecasecmp(p, g_flags[FL_WITHCHILD].getTerminatedBuffer(), g_flags[FL_WITHCHILD].length())) {
+				p += g_flags[FL_WITHCHILD].length();
 				result->has_dep = true;
 				Set *s = parseSetInlineWrapper(p);
 				rule->childset2 = s->hash;
 				result->lines += SKIPWS(p);
 			}
-			else if (ux_simplecasecmp(p, flags[FL_NOCHILD].getTerminatedBuffer(), flags[FL_NOCHILD].length())) {
-				p += flags[FL_NOCHILD].length();
+			else if (ux_simplecasecmp(p, g_flags[FL_NOCHILD].getTerminatedBuffer(), g_flags[FL_NOCHILD].length())) {
+				p += g_flags[FL_NOCHILD].length();
 				rule->childset2 = 0;
 				result->lines += SKIPWS(p);
 			}
