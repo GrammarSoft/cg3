@@ -29,7 +29,7 @@
 namespace CG3 {
 
 std::string ux_dirname(const char *in) {
-	char tmp[32768] = {0};
+	char tmp[32768] = { 0 };
 #ifdef _WIN32
 	char *fname = 0;
 	GetFullPathNameA(in, 32767, tmp, &fname);
@@ -44,11 +44,10 @@ std::string ux_dirname(const char *in) {
 	}
 #endif
 	size_t tlen = strlen(tmp);
-	if (tmp[tlen-1] != '/' && tmp[tlen-1] != '\\') {
-		tmp[tlen+1] = 0;
+	if (tmp[tlen - 1] != '/' && tmp[tlen - 1] != '\\') {
+		tmp[tlen + 1] = 0;
 		tmp[tlen] = '/';
 	}
 	return tmp;
 }
-
 }

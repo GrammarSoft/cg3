@@ -26,25 +26,25 @@
 
 namespace CG3 {
 
-Window::Window(GrammarApplicator *p) :
-parent(p),
-cohort_counter(1),
-window_counter(0),
-window_span(0),
-current(0)
+Window::Window(GrammarApplicator *p)
+  : parent(p)
+  , cohort_counter(1)
+  , window_counter(0)
+  , window_span(0)
+  , current(0)
 {
 }
 
 Window::~Window() {
 	SingleWindowCont::iterator iter;
-	for (iter = previous.begin() ; iter != previous.end() ; iter++) {
+	for (iter = previous.begin(); iter != previous.end(); iter++) {
 		delete *iter;
 	}
 
 	delete current;
 	current = 0;
 
-	for (iter = next.begin() ; iter != next.end() ; iter++) {
+	for (iter = next.begin(); iter != next.end(); iter++) {
 		delete *iter;
 	}
 }
@@ -155,5 +155,4 @@ void Window::rebuildCohortLinks() {
 		sWindow = sWindow->next;
 	}
 }
-
 }

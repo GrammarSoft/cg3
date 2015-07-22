@@ -31,99 +31,99 @@
 
 namespace CG3 {
 
-	class Grammar;
-	class Set;
+class Grammar;
+class Set;
 
-	// This must be kept in lock-step with Strings.hpp's FLAGS
-	enum {
-		RF_NEAREST      = (1 <<  0),
-		RF_ALLOWLOOP    = (1 <<  1),
-		RF_DELAYED      = (1 <<  2),
-		RF_IMMEDIATE    = (1 <<  3),
-		RF_LOOKDELETED  = (1 <<  4),
-		RF_LOOKDELAYED  = (1 <<  5),
-		RF_UNSAFE       = (1 <<  6),
-		RF_SAFE         = (1 <<  7),
-		RF_REMEMBERX    = (1 <<  8),
-		RF_RESETX       = (1 <<  9),
-		RF_KEEPORDER    = (1 << 10),
-		RF_VARYORDER    = (1 << 11),
-		RF_ENCL_INNER   = (1 << 12),
-		RF_ENCL_OUTER   = (1 << 13),
-		RF_ENCL_FINAL   = (1 << 14),
-		RF_ENCL_ANY     = (1 << 15),
-		RF_ALLOWCROSS   = (1 << 16),
-		RF_WITHCHILD    = (1 << 17),
-		RF_NOCHILD      = (1 << 18),
-		RF_ITERATE      = (1 << 19),
-		RF_NOITERATE    = (1 << 20),
-		RF_UNMAPLAST    = (1 << 21),
-		RF_REVERSE      = (1 << 22),
-		RF_SUB          = (1 << 23),
-		RF_OUTPUT       = (1 << 24),
+// This must be kept in lock-step with Strings.hpp's FLAGS
+enum {
+	RF_NEAREST     = (1 <<  0),
+	RF_ALLOWLOOP   = (1 <<  1),
+	RF_DELAYED     = (1 <<  2),
+	RF_IMMEDIATE   = (1 <<  3),
+	RF_LOOKDELETED = (1 <<  4),
+	RF_LOOKDELAYED = (1 <<  5),
+	RF_UNSAFE      = (1 <<  6),
+	RF_SAFE        = (1 <<  7),
+	RF_REMEMBERX   = (1 <<  8),
+	RF_RESETX      = (1 <<  9),
+	RF_KEEPORDER   = (1 << 10),
+	RF_VARYORDER   = (1 << 11),
+	RF_ENCL_INNER  = (1 << 12),
+	RF_ENCL_OUTER  = (1 << 13),
+	RF_ENCL_FINAL  = (1 << 14),
+	RF_ENCL_ANY    = (1 << 15),
+	RF_ALLOWCROSS  = (1 << 16),
+	RF_WITHCHILD   = (1 << 17),
+	RF_NOCHILD     = (1 << 18),
+	RF_ITERATE     = (1 << 19),
+	RF_NOITERATE   = (1 << 20),
+	RF_UNMAPLAST   = (1 << 21),
+	RF_REVERSE     = (1 << 22),
+	RF_SUB         = (1 << 23),
+	RF_OUTPUT      = (1 << 24),
 
-		MASK_ENCL = RF_ENCL_INNER | RF_ENCL_OUTER | RF_ENCL_FINAL | RF_ENCL_ANY,
-	};
+	MASK_ENCL      = RF_ENCL_INNER | RF_ENCL_OUTER | RF_ENCL_FINAL | RF_ENCL_ANY,
+};
 
-	class Rule {
-	public:
-		UChar *name;
-		Tag *wordform;
-		uint32_t target;
-		uint32_t childset1, childset2;
-		uint32_t line, number;
-		uint32_t varname, varvalue; // ToDo: varvalue is unused
-		uint32_t flags;
-		int32_t section;
-		int32_t sub_reading;
-		// ToDo: Add proper "quality" quantifier based on num_fail, num_match, total_time
-		double weight, quality;
-		KEYWORDS type;
-		Set *maplist;
-		Set *sublist;
+class Rule {
+public:
+	UChar *name;
+	Tag *wordform;
+	uint32_t target;
+	uint32_t childset1, childset2;
+	uint32_t line, number;
+	uint32_t varname, varvalue; // ToDo: varvalue is unused
+	uint32_t flags;
+	int32_t section;
+	int32_t sub_reading;
+	// ToDo: Add proper "quality" quantifier based on num_fail, num_match, total_time
+	double weight, quality;
+	KEYWORDS type;
+	Set *maplist;
+	Set *sublist;
 
-		mutable ContextList tests;
-		mutable ContextList dep_tests;
-		mutable uint32_t num_fail, num_match;
-		mutable double total_time;
-		mutable ContextualTest *dep_target;
+	mutable ContextList tests;
+	mutable ContextList dep_tests;
+	mutable uint32_t num_fail, num_match;
+	mutable double total_time;
+	mutable ContextualTest *dep_target;
 
-		Rule();
-		~Rule();
-		void setName(const UChar *to);
+	Rule();
+	~Rule();
+	void setName(const UChar *to);
 
-		void resetStatistics();
+	void resetStatistics();
 
-		void addContextualTest(ContextualTest *to, ContextList& head);
-		void reverseContextualTests();
+	void addContextualTest(ContextualTest *to, ContextList& head);
+	void reverseContextualTests();
 
-		static bool cmp_quality(const Rule *a, const Rule *b);
+	static bool cmp_quality(const Rule *a, const Rule *b);
 
-		static inline size_t cmp_hash(const Rule* r) {
-			return hash_value(r->number);
-		}
-		static inline bool cmp_compare(const Rule* a, const Rule* b) {
-			return a->number < b->number;
-		}
-	};
+	static inline size_t cmp_hash(const Rule *r) {
+		return hash_value(r->number);
+	}
+	static inline bool cmp_compare(const Rule *a, const Rule *b) {
+		return a->number < b->number;
+	}
+};
 
-	struct compare_Rule {
-		static const size_t bucket_size = 4;
-		static const size_t min_buckets = 8;
+struct compare_Rule {
+	static const size_t bucket_size = 4;
+	static const size_t min_buckets = 8;
 
-		inline size_t operator() (const Rule* r) const {
-			return Rule::cmp_hash(r);
-		}
+	inline size_t operator()(const Rule *r) const {
+		return Rule::cmp_hash(r);
+	}
 
-		inline bool operator() (const Rule* a, const Rule* b) const {
-			return Rule::cmp_compare(a, b);
-		}
-	};
+	inline bool operator()(const Rule *a, const Rule *b) const {
+		return Rule::cmp_compare(a, b);
+	}
+};
 
-	typedef std::vector<Rule*> RuleVector;
-	typedef std::map<uint32_t,Rule*> RuleByLineMap;
-	typedef stdext::hash_map<uint32_t,Rule*> RuleByLineHashMap;
-	typedef stdext::hash_map<const Rule*, CohortSet, compare_Rule> RuleToCohortsMap;
+typedef std::vector<Rule*> RuleVector;
+typedef std::map<uint32_t, Rule*> RuleByLineMap;
+typedef stdext::hash_map<uint32_t, Rule*> RuleByLineHashMap;
+typedef stdext::hash_map<const Rule *, CohortSet, compare_Rule> RuleToCohortsMap;
 }
 
 #endif

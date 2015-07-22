@@ -58,7 +58,7 @@ void GrammarWriter::printSet(UFILE *output, const Set& curset) {
 				if (tags.size() > 1) {
 					u_fprintf(output, "(");
 				}
-				boost_foreach (const Tag* tag, tags) {
+				boost_foreach (const Tag *tag, tags) {
 					printTag(output, *tag);
 					u_fprintf(output, " ");
 				}
@@ -71,7 +71,7 @@ void GrammarWriter::printSet(UFILE *output, const Set& curset) {
 	}
 	else {
 		used_sets.insert(curset.number);
-		for (uint32_t i=0;i<curset.sets.size();i++) {
+		for (uint32_t i = 0; i < curset.sets.size(); i++) {
 			printSet(output, *(grammar->sets_list[curset.sets[i]]));
 		}
 		if (statistics) {
@@ -88,8 +88,8 @@ void GrammarWriter::printSet(UFILE *output, const Set& curset) {
 		}
 		u_fprintf(output, "SET %S = ", n);
 		u_fprintf(output, "%S ", grammar->sets_list[curset.sets[0]]->name.c_str());
-		for (uint32_t i=0;i<curset.sets.size()-1;i++) {
-			u_fprintf(output, "%S %S ", stringbits[curset.set_ops[i]].getTerminatedBuffer(), grammar->sets_list[curset.sets[i+1]]->name.c_str());
+		for (uint32_t i = 0; i < curset.sets.size() - 1; i++) {
+			u_fprintf(output, "%S %S ", stringbits[curset.set_ops[i]].getTerminatedBuffer(), grammar->sets_list[curset.sets[i + 1]]->name.c_str());
 		}
 		u_fprintf(output, " ;\n\n");
 	}
@@ -139,7 +139,7 @@ int GrammarWriter::writeGrammar(UFILE *output) {
 	if (!grammar->preferred_targets.empty()) {
 		u_fprintf(output, "PREFERRED-TARGETS = ");
 		uint32Vector::const_iterator iter;
-		for (iter = grammar->preferred_targets.begin() ; iter != grammar->preferred_targets.end() ; iter++ ) {
+		for (iter = grammar->preferred_targets.begin(); iter != grammar->preferred_targets.end(); iter++) {
 			printTag(output, *(grammar->single_tags.find(*iter)->second));
 			u_fprintf(output, " ");
 		}
@@ -246,7 +246,7 @@ void GrammarWriter::printRule(UFILE *to, const Rule& rule) {
 	}
 	u_fprintf(to, " ");
 
-	for (uint32_t i=0 ; i<FLAGS_COUNT ; i++) {
+	for (uint32_t i = 0; i < FLAGS_COUNT; i++) {
 		if (rule.flags & (1 << i)) {
 			u_fprintf(to, "%S ", g_flags[i].getTerminatedBuffer());
 		}
@@ -295,7 +295,7 @@ void GrammarWriter::printContextualTest(UFILE *to, const ContextualTest& test) {
 		u_fprintf(to, "T:%u ", test.tmpl->hash);
 	}
 	else if (!test.ors.empty()) {
-		for (BOOST_AUTO(iter, test.ors.begin()) ; iter != test.ors.end() ; ) {
+		for (BOOST_AUTO(iter, test.ors.begin()); iter != test.ors.end();) {
 			u_fprintf(to, "(");
 			printContextualTest(to, **iter);
 			u_fprintf(to, ")");
@@ -411,5 +411,4 @@ void GrammarWriter::printTag(UFILE *to, const Tag& tag) {
 	UString str = tag.toUString(true);
 	u_file_write(str.c_str(), str.length(), to);
 }
-
 }

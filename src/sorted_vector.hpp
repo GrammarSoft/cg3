@@ -29,20 +29,20 @@
 #include <stdint.h> // C99 or C++0x or C++ TR1 will have this header. ToDo: Change to <cstdint> when C++0x broader support gets under way.
 
 namespace CG3 {
-	namespace detail {
-		template<typename ForwardIt, typename Comp>
-		bool is_sorted(ForwardIt first, ForwardIt last, Comp comp) {
-			if (first != last) {
-				ForwardIt next = first;
-				while (++next != last) {
-					if (comp(*next, *first))
-						return false;
-					first = next;
-				}
+namespace detail {
+	template<typename ForwardIt, typename Comp>
+	bool is_sorted(ForwardIt first, ForwardIt last, Comp comp) {
+		if (first != last) {
+			ForwardIt next = first;
+			while (++next != last) {
+				if (comp(*next, *first))
+					return false;
+				first = next;
 			}
-			return true;
 		}
+		return true;
 	}
+}
 
 template<typename T, typename Comp = std::less<T> >
 class sorted_vector {
@@ -65,7 +65,7 @@ public:
 	}
 	#endif
 
-	std::pair<iterator,bool> insert(T t) {
+	std::pair<iterator, bool> insert(T t) {
 		if (elements.empty()) {
 			elements.push_back(t);
 			return std::make_pair(elements.begin(), true);
@@ -84,7 +84,7 @@ public:
 		size_t at = std::distance(elements.begin(), it);
 		if (it == elements.end() || comp(*it, t) || comp(t, *it)) {
 			elements.insert(it, t);
-			return std::make_pair(elements.begin()+at, true);
+			return std::make_pair(elements.begin() + at, true);
 		}
 		return std::make_pair(elements.begin() + at, false);
 	}
@@ -248,7 +248,6 @@ private:
 };
 
 typedef sorted_vector<uint32_t> uint32SortedVector;
-
 }
 
 #endif

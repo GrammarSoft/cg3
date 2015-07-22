@@ -29,9 +29,9 @@ namespace CG3 {
 
 class istream {
 public:
-	istream(UFILE *s, bool strip_bom=true) :
-	stream(s),
-	raw(u_fgetfile(stream))
+	istream(UFILE *s, bool strip_bom = true)
+	  : stream(s)
+	  , raw(u_fgetfile(stream))
 	{
 		if (strip_bom) {
 			UChar32 bom = u_fgetcx(stream);
@@ -72,18 +72,18 @@ private:
 
 class istream_buffer : public istream {
 public:
-	istream_buffer(UFILE *s, const UString& b) :
-	istream(s),
-	offset(0),
-	raw_offset(0),
-	buffer(b)
+	istream_buffer(UFILE *s, const UString& b)
+	  : istream(s)
+	  , offset(0)
+	  , raw_offset(0)
+	  , buffer(b)
 	{
-		buffer.resize(buffer.size()+1);
-		buffer.resize(buffer.size()-1);
+		buffer.resize(buffer.size() + 1);
+		buffer.resize(buffer.size() - 1);
 	}
 
 	UBool eof() {
-		if (offset >= buffer.size() || raw_offset >= buffer.size()*sizeof(buffer[0])) {
+		if (offset >= buffer.size() || raw_offset >= buffer.size() * sizeof(buffer[0])) {
 			return istream::eof();
 		}
 		return false;
@@ -91,18 +91,18 @@ public:
 
 	UChar *gets(UChar *s, int32_t m) {
 		if (offset < buffer.size()) {
-			std::fill(s, s+m, 0);
+			std::fill(s, s + m, 0);
 			UChar *p = &buffer[offset];
 			UChar *n = p;
 			SKIPLN(n);
-			if (n-p > m) {
-				n = p+m;
+			if (n - p > m) {
+				n = p + m;
 			}
 			std::copy(p, n, s);
-			size_t len = n-p;
+			size_t len = n - p;
 			offset += len;
 			if (!ISNL(n[-1])) {
-				istream::gets(s + (len-1), m - len);
+				istream::gets(s + (len - 1), m - len);
 			}
 			return s;
 		}
@@ -117,7 +117,7 @@ public:
 	}
 
 	int getc_raw() {
-		if (raw_offset < buffer.size()*sizeof(buffer[0])) {
+		if (raw_offset < buffer.size() * sizeof(buffer[0])) {
 			return reinterpret_cast<char*>(&buffer[0])[raw_offset++];
 		}
 		return istream::getc_raw();
@@ -127,7 +127,6 @@ private:
 	size_t offset, raw_offset;
 	UString buffer;
 };
-
 }
 
 #endif

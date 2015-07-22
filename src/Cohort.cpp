@@ -51,19 +51,19 @@ void free_cohort(Cohort *c) {
 	pool_put(pool_cohorts, c);
 }
 
-Cohort::Cohort(SingleWindow *p) :
-type(0),
-global_number(0),
-local_number(0),
-wordform(0),
-dep_self(0),
-dep_parent(std::numeric_limits<uint32_t>::max()),
-is_pleft(0),
-is_pright(0),
-parent(p),
-prev(0),
-next(0),
-wread(0)
+Cohort::Cohort(SingleWindow *p)
+  : type(0)
+  , global_number(0)
+  , local_number(0)
+  , wordform(0)
+  , dep_self(0)
+  , dep_parent(std::numeric_limits<uint32_t>::max())
+  , is_pleft(0)
+  , is_pright(0)
+  , parent(p)
+  , prev(0)
+  , next(0)
+  , wread(0)
 {
 	#ifdef CG_TRACE_OBJECTS
 	std::cerr << "OBJECT: " << __PRETTY_FUNCTION__ << std::endl;
@@ -170,7 +170,7 @@ void Cohort::appendReading(Reading *read) {
 	type &= ~CT_NUM_CURRENT;
 }
 
-Reading* Cohort::allocateAppendReading() {
+Reading *Cohort::allocateAppendReading() {
 	Reading *read = alloc_reading(this);
 	readings.push_back(read);
 	if (read->number == 0) {
@@ -241,5 +241,4 @@ bool Cohort::remRelation(uint32_t rel, uint32_t cohort) {
 	}
 	return false;
 }
-
 }

@@ -36,12 +36,16 @@ private:
 		T lb;
 		T ub;
 
-		explicit interval(T lb = T()) :
-		lb(lb), ub(lb) {
+		explicit interval(T lb = T())
+		  : lb(lb)
+		  , ub(lb)
+		{
 		}
 
-		explicit interval(T lb, T ub) :
-		lb(lb), ub(ub) {
+		explicit interval(T lb, T ub)
+		  : lb(lb)
+		  , ub(ub)
+		{
 		}
 
 		bool operator<(const interval& o) const {
@@ -59,7 +63,7 @@ private:
 	size_t _size;
 
 public:
-	class const_iterator : public std::iterator<std::bidirectional_iterator_tag,T> {
+	class const_iterator : public std::iterator<std::bidirectional_iterator_tag, T> {
 	private:
 		const Cont *elements;
 		ContConstIter it;
@@ -68,26 +72,26 @@ public:
 	public:
 		typedef T reference;
 
-		const_iterator() :
-		elements(0),
-		t(T())
+		const_iterator()
+		  : elements(0)
+		  , t(T())
 		{
 		}
 
-		const_iterator(const Cont& elements, ContConstIter it) :
-		elements(&elements),
-		it(it),
-		t(T())
+		const_iterator(const Cont& elements, ContConstIter it)
+		  : elements(&elements)
+		  , it(it)
+		  , t(T())
 		{
 			if (it != elements.end()) {
 				t = it->lb;
 			}
 		}
 
-		const_iterator(const Cont& elements, ContConstIter it, T t) :
-		elements(&elements),
-		it(it),
-		t(t)
+		const_iterator(const Cont& elements, ContConstIter it, T t)
+		  : elements(&elements)
+		  , it(it)
+		  , t(t)
 		{
 		}
 
@@ -152,16 +156,16 @@ public:
 	typedef T value_type;
 	typedef T key_type;
 
-	interval_vector() :
-	_size(0)
+	interval_vector()
+	  : _size(0)
 	{
 	}
 
 	template<typename Iter>
-	interval_vector(Iter b, const Iter& e) :
-	_size(0)
+	interval_vector(Iter b, const Iter& e)
+	  : _size(0)
 	{
-		for (; b != e ; ++b) {
+		for (; b != e; ++b) {
 			insert(*b);
 		}
 	}
@@ -171,17 +175,17 @@ public:
 		if (it != elements.end() && t >= it->lb && t <= it->ub) {
 			return false;
 		}
-		ContIter pr = it-1;
-		if (it != elements.begin() && pr->ub+1 == t) {
+		ContIter pr = it - 1;
+		if (it != elements.begin() && pr->ub + 1 == t) {
 			++pr->ub;
-			if (it != elements.end() && pr->ub+1 == it->lb) {
+			if (it != elements.end() && pr->ub + 1 == it->lb) {
 				pr->ub = it->ub;
 				elements.erase(it);
 			}
 		}
-		else if (it != elements.end() && it->lb == t+1) {
+		else if (it != elements.end() && it->lb == t + 1) {
 			--it->lb;
-			if (it != elements.begin() && pr->ub+1 == it->lb) {
+			if (it != elements.begin() && pr->ub + 1 == it->lb) {
 				pr->ub = it->ub;
 				elements.erase(it);
 			}
@@ -228,8 +232,8 @@ public:
 			return true;
 		}
 		if (it->lb < t && it->ub > t) {
-			elements.insert(it+1, interval(t+1, it->ub));
-			it->ub = t-1;
+			elements.insert(it + 1, interval(t + 1, it->ub));
+			it->ub = t - 1;
 			--_size;
 			return true;
 		}
@@ -319,7 +323,7 @@ public:
 				while (a != elements.end() && b != o.elements.end() && a->ub >= b->lb && b->ub >= a->lb) {
 					const T lb = std::max(a->lb, b->lb);
 					const T ub = std::min(a->ub, b->ub);
-					if (!rv.elements.empty() && rv.elements.back().ub+1 == lb) {
+					if (!rv.elements.empty() && rv.elements.back().ub + 1 == lb) {
 						rv.elements.back().ub = ub;
 					}
 					else {
@@ -340,7 +344,6 @@ public:
 };
 
 typedef interval_vector<uint32_t> uint32IntervalVector;
-
 }
 
 #endif

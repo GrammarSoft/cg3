@@ -210,9 +210,7 @@ Tag *parseTag(const UChar *to, const UChar *p, State& state) {
 		}
 
 		if (tag->type & T_REGEXP) {
-			if (u_strcmp(tag->tag.c_str(), stringbits[S_RXTEXT_ANY].getTerminatedBuffer()) == 0
-				|| u_strcmp(tag->tag.c_str(), stringbits[S_RXBASE_ANY].getTerminatedBuffer()) == 0
-				|| u_strcmp(tag->tag.c_str(), stringbits[S_RXWORD_ANY].getTerminatedBuffer()) == 0) {
+			if (u_strcmp(tag->tag.c_str(), stringbits[S_RXTEXT_ANY].getTerminatedBuffer()) == 0 || u_strcmp(tag->tag.c_str(), stringbits[S_RXBASE_ANY].getTerminatedBuffer()) == 0 || u_strcmp(tag->tag.c_str(), stringbits[S_RXWORD_ANY].getTerminatedBuffer()) == 0) {
 				// ToDo: Add a case-insensitive version of T_REGEXP_ANY for unification
 				tag->type |= T_REGEXP_ANY;
 				tag->type &= ~T_REGEXP;
@@ -242,15 +240,14 @@ Tag *parseTag(const UChar *to, const UChar *p, State& state) {
 				}
 			}
 		}
-		if (tag->type & (T_CASE_INSENSITIVE|T_REGEXP)) {
+		if (tag->type & (T_CASE_INSENSITIVE | T_REGEXP)) {
 			if (tag->tag[0] == '/' && tag->tag[length - 1] == '/') {
 				tag->tag.resize(tag->tag.size() - 1);
 				tag->tag.erase(tag->tag.begin());
 			}
 		}
 
-	label_isVarstring:
-		;
+	label_isVarstring:;
 	}
 
 	tag->type &= ~T_SPECIAL;
@@ -274,9 +271,8 @@ Set *parseSet(const UChar *name, const UChar *p, State& state) {
 	}
 
 	if ((
-		(name[0] == '$' && name[1] == '$')
-		|| (name[0] == '&' && name[1] == '&')
-		) && name[2]) {
+	      (name[0] == '$' && name[1] == '$') || (name[0] == '&' && name[1] == '&')) &&
+	    name[2]) {
 		const UChar *wname = &(name[2]);
 		uint32_t wrap = hash_value(wname);
 		Set *wtmp = state.get_grammar()->getSet(wrap);
@@ -318,7 +314,6 @@ Set *parseSet(const UChar *name, const UChar *p, State& state) {
 	}
 	return tmp;
 }
-
 }
 
 #endif

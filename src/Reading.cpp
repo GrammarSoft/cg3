@@ -80,47 +80,47 @@ void free_reading(Reading *r) {
 	pool_put(pool_readings, r);
 }
 
-Reading::Reading(Cohort *p) :
-mapped(false),
-deleted(false),
-noprint(false),
-matched_target(false),
-matched_tests(false),
-baseform(0),
-hash(0),
-hash_plain(0),
-number(p ? (p->readings.size() * 1000 + 1000) : 0),
-mapping(0),
-parent(p),
-next(0)
+Reading::Reading(Cohort *p)
+  : mapped(false)
+  , deleted(false)
+  , noprint(false)
+  , matched_target(false)
+  , matched_tests(false)
+  , baseform(0)
+  , hash(0)
+  , hash_plain(0)
+  , number(p ? (p->readings.size() * 1000 + 1000) : 0)
+  , mapping(0)
+  , parent(p)
+  , next(0)
 {
 	#ifdef CG_TRACE_OBJECTS
 	std::cerr << "OBJECT: " << __PRETTY_FUNCTION__ << std::endl;
 	#endif
 }
 
-Reading::Reading(const Reading& r) :
-mapped(r.mapped),
-deleted(r.deleted),
-noprint(r.noprint),
-matched_target(false),
-matched_tests(false),
-baseform(r.baseform),
-hash(r.hash),
-hash_plain(r.hash_plain),
-number(r.number + 100),
-tags_bloom(r.tags_bloom),
-tags_plain_bloom(r.tags_plain_bloom),
-tags_textual_bloom(r.tags_textual_bloom),
-mapping(r.mapping),
-parent(r.parent),
-next(r.next),
-hit_by(r.hit_by),
-tags_list(r.tags_list),
-tags(r.tags),
-tags_plain(r.tags_plain),
-tags_textual(r.tags_textual),
-tags_numerical(r.tags_numerical)
+Reading::Reading(const Reading& r)
+  : mapped(r.mapped)
+  , deleted(r.deleted)
+  , noprint(r.noprint)
+  , matched_target(false)
+  , matched_tests(false)
+  , baseform(r.baseform)
+  , hash(r.hash)
+  , hash_plain(r.hash_plain)
+  , number(r.number + 100)
+  , tags_bloom(r.tags_bloom)
+  , tags_plain_bloom(r.tags_plain_bloom)
+  , tags_textual_bloom(r.tags_textual_bloom)
+  , mapping(r.mapping)
+  , parent(r.parent)
+  , next(r.next)
+  , hit_by(r.hit_by)
+  , tags_list(r.tags_list)
+  , tags(r.tags)
+  , tags_plain(r.tags_plain)
+  , tags_textual(r.tags_textual)
+  , tags_numerical(r.tags_numerical)
 {
 	#ifdef CG_TRACE_OBJECTS
 	std::cerr << "OBJECT: " << __PRETTY_FUNCTION__ << std::endl;
@@ -195,5 +195,4 @@ uint32_t Reading::rehash() {
 bool Reading::cmp_number(Reading *a, Reading *b) {
 	return a->number < b->number;
 }
-
 }

@@ -35,7 +35,6 @@ public:
 	void printCohort(Cohort *cohort, UFILE *output);
 	void printSingleWindow(SingleWindow *window, UFILE *output);
 };
-
 }
 
 #endif

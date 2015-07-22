@@ -57,28 +57,31 @@ inline uint32_t SuperFastHash(const char *data, size_t len = 0, uint32_t hash = 
 	len >>= 2;
 
 	/* Main loop */
-	for (;len > 0; len--) {
-		hash  += get16bits (data);
-		tmp    = (get16bits (data+2) << 11) ^ hash;
-		hash   = (hash << 16) ^ tmp;
-		data  += 2*sizeof (uint16_t);
-		hash  += hash >> 11;
+	for (; len > 0; len--) {
+		hash += get16bits(data);
+		tmp = (get16bits(data + 2) << 11) ^ hash;
+		hash = (hash << 16) ^ tmp;
+		data += 2 * sizeof(uint16_t);
+		hash += hash >> 11;
 	}
 
 	/* Handle end cases */
 	switch (rem) {
-		case 3:	hash += get16bits (data);
-				hash ^= hash << 16;
-				hash ^= data[sizeof (uint16_t)] << 18;
-				hash += hash >> 11;
-				break;
-		case 2:	hash += get16bits (data);
-				hash ^= hash << 11;
-				hash += hash >> 17;
-				break;
-		case 1: hash += *data;
-				hash ^= hash << 10;
-				hash += hash >> 1;
+	case 3:
+		hash += get16bits(data);
+		hash ^= hash << 16;
+		hash ^= data[sizeof(uint16_t)] << 18;
+		hash += hash >> 11;
+		break;
+	case 2:
+		hash += get16bits(data);
+		hash ^= hash << 11;
+		hash += hash >> 17;
+		break;
+	case 1:
+		hash += *data;
+		hash ^= hash << 10;
+		hash += hash >> 1;
 	}
 
 	/* Force "avalanching" of final 127 bits */
@@ -89,7 +92,7 @@ inline uint32_t SuperFastHash(const char *data, size_t len = 0, uint32_t hash = 
 	hash ^= hash << 25;
 	hash += hash >> 6;
 
-	if (hash == 0 || hash == std::numeric_limits<uint32_t>::max() || hash == std::numeric_limits<uint32_t>::max()-1) {
+	if (hash == 0 || hash == std::numeric_limits<uint32_t>::max() || hash == std::numeric_limits<uint32_t>::max() - 1) {
 		hash = CG3_HASH_SEED;
 	}
 
@@ -111,20 +114,21 @@ inline uint32_t SuperFastHash(const UChar *data, size_t len = 0, uint32_t hash =
 	len >>= 1;
 
 	/* Main loop */
-	for (;len > 0; len--) {
-		hash  += data[0];
-		tmp    = (data[1] << 11) ^ hash;
-		hash   = (hash << 16) ^ tmp;
-		data  += 2;
-		hash  += hash >> 11;
+	for (; len > 0; len--) {
+		hash += data[0];
+		tmp = (data[1] << 11) ^ hash;
+		hash = (hash << 16) ^ tmp;
+		data += 2;
+		hash += hash >> 11;
 	}
 
 	/* Handle end cases */
 	switch (rem) {
-		case 1:	hash += data[0];
-				hash ^= hash << 11;
-				hash += hash >> 17;
-				break;
+	case 1:
+		hash += data[0];
+		hash ^= hash << 11;
+		hash += hash >> 17;
+		break;
 	}
 
 	/* Force "avalanching" of final 127 bits */
@@ -135,7 +139,7 @@ inline uint32_t SuperFastHash(const UChar *data, size_t len = 0, uint32_t hash =
 	hash ^= hash << 25;
 	hash += hash >> 6;
 
-	if (hash == 0 || hash == std::numeric_limits<uint32_t>::max() || hash == std::numeric_limits<uint32_t>::max()-1) {
+	if (hash == 0 || hash == std::numeric_limits<uint32_t>::max() || hash == std::numeric_limits<uint32_t>::max() - 1) {
 		hash = CG3_HASH_SEED;
 	}
 
@@ -172,7 +176,7 @@ inline uint32_t hash_value(uint32_t c, uint32_t h = CG3_HASH_SEED) {
 	}
 	//*
 	h = c + (h << 6U) + (h << 16U) - h;
-	if (h == 0 || h == std::numeric_limits<uint32_t>::max() || h == std::numeric_limits<uint32_t>::max()-1) {
+	if (h == 0 || h == std::numeric_limits<uint32_t>::max() || h == std::numeric_limits<uint32_t>::max() - 1) {
 		h = CG3_HASH_SEED;
 	}
 	return h;
@@ -201,10 +205,10 @@ inline bool ISSPACE(const UChar c) {
 }
 
 inline bool ISSTRING(const UChar *p, const uint32_t c) {
-	if (*(p-1) == '"' && *(p+c+1) == '"') {
+	if (*(p - 1) == '"' && *(p + c + 1) == '"') {
 		return true;
 	}
-	if (*(p-1) == '<' && *(p+c+1) == '>') {
+	if (*(p - 1) == '<' && *(p + c + 1) == '>') {
 		return true;
 	}
 	return false;
@@ -212,20 +216,20 @@ inline bool ISSTRING(const UChar *p, const uint32_t c) {
 
 inline bool ISNL(const UChar c) {
 	return (
-	   c == 0x2028L // Unicode Line Seperator
-	|| c == 0x2029L // Unicode Paragraph Seperator
-	|| c == 0x000CL // Form Feed
-	|| c == 0x000BL // Vertical Tab
-	|| c == 0x000AL // ASCII \n
-	);
+	  c == 0x2028L    // Unicode Line Seperator
+	  || c == 0x2029L // Unicode Paragraph Seperator
+	  || c == 0x000CL // Form Feed
+	  || c == 0x000BL // Vertical Tab
+	  || c == 0x000AL // ASCII \n
+	  );
 }
 
 inline bool ISESC(const UChar *p) {
-	uint32_t a=1;
-	while (*(p-a) && *(p-a) == '\\') {
+	uint32_t a = 1;
+	while (*(p - a) && *(p - a) == '\\') {
 		a++;
 	}
-	return (a%2==0);
+	return (a % 2 == 0);
 }
 
 inline bool ISCHR(const UChar p, const UChar a, const UChar b) {
@@ -316,7 +320,7 @@ inline void SKIPTO_NOSPAN_RAW(UChar *& p, const UChar a) {
 	}
 }
 
-inline void CG3Quit(const int32_t c = 0, const char* file = 0, const uint32_t line = 0) {
+inline void CG3Quit(const int32_t c = 0, const char *file = 0, const uint32_t line = 0) {
 	if (file && line) {
 		std::cerr << std::flush;
 		std::cerr << "CG3Quit triggered from " << file << " line " << line << "." << std::endl;
@@ -329,7 +333,7 @@ inline bool index_matches(const Cont& index, const VT& entry) {
 	return (index.find(entry) != index.end());
 }
 
-inline void insert_if_exists(boost::dynamic_bitset<>& cont, const boost::dynamic_bitset<>* other) {
+inline void insert_if_exists(boost::dynamic_bitset<>& cont, const boost::dynamic_bitset<> *other) {
 	if (other && !other->empty()) {
 		cont.resize(std::max(cont.size(), other->size()));
 		cont |= *other;
@@ -351,10 +355,10 @@ inline void writeUTF8String(std::ostream& output, const UChar *str, size_t len =
 		len = u_strlen(str);
 	}
 
-	std::vector<char> buffer(len*4);
+	std::vector<char> buffer(len * 4);
 	int32_t olen = 0;
 	UErrorCode status = U_ZERO_ERROR;
-	u_strToUTF8(&buffer[0], len*4-1, &olen, str, len, &status);
+	u_strToUTF8(&buffer[0], len * 4 - 1, &olen, str, len, &status);
 
 	uint16_t cs = static_cast<uint16_t>(olen);
 	writeRaw(output, cs);
@@ -465,9 +469,9 @@ inline void GAppSetOpts_ranged(const char *value, Cont& cont) {
 		const char *nextc = strchr(comma, ',');
 		if (delim && (nextc == 0 || nextc > delim)) {
 			had_range = true;
-			high = abs(atoi(delim+1));
+			high = abs(atoi(delim + 1));
 		}
-		for (; low <= high ; ++low) {
+		for (; low <= high; ++low) {
 			cont.push_back(low);
 		}
 	} while ((comma = strchr(comma, ',')) != 0 && ++comma && *comma != 0);
@@ -475,7 +479,7 @@ inline void GAppSetOpts_ranged(const char *value, Cont& cont) {
 	if (cont.size() == 1 && !had_range) {
 		uint32_t val = cont.front();
 		cont.clear();
-		for (uint32_t i=1 ; i<=val ; ++i) {
+		for (uint32_t i = 1; i <= val; ++i) {
 			cont.push_back(i);
 		}
 	}
@@ -484,10 +488,10 @@ inline void GAppSetOpts_ranged(const char *value, Cont& cont) {
 template<typename T>
 class swapper {
 public:
-	swapper(bool cond, T& a, T& b) :
-	cond(cond),
-	a(a),
-	b(b)
+	swapper(bool cond, T& a, T& b)
+	  : cond(cond)
+	  , a(a)
+	  , b(b)
 	{
 		if (cond) {
 			std::swap(a, b);
@@ -508,9 +512,9 @@ private:
 
 class swapper_false {
 public:
-	swapper_false(bool cond, bool& b) :
-		val(false),
-		swp(cond, val, b)
+	swapper_false(bool cond, bool& b)
+	  : val(false)
+	  , swp(cond, val, b)
 	{}
 
 private:
@@ -521,9 +525,9 @@ private:
 template<typename T>
 class uncond_swap {
 public:
-	uncond_swap(T& a, T b) :
-	a_(a),
-	b_(b)
+	uncond_swap(T& a, T b)
+	  : a_(a)
+	  , b_(b)
 	{
 		std::swap(a_, b_);
 	}
@@ -531,13 +535,14 @@ public:
 	~uncond_swap() {
 		std::swap(a_, b_);
 	}
+
 private:
 	T& a_;
 	T b_;
 };
 
 template<typename T>
-inline T* reverse(T *head) {
+inline T *reverse(T *head) {
 	T *nr = 0;
 	while (head) {
 		T *next = head->next;
@@ -580,7 +585,7 @@ void pool_get(Pool& pool, Var& var) {
 
 template<typename Pool, typename Var>
 void pool_put(Pool& pool, Var& var) {
-	pool.resize(pool.size()+1);
+	pool.resize(pool.size() + 1);
 	var.swap(pool.back());
 }
 
@@ -613,8 +618,8 @@ template<typename Pool>
 struct pool_cleaner {
 	Pool& pool;
 
-	pool_cleaner(Pool& pool) :
-		pool(pool)
+	pool_cleaner(Pool& pool)
+	  : pool(pool)
 	{
 	}
 
@@ -624,7 +629,6 @@ struct pool_cleaner {
 		}
 	}
 };
-
 }
 
 #endif
