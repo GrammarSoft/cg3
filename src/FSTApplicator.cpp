@@ -30,8 +30,8 @@
 namespace CG3 {
 
 FSTApplicator::FSTApplicator(UFILE *ux_err)
-	: GrammarApplicator(ux_err),
-	wfactor(100.0)
+  : GrammarApplicator(ux_err)
+  , wfactor(100.0)
 {
 	wtag += 'W';
 	sub_delims += '#';
@@ -74,7 +74,7 @@ void FSTApplicator::runGrammarOnText(istream& input, UFILE *output) {
 
 	index();
 
-	uint32_t resetAfter = ((num_windows+4)*2+1);
+	uint32_t resetAfter = ((num_windows + 4) * 2 + 1);
 	uint32_t lines = 0;
 
 	SingleWindow *cSWindow = 0;
@@ -90,9 +90,9 @@ void FSTApplicator::runGrammarOnText(istream& input, UFILE *output) {
 		++lines;
 		size_t offset = 0, packoff = 0;
 		// Read as much of the next line as will fit in the current buffer
-		while (input.gets(&line[offset], line.size()-offset-1)) {
+		while (input.gets(&line[offset], line.size() - offset - 1)) {
 			// Copy the segment just read to cleaned
-			for (size_t i=offset ; i<line.size() ; ++i) {
+			for (size_t i = offset; i < line.size(); ++i) {
 				// Only copy one space character, regardless of how many are in input
 				if (ISSPACE(line[i]) && !ISNL(line[i])) {
 					UChar space = (line[i] == '\t' ? '\t' : ' ');
@@ -106,25 +106,25 @@ void FSTApplicator::runGrammarOnText(istream& input, UFILE *output) {
 				}
 				// Break if there is a newline
 				if (ISNL(line[i])) {
-					cleaned[packoff+1] = cleaned[packoff] = 0;
+					cleaned[packoff + 1] = cleaned[packoff] = 0;
 					goto gotaline; // Oh how I wish C++ had break 2;
 				}
 				if (line[i] == 0) {
-					cleaned[packoff+1] = cleaned[packoff] = 0;
+					cleaned[packoff + 1] = cleaned[packoff] = 0;
 					break;
 				}
 				cleaned[packoff++] = line[i];
 			}
 			// If we reached this, buffer wasn't big enough. Double the size of the buffer and try again.
-			offset = line.size()-2;
-			line.resize(line.size()*2, 0);
-			cleaned.resize(line.size()+1, 0);
+			offset = line.size() - 2;
+			line.resize(line.size() * 2, 0);
+			cleaned.resize(line.size() + 1, 0);
 		}
 
-gotaline:
+	gotaline:
 		// Trim trailing whitespace
-		while (cleaned[0] && ISSPACE(cleaned[packoff-1])) {
-			cleaned[packoff-1] = 0;
+		while (cleaned[0] && ISSPACE(cleaned[packoff - 1])) {
+			cleaned[packoff - 1] = 0;
 			--packoff;
 		}
 		if (!ignoreinput && cleaned[0]) {
@@ -212,14 +212,14 @@ gotaline:
 					if (base && base[0]) {
 						int32_t f = u_strcspn(base, sub_delims.c_str());
 						UChar *hash = 0;
-						if (f && base+f < space) {
-							hash = const_cast<UChar*>(base)+f;
+						if (f && base + f < space) {
+							hash = const_cast<UChar*>(base) + f;
 							size_t oh = hash - &cleaned[0];
 							size_t ob = base - &cleaned[0];
-							cleaned.resize(cleaned.size()+1, 0);
+							cleaned.resize(cleaned.size() + 1, 0);
 							hash = &cleaned[oh];
 							base = &cleaned[ob];
-							std::copy_backward(hash, &cleaned[cleaned.size()-2], &cleaned[cleaned.size()-1]);
+							std::copy_backward(hash, &cleaned[cleaned.size() - 2], &cleaned[cleaned.size() - 1]);
 							hash[0] = 0;
 							space = hash;
 						}
@@ -289,7 +289,7 @@ gotaline:
 			}
 		}
 		else {
-istext:
+		istext:
 			if (cCohort && cCohort->readings.empty()) {
 				initEmptyCohort(*cCohort);
 			}
@@ -425,5 +425,4 @@ istext:
 
 	u_fflush(output);
 }
-
 }

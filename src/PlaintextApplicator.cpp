@@ -30,7 +30,7 @@
 namespace CG3 {
 
 PlaintextApplicator::PlaintextApplicator(UFILE *ux_err)
-	: GrammarApplicator(ux_err)
+  : GrammarApplicator(ux_err)
 {
 	allow_magic_readings = true;
 }
@@ -69,7 +69,7 @@ void PlaintextApplicator::runGrammarOnText(istream& input, UFILE *output) {
 
 	index();
 
-	uint32_t resetAfter = ((num_windows+4)*2+1);
+	uint32_t resetAfter = ((num_windows + 4) * 2 + 1);
 	uint32_t lines = 0;
 
 	SingleWindow *cSWindow = 0;
@@ -85,9 +85,9 @@ void PlaintextApplicator::runGrammarOnText(istream& input, UFILE *output) {
 		++lines;
 		size_t offset = 0, packoff = 0;
 		// Read as much of the next line as will fit in the current buffer
-		while (input.gets(&line[offset], line.size()-offset-1)) {
+		while (input.gets(&line[offset], line.size() - offset - 1)) {
 			// Copy the segment just read to cleaned
-			for (size_t i=offset ; i<line.size() ; ++i) {
+			for (size_t i = offset; i < line.size(); ++i) {
 				// Only copy one space character, regardless of how many are in input
 				if (ISSPACE(line[i]) && !ISNL(line[i])) {
 					cleaned[packoff++] = ' ';
@@ -97,25 +97,25 @@ void PlaintextApplicator::runGrammarOnText(istream& input, UFILE *output) {
 				}
 				// Break if there is a newline
 				if (ISNL(line[i])) {
-					cleaned[packoff+1] = cleaned[packoff] = 0;
+					cleaned[packoff + 1] = cleaned[packoff] = 0;
 					goto gotaline; // Oh how I wish C++ had break 2;
 				}
 				if (line[i] == 0) {
-					cleaned[packoff+1] = cleaned[packoff] = 0;
+					cleaned[packoff + 1] = cleaned[packoff] = 0;
 					break;
 				}
 				cleaned[packoff++] = line[i];
 			}
 			// If we reached this, buffer wasn't big enough. Double the size of the buffer and try again.
-			offset = line.size()-2;
-			line.resize(line.size()*2, 0);
-			cleaned.resize(line.size()+1, 0);
+			offset = line.size() - 2;
+			line.resize(line.size() * 2, 0);
+			cleaned.resize(line.size() + 1, 0);
 		}
 
-gotaline:
+	gotaline:
 		// Trim trailing whitespace
-		while (cleaned[0] && ISSPACE(cleaned[packoff-1])) {
-			cleaned[packoff-1] = 0;
+		while (cleaned[0] && ISSPACE(cleaned[packoff - 1])) {
+			cleaned[packoff - 1] = 0;
 			--packoff;
 		}
 		if (!ignoreinput && cleaned[0] && cleaned[0] != '<') {
@@ -222,7 +222,7 @@ gotaline:
 			}
 
 			std::vector<UnicodeString> tokens;
-			for (size_t i=0 ; i<tokens_raw.size() ; ++i) {
+			for (size_t i = 0; i < tokens_raw.size(); ++i) {
 				UChar *p = tokens_raw[i];
 				size_t len = u_strlen(p);
 				while (*p && u_ispunct(p[0])) {
@@ -231,23 +231,23 @@ gotaline:
 					--len;
 				}
 				size_t tkz = tokens.size();
-				while (*p && u_ispunct(p[len-1])) {
-					tokens.push_back(UnicodeString(p[len-1]));
-					p[len-1] = 0;
+				while (*p && u_ispunct(p[len - 1])) {
+					tokens.push_back(UnicodeString(p[len - 1]));
+					p[len - 1] = 0;
 					--len;
 				}
 				if (*p) {
-					tokens.insert(tokens.begin()+tkz, p);
+					tokens.insert(tokens.begin() + tkz, p);
 				}
 			}
 
 			UString tag;
-			for (size_t i=0 ; i<tokens.size() ; ++i) {
+			for (size_t i = 0; i < tokens.size(); ++i) {
 				UnicodeString& token = tokens[i];
 				bool first_upper = (u_isupper(token[0]) != 0);
 				bool all_upper = first_upper;
 				bool mixed_upper = false;
-				for (int32_t i=1 ; i<token.length() ; ++i) {
+				for (int32_t i = 1; i < token.length(); ++i) {
 					if (u_isupper(token[i])) {
 						mixed_upper = true;
 					}
@@ -279,17 +279,17 @@ gotaline:
 					addTagToReading(*cReading, addTag(tag));
 					if (all_upper) {
 						static const char _tag[] = "<all-upper>";
-						tag.assign(_tag, _tag+sizeof(_tag)-1);
+						tag.assign(_tag, _tag + sizeof(_tag) - 1);
 						addTagToReading(*cReading, addTag(tag));
 					}
 					if (first_upper) {
 						static const char _tag[] = "<first-upper>";
-						tag.assign(_tag, _tag+sizeof(_tag)-1);
+						tag.assign(_tag, _tag + sizeof(_tag) - 1);
 						addTagToReading(*cReading, addTag(tag));
 					}
 					if (mixed_upper && !all_upper) {
 						static const char _tag[] = "<mixed-upper>";
-						tag.assign(_tag, _tag+sizeof(_tag)-1);
+						tag.assign(_tag, _tag + sizeof(_tag) - 1);
 						addTagToReading(*cReading, addTag(tag));
 					}
 				}
@@ -368,5 +368,4 @@ void PlaintextApplicator::printSingleWindow(SingleWindow *window, UFILE *output)
 	u_fputc('\n', output);
 	u_fflush(output);
 }
-
 }

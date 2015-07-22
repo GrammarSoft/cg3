@@ -30,14 +30,14 @@
 namespace CG3 {
 
 ApertiumApplicator::ApertiumApplicator(UFILE *ux_err)
-	: GrammarApplicator(ux_err)
+  : GrammarApplicator(ux_err)
 {
-	nullFlush=false;
+	nullFlush = false;
 	wordform_case = false;
 	print_word_forms = true;
 	print_only_first = false;
-	runningWithNullFlush=false;
-	fgetc_converter=0;
+	runningWithNullFlush = false;
+	fgetc_converter = 0;
 }
 
 
@@ -46,40 +46,39 @@ bool ApertiumApplicator::getNullFlush() {
 }
 
 void ApertiumApplicator::setNullFlush(bool pNullFlush) {
-	nullFlush=pNullFlush;
+	nullFlush = pNullFlush;
 }
 
 UChar ApertiumApplicator::u_fgetc_wrapper(istream& input) {
 	if (runningWithNullFlush) {
 		if (!fgetc_converter) {
-			fgetc_error=U_ZERO_ERROR;
+			fgetc_error = U_ZERO_ERROR;
 			fgetc_converter = ucnv_open(ucnv_getDefaultName(), &fgetc_error);
 			if (U_FAILURE(fgetc_error)) {
-					u_fprintf(ux_stderr, "Error in ucnv_open: %d\n", fgetc_error);
-				}
+				u_fprintf(ux_stderr, "Error in ucnv_open: %d\n", fgetc_error);
+			}
 		}
 		int ch;
 		int result;
-		int inputsize=0;
+		int inputsize = 0;
 
 		do {
 			ch = input.getc_raw();
-			if (ch==0) {
+			if (ch == 0) {
 				return 0;
 			}
 			else {
-				fgetc_inputbuf[inputsize]=static_cast<char>(ch);
+				fgetc_inputbuf[inputsize] = static_cast<char>(ch);
 				inputsize++;
-				fgetc_error=U_ZERO_ERROR;
+				fgetc_error = U_ZERO_ERROR;
 				result = ucnv_toUChars(fgetc_converter, fgetc_outputbuf, 5, fgetc_inputbuf, inputsize, &fgetc_error);
 				if (U_FAILURE(fgetc_error)) {
 					u_fprintf(ux_stderr, "Error conversion: %d\n", fgetc_error);
 				}
 			}
-		}
-		while (( ((result>=1 && fgetc_outputbuf[0]==0xFFFD))  || result<1 || U_FAILURE(fgetc_error) ) && !input.eof() && inputsize<5);
+		} while ((((result >= 1 && fgetc_outputbuf[0] == 0xFFFD)) || result < 1 || U_FAILURE(fgetc_error)) && !input.eof() && inputsize < 5);
 
-		if (fgetc_outputbuf[0]==0xFFFD && input.eof()) {
+		if (fgetc_outputbuf[0] == 0xFFFD && input.eof()) {
 			return U_EOF;
 		}
 		return fgetc_outputbuf[0];
@@ -92,13 +91,13 @@ UChar ApertiumApplicator::u_fgetc_wrapper(istream& input) {
 
 void ApertiumApplicator::runGrammarOnTextWrapperNullFlush(istream& input, UFILE *output) {
 	setNullFlush(false);
-	runningWithNullFlush=true;
+	runningWithNullFlush = true;
 	while (!input.eof()) {
 		runGrammarOnText(input, output);
 		u_fputc('\0', output);
 		u_fflush(output);
 	}
-	runningWithNullFlush=false;
+	runningWithNullFlush = false;
 }
 
 /*
@@ -138,23 +137,23 @@ void ApertiumApplicator::runGrammarOnText(istream& input, UFILE *output) {
 		}
 	}
 
-	UChar inchar = 0; 		// Current character
-	bool superblank = false; 	// Are we in a superblank ?
-	bool incohort = false; 		// Are we in a cohort ?
-	UString firstblank;		// Blanks before the first window
+	UChar inchar = 0;        // Current character
+	bool superblank = false; // Are we in a superblank ?
+	bool incohort = false;   // Are we in a cohort ?
+	UString firstblank;      // Blanks before the first window
 
 	index();
 
-	uint32_t resetAfter = ((num_windows+4)*2+1);
+	uint32_t resetAfter = ((num_windows + 4) * 2 + 1);
 
 	begintag = addTag(stringbits[S_BEGINTAG].getTerminatedBuffer())->hash; // Beginning of sentence tag
-	endtag = addTag(stringbits[S_ENDTAG].getTerminatedBuffer())->hash; // End of sentence tag
+	endtag = addTag(stringbits[S_ENDTAG].getTerminatedBuffer())->hash;     // End of sentence tag
 
-	SingleWindow *cSWindow = 0; 	// Current single window (Cohort frame)
-	Cohort *cCohort = 0; 		// Current cohort
-	Reading *cReading = 0; 		// Current reading
+	SingleWindow *cSWindow = 0; // Current single window (Cohort frame)
+	Cohort *cCohort = 0;        // Current cohort
+	Reading *cReading = 0;      // Current reading
 
-	SingleWindow *lSWindow = 0; 	// Left hand single window
+	SingleWindow *lSWindow = 0; // Left hand single window
 
 	gWindow->window_span = num_windows;
 	gtimer = getticks();
@@ -215,7 +214,7 @@ void ApertiumApplicator::runGrammarOnText(istream& input, UFILE *output) {
 				initEmptyCohort(*cCohort);
 			}
 			if (cCohort && cSWindow->cohorts.size() >= soft_limit && grammar->soft_delimiters && doesSetMatchCohortNormal(*cCohort, grammar->soft_delimiters->number)) {
-			  // ie. we've read some cohorts
+				// ie. we've read some cohorts
 				foreach (iter, cCohort->readings) {
 					addTagToReading(**iter, endtag);
 				}
@@ -514,7 +513,7 @@ void ApertiumApplicator::processReading(Reading *cReading, const UChar *reading_
 	base += '"';
 	while (*c != '\0') {
 		if (*c == '*') { // Initial asterisk means word is unknown, and
-				// should just be copied in the output.
+			             // should just be copied in the output.
 			unknown = true;
 		}
 		if (*c == '<' || *c == '\0') {
@@ -525,12 +524,12 @@ void ApertiumApplicator::processReading(Reading *cReading, const UChar *reading_
 	}
 
 	if (!suf.empty()) { // Append the multiword suffix to the baseform
-			   // (this is normally done in pretransfer)
+		// (this is normally done in pretransfer)
 		base += suf;
 	}
 	base += '"';
 
-//	u_fprintf(ux_stderr, ">> b: %S s: %S\n", base.c_str(), suf.c_str());
+	//	u_fprintf(ux_stderr, ">> b: %S s: %S\n", base.c_str(), suf.c_str());
 
 	TagVector taglist;
 
@@ -575,7 +574,7 @@ void ApertiumApplicator::processReading(Reading *cReading, const UChar *reading_
 				UString bf;
 				bf += '"';
 				if (tmptag[0] == '+') {
-					bf.append(tmptag.begin()+1, tmptag.end());
+					bf.append(tmptag.begin() + 1, tmptag.end());
 				}
 				else {
 					bf += tmptag;
@@ -630,7 +629,7 @@ void ApertiumApplicator::processReading(Reading *cReading, const UChar *reading_
 				// Add tags
 				TagList mappings;
 				TagVector::iterator iter = riter.base();
-				for (--iter ; iter != taglist.end() ; ++iter) {
+				for (--iter; iter != taglist.end(); ++iter) {
 					if ((*iter)->type & T_MAPPING || (*iter)->tag[0] == grammar->mapping_prefix) {
 						mappings.push_back(*iter);
 					}
@@ -666,7 +665,7 @@ void ApertiumApplicator::testPR(UFILE *output) {
 		"be# happy<vblex><inf>",
 		"aux3<tag>+aux2<tag>+aux1<tag>+main<tag>",
 	};
-	for (size_t i = 0 ; i<6 ; ++i) {
+	for (size_t i = 0; i < 6; ++i) {
 		UString text(texts[i].begin(), texts[i].end());
 		Reading *reading = alloc_reading(0);
 		processReading(reading, text);
@@ -690,7 +689,7 @@ void ApertiumApplicator::printReading(Reading *reading, UFILE *output) {
 
 	if (reading->baseform) {
 		// Lop off the initial and final '"' characters
-		UnicodeString bf(single_tags[reading->baseform]->tag.c_str()+1, single_tags[reading->baseform]->tag.length()-2);
+		UnicodeString bf(single_tags[reading->baseform]->tag.c_str() + 1, single_tags[reading->baseform]->tag.length() - 2);
 
 		if (wordform_case && !reading->next) {
 			// Use surface/wordform case, eg. if lt-proc
@@ -698,10 +697,10 @@ void ApertiumApplicator::printReading(Reading *reading, UFILE *output) {
 			// dictionary case on lemma/basefrom)
 			// Lop off the initial and final '"<>"' characters
 			// ToDo: A copy does not need to be made here - use pointer offsets
-			UnicodeString wf(reading->parent->wordform->tag.c_str()+2, reading->parent->wordform->tag.length()-4);
+			UnicodeString wf(reading->parent->wordform->tag.c_str() + 2, reading->parent->wordform->tag.length() - 4);
 
 			int first = 0; // first occurrence of a lowercase character in baseform
-			for (; first<bf.length() ; ++first) {
+			for (; first < bf.length(); ++first) {
 				if (u_islower(bf[first]) != 0) {
 					break;
 				}
@@ -709,7 +708,7 @@ void ApertiumApplicator::printReading(Reading *reading, UFILE *output) {
 
 			// this corresponds to fst_processor.cc in lttoolbox:
 			bool firstupper = first < wf.length() && (u_isupper(wf[first]) != 0);
-			bool uppercase = firstupper && u_isupper(wf[wf.length()-1]);
+			bool uppercase = firstupper && u_isupper(wf[wf.length() - 1]);
 
 			if (uppercase) {
 				bf.toUpper(); // Perform a Unicode case folding to upper case -- Tino Didriksen
@@ -723,7 +722,7 @@ void ApertiumApplicator::printReading(Reading *reading, UFILE *output) {
 		} // if (wordform_case)
 
 		UString bf_escaped;
-		for (int i=0 ; i<bf.length() ; ++i) {
+		for (int i = 0; i < bf.length(); ++i) {
 			if (bf[i] == '^' || bf[i] == '\\' || bf[i] == '/' || bf[i] == '$' || bf[i] == '[' || bf[i] == ']' || bf[i] == '{' || bf[i] == '}' || bf[i] == '<' || bf[i] == '>') {
 				bf_escaped += '\\';
 			}
@@ -741,7 +740,7 @@ void ApertiumApplicator::printReading(Reading *reading, UFILE *output) {
 	Reading::tags_list_t multitags_list; // everything after a +, until the first MAPPING tag
 	Reading::tags_list_t::iterator tter;
 	bool multi = false;
-	for (tter = reading->tags_list.begin() ; tter != reading->tags_list.end() ; tter++) {
+	for (tter = reading->tags_list.begin(); tter != reading->tags_list.end(); tter++) {
 		const Tag *tag = single_tags[*tter];
 		if (tag->tag[0] == '+') {
 			multi = true;
@@ -757,10 +756,10 @@ void ApertiumApplicator::printReading(Reading *reading, UFILE *output) {
 			tags_list.push_back(*tter);
 		}
 	}
-	tags_list.insert(tags_list.end(),multitags_list.begin(),multitags_list.end());
+	tags_list.insert(tags_list.end(), multitags_list.begin(), multitags_list.end());
 
 	uint32SortedVector used_tags;
-	for (tter = tags_list.begin() ; tter != tags_list.end() ; tter++) {
+	for (tter = tags_list.begin(); tter != tags_list.end(); tter++) {
 		if (unique_tags) {
 			if (used_tags.find(*tter) != used_tags.end()) {
 				continue;
@@ -794,13 +793,12 @@ void ApertiumApplicator::printReading(Reading *reading, UFILE *output) {
 }
 
 void ApertiumApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
-
 	// Window text comes at the left
 	if (!window->text.empty()) {
 		u_fprintf(output, "%S", window->text.c_str());
 	}
 
-	for (uint32_t c=0 ; c < window->cohorts.size() ; c++) {
+	for (uint32_t c = 0; c < window->cohorts.size(); c++) {
 		if (c == 0) { // Skip magic cohort
 			continue;
 		}
@@ -817,9 +815,9 @@ void ApertiumApplicator::printSingleWindow(SingleWindow *window, UFILE *output) 
 		if (print_word_forms == true) {
 			// Lop off the initial and final '"' characters
 			// ToDo: A copy does not need to be made here - use pointer offsets
-			UnicodeString wf(cohort->wordform->tag.c_str()+2, cohort->wordform->tag.length()-4);
+			UnicodeString wf(cohort->wordform->tag.c_str() + 2, cohort->wordform->tag.length() - 4);
 			UString wf_escaped;
-			for (int i=0 ; i<wf.length() ; ++i) {
+			for (int i = 0; i < wf.length(); ++i) {
 				if (wf[i] == '^' || wf[i] == '\\' || wf[i] == '/' || wf[i] == '$' || wf[i] == '[' || wf[i] == ']' || wf[i] == '{' || wf[i] == '}' || wf[i] == '<' || wf[i] == '>') {
 					wf_escaped += '\\';
 				}
@@ -851,8 +849,7 @@ void ApertiumApplicator::printSingleWindow(SingleWindow *window, UFILE *output) 
 				reading = reverse(reading);
 			}
 			printReading(reading, output);
-			if(print_only_first == true)
-			{
+			if (print_only_first == true) {
 				break;
 			}
 		}
@@ -928,7 +925,7 @@ void ApertiumApplicator::mergeMappings(Cohort& cohort) {
 	std::vector<Reading*> order;
 
 	std::map<uint32_t, ReadingList>::iterator miter;
-	for (miter = mlist.begin() ; miter != mlist.end() ; miter++) {
+	for (miter = mlist.begin(); miter != mlist.end(); miter++) {
 		ReadingList clist = miter->second;
 		Reading *nr = alloc_reading(*(clist.front()));
 		// no merging of mapping tags
@@ -938,5 +935,4 @@ void ApertiumApplicator::mergeMappings(Cohort& cohort) {
 	std::sort(order.begin(), order.end(), CG3::Reading::cmp_number);
 	cohort.readings.insert(cohort.readings.begin(), order.begin(), order.end());
 }
-
 }

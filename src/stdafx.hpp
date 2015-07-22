@@ -94,12 +94,12 @@
 #define hash_map unordered_map
 
 #define foreach(iter, container) \
-	if (!(container).empty()) \
-	for (BOOST_AUTO(iter, (container).begin()), iter##_end = (container).end() ; iter != iter##_end ; ++iter)
+	if (!(container).empty())    \
+		for (BOOST_AUTO(iter, (container).begin()), iter##_end = (container).end(); iter != iter##_end; ++iter)
 
 #define reverse_foreach(iter, container) \
-	if (!(container).empty()) \
-	for (BOOST_AUTO(iter, (container).rbegin()), iter##_end = (container).rend() ; iter != iter##_end ; ++iter)
+	if (!(container).empty())            \
+		for (BOOST_AUTO(iter, (container).rbegin()), iter##_end = (container).rend(); iter != iter##_end; ++iter)
 
 #ifdef _WIN32
 	#include <winsock.h> // for hton() and family.
@@ -124,10 +124,10 @@
 #include <unicode/ubrk.h>
 
 namespace CG3 {
-	typedef std::basic_string<UChar> UString;
-	typedef std::vector<UString> UStringVector;
-	typedef std::vector<uint32_t> uint32Vector;
-	namespace bc = ::boost::container;
+typedef std::basic_string<UChar> UString;
+typedef std::vector<UString> UStringVector;
+typedef std::vector<uint32_t> uint32Vector;
+namespace bc = ::boost::container;
 }
 
 #include "inlines.hpp"

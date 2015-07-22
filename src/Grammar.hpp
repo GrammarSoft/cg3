@@ -32,136 +32,136 @@
 #include "flat_unordered_set.hpp"
 
 namespace CG3 {
-	class Anchor;
+class Anchor;
 
-	class Grammar {
-	public:
-		UFILE *ux_stderr, *ux_stdout;
+class Grammar {
+public:
+	UFILE *ux_stderr, *ux_stdout;
 
-		bool has_dep;
-		bool has_relations;
-		bool has_encl_final;
-		bool is_binary;
-		bool sub_readings_ltr;
-		size_t grammar_size;
-		UChar mapping_prefix;
-		uint32_t lines;
-		uint32_t verbosity_level;
-		mutable double total_time;
+	bool has_dep;
+	bool has_relations;
+	bool has_encl_final;
+	bool is_binary;
+	bool sub_readings_ltr;
+	size_t grammar_size;
+	UChar mapping_prefix;
+	uint32_t lines;
+	uint32_t verbosity_level;
+	mutable double total_time;
 
-		std::vector<Tag*> single_tags_list;
-		Taguint32HashMap single_tags;
+	std::vector<Tag*> single_tags_list;
+	Taguint32HashMap single_tags;
 
-		std::vector<Set*> sets_list;
-		SetSet sets_all;
-		uint32FlatHashMap sets_by_name;
-		typedef stdext::hash_map<UString,uint32_t> set_name_seeds_t;
-		set_name_seeds_t set_name_seeds;
-		Setuint32HashMap sets_by_contents;
-		uint32FlatHashMap set_alias;
-		SetSet maybe_used_sets;
+	std::vector<Set*> sets_list;
+	SetSet sets_all;
+	uint32FlatHashMap sets_by_name;
+	typedef stdext::hash_map<UString, uint32_t> set_name_seeds_t;
+	set_name_seeds_t set_name_seeds;
+	Setuint32HashMap sets_by_contents;
+	uint32FlatHashMap set_alias;
+	SetSet maybe_used_sets;
 
-		typedef std::vector<UString> static_sets_t;
-		static_sets_t static_sets;
+	typedef std::vector<UString> static_sets_t;
+	static_sets_t static_sets;
 
-		typedef std::set<URegularExpression*> regex_tags_t;
-		regex_tags_t regex_tags;
-		typedef TagSortedVector icase_tags_t;
-		icase_tags_t icase_tags;
+	typedef std::set<URegularExpression*> regex_tags_t;
+	regex_tags_t regex_tags;
+	typedef TagSortedVector icase_tags_t;
+	icase_tags_t icase_tags;
 
-		typedef stdext::hash_map<uint32_t, ContextualTest*> contexts_t;
-		contexts_t templates;
-		contexts_t contexts;
+	typedef stdext::hash_map<uint32_t, ContextualTest*> contexts_t;
+	contexts_t templates;
+	contexts_t contexts;
 
-		typedef stdext::hash_map<uint32_t, uint32IntervalVector> rules_by_set_t;
-		rules_by_set_t rules_by_set;
-		typedef stdext::hash_map<uint32_t, uint32IntervalVector> rules_by_tag_t;
-		rules_by_tag_t rules_by_tag;
-		typedef stdext::hash_map<uint32_t, boost::dynamic_bitset<> > sets_by_tag_t;
-		sets_by_tag_t sets_by_tag;
+	typedef stdext::hash_map<uint32_t, uint32IntervalVector> rules_by_set_t;
+	rules_by_set_t rules_by_set;
+	typedef stdext::hash_map<uint32_t, uint32IntervalVector> rules_by_tag_t;
+	rules_by_tag_t rules_by_tag;
+	typedef stdext::hash_map<uint32_t, boost::dynamic_bitset<> > sets_by_tag_t;
+	sets_by_tag_t sets_by_tag;
 
-		uint32IntervalVector *rules_any;
-		boost::dynamic_bitset<> *sets_any;
+	uint32IntervalVector *rules_any;
+	boost::dynamic_bitset<> *sets_any;
 
-		Set *delimiters;
-		Set *soft_delimiters;
-		uint32_t tag_any;
-		uint32Vector preferred_targets;
-		uint32SortedVector reopen_mappings;
-		typedef bc::flat_map<uint32_t,uint32_t> parentheses_t;
-		parentheses_t parentheses;
-		parentheses_t parentheses_reverse;
+	Set *delimiters;
+	Set *soft_delimiters;
+	uint32_t tag_any;
+	uint32Vector preferred_targets;
+	uint32SortedVector reopen_mappings;
+	typedef bc::flat_map<uint32_t, uint32_t> parentheses_t;
+	parentheses_t parentheses;
+	parentheses_t parentheses_reverse;
 
-		uint32Vector sections;
-		uint32FlatHashMap anchors;
+	uint32Vector sections;
+	uint32FlatHashMap anchors;
 
-		RuleVector rule_by_number;
-		RuleVector before_sections;
-		RuleVector rules;
-		RuleVector after_sections;
-		RuleVector null_section;
-		RuleVector wf_rules;
+	RuleVector rule_by_number;
+	RuleVector before_sections;
+	RuleVector rules;
+	RuleVector after_sections;
+	RuleVector null_section;
+	RuleVector wf_rules;
 
-		Grammar();
-		~Grammar();
+	Grammar();
+	~Grammar();
 
-		void addSet(Set *& to);
-		Set *getSet(uint32_t which) const;
-		Set *allocateSet();
-		void destroySet(Set *set);
-		void addSetToList(Set *s);
-		void allocateDummySet();
-		uint32_t removeNumericTags(uint32_t s);
+	void addSet(Set *& to);
+	Set *getSet(uint32_t which) const;
+	Set *allocateSet();
+	void destroySet(Set *set);
+	void addSetToList(Set *s);
+	void allocateDummySet();
+	uint32_t removeNumericTags(uint32_t s);
 
-		void addAnchor(const UChar *to, uint32_t at, bool primary = false);
+	void addAnchor(const UChar *to, uint32_t at, bool primary = false);
 
-		Tag *allocateTag();
-		Tag *allocateTag(const UChar *tag);
-		Tag *addTag(Tag *tag);
-		void destroyTag(Tag *tag);
-		void addTagToSet(Tag *rtag, Set *set);
+	Tag *allocateTag();
+	Tag *allocateTag(const UChar *tag);
+	Tag *addTag(Tag *tag);
+	void destroyTag(Tag *tag);
+	void addTagToSet(Tag *rtag, Set *set);
 
-		Rule *allocateRule();
-		void addRule(Rule *rule);
-		void destroyRule(Rule *rule);
+	Rule *allocateRule();
+	void addRule(Rule *rule);
+	void destroyRule(Rule *rule);
 
-		ContextualTest *allocateContextualTest();
-		ContextualTest *addContextualTest(ContextualTest *t);
-		void addTemplate(ContextualTest *test, const UChar *name);
+	ContextualTest *allocateContextualTest();
+	ContextualTest *addContextualTest(ContextualTest *t);
+	void addTemplate(ContextualTest *test, const UChar *name);
 
-		void resetStatistics();
-		void reindex(bool unused_sets = false, bool used_tags = false);
-		void renameAllRules();
+	void resetStatistics();
+	void reindex(bool unused_sets = false, bool used_tags = false);
+	void renameAllRules();
 
-		void indexSetToRule(uint32_t, Set*);
-		void indexTagToRule(uint32_t, uint32_t);
-		void indexSets(uint32_t, Set*);
-		void indexTagToSet(uint32_t, uint32_t);
-		void setAdjustSets(Set*);
-		void contextAdjustTarget(ContextualTest*);
-	};
+	void indexSetToRule(uint32_t, Set *);
+	void indexTagToRule(uint32_t, uint32_t);
+	void indexSets(uint32_t, Set *);
+	void indexTagToSet(uint32_t, uint32_t);
+	void setAdjustSets(Set *);
+	void contextAdjustTarget(ContextualTest *);
+};
 
-	inline void trie_unserialize(trie_t& trie, FILE *input, Grammar& grammar, uint32_t num_tags) {
-		for (uint32_t i = 0; i < num_tags; ++i) {
-			uint32_t u32tmp = 0;
-			fread_throw(&u32tmp, sizeof(uint32_t), 1, input);
-			u32tmp = (uint32_t)ntohl(u32tmp);
-			trie_node_t& node = trie[grammar.single_tags_list[u32tmp]];
+inline void trie_unserialize(trie_t& trie, FILE *input, Grammar& grammar, uint32_t num_tags) {
+	for (uint32_t i = 0; i < num_tags; ++i) {
+		uint32_t u32tmp = 0;
+		fread_throw(&u32tmp, sizeof(uint32_t), 1, input);
+		u32tmp = (uint32_t)ntohl(u32tmp);
+		trie_node_t& node = trie[grammar.single_tags_list[u32tmp]];
 
-			uint8_t u8tmp = 0;
-			fread_throw(&u8tmp, sizeof(uint8_t), 1, input);
-			node.terminal = (u8tmp != 0);
+		uint8_t u8tmp = 0;
+		fread_throw(&u8tmp, sizeof(uint8_t), 1, input);
+		node.terminal = (u8tmp != 0);
 
-			fread_throw(&u32tmp, sizeof(uint32_t), 1, input);
-			u32tmp = (uint32_t)ntohl(u32tmp);
-			if (u32tmp) {
-				if (!node.trie) {
-					node.trie = new trie_t;
-				}
-				trie_unserialize(*node.trie, input, grammar, u32tmp);
+		fread_throw(&u32tmp, sizeof(uint32_t), 1, input);
+		u32tmp = (uint32_t)ntohl(u32tmp);
+		if (u32tmp) {
+			if (!node.trie) {
+				node.trie = new trie_t;
 			}
+			trie_unserialize(*node.trie, input, grammar, u32tmp);
 		}
 	}
+}
 }
 
 #endif

@@ -89,7 +89,7 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 	}
 
 	// Keep track of which sets that the varstring tags used; we can't just assign them as sets are not loaded yet
-	typedef std::map<uint32_t,uint32Vector> tag_varsets_t;
+	typedef std::map<uint32_t, uint32Vector> tag_varsets_t;
 	tag_varsets_t tag_varsets;
 
 	u32tmp = 0;
@@ -99,7 +99,7 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 	}
 	uint32_t num_single_tags = u32tmp;
 	grammar->single_tags_list.resize(num_single_tags);
-	for (uint32_t i=0 ; i<num_single_tags ; i++) {
+	for (uint32_t i = 0; i < num_single_tags; i++) {
 		Tag *t = grammar->allocateTag();
 		t->type |= T_GRAMMAR;
 
@@ -147,7 +147,7 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 			if (u32tmp) {
 				ucnv_reset(conv);
 				fread_throw(&cbuffers[0][0], 1, u32tmp, input);
-				i32tmp = ucnv_toUChars(conv, &gbuffers[0][0], CG3_BUFFER_SIZE-1, &cbuffers[0][0], u32tmp, &err);
+				i32tmp = ucnv_toUChars(conv, &gbuffers[0][0], CG3_BUFFER_SIZE - 1, &cbuffers[0][0], u32tmp, &err);
 				t->tag = &gbuffers[0][0];
 			}
 		}
@@ -158,7 +158,7 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 			if (u32tmp) {
 				ucnv_reset(conv);
 				fread_throw(&cbuffers[0][0], 1, u32tmp, input);
-				i32tmp = ucnv_toUChars(conv, &gbuffers[0][0], CG3_BUFFER_SIZE-1, &cbuffers[0][0], u32tmp, &err);
+				i32tmp = ucnv_toUChars(conv, &gbuffers[0][0], CG3_BUFFER_SIZE - 1, &cbuffers[0][0], u32tmp, &err);
 
 				UParseError pe;
 				UErrorCode status = U_ZERO_ERROR;
@@ -182,7 +182,7 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 			t->allocateVsSets();
 			t->vs_sets->reserve(num);
 			tag_varsets[t->number].reserve(num);
-			for (size_t i=0 ; i<num ; ++i) {
+			for (size_t i = 0; i < num; ++i) {
 				fread_throw(&u32tmp, sizeof(uint32_t), 1, input);
 				u32tmp = (uint32_t)ntohl(u32tmp);
 				tag_varsets[t->number].push_back(u32tmp);
@@ -193,13 +193,13 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 			uint32_t num = (uint32_t)ntohl(u32tmp);
 			t->allocateVsNames();
 			t->vs_names->reserve(num);
-			for (size_t i=0 ; i<num ; ++i) {
+			for (size_t i = 0; i < num; ++i) {
 				fread_throw(&u32tmp, sizeof(uint32_t), 1, input);
 				u32tmp = (uint32_t)ntohl(u32tmp);
 				if (u32tmp) {
 					ucnv_reset(conv);
 					fread_throw(&cbuffers[0][0], 1, u32tmp, input);
-					i32tmp = ucnv_toUChars(conv, &gbuffers[0][0], CG3_BUFFER_SIZE-1, &cbuffers[0][0], u32tmp, &err);
+					i32tmp = ucnv_toUChars(conv, &gbuffers[0][0], CG3_BUFFER_SIZE - 1, &cbuffers[0][0], u32tmp, &err);
 					t->vs_names->push_back(&gbuffers[0][0]);
 				}
 			}
@@ -218,7 +218,7 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 		u32tmp = (uint32_t)ntohl(u32tmp);
 	}
 	uint32_t num_remaps = u32tmp;
-	for (uint32_t i = 0; i<num_remaps; ++i) {
+	for (uint32_t i = 0; i < num_remaps; ++i) {
 		fread_throw(&u32tmp, sizeof(uint32_t), 1, input);
 		u32tmp = (uint32_t)ntohl(u32tmp);
 		grammar->reopen_mappings.insert(u32tmp);
@@ -230,7 +230,7 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 		u32tmp = (uint32_t)ntohl(u32tmp);
 	}
 	uint32_t num_pref_targets = u32tmp;
-	for (uint32_t i=0 ; i<num_pref_targets ; i++) {
+	for (uint32_t i = 0; i < num_pref_targets; i++) {
 		fread_throw(&u32tmp, sizeof(uint32_t), 1, input);
 		u32tmp = (uint32_t)ntohl(u32tmp);
 		grammar->preferred_targets.push_back(u32tmp);
@@ -242,7 +242,7 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 		u32tmp = (uint32_t)ntohl(u32tmp);
 	}
 	uint32_t num_par_pairs = u32tmp;
-	for (uint32_t i=0 ; i<num_par_pairs ; i++) {
+	for (uint32_t i = 0; i < num_par_pairs; i++) {
 		fread_throw(&u32tmp, sizeof(uint32_t), 1, input);
 		uint32_t left = (uint32_t)ntohl(u32tmp);
 		fread_throw(&u32tmp, sizeof(uint32_t), 1, input);
@@ -257,7 +257,7 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 		u32tmp = (uint32_t)ntohl(u32tmp);
 	}
 	uint32_t num_par_anchors = u32tmp;
-	for (uint32_t i=0 ; i<num_par_anchors ; i++) {
+	for (uint32_t i = 0; i < num_par_anchors; i++) {
 		fread_throw(&u32tmp, sizeof(uint32_t), 1, input);
 		uint32_t left = (uint32_t)ntohl(u32tmp);
 		fread_throw(&u32tmp, sizeof(uint32_t), 1, input);
@@ -272,7 +272,7 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 	}
 	uint32_t num_sets = u32tmp;
 	grammar->sets_list.resize(num_sets);
-	for (uint32_t i=0 ; i<num_sets ; i++) {
+	for (uint32_t i = 0; i < num_sets; i++) {
 		Set *s = grammar->allocateSet();
 
 		uint32_t fields = 0;
@@ -305,7 +305,7 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 			fread_throw(&u32tmp, sizeof(uint32_t), 1, input);
 			u32tmp = (uint32_t)ntohl(u32tmp);
 			uint32_t num_set_ops = u32tmp;
-			for (uint32_t j=0 ; j<num_set_ops ; j++) {
+			for (uint32_t j = 0; j < num_set_ops; j++) {
 				fread_throw(&u32tmp, sizeof(uint32_t), 1, input);
 				u32tmp = (uint32_t)ntohl(u32tmp);
 				s->set_ops.push_back(u32tmp);
@@ -315,7 +315,7 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 			fread_throw(&u32tmp, sizeof(uint32_t), 1, input);
 			u32tmp = (uint32_t)ntohl(u32tmp);
 			uint32_t num_sets = u32tmp;
-			for (uint32_t j=0 ; j<num_sets ; j++) {
+			for (uint32_t j = 0; j < num_sets; j++) {
 				fread_throw(&u32tmp, sizeof(uint32_t), 1, input);
 				u32tmp = (uint32_t)ntohl(u32tmp);
 				s->sets.push_back(u32tmp);
@@ -327,7 +327,7 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 			if (u32tmp) {
 				ucnv_reset(conv);
 				fread_throw(&cbuffers[0][0], 1, u32tmp, input);
-				i32tmp = ucnv_toUChars(conv, &gbuffers[0][0], CG3_BUFFER_SIZE-1, &cbuffers[0][0], u32tmp, &err);
+				i32tmp = ucnv_toUChars(conv, &gbuffers[0][0], CG3_BUFFER_SIZE - 1, &cbuffers[0][0], u32tmp, &err);
 				s->setName(&gbuffers[0][0]);
 			}
 		}
@@ -373,7 +373,7 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 	}
 	uint32_t num_rules = u32tmp;
 	grammar->rule_by_number.resize(num_rules);
-	for (uint32_t i=0 ; i<num_rules ; i++) {
+	for (uint32_t i = 0; i < num_rules; i++) {
 		Rule *r = grammar->allocateRule();
 
 		uint32_t fields = 0;
@@ -402,7 +402,7 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 			if (u32tmp) {
 				ucnv_reset(conv);
 				fread_throw(&cbuffers[0][0], 1, u32tmp, input);
-				i32tmp = ucnv_toUChars(conv, &gbuffers[0][0], CG3_BUFFER_SIZE-1, &cbuffers[0][0], u32tmp, &err);
+				i32tmp = ucnv_toUChars(conv, &gbuffers[0][0], CG3_BUFFER_SIZE - 1, &cbuffers[0][0], u32tmp, &err);
 				r->setName(&gbuffers[0][0]);
 			}
 		}
@@ -463,7 +463,7 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 		fread_throw(&u32tmp, sizeof(uint32_t), 1, input);
 		u32tmp = (uint32_t)ntohl(u32tmp);
 		uint32_t num_dep_tests = u32tmp;
-		for (uint32_t j=0 ; j<num_dep_tests ; j++) {
+		for (uint32_t j = 0; j < num_dep_tests; j++) {
 			fread_throw(&u32tmp, sizeof(uint32_t), 1, input);
 			u32tmp = (uint32_t)ntohl(u32tmp);
 			ContextualTest *t = grammar->contexts[u32tmp];
@@ -473,7 +473,7 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 		fread_throw(&u32tmp, sizeof(uint32_t), 1, input);
 		u32tmp = (uint32_t)ntohl(u32tmp);
 		uint32_t num_tests = u32tmp;
-		for (uint32_t j=0 ; j<num_tests ; j++) {
+		for (uint32_t j = 0; j < num_tests; j++) {
 			fread_throw(&u32tmp, sizeof(uint32_t), 1, input);
 			u32tmp = (uint32_t)ntohl(u32tmp);
 			ContextualTest *t = grammar->contexts[u32tmp];
@@ -549,7 +549,7 @@ ContextualTest *BinaryGrammar::readContextualTest(FILE *input) {
 	if (fields & (1 << 10)) {
 		fread_throw(&u32tmp, sizeof(uint32_t), 1, input);
 		uint32_t num_ors = (uint32_t)ntohl(u32tmp);
-		for (uint32_t i=0 ; i<num_ors ; ++i) {
+		for (uint32_t i = 0; i < num_ors; ++i) {
 			fread_throw(&u32tmp, sizeof(uint32_t), 1, input);
 			u32tmp = (uint32_t)ntohl(u32tmp);
 			ContextualTest *to = grammar->contexts[u32tmp];
@@ -564,5 +564,4 @@ ContextualTest *BinaryGrammar::readContextualTest(FILE *input) {
 
 	return t;
 }
-
 }

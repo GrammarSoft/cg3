@@ -37,8 +37,8 @@ using CG3::CG3Quit;
 void endProgram(char *name) {
 	using namespace std;
 	fprintf(stdout, "VISL CG-3 Disambiguator version %u.%u.%u.%u\n",
-		CG3_VERSION_MAJOR, CG3_VERSION_MINOR, CG3_VERSION_PATCH, CG3_REVISION);
-	cout << basename(name) <<": process a stream with a constraint grammar" << endl;
+	  CG3_VERSION_MAJOR, CG3_VERSION_MINOR, CG3_VERSION_PATCH, CG3_REVISION);
+	cout << basename(name) << ": process a stream with a constraint grammar" << endl;
 	cout << "USAGE: " << basename(name) << " [-t] [-s] [-d] [-r rule] grammar_file [input_file [output_file]]" << endl;
 	cout << "Options:" << endl;
 #if HAVE_GETOPT_LONG
@@ -86,7 +86,7 @@ int main(int argc, char *argv[]) {
 	int sections = 0;
 	int stream_format = 1;
 	bool null_flush = false;
-	char* single_rule = 0;
+	char *single_rule = 0;
 
 	UErrorCode status = U_ZERO_ERROR;
 	UFILE *ux_stdin = 0;
@@ -122,62 +122,60 @@ int main(int argc, char *argv[]) {
 			break;
 		}
 
-		switch(c) {
-
-			case 'd':
-				if (cmd == 0) {
-					cmd = c;
-				}
-				else {
-					endProgram(argv[0]);
-				}
-				break;
-
-			case 'f':
-				stream_format = atoi(optarg);
-				break;
-
-			case 't':
-				trace = true;
-				break;
-
-			case 'r':
-				{
-					// strdup() is Posix
-					size_t len = strlen(optarg);
-					single_rule = new char[len];
-					std::copy(optarg, optarg+len, single_rule);
-					break;
-				}
-			case 's':
-				sections = atoi(optarg);
-				break;
-
-			case 'n':
-				print_word_forms = false;
-				break;
-
-			case '1':
-				only_first = true;
-				break;
-
-			case 'w':
-				wordform_case = true;
-				break;
-
-			case 'v':
-				fprintf(stdout, "VISL CG-3 Disambiguator version %u.%u.%u.%u\n",
-					CG3_VERSION_MAJOR, CG3_VERSION_MINOR, CG3_VERSION_PATCH, CG3_REVISION);
-
-				exit(EXIT_SUCCESS);
-				break;
-			case 'z':
-				null_flush = true;
-				break;
-			case 'h':
-			default:
+		switch (c) {
+		case 'd':
+			if (cmd == 0) {
+				cmd = c;
+			}
+			else {
 				endProgram(argv[0]);
-				break;
+			}
+			break;
+
+		case 'f':
+			stream_format = atoi(optarg);
+			break;
+
+		case 't':
+			trace = true;
+			break;
+
+		case 'r': {
+			// strdup() is Posix
+			size_t len = strlen(optarg);
+			single_rule = new char[len];
+			std::copy(optarg, optarg + len, single_rule);
+			break;
+		}
+		case 's':
+			sections = atoi(optarg);
+			break;
+
+		case 'n':
+			print_word_forms = false;
+			break;
+
+		case '1':
+			only_first = true;
+			break;
+
+		case 'w':
+			wordform_case = true;
+			break;
+
+		case 'v':
+			fprintf(stdout, "VISL CG-3 Disambiguator version %u.%u.%u.%u\n",
+			  CG3_VERSION_MAJOR, CG3_VERSION_MINOR, CG3_VERSION_PATCH, CG3_REVISION);
+
+			exit(EXIT_SUCCESS);
+			break;
+		case 'z':
+			null_flush = true;
+			break;
+		case 'h':
+		default:
+			endProgram(argv[0]);
+			break;
 		}
 	}
 
@@ -228,14 +226,14 @@ int main(int argc, char *argv[]) {
 	}
 	if (optind <= (argc - 2)) {
 		u_fclose(ux_stdin);
-		ux_stdin = u_fopen(argv[optind+1], "rb", locale_default, codepage_default);
+		ux_stdin = u_fopen(argv[optind + 1], "rb", locale_default, codepage_default);
 		if (ux_stdin == NULL) {
 			endProgram(argv[0]);
 		}
 	}
 	if (optind <= (argc - 3)) {
 		u_fclose(ux_stdout);
-		ux_stdout = u_fopen(argv[optind+2], "wb", locale_default, codepage_default);
+		ux_stdout = u_fopen(argv[optind + 2], "wb", locale_default, codepage_default);
 		if (ux_stdout == NULL) {
 			endProgram(argv[0]);
 		}
@@ -267,7 +265,7 @@ int main(int argc, char *argv[]) {
 		applicator = new CG3::GrammarApplicator(ux_stderr);
 	}
 	else {
-		CG3::ApertiumApplicator* apertiumApplicator= new CG3::ApertiumApplicator(ux_stderr);
+		CG3::ApertiumApplicator *apertiumApplicator = new CG3::ApertiumApplicator(ux_stderr);
 		apertiumApplicator->setNullFlush(null_flush);
 		apertiumApplicator->wordform_case = wordform_case;
 		apertiumApplicator->print_word_forms = print_word_forms;
@@ -276,7 +274,7 @@ int main(int argc, char *argv[]) {
 	}
 
 	applicator->setGrammar(&grammar);
-	for (int32_t i=1 ; i<=sections ; i++) {
+	for (int32_t i = 1; i <= sections; i++) {
 		applicator->sections.push_back(i);
 	}
 
@@ -286,7 +284,7 @@ int main(int argc, char *argv[]) {
 	// This is if we want to run a single rule  (-r option)
 	if (single_rule) {
 		size_t sn = strlen(single_rule);
-		UChar *buf = new UChar[sn*3];
+		UChar *buf = new UChar[sn * 3];
 		buf[0] = 0;
 		buf[sn] = 0;
 		u_charsToUChars(single_rule, buf, sn);
@@ -301,13 +299,12 @@ int main(int argc, char *argv[]) {
 	delete[] single_rule;
 
 	try {
-		switch(cmd) {
-
-			case 'd':
-			default:
-				CG3::istream instream(ux_stdin, !null_flush);
-				applicator->runGrammarOnText(instream, ux_stdout);
-				break;
+		switch (cmd) {
+		case 'd':
+		default:
+			CG3::istream instream(ux_stdin, !null_flush);
+			applicator->runGrammarOnText(instream, ux_stdout);
+			break;
 		}
 
 	}

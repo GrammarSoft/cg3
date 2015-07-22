@@ -24,33 +24,33 @@
 #define c6d28b7452ec699b_GRAMMARWRITER_H
 
 #include "stdafx.hpp"
- 
+
 namespace CG3 {
-	class Grammar;
-	class Tag;
-	class Set;
-	class Rule;
-	class ContextualTest;
+class Grammar;
+class Tag;
+class Set;
+class Rule;
+class ContextualTest;
 
-	class GrammarWriter {
-	public:
-		bool statistics;
-	
-		GrammarWriter(Grammar& res, UFILE *ux_err);
-		~GrammarWriter();
+class GrammarWriter {
+public:
+	bool statistics;
 
-		int writeGrammar(UFILE *output);
+	GrammarWriter(Grammar& res, UFILE *ux_err);
+	~GrammarWriter();
 
-	private:
-		UFILE *ux_stderr;
-		uint32FlatHashSet used_sets;
-		const Grammar *grammar;
+	int writeGrammar(UFILE *output);
 
-		void printTag(UFILE *out, const Tag& tag);
-		void printSet(UFILE *output, const Set& curset);
-		void printRule(UFILE *to, const Rule& rule);
-		void printContextualTest(UFILE *to, const ContextualTest& test);
-	};
+private:
+	UFILE *ux_stderr;
+	uint32FlatHashSet used_sets;
+	const Grammar *grammar;
+
+	void printTag(UFILE *out, const Tag& tag);
+	void printSet(UFILE *output, const Set& curset);
+	void printRule(UFILE *to, const Rule& rule);
+	void printContextualTest(UFILE *to, const ContextualTest& test);
+};
 }
 
 #endif

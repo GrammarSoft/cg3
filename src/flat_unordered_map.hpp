@@ -51,15 +51,15 @@ public:
 	public:
 		typedef value_type reference;
 
-		const_iterator() :
-			fus(0),
-			i(0)
+		const_iterator()
+		  : fus(0)
+		  , i(0)
 		{
 		}
 
-		const_iterator(const flat_unordered_map& fus, size_t i = 0) :
-			fus(&fus),
-			i(i)
+		const_iterator(const flat_unordered_map& fus, size_t i = 0)
+		  : fus(&fus)
+		  , i(i)
 		{
 		}
 
@@ -109,7 +109,7 @@ public:
 			return fus->elements[i];
 		}
 
-		const value_type_real* operator->() const {
+		const value_type_real *operator->() const {
 			return &fus->elements[i];
 		}
 	};
@@ -120,15 +120,15 @@ public:
 		DEFAULT_CAP = static_cast<size_type>(16u),
 	};
 
-	flat_unordered_map() :
-		size_(0)
+	flat_unordered_map()
+	  : size_(0)
 	{
 	}
 
 	size_t insert(const value_type& t) {
 		assert(t.first != res_empty && t.first != res_del && "Key cannot be res_empty or res_del!");
 
-		if ((size_ + 1)*3/2 >= capacity() / 2) {
+		if ((size_ + 1) * 3 / 2 >= capacity() / 2) {
 			reserve(std::max(static_cast<size_type>(DEFAULT_CAP), capacity() * 2));
 		}
 		size_t max = capacity() - 1;
@@ -147,14 +147,14 @@ public:
 	void insert(It b, It e) {
 		size_t d = std::distance(b, e);
 		size_t c = capacity();
-		while ((size_ + d)*3/2 >= c / 2) {
-			c = std::max(static_cast<size_type>(DEFAULT_CAP), c*2);
+		while ((size_ + d) * 3 / 2 >= c / 2) {
+			c = std::max(static_cast<size_type>(DEFAULT_CAP), c * 2);
 		}
 		if (c != capacity()) {
 			reserve(c);
 		}
 
-		for (; b != e ; ++b) {
+		for (; b != e; ++b) {
 			insert(*b);
 		}
 	}
@@ -318,8 +318,7 @@ private:
 	friend class const_iterator;
 };
 
-typedef flat_unordered_map<uint32_t,uint32_t> uint32FlatHashMap;
-
+typedef flat_unordered_map<uint32_t, uint32_t> uint32FlatHashMap;
 }
 
 #endif

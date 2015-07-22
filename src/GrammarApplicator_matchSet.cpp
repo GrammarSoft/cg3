@@ -96,7 +96,7 @@ uint32_t GrammarApplicator::doesTagMatchRegexp(uint32_t test, const Tag& tag, bo
 				for (int i = 1; i <= gc; ++i) {
 					tmp[0] = 0;
 					int32_t len = uregex_group(tag.regexp, i, tmp, 1024, &status);
-					regexgrps.second->resize(std::max(static_cast<size_t>(regexgrps.first)+1, regexgrps.second->size()));
+					regexgrps.second->resize(std::max(static_cast<size_t>(regexgrps.first) + 1, regexgrps.second->size()));
 					UnicodeString& ucstr = (*regexgrps.second)[regexgrps.first];
 					ucstr.remove();
 					ucstr.append(tmp, len);
@@ -242,7 +242,7 @@ uint32_t GrammarApplicator::doesTagMatchReading(const Reading& reading, const Ta
 		else {
 			foreach (mter, reading.tags_textual) {
 				const Tag& itag = *(single_tags.find(*mter)->second);
-				if (!(itag.type & (T_BASEFORM|T_WORDFORM))) {
+				if (!(itag.type & (T_BASEFORM | T_WORDFORM))) {
 					match = itag.hash;
 					if (unif_mode) {
 						if (unif_last_textual) {
@@ -567,7 +567,7 @@ bool GrammarApplicator::doesSetMatchReading(const Reading& reading, const uint32
 	}
 	// If there are no sub-sets, it must be a LIST set.
 	else if (theset.sets.empty()) {
-		retval = doesSetMatchReading_tags(reading, theset, ((theset.type & ST_TAG_UNIFY)!=0)|unif_mode);
+		retval = doesSetMatchReading_tags(reading, theset, ((theset.type & ST_TAG_UNIFY) != 0) | unif_mode);
 	}
 	// &&unified sets
 	else if (theset.type & ST_SET_UNIFY) {
@@ -576,9 +576,9 @@ bool GrammarApplicator::doesSetMatchReading(const Reading& reading, const uint32
 		if (unif_sets_firstrun) {
 			const Set& uset = *grammar->sets_list[theset.sets[0]];
 			const size_t size = uset.sets.size();
-			for (size_t i=0;i<size;++i) {
+			for (size_t i = 0; i < size; ++i) {
 				const Set& tset = *grammar->sets_list[uset.sets[i]];
-				if (doesSetMatchReading(reading, tset.number, bypass_index, ((theset.type & ST_TAG_UNIFY)!=0)|unif_mode)) {
+				if (doesSetMatchReading(reading, tset.number, bypass_index, ((theset.type & ST_TAG_UNIFY) != 0) | unif_mode)) {
 					unif_sets->insert(tset.number);
 				}
 			}
@@ -601,41 +601,41 @@ bool GrammarApplicator::doesSetMatchReading(const Reading& reading, const uint32
 		// If all else fails, it must be a SET set.
 		// Loop through the sub-sets and apply the set operators
 		const size_t size = theset.sets.size();
-		for (size_t i=0;i<size;++i) {
-			bool match = doesSetMatchReading(reading, theset.sets[i], bypass_index, ((theset.type & ST_TAG_UNIFY)!=0)|unif_mode);
+		for (size_t i = 0; i < size; ++i) {
+			bool match = doesSetMatchReading(reading, theset.sets[i], bypass_index, ((theset.type & ST_TAG_UNIFY) != 0) | unif_mode);
 			bool failfast = false;
 			// Operator OR does not modify match, so simply skip it.
 			// The result of doing so means that the other operators gain precedence.
-			while (i < size-1 && theset.set_ops[i] != S_OR) {
+			while (i < size - 1 && theset.set_ops[i] != S_OR) {
 				switch (theset.set_ops[i]) {
-					case S_PLUS:
-						if (match) {
-							match = doesSetMatchReading(reading, theset.sets[i+1], bypass_index, ((theset.type & ST_TAG_UNIFY)!=0)|unif_mode);
-						}
-						break;
-					// Failfast makes a difference in A OR B ^ C OR D, where - does not.
-					case S_FAILFAST:
-						if (doesSetMatchReading(reading, theset.sets[i+1], bypass_index, ((theset.type & ST_TAG_UNIFY)!=0)|unif_mode)) {
+				case S_PLUS:
+					if (match) {
+						match = doesSetMatchReading(reading, theset.sets[i + 1], bypass_index, ((theset.type & ST_TAG_UNIFY) != 0) | unif_mode);
+					}
+					break;
+				// Failfast makes a difference in A OR B ^ C OR D, where - does not.
+				case S_FAILFAST:
+					if (doesSetMatchReading(reading, theset.sets[i + 1], bypass_index, ((theset.type & ST_TAG_UNIFY) != 0) | unif_mode)) {
+						match = false;
+						failfast = true;
+					}
+					break;
+				case S_MINUS:
+					if (match) {
+						if (doesSetMatchReading(reading, theset.sets[i + 1], bypass_index, ((theset.type & ST_TAG_UNIFY) != 0) | unif_mode)) {
 							match = false;
-							failfast = true;
 						}
-						break;
-					case S_MINUS:
-						if (match) {
-							if (doesSetMatchReading(reading, theset.sets[i+1], bypass_index, ((theset.type & ST_TAG_UNIFY)!=0)|unif_mode)) {
-								match = false;
-							}
+					}
+					break;
+				case S_NOT:
+					if (!match) {
+						if (!doesSetMatchReading(reading, theset.sets[i + 1], bypass_index, ((theset.type & ST_TAG_UNIFY) != 0) | unif_mode)) {
+							match = true;
 						}
-						break;
-					case S_NOT:
-						if (!match) {
-							if (!doesSetMatchReading(reading, theset.sets[i+1], bypass_index, ((theset.type & ST_TAG_UNIFY)!=0)|unif_mode)) {
-								match = true;
-							}
-						}
-						break;
-					default:
-						break;
+					}
+					break;
+				default:
+					break;
 				}
 				++i;
 			}
@@ -653,7 +653,7 @@ bool GrammarApplicator::doesSetMatchReading(const Reading& reading, const uint32
 		// Propagate unified tag to other sets of this set, if applicable
 		if (unif_mode || (theset.type & ST_TAG_UNIFY)) {
 			const void *tag = 0;
-			for (size_t i=0 ; i<size ; ++i) {
+			for (size_t i = 0; i < size; ++i) {
 				BOOST_AUTO(it, unif_tags->find(theset.sets[i]));
 				if (it != unif_tags->end()) {
 					tag = it->second;
@@ -661,7 +661,7 @@ bool GrammarApplicator::doesSetMatchReading(const Reading& reading, const uint32
 				}
 			}
 			if (tag) {
-				for (size_t i=0 ; i<size ; ++i) {
+				for (size_t i = 0; i < size; ++i) {
 					(*unif_tags)[theset.sets[i]] = tag;
 				}
 			}
@@ -861,5 +861,4 @@ bool GrammarApplicator::doesSetMatchCohortCareful(Cohort& cohort, const uint32_t
 
 	return retval;
 }
-
 }

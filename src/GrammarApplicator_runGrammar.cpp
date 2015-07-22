@@ -94,7 +94,7 @@ void GrammarApplicator::runGrammarOnText(istream& input, UFILE *output) {
 
 	index();
 
-	uint32_t resetAfter = ((num_windows+4)*2+1);
+	uint32_t resetAfter = ((num_windows + 4) * 2 + 1);
 	uint32_t lines = 0;
 
 	SingleWindow *cSWindow = 0;
@@ -113,16 +113,16 @@ void GrammarApplicator::runGrammarOnText(istream& input, UFILE *output) {
 	uint32FlatHashSet variables_rem;
 	uint32SortedVector variables_output;
 
-	std::vector<std::pair<size_t,Reading*> > indents;
+	std::vector<std::pair<size_t, Reading*> > indents;
 	all_mappings_t all_mappings;
 
 	while (!input.eof()) {
 		++lines;
 		size_t offset = 0, packoff = 0;
 		// Read as much of the next line as will fit in the current buffer
-		while (input.gets(&line[offset], line.size()-offset-1)) {
+		while (input.gets(&line[offset], line.size() - offset - 1)) {
 			// Copy the segment just read to cleaned
-			for (size_t i=offset ; i<line.size() ; ++i) {
+			for (size_t i = offset; i < line.size(); ++i) {
 				// Only copy one space character, regardless of how many are in input
 				if (ISSPACE(line[i]) && !ISNL(line[i])) {
 					cleaned[packoff++] = ' ';
@@ -132,25 +132,25 @@ void GrammarApplicator::runGrammarOnText(istream& input, UFILE *output) {
 				}
 				// Break if there is a newline
 				if (ISNL(line[i])) {
-					cleaned[packoff+1] = cleaned[packoff] = 0;
+					cleaned[packoff + 1] = cleaned[packoff] = 0;
 					goto gotaline; // Oh how I wish C++ had break 2;
 				}
 				if (line[i] == 0) {
-					cleaned[packoff+1] = cleaned[packoff] = 0;
+					cleaned[packoff + 1] = cleaned[packoff] = 0;
 					break;
 				}
 				cleaned[packoff++] = line[i];
 			}
 			// If we reached this, buffer wasn't big enough. Double the size of the buffer and try again.
-			offset = line.size()-2;
-			line.resize(line.size()*2, 0);
-			cleaned.resize(line.size()+1, 0);
+			offset = line.size() - 2;
+			line.resize(line.size() * 2, 0);
+			cleaned.resize(line.size() + 1, 0);
 		}
 
-gotaline:
+	gotaline:
 		// Trim trailing whitespace
-		while (cleaned[0] && ISSPACE(cleaned[packoff-1])) {
-			cleaned[packoff-1] = 0;
+		while (cleaned[0] && ISSPACE(cleaned[packoff - 1])) {
+			cleaned[packoff - 1] = 0;
 			--packoff;
 		}
 		if (!ignoreinput && cleaned[0] == '"' && cleaned[1] == '<') {
@@ -385,7 +385,7 @@ gotaline:
 				}
 				cCohort->readings.back()->rehash();
 			}
-			indents.push_back(std::make_pair(indent,cReading));
+			indents.push_back(std::make_pair(indent, cReading));
 			numReadings++;
 
 			// Check whether the cohort still belongs to the window, as per --dep-delimit
@@ -416,7 +416,7 @@ gotaline:
 					u_fflush(ux_stderr);
 				}
 			}
-istext:
+		istext:
 			if (cleaned[0]) {
 				if (u_strcmp(&cleaned[0], stringbits[S_CMD_FLUSH].getTerminatedBuffer()) == 0) {
 					u_fprintf(ux_stderr, "Info: FLUSH encountered on line %u. Flushing...\n", numLines);
@@ -480,7 +480,7 @@ istext:
 				}
 				else if (u_strncmp(&cleaned[0], stringbits[S_CMD_SETVAR].getTerminatedBuffer(), stringbits[S_CMD_SETVAR].length()) == 0) {
 					//u_fprintf(ux_stderr, "Info: SETVAR encountered on line %u.\n", numLines);
-					cleaned[packoff-1] = 0;
+					cleaned[packoff - 1] = 0;
 					line[0] = 0;
 
 					UChar *s = &cleaned[stringbits[S_CMD_SETVAR].length()];
@@ -506,14 +506,14 @@ istext:
 								}
 								if (c) {
 									c[0] = 0;
-									s = c+1;
+									s = c + 1;
 								}
 								if (!d[1]) {
 									u_fprintf(ux_stderr, "Warning: SETVAR on line %u had no value after the =! Defaulting to value *.\n", numLines);
 									b = grammar->tag_any;
 								}
 								else {
-									b = addTag(d+1)->hash;
+									b = addTag(d + 1)->hash;
 								}
 								if (!c) {
 									d = 0;
@@ -532,7 +532,7 @@ istext:
 								else {
 									a = addTag(s)->hash;
 								}
-								s = c+1;
+								s = c + 1;
 								variables_set[a] = grammar->tag_any;
 								variables_rem.erase(a);
 								variables_output.insert(a);
@@ -553,7 +553,7 @@ istext:
 				}
 				else if (u_strncmp(&cleaned[0], stringbits[S_CMD_REMVAR].getTerminatedBuffer(), stringbits[S_CMD_REMVAR].length()) == 0) {
 					//u_fprintf(ux_stderr, "Info: REMVAR encountered on line %u.\n", numLines);
-					cleaned[packoff-1] = 0;
+					cleaned[packoff - 1] = 0;
 					line[0] = 0;
 
 					UChar *s = &cleaned[stringbits[S_CMD_REMVAR].length()];
@@ -567,7 +567,7 @@ istext:
 							variables_rem.insert(a);
 							variables_output.insert(a);
 						}
-						s = c+1;
+						s = c + 1;
 						c = u_strchr(s, ',');
 					}
 					if (s && s[0]) {
@@ -577,7 +577,7 @@ istext:
 						variables_output.insert(a);
 					}
 				}
-				
+
 				if (line[0]) {
 					if (lCohort) {
 						lCohort->text += &line[0];
@@ -643,5 +643,4 @@ CGCMD_EXIT:
 		u_fflush(ux_stderr);
 	}
 }
-
 }

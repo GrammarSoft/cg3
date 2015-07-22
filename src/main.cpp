@@ -32,7 +32,7 @@ using namespace Options;
 using CG3::CG3Quit;
 void GAppSetOpts(CG3::GrammarApplicator& applicator, UConverter *conv);
 
-int main(int argc, char* argv[]) {
+int main(int argc, char *argv[]) {
 	UFILE *ux_stdin = 0;
 	UFILE *ux_stdout = 0;
 	UFILE *ux_stderr = 0;
@@ -78,13 +78,13 @@ int main(int argc, char* argv[]) {
 		fprintf(out, "Options:\n");
 
 		size_t longest = 0;
-		for (uint32_t i=0 ; i<NUM_OPTIONS ; i++) {
+		for (uint32_t i = 0; i < NUM_OPTIONS; i++) {
 			if (options[i].description) {
 				size_t len = strlen(options[i].longName);
 				longest = std::max(longest, len);
 			}
 		}
-		for (uint32_t i=0 ; i<NUM_OPTIONS ; i++) {
+		for (uint32_t i = 0; i < NUM_OPTIONS; i++) {
 			if (options[i].description) {
 				fprintf(out, " ");
 				if (options[i].shortName) {
@@ -138,8 +138,8 @@ int main(int argc, char* argv[]) {
 	ucnv_setDefaultName("UTF-8");
 	const char *codepage_default = ucnv_getDefaultName();
 	const char *codepage_grammar = codepage_default;
-	const char *codepage_input   = codepage_grammar;
-	const char *codepage_output  = codepage_grammar;
+	const char *codepage_input = codepage_grammar;
+	const char *codepage_output = codepage_grammar;
 
 	if (options[CODEPAGE_GRAMMAR].doesOccur) {
 		codepage_grammar = options[CODEPAGE_GRAMMAR].value;
@@ -256,7 +256,7 @@ int main(int argc, char* argv[]) {
 	parser->setCompatible(options[VISLCGCOMPAT].doesOccur != 0);
 
 	if (options[VERBOSE].doesOccur) {
-		std::cerr << "Initialization took " << (clock()-main_timer)/(double)CLOCKS_PER_SEC << " seconds." << std::endl;
+		std::cerr << "Initialization took " << (clock() - main_timer) / (double)CLOCKS_PER_SEC << " seconds." << std::endl;
 	}
 	main_timer = clock();
 
@@ -268,7 +268,7 @@ int main(int argc, char* argv[]) {
 	if (options[MAPPING_PREFIX].doesOccur) {
 		UConverter *conv = ucnv_open(codepage_cli, &status);
 		size_t sn = strlen(options[MAPPING_PREFIX].value);
-		CG3::UString buf(sn*3, 0);
+		CG3::UString buf(sn * 3, 0);
 		ucnv_toUChars(conv, &buf[0], buf.size(), options[MAPPING_PREFIX].value, sn, &status);
 		if (grammar.is_binary && grammar.mapping_prefix != buf[0]) {
 			std::cerr << "Error: Mapping prefix must match the one used for compiling the binary grammar!" << std::endl;
@@ -286,7 +286,7 @@ int main(int argc, char* argv[]) {
 	parser = 0;
 
 	if (options[VERBOSE].doesOccur) {
-		std::cerr << "Parsing grammar took " << (clock()-main_timer)/(double)CLOCKS_PER_SEC << " seconds." << std::endl;
+		std::cerr << "Parsing grammar took " << (clock() - main_timer) / (double)CLOCKS_PER_SEC << " seconds." << std::endl;
 	}
 	main_timer = clock();
 
@@ -343,7 +343,7 @@ int main(int argc, char* argv[]) {
 		applicator.runGrammarOnText(instream, ux_stdout);
 
 		if (options[VERBOSE].doesOccur) {
-			std::cerr << "Applying grammar on input took " << (clock()-main_timer)/(double)CLOCKS_PER_SEC << " seconds." << std::endl;
+			std::cerr << "Applying grammar on input took " << (clock() - main_timer) / (double)CLOCKS_PER_SEC << " seconds." << std::endl;
 		}
 		main_timer = clock();
 	}
@@ -357,7 +357,7 @@ int main(int argc, char* argv[]) {
 		}
 		reverse_foreach (br, bad) {
 			CG3::Rule *r = grammar.rule_by_number[*br];
-			grammar.rule_by_number.erase(grammar.rule_by_number.begin()+*br);
+			grammar.rule_by_number.erase(grammar.rule_by_number.begin() + *br);
 			grammar.destroyRule(r);
 		}
 		std::cerr << "Optimizer removed " << bad.size() << " rules." << std::endl;
@@ -393,7 +393,7 @@ int main(int argc, char* argv[]) {
 			writer.writeGrammar(gout);
 
 			if (options[VERBOSE].doesOccur) {
-				std::cerr << "Writing textual grammar took " << (clock()-main_timer)/(double)CLOCKS_PER_SEC << " seconds." << std::endl;
+				std::cerr << "Writing textual grammar took " << (clock() - main_timer) / (double)CLOCKS_PER_SEC << " seconds." << std::endl;
 			}
 			main_timer = clock();
 		}
@@ -409,7 +409,7 @@ int main(int argc, char* argv[]) {
 			writer.writeBinaryGrammar(gout);
 
 			if (options[VERBOSE].doesOccur) {
-				std::cerr << "Writing binary grammar took " << (clock()-main_timer)/(double)CLOCKS_PER_SEC << " seconds." << std::endl;
+				std::cerr << "Writing binary grammar took " << (clock() - main_timer) / (double)CLOCKS_PER_SEC << " seconds." << std::endl;
 			}
 			main_timer = clock();
 		}
@@ -425,7 +425,7 @@ int main(int argc, char* argv[]) {
 	u_cleanup();
 
 	if (options[VERBOSE].doesOccur) {
-		std::cerr << "Cleanup took " << (clock()-main_timer)/(double)CLOCKS_PER_SEC << " seconds." << std::endl;
+		std::cerr << "Cleanup took " << (clock() - main_timer) / (double)CLOCKS_PER_SEC << " seconds." << std::endl;
 	}
 
 	return status;
@@ -507,9 +507,9 @@ void GAppSetOpts(CG3::GrammarApplicator& applicator, UConverter *conv) {
 		else {
 			UErrorCode status = U_ZERO_ERROR;
 			size_t sn = strlen(options[RULE].value);
-			UChar *buf = new UChar[sn*3];
+			UChar *buf = new UChar[sn * 3];
 			buf[0] = 0;
-			ucnv_toUChars(conv, buf, sn*3, options[RULE].value, sn, &status);
+			ucnv_toUChars(conv, buf, sn * 3, options[RULE].value, sn, &status);
 
 			foreach (riter, applicator.grammar->rule_by_number) {
 				const CG3::Rule *rule = *riter;

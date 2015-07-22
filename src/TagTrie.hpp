@@ -27,136 +27,137 @@
 #include "Tag.hpp"
 
 namespace CG3 {
-	struct trie_node_t;
-	typedef bc::flat_map<Tag*, trie_node_t, compare_Tag> trie_t;
+struct trie_node_t;
+typedef bc::flat_map<Tag *, trie_node_t, compare_Tag> trie_t;
 
-	struct trie_node_t {
-		bool terminal;
-		trie_t* trie;
+struct trie_node_t {
+	bool terminal;
+	trie_t *trie;
 
-		trie_node_t() :
-			terminal(false),
-			trie(0) {
-		}
+	trie_node_t()
+	  : terminal(false)
+	  , trie(0)
+	{
+	}
 
-		/*
+	/*
 		// Due to how flat_map works with copying elements around, let's not do cleanup the usual way
 		~trie_node_t() {
 			delete trie;
 		}
 		//*/
-	};
+};
 
-	inline bool trie_insert(trie_t& trie, const TagVector& tv, size_t w = 0) {
-		trie_node_t& node = trie[tv[w]];
-		if (node.terminal) {
-			return false;
+inline bool trie_insert(trie_t& trie, const TagVector& tv, size_t w = 0) {
+	trie_node_t& node = trie[tv[w]];
+	if (node.terminal) {
+		return false;
+	}
+	if (w < tv.size() - 1) {
+		if (!node.trie) {
+			node.trie = new trie_t;
+			//std::cerr << "new Trie" << std::endl;
 		}
-		if (w < tv.size() - 1) {
-			if (!node.trie) {
-				node.trie = new trie_t;
-				//std::cerr << "new Trie" << std::endl;
-			}
-			return trie_insert(*node.trie, tv, w + 1);
+		return trie_insert(*node.trie, tv, w + 1);
+	}
+	node.terminal = true;
+	if (node.trie) {
+		delete node.trie;
+		node.trie = 0;
+	}
+	return true;
+}
+
+inline trie_t *_trie_copy_helper(const trie_t& trie) {
+	trie_t *nt = new trie_t;
+	boost_foreach (const trie_t::value_type& p, trie) {
+		(*nt)[p.first].terminal = p.second.terminal;
+		if (p.second.trie) {
+			(*nt)[p.first].trie = _trie_copy_helper(*p.second.trie);
 		}
-		node.terminal = true;
-		if (node.trie) {
-			delete node.trie;
-			node.trie = 0;
+	}
+	return nt;
+}
+
+inline trie_t trie_copy(const trie_t& trie) {
+	trie_t nt;
+	boost_foreach (const trie_t::value_type& p, trie) {
+		nt[p.first].terminal = p.second.terminal;
+		if (p.second.trie) {
+			nt[p.first].trie = _trie_copy_helper(*p.second.trie);
 		}
+	}
+	return nt;
+}
+
+inline void trie_delete(trie_t& trie) {
+	boost_foreach (trie_t::value_type& p, trie) {
+		if (p.second.trie) {
+			trie_delete(*p.second.trie);
+			delete p.second.trie;
+			p.second.trie = 0;
+		}
+	}
+}
+
+inline bool trie_singular(const trie_t& trie) {
+	if (trie.size() != 1) {
+		return false;
+	}
+	const trie_node_t& node = trie.begin()->second;
+	if (node.terminal) {
 		return true;
 	}
-
-	inline trie_t *_trie_copy_helper(const trie_t& trie) {
-		trie_t *nt = new trie_t;
-		boost_foreach (const trie_t::value_type& p, trie) {
-			(*nt)[p.first].terminal = p.second.terminal;
-			if (p.second.trie) {
-				(*nt)[p.first].trie = _trie_copy_helper(*p.second.trie);
-			}
-		}
-		return nt;
+	if (node.trie) {
+		return trie_singular(*node.trie);
 	}
+	return false;
+}
 
-	inline trie_t trie_copy(const trie_t& trie) {
-		trie_t nt;
-		boost_foreach (const trie_t::value_type& p, trie) {
-			nt[p.first].terminal = p.second.terminal;
-			if (p.second.trie) {
-				nt[p.first].trie = _trie_copy_helper(*p.second.trie);
-			}
-		}
-		return nt;
-	}
-
-	inline void trie_delete(trie_t& trie) {
-		boost_foreach (trie_t::value_type& p, trie) {
-			if (p.second.trie) {
-				trie_delete(*p.second.trie);
-				delete p.second.trie;
-				p.second.trie = 0;
-			}
+inline uint32_t trie_rehash(const trie_t& trie) {
+	uint32_t retval = 0;
+	boost_foreach (const trie_t::value_type& kv, trie) {
+		retval = hash_value(kv.first->hash, retval);
+		if (kv.second.trie) {
+			retval = hash_value(trie_rehash(*kv.second.trie), retval);
 		}
 	}
+	return retval;
+}
 
-	inline bool trie_singular(const trie_t& trie) {
-		if (trie.size() != 1) {
-			return false;
+inline void trie_markused(trie_t& trie) {
+	boost_foreach (trie_t::value_type& kv, trie) {
+		kv.first->markUsed();
+		if (kv.second.trie) {
+			trie_markused(*kv.second.trie);
 		}
-		const trie_node_t& node = trie.begin()->second;
-		if (node.terminal) {
+	}
+}
+
+inline void trie_getTagList(const trie_t& trie, TagList& theTags) {
+	boost_foreach (const trie_t::value_type& kv, trie) {
+		theTags.push_back(kv.first);
+		if (kv.second.trie) {
+			trie_getTagList(*kv.second.trie, theTags);
+		}
+	}
+}
+
+inline bool trie_getTagList(const trie_t& trie, TagList& theTags, const void *node) {
+	boost_foreach (const trie_t::value_type& kv, trie) {
+		theTags.push_back(kv.first);
+		if (node == &kv) {
 			return true;
 		}
-		if (node.trie) {
-			return trie_singular(*node.trie);
+		if (kv.second.trie && trie_getTagList(*kv.second.trie, theTags, node)) {
+			return true;
 		}
-		return false;
+		theTags.pop_back();
 	}
+	return false;
+}
 
-	inline uint32_t trie_rehash(const trie_t& trie) {
-		uint32_t retval = 0;
-		boost_foreach (const trie_t::value_type& kv, trie) {
-			retval = hash_value(kv.first->hash, retval);
-			if (kv.second.trie) {
-				retval = hash_value(trie_rehash(*kv.second.trie), retval);
-			}
-		}
-		return retval;
-	}
-
-	inline void trie_markused(trie_t& trie) {
-		boost_foreach (trie_t::value_type& kv, trie) {
-			kv.first->markUsed();
-			if (kv.second.trie) {
-				trie_markused(*kv.second.trie);
-			}
-		}
-	}
-
-	inline void trie_getTagList(const trie_t& trie, TagList& theTags) {
-		boost_foreach (const trie_t::value_type& kv, trie) {
-			theTags.push_back(kv.first);
-			if (kv.second.trie) {
-				trie_getTagList(*kv.second.trie, theTags);
-			}
-		}
-	}
-
-	inline bool trie_getTagList(const trie_t& trie, TagList& theTags, const void *node) {
-		boost_foreach (const trie_t::value_type& kv, trie) {
-			theTags.push_back(kv.first);
-			if (node == &kv) {
-				return true;
-			}
-			if (kv.second.trie && trie_getTagList(*kv.second.trie, theTags, node)) {
-				return true;
-			}
-			theTags.pop_back();
-		}
-		return false;
-	}
-
-	/*
+/*
 	inline void trie_getTagList(const trie_t& trie, TagVector& theTags) {
 		boost_foreach (const trie_t::value_type& kv, trie) {
 			theTags.push_back(kv.first);
@@ -167,94 +168,94 @@ namespace CG3 {
 	}
 	//*/
 
-	inline TagVector trie_getTagList(const trie_t& trie) {
-		TagVector theTags;
-		boost_foreach (const trie_t::value_type& kv, trie) {
-			theTags.push_back(kv.first);
-			if (kv.second.trie) {
-				trie_getTagList(*kv.second.trie, theTags);
-			}
+inline TagVector trie_getTagList(const trie_t& trie) {
+	TagVector theTags;
+	boost_foreach (const trie_t::value_type& kv, trie) {
+		theTags.push_back(kv.first);
+		if (kv.second.trie) {
+			trie_getTagList(*kv.second.trie, theTags);
 		}
-		return theTags;
 	}
+	return theTags;
+}
 
-	inline void trie_getTags(const trie_t& trie, std::set<TagVector>& rv, TagVector& tv) {
-		boost_foreach (const trie_t::value_type& kv, trie) {
-			tv.push_back(kv.first);
-			if (kv.second.terminal) {
-				std::sort(tv.begin(), tv.end());
-				rv.insert(tv);
-				tv.pop_back();
-				continue;
-			}
-			if (kv.second.trie) {
-				trie_getTags(*kv.second.trie, rv, tv);
-			}
+inline void trie_getTags(const trie_t& trie, std::set<TagVector>& rv, TagVector& tv) {
+	boost_foreach (const trie_t::value_type& kv, trie) {
+		tv.push_back(kv.first);
+		if (kv.second.terminal) {
+			std::sort(tv.begin(), tv.end());
+			rv.insert(tv);
+			tv.pop_back();
+			continue;
+		}
+		if (kv.second.trie) {
+			trie_getTags(*kv.second.trie, rv, tv);
 		}
 	}
+}
 
-	inline std::set<TagVector> trie_getTags(const trie_t& trie) {
-		std::set<TagVector> rv;
-		boost_foreach (const trie_t::value_type& kv, trie) {
-			TagVector tv;
-			tv.push_back(kv.first);
-			if (kv.second.terminal) {
-				std::sort(tv.begin(), tv.end());
-				rv.insert(tv);
-				tv.pop_back();
-				continue;
-			}
-			if (kv.second.trie) {
-				trie_getTags(*kv.second.trie, rv, tv);
-			}
+inline std::set<TagVector> trie_getTags(const trie_t& trie) {
+	std::set<TagVector> rv;
+	boost_foreach (const trie_t::value_type& kv, trie) {
+		TagVector tv;
+		tv.push_back(kv.first);
+		if (kv.second.terminal) {
+			std::sort(tv.begin(), tv.end());
+			rv.insert(tv);
+			tv.pop_back();
+			continue;
 		}
-		return rv;
+		if (kv.second.trie) {
+			trie_getTags(*kv.second.trie, rv, tv);
+		}
 	}
+	return rv;
+}
 
-	inline void trie_getTagsOrdered(const trie_t& trie, std::set<TagVector>& rv, TagVector& tv) {
-		boost_foreach (const trie_t::value_type& kv, trie) {
-			tv.push_back(kv.first);
-			if (kv.second.terminal) {
-				rv.insert(tv);
-				tv.pop_back();
-				continue;
-			}
-			if (kv.second.trie) {
-				trie_getTagsOrdered(*kv.second.trie, rv, tv);
-			}
+inline void trie_getTagsOrdered(const trie_t& trie, std::set<TagVector>& rv, TagVector& tv) {
+	boost_foreach (const trie_t::value_type& kv, trie) {
+		tv.push_back(kv.first);
+		if (kv.second.terminal) {
+			rv.insert(tv);
+			tv.pop_back();
+			continue;
+		}
+		if (kv.second.trie) {
+			trie_getTagsOrdered(*kv.second.trie, rv, tv);
 		}
 	}
+}
 
-	inline std::set<TagVector> trie_getTagsOrdered(const trie_t& trie) {
-		std::set<TagVector> rv;
-		boost_foreach (const trie_t::value_type& kv, trie) {
-			TagVector tv;
-			tv.push_back(kv.first);
-			if (kv.second.terminal) {
-				rv.insert(tv);
-				tv.pop_back();
-				continue;
-			}
-			if (kv.second.trie) {
-				trie_getTagsOrdered(*kv.second.trie, rv, tv);
-			}
+inline std::set<TagVector> trie_getTagsOrdered(const trie_t& trie) {
+	std::set<TagVector> rv;
+	boost_foreach (const trie_t::value_type& kv, trie) {
+		TagVector tv;
+		tv.push_back(kv.first);
+		if (kv.second.terminal) {
+			rv.insert(tv);
+			tv.pop_back();
+			continue;
 		}
-		return rv;
+		if (kv.second.trie) {
+			trie_getTagsOrdered(*kv.second.trie, rv, tv);
+		}
 	}
+	return rv;
+}
 
-	inline void trie_serialize(const trie_t& trie, std::ostream& out) {
-		boost_foreach (const trie_t::value_type& kv, trie) {
-			writeSwapped<uint32_t>(out, kv.first->number);
-			writeSwapped<uint8_t>(out, kv.second.terminal);
-			if (kv.second.trie) {
-				writeSwapped<uint32_t>(out, kv.second.trie->size());
-				trie_serialize(*kv.second.trie, out);
-			}
-			else {
-				writeSwapped<uint32_t>(out, 0);
-			}
+inline void trie_serialize(const trie_t& trie, std::ostream& out) {
+	boost_foreach (const trie_t::value_type& kv, trie) {
+		writeSwapped<uint32_t>(out, kv.first->number);
+		writeSwapped<uint8_t>(out, kv.second.terminal);
+		if (kv.second.trie) {
+			writeSwapped<uint32_t>(out, kv.second.trie->size());
+			trie_serialize(*kv.second.trie, out);
+		}
+		else {
+			writeSwapped<uint32_t>(out, 0);
 		}
 	}
+}
 }
 
 #endif

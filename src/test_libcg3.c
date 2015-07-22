@@ -83,21 +83,21 @@ int main(int argc, char *argv[]) {
 
 	cg3_sentence_runrules(applicator, sentence);
 
-	for (ci = 0, ce = cg3_sentence_numcohorts(sentence) ; ci != ce ; ++ci) {
+	for (ci = 0, ce = cg3_sentence_numcohorts(sentence); ci != ce; ++ci) {
 		cohort = cg3_sentence_getcohort(sentence, ci);
 		tag = cg3_cohort_getwordform(cohort);
 		tmp = cg3_tag_gettext_u8(tag);
 		fprintf(stdout, "%s\n", tmp);
 
-		for (ri = 0, re = cg3_cohort_numreadings(cohort) ; ri != re ; ++ri) {
+		for (ri = 0, re = cg3_cohort_numreadings(cohort); ri != re; ++ri) {
 			reading = cg3_cohort_getreading(cohort, ri);
 			fprintf(stdout, "\t");
-			for (ti = 0, te = cg3_reading_numtags(reading) ; ti != te ; ++ti) {
+			for (ti = 0, te = cg3_reading_numtags(reading); ti != te; ++ti) {
 				tag = cg3_reading_gettag(reading, ti);
 				tmp = cg3_tag_gettext_u8(tag);
 				fprintf(stdout, "%s ", tmp);
 			}
-			for (ti = 0, te = cg3_reading_numtraces(reading) ; ti != te ; ++ti) {
+			for (ti = 0, te = cg3_reading_numtraces(reading); ti != te; ++ti) {
 				uint32_t rule_line = cg3_reading_gettrace(reading, ti);
 				fprintf(stdout, "TRACE:%u ", rule_line);
 			}

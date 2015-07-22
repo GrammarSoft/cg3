@@ -29,28 +29,28 @@
 #include "FSTApplicator.hpp"
 
 namespace CG3 {
-	enum CG_FORMATS {
-		FMT_INVALID,
-		FMT_CG,
-		FMT_NICELINE,
-		FMT_APERTIUM,
-		FMT_FST,
-		FMT_PLAIN,
-		NUM_FORMATS,
-	};
+enum CG_FORMATS {
+	FMT_INVALID,
+	FMT_CG,
+	FMT_NICELINE,
+	FMT_APERTIUM,
+	FMT_FST,
+	FMT_PLAIN,
+	NUM_FORMATS,
+};
 
-	class FormatConverter : public ApertiumApplicator, public NicelineApplicator, public PlaintextApplicator, public FSTApplicator {
-	public:
-		FormatConverter(UFILE *ux_err);
+class FormatConverter : public ApertiumApplicator, public NicelineApplicator, public PlaintextApplicator, public FSTApplicator {
+public:
+	FormatConverter(UFILE *ux_err);
 
-		void runGrammarOnText(istream& input, UFILE *output);
-		void setInputFormat(CG_FORMATS format);
-		void setOutputFormat(CG_FORMATS format);
+	void runGrammarOnText(istream& input, UFILE *output);
+	void setInputFormat(CG_FORMATS format);
+	void setOutputFormat(CG_FORMATS format);
 
-	protected:
-		CG_FORMATS informat, outformat;
-		void printSingleWindow(SingleWindow *window, UFILE *output);
-	};
+protected:
+	CG_FORMATS informat, outformat;
+	void printSingleWindow(SingleWindow *window, UFILE *output);
+};
 }
 
 #endif

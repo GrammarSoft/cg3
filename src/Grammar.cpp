@@ -25,24 +25,24 @@
 
 namespace CG3 {
 
-Grammar::Grammar() :
-ux_stderr(0),
-ux_stdout(0),
-has_dep(false),
-has_relations(false),
-has_encl_final(false),
-is_binary(false),
-sub_readings_ltr(false),
-grammar_size(0),
-mapping_prefix('@'),
-lines(0),
-verbosity_level(0),
-total_time(0),
-rules_any(0),
-sets_any(0),
-delimiters(0),
-soft_delimiters(0),
-tag_any(0)
+Grammar::Grammar()
+  : ux_stderr(0)
+  , ux_stdout(0)
+  , has_dep(false)
+  , has_relations(false)
+  , has_encl_final(false)
+  , is_binary(false)
+  , sub_readings_ltr(false)
+  , grammar_size(0)
+  , mapping_prefix('@')
+  , lines(0)
+  , verbosity_level(0)
+  , total_time(0)
+  , rules_any(0)
+  , sets_any(0)
+  , delimiters(0)
+  , soft_delimiters(0)
+  , tag_any(0)
 {
 	// Nothing in the actual body...
 }
@@ -57,7 +57,7 @@ Grammar::~Grammar() {
 	}
 
 	Taguint32HashMap::iterator iter_stag;
-	for (iter_stag = single_tags.begin() ; iter_stag != single_tags.end() ; ++iter_stag) {
+	for (iter_stag = single_tags.begin(); iter_stag != single_tags.end(); ++iter_stag) {
 		if (iter_stag->second) {
 			delete iter_stag->second;
 		}
@@ -83,10 +83,10 @@ void Grammar::addSet(Set *& to) {
 		u_fprintf(ux_stderr, "Warning: Set name %S looks like a misattempt of template usage on line %u.\n", to->name.c_str(), to->line);
 	}
 
-	if (!to->sets.empty() && !(to->type & (ST_TAG_UNIFY|ST_CHILD_UNIFY|ST_SET_UNIFY))) {
+	if (!to->sets.empty() && !(to->type & (ST_TAG_UNIFY | ST_CHILD_UNIFY | ST_SET_UNIFY))) {
 		bool all_tags = true;
-		for (size_t i=0 ; i<to->sets.size() ; ++i) {
-			if (i > 0 && to->set_ops[i-1] != S_OR) {
+		for (size_t i = 0; i < to->sets.size(); ++i) {
+			if (i > 0 && to->set_ops[i - 1] != S_OR) {
 				all_tags = false;
 				break;
 			}
@@ -106,7 +106,7 @@ void Grammar::addSet(Set *& to) {
 		}
 
 		if (all_tags) {
-			for (size_t i=0 ; i<to->sets.size() ; ++i) {
+			for (size_t i = 0; i < to->sets.size(); ++i) {
 				Set *s = getSet(to->sets[i]);
 				maybe_used_sets.insert(s);
 				TagVector tv = trie_getTagList(s->getNonEmpty());
@@ -195,7 +195,7 @@ void Grammar::addSet(Set *& to) {
 	}
 
 	uint32_t chash = to->rehash();
-	for (; to->name[0] != '_' || to->name[1] != 'G' || to->name[2] != '_' ;) {
+	for (; to->name[0] != '_' || to->name[1] != 'G' || to->name[2] != '_';) {
 		uint32_t nhash = hash_value(to->name.c_str());
 		if (sets_by_name.find(nhash) != sets_by_name.end()) {
 			Set *a = sets_by_contents.find(sets_by_name.find(nhash)->second)->second;
@@ -217,14 +217,14 @@ void Grammar::addSet(Set *& to) {
 				CG3Quit(1);
 			}
 			else {
-				for (uint32_t seed=0 ; seed<1000 ; ++seed) {
-					if (sets_by_name.find(nhash+seed) == sets_by_name.end()) {
+				for (uint32_t seed = 0; seed < 1000; ++seed) {
+					if (sets_by_name.find(nhash + seed) == sets_by_name.end()) {
 						if (verbosity_level > 0 && (to->name[0] != '_' || to->name[1] != 'G' || to->name[2] != '_')) {
 							u_fprintf(ux_stderr, "Warning: Set %S got hash seed %u.\n", to->name.c_str(), seed);
 							u_fflush(ux_stderr);
 						}
 						set_name_seeds[to->name] = seed;
-						sets_by_name[nhash+seed] = chash;
+						sets_by_name[nhash + seed] = chash;
 						break;
 					}
 				}
@@ -240,9 +240,7 @@ void Grammar::addSet(Set *& to) {
 		if (a != to) {
 			a->reindex(*this);
 			to->reindex(*this);
-			if ((a->type & (ST_SPECIAL|ST_TAG_UNIFY|ST_CHILD_UNIFY|ST_SET_UNIFY)) != (to->type & (ST_SPECIAL|ST_TAG_UNIFY|ST_CHILD_UNIFY|ST_SET_UNIFY))
-			|| a->set_ops.size() != to->set_ops.size() || a->sets.size() != to->sets.size()
-			|| a->trie.size() != to->trie.size() || a->trie_special.size() != to->trie_special.size()) {
+			if ((a->type & (ST_SPECIAL | ST_TAG_UNIFY | ST_CHILD_UNIFY | ST_SET_UNIFY)) != (to->type & (ST_SPECIAL | ST_TAG_UNIFY | ST_CHILD_UNIFY | ST_SET_UNIFY)) || a->set_ops.size() != to->set_ops.size() || a->sets.size() != to->sets.size() || a->trie.size() != to->trie.size() || a->trie_special.size() != to->trie_special.size()) {
 				u_fprintf(ux_stderr, "Error: Content hash collision between set %S on line %u and %S on line %u!\n", a->name.c_str(), a->line, to->name.c_str(), to->line);
 				CG3Quit(1);
 			}
@@ -295,7 +293,7 @@ void Grammar::addSetToList(Set *s) {
 				}
 			}
 			sets_list.push_back(s);
-			s->number = (uint32_t)sets_list.size()-1;
+			s->number = (uint32_t)sets_list.size() - 1;
 		}
 	}
 }
@@ -347,7 +345,7 @@ uint32_t Grammar::removeNumericTags(uint32_t s) {
 		bool did = false;
 		std::map<TagVector, bool> ntags;
 		TagVector tags;
-		const trie_t* tries[2] = { &set->trie, &set->trie_special };
+		const trie_t *tries[2] = { &set->trie, &set->trie_special };
 		for (size_t i = 0; i < 2; ++i) {
 			if (tries[i]->empty()) {
 				continue;
@@ -517,9 +515,9 @@ ContextualTest *Grammar::addContextualTest(ContextualTest *t) {
 	}
 
 	for (uint32_t seed = 0; seed < 1000; ++seed) {
-		contexts_t::iterator cit = contexts.find(t->hash+seed);
+		contexts_t::iterator cit = contexts.find(t->hash + seed);
 		if (cit == contexts.end()) {
-			contexts[t->hash+seed] = t;
+			contexts[t->hash + seed] = t;
 			t->hash += seed;
 			t->seed = seed;
 			if (verbosity_level > 1 && seed) {
@@ -567,7 +565,7 @@ void Grammar::addAnchor(const UChar *to, uint32_t at, bool primary) {
 
 void Grammar::resetStatistics() {
 	total_time = 0;
-	for (uint32_t j=0;j<rules.size();j++) {
+	for (uint32_t j = 0; j < rules.size(); j++) {
 		rules[j]->resetStatistics();
 	}
 }
@@ -755,7 +753,7 @@ void Grammar::reindex(bool unused_sets, bool used_tags) {
 		}
 	}
 
-	for (BOOST_AUTO(iter_tags, single_tags.begin()) ; iter_tags != single_tags.end() ; ++iter_tags) {
+	for (BOOST_AUTO(iter_tags, single_tags.begin()); iter_tags != single_tags.end(); ++iter_tags) {
 		Tag *tag = iter_tags->second;
 		if (tag->tag[0] == mapping_prefix) {
 			tag->type |= T_MAPPING;
@@ -864,14 +862,14 @@ void Grammar::reindex(bool unused_sets, bool used_tags) {
 					CG3Quit(1);
 				}
 				else {
-					for (uint32_t seed=0 ; seed<1000 ; ++seed) {
-						if (sets_by_name.find(nhash+seed) == sets_by_name.end()) {
+					for (uint32_t seed = 0; seed < 1000; ++seed) {
+						if (sets_by_name.find(nhash + seed) == sets_by_name.end()) {
 							if (verbosity_level > 0) {
 								u_fprintf(ux_stderr, "Warning: Static set %S got hash seed %u.\n", to->name.c_str(), seed);
 								u_fflush(ux_stderr);
 							}
 							set_name_seeds[to->name] = seed;
-							sets_by_name[nhash+seed] = cnum;
+							sets_by_name[nhash + seed] = cnum;
 							break;
 						}
 					}
@@ -902,7 +900,7 @@ inline void trie_indexToRule(const trie_t& trie, Grammar& grammar, uint32_t r) {
 }
 
 void Grammar::indexSetToRule(uint32_t r, Set *s) {
-	if (s->type & (ST_SPECIAL|ST_TAG_UNIFY)) {
+	if (s->type & (ST_SPECIAL | ST_TAG_UNIFY)) {
 		indexTagToRule(tag_any, r);
 		return;
 	}
@@ -910,7 +908,7 @@ void Grammar::indexSetToRule(uint32_t r, Set *s) {
 	trie_indexToRule(s->trie, *this, r);
 	trie_indexToRule(s->trie_special, *this, r);
 
-	for (uint32_t i=0 ; i<s->sets.size() ; ++i) {
+	for (uint32_t i = 0; i < s->sets.size(); ++i) {
 		Set *set = sets_list[s->sets[i]];
 		indexSetToRule(r, set);
 	}
@@ -930,7 +928,7 @@ inline void trie_indexToSet(const trie_t& trie, Grammar& grammar, uint32_t r) {
 }
 
 void Grammar::indexSets(uint32_t r, Set *s) {
-	if (s->type & (ST_SPECIAL|ST_TAG_UNIFY)) {
+	if (s->type & (ST_SPECIAL | ST_TAG_UNIFY)) {
 		indexTagToSet(tag_any, r);
 		return;
 	}
@@ -938,7 +936,7 @@ void Grammar::indexSets(uint32_t r, Set *s) {
 	trie_indexToSet(s->trie, *this, r);
 	trie_indexToSet(s->trie_special, *this, r);
 
-	for (uint32_t i=0 ; i<s->sets.size() ; ++i) {
+	for (uint32_t i = 0; i < s->sets.size(); ++i) {
 		Set *set = sets_list[s->sets[i]];
 		indexSets(r, set);
 	}
@@ -957,7 +955,7 @@ void Grammar::setAdjustSets(Set *s) {
 	}
 	s->type &= ~ST_USED;
 
-	for (uint32_t i = 0; i<s->sets.size(); ++i) {
+	for (uint32_t i = 0; i < s->sets.size(); ++i) {
 		Set *set = sets_by_contents.find(s->sets[i])->second;
 		s->sets[i] = set->number;
 		setAdjustSets(set);
@@ -993,5 +991,4 @@ void Grammar::contextAdjustTarget(ContextualTest *test) {
 		contextAdjustTarget(test->linked);
 	}
 }
-
 }
