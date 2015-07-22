@@ -219,7 +219,7 @@ namespace CG3 {
 		std::vector<uint32FlatHashSet> index_readingSet_no;
 		uint32FlatHashSet index_ruleCohort_no;
 		void resetIndexes();
-	
+
 		Tag *makeBaseFromWord(uint32_t tag);
 		Tag *makeBaseFromWord(Tag *tag);
 
@@ -231,7 +231,7 @@ namespace CG3 {
 
 		enum ST_RETVALS {
 			TRV_BREAK   = (1 << 0),
-			TRV_BARRIER = (1 << 1)
+			TRV_BARRIER = (1 << 1),
 		};
 		Cohort *runSingleTest(Cohort *cohort, const ContextualTest *test, uint8_t& rvs, bool *retval, Cohort **deep = 0, Cohort *origin = 0);
 		Cohort *runSingleTest(SingleWindow *sWindow, size_t i, const ContextualTest *test, uint8_t& rvs, bool *retval, Cohort **deep = 0, Cohort *origin = 0);

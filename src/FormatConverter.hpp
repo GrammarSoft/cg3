@@ -36,7 +36,7 @@ namespace CG3 {
 		FMT_APERTIUM,
 		FMT_FST,
 		FMT_PLAIN,
-		NUM_FORMATS
+		NUM_FORMATS,
 	};
 
 	class FormatConverter : public ApertiumApplicator, public NicelineApplicator, public PlaintextApplicator, public FSTApplicator {

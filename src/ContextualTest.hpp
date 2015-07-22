@@ -84,7 +84,7 @@ namespace CG3 {
 	};
 
 	enum GSR_SPECIALS {
-		GSR_ANY = 32767
+		GSR_ANY = 32767,
 	};
 
 	class ContextualTest {
@@ -108,7 +108,7 @@ namespace CG3 {
 		ContextVector ors;
 
 		ContextualTest();
-		
+
 		bool operator==(const ContextualTest&) const;
 		bool operator!=(const ContextualTest& o) const { return !(*this == o); }
 		uint32_t rehash();
