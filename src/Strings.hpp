@@ -85,7 +85,7 @@ namespace CG3 {
 		K_STRICT_TAGS,
 		K_REOPEN_MAPPINGS,
 		K_SUBREADINGS,
-		KEYWORD_COUNT
+		KEYWORD_COUNT,
 	};
 
 	enum {
@@ -166,7 +166,7 @@ namespace CG3 {
 		S_STRICT_SECOND,
 		S_CMD_SETVAR,
 		S_CMD_REMVAR,
-		STRINGS_COUNT
+		STRINGS_COUNT,
 	};
 
 	// This must be kept in lock-step with Rule.hpp's RULE_FLAGS
@@ -197,7 +197,7 @@ namespace CG3 {
 		FL_SUB,
 		FL_OUTPUT,
 		FL_CAPTURE_UNIF,
-		FLAGS_COUNT
+		FLAGS_COUNT,
 	};
 }
 
