@@ -745,13 +745,15 @@ void ApertiumApplicator::printReading(Reading *reading, UFILE *output) {
 		const Tag *tag = single_tags[*tter];
 		if (tag->tag[0] == '+') {
 			multi = true;
-		} else if (tag->type & T_MAPPING) {
+		}
+		else if (tag->type & T_MAPPING) {
 			multi = false;
 		}
 
 		if (multi) {
 			multitags_list.push_back(*tter);
-		} else {
+		}
+		else {
 			tags_list.push_back(*tter);
 		}
 	}
