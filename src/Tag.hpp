@@ -41,7 +41,7 @@ namespace CG3 {
 		OP_LESSEQUALS,
 		OP_GREATEREQUALS,
 		OP_NOTEQUALS,
-		NUM_OPS
+		NUM_OPS,
 	};
 
 	enum {
