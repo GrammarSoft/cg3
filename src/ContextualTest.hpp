@@ -35,9 +35,9 @@ typedef std::vector<ContextualTest*> ContextVector;
 typedef std::list<ContextualTest*> ContextList;
 
 #ifdef _MSC_VER
-	enum : uint64_t {
+enum : uint64_t {
 #else
-	enum {
+enum {
 #endif
 	POS_CAREFUL        = (1 <<  0),
 	POS_NEGATE         = (1 <<  1),
