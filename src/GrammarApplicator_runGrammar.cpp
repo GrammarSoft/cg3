@@ -177,7 +177,7 @@ gotaline:
 			}
 			if (cSWindow && cSWindow->cohorts.size() >= soft_limit && grammar->soft_delimiters && !did_soft_lookback) {
 				did_soft_lookback = true;
-				reverse_foreach (CohortVector, cSWindow->cohorts, iter, iter_end) {
+				reverse_foreach (iter, cSWindow->cohorts) {
 					if (doesSetMatchCohortNormal(**iter, grammar->soft_delimiters->number)) {
 						did_soft_lookback = false;
 						Cohort *cohort = delimitAt(*cSWindow, *iter);
@@ -198,7 +198,7 @@ gotaline:
 					u_fprintf(ux_stderr, "Warning: Soft limit of %u cohorts reached at line %u but found suitable soft delimiter.\n", soft_limit, numLines);
 					u_fflush(ux_stderr);
 				}
-				foreach (ReadingList, cCohort->readings, iter, iter_end) {
+				foreach (iter, cCohort->readings) {
 					addTagToReading(**iter, endtag);
 				}
 
@@ -215,7 +215,7 @@ gotaline:
 					u_fprintf(ux_stderr, "Warning: Hard limit of %u cohorts reached at line %u - forcing break.\n", hard_limit, numLines);
 					u_fflush(ux_stderr);
 				}
-				foreach (ReadingList, cCohort->readings, iter, iter_end) {
+				foreach (iter, cCohort->readings) {
 					addTagToReading(**iter, endtag);
 				}
 
@@ -426,7 +426,7 @@ istext:
 						if (cCohort->readings.empty()) {
 							initEmptyCohort(*cCohort);
 						}
-						foreach (ReadingList, cCohort->readings, iter, iter_end) {
+						foreach (iter, cCohort->readings) {
 							addTagToReading(**iter, endtag);
 						}
 						cReading = lReading = 0;
@@ -603,7 +603,7 @@ istext:
 		if (cCohort->readings.empty()) {
 			initEmptyCohort(*cCohort);
 		}
-		foreach (ReadingList, cCohort->readings, iter, iter_end) {
+		foreach (iter, cCohort->readings) {
 			addTagToReading(**iter, endtag);
 		}
 		cReading = 0;

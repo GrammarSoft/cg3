@@ -75,10 +75,10 @@ void Rule::reverseContextualTests() {
 }
 
 void Rule::resetStatistics() {
-	foreach (ContextList, tests, it, it_end) {
+	foreach (it, tests) {
 		(*it)->resetStatistics();
 	}
-	foreach (ContextList, dep_tests, it, it_end) {
+	foreach (it, dep_tests) {
 		(*it)->resetStatistics();
 	}
 	num_fail = 0;

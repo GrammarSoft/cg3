@@ -565,7 +565,7 @@ Cohort *GrammarApplicator::runDependencyTest(SingleWindow *sWindow, Cohort *curr
 		deps = &tmp_deps;
 	}
 
-	const_foreach (uint32SortedVector, *deps, dter, dter_end) {
+	foreach (dter, *deps) {
 		if (*dter == current->global_number && !(test->pos & POS_SELF)) {
 			continue;
 		}
@@ -660,7 +660,7 @@ Cohort *GrammarApplicator::runRelationTest(SingleWindow *sWindow, Cohort *curren
 	CohortSet rels;
 
 	if (test->relation == grammar->tag_any) {
-		const_foreach (RelationCtn, current->relations, riter, riter_end) {
+		foreach (riter, current->relations) {
 			boost_foreach (uint32_t citer, riter->second) {
 				std::map<uint32_t,Cohort*>::iterator it = sWindow->parent->cohort_map.find(citer);
 				if (it != sWindow->parent->cohort_map.end()) {
@@ -706,7 +706,7 @@ Cohort *GrammarApplicator::runRelationTest(SingleWindow *sWindow, Cohort *curren
 	}
 
 	Cohort *rv = 0;
-	const_foreach (CohortSet, rels, iter, iter_end) {
+	foreach (iter, rels) {
 		uint8_t rvs = 0;
 		bool retval = false;
 

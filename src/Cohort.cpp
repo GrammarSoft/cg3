@@ -75,18 +75,18 @@ Cohort::~Cohort() {
 	std::cerr << "OBJECT: " << __PRETTY_FUNCTION__ << ": " << readings.size() << ", " << deleted.size() << ", " << delayed.size() << std::endl;
 	#endif
 
-	foreach (ReadingList, readings, iter1, iter1_end) {
+	foreach (iter1, readings) {
 		delete (*iter1);
 	}
-	foreach (ReadingList, deleted, iter2, iter2_end) {
+	foreach (iter2, deleted) {
 		delete (*iter2);
 	}
-	foreach (ReadingList, delayed, iter3, iter3_end) {
+	foreach (iter3, delayed) {
 		delete (*iter3);
 	}
 	delete wread;
 
-	foreach(CohortVector, removed, iter, iter_end) {
+	foreach (iter, removed) {
 		delete (*iter);
 	}
 	if (parent) {
@@ -121,13 +121,13 @@ void Cohort::clear() {
 	relations.clear();
 	relations_input.clear();
 
-	foreach(ReadingList, readings, iter1, iter1_end) {
+	foreach (iter1, readings) {
 		free_reading(*iter1);
 	}
-	foreach(ReadingList, deleted, iter2, iter2_end) {
+	foreach (iter2, deleted) {
 		free_reading(*iter2);
 	}
-	foreach(ReadingList, delayed, iter3, iter3_end) {
+	foreach (iter3, delayed) {
 		free_reading(*iter3);
 	}
 	free_reading(wread);
@@ -137,7 +137,7 @@ void Cohort::clear() {
 	delayed.clear();
 	wread = 0;
 
-	foreach(CohortVector, removed, iter, iter_end) {
+	foreach (iter, removed) {
 		free_cohort(*iter);
 	}
 	removed.clear();
@@ -186,7 +186,7 @@ void Cohort::updateMinMax() {
 	}
 	num_min.clear();
 	num_max.clear();
-	const_foreach (ReadingList, readings, rter, rter_end) {
+	foreach (rter, readings) {
 		boost_foreach (Reading::tags_numerical_t::value_type& nter, (*rter)->tags_numerical) {
 			const Tag *tag = nter.second;
 			if (num_min.find(tag->comparison_hash) == num_min.end() || tag->comparison_val < num_min[tag->comparison_hash]) {

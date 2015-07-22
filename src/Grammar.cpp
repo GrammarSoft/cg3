@@ -48,11 +48,11 @@ tag_any(0)
 }
 
 Grammar::~Grammar() {
-	foreach (std::vector<Set*>, sets_list, iter_set, iter_set_end) {
+	foreach (iter_set, sets_list) {
 		destroySet(*iter_set);
 	}
 
-	foreach (SetSet, sets_all, rsets, rsets_end) {
+	foreach (rsets, sets_all) {
 		delete *rsets;
 	}
 	
@@ -63,7 +63,7 @@ Grammar::~Grammar() {
 		}
 	}
 
-	foreach (RuleVector, rule_by_number, iter_rules, iter_rules_end) {
+	foreach (iter_rules, rule_by_number) {
 		delete *iter_rules;
 	}
 
@@ -290,7 +290,7 @@ void Grammar::addSetToList(Set *s) {
 	if (s->number == 0) {
 		if (sets_list.empty() || sets_list[0] != s) {
 			if (!s->sets.empty()) {
-				foreach (uint32Vector, s->sets, sit, sit_end) {
+				foreach (sit, s->sets) {
 					addSetToList(getSet(*sit));
 				}
 			}
@@ -573,7 +573,7 @@ void Grammar::resetStatistics() {
 }
 
 void Grammar::renameAllRules() {
-	foreach (RuleVector, rule_by_number, iter_rule, iter_rule_end) {
+	foreach (iter_rule, rule_by_number) {
 		Rule *r = *iter_rule;
 		gbuffers[0][0] = 0;
 		u_sprintf(&gbuffers[0][0], "L%u", r->line);
@@ -582,7 +582,7 @@ void Grammar::renameAllRules() {
 };
 
 void Grammar::reindex(bool unused_sets, bool used_tags) {
-	foreach (Setuint32HashMap, sets_by_contents, dset, dset_end) {
+	foreach (dset, sets_by_contents) {
 		if (dset->second->number == std::numeric_limits<uint32_t>::max()) {
 			dset->second->type |= ST_USED;
 			continue;
@@ -593,7 +593,7 @@ void Grammar::reindex(bool unused_sets, bool used_tags) {
 		dset->second->number = 0;
 	}
 
-	foreach (static_sets_t, static_sets, sset, sset_end) {
+	foreach (sset, static_sets) {
 		uint32_t sh = hash_value(*sset);
 		if (set_alias.find(sh) != set_alias.end()) {
 			u_fprintf(ux_stderr, "Error: Static set %S is an alias; only real sets may be made static!\n", (*sset).c_str());
@@ -628,7 +628,7 @@ void Grammar::reindex(bool unused_sets, bool used_tags) {
 	sets_any = 0;
 	rules_any = 0;
 
-	foreach (TagVector, single_tags_list, iter, iter_end) {
+	foreach (iter, single_tags_list) {
 		if ((*iter)->regexp && (*iter)->tag[0] != '"' && (*iter)->tag[0] != '<') {
 			regex_tags.insert((*iter)->regexp);
 		}
@@ -641,16 +641,16 @@ void Grammar::reindex(bool unused_sets, bool used_tags) {
 		if (!(*iter)->vs_sets) {
 			continue;
 		}
-		foreach (SetVector, *(*iter)->vs_sets, sit, sit_end) {
+		foreach (sit, *(*iter)->vs_sets) {
 			(*sit)->markUsed(*this);
 		}
 	}
 
-	foreach (TagVector, single_tags_list, titer, titer_end) {
+	foreach (titer, single_tags_list) {
 		if ((*titer)->type & T_TEXTUAL) {
 			continue;
 		}
-		foreach (Grammar::regex_tags_t, regex_tags, iter, iter_end) {
+		foreach (iter, regex_tags) {
 			UErrorCode status = U_ZERO_ERROR;
 			uregex_setText(*iter, (*titer)->tag.c_str(), (*titer)->tag.length(), &status);
 			if (status == U_ZERO_ERROR) {
@@ -659,7 +659,7 @@ void Grammar::reindex(bool unused_sets, bool used_tags) {
 				}
 			}
 		}
-		foreach (Grammar::icase_tags_t, icase_tags, iter, iter_end) {
+		foreach (iter, icase_tags) {
 			UErrorCode status = U_ZERO_ERROR;
 			if (u_strCaseCompare((*titer)->tag.c_str(), (*titer)->tag.length(), (*iter)->tag.c_str(), (*iter)->tag.length(), U_FOLD_CASE_DEFAULT, &status) == 0) {
 				(*titer)->type |= T_TEXTUAL;
@@ -680,7 +680,7 @@ void Grammar::reindex(bool unused_sets, bool used_tags) {
 		single_tags[*it]->markUsed();
 	}
 
-	foreach (RuleVector, rule_by_number, iter_rule, iter_rule_end) {
+	foreach (iter_rule, rule_by_number) {
 		if ((*iter_rule)->wordform) {
 			wf_rules.push_back(*iter_rule);
 		}
@@ -707,10 +707,10 @@ void Grammar::reindex(bool unused_sets, bool used_tags) {
 		if ((*iter_rule)->dep_target) {
 			(*iter_rule)->dep_target->markUsed(*this);
 		}
-		foreach (ContextList, (*iter_rule)->tests, it, it_end) {
+		foreach (it, (*iter_rule)->tests) {
 			(*it)->markUsed(*this);
 		}
-		foreach (ContextList, (*iter_rule)->dep_tests, it, it_end) {
+		foreach (it, (*iter_rule)->dep_tests) {
 			(*it)->markUsed(*this);
 		}
 	}
@@ -736,7 +736,7 @@ void Grammar::reindex(bool unused_sets, bool used_tags) {
 
 	if (unused_sets) {
 		u_fprintf(ux_stdout, "Unused sets:\n");
-		foreach (Setuint32HashMap, sets_by_contents, rset, rset_end) {
+		foreach (rset, sets_by_contents) {
 			if (!(rset->second->type & ST_USED) && !rset->second->name.empty() && maybe_used_sets.count(rset->second) == 0) {
 				if (rset->second->name[0] != '_' || rset->second->name[1] != 'G' || rset->second->name[2] != '_') {
 					u_fprintf(ux_stdout, "Line %u set %S\n", rset->second->line, rset->second->name.c_str());
@@ -749,7 +749,7 @@ void Grammar::reindex(bool unused_sets, bool used_tags) {
 
 	// Stuff below this line is not optional...
 
-	foreach (Setuint32HashMap, sets_by_contents, tset, tset_end) {
+	foreach (tset, sets_by_contents) {
 		if (tset->second->type & ST_USED) {
 			addSetToList(tset->second);
 		}
@@ -779,7 +779,7 @@ void Grammar::reindex(bool unused_sets, bool used_tags) {
 
 	uint32SortedVector sects;
 
-	foreach (RuleVector, rule_by_number, iter_rule, iter_rule_end) {
+	foreach (iter_rule, rule_by_number) {
 		if ((*iter_rule)->section == -1) {
 			before_sections.push_back(*iter_rule);
 		}

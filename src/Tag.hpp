@@ -127,7 +127,7 @@ namespace CG3 {
 
 	template<typename T>
 	inline void fill_tagvector(const T& in, TagVector& tags, bool& did, bool& special) {
-		boost_foreach(Tag *tag, in) {
+		boost_foreach (Tag *tag, in) {
 			if (tag->type & T_NUMERICAL) {
 				did = true;
 			}

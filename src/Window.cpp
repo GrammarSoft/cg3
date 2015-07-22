@@ -101,7 +101,7 @@ void Window::shuffleWindowsDown() {
 void Window::rebuildSingleWindowLinks() {
 	SingleWindow *sWindow = 0;
 
-	foreach (SingleWindowCont, previous, iter, iter_end) {
+	foreach (iter, previous) {
 		(*iter)->previous = sWindow;
 		if (sWindow) {
 			sWindow->next = *iter;
@@ -117,7 +117,7 @@ void Window::rebuildSingleWindowLinks() {
 		sWindow = current;
 	}
 
-	foreach (SingleWindowCont, next, iter, iter_end) {
+	foreach (iter, next) {
 		(*iter)->previous = sWindow;
 		if (sWindow) {
 			sWindow->next = *iter;
@@ -144,7 +144,7 @@ void Window::rebuildCohortLinks() {
 
 	Cohort *prev = 0;
 	while (sWindow) {
-		foreach (CohortVector, sWindow->cohorts, citer, citer_end) {
+		foreach (citer, sWindow->cohorts) {
 			(*citer)->prev = prev;
 			(*citer)->next = 0;
 			if (prev) {
