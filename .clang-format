@@ -29,8 +29,6 @@ IndentFunctionDeclarationAfterType: false
 IndentWidth: 4
 KeepEmptyLinesAtTheStartOfBlocks: false
 Language: Cpp
-#MacroBlockBegin: "^(if|ifdef|ifndef|else|elif)$"
-#MacroBlockEnd: "^endif$"
 MaxEmptyLinesToKeep: 2
 NamespaceIndentation: Inner
 PointerAlignment: Right
