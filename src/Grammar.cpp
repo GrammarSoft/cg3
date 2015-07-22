@@ -55,7 +55,7 @@ Grammar::~Grammar() {
 	foreach (rsets, sets_all) {
 		delete *rsets;
 	}
-	
+
 	Taguint32HashMap::iterator iter_stag;
 	for (iter_stag = single_tags.begin() ; iter_stag != single_tags.end() ; ++iter_stag) {
 		if (iter_stag->second) {
@@ -579,7 +579,7 @@ void Grammar::renameAllRules() {
 		u_sprintf(&gbuffers[0][0], "L%u", r->line);
 		r->setName(&gbuffers[0][0]);
 	}
-};
+}
 
 void Grammar::reindex(bool unused_sets, bool used_tags) {
 	foreach (dset, sets_by_contents) {
