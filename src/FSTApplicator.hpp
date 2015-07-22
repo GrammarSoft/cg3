@@ -36,7 +36,6 @@ public:
 	UString wtag;
 	UString sub_delims;
 };
-
 }
 
 #endif

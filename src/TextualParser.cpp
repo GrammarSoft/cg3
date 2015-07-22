@@ -28,24 +28,24 @@
 
 namespace CG3 {
 
-TextualParser::TextualParser(Grammar& res, UFILE *ux_err) :
-verbosity_level(0),
-sets_counter(100),
-seen_mapping_prefix(0),
-option_vislcg_compat(false),
-in_section(false),
-in_before_sections(true),
-in_after_sections(false),
-in_null_section(false),
-no_isets(false),
-no_itmpls(false),
-strict_wforms(false),
-strict_bforms(false),
-strict_second(false),
-filename(0),
-locale(0),
-codepage(0),
-error_counter(0)
+TextualParser::TextualParser(Grammar& res, UFILE *ux_err)
+  : verbosity_level(0)
+  , sets_counter(100)
+  , seen_mapping_prefix(0)
+  , option_vislcg_compat(false)
+  , in_section(false)
+  , in_before_sections(true)
+  , in_after_sections(false)
+  , in_null_section(false)
+  , no_isets(false)
+  , no_itmpls(false)
+  , strict_wforms(false)
+  , strict_bforms(false)
+  , strict_second(false)
+  , filename(0)
+  , locale(0)
+  , codepage(0)
+  , error_counter(0)
 {
 	ux_stderr = ux_err;
 	result = &res;
@@ -62,9 +62,11 @@ void TextualParser::incErrorCount() {
 }
 
 struct freq_sorter {
-	const bc::flat_map<Tag*, size_t>& tag_freq;
+	const bc::flat_map<Tag *, size_t>& tag_freq;
 
-	freq_sorter(const bc::flat_map<Tag*, size_t>& tag_freq) : tag_freq(tag_freq) {
+	freq_sorter(const bc::flat_map<Tag *, size_t>& tag_freq)
+	  : tag_freq(tag_freq)
+	{
 	}
 
 	bool operator()(Tag *a, Tag *b) const {
@@ -134,7 +136,7 @@ Tag *TextualParser::parseTag(const UChar *to, const UChar *p) {
 				incErrorCount();
 			}
 		}
-		else if (tag->tag[0] == '<' && tag->tag[tag->tag.size()-1] == '>') {
+		else if (tag->tag[0] == '<' && tag->tag[tag->tag.size() - 1] == '>') {
 			if (strict_second) {
 				error("%s: Error: Secondary tag %S not on the strict-tags list, on line %u near `%S`!\n", tag->tag.c_str(), p);
 				incErrorCount();
@@ -154,7 +156,7 @@ Tag *TextualParser::addTag(Tag *tag) {
 
 void TextualParser::parseTagList(UChar *& p, Set *s) {
 	std::set<TagVector> taglists;
-	bc::flat_map<Tag*, size_t> tag_freq;
+	bc::flat_map<Tag *, size_t> tag_freq;
 
 	while (*p && *p != ';' && *p != ')') {
 		result->lines += SKIPWS(p, ';', ')');
@@ -360,7 +362,7 @@ Set *TextualParser::parseSetInline(UChar *& p, Set *s) {
 					set_c->line = result->lines;
 					set_c->setName(sets_counter++);
 
-					bc::flat_map<Tag*, size_t> tag_freq;
+					bc::flat_map<Tag *, size_t> tag_freq;
 					boost_foreach (const TagVector& tags, r) {
 						boost_foreach (Tag *t, tags) {
 							++tag_freq[t];
@@ -454,8 +456,8 @@ void TextualParser::parseContextualTestPosition(UChar *& p, ContextualTest& t) {
 	UChar *n = p;
 
 	size_t tries;
-	for (tries=0 ; *p != ' ' && *p != '(' && *p != '/' && tries < 100 ; ++tries) {
-		if (*p == '*' && *(p+1) == '*') {
+	for (tries = 0; *p != ' ' && *p != '(' && *p != '/' && tries < 100; ++tries) {
+		if (*p == '*' && *(p + 1) == '*') {
 			t.pos |= POS_SCANALL;
 			p += 2;
 		}
@@ -559,11 +561,11 @@ void TextualParser::parseContextualTestPosition(UChar *& p, ContextualTest& t) {
 		if (u_isdigit(*p)) {
 			had_digits = true;
 			while (*p >= '0' && *p <= '9') {
-				t.offset = (t.offset*10) + (*p - '0');
+				t.offset = (t.offset * 10) + (*p - '0');
 				++p;
 			}
 		}
-		if (*p == 'r' && *(p+1) == ':') {
+		if (*p == 'r' && *(p + 1) == ':') {
 			t.pos |= POS_RELATION;
 			p += 2;
 			UChar *n = p;
@@ -604,8 +606,8 @@ void TextualParser::parseContextualTestPosition(UChar *& p, ContextualTest& t) {
 		bool negative = false;
 
 		size_t tries;
-		for (tries=0 ; *p != ' ' && *p != '(' && tries < 100 ; ++tries) {
-			if (*p == '*' && *(p+1) == '*') {
+		for (tries = 0; *p != ' ' && *p != '(' && tries < 100; ++tries) {
+			if (*p == '*' && *(p + 1) == '*') {
 				t.offset_sub = GSR_ANY;
 				p += 2;
 			}
@@ -619,7 +621,7 @@ void TextualParser::parseContextualTestPosition(UChar *& p, ContextualTest& t) {
 			}
 			if (u_isdigit(*p)) {
 				while (*p >= '0' && *p <= '9') {
-					t.offset_sub = (t.offset_sub*10) + (*p - '0');
+					t.offset_sub = (t.offset_sub * 10) + (*p - '0');
 					++p;
 				}
 			}
@@ -630,7 +632,7 @@ void TextualParser::parseContextualTestPosition(UChar *& p, ContextualTest& t) {
 		}
 	}
 
-	if ((t.pos & (POS_DEP_CHILD|POS_DEP_SIBLING)) && (t.pos & (POS_SCANFIRST|POS_SCANALL))) {
+	if ((t.pos & (POS_DEP_CHILD | POS_DEP_SIBLING)) && (t.pos & (POS_SCANFIRST | POS_SCANALL))) {
 		t.pos &= ~POS_SCANFIRST;
 		t.pos &= ~POS_SCANALL;
 		t.pos |= POS_DEP_DEEP;
@@ -648,10 +650,10 @@ void TextualParser::parseContextualTestPosition(UChar *& p, ContextualTest& t) {
 		error("%s: Error: Invalid position on line %u near `%S` - garbage data!\n", n);
 	}
 	if (had_digits) {
-		if (t.pos & (POS_DEP_CHILD|POS_DEP_SIBLING|POS_DEP_PARENT)) {
+		if (t.pos & (POS_DEP_CHILD | POS_DEP_SIBLING | POS_DEP_PARENT)) {
 			error("%s: Error: Invalid position on line %u near `%S` - cannot combine offsets with dependency!\n", n);
 		}
-		if (t.pos & (POS_LEFT_PAR|POS_RIGHT_PAR)) {
+		if (t.pos & (POS_LEFT_PAR | POS_RIGHT_PAR)) {
 			error("%s: Error: Invalid position on line %u near `%S` - cannot combine offsets with enclosures!\n", n);
 		}
 		if (t.pos & POS_RELATION) {
@@ -659,7 +661,7 @@ void TextualParser::parseContextualTestPosition(UChar *& p, ContextualTest& t) {
 		}
 	}
 	if ((t.pos & POS_DEP_PARENT) && !(t.pos & POS_DEP_GLOB)) {
-		if (t.pos & (POS_LEFTMOST|POS_RIGHTMOST)) {
+		if (t.pos & (POS_LEFTMOST | POS_RIGHTMOST)) {
 			error("%s: Error: Invalid position on line %u near `%S` - leftmost/rightmost requires ancestor, not parent!\n", n);
 		}
 	}
@@ -719,7 +721,7 @@ ContextualTest *TextualParser::parseContextualTestList(UChar *& p, Rule *rule) {
 	}
 	result->lines += SKIPWS(p);
 
-	std::pair<size_t,UString> tmpl_data;
+	std::pair<size_t, UString> tmpl_data;
 
 	UChar *pos_p = p;
 	UChar *n = p;
@@ -791,7 +793,7 @@ ContextualTest *TextualParser::parseContextualTestList(UChar *& p, Rule *rule) {
 		pos_p = p;
 		parseContextualTestPosition(p, *t);
 		p = n;
-		if (t->pos & (POS_DEP_CHILD|POS_DEP_PARENT|POS_DEP_SIBLING)) {
+		if (t->pos & (POS_DEP_CHILD | POS_DEP_PARENT | POS_DEP_SIBLING)) {
 			result->has_dep = true;
 		}
 		if (t->pos & POS_RELATION) {
@@ -801,7 +803,7 @@ ContextualTest *TextualParser::parseContextualTestList(UChar *& p, Rule *rule) {
 
 		if (p[0] == 'T' && p[1] == ':') {
 			t->pos |= POS_TMPL_OVERRIDE;
-label_parseTemplateRef:
+		label_parseTemplateRef:
 			p += 2;
 			n = p;
 			result->lines += SKIPTOWS(n, ')');
@@ -970,8 +972,8 @@ void TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 		result->lines += SKIPTOWS(n, 0, true);
 		ptrdiff_t c = n - p;
 		if (*p == '"') {
-			u_strncpy(&gbuffers[0][0], p+1, c-1);
-			gbuffers[0][c-2] = 0;
+			u_strncpy(&gbuffers[0][0], p + 1, c - 1);
+			gbuffers[0][c - 2] = 0;
 		}
 		else {
 			u_strncpy(&gbuffers[0][0], p, c);
@@ -987,7 +989,7 @@ void TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 	bool setflag = true;
 	while (setflag) {
 		setflag = false;
-		for (uint32_t i=0 ; i<FLAGS_COUNT ; i++) {
+		for (uint32_t i = 0; i < FLAGS_COUNT; i++) {
 			UChar *op = p;
 			if (ux_simplecasecmp(p, g_flags[i].getTerminatedBuffer(), g_flags[i].length())) {
 				p += g_flags[i].length();
@@ -1015,7 +1017,7 @@ void TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 
 				// Rule flags followed by letters or valid set characters should not be flags.
 				if (*p != '(' && !ISSPACE(*p)) {
-					undo_flag:
+				undo_flag:
 					rule->flags &= ~(1 << i);
 					p = op;
 					setflag = false;
@@ -1031,7 +1033,7 @@ void TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 		}
 	}
 	if (rule->flags & MASK_ENCL) {
-		std::bitset<sizeof(rule->flags)*CHAR_BIT> bits(static_cast<uint64_t>(rule->flags & MASK_ENCL));
+		std::bitset<sizeof(rule->flags) * CHAR_BIT> bits(static_cast<uint64_t>(rule->flags & MASK_ENCL));
 		if (bits.count() > 1) {
 			error("%s: Error: Line %u near `%S`: ENCL_* are all mutually exclusive!\n", lp);
 		}
@@ -1061,14 +1063,12 @@ void TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 		error("%s: Error: Line %u near `%S`: ITERATE and NOITERATE are mutually exclusive!\n", lp);
 	}
 
-	if (!(rule->flags & (RF_ITERATE|RF_NOITERATE))) {
-		if (key != K_SELECT && key != K_REMOVE && key != K_IFF
-			&& key != K_DELIMIT && key != K_REMCOHORT
-			&& key != K_MOVE && key != K_SWITCH) {
+	if (!(rule->flags & (RF_ITERATE | RF_NOITERATE))) {
+		if (key != K_SELECT && key != K_REMOVE && key != K_IFF && key != K_DELIMIT && key != K_REMCOHORT && key != K_MOVE && key != K_SWITCH) {
 			rule->flags |= RF_NOITERATE;
 		}
 	}
-	if (key == K_UNMAP && !(rule->flags & (RF_SAFE|RF_UNSAFE))) {
+	if (key == K_UNMAP && !(rule->flags & (RF_SAFE | RF_UNSAFE))) {
 		rule->flags |= RF_SAFE;
 	}
 	if (rule->flags & RF_UNMAPLAST) {
@@ -1105,12 +1105,7 @@ void TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 
 	result->lines += SKIPWS(p);
 	lp = p;
-	if (key == K_MAP || key == K_ADD || key == K_REPLACE || key == K_APPEND || key == K_SUBSTITUTE || key == K_COPY
-	|| key == K_ADDRELATIONS || key == K_ADDRELATION
-	|| key == K_SETRELATIONS || key == K_SETRELATION
-	|| key == K_REMRELATIONS || key == K_REMRELATION
-	|| key == K_SETVARIABLE || key == K_REMVARIABLE
-	|| key == K_ADDCOHORT || key == K_JUMP) {
+	if (key == K_MAP || key == K_ADD || key == K_REPLACE || key == K_APPEND || key == K_SUBSTITUTE || key == K_COPY || key == K_ADDRELATIONS || key == K_ADDRELATION || key == K_SETRELATIONS || key == K_SETRELATION || key == K_REMRELATIONS || key == K_REMRELATION || key == K_SETVARIABLE || key == K_REMVARIABLE || key == K_ADDCOHORT || key == K_JUMP) {
 		swapper_false swp(no_isets, no_isets);
 		Set *s = parseSetInlineWrapper(p);
 		s->reindex(*result);
@@ -1195,11 +1190,7 @@ void TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 		result->lines += SKIPWS(p);
 	}
 
-	if (key == K_SETPARENT || key == K_SETCHILD
-	|| key == K_ADDRELATIONS || key == K_ADDRELATION
-	|| key == K_SETRELATIONS || key == K_SETRELATION
-	|| key == K_REMRELATIONS || key == K_REMRELATION
-	|| key == K_MOVE || key == K_SWITCH) {
+	if (key == K_SETPARENT || key == K_SETCHILD || key == K_ADDRELATIONS || key == K_ADDRELATION || key == K_SETRELATIONS || key == K_SETRELATION || key == K_REMRELATIONS || key == K_REMRELATION || key == K_MOVE || key == K_SWITCH) {
 		result->lines += SKIPWS(p);
 		if (key == K_MOVE) {
 			if (ux_simplecasecmp(p, stringbits[S_AFTER].getTerminatedBuffer(), stringbits[S_AFTER].length())) {
@@ -1330,958 +1321,828 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 	filebase = basename(const_cast<char*>(fname));
 
 	while (*p) {
-	try {
-		if (verbosity_level > 0 && result->lines % 500 == 0) {
-			std::cerr << "Parsing line " << result->lines << "          \r" << std::flush;
-		}
-		result->lines += SKIPWS(p);
-		// DELIMITERS
-		if (ISCHR(*p,'D','d') && ISCHR(*(p+9),'S','s') && ISCHR(*(p+1),'E','e') && ISCHR(*(p+2),'L','l')
-			&& ISCHR(*(p+3),'I','i') && ISCHR(*(p+4),'M','m') && ISCHR(*(p+5),'I','i') && ISCHR(*(p+6),'T','t')
-			&& ISCHR(*(p+7),'E','e') && ISCHR(*(p+8),'R','r')
-			&& !ISSTRING(p, 9)) {
-			if (result->delimiters) {
-				error("%s: Error: Cannot redefine DELIMITERS on line %u near `%S`!\n", p);
+		try {
+			if (verbosity_level > 0 && result->lines % 500 == 0) {
+				std::cerr << "Parsing line " << result->lines << "          \r" << std::flush;
 			}
-			result->delimiters = result->allocateSet();
-			result->delimiters->line = result->lines;
-			result->delimiters->setName(stringbits[S_DELIMITSET].getTerminatedBuffer());
-			p += 10;
-			result->lines += SKIPWS(p, '=');
-			if (*p != '=') {
-				error("%s: Error: Encountered a %C before the expected = on line %u near `%S`!\n", *p, p);
-			}
-			++p;
-			parseTagList(p, result->delimiters);
-			result->addSet(result->delimiters);
-			if (result->delimiters->trie.empty() && result->delimiters->trie_special.empty()) {
-				error("%s: Error: DELIMITERS declared, but no definitions given, on line %u near `%S`!\n", p);
-			}
-			result->lines += SKIPWS(p, ';');
-			if (*p != ';') {
-				error("%s: Error: Expected closing ; before line %u near `%S`!\n", p);
-			}
-		}
-		// SOFT-DELIMITERS
-		else if (ISCHR(*p,'S','s') && ISCHR(*(p+14),'S','s') && ISCHR(*(p+1),'O','o') && ISCHR(*(p+2),'F','f')
-			&& ISCHR(*(p+3),'T','t') && ISCHR(*(p+4),'-','_')
-			&& ISCHR(*(p+5),'D','d') && ISCHR(*(p+6),'E','e') && ISCHR(*(p+7),'L','l')
-			&& ISCHR(*(p+8),'I','i') && ISCHR(*(p+9),'M','m') && ISCHR(*(p+10),'I','i') && ISCHR(*(p+11),'T','t')
-			&& ISCHR(*(p+12),'E','e') && ISCHR(*(p+13),'R','r')
-			&& !ISSTRING(p, 14)) {
-			if (result->soft_delimiters) {
-				error("%s: Error: Cannot redefine SOFT-DELIMITERS on line %u near `%S`!\n", p);
-			}
-			result->soft_delimiters = result->allocateSet();
-			result->soft_delimiters->line = result->lines;
-			result->soft_delimiters->setName(stringbits[S_SOFTDELIMITSET].getTerminatedBuffer());
-			p += 15;
-			result->lines += SKIPWS(p, '=');
-			if (*p != '=') {
-				error("%s: Error: Encountered a %C before the expected = on line %u near `%S`!\n", *p, p);
-			}
-			++p;
-			parseTagList(p, result->soft_delimiters);
-			result->addSet(result->soft_delimiters);
-			if (result->soft_delimiters->trie.empty() && result->soft_delimiters->trie_special.empty()) {
-				error("%s: Error: SOFT-DELIMITERS declared, but no definitions given, on line %u near `%S`!\n", p);
-			}
-			result->lines += SKIPWS(p, ';');
-			if (*p != ';') {
-				error("%s: Error: Expected closing ; before line %u near `%S`!\n", p);
-			}
-		}
-		// MAPPING-PREFIX
-		else if (ISCHR(*p,'M','m') && ISCHR(*(p+13),'X','x') && ISCHR(*(p+1),'A','a') && ISCHR(*(p+2),'P','p')
-			&& ISCHR(*(p+3),'P','p') && ISCHR(*(p+4),'I','i')
-			&& ISCHR(*(p+5),'N','n') && ISCHR(*(p+6),'G','g') && ISCHR(*(p+7),'-','_')
-			&& ISCHR(*(p+8),'P','p') && ISCHR(*(p+9),'R','r') && ISCHR(*(p+10),'E','e') && ISCHR(*(p+11),'F','f')
-			&& ISCHR(*(p+12),'I','i')
-			&& !ISSTRING(p, 13)) {
-
-			if (seen_mapping_prefix) {
-				u_fprintf(ux_stderr, "%s: Error: MAPPING-PREFIX on line %u cannot change previous prefix set on line %u!\n", filebase, result->lines, seen_mapping_prefix);
-				incErrorCount();
-			}
-			seen_mapping_prefix = result->lines;
-
-			p += 14;
-			result->lines += SKIPWS(p, '=');
-			if (*p != '=') {
-				error("%s: Error: Encountered a %C before the expected = on line %u near `%S`!\n", *p, p);
-			}
-			++p;
 			result->lines += SKIPWS(p);
-
-			UChar *n = p;
-			result->lines += SKIPTOWS(n, ';');
-			ptrdiff_t c = n - p;
-			u_strncpy(&gbuffers[0][0], p, c);
-			gbuffers[0][c] = 0;
-			p = n;
-
-			result->mapping_prefix = gbuffers[0][0];
-
-			if (!result->mapping_prefix) {
-				error("%s: Error: MAPPING-PREFIX declared, but no definitions given, on line %u near `%S`!\n", p);
-			}
-			result->lines += SKIPWS(p, ';');
-			if (*p != ';') {
-				error("%s: Error: Expected closing ; before line %u near `%S`!\n", p);
-			}
-		}
-		// PREFERRED-TARGETS
-		else if (ISCHR(*p,'P','p') && ISCHR(*(p+16),'S','s') && ISCHR(*(p+1),'R','r') && ISCHR(*(p+2),'E','e')
-			&& ISCHR(*(p+3),'F','f') && ISCHR(*(p+4),'E','e')
-			&& ISCHR(*(p+5),'R','r') && ISCHR(*(p+6),'R','r') && ISCHR(*(p+7),'E','e')
-			&& ISCHR(*(p+8),'D','d') && ISCHR(*(p+9),'-','_') && ISCHR(*(p+10),'T','t') && ISCHR(*(p+11),'A','a')
-			&& ISCHR(*(p+12),'R','r') && ISCHR(*(p+13),'G','g') && ISCHR(*(p+14),'E','e') && ISCHR(*(p+15),'T','t')
-			&& !ISSTRING(p, 16)) {
-			p += 17;
-			result->lines += SKIPWS(p, '=');
-			if (*p != '=') {
-				error("%s: Error: Encountered a %C before the expected = on line %u near `%S`!\n", *p, p);
-			}
-			++p;
-			result->lines += SKIPWS(p);
-
-			while (*p && *p != ';') {
-				UChar *n = p;
-				if (*n == '"') {
-					n++;
-					SKIPTO_NOSPAN(n, '"');
-					if (*n != '"') {
-						error("%s: Error: Expected closing \" on line %u near `%S`!\n", p);
-					}
+			// DELIMITERS
+			if (ISCHR(*p, 'D', 'd') && ISCHR(*(p + 9), 'S', 's') && ISCHR(*(p + 1), 'E', 'e') && ISCHR(*(p + 2), 'L', 'l') && ISCHR(*(p + 3), 'I', 'i') && ISCHR(*(p + 4), 'M', 'm') && ISCHR(*(p + 5), 'I', 'i') && ISCHR(*(p + 6), 'T', 't') && ISCHR(*(p + 7), 'E', 'e') && ISCHR(*(p + 8), 'R', 'r') && !ISSTRING(p, 9)) {
+				if (result->delimiters) {
+					error("%s: Error: Cannot redefine DELIMITERS on line %u near `%S`!\n", p);
 				}
-				result->lines += SKIPTOWS(n, ';', true);
-				ptrdiff_t c = n - p;
-				u_strncpy(&gbuffers[0][0], p, c);
-				gbuffers[0][c] = 0;
-				Tag *t = parseTag(&gbuffers[0][0], p);
-				result->preferred_targets.push_back(t->hash);
-				p = n;
-				result->lines += SKIPWS(p);
-			}
-
-			if (result->preferred_targets.empty()) {
-				error("%s: Error: PREFERRED-TARGETS declared, but no definitions given, on line %u near `%S`!\n", p);
-			}
-			result->lines += SKIPWS(p, ';');
-			if (*p != ';') {
-				error("%s: Error: Expected closing ; before line %u near `%S`!\n", p);
-			}
-		}
-		// REOPEN-MAPPINGS
-		else if (ISCHR(*p, 'R', 'r') && ISCHR(*(p + 14), 'S', 's') && ISCHR(*(p + 1), 'E', 'e') && ISCHR(*(p + 2), 'O', 'o')
-			&& ISCHR(*(p + 3), 'P', 'p') && ISCHR(*(p + 4), 'E', 'e') && ISCHR(*(p + 5), 'N', 'n') && ISCHR(*(p + 6), '-', '_')
-			&& ISCHR(*(p + 7), 'M', 'm') && ISCHR(*(p + 8), 'A', 'a') && ISCHR(*(p + 9), 'P', 'p') && ISCHR(*(p + 10), 'P', 'p')
-			&& ISCHR(*(p + 11), 'I', 'i') && ISCHR(*(p + 12), 'N', 'n') && ISCHR(*(p + 13), 'G', 'g')
-			&& !ISSTRING(p, 14)) {
-			p += 15;
-			result->lines += SKIPWS(p, '=');
-			if (*p != '=') {
-				error("%s: Error: Encountered a %C before the expected = on line %u near `%S`!\n", *p, p);
-			}
-			++p;
-			result->lines += SKIPWS(p);
-
-			while (*p && *p != ';') {
-				UChar *n = p;
-				if (*n == '"') {
-					n++;
-					SKIPTO_NOSPAN(n, '"');
-					if (*n != '"') {
-						error("%s: Error: Expected closing \" on line %u near `%S`!\n", p);
-					}
+				result->delimiters = result->allocateSet();
+				result->delimiters->line = result->lines;
+				result->delimiters->setName(stringbits[S_DELIMITSET].getTerminatedBuffer());
+				p += 10;
+				result->lines += SKIPWS(p, '=');
+				if (*p != '=') {
+					error("%s: Error: Encountered a %C before the expected = on line %u near `%S`!\n", *p, p);
 				}
-				result->lines += SKIPTOWS(n, ';', true);
-				ptrdiff_t c = n - p;
-				u_strncpy(&gbuffers[0][0], p, c);
-				gbuffers[0][c] = 0;
-				Tag *t = parseTag(&gbuffers[0][0], p);
-				result->reopen_mappings.insert(t->hash);
-				p = n;
-				result->lines += SKIPWS(p);
-			}
-
-			if (result->reopen_mappings.empty()) {
-				error("%s: Error: REOPEN-MAPPINGS declared, but no definitions given, on line %u near `%S`!\n", p);
-			}
-			result->lines += SKIPWS(p, ';');
-			if (*p != ';') {
-				error("%s: Error: Expected closing ; before line %u near `%S`!\n", p);
-			}
-		}
-		// STATIC-SETS
-		else if (ISCHR(*p,'S','s') && ISCHR(*(p+10),'S','s') && ISCHR(*(p+1),'T','t') && ISCHR(*(p+2),'A','a')
-			&& ISCHR(*(p+3),'T','t') && ISCHR(*(p+4),'I','i') && ISCHR(*(p+5),'C','c') && ISCHR(*(p+6),'-','-')
-			&& ISCHR(*(p+7),'S','s') && ISCHR(*(p+8),'E','e') && ISCHR(*(p+9),'T','t')
-			&& !ISSTRING(p, 10)) {
-			p += 11;
-			result->lines += SKIPWS(p, '=');
-			if (*p != '=') {
-				error("%s: Error: Encountered a %C before the expected = on line %u near `%S`!\n", *p, p);
-			}
-			++p;
-			result->lines += SKIPWS(p);
-
-			while (*p && *p != ';') {
-				UChar *n = p;
-				result->lines += SKIPTOWS(n, ';', true);
-				result->static_sets.push_back(UString(p, n));
-				p = n;
-				result->lines += SKIPWS(p);
-			}
-
-			if (result->static_sets.empty()) {
-				error("%s: Error: STATIC-SETS declared, but no definitions given, on line %u near `%S`!\n", p);
-			}
-			result->lines += SKIPWS(p, ';');
-			if (*p != ';') {
-				error("%s: Error: Expected closing ; before line %u near `%S`!\n", p);
-			}
-		}
-		// ADDRELATIONS
-		else if (ISCHR(*p,'A','a') && ISCHR(*(p+11),'S','s') && ISCHR(*(p+1),'D','d') && ISCHR(*(p+2),'D','d')
-			&& ISCHR(*(p+3),'R','r') && ISCHR(*(p+4),'E','e') && ISCHR(*(p+5),'L','l') && ISCHR(*(p+6),'A','a')
-			&& ISCHR(*(p+7),'T','t') && ISCHR(*(p+8),'I','i') && ISCHR(*(p+9),'O','o') && ISCHR(*(p+10),'N','n')
-			&& !ISSTRING(p, 11)) {
-			parseRule(p, K_ADDRELATIONS);
-		}
-		// SETRELATIONS
-		else if (ISCHR(*p,'S','s') && ISCHR(*(p+11),'S','s') && ISCHR(*(p+1),'E','e') && ISCHR(*(p+2),'T','t')
-			&& ISCHR(*(p+3),'R','r') && ISCHR(*(p+4),'E','e') && ISCHR(*(p+5),'L','l') && ISCHR(*(p+6),'A','a')
-			&& ISCHR(*(p+7),'T','t') && ISCHR(*(p+8),'I','i') && ISCHR(*(p+9),'O','o') && ISCHR(*(p+10),'N','n')
-			&& !ISSTRING(p, 11)) {
-			parseRule(p, K_SETRELATIONS);
-		}
-		// REMRELATIONS
-		else if (ISCHR(*p,'R','r') && ISCHR(*(p+11),'S','s') && ISCHR(*(p+1),'E','e') && ISCHR(*(p+2),'M','m')
-			&& ISCHR(*(p+3),'R','r') && ISCHR(*(p+4),'E','e') && ISCHR(*(p+5),'L','l') && ISCHR(*(p+6),'A','a')
-			&& ISCHR(*(p+7),'T','t') && ISCHR(*(p+8),'I','i') && ISCHR(*(p+9),'O','o') && ISCHR(*(p+10),'N','n')
-			&& !ISSTRING(p, 11)) {
-			parseRule(p, K_REMRELATIONS);
-		}
-		// ADDRELATION
-		else if (ISCHR(*p,'A','a') && ISCHR(*(p+10),'N','n') && ISCHR(*(p+1),'D','d') && ISCHR(*(p+2),'D','d')
-			&& ISCHR(*(p+3),'R','r') && ISCHR(*(p+4),'E','e') && ISCHR(*(p+5),'L','l') && ISCHR(*(p+6),'A','a')
-			&& ISCHR(*(p+7),'T','t') && ISCHR(*(p+8),'I','i') && ISCHR(*(p+9),'O','o')
-			&& !ISSTRING(p, 10)) {
-			parseRule(p, K_ADDRELATION);
-		}
-		// SETRELATION
-		else if (ISCHR(*p,'S','s') && ISCHR(*(p+10),'N','n') && ISCHR(*(p+1),'E','e') && ISCHR(*(p+2),'T','t')
-			&& ISCHR(*(p+3),'R','r') && ISCHR(*(p+4),'E','e') && ISCHR(*(p+5),'L','l') && ISCHR(*(p+6),'A','a')
-			&& ISCHR(*(p+7),'T','t') && ISCHR(*(p+8),'I','i') && ISCHR(*(p+9),'O','o')
-			&& !ISSTRING(p, 10)) {
-			parseRule(p, K_SETRELATION);
-		}
-		// REMRELATION
-		else if (ISCHR(*p,'R','r') && ISCHR(*(p+10),'N','n') && ISCHR(*(p+1),'E','e') && ISCHR(*(p+2),'M','m')
-			&& ISCHR(*(p+3),'R','r') && ISCHR(*(p+4),'E','e') && ISCHR(*(p+5),'L','l') && ISCHR(*(p+6),'A','a')
-			&& ISCHR(*(p+7),'T','t') && ISCHR(*(p+8),'I','i') && ISCHR(*(p+9),'O','o')
-			&& !ISSTRING(p, 10)) {
-			parseRule(p, K_REMRELATION);
-		}
-		// SETVARIABLE
-		else if (ISCHR(*p,'S','s') && ISCHR(*(p+10),'E','e') && ISCHR(*(p+1),'E','e') && ISCHR(*(p+2),'T','t')
-			&& ISCHR(*(p+3),'V','v') && ISCHR(*(p+4),'A','a') && ISCHR(*(p+5),'R','r') && ISCHR(*(p+6),'I','i')
-			&& ISCHR(*(p+7),'A','a') && ISCHR(*(p+8),'B','b') && ISCHR(*(p+9),'L','l')
-			&& !ISSTRING(p, 10)) {
-			parseRule(p, K_SETVARIABLE);
-		}
-		// REMVARIABLE
-		else if (ISCHR(*p,'R','r') && ISCHR(*(p+10),'E','e') && ISCHR(*(p+1),'E','e') && ISCHR(*(p+2),'M','m')
-			&& ISCHR(*(p+3),'V','v') && ISCHR(*(p+4),'A','a') && ISCHR(*(p+5),'R','r') && ISCHR(*(p+6),'I','i')
-			&& ISCHR(*(p+7),'A','a') && ISCHR(*(p+8),'B','b') && ISCHR(*(p+9),'L','l')
-			&& !ISSTRING(p, 10)) {
-			parseRule(p, K_REMVARIABLE);
-		}
-		// SETPARENT
-		else if (ISCHR(*p,'S','s') && ISCHR(*(p+8),'T','t') && ISCHR(*(p+1),'E','e') && ISCHR(*(p+2),'T','t')
-			&& ISCHR(*(p+3),'P','p') && ISCHR(*(p+4),'A','a') && ISCHR(*(p+5),'R','r') && ISCHR(*(p+6),'E','e')
-			&& ISCHR(*(p+7),'N','n')
-			&& !ISSTRING(p, 8)) {
-			parseRule(p, K_SETPARENT);
-		}
-		// SETCHILD
-		else if (ISCHR(*p,'S','s') && ISCHR(*(p+7),'D','d') && ISCHR(*(p+1),'E','e') && ISCHR(*(p+2),'T','t')
-			&& ISCHR(*(p+3),'C','c') && ISCHR(*(p+4),'H','h') && ISCHR(*(p+5),'I','i') && ISCHR(*(p+6),'L','l')
-			&& !ISSTRING(p, 7)) {
-			parseRule(p, K_SETCHILD);
-		}
-		// EXTERNAL
-		else if (ISCHR(*p,'E','e') && ISCHR(*(p+7),'L','l') && ISCHR(*(p+1),'X','x') && ISCHR(*(p+2),'T','t')
-			&& ISCHR(*(p+3),'E','e') && ISCHR(*(p+4),'R','r') && ISCHR(*(p+5),'N','n') && ISCHR(*(p+6),'A','a')
-			&& !ISSTRING(p, 7)) {
-			parseRule(p, K_EXTERNAL);
-		}
-		// REMCOHORT
-		else if (ISCHR(*p,'R','r') && ISCHR(*(p+8),'T','t') && ISCHR(*(p+1),'E','e') && ISCHR(*(p+2),'M','m')
-			&& ISCHR(*(p+3),'C','c') && ISCHR(*(p+4),'O','o') && ISCHR(*(p+5),'H','h') && ISCHR(*(p+6),'O','o')
-			&& ISCHR(*(p+7),'R','r')
-			&& !ISSTRING(p, 8)) {
-			parseRule(p, K_REMCOHORT);
-		}
-		// ADDCOHORT
-		else if (ISCHR(*p,'A','a') && ISCHR(*(p+8),'T','t') && ISCHR(*(p+1),'D','d') && ISCHR(*(p+2),'D','d')
-			&& ISCHR(*(p+3),'C','c') && ISCHR(*(p+4),'O','o') && ISCHR(*(p+5),'H','h') && ISCHR(*(p+6),'O','o')
-			&& ISCHR(*(p+7),'R','r')
-			&& !ISSTRING(p, 8)) {
-			parseRule(p, K_ADDCOHORT);
-		}
-		// SETS
-		else if (ISCHR(*p,'S','s') && ISCHR(*(p+3),'S','s') && ISCHR(*(p+1),'E','e') && ISCHR(*(p+2),'T','t')
-			&& !ISSTRING(p, 3)) {
-			p += 4;
-		}
-		// LIST
-		else if (ISCHR(*p,'L','l') && ISCHR(*(p+3),'T','t') && ISCHR(*(p+1),'I','i') && ISCHR(*(p+2),'S','s')
-			&& !ISSTRING(p, 3)) {
-			Set *s = result->allocateSet();
-			s->line = result->lines;
-			p += 4;
-			result->lines += SKIPWS(p);
-			UChar *n = p;
-			result->lines += SKIPTOWS(n, 0, true);
-			while (n[-1] == ',' || n[-1] == ']') {
-				--n;
-			}
-			ptrdiff_t c = n - p;
-			u_strncpy(&gbuffers[0][0], p, c);
-			gbuffers[0][c] = 0;
-			s->setName(&gbuffers[0][0]);
-			p = n;
-			result->lines += SKIPWS(p, '=');
-			if (*p != '=') {
-				error("%s: Error: Encountered a %C before the expected = on line %u near `%S`!\n", *p, p);
-			}
-			++p;
-			parseTagList(p, s);
-			s->rehash();
-			Set *tmp = result->getSet(s->hash);
-			if (tmp) {
-				if (verbosity_level > 0 && tmp->name[0] != '_' && tmp->name[1] != 'G' && tmp->name[2] != '_') {
-					u_fprintf(ux_stderr, "%s: Warning: LIST %S was defined twice with the same contents: Lines %u and %u.\n", filebase, s->name.c_str(), tmp->line, s->line);
-					u_fflush(ux_stderr);
+				++p;
+				parseTagList(p, result->delimiters);
+				result->addSet(result->delimiters);
+				if (result->delimiters->trie.empty() && result->delimiters->trie_special.empty()) {
+					error("%s: Error: DELIMITERS declared, but no definitions given, on line %u near `%S`!\n", p);
+				}
+				result->lines += SKIPWS(p, ';');
+				if (*p != ';') {
+					error("%s: Error: Expected closing ; before line %u near `%S`!\n", p);
 				}
 			}
-			result->addSet(s);
-			if (s->empty()) {
-				error("%s: Error: LIST %S declared, but no definitions given, on line %u near `%S`!\n", s->name.c_str(), p);
-			}
-			result->lines += SKIPWS(p, ';');
-			if (*p != ';') {
-				error("%s: Error: Expected closing ; before line %u near `%S`!\n", p);
-			}
-		}
-		// SET
-		else if (ISCHR(*p,'S','s') && ISCHR(*(p+2),'T','t') && ISCHR(*(p+1),'E','e')
-			&& !ISSTRING(p, 2)) {
-			Set *s = result->allocateSet();
-			s->line = result->lines;
-			p += 3;
-			result->lines += SKIPWS(p);
-			UChar *n = p;
-			result->lines += SKIPTOWS(n, 0, true);
-			while (n[-1] == ',' || n[-1] == ']') {
-				--n;
-			}
-			ptrdiff_t c = n - p;
-			u_strncpy(&gbuffers[0][0], p, c);
-			gbuffers[0][c] = 0;
-			s->setName(&gbuffers[0][0]);
-			uint32_t sh = hash_value(&gbuffers[0][0]);
-			p = n;
-			result->lines += SKIPWS(p, '=');
-			if (*p != '=') {
-				error("%s: Error: Encountered a %C before the expected = on line %u near `%S`!\n", *p, p);
-			}
-			++p;
-
-			swapper_false swp(no_isets, no_isets);
-
-			parseSetInline(p, s);
-			s->rehash();
-			Set *tmp = result->getSet(s->hash);
-			if (tmp) {
-				if (verbosity_level > 0 && tmp->name[0] != '_' && tmp->name[1] != 'G' && tmp->name[2] != '_') {
-					u_fprintf(ux_stderr, "%s: Warning: SET %S was defined twice with the same contents: Lines %u and %u.\n", filebase, s->name.c_str(), tmp->line, s->line);
-					u_fflush(ux_stderr);
+			// SOFT-DELIMITERS
+			else if (ISCHR(*p, 'S', 's') && ISCHR(*(p + 14), 'S', 's') && ISCHR(*(p + 1), 'O', 'o') && ISCHR(*(p + 2), 'F', 'f') && ISCHR(*(p + 3), 'T', 't') && ISCHR(*(p + 4), '-', '_') && ISCHR(*(p + 5), 'D', 'd') && ISCHR(*(p + 6), 'E', 'e') && ISCHR(*(p + 7), 'L', 'l') && ISCHR(*(p + 8), 'I', 'i') && ISCHR(*(p + 9), 'M', 'm') && ISCHR(*(p + 10), 'I', 'i') && ISCHR(*(p + 11), 'T', 't') && ISCHR(*(p + 12), 'E', 'e') && ISCHR(*(p + 13), 'R', 'r') && !ISSTRING(p, 14)) {
+				if (result->soft_delimiters) {
+					error("%s: Error: Cannot redefine SOFT-DELIMITERS on line %u near `%S`!\n", p);
+				}
+				result->soft_delimiters = result->allocateSet();
+				result->soft_delimiters->line = result->lines;
+				result->soft_delimiters->setName(stringbits[S_SOFTDELIMITSET].getTerminatedBuffer());
+				p += 15;
+				result->lines += SKIPWS(p, '=');
+				if (*p != '=') {
+					error("%s: Error: Encountered a %C before the expected = on line %u near `%S`!\n", *p, p);
+				}
+				++p;
+				parseTagList(p, result->soft_delimiters);
+				result->addSet(result->soft_delimiters);
+				if (result->soft_delimiters->trie.empty() && result->soft_delimiters->trie_special.empty()) {
+					error("%s: Error: SOFT-DELIMITERS declared, but no definitions given, on line %u near `%S`!\n", p);
+				}
+				result->lines += SKIPWS(p, ';');
+				if (*p != ';') {
+					error("%s: Error: Expected closing ; before line %u near `%S`!\n", p);
 				}
 			}
-			else if (s->sets.size() == 1 && !(s->type & ST_TAG_UNIFY)) {
-				tmp = result->getSet(s->sets.back());
-				if (verbosity_level > 0) {
-					u_fprintf(ux_stderr, "%s: Warning: Set %S on line %u aliased to %S on line %u.\n", filebase, s->name.c_str(), s->line, tmp->name.c_str(), tmp->line);
-					u_fflush(ux_stderr);
+			// MAPPING-PREFIX
+			else if (ISCHR(*p, 'M', 'm') && ISCHR(*(p + 13), 'X', 'x') && ISCHR(*(p + 1), 'A', 'a') && ISCHR(*(p + 2), 'P', 'p') && ISCHR(*(p + 3), 'P', 'p') && ISCHR(*(p + 4), 'I', 'i') && ISCHR(*(p + 5), 'N', 'n') && ISCHR(*(p + 6), 'G', 'g') && ISCHR(*(p + 7), '-', '_') && ISCHR(*(p + 8), 'P', 'p') && ISCHR(*(p + 9), 'R', 'r') && ISCHR(*(p + 10), 'E', 'e') && ISCHR(*(p + 11), 'F', 'f') && ISCHR(*(p + 12), 'I', 'i') && !ISSTRING(p, 13)) {
+				if (seen_mapping_prefix) {
+					u_fprintf(ux_stderr, "%s: Error: MAPPING-PREFIX on line %u cannot change previous prefix set on line %u!\n", filebase, result->lines, seen_mapping_prefix);
+					incErrorCount();
 				}
-				result->maybe_used_sets.insert(tmp);
-				result->set_alias[sh] = tmp->hash;
-				result->destroySet(s);
-				s = tmp;
-			}
-			result->addSet(s);
-			if (s->empty()) {
-				error("%s: Error: SET %S declared, but no definitions given, on line %u near `%S`!\n", s->name.c_str(), p);
-			}
-			result->lines += SKIPWS(p, ';');
-			if (*p != ';') {
-				error("%s: Error: Expected closing ; before line %u near `%S`! Probably caused by missing set operator.\n", p);
-			}
-		}
-		// MAPPINGS
-		else if (ISCHR(*p,'M','m') && ISCHR(*(p+7),'S','s') && ISCHR(*(p+1),'A','a') && ISCHR(*(p+2),'P','p')
-			&& ISCHR(*(p+3),'P','p') && ISCHR(*(p+4),'I','i') && ISCHR(*(p+5),'N','n') && ISCHR(*(p+6),'G','g')
-			&& !ISSTRING(p, 7)) {
-			p += 8;
-			in_before_sections = true;
-			in_section = false;
-			in_after_sections = false;
-			in_null_section = false;
-			UChar *s = p;
-			SKIPLN(s);
-			SKIPWS(s);
-			result->lines += SKIPWS(p);
-			if (p != s) {
-				parseAnchorish(p);
-			}
-		}
-		// CORRECTIONS
-		else if (ISCHR(*p,'C','c') && ISCHR(*(p+10),'S','s') && ISCHR(*(p+1),'O','o') && ISCHR(*(p+2),'R','r')
-			&& ISCHR(*(p+3),'R','r') && ISCHR(*(p+4),'E','e') && ISCHR(*(p+5),'C','c') && ISCHR(*(p+6),'T','t')
-			&& ISCHR(*(p+7),'I','i') && ISCHR(*(p+8),'O','o') && ISCHR(*(p+9),'N','n')
-			&& !ISSTRING(p, 10)) {
-			p += 11;
-			in_before_sections = true;
-			in_section = false;
-			in_after_sections = false;
-			in_null_section = false;
-			UChar *s = p;
-			SKIPLN(s);
-			SKIPWS(s);
-			result->lines += SKIPWS(p);
-			if (p != s) {
-				parseAnchorish(p);
-			}
-		}
-		// BEFORE-SECTIONS
-		else if (ISCHR(*p,'B','b') && ISCHR(*(p+14),'S','s') && ISCHR(*(p+1),'E','e') && ISCHR(*(p+2),'F','f')
-			&& ISCHR(*(p+3),'O','o') && ISCHR(*(p+4),'R','r') && ISCHR(*(p+5),'E','e') && ISCHR(*(p+6),'-','_')
-			&& ISCHR(*(p+7),'S','s') && ISCHR(*(p+8),'E','e') && ISCHR(*(p+9),'C','c') && ISCHR(*(p+10),'T','t')
-			&& ISCHR(*(p+11),'I','i') && ISCHR(*(p+12),'O','o') && ISCHR(*(p+13),'N','n')
-			&& !ISSTRING(p, 14)) {
-			p += 15;
-			in_before_sections = true;
-			in_section = false;
-			in_after_sections = false;
-			in_null_section = false;
-			UChar *s = p;
-			SKIPLN(s);
-			SKIPWS(s);
-			result->lines += SKIPWS(p);
-			if (p != s) {
-				parseAnchorish(p);
-			}
-		}
-		// SECTION
-		else if (ISCHR(*p,'S','s') && ISCHR(*(p+6),'N','n') && ISCHR(*(p+1),'E','e') && ISCHR(*(p+2),'C','c')
-			&& ISCHR(*(p+3),'T','t') && ISCHR(*(p+4),'I','i') && ISCHR(*(p+5),'O','o')
-			&& !ISSTRING(p, 6)) {
-			p += 7;
-			result->sections.push_back(result->lines);
-			in_before_sections = false;
-			in_section = true;
-			in_after_sections = false;
-			in_null_section = false;
-			UChar *s = p;
-			SKIPLN(s);
-			SKIPWS(s);
-			result->lines += SKIPWS(p);
-			if (p != s) {
-				parseAnchorish(p);
-			}
-		}
-		// CONSTRAINTS
-		else if (ISCHR(*p,'C','c') && ISCHR(*(p+10),'S','s') && ISCHR(*(p+1),'O','o') && ISCHR(*(p+2),'N','n')
-			&& ISCHR(*(p+3),'S','s') && ISCHR(*(p+4),'T','t') && ISCHR(*(p+5),'R','r') && ISCHR(*(p+6),'A','a')
-			&& ISCHR(*(p+7),'I','i') && ISCHR(*(p+8),'N','n') && ISCHR(*(p+9),'T','t')
-			&& !ISSTRING(p, 10)) {
-			p += 11;
-			result->sections.push_back(result->lines);
-			in_before_sections = false;
-			in_section = true;
-			in_after_sections = false;
-			in_null_section = false;
-			UChar *s = p;
-			SKIPLN(s);
-			SKIPWS(s);
-			result->lines += SKIPWS(p);
-			if (p != s) {
-				parseAnchorish(p);
-			}
-		}
-		// AFTER-SECTIONS
-		else if (ISCHR(*p,'A','a') && ISCHR(*(p+13),'S','s') && ISCHR(*(p+1),'F','f') && ISCHR(*(p+2),'T','t')
-			&& ISCHR(*(p+3),'E','e') && ISCHR(*(p+4),'R','r') && ISCHR(*(p+5),'-','_')
-			&& ISCHR(*(p+6),'S','s') && ISCHR(*(p+7),'E','e') && ISCHR(*(p+8),'C','c') && ISCHR(*(p+9),'T','t')
-			&& ISCHR(*(p+10),'I','i') && ISCHR(*(p+11),'O','o') && ISCHR(*(p+12),'N','n')
-			&& !ISSTRING(p, 13)) {
-			p += 14;
-			in_before_sections = false;
-			in_section = false;
-			in_after_sections = true;
-			in_null_section = false;
-			UChar *s = p;
-			SKIPLN(s);
-			SKIPWS(s);
-			result->lines += SKIPWS(p);
-			if (p != s) {
-				parseAnchorish(p);
-			}
-		}
-		// NULL-SECTION
-		else if (ISCHR(*p,'N','n') && ISCHR(*(p+11),'N','n') && ISCHR(*(p+1),'U','u') && ISCHR(*(p+2),'L','l')
-			&& ISCHR(*(p+3),'L','l') && ISCHR(*(p+4),'-','-') && ISCHR(*(p+5),'S','s')
-			&& ISCHR(*(p+6),'E','e') && ISCHR(*(p+7),'C','c') && ISCHR(*(p+8),'T','t') && ISCHR(*(p+9),'I','i')
-			&& ISCHR(*(p+10),'O','o')
-			&& !ISSTRING(p, 11)) {
-			p += 12;
-			in_before_sections = false;
-			in_section = false;
-			in_after_sections = false;
-			in_null_section = true;
-			UChar *s = p;
-			SKIPLN(s);
-			SKIPWS(s);
-			result->lines += SKIPWS(p);
-			if (p != s) {
-				parseAnchorish(p);
-			}
-		}
-		// SUBREADINGS
-		else if (ISCHR(*p,'S','s') && ISCHR(*(p+10),'S','s') && ISCHR(*(p+1),'U','u') && ISCHR(*(p+2),'B','b')
-			&& ISCHR(*(p+3),'R','r') && ISCHR(*(p+4),'E','e') && ISCHR(*(p+5),'A','a')
-			&& ISCHR(*(p+6),'D','d') && ISCHR(*(p+7),'I','i') && ISCHR(*(p+8),'N','n') && ISCHR(*(p+9),'G','g')
-			&& !ISSTRING(p, 10)) {
-			p += 11;
-			result->lines += SKIPWS(p, '=');
-			if (*p != '=') {
-				error("%s: Error: Encountered a %C before the expected = on line %u near `%S`!\n", *p, p);
-			}
-			++p;
-			result->lines += SKIPWS(p);
-			if (p[0] == 'L' || p[0] == 'l') {
-				result->sub_readings_ltr = true;
-			}
-			else if (p[0] == 'R' || p[0] == 'r') {
-				result->sub_readings_ltr = false;
-			}
-			else {
-				error("%s: Error: Expected RTL or LTR on line %u near `%S`!\n", *p, p);
-			}
-			UChar *n = p;
-			result->lines += SKIPTOWS(n, 0, true);
-			p = n;
-			result->lines += SKIPWS(p, ';');
-			if (*p != ';') {
-				error("%s: Error: Expected closing ; before line %u near `%S`!\n", p);
-			}
-		}
-		// OPTIONS
-		else if (ISCHR(*p, 'O', 'o') && ISCHR(*(p + 6), 'S', 's') && ISCHR(*(p + 1), 'P', 'p') && ISCHR(*(p + 2), 'T', 't')
-			&& ISCHR(*(p + 3), 'I', 'i') && ISCHR(*(p + 4), 'O', 'o') && ISCHR(*(p + 5), 'N', 'n')
-			&& !ISSTRING(p, 6)) {
-			p += 7;
-			result->lines += SKIPWS(p, '+');
-			if (p[0] != '+' || p[1] != '=') {
-				error("%s: Error: Encountered a %C before the expected += on line %u near `%S`!\n", *p, p);
-			}
-			p += 2;
-			result->lines += SKIPWS(p);
+				seen_mapping_prefix = result->lines;
 
-			typedef std::pair<size_t, bool&> pairs_t;
-			pairs_t pairs[] = {
-				{ S_NO_ISETS, no_isets },
-				{ S_NO_ITMPLS, no_itmpls },
-				{ S_STRICT_WFORMS, strict_wforms },
-				{ S_STRICT_BFORMS, strict_bforms },
-				{ S_STRICT_SECOND, strict_second },
-			};
-
-			while (*p != ';') {
-				bool found = false;
-				boost_foreach (pairs_t& pair, pairs) {
-					if (ux_simplecasecmp(p, stringbits[pair.first].getTerminatedBuffer(), stringbits[pair.first].length())) {
-						p += stringbits[pair.first].length();
-						pair.second = true;
-						result->lines += SKIPWS(p);
-						found = true;
-					}
-				}
-				if (!found) {
-					error("%s: Error: Invalid option found on line %u near `%S`!\n", p);
-				}
-			}
-
-			result->lines += SKIPWS(p, ';');
-			if (*p != ';') {
-				error("%s: Error: Expected closing ; before line %u near `%S`!\n", p);
-			}
-		}
-		// STRICT-TAGS
-		else if (ISCHR(*p, 'S', 's') && ISCHR(*(p + 10), 'S', 's') && ISCHR(*(p + 1), 'T', 't') && ISCHR(*(p + 2), 'R', 'r')
-			&& ISCHR(*(p + 3), 'I', 'i') && ISCHR(*(p + 4), 'C', 'c') && ISCHR(*(p + 5), 'T', 't')
-			&& ISCHR(*(p + 6), '-', '-') && ISCHR(*(p + 7), 'T', 't') && ISCHR(*(p + 8), 'A', 'a') && ISCHR(*(p + 9), 'G', 'g')
-			&& !ISSTRING(p, 10)) {
-			p += 11;
-			result->lines += SKIPWS(p, '+');
-			if (p[0] != '+' || p[1] != '=') {
-				error("%s: Error: Encountered a %C before the expected += on line %u near `%S`!\n", *p, p);
-			}
-			p += 2;
-			result->lines += SKIPWS(p);
-
-			uint32SortedVector tmp;
-			strict_tags.swap(tmp);
-			while (*p && *p != ';') {
-				UChar *n = p;
-				if (*n == '"') {
-					n++;
-					SKIPTO_NOSPAN(n, '"');
-					if (*n != '"') {
-						error("%s: Error: Expected closing \" on line %u near `%S`!\n", p);
-					}
-				}
-				result->lines += SKIPTOWS(n, ';', true);
-				ptrdiff_t c = n - p;
-				u_strncpy(&gbuffers[0][0], p, c);
-				gbuffers[0][c] = 0;
-				Tag *t = parseTag(&gbuffers[0][0], p);
-				tmp.insert(t->hash);
-				p = n;
-				result->lines += SKIPWS(p);
-			}
-
-			if (tmp.empty()) {
-				error("%s: Error: STRICT-TAGS declared, but no definitions given, on line %u near `%S`!\n", p);
-			}
-			result->lines += SKIPWS(p, ';');
-			if (*p != ';') {
-				error("%s: Error: Expected closing ; before line %u near `%S`!\n", p);
-			}
-			strict_tags.swap(tmp);
-		}
-		// ANCHOR
-		else if (ISCHR(*p,'A','a') && ISCHR(*(p+5),'R','r') && ISCHR(*(p+1),'N','n') && ISCHR(*(p+2),'C','c')
-			&& ISCHR(*(p+3),'H','h') && ISCHR(*(p+4),'O','o')
-			&& !ISSTRING(p, 5)) {
-			p += 6;
-			result->lines += SKIPWS(p);
-			parseAnchorish(p);
-		}
-		// INCLUDE
-		else if (ISCHR(*p,'I','i') && ISCHR(*(p+6),'E','e') && ISCHR(*(p+1),'N','n') && ISCHR(*(p+2),'C','c')
-			&& ISCHR(*(p+3),'L','l') && ISCHR(*(p+4),'U','u') && ISCHR(*(p+5),'D','d')
-			&& !ISSTRING(p, 6)) {
-			p += 7;
-			result->lines += SKIPWS(p);
-			UChar *n = p;
-			result->lines += SKIPTOWS(n, 0, true);
-			ptrdiff_t c = n - p;
-			u_strncpy(&gbuffers[0][0], p, c);
-			gbuffers[0][c] = 0;
-			p = n;
-			result->lines += SKIPWS(p, ';');
-			if (*p != ';') {
-				error("%s: Error: Expected closing ; before line %u near `%S`!\n", p);
-			}
-
-			UErrorCode err = U_ZERO_ERROR;
-			u_strToUTF8(&cbuffers[0][0], CG3_BUFFER_SIZE-1, 0, &gbuffers[0][0], u_strlen(&gbuffers[0][0]), &err);
-
-			std::string abspath;
-			if (cbuffers[0][0] == '/') {
-				abspath = &cbuffers[0][0];
-			}
-			else {
-				abspath = ux_dirname(fname);
-				abspath += &cbuffers[0][0];
-			}
-
-			size_t grammar_size = 0;
-			struct stat _stat;
-			int error = stat(abspath.c_str(), &_stat);
-
-			if (error != 0) {
-				abspath = &cbuffers[0][0];
-				error = stat(abspath.c_str(), &_stat);
-			}
-
-			if (error != 0) {
-				u_fprintf(ux_stderr, "%s: Error: Cannot stat %s due to error %d - bailing out!\n", filebase, abspath.c_str(), error);
-				CG3Quit(1);
-			}
-			else {
-				grammar_size = static_cast<size_t>(_stat.st_size);
-			}
-
-			UFILE *grammar = u_fopen(abspath.c_str(), "rb", locale, codepage);
-			if (!grammar) {
-				u_fprintf(ux_stderr, "%s: Error: Error opening %s for reading!\n", filebase, abspath.c_str());
-				CG3Quit(1);
-			}
-			UChar32 bom = u_fgetcx(grammar);
-			if (bom != 0xfeff && bom != static_cast<UChar32>(0xffffffff)) {
-				u_fungetc(bom, grammar);
-			}
-
-			std::vector<UChar> data(grammar_size*2, 0);
-			uint32_t read = u_file_read(&data[4], grammar_size*2, grammar);
-			u_fclose(grammar);
-			if (read >= grammar_size*2-1) {
-				u_fprintf(ux_stderr, "%s: Error: Converting from underlying codepage to UTF-16 exceeded factor 2 buffer.\n", filebase);
-				CG3Quit(1);
-			}
-			data.resize(read+4+1);
-
-			uint32_t olines = 0;
-			swapper<uint32_t> oswap(true, olines, result->lines);
-			const char *obase = 0;
-			swapper<const char*> bswap(true, obase, filebase);
-
-			parseFromUChar(&data[4], abspath.c_str());
-		}
-		// IFF
-		else if (ISCHR(*p,'I','i') && ISCHR(*(p+2),'F','f') && ISCHR(*(p+1),'F','f')
-			&& !ISSTRING(p, 2)) {
-			parseRule(p, K_IFF);
-		}
-		// MAP
-		else if (ISCHR(*p,'M','m') && ISCHR(*(p+2),'P','p') && ISCHR(*(p+1),'A','a')
-			&& !ISSTRING(p, 2)) {
-			parseRule(p, K_MAP);
-		}
-		// ADD
-		else if (ISCHR(*p,'A','a') && ISCHR(*(p+2),'D','d') && ISCHR(*(p+1),'D','d')
-			&& !ISSTRING(p, 2)) {
-			parseRule(p, K_ADD);
-		}
-		// APPEND
-		else if (ISCHR(*p,'A','a') && ISCHR(*(p+5),'D','d') && ISCHR(*(p+1),'P','p') && ISCHR(*(p+2),'P','p')
-			&& ISCHR(*(p+3),'E','e') && ISCHR(*(p+4),'N','n')
-			&& !ISSTRING(p, 5)) {
-			parseRule(p, K_APPEND);
-		}
-		// SELECT
-		else if (ISCHR(*p,'S','s') && ISCHR(*(p+5),'T','t') && ISCHR(*(p+1),'E','e') && ISCHR(*(p+2),'L','l')
-			&& ISCHR(*(p+3),'E','e') && ISCHR(*(p+4),'C','c')
-			&& !ISSTRING(p, 5)) {
-			parseRule(p, K_SELECT);
-		}
-		// REMOVE
-		else if (ISCHR(*p,'R','r') && ISCHR(*(p+5),'E','e') && ISCHR(*(p+1),'E','e') && ISCHR(*(p+2),'M','m')
-			&& ISCHR(*(p+3),'O','o') && ISCHR(*(p+4),'V','v')
-			&& !ISSTRING(p, 5)) {
-			parseRule(p, K_REMOVE);
-		}
-		// REPLACE
-		else if (ISCHR(*p,'R','r') && ISCHR(*(p+6),'E','e') && ISCHR(*(p+1),'E','e') && ISCHR(*(p+2),'P','p')
-			&& ISCHR(*(p+3),'L','l') && ISCHR(*(p+4),'A','a') && ISCHR(*(p+5),'C','c')
-			&& !ISSTRING(p, 6)) {
-			parseRule(p, K_REPLACE);
-		}
-		// DELIMIT
-		else if (ISCHR(*p,'D','d') && ISCHR(*(p+6),'T','t') && ISCHR(*(p+1),'E','e') && ISCHR(*(p+2),'L','l')
-			&& ISCHR(*(p+3),'I','i') && ISCHR(*(p+4),'M','m') && ISCHR(*(p+5),'I','i')
-			&& !ISSTRING(p, 6)) {
-			parseRule(p, K_DELIMIT);
-		}
-		// SUBSTITUTE
-		else if (ISCHR(*p,'S','s') && ISCHR(*(p+9),'E','e') && ISCHR(*(p+1),'U','u') && ISCHR(*(p+2),'B','b')
-			&& ISCHR(*(p+3),'S','s') && ISCHR(*(p+4),'T','t') && ISCHR(*(p+5),'I','i') && ISCHR(*(p+6),'T','t')
-			&& ISCHR(*(p+7),'U','u') && ISCHR(*(p+8),'T','t')
-			&& !ISSTRING(p, 9)) {
-			parseRule(p, K_SUBSTITUTE);
-		}
-		// COPY
-		else if (ISCHR(*p,'C','c') && ISCHR(*(p+3),'Y','y') && ISCHR(*(p+1),'O','o') && ISCHR(*(p+2),'P','p')
-			&& !ISSTRING(p, 3)) {
-			parseRule(p, K_COPY);
-		}
-		// JUMP
-		else if (ISCHR(*p,'J','j') && ISCHR(*(p+3),'P','p') && ISCHR(*(p+1),'U','u') && ISCHR(*(p+2),'M','m')
-			&& !ISSTRING(p, 3)) {
-			parseRule(p, K_JUMP);
-		}
-		// MOVE
-		else if (ISCHR(*p,'M','m') && ISCHR(*(p+3),'E','e') && ISCHR(*(p+1),'O','o') && ISCHR(*(p+2),'V','v')
-			&& !ISSTRING(p, 3)) {
-			parseRule(p, K_MOVE);
-		}
-		// SWITCH
-		else if (ISCHR(*p,'S','s') && ISCHR(*(p+5),'H','h') && ISCHR(*(p+1),'W','w') && ISCHR(*(p+2),'I','i')
-			&& ISCHR(*(p+3),'T','t') && ISCHR(*(p+4),'C','c')
-			&& !ISSTRING(p, 5)) {
-			parseRule(p, K_SWITCH);
-		}
-		// EXECUTE
-		else if (ISCHR(*p,'E','e') && ISCHR(*(p+6),'E','e') && ISCHR(*(p+1),'X','x') && ISCHR(*(p+2),'E','e')
-			&& ISCHR(*(p+3),'C','c') && ISCHR(*(p+4),'U','u') && ISCHR(*(p+5),'T','t')
-			&& !ISSTRING(p, 6)) {
-			parseRule(p, K_EXECUTE);
-		}
-		// UNMAP
-		else if (ISCHR(*p,'U','u') && ISCHR(*(p+4),'P','p') && ISCHR(*(p+1),'N','n') && ISCHR(*(p+2),'M','m')
-			&& ISCHR(*(p+3),'A','a')
-			&& !ISSTRING(p, 4)) {
-			parseRule(p, K_UNMAP);
-		}
-		// TEMPLATE
-		else if (ISCHR(*p,'T','t') && ISCHR(*(p+7),'E','e') && ISCHR(*(p+1),'E','e') && ISCHR(*(p+2),'M','m')
-			&& ISCHR(*(p+3),'P','p') && ISCHR(*(p+4),'L','l') && ISCHR(*(p+5),'A','a') && ISCHR(*(p+6),'T','t')
-			&& !ISSTRING(p, 7)) {
-			size_t line = result->lines;
-			p += 8;
-			result->lines += SKIPWS(p);
-			UChar *n = p;
-			result->lines += SKIPTOWS(n, 0, true);
-			ptrdiff_t c = n - p;
-			u_strncpy(&gbuffers[0][0], p, c);
-			gbuffers[0][c] = 0;
-			UString name(&gbuffers[0][0]);
-			p = n;
-			result->lines += SKIPWS(p, '=');
-			if (*p != '=') {
-				error("%s: Error: Encountered a %C before the expected = on line %u near `%S`!\n", *p, p);
-			}
-			++p;
-
-			swapper_false swp(no_itmpls, no_itmpls);
-
-			ContextualTest *t = parseContextualTestList(p);
-			t->line = line;
-			result->addTemplate(t, name.c_str());
-
-			result->lines += SKIPWS(p, ';');
-			if (*p != ';') {
-				error("%s: Error: Expected closing ; before line %u near `%S`! Probably caused by missing set operator.\n", p);
-			}
-		}
-		// PARENTHESES
-		else if (ISCHR(*p,'P','p') && ISCHR(*(p+10),'S','s') && ISCHR(*(p+1),'A','a') && ISCHR(*(p+2),'R','r')
-			&& ISCHR(*(p+3),'E','e') && ISCHR(*(p+4),'N','n') && ISCHR(*(p+5),'T','t') && ISCHR(*(p+6),'H','h')
-			&& ISCHR(*(p+7),'E','e') && ISCHR(*(p+8),'S','s') && ISCHR(*(p+9),'E','e')
-			&& !ISSTRING(p, 10)) {
-			p += 11;
-			result->lines += SKIPWS(p, '=');
-			if (*p != '=') {
-				error("%s: Error: Encountered a %C before the expected = on line %u near `%S`!\n", *p, p);
-			}
-			++p;
-			result->lines += SKIPWS(p);
-
-			while (*p && *p != ';') {
-				ptrdiff_t c = 0;
-				Tag *left = 0;
-				Tag *right = 0;
-				UChar *n = p;
-				result->lines += SKIPTOWS(n, '(', true);
-				if (*n != '(') {
-					error("%s: Error: Encountered %C before the expected ( on line %u near `%S`!\n", *p, p);
-				}
-				n++;
-				result->lines += SKIPWS(n);
-				p = n;
-				if (*n == '"') {
-					n++;
-					SKIPTO_NOSPAN(n, '"');
-					if (*n != '"') {
-						error("%s: Error: Expected closing \" on line %u near `%S`!\n", p);
-					}
-				}
-				result->lines += SKIPTOWS(n, ')', true);
-				c = n - p;
-				u_strncpy(&gbuffers[0][0], p, c);
-				gbuffers[0][c] = 0;
-				left = parseTag(&gbuffers[0][0], p);
-				result->lines += SKIPWS(n);
-				p = n;
-
-				if (*p == ')') {
-					error("%s: Error: Encountered ) before the expected Right tag on line %u near `%S`!\n", p);
-				}
-
-				if (*n == '"') {
-					n++;
-					SKIPTO_NOSPAN(n, '"');
-					if (*n != '"') {
-						error("%s: Error: Expected closing \" on line %u near `%S`!\n", p);
-					}
-				}
-				result->lines += SKIPTOWS(n, ')', true);
-				c = n - p;
-				u_strncpy(&gbuffers[0][0], p, c);
-				gbuffers[0][c] = 0;
-				right = parseTag(&gbuffers[0][0], p);
-				result->lines += SKIPWS(n);
-				p = n;
-
-				if (*p != ')') {
-					error("%s: Error: Encountered %C before the expected ) on line %u near `%S`!\n", *p, p);
+				p += 14;
+				result->lines += SKIPWS(p, '=');
+				if (*p != '=') {
+					error("%s: Error: Encountered a %C before the expected = on line %u near `%S`!\n", *p, p);
 				}
 				++p;
 				result->lines += SKIPWS(p);
 
-				if (left && right) {
-					result->parentheses[left->hash] = right->hash;
-					result->parentheses_reverse[right->hash] = left->hash;
-				}
-			}
+				UChar *n = p;
+				result->lines += SKIPTOWS(n, ';');
+				ptrdiff_t c = n - p;
+				u_strncpy(&gbuffers[0][0], p, c);
+				gbuffers[0][c] = 0;
+				p = n;
 
-			if (result->parentheses.empty()) {
-				error("%s: Error: PARENTHESES declared, but no definitions given, on line %u near `%S`!\n", p);
-			}
-			result->lines += SKIPWS(p, ';');
-			if (*p != ';') {
-				error("%s: Error: Expected closing ; before line %u near `%S`!\n", p);
-			}
-		}
-		// END
-		else if (ISCHR(*p,'E','e') && ISCHR(*(p+2),'D','d') && ISCHR(*(p+1),'N','n')) {
-			if (ISNL(*(p-1)) || ISSPACE(*(p-1))) {
-				if (*(p+3) == 0 || ISNL(*(p+3)) || ISSPACE(*(p+3))) {
-					break;
+				result->mapping_prefix = gbuffers[0][0];
+
+				if (!result->mapping_prefix) {
+					error("%s: Error: MAPPING-PREFIX declared, but no definitions given, on line %u near `%S`!\n", p);
+				}
+				result->lines += SKIPWS(p, ';');
+				if (*p != ';') {
+					error("%s: Error: Expected closing ; before line %u near `%S`!\n", p);
 				}
 			}
-			++p;
-		}
-		// No keyword found at this position, skip a character.
-		else {
-			UChar *n = p;
-			if (*p == ';' || *p == '"') {
-				if (*p == '"') {
-					++p;
-					SKIPTO_NOSPAN(p, '"');
-					if (*p != '"') {
-						error("%s: Error: Expected closing \" on line %u near `%S`!\n", n);
+			// PREFERRED-TARGETS
+			else if (ISCHR(*p, 'P', 'p') && ISCHR(*(p + 16), 'S', 's') && ISCHR(*(p + 1), 'R', 'r') && ISCHR(*(p + 2), 'E', 'e') && ISCHR(*(p + 3), 'F', 'f') && ISCHR(*(p + 4), 'E', 'e') && ISCHR(*(p + 5), 'R', 'r') && ISCHR(*(p + 6), 'R', 'r') && ISCHR(*(p + 7), 'E', 'e') && ISCHR(*(p + 8), 'D', 'd') && ISCHR(*(p + 9), '-', '_') && ISCHR(*(p + 10), 'T', 't') && ISCHR(*(p + 11), 'A', 'a') && ISCHR(*(p + 12), 'R', 'r') && ISCHR(*(p + 13), 'G', 'g') && ISCHR(*(p + 14), 'E', 'e') && ISCHR(*(p + 15), 'T', 't') && !ISSTRING(p, 16)) {
+				p += 17;
+				result->lines += SKIPWS(p, '=');
+				if (*p != '=') {
+					error("%s: Error: Encountered a %C before the expected = on line %u near `%S`!\n", *p, p);
+				}
+				++p;
+				result->lines += SKIPWS(p);
+
+				while (*p && *p != ';') {
+					UChar *n = p;
+					if (*n == '"') {
+						n++;
+						SKIPTO_NOSPAN(n, '"');
+						if (*n != '"') {
+							error("%s: Error: Expected closing \" on line %u near `%S`!\n", p);
+						}
+					}
+					result->lines += SKIPTOWS(n, ';', true);
+					ptrdiff_t c = n - p;
+					u_strncpy(&gbuffers[0][0], p, c);
+					gbuffers[0][c] = 0;
+					Tag *t = parseTag(&gbuffers[0][0], p);
+					result->preferred_targets.push_back(t->hash);
+					p = n;
+					result->lines += SKIPWS(p);
+				}
+
+				if (result->preferred_targets.empty()) {
+					error("%s: Error: PREFERRED-TARGETS declared, but no definitions given, on line %u near `%S`!\n", p);
+				}
+				result->lines += SKIPWS(p, ';');
+				if (*p != ';') {
+					error("%s: Error: Expected closing ; before line %u near `%S`!\n", p);
+				}
+			}
+			// REOPEN-MAPPINGS
+			else if (ISCHR(*p, 'R', 'r') && ISCHR(*(p + 14), 'S', 's') && ISCHR(*(p + 1), 'E', 'e') && ISCHR(*(p + 2), 'O', 'o') && ISCHR(*(p + 3), 'P', 'p') && ISCHR(*(p + 4), 'E', 'e') && ISCHR(*(p + 5), 'N', 'n') && ISCHR(*(p + 6), '-', '_') && ISCHR(*(p + 7), 'M', 'm') && ISCHR(*(p + 8), 'A', 'a') && ISCHR(*(p + 9), 'P', 'p') && ISCHR(*(p + 10), 'P', 'p') && ISCHR(*(p + 11), 'I', 'i') && ISCHR(*(p + 12), 'N', 'n') && ISCHR(*(p + 13), 'G', 'g') && !ISSTRING(p, 14)) {
+				p += 15;
+				result->lines += SKIPWS(p, '=');
+				if (*p != '=') {
+					error("%s: Error: Encountered a %C before the expected = on line %u near `%S`!\n", *p, p);
+				}
+				++p;
+				result->lines += SKIPWS(p);
+
+				while (*p && *p != ';') {
+					UChar *n = p;
+					if (*n == '"') {
+						n++;
+						SKIPTO_NOSPAN(n, '"');
+						if (*n != '"') {
+							error("%s: Error: Expected closing \" on line %u near `%S`!\n", p);
+						}
+					}
+					result->lines += SKIPTOWS(n, ';', true);
+					ptrdiff_t c = n - p;
+					u_strncpy(&gbuffers[0][0], p, c);
+					gbuffers[0][c] = 0;
+					Tag *t = parseTag(&gbuffers[0][0], p);
+					result->reopen_mappings.insert(t->hash);
+					p = n;
+					result->lines += SKIPWS(p);
+				}
+
+				if (result->reopen_mappings.empty()) {
+					error("%s: Error: REOPEN-MAPPINGS declared, but no definitions given, on line %u near `%S`!\n", p);
+				}
+				result->lines += SKIPWS(p, ';');
+				if (*p != ';') {
+					error("%s: Error: Expected closing ; before line %u near `%S`!\n", p);
+				}
+			}
+			// STATIC-SETS
+			else if (ISCHR(*p, 'S', 's') && ISCHR(*(p + 10), 'S', 's') && ISCHR(*(p + 1), 'T', 't') && ISCHR(*(p + 2), 'A', 'a') && ISCHR(*(p + 3), 'T', 't') && ISCHR(*(p + 4), 'I', 'i') && ISCHR(*(p + 5), 'C', 'c') && ISCHR(*(p + 6), '-', '-') && ISCHR(*(p + 7), 'S', 's') && ISCHR(*(p + 8), 'E', 'e') && ISCHR(*(p + 9), 'T', 't') && !ISSTRING(p, 10)) {
+				p += 11;
+				result->lines += SKIPWS(p, '=');
+				if (*p != '=') {
+					error("%s: Error: Encountered a %C before the expected = on line %u near `%S`!\n", *p, p);
+				}
+				++p;
+				result->lines += SKIPWS(p);
+
+				while (*p && *p != ';') {
+					UChar *n = p;
+					result->lines += SKIPTOWS(n, ';', true);
+					result->static_sets.push_back(UString(p, n));
+					p = n;
+					result->lines += SKIPWS(p);
+				}
+
+				if (result->static_sets.empty()) {
+					error("%s: Error: STATIC-SETS declared, but no definitions given, on line %u near `%S`!\n", p);
+				}
+				result->lines += SKIPWS(p, ';');
+				if (*p != ';') {
+					error("%s: Error: Expected closing ; before line %u near `%S`!\n", p);
+				}
+			}
+			// ADDRELATIONS
+			else if (ISCHR(*p, 'A', 'a') && ISCHR(*(p + 11), 'S', 's') && ISCHR(*(p + 1), 'D', 'd') && ISCHR(*(p + 2), 'D', 'd') && ISCHR(*(p + 3), 'R', 'r') && ISCHR(*(p + 4), 'E', 'e') && ISCHR(*(p + 5), 'L', 'l') && ISCHR(*(p + 6), 'A', 'a') && ISCHR(*(p + 7), 'T', 't') && ISCHR(*(p + 8), 'I', 'i') && ISCHR(*(p + 9), 'O', 'o') && ISCHR(*(p + 10), 'N', 'n') && !ISSTRING(p, 11)) {
+				parseRule(p, K_ADDRELATIONS);
+			}
+			// SETRELATIONS
+			else if (ISCHR(*p, 'S', 's') && ISCHR(*(p + 11), 'S', 's') && ISCHR(*(p + 1), 'E', 'e') && ISCHR(*(p + 2), 'T', 't') && ISCHR(*(p + 3), 'R', 'r') && ISCHR(*(p + 4), 'E', 'e') && ISCHR(*(p + 5), 'L', 'l') && ISCHR(*(p + 6), 'A', 'a') && ISCHR(*(p + 7), 'T', 't') && ISCHR(*(p + 8), 'I', 'i') && ISCHR(*(p + 9), 'O', 'o') && ISCHR(*(p + 10), 'N', 'n') && !ISSTRING(p, 11)) {
+				parseRule(p, K_SETRELATIONS);
+			}
+			// REMRELATIONS
+			else if (ISCHR(*p, 'R', 'r') && ISCHR(*(p + 11), 'S', 's') && ISCHR(*(p + 1), 'E', 'e') && ISCHR(*(p + 2), 'M', 'm') && ISCHR(*(p + 3), 'R', 'r') && ISCHR(*(p + 4), 'E', 'e') && ISCHR(*(p + 5), 'L', 'l') && ISCHR(*(p + 6), 'A', 'a') && ISCHR(*(p + 7), 'T', 't') && ISCHR(*(p + 8), 'I', 'i') && ISCHR(*(p + 9), 'O', 'o') && ISCHR(*(p + 10), 'N', 'n') && !ISSTRING(p, 11)) {
+				parseRule(p, K_REMRELATIONS);
+			}
+			// ADDRELATION
+			else if (ISCHR(*p, 'A', 'a') && ISCHR(*(p + 10), 'N', 'n') && ISCHR(*(p + 1), 'D', 'd') && ISCHR(*(p + 2), 'D', 'd') && ISCHR(*(p + 3), 'R', 'r') && ISCHR(*(p + 4), 'E', 'e') && ISCHR(*(p + 5), 'L', 'l') && ISCHR(*(p + 6), 'A', 'a') && ISCHR(*(p + 7), 'T', 't') && ISCHR(*(p + 8), 'I', 'i') && ISCHR(*(p + 9), 'O', 'o') && !ISSTRING(p, 10)) {
+				parseRule(p, K_ADDRELATION);
+			}
+			// SETRELATION
+			else if (ISCHR(*p, 'S', 's') && ISCHR(*(p + 10), 'N', 'n') && ISCHR(*(p + 1), 'E', 'e') && ISCHR(*(p + 2), 'T', 't') && ISCHR(*(p + 3), 'R', 'r') && ISCHR(*(p + 4), 'E', 'e') && ISCHR(*(p + 5), 'L', 'l') && ISCHR(*(p + 6), 'A', 'a') && ISCHR(*(p + 7), 'T', 't') && ISCHR(*(p + 8), 'I', 'i') && ISCHR(*(p + 9), 'O', 'o') && !ISSTRING(p, 10)) {
+				parseRule(p, K_SETRELATION);
+			}
+			// REMRELATION
+			else if (ISCHR(*p, 'R', 'r') && ISCHR(*(p + 10), 'N', 'n') && ISCHR(*(p + 1), 'E', 'e') && ISCHR(*(p + 2), 'M', 'm') && ISCHR(*(p + 3), 'R', 'r') && ISCHR(*(p + 4), 'E', 'e') && ISCHR(*(p + 5), 'L', 'l') && ISCHR(*(p + 6), 'A', 'a') && ISCHR(*(p + 7), 'T', 't') && ISCHR(*(p + 8), 'I', 'i') && ISCHR(*(p + 9), 'O', 'o') && !ISSTRING(p, 10)) {
+				parseRule(p, K_REMRELATION);
+			}
+			// SETVARIABLE
+			else if (ISCHR(*p, 'S', 's') && ISCHR(*(p + 10), 'E', 'e') && ISCHR(*(p + 1), 'E', 'e') && ISCHR(*(p + 2), 'T', 't') && ISCHR(*(p + 3), 'V', 'v') && ISCHR(*(p + 4), 'A', 'a') && ISCHR(*(p + 5), 'R', 'r') && ISCHR(*(p + 6), 'I', 'i') && ISCHR(*(p + 7), 'A', 'a') && ISCHR(*(p + 8), 'B', 'b') && ISCHR(*(p + 9), 'L', 'l') && !ISSTRING(p, 10)) {
+				parseRule(p, K_SETVARIABLE);
+			}
+			// REMVARIABLE
+			else if (ISCHR(*p, 'R', 'r') && ISCHR(*(p + 10), 'E', 'e') && ISCHR(*(p + 1), 'E', 'e') && ISCHR(*(p + 2), 'M', 'm') && ISCHR(*(p + 3), 'V', 'v') && ISCHR(*(p + 4), 'A', 'a') && ISCHR(*(p + 5), 'R', 'r') && ISCHR(*(p + 6), 'I', 'i') && ISCHR(*(p + 7), 'A', 'a') && ISCHR(*(p + 8), 'B', 'b') && ISCHR(*(p + 9), 'L', 'l') && !ISSTRING(p, 10)) {
+				parseRule(p, K_REMVARIABLE);
+			}
+			// SETPARENT
+			else if (ISCHR(*p, 'S', 's') && ISCHR(*(p + 8), 'T', 't') && ISCHR(*(p + 1), 'E', 'e') && ISCHR(*(p + 2), 'T', 't') && ISCHR(*(p + 3), 'P', 'p') && ISCHR(*(p + 4), 'A', 'a') && ISCHR(*(p + 5), 'R', 'r') && ISCHR(*(p + 6), 'E', 'e') && ISCHR(*(p + 7), 'N', 'n') && !ISSTRING(p, 8)) {
+				parseRule(p, K_SETPARENT);
+			}
+			// SETCHILD
+			else if (ISCHR(*p, 'S', 's') && ISCHR(*(p + 7), 'D', 'd') && ISCHR(*(p + 1), 'E', 'e') && ISCHR(*(p + 2), 'T', 't') && ISCHR(*(p + 3), 'C', 'c') && ISCHR(*(p + 4), 'H', 'h') && ISCHR(*(p + 5), 'I', 'i') && ISCHR(*(p + 6), 'L', 'l') && !ISSTRING(p, 7)) {
+				parseRule(p, K_SETCHILD);
+			}
+			// EXTERNAL
+			else if (ISCHR(*p, 'E', 'e') && ISCHR(*(p + 7), 'L', 'l') && ISCHR(*(p + 1), 'X', 'x') && ISCHR(*(p + 2), 'T', 't') && ISCHR(*(p + 3), 'E', 'e') && ISCHR(*(p + 4), 'R', 'r') && ISCHR(*(p + 5), 'N', 'n') && ISCHR(*(p + 6), 'A', 'a') && !ISSTRING(p, 7)) {
+				parseRule(p, K_EXTERNAL);
+			}
+			// REMCOHORT
+			else if (ISCHR(*p, 'R', 'r') && ISCHR(*(p + 8), 'T', 't') && ISCHR(*(p + 1), 'E', 'e') && ISCHR(*(p + 2), 'M', 'm') && ISCHR(*(p + 3), 'C', 'c') && ISCHR(*(p + 4), 'O', 'o') && ISCHR(*(p + 5), 'H', 'h') && ISCHR(*(p + 6), 'O', 'o') && ISCHR(*(p + 7), 'R', 'r') && !ISSTRING(p, 8)) {
+				parseRule(p, K_REMCOHORT);
+			}
+			// ADDCOHORT
+			else if (ISCHR(*p, 'A', 'a') && ISCHR(*(p + 8), 'T', 't') && ISCHR(*(p + 1), 'D', 'd') && ISCHR(*(p + 2), 'D', 'd') && ISCHR(*(p + 3), 'C', 'c') && ISCHR(*(p + 4), 'O', 'o') && ISCHR(*(p + 5), 'H', 'h') && ISCHR(*(p + 6), 'O', 'o') && ISCHR(*(p + 7), 'R', 'r') && !ISSTRING(p, 8)) {
+				parseRule(p, K_ADDCOHORT);
+			}
+			// SETS
+			else if (ISCHR(*p, 'S', 's') && ISCHR(*(p + 3), 'S', 's') && ISCHR(*(p + 1), 'E', 'e') && ISCHR(*(p + 2), 'T', 't') && !ISSTRING(p, 3)) {
+				p += 4;
+			}
+			// LIST
+			else if (ISCHR(*p, 'L', 'l') && ISCHR(*(p + 3), 'T', 't') && ISCHR(*(p + 1), 'I', 'i') && ISCHR(*(p + 2), 'S', 's') && !ISSTRING(p, 3)) {
+				Set *s = result->allocateSet();
+				s->line = result->lines;
+				p += 4;
+				result->lines += SKIPWS(p);
+				UChar *n = p;
+				result->lines += SKIPTOWS(n, 0, true);
+				while (n[-1] == ',' || n[-1] == ']') {
+					--n;
+				}
+				ptrdiff_t c = n - p;
+				u_strncpy(&gbuffers[0][0], p, c);
+				gbuffers[0][c] = 0;
+				s->setName(&gbuffers[0][0]);
+				p = n;
+				result->lines += SKIPWS(p, '=');
+				if (*p != '=') {
+					error("%s: Error: Encountered a %C before the expected = on line %u near `%S`!\n", *p, p);
+				}
+				++p;
+				parseTagList(p, s);
+				s->rehash();
+				Set *tmp = result->getSet(s->hash);
+				if (tmp) {
+					if (verbosity_level > 0 && tmp->name[0] != '_' && tmp->name[1] != 'G' && tmp->name[2] != '_') {
+						u_fprintf(ux_stderr, "%s: Warning: LIST %S was defined twice with the same contents: Lines %u and %u.\n", filebase, s->name.c_str(), tmp->line, s->line);
+						u_fflush(ux_stderr);
 					}
 				}
-				result->lines += SKIPTOWS(p);
+				result->addSet(s);
+				if (s->empty()) {
+					error("%s: Error: LIST %S declared, but no definitions given, on line %u near `%S`!\n", s->name.c_str(), p);
+				}
+				result->lines += SKIPWS(p, ';');
+				if (*p != ';') {
+					error("%s: Error: Expected closing ; before line %u near `%S`!\n", p);
+				}
 			}
-			if (*p && *p != ';' && *p != '"' && !ISNL(*p) && !ISSPACE(*p)) {
-				error("%s: Error: Garbage data encountered on line %u near `%S`!\n", p);
+			// SET
+			else if (ISCHR(*p, 'S', 's') && ISCHR(*(p + 2), 'T', 't') && ISCHR(*(p + 1), 'E', 'e') && !ISSTRING(p, 2)) {
+				Set *s = result->allocateSet();
+				s->line = result->lines;
+				p += 3;
+				result->lines += SKIPWS(p);
+				UChar *n = p;
+				result->lines += SKIPTOWS(n, 0, true);
+				while (n[-1] == ',' || n[-1] == ']') {
+					--n;
+				}
+				ptrdiff_t c = n - p;
+				u_strncpy(&gbuffers[0][0], p, c);
+				gbuffers[0][c] = 0;
+				s->setName(&gbuffers[0][0]);
+				uint32_t sh = hash_value(&gbuffers[0][0]);
+				p = n;
+				result->lines += SKIPWS(p, '=');
+				if (*p != '=') {
+					error("%s: Error: Encountered a %C before the expected = on line %u near `%S`!\n", *p, p);
+				}
+				++p;
+
+				swapper_false swp(no_isets, no_isets);
+
+				parseSetInline(p, s);
+				s->rehash();
+				Set *tmp = result->getSet(s->hash);
+				if (tmp) {
+					if (verbosity_level > 0 && tmp->name[0] != '_' && tmp->name[1] != 'G' && tmp->name[2] != '_') {
+						u_fprintf(ux_stderr, "%s: Warning: SET %S was defined twice with the same contents: Lines %u and %u.\n", filebase, s->name.c_str(), tmp->line, s->line);
+						u_fflush(ux_stderr);
+					}
+				}
+				else if (s->sets.size() == 1 && !(s->type & ST_TAG_UNIFY)) {
+					tmp = result->getSet(s->sets.back());
+					if (verbosity_level > 0) {
+						u_fprintf(ux_stderr, "%s: Warning: Set %S on line %u aliased to %S on line %u.\n", filebase, s->name.c_str(), s->line, tmp->name.c_str(), tmp->line);
+						u_fflush(ux_stderr);
+					}
+					result->maybe_used_sets.insert(tmp);
+					result->set_alias[sh] = tmp->hash;
+					result->destroySet(s);
+					s = tmp;
+				}
+				result->addSet(s);
+				if (s->empty()) {
+					error("%s: Error: SET %S declared, but no definitions given, on line %u near `%S`!\n", s->name.c_str(), p);
+				}
+				result->lines += SKIPWS(p, ';');
+				if (*p != ';') {
+					error("%s: Error: Expected closing ; before line %u near `%S`! Probably caused by missing set operator.\n", p);
+				}
 			}
-			if (ISNL(*p)) {
-				result->lines += 1;
+			// MAPPINGS
+			else if (ISCHR(*p, 'M', 'm') && ISCHR(*(p + 7), 'S', 's') && ISCHR(*(p + 1), 'A', 'a') && ISCHR(*(p + 2), 'P', 'p') && ISCHR(*(p + 3), 'P', 'p') && ISCHR(*(p + 4), 'I', 'i') && ISCHR(*(p + 5), 'N', 'n') && ISCHR(*(p + 6), 'G', 'g') && !ISSTRING(p, 7)) {
+				p += 8;
+				in_before_sections = true;
+				in_section = false;
+				in_after_sections = false;
+				in_null_section = false;
+				UChar *s = p;
+				SKIPLN(s);
+				SKIPWS(s);
+				result->lines += SKIPWS(p);
+				if (p != s) {
+					parseAnchorish(p);
+				}
 			}
-			++p;
+			// CORRECTIONS
+			else if (ISCHR(*p, 'C', 'c') && ISCHR(*(p + 10), 'S', 's') && ISCHR(*(p + 1), 'O', 'o') && ISCHR(*(p + 2), 'R', 'r') && ISCHR(*(p + 3), 'R', 'r') && ISCHR(*(p + 4), 'E', 'e') && ISCHR(*(p + 5), 'C', 'c') && ISCHR(*(p + 6), 'T', 't') && ISCHR(*(p + 7), 'I', 'i') && ISCHR(*(p + 8), 'O', 'o') && ISCHR(*(p + 9), 'N', 'n') && !ISSTRING(p, 10)) {
+				p += 11;
+				in_before_sections = true;
+				in_section = false;
+				in_after_sections = false;
+				in_null_section = false;
+				UChar *s = p;
+				SKIPLN(s);
+				SKIPWS(s);
+				result->lines += SKIPWS(p);
+				if (p != s) {
+					parseAnchorish(p);
+				}
+			}
+			// BEFORE-SECTIONS
+			else if (ISCHR(*p, 'B', 'b') && ISCHR(*(p + 14), 'S', 's') && ISCHR(*(p + 1), 'E', 'e') && ISCHR(*(p + 2), 'F', 'f') && ISCHR(*(p + 3), 'O', 'o') && ISCHR(*(p + 4), 'R', 'r') && ISCHR(*(p + 5), 'E', 'e') && ISCHR(*(p + 6), '-', '_') && ISCHR(*(p + 7), 'S', 's') && ISCHR(*(p + 8), 'E', 'e') && ISCHR(*(p + 9), 'C', 'c') && ISCHR(*(p + 10), 'T', 't') && ISCHR(*(p + 11), 'I', 'i') && ISCHR(*(p + 12), 'O', 'o') && ISCHR(*(p + 13), 'N', 'n') && !ISSTRING(p, 14)) {
+				p += 15;
+				in_before_sections = true;
+				in_section = false;
+				in_after_sections = false;
+				in_null_section = false;
+				UChar *s = p;
+				SKIPLN(s);
+				SKIPWS(s);
+				result->lines += SKIPWS(p);
+				if (p != s) {
+					parseAnchorish(p);
+				}
+			}
+			// SECTION
+			else if (ISCHR(*p, 'S', 's') && ISCHR(*(p + 6), 'N', 'n') && ISCHR(*(p + 1), 'E', 'e') && ISCHR(*(p + 2), 'C', 'c') && ISCHR(*(p + 3), 'T', 't') && ISCHR(*(p + 4), 'I', 'i') && ISCHR(*(p + 5), 'O', 'o') && !ISSTRING(p, 6)) {
+				p += 7;
+				result->sections.push_back(result->lines);
+				in_before_sections = false;
+				in_section = true;
+				in_after_sections = false;
+				in_null_section = false;
+				UChar *s = p;
+				SKIPLN(s);
+				SKIPWS(s);
+				result->lines += SKIPWS(p);
+				if (p != s) {
+					parseAnchorish(p);
+				}
+			}
+			// CONSTRAINTS
+			else if (ISCHR(*p, 'C', 'c') && ISCHR(*(p + 10), 'S', 's') && ISCHR(*(p + 1), 'O', 'o') && ISCHR(*(p + 2), 'N', 'n') && ISCHR(*(p + 3), 'S', 's') && ISCHR(*(p + 4), 'T', 't') && ISCHR(*(p + 5), 'R', 'r') && ISCHR(*(p + 6), 'A', 'a') && ISCHR(*(p + 7), 'I', 'i') && ISCHR(*(p + 8), 'N', 'n') && ISCHR(*(p + 9), 'T', 't') && !ISSTRING(p, 10)) {
+				p += 11;
+				result->sections.push_back(result->lines);
+				in_before_sections = false;
+				in_section = true;
+				in_after_sections = false;
+				in_null_section = false;
+				UChar *s = p;
+				SKIPLN(s);
+				SKIPWS(s);
+				result->lines += SKIPWS(p);
+				if (p != s) {
+					parseAnchorish(p);
+				}
+			}
+			// AFTER-SECTIONS
+			else if (ISCHR(*p, 'A', 'a') && ISCHR(*(p + 13), 'S', 's') && ISCHR(*(p + 1), 'F', 'f') && ISCHR(*(p + 2), 'T', 't') && ISCHR(*(p + 3), 'E', 'e') && ISCHR(*(p + 4), 'R', 'r') && ISCHR(*(p + 5), '-', '_') && ISCHR(*(p + 6), 'S', 's') && ISCHR(*(p + 7), 'E', 'e') && ISCHR(*(p + 8), 'C', 'c') && ISCHR(*(p + 9), 'T', 't') && ISCHR(*(p + 10), 'I', 'i') && ISCHR(*(p + 11), 'O', 'o') && ISCHR(*(p + 12), 'N', 'n') && !ISSTRING(p, 13)) {
+				p += 14;
+				in_before_sections = false;
+				in_section = false;
+				in_after_sections = true;
+				in_null_section = false;
+				UChar *s = p;
+				SKIPLN(s);
+				SKIPWS(s);
+				result->lines += SKIPWS(p);
+				if (p != s) {
+					parseAnchorish(p);
+				}
+			}
+			// NULL-SECTION
+			else if (ISCHR(*p, 'N', 'n') && ISCHR(*(p + 11), 'N', 'n') && ISCHR(*(p + 1), 'U', 'u') && ISCHR(*(p + 2), 'L', 'l') && ISCHR(*(p + 3), 'L', 'l') && ISCHR(*(p + 4), '-', '-') && ISCHR(*(p + 5), 'S', 's') && ISCHR(*(p + 6), 'E', 'e') && ISCHR(*(p + 7), 'C', 'c') && ISCHR(*(p + 8), 'T', 't') && ISCHR(*(p + 9), 'I', 'i') && ISCHR(*(p + 10), 'O', 'o') && !ISSTRING(p, 11)) {
+				p += 12;
+				in_before_sections = false;
+				in_section = false;
+				in_after_sections = false;
+				in_null_section = true;
+				UChar *s = p;
+				SKIPLN(s);
+				SKIPWS(s);
+				result->lines += SKIPWS(p);
+				if (p != s) {
+					parseAnchorish(p);
+				}
+			}
+			// SUBREADINGS
+			else if (ISCHR(*p, 'S', 's') && ISCHR(*(p + 10), 'S', 's') && ISCHR(*(p + 1), 'U', 'u') && ISCHR(*(p + 2), 'B', 'b') && ISCHR(*(p + 3), 'R', 'r') && ISCHR(*(p + 4), 'E', 'e') && ISCHR(*(p + 5), 'A', 'a') && ISCHR(*(p + 6), 'D', 'd') && ISCHR(*(p + 7), 'I', 'i') && ISCHR(*(p + 8), 'N', 'n') && ISCHR(*(p + 9), 'G', 'g') && !ISSTRING(p, 10)) {
+				p += 11;
+				result->lines += SKIPWS(p, '=');
+				if (*p != '=') {
+					error("%s: Error: Encountered a %C before the expected = on line %u near `%S`!\n", *p, p);
+				}
+				++p;
+				result->lines += SKIPWS(p);
+				if (p[0] == 'L' || p[0] == 'l') {
+					result->sub_readings_ltr = true;
+				}
+				else if (p[0] == 'R' || p[0] == 'r') {
+					result->sub_readings_ltr = false;
+				}
+				else {
+					error("%s: Error: Expected RTL or LTR on line %u near `%S`!\n", *p, p);
+				}
+				UChar *n = p;
+				result->lines += SKIPTOWS(n, 0, true);
+				p = n;
+				result->lines += SKIPWS(p, ';');
+				if (*p != ';') {
+					error("%s: Error: Expected closing ; before line %u near `%S`!\n", p);
+				}
+			}
+			// OPTIONS
+			else if (ISCHR(*p, 'O', 'o') && ISCHR(*(p + 6), 'S', 's') && ISCHR(*(p + 1), 'P', 'p') && ISCHR(*(p + 2), 'T', 't') && ISCHR(*(p + 3), 'I', 'i') && ISCHR(*(p + 4), 'O', 'o') && ISCHR(*(p + 5), 'N', 'n') && !ISSTRING(p, 6)) {
+				p += 7;
+				result->lines += SKIPWS(p, '+');
+				if (p[0] != '+' || p[1] != '=') {
+					error("%s: Error: Encountered a %C before the expected += on line %u near `%S`!\n", *p, p);
+				}
+				p += 2;
+				result->lines += SKIPWS(p);
+
+				typedef std::pair<size_t, bool&> pairs_t;
+				pairs_t pairs[] = {
+					{ S_NO_ISETS, no_isets },
+					{ S_NO_ITMPLS, no_itmpls },
+					{ S_STRICT_WFORMS, strict_wforms },
+					{ S_STRICT_BFORMS, strict_bforms },
+					{ S_STRICT_SECOND, strict_second },
+				};
+
+				while (*p != ';') {
+					bool found = false;
+					boost_foreach (pairs_t& pair, pairs) {
+						if (ux_simplecasecmp(p, stringbits[pair.first].getTerminatedBuffer(), stringbits[pair.first].length())) {
+							p += stringbits[pair.first].length();
+							pair.second = true;
+							result->lines += SKIPWS(p);
+							found = true;
+						}
+					}
+					if (!found) {
+						error("%s: Error: Invalid option found on line %u near `%S`!\n", p);
+					}
+				}
+
+				result->lines += SKIPWS(p, ';');
+				if (*p != ';') {
+					error("%s: Error: Expected closing ; before line %u near `%S`!\n", p);
+				}
+			}
+			// STRICT-TAGS
+			else if (ISCHR(*p, 'S', 's') && ISCHR(*(p + 10), 'S', 's') && ISCHR(*(p + 1), 'T', 't') && ISCHR(*(p + 2), 'R', 'r') && ISCHR(*(p + 3), 'I', 'i') && ISCHR(*(p + 4), 'C', 'c') && ISCHR(*(p + 5), 'T', 't') && ISCHR(*(p + 6), '-', '-') && ISCHR(*(p + 7), 'T', 't') && ISCHR(*(p + 8), 'A', 'a') && ISCHR(*(p + 9), 'G', 'g') && !ISSTRING(p, 10)) {
+				p += 11;
+				result->lines += SKIPWS(p, '+');
+				if (p[0] != '+' || p[1] != '=') {
+					error("%s: Error: Encountered a %C before the expected += on line %u near `%S`!\n", *p, p);
+				}
+				p += 2;
+				result->lines += SKIPWS(p);
+
+				uint32SortedVector tmp;
+				strict_tags.swap(tmp);
+				while (*p && *p != ';') {
+					UChar *n = p;
+					if (*n == '"') {
+						n++;
+						SKIPTO_NOSPAN(n, '"');
+						if (*n != '"') {
+							error("%s: Error: Expected closing \" on line %u near `%S`!\n", p);
+						}
+					}
+					result->lines += SKIPTOWS(n, ';', true);
+					ptrdiff_t c = n - p;
+					u_strncpy(&gbuffers[0][0], p, c);
+					gbuffers[0][c] = 0;
+					Tag *t = parseTag(&gbuffers[0][0], p);
+					tmp.insert(t->hash);
+					p = n;
+					result->lines += SKIPWS(p);
+				}
+
+				if (tmp.empty()) {
+					error("%s: Error: STRICT-TAGS declared, but no definitions given, on line %u near `%S`!\n", p);
+				}
+				result->lines += SKIPWS(p, ';');
+				if (*p != ';') {
+					error("%s: Error: Expected closing ; before line %u near `%S`!\n", p);
+				}
+				strict_tags.swap(tmp);
+			}
+			// ANCHOR
+			else if (ISCHR(*p, 'A', 'a') && ISCHR(*(p + 5), 'R', 'r') && ISCHR(*(p + 1), 'N', 'n') && ISCHR(*(p + 2), 'C', 'c') && ISCHR(*(p + 3), 'H', 'h') && ISCHR(*(p + 4), 'O', 'o') && !ISSTRING(p, 5)) {
+				p += 6;
+				result->lines += SKIPWS(p);
+				parseAnchorish(p);
+			}
+			// INCLUDE
+			else if (ISCHR(*p, 'I', 'i') && ISCHR(*(p + 6), 'E', 'e') && ISCHR(*(p + 1), 'N', 'n') && ISCHR(*(p + 2), 'C', 'c') && ISCHR(*(p + 3), 'L', 'l') && ISCHR(*(p + 4), 'U', 'u') && ISCHR(*(p + 5), 'D', 'd') && !ISSTRING(p, 6)) {
+				p += 7;
+				result->lines += SKIPWS(p);
+				UChar *n = p;
+				result->lines += SKIPTOWS(n, 0, true);
+				ptrdiff_t c = n - p;
+				u_strncpy(&gbuffers[0][0], p, c);
+				gbuffers[0][c] = 0;
+				p = n;
+				result->lines += SKIPWS(p, ';');
+				if (*p != ';') {
+					error("%s: Error: Expected closing ; before line %u near `%S`!\n", p);
+				}
+
+				UErrorCode err = U_ZERO_ERROR;
+				u_strToUTF8(&cbuffers[0][0], CG3_BUFFER_SIZE - 1, 0, &gbuffers[0][0], u_strlen(&gbuffers[0][0]), &err);
+
+				std::string abspath;
+				if (cbuffers[0][0] == '/') {
+					abspath = &cbuffers[0][0];
+				}
+				else {
+					abspath = ux_dirname(fname);
+					abspath += &cbuffers[0][0];
+				}
+
+				size_t grammar_size = 0;
+				struct stat _stat;
+				int error = stat(abspath.c_str(), &_stat);
+
+				if (error != 0) {
+					abspath = &cbuffers[0][0];
+					error = stat(abspath.c_str(), &_stat);
+				}
+
+				if (error != 0) {
+					u_fprintf(ux_stderr, "%s: Error: Cannot stat %s due to error %d - bailing out!\n", filebase, abspath.c_str(), error);
+					CG3Quit(1);
+				}
+				else {
+					grammar_size = static_cast<size_t>(_stat.st_size);
+				}
+
+				UFILE *grammar = u_fopen(abspath.c_str(), "rb", locale, codepage);
+				if (!grammar) {
+					u_fprintf(ux_stderr, "%s: Error: Error opening %s for reading!\n", filebase, abspath.c_str());
+					CG3Quit(1);
+				}
+				UChar32 bom = u_fgetcx(grammar);
+				if (bom != 0xfeff && bom != static_cast<UChar32>(0xffffffff)) {
+					u_fungetc(bom, grammar);
+				}
+
+				std::vector<UChar> data(grammar_size * 2, 0);
+				uint32_t read = u_file_read(&data[4], grammar_size * 2, grammar);
+				u_fclose(grammar);
+				if (read >= grammar_size * 2 - 1) {
+					u_fprintf(ux_stderr, "%s: Error: Converting from underlying codepage to UTF-16 exceeded factor 2 buffer.\n", filebase);
+					CG3Quit(1);
+				}
+				data.resize(read + 4 + 1);
+
+				uint32_t olines = 0;
+				swapper<uint32_t> oswap(true, olines, result->lines);
+				const char *obase = 0;
+				swapper<const char*> bswap(true, obase, filebase);
+
+				parseFromUChar(&data[4], abspath.c_str());
+			}
+			// IFF
+			else if (ISCHR(*p, 'I', 'i') && ISCHR(*(p + 2), 'F', 'f') && ISCHR(*(p + 1), 'F', 'f') && !ISSTRING(p, 2)) {
+				parseRule(p, K_IFF);
+			}
+			// MAP
+			else if (ISCHR(*p, 'M', 'm') && ISCHR(*(p + 2), 'P', 'p') && ISCHR(*(p + 1), 'A', 'a') && !ISSTRING(p, 2)) {
+				parseRule(p, K_MAP);
+			}
+			// ADD
+			else if (ISCHR(*p, 'A', 'a') && ISCHR(*(p + 2), 'D', 'd') && ISCHR(*(p + 1), 'D', 'd') && !ISSTRING(p, 2)) {
+				parseRule(p, K_ADD);
+			}
+			// APPEND
+			else if (ISCHR(*p, 'A', 'a') && ISCHR(*(p + 5), 'D', 'd') && ISCHR(*(p + 1), 'P', 'p') && ISCHR(*(p + 2), 'P', 'p') && ISCHR(*(p + 3), 'E', 'e') && ISCHR(*(p + 4), 'N', 'n') && !ISSTRING(p, 5)) {
+				parseRule(p, K_APPEND);
+			}
+			// SELECT
+			else if (ISCHR(*p, 'S', 's') && ISCHR(*(p + 5), 'T', 't') && ISCHR(*(p + 1), 'E', 'e') && ISCHR(*(p + 2), 'L', 'l') && ISCHR(*(p + 3), 'E', 'e') && ISCHR(*(p + 4), 'C', 'c') && !ISSTRING(p, 5)) {
+				parseRule(p, K_SELECT);
+			}
+			// REMOVE
+			else if (ISCHR(*p, 'R', 'r') && ISCHR(*(p + 5), 'E', 'e') && ISCHR(*(p + 1), 'E', 'e') && ISCHR(*(p + 2), 'M', 'm') && ISCHR(*(p + 3), 'O', 'o') && ISCHR(*(p + 4), 'V', 'v') && !ISSTRING(p, 5)) {
+				parseRule(p, K_REMOVE);
+			}
+			// REPLACE
+			else if (ISCHR(*p, 'R', 'r') && ISCHR(*(p + 6), 'E', 'e') && ISCHR(*(p + 1), 'E', 'e') && ISCHR(*(p + 2), 'P', 'p') && ISCHR(*(p + 3), 'L', 'l') && ISCHR(*(p + 4), 'A', 'a') && ISCHR(*(p + 5), 'C', 'c') && !ISSTRING(p, 6)) {
+				parseRule(p, K_REPLACE);
+			}
+			// DELIMIT
+			else if (ISCHR(*p, 'D', 'd') && ISCHR(*(p + 6), 'T', 't') && ISCHR(*(p + 1), 'E', 'e') && ISCHR(*(p + 2), 'L', 'l') && ISCHR(*(p + 3), 'I', 'i') && ISCHR(*(p + 4), 'M', 'm') && ISCHR(*(p + 5), 'I', 'i') && !ISSTRING(p, 6)) {
+				parseRule(p, K_DELIMIT);
+			}
+			// SUBSTITUTE
+			else if (ISCHR(*p, 'S', 's') && ISCHR(*(p + 9), 'E', 'e') && ISCHR(*(p + 1), 'U', 'u') && ISCHR(*(p + 2), 'B', 'b') && ISCHR(*(p + 3), 'S', 's') && ISCHR(*(p + 4), 'T', 't') && ISCHR(*(p + 5), 'I', 'i') && ISCHR(*(p + 6), 'T', 't') && ISCHR(*(p + 7), 'U', 'u') && ISCHR(*(p + 8), 'T', 't') && !ISSTRING(p, 9)) {
+				parseRule(p, K_SUBSTITUTE);
+			}
+			// COPY
+			else if (ISCHR(*p, 'C', 'c') && ISCHR(*(p + 3), 'Y', 'y') && ISCHR(*(p + 1), 'O', 'o') && ISCHR(*(p + 2), 'P', 'p') && !ISSTRING(p, 3)) {
+				parseRule(p, K_COPY);
+			}
+			// JUMP
+			else if (ISCHR(*p, 'J', 'j') && ISCHR(*(p + 3), 'P', 'p') && ISCHR(*(p + 1), 'U', 'u') && ISCHR(*(p + 2), 'M', 'm') && !ISSTRING(p, 3)) {
+				parseRule(p, K_JUMP);
+			}
+			// MOVE
+			else if (ISCHR(*p, 'M', 'm') && ISCHR(*(p + 3), 'E', 'e') && ISCHR(*(p + 1), 'O', 'o') && ISCHR(*(p + 2), 'V', 'v') && !ISSTRING(p, 3)) {
+				parseRule(p, K_MOVE);
+			}
+			// SWITCH
+			else if (ISCHR(*p, 'S', 's') && ISCHR(*(p + 5), 'H', 'h') && ISCHR(*(p + 1), 'W', 'w') && ISCHR(*(p + 2), 'I', 'i') && ISCHR(*(p + 3), 'T', 't') && ISCHR(*(p + 4), 'C', 'c') && !ISSTRING(p, 5)) {
+				parseRule(p, K_SWITCH);
+			}
+			// EXECUTE
+			else if (ISCHR(*p, 'E', 'e') && ISCHR(*(p + 6), 'E', 'e') && ISCHR(*(p + 1), 'X', 'x') && ISCHR(*(p + 2), 'E', 'e') && ISCHR(*(p + 3), 'C', 'c') && ISCHR(*(p + 4), 'U', 'u') && ISCHR(*(p + 5), 'T', 't') && !ISSTRING(p, 6)) {
+				parseRule(p, K_EXECUTE);
+			}
+			// UNMAP
+			else if (ISCHR(*p, 'U', 'u') && ISCHR(*(p + 4), 'P', 'p') && ISCHR(*(p + 1), 'N', 'n') && ISCHR(*(p + 2), 'M', 'm') && ISCHR(*(p + 3), 'A', 'a') && !ISSTRING(p, 4)) {
+				parseRule(p, K_UNMAP);
+			}
+			// TEMPLATE
+			else if (ISCHR(*p, 'T', 't') && ISCHR(*(p + 7), 'E', 'e') && ISCHR(*(p + 1), 'E', 'e') && ISCHR(*(p + 2), 'M', 'm') && ISCHR(*(p + 3), 'P', 'p') && ISCHR(*(p + 4), 'L', 'l') && ISCHR(*(p + 5), 'A', 'a') && ISCHR(*(p + 6), 'T', 't') && !ISSTRING(p, 7)) {
+				size_t line = result->lines;
+				p += 8;
+				result->lines += SKIPWS(p);
+				UChar *n = p;
+				result->lines += SKIPTOWS(n, 0, true);
+				ptrdiff_t c = n - p;
+				u_strncpy(&gbuffers[0][0], p, c);
+				gbuffers[0][c] = 0;
+				UString name(&gbuffers[0][0]);
+				p = n;
+				result->lines += SKIPWS(p, '=');
+				if (*p != '=') {
+					error("%s: Error: Encountered a %C before the expected = on line %u near `%S`!\n", *p, p);
+				}
+				++p;
+
+				swapper_false swp(no_itmpls, no_itmpls);
+
+				ContextualTest *t = parseContextualTestList(p);
+				t->line = line;
+				result->addTemplate(t, name.c_str());
+
+				result->lines += SKIPWS(p, ';');
+				if (*p != ';') {
+					error("%s: Error: Expected closing ; before line %u near `%S`! Probably caused by missing set operator.\n", p);
+				}
+			}
+			// PARENTHESES
+			else if (ISCHR(*p, 'P', 'p') && ISCHR(*(p + 10), 'S', 's') && ISCHR(*(p + 1), 'A', 'a') && ISCHR(*(p + 2), 'R', 'r') && ISCHR(*(p + 3), 'E', 'e') && ISCHR(*(p + 4), 'N', 'n') && ISCHR(*(p + 5), 'T', 't') && ISCHR(*(p + 6), 'H', 'h') && ISCHR(*(p + 7), 'E', 'e') && ISCHR(*(p + 8), 'S', 's') && ISCHR(*(p + 9), 'E', 'e') && !ISSTRING(p, 10)) {
+				p += 11;
+				result->lines += SKIPWS(p, '=');
+				if (*p != '=') {
+					error("%s: Error: Encountered a %C before the expected = on line %u near `%S`!\n", *p, p);
+				}
+				++p;
+				result->lines += SKIPWS(p);
+
+				while (*p && *p != ';') {
+					ptrdiff_t c = 0;
+					Tag *left = 0;
+					Tag *right = 0;
+					UChar *n = p;
+					result->lines += SKIPTOWS(n, '(', true);
+					if (*n != '(') {
+						error("%s: Error: Encountered %C before the expected ( on line %u near `%S`!\n", *p, p);
+					}
+					n++;
+					result->lines += SKIPWS(n);
+					p = n;
+					if (*n == '"') {
+						n++;
+						SKIPTO_NOSPAN(n, '"');
+						if (*n != '"') {
+							error("%s: Error: Expected closing \" on line %u near `%S`!\n", p);
+						}
+					}
+					result->lines += SKIPTOWS(n, ')', true);
+					c = n - p;
+					u_strncpy(&gbuffers[0][0], p, c);
+					gbuffers[0][c] = 0;
+					left = parseTag(&gbuffers[0][0], p);
+					result->lines += SKIPWS(n);
+					p = n;
+
+					if (*p == ')') {
+						error("%s: Error: Encountered ) before the expected Right tag on line %u near `%S`!\n", p);
+					}
+
+					if (*n == '"') {
+						n++;
+						SKIPTO_NOSPAN(n, '"');
+						if (*n != '"') {
+							error("%s: Error: Expected closing \" on line %u near `%S`!\n", p);
+						}
+					}
+					result->lines += SKIPTOWS(n, ')', true);
+					c = n - p;
+					u_strncpy(&gbuffers[0][0], p, c);
+					gbuffers[0][c] = 0;
+					right = parseTag(&gbuffers[0][0], p);
+					result->lines += SKIPWS(n);
+					p = n;
+
+					if (*p != ')') {
+						error("%s: Error: Encountered %C before the expected ) on line %u near `%S`!\n", *p, p);
+					}
+					++p;
+					result->lines += SKIPWS(p);
+
+					if (left && right) {
+						result->parentheses[left->hash] = right->hash;
+						result->parentheses_reverse[right->hash] = left->hash;
+					}
+				}
+
+				if (result->parentheses.empty()) {
+					error("%s: Error: PARENTHESES declared, but no definitions given, on line %u near `%S`!\n", p);
+				}
+				result->lines += SKIPWS(p, ';');
+				if (*p != ';') {
+					error("%s: Error: Expected closing ; before line %u near `%S`!\n", p);
+				}
+			}
+			// END
+			else if (ISCHR(*p, 'E', 'e') && ISCHR(*(p + 2), 'D', 'd') && ISCHR(*(p + 1), 'N', 'n')) {
+				if (ISNL(*(p - 1)) || ISSPACE(*(p - 1))) {
+					if (*(p + 3) == 0 || ISNL(*(p + 3)) || ISSPACE(*(p + 3))) {
+						break;
+					}
+				}
+				++p;
+			}
+			// No keyword found at this position, skip a character.
+			else {
+				UChar *n = p;
+				if (*p == ';' || *p == '"') {
+					if (*p == '"') {
+						++p;
+						SKIPTO_NOSPAN(p, '"');
+						if (*p != '"') {
+							error("%s: Error: Expected closing \" on line %u near `%S`!\n", n);
+						}
+					}
+					result->lines += SKIPTOWS(p);
+				}
+				if (*p && *p != ';' && *p != '"' && !ISNL(*p) && !ISSPACE(*p)) {
+					error("%s: Error: Garbage data encountered on line %u near `%S`!\n", p);
+				}
+				if (ISNL(*p)) {
+					result->lines += 1;
+				}
+				++p;
+			}
 		}
-	}
-	catch (int) {
-		result->lines += SKIPLN(p);
-	}
+		catch (int) {
+			result->lines += SKIPLN(p);
+		}
 	}
 
 	return 0;
@@ -2320,14 +2181,14 @@ int TextualParser::parse_grammar_from_file(const char *fname, const char *loc, c
 	}
 
 	// It reads into the buffer at offset 4 because certain functions may look back, so we need some nulls in front.
-	std::vector<UChar> data(result->grammar_size*2, 0);
-	uint32_t read = u_file_read(&data[4], result->grammar_size*2, grammar);
+	std::vector<UChar> data(result->grammar_size * 2, 0);
+	uint32_t read = u_file_read(&data[4], result->grammar_size * 2, grammar);
 	u_fclose(grammar);
-	if (read >= result->grammar_size*2-1) {
+	if (read >= result->grammar_size * 2 - 1) {
 		u_fprintf(ux_stderr, "%s: Error: Converting from underlying codepage to UTF-16 exceeded factor 2 buffer.\n", filebase);
 		CG3Quit(1);
 	}
-	data.resize(read+4+1);
+	data.resize(read + 4 + 1);
 
 	result->addAnchor(keywords[K_START].getTerminatedBuffer(), 0, true);
 
@@ -2419,7 +2280,7 @@ int TextualParser::parse_grammar_from_file(const char *fname, const char *loc, c
 		return error;
 	}
 
-	result->addAnchor(keywords[K_END].getTerminatedBuffer(), result->rule_by_number.size()-1, true);
+	result->addAnchor(keywords[K_END].getTerminatedBuffer(), result->rule_by_number.size() - 1, true);
 
 	foreach (it, result->rule_by_number) {
 		if ((*it)->name) {
@@ -2467,8 +2328,8 @@ int TextualParser::parse_grammar_from_file(const char *fname, const char *loc, c
 		it->first->tmpl = result->templates.find(cn)->second;
 	}
 
-	bc::flat_map<uint32_t,uint32_t> sets;
-	for (BOOST_AUTO(cntx, result->contexts.begin()); cntx != result->contexts.end(); ) {
+	bc::flat_map<uint32_t, uint32_t> sets;
+	for (BOOST_AUTO(cntx, result->contexts.begin()); cntx != result->contexts.end();) {
 		if (cntx->second->pos & POS_NUMERIC_BRANCH) {
 			ContextualTest *unsafec = cntx->second;
 			result->contexts.erase(cntx);
@@ -2480,7 +2341,7 @@ int TextualParser::parse_grammar_from_file(const char *fname, const char *loc, c
 
 			ContextualTest *safec = result->allocateContextualTest();
 			copy_cntx(unsafec, safec);
-			
+
 			safec->pos |= POS_CAREFUL;
 			safec->target = sets[unsafec->target];
 
@@ -2531,7 +2392,7 @@ void TextualParser::setVerbosity(uint32_t level) {
 
 void TextualParser::addRuleToGrammar(Rule *rule) {
 	if (in_section) {
-		rule->section = (int32_t)(result->sections.size()-1);
+		rule->section = (int32_t)(result->sections.size() - 1);
 		result->addRule(rule);
 	}
 	else if (in_after_sections) {
@@ -2547,5 +2408,4 @@ void TextualParser::addRuleToGrammar(Rule *rule) {
 		result->addRule(rule);
 	}
 }
-
 }

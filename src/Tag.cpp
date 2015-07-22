@@ -26,39 +26,39 @@
 
 namespace CG3 {
 
-UFILE* Tag::dump_hashes_out = 0;
+UFILE *Tag::dump_hashes_out = 0;
 
-Tag::Tag() :
-comparison_op(OP_NOP),
-comparison_val(0),
-type(0),
-comparison_hash(0),
-dep_self(0),
-dep_parent(0),
-hash(0),
-plain_hash(0),
-number(0),
-seed(0),
-regexp(0)
+Tag::Tag()
+  : comparison_op(OP_NOP)
+  , comparison_val(0)
+  , type(0)
+  , comparison_hash(0)
+  , dep_self(0)
+  , dep_parent(0)
+  , hash(0)
+  , plain_hash(0)
+  , number(0)
+  , seed(0)
+  , regexp(0)
 {
 	#ifdef CG_TRACE_OBJECTS
 	std::cerr << "OBJECT: " << __PRETTY_FUNCTION__ << std::endl;
 	#endif
 }
 
-Tag::Tag(const Tag& o) :
-comparison_op(o.comparison_op),
-comparison_val(o.comparison_val),
-type(o.type),
-comparison_hash(o.comparison_hash),
-dep_self(o.dep_self),
-dep_parent(o.dep_parent),
-hash(o.hash),
-plain_hash(o.plain_hash),
-number(o.number),
-seed(o.seed),
-tag(o.tag),
-regexp(0)
+Tag::Tag(const Tag& o)
+  : comparison_op(o.comparison_op)
+  , comparison_val(o.comparison_val)
+  , type(o.type)
+  , comparison_hash(o.comparison_hash)
+  , dep_self(o.dep_self)
+  , dep_parent(o.dep_parent)
+  , hash(o.hash)
+  , plain_hash(o.plain_hash)
+  , number(o.number)
+  , seed(o.seed)
+  , tag(o.tag)
+  , regexp(0)
 {
 	#ifdef CG_TRACE_OBJECTS
 	std::cerr << "OBJECT: " << __PRETTY_FUNCTION__ << std::endl;
@@ -97,10 +97,10 @@ void Tag::parseTagRaw(const UChar *to, Grammar *grammar) {
 	const UChar *tmp = to;
 
 	if (tmp[0] && (tmp[0] == '"' || tmp[0] == '<')) {
-		if ((tmp[0] == '"' && tmp[length-1] == '"') || (tmp[0] == '<' && tmp[length-1] == '>')) {
+		if ((tmp[0] == '"' && tmp[length - 1] == '"') || (tmp[0] == '<' && tmp[length - 1] == '>')) {
 			type |= T_TEXTUAL;
-			if (tmp[0] == '"' && tmp[length-1] == '"') {
-				if (tmp[1] == '<' && tmp[length-2] == '>') {
+			if (tmp[0] == '"' && tmp[length - 1] == '"') {
+				if (tmp[1] == '<' && tmp[length - 2] == '>') {
 					type |= T_WORDFORM;
 				}
 				else {
@@ -128,14 +128,14 @@ void Tag::parseTagRaw(const UChar *to, Grammar *grammar) {
 		}
 	}
 
-	if (tag[0] == '<' && tag[length-1] == '>') {
+	if (tag[0] == '<' && tag[length - 1] == '>') {
 		parseNumeric();
 	}
 	if (tag[0] == '#') {
 		if (u_sscanf(tag.c_str(), "#%i->%i", &dep_self, &dep_parent) == 2 && dep_self != 0) {
 			type |= T_DEPENDENCY;
 		}
-		const UChar local_dep_unicode[] = {'#', '%', 'i', L'\u2192', '%', 'i', 0};
+		const UChar local_dep_unicode[] = { '#', '%', 'i', L'\u2192', '%', 'i', 0 };
 		if (u_sscanf_u(tag.c_str(), local_dep_unicode, &dep_self, &dep_parent) == 2 && dep_self != 0) {
 			type |= T_DEPENDENCY;
 		}
@@ -327,12 +327,12 @@ UString Tag::toUString(bool escape) const {
 		str += ':';
 	}
 
-	if (type & (T_CASE_INSENSITIVE|T_REGEXP) && tag[0] != '"') {
+	if (type & (T_CASE_INSENSITIVE | T_REGEXP) && tag[0] != '"') {
 		str += '/';
 	}
 
 	if (escape) {
-		for (size_t i=0 ; i<tag.length() ; ++i) {
+		for (size_t i = 0; i < tag.length(); ++i) {
 			if (tag[i] == '\\' || tag[i] == '(' || tag[i] == ')' || tag[i] == ';' || tag[i] == '#') {
 				str += '\\';
 			}
@@ -343,7 +343,7 @@ UString Tag::toUString(bool escape) const {
 		str + tag;
 	}
 
-	if (type & (T_CASE_INSENSITIVE|T_REGEXP) && tag[0] != '"') {
+	if (type & (T_CASE_INSENSITIVE | T_REGEXP) && tag[0] != '"') {
 		str += '/';
 	}
 	if (type & T_CASE_INSENSITIVE) {
@@ -357,5 +357,4 @@ UString Tag::toUString(bool escape) const {
 	}
 	return str;
 }
-
 }

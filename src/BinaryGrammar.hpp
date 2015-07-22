@@ -26,31 +26,32 @@
 #include "IGrammarParser.hpp"
 
 namespace CG3 {
-	class ContextualTest;
+class ContextualTest;
 
-	class BinaryGrammar : public IGrammarParser {
-	public:
-		BinaryGrammar(Grammar& result, UFILE *ux_err);
+class BinaryGrammar : public IGrammarParser {
+public:
+	BinaryGrammar(Grammar& result, UFILE *ux_err);
 
-		int writeBinaryGrammar(FILE *output);
-		int readBinaryGrammar(FILE *input);
+	int writeBinaryGrammar(FILE *output);
+	int readBinaryGrammar(FILE *input);
 
-		void setCompatible(bool compat);
-		void setVerbosity(uint32_t level);
-		int parse_grammar_from_file(const char *filename, const char *locale, const char *codepage);
-	private:
-		Grammar *grammar;
-		void writeContextualTest(ContextualTest *t, FILE *output);
-		ContextualTest *readContextualTest(FILE *input);
+	void setCompatible(bool compat);
+	void setVerbosity(uint32_t level);
+	int parse_grammar_from_file(const char *filename, const char *locale, const char *codepage);
 
-		typedef stdext::hash_map<ContextualTest*,uint32_t> deferred_t;
-		deferred_t deferred_tmpls;
+private:
+	Grammar *grammar;
+	void writeContextualTest(ContextualTest *t, FILE *output);
+	ContextualTest *readContextualTest(FILE *input);
 
-		uint32FlatHashSet seen_uint32;
+	typedef stdext::hash_map<ContextualTest *, uint32_t> deferred_t;
+	deferred_t deferred_tmpls;
 
-		int readBinaryGrammar_10043(FILE *input);
-		ContextualTest *readContextualTest_10043(FILE *input);
-	};
+	uint32FlatHashSet seen_uint32;
+
+	int readBinaryGrammar_10043(FILE *input);
+	ContextualTest *readContextualTest_10043(FILE *input);
+};
 }
 
 #endif

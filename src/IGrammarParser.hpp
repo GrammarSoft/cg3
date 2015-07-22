@@ -26,20 +26,21 @@
 #include "stdafx.hpp"
 
 namespace CG3 {
-	class Grammar;
+class Grammar;
 
-	class IGrammarParser {
-	public:
-		virtual ~IGrammarParser() {};
-		virtual void setCompatible(bool compat) = 0;
-		virtual void setVerbosity(uint32_t level) = 0;
-		virtual int parse_grammar_from_file(const char *filename, const char *locale, const char *codepage) = 0;
+class IGrammarParser {
+public:
+	virtual ~IGrammarParser(){};
+	virtual void setCompatible(bool compat) = 0;
+	virtual void setVerbosity(uint32_t level) = 0;
+	virtual int parse_grammar_from_file(const char *filename, const char *locale, const char *codepage) = 0;
 
-		UFILE *ux_stderr;
-	protected:
-		Grammar *result;
-		uint32_t verbosity;
-	};
+	UFILE *ux_stderr;
+
+protected:
+	Grammar *result;
+	uint32_t verbosity;
+};
 }
 
 #endif

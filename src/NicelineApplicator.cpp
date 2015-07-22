@@ -30,9 +30,9 @@
 namespace CG3 {
 
 NicelineApplicator::NicelineApplicator(UFILE *ux_err)
-	: GrammarApplicator(ux_err),
-	did_warn_statictags(false),
-	did_warn_subreadings(false)
+  : GrammarApplicator(ux_err)
+  , did_warn_statictags(false)
+  , did_warn_subreadings(false)
 {
 }
 
@@ -70,7 +70,7 @@ void NicelineApplicator::runGrammarOnText(istream& input, UFILE *output) {
 
 	index();
 
-	uint32_t resetAfter = ((num_windows+4)*2+1);
+	uint32_t resetAfter = ((num_windows + 4) * 2 + 1);
 	uint32_t lines = 0;
 
 	SingleWindow *cSWindow = 0;
@@ -86,40 +86,40 @@ void NicelineApplicator::runGrammarOnText(istream& input, UFILE *output) {
 		++lines;
 		size_t offset = 0, packoff = 0;
 		// Read as much of the next line as will fit in the current buffer
-		while (input.gets(&line[offset], line.size()-offset-1)) {
+		while (input.gets(&line[offset], line.size() - offset - 1)) {
 			// Copy the segment just read to cleaned
-			for (size_t i=offset ; i<line.size() ; ++i) {
+			for (size_t i = offset; i < line.size(); ++i) {
 				// Only copy one space character, regardless of how many are in input
 				if (ISSPACE(line[i]) && !ISNL(line[i])) {
 					cleaned[packoff++] = (line[i] == '\t' ? '\t' : ' ');
 					while (ISSPACE(line[i]) && !ISNL(line[i])) {
 						if (line[i] == '\t') {
-							cleaned[packoff-1] = line[i];
+							cleaned[packoff - 1] = line[i];
 						}
 						++i;
 					}
 				}
 				// Break if there is a newline
 				if (ISNL(line[i])) {
-					cleaned[packoff+1] = cleaned[packoff] = 0;
+					cleaned[packoff + 1] = cleaned[packoff] = 0;
 					goto gotaline; // Oh how I wish C++ had break 2;
 				}
 				if (line[i] == 0) {
-					cleaned[packoff+1] = cleaned[packoff] = 0;
+					cleaned[packoff + 1] = cleaned[packoff] = 0;
 					break;
 				}
 				cleaned[packoff++] = line[i];
 			}
 			// If we reached this, buffer wasn't big enough. Double the size of the buffer and try again.
-			offset = line.size()-2;
-			line.resize(line.size()*2, 0);
-			cleaned.resize(line.size()+2, 0);
+			offset = line.size() - 2;
+			line.resize(line.size() * 2, 0);
+			cleaned.resize(line.size() + 2, 0);
 		}
 
-gotaline:
+	gotaline:
 		// Trim trailing whitespace
-		while (cleaned[0] && ISSPACE(cleaned[packoff-1])) {
-			cleaned[packoff-1] = 0;
+		while (cleaned[0] && ISSPACE(cleaned[packoff - 1])) {
+			cleaned[packoff - 1] = 0;
 			--packoff;
 		}
 		if (!ignoreinput && cleaned[0] && cleaned[0] != '<') {
@@ -306,7 +306,7 @@ gotaline:
 			}
 		}
 		else {
-istext:
+		istext:
 			if (cleaned[0] && line[0]) {
 				if (lCohort) {
 					lCohort->text += &line[0];
@@ -366,7 +366,7 @@ void NicelineApplicator::printReading(const Reading *reading, UFILE *output) {
 	}
 	u_fputc('\t', output);
 	if (reading->baseform) {
-		u_fprintf(output, "[%.*S]", single_tags.find(reading->baseform)->second->tag.size()-2, single_tags.find(reading->baseform)->second->tag.c_str() + 1);
+		u_fprintf(output, "[%.*S]", single_tags.find(reading->baseform)->second->tag.size() - 2, single_tags.find(reading->baseform)->second->tag.c_str() + 1);
 	}
 
 	uint32SortedVector unique;
@@ -416,19 +416,19 @@ void NicelineApplicator::printReading(const Reading *reading, UFILE *output) {
 		}
 		if (!dep_has_spanned) {
 			u_fprintf_u(output, pattern,
-				reading->parent->local_number,
-				pr->local_number);
+			  reading->parent->local_number,
+			  pr->local_number);
 		}
 		else {
 			if (reading->parent->dep_parent == std::numeric_limits<uint32_t>::max()) {
 				u_fprintf_u(output, pattern,
-					reading->parent->dep_self,
-					reading->parent->dep_self);
+				  reading->parent->dep_self,
+				  reading->parent->dep_self);
 			}
 			else {
 				u_fprintf_u(output, pattern,
-					reading->parent->dep_self,
-					reading->parent->dep_parent);
+				  reading->parent->dep_self,
+				  reading->parent->dep_parent);
 			}
 		}
 	}
@@ -468,7 +468,7 @@ void NicelineApplicator::printCohort(Cohort *cohort, UFILE *output) {
 		goto removed;
 	}
 
-	u_fprintf(output, "%.*S", cohort->wordform->tag.size()-4, cohort->wordform->tag.c_str()+2);
+	u_fprintf(output, "%.*S", cohort->wordform->tag.size() - 4, cohort->wordform->tag.c_str() + 2);
 	if (cohort->wread && !did_warn_statictags) {
 		u_fprintf(ux_stderr, "Warning: Niceline CG format cannot output static tags! You are losing information!\n");
 		u_fflush(ux_stderr);
@@ -512,5 +512,4 @@ void NicelineApplicator::printSingleWindow(SingleWindow *window, UFILE *output) 
 	u_fputc('\n', output);
 	u_fflush(output);
 }
-
 }

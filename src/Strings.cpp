@@ -49,7 +49,7 @@ UnicodeString g_flags[FLAGS_COUNT] = {
 	UNICODE_STRING_SIMPLE("REVERSE"),
 	UNICODE_STRING_SIMPLE("SUB"),
 	UNICODE_STRING_SIMPLE("OUTPUT"),
-	UNICODE_STRING_SIMPLE("CAPTURE_UNIF")
+	UNICODE_STRING_SIMPLE("CAPTURE_UNIF"),
 };
 
 UnicodeString keywords[KEYWORD_COUNT] = {
@@ -111,11 +111,11 @@ UnicodeString keywords[KEYWORD_COUNT] = {
 	UNICODE_STRING_SIMPLE("OPTIONS"),
 	UNICODE_STRING_SIMPLE("STRICT-TAGS"),
 	UNICODE_STRING_SIMPLE("REOPEN-MAPPINGS"),
-	UNICODE_STRING_SIMPLE("SUBREADINGS")
+	UNICODE_STRING_SIMPLE("SUBREADINGS"),
 };
 
-const UChar _S_SET_ISECT_U[] = {L'\u2229', 0};
-const UChar _S_SET_SYMDIFF_U[] = {L'\u2206', 0};
+const UChar _S_SET_ISECT_U[] = { L'\u2229', 0 };
+const UChar _S_SET_SYMDIFF_U[] = { L'\u2206', 0 };
 
 UnicodeString stringbits[STRINGS_COUNT] = {
 	UNICODE_STRING_SIMPLE("1f283fc29adb937a892e09bbc124b85c this is a dummy string to hold position 0"),
@@ -193,10 +193,9 @@ UnicodeString stringbits[STRINGS_COUNT] = {
 	UNICODE_STRING_SIMPLE("strict-baseforms"),
 	UNICODE_STRING_SIMPLE("strict-secondary"),
 	UNICODE_STRING_SIMPLE("<STREAMCMD:SETVAR:"),
-	UNICODE_STRING_SIMPLE("<STREAMCMD:REMVAR:")
+	UNICODE_STRING_SIMPLE("<STREAMCMD:REMVAR:"),
 };
 
-std::vector< std::vector<UChar> > gbuffers(NUM_GBUFFERS, std::vector<UChar>(CG3_BUFFER_SIZE, 0));
+std::vector<std::vector<UChar> > gbuffers(NUM_GBUFFERS, std::vector<UChar>(CG3_BUFFER_SIZE, 0));
 std::vector<std::string> cbuffers(NUM_CBUFFERS, std::string(CG3_BUFFER_SIZE, 0));
-
 }

@@ -34,7 +34,6 @@ namespace CG3 {
 template<typename T, T res_empty = T(-1), T res_del = T(-1) - 1>
 class flat_unordered_set {
 public:
-
 	class const_iterator : public std::iterator<std::bidirectional_iterator_tag, T> {
 	private:
 		friend class flat_unordered_set;
@@ -44,15 +43,15 @@ public:
 	public:
 		typedef T reference;
 
-		const_iterator() :
-			fus(0),
-			i(0)
+		const_iterator()
+		  : fus(0)
+		  , i(0)
 		{
 		}
 
-		const_iterator(const flat_unordered_set& fus, size_t i = 0) :
-			fus(&fus),
-			i(i)
+		const_iterator(const flat_unordered_set& fus, size_t i = 0)
+		  : fus(&fus)
+		  , i(i)
 		{
 		}
 
@@ -118,15 +117,15 @@ public:
 		DEFAULT_CAP = static_cast<size_type>(16u),
 	};
 
-	flat_unordered_set() :
-		size_(0)
+	flat_unordered_set()
+	  : size_(0)
 	{
 	}
 
 	void insert(T t) {
 		assert(t != res_empty && t != res_del && "Value cannot be res_empty or res_del!");
 
-		if ((size_ + 1)*3/2 >= capacity() / 2) {
+		if ((size_ + 1) * 3 / 2 >= capacity() / 2) {
 			reserve(std::max(static_cast<size_type>(DEFAULT_CAP), capacity() * 2));
 		}
 		size_t max = capacity() - 1;
@@ -144,14 +143,14 @@ public:
 	void insert(It b, It e) {
 		size_t d = std::distance(b, e);
 		size_t c = capacity();
-		while ((size_ + d)*3/2 >= c / 2) {
-			c = std::max(static_cast<size_type>(DEFAULT_CAP), c*2);
+		while ((size_ + d) * 3 / 2 >= c / 2) {
+			c = std::max(static_cast<size_type>(DEFAULT_CAP), c * 2);
 		}
 		if (c != capacity()) {
 			reserve(c);
 		}
 
-		for (; b != e ; ++b) {
+		for (; b != e; ++b) {
 			insert(*b);
 		}
 	}
@@ -293,7 +292,6 @@ private:
 };
 
 typedef flat_unordered_set<uint32_t> uint32FlatHashSet;
-
 }
 
 #endif

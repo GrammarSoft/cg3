@@ -25,23 +25,23 @@
 
 namespace CG3 {
 
-ContextualTest::ContextualTest() :
-is_used(false),
-offset(0),
-offset_sub(0),
-line(0),
-hash(0),
-seed(0),
-pos(0),
-target(0),
-relation(0),
-barrier(0),
-cbarrier(0),
-num_fail(0),
-num_match(0),
-total_time(0),
-tmpl(0),
-linked(0)
+ContextualTest::ContextualTest()
+  : is_used(false)
+  , offset(0)
+  , offset_sub(0)
+  , line(0)
+  , hash(0)
+  , seed(0)
+  , pos(0)
+  , target(0)
+  , relation(0)
+  , barrier(0)
+  , cbarrier(0)
+  , num_fail(0)
+  , num_match(0)
+  , total_time(0)
+  , tmpl(0)
+  , linked(0)
 {
 	// Nothing in the actual body...
 }
@@ -162,5 +162,4 @@ void ContextualTest::markUsed(Grammar& grammar) {
 		linked->markUsed(grammar);
 	}
 }
-
 }

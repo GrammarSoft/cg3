@@ -26,7 +26,7 @@
 namespace CG3 {
 
 std::vector<SingleWindow*> pool_swindows;
-pool_cleaner< std::vector<SingleWindow*> > cleaner_swindows(pool_swindows);
+pool_cleaner<std::vector<SingleWindow*> > cleaner_swindows(pool_swindows);
 
 SingleWindow *alloc_swindow(Window *p) {
 	SingleWindow *s = pool_get(pool_swindows);
@@ -46,12 +46,12 @@ void free_swindow(SingleWindow *s) {
 	pool_put(pool_swindows, s);
 }
 
-SingleWindow::SingleWindow(Window *p) :
-number(0),
-has_enclosures(false),
-next(0),
-previous(0),
-parent(p)
+SingleWindow::SingleWindow(Window *p)
+  : number(0)
+  , has_enclosures(false)
+  , next(0)
+  , previous(0)
+  , parent(p)
 {
 	#ifdef CG_TRACE_OBJECTS
 	std::cerr << "OBJECT: " << __PRETTY_FUNCTION__ << std::endl;
@@ -165,5 +165,4 @@ void SingleWindow::appendCohort(Cohort *cohort) {
 		parent->cohort_map[0] = cohort;
 	}
 }
-
 }

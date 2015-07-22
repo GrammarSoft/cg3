@@ -96,7 +96,7 @@ inline int ux_isSetOp(const UChar *it) {
 inline bool ux_isEmpty(const UChar *text) {
 	size_t length = u_strlen(text);
 	if (length > 0) {
-		for (size_t i=0 ; i<length ; i++) {
+		for (size_t i = 0; i < length; i++) {
 			if (!ISSPACE(text[i])) {
 				return false;
 			}
@@ -106,8 +106,8 @@ inline bool ux_isEmpty(const UChar *text) {
 }
 
 inline bool ux_simplecasecmp(const UChar *a, const UChar *b, const size_t n) {
-	for (size_t i = 0 ; i < n ; ++i) {
-		if (a[i] != b[i] && a[i] != b[i]+32) {
+	for (size_t i = 0; i < n; ++i) {
+		if (a[i] != b[i] && a[i] != b[i] + 32) {
 			return false;
 		}
 	}
@@ -123,30 +123,33 @@ struct substr_t {
 	size_t offset, count;
 	value_type old_value;
 
-	substr_t(const Str& str, size_t offset=0, size_t count=Str::npos) :
-	str(str), offset(offset), count(count), old_value(0)
+	substr_t(const Str& str, size_t offset = 0, size_t count = Str::npos)
+	  : str(str)
+	  , offset(offset)
+	  , count(count)
+	  , old_value(0)
 	{
 		if (count != Str::npos) {
-			old_value = str[offset+count];
+			old_value = str[offset + count];
 		}
 	}
 
 	~substr_t() {
 		if (count != Str::npos) {
-			value_type *buf = const_cast<value_type*>(str.c_str()+offset);
+			value_type *buf = const_cast<value_type*>(str.c_str() + offset);
 			buf[count] = old_value;
 		}
 	}
 
 	const value_type *c_str() const {
-		value_type *buf = const_cast<value_type*>(str.c_str()+offset);
+		value_type *buf = const_cast<value_type*>(str.c_str() + offset);
 		buf[count] = 0;
 		return buf;
 	}
 };
 
 template<typename Str>
-inline substr_t<Str> substr(const Str& str, size_t offset=0, size_t count=0) {
+inline substr_t<Str> substr(const Str& str, size_t offset = 0, size_t count = 0) {
 	return substr_t<Str>(str, offset, count);
 }
 
@@ -163,7 +166,6 @@ inline UChar *ux_bufcpy(UChar *dst, const UChar *src, size_t n) {
 }
 
 std::string ux_dirname(const char *in);
-
 }
 
 #endif

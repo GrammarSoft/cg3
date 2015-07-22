@@ -38,11 +38,11 @@ public:
 	}
 
 	bloomish(const bloomish<Cont>& other) {
-		std::copy(other.value, other.value+4, &value[0]);
+		std::copy(other.value, other.value + 4, &value[0]);
 	}
 
 	void clear() {
-		std::fill(value, value+4, 0);
+		std::fill(value, value + 4, 0);
 	}
 
 	void insert(const Cont& v) {
@@ -75,7 +75,6 @@ public:
 };
 
 typedef bloomish<uint32_t> uint32Bloomish;
-
 }
 
 #endif

@@ -30,32 +30,32 @@
 #include "sorted_vector.hpp"
 
 namespace CG3 {
-	class Window;
+class Window;
 
-	class SingleWindow {
-	public:
-		uint32_t number;
-		bool has_enclosures;
-		SingleWindow *next, *previous;
-		Window *parent;
-		UString text;
-		CohortVector cohorts;
-		uint32IntervalVector valid_rules;
-		uint32SortedVector hit_external;
-		std::vector<CohortSet> rule_to_cohorts;
-		uint32FlatHashMap variables_set;
-		uint32FlatHashSet variables_rem;
-		uint32SortedVector variables_output;
+class SingleWindow {
+public:
+	uint32_t number;
+	bool has_enclosures;
+	SingleWindow *next, *previous;
+	Window *parent;
+	UString text;
+	CohortVector cohorts;
+	uint32IntervalVector valid_rules;
+	uint32SortedVector hit_external;
+	std::vector<CohortSet> rule_to_cohorts;
+	uint32FlatHashMap variables_set;
+	uint32FlatHashSet variables_rem;
+	uint32SortedVector variables_output;
 
-		SingleWindow(Window *p);
-		~SingleWindow();
-		void clear();
+	SingleWindow(Window *p);
+	~SingleWindow();
+	void clear();
 
-		void appendCohort(Cohort *cohort);
-	};
+	void appendCohort(Cohort *cohort);
+};
 
-	SingleWindow *alloc_swindow(Window *p);
-	void free_swindow(SingleWindow *s);
+SingleWindow *alloc_swindow(Window *p);
+void free_swindow(SingleWindow *s);
 }
 
 #endif
