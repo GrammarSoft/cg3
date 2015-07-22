@@ -243,7 +243,7 @@ gotaline:
 
 			UString tag;
 			for (size_t i=0 ; i<tokens.size() ; ++i) {
-				UnicodeString &token = tokens[i];
+				UnicodeString& token = tokens[i];
 				bool first_upper = (u_isupper(token[0]) != 0);
 				bool all_upper = first_upper;
 				bool mixed_upper = false;
