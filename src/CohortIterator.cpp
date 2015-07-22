@@ -165,7 +165,7 @@ void DepDescendentIter::reset(Cohort *cohort, const ContextualTest *test, bool s
 	m_cohort = 0;
 
 	if (cohort && test) {
-		const_foreach (uint32SortedVector, cohort->dep_children, dter, dter_end) {
+		foreach (dter, cohort->dep_children) {
 			if (cohort->parent->parent->cohort_map.find(*dter) == cohort->parent->parent->cohort_map.end()) {
 				continue;
 			}
@@ -193,14 +193,14 @@ void DepDescendentIter::reset(Cohort *cohort, const ContextualTest *test, bool s
 			added = false;
 			CohortSet to_add;
 
-			const_foreach (CohortSet, m_descendents, iter, iter_end) {
+			foreach (iter, m_descendents) {
 				Cohort *cohort_inner = *iter;
 				if (m_seen.find(cohort_inner) != m_seen.end()) {
 					continue;
 				}
 				m_seen.insert(cohort_inner);
 
-				const_foreach (uint32SortedVector, cohort_inner->dep_children, dter, dter_end) {
+				foreach (dter, cohort_inner->dep_children) {
 					if (cohort_inner->parent->parent->cohort_map.find(*dter) == cohort_inner->parent->parent->cohort_map.end()) {
 						continue;
 					}
@@ -222,7 +222,7 @@ void DepDescendentIter::reset(Cohort *cohort, const ContextualTest *test, bool s
 				}
 			}
 
-			const_foreach (CohortSet, to_add, iter, iter_end) {
+			foreach (iter, to_add) {
 				m_descendents.insert(*iter);
 			}
 		} while(added);

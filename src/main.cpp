@@ -350,12 +350,12 @@ int main(int argc, char* argv[]) {
 
 	if (options[OPTIMIZE_UNSAFE].doesOccur) {
 		std::vector<uint32_t> bad;
-		foreach (CG3::RuleVector, grammar.rule_by_number, ir, ir_end) {
+		foreach (ir, grammar.rule_by_number) {
 			if ((*ir)->num_match == 0) {
 				bad.push_back((*ir)->number);
 			}
 		}
-		reverse_foreach (std::vector<uint32_t>, bad, br, br_end) {
+		reverse_foreach (br, bad) {
 			CG3::Rule *r = grammar.rule_by_number[*br];
 			grammar.rule_by_number.erase(grammar.rule_by_number.begin()+*br);
 			grammar.destroyRule(r);
@@ -366,15 +366,15 @@ int main(int argc, char* argv[]) {
 	}
 	if (options[OPTIMIZE_SAFE].doesOccur) {
 		CG3::RuleVector bad;
-		foreach (CG3::RuleVector, grammar.rule_by_number, ir, ir_end) {
+		foreach (ir, grammar.rule_by_number) {
 			if ((*ir)->num_match == 0) {
 				bad.push_back(*ir);
 			}
 		}
-		reverse_foreach (CG3::RuleVector, bad, br, br_end) {
+		reverse_foreach (br, bad) {
 			grammar.rule_by_number.erase(grammar.rule_by_number.begin() + (*br)->number);
 		}
-		foreach (CG3::RuleVector, bad, br, br_end) {
+		foreach (br, bad) {
 			(*br)->number = grammar.rule_by_number.size();
 			grammar.rule_by_number.push_back(*br);
 		}
@@ -511,7 +511,7 @@ void GAppSetOpts(CG3::GrammarApplicator& applicator, UConverter *conv) {
 			buf[0] = 0;
 			ucnv_toUChars(conv, buf, sn*3, options[RULE].value, sn, &status);
 
-			const_foreach (CG3::RuleVector, applicator.grammar->rule_by_number, riter, riter_end) {
+			foreach (riter, applicator.grammar->rule_by_number) {
 				const CG3::Rule *rule = *riter;
 				if (rule->name && u_strcmp(rule->name, buf) == 0) {
 					applicator.valid_rules.push_back(rule->number);

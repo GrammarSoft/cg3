@@ -138,7 +138,7 @@ gotaline:
 
 			if (cSWindow && cSWindow->cohorts.size() >= soft_limit && grammar->soft_delimiters && !did_soft_lookback) {
 				did_soft_lookback = true;
-				reverse_foreach (CohortVector, cSWindow->cohorts, iter, iter_end) {
+				reverse_foreach (iter, cSWindow->cohorts) {
 					if (doesSetMatchCohortNormal(**iter, grammar->soft_delimiters->number)) {
 						did_soft_lookback = false;
 						Cohort *cohort = delimitAt(*cSWindow, *iter);
@@ -159,7 +159,7 @@ gotaline:
 					u_fprintf(ux_stderr, "Warning: Soft limit of %u cohorts reached at line %u but found suitable soft delimiter.\n", soft_limit, numLines);
 					u_fflush(ux_stderr);
 				}
-				foreach (ReadingList, cCohort->readings, iter, iter_end) {
+				foreach (iter, cCohort->readings) {
 					addTagToReading(**iter, endtag);
 				}
 
@@ -175,7 +175,7 @@ gotaline:
 					u_fprintf(ux_stderr, "Warning: Hard limit of %u cohorts reached at line %u - forcing break.\n", hard_limit, numLines);
 					u_fflush(ux_stderr);
 				}
-				foreach (ReadingList, cCohort->readings, iter, iter_end) {
+				foreach (iter, cCohort->readings) {
 					addTagToReading(**iter, endtag);
 				}
 
@@ -328,7 +328,7 @@ istext:
 		if (cCohort->readings.empty()) {
 			initEmptyCohort(*cCohort);
 		}
-		foreach (ReadingList, cCohort->readings, iter, iter_end) {
+		foreach (iter, cCohort->readings) {
 			addTagToReading(**iter, endtag);
 		}
 		cReading = 0;
@@ -370,7 +370,7 @@ void NicelineApplicator::printReading(const Reading *reading, UFILE *output) {
 	}
 
 	uint32SortedVector unique;
-	const_foreach (Reading::tags_list_t, reading->tags_list, tter, tter_end) {
+	foreach (tter, reading->tags_list) {
 		if ((!show_end_tags && *tter == endtag) || *tter == begintag) {
 			continue;
 		}
@@ -436,7 +436,7 @@ void NicelineApplicator::printReading(const Reading *reading, UFILE *output) {
 	if (reading->parent->type & CT_RELATED) {
 		u_fprintf(output, " ID:%u", reading->parent->global_number);
 		if (!reading->parent->relations.empty()) {
-			foreach (RelationCtn, reading->parent->relations, miter, miter_end) {
+			foreach (miter, reading->parent->relations) {
 				boost_foreach (uint32_t siter, miter->second) {
 					u_fprintf(output, " R:%S:%u", grammar->single_tags.find(miter->first)->second->tag.c_str(), siter);
 				}
@@ -445,7 +445,7 @@ void NicelineApplicator::printReading(const Reading *reading, UFILE *output) {
 	}
 
 	if (trace) {
-		const_foreach (uint32Vector, reading->hit_by, iter_hb, iter_hb_end) {
+		foreach (iter_hb, reading->hit_by) {
 			u_fputc(' ', output);
 			printTrace(output, *iter_hb);
 		}

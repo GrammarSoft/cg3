@@ -1282,13 +1282,13 @@ void TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 			found = true;
 		}
 		else {
-			foreach (ContextList, rule->tests, it, it_end) {
+			foreach (it, rule->tests) {
 				if ((*it)->pos & POS_MARK_JUMP) {
 					found = true;
 					break;
 				}
 			}
-			foreach (ContextList, rule->dep_tests, it, it_end) {
+			foreach (it, rule->dep_tests) {
 				if ((*it)->pos & POS_MARK_JUMP) {
 					found = true;
 					break;
@@ -1912,7 +1912,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 
 			while (*p != ';') {
 				bool found = false;
-				boost_foreach(pairs_t& pair, pairs) {
+				boost_foreach (pairs_t& pair, pairs) {
 					if (ux_simplecasecmp(p, stringbits[pair.first].getTerminatedBuffer(), stringbits[pair.first].length())) {
 						p += stringbits[pair.first].length();
 						pair.second = true;
@@ -2421,7 +2421,7 @@ int TextualParser::parse_grammar_from_file(const char *fname, const char *loc, c
 
 	result->addAnchor(keywords[K_END].getTerminatedBuffer(), result->rule_by_number.size()-1, true);
 
-	const_foreach (RuleVector, result->rule_by_number, it, it_end) {
+	foreach (it, result->rule_by_number) {
 		if ((*it)->name) {
 			result->addAnchor((*it)->name, (*it)->number, false);
 		}
@@ -2457,7 +2457,7 @@ int TextualParser::parse_grammar_from_file(const char *fname, const char *loc, c
 		} while (*p);
 	}
 
-	const_foreach (deferred_t, deferred_tmpls, it, it_end) {
+	foreach (it, deferred_tmpls) {
 		uint32_t cn = hash_value(it->second.second);
 		if (result->templates.find(cn) == result->templates.end()) {
 			u_fprintf(ux_stderr, "%s: Error: Unknown template '%S' referenced on line %u!\n", filebase, it->second.second.c_str(), it->second.first);

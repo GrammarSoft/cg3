@@ -90,9 +90,16 @@
 #include <boost/typeof/typeof.hpp>
 #include <boost/foreach.hpp>
 #define boost_foreach BOOST_FOREACH
-#define boost_reverse_foreach BOOST_REVERSE_FOREACH
 #define stdext boost
 #define hash_map unordered_map
+
+#define foreach(iter, container) \
+	if (!(container).empty()) \
+	for (BOOST_AUTO(iter, (container).begin()), iter##_end = (container).end() ; iter != iter##_end ; ++iter)
+
+#define reverse_foreach(iter, container) \
+	if (!(container).empty()) \
+	for (BOOST_AUTO(iter, (container).rbegin()), iter##_end = (container).rend() ; iter != iter##_end ; ++iter)
 
 #ifdef _WIN32
 	#include <winsock.h> // for hton() and family.
@@ -123,7 +130,6 @@ namespace CG3 {
 	namespace bc = ::boost::container;
 }
 
-#include "macros.hpp"
 #include "inlines.hpp"
 #include "uextras.hpp"
 #include "flat_unordered_map.hpp"
