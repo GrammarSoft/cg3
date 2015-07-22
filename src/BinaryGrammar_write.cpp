@@ -170,14 +170,14 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 		if (t->vs_sets) {
 			fields |= (1 << 10);
 			writeSwapped<uint32_t>(buffer, t->vs_sets->size());
-			const_foreach (SetVector, *t->vs_sets, iter, iter_end) {
+			foreach (iter, *t->vs_sets) {
 				writeSwapped(buffer, (*iter)->number);
 			}
 		}
 		if (t->vs_names) {
 			fields |= (1 << 11);
 			writeSwapped<uint32_t>(buffer, t->vs_names->size());
-			const_foreach (std::vector<UString>, *t->vs_names, iter, iter_end) {
+			foreach (iter, *t->vs_names) {
 				ucnv_reset(conv);
 				i32tmp = ucnv_fromUChars(conv, &cbuffers[0][0], CG3_BUFFER_SIZE-1, (*iter).c_str(), (*iter).length(), &err);
 				writeSwapped(buffer, i32tmp);
@@ -223,7 +223,7 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 		u32tmp = (uint32_t)htonl((uint32_t)grammar->anchors.size());
 		fwrite_throw(&u32tmp, sizeof(uint32_t), 1, output);
 	}
-	const_foreach (uint32FlatHashMap, grammar->anchors, iter_anchor, iter_anchor_end) {
+	foreach (iter_anchor, grammar->anchors) {
 		u32tmp = (uint32_t)htonl((uint32_t)iter_anchor->first);
 		fwrite_throw(&u32tmp, sizeof(uint32_t), 1, output);
 		u32tmp = (uint32_t)htonl((uint32_t)iter_anchor->second);
@@ -261,14 +261,14 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 		if (!s->set_ops.empty()) {
 			fields |= (1 << 4);
 			writeSwapped<uint32_t>(buffer, s->set_ops.size());
-			const_foreach (uint32Vector, s->set_ops, iter, iter_end) {
+			foreach (iter, s->set_ops) {
 				writeSwapped(buffer, *iter);
 			}
 		}
 		if (!s->sets.empty()) {
 			fields |= (1 << 5);
 			writeSwapped<uint32_t>(buffer, s->sets.size());
-			const_foreach (uint32Vector, s->sets, iter, iter_end) {
+			foreach (iter, s->sets) {
 				writeSwapped(buffer, *iter);
 			}
 		}
@@ -308,7 +308,7 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 		u32tmp = (uint32_t)htonl((uint32_t)grammar->rule_by_number.size());
 		fwrite_throw(&u32tmp, sizeof(uint32_t), 1, output);
 	}
-	const_foreach (RuleVector, grammar->rule_by_number, rule_iter, rule_iter_end) {
+	foreach (rule_iter, grammar->rule_by_number) {
 		Rule *r = *rule_iter;
 
 		uint32_t fields = 0;
@@ -396,14 +396,14 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 		r->reverseContextualTests();
 		u32tmp = (uint32_t)htonl(r->dep_tests.size());
 		fwrite_throw(&u32tmp, sizeof(uint32_t), 1, output);
-		const_foreach (ContextList, r->dep_tests, it, it_end) {
+		foreach (it, r->dep_tests) {
 			u32tmp = (uint32_t)htonl((*it)->hash);
 			fwrite_throw(&u32tmp, sizeof(uint32_t), 1, output);
 		}
 
 		u32tmp = (uint32_t)htonl(r->tests.size());
 		fwrite_throw(&u32tmp, sizeof(uint32_t), 1, output);
-		const_foreach (ContextList, r->tests, it, it_end) {
+		foreach (it, r->tests) {
 			u32tmp = (uint32_t)htonl((*it)->hash);
 			fwrite_throw(&u32tmp, sizeof(uint32_t), 1, output);
 		}

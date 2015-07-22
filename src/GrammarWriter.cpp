@@ -171,7 +171,7 @@ int GrammarWriter::writeGrammar(UFILE *output) {
 	//*/
 
 	bool found = false;
-	const_foreach (RuleVector, grammar->rule_by_number, rule_iter, rule_iter_end) {
+	foreach (rule_iter, grammar->rule_by_number) {
 		const Rule& r = **rule_iter;
 		if (r.section == -1) {
 			if (!found) {
@@ -182,9 +182,9 @@ int GrammarWriter::writeGrammar(UFILE *output) {
 			u_fprintf(output, " ;\n");
 		}
 	}
-	const_foreach (uint32Vector, grammar->sections, isec, isec_end) {
+	foreach (isec, grammar->sections) {
 		found = false;
-		const_foreach (RuleVector, grammar->rule_by_number, rule_iter, rule_iter_end) {
+		foreach (rule_iter, grammar->rule_by_number) {
 			const Rule& r = **rule_iter;
 			if (r.section == (int32_t)*isec) {
 				if (!found) {
@@ -197,7 +197,7 @@ int GrammarWriter::writeGrammar(UFILE *output) {
 		}
 	}
 	found = false;
-	const_foreach (RuleVector, grammar->rule_by_number, rule_iter, rule_iter_end) {
+	foreach (rule_iter, grammar->rule_by_number) {
 		const Rule& r = **rule_iter;
 		if (r.section == -2) {
 			if (!found) {
@@ -209,7 +209,7 @@ int GrammarWriter::writeGrammar(UFILE *output) {
 		}
 	}
 	found = false;
-	const_foreach (RuleVector, grammar->rule_by_number, rule_iter, rule_iter_end) {
+	foreach (rule_iter, grammar->rule_by_number) {
 		const Rule& r = **rule_iter;
 		if (r.section == -3) {
 			if (!found) {
@@ -264,7 +264,7 @@ void GrammarWriter::printRule(UFILE *to, const Rule& rule) {
 		u_fprintf(to, "%S ", grammar->sets_list[rule.target]->name.c_str());
 	}
 
-	const_foreach (ContextList, rule.tests, it, it_end) {
+	foreach (it, rule.tests) {
 		u_fprintf(to, "(");
 		printContextualTest(to, **it);
 		u_fprintf(to, ") ");
@@ -274,7 +274,7 @@ void GrammarWriter::printRule(UFILE *to, const Rule& rule) {
 		u_fprintf(to, "TO (");
 		printContextualTest(to, *(rule.dep_target));
 		u_fprintf(to, ") ");
-		const_foreach (ContextList, rule.dep_tests, it, it_end) {
+		foreach (it, rule.dep_tests) {
 			u_fprintf(to, "(");
 			printContextualTest(to, **it);
 			u_fprintf(to, ") ");

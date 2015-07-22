@@ -74,7 +74,7 @@ SingleWindow::~SingleWindow() {
 		}
 	}
 
-	foreach (CohortVector, cohorts, iter, iter_end) {
+	foreach (iter, cohorts) {
 		delete *iter;
 	}
 	if (next && previous) {
@@ -103,7 +103,7 @@ void SingleWindow::clear() {
 		}
 	}
 
-	foreach(CohortVector, cohorts, iter, iter_end) {
+	foreach (iter, cohorts) {
 		free_cohort(*iter);
 	}
 	if (next && previous) {

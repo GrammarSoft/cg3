@@ -157,7 +157,7 @@ Tag *parseTag(const UChar *to, const UChar *p, State& state) {
 			state.error("%s: Error: Parsing tag %S resulted in an empty tag on line %u near `%S` - cannot continue!\n", tag->tag.c_str(), p);
 		}
 
-		foreach(Grammar::regex_tags_t, state.get_grammar()->regex_tags, iter, iter_end) {
+		foreach (iter, state.get_grammar()->regex_tags) {
 			UErrorCode status = U_ZERO_ERROR;
 			uregex_setText(*iter, tag->tag.c_str(), tag->tag.length(), &status);
 			if (status != U_ZERO_ERROR) {
@@ -168,7 +168,7 @@ Tag *parseTag(const UChar *to, const UChar *p, State& state) {
 				tag->type |= T_TEXTUAL;
 			}
 		}
-		foreach(Grammar::icase_tags_t, state.get_grammar()->icase_tags, iter, iter_end) {
+		foreach (iter, state.get_grammar()->icase_tags) {
 			UErrorCode status = U_ZERO_ERROR;
 			if (u_strCaseCompare(tag->tag.c_str(), tag->tag.length(), (*iter)->tag.c_str(), (*iter)->tag.length(), U_FOLD_CASE_DEFAULT, &status) == 0) {
 				tag->type |= T_TEXTUAL;

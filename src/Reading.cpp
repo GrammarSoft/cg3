@@ -176,7 +176,7 @@ Reading *Reading::allocateReading(const Reading& r) {
 uint32_t Reading::rehash() {
 	hash = 0;
 	hash_plain = 0;
-	const_foreach (uint32SortedVector, tags, iter, iter_end) {
+	foreach (iter, tags) {
 		if (!mapping || mapping->hash != *iter) {
 			hash = hash_value(*iter, hash);
 		}

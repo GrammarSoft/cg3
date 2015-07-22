@@ -351,7 +351,7 @@ void GrammarApplicator::reflowReading(Reading& reading) {
 	Reading::tags_list_t tlist;
 	tlist.swap(reading.tags_list);
 
-	const_foreach (Reading::tags_list_t, tlist, tter, tter_end) {
+	foreach (tter, tlist) {
 		addTagToReading(reading, *tter, false);
 	}
 
@@ -373,7 +373,7 @@ Tag *GrammarApplicator::generateVarstringTag(const Tag *tag) {
 			static UString rpl;
 			rpl.clear();
 			// If there are multiple tags, such as from CompositeTags, put _ between them
-			const_foreach (TagList, tags, iter, iter_end) {
+			foreach (iter, tags) {
 				rpl += (*iter)->tag;
 				if (std::distance(iter, iter_end) > 1) {
 					rpl += '_';
@@ -587,10 +587,10 @@ void GrammarApplicator::splitMappings(TagList& mappings, Cohort& cohort, Reading
 	Tag *tag = mappings.back();
 	mappings.pop_back();
 	size_t i = mappings.size();
-	foreach (TagList, mappings, ttag, ttag_end) {
+	foreach (ttag, mappings) {
 		// To avoid duplicating needlessly many times, check for a similar reading in the cohort that's already got this mapping
 		bool found = false;
-		foreach (ReadingList, cohort.readings, itr, itr_end) {
+		foreach (itr, cohort.readings) {
 			if ((*itr)->hash_plain == reading.hash_plain
 				&& (*itr)->mapping
 				&& (*itr)->mapping->hash == (*ttag)->hash
@@ -658,12 +658,12 @@ void GrammarApplicator::mergeReadings(ReadingList& readings) {
 	mlist.clear();
 	mlist.reserve(readings.size());
 
-	foreach (ReadingList, readings, iter, iter_end) {
+	foreach (iter, readings) {
 		Reading *r = *iter;
 		uint32_t hp = r->hash_plain, hplain = r->hash_plain;
 		uint32_t nm = 0;
 		if (trace) {
-			foreach (uint32Vector, r->hit_by, iter_hb, iter_hb_end) {
+			foreach (iter_hb, r->hit_by) {
 				hp = hash_value(*iter_hb, hp);
 			}
 		}
@@ -675,7 +675,7 @@ void GrammarApplicator::mergeReadings(ReadingList& readings) {
 			hp = hash_value(sub->hash_plain, hp);
 			hplain = hash_value(sub->hash_plain, hplain);
 			if (trace) {
-				foreach (uint32Vector, sub->hit_by, iter_hb, iter_hb_end) {
+				foreach (iter_hb, sub->hit_by) {
 					hp = hash_value(*iter_hb, hp);
 				}
 			}
@@ -710,7 +710,7 @@ void GrammarApplicator::mergeReadings(ReadingList& readings) {
 		if (nr->mapping) {
 			erase(nr->tags_list, nr->mapping->hash);
 		}
-		const_foreach (ReadingList, clist, iter1, iter1_end) {
+		foreach (iter1, clist) {
 			if ((*iter1)->mapping && std::find(nr->tags_list.begin(), nr->tags_list.end(), (*iter1)->mapping->hash) == nr->tags_list.end()) {
 				nr->tags_list.push_back((*iter1)->mapping->hash);
 			}
@@ -737,7 +737,7 @@ Cohort *GrammarApplicator::delimitAt(SingleWindow& current, Cohort *cohort) {
 		nwin = current.parent->allocPushSingleWindow();
 	}
 	else {
-		foreach (SingleWindowCont, current.parent->next, iter, iter_end) {
+		foreach (iter, current.parent->next) {
 			if (*iter == &current) {
 				nwin = current.parent->allocSingleWindow();
 				current.parent->next.insert(++iter, nwin);
@@ -745,7 +745,7 @@ Cohort *GrammarApplicator::delimitAt(SingleWindow& current, Cohort *cohort) {
 			}
 		}
 		if (!nwin) {
-			foreach (SingleWindowCont, current.parent->previous, iter, iter_end) {
+			foreach (iter, current.parent->previous) {
 				if (*iter == &current) {
 					nwin = current.parent->allocSingleWindow();
 					current.parent->previous.insert(iter, nwin);
@@ -786,7 +786,7 @@ Cohort *GrammarApplicator::delimitAt(SingleWindow& current, Cohort *cohort) {
 	}
 
 	cohort = current.cohorts.back();
-	foreach (ReadingList, cohort->readings, rter3, rter3_end) {
+	foreach (rter3, cohort->readings) {
 		Reading *reading = *rter3;
 		addTagToReading(*reading, endtag);
 	}
@@ -799,7 +799,7 @@ void GrammarApplicator::reflowTextuals_Reading(Reading& r) {
 	if (r.next) {
 		reflowTextuals_Reading(*r.next);
 	}
-	const_foreach (uint32SortedVector, r.tags, it, it_end) {
+	foreach (it, r.tags) {
 		Tag *tag = single_tags.find(*it)->second;
 		if (tag->type & T_TEXTUAL) {
 			r.tags_textual.insert(*it);
@@ -809,35 +809,35 @@ void GrammarApplicator::reflowTextuals_Reading(Reading& r) {
 }
 
 void GrammarApplicator::reflowTextuals_Cohort(Cohort& c) {
-	foreach (CohortVector, c.enclosed, it, it_end) {
+	foreach (it, c.enclosed) {
 		reflowTextuals_Cohort(**it);
 	}
-	foreach (CohortVector, c.removed, it, it_end) {
+	foreach (it, c.removed) {
 		reflowTextuals_Cohort(**it);
 	}
-	foreach (ReadingList, c.readings, it, it_end) {
+	foreach (it, c.readings) {
 		reflowTextuals_Reading(**it);
 	}
-	foreach (ReadingList, c.deleted, it, it_end) {
+	foreach (it, c.deleted) {
 		reflowTextuals_Reading(**it);
 	}
-	foreach (ReadingList, c.delayed, it, it_end) {
+	foreach (it, c.delayed) {
 		reflowTextuals_Reading(**it);
 	}
 }
 
 void GrammarApplicator::reflowTextuals_SingleWindow(SingleWindow& sw) {
-	foreach (CohortVector, sw.cohorts, it, it_end) {
+	foreach (it, sw.cohorts) {
 		reflowTextuals_Cohort(**it);
 	}
 }
 
 void GrammarApplicator::reflowTextuals() {
-	foreach (SingleWindowCont, gWindow->previous, swit, swit_end) {
+	foreach (swit, gWindow->previous) {
 		reflowTextuals_SingleWindow(**swit);
 	}
 	reflowTextuals_SingleWindow(*gWindow->current);
-	foreach (SingleWindowCont, gWindow->next, swit, swit_end) {
+	foreach (swit, gWindow->next) {
 		reflowTextuals_SingleWindow(**swit);
 	}
 }

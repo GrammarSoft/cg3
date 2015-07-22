@@ -153,7 +153,7 @@ uint32_t GrammarApplicator::doesRegexpMatchReading(const Reading& reading, const
 	uint32_t match = 0;
 
 	// Grammar::reindex() will do a one-time pass to mark any potential matching tag as T_TEXTUAL
-	const_foreach (uint32SortedVector, reading.tags_textual, mter, mter_end) {
+	foreach (mter, reading.tags_textual) {
 		match = doesTagMatchRegexp(*mter, tag, bypass_index);
 		if (match) {
 			break;
@@ -205,7 +205,7 @@ uint32_t GrammarApplicator::doesTagMatchReading(const Reading& reading, const Ta
 		match = doesRegexpMatchReading(reading, tag, bypass_index);
 	}
 	else if (tag.type & T_CASE_INSENSITIVE) {
-		const_foreach (uint32SortedVector, reading.tags_textual, mter, mter_end) {
+		foreach (mter, reading.tags_textual) {
 			match = doesTagMatchIcase(*mter, tag, bypass_index);
 			if (match) {
 				break;
@@ -240,7 +240,7 @@ uint32_t GrammarApplicator::doesTagMatchReading(const Reading& reading, const Ta
 			}
 		}
 		else {
-			const_foreach (uint32SortedVector, reading.tags_textual, mter, mter_end) {
+			foreach (mter, reading.tags_textual) {
 				const Tag& itag = *(single_tags.find(*mter)->second);
 				if (!(itag.type & (T_BASEFORM|T_WORDFORM))) {
 					match = itag.hash;
@@ -589,7 +589,7 @@ bool GrammarApplicator::doesSetMatchReading(const Reading& reading, const uint32
 		else {
 			static uint32SortedVector sets;
 			sets.clear();
-			foreach(uint32SortedVector, *unif_sets, usi, usi_end) {
+			foreach (usi, *unif_sets) {
 				if (doesSetMatchReading(reading, *usi, bypass_index, unif_mode)) {
 					sets.insert(*usi);
 				}
@@ -782,7 +782,7 @@ bool GrammarApplicator::doesSetMatchCohortNormal(Cohort& cohort, const uint32_t 
 		if (lists[i] == 0) {
 			continue;
 		}
-		const_foreach (ReadingList, *lists[i], iter, iter_end) {
+		foreach (iter, *lists[i]) {
 			Reading *reading = *iter;
 			if (context && context->test) {
 				// ToDo: Barriers need some way to escape sub-readings
@@ -836,7 +836,7 @@ bool GrammarApplicator::doesSetMatchCohortCareful(Cohort& cohort, const uint32_t
 		if (lists[i] == 0) {
 			continue;
 		}
-		const_foreach(ReadingList, *lists[i], iter, iter_end) {
+		foreach (iter, *lists[i]) {
 			Reading *reading = *iter;
 			if (context && context->test) {
 				// ToDo: Barriers need some way to escape sub-readings

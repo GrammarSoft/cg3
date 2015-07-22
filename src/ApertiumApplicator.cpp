@@ -216,7 +216,7 @@ void ApertiumApplicator::runGrammarOnText(istream& input, UFILE *output) {
 			}
 			if (cCohort && cSWindow->cohorts.size() >= soft_limit && grammar->soft_delimiters && doesSetMatchCohortNormal(*cCohort, grammar->soft_delimiters->number)) {
 			  // ie. we've read some cohorts
-				foreach (ReadingList, cCohort->readings, iter, iter_end) {
+				foreach (iter, cCohort->readings) {
 					addTagToReading(**iter, endtag);
 				}
 
@@ -231,7 +231,7 @@ void ApertiumApplicator::runGrammarOnText(istream& input, UFILE *output) {
 					u_fprintf(ux_stderr, "Warning: Hard limit of %u cohorts reached at line %u - forcing break.\n", hard_limit, numLines);
 					u_fflush(ux_stderr);
 				}
-				foreach (ReadingList, cCohort->readings, iter, iter_end) {
+				foreach (iter, cCohort->readings) {
 					addTagToReading(**iter, endtag);
 				}
 
@@ -422,7 +422,7 @@ void ApertiumApplicator::runGrammarOnText(istream& input, UFILE *output) {
 		if (cCohort->readings.empty()) {
 			initEmptyCohort(*cCohort);
 		}
-		foreach (ReadingList, cCohort->readings, iter, iter_end) {
+		foreach (iter, cCohort->readings) {
 			addTagToReading(**iter, endtag);
 		}
 		cReading = 0;
@@ -619,7 +619,7 @@ void ApertiumApplicator::processReading(Reading *cReading, const UChar *reading_
 	// Search from the back until we find a baseform, then add all tags from there until the end onto the reading
 	while (!taglist.empty()) {
 		Reading *reading = cReading;
-		reverse_foreach (TagVector, taglist, riter, riter_end) {
+		reverse_foreach (riter, taglist) {
 			if ((*riter)->type & T_BASEFORM) {
 				// If current reading already has a baseform, instead create a sub-reading as target
 				if (reading->baseform) {
@@ -783,7 +783,7 @@ void ApertiumApplicator::printReading(Reading *reading, UFILE *output) {
 	}
 
 	if (trace) {
-		const_foreach (uint32Vector, reading->hit_by, iter_hb, iter_hb_end) {
+		foreach (iter_hb, reading->hit_by) {
 			u_fputc('<', output);
 			printTrace(output, *iter_hb);
 			u_fputc('>', output);
@@ -827,7 +827,7 @@ void ApertiumApplicator::printSingleWindow(SingleWindow *window, UFILE *output) 
 
 			// Print the static reading tags
 			if (cohort->wread) {
-				const_foreach (Reading::tags_list_t, cohort->wread->tags_list, tter, tter_end) {
+				foreach (tter, cohort->wread->tags_list) {
 					if (*tter == cohort->wordform->hash) {
 						continue;
 					}
@@ -897,11 +897,11 @@ void ApertiumApplicator::mergeMappings(Cohort& cohort) {
 	// foo<N><Sg><Acc><@←SUBJ>/foo<N><Sg><Acc><@←OBJ>
 	// => foo<N><Sg><Acc><@←SUBJ>/foo<N><Sg><Acc><@←OBJ>
 	std::map<uint32_t, ReadingList> mlist;
-	foreach (ReadingList, cohort.readings, iter, iter_end) {
+	foreach (iter, cohort.readings) {
 		Reading *r = *iter;
 		uint32_t hp = r->hash; // instead of hash_plain, which doesn't include mapping tags
 		if (trace) {
-			foreach (uint32Vector, r->hit_by, iter_hb, iter_hb_end) {
+			foreach (iter_hb, r->hit_by) {
 				hp = hash_value(*iter_hb, hp);
 			}
 		}
@@ -909,7 +909,7 @@ void ApertiumApplicator::mergeMappings(Cohort& cohort) {
 		while (sub) {
 			hp = hash_value(sub->hash, hp);
 			if (trace) {
-				foreach (uint32Vector, sub->hit_by, iter_hb, iter_hb_end) {
+				foreach (iter_hb, sub->hit_by) {
 					hp = hash_value(*iter_hb, hp);
 				}
 			}

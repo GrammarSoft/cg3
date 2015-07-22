@@ -319,8 +319,8 @@ void cg3_cohort_getrelation_u(cg3_cohort *cohort_, const UChar *rel, uint32_t *r
 	GrammarApplicator *ga = cohort->parent->parent->parent;
 
 	if ((cohort->type & CT_RELATED) && !cohort->relations.empty()) {
-		foreach (RelationCtn, cohort->relations, miter, miter_end) {
-			foreach (uint32Set, miter->second, siter, siter_end) {
+		foreach (miter, cohort->relations) {
+			foreach (siter, miter->second) {
 				if (u_strcmp(ga->single_tags.find(miter->first)->second->tag.c_str(), rel) == 0) {
 					*rel_parent = *siter;
 				}
