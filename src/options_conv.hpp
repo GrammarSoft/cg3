@@ -47,7 +47,7 @@ namespace Options {
 		SUB_DELIMITER,
 		SUB_RTL,
 		SUB_LTR,
-		NUM_OPTIONS
+		NUM_OPTIONS,
 	};
 
 	UOption options[]= {

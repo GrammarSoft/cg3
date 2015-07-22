@@ -115,7 +115,7 @@ public:
 	typedef T value_type;
 	typedef T key_type;
 	enum {
-		DEFAULT_CAP = static_cast<size_type>(16u)
+		DEFAULT_CAP = static_cast<size_type>(16u),
 	};
 
 	flat_unordered_set() :

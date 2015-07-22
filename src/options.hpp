@@ -85,7 +85,7 @@ namespace Options {
 		SHOW_TAGS,
 		SHOW_TAG_HASHES,
 		SHOW_SET_HASHES,
-		NUM_OPTIONS
+		NUM_OPTIONS,
 	};
 
 	UOption options[]= {
