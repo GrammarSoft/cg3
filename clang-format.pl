@@ -71,5 +71,34 @@ foreach my $file (@files) {
       $data =~ s@\Q$enum\E@$comb@g;
    }
 
+   # clang-format has no idea what I want with UOptions[], so fix that as well
+   # UOPTION_DEF_D("help", 'h', UOPT_NO_ARG, "shows this help"),
+   my @enums = ($data =~ m@UOption options\[\] = \{(.+?)\n\s*\}[^;\n]*;@sg);
+   foreach my $enum (@enums) {
+      my @lines = split /\n/, $enum;
+      my $len = 0;
+      foreach my $line (@lines) {
+         if ($line =~ m@^([^"]+"[^"]+",)@) {
+            if (length($1) > $len) {
+               $len = length($1);
+            }
+         }
+      }
+
+      my @comb = ();
+      foreach my $line (@lines) {
+         if ($line =~ m@^([^"]+"[^"]+",)@) {
+            my $txt = $1;
+            my $sps = ' ' x (1 + $len - length($txt));
+            $line =~ s@, 0, @,   0, @g;
+            $line =~ s@UOPT_NO_ARG, @UOPT_NO_ARG,       @g;
+            $line =~ s@(\Q$txt\E) @$1$sps@;
+         }
+         push @comb, $line;
+      }
+      my $comb = join "\n", @comb;
+      $data =~ s@\Q$enum\E@$comb@g;
+   }
+
    file_write($file, $data);
 }
