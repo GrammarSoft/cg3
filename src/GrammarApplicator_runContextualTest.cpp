@@ -217,7 +217,7 @@ Cohort *GrammarApplicator::runContextualTest(SingleWindow *sWindow, size_t posit
 			uint32_t orgbar = iter->barrier;
 			if (test->pos & POS_TMPL_OVERRIDE) {
 				iter->pos = test->pos;
-				iter->pos &= ~(POS_TMPL_OVERRIDE | POS_NEGATE | POS_NOT | POS_MARK_JUMP);
+				iter->pos &= ~(POS_NEGATE | POS_NOT | POS_MARK_JUMP);
 				iter->offset = test->offset;
 				if (test->offset != 0 && !(test->pos & (POS_SCANFIRST | POS_SCANALL | POS_ABSOLUTE))) {
 					iter->pos |= POS_SCANALL;
