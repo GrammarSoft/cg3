@@ -1,21 +1,22 @@
 #!/usr/bin/env perl
+# -*- mode: cperl; indent-tabs-mode: nil; tab-width: 3; cperl-indent-level: 3; -*-
 use warnings;
 use strict;
 use utf8;
 
 sub file_read {
    my ($name) = @_;
-	local $/ = undef;
-	open FILE, '<'.$name or die "Could not open $name: $!\n";
-	my $data = <FILE>;
+   local $/ = undef;
+   open FILE, '<'.$name or die "Could not open $name: $!\n";
+   my $data = <FILE>;
    close FILE;
    return $data;
 }
 
 sub file_write {
    my ($name,$data) = @_;
-	open FILE, '>'.$name or die "Could not open $name: $!\n";
-	print FILE $data;
+   open FILE, '>'.$name or die "Could not open $name: $!\n";
+   print FILE $data;
    close FILE;
 }
 
@@ -72,7 +73,6 @@ foreach my $file (@files) {
    }
 
    # clang-format has no idea what I want with UOptions[], so fix that as well
-   # UOPTION_DEF_D("help", 'h', UOPT_NO_ARG, "shows this help"),
    my @enums = ($data =~ m@UOption options\[\] = \{(.+?)\n\s*\}[^;\n]*;@sg);
    foreach my $enum (@enums) {
       my @lines = split /\n/, $enum;
