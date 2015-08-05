@@ -1801,11 +1801,11 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 
 				typedef std::pair<size_t, bool*> pairs_t;
 				pairs_t pairs[] = {
-					std::make_pair(S_NO_ISETS, &no_isets),
-					std::make_pair(S_NO_ITMPLS, &no_itmpls),
-					std::make_pair(S_STRICT_WFORMS, &strict_wforms),
-					std::make_pair(S_STRICT_BFORMS, &strict_bforms),
-					std::make_pair(S_STRICT_SECOND, &strict_second),
+					std::pair<size_t,bool*>(S_NO_ISETS, &no_isets),
+					std::pair<size_t,bool*>(S_NO_ITMPLS, &no_itmpls),
+					std::pair<size_t,bool*>(S_STRICT_WFORMS, &strict_wforms),
+					std::pair<size_t,bool*>(S_STRICT_BFORMS, &strict_bforms),
+					std::pair<size_t,bool*>(S_STRICT_SECOND, &strict_second),
 				};
 
 				while (*p != ';') {
