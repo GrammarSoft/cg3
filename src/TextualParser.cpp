@@ -1799,13 +1799,13 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 				p += 2;
 				result->lines += SKIPWS(p);
 
-				typedef std::pair<size_t, bool&> pairs_t;
+				typedef std::pair<size_t, bool*> pairs_t;
 				pairs_t pairs[] = {
-					{ S_NO_ISETS, no_isets },
-					{ S_NO_ITMPLS, no_itmpls },
-					{ S_STRICT_WFORMS, strict_wforms },
-					{ S_STRICT_BFORMS, strict_bforms },
-					{ S_STRICT_SECOND, strict_second },
+					{ S_NO_ISETS, &no_isets },
+					{ S_NO_ITMPLS, &no_itmpls },
+					{ S_STRICT_WFORMS, &strict_wforms },
+					{ S_STRICT_BFORMS, &strict_bforms },
+					{ S_STRICT_SECOND, &strict_second },
 				};
 
 				while (*p != ';') {
@@ -1813,7 +1813,7 @@ int TextualParser::parseFromUChar(UChar *input, const char *fname) {
 					boost_foreach (pairs_t& pair, pairs) {
 						if (ux_simplecasecmp(p, stringbits[pair.first].getTerminatedBuffer(), stringbits[pair.first].length())) {
 							p += stringbits[pair.first].length();
-							pair.second = true;
+							*pair.second = true;
 							result->lines += SKIPWS(p);
 							found = true;
 						}
