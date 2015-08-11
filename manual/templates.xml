@@ -94,9 +94,15 @@
       <screen>
         SELECT (tag) IF (-1** N LINK 1 CC LINK 1 ADJ) ;
       </screen>
-      but with a post-condition that the final cohort matched from the exit of the template must be at the position given relative to the origin.
+      but with a post-condition that the cohorts at the edges of the instantiated template must be at the position given relative to the origin.
       In this case, a match of the template is only succesful if ADJ is in position -1 to the origin (tag).
       This behavior is equivalent to how templates worked in Fred Karlsson's CG-1, but with more flexibility.
+    </para>
+    <para>
+      The post-condition check cannot currently inspect the actual edges of the space that the template touched to instantiate,
+      so it will perform the edge checks on the entry and exit cohorts only. A positive override will require that the leftmost
+      edge matches the position, while negative override will require rightmost edge matches. When linking from overridden
+      tests, a positive link will try to match from the rightmost edge, and negative link from the leftmost.
     </para>
   </section>
 
