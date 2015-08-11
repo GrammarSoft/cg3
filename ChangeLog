@@ -1,3 +1,12 @@
+2015-08-11  tino
+
+	* [r10876] ChangeLog, manual/templates.xml,
+	  src/GrammarApplicator_runContextualTest.cpp, src/version.hpp,
+	  test/T_Templates/expected.txt, test/T_Templates/grammar.cg3: Fix
+	  template position override so that pos/neg overrides check the
+	  min/max exit edges, rather than just the final exit; Fix linking
+	  from pos-overridden templates
+
 2015-08-05  tino
 
 	* [r10863] src/TextualParser.cpp: More g++ 4.2 fixes, the sequel
@@ -2289,8 +2298,4 @@
 
 	* [r9009] APERTIUM_FORMAT, ChangeLog, Doxyfile, INSTALL,
 	  autogen.sh, compile-linux.sh, compile-mac.sh: Cleanup
-	* [r9008] scripts/cg3-autobin.pl,
-	  src/GrammarApplicator_runRules.cpp, src/TextualParser.cpp,
-	  src/version.h: Check APPEND and ADDCOHORT first tag during
-	  compilation
 
