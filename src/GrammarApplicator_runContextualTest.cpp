@@ -184,21 +184,46 @@ Cohort *GrammarApplicator::runContextualTest(SingleWindow *sWindow, size_t posit
 			test->tmpl->cbarrier = orgcbar;
 			test->tmpl->barrier = orgbar;
 			// ToDo: Being in a different window is not strictly a problem, so fix this assumption...
-			if (cdeep && test->offset != 0) {
-				int32_t reloff = int32_t(cdeep->local_number) - int32_t(position);
-				if (!(test->pos & (POS_SCANFIRST | POS_SCANALL | POS_ABSOLUTE))) {
-					if (cdeep->parent != sWindow || reloff != test->offset) {
-						cohort = 0;
-					}
+			if (cohort && cdeep && test->offset != 0) {
+				bool good = false;
+
+				// If the override included * or @, don't care about offsets
+				if (test->pos & (POS_SCANFIRST | POS_SCANALL | POS_ABSOLUTE)) {
+					good = true;
+				}
+				// ...otherwise, positive offsets need to match the leftmost of entry/exit
+				else if (test->offset > 0 && static_cast<int32_t>(std::min(cohort->local_number, cdeep->local_number)) - static_cast<int32_t>(position) == test->offset) {
+					good = true;
+				}
+				// ...and, negative offsets need to match the rightmost of entry/exit
+				else if (test->offset < 0 && static_cast<int32_t>(std::max(cohort->local_number, cdeep->local_number)) - static_cast<int32_t>(position) == test->offset) {
+					good = true;
+				}
+				if (!(test->pos & (POS_SPAN_BOTH | POS_SPAN_LEFT | POS_SPAN_RIGHT)) && cdeep->parent != sWindow) {
+					good = false;
 				}
 				if (!(test->pos & POS_PASS_ORIGIN)) {
-					if (test->offset < 0 && reloff >= 0) {
-						cohort = 0;
+					if (test->offset < 0 && cohort->local_number > position && cdeep->local_number > position) {
+						good = false;
 					}
-					else if (test->offset > 0 && reloff <= 0) {
-						cohort = 0;
+					else if (test->offset > 0 && cohort->local_number < position && cdeep->local_number < position) {
+						good = false;
 					}
 				}
+				if (!good) {
+					cohort = 0;
+				}
+			}
+			if (cohort && cdeep && test->linked && test->linked->offset != 0) {
+				uint64_t coff = (static_cast<uint64_t>(cohort->parent->number) << 32) | cohort->local_number;
+				uint64_t doff = (static_cast<uint64_t>(cdeep->parent->number) << 32) | cdeep->local_number;
+				if (test->linked->offset > 0 && coff > doff) {
+					cdeep = cohort;
+				}
+				else if (test->linked->offset < 0 && coff < doff) {
+					cdeep = cohort;
+				}
+				// ToDo: Template linked to 0 should require entry==exit
 			}
 		}
 		if (cohort && cdeep && test->linked) {
