@@ -1,3 +1,19 @@
+2015-08-05  tino
+
+	* [r10863] src/TextualParser.cpp: More g++ 4.2 fixes, the sequel
+	* [r10862] src/TextualParser.cpp: More g++ 4.2 fixes
+	* [r10861] CMakeLists.txt: Ware when changing negations and
+	  forgetting some
+	* [r10860] CMakeLists.txt, src/TextualParser.cpp: Appease the
+	  ancient OS X gods
+
+2015-08-04  tino
+
+	* [r10855] ChangeLog, clang-format.pl,
+	  src/GrammarApplicator_runContextualTest.cpp, src/version.hpp:
+	  Allow POS_TMPL_OVERRIDE to progatate into OR'ed tests, because I
+	  can't figure out why I disallowed it in r4766
+
 2015-07-24  tino
 
 	* [r10846] clang-format.pl, src/options.hpp, src/options_conv.hpp:
@@ -2277,31 +2293,4 @@
 	  src/GrammarApplicator_runRules.cpp, src/TextualParser.cpp,
 	  src/version.h: Check APPEND and ADDCOHORT first tag during
 	  compilation
-
-2013-05-21  tino
-
-	* [r9005] TODO, src/Grammar.cpp, src/main.cpp: Help to stdout if
-	  asked for; 'on line' instead of just 'line'; Less ToDo
-
-2013-05-17  tino
-
-	* [r8994] scripts/cg3-autobin.pl,
-	  src/GrammarApplicator_matchSet.cpp,
-	  src/GrammarApplicator_runGrammar.cpp,
-	  src/GrammarApplicator_runRules.cpp, src/Reading.cpp,
-	  src/version.h: Using Select with mixed sub-reading levels is now
-	  safe.
-
-2013-05-16  tino
-
-	* [r8993] scripts/cg3-autobin.pl, src/ApertiumApplicator.cpp,
-	  src/GrammarApplicator_reflow.cpp, src/version.h: Apertium format
-	  should also preserve sub-readings.
-	* [r8991] scripts/cg3-autobin.pl, src/GrammarApplicator_reflow.cpp,
-	  src/version.h, test/T_SubReadings_CG/expected.txt,
-	  test/T_SubReadings_CG/input.txt: Now with less wanton
-	  destruction.
-	* [r8984] manual/cmdreference.xml, manual/installation.xml,
-	  scripts/cg3-autobin.pl, src/cg_conv.cpp, src/version.h: cg-conv
-	  -a -l to use LTR instead of RTL
 

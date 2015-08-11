@@ -80,21 +80,24 @@
     </screen>
   </para>
 
-  <para>
-    It is also possible to override the position of a template, which changes their behavior. E.g:
-    <screen>
-      TEMPLATE tmpl = [N, CC, ADJ] ;
-      # ... or ...
-      TEMPLATE tmpl = 1 N LINK 1 CC LINK 1 ADJ ;
-      SELECT (tag) IF (-1 T:tmpl) ;
-    </screen>
-    is equivalent to
-    <screen>
-      SELECT (tag) IF (-1** N LINK 1 CC LINK 1 ADJ) ;
-    </screen>
-    but with a post-condition that the final cohort matched from the exit of the template must be at the position given relative to the origin.
-    In this case, a match of the template is only succesful if ADJ is in position -1 to the origin (tag).
-    This behavior is equivalent to how templates worked in Fred Karlsson's CG-1, but with more flexibility.
-  </para>
+  <section id="tmpl-override">
+    <title>Position Override</title>
+    <para>
+      It is also possible to override the position of a template, which changes their behavior. E.g:
+      <screen>
+        TEMPLATE tmpl = [N, CC, ADJ] ;
+        # ... or ...
+        TEMPLATE tmpl = 1 N LINK 1 CC LINK 1 ADJ ;
+        SELECT (tag) IF (-1 T:tmpl) ;
+      </screen>
+      is equivalent to
+      <screen>
+        SELECT (tag) IF (-1** N LINK 1 CC LINK 1 ADJ) ;
+      </screen>
+      but with a post-condition that the final cohort matched from the exit of the template must be at the position given relative to the origin.
+      In this case, a match of the template is only succesful if ADJ is in position -1 to the origin (tag).
+      This behavior is equivalent to how templates worked in Fred Karlsson's CG-1, but with more flexibility.
+    </para>
+  </section>
 
 </chapter>
