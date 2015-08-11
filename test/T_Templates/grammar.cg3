@@ -27,10 +27,11 @@ ADD (@linkedBad) (*) IF (0 (SUBJ) LINK T:A-link-B LINK 1 (>>>)) ;
 
 TEMPLATE ArtN = 1* (ART) LINK 1* (N) ;
 
-ADD (@artnGood) (PREP) IF (-1 T:ArtN) ;
-ADD (@artnBad) (PREP) IF (-2 T:ArtN) ;
-ADD (@artnBad) (PREP) IF (1 T:ArtN) ;
-ADD (@artnBad) (PREP) IF (2 T:ArtN) ;
+ADD (@artnGood1) (PREP) IF (-1 T:ArtN) ;
+ADD (@artnGood2) (V) IF (1 T:ArtN) ;
+ADD (@artnBad1) (PREP) IF (-2 T:ArtN) ;
+ADD (@artnBad2) (PREP) IF (1 T:ArtN) ;
+ADD (@artnBad3) (PREP) IF (2 T:ArtN) ;
 ADD (@artnNegateGood) (PREP) IF (NEGATE T:ArtN) ;
 ADD (@artnNegateGoodOffset) (PREP) IF (NEGATE 1 T:ArtN) ;
 ADD (@artnNegateBad) (PREP) IF (NEGATE -1 T:ArtN) ;

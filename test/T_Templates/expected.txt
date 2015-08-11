@@ -1,14 +1,14 @@
 "<He>"
 	"he" <*> <NonMod> PRON PERS MASC NOM SG3 SUBJ @postGood @linkedGood
 "<ate>"
-	"eat" <SVO> <SV> V PAST VFIN
+	"eat" <SVO> <SV> V PAST VFIN @artnGood2
 "<a>"
 	"a" <Indef> DET CENTRAL ART SG <W:60> @preGood
 	"a" <Indef> NDET CENTRAL ART SG <W:60> @preGood
 "<cow>"
 	"cow" N NOM SG @bothGoodGood
 "<with>"
-	"with" PREP @beforeNccN @artnGood @artnNegateGood @artnNegateGoodOffset @branch-nonC @branch-C
+	"with" PREP @beforeNccN @artnGood1 @artnNegateGood @artnNegateGoodOffset @branch-nonC @branch-C
 "<biscuits>"
 	"biscuit" N NOM PL @startNccN
 "<and>"
@@ -17,4 +17,3 @@
 	"lemonade" <-Indef> N NOM SG
 "<$.>"
 	"$." @afterNccN
-
