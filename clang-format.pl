@@ -32,7 +32,7 @@ foreach my $file (@files) {
    $data =~ s@PRAGMA_ONCE_IFNDEF@#pragma once\n#ifndef@g;
    file_write($file, $data);
 
-   `clang-format-3.7 -style=file -i '$file'`;
+   `clang-format-3.8 -style=file -i '$file'`;
 
    my $data = file_read($file);
    $data =~ s@\n[^\n]*//[^\n]+clang-format (off|on)\n@\n@g; # Remove preprocessor protection
