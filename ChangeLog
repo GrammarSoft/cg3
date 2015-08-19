@@ -1,5 +1,24 @@
+2015-08-19  unhammer
+
+	* [r10890] emacs/cg.el: new cg-comment-or-uncomment function, bound
+	  to C-; and M-#
+	  
+	  demo at https://asciinema.org/a/25236
+	  
+	  also, fix M-a/M-e so they don't fail if there's a set named
+	  "setn" etc.
+
+2015-08-12  tino
+
+	* [r10880] .clang-format, clang-format.pl, src/TextualParser.cpp:
+	  Update to clang-format 3.8
+
 2015-08-11  tino
 
+	* [r10877] ChangeLog, manual/templates.xml,
+	  src/GrammarApplicator.hpp,
+	  src/GrammarApplicator_runContextualTest.cpp, src/version.hpp:
+	  More template override fixing, and documentation
 	* [r10876] ChangeLog, manual/templates.xml,
 	  src/GrammarApplicator_runContextualTest.cpp, src/version.hpp,
 	  test/T_Templates/expected.txt, test/T_Templates/grammar.cg3: Fix
@@ -2278,24 +2297,4 @@
 	  src/NicelineApplicator.cpp, src/NicelineApplicator.hpp,
 	  src/cg_conv.cpp, src/version.h: cg-conv now handles partial
 	  Niceline format (WIP)
-
-2013-06-06  tino
-
-	* [r9032] TODO, scripts/cg3-autobin.pl, src/ApertiumApplicator.cpp,
-	  src/ApertiumApplicator.h, src/FormatConverter.cpp,
-	  src/FormatConverter.h, src/GrammarApplicator.h,
-	  src/GrammarApplicator_runGrammar.cpp, src/MatxinApplicator.cpp,
-	  src/MatxinApplicator.h, src/cg_comp.cpp, src/cg_conv.cpp,
-	  src/cg_proc.cpp, src/istream.hpp, src/main.cpp, src/options.h,
-	  src/options_conv.hpp, src/version.h, test/runall.pl: WIP on
-	  making cg-conv much more useful
-
-2013-06-04  unhammer
-
-	* [r9029] emacs/cg.el: highlight pO (parent + (no-)pass-origin)
-
-2013-05-24  tino
-
-	* [r9009] APERTIUM_FORMAT, ChangeLog, Doxyfile, INSTALL,
-	  autogen.sh, compile-linux.sh, compile-mac.sh: Cleanup
 

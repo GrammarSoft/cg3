@@ -1294,6 +1294,12 @@ void TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 
 	rule->reverseContextualTests();
 	addRuleToGrammar(rule);
+
+	result->lines += SKIPWS(p, ';');
+	if (*p != ';') {
+		u_fprintf(ux_stderr, "%s: Warning: Expected closing ; on line %u after previous rule!\n", filebase, result->lines);
+		u_fflush(ux_stderr);
+	}
 }
 
 void TextualParser::parseAnchorish(UChar *& p) {
