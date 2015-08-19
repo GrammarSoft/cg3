@@ -259,15 +259,9 @@ re-evaluating `cg-kw-re' (or all of cg.el)." )
   (modify-syntax-entry ?« "." table)
                        table))
 
-(defun cg-syntax-at-pos ()
-  (let ((ppss (syntax-ppss)))
-    (cond
-     ((nth 8 ppss) (if (nth 4 ppss) 'comment 'string))
-     ((nth 1 ppss) 'paren))))
-
 (defun cg-beginning-of-defun ()
   (re-search-backward defun-prompt-regexp nil 'noerror)
-  (while (cg-syntax-at-pos)
+  (while (nth 4 (syntax-ppss))
     (re-search-backward defun-prompt-regexp nil 'noerror))
   (re-search-backward "\"<[^\"]>\"" (line-beginning-position) 'noerror))
 
@@ -275,11 +269,82 @@ re-evaluating `cg-kw-re' (or all of cg.el)." )
   (and (search-forward ";")
        (re-search-forward defun-prompt-regexp nil 'noerror)
        (goto-char (match-beginning 0)))
-  (while (cg-syntax-at-pos)
+  (while (nth 4 (syntax-ppss))
     (and (search-forward ";")
-	 (re-search-forward defun-prompt-regexp nil 'noerror)
-	 (goto-char (match-beginning 0))))
+         (re-search-forward defun-prompt-regexp nil 'noerror)
+         (goto-char (match-beginning 0))))
   (re-search-backward "\"<[^\"]>\"" (line-beginning-position) 'noerror))
+
+(defun cg--line-commented-p ()
+  (save-excursion
+    (back-to-indentation)
+    (looking-at "#")))
+
+(defun cg--region-commented-p (beg end)
+  (catch 'ret
+    (save-excursion
+      (goto-char beg)
+      (while (and (< (point) end)
+                  (< (point) (point-max)))
+        (if (cg--line-commented-p)
+            (forward-line)
+          (throw 'ret nil)))
+      (throw 'ret t))))
+
+(defun cg--comment/uncomment-rule (comment &optional n)
+  "Comment/uncomment a rule around point."
+  (let ((i 0)
+        (n (if (numberp n) n 1))
+        (initial-point (point-marker)))
+    (while (< i n)
+      (incf i)
+      (let* ((r (save-excursion
+                  (if (search-forward ";" nil 'noerror)
+                      (1+ (point-marker))
+                    (point-max))))
+             (l (save-excursion
+                  (goto-char r)
+                  (if (re-search-backward defun-prompt-regexp nil 'noerror)
+                      (goto-char (line-beginning-position))
+                    (point-min)))))
+        ;; Only uncomment rules if they're completely commented (but
+        ;; always uncomment the first one)
+        (when (or comment
+                  (= i 1)
+                  (cg--region-commented-p l r))
+          (goto-char r)
+          (skip-chars-forward "\r\n[:blank:]")
+          (if comment
+              (comment-region l r)
+            (uncomment-region l r))
+          (skip-chars-forward "\r\n[:blank:]")))
+      (when (= n 1)
+        (goto-char initial-point)))))
+
+(defun cg-comment-rule (&optional n)
+  "Comment/uncomment a rule around point."
+  (interactive "p")
+  (cg--comment/uncomment-rule 'comment n))
+
+(defun cg-uncomment-rule (&optional n)
+  (interactive "p")
+  (cg--comment/uncomment-rule nil n))
+
+(defun cg-comment-or-uncomment-rule (&optional n)
+  "Comment the rule at point; if already inside (or before) a
+comment, uncomment instead. With a prefix argument N, (un)comment
+that many rules."
+  (interactive "p")
+  (if (or (elt (syntax-ppss) 4)
+          (< (save-excursion
+               (skip-chars-forward "\r\n[:blank:]")
+               (point))
+             (save-excursion
+               (comment-forward 1)
+               (point))))
+      (cg-uncomment-rule n)
+    (cg-comment-rule n)))
+
 
 ;;;###autoload
 (defun cg-mode ()
@@ -312,7 +377,7 @@ CG-mode provides the following specific keyboard key bindings:
   (set-syntax-table cg-mode-syntax-table)
   (set (make-local-variable 'parse-sexp-ignore-comments) t)
   (set (make-local-variable 'parse-sexp-lookup-properties) t)
-  (set (make-local-variable 'defun-prompt-regexp) cg-kw-re)
+  (set (make-local-variable 'defun-prompt-regexp) (concat cg-kw-re "\\(?::[^\n\t ]+\\)[\t ]"))
   (set (make-local-variable 'beginning-of-defun-function) #'cg-beginning-of-defun)
   (set (make-local-variable 'end-of-defun-function) #'cg-end-of-defun)
   (setq indent-line-function #'cg-indent-line)
@@ -973,6 +1038,9 @@ Similarly, `cg-post-pipe' is run on output."
 (define-key cg-mode-map (kbd "C-c C-c") #'cg-check)
 (define-key cg-mode-map (kbd "C-c C-i") #'cg-edit-input)
 (define-key cg-mode-map (kbd "C-c c") #'cg-toggle-check-after-change)
+(define-key cg-mode-map (kbd "C-;") #'cg-comment-or-uncomment-rule)
+(define-key cg-mode-map (kbd "M-#") #'cg-comment-or-uncomment-rule)
+
 (define-key cg-output-mode-map (kbd "C-c C-i") #'cg-back-to-file-and-edit-input)
 (define-key cg-output-mode-map (kbd "i") #'cg-back-to-file-and-edit-input)
 (define-key cg-output-mode-map (kbd "g") #'cg-back-to-file-and-check)
