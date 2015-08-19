@@ -424,6 +424,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 			// This loop figures out which readings, if any, that are valid targets for the current rule
 			// Criteria for valid is that the reading must match both target and all contextual tests
 			for (size_t i = 0; i < cohort->readings.size(); ++i) {
+				// ToDo: Switch sub-readings so that they build up a passed in vector<Reading*>
 				Reading *reading = get_sub_reading(cohort->readings[i], rule.sub_reading);
 				if (!reading) {
 					cohort->readings[i]->matched_target = false;

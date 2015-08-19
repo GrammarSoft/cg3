@@ -1,9 +1,9 @@
 DELIMITERS = "<$.>" ;
 
-MAP (@tag) (*) (NEGATE 1* ("blocker"))
+MAP (@tag) (*) (NEGATE 1* ("blocker")) ;
 
 SECTION
-SELECT (wanted) (NEGATE 1* ("blocker"))
+SELECT (wanted) (NEGATE 1* ("blocker")) ;
 
 SECTION
-REMOVE:named ("blocker")
+REMOVE:named ("blocker") ;
