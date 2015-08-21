@@ -1015,25 +1015,21 @@ ContextualTest *TextualParser::parseContextualTestList(UChar *& p, Rule *rule) {
 }
 
 void TextualParser::parseContextualTests(UChar *& p, Rule *rule) {
-	AST_OPEN("Contexts");
 	ContextualTest *t = parseContextualTestList(p, rule);
 	if (option_vislcg_compat && (t->pos & POS_NOT)) {
 		t->pos &= ~POS_NOT;
 		t->pos |= POS_NEGATE;
 	}
 	rule->addContextualTest(t, rule->tests);
-	AST_CLOSE(p);
 }
 
 void TextualParser::parseContextualDependencyTests(UChar *& p, Rule *rule) {
-	AST_OPEN("ContextsTarget");
 	ContextualTest *t = parseContextualTestList(p, rule);
 	if (option_vislcg_compat && (t->pos & POS_NOT)) {
 		t->pos &= ~POS_NOT;
 		t->pos |= POS_NEGATE;
 	}
 	rule->addContextualTest(t, rule->dep_tests);
-	AST_CLOSE(p);
 }
 
 void TextualParser::parseRule(UChar *& p, KEYWORDS key) {
@@ -1347,6 +1343,7 @@ void TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 	}
 	result->lines += SKIPWS(p);
 
+	AST_OPEN("Contexts");
 	while (*p && *p == '(') {
 		++p;
 		result->lines += SKIPWS(p);
@@ -1358,6 +1355,7 @@ void TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 		++p;
 		result->lines += SKIPWS(p);
 	}
+	AST_CLOSE(p);
 
 	if (key == K_SETPARENT || key == K_SETCHILD || key == K_ADDRELATIONS || key == K_ADDRELATION || key == K_SETRELATIONS || key == K_SETRELATION || key == K_REMRELATIONS || key == K_REMRELATION || key == K_MOVE || key == K_SWITCH) {
 		result->lines += SKIPWS(p);
@@ -1418,6 +1416,7 @@ void TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 		}
 
 		lp = p;
+		AST_OPEN("ContextsTarget");
 		while (*p && *p == '(') {
 			++p;
 			result->lines += SKIPWS(p);
@@ -1429,6 +1428,7 @@ void TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 			++p;
 			result->lines += SKIPWS(p);
 		}
+		AST_CLOSE(p);
 		if (rule->dep_tests.empty()) {
 			error("%s: Error: Expected dependency target on line %u near `%S`!\n", lp);
 		}
