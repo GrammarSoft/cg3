@@ -1,3 +1,10 @@
+2015-08-19  tino
+
+	* [r10891] ChangeLog, src/GrammarApplicator_runRules.cpp,
+	  src/TextualParser.cpp, src/version.hpp,
+	  test/T_BasicIff/grammar.cg3, test/T_MultipleSections/grammar.cg3,
+	  test/T_Trace/grammar.cg3: Warn if a rule doesn't end in ;
+
 2015-08-19  unhammer
 
 	* [r10890] emacs/cg.el: new cg-comment-or-uncomment function, bound
@@ -2292,9 +2299,4 @@
 	* [r9035] scripts/cg3-autobin.pl, src/NicelineApplicator.cpp,
 	  src/version.h: cg-conv now handles Niceline format with spaces in
 	  word/baseforms and either [] or "" baseforms.
-	* [r9034] scripts/cg3-autobin.pl, src/CMakeLists.txt,
-	  src/FormatConverter.cpp, src/FormatConverter.h,
-	  src/NicelineApplicator.cpp, src/NicelineApplicator.hpp,
-	  src/cg_conv.cpp, src/version.h: cg-conv now handles partial
-	  Niceline format (WIP)
 

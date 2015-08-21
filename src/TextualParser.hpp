@@ -35,10 +35,11 @@ class ContextualTest;
 
 class TextualParser : public IGrammarParser {
 public:
-	TextualParser(Grammar& result, UFILE *ux_err);
+	TextualParser(Grammar& result, UFILE *ux_err, bool dump_ast = false);
 
 	void setCompatible(bool compat);
 	void setVerbosity(uint32_t level);
+	void print_ast(UFILE *out);
 
 	int parse_grammar_from_file(const char *filename, const char *locale, const char *codepage);
 
@@ -69,7 +70,7 @@ private:
 	typedef stdext::hash_map<ContextualTest *, std::pair<size_t, UString> > deferred_t;
 	deferred_t deferred_tmpls;
 
-	int parseFromUChar(UChar *input, const char *fname = 0);
+	void parseFromUChar(UChar *input, const char *fname = 0);
 	void addRuleToGrammar(Rule *rule);
 
 	Tag *parseTag(const UChar *to, const UChar *p = 0);
