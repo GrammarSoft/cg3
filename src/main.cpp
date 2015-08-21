@@ -109,7 +109,7 @@ int main(int argc, char *argv[]) {
 	fflush(out);
 	fflush(stderr);
 
-	if (options[SHOW_UNUSED_SETS].doesOccur || options[SHOW_SET_HASHES].doesOccur) {
+	if (options[SHOW_UNUSED_SETS].doesOccur || options[SHOW_SET_HASHES].doesOccur || options[DUMP_AST].doesOccur) {
 		options[GRAMMAR_ONLY].doesOccur = true;
 	}
 
@@ -235,10 +235,14 @@ int main(int argc, char *argv[]) {
 		if (options[VERBOSE].doesOccur) {
 			std::cerr << "Info: Binary grammar detected." << std::endl;
 		}
+		if (options[DUMP_AST].doesOccur) {
+			std::cerr << "Error: --dump-ast is for textual grammars only!" << std::endl;
+			CG3Quit(1);
+		}
 		parser = new CG3::BinaryGrammar(grammar, ux_stderr);
 	}
 	else {
-		parser = new CG3::TextualParser(grammar, ux_stderr);
+		parser = new CG3::TextualParser(grammar, ux_stderr, options[DUMP_AST].doesOccur != 0);
 	}
 	if (options[VERBOSE].doesOccur) {
 		if (options[VERBOSE].value) {
@@ -263,6 +267,10 @@ int main(int argc, char *argv[]) {
 	if (parser->parse_grammar_from_file(options[GRAMMAR].value, locale_default, codepage_grammar)) {
 		std::cerr << "Error: Grammar could not be parsed - exiting!" << std::endl;
 		CG3Quit(1);
+	}
+
+	if (options[DUMP_AST].doesOccur) {
+		dynamic_cast<CG3::TextualParser*>(parser)->print_ast(ux_stdout);
 	}
 
 	if (options[MAPPING_PREFIX].doesOccur) {
