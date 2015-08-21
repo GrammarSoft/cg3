@@ -70,7 +70,7 @@ UOption options[] = {
 	UOPTION_DEF_D("wtag",           0, UOPT_REQUIRES_ARG, "FST weight tag prefix (defaults to W)"),
 	UOPTION_DEF_D("sub-delim",    'S', UOPT_REQUIRES_ARG, "FST sub-reading delimiters (defaults to #)"),
 	UOPTION_DEF_D("rtl",          'r', UOPT_NO_ARG,       "sets sub-reading direction to RTL (default)"),
-	UOPTION_DEF_D("ltr",          'l', UOPT_NO_ARG,       "sets sub-reading direction to LTR")
+	UOPTION_DEF_D("ltr",          'l', UOPT_NO_ARG,       "sets sub-reading direction to LTR"),
 };
 }
 
