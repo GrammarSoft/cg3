@@ -1,0 +1,5 @@
+^foo/foo<det>$
+^bar/bar<n>$
+^fie/fie<vblex>$
+^fum/fum<adj><acc>$
+^quux/quux<n><acc>$

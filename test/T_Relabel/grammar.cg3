@@ -1,0 +1,27 @@
+DELIMITERS = "<$.>" ;
+
+LIST N = N;
+LIST Det = Det;
+LIST DetInd = (Det Ind);
+LIST NP = (N Prop) ;
+LIST NPAdv = (N Prop) Adv ;
+LIST NPAdvV = (N Prop) Adv V ;
+LIST NPAdvVX = (N Prop) Adv V X ;
+
+LIST CASE = Nom Acc;
+
+LIST BOLORN = (*) Uff;
+LIST EOLORN = N (*);
+
+
+LIST nochangehere = X Y Z ;
+LIST norhere = X Y ;
+
+SET N_NO_NP = N - (Prop);
+
+REMOVE NP IF (-1 (Det));
+REMOVE DetInd IF (-1 Det);
+REMOVE (X) IF (-1 nochangehere LINK -1 norhere);
+
+SELECT $$CASE IF (-1 $$CASE);
+SELECT ("meh") IF (-1 BOLORN) (2 EOLORN);
