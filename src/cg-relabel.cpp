@@ -74,6 +74,7 @@ CG3::Grammar *cg3_grammar_load(const char *filename, UFILE* ux_stdout, UFILE* ux
 		parser.reset(new BinaryGrammar(*grammar, ux_stderr));
 	}
 	else {
+		u_fprintf(ux_stderr, "CG3 Info: Textual (non-binary) grammar detected; this is unsupported in cg-relabel and will probably fail.\n");
 		parser.reset(new TextualParser(*grammar, ux_stderr));
 	}
 	if (parser->parse_grammar_from_file(filename, uloc_getDefault(), ucnv_getDefaultName())) {
