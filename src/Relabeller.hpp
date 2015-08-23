@@ -55,6 +55,8 @@ namespace CG3 {
 		bool needsSetOps(std::set<TagVector> tagsets[]);
 		uint32_t addRelabelSet(Set* set);
 		TagVector transferTags(const TagVector tv_r);
+		void relabelAsList(Set* set_g, const Set* set_r, const Tag* fromTag);
+		void relabelAsSet(Set* set_g, const Set* set_r, const Tag* fromTag);
 	};
 
 	inline trie_t *_trie_copy_helper(const trie_t& trie, Grammar& grammar) {

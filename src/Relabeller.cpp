@@ -146,17 +146,93 @@ TagVector Relabeller::transferTags(const TagVector tv_r) {
 	return tv_g;
 }
 
+void Relabeller::relabelAsList(Set* set_g, const Set* set_r, const Tag* fromTag) {
+	std::set<TagVector> old_tvs = trie_getTagsOrdered(set_g->trie);
+	trie_delete(set_g->trie);
+	set_g->trie.clear();
+
+	std::set<TagVector> taglists;
+	bc::flat_map<Tag*, size_t> tag_freq;
+	boost_foreach (const TagVector& old_tags, old_tvs) {
+		TagVector tags_except_from;
+
+		bool seen = false;
+		boost_foreach (Tag* old_tag, old_tags) {
+			if(old_tag->hash == fromTag->hash) {
+				seen = true;
+			}
+			else {
+				tags_except_from.push_back(old_tag);
+			}
+		}
+		std::set<TagVector> suffixes;
+		if(seen) {
+			suffixes = trie_getTagsOrdered(set_r->trie);
+		}
+		else {
+			TagVector dummy;
+			suffixes.insert(dummy);
+		}
+		boost_foreach(const TagVector& tv, suffixes) {
+			TagVector tags = TagVector(tags_except_from);
+			tags.insert(tags.end(), tv.begin(), tv.end());
+			tags = transferTags(tags);
+			// From TextualParser::parseTagList
+			std::sort(tags.begin(), tags.end());
+			tags.erase(std::unique(tags.begin(), tags.end()), tags.end());
+			if (taglists.insert(tags).second) {
+				boost_foreach (Tag *t, tags) {
+					++tag_freq[t];
+				}
+			}
+		}
+	}
+	// From TextualParser::parseTagList
+	freq_sorter fs(tag_freq);
+	boost_foreach (const TagVector& tvc, taglists) {
+		if (tvc.size() == 1) {
+			grammar->addTagToSet(tvc[0], set_g);
+			continue;
+		}
+		TagVector& tv = const_cast<TagVector&>(tvc);
+		std::sort(tv.begin(), tv.end(), fs);
+		trie_insert(set_g->trie, tv);
+	}
+
+}
+
+void Relabeller::relabelAsSet(Set* set_g, const Set* set_r, const Tag* fromTag) {
+	if(set_g->trie.empty()) {
+		// If the grammar's set is only an +/OR/- of other
+		// sets, then we only need to change those other sets
+		return;
+	}
+	std::set<TagVector> old_tvs = trie_getTagsOrdered(set_g->trie);
+	trie_delete(set_g->trie);
+	set_g->trie.clear();
+	// now we split old_tvs into those that contain fromTag, tvsWith, and those that don't, tvsWithout
+	// set_g1->trie = to_trie(tvsWithout)
+	// set_g2->trie is the trie of set_r->trie intersected with all the tsvWith (removing fromTag)
+	// set_g->sets becomes set_g1 OR set_g2
+
+	// Set* set_r = relabels->sets_list[it.second->number];
+	// uint32_t s_num_g = addRelabelSet(set_r);
+	// Set* set_g = grammar->sets_list[s_num_g];
+	// u_fprintf(ux_stderr, "\tset_r %d, sh %d\t=>", set_r->number, set_r->hash);
+	// u_fprintf(ux_stderr, "\ttag %S to set_g %d==%d, sh %d\n", it.first.c_str(), set_g->number, s_num_g, set_g->hash);
+}
+
 void Relabeller::relabel() {
 	stdext::hash_map<UString, Tag* > tag_by_str;
 	// RELABEL AS TAG:
-	boost_foreach(const std::vector<Tag*>::value_type fromTag, grammar->single_tags_list) {
-		UString tagName = fromTag->toUString(true);
-		BOOST_AUTO(const toTag, relabel_as_tag->find(tagName));
-		if(toTag != relabel_as_tag->end()) {
-		 	fromTag->tag.assign(toTag->second);
-		 	fromTag->rehash();
+	boost_foreach(const std::vector<Tag*>::value_type tag_g, grammar->single_tags_list) {
+		UString tagName = tag_g->toUString(true);
+		BOOST_AUTO(const tag_r, relabel_as_tag->find(tagName));
+		if(tag_r != relabel_as_tag->end()) {
+			tag_g->tag.assign(tag_r->second);
+			tag_g->rehash();
 		}
-		tag_by_str[fromTag->tag] = fromTag;
+		tag_by_str[tag_g->tag] = tag_g;
 	}
 	stdext::hash_map<UString, std::set<Set* > > sets_by_tag;
 	boost_foreach (const std::vector<Set*>::value_type it, grammar->sets_list) {
@@ -167,82 +243,28 @@ void Relabeller::relabel() {
 	}
 	// RELABEL AS LIST:
 	boost_foreach (const UStringSetMap::value_type& it, *relabel_as_list) {
-		Set* set_r = relabels->sets_list[it.second->number];
-		std::set<TagVector> to_tvs = trie_getTagsOrdered(set_r->trie);
+		const Set* set_r = relabels->sets_list[it.second->number];
+		const Tag* fromTag = tag_by_str[it.first];
 
 		BOOST_AUTO(const sets_g, sets_by_tag.find(it.first));
 		if(sets_g != sets_by_tag.end()) {
 			boost_foreach(Set* set_g, sets_g->second) {
-				std::set<TagVector> old_tvs = trie_getTagsOrdered(set_g->trie);
-				trie_delete(set_g->trie);
-				set_g->trie.clear();
-
-				std::set<TagVector> taglists;
-				bc::flat_map<Tag*, size_t> tag_freq;
-				boost_foreach (const TagVector& old_tags, old_tvs) {
-					TagVector tags_except_from;
-
-					bool seen = false;
-					boost_foreach (Tag* old_tag, old_tags) {
-						if(old_tag->hash == tag_by_str[it.first]->hash) {
-							seen = true;
-						}
-						else {
-							tags_except_from.push_back(old_tag);
-						}
-					}
-					std::set<TagVector> suffixes;
-					if(seen) {
-						suffixes = trie_getTagsOrdered(set_r->trie);
-					}
-					else {
-						TagVector dummy;
-						suffixes.insert(dummy);
-					}
-					boost_foreach(const TagVector& tv, suffixes) {
-						TagVector tags = TagVector(tags_except_from);
-						tags.insert(tags.end(), tv.begin(), tv.end());
-						tags = transferTags(tags);
-						// From TextualParser::parseTagList
-						std::sort(tags.begin(), tags.end());
-						tags.erase(std::unique(tags.begin(), tags.end()), tags.end());
-						if (taglists.insert(tags).second) {
-							boost_foreach (Tag *t, tags) {
-								++tag_freq[t];
-							}
-						}
-					}
-				}
-				// From TextualParser::parseTagList
-				freq_sorter fs(tag_freq);
-				boost_foreach (const TagVector& tvc, taglists) {
-					if (tvc.size() == 1) {
-						grammar->addTagToSet(tvc[0], set_g);
-						continue;
-					}
-					TagVector& tv = const_cast<TagVector&>(tvc);
-					std::sort(tv.begin(), tv.end(), fs);
-					trie_insert(set_g->trie, tv);
-				}
+				relabelAsList(set_g, set_r, fromTag);
 			}
 		}
 	}
 	// RELABEL AS SET:
 	boost_foreach (const UStringSetMap::value_type& it, *relabel_as_set) {
 		u_fprintf(ux_stderr, "Relabelling %S to a SET (TODO)\n", it.first.c_str());
-		// Set* set_r = relabels->sets_list[it.second->number];
-		// uint32_t s_num_g = addRelabelSet(set_r);
-		// Set* set_g = grammar->sets_list[s_num_g];
-		// u_fprintf(ux_stderr, "\tset_r %d, sh %d\t=>", set_r->number, set_r->hash);
-		// u_fprintf(ux_stderr, "\ttag %S to set_g %d==%d, sh %d\n", it.first.c_str(), set_g->number, s_num_g, set_g->hash);
+		const Set* set_r = relabels->sets_list[it.second->number];
+		const Tag* fromTag = tag_by_str[it.first];
 
-		// TODO: now we have to find all the places where fromTag is used, and change all those sets s to be what they were, minus the fromTag, plus set_g
-		// If fromTag=N    and the set s is a plain list N adv, then we get sets=s_g OR adv
-		// If fromTag=Prop and the set s is a list (N Prop Gen) adv, then … is that represented as list or set?
-
-		// TODO: go through each set in grammar, if it has only a single tag, we simply replace that set with the new one, keeping track of which ones we replace in a map
-		// if it has no tags, it has only references to other sets, so we (after replacing actual sets) replace those references using our map
-		// if it has more than one tag, we need to turn it into a no-tag set referring to an OR-ed list of new single-tag sets (except we need to + the parenthesized ones, but how do we find them?)
+		BOOST_AUTO(const sets_g, sets_by_tag.find(it.first));
+		if(sets_g != sets_by_tag.end()) {
+			boost_foreach(Set* set_g, sets_g->second) {
+				relabelAsSet(set_g, set_r, fromTag);
+			}
+		}
 	}
 	grammar->reindex();
 }
