@@ -35,7 +35,6 @@ Relabeller::Relabeller(Grammar& res, const Grammar& relabels, UFILE *ux_err) :
 	UStringSetMap* as_list = new UStringSetMap;
 	UStringSetMap* as_set = new UStringSetMap;
 
-	std::cerr << ", Sets: " << relabels.sets_list.size() << ", Tags: " << relabels.single_tags.size() << std::endl;
 	if (relabels.rules_any) {
 		std::cerr << relabels.rules_any->size() << " relabel rules cannot be skipped by index(?)" << std::endl;
 	}
@@ -44,7 +43,6 @@ Relabeller::Relabeller(Grammar& res, const Grammar& relabels, UFILE *ux_err) :
 		const TagVector& fromTags = trie_getTagList(rule->maplist->trie);
 		Set* target = relabels.sets_list[rule->target];
 		const TagVector& toTags = trie_getTagList(target->trie);
-		u_fprintf(ux_stderr, "rule->target:%d, line:%d, name:%S, maplist.size:%d, target.size: %d\n", rule->target, rule->line, rule->name, fromTags.size(), toTags.size());
 		if(!(rule->maplist->trie_special.empty() && target->trie_special.empty())) {
 			u_fprintf(ux_stderr, "Warning: Relabel rule '%S' on line %d has %d special tags, skipping!\n", rule->name, rule->line);
 			continue;
@@ -54,23 +52,21 @@ Relabeller::Relabeller(Grammar& res, const Grammar& relabels, UFILE *ux_err) :
 			continue;
 		}
 		Tag *fromTag = fromTags[0];
+		boost_foreach (const TagVector::value_type toit, toTags) {
+			if(toit->type & T_SPECIAL) {
+				u_fprintf(ux_stderr, "Warning: Special tags (%S) not supported yet.\n", toit->tag.c_str());
+			}
+		}
 		if(toTags.size() == 1) {
 			Tag *toTag = toTags[0];
 			as_tag->emplace(fromTag->tag.c_str(), toTag->tag.c_str());
-			u_fprintf(ux_stderr, "\t%S -> %S\n", fromTag->tag.c_str(), toTag->tag.c_str());
 		}
 		else if(toTags.size() > 1) {
 			as_list->emplace(fromTag->tag.c_str(), target);
-			u_fprintf(ux_stderr, "\t%S -> (LIST)\n", fromTag->tag.c_str());
-			boost_foreach (const TagVector::value_type toit, toTags) {
-				if(toit->type & T_SPECIAL) {
-					u_fprintf(ux_stderr, "Warning: Special tags (%S) not supported yet.\n", toit->tag.c_str());
-				}
-			}
 		}
 		else {		// if(toTags.size()==0)
 			as_set->emplace(fromTag->tag.c_str(), target);
-			u_fprintf(ux_stderr, "\t%S -> (SET)\n", fromTag->tag.c_str());
+			u_fprintf(ux_stderr, "\t%S -> (SET TODO)\n", fromTag->tag.c_str());
 		}
 	}
 
@@ -173,12 +169,10 @@ void Relabeller::relabel() {
 	boost_foreach (const UStringSetMap::value_type& it, *relabel_as_list) {
 		Set* set_r = relabels->sets_list[it.second->number];
 		std::set<TagVector> to_tvs = trie_getTagsOrdered(set_r->trie);
-		u_fprintf(ux_stderr, "Relabelling %S to a LIST ", it.first.c_str()); printTrie(set_r->trie, ux_stderr); u_fprintf(ux_stderr, "\n");
 
 		BOOST_AUTO(const sets_g, sets_by_tag.find(it.first));
 		if(sets_g != sets_by_tag.end()) {
 			boost_foreach(Set* set_g, sets_g->second) {
-				u_fprintf(ux_stderr, "Splicing into SET s = "); printTrie(set_g->trie, ux_stderr); u_fprintf(ux_stderr, "\n");
 				std::set<TagVector> old_tvs = trie_getTagsOrdered(set_g->trie);
 				trie_delete(set_g->trie);
 				set_g->trie.clear();
@@ -230,7 +224,6 @@ void Relabeller::relabel() {
 					std::sort(tv.begin(), tv.end(), fs);
 					trie_insert(set_g->trie, tv);
 				}
-				u_fprintf(ux_stderr, "After splicing, SET s = "); printTrie(set_g->trie, ux_stderr); u_fprintf(ux_stderr, "\n");
 			}
 		}
 	}
