@@ -1,3 +1,59 @@
+2015-08-23  unhammer
+
+	* [r10907] src/Relabeller.cpp, src/Relabeller.hpp, src/Set.cpp,
+	  src/Set.hpp: more trie_reindex to Set.hpp; cleanup
+	* [r10906] src/Relabeller.cpp: more warnings if weird relabel
+	  grammar
+	* [r10905] src/Relabeller.hpp: rm unused debug function
+	* [r10904] src/Relabeller.cpp, src/Relabeller.hpp,
+	  test/T_RelabelSet/expected.txt, test/T_RelabelSet/grammar.cg3,
+	  test/T_RelabelSet/input.txt, test/T_RelabelSet/relabel.cg3r:
+	  support for relabelling into a SET (with e.g. lista - listb)
+	* [r10903] src/Relabeller.cpp, src/Relabeller.hpp: some refactoring
+	* [r10902] src/Relabeller.cpp, src/Relabeller.hpp: some cleanup and
+	  notes
+	* [r10901] src/Relabeller.cpp: s/for(auto)/boost_foreach(boring)/g
+	  to please our CentOS users
+	* [r10900] src/Relabeller.cpp, src/cg-relabel.cpp: exit(1) unless
+	  first arg is a cg3b; less verbose
+	* [r10899] test/T_Relabel/expected.txt, test/T_Relabel/grammar.cg3,
+	  test/T_Relabel/input.txt, test/T_Relabel/relabel.cg3r,
+	  test/T_Relabel/run.pl, test/T_RelabelList,
+	  test/T_RelabelList/expected.txt, test/T_RelabelList/grammar.cg3,
+	  test/T_RelabelList/input.txt, test/T_RelabelList/relabel.cg3r,
+	  test/T_RelabelList/run.pl, test/T_RelabelSet,
+	  test/T_RelabelSet/expected.txt, test/T_RelabelSet/grammar.cg3,
+	  test/T_RelabelSet/input.txt, test/T_RelabelSet/relabel.cg3r,
+	  test/T_RelabelSet/run.pl: update tests for bin cg-relabel
+	* [r10898] src/cg-relabel.cpp: Warn on on textual grammars handed
+	  to cg-relabel
+	* [r10897] src/CMakeLists.txt, src/Relabeller.cpp,
+	  src/Relabeller.hpp, src/cg-relabel.cpp, test/T_Relabel,
+	  test/T_Relabel/expected.txt, test/T_Relabel/grammar.cg3,
+	  test/T_Relabel/input.txt, test/T_Relabel/relabel.cg3r,
+	  test/T_Relabel/run.pl: cg-relabel command using binary grammars
+	  
+	  New relabel format (ab)using vislcg3 format: MAP (N) (n) OR (np)
+	  ; means relabel the tag N into n or np, alternatively: LIST N = n
+	  np; MAP (N) N;
+	  
+	  The from-part is only ever one tag, but the to-part can be
+	  several. Full-on SET's as to-parts still TODO, but should be
+	  doable.
+	  
+	  No longer uses GrammarWriter at all.
+	  
+	  Some cleanup TODO.
+
+2015-08-21  tino
+
+	* [r10893] src/TextualParser.cpp: Move AST Contexts and
+	  ContextsTarget
+	* [r10892] ChangeLog, src/TextualParser.cpp, src/TextualParser.hpp,
+	  src/main.cpp, src/options.hpp, src/options_conv.hpp,
+	  src/version.hpp: Added cmdline --dump-ast to output grammar parse
+	  tree
+
 2015-08-19  tino
 
 	* [r10891] ChangeLog, src/GrammarApplicator_runRules.cpp,
@@ -2239,64 +2295,4 @@
 	  differences where it should not have
 	* [r9069] TODO, scripts/cg3-autobin.pl, src/CMakeLists.txt,
 	  src/version.h: Use Install_Prefix, not Prefix_Path
-
-2013-06-20  tino
-
-	* [r9065] scripts/cg3-autobin.pl, src/TextualParser.cpp,
-	  src/version.h: Lower barrier abuse to a friendlier warning.
-
-2013-06-19  tino
-
-	* [r9063] manual/cmdreference.xml, manual/streamformats.xml,
-	  newsletters/2013-06-19.txt, scripts/cg3-autobin.pl,
-	  src/version.h: CG-3 Release 0.9.8.9063
-	* [r9062] README, scripts/cg3-autobin.pl,
-	  src/GrammarApplicator_reflow.cpp, src/PlaintextApplicator.cpp,
-	  src/exec-stream.cpp, src/version.h: cg-conv from plain text is
-	  slightly smarter
-	* [r9059] CMakeLists.txt:
-
-2013-06-18  tino
-
-	* [r9053] TODO, src/TextualParser.cpp: Fix potential segfault
-
-2013-06-17  tino
-
-	* [r9051] scripts/cg3-autobin.pl, src/ContextualTest.h,
-	  src/TextualParser.cpp, src/version.h: Error out if
-	  Barrier/CBarrier is used for a non-scanning test
-	* [r9046] dist/dist-osx.pl: ICU rewrite version bump
-
-2013-06-14  unhammer
-
-	* [r9043] emacs/cg.el: wops, don't want to underline "foo\"bar"
-
-2013-06-12  unhammer
-
-	* [r9041] emacs/cg.el: underline troublesome strings like "this
-	  "mess"right"here", highlight possible [xXlr] after [psc]
-
-2013-06-11  tino
-
-	* [r9040] src/GrammarApplicator_reflow.cpp: No longer eliminates
-	  duplicate tags.
-	* [r9039] scripts/cg3-autobin.pl, src/ApertiumApplicator.cpp,
-	  src/CMakeLists.txt, src/FSTApplicator.cpp, src/FSTApplicator.hpp,
-	  src/FormatConverter.cpp, src/FormatConverter.h,
-	  src/GrammarApplicator.cpp, src/MatxinApplicator.cpp,
-	  src/NicelineApplicator.cpp, src/TextualParser.cpp, src/version.h:
-	  Basic HFST/XFST handling. No longer eliminates duplicate tags in
-	  output.
-
-2013-06-07  tino
-
-	* [r9036] scripts/cg3-autobin.pl, src/ApertiumApplicator.h,
-	  src/CMakeLists.txt, src/FormatConverter.cpp,
-	  src/FormatConverter.h, src/NicelineApplicator.hpp,
-	  src/PlaintextApplicator.cpp, src/PlaintextApplicator.hpp,
-	  src/cg_conv.cpp, src/version.h: cg-conv handles plain-text in the
-	  dumbest possible way, which may be a good thing...
-	* [r9035] scripts/cg3-autobin.pl, src/NicelineApplicator.cpp,
-	  src/version.h: cg-conv now handles Niceline format with spaces in
-	  word/baseforms and either [] or "" baseforms.
 

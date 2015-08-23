@@ -95,7 +95,7 @@ struct compare_Cohort {
 	}
 };
 
-typedef sorted_vector<Cohort *, compare_Cohort> CohortSet;
+typedef sorted_vector<Cohort*, compare_Cohort> CohortSet;
 typedef stdext::hash_map<uint32_t, CohortSet> uint32ToCohortsMap;
 
 Cohort *alloc_cohort(SingleWindow *p);

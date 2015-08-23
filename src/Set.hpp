@@ -116,7 +116,6 @@ inline uint8_t trie_reindex(const trie_t& trie) {
 	}
 	return type;
 }
-
 }
 
 #endif
