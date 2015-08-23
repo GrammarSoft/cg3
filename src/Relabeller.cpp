@@ -35,10 +35,6 @@ Relabeller::Relabeller(Grammar& res, const Grammar& relabels, UFILE *ux_err) :
 	UStringSetMap* as_list = new UStringSetMap;
 	UStringSetMap* as_set = new UStringSetMap;
 
-	if (relabels.rules_any) {
-		std::cerr << relabels.rules_any->size() << " relabel rules cannot be skipped by index(?)" << std::endl;
-	}
-
 	boost_foreach (const RuleVector::value_type rule, relabels.rule_by_number) {
 		const TagVector& fromTags = trie_getTagList(rule->maplist->trie);
 		Set* target = relabels.sets_list[rule->target];
@@ -66,7 +62,6 @@ Relabeller::Relabeller(Grammar& res, const Grammar& relabels, UFILE *ux_err) :
 		}
 		else {		// if(toTags.size()==0)
 			as_set->emplace(fromTag->tag.c_str(), target);
-			u_fprintf(ux_stderr, "\t%S -> (SET TODO)\n", fromTag->tag.c_str());
 		}
 	}
 
@@ -84,43 +79,14 @@ Relabeller::~Relabeller() {
         relabel_as_set = 0;
 }
 
-uint32_t Relabeller::addRelabelSet(Set* s_r) { // TODO: probably deprecated
-	Set* s_g = grammar->allocateSet();
-
-	uint32_t nsets = s_r->sets.size();
-	u_fprintf(ux_stderr, "\t\ts_r %d: addRelabelSet(s_r=%p, number=%d), child sets: %d\n", s_r->number, s_r, s_r->number, nsets);
-	s_g->sets.resize(nsets);
-	for (uint32_t i=0 ; i<nsets; ++i) {
-		// First ensure all referred-to sets exist:
-		uint32_t child_num_r = s_r->sets[i];
-		uint32_t child_num_g = addRelabelSet(relabels->sets_list[child_num_r]);
-		u_fprintf(ux_stderr, "\t\ts_r %d: child %d = set num %d (s_r child num %d)\n", s_r->number, i, child_num_g, child_num_r);
-		s_g->sets[i] = child_num_g;
+TagVector Relabeller::transferTags(const TagVector tv_r) {
+	TagVector tv_g;
+	boost_foreach (Tag* tag_r, tv_r) {
+		Tag* tag_g = new Tag(*tag_r);
+		tag_g = grammar->addTag(tag_g); // new is deleted if it exists
+		tv_g.push_back(tag_g);
 	}
-	// for (uint32_t i=0 ; i<s_g->sets.size(); ++i) {
-	// 	u_fprintf(ux_stderr, "s_r %d: child %d = set num %d\n", s_r->number, i, s_g->sets[i]);
-	// }
-	// foreach (uint32Vector, s_g->sets, sit, sit_end) {
-	// 	Set* list_set = grammar->sets_list[*sit];
-	// 	u_fprintf(ux_stderr, "s_r %d: sit %p num %d, getSet(*sit) %p\n", s_r->number, sit, list_set->number);
-	// }
-
-	uint32_t nset_ops = s_r->set_ops.size();
-	s_g->set_ops.resize(nset_ops);
-	for (uint32_t i=0 ; i < nset_ops; ++i) {
-		s_g->set_ops[i] = s_r->set_ops[i]; // enum from Strings.cpp, same across grammars
-	}
-
-	s_g->trie = trie_copy(s_r->trie, *grammar);
-	s_g->trie_special = trie_copy(s_r->trie_special, *grammar);
-	s_g->ff_tags = s_r->ff_tags;
-	s_g->type = s_r->type;
-	u_fprintf(ux_stderr, "\t\t\ts_r %d addSet(s_g=%p, number=%d)\n", s_r->number, s_g, s_g->number);
-	s_g->setName(grammar->sets_list.size()+100);
-	grammar->sets_list.push_back(s_g);
-	s_g->number = (uint32_t)grammar->sets_list.size()-1;
-	u_fprintf(ux_stderr, "\t\t\ts_r %d copied to s_g %d\n", s_r->number, s_g->number);
-	return s_g->number;
+	return tv_g;
 }
 
 // From TextualParser::parseTagList
@@ -135,23 +101,16 @@ struct freq_sorter {
 		return tag_freq.find(a)->second > tag_freq.find(b)->second;
 	}
 };
-
-TagVector Relabeller::transferTags(const TagVector tv_r) {
-	TagVector tv_g;
-	boost_foreach (Tag* tag_r, tv_r) {
-		Tag* tag_g = new Tag(*tag_r);
-		tag_g = grammar->addTag(tag_g); // new is deleted if it exists
-		tv_g.push_back(tag_g);
-	}
-	return tv_g;
-}
-
 void Relabeller::addTaglistsToSet(const std::set<TagVector> tvs, Set* s) {
 	// Extracted from TextualParser::parseTagList
 
 	// Might be slightly faster to do this in relabelAsList after
 	// transferTags, but seems clearer this way and compile speed
 	// is fast enough
+
+	if(tvs.empty()) {
+		return;
+	}
 
 	bc::flat_map<Tag*, size_t> tag_freq;
 	std::set<TagVector> tvs_sort_uniq;
@@ -169,6 +128,9 @@ void Relabeller::addTaglistsToSet(const std::set<TagVector> tvs, Set* s) {
 	}
 	freq_sorter fs(tag_freq);
 	boost_foreach (const TagVector& tvc, tvs_sort_uniq) {
+		if (tvc.empty()) {
+			continue;
+		}
 		if (tvc.size() == 1) {
 			grammar->addTagToSet(tvc[0], s);
 			continue;
@@ -229,25 +191,164 @@ void Relabeller::relabelAsList(Set* set_g, const Set* set_r, const Tag* fromTag)
 	addTaglistsToSet(taglists, set_g);
 }
 
+// TODO: how do I use the one in Set.cpp?
+uint8_t trie_reindex2(const trie_t& trie) {
+	uint8_t type = 0;
+	boost_foreach (const trie_t::value_type& kv, trie) {
+		if (kv.first->type & T_SPECIAL) {
+			type |= ST_SPECIAL;
+		}
+		if (kv.first->type & T_MAPPING) {
+			type |= ST_MAPPING;
+		}
+		if (kv.second.trie) {
+			type |= trie_reindex2(*kv.second.trie);
+		}
+	}
+	return type;
+}
+
+void Relabeller::reindexSet(Set& s) {
+	s.type &= ~ST_SPECIAL;
+	s.type &= ~ST_CHILD_UNIFY;
+
+	s.type |= trie_reindex2(s.trie);
+	s.type |= trie_reindex2(s.trie_special);
+
+	for (uint32_t i = 0; i < s.sets.size(); ++i) {
+		Set *set = grammar->sets_list[s.sets[i]];
+		reindexSet(*set);
+		if (set->type & ST_SPECIAL) {
+			s.type |= ST_SPECIAL;
+		}
+		if (set->type & (ST_TAG_UNIFY | ST_SET_UNIFY | ST_CHILD_UNIFY)) {
+			s.type |= ST_CHILD_UNIFY;
+		}
+		if (set->type & ST_MAPPING) {
+			s.type |= ST_MAPPING;
+		}
+	}
+
+	if (s.type & (ST_TAG_UNIFY | ST_SET_UNIFY | ST_CHILD_UNIFY)) {
+		s.type |= ST_SPECIAL;
+		s.type |= ST_CHILD_UNIFY;
+	}
+}
+
+void Relabeller::addSetToGrammar(Set* s) {
+	s->setName(grammar->sets_list.size()+100);
+	grammar->sets_list.push_back(s);
+	s->number = (uint32_t)grammar->sets_list.size()-1;
+	reindexSet(*s);
+}
+
+uint32_t Relabeller::copyRelabelSetToGrammar(const Set* s_r) {
+	Set* s_g = grammar->allocateSet();
+
+	uint32_t nsets = s_r->sets.size();
+	s_g->sets.resize(nsets);
+	for (uint32_t i=0 ; i<nsets; ++i) {
+		// First ensure all referred-to sets exist:
+		uint32_t child_num_r = s_r->sets[i];
+		uint32_t child_num_g = copyRelabelSetToGrammar(relabels->sets_list[child_num_r]);
+		s_g->sets[i] = child_num_g;
+	}
+
+	uint32_t nset_ops = s_r->set_ops.size();
+	s_g->set_ops.resize(nset_ops);
+	for (uint32_t i=0 ; i < nset_ops; ++i) {
+		s_g->set_ops[i] = s_r->set_ops[i]; // enum from Strings.cpp, same across grammars
+	}
+
+	s_g->trie = trie_copy(s_r->trie, *grammar);
+	s_g->trie_special = trie_copy(s_r->trie_special, *grammar);
+	s_g->ff_tags = s_r->ff_tags; // TODO: does this get copied correctly?
+	addSetToGrammar(s_g);
+	return s_g->number;
+}
+
 void Relabeller::relabelAsSet(Set* set_g, const Set* set_r, const Tag* fromTag) {
 	if(set_g->trie.empty()) {
 		// If the grammar's set is only an +/OR/- of other
 		// sets, then we only need to change those other sets
 		return;
 	}
+	if(!set_g->sets.empty()) {
+		u_fprintf(ux_stderr, "Warning: SET %d has both trie and sets, this was unexpected.", set_g->number);
+	}
 	std::set<TagVector> old_tvs = trie_getTagsOrdered(set_g->trie);
 	trie_delete(set_g->trie);
 	set_g->trie.clear();
-	// now we split old_tvs into those that contain fromTag, tvsWith, and those that don't, tvsWithout
-	// set_g1->trie = to_trie(tvsWithout)
-	// set_g2->trie is the trie of set_r->trie intersected with all the tsvWith (removing fromTag)
-	// set_g->sets becomes set_g1 OR set_g2
+	// First we split old_tvs into those that contain fromTag, tvs_with_from, and those that don't, tvs_no_from
+	// set_gW->trie = to_trie(tvs_with_from, but first removing fromTag)
+	// set_gN->trie = to_trie(tvs_no_from)
+	// Then we copy set_r to the relabelled grammar as set_gR
+	// set_gI->sets = set_gR + set_gW
+	// set_g->sets = set_gN OR set_gI
+	// We also put the special and ff tags from set_g into set_gN
 
-	// Set* set_r = relabels->sets_list[it.second->number];
-	// uint32_t s_num_g = addRelabelSet(set_r);
-	// Set* set_g = grammar->sets_list[s_num_g];
-	// u_fprintf(ux_stderr, "\tset_r %d, sh %d\t=>", set_r->number, set_r->hash);
-	// u_fprintf(ux_stderr, "\ttag %S to set_g %d==%d, sh %d\n", it.first.c_str(), set_g->number, s_num_g, set_g->hash);
+	std::set<TagVector> tvs_with_from;
+	std::set<TagVector> tvs_no_from;
+	boost_foreach (const TagVector& old_tags, old_tvs) {
+		TagVector tags_except_from;
+
+		bool seen = false;
+		boost_foreach (Tag* old_tag, old_tags) {
+			if(old_tag->hash == fromTag->hash) {
+				seen = true;
+			}
+			else {
+				tags_except_from.push_back(old_tag);
+			}
+		}
+		if(tags_except_from.empty()) {
+			continue;
+		}
+		if(seen) {
+			tvs_with_from.insert(transferTags(tags_except_from));
+		}
+		else {
+			tvs_no_from.insert(transferTags(tags_except_from));
+		}
+	}
+	Set* s_gN = grammar->allocateSet();
+	addTaglistsToSet(tvs_no_from, s_gN);
+	s_gN->trie_special = trie_copy(set_g->trie_special);
+	s_gN->ff_tags = set_g->ff_tags;
+	s_gN->sets = set_g->sets; // should be empty but who knows
+	s_gN->set_ops = set_g->set_ops;
+	addSetToGrammar(s_gN);
+
+	uint32_t s_gR_num = copyRelabelSetToGrammar(set_r);
+	uint32_t s_gI_num;
+	if(tvs_with_from.empty()) {
+		// We don't want to intersect with ∅, that would never match
+		s_gI_num = s_gR_num;
+	}
+	else {
+		Set* s_gW = grammar->allocateSet();
+		addTaglistsToSet(tvs_with_from, s_gW);
+		addSetToGrammar(s_gW);
+		if(s_gW->getNonEmpty().empty()) {
+			u_fprintf(ux_stderr, "Warning: unexpected empty tries when relabelling set %d!\n", set_g->number);
+		}
+
+		Set* s_gI = grammar->allocateSet(); // relabelling_of_fromTag + taglists_that_had_fromTag
+		s_gI->sets.resize(2);
+		s_gI->sets[0] = s_gR_num;
+		s_gI->sets[1] = s_gW->number;
+		s_gI->set_ops.resize(1);
+		s_gI->set_ops[0] = S_PLUS;
+		addSetToGrammar(s_gI);
+		s_gI_num = s_gI->number;
+	}
+
+	set_g->sets.resize(2); // taglists_that_had_no_fromTag OR (relabelling_of_fromTag + taglists_that_had_no_fromTag)
+	set_g->sets[0] = s_gN->number;
+	set_g->sets[1] = s_gI_num;
+	set_g->set_ops.resize(1);
+	set_g->set_ops[0] = S_OR; // TODO: can avoid this if tvs_no_from.empty()
+	reindexSet(*set_g); // This one was already added to grammar
 }
 
 void Relabeller::relabel() {
@@ -283,7 +384,6 @@ void Relabeller::relabel() {
 	}
 	// RELABEL AS SET:
 	boost_foreach (const UStringSetMap::value_type& it, *relabel_as_set) {
-		u_fprintf(ux_stderr, "Relabelling %S to a SET (TODO)\n", it.first.c_str());
 		const Set* set_r = relabels->sets_list[it.second->number];
 		const Tag* fromTag = tag_by_str[it.first];
 
@@ -294,6 +394,7 @@ void Relabeller::relabel() {
 			}
 		}
 	}
+	grammar->sets_by_tag.clear(); // need to re-add these, with the new sets_list.sizes
 	grammar->reindex();
 }
 
