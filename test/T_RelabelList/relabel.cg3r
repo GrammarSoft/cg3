@@ -1,0 +1,20 @@
+MAP (Prop) (np);
+
+MAP (Det) (det);
+MAP (Ind) (ind);
+
+
+MAP (Nom) (nom);
+MAP (Acc) (acc);
+
+# A comment
+MAP (V) (vblex) ;
+MAP (N)	(n) OR (np) ;
+MAP (Uff) (uff) - (d) ;
+
+MAP (A) (a) OR (aaa) ;
+MAP (B) (b) OR (bbb) ;
+MAP (C) (c) OR (ccc) ;
+MAP (AA) (aa) OR (aaaa) ;
+MAP (BB) (bb) OR (bbbb) ;
+MAP (CC) (cc) OR (cccc) ;

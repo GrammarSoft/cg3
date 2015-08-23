@@ -1,0 +1,5 @@
+"<x>"
+	"x" Det
+"<Y>"
+	"Y" N Prop @bad
+	"y" N @gold

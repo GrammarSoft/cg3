@@ -20,13 +20,12 @@ if (!$binary_relabel || $binary_relabel eq '' || !(-x $binary_relabel)) {
 }
 
 my $binary_proc = $ARGV[0];
-$binary_proc =~ s@/vislcg3([^/]*)$@/cg-proc$1@;
 if (!$binary_proc || $binary_proc eq '' || !(-x $binary_proc)) {
 	die("Error: $binary_proc is not executable!");
 }
 
 my @unlinks = (
-   'grammar-out.cg3',
+   'grammar.cg3b',
    'grammar-out.cg3b',
 );
 for my $u (@unlinks) {
@@ -35,27 +34,20 @@ for my $u (@unlinks) {
         }
 }
 
+`"$binary_comp" grammar.cg3 grammar.cg3b >stdout.txt 2>stderr.txt`;
+`"$binary_relabel" grammar.cg3b relabel.cg3r grammar-out.cg3b >>stdout.txt 2>>stderr.txt`;
 
-`"$binary_relabel" grammar.cg3 relabel.cg3r grammar-out.cg3 >stdout.txt 2>stderr.txt`;
-if (-s "grammar-out.cg3") {
+if (-s "grammar.cg3b" && -s "grammar-out.cg3b") {
 	print STDERR "Success ";
 } else {
 	print STDERR "Fail ";
 }
 
-`"$binary_comp" grammar-out.cg3 grammar-out.cg3b >>stdout.txt 2>>stderr.txt`;
-
-if (-s "grammar-out.cg3b") {
-	print STDERR "Success ";
-} else {
-	print STDERR "Fail ";
-}
-
-`"$binary_proc" grammar-out.cg3b input.txt output.txt >>stdout.txt 2>>stderr.txt`;
+`"$binary_proc" -g grammar-out.cg3b <input.txt >output.txt 2>>stderr.txt`;
 `diff -B expected.txt output.txt >diff.txt`;
 
 if (-s "diff.txt") {
-	print STDERR "Fail.\n";
+	print STDERR "Fail (expected).\n";
 } else {
 	print STDERR "Success.\n";
 }
