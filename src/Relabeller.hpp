@@ -53,9 +53,11 @@ namespace CG3 {
 
 		typedef std::vector<Tag*> TagVector;
 		bool needsSetOps(std::set<TagVector> tagsets[]);
-		uint32_t addRelabelSet(Set* set);
+		uint32_t copyRelabelSetToGrammar(const Set* set);
 		TagVector transferTags(const TagVector tv_r);
 		void addTaglistsToSet(const std::set<TagVector> tvs, Set* set);
+		void reindexSet(Set& s);
+		void addSetToGrammar(Set* s);
 		void relabelAsList(Set* set_g, const Set* set_r, const Tag* fromTag);
 		void relabelAsSet(Set* set_g, const Set* set_r, const Tag* fromTag);
 	};
@@ -64,9 +66,10 @@ namespace CG3 {
 		trie_t *nt = new trie_t;
 		boost_foreach (const trie_t::value_type& p, trie) {
 			Tag* t = new Tag(*p.first);
-			t->markUsed();
-			grammar.single_tags_list.push_back(t);
-			t->number = (uint32_t)grammar.single_tags_list.size()-1;
+			t = grammar.addTag(t); // new is deleted if it exists
+			//grammar.single_tags_list.push_back(t);
+			//t->number = (uint32_t)grammar.single_tags_list.size()-1;
+			t->markUsed(); // TODO: necessary?
 			(*nt)[t].terminal = p.second.terminal;
 			if (p.second.trie) {
 				(*nt)[t].trie = _trie_copy_helper(*p.second.trie);
@@ -79,6 +82,10 @@ namespace CG3 {
 		trie_t nt;
 		boost_foreach (const trie_t::value_type& p, trie) {
 			Tag* t = new Tag(*p.first);
+			t = grammar.addTag(t); // new is deleted if it exists
+			//grammar.single_tags_list.push_back(t);
+			//t->number = (uint32_t)grammar.single_tags_list.size()-1;
+			t->markUsed(); // TODO: necessary?
 			nt[t].terminal = p.second.terminal;
 			if (p.second.trie) {
 				nt[t].trie = _trie_copy_helper(*p.second.trie);
@@ -101,40 +108,6 @@ namespace CG3 {
 		}
 	}
 
-	// Destructively alters trie:
-	inline void trie_append_copies(trie_t* trie, const bool terminal, const trie_t* suffix, UFILE* ux_stderr) {
-		boost_foreach (trie_t::value_type& p, *trie) {
-			if(p.second.trie) {
-				trie_append_copies(p.second.trie, terminal, suffix, ux_stderr);
-			}
-			else {
-				p.second.terminal = terminal;
-				if(suffix) {
-					p.second.trie = _trie_copy_helper(*suffix);
-				}
-			}
-		}
-	}
-
-	// Destructively alters both trie and infix:
-	inline void trie_splice(trie_t& trie, Tag* atTag, const trie_t& infix, UFILE* ux_stderr) {
-		boost_foreach (trie_t::value_type& p, trie) {
-			if(p.first->hash == atTag->hash) {
-				trie_node_t old_node = p.second;
-				trie_t* t_from_here = _trie_copy_helper(infix);
-				trie_append_copies(t_from_here, old_node.terminal, old_node.trie, ux_stderr);
-				trie.erase(p.first);
-				// TODO: tags in infix might actually exist in suffix, or even in the path up to this node.
-				// Instead of this method, we should first grab all possible tagvectors, splice in there, then sort+uniq them and re-insert.
-				boost_foreach (trie_t::value_type& ph, *t_from_here) {
-					trie[ph.first] = ph.second;
-				}
-			}
-			else if(p.second.trie) {
-				trie_splice(*p.second.trie, atTag, infix, ux_stderr);
-			}
-		}
-	}
 }
 
 #endif
