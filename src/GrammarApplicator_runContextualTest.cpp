@@ -110,7 +110,7 @@ Cohort *GrammarApplicator::runSingleTest(SingleWindow *sWindow, size_t i, const 
 Cohort *getCohortInWindow(SingleWindow *& sWindow, size_t position, const ContextualTest *test, int32_t& pos) {
 	Cohort *cohort = 0;
 	pos = static_cast<int32_t>(position) + test->offset;
-	// ToDo: (NOT *) and (*C) tests can be cached
+	// ToDo: (NOT*) and (*C) tests can be cached
 	if (test->pos & POS_ABSOLUTE) {
 		if (test->offset < 0) {
 			pos = static_cast<int32_t>(sWindow->cohorts.size()) + test->offset;

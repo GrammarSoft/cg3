@@ -133,12 +133,12 @@ public:
 	void reindex(bool unused_sets = false, bool used_tags = false);
 	void renameAllRules();
 
-	void indexSetToRule(uint32_t, Set *);
+	void indexSetToRule(uint32_t, Set*);
 	void indexTagToRule(uint32_t, uint32_t);
-	void indexSets(uint32_t, Set *);
+	void indexSets(uint32_t, Set*);
 	void indexTagToSet(uint32_t, uint32_t);
-	void setAdjustSets(Set *);
-	void contextAdjustTarget(ContextualTest *);
+	void setAdjustSets(Set*);
+	void contextAdjustTarget(ContextualTest*);
 };
 
 inline void trie_unserialize(trie_t& trie, FILE *input, Grammar& grammar, uint32_t num_tags) {
