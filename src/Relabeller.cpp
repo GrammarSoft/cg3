@@ -43,8 +43,20 @@ Relabeller::Relabeller(Grammar& res, const Grammar& relabels, UFILE *ux_err) :
 			u_fprintf(ux_stderr, "Warning: Relabel rule '%S' on line %d has %d special tags, skipping!\n", rule->name, rule->line);
 			continue;
 		}
+		if(!rule->tests.empty()) {
+			u_fprintf(ux_stderr, "Warning: Relabel rule '%S' on line %d had context tests, skipping!\n", rule->name, rule->line);
+			continue;
+		}
+		if(rule->wordform) {
+			u_fprintf(ux_stderr, "Warning: Relabel rule '%S' on line %d had a wordform, skipping!\n", rule->name, rule->line);
+			continue;
+		}
+		if(rule->type!=K_MAP) {
+			u_fprintf(ux_stderr, "Warning: Relabel rule '%S' on line %d has unexpected keyword (expected MAP), skipping!\n", rule->name, rule->line);
+			continue;
+		}
 		if(fromTags.size()!=1) {
-			u_fprintf(ux_stderr, "Warning: Relabel rule '%S' on line %d has %d tags in the maplist (expecting 1), skipping!\n", rule->name, rule->line, fromTags.size());
+			u_fprintf(ux_stderr, "Warning: Relabel rule '%S' on line %d has %d tags in the maplist (expected 1), skipping!\n", rule->name, rule->line, fromTags.size());
 			continue;
 		}
 		Tag *fromTag = fromTags[0];
@@ -54,8 +66,7 @@ Relabeller::Relabeller(Grammar& res, const Grammar& relabels, UFILE *ux_err) :
 			}
 		}
 		if(toTags.size() == 1) {
-			Tag *toTag = toTags[0];
-			as_tag->emplace(fromTag->tag.c_str(), toTag->tag.c_str());
+			as_tag->emplace(fromTag->tag.c_str(), toTags[0]->tag.c_str());
 		}
 		else if(toTags.size() > 1) {
 			as_list->emplace(fromTag->tag.c_str(), target);
