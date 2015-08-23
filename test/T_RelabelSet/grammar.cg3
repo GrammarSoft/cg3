@@ -1,7 +1,22 @@
 DELIMITERS = "<$.>" ;
 
+LIST adj = adj;
 LIST n = n;
 LIST np = np;
 LIST det = det;
+LIST ngen = (n gen);
+
+SELECT det;
 
 SELECT n IF (-1 det);
+# should turn into
+#SELECT (N) - (Prop) IF (-1 (Det));
+
+SELECT ngen IF (NOT -1 det) (1 n) ;
+#SELECT ((N)-(Prop))+(Gen) IF (NOT -1 (Det)) (1 (N)-(Prop));
+REMOVE ngen IF (NOT 1 n) ;
+#REMOVE ((N)-(Prop))+(Gen) IF (NOT 1 (N)-(Prop));
+
+
+SET pre-NP = det OR ngen OR adj;
+SELECT n IF (-1C pre-NP);

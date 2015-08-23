@@ -1,4 +1,27 @@
+"<w>"
+	"w" Det @gold
 "<x>"
-	"x" det
+	"x" Det
 "<Y>"
-	"y" n @gold
+	"y" N @gold
+"<Ys>"
+	"y" N Gen @gold
+"<Y>"
+	"Y" N
+"<Ys>"
+	"Ys" N Prop @gold
+"<X>"
+	"X" N Prop
+"<Z>"
+	"z" Det
+"<W>"
+	"w" N @gold
+"<Z>"
+	"z" A
+"<W>"
+	"w" N @gold
+"<Z>"
+	"z" N Gen
+"<W>"
+	"w" N @gold
+
