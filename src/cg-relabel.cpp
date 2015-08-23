@@ -50,15 +50,15 @@ void endProgram(char *name) {
 
 
 // like libcg3's, but with a non-void grammar …
-CG3::Grammar *cg3_grammar_load(const char *filename, UFILE* ux_stdout, UFILE* ux_stderr) {
+CG3::Grammar *cg3_grammar_load(const char *filename, UFILE* ux_stdout, UFILE* ux_stderr, bool require_binary=false) {
 	using namespace CG3;
 	std::ifstream input(filename, std::ios::binary);
 	if (!input) {
-		u_fprintf(ux_stderr, "CG3 Error: Error opening %s for reading!\n", filename);
+		u_fprintf(ux_stderr, "Error: Error opening %s for reading!\n", filename);
 		return 0;
 	}
 	if (!input.read(&cbuffers[0][0], 4)) {
-		u_fprintf(ux_stderr, "CG3 Error: Error reading first 4 bytes from grammar!\n");
+		u_fprintf(ux_stderr, "Error: Error reading first 4 bytes from grammar!\n");
 		return 0;
 	}
 	input.close();
@@ -70,15 +70,17 @@ CG3::Grammar *cg3_grammar_load(const char *filename, UFILE* ux_stdout, UFILE* ux
 	std::auto_ptr<IGrammarParser> parser;
 
 	if (cbuffers[0][0] == 'C' && cbuffers[0][1] == 'G' && cbuffers[0][2] == '3' && cbuffers[0][3] == 'B') {
-		u_fprintf(ux_stderr, "CG3 Info: Binary grammar detected.\n");
 		parser.reset(new BinaryGrammar(*grammar, ux_stderr));
 	}
 	else {
-		u_fprintf(ux_stderr, "CG3 Info: Textual (non-binary) grammar detected; this is unsupported in cg-relabel and will probably fail.\n");
+		if(require_binary) {
+			u_fprintf(ux_stderr, "Error: Text grammar detected -- to compile this grammar, use `cg-comp'\n");
+			CG3Quit(1);
+		}
 		parser.reset(new TextualParser(*grammar, ux_stderr));
 	}
 	if (parser->parse_grammar_from_file(filename, uloc_getDefault(), ucnv_getDefaultName())) {
-		u_fprintf(ux_stderr, "CG3 Error: Grammar could not be parsed!\n");
+		u_fprintf(ux_stderr, "Error: Grammar could not be parsed!\n");
 		return 0;
 	}
 
@@ -112,7 +114,7 @@ int main(int argc, char *argv[]) {
         ux_stdout = u_finit(stdout, locale_default, codepage_default);
         ux_stderr = u_finit(stderr, locale_default, codepage_default);
 
-	CG3::Grammar* grammar = cg3_grammar_load(argv[1], ux_stdout, ux_stderr);
+	CG3::Grammar* grammar = cg3_grammar_load(argv[1], ux_stdout, ux_stderr, true);
 	CG3::Grammar* relabel_grammar = cg3_grammar_load(argv[2], ux_stdout, ux_stderr);
 
 	CG3::Relabeller relabeller(*grammar, *relabel_grammar, ux_stderr);
