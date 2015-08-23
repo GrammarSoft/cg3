@@ -146,13 +146,59 @@ TagVector Relabeller::transferTags(const TagVector tv_r) {
 	return tv_g;
 }
 
+void Relabeller::addTaglistsToSet(const std::set<TagVector> tvs, Set* s) {
+	// Extracted from TextualParser::parseTagList
+
+	// Might be slightly faster to do this in relabelAsList after
+	// transferTags, but seems clearer this way and compile speed
+	// is fast enough
+
+	bc::flat_map<Tag*, size_t> tag_freq;
+	std::set<TagVector> tvs_sort_uniq;
+
+	boost_foreach (const TagVector& tvc, tvs) {
+		TagVector& tags = const_cast<TagVector&>(tvc);
+		// From TextualParser::parseTagList
+		std::sort(tags.begin(), tags.end());
+		tags.erase(std::unique(tags.begin(), tags.end()), tags.end());
+		if (tvs_sort_uniq.insert(tags).second) {
+			boost_foreach (Tag *t, tags) {
+				++tag_freq[t];
+			}
+		}
+	}
+	freq_sorter fs(tag_freq);
+	boost_foreach (const TagVector& tvc, tvs_sort_uniq) {
+		if (tvc.size() == 1) {
+			grammar->addTagToSet(tvc[0], s);
+			continue;
+		}
+		TagVector& tv = const_cast<TagVector&>(tvc);
+		// Sort tags by frequency, high-to-low
+		// Doing this yields a very cheap imperfect form of trie compression, but it's good enough
+		std::sort(tv.begin(), tv.end(), fs);
+		bool special = false;
+		boost_foreach (Tag *tag, tv) {
+			if (tag->type & T_SPECIAL) {
+				special = true;
+				break;
+			}
+		}
+		if (special) {
+			trie_insert(s->trie_special, tv);
+		}
+		else {
+			trie_insert(s->trie, tv);
+		}
+	}
+}
+
 void Relabeller::relabelAsList(Set* set_g, const Set* set_r, const Tag* fromTag) {
 	std::set<TagVector> old_tvs = trie_getTagsOrdered(set_g->trie);
 	trie_delete(set_g->trie);
 	set_g->trie.clear();
 
 	std::set<TagVector> taglists;
-	bc::flat_map<Tag*, size_t> tag_freq;
 	boost_foreach (const TagVector& old_tags, old_tvs) {
 		TagVector tags_except_from;
 
@@ -173,32 +219,14 @@ void Relabeller::relabelAsList(Set* set_g, const Set* set_r, const Tag* fromTag)
 			TagVector dummy;
 			suffixes.insert(dummy);
 		}
-		boost_foreach(const TagVector& tv, suffixes) {
+		boost_foreach(const TagVector& suf, suffixes) {
 			TagVector tags = TagVector(tags_except_from);
-			tags.insert(tags.end(), tv.begin(), tv.end());
+			tags.insert(tags.end(), suf.begin(), suf.end());
 			tags = transferTags(tags);
-			// From TextualParser::parseTagList
-			std::sort(tags.begin(), tags.end());
-			tags.erase(std::unique(tags.begin(), tags.end()), tags.end());
-			if (taglists.insert(tags).second) {
-				boost_foreach (Tag *t, tags) {
-					++tag_freq[t];
-				}
-			}
+			taglists.insert(tags);
 		}
 	}
-	// From TextualParser::parseTagList
-	freq_sorter fs(tag_freq);
-	boost_foreach (const TagVector& tvc, taglists) {
-		if (tvc.size() == 1) {
-			grammar->addTagToSet(tvc[0], set_g);
-			continue;
-		}
-		TagVector& tv = const_cast<TagVector&>(tvc);
-		std::sort(tv.begin(), tv.end(), fs);
-		trie_insert(set_g->trie, tv);
-	}
-
+	addTaglistsToSet(taglists, set_g);
 }
 
 void Relabeller::relabelAsSet(Set* set_g, const Set* set_r, const Tag* fromTag) {
