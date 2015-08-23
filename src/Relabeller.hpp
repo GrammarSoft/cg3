@@ -94,20 +94,6 @@ namespace CG3 {
 		return nt;
 	}
 
-	void printTrie(trie_t t, UFILE* out) {
-		boost_foreach (const trie_t::value_type& kv, t) {
-			u_fprintf(out, "(%S", kv.first->tag.c_str());
-			if (kv.second.terminal) {
-				u_fprintf(out, "!");
-			}
-			u_fprintf(out, " ");
-			if (kv.second.trie) {
-				printTrie(*kv.second.trie, out);
-			}
-			u_fprintf(out, ") ", kv.first->tag.c_str());
-		}
-	}
-
 }
 
 #endif
