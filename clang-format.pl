@@ -43,6 +43,7 @@ foreach my $file (@files) {
    $data =~ s@([\w>]) &(\w)@$1& $2@g; # I like T *t, but I also like T& t ...
    $data =~ s@([\w>]) \*&(\w)@$1 *& $2@g; # ... and T *& t
    $data =~ s@return& @return &@g; # ... except for return &t
+   $data =~ s@ \*([,>])@*$1@g; # No space before *,
    $data =~ s@^([ \t]*)(  [:,] [^\n]+) \{@$1$2\n$1\{@mg; # { after ctor-init should go on its own line
    $data =~ s@template <@template<@g; # No space in template<
 

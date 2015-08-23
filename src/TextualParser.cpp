@@ -104,10 +104,14 @@ struct ASTHelper {
 	// warning C4127: conditional expression is constant
 	#pragma warning (disable: 4127)
 #endif
-#define _AST_CONCAT(x, y) x ## y
+#define _AST_CONCAT(x, y) x##y
 #define _AST_CONCAT2(x, y) _AST_CONCAT(x, y)
 #define AST_OPEN(type) ASTHelper _AST_CONCAT2(_ast_, __LINE__)((type), result->lines, p)
-#define AST_CLOSE(p) do { cur_ast->e = (p); cur_ast_help->destroy(); } while(false)
+#define AST_CLOSE(p)             \
+	do {                         \
+		cur_ast->e = (p);        \
+		cur_ast_help->destroy(); \
+	} while (false)
 
 namespace CG3 {
 
@@ -155,9 +159,9 @@ void TextualParser::incErrorCount() {
 }
 
 struct freq_sorter {
-	const bc::flat_map<Tag *, size_t>& tag_freq;
+	const bc::flat_map<Tag*, size_t>& tag_freq;
 
-	freq_sorter(const bc::flat_map<Tag *, size_t>& tag_freq)
+	freq_sorter(const bc::flat_map<Tag*, size_t>& tag_freq)
 	  : tag_freq(tag_freq)
 	{
 	}
@@ -250,7 +254,7 @@ Tag *TextualParser::addTag(Tag *tag) {
 void TextualParser::parseTagList(UChar *& p, Set *s) {
 	AST_OPEN("TagList");
 	std::set<TagVector> taglists;
-	bc::flat_map<Tag *, size_t> tag_freq;
+	bc::flat_map<Tag*, size_t> tag_freq;
 
 	while (*p && *p != ';' && *p != ')') {
 		result->lines += SKIPWS(p, ';', ')');
@@ -470,7 +474,7 @@ Set *TextualParser::parseSetInline(UChar *& p, Set *s) {
 					set_c->line = result->lines;
 					set_c->setName(sets_counter++);
 
-					bc::flat_map<Tag *, size_t> tag_freq;
+					bc::flat_map<Tag*, size_t> tag_freq;
 					boost_foreach (const TagVector& tags, r) {
 						boost_foreach (Tag *t, tags) {
 							++tag_freq[t];

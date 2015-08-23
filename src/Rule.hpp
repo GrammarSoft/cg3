@@ -123,7 +123,7 @@ struct compare_Rule {
 typedef std::vector<Rule*> RuleVector;
 typedef std::map<uint32_t, Rule*> RuleByLineMap;
 typedef stdext::hash_map<uint32_t, Rule*> RuleByLineHashMap;
-typedef stdext::hash_map<const Rule *, CohortSet, compare_Rule> RuleToCohortsMap;
+typedef stdext::hash_map<const Rule*, CohortSet, compare_Rule> RuleToCohortsMap;
 }
 
 #endif

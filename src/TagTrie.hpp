@@ -28,7 +28,7 @@
 
 namespace CG3 {
 struct trie_node_t;
-typedef bc::flat_map<Tag *, trie_node_t, compare_Tag> trie_t;
+typedef bc::flat_map<Tag*, trie_node_t, compare_Tag> trie_t;
 
 struct trie_node_t {
 	bool terminal;
