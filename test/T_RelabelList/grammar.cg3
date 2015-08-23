@@ -7,6 +7,9 @@ LIST NP = (N Prop) ;
 LIST NPAdv = (N Prop) Adv ;
 LIST NPAdvV = (N Prop) Adv V ;
 LIST NPAdvVX = (N Prop) Adv V X ;
+LIST NPGenAdv = (N Prop Gen) Adv;
+LIST NGen = (N Gen);
+LIST NDet = N Det;              # as_set OR as_list !
 
 LIST CASE = Nom Acc;
 
@@ -21,7 +24,19 @@ SET N_NO_NP = N - (Prop);
 
 REMOVE NP IF (-1 (Det));
 REMOVE DetInd IF (-1 Det);
+REMOVE NPAdv IF (-1 (Det));
+REMOVE NPAdvV IF (-1 (Det));
+REMOVE NPAdvVX IF (-1 (Det));
+REMOVE NPGenAdv IF (-1 (Det));
+REMOVE NGen IF (-1 (Det));
+
 REMOVE (X) IF (-1 nochangehere LINK -1 norhere);
 
 SELECT $$CASE IF (-1 $$CASE);
 SELECT ("meh") IF (-1 BOLORN) (2 EOLORN);
+
+SUBSTITUTE (A) (*) (*);
+SUBSTITUTE (B) (BB) (*);
+SUBSTITUTE (C) (CC) (C);
+
+SUBSTITUTE:Date1 (Num Sg) (Num Sg Sem/Date) TARGET ("<[0-3][0-9][.][0-2][0-9][.][1-2][0-9][0-9][0-9]>"r Num) ;

@@ -1,0 +1,23 @@
+"<x>"
+	"x" det
+"<Y>"
+	"Y" np @bad
+	"y" n @gold
+"<z>"
+	"z" det
+"<q>"
+	"q" det ind @bad
+	"q" n @gold
+"<abc>"
+	"a"
+	"aa" aa
+	"aaa"
+	"aaaa" aaaa
+	"b" bb bbbb
+	"bb" bb
+	"bbb" bb bbbb
+	"bbbb" bbbb
+	"c" c
+	"cc" cc
+	"ccc" ccc
+	"cccc" cccc

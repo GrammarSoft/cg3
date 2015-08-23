@@ -1,0 +1,7 @@
+DELIMITERS = "<$.>" ;
+
+LIST n = n;
+LIST np = np;
+LIST det = det;
+
+SELECT n IF (-1 det);
