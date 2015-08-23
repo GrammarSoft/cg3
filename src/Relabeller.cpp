@@ -39,7 +39,7 @@ Relabeller::Relabeller(Grammar& res, const Grammar& relabels, UFILE *ux_err) :
 		std::cerr << relabels.rules_any->size() << " relabel rules cannot be skipped by index(?)" << std::endl;
 	}
 
-	for(const auto & rule : relabels.rule_by_number) {
+	boost_foreach (const RuleVector::value_type rule, relabels.rule_by_number) {
 		const TagVector& fromTags = trie_getTagList(rule->maplist->trie);
 		Set* target = relabels.sets_list[rule->target];
 		const TagVector& toTags = trie_getTagList(target->trie);
@@ -149,7 +149,7 @@ TagVector Relabeller::transferTags(const TagVector tv_r) {
 void Relabeller::relabel() {
 	stdext::hash_map<UString, Tag* > tag_by_str;
 	// RELABEL AS TAG:
-	for(const auto & fromTag : grammar->single_tags_list) {
+	boost_foreach(const std::vector<Tag*>::value_type fromTag, grammar->single_tags_list) {
 		UString tagName = fromTag->toUString(true);
 		BOOST_AUTO(const toTag, relabel_as_tag->find(tagName));
 		if(toTag != relabel_as_tag->end()) {
