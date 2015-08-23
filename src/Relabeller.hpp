@@ -32,9 +32,6 @@ namespace CG3 {
 	class Tag;
 	class Set;
 
-	typedef stdext::hash_map<UString, UString > UStringMap;
-	typedef stdext::hash_map<UString, Set* > UStringSetMap;
-
 	class Relabeller {
 	public:
 		Relabeller(Grammar& res, const Grammar& relabels, UFILE *ux_err);
@@ -46,13 +43,14 @@ namespace CG3 {
 		UFILE *ux_stderr;
 		Grammar *grammar;
 		const Grammar *relabels;
+
+		typedef stdext::hash_map<UString, UString > UStringMap;
+		typedef stdext::hash_map<UString, Set* > UStringSetMap;
 		const UStringMap* relabel_as_tag;
 		const UStringSetMap* relabel_as_list;
 		const UStringSetMap* relabel_as_set;
-		typedef stdext::hash_map<UString,uint32_t> set_id_map_t;
 
 		typedef std::vector<Tag*> TagVector;
-		bool needsSetOps(std::set<TagVector> tagsets[]);
 		uint32_t copyRelabelSetToGrammar(const Set* set);
 		TagVector transferTags(const TagVector tv_r);
 		void addTaglistsToSet(const std::set<TagVector> tvs, Set* set);
@@ -67,9 +65,6 @@ namespace CG3 {
 		boost_foreach (const trie_t::value_type& p, trie) {
 			Tag* t = new Tag(*p.first);
 			t = grammar.addTag(t); // new is deleted if it exists
-			//grammar.single_tags_list.push_back(t);
-			//t->number = (uint32_t)grammar.single_tags_list.size()-1;
-			t->markUsed(); // TODO: necessary?
 			(*nt)[t].terminal = p.second.terminal;
 			if (p.second.trie) {
 				(*nt)[t].trie = _trie_copy_helper(*p.second.trie);
@@ -83,9 +78,6 @@ namespace CG3 {
 		boost_foreach (const trie_t::value_type& p, trie) {
 			Tag* t = new Tag(*p.first);
 			t = grammar.addTag(t); // new is deleted if it exists
-			//grammar.single_tags_list.push_back(t);
-			//t->number = (uint32_t)grammar.single_tags_list.size()-1;
-			t->markUsed(); // TODO: necessary?
 			nt[t].terminal = p.second.terminal;
 			if (p.second.trie) {
 				nt[t].trie = _trie_copy_helper(*p.second.trie);

@@ -104,22 +104,6 @@ uint32_t Set::rehash() {
 	return retval;
 }
 
-uint8_t trie_reindex(const trie_t& trie) {
-	uint8_t type = 0;
-	boost_foreach (const trie_t::value_type& kv, trie) {
-		if (kv.first->type & T_SPECIAL) {
-			type |= ST_SPECIAL;
-		}
-		if (kv.first->type & T_MAPPING) {
-			type |= ST_MAPPING;
-		}
-		if (kv.second.trie) {
-			type |= trie_reindex(*kv.second.trie);
-		}
-	}
-	return type;
-}
-
 void Set::reindex(Grammar& grammar) {
 	type &= ~ST_SPECIAL;
 	type &= ~ST_CHILD_UNIFY;

@@ -202,29 +202,12 @@ void Relabeller::relabelAsList(Set* set_g, const Set* set_r, const Tag* fromTag)
 	addTaglistsToSet(taglists, set_g);
 }
 
-// TODO: how do I use the one in Set.cpp?
-uint8_t trie_reindex2(const trie_t& trie) {
-	uint8_t type = 0;
-	boost_foreach (const trie_t::value_type& kv, trie) {
-		if (kv.first->type & T_SPECIAL) {
-			type |= ST_SPECIAL;
-		}
-		if (kv.first->type & T_MAPPING) {
-			type |= ST_MAPPING;
-		}
-		if (kv.second.trie) {
-			type |= trie_reindex2(*kv.second.trie);
-		}
-	}
-	return type;
-}
-
 void Relabeller::reindexSet(Set& s) {
 	s.type &= ~ST_SPECIAL;
 	s.type &= ~ST_CHILD_UNIFY;
 
-	s.type |= trie_reindex2(s.trie);
-	s.type |= trie_reindex2(s.trie_special);
+	s.type |= trie_reindex(s.trie);
+	s.type |= trie_reindex(s.trie_special);
 
 	for (uint32_t i = 0; i < s.sets.size(); ++i) {
 		Set *set = grammar->sets_list[s.sets[i]];
