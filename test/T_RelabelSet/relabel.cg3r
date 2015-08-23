@@ -1,0 +1,3 @@
+MAP (n) (N) - (Prop) ;
+MAP (det) (Det) ;
+MAP (np) (N Prop) ;
