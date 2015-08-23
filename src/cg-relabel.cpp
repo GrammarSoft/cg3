@@ -36,21 +36,18 @@
 using CG3::CG3Quit;
 
 void endProgram(char *name) {
-        if (name != NULL) {
-                fprintf(stdout, "VISL CG-3 Relabeller version %u.%u.%u.%u\n",
-                        CG3_VERSION_MAJOR, CG3_VERSION_MINOR, CG3_VERSION_PATCH, CG3_REVISION);
-                std::cout << basename(name) << ": relabel a binary grammar using a relabelling file" << std::endl;
-                std::cout << "USAGE: " << basename(name) << " input_grammar_file relabel_rule_file output_grammar_file" << std::endl;
-        }
-        exit(EXIT_FAILURE);
+	if (name != NULL) {
+		fprintf(stdout, "VISL CG-3 Relabeller version %u.%u.%u.%u\n",
+		  CG3_VERSION_MAJOR, CG3_VERSION_MINOR, CG3_VERSION_PATCH, CG3_REVISION);
+		std::cout << basename(name) << ": relabel a binary grammar using a relabelling file" << std::endl;
+		std::cout << "USAGE: " << basename(name) << " input_grammar_file relabel_rule_file output_grammar_file" << std::endl;
+	}
+	exit(EXIT_FAILURE);
 }
 
 
-
-
-
 // like libcg3's, but with a non-void grammar …
-CG3::Grammar *cg3_grammar_load(const char *filename, UFILE* ux_stdout, UFILE* ux_stderr, bool require_binary=false) {
+CG3::Grammar *cg3_grammar_load(const char *filename, UFILE *ux_stdout, UFILE *ux_stderr, bool require_binary = false) {
 	using namespace CG3;
 	std::ifstream input(filename, std::ios::binary);
 	if (!input) {
@@ -67,13 +64,13 @@ CG3::Grammar *cg3_grammar_load(const char *filename, UFILE* ux_stdout, UFILE* ux
 	grammar->ux_stderr = ux_stderr;
 	grammar->ux_stdout = ux_stdout;
 
-	std::auto_ptr<IGrammarParser> parser;
+	boost::scoped_ptr<IGrammarParser> parser;
 
 	if (cbuffers[0][0] == 'C' && cbuffers[0][1] == 'G' && cbuffers[0][2] == '3' && cbuffers[0][3] == 'B') {
 		parser.reset(new BinaryGrammar(*grammar, ux_stderr));
 	}
 	else {
-		if(require_binary) {
+		if (require_binary) {
 			u_fprintf(ux_stderr, "Error: Text grammar detected -- to compile this grammar, use `cg-comp'\n");
 			CG3Quit(1);
 		}
@@ -90,54 +87,54 @@ CG3::Grammar *cg3_grammar_load(const char *filename, UFILE* ux_stdout, UFILE* ux
 }
 
 int main(int argc, char *argv[]) {
-        UFILE *ux_stdout = 0;
-        UFILE *ux_stderr = 0;
-        UErrorCode status = U_ZERO_ERROR;
+	UFILE *ux_stdout = 0;
+	UFILE *ux_stderr = 0;
+	UErrorCode status = U_ZERO_ERROR;
 
-        if (argc != 4) {
-                endProgram(argv[0]);
-        }
+	if (argc != 4) {
+		endProgram(argv[0]);
+	}
 
-        /* Initialize ICU */
-        u_init(&status);
-        if (U_FAILURE(status) && status != U_FILE_ACCESS_ERROR) {
-                std::cerr << "Error: Cannot initialize ICU. Status = " << u_errorName(status) << std::endl;
-                CG3Quit(1);
-        }
-        status = U_ZERO_ERROR;
+	/* Initialize ICU */
+	u_init(&status);
+	if (U_FAILURE(status) && status != U_FILE_ACCESS_ERROR) {
+		std::cerr << "Error: Cannot initialize ICU. Status = " << u_errorName(status) << std::endl;
+		CG3Quit(1);
+	}
+	status = U_ZERO_ERROR;
 
-        ucnv_setDefaultName("UTF-8");
-        const char *codepage_default = ucnv_getDefaultName();
-        uloc_setDefault("en_US_POSIX", &status);
-        const char *locale_default = uloc_getDefault();
+	ucnv_setDefaultName("UTF-8");
+	const char *codepage_default = ucnv_getDefaultName();
+	uloc_setDefault("en_US_POSIX", &status);
+	const char *locale_default = uloc_getDefault();
 
-        ux_stdout = u_finit(stdout, locale_default, codepage_default);
-        ux_stderr = u_finit(stderr, locale_default, codepage_default);
+	ux_stdout = u_finit(stdout, locale_default, codepage_default);
+	ux_stderr = u_finit(stderr, locale_default, codepage_default);
 
-	CG3::Grammar* grammar = cg3_grammar_load(argv[1], ux_stdout, ux_stderr, true);
-	CG3::Grammar* relabel_grammar = cg3_grammar_load(argv[2], ux_stdout, ux_stderr);
+	CG3::Grammar *grammar = cg3_grammar_load(argv[1], ux_stdout, ux_stderr, true);
+	CG3::Grammar *relabel_grammar = cg3_grammar_load(argv[2], ux_stdout, ux_stderr);
 
 	CG3::Relabeller relabeller(*grammar, *relabel_grammar, ux_stderr);
 	relabeller.relabel();
 
-        FILE *gout = fopen(argv[3], "wb");
-        if (gout) {
+	FILE *gout = fopen(argv[3], "wb");
+	if (gout) {
 		CG3::BinaryGrammar writer(*grammar, ux_stderr);
 		writer.writeBinaryGrammar(gout);
-        }
-        else {
-                std::cerr << "Could not write grammar to " << argv[3] << std::endl;
-        }
+	}
+	else {
+		std::cerr << "Could not write grammar to " << argv[3] << std::endl;
+	}
 
 	delete relabel_grammar;
 	relabel_grammar = 0;
 	delete grammar;
 	grammar = 0;
 
-        u_fclose(ux_stderr);
-        u_fclose(ux_stdout);
+	u_fclose(ux_stderr);
+	u_fclose(ux_stdout);
 
-        u_cleanup();
+	u_cleanup();
 
-        return status;
+	return status;
 }

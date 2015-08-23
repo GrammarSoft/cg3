@@ -129,7 +129,7 @@ public:
 	uint32_t addTagToReading(Reading& reading, Tag *tag, bool rehash = true);
 	void runGrammarOnWindow();
 
-	typedef std::map<Reading *, TagList> all_mappings_t;
+	typedef std::map<Reading*, TagList> all_mappings_t;
 	void splitMappings(TagList& mappings, Cohort& cohort, Reading& reading, bool mapped = false);
 	void splitAllMappings(all_mappings_t& all_mappings, Cohort& cohort, bool mapped = false);
 	Taguint32HashMap single_tags;

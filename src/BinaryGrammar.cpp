@@ -39,7 +39,7 @@ void BinaryGrammar::setVerbosity(uint32_t v) {
 	verbosity = v;
 }
 
-int BinaryGrammar::parse_grammar_from_file(const char *filename, const char *, const char *) {
+int BinaryGrammar::parse_grammar_from_file(const char *filename, const char*, const char *) {
 	if (!grammar) {
 		u_fprintf(ux_stderr, "Error: Cannot parse into nothing - hint: call setResult() before trying.\n");
 		CG3Quit(1);
