@@ -487,6 +487,14 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 		it->first->tmpl = grammar->contexts.find(it->second)->second;
 	}
 
+	// Bind the OR'ed contexts to where they are used
+	foreach (it, deferred_ors) {
+		it->first->ors.reserve(it->second.size());
+		foreach (orit, it->second) {
+			it->first->ors.push_back(grammar->contexts.find(*orit)->second);
+		}
+	}
+
 	ucnv_close(conv);
 	return 0;
 }
@@ -552,8 +560,7 @@ ContextualTest *BinaryGrammar::readContextualTest(FILE *input) {
 		for (uint32_t i = 0; i < num_ors; ++i) {
 			fread_throw(&u32tmp, sizeof(uint32_t), 1, input);
 			u32tmp = (uint32_t)ntohl(u32tmp);
-			ContextualTest *to = grammar->contexts[u32tmp];
-			t->ors.push_back(to);
+			deferred_ors[t].push_back(u32tmp);
 		}
 	}
 	if (fields & (1 << 11)) {
