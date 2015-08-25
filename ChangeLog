@@ -1,3 +1,22 @@
+2015-08-23  tino
+
+	* [r10910] clang-format.pl, src/BinaryGrammar.cpp, src/Grammar.hpp,
+	  src/GrammarApplicator_runContextualTest.cpp, src/inlines.hpp:
+	  Statement-final * format
+
+2015-08-23  unhammer
+
+	* [r10909] test/T_Relabel: rm empty dir
+
+2015-08-23  tino
+
+	* [r10908] ChangeLog, clang-format.pl, src/BinaryGrammar.cpp,
+	  src/BinaryGrammar.hpp, src/Cohort.hpp, src/GrammarApplicator.hpp,
+	  src/Relabeller.cpp, src/Relabeller.hpp, src/Rule.hpp,
+	  src/Set.hpp, src/Tag.hpp, src/TagTrie.hpp, src/TextualParser.cpp,
+	  src/TextualParser.hpp, src/cg-relabel.cpp, src/libcg3.cpp,
+	  src/version.hpp: Fix formatting, auto_ptr
+
 2015-08-23  unhammer
 
 	* [r10907] src/Relabeller.cpp, src/Relabeller.hpp, src/Set.cpp,
@@ -2276,23 +2295,4 @@
 	  src/version.h: Re-enable duplicate tag elimination (which was
 	  causing the difference) and useless barrier elimination (which
 	  was innocent after all).
-
-2013-06-22  unhammer
-
-	* [r9071] emacs/cg.el: cg-check, bound to C-c C-c, inspired by
-	  cg3ide. Clickable errors and traces. Rebound cg-goto-rule to C-c
-	  g. Use C-c C-i to edit the input sent to cg-check (or send it
-	  using cg-pre-pipe). Use a line like
-	  
-	  # -*- cg-pre-pipe: "lt-proc foo.bin | cg-conv"; coding: utf-8 -*-
-	  
-	  in your cg file to set a per-file pipeline to run before the
-	  vislcg3 step.
-
-2013-06-21  tino
-
-	* [r9070] src/TextualParser.cpp: Undo change that caused
-	  differences where it should not have
-	* [r9069] TODO, scripts/cg3-autobin.pl, src/CMakeLists.txt,
-	  src/version.h: Use Install_Prefix, not Prefix_Path
 
