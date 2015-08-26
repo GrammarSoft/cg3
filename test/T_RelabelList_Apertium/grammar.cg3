@@ -1,0 +1,3 @@
+DELIMITERS = "<$.>" ;
+
+SELECT (Der_foo) IF (0 (n));
