@@ -43,7 +43,7 @@ if (-s "grammar.cg3b" && -s "grammar-out.cg3b") {
 	print STDERR "Fail ";
 }
 
-`"$binary_proc" -g grammar-out.cg3b <input.txt >output.txt 2>>stderr.txt`;
+`"$binary_proc" -g grammar-out.cg3b -I input.txt -O output.txt 2>>stderr.txt`;
 `diff -B expected.txt output.txt >diff.txt`;
 
 if (-s "diff.txt") {
