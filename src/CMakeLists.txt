@@ -54,6 +54,7 @@ macro(cg3_link target)
 endmacro()
 
 set(LIBCG3_HEADERS
+	AST.hpp
 	BinaryGrammar.hpp
 	Cohort.hpp
 	CohortIterator.hpp

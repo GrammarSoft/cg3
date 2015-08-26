@@ -69,6 +69,7 @@ private:
 
 	typedef stdext::hash_map<ContextualTest*, std::pair<size_t, UString> > deferred_t;
 	deferred_t deferred_tmpls;
+	std::vector<boost::shared_ptr<std::vector<UChar> > > grammarbufs;
 
 	void parseFromUChar(UChar *input, const char *fname = 0);
 	void addRuleToGrammar(Rule *rule);
