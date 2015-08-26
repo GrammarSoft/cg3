@@ -1,1 +1,1 @@
-^fooey/bar<n>$
+^fooey/foo<n>$
