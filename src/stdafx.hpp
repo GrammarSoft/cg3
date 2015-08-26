@@ -87,6 +87,7 @@
 #include <boost/container/flat_map.hpp>
 #include <boost/dynamic_bitset.hpp>
 #include <boost/scoped_ptr.hpp>
+#include <boost/shared_ptr.hpp>
 #include <boost/typeof/typeof.hpp>
 #include <boost/foreach.hpp>
 #define boost_foreach BOOST_FOREACH
