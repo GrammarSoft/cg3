@@ -46,7 +46,6 @@ private:
 
 	typedef stdext::hash_map<UString, UString> UStringMap;
 	typedef stdext::hash_map<UString, Set*> UStringSetMap;
-	const UStringMap *relabel_as_tag;
 	const UStringSetMap *relabel_as_list;
 	const UStringSetMap *relabel_as_set;
 

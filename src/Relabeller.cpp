@@ -31,7 +31,6 @@ Relabeller::Relabeller(Grammar& res, const Grammar& relabels, UFILE *ux_err)
   , grammar(&res)
   , relabels(&relabels)
 {
-	UStringMap *as_tag = new UStringMap;
 	UStringSetMap *as_list = new UStringSetMap;
 	UStringSetMap *as_set = new UStringSetMap;
 
@@ -65,25 +64,19 @@ Relabeller::Relabeller(Grammar& res, const Grammar& relabels, UFILE *ux_err)
 				u_fprintf(ux_stderr, "Warning: Special tags (%S) not supported yet.\n", toit->tag.c_str());
 			}
 		}
-		if (toTags.size() == 1) {
-			as_tag->emplace(fromTag->tag.c_str(), toTags[0]->tag.c_str());
-		}
-		else if (toTags.size() > 1) {
+		if (!toTags.empty()) {
 			as_list->emplace(fromTag->tag.c_str(), target);
 		}
-		else { // if(toTags.size()==0)
+		else {
 			as_set->emplace(fromTag->tag.c_str(), target);
 		}
 	}
 
-	relabel_as_tag = as_tag;
 	relabel_as_list = as_list;
 	relabel_as_set = as_set;
 }
 
 Relabeller::~Relabeller() {
-	delete relabel_as_tag;
-	relabel_as_tag = 0;
 	delete relabel_as_list;
 	relabel_as_list = 0;
 	delete relabel_as_set;
@@ -349,14 +342,7 @@ void Relabeller::relabelAsSet(Set *set_g, const Set *set_r, const Tag *fromTag) 
 
 void Relabeller::relabel() {
 	stdext::hash_map<UString, Tag*> tag_by_str;
-	// RELABEL AS TAG:
 	boost_foreach (const std::vector<Tag*>::value_type tag_g, grammar->single_tags_list) {
-		UString tagName = tag_g->toUString(true);
-		BOOST_AUTO(const tag_r, relabel_as_tag->find(tagName));
-		if (tag_r != relabel_as_tag->end()) {
-			tag_g->tag.assign(tag_r->second);
-			tag_g->rehash();
-		}
 		tag_by_str[tag_g->tag] = tag_g;
 	}
 	stdext::hash_map<UString, std::set<Set*> > sets_by_tag;
