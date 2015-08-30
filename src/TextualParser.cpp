@@ -1430,7 +1430,7 @@ void TextualParser::parseFromUChar(UChar *input, const char *fname) {
 			}
 			result->lines += SKIPWS(p);
 			// DELIMITERS
-			if (ISCHR(*p, 'D', 'd') && ISCHR(*(p + 9), 'S', 's') && ISCHR(*(p + 1), 'E', 'e') && ISCHR(*(p + 2), 'L', 'l') && ISCHR(*(p + 3), 'I', 'i') && ISCHR(*(p + 4), 'M', 'm') && ISCHR(*(p + 5), 'I', 'i') && ISCHR(*(p + 6), 'T', 't') && ISCHR(*(p + 7), 'E', 'e') && ISCHR(*(p + 8), 'R', 'r') && !ISSTRING(p, 9)) {
+			if (IS_ICASE(p, "DELIMITERS", "delimiters")) {
 				if (result->delimiters) {
 					error("%s: Error: Cannot redefine DELIMITERS on line %u near `%S`!\n", p);
 				}
@@ -1456,7 +1456,7 @@ void TextualParser::parseFromUChar(UChar *input, const char *fname) {
 				AST_CLOSE(p + 1);
 			}
 			// SOFT-DELIMITERS
-			else if (ISCHR(*p, 'S', 's') && ISCHR(*(p + 14), 'S', 's') && ISCHR(*(p + 1), 'O', 'o') && ISCHR(*(p + 2), 'F', 'f') && ISCHR(*(p + 3), 'T', 't') && ISCHR(*(p + 4), '-', '_') && ISCHR(*(p + 5), 'D', 'd') && ISCHR(*(p + 6), 'E', 'e') && ISCHR(*(p + 7), 'L', 'l') && ISCHR(*(p + 8), 'I', 'i') && ISCHR(*(p + 9), 'M', 'm') && ISCHR(*(p + 10), 'I', 'i') && ISCHR(*(p + 11), 'T', 't') && ISCHR(*(p + 12), 'E', 'e') && ISCHR(*(p + 13), 'R', 'r') && !ISSTRING(p, 14)) {
+			else if (IS_ICASE(p, "SOFT-DELIMITERS", "soft-delimiters")) {
 				if (result->soft_delimiters) {
 					error("%s: Error: Cannot redefine SOFT-DELIMITERS on line %u near `%S`!\n", p);
 				}
@@ -1482,7 +1482,7 @@ void TextualParser::parseFromUChar(UChar *input, const char *fname) {
 				AST_CLOSE(p + 1);
 			}
 			// MAPPING-PREFIX
-			else if (ISCHR(*p, 'M', 'm') && ISCHR(*(p + 13), 'X', 'x') && ISCHR(*(p + 1), 'A', 'a') && ISCHR(*(p + 2), 'P', 'p') && ISCHR(*(p + 3), 'P', 'p') && ISCHR(*(p + 4), 'I', 'i') && ISCHR(*(p + 5), 'N', 'n') && ISCHR(*(p + 6), 'G', 'g') && ISCHR(*(p + 7), '-', '_') && ISCHR(*(p + 8), 'P', 'p') && ISCHR(*(p + 9), 'R', 'r') && ISCHR(*(p + 10), 'E', 'e') && ISCHR(*(p + 11), 'F', 'f') && ISCHR(*(p + 12), 'I', 'i') && !ISSTRING(p, 13)) {
+			else if (IS_ICASE(p, "MAPPING-PREFIX", "mapping-prefix")) {
 				if (seen_mapping_prefix) {
 					u_fprintf(ux_stderr, "%s: Error: MAPPING-PREFIX on line %u cannot change previous prefix set on line %u!\n", filebase, result->lines, seen_mapping_prefix);
 					incErrorCount();
@@ -1519,7 +1519,7 @@ void TextualParser::parseFromUChar(UChar *input, const char *fname) {
 				AST_CLOSE(p + 1);
 			}
 			// PREFERRED-TARGETS
-			else if (ISCHR(*p, 'P', 'p') && ISCHR(*(p + 16), 'S', 's') && ISCHR(*(p + 1), 'R', 'r') && ISCHR(*(p + 2), 'E', 'e') && ISCHR(*(p + 3), 'F', 'f') && ISCHR(*(p + 4), 'E', 'e') && ISCHR(*(p + 5), 'R', 'r') && ISCHR(*(p + 6), 'R', 'r') && ISCHR(*(p + 7), 'E', 'e') && ISCHR(*(p + 8), 'D', 'd') && ISCHR(*(p + 9), '-', '_') && ISCHR(*(p + 10), 'T', 't') && ISCHR(*(p + 11), 'A', 'a') && ISCHR(*(p + 12), 'R', 'r') && ISCHR(*(p + 13), 'G', 'g') && ISCHR(*(p + 14), 'E', 'e') && ISCHR(*(p + 15), 'T', 't') && !ISSTRING(p, 16)) {
+			else if (IS_ICASE(p, "PREFERRED-TARGETS", "preferred-targets")) {
 				AST_OPEN(PreferredTargets);
 				p += 17;
 				result->lines += SKIPWS(p, '=');
@@ -1560,7 +1560,7 @@ void TextualParser::parseFromUChar(UChar *input, const char *fname) {
 				AST_CLOSE(p + 1);
 			}
 			// REOPEN-MAPPINGS
-			else if (ISCHR(*p, 'R', 'r') && ISCHR(*(p + 14), 'S', 's') && ISCHR(*(p + 1), 'E', 'e') && ISCHR(*(p + 2), 'O', 'o') && ISCHR(*(p + 3), 'P', 'p') && ISCHR(*(p + 4), 'E', 'e') && ISCHR(*(p + 5), 'N', 'n') && ISCHR(*(p + 6), '-', '_') && ISCHR(*(p + 7), 'M', 'm') && ISCHR(*(p + 8), 'A', 'a') && ISCHR(*(p + 9), 'P', 'p') && ISCHR(*(p + 10), 'P', 'p') && ISCHR(*(p + 11), 'I', 'i') && ISCHR(*(p + 12), 'N', 'n') && ISCHR(*(p + 13), 'G', 'g') && !ISSTRING(p, 14)) {
+			else if (IS_ICASE(p, "REOPEN-MAPPINGS", "reopen-mappings")) {
 				AST_OPEN(ReopenMappings);
 				p += 15;
 				result->lines += SKIPWS(p, '=');
@@ -1601,7 +1601,7 @@ void TextualParser::parseFromUChar(UChar *input, const char *fname) {
 				AST_CLOSE(p + 1);
 			}
 			// STATIC-SETS
-			else if (ISCHR(*p, 'S', 's') && ISCHR(*(p + 10), 'S', 's') && ISCHR(*(p + 1), 'T', 't') && ISCHR(*(p + 2), 'A', 'a') && ISCHR(*(p + 3), 'T', 't') && ISCHR(*(p + 4), 'I', 'i') && ISCHR(*(p + 5), 'C', 'c') && ISCHR(*(p + 6), '-', '-') && ISCHR(*(p + 7), 'S', 's') && ISCHR(*(p + 8), 'E', 'e') && ISCHR(*(p + 9), 'T', 't') && !ISSTRING(p, 10)) {
+			else if (IS_ICASE(p, "STATIC-SETS", "static-sets")) {
 				AST_OPEN(StaticSets);
 				p += 11;
 				result->lines += SKIPWS(p, '=');
@@ -1631,63 +1631,63 @@ void TextualParser::parseFromUChar(UChar *input, const char *fname) {
 				AST_CLOSE(p + 1);
 			}
 			// ADDRELATIONS
-			else if (ISCHR(*p, 'A', 'a') && ISCHR(*(p + 11), 'S', 's') && ISCHR(*(p + 1), 'D', 'd') && ISCHR(*(p + 2), 'D', 'd') && ISCHR(*(p + 3), 'R', 'r') && ISCHR(*(p + 4), 'E', 'e') && ISCHR(*(p + 5), 'L', 'l') && ISCHR(*(p + 6), 'A', 'a') && ISCHR(*(p + 7), 'T', 't') && ISCHR(*(p + 8), 'I', 'i') && ISCHR(*(p + 9), 'O', 'o') && ISCHR(*(p + 10), 'N', 'n') && !ISSTRING(p, 11)) {
+			else if (IS_ICASE(p, "ADDRELATIONS", "addrelations")) {
 				parseRule(p, K_ADDRELATIONS);
 			}
 			// SETRELATIONS
-			else if (ISCHR(*p, 'S', 's') && ISCHR(*(p + 11), 'S', 's') && ISCHR(*(p + 1), 'E', 'e') && ISCHR(*(p + 2), 'T', 't') && ISCHR(*(p + 3), 'R', 'r') && ISCHR(*(p + 4), 'E', 'e') && ISCHR(*(p + 5), 'L', 'l') && ISCHR(*(p + 6), 'A', 'a') && ISCHR(*(p + 7), 'T', 't') && ISCHR(*(p + 8), 'I', 'i') && ISCHR(*(p + 9), 'O', 'o') && ISCHR(*(p + 10), 'N', 'n') && !ISSTRING(p, 11)) {
+			else if (IS_ICASE(p, "SETRELATIONS", "setrelations")) {
 				parseRule(p, K_SETRELATIONS);
 			}
 			// REMRELATIONS
-			else if (ISCHR(*p, 'R', 'r') && ISCHR(*(p + 11), 'S', 's') && ISCHR(*(p + 1), 'E', 'e') && ISCHR(*(p + 2), 'M', 'm') && ISCHR(*(p + 3), 'R', 'r') && ISCHR(*(p + 4), 'E', 'e') && ISCHR(*(p + 5), 'L', 'l') && ISCHR(*(p + 6), 'A', 'a') && ISCHR(*(p + 7), 'T', 't') && ISCHR(*(p + 8), 'I', 'i') && ISCHR(*(p + 9), 'O', 'o') && ISCHR(*(p + 10), 'N', 'n') && !ISSTRING(p, 11)) {
+			else if (IS_ICASE(p, "REMRELATIONS", "remrelations")) {
 				parseRule(p, K_REMRELATIONS);
 			}
 			// ADDRELATION
-			else if (ISCHR(*p, 'A', 'a') && ISCHR(*(p + 10), 'N', 'n') && ISCHR(*(p + 1), 'D', 'd') && ISCHR(*(p + 2), 'D', 'd') && ISCHR(*(p + 3), 'R', 'r') && ISCHR(*(p + 4), 'E', 'e') && ISCHR(*(p + 5), 'L', 'l') && ISCHR(*(p + 6), 'A', 'a') && ISCHR(*(p + 7), 'T', 't') && ISCHR(*(p + 8), 'I', 'i') && ISCHR(*(p + 9), 'O', 'o') && !ISSTRING(p, 10)) {
+			else if (IS_ICASE(p, "ADDRELATION", "addrelation")) {
 				parseRule(p, K_ADDRELATION);
 			}
 			// SETRELATION
-			else if (ISCHR(*p, 'S', 's') && ISCHR(*(p + 10), 'N', 'n') && ISCHR(*(p + 1), 'E', 'e') && ISCHR(*(p + 2), 'T', 't') && ISCHR(*(p + 3), 'R', 'r') && ISCHR(*(p + 4), 'E', 'e') && ISCHR(*(p + 5), 'L', 'l') && ISCHR(*(p + 6), 'A', 'a') && ISCHR(*(p + 7), 'T', 't') && ISCHR(*(p + 8), 'I', 'i') && ISCHR(*(p + 9), 'O', 'o') && !ISSTRING(p, 10)) {
+			else if (IS_ICASE(p, "SETRELATION", "setrelation")) {
 				parseRule(p, K_SETRELATION);
 			}
 			// REMRELATION
-			else if (ISCHR(*p, 'R', 'r') && ISCHR(*(p + 10), 'N', 'n') && ISCHR(*(p + 1), 'E', 'e') && ISCHR(*(p + 2), 'M', 'm') && ISCHR(*(p + 3), 'R', 'r') && ISCHR(*(p + 4), 'E', 'e') && ISCHR(*(p + 5), 'L', 'l') && ISCHR(*(p + 6), 'A', 'a') && ISCHR(*(p + 7), 'T', 't') && ISCHR(*(p + 8), 'I', 'i') && ISCHR(*(p + 9), 'O', 'o') && !ISSTRING(p, 10)) {
+			else if (IS_ICASE(p, "REMRELATION", "remrelation")) {
 				parseRule(p, K_REMRELATION);
 			}
 			// SETVARIABLE
-			else if (ISCHR(*p, 'S', 's') && ISCHR(*(p + 10), 'E', 'e') && ISCHR(*(p + 1), 'E', 'e') && ISCHR(*(p + 2), 'T', 't') && ISCHR(*(p + 3), 'V', 'v') && ISCHR(*(p + 4), 'A', 'a') && ISCHR(*(p + 5), 'R', 'r') && ISCHR(*(p + 6), 'I', 'i') && ISCHR(*(p + 7), 'A', 'a') && ISCHR(*(p + 8), 'B', 'b') && ISCHR(*(p + 9), 'L', 'l') && !ISSTRING(p, 10)) {
+			else if (IS_ICASE(p, "SETVARIABLE", "setvariable")) {
 				parseRule(p, K_SETVARIABLE);
 			}
 			// REMVARIABLE
-			else if (ISCHR(*p, 'R', 'r') && ISCHR(*(p + 10), 'E', 'e') && ISCHR(*(p + 1), 'E', 'e') && ISCHR(*(p + 2), 'M', 'm') && ISCHR(*(p + 3), 'V', 'v') && ISCHR(*(p + 4), 'A', 'a') && ISCHR(*(p + 5), 'R', 'r') && ISCHR(*(p + 6), 'I', 'i') && ISCHR(*(p + 7), 'A', 'a') && ISCHR(*(p + 8), 'B', 'b') && ISCHR(*(p + 9), 'L', 'l') && !ISSTRING(p, 10)) {
+			else if (IS_ICASE(p, "REMVARIABLE", "remvariable")) {
 				parseRule(p, K_REMVARIABLE);
 			}
 			// SETPARENT
-			else if (ISCHR(*p, 'S', 's') && ISCHR(*(p + 8), 'T', 't') && ISCHR(*(p + 1), 'E', 'e') && ISCHR(*(p + 2), 'T', 't') && ISCHR(*(p + 3), 'P', 'p') && ISCHR(*(p + 4), 'A', 'a') && ISCHR(*(p + 5), 'R', 'r') && ISCHR(*(p + 6), 'E', 'e') && ISCHR(*(p + 7), 'N', 'n') && !ISSTRING(p, 8)) {
+			else if (IS_ICASE(p, "SETPARENT", "setparent")) {
 				parseRule(p, K_SETPARENT);
 			}
 			// SETCHILD
-			else if (ISCHR(*p, 'S', 's') && ISCHR(*(p + 7), 'D', 'd') && ISCHR(*(p + 1), 'E', 'e') && ISCHR(*(p + 2), 'T', 't') && ISCHR(*(p + 3), 'C', 'c') && ISCHR(*(p + 4), 'H', 'h') && ISCHR(*(p + 5), 'I', 'i') && ISCHR(*(p + 6), 'L', 'l') && !ISSTRING(p, 7)) {
+			else if (IS_ICASE(p, "SETCHILD", "setchild")) {
 				parseRule(p, K_SETCHILD);
 			}
 			// EXTERNAL
-			else if (ISCHR(*p, 'E', 'e') && ISCHR(*(p + 7), 'L', 'l') && ISCHR(*(p + 1), 'X', 'x') && ISCHR(*(p + 2), 'T', 't') && ISCHR(*(p + 3), 'E', 'e') && ISCHR(*(p + 4), 'R', 'r') && ISCHR(*(p + 5), 'N', 'n') && ISCHR(*(p + 6), 'A', 'a') && !ISSTRING(p, 7)) {
+			else if (IS_ICASE(p, "EXTERNAL", "external")) {
 				parseRule(p, K_EXTERNAL);
 			}
 			// REMCOHORT
-			else if (ISCHR(*p, 'R', 'r') && ISCHR(*(p + 8), 'T', 't') && ISCHR(*(p + 1), 'E', 'e') && ISCHR(*(p + 2), 'M', 'm') && ISCHR(*(p + 3), 'C', 'c') && ISCHR(*(p + 4), 'O', 'o') && ISCHR(*(p + 5), 'H', 'h') && ISCHR(*(p + 6), 'O', 'o') && ISCHR(*(p + 7), 'R', 'r') && !ISSTRING(p, 8)) {
+			else if (IS_ICASE(p, "REMCOHORT", "remcohort")) {
 				parseRule(p, K_REMCOHORT);
 			}
 			// ADDCOHORT
-			else if (ISCHR(*p, 'A', 'a') && ISCHR(*(p + 8), 'T', 't') && ISCHR(*(p + 1), 'D', 'd') && ISCHR(*(p + 2), 'D', 'd') && ISCHR(*(p + 3), 'C', 'c') && ISCHR(*(p + 4), 'O', 'o') && ISCHR(*(p + 5), 'H', 'h') && ISCHR(*(p + 6), 'O', 'o') && ISCHR(*(p + 7), 'R', 'r') && !ISSTRING(p, 8)) {
+			else if (IS_ICASE(p, "ADDCOHORT", "addcohort")) {
 				parseRule(p, K_ADDCOHORT);
 			}
 			// SETS
-			else if (ISCHR(*p, 'S', 's') && ISCHR(*(p + 3), 'S', 's') && ISCHR(*(p + 1), 'E', 'e') && ISCHR(*(p + 2), 'T', 't') && !ISSTRING(p, 3)) {
+			else if (IS_ICASE(p, "SETS", "sets")) {
 				p += 4;
 			}
 			// LIST
-			else if (ISCHR(*p, 'L', 'l') && ISCHR(*(p + 3), 'T', 't') && ISCHR(*(p + 1), 'I', 'i') && ISCHR(*(p + 2), 'S', 's') && !ISSTRING(p, 3)) {
+			else if (IS_ICASE(p, "LIST", "list")) {
 				Set *s = result->allocateSet();
 				s->line = result->lines;
 				AST_OPEN(List);
@@ -1730,7 +1730,7 @@ void TextualParser::parseFromUChar(UChar *input, const char *fname) {
 				AST_CLOSE(p + 1);
 			}
 			// SET
-			else if (ISCHR(*p, 'S', 's') && ISCHR(*(p + 2), 'T', 't') && ISCHR(*(p + 1), 'E', 'e') && !ISSTRING(p, 2)) {
+			else if (IS_ICASE(p, "SET", "set")) {
 				Set *s = result->allocateSet();
 				s->line = result->lines;
 				AST_OPEN(Set);
@@ -1788,7 +1788,7 @@ void TextualParser::parseFromUChar(UChar *input, const char *fname) {
 				AST_CLOSE(p + 1);
 			}
 			// MAPPINGS
-			else if (ISCHR(*p, 'M', 'm') && ISCHR(*(p + 7), 'S', 's') && ISCHR(*(p + 1), 'A', 'a') && ISCHR(*(p + 2), 'P', 'p') && ISCHR(*(p + 3), 'P', 'p') && ISCHR(*(p + 4), 'I', 'i') && ISCHR(*(p + 5), 'N', 'n') && ISCHR(*(p + 6), 'G', 'g') && !ISSTRING(p, 7)) {
+			else if (IS_ICASE(p, "MAPPINGS", "mappings")) {
 				AST_OPEN(BeforeSections);
 				p += 8;
 				in_before_sections = true;
@@ -1805,7 +1805,7 @@ void TextualParser::parseFromUChar(UChar *input, const char *fname) {
 				AST_CLOSE(p);
 			}
 			// CORRECTIONS
-			else if (ISCHR(*p, 'C', 'c') && ISCHR(*(p + 10), 'S', 's') && ISCHR(*(p + 1), 'O', 'o') && ISCHR(*(p + 2), 'R', 'r') && ISCHR(*(p + 3), 'R', 'r') && ISCHR(*(p + 4), 'E', 'e') && ISCHR(*(p + 5), 'C', 'c') && ISCHR(*(p + 6), 'T', 't') && ISCHR(*(p + 7), 'I', 'i') && ISCHR(*(p + 8), 'O', 'o') && ISCHR(*(p + 9), 'N', 'n') && !ISSTRING(p, 10)) {
+			else if (IS_ICASE(p, "CORRECTIONS", "corrections")) {
 				AST_OPEN(BeforeSections);
 				p += 11;
 				in_before_sections = true;
@@ -1822,7 +1822,7 @@ void TextualParser::parseFromUChar(UChar *input, const char *fname) {
 				AST_CLOSE(p);
 			}
 			// BEFORE-SECTIONS
-			else if (ISCHR(*p, 'B', 'b') && ISCHR(*(p + 14), 'S', 's') && ISCHR(*(p + 1), 'E', 'e') && ISCHR(*(p + 2), 'F', 'f') && ISCHR(*(p + 3), 'O', 'o') && ISCHR(*(p + 4), 'R', 'r') && ISCHR(*(p + 5), 'E', 'e') && ISCHR(*(p + 6), '-', '_') && ISCHR(*(p + 7), 'S', 's') && ISCHR(*(p + 8), 'E', 'e') && ISCHR(*(p + 9), 'C', 'c') && ISCHR(*(p + 10), 'T', 't') && ISCHR(*(p + 11), 'I', 'i') && ISCHR(*(p + 12), 'O', 'o') && ISCHR(*(p + 13), 'N', 'n') && !ISSTRING(p, 14)) {
+			else if (IS_ICASE(p, "BEFORE-SECTIONS", "before-sections")) {
 				AST_OPEN(BeforeSections);
 				p += 15;
 				in_before_sections = true;
@@ -1839,7 +1839,7 @@ void TextualParser::parseFromUChar(UChar *input, const char *fname) {
 				AST_CLOSE(p);
 			}
 			// SECTION
-			else if (ISCHR(*p, 'S', 's') && ISCHR(*(p + 6), 'N', 'n') && ISCHR(*(p + 1), 'E', 'e') && ISCHR(*(p + 2), 'C', 'c') && ISCHR(*(p + 3), 'T', 't') && ISCHR(*(p + 4), 'I', 'i') && ISCHR(*(p + 5), 'O', 'o') && !ISSTRING(p, 6)) {
+			else if (IS_ICASE(p, "SECTION", "section")) {
 				AST_OPEN(Section);
 				p += 7;
 				result->sections.push_back(result->lines);
@@ -1857,7 +1857,7 @@ void TextualParser::parseFromUChar(UChar *input, const char *fname) {
 				AST_CLOSE(p);
 			}
 			// CONSTRAINTS
-			else if (ISCHR(*p, 'C', 'c') && ISCHR(*(p + 10), 'S', 's') && ISCHR(*(p + 1), 'O', 'o') && ISCHR(*(p + 2), 'N', 'n') && ISCHR(*(p + 3), 'S', 's') && ISCHR(*(p + 4), 'T', 't') && ISCHR(*(p + 5), 'R', 'r') && ISCHR(*(p + 6), 'A', 'a') && ISCHR(*(p + 7), 'I', 'i') && ISCHR(*(p + 8), 'N', 'n') && ISCHR(*(p + 9), 'T', 't') && !ISSTRING(p, 10)) {
+			else if (IS_ICASE(p, "CONSTRAINTS", "constraints")) {
 				AST_OPEN(Section);
 				p += 11;
 				result->sections.push_back(result->lines);
@@ -1875,7 +1875,7 @@ void TextualParser::parseFromUChar(UChar *input, const char *fname) {
 				AST_CLOSE(p);
 			}
 			// AFTER-SECTIONS
-			else if (ISCHR(*p, 'A', 'a') && ISCHR(*(p + 13), 'S', 's') && ISCHR(*(p + 1), 'F', 'f') && ISCHR(*(p + 2), 'T', 't') && ISCHR(*(p + 3), 'E', 'e') && ISCHR(*(p + 4), 'R', 'r') && ISCHR(*(p + 5), '-', '_') && ISCHR(*(p + 6), 'S', 's') && ISCHR(*(p + 7), 'E', 'e') && ISCHR(*(p + 8), 'C', 'c') && ISCHR(*(p + 9), 'T', 't') && ISCHR(*(p + 10), 'I', 'i') && ISCHR(*(p + 11), 'O', 'o') && ISCHR(*(p + 12), 'N', 'n') && !ISSTRING(p, 13)) {
+			else if (IS_ICASE(p, "AFTER-SECTIONS", "after-sections")) {
 				AST_OPEN(AfterSections);
 				p += 14;
 				in_before_sections = false;
@@ -1892,7 +1892,7 @@ void TextualParser::parseFromUChar(UChar *input, const char *fname) {
 				AST_CLOSE(p);
 			}
 			// NULL-SECTION
-			else if (ISCHR(*p, 'N', 'n') && ISCHR(*(p + 11), 'N', 'n') && ISCHR(*(p + 1), 'U', 'u') && ISCHR(*(p + 2), 'L', 'l') && ISCHR(*(p + 3), 'L', 'l') && ISCHR(*(p + 4), '-', '-') && ISCHR(*(p + 5), 'S', 's') && ISCHR(*(p + 6), 'E', 'e') && ISCHR(*(p + 7), 'C', 'c') && ISCHR(*(p + 8), 'T', 't') && ISCHR(*(p + 9), 'I', 'i') && ISCHR(*(p + 10), 'O', 'o') && !ISSTRING(p, 11)) {
+			else if (IS_ICASE(p, "NULL-SECTION", "null-section")) {
 				AST_OPEN(NullSection);
 				p += 12;
 				in_before_sections = false;
@@ -1909,7 +1909,7 @@ void TextualParser::parseFromUChar(UChar *input, const char *fname) {
 				AST_CLOSE(p);
 			}
 			// SUBREADINGS
-			else if (ISCHR(*p, 'S', 's') && ISCHR(*(p + 10), 'S', 's') && ISCHR(*(p + 1), 'U', 'u') && ISCHR(*(p + 2), 'B', 'b') && ISCHR(*(p + 3), 'R', 'r') && ISCHR(*(p + 4), 'E', 'e') && ISCHR(*(p + 5), 'A', 'a') && ISCHR(*(p + 6), 'D', 'd') && ISCHR(*(p + 7), 'I', 'i') && ISCHR(*(p + 8), 'N', 'n') && ISCHR(*(p + 9), 'G', 'g') && !ISSTRING(p, 10)) {
+			else if (IS_ICASE(p, "SUBREADINGS", "subreadings")) {
 				AST_OPEN(SubReadings);
 				p += 11;
 				result->lines += SKIPWS(p, '=');
@@ -1941,7 +1941,7 @@ void TextualParser::parseFromUChar(UChar *input, const char *fname) {
 				AST_CLOSE(p + 1);
 			}
 			// OPTIONS
-			else if (ISCHR(*p, 'O', 'o') && ISCHR(*(p + 6), 'S', 's') && ISCHR(*(p + 1), 'P', 'p') && ISCHR(*(p + 2), 'T', 't') && ISCHR(*(p + 3), 'I', 'i') && ISCHR(*(p + 4), 'O', 'o') && ISCHR(*(p + 5), 'N', 'n') && !ISSTRING(p, 6)) {
+			else if (IS_ICASE(p, "OPTIONS", "options")) {
 				AST_OPEN(Options);
 				p += 7;
 				result->lines += SKIPWS(p, '+');
@@ -1984,7 +1984,7 @@ void TextualParser::parseFromUChar(UChar *input, const char *fname) {
 				AST_CLOSE(p + 1);
 			}
 			// STRICT-TAGS
-			else if (ISCHR(*p, 'S', 's') && ISCHR(*(p + 10), 'S', 's') && ISCHR(*(p + 1), 'T', 't') && ISCHR(*(p + 2), 'R', 'r') && ISCHR(*(p + 3), 'I', 'i') && ISCHR(*(p + 4), 'C', 'c') && ISCHR(*(p + 5), 'T', 't') && ISCHR(*(p + 6), '-', '-') && ISCHR(*(p + 7), 'T', 't') && ISCHR(*(p + 8), 'A', 'a') && ISCHR(*(p + 9), 'G', 'g') && !ISSTRING(p, 10)) {
+			else if (IS_ICASE(p, "STRICT-TAGS", "strict-tags")) {
 				AST_OPEN(StrictTags);
 				p += 11;
 				result->lines += SKIPWS(p, '+');
@@ -2028,7 +2028,7 @@ void TextualParser::parseFromUChar(UChar *input, const char *fname) {
 				AST_CLOSE(p + 1);
 			}
 			// ANCHOR
-			else if (ISCHR(*p, 'A', 'a') && ISCHR(*(p + 5), 'R', 'r') && ISCHR(*(p + 1), 'N', 'n') && ISCHR(*(p + 2), 'C', 'c') && ISCHR(*(p + 3), 'H', 'h') && ISCHR(*(p + 4), 'O', 'o') && !ISSTRING(p, 5)) {
+			else if (IS_ICASE(p, "ANCHOR", "anchor")) {
 				AST_OPEN(Anchor);
 				p += 6;
 				result->lines += SKIPWS(p);
@@ -2036,7 +2036,7 @@ void TextualParser::parseFromUChar(UChar *input, const char *fname) {
 				AST_CLOSE(p);
 			}
 			// INCLUDE
-			else if (ISCHR(*p, 'I', 'i') && ISCHR(*(p + 6), 'E', 'e') && ISCHR(*(p + 1), 'N', 'n') && ISCHR(*(p + 2), 'C', 'c') && ISCHR(*(p + 3), 'L', 'l') && ISCHR(*(p + 4), 'U', 'u') && ISCHR(*(p + 5), 'D', 'd') && !ISSTRING(p, 6)) {
+			else if (IS_ICASE(p, "INCLUDE", "include")) {
 				AST_OPEN(Include);
 				p += 7;
 				result->lines += SKIPWS(p);
@@ -2112,67 +2112,67 @@ void TextualParser::parseFromUChar(UChar *input, const char *fname) {
 				parseFromUChar(&data[4], abspath.c_str());
 			}
 			// IFF
-			else if (ISCHR(*p, 'I', 'i') && ISCHR(*(p + 2), 'F', 'f') && ISCHR(*(p + 1), 'F', 'f') && !ISSTRING(p, 2)) {
+			else if (IS_ICASE(p, "IFF", "iff")) {
 				parseRule(p, K_IFF);
 			}
 			// MAP
-			else if (ISCHR(*p, 'M', 'm') && ISCHR(*(p + 2), 'P', 'p') && ISCHR(*(p + 1), 'A', 'a') && !ISSTRING(p, 2)) {
+			else if (IS_ICASE(p, "MAP", "map")) {
 				parseRule(p, K_MAP);
 			}
 			// ADD
-			else if (ISCHR(*p, 'A', 'a') && ISCHR(*(p + 2), 'D', 'd') && ISCHR(*(p + 1), 'D', 'd') && !ISSTRING(p, 2)) {
+			else if (IS_ICASE(p, "ADD", "add")) {
 				parseRule(p, K_ADD);
 			}
 			// APPEND
-			else if (ISCHR(*p, 'A', 'a') && ISCHR(*(p + 5), 'D', 'd') && ISCHR(*(p + 1), 'P', 'p') && ISCHR(*(p + 2), 'P', 'p') && ISCHR(*(p + 3), 'E', 'e') && ISCHR(*(p + 4), 'N', 'n') && !ISSTRING(p, 5)) {
+			else if (IS_ICASE(p, "APPEND", "append")) {
 				parseRule(p, K_APPEND);
 			}
 			// SELECT
-			else if (ISCHR(*p, 'S', 's') && ISCHR(*(p + 5), 'T', 't') && ISCHR(*(p + 1), 'E', 'e') && ISCHR(*(p + 2), 'L', 'l') && ISCHR(*(p + 3), 'E', 'e') && ISCHR(*(p + 4), 'C', 'c') && !ISSTRING(p, 5)) {
+			else if (IS_ICASE(p, "SELECT", "select")) {
 				parseRule(p, K_SELECT);
 			}
 			// REMOVE
-			else if (ISCHR(*p, 'R', 'r') && ISCHR(*(p + 5), 'E', 'e') && ISCHR(*(p + 1), 'E', 'e') && ISCHR(*(p + 2), 'M', 'm') && ISCHR(*(p + 3), 'O', 'o') && ISCHR(*(p + 4), 'V', 'v') && !ISSTRING(p, 5)) {
+			else if (IS_ICASE(p, "REMOVE", "remove")) {
 				parseRule(p, K_REMOVE);
 			}
 			// REPLACE
-			else if (ISCHR(*p, 'R', 'r') && ISCHR(*(p + 6), 'E', 'e') && ISCHR(*(p + 1), 'E', 'e') && ISCHR(*(p + 2), 'P', 'p') && ISCHR(*(p + 3), 'L', 'l') && ISCHR(*(p + 4), 'A', 'a') && ISCHR(*(p + 5), 'C', 'c') && !ISSTRING(p, 6)) {
+			else if (IS_ICASE(p, "REPLACE", "replace")) {
 				parseRule(p, K_REPLACE);
 			}
 			// DELIMIT
-			else if (ISCHR(*p, 'D', 'd') && ISCHR(*(p + 6), 'T', 't') && ISCHR(*(p + 1), 'E', 'e') && ISCHR(*(p + 2), 'L', 'l') && ISCHR(*(p + 3), 'I', 'i') && ISCHR(*(p + 4), 'M', 'm') && ISCHR(*(p + 5), 'I', 'i') && !ISSTRING(p, 6)) {
+			else if (IS_ICASE(p, "DELIMIT", "delimit")) {
 				parseRule(p, K_DELIMIT);
 			}
 			// SUBSTITUTE
-			else if (ISCHR(*p, 'S', 's') && ISCHR(*(p + 9), 'E', 'e') && ISCHR(*(p + 1), 'U', 'u') && ISCHR(*(p + 2), 'B', 'b') && ISCHR(*(p + 3), 'S', 's') && ISCHR(*(p + 4), 'T', 't') && ISCHR(*(p + 5), 'I', 'i') && ISCHR(*(p + 6), 'T', 't') && ISCHR(*(p + 7), 'U', 'u') && ISCHR(*(p + 8), 'T', 't') && !ISSTRING(p, 9)) {
+			else if (IS_ICASE(p, "SUBSTITUTE", "substitute")) {
 				parseRule(p, K_SUBSTITUTE);
 			}
 			// COPY
-			else if (ISCHR(*p, 'C', 'c') && ISCHR(*(p + 3), 'Y', 'y') && ISCHR(*(p + 1), 'O', 'o') && ISCHR(*(p + 2), 'P', 'p') && !ISSTRING(p, 3)) {
+			else if (IS_ICASE(p, "COPY", "copy")) {
 				parseRule(p, K_COPY);
 			}
 			// JUMP
-			else if (ISCHR(*p, 'J', 'j') && ISCHR(*(p + 3), 'P', 'p') && ISCHR(*(p + 1), 'U', 'u') && ISCHR(*(p + 2), 'M', 'm') && !ISSTRING(p, 3)) {
+			else if (IS_ICASE(p, "JUMP", "jump")) {
 				parseRule(p, K_JUMP);
 			}
 			// MOVE
-			else if (ISCHR(*p, 'M', 'm') && ISCHR(*(p + 3), 'E', 'e') && ISCHR(*(p + 1), 'O', 'o') && ISCHR(*(p + 2), 'V', 'v') && !ISSTRING(p, 3)) {
+			else if (IS_ICASE(p, "MOVE", "move")) {
 				parseRule(p, K_MOVE);
 			}
 			// SWITCH
-			else if (ISCHR(*p, 'S', 's') && ISCHR(*(p + 5), 'H', 'h') && ISCHR(*(p + 1), 'W', 'w') && ISCHR(*(p + 2), 'I', 'i') && ISCHR(*(p + 3), 'T', 't') && ISCHR(*(p + 4), 'C', 'c') && !ISSTRING(p, 5)) {
+			else if (IS_ICASE(p, "SWITCH", "switch")) {
 				parseRule(p, K_SWITCH);
 			}
 			// EXECUTE
-			else if (ISCHR(*p, 'E', 'e') && ISCHR(*(p + 6), 'E', 'e') && ISCHR(*(p + 1), 'X', 'x') && ISCHR(*(p + 2), 'E', 'e') && ISCHR(*(p + 3), 'C', 'c') && ISCHR(*(p + 4), 'U', 'u') && ISCHR(*(p + 5), 'T', 't') && !ISSTRING(p, 6)) {
+			else if (IS_ICASE(p, "EXECUTE", "execute")) {
 				parseRule(p, K_EXECUTE);
 			}
 			// UNMAP
-			else if (ISCHR(*p, 'U', 'u') && ISCHR(*(p + 4), 'P', 'p') && ISCHR(*(p + 1), 'N', 'n') && ISCHR(*(p + 2), 'M', 'm') && ISCHR(*(p + 3), 'A', 'a') && !ISSTRING(p, 4)) {
+			else if (IS_ICASE(p, "UNMAP", "unmap")) {
 				parseRule(p, K_UNMAP);
 			}
 			// TEMPLATE
-			else if (ISCHR(*p, 'T', 't') && ISCHR(*(p + 7), 'E', 'e') && ISCHR(*(p + 1), 'E', 'e') && ISCHR(*(p + 2), 'M', 'm') && ISCHR(*(p + 3), 'P', 'p') && ISCHR(*(p + 4), 'L', 'l') && ISCHR(*(p + 5), 'A', 'a') && ISCHR(*(p + 6), 'T', 't') && !ISSTRING(p, 7)) {
+			else if (IS_ICASE(p, "TEMPLATE", "template")) {
 				AST_OPEN(Template);
 				size_t line = result->lines;
 				p += 8;
@@ -2205,7 +2205,7 @@ void TextualParser::parseFromUChar(UChar *input, const char *fname) {
 				AST_CLOSE(p + 1);
 			}
 			// PARENTHESES
-			else if (ISCHR(*p, 'P', 'p') && ISCHR(*(p + 10), 'S', 's') && ISCHR(*(p + 1), 'A', 'a') && ISCHR(*(p + 2), 'R', 'r') && ISCHR(*(p + 3), 'E', 'e') && ISCHR(*(p + 4), 'N', 'n') && ISCHR(*(p + 5), 'T', 't') && ISCHR(*(p + 6), 'H', 'h') && ISCHR(*(p + 7), 'E', 'e') && ISCHR(*(p + 8), 'S', 's') && ISCHR(*(p + 9), 'E', 'e') && !ISSTRING(p, 10)) {
+			else if (IS_ICASE(p, "PARENTHESES", "parentheses")) {
 				AST_OPEN(Parentheses);
 				p += 11;
 				result->lines += SKIPWS(p, '=');
@@ -2290,7 +2290,7 @@ void TextualParser::parseFromUChar(UChar *input, const char *fname) {
 				AST_CLOSE(p + 1);
 			}
 			// END
-			else if (ISCHR(*p, 'E', 'e') && ISCHR(*(p + 2), 'D', 'd') && ISCHR(*(p + 1), 'N', 'n')) {
+			else if (IS_ICASE(p, "END", "end")) {
 				if (ISNL(*(p - 1)) || ISSPACE(*(p - 1))) {
 					if (*(p + 3) == 0 || ISNL(*(p + 3)) || ISSPACE(*(p + 3))) {
 						break;
