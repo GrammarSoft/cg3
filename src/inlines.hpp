@@ -232,8 +232,18 @@ inline bool ISESC(const UChar *p) {
 	return (a % 2 == 0);
 }
 
-inline bool ISCHR(const UChar p, const UChar a, const UChar b) {
-	return ((p) && ((p) == (a) || (p) == (b)));
+template<typename C, size_t N>
+inline bool IS_ICASE(const UChar *p, const C(&uc)[N], const C(&lc)[N]) {
+	// N - 1 due to null terminator for string constants
+	if (ISSTRING(p, N - 1)) {
+		return false;
+	}
+	for (size_t i = 0; i < N - 1; ++i) {
+		if (p[i] != uc[i] && p[i] != lc[i]) {
+			return false;
+		}
+	}
+	return true;
 }
 
 inline void BACKTONL(UChar *& p) {
