@@ -703,13 +703,23 @@ inline bool _check_options(std::vector<Reading*>& rv, uint32_t options, size_t n
 
 inline bool GrammarApplicator::doesSetMatchCohort_testLinked(Cohort& cohort, const Set& theset, dSMC_Context *context) {
 	bool retval = true;
+	const ContextualTest *linked = 0;
+	inc_dec<size_t> ic;
+
 	if (context->test && context->test->linked) {
+		linked = context->test->linked;
+	}
+	else if (!tmpl_cntxs.empty() && tmpl_cntx_pos < tmpl_cntxs.size()) {
+		ic.inc(tmpl_cntx_pos);
+		linked = tmpl_cntxs[tmpl_cntxs.size() - tmpl_cntx_pos].test;
+	}
+	if (linked) {
 		if (!context->did_test) {
-			if (context->test->linked->pos & POS_NO_PASS_ORIGIN) {
-				context->matched_tests = (runContextualTest(cohort.parent, cohort.local_number, context->test->linked, context->deep, &cohort) != 0);
+			if (linked->pos & POS_NO_PASS_ORIGIN) {
+				context->matched_tests = (runContextualTest(cohort.parent, cohort.local_number, linked, context->deep, &cohort) != 0);
 			}
 			else {
-				context->matched_tests = (runContextualTest(cohort.parent, cohort.local_number, context->test->linked, context->deep, context->origin) != 0);
+				context->matched_tests = (runContextualTest(cohort.parent, cohort.local_number, linked, context->deep, context->origin) != 0);
 			}
 			if (!(theset.type & ST_CHILD_UNIFY)) {
 				context->did_test = true;
