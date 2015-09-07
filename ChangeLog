@@ -1,3 +1,48 @@
+2015-08-30  tino
+
+	* [r10925] src/TextualParser.cpp, src/inlines.hpp: Easier to read
+	  parsing
+
+2015-08-26  unhammer
+
+	* [r10923] test/T_RelabelList_Apertium/expected.txt: doh, flip the
+	  expected bit
+
+2015-08-26  tino
+
+	* [r10922] test/T_RelabelList/run.pl, test/T_RelabelSet/run.pl: Use
+	  -I and -O instead of < and >, to avoid Windows pipe conversion
+
+2015-08-26  unhammer
+
+	* [r10921] src/Relabeller.cpp, src/Relabeller.hpp: allow replacing
+	  tags with baseforms
+	  
+	  remove the special case for singletag->singletag relabelling, it
+	  wasn't transferring flags (T_BASEFORM) and it's handled by the
+	  relabel_as_list case anyway
+	* [r10920] test/T_RelabelList_Apertium,
+	  test/T_RelabelList_Apertium/expected.txt,
+	  test/T_RelabelList_Apertium/grammar.cg3,
+	  test/T_RelabelList_Apertium/input.txt,
+	  test/T_RelabelList_Apertium/relabel.cg3r,
+	  test/T_RelabelList_Apertium/run.pl: test that fails with cg-proc
+	  
+	  (loops forever looking for a baseform relabelled by a
+	  non-T_BASEFORM tag)
+
+2015-08-26  tino
+
+	* [r10919] src/AST.hpp, src/CMakeLists.txt, src/TextualParser.cpp,
+	  src/TextualParser.hpp, src/stdafx.hpp: Print contents of textual
+	  AST nodes
+
+2015-08-25  tino
+
+	* [r10917] ChangeLog, TODO, src/BinaryGrammar.hpp,
+	  src/BinaryGrammar_read.cpp, src/version.hpp: OR'ed contexts also
+	  need deferred loading
+
 2015-08-23  tino
 
 	* [r10910] clang-format.pl, src/BinaryGrammar.cpp, src/Grammar.hpp,
@@ -2263,36 +2308,4 @@
 	  test/T_BasicSubstitute/input.txt, test/T_BasicSubstitute/run.pl:
 	  Substitute now uses the exact insert position even when --ordered
 	  - this fixes the regression of tag order issues
-
-2013-06-25  tino
-
-	* [r9087] make-naive.sh, src/all_cg_comp.cpp, src/all_cg_conv.cpp:
-	  Naive fix
-	* [r9086] make-naive.sh: Naive builder
-	* [r9085] src/all_cg_proc.cpp: Wipe Anchor.cpp
-
-2013-06-25  unhammer
-
-	* [r9084] emacs/cg.el: cg-check: don't overwrite regular
-	  compilation sentinel (led to modeline saying "Compiling" even
-	  when done) cg-output-mode: rebind `g' since `recompile' expects
-	  old args to work
-	* [r9083] emacs/cg.el: cg-post-pipe: like cg-pre-pipe
-	  cg-output-mode: n/p go next/prev error, i (or C-c C-i) opens edit
-	  input buffer
-
-2013-06-23  unhammer
-
-	* [r9073] emacs/cg.el: cg-check: let user specify cg-command and
-	  cg-extra-args cg-pre-pipe: no longer a safe-local-variable (it's
-	  executed …), typing ! once on opening a new cg file should not be
-	  too much hassle.
-
-2013-06-23  tino
-
-	* [r9072] scripts/cg3-autobin.pl, src/GrammarApplicator.cpp,
-	  src/GrammarApplicator_reflow.cpp, src/TextualParser.cpp,
-	  src/version.h: Re-enable duplicate tag elimination (which was
-	  causing the difference) and useless barrier elimination (which
-	  was innocent after all).
 

@@ -137,49 +137,96 @@ Cohort *getCohortInWindow(SingleWindow *& sWindow, size_t position, const Contex
 	return cohort;
 }
 
-bool posOutputHelper(const SingleWindow *sWindow, uint32_t position, const ContextualTest *test, const Cohort *cohort, const Cohort *cdeep) {
+bool GrammarApplicator::posOutputHelper(const SingleWindow *sWindow, uint32_t position, const ContextualTest *test, const Cohort *cohort, const Cohort *cdeep) {
 	bool good = false;
+
+	const Cohort *cs[4] = {
+		cohort,
+		cdeep,
+		cohort,
+		cdeep,
+	};
+	if (!tmpl_cntxs.empty()) {
+		cs[2] = tmpl_cntxs.back().min;
+		cs[3] = tmpl_cntxs.back().max;
+	}
+
+	struct _sorter {
+		bool operator()(const Cohort *a, const Cohort *b) const {
+			uint64_t az = (static_cast<uint64_t>(a->parent->number) << 32) | a->local_number;
+			uint64_t bz = (static_cast<uint64_t>(b->parent->number) << 32) | b->local_number;
+			return (az < bz);
+		}
+	} sorter;
+	std::sort(cs, cs + 4, sorter);
 
 	// If the override included * or @, don't care about offsets
 	if (test->pos & (POS_SCANFIRST | POS_SCANALL | POS_ABSOLUTE)) {
 		good = true;
 	}
-	// ...otherwise, positive offsets need to match the leftmost of entry/exit
-	else if (test->offset > 0 && static_cast<int32_t>(std::min(cohort->local_number, cdeep->local_number)) - static_cast<int32_t>(position) == test->offset) {
-		good = true;
-	}
-	// ...and, negative offsets need to match the rightmost of entry/exit
-	else if (test->offset < 0 && static_cast<int32_t>(std::max(cohort->local_number, cdeep->local_number)) - static_cast<int32_t>(position) == test->offset) {
-		good = true;
+	else {
+		// ...otherwise, positive offsets need to match the leftmost of entry/exit
+		if (test->offset > 0 && static_cast<int32_t>(cs[0]->local_number) - static_cast<int32_t>(position) == test->offset) {
+			good = true;
+		}
+		// ...and, negative offsets need to match the rightmost of entry/exit
+		else if (test->offset < 0 && static_cast<int32_t>(cs[3]->local_number) - static_cast<int32_t>(position) == test->offset) {
+			good = true;
+		}
 	}
 	if (!(test->pos & (POS_SPAN_BOTH | POS_SPAN_LEFT | POS_SPAN_RIGHT)) && cdeep->parent != sWindow) {
 		good = false;
 	}
 	if (!(test->pos & POS_PASS_ORIGIN)) {
-		if (test->offset < 0 && cohort->local_number > position && cdeep->local_number > position) {
+		if (test->offset < 0 && cs[3]->local_number > position) {
 			good = false;
 		}
-		else if (test->offset > 0 && cohort->local_number < position && cdeep->local_number < position) {
+		else if (test->offset > 0 && cs[0]->local_number < position) {
 			good = false;
 		}
 	}
 	return good;
 }
 
-bool GrammarApplicator::runContextualTest_tmpl(const ContextualTest *test, Cohort *cohort, Cohort *& cdeep, Cohort *origin) {
-	Cohort *link = cdeep;
-	if ((test->pos & POS_TMPL_OVERRIDE) && (test->linked->offset != 0)) {
-		uint64_t coff = (static_cast<uint64_t>(cohort->parent->number) << 32) | cohort->local_number;
-		uint64_t doff = (static_cast<uint64_t>(cdeep->parent->number) << 32) | cdeep->local_number;
-		if (test->linked->offset > 0 && coff > doff) {
-			link = cohort;
-		}
-		else if (test->linked->offset < 0 && coff < doff) {
-			link = cohort;
-		}
-		// ToDo: Template linked to 0 should require entry==exit
+Cohort *GrammarApplicator::runContextualTest_tmpl(SingleWindow *sWindow, size_t position, const ContextualTest *test, ContextualTest *tmpl, Cohort *& cdeep, Cohort *origin) {
+	if (test->linked) {
+		tmpl_cntxs.push_back(test->linked);
 	}
-	return runContextualTest(link->parent, link->local_number, test->linked, &cdeep, origin) != 0;
+
+	uint64_t orgpos = tmpl->pos;
+	int32_t orgoffset = tmpl->offset;
+	uint32_t orgcbar = tmpl->cbarrier;
+	uint32_t orgbar = tmpl->barrier;
+	if (test->pos & POS_TMPL_OVERRIDE) {
+		tmpl->pos = test->pos;
+		tmpl->pos &= ~(POS_NEGATE | POS_NOT | POS_MARK_JUMP);
+		tmpl->offset = test->offset;
+		if (test->offset != 0 && !(test->pos & (POS_SCANFIRST | POS_SCANALL | POS_ABSOLUTE))) {
+			tmpl->pos |= POS_SCANALL;
+		}
+		if (test->cbarrier) {
+			tmpl->cbarrier = test->cbarrier;
+		}
+		if (test->barrier) {
+			tmpl->barrier = test->barrier;
+		}
+	}
+	Cohort *cohort = runContextualTest(sWindow, position, tmpl, &cdeep, origin);
+	if (test->pos & POS_TMPL_OVERRIDE) {
+		tmpl->pos = orgpos;
+		tmpl->offset = orgoffset;
+		tmpl->cbarrier = orgcbar;
+		tmpl->barrier = orgbar;
+		if (cohort && cdeep && test->offset != 0 && !posOutputHelper(sWindow, position, test, cohort, cdeep)) {
+			cohort = 0;
+		}
+	}
+
+	if (test->linked) {
+		tmpl_cntxs.pop_back();
+	}
+
+	return cohort;
 }
 
 Cohort *GrammarApplicator::runContextualTest(SingleWindow *sWindow, size_t position, const ContextualTest *test, Cohort **deep, Cohort *origin) {
@@ -203,40 +250,8 @@ Cohort *GrammarApplicator::runContextualTest(SingleWindow *sWindow, size_t posit
 	int32_t pos = 0;
 
 	if (test->tmpl) {
-		uint64_t orgpos = test->tmpl->pos;
-		int32_t orgoffset = test->tmpl->offset;
-		uint32_t orgcbar = test->tmpl->cbarrier;
-		uint32_t orgbar = test->tmpl->barrier;
-		if (test->pos & POS_TMPL_OVERRIDE) {
-			test->tmpl->pos = test->pos;
-			test->tmpl->pos &= ~(POS_NEGATE | POS_NOT | POS_MARK_JUMP);
-			test->tmpl->offset = test->offset;
-			if (test->offset != 0 && !(test->pos & (POS_SCANFIRST | POS_SCANALL | POS_ABSOLUTE))) {
-				test->tmpl->pos |= POS_SCANALL;
-			}
-			if (test->cbarrier) {
-				test->tmpl->cbarrier = test->cbarrier;
-			}
-			if (test->barrier) {
-				test->tmpl->barrier = test->barrier;
-			}
-		}
 		Cohort *cdeep = 0;
-		cohort = runContextualTest(sWindow, position, test->tmpl, &cdeep, origin);
-		if (test->pos & POS_TMPL_OVERRIDE) {
-			test->tmpl->pos = orgpos;
-			test->tmpl->offset = orgoffset;
-			test->tmpl->cbarrier = orgcbar;
-			test->tmpl->barrier = orgbar;
-			if (cohort && cdeep && test->offset != 0 && !posOutputHelper(sWindow, position, test, cohort, cdeep)) {
-				cohort = 0;
-			}
-		}
-		if (cohort && cdeep && test->linked) {
-			if (!runContextualTest_tmpl(test, cohort, cdeep, origin)) {
-				cohort = 0;
-			}
-		}
+		cohort = runContextualTest_tmpl(sWindow, position, test, test->tmpl, cdeep, origin);
 		if (deep) {
 			*deep = cdeep;
 		}
@@ -244,42 +259,10 @@ Cohort *GrammarApplicator::runContextualTest(SingleWindow *sWindow, size_t posit
 	else if (!test->ors.empty()) {
 		Cohort *cdeep = 0;
 		boost_foreach (ContextualTest *iter, test->ors) {
-			uint64_t orgpos = iter->pos;
-			int32_t orgoffset = iter->offset;
-			uint32_t orgcbar = iter->cbarrier;
-			uint32_t orgbar = iter->barrier;
-			if (test->pos & POS_TMPL_OVERRIDE) {
-				iter->pos = test->pos;
-				iter->pos &= ~(POS_NEGATE | POS_NOT | POS_MARK_JUMP);
-				iter->offset = test->offset;
-				if (test->offset != 0 && !(test->pos & (POS_SCANFIRST | POS_SCANALL | POS_ABSOLUTE))) {
-					iter->pos |= POS_SCANALL;
-				}
-				if (test->cbarrier) {
-					iter->cbarrier = test->cbarrier;
-				}
-				if (test->barrier) {
-					iter->barrier = test->barrier;
-				}
-			}
 			dep_deep_seen.clear();
-			cohort = runContextualTest(sWindow, position, iter, &cdeep, origin);
-			if (test->pos & POS_TMPL_OVERRIDE) {
-				iter->pos = orgpos;
-				iter->offset = orgoffset;
-				iter->cbarrier = orgcbar;
-				iter->barrier = orgbar;
-				if (cohort && cdeep && test->offset != 0 && !posOutputHelper(sWindow, position, test, cohort, cdeep)) {
-					cohort = 0;
-				}
-			}
+			cohort = runContextualTest_tmpl(sWindow, position, test, iter, cdeep, origin);
 			if (cohort) {
 				break;
-			}
-		}
-		if (cohort && cdeep && test->linked) {
-			if (!runContextualTest_tmpl(test, cohort, cdeep, origin)) {
-				cohort = 0;
 			}
 		}
 		if (deep) {
@@ -302,6 +285,26 @@ Cohort *GrammarApplicator::runContextualTest(SingleWindow *sWindow, size_t posit
 		}
 		if (deep) {
 			*deep = cohort;
+		}
+		if (!tmpl_cntxs.empty()) {
+			tmpl_context_t& tmpl_cntx = tmpl_cntxs.back();
+			uint64_t gpos = (static_cast<uint64_t>(cohort->parent->number) << 32) | cohort->local_number;
+			if (tmpl_cntx.min == 0 || gpos < (static_cast<uint64_t>(tmpl_cntx.min->parent->number) << 32 | tmpl_cntx.min->local_number)) {
+				tmpl_cntx.min = cohort;
+			}
+			if (tmpl_cntx.max == 0 || gpos > (static_cast<uint64_t>(tmpl_cntx.max->parent->number) << 32 | tmpl_cntx.max->local_number)) {
+				tmpl_cntx.max = cohort;
+			}
+			if (deep) {
+				tmpl_context_t& tmpl_cntx = tmpl_cntxs.back();
+				uint64_t gpos = (static_cast<uint64_t>((*deep)->parent->number) << 32) | (*deep)->local_number;
+				if (tmpl_cntx.min == 0 || gpos < (static_cast<uint64_t>(tmpl_cntx.min->parent->number) << 32 | tmpl_cntx.min->local_number)) {
+					tmpl_cntx.min = *deep;
+				}
+				if (tmpl_cntx.max == 0 || gpos > (static_cast<uint64_t>(tmpl_cntx.max->parent->number) << 32 | tmpl_cntx.max->local_number)) {
+					tmpl_cntx.max = *deep;
+				}
+			}
 		}
 
 		CohortIterator *it = 0;
