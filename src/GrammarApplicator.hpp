@@ -186,6 +186,21 @@ protected:
 	uint32_t par_left_pos, par_right_pos;
 	bool did_final_enclosure;
 
+	struct tmpl_context_t {
+		Cohort *min;
+		Cohort *max;
+		const ContextualTest *test;
+
+		tmpl_context_t(const ContextualTest *test)
+		  : min(0)
+		  , max(0)
+		  , test(test)
+		{
+		}
+	};
+	std::vector<tmpl_context_t> tmpl_cntxs;
+	size_t tmpl_cntx_pos;
+
 	std::vector<regexgrps_t> regexgrps_store;
 	std::pair<uint8_t, regexgrps_t*> regexgrps;
 	bc::flat_map<uint32_t, uint8_t> regexgrps_z;
@@ -235,7 +250,8 @@ protected:
 	};
 	Cohort *runSingleTest(Cohort *cohort, const ContextualTest *test, uint8_t& rvs, bool *retval, Cohort **deep = 0, Cohort *origin = 0);
 	Cohort *runSingleTest(SingleWindow *sWindow, size_t i, const ContextualTest *test, uint8_t& rvs, bool *retval, Cohort **deep = 0, Cohort *origin = 0);
-	bool runContextualTest_tmpl(const ContextualTest *test, Cohort *cohort, Cohort *& cdeep, Cohort *origin);
+	bool posOutputHelper(const SingleWindow *sWindow, uint32_t position, const ContextualTest *test, const Cohort *cohort, const Cohort *cdeep);
+	Cohort *runContextualTest_tmpl(SingleWindow *sWindow, size_t position, const ContextualTest *test, ContextualTest *tmpl, Cohort *& cdeep, Cohort *origin);
 	Cohort *runContextualTest(SingleWindow *sWindow, size_t position, const ContextualTest *test, Cohort **deep = 0, Cohort *origin = 0);
 	Cohort *runDependencyTest(SingleWindow *sWindow, Cohort *current, const ContextualTest *test, Cohort **deep = 0, Cohort *origin = 0, const Cohort *self = 0);
 	Cohort *runParenthesisTest(SingleWindow *sWindow, const Cohort *current, const ContextualTest *test, Cohort **deep = 0, Cohort *origin = 0);

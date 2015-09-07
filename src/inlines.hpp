@@ -552,6 +552,28 @@ private:
 };
 
 template<typename T>
+class inc_dec {
+public:
+	inc_dec()
+	  : p(0)
+	{}
+
+	~inc_dec() {
+		if (p) {
+			--(*p);
+		}
+	}
+
+	void inc(T& pt) {
+		p = &pt;
+		++(*p);
+	}
+
+private:
+	T *p;
+};
+
+template<typename T>
 inline T *reverse(T *head) {
 	T *nr = 0;
 	while (head) {
