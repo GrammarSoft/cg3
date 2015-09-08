@@ -56,6 +56,14 @@ public:
 
 SingleWindow *alloc_swindow(Window *p);
 void free_swindow(SingleWindow *s);
+
+struct compare_Cohort_strict {
+	bool operator()(const Cohort *a, const Cohort *b) const {
+		uint64_t az = (static_cast<uint64_t>(a->parent->number) << 32) | a->local_number;
+		uint64_t bz = (static_cast<uint64_t>(b->parent->number) << 32) | b->local_number;
+		return (az < bz);
+	}
+};
 }
 
 #endif
