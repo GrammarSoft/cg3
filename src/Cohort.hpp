@@ -90,7 +90,7 @@ private:
 };
 
 struct compare_Cohort {
-	inline bool operator()(const Cohort *a, const Cohort *b) const {
+	bool operator()(const Cohort *a, const Cohort *b) const {
 		return a->global_number < b->global_number;
 	}
 };

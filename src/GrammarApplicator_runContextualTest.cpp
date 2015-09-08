@@ -151,14 +151,7 @@ bool GrammarApplicator::posOutputHelper(const SingleWindow *sWindow, uint32_t po
 		cs[3] = tmpl_cntxs.back().max;
 	}
 
-	struct _sorter {
-		bool operator()(const Cohort *a, const Cohort *b) const {
-			uint64_t az = (static_cast<uint64_t>(a->parent->number) << 32) | a->local_number;
-			uint64_t bz = (static_cast<uint64_t>(b->parent->number) << 32) | b->local_number;
-			return (az < bz);
-		}
-	} sorter;
-	std::sort(cs, cs + 4, sorter);
+	std::sort(cs, cs + 4, compare_Cohort_strict());
 
 	// If the override included * or @, don't care about offsets
 	if (test->pos & (POS_SCANFIRST | POS_SCANALL | POS_ABSOLUTE)) {
