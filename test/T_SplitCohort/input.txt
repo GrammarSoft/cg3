@@ -1,0 +1,6 @@
+"<child>"
+	"child" E #1→2
+"<Captains=Samuel=Vimes>"
+	"Captains=Samuel=Vimes" PROP S #2→3
+"<parent>"
+	"parent" F #3→0

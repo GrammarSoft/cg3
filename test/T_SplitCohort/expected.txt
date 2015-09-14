@@ -1,0 +1,12 @@
+"<child>"
+	"child" E @p-captain #1->2 ADD:9
+; "<Captains=Samuel=Vimes>"
+;	"Captains=Samuel=Vimes" PROP S SPLITCOHORT:3
+"<Captains>"
+	"captain" A #2->3 SPLITCOHORT:3
+"<Samuel>"
+	"Samuel" B PROP S A #3->5 SPLITCOHORT:3
+"<Vimes>"
+	"Vimes" C S #4->3 SPLITCOHORT:3
+"<parent>"
+	"parent" F @c-samuel #5->0 ADD:10
