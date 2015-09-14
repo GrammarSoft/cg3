@@ -1,3 +1,18 @@
+2015-09-08  tino
+
+	* [r10939] src/Cohort.hpp,
+	  src/GrammarApplicator_runContextualTest.cpp,
+	  src/SingleWindow.hpp: CentOS 6 fix
+
+2015-09-07  tino
+
+	* [r10938] TODO: ToDone
+	* [r10937] ChangeLog, src/GrammarApplicator.hpp,
+	  src/GrammarApplicator_matchSet.cpp,
+	  src/GrammarApplicator_runContextualTest.cpp,
+	  src/GrammarApplicator_runRules.cpp, src/inlines.hpp,
+	  src/version.hpp: Make template ORs fully commutative
+
 2015-08-30  tino
 
 	* [r10925] src/TextualParser.cpp, src/inlines.hpp: Easier to read
@@ -2300,12 +2315,4 @@
 	* [r9091] test/T_BasicSubstitute/expected.txt,
 	  test/T_BasicSubstitute/grammar.cg3,
 	  test/T_BasicSubstitute/run.pl:
-	* [r9090] test/T_BasicSubstitute/run.pl: Forgot test...
-	* [r9089] test/T_BasicSubstitute/expected.txt: Forgot test
-	* [r9088] CMakeLists.txt, src/GrammarApplicator_runRules.cpp,
-	  src/main.cpp, src/win/exec-stream-helpers.cpp,
-	  src/win/exec-stream-impl.cpp, test/T_BasicSubstitute/grammar.cg3,
-	  test/T_BasicSubstitute/input.txt, test/T_BasicSubstitute/run.pl:
-	  Substitute now uses the exact insert position even when --ordered
-	  - this fixes the regression of tag order issues
 

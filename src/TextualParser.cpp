@@ -1178,7 +1178,7 @@ void TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 
 	result->lines += SKIPWS(p);
 	lp = p;
-	if (key == K_MAP || key == K_ADD || key == K_REPLACE || key == K_APPEND || key == K_SUBSTITUTE || key == K_COPY || key == K_ADDRELATIONS || key == K_ADDRELATION || key == K_SETRELATIONS || key == K_SETRELATION || key == K_REMRELATIONS || key == K_REMRELATION || key == K_SETVARIABLE || key == K_REMVARIABLE || key == K_ADDCOHORT || key == K_JUMP) {
+	if (key == K_MAP || key == K_ADD || key == K_REPLACE || key == K_APPEND || key == K_SUBSTITUTE || key == K_COPY || key == K_ADDRELATIONS || key == K_ADDRELATION || key == K_SETRELATIONS || key == K_SETRELATION || key == K_REMRELATIONS || key == K_REMRELATION || key == K_SETVARIABLE || key == K_REMVARIABLE || key == K_ADDCOHORT || key == K_JUMP || key == K_SPLITCOHORT) {
 		AST_OPEN(RuleMaplist);
 		swapper_false swp(no_isets, no_isets);
 		Set *s = parseSetInlineWrapper(p);
@@ -1195,9 +1195,9 @@ void TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 				error("%s: Error: There must be a baseform before any other tags in APPEND on line %u near `%S`!\n", lp);
 			}
 		}
-		if (key == K_ADDCOHORT && !s->getNonEmpty().empty()) {
+		if ((key == K_ADDCOHORT || key == K_SPLITCOHORT) && !s->getNonEmpty().empty()) {
 			if (!(s->getNonEmpty().begin()->first->type & T_WORDFORM)) {
-				error("%s: Error: There must be a wordform before any other tags in ADDCOHORT on line %u near `%S`!\n", lp);
+				error("%s: Error: There must be a wordform before any other tags in ADDCOHORT/SPLITCOHORT on line %u near `%S`!\n", lp);
 			}
 		}
 		AST_CLOSE(p);
@@ -1353,7 +1353,7 @@ void TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 		rule->dep_target = rule->dep_tests.back();
 		rule->dep_tests.pop_back();
 	}
-	if (key == K_SETPARENT || key == K_SETCHILD) {
+	if (key == K_SETPARENT || key == K_SETCHILD || key == K_SPLITCOHORT) {
 		result->has_dep = true;
 	}
 	if (key == K_SETRELATION || key == K_SETRELATIONS || key == K_ADDRELATION || key == K_ADDRELATIONS || key == K_REMRELATION || key == K_REMRELATIONS) {
@@ -1681,6 +1681,10 @@ void TextualParser::parseFromUChar(UChar *input, const char *fname) {
 			// ADDCOHORT
 			else if (IS_ICASE(p, "ADDCOHORT", "addcohort")) {
 				parseRule(p, K_ADDCOHORT);
+			}
+			// SPLITCOHORT
+			else if (IS_ICASE(p, "SPLITCOHORT", "splitcohort")) {
+				parseRule(p, K_SPLITCOHORT);
 			}
 			// SETS
 			else if (IS_ICASE(p, "SETS", "sets")) {
