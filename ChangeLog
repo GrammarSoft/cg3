@@ -1,3 +1,11 @@
+2015-09-14  tino
+
+	* [r10952] ChangeLog, src/GrammarApplicator_runRules.cpp,
+	  src/Strings.cpp, src/Strings.hpp, src/TextualParser.cpp,
+	  src/version.hpp, test/T_SplitCohort,
+	  test/T_SplitCohort/expected.txt, test/T_SplitCohort/grammar.cg3,
+	  test/T_SplitCohort/input.txt: Implement SplitCohort
+
 2015-09-08  tino
 
 	* [r10939] src/Cohort.hpp,
@@ -2312,7 +2320,4 @@
 	  src/GrammarApplicator_reflow.cpp, src/version.h,
 	  test/T_BasicSubstitute/run.pl: Allow duplicate tags again now
 	  that Substitute works with them
-	* [r9091] test/T_BasicSubstitute/expected.txt,
-	  test/T_BasicSubstitute/grammar.cg3,
-	  test/T_BasicSubstitute/run.pl:
 
