@@ -165,10 +165,6 @@
     <para>
       Inserts a new cohort before or after the target.
     </para>
-    <para>
-      Caveat: This does NOT affect the rule application order as that is tied to the input order of the cohorts,
-      so inserted cohorts are always last.
-    </para>
     <screen>
       ADDCOHORT ("&lt;wordform&gt;" "baseform" tags) BEFORE (@waffles) ;
       ADDCOHORT ("&lt;wordform&gt;" "baseform" tags) AFTER (@waffles) ;
@@ -216,10 +212,6 @@
       The first WITHCHILD specifies which children you want moved.
       The second WITHCHILD uses the children of the cohort you're moving to as edges so you can avoid moving into
       another dependency group.
-    </para>
-    <para>
-      Caveat: This does NOT affect the rule application order as that is tied to the input order of the cohorts,
-      so after movement you may see some rules touching later cohorts than you'd expect.
     </para>
   </section>
 

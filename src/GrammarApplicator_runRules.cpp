@@ -306,7 +306,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 			++rocit;
 
 			if (debug_level > 1) {
-				std::cerr << "DEBUG: Trying cohort " << cohort->local_number << std::endl;
+				std::cerr << "DEBUG: Trying cohort " << cohort->global_number << ":" << cohort->local_number << std::endl;
 			}
 
 			// If the current cohort is the initial >>> one, skip it.
@@ -769,6 +769,10 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 							cohort->prev->enclosed.insert(cohort->prev->enclosed.end(), cohort->enclosed.begin(), cohort->enclosed.end());
 							cohort->enclosed.clear();
 						}
+						// Remove the cohort from all rules
+						foreach (cs, current.rule_to_cohorts) {
+							cs->erase(cohort);
+						}
 						cohort->type |= CT_REMOVED;
 						cohort->prev->removed.push_back(cohort);
 						cohort->detach();
@@ -789,7 +793,13 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 							}
 							index_ruleCohort_no.clear();
 							cohortset = &current.rule_to_cohorts[rule.number];
-							rocit = cohortset->find(cohort);
+							rocit = cohortset->end();
+						}
+						else if (cohortset->empty()) {
+							rocit = cohortset->end();
+						}
+						else {
+							rocit = cohortset->find(current.cohorts[cohort->local_number]);
 							++rocit;
 						}
 						readings_changed = true;
