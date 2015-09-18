@@ -89,11 +89,7 @@ private:
 	void updateMinMax();
 };
 
-struct compare_Cohort {
-	bool operator()(const Cohort *a, const Cohort *b) const {
-		return a->global_number < b->global_number;
-	}
-};
+struct compare_Cohort;
 
 typedef sorted_vector<Cohort*, compare_Cohort> CohortSet;
 typedef stdext::hash_map<uint32_t, CohortSet> uint32ToCohortsMap;

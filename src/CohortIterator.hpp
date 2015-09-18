@@ -25,6 +25,7 @@
 
 #include "stdafx.hpp"
 #include "Cohort.hpp"
+#include "SingleWindow.hpp"
 
 namespace CG3 {
 class ContextualTest;

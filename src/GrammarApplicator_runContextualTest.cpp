@@ -151,7 +151,7 @@ bool GrammarApplicator::posOutputHelper(const SingleWindow *sWindow, uint32_t po
 		cs[3] = tmpl_cntxs.back().max;
 	}
 
-	std::sort(cs, cs + 4, compare_Cohort_strict());
+	std::sort(cs, cs + 4, compare_Cohort());
 
 	// If the override included * or @, don't care about offsets
 	if (test->pos & (POS_SCANFIRST | POS_SCANALL | POS_ABSOLUTE)) {

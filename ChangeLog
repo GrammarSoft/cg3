@@ -1,3 +1,9 @@
+2015-09-16  tino
+
+	* [r10955] ChangeLog, src/Tag.cpp, src/version.hpp,
+	  test/T_NumericalTags/expected.txt: Fix bug where e.g. <C:NN> was
+	  considered numerical with value 0
+
 2015-09-14  tino
 
 	* [r10952] ChangeLog, src/GrammarApplicator_runRules.cpp,
@@ -2313,11 +2319,4 @@
 	* [r9097] TODO, scripts/cg3-autobin.pl, src/GrammarApplicator.cpp,
 	  src/TextualParser.cpp, src/version.h: Fix segfault when tracing
 	  removed cohorts that had dependency
-
-2013-06-26  tino
-
-	* [r9092] TODO, scripts/cg3-autobin.pl, src/GrammarApplicator.cpp,
-	  src/GrammarApplicator_reflow.cpp, src/version.h,
-	  test/T_BasicSubstitute/run.pl: Allow duplicate tags again now
-	  that Substitute works with them
 

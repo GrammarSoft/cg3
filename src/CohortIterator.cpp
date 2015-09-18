@@ -22,7 +22,6 @@
 #include "CohortIterator.hpp"
 #include "ContextualTest.hpp"
 #include "Window.hpp"
-#include "SingleWindow.hpp"
 
 namespace CG3 {
 
