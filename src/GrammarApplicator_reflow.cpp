@@ -202,7 +202,7 @@ void GrammarApplicator::reflowDependencyWindow(uint32_t max) {
 		max = gWindow->next.back()->cohorts[1]->global_number;
 	}
 
-	if (gWindow->dep_window.empty()) {
+	if (gWindow->dep_window.empty() || gWindow->dep_window.begin()->second->parent == 0) {
 		gWindow->dep_window[0] = gWindow->current->cohorts[0];
 	}
 	else if (gWindow->dep_window.find(0) == gWindow->dep_window.end()) {
