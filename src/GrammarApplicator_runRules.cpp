@@ -783,6 +783,9 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						cohort->type |= CT_REMOVED;
 						cohort->prev->removed.push_back(cohort);
 						cohort->detach();
+						foreach (cm, current.parent->cohort_map) {
+							cm->second->dep_children.erase(cohort->dep_self);
+						}
 						current.parent->cohort_map.erase(cohort->global_number);
 						current.cohorts.erase(current.cohorts.begin() + cohort->local_number);
 						foreach (iter, current.cohorts) {
@@ -1073,6 +1076,9 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						cohort->type |= CT_REMOVED;
 						cohort->prev->removed.push_back(cohort);
 						cohort->detach();
+						foreach (cm, current.parent->cohort_map) {
+							cm->second->dep_children.erase(cohort->dep_self);
+						}
 						current.parent->cohort_map.erase(cohort->global_number);
 						current.cohorts.erase(current.cohorts.begin() + cohort->local_number);
 
