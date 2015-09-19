@@ -1,3 +1,18 @@
+2015-09-19  tino
+
+	* [r10963] src/GrammarApplicator_runRules.cpp: Properly detach
+	  removed cohorts from the dependency tree
+
+2015-09-18  tino
+
+	* [r10961] src/GrammarApplicator_reflow.cpp: Fix segfault
+	* [r10958] ChangeLog, manual/rules.xml, src/Cohort.hpp,
+	  src/CohortIterator.cpp, src/CohortIterator.hpp,
+	  src/GrammarApplicator_runContextualTest.cpp,
+	  src/GrammarApplicator_runRules.cpp, src/SingleWindow.hpp,
+	  src/version.hpp: Fix cohort ordering to be reliable across
+	  movement, insertion, removal, etc
+
 2015-09-16  tino
 
 	* [r10955] ChangeLog, src/Tag.cpp, src/version.hpp,
@@ -2300,23 +2315,4 @@
 	  test/Apertium/T_SuperBlanksWithEscape/input.txt,
 	  test/Apertium/T_SuperBlanksWithEscape/run.pl: escaped chars in
 	  superblanks should stay put, not be printed before superblank
-
-2013-07-03  tino
-
-	* [r9102] scripts/cg3-autobin.pl, src/ApertiumApplicator.cpp,
-	  src/cg_conv.cpp, src/main.cpp, src/options_conv.hpp,
-	  src/version.h: Allow multiple mapping tags in a single Apertium
-	  reading; Remove Apertium duplicate tag workaround; Add cg-conv
-	  --prefix
-
-2013-07-02  unhammer
-
-	* [r9100] emacs/cg.el: file-name-base is new in emacs 24.3, shim;
-	  new keyword COPY
-
-2013-07-01  tino
-
-	* [r9097] TODO, scripts/cg3-autobin.pl, src/GrammarApplicator.cpp,
-	  src/TextualParser.cpp, src/version.h: Fix segfault when tracing
-	  removed cohorts that had dependency
 
