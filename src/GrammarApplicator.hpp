@@ -156,6 +156,9 @@ protected:
 	void pipeInCohort(Cohort *cohort, Process& input);
 	void pipeInSingleWindow(SingleWindow& window, Process& input);
 
+	UString span_pattern_latin;
+	UString span_pattern_utf;
+
 	uint32_t numLines;
 	uint32_t numWindows;
 	uint32_t numCohorts;
