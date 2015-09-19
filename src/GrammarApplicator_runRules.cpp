@@ -775,8 +775,10 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						}
 						// Forward all children of this cohort to the parent of this cohort
 						// ToDo: Also forward named relations?
-						foreach (ch, cohort->dep_children) {
-							attachParentChild(*current.parent->cohort_map[cohort->dep_parent], *current.parent->cohort_map[*ch], true, true);
+						while (!cohort->dep_children.empty()) {
+							uint32_t ch = cohort->dep_children.back();
+							attachParentChild(*current.parent->cohort_map[cohort->dep_parent], *current.parent->cohort_map[ch], true, true);
+							cohort->dep_children.erase(ch);
 						}
 						cohort->type |= CT_REMOVED;
 						cohort->prev->removed.push_back(cohort);
@@ -1043,8 +1045,10 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 							Cohort *cCohort = cohorts[i].first;
 
 							if (cohort_dep[i].first == std::numeric_limits<uint32_t>::max()) {
-								foreach (chit, cohort->dep_children) {
-									attachParentChild(*cCohort, *current.parent->cohort_map[*chit], true, true);
+								while (!cohort->dep_children.empty()) {
+									uint32_t ch = cohort->dep_children.back();
+									attachParentChild(*cCohort, *current.parent->cohort_map[ch], true, true);
+									cohort->dep_children.erase(ch); // Just in case the attachment can't be made for some reason
 								}
 							}
 
