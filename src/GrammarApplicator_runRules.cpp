@@ -773,10 +773,15 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						foreach (cs, current.rule_to_cohorts) {
 							cs->erase(cohort);
 						}
+						// Forward all children of this cohort to the parent of this cohort
+						// ToDo: Also forward named relations?
+						foreach (ch, cohort->dep_children) {
+							attachParentChild(*current.parent->cohort_map[cohort->dep_parent], *current.parent->cohort_map[*ch], true, true);
+						}
 						cohort->type |= CT_REMOVED;
 						cohort->prev->removed.push_back(cohort);
 						cohort->detach();
-						cohort->parent = 0;
+						current.parent->cohort_map.erase(cohort->global_number);
 						current.cohorts.erase(current.cohorts.begin() + cohort->local_number);
 						foreach (iter, current.cohorts) {
 							(*iter)->local_number = std::distance(current.cohorts.begin(), iter);
@@ -1033,6 +1038,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 							current.cohorts.insert(current.cohorts.begin() + cohort->local_number + i + 1, cCohort);
 						}
 
+						// ToDo: What should SplitCohort do with named relations?
 						for (size_t i = 0; i < cohorts.size(); ++i) {
 							Cohort *cCohort = cohorts[i].first;
 
@@ -1063,7 +1069,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						cohort->type |= CT_REMOVED;
 						cohort->prev->removed.push_back(cohort);
 						cohort->detach();
-						cohort->parent = 0;
+						current.parent->cohort_map.erase(cohort->global_number);
 						current.cohorts.erase(current.cohorts.begin() + cohort->local_number);
 
 						// Reindex and rebuild the window
