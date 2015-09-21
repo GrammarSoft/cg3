@@ -46,6 +46,7 @@ enum {
 class Cohort {
 public:
 	uint8_t type;
+	// ToDo: Get rid of global_number in favour of Cohort* relations
 	uint32_t global_number;
 	uint32_t local_number;
 	Tag *wordform;
