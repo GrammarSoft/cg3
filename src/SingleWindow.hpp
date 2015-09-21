@@ -57,12 +57,16 @@ public:
 SingleWindow *alloc_swindow(Window *p);
 void free_swindow(SingleWindow *s);
 
+inline bool less_Cohort(const Cohort *a, const Cohort *b) {
+	if (a->local_number == b->local_number) {
+		return a->parent->number < b->parent->number;
+	}
+	return a->local_number < b->local_number;
+}
+
 struct compare_Cohort {
 	bool operator()(const Cohort *a, const Cohort *b) const {
-		if (a->local_number == b->local_number) {
-			return a->parent->number < b->parent->number;
-		}
-		return a->local_number < b->local_number;
+		return less_Cohort(a, b);
 	}
 };
 }

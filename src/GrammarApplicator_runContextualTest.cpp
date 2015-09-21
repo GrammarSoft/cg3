@@ -436,11 +436,11 @@ Cohort *GrammarApplicator::runContextualTest(SingleWindow *sWindow, size_t posit
 				Cohort *current = cohort;
 				for (; *it != CohortIterator(0); ++(*it)) {
 					++seen;
-					if ((test->pos & POS_LEFT) && (**it)->global_number >= current->global_number) {
+					if ((test->pos & POS_LEFT) && less_Cohort(current, **it)) {
 						nc = 0;
 						break;
 					}
-					if ((test->pos & POS_RIGHT) && (**it)->global_number <= current->global_number) {
+					if ((test->pos & POS_RIGHT) && !less_Cohort(current, **it)) {
 						nc = 0;
 						break;
 					}
