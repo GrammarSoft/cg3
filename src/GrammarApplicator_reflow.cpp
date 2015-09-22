@@ -305,8 +305,7 @@ void GrammarApplicator::reflowRelationWindow(uint32_t max) {
 
 		if (!cohort->relations_input.empty()) {
 			for (RelationCtn::iterator rel = cohort->relations_input.begin(); rel != cohort->relations_input.end();) {
-				static uint32SortedVector newrel;
-				newrel.clear();
+				BOOST_AUTO(newrel, ss_u32sv.get());
 
 				boost_foreach (uint32_t target, rel->second) {
 					uint32FlatHashMap::iterator it = gWindow->relation_map.find(target);
@@ -314,11 +313,11 @@ void GrammarApplicator::reflowRelationWindow(uint32_t max) {
 						cohort->relations[rel->first].insert(it->second);
 					}
 					else {
-						newrel.insert(target);
+						newrel->insert(target);
 					}
 				}
 
-				if (newrel.empty()) {
+				if (newrel->empty()) {
 					cohort->relations_input.erase(rel++);
 				}
 				else {
@@ -361,13 +360,12 @@ Tag *GrammarApplicator::generateVarstringTag(const Tag *tag) {
 	// Replace unified sets with their matching tags
 	if (tag->vs_sets) {
 		for (size_t i = 0; i < tag->vs_sets->size(); ++i) {
-			static TagList tags;
-			tags.clear();
+			BOOST_AUTO(tags, ss_taglist.get());
 			getTagList(*(*tag->vs_sets)[i], tags);
 			static UString rpl;
 			rpl.clear();
 			// If there are multiple tags, such as from CompositeTags, put _ between them
-			foreach (iter, tags) {
+			foreach (iter, *tags) {
 				rpl += (*iter)->tag;
 				if (std::distance(iter, iter_end) > 1) {
 					rpl += '_';

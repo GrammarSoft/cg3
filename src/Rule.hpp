@@ -98,32 +98,11 @@ public:
 	void reverseContextualTests();
 
 	static bool cmp_quality(const Rule *a, const Rule *b);
-
-	static inline size_t cmp_hash(const Rule *r) {
-		return hash_value(r->number);
-	}
-	static inline bool cmp_compare(const Rule *a, const Rule *b) {
-		return a->number < b->number;
-	}
-};
-
-struct compare_Rule {
-	static const size_t bucket_size = 4;
-	static const size_t min_buckets = 8;
-
-	inline size_t operator()(const Rule *r) const {
-		return Rule::cmp_hash(r);
-	}
-
-	inline bool operator()(const Rule *a, const Rule *b) const {
-		return Rule::cmp_compare(a, b);
-	}
 };
 
 typedef std::vector<Rule*> RuleVector;
 typedef std::map<uint32_t, Rule*> RuleByLineMap;
 typedef stdext::hash_map<uint32_t, Rule*> RuleByLineHashMap;
-typedef stdext::hash_map<const Rule*, CohortSet, compare_Rule> RuleToCohortsMap;
 }
 
 #endif

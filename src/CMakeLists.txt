@@ -82,6 +82,7 @@ set(LIBCG3_HEADERS
 	istream.hpp
 	parser_helpers.hpp
 	process.hpp
+	scoped_stack.hpp
 	sorted_vector.hpp
 	stdafx.hpp
 	uextras.hpp
