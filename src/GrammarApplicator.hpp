@@ -31,6 +31,7 @@
 #include "interval_vector.hpp"
 #include "flat_unordered_set.hpp"
 #include "istream.hpp"
+#include "scoped_stack.hpp"
 #include <deque>
 
 class Process;
@@ -228,6 +229,10 @@ protected:
 	uint32_t unif_last_textual;
 	uint32SortedVector *unif_sets;
 	bool unif_sets_firstrun;
+
+	scoped_stack<TagList> ss_taglist;
+	scoped_stack<unif_tags_t> ss_utags;
+	scoped_stack<uint32SortedVector> ss_u32sv;
 
 	uint32FlatHashSet index_regexp_yes;
 	uint32FlatHashSet index_regexp_no;

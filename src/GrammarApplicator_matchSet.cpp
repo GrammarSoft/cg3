@@ -587,14 +587,13 @@ bool GrammarApplicator::doesSetMatchReading(const Reading& reading, const uint32
 		}
 		// Subsequent times, test whether any of the previously stored sets match the reading
 		else {
-			static uint32SortedVector sets;
-			sets.clear();
+			BOOST_AUTO(sets, ss_u32sv.get());
 			foreach (usi, *unif_sets) {
 				if (doesSetMatchReading(reading, *usi, bypass_index, unif_mode)) {
-					sets.insert(*usi);
+					sets->insert(*usi);
 				}
 			}
-			retval = !sets.empty();
+			retval = !sets->empty();
 		}
 	}
 	else {
@@ -732,14 +731,12 @@ inline bool GrammarApplicator::doesSetMatchCohort_testLinked(Cohort& cohort, con
 
 inline bool GrammarApplicator::doesSetMatchCohort_helper(Cohort& cohort, const Reading& reading, const Set& theset, dSMC_Context *context) {
 	bool retval = false;
-	static unif_tags_t utags;
-	utags.clear();
-	static uint32SortedVector usets;
-	usets.clear();
+	BOOST_AUTO(utags, ss_utags.get());
+	BOOST_AUTO(usets, ss_u32sv.get());
 
 	if (context && !(current_rule->flags & FL_CAPTURE_UNIF) && (theset.type & ST_CHILD_UNIFY)) {
-		utags = *unif_tags;
-		usets = *unif_sets;
+		*utags = *unif_tags;
+		*usets = *unif_sets;
 	}
 	if (doesSetMatchReading(reading, theset.number, (theset.type & (ST_CHILD_UNIFY | ST_SPECIAL)) != 0)) {
 		retval = true;
@@ -753,10 +750,10 @@ inline bool GrammarApplicator::doesSetMatchCohort_helper(Cohort& cohort, const R
 	if (retval && context) {
 		retval = doesSetMatchCohort_testLinked(cohort, theset, context);
 	}
-	if (context && !(current_rule->flags & FL_CAPTURE_UNIF) && (theset.type & ST_CHILD_UNIFY) && (utags.size() != unif_tags->size() || utags != *unif_tags)) {
+	if (context && !(current_rule->flags & FL_CAPTURE_UNIF) && (theset.type & ST_CHILD_UNIFY) && (utags->size() != unif_tags->size() || *utags != *unif_tags)) {
 		unif_tags->swap(utags);
 	}
-	if (context && !(current_rule->flags & FL_CAPTURE_UNIF) && (theset.type & ST_CHILD_UNIFY) && usets.size() != unif_sets->size()) {
+	if (context && !(current_rule->flags & FL_CAPTURE_UNIF) && (theset.type & ST_CHILD_UNIFY) && usets->size() != unif_sets->size()) {
 		unif_sets->swap(usets);
 	}
 	return retval;

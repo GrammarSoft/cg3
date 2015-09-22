@@ -94,7 +94,7 @@ int main(int argc, char *argv[]) {
 	UFILE *ux_stderr = 0;
 
 #if HAVE_GETOPT_LONG
-	static struct option long_options[] = {
+	struct option long_options[] = {
 		{"disambiguation",	0, 0, 'd'},
 		{"sections", 		0, 0, 's'},
 		{"stream-format",	required_argument, 0, 'f'},
@@ -105,7 +105,7 @@ int main(int argc, char *argv[]) {
 		{"version",   		0, 0, 'v'},
 		{"first",   		0, 0, '1'},
 		{"help",		0, 0, 'h'},
-		{"null-flush",		0, 0, 'z'}
+		{"null-flush",		0, 0, 'z'},
 	};
 #endif
 
