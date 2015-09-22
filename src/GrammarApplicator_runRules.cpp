@@ -933,6 +933,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 							assert(wf && "There must be a wordform before any other tags in SPLITCOHORT.");
 						}
 
+						uint32_t rel_trg = std::numeric_limits<uint32_t>::max();
 						std::vector<std::pair<uint32_t, uint32_t> > cohort_dep(cohorts.size());
 						cohort_dep.front().second = std::numeric_limits<uint32_t>::max();
 						cohort_dep.back().first = std::numeric_limits<uint32_t>::max();
@@ -963,6 +964,9 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 							if (u_sscanf((*tter)->tag.c_str(), "%[0-9cd]->%[0-9pm]", &dep_self, &dep_parent) == 2) {
 								if (dep_self[0] == 'c' || dep_self[0] == 'd') {
 									cohort_dep[i - 1].first = std::numeric_limits<uint32_t>::max();
+									if (rel_trg == std::numeric_limits<uint32_t>::max()) {
+										rel_trg = i - 1;
+									}
 								}
 								else if (u_sscanf(dep_self, "%i", &cohort_dep[i - 1].first) != 1) {
 									assert(false && "SPLITCOHORT dependency mapping dep_self was not valid");
@@ -975,7 +979,15 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 								}
 								continue;
 							}
+							if ((*tter)->tag.size() == 3 && (*tter)->tag[0] == 'R' && (*tter)->tag[1] == ':' && (*tter)->tag[2] == '*') {
+								rel_trg = i - 1;
+								continue;
+							}
 							readings->back().push_back(*tter);
+						}
+
+						if (rel_trg == std::numeric_limits<uint32_t>::max()) {
+							rel_trg = cohorts.size() - 1;
 						}
 
 						for (size_t i = 0; i < cohorts.size(); ++i) {
@@ -1041,7 +1053,6 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 							current.cohorts.insert(current.cohorts.begin() + cohort->local_number + i + 1, cCohort);
 						}
 
-						// ToDo: SplitCohort attach named relations to R:*
 						for (size_t i = 0; i < cohorts.size(); ++i) {
 							Cohort *cCohort = cohorts[i].first;
 
@@ -1058,6 +1069,30 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 							}
 							else {
 								attachParentChild(*current.parent->cohort_map[cohorts.front().first->global_number + cohort_dep[i].second - 1], *cCohort, true, true);
+							}
+
+							// Re-attach all named relations to the dependency tail or R:* cohort
+							if (rel_trg == i && (cohort->type & CT_RELATED)) {
+								cCohort->type |= CT_RELATED;
+								cCohort->relations.swap(cohort->relations);
+
+								std::pair<SingleWindow**, size_t> swss[3] = {
+									std::make_pair(&gWindow->previous[0], gWindow->previous.size()),
+									std::make_pair(&gWindow->current, static_cast<size_t>(1)),
+									std::make_pair(&gWindow->next[0], gWindow->next.size()),
+								};
+								for (size_t w = 0 ; w < 3 ; ++w) {
+									for (size_t sw = 0 ; sw < swss[w].second ; ++sw) {
+										foreach(ch, swss[w].first[sw]->cohorts) {
+											foreach(rel, (*ch)->relations) {
+												if (rel->second.count(cohort->global_number)) {
+													rel->second.erase(cohort->global_number);
+													rel->second.insert(cCohort->global_number);
+												}
+											}
+										}
+									}
+								}
 							}
 						}
 
