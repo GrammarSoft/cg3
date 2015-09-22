@@ -1,12 +1,13 @@
 "<child>"
-	"child" E @p-captain #1->2 ADD:9
+	"child" E @p-captain #1->2 ADD:11
 ; "<Captains=Samuel=Vimes>"
-;	"Captains=Samuel=Vimes" PROP S SPLITCOHORT:3
+;	"Captains=Samuel=Vimes" PROP S ID:2 SPLITCOHORT:5
 "<Captains>"
-	"captain" A #2->3 SPLITCOHORT:3
+	"captain" A #2->3 SPLITCOHORT:5
 "<Samuel>"
-	"Samuel" B PROP S A #3->5 SPLITCOHORT:3
+	"Samuel" B PROP S A #3->5 ID:5 R:rel_trg:3 SPLITCOHORT:5
 "<Vimes>"
-	"Vimes" C S #4->3 SPLITCOHORT:3
+	"Vimes" C S #4->3 SPLITCOHORT:5
 "<parent>"
-	"parent" F @c-samuel #5->0 ADD:10
+	"parent" F @c-samuel #5->0 ID:3 R:rel_src:5 ADDRELATIONS(rel_src,rel_trg):3 ADD:12
+

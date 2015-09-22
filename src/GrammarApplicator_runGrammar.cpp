@@ -491,6 +491,9 @@ void GrammarApplicator::runGrammarOnText(istream& input, UFILE *output) {
 						variables_set[tag->hash] = grammar->tag_any;
 						variables_rem.erase(tag->hash);
 						variables_output.insert(tag->hash);
+						if (cSWindow == 0) {
+							variables[tag->hash] = grammar->tag_any;
+						}
 					}
 					else {
 						uint32_t a = 0, b = 0;
