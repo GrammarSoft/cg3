@@ -84,19 +84,6 @@ public:
 	}
 };
 
-struct compare_Set {
-	static const size_t bucket_size = 4;
-	static const size_t min_buckets = 8;
-
-	inline size_t operator()(const Set *x) const {
-		return x->hash;
-	}
-
-	inline bool operator()(const Set *a, const Set *b) const {
-		return a->hash < b->hash;
-	}
-};
-
 typedef sorted_vector<Set*> SetSet;
 typedef std::vector<Set*> SetVector;
 typedef stdext::hash_map<uint32_t, Set*> Setuint32HashMap;

@@ -108,13 +108,6 @@ public:
 };
 
 struct compare_Tag {
-	static const size_t bucket_size = 4;
-	static const size_t min_buckets = 8;
-
-	inline size_t operator()(const Tag *x) const {
-		return x->hash;
-	}
-
 	inline bool operator()(const Tag *a, const Tag *b) const {
 		return a->hash < b->hash;
 	}
