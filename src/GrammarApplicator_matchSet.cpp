@@ -750,10 +750,10 @@ inline bool GrammarApplicator::doesSetMatchCohort_helper(Cohort& cohort, const R
 	if (retval && context) {
 		retval = doesSetMatchCohort_testLinked(cohort, theset, context);
 	}
-	if (context && !(current_rule->flags & FL_CAPTURE_UNIF) && (theset.type & ST_CHILD_UNIFY) && (utags->size() != unif_tags->size() || *utags != *unif_tags)) {
+	if (!retval && context && !(current_rule->flags & FL_CAPTURE_UNIF) && (theset.type & ST_CHILD_UNIFY) && (utags->size() != unif_tags->size() || *utags != *unif_tags)) {
 		unif_tags->swap(utags);
 	}
-	if (context && !(current_rule->flags & FL_CAPTURE_UNIF) && (theset.type & ST_CHILD_UNIFY) && usets->size() != unif_sets->size()) {
+	if (!retval && context && !(current_rule->flags & FL_CAPTURE_UNIF) && (theset.type & ST_CHILD_UNIFY) && usets->size() != unif_sets->size()) {
 		unif_sets->swap(usets);
 	}
 	return retval;

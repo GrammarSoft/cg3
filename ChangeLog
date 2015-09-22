@@ -1,5 +1,29 @@
+2015-09-22  tino
+
+	* [r10976] src/CMakeLists.txt, src/GrammarApplicator.hpp,
+	  src/GrammarApplicator_matchSet.cpp,
+	  src/GrammarApplicator_reflow.cpp,
+	  src/GrammarApplicator_runRules.cpp, src/Rule.hpp, src/Set.hpp,
+	  src/Tag.hpp, src/cg_proc.cpp, src/scoped_stack.hpp: Code cleanup,
+	  a bit less actual static but more reuse
+
+2015-09-21  tino
+
+	* [r10975] .editorconfig, src/Cohort.hpp,
+	  src/GrammarApplicator_runContextualTest.cpp,
+	  src/SingleWindow.hpp: WIP kill global_number
+
 2015-09-19  tino
 
+	* [r10967] src/GrammarApplicator_runRules.cpp: Erase all knowledge
+	  of a removed cohort from the dep tree
+	* [r10966] src/GrammarApplicator_runRules.cpp: Looping over a
+	  container while modifying it is generally a horrible idea
+	* [r10964] ChangeLog, src/GrammarApplicator.cpp,
+	  src/GrammarApplicator.hpp, src/version.hpp,
+	  test/T_Omniscan/expected.txt: When dep has spanned, output in the
+	  form of window number + padded local number, rather than global
+	  number
 	* [r10963] src/GrammarApplicator_runRules.cpp: Properly detach
 	  removed cohorts from the dependency tree
 
@@ -2291,28 +2315,4 @@
 
 	* [r9122] emacs/cg.el: C-c c toggles running cg-check after each
 	  change, pre-pipe is cached so this works fast
-
-2013-07-15  unhammer
-
-	* [r9119] emacs/cg.el: comment-face on all regular tags of ;-lines
-	  (was supposed to be in earlier commit)
-	* [r9118] emacs/cg.el: C-c C-n / C-c C-p to navigate errors (or
-	  trace hits) from the CG file
-	* [r9115] emacs/cg.el: common input buffer for all CG buffers (as
-	  default at least); some more fontification on cg-output
-
-2013-07-12  unhammer
-
-	* [r9113] emacs/cg.el: start mode on .cg3 files as that's the
-	  official suffix; ELPA-style commenting
-
-2013-07-04  unhammer
-
-	* [r9103] src/ApertiumApplicator.cpp,
-	  test/Apertium/T_SuperBlanksWithEscape,
-	  test/Apertium/T_SuperBlanksWithEscape/expected.txt,
-	  test/Apertium/T_SuperBlanksWithEscape/grammar.cg3,
-	  test/Apertium/T_SuperBlanksWithEscape/input.txt,
-	  test/Apertium/T_SuperBlanksWithEscape/run.pl: escaped chars in
-	  superblanks should stay put, not be printed before superblank
 

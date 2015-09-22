@@ -73,7 +73,6 @@ private:
 	size_t z;
 	std::vector<C> cs;
 };
-
 }
 
 #endif

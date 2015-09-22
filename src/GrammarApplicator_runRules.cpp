@@ -1399,14 +1399,19 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 					}
 					else if (type == K_SETPARENT || type == K_SETCHILD) {
 						int32_t orgoffset = rule.dep_target->offset;
-						uint32SortedVector seen_targets;
+						BOOST_AUTO(seen_targets, ss_u32sv.get());
 
 						seen_barrier = false;
 						bool attached = false;
 						Cohort *target = cohort;
 						while (!attached) {
+							BOOST_AUTO(utags, ss_utags.get());
+							BOOST_AUTO(usets, ss_u32sv.get());
+							*utags = *unif_tags;
+							*usets = *unif_sets;
+
 							Cohort *attach = 0;
-							seen_targets.insert(target->global_number);
+							seen_targets->insert(target->global_number);
 							dep_deep_seen.clear();
 							tmpl_cntxs.clear();
 							tmpl_cntx_pos = 0;
@@ -1447,7 +1452,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 								if (seen_barrier || (rule.flags & RF_NEAREST)) {
 									break;
 								}
-								if (seen_targets.find(attach->global_number) != seen_targets.end()) {
+								if (seen_targets->count(attach->global_number)) {
 									// We've found a cohort we have seen before...
 									// We assume running the test again would result in the same, so don't bother.
 									break;
@@ -1455,6 +1460,8 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 								if (!attached) {
 									// Did not successfully attach due to loop restrictions; look onwards from here
 									target = attach;
+									unif_tags->swap(utags);
+									unif_sets->swap(usets);
 									if (rule.dep_target->offset != 0) {
 										// Temporarily set offset to +/- 1
 										rule.dep_target->offset = ((rule.dep_target->offset < 0) ? -1 : 1);
