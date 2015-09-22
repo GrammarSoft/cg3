@@ -810,7 +810,9 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						}
 						else {
 							rocit = cohortset->find(current.cohorts[cohort->local_number]);
-							++rocit;
+							if (rocit != cohortset->end()) {
+								++rocit;
+							}
 						}
 						readings_changed = true;
 						break;
