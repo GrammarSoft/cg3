@@ -56,6 +56,7 @@
   Cohort manipulation:
       ADDCOHORT &lt;cohort tags&gt; BEFORE|AFTER &lt;target&gt; [contextual_tests] ;
       REMCOHORT &lt;target&gt; [contextual_tests] ;
+      SPLITCOHORT &lt;cohort recipe&gt; &lt;target&gt; [contextual_tests] ;
 
       MOVE [WITHCHILD &lt;child_set&gt;|NOCHILD] &lt;target&gt; [contextual_tests]
           BEFORE|AFTER [WITHCHILD &lt;child_set&gt;|NOCHILD] &lt;contextual_target&gt; [contextual_tests] ;
@@ -181,7 +182,47 @@
     </screen>
     <para>
       This will entirely remove a cohort with all its readings from the window.
+      Dependency will be forwarded so that the tree remains intact.
+      Named relations will be deleted.
     </para>
+  </section>
+
+  <section id="splitcohort">
+    <title>SPLITCOHORT</title>
+    <indexterm>
+      <primary>SPLITCOHORT</primary>
+    </indexterm>
+    <screen>
+      [wordform] SPLITCOHORT &lt;cohort recipe&gt; &lt;target&gt; [contextual_tests] ;
+    </screen>
+    <para>
+      Splits a cohort into multiple new cohorts, with a recipe for which of the new cohorts shall inherit tags,
+      dependency, or named relations. The cohorts are listed in any order you want, and you may use regex captures to
+      fill in wordforms and baseforms. You can list as many cohorts as you want.
+    </para>
+    <para>
+      You can also designate their relative place in the dependency tree with <code>x-&gt;y</code> tags,
+      where <code>x</code> must be the sequential number of the new cohorts starting from 1, and <code>y</code>
+      is which new cohort it should link to.
+      Special value <code>c</code> for <code>x</code> may be used to designate that the cohort should inherit all children,
+      and value <code>p</code> for <code>y</code> designates it is the head of the local tree.
+      You may use <code>c-&gt;p</code> to give the same cohort both roles.
+      The default is that first cohort is the head and last cohort is the tail, and the new cohorts form a simple chain.
+    </para>
+    <para>
+      Similarly, you can use tag <code>R:*</code> to designate which cohort should inherit the named relations.
+      If <code>R:*</code> is not listed, the cohort marked <code>c-&gt;</code> will be used.
+      Thus if neither is listed, default is that the last cohort inherits them.
+    </para>
+    <screen>
+      # Split hyphenated tokens with exactly two parts
+      SPLITCOHORT (
+        # inherit tags with *, and inherit dependency children with c->2
+        "&lt;$1&gt;"v "$1"v tags * tags c->2
+        # inherit named relations with R:*, and inherit dependency parents with 2->p
+        "&lt;$2&gt;"v "$2"v tags go here R:* 2->p
+        ) ("&lt;([^-]+)-([^-]+)&gt;" other tags) (1* (context)) ;
+    </screen>
   </section>
 
    <section id="move-switch">
