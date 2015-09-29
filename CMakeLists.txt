@@ -50,14 +50,17 @@ else()
 	set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -O0 -g3")
 	set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -O3")
 
-	# Enable C++14 or C++11 if possible
-	if((CMAKE_COMPILER_IS_GNUCXX AND NOT ${CMAKE_CXX_COMPILER_VERSION} VERSION_LESS 4.9) OR (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND NOT ${CMAKE_CXX_COMPILER_VERSION} VERSION_LESS 3.3))
-		message(STATUS "Enabling C++14 for ${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER_VERSION}")
-		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++1y")
-	elseif((CMAKE_COMPILER_IS_GNUCXX AND NOT ${CMAKE_CXX_COMPILER_VERSION} VERSION_LESS 4.6) OR (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND NOT ${CMAKE_CXX_COMPILER_VERSION} VERSION_LESS 3.1))
-		message(STATUS "Enabling C++11 for ${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER_VERSION}")
-		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
-	endif()
+	# Enable latest possible C++ standard
+	include(CheckCXXCompilerFlag)
+	foreach(flag "-std=c++17" "-std=c++1z" "-std=c++14" "-std=c++1y" "-std=c++11" "-std=c++0x")
+		unset(COMPILER_SUPPORTS_FLAG)
+		CHECK_CXX_COMPILER_FLAG(${flag} COMPILER_SUPPORTS_FLAG)
+		if(COMPILER_SUPPORTS_FLAG)
+			message(STATUS "Enabling ${flag}")
+			set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${flag}")
+			break()
+		endif()
+	endforeach()
 
 	# Generate pkg-config file
 	set(prefix      ${CMAKE_INSTALL_PREFIX})
