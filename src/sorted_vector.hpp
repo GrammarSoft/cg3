@@ -238,6 +238,10 @@ public:
 		elements.clear();
 	}
 
+	void sort() {
+		std::sort(elements.begin(), elements.end(), Comp());
+	}
+
 	container& get() {
 		return elements;
 	}
