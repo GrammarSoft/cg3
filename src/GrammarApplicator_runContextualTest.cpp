@@ -438,10 +438,12 @@ Cohort *GrammarApplicator::runContextualTest(SingleWindow *sWindow, size_t posit
 					++seen;
 					if ((test->pos & POS_LEFT) && less_Cohort(current, **it)) {
 						nc = 0;
+						retval = false;
 						break;
 					}
 					if ((test->pos & POS_RIGHT) && !less_Cohort(current, **it)) {
 						nc = 0;
+						retval = false;
 						break;
 					}
 					nc = runSingleTest(**it, test, rvs, &retval, deep, origin);

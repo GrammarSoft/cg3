@@ -1,5 +1,27 @@
+2015-09-29  tino
+
+	* [r10984] CMakeLists.txt: Better C++17/14/11 detection that also
+	  works
+	* [r10983] CMakeLists.txt: Better C++17/14/11 detection
+
+2015-09-23  tino
+
+	* [r10982] manual/rules.xml, todo.sh: Documented SplitCohort
+
 2015-09-22  tino
 
+	* [r10980] src/GrammarApplicator_runRules.cpp: RemCohort segfault
+	* [r10979] src/GrammarApplicator_runGrammar.cpp,
+	  test/T_SplitCohort/expected.txt, test/T_SplitCohort/grammar.cg3:
+	  Special case initial setvars so that delimiters can see them;
+	  SplitCohort test
+	* [r10978] src/GrammarApplicator_runRules.cpp: SplitCohort handle
+	  named relations
+	* [r10977] ChangeLog, clang-format.pl,
+	  src/GrammarApplicator_matchSet.cpp,
+	  src/GrammarApplicator_runRules.cpp, src/scoped_stack.hpp,
+	  src/version.hpp: Fix unification across contexts when there is no
+	  unification in target or capture
 	* [r10976] src/CMakeLists.txt, src/GrammarApplicator.hpp,
 	  src/GrammarApplicator_matchSet.cpp,
 	  src/GrammarApplicator_reflow.cpp,
@@ -2274,45 +2296,4 @@
 	* [r9209] emacs/cg.el: comments
 	* [r9208] emacs/cg.el: clear cache if pre-pipe variable changed
 	  (also s/tabs/spaces)
-
-2013-09-04  tino
-
-	* [r9205] manual/templates.xml, scripts/cg3-autobin.pl,
-	  src/TextualParser.cpp, src/version.h: More precise inline
-	  template abuse warnings; Only show them if compiling
-
-2013-09-02  tino
-
-	* [r9201] scripts/cg3-autobin.pl, src/ApertiumApplicator.cpp,
-	  src/MatxinApplicator.cpp, src/Tag.cpp, src/uextras.h,
-	  src/version.h: Minor string manipulation optimizations
-	* [r9200] scripts/cg3-autobin.pl, src/ApertiumApplicator.cpp,
-	  src/MatxinApplicator.cpp, src/uextras.h, src/version.h: Eliminate
-	  use of ux_substr() in favour of std::string's own .substr()
-	* [r9199] scripts/cg3-autobin.pl,
-	  src/GrammarApplicator_runRules.cpp, src/TextualParser.cpp,
-	  src/uextras.cpp, src/uextras.h, src/version.h,
-	  test/T_Templates/grammar.cg3: Sub-readings now bypass some
-	  caching; Warn on pointless inline templates; Inline some ux
-	  functions
-
-2013-08-06  tino
-
-	* [r9159] scripts/cg3-autobin.pl, src/TextualParser.cpp,
-	  src/version.h: Fix parsing composite tags with space after
-	  opening (
-
-2013-07-18  unhammer
-
-	* [r9124] emacs/cg.el: better check for cache-emptying (cg or input
-	  variables changed) + after-check-secs
-	  
-	  Cache works when cg-per-buffer-input now. Check-after-change now
-	  waits 1 sec (configurable) before checking. Avoid error message
-	  if output window closed before check done.
-
-2013-07-17  unhammer
-
-	* [r9122] emacs/cg.el: C-c c toggles running cg-check after each
-	  change, pre-pipe is cached so this works fast
 
