@@ -30,7 +30,8 @@
 namespace CG3 {
 
 TextualParser::TextualParser(Grammar& res, UFILE *ux_err, bool _dump_ast)
-  : verbosity_level(0)
+  : filebase(0)
+  , verbosity_level(0)
   , sets_counter(100)
   , seen_mapping_prefix(0)
   , option_vislcg_compat(false)

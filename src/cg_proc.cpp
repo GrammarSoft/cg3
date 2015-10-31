@@ -142,7 +142,7 @@ int main(int argc, char *argv[]) {
 
 		case 'r': {
 			// strdup() is Posix
-			size_t len = strlen(optarg);
+			size_t len = strlen(optarg)+1;
 			single_rule = new char[len];
 			std::copy(optarg, optarg + len, single_rule);
 			break;
