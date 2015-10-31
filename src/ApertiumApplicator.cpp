@@ -38,6 +38,7 @@ ApertiumApplicator::ApertiumApplicator(UFILE *ux_err)
 	print_only_first = false;
 	runningWithNullFlush = false;
 	fgetc_converter = 0;
+	fgetc_error = U_ZERO_ERROR;
 }
 
 
@@ -674,6 +675,7 @@ void ApertiumApplicator::testPR(UFILE *output) {
 		}
 		printReading(reading, output);
 		u_fprintf(output, "\n");
+		delete reading;
 	}
 }
 

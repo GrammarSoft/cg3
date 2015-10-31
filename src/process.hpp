@@ -160,8 +160,10 @@ public:
 	}
 
 	~Process() {
-		popen_plus_kill(child);
-		popen_plus_close(child);
+		if (child) {
+			popen_plus_kill(child);
+			popen_plus_close(child);
+		}
 	}
 
 	void start(const std::string& cmdline) {

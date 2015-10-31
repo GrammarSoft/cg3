@@ -48,6 +48,7 @@ Cohort *GrammarApplicator::runSingleTest(Cohort *cohort, const ContextualTest *t
 		*retval = doesSetMatchCohortCareful(*cohort, test->target, &context);
 		if (!context.matched_target && (test->pos & POS_SCANFIRST)) {
 			context.did_test = true;
+			// Intentionally ignoring return value to set up context.matched_target
 			doesSetMatchCohortNormal(*cohort, test->target, &context);
 		}
 	}
@@ -548,7 +549,7 @@ Cohort *GrammarApplicator::runDependencyTest(SingleWindow *sWindow, Cohort *curr
 		}
 		else {
 			std::map<uint32_t, Cohort*>::iterator it = current->parent->parent->cohort_map.find(current->dep_parent);
-			if (current->parent && current->parent->parent && it != current->parent->parent->cohort_map.end() && it->second && !it->second->dep_children.empty()) {
+			if (it != current->parent->parent->cohort_map.end() && it->second && !it->second->dep_children.empty()) {
 				deps = &(it->second->dep_children);
 			}
 			else {

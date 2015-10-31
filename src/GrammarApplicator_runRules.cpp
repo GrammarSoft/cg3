@@ -165,7 +165,7 @@ Reading *GrammarApplicator::get_sub_reading(Reading *tr, int sub_reading) {
 	if (sub_reading == 0) {
 		return tr;
 	}
-	if (sub_reading == GSR_ANY) {
+	else if (sub_reading == GSR_ANY) {
 		subs_any.push_back(Reading());
 		Reading *reading = &subs_any.back();
 		*reading = *tr;
@@ -203,13 +203,12 @@ Reading *GrammarApplicator::get_sub_reading(Reading *tr, int sub_reading) {
 		reading->rehash();
 		return reading;
 	}
-	if (sub_reading > 0) {
+	else if (sub_reading > 0) {
 		for (int i = 0; i < sub_reading && tr; ++i) {
 			tr = tr->next;
 		}
-		return tr;
 	}
-	if (sub_reading < 0) {
+	else if (sub_reading < 0) {
 		int ntr = 0;
 		Reading *ttr = tr;
 		while (ttr) {
@@ -219,7 +218,6 @@ Reading *GrammarApplicator::get_sub_reading(Reading *tr, int sub_reading) {
 		for (int i = ntr; i < sub_reading && tr; ++i) {
 			tr = tr->next;
 		}
-		return tr;
 	}
 	return tr;
 }

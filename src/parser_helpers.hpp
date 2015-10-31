@@ -52,7 +52,7 @@ Tag *parseTag(const UChar *to, const UChar *p, State& state) {
 	Tag *tag = state.get_grammar()->allocateTag();
 	tag->type = 0;
 
-	if (to && to[0]) {
+	if (to[0]) {
 		const UChar *tmp = to;
 		while (tmp[0] && (tmp[0] == '!' || tmp[0] == '^')) {
 			if (tmp[0] == '!' || tmp[0] == '^') {
