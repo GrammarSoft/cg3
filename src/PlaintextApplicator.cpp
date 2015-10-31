@@ -185,10 +185,6 @@ void PlaintextApplicator::runGrammarOnText(istream& input, UFILE *output) {
 				numWindows++;
 				did_soft_lookback = false;
 			}
-			if (cCohort && cSWindow) {
-				cSWindow->appendCohort(cCohort);
-				lCohort = cCohort;
-			}
 			if (gWindow->next.size() > num_windows) {
 				while (!gWindow->previous.empty() && gWindow->previous.size() > num_windows) {
 					SingleWindow *tmp = gWindow->previous.front();
