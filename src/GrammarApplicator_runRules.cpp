@@ -383,6 +383,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 
 			size_t num_active = 0;
 			size_t num_iff = 0;
+			attach_to = cohort;
 
 			// Assume that Iff rules are really Remove rules, until proven otherwise.
 			if (rule.type == K_IFF) {
@@ -588,6 +589,12 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 			// Keep track of which readings got removed and selected
 			removed.resize(0);
 			selected.resize(0);
+
+			bool swap_ac = (attach_to != cohort);
+			Cohort *ac_c = cohort;
+			if (swap_ac) {
+				std::swap(attach_to, cohort);
+			}
 
 			// Remember the current state so we can compare later to see if anything has changed
 			const size_t state_num_readings = cohort->readings.size();
@@ -1782,6 +1789,19 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 
 			if (delimited) {
 				break;
+			}
+
+			if (swap_ac) {
+				cohort = ac_c;
+				if (cohortset->empty()) {
+					rocit = cohortset->end();
+				}
+				else {
+					rocit = cohortset->find(current.cohorts[cohort->local_number]);
+					if (rocit != cohortset->end()) {
+						++rocit;
+					}
+				}
 			}
 		}
 

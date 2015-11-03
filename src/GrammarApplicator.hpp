@@ -275,7 +275,7 @@ protected:
 	bool doesSetMatchReading(const Reading& reading, const uint32_t set, bool bypass_index = false, bool unif_mode = false);
 
 	inline bool doesSetMatchCohort_testLinked(Cohort& cohort, const Set& theset, dSMC_Context *context = 0);
-	inline bool doesSetMatchCohort_helper(Cohort& cohort, const Reading& reading, const Set& theset, dSMC_Context *context = 0);
+	inline bool doesSetMatchCohort_helper(Cohort& cohort, Reading& reading, const Set& theset, dSMC_Context *context = 0);
 	bool doesSetMatchCohortNormal(Cohort& cohort, const uint32_t set, dSMC_Context *context = 0);
 	bool doesSetMatchCohortCareful(Cohort& cohort, const uint32_t set, dSMC_Context *context = 0);
 
