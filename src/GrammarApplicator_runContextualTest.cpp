@@ -36,27 +36,29 @@ Cohort *GrammarApplicator::runSingleTest(Cohort *cohort, const ContextualTest *t
 		mark = cohort;
 	}
 	if (test->pos & POS_ATTACH_TO) {
+		if (attach_to != cohort) {
+			// Clear readings for rules that care about readings
+			ReadingList *lists[3] = { &cohort->readings };
+			if (test->pos & POS_LOOK_DELETED) {
+				lists[1] = &cohort->deleted;
+			}
+			if (test->pos & POS_LOOK_DELAYED) {
+				lists[2] = &cohort->delayed;
+			}
+
+			for (size_t i = 0; i < 3; ++i) {
+				if (lists[i] == 0) {
+					continue;
+				}
+				foreach (iter, *lists[i]) {
+					Reading *reading = *iter;
+					reading->matched_target = false;
+					reading->matched_tests = false;
+				}
+			}
+		}
+
 		attach_to = cohort;
-
-		// Clear readings for rules that care about readings
-		ReadingList *lists[3] = { &cohort->readings };
-		if (test->pos & POS_LOOK_DELETED) {
-			lists[1] = &cohort->deleted;
-		}
-		if (test->pos & POS_LOOK_DELAYED) {
-			lists[2] = &cohort->delayed;
-		}
-
-		for (size_t i = 0; i < 3; ++i) {
-			if (lists[i] == 0) {
-				continue;
-			}
-			foreach(iter, *lists[i]) {
-				Reading *reading = *iter;
-				reading->matched_target = false;
-				reading->matched_tests = false;
-			}
-		}
 	}
 	if (deep) {
 		*deep = cohort;
