@@ -1,3 +1,19 @@
+2015-10-31  tino
+
+	* [r11024] src/ApertiumApplicator.cpp, src/GrammarApplicator.cpp,
+	  src/GrammarApplicator_runContextualTest.cpp,
+	  src/GrammarApplicator_runRules.cpp, src/PlaintextApplicator.cpp,
+	  src/TextualParser.cpp, src/cg_proc.cpp, src/parser_helpers.hpp,
+	  src/process.hpp: Fixed based on Coverity Scan report - nothing
+	  that would ever affect real world execution
+
+2015-10-14  tino
+
+	* [r10993] ChangeLog, src/GrammarApplicator_runContextualTest.cpp,
+	  src/sorted_vector.hpp, src/version.hpp: Failure to find r,l
+	  should set result to false, and thus let NONE/NOT work as
+	  expected
+
 2015-09-29  tino
 
 	* [r10984] CMakeLists.txt: Better C++17/14/11 detection that also
@@ -2290,10 +2306,4 @@
 	* [r9215] src/inlines.h: Line endings...
 	* [r9212] src/GrammarApplicator_runContextualTest.cpp,
 	  src/inlines.h: Cleaner range parser code
-
-2013-09-05  unhammer
-
-	* [r9209] emacs/cg.el: comments
-	* [r9208] emacs/cg.el: clear cache if pre-pipe variable changed
-	  (also s/tabs/spaces)
 

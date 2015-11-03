@@ -729,7 +729,7 @@ inline bool GrammarApplicator::doesSetMatchCohort_testLinked(Cohort& cohort, con
 	return retval;
 }
 
-inline bool GrammarApplicator::doesSetMatchCohort_helper(Cohort& cohort, const Reading& reading, const Set& theset, dSMC_Context *context) {
+inline bool GrammarApplicator::doesSetMatchCohort_helper(Cohort& cohort, Reading& reading, const Set& theset, dSMC_Context *context) {
 	bool retval = false;
 	BOOST_AUTO(utags, ss_utags.get());
 	BOOST_AUTO(usets, ss_u32sv.get());
@@ -741,6 +741,9 @@ inline bool GrammarApplicator::doesSetMatchCohort_helper(Cohort& cohort, const R
 	if (doesSetMatchReading(reading, theset.number, (theset.type & (ST_CHILD_UNIFY | ST_SPECIAL)) != 0)) {
 		retval = true;
 		if (context) {
+			if (context->options & POS_ATTACH_TO) {
+				reading.matched_target = true;
+			}
 			context->matched_target = true;
 		}
 	}
@@ -749,6 +752,9 @@ inline bool GrammarApplicator::doesSetMatchCohort_helper(Cohort& cohort, const R
 	}
 	if (retval && context) {
 		retval = doesSetMatchCohort_testLinked(cohort, theset, context);
+		if (context->options & POS_ATTACH_TO) {
+			reading.matched_tests = retval;
+		}
 	}
 	if (!retval && context && !(current_rule->flags & FL_CAPTURE_UNIF) && (theset.type & ST_CHILD_UNIFY) && (utags->size() != unif_tags->size() || *utags != *unif_tags)) {
 		unif_tags->swap(utags);

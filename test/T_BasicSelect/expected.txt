@@ -1,5 +1,5 @@
 "<word>"
-	"word" wanted
+	"word" wanted £affected
 "<word>"
 	"word" mapped @A @B
 "<word>"
