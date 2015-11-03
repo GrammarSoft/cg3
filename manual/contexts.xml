@@ -147,10 +147,14 @@
     </section>
 
     <section id="test-mark-attach-to">
-      <title>Attach To</title>
+      <title>Attach To / Affect Instead</title>
       <para>
         'A' sets the cohort to be attached or related against to the currently active cohort of the test's target.
         See also <link linkend="set-attachto">magic set _ATTACHTO_</link>.
+      </para>
+      <para>
+        As of version 0.9.9.11032, 'A' can be used for almost all rules to change the cohort to be affected,
+        instead of the target of the rule.
       </para>
     </section>
   </section>
