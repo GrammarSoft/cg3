@@ -1083,15 +1083,15 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 								cCohort->type |= CT_RELATED;
 								cCohort->relations.swap(cohort->relations);
 
-								std::pair<SingleWindow**, size_t> swss[3] = {
+								std::pair<SingleWindow **, size_t> swss[3] = {
 									std::make_pair(&gWindow->previous[0], gWindow->previous.size()),
 									std::make_pair(&gWindow->current, static_cast<size_t>(1)),
 									std::make_pair(&gWindow->next[0], gWindow->next.size()),
 								};
-								for (size_t w = 0 ; w < 3 ; ++w) {
-									for (size_t sw = 0 ; sw < swss[w].second ; ++sw) {
-										foreach(ch, swss[w].first[sw]->cohorts) {
-											foreach(rel, (*ch)->relations) {
+								for (size_t w = 0; w < 3; ++w) {
+									for (size_t sw = 0; sw < swss[w].second; ++sw) {
+										foreach (ch, swss[w].first[sw]->cohorts) {
+											foreach (rel, (*ch)->relations) {
 												if (rel->second.count(cohort->global_number)) {
 													rel->second.erase(cohort->global_number);
 													rel->second.insert(cCohort->global_number);
