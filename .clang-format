@@ -1,5 +1,5 @@
 AccessModifierOffset: -4
-AlignAfterOpenBracket: false
+AlignAfterOpenBracket: DontAlign
 AlignConsecutiveAssignments: false
 AlignEscapedNewlinesLeft: true
 AlignOperands: true
@@ -16,9 +16,20 @@ AlwaysBreakTemplateDeclarations: true
 BinPackArguments: true
 BinPackParameters: true
 BreakBeforeBinaryOperators: None
-BreakBeforeBraces: Attach
+BreakBeforeBraces: Custom
 BreakBeforeTernaryOperators: false
 BreakConstructorInitializersBeforeComma: true
+BraceWrapping:
+  AfterClass:      false
+  AfterControlStatement: false
+  AfterEnum:       false
+  AfterFunction:   false
+  AfterNamespace:  false
+  AfterStruct:     false
+  AfterUnion:      false
+  BeforeCatch:     true
+  BeforeElse:      true
+  IndentBraces:    false
 ColumnLimit: 0
 ConstructorInitializerAllOnOneLineOrOnePerLine: false
 ConstructorInitializerIndentWidth: 2

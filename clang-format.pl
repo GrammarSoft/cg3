@@ -37,7 +37,6 @@ foreach my $file (@files) {
    my $data = file_read($file);
    $data =~ s@\n[^\n]*//[^\n]+clang-format (off|on)\n@\n@g; # Remove preprocessor protection
    # Things clang-format gets wrong:
-   $data =~ s@([ \t]+)\} (else|catch)@$1}\n$1$2@g; # Closing } should always be on a line of its own, except do {} while and C typedef
    $data =~ s@([ \t]+)(BOOST_FOREACH|boost_foreach|reverse_foreach|foreach)([^{\n]*) \{[ \t]+([^}\n]*)[ \t]+\}@$1$2$3 {\n$1\t$4\n$1}@g; # Don't allow single-line foreach blocks
    $data =~ s@\s*([*&])>@$1>@g; # vector<T *>, really? Just no.
    $data =~ s@([\w>]) &([\w(])@$1& $2@g; # I like T *t, but I also like T& t ...
