@@ -11,10 +11,6 @@ addons:
       - libboost1.55-dev
       - libicu-dev
 
-compiler:
-  - clang
-  - gcc
-
 before_script:
   - cmake .
 
