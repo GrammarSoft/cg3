@@ -5,9 +5,10 @@ addons:
   apt:
     sources:
       - kalakris-cmake
+      - boost-latest
     packages:
       - cmake
-      - libboost1.48-dev
+      - libboost1.55-dev
       - libicu-dev
 
 compiler:
