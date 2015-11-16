@@ -10,3 +10,6 @@
 "<word>"
 	"baseform" e @baseform-diff
 	"form" f @baseform-diff @add-f
+"<match>"
+	"match" g <AtcHAT> @gen-regex @baseform-same @slashes @icase @me
+	"match" h <AtcHAT> @gen-regex @baseform-same @slashes @icase @me

@@ -34,3 +34,5 @@ ADD (@slashes) (/^@.*-SAM/ri) ;
 ADD (@icase) (/@BASEFORM-SAME/i) ;
 
 ADD (VSTR:@add-$1) ("(.*)orm"r f) ;
+
+ADD (VSTR:@$2) ("<match>") (0 ("([^<].+)"r) LINK -1* ("<wor.*"r) LINK -1* (VSTR:"$1\(.+\)"r)) ;
