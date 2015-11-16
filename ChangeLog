@@ -1,3 +1,35 @@
+2015-11-12  tino
+
+	* [r11056] README, README.md: Add badge
+	* [r11055] .travis.yml: But then clang doesn't work, of course
+	* [r11054] .travis.yml: Le sigh...
+	* [r11053] .travis.yml: Try Travic CI's container setup
+	* [r11052] .travis.yml: Try a different CMake PPA
+	* [r11051] .travis.yml: Wasn't prepared for Ubuntu 12.04
+	* [r11050] .travis.yml: Let's see if Travis CI works...
+
+2015-11-10  tino
+
+	* [r11048] .clang-format, clang-format.pl,
+	  src/GrammarApplicator_runRules.cpp, src/cg_proc.cpp: clang-format
+	  now gets Egyptian braces right
+
+2015-11-05  tino
+
+	* [r11038] src/cg_proc.cpp: Flush flush
+
+2015-11-03  tino
+
+	* [r11034] src/GrammarApplicator_runContextualTest.cpp: Don't clear
+	  readings again if we're at the current target
+	* [r11032] ChangeLog, manual/contexts.xml,
+	  src/GrammarApplicator.hpp, src/GrammarApplicator_matchSet.cpp,
+	  src/GrammarApplicator_runContextualTest.cpp,
+	  src/GrammarApplicator_runRules.cpp, src/version.hpp,
+	  test/T_BasicSelect/expected.txt, test/T_BasicSelect/grammar.cg3,
+	  test/T_BasicSelect/grammar.cg3b.10043: Context modifier 'A' now
+	  works almost anywhere
+
 2015-10-31  tino
 
 	* [r11024] src/ApertiumApplicator.cpp, src/GrammarApplicator.cpp,
@@ -2260,50 +2292,4 @@
 	  exec-stream to external
 	* [r9237] get-boost.sh, include/cycle.h, src/cycle.h, src/stdafx.h:
 	  Move cycle.h to signify external copyright
-	* [r9236] CMakeLists.txt, scripts/cg3-autobin.pl,
-	  src/TextualParser.h, src/version.h: CMake 2.8.0 (even Lucid has
-	  that); Use C++11 if available
-	* [r9235] scripts/cg3-autobin.pl, src/BinaryGrammar_read.cpp,
-	  src/BinaryGrammar_write.cpp, src/ContextualTest.cpp,
-	  src/ContextualTest.h, src/Grammar.cpp,
-	  src/GrammarApplicator_runRules.cpp, src/GrammarWriter.cpp,
-	  src/Rule.cpp, src/Rule.h, src/TextualParser.cpp, src/version.h:
-	  WIP towards duplicate context elimination
-
-2013-09-23  tino
-
-	* [r9233] TODO, scripts/cg3-autobin.pl, src/BinaryGrammar_read.cpp,
-	  src/ContextualTest.cpp, src/ContextualTest.h, src/Grammar.cpp,
-	  src/Grammar.h, src/Rule.cpp, src/Rule.h, src/TextualParser.cpp,
-	  src/TextualParser.h, src/version.h, test/runall.pl: Stable but
-	  WIP cleanup of ContextualTest allocations and duplicate
-	  elimination
-
-2013-09-18  tino
-
-	* [r9230] src/cg3.h: Appease the -pedantic overlords
-
-2013-09-18  ftyers
-
-	* [r9229] cg3.pc.in: remove versioning guff in cg3.pc.in
-
-2013-09-18  tino
-
-	* [r9228] src/CMakeLists.txt, src/libcg3.cpp: WIP library
-
-2013-09-17  tino
-
-	* [r9226] CMakeLists.txt, cg3.pc.in, src/CMakeLists.txt,
-	  vislcg3-0.9.pc.in: WIP pkg-config
-
-2013-09-17  ftyers
-
-	* [r9225] CMakeLists.txt: first pass
-	* [r9224] vislcg3-0.9.pc.in: add .pc.in file
-
-2013-09-06  tino
-
-	* [r9215] src/inlines.h: Line endings...
-	* [r9212] src/GrammarApplicator_runContextualTest.cpp,
-	  src/inlines.h: Cleaner range parser code
 

@@ -10,3 +10,6 @@
 "<word>"
 	"baseform" e
 	"form" f
+"<match>"
+	"match" g
+	"match" h
