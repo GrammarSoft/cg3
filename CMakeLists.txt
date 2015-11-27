@@ -95,4 +95,5 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/scripts/cg3-autobin.pl.in ${CMAKE_CURRENT_BINARY_DIR}/scripts/cg3-autobin.pl @ONLY)
 install(PROGRAMS "${CMAKE_CURRENT_BINARY_DIR}/scripts/cg3-autobin.pl" DESTINATION bin)
 
-install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/emacs/cg.el" DESTINATION share/emacs/site-lisp)
+set(ELISPDIR "share/emacs/site-lisp" CACHE PATH "Where to install Emacs Lisp files")
+install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/emacs/cg.el" DESTINATION ${ELISPDIR})
