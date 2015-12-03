@@ -1,3 +1,16 @@
+2015-11-27  tino
+
+	* [r11079] CMakeLists.txt: Apply ELISPDIR patch from Alex Dunn
+	  <dunn.alex@gmail.com> to aid Homebrew packaging
+
+2015-11-16  tino
+
+	* [r11069] ChangeLog, TODO, src/GrammarApplicator_runRules.cpp,
+	  src/version.hpp, test/T_RegExp/expected.txt,
+	  test/T_RegExp/grammar.cg3, test/T_RegExp/grammar.cg3b.10043,
+	  test/T_RegExp/input.txt: Propagate regexp captures to other
+	  readings
+
 2015-11-12  tino
 
 	* [r11056] README, README.md: Add badge
@@ -2283,13 +2296,4 @@
 	  Posix...by the gods, C is so awful
 	* [r9239] src/cg_comp.cpp, src/cg_proc.cpp, win32/getopt.h,
 	  win32/libgen.c, win32/libgen.h: Various cleanup
-	* [r9238] CMakeLists.txt, include/exec-stream,
-	  include/exec-stream/exec-stream.cpp,
-	  include/exec-stream/exec-stream.h, include/exec-stream/posix,
-	  include/exec-stream/win, src/CMakeLists.txt,
-	  src/GrammarApplicator.h, src/exec-stream.cpp, src/exec-stream.h,
-	  src/posix, src/stdafx.h, src/uextras.cpp, src/win: Moved
-	  exec-stream to external
-	* [r9237] get-boost.sh, include/cycle.h, src/cycle.h, src/stdafx.h:
-	  Move cycle.h to signify external copyright
 
