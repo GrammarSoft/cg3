@@ -96,7 +96,7 @@ Cohort *GrammarApplicator::runSingleTest(Cohort *cohort, const ContextualTest *t
 	context.origin = 0;
 	context.did_test = true;
 	if (test->barrier) {
-		context.options = test->pos & ~POS_CAREFUL;
+		dSMC_Context context = { 0, 0, 0, test->pos & ~POS_CAREFUL, false, false, false, true };
 		bool barrier = doesSetMatchCohortNormal(*cohort, test->barrier, &context);
 		if (barrier) {
 			seen_barrier = true;
@@ -104,7 +104,7 @@ Cohort *GrammarApplicator::runSingleTest(Cohort *cohort, const ContextualTest *t
 		}
 	}
 	if (test->cbarrier) {
-		context.options = test->pos | POS_CAREFUL;
+		dSMC_Context context = { 0, 0, 0, test->pos | POS_CAREFUL, false, false, false, true };
 		bool cbarrier = doesSetMatchCohortCareful(*cohort, test->cbarrier, &context);
 		if (cbarrier) {
 			seen_barrier = true;

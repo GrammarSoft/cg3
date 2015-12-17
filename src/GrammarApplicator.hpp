@@ -56,6 +56,7 @@ struct dSMC_Context {
 	bool did_test;
 	bool matched_target;
 	bool matched_tests;
+	bool in_barrier;
 };
 
 class GrammarApplicator {
