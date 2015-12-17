@@ -750,7 +750,7 @@ inline bool GrammarApplicator::doesSetMatchCohort_helper(Cohort& cohort, Reading
 	if (retval && context && (context->options & POS_NOT)) {
 		retval = !retval;
 	}
-	if (retval && context) {
+	if (retval && context && !context->in_barrier) {
 		retval = doesSetMatchCohort_testLinked(cohort, theset, context);
 		if (context->options & POS_ATTACH_TO) {
 			reading.matched_tests = retval;
