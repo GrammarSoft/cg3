@@ -35,7 +35,7 @@ FSTApplicator::FSTApplicator(UFILE *ux_err)
 {
 	wtag += 'W';
 	sub_delims += '#';
-	sub_delims += '+';
+	//sub_delims += '+';
 }
 
 void FSTApplicator::runGrammarOnText(istream& input, UFILE *output) {
@@ -206,6 +206,16 @@ void FSTApplicator::runGrammarOnText(istream& input, UFILE *output) {
 					std::copy(buf, buf + i, std::back_inserter(wtag_buf));
 					wtag_buf += '>';
 					wtag_tag = addTag(wtag_buf);
+				}
+
+				// Initial baseform, because it may end on +
+				UChar *plus = u_strchr(space, '+');
+				if (plus) {
+					++plus;
+					const UChar cplus[] = { '+', 0 };
+					int32_t p = u_strspn(plus, cplus);
+					space = plus + p;
+					--space;
 				}
 
 				while (space && *space && (space = u_strchr(space, '+')) != 0) {
