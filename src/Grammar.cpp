@@ -878,6 +878,87 @@ void Grammar::reindex(bool unused_sets, bool used_tags) {
 		}
 	}
 
+	// Gather knowledge of which contexts use unification
+	// ToDo: Also gather regex captures and capture-uses
+	// ToDo: Automatically determine whether keeporder is needed, by checking that the same unif-set is used in multiple contexts
+	bc::flat_set<ContextualTest*> nk;
+	bool did = true;
+	while (did) {
+		did = false;
+
+		foreach (cntx, contexts) {
+			ContextualTest *t = cntx->second;
+
+			if (nk.count(t)) {
+				continue;
+			}
+
+			if (t->tmpl && nk.count(t->tmpl)) {
+				//u_fprintf(ux_stderr, "added tmpl %u\n", t->line);
+				did |= nk.insert(t).second;
+				continue;
+			}
+			if (t->linked && nk.count(t->linked)) {
+				//u_fprintf(ux_stderr, "added linked %u\n", t->line);
+				did |= nk.insert(t).second;
+				continue;
+			}
+			if (t->target && (sets_list[t->target]->type & MASK_ST_UNIFY)) {
+				//u_fprintf(ux_stderr, "added target %u\n", t->line);
+				did |= nk.insert(t).second;
+				continue;
+			}
+			if (t->barrier && (sets_list[t->barrier]->type & MASK_ST_UNIFY)) {
+				//u_fprintf(ux_stderr, "added barrier %u\n", t->line);
+				did |= nk.insert(t).second;
+				continue;
+			}
+			if (t->cbarrier && (sets_list[t->cbarrier]->type & MASK_ST_UNIFY)) {
+				//u_fprintf(ux_stderr, "added cbarrier %u\n", t->line);
+				did |= nk.insert(t).second;
+				continue;
+			}
+		}
+	}
+
+	foreach (it, rule_by_number) {
+		Rule *r = *it;
+
+		// Determine whether this rule probably needs KEEPORDER
+		if (r->flags & RF_KEEPORDER) {
+			continue;
+		}
+		/* While this is a good indication that the unified set is used in the target, it is not 100%
+		if (r->target && (sets_list[r->target]->type & MASK_ST_UNIFY)) {
+			continue;
+		}
+		//*/
+		size_t num_u = 0;
+		if (r->dep_target && nk.count(r->dep_target)) {
+			++num_u;
+		}
+		foreach (cntx, r->tests) {
+			if (nk.count(*cntx)) {
+				++num_u;
+			}
+		}
+		foreach (cntx, r->dep_tests) {
+			if (nk.count(*cntx)) {
+				++num_u;
+			}
+		}
+		// If more than one context uses unification, keeporder may be needed
+		if (num_u > 1) {
+			r->flags |= RF_KEEPORDER;
+			/* We can do the whole thing fully automatically, so explicit KEEPORDER will eventually be deprecated
+			if (verbosity_level) {
+				u_fprintf(ux_stderr, "Warning: Rule on line %u probably needs KEEPORDER.\n", r->line);
+				u_fflush(ux_stderr);
+			}
+			//*/
+		}
+	}
+
 	if (used_tags) {
 		for (BOOST_AUTO(iter_tags, single_tags.begin()); iter_tags != single_tags.end(); ++iter_tags) {
 			Tag *tag = iter_tags->second;
