@@ -679,6 +679,10 @@
         Prevents the re-ordering of contextual tests.
         Useful in cases where a unifying set is not in the target of the rule.
       </para>
+      <para>
+        You almost certainly need KEEPORDER if you use regex capture and varstring in separate contextual tests,
+        or if you use the special baseform or wordform regexes in unification in separate contextual tests.
+      </para>
     </section>
 
     <section id="rule-options-varyorder">
