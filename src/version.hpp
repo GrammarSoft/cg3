@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2007-2015, GrammarSoft ApS
+* Copyright (C) 2007-2016, GrammarSoft ApS
 * Developed by Tino Didriksen <mail@tinodidriksen.com>
 * Design by Eckhard Bick <eckhard.bick@mail.dk>, Tino Didriksen <mail@tinodidriksen.com>
 *
@@ -25,12 +25,12 @@
 
 #include <stdint.h>
 
-const char *const CG3_COPYRIGHT_STRING = "Copyright (C) 2007-2015 GrammarSoft ApS. Licensed under GPLv3+";
+const char *const CG3_COPYRIGHT_STRING = "Copyright (C) 2007-2016 GrammarSoft ApS. Licensed under GPLv3+";
 
 const uint32_t CG3_VERSION_MAJOR = 0;
 const uint32_t CG3_VERSION_MINOR = 9;
 const uint32_t CG3_VERSION_PATCH = 9;
-const uint32_t CG3_REVISION = 11144;
+const uint32_t CG3_REVISION = 11264;
 const uint32_t CG3_FEATURE_REV = 10575;
 const uint32_t CG3_TOO_OLD = 10373;
 const uint32_t CG3_EXTERNAL_PROTOCOL = 7226;
