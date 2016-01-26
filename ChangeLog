@@ -1,3 +1,19 @@
+2016-01-25  tino
+
+	* [r11254] src/Grammar.cpp, src/Set.hpp: Dirty way to add KEEPORDER
+	  where it is likely missing
+
+2016-01-11  tino
+
+	* [r11203] src/FSTApplicator.cpp: Handle trailing + in baseforms
+
+2015-12-17  tino
+
+	* [r11144] ChangeLog, src/GrammarApplicator.hpp,
+	  src/GrammarApplicator_matchSet.cpp,
+	  src/GrammarApplicator_runContextualTest.cpp, src/version.hpp: In
+	  barrier context, don't test links
+
 2015-12-03  tino
 
 	* [r11104] ChangeLog, src/Cohort.cpp, src/version.hpp: Fix segfault
@@ -2291,11 +2307,4 @@
 	  src/stdafx.hpp, src/uextras.cpp, src/uextras.h, src/uextras.hpp,
 	  src/version.h, src/version.hpp: C++ headers are .hpp, and show
 	  headers in IDEs
-	* [r9242] src/version.h: Missed a const
-	* [r9241] include/uoptions.h, src/CMakeLists.txt,
-	  src/icu_uoptions.h, src/libcg3.cpp, src/main.cpp, src/options.h,
-	  src/options_conv.hpp, src/version.h: Move uoptions.h to external,
-	  and inline it
-	* [r9240] src/cg_comp.cpp, src/cg_proc.cpp: basename() is char* on
-	  Posix...by the gods, C is so awful
 
