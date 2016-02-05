@@ -585,6 +585,11 @@ void TextualParser::parseContextualTestPosition(UChar *& p, ContextualTest& t) {
 			t.pos |= POS_NUMERIC_BRANCH;
 			++p;
 		}
+		if (*p == 'B') {
+			result->has_bag_of_tags = true;
+			t.pos |= POS_BAG_OF_TAGS;
+			++p;
+		}
 		if (*p == '-') {
 			negative = true;
 			++p;
@@ -692,6 +697,9 @@ void TextualParser::parseContextualTestPosition(UChar *& p, ContextualTest& t) {
 		if (t.pos & POS_RELATION) {
 			error("%s: Error: Invalid position on line %u near `%S` - cannot combine offsets with relations!\n", n);
 		}
+	}
+	if ((t.pos & POS_BAG_OF_TAGS) && ((t.pos & ~(POS_BAG_OF_TAGS | POS_NOT | POS_NEGATE | POS_SPAN_BOTH | POS_SPAN_LEFT | POS_SPAN_RIGHT)) || had_digits)) {
+		error("%s: Error: Invalid position on line %u near `%S` - bag of tags may only be combined with window spanning!\n", n);
 	}
 	if ((t.pos & POS_DEP_PARENT) && !(t.pos & POS_DEP_GLOB)) {
 		if (t.pos & (POS_LEFTMOST | POS_RIGHTMOST)) {

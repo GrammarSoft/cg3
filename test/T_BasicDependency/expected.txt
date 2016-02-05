@@ -5,7 +5,7 @@
 "<em>"
 	"em" <sam-> PRP @<PIV @self-or-child-S @self-or-child-c @self-or-parent-S @self-or-parent-p #3→2
 "<a>"
-	"o" <artd> <-sam> DET F S @>N @parent-deep #4→5
+	"o" <artd> <-sam> DET F S @>N @parent-deep @bag-self-or-prev @bag-self-or-next @bag-any-not #4→5
 "<mulher>"
 	"mulher" <Hattr> N F S @P< §PAT #5→3
 "<$.>"
@@ -13,7 +13,7 @@
 </s>
 
 "<o>"
-	"o" <artd> DET M S @>N @parent-deep #1→2
+	"o" <artd> DET M S @>N @parent-deep @bag-self @bag-self-or-prev @bag-self-or-next @bag-any-not #1→2
 "<carro>"
 	"carro" <V> N M S @SUBJ> #2→3
 "<bateu>"
@@ -37,7 +37,7 @@
 "<bateu>"
 	"bater" <fmc> <mv> V PS 3S IND VFIN @FS-STA @child-deep #4→0
 "<o>"
-	"o" <artd> DET M S @>N @parent-deep #5→6
+	"o" <artd> DET M S @>N @parent-deep @bag-self @bag-self-or-prev @bag-any #5→6
 "<recorde>"
 	"recorde" <ac> N M S @<ACC §EXP §PAT #6→4
 "<$.>"
@@ -59,4 +59,3 @@
 	"six" #7→5 ID:27 R:rightmost-descendent:23 R:rightmost-deepest-child:23 R:rightmost-self-or-descendent:23 R:rightmost-right-descendent:23 R:leftmost-deepest-child:23
 "<seven>"
 	"seven" #8→1 ID:28 R:rightmost-sibling:23
-

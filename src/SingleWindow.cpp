@@ -134,6 +134,7 @@ void SingleWindow::clear() {
 	variables_set.clear();
 	variables_rem.clear();
 	variables_output.clear();
+	bag_of_tags.clear();
 }
 
 void SingleWindow::appendCohort(Cohort *cohort) {
