@@ -370,6 +370,42 @@ Cohort *GrammarApplicator::runContextualTest(SingleWindow *sWindow, size_t posit
 				retval = !retval;
 			}
 		}
+		else if (test->pos & POS_BAG_OF_TAGS) {
+			bool match = doesSetMatchReading(sWindow->bag_of_tags, test->target, true);
+			if (!match && (test->pos & (POS_SPAN_BOTH | POS_SPAN_LEFT | POS_SPAN_RIGHT))) {
+				SingleWindow *left = sWindow->previous, *right = sWindow->next;
+				while (left || right) {
+					if (left && (test->pos & (POS_SPAN_BOTH | POS_SPAN_LEFT))) {
+						match = doesSetMatchReading(left->bag_of_tags, test->target, true);
+						left = left->previous;
+					}
+					else {
+						left = 0;
+					}
+					if (right && (test->pos & (POS_SPAN_BOTH | POS_SPAN_RIGHT))) {
+						match = doesSetMatchReading(right->bag_of_tags, test->target, true);
+						right = right->next;
+					}
+					else {
+						right = 0;
+					}
+					if (match) {
+						break;
+					}
+				}
+			}
+			if (test->pos & POS_NOT) {
+				match = !match;
+			}
+			if (match) {
+				if (test->linked) {
+					cohort = runContextualTest(sWindow, position, test->linked, deep, origin);
+				}
+			}
+			else {
+				retval = false;
+			}
+		}
 		else if (test->offset == 0 && (test->pos & (POS_SCANFIRST | POS_SCANALL))) {
 			SingleWindow *right, *left;
 			int32_t rpos, lpos;

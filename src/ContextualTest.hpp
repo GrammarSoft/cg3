@@ -68,7 +68,7 @@ enum {
 	POS_RELATION       = (1 << 26),
 	POS_ATTACH_TO      = (1 << 27),
 	POS_NUMERIC_BRANCH = (1 << 28),
-	// 29 unused
+	POS_BAG_OF_TAGS    = (1 << 29),
 	POS_DEP_GLOB       = (1 << 30),
 	POS_64BIT          = (1ull << 31),
 	POS_LEFT           = (1ull << 32),

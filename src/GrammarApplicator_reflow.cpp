@@ -515,6 +515,32 @@ uint32_t GrammarApplicator::addTagToReading(Reading& reading, Tag *tag, bool reh
 	if (rehash) {
 		reading.rehash();
 	}
+
+	if (grammar->has_bag_of_tags) {
+		Reading& bot = reading.parent->parent->bag_of_tags;
+		bot.tags.insert(tag->hash);
+		bot.tags_list.push_back(tag->hash);
+		bot.tags_bloom.insert(tag->hash);
+
+		if (tag->type & (T_TEXTUAL | T_WORDFORM | T_BASEFORM)) {
+			bot.tags_textual.insert(tag->hash);
+			bot.tags_textual_bloom.insert(tag->hash);
+		}
+		if (tag->type & T_NUMERICAL) {
+			bot.tags_numerical[tag->hash] = tag;
+		}
+		if (!reading.baseform && (tag->type & T_BASEFORM)) {
+			bot.baseform = tag->hash;
+		}
+		if (!(tag->type & T_SPECIAL)) {
+			bot.tags_plain.insert(tag->hash);
+			bot.tags_plain_bloom.insert(tag->hash);
+		}
+		if (rehash) {
+			bot.rehash();
+		}
+	}
+
 	return tag->hash;
 }
 

@@ -275,6 +275,19 @@
     </screen>
   </section>
 
+  <section id="test-bag-of-tags">
+    <title>Bag of Tags</title>
+    <indexterm>
+      <primary>B</primary>
+    </indexterm>
+    <para>
+      Position modifier 'B' causes the test to look in a bag of tags, which is like a bag of words but with all
+      tags. 'B' alone looks for tags in the current window, but can be combined with the
+      <link linkend="test-spanning">window spanning modifiers</link> to also test the windows before and/or after.
+      Linking from a 'B' test behaves as if you linked from offset 0.
+    </para>
+  </section>
+
   <section id="test-branch">
     <title>Optional Frequencies</title>
     <indexterm>

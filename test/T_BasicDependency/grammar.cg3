@@ -63,3 +63,9 @@ ADDRELATION (leftmost-left-ancestor) ("four") TO (lllpp (*)) ;
 ADDRELATION (rightmost-right-ancestor) ("four") TO (rrrpp (*)) ;
 ADDRELATION (leftmost-self-or-ancestor) ("four") TO (llppS (*)) ;
 ADDRELATION (rightmost-self-or-ancestor) ("four") TO (rrppS (*)) ;
+
+ADD (@bag-self) ("o") (B ("<bateu>")) ;
+ADD (@bag-self-or-prev) ("o") (B< ("<mulher>")) ;
+ADD (@bag-self-or-next) ("o") (B> ("<árvore>")) ;
+ADD (@bag-any) ("o") (BW ("<seven>")) ;
+ADD (@bag-any-not) ("o") (NOT BW ("<seven>")) ;
