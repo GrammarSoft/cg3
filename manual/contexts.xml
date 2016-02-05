@@ -286,6 +286,10 @@
       <link linkend="test-spanning">window spanning modifiers</link> to also test the windows before and/or after.
       Linking from a 'B' test behaves as if you linked from offset 0.
     </para>
+    <para>
+      The bag is greedy and lazy. It will hold all tags added to the window at any time, but will not forget
+      tags as they are removed from the window through various means.
+    </para>
   </section>
 
   <section id="test-branch">
