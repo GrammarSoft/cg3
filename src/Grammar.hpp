@@ -39,6 +39,7 @@ public:
 	UFILE *ux_stderr, *ux_stdout;
 
 	bool has_dep;
+	bool has_bag_of_tags;
 	bool has_relations;
 	bool has_encl_final;
 	bool is_binary;

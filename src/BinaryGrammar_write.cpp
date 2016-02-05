@@ -91,6 +91,9 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 	if (grammar->has_relations) {
 		fields |= (1 << 13);
 	}
+	if (grammar->has_bag_of_tags) {
+		fields |= (1 << 14);
+	}
 
 	u32tmp = (uint32_t)htonl((uint32_t)fields);
 	fwrite_throw(&u32tmp, sizeof(uint32_t), 1, output);

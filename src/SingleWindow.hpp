@@ -46,6 +46,7 @@ public:
 	uint32FlatHashMap variables_set;
 	uint32FlatHashSet variables_rem;
 	uint32SortedVector variables_output;
+	Reading bag_of_tags;
 
 	SingleWindow(Window *p);
 	~SingleWindow();
