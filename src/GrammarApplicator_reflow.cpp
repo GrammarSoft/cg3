@@ -303,27 +303,26 @@ void GrammarApplicator::reflowRelationWindow(uint32_t max) {
 			break;
 		}
 
-		if (!cohort->relations_input.empty()) {
-			for (RelationCtn::iterator rel = cohort->relations_input.begin(); rel != cohort->relations_input.end();) {
-				BOOST_AUTO(newrel, ss_u32sv.get());
+		for (RelationCtn::iterator rel = cohort->relations_input.begin(); rel != cohort->relations_input.end();) {
+			BOOST_AUTO(newrel, ss_u32sv.get());
 
-				boost_foreach (uint32_t target, rel->second) {
-					uint32FlatHashMap::iterator it = gWindow->relation_map.find(target);
-					if (it != gWindow->relation_map.end()) {
-						cohort->relations[rel->first].insert(it->second);
-					}
-					else {
-						newrel->insert(target);
-					}
-				}
-
-				if (newrel->empty()) {
-					cohort->relations_input.erase(rel++);
+			boost_foreach (uint32_t target, rel->second) {
+				uint32FlatHashMap::iterator it = gWindow->relation_map.find(target);
+				if (it != gWindow->relation_map.end()) {
+					cohort->relations[rel->first].insert(it->second);
 				}
 				else {
-					rel->second = newrel;
-					++rel;
+					newrel->insert(target);
 				}
+			}
+
+			// Defer missing relations for later
+			if (newrel->empty()) {
+				cohort->relations_input.erase(rel++);
+			}
+			else {
+				rel->second = newrel;
+				++rel;
 			}
 		}
 	}
