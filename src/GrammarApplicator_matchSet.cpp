@@ -733,6 +733,7 @@ inline bool GrammarApplicator::doesSetMatchCohort_helper(Cohort& cohort, Reading
 	bool retval = false;
 	BOOST_AUTO(utags, ss_utags.get());
 	BOOST_AUTO(usets, ss_u32sv.get());
+	uint8_t orz = regexgrps.first;
 
 	if (context && !(current_rule->flags & FL_CAPTURE_UNIF) && (theset.type & ST_CHILD_UNIFY)) {
 		*utags = *unif_tags;
@@ -761,6 +762,9 @@ inline bool GrammarApplicator::doesSetMatchCohort_helper(Cohort& cohort, Reading
 	}
 	if (!retval && context && !(current_rule->flags & FL_CAPTURE_UNIF) && (theset.type & ST_CHILD_UNIFY) && usets->size() != unif_sets->size()) {
 		unif_sets->swap(usets);
+	}
+	if (!retval) {
+		regexgrps.first = orz;
 	}
 	return retval;
 }

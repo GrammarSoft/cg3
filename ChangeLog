@@ -1,5 +1,16 @@
 2016-02-05  tino
 
+	* [r11329] manual/contexts.xml: Greedy and lazy bag
+	* [r11327] ChangeLog, manual/contexts.xml,
+	  src/BinaryGrammar_read.cpp, src/BinaryGrammar_write.cpp,
+	  src/ContextualTest.hpp, src/Grammar.cpp, src/Grammar.hpp,
+	  src/GrammarApplicator_reflow.cpp,
+	  src/GrammarApplicator_runContextualTest.cpp,
+	  src/SingleWindow.cpp, src/SingleWindow.hpp,
+	  src/TextualParser.cpp, src/version.hpp,
+	  test/T_BasicDependency/expected.txt,
+	  test/T_BasicDependency/grammar.cg3,
+	  test/T_BasicDependency/grammar.cg3b.10043: Implement Bag of Tags
 	* [r11325] src/GrammarApplicator_reflow.cpp: Silly if
 
 2016-01-26  tino
@@ -2291,10 +2302,4 @@
 	  tests. This saves 5.18% allocations and 6.07% memory usage.
 	  Binary format changed to accomodate. This change also allows one
 	  to refer to later templates.
-	* [r9247] compile-profile.sh, profile-apply.sh, profile-parse.sh,
-	  scripts/profile-revisions.php, vapply.sh, vparse.sh: Scripts
-
-2013-09-25  unhammer
-
-	* [r9246] emacs/cg.el: remove outdated comment
 
