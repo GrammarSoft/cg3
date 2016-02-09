@@ -161,6 +161,9 @@ void Tag::parseTagRaw(const UChar *to, Grammar *grammar) {
 }
 
 void Tag::parseNumeric() {
+	if (tag.size() >= 256) {
+		return;
+	}
 	UChar tkey[256];
 	UChar top[256];
 	UChar txval[256];
@@ -168,7 +171,7 @@ void Tag::parseNumeric() {
 	tkey[0] = 0;
 	top[0] = 0;
 	txval[0] = 0;
-	if (u_sscanf(tag.c_str(), "%*[<]%[^<>=:!]%[<>=:!]%[-MAXIN0-9]%*[>]", &tkey, &top, &txval) == 3 && top[0]) {
+	if (u_sscanf(tag.c_str(), "%*[<]%[^<>=:!]%[<>=:!]%[-MAXIN0-9]%*[>]", &tkey, &top, &txval) == 3 && top[0] && txval[0]) {
 		int32_t tval = 0;
 		int32_t r = u_strspn(txval, spn);
 		if (txval[0] == 'M' && txval[1] == 'A' && txval[2] == 'X' && txval[3] == 0) {
