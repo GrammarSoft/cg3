@@ -407,6 +407,14 @@ void GrammarApplicator::runGrammarOnText(istream& input, UFILE *output) {
 				lSWindow = cSWindow;
 				++numWindows;
 				did_soft_lookback = false;
+
+				if (grammar->has_bag_of_tags) {
+					// This is slow and not 100% correct as it doesn't remove the tags from the previous window
+					cCohort->parent = cSWindow;
+					foreach (rit, cCohort->readings) {
+						reflowReading(**rit);
+					}
+				}
 			}
 		}
 		else {
