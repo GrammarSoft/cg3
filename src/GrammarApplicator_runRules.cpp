@@ -1288,9 +1288,6 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 								if (tag->hash == grammar->tag_any) {
 									break;
 								}
-								if (reading.tags.find(tag->hash) != reading.tags.end()) {
-									continue;
-								}
 								if (tag->type & T_MAPPING || tag->tag[0] == grammar->mapping_prefix) {
 									mappings->push_back(tag);
 								}
