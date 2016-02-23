@@ -1,3 +1,17 @@
+2016-02-11  tino
+
+	* [r11341] src/GrammarApplicator_runGrammar.cpp: Fix B with -D
+
+2016-02-09  tino
+
+	* [r11340] src/Tag.cpp: Don't even try to parse very long tags as
+	  numeric
+
+2016-02-08  tino
+
+	* [r11338] ChangeLog, src/GrammarApplicator_matchSet.cpp,
+	  src/version.hpp: Even more undo regex captures on match fail
+
 2016-02-05  tino
 
 	* [r11329] manual/contexts.xml: Greedy and lazy bag
@@ -2286,20 +2300,4 @@
 	  test/T_DelayAndDelete/input.txt, test/T_DelayAndDelete/run.pl:
 	  Fixed unsafe removal of magic readings. Could not produce a
 	  distilled test case that showed the problem.
-	* [r9254] scripts/cg3-autobin.pl, src/cg3.h, src/libcg3.cpp,
-	  src/version.hpp: libcg3 now knows about sub-readings
-
-2013-09-25  tino
-
-	* [r9249] CMakeLists.txt, scripts/cg3-autobin.pl, src/version.hpp:
-	  CMake Source and Binary dirs are separate
-	* [r9248] scripts/cg3-autobin.pl, src/BinaryGrammar.hpp,
-	  src/BinaryGrammar_read.cpp, src/BinaryGrammar_write.cpp,
-	  src/ContextualTest.cpp, src/ContextualTest.hpp, src/Grammar.cpp,
-	  src/Grammar.hpp, src/Rule.cpp, src/Tag.cpp,
-	  src/TextualParser.cpp, src/inlines.hpp, src/version.hpp,
-	  test/T_Templates/grammar.cg3: Eliminate duplicate contextual
-	  tests. This saves 5.18% allocations and 6.07% memory usage.
-	  Binary format changed to accomodate. This change also allows one
-	  to refer to later templates.
 
