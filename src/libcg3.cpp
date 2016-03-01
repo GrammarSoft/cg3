@@ -183,7 +183,9 @@ cg3_sentence *cg3_sentence_new(cg3_applicator *applicator_) {
 	return current;
 }
 
-#pragma GCC visibility push(hidden)
+#ifndef _MSC_VER
+	#pragma GCC visibility push(hidden)
+#endif
 inline Tag *_tag_copy(GrammarApplicator *to, Tag *t) {
 	Tag *nt = to->addTag(t->tag);
 	return nt;
@@ -227,7 +229,9 @@ inline Cohort *_cohort_copy(SingleWindow *ns, Cohort *oc) {
 	}
 	return nc;
 }
-#pragma GCC visibility pop
+#ifndef _MSC_VER
+	#pragma GCC visibility pop
+#endif
 
 cg3_sentence *cg3_sentence_copy(cg3_sentence *sentence_, cg3_applicator *applicator_) {
 	GrammarApplicator *applicator = static_cast<GrammarApplicator*>(applicator_);
