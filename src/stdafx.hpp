@@ -24,16 +24,8 @@
 #define c6d28b7452ec699b_STDAFX_H
 
 #ifdef _MSC_VER
-	// warning C4258: definition from the for loop is ignored; the definition from the enclosing scope is used
-	#pragma warning (disable: 4258)
-	#pragma conform(forScope, on)
-	// warning C4428: universal-character-name encountered in source
-	#pragma warning (disable: 4428)
 	// warning C4512: assignment operator could not be generated
 	#pragma warning (disable: 4512)
-	// warning C4480: nonstandard extension used: specifying underlying type for enum
-	// 'cause that is actually standard in C++11
-	#pragma warning (disable: 4480)
 	// warning C4456: declaration hides previous local declaration
 	#pragma warning (disable: 4456)
 	// warning C4458: declaration hides class member
