@@ -145,6 +145,7 @@
         SET Hubba = ThisIsASet - (ctag) ;
         SELECT ThisIsASet IF (-1 (dtag)) ;
 
+        SECTION with-name;
         LIST AnotherSet =  "&lt;youknowthedrill&gt;" ;
         MAP (@bingo) TARGET AnotherSet ;
       </screen>
