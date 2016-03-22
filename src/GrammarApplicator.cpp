@@ -85,8 +85,10 @@ GrammarApplicator::GrammarApplicator(UFILE *ux_err)
   , match_sub(0)
   , begintag(0)
   , endtag(0)
+  , substtag(0)
   , tag_begin(0)
   , tag_end(0)
+  , tag_subst(0)
   , par_left_tag(0)
   , par_right_tag(0)
   , par_left_pos(0)
@@ -144,8 +146,10 @@ void GrammarApplicator::setGrammar(Grammar *res) {
 	single_tags = grammar->single_tags;
 	tag_begin = addTag(stringbits[S_BEGINTAG].getTerminatedBuffer());
 	tag_end = addTag(stringbits[S_ENDTAG].getTerminatedBuffer());
+	tag_subst = addTag(stringbits[S_IGNORE].getTerminatedBuffer());
 	begintag = tag_begin->hash;
 	endtag = tag_end->hash;
+	substtag = tag_subst->hash;
 
 	index_readingSet_yes.clear();
 	index_readingSet_yes.resize(grammar->sets_list.size());

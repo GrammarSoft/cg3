@@ -1,3 +1,17 @@
+2016-03-03  tino
+
+	* [r11383] manual/grammar.xml: Section name example
+
+2016-03-01  tino
+
+	* [r11374] src/libcg3.cpp, src/stdafx.hpp: Things no longer
+	  relevant in VS 2015
+
+2016-02-23  tino
+
+	* [r11351] ChangeLog, src/GrammarApplicator_runRules.cpp,
+	  src/version.hpp: Remove Substitute unique test
+
 2016-02-11  tino
 
 	* [r11341] src/GrammarApplicator_runGrammar.cpp: Fix B with -D
@@ -2278,26 +2292,4 @@
 	* [r9265] scripts/cg3-autobin.pl, src/GrammarApplicator.cpp,
 	  src/GrammarApplicator.hpp, src/GrammarApplicator_runRules.cpp,
 	  src/main.cpp, src/options.hpp, src/version.hpp: Add --dry-run
-
-2013-10-01  unhammer
-
-	* [r9264] emacs/cg.el: minor bug in `cg-output-toggle-analyses',
-	  some doc
-	* [r9261] emacs/cg.el: `h' (cg-output-hide-analyses) in output
-	  buffer makes CG format look like plain sentences.
-	  
-	  Tags/analyses are still searchable, but hidden until searched
-	  for. `u' (cg-output-set-unhide) lets you set some exceptions to
-	  the hiding, or put (setq cg-output-unhide-regex "someregex") in
-	  ~/.emacs to save some default exception.
-
-2013-09-30  tino
-
-	* [r9258] scripts/cg3-autobin.pl,
-	  src/GrammarApplicator_runRules.cpp, src/main.cpp,
-	  src/version.hpp, test/T_DelayAndDelete/expected.txt,
-	  test/T_DelayAndDelete/grammar.cg3,
-	  test/T_DelayAndDelete/input.txt, test/T_DelayAndDelete/run.pl:
-	  Fixed unsafe removal of magic readings. Could not produce a
-	  distilled test case that showed the problem.
 
