@@ -1,5 +1,5 @@
 "<worded>"
 	"word" notwanted @add-good @add-mixcase-1 @add-mixcase-2 @add-regex ADD:8 ADD:9 SUBSTITUTE:10 ADD:12 ADD:13
-	"word-sub" before 1 1 4 2 3 3 substituted 3 3 after @add-good @add-mixcase-1 @add-mixcase-2 @add-regex @map-word SUBSTITUTE:4 SUBSTITUTE:5 ADD:8 ADD:9 SUBSTITUTE:10 ADD:12 ADD:13 SUBSTITUTE:15 MAP:16
+	"word-sub" before 1 1 4 2 4 2 3 3 substituted 3 3 after @add-good @add-mixcase-1 @add-mixcase-2 @add-regex @map-word SUBSTITUTE:4 SUBSTITUTE:5 ADD:8 ADD:9 SUBSTITUTE:10 ADD:12 ADD:13 SUBSTITUTE:15 MAP:16
 	"word" @add-good @add-mixcase-1 @add-mixcase-2 @add-regex SUBSTITUTE:6 ADD:8 ADD:9 SUBSTITUTE:10 ADD:12 ADD:13
 

@@ -185,8 +185,8 @@ protected:
 	std::map<uint32_t, DepAncestorIter> depAncestorIters;
 
 	uint32_t match_single, match_comp, match_sub;
-	uint32_t begintag, endtag;
-	Tag *tag_begin, *tag_end;
+	uint32_t begintag, endtag, substtag;
+	Tag *tag_begin, *tag_end, *tag_subst;
 	uint32_t par_left_tag, par_right_tag;
 	uint32_t par_left_pos, par_right_pos;
 	bool did_final_enclosure;
