@@ -1224,8 +1224,6 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						// ToDo: Check whether this substitution will do nothing at all to the end result
 						// ToDo: Not actually...instead, test whether any reading in the cohort already is the end result
 
-						size_t tpos = std::numeric_limits<size_t>::max();
-						size_t tagb = reading.tags_list.size();
 						BOOST_AUTO(theTags, ss_taglist.get());
 						getTagList(*rule.sublist, theTags);
 
@@ -1249,25 +1247,62 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						}
 
 						// Perform the tag removal, remembering the position of the final removed tag for use as insertion spot
-						foreach (tter, *theTags) {
-							if (tpos >= reading.tags_list.size()) {
-								foreach (tfind, reading.tags_list) {
-									if (*tfind == (*tter)->hash) {
-										tpos = std::distance(reading.tags_list.begin(), tfind);
-										--tpos;
+						size_t tpos = std::numeric_limits<size_t>::max();
+						bool plain = true;
+						for (size_t i = 0 ; i < reading.tags_list.size() ; ) {
+							BOOST_AUTO(&remter, reading.tags_list[i]);
+
+							if (plain && remter == (*theTags->begin())->hash) {
+								if (reading.baseform == remter) {
+									reading.baseform = 0;
+								}
+								remter = substtag;
+								tpos = i;
+								for (size_t j = 1 ; j < theTags->size() && i < reading.tags_list.size() ; ++j, ++i) {
+									BOOST_AUTO(&remter, reading.tags_list[i]);
+									BOOST_AUTO(tter, (*theTags)[j]->hash);
+									if (remter != tter) {
+										plain = false;
 										break;
 									}
+									reading.tags_list.erase(reading.tags_list.begin() + i);
+									reading.tags.erase(tter);
+									if (reading.baseform == tter) {
+										reading.baseform = 0;
+									}
+								}
+								continue;
+							}
+
+							foreach(tter, *theTags) {
+								if (remter != (*tter)->hash) {
+									continue;
+								}
+								tpos = i;
+								remter = substtag;
+								reading.tags.erase((*tter)->hash);
+								if (reading.baseform == (*tter)->hash) {
+									reading.baseform = 0;
 								}
 							}
-							erase(reading.tags_list, (*tter)->hash);
-							reading.tags.erase((*tter)->hash);
-							if (reading.baseform == (*tter)->hash) {
-								reading.baseform = 0;
-							}
+
+							++i;
 						}
 
 						// Should Substitute really do nothing if no tags were removed? 2013-10-21, Eckhard says this is expected behavior.
-						if (tagb != reading.tags_list.size()) {
+						if (tpos != std::numeric_limits<size_t>::max()) {
+							if (!plain) {
+								for (size_t i = 0 ; i < reading.tags_list.size() && i < tpos ; ) {
+									if (reading.tags_list[i] == substtag) {
+										reading.tags_list.erase(reading.tags_list.begin() + i);
+										--tpos;
+									}
+									else {
+										++i;
+									}
+								}
+							}
+
 							Tag *wf = 0;
 							index_ruleCohort_no.clear();
 							reading.hit_by.push_back(rule.number);
@@ -1280,30 +1315,41 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 							BOOST_AUTO(theTags, ss_taglist.get());
 							getTagList(*rule.maplist, theTags);
 
-							foreach (tter, *theTags) {
-								Tag *tag = *tter;
-								if (tag->type & T_VARSTRING) {
-									tag = generateVarstringTag(tag);
-								}
-								if (tag->hash == grammar->tag_any) {
-									break;
-								}
-								if (tag->type & T_MAPPING || tag->tag[0] == grammar->mapping_prefix) {
-									mappings->push_back(tag);
+							for (size_t i = 0 ; i < reading.tags_list.size() ; ) {
+								if (reading.tags_list[i] == substtag) {
+									reading.tags_list.erase(reading.tags_list.begin() + i);
+									tpos = i;
+
+									foreach (tter, *theTags) {
+										Tag *tag = *tter;
+										if (tag->type & T_VARSTRING) {
+											tag = generateVarstringTag(tag);
+										}
+										if (tag->hash == grammar->tag_any) {
+											break;
+										}
+										if (tag->type & T_MAPPING || tag->tag[0] == grammar->mapping_prefix) {
+											mappings->push_back(tag);
+										}
+										else {
+											if (tag->type & T_WORDFORM) {
+												wf = tag;
+											}
+											reading.tags_list.insert(reading.tags_list.begin() + tpos, tag->hash);
+											++tpos;
+										}
+										if (updateValidRules(rules, intersects, tag->hash, reading)) {
+											iter_rules = intersects.find(rule.number);
+											iter_rules_end = intersects.end();
+										}
+									}
 								}
 								else {
-									if (tag->type & T_WORDFORM) {
-										wf = tag;
-									}
-									reading.tags_list.insert(reading.tags_list.begin() + tpos, tag->hash);
-									++tpos;
-								}
-								if (updateValidRules(rules, intersects, tag->hash, reading)) {
-									iter_rules = intersects.find(rule.number);
-									iter_rules_end = intersects.end();
+									++i;
 								}
 							}
 							reflowReading(reading);
+
 							if (!mappings->empty()) {
 								splitMappings(mappings, *cohort, reading, true);
 							}

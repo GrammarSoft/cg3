@@ -53,7 +53,7 @@ UnicodeString g_flags[FLAGS_COUNT] = {
 };
 
 UnicodeString keywords[KEYWORD_COUNT] = {
-	UNICODE_STRING_SIMPLE("1f283fc29adb937a892e09bbc124b85c this is a dummy keyword to hold position 0"),
+	UNICODE_STRING_SIMPLE("__CG3_DUMMY_KEYWORD__"),
 	UNICODE_STRING_SIMPLE("SETS"),
 	UNICODE_STRING_SIMPLE("LIST"),
 	UNICODE_STRING_SIMPLE("SET"),
@@ -119,7 +119,7 @@ const UChar _S_SET_ISECT_U[] = { L'\u2229', 0 };
 const UChar _S_SET_SYMDIFF_U[] = { L'\u2206', 0 };
 
 UnicodeString stringbits[STRINGS_COUNT] = {
-	UNICODE_STRING_SIMPLE("1f283fc29adb937a892e09bbc124b85c this is a dummy string to hold position 0"),
+	UNICODE_STRING_SIMPLE("__CG3_DUMMY_STRINGBIT__"),
 	UNICODE_STRING_SIMPLE("|"),
 	UNICODE_STRING_SIMPLE("TO"),
 	UNICODE_STRING_SIMPLE("OR"),
