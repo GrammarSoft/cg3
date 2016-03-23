@@ -1246,26 +1246,6 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 							++it;
 						}
 
-						// Check whether anything at all can be done, and bail out if not
-						bool found = false;
-						for (size_t i = 0 ; i < reading.tags_list.size() ; ++i) {
-							BOOST_AUTO(&remter, reading.tags_list[i]);
-
-							foreach(tter, *theTags) {
-								if (remter != (*tter)->hash) {
-									continue;
-								}
-								found = true;
-								break;
-							}
-							if (found) {
-								break;
-							}
-						}
-						if (!found) {
-							continue;
-						}
-
 						// Perform the tag removal, remembering the position of the final removed tag for use as insertion spot
 						size_t tpos = std::numeric_limits<size_t>::max();
 						bool plain = true;
