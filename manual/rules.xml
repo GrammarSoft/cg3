@@ -299,7 +299,8 @@
     </screen>
     <para>
       Replaces the tags in the first list with the tags in the second list.
-      If none of the tags in the first list are found, the insertion tags are simply appended.
+      If none of the tags in the first list are found, no insertion is done.
+      If only some of the tags are found, the insertion happens at the last removed tag, which may cause tags to be out of your desired order.
       To prevent this, also have important tags as part of the target.
       This works as in VISLCG, but the replacement tags may be the * tag to signify a nil replacement,
       allowing for clean removal of tags in a reading. For example, to remove TAG do:
