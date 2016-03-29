@@ -1,9 +1,9 @@
 ;;; cg.el --- major mode for editing Constraint Grammar files
 
-;; Copyright (C) 2010-2013 Kevin Brubeck Unhammer
+;; Copyright (C) 2010-2016 Kevin Brubeck Unhammer
 
 ;; Author: Kevin Brubeck Unhammer <unhammer@fsfe.org>
-;; Version: 0.1.7
+;; Version: 0.1.8
 ;; Url: http://beta.visl.sdu.dk/constraint_grammar.html
 ;; Keywords: languages
 
@@ -32,17 +32,18 @@
 ;; ; Or if you use a non-standard file suffix, e.g. .rlx:
 ;; (add-to-list 'auto-mode-alist '("\\.rlx\\'" . cg-mode))
 
-;; I recommend using auto-complete-mode for tab-completion, and
+;; I recommend using company-mode for tab-completion, and
 ;; smartparens-mode if you're used to it (paredit-mode does not work
 ;; well if you have set names with the # character in them). Both are
-;; available from MELPA (see http://melpa.milkbox.net/). You can
-;; lazy-load auto-complete for cg-mode like this:
+;; available from MELPA (see http://melpa.milkbox.net/).
 ;;
-;; (eval-after-load 'auto-complete '(add-to-list 'ac-modes 'cg-mode))
+;; You can lazy-load company-mode for cg-mode like this:
+;;
+;; (eval-after-load 'company-autoloads
+;;     (add-hook 'cg-mode-hook #'company-mode))
 
 
 ;; TODO:
-;; - optionally highlight any LIST/SET without ; at the end
 ;; - different syntax highlighting for sets and tags (difficult)
 ;; - use something like prolog-clause-start to define M-a/e etc.
 ;; - run vislcg3 --show-unused-sets and buttonise with line numbers (like Occur does)
@@ -56,14 +57,14 @@
 ;; - derive cg-mode from prog-mode?
 ;; - goto-set/list
 ;; - show definition of set/list-at-point in modeline
-;; - send dictionary to auto-complete
 ;; - show section name/number in modeline
 
 ;;; Code:
 
-(defconst cg-version "0.1.7" "Version of cg-mode")
+(defconst cg-version "0.1.8" "Version of cg-mode.")
 
 (eval-when-compile (require 'cl))
+(require 'cl-lib)
 
 ;;;============================================================================
 ;;;
@@ -107,7 +108,7 @@ See also `cg-command'."
 with `cg-check'.
 
 Buffer-local, so use `setq-default' if you want to change the
-global default value. If you want to set it on a per-file basis,
+global default value.  If you want to set it on a per-file basis,
 put a line like
 
 # -*- cg-pre-pipe: \"lt-proc foo.bin | cg-conv\"; othervar: value; -*-
@@ -124,7 +125,7 @@ See also `cg-command' and `cg-post-pipe'."
 with `cg-check'.
 
 Buffer-local, so use `setq-default' if you want to change the
-global default value. If you want to set it on a per-file basis,
+global default value.  If you want to set it on a per-file basis,
 put a line like
 
 # -*- cg-post-pipe: \"cg-conv --out-apertium | lt-proc -b foo.bin\"; -*-
@@ -322,18 +323,21 @@ re-evaluating `cg-kw-re' (or all of cg.el)." )
         (goto-char initial-point)))))
 
 (defun cg-comment-rule (&optional n)
-  "Comment/uncomment a rule around point."
+  "Comment a rule around point.
+With a prefix argument N, comment that many rules."
   (interactive "p")
   (cg--comment/uncomment-rule 'comment n))
 
 (defun cg-uncomment-rule (&optional n)
+  "Uncomment a rule around point.
+With a prefix argument N, uncomment that many rules."
   (interactive "p")
   (cg--comment/uncomment-rule nil n))
 
 (defun cg-comment-or-uncomment-rule (&optional n)
-  "Comment the rule at point; if already inside (or before) a
-comment, uncomment instead. With a prefix argument N, (un)comment
-that many rules."
+  "Comment the rule at point.
+If already inside (or before) a comment, uncomment instead.
+With a prefix argument N, (un)comment that many rules."
   (interactive "p")
   (if (or (elt (syntax-ppss) 4)
           (< (save-excursion
@@ -410,13 +414,15 @@ CG-mode provides the following specific keyboard key bindings:
     ("[( \t\n]\\(\\^\\)" 1 "'")))
 
 (defun cg-font-lock-syntactic-face-function (state)
-  "Determine which face to use when fontifying syntactically. See
-`font-lock-syntactic-face-function'.
+  "Determine which face to use when fontifying syntactically.
 
-TODO: something like
-	((= 0 (nth 0 state)) font-lock-variable-name-face)
-would be great to differentiate SETs from their members, but it
-seems this function only runs on comments and strings..."
+Argument STATE is assumed to be from `parse-partial-sexp' at the
+beginning of the region to highlight; see
+`font-lock-syntactic-face-function'."
+  ;; TODO: something like
+  ;; 	((= 0 (nth 0 state)) font-lock-variable-name-face)
+  ;; would be great to differentiate SETs from their members, but it
+  ;; seems this function only runs on comments and strings...
   (cond ((nth 3 state)
          (if
              (save-excursion
@@ -470,9 +476,10 @@ seems this function only runs on comments and strings..."
               0)))))))
 
 (defun cg-indent-line ()
-  "Indent the current line. Very simple indentation: lines with
-keywords from `cg-kw-list' get zero indentation, others get one
-indentation."
+  "Indent the current line.
+
+Very simple indentation: lines with keywords from `cg-kw-list'
+get zero indentation, others get one indentation."
   (interactive)
   (let ((indent (cg-calculate-indent))
         (pos (- (point-max) (point))))
@@ -493,15 +500,16 @@ indentation."
 (defvar cg--goto-history nil)
 
 (defun cg-permute (input)
-  "From http://www.emacswiki.org/emacs/StringPermutations"
-  (require 'cl)	; TODO: (require 'cl-lib) for whole file when 24.3 in distros
+  "Permute INPUT list.
+
+From http://www.emacswiki.org/emacs/StringPermutations"
   (if (null input)
       (list input)
-    (mapcan (lambda (elt)
-              (mapcan (lambda (p)
-                        (list (cons elt p)))
-                      (cg-permute (remove* elt input :count 1))))
-            input)))
+    (cl-mapcan (lambda (elt)
+                 (cl-mapcan (lambda (p)
+                              (list (cons elt p)))
+                            (cg-permute (cl-remove elt input :count 1))))
+               input)))
 
 (defun cg-read-arg (prompt history &optional default)
   (let* ((default (or default (car history)))
@@ -550,16 +558,17 @@ etc."
       (setq regexp-history tmp))))
 
 (defun cg-goto-rule (&optional input)
-  "Go to the line number of the rule described by `input', where
-`input' is the rule info from vislcg3 --trace.  E.g. if `input'
-is \"SELECT:1022:rulename\", go to the rule on line number
-1022. Interactively, use a prefix argument to paste `input'
-manually, otherwise this function uses the most recently copied
-line in the X clipboard.
+  "Go to the line number of the rule described by INPUT.
+
+INPUT is the rule info from vislcg3 --trace; e.g. if INPUT is
+\"SELECT:1022:rulename\", go to the rule on line number 1022.
+Interactively, use a prefix argument to paste INPUT manually,
+otherwise this function uses the most recently copied line in the
+X clipboard.
 
 This makes switching between the terminal and the file slightly
-faster (since double-clicking the rule info -- in Konsole at
-least -- selects the whole string \"SELECT:1022:rulename\")."
+faster (since double-clicking the rule info in most terminals will
+select the whole string \"SELECT:1022:rulename\")."
   (interactive (list (when current-prefix-arg
                        (cg-read-arg "Paste rule info from --trace here: "
                                     cg--goto-history))))
@@ -677,19 +686,20 @@ from, otherwise all CG buffers share one input buffer."
      ,#'cg-get-file nil nil 2)
     (".*?line \\([0-9]+\\).*"		; some error messages span several lines
      ,#'cg-get-file 1 nil 2))
-  "Regexp used to match vislcg3 --trace hits. See
-`compilation-error-regexp-alist'.")
+  "Regexp used to match vislcg3 --trace hits.
+See `compilation-error-regexp-alist'.")
 ;; TODO: highlight strings and @'s and #1->0's in cg-output-mode ?
 
 ;;;###autoload
 (defcustom cg-output-setup-hook nil
-  "List of hook functions run by `cg-output-process-setup' (see
-`run-hooks')."
+  "List of hook functions run by `cg-output-process-setup'.
+See `run-hooks'."
   :type 'hook)
 
 (defun cg-output-process-setup ()
-  "Runs `cg-output-setup-hook' for `cg-check'. That hook is
-useful for doing things like
+  "Run `cg-output-setup-hook' for `cg-check'.
+
+That hook is useful for doing things like
  (setenv \"PATH\" (concat \"~/local/stuff\" (getenv \"PATH\")))"
   (run-hooks 'cg-output-setup-hook))
 
@@ -703,7 +713,7 @@ useful for doing things like
   "Face name to use for lemmas in cg-output.")
 
 (defvar cg-output-mapping-face 'bold
-  "Face name to use for mapping tags in cg-output")
+  "Face name to use for mapping tags in cg-output.")
 
 (defvar cg-output-mode-font-lock-keywords
   '(("^;\\(?:[^:]* \\)"
@@ -791,21 +801,23 @@ runs."
     (overlay-put o 'isearch-open-invisible 'cg-output-remove-overlay)))
 
 (defun cg-output-show-all ()
-  "Undoes the effect of `cg-output-hide-analyses'."
+  "Undo the effect of `cg-output-hide-analyses'."
   (interactive)
   (setq cg--output-hiding-analyses nil)
   (remove-overlays (point-min) (point-max) 'invisible 'cg-output))
 
 (defun cg-output-hide-analyses ()
-  "Hides all analyses, turning the CG format back into input
-text (more or less). You can still isearch through the text for
-tags, REMOVE/SELECT keywords etc.
+  "Hide all analyses.
+
+This turns the CG format back into input text (more or less).
+You can still isearch through the text for tags, REMOVE/SELECT
+keywords etc.
 
 Call `cg-output-set-unhide' to set a regex which will be exempt
-from hiding. Call `cg-output-show-all' to turn off all hiding."
+from hiding.  Call `cg-output-show-all' to turn off all hiding."
   (interactive)
   (setq cg--output-hiding-analyses t)
-  (lexical-let (last)
+  (lexical-let (prev)
     (save-excursion
       (goto-char (point-min))
       (while (re-search-forward "^\"<.*>\"" nil 'noerror)
@@ -813,14 +825,14 @@ from hiding. Call `cg-output-show-all' to turn off all hiding."
 	      (line-end (match-end 0)))
 	  (cg-output-hide-region line-beg (+ line-beg 2)) ; "<
 	  (cg-output-hide-region (- line-end 2) line-end) ; >"
-	  (when last
-	    (if (save-excursion (re-search-backward cg-sent-tag last 'noerror))
-		(cg-output-hide-region last (- line-beg 1))	; show newline
-	      (cg-output-hide-region last line-beg))) ; hide newline too
-	  (setq last line-end)))
-      (goto-char last)
+	  (when prev
+	    (if (save-excursion (re-search-backward cg-sent-tag prev 'noerror))
+		(cg-output-hide-region prev (- line-beg 1))	; show newline
+	      (cg-output-hide-region prev line-beg))) ; hide newline too
+	  (setq prev line-end)))
+      (goto-char prev)
       (when (re-search-forward "^[^\t\"]" nil 'noerror)
-	(cg-output-hide-region last (match-beginning 0)))))
+	(cg-output-hide-region prev (match-beginning 0)))))
 
   (when cg-output-unhide-regex
     (cg-output-unhide-some cg-output-unhide-regex)))
@@ -836,8 +848,11 @@ from hiding. Call `cg-output-show-all' to turn off all hiding."
 	    (overlays-at (match-beginning 0))))))
 
 (defun cg-output-set-unhide (needle)
-  "Set some exeption to `cg-output-hide-analyses'. This is saved
-and reused whenever `cg-output-hide-analyses' is called."
+  "Set some exeption to `cg-output-hide-analyses'.
+
+If NEEDLE is the empty string, hide all analyses.
+This is saved and reused whenever `cg-output-hide-analyses' is
+called."
   (interactive (list (cg-read-arg
 		      "Regex to unhide, or empty to hide all"
 		      cg--output-unhide-history
@@ -850,8 +865,8 @@ and reused whenever `cg-output-hide-analyses' is called."
 
 ;;; TODO:
 (defun cg-output-toggle-analyses ()
-  "Hide or show analyses from output. See
-`cg-output-hide-analyses'."
+  "Hide or show analyses from output.
+See `cg-output-hide-analyses'."
   (interactive)
   (if cg--output-hiding-analyses
       (cg-output-show-all)
@@ -920,7 +935,7 @@ buffer (so 0 is after each change)."
 			'cg-output-buffer-name))))
 
 (defun cg-end-process (proc &optional string)
-  "End `proc', optionally first sending in `string'."
+  "End PROC, optionally first sending in STRING."
   (when string
     (process-send-string proc string))
   (process-send-string proc "\n")
@@ -931,8 +946,8 @@ buffer (so 0 is after each change)."
 in case you haven't saved yet).
 
 If you've set `cg-pre-pipe', input will first be sent through
-that. Set your test input sentence(s) with `cg-edit-input'. If
-you want to send a whole file instead, just set `cg-pre-pipe' to
+that.  Set your test input sentence(s) with `cg-edit-input'.
+If you want to send a whole file instead, just set `cg-pre-pipe' to
 something like
 \"zcat corpus.gz | lt-proc analyser.bin | cg-conv\".
 
