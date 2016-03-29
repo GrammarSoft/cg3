@@ -384,6 +384,7 @@ CG-mode provides the following specific keyboard key bindings:
   (when font-lock-mode
     (setq font-lock-set-defaults nil)
     (font-lock-set-defaults)
+    ;; TODO: emacs 25 prefers `font-lock-ensure' and `font-lock-flush' over fontify
     (font-lock-fontify-buffer))
   (add-hook 'after-change-functions #'cg-after-change nil 'buffer-local)
   (let ((buf (current-buffer)))
@@ -666,15 +667,15 @@ from, otherwise all CG buffers share one input buffer."
 (defconst cg-output-regexp-alist
   `((,(format "%s:\\([^ \n\t:]+\\)\\(?::[^ \n\t]+\\)?" cg-kw-rule-re)
      ,#'cg-get-file 1 nil 1)
-    ("^Warning: .*?line \\([0-9]+\\)"
-     ,#'cg-get-file 1 nil 1)
-    ("^Warning: .*"
+    ("^\\([^:]*: \\)?Warning: .*?line \\([0-9]+\\).*"
+     ,#'cg-get-file 2 nil 1)
+    ("^\\([^:]*: \\)?Warning: .*"
      ,#'cg-get-file nil nil 1)
-    ("^Error: .*?line \\([0-9]+\\)"
-     ,#'cg-get-file 1 nil 2)
-    ("^Error: .*"
+    ("^\\([^:]*: \\)?Error: .*?line \\([0-9]+\\).*"
+     ,#'cg-get-file 2 nil 2)
+    ("^\\([^:]*: \\)?Error: .*"
      ,#'cg-get-file nil nil 2)
-    (".*?line \\([0-9]+\\)"		; some error messages span several lines
+    (".*?line \\([0-9]+\\).*"		; some error messages span several lines
      ,#'cg-get-file 1 nil 2))
   "Regexp used to match vislcg3 --trace hits. See
 `compilation-error-regexp-alist'.")
