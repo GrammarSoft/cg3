@@ -44,6 +44,8 @@ Language: Cpp
 MaxEmptyLinesToKeep: 2
 NamespaceIndentation: Inner
 PointerAlignment: Right
+ReflowComments: false
+SortIncludes: false
 SpaceAfterCStyleCast: false
 SpaceBeforeAssignmentOperators: true
 SpaceBeforeParens: ControlStatements
