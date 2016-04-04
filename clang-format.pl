@@ -32,7 +32,7 @@ foreach my $file (@files) {
    $data =~ s@PRAGMA_ONCE_IFNDEF@#pragma once\n#ifndef@g;
    file_write($file, $data);
 
-   `clang-format-3.8 -style=file -i '$file'`;
+   `clang-format-3.9 -style=file -i '$file'`;
 
    my $data = file_read($file);
    $data =~ s@\n[^\n]*//[^\n]+clang-format (off|on)\n@\n@g; # Remove preprocessor protection
@@ -91,8 +91,11 @@ foreach my $file (@files) {
          if ($line =~ m@^([^"]+"[^"]+",)@) {
             my $txt = $1;
             my $sps = ' ' x (1 + $len - length($txt));
+            my ($is) = ($txt =~ m@^(\s+)@);
+            $line =~ s@\s+@ @g;
             $line =~ s@, 0, @,   0, @g;
             $line =~ s@UOPT_NO_ARG, @UOPT_NO_ARG,       @g;
+            $line =~ s@^\s+@$is@;
             $line =~ s@(\Q$txt\E) @$1$sps@;
          }
          push @comb, $line;
