@@ -1249,7 +1249,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						// Perform the tag removal, remembering the position of the final removed tag for use as insertion spot
 						size_t tpos = std::numeric_limits<size_t>::max();
 						bool plain = true;
-						for (size_t i = 0 ; i < reading.tags_list.size() ; ) {
+						for (size_t i = 0; i < reading.tags_list.size();) {
 							BOOST_AUTO(&remter, reading.tags_list[i]);
 
 							if (plain && remter == (*theTags->begin())->hash) {
@@ -1258,7 +1258,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 								}
 								remter = substtag;
 								tpos = i;
-								for (size_t j = 1 ; j < theTags->size() && i < reading.tags_list.size() ; ++j, ++i) {
+								for (size_t j = 1; j < theTags->size() && i < reading.tags_list.size(); ++j, ++i) {
 									BOOST_AUTO(&remter, reading.tags_list[i]);
 									BOOST_AUTO(tter, (*theTags)[j]->hash);
 									if (remter != tter) {
@@ -1274,7 +1274,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 								continue;
 							}
 
-							foreach(tter, *theTags) {
+							foreach (tter, *theTags) {
 								if (remter != (*tter)->hash) {
 									continue;
 								}
@@ -1292,7 +1292,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						// Should Substitute really do nothing if no tags were removed? 2013-10-21, Eckhard says this is expected behavior.
 						if (tpos != std::numeric_limits<size_t>::max()) {
 							if (!plain) {
-								for (size_t i = 0 ; i < reading.tags_list.size() && i < tpos ; ) {
+								for (size_t i = 0; i < reading.tags_list.size() && i < tpos;) {
 									if (reading.tags_list[i] == substtag) {
 										reading.tags_list.erase(reading.tags_list.begin() + i);
 										--tpos;
@@ -1315,7 +1315,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 							BOOST_AUTO(theTags, ss_taglist.get());
 							getTagList(*rule.maplist, theTags);
 
-							for (size_t i = 0 ; i < reading.tags_list.size() ; ) {
+							for (size_t i = 0; i < reading.tags_list.size();) {
 								if (reading.tags_list[i] == substtag) {
 									reading.tags_list.erase(reading.tags_list.begin() + i);
 									tpos = i;

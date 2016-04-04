@@ -40,7 +40,7 @@ enum {
 	ST_USED        = (1 <<  6),
 	ST_STATIC      = (1 <<  7),
 
-	MASK_ST_UNIFY = ST_TAG_UNIFY | ST_SET_UNIFY | ST_CHILD_UNIFY,
+	MASK_ST_UNIFY  = ST_TAG_UNIFY | ST_SET_UNIFY | ST_CHILD_UNIFY,
 };
 
 class Set {

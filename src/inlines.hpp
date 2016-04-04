@@ -233,7 +233,7 @@ inline bool ISESC(const UChar *p) {
 }
 
 template<typename C, size_t N>
-inline bool IS_ICASE(const UChar *p, const C(&uc)[N], const C(&lc)[N]) {
+inline bool IS_ICASE(const UChar *p, const C (&uc)[N], const C (&lc)[N]) {
 	// N - 1 due to null terminator for string constants
 	if (ISSTRING(p, N - 1)) {
 		return false;
