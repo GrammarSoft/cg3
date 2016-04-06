@@ -831,24 +831,24 @@ void GrammarApplicator::pipeInSingleWindow(SingleWindow& window, Process& input)
 void GrammarApplicator::error(const char *str, const UChar *p) {
 	(void)p;
 	UChar buf[] = { L'R', L'U', L'N', L'T', L'I', L'M', L'E', 0 };
-	u_fprintf(ux_stderr, str, buf, 0, buf);
+	u_fprintf(ux_stderr, str, buf, numLines, buf);
 }
 
 void GrammarApplicator::error(const char *str, const char *s, const UChar *p) {
 	(void)p;
 	UChar buf[] = { L'R', L'U', L'N', L'T', L'I', L'M', L'E', 0 };
-	u_fprintf(ux_stderr, str, buf, s, 0, buf);
+	u_fprintf(ux_stderr, str, buf, s, numLines, buf);
 }
 
 void GrammarApplicator::error(const char *str, const UChar *s, const UChar *p) {
 	(void)p;
 	UChar buf[] = { L'R', L'U', L'N', L'T', L'I', L'M', L'E', 0 };
-	u_fprintf(ux_stderr, str, buf, s, 0, buf);
+	u_fprintf(ux_stderr, str, buf, s, numLines, buf);
 }
 
 void GrammarApplicator::error(const char *str, const char *s, const UChar *S, const UChar *p) {
 	(void)p;
 	UChar buf[] = { L'R', L'U', L'N', L'T', L'I', L'M', L'E', 0 };
-	u_fprintf(ux_stderr, str, buf, s, S, 0, buf);
+	u_fprintf(ux_stderr, str, buf, s, S, numLines, buf);
 }
 }
