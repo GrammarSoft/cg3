@@ -3,7 +3,7 @@
 ;; Copyright (C) 2010-2016 Kevin Brubeck Unhammer
 
 ;; Author: Kevin Brubeck Unhammer <unhammer@fsfe.org>
-;; Version: 0.1.8
+;; Version: 0.1.9
 ;; Url: http://beta.visl.sdu.dk/constraint_grammar.html
 ;; Keywords: languages
 
@@ -61,7 +61,7 @@
 
 ;;; Code:
 
-(defconst cg-version "0.1.8" "Version of cg-mode.")
+(defconst cg-version "0.1.9" "Version of cg-mode.")
 
 (eval-when-compile (require 'cl))
 (require 'cl-lib)
@@ -104,8 +104,7 @@ See also `cg-command'."
 
 ;;;###autoload
 (defcustom cg-pre-pipe "cg-conv"
-  "Pipeline to run before the vislcg3 command when testing a file
-with `cg-check'.
+  "Pipeline to run before vislcg3 when testing a file with `cg-check'.
 
 Buffer-local, so use `setq-default' if you want to change the
 global default value.  If you want to set it on a per-file basis,
@@ -121,8 +120,7 @@ See also `cg-command' and `cg-post-pipe'."
 
 ;;;###autoload
 (defcustom cg-post-pipe ""
-  "Pipeline to run after the vislcg3 command when testing a file
-with `cg-check'.
+  "Pipeline to run after vislcg3 when testing a file with `cg-check'.
 
 Buffer-local, so use `setq-default' if you want to change the
 global default value.  If you want to set it on a per-file basis,
@@ -141,9 +139,10 @@ See also `cg-command' and `cg-pre-pipe'."
     ;; These are not sets (and don't have names after the kw) but we
     ;; have them here to make beginning-of-defun work:
     "MAPPING-PREFIX" "SOFT-DELIMITERS" "DELIMITERS")
-  "Used for indentation, highlighting etc.; don't change without
-re-evaluating `cg-kw-re' (or all of cg.el).")
-(defconst cg-kw-set-re (regexp-opt cg-kw-set-list))
+  "List-like keywords used for indentation, highlighting etc.
+Don't change without re-evaluating `cg-kw-re' (or all of cg.el).")
+(defconst cg-kw-set-re (regexp-opt cg-kw-set-list)
+  "Regexp version of `cg-kw-set-list'.")
 
 (defconst cg-kw-rule-list
   '("SUBSTITUTE"
@@ -160,10 +159,12 @@ re-evaluating `cg-kw-re' (or all of cg.el).")
     "ADDRELATIONS" "REMRELATIONS" "SETRELATIONS"
     "SETVARIABLE"  "REMVARIABLE"
     "APPEND")
-  "Used for indentation, highlighting etc.; don't change without
-re-evaluating `cg-kw-re' (or all of cg.el)." )
-(defconst cg-kw-rule-re (regexp-opt cg-kw-rule-list))
-(defconst cg-kw-re (regexp-opt (append cg-kw-set-list cg-kw-rule-list)))
+  "Rule-starter keywords for indentation, highlighting etc.
+Don't change without re-evaluating `cg-kw-re' (or all of cg.el)." )
+(defconst cg-kw-rule-re (regexp-opt cg-kw-rule-list)
+    "Regexp version of `cg-kw-rule-list'.")
+(defconst cg-kw-re (regexp-opt (append cg-kw-set-list cg-kw-rule-list))
+  "Regexp combination of `cg-kw-rule-list' and `cg-kw-set-list'.")
 
 (defconst cg-kw-rule-flags '("NEAREST"
 			     "ALLOWLOOP"
@@ -190,9 +191,9 @@ re-evaluating `cg-kw-re' (or all of cg.el)." )
 			     "REVERSE"
 			     "SUB"
 			     "OUTPUT")
-  "Used for highlighting, from
-  http://visl.sdu.dk/svn/visl/tools/vislcg3/trunk/src/Strings.cpp
-  Don't change without re-evaluating the file.")
+  "Rule flags used for highlighting.
+from http://visl.sdu.dk/svn/visl/tools/vislcg3/trunk/src/Strings.cpp
+Don't change without re-evaluating the file.")
 (defconst cg-kw-context-flags '("NOT"
 				"NEGATE"
 				"NONE"
@@ -206,8 +207,8 @@ re-evaluating `cg-kw-re' (or all of cg.el)." )
 				"BEFORE"
 				"WITH"
 				"TO")
-  "Used for highlighting; Don't change without re-evaluating the
-  file.")
+  "Context flags used for highlighting.
+Don't change without re-evaluating the file.")
 (defconst cg-kw-flags-re (regexp-opt (append cg-kw-rule-flags cg-kw-context-flags)))
 
 
@@ -466,14 +467,14 @@ beginning of the region to highlight; see
       (let ((kw-pos (progn
                       (goto-char (1- (or (search-forward ";" (line-end-position) t)
                                          (line-end-position))))
-                      (re-search-backward cg-kw-re nil 'noerror))))
-        (setq case-fold-search old-case-fold-search)
+                      (re-search-backward (concat ";\\|" cg-kw-re) nil 'noerror))))
         (when kw-pos
           (let* ((kw (match-string-no-properties 0)))
             (if (and (not (equal kw ";"))
                      (> origin (line-end-position)))
                 cg-indentation
-              0)))))))
+              0)))))
+    (setq case-fold-search old-case-fold-search)))
 
 (defun cg-indent-line ()
   "Indent the current line.
