@@ -1199,16 +1199,6 @@ void TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 		if (s->trie.empty() && s->trie_special.empty() && !(s->type & (ST_TAG_UNIFY | ST_SET_UNIFY | ST_CHILD_UNIFY))) {
 			error("%s: Error: Mapping set on line %u near `%S` was neither unified nor of LIST type!\n", lp);
 		}
-		if (key == K_APPEND && !s->getNonEmpty().empty()) {
-			if (!(s->getNonEmpty().begin()->first->type & T_BASEFORM)) {
-				error("%s: Error: There must be a baseform before any other tags in APPEND on line %u near `%S`!\n", lp);
-			}
-		}
-		if ((key == K_ADDCOHORT || key == K_SPLITCOHORT) && !s->getNonEmpty().empty()) {
-			if (!(s->getNonEmpty().begin()->first->type & T_WORDFORM)) {
-				error("%s: Error: There must be a wordform before any other tags in ADDCOHORT/SPLITCOHORT on line %u near `%S`!\n", lp);
-			}
-		}
 		AST_CLOSE(p);
 	}
 

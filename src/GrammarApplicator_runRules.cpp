@@ -845,15 +845,25 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						getTagList(*rule.maplist, theTags);
 
 						foreach (tter, *theTags) {
+							while ((*tter)->type & T_VARSTRING) {
+								*tter = generateVarstringTag(*tter);
+							}
 							if ((*tter)->type & T_WORDFORM) {
 								cCohort->wordform = *tter;
 								wf = *tter;
 								continue;
 							}
-							assert(wf && "There must be a wordform before any other tags in ADDCOHORT.");
+							if (!wf) {
+								u_fprintf(ux_stderr, "Error: There must be a wordform before any other tags in ADDCOHORT on line %u before input line %u.\n", rule.line, numLines);
+								CG3Quit(1);
+							}
 							if ((*tter)->type & T_BASEFORM) {
 								readings.resize(readings.size() + 1);
 								readings.back().push_back(wf);
+							}
+							if (readings.empty()) {
+								u_fprintf(ux_stderr, "Error: There must be a baseform after the wordform in ADDCOHORT on line %u before input line %u.\n", rule.line, numLines);
+								CG3Quit(1);
 							}
 							readings.back().push_back(*tter);
 						}
@@ -947,7 +957,10 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 								cohorts.back().first->wordform = wf;
 								continue;
 							}
-							assert(wf && "There must be a wordform before any other tags in SPLITCOHORT.");
+							if (!wf) {
+								u_fprintf(ux_stderr, "Error: There must be a wordform before any other tags in SPLITCOHORT on line %u before input line %u.\n", rule.line, numLines);
+								CG3Quit(1);
+							}
 						}
 
 						uint32_t rel_trg = std::numeric_limits<uint32_t>::max();
@@ -974,7 +987,10 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 								readings->back().push_back(cohorts[i - 1].first->wordform);
 								bf = *tter;
 							}
-							assert(bf && "There must be a baseform after the wordform in SPLITCOHORT.");
+							if (!bf) {
+								u_fprintf(ux_stderr, "Error: There must be a baseform after the wordform in SPLITCOHORT on line %u before input line %u.\n", rule.line, numLines);
+								CG3Quit(1);
+							}
 
 							UChar dep_self[12] = {};
 							UChar dep_parent[12] = {};
@@ -986,13 +1002,15 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 									}
 								}
 								else if (u_sscanf(dep_self, "%i", &cohort_dep[i - 1].first) != 1) {
-									assert(false && "SPLITCOHORT dependency mapping dep_self was not valid");
+									u_fprintf(ux_stderr, "Error: SPLITCOHORT dependency mapping dep_self was not valid on line %u before input line %u.\n", rule.line, numLines);
+									CG3Quit(1);
 								}
 								if (dep_parent[0] == 'p' || dep_parent[0] == 'm') {
 									cohort_dep[i - 1].second = std::numeric_limits<uint32_t>::max();
 								}
 								else if (u_sscanf(dep_parent, "%i", &cohort_dep[i - 1].second) != 1) {
-									assert(false && "SPLITCOHORT dependency mapping dep_parent was not valid");
+									u_fprintf(ux_stderr, "Error: SPLITCOHORT dependency mapping dep_parent was not valid on line %u before input line %u.\n", rule.line, numLines);
+									CG3Quit(1);
 								}
 								continue;
 							}
@@ -1394,6 +1412,9 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						getTagList(*rule.maplist, theTags);
 
 						foreach (tter, *theTags) {
+							while ((*tter)->type & T_VARSTRING) {
+								*tter = generateVarstringTag(*tter);
+							}
 							if ((*tter)->type & T_BASEFORM) {
 								bf = *tter;
 								readings.resize(readings.size() + 1);
