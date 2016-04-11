@@ -830,25 +830,49 @@ void GrammarApplicator::pipeInSingleWindow(SingleWindow& window, Process& input)
 
 void GrammarApplicator::error(const char *str, const UChar *p) {
 	(void)p;
-	UChar buf[] = { L'R', L'U', L'N', L'T', L'I', L'M', L'E', 0 };
-	u_fprintf(ux_stderr, str, buf, numLines, buf);
+	if (current_rule && current_rule->line) {
+		const UChar buf[] = { 'R', 'T', ' ', 'R', 'U', 'L', 'E', 0 };
+		u_fprintf(ux_stderr, str, buf, current_rule->line, buf);
+	}
+	else {
+		const UChar buf[] = { 'R', 'T', ' ', 'I', 'N', 'P', 'U', 'T', 0 };
+		u_fprintf(ux_stderr, str, buf, numLines, buf);
+	}
 }
 
 void GrammarApplicator::error(const char *str, const char *s, const UChar *p) {
 	(void)p;
-	UChar buf[] = { L'R', L'U', L'N', L'T', L'I', L'M', L'E', 0 };
-	u_fprintf(ux_stderr, str, buf, s, numLines, buf);
+	if (current_rule && current_rule->line) {
+		const UChar buf[] = { 'R', 'T', ' ', 'R', 'U', 'L', 'E', 0 };
+		u_fprintf(ux_stderr, str, buf, s, current_rule->line, buf);
+	}
+	else {
+		const UChar buf[] = { 'R', 'T', ' ', 'I', 'N', 'P', 'U', 'T', 0 };
+		u_fprintf(ux_stderr, str, buf, s, numLines, buf);
+	}
 }
 
 void GrammarApplicator::error(const char *str, const UChar *s, const UChar *p) {
 	(void)p;
-	UChar buf[] = { L'R', L'U', L'N', L'T', L'I', L'M', L'E', 0 };
-	u_fprintf(ux_stderr, str, buf, s, numLines, buf);
+	if (current_rule && current_rule->line) {
+		const UChar buf[] = { 'R', 'T', ' ', 'R', 'U', 'L', 'E', 0 };
+		u_fprintf(ux_stderr, str, buf, s, current_rule->line, buf);
+	}
+	else {
+		const UChar buf[] = { 'R', 'T', ' ', 'I', 'N', 'P', 'U', 'T', 0 };
+		u_fprintf(ux_stderr, str, buf, s, numLines, buf);
+	}
 }
 
 void GrammarApplicator::error(const char *str, const char *s, const UChar *S, const UChar *p) {
 	(void)p;
-	UChar buf[] = { L'R', L'U', L'N', L'T', L'I', L'M', L'E', 0 };
-	u_fprintf(ux_stderr, str, buf, s, S, numLines, buf);
+	if (current_rule && current_rule->line) {
+		const UChar buf[] = { 'R', 'T', ' ', 'R', 'U', 'L', 'E', 0 };
+		u_fprintf(ux_stderr, str, buf, s, S, current_rule->line, buf);
+	}
+	else {
+		const UChar buf[] = { 'R', 'T', ' ', 'I', 'N', 'P', 'U', 'T', 0 };
+		u_fprintf(ux_stderr, str, buf, s, S, numLines, buf);
+	}
 }
 }
