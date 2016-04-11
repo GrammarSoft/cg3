@@ -10,3 +10,5 @@ COPY (copied-except) EXCEPT (also-copied copy noguard-copied) (wanted) ;
 
 "<waffle>" APPEND ("waffle" and cream) (*) ;
 "<waffle>" ADD (@show) (*) ;
+
+ADDCOHORT (VSTR:"<$1>" VSTR:"$1" notwanted) AFTER ("<(.+)>"r wanted) ;

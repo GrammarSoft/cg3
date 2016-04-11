@@ -12,5 +12,8 @@
 	"word" wanted copy also-copied noguard-copied
 	"word" wanted copied-except
 	"word" wanted copied copied-except
+"<word>"
+	"word" notwanted
 "<waffle>"
 	"waffle" and cream @show
+
