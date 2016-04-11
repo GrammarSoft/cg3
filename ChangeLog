@@ -1,3 +1,48 @@
+2016-04-07  unhammer
+
+	* [r11440] emacs/cg.el: fix indentation where wordform before rule
+	  keyword
+
+2016-04-06  tino
+
+	* [r11439] src/GrammarApplicator.cpp: At runtime, print numLines
+
+2016-04-04  tino
+
+	* [r11433] .clang-format, clang-format.pl,
+	  src/GrammarApplicator_runRules.cpp, src/Set.hpp, src/inlines.hpp:
+	  clang-format-3.9
+
+2016-03-30  tino
+
+	* [r11431] README.md: Gotta catch them all
+
+2016-03-29  unhammer
+
+	* [r11430] emacs/cg.el: (require 'cl-lib) ;; assume users have
+	  emacs>=24.3
+	  
+	  + lots of checkdoc-fixes
+	* [r11429] emacs/cg.el: compilation warnings now have filename
+	  prepended
+
+2016-03-23  tino
+
+	* [r11423] manual/rules.xml: Fix Substitute documentation
+	* [r11421] src/GrammarApplicator_runRules.cpp: No, that wasn't a
+	  problem
+	* [r11420] src/GrammarApplicator_runRules.cpp: Substitute should
+	  not remove tags if it can't later replace them
+
+2016-03-22  tino
+
+	* [r11416] ChangeLog, src/GrammarApplicator.cpp,
+	  src/GrammarApplicator.hpp, src/GrammarApplicator_runRules.cpp,
+	  src/Strings.cpp, src/version.hpp,
+	  test/T_BasicSubstitute/expected.txt: Substitute will now insert
+	  in all found locations, if the tags to be replaced were found
+	  contiguously in those locations
+
 2016-03-03  tino
 
 	* [r11383] manual/grammar.xml: Section name example
@@ -2241,55 +2286,4 @@
 	  test/T_BasicSubstitute/expected.txt,
 	  test/T_BasicSubstitute/grammar.cg3: WIP Substitute wordform
 	  replace with varstring
-	* [r9298] CMakeLists.txt, scripts/cg3-autobin.pl,
-	  src/GrammarApplicator_reflow.cpp,
-	  src/GrammarApplicator_runRules.cpp, src/version.hpp,
-	  test/T_BasicSubstitute/expected.txt,
-	  test/T_BasicSubstitute/grammar.cg3,
-	  test/T_BasicSubstitute/run.pl: Substitute can now replace
-	  wordforms
-
-2013-10-17  tino
-
-	* [r9292] CMakeLists.txt: Add Saucy to PPA
-
-2013-10-11  unhammer
-
-	* [r9285] emacs/cg.el: byte-compile on old emacsen
-	* [r9284] emacs/cg.el: fix some compiler warnings (still requiring
-	  'cl until 24.3 available everywhere)
-	* [r9283] emacs/cg.el: fix header (package.el format)
-
-2013-10-09  tino
-
-	* [r9279] scripts/cg3-autobin.pl, src/GrammarApplicator.hpp,
-	  src/cg3.h, src/libcg3.cpp, src/stdafx.hpp, src/version.hpp: Added
-	  cg3_sentence_copy() to libcg3 to aid in passing a sentence from
-	  one applicator to another
-
-2013-10-03  tino
-
-	* [r9274] src/ApertiumApplicator.cpp, src/BinaryGrammar_read.cpp,
-	  src/BinaryGrammar_write.cpp, src/CompositeTag.cpp,
-	  src/CompositeTag.hpp, src/Grammar.cpp, src/GrammarApplicator.cpp,
-	  src/GrammarApplicator_matchSet.cpp,
-	  src/GrammarApplicator_reflow.cpp,
-	  src/GrammarApplicator_runRules.cpp, src/GrammarWriter.cpp,
-	  src/Set.cpp, src/TextualParser.cpp: Coding style cleanup, and
-	  more std::list to std::vector
-	* [r9273] scripts/cg3-autobin.pl, src/ApertiumApplicator.cpp,
-	  src/BinaryGrammar_read.cpp, src/Grammar.hpp,
-	  src/GrammarApplicator.cpp, src/GrammarApplicator_reflow.cpp,
-	  src/GrammarApplicator_runRules.cpp, src/MatxinApplicator.cpp,
-	  src/Reading.hpp, src/Tag.cpp, src/Tag.hpp, src/inlines.hpp,
-	  src/libcg3.cpp, src/stdafx.hpp, src/version.hpp: Change the
-	  ordered tags_list in Reading to std::vector
-	* [r9272] scripts/cg3-autobin.pl, src/inlines.hpp, src/version.hpp:
-	  Fixed --section 2-2 regression
-
-2013-10-01  tino
-
-	* [r9265] scripts/cg3-autobin.pl, src/GrammarApplicator.cpp,
-	  src/GrammarApplicator.hpp, src/GrammarApplicator_runRules.cpp,
-	  src/main.cpp, src/options.hpp, src/version.hpp: Add --dry-run
 

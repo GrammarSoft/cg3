@@ -78,7 +78,7 @@ uint32_t GrammarApplicator::doesTagMatchRegexp(uint32_t test, const Tag& tag, bo
 		UErrorCode status = U_ZERO_ERROR;
 		uregex_setText(tag.regexp, itag.tag.c_str(), itag.tag.length(), &status);
 		if (status != U_ZERO_ERROR) {
-			u_fprintf(ux_stderr, "Error: uregex_setText(MatchSet) returned %s - cannot continue!\n", u_errorName(status));
+			u_fprintf(ux_stderr, "Error: uregex_setText(MatchSet) returned %s for tag %S before input line %u - cannot continue!\n", u_errorName(status), tag.tag.c_str(), numLines);
 			CG3Quit(1);
 		}
 		status = U_ZERO_ERROR;
@@ -86,7 +86,7 @@ uint32_t GrammarApplicator::doesTagMatchRegexp(uint32_t test, const Tag& tag, bo
 			match = itag.hash;
 		}
 		if (status != U_ZERO_ERROR) {
-			u_fprintf(ux_stderr, "Error: uregex_find(MatchSet) returned %s - cannot continue!\n", u_errorName(status));
+			u_fprintf(ux_stderr, "Error: uregex_find(MatchSet) returned %s for tag %S before input line %u - cannot continue!\n", u_errorName(status), tag.tag.c_str(), numLines);
 			CG3Quit(1);
 		}
 		if (match) {
