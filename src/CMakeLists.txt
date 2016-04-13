@@ -201,7 +201,7 @@ if(APPLE)
 	endforeach()
 endif()
 
-add_test(t_libcg3 test_libcg3 "${CMAKE_CURRENT_SOURCE_DIR}/../test/T_BasicSelect/grammar.cg3")
+add_test(t_libcg3 test_libcg3 "${CMAKE_CURRENT_SOURCE_DIR}/../test/T_Select/grammar.cg3")
 
 if(INSTALL_STATIC)
 	install(TARGETS libcg3 ARCHIVE DESTINATION "${CG_LIBDIR}/${CMAKE_LIBRARY_ARCHITECTURE}")
