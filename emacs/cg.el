@@ -3,7 +3,7 @@
 ;; Copyright (C) 2010-2016 Kevin Brubeck Unhammer
 
 ;; Author: Kevin Brubeck Unhammer <unhammer@fsfe.org>
-;; Version: 0.1.9
+;; Version: 0.2.0
 ;; Url: http://beta.visl.sdu.dk/constraint_grammar.html
 ;; Keywords: languages
 
@@ -61,7 +61,7 @@
 
 ;;; Code:
 
-(defconst cg-version "0.1.9" "Version of cg-mode.")
+(defconst cg-version "0.2.0" "Version of cg-mode.")
 
 (eval-when-compile (require 'cl))
 (require 'cl-lib)
@@ -463,18 +463,19 @@ beginning of the region to highlight; see
   (let ((origin (point))
         (old-case-fold-search case-fold-search))
     (setq case-fold-search nil)		; for re-search-backward
-    (save-excursion
-      (let ((kw-pos (progn
-                      (goto-char (1- (or (search-forward ";" (line-end-position) t)
-                                         (line-end-position))))
-                      (re-search-backward (concat ";\\|" cg-kw-re) nil 'noerror))))
-        (when kw-pos
-          (let* ((kw (match-string-no-properties 0)))
-            (if (and (not (equal kw ";"))
-                     (> origin (line-end-position)))
-                cg-indentation
-              0)))))
-    (setq case-fold-search old-case-fold-search)))
+    (prog1
+        (save-excursion
+          (let ((kw-pos (progn
+                          (goto-char (1- (or (search-forward ";" (line-end-position) t)
+                                             (line-end-position))))
+                          (re-search-backward (concat ";\\|" cg-kw-re) nil 'noerror))))
+            (when kw-pos
+              (let* ((kw (match-string-no-properties 0)))
+                (if (and (not (equal kw ";"))
+                         (> origin (line-end-position)))
+                    cg-indentation
+                  0)))))
+      (setq case-fold-search old-case-fold-search))))
 
 (defun cg-indent-line ()
   "Indent the current line.
