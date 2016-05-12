@@ -267,15 +267,15 @@ int main(int argc, char *argv[]) {
 	if (stream_format == 0) {
 		applicator = new CG3::GrammarApplicator(ux_stderr);
 	}
-	else if(stream_format == 2) {
+	else if (stream_format == 2) {
 		CG3::MatxinApplicator *matxinApplicator = new CG3::MatxinApplicator(ux_stderr);
 		matxinApplicator->setNullFlush(null_flush);
 		matxinApplicator->wordform_case = wordform_case;
 		matxinApplicator->print_word_forms = print_word_forms;
 		matxinApplicator->print_only_first = only_first;
 		applicator = matxinApplicator;
-
-	} else {
+	}
+	else {
 		CG3::ApertiumApplicator *apertiumApplicator = new CG3::ApertiumApplicator(ux_stderr);
 		apertiumApplicator->setNullFlush(null_flush);
 		apertiumApplicator->wordform_case = wordform_case;
