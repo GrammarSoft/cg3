@@ -41,14 +41,14 @@ public:
 	void testPR(UFILE *output);
 
 protected:
-        typedef struct Node {
+	struct Node {
 		int self;
-                UString lemma;
-                UString form;
-                UString pos;
-                UString mi;
-                UString si;
-        } Node ;
+		UString lemma;
+		UString form;
+		UString pos;
+		UString mi;
+		UString si;
+	};
 
 	bool nullFlush;
 	bool runningWithNullFlush;
@@ -56,7 +56,7 @@ protected:
 	void printReading(Reading *reading, Node& n);
 	void printSingleWindow(SingleWindow *window, UFILE *output);
 
-	void procNode(int &depth, std::map<int, Node> &nodes, std::map<int, std::vector<int> > &deps, int node, UFILE *output);
+	void procNode(int& depth, std::map<int, Node>& nodes, std::map<int, std::vector<int> >& deps, int node, UFILE *output);
 
 
 	void runGrammarOnTextWrapperNullFlush(istream& input, UFILE *output);
