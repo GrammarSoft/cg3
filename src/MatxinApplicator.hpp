@@ -53,7 +53,7 @@ protected:
 	bool nullFlush;
 	bool runningWithNullFlush;
 
-	void printReading(Reading *reading, Node& n);
+	void printReading(Reading *reading, Node& n, UFILE *output);
 	void printSingleWindow(SingleWindow *window, UFILE *output);
 
 	void procNode(int& depth, std::map<int, Node>& nodes, std::map<int, std::vector<int> >& deps, int node, UFILE *output);
