@@ -1,3 +1,34 @@
+2016-04-14  unhammer
+
+	* [r11459] emacs/cg.el: cg-calculate-indent was returning wrong val
+
+2016-04-13  tino
+
+	* [r11458] src/CMakeLists.txt: Test failed due to renamed tests
+
+2016-04-11  tino
+
+	* [r11456] src/GrammarApplicator.cpp: Print rule number where
+	  possible
+	* [r11455] test/Apertium/T_Append, test/Apertium/T_BasicAppend,
+	  test/Apertium/T_BasicContextTest, test/Apertium/T_BasicDelimit,
+	  test/Apertium/T_BasicIff, test/Apertium/T_BasicRemove,
+	  test/Apertium/T_BasicSelect, test/Apertium/T_BasicSubstitute,
+	  test/Apertium/T_ContextTest, test/Apertium/T_Delimit,
+	  test/Apertium/T_Iff, test/Apertium/T_Remove,
+	  test/Apertium/T_Select, test/Apertium/T_Substitute,
+	  test/T_Append, test/T_BasicAppend, test/T_BasicContextTest,
+	  test/T_BasicDelimit, test/T_BasicDependency, test/T_BasicIff,
+	  test/T_BasicSelect, test/T_BasicSubstitute, test/T_ContextTest,
+	  test/T_Delimit, test/T_Dependency, test/T_Iff, test/T_Select,
+	  test/T_Substitute: Rename tests
+	* [r11454] ChangeLog, src/GrammarApplicator_matchSet.cpp,
+	  src/GrammarApplicator_runRules.cpp, src/TextualParser.cpp,
+	  src/version.hpp, test/T_BasicAppend/expected.txt,
+	  test/T_BasicAppend/grammar.cg3,
+	  test/T_BasicAppend/grammar.cg3b.10043: Append, AddCohort,
+	  SplitCohort now performs their tag checks only at runtime
+
 2016-04-07  unhammer
 
 	* [r11440] emacs/cg.el: fix indentation where wordform before rule
@@ -2255,35 +2286,4 @@
 2013-11-08  tino
 
 	* [r9354] src/options.hpp: --ordered description
-
-2013-10-31  tino
-
-	* [r9318] src/CMakeLists.txt: Don't make symlink
-
-2013-10-29  tino
-
-	* [r9313] src/TextualParser.cpp, src/istream.hpp: Sign compare fix
-	* [r9312] scripts/cg3-autobin.pl, src/TextualParser.cpp,
-	  src/istream.hpp, src/version.hpp, test/T_Include/grammar.cg3,
-	  test/T_Include/input.txt, test/T_Include/rules.inc,
-	  test/T_Include/run.pl, test/T_Include/sets.inc: Discard initial
-	  UTF BOMs from stdin and in grammars and in included grammars
-
-2013-10-23  tino
-
-	* [r9306] scripts/cg3-autobin.pl,
-	  src/GrammarApplicator_runRules.cpp, src/version.hpp,
-	  test/T_BasicSubstitute/expected.txt,
-	  test/T_BasicSubstitute/grammar.cg3: Substitute can now replace
-	  wordforms with varstrings
-
-2013-10-21  tino
-
-	* [r9299] src/ApertiumApplicator.cpp, src/FSTApplicator.cpp,
-	  src/GrammarApplicator.hpp, src/GrammarApplicator_reflow.cpp,
-	  src/GrammarApplicator_runGrammar.cpp, src/NicelineApplicator.cpp,
-	  src/PlaintextApplicator.cpp, src/libcg3.cpp,
-	  test/T_BasicSubstitute/expected.txt,
-	  test/T_BasicSubstitute/grammar.cg3: WIP Substitute wordform
-	  replace with varstring
 

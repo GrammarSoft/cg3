@@ -21,6 +21,7 @@
 
 #include "stdafx.hpp"
 #include "Grammar.hpp"
+#include "TextualParser.hpp"
 #include "BinaryGrammar.hpp"
 #include "ApertiumApplicator.hpp"
 #include "GrammarApplicator.hpp"
@@ -243,9 +244,10 @@ int main(int argc, char *argv[]) {
 		parser = new CG3::BinaryGrammar(grammar, ux_stderr);
 	}
 	else {
-		std::cerr << "Info: Text grammar detected -- to process textual " << std::endl;
-		std::cerr << "grammars, use `vislcg3', to compile this grammar, use `cg-comp'" << std::endl;
-		CG3Quit(1);
+		// Forbidding text grammars makes debugging very annoying
+		std::cerr << "Warning: Text grammar detected - to better process textual" << std::endl;
+		std::cerr << "grammars, use `vislcg3'; to compile this grammar, use `cg-comp'" << std::endl;
+		parser = new CG3::TextualParser(grammar, ux_stderr);
 	}
 
 	grammar.ux_stderr = ux_stderr;
