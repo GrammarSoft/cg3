@@ -929,9 +929,13 @@ void ApertiumApplicator::mergeMappings(Cohort& cohort) {
 	std::map<uint32_t, ReadingList>::iterator miter;
 	for (miter = mlist.begin(); miter != mlist.end(); miter++) {
 		ReadingList clist = miter->second;
-		Reading *nr = alloc_reading(*(clist.front()));
-		// no merging of mapping tags
-		order.push_back(nr);
+		// no merging of mapping tags, so just take first reading of the group
+		order.push_back(clist.front());
+
+		clist.erase(clist.begin());
+		foreach (cit, clist) {
+			free_reading(*cit);
+		}
 	}
 
 	std::sort(order.begin(), order.end(), CG3::Reading::cmp_number);
