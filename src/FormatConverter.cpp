@@ -26,6 +26,7 @@ namespace CG3 {
 FormatConverter::FormatConverter(UFILE *ux_err)
   : GrammarApplicator(ux_err)
   , ApertiumApplicator(ux_err)
+  , MatxinApplicator(ux_err)
   , NicelineApplicator(ux_err)
   , PlaintextApplicator(ux_err)
   , FSTApplicator(ux_err)

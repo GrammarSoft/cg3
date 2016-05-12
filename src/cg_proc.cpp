@@ -24,6 +24,7 @@
 #include "TextualParser.hpp"
 #include "BinaryGrammar.hpp"
 #include "ApertiumApplicator.hpp"
+#include "MatxinApplicator.hpp"
 #include "GrammarApplicator.hpp"
 
 #include <getopt.h>
@@ -62,8 +63,8 @@ void endProgram(char *name) {
 	cout << "	-d:	 morphological disambiguation (default behaviour)" << endl;
 	cout << "	-s:	 specify number of sections to process" << endl;
 	cout << "	-f: 	 set the format of the I/O stream to NUM," << endl;
-	cout << "		   where `0' is VISL format and `1' is " << endl;
-	cout << "		   Apertium format (default: 1)" << endl;
+	cout << "		   where `0' is VISL format, `1' is " << endl;
+	cout << "		   Apertium format and `2' is Matxin (default: 1)" << endl;
 	cout << "	-r:	 run only the named rule" << endl;
 	cout << "	-t:	 print debug output on stderr" << endl;
 	cout << "	-w:	 enforce surface case on lemma/baseform " << endl;
@@ -266,7 +267,15 @@ int main(int argc, char *argv[]) {
 	if (stream_format == 0) {
 		applicator = new CG3::GrammarApplicator(ux_stderr);
 	}
-	else {
+	else if(stream_format == 2) {
+		CG3::MatxinApplicator *matxinApplicator = new CG3::MatxinApplicator(ux_stderr);
+		matxinApplicator->setNullFlush(null_flush);
+		matxinApplicator->wordform_case = wordform_case;
+		matxinApplicator->print_word_forms = print_word_forms;
+		matxinApplicator->print_only_first = only_first;
+		applicator = matxinApplicator;
+
+	} else {
 		CG3::ApertiumApplicator *apertiumApplicator = new CG3::ApertiumApplicator(ux_stderr);
 		apertiumApplicator->setNullFlush(null_flush);
 		apertiumApplicator->wordform_case = wordform_case;
@@ -282,6 +291,7 @@ int main(int argc, char *argv[]) {
 
 	applicator->trace = trace;
 	applicator->unicode_tags = true;
+	applicator->unique_tags = false;
 
 	// This is if we want to run a single rule  (-r option)
 	if (single_rule) {

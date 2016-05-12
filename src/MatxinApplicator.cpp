@@ -19,7 +19,7 @@
 * along with VISL CG-3.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "ApertiumApplicator.hpp"
+#include "MatxinApplicator.hpp"
 #include "Strings.hpp"
 #include "Tag.hpp"
 #include "Grammar.hpp"
@@ -29,7 +29,7 @@
 
 namespace CG3 {
 
-ApertiumApplicator::ApertiumApplicator(UFILE *ux_err)
+MatxinApplicator::MatxinApplicator(UFILE *ux_err)
   : GrammarApplicator(ux_err)
 {
 	nullFlush = false;
@@ -43,15 +43,15 @@ ApertiumApplicator::ApertiumApplicator(UFILE *ux_err)
 }
 
 
-bool ApertiumApplicator::getNullFlush() {
+bool MatxinApplicator::getNullFlush() {
 	return nullFlush;
 }
 
-void ApertiumApplicator::setNullFlush(bool pNullFlush) {
+void MatxinApplicator::setNullFlush(bool pNullFlush) {
 	nullFlush = pNullFlush;
 }
 
-UChar ApertiumApplicator::u_fgetc_wrapper(istream& input) {
+UChar MatxinApplicator::u_fgetc_wrapper(istream& input) {
 	if (runningWithNullFlush) {
 		if (!fgetc_converter) {
 			fgetc_error = U_ZERO_ERROR;
@@ -91,7 +91,7 @@ UChar ApertiumApplicator::u_fgetc_wrapper(istream& input) {
 }
 
 
-void ApertiumApplicator::runGrammarOnTextWrapperNullFlush(istream& input, UFILE *output) {
+void MatxinApplicator::runGrammarOnTextWrapperNullFlush(istream& input, UFILE *output) {
 	setNullFlush(false);
 	runningWithNullFlush = true;
 	while (!input.eof()) {
@@ -103,10 +103,10 @@ void ApertiumApplicator::runGrammarOnTextWrapperNullFlush(istream& input, UFILE 
 }
 
 /*
- * Run a constraint grammar on an Apertium input stream
+ * Run a constraint grammar on an Matxin input stream
  */
 
-void ApertiumApplicator::runGrammarOnText(istream& input, UFILE *output) {
+void MatxinApplicator::runGrammarOnText(istream& input, UFILE *output) {
 	if (getNullFlush()) {
 		runGrammarOnTextWrapperNullFlush(input, output);
 		return;
@@ -432,6 +432,7 @@ void ApertiumApplicator::runGrammarOnText(istream& input, UFILE *output) {
 	}
 
 	// Run the grammar & print results
+	u_fprintf(output, "<corpus>\n");
 	while (!gWindow->next.empty()) {
 		while (!gWindow->previous.empty() && gWindow->previous.size() > num_windows) {
 			SingleWindow *tmp = gWindow->previous.front();
@@ -454,6 +455,7 @@ void ApertiumApplicator::runGrammarOnText(istream& input, UFILE *output) {
 	if ((inchar) && inchar != 0xffff) {
 		u_fprintf(output, "%C", inchar); // eg. final newline
 	}
+	u_fprintf(output, "</corpus>\n");
 
 	u_fflush(output);
 
@@ -472,7 +474,7 @@ void ApertiumApplicator::runGrammarOnText(istream& input, UFILE *output) {
  *   sellout<vblex><imp><p2><sg># ouzh+indirect<prn><obj><p3><m><sg>
  *   be# happy<vblex><inf> (for chaining cg-proc)
  */
-void ApertiumApplicator::processReading(Reading *cReading, const UChar *reading_string) {
+void MatxinApplicator::processReading(Reading *cReading, const UChar *reading_string) {
 	const UChar *m = reading_string;
 	const UChar *c = reading_string;
 	UString tmptag;
@@ -566,7 +568,7 @@ void ApertiumApplicator::processReading(Reading *cReading, const UChar *reading_
 		if (*c == '<') {
 			multi = false;
 			if (intag == true) {
-				u_fprintf(ux_stderr, "Error: The Apertium stream format does not allow '<' in tag names.\n");
+				u_fprintf(ux_stderr, "Error: The Matxin stream format does not allow '<' in tag names.\n");
 				++c;
 				continue;
 			}
@@ -593,7 +595,7 @@ void ApertiumApplicator::processReading(Reading *cReading, const UChar *reading_
 		else if (*c == '>') {
 			multi = false;
 			if (intag == false) {
-				u_fprintf(ux_stderr, "Error: The Apertium stream format does not allow '>' outside tag names.\n");
+				u_fprintf(ux_stderr, "Error: The Matxin stream format does not allow '>' outside tag names.\n");
 				++c;
 				continue;
 			}
@@ -651,90 +653,31 @@ void ApertiumApplicator::processReading(Reading *cReading, const UChar *reading_
 		}
 	}
 
-	assert(taglist.empty() && "ApertiumApplicator::processReading() did not handle all tags.");
+	assert(taglist.empty() && "MatxinApplicator::processReading() did not handle all tags.");
 }
 
-void ApertiumApplicator::processReading(Reading *cReading, const UString& reading_string) {
+void MatxinApplicator::processReading(Reading *cReading, const UString& reading_string) {
 	return processReading(cReading, reading_string.c_str());
 }
 
-void ApertiumApplicator::testPR(UFILE *output) {
-	std::string texts[] = {
-		"venir<vblex><imp><p2><sg>",
-		"venir<vblex><inf>+lo<prn><enc><p3><nt><sg>",
-		"be<vblex><inf># happy",
-		"sellout<vblex><imp><p2><sg># ouzh+indirect<prn><obj><p3><m><sg>",
-		"be# happy<vblex><inf>",
-		"aux3<tag>+aux2<tag>+aux1<tag>+main<tag>",
-	};
-	for (size_t i = 0; i < 6; ++i) {
-		UString text(texts[i].begin(), texts[i].end());
-		Reading *reading = alloc_reading(0);
-		processReading(reading, text);
-		if (grammar->sub_readings_ltr && reading->next) {
-			reading = reverse(reading);
-		}
-		printReading(reading, output);
-		u_fprintf(output, "\n");
-		delete reading;
-	}
-}
-
-void ApertiumApplicator::printReading(Reading *reading, UFILE *output) {
+void MatxinApplicator::printReading(Reading *reading, Node &node) {
 	if (reading->noprint) {
 		return;
 	}
 
-	if (reading->next) {
-		printReading(reading->next, output);
-		u_fputc('+', output);
+//	if (reading->next) {
+//		printReading(reading->next, output);
+//		u_fputc('+', output);
+//	}
+
+	if(!reading->baseform) {
+		return;
 	}
 
-	if (reading->baseform) {
-		// Lop off the initial and final '"' characters
-		UnicodeString bf(single_tags[reading->baseform]->tag.c_str() + 1, single_tags[reading->baseform]->tag.length() - 2);
+	// Lop off the initial and final '"' characters
+	UnicodeString bf(single_tags[reading->baseform]->tag.c_str() + 1, single_tags[reading->baseform]->tag.length() - 2);
 
-		if (wordform_case && !reading->next) {
-			// Use surface/wordform case, eg. if lt-proc
-			// was called with "-w" option (which puts
-			// dictionary case on lemma/basefrom)
-			// Lop off the initial and final '"<>"' characters
-			// ToDo: A copy does not need to be made here - use pointer offsets
-			UnicodeString wf(reading->parent->wordform->tag.c_str() + 2, reading->parent->wordform->tag.length() - 4);
-
-			int first = 0; // first occurrence of a lowercase character in baseform
-			for (; first < bf.length(); ++first) {
-				if (u_islower(bf[first]) != 0) {
-					break;
-				}
-			}
-
-			// this corresponds to fst_processor.cc in lttoolbox:
-			bool firstupper = first < wf.length() && (u_isupper(wf[first]) != 0);
-			bool uppercase = firstupper && u_isupper(wf[wf.length() - 1]);
-
-			if (uppercase) {
-				bf.toUpper(); // Perform a Unicode case folding to upper case -- Tino Didriksen
-			}
-			else if (firstupper && first < bf.length()) {
-				// static_cast<UChar>(u_toupper(bf[first])) gives strange output
-				UnicodeString range(bf, first, 1);
-				range.toUpper();
-				bf.setCharAt(first, range[0]);
-			}
-		} // if (wordform_case)
-
-		UString bf_escaped;
-		for (int i = 0; i < bf.length(); ++i) {
-			if (bf[i] == '^' || bf[i] == '\\' || bf[i] == '/' || bf[i] == '$' || bf[i] == '[' || bf[i] == ']' || bf[i] == '{' || bf[i] == '}' || bf[i] == '<' || bf[i] == '>') {
-				bf_escaped += '\\';
-			}
-			bf_escaped += bf[i];
-		}
-		u_fprintf(output, "%S", bf_escaped.c_str());
-
-		// Tag::printTagRaw(output, single_tags[reading->baseform]);
-	}
+	node.lemma = bf.getTerminatedBuffer();
 
 	// Reorder: MAPPING tags should appear before the join of multiword tags,
 	// turn <vblex><actv><pri><p3><pl>+í<pr><@FMAINV><@FOO>$
@@ -743,6 +686,7 @@ void ApertiumApplicator::printReading(Reading *reading, UFILE *output) {
 	Reading::tags_list_t multitags_list; // everything after a +, until the first MAPPING tag
 	Reading::tags_list_t::iterator tter;
 	bool multi = false;
+	bool first = true;
 	for (tter = reading->tags_list.begin(); tter != reading->tags_list.end(); tter++) {
 		const Tag *tag = single_tags[*tter];
 		if (tag->tag[0] == '+') {
@@ -756,12 +700,19 @@ void ApertiumApplicator::printReading(Reading *reading, UFILE *output) {
 			multitags_list.push_back(*tter);
 		}
 		else {
-			tags_list.push_back(*tter);
+			if(tag->tag[0] != '"' && first) {
+				node.pos = tag->tag;
+				first = false;
+			}else {
+				tags_list.push_back(*tter);
+			}
 		}
 	}
 	tags_list.insert(tags_list.end(), multitags_list.begin(), multitags_list.end());
 
 	uint32SortedVector used_tags;
+	UString mi;
+	first = true;
 	for (tter = tags_list.begin(); tter != tags_list.end(); tter++) {
 		if (unique_tags) {
 			if (used_tags.find(*tter) != used_tags.end()) {
@@ -775,31 +726,39 @@ void ApertiumApplicator::printReading(Reading *reading, UFILE *output) {
 		const Tag *tag = single_tags[*tter];
 		if (!(tag->type & T_BASEFORM) && !(tag->type & T_WORDFORM)) {
 			if (tag->tag[0] == '+') {
-				u_fprintf(output, "%S", tag->tag.c_str());
+				u_printf("%S", tag->tag.c_str());
 			}
-			else if (tag->tag[0] == '&') {
-				u_fprintf(output, "<%S>", substr(tag->tag, 2).c_str());
-			}
-			else {
-				u_fprintf(output, "<%S>", tag->tag.c_str());
+			else if(tag->tag[0] == '@') {
+//				u_printf("<%S>", tag->tag.c_str());
+				node.si = tag->tag;
+			} else {
+				//u_printf("<%S>", tag->tag.c_str());
+				if(first) {
+					mi += tag->tag;
+					first = false;
+				}else{
+					mi += '|';					
+					mi += tag->tag;
+				}
 			}
 		}
 	}
+	node.mi = mi;
 
-	if (trace) {
-		foreach (iter_hb, reading->hit_by) {
-			u_fputc('<', output);
-			printTrace(output, *iter_hb);
-			u_fputc('>', output);
-		}
-	}
+
+
 }
 
-void ApertiumApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
+void MatxinApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 	// Window text comes at the left
-	if (!window->text.empty()) {
-		u_fprintf(output, "%S", window->text.c_str());
-	}
+//	if (!window->text.empty()) {
+//		u_fprintf(output, "%S", window->text.c_str());
+//	}
+
+	u_fprintf(output, "<SENTENCE ord=\"X\" alloc=\"Y\">\n");
+
+	std::map<int, Node> nodes ;
+	std::map<int, std::vector<int> > deps ;
 
 	for (uint32_t c = 0; c < window->cohorts.size(); c++) {
 		if (c == 0) { // Skip magic cohort
@@ -813,86 +772,121 @@ void ApertiumApplicator::printSingleWindow(SingleWindow *window, UFILE *output) 
 		}
 
 		// Start of cohort
-		u_fprintf(output, "^");
+		
+		Node n;
 
-		if (print_word_forms == true) {
-			// Lop off the initial and final '"' characters
-			// ToDo: A copy does not need to be made here - use pointer offsets
-			UnicodeString wf(cohort->wordform->tag.c_str() + 2, cohort->wordform->tag.length() - 4);
-			UString wf_escaped;
-			for (int i = 0; i < wf.length(); ++i) {
-				if (wf[i] == '^' || wf[i] == '\\' || wf[i] == '/' || wf[i] == '$' || wf[i] == '[' || wf[i] == ']' || wf[i] == '{' || wf[i] == '}' || wf[i] == '<' || wf[i] == '>') {
-					wf_escaped += '\\';
-				}
-				wf_escaped += wf[i];
+		// Lop off the initial and final '"' characters
+		// ToDo: A copy does not need to be made here - use pointer offsets
+		UnicodeString wf(cohort->wordform->tag.c_str() + 2, cohort->wordform->tag.length() - 4);
+		UString wf_escaped;
+		for (int i = 0; i < wf.length(); ++i) {
+			if (wf[i] == '&') {
+				wf_escaped += '&';
+				wf_escaped += 'a';
+				wf_escaped += 'm';
+				wf_escaped += 'p';
+				wf_escaped += ';';
 			}
-			u_fprintf(output, "%S", wf_escaped.c_str());
-
-			// Print the static reading tags
-			if (cohort->wread) {
-				foreach (tter, cohort->wread->tags_list) {
-					if (*tter == cohort->wordform->hash) {
-						continue;
-					}
-					const Tag *tag = single_tags[*tter];
-					u_fprintf(output, "<%S>", tag->tag.c_str());
-				}
+			else if (wf[i] == '"') {
+				wf_escaped += '&';
+				wf_escaped += 'q';
+				wf_escaped += 'u';
+				wf_escaped += 'o';
+				wf_escaped += 't';
+				wf_escaped += ';';
 			}
+			wf_escaped += wf[i];
 		}
 
-		bool need_slash = print_word_forms;
+		n.self = cohort->dep_self;
+		n.form = wf_escaped;
+
+		// Print the static reading tags
+/*		if (cohort->wread) {
+			foreach (tter, cohort->wread->tags_list) {
+				if (*tter == cohort->wordform->hash) {
+					continue;
+				}
+				const Tag *tag = single_tags[*tter];
+				u_fprintf(output, "<%S>", tag->tag.c_str());
+			}
+		}
+*/
 
 		//Tag::printTagRaw(output, single_tags[cohort->wordform]);
-		boost_foreach (Reading *reading, cohort->readings) {
-			if (need_slash) {
-				u_fprintf(output, "/");
-			}
-			need_slash = true;
-			if (grammar->sub_readings_ltr && reading->next) {
-				reading = reverse(reading);
-			}
-			printReading(reading, output);
-			if (print_only_first == true) {
-				break;
-			}
-		}
+		Reading *reading = cohort->readings[0];
 
-		if (trace) {
-			const UChar not_sign = L'\u00AC';
-			boost_foreach (Reading *reading, cohort->delayed) {
-				if (need_slash) {
-					u_fprintf(output, "/%C", not_sign);
-				}
-				need_slash = true;
-				if (grammar->sub_readings_ltr && reading->next) {
-					reading = reverse(reading);
-				}
-				printReading(reading, output);
-			}
-			boost_foreach (Reading *reading, cohort->deleted) {
-				if (need_slash) {
-					u_fprintf(output, "/%C", not_sign);
-				}
-				need_slash = true;
-				if (grammar->sub_readings_ltr && reading->next) {
-					reading = reverse(reading);
-				}
-				printReading(reading, output);
-			}
-		}
+		printReading(reading, n);
 
-		u_fprintf(output, "$");
+		nodes[cohort->dep_self] = n;
+		deps[cohort->dep_parent].push_back(cohort->dep_self);
+
+//		u_fprintf(output, "[%d] %d -> %d || %S\n", c, cohort->dep_self, cohort->dep_parent, cohort->text.c_str());
+
+		//u_fprintf(output, "$");
 		// End of cohort
 
-		if (!cohort->text.empty()) {
-			u_fprintf(output, "%S", cohort->text.c_str());
-		}
+//		if (!cohort->text.empty()) {
+//			u_fprintf(output, "%S", cohort->text.c_str());
+//		}
 
 		u_fflush(output);
 	}
+
+	int depth = 0;
+	procNode(depth, nodes, deps, 0, output);
+
+	u_fprintf(output, "</SENTENCE>\n");
 }
 
-void ApertiumApplicator::mergeMappings(Cohort& cohort) {
+void MatxinApplicator::procNode(int &depth, std::map<int, Node> &nodes, std::map<int, std::vector<int> > &deps, int n, UFILE *output) {
+	Node node = nodes[n];
+	std::vector<int> v = deps[n];	
+	depth = depth + 1;
+
+	for(int i = 0; i < depth * 2; i++) {
+		u_fprintf(output, " ");
+	}
+
+	if(n != 0) {
+		if(v.size() > 0) {
+	
+			u_fprintf(output, "<NODE ord=\"%d\" alloc=\"0\" form=\"%S\" lemma=\"%S\" pos=\"%S\" mi=\"%S\" si=\"%S\">\n", node.self, node.form.c_str(), node.lemma.c_str(), node.pos.c_str(), node.mi.c_str(), node.si.c_str());
+		}else{ 
+			u_fprintf(output, "<NODE ord=\"%d\" alloc=\"0\" form=\"%S\" lemma=\"%S\" pos=\"%S\" mi=\"%S\" si=\"%S\"/>\n", node.self, node.form.c_str(), node.lemma.c_str(), node.pos.c_str(), node.mi.c_str(), node.si.c_str());
+			depth = depth - 1;
+		}
+	}
+
+	bool found = false;
+	std::map<int, std::vector<int> >::iterator it;
+	for(it = deps.begin(); it != deps.end(); it++) {
+		if(it->first == n && it->second.size() != 0) {
+			found = true;
+			break;
+		}
+	}
+	if (!found) {
+		return;
+	}
+	for(std::vector<int>::iterator it = v.begin(); it != v.end(); it++) {
+		procNode(depth, nodes, deps, *it, output);
+	}	
+
+	for(int i = 0; i < depth * 2; i++) {
+		u_fprintf(output, " ");
+	}
+
+	if(n != 0) {
+		u_fprintf(output, "</NODE>\n");
+	}
+
+	depth = depth - 1;
+
+	return;
+}
+
+void MatxinApplicator::mergeMappings(Cohort& cohort) {
 	// Only merge readings which are completely equal (including mapping tags)
 	// foo<N><Sg><Acc><@←OBJ>/foo<N><Sg><Acc><@←OBJ>
 	// => guovvamánnu<N><Sg><Acc><@←OBJ>
@@ -930,13 +924,9 @@ void ApertiumApplicator::mergeMappings(Cohort& cohort) {
 	std::map<uint32_t, ReadingList>::iterator miter;
 	for (miter = mlist.begin(); miter != mlist.end(); miter++) {
 		ReadingList clist = miter->second;
-		// no merging of mapping tags, so just take first reading of the group
-		order.push_back(clist.front());
-
-		clist.erase(clist.begin());
-		foreach (cit, clist) {
-			free_reading(*cit);
-		}
+		Reading *nr = alloc_reading(*(clist.front()));
+		// no merging of mapping tags
+		order.push_back(nr);
 	}
 
 	std::sort(order.begin(), order.end(), CG3::Reading::cmp_number);
