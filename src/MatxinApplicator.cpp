@@ -750,7 +750,7 @@ void MatxinApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 //		u_fprintf(output, "%S", window->text.c_str());
 //	}
 
-	u_fprintf(output, "<SENTENCE ord=\"%d\" alloc=\"0\">\n", window->number);
+	u_fprintf(output, "  <SENTENCE ord=\"%d\" alloc=\"0\">\n", window->number);
 
 	std::map<int, Node> nodes ;
 	std::map<int, std::vector<int> > deps ;
@@ -828,7 +828,7 @@ void MatxinApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 		u_fflush(output);
 	}
 
-	int depth = 0;
+	int depth = 1;
 	procNode(depth, nodes, deps, 0, output);
 
 	u_fprintf(output, "</SENTENCE>\n");
