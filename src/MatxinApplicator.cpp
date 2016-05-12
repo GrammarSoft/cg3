@@ -660,7 +660,7 @@ void MatxinApplicator::processReading(Reading *cReading, const UString& reading_
 	return processReading(cReading, reading_string.c_str());
 }
 
-void MatxinApplicator::printReading(Reading *reading, Node& node) {
+void MatxinApplicator::printReading(Reading *reading, Node& node, UFILE *output) {
 	if (reading->noprint) {
 		return;
 	}
@@ -727,7 +727,7 @@ void MatxinApplicator::printReading(Reading *reading, Node& node) {
 		const Tag *tag = single_tags[*tter];
 		if (!(tag->type & T_BASEFORM) && !(tag->type & T_WORDFORM)) {
 			if (tag->tag[0] == '+') {
-				u_printf("%S", tag->tag.c_str());
+				u_fprintf(output, "%S", tag->tag.c_str());
 			}
 			else if (tag->tag[0] == '@') {
 				//				u_printf("<%S>", tag->tag.c_str());
@@ -816,7 +816,7 @@ void MatxinApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 		//Tag::printTagRaw(output, single_tags[cohort->wordform]);
 		Reading *reading = cohort->readings[0];
 
-		printReading(reading, n);
+		printReading(reading, n, output);
 
 		nodes[cohort->dep_self] = n;
 		deps[cohort->dep_parent].push_back(cohort->dep_self);
