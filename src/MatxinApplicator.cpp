@@ -856,10 +856,10 @@ void MatxinApplicator::procNode(int& depth, std::map<int, Node>& nodes, std::map
 
 	if (n != 0) {
 		if (v.size() > 0) {
-			u_fprintf(output, "<NODE ord=\"%d\" alloc=\"0\" form=\"%S\" lemma=\"%S\" mi=\"%S\" si=\"%S\">\n", node.self, node.form.c_str(), node.lemma.c_str(), node.mi.c_str(), si.c_str());
+			u_fprintf(output, "<NODE ord=\"%d\" alloc=\"0\" form=\"%S\" lem=\"%S\" mi=\"%S\" si=\"%S\">\n", node.self, node.form.c_str(), node.lemma.c_str(), node.mi.c_str(), si.c_str());
 		}
 		else {
-			u_fprintf(output, "<NODE ord=\"%d\" alloc=\"0\" form=\"%S\" lemma=\"%S\" mi=\"%S\" si=\"%S\"/>\n", node.self, node.form.c_str(), node.lemma.c_str(), node.mi.c_str(), si.c_str());
+			u_fprintf(output, "<NODE ord=\"%d\" alloc=\"0\" form=\"%S\" lem=\"%S\" mi=\"%S\" si=\"%S\"/>\n", node.self, node.form.c_str(), node.lemma.c_str(), node.mi.c_str(), si.c_str());
 			depth = depth - 1;
 		}
 	}
