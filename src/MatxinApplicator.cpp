@@ -664,7 +664,15 @@ void MatxinApplicator::printReading(Reading *reading, Node& node, UFILE *output)
 	if (reading->noprint) {
 		return;
 	}
-/*
+
+	if(reading->next) {
+		u_fprintf(ux_stderr, "Error: input contains sub-readings!\n");
+		u_fprintf(output, "  </SENTENCE>\n");
+		u_fprintf(output, "</corpus>\n");
+		exit(-1);
+	}
+
+/*	
 	if (reading->next) {
 		printReading(reading->next, output);
 		u_fputc('+', output);
@@ -754,9 +762,6 @@ void MatxinApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 
 	u_fprintf(output, "  <SENTENCE ord=\"%d\" alloc=\"0\">\n", window->number);
 
-	std::map<int, Node> nodes;
-	std::map<int, std::vector<int> > deps;
-
 	for (uint32_t c = 0; c < window->cohorts.size(); c++) {
 		if (c == 0) { // Skip magic cohort
 			continue;
@@ -819,9 +824,9 @@ void MatxinApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 		nodes[cohort->dep_self] = n;
 		deps[cohort->dep_parent].push_back(cohort->dep_self);
 
+
 /*
 		u_fprintf(output, "[%d] %d -> %d || %S\n", c, cohort->dep_self, cohort->dep_parent, cohort->text.c_str());
-
 		u_fprintf(output, "$");
 		// End of cohort
 

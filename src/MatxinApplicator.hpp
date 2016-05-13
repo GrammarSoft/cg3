@@ -50,6 +50,9 @@ protected:
 		UString si;
 	};
 
+        std::map<int, Node> nodes;
+        std::map<int, std::vector<int> > deps;
+
 	bool nullFlush;
 	bool runningWithNullFlush;
 
