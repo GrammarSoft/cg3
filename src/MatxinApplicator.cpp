@@ -848,12 +848,18 @@ void MatxinApplicator::procNode(int& depth, std::map<int, Node>& nodes, std::map
 		u_fprintf(output, " ");
 	}
 
+	// TODO: work out how to use substr
+	UString si; 
+	for(int i = 1; i < node.si.length(); i++) {
+		si = si + node.si[i];
+	}
+
 	if (n != 0) {
 		if (v.size() > 0) {
-			u_fprintf(output, "<NODE ord=\"%d\" alloc=\"0\" form=\"%S\" lemma=\"%S\" mi=\"%S\" si=\"%S\">\n", node.self, node.form.c_str(), node.lemma.c_str(), node.mi.c_str(), node.si.c_str());
+			u_fprintf(output, "<NODE ord=\"%d\" alloc=\"0\" form=\"%S\" lemma=\"%S\" mi=\"%S\" si=\"%S\">\n", node.self, node.form.c_str(), node.lemma.c_str(), node.mi.c_str(), si.c_str());
 		}
 		else {
-			u_fprintf(output, "<NODE ord=\"%d\" alloc=\"0\" form=\"%S\" lemma=\"%S\" mi=\"%S\" si=\"%S\"/>\n", node.self, node.form.c_str(), node.lemma.c_str(), node.mi.c_str(), node.si.c_str());
+			u_fprintf(output, "<NODE ord=\"%d\" alloc=\"0\" form=\"%S\" lemma=\"%S\" mi=\"%S\" si=\"%S\"/>\n", node.self, node.form.c_str(), node.lemma.c_str(), node.mi.c_str(), si.c_str());
 			depth = depth - 1;
 		}
 	}
