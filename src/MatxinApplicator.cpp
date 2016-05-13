@@ -848,11 +848,7 @@ void MatxinApplicator::procNode(int& depth, std::map<int, Node>& nodes, std::map
 		u_fprintf(output, " ");
 	}
 
-	// TODO: work out how to use substr
-	UString si; 
-	for(int i = 1; i < node.si.length(); i++) {
-		si = si + node.si[i];
-	}
+	UString si = node.si.substr(1);
 
 	if (n != 0) {
 		if (v.size() > 0) {
