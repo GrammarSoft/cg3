@@ -660,17 +660,18 @@ void MatxinApplicator::processReading(Reading *cReading, const UString& reading_
 	return processReading(cReading, reading_string.c_str());
 }
 
-void MatxinApplicator::printReading(Reading *reading, Node &node) {
+void MatxinApplicator::printReading(Reading *reading, Node& node, UFILE *output) {
 	if (reading->noprint) {
 		return;
 	}
+/*
+	if (reading->next) {
+		printReading(reading->next, output);
+		u_fputc('+', output);
+	}
+//*/
 
-//	if (reading->next) {
-//		printReading(reading->next, output);
-//		u_fputc('+', output);
-//	}
-
-	if(!reading->baseform) {
+	if (!reading->baseform) {
 		return;
 	}
 
@@ -721,39 +722,40 @@ void MatxinApplicator::printReading(Reading *reading, Node &node) {
 		const Tag *tag = single_tags[*tter];
 		if (!(tag->type & T_BASEFORM) && !(tag->type & T_WORDFORM)) {
 			if (tag->tag[0] == '+') {
-				u_printf("%S", tag->tag.c_str());
+				u_fprintf(output, "%S", tag->tag.c_str());
 			}
-			else if(tag->tag[0] == '@') {
-//				u_printf("<%S>", tag->tag.c_str());
+			else if (tag->tag[0] == '@') {
+				//u_fprintf(output, "<%S>", tag->tag.c_str());
 				node.si = tag->tag;
-			} else {
-				//u_printf("<%S>", tag->tag.c_str());
-				if(first) {
+			}
+			else {
+				//u_fprintf(output, "<%S>", tag->tag.c_str());
+				if (first) {
 					mi += tag->tag;
 					first = false;
-				}else{
-					mi += '|';					
+				}
+				else {
+					mi += '|';
 					mi += tag->tag;
 				}
 			}
 		}
 	}
 	node.mi = mi;
-
-
-
 }
 
 void MatxinApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
+/*
 	// Window text comes at the left
-//	if (!window->text.empty()) {
-//		u_fprintf(output, "%S", window->text.c_str());
-//	}
+	if (!window->text.empty()) {
+		u_fprintf(output, "%S", window->text.c_str());
+	}
+//*/
 
 	u_fprintf(output, "  <SENTENCE ord=\"%d\" alloc=\"0\">\n", window->number);
 
-	std::map<int, Node> nodes ;
-	std::map<int, std::vector<int> > deps ;
+	std::map<int, Node> nodes;
+	std::map<int, std::vector<int> > deps;
 
 	for (uint32_t c = 0; c < window->cohorts.size(); c++) {
 		if (c == 0) { // Skip magic cohort
@@ -767,7 +769,7 @@ void MatxinApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 		}
 
 		// Start of cohort
-		
+
 		Node n;
 
 		// Lop off the initial and final '"' characters
@@ -796,8 +798,9 @@ void MatxinApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 		n.self = cohort->dep_self;
 		n.form = wf_escaped;
 
+/*
 		// Print the static reading tags
-/*		if (cohort->wread) {
+		if (cohort->wread) {
 			foreach (tter, cohort->wread->tags_list) {
 				if (*tter == cohort->wordform->hash) {
 					continue;
@@ -806,24 +809,26 @@ void MatxinApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 				u_fprintf(output, "<%S>", tag->tag.c_str());
 			}
 		}
-*/
+//*/
 
 		//Tag::printTagRaw(output, single_tags[cohort->wordform]);
 		Reading *reading = cohort->readings[0];
 
-		printReading(reading, n);
+		printReading(reading, n, output);
 
 		nodes[cohort->dep_self] = n;
 		deps[cohort->dep_parent].push_back(cohort->dep_self);
 
-//		u_fprintf(output, "[%d] %d -> %d || %S\n", c, cohort->dep_self, cohort->dep_parent, cohort->text.c_str());
+/*
+		u_fprintf(output, "[%d] %d -> %d || %S\n", c, cohort->dep_self, cohort->dep_parent, cohort->text.c_str());
 
-		//u_fprintf(output, "$");
+		u_fprintf(output, "$");
 		// End of cohort
 
-//		if (!cohort->text.empty()) {
-//			u_fprintf(output, "%S", cohort->text.c_str());
-//		}
+		if (!cohort->text.empty()) {
+			u_fprintf(output, "%S", cohort->text.c_str());
+		}
+//*/
 
 		u_fflush(output);
 	}
@@ -834,20 +839,20 @@ void MatxinApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 	u_fprintf(output, "</SENTENCE>\n");
 }
 
-void MatxinApplicator::procNode(int &depth, std::map<int, Node> &nodes, std::map<int, std::vector<int> > &deps, int n, UFILE *output) {
+void MatxinApplicator::procNode(int& depth, std::map<int, Node>& nodes, std::map<int, std::vector<int> >& deps, int n, UFILE *output) {
 	Node node = nodes[n];
-	std::vector<int> v = deps[n];	
+	std::vector<int> v = deps[n];
 	depth = depth + 1;
 
-	for(int i = 0; i < depth * 2; i++) {
+	for (int i = 0; i < depth * 2; i++) {
 		u_fprintf(output, " ");
 	}
 
-	if(n != 0) {
-		if(v.size() > 0) {
-	
+	if (n != 0) {
+		if (v.size() > 0) {
 			u_fprintf(output, "<NODE ord=\"%d\" alloc=\"0\" form=\"%S\" lemma=\"%S\" mi=\"%S\" si=\"%S\">\n", node.self, node.form.c_str(), node.lemma.c_str(), node.mi.c_str(), node.si.c_str());
-		}else{ 
+		}
+		else {
 			u_fprintf(output, "<NODE ord=\"%d\" alloc=\"0\" form=\"%S\" lemma=\"%S\" mi=\"%S\" si=\"%S\"/>\n", node.self, node.form.c_str(), node.lemma.c_str(), node.mi.c_str(), node.si.c_str());
 			depth = depth - 1;
 		}
@@ -855,8 +860,8 @@ void MatxinApplicator::procNode(int &depth, std::map<int, Node> &nodes, std::map
 
 	bool found = false;
 	std::map<int, std::vector<int> >::iterator it;
-	for(it = deps.begin(); it != deps.end(); it++) {
-		if(it->first == n && it->second.size() != 0) {
+	for (it = deps.begin(); it != deps.end(); it++) {
+		if (it->first == n && it->second.size() != 0) {
 			found = true;
 			break;
 		}
@@ -864,15 +869,15 @@ void MatxinApplicator::procNode(int &depth, std::map<int, Node> &nodes, std::map
 	if (!found) {
 		return;
 	}
-	for(std::vector<int>::iterator it = v.begin(); it != v.end(); it++) {
+	for (std::vector<int>::iterator it = v.begin(); it != v.end(); it++) {
 		procNode(depth, nodes, deps, *it, output);
-	}	
+	}
 
-	for(int i = 0; i < depth * 2; i++) {
+	for (int i = 0; i < depth * 2; i++) {
 		u_fprintf(output, " ");
 	}
 
-	if(n != 0) {
+	if (n != 0) {
 		u_fprintf(output, "</NODE>\n");
 	}
 
