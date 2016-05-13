@@ -844,10 +844,8 @@ void MatxinApplicator::procNode(int& depth, std::map<int, Node>& nodes, std::map
 	std::vector<int> v = deps[n];
 	depth = depth + 1;
 
-	UString si;
-	for(unsigned int i = 1; i < node.si.size(); i++) {
-		si = si + node.si[i];
-	}
+	// Cut off first character, if not empty
+	const UChar *si = node.si.c_str() + !node.si.empty();
 
 	if (n != 0) {
 
@@ -856,10 +854,10 @@ void MatxinApplicator::procNode(int& depth, std::map<int, Node>& nodes, std::map
 		}
 
 		if (v.size() > 0) {
-			u_fprintf(output, "<NODE ord=\"%d\" alloc=\"0\" form=\"%S\" lem=\"%S\" mi=\"%S\" si=\"%S\">\n", node.self, node.form.c_str(), node.lemma.c_str(), node.mi.c_str(), si.c_str());
+			u_fprintf(output, "<NODE ord=\"%d\" alloc=\"0\" form=\"%S\" lem=\"%S\" mi=\"%S\" si=\"%S\">\n", node.self, node.form.c_str(), node.lemma.c_str(), node.mi.c_str(), si);
 		}
 		else {
-			u_fprintf(output, "<NODE ord=\"%d\" alloc=\"0\" form=\"%S\" lem=\"%S\" mi=\"%S\" si=\"%S\"/>\n", node.self, node.form.c_str(), node.lemma.c_str(), node.mi.c_str(), si.c_str());
+			u_fprintf(output, "<NODE ord=\"%d\" alloc=\"0\" form=\"%S\" lem=\"%S\" mi=\"%S\" si=\"%S\"/>\n", node.self, node.form.c_str(), node.lemma.c_str(), node.mi.c_str(), si);
 			depth = depth - 1;
 		}
 	}
