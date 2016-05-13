@@ -833,10 +833,10 @@ void MatxinApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 		u_fflush(output);
 	}
 
-	int depth = 1;
+	int depth = 0;
 	procNode(depth, nodes, deps, 0, output);
 
-	u_fprintf(output, "</SENTENCE>\n");
+	u_fprintf(output, "  </SENTENCE>\n");
 }
 
 void MatxinApplicator::procNode(int& depth, std::map<int, Node>& nodes, std::map<int, std::vector<int> >& deps, int n, UFILE *output) {
@@ -844,16 +844,17 @@ void MatxinApplicator::procNode(int& depth, std::map<int, Node>& nodes, std::map
 	std::vector<int> v = deps[n];
 	depth = depth + 1;
 
-	for (int i = 0; i < depth * 2; i++) {
-		u_fprintf(output, " ");
-	}
-
 	UString si;
 	for(unsigned int i = 1; i < node.si.size(); i++) {
 		si = si + node.si[i];
 	}
 
 	if (n != 0) {
+
+		for (int i = 0; i < depth * 2; i++) {
+			u_fprintf(output, " ");
+		}
+
 		if (v.size() > 0) {
 			u_fprintf(output, "<NODE ord=\"%d\" alloc=\"0\" form=\"%S\" lem=\"%S\" mi=\"%S\" si=\"%S\">\n", node.self, node.form.c_str(), node.lemma.c_str(), node.mi.c_str(), si.c_str());
 		}
@@ -878,11 +879,12 @@ void MatxinApplicator::procNode(int& depth, std::map<int, Node>& nodes, std::map
 		procNode(depth, nodes, deps, *it, output);
 	}
 
-	for (int i = 0; i < depth * 2; i++) {
-		u_fprintf(output, " ");
-	}
 
 	if (n != 0) {
+		for (int i = 0; i < depth * 2; i++) {
+			u_fprintf(output, " ");
+		}
+
 		u_fprintf(output, "</NODE>\n");
 	}
 
