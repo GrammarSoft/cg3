@@ -1,5 +1,5 @@
 #!/bin/sh
-export BOOSTVER=57
+export BOOSTVER=61
 export BDOT="1.$BOOSTVER.0"
 export BUC="boost_1_${BOOSTVER}_0"
 
