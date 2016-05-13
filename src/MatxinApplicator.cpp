@@ -848,7 +848,10 @@ void MatxinApplicator::procNode(int& depth, std::map<int, Node>& nodes, std::map
 		u_fprintf(output, " ");
 	}
 
-	UString si = node.si.substr(1);
+	UString si;
+	for(unsigned int i = 1; i < node.si.size(); i++) {
+		si = si + node.si[i];
+	}
 
 	if (n != 0) {
 		if (v.size() > 0) {
