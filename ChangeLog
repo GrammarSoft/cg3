@@ -1,3 +1,63 @@
+2016-05-13  ftyers
+
+	* [r11551] src/MatxinApplicator.cpp, src/MatxinApplicator.hpp: fail
+	  fast (well reasonably) if input contains subreadings
+
+2016-05-13  tino
+
+	* [r11550] src/MatxinApplicator.cpp: Substr that doesn't throw
+
+2016-05-13  ftyers
+
+	* [r11549] src/MatxinApplicator.cpp: fix whitespace handling
+	* [r11548] src/MatxinApplicator.cpp: go back to for loop as substr
+	  doesn't work
+
+2016-05-13  tino
+
+	* [r11547] get-boost.sh: Boost 1.61.0
+	* [r11545] src/MatxinApplicator.cpp: Use substr to fix warning
+
+2016-05-13  ftyers
+
+	* [r11544] src/MatxinApplicator.cpp: rename field
+	* [r11543] src/MatxinApplicator.cpp: lop off @
+
+2016-05-13  tino
+
+	* [r11541] src/MatxinApplicator.cpp, src/MatxinApplicator.hpp:
+	  Printing to stdout is really not allowed
+
+2016-05-12  ftyers
+
+	* [r11539] src/MatxinApplicator.cpp, src/MatxinApplicator.hpp: some
+	  formatting fixes
+	* [r11538] src/MatxinApplicator.cpp: there is no pos field, and
+	  also number sentences
+
+2016-05-12  tino
+
+	* [r11537] src/MatxinApplicator.cpp, src/MatxinApplicator.hpp:
+	  Printing to stdout is not allowed
+	* [r11536] src/FormatConverter.cpp: Reorder init
+	* [r11535] src/MatxinApplicator.cpp, src/MatxinApplicator.hpp,
+	  src/cg_proc.cpp: Attempt to inject history; Reformat
+
+2016-05-12  ftyers
+
+	* [r11534] src/ApertiumApplicator.cpp, src/CMakeLists.txt,
+	  src/FormatConverter.cpp, src/FormatConverter.hpp,
+	  src/MatxinApplicator.cpp, src/MatxinApplicator.hpp,
+	  src/all_cg_conv.cpp, src/all_cg_proc.cpp, src/cg_proc.cpp,
+	  src/options_conv.hpp: first version of the MatxinApplicator,
+	  still quite a bit of work to do
+
+2016-05-12  tino
+
+	* [r11533] ChangeLog, src/ApertiumApplicator.cpp, src/cg_proc.cpp,
+	  src/version.hpp: Fix cg-proc leak; Allow cg-proc to use textual
+	  grammars, but with a warning
+
 2016-04-14  unhammer
 
 	* [r11459] emacs/cg.el: cg-calculate-indent was returning wrong val
@@ -1839,451 +1899,4 @@
 	  src/GrammarApplicator_runGrammar.cpp,
 	  src/GrammarApplicator_runRules.cpp, src/SingleWindow.cpp,
 	  src/version.hpp: Fix --dep-delimit to react at a reading level
-
-2013-12-24  tino
-
-	* [r9516] ChangeLog, scripts/cg3-autobin.pl, src/cg_proc.cpp,
-	  src/istream.hpp, src/version.hpp: Dirty fix: don't eat BOMs in
-	  the stream if null-flush is in effect.
-
-2013-12-10  tino
-
-	* [r9492] AUTHORS, CMake/DebSourcePPA.cmake, CMake/FindBoost.cmake,
-	  CMake/FindICU.cmake, CMakeLists.txt, COPYING, ChangeLog,
-	  Doxyfile, INSTALL, LICENSE, NEWS, README, TODO, all2unix.pl,
-	  cg3.g, cg3.pc.in, cmake.sh, compile-profile.sh, dist/Portfile,
-	  dist/dist-osx.pl, dist/osx/vislcg3, emacs/cg.el, get-boost.sh,
-	  include/cycle.h, include/exec-stream/exec-stream.cpp,
-	  include/exec-stream/exec-stream.h,
-	  include/exec-stream/posix/exec-stream-helpers.cpp,
-	  include/exec-stream/posix/exec-stream-helpers.h,
-	  include/exec-stream/posix/exec-stream-impl.cpp,
-	  include/exec-stream/win/exec-stream-helpers.cpp,
-	  include/exec-stream/win/exec-stream-helpers.h,
-	  include/exec-stream/win/exec-stream-impl.cpp, include/uoptions.h,
-	  license.icu.txt, make-naive.sh, manual/bibliography.xml,
-	  manual/binarygrammar.xml, manual/cgglossary.xml,
-	  manual/cgkeywords.xml, manual/chapterize.sh,
-	  manual/cmdreference.xml, manual/combine.sh,
-	  manual/compatibility.xml, manual/contexts.xml,
-	  manual/contributing.xml, manual/dependencies.xml,
-	  manual/drafts.xml, manual/externals.xml, manual/faq.xml,
-	  manual/generate.sh, manual/grammar.xml, manual/installation.xml,
-	  manual/intro.xml, manual/make-dist.sh, manual/manual.xml,
-	  manual/parentheses.xml, manual/pdf.sh, manual/probabilistic.xml,
-	  manual/relations.xml, manual/rules.xml, manual/sets.xml,
-	  manual/singlefile.sh, manual/streamcmds.xml,
-	  manual/streamformats.xml, manual/subreadings.xml,
-	  manual/tags.xml, manual/templates.xml, manual/validate.sh,
-	  manual/xsl-fo.sh, newsletters/2007-03-29.txt,
-	  newsletters/2007-12-04.txt, newsletters/2008-01-24.txt,
-	  newsletters/2008-03-06.txt, newsletters/2008-05-20.txt,
-	  newsletters/2008-07-15.txt, newsletters/2008-08-25.txt,
-	  newsletters/2008-09-11.txt, newsletters/2008-09-20.txt,
-	  newsletters/2008-11-10.txt, newsletters/2009-01-08.txt,
-	  newsletters/2009-02-21.txt, newsletters/2009-05-13.txt,
-	  newsletters/2009-06-30.txt, newsletters/2009-09-27.txt,
-	  newsletters/2010-03-18.txt, newsletters/2010-06-06.txt,
-	  newsletters/2010-09-22.txt, newsletters/2010-09-23.txt,
-	  newsletters/2010-11-11.txt, newsletters/2011-04-30.txt,
-	  newsletters/2011-08-01.txt, newsletters/2012-01-06.txt,
-	  newsletters/2012-07-02.txt, newsletters/2012-07-29.txt,
-	  newsletters/2013-06-19.txt, profile-apply.sh, profile-parse.sh,
-	  scripts/CG3_External.pm, scripts/auto-linux-wget.sh,
-	  scripts/cg3-autobin.pl, scripts/external.pl,
-	  scripts/external_text.pl, scripts/profile-revisions-tally.php,
-	  scripts/profile-revisions.php, scripts/wrapper.valgrind,
-	  src/ApertiumApplicator.cpp, src/ApertiumApplicator.hpp,
-	  src/BinaryGrammar.cpp, src/BinaryGrammar.hpp,
-	  src/BinaryGrammar_read.cpp, src/BinaryGrammar_write.cpp,
-	  src/CMakeLists.txt, src/Cohort.cpp, src/Cohort.hpp,
-	  src/CohortIterator.cpp, src/CohortIterator.hpp,
-	  src/CompositeTag.cpp, src/CompositeTag.hpp,
-	  src/ContextualTest.cpp, src/ContextualTest.hpp,
-	  src/FSTApplicator.cpp, src/FSTApplicator.hpp,
-	  src/FormatConverter.cpp, src/FormatConverter.hpp,
-	  src/Grammar.cpp, src/Grammar.hpp, src/GrammarApplicator.cpp,
-	  src/GrammarApplicator.hpp, src/GrammarApplicator_matchSet.cpp,
-	  src/GrammarApplicator_reflow.cpp,
-	  src/GrammarApplicator_runContextualTest.cpp,
-	  src/GrammarApplicator_runGrammar.cpp,
-	  src/GrammarApplicator_runRules.cpp, src/GrammarWriter.cpp,
-	  src/GrammarWriter.hpp, src/IGrammarParser.hpp,
-	  src/MatxinApplicator.cpp, src/MatxinApplicator.hpp,
-	  src/NicelineApplicator.cpp, src/NicelineApplicator.hpp,
-	  src/PlaintextApplicator.cpp, src/PlaintextApplicator.hpp,
-	  src/Reading.cpp, src/Reading.hpp, src/Rule.cpp, src/Rule.hpp,
-	  src/Set.cpp, src/Set.hpp, src/SingleWindow.cpp,
-	  src/SingleWindow.hpp, src/Strings.cpp, src/Strings.hpp,
-	  src/Tag.cpp, src/Tag.hpp, src/TextualParser.cpp,
-	  src/TextualParser.hpp, src/Window.cpp, src/Window.hpp,
-	  src/all_cg_comp.cpp, src/all_cg_conv.cpp, src/all_cg_proc.cpp,
-	  src/all_vislcg3.cpp, src/bloomish.hpp, src/cg-comp.1,
-	  src/cg-proc.1, src/cg3.h, src/cg_comp.cpp, src/cg_conv.cpp,
-	  src/cg_proc.cpp, src/icu_uoptions.cpp, src/inlines.hpp,
-	  src/interval_vector.hpp, src/istream.hpp, src/libcg3.cpp,
-	  src/macros.hpp, src/main.cpp, src/options.hpp,
-	  src/options_conv.hpp, src/sorted_vector.hpp, src/stdafx.hpp,
-	  src/test_libcg3.c, src/uextras.cpp, src/uextras.hpp,
-	  src/version.hpp, src/vislcg3.1, test/Apertium/README,
-	  test/Apertium/T_AnyMinusSome/expected.txt,
-	  test/Apertium/T_AnyMinusSome/grammar.cg3,
-	  test/Apertium/T_AnyMinusSome/input.txt,
-	  test/Apertium/T_AnyMinusSome/run.pl,
-	  test/Apertium/T_Barrier/expected.txt,
-	  test/Apertium/T_Barrier/grammar.cg3,
-	  test/Apertium/T_Barrier/input.txt,
-	  test/Apertium/T_Barrier/run.pl,
-	  test/Apertium/T_BasicAppend/expected.txt,
-	  test/Apertium/T_BasicAppend/grammar.cg3,
-	  test/Apertium/T_BasicAppend/input.txt,
-	  test/Apertium/T_BasicAppend/run.pl,
-	  test/Apertium/T_BasicContextTest/expected.txt,
-	  test/Apertium/T_BasicContextTest/grammar.cg3,
-	  test/Apertium/T_BasicContextTest/input.txt,
-	  test/Apertium/T_BasicContextTest/run.pl,
-	  test/Apertium/T_BasicDelimit/expected.txt,
-	  test/Apertium/T_BasicDelimit/grammar.cg3,
-	  test/Apertium/T_BasicDelimit/input.txt,
-	  test/Apertium/T_BasicDelimit/run.pl,
-	  test/Apertium/T_BasicIff/expected.txt,
-	  test/Apertium/T_BasicIff/grammar.cg3,
-	  test/Apertium/T_BasicIff/input.txt,
-	  test/Apertium/T_BasicIff/run.pl,
-	  test/Apertium/T_BasicRemove/expected.txt,
-	  test/Apertium/T_BasicRemove/grammar.cg3,
-	  test/Apertium/T_BasicRemove/input.txt,
-	  test/Apertium/T_BasicRemove/run.pl,
-	  test/Apertium/T_BasicSelect/expected.txt,
-	  test/Apertium/T_BasicSelect/grammar.cg3,
-	  test/Apertium/T_BasicSelect/input.txt,
-	  test/Apertium/T_BasicSelect/run.pl,
-	  test/Apertium/T_BasicSubstitute/expected.txt,
-	  test/Apertium/T_BasicSubstitute/grammar.cg3,
-	  test/Apertium/T_BasicSubstitute/input.txt,
-	  test/Apertium/T_BasicSubstitute/run.pl,
-	  test/Apertium/T_CarefulBarrier/expected.txt,
-	  test/Apertium/T_CarefulBarrier/grammar.cg3,
-	  test/Apertium/T_CarefulBarrier/input.txt,
-	  test/Apertium/T_CarefulBarrier/run.pl,
-	  test/Apertium/T_CharsInWhiteSpace/expected.txt,
-	  test/Apertium/T_CharsInWhiteSpace/grammar.cg3,
-	  test/Apertium/T_CharsInWhiteSpace/input.txt,
-	  test/Apertium/T_CharsInWhiteSpace/run.pl,
-	  test/Apertium/T_CompositeSelect/expected.txt,
-	  test/Apertium/T_CompositeSelect/grammar.cg3,
-	  test/Apertium/T_CompositeSelect/input.txt,
-	  test/Apertium/T_CompositeSelect/run.pl,
-	  test/Apertium/T_DontMatchEmptySet/expected.txt,
-	  test/Apertium/T_DontMatchEmptySet/grammar.cg3,
-	  test/Apertium/T_DontMatchEmptySet/input.txt,
-	  test/Apertium/T_DontMatchEmptySet/run.pl,
-	  test/Apertium/T_EndlessSelect/expected.txt,
-	  test/Apertium/T_EndlessSelect/grammar.cg3,
-	  test/Apertium/T_EndlessSelect/input.txt,
-	  test/Apertium/T_EndlessSelect/run.pl,
-	  test/Apertium/T_Joiner/expected.txt,
-	  test/Apertium/T_Joiner/grammar.cg3,
-	  test/Apertium/T_Joiner/input.txt, test/Apertium/T_Joiner/run.pl,
-	  test/Apertium/T_MapAdd_Different/expected.txt,
-	  test/Apertium/T_MapAdd_Different/grammar.cg3,
-	  test/Apertium/T_MapAdd_Different/input.txt,
-	  test/Apertium/T_MapAdd_Different/run.pl,
-	  test/Apertium/T_MatchBaseform/expected.txt,
-	  test/Apertium/T_MatchBaseform/grammar.cg3,
-	  test/Apertium/T_MatchBaseform/input.txt,
-	  test/Apertium/T_MatchBaseform/run.pl,
-	  test/Apertium/T_MatchWordform/expected.txt,
-	  test/Apertium/T_MatchWordform/grammar.cg3,
-	  test/Apertium/T_MatchWordform/input.txt,
-	  test/Apertium/T_MatchWordform/run.pl,
-	  test/Apertium/T_MultiWords/expected.txt,
-	  test/Apertium/T_MultiWords/grammar.cg3,
-	  test/Apertium/T_MultiWords/input.txt,
-	  test/Apertium/T_MultiWords/run.pl,
-	  test/Apertium/T_MultipleSections/expected.txt,
-	  test/Apertium/T_MultipleSections/grammar.cg3,
-	  test/Apertium/T_MultipleSections/input.txt,
-	  test/Apertium/T_MultipleSections/run.pl,
-	  test/Apertium/T_MultiwordTagStaying/expected.txt,
-	  test/Apertium/T_MultiwordTagStaying/grammar.cg3,
-	  test/Apertium/T_MultiwordTagStaying/input.txt,
-	  test/Apertium/T_MultiwordTagStaying/run.pl,
-	  test/Apertium/T_NegatedContextTest/expected.txt,
-	  test/Apertium/T_NegatedContextTest/grammar.cg3,
-	  test/Apertium/T_NegatedContextTest/input.txt,
-	  test/Apertium/T_NegatedContextTest/run.pl,
-	  test/Apertium/T_RegExp_Map/expected.txt,
-	  test/Apertium/T_RegExp_Map/grammar.cg3,
-	  test/Apertium/T_RegExp_Map/input.txt,
-	  test/Apertium/T_RegExp_Map/run.pl,
-	  test/Apertium/T_RegExp_Select/expected.txt,
-	  test/Apertium/T_RegExp_Select/grammar.cg3,
-	  test/Apertium/T_RegExp_Select/input.txt,
-	  test/Apertium/T_RegExp_Select/run.pl,
-	  test/Apertium/T_RegExp_Substitute/expected.txt,
-	  test/Apertium/T_RegExp_Substitute/grammar.cg3,
-	  test/Apertium/T_RegExp_Substitute/input.txt,
-	  test/Apertium/T_RegExp_Substitute/run.pl,
-	  test/Apertium/T_RemoveSingleTag/expected.txt,
-	  test/Apertium/T_RemoveSingleTag/grammar.cg3,
-	  test/Apertium/T_RemoveSingleTag/input.txt,
-	  test/Apertium/T_RemoveSingleTag/run.pl,
-	  test/Apertium/T_ScanningTests/expected.txt,
-	  test/Apertium/T_ScanningTests/grammar.cg3,
-	  test/Apertium/T_ScanningTests/input.txt,
-	  test/Apertium/T_ScanningTests/run.pl,
-	  test/Apertium/T_Sections/expected.txt,
-	  test/Apertium/T_Sections/grammar.cg3,
-	  test/Apertium/T_Sections/input.txt,
-	  test/Apertium/T_Sections/run.pl,
-	  test/Apertium/T_SetOp_FailFast/expected.txt,
-	  test/Apertium/T_SetOp_FailFast/grammar.cg3,
-	  test/Apertium/T_SetOp_FailFast/input.txt,
-	  test/Apertium/T_SetOp_FailFast/run.pl,
-	  test/Apertium/T_SetOp_OR/expected.txt,
-	  test/Apertium/T_SetOp_OR/grammar.cg3,
-	  test/Apertium/T_SetOp_OR/input.txt,
-	  test/Apertium/T_SetOp_OR/run.pl,
-	  test/Apertium/T_SpaceInWord/expected.txt,
-	  test/Apertium/T_SpaceInWord/grammar.cg3,
-	  test/Apertium/T_SpaceInWord/input.txt,
-	  test/Apertium/T_SpaceInWord/run.pl,
-	  test/Apertium/T_SuperBlanks/expected.txt,
-	  test/Apertium/T_SuperBlanks/grammar.cg3,
-	  test/Apertium/T_SuperBlanks/input.txt,
-	  test/Apertium/T_SuperBlanks/run.pl,
-	  test/Apertium/T_SuperBlanksNewline/expected.txt,
-	  test/Apertium/T_SuperBlanksNewline/grammar.cg3,
-	  test/Apertium/T_SuperBlanksNewline/input.txt,
-	  test/Apertium/T_SuperBlanksNewline/run.pl,
-	  test/Apertium/T_SuperBlanksWithEscape/expected.txt,
-	  test/Apertium/T_SuperBlanksWithEscape/grammar.cg3,
-	  test/Apertium/T_SuperBlanksWithEscape/input.txt,
-	  test/Apertium/T_SuperBlanksWithEscape/run.pl,
-	  test/Apertium/T_Unification/expected.txt,
-	  test/Apertium/T_Unification/grammar.cg3,
-	  test/Apertium/T_Unification/input.txt,
-	  test/Apertium/T_Unification/run.pl,
-	  test/Apertium/T_UnknownWord/expected.txt,
-	  test/Apertium/T_UnknownWord/grammar.cg3,
-	  test/Apertium/T_UnknownWord/input.txt,
-	  test/Apertium/T_UnknownWord/run.pl, test/Apertium/clean.sh,
-	  test/Apertium/runall.pl, test/T_AnyMinusSome/expected.txt,
-	  test/T_AnyMinusSome/grammar.cg3, test/T_AnyMinusSome/input.txt,
-	  test/T_AnyMinusSome/run.pl, test/T_Barrier/expected.txt,
-	  test/T_Barrier/grammar.cg3, test/T_Barrier/input.txt,
-	  test/T_Barrier/run.pl, test/T_BasicAppend/expected.txt,
-	  test/T_BasicAppend/grammar.cg3, test/T_BasicAppend/input.txt,
-	  test/T_BasicAppend/run.pl, test/T_BasicContextTest/expected.txt,
-	  test/T_BasicContextTest/grammar.cg3,
-	  test/T_BasicContextTest/input.txt,
-	  test/T_BasicContextTest/run.pl, test/T_BasicDelimit/expected.txt,
-	  test/T_BasicDelimit/grammar.cg3, test/T_BasicDelimit/input.txt,
-	  test/T_BasicDelimit/run.pl, test/T_BasicDependency/expected.txt,
-	  test/T_BasicDependency/grammar.cg3,
-	  test/T_BasicDependency/input.txt, test/T_BasicDependency/run.pl,
-	  test/T_BasicIff/expected.txt, test/T_BasicIff/grammar.cg3,
-	  test/T_BasicIff/input.txt, test/T_BasicIff/run.pl,
-	  test/T_BasicSelect/expected.txt, test/T_BasicSelect/grammar.cg3,
-	  test/T_BasicSelect/input.txt, test/T_BasicSelect/run.pl,
-	  test/T_BasicSubstitute/expected.txt,
-	  test/T_BasicSubstitute/grammar.cg3,
-	  test/T_BasicSubstitute/input.txt, test/T_BasicSubstitute/run.pl,
-	  test/T_CG2Compat/expected.txt, test/T_CG2Compat/grammar.cg3,
-	  test/T_CG2Compat/input.txt, test/T_CG2Compat/run.pl,
-	  test/T_CarefulBarrier/expected.txt,
-	  test/T_CarefulBarrier/grammar.cg3,
-	  test/T_CarefulBarrier/input.txt, test/T_CarefulBarrier/run.pl,
-	  test/T_DelayAndDelete/expected.txt,
-	  test/T_DelayAndDelete/grammar.cg3,
-	  test/T_DelayAndDelete/input.txt, test/T_DelayAndDelete/run.pl,
-	  test/T_Dependency_Loops/expected.txt,
-	  test/T_Dependency_Loops/grammar.cg3,
-	  test/T_Dependency_Loops/input.txt,
-	  test/T_Dependency_Loops/run.pl,
-	  test/T_Dependency_OutOfRange/expected.txt,
-	  test/T_Dependency_OutOfRange/grammar.cg3,
-	  test/T_Dependency_OutOfRange/input.txt,
-	  test/T_Dependency_OutOfRange/run.pl,
-	  test/T_DontMatchEmptySet/expected.txt,
-	  test/T_DontMatchEmptySet/grammar.cg3,
-	  test/T_DontMatchEmptySet/input.txt,
-	  test/T_DontMatchEmptySet/run.pl,
-	  test/T_EndlessSelect/expected.txt,
-	  test/T_EndlessSelect/grammar.cg3, test/T_EndlessSelect/input.txt,
-	  test/T_EndlessSelect/run.pl, test/T_External/expected.txt,
-	  test/T_External/grammar.cg3, test/T_External/input.txt,
-	  test/T_External/run.pl, test/T_External/sets.inc,
-	  test/T_Include/expected.txt, test/T_Include/grammar.cg3,
-	  test/T_Include/input.txt, test/T_Include/rules.inc,
-	  test/T_Include/run.pl, test/T_Include/sets.inc,
-	  test/T_InputCommands/expected.txt,
-	  test/T_InputCommands/grammar.cg3, test/T_InputCommands/input.txt,
-	  test/T_InputCommands/run.pl, test/T_InputMarkup/expected.txt,
-	  test/T_InputMarkup/grammar.cg3, test/T_InputMarkup/input.txt,
-	  test/T_InputMarkup/run.pl, test/T_JumpExecute/expected.txt,
-	  test/T_JumpExecute/grammar.cg3, test/T_JumpExecute/input.txt,
-	  test/T_JumpExecute/run.pl, test/T_MapAdd_Different/expected.txt,
-	  test/T_MapAdd_Different/grammar.cg3,
-	  test/T_MapAdd_Different/input.txt,
-	  test/T_MapAdd_Different/run.pl,
-	  test/T_MapThenRemove/expected.txt,
-	  test/T_MapThenRemove/grammar.cg3, test/T_MapThenRemove/input.txt,
-	  test/T_MapThenRemove/run.pl, test/T_MapThenSelect/expected.txt,
-	  test/T_MapThenSelect/grammar.cg3, test/T_MapThenSelect/input.txt,
-	  test/T_MapThenSelect/run.pl, test/T_MappingPrefix/expected.txt,
-	  test/T_MappingPrefix/grammar.cg3, test/T_MappingPrefix/input.txt,
-	  test/T_MappingPrefix/run.pl, test/T_Movement/expected.txt,
-	  test/T_Movement/grammar.cg3, test/T_Movement/input.txt,
-	  test/T_Movement/run.pl, test/T_MultipleSections/expected.txt,
-	  test/T_MultipleSections/grammar.cg3,
-	  test/T_MultipleSections/input.txt,
-	  test/T_MultipleSections/run.pl,
-	  test/T_NegatedContextTest/expected.txt,
-	  test/T_NegatedContextTest/grammar.cg3,
-	  test/T_NegatedContextTest/input.txt,
-	  test/T_NegatedContextTest/run.pl,
-	  test/T_NotContextTest/expected.txt,
-	  test/T_NotContextTest/grammar.cg3,
-	  test/T_NotContextTest/input.txt, test/T_NotContextTest/run.pl,
-	  test/T_NumericalTags/expected.txt,
-	  test/T_NumericalTags/grammar.cg3, test/T_NumericalTags/input.txt,
-	  test/T_NumericalTags/run.pl, test/T_OmniWithBarrier/expected.txt,
-	  test/T_OmniWithBarrier/grammar.cg3,
-	  test/T_OmniWithBarrier/input.txt, test/T_OmniWithBarrier/run.pl,
-	  test/T_Omniscan/expected.txt, test/T_Omniscan/grammar.cg3,
-	  test/T_Omniscan/input.txt, test/T_Omniscan/run.pl,
-	  test/T_OriginPassing/expected.txt,
-	  test/T_OriginPassing/grammar.cg3, test/T_OriginPassing/input.txt,
-	  test/T_OriginPassing/run.pl, test/T_Parentheses/expected.txt,
-	  test/T_Parentheses/grammar.cg3, test/T_Parentheses/input.txt,
-	  test/T_Parentheses/run.pl, test/T_RegExp/expected.txt,
-	  test/T_RegExp/grammar.cg3, test/T_RegExp/input.txt,
-	  test/T_RegExp/run.pl, test/T_Relations/expected.txt,
-	  test/T_Relations/grammar.cg3, test/T_Relations/input.txt,
-	  test/T_Relations/run.pl, test/T_RemCohort/expected.txt,
-	  test/T_RemCohort/grammar.cg3, test/T_RemCohort/input.txt,
-	  test/T_RemCohort/run.pl, test/T_RemoveSingleTag/expected.txt,
-	  test/T_RemoveSingleTag/grammar.cg3,
-	  test/T_RemoveSingleTag/input.txt, test/T_RemoveSingleTag/run.pl,
-	  test/T_ScanningTests/expected.txt,
-	  test/T_ScanningTests/grammar.cg3, test/T_ScanningTests/input.txt,
-	  test/T_ScanningTests/run.pl, test/T_SectionRanges/expected.txt,
-	  test/T_SectionRanges/grammar.cg3, test/T_SectionRanges/input.txt,
-	  test/T_SectionRanges/run.pl, test/T_Sections/expected.txt,
-	  test/T_Sections/grammar.cg3, test/T_Sections/input.txt,
-	  test/T_Sections/run.pl, test/T_SetOp_FailFast/expected.txt,
-	  test/T_SetOp_FailFast/grammar.cg3,
-	  test/T_SetOp_FailFast/input.txt, test/T_SetOp_FailFast/run.pl,
-	  test/T_SetOps/expected.txt, test/T_SetOps/grammar.cg3,
-	  test/T_SetOps/input.txt, test/T_SetOps/run.pl,
-	  test/T_SetParentChild/expected.txt,
-	  test/T_SetParentChild/grammar.cg3,
-	  test/T_SetParentChild/input.txt, test/T_SetParentChild/run.pl,
-	  test/T_SoftDelimiters/expected.txt,
-	  test/T_SoftDelimiters/grammar.cg3,
-	  test/T_SoftDelimiters/input.txt, test/T_SoftDelimiters/run.pl,
-	  test/T_SpaceInForms/expected.txt,
-	  test/T_SpaceInForms/grammar.cg3, test/T_SpaceInForms/input.txt,
-	  test/T_SpaceInForms/run.pl,
-	  test/T_SubReadings_Apertium/expected.txt,
-	  test/T_SubReadings_Apertium/grammar.cg3,
-	  test/T_SubReadings_Apertium/input.txt,
-	  test/T_SubReadings_Apertium/run.pl,
-	  test/T_SubReadings_CG/expected.txt,
-	  test/T_SubReadings_CG/grammar.cg3,
-	  test/T_SubReadings_CG/input.txt, test/T_SubReadings_CG/run.pl,
-	  test/T_SubstituteNil/expected.txt,
-	  test/T_SubstituteNil/grammar.cg3, test/T_SubstituteNil/input.txt,
-	  test/T_SubstituteNil/run.pl, test/T_Templates/expected.txt,
-	  test/T_Templates/grammar.cg3, test/T_Templates/input.txt,
-	  test/T_Templates/run.pl, test/T_Trace/expected.txt,
-	  test/T_Trace/grammar.cg3, test/T_Trace/input.txt,
-	  test/T_Trace/run.pl, test/T_Unification/expected.txt,
-	  test/T_Unification/grammar.cg3, test/T_Unification/input.txt,
-	  test/T_Unification/run.pl, test/T_Variables/expected.txt,
-	  test/T_Variables/grammar.cg3, test/T_Variables/input.txt,
-	  test/T_Variables/run.pl, test/clean.sh, test/runall.pl, todo.sh,
-	  update-revision.pl, vapply.sh, vparse.sh, win32/getopt.c,
-	  win32/getopt.h, win32/libgen.c, win32/libgen.h: svn:eol-style=LF
-	* [r9491] scripts/profile-revisions.php, src/stdafx.hpp, vapply.sh:
-	  \r\n -> \n
-
-2013-12-09  tino
-
-	* [r9483] src/Grammar.cpp: Target:Rule code saved for later,
-	  #ifdef'd off
-
-2013-12-04  tino
-
-	* [r9467] ChangeLog, scripts/cg3-autobin.pl,
-	  src/GrammarApplicator_runRules.cpp, src/version.hpp,
-	  test/T_RemCohort/expected.txt, test/T_RemCohort/grammar.cg3,
-	  test/T_RemCohort/input.txt: RemCohort now hands off enclosed
-	  cohorts
-
-2013-12-01  tino
-
-	* [r9454] CMakeLists.txt: cg3
-	* [r9453] ChangeLog, src/version.hpp, update-revision.pl: Use
-	  svn2cl to generate the ChangeLog
-
-2013-11-21  tino
-
-	* [r9406] manual/rules.xml, scripts/cg3-autobin.pl,
-	  src/GrammarApplicator.hpp, src/GrammarApplicator_reflow.cpp,
-	  src/GrammarApplicator_runRules.cpp, src/Strings.cpp,
-	  src/Strings.hpp, src/TextualParser.cpp, src/version.hpp,
-	  test/T_BasicAppend/expected.txt, test/T_BasicAppend/grammar.cg3,
-	  test/T_BasicAppend/run.pl: COPY now has an EXCEPT clause (WIP,
-	  only takes raw tags)
-
-2013-11-19  tino
-
-	* [r9401] src/ApertiumApplicator.cpp, src/FSTApplicator.cpp,
-	  src/GrammarApplicator_runContextualTest.cpp,
-	  src/GrammarApplicator_runGrammar.cpp,
-	  src/GrammarApplicator_runRules.cpp, src/MatxinApplicator.cpp,
-	  src/NicelineApplicator.cpp, src/PlaintextApplicator.cpp,
-	  src/Tag.cpp: Fix everything clang-analyzer complained about
-
-2013-11-18  tino
-
-	* [r9398] CMakeLists.txt, src/CMakeLists.txt, src/CompositeTag.hpp,
-	  src/Rule.hpp, src/Tag.hpp: CMake script cleanup
-
-2013-11-17  tino
-
-	* [r9397] test/T_RemCohort/run.pl, test/T_Unification/run.pl: diff
-	  -Z is not always available, so use -b
-	* [r9396] scripts/cg3-autobin.pl,
-	  src/GrammarApplicator_runRules.cpp, src/sorted_vector.hpp,
-	  src/version.hpp, test/T_RemCohort/expected.txt,
-	  test/T_RemCohort/grammar.cg3, test/T_RemCohort/input.txt,
-	  test/T_RemCohort/run.pl: Rem- and AddCohort now properly updates
-	  the endtag marker <<<.
-
-2013-11-15  tino
-
-	* [r9378] scripts/cg3-autobin.pl, src/GrammarApplicator_reflow.cpp,
-	  src/GrammarApplicator_runContextualTest.cpp, src/version.hpp,
-	  test/T_Unification/expected.txt, test/T_Unification/grammar.cg3,
-	  test/T_Unification/run.pl: If a test does not succeed, discard
-	  any captures performed by that test.
-
-2013-11-13  tino
-
-	* [r9374] scripts/cg3-autobin.pl, src/GrammarApplicator.cpp,
-	  src/GrammarApplicator.hpp, src/main.cpp, src/options.hpp,
-	  src/version.hpp, test/T_AnyMinusSome/input.txt,
-	  test/T_AnyMinusSome/run.pl: Added --unique-tags
-
-2013-11-12  tino
-
-	* [r9366] get-boost.sh: Boost 1.55.0
-
-2013-11-08  tino
-
-	* [r9354] src/options.hpp: --ordered description
 
