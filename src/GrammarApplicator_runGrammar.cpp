@@ -394,6 +394,10 @@ void GrammarApplicator::runGrammarOnText(istream& input, UFILE *output) {
 				gWindow->dep_map.clear();
 				gWindow->dep_window.clear();
 
+				foreach (iter, cSWindow->cohorts.back()->readings) {
+					addTagToReading(**iter, endtag);
+				}
+
 				cSWindow = gWindow->allocAppendSingleWindow();
 				initEmptySingleWindow(cSWindow);
 
