@@ -134,6 +134,18 @@ inline void trie_markused(trie_t& trie) {
 	}
 }
 
+inline bool trie_hasType(trie_t& trie, uint32_t type) {
+	boost_foreach (trie_t::value_type& kv, trie) {
+		if (kv.first->type & type) {
+			return true;
+		}
+		if (kv.second.trie && trie_hasType(*kv.second.trie, type)) {
+			return true;
+		}
+	}
+	return false;
+}
+
 inline void trie_getTagList(const trie_t& trie, TagList& theTags) {
 	boost_foreach (const trie_t::value_type& kv, trie) {
 		theTags.push_back(kv.first);
