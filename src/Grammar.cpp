@@ -879,11 +879,32 @@ void Grammar::reindex(bool unused_sets, bool used_tags) {
 		}
 	}
 
-	// Gather knowledge of which contexts use unification
-	// ToDo: Also gather regex captures and capture-uses
-	// ToDo: Automatically determine whether keeporder is needed, by checking that the same unif-set is used in multiple contexts
-	bc::flat_set<ContextualTest*> nk;
+	// Gather knowledge of which sets have varstrings
+	boost::dynamic_bitset<> sets_vstr(sets_list.size());
 	bool did = true;
+	while (did) {
+		did = false;
+		foreach (set, sets_list) {
+			if (sets_vstr.test((*set)->number)) {
+				continue;
+			}
+			foreach (iset, (*set)->sets) {
+				if (sets_vstr.test(*iset)) {
+					sets_vstr.set((*set)->number);
+					did = true;
+					break;
+				}
+			}
+			if (trie_hasType((*set)->trie, T_VARSTRING) || trie_hasType((*set)->trie_special, T_VARSTRING)) {
+				sets_vstr.set((*set)->number);
+				did = true;
+			}
+		}
+	}
+
+	// Gather knowledge of which contexts use unification or varstrings
+	bc::flat_set<ContextualTest*> nk;
+	did = true;
 	while (did) {
 		did = false;
 
@@ -909,13 +930,28 @@ void Grammar::reindex(bool unused_sets, bool used_tags) {
 				did |= nk.insert(t).second;
 				continue;
 			}
+			if (t->target && sets_vstr.test(t->target)) {
+				//u_fprintf(ux_stderr, "added target %u\n", t->line);
+				did |= nk.insert(t).second;
+				continue;
+			}
 			if (t->barrier && (sets_list[t->barrier]->type & MASK_ST_UNIFY)) {
 				//u_fprintf(ux_stderr, "added barrier %u\n", t->line);
 				did |= nk.insert(t).second;
 				continue;
 			}
+			if (t->barrier && sets_vstr.test(t->barrier)) {
+				//u_fprintf(ux_stderr, "added target %u\n", t->line);
+				did |= nk.insert(t).second;
+				continue;
+			}
 			if (t->cbarrier && (sets_list[t->cbarrier]->type & MASK_ST_UNIFY)) {
 				//u_fprintf(ux_stderr, "added cbarrier %u\n", t->line);
+				did |= nk.insert(t).second;
+				continue;
+			}
+			if (t->cbarrier && sets_vstr.test(t->cbarrier)) {
+				//u_fprintf(ux_stderr, "added target %u\n", t->line);
 				did |= nk.insert(t).second;
 				continue;
 			}
@@ -934,22 +970,21 @@ void Grammar::reindex(bool unused_sets, bool used_tags) {
 			continue;
 		}
 		//*/
-		size_t num_u = 0;
+		bool needs = false;
 		if (r->dep_target && nk.count(r->dep_target)) {
-			++num_u;
+			needs = true;
 		}
 		foreach (cntx, r->tests) {
 			if (nk.count(*cntx)) {
-				++num_u;
+				needs = true;
 			}
 		}
 		foreach (cntx, r->dep_tests) {
 			if (nk.count(*cntx)) {
-				++num_u;
+				needs = true;
 			}
 		}
-		// If more than one context uses unification, keeporder may be needed
-		if (num_u > 1) {
+		if (needs) {
 			r->flags |= RF_KEEPORDER;
 			/* We can do the whole thing fully automatically, so explicit KEEPORDER will eventually be deprecated
 			if (verbosity_level) {
