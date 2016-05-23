@@ -800,7 +800,7 @@ void MatxinApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 			wf_escaped += wf[i];
 		}
 
-		n.self = cohort->dep_self;
+		n.self = cohort->global_number;
 		n.form = wf_escaped;
 
 /*
@@ -821,12 +821,27 @@ void MatxinApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 
 		printReading(reading, n, output);
 
-		nodes[cohort->dep_self] = n;
-		deps[cohort->dep_parent].push_back(cohort->dep_self);
+		// if we can't find the root by this point then 
+		// set the parent to the last word in the sent, 
+		// for want of a better option
+		int r = nodes.size(); // last word
+		if(deps[0].size() > 0) {
+			r = deps[0][0];
+		}
+
+		nodes[cohort->global_number] = n;
+
+		if(cohort->dep_parent == -1) {
+			deps[r].push_back(cohort->global_number);
+			//u_fprintf(output, "+[%d] %d -> %d || %d || %S\n", c, cohort->global_number, cohort->dep_parent, r, cohort->text.c_str());
+		} else {
+			deps[cohort->dep_parent].push_back(cohort->global_number);
+			//u_fprintf(output, "#[%d] %d -> %d || %d || %S\n", c, cohort->global_number, cohort->dep_parent, r, cohort->text.c_str());
+		}
 
 
 /*
-		u_fprintf(output, "[%d] %d -> %d || %S\n", c, cohort->dep_self, cohort->dep_parent, cohort->text.c_str());
+		u_fprintf(output, "[%d] %d -> %d || %S\n", c, cohort->global_number, cohort->dep_parent, cohort->text.c_str());
 		u_fprintf(output, "$");
 		// End of cohort
 
