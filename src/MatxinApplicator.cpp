@@ -665,14 +665,14 @@ void MatxinApplicator::printReading(Reading *reading, Node& node, UFILE *output)
 		return;
 	}
 
-	if(reading->next) {
+	if (reading->next) {
 		u_fprintf(ux_stderr, "Error: input contains sub-readings!\n");
 		u_fprintf(output, "  </SENTENCE>\n");
 		u_fprintf(output, "</corpus>\n");
 		exit(-1);
 	}
 
-/*	
+	/*	
 	if (reading->next) {
 		printReading(reading->next, output);
 		u_fputc('+', output);
@@ -753,7 +753,7 @@ void MatxinApplicator::printReading(Reading *reading, Node& node, UFILE *output)
 }
 
 void MatxinApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
-/*
+	/*
 	// Window text comes at the left
 	if (!window->text.empty()) {
 		u_fprintf(output, "%S", window->text.c_str());
@@ -803,7 +803,7 @@ void MatxinApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 		n.self = cohort->global_number;
 		n.form = wf_escaped;
 
-/*
+		/*
 		// Print the static reading tags
 		if (cohort->wread) {
 			foreach (tter, cohort->wread->tags_list) {
@@ -821,26 +821,27 @@ void MatxinApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 
 		printReading(reading, n, output);
 
-		// if we can't find the root by this point then 
-		// set the parent to the last word in the sent, 
+		// if we can't find the root by this point then
+		// set the parent to the last word in the sent,
 		// for want of a better option
 		int r = nodes.size(); // last word
-		if(deps[0].size() > 0) {
+		if (deps[0].size() > 0) {
 			r = deps[0][0];
 		}
 
 		nodes[cohort->global_number] = n;
 
-		if(cohort->dep_parent == -1) {
+		if (cohort->dep_parent == -1) {
 			deps[r].push_back(cohort->global_number);
 			//u_fprintf(output, "+[%d] %d -> %d || %d || %S\n", c, cohort->global_number, cohort->dep_parent, r, cohort->text.c_str());
-		} else {
+		}
+		else {
 			deps[cohort->dep_parent].push_back(cohort->global_number);
 			//u_fprintf(output, "#[%d] %d -> %d || %d || %S\n", c, cohort->global_number, cohort->dep_parent, r, cohort->text.c_str());
 		}
 
 
-/*
+		/*
 		u_fprintf(output, "[%d] %d -> %d || %S\n", c, cohort->global_number, cohort->dep_parent, cohort->text.c_str());
 		u_fprintf(output, "$");
 		// End of cohort
@@ -868,7 +869,6 @@ void MatxinApplicator::procNode(int& depth, std::map<int, Node>& nodes, std::map
 	const UChar *si = node.si.c_str() + !node.si.empty();
 
 	if (n != 0) {
-
 		for (int i = 0; i < depth * 2; i++) {
 			u_fprintf(output, " ");
 		}
