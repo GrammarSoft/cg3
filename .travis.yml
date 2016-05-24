@@ -1,14 +1,12 @@
-sudo: false
+sudo: required
+dist: trusty
 language: cpp
 
 addons:
   apt:
-    sources:
-      - kalakris-cmake
-      - boost-latest
     packages:
       - cmake
-      - libboost1.55-dev
+      - libboost-dev
       - libicu-dev
 
 before_script:
