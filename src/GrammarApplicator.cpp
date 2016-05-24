@@ -421,7 +421,7 @@ void GrammarApplicator::printReading(const Reading *reading, UFILE *output, size
 		}
 		const Cohort *pr = 0;
 		pr = reading->parent;
-		if (reading->parent->dep_parent != std::numeric_limits<uint32_t>::max()) {
+		if (reading->parent->dep_parent != DEP_NO_PARENT) {
 			if (reading->parent->dep_parent == 0) {
 				pr = reading->parent->parent->cohorts[0];
 			}
@@ -446,7 +446,7 @@ void GrammarApplicator::printReading(const Reading *reading, UFILE *output, size
 			if (unicode_tags) {
 				pattern = span_pattern_utf.c_str();
 			}
-			if (reading->parent->dep_parent == std::numeric_limits<uint32_t>::max()) {
+			if (reading->parent->dep_parent == DEP_NO_PARENT) {
 				u_fprintf_u(output, pattern,
 				  reading->parent->parent->number,
 				  reading->parent->local_number,
@@ -638,12 +638,12 @@ void GrammarApplicator::pipeOutCohort(const Cohort *cohort, std::ostream& output
 	if (!cohort->text.empty()) {
 		flags |= (1 << 0);
 	}
-	if (has_dep && cohort->dep_parent != std::numeric_limits<uint32_t>::max()) {
+	if (has_dep && cohort->dep_parent != DEP_NO_PARENT) {
 		flags |= (1 << 1);
 	}
 	writeRaw(ss, flags);
 
-	if (has_dep && cohort->dep_parent != std::numeric_limits<uint32_t>::max()) {
+	if (has_dep && cohort->dep_parent != DEP_NO_PARENT) {
 		writeRaw(ss, cohort->dep_parent);
 	}
 

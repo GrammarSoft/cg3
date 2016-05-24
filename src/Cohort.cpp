@@ -57,7 +57,7 @@ Cohort::Cohort(SingleWindow *p)
   , local_number(0)
   , wordform(0)
   , dep_self(0)
-  , dep_parent(std::numeric_limits<uint32_t>::max())
+  , dep_parent(DEP_NO_PARENT)
   , is_pleft(0)
   , is_pright(0)
   , parent(p)
@@ -108,7 +108,7 @@ void Cohort::clear() {
 	local_number = 0;
 	wordform = 0;
 	dep_self = 0;
-	dep_parent = std::numeric_limits<uint32_t>::max();
+	dep_parent = DEP_NO_PARENT;
 	is_pleft = 0;
 	is_pright = 0;
 	parent = 0;

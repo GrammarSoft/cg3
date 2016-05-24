@@ -831,7 +831,7 @@ void MatxinApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 
 		nodes[cohort->global_number] = n;
 
-		if (cohort->dep_parent == -1) {
+		if (cohort->dep_parent == DEP_NO_PARENT) {
 			deps[r].push_back(cohort->global_number);
 			//u_fprintf(output, "+[%d] %d -> %d || %d || %S\n", c, cohort->global_number, cohort->dep_parent, r, cohort->text.c_str());
 		}

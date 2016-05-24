@@ -59,7 +59,7 @@ bool GrammarApplicator::isChildOf(const Cohort *child, const Cohort *parent) {
 	else {
 		size_t i = 0;
 		for (const Cohort *inner = child; i < 1000; ++i) {
-			if (inner->dep_parent == 0 || inner->dep_parent == std::numeric_limits<uint32_t>::max()) {
+			if (inner->dep_parent == 0 || inner->dep_parent == DEP_NO_PARENT) {
 				retval = false;
 				break;
 			}
@@ -105,7 +105,7 @@ bool GrammarApplicator::wouldParentChildLoop(const Cohort *parent, const Cohort 
 	else {
 		size_t i = 0;
 		for (const Cohort *inner = parent; i < 1000; ++i) {
-			if (inner->dep_parent == 0 || inner->dep_parent == std::numeric_limits<uint32_t>::max()) {
+			if (inner->dep_parent == 0 || inner->dep_parent == DEP_NO_PARENT) {
 				retval = false;
 				break;
 			}
@@ -139,7 +139,7 @@ bool GrammarApplicator::wouldParentChildCross(const Cohort *parent, const Cohort
 
 	for (uint32_t i = mn + 1; i < mx; ++i) {
 		std::map<uint32_t, Cohort*>::iterator it = gWindow->cohort_map.find(parent->dep_parent);
-		if (it != gWindow->cohort_map.end() && it->second->dep_parent != std::numeric_limits<uint32_t>::max()) {
+		if (it != gWindow->cohort_map.end() && it->second->dep_parent != DEP_NO_PARENT) {
 			if (it->second->dep_parent < mn || it->second->dep_parent > mx) {
 				return true;
 			}
@@ -173,7 +173,7 @@ bool GrammarApplicator::attachParentChild(Cohort& parent, Cohort& child, bool al
 		return false;
 	}
 
-	if (child.dep_parent == std::numeric_limits<uint32_t>::max()) {
+	if (child.dep_parent == DEP_NO_PARENT) {
 		child.dep_parent = child.dep_self;
 	}
 	std::map<uint32_t, Cohort*>::iterator it = gWindow->cohort_map.find(child.dep_parent);
@@ -258,7 +258,7 @@ void GrammarApplicator::reflowDependencyWindow(uint32_t max) {
 			if (max && cohort->global_number >= max) {
 				break;
 			}
-			if (cohort->dep_parent == std::numeric_limits<uint32_t>::max()) {
+			if (cohort->dep_parent == DEP_NO_PARENT) {
 				continue;
 			}
 			if (cohort->dep_self == cohort->global_number) {
@@ -270,7 +270,7 @@ void GrammarApplicator::reflowDependencyWindow(uint32_t max) {
 						  cohort->dep_parent, cohort->dep_self, cohort->local_number, cohort->parent->number);
 						u_fflush(ux_stderr);
 					}
-					cohort->dep_parent = std::numeric_limits<uint32_t>::max();
+					cohort->dep_parent = DEP_NO_PARENT;
 				}
 				else {
 					if (!(cohort->type & CT_DEP_DONE)) {
@@ -494,7 +494,7 @@ uint32_t GrammarApplicator::addTagToReading(Reading& reading, Tag *tag, bool reh
 		reading.parent->dep_self = tag->dep_self;
 		reading.parent->dep_parent = tag->dep_parent;
 		if (tag->dep_parent == tag->dep_self) {
-			reading.parent->dep_parent = std::numeric_limits<uint32_t>::max();
+			reading.parent->dep_parent = DEP_NO_PARENT;
 		}
 		has_dep = true;
 	}
