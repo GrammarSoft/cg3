@@ -43,6 +43,9 @@ enum {
 	CT_DEP_DONE    = (1 <<  4),
 };
 
+// ToDo: Would love to make this a constexpr global, but that's C++11
+#define DEP_NO_PARENT std::numeric_limits<uint32_t>::max()
+
 class Cohort {
 public:
 	uint8_t type;
