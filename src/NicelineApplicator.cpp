@@ -399,7 +399,7 @@ void NicelineApplicator::printReading(const Reading *reading, UFILE *output) {
 		}
 		const Cohort *pr = 0;
 		pr = reading->parent;
-		if (reading->parent->dep_parent != std::numeric_limits<uint32_t>::max()) {
+		if (reading->parent->dep_parent != DEP_NO_PARENT) {
 			if (reading->parent->dep_parent == 0) {
 				pr = reading->parent->parent->cohorts[0];
 			}
@@ -420,7 +420,7 @@ void NicelineApplicator::printReading(const Reading *reading, UFILE *output) {
 			  pr->local_number);
 		}
 		else {
-			if (reading->parent->dep_parent == std::numeric_limits<uint32_t>::max()) {
+			if (reading->parent->dep_parent == DEP_NO_PARENT) {
 				u_fprintf_u(output, pattern,
 				  reading->parent->dep_self,
 				  reading->parent->dep_self);

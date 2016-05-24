@@ -963,10 +963,10 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 							}
 						}
 
-						uint32_t rel_trg = std::numeric_limits<uint32_t>::max();
+						uint32_t rel_trg = DEP_NO_PARENT;
 						std::vector<std::pair<uint32_t, uint32_t> > cohort_dep(cohorts.size());
-						cohort_dep.front().second = std::numeric_limits<uint32_t>::max();
-						cohort_dep.back().first = std::numeric_limits<uint32_t>::max();
+						cohort_dep.front().second = DEP_NO_PARENT;
+						cohort_dep.back().first = DEP_NO_PARENT;
 						cohort_dep.back().second = cohort_dep.size() - 1;
 						for (size_t i = 1; i < cohort_dep.size() - 1; ++i) {
 							cohort_dep[i].second = i;
@@ -996,8 +996,8 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 							UChar dep_parent[12] = {};
 							if (u_sscanf((*tter)->tag.c_str(), "%[0-9cd]->%[0-9pm]", &dep_self, &dep_parent) == 2) {
 								if (dep_self[0] == 'c' || dep_self[0] == 'd') {
-									cohort_dep[i - 1].first = std::numeric_limits<uint32_t>::max();
-									if (rel_trg == std::numeric_limits<uint32_t>::max()) {
+									cohort_dep[i - 1].first = DEP_NO_PARENT;
+									if (rel_trg == DEP_NO_PARENT) {
 										rel_trg = i - 1;
 									}
 								}
@@ -1006,7 +1006,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 									CG3Quit(1);
 								}
 								if (dep_parent[0] == 'p' || dep_parent[0] == 'm') {
-									cohort_dep[i - 1].second = std::numeric_limits<uint32_t>::max();
+									cohort_dep[i - 1].second = DEP_NO_PARENT;
 								}
 								else if (u_sscanf(dep_parent, "%i", &cohort_dep[i - 1].second) != 1) {
 									u_fprintf(ux_stderr, "Error: SPLITCOHORT dependency mapping dep_parent was not valid on line %u before input line %u.\n", rule.line, numLines);
@@ -1021,7 +1021,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 							readings->back().push_back(*tter);
 						}
 
-						if (rel_trg == std::numeric_limits<uint32_t>::max()) {
+						if (rel_trg == DEP_NO_PARENT) {
 							rel_trg = cohorts.size() - 1;
 						}
 
@@ -1091,7 +1091,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						for (size_t i = 0; i < cohorts.size(); ++i) {
 							Cohort *cCohort = cohorts[i].first;
 
-							if (cohort_dep[i].first == std::numeric_limits<uint32_t>::max()) {
+							if (cohort_dep[i].first == DEP_NO_PARENT) {
 								while (!cohort->dep_children.empty()) {
 									uint32_t ch = cohort->dep_children.back();
 									attachParentChild(*cCohort, *current.parent->cohort_map[ch], true, true);
@@ -1099,7 +1099,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 								}
 							}
 
-							if (cohort_dep[i].second == std::numeric_limits<uint32_t>::max()) {
+							if (cohort_dep[i].second == DEP_NO_PARENT) {
 								attachParentChild(*current.parent->cohort_map[cohort->dep_parent], *cCohort, true, true);
 							}
 							else {
