@@ -139,24 +139,20 @@ Tag *TextualParser::parseTag(const UChar *to, const UChar *p) {
 		else if (tag->type & T_WORDFORM) {
 			if (strict_wforms) {
 				error("%s: Error: Wordform tag %S not on the strict-tags list, on line %u near `%S`!\n", tag->tag.c_str(), p);
-				incErrorCount();
 			}
 		}
 		else if (tag->type & T_BASEFORM) {
 			if (strict_bforms) {
 				error("%s: Error: Baseform tag %S not on the strict-tags list, on line %u near `%S`!\n", tag->tag.c_str(), p);
-				incErrorCount();
 			}
 		}
 		else if (tag->tag[0] == '<' && tag->tag[tag->tag.size() - 1] == '>') {
 			if (strict_second) {
 				error("%s: Error: Secondary tag %S not on the strict-tags list, on line %u near `%S`!\n", tag->tag.c_str(), p);
-				incErrorCount();
 			}
 		}
 		else {
 			error("%s: Error: Tag %S not on the strict-tags list, on line %u near `%S`!\n", tag->tag.c_str(), p);
-			incErrorCount();
 		}
 	}
 	return tag;
