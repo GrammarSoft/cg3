@@ -1,3 +1,31 @@
+2016-05-24  tino
+
+	* [r11620] src/Cohort.cpp, src/Cohort.hpp, src/CohortIterator.cpp,
+	  src/GrammarApplicator.cpp, src/GrammarApplicator_reflow.cpp,
+	  src/GrammarApplicator_runRules.cpp, src/MatxinApplicator.cpp,
+	  src/NicelineApplicator.cpp: Magic constant -> DEP_NO_PARENT
+	* [r11619] .travis.yml: Travis changed?
+	* [r11618] src/TextualParser.cpp: Dead code
+
+2016-05-23  tino
+
+	* [r11613] src/MatxinApplicator.cpp, src/MatxinApplicator.hpp:
+	  Format code
+
+2016-05-23  ftyers
+
+	* [r11603] src/MatxinApplicator.cpp: update so it gives full trees
+
+2016-05-19  tino
+
+	* [r11583] src/Grammar.cpp, src/TagTrie.hpp: Add KeepOrder if any
+	  context uses varstrings or unification
+
+2016-05-18  tino
+
+	* [r11577] ChangeLog, src/GrammarApplicator_runGrammar.cpp,
+	  src/version.hpp: Also add magic tag <<< in --dep-delimit mode
+
 2016-05-13  ftyers
 
 	* [r11551] src/MatxinApplicator.cpp, src/MatxinApplicator.hpp: fail
@@ -1837,66 +1865,4 @@
 	  src/cg_conv.cpp, src/cg_proc.cpp, src/main.cpp,
 	  src/options_conv.hpp, src/version.hpp: Removed Matxin; cg-conv
 	  can now output to Niceline and Plain Text formats (-N, -P)
-
-2014-01-07  tino
-
-	* [r9588] ChangeLog, scripts/cg3-autobin.pl, src/main.cpp,
-	  src/version.hpp: Output info to stdout if --version or --help,
-	  and stderr otherwise
-
-2014-01-05  tino
-
-	* [r9570] ChangeLog, TODO, scripts/cg3-autobin.pl,
-	  src/GrammarApplicator_reflow.cpp, src/stdafx.hpp,
-	  src/version.hpp: All dependency tests now pass, with and without
-	  --dep-delimit
-
-2014-01-04  tino
-
-	* [r9568] ChangeLog, scripts/cg3-autobin.pl,
-	  src/NicelineApplicator.cpp, src/cg_conv.cpp, src/version.hpp,
-	  update-revision.pl: cg-conv now handles less clean Niceline input
-	* [r9567] manual/manual.xml, src/ApertiumApplicator.cpp,
-	  src/ApertiumApplicator.hpp, src/BinaryGrammar.cpp,
-	  src/BinaryGrammar.hpp, src/BinaryGrammar_read.cpp,
-	  src/BinaryGrammar_write.cpp, src/Cohort.cpp, src/Cohort.hpp,
-	  src/CohortIterator.cpp, src/CohortIterator.hpp,
-	  src/CompositeTag.cpp, src/CompositeTag.hpp,
-	  src/ContextualTest.cpp, src/ContextualTest.hpp,
-	  src/FSTApplicator.cpp, src/FSTApplicator.hpp,
-	  src/FormatConverter.cpp, src/FormatConverter.hpp,
-	  src/Grammar.cpp, src/Grammar.hpp, src/GrammarApplicator.cpp,
-	  src/GrammarApplicator.hpp, src/GrammarApplicator_matchSet.cpp,
-	  src/GrammarApplicator_reflow.cpp,
-	  src/GrammarApplicator_runContextualTest.cpp,
-	  src/GrammarApplicator_runGrammar.cpp,
-	  src/GrammarApplicator_runRules.cpp, src/GrammarWriter.cpp,
-	  src/GrammarWriter.hpp, src/IGrammarParser.hpp,
-	  src/MatxinApplicator.cpp, src/MatxinApplicator.hpp,
-	  src/NicelineApplicator.cpp, src/NicelineApplicator.hpp,
-	  src/PlaintextApplicator.cpp, src/PlaintextApplicator.hpp,
-	  src/Reading.cpp, src/Reading.hpp, src/Rule.cpp, src/Rule.hpp,
-	  src/Set.cpp, src/Set.hpp, src/SingleWindow.cpp,
-	  src/SingleWindow.hpp, src/Strings.cpp, src/Strings.hpp,
-	  src/Tag.cpp, src/Tag.hpp, src/TextualParser.cpp,
-	  src/TextualParser.hpp, src/Window.cpp, src/Window.hpp,
-	  src/bloomish.hpp, src/cg3.h, src/cg_comp.cpp, src/cg_conv.cpp,
-	  src/cg_proc.cpp, src/inlines.hpp, src/interval_vector.hpp,
-	  src/istream.hpp, src/libcg3.cpp, src/macros.hpp, src/main.cpp,
-	  src/options.hpp, src/options_conv.hpp, src/sorted_vector.hpp,
-	  src/stdafx.hpp, src/test_libcg3.c, src/uextras.cpp,
-	  src/uextras.hpp, src/version.hpp: Yearly copyright refresh
-
-2013-12-30  tino
-
-	* [r9528] ChangeLog, scripts/cg3-autobin.pl,
-	  src/GrammarApplicator_runGrammar.cpp, src/SingleWindow.cpp,
-	  src/version.hpp: Fix --dep-delimit
-	* [r9524] ChangeLog, scripts/cg3-autobin.pl,
-	  src/GrammarApplicator_runGrammar.cpp, src/version.hpp: Fix
-	  --dep-delimit, again
-	* [r9522] ChangeLog, scripts/cg3-autobin.pl,
-	  src/GrammarApplicator_runGrammar.cpp,
-	  src/GrammarApplicator_runRules.cpp, src/SingleWindow.cpp,
-	  src/version.hpp: Fix --dep-delimit to react at a reading level
 
