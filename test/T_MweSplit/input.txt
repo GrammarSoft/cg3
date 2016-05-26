@@ -1,0 +1,66 @@
+"<dalle go>"
+	"go" CS <W:0> "<go>" REMOVE:foo
+		"dalle" Adv Sem/Time <W:0> "<dalle >" REMOVE:foo
+;	"go" Pcle Qst <W:0> "<go>" REMOVE:foo
+;		"dalle" Adv Sem/Time <W:0> "<dalle >" REMOVE:foo
+"<dalle go>"
+	"go" Pcle Qst <W:0> "<go>"
+		"lle" Adv Sem/Time <W:0> "<lle >"
+			"da" Adv Sem/Time <W:0> "<da>"
+	"go" Pcle Qst <W:1> "<go>"
+		"lle" Adv Sem/Time <W:1> "<lle >"
+			"da" Adv Sem/Time <W:1> "<da>"
+:\n
+"<dalle go>"
+	"go" CS <W:0> "<go>"
+		"dalle" Adv Sem/Time <W:0> "<dalle >"
+	"go" CS <W:1> "<go>"
+		"dalle" Adv Sem/Time <W:1> "<dalle >"
+:\n
+"<dalle go>"
+	"go" Pcle Qst <W:0> "<go>"
+		"lle" Adv Sem/Time <W:0> "<dalle >"
+			"da" Adv Sem/Time <W:0>
+	"go" Pcle Qst <W:1> "<go>"
+		"lle" Adv Sem/Time <W:1> "<dalle >"
+			"da" Adv Sem/Time <W:1>
+"<,>"
+	"," CLB <W:0>
+:\n
+"<3.>"
+        "." PUNCT "<.>"
+                "3" Num Nom "<3>"
+        "." PUNCT "<.>"
+                "3" Num Acc "<3>"
+: 
+"<3.>"
+        "." PUNCT "<.>"
+                "3" Num Nom "<3>"
+        "." PUNCT "<.>"
+                "3" Num Nom "<3>"
+"<dalle go>"
+	"go" Pcle Qst <W:0> "<go>"
+		"dalle" Adv Sem/Time <W:0> "<dalle >"
+	"go" CS <W:0> "<go>"
+		"dalle" Adv Sem/Time <W:0> "<dalle >"
+	"dalle go" CS <W:0>
+"<,>"
+	"," CLB <W:0>
+: 
+"<dalle go>"
+	"go" CS <W:0> "<go>"
+		"dalle" Adv Sem/Time <W:0> "<dalle >"
+	"go" Pcle Qst <W:0> "<go>"
+		"dalle" Adv Sem/Time <W:0> "<dalle >"
+"<Supmii>"
+	"suopma" N Sem/Lang Sg Ill <W:0>
+	"Suopma" N Prop Sem/Plc Sg Ill <W:0>
+	"Suopma" N Prop Sem/Sur Sg Ill <W:0>
+: 
+"<sotnabeaivvi iđida go>"
+	"go" Pcle Qst <W:10> "<go>"
+		"iđit" N Sem/Time Sg Gen <W:10>
+			"sotnabeaivi" N Sem/Time Cmp/SgGen Cmp <W:10> "<sotnabeaivvi iđida >"
+	"go" Pcle Qst <W:0> "<go>"
+		"iđit" N Sem/Time Sg Gen <W:0> "<iđida >"
+			"sotnabeaivi" N Sem/Time Cmp/SgGen Tok/EndOfWord <W:0> "<sotnabeaivvi >"

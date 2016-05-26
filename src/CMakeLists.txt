@@ -63,6 +63,7 @@ set(LIBCG3_HEADERS
 	GrammarApplicator.hpp
 	GrammarWriter.hpp
 	Relabeller.hpp
+	MweSplitApplicator.hpp
 	IGrammarParser.hpp
 	Reading.hpp
 	Rule.hpp
@@ -105,6 +106,7 @@ set(LIBCG3_SOURCES
 	GrammarApplicator_runRules.cpp
 	GrammarWriter.cpp
 	Relabeller.cpp
+	MweSplitApplicator.cpp
 	Reading.cpp
 	Rule.cpp
 	Set.cpp
@@ -182,6 +184,10 @@ add_executable(cg-conv
 cg3_link(cg-conv)
 target_link_libraries(cg-conv ${LINKLIB})
 
+add_executable(cg-mwesplit cg-mwesplit.cpp MweSplitApplicator.cpp MweSplitApplicator.hpp)
+cg3_link(cg-mwesplit)
+target_link_libraries(cg-mwesplit ${LINKLIB})
+
 add_executable(vislcg3 main.cpp options.hpp)
 cg3_link(vislcg3)
 target_link_libraries(vislcg3 ${LINKLIB})
@@ -190,7 +196,7 @@ add_executable(test_libcg3 test_libcg3.c)
 target_link_libraries(test_libcg3 ${LINKLIB})
 
 if(APPLE)
-	foreach(t cg-conv cg-comp cg-proc cg-relabel vislcg3)
+	foreach(t cg-conv cg-comp cg-proc cg-relabel cg-mwesplit vislcg3)
 		set("_file_${t}" $<TARGET_FILE:${t}>)
 		add_custom_command(
 			TARGET ${t}
@@ -215,4 +221,4 @@ if(NOT MSVC)
 	install(TARGETS libcg3-shared ARCHIVE DESTINATION "${CG_LIBDIR}/${CMAKE_LIBRARY_ARCHITECTURE}" LIBRARY DESTINATION "${CG_LIBDIR}/${CMAKE_LIBRARY_ARCHITECTURE}" RUNTIME DESTINATION bin)
 	install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/cg3.h" DESTINATION include)
 endif()
-install(TARGETS cg-comp cg-proc cg-relabel cg-conv vislcg3 RUNTIME DESTINATION bin)
+install(TARGETS cg-comp cg-proc cg-relabel cg-mwesplit cg-conv vislcg3 RUNTIME DESTINATION bin)
