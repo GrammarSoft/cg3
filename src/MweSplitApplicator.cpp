@@ -24,7 +24,7 @@
 namespace CG3 {
 
 MweSplitApplicator::MweSplitApplicator(UFILE *ux_err)
-	: GrammarApplicator(ux_err)
+  : GrammarApplicator(ux_err)
 {
 }
 
@@ -34,7 +34,7 @@ void MweSplitApplicator::runGrammarOnText(istream& input, UFILE *output) {
 }
 
 
-const Tag* MweSplitApplicator::maybeWfTag(const Reading* r) {
+const Tag *MweSplitApplicator::maybeWfTag(const Reading *r) {
 	foreach (tter, r->tags_list) {
 		if ((!show_end_tags && *tter == endtag) || *tter == begintag) {
 			continue;
@@ -49,42 +49,41 @@ const Tag* MweSplitApplicator::maybeWfTag(const Reading* r) {
 		}
 	}
 	return NULL;
-
 }
 
-std::vector<Cohort*> MweSplitApplicator::splitMwe(Cohort* cohort) {
+std::vector<Cohort*> MweSplitApplicator::splitMwe(Cohort *cohort) {
 	const UChar rtrimblank[] = { ' ', '\n', '\r', '\t', 0 };
 	const UChar textprefix[] = { ':', 0 };
 	std::vector<Cohort*> cos;
 	size_t n_wftags = 0;
 	size_t n_goodreadings = 0;
 	foreach (rter1, cohort->readings) {
-		if(maybeWfTag(*rter1) != NULL) {
+		if (maybeWfTag(*rter1) != NULL) {
 			++n_wftags;
 		}
 		++n_goodreadings;
 	}
 
-	if(n_wftags < n_goodreadings) {
-		if(n_wftags > 0) {
+	if (n_wftags < n_goodreadings) {
+		if (n_wftags > 0) {
 			u_fprintf(ux_stderr, "WARNING: Line %u: Some but not all main-readings of %S had wordform-tags (not completely mwe-disambiguated?), not splitting.\n", numLines, cohort->wordform->tag.c_str());
 			// We also don't split if wordform-tags were only on sub-readings, but should we warn on such faulty input?
 		}
 		cos.push_back(cohort);
 		return cos;
 	}
-	foreach(r, cohort->readings) {
+	foreach (r, cohort->readings) {
 		size_t pos = -1;
-		Reading *prev = NULL;	// prev == NULL || prev->next == rNew (or a ->next of rNew)
-		for(Reading *sub = (*r); sub; sub = sub->next) {
-			const Tag* wfTag = maybeWfTag(sub);
-			if(wfTag == NULL) {
+		Reading *prev = NULL; // prev == NULL || prev->next == rNew (or a ->next of rNew)
+		for (Reading *sub = (*r); sub; sub = sub->next) {
+			const Tag *wfTag = maybeWfTag(sub);
+			if (wfTag == NULL) {
 				prev = prev->next;
 			}
 			else {
 				++pos;
-				Cohort* c;
-				while(cos.size() < pos+1) {
+				Cohort *c;
+				while (cos.size() < pos + 1) {
 					c = alloc_cohort(cohort->parent);
 					c->global_number = gWindow->cohort_counter++;
 					cohort->parent->appendCohort(c);
@@ -92,24 +91,24 @@ std::vector<Cohort*> MweSplitApplicator::splitMwe(Cohort* cohort) {
 				}
 				c = cos[pos];
 
-				const size_t wfEnd = wfTag->tag.size()-3; // index before the final '>"'
+				const size_t wfEnd = wfTag->tag.size() - 3; // index before the final '>"'
 				const size_t i = 1 + wfTag->tag.find_last_not_of(rtrimblank, wfEnd);
-				const UString &wf = wfTag->tag.substr(0, i) + wfTag->tag.substr(wfEnd+1);
-				if(c->wordform != 0 && wf != c->wordform->tag) {
+				const UString& wf = wfTag->tag.substr(0, i) + wfTag->tag.substr(wfEnd + 1);
+				if (c->wordform != 0 && wf != c->wordform->tag) {
 					u_fprintf(ux_stderr, "WARNING: Line %u: Ambiguous wordform-tags for same cohort, '%S' vs '%S', not splitting.\n", numLines, wf.c_str(), c->wordform->tag.c_str());
 					cos.clear();
 					cos.push_back(cohort);
 					return cos;
 				}
 				c->wordform = addTag(wf);
-				if(i < wfEnd+1) {
-					c->text = textprefix + wfTag->tag.substr(i, wfEnd+1-i);
+				if (i < wfEnd + 1) {
+					c->text = textprefix + wfTag->tag.substr(i, wfEnd + 1 - i);
 				}
 
 				Reading *rNew = alloc_reading(*sub);
 				for (size_t i = 0; i < rNew->tags_list.size(); ++i) {
 					BOOST_AUTO(&tter, rNew->tags_list[i]);
-					if(tter == wfTag->hash || tter == rNew->parent->wordform->hash) {
+					if (tter == wfTag->hash || tter == rNew->parent->wordform->hash) {
 						rNew->tags_list.erase(rNew->tags_list.begin() + i);
 						rNew->tags.erase(tter);
 					}
@@ -117,7 +116,7 @@ std::vector<Cohort*> MweSplitApplicator::splitMwe(Cohort* cohort) {
 				cos[pos]->appendReading(rNew);
 				rNew->parent = cos[pos];
 
-				if(prev != NULL) {
+				if (prev != NULL) {
 					free_reading(prev->next);
 					prev->next = 0;
 				}
@@ -125,7 +124,7 @@ std::vector<Cohort*> MweSplitApplicator::splitMwe(Cohort* cohort) {
 			}
 		}
 	}
-	if(cos.size() == 0) {
+	if (cos.size() == 0) {
 		u_fprintf(ux_stderr, "WARNING: Line %u: Tried splitting %S, but got no new cohorts; shouldn't happen.", numLines, cohort->wordform->tag.c_str());
 		cos.push_back(cohort);
 	}
@@ -165,7 +164,7 @@ void MweSplitApplicator::printSingleWindow(SingleWindow *window, UFILE *output) 
 	for (uint32_t c = 0; c < cs; c++) {
 		Cohort *cohort = window->cohorts[c];
 		std::vector<Cohort*> cs = splitMwe(cohort);
-		foreach(iter, cs) {
+		foreach (iter, cs) {
 			printCohort(*iter, output);
 		}
 	}
