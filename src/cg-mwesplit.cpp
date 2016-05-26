@@ -35,14 +35,13 @@ enum OPTIONS {
 	NUM_OPTIONS,
 };
 UOption options[] = {
-	UOPTION_DEF_D("help",         'h', UOPT_NO_ARG,       "shows this help"),
-	UOPTION_DEF_D("?",            '?', UOPT_NO_ARG,       "shows this help"),
+	UOPTION_DEF_D("help", 'h', UOPT_NO_ARG,       "shows this help"),
+	UOPTION_DEF_D("?",    '?', UOPT_NO_ARG,       "shows this help"),
 };
 }
 using namespace Options;
 
-int main(int argc, char ** argv)
-{
+int main(int argc, char **argv) {
 	UErrorCode status = U_ZERO_ERROR;
 	UFILE *ux_stdin = 0;
 	UFILE *ux_stdout = 0;
