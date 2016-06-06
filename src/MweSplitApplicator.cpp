@@ -73,7 +73,7 @@ std::vector<Cohort*> MweSplitApplicator::splitMwe(Cohort *cohort) {
 		return cos;
 	}
 	foreach (r, cohort->readings) {
-		size_t pos = -1;
+		size_t pos = std::numeric_limits<size_t>::max();
 		Reading *prev = NULL; // prev == NULL || prev->next == rNew (or a ->next of rNew)
 		for (Reading *sub = (*r); sub; sub = sub->next) {
 			const Tag *wfTag = maybeWfTag(sub);

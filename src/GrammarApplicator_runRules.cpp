@@ -1911,7 +1911,7 @@ uint32_t GrammarApplicator::runGrammarOnSingleWindow(SingleWindow& current) {
 		// Caveat: This may look as if it is not recursing previous sections, but those rules are preprocessed into the successive sections so they are actually run.
 		RSType::iterator iter = runsections.begin();
 		RSType::iterator iter_end = runsections.end();
-		for (; iter != iter_end;) {
+		for (size_t pass = 0; iter != iter_end; ++pass) {
 			if (iter->first < 0 || (section_max_count && counter[iter->first] >= section_max_count)) {
 				++iter;
 				continue;
@@ -1927,6 +1927,11 @@ uint32_t GrammarApplicator::runGrammarOnSingleWindow(SingleWindow& current) {
 			}
 			if (!(rv & RV_SOMETHING)) {
 				++iter;
+				pass = 0;
+			}
+			if (pass >= 1000) {
+				u_fprintf(ux_stderr, "Warning: Endless loop detected before input line %u - will try to break it.\n", numLines);
+				break;
 			}
 		}
 	}
