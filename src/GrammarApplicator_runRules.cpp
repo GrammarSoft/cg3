@@ -1930,7 +1930,15 @@ uint32_t GrammarApplicator::runGrammarOnSingleWindow(SingleWindow& current) {
 				pass = 0;
 			}
 			if (pass >= 1000) {
-				u_fprintf(ux_stderr, "Warning: Endless loop detected before input line %u - will try to break it.\n", numLines);
+				u_fprintf(ux_stderr, "Warning: Endless loop detected before input line %u. Window contents was:", numLines);
+				UString tag;
+				for (size_t i = 1 ; i < current.cohorts.size() ; ++i) {
+					Tag *t = current.cohorts[i]->wordform;
+					tag.assign(t->tag.begin() + 2, t->tag.begin() + t->tag.size() - 2);
+					u_fprintf(ux_stderr, " %S", tag.c_str());
+				}
+				u_fprintf(ux_stderr, "\n");
+				u_fflush(ux_stderr);
 				break;
 			}
 		}
@@ -2040,7 +2048,15 @@ label_runGrammarOnWindow_begin:
 
 	++pass;
 	if (pass > 1000) {
-		u_fprintf(ux_stderr, "Warning: Endless loop detected before input line %u - will try to break it.\n", numLines);
+		u_fprintf(ux_stderr, "Warning: Endless loop detected before input line %u. Window contents was:", numLines);
+		UString tag;
+		for (size_t i = 1 ; i < current->cohorts.size() ; ++i) {
+			Tag *t = current->cohorts[i]->wordform;
+			tag.assign(t->tag.begin() + 2, t->tag.begin() + t->tag.size() - 2);
+			u_fprintf(ux_stderr, " %S", tag.c_str());
+		}
+		u_fprintf(ux_stderr, "\n");
+		u_fflush(ux_stderr);
 		return;
 	}
 
