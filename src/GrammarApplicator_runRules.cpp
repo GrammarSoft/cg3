@@ -215,6 +215,9 @@ Reading *GrammarApplicator::get_sub_reading(Reading *tr, int sub_reading) {
 			ttr = ttr->next;
 			--ntr;
 		}
+		if (!tr->next) {
+			tr = 0;
+		}
 		for (int i = ntr; i < sub_reading && tr; ++i) {
 			tr = tr->next;
 		}
