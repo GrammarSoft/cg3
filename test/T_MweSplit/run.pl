@@ -14,7 +14,7 @@ if (!$binary_mwesplit || $binary_mwesplit eq '' || !(-x $binary_mwesplit)) {
 }
 
 `"$binary_mwesplit" < input.txt > output.txt 2>>stderr.txt`;
-`diff -B expected.txt output.txt >diff.txt`;
+`diff -ZB expected.txt output.txt >diff.txt`;
 
 if (-s "diff.txt") {
 	print STDERR "Fail.\n";

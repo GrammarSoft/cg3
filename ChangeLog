@@ -1,3 +1,43 @@
+2016-06-07  tino
+
+	* [r11630] src/GrammarApplicator_runRules.cpp: Endless loop print
+	  window
+
+2016-06-06  tino
+
+	* [r11628] src/GrammarApplicator_runRules.cpp,
+	  src/MweSplitApplicator.cpp: More endless loop prevention
+
+2016-05-26  tino
+
+	* [r11624] src/MweSplitApplicator.cpp, src/MweSplitApplicator.hpp,
+	  src/cg-mwesplit.cpp: Formatting
+
+2016-05-26  unhammer
+
+	* [r11623] src/CMakeLists.txt, src/MweSplitApplicator.cpp,
+	  src/MweSplitApplicator.hpp, src/cg-mwesplit.cpp, test/T_MweSplit,
+	  test/T_MweSplit/expected.txt, test/T_MweSplit/input.txt,
+	  test/T_MweSplit/run.pl: cg-mwesplit: new binary for splitting
+	  multiwords
+	  
+	  like https://github.com/unhammer/cg-mwesplit but rewritten to
+	  inherit GrammarApplicator and use the standard vislcg3 parsing.
+	  
+	  Takes no options, just stdin and stdout:
+	  
+	  $ cg-mwesplit < infile > outfile
+	  
+	  More typically, it’ll be in a pipeline after hfst-tokenise and
+	  some step that disambiguates multiwords using vislcg3:
+	  
+	  $ echo words go here | hfst-tokenise --gtd tokeniser.pmhfst |
+	  vislcg3 -g mwe-dis.cg3 | cg-mwesplit
+
+2016-05-25  tino
+
+	* [r11621] ChangeLog, src/version.hpp: Let's call this a release
+
 2016-05-24  tino
 
 	* [r11620] src/Cohort.cpp, src/Cohort.hpp, src/CohortIterator.cpp,
@@ -1765,104 +1805,4 @@
 
 	* [r9595] ChangeLog, scripts/cg3-autobin.pl, src/version.hpp:
 	  Revision bump
-	* [r9594] test/T_AnyMinusSome/run.pl, test/T_Barrier/run.pl,
-	  test/T_BasicAppend/run.pl, test/T_BasicContextTest/run.pl,
-	  test/T_BasicDelimit/run.pl, test/T_BasicDependency/run.pl,
-	  test/T_BasicIff/run.pl, test/T_BasicSelect/run.pl,
-	  test/T_CG2Compat/run.pl, test/T_CarefulBarrier/run.pl,
-	  test/T_DelayAndDelete/run.pl, test/T_Dependency_Loops/run.pl,
-	  test/T_Dependency_OutOfRange/run.pl,
-	  test/T_DontMatchEmptySet/run.pl, test/T_EndlessSelect/run.pl,
-	  test/T_External/run.pl, test/T_InputCommands/run.pl,
-	  test/T_InputMarkup/run.pl, test/T_JumpExecute/run.pl,
-	  test/T_MapAdd_Different/run.pl, test/T_MapThenRemove/run.pl,
-	  test/T_MapThenSelect/run.pl, test/T_MappingPrefix/run.pl,
-	  test/T_Movement/run.pl, test/T_MultipleSections/run.pl,
-	  test/T_NegatedContextTest/run.pl, test/T_NotContextTest/run.pl,
-	  test/T_NumericalTags/run.pl, test/T_OmniWithBarrier/run.pl,
-	  test/T_Omniscan/run.pl, test/T_OriginPassing/run.pl,
-	  test/T_Parentheses/run.pl, test/T_RegExp/run.pl,
-	  test/T_Relations/run.pl, test/T_RemCohort/run.pl,
-	  test/T_RemoveSingleTag/run.pl, test/T_ScanningTests/run.pl,
-	  test/T_SectionRanges/run.pl, test/T_Sections/run.pl,
-	  test/T_SetOp_FailFast/run.pl, test/T_SetOps/run.pl,
-	  test/T_SetParentChild/run.pl, test/T_SoftDelimiters/run.pl,
-	  test/T_SpaceInForms/run.pl, test/T_SubReadings_Apertium/run.pl,
-	  test/T_SubReadings_CG/run.pl, test/T_SubstituteNil/run.pl,
-	  test/T_Templates/run.pl, test/T_Trace/run.pl,
-	  test/T_Unification/run.pl, test/T_Variables/run.pl: No need for
-	  -b on diff any longer
-	* [r9593] src/GrammarApplicator.cpp,
-	  test/T_AnyMinusSome/expected.txt, test/T_AnyMinusSome/run.pl,
-	  test/T_Barrier/expected.txt, test/T_Barrier/run.pl,
-	  test/T_BasicContextTest/expected.txt,
-	  test/T_BasicContextTest/run.pl, test/T_BasicDelimit/expected.txt,
-	  test/T_BasicDelimit/run.pl, test/T_BasicDependency/expected.txt,
-	  test/T_BasicDependency/run.pl, test/T_BasicIff/expected.txt,
-	  test/T_BasicIff/run.pl, test/T_BasicSelect/expected.txt,
-	  test/T_BasicSelect/run.pl, test/T_CG2Compat/expected.txt,
-	  test/T_CG2Compat/run.pl, test/T_CarefulBarrier/expected.txt,
-	  test/T_CarefulBarrier/run.pl,
-	  test/T_Dependency_Loops/expected.txt,
-	  test/T_Dependency_Loops/run.pl,
-	  test/T_Dependency_OutOfRange/expected.txt,
-	  test/T_Dependency_OutOfRange/run.pl,
-	  test/T_DontMatchEmptySet/expected.txt,
-	  test/T_DontMatchEmptySet/run.pl,
-	  test/T_EndlessSelect/expected.txt, test/T_EndlessSelect/run.pl,
-	  test/T_External/expected.txt, test/T_External/run.pl,
-	  test/T_Include/expected.txt, test/T_InputCommands/expected.txt,
-	  test/T_InputCommands/run.pl, test/T_InputMarkup/expected.txt,
-	  test/T_InputMarkup/run.pl, test/T_JumpExecute/expected.txt,
-	  test/T_JumpExecute/run.pl, test/T_MapAdd_Different/expected.txt,
-	  test/T_MapAdd_Different/run.pl,
-	  test/T_MapThenRemove/expected.txt, test/T_MapThenRemove/run.pl,
-	  test/T_MapThenSelect/expected.txt, test/T_MapThenSelect/run.pl,
-	  test/T_MappingPrefix/expected.txt, test/T_MappingPrefix/run.pl,
-	  test/T_Movement/expected.txt, test/T_Movement/run.pl,
-	  test/T_MultipleSections/expected.txt,
-	  test/T_MultipleSections/run.pl,
-	  test/T_NegatedContextTest/expected.txt,
-	  test/T_NegatedContextTest/run.pl,
-	  test/T_NotContextTest/expected.txt, test/T_NotContextTest/run.pl,
-	  test/T_NumericalTags/expected.txt, test/T_NumericalTags/run.pl,
-	  test/T_OmniWithBarrier/expected.txt,
-	  test/T_OmniWithBarrier/run.pl, test/T_Omniscan/expected.txt,
-	  test/T_Omniscan/run.pl, test/T_OriginPassing/expected.txt,
-	  test/T_OriginPassing/run.pl, test/T_Parentheses/expected.txt,
-	  test/T_Parentheses/run.pl, test/T_RegExp/expected.txt,
-	  test/T_RegExp/run.pl, test/T_Relations/expected.txt,
-	  test/T_Relations/run.pl, test/T_RemoveSingleTag/expected.txt,
-	  test/T_RemoveSingleTag/run.pl, test/T_ScanningTests/expected.txt,
-	  test/T_ScanningTests/run.pl, test/T_SectionRanges/expected.txt,
-	  test/T_SectionRanges/run.pl, test/T_Sections/expected.txt,
-	  test/T_Sections/run.pl, test/T_SetOp_FailFast/expected.txt,
-	  test/T_SetOp_FailFast/run.pl, test/T_SetOps/expected.txt,
-	  test/T_SetOps/run.pl, test/T_SetParentChild/expected.txt,
-	  test/T_SetParentChild/run.pl, test/T_SoftDelimiters/expected.txt,
-	  test/T_SoftDelimiters/run.pl, test/T_SpaceInForms/expected.txt,
-	  test/T_SpaceInForms/run.pl, test/T_SubReadings_Apertium/run.pl,
-	  test/T_SubReadings_CG/expected.txt, test/T_SubReadings_CG/run.pl,
-	  test/T_SubstituteNil/expected.txt, test/T_SubstituteNil/run.pl,
-	  test/T_Templates/expected.txt, test/T_Templates/run.pl,
-	  test/T_Trace/expected.txt, test/T_Trace/run.pl,
-	  test/T_Variables/expected.txt, test/T_Variables/run.pl: Flip
-	  output order so there are no trailing spaces in readings
-	* [r9592] manual/cmdreference.xml, scripts/cg3-autobin.pl,
-	  src/GrammarApplicator.cpp, src/GrammarApplicator.hpp,
-	  src/main.cpp, src/options.hpp: Eliminate --dep-humanize
-
-2014-01-08  tino
-
-	* [r9591] TODO, manual/cmdreference.xml, src/all_cg_conv.cpp,
-	  src/all_cg_proc.cpp, src/cg_proc.cpp: Remove more references to
-	  Matxin
-	* [r9590] ChangeLog, scripts/cg3-autobin.pl, src/CMakeLists.txt,
-	  src/FormatConverter.cpp, src/FormatConverter.hpp,
-	  src/MatxinApplicator.cpp, src/MatxinApplicator.hpp,
-	  src/NicelineApplicator.cpp, src/NicelineApplicator.hpp,
-	  src/PlaintextApplicator.cpp, src/PlaintextApplicator.hpp,
-	  src/cg_conv.cpp, src/cg_proc.cpp, src/main.cpp,
-	  src/options_conv.hpp, src/version.hpp: Removed Matxin; cg-conv
-	  can now output to Niceline and Plain Text formats (-N, -P)
 
