@@ -40,7 +40,7 @@
 ;; You can lazy-load company-mode for cg-mode like this:
 ;;
 ;; (eval-after-load 'company-autoloads
-;;     (add-hook 'cg-mode-hook #'company-mode))
+;;     '(add-hook 'cg-mode-hook #'company-mode))
 
 
 ;; TODO:
@@ -258,8 +258,9 @@ Don't change without re-evaluating the file.")
     ;; using syntactic keywords for "
     (modify-syntax-entry ?\" "." table)
     (modify-syntax-entry ?» "." table)
-  (modify-syntax-entry ?« "." table)
-                       table))
+    (modify-syntax-entry ?« "." table)
+    table)
+  "Syntax table for CG mode.")
 
 (defun cg-beginning-of-defun ()
   (re-search-backward defun-prompt-regexp nil 'noerror)
@@ -352,40 +353,35 @@ With a prefix argument N, (un)comment that many rules."
 
 
 ;;;###autoload
-(defun cg-mode ()
+(define-derived-mode cg-mode prog-mode "CG"
   "Major mode for editing Constraint Grammar files.
 
 CG-mode provides the following specific keyboard key bindings:
 
 \\{cg-mode-map}"
-  (interactive)
-  (kill-all-local-variables)
-  (setq major-mode 'cg-mode
-        mode-name "CG")
-  (use-local-map cg-mode-map)
-  (make-local-variable 'comment-start)
-  (make-local-variable 'comment-start-skip)
-  (make-local-variable 'font-lock-defaults)
-  (make-local-variable 'indent-line-function)
-  (setq comment-start "#"
-        comment-start-skip "#+[\t ]*"
-        font-lock-defaults
-        `((cg-font-lock-keywords cg-font-lock-keywords-1 cg-font-lock-keywords-2)
-          nil				; KEYWORDS-ONLY
-          'case-fold ; some keywords (e.g. x vs X) are case-sensitive,
+  :group 'cg
+  ;; Font lock
+  (set (make-local-variable 'font-lock-defaults)
+       `((cg-font-lock-keywords cg-font-lock-keywords-1 cg-font-lock-keywords-2)
+         nil				; KEYWORDS-ONLY
+         'case-fold ; some keywords (e.g. x vs X) are case-sensitive,
                                         ; but that doesn't matter for highlighting
-          ((?/ . "w") (?~ . "w") (?. . "w") (?- . "w") (?_ . "w"))
-          nil ;	  beginning-of-line		; SYNTAX-BEGIN
-          (font-lock-syntactic-keywords . cg-font-lock-syntactic-keywords)
-          (font-lock-syntactic-face-function . cg-font-lock-syntactic-face-function)))
-  (make-local-variable 'cg-mode-syntax-table)
-  (set-syntax-table cg-mode-syntax-table)
+         ((?/ . "w") (?~ . "w") (?. . "w") (?- . "w") (?_ . "w"))
+         nil ;	  beginning-of-line		; SYNTAX-BEGIN
+         (font-lock-syntactic-keywords . cg-font-lock-syntactic-keywords)
+         (font-lock-syntactic-face-function . cg-font-lock-syntactic-face-function)))
+  ;; Indentation
+  (set (make-local-variable 'indent-line-function) #'cg-indent-line)
+  ;; Comments and blocks
+  (set (make-local-variable 'comment-start) "#")
+  (set (make-local-variable 'comment-start-skip) "#+[\t ]*")
+  (set (make-local-variable 'comment-use-syntax) t)
   (set (make-local-variable 'parse-sexp-ignore-comments) t)
   (set (make-local-variable 'parse-sexp-lookup-properties) t)
   (set (make-local-variable 'defun-prompt-regexp) (concat cg-kw-re "\\(?::[^\n\t ]+\\)[\t ]"))
   (set (make-local-variable 'beginning-of-defun-function) #'cg-beginning-of-defun)
   (set (make-local-variable 'end-of-defun-function) #'cg-end-of-defun)
-  (setq indent-line-function #'cg-indent-line)
+
   (when font-lock-mode
     (setq font-lock-set-defaults nil)
     (font-lock-set-defaults)
@@ -393,8 +389,7 @@ CG-mode provides the following specific keyboard key bindings:
     (font-lock-fontify-buffer))
   (add-hook 'after-change-functions #'cg-after-change nil 'buffer-local)
   (let ((buf (current-buffer)))
-    (run-with-idle-timer 1 'repeat 'cg-output-hl buf))
-  (run-mode-hooks 'cg-mode-hook))
+    (run-with-idle-timer 1 'repeat 'cg-output-hl buf)))
 
 
 (defconst cg-font-lock-syntactic-keywords
