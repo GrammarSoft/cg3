@@ -1047,10 +1047,10 @@ Similarly, `cg-post-pipe' is run on output."
 
 ;;; Keybindings ---------------------------------------------------------------
 (define-key cg-mode-map (kbd "C-c C-o") #'cg-occur-list)
-(define-key cg-mode-map (kbd "C-c g") #'cg-goto-rule)
+(define-key cg-mode-map (kbd "C-c C-r") #'cg-goto-rule)
 (define-key cg-mode-map (kbd "C-c C-c") #'cg-check)
 (define-key cg-mode-map (kbd "C-c C-i") #'cg-edit-input)
-(define-key cg-mode-map (kbd "C-c c") #'cg-toggle-check-after-change)
+(define-key cg-mode-map (kbd "C-c M-c") #'cg-toggle-check-after-change)
 (define-key cg-mode-map (kbd "C-;") #'cg-comment-or-uncomment-rule)
 (define-key cg-mode-map (kbd "M-#") #'cg-comment-or-uncomment-rule)
 
