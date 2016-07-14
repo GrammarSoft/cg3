@@ -260,6 +260,8 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 	current.parent->cohort_map[0] = current.cohorts.front();
 
 	foreach (iter_rules, intersects) {
+		repeat_rule:
+		bool rule_did_something = false;
 		uint32_t j = (*iter_rules);
 
 		// Check whether this rule is in the allowed rule list from cmdline flag --rule(s)
@@ -1861,6 +1863,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 				if (!(rule.flags & RF_NOITERATE) && section_max_count != 1) {
 					section_did_something = true;
 				}
+				rule_did_something = true;
 				cohort->type &= ~CT_NUM_CURRENT;
 			}
 
@@ -1889,6 +1892,9 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 
 		if (delimited) {
 			break;
+		}
+		if (rule_did_something && (rule.flags & RF_REPEAT)) {
+			goto repeat_rule;
 		}
 	}
 
