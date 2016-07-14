@@ -61,3 +61,4 @@ ToDo: Basque correct parse
 ToDo: Dep on readings
 ToDo: CLINK to require that all paths satisfy the linked tests
 ToDo: Include only certain sections.
+ToDo: Defer resolving sets to allow defining after use.
