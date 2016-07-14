@@ -198,6 +198,7 @@ enum {
 	FL_SUB,
 	FL_OUTPUT,
 	FL_CAPTURE_UNIF,
+	FL_REPEAT,
 	FLAGS_COUNT,
 };
 }
