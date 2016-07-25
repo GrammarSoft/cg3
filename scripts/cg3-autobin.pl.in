@@ -4,7 +4,7 @@ use warnings;
 use strict;
 use File::Spec;
 use Getopt::Long;
-use Digest::SHA1 qw(sha1_hex);
+use Digest::SHA qw(sha1_hex);
 
 # This is updated by the update-revision.pl script.
 my $revision = @REVISION@;
