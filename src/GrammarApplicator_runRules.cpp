@@ -260,7 +260,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 	current.parent->cohort_map[0] = current.cohorts.front();
 
 	foreach (iter_rules, intersects) {
-		repeat_rule:
+	repeat_rule:
 		bool rule_did_something = false;
 		uint32_t j = (*iter_rules);
 
@@ -1941,7 +1941,7 @@ uint32_t GrammarApplicator::runGrammarOnSingleWindow(SingleWindow& current) {
 			if (pass >= 1000) {
 				u_fprintf(ux_stderr, "Warning: Endless loop detected before input line %u. Window contents was:", numLines);
 				UString tag;
-				for (size_t i = 1 ; i < current.cohorts.size() ; ++i) {
+				for (size_t i = 1; i < current.cohorts.size(); ++i) {
 					Tag *t = current.cohorts[i]->wordform;
 					tag.assign(t->tag.begin() + 2, t->tag.begin() + t->tag.size() - 2);
 					u_fprintf(ux_stderr, " %S", tag.c_str());
@@ -2059,7 +2059,7 @@ label_runGrammarOnWindow_begin:
 	if (pass > 1000) {
 		u_fprintf(ux_stderr, "Warning: Endless loop detected before input line %u. Window contents was:", numLines);
 		UString tag;
-		for (size_t i = 1 ; i < current->cohorts.size() ; ++i) {
+		for (size_t i = 1; i < current->cohorts.size(); ++i) {
 			Tag *t = current->cohorts[i]->wordform;
 			tag.assign(t->tag.begin() + 2, t->tag.begin() + t->tag.size() - 2);
 			u_fprintf(ux_stderr, " %S", tag.c_str());
