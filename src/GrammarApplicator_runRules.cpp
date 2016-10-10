@@ -1105,7 +1105,9 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 							}
 
 							if (cohort_dep[i].second == DEP_NO_PARENT) {
-								attachParentChild(*current.parent->cohort_map[cohort->dep_parent], *cCohort, true, true);
+								if (current.parent->cohort_map.count(cohort->dep_parent)) {
+									attachParentChild(*current.parent->cohort_map[cohort->dep_parent], *cCohort, true, true);
+								}
 							}
 							else {
 								attachParentChild(*current.parent->cohort_map[cohorts.front().first->global_number + cohort_dep[i].second - 1], *cCohort, true, true);
