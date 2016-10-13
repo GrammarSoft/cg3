@@ -225,6 +225,13 @@ Reading *GrammarApplicator::get_sub_reading(Reading *tr, int sub_reading) {
 	return tr;
 }
 
+#define TRACE do { \
+					reading.hit_by.push_back(rule.number); \
+					if (rule.sub_reading == 32767) { \
+						reading_head.hit_by.push_back(rule.number); \
+					} \
+				} while(0)
+
 /**
  * Applies the passed rules to the passed SingleWindow.
  *
@@ -649,7 +656,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 				}
 				if (dry_run) {
 					if (good) {
-						reading.hit_by.push_back(rule.number);
+						TRACE;
 					}
 					continue;
 				}
@@ -669,12 +676,12 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 					if (good) {
 						selected.push_back(&reading_head);
 						index_ruleCohort_no.clear();
-						reading.hit_by.push_back(rule.number);
+						TRACE;
 					}
 					else {
 						removed.push_back(&reading_head);
 						index_ruleCohort_no.clear();
-						reading.hit_by.push_back(rule.number);
+						TRACE;
 					}
 					if (good) {
 						if (debug_level > 0) {
@@ -692,7 +699,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						}
 						else {
 							removed.push_back(&reading_head);
-							reading.hit_by.push_back(rule.number);
+							TRACE;
 						}
 						index_ruleCohort_no.clear();
 						if (debug_level > 0) {
@@ -700,7 +707,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						}
 					}
 					else if (type == K_JUMP) {
-						reading.hit_by.push_back(rule.number);
+						TRACE;
 						const Tag *to = getTagList(*rule.maplist).front();
 						uint32FlatHashMap::const_iterator it = grammar->anchors.find(to->hash);
 						if (it == grammar->anchors.end()) {
@@ -713,7 +720,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						break;
 					}
 					else if (type == K_REMVARIABLE) {
-						reading.hit_by.push_back(rule.number);
+						TRACE;
 						const TagList names = getTagList(*rule.maplist);
 						foreach (tter, names) {
 							const Tag *tag = *tter;
@@ -726,7 +733,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						break;
 					}
 					else if (type == K_SETVARIABLE) {
-						reading.hit_by.push_back(rule.number);
+						TRACE;
 						const TagList names = getTagList(*rule.maplist);
 						const TagList values = getTagList(*rule.sublist);
 						variables[names.front()->hash] = values.front()->hash;
@@ -838,7 +845,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						break;
 					}
 					else if (type == K_ADDCOHORT_AFTER || type == K_ADDCOHORT_BEFORE) {
-						reading.hit_by.push_back(rule.number);
+						TRACE;
 						index_ruleCohort_no.clear();
 
 						Cohort *cCohort = alloc_cohort(&current);
@@ -1172,7 +1179,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 					}
 					else if (rule.type == K_ADD || rule.type == K_MAP) {
 						index_ruleCohort_no.clear();
-						reading.hit_by.push_back(rule.number);
+						TRACE;
 						reading.noprint = false;
 						BOOST_AUTO(mappings, ss_taglist.get());
 						BOOST_AUTO(theTags, ss_taglist.get());
@@ -1212,7 +1219,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 					}
 					else if (rule.type == K_REPLACE) {
 						index_ruleCohort_no.clear();
-						reading.hit_by.push_back(rule.number);
+						TRACE;
 						reading.noprint = false;
 						reading.tags_list.clear();
 						reading.tags_list.push_back(cohort->wordform->hash);
@@ -1330,7 +1337,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 
 							Tag *wf = 0;
 							index_ruleCohort_no.clear();
-							reading.hit_by.push_back(rule.number);
+							TRACE;
 							reading.noprint = false;
 							if (tpos >= reading.tags_list.size()) {
 								tpos = reading.tags_list.size() - 1;
@@ -1565,7 +1572,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 									}
 									if (attached) {
 										index_ruleCohort_no.clear();
-										reading.hit_by.push_back(rule.number);
+										TRACE;
 										reading.noprint = false;
 										has_dep = true;
 										readings_changed = true;
@@ -1743,7 +1750,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 								}
 								if (rel_did_anything) {
 									index_ruleCohort_no.clear();
-									reading.hit_by.push_back(rule.number);
+									TRACE;
 									reading.noprint = false;
 									readings_changed = true;
 								}
@@ -1811,7 +1818,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 								}
 								if (rel_did_anything) {
 									index_ruleCohort_no.clear();
-									reading.hit_by.push_back(rule.number);
+									TRACE;
 									reading.noprint = false;
 									readings_changed = true;
 								}
