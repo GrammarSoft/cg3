@@ -141,10 +141,14 @@ void GrammarApplicator::runGrammarOnText(istream& input, UFILE *output) {
 				}
 				cleaned[packoff++] = line[i];
 			}
-			// If we reached this, buffer wasn't big enough. Double the size of the buffer and try again.
-			offset = line.size() - 2;
-			line.resize(line.size() * 2, 0);
-			cleaned.resize(line.size() + 1, 0);
+			// Either buffer wasn't big enough, or someone fed us malformed data thinking U+0085 is ellipsis when it in fact is Next Line (NEL)
+			line = cleaned;
+			offset = packoff;
+			if (packoff > line.size() / 2) {
+				// If we reached this, buffer wasn't big enough. Double the size of the buffer and try again.
+				line.resize(line.size() * 2, 0);
+				cleaned.resize(line.size() + 1, 0);
+			}
 		}
 
 	gotaline:
