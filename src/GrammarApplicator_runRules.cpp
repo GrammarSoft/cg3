@@ -717,7 +717,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 							iter_rules = intersects.lower_bound(it->second);
 							--iter_rules;
 						}
-						break;
+						goto repeat_rule;
 					}
 					else if (type == K_REMVARIABLE) {
 						TRACE;
