@@ -435,7 +435,9 @@ void GrammarApplicator::runGrammarOnText(istream& input, UFILE *output) {
 		istext:
 			if (cleaned[0]) {
 				if (u_strcmp(&cleaned[0], stringbits[S_CMD_FLUSH].getTerminatedBuffer()) == 0) {
-					u_fprintf(ux_stderr, "Info: FLUSH encountered on line %u. Flushing...\n", numLines);
+					if (verbosity_level > 0) {
+						u_fprintf(ux_stderr, "Info: FLUSH encountered on line %u. Flushing...\n", numLines);
+					}
 					if (cCohort && cSWindow) {
 						splitAllMappings(all_mappings, *cCohort, true);
 						cSWindow->appendCohort(cCohort);
@@ -482,15 +484,21 @@ void GrammarApplicator::runGrammarOnText(istream& input, UFILE *output) {
 					fflush(stderr);
 				}
 				else if (u_strcmp(&cleaned[0], stringbits[S_CMD_IGNORE].getTerminatedBuffer()) == 0) {
-					u_fprintf(ux_stderr, "Info: IGNORE encountered on line %u. Passing through all input...\n", numLines);
+					if (verbosity_level > 0) {
+						u_fprintf(ux_stderr, "Info: IGNORE encountered on line %u. Passing through all input...\n", numLines);
+					}
 					ignoreinput = true;
 				}
 				else if (u_strcmp(&cleaned[0], stringbits[S_CMD_RESUME].getTerminatedBuffer()) == 0) {
-					u_fprintf(ux_stderr, "Info: RESUME encountered on line %u. Resuming CG...\n", numLines);
+					if (verbosity_level > 0) {
+						u_fprintf(ux_stderr, "Info: RESUME encountered on line %u. Resuming CG...\n", numLines);
+					}
 					ignoreinput = false;
 				}
 				else if (u_strcmp(&cleaned[0], stringbits[S_CMD_EXIT].getTerminatedBuffer()) == 0) {
-					u_fprintf(ux_stderr, "Info: EXIT encountered on line %u. Exiting...\n", numLines);
+					if (verbosity_level > 0) {
+						u_fprintf(ux_stderr, "Info: EXIT encountered on line %u. Exiting...\n", numLines);
+					}
 					u_fprintf(output, "%S", &line[0]);
 					goto CGCMD_EXIT;
 				}
