@@ -104,10 +104,6 @@ int GrammarWriter::writeGrammar(UFILE *output) {
 		u_fprintf(ux_stderr, "Error: No grammar provided - cannot continue!\n");
 		CG3Quit(1);
 	}
-	if (grammar->is_binary) {
-		u_fprintf(ux_stderr, "Error: Grammar is binary and cannot be output in textual form!\n");
-		CG3Quit(1);
-	}
 
 	if (statistics) {
 		if (ceil(grammar->total_time) == floor(grammar->total_time)) {
@@ -150,6 +146,10 @@ int GrammarWriter::writeGrammar(UFILE *output) {
 
 	used_sets.clear();
 	boost_foreach (Set *s, grammar->sets_list) {
+		if (s->name.empty()) {
+			s->name.resize(12);
+			s->name.resize(u_sprintf(&s->name[0], "S%u", s->number));
+		}
 		if (s->name[0] == '_' && s->name[1] == 'G' && s->name[2] == '_') {
 			s->name.insert(s->name.begin(), '3');
 			s->name.insert(s->name.begin(), 'G');

@@ -311,21 +311,6 @@ int main(int argc, char *argv[]) {
 		}
 	}
 
-	if (grammar.is_binary) {
-		if (options[GRAMMAR_BIN].doesOccur || options[GRAMMAR_OUT].doesOccur) {
-			std::cerr << "Error: Binary grammars cannot be rewritten." << std::endl;
-			CG3Quit(1);
-		}
-		if (options[STATISTICS].doesOccur) {
-			std::cerr << "Error: Statistics cannot be gathered with a binary grammar." << std::endl;
-			CG3Quit(1);
-		}
-		if (options[OPTIMIZE_UNSAFE].doesOccur || options[OPTIMIZE_SAFE].doesOccur) {
-			std::cerr << "Error: Binary grammars cannot be further optimized." << std::endl;
-			CG3Quit(1);
-		}
-	}
-
 	if (options[STATISTICS].doesOccur && !(options[GRAMMAR_BIN].doesOccur || options[GRAMMAR_OUT].doesOccur)) {
 		std::cerr << "Error: Does not make sense to gather statistics if you are not writing the compiled grammar back out somehow." << std::endl;
 		CG3Quit(1);

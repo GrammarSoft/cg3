@@ -1484,6 +1484,8 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						break;
 					}
 					else if (rule.type == K_COPY) {
+						// ToDo: Also copy sub-readings
+						// ToDo: Maybe just goto Substitute directly?
 						Reading *cReading = cohort->allocateAppendReading();
 						++numReadings;
 						index_ruleCohort_no.clear();
