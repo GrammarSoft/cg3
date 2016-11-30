@@ -147,8 +147,16 @@ int GrammarWriter::writeGrammar(UFILE *output) {
 	used_sets.clear();
 	boost_foreach (Set *s, grammar->sets_list) {
 		if (s->name.empty()) {
-			s->name.resize(12);
-			s->name.resize(u_sprintf(&s->name[0], "S%u", s->number));
+			if (s == grammar->delimiters) {
+				s->name.assign(stringbits[S_DELIMITSET].getTerminatedBuffer());
+			}
+			else if (s == grammar->soft_delimiters) {
+				s->name.assign(stringbits[S_SOFTDELIMITSET].getTerminatedBuffer());
+			}
+			else {
+				s->name.resize(12);
+				s->name.resize(u_sprintf(&s->name[0], "S%u", s->number));
+			}
 		}
 		if (s->name[0] == '_' && s->name[1] == 'G' && s->name[2] == '_') {
 			s->name.insert(s->name.begin(), '3');
@@ -248,7 +256,12 @@ void GrammarWriter::printRule(UFILE *to, const Rule& rule) {
 
 	for (uint32_t i = 0; i < FLAGS_COUNT; i++) {
 		if (rule.flags & (1 << i)) {
-			u_fprintf(to, "%S ", g_flags[i].getTerminatedBuffer());
+			if (i == FL_SUB) {
+				u_fprintf(to, "%S:%d ", g_flags[i].getTerminatedBuffer(), rule.sub_reading);
+			}
+			else {
+				u_fprintf(to, "%S ", g_flags[i].getTerminatedBuffer());
+			}
 		}
 	}
 
