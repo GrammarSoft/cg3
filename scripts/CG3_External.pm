@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
 # -*- mode: cperl; indent-tabs-mode: nil; tab-width: 3; cperl-indent-level: 3; -*-
 package CG3_External;
 use strict;
@@ -92,7 +92,7 @@ sub check_protocol {
    if ($protocol == $VERSION) {
       return $VERSION;
    }
-   
+
    return undef;
 }
 
@@ -118,7 +118,7 @@ sub read_window {
          $cohort{'parent'} = read_uint32_t($fh, 'cohort parent');
       }
       $cohort{'wordform'} = read_utf8_string($fh, 'cohort wordform');
-      
+
       my @readings;
       my $rlen = read_uint32_t($fh, 'num readings');
       for (my $r=0 ; $r<$rlen ; $r++) {
@@ -129,7 +129,7 @@ sub read_window {
          if ($reading{'flags'} & (1 << 3)) {
             $reading{'baseform'} = read_utf8_string($fh, 'reading baseform');
          }
-         
+
          my @tags;
          my $tlen = read_uint32_t($fh, 'num tags');
          for (my $t=0 ; $t<$tlen ; $t++) {
@@ -149,7 +149,7 @@ sub read_window {
       push @cohorts, \%cohort;
    }
    $window{'cohorts'} = \@cohorts;
-   
+
    return \%window;
 }
 
@@ -166,7 +166,7 @@ sub write_window {
 
    foreach my $c (@{$w->{'cohorts'}}) {
       open(my $fc, '>', \my $co);
-      
+
       write_uint32_t($fc, $c->{'num'}, 'cohort number');
       if ($c->{'text'}) {
          $c->{'flags'} |= (1 << 0);
@@ -179,7 +179,7 @@ sub write_window {
          write_uint32_t($fc, $c->{'parent'}, 'cohort parent');
       }
       write_utf8_string($fc, $c->{'wordform'}, 'cohort wordform');
-      
+
       my $rlen = @{$c->{'readings'}};
       write_uint32_t($fc, $rlen, 'num readings');
 
