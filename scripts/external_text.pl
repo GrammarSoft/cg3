@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
 # -*- mode: cperl; indent-tabs-mode: nil; tab-width: 3; cperl-indent-level: 3; -*-
 BEGIN {
    $| = 1;
@@ -28,7 +28,7 @@ my $af_started = 0;
 
 sub initSubChain {
 	if ($ENV{'DEBUG'}) { print STDERR "$0 initSubChain enter\n"; }
-	$af_h = start \@af_cmd, \$af_in, \$af_out, \$af_err;	
+	$af_h = start \@af_cmd, \$af_in, \$af_out, \$af_err;
 	$af_started = 1;
 	if ($ENV{'DEBUG'}) { print STDERR "$0 initSubChain exit\n"; }
 }
@@ -76,9 +76,9 @@ while (my $w = read_window(*STDIN)) {
          $out .= "\n";
       }
    }
-   
+
    my $in = callSubChain($out);
-   
+
 	$out =~ s@^\s+@@g;
 	$out =~ s@\s+$@@g;
 
@@ -86,7 +86,7 @@ while (my $w = read_window(*STDIN)) {
       write_null_response(*STDOUT);
       next;
    }
-   
+
    my @out = split /\n/, $out;
 
    my @in = split /\n/, $in;
@@ -98,7 +98,7 @@ while (my $w = read_window(*STDIN)) {
       write_null_response(*STDOUT);
       next;
    }
-   
+
    my $cc = 0;
    for (my $i = 0 ; $i<$lin ; $i++) {
       if ($in[$i] !~ /\t/) { # Found a cohort line, start looking for readings
@@ -114,7 +114,7 @@ while (my $w = read_window(*STDIN)) {
          my $rc = 0;
          my $j;
          for ($j = $i+1 ; $j<$lin ; $j++) {
-            if ($in[$j] !~ /\t/) { # Found a cohort line, so stop looking for readings 
+            if ($in[$j] !~ /\t/) { # Found a cohort line, so stop looking for readings
                last;
             }
             $rc++;
@@ -133,6 +133,6 @@ while (my $w = read_window(*STDIN)) {
          $i = $j-1;
       }
    }
-   
+
    write_window(*STDOUT, $w);
 }
