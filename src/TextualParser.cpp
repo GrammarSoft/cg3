@@ -683,6 +683,10 @@ void TextualParser::parseContextualTestPosition(UChar *& p, ContextualTest& t) {
 	if (!ISSPACE(*p)) {
 		error("%s: Error: Invalid position on line %u near `%S` - garbage data!\n", n);
 	}
+	if (p-n == 1 && (*n == 'o' || *n == 'O')) {
+		error("%s: Error: Position on line %u near `%S` - stand-alone o or O doesn't make sense - maybe you meant 0?\n", n);
+	}
+
 	if (had_digits) {
 		if (t.pos & (POS_DEP_CHILD | POS_DEP_SIBLING | POS_DEP_PARENT)) {
 			error("%s: Error: Invalid position on line %u near `%S` - cannot combine offsets with dependency!\n", n);
