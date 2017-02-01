@@ -622,7 +622,9 @@ to.")
 (defcustom cg-check-do-cache t
   "If non-nil, `cg-check' caches the output of `cg-pre-pipe' (the
 cache is emptied whenever you make a change in the input buffer,
-or call `cg-check' from another CG file).")
+or call `cg-check' from another CG file)."
+  :group 'cg
+  :type 'bool)
 
 (defvar cg--check-cache-buffer nil "See `cg-check-do-cache'.")
 
@@ -878,13 +880,14 @@ See `cg-output-hide-analyses'."
 
 ;;;###autoload
 (defcustom cg-check-after-change nil
-  "If non-nil, run `cg-check' on grammar after each change to the
-buffer.")
+  "If non-nil, run `cg-check' on grammar after each change to the buffer."
+  :group 'cg
+  :type 'bool)
 
 ;;;###autoload
 (defcustom cg-check-after-change-secs 1
-  "Minimum seconds between each `cg-check' after a change to a CG
-buffer (so 0 is after each change)."
+  "Minimum seconds between each `cg-check' after a change to a CG buffer.
+Use 0 to check immediately after each change."
   :type 'integer)
 
 (defvar cg--after-change-timer nil)
