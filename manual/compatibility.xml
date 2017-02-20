@@ -112,8 +112,10 @@
     <section id="gotcha-setop-minus">
       <title>Set Operator -</title>
       <para>
-        In CG-2 the - operator means set difference; in VISLCG it means set fail-fast; in CG-3 it means
-        set difference again, but the new operator ^ takes place of VISLCG's behavior.
+        In CG-2 the - operator meant set difference; in VISLCG it meant set fail-fast; in CG-3
+        <link linkend="set-operator-except">operator -</link> means something in between.
+        The new <link linkend="set-operator-failfast">operator ^</link> takes place of VISLCG's behavior,
+        and <link linkend="set-operator-difference">operator \</link> takes the place of CG-2's behavior.
       </para>
     </section>
 
