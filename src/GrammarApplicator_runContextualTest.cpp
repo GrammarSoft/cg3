@@ -205,8 +205,14 @@ bool GrammarApplicator::posOutputHelper(const SingleWindow *sWindow, uint32_t po
 }
 
 Cohort *GrammarApplicator::runContextualTest_tmpl(SingleWindow *sWindow, size_t position, const ContextualTest *test, ContextualTest *tmpl, Cohort *& cdeep, Cohort *origin) {
+	bool pop = false;
 	if (test->linked) {
-		tmpl_cntxs.push_back(test->linked);
+		// Don't add the exact same test again. This works around ((x) OR (y)) LINK ((z) OR (w)) LINK q issues.
+		// This is probably not the correct solution, but until proven otherwise...
+		if (tmpl_cntxs.empty() || tmpl_cntxs.back().test != test->linked) {
+			tmpl_cntxs.push_back(test->linked);
+			pop = true;
+		}
 	}
 
 	uint64_t orgpos = tmpl->pos;
@@ -238,7 +244,7 @@ Cohort *GrammarApplicator::runContextualTest_tmpl(SingleWindow *sWindow, size_t 
 		}
 	}
 
-	if (test->linked) {
+	if (pop) {
 		tmpl_cntxs.pop_back();
 	}
 

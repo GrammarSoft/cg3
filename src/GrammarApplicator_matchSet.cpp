@@ -709,6 +709,7 @@ inline bool GrammarApplicator::doesSetMatchCohort_testLinked(Cohort& cohort, con
 		linked = context->test->linked;
 	}
 	else if (!tmpl_cntxs.empty() && tmpl_cntx_pos < tmpl_cntxs.size()) {
+		// The outermost LINK was added first. Links are processed as a stack.
 		ic.inc(tmpl_cntx_pos);
 		linked = tmpl_cntxs[tmpl_cntxs.size() - tmpl_cntx_pos].test;
 	}
