@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2007-2016, GrammarSoft ApS
+* Copyright (C) 2007-2017, GrammarSoft ApS
 * Developed by Tino Didriksen <mail@tinodidriksen.com>
 * Design by Eckhard Bick <eckhard.bick@mail.dk>, Tino Didriksen <mail@tinodidriksen.com>
 *
@@ -183,6 +183,7 @@ UnicodeString stringbits[STRINGS_COUNT] = {
 	UNICODE_STRING_SIMPLE("NEGATIVE"),
 	UNICODE_STRING_SIMPLE("ONCE"),
 	UNICODE_STRING_SIMPLE("ALWAYS"),
+	UNICODE_STRING_SIMPLE("\\"),
 	_S_SET_ISECT_U,
 	_S_SET_SYMDIFF_U,
 	UNICODE_STRING_SIMPLE("FROM"),

@@ -1,22 +1,22 @@
 "<setops>"
-	"setop" a @union @difference @symdiff
-	"setop" b @union @difference @symdiff
+	"setop" a @union @except @difference @symdiff
+	"setop" b @union @except @difference @symdiff
 	"setop" c @union @intersect @product
 	"setop" d @union @intersect @product
 	"setop" e @union @symdiff
 	"setop" f @union @symdiff
 "<setops>"
-	"setop" a b @union @difference @symdiff
-	"setop" b c @union @symdiff @intersect @product
+	"setop" a b @union @except @difference @symdiff
+	"setop" b c @union @difference @symdiff @intersect @product
 	"setop" c d @union @intersect @product
 	"setop" d e @union @symdiff @intersect @product
 	"setop" e f @union @symdiff
-	"setop" f a @union @symdiff @product
+	"setop" f a @union @difference @symdiff @product
 "<setops>"
-	"setop" a e @union @symdiff @product
-	"setop" b f @union @symdiff @product
-	"setop" c a @union @symdiff @intersect @product
-	"setop" d b @union @symdiff @intersect @product
+	"setop" a e @union @difference @symdiff @product
+	"setop" b f @union @difference @symdiff @product
+	"setop" c a @union @difference @symdiff @intersect @product
+	"setop" d b @union @difference @symdiff @intersect @product
 	"setop" e c @union @symdiff @intersect @product
 	"setop" f d @union @symdiff @intersect @product
 
