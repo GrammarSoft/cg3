@@ -23,10 +23,10 @@
       </screen>
     </section>
 
-    <section id="set-operator-difference">
-      <title>Difference: -</title>
+    <section id="set-operator-except">
+      <title>Except: -</title>
       <para>
-        Equivalent to the mathematical set complement &#x2216; operator.
+        Equivalent to the SQL Except operator.
       </para>
       <screen>
         LIST a = a b c d ;
@@ -35,6 +35,21 @@
         # Logically yields a set containing tags: a b !c !d !e !f
         # Practically a reading must match the first set and must not match the second set
         SET r = a - b ;
+      </screen>
+    </section>
+
+    <section id="set-operator-difference">
+      <title>Difference: \</title>
+      <para>
+        Equivalent to the mathematical set complement &#x2216; operator.
+        The symbol is a normal backslash.
+      </para>
+      <screen>
+        LIST a = a b c d ;
+        LIST b = c d e f ;
+
+        # Logically yields a set containing tags: a b
+        SET r = a \ b ;
       </screen>
     </section>
 
