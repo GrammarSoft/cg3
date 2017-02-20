@@ -410,6 +410,17 @@ uint32_t Grammar::removeNumericTags(uint32_t s) {
 	return set->hash;
 }
 
+void Grammar::getTags(const Set& set, std::set<TagVector>& rv) {
+	// ToDo: getTags() ought to account for other operators than OR
+	for (auto s : set.sets) {
+		getTags(*getSet(s), rv);
+	}
+	TagVector tv;
+	trie_getTags(set.trie, rv, tv);
+	tv.clear();
+	trie_getTags(set.trie_special, rv, tv);
+}
+
 Rule *Grammar::allocateRule() {
 	return new Rule;
 }

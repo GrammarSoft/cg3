@@ -113,6 +113,7 @@ public:
 	void addSetToList(Set *s);
 	void allocateDummySet();
 	uint32_t removeNumericTags(uint32_t s);
+	void getTags(const Set& set, std::set<TagVector>& rv);
 
 	void addAnchor(const UChar *to, uint32_t at, bool primary = false);
 

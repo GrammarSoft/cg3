@@ -360,14 +360,10 @@ Set *TextualParser::parseSetInline(UChar *& p, Set *s) {
 				}
 
 				if (!set_ops.empty() && (set_ops.back() == S_SET_DIFF || set_ops.back() == S_SET_ISECT_U || set_ops.back() == S_SET_SYMDIFF_U)) {
-					TagVector tv;
 					std::set<TagVector> a;
-					trie_getTags(result->getSet(sets[sets.size() - 1])->trie, a, tv);
-					trie_getTags(result->getSet(sets[sets.size() - 1])->trie_special, a, tv);
-					tv.clear();
+					result->getTags(*result->getSet(sets[sets.size() - 1]), a);
 					std::set<TagVector> b;
-					trie_getTags(result->getSet(sets[sets.size() - 2])->trie, b, tv);
-					trie_getTags(result->getSet(sets[sets.size() - 2])->trie_special, b, tv);
+					result->getTags(*result->getSet(sets[sets.size() - 2]), b);
 
 					std::vector<TagVector> r;
 					if (set_ops.back() == S_SET_ISECT_U) {
