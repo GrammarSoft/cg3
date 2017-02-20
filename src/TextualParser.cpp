@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2007-2016, GrammarSoft ApS
+* Copyright (C) 2007-2017, GrammarSoft ApS
 * Developed by Tino Didriksen <mail@tinodidriksen.com>
 * Design by Eckhard Bick <eckhard.bick@mail.dk>, Tino Didriksen <mail@tinodidriksen.com>
 *
@@ -359,7 +359,7 @@ Set *TextualParser::parseSetInline(UChar *& p, Set *s) {
 					AST_CLOSE(p);
 				}
 
-				if (!set_ops.empty() && (set_ops.back() == S_SET_ISECT_U || set_ops.back() == S_SET_SYMDIFF_U)) {
+				if (!set_ops.empty() && (set_ops.back() == S_SET_DIFF || set_ops.back() == S_SET_ISECT_U || set_ops.back() == S_SET_SYMDIFF_U)) {
 					TagVector tv;
 					std::set<TagVector> a;
 					trie_getTags(result->getSet(sets[sets.size() - 1])->trie, a, tv);
@@ -375,6 +375,10 @@ Set *TextualParser::parseSetInline(UChar *& p, Set *s) {
 					}
 					else if (set_ops.back() == S_SET_SYMDIFF_U) {
 						std::set_symmetric_difference(a.begin(), a.end(), b.begin(), b.end(), std::back_inserter(r));
+					}
+					else if (set_ops.back() == S_SET_DIFF) {
+						// (b,a) because order matters for difference
+						std::set_difference(b.begin(), b.end(), a.begin(), a.end(), std::back_inserter(r));
 					}
 
 					set_ops.pop_back();

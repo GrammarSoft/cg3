@@ -4,7 +4,8 @@ LIST A = a b c d ;
 LIST B = c d e f ;
 
 ADD (@union) A OR B ;
-ADD (@difference) A - B ;
+ADD (@except) A - B ;
+ADD (@difference) A \ B ;
 ADD (@symdiff) A ∆ B ;
 ADD (@intersect) A ∩ B ;
 ADD (@product) A + B ;
