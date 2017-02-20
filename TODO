@@ -64,3 +64,4 @@ ToDo: Include only certain sections.
 ToDo: Defer resolving sets to allow defining after use.
 ToDo: Turn cg3-autobin.pl into C++ cg-autobin and symlink old name
 ToDo: REMOVE (v) "<\\p{Lu}+>"r ; should not parse.
+ToDo: Warn on probably-wrong tags like <wordform>" and "<wordform">
