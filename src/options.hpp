@@ -152,7 +152,7 @@ UOption options[] = {
 	UOPTION_DEF_D("split-mappings",        0, UOPT_NO_ARG,       "keep mapped readings separate in output"),
 	UOPTION_DEF_D("show-end-tags",       'e', UOPT_NO_ARG,       "allows the <<< tags to appear in output"),
 	UOPTION_DEF_D("show-unused-sets",      0, UOPT_NO_ARG,       "prints a list of unused sets and their line numbers; implies --grammar-only"),
-	UOPTION_DEF_D("show-tags",             0, UOPT_NO_ARG,       "prints a list of unique tags; implies --grammar-only"),
+	UOPTION_DEF_D("show-tags",             0, UOPT_NO_ARG,       "prints a list of unique used tags; implies --grammar-only"),
 	UOPTION_DEF_D("show-tag-hashes",       0, UOPT_NO_ARG,       "prints a list of tags and their hashes as they are parsed during the run"),
 	UOPTION_DEF_D("show-set-hashes",       0, UOPT_NO_ARG,       "prints a list of sets and their hashes; implies --grammar-only"),
 	UOPTION_DEF_D("dump-ast",              0, UOPT_NO_ARG,       "prints the grammar parse tree; implies --grammar-only"),
