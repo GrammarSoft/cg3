@@ -1,4 +1,4 @@
-/*
+﻿/*
 * Copyright (C) 2007-2017, GrammarSoft ApS
 * Developed by Tino Didriksen <mail@tinodidriksen.com>
 * Design by Eckhard Bick <eckhard.bick@mail.dk>, Tino Didriksen <mail@tinodidriksen.com>
@@ -524,7 +524,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 							// Keeps track of where we have been, to prevent infinite recursion in trees with loops
 							dep_deep_seen.clear();
 							// Reset the counters for which types of CohortIterator we have in play
-							std::fill(ci_depths.begin(), ci_depths.end(), 0);
+							std::fill(ci_depths.begin(), ci_depths.end(), static_cast<uint32_t>(0));
 							tmpl_cntxs.clear();
 							tmpl_cntx_pos = 0;
 							// Run the contextual test...

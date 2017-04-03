@@ -1,4 +1,4 @@
-/*
+﻿/*
 * Copyright (C) 2007-2017, GrammarSoft ApS
 * Developed by Tino Didriksen <mail@tinodidriksen.com>
 * Design by Eckhard Bick <eckhard.bick@mail.dk>, Tino Didriksen <mail@tinodidriksen.com>
@@ -42,7 +42,7 @@ public:
 	}
 
 	void clear() {
-		std::fill(value, value + 4, 0);
+		std::fill(value, value + 4, static_cast<Cont>(0));
 	}
 
 	void insert(const Cont& v) {

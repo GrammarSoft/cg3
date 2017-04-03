@@ -1,4 +1,4 @@
-/*
+﻿/*
 * Copyright (C) 2007-2017, GrammarSoft ApS
 * Developed by Tino Didriksen <mail@tinodidriksen.com>
 * Design by Eckhard Bick <eckhard.bick@mail.dk>, Tino Didriksen <mail@tinodidriksen.com>
@@ -91,7 +91,7 @@ public:
 
 	UChar *gets(UChar *s, int32_t m) {
 		if (offset < buffer.size()) {
-			std::fill(s, s + m, 0);
+			std::fill(s, s + m, static_cast<UChar>(0));
 			UChar *p = &buffer[offset];
 			UChar *n = p;
 			SKIPLN(n);
