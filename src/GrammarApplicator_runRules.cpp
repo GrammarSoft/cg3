@@ -1654,7 +1654,12 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 								CohortVector cohorts;
 								if (rule.childset1) {
 									for (CohortVector::iterator iter = current.cohorts.begin(); iter != current.cohorts.end();) {
-										if (isChildOf(*iter, cohort) && doesSetMatchCohortNormal(**iter, rule.childset1)) {
+										// Always consider the target cohort a match
+										if ((*iter)->global_number == cohort->global_number) {
+											cohorts.push_back(*iter);
+											iter = current.cohorts.erase(iter);
+										}
+										else if (isChildOf(*iter, cohort) && doesSetMatchCohortNormal(**iter, rule.childset1)) {
 											cohorts.push_back(*iter);
 											iter = current.cohorts.erase(iter);
 										}
@@ -1675,7 +1680,10 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 								CohortVector edges;
 								if (rule.childset2) {
 									foreach (iter, current.cohorts) {
-										if (isChildOf(*iter, attach) && doesSetMatchCohortNormal(**iter, rule.childset2)) {
+										if ((*iter)->global_number == attach->global_number) {
+											edges.push_back(*iter);
+										}
+										else if (isChildOf(*iter, attach) && doesSetMatchCohortNormal(**iter, rule.childset2)) {
 											edges.push_back(*iter);
 										}
 									}
