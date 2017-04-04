@@ -1,4 +1,4 @@
-/*
+﻿/*
 * Copyright (C) 2007-2017, GrammarSoft ApS
 * Developed by Tino Didriksen <mail@tinodidriksen.com>
 * Design by Eckhard Bick <eckhard.bick@mail.dk>, Tino Didriksen <mail@tinodidriksen.com>
@@ -626,15 +626,27 @@ Cohort *GrammarApplicator::runDependencyTest(SingleWindow *sWindow, Cohort *curr
 		}
 	}
 
+	// ToDo: This whole function could resolve cohorts earlier and skip doing it twice
 	if (test->pos & MASK_POS_LORR) {
-		tmp_deps = *deps;
+		// I think this way around makes most sense? Loop over the container that's slower to look up in. But tests will show.
+		foreach (iter, sWindow->parent->cohort_map) {
+			if (deps->count(iter->second->global_number)) {
+				if (test->pos & POS_LEFT) {
+					if (less_Cohort(iter->second, current)) {
+						tmp_deps.insert(iter->second->global_number);
+					}
+				}
+				else if ((test->pos & POS_RIGHT)) {
+					if (less_Cohort(current, iter->second)) {
+						tmp_deps.insert(iter->second->global_number);
+					}
+				}
+				else {
+					tmp_deps.insert(iter->second->global_number);
+				}
+			}
+		}
 
-		if (test->pos & POS_LEFT) {
-			tmp_deps.assign(deps->begin(), deps->lower_bound(current->global_number));
-		}
-		if (test->pos & POS_RIGHT) {
-			tmp_deps.assign(deps->lower_bound(current->global_number), deps->end());
-		}
 		if (test->pos & POS_SELF) {
 			tmp_deps.insert(current->global_number);
 		}
