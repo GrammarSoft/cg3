@@ -123,7 +123,7 @@ UOption options[] = {
 	UOPTION_DEF_D("no-sections",           0, UOPT_NO_ARG,       "disables all rules in SECTION parts"),
 	UOPTION_DEF_D("no-after-sections",     0, UOPT_NO_ARG,       "disables all rules in AFTER-SECTIONS parts"),
 
-	UOPTION_DEF_D("trace",               't', UOPT_NO_ARG,       "prints debug output alongside with normal output"),
+	UOPTION_DEF_D("trace",               't', UOPT_OPTIONAL_ARG, "prints debug output alongside normal output; optionally stops execution"),
 	UOPTION_DEF_D("trace-name-only",       0, UOPT_NO_ARG,       "if a rule is named, omit the line number; implies --trace"),
 	UOPTION_DEF_D("trace-no-removed",      0, UOPT_NO_ARG,       "does not print removed readings; implies --trace"),
 	UOPTION_DEF_D("trace-encl",            0, UOPT_NO_ARG,       "traces which enclosure pass is currently happening; implies --trace"),
