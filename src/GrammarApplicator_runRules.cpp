@@ -1692,6 +1692,20 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 								else {
 									edges.push_back(attach);
 								}
+
+								foreach (iter, edges) {
+									if ((*iter)->parent != cohort->parent) {
+										u_fprintf(ux_stderr, "Warning: Move/Switch on line %u tried to move across window boundaries.\n", rule.line);
+										u_fflush(ux_stderr);
+									}
+									foreach (cohort, cohorts) {
+										if (*iter == *cohort) {
+											u_fprintf(ux_stderr, "Warning: Move/Switch on line %u tried to move to a removed position.\n", rule.line);
+											u_fflush(ux_stderr);
+										}
+									}
+								}
+
 								uint32_t spot = 0;
 								if (type == K_MOVE_BEFORE) {
 									spot = edges.front()->local_number;
@@ -1702,6 +1716,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 								else if (type == K_MOVE_AFTER) {
 									spot = edges.back()->local_number + 1;
 								}
+								spot = std::min(spot, current.cohorts.size());
 
 								while (!cohorts.empty()) {
 									foreach (iter, cohorts.back()->readings) {
