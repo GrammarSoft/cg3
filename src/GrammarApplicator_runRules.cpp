@@ -1716,7 +1716,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 								else if (type == K_MOVE_AFTER) {
 									spot = edges.back()->local_number + 1;
 								}
-								spot = std::min(spot, current.cohorts.size());
+								spot = std::min(spot, static_cast<uint32_t>(current.cohorts.size()));
 
 								while (!cohorts.empty()) {
 									foreach (iter, cohorts.back()->readings) {
