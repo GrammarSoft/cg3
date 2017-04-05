@@ -465,6 +465,9 @@ void GAppSetOpts(CG3::GrammarApplicator& applicator, UConverter *conv) {
 	}
 	if (options[TRACE].doesOccur) {
 		applicator.trace = true;
+		if (options[TRACE].value) {
+			CG3::GAppSetOpts_ranged(options[TRACE].value, applicator.trace_rules, false);
+		}
 	}
 	if (options[TRACE_NAME_ONLY].doesOccur) {
 		applicator.trace = true;

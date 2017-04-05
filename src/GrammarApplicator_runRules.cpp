@@ -36,6 +36,7 @@ enum {
 	RV_NOTHING   = 1,
 	RV_SOMETHING = 2,
 	RV_DELIMITED = 4,
+	RV_TRACERULE = 8,
 };
 
 bool GrammarApplicator::doesWordformsMatch(const Tag *cword, const Tag *rword) {
@@ -1909,11 +1910,19 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 			rule.total_time += elapsed(tmp, tstamp);
 		}
 
+		if (rule_did_something) {
+			if (trace_rules.contains(rule.line)) {
+				retval |= RV_TRACERULE;
+			}
+		}
 		if (delimited) {
 			break;
 		}
 		if (rule_did_something && (rule.flags & RF_REPEAT)) {
 			goto repeat_rule;
+		}
+		if (retval & RV_TRACERULE) {
+			break;
 		}
 	}
 
@@ -1929,7 +1938,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 uint32_t GrammarApplicator::runGrammarOnSingleWindow(SingleWindow& current) {
 	if (!grammar->before_sections.empty() && !no_before_sections) {
 		uint32_t rv = runRulesOnSingleWindow(current, runsections[-1]);
-		if (rv & RV_DELIMITED) {
+		if (rv & (RV_DELIMITED | RV_TRACERULE)) {
 			return rv;
 		}
 	}
@@ -1950,7 +1959,7 @@ uint32_t GrammarApplicator::runGrammarOnSingleWindow(SingleWindow& current) {
 			}
 			rv = runRulesOnSingleWindow(current, iter->second);
 			++counter[iter->first];
-			if (rv & RV_DELIMITED) {
+			if (rv & (RV_DELIMITED | RV_TRACERULE)) {
 				return rv;
 			}
 			if (!(rv & RV_SOMETHING)) {
@@ -1974,7 +1983,7 @@ uint32_t GrammarApplicator::runGrammarOnSingleWindow(SingleWindow& current) {
 
 	if (!grammar->after_sections.empty() && !no_after_sections) {
 		uint32_t rv = runRulesOnSingleWindow(current, runsections[-2]);
-		if (rv & RV_DELIMITED) {
+		if (rv & (RV_DELIMITED | RV_TRACERULE)) {
 			return rv;
 		}
 	}
@@ -2104,6 +2113,7 @@ label_runGrammarOnWindow_begin:
 		goto label_runGrammarOnWindow_begin;
 	}
 
+label_unpackEnclosures:
 	if (!grammar->parentheses.empty() && current->has_enclosures) {
 		size_t nc = current->cohorts.size();
 		for (size_t i = 0; i < nc; ++i) {
@@ -2126,6 +2136,9 @@ label_runGrammarOnWindow_begin:
 				par_left_pos = i + 1;
 				par_right_pos = i + ne;
 				c->enclosed.clear();
+				if (rv & RV_TRACERULE) {
+					goto label_unpackEnclosures;
+				}
 				goto label_runGrammarOnWindow_begin;
 			}
 		}
@@ -2135,6 +2148,9 @@ label_runGrammarOnWindow_begin:
 			par_left_pos = 0;
 			par_right_pos = 0;
 			did_final_enclosure = true;
+			if (rv & RV_TRACERULE) {
+				goto label_unpackEnclosures;
+			}
 			goto label_runGrammarOnWindow_begin;
 		}
 	}

@@ -468,7 +468,7 @@ inline T readSwapped(std::istream& stream) {
 #endif
 
 template<typename Cont>
-inline void GAppSetOpts_ranged(const char *value, Cont& cont) {
+inline void GAppSetOpts_ranged(const char *value, Cont& cont, bool fill = true) {
 	cont.clear();
 	bool had_range = false;
 
@@ -486,7 +486,7 @@ inline void GAppSetOpts_ranged(const char *value, Cont& cont) {
 		}
 	} while ((comma = strchr(comma, ',')) != 0 && ++comma && *comma != 0);
 
-	if (cont.size() == 1 && !had_range) {
+	if (cont.size() == 1 && !had_range && fill) {
 		uint32_t val = cont.front();
 		cont.clear();
 		for (uint32_t i = 1; i <= val; ++i) {
