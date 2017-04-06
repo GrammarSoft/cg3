@@ -1668,11 +1668,26 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 									edges.insert(attach);
 								}
 
+								CohortSet children;
+								foreach(iter, current.cohorts) {
+									foreach (edge, edges) {
+										if (isChildOf(*iter, *edge)) {
+											children.insert(*iter);
+											break;
+										}
+									}
+								}
+
 								CohortVector cohorts;
 								if (rule.childset1) {
 									for (CohortVector::iterator iter = current.cohorts.begin(); iter != current.cohorts.end();) {
 										// Protect edges from being moved
 										if (edges.count(*iter)) {
+											++iter;
+											continue;
+										}
+										// Protect edges' children from being moved
+										if (children.count(*iter)) {
 											++iter;
 											continue;
 										}
