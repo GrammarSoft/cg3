@@ -1652,9 +1652,31 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 								}
 							}
 							else {
+								// Resolve edges first, to prevent their movement
+								CohortSet edges;
+								if (rule.childset2) {
+									foreach(iter, current.cohorts) {
+										if ((*iter)->global_number == attach->global_number) {
+											edges.insert(*iter);
+										}
+										else if (isChildOf(*iter, attach) && doesSetMatchCohortNormal(**iter, rule.childset2)) {
+											edges.insert(*iter);
+										}
+									}
+								}
+								else {
+									edges.insert(attach);
+								}
+
 								CohortVector cohorts;
 								if (rule.childset1) {
 									for (CohortVector::iterator iter = current.cohorts.begin(); iter != current.cohorts.end();) {
+										// Protect edges from being moved
+										if (edges.count(*iter)) {
+											++iter;
+											continue;
+										}
+
 										// Always consider the target cohort a match
 										if ((*iter)->global_number == cohort->global_number) {
 											cohorts.push_back(*iter);
@@ -1678,30 +1700,15 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 									(*iter)->local_number = std::distance(current.cohorts.begin(), iter);
 								}
 
-								CohortVector edges;
-								if (rule.childset2) {
-									foreach (iter, current.cohorts) {
-										if ((*iter)->global_number == attach->global_number) {
-											edges.push_back(*iter);
-										}
-										else if (isChildOf(*iter, attach) && doesSetMatchCohortNormal(**iter, rule.childset2)) {
-											edges.push_back(*iter);
-										}
-									}
-								}
-								else {
-									edges.push_back(attach);
-								}
-
 								foreach (iter, edges) {
 									if ((*iter)->parent != cohort->parent) {
-										u_fprintf(ux_stderr, "Warning: Move/Switch on line %u tried to move across window boundaries.\n", rule.line);
-										u_fflush(ux_stderr);
+										u_fprintf(ux_stderr, "Error: Move/Switch on line %u tried to move across window boundaries.\n", rule.line);
+										CG3Quit(1);
 									}
-									foreach (cohort, cohorts) {
+									foreach(cohort, cohorts) {
 										if (*iter == *cohort) {
-											u_fprintf(ux_stderr, "Warning: Move/Switch on line %u tried to move to a removed position.\n", rule.line);
-											u_fflush(ux_stderr);
+											u_fprintf(ux_stderr, "Error: Move/Switch on line %u tried to move to a removed position.\n", rule.line);
+											CG3Quit(1);
 										}
 									}
 								}
@@ -1716,7 +1723,11 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 								else if (type == K_MOVE_AFTER) {
 									spot = edges.back()->local_number + 1;
 								}
-								spot = std::min(spot, static_cast<uint32_t>(current.cohorts.size()));
+
+								if (spot > current.cohorts.size()) {
+									u_fprintf(ux_stderr, "Error: Move/Switch on line %u tried to move out of bounds.\n", rule.line);
+									CG3Quit(1);
+								}
 
 								while (!cohorts.empty()) {
 									foreach (iter, cohorts.back()->readings) {
