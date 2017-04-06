@@ -1655,7 +1655,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 								// Resolve edges first, to prevent their movement
 								CohortSet edges;
 								if (rule.childset2) {
-									foreach(iter, current.cohorts) {
+									foreach (iter, current.cohorts) {
 										if ((*iter)->global_number == attach->global_number) {
 											edges.insert(*iter);
 										}
@@ -1668,47 +1668,52 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 									edges.insert(attach);
 								}
 
-								CohortSet children;
-								foreach(iter, current.cohorts) {
-									foreach (edge, edges) {
-										if (isChildOf(*iter, *edge)) {
-											children.insert(*iter);
-											break;
-										}
-									}
-								}
-
 								CohortVector cohorts;
 								if (rule.childset1) {
-									for (CohortVector::iterator iter = current.cohorts.begin(); iter != current.cohorts.end();) {
-										// Protect edges from being moved
-										if (edges.count(*iter)) {
-											++iter;
-											continue;
-										}
-										// Protect edges' children from being moved
-										if (children.count(*iter)) {
-											++iter;
-											continue;
-										}
-
+									foreach (iter, current.cohorts) {
 										// Always consider the target cohort a match
 										if ((*iter)->global_number == cohort->global_number) {
 											cohorts.push_back(*iter);
-											iter = current.cohorts.erase(iter);
 										}
 										else if (isChildOf(*iter, cohort) && doesSetMatchCohortNormal(**iter, rule.childset1)) {
 											cohorts.push_back(*iter);
-											iter = current.cohorts.erase(iter);
-										}
-										else {
-											++iter;
 										}
 									}
 								}
 								else {
 									cohorts.push_back(cohort);
-									current.cohorts.erase(current.cohorts.begin() + cohort->local_number);
+								}
+
+								bool need_clean = false;
+								foreach (iter, cohorts) {
+									if (edges.count(*iter)) {
+										need_clean = true;
+										break;
+									}
+								}
+
+								if (need_clean) {
+									CohortVector c2;
+									foreach (iter, cohorts) {
+										if (edges.count(*iter)) {
+											continue;
+										}
+										bool good = true;
+										foreach (edge, edges) {
+											if (isChildOf(*iter, *edge)) {
+												good = false;
+												break;
+											}
+										}
+										if (good) {
+											c2.push_back(*iter);
+										}
+									}
+									cohorts.swap(c2);
+								}
+
+								reverse_foreach (iter, cohorts) {
+									current.cohorts.erase(current.cohorts.begin() + (*iter)->local_number);
 								}
 
 								foreach (iter, current.cohorts) {
