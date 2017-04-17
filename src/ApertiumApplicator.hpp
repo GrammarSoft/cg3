@@ -32,7 +32,6 @@ public:
 
 	void runGrammarOnText(istream& input, UFILE *output);
 
-	bool getNullFlush();
 	bool wordform_case;
 	bool print_word_forms;
 	bool print_only_first;
