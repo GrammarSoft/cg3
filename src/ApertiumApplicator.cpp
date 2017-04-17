@@ -42,16 +42,13 @@ ApertiumApplicator::ApertiumApplicator(UFILE *ux_err)
 	fgetc_error = U_ZERO_ERROR;
 }
 
-
-bool ApertiumApplicator::getNullFlush() {
-	return nullFlush;
-}
-
 void ApertiumApplicator::setNullFlush(bool pNullFlush) {
 	nullFlush = pNullFlush;
 }
 
 UChar ApertiumApplicator::u_fgetc_wrapper(istream& input) {
+	UChar rv = U_EOF;
+
 	if (runningWithNullFlush) {
 		if (!fgetc_converter) {
 			fgetc_error = U_ZERO_ERROR;
@@ -83,11 +80,17 @@ UChar ApertiumApplicator::u_fgetc_wrapper(istream& input) {
 		if (fgetc_outputbuf[0] == 0xFFFD && input.eof()) {
 			return U_EOF;
 		}
-		return fgetc_outputbuf[0];
+		rv = fgetc_outputbuf[0];
 	}
 	else {
-		return input.getc();
+		rv = input.getc();
 	}
+
+	if (ISNL(rv)) {
+		++numLines;
+	}
+
+	return rv;
 }
 
 
@@ -107,7 +110,7 @@ void ApertiumApplicator::runGrammarOnTextWrapperNullFlush(istream& input, UFILE 
  */
 
 void ApertiumApplicator::runGrammarOnText(istream& input, UFILE *output) {
-	if (getNullFlush()) {
+	if (runningWithNullFlush) {
 		runGrammarOnTextWrapperNullFlush(input, output);
 		return;
 	}
@@ -229,7 +232,7 @@ void ApertiumApplicator::runGrammarOnText(istream& input, UFILE *output) {
 			} // end >= soft_limit
 			if (cCohort && (cSWindow->cohorts.size() >= hard_limit || (grammar->delimiters && doesSetMatchCohortNormal(*cCohort, grammar->delimiters->number)))) {
 				if (!is_conv && cSWindow->cohorts.size() >= hard_limit) {
-					u_fprintf(ux_stderr, "Warning: Hard limit of %u cohorts reached at line %u - forcing break.\n", hard_limit, numLines);
+					u_fprintf(ux_stderr, "Warning: Hard limit of %u cohorts reached at cohort %u on line %u - forcing break.\n", hard_limit, numCohorts, numLines);
 					u_fflush(ux_stderr);
 				}
 				foreach (iter, cCohort->readings) {
@@ -405,11 +408,10 @@ void ApertiumApplicator::runGrammarOnText(istream& input, UFILE *output) {
 			} // end while not $
 
 			if (!cReading->baseform) {
-				u_fprintf(ux_stderr, "Warning: Line %u had no valid baseform.\n", numLines);
+				u_fprintf(ux_stderr, "Warning: Cohort %u on line %u had no valid baseform.\n", numCohorts, numLines);
 				u_fflush(ux_stderr);
 			}
 		} // end reading
-		numLines++;
 	} // end input loop
 
 	if (!firstblank.empty()) {
