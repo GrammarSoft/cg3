@@ -917,11 +917,27 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 							initEmptyCohort(*cCohort);
 						}
 
-						if (type == K_ADDCOHORT_BEFORE) {
-							current.cohorts.insert(current.cohorts.begin() + cohort->local_number, cCohort);
+						CohortVector cohorts;
+						if (rule.childset1) {
+							foreach(iter, current.cohorts) {
+								// Always consider the target cohort a match
+								if ((*iter)->global_number == cohort->global_number) {
+									cohorts.push_back(*iter);
+								}
+								else if (isChildOf(*iter, cohort) && doesSetMatchCohortNormal(**iter, rule.childset1)) {
+									cohorts.push_back(*iter);
+								}
+							}
 						}
 						else {
-							current.cohorts.insert(current.cohorts.begin() + cohort->local_number + 1, cCohort);
+							cohorts.push_back(cohort);
+						}
+
+						if (type == K_ADDCOHORT_BEFORE) {
+							current.cohorts.insert(current.cohorts.begin() + cohorts.front()->local_number, cCohort);
+						}
+						else {
+							current.cohorts.insert(current.cohorts.begin() + cohorts.back()->local_number + 1, cCohort);
 						}
 
 						foreach (iter, current.cohorts) {

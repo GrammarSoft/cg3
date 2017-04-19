@@ -1249,6 +1249,29 @@ void TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 	}
 	result->lines += SKIPWS(p);
 
+	if (ux_simplecasecmp(p, g_flags[FL_WITHCHILD].getTerminatedBuffer(), g_flags[FL_WITHCHILD].length())) {
+		AST_OPEN(RuleFlag);
+		p += g_flags[FL_WITHCHILD].length();
+		AST_CLOSE(p);
+		AST_OPEN(RuleWithChildTarget);
+		Set *s = parseSetInlineWrapper(p);
+		AST_CLOSE(p);
+		result->has_dep = true;
+		rule->flags |= RF_WITHCHILD;
+		rule->flags &= ~RF_NOCHILD;
+		rule->childset1 = s->hash;
+		result->lines += SKIPWS(p);
+	}
+	else if (ux_simplecasecmp(p, g_flags[FL_NOCHILD].getTerminatedBuffer(), g_flags[FL_NOCHILD].length())) {
+		AST_OPEN(RuleFlag);
+		p += g_flags[FL_NOCHILD].length();
+		AST_CLOSE(p);
+		rule->flags |= RF_NOCHILD;
+		rule->flags &= ~RF_WITHCHILD;
+		rule->childset1 = 0;
+		result->lines += SKIPWS(p);
+	}
+
 	AST_OPEN(RuleTarget);
 	Set *s = parseSetInlineWrapper(p);
 	rule->target = s->hash;
