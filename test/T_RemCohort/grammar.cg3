@@ -13,5 +13,8 @@ ADDCOHORT ("<wordform1>" "baseform1" tag1) BEFORE ("matchme") ;
 ADDCOHORT ("<wordform2>" "baseform2" tag2) AFTER ("matchme") ;
 ADDCOHORT ("<wordform3>" "baseform3" tag3 "baseform4" tag4 "baseform5") BEFORE ("matchme") ;
 
+ADDCOHORT ("<wordform4>" "baseform4" tag4) BEFORE WITHCHILD (*) ("matchme") ;
+ADDCOHORT ("<wordform5>" "baseform5" tag5) AFTER WITHCHILD (*) ("matchme") ;
+
 REMCOHORT ("matchme") ;
 ADD (@stillhere) (*) ;
