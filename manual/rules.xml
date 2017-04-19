@@ -54,7 +54,8 @@
           TO|FROM &lt;contextual_target&gt; [contextual_tests] ;
 
   Cohort manipulation:
-      ADDCOHORT &lt;cohort tags&gt; BEFORE|AFTER &lt;target&gt; [contextual_tests] ;
+      ADDCOHORT &lt;cohort tags&gt; BEFORE|AFTER [WITHCHILD &lt;child_set&gt;|NOCHILD]
+          &lt;target&gt; [contextual_tests] ;
       REMCOHORT &lt;target&gt; [contextual_tests] ;
       SPLITCOHORT &lt;cohort recipe&gt; &lt;target&gt; [contextual_tests] ;
 
@@ -161,10 +162,17 @@
       <primary>ADDCOHORT</primary>
     </indexterm>
     <screen>
-      [wordform] ADDCOHORT &lt;cohort tags&gt; BEFORE|AFTER &lt;target&gt; [contextual_tests] ;
+      [wordform] ADDCOHORT &lt;cohort tags&gt; BEFORE|AFTER [WITHCHILD &lt;child_set&gt;|NOCHILD]
+          &lt;target&gt; [contextual_tests] ;
     </screen>
     <para>
       Inserts a new cohort before or after the target.
+    </para>
+    <para>
+      WITHCHILD uses the children of the cohort you're targeting as edges so you can avoid creating cohorts
+      in the middle of another dependency group.
+      If you specify WITHCHILD you will need to provide a set that the children you want to apply must match.
+      The (*) set will match all children.
     </para>
     <screen>
       ADDCOHORT ("&lt;wordform&gt;" "baseform" tags) BEFORE (@waffles) ;
