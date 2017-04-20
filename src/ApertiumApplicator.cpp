@@ -110,7 +110,7 @@ void ApertiumApplicator::runGrammarOnTextWrapperNullFlush(istream& input, UFILE 
  */
 
 void ApertiumApplicator::runGrammarOnText(istream& input, UFILE *output) {
-	if (runningWithNullFlush) {
+	if (nullFlush) {
 		runGrammarOnTextWrapperNullFlush(input, output);
 		return;
 	}
