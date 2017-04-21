@@ -1981,6 +1981,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 			break;
 		}
 		if (rule_did_something && (rule.flags & RF_REPEAT)) {
+			index_ruleCohort_no.clear();
 			goto repeat_rule;
 		}
 		if (retval & RV_TRACERULE) {
