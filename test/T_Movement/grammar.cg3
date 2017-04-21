@@ -26,3 +26,5 @@ MOVE (seventh) AFTER (-1* (first)) ;
 
 # Switch
 SWITCH (fourth) WITH (*1 (eighth)) ;
+
+MOVE REPEAT ("target") AFTER (1* ("anchor") BARRIER ("target")) ;
