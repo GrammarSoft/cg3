@@ -1727,6 +1727,9 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 									}
 									cohorts.swap(c2);
 								}
+								if (cohorts.empty()) {
+									break;
+								}
 
 								reverse_foreach (iter, cohorts) {
 									current.cohorts.erase(current.cohorts.begin() + (*iter)->local_number);
