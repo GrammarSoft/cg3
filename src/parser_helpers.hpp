@@ -183,6 +183,19 @@ Tag *parseTag(const UChar *to, const UChar *p, State& state) {
 		if (tag->tag[0] == '<' && tag->tag[length - 1] == '>') {
 			tag->parseNumeric();
 		}
+		/*
+		if (tag->tag[0] == '#') {
+			uint32_t dep_self = 0;
+			uint32_t dep_parent = 0;
+			if (u_sscanf(tag->tag.c_str(), "#%i->%i", &dep_self, &dep_parent) == 2 && dep_self != 0) {
+				tag->type |= T_DEPENDENCY;
+			}
+			const UChar local_dep_unicode[] = { '#', '%', 'i', L'\u2192', '%', 'i', 0 };
+			if (u_sscanf_u(tag->tag.c_str(), local_dep_unicode, &dep_self, &dep_parent) == 2 && dep_self != 0) {
+				tag->type |= T_DEPENDENCY;
+			}
+		}
+		//*/
 
 		if (u_strcmp(tag->tag.c_str(), stringbits[S_ASTERIK].getTerminatedBuffer()) == 0) {
 			tag->type |= T_ANY;

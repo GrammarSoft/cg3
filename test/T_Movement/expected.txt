@@ -11,7 +11,7 @@
 "<word>"
 	"word" wanted third #1->6
 "<word>"
-	"word" wanted first #2->10
+	"word" wanted first #2->9
 "<word>"
 	"word" wanted seventh #3->8
 "<word>"

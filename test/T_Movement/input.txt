@@ -9,7 +9,7 @@
 "<$.>"
 
 "<word>"
-	"word" wanted first #1->4
+	"word" wanted first #1->2
 "<word>"
 	"word" wanted second #2->0
 "<word>"
