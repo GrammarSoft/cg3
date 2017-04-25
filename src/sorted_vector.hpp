@@ -116,8 +116,8 @@ public:
 		elements.erase(it, elements.end());
 	}
 
-	bool push_back(T t) {
-		return insert(t);
+	void push_back(T t) {
+		insert(t);
 	}
 
 	bool erase(T t) {
@@ -141,6 +141,13 @@ public:
 	const_iterator erase(const_iterator it) {
 		size_type o = std::distance<const_iterator>(elements.begin(), it);
 		return elements.erase(elements.begin() + o);
+	}
+
+	template<typename It>
+	void erase(It b, It e) {
+		for (; b != e; ++b) {
+			erase(*b);
+		}
 	}
 
 	const_iterator find(T t) const {
@@ -240,6 +247,10 @@ public:
 
 	void sort() {
 		std::sort(elements.begin(), elements.end(), Comp());
+	}
+
+	void pop_back() {
+		elements.pop_back();
 	}
 
 	container& get() {
