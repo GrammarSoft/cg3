@@ -258,9 +258,14 @@
       The (*) set will match all children.
     </para>
     <para>
-      The first WITHCHILD specifies which children you want moved.
+      The first WITHCHILD specifies which children you want moved - the target cohorts.
       The second WITHCHILD uses the children of the cohort you're moving to as edges so you can avoid moving into
-      another dependency group.
+      another dependency group - the anchor cohorts.
+    </para>
+    <para>
+      WITHCHILD will match direct children only and then gobble up all descendents of the matched children.
+      If the target cohort is a descendent of the anchor, all target cohorts are removed from the anchor cohorts.
+      Otherwise, the inverse is done. This allows maximal movement while retaining chosen subtree integrity.
     </para>
   </section>
 
