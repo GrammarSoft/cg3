@@ -581,12 +581,12 @@ Cohort *GrammarApplicator::runDependencyTest(SingleWindow *sWindow, Cohort *curr
 		self = current;
 	}
 
-	// ToDo: Make the dep_deep_seen key a composite of cohort number and test hash so we don't have to clear as often
+	// ToDo: Now that dep_deep_seen is a composite, investigate all .clear() to see if they're needed
 	if (test->pos & POS_DEP_DEEP) {
-		if (index_matches(dep_deep_seen, current->global_number)) {
+		if (index_matches(dep_deep_seen, std::make_pair(test->hash, current->global_number))) {
 			return 0;
 		}
-		dep_deep_seen.insert(current->global_number);
+		dep_deep_seen.insert(std::make_pair(test->hash, current->global_number));
 	}
 
 	if ((test->pos & POS_SELF) && !(test->pos & MASK_POS_LORR)) {
