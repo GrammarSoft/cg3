@@ -257,6 +257,7 @@ protected:
 	enum ST_RETVALS {
 		TRV_BREAK   = (1 <<  0),
 		TRV_BARRIER = (1 <<  1),
+		TRV_BREAK_DEFAULT = (1 <<  2),
 	};
 	Cohort *runSingleTest(Cohort *cohort, const ContextualTest *test, uint8_t& rvs, bool *retval, Cohort **deep = 0, Cohort *origin = 0);
 	Cohort *runSingleTest(SingleWindow *sWindow, size_t i, const ContextualTest *test, uint8_t& rvs, bool *retval, Cohort **deep = 0, Cohort *origin = 0);

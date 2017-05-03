@@ -87,8 +87,8 @@ Cohort *GrammarApplicator::runSingleTest(Cohort *cohort, const ContextualTest *t
 	if (context.matched_target && (test->pos & POS_SCANFIRST)) {
 		rvs |= TRV_BREAK;
 	}
-	else if (!(test->pos & (POS_SCANALL | POS_SCANFIRST | POS_SELF))) {
-		rvs |= TRV_BREAK;
+	else if (!(test->pos & (POS_SCANALL | POS_SCANFIRST))) {
+		rvs |= TRV_BREAK | TRV_BREAK_DEFAULT;
 	}
 
 	context.test = 0;
@@ -422,6 +422,9 @@ Cohort *GrammarApplicator::runContextualTest(SingleWindow *sWindow, size_t posit
 			uint8_t rvs = 0;
 			if (test->pos & POS_SELF) {
 				cohort = runSingleTest(cohort, test, rvs, &retval, deep, origin);
+				if (!retval && (rvs & TRV_BREAK_DEFAULT)) {
+					rvs &= ~(TRV_BREAK | TRV_BREAK_DEFAULT);
+				}
 			}
 			if ((rvs & TRV_BREAK) && retval) {
 				goto label_gotACohort;
@@ -496,6 +499,9 @@ Cohort *GrammarApplicator::runContextualTest(SingleWindow *sWindow, size_t posit
 				assert(pos >= 0 && pos < static_cast<int32_t>(sWindow->cohorts.size()) && "Somehow, the input position wasn't inside the current window.");
 				Cohort *self = sWindow->cohorts[position];
 				nc = runSingleTest(self, test, rvs, &retval, deep, origin);
+				if (!retval && (rvs & TRV_BREAK_DEFAULT)) {
+					rvs &= ~(TRV_BREAK | TRV_BREAK_DEFAULT);
+				}
 			}
 			if (!(rvs & TRV_BREAK)) {
 				Cohort *current = cohort;
