@@ -5,7 +5,7 @@
   <title>Installation &amp; Updating</title>
   <para>
     These guidelines are primarily for Linux, although I develop on Windows
-    using <ulink url="http://www.visualstudio.com/downloads/download-visual-studio-vs#d-express-windows-desktop">Visual Studio 2013 Express for Windows Desktop</ulink>.
+    using <ulink url="https://www.visualstudio.com/vs/community/">Visual Studio 2017</ulink>.
   </para>
 
   <section id="cmake">
@@ -26,10 +26,10 @@
     <title>Ubuntu / Debian</title>
     <para>
       For any currently supported version of Debian/Ubuntu or compatible derivatives thereof (such as Linux Mint),
-      there is a <ulink url="http://apertium.projectjj.com/apt/">ready-made nightly repository</ulink>,
+      there is a <ulink url="https://apertium.projectjj.com/apt/">ready-made nightly repository</ulink>,
       easily installable via
       <screen>
-        wget http://apertium.projectjj.com/apt/install-nightly.sh -O - | sudo bash
+        wget https://apertium.projectjj.com/apt/install-nightly.sh -O - | sudo bash
         sudo apt-get install cg3
       </screen>
       Rest of this page can be skipped.
@@ -45,7 +45,7 @@
         # For TCMalloc, optional
         sudo apt-get install libgoogle-perftools-dev
         cd /tmp/
-        svn co http://visl.sdu.dk/svn/visl/tools/vislcg3/trunk vislcg3
+        svn co https://visl.sdu.dk/svn/visl/tools/vislcg3/trunk vislcg3
         cd vislcg3/
         ./cmake.sh
         make -j3
@@ -85,7 +85,7 @@
         # For TCMalloc, optional
         yum install google-perftools-devel
         cd /tmp/
-        svn co http://visl.sdu.dk/svn/visl/tools/vislcg3/trunk vislcg3
+        svn co https://visl.sdu.dk/svn/visl/tools/vislcg3/trunk vislcg3
         cd vislcg3/
         ./cmake.sh
         make -j3
@@ -117,7 +117,7 @@
           brew install icu4c
           brew link icu4c
           cd /tmp
-          svn co http://visl.sdu.dk/svn/visl/tools/vislcg3/trunk vislcg3
+          svn co https://visl.sdu.dk/svn/visl/tools/vislcg3/trunk vislcg3
           cd vislcg3/
           ./cmake.sh
           make -j3
@@ -140,7 +140,7 @@
           sudo port install boost
           sudo port install icu
           cd /tmp
-          svn co http://visl.sdu.dk/svn/visl/tools/vislcg3/trunk vislcg3
+          svn co https://visl.sdu.dk/svn/visl/tools/vislcg3/trunk vislcg3
           cd vislcg3/
           ./cmake.sh --prefix=/opt/local
           make -j3
@@ -155,9 +155,9 @@
       <title>Other</title>
       <para>
         Installing from source is very similar to Linux, but since the developer tools for OS X are so large,
-        we provide binaries from <ulink url="http://visl.sdu.dk/download/vislcg3/">the download folder</ulink>.
-        Look for files named *-osx.tar.gz. The archive contains the vislcg3, cg-comp, cg-proc, and cg-conv tools,
-        the ICU library binaries, and wrapper scripts to enable running CG-3 from a self-contained folder.
+        we provide binaries from <ulink url="https://apertium.projectjj.com/osx/nightly/">the download folder</ulink>.
+        Look for file named cg3-latest.tar.bz2. The archive contains the vislcg3, cg-comp, cg-proc, and cg-conv tools,
+        the ICU library binaries.
       </para>
     </section>
 
@@ -167,8 +167,8 @@
     <title>Windows</title>
     <para>
       Installing from source is rather complicated due to lack of standard search paths for libraries, so
-      we provide binaries from <ulink url="http://visl.sdu.dk/download/vislcg3/">the download folder</ulink>.
-      Look for files named *-win32.zip. The archive contains the vislcg3, cg-comp, cg-proc, and cg-conv tools and
+      we provide binaries from <ulink url="https://apertium.projectjj.com/win32/nightly/">the download folder</ulink>.
+      Look for files named cg3-latest.zip and/or cg3ide-latest.zip. The archive contains the vislcg3, cg-comp, cg-proc, and cg-conv tools and
       the ICU library DLLs. May also require installing the
       <ulink url="http://www.microsoft.com/download/en/details.aspx?id=5555">VC++ 2010 redist</ulink>
       or <ulink url="http://www.microsoft.com/download/en/details.aspx?id=5582">VC++ 2008 redist</ulink>.
@@ -223,7 +223,7 @@
       As any user in any folder where you can find it again:
       <screen>
         svn co \
-        &nbsp; <ulink url="http://visl.sdu.dk/svn/visl/tools/vislcg3/trunk/">http://visl.sdu.dk/svn/visl/tools/vislcg3/trunk</ulink> vislcg3
+        &nbsp; <ulink url="https://visl.sdu.dk/svn/visl/tools/vislcg3/trunk/">https://visl.sdu.dk/svn/visl/tools/vislcg3/trunk</ulink> vislcg3
         cd vislcg3/
         ./cmake.sh
         make
