@@ -265,6 +265,11 @@ void PlaintextApplicator::runGrammarOnText(istream& input, UFILE *output) {
 				numCohorts++;
 				cReading = initEmptyCohort(*cCohort);
 				cReading->noprint = !add_tags;
+				if (add_tags) {
+					static const char _tag[] = "<cg-conv>";
+					tag.assign(_tag, _tag + sizeof(_tag) - 1);
+					addTagToReading(*cReading, addTag(tag));
+				}
 				if (add_tags && (first_upper || all_upper || mixed_upper)) {
 					delTagFromReading(*cReading, cReading->baseform);
 					token.toLower();
