@@ -112,6 +112,11 @@ int main(int argc, char *argv[]) {
 
 	CG3::CG_FORMATS fmt = CG3::FMT_INVALID;
 
+	if (options[ADD_TAGS].doesOccur) {
+		options[IN_PLAIN].doesOccur = true;
+		dynamic_cast<CG3::PlaintextApplicator&>(applicator).add_tags = true;
+	}
+
 	if (options[IN_CG].doesOccur) {
 		fmt = CG3::FMT_CG;
 	}

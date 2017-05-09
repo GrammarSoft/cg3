@@ -264,8 +264,8 @@ void PlaintextApplicator::runGrammarOnText(istream& input, UFILE *output) {
 				lCohort = cCohort;
 				numCohorts++;
 				cReading = initEmptyCohort(*cCohort);
-				cReading->noprint = false;
-				if (first_upper || all_upper || mixed_upper) {
+				cReading->noprint = !add_tags;
+				if (add_tags && (first_upper || all_upper || mixed_upper)) {
 					delTagFromReading(*cReading, cReading->baseform);
 					token.toLower();
 					tag.clear();
