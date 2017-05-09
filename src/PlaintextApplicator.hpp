@@ -29,6 +29,8 @@ namespace CG3 {
 
 class PlaintextApplicator : public virtual GrammarApplicator {
 public:
+	bool add_tags = false;
+
 	PlaintextApplicator(UFILE *ux_err);
 	void runGrammarOnText(istream& input, UFILE *output);
 
