@@ -167,21 +167,27 @@ void Tag::parseNumeric() {
 	UChar tkey[256];
 	UChar top[256];
 	UChar txval[256];
-	UChar spn[] = { '-', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 0 };
+	UChar spn[] = { '-', '.', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 0 };
 	tkey[0] = 0;
 	top[0] = 0;
 	txval[0] = 0;
-	if (u_sscanf(tag.c_str(), "%*[<]%[^<>=:!]%[<>=:!]%[-MAXIN0-9]%*[>]", &tkey, &top, &txval) == 3 && top[0] && txval[0]) {
-		int32_t tval = 0;
+	if (u_sscanf(tag.c_str(), "%*[<]%[^<>=:!]%[<>=:!]%[-.MAXIN0-9]%*[>]", &tkey, &top, &txval) == 3 && top[0] && txval[0]) {
+		double tval = 0;
 		int32_t r = u_strspn(txval, spn);
 		if (txval[0] == 'M' && txval[1] == 'A' && txval[2] == 'X' && txval[3] == 0) {
-			tval = std::numeric_limits<int32_t>::max();
+			tval = NUMERIC_MAX;
 		}
 		else if (txval[0] == 'M' && txval[1] == 'I' && txval[2] == 'N' && txval[3] == 0) {
-			tval = std::numeric_limits<int32_t>::min();
+			tval = NUMERIC_MIN;
 		}
-		else if (txval[r] || u_sscanf(txval, "%d", &tval) != 1) {
+		else if (txval[r] || u_sscanf(txval, "%lf", &tval) != 1) {
 			return;
+		}
+		if (tval < NUMERIC_MIN) {
+			tval = NUMERIC_MIN;
+		}
+		if (tval > NUMERIC_MAX) {
+			tval = NUMERIC_MAX;
 		}
 		if (top[0] == '<') {
 			comparison_op = OP_LESSTHAN;

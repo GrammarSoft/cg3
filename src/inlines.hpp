@@ -25,7 +25,9 @@
 
 namespace CG3 {
 
-const uint32_t CG3_HASH_SEED = 705577479u;
+constexpr double NUMERIC_MIN = static_cast<double>(-(1ll << 48ll));
+constexpr double NUMERIC_MAX = static_cast<double>((1ll << 48ll)-1);
+constexpr uint32_t CG3_HASH_SEED = 705577479u;
 
 /*
 	Paul Hsieh's SuperFastHash from http://www.azillionmonkeys.com/qed/hash.html
@@ -415,12 +417,15 @@ inline void writeSwapped(std::ostream& stream, const T& value) {
 		uint32_t tmp = static_cast<uint32_t>(htonl(static_cast<uint32_t>(value)));
 		stream.write(reinterpret_cast<const char*>(&tmp), sizeof(T));
 	}
-	/*
 	else if (sizeof(T) == 8) {
-		uint64_t tmp = static_cast<uint64_t>(htonll(static_cast<uint64_t>(value)));
+		uint64_t tmp = value;
+#ifndef BIG_ENDIAN
+		const uint32_t high = static_cast<uint32_t>(htonl(static_cast<uint32_t>(tmp >> 32)));
+		const uint32_t low = static_cast<uint32_t>(htonl(static_cast<uint32_t>(tmp & 0xFFFFFFFFULL)));
+		tmp = (static_cast<uint64_t>(low) << 32) | high;
+#endif
 		stream.write(reinterpret_cast<const char*>(&tmp), sizeof(T));
 	}
-	//*/
 	else {
 		throw std::runtime_error("Unhandled type size in writeSwapped()");
 	}
@@ -429,8 +434,20 @@ inline void writeSwapped(std::ostream& stream, const T& value) {
 	}
 }
 
+template<>
+inline void writeSwapped(std::ostream& stream, const double& value) {
+	int exp = 0;
+	uint64_t mant64 = static_cast<uint64_t>(std::numeric_limits<int64_t>::max() * frexp(value, &exp));
+	uint32_t exp32 = static_cast<uint32_t>(exp);
+	writeSwapped(stream, mant64);
+	writeSwapped(stream, exp32);
+}
+
 template<typename T>
 inline T readSwapped(std::istream& stream) {
+	if (!stream) {
+		throw std::runtime_error("Stream was in bad state in readSwapped()");
+	}
 	if (sizeof(T) == 1) {
 		uint8_t tmp = 0;
 		stream.read(reinterpret_cast<char*>(&tmp), sizeof(T));
@@ -446,20 +463,27 @@ inline T readSwapped(std::istream& stream) {
 		stream.read(reinterpret_cast<char*>(&tmp), sizeof(T));
 		return static_cast<T>(ntohl(tmp));
 	}
-	/*
 	else if (sizeof(T) == 8) {
 		uint64_t tmp = 0;
 		stream.read(reinterpret_cast<char*>(&tmp), sizeof(T));
-		return static_cast<T>(ntohll(tmp));
+#ifndef BIG_ENDIAN
+		const uint32_t high = static_cast<uint32_t>(ntohl(static_cast<uint32_t>(tmp >> 32)));
+		const uint32_t low = static_cast<uint32_t>(ntohl(static_cast<uint32_t>(tmp & 0xFFFFFFFFULL)));
+		tmp = (static_cast<uint64_t>(low) << 32) | high;
+#endif
+		return static_cast<T>(tmp);
 	}
-	//*/
-	else {
-		throw std::runtime_error("Unhandled type size in readSwapped()");
-	}
-	if (!stream) {
-		throw std::runtime_error("Stream was in bad state in readSwapped()");
-	}
-	return T();
+	throw std::runtime_error("Unhandled type size in readSwapped()");
+}
+
+template<>
+inline double readSwapped(std::istream& stream) {
+	uint64_t mant64 = readSwapped<uint64_t>(stream);
+	int exp = static_cast<int>(readSwapped<int32_t>(stream));
+
+	double value = static_cast<double>(static_cast<int64_t>(mant64)) / std::numeric_limits<int64_t>::max();
+
+	return ldexp(value, exp);
 }
 
 #ifdef _MSC_VER

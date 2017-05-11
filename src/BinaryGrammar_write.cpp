@@ -147,8 +147,9 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 			fields |= (1 << 6);
 			writeSwapped<uint32_t>(buffer, t->comparison_op);
 		}
+		// ToDo: Field 1 << 7 cannot be reused until hard format break
 		if (t->comparison_val) {
-			fields |= (1 << 7);
+			fields |= (1 << 12);
 			writeSwapped(buffer, t->comparison_val);
 		}
 
@@ -187,6 +188,7 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 				buffer.write(&cbuffers[0][0], i32tmp);
 			}
 		}
+		// 1 << 12 used above
 
 		u32tmp = (uint32_t)htonl(fields);
 		fwrite_throw(&u32tmp, sizeof(uint32_t), 1, output);

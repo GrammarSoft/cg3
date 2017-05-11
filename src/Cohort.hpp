@@ -63,7 +63,7 @@ public:
 	ReadingList readings;
 	ReadingList deleted;
 	ReadingList delayed;
-	typedef bc::flat_map<uint32_t, int32_t> num_t;
+	typedef bc::flat_map<uint32_t, double> num_t;
 	num_t num_max, num_min;
 	uint32SortedVector dep_children;
 	boost::dynamic_bitset<> possible_sets;
@@ -72,8 +72,8 @@ public:
 	RelationCtn relations;
 	RelationCtn relations_input;
 
-	int32_t getMin(uint32_t key);
-	int32_t getMax(uint32_t key);
+	double getMin(uint32_t key);
+	double getMax(uint32_t key);
 
 	void detach();
 

@@ -200,20 +200,20 @@ void Cohort::updateMinMax() {
 	type |= CT_NUM_CURRENT;
 }
 
-int32_t Cohort::getMin(uint32_t key) {
+double Cohort::getMin(uint32_t key) {
 	updateMinMax();
 	if (num_min.find(key) != num_min.end()) {
 		return num_min[key];
 	}
-	return std::numeric_limits<int32_t>::min();
+	return NUMERIC_MIN;
 }
 
-int32_t Cohort::getMax(uint32_t key) {
+double Cohort::getMax(uint32_t key) {
 	updateMinMax();
 	if (num_max.find(key) != num_max.end()) {
 		return num_max[key];
 	}
-	return std::numeric_limits<int32_t>::max();
+	return NUMERIC_MAX;
 }
 
 bool Cohort::addRelation(uint32_t rel, uint32_t cohort) {

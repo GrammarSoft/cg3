@@ -103,7 +103,7 @@ Options:
  -A, --out-apertium  sets output format to Apertium
  -N, --out-niceline  sets output format to Niceline CG
  -P, --out-plain     sets output format to plain text
- -W, --wfactor       FST weight factor (defaults to 100.0)
+ -W, --wfactor       FST weight factor (defaults to 1.0)
      --wtag          FST weight tag prefix (defaults to W)
  -S, --sub-delim     FST sub-reading delimiters (defaults to #)
  -r, --rtl           sets sub-reading direction to RTL (default)
