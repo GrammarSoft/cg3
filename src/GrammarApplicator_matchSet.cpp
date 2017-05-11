@@ -265,11 +265,11 @@ uint32_t GrammarApplicator::doesTagMatchReading(const Reading& reading, const Ta
 	else if (tag.type & T_NUMERICAL) {
 		boost_foreach (const Reading::tags_numerical_t::value_type& mter, reading.tags_numerical) {
 			const Tag& itag = *(mter.second);
-			int32_t compval = tag.comparison_val;
-			if (compval == INT_MIN) {
+			double compval = tag.comparison_val;
+			if (compval <= NUMERIC_MIN) {
 				compval = reading.parent->getMin(tag.comparison_hash);
 			}
-			else if (compval == INT_MAX) {
+			else if (compval >= NUMERIC_MAX) {
 				compval = reading.parent->getMax(tag.comparison_hash);
 			}
 			if (tag.comparison_hash == itag.comparison_hash) {

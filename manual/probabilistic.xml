@@ -42,8 +42,8 @@
   <para>
     These are just examples of what <link linkend="numerical-matches">numeric tags</link> could be used for.
     There is no reason Confidence values are in % and there is no requirement that they must add up to 100%.
-    The only requirement of a numerical tag is an alphanumeric identifier and an integer value that fits
-    in a 32bit signed integer (usually -2147483648 to 2147483647).
+    The only requirement of a numerical tag is an alphanumeric identifier and a double-precision floating point value that fits
+    in the range -281474976710656.0 to +281474976710655.0.
   </para>
 
 </chapter>

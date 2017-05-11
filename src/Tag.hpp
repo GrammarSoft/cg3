@@ -81,7 +81,7 @@ public:
 	static UFILE *dump_hashes_out;
 
 	C_OPS comparison_op;
-	int32_t comparison_val;
+	double comparison_val;
 	uint32_t type;
 	uint32_t comparison_hash;
 	uint32_t dep_self, dep_parent;
