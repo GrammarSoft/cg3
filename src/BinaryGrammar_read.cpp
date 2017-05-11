@@ -42,6 +42,7 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 	uint8_t u8tmp = 0;
 	UErrorCode err = U_ZERO_ERROR;
 	UConverter *conv = ucnv_open("UTF-8", &err);
+	std::stringstream buffer;
 
 	if (fread_throw(&cbuffers[0][0], 1, 4, input) != 4) {
 		std::cerr << "Error: Error reading first 4 bytes from grammar!" << std::endl;
@@ -140,6 +141,20 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 		if (fields & (1 << 7)) {
 			fread_throw(&i32tmp, sizeof(int32_t), 1, input);
 			t->comparison_val = (int32_t)ntohl(i32tmp);
+			if (t->comparison_val <= std::numeric_limits<int32_t>::min()) {
+				t->comparison_val = NUMERIC_MIN;
+			}
+			if (t->comparison_val >= std::numeric_limits<int32_t>::max()) {
+				t->comparison_val = NUMERIC_MAX;
+			}
+		}
+		if (fields & (1 << 12)) {
+			char buf[sizeof(uint64_t)+ sizeof(int32_t)] = {};
+			fread_throw(&buf[0], sizeof(buf), 1, input);
+			buffer.str("");
+			buffer.clear();
+			buffer.write(buf, sizeof(buf));
+			t->comparison_val = readSwapped<double>(buffer);
 		}
 
 		if (fields & (1 << 8)) {
@@ -205,6 +220,7 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 				}
 			}
 		}
+		// 1 << 12 used earlier
 
 		grammar->single_tags[t->hash] = t;
 		grammar->single_tags_list[t->number] = t;

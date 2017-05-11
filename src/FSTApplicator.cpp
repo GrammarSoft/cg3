@@ -31,7 +31,7 @@ namespace CG3 {
 
 FSTApplicator::FSTApplicator(UFILE *ux_err)
   : GrammarApplicator(ux_err)
-  , wfactor(100.0)
+  , wfactor(1.0)
 {
 	wtag += 'W';
 	sub_delims += '#';
@@ -191,12 +191,12 @@ void FSTApplicator::runGrammarOnText(istream& input, UFILE *output) {
 					}
 					buf[i] = 0;
 					if (strcmp(buf, "inf") == 0) {
-						i = sprintf(buf, "%d", std::numeric_limits<int32_t>::max());
+						i = sprintf(buf, "%f", NUMERIC_MAX);
 					}
 					else {
 						weight = strtof(buf, 0);
 						weight *= wfactor;
-						i = sprintf(buf, "%.0f", weight);
+						i = sprintf(buf, "%f", weight);
 					}
 					wtag_buf.clear();
 					wtag_buf.reserve(wtag.size() + i + 3);

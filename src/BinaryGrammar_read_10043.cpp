@@ -130,6 +130,12 @@ int BinaryGrammar::readBinaryGrammar_10043(FILE *input) {
 		if (fields & (1 << 7)) {
 			fread_throw(&i32tmp, sizeof(int32_t), 1, input);
 			t->comparison_val = (int32_t)ntohl(i32tmp);
+			if (t->comparison_val <= std::numeric_limits<int32_t>::min()) {
+				t->comparison_val = NUMERIC_MIN;
+			}
+			if (t->comparison_val >= std::numeric_limits<int32_t>::max()) {
+				t->comparison_val = NUMERIC_MAX;
+			}
 		}
 
 		if (fields & (1 << 8)) {

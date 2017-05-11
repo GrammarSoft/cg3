@@ -70,7 +70,7 @@ UOption options[] = {
 	UOPTION_DEF_D("out-matxin",   'M', UOPT_NO_ARG,       "sets output format to Matxin"),
 	UOPTION_DEF_D("out-niceline", 'N', UOPT_NO_ARG,       "sets output format to Niceline CG"),
 	UOPTION_DEF_D("out-plain",    'P', UOPT_NO_ARG,       "sets output format to plain text"),
-	UOPTION_DEF_D("wfactor",      'W', UOPT_REQUIRES_ARG, "FST weight factor (defaults to 100.0)"),
+	UOPTION_DEF_D("wfactor",      'W', UOPT_REQUIRES_ARG, "FST weight factor (defaults to 1.0)"),
 	UOPTION_DEF_D("wtag",           0, UOPT_REQUIRES_ARG, "FST weight tag prefix (defaults to W)"),
 	UOPTION_DEF_D("sub-delim",    'S', UOPT_REQUIRES_ARG, "FST sub-reading delimiters (defaults to #)"),
 	UOPTION_DEF_D("rtl",          'r', UOPT_NO_ARG,       "sets sub-reading direction to RTL (default)"),
