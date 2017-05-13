@@ -837,10 +837,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 							rocit = cohortset->end();
 						}
 						else {
-							rocit = cohortset->find(current.cohorts[cohort->local_number]);
-							if (rocit != cohortset->end()) {
-								++rocit;
-							}
+							rocit = cohortset->lower_bound(current.cohorts[cohort->local_number]);
 						}
 						readings_changed = true;
 						break;
