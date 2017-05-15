@@ -377,10 +377,11 @@
       To get a list of unique used tags, pass --show-tags to CG-3. To filter this list to the default set of interesting tags,
       something like this can be used:
       <screen>
-        vislcg3 --show-tags -g grammar-goes-here | LC_ALL=C sort | egrep -v '^"' | egrep -v '^(/)?&lt;.*&gt;(/r|v)?$' | \
-        egrep -v '^\^' | egrep -v '^VSTR:' | egrep -v '^VAR:' | egrep -v '^_.*_$' | grep -v 'dummy string' | \
-        grep -v '^\*$' | grep -v '^&lt;&lt;&lt;$' | grep -v '^&gt;&gt;&gt;$' &gt; tags.txt
+        vislcg3 --show-tags -g grammar-goes-here  | LC_ALL=C sort | egrep -v '^"' | egrep -v '^&lt;.*&gt;[riv]*$' | \
+        egrep -v '^/.+/[riv]+$' | egrep -v '^\^' | egrep -v '^VSTR:' | egrep -v '^VAR:' | egrep -v '^_.+_$' | \
+        grep -v 'dummy string' | grep -v '^\*$' | grep -v '^&lt;&lt;&lt;$' | grep -v '^&gt;&gt;&gt;$' &gt; tags.txt
       </screen>
+      <!-- egrep -v '^&lt;.*&gt;[riv]*$' egrep -v '^&lt;.*&gt;[riv]+$' -->
       <emphasis>For comparison, this yields 285 tags for VISL's 10000-rule Danish grammar.</emphasis>
       Edit the resulting list to remove any tags you can see are typos or should otherwise not be allowed,
       collapse the list to a line, stuff it at the top of the grammar with STRICT-TAGS, and recompile the grammar.
