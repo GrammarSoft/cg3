@@ -171,6 +171,7 @@ void FSTApplicator::runGrammarOnText(istream& input, UFILE *output) {
 				insert_if_exists(cReading->parent->possible_sets, grammar->sets_any);
 				addTagToReading(*cReading, cCohort->wordform);
 
+				const UChar notag[] = { '_', 0 };
 				const UChar *base = space;
 				TagList mappings;
 
@@ -240,6 +241,11 @@ void FSTApplicator::runGrammarOnText(istream& input, UFILE *output) {
 							tag += base;
 							tag += '"';
 							base = tag.c_str();
+						}
+						if (base[0] == 0) {
+							base = notag;
+							u_fprintf(ux_stderr, "Warning: Line %u had empty tag.\n", numLines);
+							u_fflush(ux_stderr);
 						}
 						Tag *tag = addTag(base);
 						if (tag->type & T_MAPPING || tag->tag[0] == grammar->mapping_prefix) {
