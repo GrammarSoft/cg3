@@ -195,6 +195,8 @@ UnicodeString stringbits[STRINGS_COUNT] = {
 	UNICODE_STRING_SIMPLE("strict-wordforms"),
 	UNICODE_STRING_SIMPLE("strict-baseforms"),
 	UNICODE_STRING_SIMPLE("strict-secondary"),
+	UNICODE_STRING_SIMPLE("strict-regex"),
+	UNICODE_STRING_SIMPLE("strict-icase"),
 	UNICODE_STRING_SIMPLE("<STREAMCMD:SETVAR:"),
 	UNICODE_STRING_SIMPLE("<STREAMCMD:REMVAR:"),
 };
