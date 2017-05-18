@@ -62,7 +62,7 @@ private:
 	uint32_t seen_mapping_prefix;
 	bool option_vislcg_compat;
 	bool in_section, in_before_sections, in_after_sections, in_null_section;
-	bool no_isets, no_itmpls, strict_wforms, strict_bforms, strict_second;
+	bool no_isets, no_itmpls, strict_wforms, strict_bforms, strict_second, strict_regex=false, strict_icase=false;
 	const char *filename;
 	const char *locale;
 	const char *codepage;
