@@ -1,0 +1,170 @@
+#!/usr/bin/perl
+use warnings;
+use strict;
+use utf8;
+BEGIN {
+	$| = 1;
+	binmode(STDIN, ':encoding(UTF-8)');
+	binmode(STDOUT, ':encoding(UTF-8)');
+}
+use open qw( :encoding(UTF-8) :std );
+
+use Getopt::Long;
+
+my %opts = ();
+GetOptions (\%opts,
+   'grammar|g=s',
+   'output|o',
+   'strip',
+   'secondary',
+   'regex',
+   'icase',
+   'baseforms',
+   'wordforms',
+   'all',
+   );
+
+if (!defined $opts{'grammar'}) {
+   if (!$ARGV[0]) {
+      die "Missing --grammar!\n";
+   }
+   $opts{'grammar'} = $ARGV[0];
+}
+if (! -s $opts{'grammar'}) {
+   die "Grammar is either missing or empty!\n";
+}
+
+if (defined $opts{'all'}) {
+   $opts{'secondary'} = 1;
+   $opts{'regex'} = 1;
+   $opts{'icase'} = 1;
+   $opts{'baseforms'} = 1;
+   $opts{'wordforms'} = 1;
+}
+
+my $tags = `vislcg3 --show-tags -g '$opts{grammar}' | LC_ALL=C sort`;
+$tags =~ s@[\r\n]+@\n@g; # Normalize newlines
+chomp($tags);
+my @tags = split /\n/, $tags;
+
+my $options = '';
+if (defined $opts{'secondary'} || defined $opts{'regex'} || defined $opts{'icase'} || defined $opts{'baseforms'} || defined $opts{'wordforms'}) {
+   $options .= 'OPTIONS +=';
+   if (defined $opts{'secondary'}) {
+      $options .= ' strict-secondary';
+   }
+   if (defined $opts{'regex'}) {
+      $options .= ' strict-regex';
+   }
+   if (defined $opts{'icase'}) {
+      $options .= ' strict-icase';
+   }
+   if (defined $opts{'baseforms'}) {
+      $options .= ' strict-baseforms';
+   }
+   if (defined $opts{'wordforms'}) {
+      $options .= ' strict-wordforms';
+   }
+   $options .= " ;\n";
+}
+
+my $strict_tags = 'STRICT-TAGS +=';
+my @strict = ();
+my $lf = '';
+foreach my $tag (@tags) {
+   if ($tag eq '*') {
+      next; # Marker for erasure, any, etc.
+   }
+   if ($tag eq '>>>') {
+      next; # Start of window marker
+   }
+   if ($tag eq '<<<') {
+      next; # End of window marker
+   }
+   if ($tag =~ m@^\^@) {
+      next; # Fail-fast tags
+   }
+   if ($tag =~ m@^VSTR:@) {
+      next; # Varstrings
+   }
+   if ($tag =~ m@^VAR:@) {
+      next; # Global variables
+   }
+   if ($tag =~ m@^_.+_$@) {
+      next; # Magic placeholders such as _TARGET_
+   }
+   if ($tag =~ m@dummy string@) {
+      next; # Internal placeholder for tag #0
+   }
+
+   if ($tag =~ m@[>"/]v$@) {
+      next;
+   }
+   if (! defined $opts{'secondary'} && $tag =~ m@^<.+>[riv]*$@) {
+      next;
+   }
+   if (! defined $opts{'regex'} && $tag =~ m@^/.+/[riv]*$@) {
+      next;
+   }
+   if (! defined $opts{'icase'} && $tag =~ m@[>"/]i$@) {
+      next;
+   }
+   if (! defined $opts{'baseforms'} && $tag =~ m@^"[^<].*"[riv]*$@) {
+      next;
+   }
+   if (! defined $opts{'wordforms'} && $tag =~ m@^"<.*>"[riv]*$@) {
+      next;
+   }
+
+   my $nlf = substr($tag, 0, 1);
+   if ($nlf =~ m@^\p{Lu}@) {
+      $nlf = 'A';
+   }
+   elsif ($nlf =~ m@^\p{Ll}@) {
+      $nlf = 'a';
+   }
+   elsif ($tag =~ m@^"<.+>"[riv]*$@) {
+      $nlf = 'W';
+   }
+   elsif ($tag =~ m@^".+"[riv]*$@) {
+      $nlf = 'B';
+   }
+   if ($lf && $lf ne $nlf) {
+      $strict_tags .= "\n";
+   }
+   $lf = $nlf;
+
+   $strict_tags .= " $tag";
+   push(@strict, $tag);
+}
+$strict_tags .= " ;\n";
+
+if (! defined $opts{'output'}) {
+   print "Put these lines at the top of your grammar, and edit the STRICT-TAGS list by removing invalid tags:\n\n";
+   print $options;
+   print $strict_tags;
+   exit(0);
+}
+
+my $g = '';
+{
+   local $/ = undef;
+   open(FH, '<'.$opts{'grammar'});
+   $g = <FH>;
+   close(FH);
+}
+
+if (defined $opts{'strip'}) {
+   print STDERR "Deleting unnecessary LISTs...\n";
+   foreach my $tag (@strict) {
+      if ($g =~ m@[\b\n][Ll][Ii][Ss][Tt]\s+\Q$tag\E\s*=\s*\Q$tag\E\s*;@) {
+         print STDERR "Deleting LIST $tag\n";
+         $g =~ s@[\b\n][Ll][Ii][Ss][Tt]\s+\Q$tag\E\s*=\s*\Q$tag\E\s*;@@;
+      }
+   }
+}
+
+print $options;
+print $strict_tags;
+print "\n";
+print $g;

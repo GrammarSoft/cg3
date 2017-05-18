@@ -130,11 +130,21 @@ void TextualParser::error(const char *str, const char *s, const UChar *S, const 
 Tag *TextualParser::parseTag(const UChar *to, const UChar *p) {
 	Tag *tag = ::CG3::parseTag(to, p, *this);
 	if (!strict_tags.empty() && !strict_tags.count(tag->plain_hash)) {
-		if (tag->type & (T_ANY | T_REGEXP | T_REGEXP_ANY | T_VARSTRING | T_VSTR | T_META | T_VARIABLE | T_SET | T_PAR_LEFT | T_PAR_RIGHT | T_ENCL | T_TARGET | T_MARK | T_ATTACHTO | T_SAME_BASIC)) {
+		if (tag->type & (T_ANY | T_VARSTRING | T_VSTR | T_META | T_VARIABLE | T_SET | T_PAR_LEFT | T_PAR_RIGHT | T_ENCL | T_TARGET | T_MARK | T_ATTACHTO | T_SAME_BASIC)) {
 			// Always allow...
 		}
 		else if (u_strcmp(tag->tag.c_str(), stringbits[S_BEGINTAG].getTerminatedBuffer()) == 0 || u_strcmp(tag->tag.c_str(), stringbits[S_ENDTAG].getTerminatedBuffer()) == 0) {
 			// Always allow >>> and <<<
+		}
+		else if (tag->type & (T_REGEXP | T_REGEXP_ANY)) {
+			if (strict_regex) {
+				error("%s: Error: Regex tag %S not on the strict-tags list, on line %u near `%S`!\n", tag->tag.c_str(), p);
+			}
+		}
+		else if (tag->type & T_CASE_INSENSITIVE) {
+			if (strict_icase) {
+				error("%s: Error: Case-insensitive tag %S not on the strict-tags list, on line %u near `%S`!\n", tag->tag.c_str(), p);
+			}
 		}
 		else if (tag->type & T_WORDFORM) {
 			if (strict_wforms) {
@@ -1984,6 +1994,8 @@ void TextualParser::parseFromUChar(UChar *input, const char *fname) {
 					std::pair<size_t, bool*>(S_STRICT_WFORMS, &strict_wforms),
 					std::pair<size_t, bool*>(S_STRICT_BFORMS, &strict_bforms),
 					std::pair<size_t, bool*>(S_STRICT_SECOND, &strict_second),
+					std::pair<size_t, bool*>(S_STRICT_REGEX, &strict_regex),
+					std::pair<size_t, bool*>(S_STRICT_ICASE, &strict_icase),
 				};
 
 				while (*p != ';') {
