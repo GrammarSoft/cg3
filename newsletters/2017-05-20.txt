@@ -1,0 +1,49 @@
+A new release of CG-3 has been tagged v1.0.0.12200, in preparation for the NoDaLiDa 2017 Constraint Grammar Workshop ( https://visl.sdu.dk/nodalida2017.html ) which takes place on Monday.
+
+Finally calling it version 1.0. Doesn't change anything formally, but CG-3 is stable enough and widely enough used that it's about time for the 1.0 tag.
+
+New features:
+- Cmdline flag --dump-ast to output an XML dump of the parser representation. Useful for 3rd party transformation tools and highlighters
+- Rule SPLITCOHORT that splits a cohort into multiple, while allowing the creation of an internal dependency tree. See https://visl.sdu.dk/cg3/chunked/rules.html#splitcohort
+- Added a Bag of Tags feature. See https://visl.sdu.dk/cg3/chunked/contexts.html#test-bag-of-tags
+- Added rule flag REPEAT. See https://visl.sdu.dk/cg3/chunked/rules.html#rule-options-repeat
+- Added mathematical set difference set operator as \. See https://visl.sdu.dk/cg3/chunked/sets.html#set-operator-difference
+- Renamed the old set difference operator (-) to the except operator
+- Cmdline flag --trace now optionally takes a range of rules to break execution at
+- ADDCOHORT now takes WITHCHILD to further narrow down where to insert the cohort
+- New tool cg-strictify to aid in making your existing grammars STRICT-TAGS compliant. See https://visl.sdu.dk/cg3/chunked/cmdreference.html#cg-strictify
+
+Changes:
+- Now requires C++11 to build, but will test for and use C++14 and C++17 where available
+- Regex captures are now done on a per-reading basis, which eliminates weird gotchas about matches
+- Linking from a position override template will now go from the min/max edges of cohorts the template reached, rather than just the final cohort it touched
+- OR'ed templates will now backtrack instead of trying only first match
+- Input stream initial SETVAR commands are now honored immediately, so that variables can be used in DELIMITERS
+- Context modifier A now works for almost all rule types
+- KEEPORDER will now automatically be added for easily detectable cases where it is needed
+- SUBSTITUTE will add the replacement tags for each found contiguous tag to be removed
+- Better detection of endless loops
+- Non-scanning contexts with modifers O and o will now throw an error as the writer probably meant 0
+- Binary grammars can now be dumped as text, but in the internal mangled structure
+- MOVE WITHCHILD changed to more logically interact with moving into and out of trees
+- cg-conv no longer creates readings for plain text input. Cmdline flag --add-tags added to get these back where desired
+- Numeric tags are now double-precision floating point
+- cg-conv no longer multiplies weights in FST input by default
+
+Fixed Bugs:
+- Fixed removing a cohort that owned temporarily enclosed cohorts
+- Fixed bug where e.g. <C:NN> was considered numerical with value 0
+- Fixed a lot of bugs related to cohort moving, adding, and removing
+- Fixed segfault when parsing tags longer than 256 bytes
+- Fixed modifier pS acting as if it was p*
+
+Main site is https://visl.sdu.dk/cg3.html
+Google Group is https://groups.google.com/group/constraint-grammar
+Source snapshots available at https://visl.sdu.dk/download/cg3/
+Windows binary is at https://apertium.projectjj.com/win32/nightly/
+OS X binary is at https://apertium.projectjj.com/osx/nightly/
+RHEL/Fedora/CentOS/OpenSUSE packages are at https://apertium.projectjj.com/rpm/howto.txt
+Debian/Ubuntu packages are at https://apertium.projectjj.com/apt/howto.txt
+
+-- Tino Didriksen
+CG-3 Developer
