@@ -1,5 +1,27 @@
+2017-05-19  tino
+
+	* [r12199] manual/cmdreference.xml, manual/grammar.xml,
+	  manual/tags.xml, scripts/cg-strictify, scripts/cg3-autobin.pl.in:
+	  Document cg-strictify; Use env to find perl; Make Getopt::Long
+	  case-sensitive
+
+2017-05-18  tino
+
+	* [r12198] CMakeLists.txt, scripts/cg-strictify, src/Strings.cpp,
+	  src/Strings.hpp, src/TextualParser.cpp, src/TextualParser.hpp:
+	  Add cg-strictify script to help with STRICT-TAG'ing existing
+	  grammars; Add strict-regex and strict-icase options
+
+2017-05-15  tino
+
+	* [r12197] manual/tags.xml, src/TextualParser.cpp: Nicer
+	  strict-tags
+	* [r12196] src/FSTApplicator.cpp: Handle empty tags
+
 2017-05-13  tino
 
+	* [r12194] ChangeLog, src/version.hpp: Forgot to bump binary rev
+	  with floating point support
 	* [r12193] src/GrammarApplicator_runRules.cpp: Correct iterator
 	  after RemCohort
 
@@ -1782,27 +1804,4 @@
 2014-06-09  tino
 
 	* [r9984] manual/subreadings.xml: Document /*
-
-2014-06-07  tino
-
-	* [r9974] ChangeLog, src/ContextualTest.hpp,
-	  src/GrammarApplicator.hpp, src/TextualParser.cpp,
-	  src/version.hpp, test/T_SubReadings_CG/expected.txt,
-	  test/T_SubReadings_CG/grammar.cg3: Allow /* in contextual tests
-	  to look at any sub-reading
-
-2014-06-04  unhammer
-
-	* [r9959] emacs/cg.el: list of ADD/REMOVE/etc. only defined one
-	  place
-
-2014-05-30  tino
-
-	* [r9944] manual/installation.xml: Homebrew workaround
-
-2014-05-28  tino
-
-	* [r9942] debian, dist: Moved packaging scripts
-	* [r9941] ChangeLog, src/GrammarApplicator_runContextualTest.cpp,
-	  src/version.hpp: Fix @-N
 

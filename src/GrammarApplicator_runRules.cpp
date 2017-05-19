@@ -2247,3 +2247,6 @@ label_unpackEnclosures:
 	}
 }
 }
+
+// This helps the all_vislcg3.cpp profiling builds
+#undef TRACE
