@@ -146,6 +146,29 @@ Options:
     </screen>
   </section>
 
+  <section id="cg-strictify">
+    <title>cg-strictify</title>
+    <para>
+      cg-strictify will parse a grammar and output a candidate STRICT-TAGS line that you can edit and then put
+      into your grammar. Optionally, it can also output the whole grammar and strip superfluous LISTs along the way.
+    </para>
+    <screen>
+Usage: cg-strictify [OPTIONS] &lt;grammar&gt;
+
+Options:
+ -?, --help       outputs this help
+ -g, --grammar    the grammar to parse; defaults to first non-option argument
+ -o, --output     outputs the whole grammar with STRICT-TAGS
+     --strip      removes superfluous LISTs from the output grammar; implies -o
+     --secondary  adds secondary tags (&lt;...&gt;) to strict list
+     --regex      adds regular expression tags (/../r, &lt;..&gt;r, etc) to strict list
+     --icase      adds case-insensitive tags to strict list
+     --baseforms  adds baseform tags ("...") to strict list
+     --wordforms  adds wordform tags ("&lt;...&gt;") to strict list
+     --all        same as --strip --secondary --regex --icase --baseforms --wordforms
+    </screen>
+  </section>
+
   <section id="cg3-autobin.pl">
     <title>cg3-autobin.pl</title>
     <para>
