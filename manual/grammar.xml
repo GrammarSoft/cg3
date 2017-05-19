@@ -76,6 +76,26 @@
         Instructs STRICT-TAGS to forbid all secondary tags (<code>&lt;…&gt;</code>) by default.
       </para>
     </section>
+
+    <section id="grammar-options-strict-regex">
+      <title>strict-regex</title>
+      <indexterm>
+        <primary>strict-regex</primary>
+      </indexterm>
+      <para>
+        Instructs STRICT-TAGS to forbid all regular expression tags (<code>/…/r</code> and others) by default.
+      </para>
+    </section>
+
+    <section id="grammar-options-strict-icase">
+      <title>strict-icase</title>
+      <indexterm>
+        <primary>strict-icase</primary>
+      </indexterm>
+      <para>
+        Instructs STRICT-TAGS to forbid all case-insensitive tags by default.
+      </para>
+    </section>
   </section>
 
   <section id="grammar-include">

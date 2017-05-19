@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
 use warnings;
 use strict;
 use utf8;
@@ -10,9 +10,11 @@ BEGIN {
 use open qw( :encoding(UTF-8) :std );
 
 use Getopt::Long;
+Getopt::Long::Configure('no_ignore_case');
 
 my %opts = ();
 GetOptions (\%opts,
+   'help|?',
    'grammar|g=s',
    'output|o',
    'strip',
@@ -24,14 +26,44 @@ GetOptions (\%opts,
    'all',
    );
 
+sub print_help {
+   print <<'XOUT';
+Usage: cg-strictify [OPTIONS] <grammar>
+
+Options:
+ -?, --help       outputs this help
+ -g, --grammar    the grammar to parse; defaults to first non-option argument
+ -o, --output     outputs the whole grammar with STRICT-TAGS
+     --strip      removes superfluous LISTs from the output grammar; implies -o
+     --secondary  adds secondary tags (<...>) to strict list
+     --regex      adds regular expression tags (/../r, <..>r, etc) to strict list
+     --icase      adds case-insensitive tags to strict list
+     --baseforms  adds baseform tags ("...") to strict list
+     --wordforms  adds wordform tags ("<...>") to strict list
+     --all        same as --strip --secondary --regex --icase --baseforms --wordforms
+
+XOUT
+}
+
+if (defined $opts{'help'}) {
+   print_help();
+   exit(0);
+}
 if (!defined $opts{'grammar'}) {
    if (!$ARGV[0]) {
-      die "Missing --grammar!\n";
+      print "Missing input grammar argument!\n\n";
+      print_help();
+      exit(-1);
    }
    $opts{'grammar'} = $ARGV[0];
 }
 if (! -s $opts{'grammar'}) {
-   die "Grammar is either missing or empty!\n";
+   print "Grammar is either missing or empty!\n";
+   exit(-1);
+}
+
+if (defined $opts{'strip'}) {
+   $opts{'output'} = 1;
 }
 
 if (defined $opts{'all'}) {
