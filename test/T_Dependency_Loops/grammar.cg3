@@ -1,5 +1,5 @@
 DELIMITERS = "<$.>" ;
-STRICT-TAGS += vis N @>N PRP @P< @ADVL ADV ;
+LIST-TAGS += vis N @>N PRP @P< @ADVL ADV ;
 
 MAP (vis) _S_DELIMITERS_ ;
 SETPARENT _S_DELIMITERS_ TO (@0 (*)) ;
