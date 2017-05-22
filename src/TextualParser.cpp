@@ -1722,6 +1722,50 @@ void TextualParser::parseFromUChar(UChar *input, const char *fname) {
 			else if (IS_ICASE(p, "SETS", "sets")) {
 				p += 4;
 			}
+			// LIST-TAGS
+			else if (IS_ICASE(p, "LIST-TAGS", "list-tags")) {
+				AST_OPEN(ListTags);
+				p += 9;
+				result->lines += SKIPWS(p, '+');
+				if (p[0] != '+' || p[1] != '=') {
+					error("%s: Error: Encountered a %C before the expected += on line %u near `%S`!\n", *p, p);
+				}
+				p += 2;
+				result->lines += SKIPWS(p);
+
+				uint32SortedVector tmp;
+				list_tags.swap(tmp);
+				while (*p && *p != ';') {
+					AST_OPEN(Tag);
+					UChar *n = p;
+					if (*n == '"') {
+						n++;
+						SKIPTO_NOSPAN(n, '"');
+						if (*n != '"') {
+							error("%s: Error: Expected closing \" on line %u near `%S`!\n", p);
+						}
+					}
+					result->lines += SKIPTOWS(n, ';', true);
+					ptrdiff_t c = n - p;
+					u_strncpy(&gbuffers[0][0], p, c);
+					gbuffers[0][c] = 0;
+					Tag *t = parseTag(&gbuffers[0][0], p);
+					tmp.insert(t->hash);
+					p = n;
+					AST_CLOSE(p);
+					result->lines += SKIPWS(p);
+				}
+
+				if (tmp.empty()) {
+					error("%s: Error: LIST-TAGS declared, but no definitions given, on line %u near `%S`!\n", p);
+				}
+				result->lines += SKIPWS(p, ';');
+				if (*p != ';') {
+					error("%s: Error: Expected closing ; before line %u near `%S`!\n", p);
+				}
+				list_tags.swap(tmp);
+				AST_CLOSE(p + 1);
+			}
 			// LIST
 			else if (IS_ICASE(p, "LIST", "list")) {
 				Set *s = result->allocateSet();
