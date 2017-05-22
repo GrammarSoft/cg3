@@ -312,9 +312,9 @@ Set *parseSet(const UChar *name, const UChar *p, State& state) {
 	}
 	Set *tmp = state.get_grammar()->getSet(sh);
 	if (!tmp) {
-		if (!state.strict_tags.empty()) {
+		if (!state.strict_tags.empty() || !state.list_tags.empty()) {
 			Tag *tag = parseTag(name, p, state);
-			if (state.strict_tags.count(tag->plain_hash)) {
+			if (state.strict_tags.count(tag->plain_hash) || state.list_tags.count(tag->plain_hash)) {
 				Set *ns = state.get_grammar()->allocateSet();
 				ns->line = state.get_grammar()->lines;
 				ns->setName(name);

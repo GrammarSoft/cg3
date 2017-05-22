@@ -54,6 +54,7 @@ public:
 	Grammar *get_grammar() { return result; }
 	const char *filebase;
 	uint32SortedVector strict_tags;
+	uint32SortedVector list_tags;
 
 private:
 	UChar nearbuf[32];

@@ -75,6 +75,7 @@ enum ASTType {
 	AST_SoftDelimiters,
 	AST_StaticSets,
 	AST_StrictTags,
+	AST_ListTags,
 	AST_SubReadings,
 	AST_SubReadingsDirection,
 	AST_Tag,
