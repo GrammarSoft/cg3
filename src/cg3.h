@@ -140,6 +140,11 @@ const uint16_t *cg3_tag_gettext_u16(cg3_tag *tag);
 const uint32_t *cg3_tag_gettext_u32(cg3_tag *tag);
 const wchar_t *cg3_tag_gettext_w(cg3_tag *tag);
 
+// These 3 from Paul Meurer <paul.meurer@uni.no>
+size_t cg3_cohort_numdelreadings(cg3_cohort *cohort);
+cg3_reading *cg3_cohort_getdelreading(cg3_cohort *cohort, size_t which);
+size_t cg3_reading_gettrace_ruletype(cg3_reading *reading_, size_t which);
+
 #ifdef __cplusplus
 }
 #endif
