@@ -552,3 +552,23 @@ const wchar_t *cg3_tag_gettext_w(cg3_tag *tag_) {
 
 	return tmp;
 }
+
+// These 3 from Paul Meurer <paul.meurer@uni.no>
+size_t cg3_cohort_numdelreadings(cg3_cohort *cohort_) {
+	Cohort *cohort = static_cast<Cohort*>(cohort_);
+	return cohort->deleted.size();
+}
+
+cg3_reading *cg3_cohort_getdelreading(cg3_cohort *cohort_, size_t which) {
+	Cohort *cohort = static_cast<Cohort*>(cohort_);
+	ReadingList::iterator it = cohort->deleted.begin();
+	std::advance(it, which);
+	return *it;
+}
+
+size_t cg3_reading_gettrace_ruletype(cg3_reading *reading_, size_t which) {
+	Reading *reading = static_cast<Reading*>(reading_);
+	Grammar *grammar = reading->parent->parent->parent->parent->grammar;
+	const Rule *r = grammar->rule_by_number[reading->hit_by[which]];
+	return r->type;
+}
