@@ -714,7 +714,7 @@ Cohort *GrammarApplicator::runDependencyTest(SingleWindow *sWindow, Cohort *curr
 			break;
 		}
 		else if (rvs & TRV_BARRIER) {
-			break;
+			continue;
 		}
 		else if (test->pos & POS_DEP_DEEP) {
 			Cohort *tmc = runDependencyTest(cohort->parent, cohort, test, deep, origin, self);
