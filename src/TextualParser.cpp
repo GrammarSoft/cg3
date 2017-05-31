@@ -907,9 +907,9 @@ ContextualTest *TextualParser::parseContextualTestList(UChar *& p, Rule *rule) {
 		}
 		result->lines += SKIPWS(p);
 
-		if ((t->barrier || t->cbarrier) && !(t->pos & MASK_POS_SCAN)) {
+		if ((t->barrier || t->cbarrier) && !(t->pos & (MASK_POS_SCAN | POS_SELF))) {
 			uncond_swap<UChar> swp(*p, 0);
-			u_fprintf(ux_stderr, "%s: Warning: Barriers only make sense for scanning tests on line %u at %S.\n", filebase, result->lines, pos_p);
+			u_fprintf(ux_stderr, "%s: Warning: Barriers only make sense for scanning or self tests on line %u at %S.\n", filebase, result->lines, pos_p);
 			u_fflush(ux_stderr);
 			t->barrier = 0;
 			t->cbarrier = 0;

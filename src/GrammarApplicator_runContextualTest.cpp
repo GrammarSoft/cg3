@@ -101,6 +101,7 @@ Cohort *GrammarApplicator::runSingleTest(Cohort *cohort, const ContextualTest *t
 		if (barrier) {
 			seen_barrier = true;
 			rvs |= TRV_BREAK | TRV_BARRIER;
+			rvs &= ~TRV_BREAK_DEFAULT;
 		}
 	}
 	if (test->cbarrier) {
@@ -109,6 +110,7 @@ Cohort *GrammarApplicator::runSingleTest(Cohort *cohort, const ContextualTest *t
 		if (cbarrier) {
 			seen_barrier = true;
 			rvs |= TRV_BREAK | TRV_BARRIER;
+			rvs &= ~TRV_BREAK_DEFAULT;
 		}
 	}
 	if (context.matched_target && *retval) {
