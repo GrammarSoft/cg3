@@ -1560,7 +1560,6 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						int32_t orgoffset = rule.dep_target->offset;
 						BOOST_AUTO(seen_targets, ss_u32sv.get());
 
-						seen_barrier = false;
 						bool attached = false;
 						Cohort *target = cohort;
 						while (!attached) {
@@ -1575,7 +1574,9 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 							tmpl_cntxs.clear();
 							tmpl_cntx_pos = 0;
 							attach_to = 0;
+							seen_barrier = false;
 							if (runContextualTest(target->parent, target->local_number, rule.dep_target, &attach) && attach) {
+								bool break_after = seen_barrier || (rule.flags & RF_NEAREST);
 								if (attach_to) {
 									attach = attach_to;
 								}
@@ -1608,7 +1609,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 										break;
 									}
 								}
-								if (seen_barrier || (rule.flags & RF_NEAREST)) {
+								if (break_after) {
 									break;
 								}
 								if (seen_targets->count(attach->global_number)) {
