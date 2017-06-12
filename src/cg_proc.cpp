@@ -302,7 +302,7 @@ int main(int argc, char *argv[]) {
 		u_charsToUChars(single_rule, buf, sn);
 		foreach (riter, applicator->grammar->rule_by_number) {
 			const CG3::Rule *rule = *riter;
-			if (rule->name && u_strcmp(rule->name, buf) == 0) {
+			if (rule->name == buf) {
 				applicator->valid_rules.push_back(rule->number);
 			}
 		}

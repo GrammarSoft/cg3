@@ -27,8 +27,7 @@
 namespace CG3 {
 
 Rule::Rule()
-  : name(0)
-  , wordform(0)
+  : wordform(0)
   , target(0)
   , childset1(0)
   , childset2(0)
@@ -39,8 +38,6 @@ Rule::Rule()
   , flags(0)
   , section(0)
   , sub_reading(0)
-  , weight(0.0)
-  , quality(0.0)
   , type(K_IGNORE)
   , maplist(0)
   , sublist(0)
@@ -53,15 +50,12 @@ Rule::Rule()
 }
 
 Rule::~Rule() {
-	delete[] name;
 }
 
 void Rule::setName(const UChar *to) {
-	delete[] name;
-	name = 0;
+	name.clear();
 	if (to) {
-		name = new UChar[u_strlen(to) + 1];
-		u_strcpy(name, to);
+		name = to;
 	}
 }
 
