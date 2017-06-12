@@ -250,7 +250,7 @@ void GrammarWriter::printRule(UFILE *to, const Rule& rule) {
 	u_fprintf(to, "%S", keywords[rule.type].getTerminatedBuffer());
 
 	if (!rule.name.empty() && !(rule.name[0] == '_' && rule.name[1] == 'R' && rule.name[2] == '_')) {
-		u_fprintf(to, ":%S", rule.name);
+		u_fprintf(to, ":%S", rule.name.c_str());
 	}
 	u_fprintf(to, " ");
 
