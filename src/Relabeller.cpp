@@ -39,23 +39,23 @@ Relabeller::Relabeller(Grammar& res, const Grammar& relabels, UFILE *ux_err)
 		Set *target = relabels.sets_list[rule->target];
 		const TagVector& toTags = trie_getTagList(target->trie);
 		if (!(rule->maplist->trie_special.empty() && target->trie_special.empty())) {
-			u_fprintf(ux_stderr, "Warning: Relabel rule '%S' on line %d has %d special tags, skipping!\n", rule->name, rule->line);
+			u_fprintf(ux_stderr, "Warning: Relabel rule '%S' on line %d has %d special tags, skipping!\n", rule->name.c_str(), rule->line);
 			continue;
 		}
 		if (!rule->tests.empty()) {
-			u_fprintf(ux_stderr, "Warning: Relabel rule '%S' on line %d had context tests, skipping!\n", rule->name, rule->line);
+			u_fprintf(ux_stderr, "Warning: Relabel rule '%S' on line %d had context tests, skipping!\n", rule->name.c_str(), rule->line);
 			continue;
 		}
 		if (rule->wordform) {
-			u_fprintf(ux_stderr, "Warning: Relabel rule '%S' on line %d had a wordform, skipping!\n", rule->name, rule->line);
+			u_fprintf(ux_stderr, "Warning: Relabel rule '%S' on line %d had a wordform, skipping!\n", rule->name.c_str(), rule->line);
 			continue;
 		}
 		if (rule->type != K_MAP) {
-			u_fprintf(ux_stderr, "Warning: Relabel rule '%S' on line %d has unexpected keyword (expected MAP), skipping!\n", rule->name, rule->line);
+			u_fprintf(ux_stderr, "Warning: Relabel rule '%S' on line %d has unexpected keyword (expected MAP), skipping!\n", rule->name.c_str(), rule->line);
 			continue;
 		}
 		if (fromTags.size() != 1) {
-			u_fprintf(ux_stderr, "Warning: Relabel rule '%S' on line %d has %d tags in the maplist (expected 1), skipping!\n", rule->name, rule->line, fromTags.size());
+			u_fprintf(ux_stderr, "Warning: Relabel rule '%S' on line %d has %d tags in the maplist (expected 1), skipping!\n", rule->name.c_str(), rule->line, fromTags.size());
 			continue;
 		}
 		Tag *fromTag = fromTags[0];
