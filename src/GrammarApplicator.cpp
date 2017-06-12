@@ -357,12 +357,12 @@ void GrammarApplicator::printTrace(UFILE *output, uint32_t hit_by) {
 			}
 			u_fprintf(output, ")");
 		}
-		if (!trace_name_only || !r->name) {
+		if (!trace_name_only || r->name.empty()) {
 			u_fprintf(output, ":%u", r->line);
 		}
-		if (r->name) {
+		if (!r->name.empty()) {
 			u_fputc(':', output);
-			u_fprintf(output, "%S", r->name);
+			u_fprintf(output, "%S", r->name.c_str());
 		}
 	}
 	else {

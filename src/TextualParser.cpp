@@ -2544,8 +2544,8 @@ int TextualParser::parse_grammar_from_file(const char *fname, const char *loc, c
 	result->addAnchor(keywords[K_END].getTerminatedBuffer(), result->rule_by_number.size() - 1, true);
 
 	foreach (it, result->rule_by_number) {
-		if ((*it)->name) {
-			result->addAnchor((*it)->name, (*it)->number, false);
+		if (!(*it)->name.empty()) {
+			result->addAnchor((*it)->name.c_str(), (*it)->number, false);
 		}
 	}
 

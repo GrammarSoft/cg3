@@ -336,10 +336,10 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 			fields |= (1 << 3);
 			writeSwapped(buffer, r->flags);
 		}
-		if (r->name) {
+		if (!r->name.empty()) {
 			fields |= (1 << 4);
 			ucnv_reset(conv);
-			i32tmp = ucnv_fromUChars(conv, &cbuffers[0][0], CG3_BUFFER_SIZE - 1, r->name, u_strlen(r->name), &err);
+			i32tmp = ucnv_fromUChars(conv, &cbuffers[0][0], CG3_BUFFER_SIZE - 1, r->name.c_str(), r->name.size(), &err);
 			writeSwapped(buffer, i32tmp);
 			buffer.write(&cbuffers[0][0], i32tmp);
 		}
