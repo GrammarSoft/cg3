@@ -69,7 +69,7 @@ enum {
 
 class Rule {
 public:
-	UChar *name;
+	UString name;
 	Tag *wordform;
 	uint32_t target;
 	uint32_t childset1, childset2;
@@ -78,8 +78,6 @@ public:
 	uint32_t flags;
 	int32_t section;
 	int32_t sub_reading;
-	// ToDo: Add proper "quality" quantifier based on num_fail, num_match, total_time
-	double weight, quality;
 	KEYWORDS type;
 	Set *maplist;
 	Set *sublist;
