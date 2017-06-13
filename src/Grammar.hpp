@@ -56,7 +56,7 @@ public:
 	std::vector<Set*> sets_list;
 	SetSet sets_all;
 	uint32FlatHashMap sets_by_name;
-	typedef std::unordered_map<UString, uint32_t> set_name_seeds_t;
+	typedef std::unordered_map<UString, uint32_t, hash_ustring> set_name_seeds_t;
 	set_name_seeds_t set_name_seeds;
 	Setuint32HashMap sets_by_contents;
 	uint32FlatHashMap set_alias;

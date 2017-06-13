@@ -341,11 +341,11 @@ void Relabeller::relabelAsSet(Set *set_g, const Set *set_r, const Tag *fromTag) 
 }
 
 void Relabeller::relabel() {
-	std::unordered_map<UString, Tag*> tag_by_str;
+	std::unordered_map<UString, Tag*, hash_ustring> tag_by_str;
 	for (auto tag_g : grammar->single_tags_list) {
 		tag_by_str[tag_g->tag] = tag_g;
 	}
-	std::unordered_map<UString, std::set<Set*> > sets_by_tag;
+	std::unordered_map<UString, std::set<Set*>, hash_ustring> sets_by_tag;
 	for (auto it : grammar->sets_list) {
 		const TagVector& toTags = trie_getTagList(it->trie);
 		for (auto toit : toTags) {
