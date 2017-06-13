@@ -23,7 +23,7 @@
 #ifndef c6d28b7452ec699b_BLOOMISH_HPP
 #define c6d28b7452ec699b_BLOOMISH_HPP
 #include <algorithm>
-#include <stdint.h> // C99 or C++0x or C++ TR1 will have this header. ToDo: Change to <cstdint> when C++0x broader support gets under way.
+#include <cstdint>
 
 namespace CG3 {
 

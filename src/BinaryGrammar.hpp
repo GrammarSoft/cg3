@@ -44,9 +44,9 @@ private:
 	void writeContextualTest(ContextualTest *t, FILE *output);
 	ContextualTest *readContextualTest(FILE *input);
 
-	typedef stdext::hash_map<ContextualTest*, uint32_t> deferred_t;
+	typedef std::unordered_map<ContextualTest*, uint32_t> deferred_t;
 	deferred_t deferred_tmpls;
-	typedef stdext::hash_map<ContextualTest*, std::vector<uint32_t> > deferred_ors_t;
+	typedef std::unordered_map<ContextualTest*, std::vector<uint32_t> > deferred_ors_t;
 	deferred_ors_t deferred_ors;
 
 	uint32FlatHashSet seen_uint32;

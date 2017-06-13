@@ -44,8 +44,8 @@ private:
 	Grammar *grammar;
 	const Grammar *relabels;
 
-	typedef stdext::hash_map<UString, UString> UStringMap;
-	typedef stdext::hash_map<UString, Set*> UStringSetMap;
+	typedef std::unordered_map<UString, UString> UStringMap;
+	typedef std::unordered_map<UString, Set*> UStringSetMap;
 	const UStringSetMap *relabel_as_list;
 	const UStringSetMap *relabel_as_set;
 

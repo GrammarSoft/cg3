@@ -26,7 +26,7 @@
 #include "stdafx.hpp"
 #include <vector>
 #include <list>
-#include <stdint.h>
+#include <cstdint>
 
 namespace CG3 {
 class Grammar;

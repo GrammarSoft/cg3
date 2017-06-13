@@ -27,7 +27,7 @@
 #include <vector>
 #include <algorithm>
 #include <functional>
-#include <stdint.h> // C99 or C++0x or C++ TR1 will have this header. ToDo: Change to <cstdint> when C++0x broader support gets under way.
+#include <cstdint>
 
 namespace CG3 {
 

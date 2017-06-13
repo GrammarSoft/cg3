@@ -104,7 +104,7 @@ public:
 
 typedef std::vector<Rule*> RuleVector;
 typedef std::map<uint32_t, Rule*> RuleByLineMap;
-typedef stdext::hash_map<uint32_t, Rule*> RuleByLineHashMap;
+typedef std::unordered_map<uint32_t, Rule*> RuleByLineHashMap;
 }
 
 #endif
