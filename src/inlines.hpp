@@ -199,6 +199,12 @@ inline uint32_t hash_value(uint64_t c) {
 	//*/
 }
 
+struct hash_ustring {
+	size_t operator()(const UString& str) const {
+		return hash_value(str);
+	}
+};
+
 inline bool ISSPACE(const UChar c) {
 	if (c <= 0xFF && c != 0x09 && c != 0x0A && c != 0x0D && c != 0x20 && c != 0xA0) {
 		return false;
