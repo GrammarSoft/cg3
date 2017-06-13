@@ -3,7 +3,7 @@ DELIMITERS = "<$.>" ;
 "<word>" APPEND ("newword" appended1 @A @B "newword" appended3 @A @C) (*) (NOT 0 (appended1)) ;
 "<word>" APPEND ("newword" appended2) (*) (NOT 0 (appended2)) ;
 
-COPY (copy copied) (wanted) - (copy) ;
+COPY (copy copied) BEFORE (wanted) (wanted) - (copy) ;
 COPY (copy also-copied) (wanted) - (copy) ;
 COPY (noguard-copied) (wanted) ;
 COPY (copied-except) EXCEPT (also-copied copy noguard-copied) (wanted) ;

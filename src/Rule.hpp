@@ -63,6 +63,8 @@ enum {
 	RF_OUTPUT       = (1 << 24),
 	RF_CAPTURE_UNIF = (1 << 25),
 	RF_REPEAT       = (1 << 26),
+	RF_BEFORE       = (1 << 27),
+	RF_AFTER        = (1 << 28),
 
 	MASK_ENCL       = RF_ENCL_INNER | RF_ENCL_OUTER | RF_ENCL_FINAL | RF_ENCL_ANY,
 };

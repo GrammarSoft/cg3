@@ -5,13 +5,13 @@
 	"newword" appended1 @A @B
 	"newword" appended3 @A @C
 	"newword" appended2
-	"word" wanted copy copied
+	"word" copy copied wanted
 	"word" wanted copy also-copied
 	"word" wanted noguard-copied
-	"word" wanted copy copied noguard-copied
+	"word" copy copied wanted noguard-copied
 	"word" wanted copy also-copied noguard-copied
 	"word" wanted copied-except
-	"word" wanted copied copied-except
+	"word" copied wanted copied-except
 "<word>"
 	"word" notwanted
 "<waffle>"

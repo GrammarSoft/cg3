@@ -226,12 +226,79 @@ Reading *GrammarApplicator::get_sub_reading(Reading *tr, int sub_reading) {
 	return tr;
 }
 
-#define TRACE do { \
-					reading.hit_by.push_back(rule.number); \
-					if (rule.sub_reading == 32767) { \
-						reading_head.hit_by.push_back(rule.number); \
+#define TRACE \
+	do { \
+		reading.hit_by.push_back(rule.number); \
+		if (rule.sub_reading == 32767) { \
+			reading_head.hit_by.push_back(rule.number); \
+		} \
+	} while(0)
+
+#define FILL_TAG_LIST(taglist) \
+	do { \
+		for (TagList::iterator it = (taglist)->begin(); it != (taglist)->end();) { \
+			if (reading.tags.find((*it)->hash) == reading.tags.end()) { \
+				const Tag *tt = *it; \
+				it = (taglist)->erase(it); \
+				if (tt->type & T_SPECIAL) { \
+					if (regexgrps.second == 0) { \
+						regexgrps.second = &regexgrps_store[used_regex]; \
 					} \
-				} while(0)
+					uint32_t stag = doesTagMatchReading(reading, *tt, false, true); \
+					if (stag) { \
+						(taglist)->insert(it, single_tags.find(stag)->second); \
+					} \
+				} \
+				continue; \
+			} \
+			++it; \
+		} \
+	} while(0)
+
+#define APPEND_TAGLIST_TO_READING(taglist, reading) \
+	do { \
+		foreach (tter, (taglist)) { \
+			uint32_t hash = (*tter)->hash; \
+			while ((*tter)->type & T_VARSTRING) { \
+				*tter = generateVarstringTag(*tter); \
+			} \
+			if ((*tter)->type & T_MAPPING || (*tter)->tag[0] == grammar->mapping_prefix) { \
+				mappings->push_back(*tter); \
+			} \
+			else { \
+				hash = addTagToReading((reading), *tter); \
+			} \
+			if (updateValidRules(rules, intersects, hash, (reading))) { \
+				iter_rules = intersects.find(rule.number); \
+				iter_rules_end = intersects.end(); \
+			} \
+		} \
+	} while (0)
+
+#define INSERT_TAGLIST_TO_READING(iter, taglist, reading) \
+	do { \
+		foreach(tter, (taglist)) { \
+			Tag *tag = *tter; \
+			if (tag->type & T_VARSTRING) { \
+				tag = generateVarstringTag(tag); \
+			} \
+			if (tag->hash == grammar->tag_any) { \
+				break; \
+			} \
+			if (tag->type & T_MAPPING || tag->tag[0] == grammar->mapping_prefix) { \
+				mappings->push_back(tag); \
+			} \
+			else { \
+				(iter) = (reading).tags_list.insert((iter), tag->hash); \
+				++(iter); \
+			} \
+			if (updateValidRules(rules, intersects, tag->hash, (reading))) { \
+				iter_rules = intersects.find(rule.number); \
+				iter_rules_end = intersects.end(); \
+			} \
+		} \
+		reflowReading(reading); \
+	} while(0)
 
 /**
  * Applies the passed rules to the passed SingleWindow.
@@ -1212,21 +1279,37 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						BOOST_AUTO(theTags, ss_taglist.get());
 						getTagList(*rule.maplist, theTags);
 
-						foreach (tter, *theTags) {
-							uint32_t hash = (*tter)->hash;
-							while ((*tter)->type & T_VARSTRING) {
-								*tter = generateVarstringTag(*tter);
+						bool did_insert = false;
+						if (rule.childset1) {
+							auto spot_tags = ss_taglist.get();
+							getTagList(*grammar->sets_list[rule.childset1], spot_tags);
+							FILL_TAG_LIST(spot_tags);
+							auto it = reading.tags_list.begin();
+							for (; it != reading.tags_list.end() ; ++it) {
+								bool found = true;
+								auto tmp = it;
+								for (auto& tag : *spot_tags) {
+									if (*tmp != tag->hash) {
+										found = false;
+										break;
+									}
+									++tmp;
+								}
+								if (found) {
+									break;
+								}
 							}
-							if ((*tter)->type & T_MAPPING || (*tter)->tag[0] == grammar->mapping_prefix) {
-								mappings->push_back(*tter);
+							if (rule.flags & RF_AFTER) {
+								std::advance(it, spot_tags->size());
 							}
-							else {
-								hash = addTagToReading(reading, *tter);
+							if (it != reading.tags_list.end()) {
+								INSERT_TAGLIST_TO_READING(it, *theTags, reading);
+								did_insert = true;
 							}
-							if (updateValidRules(rules, intersects, hash, reading)) {
-								iter_rules = intersects.find(rule.number);
-								iter_rules_end = intersects.end();
-							}
+						}
+
+						if (!did_insert) {
+							APPEND_TAGLIST_TO_READING(*theTags, reading);
 						}
 						if (!mappings->empty()) {
 							splitMappings(mappings, *cohort, reading, rule.type == K_MAP);
@@ -1256,22 +1339,8 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						BOOST_AUTO(theTags, ss_taglist.get());
 						getTagList(*rule.maplist, theTags);
 
-						foreach (tter, *theTags) {
-							uint32_t hash = (*tter)->hash;
-							while ((*tter)->type & T_VARSTRING) {
-								*tter = generateVarstringTag(*tter);
-							}
-							if ((*tter)->type & T_MAPPING || (*tter)->tag[0] == grammar->mapping_prefix) {
-								mappings->push_back(*tter);
-							}
-							else {
-								hash = addTagToReading(reading, *tter);
-							}
-							if (updateValidRules(rules, intersects, hash, reading)) {
-								iter_rules = intersects.find(rule.number);
-								iter_rules_end = intersects.end();
-							}
-						}
+						APPEND_TAGLIST_TO_READING(*theTags, reading);
+
 						if (!mappings->empty()) {
 							splitMappings(mappings, *cohort, reading, true);
 						}
@@ -1287,23 +1356,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						getTagList(*rule.sublist, theTags);
 
 						// Modify the list of tags to remove to be the actual list of tags present, including matching regex and icase tags
-						for (TagList::iterator it = theTags->begin(); it != theTags->end();) {
-							if (reading.tags.find((*it)->hash) == reading.tags.end()) {
-								const Tag *tt = *it;
-								it = theTags->erase(it);
-								if (tt->type & T_SPECIAL) {
-									if (regexgrps.second == 0) {
-										regexgrps.second = &regexgrps_store[used_regex];
-									}
-									uint32_t stag = doesTagMatchReading(reading, *tt, false, true);
-									if (stag) {
-										theTags->insert(it, single_tags.find(stag)->second);
-									}
-								}
-								continue;
-							}
-							++it;
-						}
+						FILL_TAG_LIST(theTags);
 
 						// Perform the tag removal, remembering the position of the final removed tag for use as insertion spot
 						size_t tpos = std::numeric_limits<size_t>::max();
@@ -1523,9 +1576,9 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						}
 
 						if (rule.sublist) {
-							// ToDo: Use the code from Substitute to make this match and remove special tags
 							BOOST_AUTO(excepts, ss_taglist.get());
 							getTagList(*rule.sublist, excepts);
+							FILL_TAG_LIST(excepts);
 							foreach (tter, *excepts) {
 								delTagFromReading(*cReading, *tter);
 							}
@@ -1535,21 +1588,37 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						BOOST_AUTO(theTags, ss_taglist.get());
 						getTagList(*rule.maplist, theTags);
 
-						foreach (tter, *theTags) {
-							uint32_t hash = (*tter)->hash;
-							while ((*tter)->type & T_VARSTRING) {
-								*tter = generateVarstringTag(*tter);
+						bool did_insert = false;
+						if (rule.childset1) {
+							auto spot_tags = ss_taglist.get();
+							getTagList(*grammar->sets_list[rule.childset1], spot_tags);
+							FILL_TAG_LIST(spot_tags);
+							auto it = cReading->tags_list.begin();
+							for (; it != cReading->tags_list.end(); ++it) {
+								bool found = true;
+								auto tmp = it;
+								for (auto& tag : *spot_tags) {
+									if (*tmp != tag->hash) {
+										found = false;
+										break;
+									}
+									++tmp;
+								}
+								if (found) {
+									break;
+								}
 							}
-							if ((*tter)->type & T_MAPPING || (*tter)->tag[0] == grammar->mapping_prefix) {
-								mappings->push_back(*tter);
+							if (rule.flags & RF_AFTER) {
+								std::advance(it, spot_tags->size());
 							}
-							else {
-								hash = addTagToReading(*cReading, *tter);
+							if (it != cReading->tags_list.end()) {
+								INSERT_TAGLIST_TO_READING(it, *theTags, *cReading);
+								did_insert = true;
 							}
-							if (updateValidRules(rules, intersects, hash, reading)) {
-								iter_rules = intersects.find(rule.number);
-								iter_rules_end = intersects.end();
-							}
+						}
+
+						if (!did_insert) {
+							APPEND_TAGLIST_TO_READING(*theTags, *cReading);
 						}
 						if (!mappings->empty()) {
 							splitMappings(mappings, *cohort, *cReading, true);

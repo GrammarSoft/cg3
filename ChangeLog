@@ -1,5 +1,47 @@
+2017-06-12  tino
+
+	* [r12233] src/Relabeller.cpp: Make rule.name a UString instead of
+	  UChar*
+	* [r12232] src/GrammarWriter.cpp: Make rule.name a UString instead
+	  of UChar*
+	* [r12231] src/BinaryGrammar_write.cpp, src/GrammarApplicator.cpp,
+	  src/GrammarWriter.cpp, src/Rule.cpp, src/Rule.hpp,
+	  src/TextualParser.cpp, src/cg_proc.cpp, src/main.cpp: Make
+	  rule.name a UString instead of UChar*
+
+2017-06-08  tino
+
+	* [r12225] src/GrammarApplicator_runRules.cpp: Tighten seen_barrier
+	  break to only the contextual target
+
+2017-05-31  tino
+
+	* [r12219] src/GrammarApplicator_runContextualTest.cpp: *c barrier
+	  now only skips branches instead of killing the whole search
+	* [r12218] src/GrammarApplicator_runContextualTest.cpp,
+	  src/TextualParser.cpp: Barrier is now ok for self tests
+
+2017-05-30  tino
+
+	* [r12213] src/cg3.h, src/libcg3.cpp: Add 3 functions from Paul
+	  Meurer <paul.meurer@uni.no>
+
+2017-05-23  tino
+
+	* [r12203] scripts/cg3-autobin.pl.in: Forgot some are optional
+
+2017-05-22  tino
+
+	* [r12202] src/AST.hpp, src/TextualParser.cpp,
+	  src/TextualParser.hpp, src/parser_helpers.hpp,
+	  test/T_Dependency_Loops/grammar.cg3: Added LIST-TAGS as shorthand
+	  for gobbling up all LIST X = X; sets
+
 2017-05-19  tino
 
+	* [r12200] ChangeLog, newsletters/2017-05-20.txt,
+	  scripts/cg3-autobin.pl.in, src/GrammarApplicator_runRules.cpp,
+	  src/version.hpp: Release 1.0.0
 	* [r12199] manual/cmdreference.xml, manual/grammar.xml,
 	  manual/tags.xml, scripts/cg-strictify, scripts/cg3-autobin.pl.in:
 	  Document cg-strictify; Use env to find perl; Make Getopt::Long
@@ -1752,56 +1794,4 @@
 	  src/SingleWindow.cpp, src/SingleWindow.hpp, src/Window.hpp,
 	  src/flat_unordered_map.hpp, src/flat_unordered_set.hpp,
 	  src/stdafx.hpp: More flat unordered
-	* [r10032] src/Grammar.cpp, src/GrammarApplicator.cpp, src/Tag.hpp,
-	  src/flat_unordered_map.hpp, src/flat_unordered_set.hpp: New
-	  flat_unordered_map to hopefully reduce allocations
-	* [r10029] TODO, src/CohortIterator.cpp, src/CompositeTag.hpp,
-	  src/Grammar.cpp, src/Grammar.hpp,
-	  src/GrammarApplicator_matchSet.cpp,
-	  src/GrammarApplicator_runRules.cpp, src/Tag.hpp,
-	  src/TextualParser.cpp, src/sorted_vector.hpp, win32/libgen.c:
-	  Eliminate TagSet in favour of TagSortedVector
-
-2014-06-22  tino
-
-	* [r10016] ChangeLog, src/ApertiumApplicator.cpp,
-	  src/GrammarApplicator.hpp, src/GrammarApplicator_matchSet.cpp,
-	  src/GrammarApplicator_runRules.cpp, src/version.hpp: Double cache
-	  sizes => double runtimes, so undo that
-
-2014-06-17  tino
-
-	* [r10007] ChangeLog, src/version.hpp: Forgot revision
-	* [r10006] src/ApertiumApplicator.cpp, src/BinaryGrammar_read.cpp,
-	  src/BinaryGrammar_write.cpp, src/Cohort.hpp,
-	  src/FSTApplicator.cpp, src/Grammar.cpp, src/Grammar.hpp,
-	  src/GrammarApplicator.cpp, src/GrammarApplicator.hpp,
-	  src/GrammarApplicator_matchSet.cpp,
-	  src/GrammarApplicator_reflow.cpp,
-	  src/GrammarApplicator_runGrammar.cpp,
-	  src/GrammarApplicator_runRules.cpp, src/GrammarWriter.cpp,
-	  src/NicelineApplicator.cpp, src/PlaintextApplicator.cpp,
-	  src/Reading.cpp, src/Reading.hpp, src/Rule.hpp,
-	  src/TextualParser.cpp, src/libcg3.cpp, src/main.cpp,
-	  src/options.hpp, test/T_BasicSubstitute/expected.txt,
-	  test/T_BasicSubstitute/grammar.cg3: Allow modifiers i, r, ri on
-	  rule wordforms; Fix a bug where Substituted wordforms did not
-	  update the valid rules list
-	* [r10005] src/ApertiumApplicator.cpp: Better logic for printing /
-	* [r10004] ChangeLog, TODO, src/ApertiumApplicator.cpp,
-	  src/GrammarApplicator.hpp, src/GrammarApplicator_matchSet.cpp,
-	  src/GrammarApplicator_runRules.cpp, src/flat_unordered_set.hpp,
-	  src/version.hpp: cg-proc -t output ¬ before delayed/deleted
-	  readings; Embiggen some caches to eliminate collisions
-
-2014-06-10  tino
-
-	* [r9987] src/Rule.hpp, src/TextualParser.cpp: Detect ENCL_*
-	  overlap by counting bits
-	* [r9985] src/TextualParser.cpp: Throw an error for malformed /X
-	  positions
-
-2014-06-09  tino
-
-	* [r9984] manual/subreadings.xml: Document /*
 
