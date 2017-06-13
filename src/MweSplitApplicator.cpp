@@ -136,7 +136,7 @@ std::vector<Cohort*> MweSplitApplicator::splitMwe(Cohort *cohort) {
 
 
 void MweSplitApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
-	boost_foreach (uint32_t var, window->variables_output) {
+	for (auto var : window->variables_output) {
 		Tag *key = single_tags[var];
 		auto iter = window->variables_set.find(var);
 		if (iter != window->variables_set.end()) {

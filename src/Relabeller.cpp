@@ -34,7 +34,7 @@ Relabeller::Relabeller(Grammar& res, const Grammar& relabels, UFILE *ux_err)
 	UStringSetMap *as_list = new UStringSetMap;
 	UStringSetMap *as_set = new UStringSetMap;
 
-	boost_foreach (const RuleVector::value_type rule, relabels.rule_by_number) {
+	for (auto rule : relabels.rule_by_number) {
 		const TagVector& fromTags = trie_getTagList(rule->maplist->trie);
 		Set *target = relabels.sets_list[rule->target];
 		const TagVector& toTags = trie_getTagList(target->trie);
@@ -59,7 +59,7 @@ Relabeller::Relabeller(Grammar& res, const Grammar& relabels, UFILE *ux_err)
 			continue;
 		}
 		Tag *fromTag = fromTags[0];
-		boost_foreach (const TagVector::value_type toit, toTags) {
+		for (auto toit : toTags) {
 			if (toit->type & T_SPECIAL) {
 				u_fprintf(ux_stderr, "Warning: Special tags (%S) not supported yet.\n", toit->tag.c_str());
 			}
@@ -85,7 +85,7 @@ Relabeller::~Relabeller() {
 
 TagVector Relabeller::transferTags(const TagVector tv_r) {
 	TagVector tv_g;
-	boost_foreach (Tag *tag_r, tv_r) {
+	for (auto tag_r : tv_r) {
 		Tag *tag_g = new Tag(*tag_r);
 		tag_g = grammar->addTag(tag_g); // new is deleted if it exists
 		tv_g.push_back(tag_g);
@@ -121,19 +121,19 @@ void Relabeller::addTaglistsToSet(const std::set<TagVector> tvs, Set *s) {
 	bc::flat_map<Tag*, size_t> tag_freq;
 	std::set<TagVector> tvs_sort_uniq;
 
-	boost_foreach (const TagVector& tvc, tvs) {
+	for (auto& tvc : tvs) {
 		TagVector& tags = const_cast<TagVector&>(tvc);
 		// From TextualParser::parseTagList
 		std::sort(tags.begin(), tags.end());
 		tags.erase(std::unique(tags.begin(), tags.end()), tags.end());
 		if (tvs_sort_uniq.insert(tags).second) {
-			boost_foreach (Tag *t, tags) {
+			for (auto t : tags) {
 				++tag_freq[t];
 			}
 		}
 	}
 	freq_sorter fs(tag_freq);
-	boost_foreach (const TagVector& tvc, tvs_sort_uniq) {
+	for (auto& tvc : tvs_sort_uniq) {
 		if (tvc.empty()) {
 			continue;
 		}
@@ -146,7 +146,7 @@ void Relabeller::addTaglistsToSet(const std::set<TagVector> tvs, Set *s) {
 		// Doing this yields a very cheap imperfect form of trie compression, but it's good enough
 		std::sort(tv.begin(), tv.end(), fs);
 		bool special = false;
-		boost_foreach (Tag *tag, tv) {
+		for (auto tag : tv) {
 			if (tag->type & T_SPECIAL) {
 				special = true;
 				break;
@@ -167,11 +167,11 @@ void Relabeller::relabelAsList(Set *set_g, const Set *set_r, const Tag *fromTag)
 	set_g->trie.clear();
 
 	std::set<TagVector> taglists;
-	boost_foreach (const TagVector& old_tags, old_tvs) {
+	for (auto& old_tags : old_tvs) {
 		TagVector tags_except_from;
 
 		bool seen = false;
-		boost_foreach (Tag *old_tag, old_tags) {
+		for (auto old_tag : old_tags) {
 			if (old_tag->hash == fromTag->hash) {
 				seen = true;
 			}
@@ -187,7 +187,7 @@ void Relabeller::relabelAsList(Set *set_g, const Set *set_r, const Tag *fromTag)
 			TagVector dummy;
 			suffixes.insert(dummy);
 		}
-		boost_foreach (const TagVector& suf, suffixes) {
+		for (auto& suf : suffixes) {
 			TagVector tags = TagVector(tags_except_from);
 			tags.insert(tags.end(), suf.begin(), suf.end());
 			tags = transferTags(tags);
@@ -278,11 +278,11 @@ void Relabeller::relabelAsSet(Set *set_g, const Set *set_r, const Tag *fromTag) 
 
 	std::set<TagVector> tvs_with_from;
 	std::set<TagVector> tvs_no_from;
-	boost_foreach (const TagVector& old_tags, old_tvs) {
+	for (auto& old_tags : old_tvs) {
 		TagVector tags_except_from;
 
 		bool seen = false;
-		boost_foreach (Tag *old_tag, old_tags) {
+		for (auto old_tag : old_tags) {
 			if (old_tag->hash == fromTag->hash) {
 				seen = true;
 			}
@@ -342,36 +342,36 @@ void Relabeller::relabelAsSet(Set *set_g, const Set *set_r, const Tag *fromTag) 
 
 void Relabeller::relabel() {
 	stdext::hash_map<UString, Tag*> tag_by_str;
-	boost_foreach (const std::vector<Tag*>::value_type tag_g, grammar->single_tags_list) {
+	for (auto tag_g : grammar->single_tags_list) {
 		tag_by_str[tag_g->tag] = tag_g;
 	}
 	stdext::hash_map<UString, std::set<Set*> > sets_by_tag;
-	boost_foreach (const std::vector<Set*>::value_type it, grammar->sets_list) {
+	for (auto it : grammar->sets_list) {
 		const TagVector& toTags = trie_getTagList(it->trie);
-		boost_foreach (const TagVector::value_type toit, toTags) {
+		for (auto toit : toTags) {
 			sets_by_tag[toit->tag].insert(it);
 		}
 	}
 	// RELABEL AS LIST:
-	boost_foreach (const UStringSetMap::value_type& it, *relabel_as_list) {
+	for (auto& it : *relabel_as_list) {
 		const Set *set_r = relabels->sets_list[it.second->number];
 		const Tag *fromTag = tag_by_str[it.first];
 
 		const auto sets_g = sets_by_tag.find(it.first);
 		if (sets_g != sets_by_tag.end()) {
-			boost_foreach (Set *set_g, sets_g->second) {
+			for (auto set_g : sets_g->second) {
 				relabelAsList(set_g, set_r, fromTag);
 			}
 		}
 	}
 	// RELABEL AS SET:
-	boost_foreach (const UStringSetMap::value_type& it, *relabel_as_set) {
+	for (auto& it : *relabel_as_set) {
 		const Set *set_r = relabels->sets_list[it.second->number];
 		const Tag *fromTag = tag_by_str[it.first];
 
 		const auto sets_g = sets_by_tag.find(it.first);
 		if (sets_g != sets_by_tag.end()) {
-			boost_foreach (Set *set_g, sets_g->second) {
+			for (auto set_g : sets_g->second) {
 				relabelAsSet(set_g, set_r, fromTag);
 			}
 		}

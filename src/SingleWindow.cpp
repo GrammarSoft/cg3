@@ -128,7 +128,7 @@ void SingleWindow::clear() {
 	cohorts.clear();
 	valid_rules.clear();
 	hit_external.clear();
-	boost_foreach (CohortSet& cs, rule_to_cohorts) {
+	for (auto& cs : rule_to_cohorts) {
 		cs.clear();
 	}
 	variables_set.clear();

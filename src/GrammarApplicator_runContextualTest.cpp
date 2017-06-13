@@ -282,7 +282,7 @@ Cohort *GrammarApplicator::runContextualTest(SingleWindow *sWindow, size_t posit
 	}
 	else if (!test->ors.empty()) {
 		Cohort *cdeep = 0;
-		boost_foreach (ContextualTest *iter, test->ors) {
+		for (auto iter : test->ors) {
 			dep_deep_seen.clear();
 			cohort = runContextualTest_tmpl(sWindow, position, test, iter, cdeep, origin);
 			if (cohort) {
@@ -761,7 +761,7 @@ Cohort *GrammarApplicator::runRelationTest(SingleWindow *sWindow, Cohort *curren
 
 	if (test->relation == grammar->tag_any) {
 		foreach (riter, current->relations) {
-			boost_foreach (uint32_t citer, riter->second) {
+			for (auto citer : riter->second) {
 				std::map<uint32_t, Cohort*>::iterator it = sWindow->parent->cohort_map.find(citer);
 				if (it != sWindow->parent->cohort_map.end()) {
 					rels.insert(it->second);
@@ -772,7 +772,7 @@ Cohort *GrammarApplicator::runRelationTest(SingleWindow *sWindow, Cohort *curren
 	else {
 		RelationCtn::const_iterator riter = current->relations.find(test->relation);
 		if (riter != current->relations.end()) {
-			boost_foreach (uint32_t citer, riter->second) {
+			for (auto citer : riter->second) {
 				std::map<uint32_t, Cohort*>::iterator it = sWindow->parent->cohort_map.find(citer);
 				if (it != sWindow->parent->cohort_map.end()) {
 					rels.insert(it->second);

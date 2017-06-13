@@ -53,12 +53,12 @@ void GrammarWriter::printSet(UFILE *output, const Set& curset) {
 		used_sets.insert(curset.number);
 		u_fprintf(output, "LIST %S = ", curset.name.c_str());
 		std::set<TagVector> tagsets[] = { trie_getTagsOrdered(curset.trie), trie_getTagsOrdered(curset.trie_special) };
-		boost_foreach (const std::set<TagVector>& tvs, tagsets) {
-			boost_foreach (const TagVector& tags, tvs) {
+		for (auto& tvs : tagsets) {
+			for (auto& tags : tvs) {
 				if (tags.size() > 1) {
 					u_fprintf(output, "(");
 				}
-				boost_foreach (const Tag *tag, tags) {
+				for (auto tag : tags) {
 					printTag(output, *tag);
 					u_fprintf(output, " ");
 				}
@@ -126,7 +126,7 @@ int GrammarWriter::writeGrammar(UFILE *output) {
 
 	if (!grammar->static_sets.empty()) {
 		u_fprintf(output, "STATIC-SETS =");
-		boost_foreach (const UString& str, grammar->static_sets) {
+		for (auto& str : grammar->static_sets) {
 			u_fprintf(output, " %S", str.c_str());
 		}
 		u_fprintf(output, " ;\n");
@@ -145,7 +145,7 @@ int GrammarWriter::writeGrammar(UFILE *output) {
 	u_fprintf(output, "\n");
 
 	used_sets.clear();
-	boost_foreach (Set *s, grammar->sets_list) {
+	for (auto s : grammar->sets_list) {
 		if (s->name.empty()) {
 			if (s == grammar->delimiters) {
 				s->name.assign(stringbits[S_DELIMITSET].getTerminatedBuffer());
@@ -164,13 +164,13 @@ int GrammarWriter::writeGrammar(UFILE *output) {
 			s->name.insert(s->name.begin(), 'C');
 		}
 	}
-	boost_foreach (Set *s, grammar->sets_list) {
+	for (auto s : grammar->sets_list) {
 		printSet(output, *s);
 	}
 	u_fprintf(output, "\n");
 
 	/*
-	for (auto cntx = grammar->templates.begin(); cntx != grammar->templates.end(); ++cntx) {
+	for (BOOST_AUTO(cntx, grammar->templates.begin()); cntx != grammar->templates.end(); ++cntx) {
 		u_fprintf(output, "TEMPLATE %u = ", cntx->second->hash);
 		printContextualTest(output, *cntx->second);
 		u_fprintf(output, " ;\n");
@@ -308,7 +308,7 @@ void GrammarWriter::printContextualTest(UFILE *to, const ContextualTest& test) {
 		u_fprintf(to, "T:%u ", test.tmpl->hash);
 	}
 	else if (!test.ors.empty()) {
-		for (auto iter = test.ors.begin(); iter != test.ors.end();) {
+		for (BOOST_AUTO(iter, test.ors.begin()); iter != test.ors.end();) {
 			u_fprintf(to, "(");
 			printContextualTest(to, **iter);
 			u_fprintf(to, ")");

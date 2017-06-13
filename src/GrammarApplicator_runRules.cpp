@@ -90,7 +90,7 @@ bool GrammarApplicator::updateValidRules(const uint32IntervalVector& rules, uint
 void GrammarApplicator::indexSingleWindow(SingleWindow& current) {
 	current.valid_rules.clear();
 	current.rule_to_cohorts.resize(grammar->rule_by_number.size());
-	boost_foreach (CohortSet& cs, current.rule_to_cohorts) {
+	for (auto& cs : current.rule_to_cohorts) {
 		cs.clear();
 	}
 
@@ -104,7 +104,7 @@ void GrammarApplicator::indexSingleWindow(SingleWindow& current) {
 			if (rules_it == grammar->rules_by_set.end()) {
 				continue;
 			}
-			boost_foreach (uint32_t rsit, rules_it->second) {
+			for (auto rsit : rules_it->second) {
 				updateRuleToCohorts(*c, rsit);
 			}
 		}
@@ -175,15 +175,15 @@ Reading *GrammarApplicator::get_sub_reading(Reading *tr, int sub_reading) {
 			tr = tr->next;
 			reading->tags_list.push_back(0);
 			reading->tags_list.insert(reading->tags_list.end(), tr->tags_list.begin(), tr->tags_list.end());
-			boost_foreach (uint32_t tag, tr->tags) {
+			for (auto tag : tr->tags) {
 				reading->tags.insert(tag);
 				reading->tags_bloom.insert(tag);
 			}
-			boost_foreach (uint32_t tag, tr->tags_plain) {
+			for (auto tag : tr->tags_plain) {
 				reading->tags_plain.insert(tag);
 				reading->tags_plain_bloom.insert(tag);
 			}
-			boost_foreach (uint32_t tag, tr->tags_textual) {
+			for (auto tag : tr->tags_textual) {
 				reading->tags_textual.insert(tag);
 				reading->tags_textual_bloom.insert(tag);
 			}
@@ -889,7 +889,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						gWindow->rebuildCohortLinks();
 						// If we just removed the last cohort, add <<< to the new last cohort
 						if (cohort->readings.front()->tags.count(endtag)) {
-							boost_foreach (Reading *r, current.cohorts.back()->readings) {
+							for (auto r : current.cohorts.back()->readings) {
 								addTagToReading(*r, endtag);
 								if (updateValidRules(rules, intersects, endtag, *r)) {
 									iter_rules = intersects.find(rule.number);
@@ -1022,10 +1022,10 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						}
 						// If the new cohort is now the last cohort, add <<< to it and remove <<< from previous last cohort
 						if (current.cohorts.back() == cCohort) {
-							boost_foreach (Reading *r, current.cohorts[current.cohorts.size() - 2]->readings) {
+							for (auto r : current.cohorts[current.cohorts.size() - 2]->readings) {
 								delTagFromReading(*r, endtag);
 							}
-							boost_foreach (Reading *r, current.cohorts.back()->readings) {
+							for (auto r : current.cohorts.back()->readings) {
 								addTagToReading(*r, endtag);
 								if (updateValidRules(rules, intersects, endtag, *r)) {
 									iter_rules = intersects.find(rule.number);
@@ -1466,20 +1466,20 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 								splitMappings(mappings, *cohort, reading, true);
 							}
 							if (wf && wf != reading.parent->wordform) {
-								boost_foreach (Reading *r, reading.parent->readings) {
+								for (auto r : reading.parent->readings) {
 									delTagFromReading(*r, reading.parent->wordform);
 									addTagToReading(*r, wf);
 								}
-								boost_foreach (Reading *r, reading.parent->deleted) {
+								for (auto r : reading.parent->deleted) {
 									delTagFromReading(*r, reading.parent->wordform);
 									addTagToReading(*r, wf);
 								}
-								boost_foreach (Reading *r, reading.parent->delayed) {
+								for (auto r : reading.parent->delayed) {
 									delTagFromReading(*r, reading.parent->wordform);
 									addTagToReading(*r, wf);
 								}
 								reading.parent->wordform = wf;
-								boost_foreach (Rule *r, grammar->wf_rules) {
+								for (auto r : grammar->wf_rules) {
 									if (doesWordformsMatch(wf, r->wordform)) {
 										current.rule_to_cohorts[r->number].insert(cohort);
 										intersects.insert(r->number);

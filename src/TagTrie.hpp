@@ -70,7 +70,7 @@ inline bool trie_insert(trie_t& trie, const TagVector& tv, size_t w = 0) {
 
 inline trie_t *_trie_copy_helper(const trie_t& trie) {
 	trie_t *nt = new trie_t;
-	boost_foreach (const trie_t::value_type& p, trie) {
+	for (auto& p : trie) {
 		(*nt)[p.first].terminal = p.second.terminal;
 		if (p.second.trie) {
 			(*nt)[p.first].trie = _trie_copy_helper(*p.second.trie);
@@ -81,7 +81,7 @@ inline trie_t *_trie_copy_helper(const trie_t& trie) {
 
 inline trie_t trie_copy(const trie_t& trie) {
 	trie_t nt;
-	boost_foreach (const trie_t::value_type& p, trie) {
+	for (auto& p : trie) {
 		nt[p.first].terminal = p.second.terminal;
 		if (p.second.trie) {
 			nt[p.first].trie = _trie_copy_helper(*p.second.trie);
@@ -91,7 +91,7 @@ inline trie_t trie_copy(const trie_t& trie) {
 }
 
 inline void trie_delete(trie_t& trie) {
-	boost_foreach (trie_t::value_type& p, trie) {
+	for (auto& p : trie) {
 		if (p.second.trie) {
 			trie_delete(*p.second.trie);
 			delete p.second.trie;
@@ -116,7 +116,7 @@ inline bool trie_singular(const trie_t& trie) {
 
 inline uint32_t trie_rehash(const trie_t& trie) {
 	uint32_t retval = 0;
-	boost_foreach (const trie_t::value_type& kv, trie) {
+	for (auto& kv : trie) {
 		retval = hash_value(kv.first->hash, retval);
 		if (kv.second.trie) {
 			retval = hash_value(trie_rehash(*kv.second.trie), retval);
@@ -126,7 +126,7 @@ inline uint32_t trie_rehash(const trie_t& trie) {
 }
 
 inline void trie_markused(trie_t& trie) {
-	boost_foreach (trie_t::value_type& kv, trie) {
+	for (auto& kv : trie) {
 		kv.first->markUsed();
 		if (kv.second.trie) {
 			trie_markused(*kv.second.trie);
@@ -135,7 +135,7 @@ inline void trie_markused(trie_t& trie) {
 }
 
 inline bool trie_hasType(trie_t& trie, uint32_t type) {
-	boost_foreach (trie_t::value_type& kv, trie) {
+	for (auto& kv : trie) {
 		if (kv.first->type & type) {
 			return true;
 		}
@@ -147,7 +147,7 @@ inline bool trie_hasType(trie_t& trie, uint32_t type) {
 }
 
 inline void trie_getTagList(const trie_t& trie, TagList& theTags) {
-	boost_foreach (const trie_t::value_type& kv, trie) {
+	for (auto& kv : trie) {
 		theTags.push_back(kv.first);
 		if (kv.second.trie) {
 			trie_getTagList(*kv.second.trie, theTags);
@@ -156,7 +156,7 @@ inline void trie_getTagList(const trie_t& trie, TagList& theTags) {
 }
 
 inline bool trie_getTagList(const trie_t& trie, TagList& theTags, const void *node) {
-	boost_foreach (const trie_t::value_type& kv, trie) {
+	for (auto& kv : trie) {
 		theTags.push_back(kv.first);
 		if (node == &kv) {
 			return true;
@@ -171,7 +171,7 @@ inline bool trie_getTagList(const trie_t& trie, TagList& theTags, const void *no
 
 /*
 	inline void trie_getTagList(const trie_t& trie, TagVector& theTags) {
-		boost_foreach (const trie_t::value_type& kv, trie) {
+		for (auto& kv : trie) {
 			theTags.push_back(kv.first);
 			if (kv.second.trie) {
 				trie_getTagList(*kv.second.trie, theTags);
@@ -182,7 +182,7 @@ inline bool trie_getTagList(const trie_t& trie, TagList& theTags, const void *no
 
 inline TagVector trie_getTagList(const trie_t& trie) {
 	TagVector theTags;
-	boost_foreach (const trie_t::value_type& kv, trie) {
+	for (auto& kv : trie) {
 		theTags.push_back(kv.first);
 		if (kv.second.trie) {
 			trie_getTagList(*kv.second.trie, theTags);
@@ -192,7 +192,7 @@ inline TagVector trie_getTagList(const trie_t& trie) {
 }
 
 inline void trie_getTags(const trie_t& trie, std::set<TagVector>& rv, TagVector& tv) {
-	boost_foreach (const trie_t::value_type& kv, trie) {
+	for (auto& kv : trie) {
 		tv.push_back(kv.first);
 		if (kv.second.terminal) {
 			std::sort(tv.begin(), tv.end());
@@ -208,7 +208,7 @@ inline void trie_getTags(const trie_t& trie, std::set<TagVector>& rv, TagVector&
 
 inline std::set<TagVector> trie_getTags(const trie_t& trie) {
 	std::set<TagVector> rv;
-	boost_foreach (const trie_t::value_type& kv, trie) {
+	for (auto& kv : trie) {
 		TagVector tv;
 		tv.push_back(kv.first);
 		if (kv.second.terminal) {
@@ -225,7 +225,7 @@ inline std::set<TagVector> trie_getTags(const trie_t& trie) {
 }
 
 inline void trie_getTagsOrdered(const trie_t& trie, std::set<TagVector>& rv, TagVector& tv) {
-	boost_foreach (const trie_t::value_type& kv, trie) {
+	for (auto& kv : trie) {
 		tv.push_back(kv.first);
 		if (kv.second.terminal) {
 			rv.insert(tv);
@@ -240,7 +240,7 @@ inline void trie_getTagsOrdered(const trie_t& trie, std::set<TagVector>& rv, Tag
 
 inline std::set<TagVector> trie_getTagsOrdered(const trie_t& trie) {
 	std::set<TagVector> rv;
-	boost_foreach (const trie_t::value_type& kv, trie) {
+	for (auto& kv : trie) {
 		TagVector tv;
 		tv.push_back(kv.first);
 		if (kv.second.terminal) {
@@ -256,7 +256,7 @@ inline std::set<TagVector> trie_getTagsOrdered(const trie_t& trie) {
 }
 
 inline void trie_serialize(const trie_t& trie, std::ostream& out) {
-	boost_foreach (const trie_t::value_type& kv, trie) {
+	for (auto& kv : trie) {
 		writeSwapped<uint32_t>(out, kv.first->number);
 		writeSwapped<uint8_t>(out, kv.second.terminal);
 		if (kv.second.trie) {

@@ -845,7 +845,7 @@ void ApertiumApplicator::printSingleWindow(SingleWindow *window, UFILE *output) 
 		bool need_slash = print_word_forms;
 
 		//Tag::printTagRaw(output, single_tags[cohort->wordform]);
-		boost_foreach (Reading *reading, cohort->readings) {
+		for (auto reading : cohort->readings) {
 			if (need_slash) {
 				u_fprintf(output, "/");
 			}
@@ -861,7 +861,7 @@ void ApertiumApplicator::printSingleWindow(SingleWindow *window, UFILE *output) 
 
 		if (trace) {
 			const UChar not_sign = L'\u00AC';
-			boost_foreach (Reading *reading, cohort->delayed) {
+			for (auto reading : cohort->delayed) {
 				if (need_slash) {
 					u_fprintf(output, "/%C", not_sign);
 				}
@@ -871,7 +871,7 @@ void ApertiumApplicator::printSingleWindow(SingleWindow *window, UFILE *output) 
 				}
 				printReading(reading, output);
 			}
-			boost_foreach (Reading *reading, cohort->deleted) {
+			for (auto reading : cohort->deleted) {
 				if (need_slash) {
 					u_fprintf(output, "/%C", not_sign);
 				}

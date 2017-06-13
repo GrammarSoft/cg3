@@ -202,7 +202,7 @@ inline Reading *_reading_copy(Cohort *nc, Reading *oldr, bool is_sub = false) {
 	insert_if_exists(nr->parent->possible_sets, ga->grammar->sets_any);
 	ga->addTagToReading(*nr, nc->wordform);
 	TagList mappings;
-	boost_foreach (uint32_t tag, oldr->tags_list) {
+	for (auto tag : oldr->tags_list) {
 		Tag *nt = _tag_copy(oldr->parent->parent->parent->parent, nc->parent->parent->parent, tag);
 		if (nt->type & T_MAPPING || nt->tag[0] == ga->grammar->mapping_prefix) {
 			mappings.push_back(nt);
@@ -223,7 +223,7 @@ inline Reading *_reading_copy(Cohort *nc, Reading *oldr, bool is_sub = false) {
 inline Cohort *_cohort_copy(SingleWindow *ns, Cohort *oc) {
 	Cohort *nc = alloc_cohort(ns);
 	nc->wordform = _tag_copy(ns->parent->parent, oc->wordform);
-	boost_foreach (Reading *r, oc->readings) {
+	for (auto r : oc->readings) {
 		Reading *nr = _reading_copy(nc, r);
 		nc->appendReading(nr);
 	}
@@ -241,7 +241,7 @@ cg3_sentence *cg3_sentence_copy(cg3_sentence *sentence_, cg3_applicator *applica
 	applicator->initEmptySingleWindow(current);
 	current->has_enclosures = sentence->has_enclosures;
 	current->text = sentence->text;
-	boost_foreach (Cohort *c, sentence->cohorts) {
+	for (auto c : sentence->cohorts) {
 		Cohort *nc = _cohort_copy(current, c);
 		current->appendCohort(nc);
 	}
