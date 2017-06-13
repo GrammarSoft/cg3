@@ -450,7 +450,7 @@ bool GrammarApplicator::doesSetMatchReading_trie(const Reading& reading, const S
 			}
 			if (kv.second.terminal) {
 				if (unif_mode) {
-					BOOST_AUTO(it, unif_tags->find(theset.number));
+					auto it = unif_tags->find(theset.number);
 					if (it != unif_tags->end() && it->second != &kv) {
 						continue;
 					}
@@ -495,7 +495,7 @@ bool GrammarApplicator::doesSetMatchReading_tags(const Reading& reading, const S
 			if (*oiter == iiter->first->hash) {
 				if (iiter->second.terminal) {
 					if (unif_mode) {
-						BOOST_AUTO(it, unif_tags->find(theset.number));
+						auto it = unif_tags->find(theset.number);
 						if (it != unif_tags->end() && it->second != &*iiter) {
 							++iiter;
 							continue;
@@ -588,7 +588,7 @@ bool GrammarApplicator::doesSetMatchReading(const Reading& reading, const uint32
 		}
 		// Subsequent times, test whether any of the previously stored sets match the reading
 		else {
-			BOOST_AUTO(sets, ss_u32sv.get());
+			auto sets = ss_u32sv.get();
 			foreach (usi, *unif_sets) {
 				if (doesSetMatchReading(reading, *usi, bypass_index, unif_mode)) {
 					sets->insert(*usi);
@@ -654,7 +654,7 @@ bool GrammarApplicator::doesSetMatchReading(const Reading& reading, const uint32
 		if (unif_mode || (theset.type & ST_TAG_UNIFY)) {
 			const void *tag = 0;
 			for (size_t i = 0; i < size; ++i) {
-				BOOST_AUTO(it, unif_tags->find(theset.sets[i]));
+				auto it = unif_tags->find(theset.sets[i]);
 				if (it != unif_tags->end()) {
 					tag = it->second;
 					break;
@@ -733,8 +733,8 @@ inline bool GrammarApplicator::doesSetMatchCohort_testLinked(Cohort& cohort, con
 
 inline bool GrammarApplicator::doesSetMatchCohort_helper(Cohort& cohort, Reading& reading, const Set& theset, dSMC_Context *context) {
 	bool retval = false;
-	BOOST_AUTO(utags, ss_utags.get());
-	BOOST_AUTO(usets, ss_u32sv.get());
+	auto utags = ss_utags.get();
+	auto usets = ss_u32sv.get();
 	uint8_t orz = regexgrps.first;
 
 	if (context && !(current_rule->flags & FL_CAPTURE_UNIF) && (theset.type & ST_CHILD_UNIFY)) {

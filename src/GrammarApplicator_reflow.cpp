@@ -223,13 +223,13 @@ void GrammarApplicator::reflowDependencyWindow(uint32_t max) {
 		gWindow->cohort_map[0] = tmp;
 	}
 
-	for (BOOST_AUTO(begin, gWindow->dep_window.begin()); begin != gWindow->dep_window.end();) {
+	for (auto begin = gWindow->dep_window.begin(); begin != gWindow->dep_window.end();) {
 		while (begin != gWindow->dep_window.end() && (begin->second->type & CT_DEP_DONE || !begin->second->dep_self)) {
 			++begin;
 		}
 		gWindow->dep_map.clear();
 
-		BOOST_AUTO(end, begin);
+		auto end = begin;
 		for (; end != gWindow->dep_window.end(); ++end) {
 			Cohort *cohort = end->second;
 			if (cohort->type & CT_DEP_DONE) {
@@ -304,7 +304,7 @@ void GrammarApplicator::reflowRelationWindow(uint32_t max) {
 		}
 
 		for (RelationCtn::iterator rel = cohort->relations_input.begin(); rel != cohort->relations_input.end();) {
-			BOOST_AUTO(newrel, ss_u32sv.get());
+			auto newrel = ss_u32sv.get();
 
 			boost_foreach (uint32_t target, rel->second) {
 				uint32FlatHashMap::iterator it = gWindow->relation_map.find(target);
@@ -359,7 +359,7 @@ Tag *GrammarApplicator::generateVarstringTag(const Tag *tag) {
 	// Replace unified sets with their matching tags
 	if (tag->vs_sets) {
 		for (size_t i = 0; i < tag->vs_sets->size(); ++i) {
-			BOOST_AUTO(tags, ss_taglist.get());
+			auto tags = ss_taglist.get();
 			getTagList(*(*tag->vs_sets)[i], tags);
 			static UString rpl;
 			rpl.clear();
@@ -647,7 +647,7 @@ void GrammarApplicator::splitAllMappings(all_mappings_t& all_mappings, Cohort& c
 	static ReadingList readings;
 	readings = cohort.readings;
 	boost_foreach (Reading *reading, readings) {
-		BOOST_AUTO(iter, all_mappings.find(reading));
+		auto iter = all_mappings.find(reading);
 		if (iter == all_mappings.end()) {
 			continue;
 		}
@@ -718,7 +718,7 @@ void GrammarApplicator::mergeReadings(ReadingList& readings) {
 	static std::vector<Reading*> order;
 	order.clear();
 
-	for (BOOST_AUTO(miter, mlist.begin()); miter != mlist.end(); miter++) {
+	for (auto miter = mlist.begin(); miter != mlist.end(); miter++) {
 		const ReadingList& clist = miter->second;
 		Reading *nr = alloc_reading(*(clist.front()));
 		if (nr->mapping) {
