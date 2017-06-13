@@ -5,8 +5,8 @@ LIST ASet = ".atc[hm]{2}.*"r ;
 
 SECTION
 
-ADD ($tag) ASet ;
-ADD (£tag) ASet ;
+ADD ($tag) BEFORE (c wanted d) ASet ;
+ADD (£tag) AFTER (c wanted d) ASet ;
 ADD (@tag) ASet ;
 
 MAP (@mapped) (£tag) ;
