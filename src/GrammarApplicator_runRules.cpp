@@ -100,7 +100,7 @@ void GrammarApplicator::indexSingleWindow(SingleWindow& current) {
 			if (c->possible_sets.test(psit) == false) {
 				continue;
 			}
-			BOOST_AUTO(rules_it, grammar->rules_by_set.find(psit));
+			auto rules_it = grammar->rules_by_set.find(psit);
 			if (rules_it == grammar->rules_by_set.end()) {
 				continue;
 			}
@@ -137,7 +137,7 @@ void GrammarApplicator::getTagList(const Set& theSet, TagList& theTags, bool uni
 		}
 	}
 	else if (unif_mode) {
-		BOOST_AUTO(iter, unif_tags->find(theSet.number));
+		auto iter = unif_tags->find(theSet.number);
 		if (iter != unif_tags->end()) {
 			trie_getTagList(theSet.trie, theTags, iter->second);
 			trie_getTagList(theSet.trie_special, theTags, iter->second);
@@ -628,7 +628,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						++rule.num_match;
 
 						if (regex_prop && i && regexgrps_c.size()) {
-							BOOST_AUTO(it, regexgrps_c.find(cohort->readings[i - 1]->number));
+							auto it = regexgrps_c.find(cohort->readings[i - 1]->number);
 							if (it != regexgrps_c.end()) {
 								regexgrps_c.insert(std::make_pair(reading->number, it->second));
 								regexgrps_z.insert(std::make_pair(reading->number, regexgrps_z.find(cohort->readings[i - 1]->number)->second));
@@ -918,7 +918,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 
 						Tag *wf = 0;
 						std::vector<TagList> readings;
-						BOOST_AUTO(theTags, ss_taglist.get());
+						auto theTags = ss_taglist.get();
 						getTagList(*rule.maplist, theTags);
 
 						foreach (tter, *theTags) {
@@ -1047,7 +1047,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 
 						std::vector<std::pair<Cohort*, std::vector<TagList> > > cohorts;
 
-						BOOST_AUTO(theTags, ss_taglist.get());
+						auto theTags = ss_taglist.get();
 						getTagList(*rule.maplist, theTags);
 
 						Tag *wf = 0;
@@ -1275,8 +1275,8 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						index_ruleCohort_no.clear();
 						TRACE;
 						reading.noprint = false;
-						BOOST_AUTO(mappings, ss_taglist.get());
-						BOOST_AUTO(theTags, ss_taglist.get());
+						auto mappings = ss_taglist.get();
+						auto theTags = ss_taglist.get();
 						getTagList(*rule.maplist, theTags);
 
 						bool did_insert = false;
@@ -1335,8 +1335,8 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						reading.tags_list.push_back(cohort->wordform->hash);
 						reading.tags_list.push_back(reading.baseform);
 						reflowReading(reading);
-						BOOST_AUTO(mappings, ss_taglist.get());
-						BOOST_AUTO(theTags, ss_taglist.get());
+						auto mappings = ss_taglist.get();
+						auto theTags = ss_taglist.get();
 						getTagList(*rule.maplist, theTags);
 
 						APPEND_TAGLIST_TO_READING(*theTags, reading);
@@ -1352,7 +1352,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						// ToDo: Check whether this substitution will do nothing at all to the end result
 						// ToDo: Not actually...instead, test whether any reading in the cohort already is the end result
 
-						BOOST_AUTO(theTags, ss_taglist.get());
+						auto theTags = ss_taglist.get();
 						getTagList(*rule.sublist, theTags);
 
 						// Modify the list of tags to remove to be the actual list of tags present, including matching regex and icase tags
@@ -1362,7 +1362,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						size_t tpos = std::numeric_limits<size_t>::max();
 						bool plain = true;
 						for (size_t i = 0; i < reading.tags_list.size();) {
-							BOOST_AUTO(&remter, reading.tags_list[i]);
+							auto& remter = reading.tags_list[i];
 
 							if (plain && remter == (*theTags->begin())->hash) {
 								if (reading.baseform == remter) {
@@ -1371,8 +1371,8 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 								remter = substtag;
 								tpos = i;
 								for (size_t j = 1; j < theTags->size() && i < reading.tags_list.size(); ++j, ++i) {
-									BOOST_AUTO(&remter, reading.tags_list[i]);
-									BOOST_AUTO(tter, (*theTags)[j]->hash);
+									auto& remter = reading.tags_list[i];
+									auto tter = (*theTags)[j]->hash;
 									if (remter != tter) {
 										plain = false;
 										break;
@@ -1423,8 +1423,8 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 								tpos = reading.tags_list.size() - 1;
 							}
 							++tpos;
-							BOOST_AUTO(mappings, ss_taglist.get());
-							BOOST_AUTO(theTags, ss_taglist.get());
+							auto mappings = ss_taglist.get();
+							auto theTags = ss_taglist.get();
 							getTagList(*rule.maplist, theTags);
 
 							for (size_t i = 0; i < reading.tags_list.size();) {
@@ -1502,7 +1502,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 
 						Tag *bf = 0;
 						std::vector<TagList> readings;
-						BOOST_AUTO(theTags, ss_taglist.get());
+						auto theTags = ss_taglist.get();
 						getTagList(*rule.maplist, theTags);
 
 						foreach (tter, *theTags) {
@@ -1576,7 +1576,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						}
 
 						if (rule.sublist) {
-							BOOST_AUTO(excepts, ss_taglist.get());
+							auto excepts = ss_taglist.get();
 							getTagList(*rule.sublist, excepts);
 							FILL_TAG_LIST(excepts);
 							foreach (tter, *excepts) {
@@ -1584,8 +1584,8 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 							}
 						}
 
-						BOOST_AUTO(mappings, ss_taglist.get());
-						BOOST_AUTO(theTags, ss_taglist.get());
+						auto mappings = ss_taglist.get();
+						auto theTags = ss_taglist.get();
 						getTagList(*rule.maplist, theTags);
 
 						bool did_insert = false;
@@ -1627,13 +1627,13 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 					}
 					else if (type == K_SETPARENT || type == K_SETCHILD) {
 						int32_t orgoffset = rule.dep_target->offset;
-						BOOST_AUTO(seen_targets, ss_u32sv.get());
+						auto seen_targets = ss_u32sv.get();
 
 						bool attached = false;
 						Cohort *target = cohort;
 						while (!attached) {
-							BOOST_AUTO(utags, ss_utags.get());
-							BOOST_AUTO(usets, ss_u32sv.get());
+							auto utags = ss_utags.get();
+							auto usets = ss_u32sv.get();
 							*utags = *unif_tags;
 							*usets = *unif_sets;
 
@@ -1901,7 +1901,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 							if (good) {
 								swapper<Cohort*> sw((rule.flags & RF_REVERSE) != 0, attach, cohort);
 								bool rel_did_anything = false;
-								BOOST_AUTO(theTags, ss_taglist.get());
+								auto theTags = ss_taglist.get();
 								getTagList(*rule.maplist, theTags);
 
 								foreach (tter, *theTags) {
@@ -1955,10 +1955,10 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 								swapper<Cohort*> sw((rule.flags & RF_REVERSE) != 0, attach, cohort);
 								bool rel_did_anything = false;
 
-								BOOST_AUTO(sublist, ss_taglist.get());
+								auto sublist = ss_taglist.get();
 								getTagList(*rule.sublist, sublist);
 
-								BOOST_AUTO(maplist, ss_taglist.get());
+								auto maplist = ss_taglist.get();
 								getTagList(*rule.maplist, maplist);
 
 								foreach (tter, *maplist) {

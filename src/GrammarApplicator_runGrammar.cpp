@@ -377,7 +377,7 @@ void GrammarApplicator::runGrammarOnText(istream& input, UFILE *output) {
 				cCohort->appendReading(cReading);
 			}
 			else {
-				BOOST_AUTO(iter, all_mappings.find(cReading));
+				auto iter = all_mappings.find(cReading);
 				if (iter != all_mappings.end()) {
 					while (iter->second.size() > 1) {
 						u_fprintf(ux_stderr, "Warning: Sub-reading mapping %S on line %u will be discarded.\n", iter->second.back()->tag.c_str(), numLines);

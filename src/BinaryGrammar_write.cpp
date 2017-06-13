@@ -199,7 +199,7 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 		u32tmp = (uint32_t)htonl((uint32_t)grammar->reopen_mappings.size());
 		fwrite_throw(&u32tmp, sizeof(uint32_t), 1, output);
 	}
-	for (BOOST_AUTO(iter, grammar->reopen_mappings.begin()); iter != grammar->reopen_mappings.end(); ++iter) {
+	for (auto iter = grammar->reopen_mappings.begin(); iter != grammar->reopen_mappings.end(); ++iter) {
 		u32tmp = (uint32_t)htonl((uint32_t)*iter);
 		fwrite_throw(&u32tmp, sizeof(uint32_t), 1, output);
 	}
@@ -208,7 +208,7 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 		u32tmp = (uint32_t)htonl((uint32_t)grammar->preferred_targets.size());
 		fwrite_throw(&u32tmp, sizeof(uint32_t), 1, output);
 	}
-	for (BOOST_AUTO(iter, grammar->preferred_targets.begin()); iter != grammar->preferred_targets.end(); ++iter) {
+	for (auto iter = grammar->preferred_targets.begin(); iter != grammar->preferred_targets.end(); ++iter) {
 		u32tmp = (uint32_t)htonl((uint32_t)*iter);
 		fwrite_throw(&u32tmp, sizeof(uint32_t), 1, output);
 	}
@@ -305,7 +305,7 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 		u32tmp = (uint32_t)htonl((uint32_t)grammar->contexts.size());
 		fwrite_throw(&u32tmp, sizeof(uint32_t), 1, output);
 	}
-	for (BOOST_AUTO(cntx, grammar->contexts.begin()); cntx != grammar->contexts.end(); ++cntx) {
+	for (auto cntx = grammar->contexts.begin(); cntx != grammar->contexts.end(); ++cntx) {
 		writeContextualTest(cntx->second, output);
 	}
 

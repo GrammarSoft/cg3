@@ -88,11 +88,11 @@
 
 #define foreach(iter, container) \
 	if (!(container).empty())    \
-		for (BOOST_AUTO(iter, (container).begin()), iter##_end = (container).end(); iter != iter##_end; ++iter)
+		for (auto iter = (container).begin(), iter##_end = (container).end(); iter != iter##_end; ++iter)
 
 #define reverse_foreach(iter, container) \
 	if (!(container).empty())            \
-		for (BOOST_AUTO(iter, (container).rbegin()), iter##_end = (container).rend(); iter != iter##_end; ++iter)
+		for (auto iter = (container).rbegin(), iter##_end = (container).rend(); iter != iter##_end; ++iter)
 
 #ifdef _WIN32
 	#include <winsock.h> // for hton() and family.

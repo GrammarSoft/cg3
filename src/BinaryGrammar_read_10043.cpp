@@ -475,7 +475,7 @@ int BinaryGrammar::readBinaryGrammar_10043(FILE *input) {
 
 	// Bind the named templates to where they are used
 	foreach (it, deferred_tmpls) {
-		BOOST_AUTO(tmt, templates.find(it->second));
+		auto tmt = templates.find(it->second);
 		it->first->tmpl = tmt->second;
 	}
 

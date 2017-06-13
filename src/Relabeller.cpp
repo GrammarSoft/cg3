@@ -357,7 +357,7 @@ void Relabeller::relabel() {
 		const Set *set_r = relabels->sets_list[it.second->number];
 		const Tag *fromTag = tag_by_str[it.first];
 
-		BOOST_AUTO(const sets_g, sets_by_tag.find(it.first));
+		const auto sets_g = sets_by_tag.find(it.first);
 		if (sets_g != sets_by_tag.end()) {
 			boost_foreach (Set *set_g, sets_g->second) {
 				relabelAsList(set_g, set_r, fromTag);
@@ -369,7 +369,7 @@ void Relabeller::relabel() {
 		const Set *set_r = relabels->sets_list[it.second->number];
 		const Tag *fromTag = tag_by_str[it.first];
 
-		BOOST_AUTO(const sets_g, sets_by_tag.find(it.first));
+		const auto sets_g = sets_by_tag.find(it.first);
 		if (sets_g != sets_by_tag.end()) {
 			boost_foreach (Set *set_g, sets_g->second) {
 				relabelAsSet(set_g, set_r, fromTag);

@@ -2608,7 +2608,7 @@ int TextualParser::parse_grammar_from_file(const char *fname, const char *loc, c
 	}
 
 	bc::flat_map<uint32_t, uint32_t> sets;
-	for (BOOST_AUTO(cntx, result->contexts.begin()); cntx != result->contexts.end();) {
+	for (auto cntx = result->contexts.begin(); cntx != result->contexts.end();) {
 		if (cntx->second->pos & POS_NUMERIC_BRANCH) {
 			ContextualTest *unsafec = cntx->second;
 			result->contexts.erase(cntx);
@@ -2633,12 +2633,12 @@ int TextualParser::parse_grammar_from_file(const char *fname, const char *loc, c
 			orc->ors.push_back(unsafec);
 			orc = result->addContextualTest(orc);
 
-			for (BOOST_AUTO(cntx, result->contexts.begin()); cntx != result->contexts.end(); ++cntx) {
+			for (auto cntx = result->contexts.begin(); cntx != result->contexts.end(); ++cntx) {
 				if (cntx->second->linked == tmp) {
 					cntx->second->linked = orc;
 				}
 			}
-			for (BOOST_AUTO(it, result->rule_by_number.begin()); it != result->rule_by_number.end(); ++it) {
+			for (auto it = result->rule_by_number.begin(); it != result->rule_by_number.end(); ++it) {
 				if ((*it)->dep_target == tmp) {
 					(*it)->dep_target = orc;
 				}
