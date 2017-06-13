@@ -49,6 +49,8 @@
 #include <string>
 #include <set>
 #include <map>
+#include <unordered_map>
+#include <unordered_set>
 #include <stack>
 #include <limits>
 #include <ctime>
@@ -57,7 +59,7 @@
 #include <cassert>
 #include <ciso646>
 #include <sys/stat.h>
-#include <stdint.h> // C99 or C++0x or C++ TR1 will have this header. ToDo: Change to <cstdint> when C++0x broader support gets under way.
+#include <cstdint>
 #include <cycle.h>
 
 // cycle.h doesn't know all platforms (such as ARM), so fall back on clock()
@@ -73,16 +75,9 @@
 	#define HAVE_TICK_COUNTER
 #endif
 
-#include <boost/unordered_set.hpp>
-#include <boost/unordered_map.hpp>
 #include <boost/container/flat_set.hpp>
 #include <boost/container/flat_map.hpp>
 #include <boost/dynamic_bitset.hpp>
-#include <boost/scoped_ptr.hpp>
-#include <boost/shared_ptr.hpp>
-#include <boost/typeof/typeof.hpp>
-#define stdext boost
-#define hash_map unordered_map
 
 #define foreach(iter, container) \
 	if (!(container).empty())    \

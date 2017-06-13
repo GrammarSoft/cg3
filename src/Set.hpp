@@ -88,7 +88,7 @@ public:
 
 typedef sorted_vector<Set*> SetSet;
 typedef std::vector<Set*> SetVector;
-typedef stdext::hash_map<uint32_t, Set*> Setuint32HashMap;
+typedef std::unordered_map<uint32_t, Set*> Setuint32HashMap;
 
 inline uint8_t trie_reindex(const trie_t& trie) {
 	uint8_t type = 0;

@@ -108,7 +108,7 @@ int main(int argc, char *argv[]) {
 	CG3::FormatConverter applicator(ux_stderr);
 	applicator.setGrammar(&grammar);
 
-	boost::scoped_ptr<CG3::istream> instream;
+	std::unique_ptr<CG3::istream> instream;
 
 	CG3::CG_FORMATS fmt = CG3::FMT_INVALID;
 

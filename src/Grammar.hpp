@@ -56,7 +56,7 @@ public:
 	std::vector<Set*> sets_list;
 	SetSet sets_all;
 	uint32FlatHashMap sets_by_name;
-	typedef stdext::hash_map<UString, uint32_t> set_name_seeds_t;
+	typedef std::unordered_map<UString, uint32_t> set_name_seeds_t;
 	set_name_seeds_t set_name_seeds;
 	Setuint32HashMap sets_by_contents;
 	uint32FlatHashMap set_alias;
@@ -70,15 +70,15 @@ public:
 	typedef TagSortedVector icase_tags_t;
 	icase_tags_t icase_tags;
 
-	typedef stdext::hash_map<uint32_t, ContextualTest*> contexts_t;
+	typedef std::unordered_map<uint32_t, ContextualTest*> contexts_t;
 	contexts_t templates;
 	contexts_t contexts;
 
-	typedef stdext::hash_map<uint32_t, uint32IntervalVector> rules_by_set_t;
+	typedef std::unordered_map<uint32_t, uint32IntervalVector> rules_by_set_t;
 	rules_by_set_t rules_by_set;
-	typedef stdext::hash_map<uint32_t, uint32IntervalVector> rules_by_tag_t;
+	typedef std::unordered_map<uint32_t, uint32IntervalVector> rules_by_tag_t;
 	rules_by_tag_t rules_by_tag;
-	typedef stdext::hash_map<uint32_t, boost::dynamic_bitset<> > sets_by_tag_t;
+	typedef std::unordered_map<uint32_t, boost::dynamic_bitset<> > sets_by_tag_t;
 	sets_by_tag_t sets_by_tag;
 
 	uint32IntervalVector *rules_any;

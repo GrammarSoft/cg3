@@ -112,7 +112,7 @@ int main(int argc, char **argv) {
 	CG3::MweSplitApplicator applicator(ux_stderr);
 	applicator.setGrammar(&grammar);
 
-	boost::scoped_ptr<CG3::istream> instream;
+	std::unique_ptr<CG3::istream> instream;
 
 	instream.reset(new CG3::istream(ux_stdin));
 
