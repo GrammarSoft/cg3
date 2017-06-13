@@ -20,14 +20,14 @@
     </para>
     <screen>
   Reading &amp; Tag manipulations:
-      ADD &lt;tags&gt; &lt;target&gt; [contextual_tests] ;
-      MAP &lt;tags&gt; &lt;target&gt; [contextual_tests] ;
+      ADD &lt;tags&gt; [BEFORE|AFTER &lt;tags&gt;] &lt;target&gt; [contextual_tests] ;
+      MAP &lt;tags&gt; [BEFORE|AFTER &lt;tags&gt;] &lt;target&gt; [contextual_tests] ;
       SUBSTITUTE &lt;locate tags&gt; &lt;replacement tags&gt; &lt;target&gt; [contextual_tests] ;
       UNMAP &lt;target&gt; [contextual_tests] ;
 
       REPLACE &lt;tags&gt; &lt;target&gt; [contextual_tests] ;
       APPEND &lt;tags&gt; &lt;target&gt; [contextual_tests] ;
-      COPY &lt;extra tags&gt; [EXCEPT &lt;except tags&gt;] &lt;target&gt; [contextual_tests] ;
+      COPY &lt;extra tags&gt; [EXCEPT &lt;except tags&gt;] [BEFORE|AFTER &lt;tags&gt;] &lt;target&gt; [contextual_tests] ;
 
       SELECT &lt;target&gt; [contextual_tests] ;
       REMOVE &lt;target&gt; [contextual_tests] ;

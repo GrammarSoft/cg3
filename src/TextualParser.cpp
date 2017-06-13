@@ -1150,6 +1150,9 @@ void TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 	if (rule->flags & RF_ITERATE && rule->flags & RF_NOITERATE) {
 		error("%s: Error: Line %u near `%S`: ITERATE and NOITERATE are mutually exclusive!\n", lp);
 	}
+	if (rule->flags & RF_BEFORE && rule->flags & RF_AFTER) {
+		error("%s: Error: Line %u near `%S`: BEFORE and AFTER are mutually exclusive!\n", lp);
+	}
 
 	if (!(rule->flags & (RF_ITERATE | RF_NOITERATE))) {
 		if (key != K_SELECT && key != K_REMOVE && key != K_IFF && key != K_DELIMIT && key != K_REMCOHORT && key != K_MOVE && key != K_SWITCH) {
@@ -1251,6 +1254,21 @@ void TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 			error("%s: Error: Expected position keyword AFTER or BEFORE on line %u near `%S`!\n", p);
 		}
 		AST_CLOSE(p);
+	}
+
+	if (key == K_ADD || key == K_MAP || key == K_SUBSTITUTE || key == K_COPY) {
+		if (ux_simplecasecmp(p, stringbits[S_AFTER].getTerminatedBuffer(), stringbits[S_AFTER].length())) {
+			p += stringbits[S_AFTER].length();
+			rule->flags |= RF_AFTER;
+		}
+		else if (ux_simplecasecmp(p, stringbits[S_BEFORE].getTerminatedBuffer(), stringbits[S_BEFORE].length())) {
+			p += stringbits[S_BEFORE].length();
+			rule->flags |= RF_BEFORE;
+		}
+		if (rule->flags & (RF_BEFORE | RF_AFTER)) {
+			Set *s = parseSetInlineWrapper(p);
+			rule->childset1 = s->hash;
+		}
 	}
 
 	result->lines += SKIPWS(p);
