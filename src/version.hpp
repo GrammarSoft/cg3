@@ -23,7 +23,7 @@
 #ifndef c6d28b7452ec699b_VERSION_H
 #define c6d28b7452ec699b_VERSION_H
 
-#include <stdint.h>
+#include <cstdint>
 
 const char *const CG3_COPYRIGHT_STRING = "Copyright (C) 2007-2017 GrammarSoft ApS. Licensed under GPLv3+";
 

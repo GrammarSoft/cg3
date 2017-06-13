@@ -308,7 +308,7 @@ void GrammarWriter::printContextualTest(UFILE *to, const ContextualTest& test) {
 		u_fprintf(to, "T:%u ", test.tmpl->hash);
 	}
 	else if (!test.ors.empty()) {
-		for (BOOST_AUTO(iter, test.ors.begin()); iter != test.ors.end();) {
+		for (auto iter = test.ors.begin(); iter != test.ors.end();) {
 			u_fprintf(to, "(");
 			printContextualTest(to, **iter);
 			u_fprintf(to, ")");

@@ -2193,7 +2193,7 @@ void TextualParser::parseFromUChar(UChar *input, const char *fname) {
 					u_fungetc(bom, grammar);
 				}
 
-				boost::shared_ptr<std::vector<UChar> > gbuf(new std::vector<UChar>(grammar_size * 2, 0));
+				std::shared_ptr<std::vector<UChar> > gbuf(new std::vector<UChar>(grammar_size * 2, 0));
 				grammarbufs.push_back(gbuf);
 				std::vector<UChar>& data = *gbuf.get();
 				uint32_t read = u_file_read(&data[4], grammar_size * 2, grammar);
@@ -2461,7 +2461,7 @@ int TextualParser::parse_grammar_from_file(const char *fname, const char *loc, c
 	}
 
 	// It reads into the buffer at offset 4 because certain functions may look back, so we need some nulls in front.
-	boost::shared_ptr<std::vector<UChar> > gbuf(new std::vector<UChar>(result->grammar_size * 2, 0));
+	std::shared_ptr<std::vector<UChar> > gbuf(new std::vector<UChar>(result->grammar_size * 2, 0));
 	grammarbufs.push_back(gbuf);
 	std::vector<UChar>& data = *gbuf.get();
 	uint32_t read = u_file_read(&data[4], result->grammar_size * 2, grammar);

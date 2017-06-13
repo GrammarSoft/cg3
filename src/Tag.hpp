@@ -90,8 +90,8 @@ public:
 	uint32_t number;
 	uint32_t seed;
 	UString tag;
-	boost::scoped_ptr<SetVector> vs_sets;
-	boost::scoped_ptr<UStringVector> vs_names;
+	std::unique_ptr<SetVector> vs_sets;
+	std::unique_ptr<UStringVector> vs_names;
 	mutable URegularExpression *regexp;
 
 	Tag();
