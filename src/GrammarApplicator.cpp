@@ -129,10 +129,10 @@ GrammarApplicator::~GrammarApplicator() {
 }
 
 void GrammarApplicator::resetIndexes() {
-	boost_foreach (uint32FlatHashSet& sv, index_readingSet_yes) {
+	for (auto& sv : index_readingSet_yes) {
 		sv.clear();
 	}
-	boost_foreach (uint32FlatHashSet& sv, index_readingSet_no) {
+	for (auto& sv : index_readingSet_no) {
 		sv.clear();
 	}
 	index_regexp_yes.clear();
@@ -467,7 +467,7 @@ void GrammarApplicator::printReading(const Reading *reading, UFILE *output, size
 		u_fprintf(output, " ID:%u", reading->parent->global_number);
 		if (!reading->parent->relations.empty()) {
 			foreach (miter, reading->parent->relations) {
-				boost_foreach (uint32_t siter, miter->second) {
+				for (auto siter : miter->second) {
 					u_fprintf(output, " R:%S:%u", grammar->single_tags.find(miter->first)->second->tag.c_str(), siter);
 				}
 			}
@@ -545,7 +545,7 @@ removed:
 }
 
 void GrammarApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
-	boost_foreach (uint32_t var, window->variables_output) {
+	for (auto var : window->variables_output) {
 		Tag *key = single_tags[var];
 		auto iter = window->variables_set.find(var);
 		if (iter != window->variables_set.end()) {

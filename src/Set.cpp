@@ -137,7 +137,7 @@ void Set::markUsed(Grammar& grammar) {
 	trie_markused(trie);
 	trie_markused(trie_special);
 
-	boost_foreach (Tag *tag, ff_tags) {
+	for (auto tag : ff_tags) {
 		tag->markUsed();
 	}
 

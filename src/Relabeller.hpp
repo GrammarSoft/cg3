@@ -61,7 +61,7 @@ private:
 
 inline trie_t *_trie_copy_helper(const trie_t& trie, Grammar& grammar) {
 	trie_t *nt = new trie_t;
-	boost_foreach (const trie_t::value_type& p, trie) {
+	for (auto& p : trie) {
 		Tag *t = new Tag(*p.first);
 		t = grammar.addTag(t); // new is deleted if it exists
 		(*nt)[t].terminal = p.second.terminal;
@@ -74,7 +74,7 @@ inline trie_t *_trie_copy_helper(const trie_t& trie, Grammar& grammar) {
 
 inline trie_t trie_copy(const trie_t& trie, Grammar& grammar) {
 	trie_t nt;
-	boost_foreach (const trie_t::value_type& p, trie) {
+	for (auto& p : trie) {
 		Tag *t = new Tag(*p.first);
 		t = grammar.addTag(t); // new is deleted if it exists
 		nt[t].terminal = p.second.terminal;

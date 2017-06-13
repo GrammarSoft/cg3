@@ -47,7 +47,7 @@ inline bool TagSet_SubsetOf_TSet(const TagSortedVector& a, const T& b) {
 	}
 	//*/
 	typename T::const_iterator bi = b.lower_bound((*a.begin())->hash);
-	boost_foreach (Tag *ai, a) {
+	for (auto ai : a) {
 		while (bi != b.end() && *bi < ai->hash) {
 			++bi;
 		}
@@ -263,7 +263,7 @@ uint32_t GrammarApplicator::doesTagMatchReading(const Reading& reading, const Ta
 		}
 	}
 	else if (tag.type & T_NUMERICAL) {
-		boost_foreach (const Reading::tags_numerical_t::value_type& mter, reading.tags_numerical) {
+		for (auto& mter : reading.tags_numerical) {
 			const Tag& itag = *(mter.second);
 			double compval = tag.comparison_val;
 			if (compval <= NUMERIC_MIN) {
@@ -442,7 +442,7 @@ uint32_t GrammarApplicator::doesTagMatchReading(const Reading& reading, const Ta
 }
 
 bool GrammarApplicator::doesSetMatchReading_trie(const Reading& reading, const Set& theset, const trie_t& trie, bool unif_mode) {
-	boost_foreach (const trie_t::value_type& kv, trie) {
+	for (auto& kv : trie) {
 		bool match = (doesTagMatchReading(reading, *kv.first, unif_mode) != 0);
 		if (match) {
 			if (kv.first->type & T_FAILFAST) {
@@ -479,7 +479,7 @@ bool GrammarApplicator::doesSetMatchReading_tags(const Reading& reading, const S
 	bool retval = false;
 
 	if (!theset.ff_tags.empty()) {
-		boost_foreach (const Tag *tag, theset.ff_tags) {
+		for (auto tag : theset.ff_tags) {
 			if (doesTagMatchReading(reading, *tag, unif_mode)) {
 				return false;
 			}

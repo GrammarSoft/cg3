@@ -237,7 +237,7 @@ void TextualParser::parseTagList(UChar *& p, Set *s) {
 			tags.erase(std::unique(tags.begin(), tags.end()), tags.end());
 			// If this particular list of tags hasn't already been seen, then increment their frequency counts
 			if (taglists.insert(tags).second) {
-				boost_foreach (Tag *t, tags) {
+				for (auto t : tags) {
 					++tag_freq[t];
 				}
 			}
@@ -246,7 +246,7 @@ void TextualParser::parseTagList(UChar *& p, Set *s) {
 	AST_CLOSE(p);
 
 	freq_sorter fs(tag_freq);
-	boost_foreach (const TagVector& tvc, taglists) {
+	for (auto& tvc : taglists) {
 		if (tvc.size() == 1) {
 			result->addTagToSet(tvc[0], s);
 			continue;
@@ -256,7 +256,7 @@ void TextualParser::parseTagList(UChar *& p, Set *s) {
 		// Doing this yields a very cheap imperfect form of trie compression, but it's good enough
 		std::sort(tv.begin(), tv.end(), fs);
 		bool special = false;
-		boost_foreach (Tag *tag, tv) {
+		for (auto tag : tv) {
 			if (tag->type & T_SPECIAL) {
 				special = true;
 				break;
@@ -335,7 +335,7 @@ Set *TextualParser::parseSetInline(UChar *& p, Set *s) {
 					}
 					else {
 						bool special = false;
-						boost_foreach (Tag *tag, tags) {
+						for (auto tag : tags) {
 							if (tag->type & T_SPECIAL) {
 								special = true;
 								break;
@@ -396,14 +396,14 @@ Set *TextualParser::parseSetInline(UChar *& p, Set *s) {
 					set_c->setName(sets_counter++);
 
 					bc::flat_map<Tag*, size_t> tag_freq;
-					boost_foreach (const TagVector& tags, r) {
-						boost_foreach (Tag *t, tags) {
+					for (auto& tags : r) {
+						for (auto t : tags) {
 							++tag_freq[t];
 						}
 					}
 
 					freq_sorter fs(tag_freq);
-					boost_foreach (TagVector& tv, r) {
+					for (auto& tv : r) {
 						if (tv.size() == 1) {
 							result->addTagToSet(tv[0], set_c);
 							continue;
@@ -413,7 +413,7 @@ Set *TextualParser::parseSetInline(UChar *& p, Set *s) {
 						// Doing this yields a very cheap imperfect form of trie compression, but it's good enough
 						std::sort(tv.begin(), tv.end(), fs);
 						bool special = false;
-						boost_foreach (Tag *tag, tv) {
+						for (auto tag : tv) {
 							if (tag->type & T_SPECIAL) {
 								special = true;
 								break;
@@ -2062,7 +2062,7 @@ void TextualParser::parseFromUChar(UChar *input, const char *fname) {
 
 				while (*p != ';') {
 					bool found = false;
-					boost_foreach (pairs_t& pair, pairs) {
+					for (auto& pair : pairs) {
 						if (ux_simplecasecmp(p, stringbits[pair.first].getTerminatedBuffer(), stringbits[pair.first].length())) {
 							AST_OPEN(Option);
 							p += stringbits[pair.first].length();
@@ -2567,7 +2567,7 @@ int TextualParser::parse_grammar_from_file(const char *fname, const char *loc, c
 		}
 	}
 
-	boost_foreach (Tag *tag, result->single_tags_list) {
+	for (auto tag : result->single_tags_list) {
 		if (!(tag->type & T_VARSTRING)) {
 			continue;
 		}
@@ -2644,7 +2644,7 @@ int TextualParser::parse_grammar_from_file(const char *fname, const char *loc, c
 				}
 				ContextList *cntxs[2] = { &(*it)->tests, &(*it)->dep_tests };
 				for (size_t i = 0; i < 2; ++i) {
-					boost_foreach (ContextualTest *& test, *cntxs[i]) {
+					for (auto& test : *cntxs[i]) {
 						if (test == tmp) {
 							test = orc;
 						}

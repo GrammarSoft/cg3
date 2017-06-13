@@ -306,7 +306,7 @@ void GrammarApplicator::reflowRelationWindow(uint32_t max) {
 		for (RelationCtn::iterator rel = cohort->relations_input.begin(); rel != cohort->relations_input.end();) {
 			auto newrel = ss_u32sv.get();
 
-			boost_foreach (uint32_t target, rel->second) {
+			for (auto target : rel->second) {
 				uint32FlatHashMap::iterator it = gWindow->relation_map.find(target);
 				if (it != gWindow->relation_map.end()) {
 					cohort->relations[rel->first].insert(it->second);
@@ -646,7 +646,7 @@ void GrammarApplicator::splitAllMappings(all_mappings_t& all_mappings, Cohort& c
 	}
 	static ReadingList readings;
 	readings = cohort.readings;
-	boost_foreach (Reading *reading, readings) {
+	for (auto reading : readings) {
 		auto iter = all_mappings.find(reading);
 		if (iter == all_mappings.end()) {
 			continue;
@@ -655,7 +655,7 @@ void GrammarApplicator::splitAllMappings(all_mappings_t& all_mappings, Cohort& c
 	}
 	std::sort(cohort.readings.begin(), cohort.readings.end(), CG3::Reading::cmp_number);
 	if (!grammar->reopen_mappings.empty()) {
-		boost_foreach (Reading *reading, cohort.readings) {
+		for (auto reading : cohort.readings) {
 			if (reading->mapping && grammar->reopen_mappings.count(reading->mapping->hash)) {
 				reading->mapped = false;
 			}

@@ -437,7 +437,7 @@ void NicelineApplicator::printReading(const Reading *reading, UFILE *output) {
 		u_fprintf(output, " ID:%u", reading->parent->global_number);
 		if (!reading->parent->relations.empty()) {
 			foreach (miter, reading->parent->relations) {
-				boost_foreach (uint32_t siter, miter->second) {
+				for (auto siter : miter->second) {
 					u_fprintf(output, " R:%S:%u", grammar->single_tags.find(miter->first)->second->tag.c_str(), siter);
 				}
 			}
@@ -482,7 +482,7 @@ void NicelineApplicator::printCohort(Cohort *cohort, UFILE *output) {
 	if (cohort->readings.empty()) {
 		u_fputc('\t', output);
 	}
-	boost_foreach (Reading *rter, cohort->readings) {
+	for (auto rter : cohort->readings) {
 		printReading(rter, output);
 	}
 
