@@ -68,7 +68,7 @@ Grammar::~Grammar() {
 		delete *iter_rules;
 	}
 
-	for (BOOST_AUTO(cntx, contexts.begin()); cntx != contexts.end(); ++cntx) {
+	for (auto cntx = contexts.begin(); cntx != contexts.end(); ++cntx) {
 		delete cntx->second;
 	}
 }
@@ -162,7 +162,7 @@ void Grammar::addSet(Set *& to) {
 		positive->trie_special.swap(to->trie_special);
 
 		boost_foreach (Tag *iter, to->ff_tags) {
-			BOOST_AUTO(pit, positive->trie_special.find(iter));
+			auto pit = positive->trie_special.find(iter);
 			if (pit != positive->trie_special.end()) {
 				if (pit->second.terminal) {
 					if (pit->second.trie) {
@@ -314,7 +314,7 @@ uint32_t Grammar::removeNumericTags(uint32_t s) {
 	Set *set = getSet(s);
 	if (!set->sets.empty()) {
 		bool did = false;
-		BOOST_AUTO(sets, set->sets);
+		auto sets = set->sets;
 		for (size_t i = 0; i < sets.size(); ++i) {
 			uint32_t ns = removeNumericTags(sets[i]);
 			if (ns == 0) {
@@ -351,8 +351,8 @@ uint32_t Grammar::removeNumericTags(uint32_t s) {
 			if (tries[i]->empty()) {
 				continue;
 			}
-			BOOST_AUTO(ctags, trie_getTags(*tries[i]));
-			for (BOOST_AUTO(it, ctags.begin()); it != ctags.end(); ++it) {
+			auto ctags = trie_getTags(*tries[i]);
+			for (auto it = ctags.begin(); it != ctags.end(); ++it) {
 				bool special = false;
 				tags.clear();
 				fill_tagvector(*it, tags, did, special);
@@ -390,7 +390,7 @@ uint32_t Grammar::removeNumericTags(uint32_t s) {
 			ns->name += 'B';
 			ns->name += '_';
 
-			for (BOOST_AUTO(it, ntags.begin()); it != ntags.end(); ++it) {
+			for (auto it = ntags.begin(); it != ntags.end(); ++it) {
 				if (it->second) {
 					if (it->first.size() == 1 && (it->first[0]->type & T_FAILFAST)) {
 						ns->ff_tags.insert(it->first[0]);
@@ -681,12 +681,12 @@ void Grammar::reindex(bool unused_sets, bool used_tags) {
 		}
 	}
 
-	for (BOOST_AUTO(it, parentheses.begin()); it != parentheses.end(); ++it) {
+	for (auto it = parentheses.begin(); it != parentheses.end(); ++it) {
 		single_tags[it->first]->markUsed();
 		single_tags[it->second]->markUsed();
 	}
 
-	for (BOOST_AUTO(it, preferred_targets.begin()); it != preferred_targets.end(); ++it) {
+	for (auto it = preferred_targets.begin(); it != preferred_targets.end(); ++it) {
 		single_tags[*it]->markUsed();
 	}
 
@@ -734,7 +734,7 @@ void Grammar::reindex(bool unused_sets, bool used_tags) {
 		}
 
 		contexts_t tosave;
-		for (BOOST_AUTO(cntx, contexts.begin()); cntx != contexts.end(); ++cntx) {
+		for (auto cntx = contexts.begin(); cntx != contexts.end(); ++cntx) {
 			if (cntx->second->is_used) {
 				tosave[cntx->first] = cntx->second;
 				continue;
@@ -765,7 +765,7 @@ void Grammar::reindex(bool unused_sets, bool used_tags) {
 		}
 	}
 
-	for (BOOST_AUTO(iter_tags, single_tags.begin()); iter_tags != single_tags.end(); ++iter_tags) {
+	for (auto iter_tags = single_tags.begin(); iter_tags != single_tags.end(); ++iter_tags) {
 		Tag *tag = iter_tags->second;
 		if (tag->tag[0] == mapping_prefix) {
 			tag->type |= T_MAPPING;
@@ -1007,7 +1007,7 @@ void Grammar::reindex(bool unused_sets, bool used_tags) {
 	}
 
 	if (used_tags) {
-		for (BOOST_AUTO(iter_tags, single_tags.begin()); iter_tags != single_tags.end(); ++iter_tags) {
+		for (auto iter_tags = single_tags.begin(); iter_tags != single_tags.end(); ++iter_tags) {
 			Tag *tag = iter_tags->second;
 			if (tag->type & T_USED) {
 				UString tmp(tag->toUString(true));

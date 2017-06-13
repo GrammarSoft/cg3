@@ -217,14 +217,14 @@ double Cohort::getMax(uint32_t key) {
 }
 
 bool Cohort::addRelation(uint32_t rel, uint32_t cohort) {
-	BOOST_AUTO(&cohorts, relations[rel]);
+	auto& cohorts = relations[rel];
 	const size_t sz = cohorts.size();
 	cohorts.insert(cohort);
 	return (sz != cohorts.size());
 }
 
 bool Cohort::setRelation(uint32_t rel, uint32_t cohort) {
-	BOOST_AUTO(&cohorts, relations[rel]);
+	auto& cohorts = relations[rel];
 	if (cohorts.size() == 1 && cohorts.find(cohort) != cohorts.end()) {
 		return false;
 	}

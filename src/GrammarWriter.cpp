@@ -170,7 +170,7 @@ int GrammarWriter::writeGrammar(UFILE *output) {
 	u_fprintf(output, "\n");
 
 	/*
-	for (BOOST_AUTO(cntx, grammar->templates.begin()); cntx != grammar->templates.end(); ++cntx) {
+	for (auto cntx = grammar->templates.begin(); cntx != grammar->templates.end(); ++cntx) {
 		u_fprintf(output, "TEMPLATE %u = ", cntx->second->hash);
 		printContextualTest(output, *cntx->second);
 		u_fprintf(output, " ;\n");
@@ -308,7 +308,7 @@ void GrammarWriter::printContextualTest(UFILE *to, const ContextualTest& test) {
 		u_fprintf(to, "T:%u ", test.tmpl->hash);
 	}
 	else if (!test.ors.empty()) {
-		for (BOOST_AUTO(iter, test.ors.begin()); iter != test.ors.end();) {
+		for (auto iter = test.ors.begin(); iter != test.ors.end();) {
 			u_fprintf(to, "(");
 			printContextualTest(to, **iter);
 			u_fprintf(to, ")");

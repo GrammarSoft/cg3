@@ -107,7 +107,7 @@ std::vector<Cohort*> MweSplitApplicator::splitMwe(Cohort *cohort) {
 
 				Reading *rNew = alloc_reading(*sub);
 				for (size_t i = 0; i < rNew->tags_list.size(); ++i) {
-					BOOST_AUTO(&tter, rNew->tags_list[i]);
+					auto& tter = rNew->tags_list[i];
 					if (tter == wfTag->hash || tter == rNew->parent->wordform->hash) {
 						rNew->tags_list.erase(rNew->tags_list.begin() + i);
 						rNew->tags.erase(tter);
@@ -138,7 +138,7 @@ std::vector<Cohort*> MweSplitApplicator::splitMwe(Cohort *cohort) {
 void MweSplitApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 	boost_foreach (uint32_t var, window->variables_output) {
 		Tag *key = single_tags[var];
-		BOOST_AUTO(iter, window->variables_set.find(var));
+		auto iter = window->variables_set.find(var);
 		if (iter != window->variables_set.end()) {
 			if (iter->second != grammar->tag_any) {
 				Tag *value = single_tags[iter->second];
