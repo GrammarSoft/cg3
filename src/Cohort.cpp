@@ -187,7 +187,7 @@ void Cohort::updateMinMax() {
 	num_min.clear();
 	num_max.clear();
 	foreach (rter, readings) {
-		boost_foreach (Reading::tags_numerical_t::value_type& nter, (*rter)->tags_numerical) {
+		for (auto& nter : (*rter)->tags_numerical) {
 			const Tag *tag = nter.second;
 			if (num_min.find(tag->comparison_hash) == num_min.end() || tag->comparison_val < num_min[tag->comparison_hash]) {
 				num_min[tag->comparison_hash] = tag->comparison_val;

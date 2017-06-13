@@ -116,7 +116,7 @@ void Grammar::addSet(Set *& to) {
 				}
 				else {
 					bool special = false;
-					boost_foreach (Tag *tag, tv) {
+					for (auto tag : tv) {
 						if (tag->type & T_SPECIAL) {
 							special = true;
 							break;
@@ -161,7 +161,7 @@ void Grammar::addSet(Set *& to) {
 		positive->trie.swap(to->trie);
 		positive->trie_special.swap(to->trie_special);
 
-		boost_foreach (Tag *iter, to->ff_tags) {
+		for (auto iter : to->ff_tags) {
 			auto pit = positive->trie_special.find(iter);
 			if (pit != positive->trie_special.end()) {
 				if (pit->second.terminal) {
@@ -522,7 +522,7 @@ ContextualTest *Grammar::addContextualTest(ContextualTest *t) {
 	t->rehash();
 
 	t->linked = addContextualTest(t->linked);
-	boost_foreach (ContextualTest *& it, t->ors) {
+	for (auto& it : t->ors) {
 		it = addContextualTest(it);
 	}
 
@@ -776,14 +776,14 @@ void Grammar::reindex(bool unused_sets, bool used_tags) {
 	}
 
 	if (!is_binary) {
-		boost_foreach (Set *set, sets_list) {
+		for (auto set : sets_list) {
 			set->reindex(*this);
 		}
-		boost_foreach (Set *set, sets_list) {
+		for (auto set : sets_list) {
 			setAdjustSets(set);
 		}
 	}
-	boost_foreach (Set *set, sets_list) {
+	for (auto set : sets_list) {
 		indexSets(set->number, set);
 	}
 
@@ -836,10 +836,10 @@ void Grammar::reindex(bool unused_sets, bool used_tags) {
 		if ((*iter_rule)->dep_target) {
 			contextAdjustTarget((*iter_rule)->dep_target);
 		}
-		boost_foreach (ContextualTest *test, (*iter_rule)->tests) {
+		for (auto test : (*iter_rule)->tests) {
 			contextAdjustTarget(test);
 		}
-		boost_foreach (ContextualTest *test, (*iter_rule)->dep_tests) {
+		for (auto test : (*iter_rule)->dep_tests) {
 			contextAdjustTarget(test);
 		}
 	}
@@ -859,7 +859,7 @@ void Grammar::reindex(bool unused_sets, bool used_tags) {
 
 	sets_by_contents.clear();
 
-	boost_foreach (Set *to, sets_list) {
+	for (auto to : sets_list) {
 		if (to->type & ST_STATIC) {
 			uint32_t nhash = hash_value(to->name);
 			const uint32_t cnum = to->number;
@@ -1019,7 +1019,7 @@ void Grammar::reindex(bool unused_sets, bool used_tags) {
 }
 
 inline void trie_indexToRule(const trie_t& trie, Grammar& grammar, uint32_t r) {
-	boost_foreach (const trie_t::value_type& kv, trie) {
+	for (auto& kv : trie) {
 		grammar.indexTagToRule(kv.first->hash, r);
 		if (kv.second.trie) {
 			trie_indexToRule(*kv.second.trie, grammar, r);
@@ -1047,7 +1047,7 @@ void Grammar::indexTagToRule(uint32_t t, uint32_t r) {
 }
 
 inline void trie_indexToSet(const trie_t& trie, Grammar& grammar, uint32_t r) {
-	boost_foreach (const trie_t::value_type& kv, trie) {
+	for (auto& kv : trie) {
 		grammar.indexTagToSet(kv.first->hash, r);
 		if (kv.second.trie) {
 			trie_indexToSet(*kv.second.trie, grammar, r);
@@ -1109,7 +1109,7 @@ void Grammar::contextAdjustTarget(ContextualTest *test) {
 		test->cbarrier = set->number;
 	}
 
-	boost_foreach (ContextualTest *tor, test->ors) {
+	for (auto tor : test->ors) {
 		contextAdjustTarget(tor);
 	}
 	if (test->tmpl) {

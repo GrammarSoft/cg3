@@ -81,8 +81,6 @@
 #include <boost/scoped_ptr.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/typeof/typeof.hpp>
-#include <boost/foreach.hpp>
-#define boost_foreach BOOST_FOREACH
 #define stdext boost
 #define hash_map unordered_map
 

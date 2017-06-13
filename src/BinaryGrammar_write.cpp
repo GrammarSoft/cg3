@@ -217,7 +217,7 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 		u32tmp = (uint32_t)htonl((uint32_t)grammar->parentheses.size());
 		fwrite_throw(&u32tmp, sizeof(uint32_t), 1, output);
 	}
-	boost_foreach (const Grammar::parentheses_t::value_type& iter_par, grammar->parentheses) {
+	for (auto& iter_par : grammar->parentheses) {
 		u32tmp = (uint32_t)htonl(iter_par.first);
 		fwrite_throw(&u32tmp, sizeof(uint32_t), 1, output);
 		u32tmp = (uint32_t)htonl(iter_par.second);
@@ -427,7 +427,7 @@ void BinaryGrammar::writeContextualTest(ContextualTest *t, FILE *output) {
 	if (t->tmpl) {
 		writeContextualTest(t->tmpl, output);
 	}
-	boost_foreach (ContextualTest *iter, t->ors) {
+	for (auto iter : t->ors) {
 		writeContextualTest(iter, output);
 	}
 	if (t->linked) {
@@ -500,7 +500,7 @@ void BinaryGrammar::writeContextualTest(ContextualTest *t, FILE *output) {
 		u32tmp = (uint32_t)htonl((uint32_t)t->ors.size());
 		fwrite_throw(&u32tmp, sizeof(uint32_t), 1, output);
 
-		boost_foreach (ContextualTest *iter, t->ors) {
+		for (auto iter : t->ors) {
 			u32tmp = (uint32_t)htonl(iter->hash);
 			fwrite_throw(&u32tmp, sizeof(uint32_t), 1, output);
 		}
