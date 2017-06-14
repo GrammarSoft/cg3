@@ -300,8 +300,7 @@ int main(int argc, char *argv[]) {
 		buf[0] = 0;
 		buf[sn] = 0;
 		u_charsToUChars(single_rule, buf, sn);
-		foreach (riter, applicator->grammar->rule_by_number) {
-			const CG3::Rule *rule = *riter;
+		for (auto rule : applicator->grammar->rule_by_number) {
 			if (rule->name == buf) {
 				applicator->valid_rules.push_back(rule->number);
 			}

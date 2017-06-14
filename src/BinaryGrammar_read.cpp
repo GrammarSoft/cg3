@@ -352,10 +352,10 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 	}
 
 	// Actually assign sets to the varstring tags now that sets are loaded
-	foreach (iter, tag_varsets) {
-		Tag *t = grammar->single_tags_list[iter->first];
-		foreach (uit, iter->second) {
-			Set *s = grammar->sets_list[*uit];
+	for (auto iter : tag_varsets) {
+		Tag *t = grammar->single_tags_list[iter.first];
+		for (auto uit : iter.second) {
+			Set *s = grammar->sets_list[uit];
 			t->vs_sets->push_back(s);
 		}
 	}
@@ -500,15 +500,15 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 	}
 
 	// Bind the templates to where they are used
-	foreach (it, deferred_tmpls) {
-		it->first->tmpl = grammar->contexts.find(it->second)->second;
+	for (auto it : deferred_tmpls) {
+		it.first->tmpl = grammar->contexts.find(it.second)->second;
 	}
 
 	// Bind the OR'ed contexts to where they are used
-	foreach (it, deferred_ors) {
-		it->first->ors.reserve(it->second.size());
-		foreach (orit, it->second) {
-			it->first->ors.push_back(grammar->contexts.find(*orit)->second);
+	for (auto it : deferred_ors) {
+		it.first->ors.reserve(it.second.size());
+		for (auto orit : it.second) {
+			it.first->ors.push_back(grammar->contexts.find(orit)->second);
 		}
 	}
 

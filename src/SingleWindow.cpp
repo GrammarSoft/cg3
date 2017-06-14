@@ -74,8 +74,8 @@ SingleWindow::~SingleWindow() {
 		}
 	}
 
-	foreach (iter, cohorts) {
-		delete *iter;
+	for (auto iter : cohorts) {
+		delete iter;
 	}
 	if (next && previous) {
 		next->previous = previous;
@@ -103,8 +103,8 @@ void SingleWindow::clear() {
 		}
 	}
 
-	foreach (iter, cohorts) {
-		free_cohort(*iter);
+	for (auto iter : cohorts) {
+		free_cohort(iter);
 	}
 	if (next && previous) {
 		next->previous = previous;

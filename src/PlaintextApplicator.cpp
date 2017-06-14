@@ -145,8 +145,8 @@ void PlaintextApplicator::runGrammarOnText(istream& input, UFILE *output) {
 					u_fprintf(ux_stderr, "Warning: Soft limit of %u cohorts reached at line %u but found suitable soft delimiter.\n", soft_limit, numLines);
 					u_fflush(ux_stderr);
 				}
-				foreach (iter, cCohort->readings) {
-					addTagToReading(**iter, endtag);
+				for (auto iter : cCohort->readings) {
+					addTagToReading(*iter, endtag);
 				}
 
 				cSWindow->appendCohort(cCohort);
@@ -162,8 +162,8 @@ void PlaintextApplicator::runGrammarOnText(istream& input, UFILE *output) {
 					u_fprintf(ux_stderr, "Warning: Hard limit of %u cohorts reached at line %u - forcing break.\n", hard_limit, numLines);
 					u_fflush(ux_stderr);
 				}
-				foreach (iter, cCohort->readings) {
-					addTagToReading(**iter, endtag);
+				for (auto iter : cCohort->readings) {
+					addTagToReading(*iter, endtag);
 				}
 
 				cSWindow->appendCohort(cCohort);
@@ -320,8 +320,8 @@ void PlaintextApplicator::runGrammarOnText(istream& input, UFILE *output) {
 		if (cCohort->readings.empty()) {
 			initEmptyCohort(*cCohort);
 		}
-		foreach (iter, cCohort->readings) {
-			addTagToReading(**iter, endtag);
+		for (auto iter : cCohort->readings) {
+			addTagToReading(*iter, endtag);
 		}
 		cReading = 0;
 		cCohort = 0;

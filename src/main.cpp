@@ -343,9 +343,9 @@ int main(int argc, char *argv[]) {
 
 	if (options[OPTIMIZE_UNSAFE].doesOccur) {
 		std::vector<uint32_t> bad;
-		foreach (ir, grammar.rule_by_number) {
-			if ((*ir)->num_match == 0) {
-				bad.push_back((*ir)->number);
+		for (auto ir : grammar.rule_by_number) {
+			if (ir->num_match == 0) {
+				bad.push_back(ir->number);
 			}
 		}
 		reverse_foreach (br, bad) {
@@ -359,17 +359,17 @@ int main(int argc, char *argv[]) {
 	}
 	if (options[OPTIMIZE_SAFE].doesOccur) {
 		CG3::RuleVector bad;
-		foreach (ir, grammar.rule_by_number) {
-			if ((*ir)->num_match == 0) {
-				bad.push_back(*ir);
+		for (auto ir : grammar.rule_by_number) {
+			if (ir->num_match == 0) {
+				bad.push_back(ir);
 			}
 		}
 		reverse_foreach (br, bad) {
 			grammar.rule_by_number.erase(grammar.rule_by_number.begin() + (*br)->number);
 		}
-		foreach (br, bad) {
-			(*br)->number = grammar.rule_by_number.size();
-			grammar.rule_by_number.push_back(*br);
+		for (auto br : bad) {
+			br->number = grammar.rule_by_number.size();
+			grammar.rule_by_number.push_back(br);
 		}
 		std::cerr << "Optimizer moved " << bad.size() << " rules." << std::endl;
 		grammar.reindex();
@@ -507,8 +507,7 @@ void GAppSetOpts(CG3::GrammarApplicator& applicator, UConverter *conv) {
 			buf[0] = 0;
 			ucnv_toUChars(conv, buf, sn * 3, options[RULE].value, sn, &status);
 
-			foreach (riter, applicator.grammar->rule_by_number) {
-				const CG3::Rule *rule = *riter;
+			for (auto rule : applicator.grammar->rule_by_number) {
 				if (rule->name == buf) {
 					applicator.valid_rules.push_back(rule->number);
 				}

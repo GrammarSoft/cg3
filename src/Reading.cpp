@@ -176,9 +176,9 @@ Reading *Reading::allocateReading(const Reading& r) {
 uint32_t Reading::rehash() {
 	hash = 0;
 	hash_plain = 0;
-	foreach (iter, tags) {
-		if (!mapping || mapping->hash != *iter) {
-			hash = hash_value(*iter, hash);
+	for (auto iter : tags) {
+		if (!mapping || mapping->hash != iter) {
+			hash = hash_value(iter, hash);
 		}
 	}
 	hash_plain = hash;

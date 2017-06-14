@@ -323,10 +323,10 @@ void cg3_cohort_getrelation_u(cg3_cohort *cohort_, const UChar *rel, uint32_t *r
 	GrammarApplicator *ga = cohort->parent->parent->parent;
 
 	if ((cohort->type & CT_RELATED) && !cohort->relations.empty()) {
-		foreach (miter, cohort->relations) {
-			foreach (siter, miter->second) {
-				if (u_strcmp(ga->single_tags.find(miter->first)->second->tag.c_str(), rel) == 0) {
-					*rel_parent = *siter;
+		for (auto miter : cohort->relations) {
+			for (auto siter : miter->second) {
+				if (u_strcmp(ga->single_tags.find(miter.first)->second->tag.c_str(), rel) == 0) {
+					*rel_parent = siter;
 				}
 			}
 		}
@@ -509,7 +509,7 @@ const char *cg3_tag_gettext_u8(cg3_tag *tag_) {
 	Tag *tag = static_cast<Tag*>(tag_);
 	UErrorCode status = U_ZERO_ERROR;
 
-	u_strToUTF8(&cbuffers[0][0], CG3_BUFFER_SIZE - 1, 0, tag->tag.c_str(), tag->tag.length(), &status);
+	u_strToUTF8(&cbuffers[0][0], CG3_BUFFER_SIZE - 1, 0, tag->tag.c_str(), tag->tag.size(), &status);
 	if (U_FAILURE(status)) {
 		u_fprintf(ux_stderr, "CG3 Error: Failed to convert text from UChar to UTF-8. Status = %s\n", u_errorName(status));
 		return 0;
@@ -529,7 +529,7 @@ const uint32_t *cg3_tag_gettext_u32(cg3_tag *tag_) {
 
 	UChar32 *tmp = reinterpret_cast<UChar32*>(&cbuffers[0][0]);
 
-	u_strToUTF32(tmp, (CG3_BUFFER_SIZE / sizeof(UChar32)) - 1, 0, tag->tag.c_str(), tag->tag.length(), &status);
+	u_strToUTF32(tmp, (CG3_BUFFER_SIZE / sizeof(UChar32)) - 1, 0, tag->tag.c_str(), tag->tag.size(), &status);
 	if (U_FAILURE(status)) {
 		u_fprintf(ux_stderr, "CG3 Error: Failed to convert text from UChar to UTF-32. Status = %s\n", u_errorName(status));
 		return 0;
@@ -544,7 +544,7 @@ const wchar_t *cg3_tag_gettext_w(cg3_tag *tag_) {
 
 	wchar_t *tmp = reinterpret_cast<wchar_t*>(&cbuffers[0][0]);
 
-	u_strToWCS(tmp, (CG3_BUFFER_SIZE / sizeof(wchar_t)) - 1, 0, tag->tag.c_str(), tag->tag.length(), &status);
+	u_strToWCS(tmp, (CG3_BUFFER_SIZE / sizeof(wchar_t)) - 1, 0, tag->tag.c_str(), tag->tag.size(), &status);
 	if (U_FAILURE(status)) {
 		u_fprintf(ux_stderr, "CG3 Error: Failed to convert text from UChar to UTF-32. Status = %s\n", u_errorName(status));
 		return 0;
