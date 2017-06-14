@@ -435,7 +435,12 @@ Set *TextualParser::parseSetInline(UChar *& p, Set *s) {
 			}
 			else {
 				UChar *n = p;
-				result->lines += SKIPTOWS(n, 0, true);
+				if (n[0] == '\\' && ISSPACE(n[1])) {
+					++n;
+				}
+				else {
+					result->lines += SKIPTOWS(n, 0, true);
+				}
 				ptrdiff_t c = n - p;
 				u_strncpy(&gbuffers[0][0], p, c);
 				gbuffers[0][c] = 0;

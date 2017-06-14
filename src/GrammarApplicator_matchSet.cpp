@@ -144,6 +144,57 @@ uint32_t GrammarApplicator::doesTagMatchIcase(uint32_t test, const Tag& tag, boo
 	return match;
 }
 
+// ToDo: Remove for real ordered mode
+uint32_t GrammarApplicator::doesRegexpMatchLine(const Reading& reading, const Tag& tag, bool bypass_index) {
+	uint32_t match = 0;
+	uint32_t ih = reading.tags_string_hash;
+	if (!bypass_index && index_matches(index_regexp_no, ih)) {
+		match = 0;
+	}
+	else if (!bypass_index && index_matches(index_regexp_yes, ih)) {
+		match = reading.tags_string_hash;
+	}
+	else {
+		UErrorCode status = U_ZERO_ERROR;
+		uregex_setText(tag.regexp, reading.tags_string.c_str(), reading.tags_string.size(), &status);
+		if (status != U_ZERO_ERROR) {
+			u_fprintf(ux_stderr, "Error: uregex_setText(MatchSet) returned %s for tag %S before input line %u - cannot continue!\n", u_errorName(status), tag.tag.c_str(), numLines);
+			CG3Quit(1);
+		}
+		status = U_ZERO_ERROR;
+		if (uregex_find(tag.regexp, -1, &status)) {
+			match = reading.tags_string_hash;
+		}
+		if (status != U_ZERO_ERROR) {
+			u_fprintf(ux_stderr, "Error: uregex_find(MatchSet) returned %s for tag %S before input line %u - cannot continue!\n", u_errorName(status), tag.tag.c_str(), numLines);
+			CG3Quit(1);
+		}
+		if (match) {
+			int32_t gc = uregex_groupCount(tag.regexp, &status);
+			// ToDo: Allow regex captures from dependency target contexts without any captures in normal target contexts
+			if (gc > 0 && regexgrps.second != 0) {
+				UChar tmp[1024];
+				for (int i = 1; i <= gc; ++i) {
+					tmp[0] = 0;
+					int32_t len = uregex_group(tag.regexp, i, tmp, 1024, &status);
+					regexgrps.second->resize(std::max(static_cast<size_t>(regexgrps.first) + 1, regexgrps.second->size()));
+					UnicodeString& ucstr = (*regexgrps.second)[regexgrps.first];
+					ucstr.remove();
+					ucstr.append(tmp, len);
+					++regexgrps.first;
+				}
+			}
+			else {
+				index_regexp_yes.insert(ih);
+			}
+		}
+		else {
+			index_regexp_no.insert(ih);
+		}
+	}
+	return match;
+}
+
 /**
  * Tests whether a given reading matches a given tag's stored regular expression.
  *
@@ -152,6 +203,11 @@ uint32_t GrammarApplicator::doesTagMatchIcase(uint32_t test, const Tag& tag, boo
  */
 uint32_t GrammarApplicator::doesRegexpMatchReading(const Reading& reading, const Tag& tag, bool bypass_index) {
 	uint32_t match = 0;
+
+	// ToDo: Remove for real ordered mode
+	if (tag.type & T_REGEXP_LINE) {
+		return doesRegexpMatchLine(reading, tag, bypass_index);
+	}
 
 	// Grammar::reindex() will do a one-time pass to mark any potential matching tag as T_TEXTUAL
 	foreach (mter, reading.tags_textual) {

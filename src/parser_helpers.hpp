@@ -102,7 +102,7 @@ Tag *parseTag(const UChar *to, const UChar *p, State& state) {
 			size_t oldlength = length;
 
 			// Parse the suffixes r, i, v but max only one of each.
-			while (tmp[length - 1] == 'i' || tmp[length - 1] == 'r' || tmp[length - 1] == 'v') {
+			while (tmp[length - 1] == 'i' || tmp[length - 1] == 'r' || tmp[length - 1] == 'v' || tmp[length - 1] == 'l') {
 				if (!(tag->type & T_VARSTRING) && tmp[length - 1] == 'v') {
 					tag->type |= T_VARSTRING;
 					length--;
@@ -115,6 +115,12 @@ Tag *parseTag(const UChar *to, const UChar *p, State& state) {
 				}
 				if (!(tag->type & T_CASE_INSENSITIVE) && tmp[length - 1] == 'i') {
 					tag->type |= T_CASE_INSENSITIVE;
+					length--;
+					continue;
+				}
+				if (!(tag->type & T_REGEXP_LINE) && tmp[length - 1] == 'l') {
+					tag->type |= T_REGEXP;
+					tag->type |= T_REGEXP_LINE;
 					length--;
 					continue;
 				}
@@ -155,6 +161,17 @@ Tag *parseTag(const UChar *to, const UChar *p, State& state) {
 		}
 		if (tag->tag.empty()) {
 			state.error("%s: Error: Parsing tag %S resulted in an empty tag on line %u near `%S` - cannot continue!\n", tag->tag.c_str(), p);
+		}
+
+		// ToDo: Remove for real ordered mode
+		if (tag->type & T_REGEXP_LINE) {
+			constexpr UChar uu[] = { '_', '_', 0 };
+			constexpr UChar rx[] = { '(', '^', '|', '$', '|', ' ', '|', ' ', '.', '+', '?', ' ', ')', 0 }; // (^|$| | .+? )
+			size_t pos;
+			while ((pos = tag->tag.find(uu)) != UString::npos) {
+				tag->tag.replace(pos, 2, rx);
+				length += size(rx) - size(uu);
+			}
 		}
 
 		foreach (iter, state.get_grammar()->regex_tags) {

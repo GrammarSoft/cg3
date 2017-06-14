@@ -162,6 +162,13 @@ void GrammarApplicator::index() {
 		return;
 	}
 
+	// ToDo: Remove for real ordered mode
+	for (auto& iter : single_tags) {
+		if (iter.second->type & T_REGEXP_LINE) {
+			ordered = true;
+		}
+	}
+
 	if (!grammar->before_sections.empty()) {
 		uint32IntervalVector& m = runsections[-1];
 		foreach (iter_rules, grammar->before_sections) {
