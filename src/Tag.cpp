@@ -305,7 +305,7 @@ void Tag::allocateVsNames() {
 
 UString Tag::toUString(bool escape) const {
 	UString str;
-	str.reserve(tag.length());
+	str.reserve(tag.size());
 
 	if (type & T_FAILFAST) {
 		str += '^';
@@ -342,7 +342,7 @@ UString Tag::toUString(bool escape) const {
 	}
 
 	if (escape) {
-		for (size_t i = 0; i < tag.length(); ++i) {
+		for (size_t i = 0; i < tag.size(); ++i) {
 			if (tag[i] == '\\' || tag[i] == '(' || tag[i] == ')' || tag[i] == ';' || tag[i] == '#') {
 				str += '\\';
 			}
