@@ -33,7 +33,7 @@ class Set;
 
 typedef std::vector<Set*> SetVector;
 
-enum C_OPS {
+enum C_OPS : uint8_t {
 	OP_NOP,
 	OP_EQUALS,
 	OP_LESSTHAN,
@@ -44,7 +44,7 @@ enum C_OPS {
 	NUM_OPS,
 };
 
-enum {
+enum : uint32_t {
 	T_ANY              = (1 <<  0),
 	T_NUMERICAL        = (1 <<  1),
 	T_MAPPING          = (1 <<  2),
@@ -72,6 +72,8 @@ enum {
 	T_VSTR             = (1 << 24),
 	T_ENCL             = (1 << 25),
 	T_RELATION         = (1 << 26),
+
+	T_REGEXP_LINE      = (1u << 31), // ToDo: Remove for real ordered mode
 
 	MASK_TAG_SPECIAL   = T_ANY | T_TARGET | T_MARK | T_ATTACHTO | T_PAR_LEFT | T_PAR_RIGHT | T_NUMERICAL | T_VARIABLE | T_META | T_FAILFAST | T_CASE_INSENSITIVE | T_REGEXP | T_REGEXP_ANY | T_VARSTRING | T_SET | T_ENCL | T_SAME_BASIC,
 };

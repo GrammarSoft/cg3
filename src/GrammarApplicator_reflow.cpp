@@ -337,6 +337,7 @@ void GrammarApplicator::reflowReading(Reading& reading) {
 	reading.tags_textual_bloom.clear();
 	reading.tags_plain_bloom.clear();
 	reading.mapping = 0;
+	reading.tags_string.clear();
 
 	insert_if_exists(reading.parent->possible_sets, grammar->sets_any);
 
@@ -465,6 +466,14 @@ uint32_t GrammarApplicator::addTagToReading(Reading& reading, Tag *tag, bool reh
 	reading.tags.insert(tag->hash);
 	reading.tags_list.push_back(tag->hash);
 	reading.tags_bloom.insert(tag->hash);
+	// ToDo: Remove for real ordered mode
+	if (ordered) {
+		if (!reading.tags_string.empty()) {
+			reading.tags_string += ' ';
+		}
+		reading.tags_string += tag->tag;
+		reading.tags_string_hash = hash_value(reading.tags_string);
+	}
 	if (grammar->parentheses.find(tag->hash) != grammar->parentheses.end()) {
 		reading.parent->is_pleft = tag->hash;
 	}

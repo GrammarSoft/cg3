@@ -59,6 +59,10 @@ public:
 	uint32SortedVector tags_textual;
 	typedef bc::flat_map<uint32_t, Tag*> tags_numerical_t;
 	tags_numerical_t tags_numerical;
+	
+	// ToDo: Remove for real ordered mode
+	UString tags_string;
+	uint32_t tags_string_hash = 0;
 
 	Reading(Cohort *p = 0);
 	Reading(const Reading& r);
