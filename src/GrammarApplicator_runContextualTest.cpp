@@ -50,8 +50,7 @@ Cohort *GrammarApplicator::runSingleTest(Cohort *cohort, const ContextualTest *t
 				if (lists[i] == 0) {
 					continue;
 				}
-				foreach (iter, *lists[i]) {
-					Reading *reading = *iter;
+				for (auto reading : *lists[i]) {
 					reading->matched_target = false;
 					reading->matched_tests = false;
 				}
@@ -637,20 +636,20 @@ Cohort *GrammarApplicator::runDependencyTest(SingleWindow *sWindow, Cohort *curr
 	// ToDo: This whole function could resolve cohorts earlier and skip doing it twice
 	if (test->pos & MASK_POS_LORR) {
 		// I think this way around makes most sense? Loop over the container that's slower to look up in. But tests will show.
-		foreach (iter, sWindow->parent->cohort_map) {
-			if (deps->count(iter->second->global_number)) {
+		for (auto iter : sWindow->parent->cohort_map) {
+			if (deps->count(iter.second->global_number)) {
 				if (test->pos & POS_LEFT) {
-					if (less_Cohort(iter->second, current)) {
-						tmp_deps.insert(iter->second->global_number);
+					if (less_Cohort(iter.second, current)) {
+						tmp_deps.insert(iter.second->global_number);
 					}
 				}
 				else if ((test->pos & POS_RIGHT)) {
-					if (less_Cohort(current, iter->second)) {
-						tmp_deps.insert(iter->second->global_number);
+					if (less_Cohort(current, iter.second)) {
+						tmp_deps.insert(iter.second->global_number);
 					}
 				}
 				else {
-					tmp_deps.insert(iter->second->global_number);
+					tmp_deps.insert(iter.second->global_number);
 				}
 			}
 		}
@@ -666,23 +665,23 @@ Cohort *GrammarApplicator::runDependencyTest(SingleWindow *sWindow, Cohort *curr
 		deps = &tmp_deps;
 	}
 
-	foreach (dter, *deps) {
-		if (*dter == current->global_number && !(test->pos & POS_SELF)) {
+	for (auto dter : *deps) {
+		if (dter == current->global_number && !(test->pos & POS_SELF)) {
 			continue;
 		}
-		if (sWindow->parent->cohort_map.find(*dter) == sWindow->parent->cohort_map.end()) {
+		if (sWindow->parent->cohort_map.find(dter) == sWindow->parent->cohort_map.end()) {
 			if (verbosity_level > 0) {
 				if (test->pos & POS_DEP_CHILD) {
-					u_fprintf(ux_stderr, "Warning: Child dependency %u -> %u does not exist - ignoring.\n", current->dep_self, *dter);
+					u_fprintf(ux_stderr, "Warning: Child dependency %u -> %u does not exist - ignoring.\n", current->dep_self, dter);
 				}
 				else {
-					u_fprintf(ux_stderr, "Warning: Sibling dependency %u -> %u does not exist - ignoring.\n", current->dep_self, *dter);
+					u_fprintf(ux_stderr, "Warning: Sibling dependency %u -> %u does not exist - ignoring.\n", current->dep_self, dter);
 				}
 				u_fflush(ux_stderr);
 			}
 			continue;
 		}
-		Cohort *cohort = sWindow->parent->cohort_map.find(*dter)->second;
+		Cohort *cohort = sWindow->parent->cohort_map.find(dter)->second;
 		if (cohort->type & CT_REMOVED) {
 			continue;
 		}
@@ -760,8 +759,8 @@ Cohort *GrammarApplicator::runRelationTest(SingleWindow *sWindow, Cohort *curren
 	CohortSet rels;
 
 	if (test->relation == grammar->tag_any) {
-		foreach (riter, current->relations) {
-			for (auto citer : riter->second) {
+		for (auto riter : current->relations) {
+			for (auto citer : riter.second) {
 				std::map<uint32_t, Cohort*>::iterator it = sWindow->parent->cohort_map.find(citer);
 				if (it != sWindow->parent->cohort_map.end()) {
 					rels.insert(it->second);
@@ -806,22 +805,22 @@ Cohort *GrammarApplicator::runRelationTest(SingleWindow *sWindow, Cohort *curren
 	}
 
 	Cohort *rv = 0;
-	foreach (iter, rels) {
+	for (auto iter : rels) {
 		uint8_t rvs = 0;
 		bool retval = false;
 
-		runSingleTest(*iter, test, rvs, &retval, deep, origin);
+		runSingleTest(iter, test, rvs, &retval, deep, origin);
 		if (test->pos & POS_ALL) {
 			if (!retval) {
 				rv = 0;
 				break;
 			}
 			else {
-				rv = *iter;
+				rv = iter;
 			}
 		}
 		else if (retval) {
-			rv = *iter;
+			rv = iter;
 			break;
 		}
 	}

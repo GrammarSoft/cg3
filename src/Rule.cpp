@@ -69,11 +69,11 @@ void Rule::reverseContextualTests() {
 }
 
 void Rule::resetStatistics() {
-	foreach (it, tests) {
-		(*it)->resetStatistics();
+	for (auto it : tests) {
+		it->resetStatistics();
 	}
-	foreach (it, dep_tests) {
-		(*it)->resetStatistics();
+	for (auto it : dep_tests) {
+		it->resetStatistics();
 	}
 	num_fail = 0;
 	num_match = 0;

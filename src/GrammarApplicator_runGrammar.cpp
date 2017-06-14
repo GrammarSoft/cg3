@@ -202,8 +202,8 @@ void GrammarApplicator::runGrammarOnText(istream& input, UFILE *output) {
 					u_fprintf(ux_stderr, "Warning: Soft limit of %u cohorts reached at line %u but found suitable soft delimiter.\n", soft_limit, numLines);
 					u_fflush(ux_stderr);
 				}
-				foreach (iter, cCohort->readings) {
-					addTagToReading(**iter, endtag);
+				for (auto iter : cCohort->readings) {
+					addTagToReading(*iter, endtag);
 				}
 
 				splitAllMappings(all_mappings, *cCohort, true);
@@ -219,8 +219,8 @@ void GrammarApplicator::runGrammarOnText(istream& input, UFILE *output) {
 					u_fprintf(ux_stderr, "Warning: Hard limit of %u cohorts reached at line %u - forcing break.\n", hard_limit, numLines);
 					u_fflush(ux_stderr);
 				}
-				foreach (iter, cCohort->readings) {
-					addTagToReading(**iter, endtag);
+				for (auto iter : cCohort->readings) {
+					addTagToReading(*iter, endtag);
 				}
 
 				splitAllMappings(all_mappings, *cCohort, true);
@@ -398,8 +398,8 @@ void GrammarApplicator::runGrammarOnText(istream& input, UFILE *output) {
 				gWindow->dep_map.clear();
 				gWindow->dep_window.clear();
 
-				foreach (iter, cSWindow->cohorts.back()->readings) {
-					addTagToReading(**iter, endtag);
+				for (auto iter : cSWindow->cohorts.back()->readings) {
+					addTagToReading(*iter, endtag);
 				}
 
 				cSWindow = gWindow->allocAppendSingleWindow();
@@ -419,8 +419,8 @@ void GrammarApplicator::runGrammarOnText(istream& input, UFILE *output) {
 				if (grammar->has_bag_of_tags) {
 					// This is slow and not 100% correct as it doesn't remove the tags from the previous window
 					cCohort->parent = cSWindow;
-					foreach (rit, cCohort->readings) {
-						reflowReading(**rit);
+					for (auto rit : cCohort->readings) {
+						reflowReading(*rit);
 					}
 				}
 			}
@@ -444,8 +444,8 @@ void GrammarApplicator::runGrammarOnText(istream& input, UFILE *output) {
 						if (cCohort->readings.empty()) {
 							initEmptyCohort(*cCohort);
 						}
-						foreach (iter, cCohort->readings) {
-							addTagToReading(**iter, endtag);
+						for (auto iter : cCohort->readings) {
+							addTagToReading(*iter, endtag);
 						}
 						cReading = lReading = 0;
 						cCohort = lCohort = 0;
@@ -630,8 +630,8 @@ void GrammarApplicator::runGrammarOnText(istream& input, UFILE *output) {
 		if (cCohort->readings.empty()) {
 			initEmptyCohort(*cCohort);
 		}
-		foreach (iter, cCohort->readings) {
-			addTagToReading(**iter, endtag);
+		for (auto iter : cCohort->readings) {
+			addTagToReading(*iter, endtag);
 		}
 		cReading = 0;
 		cCohort = 0;

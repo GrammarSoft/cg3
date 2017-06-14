@@ -174,20 +174,20 @@ Tag *parseTag(const UChar *to, const UChar *p, State& state) {
 			}
 		}
 
-		foreach (iter, state.get_grammar()->regex_tags) {
+		for (auto iter : state.get_grammar()->regex_tags) {
 			UErrorCode status = U_ZERO_ERROR;
-			uregex_setText(*iter, tag->tag.c_str(), tag->tag.length(), &status);
+			uregex_setText(iter, tag->tag.c_str(), tag->tag.size(), &status);
 			if (status != U_ZERO_ERROR) {
 				state.error("%s: Error: uregex_setText(parseTag) returned %s on line %u near `%S` - cannot continue!\n", u_errorName(status), p);
 			}
 			status = U_ZERO_ERROR;
-			if (uregex_matches(*iter, 0, &status)) {
+			if (uregex_matches(iter, 0, &status)) {
 				tag->type |= T_TEXTUAL;
 			}
 		}
-		foreach (iter, state.get_grammar()->icase_tags) {
+		for (auto iter : state.get_grammar()->icase_tags) {
 			UErrorCode status = U_ZERO_ERROR;
-			if (u_strCaseCompare(tag->tag.c_str(), tag->tag.length(), (*iter)->tag.c_str(), (*iter)->tag.length(), U_FOLD_CASE_DEFAULT, &status) == 0) {
+			if (u_strCaseCompare(tag->tag.c_str(), tag->tag.size(), iter->tag.c_str(), iter->tag.size(), U_FOLD_CASE_DEFAULT, &status) == 0) {
 				tag->type |= T_TEXTUAL;
 			}
 			if (status != U_ZERO_ERROR) {

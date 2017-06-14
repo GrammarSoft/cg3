@@ -167,12 +167,12 @@ void print_ast(UFILE *out, const UChar *b, size_t n, const ASTNode& node) {
 		return;
 	}
 	u_fprintf(out, ">\n");
-	foreach (it, node.cs) {
-		if (it->type == AST_Grammar) {
-			print_ast(out, it->b, n + 1, *it);
+	for (auto& it : node.cs) {
+		if (it.type == AST_Grammar) {
+			print_ast(out, it.b, n + 1, it);
 		}
 		else {
-			print_ast(out, b, n + 1, *it);
+			print_ast(out, b, n + 1, it);
 		}
 	}
 	u_fprintf(out, "%s</%s>\n", indent.c_str(), ASTType_str[node.type]);

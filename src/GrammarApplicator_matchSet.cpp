@@ -76,7 +76,7 @@ uint32_t GrammarApplicator::doesTagMatchRegexp(uint32_t test, const Tag& tag, bo
 	else {
 		const Tag& itag = *(single_tags.find(test)->second);
 		UErrorCode status = U_ZERO_ERROR;
-		uregex_setText(tag.regexp, itag.tag.c_str(), itag.tag.length(), &status);
+		uregex_setText(tag.regexp, itag.tag.c_str(), itag.tag.size(), &status);
 		if (status != U_ZERO_ERROR) {
 			u_fprintf(ux_stderr, "Error: uregex_setText(MatchSet) returned %s for tag %S before input line %u - cannot continue!\n", u_errorName(status), tag.tag.c_str(), numLines);
 			CG3Quit(1);
@@ -127,7 +127,7 @@ uint32_t GrammarApplicator::doesTagMatchIcase(uint32_t test, const Tag& tag, boo
 	else {
 		const Tag& itag = *(single_tags.find(test)->second);
 		UErrorCode status = U_ZERO_ERROR;
-		if (u_strCaseCompare(tag.tag.c_str(), tag.tag.length(), itag.tag.c_str(), itag.tag.length(), U_FOLD_CASE_DEFAULT, &status) == 0) {
+		if (u_strCaseCompare(tag.tag.c_str(), tag.tag.size(), itag.tag.c_str(), itag.tag.size(), U_FOLD_CASE_DEFAULT, &status) == 0) {
 			match = itag.hash;
 		}
 		if (status != U_ZERO_ERROR) {
@@ -210,8 +210,8 @@ uint32_t GrammarApplicator::doesRegexpMatchReading(const Reading& reading, const
 	}
 
 	// Grammar::reindex() will do a one-time pass to mark any potential matching tag as T_TEXTUAL
-	foreach (mter, reading.tags_textual) {
-		match = doesTagMatchRegexp(*mter, tag, bypass_index);
+	for (auto mter : reading.tags_textual) {
+		match = doesTagMatchRegexp(mter, tag, bypass_index);
 		if (match) {
 			break;
 		}
@@ -262,8 +262,8 @@ uint32_t GrammarApplicator::doesTagMatchReading(const Reading& reading, const Ta
 		match = doesRegexpMatchReading(reading, tag, bypass_index);
 	}
 	else if (tag.type & T_CASE_INSENSITIVE) {
-		foreach (mter, reading.tags_textual) {
-			match = doesTagMatchIcase(*mter, tag, bypass_index);
+		for (auto mter : reading.tags_textual) {
+			match = doesTagMatchIcase(mter, tag, bypass_index);
 			if (match) {
 				break;
 			}
@@ -297,18 +297,18 @@ uint32_t GrammarApplicator::doesTagMatchReading(const Reading& reading, const Ta
 			}
 		}
 		else {
-			foreach (mter, reading.tags_textual) {
-				const Tag& itag = *(single_tags.find(*mter)->second);
+			for (auto mter : reading.tags_textual) {
+				const Tag& itag = *(single_tags.find(mter)->second);
 				if (!(itag.type & (T_BASEFORM | T_WORDFORM))) {
 					match = itag.hash;
 					if (unif_mode) {
 						if (unif_last_textual) {
-							if (unif_last_textual != *mter) {
+							if (unif_last_textual != mter) {
 								match = 0;
 							}
 						}
 						else {
-							unif_last_textual = *mter;
+							unif_last_textual = mter;
 						}
 					}
 				}
@@ -319,7 +319,7 @@ uint32_t GrammarApplicator::doesTagMatchReading(const Reading& reading, const Ta
 		}
 	}
 	else if (tag.type & T_NUMERICAL) {
-		for (auto& mter : reading.tags_numerical) {
+		for (auto mter : reading.tags_numerical) {
 			const Tag& itag = *(mter.second);
 			double compval = tag.comparison_val;
 			if (compval <= NUMERIC_MIN) {
@@ -645,9 +645,9 @@ bool GrammarApplicator::doesSetMatchReading(const Reading& reading, const uint32
 		// Subsequent times, test whether any of the previously stored sets match the reading
 		else {
 			auto sets = ss_u32sv.get();
-			foreach (usi, *unif_sets) {
-				if (doesSetMatchReading(reading, *usi, bypass_index, unif_mode)) {
-					sets->insert(*usi);
+			for (auto usi : *unif_sets) {
+				if (doesSetMatchReading(reading, usi, bypass_index, unif_mode)) {
+					sets->insert(usi);
 				}
 			}
 			retval = !sets->empty();
@@ -857,8 +857,7 @@ bool GrammarApplicator::doesSetMatchCohortNormal(Cohort& cohort, const uint32_t 
 		if (lists[i] == 0) {
 			continue;
 		}
-		foreach (iter, *lists[i]) {
-			Reading *reading = *iter;
+		for (auto reading : *lists[i]) {
 			if (context && context->test) {
 				// ToDo: Barriers need some way to escape sub-readings
 				reading = get_sub_reading(reading, context->test->offset_sub);
@@ -911,8 +910,7 @@ bool GrammarApplicator::doesSetMatchCohortCareful(Cohort& cohort, const uint32_t
 		if (lists[i] == 0) {
 			continue;
 		}
-		foreach (iter, *lists[i]) {
-			Reading *reading = *iter;
+		for (auto reading : *lists[i]) {
 			if (context && context->test) {
 				// ToDo: Barriers need some way to escape sub-readings
 				reading = get_sub_reading(reading, context->test->offset_sub);
