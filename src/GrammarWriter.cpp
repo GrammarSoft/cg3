@@ -179,8 +179,8 @@ int GrammarWriter::writeGrammar(UFILE *output) {
 	//*/
 
 	bool found = false;
-	foreach (rule_iter, grammar->rule_by_number) {
-		const Rule& r = **rule_iter;
+	for (auto rule_iter : grammar->rule_by_number) {
+		const Rule& r = *rule_iter;
 		if (r.section == -1) {
 			if (!found) {
 				u_fprintf(output, "\nBEFORE-SECTIONS\n");
@@ -190,11 +190,11 @@ int GrammarWriter::writeGrammar(UFILE *output) {
 			u_fprintf(output, " ;\n");
 		}
 	}
-	foreach (isec, grammar->sections) {
+	for (auto isec : grammar->sections) {
 		found = false;
-		foreach (rule_iter, grammar->rule_by_number) {
-			const Rule& r = **rule_iter;
-			if (r.section == (int32_t)*isec) {
+		for (auto rule_iter : grammar->rule_by_number) {
+			const Rule& r = *rule_iter;
+			if (r.section == static_cast<int32_t>(isec)) {
 				if (!found) {
 					u_fprintf(output, "\nSECTION\n");
 					found = true;
@@ -205,8 +205,8 @@ int GrammarWriter::writeGrammar(UFILE *output) {
 		}
 	}
 	found = false;
-	foreach (rule_iter, grammar->rule_by_number) {
-		const Rule& r = **rule_iter;
+	for (auto rule_iter : grammar->rule_by_number) {
+		const Rule& r = *rule_iter;
 		if (r.section == -2) {
 			if (!found) {
 				u_fprintf(output, "\nAFTER-SECTIONS\n");
@@ -217,8 +217,8 @@ int GrammarWriter::writeGrammar(UFILE *output) {
 		}
 	}
 	found = false;
-	foreach (rule_iter, grammar->rule_by_number) {
-		const Rule& r = **rule_iter;
+	for (auto rule_iter : grammar->rule_by_number) {
+		const Rule& r = *rule_iter;
 		if (r.section == -3) {
 			if (!found) {
 				u_fprintf(output, "\nNULL-SECTION\n");
@@ -277,9 +277,9 @@ void GrammarWriter::printRule(UFILE *to, const Rule& rule) {
 		u_fprintf(to, "%S ", grammar->sets_list[rule.target]->name.c_str());
 	}
 
-	foreach (it, rule.tests) {
+	for (auto it : rule.tests) {
 		u_fprintf(to, "(");
-		printContextualTest(to, **it);
+		printContextualTest(to, *it);
 		u_fprintf(to, ") ");
 	}
 
@@ -287,9 +287,9 @@ void GrammarWriter::printRule(UFILE *to, const Rule& rule) {
 		u_fprintf(to, "TO (");
 		printContextualTest(to, *(rule.dep_target));
 		u_fprintf(to, ") ");
-		foreach (it, rule.dep_tests) {
+		for (auto it : rule.dep_tests) {
 			u_fprintf(to, "(");
-			printContextualTest(to, **it);
+			printContextualTest(to, *it);
 			u_fprintf(to, ") ");
 		}
 	}

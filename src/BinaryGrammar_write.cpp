@@ -156,7 +156,7 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 		if (!t->tag.empty()) {
 			fields |= (1 << 8);
 			ucnv_reset(conv);
-			i32tmp = ucnv_fromUChars(conv, &cbuffers[0][0], CG3_BUFFER_SIZE - 1, t->tag.c_str(), t->tag.length(), &err);
+			i32tmp = ucnv_fromUChars(conv, &cbuffers[0][0], CG3_BUFFER_SIZE - 1, t->tag.c_str(), t->tag.size(), &err);
 			writeSwapped(buffer, i32tmp);
 			buffer.write(&cbuffers[0][0], i32tmp);
 		}
@@ -174,16 +174,16 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 		if (t->vs_sets) {
 			fields |= (1 << 10);
 			writeSwapped<uint32_t>(buffer, t->vs_sets->size());
-			foreach (iter, *t->vs_sets) {
-				writeSwapped(buffer, (*iter)->number);
+			for (auto iter : *t->vs_sets) {
+				writeSwapped(buffer, iter->number);
 			}
 		}
 		if (t->vs_names) {
 			fields |= (1 << 11);
 			writeSwapped<uint32_t>(buffer, t->vs_names->size());
-			foreach (iter, *t->vs_names) {
+			for (auto iter : *t->vs_names) {
 				ucnv_reset(conv);
-				i32tmp = ucnv_fromUChars(conv, &cbuffers[0][0], CG3_BUFFER_SIZE - 1, (*iter).c_str(), (*iter).length(), &err);
+				i32tmp = ucnv_fromUChars(conv, &cbuffers[0][0], CG3_BUFFER_SIZE - 1, iter.c_str(), iter.size(), &err);
 				writeSwapped(buffer, i32tmp);
 				buffer.write(&cbuffers[0][0], i32tmp);
 			}
@@ -217,7 +217,7 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 		u32tmp = (uint32_t)htonl((uint32_t)grammar->parentheses.size());
 		fwrite_throw(&u32tmp, sizeof(uint32_t), 1, output);
 	}
-	for (auto& iter_par : grammar->parentheses) {
+	for (auto iter_par : grammar->parentheses) {
 		u32tmp = (uint32_t)htonl(iter_par.first);
 		fwrite_throw(&u32tmp, sizeof(uint32_t), 1, output);
 		u32tmp = (uint32_t)htonl(iter_par.second);
@@ -228,10 +228,10 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 		u32tmp = (uint32_t)htonl((uint32_t)grammar->anchors.size());
 		fwrite_throw(&u32tmp, sizeof(uint32_t), 1, output);
 	}
-	foreach (iter_anchor, grammar->anchors) {
-		u32tmp = (uint32_t)htonl((uint32_t)iter_anchor->first);
+	for (auto iter_anchor : grammar->anchors) {
+		u32tmp = (uint32_t)htonl((uint32_t)iter_anchor.first);
 		fwrite_throw(&u32tmp, sizeof(uint32_t), 1, output);
-		u32tmp = (uint32_t)htonl((uint32_t)iter_anchor->second);
+		u32tmp = (uint32_t)htonl((uint32_t)iter_anchor.second);
 		fwrite_throw(&u32tmp, sizeof(uint32_t), 1, output);
 	}
 
@@ -266,15 +266,15 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 		if (!s->set_ops.empty()) {
 			fields |= (1 << 4);
 			writeSwapped<uint32_t>(buffer, s->set_ops.size());
-			foreach (iter, s->set_ops) {
-				writeSwapped(buffer, *iter);
+			for (auto iter : s->set_ops) {
+				writeSwapped(buffer, iter);
 			}
 		}
 		if (!s->sets.empty()) {
 			fields |= (1 << 5);
 			writeSwapped<uint32_t>(buffer, s->sets.size());
-			foreach (iter, s->sets) {
-				writeSwapped(buffer, *iter);
+			for (auto iter : s->sets) {
+				writeSwapped(buffer, iter);
 			}
 		}
 		if (s->type & ST_STATIC) {
@@ -313,9 +313,7 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 		u32tmp = (uint32_t)htonl((uint32_t)grammar->rule_by_number.size());
 		fwrite_throw(&u32tmp, sizeof(uint32_t), 1, output);
 	}
-	foreach (rule_iter, grammar->rule_by_number) {
-		Rule *r = *rule_iter;
-
+	for (auto r : grammar->rule_by_number) {
 		uint32_t fields = 0;
 		buffer.str("");
 		buffer.clear();
@@ -401,15 +399,15 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 		r->reverseContextualTests();
 		u32tmp = (uint32_t)htonl(r->dep_tests.size());
 		fwrite_throw(&u32tmp, sizeof(uint32_t), 1, output);
-		foreach (it, r->dep_tests) {
-			u32tmp = (uint32_t)htonl((*it)->hash);
+		for (auto it : r->dep_tests) {
+			u32tmp = (uint32_t)htonl(it->hash);
 			fwrite_throw(&u32tmp, sizeof(uint32_t), 1, output);
 		}
 
 		u32tmp = (uint32_t)htonl(r->tests.size());
 		fwrite_throw(&u32tmp, sizeof(uint32_t), 1, output);
-		foreach (it, r->tests) {
-			u32tmp = (uint32_t)htonl((*it)->hash);
+		for (auto it : r->tests) {
+			u32tmp = (uint32_t)htonl(it->hash);
 			fwrite_throw(&u32tmp, sizeof(uint32_t), 1, output);
 		}
 	}

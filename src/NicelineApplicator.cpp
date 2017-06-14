@@ -159,8 +159,8 @@ void NicelineApplicator::runGrammarOnText(istream& input, UFILE *output) {
 					u_fprintf(ux_stderr, "Warning: Soft limit of %u cohorts reached at line %u but found suitable soft delimiter.\n", soft_limit, numLines);
 					u_fflush(ux_stderr);
 				}
-				foreach (iter, cCohort->readings) {
-					addTagToReading(**iter, endtag);
+				for (auto iter : cCohort->readings) {
+					addTagToReading(*iter, endtag);
 				}
 
 				cSWindow->appendCohort(cCohort);
@@ -175,8 +175,8 @@ void NicelineApplicator::runGrammarOnText(istream& input, UFILE *output) {
 					u_fprintf(ux_stderr, "Warning: Hard limit of %u cohorts reached at line %u - forcing break.\n", hard_limit, numLines);
 					u_fflush(ux_stderr);
 				}
-				foreach (iter, cCohort->readings) {
-					addTagToReading(**iter, endtag);
+				for (auto iter : cCohort->readings) {
+					addTagToReading(*iter, endtag);
 				}
 
 				cSWindow->appendCohort(cCohort);
@@ -328,8 +328,8 @@ void NicelineApplicator::runGrammarOnText(istream& input, UFILE *output) {
 		if (cCohort->readings.empty()) {
 			initEmptyCohort(*cCohort);
 		}
-		foreach (iter, cCohort->readings) {
-			addTagToReading(**iter, endtag);
+		for (auto iter : cCohort->readings) {
+			addTagToReading(*iter, endtag);
 		}
 		cReading = 0;
 		cCohort = 0;
@@ -370,20 +370,20 @@ void NicelineApplicator::printReading(const Reading *reading, UFILE *output) {
 	}
 
 	uint32SortedVector unique;
-	foreach (tter, reading->tags_list) {
-		if ((!show_end_tags && *tter == endtag) || *tter == begintag) {
+	for (auto tter : reading->tags_list) {
+		if ((!show_end_tags && tter == endtag) || tter == begintag) {
 			continue;
 		}
-		if (*tter == reading->baseform || *tter == reading->parent->wordform->hash) {
+		if (tter == reading->baseform || tter == reading->parent->wordform->hash) {
 			continue;
 		}
 		if (unique_tags) {
-			if (unique.find(*tter) != unique.end()) {
+			if (unique.find(tter) != unique.end()) {
 				continue;
 			}
-			unique.insert(*tter);
+			unique.insert(tter);
 		}
-		const Tag *tag = single_tags[*tter];
+		const Tag *tag = single_tags[tter];
 		if (tag->type & T_DEPENDENCY && has_dep && !dep_original) {
 			continue;
 		}
@@ -436,18 +436,18 @@ void NicelineApplicator::printReading(const Reading *reading, UFILE *output) {
 	if (reading->parent->type & CT_RELATED) {
 		u_fprintf(output, " ID:%u", reading->parent->global_number);
 		if (!reading->parent->relations.empty()) {
-			foreach (miter, reading->parent->relations) {
-				for (auto siter : miter->second) {
-					u_fprintf(output, " R:%S:%u", grammar->single_tags.find(miter->first)->second->tag.c_str(), siter);
+			for (auto miter : reading->parent->relations) {
+				for (auto siter : miter.second) {
+					u_fprintf(output, " R:%S:%u", grammar->single_tags.find(miter.first)->second->tag.c_str(), siter);
 				}
 			}
 		}
 	}
 
 	if (trace) {
-		foreach (iter_hb, reading->hit_by) {
+		for (auto iter_hb : reading->hit_by) {
 			u_fputc(' ', output);
-			printTrace(output, *iter_hb);
+			printTrace(output, iter_hb);
 		}
 	}
 

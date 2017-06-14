@@ -220,8 +220,8 @@ void ApertiumApplicator::runGrammarOnText(istream& input, UFILE *output) {
 			}
 			if (cCohort && cSWindow->cohorts.size() >= soft_limit && grammar->soft_delimiters && doesSetMatchCohortNormal(*cCohort, grammar->soft_delimiters->number)) {
 				// ie. we've read some cohorts
-				foreach (iter, cCohort->readings) {
-					addTagToReading(**iter, endtag);
+				for (auto iter : cCohort->readings) {
+					addTagToReading(*iter, endtag);
 				}
 
 				cSWindow->appendCohort(cCohort);
@@ -235,8 +235,8 @@ void ApertiumApplicator::runGrammarOnText(istream& input, UFILE *output) {
 					u_fprintf(ux_stderr, "Warning: Hard limit of %u cohorts reached at cohort %u on line %u - forcing break.\n", hard_limit, numCohorts, numLines);
 					u_fflush(ux_stderr);
 				}
-				foreach (iter, cCohort->readings) {
-					addTagToReading(**iter, endtag);
+				for (auto iter : cCohort->readings) {
+					addTagToReading(*iter, endtag);
 				}
 
 				cSWindow->appendCohort(cCohort);
@@ -425,8 +425,8 @@ void ApertiumApplicator::runGrammarOnText(istream& input, UFILE *output) {
 		if (cCohort->readings.empty()) {
 			initEmptyCohort(*cCohort);
 		}
-		foreach (iter, cCohort->readings) {
-			addTagToReading(**iter, endtag);
+		for (auto iter : cCohort->readings) {
+			addTagToReading(*iter, endtag);
 		}
 		cReading = 0;
 		cCohort = 0;
@@ -694,7 +694,7 @@ void ApertiumApplicator::printReading(Reading *reading, UFILE *output) {
 
 	if (reading->baseform) {
 		// Lop off the initial and final '"' characters
-		UnicodeString bf(single_tags[reading->baseform]->tag.c_str() + 1, single_tags[reading->baseform]->tag.length() - 2);
+		UnicodeString bf(single_tags[reading->baseform]->tag.c_str() + 1, single_tags[reading->baseform]->tag.size() - 2);
 
 		if (wordform_case && !reading->next) {
 			// Use surface/wordform case, eg. if lt-proc
@@ -702,7 +702,7 @@ void ApertiumApplicator::printReading(Reading *reading, UFILE *output) {
 			// dictionary case on lemma/basefrom)
 			// Lop off the initial and final '"<>"' characters
 			// ToDo: A copy does not need to be made here - use pointer offsets
-			UnicodeString wf(reading->parent->wordform->tag.c_str() + 2, reading->parent->wordform->tag.length() - 4);
+			UnicodeString wf(reading->parent->wordform->tag.c_str() + 2, reading->parent->wordform->tag.size() - 4);
 
 			int first = 0; // first occurrence of a lowercase character in baseform
 			for (; first < bf.length(); ++first) {
@@ -789,9 +789,9 @@ void ApertiumApplicator::printReading(Reading *reading, UFILE *output) {
 	}
 
 	if (trace) {
-		foreach (iter_hb, reading->hit_by) {
+		for (auto iter_hb : reading->hit_by) {
 			u_fputc('<', output);
-			printTrace(output, *iter_hb);
+			printTrace(output, iter_hb);
 			u_fputc('>', output);
 		}
 	}
@@ -820,7 +820,7 @@ void ApertiumApplicator::printSingleWindow(SingleWindow *window, UFILE *output) 
 		if (print_word_forms == true) {
 			// Lop off the initial and final '"' characters
 			// ToDo: A copy does not need to be made here - use pointer offsets
-			UnicodeString wf(cohort->wordform->tag.c_str() + 2, cohort->wordform->tag.length() - 4);
+			UnicodeString wf(cohort->wordform->tag.c_str() + 2, cohort->wordform->tag.size() - 4);
 			UString wf_escaped;
 			for (int i = 0; i < wf.length(); ++i) {
 				if (wf[i] == '^' || wf[i] == '\\' || wf[i] == '/' || wf[i] == '$' || wf[i] == '[' || wf[i] == ']' || wf[i] == '{' || wf[i] == '}' || wf[i] == '<' || wf[i] == '>') {
@@ -832,11 +832,11 @@ void ApertiumApplicator::printSingleWindow(SingleWindow *window, UFILE *output) 
 
 			// Print the static reading tags
 			if (cohort->wread) {
-				foreach (tter, cohort->wread->tags_list) {
-					if (*tter == cohort->wordform->hash) {
+				for (auto tter : cohort->wread->tags_list) {
+					if (tter == cohort->wordform->hash) {
 						continue;
 					}
-					const Tag *tag = single_tags[*tter];
+					const Tag *tag = single_tags[tter];
 					u_fprintf(output, "<%S>", tag->tag.c_str());
 				}
 			}
@@ -901,20 +901,20 @@ void ApertiumApplicator::mergeMappings(Cohort& cohort) {
 	// foo<N><Sg><Acc><@←SUBJ>/foo<N><Sg><Acc><@←OBJ>
 	// => foo<N><Sg><Acc><@←SUBJ>/foo<N><Sg><Acc><@←OBJ>
 	std::map<uint32_t, ReadingList> mlist;
-	foreach (iter, cohort.readings) {
-		Reading *r = *iter;
+	for (auto iter : cohort.readings) {
+		Reading *r = iter;
 		uint32_t hp = r->hash; // instead of hash_plain, which doesn't include mapping tags
 		if (trace) {
-			foreach (iter_hb, r->hit_by) {
-				hp = hash_value(*iter_hb, hp);
+			for (auto iter_hb : r->hit_by) {
+				hp = hash_value(iter_hb, hp);
 			}
 		}
 		Reading *sub = r->next;
 		while (sub) {
 			hp = hash_value(sub->hash, hp);
 			if (trace) {
-				foreach (iter_hb, sub->hit_by) {
-					hp = hash_value(*iter_hb, hp);
+				for (auto iter_hb : sub->hit_by) {
+					hp = hash_value(iter_hb, hp);
 				}
 			}
 			sub = sub->next;
@@ -936,8 +936,8 @@ void ApertiumApplicator::mergeMappings(Cohort& cohort) {
 		order.push_back(clist.front());
 
 		clist.erase(clist.begin());
-		foreach (cit, clist) {
-			free_reading(*cit);
+		for (auto cit : clist) {
+			free_reading(cit);
 		}
 	}
 

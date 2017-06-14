@@ -324,10 +324,10 @@ int BinaryGrammar::readBinaryGrammar_10043(FILE *input) {
 	}
 
 	// Actually assign sets to the varstring tags now that sets are loaded
-	foreach (iter, tag_varsets) {
-		Tag *t = grammar->single_tags_list[iter->first];
-		foreach (uit, iter->second) {
-			Set *s = grammar->sets_list[*uit];
+	for (auto iter : tag_varsets) {
+		Tag *t = grammar->single_tags_list[iter.first];
+		for (auto uit : iter.second) {
+			Set *s = grammar->sets_list[uit];
 			t->vs_sets->push_back(s);
 		}
 	}
@@ -474,9 +474,9 @@ int BinaryGrammar::readBinaryGrammar_10043(FILE *input) {
 	}
 
 	// Bind the named templates to where they are used
-	foreach (it, deferred_tmpls) {
-		auto tmt = templates.find(it->second);
-		it->first->tmpl = tmt->second;
+	for (auto it : deferred_tmpls) {
+		auto tmt = templates.find(it.second);
+		it.first->tmpl = tmt->second;
 	}
 
 	ucnv_close(conv);

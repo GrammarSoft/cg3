@@ -49,12 +49,12 @@ Grammar::Grammar()
 }
 
 Grammar::~Grammar() {
-	foreach (iter_set, sets_list) {
-		destroySet(*iter_set);
+	for (auto iter_set : sets_list) {
+		destroySet(iter_set);
 	}
 
-	foreach (rsets, sets_all) {
-		delete *rsets;
+	for (auto rsets : sets_all) {
+		delete rsets;
 	}
 
 	Taguint32HashMap::iterator iter_stag;
@@ -64,12 +64,12 @@ Grammar::~Grammar() {
 		}
 	}
 
-	foreach (iter_rules, rule_by_number) {
-		delete *iter_rules;
+	for (auto iter_rules : rule_by_number) {
+		delete iter_rules;
 	}
 
-	for (auto cntx = contexts.begin(); cntx != contexts.end(); ++cntx) {
-		delete cntx->second;
+	for (auto cntx : contexts) {
+		delete cntx.second;
 	}
 }
 
@@ -289,8 +289,8 @@ void Grammar::addSetToList(Set *s) {
 	if (s->number == 0) {
 		if (sets_list.empty() || sets_list[0] != s) {
 			if (!s->sets.empty()) {
-				foreach (sit, s->sets) {
-					addSetToList(getSet(*sit));
+				for (auto sit : s->sets) {
+					addSetToList(getSet(sit));
 				}
 			}
 			sets_list.push_back(s);
@@ -583,8 +583,7 @@ void Grammar::resetStatistics() {
 }
 
 void Grammar::renameAllRules() {
-	foreach (iter_rule, rule_by_number) {
-		Rule *r = *iter_rule;
+	for (auto r : rule_by_number) {
 		gbuffers[0][0] = 0;
 		u_sprintf(&gbuffers[0][0], "L%u", r->line);
 		r->setName(&gbuffers[0][0]);
@@ -592,32 +591,32 @@ void Grammar::renameAllRules() {
 }
 
 void Grammar::reindex(bool unused_sets, bool used_tags) {
-	foreach (dset, sets_by_contents) {
-		if (dset->second->number == std::numeric_limits<uint32_t>::max()) {
-			dset->second->type |= ST_USED;
+	for (auto dset : sets_by_contents) {
+		if (dset.second->number == std::numeric_limits<uint32_t>::max()) {
+			dset.second->type |= ST_USED;
 			continue;
 		}
-		if (!(dset->second->type & ST_STATIC)) {
-			dset->second->type &= ~ST_USED;
+		if (!(dset.second->type & ST_STATIC)) {
+			dset.second->type &= ~ST_USED;
 		}
-		dset->second->number = 0;
+		dset.second->number = 0;
 	}
 
-	foreach (sset, static_sets) {
-		uint32_t sh = hash_value(*sset);
+	for (auto sset : static_sets) {
+		uint32_t sh = hash_value(sset);
 		if (set_alias.find(sh) != set_alias.end()) {
-			u_fprintf(ux_stderr, "Error: Static set %S is an alias; only real sets may be made static!\n", (*sset).c_str());
+			u_fprintf(ux_stderr, "Error: Static set %S is an alias; only real sets may be made static!\n", sset.c_str());
 			CG3Quit(1);
 		}
 		Set *s = getSet(sh);
 		if (!s) {
 			if (verbosity_level > 0) {
-				u_fprintf(ux_stderr, "Warning: Set %S was not defined, so cannot make it static.\n", (*sset).c_str());
+				u_fprintf(ux_stderr, "Warning: Set %S was not defined, so cannot make it static.\n", sset.c_str());
 			}
 			continue;
 		}
-		if (s->name != *sset) {
-			s->setName(*sset);
+		if (s->name != sset) {
+			s->setName(sset);
 		}
 		s->markUsed(*this);
 		s->type |= ST_STATIC;
@@ -638,41 +637,41 @@ void Grammar::reindex(bool unused_sets, bool used_tags) {
 	sets_any = 0;
 	rules_any = 0;
 
-	foreach (iter, single_tags_list) {
-		if ((*iter)->regexp && (*iter)->tag[0] != '"' && (*iter)->tag[0] != '<') {
-			regex_tags.insert((*iter)->regexp);
+	for (auto iter : single_tags_list) {
+		if (iter->regexp && iter->tag[0] != '"' && iter->tag[0] != '<') {
+			regex_tags.insert(iter->regexp);
 		}
-		if (((*iter)->type & T_CASE_INSENSITIVE) && (*iter)->tag[0] != '"' && (*iter)->tag[0] != '<') {
-			icase_tags.insert((*iter));
+		if ((iter->type & T_CASE_INSENSITIVE) && iter->tag[0] != '"' && iter->tag[0] != '<') {
+			icase_tags.insert(iter);
 		}
 		if (is_binary) {
 			continue;
 		}
-		if (!(*iter)->vs_sets) {
+		if (!iter->vs_sets) {
 			continue;
 		}
-		foreach (sit, *(*iter)->vs_sets) {
-			(*sit)->markUsed(*this);
+		for (auto sit : *iter->vs_sets) {
+			sit->markUsed(*this);
 		}
 	}
 
-	foreach (titer, single_tags_list) {
-		if ((*titer)->type & T_TEXTUAL) {
+	for (auto titer : single_tags_list) {
+		if (titer->type & T_TEXTUAL) {
 			continue;
 		}
-		foreach (iter, regex_tags) {
+		for (auto iter : regex_tags) {
 			UErrorCode status = U_ZERO_ERROR;
-			uregex_setText(*iter, (*titer)->tag.c_str(), (*titer)->tag.length(), &status);
+			uregex_setText(iter, titer->tag.c_str(), titer->tag.size(), &status);
 			if (status == U_ZERO_ERROR) {
-				if (uregex_find(*iter, -1, &status)) {
-					(*titer)->type |= T_TEXTUAL;
+				if (uregex_find(iter, -1, &status)) {
+					titer->type |= T_TEXTUAL;
 				}
 			}
 		}
-		foreach (iter, icase_tags) {
+		for (auto iter : icase_tags) {
 			UErrorCode status = U_ZERO_ERROR;
-			if (u_strCaseCompare((*titer)->tag.c_str(), (*titer)->tag.length(), (*iter)->tag.c_str(), (*iter)->tag.length(), U_FOLD_CASE_DEFAULT, &status) == 0) {
-				(*titer)->type |= T_TEXTUAL;
+			if (u_strCaseCompare(titer->tag.c_str(), titer->tag.size(), iter->tag.c_str(), iter->tag.size(), U_FOLD_CASE_DEFAULT, &status) == 0) {
+				titer->type |= T_TEXTUAL;
 			}
 			if (status != U_ZERO_ERROR) {
 				u_fprintf(ux_stderr, "Error: u_strCaseCompare() returned %s - cannot continue!\n", u_errorName(status));
@@ -690,38 +689,38 @@ void Grammar::reindex(bool unused_sets, bool used_tags) {
 		single_tags[*it]->markUsed();
 	}
 
-	foreach (iter_rule, rule_by_number) {
-		if ((*iter_rule)->wordform) {
-			wf_rules.push_back(*iter_rule);
+	for (auto rule : rule_by_number) {
+		if (rule->wordform) {
+			wf_rules.push_back(rule);
 		}
 		if (is_binary) {
 			continue;
 		}
 		Set *s = 0;
-		s = getSet((*iter_rule)->target);
+		s = getSet(rule->target);
 		s->markUsed(*this);
-		if ((*iter_rule)->childset1) {
-			s = getSet((*iter_rule)->childset1);
+		if (rule->childset1) {
+			s = getSet(rule->childset1);
 			s->markUsed(*this);
 		}
-		if ((*iter_rule)->childset2) {
-			s = getSet((*iter_rule)->childset2);
+		if (rule->childset2) {
+			s = getSet(rule->childset2);
 			s->markUsed(*this);
 		}
-		if ((*iter_rule)->maplist) {
-			(*iter_rule)->maplist->markUsed(*this);
+		if (rule->maplist) {
+			rule->maplist->markUsed(*this);
 		}
-		if ((*iter_rule)->sublist) {
-			(*iter_rule)->sublist->markUsed(*this);
+		if (rule->sublist) {
+			rule->sublist->markUsed(*this);
 		}
-		if ((*iter_rule)->dep_target) {
-			(*iter_rule)->dep_target->markUsed(*this);
+		if (rule->dep_target) {
+			rule->dep_target->markUsed(*this);
 		}
-		foreach (it, (*iter_rule)->tests) {
-			(*it)->markUsed(*this);
+		for (auto it : rule->tests) {
+			it->markUsed(*this);
 		}
-		foreach (it, (*iter_rule)->dep_tests) {
-			(*it)->markUsed(*this);
+		for (auto it : rule->dep_tests) {
+			it->markUsed(*this);
 		}
 	}
 
@@ -746,10 +745,10 @@ void Grammar::reindex(bool unused_sets, bool used_tags) {
 
 	if (unused_sets) {
 		u_fprintf(ux_stdout, "Unused sets:\n");
-		foreach (rset, sets_by_contents) {
-			if (!(rset->second->type & ST_USED) && !rset->second->name.empty() && maybe_used_sets.count(rset->second) == 0) {
-				if (rset->second->name[0] != '_' || rset->second->name[1] != 'G' || rset->second->name[2] != '_') {
-					u_fprintf(ux_stdout, "Line %u set %S\n", rset->second->line, rset->second->name.c_str());
+		for (auto rset : sets_by_contents) {
+			if (!(rset.second->type & ST_USED) && !rset.second->name.empty() && maybe_used_sets.count(rset.second) == 0) {
+				if (rset.second->name[0] != '_' || rset.second->name[1] != 'G' || rset.second->name[2] != '_') {
+					u_fprintf(ux_stdout, "Line %u set %S\n", rset.second->line, rset.second->name.c_str());
 				}
 			}
 		}
@@ -759,14 +758,14 @@ void Grammar::reindex(bool unused_sets, bool used_tags) {
 
 	// Stuff below this line is not optional...
 
-	foreach (tset, sets_by_contents) {
-		if (tset->second->type & ST_USED) {
-			addSetToList(tset->second);
+	for (auto tset : sets_by_contents) {
+		if (tset.second->type & ST_USED) {
+			addSetToList(tset.second);
 		}
 	}
 
-	for (auto iter_tags = single_tags.begin(); iter_tags != single_tags.end(); ++iter_tags) {
-		Tag *tag = iter_tags->second;
+	for (auto iter_tags : single_tags) {
+		Tag *tag = iter_tags.second;
 		if (tag->tag[0] == mapping_prefix) {
 			tag->type |= T_MAPPING;
 		}
@@ -789,57 +788,57 @@ void Grammar::reindex(bool unused_sets, bool used_tags) {
 
 	uint32SortedVector sects;
 
-	foreach (iter_rule, rule_by_number) {
-		if ((*iter_rule)->section == -1) {
-			before_sections.push_back(*iter_rule);
+	for (auto rule : rule_by_number) {
+		if (rule->section == -1) {
+			before_sections.push_back(rule);
 		}
-		else if ((*iter_rule)->section == -2) {
-			after_sections.push_back(*iter_rule);
+		else if (rule->section == -2) {
+			after_sections.push_back(rule);
 		}
-		else if ((*iter_rule)->section == -3) {
-			null_section.push_back(*iter_rule);
+		else if (rule->section == -3) {
+			null_section.push_back(rule);
 		}
 		else {
-			sects.insert((*iter_rule)->section);
-			rules.push_back(*iter_rule);
+			sects.insert(rule->section);
+			rules.push_back(rule);
 		}
-		if ((*iter_rule)->target) {
+		if (rule->target) {
 			Set *set = 0;
 			if (is_binary) {
-				set = sets_list[(*iter_rule)->target];
+				set = sets_list[rule->target];
 			}
 			else {
-				set = sets_by_contents.find((*iter_rule)->target)->second;
-				(*iter_rule)->target = set->number;
+				set = sets_by_contents.find(rule->target)->second;
+				rule->target = set->number;
 			}
-			indexSetToRule((*iter_rule)->number, set);
-			rules_by_set[(*iter_rule)->target].insert((*iter_rule)->number);
+			indexSetToRule(rule->number, set);
+			rules_by_set[rule->target].insert(rule->number);
 		}
 		else {
-			u_fprintf(ux_stderr, "Warning: Rule on line %u had no target.\n", (*iter_rule)->line);
+			u_fprintf(ux_stderr, "Warning: Rule on line %u had no target.\n", rule->line);
 			u_fflush(ux_stderr);
 		}
-		if (((*iter_rule)->maplist && ((*iter_rule)->maplist->type & ST_CHILD_UNIFY)) || ((*iter_rule)->sublist && ((*iter_rule)->sublist->type & ST_CHILD_UNIFY))) {
-			(*iter_rule)->flags |= FL_CAPTURE_UNIF;
+		if ((rule->maplist && (rule->maplist->type & ST_CHILD_UNIFY)) || (rule->sublist && (rule->sublist->type & ST_CHILD_UNIFY))) {
+			rule->flags |= FL_CAPTURE_UNIF;
 		}
 		if (is_binary) {
 			continue;
 		}
-		if ((*iter_rule)->childset1) {
-			Set *set = sets_by_contents.find((*iter_rule)->childset1)->second;
-			(*iter_rule)->childset1 = set->number;
+		if (rule->childset1) {
+			Set *set = sets_by_contents.find(rule->childset1)->second;
+			rule->childset1 = set->number;
 		}
-		if ((*iter_rule)->childset2) {
-			Set *set = sets_by_contents.find((*iter_rule)->childset2)->second;
-			(*iter_rule)->childset2 = set->number;
+		if (rule->childset2) {
+			Set *set = sets_by_contents.find(rule->childset2)->second;
+			rule->childset2 = set->number;
 		}
-		if ((*iter_rule)->dep_target) {
-			contextAdjustTarget((*iter_rule)->dep_target);
+		if (rule->dep_target) {
+			contextAdjustTarget(rule->dep_target);
 		}
-		for (auto test : (*iter_rule)->tests) {
+		for (auto test : rule->tests) {
 			contextAdjustTarget(test);
 		}
-		for (auto test : (*iter_rule)->dep_tests) {
+		for (auto test : rule->dep_tests) {
 			contextAdjustTarget(test);
 		}
 	}
@@ -895,19 +894,19 @@ void Grammar::reindex(bool unused_sets, bool used_tags) {
 	bool did = true;
 	while (did) {
 		did = false;
-		foreach (set, sets_list) {
-			if (sets_vstr.test((*set)->number)) {
+		for (auto set : sets_list) {
+			if (sets_vstr.test(set->number)) {
 				continue;
 			}
-			foreach (iset, (*set)->sets) {
-				if (sets_vstr.test(*iset)) {
-					sets_vstr.set((*set)->number);
+			for (auto iset : set->sets) {
+				if (sets_vstr.test(iset)) {
+					sets_vstr.set(set->number);
 					did = true;
 					break;
 				}
 			}
-			if (trie_hasType((*set)->trie, T_VARSTRING) || trie_hasType((*set)->trie_special, T_VARSTRING)) {
-				sets_vstr.set((*set)->number);
+			if (trie_hasType(set->trie, T_VARSTRING) || trie_hasType(set->trie_special, T_VARSTRING)) {
+				sets_vstr.set(set->number);
 				did = true;
 			}
 		}
@@ -919,8 +918,8 @@ void Grammar::reindex(bool unused_sets, bool used_tags) {
 	while (did) {
 		did = false;
 
-		foreach (cntx, contexts) {
-			ContextualTest *t = cntx->second;
+		for (auto cntx : contexts) {
+			ContextualTest *t = cntx.second;
 
 			if (nk.count(t)) {
 				continue;
@@ -969,9 +968,7 @@ void Grammar::reindex(bool unused_sets, bool used_tags) {
 		}
 	}
 
-	foreach (it, rule_by_number) {
-		Rule *r = *it;
-
+	for (auto r : rule_by_number) {
 		// Determine whether this rule probably needs KEEPORDER
 		if (r->flags & RF_KEEPORDER) {
 			continue;
@@ -985,13 +982,13 @@ void Grammar::reindex(bool unused_sets, bool used_tags) {
 		if (r->dep_target && nk.count(r->dep_target)) {
 			needs = true;
 		}
-		foreach (cntx, r->tests) {
-			if (nk.count(*cntx)) {
+		for (auto cntx : r->tests) {
+			if (nk.count(cntx)) {
 				needs = true;
 			}
 		}
-		foreach (cntx, r->dep_tests) {
-			if (nk.count(*cntx)) {
+		for (auto cntx : r->dep_tests) {
+			if (nk.count(cntx)) {
 				needs = true;
 			}
 		}

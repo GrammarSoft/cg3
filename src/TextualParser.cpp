@@ -1421,14 +1421,14 @@ void TextualParser::parseRule(UChar *& p, KEYWORDS key) {
 			found = true;
 		}
 		else {
-			foreach (it, rule->tests) {
-				if ((*it)->pos & POS_MARK_JUMP) {
+			for (auto it : rule->tests) {
+				if (it->pos & POS_MARK_JUMP) {
 					found = true;
 					break;
 				}
 			}
-			foreach (it, rule->dep_tests) {
-				if ((*it)->pos & POS_MARK_JUMP) {
+			for (auto it : rule->dep_tests) {
+				if (it->pos & POS_MARK_JUMP) {
 					found = true;
 					break;
 				}
@@ -2067,7 +2067,7 @@ void TextualParser::parseFromUChar(UChar *input, const char *fname) {
 
 				while (*p != ';') {
 					bool found = false;
-					for (auto& pair : pairs) {
+					for (auto pair : pairs) {
 						if (ux_simplecasecmp(p, stringbits[pair.first].getTerminatedBuffer(), stringbits[pair.first].length())) {
 							AST_OPEN(Option);
 							p += stringbits[pair.first].length();
@@ -2566,9 +2566,9 @@ int TextualParser::parse_grammar_from_file(const char *fname, const char *loc, c
 
 	result->addAnchor(keywords[K_END].getTerminatedBuffer(), result->rule_by_number.size() - 1, true);
 
-	foreach (it, result->rule_by_number) {
-		if (!(*it)->name.empty()) {
-			result->addAnchor((*it)->name.c_str(), (*it)->number, false);
+	for (auto it : result->rule_by_number) {
+		if (!it->name.empty()) {
+			result->addAnchor(it->name.c_str(), it->number, false);
 		}
 	}
 
@@ -2602,14 +2602,14 @@ int TextualParser::parse_grammar_from_file(const char *fname, const char *loc, c
 		} while (*p);
 	}
 
-	foreach (it, deferred_tmpls) {
-		uint32_t cn = hash_value(it->second.second);
+	for (auto it : deferred_tmpls) {
+		uint32_t cn = hash_value(it.second.second);
 		if (result->templates.find(cn) == result->templates.end()) {
-			u_fprintf(ux_stderr, "%s: Error: Unknown template '%S' referenced on line %u!\n", filebase, it->second.second.c_str(), it->second.first);
+			u_fprintf(ux_stderr, "%s: Error: Unknown template '%S' referenced on line %u!\n", filebase, it.second.second.c_str(), it.second.first);
 			++error_counter;
 			continue;
 		}
-		it->first->tmpl = result->templates.find(cn)->second;
+		it.first->tmpl = result->templates.find(cn)->second;
 	}
 
 	bc::flat_map<uint32_t, uint32_t> sets;
