@@ -240,6 +240,10 @@ inline bool ISESC(const UChar *p) {
 	return (a % 2 == 0);
 }
 
+inline bool ISSPACE(const UChar *p) {
+	return ISSPACE(*p) && !ISESC(p);
+}
+
 template<typename C, size_t N>
 inline bool IS_ICASE(const UChar *p, const C (&uc)[N], const C (&lc)[N]) {
 	// N - 1 due to null terminator for string constants
@@ -289,7 +293,7 @@ inline uint32_t SKIPWS(UChar *& p, const UChar a = 0, const UChar b = 0, const b
 
 inline uint32_t SKIPTOWS(UChar *& p, const UChar a = 0, const bool allowhash = false, const bool allowscol = false) {
 	uint32_t s = 0;
-	while (*p && !ISSPACE(*p)) {
+	while (*p && !ISSPACE(p)) {
 		if (!allowhash && *p == '#' && !ISESC(p)) {
 			s += SKIPLN(p);
 			--p;
@@ -344,6 +348,11 @@ inline void CG3Quit(const int32_t c = 0, const char *file = 0, const uint32_t li
 		std::cerr << "CG3Quit triggered from " << file << " line " << line << "." << std::endl;
 	}
 	exit(c);
+}
+
+template <typename T, size_t N>
+inline constexpr size_t size(T(&)[N]) {
+	return N;
 }
 
 template<typename Cont, typename VT>

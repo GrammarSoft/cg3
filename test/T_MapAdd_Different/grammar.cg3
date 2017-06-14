@@ -3,6 +3,10 @@ DELIMITERS = "<$.>" ;
 
 LIST ASet = ".atc[hm]{2}.*"r ;
 
+ADD (@order-good) (/__d\ e\ f__/l) ;
+ADD (@order-skip) (/__d__f__/l) ;
+ADD (@order-bad) (/__d\ f__/l) ;
+
 SECTION
 
 ADD ($tag) BEFORE (c wanted d) ASet ;
