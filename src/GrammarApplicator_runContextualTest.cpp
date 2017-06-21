@@ -170,9 +170,11 @@ bool GrammarApplicator::posOutputHelper(const SingleWindow *sWindow, uint32_t po
 		cohort,
 		cdeep,
 	};
-	if (!tmpl_cntxs.empty()) {
-		cs[2] = tmpl_cntxs.back().min;
-		cs[3] = tmpl_cntxs.back().max;
+	if (tmpl_cntx.min) {
+		cs[2] = tmpl_cntx.min;
+	}
+	if (tmpl_cntx.max) {
+		cs[3] = tmpl_cntx.max;
 	}
 
 	std::sort(cs, cs + 4, compare_Cohort());
@@ -206,16 +208,12 @@ bool GrammarApplicator::posOutputHelper(const SingleWindow *sWindow, uint32_t po
 }
 
 Cohort *GrammarApplicator::runContextualTest_tmpl(SingleWindow *sWindow, size_t position, const ContextualTest *test, ContextualTest *tmpl, Cohort *& cdeep, Cohort *origin) {
-	bool pop = false;
+	Cohort *min = tmpl_cntx.min;
+	Cohort *max = tmpl_cntx.max;
 	if (test->linked) {
-		// Don't add the exact same test again. This works around ((x) OR (y)) LINK ((z) OR (w)) LINK q issues.
-		// This is probably not the correct solution, but until proven otherwise...
-		if (tmpl_cntxs.empty() || tmpl_cntxs.back().test != test->linked) {
-			tmpl_cntxs.push_back(test->linked);
-			pop = true;
-		}
+		tmpl_cntx.linked.push_back(test->linked);
 	}
-
+	
 	uint64_t orgpos = tmpl->pos;
 	int32_t orgoffset = tmpl->offset;
 	uint32_t orgcbar = tmpl->cbarrier;
@@ -245,8 +243,12 @@ Cohort *GrammarApplicator::runContextualTest_tmpl(SingleWindow *sWindow, size_t 
 		}
 	}
 
-	if (pop) {
-		tmpl_cntxs.pop_back();
+	if (test->linked) {
+		tmpl_cntx.linked.pop_back();
+	}
+	if (!cohort) {
+		tmpl_cntx.min = min;
+		tmpl_cntx.max = max;
 	}
 
 	return cohort;
@@ -309,8 +311,7 @@ Cohort *GrammarApplicator::runContextualTest(SingleWindow *sWindow, size_t posit
 		if (deep) {
 			*deep = cohort;
 		}
-		if (!tmpl_cntxs.empty()) {
-			tmpl_context_t& tmpl_cntx = tmpl_cntxs.back();
+		if (tmpl_cntx.min || tmpl_cntx.max) {
 			auto gpos = make_64(cohort->parent->number, cohort->local_number);
 			if (tmpl_cntx.min == 0 || gpos < make_64(tmpl_cntx.min->parent->number, tmpl_cntx.min->local_number)) {
 				tmpl_cntx.min = cohort;
@@ -340,7 +341,7 @@ Cohort *GrammarApplicator::runContextualTest(SingleWindow *sWindow, size_t posit
 			it = &depDescendentIters[ci_depths[4]++];
 		}
 		else if (test->pos & (POS_DEP_CHILD | POS_DEP_SIBLING)) {
-			Cohort *nc = runDependencyTest(sWindow, cohort, test, deep, origin);
+			Cohort *nc = runDependencyTest(sWindow, cohort, test, deep, origin, 0);
 			if (nc) {
 				cohort = nc;
 				retval = true;
