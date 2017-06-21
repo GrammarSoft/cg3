@@ -118,8 +118,8 @@ UnicodeString keywords[KEYWORD_COUNT] = {
 	UNICODE_STRING_SIMPLE("SPLITCOHORT"),
 };
 
-const UChar _S_SET_ISECT_U[] = { L'\u2229', 0 };
-const UChar _S_SET_SYMDIFF_U[] = { L'\u2206', 0 };
+constexpr UChar _S_SET_ISECT_U[] = { L'\u2229', 0 };
+constexpr UChar _S_SET_SYMDIFF_U[] = { L'\u2206', 0 };
 
 UnicodeString stringbits[STRINGS_COUNT] = {
 	UNICODE_STRING_SIMPLE("__CG3_DUMMY_STRINGBIT__"),

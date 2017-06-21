@@ -311,20 +311,19 @@ Cohort *GrammarApplicator::runContextualTest(SingleWindow *sWindow, size_t posit
 		}
 		if (!tmpl_cntxs.empty()) {
 			tmpl_context_t& tmpl_cntx = tmpl_cntxs.back();
-			uint64_t gpos = (static_cast<uint64_t>(cohort->parent->number) << 32) | cohort->local_number;
-			if (tmpl_cntx.min == 0 || gpos < (static_cast<uint64_t>(tmpl_cntx.min->parent->number) << 32 | tmpl_cntx.min->local_number)) {
+			auto gpos = make_64(cohort->parent->number, cohort->local_number);
+			if (tmpl_cntx.min == 0 || gpos < make_64(tmpl_cntx.min->parent->number, tmpl_cntx.min->local_number)) {
 				tmpl_cntx.min = cohort;
 			}
-			if (tmpl_cntx.max == 0 || gpos > (static_cast<uint64_t>(tmpl_cntx.max->parent->number) << 32 | tmpl_cntx.max->local_number)) {
+			if (tmpl_cntx.max == 0 || gpos > make_64(tmpl_cntx.max->parent->number, tmpl_cntx.max->local_number)) {
 				tmpl_cntx.max = cohort;
 			}
 			if (deep) {
-				tmpl_context_t& tmpl_cntx = tmpl_cntxs.back();
-				uint64_t gpos = (static_cast<uint64_t>((*deep)->parent->number) << 32) | (*deep)->local_number;
-				if (tmpl_cntx.min == 0 || gpos < (static_cast<uint64_t>(tmpl_cntx.min->parent->number) << 32 | tmpl_cntx.min->local_number)) {
+				auto gpos = make_64((*deep)->parent->number, (*deep)->local_number);
+				if (tmpl_cntx.min == 0 || gpos < make_64(tmpl_cntx.min->parent->number, tmpl_cntx.min->local_number)) {
 					tmpl_cntx.min = *deep;
 				}
-				if (tmpl_cntx.max == 0 || gpos > (static_cast<uint64_t>(tmpl_cntx.max->parent->number) << 32 | tmpl_cntx.max->local_number)) {
+				if (tmpl_cntx.max == 0 || gpos > make_64(tmpl_cntx.max->parent->number, tmpl_cntx.max->local_number)) {
 					tmpl_cntx.max = *deep;
 				}
 			}

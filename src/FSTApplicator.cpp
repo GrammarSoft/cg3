@@ -171,7 +171,7 @@ void FSTApplicator::runGrammarOnText(istream& input, UFILE *output) {
 				insert_if_exists(cReading->parent->possible_sets, grammar->sets_any);
 				addTagToReading(*cReading, cCohort->wordform);
 
-				const UChar notag[] = { '_', 0 };
+				constexpr UChar notag[] = { '_', 0 };
 				const UChar *base = space;
 				TagList mappings;
 
@@ -213,7 +213,7 @@ void FSTApplicator::runGrammarOnText(istream& input, UFILE *output) {
 				UChar *plus = u_strchr(space, '+');
 				if (plus) {
 					++plus;
-					const UChar cplus[] = { '+', 0 };
+					constexpr UChar cplus[] = { '+', 0 };
 					int32_t p = u_strspn(plus, cplus);
 					space = plus + p;
 					--space;

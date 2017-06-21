@@ -350,6 +350,10 @@ inline void CG3Quit(const int32_t c = 0, const char *file = 0, const uint32_t li
 	exit(c);
 }
 
+inline constexpr uint64_t make_64(uint32_t hi, uint32_t low) {
+	return (static_cast<uint64_t>(hi) << 32) | static_cast<uint64_t>(low);
+}
+
 template <typename T, size_t N>
 inline constexpr size_t size(T(&)[N]) {
 	return N;
