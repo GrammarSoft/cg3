@@ -591,8 +591,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 							dep_deep_seen.clear();
 							// Reset the counters for which types of CohortIterator we have in play
 							std::fill(ci_depths.begin(), ci_depths.end(), static_cast<uint32_t>(0));
-							tmpl_cntxs.clear();
-							tmpl_cntx_pos = 0;
+							tmpl_cntx.clear();
 							// Run the contextual test...
 							if (!(test->pos & POS_PASS_ORIGIN) && (no_pass_origin || (test->pos & POS_NO_PASS_ORIGIN))) {
 								test_good = (runContextualTest(&current, c, test, 0, cohort) != 0);
@@ -1635,8 +1634,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 							Cohort *attach = 0;
 							seen_targets->insert(target->global_number);
 							dep_deep_seen.clear();
-							tmpl_cntxs.clear();
-							tmpl_cntx_pos = 0;
+							tmpl_cntx.clear();
 							attach_to = 0;
 							seen_barrier = false;
 							if (runContextualTest(target->parent, target->local_number, rule.dep_target, &attach) && attach) {
@@ -1648,8 +1646,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 								for (auto it : rule.dep_tests) {
 									mark = attach;
 									dep_deep_seen.clear();
-									tmpl_cntxs.clear();
-									tmpl_cntx_pos = 0;
+									tmpl_cntx.clear();
 									test_good = (runContextualTest(attach->parent, attach->local_number, it) != 0);
 									if (!test_good) {
 										good = test_good;
@@ -1703,8 +1700,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						// ToDo: ** tests will not correctly work for MOVE/SWITCH; cannot move cohorts between windows
 						Cohort *attach = 0;
 						dep_deep_seen.clear();
-						tmpl_cntxs.clear();
-						tmpl_cntx_pos = 0;
+						tmpl_cntx.clear();
 						attach_to = 0;
 						if (runContextualTest(&current, c, rule.dep_target, &attach) && attach && cohort->parent == attach->parent) {
 							if (attach_to) {
@@ -1714,8 +1710,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 							for (auto it : rule.dep_tests) {
 								mark = attach;
 								dep_deep_seen.clear();
-								tmpl_cntxs.clear();
-								tmpl_cntx_pos = 0;
+								tmpl_cntx.clear();
 								test_good = (runContextualTest(attach->parent, attach->local_number, it) != 0);
 								if (!test_good) {
 									good = test_good;
@@ -1927,8 +1922,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 					else if (type == K_ADDRELATIONS || type == K_SETRELATIONS || type == K_REMRELATIONS) {
 						Cohort *attach = 0;
 						dep_deep_seen.clear();
-						tmpl_cntxs.clear();
-						tmpl_cntx_pos = 0;
+						tmpl_cntx.clear();
 						attach_to = 0;
 						if (runContextualTest(&current, c, rule.dep_target, &attach) && attach) {
 							if (attach_to) {
@@ -1938,8 +1932,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 							for (auto it : rule.dep_tests) {
 								mark = attach;
 								dep_deep_seen.clear();
-								tmpl_cntxs.clear();
-								tmpl_cntx_pos = 0;
+								tmpl_cntx.clear();
 								test_good = (runContextualTest(attach->parent, attach->local_number, it) != 0);
 								if (!test_good) {
 									good = test_good;

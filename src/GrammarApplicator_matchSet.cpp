@@ -759,16 +759,20 @@ inline bool _check_options(std::vector<Reading*>& rv, uint32_t options, size_t n
 
 inline bool GrammarApplicator::doesSetMatchCohort_testLinked(Cohort& cohort, const Set& theset, dSMC_Context *context) {
 	bool retval = true;
+	bool reset = false;
 	const ContextualTest *linked = 0;
-	inc_dec<size_t> ic;
+	Cohort *min = 0;
+	Cohort *max = 0;
 
 	if (context->test && context->test->linked) {
 		linked = context->test->linked;
 	}
-	else if (!tmpl_cntxs.empty() && tmpl_cntx_pos < tmpl_cntxs.size()) {
-		// The outermost LINK was added first. Links are processed as a stack.
-		ic.inc(tmpl_cntx_pos);
-		linked = tmpl_cntxs[tmpl_cntxs.size() - tmpl_cntx_pos].test;
+	else if (!tmpl_cntx.linked.empty()) {
+		min = tmpl_cntx.min;
+		max = tmpl_cntx.max;
+		linked = tmpl_cntx.linked.back();
+		tmpl_cntx.linked.pop_back();
+		reset = true;
 	}
 	if (linked) {
 		if (!context->did_test) {
@@ -783,6 +787,13 @@ inline bool GrammarApplicator::doesSetMatchCohort_testLinked(Cohort& cohort, con
 			}
 		}
 		retval = context->matched_tests;
+	}
+	if (reset) {
+		tmpl_cntx.linked.push_back(linked);
+	}
+	if (!retval) {
+		tmpl_cntx.min = min;
+		tmpl_cntx.max = max;
 	}
 	return retval;
 }
