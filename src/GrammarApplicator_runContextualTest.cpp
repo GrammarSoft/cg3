@@ -210,6 +210,8 @@ bool GrammarApplicator::posOutputHelper(const SingleWindow *sWindow, uint32_t po
 Cohort *GrammarApplicator::runContextualTest_tmpl(SingleWindow *sWindow, size_t position, const ContextualTest *test, ContextualTest *tmpl, Cohort *& cdeep, Cohort *origin) {
 	Cohort *min = tmpl_cntx.min;
 	Cohort *max = tmpl_cntx.max;
+	bool in_template = tmpl_cntx.in_template;
+	tmpl_cntx.in_template = true;
 	if (test->linked) {
 		tmpl_cntx.linked.push_back(test->linked);
 	}
@@ -249,6 +251,7 @@ Cohort *GrammarApplicator::runContextualTest_tmpl(SingleWindow *sWindow, size_t 
 	if (!cohort) {
 		tmpl_cntx.min = min;
 		tmpl_cntx.max = max;
+		tmpl_cntx.in_template = in_template;
 	}
 
 	return cohort;
@@ -311,7 +314,7 @@ Cohort *GrammarApplicator::runContextualTest(SingleWindow *sWindow, size_t posit
 		if (deep) {
 			*deep = cohort;
 		}
-		if (tmpl_cntx.min || tmpl_cntx.max) {
+		if (tmpl_cntx.in_template) {
 			auto gpos = make_64(cohort->parent->number, cohort->local_number);
 			if (tmpl_cntx.min == 0 || gpos < make_64(tmpl_cntx.min->parent->number, tmpl_cntx.min->local_number)) {
 				tmpl_cntx.min = cohort;
