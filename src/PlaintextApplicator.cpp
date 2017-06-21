@@ -266,7 +266,7 @@ void PlaintextApplicator::runGrammarOnText(istream& input, UFILE *output) {
 				cReading = initEmptyCohort(*cCohort);
 				cReading->noprint = !add_tags;
 				if (add_tags) {
-					static const char _tag[] = "<cg-conv>";
+					constexpr char _tag[] = "<cg-conv>";
 					tag.assign(_tag, _tag + sizeof(_tag) - 1);
 					addTagToReading(*cReading, addTag(tag));
 				}
@@ -279,17 +279,17 @@ void PlaintextApplicator::runGrammarOnText(istream& input, UFILE *output) {
 					tag += '"';
 					addTagToReading(*cReading, addTag(tag));
 					if (all_upper) {
-						static const char _tag[] = "<all-upper>";
+						constexpr char _tag[] = "<all-upper>";
 						tag.assign(_tag, _tag + sizeof(_tag) - 1);
 						addTagToReading(*cReading, addTag(tag));
 					}
 					if (first_upper) {
-						static const char _tag[] = "<first-upper>";
+						constexpr char _tag[] = "<first-upper>";
 						tag.assign(_tag, _tag + sizeof(_tag) - 1);
 						addTagToReading(*cReading, addTag(tag));
 					}
 					if (mixed_upper && !all_upper) {
-						static const char _tag[] = "<mixed-upper>";
+						constexpr char _tag[] = "<mixed-upper>";
 						tag.assign(_tag, _tag + sizeof(_tag) - 1);
 						addTagToReading(*cReading, addTag(tag));
 					}

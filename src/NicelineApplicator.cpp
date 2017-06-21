@@ -408,8 +408,8 @@ void NicelineApplicator::printReading(const Reading *reading, UFILE *output) {
 			}
 		}
 
-		const UChar local_utf_pattern[] = { ' ', '#', '%', 'u', L'\u2192', '%', 'u', 0 };
-		const UChar local_latin_pattern[] = { ' ', '#', '%', 'u', '-', '>', '%', 'u', 0 };
+		constexpr UChar local_utf_pattern[] = { ' ', '#', '%', 'u', L'\u2192', '%', 'u', 0 };
+		constexpr UChar local_latin_pattern[] = { ' ', '#', '%', 'u', '-', '>', '%', 'u', 0 };
 		const UChar *pattern = local_latin_pattern;
 		if (unicode_tags) {
 			pattern = local_utf_pattern;
@@ -459,7 +459,7 @@ void NicelineApplicator::printReading(const Reading *reading, UFILE *output) {
 }
 
 void NicelineApplicator::printCohort(Cohort *cohort, UFILE *output) {
-	const UChar ws[] = { ' ', '\t', 0 };
+	constexpr UChar ws[] = { ' ', '\t', 0 };
 
 	if (cohort->local_number == 0) {
 		goto removed;
