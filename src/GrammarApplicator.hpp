@@ -52,11 +52,13 @@ struct tmpl_context_t {
 	Cohort *min = 0;
 	Cohort *max = 0;
 	std::vector<const ContextualTest*> linked;
+	bool in_template = false;
 
 	void clear() {
 		min = 0;
 		max = 0;
 		linked.clear();
+		in_template = false;
 	}
 };
 
