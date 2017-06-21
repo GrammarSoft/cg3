@@ -1,3 +1,80 @@
+2017-06-21  tino
+
+	* [r12250] src/FSTApplicator.cpp, src/GrammarApplicator.cpp,
+	  src/GrammarApplicator_runContextualTest.cpp,
+	  src/MweSplitApplicator.cpp, src/NicelineApplicator.cpp,
+	  src/PlaintextApplicator.cpp, src/Strings.cpp, src/Tag.cpp,
+	  src/inlines.hpp, src/parser_helpers.hpp, src/version.hpp:
+	  constexpr cleanup
+
+2017-06-14  tino
+
+	* [r12243] src/Tag.cpp: length() -> size()
+	* [r12242] src/AST.hpp, src/ApertiumApplicator.cpp,
+	  src/BinaryGrammar_read.cpp, src/BinaryGrammar_read_10043.cpp,
+	  src/BinaryGrammar_write.cpp, src/Cohort.cpp,
+	  src/CohortIterator.cpp, src/FSTApplicator.cpp, src/Grammar.cpp,
+	  src/GrammarApplicator.cpp, src/GrammarApplicator_matchSet.cpp,
+	  src/GrammarApplicator_reflow.cpp,
+	  src/GrammarApplicator_runContextualTest.cpp,
+	  src/GrammarApplicator_runGrammar.cpp,
+	  src/GrammarApplicator_runRules.cpp, src/GrammarWriter.cpp,
+	  src/MatxinApplicator.cpp, src/MweSplitApplicator.cpp,
+	  src/NicelineApplicator.cpp, src/PlaintextApplicator.cpp,
+	  src/Reading.cpp, src/Rule.cpp, src/SingleWindow.cpp, src/Tag.cpp,
+	  src/TextualParser.cpp, src/Window.cpp, src/cg_proc.cpp,
+	  src/libcg3.cpp, src/main.cpp, src/parser_helpers.hpp: Many
+	  foreach() -> range-for
+	* [r12240] src/GrammarApplicator.cpp, src/GrammarApplicator.hpp,
+	  src/GrammarApplicator_matchSet.cpp,
+	  src/GrammarApplicator_reflow.cpp, src/Reading.hpp, src/Tag.hpp,
+	  src/TextualParser.cpp, src/inlines.hpp, src/parser_helpers.hpp,
+	  test/T_MapAdd_Different/expected.txt,
+	  test/T_MapAdd_Different/grammar.cg3: Temporary hack for
+	  quick'n'dirty ordered tag check
+
+2017-06-13  tino
+
+	* [r12239] src/Grammar.hpp, src/Relabeller.cpp, src/Relabeller.hpp,
+	  src/inlines.hpp: Hasher for UString
+	* [r12238] src/BinaryGrammar.hpp, src/Cohort.hpp,
+	  src/ContextualTest.hpp, src/Grammar.hpp, src/GrammarWriter.cpp,
+	  src/Relabeller.cpp, src/Relabeller.hpp, src/Rule.hpp,
+	  src/Set.hpp, src/Tag.hpp, src/TextualParser.cpp,
+	  src/TextualParser.hpp, src/bloomish.hpp, src/cg-mwesplit.cpp,
+	  src/cg-relabel.cpp, src/cg_conv.cpp, src/flat_unordered_map.hpp,
+	  src/flat_unordered_set.hpp, src/interval_vector.hpp,
+	  src/libcg3.cpp, src/sorted_vector.hpp, src/stdafx.hpp,
+	  src/version.hpp: More Boost -> C++11
+	* [r12237] src/ApertiumApplicator.cpp, src/BinaryGrammar_write.cpp,
+	  src/Cohort.cpp, src/ContextualTest.cpp, src/Grammar.cpp,
+	  src/GrammarApplicator.cpp, src/GrammarApplicator_matchSet.cpp,
+	  src/GrammarApplicator_reflow.cpp,
+	  src/GrammarApplicator_runContextualTest.cpp,
+	  src/GrammarApplicator_runRules.cpp, src/GrammarWriter.cpp,
+	  src/MweSplitApplicator.cpp, src/NicelineApplicator.cpp,
+	  src/Relabeller.cpp, src/Relabeller.hpp, src/Set.cpp, src/Set.hpp,
+	  src/SingleWindow.cpp, src/Tag.hpp, src/TagTrie.hpp,
+	  src/TextualParser.cpp, src/libcg3.cpp, src/stdafx.hpp:
+	  BOOST_FOREACH -> range-for
+	* [r12236] src/BinaryGrammar_read_10043.cpp,
+	  src/BinaryGrammar_write.cpp, src/Cohort.cpp, src/Grammar.cpp,
+	  src/GrammarApplicator.cpp, src/GrammarApplicator_matchSet.cpp,
+	  src/GrammarApplicator_reflow.cpp,
+	  src/GrammarApplicator_runGrammar.cpp,
+	  src/GrammarApplicator_runRules.cpp, src/GrammarWriter.cpp,
+	  src/MweSplitApplicator.cpp, src/Relabeller.cpp,
+	  src/TextualParser.cpp, src/stdafx.hpp: BOOST_AUTO -> auto
+	* [r12235] ChangeLog, manual/rules.xml,
+	  src/GrammarApplicator_runRules.cpp, src/Rule.hpp,
+	  src/Strings.cpp, src/Strings.hpp, src/TextualParser.cpp,
+	  src/version.hpp, test/T_Append/expected.txt,
+	  test/T_Append/grammar.cg3, test/T_MapAdd_Different/expected.txt,
+	  test/T_MapAdd_Different/grammar.cg3,
+	  test/T_MapAdd_Different/grammar.cg3b.10043,
+	  test/T_MapAdd_Different/input.txt: Add BEFORE|AFTER to
+	  ADD/MAP/COPY to control where tags are inserted
+
 2017-06-12  tino
 
 	* [r12233] src/Relabeller.cpp: Make rule.name a UString instead of
@@ -1749,49 +1826,4 @@
 
 	* [r10047] emacs/cg.el: more rule flags to highlight
 	* [r10046] emacs/cg.el: hl UNMAP UNSAFE
-
-2014-07-15  tino
-
-	* [r10045] src/version.hpp: Bump binary grammar revision
-
-2014-07-14  tino
-
-	* [r10044] src/all_vislcg3.cpp: Eliminate CompositeTag
-	* [r10043] ChangeLog, TODO, src/BinaryGrammar_read.cpp,
-	  src/BinaryGrammar_write.cpp, src/CMakeLists.txt, src/Cohort.cpp,
-	  src/CompositeTag.cpp, src/CompositeTag.hpp, src/Grammar.cpp,
-	  src/Grammar.hpp, src/GrammarApplicator.cpp,
-	  src/GrammarApplicator.hpp, src/GrammarApplicator_matchSet.cpp,
-	  src/GrammarApplicator_runRules.cpp, src/GrammarWriter.cpp,
-	  src/Set.cpp, src/Set.hpp, src/Tag.hpp, src/TagTrie.hpp,
-	  src/TextualParser.cpp, src/TextualParser.hpp, src/main.cpp,
-	  src/version.hpp, test/T_Unification/expected.txt: Use a trie for
-	  tag matching (6% faster normal, 70% faster worst); Eliminate
-	  CompositeTag; Bump binary revision
-
-2014-07-13  tino
-
-	* [r10038] src/GrammarApplicator_matchSet.cpp: Unification of plain
-	  tags don't need special handling
-	* [r10037] src/Grammar.cpp, src/Set.hpp, src/Tag.hpp: Minor stuff
-
-2014-07-11  tino
-
-	* [r10036] scripts/profile-revisions-tally.php,
-	  scripts/profile-revisions.php, src/TextualParser.cpp: Flush;
-	  Profiling
-	* [r10035] src/Grammar.cpp, src/GrammarApplicator.hpp,
-	  src/GrammarApplicator_matchSet.cpp,
-	  src/GrammarApplicator_runRules.cpp, src/stdafx.hpp: Eliminate
-	  uint32Set in favour of uint32SortedVector
-	* [r10034] ChangeLog, src/CMakeLists.txt, src/version.hpp: Flat is
-	  good
-	* [r10033] src/BinaryGrammar_write.cpp, src/Grammar.cpp,
-	  src/Grammar.hpp, src/GrammarApplicator.hpp,
-	  src/GrammarApplicator_reflow.cpp,
-	  src/GrammarApplicator_runGrammar.cpp,
-	  src/GrammarApplicator_runRules.cpp, src/GrammarWriter.hpp,
-	  src/SingleWindow.cpp, src/SingleWindow.hpp, src/Window.hpp,
-	  src/flat_unordered_map.hpp, src/flat_unordered_set.hpp,
-	  src/stdafx.hpp: More flat unordered
 

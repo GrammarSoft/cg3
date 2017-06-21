@@ -48,6 +48,18 @@ class Rule;
 
 typedef std::vector<UnicodeString> regexgrps_t;
 
+struct tmpl_context_t {
+	Cohort *min = 0;
+	Cohort *max = 0;
+	std::vector<const ContextualTest*> linked;
+
+	void clear() {
+		min = 0;
+		max = 0;
+		linked.clear();
+	}
+};
+
 struct dSMC_Context {
 	const ContextualTest *test;
 	Cohort **deep;
@@ -192,20 +204,7 @@ protected:
 	uint32_t par_left_pos, par_right_pos;
 	bool did_final_enclosure;
 
-	struct tmpl_context_t {
-		Cohort *min;
-		Cohort *max;
-		const ContextualTest *test;
-
-		tmpl_context_t(const ContextualTest *test)
-		  : min(0)
-		  , max(0)
-		  , test(test)
-		{
-		}
-	};
-	std::vector<tmpl_context_t> tmpl_cntxs;
-	size_t tmpl_cntx_pos;
+	tmpl_context_t tmpl_cntx;
 
 	std::vector<regexgrps_t> regexgrps_store;
 	std::pair<uint8_t, regexgrps_t*> regexgrps;
