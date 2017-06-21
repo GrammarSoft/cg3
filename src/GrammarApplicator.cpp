@@ -227,8 +227,8 @@ void GrammarApplicator::index() {
 		valid_rules = vr;
 	}
 
-	const UChar local_utf_pattern[] = { ' ', '#', '%', 'u', '%', '0', '?', 'u', L'\u2192', '%', 'u', '%', '0', '?', 'u', 0 };
-	const UChar local_latin_pattern[] = { ' ', '#', '%', 'u', '%', '0', '?', 'u', '-', '>', '%', 'u', '%', '0', '?', 'u', 0 };
+	constexpr UChar local_utf_pattern[] = { ' ', '#', '%', 'u', '%', '0', '?', 'u', L'\u2192', '%', 'u', '%', '0', '?', 'u', 0 };
+	constexpr UChar local_latin_pattern[] = { ' ', '#', '%', 'u', '%', '0', '?', 'u', '-', '>', '%', 'u', '%', '0', '?', 'u', 0 };
 
 	span_pattern_utf = local_utf_pattern;
 	span_pattern_latin = local_latin_pattern;
@@ -432,8 +432,8 @@ void GrammarApplicator::printReading(const Reading *reading, UFILE *output, size
 			}
 		}
 
-		const UChar local_utf_pattern[] = { ' ', '#', '%', 'u', L'\u2192', '%', 'u', 0 };
-		const UChar local_latin_pattern[] = { ' ', '#', '%', 'u', '-', '>', '%', 'u', 0 };
+		constexpr UChar local_utf_pattern[] = { ' ', '#', '%', 'u', L'\u2192', '%', 'u', 0 };
+		constexpr UChar local_latin_pattern[] = { ' ', '#', '%', 'u', '-', '>', '%', 'u', 0 };
 		const UChar *pattern = local_latin_pattern;
 		if (unicode_tags) {
 			pattern = local_utf_pattern;
@@ -492,7 +492,7 @@ void GrammarApplicator::printReading(const Reading *reading, UFILE *output, size
 }
 
 void GrammarApplicator::printCohort(Cohort *cohort, UFILE *output) {
-	const UChar ws[] = { ' ', '\t', 0 };
+	constexpr UChar ws[] = { ' ', '\t', 0 };
 
 	if (cohort->local_number == 0) {
 		goto removed;
@@ -833,11 +833,11 @@ void GrammarApplicator::pipeInSingleWindow(SingleWindow& window, Process& input)
 void GrammarApplicator::error(const char *str, const UChar *p) {
 	(void)p;
 	if (current_rule && current_rule->line) {
-		const UChar buf[] = { 'R', 'T', ' ', 'R', 'U', 'L', 'E', 0 };
+		constexpr UChar buf[] = { 'R', 'T', ' ', 'R', 'U', 'L', 'E', 0 };
 		u_fprintf(ux_stderr, str, buf, current_rule->line, buf);
 	}
 	else {
-		const UChar buf[] = { 'R', 'T', ' ', 'I', 'N', 'P', 'U', 'T', 0 };
+		constexpr UChar buf[] = { 'R', 'T', ' ', 'I', 'N', 'P', 'U', 'T', 0 };
 		u_fprintf(ux_stderr, str, buf, numLines, buf);
 	}
 }
@@ -845,11 +845,11 @@ void GrammarApplicator::error(const char *str, const UChar *p) {
 void GrammarApplicator::error(const char *str, const char *s, const UChar *p) {
 	(void)p;
 	if (current_rule && current_rule->line) {
-		const UChar buf[] = { 'R', 'T', ' ', 'R', 'U', 'L', 'E', 0 };
+		constexpr UChar buf[] = { 'R', 'T', ' ', 'R', 'U', 'L', 'E', 0 };
 		u_fprintf(ux_stderr, str, buf, s, current_rule->line, buf);
 	}
 	else {
-		const UChar buf[] = { 'R', 'T', ' ', 'I', 'N', 'P', 'U', 'T', 0 };
+		constexpr UChar buf[] = { 'R', 'T', ' ', 'I', 'N', 'P', 'U', 'T', 0 };
 		u_fprintf(ux_stderr, str, buf, s, numLines, buf);
 	}
 }
@@ -857,11 +857,11 @@ void GrammarApplicator::error(const char *str, const char *s, const UChar *p) {
 void GrammarApplicator::error(const char *str, const UChar *s, const UChar *p) {
 	(void)p;
 	if (current_rule && current_rule->line) {
-		const UChar buf[] = { 'R', 'T', ' ', 'R', 'U', 'L', 'E', 0 };
+		constexpr UChar buf[] = { 'R', 'T', ' ', 'R', 'U', 'L', 'E', 0 };
 		u_fprintf(ux_stderr, str, buf, s, current_rule->line, buf);
 	}
 	else {
-		const UChar buf[] = { 'R', 'T', ' ', 'I', 'N', 'P', 'U', 'T', 0 };
+		constexpr UChar buf[] = { 'R', 'T', ' ', 'I', 'N', 'P', 'U', 'T', 0 };
 		u_fprintf(ux_stderr, str, buf, s, numLines, buf);
 	}
 }
@@ -869,11 +869,11 @@ void GrammarApplicator::error(const char *str, const UChar *s, const UChar *p) {
 void GrammarApplicator::error(const char *str, const char *s, const UChar *S, const UChar *p) {
 	(void)p;
 	if (current_rule && current_rule->line) {
-		const UChar buf[] = { 'R', 'T', ' ', 'R', 'U', 'L', 'E', 0 };
+		constexpr UChar buf[] = { 'R', 'T', ' ', 'R', 'U', 'L', 'E', 0 };
 		u_fprintf(ux_stderr, str, buf, s, S, current_rule->line, buf);
 	}
 	else {
-		const UChar buf[] = { 'R', 'T', ' ', 'I', 'N', 'P', 'U', 'T', 0 };
+		constexpr UChar buf[] = { 'R', 'T', ' ', 'I', 'N', 'P', 'U', 'T', 0 };
 		u_fprintf(ux_stderr, str, buf, s, S, numLines, buf);
 	}
 }

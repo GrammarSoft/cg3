@@ -52,8 +52,8 @@ const Tag *MweSplitApplicator::maybeWfTag(const Reading *r) {
 }
 
 std::vector<Cohort*> MweSplitApplicator::splitMwe(Cohort *cohort) {
-	const UChar rtrimblank[] = { ' ', '\n', '\r', '\t', 0 };
-	const UChar textprefix[] = { ':', 0 };
+	constexpr UChar rtrimblank[] = { ' ', '\n', '\r', '\t', 0 };
+	constexpr UChar textprefix[] = { ':', 0 };
 	std::vector<Cohort*> cos;
 	size_t n_wftags = 0;
 	size_t n_goodreadings = 0;
