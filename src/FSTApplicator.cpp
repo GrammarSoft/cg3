@@ -166,7 +166,7 @@ void FSTApplicator::runGrammarOnText(istream& input, UFILE *output) {
 			}
 
 			++space;
-			while (space && (space[0] != '+' || space[1] != '?' || space[2] != 0)) {
+			while (space && *space && (space[0] != '+' || space[1] != '?' || space[2] != 0)) {
 				cReading = alloc_reading(cCohort);
 				insert_if_exists(cReading->parent->possible_sets, grammar->sets_any);
 				addTagToReading(*cReading, cCohort->wordform);
