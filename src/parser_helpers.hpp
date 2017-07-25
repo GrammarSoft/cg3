@@ -69,7 +69,6 @@ Tag *parseTag(const UChar *to, const UChar *p, State& state) {
 			u_fflush(state.ux_stderr);
 		}
 
-		// ToDo: Implement META and VAR
 		if (tmp[0] == 'M' && tmp[1] == 'E' && tmp[2] == 'T' && tmp[3] == 'A' && tmp[4] == ':') {
 			tag->type |= T_META;
 			tmp += 5;
