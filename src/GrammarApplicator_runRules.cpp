@@ -854,6 +854,9 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						for (auto iter : cohort->readings) {
 							iter->hit_by.push_back(rule.number);
 							iter->deleted = true;
+							if (trace) {
+								iter->noprint = false;
+							}
 						}
 						// Move any enclosed parentheses to the previous cohort
 						if (!cohort->enclosed.empty()) {
@@ -975,6 +978,11 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 
 						if (cCohort->readings.empty()) {
 							initEmptyCohort(*cCohort);
+							if (trace) {
+								auto r = cCohort->readings.front();
+								r->hit_by.push_back(rule.number);
+								r->noprint = false;
+							}
 						}
 
 						CohortSet cohorts;
