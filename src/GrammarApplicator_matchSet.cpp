@@ -258,6 +258,39 @@ uint32_t GrammarApplicator::doesTagMatchReading(const Reading& reading, const Ta
 		const Tag *nt = generateVarstringTag(&tag);
 		match = doesTagMatchReading(reading, *nt, unif_mode, bypass_index);
 	}
+	else if (tag.type & T_META) {
+		if (tag.regexp && !reading.parent->text.empty()) {
+			UErrorCode status = U_ZERO_ERROR;
+			uregex_setText(tag.regexp, reading.parent->text.c_str(), reading.parent->text.size(), &status);
+			if (status != U_ZERO_ERROR) {
+				u_fprintf(ux_stderr, "Error: uregex_setText(MatchSet) returned %s for tag %S before input line %u - cannot continue!\n", u_errorName(status), tag.tag.c_str(), numLines);
+				CG3Quit(1);
+			}
+			status = U_ZERO_ERROR;
+			if (uregex_find(tag.regexp, -1, &status)) {
+				match = tag.hash;
+			}
+			if (status != U_ZERO_ERROR) {
+				u_fprintf(ux_stderr, "Error: uregex_find(MatchSet) returned %s for tag %S before input line %u - cannot continue!\n", u_errorName(status), tag.tag.c_str(), numLines);
+				CG3Quit(1);
+			}
+			if (match) {
+				int32_t gc = uregex_groupCount(tag.regexp, &status);
+				if (gc > 0 && regexgrps.second != 0) {
+					UChar tmp[1024];
+					for (int i = 1; i <= gc; ++i) {
+						tmp[0] = 0;
+						int32_t len = uregex_group(tag.regexp, i, tmp, 1024, &status);
+						regexgrps.second->resize(std::max(static_cast<size_t>(regexgrps.first) + 1, regexgrps.second->size()));
+						UnicodeString& ucstr = (*regexgrps.second)[regexgrps.first];
+						ucstr.remove();
+						ucstr.append(tmp, len);
+						++regexgrps.first;
+					}
+				}
+			}
+		}
+	}
 	else if (tag.regexp) {
 		match = doesRegexpMatchReading(reading, tag, bypass_index);
 	}

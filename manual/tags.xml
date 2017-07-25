@@ -320,6 +320,23 @@
     </para>
   </section>
 
+  <section id="stream-metadata">
+    <title>Stream Metadata</title>
+    <para>
+      CG-3 will <link linkend="streamformats">store and forward</link> any data between cohorts,
+      attached to the preceding cohort.
+      <code>META:/.../r</code> and <code>META:/.../ri</code> lets you query and capture from this data with regular expressions.
+      Data before the first cohort is not accessible.
+    </para>
+    <screen>
+      ADD (@header) (*) IF (-1 (META:/&lt;h\d+&gt;$/ri)) ;
+    </screen>
+    <para>
+      I recommend keeping META tags in the contextual tests, since they cannot currently be cached and will be checked
+      every time.
+    </para>
+  </section>
+
   <section id="global-variables">
     <title>Global Variables</title>
     <para>
