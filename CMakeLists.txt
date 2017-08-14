@@ -86,12 +86,6 @@ else()
 		PATTERN ".svn" EXCLUDE)
 endif()
 
-include(TestBigEndian)
-TEST_BIG_ENDIAN(BIG_ENDIAN)
-if(BIG_ENDIAN)
-	add_definitions(-DBIG_ENDIAN)
-endif()
-
 if(WIN32)
 	add_definitions(-DUNICODE -D_UNICODE -D_SECURE_SCL=0 -D_ITERATOR_DEBUG_LEVEL=0 -D_CRT_SECURE_NO_DEPRECATE -DWIN32_LEAN_AND_MEAN -DVC_EXTRALEAN -DNOMINMAX)
 	include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include/win32")
