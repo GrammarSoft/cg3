@@ -23,11 +23,9 @@
 #ifndef c6d28b7452ec699b_STRINGS_H
 #define c6d28b7452ec699b_STRINGS_H
 
-#include <cstdint>
-
 namespace CG3 {
 // ToDo: Add ABORT
-enum KEYWORDS : uint32_t {
+enum KEYWORDS {
 	K_IGNORE,
 	K_SETS,
 	K_LIST,
@@ -91,7 +89,7 @@ enum KEYWORDS : uint32_t {
 	KEYWORD_COUNT,
 };
 
-enum : uint32_t {
+enum {
 	S_IGNORE,
 	S_PIPE,
 	S_TO,
@@ -176,7 +174,7 @@ enum : uint32_t {
 };
 
 // This must be kept in lock-step with Rule.hpp's RULE_FLAGS
-enum : uint32_t {
+enum {
 	FL_NEAREST,
 	FL_ALLOWLOOP,
 	FL_DELAYED,
