@@ -425,10 +425,29 @@ inline UString readUTF8String(S& input) {
 
 template<typename T>
 inline void writeSwapped(std::ostream& stream, const T& value) {
-	auto tmp = static_cast<std::make_unsigned<T>::type>(value);
-	boost::endian::native_to_big_inplace(tmp);
-	stream.write(reinterpret_cast<const char*>(&tmp), sizeof(tmp));
-
+	if (sizeof(T) == 1) {
+		stream.write(reinterpret_cast<const char*>(&value), sizeof(T));
+	}
+	else if (sizeof(T) == 2) {
+		uint16_t tmp = static_cast<uint16_t>(htons(static_cast<uint16_t>(value)));
+		stream.write(reinterpret_cast<const char*>(&tmp), sizeof(T));
+	}
+	else if (sizeof(T) == 4) {
+		uint32_t tmp = static_cast<uint32_t>(htonl(static_cast<uint32_t>(value)));
+		stream.write(reinterpret_cast<const char*>(&tmp), sizeof(T));
+	}
+	else if (sizeof(T) == 8) {
+		uint64_t tmp = value;
+#ifndef BIG_ENDIAN
+		const uint32_t high = static_cast<uint32_t>(htonl(static_cast<uint32_t>(tmp >> 32)));
+		const uint32_t low = static_cast<uint32_t>(htonl(static_cast<uint32_t>(tmp & 0xFFFFFFFFULL)));
+		tmp = (static_cast<uint64_t>(low) << 32) | high;
+#endif
+		stream.write(reinterpret_cast<const char*>(&tmp), sizeof(T));
+	}
+	else {
+		throw std::runtime_error("Unhandled type size in writeSwapped()");
+	}
 	if (!stream) {
 		throw std::runtime_error("Stream was in bad state in writeSwapped()");
 	}
@@ -448,11 +467,32 @@ inline T readSwapped(std::istream& stream) {
 	if (!stream) {
 		throw std::runtime_error("Stream was in bad state in readSwapped()");
 	}
-
-	std::make_unsigned<T>::type tmp = 0;
-	stream.read(reinterpret_cast<char*>(&tmp), sizeof(tmp));
-	boost::endian::big_to_native_inplace(tmp);
-	return static_cast<T>(tmp);
+	if (sizeof(T) == 1) {
+		uint8_t tmp = 0;
+		stream.read(reinterpret_cast<char*>(&tmp), sizeof(T));
+		return static_cast<T>(tmp);
+	}
+	else if (sizeof(T) == 2) {
+		uint16_t tmp = 0;
+		stream.read(reinterpret_cast<char*>(&tmp), sizeof(T));
+		return static_cast<T>(ntohs(tmp));
+	}
+	else if (sizeof(T) == 4) {
+		uint32_t tmp = 0;
+		stream.read(reinterpret_cast<char*>(&tmp), sizeof(T));
+		return static_cast<T>(ntohl(tmp));
+	}
+	else if (sizeof(T) == 8) {
+		uint64_t tmp = 0;
+		stream.read(reinterpret_cast<char*>(&tmp), sizeof(T));
+#ifndef BIG_ENDIAN
+		const uint32_t high = static_cast<uint32_t>(ntohl(static_cast<uint32_t>(tmp >> 32)));
+		const uint32_t low = static_cast<uint32_t>(ntohl(static_cast<uint32_t>(tmp & 0xFFFFFFFFULL)));
+		tmp = (static_cast<uint64_t>(low) << 32) | high;
+#endif
+		return static_cast<T>(tmp);
+	}
+	throw std::runtime_error("Unhandled type size in readSwapped()");
 }
 
 template<>

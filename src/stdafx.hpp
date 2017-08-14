@@ -53,7 +53,6 @@
 #include <unordered_set>
 #include <stack>
 #include <limits>
-#include <type_traits>
 #include <ctime>
 #include <cmath>
 #include <climits>
@@ -79,7 +78,6 @@
 #include <boost/container/flat_set.hpp>
 #include <boost/container/flat_map.hpp>
 #include <boost/dynamic_bitset.hpp>
-#include <boost/endian/conversion.hpp>
 
 #define foreach(iter, container) \
 	if (!(container).empty())    \
