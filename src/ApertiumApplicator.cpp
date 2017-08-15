@@ -377,8 +377,13 @@ void ApertiumApplicator::runGrammarOnText(istream& input, UFILE *output) {
 						cReading = reverse(cReading);
 					}
 
-					cCohort->appendReading(cReading);
-					numReadings++;
+					if (cReading->deleted) {
+						cCohort->deleted.push_back(cReading);
+					}
+					else {
+						cCohort->appendReading(cReading);
+					}
+					++numReadings;
 
 					current_reading.clear();
 
@@ -397,8 +402,13 @@ void ApertiumApplicator::runGrammarOnText(istream& input, UFILE *output) {
 						cReading = reverse(cReading);
 					}
 
-					cCohort->appendReading(cReading);
-					numReadings++;
+					if (cReading->deleted) {
+						cCohort->deleted.push_back(cReading);
+					}
+					else {
+						cCohort->appendReading(cReading);
+					}
+					++numReadings;
 
 					current_reading.clear();
 					continue; // while not $
@@ -519,6 +529,12 @@ void ApertiumApplicator::processReading(Reading *cReading, const UChar *reading_
 		if (*c == '*') { // Initial asterisk means word is unknown, and
 			             // should just be copied in the output.
 			unknown = true;
+		}
+		// Mark the reading as deleted if initial character is the Not Sign
+		if (base[1] == 0 && *c == not_sign) {
+			cReading->deleted = true;
+			++c;
+			continue;
 		}
 		if (*c == '<' || *c == '\0') {
 			break;
@@ -860,7 +876,6 @@ void ApertiumApplicator::printSingleWindow(SingleWindow *window, UFILE *output) 
 		}
 
 		if (trace) {
-			const UChar not_sign = L'\u00AC';
 			for (auto reading : cohort->delayed) {
 				if (need_slash) {
 					u_fprintf(output, "/%C", not_sign);
