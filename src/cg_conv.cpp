@@ -238,6 +238,7 @@ int main(int argc, char *argv[]) {
 	}
 
 	applicator.is_conv = true;
+	applicator.trace = true;
 	applicator.verbosity_level = 0;
 	applicator.runGrammarOnText(*instream.get(), ux_stdout);
 
