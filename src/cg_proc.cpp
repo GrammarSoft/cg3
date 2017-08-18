@@ -253,7 +253,7 @@ int main(int argc, char *argv[]) {
 
 	grammar.ux_stderr = ux_stderr;
 
-	if (parser->parse_grammar_from_file(argv[optind], locale_default, codepage_default)) {
+	if (parser->parse_grammar(argv[optind], locale_default, codepage_default)) {
 		std::cerr << "Error: Grammar could not be parsed - exiting!" << std::endl;
 		CG3Quit(1);
 	}

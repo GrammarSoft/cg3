@@ -30,7 +30,7 @@ namespace CG3 {
 static std::vector<ContextualTest*> contexts_list;
 static Grammar::contexts_t templates;
 
-int BinaryGrammar::readBinaryGrammar_10043(FILE *input) {
+int BinaryGrammar::readBinaryGrammar_10043(std::istream& input) {
 	if (!input) {
 		u_fprintf(ux_stderr, "Error: Input is null - cannot read from nothing!\n");
 		CG3Quit(1);
@@ -486,7 +486,7 @@ int BinaryGrammar::readBinaryGrammar_10043(FILE *input) {
 	return 0;
 }
 
-ContextualTest *BinaryGrammar::readContextualTest_10043(FILE *input) {
+ContextualTest *BinaryGrammar::readContextualTest_10043(std::istream& input) {
 	ContextualTest *t = grammar->allocateContextualTest();
 	uint32_t fields = 0;
 	uint32_t u32tmp = 0;

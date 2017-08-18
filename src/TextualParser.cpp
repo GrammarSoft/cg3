@@ -2198,9 +2198,8 @@ void TextualParser::parseFromUChar(UChar *input, const char *fname) {
 					u_fungetc(bom, grammar);
 				}
 
-				std::shared_ptr<std::vector<UChar> > gbuf(new std::vector<UChar>(grammar_size * 2, 0));
-				grammarbufs.push_back(gbuf);
-				std::vector<UChar>& data = *gbuf.get();
+				grammarbufs.emplace_back(new UString(grammar_size * 2, 0));
+				auto& data = *grammarbufs.back().get();
 				uint32_t read = u_file_read(&data[4], grammar_size * 2, grammar);
 				u_fclose(grammar);
 				if (read >= grammar_size * 2 - 1) {
@@ -2433,7 +2432,7 @@ void TextualParser::parseFromUChar(UChar *input, const char *fname) {
 	AST_CLOSE(p);
 }
 
-int TextualParser::parse_grammar_from_file(const char *fname, const char *loc, const char *cpage) {
+int TextualParser::parse_grammar(const char *fname, const char *loc, const char *cpage) {
 	filename = fname;
 	filebase = basename(const_cast<char*>(fname));
 	locale = loc;
@@ -2466,9 +2465,8 @@ int TextualParser::parse_grammar_from_file(const char *fname, const char *loc, c
 	}
 
 	// It reads into the buffer at offset 4 because certain functions may look back, so we need some nulls in front.
-	std::shared_ptr<std::vector<UChar> > gbuf(new std::vector<UChar>(result->grammar_size * 2, 0));
-	grammarbufs.push_back(gbuf);
-	std::vector<UChar>& data = *gbuf.get();
+	grammarbufs.emplace_back(new UString(result->grammar_size * 2, 0));
+	auto& data = *grammarbufs.back().get();
 	uint32_t read = u_file_read(&data[4], result->grammar_size * 2, grammar);
 	u_fclose(grammar);
 	if (read >= result->grammar_size * 2 - 1) {
@@ -2477,6 +2475,54 @@ int TextualParser::parse_grammar_from_file(const char *fname, const char *loc, c
 	}
 	data.resize(read + 4 + 1);
 
+	return parse_grammar(data);
+}
+
+int TextualParser::parse_grammar(const char *buffer, size_t length) {
+	filename = "<utf8-memory>";
+	filebase = "<utf8-memory>";
+	locale = "en_US_POSIX";
+	codepage = "UTF-8";
+	result->grammar_size = length;
+
+	grammarbufs.emplace_back(new UString(length * 2, 0));
+	auto& data = *grammarbufs.back().get();
+
+	UErrorCode err = U_ZERO_ERROR;
+	UConverter *conv = ucnv_open("UTF-8", &err);
+	auto tmp = ucnv_toUChars(conv, &data[4], length * 2, buffer, length, &err);
+
+	if (static_cast<size_t>(tmp) >= length * 2 - 1) {
+		u_fprintf(ux_stderr, "%s: Error: Converting from underlying codepage to UTF-16 exceeded factor 2 buffer!\n", filebase);
+		CG3Quit(1);
+	}
+
+	if (err != U_ZERO_ERROR) {
+		u_fprintf(ux_stderr, "%s: Error: Converting from underlying codepage to UTF-16 caused error %s!\n", filebase, u_errorName(err));
+		CG3Quit(1);
+	}
+
+	return parse_grammar(data);
+}
+
+int TextualParser::parse_grammar(const UChar *buffer, size_t length) {
+	filename = "<utf16-memory>";
+	filebase = "<utf16-memory>";
+	locale = "en_US_POSIX";
+	codepage = "UTF-8";
+	result->grammar_size = length;
+
+	grammarbufs.emplace_back(new UString(buffer, buffer+length));
+	auto& data = *grammarbufs.back().get();
+
+	return parse_grammar(data);
+}
+
+int TextualParser::parse_grammar(const std::string& buffer) {
+	return parse_grammar(buffer.c_str(), buffer.size());
+}
+
+int TextualParser::parse_grammar(UString& data) {
 	result->addAnchor(keywords[K_START].getTerminatedBuffer(), 0, true);
 
 	// Allocate the magic * tag

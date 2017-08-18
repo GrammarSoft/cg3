@@ -76,7 +76,7 @@ CG3::Grammar *cg3_grammar_load(const char *filename, UFILE *ux_stdout, UFILE *ux
 		}
 		parser.reset(new TextualParser(*grammar, ux_stderr));
 	}
-	if (parser->parse_grammar_from_file(filename, uloc_getDefault(), ucnv_getDefaultName())) {
+	if (parser->parse_grammar(filename, uloc_getDefault(), ucnv_getDefaultName())) {
 		u_fprintf(ux_stderr, "Error: Grammar could not be parsed!\n");
 		return 0;
 	}

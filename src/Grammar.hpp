@@ -143,7 +143,8 @@ public:
 	void contextAdjustTarget(ContextualTest*);
 };
 
-inline void trie_unserialize(trie_t& trie, FILE *input, Grammar& grammar, uint32_t num_tags) {
+template<typename Stream>
+inline void _trie_unserialize(trie_t& trie, Stream& input, Grammar& grammar, uint32_t num_tags) {
 	for (uint32_t i = 0; i < num_tags; ++i) {
 		uint32_t u32tmp = 0;
 		fread_throw(&u32tmp, sizeof(uint32_t), 1, input);
@@ -164,6 +165,15 @@ inline void trie_unserialize(trie_t& trie, FILE *input, Grammar& grammar, uint32
 		}
 	}
 }
+
+inline void trie_unserialize(trie_t& trie, FILE *input, Grammar& grammar, uint32_t num_tags) {
+	return _trie_unserialize(trie, input, grammar, num_tags);
+}
+
+inline void trie_unserialize(trie_t& trie, std::istream& input, Grammar& grammar, uint32_t num_tags) {
+	return _trie_unserialize(trie, input, grammar, num_tags);
+}
+
 }
 
 #endif
