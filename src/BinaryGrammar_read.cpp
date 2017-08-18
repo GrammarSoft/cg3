@@ -27,15 +27,25 @@
 
 namespace CG3 {
 
-int BinaryGrammar::readBinaryGrammar(FILE *input) {
-	if (!input) {
-		u_fprintf(ux_stderr, "Error: Input is null - cannot read from nothing!\n");
-		CG3Quit(1);
-	}
-	if (!grammar) {
-		u_fprintf(ux_stderr, "Error: No grammar provided - cannot continue!\n");
-		CG3Quit(1);
-	}
+int BinaryGrammar::parse_grammar(const UChar*, size_t) {
+	throw "UChar* interface doesn't make sense for binary grammars.";
+}
+int BinaryGrammar::parse_grammar(UString&) {
+	throw "UString interface doesn't make sense for binary grammars.";
+}
+
+int BinaryGrammar::parse_grammar(const std::string& buffer) {
+	return parse_grammar(buffer.c_str(), buffer.size());
+}
+
+int BinaryGrammar::parse_grammar(const char *buffer, size_t length) {
+	std::stringstream input;
+	input.write(buffer, length);
+	input.seekg(0);
+	return parse_grammar(input);
+}
+
+int BinaryGrammar::parse_grammar(std::istream& input) {
 	uint32_t fields = 0;
 	uint32_t u32tmp = 0;
 	int32_t i32tmp = 0;
@@ -60,7 +70,7 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 			u_fprintf(ux_stderr, "Warning: Grammar revision is %u, but current format is %u or later. Please recompile the binary grammar with latest CG-3.\n", u32tmp, CG3_FEATURE_REV);
 			u_fflush(ux_stderr);
 		}
-		fseek(input, 0, SEEK_SET);
+		input.seekg(0);
 		return readBinaryGrammar_10043(input);
 	}
 	if (u32tmp < CG3_TOO_OLD) {
@@ -516,7 +526,7 @@ int BinaryGrammar::readBinaryGrammar(FILE *input) {
 	return 0;
 }
 
-ContextualTest *BinaryGrammar::readContextualTest(FILE *input) {
+ContextualTest *BinaryGrammar::readContextualTest(std::istream& input) {
 	ContextualTest *t = grammar->allocateContextualTest();
 	uint32_t fields = 0;
 	uint32_t u32tmp = 0;

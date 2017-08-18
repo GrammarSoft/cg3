@@ -111,7 +111,7 @@ cg3_grammar *cg3_grammar_load(const char *filename) {
 	else {
 		parser.reset(new TextualParser(*grammar, ux_stderr));
 	}
-	if (parser->parse_grammar_from_file(filename, uloc_getDefault(), ucnv_getDefaultName())) {
+	if (parser->parse_grammar(filename, uloc_getDefault(), ucnv_getDefaultName())) {
 		u_fprintf(ux_stderr, "CG3 Error: Grammar could not be parsed!\n");
 		return 0;
 	}

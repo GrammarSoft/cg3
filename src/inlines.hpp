@@ -641,6 +641,13 @@ inline size_t fread_throw(void *buffer, size_t size, size_t count, FILE *stream)
 	return rv;
 }
 
+inline size_t fread_throw(void *buffer, size_t size, size_t count, std::istream& stream) {
+	if (!stream.read(static_cast<char*>(buffer), size * count)) {
+		throw std::runtime_error("stream did not read all requested objects");
+	}
+	return size * count;
+}
+
 inline size_t fwrite_throw(const void *buffer, size_t size, size_t count, FILE *stream) {
 	size_t rv = ::fwrite(buffer, size, count, stream);
 	if (rv != count) {

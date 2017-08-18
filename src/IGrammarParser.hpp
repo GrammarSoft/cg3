@@ -33,11 +33,16 @@ public:
 	virtual ~IGrammarParser(){};
 	virtual void setCompatible(bool compat) = 0;
 	virtual void setVerbosity(uint32_t level) = 0;
-	virtual int parse_grammar_from_file(const char *filename, const char *locale, const char *codepage) = 0;
+	virtual int parse_grammar(const char *buffer, size_t length) = 0;
+	virtual int parse_grammar(const UChar *buffer, size_t length) = 0;
+	virtual int parse_grammar(const std::string& buffer) = 0;
+	virtual int parse_grammar(const char *filename, const char *locale, const char *codepage) = 0;
 
 	UFILE *ux_stderr;
 
 protected:
+	virtual int parse_grammar(UString& buffer) = 0;
+
 	Grammar *result;
 	uint32_t verbosity;
 };

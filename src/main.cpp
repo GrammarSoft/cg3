@@ -219,7 +219,7 @@ int main(int argc, char *argv[]) {
 		CG3::Set::dump_hashes_out = ux_stderr;
 	}
 
-	CG3::IGrammarParser *parser = 0;
+	std::unique_ptr<CG3::IGrammarParser> parser;
 	FILE *input = fopen(options[GRAMMAR].value, "rb");
 	if (!input) {
 		std::cerr << "Error: Error opening " << options[GRAMMAR].value << " for reading!" << std::endl;
@@ -239,10 +239,10 @@ int main(int argc, char *argv[]) {
 			std::cerr << "Error: --dump-ast is for textual grammars only!" << std::endl;
 			CG3Quit(1);
 		}
-		parser = new CG3::BinaryGrammar(grammar, ux_stderr);
+		parser.reset(new CG3::BinaryGrammar(grammar, ux_stderr));
 	}
 	else {
-		parser = new CG3::TextualParser(grammar, ux_stderr, options[DUMP_AST].doesOccur != 0);
+		parser.reset(new CG3::TextualParser(grammar, ux_stderr, options[DUMP_AST].doesOccur != 0));
 	}
 	if (options[VERBOSE].doesOccur) {
 		if (options[VERBOSE].value) {
@@ -264,13 +264,13 @@ int main(int argc, char *argv[]) {
 	}
 	main_timer = clock();
 
-	if (parser->parse_grammar_from_file(options[GRAMMAR].value, locale_default, codepage_grammar)) {
+	if (parser->parse_grammar(options[GRAMMAR].value, locale_default, codepage_grammar)) {
 		std::cerr << "Error: Grammar could not be parsed - exiting!" << std::endl;
 		CG3Quit(1);
 	}
 
 	if (options[DUMP_AST].doesOccur) {
-		dynamic_cast<CG3::TextualParser*>(parser)->print_ast(ux_stdout);
+		dynamic_cast<CG3::TextualParser*>(parser.get())->print_ast(ux_stdout);
 	}
 
 	if (options[MAPPING_PREFIX].doesOccur) {
@@ -290,8 +290,7 @@ int main(int argc, char *argv[]) {
 	}
 	grammar.reindex(options[SHOW_UNUSED_SETS].doesOccur == 1, options[SHOW_TAGS].doesOccur == 1);
 
-	delete parser;
-	parser = 0;
+	parser.reset();
 
 	if (options[VERBOSE].doesOccur) {
 		std::cerr << "Parsing grammar took " << (clock() - main_timer) / (double)CLOCKS_PER_SEC << " seconds." << std::endl;
