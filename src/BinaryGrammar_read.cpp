@@ -46,6 +46,8 @@ int BinaryGrammar::parse_grammar(const char *buffer, size_t length) {
 }
 
 int BinaryGrammar::parse_grammar(std::istream& input) {
+	input.exceptions(std::ios::failbit | std::ios::eofbit | std::ios::badbit);
+
 	uint32_t fields = 0;
 	uint32_t u32tmp = 0;
 	int32_t i32tmp = 0;
