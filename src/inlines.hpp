@@ -46,7 +46,7 @@ constexpr uint32_t CG3_HASH_SEED = 705577479u;
 
 inline uint32_t SuperFastHash(const char *data, size_t len = 0, uint32_t hash = CG3_HASH_SEED) {
 	if (hash == 0) {
-		hash = len;
+		hash = static_cast<uint32_t>(len);
 	}
 	uint32_t tmp;
 	uint32_t rem;
@@ -103,7 +103,7 @@ inline uint32_t SuperFastHash(const char *data, size_t len = 0, uint32_t hash = 
 
 inline uint32_t SuperFastHash(const UChar *data, size_t len = 0, uint32_t hash = CG3_HASH_SEED) {
 	if (hash == 0) {
-		hash = len;
+		hash = static_cast<uint32_t>(len);
 	}
 	uint32_t tmp;
 	uint32_t rem;
@@ -389,7 +389,7 @@ inline void writeUTF8String(std::ostream& output, const UChar *str, size_t len =
 	std::vector<char> buffer(len * 4);
 	int32_t olen = 0;
 	UErrorCode status = U_ZERO_ERROR;
-	u_strToUTF8(&buffer[0], len * 4 - 1, &olen, str, len, &status);
+	u_strToUTF8(&buffer[0], static_cast<int32_t>(len * 4 - 1), &olen, str, static_cast<int32_t>(len), &status);
 
 	uint16_t cs = static_cast<uint16_t>(olen);
 	writeRaw(output, cs);

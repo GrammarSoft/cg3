@@ -1,5 +1,56 @@
+2017-08-18  tino
+
+	* [r12311] src/BinaryGrammar_read.cpp: Enable exceptions
+	* [r12310] src/BinaryGrammar.cpp, src/BinaryGrammar.hpp,
+	  src/BinaryGrammar_read.cpp, src/BinaryGrammar_read_10043.cpp,
+	  src/Grammar.hpp, src/IGrammarParser.hpp, src/TextualParser.cpp,
+	  src/TextualParser.hpp, src/cg-relabel.cpp, src/cg_comp.cpp,
+	  src/cg_proc.cpp, src/inlines.hpp, src/libcg3.cpp, src/main.cpp:
+	  Add various parse_grammar() overloads
+
+2017-08-15  tino
+
+	* [r12308] src/ApertiumApplicator.cpp, src/Strings.hpp,
+	  src/cg_conv.cpp: Apertium format now considers initial ¬ (U+00AC)
+	  as a deleted reading
+
+2017-08-14  tino
+
+	* [r12306] CMakeLists.txt, manual/cmdreference.xml,
+	  manual/grammar.xml, manual/parentheses.xml,
+	  manual/streamcmds.xml, src/Strings.hpp, src/inlines.hpp,
+	  src/stdafx.hpp, test/T_CG2Compat, test/T_DelayAndDelete,
+	  test/T_External, test/T_Include, test/T_MappingPrefix,
+	  test/T_Movement, test/T_OriginPassing, test/T_Parentheses,
+	  test/T_SectionRanges: Revert r12305. Older supported distros have
+	  too old Boost
+	* [r12305] CMakeLists.txt, src/Strings.hpp, src/inlines.hpp,
+	  src/stdafx.hpp: Drop big endian detection in favour of generic
+	  Boost
+
+2017-07-25  tino
+
+	* [r12274] manual/tags.xml, src/GrammarApplicator_matchSet.cpp,
+	  src/parser_helpers.hpp: Implement and document META for querying
+	  stream metadata
+	* [r12273] src/GrammarApplicator_runRules.cpp: If tracing, show
+	  removed cohort readings and added empty cohort readings
+
+2017-06-27  tino
+
+	* [r12259] src/FSTApplicator.cpp: Handle invalid terminating +
+
 2017-06-21  tino
 
+	* [r12254] src/GrammarApplicator.hpp,
+	  src/GrammarApplicator_runContextualTest.cpp: Still feels
+	  breakable
+	* [r12253] ChangeLog, src/GrammarApplicator.cpp,
+	  src/GrammarApplicator.hpp, src/GrammarApplicator_matchSet.cpp,
+	  src/GrammarApplicator_runContextualTest.cpp,
+	  src/GrammarApplicator_runRules.cpp, src/version.hpp: An OR
+	  template followed by another OR template followed by a normal
+	  linked test now finally seems to work as it should.
 	* [r12250] src/FSTApplicator.cpp, src/GrammarApplicator.cpp,
 	  src/GrammarApplicator_runContextualTest.cpp,
 	  src/MweSplitApplicator.cpp, src/NicelineApplicator.cpp,
@@ -1785,45 +1836,4 @@
 2014-08-23  unhammer
 
 	* [r10097] emacs/cg.el: highlight SETVARIABLE
-
-2014-08-14  tino
-
-	* [r10080] TODO, manual/installation.xml, manual/probabilistic.xml,
-	  manual/tags.xml, src/GrammarApplicator_matchSet.cpp,
-	  src/NicelineApplicator.cpp, src/Tag.cpp, src/Tag.hpp: Tag prefix
-	  ! is now an alias for ^; cg-conv better handling of niceline
-	  format
-
-2014-08-11  tino
-
-	* [r10072] src/cg_conv.cpp: Better Apertium format detection
-
-2014-08-07  tino
-
-	* [r10065] newsletters/2014-08-07.txt: Newsletter
-	* [r10063] ChangeLog, src/GrammarApplicator_runRules.cpp,
-	  src/version.hpp: Fix setting parent to 0 and later testing for
-	  parent; Release 0.9.8.10063
-	* [r10054] src/TextualParser.cpp: VC10 needs a cast here
-
-2014-07-20  tino
-
-	* [r10051] src/Grammar.cpp, src/GrammarWriter.cpp, src/TagTrie.hpp,
-	  src/all_cg_comp.cpp, src/all_cg_conv.cpp, src/all_cg_proc.cpp:
-	  Remove more CompositeTag references; Fix GrammarWriter for new
-	  tag store
-
-2014-07-18  tino
-
-	* [r10049] src/main.cpp, src/options.hpp: Add --min-binary-revision
-	  to programatically determine if a grammar needs rebuilding
-
-2014-07-15  tino
-
-	* [r10048] cg3.magic: Add file(1) magic definition
-
-2014-07-15  unhammer
-
-	* [r10047] emacs/cg.el: more rule flags to highlight
-	* [r10046] emacs/cg.el: hl UNMAP UNSAFE
 
