@@ -34,7 +34,7 @@
 
 using CG3::CG3Quit;
 
-void endProgram(char *name) {
+void endProgram(char* name) {
 	if (name != NULL) {
 		fprintf(stdout, "VISL CG-3 Compiler version %u.%u.%u.%u\n",
 		  CG3_VERSION_MAJOR, CG3_VERSION_MINOR, CG3_VERSION_PATCH, CG3_REVISION);
@@ -44,8 +44,8 @@ void endProgram(char *name) {
 	exit(EXIT_FAILURE);
 }
 
-int main(int argc, char *argv[]) {
-	UFILE *ux_stderr = 0;
+int main(int argc, char* argv[]) {
+	UFILE* ux_stderr = 0;
 	UErrorCode status = U_ZERO_ERROR;
 
 	if (argc != 3) {
@@ -61,16 +61,16 @@ int main(int argc, char *argv[]) {
 	status = U_ZERO_ERROR;
 
 	ucnv_setDefaultName("UTF-8");
-	const char *codepage_default = ucnv_getDefaultName();
+	const char* codepage_default = ucnv_getDefaultName();
 	uloc_setDefault("en_US_POSIX", &status);
-	const char *locale_default = uloc_getDefault();
+	const char* locale_default = uloc_getDefault();
 
 	ux_stderr = u_finit(stderr, locale_default, codepage_default);
 
 	CG3::Grammar grammar;
 
-	CG3::IGrammarParser *parser = 0;
-	FILE *input = fopen(argv[1], "rb");
+	CG3::IGrammarParser* parser = 0;
+	FILE* input = fopen(argv[1], "rb");
 
 	if (!input) {
 		std::cerr << "Error: Error opening " << argv[1] << " for reading!" << std::endl;
@@ -110,7 +110,7 @@ int main(int argc, char *argv[]) {
 		std::cerr << "Grammar has dependency rules." << std::endl;
 	}
 
-	FILE *gout = fopen(argv[2], "wb");
+	FILE* gout = fopen(argv[2], "wb");
 
 	if (gout) {
 		CG3::BinaryGrammar writer(grammar, ux_stderr);

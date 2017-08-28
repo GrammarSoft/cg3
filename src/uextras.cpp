@@ -28,7 +28,7 @@
 
 namespace CG3 {
 
-std::string ux_dirname(const char *in) {
+std::string ux_dirname(const char* in) {
 	char tmp[32768] = { 0 };
 #ifdef _WIN32
 	char *fname = 0;

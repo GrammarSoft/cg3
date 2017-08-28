@@ -29,13 +29,13 @@
 
 namespace CG3 {
 
-PlaintextApplicator::PlaintextApplicator(UFILE *ux_err)
+PlaintextApplicator::PlaintextApplicator(UFILE* ux_err)
   : GrammarApplicator(ux_err)
 {
 	allow_magic_readings = true;
 }
 
-void PlaintextApplicator::runGrammarOnText(istream& input, UFILE *output) {
+void PlaintextApplicator::runGrammarOnText(istream& input, UFILE* output) {
 	if (!input.good()) {
 		u_fprintf(ux_stderr, "Error: Input is null - nothing to parse!\n");
 		CG3Quit(1);
@@ -72,12 +72,12 @@ void PlaintextApplicator::runGrammarOnText(istream& input, UFILE *output) {
 	uint32_t resetAfter = ((num_windows + 4) * 2 + 1);
 	uint32_t lines = 0;
 
-	SingleWindow *cSWindow = 0;
-	Cohort *cCohort = 0;
-	Reading *cReading = 0;
+	SingleWindow* cSWindow = 0;
+	Cohort* cCohort = 0;
+	Reading* cReading = 0;
 
-	SingleWindow *lSWindow = 0;
-	Cohort *lCohort = 0;
+	SingleWindow* lSWindow = 0;
+	Cohort* lCohort = 0;
 
 	gWindow->window_span = num_windows;
 
@@ -127,7 +127,7 @@ void PlaintextApplicator::runGrammarOnText(istream& input, UFILE *output) {
 				reverse_foreach (iter, cSWindow->cohorts) {
 					if (doesSetMatchCohortNormal(**iter, grammar->soft_delimiters->number)) {
 						did_soft_lookback = false;
-						Cohort *cohort = delimitAt(*cSWindow, *iter);
+						Cohort* cohort = delimitAt(*cSWindow, *iter);
 						cSWindow = cohort->parent->next;
 						if (cCohort) {
 							cCohort->parent = cSWindow;
@@ -187,7 +187,7 @@ void PlaintextApplicator::runGrammarOnText(istream& input, UFILE *output) {
 			}
 			if (gWindow->next.size() > num_windows) {
 				while (!gWindow->previous.empty() && gWindow->previous.size() > num_windows) {
-					SingleWindow *tmp = gWindow->previous.front();
+					SingleWindow* tmp = gWindow->previous.front();
 					printSingleWindow(tmp, output);
 					free_swindow(tmp);
 					gWindow->previous.erase(gWindow->previous.begin());
@@ -203,8 +203,8 @@ void PlaintextApplicator::runGrammarOnText(istream& input, UFILE *output) {
 				}
 			}
 			std::vector<UChar*> tokens_raw;
-			UChar *base = &cleaned[0];
-			UChar *space = base;
+			UChar* base = &cleaned[0];
+			UChar* space = base;
 
 			while (space && *space && (space = u_strchr(space, ' ')) != 0) {
 				space[0] = 0;
@@ -219,7 +219,7 @@ void PlaintextApplicator::runGrammarOnText(istream& input, UFILE *output) {
 
 			std::vector<UnicodeString> tokens;
 			for (size_t i = 0; i < tokens_raw.size(); ++i) {
-				UChar *p = tokens_raw[i];
+				UChar* p = tokens_raw[i];
 				size_t len = u_strlen(p);
 				while (*p && u_ispunct(p[0])) {
 					tokens.push_back(UnicodeString(p[0]));
@@ -329,7 +329,7 @@ void PlaintextApplicator::runGrammarOnText(istream& input, UFILE *output) {
 	}
 	while (!gWindow->next.empty()) {
 		while (!gWindow->previous.empty() && gWindow->previous.size() > num_windows) {
-			SingleWindow *tmp = gWindow->previous.front();
+			SingleWindow* tmp = gWindow->previous.front();
 			printSingleWindow(tmp, output);
 			free_swindow(tmp);
 			gWindow->previous.erase(gWindow->previous.begin());
@@ -340,7 +340,7 @@ void PlaintextApplicator::runGrammarOnText(istream& input, UFILE *output) {
 
 	gWindow->shuffleWindowsDown();
 	while (!gWindow->previous.empty()) {
-		SingleWindow *tmp = gWindow->previous.front();
+		SingleWindow* tmp = gWindow->previous.front();
 		printSingleWindow(tmp, output);
 		free_swindow(tmp);
 		gWindow->previous.erase(gWindow->previous.begin());
@@ -349,7 +349,7 @@ void PlaintextApplicator::runGrammarOnText(istream& input, UFILE *output) {
 	u_fflush(output);
 }
 
-void PlaintextApplicator::printCohort(Cohort *cohort, UFILE *output) {
+void PlaintextApplicator::printCohort(Cohort* cohort, UFILE* output) {
 	if (cohort->local_number == 0) {
 		return;
 	}
@@ -360,10 +360,10 @@ void PlaintextApplicator::printCohort(Cohort *cohort, UFILE *output) {
 	u_fprintf(output, "%.*S ", cohort->wordform->tag.size() - 4, cohort->wordform->tag.c_str() + 2);
 }
 
-void PlaintextApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
+void PlaintextApplicator::printSingleWindow(SingleWindow* window, UFILE* output) {
 	uint32_t cs = (uint32_t)window->cohorts.size();
 	for (uint32_t c = 0; c < cs; c++) {
-		Cohort *cohort = window->cohorts[c];
+		Cohort* cohort = window->cohorts[c];
 		printCohort(cohort, output);
 	}
 	u_fputc('\n', output);

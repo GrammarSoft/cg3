@@ -28,36 +28,36 @@
 namespace CG3 {
 class ApertiumApplicator : public virtual GrammarApplicator {
 public:
-	ApertiumApplicator(UFILE *ux_err);
+	ApertiumApplicator(UFILE* ux_err);
 
-	void runGrammarOnText(istream& input, UFILE *output);
+	void runGrammarOnText(istream& input, UFILE* output);
 
 	bool wordform_case;
 	bool print_word_forms;
 	bool print_only_first;
 	void setNullFlush(bool pNullFlush);
 
-	void testPR(UFILE *output);
+	void testPR(UFILE* output);
 
 protected:
 	bool nullFlush;
 	bool runningWithNullFlush;
 
-	void printReading(Reading *reading, UFILE *output);
-	void printSingleWindow(SingleWindow *window, UFILE *output);
+	void printReading(Reading* reading, UFILE* output);
+	void printSingleWindow(SingleWindow* window, UFILE* output);
 
-	void runGrammarOnTextWrapperNullFlush(istream& input, UFILE *output);
+	void runGrammarOnTextWrapperNullFlush(istream& input, UFILE* output);
 
 	UChar u_fgetc_wrapper(istream& input);
-	UConverter *fgetc_converter;
+	UConverter* fgetc_converter;
 	char fgetc_inputbuf[5];
 	UChar fgetc_outputbuf[5];
 	UErrorCode fgetc_error;
 	void mergeMappings(Cohort& cohort);
 
 private:
-	void processReading(Reading *cReading, const UChar *reading_string);
-	void processReading(Reading *cReading, const UString& reading_string);
+	void processReading(Reading* cReading, const UChar* reading_string);
+	void processReading(Reading* cReading, const UString& reading_string);
 };
 }
 

@@ -33,12 +33,12 @@ private:
 	bool did_warn_subreadings;
 
 public:
-	NicelineApplicator(UFILE *ux_err);
-	void runGrammarOnText(istream& input, UFILE *output);
+	NicelineApplicator(UFILE* ux_err);
+	void runGrammarOnText(istream& input, UFILE* output);
 
-	void printReading(const Reading *reading, UFILE *output);
-	void printCohort(Cohort *cohort, UFILE *output);
-	void printSingleWindow(SingleWindow *window, UFILE *output);
+	void printReading(const Reading* reading, UFILE* output);
+	void printCohort(Cohort* cohort, UFILE* output);
+	void printSingleWindow(SingleWindow* window, UFILE* output);
 };
 }
 

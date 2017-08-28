@@ -255,7 +255,7 @@ uint32_t GrammarApplicator::doesTagMatchReading(const Reading& reading, const Ta
 		match = doesSetMatchReading(reading, sh, bypass_index, unif_mode);
 	}
 	else if (tag.type & T_VARSTRING) {
-		const Tag *nt = generateVarstringTag(&tag);
+		const Tag* nt = generateVarstringTag(&tag);
 		match = doesTagMatchReading(reading, *nt, unif_mode, bypass_index);
 	}
 	else if (tag.type & T_META) {
@@ -741,7 +741,7 @@ bool GrammarApplicator::doesSetMatchReading(const Reading& reading, const uint32
 		}
 		// Propagate unified tag to other sets of this set, if applicable
 		if (unif_mode || (theset.type & ST_TAG_UNIFY)) {
-			const void *tag = 0;
+			const void* tag = 0;
 			for (size_t i = 0; i < size; ++i) {
 				auto it = unif_tags->find(theset.sets[i]);
 				if (it != unif_tags->end()) {
@@ -790,12 +790,12 @@ inline bool _check_options(std::vector<Reading*>& rv, uint32_t options, size_t n
 	return !rv.empty();
 }
 
-inline bool GrammarApplicator::doesSetMatchCohort_testLinked(Cohort& cohort, const Set& theset, dSMC_Context *context) {
+inline bool GrammarApplicator::doesSetMatchCohort_testLinked(Cohort& cohort, const Set& theset, dSMC_Context* context) {
 	bool retval = true;
 	bool reset = false;
-	const ContextualTest *linked = 0;
-	Cohort *min = 0;
-	Cohort *max = 0;
+	const ContextualTest* linked = 0;
+	Cohort* min = 0;
+	Cohort* max = 0;
 
 	if (context->test && context->test->linked) {
 		linked = context->test->linked;
@@ -831,7 +831,7 @@ inline bool GrammarApplicator::doesSetMatchCohort_testLinked(Cohort& cohort, con
 	return retval;
 }
 
-inline bool GrammarApplicator::doesSetMatchCohort_helper(Cohort& cohort, Reading& reading, const Set& theset, dSMC_Context *context) {
+inline bool GrammarApplicator::doesSetMatchCohort_helper(Cohort& cohort, Reading& reading, const Set& theset, dSMC_Context* context) {
 	bool retval = false;
 	auto utags = ss_utags.get();
 	auto usets = ss_u32sv.get();
@@ -872,14 +872,14 @@ inline bool GrammarApplicator::doesSetMatchCohort_helper(Cohort& cohort, Reading
 }
 
 
-bool GrammarApplicator::doesSetMatchCohortNormal(Cohort& cohort, const uint32_t set, dSMC_Context *context) {
+bool GrammarApplicator::doesSetMatchCohortNormal(Cohort& cohort, const uint32_t set, dSMC_Context* context) {
 	bool retval = false;
 
 	if (!(!context || (context->options & (POS_LOOK_DELETED | POS_LOOK_DELAYED | POS_NOT))) && (set >= cohort.possible_sets.size() || !cohort.possible_sets.test(set))) {
 		return retval;
 	}
 
-	const Set *theset = grammar->sets_list[set];
+	const Set* theset = grammar->sets_list[set];
 
 	if (cohort.wread) {
 		retval = doesSetMatchCohort_helper(cohort, *cohort.wread, *theset, context);
@@ -889,7 +889,7 @@ bool GrammarApplicator::doesSetMatchCohortNormal(Cohort& cohort, const uint32_t 
 		return retval;
 	}
 
-	ReadingList *lists[3] = { &cohort.readings };
+	ReadingList* lists[3] = { &cohort.readings };
 	if (context && (context->options & POS_LOOK_DELETED)) {
 		lists[1] = &cohort.deleted;
 	}
@@ -933,16 +933,16 @@ bool GrammarApplicator::doesSetMatchCohortNormal(Cohort& cohort, const uint32_t 
 	return retval;
 }
 
-bool GrammarApplicator::doesSetMatchCohortCareful(Cohort& cohort, const uint32_t set, dSMC_Context *context) {
+bool GrammarApplicator::doesSetMatchCohortCareful(Cohort& cohort, const uint32_t set, dSMC_Context* context) {
 	bool retval = false;
 
 	if (!(!context || (context->options & (POS_LOOK_DELETED | POS_LOOK_DELAYED | POS_NOT))) && (set >= cohort.possible_sets.size() || !cohort.possible_sets.test(set))) {
 		return retval;
 	}
 
-	const Set *theset = grammar->sets_list[set];
+	const Set* theset = grammar->sets_list[set];
 
-	ReadingList *lists[3] = { &cohort.readings };
+	ReadingList* lists[3] = { &cohort.readings };
 	if (context && (context->options & POS_LOOK_DELETED)) {
 		lists[1] = &cohort.deleted;
 	}

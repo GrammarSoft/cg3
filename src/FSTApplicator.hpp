@@ -29,8 +29,8 @@ namespace CG3 {
 
 class FSTApplicator : public virtual GrammarApplicator {
 public:
-	FSTApplicator(UFILE *ux_err);
-	void runGrammarOnText(istream& input, UFILE *output);
+	FSTApplicator(UFILE* ux_err);
+	void runGrammarOnText(istream& input, UFILE* output);
 
 	double wfactor;
 	UString wtag;

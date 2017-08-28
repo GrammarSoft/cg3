@@ -33,8 +33,8 @@ namespace CG3 {
 CohortVector pool_cohorts;
 pool_cleaner<CohortVector> cleaner_cohorts(pool_cohorts);
 
-Cohort *alloc_cohort(SingleWindow *p) {
-	Cohort *c = pool_get(pool_cohorts);
+Cohort* alloc_cohort(SingleWindow* p) {
+	Cohort* c = pool_get(pool_cohorts);
 	if (c == 0) {
 		c = new Cohort(p);
 	}
@@ -44,14 +44,14 @@ Cohort *alloc_cohort(SingleWindow *p) {
 	return c;
 }
 
-void free_cohort(Cohort *c) {
+void free_cohort(Cohort* c) {
 	if (c == 0) {
 		return;
 	}
 	pool_put(pool_cohorts, c);
 }
 
-Cohort::Cohort(SingleWindow *p)
+Cohort::Cohort(SingleWindow* p)
   : type(0)
   , global_number(0)
   , local_number(0)
@@ -162,7 +162,7 @@ void Cohort::remChild(uint32_t child) {
 	dep_children.erase(child);
 }
 
-void Cohort::appendReading(Reading *read) {
+void Cohort::appendReading(Reading* read) {
 	readings.push_back(read);
 	if (read->number == 0) {
 		read->number = (uint32_t)readings.size() * 1000 + 1000;
@@ -170,8 +170,8 @@ void Cohort::appendReading(Reading *read) {
 	type &= ~CT_NUM_CURRENT;
 }
 
-Reading *Cohort::allocateAppendReading() {
-	Reading *read = alloc_reading(this);
+Reading* Cohort::allocateAppendReading() {
+	Reading* read = alloc_reading(this);
 	readings.push_back(read);
 	if (read->number == 0) {
 		read->number = (uint32_t)readings.size() * 1000 + 1000;
@@ -188,7 +188,7 @@ void Cohort::updateMinMax() {
 	num_max.clear();
 	for (auto rter : readings) {
 		for (auto nter : rter->tags_numerical) {
-			const Tag *tag = nter.second;
+			const Tag* tag = nter.second;
 			if (num_min.find(tag->comparison_hash) == num_min.end() || tag->comparison_val < num_min[tag->comparison_hash]) {
 				num_min[tag->comparison_hash] = tag->comparison_val;
 			}

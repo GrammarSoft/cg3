@@ -43,7 +43,7 @@ KeepEmptyLinesAtTheStartOfBlocks: false
 Language: Cpp
 MaxEmptyLinesToKeep: 2
 NamespaceIndentation: Inner
-PointerAlignment: Right
+PointerAlignment: Left
 ReflowComments: false
 SortIncludes: false
 SpaceAfterCStyleCast: false

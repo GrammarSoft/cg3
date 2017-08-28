@@ -35,27 +35,27 @@ class ContextualTest;
 
 class TextualParser : public IGrammarParser {
 public:
-	TextualParser(Grammar& result, UFILE *ux_err, bool dump_ast = false);
+	TextualParser(Grammar& result, UFILE* ux_err, bool dump_ast = false);
 
 	void setCompatible(bool compat);
 	void setVerbosity(uint32_t level);
-	void print_ast(UFILE *out);
+	void print_ast(UFILE* out);
 
-	int parse_grammar(const char *buffer, size_t length);
-	int parse_grammar(const UChar *buffer, size_t length);
+	int parse_grammar(const char* buffer, size_t length);
+	int parse_grammar(const UChar* buffer, size_t length);
 	int parse_grammar(const std::string& buffer);
-	int parse_grammar(const char *filename, const char *locale, const char *codepage);
+	int parse_grammar(const char* filename, const char* locale, const char* codepage);
 
-	void error(const char *str);
-	void error(const char *str, UChar c);
-	void error(const char *str, const UChar *p);
-	void error(const char *str, UChar c, const UChar *p);
-	void error(const char *str, const char *s, const UChar *p);
-	void error(const char *str, const UChar *s, const UChar *p);
-	void error(const char *str, const char *s, const UChar *S, const UChar *p);
-	Tag *addTag(Tag *tag);
-	Grammar *get_grammar() { return result; }
-	const char *filebase;
+	void error(const char* str);
+	void error(const char* str, UChar c);
+	void error(const char* str, const UChar* p);
+	void error(const char* str, UChar c, const UChar* p);
+	void error(const char* str, const char* s, const UChar* p);
+	void error(const char* str, const UChar* s, const UChar* p);
+	void error(const char* str, const char* s, const UChar* S, const UChar* p);
+	Tag* addTag(Tag* tag);
+	Grammar* get_grammar() { return result; }
+	const char* filebase;
 	uint32SortedVector strict_tags;
 	uint32SortedVector list_tags;
 
@@ -67,29 +67,29 @@ private:
 	bool option_vislcg_compat;
 	bool in_section, in_before_sections, in_after_sections, in_null_section;
 	bool no_isets, no_itmpls, strict_wforms, strict_bforms, strict_second, strict_regex = false, strict_icase = false;
-	const char *filename;
-	const char *locale;
-	const char *codepage;
+	const char* filename;
+	const char* locale;
+	const char* codepage;
 
 	typedef std::unordered_map<ContextualTest*, std::pair<size_t, UString>> deferred_t;
 	deferred_t deferred_tmpls;
 	std::vector<std::unique_ptr<UString>> grammarbufs;
 
 	int parse_grammar(UString& buffer);
-	void parseFromUChar(UChar *input, const char *fname = 0);
-	void addRuleToGrammar(Rule *rule);
+	void parseFromUChar(UChar* input, const char* fname = 0);
+	void addRuleToGrammar(Rule* rule);
 
-	Tag *parseTag(const UChar *to, const UChar *p = 0);
-	void parseTagList(UChar *& p, Set *s);
-	Set *parseSet(const UChar *name, const UChar *p = 0);
-	Set *parseSetInline(UChar *& p, Set *s = 0);
-	Set *parseSetInlineWrapper(UChar *& p);
-	void parseContextualTestPosition(UChar *& p, ContextualTest& t);
-	ContextualTest *parseContextualTestList(UChar *& p, Rule *rule = 0);
-	void parseContextualTests(UChar *& p, Rule *rule);
-	void parseContextualDependencyTests(UChar *& p, Rule *rule);
-	void parseRule(UChar *& p, KEYWORDS key);
-	void parseAnchorish(UChar *& p);
+	Tag* parseTag(const UChar* to, const UChar* p = 0);
+	void parseTagList(UChar*& p, Set* s);
+	Set* parseSet(const UChar* name, const UChar* p = 0);
+	Set* parseSetInline(UChar*& p, Set* s = 0);
+	Set* parseSetInlineWrapper(UChar*& p);
+	void parseContextualTestPosition(UChar*& p, ContextualTest& t);
+	ContextualTest* parseContextualTestList(UChar*& p, Rule* rule = 0);
+	void parseContextualTests(UChar*& p, Rule* rule);
+	void parseContextualDependencyTests(UChar*& p, Rule* rule);
+	void parseRule(UChar*& p, KEYWORDS key);
+	void parseAnchorish(UChar*& p);
 
 	int error_counter;
 	void incErrorCount();

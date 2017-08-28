@@ -25,7 +25,7 @@
 
 namespace CG3 {
 
-CohortIterator::CohortIterator(Cohort *cohort, const ContextualTest *test, bool span)
+CohortIterator::CohortIterator(Cohort* cohort, const ContextualTest* test, bool span)
   : m_span(span)
   , m_cohort(cohort)
   , m_test(test)
@@ -47,17 +47,17 @@ CohortIterator& CohortIterator::operator++() {
 	return *this;
 }
 
-Cohort *CohortIterator::operator*() {
+Cohort* CohortIterator::operator*() {
 	return m_cohort;
 }
 
-void CohortIterator::reset(Cohort *cohort, const ContextualTest *test, bool span) {
+void CohortIterator::reset(Cohort* cohort, const ContextualTest* test, bool span) {
 	m_span = span;
 	m_cohort = cohort;
 	m_test = test;
 }
 
-TopologyLeftIter::TopologyLeftIter(Cohort *cohort, const ContextualTest *test, bool span)
+TopologyLeftIter::TopologyLeftIter(Cohort* cohort, const ContextualTest* test, bool span)
   : CohortIterator(cohort, test, span)
 {
 }
@@ -77,7 +77,7 @@ TopologyLeftIter& TopologyLeftIter::operator++() {
 	return *this;
 }
 
-TopologyRightIter::TopologyRightIter(Cohort *cohort, const ContextualTest *test, bool span)
+TopologyRightIter::TopologyRightIter(Cohort* cohort, const ContextualTest* test, bool span)
   : CohortIterator(cohort, test, span)
 {
 }
@@ -97,7 +97,7 @@ TopologyRightIter& TopologyRightIter::operator++() {
 	return *this;
 }
 
-DepParentIter::DepParentIter(Cohort *cohort, const ContextualTest *test, bool span)
+DepParentIter::DepParentIter(Cohort* cohort, const ContextualTest* test, bool span)
   : CohortIterator(cohort, test, span)
 {
 	++(*this);
@@ -110,7 +110,7 @@ DepParentIter& DepParentIter::operator++() {
 	if (m_cohort->dep_parent != DEP_NO_PARENT) {
 		std::map<uint32_t, Cohort*>::iterator it = m_cohort->parent->parent->cohort_map.find(m_cohort->dep_parent);
 		if (it != m_cohort->parent->parent->cohort_map.end()) {
-			Cohort *cohort = it->second;
+			Cohort* cohort = it->second;
 			if (cohort->type & CT_REMOVED) {
 				m_cohort = 0;
 				return *this;
@@ -137,13 +137,13 @@ DepParentIter& DepParentIter::operator++() {
 	return *this;
 }
 
-void DepParentIter::reset(Cohort *cohort, const ContextualTest *test, bool span) {
+void DepParentIter::reset(Cohort* cohort, const ContextualTest* test, bool span) {
 	CohortIterator::reset(cohort, test, span);
 	m_seen.clear();
 	++(*this);
 }
 
-DepDescendentIter::DepDescendentIter(Cohort *cohort, const ContextualTest *test, bool span)
+DepDescendentIter::DepDescendentIter(Cohort* cohort, const ContextualTest* test, bool span)
   : CohortIterator(cohort, test, span)
 {
 	reset(cohort, test, span);
@@ -158,7 +158,7 @@ DepDescendentIter& DepDescendentIter::operator++() {
 	return *this;
 }
 
-void DepDescendentIter::reset(Cohort *cohort, const ContextualTest *test, bool span) {
+void DepDescendentIter::reset(Cohort* cohort, const ContextualTest* test, bool span) {
 	CohortIterator::reset(cohort, test, span);
 	m_descendents.clear();
 	m_cohort = 0;
@@ -168,7 +168,7 @@ void DepDescendentIter::reset(Cohort *cohort, const ContextualTest *test, bool s
 			if (cohort->parent->parent->cohort_map.find(dter) == cohort->parent->parent->cohort_map.end()) {
 				continue;
 			}
-			Cohort *current = cohort->parent->parent->cohort_map.find(dter)->second;
+			Cohort* current = cohort->parent->parent->cohort_map.find(dter)->second;
 			bool good = true;
 			if (current->parent != cohort->parent) {
 				if ((!(test->pos & (POS_SPAN_BOTH | POS_SPAN_LEFT))) && current->parent->number < cohort->parent->number) {
@@ -201,7 +201,7 @@ void DepDescendentIter::reset(Cohort *cohort, const ContextualTest *test, bool s
 					if (cohort_inner->parent->parent->cohort_map.find(dter) == cohort_inner->parent->parent->cohort_map.end()) {
 						continue;
 					}
-					Cohort *current = cohort_inner->parent->parent->cohort_map.find(dter)->second;
+					Cohort* current = cohort_inner->parent->parent->cohort_map.find(dter)->second;
 					bool good = true;
 					if (current->parent != cohort->parent) {
 						if ((!(test->pos & (POS_SPAN_BOTH | POS_SPAN_LEFT))) && current->parent->number < cohort->parent->number) {
@@ -246,7 +246,7 @@ void DepDescendentIter::reset(Cohort *cohort, const ContextualTest *test, bool s
 	}
 }
 
-DepAncestorIter::DepAncestorIter(Cohort *cohort, const ContextualTest *test, bool span)
+DepAncestorIter::DepAncestorIter(Cohort* cohort, const ContextualTest* test, bool span)
   : CohortIterator(cohort, test, span)
 {
 	reset(cohort, test, span);
@@ -261,13 +261,13 @@ DepAncestorIter& DepAncestorIter::operator++() {
 	return *this;
 }
 
-void DepAncestorIter::reset(Cohort *cohort, const ContextualTest *test, bool span) {
+void DepAncestorIter::reset(Cohort* cohort, const ContextualTest* test, bool span) {
 	CohortIterator::reset(cohort, test, span);
 	m_ancestors.clear();
 	m_cohort = 0;
 
 	if (cohort && test) {
-		for (Cohort *current = cohort; current;) {
+		for (Cohort* current = cohort; current;) {
 			if (cohort->parent->parent->cohort_map.find(current->dep_parent) == cohort->parent->parent->cohort_map.end()) {
 				break;
 			}
@@ -314,14 +314,14 @@ void DepAncestorIter::reset(Cohort *cohort, const ContextualTest *test, bool spa
 	}
 }
 
-CohortSetIter::CohortSetIter(Cohort *cohort, const ContextualTest *test, bool span)
+CohortSetIter::CohortSetIter(Cohort* cohort, const ContextualTest* test, bool span)
   : CohortIterator(cohort, test, span)
   , m_origcohort(cohort)
   , m_cohortsetiter(m_cohortset.end())
 {
 }
 
-void CohortSetIter::addCohort(Cohort *cohort) {
+void CohortSetIter::addCohort(Cohort* cohort) {
 	m_cohortset.insert(cohort);
 	m_cohortsetiter = m_cohortset.begin();
 }
@@ -329,7 +329,7 @@ void CohortSetIter::addCohort(Cohort *cohort) {
 CohortSetIter& CohortSetIter::operator++() {
 	m_cohort = 0;
 	for (; m_cohortsetiter != m_cohortset.end(); ++m_cohortsetiter) {
-		Cohort *cohort = *m_cohortsetiter;
+		Cohort* cohort = *m_cohortsetiter;
 		if (cohort->parent == m_origcohort->parent || (m_test->pos & POS_SPAN_BOTH) || m_span) {
 			m_cohort = cohort;
 			break;
@@ -346,7 +346,7 @@ CohortSetIter& CohortSetIter::operator++() {
 	return *this;
 }
 
-MultiCohortIterator::MultiCohortIterator(Cohort *cohort, const ContextualTest *test, bool span)
+MultiCohortIterator::MultiCohortIterator(Cohort* cohort, const ContextualTest* test, bool span)
   : m_span(span)
   , m_cohort(cohort)
   , m_test(test)
@@ -370,12 +370,12 @@ MultiCohortIterator& MultiCohortIterator::operator++() {
 	return *this;
 }
 
-CohortIterator *MultiCohortIterator::operator*() {
+CohortIterator* MultiCohortIterator::operator*() {
 	return m_cohortiter;
 }
 
 // ToDo: Iterative deepening depth-first search
-ChildrenIterator::ChildrenIterator(Cohort *cohort, const ContextualTest *test, bool span)
+ChildrenIterator::ChildrenIterator(Cohort* cohort, const ContextualTest* test, bool span)
   : MultiCohortIterator(cohort, test, span)
   , m_depth(0)
 {

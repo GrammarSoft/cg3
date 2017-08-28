@@ -25,7 +25,7 @@
 
 namespace CG3 {
 
-BinaryGrammar::BinaryGrammar(Grammar& res, UFILE *ux_err) {
+BinaryGrammar::BinaryGrammar(Grammar& res, UFILE* ux_err) {
 	ux_stderr = ux_err;
 	result = &res;
 	grammar = result;
@@ -39,7 +39,7 @@ void BinaryGrammar::setVerbosity(uint32_t v) {
 	verbosity = v;
 }
 
-int BinaryGrammar::parse_grammar(const char *filename, const char*, const char*) {
+int BinaryGrammar::parse_grammar(const char* filename, const char*, const char*) {
 	if (!grammar) {
 		u_fprintf(ux_stderr, "Error: Cannot parse into nothing - hint: call setResult() before trying.\n");
 		CG3Quit(1);

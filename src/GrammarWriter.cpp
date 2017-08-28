@@ -26,7 +26,7 @@
 
 namespace CG3 {
 
-GrammarWriter::GrammarWriter(Grammar& res, UFILE *ux_err) {
+GrammarWriter::GrammarWriter(Grammar& res, UFILE* ux_err) {
 	statistics = false;
 	ux_stderr = ux_err;
 	grammar = &res;
@@ -36,7 +36,7 @@ GrammarWriter::~GrammarWriter() {
 	grammar = 0;
 }
 
-void GrammarWriter::printSet(UFILE *output, const Set& curset) {
+void GrammarWriter::printSet(UFILE* output, const Set& curset) {
 	if (used_sets.find(curset.number) != used_sets.end()) {
 		return;
 	}
@@ -82,7 +82,7 @@ void GrammarWriter::printSet(UFILE *output, const Set& curset) {
 				u_fprintf(output, "#Set Matched: %u ; NoMatch: %u ; TotalTime: %f\n", curset.num_match, curset.num_fail, curset.total_time);
 			}
 		}
-		const UChar *n = curset.name.c_str();
+		const UChar* n = curset.name.c_str();
 		if ((n[0] == '$' && n[1] == '$') || (n[0] == '&' && n[1] == '&')) {
 			u_fprintf(output, "# ");
 		}
@@ -95,7 +95,7 @@ void GrammarWriter::printSet(UFILE *output, const Set& curset) {
 	}
 }
 
-int GrammarWriter::writeGrammar(UFILE *output) {
+int GrammarWriter::writeGrammar(UFILE* output) {
 	if (!output) {
 		u_fprintf(ux_stderr, "Error: Output is null - cannot write to nothing!\n");
 		CG3Quit(1);
@@ -233,7 +233,7 @@ int GrammarWriter::writeGrammar(UFILE *output) {
 }
 
 // ToDo: Make printRule do the right thing for MOVE_ and ADDCOHORT_ BEFORE|AFTER
-void GrammarWriter::printRule(UFILE *to, const Rule& rule) {
+void GrammarWriter::printRule(UFILE* to, const Rule& rule) {
 	if (statistics) {
 		if (ceil(rule.total_time) == floor(rule.total_time)) {
 			u_fprintf(to, "\n#Rule Matched: %u ; NoMatch: %u ; TotalTime: %.0f\n", rule.num_match, rule.num_fail, rule.total_time);
@@ -295,7 +295,7 @@ void GrammarWriter::printRule(UFILE *to, const Rule& rule) {
 	}
 }
 
-void GrammarWriter::printContextualTest(UFILE *to, const ContextualTest& test) {
+void GrammarWriter::printContextualTest(UFILE* to, const ContextualTest& test) {
 	if (statistics) {
 		if (ceil(test.total_time) == floor(test.total_time)) {
 			u_fprintf(to, "\n#Test Matched: %u ; NoMatch: %u ; TotalTime: %.0f\n", test.num_match, test.num_fail, test.total_time);
@@ -420,7 +420,7 @@ void GrammarWriter::printContextualTest(UFILE *to, const ContextualTest& test) {
 	}
 }
 
-void GrammarWriter::printTag(UFILE *to, const Tag& tag) {
+void GrammarWriter::printTag(UFILE* to, const Tag& tag) {
 	UString str = tag.toUString(true);
 	u_file_write(str.c_str(), str.length(), to);
 }

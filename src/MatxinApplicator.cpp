@@ -29,7 +29,7 @@
 
 namespace CG3 {
 
-MatxinApplicator::MatxinApplicator(UFILE *ux_err)
+MatxinApplicator::MatxinApplicator(UFILE* ux_err)
   : GrammarApplicator(ux_err)
 {
 	nullFlush = false;
@@ -91,7 +91,7 @@ UChar MatxinApplicator::u_fgetc_wrapper(istream& input) {
 }
 
 
-void MatxinApplicator::runGrammarOnTextWrapperNullFlush(istream& input, UFILE *output) {
+void MatxinApplicator::runGrammarOnTextWrapperNullFlush(istream& input, UFILE* output) {
 	setNullFlush(false);
 	runningWithNullFlush = true;
 	while (!input.eof()) {
@@ -106,7 +106,7 @@ void MatxinApplicator::runGrammarOnTextWrapperNullFlush(istream& input, UFILE *o
  * Run a constraint grammar on an Matxin input stream
  */
 
-void MatxinApplicator::runGrammarOnText(istream& input, UFILE *output) {
+void MatxinApplicator::runGrammarOnText(istream& input, UFILE* output) {
 	if (getNullFlush()) {
 		runGrammarOnTextWrapperNullFlush(input, output);
 		return;
@@ -151,11 +151,11 @@ void MatxinApplicator::runGrammarOnText(istream& input, UFILE *output) {
 	begintag = addTag(stringbits[S_BEGINTAG].getTerminatedBuffer())->hash; // Beginning of sentence tag
 	endtag = addTag(stringbits[S_ENDTAG].getTerminatedBuffer())->hash;     // End of sentence tag
 
-	SingleWindow *cSWindow = 0; // Current single window (Cohort frame)
-	Cohort *cCohort = 0;        // Current cohort
-	Reading *cReading = 0;      // Current reading
+	SingleWindow* cSWindow = 0; // Current single window (Cohort frame)
+	Cohort* cCohort = 0;        // Current cohort
+	Reading* cReading = 0;      // Current reading
 
-	SingleWindow *lSWindow = 0; // Left hand single window
+	SingleWindow* lSWindow = 0; // Left hand single window
 
 	gWindow->window_span = num_windows;
 	gtimer = getticks();
@@ -274,7 +274,7 @@ void MatxinApplicator::runGrammarOnText(istream& input, UFILE *output) {
 			}
 			if (gWindow->next.size() > num_windows) {
 				while (!gWindow->previous.empty() && gWindow->previous.size() > num_windows) {
-					SingleWindow *tmp = gWindow->previous.front();
+					SingleWindow* tmp = gWindow->previous.front();
 					printSingleWindow(tmp, output);
 					free_swindow(tmp);
 					gWindow->previous.erase(gWindow->previous.begin());
@@ -318,7 +318,7 @@ void MatxinApplicator::runGrammarOnText(istream& input, UFILE *output) {
 
 			// We're now at the beginning of the readings
 			UString current_reading;
-			Reading *cReading = 0;
+			Reading* cReading = 0;
 
 			// Handle the static reading of ^estació<n><f><sg>/season<n><sg>/station<n><sg>$
 			// Gobble up all <tags> until the first / or $ and stuff them in the static reading
@@ -337,7 +337,7 @@ void MatxinApplicator::runGrammarOnText(istream& input, UFILE *output) {
 						continue;
 					}
 					if (inchar == '>') {
-						Tag *t = addTag(tag);
+						Tag* t = addTag(tag);
 						addTagToReading(*cCohort->wread, t);
 						//u_fprintf(ux_stderr, "Adding tag %S\n", tag.c_str());
 						tag.clear();
@@ -383,7 +383,7 @@ void MatxinApplicator::runGrammarOnText(istream& input, UFILE *output) {
 				}
 
 				if (inchar == '/') { // Reached end of reading
-					Reading *cReading = 0;
+					Reading* cReading = 0;
 					cReading = alloc_reading(cCohort);
 
 					addTagToReading(*cReading, cCohort->wordform);
@@ -435,7 +435,7 @@ void MatxinApplicator::runGrammarOnText(istream& input, UFILE *output) {
 	u_fprintf(output, "<corpus>\n");
 	while (!gWindow->next.empty()) {
 		while (!gWindow->previous.empty() && gWindow->previous.size() > num_windows) {
-			SingleWindow *tmp = gWindow->previous.front();
+			SingleWindow* tmp = gWindow->previous.front();
 			printSingleWindow(tmp, output);
 			free_swindow(tmp);
 			gWindow->previous.erase(gWindow->previous.begin());
@@ -446,7 +446,7 @@ void MatxinApplicator::runGrammarOnText(istream& input, UFILE *output) {
 
 	gWindow->shuffleWindowsDown();
 	while (!gWindow->previous.empty()) {
-		SingleWindow *tmp = gWindow->previous.front();
+		SingleWindow* tmp = gWindow->previous.front();
 		printSingleWindow(tmp, output);
 		free_swindow(tmp);
 		gWindow->previous.erase(gWindow->previous.begin());
@@ -474,9 +474,9 @@ void MatxinApplicator::runGrammarOnText(istream& input, UFILE *output) {
  *   sellout<vblex><imp><p2><sg># ouzh+indirect<prn><obj><p3><m><sg>
  *   be# happy<vblex><inf> (for chaining cg-proc)
  */
-void MatxinApplicator::processReading(Reading *cReading, const UChar *reading_string) {
-	const UChar *m = reading_string;
-	const UChar *c = reading_string;
+void MatxinApplicator::processReading(Reading* cReading, const UChar* reading_string) {
+	const UChar* m = reading_string;
+	const UChar* c = reading_string;
 	UString tmptag;
 	UString base;
 	UString suf;
@@ -537,7 +537,7 @@ void MatxinApplicator::processReading(Reading *cReading, const UChar *reading_st
 
 	TagVector taglist;
 
-	Tag *tag = addTag(base);
+	Tag* tag = addTag(base);
 
 	if (unknown) {
 		cReading->baseform = tag->hash;
@@ -621,12 +621,12 @@ void MatxinApplicator::processReading(Reading *cReading, const UChar *reading_st
 
 	// Search from the back until we find a baseform, then add all tags from there until the end onto the reading
 	while (!taglist.empty()) {
-		Reading *reading = cReading;
+		Reading* reading = cReading;
 		reverse_foreach (riter, taglist) {
 			if ((*riter)->type & T_BASEFORM) {
 				// If current reading already has a baseform, instead create a sub-reading as target
 				if (reading->baseform) {
-					Reading *nr = reading->allocateReading(reading->parent);
+					Reading* nr = reading->allocateReading(reading->parent);
 					reading->next = nr;
 					reading = nr;
 				}
@@ -656,11 +656,11 @@ void MatxinApplicator::processReading(Reading *cReading, const UChar *reading_st
 	assert(taglist.empty() && "MatxinApplicator::processReading() did not handle all tags.");
 }
 
-void MatxinApplicator::processReading(Reading *cReading, const UString& reading_string) {
+void MatxinApplicator::processReading(Reading* cReading, const UString& reading_string) {
 	return processReading(cReading, reading_string.c_str());
 }
 
-void MatxinApplicator::printReading(Reading *reading, Node& node, UFILE *output) {
+void MatxinApplicator::printReading(Reading* reading, Node& node, UFILE* output) {
 	if (reading->noprint) {
 		return;
 	}
@@ -697,7 +697,7 @@ void MatxinApplicator::printReading(Reading *reading, Node& node, UFILE *output)
 	bool multi = false;
 	bool first = true;
 	for (tter = reading->tags_list.begin(); tter != reading->tags_list.end(); tter++) {
-		const Tag *tag = single_tags[*tter];
+		const Tag* tag = single_tags[*tter];
 		if (tag->tag[0] == '+') {
 			multi = true;
 		}
@@ -727,7 +727,7 @@ void MatxinApplicator::printReading(Reading *reading, Node& node, UFILE *output)
 		if (*tter == endtag || *tter == begintag) {
 			continue;
 		}
-		const Tag *tag = single_tags[*tter];
+		const Tag* tag = single_tags[*tter];
 		if (!(tag->type & T_BASEFORM) && !(tag->type & T_WORDFORM)) {
 			if (tag->tag[0] == '+') {
 				u_fprintf(output, "%S", tag->tag.c_str());
@@ -752,7 +752,7 @@ void MatxinApplicator::printReading(Reading *reading, Node& node, UFILE *output)
 	node.mi = mi;
 }
 
-void MatxinApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
+void MatxinApplicator::printSingleWindow(SingleWindow* window, UFILE* output) {
 	/*
 	// Window text comes at the left
 	if (!window->text.empty()) {
@@ -767,7 +767,7 @@ void MatxinApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 			continue;
 		}
 
-		Cohort *cohort = window->cohorts[c];
+		Cohort* cohort = window->cohorts[c];
 
 		if (!split_mappings) {
 			mergeMappings(*cohort);
@@ -817,7 +817,7 @@ void MatxinApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 //*/
 
 		//Tag::printTagRaw(output, single_tags[cohort->wordform]);
-		Reading *reading = cohort->readings[0];
+		Reading* reading = cohort->readings[0];
 
 		printReading(reading, n, output);
 
@@ -860,13 +860,13 @@ void MatxinApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 	u_fprintf(output, "  </SENTENCE>\n");
 }
 
-void MatxinApplicator::procNode(int& depth, std::map<int, Node>& nodes, std::map<int, std::vector<int>>& deps, int n, UFILE *output) {
+void MatxinApplicator::procNode(int& depth, std::map<int, Node>& nodes, std::map<int, std::vector<int>>& deps, int n, UFILE* output) {
 	Node node = nodes[n];
 	std::vector<int> v = deps[n];
 	depth = depth + 1;
 
 	// Cut off first character, if not empty
-	const UChar *si = node.si.c_str() + !node.si.empty();
+	const UChar* si = node.si.c_str() + !node.si.empty();
 
 	if (n != 0) {
 		for (int i = 0; i < depth * 2; i++) {
@@ -919,14 +919,14 @@ void MatxinApplicator::mergeMappings(Cohort& cohort) {
 	// => foo<N><Sg><Acc><@←SUBJ>/foo<N><Sg><Acc><@←OBJ>
 	std::map<uint32_t, ReadingList> mlist;
 	for (auto iter : cohort.readings) {
-		Reading *r = iter;
+		Reading* r = iter;
 		uint32_t hp = r->hash; // instead of hash_plain, which doesn't include mapping tags
 		if (trace) {
 			for (auto iter_hb : r->hit_by) {
 				hp = hash_value(iter_hb, hp);
 			}
 		}
-		Reading *sub = r->next;
+		Reading* sub = r->next;
 		while (sub) {
 			hp = hash_value(sub->hash, hp);
 			if (trace) {
@@ -949,7 +949,7 @@ void MatxinApplicator::mergeMappings(Cohort& cohort) {
 	std::map<uint32_t, ReadingList>::iterator miter;
 	for (miter = mlist.begin(); miter != mlist.end(); miter++) {
 		ReadingList clist = miter->second;
-		Reading *nr = alloc_reading(*(clist.front()));
+		Reading* nr = alloc_reading(*(clist.front()));
 		// no merging of mapping tags
 		order.push_back(nr);
 	}

@@ -52,14 +52,14 @@ Rule::Rule()
 Rule::~Rule() {
 }
 
-void Rule::setName(const UChar *to) {
+void Rule::setName(const UChar* to) {
 	name.clear();
 	if (to) {
 		name = to;
 	}
 }
 
-void Rule::addContextualTest(ContextualTest *to, ContextList& head) {
+void Rule::addContextualTest(ContextualTest* to, ContextList& head) {
 	head.push_front(to);
 }
 
@@ -80,7 +80,7 @@ void Rule::resetStatistics() {
 	total_time = 0;
 }
 
-bool Rule::cmp_quality(const Rule *a, const Rule *b) {
+bool Rule::cmp_quality(const Rule* a, const Rule* b) {
 	return a->total_time > b->total_time;
 }
 }

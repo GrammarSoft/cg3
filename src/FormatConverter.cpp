@@ -23,7 +23,7 @@
 
 namespace CG3 {
 
-FormatConverter::FormatConverter(UFILE *ux_err)
+FormatConverter::FormatConverter(UFILE* ux_err)
   : GrammarApplicator(ux_err)
   , ApertiumApplicator(ux_err)
   , NicelineApplicator(ux_err)
@@ -43,7 +43,7 @@ void FormatConverter::setOutputFormat(CG_FORMATS format) {
 	outformat = format;
 }
 
-void FormatConverter::runGrammarOnText(istream& input, UFILE *output) {
+void FormatConverter::runGrammarOnText(istream& input, UFILE* output) {
 	switch (informat) {
 	case FMT_CG: {
 		GrammarApplicator::runGrammarOnText(input, output);
@@ -70,7 +70,7 @@ void FormatConverter::runGrammarOnText(istream& input, UFILE *output) {
 	}
 }
 
-void FormatConverter::printSingleWindow(SingleWindow *window, UFILE *output) {
+void FormatConverter::printSingleWindow(SingleWindow* window, UFILE* output) {
 	switch (outformat) {
 	case FMT_CG: {
 		GrammarApplicator::printSingleWindow(window, output);

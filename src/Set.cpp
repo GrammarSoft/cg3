@@ -25,7 +25,7 @@
 
 namespace CG3 {
 
-UFILE *Set::dump_hashes_out = 0;
+UFILE* Set::dump_hashes_out = 0;
 
 Set::Set()
   : type(0)
@@ -52,7 +52,7 @@ void Set::setName(uint32_t to) {
 	name.assign(&cbuffers[0][0], &cbuffers[0][0] + n);
 }
 
-void Set::setName(const UChar *to) {
+void Set::setName(const UChar* to) {
 	if (to) {
 		name = to;
 	}
@@ -112,7 +112,7 @@ void Set::reindex(Grammar& grammar) {
 	type |= trie_reindex(trie_special);
 
 	for (uint32_t i = 0; i < sets.size(); ++i) {
-		Set *set = grammar.sets_by_contents.find(sets[i])->second;
+		Set* set = grammar.sets_by_contents.find(sets[i])->second;
 		set->reindex(grammar);
 		if (set->type & ST_SPECIAL) {
 			type |= ST_SPECIAL;
@@ -142,7 +142,7 @@ void Set::markUsed(Grammar& grammar) {
 	}
 
 	for (uint32_t i = 0; i < sets.size(); ++i) {
-		Set *set = grammar.sets_by_contents.find(sets[i])->second;
+		Set* set = grammar.sets_by_contents.find(sets[i])->second;
 		set->markUsed(grammar);
 	}
 }

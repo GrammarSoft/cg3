@@ -18,9 +18,9 @@
 
 #include "icu_uoptions.hpp"
 
-int u_parseArgs(int argc, char *argv[],
+int u_parseArgs(int argc, char* argv[],
   int optionCount, UOption options[]) {
-	char *arg;
+	char* arg;
 	int i = 1, remaining = 1;
 	char c, stopOptions = 0;
 
@@ -28,7 +28,7 @@ int u_parseArgs(int argc, char *argv[],
 		arg = argv[i];
 		if (!stopOptions && *arg == '-' && (c = arg[1]) != 0) {
 			/* process an option */
-			UOption *option = NULL;
+			UOption* option = NULL;
 			arg += 2;
 			if (c == '-') {
 				/* process a long option */

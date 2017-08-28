@@ -32,7 +32,7 @@ typedef bc::flat_map<Tag*, trie_node_t, compare_Tag> trie_t;
 
 struct trie_node_t {
 	bool terminal;
-	trie_t *trie;
+	trie_t* trie;
 
 	trie_node_t()
 	  : terminal(false)
@@ -68,8 +68,8 @@ inline bool trie_insert(trie_t& trie, const TagVector& tv, size_t w = 0) {
 	return true;
 }
 
-inline trie_t *_trie_copy_helper(const trie_t& trie) {
-	trie_t *nt = new trie_t;
+inline trie_t* _trie_copy_helper(const trie_t& trie) {
+	trie_t* nt = new trie_t;
 	for (auto& p : trie) {
 		(*nt)[p.first].terminal = p.second.terminal;
 		if (p.second.trie) {
@@ -155,7 +155,7 @@ inline void trie_getTagList(const trie_t& trie, TagList& theTags) {
 	}
 }
 
-inline bool trie_getTagList(const trie_t& trie, TagList& theTags, const void *node) {
+inline bool trie_getTagList(const trie_t& trie, TagList& theTags, const void* node) {
 	for (auto& kv : trie) {
 		theTags.push_back(kv.first);
 		if (node == &kv) {
