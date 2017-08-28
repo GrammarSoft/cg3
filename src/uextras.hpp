@@ -51,7 +51,7 @@ inline const char *basename(const char *path) {
 
 namespace CG3 {
 
-inline int ux_isSetOp(const UChar *it) {
+inline int ux_isSetOp(const UChar* it) {
 	switch (it[1]) {
 	case 0:
 		switch (it[0]) {
@@ -95,7 +95,7 @@ inline int ux_isSetOp(const UChar *it) {
 	return S_IGNORE;
 }
 
-inline bool ux_isEmpty(const UChar *text) {
+inline bool ux_isEmpty(const UChar* text) {
 	size_t length = u_strlen(text);
 	if (length > 0) {
 		for (size_t i = 0; i < length; i++) {
@@ -107,7 +107,7 @@ inline bool ux_isEmpty(const UChar *text) {
 	return true;
 }
 
-inline bool ux_simplecasecmp(const UChar *a, const UChar *b, const size_t n) {
+inline bool ux_simplecasecmp(const UChar* a, const UChar* b, const size_t n) {
 	for (size_t i = 0; i < n; ++i) {
 		if (a[i] != b[i] && a[i] != b[i] + 32) {
 			return false;
@@ -138,13 +138,13 @@ struct substr_t {
 
 	~substr_t() {
 		if (count != Str::npos) {
-			value_type *buf = const_cast<value_type*>(str.c_str() + offset);
+			value_type* buf = const_cast<value_type*>(str.c_str() + offset);
 			buf[count] = old_value;
 		}
 	}
 
-	const value_type *c_str() const {
-		value_type *buf = const_cast<value_type*>(str.c_str() + offset);
+	const value_type* c_str() const {
+		value_type* buf = const_cast<value_type*>(str.c_str() + offset);
 		buf[count] = 0;
 		return buf;
 	}
@@ -155,7 +155,7 @@ inline substr_t<Str> substr(const Str& str, size_t offset = 0, size_t count = 0)
 	return substr_t<Str>(str, offset, count);
 }
 
-inline UChar *ux_bufcpy(UChar *dst, const UChar *src, size_t n) {
+inline UChar* ux_bufcpy(UChar* dst, const UChar* src, size_t n) {
 	size_t i = 0;
 	for (; i < n && src && src[i]; ++i) {
 		dst[i] = src[i];
@@ -167,7 +167,7 @@ inline UChar *ux_bufcpy(UChar *dst, const UChar *src, size_t n) {
 	return dst;
 }
 
-std::string ux_dirname(const char *in);
+std::string ux_dirname(const char* in);
 }
 
 #endif

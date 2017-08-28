@@ -102,8 +102,8 @@ public:
 	uint32_t cbarrier;
 	mutable uint32_t num_fail, num_match;
 	mutable double total_time;
-	ContextualTest *tmpl;
-	ContextualTest *linked;
+	ContextualTest* tmpl;
+	ContextualTest* linked;
 
 	ContextVector ors;
 
@@ -116,7 +116,7 @@ public:
 	void markUsed(Grammar& grammar);
 };
 
-inline void copy_cntx(const ContextualTest *src, ContextualTest *trg) {
+inline void copy_cntx(const ContextualTest* src, ContextualTest* trg) {
 	trg->offset = src->offset;
 	trg->offset_sub = src->offset_sub;
 	trg->line = src->line;

@@ -29,12 +29,12 @@
 
 namespace CG3 {
 
-void GrammarApplicator::initEmptySingleWindow(SingleWindow *cSWindow) {
-	Cohort *cCohort = alloc_cohort(cSWindow);
+void GrammarApplicator::initEmptySingleWindow(SingleWindow* cSWindow) {
+	Cohort* cCohort = alloc_cohort(cSWindow);
 	cCohort->global_number = 0;
 	cCohort->wordform = tag_begin;
 
-	Reading *cReading = alloc_reading(cCohort);
+	Reading* cReading = alloc_reading(cCohort);
 	cReading->baseform = begintag;
 	insert_if_exists(cReading->parent->possible_sets, grammar->sets_any);
 	addTagToReading(*cReading, begintag);
@@ -44,8 +44,8 @@ void GrammarApplicator::initEmptySingleWindow(SingleWindow *cSWindow) {
 	cSWindow->appendCohort(cCohort);
 }
 
-Reading *GrammarApplicator::initEmptyCohort(Cohort& cCohort) {
-	Reading *cReading = alloc_reading(&cCohort);
+Reading* GrammarApplicator::initEmptyCohort(Cohort& cCohort) {
+	Reading* cReading = alloc_reading(&cCohort);
 	if (allow_magic_readings) {
 		cReading->baseform = makeBaseFromWord(cCohort.wordform)->hash;
 	}
@@ -60,7 +60,7 @@ Reading *GrammarApplicator::initEmptyCohort(Cohort& cCohort) {
 	return cReading;
 }
 
-void GrammarApplicator::runGrammarOnText(istream& input, UFILE *output) {
+void GrammarApplicator::runGrammarOnText(istream& input, UFILE* output) {
 	if (!input.good()) {
 		u_fprintf(ux_stderr, "Error: Input is null - nothing to parse!\n");
 		CG3Quit(1);
@@ -97,13 +97,13 @@ void GrammarApplicator::runGrammarOnText(istream& input, UFILE *output) {
 	uint32_t resetAfter = ((num_windows + 4) * 2 + 1);
 	uint32_t lines = 0;
 
-	SingleWindow *cSWindow = 0;
-	Cohort *cCohort = 0;
-	Reading *cReading = 0;
+	SingleWindow* cSWindow = 0;
+	Cohort* cCohort = 0;
+	Reading* cReading = 0;
 
-	SingleWindow *lSWindow = 0;
-	Cohort *lCohort = 0;
-	Reading *lReading = 0;
+	SingleWindow* lSWindow = 0;
+	Cohort* lCohort = 0;
+	Reading* lReading = 0;
 
 	gWindow->window_span = num_windows;
 	gtimer = getticks();
@@ -158,7 +158,7 @@ void GrammarApplicator::runGrammarOnText(istream& input, UFILE *output) {
 			--packoff;
 		}
 		if (!ignoreinput && cleaned[0] == '"' && cleaned[1] == '<') {
-			UChar *space = &cleaned[0];
+			UChar* space = &cleaned[0];
 			if (space[0] == '"' && space[1] == '<') {
 				++space;
 				SKIPTO_NOSPAN(space, '"');
@@ -184,7 +184,7 @@ void GrammarApplicator::runGrammarOnText(istream& input, UFILE *output) {
 				reverse_foreach (iter, cSWindow->cohorts) {
 					if (doesSetMatchCohortNormal(**iter, grammar->soft_delimiters->number)) {
 						did_soft_lookback = false;
-						Cohort *cohort = delimitAt(*cSWindow, *iter);
+						Cohort* cohort = delimitAt(*cSWindow, *iter);
 						cSWindow = cohort->parent->next;
 						if (cCohort) {
 							cCohort->parent = cSWindow;
@@ -254,7 +254,7 @@ void GrammarApplicator::runGrammarOnText(istream& input, UFILE *output) {
 			}
 			if (gWindow->next.size() > num_windows) {
 				while (!gWindow->previous.empty() && gWindow->previous.size() > num_windows) {
-					SingleWindow *tmp = gWindow->previous.front();
+					SingleWindow* tmp = gWindow->previous.front();
 					printSingleWindow(tmp, output);
 					free_swindow(tmp);
 					gWindow->previous.erase(gWindow->previous.begin());
@@ -283,14 +283,14 @@ void GrammarApplicator::runGrammarOnText(istream& input, UFILE *output) {
 				addTagToReading(*cCohort->wread, cCohort->wordform);
 				while (space[0]) {
 					SKIPWS(space, 0, 0, true);
-					UChar *n = space;
+					UChar* n = space;
 					if (*n == '"') {
 						++n;
 						SKIPTO_NOSPAN(n, '"');
 					}
 					SKIPTOWS(n, 0, true, true);
 					n[0] = 0;
-					Tag *tag = addTag(space);
+					Tag* tag = addTag(space);
 					addTagToReading(*cCohort->wread, tag);
 					space = ++n;
 				}
@@ -321,8 +321,8 @@ void GrammarApplicator::runGrammarOnText(istream& input, UFILE *output) {
 			insert_if_exists(cReading->parent->possible_sets, grammar->sets_any);
 			addTagToReading(*cReading, cCohort->wordform);
 
-			UChar *space = &cleaned[1];
-			UChar *base = space;
+			UChar* space = &cleaned[1];
+			UChar* base = space;
 			if (*space == '"') {
 				++space;
 				SKIPTO_NOSPAN(space, '"');
@@ -346,7 +346,7 @@ void GrammarApplicator::runGrammarOnText(istream& input, UFILE *output) {
 				space[0] = 0;
 				++space;
 				if (base && base[0]) {
-					Tag *tag = addTag(base);
+					Tag* tag = addTag(base);
 					if (tag->type & T_MAPPING || tag->tag[0] == grammar->mapping_prefix) {
 						all_mappings[cReading].push_back(tag);
 					}
@@ -361,7 +361,7 @@ void GrammarApplicator::runGrammarOnText(istream& input, UFILE *output) {
 				}
 			}
 			if (base && base[0]) {
-				Tag *tag = addTag(base);
+				Tag* tag = addTag(base);
 				if (tag->type & T_MAPPING || tag->tag[0] == grammar->mapping_prefix) {
 					all_mappings[cReading].push_back(tag);
 				}
@@ -453,7 +453,7 @@ void GrammarApplicator::runGrammarOnText(istream& input, UFILE *output) {
 					}
 					while (!gWindow->next.empty()) {
 						while (!gWindow->previous.empty() && gWindow->previous.size() > num_windows) {
-							SingleWindow *tmp = gWindow->previous.front();
+							SingleWindow* tmp = gWindow->previous.front();
 							printSingleWindow(tmp, output);
 							free_swindow(tmp);
 							gWindow->previous.erase(gWindow->previous.begin());
@@ -470,7 +470,7 @@ void GrammarApplicator::runGrammarOnText(istream& input, UFILE *output) {
 					}
 					gWindow->shuffleWindowsDown();
 					while (!gWindow->previous.empty()) {
-						SingleWindow *tmp = gWindow->previous.front();
+						SingleWindow* tmp = gWindow->previous.front();
 						printSingleWindow(tmp, output);
 						free_swindow(tmp);
 						gWindow->previous.erase(gWindow->previous.begin());
@@ -507,11 +507,11 @@ void GrammarApplicator::runGrammarOnText(istream& input, UFILE *output) {
 					cleaned[packoff - 1] = 0;
 					line[0] = 0;
 
-					UChar *s = &cleaned[stringbits[S_CMD_SETVAR].length()];
-					UChar *c = u_strchr(s, ',');
-					UChar *d = u_strchr(s, '=');
+					UChar* s = &cleaned[stringbits[S_CMD_SETVAR].length()];
+					UChar* c = u_strchr(s, ',');
+					UChar* d = u_strchr(s, '=');
 					if (c == 0 && d == 0) {
-						Tag *tag = addTag(s);
+						Tag* tag = addTag(s);
 						variables_set[tag->hash] = grammar->tag_any;
 						variables_rem.erase(tag->hash);
 						variables_output.insert(tag->hash);
@@ -583,8 +583,8 @@ void GrammarApplicator::runGrammarOnText(istream& input, UFILE *output) {
 					cleaned[packoff - 1] = 0;
 					line[0] = 0;
 
-					UChar *s = &cleaned[stringbits[S_CMD_REMVAR].length()];
-					UChar *c = u_strchr(s, ',');
+					UChar* s = &cleaned[stringbits[S_CMD_REMVAR].length()];
+					UChar* c = u_strchr(s, ',');
 					uint32_t a = 0;
 					while (c && *c) {
 						c[0] = 0;
@@ -639,7 +639,7 @@ void GrammarApplicator::runGrammarOnText(istream& input, UFILE *output) {
 	}
 	while (!gWindow->next.empty()) {
 		while (!gWindow->previous.empty() && gWindow->previous.size() > num_windows) {
-			SingleWindow *tmp = gWindow->previous.front();
+			SingleWindow* tmp = gWindow->previous.front();
 			printSingleWindow(tmp, output);
 			free_swindow(tmp);
 			gWindow->previous.erase(gWindow->previous.begin());
@@ -654,7 +654,7 @@ void GrammarApplicator::runGrammarOnText(istream& input, UFILE *output) {
 
 	gWindow->shuffleWindowsDown();
 	while (!gWindow->previous.empty()) {
-		SingleWindow *tmp = gWindow->previous.front();
+		SingleWindow* tmp = gWindow->previous.front();
 		printSingleWindow(tmp, output);
 		free_swindow(tmp);
 		gWindow->previous.erase(gWindow->previous.begin());

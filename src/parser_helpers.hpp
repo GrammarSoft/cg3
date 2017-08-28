@@ -31,7 +31,7 @@
 namespace CG3 {
 
 template<typename State>
-Tag *parseTag(const UChar *to, const UChar *p, State& state) {
+Tag* parseTag(const UChar* to, const UChar* p, State& state) {
 	if (to[0] == 0) {
 		state.error("%s: Error: Empty tag on line %u near `%S`! Forgot to fill in a ()?\n", p);
 	}
@@ -49,11 +49,11 @@ Tag *parseTag(const UChar *to, const UChar *p, State& state) {
 		return it->second;
 	}
 
-	Tag *tag = state.get_grammar()->allocateTag();
+	Tag* tag = state.get_grammar()->allocateTag();
 	tag->type = 0;
 
 	if (to[0]) {
-		const UChar *tmp = to;
+		const UChar* tmp = to;
 		while (tmp[0] && (tmp[0] == '!' || tmp[0] == '^')) {
 			if (tmp[0] == '!' || tmp[0] == '^') {
 				tag->type |= T_FAILFAST;
@@ -292,7 +292,7 @@ Tag *parseTag(const UChar *to, const UChar *p, State& state) {
 }
 
 template<typename State>
-Set *parseSet(const UChar *name, const UChar *p, State& state) {
+Set* parseSet(const UChar* name, const UChar* p, State& state) {
 	uint32_t sh = hash_value(name);
 
 	if (ux_isSetOp(name) != S_IGNORE) {
@@ -302,15 +302,15 @@ Set *parseSet(const UChar *name, const UChar *p, State& state) {
 	if ((
 	      (name[0] == '$' && name[1] == '$') || (name[0] == '&' && name[1] == '&')) &&
 	    name[2]) {
-		const UChar *wname = &(name[2]);
+		const UChar* wname = &(name[2]);
 		uint32_t wrap = hash_value(wname);
-		Set *wtmp = state.get_grammar()->getSet(wrap);
+		Set* wtmp = state.get_grammar()->getSet(wrap);
 		if (!wtmp) {
 			state.error("%s: Error: Attempted to reference undefined set '%S' on line %u near `%S`!\n", wname, p);
 		}
-		Set *tmp = state.get_grammar()->getSet(sh);
+		Set* tmp = state.get_grammar()->getSet(sh);
 		if (!tmp) {
-			Set *ns = state.get_grammar()->allocateSet();
+			Set* ns = state.get_grammar()->allocateSet();
 			ns->line = state.get_grammar()->lines;
 			ns->setName(name);
 			ns->sets.push_back(wtmp->hash);
@@ -326,12 +326,12 @@ Set *parseSet(const UChar *name, const UChar *p, State& state) {
 	if (state.get_grammar()->set_alias.find(sh) != state.get_grammar()->set_alias.end()) {
 		sh = state.get_grammar()->set_alias[sh];
 	}
-	Set *tmp = state.get_grammar()->getSet(sh);
+	Set* tmp = state.get_grammar()->getSet(sh);
 	if (!tmp) {
 		if (!state.strict_tags.empty() || !state.list_tags.empty()) {
-			Tag *tag = parseTag(name, p, state);
+			Tag* tag = parseTag(name, p, state);
 			if (state.strict_tags.count(tag->plain_hash) || state.list_tags.count(tag->plain_hash)) {
-				Set *ns = state.get_grammar()->allocateSet();
+				Set* ns = state.get_grammar()->allocateSet();
 				ns->line = state.get_grammar()->lines;
 				ns->setName(name);
 				state.get_grammar()->addTagToSet(tag, ns);

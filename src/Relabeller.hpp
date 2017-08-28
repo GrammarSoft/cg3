@@ -34,35 +34,35 @@ class Set;
 
 class Relabeller {
 public:
-	Relabeller(Grammar& res, const Grammar& relabels, UFILE *ux_err);
+	Relabeller(Grammar& res, const Grammar& relabels, UFILE* ux_err);
 	~Relabeller();
 
 	void relabel();
 
 private:
-	UFILE *ux_stderr;
-	Grammar *grammar;
-	const Grammar *relabels;
+	UFILE* ux_stderr;
+	Grammar* grammar;
+	const Grammar* relabels;
 
 	typedef std::unordered_map<UString, UString, hash_ustring> UStringMap;
 	typedef std::unordered_map<UString, Set*, hash_ustring> UStringSetMap;
-	const UStringSetMap *relabel_as_list;
-	const UStringSetMap *relabel_as_set;
+	const UStringSetMap* relabel_as_list;
+	const UStringSetMap* relabel_as_set;
 
 	typedef std::vector<Tag*> TagVector;
-	uint32_t copyRelabelSetToGrammar(const Set *set);
+	uint32_t copyRelabelSetToGrammar(const Set* set);
 	TagVector transferTags(const TagVector tv_r);
-	void addTaglistsToSet(const std::set<TagVector> tvs, Set *set);
+	void addTaglistsToSet(const std::set<TagVector> tvs, Set* set);
 	void reindexSet(Set& s);
-	void addSetToGrammar(Set *s);
-	void relabelAsList(Set *set_g, const Set *set_r, const Tag *fromTag);
-	void relabelAsSet(Set *set_g, const Set *set_r, const Tag *fromTag);
+	void addSetToGrammar(Set* s);
+	void relabelAsList(Set* set_g, const Set* set_r, const Tag* fromTag);
+	void relabelAsSet(Set* set_g, const Set* set_r, const Tag* fromTag);
 };
 
-inline trie_t *_trie_copy_helper(const trie_t& trie, Grammar& grammar) {
-	trie_t *nt = new trie_t;
+inline trie_t* _trie_copy_helper(const trie_t& trie, Grammar& grammar) {
+	trie_t* nt = new trie_t;
 	for (auto& p : trie) {
-		Tag *t = new Tag(*p.first);
+		Tag* t = new Tag(*p.first);
 		t = grammar.addTag(t); // new is deleted if it exists
 		(*nt)[t].terminal = p.second.terminal;
 		if (p.second.trie) {
@@ -75,7 +75,7 @@ inline trie_t *_trie_copy_helper(const trie_t& trie, Grammar& grammar) {
 inline trie_t trie_copy(const trie_t& trie, Grammar& grammar) {
 	trie_t nt;
 	for (auto& p : trie) {
-		Tag *t = new Tag(*p.first);
+		Tag* t = new Tag(*p.first);
 		t = grammar.addTag(t); // new is deleted if it exists
 		nt[t].terminal = p.second.terminal;
 		if (p.second.trie) {

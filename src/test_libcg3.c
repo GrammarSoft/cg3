@@ -22,15 +22,15 @@
 #include "cg3.h"
 #include <stdio.h>
 
-int main(int argc, char *argv[]) {
-	cg3_grammar *grammar = 0;
-	cg3_applicator *applicator = 0;
-	cg3_sentence *sentence = 0;
-	cg3_cohort *cohort = 0;
-	cg3_reading *reading = 0;
-	cg3_tag *tag = 0;
+int main(int argc, char* argv[]) {
+	cg3_grammar* grammar = 0;
+	cg3_applicator* applicator = 0;
+	cg3_sentence* sentence = 0;
+	cg3_cohort* cohort = 0;
+	cg3_reading* reading = 0;
+	cg3_tag* tag = 0;
 	size_t ci = 0, ce = 0, ri = 0, re = 0, ti = 0, te = 0;
-	const char *tmp;
+	const char* tmp;
 
 	if (argc < 2) {
 		fprintf(stderr, "Error: First argument must be a CG-3 grammar to load!\n");

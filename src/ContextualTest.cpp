@@ -139,7 +139,7 @@ void ContextualTest::markUsed(Grammar& grammar) {
 	}
 	is_used = true;
 
-	Set *s = 0;
+	Set* s = 0;
 	if (target) {
 		s = grammar.getSet(target);
 		s->markUsed(grammar);

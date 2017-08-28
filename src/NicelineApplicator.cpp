@@ -29,14 +29,14 @@
 
 namespace CG3 {
 
-NicelineApplicator::NicelineApplicator(UFILE *ux_err)
+NicelineApplicator::NicelineApplicator(UFILE* ux_err)
   : GrammarApplicator(ux_err)
   , did_warn_statictags(false)
   , did_warn_subreadings(false)
 {
 }
 
-void NicelineApplicator::runGrammarOnText(istream& input, UFILE *output) {
+void NicelineApplicator::runGrammarOnText(istream& input, UFILE* output) {
 	if (!input.good()) {
 		u_fprintf(ux_stderr, "Error: Input is null - nothing to parse!\n");
 		CG3Quit(1);
@@ -73,12 +73,12 @@ void NicelineApplicator::runGrammarOnText(istream& input, UFILE *output) {
 	uint32_t resetAfter = ((num_windows + 4) * 2 + 1);
 	uint32_t lines = 0;
 
-	SingleWindow *cSWindow = 0;
-	Cohort *cCohort = 0;
-	Reading *cReading = 0;
+	SingleWindow* cSWindow = 0;
+	Cohort* cCohort = 0;
+	Reading* cReading = 0;
 
-	SingleWindow *lSWindow = 0;
-	Cohort *lCohort = 0;
+	SingleWindow* lSWindow = 0;
+	Cohort* lCohort = 0;
 
 	gWindow->window_span = num_windows;
 
@@ -123,7 +123,7 @@ void NicelineApplicator::runGrammarOnText(istream& input, UFILE *output) {
 			--packoff;
 		}
 		if (!ignoreinput && cleaned[0] && cleaned[0] != '<') {
-			UChar *space = &cleaned[0];
+			UChar* space = &cleaned[0];
 			SKIPTO_NOSPAN(space, '\t');
 
 			if (space[0] && space[0] != '\t') {
@@ -141,7 +141,7 @@ void NicelineApplicator::runGrammarOnText(istream& input, UFILE *output) {
 				reverse_foreach (iter, cSWindow->cohorts) {
 					if (doesSetMatchCohortNormal(**iter, grammar->soft_delimiters->number)) {
 						did_soft_lookback = false;
-						Cohort *cohort = delimitAt(*cSWindow, *iter);
+						Cohort* cohort = delimitAt(*cSWindow, *iter);
 						cSWindow = cohort->parent->next;
 						if (cCohort) {
 							cCohort->parent = cSWindow;
@@ -201,7 +201,7 @@ void NicelineApplicator::runGrammarOnText(istream& input, UFILE *output) {
 			}
 			if (gWindow->next.size() > num_windows) {
 				while (!gWindow->previous.empty() && gWindow->previous.size() > num_windows) {
-					SingleWindow *tmp = gWindow->previous.front();
+					SingleWindow* tmp = gWindow->previous.front();
 					printSingleWindow(tmp, output);
 					free_swindow(tmp);
 					gWindow->previous.erase(gWindow->previous.begin());
@@ -235,7 +235,7 @@ void NicelineApplicator::runGrammarOnText(istream& input, UFILE *output) {
 				cReading = alloc_reading(cCohort);
 				insert_if_exists(cReading->parent->possible_sets, grammar->sets_any);
 
-				UChar *base = space;
+				UChar* base = space;
 				if (*space == '"') {
 					++space;
 					SKIPTO_NOSPAN(space, '"');
@@ -246,7 +246,7 @@ void NicelineApplicator::runGrammarOnText(istream& input, UFILE *output) {
 
 				TagList mappings;
 
-				UChar *tab = u_strchr(space, '\t');
+				UChar* tab = u_strchr(space, '\t');
 				if (tab) {
 					tab[0] = 0;
 				}
@@ -257,7 +257,7 @@ void NicelineApplicator::runGrammarOnText(istream& input, UFILE *output) {
 						if (base[0] == '[' && space[-1] == ']') {
 							base[0] = space[-1] = '"';
 						}
-						Tag *tag = addTag(base);
+						Tag* tag = addTag(base);
 						if (tag->type & T_MAPPING || tag->tag[0] == grammar->mapping_prefix) {
 							mappings.push_back(tag);
 						}
@@ -278,7 +278,7 @@ void NicelineApplicator::runGrammarOnText(istream& input, UFILE *output) {
 					if (base[0] == '[' && space[-1] == ']') {
 						base[0] = space[-1] = '"';
 					}
-					Tag *tag = addTag(base);
+					Tag* tag = addTag(base);
 					if (tag->type & T_MAPPING || tag->tag[0] == grammar->mapping_prefix) {
 						mappings.push_back(tag);
 					}
@@ -337,7 +337,7 @@ void NicelineApplicator::runGrammarOnText(istream& input, UFILE *output) {
 	}
 	while (!gWindow->next.empty()) {
 		while (!gWindow->previous.empty() && gWindow->previous.size() > num_windows) {
-			SingleWindow *tmp = gWindow->previous.front();
+			SingleWindow* tmp = gWindow->previous.front();
 			printSingleWindow(tmp, output);
 			free_swindow(tmp);
 			gWindow->previous.erase(gWindow->previous.begin());
@@ -348,7 +348,7 @@ void NicelineApplicator::runGrammarOnText(istream& input, UFILE *output) {
 
 	gWindow->shuffleWindowsDown();
 	while (!gWindow->previous.empty()) {
-		SingleWindow *tmp = gWindow->previous.front();
+		SingleWindow* tmp = gWindow->previous.front();
 		printSingleWindow(tmp, output);
 		free_swindow(tmp);
 		gWindow->previous.erase(gWindow->previous.begin());
@@ -357,7 +357,7 @@ void NicelineApplicator::runGrammarOnText(istream& input, UFILE *output) {
 	u_fflush(output);
 }
 
-void NicelineApplicator::printReading(const Reading *reading, UFILE *output) {
+void NicelineApplicator::printReading(const Reading* reading, UFILE* output) {
 	if (reading->noprint) {
 		return;
 	}
@@ -383,7 +383,7 @@ void NicelineApplicator::printReading(const Reading *reading, UFILE *output) {
 			}
 			unique.insert(tter);
 		}
-		const Tag *tag = single_tags[tter];
+		const Tag* tag = single_tags[tter];
 		if (tag->type & T_DEPENDENCY && has_dep && !dep_original) {
 			continue;
 		}
@@ -397,7 +397,7 @@ void NicelineApplicator::printReading(const Reading *reading, UFILE *output) {
 		if (!reading->parent->dep_self) {
 			reading->parent->dep_self = reading->parent->global_number;
 		}
-		const Cohort *pr = 0;
+		const Cohort* pr = 0;
 		pr = reading->parent;
 		if (reading->parent->dep_parent != DEP_NO_PARENT) {
 			if (reading->parent->dep_parent == 0) {
@@ -410,7 +410,7 @@ void NicelineApplicator::printReading(const Reading *reading, UFILE *output) {
 
 		constexpr UChar local_utf_pattern[] = { ' ', '#', '%', 'u', L'\u2192', '%', 'u', 0 };
 		constexpr UChar local_latin_pattern[] = { ' ', '#', '%', 'u', '-', '>', '%', 'u', 0 };
-		const UChar *pattern = local_latin_pattern;
+		const UChar* pattern = local_latin_pattern;
 		if (unicode_tags) {
 			pattern = local_utf_pattern;
 		}
@@ -458,7 +458,7 @@ void NicelineApplicator::printReading(const Reading *reading, UFILE *output) {
 	}
 }
 
-void NicelineApplicator::printCohort(Cohort *cohort, UFILE *output) {
+void NicelineApplicator::printCohort(Cohort* cohort, UFILE* output) {
 	constexpr UChar ws[] = { ' ', '\t', 0 };
 
 	if (cohort->local_number == 0) {
@@ -496,7 +496,7 @@ removed:
 	}
 }
 
-void NicelineApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
+void NicelineApplicator::printSingleWindow(SingleWindow* window, UFILE* output) {
 	if (!window->text.empty()) {
 		u_fprintf(output, "%S", window->text.c_str());
 		if (!ISNL(window->text[window->text.length() - 1])) {
@@ -506,7 +506,7 @@ void NicelineApplicator::printSingleWindow(SingleWindow *window, UFILE *output) 
 
 	uint32_t cs = (uint32_t)window->cohorts.size();
 	for (uint32_t c = 0; c < cs; c++) {
-		Cohort *cohort = window->cohorts[c];
+		Cohort* cohort = window->cohorts[c];
 		printCohort(cohort, output);
 	}
 	u_fputc('\n', output);

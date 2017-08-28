@@ -34,7 +34,7 @@ typedef std::vector<SingleWindow*> SingleWindowCont;
 
 class Window {
 public:
-	GrammarApplicator *parent;
+	GrammarApplicator* parent;
 	uint32_t cohort_counter;
 	uint32_t window_counter;
 	uint32_t window_span;
@@ -45,15 +45,15 @@ public:
 	uint32FlatHashMap relation_map;
 
 	SingleWindowCont previous;
-	SingleWindow *current;
+	SingleWindow* current;
 	SingleWindowCont next;
 
-	Window(GrammarApplicator *p);
+	Window(GrammarApplicator* p);
 	~Window();
 
-	SingleWindow *allocSingleWindow();
-	SingleWindow *allocPushSingleWindow();
-	SingleWindow *allocAppendSingleWindow();
+	SingleWindow* allocSingleWindow();
+	SingleWindow* allocPushSingleWindow();
+	SingleWindow* allocAppendSingleWindow();
 	void shuffleWindowsDown();
 	void rebuildSingleWindowLinks();
 	void rebuildCohortLinks();

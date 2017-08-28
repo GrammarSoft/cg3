@@ -72,7 +72,7 @@ enum {
 class Rule {
 public:
 	UString name;
-	Tag *wordform;
+	Tag* wordform;
 	uint32_t target;
 	uint32_t childset1, childset2;
 	uint32_t line, number;
@@ -81,25 +81,25 @@ public:
 	int32_t section;
 	int32_t sub_reading;
 	KEYWORDS type;
-	Set *maplist;
-	Set *sublist;
+	Set* maplist;
+	Set* sublist;
 
 	mutable ContextList tests;
 	mutable ContextList dep_tests;
 	mutable uint32_t num_fail, num_match;
 	mutable double total_time;
-	mutable ContextualTest *dep_target;
+	mutable ContextualTest* dep_target;
 
 	Rule();
 	~Rule();
-	void setName(const UChar *to);
+	void setName(const UChar* to);
 
 	void resetStatistics();
 
-	void addContextualTest(ContextualTest *to, ContextList& head);
+	void addContextualTest(ContextualTest* to, ContextList& head);
 	void reverseContextualTests();
 
-	static bool cmp_quality(const Rule *a, const Rule *b);
+	static bool cmp_quality(const Rule* a, const Rule* b);
 };
 
 typedef std::vector<Rule*> RuleVector;

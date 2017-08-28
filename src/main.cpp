@@ -30,12 +30,12 @@
 #include "options.hpp"
 using namespace Options;
 using CG3::CG3Quit;
-void GAppSetOpts(CG3::GrammarApplicator& applicator, UConverter *conv);
+void GAppSetOpts(CG3::GrammarApplicator& applicator, UConverter* conv);
 
-int main(int argc, char *argv[]) {
-	UFILE *ux_stdin = 0;
-	UFILE *ux_stdout = 0;
-	UFILE *ux_stderr = 0;
+int main(int argc, char* argv[]) {
+	UFILE* ux_stdin = 0;
+	UFILE* ux_stdout = 0;
+	UFILE* ux_stderr = 0;
 
 	clock_t main_timer = clock();
 
@@ -44,7 +44,7 @@ int main(int argc, char *argv[]) {
 
 	U_MAIN_INIT_ARGS(argc, argv);
 	argc = u_parseArgs(argc, argv, NUM_OPTIONS, options);
-	FILE *out = stderr;
+	FILE* out = stderr;
 
 	if (options[VERSION_TOO_OLD].doesOccur) {
 		std::cout << CG3_TOO_OLD << std::endl;
@@ -134,12 +134,12 @@ int main(int argc, char *argv[]) {
 	}
 	status = U_ZERO_ERROR;
 
-	const char *codepage_cli = ucnv_getDefaultName();
+	const char* codepage_cli = ucnv_getDefaultName();
 	ucnv_setDefaultName("UTF-8");
-	const char *codepage_default = ucnv_getDefaultName();
-	const char *codepage_grammar = codepage_default;
-	const char *codepage_input = codepage_grammar;
-	const char *codepage_output = codepage_grammar;
+	const char* codepage_default = ucnv_getDefaultName();
+	const char* codepage_grammar = codepage_default;
+	const char* codepage_input = codepage_grammar;
+	const char* codepage_output = codepage_grammar;
 
 	if (options[CODEPAGE_GRAMMAR].doesOccur) {
 		codepage_grammar = options[CODEPAGE_GRAMMAR].value;
@@ -167,9 +167,9 @@ int main(int argc, char *argv[]) {
 	}
 
 	uloc_setDefault("en_US_POSIX", &status);
-	const char *locale_default = uloc_getDefault();
+	const char* locale_default = uloc_getDefault();
 
-	UConverter *conv = ucnv_open(codepage_default, &status);
+	UConverter* conv = ucnv_open(codepage_default, &status);
 
 	if (!options[STDOUT].doesOccur) {
 		ux_stdout = u_finit(stdout, locale_default, codepage_output);
@@ -220,7 +220,7 @@ int main(int argc, char *argv[]) {
 	}
 
 	std::unique_ptr<CG3::IGrammarParser> parser;
-	FILE *input = fopen(options[GRAMMAR].value, "rb");
+	FILE* input = fopen(options[GRAMMAR].value, "rb");
 	if (!input) {
 		std::cerr << "Error: Error opening " << options[GRAMMAR].value << " for reading!" << std::endl;
 		CG3Quit(1);
@@ -274,7 +274,7 @@ int main(int argc, char *argv[]) {
 	}
 
 	if (options[MAPPING_PREFIX].doesOccur) {
-		UConverter *conv = ucnv_open(codepage_cli, &status);
+		UConverter* conv = ucnv_open(codepage_cli, &status);
 		size_t sn = strlen(options[MAPPING_PREFIX].value);
 		CG3::UString buf(sn * 3, 0);
 		ucnv_toUChars(conv, &buf[0], buf.size(), options[MAPPING_PREFIX].value, sn, &status);
@@ -348,7 +348,7 @@ int main(int argc, char *argv[]) {
 			}
 		}
 		reverse_foreach (br, bad) {
-			CG3::Rule *r = grammar.rule_by_number[*br];
+			CG3::Rule* r = grammar.rule_by_number[*br];
 			grammar.rule_by_number.erase(grammar.rule_by_number.begin() + *br);
 			grammar.destroyRule(r);
 		}
@@ -376,7 +376,7 @@ int main(int argc, char *argv[]) {
 	}
 
 	if (options[GRAMMAR_OUT].doesOccur) {
-		UFILE *gout = u_fopen(options[GRAMMAR_OUT].value, "w", locale_default, codepage_output);
+		UFILE* gout = u_fopen(options[GRAMMAR_OUT].value, "w", locale_default, codepage_output);
 		if (gout) {
 			CG3::GrammarWriter writer(grammar, ux_stderr);
 			if (options[STATISTICS].doesOccur) {
@@ -395,7 +395,7 @@ int main(int argc, char *argv[]) {
 	}
 
 	if (options[GRAMMAR_BIN].doesOccur) {
-		FILE *gout = fopen(options[GRAMMAR_BIN].value, "wb");
+		FILE* gout = fopen(options[GRAMMAR_BIN].value, "wb");
 		if (gout) {
 			CG3::BinaryGrammar writer(grammar, ux_stderr);
 			writer.writeBinaryGrammar(gout);
@@ -423,7 +423,7 @@ int main(int argc, char *argv[]) {
 	return status;
 }
 
-void GAppSetOpts(CG3::GrammarApplicator& applicator, UConverter *conv) {
+void GAppSetOpts(CG3::GrammarApplicator& applicator, UConverter* conv) {
 	if (options[ALWAYS_SPAN].doesOccur) {
 		applicator.always_span = true;
 	}
@@ -502,7 +502,7 @@ void GAppSetOpts(CG3::GrammarApplicator& applicator, UConverter *conv) {
 		else {
 			UErrorCode status = U_ZERO_ERROR;
 			size_t sn = strlen(options[RULE].value);
-			UChar *buf = new UChar[sn * 3];
+			UChar* buf = new UChar[sn * 3];
 			buf[0] = 0;
 			ucnv_toUChars(conv, buf, sn * 3, options[RULE].value, sn, &status);
 

@@ -65,16 +65,16 @@ typedef enum {
 } cg3_option;
 
 // Default usage: if (!cg3_init(stdin, stdout, stderr)) { exit(1); }
-cg3_status cg3_init(FILE *in, FILE *out, FILE *err);
+cg3_status cg3_init(FILE* in, FILE* out, FILE* err);
 // Default usage: cg3_cleanup();
 cg3_status cg3_cleanup(void);
 
-cg3_grammar *cg3_grammar_load(const char *filename);
-void cg3_grammar_free(cg3_grammar *grammar);
+cg3_grammar* cg3_grammar_load(const char* filename);
+void cg3_grammar_free(cg3_grammar* grammar);
 
-cg3_applicator *cg3_applicator_create(cg3_grammar *grammar);
+cg3_applicator* cg3_applicator_create(cg3_grammar* grammar);
 // Pass in OR'ed values from cg3_flags; each call resets flags, so set all needed ones in a single call.
-void cg3_applicator_setflags(cg3_applicator *applicator, uint32_t flags);
+void cg3_applicator_setflags(cg3_applicator* applicator, uint32_t flags);
 /*
 Valid signatures:
 - cg3_applicator_setoption(aplc, CG3O_SECTIONS, uint32_t*);
@@ -82,68 +82,68 @@ Valid signatures:
 - cg3_applicator_setoption(aplc, CG3O_SECTIONS_TEXT, const char*);
 	Pointer to cstring with ranges; akin to --sections "2,4-6,8-9"
 //*/
-void cg3_applicator_setoption(cg3_applicator *applicator, cg3_option option, void *value);
-void cg3_applicator_free(cg3_applicator *applicator);
+void cg3_applicator_setoption(cg3_applicator* applicator, cg3_option option, void* value);
+void cg3_applicator_free(cg3_applicator* applicator);
 
-cg3_sentence *cg3_sentence_new(cg3_applicator *applicator);
-cg3_sentence *cg3_sentence_copy(cg3_sentence *from, cg3_applicator *to);
-void cg3_sentence_runrules(cg3_applicator *applicator, cg3_sentence *sentence);
+cg3_sentence* cg3_sentence_new(cg3_applicator* applicator);
+cg3_sentence* cg3_sentence_copy(cg3_sentence* from, cg3_applicator* to);
+void cg3_sentence_runrules(cg3_applicator* applicator, cg3_sentence* sentence);
 // The Sentence takes ownership of the Cohort here.
-void cg3_sentence_addcohort(cg3_sentence *sentence, cg3_cohort *cohort);
-size_t cg3_sentence_numcohorts(cg3_sentence *sentence);
-cg3_cohort *cg3_sentence_getcohort(cg3_sentence *sentence, size_t which);
-void cg3_sentence_free(cg3_sentence *sentence);
+void cg3_sentence_addcohort(cg3_sentence* sentence, cg3_cohort* cohort);
+size_t cg3_sentence_numcohorts(cg3_sentence* sentence);
+cg3_cohort* cg3_sentence_getcohort(cg3_sentence* sentence, size_t which);
+void cg3_sentence_free(cg3_sentence* sentence);
 
-cg3_cohort *cg3_cohort_create(cg3_sentence *sentence);
-void cg3_cohort_setwordform(cg3_cohort *cohort, cg3_tag *wordform);
-cg3_tag *cg3_cohort_getwordform(cg3_cohort *cohort);
-uint32_t cg3_cohort_getid(cg3_cohort *cohort);
-void cg3_cohort_setdependency(cg3_cohort *cohort, uint32_t dep_self, uint32_t dep_parent);
-void cg3_cohort_getdependency(cg3_cohort *cohort, uint32_t *dep_self, uint32_t *dep_parent);
+cg3_cohort* cg3_cohort_create(cg3_sentence* sentence);
+void cg3_cohort_setwordform(cg3_cohort* cohort, cg3_tag* wordform);
+cg3_tag* cg3_cohort_getwordform(cg3_cohort* cohort);
+uint32_t cg3_cohort_getid(cg3_cohort* cohort);
+void cg3_cohort_setdependency(cg3_cohort* cohort, uint32_t dep_self, uint32_t dep_parent);
+void cg3_cohort_getdependency(cg3_cohort* cohort, uint32_t* dep_self, uint32_t* dep_parent);
 // The Cohort takes ownership of the Reading here.
-void cg3_cohort_addreading(cg3_cohort *cohort, cg3_reading *reading);
-size_t cg3_cohort_numreadings(cg3_cohort *cohort);
-cg3_reading *cg3_cohort_getreading(cg3_cohort *cohort, size_t which);
+void cg3_cohort_addreading(cg3_cohort* cohort, cg3_reading* reading);
+size_t cg3_cohort_numreadings(cg3_cohort* cohort);
+cg3_reading* cg3_cohort_getreading(cg3_cohort* cohort, size_t which);
 // This is usually not to be used. The Sentence will take ownership of the Cohort and free it on destruction
-void cg3_cohort_free(cg3_cohort *cohort);
+void cg3_cohort_free(cg3_cohort* cohort);
 
-cg3_reading *cg3_reading_create(cg3_cohort *cohort);
-cg3_status cg3_reading_addtag(cg3_reading *reading, cg3_tag *tag);
-size_t cg3_reading_numtags(cg3_reading *reading);
-cg3_tag *cg3_reading_gettag(cg3_reading *reading, size_t which);
-size_t cg3_reading_numtraces(cg3_reading *reading);
-uint32_t cg3_reading_gettrace(cg3_reading *reading, size_t which);
+cg3_reading* cg3_reading_create(cg3_cohort* cohort);
+cg3_status cg3_reading_addtag(cg3_reading* reading, cg3_tag* tag);
+size_t cg3_reading_numtags(cg3_reading* reading);
+cg3_tag* cg3_reading_gettag(cg3_reading* reading, size_t which);
+size_t cg3_reading_numtraces(cg3_reading* reading);
+uint32_t cg3_reading_gettrace(cg3_reading* reading, size_t which);
 // This is usually not to be used. The Cohort will take ownership of the Reading and free it on destruction
-void cg3_reading_free(cg3_reading *reading);
+void cg3_reading_free(cg3_reading* reading);
 
-cg3_reading *cg3_subreading_create(cg3_reading *reading);
+cg3_reading* cg3_subreading_create(cg3_reading* reading);
 // The Reading takes ownership of the Sub-Reading here.
-cg3_status cg3_reading_setsubreading(cg3_reading *reading, cg3_reading *subreading);
-size_t cg3_reading_numsubreadings(cg3_reading *reading);
-cg3_reading *cg3_reading_getsubreading(cg3_reading *reading, size_t which);
+cg3_status cg3_reading_setsubreading(cg3_reading* reading, cg3_reading* subreading);
+size_t cg3_reading_numsubreadings(cg3_reading* reading);
+cg3_reading* cg3_reading_getsubreading(cg3_reading* reading, size_t which);
 // This is usually not to be used. The Reading will take ownership of the Sub-Reading and free it on destruction
-void cg3_subreading_free(cg3_reading *subreading);
+void cg3_subreading_free(cg3_reading* subreading);
 
 #ifdef U_ICU_VERSION_MAJOR_NUM
 cg3_tag *cg3_tag_create_u(cg3_applicator *applicator, const UChar *text);
 #endif
-cg3_tag *cg3_tag_create_u8(cg3_applicator *applicator, const char *text);
-cg3_tag *cg3_tag_create_u16(cg3_applicator *applicator, const uint16_t *text);
-cg3_tag *cg3_tag_create_u32(cg3_applicator *applicator, const uint32_t *text);
-cg3_tag *cg3_tag_create_w(cg3_applicator *applicator, const wchar_t *text);
+cg3_tag* cg3_tag_create_u8(cg3_applicator* applicator, const char* text);
+cg3_tag* cg3_tag_create_u16(cg3_applicator* applicator, const uint16_t* text);
+cg3_tag* cg3_tag_create_u32(cg3_applicator* applicator, const uint32_t* text);
+cg3_tag* cg3_tag_create_w(cg3_applicator* applicator, const wchar_t* text);
 
 #ifdef U_ICU_VERSION_MAJOR_NUM
 const UChar *cg3_tag_gettext_u(cg3_tag *tag);
 #endif
-const char *cg3_tag_gettext_u8(cg3_tag *tag);
-const uint16_t *cg3_tag_gettext_u16(cg3_tag *tag);
-const uint32_t *cg3_tag_gettext_u32(cg3_tag *tag);
-const wchar_t *cg3_tag_gettext_w(cg3_tag *tag);
+const char* cg3_tag_gettext_u8(cg3_tag* tag);
+const uint16_t* cg3_tag_gettext_u16(cg3_tag* tag);
+const uint32_t* cg3_tag_gettext_u32(cg3_tag* tag);
+const wchar_t* cg3_tag_gettext_w(cg3_tag* tag);
 
 // These 3 from Paul Meurer <paul.meurer@uni.no>
-size_t cg3_cohort_numdelreadings(cg3_cohort *cohort);
-cg3_reading *cg3_cohort_getdelreading(cg3_cohort *cohort, size_t which);
-size_t cg3_reading_gettrace_ruletype(cg3_reading *reading_, size_t which);
+size_t cg3_cohort_numdelreadings(cg3_cohort* cohort);
+cg3_reading* cg3_cohort_getdelreading(cg3_cohort* cohort, size_t which);
+size_t cg3_reading_gettrace_ruletype(cg3_reading* reading_, size_t which);
 
 #ifdef __cplusplus
 }

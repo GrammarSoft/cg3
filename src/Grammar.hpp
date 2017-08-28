@@ -81,11 +81,11 @@ public:
 	typedef std::unordered_map<uint32_t, boost::dynamic_bitset<>> sets_by_tag_t;
 	sets_by_tag_t sets_by_tag;
 
-	uint32IntervalVector *rules_any;
-	boost::dynamic_bitset<> *sets_any;
+	uint32IntervalVector* rules_any;
+	boost::dynamic_bitset<>* sets_any;
 
-	Set *delimiters;
-	Set *soft_delimiters;
+	Set* delimiters;
+	Set* soft_delimiters;
 	uint32_t tag_any;
 	uint32Vector preferred_targets;
 	uint32SortedVector reopen_mappings;
@@ -106,30 +106,30 @@ public:
 	Grammar();
 	~Grammar();
 
-	void addSet(Set *& to);
-	Set *getSet(uint32_t which) const;
-	Set *allocateSet();
-	void destroySet(Set *set);
-	void addSetToList(Set *s);
+	void addSet(Set*& to);
+	Set* getSet(uint32_t which) const;
+	Set* allocateSet();
+	void destroySet(Set* set);
+	void addSetToList(Set* s);
 	void allocateDummySet();
 	uint32_t removeNumericTags(uint32_t s);
 	void getTags(const Set& set, std::set<TagVector>& rv);
 
-	void addAnchor(const UChar *to, uint32_t at, bool primary = false);
+	void addAnchor(const UChar* to, uint32_t at, bool primary = false);
 
-	Tag *allocateTag();
-	Tag *allocateTag(const UChar *tag);
-	Tag *addTag(Tag *tag);
-	void destroyTag(Tag *tag);
-	void addTagToSet(Tag *rtag, Set *set);
+	Tag* allocateTag();
+	Tag* allocateTag(const UChar* tag);
+	Tag* addTag(Tag* tag);
+	void destroyTag(Tag* tag);
+	void addTagToSet(Tag* rtag, Set* set);
 
-	Rule *allocateRule();
-	void addRule(Rule *rule);
-	void destroyRule(Rule *rule);
+	Rule* allocateRule();
+	void addRule(Rule* rule);
+	void destroyRule(Rule* rule);
 
-	ContextualTest *allocateContextualTest();
-	ContextualTest *addContextualTest(ContextualTest *t);
-	void addTemplate(ContextualTest *test, const UChar *name);
+	ContextualTest* allocateContextualTest();
+	ContextualTest* addContextualTest(ContextualTest* t);
+	void addTemplate(ContextualTest* test, const UChar* name);
 
 	void resetStatistics();
 	void reindex(bool unused_sets = false, bool used_tags = false);
@@ -166,7 +166,7 @@ inline void _trie_unserialize(trie_t& trie, Stream& input, Grammar& grammar, uin
 	}
 }
 
-inline void trie_unserialize(trie_t& trie, FILE *input, Grammar& grammar, uint32_t num_tags) {
+inline void trie_unserialize(trie_t& trie, FILE* input, Grammar& grammar, uint32_t num_tags) {
 	return _trie_unserialize(trie, input, grammar, num_tags);
 }
 

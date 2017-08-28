@@ -45,7 +45,7 @@ enum {
 
 class Set {
 public:
-	static UFILE *dump_hashes_out;
+	static UFILE* dump_hashes_out;
 
 	uint8_t type;
 	uint32_t line;
@@ -69,7 +69,7 @@ public:
 	}
 
 	void setName(uint32_t to = 0);
-	void setName(const UChar *to);
+	void setName(const UChar* to);
 	void setName(const UString& to);
 
 	bool empty() const;
