@@ -48,9 +48,9 @@ public:
 	uint32Bloomish tags_bloom;
 	uint32Bloomish tags_plain_bloom;
 	uint32Bloomish tags_textual_bloom;
-	Tag *mapping;
-	Cohort *parent;
-	Reading *next;
+	Tag* mapping;
+	Cohort* parent;
+	Reading* next;
 	uint32Vector hit_by;
 	typedef uint32Vector tags_list_t;
 	tags_list_t tags_list;
@@ -64,21 +64,21 @@ public:
 	UString tags_string;
 	uint32_t tags_string_hash = 0;
 
-	Reading(Cohort *p = 0);
+	Reading(Cohort* p = 0);
 	Reading(const Reading& r);
 	~Reading();
 	void clear();
 
-	Reading *allocateReading(Cohort *p);
-	Reading *allocateReading(const Reading& r);
+	Reading* allocateReading(Cohort* p);
+	Reading* allocateReading(const Reading& r);
 
 	uint32_t rehash();
-	static bool cmp_number(Reading *a, Reading *b);
+	static bool cmp_number(Reading* a, Reading* b);
 };
 
-Reading *alloc_reading(Cohort *p = 0);
-Reading *alloc_reading(const Reading& r);
-void free_reading(Reading *r);
+Reading* alloc_reading(Cohort* p = 0);
+Reading* alloc_reading(const Reading& r);
+void free_reading(Reading* r);
 }
 
 #endif

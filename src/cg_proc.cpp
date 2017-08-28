@@ -36,7 +36,7 @@
 
 using CG3::CG3Quit;
 
-void endProgram(char *name) {
+void endProgram(char* name) {
 	using namespace std;
 	fprintf(stdout, "VISL CG-3 Disambiguator version %u.%u.%u.%u\n",
 	  CG3_VERSION_MAJOR, CG3_VERSION_MINOR, CG3_VERSION_PATCH, CG3_REVISION);
@@ -79,7 +79,7 @@ void endProgram(char *name) {
 	exit(EXIT_FAILURE);
 }
 
-int main(int argc, char *argv[]) {
+int main(int argc, char* argv[]) {
 	bool trace = false;
 	bool wordform_case = false;
 	bool print_word_forms = true;
@@ -88,12 +88,12 @@ int main(int argc, char *argv[]) {
 	int sections = 0;
 	int stream_format = 1;
 	bool null_flush = false;
-	char *single_rule = 0;
+	char* single_rule = 0;
 
 	UErrorCode status = U_ZERO_ERROR;
-	UFILE *ux_stdin = 0;
-	UFILE *ux_stdout = 0;
-	UFILE *ux_stderr = 0;
+	UFILE* ux_stdin = 0;
+	UFILE* ux_stdout = 0;
+	UFILE* ux_stderr = 0;
 
 #if HAVE_GETOPT_LONG
 	struct option long_options[] = {
@@ -189,9 +189,9 @@ int main(int argc, char *argv[]) {
 	}
 
 	ucnv_setDefaultName("UTF-8");
-	const char *codepage_default = ucnv_getDefaultName();
+	const char* codepage_default = ucnv_getDefaultName();
 	uloc_setDefault("en_US_POSIX", &status);
-	const char *locale_default = uloc_getDefault();
+	const char* locale_default = uloc_getDefault();
 
 	ux_stdin = u_finit(stdin, locale_default, codepage_default);
 	ux_stdout = u_finit(stdout, locale_default, codepage_default);
@@ -209,10 +209,10 @@ int main(int argc, char *argv[]) {
 	}
 	//*/
 
-	CG3::IGrammarParser *parser = 0;
+	CG3::IGrammarParser* parser = 0;
 
 	if (optind <= (argc - 1)) {
-		FILE *in = fopen(argv[optind], "rb");
+		FILE* in = fopen(argv[optind], "rb");
 		if (in == NULL || ferror(in)) {
 			endProgram(argv[0]);
 		}
@@ -262,13 +262,13 @@ int main(int argc, char *argv[]) {
 
 	delete parser;
 
-	CG3::GrammarApplicator *applicator = 0;
+	CG3::GrammarApplicator* applicator = 0;
 
 	if (stream_format == 0) {
 		applicator = new CG3::GrammarApplicator(ux_stderr);
 	}
 	else if (stream_format == 2) {
-		CG3::MatxinApplicator *matxinApplicator = new CG3::MatxinApplicator(ux_stderr);
+		CG3::MatxinApplicator* matxinApplicator = new CG3::MatxinApplicator(ux_stderr);
 		matxinApplicator->setNullFlush(null_flush);
 		matxinApplicator->wordform_case = wordform_case;
 		matxinApplicator->print_word_forms = print_word_forms;
@@ -276,7 +276,7 @@ int main(int argc, char *argv[]) {
 		applicator = matxinApplicator;
 	}
 	else {
-		CG3::ApertiumApplicator *apertiumApplicator = new CG3::ApertiumApplicator(ux_stderr);
+		CG3::ApertiumApplicator* apertiumApplicator = new CG3::ApertiumApplicator(ux_stderr);
 		apertiumApplicator->setNullFlush(null_flush);
 		apertiumApplicator->wordform_case = wordform_case;
 		apertiumApplicator->print_word_forms = print_word_forms;
@@ -296,7 +296,7 @@ int main(int argc, char *argv[]) {
 	// This is if we want to run a single rule  (-r option)
 	if (single_rule) {
 		size_t sn = strlen(single_rule);
-		UChar *buf = new UChar[sn * 3];
+		UChar* buf = new UChar[sn * 3];
 		buf[0] = 0;
 		buf[sn] = 0;
 		u_charsToUChars(single_rule, buf, sn);

@@ -30,11 +30,11 @@ using namespace Options;
 using namespace std;
 using CG3::CG3Quit;
 
-int main(int argc, char *argv[]) {
+int main(int argc, char* argv[]) {
 	UErrorCode status = U_ZERO_ERROR;
-	UFILE *ux_stdin = 0;
-	UFILE *ux_stdout = 0;
-	UFILE *ux_stderr = 0;
+	UFILE* ux_stdin = 0;
+	UFILE* ux_stdout = 0;
+	UFILE* ux_stderr = 0;
 
 	/* Initialize ICU */
 	u_init(&status);
@@ -47,7 +47,7 @@ int main(int argc, char *argv[]) {
 	argc = u_parseArgs(argc, argv, NUM_OPTIONS, options);
 
 	if (argc < 0 || options[HELP1].doesOccur || options[HELP2].doesOccur) {
-		FILE *out = (argc < 0) ? stderr : stdout;
+		FILE* out = (argc < 0) ? stderr : stdout;
 		fprintf(out, "Usage: cg-conv [OPTIONS]\n");
 		fprintf(out, "\n");
 		fprintf(out, "Options:\n");
@@ -89,9 +89,9 @@ int main(int argc, char *argv[]) {
 	}
 
 	ucnv_setDefaultName("UTF-8");
-	const char *codepage_default = ucnv_getDefaultName();
+	const char* codepage_default = ucnv_getDefaultName();
 	uloc_setDefault("en_US_POSIX", &status);
-	const char *locale_default = uloc_getDefault();
+	const char* locale_default = uloc_getDefault();
 
 	ux_stdin = u_finit(stdin, locale_default, codepage_default);
 	ux_stdout = u_finit(stdout, locale_default, codepage_default);
@@ -138,7 +138,7 @@ int main(int argc, char *argv[]) {
 		buffer.resize(1000);
 		int32_t nr = u_file_read(&buffer[0], buffer.size(), ux_stdin);
 		buffer.resize(nr);
-		URegularExpression *rx = 0;
+		URegularExpression* rx = 0;
 
 		for (;;) {
 			rx = uregex_openC("^\"<[^>]+>\".*?^\\s+\"[^\"]+\"", UREGEX_DOTALL | UREGEX_MULTILINE, 0, &status);
@@ -199,7 +199,7 @@ int main(int argc, char *argv[]) {
 	if (options[MAPPING_PREFIX].doesOccur) {
 		size_t sn = strlen(options[MAPPING_PREFIX].value);
 		CG3::UString buf(sn * 3, 0);
-		UConverter *conv = ucnv_open(codepage_default, &status);
+		UConverter* conv = ucnv_open(codepage_default, &status);
 		ucnv_toUChars(conv, &buf[0], buf.size(), options[MAPPING_PREFIX].value, sn, &status);
 		ucnv_close(conv);
 		grammar.mapping_prefix = buf[0];
@@ -207,7 +207,7 @@ int main(int argc, char *argv[]) {
 	if (options[SUB_DELIMITER].doesOccur) {
 		size_t sn = strlen(options[SUB_DELIMITER].value);
 		applicator.sub_delims.resize(sn * 2);
-		UConverter *conv = ucnv_open(codepage_default, &status);
+		UConverter* conv = ucnv_open(codepage_default, &status);
 		sn = ucnv_toUChars(conv, &applicator.sub_delims[0], applicator.sub_delims.size(), options[SUB_DELIMITER].value, sn, &status);
 		applicator.sub_delims.resize(sn);
 		applicator.sub_delims += '+';
@@ -216,7 +216,7 @@ int main(int argc, char *argv[]) {
 	if (options[FST_WTAG].doesOccur) {
 		size_t sn = strlen(options[FST_WTAG].value);
 		applicator.wtag.resize(sn * 2);
-		UConverter *conv = ucnv_open(codepage_default, &status);
+		UConverter* conv = ucnv_open(codepage_default, &status);
 		sn = ucnv_toUChars(conv, &applicator.wtag[0], applicator.wtag.size(), options[FST_WTAG].value, sn, &status);
 		applicator.wtag.resize(sn);
 		ucnv_close(conv);

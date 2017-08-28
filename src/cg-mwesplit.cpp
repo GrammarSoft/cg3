@@ -41,11 +41,11 @@ UOption options[] = {
 }
 using namespace Options;
 
-int main(int argc, char **argv) {
+int main(int argc, char** argv) {
 	UErrorCode status = U_ZERO_ERROR;
-	UFILE *ux_stdin = 0;
-	UFILE *ux_stdout = 0;
-	UFILE *ux_stderr = 0;
+	UFILE* ux_stdin = 0;
+	UFILE* ux_stdout = 0;
+	UFILE* ux_stderr = 0;
 
 	/* Initialize ICU */
 	u_init(&status);
@@ -58,7 +58,7 @@ int main(int argc, char **argv) {
 	argc = u_parseArgs(argc, argv, NUM_OPTIONS, options);
 
 	if (argc < 0 || options[HELP1].doesOccur || options[HELP2].doesOccur) {
-		FILE *out = (argc < 0) ? stderr : stdout;
+		FILE* out = (argc < 0) ? stderr : stdout;
 		fprintf(out, "Usage: cg-mwesplit [OPTIONS]\n");
 		fprintf(out, "\n");
 		fprintf(out, "Options:\n");
@@ -93,9 +93,9 @@ int main(int argc, char **argv) {
 	}
 
 	ucnv_setDefaultName("UTF-8");
-	const char *codepage_default = ucnv_getDefaultName();
+	const char* codepage_default = ucnv_getDefaultName();
 	uloc_setDefault("en_US_POSIX", &status);
-	const char *locale_default = uloc_getDefault();
+	const char* locale_default = uloc_getDefault();
 
 	ux_stdin = u_finit(stdin, locale_default, codepage_default);
 	ux_stdout = u_finit(stdout, locale_default, codepage_default);

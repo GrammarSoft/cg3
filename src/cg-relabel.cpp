@@ -35,7 +35,7 @@
 
 using CG3::CG3Quit;
 
-void endProgram(char *name) {
+void endProgram(char* name) {
 	if (name != NULL) {
 		fprintf(stdout, "VISL CG-3 Relabeller version %u.%u.%u.%u\n",
 		  CG3_VERSION_MAJOR, CG3_VERSION_MINOR, CG3_VERSION_PATCH, CG3_REVISION);
@@ -47,7 +47,7 @@ void endProgram(char *name) {
 
 
 // like libcg3's, but with a non-void grammar …
-CG3::Grammar *cg3_grammar_load(const char *filename, UFILE *ux_stdout, UFILE *ux_stderr, bool require_binary = false) {
+CG3::Grammar* cg3_grammar_load(const char* filename, UFILE* ux_stdout, UFILE* ux_stderr, bool require_binary = false) {
 	using namespace CG3;
 	std::ifstream input(filename, std::ios::binary);
 	if (!input) {
@@ -60,7 +60,7 @@ CG3::Grammar *cg3_grammar_load(const char *filename, UFILE *ux_stdout, UFILE *ux
 	}
 	input.close();
 
-	Grammar *grammar = new Grammar;
+	Grammar* grammar = new Grammar;
 	grammar->ux_stderr = ux_stderr;
 	grammar->ux_stdout = ux_stdout;
 
@@ -86,9 +86,9 @@ CG3::Grammar *cg3_grammar_load(const char *filename, UFILE *ux_stdout, UFILE *ux
 	return grammar;
 }
 
-int main(int argc, char *argv[]) {
-	UFILE *ux_stdout = 0;
-	UFILE *ux_stderr = 0;
+int main(int argc, char* argv[]) {
+	UFILE* ux_stdout = 0;
+	UFILE* ux_stderr = 0;
 	UErrorCode status = U_ZERO_ERROR;
 
 	if (argc != 4) {
@@ -104,20 +104,20 @@ int main(int argc, char *argv[]) {
 	status = U_ZERO_ERROR;
 
 	ucnv_setDefaultName("UTF-8");
-	const char *codepage_default = ucnv_getDefaultName();
+	const char* codepage_default = ucnv_getDefaultName();
 	uloc_setDefault("en_US_POSIX", &status);
-	const char *locale_default = uloc_getDefault();
+	const char* locale_default = uloc_getDefault();
 
 	ux_stdout = u_finit(stdout, locale_default, codepage_default);
 	ux_stderr = u_finit(stderr, locale_default, codepage_default);
 
-	CG3::Grammar *grammar = cg3_grammar_load(argv[1], ux_stdout, ux_stderr, true);
-	CG3::Grammar *relabel_grammar = cg3_grammar_load(argv[2], ux_stdout, ux_stderr);
+	CG3::Grammar* grammar = cg3_grammar_load(argv[1], ux_stdout, ux_stderr, true);
+	CG3::Grammar* relabel_grammar = cg3_grammar_load(argv[2], ux_stdout, ux_stderr);
 
 	CG3::Relabeller relabeller(*grammar, *relabel_grammar, ux_stderr);
 	relabeller.relabel();
 
-	FILE *gout = fopen(argv[3], "wb");
+	FILE* gout = fopen(argv[3], "wb");
 	if (gout) {
 		CG3::BinaryGrammar writer(*grammar, ux_stderr);
 		writer.writeBinaryGrammar(gout);

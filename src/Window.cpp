@@ -26,7 +26,7 @@
 
 namespace CG3 {
 
-Window::Window(GrammarApplicator *p)
+Window::Window(GrammarApplicator* p)
   : parent(p)
   , cohort_counter(1)
   , window_counter(0)
@@ -49,15 +49,15 @@ Window::~Window() {
 	}
 }
 
-SingleWindow *Window::allocSingleWindow() {
-	SingleWindow *swindow = alloc_swindow(this);
+SingleWindow* Window::allocSingleWindow() {
+	SingleWindow* swindow = alloc_swindow(this);
 	window_counter++;
 	swindow->number = window_counter;
 	return swindow;
 }
 
-SingleWindow *Window::allocPushSingleWindow() {
-	SingleWindow *swindow = alloc_swindow(this);
+SingleWindow* Window::allocPushSingleWindow() {
+	SingleWindow* swindow = alloc_swindow(this);
 	window_counter++;
 	swindow->number = window_counter;
 	if (!next.empty()) {
@@ -72,8 +72,8 @@ SingleWindow *Window::allocPushSingleWindow() {
 	return swindow;
 }
 
-SingleWindow *Window::allocAppendSingleWindow() {
-	SingleWindow *swindow = alloc_swindow(this);
+SingleWindow* Window::allocAppendSingleWindow() {
+	SingleWindow* swindow = alloc_swindow(this);
 	window_counter++;
 	swindow->number = window_counter;
 	if (!next.empty()) {
@@ -99,7 +99,7 @@ void Window::shuffleWindowsDown() {
 }
 
 void Window::rebuildSingleWindowLinks() {
-	SingleWindow *sWindow = 0;
+	SingleWindow* sWindow = 0;
 
 	for (auto iter : previous) {
 		iter->previous = sWindow;
@@ -131,7 +131,7 @@ void Window::rebuildSingleWindowLinks() {
 }
 
 void Window::rebuildCohortLinks() {
-	SingleWindow *sWindow = 0;
+	SingleWindow* sWindow = 0;
 	if (!previous.empty()) {
 		sWindow = previous.front();
 	}
@@ -142,7 +142,7 @@ void Window::rebuildCohortLinks() {
 		sWindow = next.front();
 	}
 
-	Cohort *prev = 0;
+	Cohort* prev = 0;
 	while (sWindow) {
 		for (auto citer : sWindow->cohorts) {
 			citer->prev = prev;

@@ -27,7 +27,7 @@
 
 namespace CG3 {
 
-int BinaryGrammar::writeBinaryGrammar(FILE *output) {
+int BinaryGrammar::writeBinaryGrammar(FILE* output) {
 	if (!output) {
 		u_fprintf(ux_stderr, "Error: Output is null - cannot write to nothing!\n");
 		CG3Quit(1);
@@ -40,7 +40,7 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 	uint32_t u32tmp = 0;
 	int32_t i32tmp = 0;
 	UErrorCode err = U_ZERO_ERROR;
-	UConverter *conv = ucnv_open("UTF-8", &err);
+	UConverter* conv = ucnv_open("UTF-8", &err);
 	std::ostringstream buffer;
 
 	fprintf(output, "CG3B");
@@ -112,7 +112,7 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 	}
 	std::vector<Tag*>::const_iterator tags_iter;
 	for (tags_iter = grammar->single_tags_list.begin(); tags_iter != grammar->single_tags_list.end(); tags_iter++) {
-		const Tag *t = *tags_iter;
+		const Tag* t = *tags_iter;
 
 		uint32_t fields = 0;
 		buffer.str("");
@@ -164,7 +164,7 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 		if (t->regexp) {
 			fields |= (1 << 9);
 			int32_t len = 0;
-			const UChar *p = uregex_pattern(t->regexp, &len, &err);
+			const UChar* p = uregex_pattern(t->regexp, &len, &err);
 			ucnv_reset(conv);
 			i32tmp = ucnv_fromUChars(conv, &cbuffers[0][0], CG3_BUFFER_SIZE - 1, p, len, &err);
 			writeSwapped(buffer, i32tmp);
@@ -241,7 +241,7 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 	}
 	std::vector<Set*>::const_iterator set_iter;
 	for (set_iter = grammar->sets_list.begin(); set_iter != grammar->sets_list.end(); set_iter++) {
-		Set *s = *set_iter;
+		Set* s = *set_iter;
 
 		uint32_t fields = 0;
 		buffer.str("");
@@ -416,7 +416,7 @@ int BinaryGrammar::writeBinaryGrammar(FILE *output) {
 	return 0;
 }
 
-void BinaryGrammar::writeContextualTest(ContextualTest *t, FILE *output) {
+void BinaryGrammar::writeContextualTest(ContextualTest* t, FILE* output) {
 	if (seen_uint32.count(t->hash)) {
 		return;
 	}

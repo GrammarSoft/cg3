@@ -29,7 +29,7 @@ namespace CG3 {
 
 class istream {
 public:
-	istream(UFILE *s, bool strip_bom = true)
+	istream(UFILE* s, bool strip_bom = true)
 	  : stream(s)
 	  , raw(u_fgetfile(stream))
 	{
@@ -53,7 +53,7 @@ public:
 		return u_feof(stream);
 	}
 
-	virtual UChar *gets(UChar *s, int32_t n) {
+	virtual UChar* gets(UChar* s, int32_t n) {
 		return u_fgets(s, n, stream);
 	}
 
@@ -66,13 +66,13 @@ public:
 	}
 
 private:
-	UFILE *stream;
-	FILE *raw;
+	UFILE* stream;
+	FILE* raw;
 };
 
 class istream_buffer : public istream {
 public:
-	istream_buffer(UFILE *s, const UString& b)
+	istream_buffer(UFILE* s, const UString& b)
 	  : istream(s)
 	  , offset(0)
 	  , raw_offset(0)
@@ -89,11 +89,11 @@ public:
 		return false;
 	}
 
-	UChar *gets(UChar *s, int32_t m) {
+	UChar* gets(UChar* s, int32_t m) {
 		if (offset < buffer.size()) {
 			std::fill(s, s + m, static_cast<UChar>(0));
-			UChar *p = &buffer[offset];
-			UChar *n = p;
+			UChar* p = &buffer[offset];
+			UChar* n = p;
 			SKIPLN(n);
 			if (n - p > m) {
 				n = p + m;

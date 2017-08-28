@@ -31,7 +31,7 @@
 
 namespace CG3 {
 
-GrammarApplicator::GrammarApplicator(UFILE *ux_err)
+GrammarApplicator::GrammarApplicator(UFILE* ux_err)
   : always_span(false)
   , apply_mappings(true)
   , apply_corrections(true)
@@ -140,7 +140,7 @@ void GrammarApplicator::resetIndexes() {
 	index_icase_no.clear();
 }
 
-void GrammarApplicator::setGrammar(Grammar *res) {
+void GrammarApplicator::setGrammar(Grammar* res) {
 	grammar = res;
 	single_tags = grammar->single_tags;
 	tag_begin = addTag(stringbits[S_BEGINTAG].getTerminatedBuffer());
@@ -247,14 +247,14 @@ void GrammarApplicator::disableStatistics() {
 	statistics = false;
 }
 
-Tag *GrammarApplicator::addTag(Tag *tag) {
+Tag* GrammarApplicator::addTag(Tag* tag) {
 	uint32_t hash = tag->rehash();
 	uint32_t seed = 0;
 	for (; seed < 10000; seed++) {
 		uint32_t ih = hash + seed;
 		Taguint32HashMap::iterator it;
 		if ((it = single_tags.find(ih)) != single_tags.end()) {
-			Tag *t = it->second;
+			Tag* t = it->second;
 			if (t == tag) {
 				return tag;
 			}
@@ -278,14 +278,14 @@ Tag *GrammarApplicator::addTag(Tag *tag) {
 	return single_tags[hash];
 }
 
-Tag *GrammarApplicator::addTag(const UChar *txt, bool vstr) {
+Tag* GrammarApplicator::addTag(const UChar* txt, bool vstr) {
 	Taguint32HashMap::iterator it;
 	uint32_t thash = hash_value(txt);
 	if ((it = single_tags.find(thash)) != single_tags.end() && !it->second->tag.empty() && u_strcmp(it->second->tag.c_str(), txt) == 0) {
 		return it->second;
 	}
 
-	Tag *tag = 0;
+	Tag* tag = 0;
 	if (vstr) {
 		tag = ::CG3::parseTag(txt, 0, *this);
 	}
@@ -342,14 +342,14 @@ Tag *GrammarApplicator::addTag(const UChar *txt, bool vstr) {
 }
 
 
-Tag *GrammarApplicator::addTag(const UString& txt, bool vstr) {
+Tag* GrammarApplicator::addTag(const UString& txt, bool vstr) {
 	assert(txt.length() && "addTag() will not work with empty strings.");
 	return addTag(txt.c_str(), vstr);
 }
 
-void GrammarApplicator::printTrace(UFILE *output, uint32_t hit_by) {
+void GrammarApplicator::printTrace(UFILE* output, uint32_t hit_by) {
 	if (hit_by < grammar->rule_by_number.size()) {
-		const Rule *r = grammar->rule_by_number[hit_by];
+		const Rule* r = grammar->rule_by_number[hit_by];
 		u_fprintf(output, "%S", keywords[r->type].getTerminatedBuffer());
 		if (r->type == K_ADDRELATION || r->type == K_SETRELATION || r->type == K_REMRELATION || r->type == K_ADDRELATIONS || r->type == K_SETRELATIONS || r->type == K_REMRELATIONS) {
 			u_fprintf(output, "(%S", r->maplist->getNonEmpty().begin()->first->tag.c_str());
@@ -372,7 +372,7 @@ void GrammarApplicator::printTrace(UFILE *output, uint32_t hit_by) {
 	}
 }
 
-void GrammarApplicator::printReading(const Reading *reading, UFILE *output, size_t sub) {
+void GrammarApplicator::printReading(const Reading* reading, UFILE* output, size_t sub) {
 	if (reading->noprint) {
 		return;
 	}
@@ -406,7 +406,7 @@ void GrammarApplicator::printReading(const Reading *reading, UFILE *output, size
 			}
 			unique.insert(tter);
 		}
-		const Tag *tag = single_tags[tter];
+		const Tag* tag = single_tags[tter];
 		if (tag->type & T_DEPENDENCY && has_dep && !dep_original) {
 			continue;
 		}
@@ -420,7 +420,7 @@ void GrammarApplicator::printReading(const Reading *reading, UFILE *output, size
 		if (!reading->parent->dep_self) {
 			reading->parent->dep_self = reading->parent->global_number;
 		}
-		const Cohort *pr = 0;
+		const Cohort* pr = 0;
 		pr = reading->parent;
 		if (reading->parent->dep_parent != DEP_NO_PARENT) {
 			if (reading->parent->dep_parent == 0) {
@@ -433,7 +433,7 @@ void GrammarApplicator::printReading(const Reading *reading, UFILE *output, size
 
 		constexpr UChar local_utf_pattern[] = { ' ', '#', '%', 'u', L'\u2192', '%', 'u', 0 };
 		constexpr UChar local_latin_pattern[] = { ' ', '#', '%', 'u', '-', '>', '%', 'u', 0 };
-		const UChar *pattern = local_latin_pattern;
+		const UChar* pattern = local_latin_pattern;
 		if (unicode_tags) {
 			pattern = local_utf_pattern;
 		}
@@ -490,7 +490,7 @@ void GrammarApplicator::printReading(const Reading *reading, UFILE *output, size
 	}
 }
 
-void GrammarApplicator::printCohort(Cohort *cohort, UFILE *output) {
+void GrammarApplicator::printCohort(Cohort* cohort, UFILE* output) {
 	constexpr UChar ws[] = { ' ', '\t', 0 };
 
 	if (cohort->local_number == 0) {
@@ -510,7 +510,7 @@ void GrammarApplicator::printCohort(Cohort *cohort, UFILE *output) {
 			if (tter == cohort->wordform->hash) {
 				continue;
 			}
-			const Tag *tag = single_tags[tter];
+			const Tag* tag = single_tags[tter];
 			u_fprintf(output, " %S", tag->tag.c_str());
 		}
 	}
@@ -545,13 +545,13 @@ removed:
 	}
 }
 
-void GrammarApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
+void GrammarApplicator::printSingleWindow(SingleWindow* window, UFILE* output) {
 	for (auto var : window->variables_output) {
-		Tag *key = single_tags[var];
+		Tag* key = single_tags[var];
 		auto iter = window->variables_set.find(var);
 		if (iter != window->variables_set.end()) {
 			if (iter->second != grammar->tag_any) {
-				Tag *value = single_tags[iter->second];
+				Tag* value = single_tags[iter->second];
 				u_fprintf(output, "%S%S=%S>\n", stringbits[S_CMD_SETVAR].getTerminatedBuffer(), key->tag.c_str(), value->tag.c_str());
 			}
 			else {
@@ -572,14 +572,14 @@ void GrammarApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 
 	uint32_t cs = (uint32_t)window->cohorts.size();
 	for (uint32_t c = 0; c < cs; c++) {
-		Cohort *cohort = window->cohorts[c];
+		Cohort* cohort = window->cohorts[c];
 		printCohort(cohort, output);
 	}
 	u_fputc('\n', output);
 	u_fflush(output);
 }
 
-void GrammarApplicator::pipeOutReading(const Reading *reading, std::ostream& output) {
+void GrammarApplicator::pipeOutReading(const Reading* reading, std::ostream& output) {
 	std::ostringstream ss;
 
 	uint32_t flags = 0;
@@ -605,7 +605,7 @@ void GrammarApplicator::pipeOutReading(const Reading *reading, std::ostream& out
 		if (tter == reading->baseform || tter == reading->parent->wordform->hash) {
 			continue;
 		}
-		const Tag *tag = single_tags.find(tter)->second;
+		const Tag* tag = single_tags.find(tter)->second;
 		if (tag->type & T_DEPENDENCY && has_dep) {
 			continue;
 		}
@@ -617,7 +617,7 @@ void GrammarApplicator::pipeOutReading(const Reading *reading, std::ostream& out
 		if (tter == reading->baseform || tter == reading->parent->wordform->hash) {
 			continue;
 		}
-		const Tag *tag = single_tags.find(tter)->second;
+		const Tag* tag = single_tags.find(tter)->second;
 		if (tag->type & T_DEPENDENCY && has_dep) {
 			continue;
 		}
@@ -630,7 +630,7 @@ void GrammarApplicator::pipeOutReading(const Reading *reading, std::ostream& out
 	output.write(str.c_str(), str.length());
 }
 
-void GrammarApplicator::pipeOutCohort(const Cohort *cohort, std::ostream& output) {
+void GrammarApplicator::pipeOutCohort(const Cohort* cohort, std::ostream& output) {
 	std::ostringstream ss;
 
 	writeRaw(ss, cohort->global_number);
@@ -685,7 +685,7 @@ void GrammarApplicator::pipeOutSingleWindow(const SingleWindow& window, Process&
 	output.flush();
 }
 
-void GrammarApplicator::pipeInReading(Reading *reading, Process& input, bool force) {
+void GrammarApplicator::pipeInReading(Reading* reading, Process& input, bool force) {
 	uint32_t cs = 0;
 	readRaw(input, cs);
 	if (debug_level > 1) {
@@ -713,7 +713,7 @@ void GrammarApplicator::pipeInReading(Reading *reading, Process& input, bool for
 	if (flags & (1 << 3)) {
 		UString str = readUTF8String(ss);
 		if (str != single_tags.find(reading->baseform)->second->tag) {
-			Tag *tag = addTag(str);
+			Tag* tag = addTag(str);
 			reading->baseform = tag->hash;
 		}
 		if (debug_level > 1) {
@@ -737,7 +737,7 @@ void GrammarApplicator::pipeInReading(Reading *reading, Process& input, bool for
 
 	for (size_t i = 0; i < cs; ++i) {
 		UString str = readUTF8String(ss);
-		Tag *tag = addTag(str);
+		Tag* tag = addTag(str);
 		reading->tags_list.push_back(tag->hash);
 		if (debug_level > 1) {
 			u_fprintf(ux_stderr, "DEBUG: tag %S\n", tag->tag.c_str());
@@ -747,7 +747,7 @@ void GrammarApplicator::pipeInReading(Reading *reading, Process& input, bool for
 	reflowReading(*reading);
 }
 
-void GrammarApplicator::pipeInCohort(Cohort *cohort, Process& input) {
+void GrammarApplicator::pipeInCohort(Cohort* cohort, Process& input) {
 	uint32_t cs = 0;
 	readRaw(input, cs);
 	if (debug_level > 1) {
@@ -779,7 +779,7 @@ void GrammarApplicator::pipeInCohort(Cohort *cohort, Process& input) {
 	bool force_readings = false;
 	UString str = readUTF8String(input);
 	if (str != cohort->wordform->tag) {
-		Tag *tag = addTag(str);
+		Tag* tag = addTag(str);
 		cohort->wordform = tag;
 		force_readings = true;
 		if (debug_level > 1) {
@@ -829,7 +829,7 @@ void GrammarApplicator::pipeInSingleWindow(SingleWindow& window, Process& input)
 	}
 }
 
-void GrammarApplicator::error(const char *str, const UChar *p) {
+void GrammarApplicator::error(const char* str, const UChar* p) {
 	(void)p;
 	if (current_rule && current_rule->line) {
 		constexpr UChar buf[] = { 'R', 'T', ' ', 'R', 'U', 'L', 'E', 0 };
@@ -841,7 +841,7 @@ void GrammarApplicator::error(const char *str, const UChar *p) {
 	}
 }
 
-void GrammarApplicator::error(const char *str, const char *s, const UChar *p) {
+void GrammarApplicator::error(const char* str, const char* s, const UChar* p) {
 	(void)p;
 	if (current_rule && current_rule->line) {
 		constexpr UChar buf[] = { 'R', 'T', ' ', 'R', 'U', 'L', 'E', 0 };
@@ -853,7 +853,7 @@ void GrammarApplicator::error(const char *str, const char *s, const UChar *p) {
 	}
 }
 
-void GrammarApplicator::error(const char *str, const UChar *s, const UChar *p) {
+void GrammarApplicator::error(const char* str, const UChar* s, const UChar* p) {
 	(void)p;
 	if (current_rule && current_rule->line) {
 		constexpr UChar buf[] = { 'R', 'T', ' ', 'R', 'U', 'L', 'E', 0 };
@@ -865,7 +865,7 @@ void GrammarApplicator::error(const char *str, const UChar *s, const UChar *p) {
 	}
 }
 
-void GrammarApplicator::error(const char *str, const char *s, const UChar *S, const UChar *p) {
+void GrammarApplicator::error(const char* str, const char* s, const UChar* S, const UChar* p) {
 	(void)p;
 	if (current_rule && current_rule->line) {
 		constexpr UChar buf[] = { 'R', 'T', ' ', 'R', 'U', 'L', 'E', 0 };

@@ -39,7 +39,7 @@ enum {
 	RV_TRACERULE = 8,
 };
 
-bool GrammarApplicator::doesWordformsMatch(const Tag *cword, const Tag *rword) {
+bool GrammarApplicator::doesWordformsMatch(const Tag* cword, const Tag* rword) {
 	if (rword && rword != cword) {
 		if (rword->type & T_REGEXP) {
 			if (!doesTagMatchRegexp(cword->hash, *rword)) {
@@ -63,8 +63,8 @@ bool GrammarApplicator::updateRuleToCohorts(Cohort& c, const uint32_t& rsit) {
 	if (!valid_rules.empty() && !valid_rules.contains(rsit)) {
 		return false;
 	}
-	SingleWindow *current = c.parent;
-	const Rule *r = grammar->rule_by_number[rsit];
+	SingleWindow* current = c.parent;
+	const Rule* r = grammar->rule_by_number[rsit];
 	if (!doesWordformsMatch(c.wordform, r->wordform)) {
 		return false;
 	}
@@ -161,13 +161,13 @@ void GrammarApplicator::getTagList(const Set& theSet, TagList& theTags, bool uni
 	}
 }
 
-Reading *GrammarApplicator::get_sub_reading(Reading *tr, int sub_reading) {
+Reading* GrammarApplicator::get_sub_reading(Reading* tr, int sub_reading) {
 	if (sub_reading == 0) {
 		return tr;
 	}
 	else if (sub_reading == GSR_ANY) {
 		subs_any.push_back(Reading());
-		Reading *reading = &subs_any.back();
+		Reading* reading = &subs_any.back();
 		*reading = *tr;
 		reading->next = 0;
 		while (tr->next) {
@@ -210,7 +210,7 @@ Reading *GrammarApplicator::get_sub_reading(Reading *tr, int sub_reading) {
 	}
 	else if (sub_reading < 0) {
 		int ntr = 0;
-		Reading *ttr = tr;
+		Reading* ttr = tr;
 		while (ttr) {
 			ttr = ttr->next;
 			--ntr;
@@ -237,7 +237,7 @@ Reading *GrammarApplicator::get_sub_reading(Reading *tr, int sub_reading) {
 	do {                                                                            \
 		for (TagList::iterator it = (taglist)->begin(); it != (taglist)->end();) {  \
 			if (reading.tags.find((*it)->hash) == reading.tags.end()) {             \
-				const Tag *tt = *it;                                                \
+				const Tag* tt = *it;                                                \
 				it = (taglist)->erase(it);                                          \
 				if (tt->type & T_SPECIAL) {                                         \
 					if (regexgrps.second == 0) {                                    \
@@ -373,12 +373,12 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 		const Set& set = *(grammar->sets_list[rule.target]);
 		grammar->lines = rule.line;
 
-		CohortSet *cohortset = &current.rule_to_cohorts[rule.number];
+		CohortSet* cohortset = &current.rule_to_cohorts[rule.number];
 		if (debug_level > 1) {
 			std::cerr << "DEBUG: " << cohortset->size() << "/" << current.cohorts.size() << " = " << double(cohortset->size()) / double(current.cohorts.size()) << std::endl;
 		}
 		for (CohortSet::const_iterator rocit = cohortset->begin(); rocit != cohortset->end();) {
-			Cohort *cohort = *rocit;
+			Cohort* cohort = *rocit;
 			++rocit;
 
 			if (debug_level > 1) {
@@ -502,7 +502,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 			// Criteria for valid is that the reading must match both target and all contextual tests
 			for (size_t i = 0; i < cohort->readings.size(); ++i) {
 				// ToDo: Switch sub-readings so that they build up a passed in vector<Reading*>
-				Reading *reading = get_sub_reading(cohort->readings[i], rule.sub_reading);
+				Reading* reading = get_sub_reading(cohort->readings[i], rule.sub_reading);
 				if (!reading) {
 					cohort->readings[i]->matched_target = false;
 					cohort->readings[i]->matched_tests = false;
@@ -582,7 +582,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 					// If we didn't already run the contextual tests, run them now.
 					if (!did_test) {
 						foreach (it, rule.tests) {
-							ContextualTest *test = *it;
+							ContextualTest* test = *it;
 							if (rule.flags & RF_RESETX || !(rule.flags & RF_REMEMBERX)) {
 								mark = cohort;
 							}
@@ -678,7 +678,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 			selected.resize(0);
 
 			bool swap_ac = (attach_to != cohort);
-			Cohort *ac_c = cohort;
+			Cohort* ac_c = cohort;
 			if (swap_ac) {
 				std::swap(attach_to, cohort);
 			}
@@ -691,7 +691,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 
 			// This loop acts on the result of the previous loop; letting the rules do their thing on the valid readings.
 			for (size_t i = 0; i < cohort->readings.size(); ++i) {
-				Reading *tr = get_sub_reading(cohort->readings[i], rule.sub_reading);
+				Reading* tr = get_sub_reading(cohort->readings[i], rule.sub_reading);
 				if (!tr) {
 					tr = cohort->readings[i];
 					tr->matched_target = false;
@@ -773,7 +773,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 					}
 					else if (type == K_JUMP) {
 						TRACE;
-						const Tag *to = getTagList(*rule.maplist).front();
+						const Tag* to = getTagList(*rule.maplist).front();
 						uint32FlatHashMap::const_iterator it = grammar->anchors.find(to->hash);
 						if (it == grammar->anchors.end()) {
 							u_fprintf(ux_stderr, "Warning: JUMP on line %u could not find anchor '%S'.\n", rule.line, to->tag.c_str());
@@ -820,7 +820,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 
 						externals_t::iterator ei = externals.find(rule.varname);
 						if (ei == externals.end()) {
-							Tag *ext = single_tags.find(rule.varname)->second;
+							Tag* ext = single_tags.find(rule.varname)->second;
 							UErrorCode err = U_ZERO_ERROR;
 							u_strToUTF8(&cbuffers[0][0], CG3_BUFFER_SIZE - 1, 0, ext->tag.c_str(), ext->tag.size(), &err);
 
@@ -912,10 +912,10 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						TRACE;
 						index_ruleCohort_no.clear();
 
-						Cohort *cCohort = alloc_cohort(&current);
+						Cohort* cCohort = alloc_cohort(&current);
 						cCohort->global_number = gWindow->cohort_counter++;
 
-						Tag *wf = 0;
+						Tag* wf = 0;
 						std::vector<TagList> readings;
 						auto theTags = ss_taglist.get();
 						getTagList(*rule.maplist, theTags);
@@ -945,7 +945,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						}
 
 						for (auto rit : readings) {
-							Reading *cReading = alloc_reading(cCohort);
+							Reading* cReading = alloc_reading(cCohort);
 							++numReadings;
 							insert_if_exists(cReading->parent->possible_sets, grammar->sets_any);
 							cReading->hit_by.push_back(rule.number);
@@ -1054,7 +1054,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						auto theTags = ss_taglist.get();
 						getTagList(*rule.maplist, theTags);
 
-						Tag *wf = 0;
+						Tag* wf = 0;
 						for (auto tter : *theTags) {
 							if (tter->type & T_WORDFORM) {
 								cohorts.resize(cohorts.size() + 1);
@@ -1083,8 +1083,8 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						}
 
 						size_t i = 0;
-						std::vector<TagList> *readings = &cohorts.front().second;
-						Tag *bf = 0;
+						std::vector<TagList>* readings = &cohorts.front().second;
+						Tag* bf = 0;
 						for (auto tter : *theTags) {
 							if (tter->type & T_WORDFORM) {
 								++i;
@@ -1136,11 +1136,11 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						}
 
 						for (size_t i = 0; i < cohorts.size(); ++i) {
-							Cohort *cCohort = cohorts[i].first;
+							Cohort* cCohort = cohorts[i].first;
 							readings = &cohorts[i].second;
 
 							for (auto tags : *readings) {
-								Reading *cReading = alloc_reading(cCohort);
+								Reading* cReading = alloc_reading(cCohort);
 								++numReadings;
 								insert_if_exists(cReading->parent->possible_sets, grammar->sets_any);
 								cReading->hit_by.push_back(rule.number);
@@ -1198,7 +1198,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						}
 
 						for (size_t i = 0; i < cohorts.size(); ++i) {
-							Cohort *cCohort = cohorts[i].first;
+							Cohort* cCohort = cohorts[i].first;
 
 							if (cohort_dep[i].first == DEP_NO_PARENT) {
 								while (!cohort->dep_children.empty()) {
@@ -1222,7 +1222,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 								cCohort->type |= CT_RELATED;
 								cCohort->relations.swap(cohort->relations);
 
-								std::pair<SingleWindow **, size_t> swss[3] = {
+								std::pair<SingleWindow**, size_t> swss[3] = {
 									std::make_pair(&gWindow->previous[0], gWindow->previous.size()),
 									std::make_pair(&gWindow->current, static_cast<size_t>(1)),
 									std::make_pair(&gWindow->next[0], gWindow->next.size()),
@@ -1418,7 +1418,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 								}
 							}
 
-							Tag *wf = 0;
+							Tag* wf = 0;
 							index_ruleCohort_no.clear();
 							TRACE;
 							reading.noprint = false;
@@ -1502,7 +1502,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 					else if (rule.type == K_APPEND) {
 						index_ruleCohort_no.clear();
 
-						Tag *bf = 0;
+						Tag* bf = 0;
 						std::vector<TagList> readings;
 						auto theTags = ss_taglist.get();
 						getTagList(*rule.maplist, theTags);
@@ -1523,7 +1523,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						}
 
 						for (auto rit : readings) {
-							Reading *cReading = alloc_reading(cohort);
+							Reading* cReading = alloc_reading(cohort);
 							++numReadings;
 							insert_if_exists(cReading->parent->possible_sets, grammar->sets_any);
 							addTagToReading(*cReading, cohort->wordform);
@@ -1568,7 +1568,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 					else if (rule.type == K_COPY) {
 						// ToDo: Also copy sub-readings
 						// ToDo: Maybe just goto Substitute directly?
-						Reading *cReading = cohort->allocateAppendReading();
+						Reading* cReading = cohort->allocateAppendReading();
 						++numReadings;
 						index_ruleCohort_no.clear();
 						cReading->hit_by.push_back(rule.number);
@@ -1632,14 +1632,14 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						auto seen_targets = ss_u32sv.get();
 
 						bool attached = false;
-						Cohort *target = cohort;
+						Cohort* target = cohort;
 						while (!attached) {
 							auto utags = ss_utags.get();
 							auto usets = ss_u32sv.get();
 							*utags = *unif_tags;
 							*usets = *unif_sets;
 
-							Cohort *attach = 0;
+							Cohort* attach = 0;
 							seen_targets->insert(target->global_number);
 							dep_deep_seen.clear();
 							tmpl_cntx.clear();
@@ -1706,7 +1706,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 					}
 					else if (type == K_MOVE_AFTER || type == K_MOVE_BEFORE || type == K_SWITCH) {
 						// ToDo: ** tests will not correctly work for MOVE/SWITCH; cannot move cohorts between windows
-						Cohort *attach = 0;
+						Cohort* attach = 0;
 						dep_deep_seen.clear();
 						tmpl_cntx.clear();
 						attach_to = 0;
@@ -1878,7 +1878,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						}
 					}
 					else if (type == K_ADDRELATION || type == K_SETRELATION || type == K_REMRELATION) {
-						Cohort *attach = 0;
+						Cohort* attach = 0;
 						dep_deep_seen.clear();
 						attach_to = 0;
 						// ToDo: Maybe allow SetRelation family to scan on after failed tests?
@@ -1928,7 +1928,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						break;
 					}
 					else if (type == K_ADDRELATIONS || type == K_SETRELATIONS || type == K_REMRELATIONS) {
-						Cohort *attach = 0;
+						Cohort* attach = 0;
 						dep_deep_seen.clear();
 						tmpl_cntx.clear();
 						attach_to = 0;
@@ -2127,7 +2127,7 @@ uint32_t GrammarApplicator::runGrammarOnSingleWindow(SingleWindow& current) {
 				u_fprintf(ux_stderr, "Warning: Endless loop detected before input line %u. Window contents was:", numLines);
 				UString tag;
 				for (size_t i = 1; i < current.cohorts.size(); ++i) {
-					Tag *t = current.cohorts[i]->wordform;
+					Tag* t = current.cohorts[i]->wordform;
 					tag.assign(t->tag.begin() + 2, t->tag.begin() + t->tag.size() - 2);
 					u_fprintf(ux_stderr, " %S", tag.c_str());
 				}
@@ -2149,7 +2149,7 @@ uint32_t GrammarApplicator::runGrammarOnSingleWindow(SingleWindow& current) {
 }
 
 void GrammarApplicator::runGrammarOnWindow() {
-	SingleWindow *current = gWindow->current;
+	SingleWindow* current = gWindow->current;
 	did_final_enclosure = false;
 
 	for (auto vit : current->variables_set) {
@@ -2176,7 +2176,7 @@ void GrammarApplicator::runGrammarOnWindow() {
 	if (!grammar->parentheses.empty()) {
 	label_scanParentheses:
 		reverse_foreach (iter, current->cohorts) {
-			Cohort *c = *iter;
+			Cohort* c = *iter;
 			if (c->is_pleft == 0) {
 				continue;
 			}
@@ -2190,7 +2190,7 @@ void GrammarApplicator::runGrammarOnWindow() {
 				bool found = false;
 				CohortVector encs;
 				for (; right != current->cohorts.end(); ++right) {
-					Cohort *s = *right;
+					Cohort* s = *right;
 					encs.push_back(s);
 					if (s->is_pright == p->second) {
 						found = true;
@@ -2244,7 +2244,7 @@ label_runGrammarOnWindow_begin:
 		u_fprintf(ux_stderr, "Warning: Endless loop detected before input line %u. Window contents was:", numLines);
 		UString tag;
 		for (size_t i = 1; i < current->cohorts.size(); ++i) {
-			Tag *t = current->cohorts[i]->wordform;
+			Tag* t = current->cohorts[i]->wordform;
 			tag.assign(t->tag.begin() + 2, t->tag.begin() + t->tag.size() - 2);
 			u_fprintf(ux_stderr, " %S", tag.c_str());
 		}
@@ -2257,7 +2257,7 @@ label_runGrammarOnWindow_begin:
 		uint32_t hitpass = std::numeric_limits<uint32_t>::max() - pass;
 		size_t nc = current->cohorts.size();
 		for (size_t i = 0; i < nc; ++i) {
-			Cohort *c = current->cohorts[i];
+			Cohort* c = current->cohorts[i];
 			for (auto rit : c->readings) {
 				rit->hit_by.push_back(hitpass);
 			}
@@ -2273,7 +2273,7 @@ label_unpackEnclosures:
 	if (!grammar->parentheses.empty() && current->has_enclosures) {
 		size_t nc = current->cohorts.size();
 		for (size_t i = 0; i < nc; ++i) {
-			Cohort *c = current->cohorts[i];
+			Cohort* c = current->cohorts[i];
 			if (!c->enclosed.empty()) {
 				current->cohorts.resize(current->cohorts.size() + c->enclosed.size(), 0);
 				size_t ne = c->enclosed.size();

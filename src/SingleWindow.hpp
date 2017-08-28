@@ -37,7 +37,7 @@ public:
 	uint32_t number;
 	bool has_enclosures;
 	SingleWindow *next, *previous;
-	Window *parent;
+	Window* parent;
 	UString text;
 	CohortVector cohorts;
 	uint32IntervalVector valid_rules;
@@ -48,17 +48,17 @@ public:
 	uint32SortedVector variables_output;
 	Reading bag_of_tags;
 
-	SingleWindow(Window *p);
+	SingleWindow(Window* p);
 	~SingleWindow();
 	void clear();
 
-	void appendCohort(Cohort *cohort);
+	void appendCohort(Cohort* cohort);
 };
 
-SingleWindow *alloc_swindow(Window *p);
-void free_swindow(SingleWindow *s);
+SingleWindow* alloc_swindow(Window* p);
+void free_swindow(SingleWindow* s);
 
-inline bool less_Cohort(const Cohort *a, const Cohort *b) {
+inline bool less_Cohort(const Cohort* a, const Cohort* b) {
 	if (a->local_number == b->local_number) {
 		return a->parent->number < b->parent->number;
 	}
@@ -66,7 +66,7 @@ inline bool less_Cohort(const Cohort *a, const Cohort *b) {
 }
 
 struct compare_Cohort {
-	bool operator()(const Cohort *a, const Cohort *b) const {
+	bool operator()(const Cohort* a, const Cohort* b) const {
 		return less_Cohort(a, b);
 	}
 };

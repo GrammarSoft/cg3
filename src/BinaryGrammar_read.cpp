@@ -38,7 +38,7 @@ int BinaryGrammar::parse_grammar(const std::string& buffer) {
 	return parse_grammar(buffer.c_str(), buffer.size());
 }
 
-int BinaryGrammar::parse_grammar(const char *buffer, size_t length) {
+int BinaryGrammar::parse_grammar(const char* buffer, size_t length) {
 	std::stringstream input;
 	input.write(buffer, length);
 	input.seekg(0);
@@ -53,7 +53,7 @@ int BinaryGrammar::parse_grammar(std::istream& input) {
 	int32_t i32tmp = 0;
 	uint8_t u8tmp = 0;
 	UErrorCode err = U_ZERO_ERROR;
-	UConverter *conv = ucnv_open("UTF-8", &err);
+	UConverter* conv = ucnv_open("UTF-8", &err);
 	std::stringstream buffer;
 
 	if (fread_throw(&cbuffers[0][0], 1, 4, input) != 4) {
@@ -114,7 +114,7 @@ int BinaryGrammar::parse_grammar(std::istream& input) {
 	uint32_t num_single_tags = u32tmp;
 	grammar->single_tags_list.resize(num_single_tags);
 	for (uint32_t i = 0; i < num_single_tags; i++) {
-		Tag *t = grammar->allocateTag();
+		Tag* t = grammar->allocateTag();
 		t->type |= T_GRAMMAR;
 
 		uint32_t fields = 0;
@@ -302,7 +302,7 @@ int BinaryGrammar::parse_grammar(std::istream& input) {
 	uint32_t num_sets = u32tmp;
 	grammar->sets_list.resize(num_sets);
 	for (uint32_t i = 0; i < num_sets; i++) {
-		Set *s = grammar->allocateSet();
+		Set* s = grammar->allocateSet();
 
 		uint32_t fields = 0;
 		fread_throw(&u32tmp, sizeof(uint32_t), 1, input);
@@ -365,9 +365,9 @@ int BinaryGrammar::parse_grammar(std::istream& input) {
 
 	// Actually assign sets to the varstring tags now that sets are loaded
 	for (auto iter : tag_varsets) {
-		Tag *t = grammar->single_tags_list[iter.first];
+		Tag* t = grammar->single_tags_list[iter.first];
 		for (auto uit : iter.second) {
-			Set *s = grammar->sets_list[uit];
+			Set* s = grammar->sets_list[uit];
 			t->vs_sets->push_back(s);
 		}
 	}
@@ -391,7 +391,7 @@ int BinaryGrammar::parse_grammar(std::istream& input) {
 	}
 	uint32_t num_contexts = u32tmp;
 	for (uint32_t i = 0; i < num_contexts; i++) {
-		ContextualTest *t = readContextualTest(input);
+		ContextualTest* t = readContextualTest(input);
 		grammar->contexts[t->hash] = t;
 	}
 
@@ -403,7 +403,7 @@ int BinaryGrammar::parse_grammar(std::istream& input) {
 	uint32_t num_rules = u32tmp;
 	grammar->rule_by_number.resize(num_rules);
 	for (uint32_t i = 0; i < num_rules; i++) {
-		Rule *r = grammar->allocateRule();
+		Rule* r = grammar->allocateRule();
 
 		uint32_t fields = 0;
 		fread_throw(&u32tmp, sizeof(uint32_t), 1, input);
@@ -495,7 +495,7 @@ int BinaryGrammar::parse_grammar(std::istream& input) {
 		for (uint32_t j = 0; j < num_dep_tests; j++) {
 			fread_throw(&u32tmp, sizeof(uint32_t), 1, input);
 			u32tmp = (uint32_t)ntohl(u32tmp);
-			ContextualTest *t = grammar->contexts[u32tmp];
+			ContextualTest* t = grammar->contexts[u32tmp];
 			r->addContextualTest(t, r->dep_tests);
 		}
 
@@ -505,7 +505,7 @@ int BinaryGrammar::parse_grammar(std::istream& input) {
 		for (uint32_t j = 0; j < num_tests; j++) {
 			fread_throw(&u32tmp, sizeof(uint32_t), 1, input);
 			u32tmp = (uint32_t)ntohl(u32tmp);
-			ContextualTest *t = grammar->contexts[u32tmp];
+			ContextualTest* t = grammar->contexts[u32tmp];
 			r->addContextualTest(t, r->tests);
 		}
 		grammar->rule_by_number[r->number] = r;
@@ -528,8 +528,8 @@ int BinaryGrammar::parse_grammar(std::istream& input) {
 	return 0;
 }
 
-ContextualTest *BinaryGrammar::readContextualTest(std::istream& input) {
-	ContextualTest *t = grammar->allocateContextualTest();
+ContextualTest* BinaryGrammar::readContextualTest(std::istream& input) {
+	ContextualTest* t = grammar->allocateContextualTest();
 	uint32_t fields = 0;
 	uint32_t u32tmp = 0;
 	int32_t i32tmp = 0;

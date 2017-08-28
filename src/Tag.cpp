@@ -26,7 +26,7 @@
 
 namespace CG3 {
 
-UFILE *Tag::dump_hashes_out = 0;
+UFILE* Tag::dump_hashes_out = 0;
 
 Tag::Tag()
   : comparison_op(OP_NOP)
@@ -89,12 +89,12 @@ Tag::~Tag() {
 	}
 }
 
-void Tag::parseTagRaw(const UChar *to, Grammar *grammar) {
+void Tag::parseTagRaw(const UChar* to, Grammar* grammar) {
 	type = 0;
 	size_t length = u_strlen(to);
 	assert(length && "parseTagRaw() will not work with empty strings.");
 
-	const UChar *tmp = to;
+	const UChar* tmp = to;
 
 	if (tmp[0] && (tmp[0] == '"' || tmp[0] == '<')) {
 		if ((tmp[0] == '"' && tmp[length - 1] == '"') || (tmp[0] == '<' && tmp[length - 1] == '>')) {
@@ -149,7 +149,7 @@ void Tag::parseTagRaw(const UChar *to, Grammar *grammar) {
 		UChar relname[256];
 		if (u_sscanf(tag.c_str(), "R:%[^:]:%i", &relname, &dep_parent) == 2 && dep_parent != 0) {
 			type |= T_RELATION;
-			Tag *reltag = grammar->allocateTag(relname);
+			Tag* reltag = grammar->allocateTag(relname);
 			comparison_hash = reltag->hash;
 		}
 	}

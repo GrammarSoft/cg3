@@ -38,15 +38,10 @@ foreach my $file (@files) {
    $data =~ s@\n[^\n]*//[^\n]+clang-format (off|on)\n@\n@g; # Remove preprocessor protection
    # Things clang-format gets wrong:
    $data =~ s@([ \t]+)(BOOST_FOREACH|boost_foreach|reverse_foreach|foreach)([^{\n]*) \{[ \t]+([^}\n]*)[ \t]+\}@$1$2$3 {\n$1\t$4\n$1}@g; # Don't allow single-line foreach blocks
-   $data =~ s@\s*([*&])>@$1>@g; # vector<T *>, really? Just no.
-   $data =~ s@([\w>]) &([\w(])@$1& $2@g; # I like T *t, but I also like T& t ...
-   $data =~ s@([\w>]) \*&(\w)@$1 *& $2@g; # ... and T *& t
-   $data =~ s@return& @return &@g; # ... except for return &t
    $data =~ s@(operator .+?) \(@$1(@g; # No space before ( in operators
    $data =~ s@ \*([,>)])@*$1@g; # No space before statement-final *
    $data =~ s@^([ \t]*)(  [:,] [^\n]+) \{@$1$2\n$1\{@mg; # { after ctor-init should go on its own line
    $data =~ s@template <@template<@g; # No space in template<
-   $data =~ s@\s*&\)@&)@g; # (UString &) -> (UString&)
 
    # clang-format horribly mangles enums if AlignConsecutiveAssignments is off, so fix that
    my @enums = ($data =~ m@enum [^{]*\{(.+?)\n\s*\}[^;\n]*;@sg);

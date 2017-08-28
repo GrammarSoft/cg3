@@ -65,7 +65,7 @@ private:
 public:
 	class const_iterator : public std::iterator<std::bidirectional_iterator_tag, T> {
 	private:
-		const Cont *elements;
+		const Cont* elements;
 		ContConstIter it;
 		T t;
 

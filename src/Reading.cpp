@@ -27,8 +27,8 @@ namespace CG3 {
 ReadingList pool_readings;
 pool_cleaner<ReadingList> cleaner_readings(pool_readings);
 
-Reading *alloc_reading(Cohort *p) {
-	Reading *r = pool_get(pool_readings);
+Reading* alloc_reading(Cohort* p) {
+	Reading* r = pool_get(pool_readings);
 	if (r == 0) {
 		r = new Reading(p);
 	}
@@ -39,8 +39,8 @@ Reading *alloc_reading(Cohort *p) {
 	return r;
 }
 
-Reading *alloc_reading(const Reading& o) {
-	Reading *r = pool_get(pool_readings);
+Reading* alloc_reading(const Reading& o) {
+	Reading* r = pool_get(pool_readings);
 	if (r == 0) {
 		r = new Reading(o);
 	}
@@ -73,14 +73,14 @@ Reading *alloc_reading(const Reading& o) {
 	return r;
 }
 
-void free_reading(Reading *r) {
+void free_reading(Reading* r) {
 	if (r == 0) {
 		return;
 	}
 	pool_put(pool_readings, r);
 }
 
-Reading::Reading(Cohort *p)
+Reading::Reading(Cohort* p)
   : mapped(false)
   , deleted(false)
   , noprint(false)
@@ -165,11 +165,11 @@ void Reading::clear() {
 	tags_numerical.clear();
 }
 
-Reading *Reading::allocateReading(Cohort *p) {
+Reading* Reading::allocateReading(Cohort* p) {
 	return alloc_reading(p);
 }
 
-Reading *Reading::allocateReading(const Reading& r) {
+Reading* Reading::allocateReading(const Reading& r) {
 	return alloc_reading(r);
 }
 
@@ -192,7 +192,7 @@ uint32_t Reading::rehash() {
 	return hash;
 }
 
-bool Reading::cmp_number(Reading *a, Reading *b) {
+bool Reading::cmp_number(Reading* a, Reading* b) {
 	return a->number < b->number;
 }
 }

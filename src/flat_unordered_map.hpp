@@ -45,7 +45,7 @@ public:
 	class const_iterator : public std::iterator<std::bidirectional_iterator_tag, value_type> {
 	private:
 		friend class flat_unordered_map;
-		const flat_unordered_map *fus;
+		const flat_unordered_map* fus;
 		size_t i;
 
 	public:
@@ -109,7 +109,7 @@ public:
 			return fus->elements[i];
 		}
 
-		const value_type_real *operator->() const {
+		const value_type_real* operator->() const {
 			return &fus->elements[i];
 		}
 	};

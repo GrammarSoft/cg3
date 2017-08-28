@@ -37,7 +37,7 @@ public:
 	class const_iterator : public std::iterator<std::bidirectional_iterator_tag, T> {
 	private:
 		friend class flat_unordered_set;
-		const flat_unordered_set *fus;
+		const flat_unordered_set* fus;
 		size_t i;
 
 	public:

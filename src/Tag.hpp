@@ -80,7 +80,7 @@ enum : uint32_t {
 
 class Tag {
 public:
-	static UFILE *dump_hashes_out;
+	static UFILE* dump_hashes_out;
 
 	C_OPS comparison_op;
 	double comparison_val;
@@ -94,12 +94,12 @@ public:
 	UString tag;
 	std::unique_ptr<SetVector> vs_sets;
 	std::unique_ptr<UStringVector> vs_names;
-	mutable URegularExpression *regexp;
+	mutable URegularExpression* regexp;
 
 	Tag();
 	Tag(const Tag& o);
 	~Tag();
-	void parseTagRaw(const UChar *to, Grammar *grammar);
+	void parseTagRaw(const UChar* to, Grammar* grammar);
 	UString toUString(bool escape = false) const;
 
 	uint32_t rehash();
@@ -110,7 +110,7 @@ public:
 };
 
 struct compare_Tag {
-	inline bool operator()(const Tag *a, const Tag *b) const {
+	inline bool operator()(const Tag* a, const Tag* b) const {
 		return a->hash < b->hash;
 	}
 };

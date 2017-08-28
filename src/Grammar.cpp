@@ -73,7 +73,7 @@ Grammar::~Grammar() {
 	}
 }
 
-void Grammar::addSet(Set *& to) {
+void Grammar::addSet(Set*& to) {
 	if (!delimiters && u_strcmp(to->name.c_str(), stringbits[S_DELIMITSET].getTerminatedBuffer()) == 0) {
 		delimiters = to;
 	}
@@ -91,7 +91,7 @@ void Grammar::addSet(Set *& to) {
 				all_tags = false;
 				break;
 			}
-			Set *s = getSet(to->sets[i]);
+			Set* s = getSet(to->sets[i]);
 			if (!s->sets.empty()) {
 				all_tags = false;
 				break;
@@ -108,7 +108,7 @@ void Grammar::addSet(Set *& to) {
 
 		if (all_tags) {
 			for (size_t i = 0; i < to->sets.size(); ++i) {
-				Set *s = getSet(to->sets[i]);
+				Set* s = getSet(to->sets[i]);
 				maybe_used_sets.insert(s);
 				TagVector tv = trie_getTagList(s->getNonEmpty());
 				if (tv.size() == 1) {
@@ -143,8 +143,8 @@ void Grammar::addSet(Set *& to) {
 
 	// If there are failfast tags, and if they don't comprise the whole of the set, split the set into Positive - Negative
 	if (!to->ff_tags.empty() && to->ff_tags.size() < (to->trie.size() + to->trie_special.size())) {
-		Set *positive = allocateSet();
-		Set *negative = allocateSet();
+		Set* positive = allocateSet();
+		Set* negative = allocateSet();
 
 		UString str;
 		str = stringbits[S_GPREFIX].getTerminatedBuffer();
@@ -171,7 +171,7 @@ void Grammar::addSet(Set *& to) {
 					positive->trie_special.erase(pit);
 				}
 			}
-			Tag *tag = new Tag(*iter);
+			Tag* tag = new Tag(*iter);
 			tag->type &= ~T_FAILFAST;
 			tag = addTag(tag);
 			addTagToSet(tag, negative);
@@ -199,7 +199,7 @@ void Grammar::addSet(Set *& to) {
 	for (; to->name[0] != '_' || to->name[1] != 'G' || to->name[2] != '_';) {
 		uint32_t nhash = hash_value(to->name.c_str());
 		if (sets_by_name.find(nhash) != sets_by_name.end()) {
-			Set *a = sets_by_contents.find(sets_by_name.find(nhash)->second)->second;
+			Set* a = sets_by_contents.find(sets_by_name.find(nhash)->second)->second;
 			if (a == to || a->hash == to->hash) {
 				break;
 			}
@@ -212,7 +212,7 @@ void Grammar::addSet(Set *& to) {
 			break;
 		}
 		else if (chash != sets_by_contents.find(sets_by_name.find(nhash)->second)->second->hash) {
-			Set *a = sets_by_contents.find(sets_by_name.find(nhash)->second)->second;
+			Set* a = sets_by_contents.find(sets_by_name.find(nhash)->second)->second;
 			if (a->name == to->name) {
 				u_fprintf(ux_stderr, "Error: Set %S already defined at line %u. Redefinition attempted at line %u!\n", a->name.c_str(), a->line, to->line);
 				CG3Quit(1);
@@ -237,7 +237,7 @@ void Grammar::addSet(Set *& to) {
 		sets_by_contents[chash] = to;
 	}
 	else {
-		Set *a = sets_by_contents.find(chash)->second;
+		Set* a = sets_by_contents.find(chash)->second;
 		if (a != to) {
 			a->reindex(*this);
 			to->reindex(*this);
@@ -251,7 +251,7 @@ void Grammar::addSet(Set *& to) {
 	to = sets_by_contents[chash];
 }
 
-Set *Grammar::getSet(uint32_t which) const {
+Set* Grammar::getSet(uint32_t which) const {
 	Setuint32HashMap::const_iterator iter = sets_by_contents.find(which);
 	if (iter != sets_by_contents.end()) {
 		return iter->second;
@@ -274,18 +274,18 @@ Set *Grammar::getSet(uint32_t which) const {
 	return 0;
 }
 
-Set *Grammar::allocateSet() {
-	Set *ns = new Set;
+Set* Grammar::allocateSet() {
+	Set* ns = new Set;
 	sets_all.insert(ns);
 	return ns;
 }
 
-void Grammar::destroySet(Set *set) {
+void Grammar::destroySet(Set* set) {
 	sets_all.erase(set);
 	delete set;
 }
 
-void Grammar::addSetToList(Set *s) {
+void Grammar::addSetToList(Set* s) {
 	if (s->number == 0) {
 		if (sets_list.empty() || sets_list[0] != s) {
 			if (!s->sets.empty()) {
@@ -300,10 +300,10 @@ void Grammar::addSetToList(Set *s) {
 }
 
 void Grammar::allocateDummySet() {
-	Set *set_c = allocateSet();
+	Set* set_c = allocateSet();
 	set_c->line = 0;
 	set_c->setName(stringbits[S_IGNORE].getTerminatedBuffer());
-	Tag *t = allocateTag(stringbits[S_IGNORE].getTerminatedBuffer());
+	Tag* t = allocateTag(stringbits[S_IGNORE].getTerminatedBuffer());
 	addTagToSet(t, set_c);
 	addSet(set_c);
 	set_c->number = std::numeric_limits<uint32_t>::max();
@@ -311,7 +311,7 @@ void Grammar::allocateDummySet() {
 }
 
 uint32_t Grammar::removeNumericTags(uint32_t s) {
-	Set *set = getSet(s);
+	Set* set = getSet(s);
 	if (!set->sets.empty()) {
 		bool did = false;
 		auto sets = set->sets;
@@ -328,7 +328,7 @@ uint32_t Grammar::removeNumericTags(uint32_t s) {
 			}
 		}
 		if (did) {
-			Set *ns = allocateSet();
+			Set* ns = allocateSet();
 			ns->type = set->type;
 			ns->line = set->line;
 			ns->name = stringbits[S_GPREFIX].getTerminatedBuffer();
@@ -346,7 +346,7 @@ uint32_t Grammar::removeNumericTags(uint32_t s) {
 		bool did = false;
 		std::map<TagVector, bool> ntags;
 		TagVector tags;
-		const trie_t *tries[2] = { &set->trie, &set->trie_special };
+		const trie_t* tries[2] = { &set->trie, &set->trie_special };
 		for (size_t i = 0; i < 2; ++i) {
 			if (tries[i]->empty()) {
 				continue;
@@ -381,7 +381,7 @@ uint32_t Grammar::removeNumericTags(uint32_t s) {
 					u_fflush(ux_stderr);
 				}
 			}
-			Set *ns = allocateSet();
+			Set* ns = allocateSet();
 			ns->type = set->type;
 			ns->line = set->line;
 			ns->name = stringbits[S_GPREFIX].getTerminatedBuffer();
@@ -421,24 +421,24 @@ void Grammar::getTags(const Set& set, std::set<TagVector>& rv) {
 	trie_getTags(set.trie_special, rv, tv);
 }
 
-Rule *Grammar::allocateRule() {
+Rule* Grammar::allocateRule() {
 	return new Rule;
 }
 
-void Grammar::addRule(Rule *rule) {
+void Grammar::addRule(Rule* rule) {
 	rule->number = rule_by_number.size();
 	rule_by_number.push_back(rule);
 }
 
-void Grammar::destroyRule(Rule *rule) {
+void Grammar::destroyRule(Rule* rule) {
 	delete rule;
 }
 
-Tag *Grammar::allocateTag() {
+Tag* Grammar::allocateTag() {
 	return new Tag;
 }
 
-Tag *Grammar::allocateTag(const UChar *txt) {
+Tag* Grammar::allocateTag(const UChar* txt) {
 	if (txt[0] == 0) {
 		u_fprintf(ux_stderr, "Error: Empty tag on line %u! Forgot to fill in a ()?\n", lines);
 		CG3Quit(1);
@@ -453,19 +453,19 @@ Tag *Grammar::allocateTag(const UChar *txt) {
 		return it->second;
 	}
 
-	Tag *tag = new Tag();
+	Tag* tag = new Tag();
 	tag->parseTagRaw(txt, this);
 	return addTag(tag);
 }
 
-Tag *Grammar::addTag(Tag *tag) {
+Tag* Grammar::addTag(Tag* tag) {
 	tag->type |= T_GRAMMAR;
 	uint32_t hash = tag->rehash();
 	for (uint32_t seed = 0; seed < 10000; seed++) {
 		uint32_t ih = hash + seed;
 		Taguint32HashMap::iterator it;
 		if ((it = single_tags.find(ih)) != single_tags.end()) {
-			Tag *t = it->second;
+			Tag* t = it->second;
 			if (t == tag) {
 				return tag;
 			}
@@ -491,7 +491,7 @@ Tag *Grammar::addTag(Tag *tag) {
 	return single_tags[hash];
 }
 
-void Grammar::addTagToSet(Tag *rtag, Set *set) {
+void Grammar::addTagToSet(Tag* rtag, Set* set) {
 	if (rtag->type & T_ANY) {
 		set->type |= ST_ANY;
 	}
@@ -507,15 +507,15 @@ void Grammar::addTagToSet(Tag *rtag, Set *set) {
 	}
 }
 
-void Grammar::destroyTag(Tag *tag) {
+void Grammar::destroyTag(Tag* tag) {
 	delete tag;
 }
 
-ContextualTest *Grammar::allocateContextualTest() {
+ContextualTest* Grammar::allocateContextualTest() {
 	return new ContextualTest;
 }
 
-ContextualTest *Grammar::addContextualTest(ContextualTest *t) {
+ContextualTest* Grammar::addContextualTest(ContextualTest* t) {
 	if (t == 0) {
 		return 0;
 	}
@@ -550,7 +550,7 @@ ContextualTest *Grammar::addContextualTest(ContextualTest *t) {
 	return t;
 }
 
-void Grammar::addTemplate(ContextualTest *test, const UChar *name) {
+void Grammar::addTemplate(ContextualTest* test, const UChar* name) {
 	uint32_t cn = hash_value(name);
 	if (templates.find(cn) != templates.end()) {
 		u_fprintf(ux_stderr, "Error: Redefinition attempt for template '%S' on line %u!\n", name, lines);
@@ -559,7 +559,7 @@ void Grammar::addTemplate(ContextualTest *test, const UChar *name) {
 	templates[cn] = test;
 }
 
-void Grammar::addAnchor(const UChar *to, uint32_t at, bool primary) {
+void Grammar::addAnchor(const UChar* to, uint32_t at, bool primary) {
 	uint32_t ah = allocateTag(to)->hash;
 	uint32FlatHashMap::iterator it = anchors.find(ah);
 	if (primary && it != anchors.end()) {
@@ -608,7 +608,7 @@ void Grammar::reindex(bool unused_sets, bool used_tags) {
 			u_fprintf(ux_stderr, "Error: Static set %S is an alias; only real sets may be made static!\n", sset.c_str());
 			CG3Quit(1);
 		}
-		Set *s = getSet(sh);
+		Set* s = getSet(sh);
 		if (!s) {
 			if (verbosity_level > 0) {
 				u_fprintf(ux_stderr, "Warning: Set %S was not defined, so cannot make it static.\n", sset.c_str());
@@ -696,7 +696,7 @@ void Grammar::reindex(bool unused_sets, bool used_tags) {
 		if (is_binary) {
 			continue;
 		}
-		Set *s = 0;
+		Set* s = 0;
 		s = getSet(rule->target);
 		s->markUsed(*this);
 		if (rule->childset1) {
@@ -765,7 +765,7 @@ void Grammar::reindex(bool unused_sets, bool used_tags) {
 	}
 
 	for (auto iter_tags : single_tags) {
-		Tag *tag = iter_tags.second;
+		Tag* tag = iter_tags.second;
 		if (tag->tag[0] == mapping_prefix) {
 			tag->type |= T_MAPPING;
 		}
@@ -803,7 +803,7 @@ void Grammar::reindex(bool unused_sets, bool used_tags) {
 			rules.push_back(rule);
 		}
 		if (rule->target) {
-			Set *set = 0;
+			Set* set = 0;
 			if (is_binary) {
 				set = sets_list[rule->target];
 			}
@@ -825,11 +825,11 @@ void Grammar::reindex(bool unused_sets, bool used_tags) {
 			continue;
 		}
 		if (rule->childset1) {
-			Set *set = sets_by_contents.find(rule->childset1)->second;
+			Set* set = sets_by_contents.find(rule->childset1)->second;
 			rule->childset1 = set->number;
 		}
 		if (rule->childset2) {
-			Set *set = sets_by_contents.find(rule->childset2)->second;
+			Set* set = sets_by_contents.find(rule->childset2)->second;
 			rule->childset2 = set->number;
 		}
 		if (rule->dep_target) {
@@ -867,7 +867,7 @@ void Grammar::reindex(bool unused_sets, bool used_tags) {
 				sets_by_name[nhash] = cnum;
 			}
 			else if (cnum != sets_list[sets_by_name.find(nhash)->second]->number) {
-				Set *a = sets_list[sets_by_name.find(nhash)->second];
+				Set* a = sets_list[sets_by_name.find(nhash)->second];
 				if (a->name == to->name) {
 					u_fprintf(ux_stderr, "Error: Static set %S already defined. Redefinition attempted!\n", a->name.c_str());
 					CG3Quit(1);
@@ -919,7 +919,7 @@ void Grammar::reindex(bool unused_sets, bool used_tags) {
 		did = false;
 
 		for (auto cntx : contexts) {
-			ContextualTest *t = cntx.second;
+			ContextualTest* t = cntx.second;
 
 			if (nk.count(t)) {
 				continue;
@@ -1005,7 +1005,7 @@ void Grammar::reindex(bool unused_sets, bool used_tags) {
 
 	if (used_tags) {
 		for (auto iter_tags = single_tags.begin(); iter_tags != single_tags.end(); ++iter_tags) {
-			Tag *tag = iter_tags->second;
+			Tag* tag = iter_tags->second;
 			if (tag->type & T_USED) {
 				UString tmp(tag->toUString(true));
 				u_fprintf(ux_stdout, "%S\n", tmp.c_str());
@@ -1024,7 +1024,7 @@ inline void trie_indexToRule(const trie_t& trie, Grammar& grammar, uint32_t r) {
 	}
 }
 
-void Grammar::indexSetToRule(uint32_t r, Set *s) {
+void Grammar::indexSetToRule(uint32_t r, Set* s) {
 	if (s->type & (ST_SPECIAL | ST_TAG_UNIFY)) {
 		indexTagToRule(tag_any, r);
 		return;
@@ -1034,7 +1034,7 @@ void Grammar::indexSetToRule(uint32_t r, Set *s) {
 	trie_indexToRule(s->trie_special, *this, r);
 
 	for (uint32_t i = 0; i < s->sets.size(); ++i) {
-		Set *set = sets_list[s->sets[i]];
+		Set* set = sets_list[s->sets[i]];
 		indexSetToRule(r, set);
 	}
 }
@@ -1052,7 +1052,7 @@ inline void trie_indexToSet(const trie_t& trie, Grammar& grammar, uint32_t r) {
 	}
 }
 
-void Grammar::indexSets(uint32_t r, Set *s) {
+void Grammar::indexSets(uint32_t r, Set* s) {
 	if (s->type & (ST_SPECIAL | ST_TAG_UNIFY)) {
 		indexTagToSet(tag_any, r);
 		return;
@@ -1062,7 +1062,7 @@ void Grammar::indexSets(uint32_t r, Set *s) {
 	trie_indexToSet(s->trie_special, *this, r);
 
 	for (uint32_t i = 0; i < s->sets.size(); ++i) {
-		Set *set = sets_list[s->sets[i]];
+		Set* set = sets_list[s->sets[i]];
 		indexSets(r, set);
 	}
 }
@@ -1074,35 +1074,35 @@ void Grammar::indexTagToSet(uint32_t t, uint32_t r) {
 	sets_by_tag[t].set(r);
 }
 
-void Grammar::setAdjustSets(Set *s) {
+void Grammar::setAdjustSets(Set* s) {
 	if (!(s->type & ST_USED)) {
 		return;
 	}
 	s->type &= ~ST_USED;
 
 	for (uint32_t i = 0; i < s->sets.size(); ++i) {
-		Set *set = sets_by_contents.find(s->sets[i])->second;
+		Set* set = sets_by_contents.find(s->sets[i])->second;
 		s->sets[i] = set->number;
 		setAdjustSets(set);
 	}
 }
 
-void Grammar::contextAdjustTarget(ContextualTest *test) {
+void Grammar::contextAdjustTarget(ContextualTest* test) {
 	if (!test->is_used) {
 		return;
 	}
 	test->is_used = false;
 
 	if (test->target) {
-		Set *set = sets_by_contents.find(test->target)->second;
+		Set* set = sets_by_contents.find(test->target)->second;
 		test->target = set->number;
 	}
 	if (test->barrier) {
-		Set *set = sets_by_contents.find(test->barrier)->second;
+		Set* set = sets_by_contents.find(test->barrier)->second;
 		test->barrier = set->number;
 	}
 	if (test->cbarrier) {
-		Set *set = sets_by_contents.find(test->cbarrier)->second;
+		Set* set = sets_by_contents.find(test->cbarrier)->second;
 		test->cbarrier = set->number;
 	}
 
