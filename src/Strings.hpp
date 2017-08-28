@@ -219,7 +219,7 @@ extern UnicodeString g_flags[FLAGS_COUNT];
 
 constexpr size_t CG3_BUFFER_SIZE = 8192;
 constexpr size_t NUM_GBUFFERS = 1;
-extern std::vector<std::vector<UChar> > gbuffers;
+extern std::vector<std::vector<UChar>> gbuffers;
 constexpr size_t NUM_CBUFFERS = 1;
 extern std::vector<std::string> cbuffers;
 

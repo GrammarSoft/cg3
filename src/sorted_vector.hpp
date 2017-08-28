@@ -44,7 +44,7 @@ namespace detail {
 	}
 }
 
-template<typename T, typename Comp = std::less<T> >
+template<typename T, typename Comp = std::less<T>>
 class sorted_vector {
 public:
 	typedef typename std::vector<T> container;

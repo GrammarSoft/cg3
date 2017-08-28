@@ -46,6 +46,7 @@ foreach my $file (@files) {
    $data =~ s@ \*([,>)])@*$1@g; # No space before statement-final *
    $data =~ s@^([ \t]*)(  [:,] [^\n]+) \{@$1$2\n$1\{@mg; # { after ctor-init should go on its own line
    $data =~ s@template <@template<@g; # No space in template<
+   $data =~ s@\s*&\)@&)@g; # (UString &) -> (UString&)
 
    # clang-format horribly mangles enums if AlignConsecutiveAssignments is off, so fix that
    my @enums = ($data =~ m@enum [^{]*\{(.+?)\n\s*\}[^;\n]*;@sg);

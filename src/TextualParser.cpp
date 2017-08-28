@@ -698,7 +698,7 @@ void TextualParser::parseContextualTestPosition(UChar *& p, ContextualTest& t) {
 	if (!ISSPACE(*p)) {
 		error("%s: Error: Invalid position on line %u near `%S` - garbage data!\n", n);
 	}
-	if (p-n == 1 && (*n == 'o' || *n == 'O')) {
+	if (p - n == 1 && (*n == 'o' || *n == 'O')) {
 		error("%s: Error: Position on line %u near `%S` - stand-alone o or O doesn't make sense - maybe you meant 0?\n", n);
 	}
 
@@ -2512,7 +2512,7 @@ int TextualParser::parse_grammar(const UChar *buffer, size_t length) {
 	codepage = "UTF-8";
 	result->grammar_size = length;
 
-	grammarbufs.emplace_back(new UString(buffer, buffer+length));
+	grammarbufs.emplace_back(new UString(buffer, buffer + length));
 	auto& data = *grammarbufs.back().get();
 
 	return parse_grammar(data);

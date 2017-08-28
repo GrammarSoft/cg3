@@ -422,7 +422,7 @@ void ApertiumApplicator::runGrammarOnText(istream& input, UFILE *output) {
 				u_fflush(ux_stderr);
 			}
 		} // end reading
-	} // end input loop
+	}     // end input loop
 
 	if (!firstblank.empty()) {
 		u_fprintf(output, "%S", firstblank.c_str());
