@@ -26,7 +26,7 @@
 namespace CG3 {
 
 std::vector<SingleWindow*> pool_swindows;
-pool_cleaner<std::vector<SingleWindow*> > cleaner_swindows(pool_swindows);
+pool_cleaner<std::vector<SingleWindow*>> cleaner_swindows(pool_swindows);
 
 SingleWindow *alloc_swindow(Window *p) {
 	SingleWindow *s = pool_get(pool_swindows);

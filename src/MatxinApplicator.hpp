@@ -51,7 +51,7 @@ protected:
 	};
 
 	std::map<int, Node> nodes;
-	std::map<int, std::vector<int> > deps;
+	std::map<int, std::vector<int>> deps;
 
 	bool nullFlush;
 	bool runningWithNullFlush;
@@ -59,7 +59,7 @@ protected:
 	void printReading(Reading *reading, Node& n, UFILE *output);
 	void printSingleWindow(SingleWindow *window, UFILE *output);
 
-	void procNode(int& depth, std::map<int, Node>& nodes, std::map<int, std::vector<int> >& deps, int node, UFILE *output);
+	void procNode(int& depth, std::map<int, Node>& nodes, std::map<int, std::vector<int>>& deps, int node, UFILE *output);
 
 
 	void runGrammarOnTextWrapperNullFlush(istream& input, UFILE *output);

@@ -215,7 +215,7 @@ Cohort *GrammarApplicator::runContextualTest_tmpl(SingleWindow *sWindow, size_t 
 	if (test->linked) {
 		tmpl_cntx.linked.push_back(test->linked);
 	}
-	
+
 	uint64_t orgpos = tmpl->pos;
 	int32_t orgoffset = tmpl->offset;
 	uint32_t orgcbar = tmpl->cbarrier;

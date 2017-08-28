@@ -78,7 +78,7 @@ public:
 	rules_by_set_t rules_by_set;
 	typedef std::unordered_map<uint32_t, uint32IntervalVector> rules_by_tag_t;
 	rules_by_tag_t rules_by_tag;
-	typedef std::unordered_map<uint32_t, boost::dynamic_bitset<> > sets_by_tag_t;
+	typedef std::unordered_map<uint32_t, boost::dynamic_bitset<>> sets_by_tag_t;
 	sets_by_tag_t sets_by_tag;
 
 	uint32IntervalVector *rules_any;
@@ -173,7 +173,6 @@ inline void trie_unserialize(trie_t& trie, FILE *input, Grammar& grammar, uint32
 inline void trie_unserialize(trie_t& trie, std::istream& input, Grammar& grammar, uint32_t num_tags) {
 	return _trie_unserialize(trie, input, grammar, num_tags);
 }
-
 }
 
 #endif

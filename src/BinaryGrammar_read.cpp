@@ -161,7 +161,7 @@ int BinaryGrammar::parse_grammar(std::istream& input) {
 			}
 		}
 		if (fields & (1 << 12)) {
-			char buf[sizeof(uint64_t)+ sizeof(int32_t)] = {};
+			char buf[sizeof(uint64_t) + sizeof(int32_t)] = {};
 			fread_throw(&buf[0], sizeof(buf), 1, input);
 			buffer.str("");
 			buffer.clear();
