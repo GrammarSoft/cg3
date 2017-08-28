@@ -113,7 +113,7 @@ void GrammarApplicator::runGrammarOnText(istream& input, UFILE *output) {
 	uint32FlatHashSet variables_rem;
 	uint32SortedVector variables_output;
 
-	std::vector<std::pair<size_t, Reading*> > indents;
+	std::vector<std::pair<size_t, Reading*>> indents;
 	all_mappings_t all_mappings;
 
 	while (!input.eof()) {

@@ -860,7 +860,7 @@ void MatxinApplicator::printSingleWindow(SingleWindow *window, UFILE *output) {
 	u_fprintf(output, "  </SENTENCE>\n");
 }
 
-void MatxinApplicator::procNode(int& depth, std::map<int, Node>& nodes, std::map<int, std::vector<int> >& deps, int n, UFILE *output) {
+void MatxinApplicator::procNode(int& depth, std::map<int, Node>& nodes, std::map<int, std::vector<int>>& deps, int n, UFILE *output) {
 	Node node = nodes[n];
 	std::vector<int> v = deps[n];
 	depth = depth + 1;
@@ -883,7 +883,7 @@ void MatxinApplicator::procNode(int& depth, std::map<int, Node>& nodes, std::map
 	}
 
 	bool found = false;
-	std::map<int, std::vector<int> >::iterator it;
+	std::map<int, std::vector<int>>::iterator it;
 	for (it = deps.begin(); it != deps.end(); it++) {
 		if (it->first == n && it->second.size() != 0) {
 			found = true;

@@ -182,7 +182,7 @@ protected:
 	uint32_t numReadings;
 
 	bool did_index;
-	sorted_vector<std::pair<uint32_t,uint32_t>> dep_deep_seen;
+	sorted_vector<std::pair<uint32_t, uint32_t>> dep_deep_seen;
 
 	uint32_t numsections;
 	typedef std::map<int32_t, uint32IntervalVector> RSType;
@@ -256,8 +256,8 @@ protected:
 	uint32_t runRulesOnSingleWindow(SingleWindow& current, const uint32IntervalVector& rules);
 
 	enum ST_RETVALS {
-		TRV_BREAK   = (1 <<  0),
-		TRV_BARRIER = (1 <<  1),
+		TRV_BREAK         = (1 <<  0),
+		TRV_BARRIER       = (1 <<  1),
 		TRV_BREAK_DEFAULT = (1 <<  2),
 	};
 	Cohort *runSingleTest(Cohort *cohort, const ContextualTest *test, uint8_t& rvs, bool *retval, Cohort **deep = 0, Cohort *origin = 0);

@@ -109,7 +109,7 @@ public:
 
 	ContextualTest();
 
-	bool operator==(const ContextualTest &) const;
+	bool operator==(const ContextualTest&) const;
 	bool operator!=(const ContextualTest& o) const { return !(*this == o); }
 	uint32_t rehash();
 	void resetStatistics();

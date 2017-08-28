@@ -26,7 +26,7 @@
 namespace CG3 {
 
 constexpr double NUMERIC_MIN = static_cast<double>(-(1ll << 48ll));
-constexpr double NUMERIC_MAX = static_cast<double>((1ll << 48ll)-1);
+constexpr double NUMERIC_MAX = static_cast<double>((1ll << 48ll) - 1);
 constexpr uint32_t CG3_HASH_SEED = 705577479u;
 
 /*
@@ -354,8 +354,8 @@ inline constexpr uint64_t make_64(uint32_t hi, uint32_t low) {
 	return (static_cast<uint64_t>(hi) << 32) | static_cast<uint64_t>(low);
 }
 
-template <typename T, size_t N>
-inline constexpr size_t size(T(&)[N]) {
+template<typename T, size_t N>
+inline constexpr size_t size(T (&)[N]) {
 	return N;
 }
 
