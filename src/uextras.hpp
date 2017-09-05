@@ -25,6 +25,7 @@
 
 #include "stdafx.hpp"
 #include "Strings.hpp"
+#include <cstdarg>
 
 #ifdef _WIN32
 inline const char *basename(const char *path) {
@@ -48,6 +49,17 @@ inline const char *basename(const char *path) {
 	}
 }
 #endif
+
+void u_fflush(std::ostream& output);
+void u_fflush(std::ostream* output);
+
+int32_t u_fprintf(std::ostream& output, const char* fmt, ...);
+int32_t u_fprintf(std::unique_ptr<std::ostream>& output, const char* fmt, ...);
+int32_t u_fprintf(std::ostream* output, const char* fmt, ...);
+
+int32_t u_fprintf_u(std::ostream& output, const UChar* fmt, ...);
+
+UChar32 u_fputc(UChar32 c, std::ostream& output);
 
 namespace CG3 {
 

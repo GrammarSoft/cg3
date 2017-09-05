@@ -80,7 +80,7 @@ enum : uint32_t {
 
 class Tag {
 public:
-	static UFILE* dump_hashes_out;
+	static std::ostream* dump_hashes_out;
 
 	C_OPS comparison_op;
 	double comparison_val;

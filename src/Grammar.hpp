@@ -36,7 +36,8 @@ class Anchor;
 
 class Grammar {
 public:
-	UFILE *ux_stderr, *ux_stdout;
+	std::ostream* ux_stderr;
+	std::ostream* ux_stdout;
 
 	bool has_dep;
 	bool has_bag_of_tags;

@@ -31,7 +31,7 @@
 
 namespace CG3 {
 
-GrammarApplicator::GrammarApplicator(UFILE* ux_err)
+GrammarApplicator::GrammarApplicator(std::ostream& ux_err)
   : always_span(false)
   , apply_mappings(true)
   , apply_corrections(true)
@@ -71,7 +71,7 @@ GrammarApplicator::GrammarApplicator(UFILE* ux_err)
   , gWindow(0)
   , has_relations(false)
   , grammar(0)
-  , ux_stderr(ux_err)
+  , ux_stderr(&ux_err)
   , filebase(0)
   , numLines(0)
   , numWindows(0)
@@ -347,7 +347,7 @@ Tag* GrammarApplicator::addTag(const UString& txt, bool vstr) {
 	return addTag(txt.c_str(), vstr);
 }
 
-void GrammarApplicator::printTrace(UFILE* output, uint32_t hit_by) {
+void GrammarApplicator::printTrace(std::ostream& output, uint32_t hit_by) {
 	if (hit_by < grammar->rule_by_number.size()) {
 		const Rule* r = grammar->rule_by_number[hit_by];
 		u_fprintf(output, "%S", keywords[r->type].getTerminatedBuffer());
@@ -372,7 +372,7 @@ void GrammarApplicator::printTrace(UFILE* output, uint32_t hit_by) {
 	}
 }
 
-void GrammarApplicator::printReading(const Reading* reading, UFILE* output, size_t sub) {
+void GrammarApplicator::printReading(const Reading* reading, std::ostream& output, size_t sub) {
 	if (reading->noprint) {
 		return;
 	}
@@ -490,7 +490,7 @@ void GrammarApplicator::printReading(const Reading* reading, UFILE* output, size
 	}
 }
 
-void GrammarApplicator::printCohort(Cohort* cohort, UFILE* output) {
+void GrammarApplicator::printCohort(Cohort* cohort, std::ostream& output) {
 	constexpr UChar ws[] = { ' ', '\t', 0 };
 
 	if (cohort->local_number == 0) {
@@ -545,7 +545,7 @@ removed:
 	}
 }
 
-void GrammarApplicator::printSingleWindow(SingleWindow* window, UFILE* output) {
+void GrammarApplicator::printSingleWindow(SingleWindow* window, std::ostream& output) {
 	for (auto var : window->variables_output) {
 		Tag* key = single_tags[var];
 		auto iter = window->variables_set.find(var);

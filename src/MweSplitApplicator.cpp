@@ -23,13 +23,13 @@
 
 namespace CG3 {
 
-MweSplitApplicator::MweSplitApplicator(UFILE* ux_err)
+MweSplitApplicator::MweSplitApplicator(std::ostream& ux_err)
   : GrammarApplicator(ux_err)
 {
 }
 
 
-void MweSplitApplicator::runGrammarOnText(istream& input, UFILE* output) {
+void MweSplitApplicator::runGrammarOnText(istream& input, std::ostream& output) {
 	GrammarApplicator::runGrammarOnText(input, output);
 }
 
@@ -135,7 +135,7 @@ std::vector<Cohort*> MweSplitApplicator::splitMwe(Cohort* cohort) {
 }
 
 
-void MweSplitApplicator::printSingleWindow(SingleWindow* window, UFILE* output) {
+void MweSplitApplicator::printSingleWindow(SingleWindow* window, std::ostream& output) {
 	for (auto var : window->variables_output) {
 		Tag* key = single_tags[var];
 		auto iter = window->variables_set.find(var);

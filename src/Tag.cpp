@@ -26,7 +26,7 @@
 
 namespace CG3 {
 
-UFILE* Tag::dump_hashes_out = 0;
+std::ostream* Tag::dump_hashes_out = 0;
 
 Tag::Tag()
   : comparison_op(OP_NOP)

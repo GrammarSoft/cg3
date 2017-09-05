@@ -92,8 +92,6 @@ int main(int argc, char* argv[]) {
 
 	UErrorCode status = U_ZERO_ERROR;
 	UFILE* ux_stdin = 0;
-	UFILE* ux_stdout = 0;
-	UFILE* ux_stderr = 0;
 
 #if HAVE_GETOPT_LONG
 	struct option long_options[] = {
@@ -194,8 +192,6 @@ int main(int argc, char* argv[]) {
 	const char* locale_default = uloc_getDefault();
 
 	ux_stdin = u_finit(stdin, locale_default, codepage_default);
-	ux_stdout = u_finit(stdout, locale_default, codepage_default);
-	ux_stderr = u_finit(stderr, locale_default, codepage_default);
 
 	CG3::Grammar grammar;
 
@@ -233,25 +229,29 @@ int main(int argc, char* argv[]) {
 			endProgram(argv[0]);
 		}
 	}
+
+	std::ostream* ux_stdout = &std::cout;
+	std::unique_ptr<std::ofstream> _ux_stdout;
 	if (optind <= (argc - 3)) {
-		u_fclose(ux_stdout);
-		ux_stdout = u_fopen(argv[optind + 2], "wb", locale_default, codepage_default);
-		if (ux_stdout == NULL) {
+		_ux_stdout.reset(new std::ofstream(argv[optind + 2], std::ios::binary));
+
+		if (!_ux_stdout || _ux_stdout->bad()) {
 			endProgram(argv[0]);
 		}
+		ux_stdout = _ux_stdout.get();
 	}
 
 	if (CG3::cbuffers[0][0] == 'C' && CG3::cbuffers[0][1] == 'G' && CG3::cbuffers[0][2] == '3' && CG3::cbuffers[0][3] == 'B') {
-		parser = new CG3::BinaryGrammar(grammar, ux_stderr);
+		parser = new CG3::BinaryGrammar(grammar, std::cerr);
 	}
 	else {
 		// Forbidding text grammars makes debugging very annoying
 		std::cerr << "Warning: Text grammar detected - to better process textual" << std::endl;
 		std::cerr << "grammars, use `vislcg3'; to compile this grammar, use `cg-comp'" << std::endl;
-		parser = new CG3::TextualParser(grammar, ux_stderr);
+		parser = new CG3::TextualParser(grammar, std::cerr);
 	}
 
-	grammar.ux_stderr = ux_stderr;
+	grammar.ux_stderr = &std::cerr;
 
 	if (parser->parse_grammar(argv[optind], locale_default, codepage_default)) {
 		std::cerr << "Error: Grammar could not be parsed - exiting!" << std::endl;
@@ -262,26 +262,26 @@ int main(int argc, char* argv[]) {
 
 	delete parser;
 
-	CG3::GrammarApplicator* applicator = 0;
+	std::unique_ptr<CG3::GrammarApplicator> applicator;
 
 	if (stream_format == 0) {
-		applicator = new CG3::GrammarApplicator(ux_stderr);
+		applicator.reset(new CG3::GrammarApplicator(std::cerr));
 	}
 	else if (stream_format == 2) {
-		CG3::MatxinApplicator* matxinApplicator = new CG3::MatxinApplicator(ux_stderr);
+		CG3::MatxinApplicator* matxinApplicator = new CG3::MatxinApplicator(std::cerr);
 		matxinApplicator->setNullFlush(null_flush);
 		matxinApplicator->wordform_case = wordform_case;
 		matxinApplicator->print_word_forms = print_word_forms;
 		matxinApplicator->print_only_first = only_first;
-		applicator = matxinApplicator;
+		applicator.reset(matxinApplicator);
 	}
 	else {
-		CG3::ApertiumApplicator* apertiumApplicator = new CG3::ApertiumApplicator(ux_stderr);
+		CG3::ApertiumApplicator* apertiumApplicator = new CG3::ApertiumApplicator(std::cerr);
 		apertiumApplicator->setNullFlush(null_flush);
 		apertiumApplicator->wordform_case = wordform_case;
 		apertiumApplicator->print_word_forms = print_word_forms;
 		apertiumApplicator->print_only_first = only_first;
-		applicator = apertiumApplicator;
+		applicator.reset(apertiumApplicator);
 	}
 
 	applicator->setGrammar(&grammar);
@@ -314,7 +314,7 @@ int main(int argc, char* argv[]) {
 		case 'd':
 		default:
 			CG3::istream instream(ux_stdin, !null_flush);
-			applicator->runGrammarOnText(instream, ux_stdout);
+			applicator->runGrammarOnText(instream, *ux_stdout);
 			break;
 		}
 	}
@@ -322,11 +322,6 @@ int main(int argc, char* argv[]) {
 		std::cerr << e.what();
 		exit(1);
 	}
-
-	delete applicator;
-
-	u_fclose(ux_stdout);
-	u_fclose(ux_stderr);
 
 	u_cleanup();
 }

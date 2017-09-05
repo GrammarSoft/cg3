@@ -29,7 +29,7 @@
 
 namespace CG3 {
 
-MatxinApplicator::MatxinApplicator(UFILE* ux_err)
+MatxinApplicator::MatxinApplicator(std::ostream& ux_err)
   : GrammarApplicator(ux_err)
 {
 	nullFlush = false;
@@ -91,7 +91,7 @@ UChar MatxinApplicator::u_fgetc_wrapper(istream& input) {
 }
 
 
-void MatxinApplicator::runGrammarOnTextWrapperNullFlush(istream& input, UFILE* output) {
+void MatxinApplicator::runGrammarOnTextWrapperNullFlush(istream& input, std::ostream& output) {
 	setNullFlush(false);
 	runningWithNullFlush = true;
 	while (!input.eof()) {
@@ -106,7 +106,7 @@ void MatxinApplicator::runGrammarOnTextWrapperNullFlush(istream& input, UFILE* o
  * Run a constraint grammar on an Matxin input stream
  */
 
-void MatxinApplicator::runGrammarOnText(istream& input, UFILE* output) {
+void MatxinApplicator::runGrammarOnText(istream& input, std::ostream& output) {
 	if (getNullFlush()) {
 		runGrammarOnTextWrapperNullFlush(input, output);
 		return;
@@ -660,7 +660,7 @@ void MatxinApplicator::processReading(Reading* cReading, const UString& reading_
 	return processReading(cReading, reading_string.c_str());
 }
 
-void MatxinApplicator::printReading(Reading* reading, Node& node, UFILE* output) {
+void MatxinApplicator::printReading(Reading* reading, Node& node, std::ostream& output) {
 	if (reading->noprint) {
 		return;
 	}
@@ -752,7 +752,7 @@ void MatxinApplicator::printReading(Reading* reading, Node& node, UFILE* output)
 	node.mi = mi;
 }
 
-void MatxinApplicator::printSingleWindow(SingleWindow* window, UFILE* output) {
+void MatxinApplicator::printSingleWindow(SingleWindow* window, std::ostream& output) {
 	/*
 	// Window text comes at the left
 	if (!window->text.empty()) {
@@ -860,7 +860,7 @@ void MatxinApplicator::printSingleWindow(SingleWindow* window, UFILE* output) {
 	u_fprintf(output, "  </SENTENCE>\n");
 }
 
-void MatxinApplicator::procNode(int& depth, std::map<int, Node>& nodes, std::map<int, std::vector<int>>& deps, int n, UFILE* output) {
+void MatxinApplicator::procNode(int& depth, std::map<int, Node>& nodes, std::map<int, std::vector<int>>& deps, int n, std::ostream& output) {
 	Node node = nodes[n];
 	std::vector<int> v = deps[n];
 	depth = depth + 1;

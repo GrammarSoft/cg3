@@ -27,14 +27,15 @@
 #include "Window.hpp"
 #include "SingleWindow.hpp"
 #include "version.hpp"
+#include "streambuf.hpp"
 using namespace CG3;
 
 #include "cg3.h"
 
 namespace {
 UFILE* ux_stdin = 0;
-UFILE* ux_stdout = 0;
-UFILE* ux_stderr = 0;
+std::unique_ptr<std::ostream> ux_stdout;
+std::unique_ptr<std::ostream> ux_stderr;
 }
 
 cg3_status cg3_init(FILE* in, FILE* out, FILE* err) {
@@ -61,13 +62,13 @@ cg3_status cg3_init(FILE* in, FILE* out, FILE* err) {
 		return CG3_ERROR;
 	}
 
-	ux_stdout = u_finit(out, uloc_getDefault(), ucnv_getDefaultName());
+	ux_stdout.reset(new std::ostream(new cstreambuf(out)));
 	if (!ux_stdout) {
 		fprintf(err, "CG3 Error: The output stream could not be inited.\n");
 		return CG3_ERROR;
 	}
 
-	ux_stderr = u_finit(err, uloc_getDefault(), ucnv_getDefaultName());
+	ux_stderr.reset(new std::ostream(new cstreambuf(err)));
 	if (!ux_stderr) {
 		fprintf(err, "CG3 Error: The error stream could not be inited.\n");
 		return CG3_ERROR;
@@ -78,8 +79,8 @@ cg3_status cg3_init(FILE* in, FILE* out, FILE* err) {
 
 cg3_status cg3_cleanup(void) {
 	u_fclose(ux_stdin);
-	u_fclose(ux_stdout);
-	u_fclose(ux_stderr);
+	ux_stdout.reset();
+	ux_stderr.reset();
 
 	u_cleanup();
 
@@ -99,17 +100,17 @@ cg3_grammar* cg3_grammar_load(const char* filename) {
 	input.close();
 
 	Grammar* grammar = new Grammar;
-	grammar->ux_stderr = ux_stderr;
-	grammar->ux_stdout = ux_stdout;
+	grammar->ux_stderr = ux_stderr.get();
+	grammar->ux_stdout = ux_stdout.get();
 
 	std::unique_ptr<IGrammarParser> parser;
 
 	if (cbuffers[0][0] == 'C' && cbuffers[0][1] == 'G' && cbuffers[0][2] == '3' && cbuffers[0][3] == 'B') {
 		u_fprintf(ux_stderr, "CG3 Info: Binary grammar detected.\n");
-		parser.reset(new BinaryGrammar(*grammar, ux_stderr));
+		parser.reset(new BinaryGrammar(*grammar, *ux_stderr));
 	}
 	else {
-		parser.reset(new TextualParser(*grammar, ux_stderr));
+		parser.reset(new TextualParser(*grammar, *ux_stderr));
 	}
 	if (parser->parse_grammar(filename, uloc_getDefault(), ucnv_getDefaultName())) {
 		u_fprintf(ux_stderr, "CG3 Error: Grammar could not be parsed!\n");
@@ -128,7 +129,7 @@ void cg3_grammar_free(cg3_grammar* grammar_) {
 
 cg3_applicator* cg3_applicator_create(cg3_grammar* grammar_) {
 	Grammar* grammar = static_cast<Grammar*>(grammar_);
-	GrammarApplicator* applicator = new GrammarApplicator(ux_stderr);
+	GrammarApplicator* applicator = new GrammarApplicator(*ux_stderr);
 	applicator->setGrammar(grammar);
 	applicator->index();
 	return applicator;

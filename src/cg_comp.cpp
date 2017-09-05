@@ -45,7 +45,6 @@ void endProgram(char* name) {
 }
 
 int main(int argc, char* argv[]) {
-	UFILE* ux_stderr = 0;
 	UErrorCode status = U_ZERO_ERROR;
 
 	if (argc != 3) {
@@ -64,8 +63,6 @@ int main(int argc, char* argv[]) {
 	const char* codepage_default = ucnv_getDefaultName();
 	uloc_setDefault("en_US_POSIX", &status);
 	const char* locale_default = uloc_getDefault();
-
-	ux_stderr = u_finit(stderr, locale_default, codepage_default);
 
 	CG3::Grammar grammar;
 
@@ -87,10 +84,10 @@ int main(int argc, char* argv[]) {
 		CG3Quit(1);
 	}
 	else {
-		parser = new CG3::TextualParser(grammar, ux_stderr);
+		parser = new CG3::TextualParser(grammar, std::cerr);
 	}
 
-	grammar.ux_stderr = ux_stderr;
+	grammar.ux_stderr = &std::cerr;
 
 	if (parser->parse_grammar(argv[1], locale_default, codepage_default)) {
 		std::cerr << "Error: Grammar could not be parsed - exiting!" << std::endl;
@@ -113,14 +110,12 @@ int main(int argc, char* argv[]) {
 	FILE* gout = fopen(argv[2], "wb");
 
 	if (gout) {
-		CG3::BinaryGrammar writer(grammar, ux_stderr);
+		CG3::BinaryGrammar writer(grammar, std::cerr);
 		writer.writeBinaryGrammar(gout);
 	}
 	else {
 		std::cerr << "Could not write grammar to " << argv[2] << std::endl;
 	}
-
-	u_fclose(ux_stderr);
 
 	u_cleanup();
 

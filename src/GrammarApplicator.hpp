@@ -116,7 +116,7 @@ public:
 	uint32_t debug_level;
 	uint32_t section_max_count;
 
-	GrammarApplicator(UFILE* ux_err);
+	GrammarApplicator(std::ostream& ux_err);
 	virtual ~GrammarApplicator();
 
 	void enableStatistics();
@@ -125,7 +125,7 @@ public:
 	void setGrammar(Grammar* res);
 	void index();
 
-	virtual void runGrammarOnText(istream& input, UFILE* output);
+	virtual void runGrammarOnText(istream& input, std::ostream& output);
 
 	bool has_dep;
 	uint32_t dep_highest_seen;
@@ -151,7 +151,7 @@ public:
 	void splitAllMappings(all_mappings_t& all_mappings, Cohort& cohort, bool mapped = false);
 	Taguint32HashMap single_tags;
 
-	UFILE* ux_stderr;
+	std::ostream* ux_stderr;
 	UChar* filebase;
 	void error(const char* str, const UChar* p);
 	void error(const char* str, const char* s, const UChar* p);
@@ -160,10 +160,10 @@ public:
 	Grammar* get_grammar() { return grammar; }
 
 protected:
-	void printTrace(UFILE* output, uint32_t hit_by);
-	void printReading(const Reading* reading, UFILE* output, size_t sub = 1);
-	void printCohort(Cohort* cohort, UFILE* output);
-	virtual void printSingleWindow(SingleWindow* window, UFILE* output);
+	void printTrace(std::ostream& output, uint32_t hit_by);
+	void printReading(const Reading* reading, std::ostream& output, size_t sub = 1);
+	void printCohort(Cohort* cohort, std::ostream& output);
+	virtual void printSingleWindow(SingleWindow* window, std::ostream& output);
 
 	void pipeOutReading(const Reading* reading, std::ostream& output);
 	void pipeOutCohort(const Cohort* cohort, std::ostream& output);
