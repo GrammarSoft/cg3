@@ -1,3 +1,56 @@
+2017-08-28  tino
+
+	* [r12319] .clang-format, clang-format.pl, src/AST.hpp,
+	  src/ApertiumApplicator.cpp, src/ApertiumApplicator.hpp,
+	  src/BinaryGrammar.cpp, src/BinaryGrammar.hpp,
+	  src/BinaryGrammar_read.cpp, src/BinaryGrammar_read_10043.cpp,
+	  src/BinaryGrammar_write.cpp, src/Cohort.cpp, src/Cohort.hpp,
+	  src/CohortIterator.cpp, src/CohortIterator.hpp,
+	  src/ContextualTest.cpp, src/ContextualTest.hpp,
+	  src/FSTApplicator.cpp, src/FSTApplicator.hpp,
+	  src/FormatConverter.cpp, src/FormatConverter.hpp,
+	  src/Grammar.cpp, src/Grammar.hpp, src/GrammarApplicator.cpp,
+	  src/GrammarApplicator.hpp, src/GrammarApplicator_matchSet.cpp,
+	  src/GrammarApplicator_reflow.cpp,
+	  src/GrammarApplicator_runContextualTest.cpp,
+	  src/GrammarApplicator_runGrammar.cpp,
+	  src/GrammarApplicator_runRules.cpp, src/GrammarWriter.cpp,
+	  src/GrammarWriter.hpp, src/IGrammarParser.hpp,
+	  src/MatxinApplicator.cpp, src/MatxinApplicator.hpp,
+	  src/MweSplitApplicator.cpp, src/MweSplitApplicator.hpp,
+	  src/NicelineApplicator.cpp, src/NicelineApplicator.hpp,
+	  src/PlaintextApplicator.cpp, src/PlaintextApplicator.hpp,
+	  src/Reading.cpp, src/Reading.hpp, src/Relabeller.cpp,
+	  src/Relabeller.hpp, src/Rule.cpp, src/Rule.hpp, src/Set.cpp,
+	  src/Set.hpp, src/SingleWindow.cpp, src/SingleWindow.hpp,
+	  src/Tag.cpp, src/Tag.hpp, src/TagTrie.hpp, src/TextualParser.cpp,
+	  src/TextualParser.hpp, src/Window.cpp, src/Window.hpp,
+	  src/cg-mwesplit.cpp, src/cg-relabel.cpp, src/cg3.h,
+	  src/cg_comp.cpp, src/cg_conv.cpp, src/cg_proc.cpp,
+	  src/flat_unordered_map.hpp, src/flat_unordered_set.hpp,
+	  src/icu_uoptions.cpp, src/inlines.hpp, src/interval_vector.hpp,
+	  src/istream.hpp, src/libcg3.cpp, src/main.cpp,
+	  src/parser_helpers.hpp, src/scoped_stack.hpp, src/test_libcg3.c,
+	  src/uextras.cpp, src/uextras.hpp: Enforce actual
+	  PointerAlignment:Left
+	* [r12318] .clang-format, clang-format.pl,
+	  src/ApertiumApplicator.cpp, src/BinaryGrammar.hpp,
+	  src/BinaryGrammar_read.cpp, src/ContextualTest.hpp,
+	  src/Grammar.hpp, src/GrammarApplicator.hpp,
+	  src/GrammarApplicator_reflow.cpp,
+	  src/GrammarApplicator_runContextualTest.cpp,
+	  src/GrammarApplicator_runGrammar.cpp,
+	  src/GrammarApplicator_runRules.cpp, src/MatxinApplicator.cpp,
+	  src/MatxinApplicator.hpp, src/Reading.hpp, src/SingleWindow.cpp,
+	  src/Strings.cpp, src/Strings.hpp, src/TextualParser.cpp,
+	  src/TextualParser.hpp, src/inlines.hpp, src/sorted_vector.hpp:
+	  Formatting
+
+2017-08-19  tino
+
+	* [r12312] ChangeLog, src/inlines.hpp, src/version.hpp: Release
+	  1.1.0
+
 2017-08-18  tino
 
 	* [r12311] src/BinaryGrammar_read.cpp: Enable exceptions
@@ -1823,17 +1876,4 @@
 	* [r10105] TODO, src/FSTApplicator.cpp, src/TextualParser.cpp,
 	  src/inlines.hpp: cg-conv FST input now handles trailing
 	  whitespace and \
-
-2014-08-27  tino
-
-	* [r10100] src/cg_conv.cpp: cg-conv: add dummy tag to delimiters to
-	  silence warning
-
-2014-08-23  tino
-
-	* [r10098] TODO, manual/tags.xml: ToDos; Undocument !tag
-
-2014-08-23  unhammer
-
-	* [r10097] emacs/cg.el: highlight SETVARIABLE
 

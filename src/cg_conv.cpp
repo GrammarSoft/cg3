@@ -33,8 +33,6 @@ using CG3::CG3Quit;
 int main(int argc, char* argv[]) {
 	UErrorCode status = U_ZERO_ERROR;
 	UFILE* ux_stdin = 0;
-	UFILE* ux_stdout = 0;
-	UFILE* ux_stderr = 0;
 
 	/* Initialize ICU */
 	u_init(&status);
@@ -94,18 +92,16 @@ int main(int argc, char* argv[]) {
 	const char* locale_default = uloc_getDefault();
 
 	ux_stdin = u_finit(stdin, locale_default, codepage_default);
-	ux_stdout = u_finit(stdout, locale_default, codepage_default);
-	ux_stderr = u_finit(stderr, locale_default, codepage_default);
 
 	CG3::Grammar grammar;
 
-	grammar.ux_stderr = ux_stderr;
+	grammar.ux_stderr = &std::cerr;
 	grammar.allocateDummySet();
 	grammar.delimiters = grammar.allocateSet();
 	grammar.addTagToSet(grammar.allocateTag(CG3::stringbits[0].getTerminatedBuffer()), grammar.delimiters);
 	grammar.reindex();
 
-	CG3::FormatConverter applicator(ux_stderr);
+	CG3::FormatConverter applicator(std::cerr);
 	applicator.setGrammar(&grammar);
 
 	std::unique_ptr<CG3::istream> instream;
@@ -240,10 +236,7 @@ int main(int argc, char* argv[]) {
 	applicator.is_conv = true;
 	applicator.trace = true;
 	applicator.verbosity_level = 0;
-	applicator.runGrammarOnText(*instream.get(), ux_stdout);
-
-	u_fclose(ux_stdout);
-	u_fclose(ux_stderr);
+	applicator.runGrammarOnText(*instream.get(), std::cout);
 
 	u_cleanup();
 }

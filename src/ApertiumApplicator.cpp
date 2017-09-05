@@ -29,7 +29,7 @@
 
 namespace CG3 {
 
-ApertiumApplicator::ApertiumApplicator(UFILE* ux_err)
+ApertiumApplicator::ApertiumApplicator(std::ostream& ux_err)
   : GrammarApplicator(ux_err)
 {
 	nullFlush = false;
@@ -94,7 +94,7 @@ UChar ApertiumApplicator::u_fgetc_wrapper(istream& input) {
 }
 
 
-void ApertiumApplicator::runGrammarOnTextWrapperNullFlush(istream& input, UFILE* output) {
+void ApertiumApplicator::runGrammarOnTextWrapperNullFlush(istream& input, std::ostream& output) {
 	setNullFlush(false);
 	runningWithNullFlush = true;
 	while (!input.eof()) {
@@ -109,7 +109,7 @@ void ApertiumApplicator::runGrammarOnTextWrapperNullFlush(istream& input, UFILE*
  * Run a constraint grammar on an Apertium input stream
  */
 
-void ApertiumApplicator::runGrammarOnText(istream& input, UFILE* output) {
+void ApertiumApplicator::runGrammarOnText(istream& input, std::ostream& output) {
 	if (nullFlush) {
 		runGrammarOnTextWrapperNullFlush(input, output);
 		return;
@@ -676,7 +676,7 @@ void ApertiumApplicator::processReading(Reading* cReading, const UString& readin
 	return processReading(cReading, reading_string.c_str());
 }
 
-void ApertiumApplicator::testPR(UFILE* output) {
+void ApertiumApplicator::testPR(std::ostream& output) {
 	std::string texts[] = {
 		"venir<vblex><imp><p2><sg>",
 		"venir<vblex><inf>+lo<prn><enc><p3><nt><sg>",
@@ -698,7 +698,7 @@ void ApertiumApplicator::testPR(UFILE* output) {
 	}
 }
 
-void ApertiumApplicator::printReading(Reading* reading, UFILE* output) {
+void ApertiumApplicator::printReading(Reading* reading, std::ostream& output) {
 	if (reading->noprint) {
 		return;
 	}
@@ -813,7 +813,7 @@ void ApertiumApplicator::printReading(Reading* reading, UFILE* output) {
 	}
 }
 
-void ApertiumApplicator::printSingleWindow(SingleWindow* window, UFILE* output) {
+void ApertiumApplicator::printSingleWindow(SingleWindow* window, std::ostream& output) {
 	// Window text comes at the left
 	if (!window->text.empty()) {
 		u_fprintf(output, "%S", window->text.c_str());

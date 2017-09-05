@@ -29,7 +29,7 @@
 
 namespace CG3 {
 
-FSTApplicator::FSTApplicator(UFILE* ux_err)
+FSTApplicator::FSTApplicator(std::ostream& ux_err)
   : GrammarApplicator(ux_err)
   , wfactor(1.0)
 {
@@ -38,7 +38,7 @@ FSTApplicator::FSTApplicator(UFILE* ux_err)
 	//sub_delims += '+';
 }
 
-void FSTApplicator::runGrammarOnText(istream& input, UFILE* output) {
+void FSTApplicator::runGrammarOnText(istream& input, std::ostream& output) {
 	if (!input.good()) {
 		u_fprintf(ux_stderr, "Error: Input is null - nothing to parse!\n");
 		CG3Quit(1);

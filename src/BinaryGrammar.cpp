@@ -25,8 +25,8 @@
 
 namespace CG3 {
 
-BinaryGrammar::BinaryGrammar(Grammar& res, UFILE* ux_err) {
-	ux_stderr = ux_err;
+BinaryGrammar::BinaryGrammar(Grammar& res, std::ostream& ux_err) {
+	ux_stderr = &ux_err;
 	result = &res;
 	grammar = result;
 	verbosity = 0;

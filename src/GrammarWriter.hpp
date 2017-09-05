@@ -36,13 +36,13 @@ class GrammarWriter {
 public:
 	bool statistics;
 
-	GrammarWriter(Grammar& res, UFILE* ux_err);
+	GrammarWriter(Grammar& res, std::ostream& ux_err);
 	~GrammarWriter();
 
 	int writeGrammar(UFILE* output);
 
 private:
-	UFILE* ux_stderr;
+	std::ostream* ux_stderr;
 	uint32FlatHashSet used_sets;
 	const Grammar* grammar;
 

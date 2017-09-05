@@ -31,11 +31,11 @@ class PlaintextApplicator : public virtual GrammarApplicator {
 public:
 	bool add_tags = false;
 
-	PlaintextApplicator(UFILE* ux_err);
-	void runGrammarOnText(istream& input, UFILE* output);
+	PlaintextApplicator(std::ostream& ux_err);
+	void runGrammarOnText(istream& input, std::ostream& output);
 
-	void printCohort(Cohort* cohort, UFILE* output);
-	void printSingleWindow(SingleWindow* window, UFILE* output);
+	void printCohort(Cohort* cohort, std::ostream& output);
+	void printSingleWindow(SingleWindow* window, std::ostream& output);
 };
 }
 

@@ -38,7 +38,7 @@ public:
 	virtual int parse_grammar(const std::string& buffer) = 0;
 	virtual int parse_grammar(const char* filename, const char* locale, const char* codepage) = 0;
 
-	UFILE* ux_stderr;
+	std::ostream* ux_stderr;
 
 protected:
 	virtual int parse_grammar(UString& buffer) = 0;
