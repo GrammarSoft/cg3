@@ -45,7 +45,7 @@ enum {
 
 class Set {
 public:
-	static UFILE* dump_hashes_out;
+	static std::ostream* dump_hashes_out;
 
 	uint8_t type;
 	uint32_t line;

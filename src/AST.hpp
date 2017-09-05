@@ -156,7 +156,7 @@ const UChar* xml_encode(const UChar* b, const UChar* e) {
 	return buf.c_str();
 }
 
-void print_ast(UFILE* out, const UChar* b, size_t n, const ASTNode& node) {
+void print_ast(std::ostream& out, const UChar* b, size_t n, const ASTNode& node) {
 	std::string indent(n, ' ');
 	u_fprintf(out, "%s<%s l=\"%u\" b=\"%u\" e=\"%u\"", indent.c_str(), ASTType_str[node.type], node.line, static_cast<uint32_t>(node.b - b), static_cast<uint32_t>(node.e - b));
 	if (node.type == AST_AnchorName || node.type == AST_ContextMod || node.type == AST_ContextPos || node.type == AST_IncludeFilename || node.type == AST_MappingPrefix || node.type == AST_Option || node.type == AST_RuleAddcohortWhere || node.type == AST_RuleDirection || node.type == AST_RuleExternalCmd || node.type == AST_RuleExternalType || node.type == AST_RuleFlag || node.type == AST_RuleMoveType || node.type == AST_RuleName || node.type == AST_RuleType || node.type == AST_RuleWordform || node.type == AST_SetName || node.type == AST_SetOp || node.type == AST_SubReadingsDirection || node.type == AST_Tag || node.type == AST_TemplateName || node.type == AST_TemplateRef) {

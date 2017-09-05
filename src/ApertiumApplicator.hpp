@@ -28,25 +28,25 @@
 namespace CG3 {
 class ApertiumApplicator : public virtual GrammarApplicator {
 public:
-	ApertiumApplicator(UFILE* ux_err);
+	ApertiumApplicator(std::ostream& ux_err);
 
-	void runGrammarOnText(istream& input, UFILE* output);
+	void runGrammarOnText(istream& input, std::ostream& output);
 
 	bool wordform_case;
 	bool print_word_forms;
 	bool print_only_first;
 	void setNullFlush(bool pNullFlush);
 
-	void testPR(UFILE* output);
+	void testPR(std::ostream& output);
 
 protected:
 	bool nullFlush;
 	bool runningWithNullFlush;
 
-	void printReading(Reading* reading, UFILE* output);
-	void printSingleWindow(SingleWindow* window, UFILE* output);
+	void printReading(Reading* reading, std::ostream& output);
+	void printSingleWindow(SingleWindow* window, std::ostream& output);
 
-	void runGrammarOnTextWrapperNullFlush(istream& input, UFILE* output);
+	void runGrammarOnTextWrapperNullFlush(istream& input, std::ostream& output);
 
 	UChar u_fgetc_wrapper(istream& input);
 	UConverter* fgetc_converter;

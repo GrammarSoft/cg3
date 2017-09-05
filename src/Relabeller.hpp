@@ -34,13 +34,13 @@ class Set;
 
 class Relabeller {
 public:
-	Relabeller(Grammar& res, const Grammar& relabels, UFILE* ux_err);
+	Relabeller(Grammar& res, const Grammar& relabels, std::ostream& ux_err);
 	~Relabeller();
 
 	void relabel();
 
 private:
-	UFILE* ux_stderr;
+	std::ostream* ux_stderr;
 	Grammar* grammar;
 	const Grammar* relabels;
 

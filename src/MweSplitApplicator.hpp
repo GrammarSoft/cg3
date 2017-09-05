@@ -41,10 +41,10 @@ private:
 	std::vector<Cohort*> splitMwe(Cohort* cohort);
 
 public:
-	MweSplitApplicator(UFILE* ux_err);
-	void runGrammarOnText(istream& input, UFILE* output);
+	MweSplitApplicator(std::ostream& ux_err);
+	void runGrammarOnText(istream& input, std::ostream& output);
 
-	void printSingleWindow(SingleWindow* window, UFILE* output);
+	void printSingleWindow(SingleWindow* window, std::ostream& output);
 };
 }
 

@@ -30,7 +30,7 @@ class ContextualTest;
 
 class BinaryGrammar : public IGrammarParser {
 public:
-	BinaryGrammar(Grammar& result, UFILE* ux_err);
+	BinaryGrammar(Grammar& result, std::ostream& ux_err);
 
 	int writeBinaryGrammar(FILE* output);
 

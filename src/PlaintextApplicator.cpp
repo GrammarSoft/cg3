@@ -29,13 +29,13 @@
 
 namespace CG3 {
 
-PlaintextApplicator::PlaintextApplicator(UFILE* ux_err)
+PlaintextApplicator::PlaintextApplicator(std::ostream& ux_err)
   : GrammarApplicator(ux_err)
 {
 	allow_magic_readings = true;
 }
 
-void PlaintextApplicator::runGrammarOnText(istream& input, UFILE* output) {
+void PlaintextApplicator::runGrammarOnText(istream& input, std::ostream& output) {
 	if (!input.good()) {
 		u_fprintf(ux_stderr, "Error: Input is null - nothing to parse!\n");
 		CG3Quit(1);
@@ -349,7 +349,7 @@ void PlaintextApplicator::runGrammarOnText(istream& input, UFILE* output) {
 	u_fflush(output);
 }
 
-void PlaintextApplicator::printCohort(Cohort* cohort, UFILE* output) {
+void PlaintextApplicator::printCohort(Cohort* cohort, std::ostream& output) {
 	if (cohort->local_number == 0) {
 		return;
 	}
@@ -360,7 +360,7 @@ void PlaintextApplicator::printCohort(Cohort* cohort, UFILE* output) {
 	u_fprintf(output, "%.*S ", cohort->wordform->tag.size() - 4, cohort->wordform->tag.c_str() + 2);
 }
 
-void PlaintextApplicator::printSingleWindow(SingleWindow* window, UFILE* output) {
+void PlaintextApplicator::printSingleWindow(SingleWindow* window, std::ostream& output) {
 	uint32_t cs = (uint32_t)window->cohorts.size();
 	for (uint32_t c = 0; c < cs; c++) {
 		Cohort* cohort = window->cohorts[c];

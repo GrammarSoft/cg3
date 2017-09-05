@@ -51,3 +51,112 @@ std::string ux_dirname(const char* in) {
 	return tmp;
 }
 }
+
+void u_fflush(std::ostream& output) {
+	output.flush();
+}
+
+void u_fflush(std::ostream* output) {
+	output->flush();
+}
+
+inline int32_t _u_vsnprintf(UChar* dst, int32_t count, const UChar* fmt, va_list args) {
+	return u_vsnprintf_u(dst, count, fmt, args);
+}
+
+inline int32_t _u_vsnprintf(UChar* dst, int32_t count, const char* fmt, va_list args) {
+	return u_vsnprintf(dst, count, fmt, args);
+}
+
+template<typename Char>
+inline int32_t _u_fprintf(std::ostream& output, const Char* fmt, va_list args) {
+	using namespace CG3;
+
+	UChar _buf16[500];
+	UString _str16;
+	UChar* buf16 = &_buf16[0];
+
+	int32_t n16 = size(_buf16);
+	n16 = _u_vsnprintf(buf16, n16, fmt, args);
+	if (n16 < 0) {
+		throw std::runtime_error("Critical error in u_fprintf() wrapper");
+	}
+	if (n16 > static_cast<int32_t>(size(_buf16))) {
+		_str16.resize(n16 + 1);
+		buf16 = &_str16[0];
+		n16 = _u_vsnprintf(buf16, n16, fmt, args);
+	}
+
+	char _buf8[size(_buf16) * 3];
+	std::string _str8;
+	char *buf8 = &_buf8[0];
+	int32_t n8 = size(_buf8);
+	int32_t u8 = 0;
+	UErrorCode err = U_ZERO_ERROR;
+	u_strToUTF8(buf8, n8, &u8, buf16, n16, &err);
+	if (u8 > n8) {
+		_str8.resize(u8 + 1);
+		buf8 = &_str8[0];
+		err = U_ZERO_ERROR;
+		u_strToUTF8(buf8, u8, 0, buf16, n16, &err);
+	}
+
+	output.write(buf8, u8);
+
+	return n16;
+}
+
+int32_t u_fprintf(std::ostream& output, const char* fmt, ...) {
+	va_list args;
+	va_start(args, fmt);
+	int32_t rv = _u_fprintf(output, fmt, args);
+	va_end(args);
+	return rv;
+}
+
+int32_t u_fprintf(std::unique_ptr<std::ostream>& output, const char* fmt, ...) {
+	va_list args;
+	va_start(args, fmt);
+	int32_t rv = _u_fprintf(*output.get(), fmt, args);
+	va_end(args);
+	return rv;
+}
+
+int32_t u_fprintf(std::ostream* output, const char* fmt, ...) {
+	va_list args;
+	va_start(args, fmt);
+	int32_t rv = _u_fprintf(*output, fmt, args);
+	va_end(args);
+	return rv;
+}
+
+int32_t u_fprintf_u(std::ostream& output, const UChar* fmt, ...) {
+	va_list args;
+	va_start(args, fmt);
+	int32_t rv = _u_fprintf(output, fmt, args);
+	va_end(args);
+	return rv;
+}
+
+UChar32 u_fputc(UChar32 c32, std::ostream& output) {
+	using namespace CG3;
+
+	if (c32 <= 0x7F) {
+		output.put(static_cast<char>(c32));
+	}
+	else if (c32 <= 0x7FFF) {
+		char buf8[5];
+		int32_t n8 = size(buf8);
+		int32_t u8 = 0;
+		UErrorCode err = U_ZERO_ERROR;
+		UChar c16 = static_cast<UChar>(c32);
+		u_strToUTF8(buf8, n8, &u8, &c16, 1, &err);
+
+		output.write(buf8, u8);
+	}
+	else {
+		throw std::runtime_error("u_fputc() wrapper can't handle >= 0x7FFF");
+	}
+
+	return c32;
+}

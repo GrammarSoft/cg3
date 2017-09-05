@@ -26,8 +26,8 @@
 
 namespace CG3 {
 
-Relabeller::Relabeller(Grammar& res, const Grammar& relabels, UFILE* ux_err)
-  : ux_stderr(ux_err)
+Relabeller::Relabeller(Grammar& res, const Grammar& relabels, std::ostream& ux_err)
+  : ux_stderr(&ux_err)
   , grammar(&res)
   , relabels(&relabels)
 {

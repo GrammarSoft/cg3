@@ -34,8 +34,6 @@ void GAppSetOpts(CG3::GrammarApplicator& applicator, UConverter* conv);
 
 int main(int argc, char* argv[]) {
 	UFILE* ux_stdin = 0;
-	UFILE* ux_stdout = 0;
-	UFILE* ux_stderr = 0;
 
 	clock_t main_timer = clock();
 
@@ -171,26 +169,28 @@ int main(int argc, char* argv[]) {
 
 	UConverter* conv = ucnv_open(codepage_default, &status);
 
-	if (!options[STDOUT].doesOccur) {
-		ux_stdout = u_finit(stdout, locale_default, codepage_output);
-	}
-	else {
-		ux_stdout = u_fopen(options[STDOUT].value, "wb", locale_default, codepage_output);
-	}
-	if (!ux_stdout) {
-		std::cerr << "Error: Failed to open the output stream for writing!" << std::endl;
-		CG3Quit(1);
+	std::ostream* ux_stdout = &std::cout;
+	std::unique_ptr<std::ofstream> _ux_stdout;
+	if (options[STDOUT].doesOccur) {
+		_ux_stdout.reset(new std::ofstream(options[STDOUT].value, std::ios::binary));
+
+		if (!_ux_stdout || _ux_stdout->bad()) {
+			std::cerr << "Error: Failed to open the output stream for writing!" << std::endl;
+			CG3Quit(1);
+		}
+		ux_stdout = _ux_stdout.get();
 	}
 
-	if (!options[STDERR].doesOccur) {
-		ux_stderr = u_finit(stderr, locale_default, codepage_output);
-	}
-	else {
-		ux_stderr = u_fopen(options[STDERR].value, "wb", locale_default, codepage_output);
-	}
-	if (!ux_stdout) {
-		std::cerr << "Error: Failed to open the error stream for writing!" << std::endl;
-		CG3Quit(1);
+	std::ostream* ux_stderr = &std::cerr;
+	std::unique_ptr<std::ofstream> _ux_stderr;
+	if (options[STDERR].doesOccur) {
+		_ux_stderr.reset(new std::ofstream(options[STDERR].value, std::ios::binary));
+
+		if (!_ux_stderr || _ux_stderr->bad()) {
+			std::cerr << "Error: Failed to open the error stream for writing!" << std::endl;
+			CG3Quit(1);
+		}
+		ux_stderr = _ux_stderr.get();
 	}
 
 	if (!options[STDIN].doesOccur) {
@@ -239,10 +239,10 @@ int main(int argc, char* argv[]) {
 			std::cerr << "Error: --dump-ast is for textual grammars only!" << std::endl;
 			CG3Quit(1);
 		}
-		parser.reset(new CG3::BinaryGrammar(grammar, ux_stderr));
+		parser.reset(new CG3::BinaryGrammar(grammar, *ux_stderr));
 	}
 	else {
-		parser.reset(new CG3::TextualParser(grammar, ux_stderr, options[DUMP_AST].doesOccur != 0));
+		parser.reset(new CG3::TextualParser(grammar, *ux_stderr, options[DUMP_AST].doesOccur != 0));
 	}
 	if (options[VERBOSE].doesOccur) {
 		if (options[VERBOSE].value) {
@@ -270,7 +270,7 @@ int main(int argc, char* argv[]) {
 	}
 
 	if (options[DUMP_AST].doesOccur) {
-		dynamic_cast<CG3::TextualParser*>(parser.get())->print_ast(ux_stdout);
+		dynamic_cast<CG3::TextualParser*>(parser.get())->print_ast(*ux_stdout);
 	}
 
 	if (options[MAPPING_PREFIX].doesOccur) {
@@ -328,11 +328,11 @@ int main(int argc, char* argv[]) {
 	}
 
 	if (!options[GRAMMAR_ONLY].doesOccur) {
-		CG3::GrammarApplicator applicator(ux_stderr);
+		CG3::GrammarApplicator applicator(*ux_stderr);
 		applicator.setGrammar(&grammar);
 		GAppSetOpts(applicator, conv);
 		CG3::istream instream(ux_stdin);
-		applicator.runGrammarOnText(instream, ux_stdout);
+		applicator.runGrammarOnText(instream, *ux_stdout);
 
 		if (options[VERBOSE].doesOccur) {
 			std::cerr << "Applying grammar on input took " << (clock() - main_timer) / (double)CLOCKS_PER_SEC << " seconds." << std::endl;
@@ -378,7 +378,7 @@ int main(int argc, char* argv[]) {
 	if (options[GRAMMAR_OUT].doesOccur) {
 		UFILE* gout = u_fopen(options[GRAMMAR_OUT].value, "w", locale_default, codepage_output);
 		if (gout) {
-			CG3::GrammarWriter writer(grammar, ux_stderr);
+			CG3::GrammarWriter writer(grammar, *ux_stderr);
 			if (options[STATISTICS].doesOccur) {
 				writer.statistics = true;
 			}
@@ -397,7 +397,7 @@ int main(int argc, char* argv[]) {
 	if (options[GRAMMAR_BIN].doesOccur) {
 		FILE* gout = fopen(options[GRAMMAR_BIN].value, "wb");
 		if (gout) {
-			CG3::BinaryGrammar writer(grammar, ux_stderr);
+			CG3::BinaryGrammar writer(grammar, *ux_stderr);
 			writer.writeBinaryGrammar(gout);
 
 			if (options[VERBOSE].doesOccur) {
@@ -410,10 +410,7 @@ int main(int argc, char* argv[]) {
 		}
 	}
 
-	u_fclose(ux_stdout);
-	u_fclose(ux_stderr);
 	ucnv_close(conv);
-
 	u_cleanup();
 
 	if (options[VERBOSE].doesOccur) {

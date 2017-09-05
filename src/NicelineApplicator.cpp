@@ -29,14 +29,14 @@
 
 namespace CG3 {
 
-NicelineApplicator::NicelineApplicator(UFILE* ux_err)
+NicelineApplicator::NicelineApplicator(std::ostream& ux_err)
   : GrammarApplicator(ux_err)
   , did_warn_statictags(false)
   , did_warn_subreadings(false)
 {
 }
 
-void NicelineApplicator::runGrammarOnText(istream& input, UFILE* output) {
+void NicelineApplicator::runGrammarOnText(istream& input, std::ostream& output) {
 	if (!input.good()) {
 		u_fprintf(ux_stderr, "Error: Input is null - nothing to parse!\n");
 		CG3Quit(1);
@@ -357,7 +357,7 @@ void NicelineApplicator::runGrammarOnText(istream& input, UFILE* output) {
 	u_fflush(output);
 }
 
-void NicelineApplicator::printReading(const Reading* reading, UFILE* output) {
+void NicelineApplicator::printReading(const Reading* reading, std::ostream& output) {
 	if (reading->noprint) {
 		return;
 	}
@@ -458,7 +458,7 @@ void NicelineApplicator::printReading(const Reading* reading, UFILE* output) {
 	}
 }
 
-void NicelineApplicator::printCohort(Cohort* cohort, UFILE* output) {
+void NicelineApplicator::printCohort(Cohort* cohort, std::ostream& output) {
 	constexpr UChar ws[] = { ' ', '\t', 0 };
 
 	if (cohort->local_number == 0) {
@@ -496,7 +496,7 @@ removed:
 	}
 }
 
-void NicelineApplicator::printSingleWindow(SingleWindow* window, UFILE* output) {
+void NicelineApplicator::printSingleWindow(SingleWindow* window, std::ostream& output) {
 	if (!window->text.empty()) {
 		u_fprintf(output, "%S", window->text.c_str());
 		if (!ISNL(window->text[window->text.length() - 1])) {

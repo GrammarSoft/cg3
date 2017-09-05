@@ -35,11 +35,11 @@ class ContextualTest;
 
 class TextualParser : public IGrammarParser {
 public:
-	TextualParser(Grammar& result, UFILE* ux_err, bool dump_ast = false);
+	TextualParser(Grammar& result, std::ostream& ux_err, bool dump_ast = false);
 
 	void setCompatible(bool compat);
 	void setVerbosity(uint32_t level);
-	void print_ast(UFILE* out);
+	void print_ast(std::ostream& out);
 
 	int parse_grammar(const char* buffer, size_t length);
 	int parse_grammar(const UChar* buffer, size_t length);

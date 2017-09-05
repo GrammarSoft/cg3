@@ -29,7 +29,7 @@
 
 namespace CG3 {
 
-TextualParser::TextualParser(Grammar& res, UFILE* ux_err, bool _dump_ast)
+TextualParser::TextualParser(Grammar& res, std::ostream& ux_err, bool _dump_ast)
   : filebase(0)
   , verbosity_level(0)
   , sets_counter(100)
@@ -49,16 +49,16 @@ TextualParser::TextualParser(Grammar& res, UFILE* ux_err, bool _dump_ast)
   , codepage(0)
   , error_counter(0)
 {
-	ux_stderr = ux_err;
+	ux_stderr = &ux_err;
 	result = &res;
 	dump_ast = _dump_ast;
 }
 
-void TextualParser::print_ast(UFILE* out) {
+void TextualParser::print_ast(std::ostream& out) {
 	if (ast.cs.empty()) {
 		return;
 	}
-	u_fprintf(out, "<?xml version=\"1.0\" encoding=\"%s\"?>\n", u_fgetcodepage(out));
+	u_fprintf(out, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
 	u_fprintf(out, "<!-- l is line; b is begin, e is end, both are absolute UTF-16 code unit offsets (not code point) in the file -->\n");
 	::print_ast(out, ast.cs.front().b, 0, ast.cs.front());
 }

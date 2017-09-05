@@ -25,7 +25,7 @@
 
 namespace CG3 {
 
-UFILE* Set::dump_hashes_out = 0;
+std::ostream* Set::dump_hashes_out = 0;
 
 Set::Set()
   : type(0)

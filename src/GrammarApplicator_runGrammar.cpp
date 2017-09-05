@@ -60,7 +60,7 @@ Reading* GrammarApplicator::initEmptyCohort(Cohort& cCohort) {
 	return cReading;
 }
 
-void GrammarApplicator::runGrammarOnText(istream& input, UFILE* output) {
+void GrammarApplicator::runGrammarOnText(istream& input, std::ostream& output) {
 	if (!input.good()) {
 		u_fprintf(ux_stderr, "Error: Input is null - nothing to parse!\n");
 		CG3Quit(1);
