@@ -91,7 +91,6 @@ public:
 private:
 	std::istream* stream;
 };
-
 }
 
 #endif

@@ -1,3 +1,48 @@
+2017-09-06  tino
+
+	* [r12323] src/ApertiumApplicator.cpp, src/ApertiumApplicator.hpp,
+	  src/BinaryGrammar.cpp, src/BinaryGrammar.hpp, src/CMakeLists.txt,
+	  src/FSTApplicator.cpp, src/FSTApplicator.hpp,
+	  src/FormatConverter.cpp, src/FormatConverter.hpp,
+	  src/GrammarApplicator.hpp, src/GrammarApplicator_runGrammar.cpp,
+	  src/GrammarWriter.cpp, src/GrammarWriter.hpp,
+	  src/IGrammarParser.hpp, src/MatxinApplicator.cpp,
+	  src/MatxinApplicator.hpp, src/MweSplitApplicator.cpp,
+	  src/MweSplitApplicator.hpp, src/NicelineApplicator.cpp,
+	  src/NicelineApplicator.hpp, src/PlaintextApplicator.cpp,
+	  src/PlaintextApplicator.hpp, src/TextualParser.cpp,
+	  src/TextualParser.hpp, src/cg-mwesplit.cpp, src/cg-relabel.cpp,
+	  src/cg_comp.cpp, src/cg_conv.cpp, src/cg_proc.cpp,
+	  src/istream.hpp, src/libcg3.cpp, src/main.cpp, src/options.hpp,
+	  src/options_conv.hpp, src/streambuf.hpp, src/uextras.cpp,
+	  src/uextras.hpp, test/T_External/run.pl,
+	  test/T_Include/rules.inc: All input now happens via std::istream&
+	  instead of UFILE*, and assumes UTF-8; Deprecated -C and
+	  --codepage-* options. (WIP Github issue #1)
+
+2017-09-05  tino
+
+	* [r12322] ChangeLog, src/AST.hpp, src/ApertiumApplicator.cpp,
+	  src/ApertiumApplicator.hpp, src/BinaryGrammar.cpp,
+	  src/BinaryGrammar.hpp, src/CMakeLists.txt, src/FSTApplicator.cpp,
+	  src/FSTApplicator.hpp, src/FormatConverter.cpp,
+	  src/FormatConverter.hpp, src/Grammar.hpp,
+	  src/GrammarApplicator.cpp, src/GrammarApplicator.hpp,
+	  src/GrammarApplicator_runGrammar.cpp, src/GrammarWriter.cpp,
+	  src/GrammarWriter.hpp, src/IGrammarParser.hpp,
+	  src/MatxinApplicator.cpp, src/MatxinApplicator.hpp,
+	  src/MweSplitApplicator.cpp, src/MweSplitApplicator.hpp,
+	  src/NicelineApplicator.cpp, src/NicelineApplicator.hpp,
+	  src/PlaintextApplicator.cpp, src/PlaintextApplicator.hpp,
+	  src/Relabeller.cpp, src/Relabeller.hpp, src/Set.cpp, src/Set.hpp,
+	  src/Tag.cpp, src/Tag.hpp, src/TextualParser.cpp,
+	  src/TextualParser.hpp, src/cg-mwesplit.cpp, src/cg-relabel.cpp,
+	  src/cg_comp.cpp, src/cg_conv.cpp, src/cg_proc.cpp,
+	  src/libcg3.cpp, src/main.cpp, src/streambuf.hpp, src/uextras.cpp,
+	  src/uextras.hpp, src/version.hpp: All output now happens to
+	  std::ostream& instead of UFILE*. This forces output to UTF-8,
+	  which everyone should be using anyway. (WIP Github issue #1)
+
 2017-08-28  tino
 
 	* [r12319] .clang-format, clang-format.pl, src/AST.hpp,
@@ -1868,12 +1913,4 @@
 
 	* [r10125] src/FSTApplicator.cpp: cg-conv FST input < fix
 	* [r10123] CMakeLists.txt: RPM building fixes
-	* [r10122] CMakeLists.txt, get-boost.sh, src/CMakeLists.txt: RPM
-	  building fixes
-
-2014-09-01  tino
-
-	* [r10105] TODO, src/FSTApplicator.cpp, src/TextualParser.cpp,
-	  src/inlines.hpp: cg-conv FST input now handles trailing
-	  whitespace and \
 

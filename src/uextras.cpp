@@ -184,7 +184,7 @@ inline int32_t _u_fprintf(std::ostream& output, const Char* fmt, va_list args) {
 
 	char _buf8[size(_buf16) * 3];
 	std::string _str8;
-	char *buf8 = &_buf8[0];
+	char* buf8 = &_buf8[0];
 	int32_t n8 = size(_buf8);
 	int32_t u8 = 0;
 	UErrorCode err = U_ZERO_ERROR;
