@@ -33,8 +33,6 @@ using CG3::CG3Quit;
 void GAppSetOpts(CG3::GrammarApplicator& applicator, UConverter* conv);
 
 int main(int argc, char* argv[]) {
-	UFILE* ux_stdin = 0;
-
 	clock_t main_timer = clock();
 
 	UErrorCode status = U_ZERO_ERROR;
@@ -134,40 +132,14 @@ int main(int argc, char* argv[]) {
 
 	const char* codepage_cli = ucnv_getDefaultName();
 	ucnv_setDefaultName("UTF-8");
-	const char* codepage_default = ucnv_getDefaultName();
-	const char* codepage_grammar = codepage_default;
-	const char* codepage_input = codepage_grammar;
-	const char* codepage_output = codepage_grammar;
 
-	if (options[CODEPAGE_GRAMMAR].doesOccur) {
-		codepage_grammar = options[CODEPAGE_GRAMMAR].value;
-	}
-	else if (options[CODEPAGE_GLOBAL].doesOccur) {
-		codepage_grammar = options[CODEPAGE_GLOBAL].value;
-	}
-
-	if (options[CODEPAGE_INPUT].doesOccur) {
-		codepage_input = options[CODEPAGE_INPUT].value;
-	}
-	else if (options[CODEPAGE_GLOBAL].doesOccur) {
-		codepage_input = options[CODEPAGE_GLOBAL].value;
-	}
-
-	if (options[CODEPAGE_OUTPUT].doesOccur) {
-		codepage_output = options[CODEPAGE_OUTPUT].value;
-	}
-	else if (options[CODEPAGE_GLOBAL].doesOccur) {
-		codepage_output = options[CODEPAGE_GLOBAL].value;
-	}
-
-	if (options[VERBOSE].doesOccur) {
-		std::cerr << "Codepage: default " << codepage_default << ", input " << codepage_input << ", output " << codepage_output << ", grammar " << codepage_grammar << std::endl;
+	if (options[CODEPAGE_GLOBAL].doesOccur || options[CODEPAGE_INPUT].doesOccur || options[CODEPAGE_OUTPUT].doesOccur || options[CODEPAGE_GRAMMAR].doesOccur) {
+		std::cerr << "Warning: The -C and --codepage-* option are deprecated and now default to UTF-8" << std::endl;
 	}
 
 	uloc_setDefault("en_US_POSIX", &status);
-	const char* locale_default = uloc_getDefault();
 
-	UConverter* conv = ucnv_open(codepage_default, &status);
+	UConverter* conv = ucnv_open(ucnv_getDefaultName(), &status);
 
 	std::ostream* ux_stdout = &std::cout;
 	std::unique_ptr<std::ofstream> _ux_stdout;
@@ -193,21 +165,23 @@ int main(int argc, char* argv[]) {
 		ux_stderr = _ux_stderr.get();
 	}
 
-	if (!options[STDIN].doesOccur) {
-		ux_stdin = u_finit(stdin, locale_default, codepage_input);
-	}
-	else {
+	std::istream* ux_stdin = &std::cin;
+	std::unique_ptr<std::ifstream> _ux_stdin;
+	if (options[STDIN].doesOccur) {
 		struct stat info;
 		int serr = stat(options[STDIN].value, &info);
 		if (serr) {
 			std::cerr << "Error: Cannot stat " << options[STDIN].value << " due to error " << serr << "!" << std::endl;
 			CG3Quit(1);
 		}
-		ux_stdin = u_fopen(options[STDIN].value, "rb", locale_default, codepage_input);
-	}
-	if (!ux_stdin) {
-		std::cerr << "Error: Failed to open the input stream for reading!" << std::endl;
-		CG3Quit(1);
+
+		_ux_stdin.reset(new std::ifstream(options[STDIN].value, std::ios::binary));
+
+		if (!_ux_stdin || _ux_stdin->bad()) {
+			std::cerr << "Error: Failed to open the input stream for reading!" << std::endl;
+			CG3Quit(1);
+		}
+		ux_stdin = _ux_stdin.get();
 	}
 
 	CG3::Grammar grammar;
@@ -264,7 +238,7 @@ int main(int argc, char* argv[]) {
 	}
 	main_timer = clock();
 
-	if (parser->parse_grammar(options[GRAMMAR].value, locale_default, codepage_grammar)) {
+	if (parser->parse_grammar(options[GRAMMAR].value)) {
 		std::cerr << "Error: Grammar could not be parsed - exiting!" << std::endl;
 		CG3Quit(1);
 	}
@@ -331,8 +305,7 @@ int main(int argc, char* argv[]) {
 		CG3::GrammarApplicator applicator(*ux_stderr);
 		applicator.setGrammar(&grammar);
 		GAppSetOpts(applicator, conv);
-		CG3::istream instream(ux_stdin);
-		applicator.runGrammarOnText(instream, *ux_stdout);
+		applicator.runGrammarOnText(*ux_stdin, *ux_stdout);
 
 		if (options[VERBOSE].doesOccur) {
 			std::cerr << "Applying grammar on input took " << (clock() - main_timer) / (double)CLOCKS_PER_SEC << " seconds." << std::endl;
@@ -376,7 +349,7 @@ int main(int argc, char* argv[]) {
 	}
 
 	if (options[GRAMMAR_OUT].doesOccur) {
-		UFILE* gout = u_fopen(options[GRAMMAR_OUT].value, "w", locale_default, codepage_output);
+		std::ofstream gout(options[GRAMMAR_OUT].value, std::ios::binary);
 		if (gout) {
 			CG3::GrammarWriter writer(grammar, *ux_stderr);
 			if (options[STATISTICS].doesOccur) {

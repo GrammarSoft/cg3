@@ -40,7 +40,7 @@ public:
 	int parse_grammar(const char* buffer, size_t length);
 	int parse_grammar(const UChar* buffer, size_t length);
 	int parse_grammar(const std::string& buffer);
-	int parse_grammar(const char* filename, const char* locale, const char* codepage);
+	int parse_grammar(const char* filename);
 
 private:
 	int parse_grammar(UString& buffer);

@@ -38,8 +38,6 @@ MatxinApplicator::MatxinApplicator(std::ostream& ux_err)
 	print_word_forms = true;
 	print_only_first = false;
 	runningWithNullFlush = false;
-	fgetc_converter = 0;
-	fgetc_error = U_ZERO_ERROR;
 }
 
 
@@ -51,47 +49,7 @@ void MatxinApplicator::setNullFlush(bool pNullFlush) {
 	nullFlush = pNullFlush;
 }
 
-UChar MatxinApplicator::u_fgetc_wrapper(istream& input) {
-	if (runningWithNullFlush) {
-		if (!fgetc_converter) {
-			fgetc_error = U_ZERO_ERROR;
-			fgetc_converter = ucnv_open(ucnv_getDefaultName(), &fgetc_error);
-			if (U_FAILURE(fgetc_error)) {
-				u_fprintf(ux_stderr, "Error in ucnv_open: %d\n", fgetc_error);
-			}
-		}
-		int ch;
-		int result;
-		int inputsize = 0;
-
-		do {
-			ch = input.getc_raw();
-			if (ch == 0) {
-				return 0;
-			}
-			else {
-				fgetc_inputbuf[inputsize] = static_cast<char>(ch);
-				inputsize++;
-				fgetc_error = U_ZERO_ERROR;
-				result = ucnv_toUChars(fgetc_converter, fgetc_outputbuf, 5, fgetc_inputbuf, inputsize, &fgetc_error);
-				if (U_FAILURE(fgetc_error)) {
-					u_fprintf(ux_stderr, "Error conversion: %d\n", fgetc_error);
-				}
-			}
-		} while ((((result >= 1 && fgetc_outputbuf[0] == 0xFFFD)) || result < 1 || U_FAILURE(fgetc_error)) && !input.eof() && inputsize < 5);
-
-		if (fgetc_outputbuf[0] == 0xFFFD && input.eof()) {
-			return U_EOF;
-		}
-		return fgetc_outputbuf[0];
-	}
-	else {
-		return input.getc();
-	}
-}
-
-
-void MatxinApplicator::runGrammarOnTextWrapperNullFlush(istream& input, std::ostream& output) {
+void MatxinApplicator::runGrammarOnTextWrapperNullFlush(std::istream& input, std::ostream& output) {
 	setNullFlush(false);
 	runningWithNullFlush = true;
 	while (!input.eof()) {
@@ -106,7 +64,7 @@ void MatxinApplicator::runGrammarOnTextWrapperNullFlush(istream& input, std::ost
  * Run a constraint grammar on an Matxin input stream
  */
 
-void MatxinApplicator::runGrammarOnText(istream& input, std::ostream& output) {
+void MatxinApplicator::runGrammarOnText(std::istream& input, std::ostream& output) {
 	if (getNullFlush()) {
 		runGrammarOnTextWrapperNullFlush(input, output);
 		return;
@@ -161,7 +119,9 @@ void MatxinApplicator::runGrammarOnText(istream& input, std::ostream& output) {
 	gtimer = getticks();
 	ticks timer(gtimer);
 
-	while ((inchar = u_fgetc_wrapper(input)) != 0) {
+	ux_stripBOM(input);
+
+	while ((inchar = u_fgetc(input)) != 0) {
 		if (input.eof()) {
 			break;
 		}
@@ -177,17 +137,17 @@ void MatxinApplicator::runGrammarOnText(istream& input, std::ostream& output) {
 		if (inchar == '\\' && !incohort && !superblank) {
 			if (cCohort) {
 				cCohort->text += inchar;
-				inchar = u_fgetc_wrapper(input);
+				inchar = u_fgetc(input);
 				cCohort->text += inchar;
 			}
 			else if (lSWindow) {
 				lSWindow->text += inchar;
-				inchar = u_fgetc_wrapper(input);
+				inchar = u_fgetc(input);
 				lSWindow->text += inchar;
 			}
 			else {
 				u_fprintf(output, "%C", inchar);
-				inchar = u_fgetc_wrapper(input);
+				inchar = u_fgetc(input);
 				u_fprintf(output, "%C", inchar);
 			}
 			continue;
@@ -296,13 +256,13 @@ void MatxinApplicator::runGrammarOnText(istream& input, std::ostream& output) {
 			// '>"' for internal processing.
 			wordform += '<';
 			for (;;) {
-				inchar = u_fgetc_wrapper(input);
+				inchar = u_fgetc(input);
 
 				if (inchar == '/' || inchar == '<') {
 					break;
 				}
 				else if (inchar == '\\') {
-					inchar = u_fgetc_wrapper(input);
+					inchar = u_fgetc(input);
 					wordform += inchar;
 				}
 				else {
@@ -327,9 +287,9 @@ void MatxinApplicator::runGrammarOnText(istream& input, std::ostream& output) {
 				cCohort->wread = alloc_reading(cCohort);
 				UString tag;
 				do {
-					inchar = u_fgetc_wrapper(input);
+					inchar = u_fgetc(input);
 					if (inchar == '\\') {
-						inchar = u_fgetc_wrapper(input);
+						inchar = u_fgetc(input);
 						tag += inchar;
 						continue;
 					}
@@ -352,11 +312,11 @@ void MatxinApplicator::runGrammarOnText(istream& input, std::ostream& output) {
 
 			// Read in the readings
 			while (incohort) {
-				inchar = u_fgetc_wrapper(input);
+				inchar = u_fgetc(input);
 
 				if (inchar == '\\') {
 					// TODO: \< in baseforms -- ^foo\<bars/foo\<bar$ currently outputs ^foo\<bars/foo$
-					inchar = u_fgetc_wrapper(input);
+					inchar = u_fgetc(input);
 					current_reading += inchar;
 					continue;
 				}

@@ -42,7 +42,7 @@ private:
 
 public:
 	MweSplitApplicator(std::ostream& ux_err);
-	void runGrammarOnText(istream& input, std::ostream& output);
+	void runGrammarOnText(std::istream& input, std::ostream& output);
 
 	void printSingleWindow(SingleWindow* window, std::ostream& output);
 };

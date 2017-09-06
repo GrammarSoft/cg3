@@ -80,7 +80,6 @@ set(LIBCG3_HEADERS
 	flat_unordered_set.hpp
 	inlines.hpp
 	interval_vector.hpp
-	istream.hpp
 	parser_helpers.hpp
 	process.hpp
 	scoped_stack.hpp

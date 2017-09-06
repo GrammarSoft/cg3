@@ -30,7 +30,6 @@
 #include "Rule.hpp"
 #include "interval_vector.hpp"
 #include "flat_unordered_set.hpp"
-#include "istream.hpp"
 #include "scoped_stack.hpp"
 #include <deque>
 
@@ -125,7 +124,7 @@ public:
 	void setGrammar(Grammar* res);
 	void index();
 
-	virtual void runGrammarOnText(istream& input, std::ostream& output);
+	virtual void runGrammarOnText(std::istream& input, std::ostream& output);
 
 	bool has_dep;
 	uint32_t dep_highest_seen;

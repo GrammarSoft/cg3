@@ -30,7 +30,7 @@ class MatxinApplicator : public virtual GrammarApplicator {
 public:
 	MatxinApplicator(std::ostream& ux_err);
 
-	void runGrammarOnText(istream& input, std::ostream& output);
+	void runGrammarOnText(std::istream& input, std::ostream& output);
 
 	bool getNullFlush();
 	bool wordform_case;
@@ -62,13 +62,8 @@ protected:
 	void procNode(int& depth, std::map<int, Node>& nodes, std::map<int, std::vector<int>>& deps, int node, std::ostream& output);
 
 
-	void runGrammarOnTextWrapperNullFlush(istream& input, std::ostream& output);
+	void runGrammarOnTextWrapperNullFlush(std::istream& input, std::ostream& output);
 
-	UChar u_fgetc_wrapper(istream& input);
-	UConverter* fgetc_converter;
-	char fgetc_inputbuf[5];
-	UChar fgetc_outputbuf[5];
-	UErrorCode fgetc_error;
 	void mergeMappings(Cohort& cohort);
 
 private:

@@ -22,6 +22,7 @@
 #include "stdafx.hpp"
 #include "Grammar.hpp"
 #include "FormatConverter.hpp"
+#include "streambuf.hpp"
 
 #include "version.hpp"
 
@@ -32,7 +33,6 @@ using CG3::CG3Quit;
 
 int main(int argc, char* argv[]) {
 	UErrorCode status = U_ZERO_ERROR;
-	UFILE* ux_stdin = 0;
 
 	/* Initialize ICU */
 	u_init(&status);
@@ -89,9 +89,6 @@ int main(int argc, char* argv[]) {
 	ucnv_setDefaultName("UTF-8");
 	const char* codepage_default = ucnv_getDefaultName();
 	uloc_setDefault("en_US_POSIX", &status);
-	const char* locale_default = uloc_getDefault();
-
-	ux_stdin = u_finit(stdin, locale_default, codepage_default);
 
 	CG3::Grammar grammar;
 
@@ -104,7 +101,10 @@ int main(int argc, char* argv[]) {
 	CG3::FormatConverter applicator(std::cerr);
 	applicator.setGrammar(&grammar);
 
-	std::unique_ptr<CG3::istream> instream;
+	ux_stripBOM(std::cin);
+
+	std::istream* instream = &std::cin;
+	std::unique_ptr<std::istream> _instream;
 
 	CG3::CG_FORMATS fmt = CG3::FMT_INVALID;
 
@@ -130,9 +130,36 @@ int main(int argc, char* argv[]) {
 	}
 
 	if (options[IN_AUTO].doesOccur || fmt == CG3::FMT_INVALID) {
-		CG3::UString buffer;
-		buffer.resize(1000);
-		int32_t nr = u_file_read(&buffer[0], buffer.size(), ux_stdin);
+		constexpr auto BUF_SIZE = 1000;
+
+		std::string buf8(BUF_SIZE, 0);
+		std::cin.read(&buf8[0], BUF_SIZE - 4);
+		auto sz = static_cast<int32_t>(std::cin.gcount());
+		if ((buf8[sz - 1] & 0xF0) == 0xF0) {
+			if (!std::cin.read(&buf8[sz], 3)) {
+				throw std::runtime_error("Could not read 3 expected bytes from stream");
+			}
+			sz += 3;
+		}
+		else if ((buf8[sz - 1] & 0xE0) == 0xE0) {
+			if (!std::cin.read(&buf8[sz], 2)) {
+				throw std::runtime_error("Could not read 2 expected bytes from stream");
+			}
+			sz += 2;
+		}
+		else if ((buf8[sz - 1] & 0xC0) == 0xC0) {
+			if (!std::cin.read(&buf8[sz], 1)) {
+				throw std::runtime_error("Could not read 1 expected byte from stream");
+			}
+			sz += 1;
+		}
+
+		CG3::UString buffer(BUF_SIZE, 0);
+		int32_t nr = 0;
+		u_strFromUTF8(&buffer[0], BUF_SIZE, &nr, buf8.c_str(), sz, &status);
+		if (U_FAILURE(status)) {
+			throw std::runtime_error("UTF-8 to UTF-16 conversion failed");
+		}
 		buffer.resize(nr);
 		URegularExpression* rx = 0;
 
@@ -181,10 +208,8 @@ int main(int argc, char* argv[]) {
 		}
 		uregex_close(rx);
 
-		instream.reset(new CG3::istream_buffer(ux_stdin, buffer));
-	}
-	else {
-		instream.reset(new CG3::istream(ux_stdin));
+		_instream.reset(new std::istream(new CG3::bstreambuf(std::cin, std::move(buf8))));
+		instream = _instream.get();
 	}
 
 	applicator.setInputFormat(fmt);
@@ -236,7 +261,7 @@ int main(int argc, char* argv[]) {
 	applicator.is_conv = true;
 	applicator.trace = true;
 	applicator.verbosity_level = 0;
-	applicator.runGrammarOnText(*instream.get(), std::cout);
+	applicator.runGrammarOnText(*instream, std::cout);
 
 	u_cleanup();
 }
