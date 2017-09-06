@@ -91,7 +91,6 @@ int main(int argc, char* argv[]) {
 	char* single_rule = 0;
 
 	UErrorCode status = U_ZERO_ERROR;
-	UFILE* ux_stdin = 0;
 
 #if HAVE_GETOPT_LONG
 	struct option long_options[] = {
@@ -187,11 +186,7 @@ int main(int argc, char* argv[]) {
 	}
 
 	ucnv_setDefaultName("UTF-8");
-	const char* codepage_default = ucnv_getDefaultName();
 	uloc_setDefault("en_US_POSIX", &status);
-	const char* locale_default = uloc_getDefault();
-
-	ux_stdin = u_finit(stdin, locale_default, codepage_default);
 
 	CG3::Grammar grammar;
 
@@ -204,8 +199,6 @@ int main(int argc, char* argv[]) {
 		return 0;
 	}
 	//*/
-
-	CG3::IGrammarParser* parser = 0;
 
 	if (optind <= (argc - 1)) {
 		FILE* in = fopen(argv[optind], "rb");
@@ -222,12 +215,16 @@ int main(int argc, char* argv[]) {
 	else {
 		endProgram(argv[0]);
 	}
+
+	std::istream* ux_stdin = &std::cin;
+	std::unique_ptr<std::ifstream> _ux_stdin;
 	if (optind <= (argc - 2)) {
-		u_fclose(ux_stdin);
-		ux_stdin = u_fopen(argv[optind + 1], "rb", locale_default, codepage_default);
-		if (ux_stdin == NULL) {
+		_ux_stdin.reset(new std::ifstream(argv[optind + 1], std::ios::binary));
+
+		if (!_ux_stdin || _ux_stdin->bad()) {
 			endProgram(argv[0]);
 		}
+		ux_stdin = _ux_stdin.get();
 	}
 
 	std::ostream* ux_stdout = &std::cout;
@@ -241,26 +238,25 @@ int main(int argc, char* argv[]) {
 		ux_stdout = _ux_stdout.get();
 	}
 
+	std::unique_ptr<CG3::IGrammarParser> parser;
 	if (CG3::cbuffers[0][0] == 'C' && CG3::cbuffers[0][1] == 'G' && CG3::cbuffers[0][2] == '3' && CG3::cbuffers[0][3] == 'B') {
-		parser = new CG3::BinaryGrammar(grammar, std::cerr);
+		parser.reset(new CG3::BinaryGrammar(grammar, std::cerr));
 	}
 	else {
 		// Forbidding text grammars makes debugging very annoying
 		std::cerr << "Warning: Text grammar detected - to better process textual" << std::endl;
 		std::cerr << "grammars, use `vislcg3'; to compile this grammar, use `cg-comp'" << std::endl;
-		parser = new CG3::TextualParser(grammar, std::cerr);
+		parser.reset(new CG3::TextualParser(grammar, std::cerr));
 	}
 
 	grammar.ux_stderr = &std::cerr;
 
-	if (parser->parse_grammar(argv[optind], locale_default, codepage_default)) {
+	if (parser->parse_grammar(argv[optind])) {
 		std::cerr << "Error: Grammar could not be parsed - exiting!" << std::endl;
 		CG3Quit(1);
 	}
 
 	grammar.reindex();
-
-	delete parser;
 
 	std::unique_ptr<CG3::GrammarApplicator> applicator;
 
@@ -313,8 +309,7 @@ int main(int argc, char* argv[]) {
 		switch (cmd) {
 		case 'd':
 		default:
-			CG3::istream instream(ux_stdin, !null_flush);
-			applicator->runGrammarOnText(instream, *ux_stdout);
+			applicator->runGrammarOnText(*ux_stdin, *ux_stdout);
 			break;
 		}
 	}

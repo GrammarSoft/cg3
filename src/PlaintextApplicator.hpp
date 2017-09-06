@@ -32,7 +32,7 @@ public:
 	bool add_tags = false;
 
 	PlaintextApplicator(std::ostream& ux_err);
-	void runGrammarOnText(istream& input, std::ostream& output);
+	void runGrammarOnText(std::istream& input, std::ostream& output);
 
 	void printCohort(Cohort* cohort, std::ostream& output);
 	void printSingleWindow(SingleWindow* window, std::ostream& output);

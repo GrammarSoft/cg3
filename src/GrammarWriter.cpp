@@ -36,7 +36,7 @@ GrammarWriter::~GrammarWriter() {
 	grammar = 0;
 }
 
-void GrammarWriter::printSet(UFILE* output, const Set& curset) {
+void GrammarWriter::printSet(std::ostream& output, const Set& curset) {
 	if (used_sets.find(curset.number) != used_sets.end()) {
 		return;
 	}
@@ -95,7 +95,7 @@ void GrammarWriter::printSet(UFILE* output, const Set& curset) {
 	}
 }
 
-int GrammarWriter::writeGrammar(UFILE* output) {
+int GrammarWriter::writeGrammar(std::ostream& output) {
 	if (!output) {
 		u_fprintf(ux_stderr, "Error: Output is null - cannot write to nothing!\n");
 		CG3Quit(1);
@@ -233,7 +233,7 @@ int GrammarWriter::writeGrammar(UFILE* output) {
 }
 
 // ToDo: Make printRule do the right thing for MOVE_ and ADDCOHORT_ BEFORE|AFTER
-void GrammarWriter::printRule(UFILE* to, const Rule& rule) {
+void GrammarWriter::printRule(std::ostream& to, const Rule& rule) {
 	if (statistics) {
 		if (ceil(rule.total_time) == floor(rule.total_time)) {
 			u_fprintf(to, "\n#Rule Matched: %u ; NoMatch: %u ; TotalTime: %.0f\n", rule.num_match, rule.num_fail, rule.total_time);
@@ -295,7 +295,7 @@ void GrammarWriter::printRule(UFILE* to, const Rule& rule) {
 	}
 }
 
-void GrammarWriter::printContextualTest(UFILE* to, const ContextualTest& test) {
+void GrammarWriter::printContextualTest(std::ostream& to, const ContextualTest& test) {
 	if (statistics) {
 		if (ceil(test.total_time) == floor(test.total_time)) {
 			u_fprintf(to, "\n#Test Matched: %u ; NoMatch: %u ; TotalTime: %.0f\n", test.num_match, test.num_fail, test.total_time);
@@ -420,8 +420,8 @@ void GrammarWriter::printContextualTest(UFILE* to, const ContextualTest& test) {
 	}
 }
 
-void GrammarWriter::printTag(UFILE* to, const Tag& tag) {
+void GrammarWriter::printTag(std::ostream& to, const Tag& tag) {
 	UString str = tag.toUString(true);
-	u_file_write(str.c_str(), str.length(), to);
+	u_fprintf(to, "%S", str.c_str());
 }
 }

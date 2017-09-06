@@ -39,9 +39,16 @@ public:
 	{
 	}
 
-	~cstreambuf() {
+	// Get
+	int_type underflow() {
+		return fgetc(stream);
 	}
 
+	std::streamsize xsgetn(char_type* s, std::streamsize count) {
+		return fread(s, 1, static_cast<size_t>(count), stream);
+	}
+
+	// Put
 	int_type overflow(int_type ch = Base::traits_type::eof()) {
 		if (ch != Base::traits_type::eof()) {
 			return fputc(ch, stream);
@@ -50,7 +57,7 @@ public:
 	}
 
 	std::streamsize xsputn(const char_type* s, std::streamsize count) {
-		return fwrite(s, static_cast<size_t>(count), 1, stream);
+		return fwrite(s, 1, static_cast<size_t>(count), stream);
 	}
 
 	int sync() {
@@ -61,43 +68,28 @@ private:
 	FILE* stream;
 };
 
-class ustreambuf : public std::streambuf {
+class bstreambuf : public std::stringbuf {
 public:
-	using Base = std::streambuf;
+	using Base = std::stringbuf;
 	using char_type = typename Base::char_type;
 	using int_type = typename Base::int_type;
 
-	ustreambuf(UFILE* s)
-		: stream(s)
-		, raw(u_fgetfile(s))
+	bstreambuf(std::istream& input, std::string&& b)
+	  : Base(std::move(b), std::ios::in | std::ios::binary)
+	  , stream(&input)
 	{
 	}
 
-	~ustreambuf() {
-	}
-
-	int_type overflow(int_type ch = Base::traits_type::eof()) {
-		if (ch != Base::traits_type::eof()) {
-			return fputc(ch, raw);
+	int_type underflow() {
+		auto c = Base::underflow();
+		if (c != Base::traits_type::eof()) {
+			return c;
 		}
-		return 0;
-	}
-
-	std::streamsize xsputn(const char_type* s, std::streamsize count) {
-		return fwrite(s, static_cast<size_t>(count), 1, raw);
-	}
-
-	int sync() {
-		return fflush(raw);
-	}
-
-	UConverter* getConverter() {
-		return u_fgetConverter(stream);
+		return stream->get();
 	}
 
 private:
-	UFILE* stream;
-	FILE* raw;
+	std::istream* stream;
 };
 
 }

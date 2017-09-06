@@ -39,17 +39,17 @@ public:
 	GrammarWriter(Grammar& res, std::ostream& ux_err);
 	~GrammarWriter();
 
-	int writeGrammar(UFILE* output);
+	int writeGrammar(std::ostream& output);
 
 private:
 	std::ostream* ux_stderr;
 	uint32FlatHashSet used_sets;
 	const Grammar* grammar;
 
-	void printTag(UFILE* out, const Tag& tag);
-	void printSet(UFILE* output, const Set& curset);
-	void printRule(UFILE* to, const Rule& rule);
-	void printContextualTest(UFILE* to, const ContextualTest& test);
+	void printTag(std::ostream& out, const Tag& tag);
+	void printSet(std::ostream& output, const Set& curset);
+	void printRule(std::ostream& to, const Rule& rule);
+	void printContextualTest(std::ostream& to, const ContextualTest& test);
 };
 }
 

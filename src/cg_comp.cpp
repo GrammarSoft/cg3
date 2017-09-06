@@ -60,9 +60,7 @@ int main(int argc, char* argv[]) {
 	status = U_ZERO_ERROR;
 
 	ucnv_setDefaultName("UTF-8");
-	const char* codepage_default = ucnv_getDefaultName();
 	uloc_setDefault("en_US_POSIX", &status);
-	const char* locale_default = uloc_getDefault();
 
 	CG3::Grammar grammar;
 
@@ -89,7 +87,7 @@ int main(int argc, char* argv[]) {
 
 	grammar.ux_stderr = &std::cerr;
 
-	if (parser->parse_grammar(argv[1], locale_default, codepage_default)) {
+	if (parser->parse_grammar(argv[1])) {
 		std::cerr << "Error: Grammar could not be parsed - exiting!" << std::endl;
 		CG3Quit(1);
 	}

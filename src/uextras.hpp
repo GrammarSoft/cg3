@@ -50,6 +50,50 @@ inline const char *basename(const char *path) {
 }
 #endif
 
+// Strips 0xEF 0xBB 0xBF from a stream
+inline bool ux_stripBOM(std::istream& stream) {
+	auto a = stream.get();
+	if (a == std::istream::traits_type::eof()) {
+		return false;
+	}
+	if (a != 0xef) {
+		stream.putback(static_cast<char>(a));
+		return false;
+	}
+
+	auto b = stream.get();
+	if (b == std::istream::traits_type::eof()) {
+		stream.putback(static_cast<char>(a));
+		return false;
+	}
+	if (b != 0xbb) {
+		stream.putback(static_cast<char>(b));
+		stream.putback(static_cast<char>(a));
+		return false;
+	}
+
+	auto c = stream.get();
+	if (c == std::istream::traits_type::eof()) {
+		stream.putback(static_cast<char>(b));
+		stream.putback(static_cast<char>(a));
+		return false;
+	}
+	if (c != 0xbf) {
+		stream.putback(static_cast<char>(c));
+		stream.putback(static_cast<char>(b));
+		stream.putback(static_cast<char>(a));
+		return false;
+	}
+
+	return true;
+}
+
+// ICU std::istream input wrappers
+UChar* u_fgets(UChar* s, int32_t n, std::istream& input);
+
+UChar u_fgetc(std::istream& input);
+
+// ICU std::ostream output wrappers
 void u_fflush(std::ostream& output);
 void u_fflush(std::ostream* output);
 

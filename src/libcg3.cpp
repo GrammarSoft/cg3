@@ -33,7 +33,7 @@ using namespace CG3;
 #include "cg3.h"
 
 namespace {
-UFILE* ux_stdin = 0;
+std::unique_ptr<std::istream> ux_stdin;
 std::unique_ptr<std::ostream> ux_stdout;
 std::unique_ptr<std::ostream> ux_stderr;
 }
@@ -56,7 +56,7 @@ cg3_status cg3_init(FILE* in, FILE* out, FILE* err) {
 	}
 	status = U_ZERO_ERROR;
 
-	ux_stdin = u_finit(in, uloc_getDefault(), ucnv_getDefaultName());
+	ux_stdin.reset(new std::istream(new cstreambuf(in)));
 	if (!ux_stdin) {
 		fprintf(err, "CG3 Error: The input stream could not be inited.\n");
 		return CG3_ERROR;
@@ -78,7 +78,7 @@ cg3_status cg3_init(FILE* in, FILE* out, FILE* err) {
 }
 
 cg3_status cg3_cleanup(void) {
-	u_fclose(ux_stdin);
+	ux_stdin.reset();
 	ux_stdout.reset();
 	ux_stderr.reset();
 
@@ -112,7 +112,7 @@ cg3_grammar* cg3_grammar_load(const char* filename) {
 	else {
 		parser.reset(new TextualParser(*grammar, *ux_stderr));
 	}
-	if (parser->parse_grammar(filename, uloc_getDefault(), ucnv_getDefaultName())) {
+	if (parser->parse_grammar(filename)) {
 		u_fprintf(ux_stderr, "CG3 Error: Grammar could not be parsed!\n");
 		return 0;
 	}

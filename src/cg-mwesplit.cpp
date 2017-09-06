@@ -43,7 +43,6 @@ using namespace Options;
 
 int main(int argc, char** argv) {
 	UErrorCode status = U_ZERO_ERROR;
-	UFILE* ux_stdin = 0;
 
 	/* Initialize ICU */
 	u_init(&status);
@@ -91,11 +90,7 @@ int main(int argc, char** argv) {
 	}
 
 	ucnv_setDefaultName("UTF-8");
-	const char* codepage_default = ucnv_getDefaultName();
 	uloc_setDefault("en_US_POSIX", &status);
-	const char* locale_default = uloc_getDefault();
-
-	ux_stdin = u_finit(stdin, locale_default, codepage_default);
 
 	CG3::Grammar grammar;
 
@@ -108,13 +103,9 @@ int main(int argc, char** argv) {
 	CG3::MweSplitApplicator applicator(std::cerr);
 	applicator.setGrammar(&grammar);
 
-	std::unique_ptr<CG3::istream> instream;
-
-	instream.reset(new CG3::istream(ux_stdin));
-
 	applicator.is_conv = true;
 	applicator.verbosity_level = 0;
-	applicator.runGrammarOnText(*instream.get(), std::cout);
+	applicator.runGrammarOnText(std::cin, std::cout);
 
 	u_cleanup();
 }
