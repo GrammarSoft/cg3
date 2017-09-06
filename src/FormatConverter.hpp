@@ -45,7 +45,7 @@ class FormatConverter : public ApertiumApplicator, public NicelineApplicator, pu
 public:
 	FormatConverter(std::ostream& ux_err);
 
-	void runGrammarOnText(istream& input, std::ostream& output);
+	void runGrammarOnText(std::istream& input, std::ostream& output);
 	void setInputFormat(CG_FORMATS format);
 	void setOutputFormat(CG_FORMATS format);
 

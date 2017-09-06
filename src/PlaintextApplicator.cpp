@@ -35,7 +35,7 @@ PlaintextApplicator::PlaintextApplicator(std::ostream& ux_err)
 	allow_magic_readings = true;
 }
 
-void PlaintextApplicator::runGrammarOnText(istream& input, std::ostream& output) {
+void PlaintextApplicator::runGrammarOnText(std::istream& input, std::ostream& output) {
 	if (!input.good()) {
 		u_fprintf(ux_stderr, "Error: Input is null - nothing to parse!\n");
 		CG3Quit(1);
@@ -81,11 +81,13 @@ void PlaintextApplicator::runGrammarOnText(istream& input, std::ostream& output)
 
 	gWindow->window_span = num_windows;
 
+	ux_stripBOM(input);
+
 	while (!input.eof()) {
 		++lines;
 		size_t offset = 0, packoff = 0;
 		// Read as much of the next line as will fit in the current buffer
-		while (input.gets(&line[offset], line.size() - offset - 1)) {
+		while (u_fgets(&line[offset], line.size() - offset - 1, input)) {
 			// Copy the segment just read to cleaned
 			for (size_t i = offset; i < line.size(); ++i) {
 				// Only copy one space character, regardless of how many are in input

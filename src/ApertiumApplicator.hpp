@@ -30,7 +30,7 @@ class ApertiumApplicator : public virtual GrammarApplicator {
 public:
 	ApertiumApplicator(std::ostream& ux_err);
 
-	void runGrammarOnText(istream& input, std::ostream& output);
+	void runGrammarOnText(std::istream& input, std::ostream& output);
 
 	bool wordform_case;
 	bool print_word_forms;
@@ -46,13 +46,8 @@ protected:
 	void printReading(Reading* reading, std::ostream& output);
 	void printSingleWindow(SingleWindow* window, std::ostream& output);
 
-	void runGrammarOnTextWrapperNullFlush(istream& input, std::ostream& output);
+	void runGrammarOnTextWrapperNullFlush(std::istream& input, std::ostream& output);
 
-	UChar u_fgetc_wrapper(istream& input);
-	UConverter* fgetc_converter;
-	char fgetc_inputbuf[5];
-	UChar fgetc_outputbuf[5];
-	UErrorCode fgetc_error;
 	void mergeMappings(Cohort& cohort);
 
 private:

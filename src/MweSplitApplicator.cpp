@@ -29,7 +29,7 @@ MweSplitApplicator::MweSplitApplicator(std::ostream& ux_err)
 }
 
 
-void MweSplitApplicator::runGrammarOnText(istream& input, std::ostream& output) {
+void MweSplitApplicator::runGrammarOnText(std::istream& input, std::ostream& output) {
 	GrammarApplicator::runGrammarOnText(input, output);
 }
 

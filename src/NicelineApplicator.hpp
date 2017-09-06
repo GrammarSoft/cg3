@@ -34,7 +34,7 @@ private:
 
 public:
 	NicelineApplicator(std::ostream& ux_err);
-	void runGrammarOnText(istream& input, std::ostream& output);
+	void runGrammarOnText(std::istream& input, std::ostream& output);
 
 	void printReading(const Reading* reading, std::ostream& output);
 	void printCohort(Cohort* cohort, std::ostream& output);

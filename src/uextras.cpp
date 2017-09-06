@@ -52,6 +52,101 @@ std::string ux_dirname(const char* in) {
 }
 }
 
+// ICU std::istream input wrappers
+UChar* u_fgets(UChar* s, int32_t n, std::istream& input) {
+	using namespace CG3;
+
+	s[0] = 0;
+	int32_t i = 0;
+	for (; i < n; ++i) {
+		UChar c = u_fgetc(input);
+		if (c == U_EOF) {
+			break;
+		}
+		s[i] = c;
+		if (ISNL(c)) {
+			break;
+		}
+	}
+	if (i < n) {
+		s[i + 1] = 0;
+	}
+
+	if (i == 0) {
+		return nullptr;
+	}
+	return s;
+}
+
+UChar u_fgetc(std::istream& input) {
+	struct _cps {
+		std::istream* i = 0;
+		UChar c = 0;
+	};
+	static _cps cps[4];
+
+	for (auto& cp : cps) {
+		if (cp.i == &input) {
+			cp.i = 0;
+			return cp.c;
+		}
+	}
+
+	int c = 0;
+	int i = 0;
+	char buf[4];
+	if ((c = input.get()) != EOF) {
+		buf[i++] = static_cast<char>(c);
+		if ((c & 0xF0) == 0xF0) {
+			if (!input.read(buf + i, 3)) {
+				throw std::runtime_error("Could not read 3 expected bytes from stream");
+			}
+			i += 3;
+		}
+		else if ((c & 0xE0) == 0xE0) {
+			if (!input.read(buf + i, 2)) {
+				throw std::runtime_error("Could not read 2 expected bytes from stream");
+			}
+			i += 2;
+		}
+		else if ((c & 0xC0) == 0xC0) {
+			if (!input.read(buf + i, 1)) {
+				throw std::runtime_error("Could not read 1 expected byte from stream");
+			}
+			i += 1;
+		}
+	}
+
+	if (i == 0 && c == EOF) {
+		return U_EOF;
+	}
+
+	if (c == 0) {
+		return 0;
+	}
+
+	UChar u16[2] = {};
+	UErrorCode err = U_ZERO_ERROR;
+	u_strFromUTF8(u16, 2, 0, buf, i, &err);
+	if (U_FAILURE(err)) {
+		throw std::runtime_error("Failed to convert from UTF-8 to UTF-16");
+	}
+
+	if (u16[1]) {
+		for (auto& cp : cps) {
+			if (cp.i == 0) {
+				cp.i = &input;
+				cp.c = u16[1];
+				return u16[0];
+			}
+		}
+		throw std::runtime_error("Not enough space to store UTF-16 high surrogate");
+	}
+
+	return u16[0];
+}
+
+// ICU std::ostream output wrappers
 void u_fflush(std::ostream& output) {
 	output.flush();
 }

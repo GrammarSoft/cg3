@@ -30,7 +30,8 @@
 namespace CG3 {
 
 TextualParser::TextualParser(Grammar& res, std::ostream& ux_err, bool _dump_ast)
-  : filebase(0)
+  : IGrammarParser(res, ux_err)
+  , filebase(0)
   , verbosity_level(0)
   , sets_counter(100)
   , seen_mapping_prefix(0)
@@ -45,12 +46,8 @@ TextualParser::TextualParser(Grammar& res, std::ostream& ux_err, bool _dump_ast)
   , strict_bforms(false)
   , strict_second(false)
   , filename(0)
-  , locale(0)
-  , codepage(0)
   , error_counter(0)
 {
-	ux_stderr = &ux_err;
-	result = &res;
 	dump_ast = _dump_ast;
 }
 
@@ -2188,7 +2185,7 @@ void TextualParser::parseFromUChar(UChar* input, const char* fname) {
 					grammar_size = static_cast<size_t>(_stat.st_size);
 				}
 
-				UFILE* grammar = u_fopen(abspath.c_str(), "rb", locale, codepage);
+				UFILE* grammar = u_fopen(abspath.c_str(), "rb", nullptr, nullptr);
 				if (!grammar) {
 					u_fprintf(ux_stderr, "%s: Error: Error opening %s for reading!\n", filebase, abspath.c_str());
 					CG3Quit(1);
@@ -2432,11 +2429,9 @@ void TextualParser::parseFromUChar(UChar* input, const char* fname) {
 	AST_CLOSE(p);
 }
 
-int TextualParser::parse_grammar(const char* fname, const char* loc, const char* cpage) {
+int TextualParser::parse_grammar(const char* fname) {
 	filename = fname;
 	filebase = basename(const_cast<char*>(fname));
-	locale = loc;
-	codepage = cpage;
 
 	if (!result) {
 		u_fprintf(ux_stderr, "%s: Error: Cannot parse into nothing - hint: call setResult() before trying.\n", filebase);
@@ -2454,7 +2449,7 @@ int TextualParser::parse_grammar(const char* fname, const char* loc, const char*
 		result->grammar_size = static_cast<size_t>(_stat.st_size);
 	}
 
-	UFILE* grammar = u_fopen(filename, "rb", locale, codepage);
+	UFILE* grammar = u_fopen(filename, "rb", nullptr, nullptr);
 	if (!grammar) {
 		u_fprintf(ux_stderr, "%s: Error: Error opening %s for reading!\n", filebase, filename);
 		CG3Quit(1);
@@ -2481,8 +2476,6 @@ int TextualParser::parse_grammar(const char* fname, const char* loc, const char*
 int TextualParser::parse_grammar(const char* buffer, size_t length) {
 	filename = "<utf8-memory>";
 	filebase = "<utf8-memory>";
-	locale = "en_US_POSIX";
-	codepage = "UTF-8";
 	result->grammar_size = length;
 
 	grammarbufs.emplace_back(new UString(length * 2, 0));
@@ -2508,8 +2501,6 @@ int TextualParser::parse_grammar(const char* buffer, size_t length) {
 int TextualParser::parse_grammar(const UChar* buffer, size_t length) {
 	filename = "<utf16-memory>";
 	filebase = "<utf16-memory>";
-	locale = "en_US_POSIX";
-	codepage = "UTF-8";
 	result->grammar_size = length;
 
 	grammarbufs.emplace_back(new UString(buffer, buffer + length));
