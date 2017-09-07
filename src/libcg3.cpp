@@ -24,6 +24,7 @@
 #include "TextualParser.hpp"
 #include "BinaryGrammar.hpp"
 #include "GrammarApplicator.hpp"
+#include "MweSplitApplicator.hpp"
 #include "Window.hpp"
 #include "SingleWindow.hpp"
 #include "version.hpp"
@@ -122,6 +123,35 @@ cg3_grammar* cg3_grammar_load(const char* filename) {
 	return grammar;
 }
 
+cg3_grammar* cg3_grammar_load_buffer(const char* buffer, size_t length) {
+	if (length < 4) {
+		u_fprintf(ux_stderr, "CG3 Error: Error reading first 4 bytes from grammar!\n");
+		return 0;
+	}
+
+	Grammar* grammar = new Grammar;
+	grammar->ux_stderr = ux_stderr.get();
+	grammar->ux_stdout = ux_stdout.get();
+
+	std::unique_ptr<IGrammarParser> parser;
+
+	if (buffer[0] == 'C' && buffer[1] == 'G' && buffer[2] == '3' && buffer[3] == 'B') {
+		u_fprintf(ux_stderr, "CG3 Info: Binary grammar detected.\n");
+		parser.reset(new BinaryGrammar(*grammar, *ux_stderr));
+	}
+	else {
+		parser.reset(new TextualParser(*grammar, *ux_stderr));
+	}
+	if (parser->parse_grammar(buffer, length)) {
+		u_fprintf(ux_stderr, "CG3 Error: Grammar could not be parsed!\n");
+		return 0;
+	}
+
+	grammar->reindex();
+
+	return grammar;
+}
+
 void cg3_grammar_free(cg3_grammar* grammar_) {
 	Grammar* grammar = static_cast<Grammar*>(grammar_);
 	delete grammar;
@@ -133,6 +163,10 @@ cg3_applicator* cg3_applicator_create(cg3_grammar* grammar_) {
 	applicator->setGrammar(grammar);
 	applicator->index();
 	return applicator;
+}
+
+cg3_mwesplitapplicator* cg3_mwesplitapplicator_create() {
+	return new MweSplitApplicator(*ux_stderr);
 }
 
 void cg3_applicator_setflags(cg3_applicator* applicator_, uint32_t flags) {
@@ -175,6 +209,21 @@ void cg3_applicator_setoption(cg3_applicator* applicator_, cg3_option option, vo
 void cg3_applicator_free(cg3_applicator* applicator_) {
 	GrammarApplicator* applicator = static_cast<GrammarApplicator*>(applicator_);
 	delete applicator;
+}
+
+void cg3_run_grammar_on_text(cg3_applicator* applicator_, cg3_istream* is_, cg3_ostream* os_) {
+	GrammarApplicator* applicator = static_cast<GrammarApplicator*>(applicator_);
+	std::istream* is = static_cast<std::istream*>(is_);
+	std::ostream* os = static_cast<std::ostream*>(os_);
+	applicator->runGrammarOnText(*is, *os);
+}
+
+
+void cg3_run_mwesplit_on_text(cg3_mwesplitapplicator* applicator_, cg3_istream* is_, cg3_ostream* os_) {
+	MweSplitApplicator* applicator = static_cast<MweSplitApplicator*>(applicator_);
+	std::istream* is = static_cast<std::istream*>(is_);
+	std::ostream* os = static_cast<std::ostream*>(os_);
+	applicator->runGrammarOnText(*is, *os);
 }
 
 cg3_sentence* cg3_sentence_new(cg3_applicator* applicator_) {
