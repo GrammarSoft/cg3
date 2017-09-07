@@ -33,10 +33,13 @@ extern "C" {
 
 typedef void cg3_grammar;
 typedef void cg3_applicator;
+typedef void cg3_mwesplitapplicator;
 typedef void cg3_sentence;
 typedef void cg3_cohort;
 typedef void cg3_reading;
 typedef void cg3_tag;
+typedef void cg3_istream;
+typedef void cg3_ostream;
 
 typedef enum {
 	CG3_ERROR   = 0,
@@ -70,6 +73,7 @@ cg3_status cg3_init(FILE* in, FILE* out, FILE* err);
 cg3_status cg3_cleanup(void);
 
 cg3_grammar* cg3_grammar_load(const char* filename);
+cg3_grammar* cg3_grammar_load_buffer(const char* buffer, size_t length);
 void cg3_grammar_free(cg3_grammar* grammar);
 
 cg3_applicator* cg3_applicator_create(cg3_grammar* grammar);
@@ -84,6 +88,11 @@ Valid signatures:
 //*/
 void cg3_applicator_setoption(cg3_applicator* applicator, cg3_option option, void* value);
 void cg3_applicator_free(cg3_applicator* applicator);
+
+void cg3_run_grammar_on_text(cg3_applicator*, cg3_istream*, cg3_ostream*);
+
+cg3_mwesplitapplicator* cg3_mwesplitapplicator_create();
+void cg3_run_mwesplit_on_text(cg3_mwesplitapplicator*, cg3_istream*, cg3_ostream*);
 
 cg3_sentence* cg3_sentence_new(cg3_applicator* applicator);
 cg3_sentence* cg3_sentence_copy(cg3_sentence* from, cg3_applicator* to);
