@@ -92,18 +92,8 @@ int main(int argc, char** argv) {
 	ucnv_setDefaultName("UTF-8");
 	uloc_setDefault("en_US_POSIX", &status);
 
-	CG3::Grammar grammar;
-
-	grammar.ux_stderr = &std::cerr;
-	grammar.allocateDummySet();
-	grammar.delimiters = grammar.allocateSet();
-	grammar.addTagToSet(grammar.allocateTag(CG3::stringbits[0].getTerminatedBuffer()), grammar.delimiters);
-	grammar.reindex();
-
 	CG3::MweSplitApplicator applicator(std::cerr);
-	applicator.setGrammar(&grammar);
 
-	applicator.is_conv = true;
 	applicator.verbosity_level = 0;
 	applicator.runGrammarOnText(std::cin, std::cout);
 
