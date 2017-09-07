@@ -26,6 +26,15 @@ namespace CG3 {
 MweSplitApplicator::MweSplitApplicator(std::ostream& ux_err)
   : GrammarApplicator(ux_err)
 {
+       CG3::Grammar *grammar = new CG3::Grammar;
+       grammar->ux_stderr = ux_stderr;
+       grammar->allocateDummySet();
+       grammar->delimiters = grammar->allocateSet();
+       grammar->addTagToSet(grammar->allocateTag(CG3::stringbits[0].getTerminatedBuffer()), grammar->delimiters);
+       grammar->reindex();
+       setGrammar(grammar);
+       owns_grammar = true;
+       is_conv = true;
 }
 
 
