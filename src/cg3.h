@@ -38,8 +38,8 @@ typedef void cg3_sentence;
 typedef void cg3_cohort;
 typedef void cg3_reading;
 typedef void cg3_tag;
-typedef void cg3_istream;
-typedef void cg3_ostream;
+typedef void std_istream;
+typedef void std_ostream;
 
 typedef enum {
 	CG3_ERROR   = 0,
@@ -89,10 +89,10 @@ Valid signatures:
 void cg3_applicator_setoption(cg3_applicator* applicator, cg3_option option, void* value);
 void cg3_applicator_free(cg3_applicator* applicator);
 
-void cg3_run_grammar_on_text(cg3_applicator*, cg3_istream*, cg3_ostream*);
+void cg3_run_grammar_on_text(cg3_applicator*, std_istream*, std_ostream*);
 
 cg3_mwesplitapplicator* cg3_mwesplitapplicator_create();
-void cg3_run_mwesplit_on_text(cg3_mwesplitapplicator*, cg3_istream*, cg3_ostream*);
+void cg3_run_mwesplit_on_text(cg3_mwesplitapplicator*, std_istream*, std_ostream*);
 
 cg3_sentence* cg3_sentence_new(cg3_applicator* applicator);
 cg3_sentence* cg3_sentence_copy(cg3_sentence* from, cg3_applicator* to);
