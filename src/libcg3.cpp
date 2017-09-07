@@ -211,7 +211,7 @@ void cg3_applicator_free(cg3_applicator* applicator_) {
 	delete applicator;
 }
 
-void cg3_run_grammar_on_text(cg3_applicator* applicator_, cg3_istream* is_, cg3_ostream* os_) {
+void cg3_run_grammar_on_text(cg3_applicator* applicator_, std_istream* is_, std_ostream* os_) {
 	GrammarApplicator* applicator = static_cast<GrammarApplicator*>(applicator_);
 	std::istream* is = static_cast<std::istream*>(is_);
 	std::ostream* os = static_cast<std::ostream*>(os_);
@@ -219,7 +219,7 @@ void cg3_run_grammar_on_text(cg3_applicator* applicator_, cg3_istream* is_, cg3_
 }
 
 
-void cg3_run_mwesplit_on_text(cg3_mwesplitapplicator* applicator_, cg3_istream* is_, cg3_ostream* os_) {
+void cg3_run_mwesplit_on_text(cg3_mwesplitapplicator* applicator_, std_istream* is_, std_ostream* os_) {
 	MweSplitApplicator* applicator = static_cast<MweSplitApplicator*>(applicator_);
 	std::istream* is = static_cast<std::istream*>(is_);
 	std::ostream* os = static_cast<std::ostream*>(os_);
