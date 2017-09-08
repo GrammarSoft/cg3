@@ -1566,16 +1566,12 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						break;
 					}
 					else if (rule.type == K_COPY) {
-						// ToDo: Also copy sub-readings
 						// ToDo: Maybe just goto Substitute directly?
-						Reading* cReading = cohort->allocateAppendReading();
+						Reading* cReading = cohort->allocateAppendReading(reading_head);
 						++numReadings;
 						index_ruleCohort_no.clear();
 						cReading->hit_by.push_back(rule.number);
 						cReading->noprint = false;
-						for (auto iter : reading.tags_list) {
-							addTagToReading(*cReading, iter);
-						}
 
 						if (rule.sublist) {
 							auto excepts = ss_taglist.get();
@@ -1626,6 +1622,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 							splitMappings(mappings, *cohort, *cReading, true);
 						}
 						readings_changed = true;
+						reflowReading(*cReading);
 					}
 					else if (type == K_SETPARENT || type == K_SETCHILD) {
 						int32_t orgoffset = rule.dep_target->offset;

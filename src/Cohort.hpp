@@ -85,6 +85,7 @@ public:
 	void remChild(uint32_t child);
 	void appendReading(Reading* read);
 	Reading* allocateAppendReading();
+	Reading* allocateAppendReading(Reading& r);
 	bool addRelation(uint32_t rel, uint32_t cohort);
 	bool setRelation(uint32_t rel, uint32_t cohort);
 	bool remRelation(uint32_t rel, uint32_t cohort);

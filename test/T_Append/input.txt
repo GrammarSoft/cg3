@@ -1,5 +1,6 @@
 "<word>"
 	"word" notwanted
 	"word" wanted
+		"subba" a
 	"word" notmeeither
 "<waffle>"
