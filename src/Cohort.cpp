@@ -180,6 +180,16 @@ Reading* Cohort::allocateAppendReading() {
 	return read;
 }
 
+Reading* Cohort::allocateAppendReading(Reading& r) {
+	Reading* read = alloc_reading(r);
+	readings.push_back(read);
+	if (read->number == 0) {
+		read->number = (uint32_t)readings.size() * 1000 + 1000;
+	}
+	type &= ~CT_NUM_CURRENT;
+	return read;
+}
+
 void Cohort::updateMinMax() {
 	if (type & CT_NUM_CURRENT) {
 		return;
