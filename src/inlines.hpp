@@ -229,7 +229,7 @@ inline bool ISNL(const UChar c) {
 	  || c == 0x000CL // Form Feed
 	  || c == 0x000BL // Vertical Tab
 	  || c == 0x000AL // ASCII \n
-	  );
+	);
 }
 
 inline bool ISESC(const UChar* p) {

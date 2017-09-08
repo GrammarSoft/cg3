@@ -35,6 +35,7 @@ ConstructorInitializerAllOnOneLineOrOnePerLine: false
 ConstructorInitializerIndentWidth: 2
 ContinuationIndentWidth: 2
 Cpp11BracedListStyle: false
+FixNamespaceComments: false
 ForEachMacros: [ foreach, reverse_foreach, BOOST_FOREACH, boost_foreach ]
 IndentCaseLabels: false
 IndentWidth: 4
