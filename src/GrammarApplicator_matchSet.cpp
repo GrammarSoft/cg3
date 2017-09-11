@@ -33,7 +33,7 @@ namespace CG3 {
 /**
  * Tests whether one set is a subset of another set, specialized for TagSet.
  *
- * In the http://beta.visl.sdu.dk/cg3_performance.html test data, this function is executed 1516098 times,
+ * In the https://visl.sdu.dk/cg3_performance.html test data, this function is executed 1516098 times,
  * of which 23222 (1.5%) return true.
  *
  * @param[in] a The tags from the set
@@ -223,7 +223,7 @@ uint32_t GrammarApplicator::doesRegexpMatchReading(const Reading& reading, const
 /**
  * Tests whether a given reading matches a given tag.
  *
- * In the http://beta.visl.sdu.dk/cg3_performance.html test data, this function is executed 1058428 times,
+ * In the https://visl.sdu.dk/cg3_performance.html test data, this function is executed 1058428 times,
  * of which 827259 are treated as raw tags.
  *
  * @param[in] reading The reading to test
@@ -558,7 +558,7 @@ bool GrammarApplicator::doesSetMatchReading_trie(const Reading& reading, const S
 /**
  * Tests whether a given reading matches a given LIST set.
  *
- * In the http://beta.visl.sdu.dk/cg3_performance.html test data, this function is executed 1073969 times.
+ * In the https://visl.sdu.dk/cg3_performance.html test data, this function is executed 1073969 times.
  *
  * @param[in] reading The reading to test
  * @param[in] set The hash of the set to test against
@@ -619,7 +619,7 @@ bool GrammarApplicator::doesSetMatchReading_tags(const Reading& reading, const S
 /**
  * Tests whether a given reading matches a given LIST or SET set.
  *
- * In the http://beta.visl.sdu.dk/cg3_performance.html test data, this function is executed 5746792 times,
+ * In the https://visl.sdu.dk/cg3_performance.html test data, this function is executed 5746792 times,
  * of which only 1700292 make it past the first index check.
  *
  * @param[in] reading The reading to test

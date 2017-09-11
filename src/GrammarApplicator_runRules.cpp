@@ -306,7 +306,7 @@ Reading* GrammarApplicator::get_sub_reading(Reading* tr, int sub_reading) {
  * Only when no further changes are caused at a level does it progress to next level.
  *
  * The loops in this function are increasingly explosive, despite efforts to contain them.
- * In the http://beta.visl.sdu.dk/cg3_performance.html test data, this function is called 1015 times.
+ * In the https://visl.sdu.dk/cg3_performance.html test data, this function is called 1015 times.
  * The first loop (rules) is executed 3101728 times.
  * The second loop (cohorts) is executed 11087278 times.
  * The third loop (finding readings) is executed 11738927 times; of these, 1164585 (10%) match the rule target.
