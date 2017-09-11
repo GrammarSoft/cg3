@@ -4,14 +4,14 @@
 # Textual form of a Constraint Grammar v3 file
 # Extensions: .cg3 .rlx
 # by Tino Didriksen <mail@tinodidriksen.com>
-# http://visl.sdu.dk/cg3.html
+# https://visl.sdu.dk/cg3.html
 0   search/1/cb  DELIMITERS\ =  CG-3 Grammar, text
 0   search/1/cb  DELIMITERS=    CG-3 Grammar, text
 
 # CG-3 compiled grammar
 # Compiled form of a Constraint Grammar v3 file
-# Extensions: .cg3b .rlx.bin
+# Extensions: .cg3b .rlx.bin .bin
 # by Tino Didriksen <mail@tinodidriksen.com>
-# http://visl.sdu.dk/cg3.html
+# https://visl.sdu.dk/cg3.html
 0   string       CG3B           CG-3 Grammar, compiled,
 >4  ubelong      x              revision %u
