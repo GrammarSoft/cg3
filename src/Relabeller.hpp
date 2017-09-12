@@ -19,7 +19,6 @@
 * along with VISL CG-3.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-// TODO: how's the uuid generated?
 #pragma once
 #ifndef b6d28b7452ec699b_RELABELLER_H
 #define b6d28b7452ec699b_RELABELLER_H
@@ -35,7 +34,6 @@ class Set;
 class Relabeller {
 public:
 	Relabeller(Grammar& res, const Grammar& relabels, std::ostream& ux_err);
-	~Relabeller();
 
 	void relabel();
 
@@ -46,8 +44,8 @@ private:
 
 	typedef std::unordered_map<UString, UString, hash_ustring> UStringMap;
 	typedef std::unordered_map<UString, Set*, hash_ustring> UStringSetMap;
-	const UStringSetMap* relabel_as_list;
-	const UStringSetMap* relabel_as_set;
+	std::unique_ptr<const UStringSetMap> relabel_as_list;
+	std::unique_ptr<const UStringSetMap> relabel_as_set;
 
 	typedef std::vector<Tag*> TagVector;
 	uint32_t copyRelabelSetToGrammar(const Set* set);

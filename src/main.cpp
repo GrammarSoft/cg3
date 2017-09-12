@@ -472,17 +472,14 @@ void GAppSetOpts(CG3::GrammarApplicator& applicator, UConverter* conv) {
 		else {
 			UErrorCode status = U_ZERO_ERROR;
 			size_t sn = strlen(options[RULE].value);
-			UChar* buf = new UChar[sn * 3];
-			buf[0] = 0;
-			ucnv_toUChars(conv, buf, sn * 3, options[RULE].value, sn, &status);
+			CG3::UString buf(sn * 3, 0);
+			ucnv_toUChars(conv, &buf[0], sn * 3, options[RULE].value, sn, &status);
 
 			for (auto rule : applicator.grammar->rule_by_number) {
 				if (rule->name == buf) {
 					applicator.valid_rules.push_back(rule->number);
 				}
 			}
-
-			delete[] buf;
 		}
 	}
 	if (options[VERBOSE].doesOccur) {
