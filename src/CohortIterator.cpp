@@ -350,12 +350,10 @@ MultiCohortIterator::MultiCohortIterator(Cohort* cohort, const ContextualTest* t
   : m_span(span)
   , m_cohort(cohort)
   , m_test(test)
-  , m_cohortiter(0)
 {
 }
 
 MultiCohortIterator::~MultiCohortIterator() {
-	delete m_cohortiter;
 }
 
 bool MultiCohortIterator::operator==(const MultiCohortIterator& other) {
@@ -371,7 +369,7 @@ MultiCohortIterator& MultiCohortIterator::operator++() {
 }
 
 CohortIterator* MultiCohortIterator::operator*() {
-	return m_cohortiter;
+	return m_cohortiter.get();
 }
 
 // ToDo: Iterative deepening depth-first search
@@ -382,11 +380,10 @@ ChildrenIterator::ChildrenIterator(Cohort* cohort, const ContextualTest* test, b
 }
 
 ChildrenIterator& ChildrenIterator::operator++() {
-	delete m_cohortiter;
-	m_cohortiter = 0;
+	m_cohortiter.reset();
 	++m_depth;
 	if (!m_cohort->dep_children.empty()) {
-		m_cohortiter = new CohortSetIter(m_cohort, m_test, m_span);
+		m_cohortiter.reset(new CohortSetIter(m_cohort, m_test, m_span));
 	}
 	return *this;
 }

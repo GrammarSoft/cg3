@@ -64,7 +64,7 @@ int main(int argc, char* argv[]) {
 
 	CG3::Grammar grammar;
 
-	CG3::IGrammarParser* parser = 0;
+	std::unique_ptr<CG3::IGrammarParser> parser;
 	FILE* input = fopen(argv[1], "rb");
 
 	if (!input) {
@@ -82,7 +82,7 @@ int main(int argc, char* argv[]) {
 		CG3Quit(1);
 	}
 	else {
-		parser = new CG3::TextualParser(grammar, std::cerr);
+		parser.reset(new CG3::TextualParser(grammar, std::cerr));
 	}
 
 	grammar.ux_stderr = &std::cerr;
