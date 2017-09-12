@@ -66,6 +66,8 @@ Reading* alloc_reading(const Reading& o) {
 		r->tags_plain = o.tags_plain;
 		r->tags_textual = o.tags_textual;
 		r->tags_numerical = o.tags_numerical;
+		r->tags_string = o.tags_string;
+		r->tags_string_hash = o.tags_string_hash;
 		if (r->next) {
 			r->next = alloc_reading(*r->next);
 		}
@@ -121,6 +123,8 @@ Reading::Reading(const Reading& r)
   , tags_plain(r.tags_plain)
   , tags_textual(r.tags_textual)
   , tags_numerical(r.tags_numerical)
+  , tags_string(r.tags_string)
+  , tags_string_hash(r.tags_string_hash)
 {
 	#ifdef CG_TRACE_OBJECTS
 	std::cerr << "OBJECT: " << __PRETTY_FUNCTION__ << std::endl;
@@ -163,6 +167,8 @@ void Reading::clear() {
 	tags_plain.clear();
 	tags_textual.clear();
 	tags_numerical.clear();
+	tags_string.clear();
+	tags_string_hash = 0;
 }
 
 Reading* Reading::allocateReading(Cohort* p) {
