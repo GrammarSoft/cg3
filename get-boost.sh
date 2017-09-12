@@ -1,7 +1,8 @@
 #!/bin/sh
-export BOOSTVER=61
-export BDOT="1.$BOOSTVER.0"
-export BUC="boost_1_${BOOSTVER}_0"
+export BOOSTVER=65
+export BOOSTMINOR=1
+export BDOT="1.$BOOSTVER.$BOOSTMINOR"
+export BUC="boost_1_${BOOSTVER}_$BOOSTMINOR"
 
 if [ ! -d include ]; then
 	echo "This should be run from the project root folder!"
