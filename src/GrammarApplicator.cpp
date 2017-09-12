@@ -68,7 +68,6 @@ GrammarApplicator::GrammarApplicator(std::ostream& ux_err)
   , section_max_count(0)
   , has_dep(false)
   , dep_highest_seen(0)
-  , gWindow(0)
   , has_relations(false)
   , grammar(0)
   , ux_stderr(&ux_err)
@@ -107,7 +106,7 @@ GrammarApplicator::GrammarApplicator(std::ostream& ux_err)
   , unif_sets_firstrun(false)
   , statistics(false)
 {
-	gWindow = new Window(this);
+	gWindow.reset(new Window(this));
 }
 
 GrammarApplicator::~GrammarApplicator() {
@@ -117,8 +116,6 @@ GrammarApplicator::~GrammarApplicator() {
 			delete iter_stag->second;
 		}
 	}
-
-	delete gWindow;
 
 	if (owns_grammar) {
 		delete grammar;

@@ -31,8 +31,8 @@ Relabeller::Relabeller(Grammar& res, const Grammar& relabels, std::ostream& ux_e
   , grammar(&res)
   , relabels(&relabels)
 {
-	UStringSetMap* as_list = new UStringSetMap;
-	UStringSetMap* as_set = new UStringSetMap;
+	std::unique_ptr<UStringSetMap> as_list{ new UStringSetMap };
+	std::unique_ptr<UStringSetMap> as_set{ new UStringSetMap };
 
 	for (auto rule : relabels.rule_by_number) {
 		const TagVector& fromTags = trie_getTagList(rule->maplist->trie);
@@ -72,15 +72,8 @@ Relabeller::Relabeller(Grammar& res, const Grammar& relabels, std::ostream& ux_e
 		}
 	}
 
-	relabel_as_list = as_list;
-	relabel_as_set = as_set;
-}
-
-Relabeller::~Relabeller() {
-	delete relabel_as_list;
-	relabel_as_list = 0;
-	delete relabel_as_set;
-	relabel_as_set = 0;
+	relabel_as_list = std::move(as_list);
+	relabel_as_set = std::move(as_set);
 }
 
 TagVector Relabeller::transferTags(const TagVector tv_r) {

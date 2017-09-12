@@ -128,7 +128,7 @@ public:
 
 	bool has_dep;
 	uint32_t dep_highest_seen;
-	Window* gWindow;
+	std::unique_ptr<Window> gWindow;
 	void reflowDependencyWindow(uint32_t max = 0);
 
 	bool has_relations;

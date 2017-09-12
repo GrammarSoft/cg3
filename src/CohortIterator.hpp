@@ -135,7 +135,7 @@ protected:
 	Cohort* m_cohort;
 	const ContextualTest* m_test;
 	CohortSet m_seen;
-	CohortSetIter* m_cohortiter;
+	std::unique_ptr<CohortSetIter> m_cohortiter;
 };
 
 class ChildrenIterator : public MultiCohortIterator {

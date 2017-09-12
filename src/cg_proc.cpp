@@ -88,7 +88,7 @@ int main(int argc, char* argv[]) {
 	int sections = 0;
 	int stream_format = 1;
 	bool null_flush = false;
-	char* single_rule = 0;
+	std::string single_rule;
 
 	UErrorCode status = U_ZERO_ERROR;
 
@@ -142,8 +142,8 @@ int main(int argc, char* argv[]) {
 		case 'r': {
 			// strdup() is Posix
 			size_t len = strlen(optarg) + 1;
-			single_rule = new char[len];
-			std::copy(optarg, optarg + len, single_rule);
+			single_rule.reserve(len);
+			std::copy(optarg, optarg + len, std::back_inserter(single_rule));
 			break;
 		}
 		case 's':
@@ -290,20 +290,16 @@ int main(int argc, char* argv[]) {
 	applicator->unique_tags = false;
 
 	// This is if we want to run a single rule  (-r option)
-	if (single_rule) {
-		size_t sn = strlen(single_rule);
-		UChar* buf = new UChar[sn * 3];
-		buf[0] = 0;
-		buf[sn] = 0;
-		u_charsToUChars(single_rule, buf, sn);
+	if (!single_rule.empty()) {
+		size_t sn = single_rule.size();
+		CG3::UString buf(sn * 3, 0);
+		u_charsToUChars(single_rule.c_str(), &buf[0], sn);
 		for (auto rule : applicator->grammar->rule_by_number) {
 			if (rule->name == buf) {
 				applicator->valid_rules.push_back(rule->number);
 			}
 		}
-		delete[] buf;
 	}
-	delete[] single_rule;
 
 	try {
 		switch (cmd) {
