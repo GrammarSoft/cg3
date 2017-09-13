@@ -45,7 +45,6 @@ void endProgram(char* name) {
 	exit(EXIT_FAILURE);
 }
 
-
 // like libcg3's, but with a non-void grammar …
 CG3::Grammar* cg3_grammar_load(const char* filename, std::ostream& ux_stdout, std::ostream& ux_stderr, bool require_binary = false) {
 	using namespace CG3;

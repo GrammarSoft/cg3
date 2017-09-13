@@ -1,5 +1,64 @@
+2017-09-12  unhammer
+
+	* [r12345] src/cg3.h, src/libcg3.cpp: add
+	  cg3_mwesplitapplicator_free
+	  
+	  since using cg3_applicator_free segfaults with 'Key cannot be
+	  res_empty or res_del'
+
+2017-09-12  tino
+
+	* [r12342] src/Reading.cpp: Also clear fake ordered vars; 2000th
+	  commit
+	* [r12340] AUTHORS, NEWS, clang-format.pl, compile-profile.sh,
+	  get-boost.sh, profile-apply.sh, profile-parse.sh,
+	  scripts/clang-format.pl, scripts/compile-profile.sh,
+	  scripts/profile-apply.sh, scripts/profile-parse.sh,
+	  scripts/todo.sh, scripts/update-revision.pl, scripts/vapply.sh,
+	  scripts/vparse.sh, todo.sh, update-revision.pl, vapply.sh,
+	  vparse.sh: Organize
+	* [r12339] src/CohortIterator.cpp, src/CohortIterator.hpp,
+	  src/GrammarApplicator.cpp, src/GrammarApplicator.hpp,
+	  src/Relabeller.cpp, src/Relabeller.hpp, src/cg_comp.cpp,
+	  src/cg_proc.cpp, src/main.cpp: Use unique_ptr
+
+2017-09-11  tino
+
+	* [r12335] INSTALL, cg3.magic, emacs/cg.el,
+	  src/GrammarApplicator_matchSet.cpp,
+	  src/GrammarApplicator_runRules.cpp: http -> https
+
+2017-09-08  tino
+
+	* [r12331] src/Cohort.cpp, src/Cohort.hpp,
+	  src/GrammarApplicator_runRules.cpp, test/T_Append/expected.txt,
+	  test/T_Append/input.txt: Also copy sub-readings
+	* [r12330] .clang-format, clang-format.pl, src/inlines.hpp:
+	  clang-format 6.0
+
+2017-09-07  tino
+
+	* [r12328] src/MweSplitApplicator.cpp: Formatting
+
+2017-09-07  unhammer
+
+	* [r12327] src/cg3.h, src/libcg3.cpp: change cg3_[io]stream to
+	  std_[io]stream since they're std::[io]stream
+	* [r12326] src/cg3.h, src/libcg3.cpp: new cg3.h functions for
+	  loading grammars from buffers and running on streams
+	  
+	  * cg3_grammar_load_buffer * cg3_run_grammar_on_text *
+	  cg3_mwesplitapplicator_create * cg3_run_mwesplit_on_text
+	* [r12325] src/MweSplitApplicator.cpp, src/cg-mwesplit.cpp:
+	  mwesplit always uses an empty grammar, so initialise and own it
+	  in constructor
+	  
+	  easier to use from api
+
 2017-09-06  tino
 
+	* [r12324] ChangeLog, src/streambuf.hpp, src/uextras.cpp,
+	  src/version.hpp: Bump version; Formatting
 	* [r12323] src/ApertiumApplicator.cpp, src/ApertiumApplicator.hpp,
 	  src/BinaryGrammar.cpp, src/BinaryGrammar.hpp, src/CMakeLists.txt,
 	  src/FSTApplicator.cpp, src/FSTApplicator.hpp,
@@ -1860,57 +1919,4 @@
 	  src/Grammar.hpp, src/GrammarApplicator_runRules.cpp,
 	  src/stdafx.hpp: Eliminate more std::map; Tell Debians to use
 	  Apertium Nightly; Tell RPMians to use OBS
-
-2014-10-29  unhammer
-
-	* [r10241] emacs/cg.el: beg/end-of-defun fn's; C-M-h now selects a
-	  rule/set
-	  
-	  and C-M-a / C-M-e works as expected
-
-2014-10-21  tino
-
-	* [r10235] src/Grammar.cpp, src/TextualParser.cpp: Error out when
-	  parsing empty ()
-
-2014-10-09  tino
-
-	* [r10218] CMakeLists.txt: Accidentally -fPIC
-	* [r10217] CMake/FindBoost.cmake, CMakeLists.txt,
-	  src/CMakeLists.txt: Mac RPATH and Threads fixes; If C++11 is
-	  possible, require it; Seperate C++ and C flags
-
-2014-10-07  tino
-
-	* [r10195] ChangeLog, src/GrammarApplicator_matchSet.cpp,
-	  src/version.hpp: Forgot the other half
-	* [r10194] ChangeLog, src/GrammarApplicator.hpp,
-	  src/GrammarApplicator_matchSet.cpp,
-	  src/GrammarApplicator_runRules.cpp, src/TagTrie.hpp,
-	  src/version.hpp: Fix tag unification to actually work with new
-	  trie storage
-
-2014-10-06  tino
-
-	* [r10190] src/version.hpp: Version bump & change
-
-2014-10-03  tino
-
-	* [r10184] src/CMakeLists.txt: No need to explicitly set rpath any
-	  longer
-
-2014-09-30  tino
-
-	* [r10157] TODO, src/CMakeLists.txt: Eliminate private library
-	  split
-
-2014-09-08  tino
-
-	* [r10134] src/FSTApplicator.cpp: cg-conv FST: Copy wordform ->
-	  baseform when missing
-
-2014-09-05  tino
-
-	* [r10125] src/FSTApplicator.cpp: cg-conv FST input < fix
-	* [r10123] CMakeLists.txt: RPM building fixes
 
