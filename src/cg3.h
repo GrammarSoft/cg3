@@ -96,8 +96,8 @@ void cg3_applicator_free(cg3_applicator* applicator);
 void cg3_run_grammar_on_text(cg3_applicator*, std_istream*, std_ostream*);
 
 cg3_mwesplitapplicator* cg3_mwesplitapplicator_create();
-#define cg3_mwesplitapplicator_free(app) cg3_applicator_free(app)
-#define cg3_run_mwesplit_on_text(app, in, out) cg3_run_grammar_on_text(app, in, out)
+#define cg3_mwesplitapplicator_free cg3_applicator_free
+#define cg3_run_mwesplit_on_text cg3_run_grammar_on_text
 
 cg3_sentence* cg3_sentence_new(cg3_applicator* applicator);
 cg3_sentence* cg3_sentence_copy(cg3_sentence* from, cg3_applicator* to);
