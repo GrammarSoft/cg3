@@ -338,7 +338,6 @@ Tag* GrammarApplicator::addTag(const UChar* txt, bool vstr) {
 	return tag;
 }
 
-
 Tag* GrammarApplicator::addTag(const UString& txt, bool vstr) {
 	assert(txt.length() && "addTag() will not work with empty strings.");
 	return addTag(txt.c_str(), vstr);

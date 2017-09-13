@@ -31,9 +31,13 @@
 extern "C" {
 #endif
 
+#if defined(__STDC_VERSION__) && (__STDC_VERSION__ < 199901L)
+	#error "CG-3 requires C99 or newer!"
+#endif
+
 typedef void cg3_grammar;
 typedef void cg3_applicator;
-typedef void cg3_mwesplitapplicator;
+typedef cg3_applicator cg3_mwesplitapplicator;
 typedef void cg3_sentence;
 typedef void cg3_cohort;
 typedef void cg3_reading;
@@ -43,7 +47,7 @@ typedef void std_ostream;
 
 typedef enum {
 	CG3_ERROR   = 0,
-	CG3_SUCCESS = 1
+	CG3_SUCCESS = 1,
 } cg3_status;
 
 typedef enum {
@@ -59,12 +63,12 @@ typedef enum {
 	CG3F_ALWAYS_SPAN        = (1 <<  9),
 	CG3F_DEP_ALLOW_LOOPS    = (1 << 10),
 	CG3F_DEP_NO_CROSSING    = (1 << 11),
-	CG3F_NO_PASS_ORIGIN     = (1 << 13)
+	CG3F_NO_PASS_ORIGIN     = (1 << 13),
 } cg3_flags;
 
 typedef enum {
 	CG3O_SECTIONS      = 1,
-	CG3O_SECTIONS_TEXT = 2
+	CG3O_SECTIONS_TEXT = 2,
 } cg3_option;
 
 // Default usage: if (!cg3_init(stdin, stdout, stderr)) { exit(1); }
@@ -92,7 +96,7 @@ void cg3_applicator_free(cg3_applicator* applicator);
 void cg3_run_grammar_on_text(cg3_applicator*, std_istream*, std_ostream*);
 
 cg3_mwesplitapplicator* cg3_mwesplitapplicator_create();
-void cg3_mwesplitapplicator_free(cg3_mwesplitapplicator* applicator);
+#define cg3_mwesplitapplicator_free(app) cg3_applicator_free(app)
 void cg3_run_mwesplit_on_text(cg3_mwesplitapplicator*, std_istream*, std_ostream*);
 
 cg3_sentence* cg3_sentence_new(cg3_applicator* applicator);

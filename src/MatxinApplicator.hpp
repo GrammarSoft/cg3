@@ -61,7 +61,6 @@ protected:
 
 	void procNode(int& depth, std::map<int, Node>& nodes, std::map<int, std::vector<int>>& deps, int node, std::ostream& output);
 
-
 	void runGrammarOnTextWrapperNullFlush(std::istream& input, std::ostream& output);
 
 	void mergeMappings(Cohort& cohort);

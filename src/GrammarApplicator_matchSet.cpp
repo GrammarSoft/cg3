@@ -871,7 +871,6 @@ inline bool GrammarApplicator::doesSetMatchCohort_helper(Cohort& cohort, Reading
 	return retval;
 }
 
-
 bool GrammarApplicator::doesSetMatchCohortNormal(Cohort& cohort, const uint32_t set, dSMC_Context* context) {
 	bool retval = false;
 
