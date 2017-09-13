@@ -425,7 +425,6 @@ void ApertiumApplicator::runGrammarOnText(std::istream& input, std::ostream& out
 	grammar->total_time = elapsed(tmp, timer);
 } // runGrammarOnText
 
-
 /*
  * Parse an Apertium reading into a CG Reading
  *

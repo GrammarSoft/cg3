@@ -173,7 +173,6 @@ inline bool ux_simplecasecmp(const UChar* a, const UChar* b, const size_t n) {
 	return true;
 }
 
-
 template<typename Str>
 struct substr_t {
 	typedef typename Str::value_type value_type;

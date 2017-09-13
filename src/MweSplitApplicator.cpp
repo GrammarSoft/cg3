@@ -37,11 +37,9 @@ MweSplitApplicator::MweSplitApplicator(std::ostream& ux_err)
 	is_conv = true;
 }
 
-
 void MweSplitApplicator::runGrammarOnText(std::istream& input, std::ostream& output) {
 	GrammarApplicator::runGrammarOnText(input, output);
 }
-
 
 const Tag* MweSplitApplicator::maybeWfTag(const Reading* r) {
 	for (auto tter : r->tags_list) {
@@ -142,7 +140,6 @@ std::vector<Cohort*> MweSplitApplicator::splitMwe(Cohort* cohort) {
 	std::reverse(cos.begin(), cos.end());
 	return cos;
 }
-
 
 void MweSplitApplicator::printSingleWindow(SingleWindow* window, std::ostream& output) {
 	for (auto var : window->variables_output) {

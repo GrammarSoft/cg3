@@ -23,15 +23,6 @@
 #include <stdio.h>
 
 int main(int argc, char* argv[]) {
-	cg3_grammar* grammar = 0;
-	cg3_applicator* applicator = 0;
-	cg3_sentence* sentence = 0;
-	cg3_cohort* cohort = 0;
-	cg3_reading* reading = 0;
-	cg3_tag* tag = 0;
-	size_t ci = 0, ce = 0, ri = 0, re = 0, ti = 0, te = 0;
-	const char* tmp;
-
 	if (argc < 2) {
 		fprintf(stderr, "Error: First argument must be a CG-3 grammar to load!\n");
 		return 1;
@@ -42,21 +33,21 @@ int main(int argc, char* argv[]) {
 		return 2;
 	}
 
-	grammar = cg3_grammar_load(argv[1]);
+	cg3_grammar* grammar = cg3_grammar_load(argv[1]);
 	if (!grammar) {
 		fprintf(stderr, "Error: Failed cg3_grammar_load( %s )!\n", argv[1]);
 		return 3;
 	}
 
-	applicator = cg3_applicator_create(grammar);
+	cg3_applicator* applicator = cg3_applicator_create(grammar);
 	cg3_applicator_setflags(applicator, CG3F_TRACE);
-	sentence = cg3_sentence_new(applicator);
+	cg3_sentence* sentence = cg3_sentence_new(applicator);
 
-	cohort = cg3_cohort_create(sentence);
-	tag = cg3_tag_create_u8(applicator, "\"<wordform>\"");
+	cg3_cohort* cohort = cg3_cohort_create(sentence);
+	cg3_tag* tag = cg3_tag_create_u8(applicator, "\"<wordform>\"");
 	cg3_cohort_setwordform(cohort, tag);
 
-	reading = cg3_reading_create(cohort);
+	cg3_reading* reading = cg3_reading_create(cohort);
 	tag = cg3_tag_create_w(applicator, L"\"baseform\"");
 	cg3_reading_addtag(reading, tag);
 	tag = cg3_tag_create_u8(applicator, "notwanted");
@@ -83,21 +74,21 @@ int main(int argc, char* argv[]) {
 
 	cg3_sentence_runrules(applicator, sentence);
 
-	for (ci = 0, ce = cg3_sentence_numcohorts(sentence); ci != ce; ++ci) {
+	for (size_t ci = 0, ce = cg3_sentence_numcohorts(sentence); ci != ce; ++ci) {
 		cohort = cg3_sentence_getcohort(sentence, ci);
 		tag = cg3_cohort_getwordform(cohort);
-		tmp = cg3_tag_gettext_u8(tag);
+		const char* tmp = cg3_tag_gettext_u8(tag);
 		fprintf(stdout, "%s\n", tmp);
 
-		for (ri = 0, re = cg3_cohort_numreadings(cohort); ri != re; ++ri) {
+		for (size_t ri = 0, re = cg3_cohort_numreadings(cohort); ri != re; ++ri) {
 			reading = cg3_cohort_getreading(cohort, ri);
 			fprintf(stdout, "\t");
-			for (ti = 0, te = cg3_reading_numtags(reading); ti != te; ++ti) {
+			for (size_t ti = 0, te = cg3_reading_numtags(reading); ti != te; ++ti) {
 				tag = cg3_reading_gettag(reading, ti);
 				tmp = cg3_tag_gettext_u8(tag);
 				fprintf(stdout, "%s ", tmp);
 			}
-			for (ti = 0, te = cg3_reading_numtraces(reading); ti != te; ++ti) {
+			for (size_t ti = 0, te = cg3_reading_numtraces(reading); ti != te; ++ti) {
 				uint32_t rule_line = cg3_reading_gettrace(reading, ti);
 				fprintf(stdout, "TRACE:%u ", rule_line);
 			}

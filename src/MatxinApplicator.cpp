@@ -40,7 +40,6 @@ MatxinApplicator::MatxinApplicator(std::ostream& ux_err)
 	runningWithNullFlush = false;
 }
 
-
 bool MatxinApplicator::getNullFlush() {
 	return nullFlush;
 }
@@ -423,7 +422,6 @@ void MatxinApplicator::runGrammarOnText(std::istream& input, std::ostream& outpu
 	grammar->total_time = elapsed(tmp, timer);
 } // runGrammarOnText
 
-
 /*
  * Parse an Apertium reading into a CG Reading
  *
@@ -800,7 +798,6 @@ void MatxinApplicator::printSingleWindow(SingleWindow* window, std::ostream& out
 			//u_fprintf(output, "#[%d] %d -> %d || %d || %S\n", c, cohort->global_number, cohort->dep_parent, r, cohort->text.c_str());
 		}
 
-
 		/*
 		u_fprintf(output, "[%d] %d -> %d || %S\n", c, cohort->global_number, cohort->dep_parent, cohort->text.c_str());
 		u_fprintf(output, "$");
@@ -856,7 +853,6 @@ void MatxinApplicator::procNode(int& depth, std::map<int, Node>& nodes, std::map
 	for (std::vector<int>::iterator it = v.begin(); it != v.end(); it++) {
 		procNode(depth, nodes, deps, *it, output);
 	}
-
 
 	if (n != 0) {
 		for (int i = 0; i < depth * 2; i++) {
