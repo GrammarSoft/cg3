@@ -219,13 +219,6 @@ void cg3_run_grammar_on_text(cg3_applicator* applicator_, std_istream* is_, std_
 	applicator->runGrammarOnText(*is, *os);
 }
 
-void cg3_run_mwesplit_on_text(cg3_mwesplitapplicator* applicator_, std_istream* is_, std_ostream* os_) {
-	MweSplitApplicator* applicator = static_cast<MweSplitApplicator*>(applicator_);
-	std::istream* is = static_cast<std::istream*>(is_);
-	std::ostream* os = static_cast<std::ostream*>(os_);
-	applicator->runGrammarOnText(*is, *os);
-}
-
 cg3_sentence* cg3_sentence_new(cg3_applicator* applicator_) {
 	GrammarApplicator* applicator = static_cast<GrammarApplicator*>(applicator_);
 	SingleWindow* current = applicator->gWindow->allocSingleWindow();
