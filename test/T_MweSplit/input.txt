@@ -64,3 +64,21 @@
 	"go" Pcle Qst <W:0> "<go>"
 		"iđit" N Sem/Time Sg Gen <W:0> "<iđida >"
 			"sotnabeaivi" N Sem/Time Cmp/SgGen Tok/EndOfWord <W:0> "<sotnabeaivvi >"
+: 
+"<oahppogirjeprošeavttat>"
+	"oahppogirjeprošeakta" N Sem/Act Pl Nom <W:0.0000000000>
+	"oahppogirjeprošeakta" N Sem/Act Sg Acc PxSg2 <W:0.0000000000>
+	"oahppogirjeprošeakta" N Sem/Act Sg Gen PxSg2 <W:0.0000000000>
+;	"prošeakta" N Sem/Act Pl Nom <W:10.0000000000>
+;		"oahppogirji" N Sem/Txt Cmp/SgNom Cmp <W:10.0000000000> REMOVE:2110:longest-match
+;	"prošeakta" N Sem/Act Sg Acc PxSg2 <W:10.0000000000>
+;		"oahppogirji" N Sem/Txt Cmp/SgNom Cmp <W:10.0000000000> REMOVE:2110:longest-match
+;	"prošeakta" N Sem/Act Sg Gen PxSg2 <W:10.0000000000>
+;		"oahppogirji" N Sem/Txt Cmp/SgNom Cmp <W:10.0000000000> REMOVE:2110:longest-match
+;	"girjeprošeakta" N Sem/Act Pl Nom <W:10.0000000000>
+;		"oahppu" N Sem/Edu Cmp/SgNom Cmp <W:10.0000000000> REMOVE:2110:longest-match
+;	"girjeprošeakta" N Sem/Act Sg Acc PxSg2 <W:10.0000000000>
+;		"oahppu" N Sem/Edu Cmp/SgNom Cmp <W:10.0000000000> REMOVE:2110:longest-match
+;	"girjeprošeakta" N Sem/Act Sg Gen PxSg2 <W:10.0000000000>
+;		"oahppu" N Sem/Edu Cmp/SgNom Cmp <W:10.0000000000> REMOVE:2110:longest-match
+:\n
