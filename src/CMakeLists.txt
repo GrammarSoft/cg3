@@ -186,7 +186,7 @@ add_executable(cg-conv
 cg3_link(cg-conv)
 target_link_libraries(cg-conv ${LINKLIB})
 
-add_executable(cg-mwesplit cg-mwesplit.cpp MweSplitApplicator.cpp MweSplitApplicator.hpp)
+add_executable(cg-mwesplit cg-mwesplit.cpp)
 cg3_link(cg-mwesplit)
 target_link_libraries(cg-mwesplit ${LINKLIB})
 

@@ -171,6 +171,9 @@ inline int32_t _u_fprintf(std::ostream& output, const Char* fmt, va_list args) {
 	UString _str16;
 	UChar* buf16 = &_buf16[0];
 
+	va_list args2;
+	va_copy(args2, args);
+
 	int32_t n16 = size(_buf16);
 	n16 = _u_vsnprintf(buf16, n16, fmt, args);
 	if (n16 < 0) {
@@ -179,7 +182,7 @@ inline int32_t _u_fprintf(std::ostream& output, const Char* fmt, va_list args) {
 	if (n16 > static_cast<int32_t>(size(_buf16))) {
 		_str16.resize(n16 + 1);
 		buf16 = &_str16[0];
-		n16 = _u_vsnprintf(buf16, n16, fmt, args);
+		n16 = _u_vsnprintf(buf16, n16, fmt, args2);
 	}
 
 	char _buf8[size(_buf16) * 3];
