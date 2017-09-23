@@ -135,24 +135,35 @@ int main(int argc, char* argv[]) {
 		std::string buf8(BUF_SIZE, 0);
 		std::cin.read(&buf8[0], BUF_SIZE - 4);
 		auto sz = static_cast<int32_t>(std::cin.gcount());
-		if ((buf8[sz - 1] & 0xF0) == 0xF0) {
-			if (!std::cin.read(&buf8[sz], 3)) {
-				throw std::runtime_error("Could not read 3 expected bytes from stream");
+		if (buf8[sz - 1] & 0x80) {
+			for (size_t i = sz - 1; ; --i) {
+				if ((buf8[i] & 0xF0) == 0xF0) {
+					i = sz - 1 - i;
+					if (!std::cin.read(&buf8[sz], 3 - i)) {
+						throw std::runtime_error("Could not read expected bytes from stream");
+					}
+					sz += 3 - i;
+					break;
+				}
+				else if ((buf8[i] & 0xE0) == 0xE0) {
+					i = sz - 1 - i;
+					if (!std::cin.read(&buf8[sz], 2 - i)) {
+						throw std::runtime_error("Could not read expected bytes from stream");
+					}
+					sz += 2 - i;
+					break;
+				}
+				else if ((buf8[i] & 0xC0) == 0xC0) {
+					i = sz - 1 - i;
+					if (!std::cin.read(&buf8[sz], 1 - i)) {
+						throw std::runtime_error("Could not read expected bytes from stream");
+					}
+					sz += 1 - i;
+					break;
+				}
 			}
-			sz += 3;
 		}
-		else if ((buf8[sz - 1] & 0xE0) == 0xE0) {
-			if (!std::cin.read(&buf8[sz], 2)) {
-				throw std::runtime_error("Could not read 2 expected bytes from stream");
-			}
-			sz += 2;
-		}
-		else if ((buf8[sz - 1] & 0xC0) == 0xC0) {
-			if (!std::cin.read(&buf8[sz], 1)) {
-				throw std::runtime_error("Could not read 1 expected byte from stream");
-			}
-			sz += 1;
-		}
+		buf8.resize(sz);
 
 		CG3::UString buffer(BUF_SIZE, 0);
 		int32_t nr = 0;

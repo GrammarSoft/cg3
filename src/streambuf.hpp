@@ -37,14 +37,19 @@ public:
 	cstreambuf(FILE* s)
 	  : stream(s)
 	{
+		setg(&ch, &ch + 1, &ch + 1);
 	}
 
 	// Get
 	int_type underflow() {
-		return fgetc(stream);
+		auto c = fgetc(stream);
+		ch = static_cast<char_type>(c);
+		setg(&ch, &ch, &ch + 1);
+		return c;
 	}
 
 	std::streamsize xsgetn(char_type* s, std::streamsize count) {
+		setg(&ch, &ch + 1, &ch + 1);
 		return fread(s, 1, static_cast<size_t>(count), stream);
 	}
 
@@ -65,30 +70,54 @@ public:
 	}
 
 private:
+	char_type ch = 0;
 	FILE* stream;
 };
 
-class bstreambuf : public std::stringbuf {
+class bstreambuf : public std::streambuf {
 public:
-	using Base = std::stringbuf;
+	using Base = std::streambuf;
 	using char_type = typename Base::char_type;
 	using int_type = typename Base::int_type;
 
 	bstreambuf(std::istream& input, std::string&& b)
-	  : Base(std::move(b), std::ios::in | std::ios::binary)
+	  : buffer(std::move(b))
 	  , stream(&input)
 	{
+		setg(&ch, &ch + 1, &ch + 1);
 	}
 
 	int_type underflow() {
-		auto c = Base::underflow();
-		if (c != Base::traits_type::eof()) {
-			return c;
+		int_type c = 0;
+		if (offset < buffer.size()) {
+			c = static_cast<std::make_unsigned<char_type>::type>(buffer[offset++]);
 		}
-		return stream->get();
+		else {
+			c = stream->get();
+		}
+		ch = static_cast<char_type>(c);
+		setg(&ch, &ch, &ch + 1);
+		return c;
+	}
+
+	std::streamsize xsgetn(char_type* s, std::streamsize count) {
+		std::streamsize i = 0;
+		for (; offset < buffer.size() && i < count; ++i) {
+			s[i] = buffer[offset++];
+		}
+		if (i < count) {
+			stream->read(s + i, count - i);
+			i += stream->gcount();
+		}
+		s[i] = 0;
+		setg(&ch, &ch + 1, &ch + 1);
+		return i;
 	}
 
 private:
+	std::string buffer;
+	char_type ch = 0;
+	size_t offset = 0;
 	std::istream* stream;
 };
 }
