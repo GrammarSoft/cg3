@@ -1900,6 +1900,9 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 								getTagList(*rule.maplist, theTags);
 
 								for (auto tter : *theTags) {
+									while (tter->type & T_VARSTRING) {
+										tter = generateVarstringTag(tter);
+									}
 									if (type == K_ADDRELATION) {
 										attach->type |= CT_RELATED;
 										cohort->type |= CT_RELATED;
@@ -1955,6 +1958,9 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 								getTagList(*rule.maplist, maplist);
 
 								for (auto tter : *maplist) {
+									while (tter->type & T_VARSTRING) {
+										tter = generateVarstringTag(tter);
+									}
 									if (type == K_ADDRELATIONS) {
 										cohort->type |= CT_RELATED;
 										rel_did_anything |= cohort->addRelation(tter->hash, attach->global_number);
@@ -1968,6 +1974,9 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 									}
 								}
 								for (auto tter : *sublist) {
+									while (tter->type & T_VARSTRING) {
+										tter = generateVarstringTag(tter);
+									}
 									if (type == K_ADDRELATIONS) {
 										attach->type |= CT_RELATED;
 										rel_did_anything |= attach->addRelation(tter->hash, cohort->global_number);
