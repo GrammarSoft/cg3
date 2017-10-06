@@ -13,7 +13,7 @@
 </s>
 
 "<o>"
-	"o" <artd> DET M S @>N @parent-deep @bag-self @bag-self-or-prev @bag-self-or-next @bag-any-not #1→2
+	"o" <artd> DET M S @>N @parent-deep @bag-self @bag-self-or-prev @bag-self-or-next @bag-any #1→2
 "<carro>"
 	"carro" <V> N M S @SUBJ> #2→3
 "<bateu>"
