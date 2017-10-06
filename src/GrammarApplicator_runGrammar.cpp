@@ -254,8 +254,8 @@ void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& outp
 				splitAllMappings(all_mappings, *cCohort, true);
 				cSWindow->appendCohort(cCohort);
 			}
-			if (gWindow->next.size() > num_windows) {
-				while (!gWindow->previous.empty() && gWindow->previous.size() > num_windows) {
+			if (gWindow->next.size() > num_windows + 1) {
+				while (!gWindow->previous.empty() && gWindow->previous.size() > num_windows + 1) {
 					SingleWindow* tmp = gWindow->previous.front();
 					printSingleWindow(tmp, output);
 					free_swindow(tmp);
