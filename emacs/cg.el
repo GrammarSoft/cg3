@@ -167,7 +167,10 @@ Don't change without re-evaluating `cg-kw-re' (or all of cg.el).")
   "Rule-starter keywords for indentation, highlighting etc.
 Don't change without re-evaluating `cg-kw-re' (or all of cg.el)." )
 (defconst cg-kw-rule-re (regexp-opt cg-kw-rule-list)
-    "Regexp version of `cg-kw-rule-list'.")
+  "Regexp version of `cg-kw-rule-list'.")
+(defconst cg-kw-trace-rule-re (regexp-opt (append '("ADDCOHORT-AFTER" "ADDCOHORT-BEFORE")
+                                                  cg-kw-rule-list))
+  "Regexp version of `cg-kw-rule-list' with extra keywords used only in tracing.")
 (defconst cg-kw-re (regexp-opt (append cg-kw-set-list cg-kw-rule-list))
   "Regexp combination of `cg-kw-rule-list' and `cg-kw-set-list'.")
 
@@ -678,7 +681,7 @@ from, otherwise all CG buffers share one input buffer."
   (list cg--file))
 
 (defconst cg-output-regexp-alist
-  `((,(format "%s:\\([^ \n\t:]+\\)\\(?::[^ \n\t]+\\)?" cg-kw-rule-re)
+  `((,(format "%s:\\([^ \n\t:]+\\)\\(?::[^ \n\t]+\\)?" cg-kw-trace-rule-re)
      ,#'cg-get-file 1 nil 1)
     ("^\\([^:]*: \\)?Warning: .*?line \\([0-9]+\\).*"
      ,#'cg-get-file 2 nil 1)
