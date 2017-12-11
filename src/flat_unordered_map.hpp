@@ -42,7 +42,7 @@ public:
 	typedef typename std::vector<value_type_real> container;
 	typedef typename container::size_type size_type;
 
-	class const_iterator : public std::iterator<std::bidirectional_iterator_tag, value_type> {
+	class const_iterator {
 	private:
 		friend class flat_unordered_map;
 		const flat_unordered_map* fus;
