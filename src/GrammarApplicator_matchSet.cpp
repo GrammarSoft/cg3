@@ -147,7 +147,7 @@ uint32_t GrammarApplicator::doesTagMatchIcase(uint32_t test, const Tag& tag, boo
 // ToDo: Remove for real ordered mode
 uint32_t GrammarApplicator::doesRegexpMatchLine(const Reading& reading, const Tag& tag, bool bypass_index) {
 	uint32_t match = 0;
-	uint32_t ih = reading.tags_string_hash;
+	uint32_t ih = hash_value(reading.tags_string_hash, tag.hash);
 	if (!bypass_index && index_matches(index_regexp_no, ih)) {
 		match = 0;
 	}
