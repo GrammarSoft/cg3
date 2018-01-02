@@ -165,7 +165,7 @@ Tag* parseTag(const UChar* to, const UChar* p, State& state) {
 		// ToDo: Remove for real ordered mode
 		if (tag->type & T_REGEXP_LINE) {
 			constexpr UChar uu[] = { '_', '_', 0 };
-			constexpr UChar rx[] = { '(', '^', '|', '$', '|', ' ', '|', ' ', '.', '+', '?', ' ', ')', 0 }; // (^|$| | .+? )
+			constexpr UChar rx[] = { '(', '?', ':', '^', '|', '$', '|', ' ', '|', ' ', '.', '+', '?', ' ', ')', 0 }; // (^|$| | .+? )
 			size_t pos;
 			while ((pos = tag->tag.find(uu)) != UString::npos) {
 				tag->tag.replace(pos, 2, rx);
