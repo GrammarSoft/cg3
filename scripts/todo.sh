@@ -1,4 +1,5 @@
 #!/bin/bash
+rm -fv src/*~
 rm -f TODO.list
 cat TODO > TODO.list
 echo "----------" >> TODO.list
