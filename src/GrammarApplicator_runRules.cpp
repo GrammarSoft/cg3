@@ -1271,7 +1271,9 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 
 						cohortset = &current.rule_to_cohorts[rule.number];
 						rocit = cohortset->find(current.cohorts[cohort->local_number]);
-						++rocit;
+						if (rocit != cohortset->end()) {
+							++rocit;
+						}
 						break;
 					}
 					else if (rule.type == K_ADD || rule.type == K_MAP) {
