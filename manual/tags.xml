@@ -36,8 +36,7 @@
       with multiple parts do not have to match in-order; (N &lt;civ&gt;) is the same
       as (&lt;civ&gt; N). This is different from previous versions of CG, but I deemed
       it unncecessary to spend extra time checking the tag order when hash lookups can
-      verify the existance so fast. A side effect of this means there is no intersection
-      set operator, nor need of one.
+      verify the existence so fast.
     </para>
   </section>
 
@@ -334,6 +333,14 @@
     <para>
       I recommend keeping META tags in the contextual tests, since they cannot currently be cached and will be checked
       every time.
+    </para>
+  </section>
+
+  <section id="stream-static-tags">
+    <title>Stream Static Tags</title>
+    <para>
+      In the CG and Apertium stream formats, it is allowed to have tags after the word form / surface form.
+      These tags behave as if they contextually exist in every reading of the cohort - they will not be seen by rule targets.
     </para>
   </section>
 

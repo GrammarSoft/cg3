@@ -64,13 +64,13 @@
 
       Or in CG terms:
       <screen>
-        "&lt;word form&gt;"
+        "&lt;word form&gt;" <link linkend="stream-static-tags">static_tags</link>
             "base form" tags
       </screen>
 
       Also known as:
       <screen>
-        "&lt;surface form&gt;"
+        "&lt;surface form&gt;" <link linkend="stream-static-tags">static_tags</link>
             "lexeme" tags
       </screen>
     </para>
@@ -95,7 +95,7 @@
           Removed cohorts will still output their attached text.
         </para></listitem>
       </itemizedlist>
-      
+
       This means that you can embed all kinda of extra information in the stream as long as you don't hit those exact
       patterns. For example, we use <code>&lt;s id="unique-1234"&gt; &lt;/s&gt;</code> tags around sentences to keep track of them
       for corpus markup.
@@ -124,7 +124,7 @@
         at    [at] PREP
         the   [the] DET CENTRAL ART SG/PL
         bear  [bear] N NOM SG
-        .     
+        .
       </screen>
 
       Or in CG terms:
