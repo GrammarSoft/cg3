@@ -107,7 +107,6 @@ cg3_grammar* cg3_grammar_load(const char* filename) {
 	std::unique_ptr<IGrammarParser> parser;
 
 	if (cbuffers[0][0] == 'C' && cbuffers[0][1] == 'G' && cbuffers[0][2] == '3' && cbuffers[0][3] == 'B') {
-		u_fprintf(ux_stderr, "CG3 Info: Binary grammar detected.\n");
 		parser.reset(new BinaryGrammar(*grammar, *ux_stderr));
 	}
 	else {
@@ -136,7 +135,6 @@ cg3_grammar* cg3_grammar_load_buffer(const char* buffer, size_t length) {
 	std::unique_ptr<IGrammarParser> parser;
 
 	if (buffer[0] == 'C' && buffer[1] == 'G' && buffer[2] == '3' && buffer[3] == 'B') {
-		u_fprintf(ux_stderr, "CG3 Info: Binary grammar detected.\n");
 		parser.reset(new BinaryGrammar(*grammar, *ux_stderr));
 	}
 	else {
