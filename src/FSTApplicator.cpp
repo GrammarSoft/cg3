@@ -169,6 +169,12 @@ void FSTApplicator::runGrammarOnText(std::istream& input, std::ostream& output) 
 
 			++space;
 			while (space && *space && (space[0] != '+' || space[1] != '?' || space[2] != 0)) {
+				UChar* tab = u_strchr(space, '\t');
+				// FSTs sometimes output the input twice for non-matches, which turned into a weight of 0
+				if (tab && tab[1] == '+' && tab[2] == '?') {
+					break;
+				}
+
 				cReading = alloc_reading(cCohort);
 				insert_if_exists(cReading->parent->possible_sets, grammar->sets_any);
 				addTagToReading(*cReading, cCohort->wordform);
@@ -179,7 +185,6 @@ void FSTApplicator::runGrammarOnText(std::istream& input, std::ostream& output) 
 
 				wtag_tag = 0;
 				double weight = 0.0;
-				UChar* tab = u_strchr(space, '\t');
 				if (tab) {
 					tab[0] = 0;
 					++tab;
