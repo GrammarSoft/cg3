@@ -1,0 +1,63 @@
+#!/usr/bin/env perl
+# -*- mode: cperl; indent-tabs-mode: nil; tab-width: 3; cperl-indent-level: 3; -*-
+use warnings;
+use strict;
+use utf8;
+BEGIN {
+	$| = 1;
+	binmode(STDIN, ':encoding(UTF-8)');
+	binmode(STDOUT, ':encoding(UTF-8)');
+}
+use open qw( :encoding(UTF-8) :std );
+
+my $in_cohort = 0;
+my %readings = ();
+my %deleted = ();
+my $trail = '';
+
+sub print_sorted {
+   if (!$in_cohort) {
+      return;
+   }
+
+   foreach (sort(keys(%readings))) {
+      print;
+   }
+   foreach (sort(keys(%deleted))) {
+      print;
+   }
+
+   print $trail;
+
+   %readings = ();
+   %deleted = ();
+   $trail = '';
+   $in_cohort = 0;
+}
+
+my $fh = *STDIN;
+if (defined $ARGV[0]) {
+   open($fh, '<', $ARGV[0]) or die $!;
+}
+
+while (<$fh>) {
+   if (m/^"<.+?>"/) {
+      print_sorted();
+      $in_cohort = 1;
+   }
+   elsif ($in_cohort) {
+      if (m/^\s+".+?"/) {
+         $readings{$_} = 1;
+      }
+      elsif (m/^;\s+".+?"/) {
+         $deleted{$_} = 1;
+      }
+      else {
+         $trail .= $_;
+      }
+      next;
+   }
+   print;
+}
+
+print_sorted();
