@@ -43,6 +43,7 @@ public:
 	bool has_bag_of_tags;
 	bool has_relations;
 	bool has_encl_final;
+	bool has_protect;
 	bool is_binary;
 	bool sub_readings_ltr;
 	size_t grammar_size;

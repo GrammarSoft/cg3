@@ -32,6 +32,7 @@ Grammar::Grammar()
   , has_bag_of_tags(false)
   , has_relations(false)
   , has_encl_final(false)
+  , has_protect(false)
   , is_binary(false)
   , sub_readings_ltr(false)
   , grammar_size(0)
@@ -692,6 +693,9 @@ void Grammar::reindex(bool unused_sets, bool used_tags) {
 	for (auto rule : rule_by_number) {
 		if (rule->wordform) {
 			wf_rules.push_back(rule);
+		}
+		if (rule->type == K_PROTECT) {
+			has_protect = true;
 		}
 		if (is_binary) {
 			continue;
