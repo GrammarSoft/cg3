@@ -519,6 +519,15 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 				if (reading->noprint && !allow_magic_readings) {
 					continue;
 				}
+				if (reading->immutable && rule.type != K_UNPROTECT) {
+					if (type == K_SELECT) {
+						reading->matched_target = true;
+						reading->matched_tests = true;
+					}
+					++num_active;
+					++num_iff;
+					continue;
+				}
 
 				// Check if any previous reading of this cohort had the same plain signature, and if so just copy their results
 				// This cache is cleared on a per-cohort basis
@@ -617,8 +626,19 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 					}
 					if (good) {
 						// We've found a match, so Iff should be treated as Select instead of Remove
-						if (rule.type == K_IFF) {
+						if (rule.type == K_IFF && type != K_SELECT) {
 							type = K_SELECT;
+							if (grammar->has_protect) {
+								for (size_t j = 0; i < j; ++j) {
+									Reading* reading = get_sub_reading(cohort->readings[j], rule.sub_reading);
+									if (reading && reading->immutable) {
+										reading->matched_target = true;
+										reading->matched_tests = true;
+										++num_active;
+										++num_iff;
+									}
+								}
+							}
 						}
 						reading->matched_tests = true;
 						++num_active;
@@ -783,6 +803,14 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 							--iter_rules;
 						}
 						goto repeat_rule;
+					}
+					else if (type == K_PROTECT) {
+						TRACE;
+						reading.immutable = true;
+					}
+					else if (type == K_UNPROTECT) {
+						TRACE;
+						reading.immutable = false;
 					}
 					else if (type == K_REMVARIABLE) {
 						TRACE;

@@ -1,0 +1,6 @@
+"<word>"
+	"word" P
+	"word" U
+	"word" P U
+	"word" X
+	"word" A

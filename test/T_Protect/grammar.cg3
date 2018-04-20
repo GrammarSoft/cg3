@@ -1,0 +1,11 @@
+DELIMITERS = "<$.>" ;
+
+PROTECT (P) OR (U) ;
+ADD (@A @B) (*) ;
+REMOVE (P) OR (U) ;
+SELECT (@A) ;
+
+UNPROTECT (U);
+REMOVE (P) OR (U) ;
+SELECT (@B) ;
+ADD (@C) (*) ;

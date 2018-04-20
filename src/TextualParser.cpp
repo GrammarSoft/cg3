@@ -2272,6 +2272,14 @@ void TextualParser::parseFromUChar(UChar* input, const char* fname) {
 			else if (IS_ICASE(p, "UNMAP", "unmap")) {
 				parseRule(p, K_UNMAP);
 			}
+			// PROTECT
+			else if (IS_ICASE(p, "PROTECT", "protect")) {
+				parseRule(p, K_PROTECT);
+			}
+			// UNPROTECT
+			else if (IS_ICASE(p, "UNPROTECT", "unprotect")) {
+				parseRule(p, K_UNPROTECT);
+			}
 			// TEMPLATE
 			else if (IS_ICASE(p, "TEMPLATE", "template")) {
 				AST_OPEN(Template);
