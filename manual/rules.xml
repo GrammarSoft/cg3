@@ -404,6 +404,33 @@
     </screen>
   </section>
 
+  <section id="protect">
+    <title>PROTECT</title>
+    <indexterm>
+      <primary>PROTECT</primary>
+    </indexterm>
+    <screen>
+      [wordform] PROTECT &lt;target&gt; [contextual_tests] ;
+    </screen>
+    <para>
+      Protects the matched reading from removal and modification.
+      Once protected, no other rule can target the reading, except <link linkend="unprotect">UNPROTECT</link>.
+    </para>
+  </section>
+
+  <section id="unprotect">
+    <title>UNPROTECT</title>
+    <indexterm>
+      <primary>UNPROTECT</primary>
+    </indexterm>
+    <screen>
+      [wordform] UNPROTECT &lt;target&gt; [contextual_tests] ;
+    </screen>
+    <para>
+      Lifts the protection of <link linkend="unprotect">PROTECT</link>, so that other rules can once again target the reading.
+    </para>
+  </section>
+
   <section id="taglists-sets">
     <title>Tag Lists Can Be Sets</title>
     <para>

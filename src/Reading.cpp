@@ -50,6 +50,7 @@ Reading* alloc_reading(const Reading& o) {
 		r->noprint = o.noprint;
 		r->matched_target = false;
 		r->matched_tests = false;
+		r->immutable = false;
 		r->baseform = o.baseform;
 		r->hash = o.hash;
 		r->hash_plain = o.hash_plain;
@@ -88,6 +89,7 @@ Reading::Reading(Cohort* p)
   , noprint(false)
   , matched_target(false)
   , matched_tests(false)
+  , immutable(false)
   , baseform(0)
   , hash(0)
   , hash_plain(0)
@@ -107,6 +109,7 @@ Reading::Reading(const Reading& r)
   , noprint(r.noprint)
   , matched_target(false)
   , matched_tests(false)
+  , immutable(r.immutable)
   , baseform(r.baseform)
   , hash(r.hash)
   , hash_plain(r.hash_plain)
@@ -150,6 +153,7 @@ void Reading::clear() {
 	noprint = false;
 	matched_target = false;
 	matched_tests = false;
+	immutable = false;
 	baseform = 0;
 	hash = 0;
 	hash_plain = 0;

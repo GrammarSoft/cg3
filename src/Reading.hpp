@@ -36,11 +36,13 @@ typedef std::vector<Reading*> ReadingList;
 
 class Reading {
 public:
-	bool mapped;
-	bool deleted;
-	bool noprint;
-	bool matched_target;
-	bool matched_tests;
+	uint8_t mapped : 1;
+	uint8_t deleted : 1;
+	uint8_t noprint : 1;
+	uint8_t matched_target : 1;
+	uint8_t matched_tests : 1;
+	uint8_t immutable : 1;
+
 	uint32_t baseform;
 	uint32_t hash;
 	uint32_t hash_plain;
