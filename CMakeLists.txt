@@ -74,7 +74,7 @@ else()
 	endforeach()
 
 	# Enable latest possible C++ standard
-	foreach(flag "-std=c++17" "-std=c++1z" "-std=c++14" "-std=c++1y" "-std=c++11" "-std=c++0x")
+	foreach(flag "-std=c++20" "-std=c++2a" "-std=c++17" "-std=c++1z" "-std=c++14" "-std=c++1y" "-std=c++11" "-std=c++0x")
 		string(REGEX REPLACE "[^a-z0-9]" "-" _flag ${flag})
 		CHECK_CXX_COMPILER_FLAG(${flag} COMPILER_SUPPORTS_${_flag})
 		if(COMPILER_SUPPORTS_${_flag})
