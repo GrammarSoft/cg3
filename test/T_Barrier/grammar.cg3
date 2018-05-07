@@ -1,3 +1,9 @@
 DELIMITERS = "<$.>" ;
 
-MAP (@tag) ("word") (1* (findme) BARRIER ("blocker")) ;
+ADD (@tag) ("word") (1* (findme) BARRIER (block)) ;
+ADD (@self-barrier-l) (1) (1*S (3) BARRIER (wanted)) ;
+ADD (@self-no-barrier-l) (1) (1*SN (3) BARRIER (wanted)) ;
+
+OPTIONS += self-no-barrier ;
+ADD (@self-barrier-g) (1) (1*S (3) BARRIER (wanted)) ;
+ADD (@self-no-barrier-g) (1) (1*SN (3) BARRIER (wanted)) ;

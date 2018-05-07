@@ -159,7 +159,7 @@ inline uint32_t hash_value(const UChar* str, uint32_t hash = 0, size_t len = 0) 
 }
 
 inline uint32_t hash_value(const UString& str, uint32_t h = 0) {
-	return hash_value(str.c_str(), h, str.length());
+	return hash_value(str.c_str(), h, str.size());
 }
 
 inline uint32_t hash_value(const char* str, uint32_t hash = 0, size_t len = 0) {
@@ -397,7 +397,7 @@ inline void writeUTF8String(std::ostream& output, const UChar* str, size_t len =
 }
 
 inline void writeUTF8String(std::ostream& output, const UString& str) {
-	writeUTF8String(output, str.c_str(), str.length());
+	writeUTF8String(output, str.c_str(), str.size());
 }
 
 template<typename S>

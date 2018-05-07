@@ -661,7 +661,7 @@ void ApertiumApplicator::printReading(Reading* reading, std::ostream& output) {
 
 	if (reading->baseform) {
 		// Lop off the initial and final '"' characters
-		UnicodeString bf(single_tags[reading->baseform]->tag.c_str() + 1, single_tags[reading->baseform]->tag.size() - 2);
+		UnicodeString bf(single_tags[reading->baseform]->tag.c_str() + 1, static_cast<int32_t>(single_tags[reading->baseform]->tag.size() - 2));
 
 		if (wordform_case && !reading->next) {
 			// Use surface/wordform case, eg. if lt-proc
@@ -669,7 +669,7 @@ void ApertiumApplicator::printReading(Reading* reading, std::ostream& output) {
 			// dictionary case on lemma/basefrom)
 			// Lop off the initial and final '"<>"' characters
 			// ToDo: A copy does not need to be made here - use pointer offsets
-			UnicodeString wf(reading->parent->wordform->tag.c_str() + 2, reading->parent->wordform->tag.size() - 4);
+			UnicodeString wf(reading->parent->wordform->tag.c_str() + 2, static_cast<int32_t>(reading->parent->wordform->tag.size() - 4));
 
 			int first = 0; // first occurrence of a lowercase character in baseform
 			for (; first < bf.length(); ++first) {
@@ -787,7 +787,7 @@ void ApertiumApplicator::printSingleWindow(SingleWindow* window, std::ostream& o
 		if (print_word_forms == true) {
 			// Lop off the initial and final '"' characters
 			// ToDo: A copy does not need to be made here - use pointer offsets
-			UnicodeString wf(cohort->wordform->tag.c_str() + 2, cohort->wordform->tag.size() - 4);
+			UnicodeString wf(cohort->wordform->tag.c_str() + 2, static_cast<int32_t>(cohort->wordform->tag.size() - 4));
 			UString wf_escaped;
 			for (int i = 0; i < wf.length(); ++i) {
 				if (wf[i] == '^' || wf[i] == '\\' || wf[i] == '/' || wf[i] == '$' || wf[i] == '[' || wf[i] == ']' || wf[i] == '{' || wf[i] == '}' || wf[i] == '<' || wf[i] == '>') {

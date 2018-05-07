@@ -42,7 +42,7 @@ Tag* GrammarApplicator::makeBaseFromWord(Tag* tag) {
 	n.clear();
 	n.resize(len - 2);
 	n[0] = n[len - 3] = '"';
-	u_strncpy(&n[1], tag->tag.c_str() + 2, len - 4);
+	u_strncpy(&n[1], tag->tag.c_str() + 2, static_cast<int32_t>(len - 4));
 	Tag* nt = addTag(n);
 	return nt;
 }
@@ -354,7 +354,7 @@ void GrammarApplicator::reflowReading(Reading& reading) {
 Tag* GrammarApplicator::generateVarstringTag(const Tag* tag) {
 	static UnicodeString tmp;
 	tmp.remove();
-	tmp.append(tag->tag.c_str(), tag->tag.size());
+	tmp.append(tag->tag.c_str(), static_cast<int32_t>(tag->tag.size()));
 	bool did_something = false;
 
 	// Replace unified sets with their matching tags
@@ -627,7 +627,7 @@ void GrammarApplicator::splitMappings(TagList& mappings, Cohort& cohort, Reading
 		}
 		Reading* nr = alloc_reading(reading);
 		nr->mapped = mapped;
-		nr->number = reading.number - i--;
+		nr->number = static_cast<uint32_t>(reading.number - i--);
 		uint32_t mp = addTagToReading(*nr, ttag);
 		if (mp != ttag->hash) {
 			nr->mapping = single_tags.find(mp)->second;
@@ -802,7 +802,7 @@ Cohort* GrammarApplicator::delimitAt(SingleWindow& current, Cohort* cohort) {
 		current.cohorts[nc]->parent = nwin;
 		nwin->appendCohort(current.cohorts[nc]);
 	}
-	c = current.cohorts.size() - c;
+	c = static_cast<uint32_t>(current.cohorts.size() - c);
 	for (nc = 0; nc < c - 1; nc++) {
 		current.cohorts.pop_back();
 	}

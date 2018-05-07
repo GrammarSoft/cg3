@@ -174,7 +174,7 @@ inline int32_t _u_fprintf(std::ostream& output, const Char* fmt, va_list args) {
 	va_list args2;
 	va_copy(args2, args);
 
-	int32_t n16 = size(_buf16);
+	auto n16 = static_cast<int32_t>(size(_buf16));
 	n16 = _u_vsnprintf(buf16, n16, fmt, args);
 	if (n16 < 0) {
 		throw std::runtime_error("Critical error in u_fprintf() wrapper");
@@ -188,7 +188,7 @@ inline int32_t _u_fprintf(std::ostream& output, const Char* fmt, va_list args) {
 	char _buf8[size(_buf16) * 3];
 	std::string _str8;
 	char* buf8 = &_buf8[0];
-	int32_t n8 = size(_buf8);
+	auto n8 = static_cast<int32_t>(size(_buf8));
 	int32_t u8 = 0;
 	UErrorCode err = U_ZERO_ERROR;
 	u_strToUTF8(buf8, n8, &u8, buf16, n16, &err);
@@ -244,7 +244,7 @@ UChar32 u_fputc(UChar32 c32, std::ostream& output) {
 	}
 	else if (c32 <= 0x7FFF) {
 		char buf8[5];
-		int32_t n8 = size(buf8);
+		auto n8 = static_cast<int32_t>(size(buf8));
 		int32_t u8 = 0;
 		UErrorCode err = U_ZERO_ERROR;
 		UChar c16 = static_cast<UChar>(c32);

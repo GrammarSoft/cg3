@@ -850,7 +850,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						if (ei == externals.end()) {
 							Tag* ext = single_tags.find(rule.varname)->second;
 							UErrorCode err = U_ZERO_ERROR;
-							u_strToUTF8(&cbuffers[0][0], CG3_BUFFER_SIZE - 1, 0, ext->tag.c_str(), ext->tag.size(), &err);
+							u_strToUTF8(&cbuffers[0][0], static_cast<int32_t>(CG3_BUFFER_SIZE - 1), 0, ext->tag.c_str(), static_cast<int32_t>(ext->tag.size()), &err);
 
 							Process& es = externals[rule.varname];
 							try {
@@ -911,7 +911,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						current.parent->cohort_map.erase(cohort->global_number);
 						current.cohorts.erase(current.cohorts.begin() + cohort->local_number);
 						foreach (iter, current.cohorts) {
-							(*iter)->local_number = std::distance(current.cohorts.begin(), iter);
+							(*iter)->local_number = static_cast<uint32_t>(std::distance(current.cohorts.begin(), iter));
 						}
 						gWindow->rebuildCohortLinks();
 						// If we just removed the last cohort, add <<< to the new last cohort
@@ -1050,7 +1050,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						}
 
 						foreach (iter, current.cohorts) {
-							(*iter)->local_number = std::distance(current.cohorts.begin(), iter);
+							(*iter)->local_number = static_cast<uint32_t>(std::distance(current.cohorts.begin(), iter));
 						}
 						// If the new cohort is now the last cohort, add <<< to it and remove <<< from previous last cohort
 						if (current.cohorts.back() == cCohort) {
@@ -1105,9 +1105,9 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						std::vector<std::pair<uint32_t, uint32_t>> cohort_dep(cohorts.size());
 						cohort_dep.front().second = DEP_NO_PARENT;
 						cohort_dep.back().first = DEP_NO_PARENT;
-						cohort_dep.back().second = cohort_dep.size() - 1;
+						cohort_dep.back().second = static_cast<uint32_t>(cohort_dep.size() - 1);
 						for (size_t i = 1; i < cohort_dep.size() - 1; ++i) {
-							cohort_dep[i].second = i;
+							cohort_dep[i].second = static_cast<uint32_t>(i);
 						}
 
 						size_t i = 0;
@@ -1136,7 +1136,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 								if (dep_self[0] == 'c' || dep_self[0] == 'd') {
 									cohort_dep[i - 1].first = DEP_NO_PARENT;
 									if (rel_trg == DEP_NO_PARENT) {
-										rel_trg = i - 1;
+										rel_trg = static_cast<uint32_t>(i - 1);
 									}
 								}
 								else if (u_sscanf(dep_self, "%i", &cohort_dep[i - 1].first) != 1) {
@@ -1153,14 +1153,14 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 								continue;
 							}
 							if (tter->tag.size() == 3 && tter->tag[0] == 'R' && tter->tag[1] == ':' && tter->tag[2] == '*') {
-								rel_trg = i - 1;
+								rel_trg = static_cast<uint32_t>(i - 1);
 								continue;
 							}
 							readings->back().push_back(tter);
 						}
 
 						if (rel_trg == DEP_NO_PARENT) {
-							rel_trg = cohorts.size() - 1;
+							rel_trg = static_cast<uint32_t>(cohorts.size() - 1);
 						}
 
 						for (size_t i = 0; i < cohorts.size(); ++i) {
@@ -1291,7 +1291,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 
 						// Reindex and rebuild the window
 						foreach (iter, current.cohorts) {
-							(*iter)->local_number = std::distance(current.cohorts.begin(), iter);
+							(*iter)->local_number = static_cast<uint32_t>(std::distance(current.cohorts.begin(), iter));
 						}
 						gWindow->rebuildCohortLinks();
 						indexSingleWindow(current);
@@ -1856,7 +1856,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 								}
 
 								foreach (iter, current.cohorts) {
-									(*iter)->local_number = std::distance(current.cohorts.begin(), iter);
+									(*iter)->local_number = static_cast<uint32_t>(std::distance(current.cohorts.begin(), iter));
 								}
 
 								for (auto iter : edges) {
@@ -1897,7 +1897,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 								}
 							}
 							foreach (iter, current.cohorts) {
-								(*iter)->local_number = std::distance(current.cohorts.begin(), iter);
+								(*iter)->local_number = static_cast<uint32_t>(std::distance(current.cohorts.begin(), iter));
 							}
 							gWindow->rebuildCohortLinks();
 							readings_changed = true;
@@ -2315,18 +2315,18 @@ label_unpackEnclosures:
 				size_t ne = c->enclosed.size();
 				for (size_t j = nc - 1; j > i; --j) {
 					current->cohorts[j + ne] = current->cohorts[j];
-					current->cohorts[j + ne]->local_number = j + ne;
+					current->cohorts[j + ne]->local_number = static_cast<uint32_t>(j + ne);
 				}
 				for (size_t j = 0; j < ne; ++j) {
 					current->cohorts[i + j + 1] = c->enclosed[j];
-					current->cohorts[i + j + 1]->local_number = i + j + 1;
+					current->cohorts[i + j + 1]->local_number = static_cast<uint32_t>(i + j + 1);
 					current->cohorts[i + j + 1]->parent = current;
 					current->cohorts[i + j + 1]->type &= ~CT_ENCLOSED;
 				}
 				par_left_tag = c->enclosed[0]->is_pleft;
 				par_right_tag = c->enclosed[ne - 1]->is_pright;
-				par_left_pos = i + 1;
-				par_right_pos = i + ne;
+				par_left_pos = static_cast<uint32_t>(i + 1);
+				par_right_pos = static_cast<uint32_t>(i + ne);
 				c->enclosed.clear();
 				if (rv & RV_TRACERULE) {
 					goto label_unpackEnclosures;

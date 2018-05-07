@@ -36,7 +36,7 @@ int main(int argc, char* argv[]) {
 	clock_t main_timer = clock();
 
 	UErrorCode status = U_ZERO_ERROR;
-	srand((uint32_t)time(0));
+	srand(static_cast<uint32_t>(time(0)));
 
 	U_MAIN_INIT_ARGS(argc, argv);
 	argc = u_parseArgs(argc, argv, NUM_OPTIONS, options);
@@ -251,7 +251,7 @@ int main(int argc, char* argv[]) {
 		UConverter* conv = ucnv_open(codepage_cli, &status);
 		size_t sn = strlen(options[MAPPING_PREFIX].value);
 		CG3::UString buf(sn * 3, 0);
-		ucnv_toUChars(conv, &buf[0], buf.size(), options[MAPPING_PREFIX].value, sn, &status);
+		ucnv_toUChars(conv, &buf[0], static_cast<int32_t>(buf.size()), options[MAPPING_PREFIX].value, static_cast<int32_t>(sn), &status);
 		if (grammar.is_binary && grammar.mapping_prefix != buf[0]) {
 			std::cerr << "Error: Mapping prefix must match the one used for compiling the binary grammar!" << std::endl;
 			CG3Quit(1);
@@ -340,7 +340,7 @@ int main(int argc, char* argv[]) {
 			grammar.rule_by_number.erase(grammar.rule_by_number.begin() + (*br)->number);
 		}
 		for (auto br : bad) {
-			br->number = grammar.rule_by_number.size();
+			br->number = static_cast<uint32_t>(grammar.rule_by_number.size());
 			grammar.rule_by_number.push_back(br);
 		}
 		std::cerr << "Optimizer moved " << bad.size() << " rules." << std::endl;
@@ -473,7 +473,7 @@ void GAppSetOpts(CG3::GrammarApplicator& applicator, UConverter* conv) {
 			UErrorCode status = U_ZERO_ERROR;
 			size_t sn = strlen(options[RULE].value);
 			CG3::UString buf(sn * 3, 0);
-			ucnv_toUChars(conv, &buf[0], sn * 3, options[RULE].value, sn, &status);
+			ucnv_toUChars(conv, &buf[0], static_cast<int32_t>(sn * 3), options[RULE].value, static_cast<int32_t>(sn), &status);
 
 			for (auto rule : applicator.grammar->rule_by_number) {
 				if (rule->name == buf) {

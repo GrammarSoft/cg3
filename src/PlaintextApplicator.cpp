@@ -87,7 +87,7 @@ void PlaintextApplicator::runGrammarOnText(std::istream& input, std::ostream& ou
 		++lines;
 		size_t offset = 0, packoff = 0;
 		// Read as much of the next line as will fit in the current buffer
-		while (u_fgets(&line[offset], line.size() - offset - 1, input)) {
+		while (u_fgets(&line[offset], static_cast<int32_t>(line.size() - offset - 1), input)) {
 			// Copy the segment just read to cleaned
 			for (size_t i = offset; i < line.size(); ++i) {
 				// Only copy one space character, regardless of how many are in input
@@ -363,7 +363,7 @@ void PlaintextApplicator::printCohort(Cohort* cohort, std::ostream& output) {
 }
 
 void PlaintextApplicator::printSingleWindow(SingleWindow* window, std::ostream& output) {
-	uint32_t cs = (uint32_t)window->cohorts.size();
+	uint32_t cs = static_cast<uint32_t>(window->cohorts.size());
 	for (uint32_t c = 0; c < cs; c++) {
 		Cohort* cohort = window->cohorts[c];
 		printCohort(cohort, output);

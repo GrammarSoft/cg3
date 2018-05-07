@@ -156,7 +156,7 @@ int BinaryGrammar::writeBinaryGrammar(FILE* output) {
 		if (!t->tag.empty()) {
 			fields |= (1 << 8);
 			ucnv_reset(conv);
-			i32tmp = ucnv_fromUChars(conv, &cbuffers[0][0], CG3_BUFFER_SIZE - 1, t->tag.c_str(), t->tag.size(), &err);
+			i32tmp = ucnv_fromUChars(conv, &cbuffers[0][0], CG3_BUFFER_SIZE - 1, t->tag.c_str(), static_cast<int32_t>(t->tag.size()), &err);
 			writeSwapped(buffer, i32tmp);
 			buffer.write(&cbuffers[0][0], i32tmp);
 		}
@@ -173,17 +173,17 @@ int BinaryGrammar::writeBinaryGrammar(FILE* output) {
 
 		if (t->vs_sets) {
 			fields |= (1 << 10);
-			writeSwapped<uint32_t>(buffer, t->vs_sets->size());
+			writeSwapped<uint32_t>(buffer, static_cast<uint32_t>(t->vs_sets->size()));
 			for (auto iter : *t->vs_sets) {
 				writeSwapped(buffer, iter->number);
 			}
 		}
 		if (t->vs_names) {
 			fields |= (1 << 11);
-			writeSwapped<uint32_t>(buffer, t->vs_names->size());
+			writeSwapped<uint32_t>(buffer, static_cast<uint32_t>(t->vs_names->size()));
 			for (auto iter : *t->vs_names) {
 				ucnv_reset(conv);
-				i32tmp = ucnv_fromUChars(conv, &cbuffers[0][0], CG3_BUFFER_SIZE - 1, iter.c_str(), iter.size(), &err);
+				i32tmp = ucnv_fromUChars(conv, &cbuffers[0][0], CG3_BUFFER_SIZE - 1, iter.c_str(), static_cast<int32_t>(iter.size()), &err);
 				writeSwapped(buffer, i32tmp);
 				buffer.write(&cbuffers[0][0], i32tmp);
 			}
@@ -192,7 +192,8 @@ int BinaryGrammar::writeBinaryGrammar(FILE* output) {
 
 		u32tmp = (uint32_t)htonl(fields);
 		fwrite_throw(&u32tmp, sizeof(uint32_t), 1, output);
-		fwrite_throw(buffer.str().c_str(), buffer.str().length(), 1, output);
+		const auto& str = buffer.str();
+		fwrite_throw(str.c_str(), str.size(), 1, output);
 	}
 
 	if (!grammar->reopen_mappings.empty()) {
@@ -258,21 +259,21 @@ int BinaryGrammar::writeBinaryGrammar(FILE* output) {
 		}
 		if (!s->getNonEmpty().empty()) {
 			fields |= (1 << 3);
-			writeSwapped<uint32_t>(buffer, s->trie.size());
+			writeSwapped<uint32_t>(buffer, static_cast<uint32_t>(s->trie.size()));
 			trie_serialize(s->trie, buffer);
-			writeSwapped<uint32_t>(buffer, s->trie_special.size());
+			writeSwapped<uint32_t>(buffer, static_cast<uint32_t>(s->trie_special.size()));
 			trie_serialize(s->trie_special, buffer);
 		}
 		if (!s->set_ops.empty()) {
 			fields |= (1 << 4);
-			writeSwapped<uint32_t>(buffer, s->set_ops.size());
+			writeSwapped<uint32_t>(buffer, static_cast<uint32_t>(s->set_ops.size()));
 			for (auto iter : s->set_ops) {
 				writeSwapped(buffer, iter);
 			}
 		}
 		if (!s->sets.empty()) {
 			fields |= (1 << 5);
-			writeSwapped<uint32_t>(buffer, s->sets.size());
+			writeSwapped<uint32_t>(buffer, static_cast<uint32_t>(s->sets.size()));
 			for (auto iter : s->sets) {
 				writeSwapped(buffer, iter);
 			}
@@ -280,14 +281,15 @@ int BinaryGrammar::writeBinaryGrammar(FILE* output) {
 		if (s->type & ST_STATIC) {
 			fields |= (1 << 6);
 			ucnv_reset(conv);
-			i32tmp = ucnv_fromUChars(conv, &cbuffers[0][0], CG3_BUFFER_SIZE - 1, s->name.c_str(), s->name.length(), &err);
+			i32tmp = ucnv_fromUChars(conv, &cbuffers[0][0], CG3_BUFFER_SIZE - 1, s->name.c_str(), static_cast<int32_t>(s->name.size()), &err);
 			writeSwapped(buffer, i32tmp);
 			buffer.write(&cbuffers[0][0], i32tmp);
 		}
 
 		u32tmp = (uint32_t)htonl(fields);
 		fwrite_throw(&u32tmp, sizeof(uint32_t), 1, output);
-		fwrite_throw(buffer.str().c_str(), buffer.str().length(), 1, output);
+		const auto& str = buffer.str();
+		fwrite_throw(str.c_str(), str.size(), 1, output);
 	}
 
 	if (grammar->delimiters) {
@@ -337,7 +339,7 @@ int BinaryGrammar::writeBinaryGrammar(FILE* output) {
 		if (!r->name.empty()) {
 			fields |= (1 << 4);
 			ucnv_reset(conv);
-			i32tmp = ucnv_fromUChars(conv, &cbuffers[0][0], CG3_BUFFER_SIZE - 1, r->name.c_str(), r->name.size(), &err);
+			i32tmp = ucnv_fromUChars(conv, &cbuffers[0][0], CG3_BUFFER_SIZE - 1, r->name.c_str(), static_cast<int32_t>(r->name.size()), &err);
 			writeSwapped(buffer, i32tmp);
 			buffer.write(&cbuffers[0][0], i32tmp);
 		}
@@ -388,7 +390,8 @@ int BinaryGrammar::writeBinaryGrammar(FILE* output) {
 
 		u32tmp = (uint32_t)htonl(fields);
 		fwrite_throw(&u32tmp, sizeof(uint32_t), 1, output);
-		fwrite_throw(buffer.str().c_str(), buffer.str().length(), 1, output);
+		const auto& str = buffer.str();
+		fwrite_throw(str.c_str(), str.size(), 1, output);
 
 		u32tmp = 0;
 		if (r->dep_target) {
@@ -397,14 +400,14 @@ int BinaryGrammar::writeBinaryGrammar(FILE* output) {
 		fwrite_throw(&u32tmp, sizeof(uint32_t), 1, output);
 
 		r->reverseContextualTests();
-		u32tmp = (uint32_t)htonl(r->dep_tests.size());
+		u32tmp = (uint32_t)htonl(static_cast<unsigned long>(r->dep_tests.size()));
 		fwrite_throw(&u32tmp, sizeof(uint32_t), 1, output);
 		for (auto it : r->dep_tests) {
 			u32tmp = (uint32_t)htonl(it->hash);
 			fwrite_throw(&u32tmp, sizeof(uint32_t), 1, output);
 		}
 
-		u32tmp = (uint32_t)htonl(r->tests.size());
+		u32tmp = (uint32_t)htonl(static_cast<unsigned long>(r->tests.size()));
 		fwrite_throw(&u32tmp, sizeof(uint32_t), 1, output);
 		for (auto it : r->tests) {
 			u32tmp = (uint32_t)htonl(it->hash);
@@ -492,7 +495,8 @@ void BinaryGrammar::writeContextualTest(ContextualTest* t, FILE* output) {
 
 	u32tmp = (uint32_t)htonl(fields);
 	fwrite_throw(&u32tmp, sizeof(uint32_t), 1, output);
-	fwrite_throw(buffer.str().c_str(), buffer.str().length(), 1, output);
+	const auto& str = buffer.str();
+	fwrite_throw(str.c_str(), str.size(), 1, output);
 
 	if (!t->ors.empty()) {
 		u32tmp = (uint32_t)htonl((uint32_t)t->ors.size());

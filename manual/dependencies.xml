@@ -227,10 +227,23 @@
       </para>
       <para>
         Be aware that BARRIER and CBARRIER will check and thus possibly stop at the current target when 'S' is in effect.
+        This can be toggled on a per context basis with modifier <link linkend="dep-ct-no-barrier">N</link>.
       </para>
       <screen>
         (cS (ADJ))
       </screen>
+    </section>
+
+    <section id="dep-ct-no-barrier">
+      <title>No Barrier</title>
+      <indexterm>
+        <primary>N</primary>
+      </indexterm>
+      <para>
+        The 'N' option causes barriers to ignore the self cohort.
+        If <link linkend="grammar-options-self-no-barrier">self-no-barrier</link> is enabled,
+        then instead it forces barriers to respect the self cohort.
+      </para>
     </section>
 
     <section id="dep-ct-deep">
