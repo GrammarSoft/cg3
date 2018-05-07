@@ -76,7 +76,7 @@ uint32_t GrammarApplicator::doesTagMatchRegexp(uint32_t test, const Tag& tag, bo
 	else {
 		const Tag& itag = *(single_tags.find(test)->second);
 		UErrorCode status = U_ZERO_ERROR;
-		uregex_setText(tag.regexp, itag.tag.c_str(), itag.tag.size(), &status);
+		uregex_setText(tag.regexp, itag.tag.c_str(), static_cast<int32_t>(itag.tag.size()), &status);
 		if (status != U_ZERO_ERROR) {
 			u_fprintf(ux_stderr, "Error: uregex_setText(MatchSet) returned %s for tag %S before input line %u - cannot continue!\n", u_errorName(status), tag.tag.c_str(), numLines);
 			CG3Quit(1);
@@ -127,7 +127,7 @@ uint32_t GrammarApplicator::doesTagMatchIcase(uint32_t test, const Tag& tag, boo
 	else {
 		const Tag& itag = *(single_tags.find(test)->second);
 		UErrorCode status = U_ZERO_ERROR;
-		if (u_strCaseCompare(tag.tag.c_str(), tag.tag.size(), itag.tag.c_str(), itag.tag.size(), U_FOLD_CASE_DEFAULT, &status) == 0) {
+		if (u_strCaseCompare(tag.tag.c_str(), static_cast<int32_t>(tag.tag.size()), itag.tag.c_str(), static_cast<int32_t>(itag.tag.size()), U_FOLD_CASE_DEFAULT, &status) == 0) {
 			match = itag.hash;
 		}
 		if (status != U_ZERO_ERROR) {
@@ -156,7 +156,7 @@ uint32_t GrammarApplicator::doesRegexpMatchLine(const Reading& reading, const Ta
 	}
 	else {
 		UErrorCode status = U_ZERO_ERROR;
-		uregex_setText(tag.regexp, reading.tags_string.c_str(), reading.tags_string.size(), &status);
+		uregex_setText(tag.regexp, reading.tags_string.c_str(), static_cast<int32_t>(reading.tags_string.size()), &status);
 		if (status != U_ZERO_ERROR) {
 			u_fprintf(ux_stderr, "Error: uregex_setText(MatchSet) returned %s for tag %S before input line %u - cannot continue!\n", u_errorName(status), tag.tag.c_str(), numLines);
 			CG3Quit(1);
@@ -261,7 +261,7 @@ uint32_t GrammarApplicator::doesTagMatchReading(const Reading& reading, const Ta
 	else if (tag.type & T_META) {
 		if (tag.regexp && !reading.parent->text.empty()) {
 			UErrorCode status = U_ZERO_ERROR;
-			uregex_setText(tag.regexp, reading.parent->text.c_str(), reading.parent->text.size(), &status);
+			uregex_setText(tag.regexp, reading.parent->text.c_str(), static_cast<int32_t>(reading.parent->text.size()), &status);
 			if (status != U_ZERO_ERROR) {
 				u_fprintf(ux_stderr, "Error: uregex_setText(MatchSet) returned %s for tag %S before input line %u - cannot continue!\n", u_errorName(status), tag.tag.c_str(), numLines);
 				CG3Quit(1);

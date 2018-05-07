@@ -499,7 +499,7 @@ cg3_tag* cg3_tag_create_u(cg3_applicator* applicator_, const UChar* text) {
 cg3_tag* cg3_tag_create_u8(cg3_applicator* applicator, const char* text) {
 	UErrorCode status = U_ZERO_ERROR;
 
-	u_strFromUTF8(&gbuffers[0][0], CG3_BUFFER_SIZE - 1, 0, text, strlen(text), &status);
+	u_strFromUTF8(&gbuffers[0][0], CG3_BUFFER_SIZE - 1, 0, text, static_cast<int32_t>(strlen(text)), &status);
 	if (U_FAILURE(status)) {
 		u_fprintf(ux_stderr, "CG3 Error: Failed to convert text from UTF-8 to UTF-16. Status = %s\n", u_errorName(status));
 		return 0;
@@ -515,7 +515,7 @@ cg3_tag* cg3_tag_create_u16(cg3_applicator* applicator, const uint16_t* text) {
 cg3_tag* cg3_tag_create_u32(cg3_applicator* applicator, const uint32_t* text) {
 	UErrorCode status = U_ZERO_ERROR;
 
-	size_t length = 0;
+	int32_t length = 0;
 	while (text[length]) {
 		++length;
 	}
@@ -532,7 +532,7 @@ cg3_tag* cg3_tag_create_u32(cg3_applicator* applicator, const uint32_t* text) {
 cg3_tag* cg3_tag_create_w(cg3_applicator* applicator, const wchar_t* text) {
 	UErrorCode status = U_ZERO_ERROR;
 
-	u_strFromWCS(&gbuffers[0][0], CG3_BUFFER_SIZE - 1, 0, text, wcslen(text), &status);
+	u_strFromWCS(&gbuffers[0][0], CG3_BUFFER_SIZE - 1, 0, text, static_cast<int32_t>(wcslen(text)), &status);
 	if (U_FAILURE(status)) {
 		u_fprintf(ux_stderr, "CG3 Error: Failed to convert text from wchar_t to UTF-16. Status = %s\n", u_errorName(status));
 		return 0;
@@ -550,7 +550,7 @@ const char* cg3_tag_gettext_u8(cg3_tag* tag_) {
 	Tag* tag = static_cast<Tag*>(tag_);
 	UErrorCode status = U_ZERO_ERROR;
 
-	u_strToUTF8(&cbuffers[0][0], CG3_BUFFER_SIZE - 1, 0, tag->tag.c_str(), tag->tag.size(), &status);
+	u_strToUTF8(&cbuffers[0][0], CG3_BUFFER_SIZE - 1, 0, tag->tag.c_str(), static_cast<int32_t>(tag->tag.size()), &status);
 	if (U_FAILURE(status)) {
 		u_fprintf(ux_stderr, "CG3 Error: Failed to convert text from UChar to UTF-8. Status = %s\n", u_errorName(status));
 		return 0;
@@ -570,7 +570,7 @@ const uint32_t* cg3_tag_gettext_u32(cg3_tag* tag_) {
 
 	UChar32* tmp = reinterpret_cast<UChar32*>(&cbuffers[0][0]);
 
-	u_strToUTF32(tmp, (CG3_BUFFER_SIZE / sizeof(UChar32)) - 1, 0, tag->tag.c_str(), tag->tag.size(), &status);
+	u_strToUTF32(tmp, (CG3_BUFFER_SIZE / sizeof(UChar32)) - 1, 0, tag->tag.c_str(), static_cast<int32_t>(tag->tag.size()), &status);
 	if (U_FAILURE(status)) {
 		u_fprintf(ux_stderr, "CG3 Error: Failed to convert text from UChar to UTF-32. Status = %s\n", u_errorName(status));
 		return 0;
@@ -585,7 +585,7 @@ const wchar_t* cg3_tag_gettext_w(cg3_tag* tag_) {
 
 	wchar_t* tmp = reinterpret_cast<wchar_t*>(&cbuffers[0][0]);
 
-	u_strToWCS(tmp, (CG3_BUFFER_SIZE / sizeof(wchar_t)) - 1, 0, tag->tag.c_str(), tag->tag.size(), &status);
+	u_strToWCS(tmp, (CG3_BUFFER_SIZE / sizeof(wchar_t)) - 1, 0, tag->tag.c_str(), static_cast<int32_t>(tag->tag.size()), &status);
 	if (U_FAILURE(status)) {
 		u_fprintf(ux_stderr, "CG3 Error: Failed to convert text from UChar to UTF-32. Status = %s\n", u_errorName(status));
 		return 0;

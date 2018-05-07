@@ -1,16 +1,8 @@
 "<word>"
-	"word" notwanted
-	"word" wanted
-	"word" notmeeither
+	"word" wanted 1
 "<word>"
-	"word" notwanted
-	"blocker" block
-	"word" notmeeither
+	"word" block 2
 "<word>"
-	"word" notwanted
-	"word" wanted
-	"word" notmeeither
+	"word" wanted 3
 "<word>"
-	"word" notwanted
-	"word" findme
-	"word" notmeeither
+	"word" findme 4

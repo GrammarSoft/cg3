@@ -218,16 +218,16 @@ void Relabeller::reindexSet(Set& s) {
 }
 
 void Relabeller::addSetToGrammar(Set* s) {
-	s->setName(grammar->sets_list.size() + 100);
+	s->setName(static_cast<uint32_t>(grammar->sets_list.size() + 100));
 	grammar->sets_list.push_back(s);
-	s->number = (uint32_t)grammar->sets_list.size() - 1;
+	s->number = static_cast<uint32_t>(grammar->sets_list.size() - 1);
 	reindexSet(*s);
 }
 
 uint32_t Relabeller::copyRelabelSetToGrammar(const Set* s_r) {
 	Set* s_g = grammar->allocateSet();
 
-	uint32_t nsets = s_r->sets.size();
+	uint32_t nsets = static_cast<uint32_t>(s_r->sets.size());
 	s_g->sets.resize(nsets);
 	for (uint32_t i = 0; i < nsets; ++i) {
 		// First ensure all referred-to sets exist:
@@ -236,7 +236,7 @@ uint32_t Relabeller::copyRelabelSetToGrammar(const Set* s_r) {
 		s_g->sets[i] = child_num_g;
 	}
 
-	uint32_t nset_ops = s_r->set_ops.size();
+	uint32_t nset_ops = static_cast<uint32_t>(s_r->set_ops.size());
 	s_g->set_ops.resize(nset_ops);
 	for (uint32_t i = 0; i < nset_ops; ++i) {
 		s_g->set_ops[i] = s_r->set_ops[i]; // enum from Strings.cpp, same across grammars

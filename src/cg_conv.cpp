@@ -134,7 +134,7 @@ int main(int argc, char* argv[]) {
 
 		std::string buf8(BUF_SIZE, 0);
 		std::cin.read(&buf8[0], BUF_SIZE - 4);
-		auto sz = static_cast<int32_t>(std::cin.gcount());
+		auto sz = std::cin.gcount();
 		if (buf8[sz - 1] & 0x80) {
 			for (size_t i = sz - 1; ; --i) {
 				if ((buf8[i] & 0xF0) == 0xF0) {
@@ -167,7 +167,7 @@ int main(int argc, char* argv[]) {
 
 		CG3::UString buffer(BUF_SIZE, 0);
 		int32_t nr = 0;
-		u_strFromUTF8(&buffer[0], BUF_SIZE, &nr, buf8.c_str(), sz, &status);
+		u_strFromUTF8(&buffer[0], BUF_SIZE, &nr, buf8.c_str(), static_cast<int32_t>(sz), &status);
 		if (U_FAILURE(status)) {
 			throw std::runtime_error("UTF-8 to UTF-16 conversion failed");
 		}
@@ -176,7 +176,7 @@ int main(int argc, char* argv[]) {
 
 		for (;;) {
 			rx = uregex_openC("^\"<[^>]+>\".*?^\\s+\"[^\"]+\"", UREGEX_DOTALL | UREGEX_MULTILINE, 0, &status);
-			uregex_setText(rx, buffer.c_str(), buffer.size(), &status);
+			uregex_setText(rx, buffer.c_str(), static_cast<int32_t>(buffer.size()), &status);
 			if (uregex_find(rx, -1, &status)) {
 				fmt = CG3::FMT_CG;
 				break;
@@ -184,7 +184,7 @@ int main(int argc, char* argv[]) {
 			uregex_close(rx);
 
 			rx = uregex_openC("^\\S+ *\t *\\[\\S+\\]", UREGEX_DOTALL | UREGEX_MULTILINE, 0, &status);
-			uregex_setText(rx, buffer.c_str(), buffer.size(), &status);
+			uregex_setText(rx, buffer.c_str(), static_cast<int32_t>(buffer.size()), &status);
 			if (uregex_find(rx, -1, &status)) {
 				fmt = CG3::FMT_NICELINE;
 				break;
@@ -192,7 +192,7 @@ int main(int argc, char* argv[]) {
 			uregex_close(rx);
 
 			rx = uregex_openC("^\\S+ *\t *\"\\S+\"", UREGEX_DOTALL | UREGEX_MULTILINE, 0, &status);
-			uregex_setText(rx, buffer.c_str(), buffer.size(), &status);
+			uregex_setText(rx, buffer.c_str(), static_cast<int32_t>(buffer.size()), &status);
 			if (uregex_find(rx, -1, &status)) {
 				fmt = CG3::FMT_NICELINE;
 				break;
@@ -200,7 +200,7 @@ int main(int argc, char* argv[]) {
 			uregex_close(rx);
 
 			rx = uregex_openC("\\^[^/]+(/[^<]+(<[^>]+>)+)+\\$", UREGEX_DOTALL | UREGEX_MULTILINE, 0, &status);
-			uregex_setText(rx, buffer.c_str(), buffer.size(), &status);
+			uregex_setText(rx, buffer.c_str(), static_cast<int32_t>(buffer.size()), &status);
 			if (uregex_find(rx, -1, &status)) {
 				fmt = CG3::FMT_APERTIUM;
 				break;
@@ -208,7 +208,7 @@ int main(int argc, char* argv[]) {
 			uregex_close(rx);
 
 			rx = uregex_openC("^\\S+\t\\S+(\\+\\S+)+$", UREGEX_DOTALL | UREGEX_MULTILINE, 0, &status);
-			uregex_setText(rx, buffer.c_str(), buffer.size(), &status);
+			uregex_setText(rx, buffer.c_str(), static_cast<int32_t>(buffer.size()), &status);
 			if (uregex_find(rx, -1, &status)) {
 				fmt = CG3::FMT_FST;
 				break;
@@ -229,27 +229,27 @@ int main(int argc, char* argv[]) {
 		grammar.sub_readings_ltr = true;
 	}
 	if (options[MAPPING_PREFIX].doesOccur) {
-		size_t sn = strlen(options[MAPPING_PREFIX].value);
+		auto sn = static_cast<int32_t>(strlen(options[MAPPING_PREFIX].value));
 		CG3::UString buf(sn * 3, 0);
 		UConverter* conv = ucnv_open(codepage_default, &status);
-		ucnv_toUChars(conv, &buf[0], buf.size(), options[MAPPING_PREFIX].value, sn, &status);
+		ucnv_toUChars(conv, &buf[0], static_cast<int32_t>(buf.size()), options[MAPPING_PREFIX].value, sn, &status);
 		ucnv_close(conv);
 		grammar.mapping_prefix = buf[0];
 	}
 	if (options[SUB_DELIMITER].doesOccur) {
-		size_t sn = strlen(options[SUB_DELIMITER].value);
+		auto sn = static_cast<int32_t>(strlen(options[SUB_DELIMITER].value));
 		applicator.sub_delims.resize(sn * 2);
 		UConverter* conv = ucnv_open(codepage_default, &status);
-		sn = ucnv_toUChars(conv, &applicator.sub_delims[0], applicator.sub_delims.size(), options[SUB_DELIMITER].value, sn, &status);
+		sn = ucnv_toUChars(conv, &applicator.sub_delims[0], static_cast<int32_t>(applicator.sub_delims.size()), options[SUB_DELIMITER].value, sn, &status);
 		applicator.sub_delims.resize(sn);
 		applicator.sub_delims += '+';
 		ucnv_close(conv);
 	}
 	if (options[FST_WTAG].doesOccur) {
-		size_t sn = strlen(options[FST_WTAG].value);
+		auto sn = static_cast<int32_t>(strlen(options[FST_WTAG].value));
 		applicator.wtag.resize(sn * 2);
 		UConverter* conv = ucnv_open(codepage_default, &status);
-		sn = ucnv_toUChars(conv, &applicator.wtag[0], applicator.wtag.size(), options[FST_WTAG].value, sn, &status);
+		sn = ucnv_toUChars(conv, &applicator.wtag[0], static_cast<int32_t>(applicator.wtag.size()), options[FST_WTAG].value, sn, &status);
 		applicator.wtag.resize(sn);
 		ucnv_close(conv);
 	}

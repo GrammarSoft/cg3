@@ -1,17 +1,8 @@
 "<word>"
-	"word" notwanted
-	"word" wanted
-	"word" notmeeither
+	"word" wanted 1 @self-no-barrier-l @self-barrier-g
 "<word>"
-	"word" notwanted @tag
-	"blocker" block
-	"word" notmeeither @tag
+	"word" block 2 @tag
 "<word>"
-	"word" notwanted @tag
-	"word" wanted @tag
-	"word" notmeeither @tag
+	"word" wanted 3 @tag
 "<word>"
-	"word" notwanted
-	"word" findme
-	"word" notmeeither
-
+	"word" findme 4
