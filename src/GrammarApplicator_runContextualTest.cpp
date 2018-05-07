@@ -90,6 +90,8 @@ Cohort* GrammarApplicator::runSingleTest(Cohort* cohort, const ContextualTest* t
 		rvs |= TRV_BREAK | TRV_BREAK_DEFAULT;
 	}
 
+	bool broken = (rvs & TRV_BREAK) != 0;
+
 	context.test = 0;
 	context.deep = 0;
 	context.origin = 0;
@@ -114,6 +116,9 @@ Cohort* GrammarApplicator::runSingleTest(Cohort* cohort, const ContextualTest* t
 	}
 	if (context.matched_target && *retval) {
 		rvs |= TRV_BREAK;
+	}
+	if (!broken && (rvs & TRV_BARRIER) && (test->pos & MASK_SELF_NB) == MASK_SELF_NB) {
+		rvs &= ~(TRV_BREAK | TRV_BARRIER);
 	}
 	if (!*retval) {
 		regexgrps.first = regexgrpz;
@@ -161,7 +166,7 @@ Cohort* getCohortInWindow(SingleWindow*& sWindow, size_t position, const Context
 	return cohort;
 }
 
-bool GrammarApplicator::posOutputHelper(const SingleWindow* sWindow, uint32_t position, const ContextualTest* test, const Cohort* cohort, const Cohort* cdeep) {
+bool GrammarApplicator::posOutputHelper(const SingleWindow* sWindow, size_t position, const ContextualTest* test, const Cohort* cohort, const Cohort* cdeep) {
 	bool good = false;
 
 	const Cohort* cs[4] = {
@@ -451,7 +456,7 @@ Cohort* GrammarApplicator::runContextualTest(SingleWindow* sWindow, size_t posit
 						if ((test->pos & (POS_SPAN_BOTH | POS_SPAN_LEFT) || always_span)) {
 							left = left->previous;
 							if (left) {
-								lpos = i + left->cohorts.size();
+								lpos = static_cast<int32_t>(i + left->cohorts.size());
 							}
 						}
 						else {

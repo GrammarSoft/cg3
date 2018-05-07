@@ -114,7 +114,7 @@ void Tag::parseTagRaw(const UChar* to, Grammar* grammar) {
 
 	for (auto iter : grammar->regex_tags) {
 		UErrorCode status = U_ZERO_ERROR;
-		uregex_setText(iter, tag.c_str(), tag.size(), &status);
+		uregex_setText(iter, tag.c_str(), static_cast<int32_t>(tag.size()), &status);
 		if (status == U_ZERO_ERROR) {
 			if (uregex_matches(iter, 0, &status)) {
 				type |= T_TEXTUAL;
@@ -123,7 +123,7 @@ void Tag::parseTagRaw(const UChar* to, Grammar* grammar) {
 	}
 	for (auto iter : grammar->icase_tags) {
 		UErrorCode status = U_ZERO_ERROR;
-		if (u_strCaseCompare(tag.c_str(), tag.size(), iter->tag.c_str(), iter->tag.size(), U_FOLD_CASE_DEFAULT, &status) == 0) {
+		if (u_strCaseCompare(tag.c_str(), static_cast<int32_t>(tag.size()), iter->tag.c_str(), static_cast<int32_t>(iter->tag.size()), U_FOLD_CASE_DEFAULT, &status) == 0) {
 			type |= T_TEXTUAL;
 		}
 	}

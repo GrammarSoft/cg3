@@ -291,7 +291,7 @@ int main(int argc, char* argv[]) {
 
 	// This is if we want to run a single rule  (-r option)
 	if (!single_rule.empty()) {
-		size_t sn = single_rule.size();
+		auto sn = static_cast<int32_t>(single_rule.size());
 		CG3::UString buf(sn * 3, 0);
 		u_charsToUChars(single_rule.c_str(), &buf[0], sn);
 		for (auto rule : applicator->grammar->rule_by_number) {

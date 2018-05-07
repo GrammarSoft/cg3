@@ -295,7 +295,7 @@ void Grammar::addSetToList(Set* s) {
 				}
 			}
 			sets_list.push_back(s);
-			s->number = (uint32_t)sets_list.size() - 1;
+			s->number = static_cast<uint32_t>(sets_list.size() - 1);
 		}
 	}
 }
@@ -427,7 +427,7 @@ Rule* Grammar::allocateRule() {
 }
 
 void Grammar::addRule(Rule* rule) {
-	rule->number = rule_by_number.size();
+	rule->number = static_cast<uint32_t>(rule_by_number.size());
 	rule_by_number.push_back(rule);
 }
 
@@ -484,7 +484,7 @@ Tag* Grammar::addTag(Tag* tag) {
 			tag->seed = seed;
 			hash = tag->rehash();
 			single_tags_list.push_back(tag);
-			tag->number = (uint32_t)single_tags_list.size() - 1;
+			tag->number = static_cast<uint32_t>(single_tags_list.size() - 1);
 			single_tags[hash] = tag;
 			break;
 		}
@@ -569,7 +569,7 @@ void Grammar::addAnchor(const UChar* to, uint32_t at, bool primary) {
 	}
 	if (at > rule_by_number.size()) {
 		u_fprintf(ux_stderr, "Warning: No corresponding rule available for anchor '%S' on line %u!\n", to, lines);
-		at = rule_by_number.size();
+		at = static_cast<uint32_t>(rule_by_number.size());
 	}
 	if (it == anchors.end()) {
 		anchors[ah] = at;
@@ -662,7 +662,7 @@ void Grammar::reindex(bool unused_sets, bool used_tags) {
 		}
 		for (auto iter : regex_tags) {
 			UErrorCode status = U_ZERO_ERROR;
-			uregex_setText(iter, titer->tag.c_str(), titer->tag.size(), &status);
+			uregex_setText(iter, titer->tag.c_str(), static_cast<int32_t>(titer->tag.size()), &status);
 			if (status == U_ZERO_ERROR) {
 				if (uregex_find(iter, -1, &status)) {
 					titer->type |= T_TEXTUAL;
@@ -671,7 +671,7 @@ void Grammar::reindex(bool unused_sets, bool used_tags) {
 		}
 		for (auto iter : icase_tags) {
 			UErrorCode status = U_ZERO_ERROR;
-			if (u_strCaseCompare(titer->tag.c_str(), titer->tag.size(), iter->tag.c_str(), iter->tag.size(), U_FOLD_CASE_DEFAULT, &status) == 0) {
+			if (u_strCaseCompare(titer->tag.c_str(), static_cast<int32_t>(titer->tag.size()), iter->tag.c_str(), static_cast<int32_t>(iter->tag.size()), U_FOLD_CASE_DEFAULT, &status) == 0) {
 				titer->type |= T_TEXTUAL;
 			}
 			if (status != U_ZERO_ERROR) {

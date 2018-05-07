@@ -34,53 +34,51 @@ class ContextualTest;
 typedef std::vector<ContextualTest*> ContextVector;
 typedef std::list<ContextualTest*> ContextList;
 
-#ifdef _MSC_VER
 enum : uint64_t {
-#else
-enum {
-#endif
-	POS_CAREFUL        = (1 <<  0),
-	POS_NEGATE         = (1 <<  1),
-	POS_NOT            = (1 <<  2),
-	POS_SCANFIRST      = (1 <<  3),
-	POS_SCANALL        = (1 <<  4),
-	POS_ABSOLUTE       = (1 <<  5),
-	POS_SPAN_RIGHT     = (1 <<  6),
-	POS_SPAN_LEFT      = (1 <<  7),
-	POS_SPAN_BOTH      = (1 <<  8),
-	POS_DEP_PARENT     = (1 <<  9),
-	POS_DEP_SIBLING    = (1 << 10),
-	POS_DEP_CHILD      = (1 << 11),
-	POS_PASS_ORIGIN    = (1 << 12),
-	POS_NO_PASS_ORIGIN = (1 << 13),
-	POS_LEFT_PAR       = (1 << 14),
-	POS_RIGHT_PAR      = (1 << 15),
-	POS_SELF           = (1 << 16),
-	POS_NONE           = (1 << 17),
-	POS_ALL            = (1 << 18),
-	POS_DEP_DEEP       = (1 << 19),
-	POS_MARK_SET       = (1 << 20),
-	POS_MARK_JUMP      = (1 << 21),
-	POS_LOOK_DELETED   = (1 << 22),
-	POS_LOOK_DELAYED   = (1 << 23),
+	POS_CAREFUL        = (1 <<  0), // C
+	POS_NEGATE         = (1 <<  1), // Prefix NEGATE
+	POS_NOT            = (1 <<  2), // Prefix NOT
+	POS_SCANFIRST      = (1 <<  3), // *
+	POS_SCANALL        = (1 <<  4), // **
+	POS_ABSOLUTE       = (1 <<  5), // @
+	POS_SPAN_RIGHT     = (1 <<  6), // >
+	POS_SPAN_LEFT      = (1 <<  7), // <
+	POS_SPAN_BOTH      = (1 <<  8), // W
+	POS_DEP_PARENT     = (1 <<  9), // p
+	POS_DEP_SIBLING    = (1 << 10), // s
+	POS_DEP_CHILD      = (1 << 11), // c
+	POS_PASS_ORIGIN    = (1 << 12), // o
+	POS_NO_PASS_ORIGIN = (1 << 13), // O
+	POS_LEFT_PAR       = (1 << 14), // L
+	POS_RIGHT_PAR      = (1 << 15), // R
+	POS_SELF           = (1 << 16), // S
+	POS_NONE           = (1 << 17), // Prefix NONE
+	POS_ALL            = (1 << 18), // Prefix ALL
+	POS_DEP_DEEP       = (1 << 19), // * or **
+	POS_MARK_SET       = (1 << 20), // X
+	POS_MARK_JUMP      = (1 << 21), // x
+	POS_LOOK_DELETED   = (1 << 22), // D
+	POS_LOOK_DELAYED   = (1 << 23), // d
 	POS_TMPL_OVERRIDE  = (1 << 24),
-	POS_UNKNOWN        = (1 << 25),
-	POS_RELATION       = (1 << 26),
-	POS_ATTACH_TO      = (1 << 27),
-	POS_NUMERIC_BRANCH = (1 << 28),
-	POS_BAG_OF_TAGS    = (1 << 29),
-	POS_DEP_GLOB       = (1 << 30),
+	POS_UNKNOWN        = (1 << 25), // ?
+	POS_RELATION       = (1 << 26), // r:
+	POS_ATTACH_TO      = (1 << 27), // A
+	POS_NUMERIC_BRANCH = (1 << 28), // f
+	POS_BAG_OF_TAGS    = (1 << 29), // B
+	POS_DEP_GLOB       = (1 << 30), // pp
 	POS_64BIT          = (1ull << 31),
-	POS_LEFT           = (1ull << 32),
-	POS_RIGHT          = (1ull << 33),
-	POS_LEFTMOST       = (1ull << 34),
-	POS_RIGHTMOST      = (1ull << 35),
+	POS_LEFT           = (1ull << 32), // l
+	POS_RIGHT          = (1ull << 33), // r
+	POS_LEFTMOST       = (1ull << 34), // ll
+	POS_RIGHTMOST      = (1ull << 35), // rr
+	POS_NO_BARRIER     = (1ull << 36), // N
 
 	MASK_POS_DEP       = POS_DEP_PARENT | POS_DEP_SIBLING | POS_DEP_CHILD | POS_DEP_GLOB,
 	MASK_POS_DEPREL    = MASK_POS_DEP | POS_RELATION,
 	MASK_POS_CDEPREL   = MASK_POS_DEPREL | POS_CAREFUL,
 	MASK_POS_LORR      = POS_LEFT | POS_RIGHT | POS_LEFTMOST | POS_RIGHTMOST,
 	MASK_POS_SCAN      = POS_SCANFIRST | POS_SCANALL | POS_DEP_DEEP | POS_DEP_GLOB,
+	MASK_SELF_NB       = POS_SELF | POS_NO_BARRIER,
 };
 
 enum GSR_SPECIALS {

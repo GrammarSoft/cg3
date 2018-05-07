@@ -187,7 +187,7 @@ void GrammarApplicator::index() {
 	}
 
 	if (sections.empty()) {
-		int32_t smax = (int32_t)grammar->sections.size();
+		int32_t smax = static_cast<int32_t>(grammar->sections.size());
 		for (int32_t i = 0; i < smax; i++) {
 			for (auto r : grammar->rules) {
 				if (r->section < 0 || r->section > i) {
@@ -199,11 +199,11 @@ void GrammarApplicator::index() {
 		}
 	}
 	else {
-		numsections = sections.size();
+		numsections = static_cast<uint32_t>(sections.size());
 		for (uint32_t n = 0; n < numsections; n++) {
 			for (uint32_t e = 0; e <= n; e++) {
 				for (auto r : grammar->rules) {
-					if (r->section != (int32_t)sections[e] - 1) {
+					if (r->section != static_cast<int32_t>(sections[e]) - 1) {
 						continue;
 					}
 					uint32IntervalVector& m = runsections[n];
@@ -301,7 +301,7 @@ Tag* GrammarApplicator::addTag(const UChar* txt, bool vstr) {
 				}
 				for (auto iter : grammar->regex_tags) {
 					UErrorCode status = U_ZERO_ERROR;
-					uregex_setText(iter, titer.second->tag.c_str(), titer.second->tag.size(), &status);
+					uregex_setText(iter, titer.second->tag.c_str(), static_cast<int32_t>(titer.second->tag.size()), &status);
 					if (status == U_ZERO_ERROR) {
 						if (uregex_find(iter, -1, &status)) {
 							titer.second->type |= T_TEXTUAL;
@@ -320,7 +320,7 @@ Tag* GrammarApplicator::addTag(const UChar* txt, bool vstr) {
 				}
 				for (auto iter : grammar->icase_tags) {
 					UErrorCode status = U_ZERO_ERROR;
-					if (u_strCaseCompare(titer.second->tag.c_str(), titer.second->tag.size(), iter->tag.c_str(), iter->tag.size(), U_FOLD_CASE_DEFAULT, &status) == 0) {
+					if (u_strCaseCompare(titer.second->tag.c_str(), static_cast<int32_t>(titer.second->tag.size()), iter->tag.c_str(), static_cast<int32_t>(iter->tag.size()), U_FOLD_CASE_DEFAULT, &status) == 0) {
 						titer.second->type |= T_TEXTUAL;
 						reflow = true;
 					}
@@ -339,7 +339,7 @@ Tag* GrammarApplicator::addTag(const UChar* txt, bool vstr) {
 }
 
 Tag* GrammarApplicator::addTag(const UString& txt, bool vstr) {
-	assert(txt.length() && "addTag() will not work with empty strings.");
+	assert(txt.size() && "addTag() will not work with empty strings.");
 	return addTag(txt.c_str(), vstr);
 }
 
@@ -531,7 +531,7 @@ void GrammarApplicator::printCohort(Cohort* cohort, std::ostream& output) {
 removed:
 	if (!cohort->text.empty() && cohort->text.find_first_not_of(ws) != UString::npos) {
 		u_fprintf(output, "%S", cohort->text.c_str());
-		if (!ISNL(cohort->text[cohort->text.length() - 1])) {
+		if (!ISNL(cohort->text[cohort->text.size() - 1])) {
 			u_fputc('\n', output);
 		}
 	}
@@ -561,12 +561,12 @@ void GrammarApplicator::printSingleWindow(SingleWindow* window, std::ostream& ou
 
 	if (!window->text.empty()) {
 		u_fprintf(output, "%S", window->text.c_str());
-		if (!ISNL(window->text[window->text.length() - 1])) {
+		if (!ISNL(window->text[window->text.size() - 1])) {
 			u_fputc('\n', output);
 		}
 	}
 
-	uint32_t cs = (uint32_t)window->cohorts.size();
+	uint32_t cs = static_cast<uint32_t>(window->cohorts.size());
 	for (uint32_t c = 0; c < cs; c++) {
 		Cohort* cohort = window->cohorts[c];
 		printCohort(cohort, output);
@@ -620,10 +620,10 @@ void GrammarApplicator::pipeOutReading(const Reading* reading, std::ostream& out
 		writeUTF8String(ss, tag->tag);
 	}
 
-	std::string str = ss.str();
-	cs = str.length();
+	const auto& str = ss.str();
+	cs = static_cast<uint32_t>(str.size());
 	writeRaw(output, cs);
-	output.write(str.c_str(), str.length());
+	output.write(str.c_str(), str.size());
 }
 
 void GrammarApplicator::pipeOutCohort(const Cohort* cohort, std::ostream& output) {
@@ -646,7 +646,7 @@ void GrammarApplicator::pipeOutCohort(const Cohort* cohort, std::ostream& output
 
 	writeUTF8String(ss, cohort->wordform->tag);
 
-	uint32_t cs = cohort->readings.size();
+	uint32_t cs = static_cast<uint32_t>(cohort->readings.size());
 	writeRaw(ss, cs);
 	for (auto rter1 : cohort->readings) {
 		pipeOutReading(rter1, ss);
@@ -655,10 +655,10 @@ void GrammarApplicator::pipeOutCohort(const Cohort* cohort, std::ostream& output
 		writeUTF8String(ss, cohort->text);
 	}
 
-	std::string str = ss.str();
-	cs = str.length();
+	const auto& str = ss.str();
+	cs = static_cast<uint32_t>(str.size());
 	writeRaw(output, cs);
-	output.write(str.c_str(), str.length());
+	output.write(str.c_str(), str.size());
 }
 
 void GrammarApplicator::pipeOutSingleWindow(const SingleWindow& window, Process& output) {
@@ -673,10 +673,10 @@ void GrammarApplicator::pipeOutSingleWindow(const SingleWindow& window, Process&
 		pipeOutCohort(window.cohorts[c], ss);
 	}
 
-	std::string str = ss.str();
-	cs = str.length();
+	const auto& str = ss.str();
+	cs = static_cast<uint32_t>(str.size());
 	writeRaw(output, cs);
-	output.write(str.c_str(), str.length());
+	output.write(str.c_str(), str.size());
 
 	output.flush();
 }

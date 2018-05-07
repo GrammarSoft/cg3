@@ -353,6 +353,12 @@ void GrammarWriter::printContextualTest(std::ostream& to, const ContextualTest& 
 		if (test.pos & POS_DEP_SIBLING) {
 			u_fprintf(to, "s");
 		}
+		if (test.pos & POS_SELF) {
+			u_fprintf(to, "S");
+		}
+		if (test.pos & POS_NO_BARRIER) {
+			u_fprintf(to, "N");
+		}
 
 		if (test.pos & POS_UNKNOWN) {
 			u_fprintf(to, "?");

@@ -96,6 +96,18 @@
         Instructs STRICT-TAGS to forbid all case-insensitive tags by default.
       </para>
     </section>
+
+    <section id="grammar-options-self-no-barrier">
+      <title>self-no-barrier</title>
+      <indexterm>
+        <primary>self-no-barrier</primary>
+      </indexterm>
+      <para>
+        Inverts the behavior of barriers on self tests. By default, barriers will stop if the self cohort matches.
+        This can be toggled on a per context basis with modifier <link linkend="dep-ct-no-barrier">N</link>,
+        where self-no-barrier inverts the behavior of S vs. SN.
+      </para>
+    </section>
   </section>
 
   <section id="grammar-include">

@@ -33,7 +33,7 @@ Reading* alloc_reading(Cohort* p) {
 		r = new Reading(p);
 	}
 	else {
-		r->number = p ? (p->readings.size() * 1000 + 1000) : 0;
+		r->number = static_cast<uint32_t>(p ? (p->readings.size() * 1000 + 1000) : 0);
 		r->parent = p;
 	}
 	return r;
@@ -93,7 +93,7 @@ Reading::Reading(Cohort* p)
   , baseform(0)
   , hash(0)
   , hash_plain(0)
-  , number(p ? (p->readings.size() * 1000 + 1000) : 0)
+  , number(static_cast<uint32_t>(p ? (p->readings.size() * 1000 + 1000) : 0))
   , mapping(0)
   , parent(p)
   , next(0)

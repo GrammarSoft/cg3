@@ -92,7 +92,7 @@ const char* ASTType_str[NUM_ASTTypes] = {};
 struct ASTHelper;
 struct ASTNode {
 	ASTType type;
-	uint32_t line;
+	size_t line;
 	const UChar *b, *e;
 	std::vector<ASTNode> cs;
 

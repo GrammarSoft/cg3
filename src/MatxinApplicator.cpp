@@ -642,7 +642,7 @@ void MatxinApplicator::printReading(Reading* reading, Node& node, std::ostream& 
 	}
 
 	// Lop off the initial and final '"' characters
-	UnicodeString bf(single_tags[reading->baseform]->tag.c_str() + 1, single_tags[reading->baseform]->tag.size() - 2);
+	UnicodeString bf(single_tags[reading->baseform]->tag.c_str() + 1, static_cast<int32_t>(single_tags[reading->baseform]->tag.size() - 2));
 
 	node.lemma = bf.getTerminatedBuffer();
 
@@ -720,7 +720,7 @@ void MatxinApplicator::printSingleWindow(SingleWindow* window, std::ostream& out
 
 	u_fprintf(output, "  <SENTENCE ord=\"%d\" alloc=\"0\">\n", window->number);
 
-	for (uint32_t c = 0; c < window->cohorts.size(); c++) {
+	for (size_t c = 0; c < window->cohorts.size(); ++c) {
 		if (c == 0) { // Skip magic cohort
 			continue;
 		}
@@ -737,7 +737,7 @@ void MatxinApplicator::printSingleWindow(SingleWindow* window, std::ostream& out
 
 		// Lop off the initial and final '"' characters
 		// ToDo: A copy does not need to be made here - use pointer offsets
-		UnicodeString wf(cohort->wordform->tag.c_str() + 2, cohort->wordform->tag.size() - 4);
+		UnicodeString wf(cohort->wordform->tag.c_str() + 2, static_cast<int32_t>(cohort->wordform->tag.size() - 4));
 		UString wf_escaped;
 		for (int i = 0; i < wf.length(); ++i) {
 			if (wf[i] == '&') {
@@ -782,7 +782,7 @@ void MatxinApplicator::printSingleWindow(SingleWindow* window, std::ostream& out
 		// if we can't find the root by this point then
 		// set the parent to the last word in the sent,
 		// for want of a better option
-		int r = nodes.size(); // last word
+		auto r = static_cast<int>(nodes.size()); // last word
 		if (deps[0].size() > 0) {
 			r = deps[0][0];
 		}

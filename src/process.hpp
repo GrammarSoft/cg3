@@ -97,7 +97,7 @@ public:
 
 	void read(char *buffer, size_t count) {
 		DWORD bytes_read = 0;
-		if (!ReadFile(g_hChildStd_OUT_Rd, buffer, count, &bytes_read, 0) || bytes_read != count) {
+		if (!ReadFile(g_hChildStd_OUT_Rd, buffer, static_cast<DWORD>(count), &bytes_read, 0) || bytes_read != count) {
 			std::string msg = formatLastError("Process.read(char*,size_t)");
 			throw std::runtime_error(msg);
 		}
@@ -105,7 +105,7 @@ public:
 
 	void write(const char *buffer, size_t length) {
 		DWORD bytes = 0;
-		if (!WriteFile(g_hChildStd_IN_Wr, buffer, length, &bytes, 0) || bytes != length) {
+		if (!WriteFile(g_hChildStd_IN_Wr, buffer, static_cast<DWORD>(length), &bytes, 0) || bytes != length) {
 			std::string msg = formatLastError("Process.write(char*,size_t)");
 			throw std::runtime_error(msg);
 		}
