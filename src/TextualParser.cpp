@@ -2697,16 +2697,16 @@ int TextualParser::parse_grammar(UString& data) {
 			orc->ors.push_back(unsafec);
 			orc = result->addContextualTest(orc);
 
-			for (auto cntx = result->contexts.begin(); cntx != result->contexts.end(); ++cntx) {
-				if (cntx->second->linked == tmp) {
-					cntx->second->linked = orc;
+			for (auto& cntx : result->contexts) {
+				if (cntx.second->linked == tmp) {
+					cntx.second->linked = orc;
 				}
 			}
-			for (auto it = result->rule_by_number.begin(); it != result->rule_by_number.end(); ++it) {
-				if ((*it)->dep_target == tmp) {
-					(*it)->dep_target = orc;
+			for (auto it : result->rule_by_number) {
+				if (it->dep_target == tmp) {
+					it->dep_target = orc;
 				}
-				ContextList* cntxs[2] = { &(*it)->tests, &(*it)->dep_tests };
+				ContextList* cntxs[2] = { &it->tests, &it->dep_tests };
 				for (size_t i = 0; i < 2; ++i) {
 					for (auto& test : *cntxs[i]) {
 						if (test == tmp) {

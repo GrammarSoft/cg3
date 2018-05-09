@@ -83,11 +83,11 @@ uint32_t Set::rehash() {
 	}
 	else {
 		retval = hash_value(2683, retval); // Combat hash-collisions
-		for (uint32_t i = 0; i < sets.size(); ++i) {
-			retval = hash_value(sets[i], retval);
+		for (auto i : sets) {
+			retval = hash_value(i, retval);
 		}
-		for (uint32_t i = 0; i < set_ops.size(); ++i) {
-			retval = hash_value(set_ops[i], retval);
+		for (auto i : set_ops) {
+			retval = hash_value(i, retval);
 		}
 	}
 	hash = retval;
@@ -111,8 +111,8 @@ void Set::reindex(Grammar& grammar) {
 	type |= trie_reindex(trie);
 	type |= trie_reindex(trie_special);
 
-	for (uint32_t i = 0; i < sets.size(); ++i) {
-		Set* set = grammar.sets_by_contents.find(sets[i])->second;
+	for (auto s : sets) {
+		Set* set = grammar.sets_by_contents.find(s)->second;
 		set->reindex(grammar);
 		if (set->type & ST_SPECIAL) {
 			type |= ST_SPECIAL;
@@ -141,8 +141,8 @@ void Set::markUsed(Grammar& grammar) {
 		tag->markUsed();
 	}
 
-	for (uint32_t i = 0; i < sets.size(); ++i) {
-		Set* set = grammar.sets_by_contents.find(sets[i])->second;
+	for (auto s : sets) {
+		Set* set = grammar.sets_by_contents.find(s)->second;
 		set->markUsed(grammar);
 	}
 }

@@ -706,8 +706,8 @@ struct pool_cleaner {
 	}
 
 	~pool_cleaner() {
-		for (size_t i = 0; i < pool.size(); ++i) {
-			delete pool[i];
+		for (auto p : pool) {
+			delete p;
 		}
 	}
 };

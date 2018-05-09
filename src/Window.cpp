@@ -36,16 +36,15 @@ Window::Window(GrammarApplicator* p)
 }
 
 Window::~Window() {
-	SingleWindowCont::iterator iter;
-	for (iter = previous.begin(); iter != previous.end(); iter++) {
-		delete *iter;
+	for (auto iter : previous) {
+		delete iter;
 	}
 
 	delete current;
 	current = 0;
 
-	for (iter = next.begin(); iter != next.end(); iter++) {
-		delete *iter;
+	for (auto iter : next) {
+		delete iter;
 	}
 }
 

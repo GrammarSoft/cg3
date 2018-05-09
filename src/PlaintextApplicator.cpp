@@ -220,8 +220,7 @@ void PlaintextApplicator::runGrammarOnText(std::istream& input, std::ostream& ou
 			}
 
 			std::vector<UnicodeString> tokens;
-			for (size_t i = 0; i < tokens_raw.size(); ++i) {
-				UChar* p = tokens_raw[i];
+			for (auto p : tokens_raw) {
 				size_t len = u_strlen(p);
 				while (*p && u_ispunct(p[0])) {
 					tokens.push_back(UnicodeString(p[0]));
@@ -240,8 +239,7 @@ void PlaintextApplicator::runGrammarOnText(std::istream& input, std::ostream& ou
 			}
 
 			UString tag;
-			for (size_t i = 0; i < tokens.size(); ++i) {
-				UnicodeString& token = tokens[i];
+			for (auto& token : tokens) {
 				bool first_upper = (u_isupper(token[0]) != 0);
 				bool all_upper = first_upper;
 				bool mixed_upper = false;
