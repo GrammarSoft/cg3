@@ -110,10 +110,7 @@ int BinaryGrammar::writeBinaryGrammar(FILE* output) {
 		u32tmp = (uint32_t)htonl((uint32_t)grammar->single_tags_list.size());
 		fwrite_throw(&u32tmp, sizeof(uint32_t), 1, output);
 	}
-	std::vector<Tag*>::const_iterator tags_iter;
-	for (tags_iter = grammar->single_tags_list.begin(); tags_iter != grammar->single_tags_list.end(); tags_iter++) {
-		const Tag* t = *tags_iter;
-
+	for (auto t : grammar->single_tags_list) {
 		uint32_t fields = 0;
 		buffer.str("");
 		buffer.clear();
@@ -200,8 +197,8 @@ int BinaryGrammar::writeBinaryGrammar(FILE* output) {
 		u32tmp = (uint32_t)htonl((uint32_t)grammar->reopen_mappings.size());
 		fwrite_throw(&u32tmp, sizeof(uint32_t), 1, output);
 	}
-	for (auto iter = grammar->reopen_mappings.begin(); iter != grammar->reopen_mappings.end(); ++iter) {
-		u32tmp = (uint32_t)htonl((uint32_t)*iter);
+	for (auto iter : grammar->reopen_mappings) {
+		u32tmp = (uint32_t)htonl((uint32_t)iter);
 		fwrite_throw(&u32tmp, sizeof(uint32_t), 1, output);
 	}
 
@@ -209,8 +206,8 @@ int BinaryGrammar::writeBinaryGrammar(FILE* output) {
 		u32tmp = (uint32_t)htonl((uint32_t)grammar->preferred_targets.size());
 		fwrite_throw(&u32tmp, sizeof(uint32_t), 1, output);
 	}
-	for (auto iter = grammar->preferred_targets.begin(); iter != grammar->preferred_targets.end(); ++iter) {
-		u32tmp = (uint32_t)htonl((uint32_t)*iter);
+	for (auto iter : grammar->preferred_targets) {
+		u32tmp = (uint32_t)htonl((uint32_t)iter);
 		fwrite_throw(&u32tmp, sizeof(uint32_t), 1, output);
 	}
 
@@ -240,10 +237,7 @@ int BinaryGrammar::writeBinaryGrammar(FILE* output) {
 		u32tmp = (uint32_t)htonl((uint32_t)grammar->sets_list.size());
 		fwrite_throw(&u32tmp, sizeof(uint32_t), 1, output);
 	}
-	std::vector<Set*>::const_iterator set_iter;
-	for (set_iter = grammar->sets_list.begin(); set_iter != grammar->sets_list.end(); set_iter++) {
-		Set* s = *set_iter;
-
+	for (auto s : grammar->sets_list) {
 		uint32_t fields = 0;
 		buffer.str("");
 		buffer.clear();
@@ -307,8 +301,8 @@ int BinaryGrammar::writeBinaryGrammar(FILE* output) {
 		u32tmp = (uint32_t)htonl((uint32_t)grammar->contexts.size());
 		fwrite_throw(&u32tmp, sizeof(uint32_t), 1, output);
 	}
-	for (auto cntx = grammar->contexts.begin(); cntx != grammar->contexts.end(); ++cntx) {
-		writeContextualTest(cntx->second, output);
+	for (auto& cntx : grammar->contexts) {
+		writeContextualTest(cntx.second, output);
 	}
 
 	if (!grammar->rule_by_number.empty()) {

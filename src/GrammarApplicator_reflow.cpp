@@ -726,8 +726,8 @@ void GrammarApplicator::mergeReadings(ReadingList& readings) {
 	static std::vector<Reading*> order;
 	order.clear();
 
-	for (auto miter = mlist.begin(); miter != mlist.end(); miter++) {
-		const ReadingList& clist = miter->second;
+	for (auto& miter : mlist) {
+		const ReadingList& clist = miter.second;
 		Reading* nr = alloc_reading(*(clist.front()));
 		if (nr->mapping) {
 			erase(nr->tags_list, nr->mapping->hash);

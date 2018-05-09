@@ -342,15 +342,15 @@ UString Tag::toUString(bool escape) const {
 	}
 
 	if (escape) {
-		for (size_t i = 0; i < tag.size(); ++i) {
-			if (tag[i] == '\\' || tag[i] == '(' || tag[i] == ')' || tag[i] == ';' || tag[i] == '#') {
+		for (auto c : tag) {
+			if (c == '\\' || c == '(' || c == ')' || c == ';' || c == '#') {
 				str += '\\';
 			}
-			str += tag[i];
+			str += c;
 		}
 	}
 	else {
-		str + tag;
+		str += tag;
 	}
 
 	if (type & (T_CASE_INSENSITIVE | T_REGEXP) && tag[0] != '"') {
