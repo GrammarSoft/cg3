@@ -651,11 +651,10 @@ void MatxinApplicator::printReading(Reading* reading, Node& node, std::ostream& 
 	// into <vblex><actv><pri><p3><pl><@FMAINV><@FOO>+í<pr>$
 	Reading::tags_list_t tags_list;
 	Reading::tags_list_t multitags_list; // everything after a +, until the first MAPPING tag
-	Reading::tags_list_t::iterator tter;
 	bool multi = false;
 	bool first = true;
-	for (tter = reading->tags_list.begin(); tter != reading->tags_list.end(); tter++) {
-		const Tag* tag = single_tags[*tter];
+	for (auto tter : reading->tags_list) {
+		const Tag* tag = single_tags[tter];
 		if (tag->tag[0] == '+') {
 			multi = true;
 		}
@@ -664,10 +663,10 @@ void MatxinApplicator::printReading(Reading* reading, Node& node, std::ostream& 
 		}
 
 		if (multi) {
-			multitags_list.push_back(*tter);
+			multitags_list.push_back(tter);
 		}
 		else {
-			tags_list.push_back(*tter);
+			tags_list.push_back(tter);
 		}
 	}
 	tags_list.insert(tags_list.end(), multitags_list.begin(), multitags_list.end());
@@ -675,17 +674,17 @@ void MatxinApplicator::printReading(Reading* reading, Node& node, std::ostream& 
 	uint32SortedVector used_tags;
 	UString mi;
 	first = true;
-	for (tter = tags_list.begin(); tter != tags_list.end(); tter++) {
+	for (auto tter : tags_list) {
 		if (unique_tags) {
-			if (used_tags.find(*tter) != used_tags.end()) {
+			if (used_tags.find(tter) != used_tags.end()) {
 				continue;
 			}
-			used_tags.insert(*tter);
+			used_tags.insert(tter);
 		}
-		if (*tter == endtag || *tter == begintag) {
+		if (tter == endtag || tter == begintag) {
 			continue;
 		}
-		const Tag* tag = single_tags[*tter];
+		const Tag* tag = single_tags[tter];
 		if (!(tag->type & T_BASEFORM) && !(tag->type & T_WORDFORM)) {
 			if (tag->tag[0] == '+') {
 				u_fprintf(output, "%S", tag->tag.c_str());
@@ -840,9 +839,8 @@ void MatxinApplicator::procNode(int& depth, std::map<int, Node>& nodes, std::map
 	}
 
 	bool found = false;
-	std::map<int, std::vector<int>>::iterator it;
-	for (it = deps.begin(); it != deps.end(); it++) {
-		if (it->first == n && it->second.size() != 0) {
+	for (auto& it : deps) {
+		if (it.first == n && it.second.size() != 0) {
 			found = true;
 			break;
 		}
@@ -850,8 +848,8 @@ void MatxinApplicator::procNode(int& depth, std::map<int, Node>& nodes, std::map
 	if (!found) {
 		return;
 	}
-	for (std::vector<int>::iterator it = v.begin(); it != v.end(); it++) {
-		procNode(depth, nodes, deps, *it, output);
+	for (auto it : v) {
+		procNode(depth, nodes, deps, it, output);
 	}
 
 	if (n != 0) {
@@ -902,9 +900,8 @@ void MatxinApplicator::mergeMappings(Cohort& cohort) {
 	cohort.readings.clear();
 	std::vector<Reading*> order;
 
-	std::map<uint32_t, ReadingList>::iterator miter;
-	for (miter = mlist.begin(); miter != mlist.end(); miter++) {
-		ReadingList clist = miter->second;
+	for (auto& miter : mlist) {
+		ReadingList clist = miter.second;
 		Reading* nr = alloc_reading(*(clist.front()));
 		// no merging of mapping tags
 		order.push_back(nr);

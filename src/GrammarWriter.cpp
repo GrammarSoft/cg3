@@ -71,8 +71,8 @@ void GrammarWriter::printSet(std::ostream& output, const Set& curset) {
 	}
 	else {
 		used_sets.insert(curset.number);
-		for (uint32_t i = 0; i < curset.sets.size(); i++) {
-			printSet(output, *(grammar->sets_list[curset.sets[i]]));
+		for (auto s: curset.sets) {
+			printSet(output, *(grammar->sets_list[s]));
 		}
 		if (statistics) {
 			if (ceil(curset.total_time) == floor(curset.total_time)) {
@@ -134,9 +134,8 @@ int GrammarWriter::writeGrammar(std::ostream& output) {
 
 	if (!grammar->preferred_targets.empty()) {
 		u_fprintf(output, "PREFERRED-TARGETS = ");
-		uint32Vector::const_iterator iter;
-		for (iter = grammar->preferred_targets.begin(); iter != grammar->preferred_targets.end(); iter++) {
-			printTag(output, *(grammar->single_tags.find(*iter)->second));
+		for (auto iter : grammar->preferred_targets) {
+			printTag(output, *(grammar->single_tags.find(iter)->second));
 			u_fprintf(output, " ");
 		}
 		u_fprintf(output, " ;\n");

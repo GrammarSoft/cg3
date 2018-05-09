@@ -58,11 +58,8 @@ Grammar::~Grammar() {
 		delete rsets;
 	}
 
-	Taguint32HashMap::iterator iter_stag;
-	for (iter_stag = single_tags.begin(); iter_stag != single_tags.end(); ++iter_stag) {
-		if (iter_stag->second) {
-			delete iter_stag->second;
-		}
+	for (auto& iter_stag : single_tags) {
+		delete iter_stag.second;
 	}
 
 	for (auto iter_rules : rule_by_number) {
@@ -108,8 +105,8 @@ void Grammar::addSet(Set*& to) {
 		}
 
 		if (all_tags) {
-			for (size_t i = 0; i < to->sets.size(); ++i) {
-				Set* s = getSet(to->sets[i]);
+			for (auto i : to->sets) {
+				Set* s = getSet(i);
 				maybe_used_sets.insert(s);
 				TagVector tv = trie_getTagList(s->getNonEmpty());
 				if (tv.size() == 1) {
@@ -316,15 +313,15 @@ uint32_t Grammar::removeNumericTags(uint32_t s) {
 	if (!set->sets.empty()) {
 		bool did = false;
 		auto sets = set->sets;
-		for (size_t i = 0; i < sets.size(); ++i) {
-			uint32_t ns = removeNumericTags(sets[i]);
+		for (auto& i : sets) {
+			uint32_t ns = removeNumericTags(i);
 			if (ns == 0) {
-				set = getSet(sets[i]);
+				set = getSet(i);
 				u_fprintf(ux_stderr, "Error: Removing numeric tags for branch resulted in set %S on line %u being empty!\n", set->name.c_str(), set->line);
 				CG3Quit(1);
 			}
-			if (ns != sets[i]) {
-				sets[i] = ns;
+			if (ns != i) {
+				i = ns;
 				did = true;
 			}
 		}
@@ -353,10 +350,10 @@ uint32_t Grammar::removeNumericTags(uint32_t s) {
 				continue;
 			}
 			auto ctags = trie_getTags(*tries[i]);
-			for (auto it = ctags.begin(); it != ctags.end(); ++it) {
+			for (auto& it : ctags) {
 				bool special = false;
 				tags.clear();
-				fill_tagvector(*it, tags, did, special);
+				fill_tagvector(it, tags, did, special);
 				if (!tags.empty()) {
 					ntags[tags] = special;
 				}
@@ -391,17 +388,17 @@ uint32_t Grammar::removeNumericTags(uint32_t s) {
 			ns->name += 'B';
 			ns->name += '_';
 
-			for (auto it = ntags.begin(); it != ntags.end(); ++it) {
-				if (it->second) {
-					if (it->first.size() == 1 && (it->first[0]->type & T_FAILFAST)) {
-						ns->ff_tags.insert(it->first[0]);
+			for (auto& it : ntags) {
+				if (it.second) {
+					if (it.first.size() == 1 && (it.first[0]->type & T_FAILFAST)) {
+						ns->ff_tags.insert(it.first[0]);
 					}
 					else {
-						trie_insert(ns->trie_special, it->first);
+						trie_insert(ns->trie_special, it.first);
 					}
 				}
 				else {
-					trie_insert(ns->trie, it->first);
+					trie_insert(ns->trie, it.first);
 				}
 			}
 			addSet(ns);
@@ -578,8 +575,8 @@ void Grammar::addAnchor(const UChar* to, uint32_t at, bool primary) {
 
 void Grammar::resetStatistics() {
 	total_time = 0;
-	for (uint32_t j = 0; j < rules.size(); j++) {
-		rules[j]->resetStatistics();
+	for (auto r : rules) {
+		r->resetStatistics();
 	}
 }
 
@@ -681,13 +678,13 @@ void Grammar::reindex(bool unused_sets, bool used_tags) {
 		}
 	}
 
-	for (auto it = parentheses.begin(); it != parentheses.end(); ++it) {
-		single_tags[it->first]->markUsed();
-		single_tags[it->second]->markUsed();
+	for (auto& it : parentheses) {
+		single_tags[it.first]->markUsed();
+		single_tags[it.second]->markUsed();
 	}
 
-	for (auto it = preferred_targets.begin(); it != preferred_targets.end(); ++it) {
-		single_tags[*it]->markUsed();
+	for (auto it : preferred_targets) {
+		single_tags[it]->markUsed();
 	}
 
 	for (auto rule : rule_by_number) {
@@ -737,12 +734,12 @@ void Grammar::reindex(bool unused_sets, bool used_tags) {
 		}
 
 		contexts_t tosave;
-		for (auto cntx = contexts.begin(); cntx != contexts.end(); ++cntx) {
-			if (cntx->second->is_used) {
-				tosave[cntx->first] = cntx->second;
+		for (auto& cntx : contexts) {
+			if (cntx.second->is_used) {
+				tosave[cntx.first] = cntx.second;
 				continue;
 			}
-			delete cntx->second;
+			delete cntx.second;
 		}
 		contexts.swap(tosave);
 	}
@@ -922,7 +919,7 @@ void Grammar::reindex(bool unused_sets, bool used_tags) {
 	while (did) {
 		did = false;
 
-		for (auto cntx : contexts) {
+		for (auto& cntx : contexts) {
 			ContextualTest* t = cntx.second;
 
 			if (nk.count(t)) {
@@ -1008,8 +1005,8 @@ void Grammar::reindex(bool unused_sets, bool used_tags) {
 	}
 
 	if (used_tags) {
-		for (auto iter_tags = single_tags.begin(); iter_tags != single_tags.end(); ++iter_tags) {
-			Tag* tag = iter_tags->second;
+		for (auto& iter_tags : single_tags) {
+			Tag* tag = iter_tags.second;
 			if (tag->type & T_USED) {
 				UString tmp(tag->toUString(true));
 				u_fprintf(ux_stdout, "%S\n", tmp.c_str());
@@ -1037,8 +1034,8 @@ void Grammar::indexSetToRule(uint32_t r, Set* s) {
 	trie_indexToRule(s->trie, *this, r);
 	trie_indexToRule(s->trie_special, *this, r);
 
-	for (uint32_t i = 0; i < s->sets.size(); ++i) {
-		Set* set = sets_list[s->sets[i]];
+	for (auto i : s->sets) {
+		Set* set = sets_list[i];
 		indexSetToRule(r, set);
 	}
 }
@@ -1065,8 +1062,8 @@ void Grammar::indexSets(uint32_t r, Set* s) {
 	trie_indexToSet(s->trie, *this, r);
 	trie_indexToSet(s->trie_special, *this, r);
 
-	for (uint32_t i = 0; i < s->sets.size(); ++i) {
-		Set* set = sets_list[s->sets[i]];
+	for (auto i : s->sets) {
+		Set* set = sets_list[i];
 		indexSets(r, set);
 	}
 }
@@ -1084,9 +1081,9 @@ void Grammar::setAdjustSets(Set* s) {
 	}
 	s->type &= ~ST_USED;
 
-	for (uint32_t i = 0; i < s->sets.size(); ++i) {
-		Set* set = sets_by_contents.find(s->sets[i])->second;
-		s->sets[i] = set->number;
+	for (auto& i : s->sets) {
+		Set* set = sets_by_contents.find(i)->second;
+		i = set->number;
 		setAdjustSets(set);
 	}
 }

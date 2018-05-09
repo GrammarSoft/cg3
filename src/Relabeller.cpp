@@ -197,8 +197,8 @@ void Relabeller::reindexSet(Set& s) {
 	s.type |= trie_reindex(s.trie);
 	s.type |= trie_reindex(s.trie_special);
 
-	for (uint32_t i = 0; i < s.sets.size(); ++i) {
-		Set* set = grammar->sets_list[s.sets[i]];
+	for (auto i : s.sets) {
+		Set* set = grammar->sets_list[i];
 		reindexSet(*set);
 		if (set->type & ST_SPECIAL) {
 			s.type |= ST_SPECIAL;
