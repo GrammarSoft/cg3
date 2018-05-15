@@ -8,7 +8,7 @@
 #include <stdio.h>
 #include <string.h>
 
-int getopt(int argc, char** argv, char* opts);
+int getopt(int argc, char** argv, const char* opts);
 
 extern int opterr;
 extern int optind;
