@@ -134,7 +134,7 @@ int main(int argc, char* argv[]) {
 
 		std::string buf8(BUF_SIZE, 0);
 		std::cin.read(&buf8[0], BUF_SIZE - 4);
-		auto sz = std::cin.gcount();
+		auto sz = static_cast<size_t>(std::cin.gcount());
 		if (buf8[sz - 1] & 0x80) {
 			for (size_t i = sz - 1; ; --i) {
 				if ((buf8[i] & 0xF0) == 0xF0) {
