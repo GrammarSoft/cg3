@@ -95,6 +95,11 @@
       Multiple occurances of a single variable is allowed, so e.g. "$1$2$1"v would contain group 1 twice.
     </para>
     <para>
+      Alternative syntax is prefixing with <code>VSTR:</code>. This is used to build tags that are not textual, or tags
+      that need secondary processing such as regex or case-insensitive matching. E.g., <code>VSTR:@m$1</code> would
+      create a mapping tag or <code>VSTR:"$1.*"r</code> to create a regex tag.
+    </para>
+    <para>
       One can also manipulate the case of the resulting tag via %U, %u, %L, and %l.
       %U upper-cases the entire following string.
       %u upper-cases the following single letter.
