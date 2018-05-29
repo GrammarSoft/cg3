@@ -1,0 +1,24 @@
+#!/usr/bin/env perl
+# -*- mode: cperl; indent-tabs-mode: nil; tab-width: 3; cperl-indent-level: 3; -*-
+use warnings;
+use strict;
+use utf8;
+BEGIN {
+	$| = 1;
+	binmode(STDIN, ':encoding(UTF-8)');
+	binmode(STDOUT, ':encoding(UTF-8)');
+}
+use open qw( :encoding(UTF-8) :std );
+
+while (<STDIN>) {
+   # Discard deleted readings
+   if (/^;/) {
+      next;
+   }
+   # On readings only...
+   if (/^\s+"/) {
+      # ...strip trace tags
+      while (s/ [-A-Z]+:[^"\s\n]+//g) {}
+   }
+   print;
+}
