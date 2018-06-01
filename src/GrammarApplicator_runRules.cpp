@@ -892,7 +892,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 							cohort->enclosed.clear();
 						}
 						// Remove the cohort from all rules
-						for (auto cs : current.rule_to_cohorts) {
+						for (auto& cs : current.rule_to_cohorts) {
 							cs.erase(cohort);
 						}
 						// Forward all children of this cohort to the parent of this cohort
@@ -1901,6 +1901,9 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 							}
 							gWindow->rebuildCohortLinks();
 							readings_changed = true;
+							for (auto& cs : current.rule_to_cohorts) {
+								cs.sort();
+							}
 							break;
 						}
 					}
