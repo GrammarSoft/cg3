@@ -159,7 +159,10 @@ void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& outp
 			cleaned[packoff - 1] = 0;
 			--packoff;
 		}
-		if (!ignoreinput && cleaned[0] == '"' && cleaned[1] == '<') {
+		if (ignoreinput) {
+			goto istext;
+		}
+		if (cleaned[0] == '"' && cleaned[1] == '<') {
 			UChar* space = &cleaned[0];
 			if (space[0] == '"' && space[1] == '<') {
 				++space;
@@ -428,7 +431,7 @@ void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& outp
 			}
 		}
 		else {
-			if (!ignoreinput && cleaned[0] == ' ' && cleaned[1] == '"') {
+			if (cleaned[0] == ' ' && cleaned[1] == '"') {
 				if (verbosity_level > 0) {
 					u_fprintf(ux_stderr, "Warning: %S on line %u looked like a reading but there was no containing cohort - treated as plain text.\n", &cleaned[0], numLines);
 					u_fflush(ux_stderr);
