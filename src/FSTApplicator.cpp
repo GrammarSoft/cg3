@@ -316,6 +316,18 @@ void FSTApplicator::runGrammarOnText(std::istream& input, std::ostream& output) 
 			if (cCohort && cCohort->readings.empty()) {
 				initEmptyCohort(*cCohort);
 			}
+			if (is_conv) {
+				if (cCohort) {
+					cCohort->local_number = 1;
+					printCohort(cCohort, output);
+					free_cohort(cCohort);
+					cCohort = 0;
+				}
+				if (cleaned[0] && line[0]) {
+					u_fprintf(output, "%S", &line[0]);
+				}
+				continue;
+			}
 			if (cSWindow && cSWindow->cohorts.size() >= soft_limit && grammar->soft_delimiters && !did_soft_lookback) {
 				did_soft_lookback = true;
 				reverse_foreach (iter, cSWindow->cohorts) {
