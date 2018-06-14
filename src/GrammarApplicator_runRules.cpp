@@ -338,6 +338,8 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 			SingleWindow& current;
 			bool do_sort = false;
 
+			Sorter(SingleWindow& current) : current(current) {}
+
 			~Sorter() {
 				if (do_sort) {
 					for (auto& cs : current.rule_to_cohorts) {
@@ -345,7 +347,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 					}
 				}
 			}
-		} sorter{current};
+		} sorter(current);
 
 	repeat_rule:
 		bool rule_did_something = false;
