@@ -419,4 +419,12 @@
       No more need for <code>LIST N = N ;</code> constructs.
     </para>
   </section>
+
+  <section id="list-tags">
+    <title>LIST-TAGS</title>
+    <para>
+      Very similar to <link linkend="strict-tags">STRICT-TAGS</link>, but only performs the final part of making
+      <code>LIST N = N ;</code> superfluous. Any tag listed in <code>LIST-TAGS</code> has an implicit set created for it.
+    </para>
+  </section>
 </chapter>

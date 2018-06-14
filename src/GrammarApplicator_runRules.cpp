@@ -33,7 +33,7 @@
 namespace CG3 {
 
 enum {
-	RV_NOTHING   = 1,
+	RV_NOTHING = 1,
 	RV_SOMETHING = 2,
 	RV_DELIMITED = 4,
 	RV_TRACERULE = 8,
@@ -333,6 +333,20 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 	current.parent->cohort_map[0] = current.cohorts.front();
 
 	foreach (iter_rules, intersects) {
+		// Conditionally re-sort the rule-to-cohort mapping when the current rule is finished, regardless of how it finishes
+		struct Sorter {
+			SingleWindow& current;
+			bool do_sort = false;
+
+			~Sorter() {
+				if (do_sort) {
+					for (auto& cs : current.rule_to_cohorts) {
+						cs.sort();
+					}
+				}
+			}
+		} sorter{current};
+
 	repeat_rule:
 		bool rule_did_something = false;
 		uint32_t j = (*iter_rules);
@@ -1901,9 +1915,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 							}
 							gWindow->rebuildCohortLinks();
 							readings_changed = true;
-							for (auto& cs : current.rule_to_cohorts) {
-								cs.sort();
-							}
+							sorter.do_sort = true;
 							break;
 						}
 					}
