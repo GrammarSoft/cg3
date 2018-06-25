@@ -738,11 +738,14 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 				bool good = reading.matched_tests;
 				const uint32_t state_hash = reading.hash;
 
-				regexgrps.first = 0;
-				regexgrps.second = 0;
 				if (regexgrps_c.count(reading.number)) {
 					regexgrps.second = regexgrps_c[reading.number];
 					regexgrps.first = regexgrps_z[reading.number];
+				}
+				else {
+					// No captures for this reading, so can't possibly have used all available stores, so it's safe to use the final one. Famous last words.
+					regexgrps.first = 0;
+					regexgrps.second = &regexgrps_store.back();
 				}
 
 				// Iff needs extra special care; if it is a Remove type and we matched the target, go ahead.
