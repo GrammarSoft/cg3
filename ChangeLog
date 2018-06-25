@@ -1,3 +1,22 @@
+2018-06-14  tino
+
+	* [r13018] src/GrammarApplicator_runRules.cpp: That was apparently
+	  not C++11 compatible
+	* [r13017] manual/tags.xml, src/GrammarApplicator_runRules.cpp: Fix
+	  Move/Switch ordering again, but better
+
+2018-06-11  tino
+
+	* [r13014] src/GrammarApplicator_runGrammar.cpp: Fix ignore input
+	* [r13012] src/FSTApplicator.cpp: Converting flush after every
+	  cohort - this should be done globally
+
+2018-06-01  tino
+
+	* [r12992] ChangeLog, src/GrammarApplicator_runRules.cpp,
+	  src/version.hpp: Fix rule-to-cohort mapping after
+	  move/switch/remcohort
+
 2018-05-29  tino
 
 	* [r12974] CMakeLists.txt, scripts/cg-untrace: Add cg-untrace
@@ -1840,28 +1859,4 @@
 	* [r10530] manual/cgkeywords.xml, manual/grammar.xml: Documented
 	  OPTIONS += no-inline-sets no-inline-templates
 	* [r10529] src/parser_helpers.hpp: Include guard
-	* [r10528] manual/cgkeywords.xml, manual/cmdreference.xml,
-	  manual/tags.xml: Document STRICT-TAGS
-
-2015-02-19  tino
-
-	* [r10525] src/TextualParser.cpp: You don't know context
-	* [r10524] ChangeLog, src/Grammar.cpp, src/GrammarApplicator.cpp,
-	  src/Strings.cpp, src/Strings.hpp, src/Tag.cpp,
-	  src/TextualParser.cpp, src/TextualParser.hpp, src/inlines.hpp,
-	  src/main.cpp, src/options.hpp, src/parser_helpers.hpp,
-	  src/version.hpp: Implemented STRICT-TAGS += ... ; Implemented
-	  --show-tags ; Implemented OPTIONS += no-inline-templates
-	  no-inline-sets ;
-
-2015-02-18  tino
-
-	* [r10515] cg3.g: That comment is no longer true
-
-2015-02-17  tino
-
-	* [r10506] src/ApertiumApplicator.cpp, src/FSTApplicator.cpp,
-	  src/GrammarApplicator.cpp, src/GrammarApplicator.hpp,
-	  src/GrammarApplicator_runGrammar.cpp, src/NicelineApplicator.cpp,
-	  src/PlaintextApplicator.cpp, src/cg_conv.cpp: cg-conv less noisy
 

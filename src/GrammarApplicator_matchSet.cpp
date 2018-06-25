@@ -91,7 +91,6 @@ uint32_t GrammarApplicator::doesTagMatchRegexp(uint32_t test, const Tag& tag, bo
 		}
 		if (match) {
 			int32_t gc = uregex_groupCount(tag.regexp, &status);
-			// ToDo: Allow regex captures from dependency target contexts without any captures in normal target contexts
 			if (gc > 0 && regexgrps.second != 0) {
 				UChar tmp[1024];
 				for (int i = 1; i <= gc; ++i) {
