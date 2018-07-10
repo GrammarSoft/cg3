@@ -88,7 +88,7 @@ void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& outp
 	}
 
 	std::vector<UChar> line(1024, 0);
-	std::vector<UChar> cleaned(line.size(), 0);
+	std::vector<UChar> cleaned(line.size() + 1, 0);
 	bool ignoreinput = false;
 	bool did_soft_lookback = false;
 
