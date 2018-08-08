@@ -60,6 +60,9 @@ void ApertiumApplicator::runGrammarOnTextWrapperNullFlush(std::istream& input, s
  */
 
 void ApertiumApplicator::runGrammarOnText(std::istream& input, std::ostream& output) {
+	ux_stdin = &input;
+	ux_stdout = &output;
+
 	if (nullFlush) {
 		runGrammarOnTextWrapperNullFlush(input, output);
 		return;
@@ -228,12 +231,6 @@ void ApertiumApplicator::runGrammarOnText(std::istream& input, std::ostream& out
 				cSWindow->appendCohort(cCohort);
 			}
 			if (gWindow->next.size() > num_windows) {
-				while (!gWindow->previous.empty() && gWindow->previous.size() > num_windows) {
-					SingleWindow* tmp = gWindow->previous.front();
-					printSingleWindow(tmp, output);
-					free_swindow(tmp);
-					gWindow->previous.erase(gWindow->previous.begin());
-				}
 				gWindow->shuffleWindowsDown();
 				runGrammarOnWindow();
 				if (numWindows % resetAfter == 0) {
@@ -397,12 +394,6 @@ void ApertiumApplicator::runGrammarOnText(std::istream& input, std::ostream& out
 
 	// Run the grammar & print results
 	while (!gWindow->next.empty()) {
-		while (!gWindow->previous.empty() && gWindow->previous.size() > num_windows) {
-			SingleWindow* tmp = gWindow->previous.front();
-			printSingleWindow(tmp, output);
-			free_swindow(tmp);
-			gWindow->previous.erase(gWindow->previous.begin());
-		}
 		gWindow->shuffleWindowsDown();
 		runGrammarOnWindow();
 	}
