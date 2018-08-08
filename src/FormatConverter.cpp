@@ -44,6 +44,9 @@ void FormatConverter::setOutputFormat(CG_FORMATS format) {
 }
 
 void FormatConverter::runGrammarOnText(std::istream& input, std::ostream& output) {
+	ux_stdin = &input;
+	ux_stdout = &output;
+
 	switch (informat) {
 	case FMT_CG: {
 		GrammarApplicator::runGrammarOnText(input, output);

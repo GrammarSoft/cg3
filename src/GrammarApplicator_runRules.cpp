@@ -2289,6 +2289,13 @@ void GrammarApplicator::runGrammarOnWindow() {
 	uint32_t pass = 0;
 
 label_runGrammarOnWindow_begin:
+	while (!gWindow->previous.empty() && gWindow->previous.size() > num_windows) {
+		SingleWindow* tmp = gWindow->previous.front();
+		printSingleWindow(tmp, *ux_stdout);
+		free_swindow(tmp);
+		gWindow->previous.erase(gWindow->previous.begin());
+	}
+
 	index_ruleCohort_no.clear();
 	current = gWindow->current;
 	indexSingleWindow(*current);

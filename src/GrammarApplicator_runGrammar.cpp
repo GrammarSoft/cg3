@@ -61,6 +61,9 @@ Reading* GrammarApplicator::initEmptyCohort(Cohort& cCohort) {
 }
 
 void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& output) {
+	ux_stdin = &input;
+	ux_stdout = &output;
+
 	if (!input.good()) {
 		u_fprintf(ux_stderr, "Error: Input is null - nothing to parse!\n");
 		CG3Quit(1);
@@ -258,12 +261,6 @@ void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& outp
 				cSWindow->appendCohort(cCohort);
 			}
 			if (gWindow->next.size() > num_windows + 1) {
-				while (!gWindow->previous.empty() && gWindow->previous.size() > num_windows + 1) {
-					SingleWindow* tmp = gWindow->previous.front();
-					printSingleWindow(tmp, output);
-					free_swindow(tmp);
-					gWindow->previous.erase(gWindow->previous.begin());
-				}
 				gWindow->shuffleWindowsDown();
 				runGrammarOnWindow();
 				if (numWindows % resetAfter == 0) {
@@ -457,12 +454,6 @@ void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& outp
 						cSWindow = lSWindow = 0;
 					}
 					while (!gWindow->next.empty()) {
-						while (!gWindow->previous.empty() && gWindow->previous.size() > num_windows) {
-							SingleWindow* tmp = gWindow->previous.front();
-							printSingleWindow(tmp, output);
-							free_swindow(tmp);
-							gWindow->previous.erase(gWindow->previous.begin());
-						}
 						gWindow->shuffleWindowsDown();
 						runGrammarOnWindow();
 						if (numWindows % resetAfter == 0) {
@@ -643,12 +634,6 @@ void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& outp
 		cSWindow = 0;
 	}
 	while (!gWindow->next.empty()) {
-		while (!gWindow->previous.empty() && gWindow->previous.size() > num_windows) {
-			SingleWindow* tmp = gWindow->previous.front();
-			printSingleWindow(tmp, output);
-			free_swindow(tmp);
-			gWindow->previous.erase(gWindow->previous.begin());
-		}
 		gWindow->shuffleWindowsDown();
 		runGrammarOnWindow();
 		if (verbosity_level > 0) {

@@ -150,6 +150,8 @@ public:
 	void splitAllMappings(all_mappings_t& all_mappings, Cohort& cohort, bool mapped = false);
 	Taguint32HashMap single_tags;
 
+	std::istream* ux_stdin = 0;
+	std::ostream* ux_stdout = 0;
 	std::ostream* ux_stderr;
 	UChar* filebase;
 	void error(const char* str, const UChar* p);
