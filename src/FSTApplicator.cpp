@@ -39,6 +39,9 @@ FSTApplicator::FSTApplicator(std::ostream& ux_err)
 }
 
 void FSTApplicator::runGrammarOnText(std::istream& input, std::ostream& output) {
+	ux_stdin = &input;
+	ux_stdout = &output;
+
 	if (!input.good()) {
 		u_fprintf(ux_stderr, "Error: Input is null - nothing to parse!\n");
 		CG3Quit(1);
@@ -392,12 +395,6 @@ void FSTApplicator::runGrammarOnText(std::istream& input, std::ostream& output) 
 				lCohort = cCohort;
 			}
 			if (gWindow->next.size() > num_windows) {
-				while (!gWindow->previous.empty() && gWindow->previous.size() > num_windows) {
-					SingleWindow* tmp = gWindow->previous.front();
-					printSingleWindow(tmp, output);
-					free_swindow(tmp);
-					gWindow->previous.erase(gWindow->previous.begin());
-				}
 				gWindow->shuffleWindowsDown();
 				runGrammarOnWindow();
 				if (numWindows % resetAfter == 0) {
@@ -440,12 +437,6 @@ void FSTApplicator::runGrammarOnText(std::istream& input, std::ostream& output) 
 		cSWindow = 0;
 	}
 	while (!gWindow->next.empty()) {
-		while (!gWindow->previous.empty() && gWindow->previous.size() > num_windows) {
-			SingleWindow* tmp = gWindow->previous.front();
-			printSingleWindow(tmp, output);
-			free_swindow(tmp);
-			gWindow->previous.erase(gWindow->previous.begin());
-		}
 		gWindow->shuffleWindowsDown();
 		runGrammarOnWindow();
 	}

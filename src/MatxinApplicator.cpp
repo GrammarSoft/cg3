@@ -64,6 +64,9 @@ void MatxinApplicator::runGrammarOnTextWrapperNullFlush(std::istream& input, std
  */
 
 void MatxinApplicator::runGrammarOnText(std::istream& input, std::ostream& output) {
+	ux_stdin = &input;
+	ux_stdout = &output;
+
 	if (getNullFlush()) {
 		runGrammarOnTextWrapperNullFlush(input, output);
 		return;
@@ -232,12 +235,6 @@ void MatxinApplicator::runGrammarOnText(std::istream& input, std::ostream& outpu
 				cSWindow->appendCohort(cCohort);
 			}
 			if (gWindow->next.size() > num_windows) {
-				while (!gWindow->previous.empty() && gWindow->previous.size() > num_windows) {
-					SingleWindow* tmp = gWindow->previous.front();
-					printSingleWindow(tmp, output);
-					free_swindow(tmp);
-					gWindow->previous.erase(gWindow->previous.begin());
-				}
 				gWindow->shuffleWindowsDown();
 				runGrammarOnWindow();
 				if (numWindows % resetAfter == 0) {
@@ -393,12 +390,6 @@ void MatxinApplicator::runGrammarOnText(std::istream& input, std::ostream& outpu
 	// Run the grammar & print results
 	u_fprintf(output, "<corpus>\n");
 	while (!gWindow->next.empty()) {
-		while (!gWindow->previous.empty() && gWindow->previous.size() > num_windows) {
-			SingleWindow* tmp = gWindow->previous.front();
-			printSingleWindow(tmp, output);
-			free_swindow(tmp);
-			gWindow->previous.erase(gWindow->previous.begin());
-		}
 		gWindow->shuffleWindowsDown();
 		runGrammarOnWindow();
 	}
