@@ -93,6 +93,7 @@ int BinaryGrammar::parse_grammar(std::istream& input) {
 	grammar->sub_readings_ltr = (fields & (1 << 2)) != 0;
 	grammar->has_relations = (fields & (1 << 13)) != 0;
 	grammar->has_bag_of_tags = (fields & (1 << 14)) != 0;
+	grammar->ordered = (fields & (1 << 15)) != 0;
 
 	if (fields & (1 << 1)) {
 		ucnv_reset(conv);

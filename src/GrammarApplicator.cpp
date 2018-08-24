@@ -157,11 +157,8 @@ void GrammarApplicator::index() {
 		return;
 	}
 
-	// ToDo: Remove for real ordered mode
-	for (auto iter : single_tags) {
-		if (iter.second->type & T_REGEXP_LINE) {
-			ordered = true;
-		}
+	if (grammar->ordered) {
+		ordered = true;
 	}
 
 	if (!grammar->before_sections.empty()) {

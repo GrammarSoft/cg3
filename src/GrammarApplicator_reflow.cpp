@@ -683,6 +683,9 @@ void GrammarApplicator::mergeReadings(ReadingList& readings) {
 
 	for (auto r : readings) {
 		uint32_t hp = r->hash_plain, hplain = r->hash_plain;
+		if (ordered) {
+			hp = hplain = r->tags_string_hash;
+		}
 		uint32_t nm = 0;
 		if (trace) {
 			for (auto iter_hb : r->hit_by) {
@@ -694,8 +697,14 @@ void GrammarApplicator::mergeReadings(ReadingList& readings) {
 		}
 		Reading* sub = r->next;
 		while (sub) {
-			hp = hash_value(sub->hash_plain, hp);
-			hplain = hash_value(sub->hash_plain, hplain);
+			if (ordered) {
+				hp = hash_value(sub->tags_string_hash, hp);
+				hplain = hash_value(sub->tags_string_hash, hplain);
+			}
+			else {
+				hp = hash_value(sub->hash_plain, hp);
+				hplain = hash_value(sub->hash_plain, hplain);
+			}
 			if (trace) {
 				for (auto iter_hb : sub->hit_by) {
 					hp = hash_value(iter_hb, hp);

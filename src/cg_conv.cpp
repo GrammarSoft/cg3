@@ -92,6 +92,10 @@ int main(int argc, char* argv[]) {
 
 	CG3::Grammar grammar;
 
+	if (options[ORDERED].doesOccur) {
+		grammar.ordered = true;
+	}
+
 	grammar.ux_stderr = &std::cerr;
 	grammar.allocateDummySet();
 	grammar.delimiters = grammar.allocateSet();
