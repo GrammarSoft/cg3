@@ -46,6 +46,7 @@ public:
 	bool has_protect;
 	bool is_binary;
 	bool sub_readings_ltr;
+	bool ordered = false;
 	size_t grammar_size;
 	UChar mapping_prefix;
 	uint32_t lines;

@@ -2074,6 +2074,7 @@ void TextualParser::parseFromUChar(UChar* input, const char* fname) {
 					std::pair<size_t, bool*>(S_STRICT_REGEX, &strict_regex),
 					std::pair<size_t, bool*>(S_STRICT_ICASE, &strict_icase),
 					std::pair<size_t, bool*>(S_SELF_NO_BARRIER, &self_no_barrier),
+					std::pair<size_t, bool*>(S_ORDERED, &result->ordered),
 				};
 
 				while (*p != ';') {
@@ -2632,6 +2633,11 @@ int TextualParser::parse_grammar(UString& data) {
 	}
 
 	for (auto tag : result->single_tags_list) {
+		// ToDo: Remove for real ordered mode
+		if (tag->type & T_REGEXP_LINE) {
+			result->ordered = true;
+		}
+
 		if (!(tag->type & T_VARSTRING)) {
 			continue;
 		}
