@@ -217,6 +217,7 @@ protected:
 	Cohort* target;
 	Cohort* mark;
 	Cohort* attach_to;
+	Cohort* merge_with;
 	Rule* current_rule;
 
 	typedef bc::flat_map<uint32_t, Reading*> readings_plain_t;

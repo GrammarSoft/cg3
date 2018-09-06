@@ -72,6 +72,7 @@ enum : uint64_t {
 	POS_LEFTMOST       = (1ull << 34), // ll
 	POS_RIGHTMOST      = (1ull << 35), // rr
 	POS_NO_BARRIER     = (1ull << 36), // N
+	POS_WITH           = (1ull << 37), // w
 
 	MASK_POS_DEP       = POS_DEP_PARENT | POS_DEP_SIBLING | POS_DEP_CHILD | POS_DEP_GLOB,
 	MASK_POS_DEPREL    = MASK_POS_DEP | POS_RELATION,
