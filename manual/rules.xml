@@ -58,6 +58,7 @@
           &lt;target&gt; [contextual_tests] ;
       REMCOHORT &lt;target&gt; [contextual_tests] ;
       SPLITCOHORT &lt;cohort recipe&gt; &lt;target&gt; [contextual_tests] ;
+      MERGECOHORTS &lt;cohort recipe&gt; &lt;target&gt; [contextual_tests] WITH &lt;contextual targets&gt; ;
 
       MOVE [WITHCHILD &lt;child_set&gt;|NOCHILD] &lt;target&gt; [contextual_tests]
           BEFORE|AFTER [WITHCHILD &lt;child_set&gt;|NOCHILD] &lt;contextual_target&gt; [contextual_tests] ;
@@ -231,6 +232,49 @@
         "&lt;$2&gt;"v "$2"v tags go here R:* 2->p
         ) ("&lt;([^-]+)-([^-]+)&gt;" other tags) (1* (context)) ;
     </screen>
+  </section>
+
+  <section id="mergecohorts">
+    <title>MERGECOHORTS</title>
+    <indexterm>
+      <primary>MERGECOHORTS</primary>
+    </indexterm>
+    <screen>
+      [wordform] MERGECOHORTS &lt;cohort recipe&gt; &lt;target&gt; [contextual_tests] WITH &lt;contextual targets&gt; ;
+    </screen>
+    <para>
+      Removes the target cohort and all cohorts matched by the contextual targets and inserts a new cohort in the target's position.
+      The removed cohorts need not be sequential.
+    </para>
+    <para>
+      Each contextual target is a contextual test where by default the last matched cohort is the cohort you want removed.
+      In a longer chain, you can override which cohort is to be removed with modifier <code>w</code> such as <code>(1w ("word") LINK 1 (condition on word))</code>.
+      Each contextual target can only contribute 1 cohort for the merge - multiple <code>w</code> in a single test is not possible.
+    </para>
+    <para>
+      Also, modifier <code>A</code> will override where the insertion is to take place - if set, the insertion happens after the cohort marked as <code>A</code>.
+      Modifier <code>A</code> does not imply <code>w</code> - it is possible to insert in a different position than any removed cohort.
+      <code>A</code> will suppress that contextual target from yielding a cohort, but <code>w</code> can force it.
+    </para>
+    <screen>
+      WITH examples:
+      # Normal, last cohort in the chain, "word", is marked for removal
+        (1 ("the") LINK 1 ("word"))
+
+      # Sets the insert position after "the" and requires "word" follows that cohort
+      # Does not mark any cohort for removal
+        (1A ("the") LINK 1 ("word"))
+
+      # Marks "the" for removal, and merely requires "word" follows that cohort
+        (1w ("the") LINK 1 ("word"))
+
+      # Sets the insert position after "the" and requires "word" follows that cohort
+      # Also marks "word" for removal
+        (1A ("the") LINK 1w ("word"))
+    </screen>
+    <para>
+      MergeCohorts does not currently handle dependencies or named relations.
+    </para>
   </section>
 
    <section id="move-switch">

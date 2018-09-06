@@ -895,11 +895,11 @@ bool GrammarApplicator::doesSetMatchCohortNormal(Cohort& cohort, const uint32_t 
 		lists[2] = &cohort.delayed;
 	}
 
-	for (size_t i = 0; i < 3; ++i) {
-		if (lists[i] == 0) {
+	for (auto list : lists) {
+		if (list == 0) {
 			continue;
 		}
-		for (auto reading : *lists[i]) {
+		for (auto reading : *list) {
 			if (context && context->test) {
 				// ToDo: Barriers need some way to escape sub-readings
 				reading = get_sub_reading(reading, context->test->offset_sub);
@@ -948,11 +948,11 @@ bool GrammarApplicator::doesSetMatchCohortCareful(Cohort& cohort, const uint32_t
 		lists[2] = &cohort.delayed;
 	}
 
-	for (size_t i = 0; i < 3; ++i) {
-		if (lists[i] == 0) {
+	for (auto list : lists) {
+		if (list == 0) {
 			continue;
 		}
-		for (auto reading : *lists[i]) {
+		for (auto reading : *list) {
 			if (context && context->test) {
 				// ToDo: Barriers need some way to escape sub-readings
 				reading = get_sub_reading(reading, context->test->offset_sub);

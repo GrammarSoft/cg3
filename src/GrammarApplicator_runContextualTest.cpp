@@ -46,11 +46,11 @@ Cohort* GrammarApplicator::runSingleTest(Cohort* cohort, const ContextualTest* t
 				lists[2] = &cohort->delayed;
 			}
 
-			for (size_t i = 0; i < 3; ++i) {
-				if (lists[i] == 0) {
+			for (auto list : lists) {
+				if (list == 0) {
 					continue;
 				}
-				for (auto reading : *lists[i]) {
+				for (auto reading : *list) {
 					reading->matched_target = false;
 					reading->matched_tests = false;
 				}
@@ -58,6 +58,9 @@ Cohort* GrammarApplicator::runSingleTest(Cohort* cohort, const ContextualTest* t
 		}
 
 		attach_to = cohort;
+	}
+	if (test->pos & POS_WITH) {
+		merge_with = cohort;
 	}
 	if (deep) {
 		*deep = cohort;

@@ -46,8 +46,7 @@ TextualParser::TextualParser(Grammar& res, std::ostream& ux_err, bool _dump_ast)
   , strict_bforms(false)
   , strict_second(false)
   , filename(0)
-  , error_counter(0)
-{
+  , error_counter(0) {
 	dump_ast = _dump_ast;
 }
 
@@ -74,8 +73,7 @@ struct freq_sorter {
 	const bc::flat_map<Tag*, size_t>& tag_freq;
 
 	freq_sorter(const bc::flat_map<Tag*, size_t>& tag_freq)
-	  : tag_freq(tag_freq)
-	{
+	  : tag_freq(tag_freq) {
 	}
 
 	bool operator()(Tag* a, Tag* b) const {
@@ -587,6 +585,10 @@ void TextualParser::parseContextualTestPosition(UChar*& p, ContextualTest& t) {
 		}
 		if (*p == 'A') {
 			t.pos |= POS_ATTACH_TO;
+			++p;
+		}
+		if (*p == 'w') {
+			t.pos |= POS_WITH;
 			++p;
 		}
 		if (*p == '?') {
@@ -1215,7 +1217,7 @@ void TextualParser::parseRule(UChar*& p, KEYWORDS key) {
 
 	result->lines += SKIPWS(p);
 	lp = p;
-	if (key == K_MAP || key == K_ADD || key == K_REPLACE || key == K_APPEND || key == K_SUBSTITUTE || key == K_COPY || key == K_ADDRELATIONS || key == K_ADDRELATION || key == K_SETRELATIONS || key == K_SETRELATION || key == K_REMRELATIONS || key == K_REMRELATION || key == K_SETVARIABLE || key == K_REMVARIABLE || key == K_ADDCOHORT || key == K_JUMP || key == K_SPLITCOHORT) {
+	if (key == K_MAP || key == K_ADD || key == K_REPLACE || key == K_APPEND || key == K_SUBSTITUTE || key == K_COPY || key == K_ADDRELATIONS || key == K_ADDRELATION || key == K_SETRELATIONS || key == K_SETRELATION || key == K_REMRELATIONS || key == K_REMRELATION || key == K_SETVARIABLE || key == K_REMVARIABLE || key == K_ADDCOHORT || key == K_JUMP || key == K_SPLITCOHORT || key == K_MERGECOHORTS) {
 		AST_OPEN(RuleMaplist);
 		swapper_false swp(no_isets, no_isets);
 		Set* s = parseSetInlineWrapper(p);
@@ -1340,7 +1342,7 @@ void TextualParser::parseRule(UChar*& p, KEYWORDS key) {
 	}
 	AST_CLOSE(p);
 
-	if (key == K_SETPARENT || key == K_SETCHILD || key == K_ADDRELATIONS || key == K_ADDRELATION || key == K_SETRELATIONS || key == K_SETRELATION || key == K_REMRELATIONS || key == K_REMRELATION || key == K_MOVE || key == K_SWITCH) {
+	if (key == K_SETPARENT || key == K_SETCHILD || key == K_ADDRELATIONS || key == K_ADDRELATION || key == K_SETRELATIONS || key == K_SETRELATION || key == K_REMRELATIONS || key == K_REMRELATION || key == K_MOVE || key == K_SWITCH || key == K_MERGECOHORTS) {
 		result->lines += SKIPWS(p);
 		if (key == K_MOVE) {
 			AST_OPEN(RuleMoveType);
@@ -1357,12 +1359,12 @@ void TextualParser::parseRule(UChar*& p, KEYWORDS key) {
 			}
 			AST_CLOSE(p);
 		}
-		else if (key == K_SWITCH) {
+		else if (key == K_SWITCH || key == K_MERGECOHORTS) {
 			if (ux_simplecasecmp(p, stringbits[S_WITH].getTerminatedBuffer(), stringbits[S_WITH].length())) {
 				p += stringbits[S_WITH].length();
 			}
 			else {
-				error("%s: Error: Expected movement keyword WITH on line %u near `%S`!\n", p);
+				error("%s: Error: Expected movement/merge keyword WITH on line %u near `%S`!\n", p);
 			}
 		}
 		else {
@@ -1415,10 +1417,12 @@ void TextualParser::parseRule(UChar*& p, KEYWORDS key) {
 		if (rule->dep_tests.empty()) {
 			error("%s: Error: Expected dependency target on line %u near `%S`!\n", lp);
 		}
-		rule->dep_target = rule->dep_tests.back();
-		rule->dep_tests.pop_back();
+		if (key != K_MERGECOHORTS) {
+			rule->dep_target = rule->dep_tests.back();
+			rule->dep_tests.pop_back();
+		}
 	}
-	if (key == K_SETPARENT || key == K_SETCHILD || key == K_SPLITCOHORT) {
+	if (key == K_SETPARENT || key == K_SETCHILD || key == K_SPLITCOHORT || key == K_MERGECOHORTS) {
 		result->has_dep = true;
 	}
 	if (key == K_SETRELATION || key == K_SETRELATIONS || key == K_ADDRELATION || key == K_ADDRELATIONS || key == K_REMRELATION || key == K_REMRELATIONS) {
@@ -1750,6 +1754,10 @@ void TextualParser::parseFromUChar(UChar* input, const char* fname) {
 			// SPLITCOHORT
 			else if (IS_ICASE(p, "SPLITCOHORT", "splitcohort")) {
 				parseRule(p, K_SPLITCOHORT);
+			}
+			// MERGECOHORTS
+			else if (IS_ICASE(p, "MERGECOHORTS", "mergecohorts")) {
+				parseRule(p, K_MERGECOHORTS);
 			}
 			// SETS
 			else if (IS_ICASE(p, "SETS", "sets")) {
