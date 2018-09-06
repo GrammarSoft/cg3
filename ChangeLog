@@ -1,3 +1,33 @@
+2018-08-24  tino
+
+	* [r13139] src/BinaryGrammar_read.cpp, src/BinaryGrammar_write.cpp,
+	  src/Grammar.hpp, src/GrammarApplicator.cpp,
+	  src/GrammarApplicator_reflow.cpp, src/Strings.cpp,
+	  src/Strings.hpp, src/TextualParser.cpp, src/cg_conv.cpp,
+	  src/options_conv.hpp: Add ordered in-grammar mode; When ordered,
+	  consider all tags when determining duplicate readings
+
+2018-08-08  tino
+
+	* [r13101] src/ApertiumApplicator.cpp, src/FSTApplicator.cpp,
+	  src/FormatConverter.cpp, src/GrammarApplicator.hpp,
+	  src/GrammarApplicator_runGrammar.cpp,
+	  src/GrammarApplicator_runRules.cpp, src/MatxinApplicator.cpp,
+	  src/NicelineApplicator.cpp, src/PlaintextApplicator.cpp:
+	  Centralize when windows are discarded (fixes #15)
+
+2018-07-10  tino
+
+	* [r13043] src/GrammarApplicator_runGrammar.cpp: Fix off-by-one.
+	  Quite amazing nobody ran into this before.
+
+2018-06-25  tino
+
+	* [r13033] ChangeLog, src/GrammarApplicator_matchSet.cpp,
+	  src/GrammarApplicator_runRules.cpp, src/version.hpp: Allow regex
+	  captures from dependency target contexts, without any captures in
+	  normal target contexts
+
 2018-06-14  tino
 
 	* [r13018] src/GrammarApplicator_runRules.cpp: That was apparently
@@ -1850,13 +1880,4 @@
 	* [r10534] src/TextualParser.cpp: no-isets allow (*)
 	* [r10533] src/TextualParser.cpp: Moved no-isets check to start of
 	  (
-	* [r10532] src/BinaryGrammar_read.cpp,
-	  src/BinaryGrammar_read_10043.cpp, src/Grammar.hpp: Deduplicate
-	  code
-	* [r10531] src/all_cg_comp.cpp, src/all_cg_conv.cpp,
-	  src/all_cg_proc.cpp, src/all_vislcg3.cpp: Add #include
-	  BinaryGrammar_read_10043.cpp
-	* [r10530] manual/cgkeywords.xml, manual/grammar.xml: Documented
-	  OPTIONS += no-inline-sets no-inline-templates
-	* [r10529] src/parser_helpers.hpp: Include guard
 

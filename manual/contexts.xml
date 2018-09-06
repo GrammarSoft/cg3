@@ -115,6 +115,9 @@
     <indexterm>
       <primary>A</primary>
     </indexterm>
+    <indexterm>
+      <primary>w</primary>
+    </indexterm>
     <para>
       By default, linked tests continue from the immediately preceding test.
       These options affect behavior.
@@ -155,6 +158,14 @@
       <para>
         As of version 0.9.9.11032, 'A' can be used for almost all rules to change the cohort to be affected,
         instead of the target of the rule.
+      </para>
+    </section>
+
+    <section id="test-mark-with">
+      <title>Merge With</title>
+      <para>
+        'w' sets the cohort to be merged with to the currently active cohort of the test's target.
+        Currently only used with <link linkend="mergecohorts">MergeCohorts</link>.
       </para>
     </section>
   </section>

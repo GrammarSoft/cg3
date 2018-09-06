@@ -282,15 +282,28 @@ void GrammarWriter::printRule(std::ostream& to, const Rule& rule) {
 		u_fprintf(to, ") ");
 	}
 
+	if (rule.type == K_SETPARENT || rule.type == K_SETCHILD || rule.type == K_ADDRELATIONS || rule.type == K_ADDRELATION || rule.type == K_SETRELATIONS || rule.type == K_SETRELATION || rule.type == K_REMRELATIONS || rule.type == K_REMRELATION) {
+		u_fprintf(to, "TO ");
+	}
+	else if (rule.type == K_MOVE_AFTER) {
+		u_fprintf(to, "AFTER ");
+	}
+	else if (rule.type == K_MOVE_BEFORE) {
+		u_fprintf(to, "BEFORE ");
+	}
+	else if (rule.type == K_SWITCH || rule.type == K_MERGECOHORTS) {
+		u_fprintf(to, "WITH ");
+	}
+
 	if (rule.dep_target) {
-		u_fprintf(to, "TO (");
+		u_fprintf(to, "(");
 		printContextualTest(to, *(rule.dep_target));
 		u_fprintf(to, ") ");
-		for (auto it : rule.dep_tests) {
-			u_fprintf(to, "(");
-			printContextualTest(to, *it);
-			u_fprintf(to, ") ");
-		}
+	}
+	for (auto it : rule.dep_tests) {
+		u_fprintf(to, "(");
+		printContextualTest(to, *it);
+		u_fprintf(to, ") ");
 	}
 }
 
