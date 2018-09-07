@@ -71,7 +71,7 @@ void GrammarWriter::printSet(std::ostream& output, const Set& curset) {
 	}
 	else {
 		used_sets.insert(curset.number);
-		for (auto s: curset.sets) {
+		for (auto s : curset.sets) {
 			printSet(output, *(grammar->sets_list[s]));
 		}
 		if (statistics) {
