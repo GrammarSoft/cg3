@@ -46,7 +46,8 @@ TextualParser::TextualParser(Grammar& res, std::ostream& ux_err, bool _dump_ast)
   , strict_bforms(false)
   , strict_second(false)
   , filename(0)
-  , error_counter(0) {
+  , error_counter(0)
+{
 	dump_ast = _dump_ast;
 }
 
@@ -73,7 +74,8 @@ struct freq_sorter {
 	const bc::flat_map<Tag*, size_t>& tag_freq;
 
 	freq_sorter(const bc::flat_map<Tag*, size_t>& tag_freq)
-	  : tag_freq(tag_freq) {
+	  : tag_freq(tag_freq)
+	{
 	}
 
 	bool operator()(Tag* a, Tag* b) const {

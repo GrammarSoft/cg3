@@ -33,7 +33,7 @@
 namespace CG3 {
 
 enum {
-	RV_NOTHING = 1,
+	RV_NOTHING   = 1,
 	RV_SOMETHING = 2,
 	RV_DELIMITED = 4,
 	RV_TRACERULE = 8,
@@ -339,7 +339,8 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 			bool do_sort = false;
 
 			Sorter(SingleWindow& current)
-			  : current(current) {}
+			  : current(current)
+			{}
 
 			~Sorter() {
 				if (do_sort) {
@@ -726,7 +727,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 			const size_t state_num_delayed = cohort->delayed.size();
 			bool readings_changed = false;
 
-			auto add_cohort = [&](Cohort *cohort) {
+			auto add_cohort = [&](Cohort* cohort) {
 				Cohort* cCohort = alloc_cohort(&current);
 				cCohort->global_number = gWindow->cohort_counter++;
 
