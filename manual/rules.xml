@@ -246,6 +246,20 @@
       Removes the target cohort and all cohorts matched by the contextual targets and inserts a new cohort in the target's position.
       The removed cohorts need not be sequential.
     </para>
+    <screen>
+      # Given input
+      "&lt;March&gt;"
+        "March" month
+      "&lt;2nd&gt;"
+        "2nd" ordinal
+
+      # The rule
+      MergeCohorts ("&lt;$1 $2&gt;"v "$1 $2"v date) ("&lt;(.+)&gt;"r month) WITH (1 ("&lt;(.+)&gt;"r ordinal)) ;
+
+      # would yield
+      "&lt;March 2nd&gt;"
+        "March 2nd" date
+    </screen>
     <para>
       Each contextual target is a contextual test where by default the last matched cohort is the cohort you want removed.
       In a longer chain, you can override which cohort is to be removed with modifier <code>w</code> such as <code>(1w ("word") LINK 1 (condition on word))</code>.
