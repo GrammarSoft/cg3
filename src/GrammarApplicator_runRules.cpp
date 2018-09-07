@@ -760,7 +760,27 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 					readings.back().push_back(tter);
 				}
 
-				for (auto rit : readings) {
+				for (auto& tags : readings) {
+					for (size_t i = 0; i < tags.size(); ++i) {
+						if (tags[i]->hash == grammar->tag_any) {
+							auto& nt = cohort->readings.front()->tags_list;
+							if (nt.size() <= 2) {
+								continue;
+							}
+							tags.reserve(tags.size() + nt.size() - 2);
+							tags[i] = single_tags[nt[2]];
+							for (size_t j = 3, k = 1; j < nt.size(); ++j) {
+								if (single_tags[nt[j]]->type & T_DEPENDENCY) {
+									continue;
+								}
+								tags.insert(tags.begin() + i + k, single_tags[nt[j]]);
+								++k;
+							}
+						}
+					}
+				}
+
+				for (auto& rit : readings) {
 					Reading* cReading = alloc_reading(cCohort);
 					++numReadings;
 					insert_if_exists(cReading->parent->possible_sets, grammar->sets_any);

@@ -245,6 +245,7 @@
     <para>
       Removes the target cohort and all cohorts matched by the contextual targets and inserts a new cohort in the target's position.
       The removed cohorts need not be sequential.
+      In the cohort recipe, the special tag <code>*</code> will copy all tags from the insert position cohort to that spot.
     </para>
     <screen>
       # Given input
