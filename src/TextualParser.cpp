@@ -1201,6 +1201,21 @@ void TextualParser::parseRule(UChar*& p, KEYWORDS key) {
 		rule->childset1 = 0;
 	}
 
+	auto is_list = [&](Set *s) {
+		bool is_list = true;
+		if (!(s->trie.empty() && s->trie_special.empty() && !(s->type & (ST_TAG_UNIFY | ST_SET_UNIFY | ST_CHILD_UNIFY)))) {
+			return is_list;
+		}
+		for (auto i : s->sets) {
+			auto set = result->getSet(i);
+			if (set->trie.empty() && set->trie_special.empty() && !(set->type & (ST_TAG_UNIFY | ST_SET_UNIFY | ST_CHILD_UNIFY))) {
+				is_list = false;
+				break;
+			}
+		}
+		return is_list;
+	};
+
 	lp = p;
 	if (key == K_SUBSTITUTE || key == K_EXECUTE) {
 		AST_OPEN(RuleSublist);
@@ -1211,7 +1226,7 @@ void TextualParser::parseRule(UChar*& p, KEYWORDS key) {
 		if (s->empty()) {
 			error("%s: Error: Empty substitute set on line %u near `%S`!\n", lp);
 		}
-		if (s->trie.empty() && s->trie_special.empty() && !(s->type & (ST_TAG_UNIFY | ST_SET_UNIFY | ST_CHILD_UNIFY))) {
+		if (!is_list(s)) {
 			error("%s: Error: Substitute set on line %u near `%S` was neither unified nor of LIST type!\n", lp);
 		}
 		AST_CLOSE(p);
@@ -1228,7 +1243,7 @@ void TextualParser::parseRule(UChar*& p, KEYWORDS key) {
 		if (s->empty()) {
 			error("%s: Error: Empty mapping set on line %u near `%S`!\n", lp);
 		}
-		if (s->trie.empty() && s->trie_special.empty() && !(s->type & (ST_TAG_UNIFY | ST_SET_UNIFY | ST_CHILD_UNIFY))) {
+		if (!is_list(s)) {
 			error("%s: Error: Mapping set on line %u near `%S` was neither unified nor of LIST type!\n", lp);
 		}
 		AST_CLOSE(p);
@@ -1253,7 +1268,7 @@ void TextualParser::parseRule(UChar*& p, KEYWORDS key) {
 		if (s->empty()) {
 			error("%s: Error: Empty relation set on line %u near `%S`!\n", lp);
 		}
-		if (s->trie.empty() && s->trie_special.empty() && !(s->type & (ST_TAG_UNIFY | ST_SET_UNIFY | ST_CHILD_UNIFY))) {
+		if (!is_list(s)) {
 			error("%s: Error: Relation/Value set on line %u near `%S` was neither unified nor of LIST type!\n", lp);
 		}
 		AST_CLOSE(p);
