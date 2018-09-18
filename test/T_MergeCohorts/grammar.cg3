@@ -1,0 +1,6 @@
+DELIMITERS = "<$.>" ;
+
+MERGECOHORTS ("<$1 $2>"v "$2 $1"v merged) ("em") WITH
+	(1* ("mul(her)"r))
+	(-1*A ("(el)e"r) LINK 1 (*))
+	;
