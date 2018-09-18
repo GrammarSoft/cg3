@@ -1,0 +1,61 @@
+"<ele>"
+	"ele" PERS M 3S NOM @SUBJ> #1→2 
+"<bate>"
+	"bater" <fmc> <mv> V PR 3S IND VFIN @FS-STA #2→0 
+"<em>"
+	"em" <sam-> PRP @<PIV #3→2 
+"<a>"
+	"o" <artd> <-sam> DET F S @>N #4→5 
+"<mulher>"
+	"mulher" <Hattr> N F S @P< #5→3
+"<$.>"
+	"$." PU @PU #6→0 <<< 
+</s>
+
+"<o>"
+	"o" <artd> DET M S @>N #71→72 
+"<carro>"
+	"carro" <V> N M S @SUBJ> #72→73 
+"<bateu>"
+	"bater" <fmc> <mv> V PS 3S IND VFIN @FS-STA #73→0 
+"<em>"
+	"em" <sam-> PRP @<PIV #74→73 
+"<uma>"
+	"um" <arti> <-sam> DET F S @>N #75→76 
+"<árvore>"
+	"árvore" <Btree> N F S @P< #76→74
+"<$.>"
+	"$." PU @PU #77→0 <<< 
+</s>
+
+"<em>"
+	"em" PRP @ADVL> #41→44 
+"<1993>"
+	"1993" <date> <card> <NER:date> NUM M/F S @P< #42→41 
+"<ele>"
+	"ele" PERS M 3S NOM @SUBJ> #43→44 
+"<bateu>"
+	"bater" <fmc> <mv> V PS 3S IND VFIN @FS-STA #44→0 
+"<o>"
+	"o" <artd> DET M S @>N #45→46 
+"<recorde>"
+	"recorde" <ac> N M S @<ACC #46→44
+"<$.>"
+	"$." PU @PU #47→0 
+
+"<root>"
+	"root" #1->0
+"<one>"
+	"one" #2->1
+"<two>"
+	"two" #3->1
+"<three>"
+	"three" #4->3
+"<four>"
+	"four" #5->6
+"<five>"
+	"five" #6->4
+"<six>"
+	"six" #7->5
+"<seven>"
+	"seven" #8->1
