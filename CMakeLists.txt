@@ -73,15 +73,19 @@ else()
 		endif()
 	endforeach()
 
-	# Enable latest possible C++ standard
-	foreach(flag "-std=c++20" "-std=c++2a" "-std=c++17" "-std=c++1z" "-std=c++14" "-std=c++1y" "-std=c++11" "-std=c++0x")
+	# Require latest possible C++ standard
+	foreach(flag "-std=c++20" "-std=c++2a" "-std=c++17" "-std=c++1z" "-std=c++14" "-std=c++1y")
 		string(REGEX REPLACE "[^a-z0-9]" "-" _flag ${flag})
 		CHECK_CXX_COMPILER_FLAG(${flag} COMPILER_SUPPORTS_${_flag})
 		if(COMPILER_SUPPORTS_${_flag})
 			set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${flag}")
+			set(_ENABLED_CXX ${flag})
 			break()
 		endif()
 	endforeach()
+	if(NOT _ENABLED_CXX)
+		message(FATAL_ERROR "Could not enable at least C++14 (C++1y) - upgrade your compiler")
+	endif()
 
 	# Generate pkg-config file
 	set(prefix      ${CMAKE_INSTALL_PREFIX})
