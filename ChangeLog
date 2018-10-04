@@ -1,3 +1,42 @@
+2018-10-01  tino
+
+	* [r13197] src/TextualParser.cpp: Check that mapping lists don't
+	  have failfast or line regexes
+
+2018-09-19  tino
+
+	* [r13174] CMakeLists.txt, src/CMakeLists.txt: Require at least
+	  C++1y (C++14), Boost 1.53.0, ICU 50.0
+
+2018-09-18  tino
+
+	* [r13173] test/T_MergeCohorts, test/T_MergeCohorts/args.txt,
+	  test/T_MergeCohorts/expected.txt,
+	  test/T_MergeCohorts/grammar.cg3: Forgot the MergeCohorts test
+
+2018-09-07  tino
+
+	* [r13154] src/TextualParser.cpp: Allow Substitute/Map/etc tag
+	  lists to be combinations of LIST sets and on-the-fly definitions
+	  (fixes #16)
+	* [r13149] manual/rules.xml, src/GrammarApplicator_runRules.cpp:
+	  MergeCohorts tag * now means copy target's tags to this spot
+	  (also affects AddCohort) (WIP issue #17)
+	* [r13148] src/GrammarApplicator_runRules.cpp,
+	  src/GrammarWriter.cpp, src/TextualParser.cpp: Formatting
+	* [r13146] manual/rules.xml: Add example to MergeCohorts
+
+2018-09-06  tino
+
+	* [r13145] ChangeLog, manual/contexts.xml, manual/rules.xml,
+	  src/ContextualTest.hpp, src/GrammarApplicator.hpp,
+	  src/GrammarApplicator_matchSet.cpp,
+	  src/GrammarApplicator_runContextualTest.cpp,
+	  src/GrammarApplicator_runRules.cpp, src/GrammarWriter.cpp,
+	  src/Strings.cpp, src/Strings.hpp, src/TextualParser.cpp,
+	  src/version.hpp: Implement first version of MergeCohorts (WIP
+	  issue #17)
+
 2018-08-24  tino
 
 	* [r13139] src/BinaryGrammar_read.cpp, src/BinaryGrammar_write.cpp,
@@ -1848,36 +1887,4 @@
 	  test/T_Templates/grammar.cg3,
 	  test/T_Templates/grammar.cg3b.10043, test/T_Templates/input.txt:
 	  New context modifier 'f'
-
-2015-02-24  tino
-
-	* [r10550] src/CMakeLists.txt: Actually install DLL
-	* [r10549] ChangeLog, manual/cmdreference.xml,
-	  src/FSTApplicator.cpp, src/FSTApplicator.hpp, src/cg_conv.cpp,
-	  src/options_conv.hpp, src/version.hpp: Added cg-conv --wfactor,-W
-	  --wtag --sub-delim,-S
-
-2015-02-23  tino
-
-	* [r10548] src/CMakeLists.txt: More MSVC vs WIN32
-	* [r10547] CMakeLists.txt, get-boost.sh, src/CMakeLists.txt,
-	  src/cg_comp.cpp, src/cg_proc.cpp, src/stdafx.hpp,
-	  src/uextras.cpp, src/uextras.hpp: Differentiate between MSVC and
-	  WIN32 to allow for cross-compiling
-
-2015-02-22  tino
-
-	* [r10543] ChangeLog, manual/grammar.xml,
-	  src/GrammarApplicator_runRules.cpp, src/version.hpp,
-	  test/T_RegExp/expected.txt, test/T_RegExp/grammar.cg3,
-	  test/T_RegExp/grammar.cg3b.10043: Fix regex capture groups
-	  remaining captured after a target match fail
-
-2015-02-20  tino
-
-	* [r10535] ChangeLog, src/Grammar.cpp, src/GrammarApplicator.cpp,
-	  src/version.hpp: Undo not checking tag[0] for regex/icase tags
-	* [r10534] src/TextualParser.cpp: no-isets allow (*)
-	* [r10533] src/TextualParser.cpp: Moved no-isets check to start of
-	  (
 
