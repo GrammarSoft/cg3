@@ -1,22 +1,20 @@
-#ifndef GETOPT_H
-#define GETOPT_H
+#ifndef c6d28b7452ec699b_GETOPT_H
+#define c6d28b7452ec699b_GETOPT_H
 
-#ifdef __cplusplus
-	extern "C" {
-#endif
-
+#include <stdafx.hpp>
 #include <stdio.h>
 #include <string.h>
 
+namespace CG3_GetOpt {
+
 int getopt(int argc, char** argv, const char* opts);
 
-extern int opterr;
-extern int optind;
-extern int optopt;
-extern char *optarg;
+CG3_IMPORTS extern int opterr;
+CG3_IMPORTS extern int optind;
+CG3_IMPORTS extern int optopt;
+CG3_IMPORTS extern char *optarg;
 
-#ifdef __cplusplus
-	}
-#endif
+}
+using namespace CG3_GetOpt;
 
 #endif

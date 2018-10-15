@@ -45,7 +45,7 @@ enum {
 
 class Set {
 public:
-	static std::ostream* dump_hashes_out;
+	CG3_IMPORTS static std::ostream* dump_hashes_out;
 
 	uint8_t type;
 	uint32_t line;
