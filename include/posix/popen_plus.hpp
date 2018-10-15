@@ -1,7 +1,7 @@
 /*
  ** Author: Hamid Alipour http://codingrecipes.com http://twitter.com/code_head
  ** SQLite style license:
- ** 
+ **
  ** 2001 September 15
  **
  ** The author disclaims copyright to this source code.  In place of
@@ -13,12 +13,9 @@
  **/
 
 #pragma once
-#ifndef POPEN_PLUS_H_f28c53c53a48d38efafee7fb7004a01faaac9e22
-#define POPEN_PLUS_H_f28c53c53a48d38efafee7fb7004a01faaac9e22
-
-#ifdef __cplusplus
-extern "C" {
-#endif
+#ifndef POPEN_PLUS_HPP_f28c53c53a48d38efafee7fb7004a01faaac9e22
+#define POPEN_PLUS_HPP_f28c53c53a48d38efafee7fb7004a01faaac9e22
+namespace CG3_PopenPlus {
 
 #include <sys/types.h>
 #include <fcntl.h>
@@ -49,8 +46,6 @@ int popen_plus_kill_by_id(int process_id);
 int popen_plus_terminate(popen_plus_process *process);
 int popen_plus_terminate_with_id(int process_id);
 
-#ifdef __cplusplus
 }
-#endif
-
+using namespace CG3_PopenPlus;
 #endif

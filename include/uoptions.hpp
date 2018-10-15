@@ -19,6 +19,7 @@
 #pragma once
 #ifndef c6d28b7452ec699b_UOPTIONS_H__
 #define c6d28b7452ec699b_UOPTIONS_H__
+namespace Options {
 
 /* This should usually be called before calling u_parseArgs */
 /*#if defined(OS390) && (U_CHARSET_FAMILY == U_ASCII_FAMILY)*/
@@ -289,4 +290,5 @@ inline int u_parseArgs(int argc, char* argv[], int optionCount, UOption options[
 		return remaining;
 }
 
+}
 #endif
