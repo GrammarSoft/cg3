@@ -27,7 +27,7 @@
 
 using CG3::CG3Quit;
 
-#include <uoptions.h>
+#include <uoptions.hpp>
 namespace Options {
 enum OPTIONS {
 	HELP1,

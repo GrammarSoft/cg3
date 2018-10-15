@@ -13,6 +13,7 @@ in the public domain.
 #include "getopt.h"
 
 /*LINTLIBRARY*/
+namespace CG3_GetOpt {
 
 #define EOF	(-1)
 #define ERR(s, c)	if (opterr){\
@@ -29,8 +30,8 @@ char	*optarg;
 
 int getopt(int argc, char **argv, const char *opts) {
 	static int sp = 1;
-	register int c;
-	register char *cp;
+	int c;
+	const char *cp;
 
 	if (sp == 1)
 		if (optind >= argc ||
@@ -70,4 +71,6 @@ int getopt(int argc, char **argv, const char *opts) {
 		optarg = NULL;
 	}
 	return(c);
+}
+
 }

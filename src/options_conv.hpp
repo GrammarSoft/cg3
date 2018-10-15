@@ -23,7 +23,7 @@
 #ifndef c6d28b7452ec699b_OPTIONS_CONV_H
 #define c6d28b7452ec699b_OPTIONS_CONV_H
 
-#include <uoptions.h>
+#include <uoptions.hpp>
 
 namespace Options {
 enum OPTIONS {
