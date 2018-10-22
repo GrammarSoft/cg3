@@ -4,6 +4,7 @@
 
 ;; Author: Kevin Brubeck Unhammer <unhammer@fsfe.org>
 ;; Version: 0.3.0
+;; Package-Requires: ((emacs "24.3"))
 ;; Url: https://visl.sdu.dk/constraint_grammar.html
 ;; Keywords: languages
 
@@ -1054,6 +1055,61 @@ Similarly, `cg-post-pipe' is run on output."
   (message "%s after each change" (if cg-check-after-change
                                       (format "Checking CG %s seconds" cg-check-after-change-secs)
                                     "Not checking CG")))
+
+
+
+
+;;; xref support --------------------------------------------------------------
+
+(when (featurep 'xref)
+  (declare-function xref-make-bogus-location "xref" (message))
+  (declare-function xref-make "xref" (summary location))
+  (declare-function xref-collect-references "xref" (symbol dir))
+
+  (cl-defmethod xref-backend-identifier-at-point ((_backend (eql cg)))
+    (format "%s" (symbol-at-point)))
+
+  (defvar cg--set-definition-re "^ *\\(?:[Ll][Ii][Ss]\\|[Ss][Ee]\\)t\\s +\\(%s\\)\\(?:\\s \\|=\\)")
+
+  (cl-defmethod xref-backend-identifier-completion-table ((_backend (eql cg)))
+    (completion-table-dynamic
+     (lambda (prefix)
+       (let* ((prefix-re (concat (replace-quote prefix)
+                                 "\\S *"))
+              (def-re (format cg--set-definition-re prefix-re))
+              matches)
+         (save-excursion
+           (save-restriction
+             (widen)
+             (goto-char (point-min))
+             (while (re-search-forward def-re nil 'noerror)
+               (push (match-string-no-properties 1) matches))))
+         matches))
+     'switch-buffer))
+
+  (cl-defmethod xref-backend-definitions ((_backend (eql cg)) symbol)
+    (let* ((loc
+            (save-excursion
+              (save-restriction
+                (widen)
+                (goto-char (point-min))
+                (and
+                 (re-search-forward (format cg--set-definition-re symbol) nil 'noerror)
+                 (xref-make-file-location (buffer-file-name)
+                                          (line-number-at-pos) ; TODO: this is slow!
+                                          (current-column)))))))
+      (when loc
+        (list (xref-make (format "%s" symbol) loc)))))
+
+  (cl-defmethod xref-backend-references ((_backend (eql cg)) symbol)
+    (message "Not yet implemented")
+    nil)
+
+  (defun cg--xref-backend () 'cg)
+  (add-hook 'cg-mode-hook
+            (defun cg--setup-xref ()
+              (define-key cg-mode-map (kbd "M-.") 'xref-find-definitions)
+              (add-hook 'xref-backend-functions #'cg--xref-backend nil t))))
 
 
 ;;; Keybindings ---------------------------------------------------------------
