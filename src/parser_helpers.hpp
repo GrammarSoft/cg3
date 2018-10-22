@@ -54,11 +54,9 @@ Tag* parseTag(const UChar* to, const UChar* p, State& state) {
 
 	if (to[0]) {
 		const UChar* tmp = to;
-		while (tmp[0] && (tmp[0] == '!' || tmp[0] == '^')) {
-			if (tmp[0] == '!' || tmp[0] == '^') {
-				tag->type |= T_FAILFAST;
-				tmp++;
-			}
+		while (tmp[0] && tmp[0] == '^') {
+			tag->type |= T_FAILFAST;
+			tmp++;
 		}
 
 		size_t length = u_strlen(tmp);

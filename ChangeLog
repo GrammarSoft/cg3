@@ -1,3 +1,19 @@
+2018-10-15  tino
+
+	* [r13229] CMakeLists.txt, include/posix/popen_plus.c,
+	  include/posix/popen_plus.cpp, include/posix/popen_plus.h,
+	  include/posix/popen_plus.hpp, include/uoptions.h,
+	  include/uoptions.hpp, include/win32/getopt.c,
+	  include/win32/getopt.cpp, include/win32/getopt.h,
+	  src/CMakeLists.txt, src/Set.hpp, src/Strings.hpp, src/Tag.hpp,
+	  src/cg-mwesplit.cpp, src/options.hpp, src/options_conv.hpp,
+	  src/process.hpp, src/stdafx.hpp: Simplify CMake project; WIP
+	  better project structure
+
+2018-10-04  tino
+
+	* [r13204] ChangeLog, src/version.hpp: Release 1.1.7
+
 2018-10-01  tino
 
 	* [r13197] src/TextualParser.cpp: Check that mapping lists don't
@@ -1869,22 +1885,4 @@
 	* [r10574] src/GrammarApplicator.hpp,
 	  src/GrammarApplicator_runRules.cpp: Regex captures are now
 	  per-reading
-	* [r10570] src/GrammarApplicator.cpp,
-	  src/GrammarApplicator_reflow.cpp, src/GrammarWriter.cpp: Readings
-	  that would be considered identical without --trace are now marked
-	  deleted under --trace. This is incorrect behavior, but being
-	  blessed because it makes things easier for grammarians.
-
-2015-03-05  tino
-
-	* [r10568] CMakeLists.txt, ChangeLog, manual/contexts.xml,
-	  src/BinaryGrammar_write.cpp, src/ContextualTest.cpp,
-	  src/ContextualTest.hpp, src/Grammar.cpp, src/Grammar.hpp,
-	  src/GrammarApplicator_runContextualTest.cpp,
-	  src/GrammarWriter.cpp, src/Tag.hpp, src/TagTrie.hpp,
-	  src/TextualParser.cpp, src/inlines.hpp, src/stdafx.hpp,
-	  src/version.hpp, test/T_Templates/expected.txt,
-	  test/T_Templates/grammar.cg3,
-	  test/T_Templates/grammar.cg3b.10043, test/T_Templates/input.txt:
-	  New context modifier 'f'
 

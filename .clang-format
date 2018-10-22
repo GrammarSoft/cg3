@@ -23,6 +23,7 @@ BraceWrapping:
   AfterClass:      false
   AfterControlStatement: false
   AfterEnum:       false
+  AfterExternBlock: false
   AfterFunction:   false
   AfterNamespace:  false
   AfterStruct:     false
@@ -38,6 +39,7 @@ Cpp11BracedListStyle: false
 FixNamespaceComments: false
 ForEachMacros: [ foreach, reverse_foreach, BOOST_FOREACH, boost_foreach ]
 IndentCaseLabels: false
+IndentPPDirectives: AfterHash
 IndentWidth: 4
 IndentWrappedFunctionNames: false
 KeepEmptyLinesAtTheStartOfBlocks: false
@@ -48,6 +50,7 @@ PointerAlignment: Left
 ReflowComments: false
 SortIncludes: false
 SpaceAfterCStyleCast: false
+SpaceAfterTemplateKeyword: false
 SpaceBeforeAssignmentOperators: true
 SpaceBeforeParens: ControlStatements
 SpaceInEmptyParentheses: false
