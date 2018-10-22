@@ -1247,6 +1247,10 @@ void TextualParser::parseRule(UChar*& p, KEYWORDS key) {
 		AST_CLOSE(p);
 	}
 
+	if (rule->sub_reading == GSR_ANY && (key == K_MAP || key == K_ADD || key == K_REPLACE || key == K_SUBSTITUTE || key == K_COPY)) {
+		error("%s: Error: SUB:* on line %u is not yet valid for MAP/ADD/REPLACE/SUBSTITUTE/COPY!\n");
+	}
+
 	result->lines += SKIPWS(p);
 	lp = p;
 	if (key == K_MAP || key == K_ADD || key == K_REPLACE || key == K_APPEND || key == K_SUBSTITUTE || key == K_COPY || key == K_ADDRELATIONS || key == K_ADDRELATION || key == K_SETRELATIONS || key == K_SETRELATION || key == K_REMRELATIONS || key == K_REMRELATION || key == K_SETVARIABLE || key == K_REMVARIABLE || key == K_ADDCOHORT || key == K_JUMP || key == K_SPLITCOHORT || key == K_MERGECOHORTS) {
