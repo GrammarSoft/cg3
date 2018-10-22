@@ -139,6 +139,7 @@ Tag* parseTag(const UChar* to, const UChar* p, State& state) {
 			else {
 				tag->type &= ~T_VARSTRING;
 				tag->type &= ~T_REGEXP;
+				tag->type &= ~T_REGEXP_LINE;
 				tag->type &= ~T_CASE_INSENSITIVE;
 				tag->type &= ~T_WORDFORM;
 				tag->type &= ~T_BASEFORM;
