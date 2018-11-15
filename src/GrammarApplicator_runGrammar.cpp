@@ -216,6 +216,7 @@ void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& outp
 
 				splitAllMappings(all_mappings, *cCohort, true);
 				cSWindow->appendCohort(cCohort);
+				cCohort->line_number = numLines;
 				lSWindow = cSWindow;
 				cSWindow = 0;
 				cCohort = 0;
@@ -233,6 +234,7 @@ void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& outp
 
 				splitAllMappings(all_mappings, *cCohort, true);
 				cSWindow->appendCohort(cCohort);
+				cCohort->line_number = numLines;
 				lSWindow = cSWindow;
 				cSWindow = 0;
 				cCohort = 0;
@@ -278,6 +280,7 @@ void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& outp
 			lReading = 0;
 			indents.clear();
 			numCohorts++;
+			cCohort->line_number = numLines;
 
 			space += 2;
 			if (space[0]) {
