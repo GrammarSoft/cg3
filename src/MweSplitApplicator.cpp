@@ -73,7 +73,7 @@ std::vector<Cohort*> MweSplitApplicator::splitMwe(Cohort* cohort) {
 
 	if (n_wftags < n_goodreadings) {
 		if (n_wftags > 0) {
-			u_fprintf(ux_stderr, "WARNING: Line %u: Some but not all main-readings of %S had wordform-tags (not completely mwe-disambiguated?), not splitting.\n", numLines, cohort->wordform->tag.c_str());
+			u_fprintf(ux_stderr, "WARNING: Line %u: Some but not all main-readings of %S had wordform-tags (not completely mwe-disambiguated?), not splitting.\n", cohort->line_number, cohort->wordform->tag.c_str());
 			// We also don't split if wordform-tags were only on sub-readings, but should we warn on such faulty input?
 		}
 		cos.push_back(cohort);
