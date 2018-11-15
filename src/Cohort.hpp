@@ -71,6 +71,7 @@ public:
 	CohortVector removed;
 	RelationCtn relations;
 	RelationCtn relations_input;
+	uint32_t line_number = 0;
 
 	double getMin(uint32_t key);
 	double getMax(uint32_t key);
