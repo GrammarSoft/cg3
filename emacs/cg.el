@@ -1,6 +1,6 @@
 ;;; cg.el --- major mode for editing Constraint Grammar files  -*- lexical-binding: t; coding: utf-8 -*-
 
-;; Copyright (C) 2010-2017 Kevin Brubeck Unhammer
+;; Copyright (C) 2010-2018 Kevin Brubeck Unhammer
 
 ;; Author: Kevin Brubeck Unhammer <unhammer@fsfe.org>
 ;; Version: 0.3.0
@@ -811,8 +811,9 @@ runs."
 (defun cg-output-show-all ()
   "Undo the effect of `cg-output-hide-analyses'."
   (interactive)
-  (setq cg--output-hiding-analyses nil)
-  (remove-overlays (point-min) (point-max) 'invisible 'cg-output))
+  (with-current-buffer (cg-output-buffer)
+    (setq cg--output-hiding-analyses nil)
+    (remove-overlays (point-min) (point-max) 'invisible 'cg-output)))
 
 (defun cg-output-hide-analyses ()
   "Hide all analyses.
@@ -824,26 +825,27 @@ keywords etc.
 Call `cg-output-set-unhide' to set a regex which will be exempt
 from hiding.  Call `cg-output-show-all' to turn off all hiding."
   (interactive)
-  (setq cg--output-hiding-analyses t)
-  (let (prev)
-    (save-excursion
-      (goto-char (point-min))
-      (while (re-search-forward "^\"<.*>\"" nil 'noerror)
-	(let ((line-beg (match-beginning 0))
-	      (line-end (match-end 0)))
-	  (cg-output-hide-region line-beg (+ line-beg 2)) ; "<
-	  (cg-output-hide-region (- line-end 2) line-end) ; >"
-	  (when prev
-	    (if (save-excursion (re-search-backward cg-sent-tag prev 'noerror))
-		(cg-output-hide-region prev (- line-beg 1))	; show newline
-	      (cg-output-hide-region prev line-beg))) ; hide newline too
-	  (setq prev line-end)))
-      (goto-char prev)
-      (when (re-search-forward "^[^\t\"]" nil 'noerror)
-	(cg-output-hide-region prev (match-beginning 0)))))
+  (with-current-buffer (cg-output-buffer)
+    (setq cg--output-hiding-analyses t)
+    (let (prev)
+      (save-excursion
+        (goto-char (point-min))
+        (while (re-search-forward "^\"<.*>\"" nil 'noerror)
+          (let ((line-beg (match-beginning 0))
+                (line-end (match-end 0)))
+            (cg-output-hide-region line-beg (+ line-beg 2)) ; "<
+            (cg-output-hide-region (- line-end 2) line-end) ; >"
+            (when prev
+              (if (save-excursion (re-search-backward cg-sent-tag prev 'noerror))
+                  (cg-output-hide-region prev (- line-beg 1))	; show newline
+                (cg-output-hide-region prev line-beg))) ; hide newline too
+            (setq prev line-end)))
+        (goto-char prev)
+        (when (re-search-forward "^[^\t\"]" nil 'noerror)
+          (cg-output-hide-region prev (match-beginning 0)))))
 
-  (when cg-output-unhide-regex
-    (cg-output-unhide-some cg-output-unhide-regex)))
+    (when cg-output-unhide-regex
+      (cg-output-unhide-some cg-output-unhide-regex))))
 
 (defun cg-output-unhide-some (needle)
   (save-excursion
@@ -856,7 +858,7 @@ from hiding.  Call `cg-output-show-all' to turn off all hiding."
 	    (overlays-at (match-beginning 0))))))
 
 (defun cg-output-set-unhide (needle)
-  "Set some exeption to `cg-output-hide-analyses'.
+  "Make an exception to `cg-output-hide-analyses'.
 
 If NEEDLE is the empty string, hide all analyses.
 This is saved and reused whenever `cg-output-hide-analyses' is
@@ -871,7 +873,6 @@ called."
     (setq cg--output-unhide-history (cons needle cg--output-unhide-history)))
   (cg-output-hide-analyses))
 
-;;; TODO:
 (defun cg-output-toggle-analyses ()
   "Hide or show analyses from output.
 See `cg-output-hide-analyses'."
@@ -1120,6 +1121,8 @@ Similarly, `cg-post-pipe' is run on output."
 (define-key cg-mode-map (kbd "C-c M-c") #'cg-toggle-check-after-change)
 (define-key cg-mode-map (kbd "C-;") #'cg-comment-or-uncomment-rule)
 (define-key cg-mode-map (kbd "M-#") #'cg-comment-or-uncomment-rule)
+(define-key cg-mode-map (kbd "C-c C-u") #'cg-output-set-unhide)
+(define-key cg-mode-map (kbd "C-c C-v") #'cg-output-toggle-analyses)
 
 (define-key cg-output-mode-map (kbd "C-c C-i") #'cg-back-to-file-and-edit-input)
 (define-key cg-output-mode-map (kbd "i") #'cg-back-to-file-and-edit-input)
