@@ -118,7 +118,7 @@ if (!(-r $bn) && !(-r $bn.".lock")) {
 
 my $cmd = '';
 if (-r $bn && !(-r $bn.".lock")) {
-	print STDERR "CG3 AutoBin using $bn\n";
+#	print STDERR "CG3 AutoBin using $bn\n";
 	$cmd = "cat /dev/stdin | $bin $args --grammar $bn";
 }
 else {
