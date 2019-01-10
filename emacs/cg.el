@@ -3,7 +3,7 @@
 ;; Copyright (C) 2010-2018 Kevin Brubeck Unhammer
 
 ;; Author: Kevin Brubeck Unhammer <unhammer@fsfe.org>
-;; Version: 0.3.0
+;; Version: 0.3.1
 ;; Package-Requires: ((emacs "24.3"))
 ;; Url: https://visl.sdu.dk/constraint_grammar.html
 ;; Keywords: languages
@@ -67,7 +67,7 @@
 
 ;;; Code:
 
-(defconst cg-version "0.3.0" "Version of cg-mode.")
+(defconst cg-version "0.3.1" "Version of cg-mode.")
 
 (eval-when-compile (require 'cl))
 (require 'cl-lib)
@@ -600,6 +600,9 @@ select the whole string \"SELECT:1022:rulename\")."
   "Which CG file the `cg-output-mode' (and `cg--check-cache-buffer')
 buffer corresponds to.")
 (make-variable-buffer-local 'cg--file)
+(defvar cg--input-buffer nil
+  "Which CG input buffer the `cg-mode' buffer corresponds to.")
+(make-variable-buffer-local 'cg--input-buffer)
 (defvar cg--tmp nil     ; TODO: could use cg--file iff buffer-modified-p
   "Which temporary file was sent in lieu of `cg--file' to
 compilation (in case the buffer of `cg--file' was not saved)")
@@ -617,10 +620,17 @@ to.")
     (let ((filename (or filename (buffer-file-name))))
       (file-name-nondirectory (file-name-sans-extension filename)))))
 
-(defun cg-edit-input ()
-  "Open a buffer to edit the input sent when running `cg-check'."
-  (interactive)
-  (pop-to-buffer (cg-input-buffer (buffer-file-name))))
+
+(defun cg-edit-input (&optional pick-buffer)
+  "Open a buffer to edit the input sent when running `cg-check'.
+With prefix argument PICK-BUFFER, prompt for a buffer (e.g. a
+text file you've already opened) to use as CG input buffer."
+  (interactive "P")
+  (when pick-buffer
+    (setq-local cg--input-buffer (get-buffer
+                                  (read-buffer-to-switch "Use as input buffer: "))))
+  (pop-to-buffer
+   (cg--get-input-buffer (buffer-file-name))))
 
 ;;;###autoload
 (defcustom cg-check-do-cache t
@@ -662,17 +672,25 @@ or call `cg-check' from another CG file)."
 
 ;;;###autoload
 (defcustom cg-per-buffer-input nil
-  "If this is non-nil, the input buffer created by
-`cg-edit-input' will be specific to the CG buffer it was called
-from, otherwise all CG buffers share one input buffer."
+  "Make input buffers specific to their source CG's.
+
+If this is non-nil, the input buffer created by `cg-edit-input'
+will be specific to the CG buffer it was called from, otherwise
+all CG buffers share one input buffer."
   :type 'string)
 
-(defun cg-input-buffer (file)
-  (let ((buf (get-buffer-create (concat "*CG input"
-                                        (if cg-per-buffer-input
-                                            (concat " for " (file-name-base file))
-                                          "")
-                                        "*"))))
+(defun cg--get-input-buffer (file)
+  "Return a (possibly new) input buffer.
+If `cg-per-buffer-input', the buffer will have be named after
+FILE."
+  (let ((buf (if (buffer-live-p cg--input-buffer)
+                 cg--input-buffer
+               (get-buffer-create (concat "*CG input"
+                                          (if cg-per-buffer-input
+                                              (concat " for " (file-name-base file))
+                                            "")
+                                          "*")))))
+    (setq-local cg--input-buffer buf)
     (with-current-buffer buf
       (cg-input-mode)
       (setq cg--file file))
@@ -977,7 +995,7 @@ Similarly, `cg-post-pipe' is run on output."
        (cmd (concat
              cg-command " " cg-extra-args " --grammar " tmp
              post-pipe))
-       (in (cg-input-buffer file))
+       (in (cg--get-input-buffer file))
        (out (progn (write-region (point-min) (point-max) tmp)
                    (compilation-start
                     cmd
