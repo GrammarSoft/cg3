@@ -234,6 +234,7 @@ protected:
 	uint32_t unif_last_textual;
 	uint32SortedVector* unif_sets;
 	bool unif_sets_firstrun;
+	bc::flat_map<uint32_t, uint32_t> rule_hits;
 
 	scoped_stack<TagList> ss_taglist;
 	scoped_stack<unif_tags_t> ss_utags;
