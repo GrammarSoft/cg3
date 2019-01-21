@@ -2025,6 +2025,11 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 							}
 
 							if (phash != phash_n || chash != chash_n) {
+								if (++rule_hits[rule.number] > current.cohorts.size() * 100) {
+									u_fprintf(ux_stderr, "Error: Move/Switch endless loop detected for rule on line %u - bailing out!\n", rule.line);
+									CG3Quit(1);
+								}
+
 								for (auto c : cohorts) {
 									for (auto iter : c->readings) {
 										iter->hit_by.push_back(rule.number);
@@ -2408,6 +2413,7 @@ label_runGrammarOnWindow_begin:
 		gWindow->previous.erase(gWindow->previous.begin());
 	}
 
+	rule_hits.clear();
 	index_ruleCohort_no.clear();
 	current = gWindow->current;
 	indexSingleWindow(*current);
