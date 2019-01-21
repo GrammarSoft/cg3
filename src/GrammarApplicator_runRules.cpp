@@ -1847,6 +1847,14 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						break;
 					}
 					else if (type == K_MOVE_AFTER || type == K_MOVE_BEFORE || type == K_SWITCH) {
+						// Calculate hash of current state to later compare whether this move/switch actually did anything
+						uint32_t phash = 0;
+						uint32_t chash = 0;
+						for (const auto& c : current.cohorts) {
+							phash = hash_value(c->global_number, phash);
+							chash = hash_value(c->readings[0]->hash, chash);
+						}
+
 						// ToDo: ** tests will not correctly work for MOVE/SWITCH; cannot move cohorts between windows
 						Cohort* attach = nullptr;
 						dep_deep_seen.clear();
@@ -1873,6 +1881,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 							}
 
 							swapper<Cohort*> sw((rule.flags & RF_REVERSE) != 0, attach, cohort);
+							CohortSet cohorts;
 
 							if (type == K_SWITCH) {
 								if (attach->local_number == 0) {
@@ -1880,12 +1889,8 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 								}
 								current.cohorts[cohort->local_number] = attach;
 								current.cohorts[attach->local_number] = cohort;
-								for (auto iter : cohort->readings) {
-									iter->hit_by.push_back(rule.number);
-								}
-								for (auto iter : attach->readings) {
-									iter->hit_by.push_back(rule.number);
-								}
+								cohorts.insert(attach);
+								cohorts.insert(cohort);
 							}
 							else {
 								CohortSet edges;
@@ -1917,7 +1922,6 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 									edges.insert(attach);
 								}
 
-								CohortSet cohorts;
 								if (rule.childset1) {
 									for (auto iter : current.cohorts) {
 										// Always consider the target cohort a match
@@ -2003,20 +2007,32 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 									CG3Quit(1);
 								}
 
-								while (!cohorts.empty()) {
-									for (auto iter : cohorts.back()->readings) {
-										iter->hit_by.push_back(rule.number);
-									}
-									current.cohorts.insert(current.cohorts.begin() + spot, cohorts.back());
-									cohorts.pop_back();
+								reverse_foreach (iter, cohorts) {
+									current.cohorts.insert(current.cohorts.begin() + spot, *iter);
 								}
 							}
 							foreach (iter, current.cohorts) {
 								(*iter)->local_number = static_cast<uint32_t>(std::distance(current.cohorts.begin(), iter));
 							}
 							gWindow->rebuildCohortLinks();
-							readings_changed = true;
-							sorter.do_sort = true;
+
+							// Compare whether this move/switch actually did anything
+							uint32_t phash_n = 0;
+							uint32_t chash_n = 0;
+							for (const auto& c : current.cohorts) {
+								phash_n = hash_value(c->global_number, phash_n);
+								chash_n = hash_value(c->readings[0]->hash, chash_n);
+							}
+
+							if (phash != phash_n || chash != chash_n) {
+								for (auto c : cohorts) {
+									for (auto iter : c->readings) {
+										iter->hit_by.push_back(rule.number);
+									}
+								}
+								readings_changed = true;
+								sorter.do_sort = true;
+							}
 							break;
 						}
 					}
