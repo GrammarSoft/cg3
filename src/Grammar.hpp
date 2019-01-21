@@ -151,7 +151,7 @@ inline void _trie_unserialize(trie_t& trie, Stream& input, Grammar& grammar, uin
 	for (uint32_t i = 0; i < num_tags; ++i) {
 		uint32_t u32tmp = 0;
 		fread_throw(&u32tmp, sizeof(uint32_t), 1, input);
-		u32tmp = (uint32_t)ntohl(u32tmp);
+		u32tmp = ntoh32(u32tmp);
 		trie_node_t& node = trie[grammar.single_tags_list[u32tmp]];
 
 		uint8_t u8tmp = 0;
@@ -159,7 +159,7 @@ inline void _trie_unserialize(trie_t& trie, Stream& input, Grammar& grammar, uin
 		node.terminal = (u8tmp != 0);
 
 		fread_throw(&u32tmp, sizeof(uint32_t), 1, input);
-		u32tmp = (uint32_t)ntohl(u32tmp);
+		u32tmp = ntoh32(u32tmp);
 		if (u32tmp) {
 			if (!node.trie) {
 				node.trie = new trie_t;

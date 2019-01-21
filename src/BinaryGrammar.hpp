@@ -34,16 +34,16 @@ public:
 
 	int writeBinaryGrammar(FILE* output);
 
-	void setCompatible(bool compat);
-	void setVerbosity(uint32_t level);
+	void setCompatible(bool compat) override;
+	void setVerbosity(uint32_t level) override;
 	int parse_grammar(std::istream& input);
-	int parse_grammar(const char* buffer, size_t length);
-	int parse_grammar(const UChar* buffer, size_t length);
-	int parse_grammar(const std::string& buffer);
-	int parse_grammar(const char* filename);
+	int parse_grammar(const char* buffer, size_t length) override;
+	int parse_grammar(const UChar* buffer, size_t length) override;
+	int parse_grammar(const std::string& buffer) override;
+	int parse_grammar(const char* filename) override;
 
 private:
-	int parse_grammar(UString& buffer);
+	int parse_grammar(UString& buffer) override;
 
 	Grammar* grammar;
 	void writeContextualTest(ContextualTest* t, FILE* output);

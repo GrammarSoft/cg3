@@ -32,7 +32,7 @@ class ContextualTest;
 
 class CohortIterator : public std::iterator<std::input_iterator_tag, Cohort*> {
 public:
-	CohortIterator(Cohort* cohort = 0, const ContextualTest* test = 0, bool span = false);
+	CohortIterator(Cohort* cohort = nullptr, const ContextualTest* test = nullptr, bool span = false);
 
 	virtual ~CohortIterator();
 
@@ -43,7 +43,7 @@ public:
 
 	Cohort* operator*();
 
-	virtual void reset(Cohort* cohort = 0, const ContextualTest* test = 0, bool span = false);
+	virtual void reset(Cohort* cohort = nullptr, const ContextualTest* test = nullptr, bool span = false);
 
 protected:
 	bool m_span;
@@ -53,25 +53,25 @@ protected:
 
 class TopologyLeftIter : public CohortIterator {
 public:
-	TopologyLeftIter(Cohort* cohort = 0, const ContextualTest* test = 0, bool span = false);
+	TopologyLeftIter(Cohort* cohort = nullptr, const ContextualTest* test = nullptr, bool span = false);
 
 	TopologyLeftIter& operator++();
 };
 
 class TopologyRightIter : public CohortIterator {
 public:
-	TopologyRightIter(Cohort* cohort = 0, const ContextualTest* test = 0, bool span = false);
+	TopologyRightIter(Cohort* cohort = nullptr, const ContextualTest* test = nullptr, bool span = false);
 
 	TopologyRightIter& operator++();
 };
 
 class DepParentIter : public CohortIterator {
 public:
-	DepParentIter(Cohort* cohort = 0, const ContextualTest* test = 0, bool span = false);
+	DepParentIter(Cohort* cohort = nullptr, const ContextualTest* test = nullptr, bool span = false);
 
 	DepParentIter& operator++();
 
-	void reset(Cohort* cohort = 0, const ContextualTest* test = 0, bool span = false);
+	void reset(Cohort* cohort = nullptr, const ContextualTest* test = nullptr, bool span = false);
 
 protected:
 	CohortSet m_seen;
@@ -79,11 +79,11 @@ protected:
 
 class DepDescendentIter : public CohortIterator {
 public:
-	DepDescendentIter(Cohort* cohort = 0, const ContextualTest* test = 0, bool span = false);
+	DepDescendentIter(Cohort* cohort = nullptr, const ContextualTest* test = nullptr, bool span = false);
 
 	DepDescendentIter& operator++();
 
-	void reset(Cohort* cohort = 0, const ContextualTest* test = 0, bool span = false);
+	void reset(Cohort* cohort = nullptr, const ContextualTest* test = nullptr, bool span = false);
 
 protected:
 	CohortSet m_descendents;
@@ -92,11 +92,11 @@ protected:
 
 class DepAncestorIter : public CohortIterator {
 public:
-	DepAncestorIter(Cohort* cohort = 0, const ContextualTest* test = 0, bool span = false);
+	DepAncestorIter(Cohort* cohort = nullptr, const ContextualTest* test = nullptr, bool span = false);
 
 	DepAncestorIter& operator++();
 
-	void reset(Cohort* cohort = 0, const ContextualTest* test = 0, bool span = false);
+	void reset(Cohort* cohort = nullptr, const ContextualTest* test = nullptr, bool span = false);
 
 protected:
 	CohortSet m_ancestors;
@@ -105,7 +105,7 @@ protected:
 
 class CohortSetIter : public CohortIterator {
 public:
-	CohortSetIter(Cohort* cohort = 0, const ContextualTest* test = 0, bool span = false);
+	CohortSetIter(Cohort* cohort = nullptr, const ContextualTest* test = nullptr, bool span = false);
 
 	void addCohort(Cohort* cohort);
 
@@ -119,7 +119,7 @@ protected:
 
 class MultiCohortIterator : public std::iterator<std::input_iterator_tag, Cohort*> {
 public:
-	MultiCohortIterator(Cohort* cohort = 0, const ContextualTest* test = 0, bool span = false);
+	MultiCohortIterator(Cohort* cohort = nullptr, const ContextualTest* test = nullptr, bool span = false);
 
 	virtual ~MultiCohortIterator();
 
@@ -140,7 +140,7 @@ protected:
 
 class ChildrenIterator : public MultiCohortIterator {
 public:
-	ChildrenIterator(Cohort* cohort = 0, const ContextualTest* test = 0, bool span = false);
+	ChildrenIterator(Cohort* cohort = nullptr, const ContextualTest* test = nullptr, bool span = false);
 
 	ChildrenIterator& operator++();
 

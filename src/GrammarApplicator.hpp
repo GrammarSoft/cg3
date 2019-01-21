@@ -48,14 +48,14 @@ class Rule;
 typedef std::vector<UnicodeString> regexgrps_t;
 
 struct tmpl_context_t {
-	Cohort* min = 0;
-	Cohort* max = 0;
+	Cohort* min = nullptr;
+	Cohort* max = nullptr;
 	std::vector<const ContextualTest*> linked;
 	bool in_template = false;
 
 	void clear() {
-		min = 0;
-		max = 0;
+		min = nullptr;
+		max = nullptr;
 		linked.clear();
 		in_template = false;
 	}
@@ -150,8 +150,8 @@ public:
 	void splitAllMappings(all_mappings_t& all_mappings, Cohort& cohort, bool mapped = false);
 	Taguint32HashMap single_tags;
 
-	std::istream* ux_stdin = 0;
-	std::ostream* ux_stdout = 0;
+	std::istream* ux_stdin = nullptr;
+	std::ostream* ux_stdout = nullptr;
 	std::ostream* ux_stderr;
 	UChar* filebase;
 	void error(const char* str, const UChar* p);
@@ -262,14 +262,14 @@ protected:
 		TRV_BARRIER       = (1 <<  1),
 		TRV_BREAK_DEFAULT = (1 <<  2),
 	};
-	Cohort* runSingleTest(Cohort* cohort, const ContextualTest* test, uint8_t& rvs, bool* retval, Cohort** deep = 0, Cohort* origin = 0);
-	Cohort* runSingleTest(SingleWindow* sWindow, size_t i, const ContextualTest* test, uint8_t& rvs, bool* retval, Cohort** deep = 0, Cohort* origin = 0);
+	Cohort* runSingleTest(Cohort* cohort, const ContextualTest* test, uint8_t& rvs, bool* retval, Cohort** deep = nullptr, Cohort* origin = nullptr);
+	Cohort* runSingleTest(SingleWindow* sWindow, size_t i, const ContextualTest* test, uint8_t& rvs, bool* retval, Cohort** deep = nullptr, Cohort* origin = nullptr);
 	bool posOutputHelper(const SingleWindow* sWindow, size_t position, const ContextualTest* test, const Cohort* cohort, const Cohort* cdeep);
 	Cohort* runContextualTest_tmpl(SingleWindow* sWindow, size_t position, const ContextualTest* test, ContextualTest* tmpl, Cohort*& cdeep, Cohort* origin);
-	Cohort* runContextualTest(SingleWindow* sWindow, size_t position, const ContextualTest* test, Cohort** deep = 0, Cohort* origin = 0);
-	Cohort* runDependencyTest(SingleWindow* sWindow, Cohort* current, const ContextualTest* test, Cohort** deep = 0, Cohort* origin = 0, const Cohort* self = 0);
-	Cohort* runParenthesisTest(SingleWindow* sWindow, const Cohort* current, const ContextualTest* test, Cohort** deep = 0, Cohort* origin = 0);
-	Cohort* runRelationTest(SingleWindow* sWindow, Cohort* current, const ContextualTest* test, Cohort** deep = 0, Cohort* origin = 0);
+	Cohort* runContextualTest(SingleWindow* sWindow, size_t position, const ContextualTest* test, Cohort** deep = nullptr, Cohort* origin = nullptr);
+	Cohort* runDependencyTest(SingleWindow* sWindow, Cohort* current, const ContextualTest* test, Cohort** deep = nullptr, Cohort* origin = nullptr, const Cohort* self = nullptr);
+	Cohort* runParenthesisTest(SingleWindow* sWindow, const Cohort* current, const ContextualTest* test, Cohort** deep = nullptr, Cohort* origin = nullptr);
+	Cohort* runRelationTest(SingleWindow* sWindow, Cohort* current, const ContextualTest* test, Cohort** deep = nullptr, Cohort* origin = nullptr);
 
 	bool doesWordformsMatch(const Tag* cword, const Tag* rword);
 	uint32_t doesTagMatchRegexp(uint32_t test, const Tag& tag, bool bypass_index = false);
@@ -281,10 +281,10 @@ protected:
 	bool doesSetMatchReading_tags(const Reading& reading, const Set& theset, bool unif_mode = false);
 	bool doesSetMatchReading(const Reading& reading, const uint32_t set, bool bypass_index = false, bool unif_mode = false);
 
-	inline bool doesSetMatchCohort_testLinked(Cohort& cohort, const Set& theset, dSMC_Context* context = 0);
-	inline bool doesSetMatchCohort_helper(Cohort& cohort, Reading& reading, const Set& theset, dSMC_Context* context = 0);
-	bool doesSetMatchCohortNormal(Cohort& cohort, const uint32_t set, dSMC_Context* context = 0);
-	bool doesSetMatchCohortCareful(Cohort& cohort, const uint32_t set, dSMC_Context* context = 0);
+	inline bool doesSetMatchCohort_testLinked(Cohort& cohort, const Set& theset, dSMC_Context* context = nullptr);
+	inline bool doesSetMatchCohort_helper(Cohort& cohort, Reading& reading, const Set& theset, dSMC_Context* context = nullptr);
+	bool doesSetMatchCohortNormal(Cohort& cohort, const uint32_t set, dSMC_Context* context = nullptr);
+	bool doesSetMatchCohortCareful(Cohort& cohort, const uint32_t set, dSMC_Context* context = nullptr);
 
 	bool statistics;
 	ticks gtimer;

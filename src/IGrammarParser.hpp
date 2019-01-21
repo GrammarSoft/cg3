@@ -36,7 +36,7 @@ public:
 	{
 	}
 
-	virtual ~IGrammarParser() {}
+	virtual ~IGrammarParser() = default;
 	virtual void setCompatible(bool compat) = 0;
 	virtual void setVerbosity(uint32_t level) = 0;
 	virtual int parse_grammar(const char* buffer, size_t length) = 0;
@@ -44,12 +44,12 @@ public:
 	virtual int parse_grammar(const std::string& buffer) = 0;
 	virtual int parse_grammar(const char* filename) = 0;
 
-	std::ostream* ux_stderr = 0;
+	std::ostream* ux_stderr = nullptr;
 
 protected:
 	virtual int parse_grammar(UString& buffer) = 0;
 
-	Grammar* result = 0;
+	Grammar* result = nullptr;
 	uint32_t verbosity = 0;
 };
 }
