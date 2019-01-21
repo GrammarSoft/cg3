@@ -66,7 +66,7 @@ public:
 	UString tags_string;
 	uint32_t tags_string_hash = 0;
 
-	Reading(Cohort* p = 0);
+	Reading(Cohort* p = nullptr);
 	Reading(const Reading& r);
 	~Reading();
 	void clear();
@@ -78,7 +78,7 @@ public:
 	static bool cmp_number(Reading* a, Reading* b);
 };
 
-Reading* alloc_reading(Cohort* p = 0);
+Reading* alloc_reading(Cohort* p = nullptr);
 Reading* alloc_reading(const Reading& r);
 void free_reading(Reading* r);
 }

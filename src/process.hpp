@@ -30,12 +30,12 @@
 
 class Process {
 public:
-	Process() :
-	g_hChildStd_IN_Rd(0),
-	g_hChildStd_IN_Wr(0),
-	g_hChildStd_OUT_Rd(0),
-	g_hChildStd_OUT_Wr(0) {
-	}
+	Process()
+	  : g_hChildStd_IN_Rd(nullptr)
+	  , g_hChildStd_IN_Wr(nullptr)
+	  , g_hChildStd_OUT_Rd(nullptr)
+	  , g_hChildStd_OUT_Wr(nullptr)
+	{}
 
 	~Process() {
 		CloseHandle(g_hChildStd_IN_Rd);
@@ -45,7 +45,7 @@ public:
 	}
 
 	void start(const std::string& cmdline) {
-		SECURITY_ATTRIBUTES saAttr = { sizeof(saAttr), 0, true };
+		SECURITY_ATTRIBUTES saAttr = { sizeof(saAttr), nullptr, true };
 
 		if (!CreatePipe(&g_hChildStd_OUT_Rd, &g_hChildStd_OUT_Wr, &saAttr, 0)) {
 			std::string msg = formatLastError("Process CreatePipe 1");
@@ -64,7 +64,7 @@ public:
 			throw std::runtime_error(msg);
 		}
 
-		PROCESS_INFORMATION piProcInfo = { 0 };
+		PROCESS_INFORMATION piProcInfo = { nullptr };
 		STARTUPINFOA siStartInfo = { sizeof(siStartInfo) };
 
 		siStartInfo.hStdError = g_hChildStd_OUT_Wr;
@@ -72,20 +72,20 @@ public:
 		siStartInfo.hStdInput = g_hChildStd_IN_Rd;
 		siStartInfo.dwFlags |= STARTF_USESTDHANDLES;
 
-		BOOL bSuccess = CreateProcessA(0,
+		BOOL bSuccess = CreateProcessA(nullptr,
 			const_cast<char*>(cmdline.c_str()),
-			0,
-			0,
+			nullptr,
+			nullptr,
 			TRUE,
 			CREATE_NO_WINDOW | BELOW_NORMAL_PRIORITY_CLASS,
-			0,
-			0,
+			nullptr,
+			nullptr,
 			&siStartInfo,
 			&piProcInfo);
 
 		if (!bSuccess) {
 			std::string msg("Process could not start!\nCmdline: ");
-			msg += cmdline.c_str();
+			msg += cmdline;
 			msg += '\n';
 			msg = formatLastError(msg);
 			throw std::runtime_error(msg);
@@ -97,7 +97,7 @@ public:
 
 	void read(char *buffer, size_t count) {
 		DWORD bytes_read = 0;
-		if (!ReadFile(g_hChildStd_OUT_Rd, buffer, static_cast<DWORD>(count), &bytes_read, 0) || bytes_read != count) {
+		if (!ReadFile(g_hChildStd_OUT_Rd, buffer, static_cast<DWORD>(count), &bytes_read, nullptr) || bytes_read != count) {
 			std::string msg = formatLastError("Process.read(char*,size_t)");
 			throw std::runtime_error(msg);
 		}
@@ -105,7 +105,7 @@ public:
 
 	void write(const char *buffer, size_t length) {
 		DWORD bytes = 0;
-		if (!WriteFile(g_hChildStd_IN_Wr, buffer, static_cast<DWORD>(length), &bytes, 0) || bytes != length) {
+		if (!WriteFile(g_hChildStd_IN_Wr, buffer, static_cast<DWORD>(length), &bytes, nullptr) || bytes != length) {
 			std::string msg = formatLastError("Process.write(char*,size_t)");
 			throw std::runtime_error(msg);
 		}
@@ -124,8 +124,8 @@ private:
 		if (!msg.empty()) {
 			msg += ' ';
 		}
-		char *fmt = 0;
-		FormatMessageA(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ALLOCATE_BUFFER, 0, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL), (LPSTR)&fmt, 0, 0);
+		char *fmt = nullptr;
+		FormatMessageA(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ALLOCATE_BUFFER, 0, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL), (LPSTR)&fmt, 0, nullptr);
 		msg += "GetLastError: ";
 		msg += fmt;
 		msg += '\n';
