@@ -51,7 +51,7 @@ inline uint32_t SuperFastHash(const char* data, size_t len = 0, uint32_t hash = 
 	uint32_t tmp;
 	uint32_t rem;
 
-	if (len == 0 || data == 0) {
+	if (len == 0 || data == nullptr) {
 		return 0;
 	}
 
@@ -108,7 +108,7 @@ inline uint32_t SuperFastHash(const UChar* data, size_t len = 0, uint32_t hash =
 	uint32_t tmp;
 	uint32_t rem;
 
-	if (len == 0 || data == 0) {
+	if (len == 0 || data == nullptr) {
 		return 0;
 	}
 
@@ -234,7 +234,7 @@ inline bool ISNL(const UChar c) {
 
 inline bool ISESC(const UChar* p) {
 	uint32_t a = 1;
-	while (*(p - a) && *(p - a) == '\\') {
+	while (*(p - a) == '\\') {
 		a++;
 	}
 	return (a % 2 == 0);
@@ -342,7 +342,7 @@ inline void SKIPTO_NOSPAN_RAW(UChar*& p, const UChar a) {
 	}
 }
 
-inline void CG3Quit(const int32_t c = 0, const char* file = 0, const uint32_t line = 0) {
+inline void CG3Quit(const int32_t c = 0, const char* file = nullptr, const uint32_t line = 0) {
 	if (file && line) {
 		std::cerr << std::flush;
 		std::cerr << "CG3Quit triggered from " << file << " line " << line << "." << std::endl;
@@ -391,7 +391,7 @@ inline void writeUTF8String(std::ostream& output, const UChar* str, size_t len =
 	UErrorCode status = U_ZERO_ERROR;
 	u_strToUTF8(&buffer[0], static_cast<int32_t>(len * 4 - 1), &olen, str, static_cast<int32_t>(len), &status);
 
-	uint16_t cs = static_cast<uint16_t>(olen);
+	auto cs = static_cast<uint16_t>(olen);
 	writeRaw(output, cs);
 	output.write(&buffer[0], cs);
 }
@@ -423,24 +423,32 @@ inline UString readUTF8String(S& input) {
 	#pragma warning (disable: 4127)
 #endif
 
+inline uint32_t hton32(uint32_t val) {
+	return static_cast<uint32_t>(htonl(val));
+}
+
+inline uint32_t ntoh32(uint32_t val) {
+	return static_cast<uint32_t>(ntohl(val));
+}
+
 template<typename T>
 inline void writeSwapped(std::ostream& stream, const T& value) {
 	if (sizeof(T) == 1) {
 		stream.write(reinterpret_cast<const char*>(&value), sizeof(T));
 	}
 	else if (sizeof(T) == 2) {
-		uint16_t tmp = static_cast<uint16_t>(htons(static_cast<uint16_t>(value)));
+		auto tmp = static_cast<uint16_t>(htons(static_cast<uint16_t>(value)));
 		stream.write(reinterpret_cast<const char*>(&tmp), sizeof(T));
 	}
 	else if (sizeof(T) == 4) {
-		uint32_t tmp = static_cast<uint32_t>(htonl(static_cast<uint32_t>(value)));
+		auto tmp = static_cast<uint32_t>(htonl(static_cast<uint32_t>(value)));
 		stream.write(reinterpret_cast<const char*>(&tmp), sizeof(T));
 	}
 	else if (sizeof(T) == 8) {
 		uint64_t tmp = value;
 #ifndef BIG_ENDIAN
-		const uint32_t high = static_cast<uint32_t>(htonl(static_cast<uint32_t>(tmp >> 32)));
-		const uint32_t low = static_cast<uint32_t>(htonl(static_cast<uint32_t>(tmp & 0xFFFFFFFFULL)));
+		auto high = hton32(static_cast<uint32_t>(tmp >> 32));
+		auto low = hton32(static_cast<uint32_t>(tmp & 0xFFFFFFFFULL));
 		tmp = (static_cast<uint64_t>(low) << 32) | high;
 #endif
 		stream.write(reinterpret_cast<const char*>(&tmp), sizeof(T));
@@ -456,8 +464,8 @@ inline void writeSwapped(std::ostream& stream, const T& value) {
 template<>
 inline void writeSwapped(std::ostream& stream, const double& value) {
 	int exp = 0;
-	uint64_t mant64 = static_cast<uint64_t>(std::numeric_limits<int64_t>::max() * frexp(value, &exp));
-	uint32_t exp32 = static_cast<uint32_t>(exp);
+	auto mant64 = static_cast<uint64_t>(std::numeric_limits<int64_t>::max() * frexp(value, &exp));
+	auto exp32 = static_cast<uint32_t>(exp);
 	writeSwapped(stream, mant64);
 	writeSwapped(stream, exp32);
 }
@@ -472,22 +480,22 @@ inline T readSwapped(std::istream& stream) {
 		stream.read(reinterpret_cast<char*>(&tmp), sizeof(T));
 		return static_cast<T>(tmp);
 	}
-	else if (sizeof(T) == 2) {
+	if (sizeof(T) == 2) {
 		uint16_t tmp = 0;
 		stream.read(reinterpret_cast<char*>(&tmp), sizeof(T));
 		return static_cast<T>(ntohs(tmp));
 	}
-	else if (sizeof(T) == 4) {
+	if (sizeof(T) == 4) {
 		uint32_t tmp = 0;
 		stream.read(reinterpret_cast<char*>(&tmp), sizeof(T));
 		return static_cast<T>(ntohl(tmp));
 	}
-	else if (sizeof(T) == 8) {
+	if (sizeof(T) == 8) {
 		uint64_t tmp = 0;
 		stream.read(reinterpret_cast<char*>(&tmp), sizeof(T));
 #ifndef BIG_ENDIAN
-		const uint32_t high = static_cast<uint32_t>(ntohl(static_cast<uint32_t>(tmp >> 32)));
-		const uint32_t low = static_cast<uint32_t>(ntohl(static_cast<uint32_t>(tmp & 0xFFFFFFFFULL)));
+		auto high = ntoh32(static_cast<uint32_t>(tmp >> 32));
+		auto low = ntoh32(static_cast<uint32_t>(tmp & 0xFFFFFFFFULL));
 		tmp = (static_cast<uint64_t>(low) << 32) | high;
 #endif
 		return static_cast<T>(tmp);
@@ -497,10 +505,10 @@ inline T readSwapped(std::istream& stream) {
 
 template<>
 inline double readSwapped(std::istream& stream) {
-	uint64_t mant64 = readSwapped<uint64_t>(stream);
-	int exp = static_cast<int>(readSwapped<int32_t>(stream));
+	auto mant64 = readSwapped<uint64_t>(stream);
+	auto exp = static_cast<int>(readSwapped<int32_t>(stream));
 
-	double value = static_cast<double>(static_cast<int64_t>(mant64)) / std::numeric_limits<int64_t>::max();
+	auto value = static_cast<double>(static_cast<int64_t>(mant64)) / std::numeric_limits<int64_t>::max();
 
 	return ldexp(value, exp);
 }
@@ -515,11 +523,11 @@ inline void GAppSetOpts_ranged(const char* value, Cont& cont, bool fill = true) 
 	cont.clear();
 	bool had_range = false;
 
-	const char* comma = value;
+	auto comma = value;
 	do {
 		uint32_t low = abs(atoi(comma)), high = low;
-		const char* delim = strchr(comma, '-');
-		const char* nextc = strchr(comma, ',');
+		auto delim = strchr(comma, '-');
+		auto nextc = strchr(comma, ',');
 		if (delim && (nextc == 0 || nextc > delim)) {
 			had_range = true;
 			high = abs(atoi(delim + 1));

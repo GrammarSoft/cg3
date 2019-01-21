@@ -171,11 +171,11 @@ public:
 	}
 
 	bool insert(T t) {
-		ContIter it = std::lower_bound(elements.begin(), elements.end(), t);
+		auto it = std::lower_bound(elements.begin(), elements.end(), t);
 		if (it != elements.end() && t >= it->lb && t <= it->ub) {
 			return false;
 		}
-		ContIter pr = it - 1;
+		auto pr = it - 1;
 		if (it != elements.begin() && pr->ub + 1 == t) {
 			++pr->ub;
 			if (it != elements.end() && pr->ub + 1 == it->lb) {
@@ -243,7 +243,7 @@ public:
 	}
 
 	const_iterator find(T t) const {
-		ContConstIter it = std::lower_bound(elements.begin(), elements.end(), t);
+		auto it = std::lower_bound(elements.begin(), elements.end(), t);
 		if (it == elements.end()) {
 			return end();
 		}
@@ -254,7 +254,7 @@ public:
 	}
 
 	const_iterator lower_bound(T t) const {
-		ContConstIter it = std::lower_bound(elements.begin(), elements.end(), t);
+		auto it = std::lower_bound(elements.begin(), elements.end(), t);
 		if (it == elements.end()) {
 			return end();
 		}
@@ -269,7 +269,7 @@ public:
 	}
 
 	bool contains(T t) const {
-		ContConstIter it = std::lower_bound(elements.begin(), elements.end(), t);
+		auto it = std::lower_bound(elements.begin(), elements.end(), t);
 		if (it == elements.end()) {
 			return false;
 		}
@@ -311,8 +311,8 @@ public:
 	interval_vector intersect(const interval_vector& o) const {
 		interval_vector rv;
 		if (!empty() && !o.empty()) {
-			ContConstIter a = elements.begin();
-			ContConstIter b = o.elements.begin();
+			auto a = elements.begin();
+			auto b = o.elements.begin();
 			while (a != elements.end() && b != o.elements.end()) {
 				while (a != elements.end() && b != o.elements.end() && a->ub < b->lb) {
 					++a;
