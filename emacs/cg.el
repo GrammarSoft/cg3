@@ -215,6 +215,7 @@ Don't change without re-evaluating the file.")
 				"AFTER"
 				"BEFORE"
 				"WITH"
+				"FROM"
 				"TO")
   "Context flags used for highlighting.
 Don't change without re-evaluating the file.")
