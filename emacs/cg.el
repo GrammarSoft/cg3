@@ -672,25 +672,35 @@ or call `cg-check' from another CG file)."
 
 
 ;;;###autoload
-(defcustom cg-per-buffer-input nil
+(defcustom cg-per-buffer-input 'pipe
   "Make input buffers specific to their source CG's.
 
-If this is non-nil, the input buffer created by `cg-edit-input'
-will be specific to the CG buffer it was called from, otherwise
-all CG buffers share one input buffer."
-  :type 'string)
+If it is 'pipe (the default), input buffers will be shared by all
+CG's that have the same value for `cg-pre-pipe'.
+
+If this is 'buffer or t, the input buffer created by
+`cg-edit-input' will be specific to the CG buffer it was called
+from.
+
+If it is nil, all CG buffers share one input buffer."
+  :type 'symbol)
+
+(defun cg--input-buffer-name (file)
+  "Create a name for the input buffer for FILE."
+  (format "*CG input%s*"
+          (pcase cg-per-buffer-input
+            ('nil "")
+            ('pipe (concat " for " cg-pre-pipe))
+            (_ (concat " for " (file-name-base file))))))
 
 (defun cg--get-input-buffer (file)
   "Return a (possibly new) input buffer.
-If `cg-per-buffer-input', the buffer will have be named after
-FILE."
+If `cg-per-buffer-input' is t, the buffer will have be named
+after FILE; if it is 'pipe, the buffer will be named after the
+`cg-pre-pipe'."
   (let ((buf (if (buffer-live-p cg--input-buffer)
                  cg--input-buffer
-               (get-buffer-create (concat "*CG input"
-                                          (if cg-per-buffer-input
-                                              (concat " for " (file-name-base file))
-                                            "")
-                                          "*")))))
+               (get-buffer-create (cg--input-buffer-name file)))))
     (setq-local cg--input-buffer buf)
     (with-current-buffer buf
       (cg-input-mode)
@@ -896,9 +906,10 @@ called."
   "Hide or show analyses from output.
 See `cg-output-hide-analyses'."
   (interactive)
-  (if cg--output-hiding-analyses
-      (cg-output-show-all)
-    (cg-output-hide-analyses)))
+  (with-current-buffer (cg-output-buffer)
+    (if cg--output-hiding-analyses
+        (cg-output-show-all)
+      (cg-output-hide-analyses))))
 
 
 
