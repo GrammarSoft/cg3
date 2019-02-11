@@ -19,6 +19,8 @@ ADD (@self-or-child-S) ("em") (cS (PRP)) ;
 ADD (@self-or-child-c) ("em") (cS (S)) ;
 ADD (@self-or-child-error) ("em") (c (PRP)) ;
 
+ADD (@cc-found) ("two") (cc ("five")) ;
+
 ADD (@self-or-parent-S) ("em") (pS (PRP)) ;
 ADD (@self-or-parent-p) ("em") (pS (IND)) ;
 ADD (@self-or-parent-error) ("em") (p (PRP)) ;

@@ -48,7 +48,7 @@
 "<one>"
 	"one" #2→1 ID:22 R:leftmost-sibling:23
 "<two>"
-	"two" #3→1 ID:23 R:leftmost-self-or-descendent:23
+	"two" @cc-found #3→1 ID:23 R:leftmost-self-or-descendent:23
 "<three>"
 	"three" #4→3 ID:24 R:leftmost-descendent:23 R:right-descendent:23 R:right-child:23 R:rightmost-right-direct-child:23 R:leftmost-direct-child:23 R:rightmost-direct-child:23
 "<four>"
