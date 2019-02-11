@@ -65,7 +65,7 @@ enum : uint64_t {
 	POS_ATTACH_TO      = (1 << 27), // A
 	POS_NUMERIC_BRANCH = (1 << 28), // f
 	POS_BAG_OF_TAGS    = (1 << 29), // B
-	POS_DEP_GLOB       = (1 << 30), // pp
+	POS_DEP_GLOB       = (1 << 30), // pp or cc
 	POS_64BIT          = (1ull << 31),
 	POS_LEFT           = (1ull << 32), // l
 	POS_RIGHT          = (1ull << 33), // r
