@@ -802,6 +802,7 @@ void ApertiumApplicator::printSingleWindow(SingleWindow* window, std::ostream& o
 		bool need_slash = print_word_forms;
 
 		//Tag::printTagRaw(output, single_tags[cohort->wordform]);
+		std::sort(cohort->readings.begin(), cohort->readings.end(), CG3::Reading::cmp_number);
 		for (auto reading : cohort->readings) {
 			if (need_slash) {
 				u_fprintf(output, "/");
@@ -817,6 +818,7 @@ void ApertiumApplicator::printSingleWindow(SingleWindow* window, std::ostream& o
 		}
 
 		if (trace) {
+			std::sort(cohort->delayed.begin(), cohort->delayed.end(), CG3::Reading::cmp_number);
 			for (auto reading : cohort->delayed) {
 				if (need_slash) {
 					u_fprintf(output, "/%C", not_sign);
@@ -827,6 +829,7 @@ void ApertiumApplicator::printSingleWindow(SingleWindow* window, std::ostream& o
 				}
 				printReading(reading, output);
 			}
+			std::sort(cohort->deleted.begin(), cohort->deleted.end(), CG3::Reading::cmp_number);
 			for (auto reading : cohort->deleted) {
 				if (need_slash) {
 					u_fprintf(output, "/%C", not_sign);

@@ -203,6 +203,9 @@ uint32_t Reading::rehash() {
 }
 
 bool Reading::cmp_number(Reading* a, Reading* b) {
+	if (a->number == b->number) {
+		return a->hash < b->hash;
+	}
 	return a->number < b->number;
 }
 }
