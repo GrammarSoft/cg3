@@ -14,8 +14,8 @@
 	"replaced:rde" some tags CC @UnifSet ADD:10 SELECT:one SUBSTITUTE:28
 ;	"worde" some tags SELECT:one
 "<wordf>"
-	"replaced:f" some tags THIS SUBSTITUTE:28
 	"replaced:f" some tags CC THIS @UnifSet ADD:10 SUBSTITUTE:28
+	"replaced:f" some tags THIS SUBSTITUTE:28
 ;	"wordf" some tags NOTTHIS REMOVE:19
 "<wordg>"
 	"replaced:g" some tags CC THIS SELECT:this SUBSTITUTE:28
@@ -33,4 +33,3 @@
 	"wordj" ccc <ccc> ADD:42
 "<$.>"
 	"."
-

@@ -13,11 +13,10 @@
 "<max>"
 	"max" <X=1000> SELECT:18
 ;	"max" <X=-1000> REMOVE:17
-;	"max" <Waffles> SELECT:18
 ;	"max" <X:0> SELECT:18
+;	"max" <Waffles> SELECT:18
 "<min>"
 	"min" <N=-1000> SELECT:21
 ;	"min" <N=1000> REMOVE:20
-;	"min" <Waffles> SELECT:21
 ;	"min" <N:0> SELECT:21
-
+;	"min" <Waffles> SELECT:21

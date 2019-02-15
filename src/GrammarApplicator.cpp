@@ -512,13 +512,16 @@ void GrammarApplicator::printCohort(Cohort* cohort, std::ostream& output) {
 		mergeMappings(*cohort);
 	}
 
+	std::sort(cohort->readings.begin(), cohort->readings.end(), CG3::Reading::cmp_number);
 	for (auto rter1 : cohort->readings) {
 		printReading(rter1, output);
 	}
 	if (trace && !trace_no_removed) {
+		std::sort(cohort->delayed.begin(), cohort->delayed.end(), CG3::Reading::cmp_number);
 		for (auto rter3 : cohort->delayed) {
 			printReading(rter3, output);
 		}
+		std::sort(cohort->deleted.begin(), cohort->deleted.end(), CG3::Reading::cmp_number);
 		for (auto rter2 : cohort->deleted) {
 			printReading(rter2, output);
 		}
