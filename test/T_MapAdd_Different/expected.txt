@@ -1,8 +1,7 @@
 "<word>"
 	"word" notwanted
+	"matchme" a b $tag c wanted d £tag e f @tag ADD:6 ADD:7 ADD:12 ADD:13 ADD:14 MAP:16
+	"matchme" a b $tag c wanted d £tag e f @order-skip ADD:6 ADD:7 ADD:12 ADD:13 ADD:14 MAP:16
+	"matchme" a b $tag c wanted d £tag e f @mapped ADD:6 ADD:7 ADD:12 ADD:13 ADD:14 MAP:16
 	"matchme" a b $tag c wanted d £tag e f @order-good ADD:6 ADD:7 ADD:12 ADD:13 ADD:14 MAP:16
 	"word" notmeeither
-	"matchme" a b $tag c wanted d £tag e f @order-skip ADD:6 ADD:7 ADD:12 ADD:13 ADD:14 MAP:16
-	"matchme" a b $tag c wanted d £tag e f @tag ADD:6 ADD:7 ADD:12 ADD:13 ADD:14 MAP:16
-	"matchme" a b $tag c wanted d £tag e f @mapped ADD:6 ADD:7 ADD:12 ADD:13 ADD:14 MAP:16
-
