@@ -273,6 +273,10 @@ int main(int argc, char* argv[]) {
 		applicator.setOutputFormat(CG3::FMT_PLAIN);
 	}
 
+	if (options[PIPE_DELETED].doesOccur) {
+		applicator.pipe_deleted = true;
+	}
+
 	applicator.is_conv = true;
 	applicator.trace = true;
 	applicator.verbosity_level = 0;

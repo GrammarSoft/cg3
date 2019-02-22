@@ -84,6 +84,7 @@ public:
 
 	void addChild(uint32_t child);
 	void remChild(uint32_t child);
+	void appendReading(Reading* read, ReadingList& readings);
 	void appendReading(Reading* read);
 	Reading* allocateAppendReading();
 	Reading* allocateAppendReading(Reading& r);

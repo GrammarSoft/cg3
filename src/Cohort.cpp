@@ -162,12 +162,16 @@ void Cohort::remChild(uint32_t child) {
 	dep_children.erase(child);
 }
 
-void Cohort::appendReading(Reading* read) {
+void Cohort::appendReading(Reading* read, ReadingList& readings) {
 	readings.push_back(read);
 	if (read->number == 0) {
 		read->number = static_cast<uint32_t>(readings.size() * 1000 + 1000);
 	}
 	type &= ~CT_NUM_CURRENT;
+}
+
+void Cohort::appendReading(Reading* read) {
+	return appendReading(read, readings);
 }
 
 Reading* Cohort::allocateAppendReading() {
