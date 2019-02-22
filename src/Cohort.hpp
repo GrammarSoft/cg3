@@ -91,6 +91,7 @@ public:
 	bool addRelation(uint32_t rel, uint32_t cohort);
 	bool setRelation(uint32_t rel, uint32_t cohort);
 	bool remRelation(uint32_t rel, uint32_t cohort);
+	void setRelated();
 
 private:
 	void updateMinMax();

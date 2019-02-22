@@ -143,6 +143,14 @@ Cohort* getCohortInWindow(SingleWindow*& sWindow, size_t position, const Context
 	Cohort* cohort = 0;
 	pos = static_cast<int32_t>(position) + test->offset;
 	// ToDo: (NOT*) and (*C) tests can be cached
+	if ((test->pos & POS_ABSOLUTE) && (test->pos & (POS_SPAN_LEFT|POS_SPAN_RIGHT))) {
+		if (sWindow->previous && (test->pos & POS_SPAN_LEFT)) {
+			sWindow = sWindow->previous;
+		}
+		else if (sWindow->next && (test->pos & POS_SPAN_RIGHT)) {
+			sWindow = sWindow->next;
+		}
+	}
 	if (test->pos & POS_ABSOLUTE) {
 		if (test->offset < 0) {
 			pos = static_cast<int32_t>(sWindow->cohorts.size()) + test->offset;

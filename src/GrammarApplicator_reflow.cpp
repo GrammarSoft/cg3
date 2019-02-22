@@ -515,7 +515,7 @@ uint32_t GrammarApplicator::addTagToReading(Reading& reading, Tag* tag, bool reh
 			gWindow->relation_map[tag->dep_self] = reading.parent->global_number;
 		}
 		has_relations = true;
-		reading.parent->type |= CT_RELATED;
+		reading.parent->setRelated();
 	}
 	if (!(tag->type & T_SPECIAL)) {
 		reading.tags_plain.insert(tag->hash);
