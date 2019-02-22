@@ -1302,7 +1302,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 
 							// Re-attach all named relations to the dependency tail or R:* cohort
 							if (rel_trg == i && (cohort->type & CT_RELATED)) {
-								cCohort->type |= CT_RELATED;
+								cCohort->setRelated();
 								cCohort->relations.swap(cohort->relations);
 
 								std::pair<SingleWindow**, size_t> swss[3] = {
@@ -2071,13 +2071,13 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 										tter = generateVarstringTag(tter);
 									}
 									if (type == K_ADDRELATION) {
-										attach->type |= CT_RELATED;
-										cohort->type |= CT_RELATED;
+										attach->setRelated();
+										cohort->setRelated();
 										rel_did_anything |= cohort->addRelation(tter->hash, attach->global_number);
 									}
 									else if (type == K_SETRELATION) {
-										attach->type |= CT_RELATED;
-										cohort->type |= CT_RELATED;
+										attach->setRelated();
+										cohort->setRelated();
 										rel_did_anything |= cohort->setRelation(tter->hash, attach->global_number);
 									}
 									else {
@@ -2129,11 +2129,11 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 										tter = generateVarstringTag(tter);
 									}
 									if (type == K_ADDRELATIONS) {
-										cohort->type |= CT_RELATED;
+										cohort->setRelated();
 										rel_did_anything |= cohort->addRelation(tter->hash, attach->global_number);
 									}
 									else if (type == K_SETRELATIONS) {
-										cohort->type |= CT_RELATED;
+										cohort->setRelated();
 										rel_did_anything |= cohort->setRelation(tter->hash, attach->global_number);
 									}
 									else {
@@ -2145,11 +2145,11 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 										tter = generateVarstringTag(tter);
 									}
 									if (type == K_ADDRELATIONS) {
-										attach->type |= CT_RELATED;
+										attach->setRelated();
 										rel_did_anything |= attach->addRelation(tter->hash, cohort->global_number);
 									}
 									else if (type == K_SETRELATIONS) {
-										attach->type |= CT_RELATED;
+										attach->setRelated();
 										rel_did_anything |= attach->setRelation(tter->hash, cohort->global_number);
 									}
 									else {

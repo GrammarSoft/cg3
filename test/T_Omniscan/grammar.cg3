@@ -11,3 +11,10 @@ ADD (@neighbour-left) (startsecond) (0*S (startfirst)) ;
 ADD (@neighbour-right) (startfourth) (0*S (startfirst)) ;
 
 ADD (@error-not-first) (startthird) (NOT 0* (startfirst)) ;
+
+SETRELATION (abs-begin) (startfirst) FROM (@1 (*)) ;
+SETRELATION (abs-end) (startfirst) FROM (@-1 (*)) ;
+SETRELATION (abs-prev-begin) (startfirst) FROM (@1< (*)) ;
+SETRELATION (abs-prev-end) (startfirst) FROM (@-1< (*)) ;
+SETRELATION (abs-next-begin) (startfirst) FROM (@1> (*)) ;
+SETRELATION (abs-next-end) (startfirst) FROM (@-1> (*)) ;
