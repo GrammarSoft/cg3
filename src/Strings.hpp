@@ -218,17 +218,17 @@ enum : uint32_t {
 #include "stdafx.hpp"
 
 namespace CG3 {
-CG3_IMPORTS extern UnicodeString keywords[KEYWORD_COUNT];
-CG3_IMPORTS extern UnicodeString stringbits[STRINGS_COUNT];
-CG3_IMPORTS extern UnicodeString g_flags[FLAGS_COUNT];
+CG3_IMPORTS extern const UString keywords[KEYWORD_COUNT];
+CG3_IMPORTS extern const UString stringbits[STRINGS_COUNT];
+CG3_IMPORTS extern const UString g_flags[FLAGS_COUNT];
 
 constexpr size_t CG3_BUFFER_SIZE = 8192;
 constexpr size_t NUM_GBUFFERS = 1;
-CG3_IMPORTS extern std::vector<std::vector<UChar>> gbuffers;
+CG3_IMPORTS extern std::vector<UString> gbuffers;
 constexpr size_t NUM_CBUFFERS = 1;
 CG3_IMPORTS extern std::vector<std::string> cbuffers;
 
-constexpr UChar not_sign = L'\u00AC';
+constexpr UChar not_sign = u'\u00AC';
 }
 
 #endif

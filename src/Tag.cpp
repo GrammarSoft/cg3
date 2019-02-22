@@ -122,8 +122,7 @@ void Tag::parseTagRaw(const UChar* to, Grammar* grammar) {
 		}
 	}
 	for (auto iter : grammar->icase_tags) {
-		UErrorCode status = U_ZERO_ERROR;
-		if (u_strCaseCompare(tag.c_str(), static_cast<int32_t>(tag.size()), iter->tag.c_str(), static_cast<int32_t>(iter->tag.size()), U_FOLD_CASE_DEFAULT, &status) == 0) {
+		if (ux_strCaseCompare(tag, iter->tag)) {
 			type |= T_TEXTUAL;
 		}
 	}
@@ -135,7 +134,7 @@ void Tag::parseTagRaw(const UChar* to, Grammar* grammar) {
 		if (u_sscanf(tag.c_str(), "#%i->%i", &dep_self, &dep_parent) == 2 && dep_self != 0) {
 			type |= T_DEPENDENCY;
 		}
-		constexpr UChar local_dep_unicode[] = { '#', '%', 'i', L'\u2192', '%', 'i', 0 };
+		constexpr UChar local_dep_unicode[] = { '#', '%', 'i', u'\u2192', '%', 'i', 0 };
 		if (u_sscanf_u(tag.c_str(), local_dep_unicode, &dep_self, &dep_parent) == 2 && dep_self != 0) {
 			type |= T_DEPENDENCY;
 		}

@@ -27,8 +27,8 @@
 
 namespace CG3 {
 
-static std::vector<ContextualTest*> contexts_list;
-static Grammar::contexts_t templates;
+static thread_local std::vector<ContextualTest*> contexts_list;
+static thread_local Grammar::contexts_t templates;
 
 int BinaryGrammar::readBinaryGrammar_10043(std::istream& input) {
 	if (!input) {

@@ -83,7 +83,7 @@ UChar u_fgetc(std::istream& input) {
 		std::istream* i = 0;
 		UChar c = 0;
 	};
-	static _cps cps[4];
+	static thread_local _cps cps[4];
 
 	for (auto& cp : cps) {
 		if (cp.i == &input) {

@@ -68,8 +68,8 @@ void FSTApplicator::runGrammarOnText(std::istream& input, std::ostream& output) 
 		}
 	}
 
-	std::vector<UChar> line(1024, 0);
-	std::vector<UChar> cleaned(line.size(), 0);
+	UString line(1024, 0);
+	UString cleaned(line.size(), 0);
 	bool ignoreinput = false;
 	bool did_soft_lookback = false;
 	UString wtag_buf;

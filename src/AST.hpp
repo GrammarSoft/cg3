@@ -110,7 +110,7 @@ ASTNode* cur_ast = &ast;
 ASTHelper* cur_ast_help = 0;
 
 const UChar* xml_encode(const UChar* b, const UChar* e) {
-	static CG3::UString buf;
+	static thread_local CG3::UString buf;
 	buf.clear();
 	buf.reserve(e - b);
 	for (; b != e; ++b) {

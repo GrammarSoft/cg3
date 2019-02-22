@@ -125,13 +125,8 @@ uint32_t GrammarApplicator::doesTagMatchIcase(uint32_t test, const Tag& tag, boo
 	}
 	else {
 		const Tag& itag = *(single_tags.find(test)->second);
-		UErrorCode status = U_ZERO_ERROR;
-		if (u_strCaseCompare(tag.tag.c_str(), static_cast<int32_t>(tag.tag.size()), itag.tag.c_str(), static_cast<int32_t>(itag.tag.size()), U_FOLD_CASE_DEFAULT, &status) == 0) {
+		if (ux_strCaseCompare(tag.tag, itag.tag)) {
 			match = itag.hash;
-		}
-		if (status != U_ZERO_ERROR) {
-			u_fprintf(ux_stderr, "Error: u_strCaseCompare() returned %s - cannot continue!\n", u_errorName(status));
-			CG3Quit(1);
 		}
 		if (match) {
 			index_icase_yes.insert(ih);
