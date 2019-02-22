@@ -94,6 +94,8 @@ void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& outp
 	std::vector<UChar> cleaned(line.size() + 1, 0);
 	bool ignoreinput = false;
 	bool did_soft_lookback = false;
+	bool is_deleted = false;
+	ReadingList* readings;
 
 	index();
 
@@ -302,6 +304,10 @@ void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& outp
 			}
 		}
 		else if (cleaned[0] == ' ' && cleaned[1] == '"' && cCohort) {
+			is_deleted = false;
+			readings = &cCohort->readings;
+
+		got_reading:
 			// Count current indent level
 			size_t indent = 0;
 			while (ISSPACE(line[indent])) {
@@ -344,8 +350,15 @@ void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& outp
 				}
 				delete cReading;
 				cReading = 0;
+				if (is_deleted) {
+					// ToDo: Use string_view instead, when able
+					cleaned.insert(cleaned.begin(), ';');
+					line.insert(line.begin(), ';');
+				}
 				goto istext;
 			}
+
+			cReading->deleted = is_deleted;
 
 			while (space && (space = u_strchr(space, ' ')) != 0) {
 				space[0] = 0;
@@ -379,7 +392,7 @@ void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& outp
 				u_fflush(ux_stderr);
 			}
 			if (indents.empty() || indent <= indents.back().first) {
-				cCohort->appendReading(cReading);
+				cCohort->appendReading(cReading, *readings);
 			}
 			else {
 				auto iter = all_mappings.find(cReading);
@@ -392,13 +405,13 @@ void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& outp
 					splitMappings(iter->second, *cCohort, *cReading, true);
 					all_mappings.erase(iter);
 				}
-				cCohort->readings.back()->rehash();
+				readings->back()->rehash();
 			}
 			indents.push_back(std::make_pair(indent, cReading));
 			numReadings++;
 
 			// Check whether the cohort still belongs to the window, as per --dep-delimit
-			if (dep_delimit && dep_highest_seen && (cCohort->dep_self <= dep_highest_seen || cCohort->dep_self - dep_highest_seen > dep_delimit)) {
+			if (!is_deleted && dep_delimit && dep_highest_seen && (cCohort->dep_self <= dep_highest_seen || cCohort->dep_self - dep_highest_seen > dep_delimit)) {
 				reflowDependencyWindow(cCohort->global_number);
 				gWindow->dep_map.clear();
 				gWindow->dep_window.clear();
@@ -429,6 +442,13 @@ void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& outp
 					}
 				}
 			}
+		}
+		else if (pipe_deleted && cleaned[0] == ';' && cleaned[1] == ' ' && cleaned[2] == '"' && cCohort) {
+			is_deleted = true;
+			readings = &cCohort->deleted;
+			cleaned.erase(cleaned.begin());
+			line.erase(line.begin());
+			goto got_reading;
 		}
 		else {
 			if (cleaned[0] == ' ' && cleaned[1] == '"') {
