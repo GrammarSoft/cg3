@@ -50,6 +50,7 @@ enum OPTIONS {
 	SUB_RTL,
 	SUB_LTR,
 	ORDERED,
+	PIPE_DELETED,
 	NUM_OPTIONS,
 };
 
@@ -77,6 +78,7 @@ UOption options[] = {
 	UOPTION_DEF_D("rtl",          'r', UOPT_NO_ARG,       "sets sub-reading direction to RTL (default)"),
 	UOPTION_DEF_D("ltr",          'l', UOPT_NO_ARG,       "sets sub-reading direction to LTR"),
 	UOPTION_DEF_D("ordered",      'o', UOPT_NO_ARG,       "tag order matters mode"),
+	UOPTION_DEF_D("deleted",        0, UOPT_NO_ARG,       "read deleted readings as such, instead of as text"),
 };
 }
 

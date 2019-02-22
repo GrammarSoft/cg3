@@ -97,6 +97,7 @@ public:
 	bool seen_barrier;
 	bool is_conv;
 	bool split_mappings;
+	bool pipe_deleted = false;
 
 	bool dep_has_spanned;
 	uint32_t dep_delimit;

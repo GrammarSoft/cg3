@@ -450,6 +450,9 @@ void GAppSetOpts(CG3::GrammarApplicator& applicator, UConverter* conv) {
 		applicator.trace = true;
 		applicator.trace_encl = true;
 	}
+	if (options[PIPE_DELETED].doesOccur) {
+		applicator.pipe_deleted = true;
+	}
 	if (options[DRYRUN].doesOccur) {
 		applicator.dry_run = true;
 	}

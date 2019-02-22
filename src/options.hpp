@@ -60,6 +60,7 @@ enum OPTIONS {
 	TRACE_NAME_ONLY,
 	TRACE_NO_REMOVED,
 	TRACE_ENCL,
+	PIPE_DELETED,
 	DRYRUN,
 	SINGLERUN,
 	MAXRUNS,
@@ -127,6 +128,8 @@ UOption options[] = {
 	UOPTION_DEF_D("trace-name-only",       0, UOPT_NO_ARG,       "if a rule is named, omit the line number; implies --trace"),
 	UOPTION_DEF_D("trace-no-removed",      0, UOPT_NO_ARG,       "does not print removed readings; implies --trace"),
 	UOPTION_DEF_D("trace-encl",            0, UOPT_NO_ARG,       "traces which enclosure pass is currently happening; implies --trace"),
+
+	UOPTION_DEF_D("deleted",               0, UOPT_NO_ARG,       "read deleted readings as such, instead of as text"),
 
 	UOPTION_DEF_D("dry-run",               0, UOPT_NO_ARG,       "make no actual changes to the input"),
 	UOPTION_DEF_D("single-run",            0, UOPT_NO_ARG,       "runs each section only once; same as --max-runs 1"),
