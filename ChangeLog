@@ -1,3 +1,121 @@
+2019-02-22  tino
+
+	* [r13425] include/win32/getopt.cpp, src/AST.hpp,
+	  src/ApertiumApplicator.cpp, src/BinaryGrammar_read_10043.cpp,
+	  src/Cohort.hpp, src/FSTApplicator.cpp, src/Grammar.cpp,
+	  src/Grammar.hpp, src/GrammarApplicator.cpp,
+	  src/GrammarApplicator_matchSet.cpp,
+	  src/GrammarApplicator_reflow.cpp,
+	  src/GrammarApplicator_runContextualTest.cpp,
+	  src/GrammarApplicator_runGrammar.cpp, src/GrammarWriter.cpp,
+	  src/MatxinApplicator.cpp, src/MweSplitApplicator.cpp,
+	  src/NicelineApplicator.cpp, src/PlaintextApplicator.cpp,
+	  src/Strings.cpp, src/Strings.hpp, src/Tag.cpp, src/TagTrie.hpp,
+	  src/TextualParser.cpp, src/TextualParser.hpp, src/cg_conv.cpp,
+	  src/flat_unordered_map.hpp, src/flat_unordered_set.hpp,
+	  src/libcg3.cpp, src/parser_helpers.hpp, src/sorted_vector.hpp,
+	  src/stdafx.hpp, src/uextras.cpp, src/uextras.hpp: Lots of C++11
+	  cleanup: thread_local statics; UString literals and overloads;
+	  wchar_t -> char16_t; check for combining characters
+	* [r13424] src/Cohort.cpp, src/Cohort.hpp,
+	  src/GrammarApplicator_reflow.cpp,
+	  src/GrammarApplicator_runContextualTest.cpp,
+	  src/GrammarApplicator_runRules.cpp, test/T_Omniscan/expected.txt,
+	  test/T_Omniscan/grammar.cg3, test/T_Omniscan/grammar.cg3b.10043:
+	  Shorthand syntax @x< and @x> to go to that absolute position in
+	  the prev/next window (closes #21)
+	* [r13423] src/Cohort.cpp, src/Cohort.hpp,
+	  src/GrammarApplicator.hpp, src/GrammarApplicator_runGrammar.cpp,
+	  src/cg_conv.cpp, src/main.cpp, src/options.hpp,
+	  src/options_conv.hpp: Allow piping deleted readings as such,
+	  instead of as text (closes #29)
+
+2019-02-15  tino
+
+	* [r13412] src/ApertiumApplicator.cpp, src/GrammarApplicator.cpp,
+	  src/Reading.cpp, test/T_MapAdd_Different/expected.txt,
+	  test/T_NumericalTags/expected.txt, test/T_Protect/expected.txt,
+	  test/T_SetOp_FailFast/expected.txt,
+	  test/T_Unification/expected.txt: Sort readings before print,
+	  because we can't expect other rules to trigger a sort
+
+2019-02-11  tino
+
+	* [r13411] src/ContextualTest.hpp,
+	  src/GrammarApplicator_runContextualTest.cpp,
+	  test/T_Dependency/expected.txt, test/T_Dependency/grammar.cg3:
+	  Glob (cc, pp) should be treated as a scanning search
+
+2019-01-24  unhammer
+
+	* [r13407] emacs/cg.el: Emacs: One input-buffer per pipeline as
+	  default
+	  
+	  For sharing inputs across CG's, pick a buffer explicitly (C-u C-c
+	  C-i)
+	  
+	  Also ensure cg-output-toggle-analyses is callable from the CG,
+	  not just from within the output-buffer.
+
+2019-01-23  unhammer
+
+	* [r13400] emacs/cg.el: Add FROM keyword, like TO
+
+2019-01-21  tino
+
+	* [r13392] src/GrammarApplicator.hpp,
+	  src/GrammarApplicator_runRules.cpp: Give up if Move/Switch has
+	  acted 100*num_cohorts times in the same window
+	* [r13391] src/GrammarApplicator_runRules.cpp: Check whether
+	  Move/Switch did anything (fixes #13)
+	* [r13390] src/BinaryGrammar.hpp, src/BinaryGrammar_read.cpp,
+	  src/BinaryGrammar_write.cpp, src/CohortIterator.hpp,
+	  src/Grammar.hpp, src/GrammarApplicator.hpp,
+	  src/GrammarApplicator_runRules.cpp, src/IGrammarParser.hpp,
+	  src/Reading.hpp, src/TagTrie.hpp, src/inlines.hpp,
+	  src/interval_vector.hpp, src/process.hpp, src/sorted_vector.hpp,
+	  src/uextras.hpp: Modernize a bit
+
+2019-01-10  unhammer
+
+	* [r13381] emacs/cg.el: Prefix arg to cg-edit-input will prompt for
+	  an existing buffer to use as input
+	  
+	  also, allow checking newly created CG input buffers after saving
+	  them
+	  
+	  handy for when testing+editing the same text both from Emacs
+	  cg-mode and command line
+
+2019-01-07  tino
+
+	* [r13380] scripts/cg3-autobin.pl.in: Less noise
+
+2018-11-21  unhammer
+
+	* [r13326] emacs/cg.el: make cg-output-toggle-analyses and
+	  cg-output-set-unhide usable from main CG buffer
+	  
+	  + keybindings for them from there
+
+2018-11-15  unhammer
+
+	* [r13318] src/Cohort.hpp, src/GrammarApplicator_runGrammar.cpp,
+	  src/MweSplitApplicator.cpp: Store input line number on Cohort;
+	  use it when writing cg-mwesplit warnings; fixes #22
+
+2018-10-22  unhammer
+
+	* [r13262] emacs/cg.el: emacs: support xref-find-definitions on M-.
+
+2018-10-22  tino
+
+	* [r13261] src/TextualParser.cpp: Nicer error message for invalid
+	  SUB:* (fixes #19)
+	* [r13260] src/parser_helpers.hpp: Also unset regexp-line flag
+	* [r13258] .clang-format, ChangeLog, src/parser_helpers.hpp,
+	  src/version.hpp: Remove prefix ! as fail-fast alias
+
 2018-10-15  tino
 
 	* [r13229] CMakeLists.txt, include/posix/popen_plus.c,
@@ -1808,81 +1926,4 @@
 2015-04-17  unhammer
 
 	* [r10647] emacs/cg.el: todo
-	* [r10646] emacs/cg.el: "handle all the string
-	  modifiers"[irv]\{0,3\}
-	* [r10645] emacs/cg.el: "foo"i also possible, not just "foo"ri
-
-2015-04-13  tino
-
-	* [r10643] ChangeLog, src/Grammar.cpp, src/version.hpp: f branch
-	  empty sets turned into * instead of error
-
-2015-04-10  tino
-
-	* [r10640] ChangeLog, src/Grammar.cpp, src/GrammarApplicator.hpp,
-	  src/GrammarApplicator_matchSet.cpp,
-	  src/GrammarApplicator_runRules.cpp, src/Strings.cpp,
-	  src/Strings.hpp, src/version.hpp: Non-capturing unification is
-	  now done per reading
-	* [r10639] src/GrammarApplicator_runRules.cpp: Remove debug
-	* [r10638] vapply.sh: Keep old output
-	* [r10637] ChangeLog, TODO, src/GrammarApplicator.hpp,
-	  src/GrammarApplicator_matchSet.cpp,
-	  src/GrammarApplicator_runContextualTest.cpp,
-	  src/GrammarApplicator_runRules.cpp, src/version.hpp: WIP to make
-	  unification truly per-reading
-
-2015-03-25  unhammer
-
-	* [r10629] emacs/cg.el: call it 0.1.7, since C-M-h now works, more
-	  keywords are matched, and we highlight symbol-at-point in output.
-	  
-	  +some nitpicking
-
-2015-03-25  tino
-
-	* [r10628] CMakeLists.txt: Don't rename cg.el to cg3-mode.el as it
-	  seems no current distro ships any package with a conflicting
-	  cg.el
-
-2015-03-24  tino
-
-	* [r10617] src/Grammar.cpp, src/Grammar.hpp, src/TextualParser.cpp:
-	  Don't report potentially used sets as unused. They might actually
-	  be unused, but that would take a lot more work to determine.
-
-2015-03-19  tino
-
-	* [r10601] CMakeLists.txt,
-	  include/exec-stream/posix/exec-stream-impl.cpp,
-	  src/BinaryGrammar_read.cpp, src/BinaryGrammar_read_10043.cpp,
-	  src/BinaryGrammar_write.cpp, src/Grammar.hpp, src/inlines.hpp:
-	  Remove -Wno-unused-result to help poor feeble GCC 4.2.1
-
-2015-03-09  tino
-
-	* [r10589] src/GrammarApplicator_reflow.cpp: Satisfy older
-	  compilers
-	* [r10588] src/Grammar.cpp: Respect empty sections
-	* [r10587] ChangeLog, src/GrammarApplicator.hpp, src/main.cpp,
-	  src/version.hpp: Enforce matching --prefix for binary grammars
-
-2015-03-06  tino
-
-	* [r10578] src/GrammarApplicator_runGrammar.cpp: Wordforms now
-	  search for >" instead of just "
-	* [r10577] ChangeLog, manual/sets.xml, src/GrammarApplicator.hpp,
-	  src/GrammarApplicator_matchSet.cpp,
-	  src/GrammarApplicator_runRules.cpp, src/Strings.cpp,
-	  src/Strings.hpp, src/Tag.hpp, src/TextualParser.cpp,
-	  src/parser_helpers.hpp, src/version.hpp: Added magic set/tag
-	  _SAME_BASIC_
-	* [r10576] ChangeLog, manual/grammar.xml,
-	  src/BinaryGrammar_read.cpp, src/BinaryGrammar_write.cpp,
-	  src/Grammar.hpp, src/GrammarApplicator_reflow.cpp,
-	  src/Strings.cpp, src/Strings.hpp, src/TextualParser.cpp,
-	  src/version.hpp: Added REOPEN-MAPPINGS
-	* [r10574] src/GrammarApplicator.hpp,
-	  src/GrammarApplicator_runRules.cpp: Regex captures are now
-	  per-reading
 
