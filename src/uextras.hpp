@@ -167,7 +167,22 @@ inline bool ux_simplecasecmp(const UChar* a, const UChar* b, const size_t n) {
 		}
 	}
 
-	return true;
+	// If there is a combining character after the last plain letter, it's not a match
+	// But since that's a whole function call, short circuit for most likely suffixes
+	return a[n] == 0 || ISSPACE(a[n]) || u_getCombiningClass(a[n]) == 0;
+}
+
+inline bool ux_simplecasecmp(const UChar* a, const UString& b) {
+	return ux_simplecasecmp(a, b.c_str(), b.size());
+}
+
+inline bool ux_strCaseCompare(const UString& a, const UString& b) {
+	UErrorCode status = U_ZERO_ERROR;
+	auto rv = u_strCaseCompare(a.c_str(), static_cast<int32_t>(a.size()), b.c_str(), static_cast<int32_t>(b.size()), U_FOLD_CASE_DEFAULT, &status);
+	if (status != U_ZERO_ERROR) {
+		throw new std::runtime_error(u_errorName(status));
+	}
+	return (rv == 0);
 }
 
 template<typename Str>

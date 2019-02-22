@@ -65,8 +65,8 @@ void PlaintextApplicator::runGrammarOnText(std::istream& input, std::ostream& ou
 		}
 	}
 
-	std::vector<UChar> line(1024, 0);
-	std::vector<UChar> cleaned(line.size(), 0);
+	UString line(1024, 0);
+	UString cleaned(line.size(), 0);
 	bool ignoreinput = false;
 	bool did_soft_lookback = false;
 

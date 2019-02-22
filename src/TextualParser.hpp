@@ -79,6 +79,7 @@ private:
 	void addRuleToGrammar(Rule* rule);
 
 	Tag* parseTag(const UChar* to, const UChar* p = 0);
+	Tag* parseTag(const UString& to, const UChar* p = 0);
 	void parseTagList(UChar*& p, Set* s);
 	Set* parseSet(const UChar* name, const UChar* p = 0);
 	Set* parseSetInline(UChar*& p, Set* s = 0);

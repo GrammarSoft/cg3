@@ -98,7 +98,7 @@ public:
 			return;
 		}
 
-		static container merged;
+		static thread_local container merged;
 		merged.resize(0);
 		merged.reserve(elements.size() + d);
 
@@ -106,7 +106,7 @@ public:
 			std::merge(elements.begin(), elements.end(), b, e, std::back_inserter(merged), comp);
 		}
 		else {
-			static container sorted;
+			static thread_local container sorted;
 			sorted.assign(b, e);
 			std::sort(sorted.begin(), sorted.end(), comp);
 			std::merge(elements.begin(), elements.end(), sorted.begin(), sorted.end(), std::back_inserter(merged), comp);

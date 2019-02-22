@@ -66,8 +66,8 @@ void NicelineApplicator::runGrammarOnText(std::istream& input, std::ostream& out
 		}
 	}
 
-	std::vector<UChar> line(1024, 0);
-	std::vector<UChar> cleaned(line.size(), 0);
+	UString line(1024, 0);
+	UString cleaned(line.size(), 0);
 	bool ignoreinput = false;
 	bool did_soft_lookback = false;
 
@@ -401,7 +401,7 @@ void NicelineApplicator::printReading(const Reading* reading, std::ostream& outp
 			}
 		}
 
-		constexpr UChar local_utf_pattern[] = { ' ', '#', '%', 'u', L'\u2192', '%', 'u', 0 };
+		constexpr UChar local_utf_pattern[] = { ' ', '#', '%', 'u', u'\u2192', '%', 'u', 0 };
 		constexpr UChar local_latin_pattern[] = { ' ', '#', '%', 'u', '-', '>', '%', 'u', 0 };
 		const UChar* pattern = local_latin_pattern;
 		if (unicode_tags) {

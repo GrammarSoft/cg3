@@ -72,10 +72,10 @@ Grammar::~Grammar() {
 }
 
 void Grammar::addSet(Set*& to) {
-	if (!delimiters && u_strcmp(to->name.c_str(), stringbits[S_DELIMITSET].getTerminatedBuffer()) == 0) {
+	if (!delimiters && to->name == stringbits[S_DELIMITSET]) {
 		delimiters = to;
 	}
-	else if (!soft_delimiters && u_strcmp(to->name.c_str(), stringbits[S_SOFTDELIMITSET].getTerminatedBuffer()) == 0) {
+	else if (!soft_delimiters && to->name == stringbits[S_SOFTDELIMITSET]) {
 		soft_delimiters = to;
 	}
 	if (verbosity_level > 0 && to->name[0] == 'T' && to->name[1] == ':') {
@@ -145,15 +145,15 @@ void Grammar::addSet(Set*& to) {
 		Set* negative = allocateSet();
 
 		UString str;
-		str = stringbits[S_GPREFIX].getTerminatedBuffer();
+		str = stringbits[S_GPREFIX];
 		str += to->name;
 		str += '_';
-		str += stringbits[S_POSITIVE].getTerminatedBuffer();
+		str += stringbits[S_POSITIVE];
 		positive->setName(str);
-		str = stringbits[S_GPREFIX].getTerminatedBuffer();
+		str = stringbits[S_GPREFIX];
 		str += to->name;
 		str += '_';
-		str += stringbits[S_NEGATIVE].getTerminatedBuffer();
+		str += stringbits[S_NEGATIVE];
 		negative->setName(str);
 
 		positive->trie.swap(to->trie);
@@ -300,8 +300,8 @@ void Grammar::addSetToList(Set* s) {
 void Grammar::allocateDummySet() {
 	Set* set_c = allocateSet();
 	set_c->line = 0;
-	set_c->setName(stringbits[S_IGNORE].getTerminatedBuffer());
-	Tag* t = allocateTag(stringbits[S_IGNORE].getTerminatedBuffer());
+	set_c->setName(stringbits[S_IGNORE]);
+	Tag* t = allocateTag(stringbits[S_IGNORE]);
 	addTagToSet(t, set_c);
 	addSet(set_c);
 	set_c->number = std::numeric_limits<uint32_t>::max();
@@ -329,7 +329,7 @@ uint32_t Grammar::removeNumericTags(uint32_t s) {
 			Set* ns = allocateSet();
 			ns->type = set->type;
 			ns->line = set->line;
-			ns->name = stringbits[S_GPREFIX].getTerminatedBuffer();
+			ns->name = stringbits[S_GPREFIX];
 			ns->name += set->name;
 			ns->name += '_';
 			ns->name += 'B';
@@ -382,7 +382,7 @@ uint32_t Grammar::removeNumericTags(uint32_t s) {
 			Set* ns = allocateSet();
 			ns->type = set->type;
 			ns->line = set->line;
-			ns->name = stringbits[S_GPREFIX].getTerminatedBuffer();
+			ns->name = stringbits[S_GPREFIX];
 			ns->name += set->name;
 			ns->name += '_';
 			ns->name += 'B';
@@ -447,13 +447,17 @@ Tag* Grammar::allocateTag(const UChar* txt) {
 	}
 	Taguint32HashMap::iterator it;
 	uint32_t thash = hash_value(txt);
-	if ((it = single_tags.find(thash)) != single_tags.end() && !it->second->tag.empty() && u_strcmp(it->second->tag.c_str(), txt) == 0) {
+	if ((it = single_tags.find(thash)) != single_tags.end() && !it->second->tag.empty() && it->second->tag == txt) {
 		return it->second;
 	}
 
 	Tag* tag = new Tag();
 	tag->parseTagRaw(txt, this);
 	return addTag(tag);
+}
+
+Tag* Grammar::allocateTag(const UString& txt) {
+	return allocateTag(txt.c_str());
 }
 
 Tag* Grammar::addTag(Tag* tag) {
@@ -573,6 +577,10 @@ void Grammar::addAnchor(const UChar* to, uint32_t at, bool primary) {
 	}
 }
 
+void Grammar::addAnchor(const UString& to, uint32_t at, bool primary) {
+	return addAnchor(to.c_str(), at, primary);
+}
+
 void Grammar::resetStatistics() {
 	total_time = 0;
 	for (auto r : rules) {
@@ -667,13 +675,8 @@ void Grammar::reindex(bool unused_sets, bool used_tags) {
 			}
 		}
 		for (auto iter : icase_tags) {
-			UErrorCode status = U_ZERO_ERROR;
-			if (u_strCaseCompare(titer->tag.c_str(), static_cast<int32_t>(titer->tag.size()), iter->tag.c_str(), static_cast<int32_t>(iter->tag.size()), U_FOLD_CASE_DEFAULT, &status) == 0) {
+			if (ux_strCaseCompare(titer->tag, iter->tag)) {
 				titer->type |= T_TEXTUAL;
-			}
-			if (status != U_ZERO_ERROR) {
-				u_fprintf(ux_stderr, "Error: u_strCaseCompare() returned %s - cannot continue!\n", u_errorName(status));
-				CG3Quit(1);
 			}
 		}
 	}

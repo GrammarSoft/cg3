@@ -130,7 +130,7 @@ Tag* TextualParser::parseTag(const UChar* to, const UChar* p) {
 		if (tag->type & (T_ANY | T_VARSTRING | T_VSTR | T_META | T_VARIABLE | T_SET | T_PAR_LEFT | T_PAR_RIGHT | T_ENCL | T_TARGET | T_MARK | T_ATTACHTO | T_SAME_BASIC)) {
 			// Always allow...
 		}
-		else if (u_strcmp(tag->tag.c_str(), stringbits[S_BEGINTAG].getTerminatedBuffer()) == 0 || u_strcmp(tag->tag.c_str(), stringbits[S_ENDTAG].getTerminatedBuffer()) == 0) {
+		else if (tag->tag == stringbits[S_BEGINTAG] || tag->tag == stringbits[S_ENDTAG]) {
 			// Always allow >>> and <<<
 		}
 		else if (tag->type & (T_REGEXP | T_REGEXP_ANY)) {
@@ -163,6 +163,10 @@ Tag* TextualParser::parseTag(const UChar* to, const UChar* p) {
 		}
 	}
 	return tag;
+}
+
+Tag* TextualParser::parseTag(const UString& to, const UChar* p) {
+	return parseTag(to.c_str(), p);
 }
 
 Tag* TextualParser::addTag(Tag* tag) {
@@ -771,30 +775,30 @@ ContextualTest* TextualParser::parseContextualTestList(UChar*& p, Rule* rule) {
 	t->line = result->lines;
 
 	result->lines += SKIPWS(p);
-	if (ux_simplecasecmp(p, stringbits[S_TEXTNEGATE].getTerminatedBuffer(), stringbits[S_TEXTNEGATE].length())) {
+	if (ux_simplecasecmp(p, stringbits[S_TEXTNEGATE])) {
 		AST_OPEN(ContextMod);
-		p += stringbits[S_TEXTNEGATE].length();
+		p += stringbits[S_TEXTNEGATE].size();
 		AST_CLOSE(p);
 		t->pos |= POS_NEGATE;
 	}
 	result->lines += SKIPWS(p);
-	if (ux_simplecasecmp(p, stringbits[S_ALL].getTerminatedBuffer(), stringbits[S_ALL].length())) {
+	if (ux_simplecasecmp(p, stringbits[S_ALL])) {
 		AST_OPEN(ContextMod);
-		p += stringbits[S_ALL].length();
+		p += stringbits[S_ALL].size();
 		AST_CLOSE(p);
 		t->pos |= POS_ALL;
 	}
 	result->lines += SKIPWS(p);
-	if (ux_simplecasecmp(p, stringbits[S_NONE].getTerminatedBuffer(), stringbits[S_NONE].length())) {
+	if (ux_simplecasecmp(p, stringbits[S_NONE])) {
 		AST_OPEN(ContextMod);
-		p += stringbits[S_NONE].length();
+		p += stringbits[S_NONE].size();
 		AST_CLOSE(p);
 		t->pos |= POS_NONE;
 	}
 	result->lines += SKIPWS(p);
-	if (ux_simplecasecmp(p, stringbits[S_TEXTNOT].getTerminatedBuffer(), stringbits[S_TEXTNOT].length())) {
+	if (ux_simplecasecmp(p, stringbits[S_TEXTNOT])) {
 		AST_OPEN(ContextMod);
-		p += stringbits[S_TEXTNOT].length();
+		p += stringbits[S_TEXTNOT].size();
 		AST_CLOSE(p);
 		t->pos |= POS_NOT;
 	}
@@ -824,8 +828,8 @@ ContextualTest* TextualParser::parseContextualTestList(UChar*& p, Rule* rule) {
 			++p;
 			t->ors.push_back(ored);
 			result->lines += SKIPWS(p);
-			if (ux_simplecasecmp(p, stringbits[S_OR].getTerminatedBuffer(), stringbits[S_OR].length())) {
-				p += stringbits[S_OR].length();
+			if (ux_simplecasecmp(p, stringbits[S_OR])) {
+				p += stringbits[S_OR].size();
 			}
 			else {
 				break;
@@ -907,18 +911,18 @@ ContextualTest* TextualParser::parseContextualTestList(UChar*& p, Rule* rule) {
 		}
 
 		result->lines += SKIPWS(p);
-		if (ux_simplecasecmp(p, stringbits[S_CBARRIER].getTerminatedBuffer(), stringbits[S_CBARRIER].length())) {
+		if (ux_simplecasecmp(p, stringbits[S_CBARRIER])) {
 			AST_OPEN(BarrierSafe);
-			p += stringbits[S_CBARRIER].length();
+			p += stringbits[S_CBARRIER].size();
 			result->lines += SKIPWS(p);
 			Set* s = parseSetInlineWrapper(p);
 			t->cbarrier = s->hash;
 			AST_CLOSE(p);
 		}
 		result->lines += SKIPWS(p);
-		if (ux_simplecasecmp(p, stringbits[S_BARRIER].getTerminatedBuffer(), stringbits[S_BARRIER].length())) {
+		if (ux_simplecasecmp(p, stringbits[S_BARRIER])) {
 			AST_OPEN(Barrier);
-			p += stringbits[S_BARRIER].length();
+			p += stringbits[S_BARRIER].size();
 			result->lines += SKIPWS(p);
 			Set* s = parseSetInlineWrapper(p);
 			t->barrier = s->hash;
@@ -937,11 +941,11 @@ ContextualTest* TextualParser::parseContextualTestList(UChar*& p, Rule* rule) {
 
 	bool linked = false;
 	result->lines += SKIPWS(p);
-	if (ux_simplecasecmp(p, stringbits[S_AND].getTerminatedBuffer(), stringbits[S_AND].length())) {
+	if (ux_simplecasecmp(p, stringbits[S_AND])) {
 		error("%s: Error: 'AND' is deprecated; use 'LINK 0' or operator '+' instead. Found on line %u near `%S`!\n", p);
 	}
-	if (ux_simplecasecmp(p, stringbits[S_LINK].getTerminatedBuffer(), stringbits[S_LINK].length())) {
-		p += stringbits[S_LINK].length();
+	if (ux_simplecasecmp(p, stringbits[S_LINK])) {
+		p += stringbits[S_LINK].size();
 		linked = true;
 	}
 	result->lines += SKIPWS(p);
@@ -1020,7 +1024,7 @@ void TextualParser::parseRule(UChar*& p, KEYWORDS key) {
 	}
 
 	AST_OPEN(RuleType);
-	p += keywords[key].length();
+	p += keywords[key].size();
 	AST_CLOSE(p);
 	result->lines += SKIPWS(p);
 
@@ -1047,12 +1051,12 @@ void TextualParser::parseRule(UChar*& p, KEYWORDS key) {
 
 	if (key == K_EXTERNAL) {
 		AST_OPEN(RuleExternalType);
-		if (ux_simplecasecmp(p, stringbits[S_ONCE].getTerminatedBuffer(), stringbits[S_ONCE].length())) {
-			p += stringbits[S_ONCE].length();
+		if (ux_simplecasecmp(p, stringbits[S_ONCE])) {
+			p += stringbits[S_ONCE].size();
 			rule->type = K_EXTERNAL_ONCE;
 		}
-		else if (ux_simplecasecmp(p, stringbits[S_ALWAYS].getTerminatedBuffer(), stringbits[S_ALWAYS].length())) {
-			p += stringbits[S_ALWAYS].length();
+		else if (ux_simplecasecmp(p, stringbits[S_ALWAYS])) {
+			p += stringbits[S_ALWAYS].size();
 			rule->type = K_EXTERNAL_ALWAYS;
 		}
 		else {
@@ -1094,8 +1098,8 @@ void TextualParser::parseRule(UChar*& p, KEYWORDS key) {
 		setflag = false;
 		for (uint32_t i = 0; i < FLAGS_COUNT; i++) {
 			UChar* op = p;
-			if (ux_simplecasecmp(p, g_flags[i].getTerminatedBuffer(), g_flags[i].length())) {
-				p += g_flags[i].length();
+			if (ux_simplecasecmp(p, g_flags[i])) {
+				p += g_flags[i].size();
 				rule->flags |= (1 << i);
 				setflag = true;
 
@@ -1269,9 +1273,9 @@ void TextualParser::parseRule(UChar*& p, KEYWORDS key) {
 	}
 
 	bool copy_except = false;
-	if (key == K_COPY && ux_simplecasecmp(p, stringbits[S_EXCEPT].getTerminatedBuffer(), stringbits[S_EXCEPT].length())) {
+	if (key == K_COPY && ux_simplecasecmp(p, stringbits[S_EXCEPT])) {
 		AST_OPEN(RuleExcept);
-		p += stringbits[S_EXCEPT].length();
+		p += stringbits[S_EXCEPT].size();
 		copy_except = true;
 		AST_CLOSE(p);
 	}
@@ -1295,12 +1299,12 @@ void TextualParser::parseRule(UChar*& p, KEYWORDS key) {
 
 	if (key == K_ADDCOHORT) {
 		AST_OPEN(RuleAddcohortWhere);
-		if (ux_simplecasecmp(p, stringbits[S_AFTER].getTerminatedBuffer(), stringbits[S_AFTER].length())) {
-			p += stringbits[S_AFTER].length();
+		if (ux_simplecasecmp(p, stringbits[S_AFTER])) {
+			p += stringbits[S_AFTER].size();
 			rule->type = K_ADDCOHORT_AFTER;
 		}
-		else if (ux_simplecasecmp(p, stringbits[S_BEFORE].getTerminatedBuffer(), stringbits[S_BEFORE].length())) {
-			p += stringbits[S_BEFORE].length();
+		else if (ux_simplecasecmp(p, stringbits[S_BEFORE])) {
+			p += stringbits[S_BEFORE].size();
 			rule->type = K_ADDCOHORT_BEFORE;
 		}
 		else {
@@ -1310,12 +1314,12 @@ void TextualParser::parseRule(UChar*& p, KEYWORDS key) {
 	}
 
 	if (key == K_ADD || key == K_MAP || key == K_SUBSTITUTE || key == K_COPY) {
-		if (ux_simplecasecmp(p, stringbits[S_AFTER].getTerminatedBuffer(), stringbits[S_AFTER].length())) {
-			p += stringbits[S_AFTER].length();
+		if (ux_simplecasecmp(p, stringbits[S_AFTER])) {
+			p += stringbits[S_AFTER].size();
 			rule->flags |= RF_AFTER;
 		}
-		else if (ux_simplecasecmp(p, stringbits[S_BEFORE].getTerminatedBuffer(), stringbits[S_BEFORE].length())) {
-			p += stringbits[S_BEFORE].length();
+		else if (ux_simplecasecmp(p, stringbits[S_BEFORE])) {
+			p += stringbits[S_BEFORE].size();
 			rule->flags |= RF_BEFORE;
 		}
 		if (rule->flags & (RF_BEFORE | RF_AFTER)) {
@@ -1325,14 +1329,14 @@ void TextualParser::parseRule(UChar*& p, KEYWORDS key) {
 	}
 
 	result->lines += SKIPWS(p);
-	if (ux_simplecasecmp(p, stringbits[S_TARGET].getTerminatedBuffer(), stringbits[S_TARGET].length())) {
-		p += stringbits[S_TARGET].length();
+	if (ux_simplecasecmp(p, stringbits[S_TARGET])) {
+		p += stringbits[S_TARGET].size();
 	}
 	result->lines += SKIPWS(p);
 
-	if (ux_simplecasecmp(p, g_flags[FL_WITHCHILD].getTerminatedBuffer(), g_flags[FL_WITHCHILD].length())) {
+	if (ux_simplecasecmp(p, g_flags[FL_WITHCHILD])) {
 		AST_OPEN(RuleFlag);
-		p += g_flags[FL_WITHCHILD].length();
+		p += g_flags[FL_WITHCHILD].size();
 		AST_CLOSE(p);
 		AST_OPEN(RuleWithChildTarget);
 		Set* s = parseSetInlineWrapper(p);
@@ -1343,9 +1347,9 @@ void TextualParser::parseRule(UChar*& p, KEYWORDS key) {
 		rule->childset1 = s->hash;
 		result->lines += SKIPWS(p);
 	}
-	else if (ux_simplecasecmp(p, g_flags[FL_NOCHILD].getTerminatedBuffer(), g_flags[FL_NOCHILD].length())) {
+	else if (ux_simplecasecmp(p, g_flags[FL_NOCHILD])) {
 		AST_OPEN(RuleFlag);
-		p += g_flags[FL_NOCHILD].length();
+		p += g_flags[FL_NOCHILD].size();
 		AST_CLOSE(p);
 		rule->flags |= RF_NOCHILD;
 		rule->flags &= ~RF_WITHCHILD;
@@ -1359,8 +1363,8 @@ void TextualParser::parseRule(UChar*& p, KEYWORDS key) {
 	AST_CLOSE(p);
 
 	result->lines += SKIPWS(p);
-	if (ux_simplecasecmp(p, stringbits[S_IF].getTerminatedBuffer(), stringbits[S_IF].length())) {
-		p += stringbits[S_IF].length();
+	if (ux_simplecasecmp(p, stringbits[S_IF])) {
+		p += stringbits[S_IF].size();
 	}
 	result->lines += SKIPWS(p);
 
@@ -1382,12 +1386,12 @@ void TextualParser::parseRule(UChar*& p, KEYWORDS key) {
 		result->lines += SKIPWS(p);
 		if (key == K_MOVE) {
 			AST_OPEN(RuleMoveType);
-			if (ux_simplecasecmp(p, stringbits[S_AFTER].getTerminatedBuffer(), stringbits[S_AFTER].length())) {
-				p += stringbits[S_AFTER].length();
+			if (ux_simplecasecmp(p, stringbits[S_AFTER])) {
+				p += stringbits[S_AFTER].size();
 				rule->type = K_MOVE_AFTER;
 			}
-			else if (ux_simplecasecmp(p, stringbits[S_BEFORE].getTerminatedBuffer(), stringbits[S_BEFORE].length())) {
-				p += stringbits[S_BEFORE].length();
+			else if (ux_simplecasecmp(p, stringbits[S_BEFORE])) {
+				p += stringbits[S_BEFORE].size();
 				rule->type = K_MOVE_BEFORE;
 			}
 			else {
@@ -1396,8 +1400,8 @@ void TextualParser::parseRule(UChar*& p, KEYWORDS key) {
 			AST_CLOSE(p);
 		}
 		else if (key == K_SWITCH || key == K_MERGECOHORTS) {
-			if (ux_simplecasecmp(p, stringbits[S_WITH].getTerminatedBuffer(), stringbits[S_WITH].length())) {
-				p += stringbits[S_WITH].length();
+			if (ux_simplecasecmp(p, stringbits[S_WITH])) {
+				p += stringbits[S_WITH].size();
 			}
 			else {
 				error("%s: Error: Expected movement/merge keyword WITH on line %u near `%S`!\n", p);
@@ -1405,11 +1409,11 @@ void TextualParser::parseRule(UChar*& p, KEYWORDS key) {
 		}
 		else {
 			AST_OPEN(RuleDirection);
-			if (ux_simplecasecmp(p, stringbits[S_TO].getTerminatedBuffer(), stringbits[S_TO].length())) {
-				p += stringbits[S_TO].length();
+			if (ux_simplecasecmp(p, stringbits[S_TO])) {
+				p += stringbits[S_TO].size();
 			}
-			else if (ux_simplecasecmp(p, stringbits[S_FROM].getTerminatedBuffer(), stringbits[S_FROM].length())) {
-				p += stringbits[S_FROM].length();
+			else if (ux_simplecasecmp(p, stringbits[S_FROM])) {
+				p += stringbits[S_FROM].size();
 				rule->flags |= RF_REVERSE;
 			}
 			else {
@@ -1421,15 +1425,15 @@ void TextualParser::parseRule(UChar*& p, KEYWORDS key) {
 
 		if (key == K_MOVE) {
 			AST_OPEN(RuleWithChildDepTarget);
-			if (ux_simplecasecmp(p, g_flags[FL_WITHCHILD].getTerminatedBuffer(), g_flags[FL_WITHCHILD].length())) {
-				p += g_flags[FL_WITHCHILD].length();
+			if (ux_simplecasecmp(p, g_flags[FL_WITHCHILD])) {
+				p += g_flags[FL_WITHCHILD].size();
 				result->has_dep = true;
 				Set* s = parseSetInlineWrapper(p);
 				rule->childset2 = s->hash;
 				result->lines += SKIPWS(p);
 			}
-			else if (ux_simplecasecmp(p, g_flags[FL_NOCHILD].getTerminatedBuffer(), g_flags[FL_NOCHILD].length())) {
-				p += g_flags[FL_NOCHILD].length();
+			else if (ux_simplecasecmp(p, g_flags[FL_NOCHILD])) {
+				p += g_flags[FL_NOCHILD].size();
 				rule->childset2 = 0;
 				result->lines += SKIPWS(p);
 			}
@@ -1541,7 +1545,7 @@ void TextualParser::parseFromUChar(UChar* input, const char* fname) {
 				}
 				result->delimiters = result->allocateSet();
 				result->delimiters->line = result->lines;
-				result->delimiters->setName(stringbits[S_DELIMITSET].getTerminatedBuffer());
+				result->delimiters->setName(stringbits[S_DELIMITSET]);
 				AST_OPEN(Delimiters);
 				p += 10;
 				result->lines += SKIPWS(p, '=');
@@ -1567,7 +1571,7 @@ void TextualParser::parseFromUChar(UChar* input, const char* fname) {
 				}
 				result->soft_delimiters = result->allocateSet();
 				result->soft_delimiters->line = result->lines;
-				result->soft_delimiters->setName(stringbits[S_SOFTDELIMITSET].getTerminatedBuffer());
+				result->soft_delimiters->setName(stringbits[S_SOFTDELIMITSET]);
 				AST_OPEN(SoftDelimiters);
 				p += 15;
 				result->lines += SKIPWS(p, '=');
@@ -2124,9 +2128,9 @@ void TextualParser::parseFromUChar(UChar* input, const char* fname) {
 				while (*p != ';') {
 					bool found = false;
 					for (auto pair : pairs) {
-						if (ux_simplecasecmp(p, stringbits[pair.first].getTerminatedBuffer(), stringbits[pair.first].length())) {
+						if (ux_simplecasecmp(p, stringbits[pair.first])) {
 							AST_OPEN(Option);
-							p += stringbits[pair.first].length();
+							p += stringbits[pair.first].size();
 							AST_CLOSE(p);
 							*pair.second = true;
 							result->lines += SKIPWS(p);
@@ -2581,11 +2585,11 @@ int TextualParser::parse_grammar(const std::string& buffer) {
 }
 
 int TextualParser::parse_grammar(UString& data) {
-	result->addAnchor(keywords[K_START].getTerminatedBuffer(), 0, true);
+	result->addAnchor(keywords[K_START], 0, true);
 
 	// Allocate the magic * tag
 	{
-		Tag* tany = parseTag(stringbits[S_ASTERIK].getTerminatedBuffer());
+		Tag* tany = parseTag(stringbits[S_ASTERIK]);
 		result->tag_any = tany->hash;
 	}
 	// Create the dummy set
@@ -2594,8 +2598,8 @@ int TextualParser::parse_grammar(UString& data) {
 	{
 		Set* set_c = result->allocateSet();
 		set_c->line = 0;
-		set_c->setName(stringbits[S_UU_TARGET].getTerminatedBuffer());
-		Tag* t = parseTag(stringbits[S_UU_TARGET].getTerminatedBuffer());
+		set_c->setName(stringbits[S_UU_TARGET]);
+		Tag* t = parseTag(stringbits[S_UU_TARGET]);
 		result->addTagToSet(t, set_c);
 		result->addSet(set_c);
 	}
@@ -2603,8 +2607,8 @@ int TextualParser::parse_grammar(UString& data) {
 	{
 		Set* set_c = result->allocateSet();
 		set_c->line = 0;
-		set_c->setName(stringbits[S_UU_MARK].getTerminatedBuffer());
-		Tag* t = parseTag(stringbits[S_UU_MARK].getTerminatedBuffer());
+		set_c->setName(stringbits[S_UU_MARK]);
+		Tag* t = parseTag(stringbits[S_UU_MARK]);
 		result->addTagToSet(t, set_c);
 		result->addSet(set_c);
 	}
@@ -2612,8 +2616,8 @@ int TextualParser::parse_grammar(UString& data) {
 	{
 		Set* set_c = result->allocateSet();
 		set_c->line = 0;
-		set_c->setName(stringbits[S_UU_ATTACHTO].getTerminatedBuffer());
-		Tag* t = parseTag(stringbits[S_UU_ATTACHTO].getTerminatedBuffer());
+		set_c->setName(stringbits[S_UU_ATTACHTO]);
+		Tag* t = parseTag(stringbits[S_UU_ATTACHTO]);
 		result->addTagToSet(t, set_c);
 		result->addSet(set_c);
 	}
@@ -2622,8 +2626,8 @@ int TextualParser::parse_grammar(UString& data) {
 	{
 		Set* set_c = s_left = result->allocateSet();
 		set_c->line = 0;
-		set_c->setName(stringbits[S_UU_LEFT].getTerminatedBuffer());
-		Tag* t = parseTag(stringbits[S_UU_LEFT].getTerminatedBuffer());
+		set_c->setName(stringbits[S_UU_LEFT]);
+		Tag* t = parseTag(stringbits[S_UU_LEFT]);
 		result->addTagToSet(t, set_c);
 		result->addSet(set_c);
 	}
@@ -2632,8 +2636,8 @@ int TextualParser::parse_grammar(UString& data) {
 	{
 		Set* set_c = s_right = result->allocateSet();
 		set_c->line = 0;
-		set_c->setName(stringbits[S_UU_RIGHT].getTerminatedBuffer());
-		Tag* t = parseTag(stringbits[S_UU_RIGHT].getTerminatedBuffer());
+		set_c->setName(stringbits[S_UU_RIGHT]);
+		Tag* t = parseTag(stringbits[S_UU_RIGHT]);
 		result->addTagToSet(t, set_c);
 		result->addSet(set_c);
 	}
@@ -2641,8 +2645,8 @@ int TextualParser::parse_grammar(UString& data) {
 	{
 		Set* set_c = result->allocateSet();
 		set_c->line = 0;
-		set_c->setName(stringbits[S_UU_ENCL].getTerminatedBuffer());
-		Tag* t = parseTag(stringbits[S_UU_ENCL].getTerminatedBuffer());
+		set_c->setName(stringbits[S_UU_ENCL]);
+		Tag* t = parseTag(stringbits[S_UU_ENCL]);
 		result->addTagToSet(t, set_c);
 		result->addSet(set_c);
 	}
@@ -2650,7 +2654,7 @@ int TextualParser::parse_grammar(UString& data) {
 	{
 		Set* set_c = result->allocateSet();
 		set_c->line = 0;
-		set_c->setName(stringbits[S_UU_PAREN].getTerminatedBuffer());
+		set_c->setName(stringbits[S_UU_PAREN]);
 		set_c->set_ops.push_back(S_OR);
 		set_c->sets.push_back(s_left->hash);
 		set_c->sets.push_back(s_right->hash);
@@ -2660,15 +2664,15 @@ int TextualParser::parse_grammar(UString& data) {
 	{
 		Set* set_c = result->allocateSet();
 		set_c->line = 0;
-		set_c->setName(stringbits[S_UU_SAME_BASIC].getTerminatedBuffer());
-		Tag* t = parseTag(stringbits[S_UU_SAME_BASIC].getTerminatedBuffer());
+		set_c->setName(stringbits[S_UU_SAME_BASIC]);
+		Tag* t = parseTag(stringbits[S_UU_SAME_BASIC]);
 		result->addTagToSet(t, set_c);
 		result->addSet(set_c);
 	}
 
 	parseFromUChar(&data[4], filename);
 
-	result->addAnchor(keywords[K_END].getTerminatedBuffer(), static_cast<uint32_t>(result->rule_by_number.size() - 1), true);
+	result->addAnchor(keywords[K_END], static_cast<uint32_t>(result->rule_by_number.size() - 1), true);
 
 	for (auto it : result->rule_by_number) {
 		if (!it->name.empty()) {

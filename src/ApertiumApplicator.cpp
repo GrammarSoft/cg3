@@ -104,8 +104,8 @@ void ApertiumApplicator::runGrammarOnText(std::istream& input, std::ostream& out
 
 	uint32_t resetAfter = ((num_windows + 4) * 2 + 1);
 
-	begintag = addTag(stringbits[S_BEGINTAG].getTerminatedBuffer())->hash; // Beginning of sentence tag
-	endtag = addTag(stringbits[S_ENDTAG].getTerminatedBuffer())->hash;     // End of sentence tag
+	begintag = addTag(stringbits[S_BEGINTAG])->hash; // Beginning of sentence tag
+	endtag = addTag(stringbits[S_ENDTAG])->hash;     // End of sentence tag
 
 	SingleWindow* cSWindow = 0; // Current single window (Cohort frame)
 	Cohort* cCohort = 0;        // Current cohort

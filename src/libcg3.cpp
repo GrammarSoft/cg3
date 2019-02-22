@@ -366,7 +366,7 @@ void cg3_cohort_getrelation_u(cg3_cohort *cohort_, const UChar *rel, uint32_t *r
 	if ((cohort->type & CT_RELATED) && !cohort->relations.empty()) {
 		for (auto miter : cohort->relations) {
 			for (auto siter : miter->second) {
-				if (u_strcmp(ga->single_tags.find(miter.first)->second->tag.c_str(), rel) == 0) {
+				if (ga->single_tags.find(miter.first)->second->tag == rel) {
 					*rel_parent = siter;
 				}
 			}
