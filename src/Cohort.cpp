@@ -255,4 +255,11 @@ bool Cohort::remRelation(uint32_t rel, uint32_t cohort) {
 	}
 	return false;
 }
+
+void Cohort::setRelated() {
+	type |= CT_RELATED;
+	for (auto& r : readings) {
+		r->noprint = false;
+	}
+}
 }

@@ -1,5 +1,5 @@
 "<word>"
-	"word" none #1001->1001
+	"word" none #1001->1001 ID:1 R:abs-prev-begin:11
 "<word>"
 	"word" third #1002->1002
 "<word>"
@@ -7,9 +7,10 @@
 "<word>"
 	"word" none #1004->1004
 "<$.>"
+	"$." #1005->1005 ID:5 R:abs-prev-end:11
 
 "<word>"
-	"word" none #2001->2001
+	"word" none #2001->2001 ID:6 R:abs-begin:11
 "<word>"
 	"word" second #2002->2002
 "<word>"
@@ -19,7 +20,7 @@
 "<word>"
 	"word" startfourth @neighbour-right #2005->3002
 "<word>"
-	"word" startfirst @self #2006->2004
+	"word" startfirst @self #2006->2004 ID:11
 "<word>"
 	"word" startsecond @neighbour-left #2007->2009
 "<word>"
@@ -33,9 +34,10 @@
 "<word>"
 	"word" none #2012->2012
 "<$.>"
+	"$." #2013->2013 ID:18 R:abs-end:11
 
 "<word>"
-	"word" none #3001->3001
+	"word" none #3001->3001 ID:19 R:abs-next-begin:11
 "<word>"
 	"word" fourth #3002->3002
 "<word>"
@@ -43,4 +45,4 @@
 "<word>"
 	"word" fourth #3004->3004
 "<$.>"
-
+	"$." #3005->3005 ID:23 R:abs-next-end:11
