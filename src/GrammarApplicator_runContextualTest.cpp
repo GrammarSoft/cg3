@@ -800,12 +800,12 @@ Cohort* GrammarApplicator::runRelationTest(SingleWindow* sWindow, Cohort* curren
 	}
 
 	if (test->pos & POS_LEFT) {
-		static CohortSet tmp;
+		static thread_local CohortSet tmp;
 		tmp.assign(rels.begin(), rels.lower_bound(current));
 		rels.swap(tmp);
 	}
 	if (test->pos & POS_RIGHT) {
-		static CohortSet tmp;
+		static thread_local CohortSet tmp;
 		tmp.assign(rels.lower_bound(current), rels.end());
 		rels.swap(tmp);
 	}

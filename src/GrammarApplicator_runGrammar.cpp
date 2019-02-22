@@ -90,8 +90,8 @@ void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& outp
 		}
 	}
 
-	std::vector<UChar> line(1024, 0);
-	std::vector<UChar> cleaned(line.size() + 1, 0);
+	UString line(1024, 0);
+	UString cleaned(line.size() + 1, 0);
 	bool ignoreinput = false;
 	bool did_soft_lookback = false;
 	bool is_deleted = false;
@@ -459,7 +459,7 @@ void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& outp
 			}
 		istext:
 			if (cleaned[0]) {
-				if (u_strcmp(&cleaned[0], stringbits[S_CMD_FLUSH].getTerminatedBuffer()) == 0) {
+				if (&cleaned[0] == stringbits[S_CMD_FLUSH]) {
 					if (verbosity_level > 0) {
 						u_fprintf(ux_stderr, "Info: FLUSH encountered on line %u. Flushing...\n", numLines);
 					}
@@ -502,31 +502,31 @@ void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& outp
 					fflush(stdout);
 					fflush(stderr);
 				}
-				else if (u_strcmp(&cleaned[0], stringbits[S_CMD_IGNORE].getTerminatedBuffer()) == 0) {
+				else if (&cleaned[0] == stringbits[S_CMD_IGNORE]) {
 					if (verbosity_level > 0) {
 						u_fprintf(ux_stderr, "Info: IGNORE encountered on line %u. Passing through all input...\n", numLines);
 					}
 					ignoreinput = true;
 				}
-				else if (u_strcmp(&cleaned[0], stringbits[S_CMD_RESUME].getTerminatedBuffer()) == 0) {
+				else if (&cleaned[0] == stringbits[S_CMD_RESUME]) {
 					if (verbosity_level > 0) {
 						u_fprintf(ux_stderr, "Info: RESUME encountered on line %u. Resuming CG...\n", numLines);
 					}
 					ignoreinput = false;
 				}
-				else if (u_strcmp(&cleaned[0], stringbits[S_CMD_EXIT].getTerminatedBuffer()) == 0) {
+				else if (&cleaned[0] == stringbits[S_CMD_EXIT]) {
 					if (verbosity_level > 0) {
 						u_fprintf(ux_stderr, "Info: EXIT encountered on line %u. Exiting...\n", numLines);
 					}
 					u_fprintf(output, "%S", &line[0]);
 					goto CGCMD_EXIT;
 				}
-				else if (u_strncmp(&cleaned[0], stringbits[S_CMD_SETVAR].getTerminatedBuffer(), stringbits[S_CMD_SETVAR].length()) == 0) {
+				else if (u_strncmp(&cleaned[0], stringbits[S_CMD_SETVAR].c_str(), stringbits[S_CMD_SETVAR].size()) == 0) {
 					//u_fprintf(ux_stderr, "Info: SETVAR encountered on line %u.\n", numLines);
 					cleaned[packoff - 1] = 0;
 					line[0] = 0;
 
-					UChar* s = &cleaned[stringbits[S_CMD_SETVAR].length()];
+					UChar* s = &cleaned[stringbits[S_CMD_SETVAR].size()];
 					UChar* c = u_strchr(s, ',');
 					UChar* d = u_strchr(s, '=');
 					if (c == 0 && d == 0) {
@@ -597,12 +597,12 @@ void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& outp
 						}
 					}
 				}
-				else if (u_strncmp(&cleaned[0], stringbits[S_CMD_REMVAR].getTerminatedBuffer(), stringbits[S_CMD_REMVAR].length()) == 0) {
+				else if (u_strncmp(&cleaned[0], stringbits[S_CMD_REMVAR].c_str(), stringbits[S_CMD_REMVAR].size()) == 0) {
 					//u_fprintf(ux_stderr, "Info: REMVAR encountered on line %u.\n", numLines);
 					cleaned[packoff - 1] = 0;
 					line[0] = 0;
 
-					UChar* s = &cleaned[stringbits[S_CMD_REMVAR].length()];
+					UChar* s = &cleaned[stringbits[S_CMD_REMVAR].size()];
 					UChar* c = u_strchr(s, ',');
 					uint32_t a = 0;
 					while (c && *c) {

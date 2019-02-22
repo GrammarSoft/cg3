@@ -45,7 +45,7 @@ Tag* parseTag(const UChar* to, const UChar* p, State& state) {
 
 	Taguint32HashMap::iterator it;
 	uint32_t thash = hash_value(to);
-	if ((it = state.get_grammar()->single_tags.find(thash)) != state.get_grammar()->single_tags.end() && !it->second->tag.empty() && u_strcmp(it->second->tag.c_str(), to) == 0) {
+	if ((it = state.get_grammar()->single_tags.find(thash)) != state.get_grammar()->single_tags.end() && !it->second->tag.empty() && it->second->tag == to) {
 		return it->second;
 	}
 
@@ -184,12 +184,8 @@ Tag* parseTag(const UChar* to, const UChar* p, State& state) {
 			}
 		}
 		for (auto iter : state.get_grammar()->icase_tags) {
-			UErrorCode status = U_ZERO_ERROR;
-			if (u_strCaseCompare(tag->tag.c_str(), static_cast<int32_t>(tag->tag.size()), iter->tag.c_str(), static_cast<int32_t>(iter->tag.size()), U_FOLD_CASE_DEFAULT, &status) == 0) {
+			if (ux_strCaseCompare(tag->tag, iter->tag)) {
 				tag->type |= T_TEXTUAL;
-			}
-			if (status != U_ZERO_ERROR) {
-				state.error("%s: Error: u_strCaseCompare(parseTag) returned %s on line %u near `%S` - cannot continue!\n", u_errorName(status), p);
 			}
 		}
 
@@ -205,40 +201,40 @@ Tag* parseTag(const UChar* to, const UChar* p, State& state) {
 			if (u_sscanf(tag->tag.c_str(), "#%i->%i", &dep_self, &dep_parent) == 2 && dep_self != 0) {
 				tag->type |= T_DEPENDENCY;
 			}
-			constexpr UChar local_dep_unicode[] = { '#', '%', 'i', L'\u2192', '%', 'i', 0 };
+			constexpr UChar local_dep_unicode[] = { '#', '%', 'i', u'\u2192', '%', 'i', 0 };
 			if (u_sscanf_u(tag->tag.c_str(), local_dep_unicode, &dep_self, &dep_parent) == 2 && dep_self != 0) {
 				tag->type |= T_DEPENDENCY;
 			}
 		}
 		//*/
 
-		if (u_strcmp(tag->tag.c_str(), stringbits[S_ASTERIK].getTerminatedBuffer()) == 0) {
+		if (tag->tag == stringbits[S_ASTERIK]) {
 			tag->type |= T_ANY;
 		}
-		else if (u_strcmp(tag->tag.c_str(), stringbits[S_UU_LEFT].getTerminatedBuffer()) == 0) {
+		else if (tag->tag == stringbits[S_UU_LEFT]) {
 			tag->type |= T_PAR_LEFT;
 		}
-		else if (u_strcmp(tag->tag.c_str(), stringbits[S_UU_RIGHT].getTerminatedBuffer()) == 0) {
+		else if (tag->tag == stringbits[S_UU_RIGHT]) {
 			tag->type |= T_PAR_RIGHT;
 		}
-		else if (u_strcmp(tag->tag.c_str(), stringbits[S_UU_ENCL].getTerminatedBuffer()) == 0) {
+		else if (tag->tag == stringbits[S_UU_ENCL]) {
 			tag->type |= T_ENCL;
 		}
-		else if (u_strcmp(tag->tag.c_str(), stringbits[S_UU_TARGET].getTerminatedBuffer()) == 0) {
+		else if (tag->tag == stringbits[S_UU_TARGET]) {
 			tag->type |= T_TARGET;
 		}
-		else if (u_strcmp(tag->tag.c_str(), stringbits[S_UU_MARK].getTerminatedBuffer()) == 0) {
+		else if (tag->tag == stringbits[S_UU_MARK]) {
 			tag->type |= T_MARK;
 		}
-		else if (u_strcmp(tag->tag.c_str(), stringbits[S_UU_ATTACHTO].getTerminatedBuffer()) == 0) {
+		else if (tag->tag == stringbits[S_UU_ATTACHTO]) {
 			tag->type |= T_ATTACHTO;
 		}
-		else if (u_strcmp(tag->tag.c_str(), stringbits[S_UU_SAME_BASIC].getTerminatedBuffer()) == 0) {
+		else if (tag->tag == stringbits[S_UU_SAME_BASIC]) {
 			tag->type |= T_SAME_BASIC;
 		}
 
 		if (tag->type & T_REGEXP) {
-			if (u_strcmp(tag->tag.c_str(), stringbits[S_RXTEXT_ANY].getTerminatedBuffer()) == 0 || u_strcmp(tag->tag.c_str(), stringbits[S_RXBASE_ANY].getTerminatedBuffer()) == 0 || u_strcmp(tag->tag.c_str(), stringbits[S_RXWORD_ANY].getTerminatedBuffer()) == 0) {
+			if (tag->tag == stringbits[S_RXTEXT_ANY] || tag->tag == stringbits[S_RXBASE_ANY] || tag->tag == stringbits[S_RXWORD_ANY]) {
 				// ToDo: Add a case-insensitive version of T_REGEXP_ANY for unification
 				tag->type |= T_REGEXP_ANY;
 				tag->type &= ~T_REGEXP;

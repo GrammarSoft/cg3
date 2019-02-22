@@ -119,9 +119,11 @@ public:
 	void getTags(const Set& set, std::set<TagVector>& rv);
 
 	void addAnchor(const UChar* to, uint32_t at, bool primary = false);
+	void addAnchor(const UString& to, uint32_t at, bool primary = false);
 
 	Tag* allocateTag();
 	Tag* allocateTag(const UChar* tag);
+	Tag* allocateTag(const UString& tag);
 	Tag* addTag(Tag* tag);
 	void destroyTag(Tag* tag);
 	void addTagToSet(Tag* rtag, Set* set);

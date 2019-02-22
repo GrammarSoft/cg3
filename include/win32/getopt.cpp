@@ -29,7 +29,7 @@ int	optopt;
 char	*optarg;
 
 int getopt(int argc, char **argv, const char *opts) {
-	static int sp = 1;
+	static thread_local int sp = 1;
 	int c;
 	const char *cp;
 

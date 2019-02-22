@@ -99,7 +99,7 @@ int main(int argc, char* argv[]) {
 	grammar.ux_stderr = &std::cerr;
 	grammar.allocateDummySet();
 	grammar.delimiters = grammar.allocateSet();
-	grammar.addTagToSet(grammar.allocateTag(CG3::stringbits[0].getTerminatedBuffer()), grammar.delimiters);
+	grammar.addTagToSet(grammar.allocateTag(CG3::stringbits[0]), grammar.delimiters);
 	grammar.reindex();
 
 	CG3::FormatConverter applicator(std::cerr);

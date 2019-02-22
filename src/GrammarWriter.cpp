@@ -89,7 +89,7 @@ void GrammarWriter::printSet(std::ostream& output, const Set& curset) {
 		u_fprintf(output, "SET %S = ", n);
 		u_fprintf(output, "%S ", grammar->sets_list[curset.sets[0]]->name.c_str());
 		for (uint32_t i = 0; i < curset.sets.size() - 1; i++) {
-			u_fprintf(output, "%S %S ", stringbits[curset.set_ops[i]].getTerminatedBuffer(), grammar->sets_list[curset.sets[i + 1]]->name.c_str());
+			u_fprintf(output, "%S %S ", stringbits[curset.set_ops[i]].c_str(), grammar->sets_list[curset.sets[i + 1]]->name.c_str());
 		}
 		u_fprintf(output, " ;\n\n");
 	}
@@ -147,10 +147,10 @@ int GrammarWriter::writeGrammar(std::ostream& output) {
 	for (auto s : grammar->sets_list) {
 		if (s->name.empty()) {
 			if (s == grammar->delimiters) {
-				s->name.assign(stringbits[S_DELIMITSET].getTerminatedBuffer());
+				s->name = stringbits[S_DELIMITSET];
 			}
 			else if (s == grammar->soft_delimiters) {
-				s->name.assign(stringbits[S_SOFTDELIMITSET].getTerminatedBuffer());
+				s->name = stringbits[S_SOFTDELIMITSET];
 			}
 			else {
 				s->name.resize(12);
@@ -246,7 +246,7 @@ void GrammarWriter::printRule(std::ostream& to, const Rule& rule) {
 		u_fprintf(to, " ");
 	}
 
-	u_fprintf(to, "%S", keywords[rule.type].getTerminatedBuffer());
+	u_fprintf(to, "%S", keywords[rule.type].c_str());
 
 	if (!rule.name.empty() && !(rule.name[0] == '_' && rule.name[1] == 'R' && rule.name[2] == '_')) {
 		u_fprintf(to, ":%S", rule.name.c_str());
@@ -256,10 +256,10 @@ void GrammarWriter::printRule(std::ostream& to, const Rule& rule) {
 	for (uint32_t i = 0; i < FLAGS_COUNT; i++) {
 		if (rule.flags & (1 << i)) {
 			if (i == FL_SUB) {
-				u_fprintf(to, "%S:%d ", g_flags[i].getTerminatedBuffer(), rule.sub_reading);
+				u_fprintf(to, "%S:%d ", g_flags[i].c_str(), rule.sub_reading);
 			}
 			else {
-				u_fprintf(to, "%S ", g_flags[i].getTerminatedBuffer());
+				u_fprintf(to, "%S ", g_flags[i].c_str());
 			}
 		}
 	}

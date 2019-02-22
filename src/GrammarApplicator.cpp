@@ -139,9 +139,9 @@ void GrammarApplicator::resetIndexes() {
 void GrammarApplicator::setGrammar(Grammar* res) {
 	grammar = res;
 	single_tags = grammar->single_tags;
-	tag_begin = addTag(stringbits[S_BEGINTAG].getTerminatedBuffer());
-	tag_end = addTag(stringbits[S_ENDTAG].getTerminatedBuffer());
-	tag_subst = addTag(stringbits[S_IGNORE].getTerminatedBuffer());
+	tag_begin = addTag(stringbits[S_BEGINTAG]);
+	tag_end = addTag(stringbits[S_ENDTAG]);
+	tag_subst = addTag(stringbits[S_IGNORE]);
 	begintag = tag_begin->hash;
 	endtag = tag_end->hash;
 	substtag = tag_subst->hash;
@@ -219,7 +219,7 @@ void GrammarApplicator::index() {
 		valid_rules = vr;
 	}
 
-	constexpr UChar local_utf_pattern[] = { ' ', '#', '%', 'u', '%', '0', '?', 'u', L'\u2192', '%', 'u', '%', '0', '?', 'u', 0 };
+	constexpr UChar local_utf_pattern[] = { ' ', '#', '%', 'u', '%', '0', '?', 'u', u'\u2192', '%', 'u', '%', '0', '?', 'u', 0 };
 	constexpr UChar local_latin_pattern[] = { ' ', '#', '%', 'u', '%', '0', '?', 'u', '-', '>', '%', 'u', '%', '0', '?', 'u', 0 };
 
 	span_pattern_utf = local_utf_pattern;
@@ -274,7 +274,7 @@ Tag* GrammarApplicator::addTag(Tag* tag) {
 Tag* GrammarApplicator::addTag(const UChar* txt, bool vstr) {
 	Taguint32HashMap::iterator it;
 	uint32_t thash = hash_value(txt);
-	if ((it = single_tags.find(thash)) != single_tags.end() && !it->second->tag.empty() && u_strcmp(it->second->tag.c_str(), txt) == 0) {
+	if ((it = single_tags.find(thash)) != single_tags.end() && !it->second->tag.empty() && it->second->tag == txt) {
 		return it->second;
 	}
 
@@ -315,14 +315,9 @@ Tag* GrammarApplicator::addTag(const UChar* txt, bool vstr) {
 					continue;
 				}
 				for (auto iter : grammar->icase_tags) {
-					UErrorCode status = U_ZERO_ERROR;
-					if (u_strCaseCompare(titer.second->tag.c_str(), static_cast<int32_t>(titer.second->tag.size()), iter->tag.c_str(), static_cast<int32_t>(iter->tag.size()), U_FOLD_CASE_DEFAULT, &status) == 0) {
+					if (ux_strCaseCompare(titer.second->tag, iter->tag)) {
 						titer.second->type |= T_TEXTUAL;
 						reflow = true;
-					}
-					if (status != U_ZERO_ERROR) {
-						u_fprintf(ux_stderr, "Error: u_strCaseCompare(addTag) returned %s - cannot continue!\n", u_errorName(status));
-						CG3Quit(1);
 					}
 				}
 			}
@@ -342,7 +337,7 @@ Tag* GrammarApplicator::addTag(const UString& txt, bool vstr) {
 void GrammarApplicator::printTrace(std::ostream& output, uint32_t hit_by) {
 	if (hit_by < grammar->rule_by_number.size()) {
 		const Rule* r = grammar->rule_by_number[hit_by];
-		u_fprintf(output, "%S", keywords[r->type].getTerminatedBuffer());
+		u_fprintf(output, "%S", keywords[r->type].c_str());
 		if (r->type == K_ADDRELATION || r->type == K_SETRELATION || r->type == K_REMRELATION || r->type == K_ADDRELATIONS || r->type == K_SETRELATIONS || r->type == K_REMRELATIONS) {
 			u_fprintf(output, "(%S", r->maplist->getNonEmpty().begin()->first->tag.c_str());
 			if (r->type == K_ADDRELATIONS || r->type == K_SETRELATIONS || r->type == K_REMRELATIONS) {
@@ -423,7 +418,7 @@ void GrammarApplicator::printReading(const Reading* reading, std::ostream& outpu
 			}
 		}
 
-		constexpr UChar local_utf_pattern[] = { ' ', '#', '%', 'u', L'\u2192', '%', 'u', 0 };
+		constexpr UChar local_utf_pattern[] = { ' ', '#', '%', 'u', u'\u2192', '%', 'u', 0 };
 		constexpr UChar local_latin_pattern[] = { ' ', '#', '%', 'u', '-', '>', '%', 'u', 0 };
 		const UChar* pattern = local_latin_pattern;
 		if (unicode_tags) {
@@ -547,14 +542,14 @@ void GrammarApplicator::printSingleWindow(SingleWindow* window, std::ostream& ou
 		if (iter != window->variables_set.end()) {
 			if (iter->second != grammar->tag_any) {
 				Tag* value = single_tags[iter->second];
-				u_fprintf(output, "%S%S=%S>\n", stringbits[S_CMD_SETVAR].getTerminatedBuffer(), key->tag.c_str(), value->tag.c_str());
+				u_fprintf(output, "%S%S=%S>\n", stringbits[S_CMD_SETVAR].c_str(), key->tag.c_str(), value->tag.c_str());
 			}
 			else {
-				u_fprintf(output, "%S%S>\n", stringbits[S_CMD_SETVAR].getTerminatedBuffer(), key->tag.c_str());
+				u_fprintf(output, "%S%S>\n", stringbits[S_CMD_SETVAR].c_str(), key->tag.c_str());
 			}
 		}
 		else {
-			u_fprintf(output, "%S%S>\n", stringbits[S_CMD_REMVAR].getTerminatedBuffer(), key->tag.c_str());
+			u_fprintf(output, "%S%S>\n", stringbits[S_CMD_REMVAR].c_str(), key->tag.c_str());
 		}
 	}
 

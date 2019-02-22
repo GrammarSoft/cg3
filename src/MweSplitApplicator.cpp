@@ -30,7 +30,7 @@ MweSplitApplicator::MweSplitApplicator(std::ostream& ux_err)
 	grammar->ux_stderr = ux_stderr;
 	grammar->allocateDummySet();
 	grammar->delimiters = grammar->allocateSet();
-	grammar->addTagToSet(grammar->allocateTag(CG3::stringbits[0].getTerminatedBuffer()), grammar->delimiters);
+	grammar->addTagToSet(grammar->allocateTag(CG3::stringbits[0]), grammar->delimiters);
 	grammar->reindex();
 	setGrammar(grammar);
 	owns_grammar = true;
@@ -148,14 +148,14 @@ void MweSplitApplicator::printSingleWindow(SingleWindow* window, std::ostream& o
 		if (iter != window->variables_set.end()) {
 			if (iter->second != grammar->tag_any) {
 				Tag* value = single_tags[iter->second];
-				u_fprintf(output, "%S%S=%S>\n", stringbits[S_CMD_SETVAR].getTerminatedBuffer(), key->tag.c_str(), value->tag.c_str());
+				u_fprintf(output, "%S%S=%S>\n", stringbits[S_CMD_SETVAR].c_str(), key->tag.c_str(), value->tag.c_str());
 			}
 			else {
-				u_fprintf(output, "%S%S>\n", stringbits[S_CMD_SETVAR].getTerminatedBuffer(), key->tag.c_str());
+				u_fprintf(output, "%S%S>\n", stringbits[S_CMD_SETVAR].c_str(), key->tag.c_str());
 			}
 		}
 		else {
-			u_fprintf(output, "%S%S>\n", stringbits[S_CMD_REMVAR].getTerminatedBuffer(), key->tag.c_str());
+			u_fprintf(output, "%S%S>\n", stringbits[S_CMD_REMVAR].c_str(), key->tag.c_str());
 		}
 	}
 
