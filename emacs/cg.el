@@ -752,6 +752,9 @@ That hook is useful for doing things like
 (defvar cg-output-mapping-face 'bold
   "Face name to use for mapping tags in cg-output.")
 
+(defvar cg-output-highlight-face 'font-lock-variable-name-face
+  "Face name to use for highlighting symbol at point in grammar in cg-output.")
+
 (defvar cg-output-mode-font-lock-keywords
   '(("^;\\(?:[^:]* \\)"
      ;; hack alert! a colon in a tag will mess this up
@@ -939,22 +942,23 @@ Use 0 to check immediately after each change."
 	  (with-demoted-errors (cg-check))))))))
 
 (defun cg-output-hl (cg-buffer)
+  "Highlight the symbol at point in the output buffer."
   (when (eq (current-buffer) cg-buffer)
     (let* ((sym (symbol-at-point))
-	   (sym-re (concat "[ \"]\\("
+	   (sym-re (concat "\\(?:^\\|[ \"(:]\\)\\("
 			   (regexp-quote (symbol-name sym))
-			   "\\)\\([\" ]\\|$\\)")))
+			   "\\)\\(?:[:)\" ]\\|$\\)")))
       ;; TODO: make regexp-opts of the LIST definitions and search
       ;; those as well?
       (with-current-buffer (cg-output-buffer)
 	(when (and sym
 		   (get-buffer-window)
 		   (not (cg-output-running)))
-	  (remove-overlays (point-min) (point-max) 'face 'lazy-highlight)
+	  (remove-overlays (point-min) (point-max) 'face cg-output-highlight-face)
 	  (goto-char (point-min))
 	  (while (re-search-forward sym-re nil 'noerror)
 	    (overlay-put (make-overlay (match-beginning 1) (match-end 1))
-			 'face 'lazy-highlight)))))))
+			 'face cg-output-highlight-face)))))))
 
 (defun cg-output-running ()
   (let ((proc (get-buffer-process (cg-output-buffer))))
