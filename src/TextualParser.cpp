@@ -1225,6 +1225,12 @@ void TextualParser::parseRule(UChar*& p, KEYWORDS key) {
 			}
 			return is_list;
 		}
+		for (auto op : s->set_ops) {
+			if (op != S_OR) {
+				is_list = false;
+				break;
+			}
+		}
 		for (auto i : s->sets) {
 			auto set = result->getSet(i);
 			if (set->trie.empty() && set->trie_special.empty() && !(set->type & (ST_TAG_UNIFY | ST_SET_UNIFY | ST_CHILD_UNIFY))) {
