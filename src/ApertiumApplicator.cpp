@@ -769,7 +769,7 @@ void ApertiumApplicator::printReading(Reading* reading, std::ostream& output) {
 
 			// similar to fst_processor.cc in lttoolbox:
 			bool firstupper = firstlower < wf.length() && (u_isupper(wf[firstlower]) != 0);
-			bool uppercase = wf == wfUPPER;
+			bool uppercase = wf.length() >= 2 && wf == wfUPPER;
 
 			if (uppercase) {
 				casing = ApertiumCasing::Upper;
