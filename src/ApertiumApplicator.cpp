@@ -741,27 +741,28 @@ void ApertiumApplicator::printReading(Reading* reading, std::ostream& output) {
 	ApertiumCasing casing = ApertiumCasing::Lower;
 
 	if (wordform_case) {
+		// Use surface/wordform case, eg. if lt-proc
+		// was called with "-w" option (which puts
+		// dictionary case on lemma/basefrom)
 		Reading* last = reading;
 		while (last->next && last->next->baseform) {
 			last = last->next;
 		}
 		if (last->baseform) {
-			// Lop off the initial and final '"' characters
-			// ToDo: A copy does not need to be made here - use pointer offsets
-			UnicodeString bf(single_tags[last->baseform]->tag.c_str() + 1, static_cast<int32_t>(single_tags[last->baseform]->tag.size() - 2));
+			// Including the initial and final '"' characters
+			UString* bftag = &single_tags[last->baseform]->tag;
+			// Excluding the initial and final '"' characters
+			int bf_length = bftag->size() - 2;
 
-			// Use surface/wordform case, eg. if lt-proc
-			// was called with "-w" option (which puts
-			// dictionary case on lemma/basefrom)
 			// Lop off the initial and final '"<>"' characters
-			// ToDo: A copy does not need to be made here - use pointer offsets
+			// ToDo: Can we compare wf==wfUPPER with less copying?
 			UnicodeString wf(reading->parent->wordform->tag.c_str() + 2, static_cast<int32_t>(reading->parent->wordform->tag.size() - 4));
 
 			UnicodeString wfUPPER(reading->parent->wordform->tag.c_str() + 2, static_cast<int32_t>(reading->parent->wordform->tag.size() - 4));
 			wfUPPER.toUpper();
 
-			for (; firstlower < bf.length(); ++firstlower) {
-				if (u_islower(bf[firstlower]) != 0) {
+			for (; firstlower < bf_length; ++firstlower) {
+				if (u_islower(bftag->at(firstlower+1)) != 0) {
 					break;
 				}
 			}
@@ -773,7 +774,7 @@ void ApertiumApplicator::printReading(Reading* reading, std::ostream& output) {
 			if (uppercase) {
 				casing = ApertiumCasing::Upper;
 			}
-			else if (firstupper && firstlower < bf.length()) {
+			else if (firstupper && firstlower < bf_length) {
 				casing = ApertiumCasing::Title;
 			}
 		}
