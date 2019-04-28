@@ -18,3 +18,4 @@ Makefile
 /src/cmake_install.cmake
 /src/CTestTestfile.cmake
 /install_manifest.txt
+.ccls-cache/

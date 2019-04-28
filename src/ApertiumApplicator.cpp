@@ -737,13 +737,14 @@ void ApertiumApplicator::printReading(Reading* reading, std::ostream& output) {
 		return;
 	}
 
-	int firstlower = 0;
+	size_t firstlower = 0;
 	ApertiumCasing casing = ApertiumCasing::Lower;
 
 	if (wordform_case) {
 		// Use surface/wordform case, eg. if lt-proc
 		// was called with "-w" option (which puts
 		// dictionary case on lemma/basefrom)
+		// cf. fst_processor.cc in lttoolbox
 		Reading* last = reading;
 		while (last->next && last->next->baseform) {
 			last = last->next;
@@ -752,14 +753,9 @@ void ApertiumApplicator::printReading(Reading* reading, std::ostream& output) {
 			// Including the initial and final '"' characters
 			UString* bftag = &single_tags[last->baseform]->tag;
 			// Excluding the initial and final '"' characters
-			int bf_length = bftag->size() - 2;
-
-			// Lop off the initial and final '"<>"' characters
-			// ToDo: Can we compare wf==wfUPPER with less copying?
-			UnicodeString wf(reading->parent->wordform->tag.c_str() + 2, static_cast<int32_t>(reading->parent->wordform->tag.size() - 4));
-
-			UnicodeString wfUPPER(reading->parent->wordform->tag.c_str() + 2, static_cast<int32_t>(reading->parent->wordform->tag.size() - 4));
-			wfUPPER.toUpper();
+			size_t bf_length = bftag->size() - 2;
+			UString* wftag = &reading->parent->wordform->tag;
+			size_t wf_length = wftag->size() - 4;
 
 			for (; firstlower < bf_length; ++firstlower) {
 				if (u_islower(bftag->at(firstlower+1)) != 0) {
@@ -767,14 +763,31 @@ void ApertiumApplicator::printReading(Reading* reading, std::ostream& output) {
 				}
 			}
 
-			// similar to fst_processor.cc in lttoolbox:
-			bool firstupper = firstlower < wf.length() && (u_isupper(wf[firstlower]) != 0);
-			bool uppercase = wf.length() >= 2 && wf == wfUPPER;
+			bool uppercaseseen = false;
+			bool allupper = true;
+			// 2-2: Skip the initial and final '"<>"' characters
+			for (size_t i = 2; i < wftag->size() - 2; ++i) {
+				UChar32 c = wftag->at(i);
+				if(u_isUAlphabetic(c)) {
+					if(!u_isUUppercase(c)) {
+						allupper = false;
+						break;
+					}
+					else {
+						uppercaseseen = true;
+					}
+				}
+			}
 
-			if (uppercase) {
+			// Require at least 2 characters to call it UPPER:
+			if (wf_length >= 2
+			    && allupper
+			    && uppercaseseen) {
 				casing = ApertiumCasing::Upper;
 			}
-			else if (firstupper && firstlower < bf_length) {
+			else if (firstlower < wf_length
+				 && firstlower < bf_length
+				 && (u_isupper(wftag->at(firstlower+2)) != 0)) {
 				casing = ApertiumCasing::Title;
 			}
 		}
