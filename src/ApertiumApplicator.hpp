@@ -26,6 +26,9 @@
 #include "GrammarApplicator.hpp"
 
 namespace CG3 {
+
+enum ApertiumCasing { Lower, Title, Upper };
+
 class ApertiumApplicator : public virtual GrammarApplicator {
 public:
 	ApertiumApplicator(std::ostream& ux_err);
@@ -51,6 +54,7 @@ protected:
 	void mergeMappings(Cohort& cohort);
 
 private:
+	void printReading(Reading* reading, std::ostream& output, ApertiumCasing casing, int firstlower);
 	void processReading(Reading* cReading, const UChar* reading_string);
 	void processReading(Reading* cReading, const UString& reading_string);
 };
