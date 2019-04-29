@@ -640,13 +640,9 @@ void ApertiumApplicator::testPR(std::ostream& output) {
 	}
 }
 
-void ApertiumApplicator::printReading(Reading* reading, std::ostream& output) {
-	if (reading->noprint) {
-		return;
-	}
-
+void ApertiumApplicator::printReading(Reading* reading, std::ostream& output, ApertiumCasing casing, int firstlower) {
 	if (reading->next) {
-		printReading(reading->next, output);
+		printReading(reading->next, output, casing, firstlower);
 		u_fputc('+', output);
 	}
 
@@ -654,33 +650,15 @@ void ApertiumApplicator::printReading(Reading* reading, std::ostream& output) {
 		// Lop off the initial and final '"' characters
 		UnicodeString bf(single_tags[reading->baseform]->tag.c_str() + 1, static_cast<int32_t>(single_tags[reading->baseform]->tag.size() - 2));
 
-		if (wordform_case && !reading->next) {
-			// Use surface/wordform case, eg. if lt-proc
-			// was called with "-w" option (which puts
-			// dictionary case on lemma/basefrom)
-			// Lop off the initial and final '"<>"' characters
-			// ToDo: A copy does not need to be made here - use pointer offsets
-			UnicodeString wf(reading->parent->wordform->tag.c_str() + 2, static_cast<int32_t>(reading->parent->wordform->tag.size() - 4));
-
-			int first = 0; // first occurrence of a lowercase character in baseform
-			for (; first < bf.length(); ++first) {
-				if (u_islower(bf[first]) != 0) {
-					break;
-				}
-			}
-
-			// this corresponds to fst_processor.cc in lttoolbox:
-			bool firstupper = first < wf.length() && (u_isupper(wf[first]) != 0);
-			bool uppercase = firstupper && u_isupper(wf[wf.length() - 1]);
-
-			if (uppercase) {
+		if (wordform_case) {
+			if (casing == ApertiumCasing::Upper) {
 				bf.toUpper(); // Perform a Unicode case folding to upper case -- Tino Didriksen
 			}
-			else if (firstupper && first < bf.length()) {
+			else if (casing == ApertiumCasing::Title && !reading->next) {
 				// static_cast<UChar>(u_toupper(bf[first])) gives strange output
-				UnicodeString range(bf, first, 1);
+				UnicodeString range(bf, firstlower, 1);
 				range.toUpper();
-				bf.setCharAt(first, range[0]);
+				bf.setCharAt(firstlower, range[0]);
 			}
 		} // if (wordform_case)
 
@@ -753,6 +731,68 @@ void ApertiumApplicator::printReading(Reading* reading, std::ostream& output) {
 		}
 	}
 }
+
+void ApertiumApplicator::printReading(Reading* reading, std::ostream& output) {
+	if (reading->noprint) {
+		return;
+	}
+
+	size_t firstlower = 0;
+	ApertiumCasing casing = ApertiumCasing::Lower;
+
+	if (wordform_case) {
+		// Use surface/wordform case, eg. if lt-proc
+		// was called with "-w" option (which puts
+		// dictionary case on lemma/basefrom)
+		// cf. fst_processor.cc in lttoolbox
+		Reading* last = reading;
+		while (last->next && last->next->baseform) {
+			last = last->next;
+		}
+		if (last->baseform) {
+			// Including the initial and final '"' characters
+			UString* bftag = &single_tags[last->baseform]->tag;
+			// Excluding the initial and final '"' characters
+			size_t bf_length = bftag->size() - 2;
+			UString* wftag = &reading->parent->wordform->tag;
+			size_t wf_length = wftag->size() - 4;
+
+			for (; firstlower < bf_length; ++firstlower) {
+				if (u_islower(bftag->at(firstlower+1)) != 0) {
+					break;
+				}
+			}
+
+			int uppercaseseen = 0;
+			bool allupper = true;
+			// 2-2: Skip the initial and final '"<>"' characters
+			for (size_t i = 2; i < wftag->size() - 2; ++i) {
+				UChar32 c = wftag->at(i);
+				if(u_isUAlphabetic(c)) {
+					if(!u_isUUppercase(c)) {
+						allupper = false;
+						break;
+					}
+					else {
+						uppercaseseen++;
+					}
+				}
+			}
+
+			// Require at least 2 characters to call it UPPER:
+			if (allupper && uppercaseseen >= 2) {
+				casing = ApertiumCasing::Upper;
+			}
+			else if (firstlower < wf_length
+				 && firstlower < bf_length
+				 && (u_isupper(wftag->at(firstlower+2)) != 0)) {
+				casing = ApertiumCasing::Title;
+			}
+		}
+	} // if (wordform_case)
+	printReading(reading, output, casing, firstlower);
+}
+
 
 void ApertiumApplicator::printSingleWindow(SingleWindow* window, std::ostream& output) {
 	// Window text comes at the left
