@@ -1,1 +1,2 @@
 ^word/word<alsowanted>/word<wanted>$ ^word/word<alsowanted>$ ^word/word<alsowanted>/word<wanted>$
+

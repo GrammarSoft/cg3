@@ -1,16 +1,16 @@
 DELIMITERS = "<$.>" ;
 
 SECTION
-REMOVE (didthis) ;
+REMOVE (@didthis) ;
 
 SECTION
-REMOVE (didthis) ;
+REMOVE (@didthis) ;
 
 SECTION
-REMOVE (didthis) ;
+REMOVE (@didthis) ;
 
 SECTION
-ADD (didthis) (wanted) ;
+ADD (@didthis) (wanted) ;
 
-SECTION
-REMOVE (didthis) ;
+# SECTION
+# REMOVE (@didthis) ;
