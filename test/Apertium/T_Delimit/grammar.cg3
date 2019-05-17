@@ -7,4 +7,4 @@ SECTION
 
 DELIMIT ASet ;
 
-REMOVE BSet;
+REMOVE BSet IF (0 (<<<));
