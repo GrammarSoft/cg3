@@ -89,7 +89,7 @@ Cohort* GrammarApplicator::runSingleTest(Cohort* cohort, const ContextualTest* t
 	if (context.matched_target && (test->pos & POS_SCANFIRST)) {
 		rvs |= TRV_BREAK;
 	}
-	else if (!(test->pos & (POS_SCANALL | POS_SCANFIRST | POS_DEP_GLOB))) {
+	else if (!(test->pos & (POS_SCANALL | POS_SCANFIRST | POS_DEP_DEEP | POS_DEP_GLOB))) {
 		rvs |= TRV_BREAK | TRV_BREAK_DEFAULT;
 	}
 

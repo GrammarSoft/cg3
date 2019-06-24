@@ -59,3 +59,21 @@
 	"six" #7→5 ID:27 R:rightmost-descendent:23 R:rightmost-deepest-child:23 R:rightmost-self-or-descendent:23 R:rightmost-right-descendent:23 R:leftmost-deepest-child:23
 "<seven>"
 	"seven" #8→1 ID:28 R:rightmost-sibling:23
+"<$.>"
+
+"<læreren>"
+	"lærer" <left> <1> <Hprof> <sentstart> <Hpers> <H> N UTR S DEF NOM @SUBJ> @ss-cSN-good #1→2 ID:30
+"<bestræbte>"
+	"bestræbe" <2> <v:på^vrp> <fn:try_to> <¤vr> <mv> <¤vr> V IMPF 3S AKT @FS-STA #2→0
+"<sig>"
+	"sig" <right> <3> <refl> <H> PRON <H> PERS nG 3S ACC @<ACC §REFL #3→2 ID:32
+"<på>"
+	"på" <right> <4> PRP @<PIV #4→2
+"<at>"
+	"at" <5> INFM @INFM #5→6
+"<undervise>"
+	"undervise" <6> <v:vt> <fn:teach> <mv> V INF AKT @ICL-P< #6→4 ID:35
+"<alle>"
+	"al" <right> <7> <quant> DET PRON nG P NOM @<ACC #7→6 ID:36
+"<$.>"
+	"." $. <8> PU @PU #8→7
