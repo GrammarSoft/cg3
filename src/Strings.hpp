@@ -177,6 +177,7 @@ enum : uint32_t {
 	S_ORDERED,
 	S_CMD_SETVAR,
 	S_CMD_REMVAR,
+	S_STATIC,
 	STRINGS_COUNT,
 };
 
