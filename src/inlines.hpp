@@ -342,6 +342,7 @@ inline void SKIPTO_NOSPAN_RAW(UChar*& p, const UChar a) {
 	}
 }
 
+[[noreturn]]
 inline void CG3Quit(const int32_t c = 0, const char* file = nullptr, const uint32_t line = 0) {
 	if (file && line) {
 		std::cerr << std::flush;

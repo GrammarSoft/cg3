@@ -155,10 +155,10 @@ public:
 	std::ostream* ux_stdout = nullptr;
 	std::ostream* ux_stderr;
 	UChar* filebase;
-	void error(const char* str, const UChar* p);
-	void error(const char* str, const char* s, const UChar* p);
-	void error(const char* str, const UChar* s, const UChar* p);
-	void error(const char* str, const char* s, const UChar* S, const UChar* p);
+	[[noreturn]] void error(const char* str, const UChar* p);
+	[[noreturn]] void error(const char* str, const char* s, const UChar* p);
+	[[noreturn]] void error(const char* str, const UChar* s, const UChar* p);
+	[[noreturn]] void error(const char* str, const char* s, const UChar* S, const UChar* p);
 	Grammar* get_grammar() { return grammar; }
 
 protected:
@@ -218,7 +218,7 @@ protected:
 	Cohort* target;
 	Cohort* mark;
 	Cohort* attach_to;
-	Cohort* merge_with;
+	Cohort* merge_with{};
 	Rule* current_rule;
 
 	typedef bc::flat_map<uint32_t, Reading*> readings_plain_t;
@@ -289,7 +289,7 @@ protected:
 	bool doesSetMatchCohortCareful(Cohort& cohort, const uint32_t set, dSMC_Context* context = nullptr);
 
 	bool statistics;
-	ticks gtimer;
+	ticks gtimer{};
 
 	Cohort* delimitAt(SingleWindow& current, Cohort* cohort);
 	void reflowReading(Reading& reading);
