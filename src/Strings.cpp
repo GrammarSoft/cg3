@@ -203,6 +203,7 @@ const UString stringbits[STRINGS_COUNT] = {
 	"ordered"_us,
 	"<STREAMCMD:SETVAR:"_us,
 	"<STREAMCMD:REMVAR:"_us,
+	"STATIC"_us,
 };
 
 std::vector<UString> gbuffers(NUM_GBUFFERS, UString(CG3_BUFFER_SIZE, 0));

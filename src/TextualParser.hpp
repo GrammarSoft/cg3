@@ -68,6 +68,7 @@ private:
 	bool in_section, in_before_sections, in_after_sections, in_null_section;
 	bool no_isets, no_itmpls, strict_wforms, strict_bforms, strict_second, strict_regex = false, strict_icase = false;
 	bool self_no_barrier = false;
+	bool only_sets = false;
 	const char* filename;
 
 	typedef std::unordered_map<ContextualTest*, std::pair<size_t, UString>> deferred_t;

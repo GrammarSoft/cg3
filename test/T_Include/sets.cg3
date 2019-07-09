@@ -1,0 +1,9 @@
+﻿DELIMITERS = "<$.>" ;
+
+LIST ASet = wanted ;
+LIST BSet = @A @B @C ;
+LIST CSet = (@D @E) @F ;
+
+SECTION
+SUBSTITUTE ("word") ("word" £errorB) BSet ;
+SUBSTITUTE ("word") ("word" £errorC) CSet ;
