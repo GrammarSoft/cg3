@@ -46,13 +46,13 @@ public:
 	int parse_grammar(const std::string& buffer);
 	int parse_grammar(const char* filename);
 
-	void error(const char* str);
-	void error(const char* str, UChar c);
-	void error(const char* str, const UChar* p);
-	void error(const char* str, UChar c, const UChar* p);
-	void error(const char* str, const char* s, const UChar* p);
-	void error(const char* str, const UChar* s, const UChar* p);
-	void error(const char* str, const char* s, const UChar* S, const UChar* p);
+	[[noreturn]] void error(const char* str);
+	[[noreturn]] void error(const char* str, UChar c);
+	[[noreturn]] void error(const char* str, const UChar* p);
+	[[noreturn]] void error(const char* str, UChar c, const UChar* p);
+	[[noreturn]] void error(const char* str, const char* s, const UChar* p);
+	[[noreturn]] void error(const char* str, const UChar* s, const UChar* p);
+	[[noreturn]] void error(const char* str, const char* s, const UChar* S, const UChar* p);
 	Tag* addTag(Tag* tag);
 	Grammar* get_grammar() { return result; }
 	const char* filebase;
@@ -60,7 +60,7 @@ public:
 	uint32SortedVector list_tags;
 
 private:
-	UChar nearbuf[32];
+	UChar nearbuf[32]{};
 	uint32_t verbosity_level;
 	uint32_t sets_counter;
 	uint32_t seen_mapping_prefix;

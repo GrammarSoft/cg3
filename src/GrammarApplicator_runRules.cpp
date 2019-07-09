@@ -649,7 +649,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						if (rule.type == K_IFF && type != K_SELECT) {
 							type = K_SELECT;
 							if (grammar->has_protect) {
-								for (size_t j = 0; i < j; ++j) {
+								for (size_t j = 0; j < i; ++j) {
 									Reading* reading = get_sub_reading(cohort->readings[j], rule.sub_reading);
 									if (reading && reading->immutable) {
 										reading->matched_target = true;
