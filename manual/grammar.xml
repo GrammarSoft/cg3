@@ -112,6 +112,12 @@
 
   <section id="grammar-include">
     <title>INCLUDE</title>
+    <indexterm>
+      <primary>INCLUDE</primary>
+    </indexterm>
+    <indexterm>
+      <primary>STATIC</primary>
+    </indexterm>
     <para>
       <link linkend="keyword-include">INCLUDE</link> loads and parses another grammar file as if it had been pasted
       in on the line of the INCLUDE statement, with the exception that line numbers start again from 1.
@@ -123,6 +129,15 @@
       The file name should not be quoted and the line must end with semi-colon.
       The include candidate will be looked for at a path relative to the file performing the include.
       Be careful not to make circular includes as they will loop forever.
+    </para>
+    <para>
+      If you use option <code>STATIC</code>, only the passive parts of the grammar is loaded.
+      This is useful if you have an existing grammar that you don't want to split, but still want to reuse the sets
+      from it for other grammars. This is transitive - all grammars loaded from a static grammar will be static, even
+      if not explicitly loaded as such.
+      <screen>
+        INCLUDE STATIC other-file-name ;
+      </screen>
     </para>
   </section>
 

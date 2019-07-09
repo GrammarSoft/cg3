@@ -1501,7 +1501,12 @@ void TextualParser::parseRule(UChar*& p, KEYWORDS key) {
 	}
 
 	rule->reverseContextualTests();
-	addRuleToGrammar(rule);
+	if (only_sets) {
+		result->destroyRule(rule);
+	}
+	else {
+		addRuleToGrammar(rule);
+	}
 
 	result->lines += SKIPWS(p, ';');
 	if (*p != ';') {
@@ -1518,7 +1523,9 @@ void TextualParser::parseAnchorish(UChar*& p) {
 	auto c = static_cast<int32_t>(n - p);
 	u_strncpy(&gbuffers[0][0], p, c);
 	gbuffers[0][c] = 0;
-	result->addAnchor(&gbuffers[0][0], static_cast<uint32_t>(result->rule_by_number.size()), true);
+	if (!only_sets) {
+		result->addAnchor(&gbuffers[0][0], static_cast<uint32_t>(result->rule_by_number.size()), true);
+	}
 	p = n;
 	AST_CLOSE(p);
 	result->lines += SKIPWS(p, ';');
@@ -1958,10 +1965,12 @@ void TextualParser::parseFromUChar(UChar* input, const char* fname) {
 			else if (IS_ICASE(p, "MAPPINGS", "mappings")) {
 				AST_OPEN(BeforeSections);
 				p += 8;
-				in_before_sections = true;
-				in_section = false;
-				in_after_sections = false;
-				in_null_section = false;
+				if (!only_sets) {
+					in_before_sections = true;
+					in_section = false;
+					in_after_sections = false;
+					in_null_section = false;
+				}
 				UChar* s = p;
 				SKIPLN(s);
 				SKIPWS(s);
@@ -1975,10 +1984,12 @@ void TextualParser::parseFromUChar(UChar* input, const char* fname) {
 			else if (IS_ICASE(p, "CORRECTIONS", "corrections")) {
 				AST_OPEN(BeforeSections);
 				p += 11;
-				in_before_sections = true;
-				in_section = false;
-				in_after_sections = false;
-				in_null_section = false;
+				if (!only_sets) {
+					in_before_sections = true;
+					in_section = false;
+					in_after_sections = false;
+					in_null_section = false;
+				}
 				UChar* s = p;
 				SKIPLN(s);
 				SKIPWS(s);
@@ -1992,10 +2003,12 @@ void TextualParser::parseFromUChar(UChar* input, const char* fname) {
 			else if (IS_ICASE(p, "BEFORE-SECTIONS", "before-sections")) {
 				AST_OPEN(BeforeSections);
 				p += 15;
-				in_before_sections = true;
-				in_section = false;
-				in_after_sections = false;
-				in_null_section = false;
+				if (!only_sets) {
+					in_before_sections = true;
+					in_section = false;
+					in_after_sections = false;
+					in_null_section = false;
+				}
 				UChar* s = p;
 				SKIPLN(s);
 				SKIPWS(s);
@@ -2009,11 +2022,13 @@ void TextualParser::parseFromUChar(UChar* input, const char* fname) {
 			else if (IS_ICASE(p, "SECTION", "section")) {
 				AST_OPEN(Section);
 				p += 7;
-				result->sections.push_back(result->lines);
-				in_before_sections = false;
-				in_section = true;
-				in_after_sections = false;
-				in_null_section = false;
+				if (!only_sets) {
+					result->sections.push_back(result->lines);
+					in_before_sections = false;
+					in_section = true;
+					in_after_sections = false;
+					in_null_section = false;
+				}
 				UChar* s = p;
 				SKIPLN(s);
 				SKIPWS(s);
@@ -2027,11 +2042,13 @@ void TextualParser::parseFromUChar(UChar* input, const char* fname) {
 			else if (IS_ICASE(p, "CONSTRAINTS", "constraints")) {
 				AST_OPEN(Section);
 				p += 11;
-				result->sections.push_back(result->lines);
-				in_before_sections = false;
-				in_section = true;
-				in_after_sections = false;
-				in_null_section = false;
+				if (!only_sets) {
+					result->sections.push_back(result->lines);
+					in_before_sections = false;
+					in_section = true;
+					in_after_sections = false;
+					in_null_section = false;
+				}
 				UChar* s = p;
 				SKIPLN(s);
 				SKIPWS(s);
@@ -2045,10 +2062,12 @@ void TextualParser::parseFromUChar(UChar* input, const char* fname) {
 			else if (IS_ICASE(p, "AFTER-SECTIONS", "after-sections")) {
 				AST_OPEN(AfterSections);
 				p += 14;
-				in_before_sections = false;
-				in_section = false;
-				in_after_sections = true;
-				in_null_section = false;
+				if (!only_sets) {
+					in_before_sections = false;
+					in_section = false;
+					in_after_sections = true;
+					in_null_section = false;
+				}
 				UChar* s = p;
 				SKIPLN(s);
 				SKIPWS(s);
@@ -2062,10 +2081,12 @@ void TextualParser::parseFromUChar(UChar* input, const char* fname) {
 			else if (IS_ICASE(p, "NULL-SECTION", "null-section")) {
 				AST_OPEN(NullSection);
 				p += 12;
-				in_before_sections = false;
-				in_section = false;
-				in_after_sections = false;
-				in_null_section = true;
+				if (!only_sets) {
+					in_before_sections = false;
+					in_section = false;
+					in_after_sections = false;
+					in_null_section = true;
+				}
 				UChar* s = p;
 				SKIPLN(s);
 				SKIPWS(s);
@@ -2211,6 +2232,17 @@ void TextualParser::parseFromUChar(UChar* input, const char* fname) {
 				AST_OPEN(Include);
 				p += 7;
 				result->lines += SKIPWS(p);
+
+				bool local_only_sets = only_sets;
+				if (ux_simplecasecmp(p, stringbits[S_STATIC]) && ISSPACE(p[stringbits[S_STATIC].size()])) {
+					AST_OPEN(Option);
+					p += stringbits[S_STATIC].size();
+					result->lines += SKIPWS(p);
+					local_only_sets = true;
+					AST_CLOSE(p);
+				}
+				swapper<bool> osets(true, only_sets, local_only_sets);
+
 				AST_OPEN(IncludeFilename);
 				UChar* n = p;
 				result->lines += SKIPTOWS(n, 0, true);

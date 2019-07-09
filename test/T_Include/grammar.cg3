@@ -1,6 +1,6 @@
-﻿INCLUDE sets.inc ;
+﻿INCLUDE STATIC sets.cg3 ;
 
 SECTION
 
 SELECT ASet ;
-INCLUDE rules.inc ;
+INCLUDE rules.cg3 ;
