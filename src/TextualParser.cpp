@@ -956,6 +956,12 @@ ContextualTest* TextualParser::parseContextualTestList(UChar*& p, Rule* rule) {
 			error("%s: Error: It does not make sense to LINK from a NONE test; perhaps you meant NOT or NEGATE on line %u near `%S`?\n", p);
 		}
 	}
+	else if ((t->pos & POS_SCANALL) && !(t->pos & POS_CAREFUL)) {
+		uncond_swap<UChar> swp(*p, 0);
+		u_fprintf(ux_stderr, "%s: Warning: ** without LINK or C doesn't make sense on line %u near %S.\n", filebase, result->lines, pos_p);
+		u_fflush(ux_stderr);
+	}
+
 	AST_CLOSE(p);
 
 	if (rule) {
