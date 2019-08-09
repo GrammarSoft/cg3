@@ -93,7 +93,7 @@ private:
 	void parseAnchorish(UChar*& p);
 
 	int error_counter;
-	void incErrorCount();
+	[[noreturn]] void incErrorCount();
 };
 }
 
