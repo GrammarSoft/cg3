@@ -1,0 +1,54 @@
+#!/usr/bin/env python3
+
+"""
+Setup for SWIG Python bindings for constraint_grammar
+"""
+from os import path
+from distutils.core import Extension, setup
+from distutils.command.build import build
+
+
+class CustomBuild(build):
+    sub_commands = [
+        ('build_ext', build.has_ext_modules),
+        ('build_py', build.has_pure_modules),
+        ('build_clib', build.has_c_libraries),
+        ('build_scripts', build.has_scripts),
+    ]
+
+
+def get_sources():
+    sources = ['constraint_grammar.i', '${CMAKE_SOURCE_DIR}/include/posix/popen_plus.cpp']
+    cc_sources = [
+        'ApertiumApplicator.cpp', 'BinaryGrammar.cpp', 'BinaryGrammar_read.cpp', 'BinaryGrammar_read_10043.cpp',
+        'BinaryGrammar_write.cpp', 'Cohort.cpp', 'CohortIterator.cpp', 'ContextualTest.cpp', 'Grammar.cpp',
+        'GrammarApplicator.cpp', 'GrammarApplicator_matchSet.cpp', 'GrammarApplicator_reflow.cpp',
+        'GrammarApplicator_runContextualTest.cpp', 'GrammarApplicator_runGrammar.cpp',
+        'GrammarApplicator_runRules.cpp', 'GrammarWriter.cpp', 'MatxinApplicator.cpp',
+        'Reading.cpp', 'Rule.cpp', 'Set.cpp', 'SingleWindow.cpp', 'Strings.cpp', 'Tag.cpp',
+        'TextualParser.cpp', 'Window.cpp', 'uextras.cpp',
+    ]
+    rel_path = '${CMAKE_SOURCE_DIR}/src/'
+    sources.extend(path.join(rel_path, f) for f in cc_sources)
+    return sources
+
+constraint_grammar_module = Extension(
+    name='_constraint_grammar',
+    sources=get_sources(),
+    swig_opts = ['-c++', '-I/usr/include', '-I${CMAKE_SOURCE_DIR}', '-I${CMAKE_SOURCE_DIR}/src', '-I${CMAKE_SOURCE_DIR}/include', '-Wall'],
+    include_dirs=['${CMAKE_SOURCE_DIR}', '${CMAKE_SOURCE_DIR}/src', '${CMAKE_SOURCE_DIR}/include', '${CMAKE_SOURCE_DIR}/include/posix'],
+    extra_compile_args='${CMAKE_CXX_FLAGS}'.split(),
+    extra_link_args=['-lxml2', '-licuuc', '-licuio', '-licui18n'],
+)
+
+setup(
+    name='constraint_grammar',
+    version='${VERSION}',
+    description='SWIG interface to constraint_grammar',
+    long_description='SWIG interface to constraint_grammar for use in apertium-python',
+    # TODO: author, author_email, maintainer, url
+    license='GPL-3.0+',
+    cmdclass={'build': CustomBuild},
+    ext_modules=[constraint_grammar_module],
+    py_modules=['constraint_grammar'],
+)

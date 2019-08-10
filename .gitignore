@@ -19,3 +19,17 @@ Makefile
 /src/CTestTestfile.cmake
 /install_manifest.txt
 .ccls-cache/
+*so*
+
+__pycache__
+/python/constraint_grammar_wrap.cpp
+/python/constraint_grammar.py
+/python/setup.py
+/python/build*
+*.egg-info/
+*.egg
+/python/CMakeCache.txt
+/python/CMakeFiles
+/python/cmake_install.cmake
+/python/CTestTestfile.cmake
+/python/install_manifest.txt

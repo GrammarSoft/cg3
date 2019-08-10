@@ -53,103 +53,103 @@ public:
 	uint32_t verbosity_level;
 	mutable double total_time;
 
-	std::vector<Tag*> single_tags_list;
-	Taguint32HashMap single_tags;
+	std::vector<CG3::Tag*> single_tags_list;
+	CG3::Taguint32HashMap single_tags;
 
-	std::vector<Set*> sets_list;
-	SetSet sets_all;
-	uint32FlatHashMap sets_by_name;
-	typedef std::unordered_map<UString, uint32_t, hash_ustring> set_name_seeds_t;
+	std::vector<CG3::Set*> sets_list;
+	CG3::SetSet sets_all;
+	CG3::uint32FlatHashMap sets_by_name;
+	typedef std::unordered_map<CG3::UString, uint32_t, hash_ustring> set_name_seeds_t;
 	set_name_seeds_t set_name_seeds;
-	Setuint32HashMap sets_by_contents;
-	uint32FlatHashMap set_alias;
-	SetSet maybe_used_sets;
+	CG3::Setuint32HashMap sets_by_contents;
+	CG3::uint32FlatHashMap set_alias;
+	CG3::SetSet maybe_used_sets;
 
-	typedef std::vector<UString> static_sets_t;
+	typedef std::vector<CG3::UString> static_sets_t;
 	static_sets_t static_sets;
 
 	typedef std::set<URegularExpression*> regex_tags_t;
 	regex_tags_t regex_tags;
-	typedef TagSortedVector icase_tags_t;
+	typedef CG3::TagSortedVector icase_tags_t;
 	icase_tags_t icase_tags;
 
-	typedef std::unordered_map<uint32_t, ContextualTest*> contexts_t;
+	typedef std::unordered_map<uint32_t, CG3::ContextualTest*> contexts_t;
 	contexts_t templates;
 	contexts_t contexts;
 
-	typedef std::unordered_map<uint32_t, uint32IntervalVector> rules_by_set_t;
+	typedef std::unordered_map<uint32_t, CG3::uint32IntervalVector> rules_by_set_t;
 	rules_by_set_t rules_by_set;
-	typedef std::unordered_map<uint32_t, uint32IntervalVector> rules_by_tag_t;
+	typedef std::unordered_map<uint32_t, CG3::uint32IntervalVector> rules_by_tag_t;
 	rules_by_tag_t rules_by_tag;
 	typedef std::unordered_map<uint32_t, boost::dynamic_bitset<>> sets_by_tag_t;
 	sets_by_tag_t sets_by_tag;
 
-	uint32IntervalVector* rules_any;
+	CG3::uint32IntervalVector* rules_any;
 	boost::dynamic_bitset<>* sets_any;
 
-	Set* delimiters;
-	Set* soft_delimiters;
+	CG3::Set* delimiters;
+	CG3::Set* soft_delimiters;
 	uint32_t tag_any;
-	uint32Vector preferred_targets;
-	uint32SortedVector reopen_mappings;
+	CG3::uint32Vector preferred_targets;
+	CG3::uint32SortedVector reopen_mappings;
 	typedef bc::flat_map<uint32_t, uint32_t> parentheses_t;
 	parentheses_t parentheses;
 	parentheses_t parentheses_reverse;
 
-	uint32Vector sections;
-	uint32FlatHashMap anchors;
+	CG3::uint32Vector sections;
+	CG3::uint32FlatHashMap anchors;
 
-	RuleVector rule_by_number;
-	RuleVector before_sections;
-	RuleVector rules;
-	RuleVector after_sections;
-	RuleVector null_section;
-	RuleVector wf_rules;
+	CG3::RuleVector rule_by_number;
+	CG3::RuleVector before_sections;
+	CG3::RuleVector rules;
+	CG3::RuleVector after_sections;
+	CG3::RuleVector null_section;
+	CG3::RuleVector wf_rules;
 
 	Grammar();
 	~Grammar();
 
-	void addSet(Set*& to);
-	Set* getSet(uint32_t which) const;
-	Set* allocateSet();
-	void destroySet(Set* set);
-	void addSetToList(Set* s);
+	void addSet(CG3::Set*& to);
+	CG3::Set* getSet(uint32_t which) const;
+	CG3::Set* allocateSet();
+	void destroySet(CG3::Set* set);
+	void addSetToList(CG3::Set* s);
 	void allocateDummySet();
 	uint32_t removeNumericTags(uint32_t s);
-	void getTags(const Set& set, std::set<TagVector>& rv);
+	void getTags(const CG3::Set& set, std::set<CG3::TagVector>& rv);
 
 	void addAnchor(const UChar* to, uint32_t at, bool primary = false);
-	void addAnchor(const UString& to, uint32_t at, bool primary = false);
+	void addAnchor(const CG3::UString& to, uint32_t at, bool primary = false);
 
-	Tag* allocateTag();
-	Tag* allocateTag(const UChar* tag);
-	Tag* allocateTag(const UString& tag);
-	Tag* addTag(Tag* tag);
-	void destroyTag(Tag* tag);
-	void addTagToSet(Tag* rtag, Set* set);
+	CG3::Tag* allocateTag();
+	CG3::Tag* allocateTag(const UChar* tag);
+	CG3::Tag* allocateTag(const CG3::UString& tag);
+	CG3::Tag* addTag(CG3::Tag* tag);
+	void destroyTag(CG3::Tag* tag);
+	void addTagToSet(CG3::Tag* rtag, CG3::Set* set);
 
-	Rule* allocateRule();
-	void addRule(Rule* rule);
-	void destroyRule(Rule* rule);
+	CG3::Rule* allocateRule();
+	void addRule(CG3::Rule* rule);
+	void destroyRule(CG3::Rule* rule);
 
-	ContextualTest* allocateContextualTest();
-	ContextualTest* addContextualTest(ContextualTest* t);
-	void addTemplate(ContextualTest* test, const UChar* name);
+	CG3::ContextualTest* allocateContextualTest();
+	CG3::ContextualTest* addContextualTest(CG3::ContextualTest* t);
+	void addTemplate(CG3::ContextualTest* test, const UChar* name);
 
 	void resetStatistics();
 	void reindex(bool unused_sets = false, bool used_tags = false);
 	void renameAllRules();
 
-	void indexSetToRule(uint32_t, Set*);
+	void indexSetToRule(uint32_t, CG3::Set*);
 	void indexTagToRule(uint32_t, uint32_t);
-	void indexSets(uint32_t, Set*);
+	void indexSets(uint32_t, CG3::Set*);
 	void indexTagToSet(uint32_t, uint32_t);
-	void setAdjustSets(Set*);
-	void contextAdjustTarget(ContextualTest*);
+	void setAdjustSets(CG3::Set*);
+	void contextAdjustTarget(CG3::ContextualTest*);
 };
 
 template<typename Stream>
-inline void _trie_unserialize(trie_t& trie, Stream& input, Grammar& grammar, uint32_t num_tags) {
+inline void _trie_unserialize(CG3::trie_t& trie, Stream& input, Grammar& grammar, uint32_t num_tags) {
 	for (uint32_t i = 0; i < num_tags; ++i) {
 		uint32_t u32tmp = 0;
 		fread_throw(&u32tmp, sizeof(uint32_t), 1, input);
@@ -164,18 +164,18 @@ inline void _trie_unserialize(trie_t& trie, Stream& input, Grammar& grammar, uin
 		u32tmp = ntoh32(u32tmp);
 		if (u32tmp) {
 			if (!node.trie) {
-				node.trie = new trie_t;
+				node.trie = new CG3::trie_t;
 			}
 			trie_unserialize(*node.trie, input, grammar, u32tmp);
 		}
 	}
 }
 
-inline void trie_unserialize(trie_t& trie, FILE* input, Grammar& grammar, uint32_t num_tags) {
+inline void trie_unserialize(CG3::trie_t& trie, FILE* input, Grammar& grammar, uint32_t num_tags) {
 	return _trie_unserialize(trie, input, grammar, num_tags);
 }
 
-inline void trie_unserialize(trie_t& trie, std::istream& input, Grammar& grammar, uint32_t num_tags) {
+inline void trie_unserialize(CG3::trie_t& trie, std::istream& input, Grammar& grammar, uint32_t num_tags) {
 	return _trie_unserialize(trie, input, grammar, num_tags);
 }
 }
