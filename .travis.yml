@@ -8,9 +8,10 @@ addons:
       - cmake
       - libboost-dev
       - libicu-dev
+      - swig
 
 before_script:
-  - cmake .
+  - cmake -DENABLE_PYTHON_BINDINGS:BOOL=ON .
 
 script:
   - $CXX --version
