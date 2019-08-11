@@ -87,13 +87,13 @@ void CGProc::cg_proc(char argc, char **argv, char *input_path, char *output_path
 
 	int c = 0;
 	optind = 1;
-	while(true){
+	while (true) {
 		c = getopt(argc, argv, "s:f:tn1wz");
 		if (c == -1) {
 			break;
 		}
 
-		switch(c){
+		switch (c) {
 			case 'f':
 				stream_format = atoi(optarg);
 				break;
@@ -116,6 +116,7 @@ void CGProc::cg_proc(char argc, char **argv, char *input_path, char *output_path
 			case 'w':
 				wordform_case = true;
 				break;
+
 			case 'z':
 				null_flush = true;
 				break;
