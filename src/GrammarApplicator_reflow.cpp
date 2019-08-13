@@ -357,6 +357,11 @@ Tag* GrammarApplicator::generateVarstringTag(const Tag* tag) {
 	tmp.append(tag->tag.c_str(), static_cast<int32_t>(tag->tag.size()));
 	bool did_something = false;
 
+	// Convert %[UuLl] markers to control codes to avoid having combined %$1 accidentally match %L
+	for (size_t i = 0; i < 4; ++i) {
+		tmp.findAndReplace(stringbits[S_VSu_raw + i].c_str(), stringbits[S_VSu + i].c_str());
+	}
+
 	// Replace unified sets with their matching tags
 	if (tag->vs_sets) {
 		for (size_t i = 0; i < tag->vs_sets->size(); ++i) {
@@ -383,7 +388,6 @@ Tag* GrammarApplicator::generateVarstringTag(const Tag* tag) {
 	}
 
 	// Handle %U %u %L %l markers.
-	// ToDo: Split %[UuLl] markers from the main string to avoid having combined %$1 accidentally match %L
 	bool found;
 	do {
 		found = false;
