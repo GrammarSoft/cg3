@@ -1,21 +1,21 @@
 "<word>"
 	"word" notwanted
 	"word" wanted
-		"subba" a
-	"word" wanted copy also-copied
-		"subba" a
-	"word" copy copied wanted
-		"subba" a
-	"word" wanted copied-except
-		"subba" a
+		"subba" a excepted
 	"word" wanted noguard-copied
+		"subba" a excepted
+	"word" wanted copy also-copied
+		"subba" a excepted
+	"word" copy copied wanted
+		"subba" a excepted
+	"word" wanted copied-except
 		"subba" a
 	"word" copied wanted copied-except
 		"subba" a
 	"word" copy copied wanted noguard-copied
-		"subba" a
+		"subba" a excepted
 	"word" wanted copy also-copied noguard-copied
-		"subba" a
+		"subba" a excepted
 	"word" notmeeither
 	"newword" appended1 @A @B
 	"newword" appended3 @A @C

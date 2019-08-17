@@ -6,7 +6,7 @@ DELIMITERS = "<$.>" ;
 COPY (copy copied) BEFORE (wanted) (wanted) - (copy) ;
 COPY (copy also-copied) (wanted) - (copy) ;
 COPY (noguard-copied) (wanted) ;
-COPY (copied-except) EXCEPT (also-copied copy noguard-copied) (wanted) ;
+COPY (copied-except) EXCEPT (excepted also-copied copy noguard-copied) (wanted) ;
 
 "<waffle>" APPEND ("waffle" and cream) (*) ;
 "<waffle>" ADD (@show) (*) ;
