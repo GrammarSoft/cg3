@@ -256,6 +256,21 @@ Reading* GrammarApplicator::get_sub_reading(Reading* tr, int sub_reading) {
 		}                                                                           \
 	} while (0)
 
+#define FILL_TAG_LIST_RAW(taglist)                                              \
+	do {                                                                        \
+		for (auto& tt : *(taglist)) {                                           \
+			if (tt->type & T_SPECIAL) {                                         \
+				if (regexgrps.second == 0) {                                    \
+					regexgrps.second = &regexgrps_store[used_regex];            \
+				}                                                               \
+				auto stag = doesTagMatchReading(reading, *tt, false, true);     \
+				if (stag) {                                                     \
+					tt = single_tags.find(stag)->second;                        \
+				}                                                               \
+			}                                                                   \
+		}                                                                       \
+	} while (0)
+
 #define APPEND_TAGLIST_TO_READING(taglist, reading)                                  \
 	do {                                                                             \
 		for (auto tter : (taglist)) {                                                \
@@ -1661,9 +1676,11 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						if (rule.sublist) {
 							auto excepts = ss_taglist.get();
 							getTagList(*rule.sublist, excepts);
-							FILL_TAG_LIST(excepts);
-							for (auto tter : *excepts) {
-								delTagFromReading(*cReading, tter);
+							FILL_TAG_LIST_RAW(excepts);
+							for (auto r = cReading; r; r = r->next) {
+								for (auto tter : *excepts) {
+									delTagFromReading(*r, tter);
+								}
 							}
 						}
 
