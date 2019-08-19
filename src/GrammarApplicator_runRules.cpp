@@ -162,12 +162,16 @@ void GrammarApplicator::getTagList(const Set& theSet, TagList& theTags, bool uni
 }
 
 Reading* GrammarApplicator::get_sub_reading(Reading* tr, int sub_reading) {
-	// If asking for the primary reading or there aren't any sub-readings, return the primary reading
-	if (sub_reading == 0 || tr->next == nullptr) {
+	if (sub_reading == 0) {
 		return tr;
 	}
 
 	if (sub_reading == GSR_ANY) {
+		// If there aren't any sub-readings, the primary reading is the same as the amalgamation of all readings
+		if (tr->next == nullptr) {
+			return tr;
+		}
+
 		subs_any.emplace_back(Reading());
 		Reading* reading = &subs_any.back();
 		*reading = *tr;
