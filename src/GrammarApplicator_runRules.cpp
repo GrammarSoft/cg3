@@ -162,7 +162,8 @@ void GrammarApplicator::getTagList(const Set& theSet, TagList& theTags, bool uni
 }
 
 Reading* GrammarApplicator::get_sub_reading(Reading* tr, int sub_reading) {
-	if (sub_reading == 0) {
+	// If asking for the primary reading or there aren't any sub-readings, return the primary reading
+	if (sub_reading == 0 || tr->next == nullptr) {
 		return tr;
 	}
 
