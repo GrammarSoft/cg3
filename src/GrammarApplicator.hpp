@@ -155,10 +155,10 @@ public:
 	std::ostream* ux_stdout = nullptr;
 	std::ostream* ux_stderr;
 	UChar* filebase;
-	[[noreturn]] void error(const char* str, const UChar* p);
-	[[noreturn]] void error(const char* str, const char* s, const UChar* p);
-	[[noreturn]] void error(const char* str, const UChar* s, const UChar* p);
-	[[noreturn]] void error(const char* str, const char* s, const UChar* S, const UChar* p);
+	void error(const char* str, const UChar* p);
+	void error(const char* str, const char* s, const UChar* p);
+	void error(const char* str, const UChar* s, const UChar* p);
+	void error(const char* str, const char* s, const UChar* S, const UChar* p);
 	Grammar* get_grammar() { return grammar; }
 
 protected:
