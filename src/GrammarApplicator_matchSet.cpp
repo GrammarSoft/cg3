@@ -874,7 +874,7 @@ bool GrammarApplicator::doesSetMatchCohortNormal(Cohort& cohort, const uint32_t 
 
 	const Set* theset = grammar->sets_list[set];
 
-	if (cohort.wread) {
+	if (cohort.wread && (!context || !context->in_barrier)) {
 		retval = doesSetMatchCohort_helper(cohort, *cohort.wread, *theset, context);
 	}
 
