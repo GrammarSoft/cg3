@@ -5,27 +5,31 @@
 %include <std_vector.i>
 %include <Grammar.hpp>
 
-%typemap(in) char ** {
-  if (PyList_Check($input)) {
-    int size = PyList_Size($input);
+%typemap(in) (int argc, char **argv) {
+  if (PyTuple_Check($input)) {
     int i = 0;
-    $1 = (char **) malloc((size+1)*sizeof(char *));
-    for (i = 0; i < size; i++) {
-      PyObject *py_obj = PyList_GetItem($input, i);
+    $1 = PyTuple_Size($input);
+    $2 = (char **) malloc(($1 + 1)*sizeof(char *));
+    for (i = 0; i < $1; i++) {
+      PyObject *py_obj = PyTuple_GetItem($input, i);
       if (PyUnicode_Check(py_obj)) {
-        $1[i] = strdup(PyUnicode_AsUTF8(py_obj));
+        $2[i] = strdup(PyUnicode_AsUTF8(py_obj));
       }
       else {
-        PyErr_SetString(PyExc_TypeError, "list must contain strings");
-        free($1);
+        PyErr_SetString(PyExc_TypeError, "tuple must contain strings");
+        free($2);
         return NULL;
       }
     }
-    $1[i] = 0;
+    $2[i] = 0;
   } else {
-    PyErr_SetString(PyExc_TypeError, "not a list");
+    PyErr_SetString(PyExc_TypeError, "not a tuple");
     return NULL;
   }
+}
+
+%typemap(freearg) (int argc, char **argv) {
+  free((char *) $2);
 }
 
 %inline%{
@@ -47,7 +51,7 @@ private:
 
 public:
 	CGProc(char *dictionary_path);
-	void cg_proc(char argc, char **argv, char *input_path, char *output_path);
+	void cg_proc(int argc, char **argv, char *input_path, char *output_path);
 };
 
 CGProc::CGProc(char *dictionary_path)
@@ -65,7 +69,7 @@ CGProc::CGProc(char *dictionary_path)
 	parser->parse_grammar(dictionary_path);
 }
 
-void CGProc::cg_proc(char argc, char **argv, char *input_path, char *output_path)
+void CGProc::cg_proc(int argc, char **argv, char *input_path, char *output_path)
 {
 	bool trace = false;
 	bool wordform_case = false;
