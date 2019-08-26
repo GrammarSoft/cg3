@@ -1,5 +1,5 @@
 set(CMAKE_LEGACY_CYGWIN_WIN32 0)
-cmake_minimum_required(VERSION 2.8.9 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.0 FATAL_ERROR)
 project(cg3 CXX C)
 
 # Release or Debug
@@ -29,6 +29,8 @@ endif()
 
 option(BUILD_SHARED_LIBS "Set to OFF to use static library" ON)
 option(USE_TCMALLOC "Set to OFF to disable linking against TCMalloc" ON)
+option(ENABLE_PYTHON_BINDINGS "Set to ON to build the python wrapper" OFF)
+
 if(APPLE)
 	message(STATUS "Disabling TCMalloc for OS X")
 	set(USE_TCMALLOC OFF)
@@ -125,6 +127,10 @@ include_directories("${CMAKE_CURRENT_SOURCE_DIR}/src")
 enable_testing()
 
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src)
+
+if(ENABLE_PYTHON_BINDINGS)
+	add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/python)
+endif()
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/scripts/cg3-autobin.pl.in ${CMAKE_CURRENT_BINARY_DIR}/scripts/cg3-autobin.pl @ONLY)
 install(PROGRAMS
