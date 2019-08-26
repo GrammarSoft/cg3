@@ -1,5 +1,5 @@
 sudo: required
-dist: trusty
+dist: xenial
 language: cpp
 
 addons:
@@ -8,9 +8,10 @@ addons:
       - cmake
       - libboost-dev
       - libicu-dev
+      - swig
 
 before_script:
-  - cmake .
+  - cmake -DENABLE_PYTHON_BINDINGS=ON .
 
 script:
   - $CXX --version
