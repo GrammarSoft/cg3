@@ -2048,8 +2048,8 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 
 							if (phash != phash_n || chash != chash_n) {
 								if (++rule_hits[rule.number] > current.cohorts.size() * 100) {
-									u_fprintf(ux_stderr, "Error: Move/Switch endless loop detected for rule on line %u - bailing out!\n", rule.line);
-									CG3Quit(1);
+									u_fprintf(ux_stderr, "Warning: Move/Switch endless loop detected for rule on line %u around input line %u - bailing out!\n", rule.line, cohort->line_number);
+									goto bailout;
 								}
 
 								for (auto c : cohorts) {
@@ -2273,6 +2273,13 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 			index_ruleCohort_no.clear();
 			goto repeat_rule;
 		}
+
+		if (false) {
+		bailout:
+			rule_hits[rule.number] = 0;
+			index_ruleCohort_no.clear();
+		}
+
 		if (retval & RV_TRACERULE) {
 			break;
 		}
