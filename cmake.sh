@@ -23,7 +23,7 @@ done
 set -- "${args[@]}"
 
 echo "- rm -rf CMake caches"
-rm -rf install_manifest.txt CMakeCache.txt *.cmake CMakeFiles src/CMakeFiles src/*.cmake _CPack_Packages Testing test/T_*/grammar.cg3b
+rm -rf install_manifest.txt CMakeCache.txt *.cmake CMakeFiles [sp]*/CMakeFiles [sp]*/*.cmake _CPack_Packages Testing test/T_*/grammar.cg3b
 echo "- cmake " "$@" "."
 cmake "$@" .
 echo "- You may now perform: make -j3"
