@@ -77,7 +77,7 @@ int main(int argc, char* argv[]) {
 	}
 	fclose(input);
 
-	if (CG3::cbuffers[0][0] == 'C' && CG3::cbuffers[0][1] == 'G' && CG3::cbuffers[0][2] == '3' && CG3::cbuffers[0][3] == 'B') {
+	if (CG3::is_cg3b(CG3::cbuffers[0])) {
 		std::cerr << "Binary grammar detected. Cannot re-compile binary grammars." << std::endl;
 		CG3Quit(1);
 	}

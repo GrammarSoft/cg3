@@ -1894,7 +1894,7 @@ void TextualParser::parseFromUChar(UChar* input, const char* fname) {
 				s->rehash();
 				Set* tmp = result->getSet(s->hash);
 				if (tmp) {
-					if (verbosity_level > 0 && tmp->name[0] != '_' && tmp->name[1] != 'G' && tmp->name[2] != '_') {
+					if (verbosity_level > 0 && !is_internal(tmp->name)) {
 						u_fprintf(ux_stderr, "%s: Warning: LIST %S was defined twice with the same contents: Lines %u and %u.\n", filebase, s->name.c_str(), tmp->line, s->line);
 						u_fflush(ux_stderr);
 					}
@@ -1941,7 +1941,7 @@ void TextualParser::parseFromUChar(UChar* input, const char* fname) {
 				s->rehash();
 				Set* tmp = result->getSet(s->hash);
 				if (tmp) {
-					if (verbosity_level > 0 && tmp->name[0] != '_' && tmp->name[1] != 'G' && tmp->name[2] != '_') {
+					if (verbosity_level > 0 && !is_internal(tmp->name)) {
 						u_fprintf(ux_stderr, "%s: Warning: SET %S was defined twice with the same contents: Lines %u and %u.\n", filebase, s->name.c_str(), tmp->line, s->line);
 						u_fflush(ux_stderr);
 					}
