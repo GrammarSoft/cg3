@@ -239,7 +239,7 @@ int main(int argc, char* argv[]) {
 	}
 
 	std::unique_ptr<CG3::IGrammarParser> parser;
-	if (CG3::cbuffers[0][0] == 'C' && CG3::cbuffers[0][1] == 'G' && CG3::cbuffers[0][2] == '3' && CG3::cbuffers[0][3] == 'B') {
+	if (CG3::is_cg3b(CG3::cbuffers[0])) {
 		parser.reset(new CG3::BinaryGrammar(grammar, std::cerr));
 	}
 	else {

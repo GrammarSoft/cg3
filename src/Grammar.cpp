@@ -132,7 +132,7 @@ void Grammar::addSet(Set*& to) {
 			to->set_ops.clear();
 
 			to->reindex(*this);
-			if (verbosity_level > 1 && (to->name[0] != '_' || to->name[1] != 'G' || to->name[2] != '_')) {
+			if (verbosity_level > 1 && !is_internal(to->name)) {
 				u_fprintf(ux_stderr, "Info: SET %S on line %u changed to a LIST.\n", to->name.c_str(), to->line);
 				u_fflush(ux_stderr);
 			}
@@ -194,7 +194,7 @@ void Grammar::addSet(Set*& to) {
 	}
 
 	uint32_t chash = to->rehash();
-	for (; to->name[0] != '_' || to->name[1] != 'G' || to->name[2] != '_';) {
+	for (; !is_internal(to->name);) {
 		uint32_t nhash = hash_value(to->name.c_str());
 		if (sets_by_name.find(nhash) != sets_by_name.end()) {
 			Set* a = sets_by_contents.find(sets_by_name.find(nhash)->second)->second;
@@ -218,7 +218,7 @@ void Grammar::addSet(Set*& to) {
 			else {
 				for (uint32_t seed = 0; seed < 1000; ++seed) {
 					if (sets_by_name.find(nhash + seed) == sets_by_name.end()) {
-						if (verbosity_level > 0 && (to->name[0] != '_' || to->name[1] != 'G' || to->name[2] != '_')) {
+						if (verbosity_level > 0 && !is_internal(to->name)) {
 							u_fprintf(ux_stderr, "Warning: Set %S got hash seed %u.\n", to->name.c_str(), seed);
 							u_fflush(ux_stderr);
 						}
@@ -751,7 +751,7 @@ void Grammar::reindex(bool unused_sets, bool used_tags) {
 		u_fprintf(ux_stdout, "Unused sets:\n");
 		for (auto rset : sets_by_contents) {
 			if (!(rset.second->type & ST_USED) && !rset.second->name.empty() && maybe_used_sets.count(rset.second) == 0) {
-				if (rset.second->name[0] != '_' || rset.second->name[1] != 'G' || rset.second->name[2] != '_') {
+				if (!is_internal(rset.second->name)) {
 					u_fprintf(ux_stdout, "Line %u set %S\n", rset.second->line, rset.second->name.c_str());
 				}
 			}
