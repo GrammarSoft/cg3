@@ -118,9 +118,10 @@ TagList GrammarApplicator::getTagList(const Set& theSet, bool unif_mode) const {
 
 void GrammarApplicator::getTagList(const Set& theSet, TagList& theTags, bool unif_mode) const {
 	if (theSet.type & ST_SET_UNIFY) {
+		const auto& usets = (*unif_sets)[theSet.number];
 		const Set& pSet = *(grammar->sets_list[theSet.sets[0]]);
 		for (auto iter : pSet.sets) {
-			if (unif_sets->count(iter)) {
+			if (usets.count(iter)) {
 				getTagList(*(grammar->sets_list[iter]), theTags);
 			}
 		}
@@ -512,22 +513,14 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 			bool test_good = false;
 			bool matched_target = false;
 
-			// Older g++ apparently don't check for empty themselves, so we have to.
-			if (!readings_plain.empty()) {
-				readings_plain.clear();
-			}
-			if (!subs_any.empty()) {
-				subs_any.clear();
-			}
+			clear(readings_plain);
+			clear(subs_any);
+
 			// Varstring capture groups exist on a per-cohort basis, since we may need them for mapping later.
-			regexgrps_z.clear();
-			regexgrps_c.clear();
-			if (!unif_tags_rs.empty()) {
-				unif_tags_rs.clear();
-			}
-			if (!unif_sets_rs.empty()) {
-				unif_sets_rs.clear();
-			}
+			clear(regexgrps_z);
+			clear(regexgrps_c);
+			clear(unif_tags_rs);
+			clear(unif_sets_rs);
 
 			size_t used_regex = 0;
 			regexgrps_store.resize(std::max(regexgrps_store.size(), cohort->readings.size()));
@@ -605,13 +598,8 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 				unif_last_wordform = 0;
 				unif_last_baseform = 0;
 				unif_last_textual = 0;
-				if (!unif_tags->empty()) {
-					unif_tags->clear();
-				}
-				unif_sets_firstrun = true;
-				if (!unif_sets->empty()) {
-					unif_sets->clear();
-				}
+				clear(*unif_tags);
+				clear(*unif_sets);
 
 				same_basic = reading->hash_plain;
 				target = nullptr;
@@ -1799,7 +1787,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						Cohort* target = cohort;
 						while (!attached) {
 							auto utags = ss_utags.get();
-							auto usets = ss_u32sv.get();
+							auto usets = ss_usets.get();
 							*utags = *unif_tags;
 							*usets = *unif_sets;
 

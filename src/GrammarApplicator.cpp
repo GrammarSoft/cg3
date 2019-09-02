@@ -103,7 +103,6 @@ GrammarApplicator::GrammarApplicator(std::ostream& ux_err)
   , unif_last_baseform(0)
   , unif_last_textual(0)
   , unif_sets(0)
-  , unif_sets_firstrun(false)
   , statistics(false)
 {
 	gWindow.reset(new Window(this));
