@@ -157,7 +157,7 @@ int GrammarWriter::writeGrammar(std::ostream& output) {
 				s->name.resize(u_sprintf(&s->name[0], "S%u", s->number));
 			}
 		}
-		if (s->name[0] == '_' && s->name[1] == 'G' && s->name[2] == '_') {
+		if (is_internal(s->name)) {
 			s->name.insert(s->name.begin(), '3');
 			s->name.insert(s->name.begin(), 'G');
 			s->name.insert(s->name.begin(), 'C');

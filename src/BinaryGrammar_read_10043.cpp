@@ -50,7 +50,7 @@ int BinaryGrammar::readBinaryGrammar_10043(std::istream& input) {
 		std::cerr << "Error: Error reading first 4 bytes from grammar!" << std::endl;
 		CG3Quit(1);
 	}
-	if (cbuffers[0][0] != 'C' || cbuffers[0][1] != 'G' || cbuffers[0][2] != '3' || cbuffers[0][3] != 'B') {
+	if (!is_cg3b(cbuffers[0])) {
 		u_fprintf(ux_stderr, "Error: Grammar does not begin with magic bytes - cannot load as binary!\n");
 		CG3Quit(1);
 	}

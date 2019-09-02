@@ -65,7 +65,7 @@ CG3::Grammar* cg3_grammar_load(const char* filename, std::ostream& ux_stdout, st
 
 	std::unique_ptr<IGrammarParser> parser;
 
-	if (cbuffers[0][0] == 'C' && cbuffers[0][1] == 'G' && cbuffers[0][2] == '3' && cbuffers[0][3] == 'B') {
+	if (is_cg3b(cbuffers[0])) {
 		parser.reset(new BinaryGrammar(*grammar, ux_stderr));
 	}
 	else {
