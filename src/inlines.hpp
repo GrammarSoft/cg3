@@ -360,6 +360,14 @@ inline constexpr size_t size(T (&)[N]) {
 	return N;
 }
 
+// Older g++ apparently don't check for empty themselves, so we have to.
+template<typename C>
+inline void clear(C& c) {
+	if (!c.empty()) {
+		c.clear();
+	}
+}
+
 template<typename Cont, typename VT>
 inline bool index_matches(const Cont& index, const VT& entry) {
 	return (index.find(entry) != index.end());

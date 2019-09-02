@@ -227,18 +227,19 @@ protected:
 	typedef bc::flat_map<uint32_t, const void*> unif_tags_t;
 	bc::flat_map<uint32_t, unif_tags_t*> unif_tags_rs;
 	std::vector<unif_tags_t> unif_tags_store;
-	bc::flat_map<uint32_t, uint32SortedVector*> unif_sets_rs;
-	std::vector<uint32SortedVector> unif_sets_store;
+	typedef bc::flat_map<uint32_t, uint32SortedVector> unif_sets_t;
+	bc::flat_map<uint32_t, unif_sets_t*> unif_sets_rs;
+	std::vector<unif_sets_t> unif_sets_store;
 	unif_tags_t* unif_tags;
 	uint32_t unif_last_wordform;
 	uint32_t unif_last_baseform;
 	uint32_t unif_last_textual;
-	uint32SortedVector* unif_sets;
-	bool unif_sets_firstrun;
+	unif_sets_t* unif_sets;
 	bc::flat_map<uint32_t, uint32_t> rule_hits;
 
 	scoped_stack<TagList> ss_taglist;
 	scoped_stack<unif_tags_t> ss_utags;
+	scoped_stack<unif_sets_t> ss_usets;
 	scoped_stack<uint32SortedVector> ss_u32sv;
 
 	uint32FlatHashSet index_regexp_yes;
