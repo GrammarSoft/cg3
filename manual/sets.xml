@@ -276,6 +276,10 @@
         Note also that the set operators in the prefixed set are ignored during unification.
       </para>
       <para>
+        You can use the same set for different unified matches by prefixing the set name with a number and colon.
+        E.g., <code>&amp;&amp;SAME-SEM</code> is a different match than <code>&amp;&amp;1:SAME-SEM</code>.
+      </para>
+      <para>
         The same caveats as for <link linkend="set-unification-tag">Tag Unification</link> apply.
       </para>
     </section>

@@ -298,6 +298,10 @@ Set* parseSet(const UChar* name, const UChar* p, State& state) {
 	      (name[0] == '$' && name[1] == '$') || (name[0] == '&' && name[1] == '&')) &&
 	    name[2]) {
 		const UChar* wname = &(name[2]);
+		const UChar wname2[1024]{};
+		if (u_sscanf(wname, "%*u:%S", &wname2) == 1) {
+			wname = wname2;
+		}
 		uint32_t wrap = hash_value(wname);
 		Set* wtmp = state.get_grammar()->getSet(wrap);
 		if (!wtmp) {

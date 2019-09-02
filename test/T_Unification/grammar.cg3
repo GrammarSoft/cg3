@@ -1,4 +1,5 @@
 DELIMITERS = "<$.>" ;
+LIST-TAGS += AA BB CC DD EE FF ;
 
 LIST ACESet = AA CC EE ;
 LIST BDFSet = BB DD FF ;
@@ -27,8 +28,8 @@ SUBSTITUTE &&USET (<before>) + $$TSet + (<after>) ("wordi") (-8 &&USET) (-2C (so
 LIST REMSET = "word([fgh])"r "WO(RDE)"ri ;
 SUBSTITUTE $$REMSET ("replaced:$1"v) $$REMSET ;
 
-SET Sace = (AA) OR (CC) OR (EE) ;
-SET Sbdf = (BB) OR (DD) OR (FF) ;
+SET Sace = AA OR CC OR EE ;
+SET Sbdf = BB OR DD OR FF ;
 
 ADD (@same-but-different-list) $$ACESet (1 ACESet - $$ACESet) ;
 ADD (@same-but-different-list-bad) $$BDFSet (1 BDFSet - $$BDFSet) ;
@@ -40,3 +41,8 @@ ADD (@vstr-safe-capture) ("wordi") (-1**C ("([^<].*)."r some tags) LINK -1 ("$1c
 STATIC-SETS = each ;
 LIST each = aaa bbb ccc ;
 ADD (<{$$each}>v) $$each ;
+
+# Using + to avoid OR-to-LIST optimization
+SET CE = CC + EE ;
+ADD (@multi-unif-1) + &&CE ("replaced:g") + &&CE (-1 &&CE) (-3 &&1:CE LINK -1 &&1:CE) ;
+ADD (@multi-unif-2) + &&1:CE ("replaced:g") + &&CE (-1 &&CE) (-3 &&1:CE LINK -1 &&1:CE) ;

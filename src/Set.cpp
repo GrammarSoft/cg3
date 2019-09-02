@@ -72,6 +72,25 @@ void Set::setName(const UString& to) {
 
 uint32_t Set::rehash() {
 	uint32_t retval = 0;
+
+	if (type & (ST_TAG_UNIFY | ST_SET_UNIFY)) {
+		if (type & ST_TAG_UNIFY) {
+			retval = hash_value(5153, retval);
+		}
+		if (type & ST_SET_UNIFY) {
+			retval = hash_value(5171, retval);
+		}
+
+		// Parse and incorporate multi-use identifier, if any
+		uint32_t u = 0;
+		if (name[0] == '&' && u_sscanf(name.c_str(), "&&%u:%*S", &u) == 1 && u != 0) {
+			retval = hash_value(u, retval);
+		}
+		else if (name[0] == '$' && u_sscanf(name.c_str(), "$$%u:%*S", &u) == 1 && u != 0) {
+			retval = hash_value(u, retval);
+		}
+	}
+
 	if (sets.empty()) {
 		retval = hash_value(3499, retval); // Combat hash-collisions
 		if (!trie.empty()) {
