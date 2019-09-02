@@ -655,24 +655,23 @@ bool GrammarApplicator::doesSetMatchReading(const Reading& reading, const uint32
 	}
 	// &&unified sets
 	else if (theset.type & ST_SET_UNIFY) {
-		// ToDo: Handle multiple active &&sets at a time.
 		// First time, figure out all the sub-sets that match the reading and store them for later comparison
-		if (unif_sets_firstrun) {
+		auto& usets = (*unif_sets)[theset.number];
+		if (usets.empty()) {
 			const Set& uset = *grammar->sets_list[theset.sets[0]];
 			const size_t size = uset.sets.size();
 			for (size_t i = 0; i < size; ++i) {
 				const Set& tset = *grammar->sets_list[uset.sets[i]];
 				if (doesSetMatchReading(reading, tset.number, bypass_index, ((theset.type & ST_TAG_UNIFY) != 0) | unif_mode)) {
-					unif_sets->insert(tset.number);
+					usets.insert(tset.number);
 				}
 			}
-			retval = !unif_sets->empty();
-			unif_sets_firstrun = !retval;
+			retval = !usets.empty();
 		}
 		// Subsequent times, test whether any of the previously stored sets match the reading
 		else {
 			auto sets = ss_u32sv.get();
-			for (auto usi : *unif_sets) {
+			for (auto usi : usets) {
 				if (doesSetMatchReading(reading, usi, bypass_index, unif_mode)) {
 					sets->insert(usi);
 				}
@@ -828,7 +827,7 @@ inline bool GrammarApplicator::doesSetMatchCohort_testLinked(Cohort& cohort, con
 inline bool GrammarApplicator::doesSetMatchCohort_helper(Cohort& cohort, Reading& reading, const Set& theset, dSMC_Context* context) {
 	bool retval = false;
 	auto utags = ss_utags.get();
-	auto usets = ss_u32sv.get();
+	auto usets = ss_usets.get();
 	uint8_t orz = regexgrps.first;
 
 	if (context && !(current_rule->flags & FL_CAPTURE_UNIF) && (theset.type & ST_CHILD_UNIFY)) {
