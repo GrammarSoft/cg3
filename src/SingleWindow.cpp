@@ -30,7 +30,7 @@ pool_cleaner<std::vector<SingleWindow*>> cleaner_swindows(pool_swindows);
 
 SingleWindow* alloc_swindow(Window* p) {
 	SingleWindow* s = pool_get(pool_swindows);
-	if (s == 0) {
+	if (s == nullptr) {
 		s = new SingleWindow(p);
 	}
 	else {
@@ -40,7 +40,7 @@ SingleWindow* alloc_swindow(Window* p) {
 }
 
 void free_swindow(SingleWindow* s) {
-	if (s == 0) {
+	if (s == nullptr) {
 		return;
 	}
 	pool_put(pool_swindows, s);
@@ -49,8 +49,8 @@ void free_swindow(SingleWindow* s) {
 SingleWindow::SingleWindow(Window* p)
   : number(0)
   , has_enclosures(false)
-  , next(0)
-  , previous(0)
+  , next(nullptr)
+  , previous(nullptr)
   , parent(p)
 {
 	#ifdef CG_TRACE_OBJECTS
@@ -83,10 +83,10 @@ SingleWindow::~SingleWindow() {
 	}
 	else {
 		if (next) {
-			next->previous = 0;
+			next->previous = nullptr;
 		}
 		if (previous) {
-			previous->next = 0;
+			previous->next = nullptr;
 		}
 	}
 }
@@ -112,18 +112,18 @@ void SingleWindow::clear() {
 	}
 	else {
 		if (next) {
-			next->previous = 0;
+			next->previous = nullptr;
 		}
 		if (previous) {
-			previous->next = 0;
+			previous->next = nullptr;
 		}
 	}
 
 	number = 0;
 	has_enclosures = false;
-	next = 0;
-	previous = 0;
-	parent = 0;
+	next = nullptr;
+	previous = nullptr;
+	parent = nullptr;
 	text.clear();
 	cohorts.clear();
 	valid_rules.clear();

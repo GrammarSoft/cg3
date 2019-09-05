@@ -248,7 +248,7 @@ Reading* GrammarApplicator::get_sub_reading(Reading* tr, int sub_reading) {
 				auto tt = *it;                                                      \
 				it = (taglist)->erase(it);                                          \
 				if (tt->type & T_SPECIAL) {                                         \
-					if (regexgrps.second == 0) {                                    \
+					if (regexgrps.second == nullptr) {                              \
 						regexgrps.second = &regexgrps_store[used_regex];            \
 					}                                                               \
 					auto stag = doesTagMatchReading(reading, *tt, false, true);     \
@@ -266,7 +266,7 @@ Reading* GrammarApplicator::get_sub_reading(Reading* tr, int sub_reading) {
 	do {                                                                        \
 		for (auto& tt : *(taglist)) {                                           \
 			if (tt->type & T_SPECIAL) {                                         \
-				if (regexgrps.second == 0) {                                    \
+				if (regexgrps.second == nullptr) {                              \
 					regexgrps.second = &regexgrps_store[used_regex];            \
 				}                                                               \
 				auto stag = doesTagMatchReading(reading, *tt, false, true);     \

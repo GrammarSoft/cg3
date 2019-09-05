@@ -176,7 +176,7 @@ int main(int argc, char* argv[]) {
 			throw std::runtime_error("UTF-8 to UTF-16 conversion failed");
 		}
 		buffer.resize(nr);
-		URegularExpression* rx = 0;
+		URegularExpression* rx = nullptr;
 
 		for (;;) {
 			rx = uregex_openC("^\"<[^>]+>\".*?^\\s+\"[^\"]+\"", UREGEX_DOTALL | UREGEX_MULTILINE, 0, &status);

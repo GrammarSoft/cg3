@@ -294,7 +294,7 @@ void cg3_sentence_runrules(cg3_applicator* applicator_, cg3_sentence* sentence_)
 	SingleWindow* sentence = static_cast<SingleWindow*>(sentence_);
 	applicator->gWindow->current = sentence;
 	applicator->runGrammarOnWindow();
-	applicator->gWindow->current = 0;
+	applicator->gWindow->current = nullptr;
 }
 
 size_t cg3_sentence_numcohorts(cg3_sentence* sentence_) {

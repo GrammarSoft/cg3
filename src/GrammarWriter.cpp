@@ -33,7 +33,7 @@ GrammarWriter::GrammarWriter(Grammar& res, std::ostream& ux_err) {
 }
 
 GrammarWriter::~GrammarWriter() {
-	grammar = 0;
+	grammar = nullptr;
 }
 
 void GrammarWriter::printSet(std::ostream& output, const Set& curset) {

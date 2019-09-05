@@ -27,7 +27,7 @@
 namespace CG3 {
 
 Rule::Rule()
-  : wordform(0)
+  : wordform(nullptr)
   , target(0)
   , childset1(0)
   , childset2(0)
@@ -39,12 +39,12 @@ Rule::Rule()
   , section(0)
   , sub_reading(0)
   , type(K_IGNORE)
-  , maplist(0)
-  , sublist(0)
+  , maplist(nullptr)
+  , sublist(nullptr)
   , num_fail(0)
   , num_match(0)
   , total_time(0)
-  , dep_target(0)
+  , dep_target(nullptr)
 {
 	// Nothing in the actual body...
 }

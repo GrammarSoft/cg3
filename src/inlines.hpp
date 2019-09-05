@@ -625,7 +625,7 @@ template<typename T>
 class inc_dec {
 public:
 	inc_dec()
-	  : p(0)
+	  : p(nullptr)
 	{}
 
 	~inc_dec() {
@@ -645,7 +645,7 @@ private:
 
 template<typename T>
 inline T* reverse(T* head) {
-	T* nr = 0;
+	T* nr = nullptr;
 	while (head) {
 		T* next = head->next;
 		head->next = nr;
@@ -700,7 +700,7 @@ void pool_put(Pool& pool, Var& var) {
 
 template<typename Pool, typename Var>
 void pool_get(Pool& pool, Var*& var) {
-	var = 0;
+	var = nullptr;
 	if (!pool.empty()) {
 		var = pool.back();
 		pool.pop_back();
@@ -709,7 +709,7 @@ void pool_get(Pool& pool, Var*& var) {
 
 template<typename Pool>
 typename Pool::value_type pool_get(Pool& pool) {
-	typename Pool::value_type var = 0;
+	typename Pool::value_type var = nullptr;
 	if (!pool.empty()) {
 		var = pool.back();
 		pool.pop_back();

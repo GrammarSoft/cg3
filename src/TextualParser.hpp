@@ -76,17 +76,17 @@ private:
 	std::vector<std::unique_ptr<UString>> grammarbufs;
 
 	int parse_grammar(UString& buffer);
-	void parseFromUChar(UChar* input, const char* fname = 0);
+	void parseFromUChar(UChar* input, const char* fname = nullptr);
 	void addRuleToGrammar(Rule* rule);
 
-	Tag* parseTag(const UChar* to, const UChar* p = 0);
-	Tag* parseTag(const UString& to, const UChar* p = 0);
+	Tag* parseTag(const UChar* to, const UChar* p = nullptr);
+	Tag* parseTag(const UString& to, const UChar* p = nullptr);
 	void parseTagList(UChar*& p, Set* s);
-	Set* parseSet(const UChar* name, const UChar* p = 0);
-	Set* parseSetInline(UChar*& p, Set* s = 0);
+	Set* parseSet(const UChar* name, const UChar* p = nullptr);
+	Set* parseSetInline(UChar*& p, Set* s = nullptr);
 	Set* parseSetInlineWrapper(UChar*& p);
 	void parseContextualTestPosition(UChar*& p, ContextualTest& t);
-	ContextualTest* parseContextualTestList(UChar*& p, Rule* rule = 0);
+	ContextualTest* parseContextualTestList(UChar*& p, Rule* rule = nullptr, bool in_tmpl = false);
 	void parseContextualTests(UChar*& p, Rule* rule);
 	void parseContextualDependencyTests(UChar*& p, Rule* rule);
 	void parseRule(UChar*& p, KEYWORDS key);
