@@ -125,7 +125,7 @@ std::vector<Cohort*> MweSplitApplicator::splitMwe(Cohort* cohort) {
 
 				if (prev != NULL) {
 					free_reading(prev->next);
-					prev->next = 0;
+					prev->next = nullptr;
 				}
 				prev = rNew;
 			}

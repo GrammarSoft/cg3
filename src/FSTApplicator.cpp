@@ -80,12 +80,12 @@ void FSTApplicator::runGrammarOnText(std::istream& input, std::ostream& output) 
 	uint32_t resetAfter = ((num_windows + 4) * 2 + 1);
 	uint32_t lines = 0;
 
-	SingleWindow* cSWindow = 0;
-	Cohort* cCohort = 0;
-	Reading* cReading = 0;
+	SingleWindow* cSWindow = nullptr;
+	Cohort* cCohort = nullptr;
+	Reading* cReading = nullptr;
 
-	SingleWindow* lSWindow = 0;
-	Cohort* lCohort = 0;
+	SingleWindow* lSWindow = nullptr;
+	Cohort* lCohort = nullptr;
 
 	gWindow->window_span = num_windows;
 
@@ -186,7 +186,7 @@ void FSTApplicator::runGrammarOnText(std::istream& input, std::ostream& output) 
 				const UChar* base = space;
 				TagList mappings;
 
-				wtag_tag = 0;
+				wtag_tag = nullptr;
 				double weight = 0.0;
 				if (tab) {
 					tab[0] = 0;
@@ -232,7 +232,7 @@ void FSTApplicator::runGrammarOnText(std::istream& input, std::ostream& output) 
 				while (space && *space && (space = u_strchr(space, '+')) != 0) {
 					if (base && base[0]) {
 						int32_t f = u_strcspn(base, sub_delims.c_str());
-						UChar* hash = 0;
+						UChar* hash = nullptr;
 						if (f && base + f < space) {
 							hash = const_cast<UChar*>(base) + f;
 							size_t oh = hash - &cleaned[0];
@@ -324,7 +324,7 @@ void FSTApplicator::runGrammarOnText(std::istream& input, std::ostream& output) 
 					cCohort->local_number = 1;
 					printCohort(cCohort, output);
 					free_cohort(cCohort);
-					cCohort = 0;
+					cCohort = nullptr;
 				}
 				if (cleaned[0] && line[0]) {
 					u_fprintf(output, "%S", &line[0]);
@@ -361,7 +361,7 @@ void FSTApplicator::runGrammarOnText(std::istream& input, std::ostream& output) 
 				cSWindow->appendCohort(cCohort);
 				lSWindow = cSWindow;
 				lCohort = cCohort;
-				cSWindow = 0;
+				cSWindow = nullptr;
 				did_soft_lookback = false;
 			}
 			if (cCohort && (cSWindow->cohorts.size() >= hard_limit || (!dep_delimit && grammar->delimiters && doesSetMatchCohortNormal(*cCohort, grammar->delimiters->number)))) {
@@ -376,7 +376,7 @@ void FSTApplicator::runGrammarOnText(std::istream& input, std::ostream& output) 
 				cSWindow->appendCohort(cCohort);
 				lSWindow = cSWindow;
 				lCohort = cCohort;
-				cSWindow = 0;
+				cSWindow = nullptr;
 				did_soft_lookback = false;
 			}
 			if (!cSWindow) {
@@ -386,7 +386,7 @@ void FSTApplicator::runGrammarOnText(std::istream& input, std::ostream& output) 
 
 				lSWindow = cSWindow;
 				lCohort = cSWindow->cohorts[0];
-				cCohort = 0;
+				cCohort = nullptr;
 				++numWindows;
 				did_soft_lookback = false;
 			}
@@ -406,7 +406,7 @@ void FSTApplicator::runGrammarOnText(std::istream& input, std::ostream& output) 
 				}
 			}
 
-			cCohort = 0;
+			cCohort = nullptr;
 
 			if (cleaned[0] && line[0]) {
 				if (lCohort) {
@@ -432,9 +432,9 @@ void FSTApplicator::runGrammarOnText(std::istream& input, std::ostream& output) 
 		for (auto iter : cCohort->readings) {
 			addTagToReading(*iter, endtag);
 		}
-		cReading = 0;
-		cCohort = 0;
-		cSWindow = 0;
+		cReading = nullptr;
+		cCohort = nullptr;
+		cSWindow = nullptr;
 	}
 	while (!gWindow->next.empty()) {
 		gWindow->shuffleWindowsDown();

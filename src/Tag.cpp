@@ -26,7 +26,7 @@
 
 namespace CG3 {
 
-std::ostream* Tag::dump_hashes_out = 0;
+std::ostream* Tag::dump_hashes_out = nullptr;
 
 Tag::Tag()
   : comparison_op(OP_NOP)
@@ -39,7 +39,7 @@ Tag::Tag()
   , plain_hash(0)
   , number(0)
   , seed(0)
-  , regexp(0)
+  , regexp(nullptr)
 {
 	#ifdef CG_TRACE_OBJECTS
 	std::cerr << "OBJECT: " << __PRETTY_FUNCTION__ << std::endl;
@@ -58,7 +58,7 @@ Tag::Tag(const Tag& o)
   , number(o.number)
   , seed(o.seed)
   , tag(o.tag)
-  , regexp(0)
+  , regexp(nullptr)
 {
 	#ifdef CG_TRACE_OBJECTS
 	std::cerr << "OBJECT: " << __PRETTY_FUNCTION__ << std::endl;
@@ -85,7 +85,7 @@ Tag::~Tag() {
 
 	if (regexp) {
 		uregex_close(regexp);
-		regexp = 0;
+		regexp = nullptr;
 	}
 }
 

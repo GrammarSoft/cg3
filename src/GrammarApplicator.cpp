@@ -69,9 +69,9 @@ GrammarApplicator::GrammarApplicator(std::ostream& ux_err)
   , has_dep(false)
   , dep_highest_seen(0)
   , has_relations(false)
-  , grammar(0)
+  , grammar(nullptr)
   , ux_stderr(&ux_err)
-  , filebase(0)
+  , filebase(nullptr)
   , numLines(0)
   , numWindows(0)
   , numCohorts(0)
@@ -85,24 +85,24 @@ GrammarApplicator::GrammarApplicator(std::ostream& ux_err)
   , begintag(0)
   , endtag(0)
   , substtag(0)
-  , tag_begin(0)
-  , tag_end(0)
-  , tag_subst(0)
+  , tag_begin(nullptr)
+  , tag_end(nullptr)
+  , tag_subst(nullptr)
   , par_left_tag(0)
   , par_right_tag(0)
   , par_left_pos(0)
   , par_right_pos(0)
   , did_final_enclosure(false)
   , same_basic(0)
-  , target(0)
-  , mark(0)
-  , attach_to(0)
-  , current_rule(0)
-  , unif_tags(0)
+  , target(nullptr)
+  , mark(nullptr)
+  , attach_to(nullptr)
+  , current_rule(nullptr)
+  , unif_tags(nullptr)
   , unif_last_wordform(0)
   , unif_last_baseform(0)
   , unif_last_textual(0)
-  , unif_sets(0)
+  , unif_sets(nullptr)
   , statistics(false)
 {
 	gWindow.reset(new Window(this));
@@ -118,8 +118,8 @@ GrammarApplicator::~GrammarApplicator() {
 	if (owns_grammar) {
 		delete grammar;
 	}
-	grammar = 0;
-	ux_stderr = 0;
+	grammar = nullptr;
+	ux_stderr = nullptr;
 }
 
 void GrammarApplicator::resetIndexes() {
@@ -277,7 +277,7 @@ Tag* GrammarApplicator::addTag(const UChar* txt, bool vstr) {
 		return it->second;
 	}
 
-	Tag* tag = 0;
+	Tag* tag = nullptr;
 	if (vstr) {
 		tag = ::CG3::parseTag(txt, 0, *this);
 	}
@@ -406,7 +406,7 @@ void GrammarApplicator::printReading(const Reading* reading, std::ostream& outpu
 		if (!reading->parent->dep_self) {
 			reading->parent->dep_self = reading->parent->global_number;
 		}
-		const Cohort* pr = 0;
+		const Cohort* pr = nullptr;
 		pr = reading->parent;
 		if (reading->parent->dep_parent != DEP_NO_PARENT) {
 			if (reading->parent->dep_parent == 0) {

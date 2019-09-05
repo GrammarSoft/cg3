@@ -156,7 +156,7 @@ private:
 public:
 
 	Process() :
-	child(0) {
+	child(nullptr) {
 	}
 
 	~Process() {
@@ -168,7 +168,7 @@ public:
 
 	void start(const std::string& cmdline) {
 		child = popen_plus(cmdline.c_str());
-		if (child == 0) {
+		if (child == nullptr) {
 			std::string msg = "Process could not start!\nCmdline: ";
 			msg += cmdline.c_str();
 			msg += '\n';
