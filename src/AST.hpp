@@ -96,7 +96,7 @@ struct ASTNode {
 	const UChar *b, *e;
 	std::vector<ASTNode> cs;
 
-	ASTNode(ASTType type = AST_Unknown, size_t line = 0, const UChar* b = 0, const UChar* e = 0)
+	ASTNode(ASTType type = AST_Unknown, size_t line = 0, const UChar* b = nullptr, const UChar* e = nullptr)
 	  : type(type)
 	  , line(line)
 	  , b(b)
@@ -107,7 +107,7 @@ struct ASTNode {
 bool dump_ast = false;
 ASTNode ast;
 ASTNode* cur_ast = &ast;
-ASTHelper* cur_ast_help = 0;
+ASTHelper* cur_ast_help = nullptr;
 
 const UChar* xml_encode(const UChar* b, const UChar* e) {
 	static thread_local CG3::UString buf;
@@ -182,14 +182,14 @@ struct ASTHelper {
 	ASTNode* c;
 	ASTHelper* h;
 
-	ASTHelper(ASTType type = AST_Unknown, size_t line = 0, const UChar* b = 0, const UChar* e = 0)
+	ASTHelper(ASTType type = AST_Unknown, size_t line = 0, const UChar* b = nullptr, const UChar* e = nullptr)
 	  : c(cur_ast)
 	  , h(cur_ast_help)
 	{
 		cur_ast_help = this;
 		if (!dump_ast) {
-			c = 0;
-			h = 0;
+			c = nullptr;
+			h = nullptr;
 			return;
 		}
 		c->cs.push_back(ASTNode(type, line, b, e));
@@ -208,8 +208,8 @@ struct ASTHelper {
 		}
 		cur_ast = c;
 		cur_ast_help = h;
-		c = 0;
-		h = 0;
+		c = nullptr;
+		h = nullptr;
 	}
 };
 

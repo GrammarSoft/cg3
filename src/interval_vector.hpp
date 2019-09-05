@@ -73,7 +73,7 @@ public:
 		typedef T reference;
 
 		const_iterator()
-		  : elements(0)
+		  : elements(nullptr)
 		  , t(T())
 		{
 		}

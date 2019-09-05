@@ -31,7 +31,7 @@ Window::Window(GrammarApplicator* p)
   , cohort_counter(1)
   , window_counter(0)
   , window_span(0)
-  , current(0)
+  , current(nullptr)
 {
 }
 
@@ -41,7 +41,7 @@ Window::~Window() {
 	}
 
 	delete current;
-	current = 0;
+	current = nullptr;
 
 	for (auto iter : next) {
 		delete iter;
@@ -88,7 +88,7 @@ void Window::shuffleWindowsDown() {
 		current->variables_set = parent->variables;
 		current->variables_rem.clear();
 		previous.push_back(current);
-		current = 0;
+		current = nullptr;
 	}
 
 	if (!next.empty()) {
@@ -98,7 +98,7 @@ void Window::shuffleWindowsDown() {
 }
 
 void Window::rebuildSingleWindowLinks() {
-	SingleWindow* sWindow = 0;
+	SingleWindow* sWindow = nullptr;
 
 	for (auto iter : previous) {
 		iter->previous = sWindow;
@@ -125,12 +125,12 @@ void Window::rebuildSingleWindowLinks() {
 	}
 
 	if (sWindow) {
-		sWindow->next = 0;
+		sWindow->next = nullptr;
 	}
 }
 
 void Window::rebuildCohortLinks() {
-	SingleWindow* sWindow = 0;
+	SingleWindow* sWindow = nullptr;
 	if (!previous.empty()) {
 		sWindow = previous.front();
 	}
@@ -141,11 +141,11 @@ void Window::rebuildCohortLinks() {
 		sWindow = next.front();
 	}
 
-	Cohort* prev = 0;
+	Cohort* prev = nullptr;
 	while (sWindow) {
 		for (auto citer : sWindow->cohorts) {
 			citer->prev = prev;
-			citer->next = 0;
+			citer->next = nullptr;
 			if (prev) {
 				prev->next = citer;
 			}

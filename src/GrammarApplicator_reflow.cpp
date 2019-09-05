@@ -336,7 +336,7 @@ void GrammarApplicator::reflowReading(Reading& reading) {
 	reading.tags_bloom.clear();
 	reading.tags_textual_bloom.clear();
 	reading.tags_plain_bloom.clear();
-	reading.mapping = 0;
+	reading.mapping = nullptr;
 	reading.tags_string.clear();
 
 	insert_if_exists(reading.parent->possible_sets, grammar->sets_any);
@@ -564,7 +564,7 @@ void GrammarApplicator::delTagFromReading(Reading& reading, uint32_t utag) {
 	reading.tags_numerical.erase(utag);
 	reading.tags_plain.erase(utag);
 	if (reading.mapping && utag == reading.mapping->hash) {
-		reading.mapping = 0;
+		reading.mapping = nullptr;
 	}
 	if (utag == reading.baseform) {
 		reading.baseform = 0;
@@ -767,7 +767,7 @@ void GrammarApplicator::mergeMappings(Cohort& cohort) {
 }
 
 Cohort* GrammarApplicator::delimitAt(SingleWindow& current, Cohort* cohort) {
-	SingleWindow* nwin = 0;
+	SingleWindow* nwin = nullptr;
 	if (current.parent->current == &current) {
 		nwin = current.parent->allocPushSingleWindow();
 	}

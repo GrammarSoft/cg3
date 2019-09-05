@@ -40,8 +40,8 @@ ContextualTest::ContextualTest()
   , num_fail(0)
   , num_match(0)
   , total_time(0)
-  , tmpl(0)
-  , linked(0)
+  , tmpl(nullptr)
+  , linked(nullptr)
 {
 	// Nothing in the actual body...
 }
@@ -139,7 +139,7 @@ void ContextualTest::markUsed(Grammar& grammar) {
 	}
 	is_used = true;
 
-	Set* s = 0;
+	Set* s = nullptr;
 	if (target) {
 		s = grammar.getSet(target);
 		s->markUsed(grammar);

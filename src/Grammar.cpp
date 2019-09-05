@@ -26,8 +26,8 @@
 namespace CG3 {
 
 Grammar::Grammar()
-  : ux_stderr(0)
-  , ux_stdout(0)
+  : ux_stderr(nullptr)
+  , ux_stdout(nullptr)
   , has_dep(false)
   , has_bag_of_tags(false)
   , has_relations(false)
@@ -40,10 +40,10 @@ Grammar::Grammar()
   , lines(0)
   , verbosity_level(0)
   , total_time(0)
-  , rules_any(0)
-  , sets_any(0)
-  , delimiters(0)
-  , soft_delimiters(0)
+  , rules_any(nullptr)
+  , sets_any(nullptr)
+  , delimiters(nullptr)
+  , soft_delimiters(nullptr)
   , tag_any(0)
 {
 	// Nothing in the actual body...
@@ -518,8 +518,8 @@ ContextualTest* Grammar::allocateContextualTest() {
 }
 
 ContextualTest* Grammar::addContextualTest(ContextualTest* t) {
-	if (t == 0) {
-		return 0;
+	if (t == nullptr) {
+		return nullptr;
 	}
 	t->rehash();
 
@@ -640,8 +640,8 @@ void Grammar::reindex(bool unused_sets, bool used_tags) {
 		sets_list[0]->number = 0;
 	}
 	set_name_seeds.clear();
-	sets_any = 0;
-	rules_any = 0;
+	sets_any = nullptr;
+	rules_any = nullptr;
 
 	for (auto iter : single_tags_list) {
 		if (iter->regexp && iter->tag[0] != '"' && iter->tag[0] != '<') {
@@ -700,7 +700,7 @@ void Grammar::reindex(bool unused_sets, bool used_tags) {
 		if (is_binary) {
 			continue;
 		}
-		Set* s = 0;
+		Set* s = nullptr;
 		s = getSet(rule->target);
 		s->markUsed(*this);
 		if (rule->childset1) {
@@ -807,7 +807,7 @@ void Grammar::reindex(bool unused_sets, bool used_tags) {
 			rules.push_back(rule);
 		}
 		if (rule->target) {
-			Set* set = 0;
+			Set* set = nullptr;
 			if (is_binary) {
 				set = sets_list[rule->target];
 			}

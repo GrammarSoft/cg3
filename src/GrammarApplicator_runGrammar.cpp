@@ -102,13 +102,13 @@ void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& outp
 	uint32_t resetAfter = ((num_windows + 4) * 2 + 1);
 	uint32_t lines = 0;
 
-	SingleWindow* cSWindow = 0;
-	Cohort* cCohort = 0;
-	Reading* cReading = 0;
+	SingleWindow* cSWindow = nullptr;
+	Cohort* cCohort = nullptr;
+	Reading* cReading = nullptr;
 
-	SingleWindow* lSWindow = 0;
-	Cohort* lCohort = 0;
-	Reading* lReading = 0;
+	SingleWindow* lSWindow = nullptr;
+	Cohort* lCohort = nullptr;
+	Reading* lReading = nullptr;
 
 	gWindow->window_span = num_windows;
 	gtimer = getticks();
@@ -220,8 +220,8 @@ void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& outp
 				cSWindow->appendCohort(cCohort);
 				cCohort->line_number = numLines;
 				lSWindow = cSWindow;
-				cSWindow = 0;
-				cCohort = 0;
+				cSWindow = nullptr;
+				cCohort = nullptr;
 				numCohorts++;
 				did_soft_lookback = false;
 			}
@@ -238,8 +238,8 @@ void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& outp
 				cSWindow->appendCohort(cCohort);
 				cCohort->line_number = numLines;
 				lSWindow = cSWindow;
-				cSWindow = 0;
-				cCohort = 0;
+				cSWindow = nullptr;
+				cCohort = nullptr;
 				numCohorts++;
 				did_soft_lookback = false;
 			}
@@ -256,7 +256,7 @@ void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& outp
 				variables_output.clear();
 
 				lSWindow = cSWindow;
-				cCohort = 0;
+				cCohort = nullptr;
 				numWindows++;
 				did_soft_lookback = false;
 			}
@@ -279,7 +279,7 @@ void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& outp
 			cCohort->global_number = gWindow->cohort_counter++;
 			cCohort->wordform = addTag(&cleaned[0]);
 			lCohort = cCohort;
-			lReading = 0;
+			lReading = nullptr;
 			indents.clear();
 			numCohorts++;
 			cCohort->line_number = numLines;
@@ -320,7 +320,7 @@ void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& outp
 				if (indents.back().second->next) {
 					u_fprintf(ux_stderr, "Warning: Sub-reading %S on line %u will be ignored and lost as each reading currently only can have one sub-reading.\n", &cleaned[0], numLines);
 					u_fflush(ux_stderr);
-					cReading = 0;
+					cReading = nullptr;
 					continue;
 				}
 				cReading = indents.back().second->allocateReading(indents.back().second->parent);
@@ -346,10 +346,10 @@ void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& outp
 				u_fprintf(ux_stderr, "Warning: %S on line %u looked like a reading but wasn't - treated as text.\n", &cleaned[0], numLines);
 				u_fflush(ux_stderr);
 				if (!indents.empty() && indents.back().second->next == cReading) {
-					indents.back().second->next = 0;
+					indents.back().second->next = nullptr;
 				}
 				delete cReading;
-				cReading = 0;
+				cReading = nullptr;
 				if (is_deleted) {
 					// ToDo: Use string_view instead, when able
 					cleaned.insert(cleaned.begin(), ';');
@@ -472,9 +472,9 @@ void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& outp
 						for (auto iter : cCohort->readings) {
 							addTagToReading(*iter, endtag);
 						}
-						cReading = lReading = 0;
-						cCohort = lCohort = 0;
-						cSWindow = lSWindow = 0;
+						cReading = lReading = nullptr;
+						cCohort = lCohort = nullptr;
+						cSWindow = lSWindow = nullptr;
 					}
 					while (!gWindow->next.empty()) {
 						gWindow->shuffleWindowsDown();
@@ -534,14 +534,14 @@ void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& outp
 						variables_set[tag->hash] = grammar->tag_any;
 						variables_rem.erase(tag->hash);
 						variables_output.insert(tag->hash);
-						if (cSWindow == 0) {
+						if (cSWindow == nullptr) {
 							variables[tag->hash] = grammar->tag_any;
 						}
 					}
 					else {
 						uint32_t a = 0, b = 0;
 						while (c || d) {
-							if (d && (d < c || c == 0)) {
+							if (d && (d < c || c == nullptr)) {
 								d[0] = 0;
 								if (!s[0]) {
 									u_fprintf(ux_stderr, "Warning: SETVAR on line %u had no identifier before the =! Defaulting to identifier *.\n", numLines);
@@ -562,14 +562,14 @@ void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& outp
 									b = addTag(d + 1)->hash;
 								}
 								if (!c) {
-									d = 0;
-									s = 0;
+									d = nullptr;
+									s = nullptr;
 								}
 								variables_set[a] = b;
 								variables_rem.erase(a);
 								variables_output.insert(a);
 							}
-							else if (c && (c < d || d == 0)) {
+							else if (c && (c < d || d == nullptr)) {
 								c[0] = 0;
 								if (!s[0]) {
 									u_fprintf(ux_stderr, "Warning: SETVAR on line %u had no identifier after the ,! Defaulting to identifier *.\n", numLines);
@@ -586,12 +586,12 @@ void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& outp
 							if (s) {
 								c = u_strchr(s, ',');
 								d = u_strchr(s, '=');
-								if (c == 0 && d == 0) {
+								if (c == nullptr && d == nullptr) {
 									a = addTag(s)->hash;
 									variables_set[a] = grammar->tag_any;
 									variables_rem.erase(a);
 									variables_output.insert(a);
-									s = 0;
+									s = nullptr;
 								}
 							}
 						}
@@ -652,9 +652,9 @@ void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& outp
 		for (auto iter : cCohort->readings) {
 			addTagToReading(*iter, endtag);
 		}
-		cReading = 0;
-		cCohort = 0;
-		cSWindow = 0;
+		cReading = nullptr;
+		cCohort = nullptr;
+		cSWindow = nullptr;
 	}
 	while (!gWindow->next.empty()) {
 		gWindow->shuffleWindowsDown();

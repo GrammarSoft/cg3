@@ -734,7 +734,7 @@ bool GrammarApplicator::doesSetMatchReading(const Reading& reading, const uint32
 		}
 		// Propagate unified tag to other sets of this set, if applicable
 		if (unif_mode || (theset.type & ST_TAG_UNIFY)) {
-			const void* tag = 0;
+			const void* tag = nullptr;
 			for (size_t i = 0; i < size; ++i) {
 				auto it = unif_tags->find(theset.sets[i]);
 				if (it != unif_tags->end()) {
@@ -786,9 +786,9 @@ inline bool _check_options(std::vector<Reading*>& rv, uint32_t options, size_t n
 inline bool GrammarApplicator::doesSetMatchCohort_testLinked(Cohort& cohort, const Set& theset, dSMC_Context* context) {
 	bool retval = true;
 	bool reset = false;
-	const ContextualTest* linked = 0;
-	Cohort* min = 0;
-	Cohort* max = 0;
+	const ContextualTest* linked = nullptr;
+	Cohort* min = nullptr;
+	Cohort* max = nullptr;
 
 	if (context->test && context->test->linked) {
 		linked = context->test->linked;
@@ -890,7 +890,7 @@ bool GrammarApplicator::doesSetMatchCohortNormal(Cohort& cohort, const uint32_t 
 	}
 
 	for (auto list : lists) {
-		if (list == 0) {
+		if (list == nullptr) {
 			continue;
 		}
 		for (auto reading : *list) {
@@ -943,7 +943,7 @@ bool GrammarApplicator::doesSetMatchCohortCareful(Cohort& cohort, const uint32_t
 	}
 
 	for (auto list : lists) {
-		if (list == 0) {
+		if (list == nullptr) {
 			continue;
 		}
 		for (auto reading : *list) {

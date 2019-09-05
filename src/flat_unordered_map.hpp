@@ -52,7 +52,7 @@ public:
 		typedef value_type reference;
 
 		const_iterator()
-		  : fus(0)
+		  : fus(nullptr)
 		  , i(0)
 		{
 		}
@@ -76,7 +76,7 @@ public:
 				}
 			}
 			if (i >= fus->capacity()) {
-				fus = 0;
+				fus = nullptr;
 				i = 0;
 			}
 			return *this;
@@ -84,7 +84,7 @@ public:
 
 		const_iterator& operator--() {
 			if (i == 0) {
-				fus = 0;
+				fus = nullptr;
 				i = 0;
 			}
 			else {

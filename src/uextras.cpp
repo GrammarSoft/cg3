@@ -31,14 +31,14 @@ namespace CG3 {
 std::string ux_dirname(const char* in) {
 	char tmp[32768] = { 0 };
 #ifdef _WIN32
-	char *fname = 0;
+	char* fname = nullptr;
 	GetFullPathNameA(in, 32767, tmp, &fname);
 	if (fname) {
 		fname[0] = 0;
 	}
 #else
 	strcpy(tmp, in);
-	char *dir = dirname(tmp);
+	char* dir = dirname(tmp);
 	if (dir != tmp) {
 		strcpy(tmp, dir);
 	}
@@ -80,7 +80,7 @@ UChar* u_fgets(UChar* s, int32_t n, std::istream& input) {
 
 UChar u_fgetc(std::istream& input) {
 	struct _cps {
-		std::istream* i = 0;
+		std::istream* i = nullptr;
 		UChar c = 0;
 	};
 	static thread_local _cps cps[4];
@@ -134,7 +134,7 @@ UChar u_fgetc(std::istream& input) {
 
 	if (u16[1]) {
 		for (auto& cp : cps) {
-			if (cp.i == 0) {
+			if (cp.i == nullptr) {
 				cp.i = &input;
 				cp.c = u16[1];
 				return u16[0];

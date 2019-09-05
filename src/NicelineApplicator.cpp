@@ -76,12 +76,12 @@ void NicelineApplicator::runGrammarOnText(std::istream& input, std::ostream& out
 	uint32_t resetAfter = ((num_windows + 4) * 2 + 1);
 	uint32_t lines = 0;
 
-	SingleWindow* cSWindow = 0;
-	Cohort* cCohort = 0;
-	Reading* cReading = 0;
+	SingleWindow* cSWindow = nullptr;
+	Cohort* cCohort = nullptr;
+	Reading* cReading = nullptr;
 
-	SingleWindow* lSWindow = 0;
-	Cohort* lCohort = 0;
+	SingleWindow* lSWindow = nullptr;
+	Cohort* lCohort = nullptr;
 
 	gWindow->window_span = num_windows;
 
@@ -170,8 +170,8 @@ void NicelineApplicator::runGrammarOnText(std::istream& input, std::ostream& out
 
 				cSWindow->appendCohort(cCohort);
 				lSWindow = cSWindow;
-				cSWindow = 0;
-				cCohort = 0;
+				cSWindow = nullptr;
+				cCohort = nullptr;
 				numCohorts++;
 				did_soft_lookback = false;
 			}
@@ -186,8 +186,8 @@ void NicelineApplicator::runGrammarOnText(std::istream& input, std::ostream& out
 
 				cSWindow->appendCohort(cCohort);
 				lSWindow = cSWindow;
-				cSWindow = 0;
-				cCohort = 0;
+				cSWindow = nullptr;
+				cCohort = nullptr;
 				numCohorts++;
 				did_soft_lookback = false;
 			}
@@ -197,7 +197,7 @@ void NicelineApplicator::runGrammarOnText(std::istream& input, std::ostream& out
 				initEmptySingleWindow(cSWindow);
 
 				lSWindow = cSWindow;
-				cCohort = 0;
+				cCohort = nullptr;
 				numWindows++;
 				did_soft_lookback = false;
 			}
@@ -330,9 +330,9 @@ void NicelineApplicator::runGrammarOnText(std::istream& input, std::ostream& out
 		for (auto iter : cCohort->readings) {
 			addTagToReading(*iter, endtag);
 		}
-		cReading = 0;
-		cCohort = 0;
-		cSWindow = 0;
+		cReading = nullptr;
+		cCohort = nullptr;
+		cSWindow = nullptr;
 	}
 	while (!gWindow->next.empty()) {
 		gWindow->shuffleWindowsDown();
@@ -390,7 +390,7 @@ void NicelineApplicator::printReading(const Reading* reading, std::ostream& outp
 		if (!reading->parent->dep_self) {
 			reading->parent->dep_self = reading->parent->global_number;
 		}
-		const Cohort* pr = 0;
+		const Cohort* pr = nullptr;
 		pr = reading->parent;
 		if (reading->parent->dep_parent != DEP_NO_PARENT) {
 			if (reading->parent->dep_parent == 0) {

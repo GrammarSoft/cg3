@@ -29,7 +29,7 @@ pool_cleaner<ReadingList> cleaner_readings(pool_readings);
 
 Reading* alloc_reading(Cohort* p) {
 	Reading* r = pool_get(pool_readings);
-	if (r == 0) {
+	if (r == nullptr) {
 		r = new Reading(p);
 	}
 	else {
@@ -41,7 +41,7 @@ Reading* alloc_reading(Cohort* p) {
 
 Reading* alloc_reading(const Reading& o) {
 	Reading* r = pool_get(pool_readings);
-	if (r == 0) {
+	if (r == nullptr) {
 		r = new Reading(o);
 	}
 	else {
@@ -77,7 +77,7 @@ Reading* alloc_reading(const Reading& o) {
 }
 
 void free_reading(Reading* r) {
-	if (r == 0) {
+	if (r == nullptr) {
 		return;
 	}
 	pool_put(pool_readings, r);
@@ -94,9 +94,9 @@ Reading::Reading(Cohort* p)
   , hash(0)
   , hash_plain(0)
   , number(static_cast<uint32_t>(p ? (p->readings.size() * 1000 + 1000) : 0))
-  , mapping(0)
+  , mapping(nullptr)
   , parent(p)
-  , next(0)
+  , next(nullptr)
 {
 	#ifdef CG_TRACE_OBJECTS
 	std::cerr << "OBJECT: " << __PRETTY_FUNCTION__ << std::endl;
@@ -144,7 +144,7 @@ Reading::~Reading() {
 	#endif
 
 	delete next;
-	next = 0;
+	next = nullptr;
 }
 
 void Reading::clear() {
@@ -161,10 +161,10 @@ void Reading::clear() {
 	tags_bloom.clear();
 	tags_plain_bloom.clear();
 	tags_textual_bloom.clear();
-	mapping = 0;
-	parent = 0;
+	mapping = nullptr;
+	parent = nullptr;
 	free_reading(next);
-	next = 0;
+	next = nullptr;
 	hit_by.clear();
 	tags_list.clear();
 	tags.clear();

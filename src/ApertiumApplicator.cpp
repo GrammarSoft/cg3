@@ -107,11 +107,11 @@ void ApertiumApplicator::runGrammarOnText(std::istream& input, std::ostream& out
 	begintag = addTag(stringbits[S_BEGINTAG])->hash; // Beginning of sentence tag
 	endtag = addTag(stringbits[S_ENDTAG])->hash;     // End of sentence tag
 
-	SingleWindow* cSWindow = 0; // Current single window (Cohort frame)
-	Cohort* cCohort = 0;        // Current cohort
-	Reading* cReading = 0;      // Current reading
+	SingleWindow* cSWindow = nullptr; // Current single window (Cohort frame)
+	Cohort* cCohort = nullptr;        // Current cohort
+	Reading* cReading = nullptr;      // Current reading
 
-	SingleWindow* lSWindow = 0; // Left hand single window
+	SingleWindow* lSWindow = nullptr; // Left hand single window
 
 	gWindow->window_span = num_windows;
 	gtimer = getticks();
@@ -181,8 +181,8 @@ void ApertiumApplicator::runGrammarOnText(std::istream& input, std::ostream& out
 
 				cSWindow->appendCohort(cCohort);
 				lSWindow = cSWindow;
-				cSWindow = 0;
-				cCohort = 0;
+				cSWindow = nullptr;
+				cCohort = nullptr;
 				numCohorts++;
 			} // end >= soft_limit
 			if (cCohort && (cSWindow->cohorts.size() >= hard_limit || (grammar->delimiters && doesSetMatchCohortNormal(*cCohort, grammar->delimiters->number)))) {
@@ -196,8 +196,8 @@ void ApertiumApplicator::runGrammarOnText(std::istream& input, std::ostream& out
 
 				cSWindow->appendCohort(cCohort);
 				lSWindow = cSWindow;
-				cSWindow = 0;
-				cCohort = 0;
+				cSWindow = nullptr;
+				cCohort = nullptr;
 				numCohorts++;
 			} // end >= hard_limit
 			// If we don't have a current window, create one
@@ -221,7 +221,7 @@ void ApertiumApplicator::runGrammarOnText(std::istream& input, std::ostream& out
 				lSWindow = cSWindow;
 				lSWindow->text = firstblank;
 				firstblank.clear();
-				cCohort = 0;
+				cCohort = nullptr;
 				numWindows++;
 			} // created at least one cSWindow by now
 
@@ -270,7 +270,7 @@ void ApertiumApplicator::runGrammarOnText(std::istream& input, std::ostream& out
 
 			// We're now at the beginning of the readings
 			UString current_reading;
-			Reading* cReading = 0;
+			Reading* cReading = nullptr;
 
 			// Handle the static reading of ^estació<n><f><sg>/season<n><sg>/station<n><sg>$
 			// Gobble up all <tags> until the first / or $ and stuff them in the static reading
@@ -340,7 +340,7 @@ void ApertiumApplicator::runGrammarOnText(std::istream& input, std::ostream& out
 				}
 
 				if (inchar == '/') { // Reached end of reading
-					Reading* cReading = 0;
+					Reading* cReading = nullptr;
 					cReading = alloc_reading(cCohort);
 
 					addTagToReading(*cReading, cCohort->wordform);
@@ -387,9 +387,9 @@ void ApertiumApplicator::runGrammarOnText(std::istream& input, std::ostream& out
 		for (auto iter : cCohort->readings) {
 			addTagToReading(*iter, endtag);
 		}
-		cReading = 0;
-		cCohort = 0;
-		cSWindow = 0;
+		cReading = nullptr;
+		cCohort = nullptr;
+		cSWindow = nullptr;
 	}
 
 	// Run the grammar & print results
@@ -629,7 +629,7 @@ void ApertiumApplicator::testPR(std::ostream& output) {
 	};
 	for (size_t i = 0; i < 6; ++i) {
 		UString text(texts[i].begin(), texts[i].end());
-		Reading* reading = alloc_reading(0);
+		Reading* reading = alloc_reading();
 		processReading(reading, text);
 		if (grammar->sub_readings_ltr && reading->next) {
 			reading = reverse(reading);

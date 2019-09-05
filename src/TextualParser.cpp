@@ -31,7 +31,7 @@ namespace CG3 {
 
 TextualParser::TextualParser(Grammar& res, std::ostream& ux_err, bool _dump_ast)
   : IGrammarParser(res, ux_err)
-  , filebase(0)
+  , filebase(nullptr)
   , verbosity_level(0)
   , sets_counter(100)
   , seen_mapping_prefix(0)
@@ -45,7 +45,7 @@ TextualParser::TextualParser(Grammar& res, std::ostream& ux_err, bool _dump_ast)
   , strict_wforms(false)
   , strict_bforms(false)
   , strict_second(false)
-  , filename(0)
+  , filename(nullptr)
   , error_counter(0)
 {
 	dump_ast = _dump_ast;
@@ -768,7 +768,7 @@ void TextualParser::parseContextualTestPosition(UChar*& p, ContextualTest& t) {
 	}
 }
 
-ContextualTest* TextualParser::parseContextualTestList(UChar*& p, Rule* rule) {
+ContextualTest* TextualParser::parseContextualTestList(UChar*& p, Rule* rule, bool in_tmpl) {
 	AST_OPEN(Context);
 	ContextualTest* t = result->allocateContextualTest();
 	ContextualTest* ot = t;
@@ -824,7 +824,7 @@ ContextualTest* TextualParser::parseContextualTestList(UChar*& p, Rule* rule) {
 				error("%s: Error: Expected '(' but found '%C' on line %u near `%S`!\n", *p, p);
 			}
 			++p;
-			ContextualTest* ored = parseContextualTestList(p, rule);
+			ContextualTest* ored = parseContextualTestList(p, rule, true);
 			++p;
 			t->ors.push_back(ored);
 			result->lines += SKIPWS(p);
@@ -956,7 +956,7 @@ ContextualTest* TextualParser::parseContextualTestList(UChar*& p, Rule* rule) {
 			error("%s: Error: It does not make sense to LINK from a NONE test; perhaps you meant NOT or NEGATE on line %u near `%S`?\n", p);
 		}
 	}
-	else if ((t->pos & POS_SCANALL) && !(t->pos & POS_CAREFUL)) {
+	else if (!in_tmpl && (t->pos & POS_SCANALL) && !(t->pos & POS_CAREFUL)) {
 		uncond_swap<UChar> swp(*p, 0);
 		u_fprintf(ux_stderr, "%s: Warning: ** without LINK or C doesn't make sense on line %u near %S.\n", filebase, result->lines, pos_p);
 		u_fflush(ux_stderr);
@@ -2314,7 +2314,7 @@ void TextualParser::parseFromUChar(UChar* input, const char* fname) {
 
 				uint32_t olines = 0;
 				swapper<uint32_t> oswap(true, olines, result->lines);
-				const char* obase = 0;
+				const char* obase = nullptr;
 				swapper<const char*> bswap(true, obase, filebase);
 
 				parseFromUChar(&data[4], abspath.c_str());
@@ -2410,7 +2410,7 @@ void TextualParser::parseFromUChar(UChar* input, const char* fname) {
 
 				swapper_false swp(no_itmpls, no_itmpls);
 
-				ContextualTest* t = parseContextualTestList(p);
+				ContextualTest* t = parseContextualTestList(p, nullptr, true);
 				t->line = static_cast<uint32_t>(line);
 				result->addTemplate(t, name.c_str());
 
@@ -2433,8 +2433,8 @@ void TextualParser::parseFromUChar(UChar* input, const char* fname) {
 
 				while (*p && *p != ';') {
 					int32_t c = 0;
-					Tag* left = 0;
-					Tag* right = 0;
+					Tag* left = nullptr;
+					Tag* right = nullptr;
 					UChar* n = p;
 					result->lines += SKIPTOWS(n, '(', true);
 					if (*n != '(') {
@@ -2666,7 +2666,7 @@ int TextualParser::parse_grammar(UString& data) {
 		result->addSet(set_c);
 	}
 	// Create the magic set _LEFT_ containing the tag _LEFT_
-	Set* s_left = 0;
+	Set* s_left = nullptr;
 	{
 		Set* set_c = s_left = result->allocateSet();
 		set_c->line = 0;
@@ -2676,7 +2676,7 @@ int TextualParser::parse_grammar(UString& data) {
 		result->addSet(set_c);
 	}
 	// Create the magic set _RIGHT_ containing the tag _RIGHT_
-	Set* s_right = 0;
+	Set* s_right = nullptr;
 	{
 		Set* set_c = s_right = result->allocateSet();
 		set_c->line = 0;
@@ -2734,7 +2734,7 @@ int TextualParser::parse_grammar(UString& data) {
 			continue;
 		}
 		UChar* p = &tag->tag[0];
-		UChar* n = 0;
+		UChar* n = nullptr;
 		do {
 			SKIPTO(p, '{');
 			if (*p) {
