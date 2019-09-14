@@ -38,7 +38,6 @@ endif()
 option(BUILD_SHARED_LIBS "Set to OFF to use static library" ON)
 option(USE_TCMALLOC "Set to OFF to disable linking against TCMalloc" ON)
 option(ENABLE_PYTHON_BINDINGS "Set to ON to build the Python wrapper" OFF)
-option(ENABLE_PYTHON_BUILD "Set to OFF to only configure the Python wrapper" ${ENABLE_PYTHON_BINDINGS})
 
 if(APPLE)
 	message(STATUS "Disabling TCMalloc for OS X")
