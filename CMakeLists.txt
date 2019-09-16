@@ -17,7 +17,7 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set(CMAKE_MACOSX_RPATH ON)
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/CMake" ${CMAKE_MODULE_PATH})
 
-file(READ "${CMAKE_CURRENT_SOURCE_DIR}/src/version.hpp" _cg3_VERSION_FILE)
+file(READ src/version.hpp _cg3_VERSION_FILE)
 string(REGEX REPLACE ".*CG3_VERSION_MAJOR = ([0-9]+).*" "\\1" _cg3_VERSION_MAJOR ${_cg3_VERSION_FILE})
 string(REGEX REPLACE ".*CG3_VERSION_MINOR = ([0-9]+).*" "\\1" _cg3_VERSION_MINOR ${_cg3_VERSION_FILE})
 string(REGEX REPLACE ".*CG3_VERSION_PATCH = ([0-9]+).*" "\\1" _cg3_VERSION_PATCH ${_cg3_VERSION_FILE})
@@ -27,13 +27,7 @@ set(CPACK_PACKAGE_VERSION_MINOR ${_cg3_VERSION_MINOR})
 set(CPACK_PACKAGE_VERSION_PATCH ${_cg3_VERSION_PATCH})
 set(VERSION "${_cg3_VERSION_MAJOR}.${_cg3_VERSION_MINOR}.${_cg3_VERSION_PATCH}.${REVISION}")
 
-# Because Fedora / CentOS / RHEL ...
-set(CG_LIBDIR "lib")
-if(LIB_INSTALL_DIR)
-	string(REGEX REPLACE "^${CMAKE_INSTALL_PREFIX}/" "" CG_LIBDIR ${LIB_INSTALL_DIR})
-elseif(LIB_SUFFIX)
-	set(CG_LIBDIR "${CG_LIBDIR}${LIB_SUFFIX}")
-endif()
+include(GNUInstallDirs)
 
 option(BUILD_SHARED_LIBS "Set to OFF to use static library" ON)
 option(USE_TCMALLOC "Set to OFF to disable linking against TCMalloc" ON)
@@ -101,14 +95,13 @@ else()
 	# Generate pkg-config file
 	set(prefix      ${CMAKE_INSTALL_PREFIX})
 	set(exec_prefix ${CMAKE_INSTALL_PREFIX})
-	set(libdir      ${CMAKE_INSTALL_PREFIX}/${CG_LIBDIR}/${CMAKE_LIBRARY_ARCHITECTURE})
-	set(includedir  ${CMAKE_INSTALL_PREFIX}/include)
-	configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cg3.pc.in
-		${CMAKE_CURRENT_BINARY_DIR}/cg3.pc @ONLY)
-	install(FILES "${CMAKE_CURRENT_BINARY_DIR}/cg3.pc" DESTINATION "${CG_LIBDIR}/${CMAKE_LIBRARY_ARCHITECTURE}/pkgconfig")
+	set(libdir      ${CMAKE_INSTALL_LIBDIR})
+	set(includedir  ${CMAKE_INSTALL_INCLUDEDIR})
+	configure_file(cg3.pc.in cg3.pc @ONLY)
+	install(FILES "${CMAKE_CURRENT_BINARY_DIR}/cg3.pc" DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig/")
 
-	install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/manual/man/"
-		DESTINATION share/man/man1
+	install(DIRECTORY manual/man/
+		DESTINATION ${CMAKE_INSTALL_MANDIR}/man1
 		FILES_MATCHING
 		PATTERN "*.1"
 		PATTERN ".svn" EXCLUDE)
@@ -122,31 +115,31 @@ endif()
 
 if(WIN32)
 	add_definitions(-DUNICODE -D_UNICODE -D_SECURE_SCL=0 -D_ITERATOR_DEBUG_LEVEL=0 -D_CRT_SECURE_NO_DEPRECATE -DWIN32_LEAN_AND_MEAN -DVC_EXTRALEAN -DNOMINMAX)
-	include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include/win32")
+	include_directories("include/win32")
 else()
 	add_definitions(-D_POSIX_C_SOURCE=200112)
-	set(POPEN_PLUS_CPP "${CMAKE_CURRENT_SOURCE_DIR}/include/posix/popen_plus.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/include/posix/popen_plus.hpp")
-	include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include/posix")
+	set(POPEN_PLUS_CPP "../include/posix/popen_plus.cpp" "../include/posix/popen_plus.hpp")
+	include_directories("include/posix")
 endif()
 
-include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
-include_directories("${CMAKE_CURRENT_SOURCE_DIR}/src")
+include_directories("include")
+include_directories("src")
 
 enable_testing()
 
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src)
+add_subdirectory(src)
 
 if(ENABLE_PYTHON_BINDINGS)
-	add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/python)
+	add_subdirectory(python)
 endif()
 
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/scripts/cg3-autobin.pl.in ${CMAKE_CURRENT_BINARY_DIR}/scripts/cg3-autobin.pl @ONLY)
+configure_file(scripts/cg3-autobin.pl.in scripts/cg3-autobin.pl @ONLY)
 install(PROGRAMS
 	"${CMAKE_CURRENT_BINARY_DIR}/scripts/cg3-autobin.pl"
 	"${CMAKE_CURRENT_SOURCE_DIR}/scripts/cg-sort"
 	"${CMAKE_CURRENT_SOURCE_DIR}/scripts/cg-strictify"
 	"${CMAKE_CURRENT_SOURCE_DIR}/scripts/cg-untrace"
-	DESTINATION bin)
+	DESTINATION ${CMAKE_INSTALL_BINDIR})
 
-set(ELISPDIR "share/emacs/site-lisp" CACHE PATH "Where to install Emacs Lisp files")
-install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/emacs/cg.el" DESTINATION ${ELISPDIR})
+set(ELISPDIR "${CMAKE_INSTALL_DATAROOTDIR}/emacs/site-lisp" CACHE PATH "Where to install Emacs Lisp files")
+install(FILES "emacs/cg.el" DESTINATION ${ELISPDIR})
