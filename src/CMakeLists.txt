@@ -5,9 +5,9 @@ if(NOT APPLE)
 endif()
 
 # Boost
-find_path(Boost_LOCAL NAMES boost/config.hpp PATHS "${CMAKE_CURRENT_SOURCE_DIR}/../include" NO_DEFAULT_PATH)
+find_path(Boost_LOCAL NAMES boost/config.hpp PATHS "../include" NO_DEFAULT_PATH)
 if(Boost_LOCAL)
-	set(BOOST_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/../include")
+	set(BOOST_ROOT "../include")
 	find_package(Boost 1.53.0)
 endif()
 if(NOT Boost_FOUND)
@@ -188,8 +188,8 @@ if(APPLE)
 			POST_BUILD
 			COMMAND install_name_tool -change libcg3.0.dylib @rpath/libcg3.0.dylib ${_file_${t}}
 			COMMAND install_name_tool -add_rpath @executable_path/ ${_file_${t}}
-			COMMAND install_name_tool -add_rpath @executable_path/../${CG_LIBDIR} ${_file_${t}}
-			COMMAND install_name_tool -add_rpath @loader_path/../${CG_LIBDIR} ${_file_${t}}
+			COMMAND install_name_tool -add_rpath @executable_path/../${CMAKE_INSTALL_LIBDIR} ${_file_${t}}
+			COMMAND install_name_tool -add_rpath @loader_path/../${CMAKE_INSTALL_LIBDIR} ${_file_${t}}
 			COMMENT "Adding @rpath to ${t}"
 			VERBATIM
 		)
@@ -198,6 +198,6 @@ endif()
 
 add_test(t_libcg3 test_libcg3 "${CMAKE_CURRENT_SOURCE_DIR}/../test/T_Select/grammar.cg3")
 
-install(TARGETS cg3 ARCHIVE DESTINATION "${CG_LIBDIR}/${CMAKE_LIBRARY_ARCHITECTURE}" LIBRARY DESTINATION "${CG_LIBDIR}/${CMAKE_LIBRARY_ARCHITECTURE}" RUNTIME DESTINATION bin)
-install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/cg3.h" DESTINATION include)
-install(TARGETS cg-comp cg-proc cg-relabel cg-mwesplit cg-conv vislcg3 RUNTIME DESTINATION bin)
+install(TARGETS cg3 ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+install(FILES cg3.h DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+install(TARGETS cg-comp cg-proc cg-relabel cg-mwesplit cg-conv vislcg3 RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
