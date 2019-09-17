@@ -951,7 +951,7 @@ ContextualTest* TextualParser::parseContextualTestList(UChar*& p, Rule* rule, bo
 	result->lines += SKIPWS(p);
 
 	if (linked) {
-		t->linked = parseContextualTestList(p, rule);
+		t->linked = parseContextualTestList(p, rule, in_tmpl);
 		if ((t->pos & POS_NONE) && !(t->linked->pos & POS_MARK_JUMP)) {
 			error("%s: Error: It does not make sense to LINK from a NONE test; perhaps you meant NOT or NEGATE on line %u near `%S`?\n", p);
 		}
