@@ -1,7 +1,7 @@
 prefix=@prefix@
 exec_prefix=@exec_prefix@
-libdir=@libdir@
-includedir=@includedir@
+libdir=${prefix}/@libdir@
+includedir=${prefix}/@includedir@
 
 Name: cg3
 Description: CG-3 is a compiler and applicator for the third edition of the Constraint Grammar formalism.
