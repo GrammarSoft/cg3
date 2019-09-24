@@ -1,4 +1,4 @@
-find_package(SWIG 2.0 REQUIRED)
+find_package(SWIG 3.0 REQUIRED)
 find_package(PythonInterp 3.5 REQUIRED)
 
 set(PYTHON_FILE "constraint_grammar.py")
