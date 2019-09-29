@@ -1,0 +1,54 @@
+A new release of CG-3 has been tagged v1.3.0 (r13684), in preparation for the NoDaLiDa 2019 Constraint Grammar Workshop ( https://visl.sdu.dk/nodalida2019.html ) which takes starts in 11 hours.
+
+Been two and a half years since last formal round-up of features and changes, but things have steadily progressed.
+
+Bugs/issues/request are now on Github https://github.com/TinoDidriksen/cg3, though the authoritative code remains in VISL's svn.
+
+New features:
+- Added LIST-TAGS which is very similar to STRICT-TAGS: https://visl.sdu.dk/cg3/chunked/tags.html#list-tags
+- Rules ADD/MAP/COPY now takes BEFORE|AFTER to mark where exactly you want the new tags to go. This was implemented to alleviate the need for abusing SUBSTITUTE: https://visl.sdu.dk/cg3/chunked/rules.html#rules-cheatsheet
+- Added 3 functions to the C API from Paul Meurer <​paul.meurer@uni.no>
+- Added META tags to query non-CG information: https://visl.sdu.dk/cg3/chunked/tags.html#stream-metadata
+- Added stream static tags: https://visl.sdu.dk/cg3/chunked/tags.html#stream-static-tags
+- New tool cg-sort which performs the equivalent of sort|uniq on each cohort's readings. Does not yet handle sub-readings.
+- Added PROTECT and UNPROTECT to mark readings as untouchable: https://visl.sdu.dk/cg3/chunked/rules.html#protect
+- Added contextual modifier N to say that self should not count as the barrier: https://visl.sdu.dk/cg3/chunked/dependencies.html#dep-ct-no-barrier
+- New tool cg-untrace which strips tracing information from the stream, which means all deleted readings and trace tags.
+- Added -o / --ordered cmdline flag. For now, this only makes duplicate tags actually matter when determining whether or not a reading is identical to another.
+- Added MERGECOHORTS: https://visl.sdu.dk/cg3/chunked/rules.html#mergecohorts
+- Added cmdline flag --deleted to treat ; readings in the input as proper deleted readings, instead of as text.
+- Added shorthand syntax @< and @> to jump to the absolute position in the respectively previous and next window.
+- Added INCLUDE STATIC to only include the non-rule parts of another grammar. Very useful if you have an existing grammar that you want to separate some parts of without duplicating set definitions: https://visl.sdu.dk/cg3/chunked/grammar.html#grammar-include
+- Added a Python 3 module from Lokendra Singh <​lokendras1998@gmail.com>
+
+Changes:
+- For self-tests, BARRIER now also tests and stops if the selv matches it
+- When tracing, invisible magic readings are now given form
+- CG-3 now assumes UTF-8 for all I/O, and the -C and --codepage-* options are deprecated
+- Code now takes much more advantage of C++14 and C99
+- Named relations can now be constructed from captured snippets, same as varstrings
+- Regex captures from dependency target contexts are now allowed, even without any captures in normal target contexts
+- Cmdline flag --num-windows is now exact. Before it was merely a minimum.
+- Map/Add/etc mapping sets can now be a mix of inline and sets, as long as everything is of LIST-type.
+- The symbol ! is no longer an alias of the fail-fast prefix ^
+- The tools now all default to being silent when in processing mode
+- Detects and breaks out if MOVE/SWITCH goes into an endless loop
+- COPY EXCEPT will now except from sub-readings as well as main reading
+- Now warns when ** is used in contexts where it doesn't make sense
+- Multiple distinct &&-unification sets can now be active at the same time in different uses
+- For &&-unification, you can use the same set for different unified matches by prefixing the set name with a number and colon. E.g., &&SAME-SEM is a different match than &&1:SAME-SEM.
+
+Fixed Bugs:
+- Linked OR'ed templates now actually work
+- COPY now also copies sub-readings
+- Better maintain reading order through various manipulations
+
+Main site is https://visl.sdu.dk/cg3.html
+Google Group is https://groups.google.com/group/constraint-grammar
+Source snapshots available at https://github.com/TinoDidriksen/cg3
+Windows binary is at https://apertium.projectjj.com/win32/nightly/
+OS X binary is at https://apertium.projectjj.com/osx/nightly/
+RHEL/Fedora/CentOS/OpenSUSE packages are at https://apertium.projectjj.com/rpm/howto.txt
+Debian/Ubuntu packages are at https://apertium.projectjj.com/apt/howto.txt
+
+-- Tino Didriksen
