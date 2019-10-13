@@ -3,6 +3,7 @@ find_package(PythonInterp 3.5 REQUIRED)
 
 set(PYTHON_FILE "constraint_grammar.py")
 set(CPP_WRAP_FILE "constraint_grammar_wrap.cpp")
+file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/cg3.py" "from constraint_grammar import *\n")
 
 configure_file(constraint_grammar.i.in constraint_grammar.i @ONLY)
 configure_file(setup.py.in setup.py)
