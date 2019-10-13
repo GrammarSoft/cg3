@@ -50,5 +50,5 @@ setup(
     license='GPL-3.0+',
     cmdclass={'build': CustomBuild},
     ext_modules=[constraint_grammar_module],
-    py_modules=['constraint_grammar'],
+    py_modules=['constraint_grammar', 'cg3'],
 )
