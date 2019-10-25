@@ -150,6 +150,9 @@ Cohort* getCohortInWindow(SingleWindow*& sWindow, size_t position, const Context
 		else if (sWindow->next && (test->pos & POS_SPAN_RIGHT)) {
 			sWindow = sWindow->next;
 		}
+		else {
+			return cohort;
+		}
 	}
 	if (test->pos & POS_ABSOLUTE) {
 		if (test->offset < 0) {
