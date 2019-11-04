@@ -900,7 +900,12 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 					cohort->dep_children.erase(ch);
 				}
 				cohort->type |= CT_REMOVED;
-				cohort->prev->removed.push_back(cohort);
+				if (!cohort->prev->enclosed.empty()) {
+					cohort->prev->enclosed.back()->removed.push_back(cohort);
+				}
+				else {
+					cohort->prev->removed.push_back(cohort);
+				}
 				cohort->detach();
 				for (auto cm : current.parent->cohort_map) {
 					cm.second->dep_children.erase(cohort->dep_self);
