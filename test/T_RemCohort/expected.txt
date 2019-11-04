@@ -9,16 +9,16 @@
 	"baseform5" @stillhere #3->3 ADDCOHORT-BEFORE:14 ADD:20 ADD:20 ADD:20
 "<wordform4>"
 	"baseform4" tag4 @stillhere #4->4 ADDCOHORT-BEFORE:16 ADD:20 ADD:20 ADD:20
-; "<word>"
-;	"word" notwanted REMCOHORT:19
-;	"matchme" wanted ADDCOHORT-BEFORE:12 ADDCOHORT-AFTER:13 ADDCOHORT-BEFORE:14 ADDCOHORT-BEFORE:16 ADDCOHORT-AFTER:17 REMCOHORT:19
-;	"word" notmeeither REMCOHORT:19
 "<(>"
 	"(" @stillhere #5->1 ADD:20
 "<inside>"
 	"inside" inside @stillhere #6->1 ADD:20
 "<)>"
 	")" @stillhere #7->1 ADD:20
+; "<word>"
+;	"word" notwanted REMCOHORT:19
+;	"matchme" wanted ADDCOHORT-BEFORE:12 ADDCOHORT-AFTER:13 ADDCOHORT-BEFORE:14 ADDCOHORT-BEFORE:16 ADDCOHORT-AFTER:17 REMCOHORT:19
+;	"word" notmeeither REMCOHORT:19
 "<wordform2>"
 	"baseform2" tag2 @stillhere #8->8 ADDCOHORT-AFTER:13 ADD:20 ADD:20 ADD:20
 "<word>"
