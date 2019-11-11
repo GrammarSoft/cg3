@@ -407,7 +407,10 @@ void NicelineApplicator::printReading(const Reading* reading, std::ostream& outp
 		if (unicode_tags) {
 			pattern = local_utf_pattern;
 		}
-		if (!dep_has_spanned) {
+		if (dep_absolute) {
+			u_fprintf_u(output, pattern, reading->parent->global_number, pr->global_number);
+		}
+		else if (!dep_has_spanned) {
 			u_fprintf_u(output, pattern,
 			  reading->parent->local_number,
 			  pr->local_number);

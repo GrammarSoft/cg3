@@ -101,6 +101,7 @@ public:
 
 	bool dep_has_spanned;
 	uint32_t dep_delimit;
+	bool dep_absolute;
 	bool dep_original;
 	bool dep_block_loops;
 	bool dep_block_crossing;
