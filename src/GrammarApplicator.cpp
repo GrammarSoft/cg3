@@ -57,6 +57,7 @@ GrammarApplicator::GrammarApplicator(std::ostream& ux_err)
   , split_mappings(false)
   , dep_has_spanned(false)
   , dep_delimit(0)
+  , dep_absolute(false)
   , dep_original(false)
   , dep_block_loops(true)
   , dep_block_crossing(false)
@@ -423,7 +424,10 @@ void GrammarApplicator::printReading(const Reading* reading, std::ostream& outpu
 		if (unicode_tags) {
 			pattern = local_utf_pattern;
 		}
-		if (!dep_has_spanned) {
+		if (dep_absolute) {
+			u_fprintf_u(output, pattern, reading->parent->global_number, pr->global_number);
+		}
+		else if (!dep_has_spanned) {
 			u_fprintf_u(output, pattern,
 			  reading->parent->local_number,
 			  pr->local_number);
