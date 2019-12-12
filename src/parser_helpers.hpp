@@ -179,7 +179,7 @@ Tag* parseTag(const UChar* to, const UChar* p, State& state) {
 				state.error("%s: Error: uregex_setText(parseTag) returned %s on line %u near `%S` - cannot continue!\n", u_errorName(status), p);
 			}
 			status = U_ZERO_ERROR;
-			if (uregex_matches(iter, 0, &status)) {
+			if (uregex_find(iter, -1, &status)) {
 				tag->type |= T_TEXTUAL;
 			}
 		}

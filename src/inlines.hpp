@@ -369,6 +369,11 @@ inline void clear(C& c) {
 }
 
 template<typename S>
+inline bool is_textual(const S& s) {
+	return (s.front() == '"' && s.back() == '"') || (s.front() == '<' && s.back() == '>');
+}
+
+template<typename S>
 inline bool is_internal(const S& s) {
 	return (s[0] == '_' && s[1] == 'G' && s[2] == '_');
 }

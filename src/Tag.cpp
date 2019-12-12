@@ -116,7 +116,7 @@ void Tag::parseTagRaw(const UChar* to, Grammar* grammar) {
 		UErrorCode status = U_ZERO_ERROR;
 		uregex_setText(iter, tag.c_str(), static_cast<int32_t>(tag.size()), &status);
 		if (status == U_ZERO_ERROR) {
-			if (uregex_matches(iter, 0, &status)) {
+			if (uregex_find(iter, -1, &status)) {
 				type |= T_TEXTUAL;
 			}
 		}
@@ -336,7 +336,7 @@ UString Tag::toUString(bool escape) const {
 		str += ':';
 	}
 
-	if (type & (T_CASE_INSENSITIVE | T_REGEXP) && tag[0] != '"') {
+	if (type & (T_CASE_INSENSITIVE | T_REGEXP) && !is_textual(tag)) {
 		str += '/';
 	}
 
@@ -352,7 +352,7 @@ UString Tag::toUString(bool escape) const {
 		str += tag;
 	}
 
-	if (type & (T_CASE_INSENSITIVE | T_REGEXP) && tag[0] != '"') {
+	if (type & (T_CASE_INSENSITIVE | T_REGEXP) && !is_textual(tag)) {
 		str += '/';
 	}
 	if (type & T_CASE_INSENSITIVE) {
