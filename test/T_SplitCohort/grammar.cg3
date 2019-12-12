@@ -6,7 +6,7 @@ SPLITCOHORT (
 	"<$1>"v "%L$2"v A c->2
 	"<$3>"v "$3"v B * A R:* 2->p
 	"<$4>"v "$4"v C VSTR:$5 3->2
-	) TARGET ("<((.+?)s)=(.+?)=(.+?)>"r) (0 (/\(S|P\)/r)) ;
+	) TARGET ("<((.+?)s)=(.+?)=(.+?)>"r) (0 (/^\(S|P\)$/r)) ;
 
 ADD (@p-captain) (*) (p ("captain")) ;
 ADD (@c-samuel) (*) (c ("Samuel")) ;

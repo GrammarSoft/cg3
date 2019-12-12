@@ -289,7 +289,7 @@ Tag* GrammarApplicator::addTag(const UChar* txt, bool vstr) {
 	}
 
 	bool reflow = false;
-	if ((tag->type & T_REGEXP) && tag->tag[0] != '"' && tag->tag[0] != '<') {
+	if ((tag->type & T_REGEXP) && !is_textual(tag->tag)) {
 		if (grammar->regex_tags.insert(tag->regexp).second) {
 			for (auto titer : single_tags) {
 				if (titer.second->type & T_TEXTUAL) {
@@ -308,7 +308,7 @@ Tag* GrammarApplicator::addTag(const UChar* txt, bool vstr) {
 			}
 		}
 	}
-	if ((tag->type & T_CASE_INSENSITIVE) && tag->tag[0] != '"' && tag->tag[0] != '<') {
+	if ((tag->type & T_CASE_INSENSITIVE) && !is_textual(tag->tag)) {
 		if (grammar->icase_tags.insert(tag).second) {
 			for (auto titer : single_tags) {
 				if (titer.second->type & T_TEXTUAL) {

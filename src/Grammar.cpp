@@ -644,10 +644,10 @@ void Grammar::reindex(bool unused_sets, bool used_tags) {
 	rules_any = nullptr;
 
 	for (auto iter : single_tags_list) {
-		if (iter->regexp && iter->tag[0] != '"' && iter->tag[0] != '<') {
+		if (iter->regexp && !is_textual(iter->tag)) {
 			regex_tags.insert(iter->regexp);
 		}
-		if ((iter->type & T_CASE_INSENSITIVE) && iter->tag[0] != '"' && iter->tag[0] != '<') {
+		if ((iter->type & T_CASE_INSENSITIVE) && !is_textual(iter->tag)) {
 			icase_tags.insert(iter);
 		}
 		if (is_binary) {
