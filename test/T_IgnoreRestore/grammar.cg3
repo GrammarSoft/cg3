@@ -1,0 +1,20 @@
+DELIMITERS = "<$.>" ;
+
+REMOVE IGNORED (one) ;
+ADD (@seen-1) (first) ;
+RESTORE IGNORED (one) (first) ;
+ADD (@one) (one) ;
+
+REMOVE DELAYED (five) ;
+ADD (@seen-2) (second) ;
+RESTORE DELAYED (five) (second) ;
+ADD (@five) (five) ;
+
+REMOVE (eight) ;
+ADD (@seen-3) (third) ;
+RESTORE (eight) (third) ;
+ADD (@eight) (eight) ;
+
+REMOVE IGNORED (two) ;
+REMOVE DELAYED (six) ;
+REMOVE (seven) ;

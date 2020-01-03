@@ -806,6 +806,7 @@ void ApertiumApplicator::printSingleWindow(SingleWindow* window, std::ostream& o
 		}
 
 		Cohort* cohort = window->cohorts[c];
+		cohort->unignoreAll();
 
 		if (!split_mappings) {
 			mergeMappings(*cohort);

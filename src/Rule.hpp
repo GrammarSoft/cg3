@@ -65,6 +65,8 @@ enum {
 	RF_REPEAT       = (1 << 26),
 	RF_BEFORE       = (1 << 27),
 	RF_AFTER        = (1 << 28),
+	RF_IGNORED      = (1 << 29),
+	RF_LOOKIGNORED  = (1 << 30),
 
 	MASK_ENCL       = RF_ENCL_INNER | RF_ENCL_OUTER | RF_ENCL_FINAL | RF_ENCL_ANY,
 };

@@ -32,6 +32,7 @@
       SELECT &lt;target&gt; [contextual_tests] ;
       REMOVE &lt;target&gt; [contextual_tests] ;
       IFF &lt;target&gt; [contextual_tests] ;
+      RESTORE &lt;restore_target&gt; &lt;target&gt; [contextual_tests] ;
 
   Dependency manipulation:
       SETPARENT &lt;target&gt; [contextual_tests]
@@ -486,8 +487,28 @@
       [wordform] UNPROTECT &lt;target&gt; [contextual_tests] ;
     </screen>
     <para>
-      Lifts the protection of <link linkend="unprotect">PROTECT</link>, so that other rules can once again target the reading.
+      Lifts the protection of <link linkend="protect">PROTECT</link>, so that other rules can once again target the reading.
     </para>
+  </section>
+
+  <section id="restore">
+    <title>RESTORE</title>
+    <indexterm>
+      <primary>RESTORE</primary>
+    </indexterm>
+    <screen>
+      [wordform] RESTORE [DELAYED|IGNORED] &lt;restore_target&gt; &lt;target&gt; [contextual_tests] ;
+    </screen>
+    <para>
+      Restores readings that were previously removed. Only restores the readings matching the <code>restore_target</code> set.
+      If either of the flags <link linkend="rule-options-delayed">DELAYED</link> or <link linkend="rule-options-ignored">IGNORED</link> are enabled, the rule will look in those special buffers for the readings restore.
+      If neither flag, or the <link linkend="rule-options-immediate">IMMEDIATE</link> flag, is enabled, the rule will restore ordinarily remove readings.
+    </para>
+    <screen>
+      RESTORE (@func) TARGET (target) IF (-1 KC) ;
+      RESTORE DELAYED (@func) TARGET (target) IF (-1 KC) ;
+      RESTORE IGNORED (@func) TARGET (target) IF (-1 KC) ;
+    </screen>
   </section>
 
   <section id="taglists-sets">
@@ -622,12 +643,13 @@
         <primary>DELAYED</primary>
       </indexterm>
       <para>
-        Applicable for rules SELECT, REMOVE, and IFF.
-        Not compatible with option IMMEDIATE.
+        Applicable for rules SELECT, REMOVE, RESTORE, and IFF.
+        Not compatible with options IGNORED or IMMEDIATE.
       </para>
       <para>
         Option DELAYED causes readings that otherwise would have been put in the deleted buffer to be put in
         a special delayed buffer, in the grey zone between living and dead.
+        Delayed readings are removed at the end of the run.
       </para>
       <para>
         Delayed readings can be looked at by contextual tests of rules that have option LOOKDELAYED,
@@ -641,13 +663,33 @@
         <primary>IMMEDIATE</primary>
       </indexterm>
       <para>
-        Applicable for rules SELECT, REMOVE, and IFF.
-        Not compatible with option DELAYED.
+        Applicable for rules SELECT, REMOVE, RESTORE, and IFF.
+        Not compatible with option DELAYED or IGNORED.
       </para>
       <para>
         Option IMMEDIATE causes readings that otherwise would have been put in the special delayed buffer to be put in
-        the delayed buffer. This is mainly used to selectively override a global DELAYED flag
+        the deleted buffer. This is mainly used to selectively override a global DELAYED flag
         as rules are by default immediate.
+      </para>
+    </section>
+
+    <section id="rule-options-ignored">
+      <title>IGNORED</title>
+      <indexterm>
+        <primary>IGNORED</primary>
+      </indexterm>
+      <para>
+        Applicable for rules REMOVE and RESTORE.
+        Not compatible with options DELAYED or IMMEDIATE.
+      </para>
+      <para>
+        Option IGNORED causes readings that otherwise would have been put in the deleted buffer to be put in
+        a special ignored buffer, in the grey zone between living and dead.
+        Unlike delayed readings, ignored readings get restored at the end of the run.
+      </para>
+      <para>
+        Ignored readings can be looked at by contextual tests of rules that have option LOOKIGNORED,
+        or if the contextual test has position 'I'.
       </para>
     </section>
 
@@ -662,6 +704,20 @@
       <para>
         Option LOOKDELAYED puts <link linkend="test-deleted-delayed">contextual position 'd'</link> on all tests done by that rule,
         allowing them all to see delayed readings.
+      </para>
+    </section>
+
+    <section id="rule-options-lookignored">
+      <title>LOOKIGNORED</title>
+      <indexterm>
+        <primary>LOOKIGNORED</primary>
+      </indexterm>
+      <para>
+        Applicable for all rules.
+      </para>
+      <para>
+        Option LOOKIGNORED puts <link linkend="test-deleted-ignored">contextual position 'I'</link> on all tests done by that rule,
+        allowing them all to see ignored readings.
       </para>
     </section>
 
