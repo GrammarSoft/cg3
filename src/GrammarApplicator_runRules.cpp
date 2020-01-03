@@ -449,6 +449,18 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 			if (cohort->readings.empty()) {
 				continue;
 			}
+			// If there's no reason to even attempt to restore, just skip it.
+			if (rule.type == K_RESTORE) {
+				if ((rule.flags & RF_DELAYED) && cohort->delayed.empty()) {
+					continue;
+				}
+				else if ((rule.flags & RF_IGNORED) && cohort->ignored.empty()) {
+					continue;
+				}
+				else if (!(rule.flags & (RF_DELAYED|RF_IGNORED)) && cohort->deleted.empty()) {
+					continue;
+				}
+			}
 			// If there is not even a remote chance the target set might match this cohort, skip it.
 			if (rule.sub_reading == 0 && (rule.target >= cohort->possible_sets.size() || !cohort->possible_sets.test(rule.target))) {
 				continue;
@@ -1430,8 +1442,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						}
 					}
 					else if (rule.type == K_RESTORE) {
-						TRACE;
-
+						bool did_restore = false;
 						auto move_rs = [&](ReadingList& rl) {
 							for (size_t i = 0; i < rl.size();) {
 								if (doesSetMatchReading(*rl[i], rule.maplist->number)) {
@@ -1439,6 +1450,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 									rl[i]->hit_by.push_back(rule.number);
 									cohort->readings.push_back(rl[i]);
 									rl.erase(rl.begin() + i);
+									did_restore = true;
 								}
 								else {
 									++i;
@@ -1454,6 +1466,10 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						}
 						else {
 							move_rs(cohort->deleted);
+						}
+
+						if (did_restore) {
+							TRACE;
 						}
 						break;
 					}
