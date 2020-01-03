@@ -735,6 +735,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 			const size_t state_num_readings = cohort->readings.size();
 			const size_t state_num_removed = cohort->deleted.size();
 			const size_t state_num_delayed = cohort->delayed.size();
+			const size_t state_num_ignored = cohort->ignored.size();
 			bool readings_changed = false;
 
 			auto add_cohort = [&](Cohort* cohort) {
@@ -1427,6 +1428,34 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 							index_ruleCohort_no.clear();
 							readings_changed = true;
 						}
+					}
+					else if (rule.type == K_RESTORE) {
+						TRACE;
+
+						auto move_rs = [&](ReadingList& rl) {
+							for (size_t i = 0; i < rl.size();) {
+								if (doesSetMatchReading(*rl[i], rule.maplist->number)) {
+									rl[i]->deleted = false;
+									rl[i]->hit_by.push_back(rule.number);
+									cohort->readings.push_back(rl[i]);
+									rl.erase(rl.begin() + i);
+								}
+								else {
+									++i;
+								}
+							}
+						};
+
+						if (rule.flags & RF_DELAYED) {
+							move_rs(cohort->delayed);
+						}
+						else if (rule.flags & RF_IGNORED) {
+							move_rs(cohort->ignored);
+						}
+						else {
+							move_rs(cohort->deleted);
+						}
+						break;
 					}
 					else if (rule.type == K_REPLACE) {
 						index_ruleCohort_no.clear();
@@ -2194,6 +2223,9 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 				if (rule.flags & RF_DELAYED) {
 					cohort->delayed.insert(cohort->delayed.end(), removed.begin(), removed.end());
 				}
+				else if (rule.flags & RF_IGNORED) {
+					cohort->ignored.insert(cohort->ignored.end(), removed.begin(), removed.end());
+				}
 				else {
 					cohort->deleted.insert(cohort->deleted.end(), removed.begin(), removed.end());
 				}
@@ -2223,7 +2255,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 			}
 
 			// Cohort state has changed, so mark that the section did something
-			if (state_num_readings != cohort->readings.size() || state_num_removed != cohort->deleted.size() || state_num_delayed != cohort->delayed.size() || readings_changed) {
+			if (state_num_readings != cohort->readings.size() || state_num_removed != cohort->deleted.size() || state_num_delayed != cohort->delayed.size() || state_num_ignored != cohort->ignored.size() || readings_changed) {
 				if (!(rule.flags & RF_NOITERATE) && section_max_count != 1) {
 					section_did_something = true;
 				}

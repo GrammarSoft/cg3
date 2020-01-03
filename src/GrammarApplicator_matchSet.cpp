@@ -867,7 +867,7 @@ inline bool GrammarApplicator::doesSetMatchCohort_helper(Cohort& cohort, Reading
 bool GrammarApplicator::doesSetMatchCohortNormal(Cohort& cohort, const uint32_t set, dSMC_Context* context) {
 	bool retval = false;
 
-	if (!(!context || (context->options & (POS_LOOK_DELETED | POS_LOOK_DELAYED | POS_NOT))) && (set >= cohort.possible_sets.size() || !cohort.possible_sets.test(set))) {
+	if (!(!context || (context->options & (POS_LOOK_DELETED | POS_LOOK_DELAYED | POS_LOOK_IGNORED | POS_NOT))) && (set >= cohort.possible_sets.size() || !cohort.possible_sets.test(set))) {
 		return retval;
 	}
 
@@ -881,12 +881,15 @@ bool GrammarApplicator::doesSetMatchCohortNormal(Cohort& cohort, const uint32_t 
 		return retval;
 	}
 
-	ReadingList* lists[3] = { &cohort.readings };
+	ReadingList* lists[4] = { &cohort.readings };
 	if (context && (context->options & POS_LOOK_DELETED)) {
 		lists[1] = &cohort.deleted;
 	}
 	if (context && (context->options & POS_LOOK_DELAYED)) {
 		lists[2] = &cohort.delayed;
+	}
+	if (context && (context->options & POS_LOOK_IGNORED)) {
+		lists[3] = &cohort.ignored;
 	}
 
 	for (auto list : lists) {
@@ -928,18 +931,21 @@ bool GrammarApplicator::doesSetMatchCohortNormal(Cohort& cohort, const uint32_t 
 bool GrammarApplicator::doesSetMatchCohortCareful(Cohort& cohort, const uint32_t set, dSMC_Context* context) {
 	bool retval = false;
 
-	if (!(!context || (context->options & (POS_LOOK_DELETED | POS_LOOK_DELAYED | POS_NOT))) && (set >= cohort.possible_sets.size() || !cohort.possible_sets.test(set))) {
+	if (!(!context || (context->options & (POS_LOOK_DELETED | POS_LOOK_DELAYED | POS_LOOK_IGNORED | POS_NOT))) && (set >= cohort.possible_sets.size() || !cohort.possible_sets.test(set))) {
 		return retval;
 	}
 
 	const Set* theset = grammar->sets_list[set];
 
-	ReadingList* lists[3] = { &cohort.readings };
+	ReadingList* lists[4] = { &cohort.readings };
 	if (context && (context->options & POS_LOOK_DELETED)) {
 		lists[1] = &cohort.deleted;
 	}
 	if (context && (context->options & POS_LOOK_DELAYED)) {
 		lists[2] = &cohort.delayed;
+	}
+	if (context && (context->options & POS_LOOK_IGNORED)) {
+		lists[3] = &cohort.ignored;
 	}
 
 	for (auto list : lists) {

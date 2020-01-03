@@ -415,6 +415,9 @@ void GrammarWriter::printContextualTest(std::ostream& to, const ContextualTest& 
 		if (test.pos & POS_LOOK_DELAYED) {
 			u_fprintf(to, "d");
 		}
+		if (test.pos & POS_LOOK_IGNORED) {
+			u_fprintf(to, "I");
+		}
 		if (test.pos & POS_RELATION) {
 			u_fprintf(to, "r:%S", grammar->single_tags.find(test.relation)->second->tag.c_str());
 		}

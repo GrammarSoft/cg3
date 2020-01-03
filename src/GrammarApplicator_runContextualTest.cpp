@@ -38,12 +38,15 @@ Cohort* GrammarApplicator::runSingleTest(Cohort* cohort, const ContextualTest* t
 	if (test->pos & POS_ATTACH_TO) {
 		if (attach_to != cohort) {
 			// Clear readings for rules that care about readings
-			ReadingList* lists[3] = { &cohort->readings };
+			ReadingList* lists[4] = { &cohort->readings };
 			if (test->pos & POS_LOOK_DELETED) {
 				lists[1] = &cohort->deleted;
 			}
 			if (test->pos & POS_LOOK_DELAYED) {
 				lists[2] = &cohort->delayed;
+			}
+			if (test->pos & POS_LOOK_IGNORED) {
+				lists[3] = &cohort->ignored;
 			}
 
 			for (auto list : lists) {

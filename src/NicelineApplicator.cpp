@@ -471,6 +471,8 @@ void NicelineApplicator::printCohort(Cohort* cohort, std::ostream& output) {
 		did_warn_statictags = true;
 	}
 
+	cohort->unignoreAll();
+
 	if (!split_mappings) {
 		mergeMappings(*cohort);
 	}

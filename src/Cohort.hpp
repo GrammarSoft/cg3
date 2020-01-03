@@ -62,6 +62,7 @@ public:
 	ReadingList readings;
 	ReadingList deleted;
 	ReadingList delayed;
+	ReadingList ignored;
 	typedef bc::flat_map<uint32_t, double> num_t;
 	num_t num_max, num_min;
 	uint32SortedVector dep_children;
@@ -91,6 +92,16 @@ public:
 	bool setRelation(uint32_t rel, uint32_t cohort);
 	bool remRelation(uint32_t rel, uint32_t cohort);
 	void setRelated();
+
+	void unignoreAll() {
+		if (!ignored.empty()) {
+			for (auto& r : ignored) {
+				r->deleted = false;
+			}
+			readings.insert(readings.end(), ignored.begin(), ignored.end());
+			ignored.clear();
+		}
+	}
 
 private:
 	void updateMinMax();

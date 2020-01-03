@@ -53,6 +53,8 @@ const UString g_flags[FLAGS_COUNT] = {
 	"REPEAT"_us,
 	"BEFORE"_us,
 	"AFTER"_us,
+	"IGNORED"_us,
+	"LOOKIGNORED"_us,
 };
 
 const UString keywords[KEYWORD_COUNT] = {
@@ -119,6 +121,7 @@ const UString keywords[KEYWORD_COUNT] = {
 	"PROTECT"_us,
 	"UNPROTECT"_us,
 	"MERGECOHORTS"_us,
+	"RESTORE"_us,
 };
 
 const UString stringbits[STRINGS_COUNT] = {

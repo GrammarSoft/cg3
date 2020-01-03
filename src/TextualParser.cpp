@@ -589,6 +589,10 @@ void TextualParser::parseContextualTestPosition(UChar*& p, ContextualTest& t) {
 			t.pos |= POS_LOOK_DELAYED;
 			++p;
 		}
+		if (*p == 'I') {
+			t.pos |= POS_LOOK_IGNORED;
+			++p;
+		}
 		if (*p == 'A') {
 			t.pos |= POS_ATTACH_TO;
 			++p;
@@ -971,6 +975,9 @@ ContextualTest* TextualParser::parseContextualTestList(UChar*& p, Rule* rule, bo
 		if (rule->flags & RF_LOOKDELAYED) {
 			t->pos |= POS_LOOK_DELAYED;
 		}
+		if (rule->flags & RF_LOOKIGNORED) {
+			t->pos |= POS_LOOK_IGNORED;
+		}
 	}
 
 	t = result->addContextualTest(ot);
@@ -1170,9 +1177,17 @@ void TextualParser::parseRule(UChar*& p, KEYWORDS key) {
 	if (rule->flags & RF_UNMAPLAST && rule->flags & RF_SAFE) {
 		error("%s: Error: Line %u near `%S`: SAFE and UNMAPLAST are mutually exclusive!\n", lp);
 	}
+
 	if (rule->flags & RF_DELAYED && rule->flags & RF_IMMEDIATE) {
 		error("%s: Error: Line %u near `%S`: IMMEDIATE and DELAYED are mutually exclusive!\n", lp);
 	}
+	if (rule->flags & RF_DELAYED && rule->flags & RF_IGNORED) {
+		error("%s: Error: Line %u near `%S`: IGNORED and DELAYED are mutually exclusive!\n", lp);
+	}
+	if (rule->flags & RF_IGNORED && rule->flags & RF_IMMEDIATE) {
+		error("%s: Error: Line %u near `%S`: IMMEDIATE and IGNORED are mutually exclusive!\n", lp);
+	}
+
 	if (rule->flags & RF_WITHCHILD && rule->flags & RF_NOCHILD) {
 		error("%s: Error: Line %u near `%S`: WITHCHILD and NOCHILD are mutually exclusive!\n", lp);
 	}
@@ -1269,7 +1284,7 @@ void TextualParser::parseRule(UChar*& p, KEYWORDS key) {
 
 	result->lines += SKIPWS(p);
 	lp = p;
-	if (key == K_MAP || key == K_ADD || key == K_REPLACE || key == K_APPEND || key == K_SUBSTITUTE || key == K_COPY || key == K_ADDRELATIONS || key == K_ADDRELATION || key == K_SETRELATIONS || key == K_SETRELATION || key == K_REMRELATIONS || key == K_REMRELATION || key == K_SETVARIABLE || key == K_REMVARIABLE || key == K_ADDCOHORT || key == K_JUMP || key == K_SPLITCOHORT || key == K_MERGECOHORTS) {
+	if (key == K_MAP || key == K_ADD || key == K_REPLACE || key == K_APPEND || key == K_SUBSTITUTE || key == K_COPY || key == K_ADDRELATIONS || key == K_ADDRELATION || key == K_SETRELATIONS || key == K_SETRELATION || key == K_REMRELATIONS || key == K_REMRELATION || key == K_SETVARIABLE || key == K_REMVARIABLE || key == K_ADDCOHORT || key == K_JUMP || key == K_SPLITCOHORT || key == K_MERGECOHORTS || key == K_RESTORE) {
 		AST_OPEN(RuleMaplist);
 		swapper_false swp(no_isets, no_isets);
 		Set* s = parseSetInlineWrapper(p);
@@ -1817,6 +1832,10 @@ void TextualParser::parseFromUChar(UChar* input, const char* fname) {
 			// MERGECOHORTS
 			else if (IS_ICASE(p, "MERGECOHORTS", "mergecohorts")) {
 				parseRule(p, K_MERGECOHORTS);
+			}
+			// RESTORE
+			else if (IS_ICASE(p, "RESTORE", "restore")) {
+				parseRule(p, K_RESTORE);
 			}
 			// SETS
 			else if (IS_ICASE(p, "SETS", "sets")) {
