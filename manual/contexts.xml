@@ -200,6 +200,15 @@
         Deleted readings are not part of 'd', but can be combined as 'Dd' to look at both.
       </para>
     </section>
+
+    <section id="test-deleted-ignored">
+      <title>Look at Ignored Readings</title>
+      <para>
+        'I' allows the current test (and any barrier) to look at readings that have previously been ignored
+        by REMOVE IGNORED.
+        Can be combined with 'D' and 'd'.
+      </para>
+    </section>
   </section>
 
   <section id="test-origin">

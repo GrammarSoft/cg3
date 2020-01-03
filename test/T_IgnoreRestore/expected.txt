@@ -1,0 +1,12 @@
+"<word>"
+	"word" first one @one REMOVE:3 RESTORE:5 ADD:6
+	"word" first two @seen-1 ADD:4 REMOVE:18
+	"word" first three @seen-1 ADD:4 RESTORE:5
+"<word>"
+	"word" second four @seen-2 ADD:9 RESTORE:10
+	"word" second five @five REMOVE:8 RESTORE:10 ADD:11
+;	"word" second six @seen-2 ADD:9 REMOVE:19
+"<word>"
+	"word" third eight @eight REMOVE:13 RESTORE:15 ADD:16
+	"word" third nine @seen-3 ADD:14
+;	"word" third seven @seen-3 ADD:14 RESTORE:15 REMOVE:20

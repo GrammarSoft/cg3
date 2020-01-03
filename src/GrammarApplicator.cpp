@@ -506,6 +506,8 @@ void GrammarApplicator::printCohort(Cohort* cohort, std::ostream& output) {
 	}
 	u_fputc('\n', output);
 
+	cohort->unignoreAll();
+
 	if (!split_mappings) {
 		mergeMappings(*cohort);
 	}
