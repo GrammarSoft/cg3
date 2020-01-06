@@ -1018,15 +1018,18 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 					}
 					else if (type == K_JUMP) {
 						TRACE;
-						const Tag* to = getTagList(*rule.maplist).front();
-						uint32FlatHashMap::const_iterator it = grammar->anchors.find(to->hash);
+						auto to = getTagList(*rule.maplist).front();
+						while (to->type & T_VARSTRING) {
+							to = generateVarstringTag(to);
+						}
+						auto it = grammar->anchors.find(to->hash);
 						if (it == grammar->anchors.end()) {
 							u_fprintf(ux_stderr, "Warning: JUMP on line %u could not find anchor '%S'.\n", rule.line, to->tag.c_str());
 						}
 						else {
 							iter_rules = intersects.lower_bound(it->second);
+							goto repeat_rule;
 						}
-						goto repeat_rule;
 					}
 					else if (type == K_PROTECT) {
 						TRACE;
@@ -1038,7 +1041,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 					}
 					else if (type == K_REMVARIABLE) {
 						TRACE;
-						const TagList names = getTagList(*rule.maplist);
+						auto names = getTagList(*rule.maplist);
 						for (auto tag : names) {
 							variables.erase(tag->hash);
 							if (rule.flags & RF_OUTPUT) {
@@ -1050,8 +1053,8 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 					}
 					else if (type == K_SETVARIABLE) {
 						TRACE;
-						const TagList names = getTagList(*rule.maplist);
-						const TagList values = getTagList(*rule.sublist);
+						auto names = getTagList(*rule.maplist);
+						auto values = getTagList(*rule.sublist);
 						variables[names.front()->hash] = values.front()->hash;
 						if (rule.flags & RF_OUTPUT) {
 							current.variables_output.insert(names.front()->hash);
