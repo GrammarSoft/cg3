@@ -1025,7 +1025,6 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						}
 						else {
 							iter_rules = intersects.lower_bound(it->second);
-							--iter_rules;
 						}
 						goto repeat_rule;
 					}
