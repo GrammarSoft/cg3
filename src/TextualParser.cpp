@@ -2743,6 +2743,21 @@ int TextualParser::parse_grammar(UString& data) {
 		}
 	}
 
+	for (auto rule : result->rule_by_number) {
+		if (rule->type == K_JUMP) {
+			auto to = result->getTagList_Any(*rule->maplist).front();
+			if (to->type & T_SPECIAL) {
+				// Relies on unification or varstrings, so can't check statically
+				continue;
+			}
+			auto it = result->anchors.find(to->hash);
+			if (it == result->anchors.end()) {
+				u_fprintf(ux_stderr, "Error: JUMP on line %u could not find anchor '%S'.\n", rule->line, to->tag.c_str());
+				++error_counter;
+			}
+		}
+	}
+
 	for (auto tag : result->single_tags_list) {
 		// ToDo: Remove for real ordered mode
 		if (tag->type & T_REGEXP_LINE) {

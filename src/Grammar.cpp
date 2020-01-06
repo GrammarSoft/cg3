@@ -408,7 +408,7 @@ uint32_t Grammar::removeNumericTags(uint32_t s) {
 	return set->hash;
 }
 
-void Grammar::getTags(const Set& set, std::set<TagVector>& rv) {
+void Grammar::getTags(const Set& set, std::set<TagVector>& rv) const {
 	// ToDo: getTags() ought to account for other operators than OR
 	for (auto s : set.sets) {
 		getTags(*getSet(s), rv);
@@ -417,6 +417,28 @@ void Grammar::getTags(const Set& set, std::set<TagVector>& rv) {
 	trie_getTags(set.trie, rv, tv);
 	tv.clear();
 	trie_getTags(set.trie_special, rv, tv);
+}
+
+TagList Grammar::getTagList_Any(const Set& theSet) const {
+	TagList theTags;
+	getTagList_Any(theSet, theTags);
+	return theTags;
+}
+
+void Grammar::getTagList_Any(const Set& theSet, TagList& theTags) const {
+	if (theSet.type & (ST_SET_UNIFY | ST_TAG_UNIFY)) {
+		theTags.clear();
+		theTags.push_back(single_tags.find(tag_any)->second);
+	}
+	else if (!theSet.sets.empty()) {
+		for (auto iter : theSet.sets) {
+			getTagList_Any(*sets_list[iter], theTags);
+		}
+	}
+	else {
+		trie_getTagList(theSet.trie, theTags);
+		trie_getTagList(theSet.trie_special, theTags);
+	}
 }
 
 Rule* Grammar::allocateRule() {
