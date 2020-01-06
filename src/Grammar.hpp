@@ -116,7 +116,9 @@ public:
 	void addSetToList(Set* s);
 	void allocateDummySet();
 	uint32_t removeNumericTags(uint32_t s);
-	void getTags(const Set& set, std::set<TagVector>& rv);
+	void getTags(const Set& set, std::set<TagVector>& rv) const;
+	TagList getTagList_Any(const Set& theSet) const;
+	void getTagList_Any(const Set& theSet, TagList& theTags) const;
 
 	void addAnchor(const UChar* to, uint32_t at, bool primary = false);
 	void addAnchor(const UString& to, uint32_t at, bool primary = false);
