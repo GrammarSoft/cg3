@@ -1,19 +1,18 @@
 "<He>"
-	"he" <*> <NonMod> PRON PERS MASC NOM SG3 SUBJ @a @b @c
+	"he" <*> <NonMod> PRON PERS MASC NOM SG3 SUBJ @b @a @c JUMP:3 ADD:8:named JUMP:9 ADD:7 ADD:8:named ADD:11:named
 "<ate>"
-	"eat" <SVO> <SV> V PAST VFIN @a @b @c
+	"eat" <SVO> <SV> V PAST VFIN @b @a @c ADD:8:named ADD:7 ADD:8:named ADD:11:named
 "<a>"
-	"a" <Indef> DET CENTRAL ART SG @a @b @c
+	"a" <Indef> DET CENTRAL ART SG @b @a @c ADD:8:named ADD:7 ADD:8:named ADD:11:named
 "<cow>"
-	"cow" N NOM SG @a @b @c
+	"cow" N NOM SG @b @a @c ADD:8:named ADD:7 ADD:8:named ADD:11:named
 "<with>"
-	"with" PREP @a @b @c
+	"with" PREP @b @a @c ADD:8:named ADD:7 ADD:8:named ADD:11:named
 "<biscuits>"
-	"biscuit" N NOM PL @a @b @c
+	"biscuit" N NOM PL @b @a @c ADD:8:named ADD:7 ADD:8:named ADD:11:named
 "<and>"
-	"and" CC @a @b @c
+	"and" CC @b @a @c ADD:8:named ADD:7 ADD:8:named ADD:11:named
 "<lemonade>"
-	"lemonade" <-Indef> N NOM SG @a @b @c
+	"lemonade" <-Indef> N NOM SG @b @a @c ADD:8:named ADD:7 ADD:8:named ADD:11:named
 "<$.>"
-	"$." <<< @a @b @c
-
+	"$." <<< @b @a @c ADD:8:named ADD:7 ADD:8:named ADD:11:named
