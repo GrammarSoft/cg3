@@ -260,7 +260,7 @@ public:
 			return;
 		}
 
-		static thread_local container vals;
+		static container vals;
 		vals.resize(0);
 		vals.reserve(size_);
 		for (size_type i = 0, ie = capacity(); i < ie; ++i) {
