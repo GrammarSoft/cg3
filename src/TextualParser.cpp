@@ -640,7 +640,7 @@ void TextualParser::parseContextualTestPosition(UChar*& p, ContextualTest& t) {
 			auto c = static_cast<int32_t>(n - p);
 			u_strncpy(&gbuffers[0][0], p, c);
 			gbuffers[0][c] = 0;
-			Tag* tag = result->allocateTag(&gbuffers[0][0]);
+			Tag* tag = parseTag(&gbuffers[0][0], p);
 			t.relation = tag->hash;
 			p = n;
 		}
