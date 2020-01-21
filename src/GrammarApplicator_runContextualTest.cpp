@@ -783,7 +783,12 @@ Cohort* GrammarApplicator::runRelationTest(SingleWindow* sWindow, Cohort* curren
 	// Recursion may happen, so can't be static
 	CohortSet rels;
 
-	if (test->relation == grammar->tag_any) {
+	auto rtag = single_tags[test->relation];
+	while (rtag->type & T_VARSTRING) {
+		rtag = generateVarstringTag(rtag);
+	}
+
+	if (rtag->hash == grammar->tag_any) {
 		for (auto riter : current->relations) {
 			for (auto citer : riter.second) {
 				std::map<uint32_t, Cohort*>::iterator it = sWindow->parent->cohort_map.find(citer);
@@ -794,7 +799,7 @@ Cohort* GrammarApplicator::runRelationTest(SingleWindow* sWindow, Cohort* curren
 		}
 	}
 	else {
-		RelationCtn::const_iterator riter = current->relations.find(test->relation);
+		RelationCtn::const_iterator riter = current->relations.find(rtag->hash);
 		if (riter != current->relations.end()) {
 			for (auto citer : riter->second) {
 				std::map<uint32_t, Cohort*>::iterator it = sWindow->parent->cohort_map.find(citer);
