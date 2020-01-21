@@ -1,16 +1,16 @@
 DELIMITERS = "<$.>" ;
 
-ADDRELATION (First) (startfirst) TO (0** (first)) ;
-ADDRELATION (Second) (startsecond) TO (0** (second)) ;
-ADDRELATION (OtherSecond) (startsecond) TO (**-1 (first)) ;
-SETRELATION (OtherSecond) (startsecond) TO (**-1 (second)) ;
-SETRELATION (OtherSecond) (startsecond) FROM (**-1 (second)) ;
-REMRELATION (First) (startfirst) TO (0** (first)) ;
+ADDRELATION (First) (startfirst) TO (0* (first)) ;
+ADDRELATION (Second) (startsecond) TO (0* (second)) ;
+ADDRELATION (OtherSecond) (startsecond) TO (*-1 (first)) ;
+SETRELATION (OtherSecond) (startsecond) TO (*-1 (second)) ;
+SETRELATION (OtherSecond) (startsecond) FROM (*-1 (second)) ;
+REMRELATION (First) (startfirst) TO (0* (first)) ;
 
-ADDRELATIONS (Begin3) (End3) (startthird) TO (0**W (third)) ;
-ADDRELATIONS (Begin4) (End4) (startfourth) TO (0**W (fourth)) ;
-ADDRELATIONS (Begin4) (End3) (startfourth) TO (**-1W (third)) ;
-REMRELATIONS (Begin3) (End3) (startthird) TO (0**W (third)) ;
+ADDRELATIONS (Begin3) (End3) (startthird) TO (0*W (third)) ;
+ADDRELATIONS (Begin4) (End4) (startfourth) TO (0*W (fourth)) ;
+ADDRELATIONS (Begin4) (End3) (startfourth) TO (*-1W (third)) ;
+REMRELATIONS (Begin3) (End3) (startthird) TO (0*W (third)) ;
 
 ADD (@4to3) (*) (r:Begin4 (third)) ;
 ADD (@*to3) (*) (r:* (third)) ;
@@ -20,7 +20,10 @@ ADD (@careful) (*) (ALL r:OtherSecond (second)) ;
 
 ADD (@none) (*) (NONE r:Begin4 (third)) ;
 
-REMRELATIONS (NoSuchRelation) (End3) (startthird) TO (0**W (third)) ;
-REMRELATIONS (Begin3) (NoSuchRelation) (startthird) TO (0**W (third)) ;
-REMRELATIONS (End3) (NoSuchRelation) (startthird) FROM (0**W (third)) ;
-REMRELATIONS (NoSuchRelation) (Begin3) (startthird) FROM (0**W (third)) ;
+REMRELATIONS (NoSuchRelation) (End3) (startthird) TO (0*W (third)) ;
+REMRELATIONS (Begin3) (NoSuchRelation) (startthird) TO (0*W (third)) ;
+REMRELATIONS (End3) (NoSuchRelation) (startthird) FROM (0*W (third)) ;
+REMRELATIONS (NoSuchRelation) (Begin3) (startthird) FROM (0*W (third)) ;
+
+ADD (@var-relation-error) (/^start\(second\)$/r) (r:VSTR:$1 (*)) ;
+ADD (@var-relation) (/^start\(second\)$/r) (r:VSTR:%u$1 (*)) ;
