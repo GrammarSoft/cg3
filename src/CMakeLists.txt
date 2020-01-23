@@ -119,7 +119,7 @@ set(LIBCG3_SOURCES
 	${POPEN_PLUS_CPP}
 	${LIBCG3_HEADERS}
 	)
-if(MSVC)
+if(WIN32)
 	set(LIBCG3_SOURCES
 		"${CMAKE_SOURCE_DIR}/include/win32/getopt.cpp"
 		"${CMAKE_SOURCE_DIR}/include/win32/getopt.h"
