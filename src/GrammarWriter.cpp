@@ -52,7 +52,7 @@ void GrammarWriter::printSet(std::ostream& output, const Set& curset) {
 		}
 		used_sets.insert(curset.number);
 		u_fprintf(output, "LIST %S = ", curset.name.c_str());
-		std::set<TagVector> tagsets[] = { trie_getTagsOrdered(curset.trie), trie_getTagsOrdered(curset.trie_special) };
+		TagVectorSet tagsets[] = { trie_getTagsOrdered(curset.trie), trie_getTagsOrdered(curset.trie_special) };
 		for (auto& tvs : tagsets) {
 			for (auto& tags : tvs) {
 				if (tags.size() > 1) {
@@ -63,7 +63,7 @@ void GrammarWriter::printSet(std::ostream& output, const Set& curset) {
 					u_fprintf(output, " ");
 				}
 				if (tags.size() > 1) {
-					u_fprintf(output, ")");
+					u_fprintf(output, ") ");
 				}
 			}
 		}
