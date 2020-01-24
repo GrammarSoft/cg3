@@ -182,7 +182,7 @@ Tag* TextualParser::addTag(Tag* tag) {
 
 void TextualParser::parseTagList(UChar*& p, Set* s) {
 	AST_OPEN(TagList);
-	std::set<TagVector> taglists;
+	TagVectorSet taglists;
 	bc::flat_map<Tag*, size_t> tag_freq;
 
 	while (*p && *p != ';' && *p != ')') {
@@ -241,8 +241,8 @@ void TextualParser::parseTagList(UChar*& p, Set* s) {
 			}
 
 			// sort + uniq the tags
-			std::sort(tags.begin(), tags.end());
-			tags.erase(std::unique(tags.begin(), tags.end()), tags.end());
+			std::sort(tags.begin(), tags.end(), compare_Tag());
+			tags.erase(std::unique(tags.begin(), tags.end(), equal_Tag()), tags.end());
 			// If this particular list of tags hasn't already been seen, then increment their frequency counts
 			if (taglists.insert(tags).second) {
 				for (auto t : tags) {
@@ -378,21 +378,21 @@ Set* TextualParser::parseSetInline(UChar*& p, Set* s) {
 				}
 
 				if (!set_ops.empty() && (set_ops.back() == S_SET_DIFF || set_ops.back() == S_SET_ISECT_U || set_ops.back() == S_SET_SYMDIFF_U)) {
-					std::set<TagVector> a;
+					TagVectorSet a;
 					result->getTags(*result->getSet(sets[sets.size() - 1]), a);
-					std::set<TagVector> b;
+					TagVectorSet b;
 					result->getTags(*result->getSet(sets[sets.size() - 2]), b);
 
 					std::vector<TagVector> r;
 					if (set_ops.back() == S_SET_ISECT_U) {
-						std::set_intersection(a.begin(), a.end(), b.begin(), b.end(), std::back_inserter(r));
+						std::set_intersection(a.begin(), a.end(), b.begin(), b.end(), std::back_inserter(r), compare_TagVector());
 					}
 					else if (set_ops.back() == S_SET_SYMDIFF_U) {
-						std::set_symmetric_difference(a.begin(), a.end(), b.begin(), b.end(), std::back_inserter(r));
+						std::set_symmetric_difference(a.begin(), a.end(), b.begin(), b.end(), std::back_inserter(r), compare_TagVector());
 					}
 					else if (set_ops.back() == S_SET_DIFF) {
 						// (b,a) because order matters for difference
-						std::set_difference(b.begin(), b.end(), a.begin(), a.end(), std::back_inserter(r));
+						std::set_difference(b.begin(), b.end(), a.begin(), a.end(), std::back_inserter(r), compare_TagVector());
 					}
 
 					set_ops.pop_back();

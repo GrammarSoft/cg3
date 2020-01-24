@@ -49,8 +49,8 @@ private:
 
 	typedef std::vector<Tag*> TagVector;
 	uint32_t copyRelabelSetToGrammar(const Set* set);
-	TagVector transferTags(const TagVector tv_r);
-	void addTaglistsToSet(const std::set<TagVector> tvs, Set* set);
+	TagVector transferTags(const TagVector& tv_r);
+	void addTaglistsToSet(const TagVectorSet& tvs, Set* set);
 	void reindexSet(Set& s);
 	void addSetToGrammar(Set* s);
 	void relabelAsList(Set* set_g, const Set* set_r, const Tag* fromTag);

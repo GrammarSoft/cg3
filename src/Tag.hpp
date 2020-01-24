@@ -31,7 +31,7 @@ namespace CG3 {
 class Grammar;
 class Set;
 
-typedef std::vector<Set*> SetVector;
+using SetVector = std::vector<Set*>;
 
 enum C_OPS : uint8_t {
 	OP_NOP,
@@ -115,10 +115,30 @@ struct compare_Tag {
 	}
 };
 
-typedef std::vector<Tag*> TagVector;
-typedef TagVector TagList;
-typedef flat_unordered_map<uint32_t, Tag*> Taguint32HashMap;
-typedef sorted_vector<Tag*, compare_Tag> TagSortedVector;
+struct equal_Tag {
+	inline bool operator()(const Tag* a, const Tag* b) const {
+		return a->hash == b->hash;
+	}
+};
+
+using TagVector = std::vector<Tag*>;
+using TagList = TagVector;
+using Taguint32HashMap = flat_unordered_map<uint32_t, Tag*>;
+using TagSortedVector = sorted_vector<Tag*, compare_Tag>;
+
+struct compare_TagVector {
+	inline bool operator()(const TagVector& a, const TagVector& b) const {
+		for (size_t i = 0; i < a.size() && i < b.size(); ++i) {
+			if (a[i]->hash != b[i]->hash) {
+				return a[i]->hash < b[i]->hash;
+			}
+		}
+
+		return a.size() < b.size();
+	}
+};
+
+using TagVectorSet = std::set<TagVector, compare_TagVector>;
 
 template<typename T>
 inline void fill_tagvector(const T& in, TagVector& tags, bool& did, bool& special) {
