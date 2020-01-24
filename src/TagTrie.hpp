@@ -191,11 +191,11 @@ inline TagVector trie_getTagList(const trie_t& trie) {
 	return theTags;
 }
 
-inline void trie_getTags(const trie_t& trie, std::set<TagVector>& rv, TagVector& tv) {
+inline void trie_getTags(const trie_t& trie, TagVectorSet& rv, TagVector& tv) {
 	for (auto& kv : trie) {
 		tv.push_back(kv.first);
 		if (kv.second.terminal) {
-			std::sort(tv.begin(), tv.end());
+			std::sort(tv.begin(), tv.end(), compare_Tag());
 			rv.insert(tv);
 			tv.pop_back();
 			continue;
@@ -206,13 +206,13 @@ inline void trie_getTags(const trie_t& trie, std::set<TagVector>& rv, TagVector&
 	}
 }
 
-inline std::set<TagVector> trie_getTags(const trie_t& trie) {
-	std::set<TagVector> rv;
+inline TagVectorSet trie_getTags(const trie_t& trie) {
+	TagVectorSet rv;
 	for (auto& kv : trie) {
 		TagVector tv;
 		tv.push_back(kv.first);
 		if (kv.second.terminal) {
-			std::sort(tv.begin(), tv.end());
+			std::sort(tv.begin(), tv.end(), compare_Tag());
 			rv.insert(tv);
 			tv.pop_back();
 			continue;
@@ -224,7 +224,7 @@ inline std::set<TagVector> trie_getTags(const trie_t& trie) {
 	return rv;
 }
 
-inline void trie_getTagsOrdered(const trie_t& trie, std::set<TagVector>& rv, TagVector& tv) {
+inline void trie_getTagsOrdered(const trie_t& trie, TagVectorSet& rv, TagVector& tv) {
 	for (auto& kv : trie) {
 		tv.push_back(kv.first);
 		if (kv.second.terminal) {
@@ -238,8 +238,8 @@ inline void trie_getTagsOrdered(const trie_t& trie, std::set<TagVector>& rv, Tag
 	}
 }
 
-inline std::set<TagVector> trie_getTagsOrdered(const trie_t& trie) {
-	std::set<TagVector> rv;
+inline TagVectorSet trie_getTagsOrdered(const trie_t& trie) {
+	TagVectorSet rv;
 	for (auto& kv : trie) {
 		TagVector tv;
 		tv.push_back(kv.first);

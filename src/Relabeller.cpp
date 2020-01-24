@@ -76,7 +76,7 @@ Relabeller::Relabeller(Grammar& res, const Grammar& relabels, std::ostream& ux_e
 	relabel_as_set = std::move(as_set);
 }
 
-TagVector Relabeller::transferTags(const TagVector tv_r) {
+TagVector Relabeller::transferTags(const TagVector& tv_r) {
 	TagVector tv_g;
 	for (auto tag_r : tv_r) {
 		Tag* tag_g = new Tag(*tag_r);
@@ -100,7 +100,7 @@ struct freq_sorter {
 		return tag_freq.find(a)->second > tag_freq.find(b)->second;
 	}
 };
-void Relabeller::addTaglistsToSet(const std::set<TagVector> tvs, Set* s) {
+void Relabeller::addTaglistsToSet(const TagVectorSet& tvs, Set* s) {
 	// Extracted from TextualParser::parseTagList
 
 	// Might be slightly faster to do this in relabelAsList after
@@ -112,12 +112,12 @@ void Relabeller::addTaglistsToSet(const std::set<TagVector> tvs, Set* s) {
 	}
 
 	bc::flat_map<Tag*, size_t> tag_freq;
-	std::set<TagVector> tvs_sort_uniq;
+	TagVectorSet tvs_sort_uniq;
 
 	for (auto& tvc : tvs) {
 		TagVector& tags = const_cast<TagVector&>(tvc);
 		// From TextualParser::parseTagList
-		std::sort(tags.begin(), tags.end());
+		std::sort(tags.begin(), tags.end(), compare_Tag());
 		tags.erase(std::unique(tags.begin(), tags.end()), tags.end());
 		if (tvs_sort_uniq.insert(tags).second) {
 			for (auto t : tags) {
@@ -155,11 +155,11 @@ void Relabeller::addTaglistsToSet(const std::set<TagVector> tvs, Set* s) {
 }
 
 void Relabeller::relabelAsList(Set* set_g, const Set* set_r, const Tag* fromTag) {
-	std::set<TagVector> old_tvs = trie_getTagsOrdered(set_g->trie);
+	auto old_tvs = trie_getTagsOrdered(set_g->trie);
 	trie_delete(set_g->trie);
 	set_g->trie.clear();
 
-	std::set<TagVector> taglists;
+	TagVectorSet taglists;
 	for (auto& old_tags : old_tvs) {
 		TagVector tags_except_from;
 
@@ -172,7 +172,7 @@ void Relabeller::relabelAsList(Set* set_g, const Set* set_r, const Tag* fromTag)
 				tags_except_from.push_back(old_tag);
 			}
 		}
-		std::set<TagVector> suffixes;
+		TagVectorSet suffixes;
 		if (seen) {
 			suffixes = trie_getTagsOrdered(set_r->trie);
 		}
@@ -258,7 +258,7 @@ void Relabeller::relabelAsSet(Set* set_g, const Set* set_r, const Tag* fromTag) 
 	if (!set_g->sets.empty()) {
 		u_fprintf(ux_stderr, "Warning: SET %d has both trie and sets, this was unexpected.", set_g->number);
 	}
-	std::set<TagVector> old_tvs = trie_getTagsOrdered(set_g->trie);
+	TagVectorSet old_tvs = trie_getTagsOrdered(set_g->trie);
 	trie_delete(set_g->trie);
 	set_g->trie.clear();
 	// First we split old_tvs into those that contain fromTag, tvs_with_from, and those that don't, tvs_no_from
@@ -269,8 +269,8 @@ void Relabeller::relabelAsSet(Set* set_g, const Set* set_r, const Tag* fromTag) 
 	// set_g->sets = set_gN OR set_gI
 	// We also put the special and ff tags from set_g into set_gN
 
-	std::set<TagVector> tvs_with_from;
-	std::set<TagVector> tvs_no_from;
+	TagVectorSet tvs_with_from;
+	TagVectorSet tvs_no_from;
 	for (auto& old_tags : old_tvs) {
 		TagVector tags_except_from;
 

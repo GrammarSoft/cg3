@@ -408,7 +408,7 @@ uint32_t Grammar::removeNumericTags(uint32_t s) {
 	return set->hash;
 }
 
-void Grammar::getTags(const Set& set, std::set<TagVector>& rv) const {
+void Grammar::getTags(const Set& set, TagVectorSet& rv) const {
 	// ToDo: getTags() ought to account for other operators than OR
 	for (auto s : set.sets) {
 		getTags(*getSet(s), rv);
