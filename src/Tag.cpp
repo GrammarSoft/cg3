@@ -146,7 +146,8 @@ void Tag::parseTagRaw(const UChar* to, Grammar* grammar) {
 	}
 	if (tag[0] == 'R' && tag[1] == ':') {
 		UChar relname[256];
-		if (u_sscanf(tag.c_str(), "R:%[^:]:%i", &relname, &dep_parent) == 2 && dep_parent != 0) {
+		dep_parent = std::numeric_limits<uint32_t>::max();
+		if (u_sscanf(tag.c_str(), "R:%[^:]:%i", &relname, &dep_parent) == 2 && dep_parent != std::numeric_limits<uint32_t>::max()) {
 			type |= T_RELATION;
 			Tag* reltag = grammar->allocateTag(relname);
 			comparison_hash = reltag->hash;

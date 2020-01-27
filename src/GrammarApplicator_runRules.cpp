@@ -931,6 +931,47 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 				gWindow->rebuildCohortLinks();
 			};
 
+			auto make_relation_rtag = [&](Tag* tag, uint32_t id) {
+				UChar tmp[256] = { 0 };
+				u_sprintf(tmp, "R:%S:%u", tag->tag.c_str(), id);
+				auto nt = addTag(tmp);
+				return nt;
+			};
+
+			auto add_relation_rtag = [&](Cohort* cohort, Tag* tag, uint32_t id) {
+				auto nt = make_relation_rtag(tag, id);
+				for (auto& r : cohort->readings) {
+					addTagToReading(*r, nt);
+				}
+			};
+
+			auto set_relation_rtag = [&](Cohort* cohort, Tag* tag, uint32_t id) {
+				auto nt = make_relation_rtag(tag, id);
+				for (auto& r : cohort->readings) {
+					for (auto it = r->tags_list.begin(); it != r->tags_list.end();) {
+						auto utag = single_tags[*it]->tag;
+						if (utag[0] == 'R' && utag[1] == ':' && utag.size() > 2 + tag->tag.size() && utag[2 + tag->tag.size()] == ':' && utag.compare(2, tag->tag.size(), tag->tag) == 0) {
+							r->tags.erase(*it);
+							r->tags_textual.erase(*it);
+							r->tags_numerical.erase(*it);
+							r->tags_plain.erase(*it);
+							it = r->tags_list.erase(it);
+						}
+						else {
+							++it;
+						}
+					}
+					addTagToReading(*r, nt);
+				}
+			};
+
+			auto rem_relation_rtag = [&](Cohort* cohort, Tag* tag, uint32_t id) {
+				auto nt = make_relation_rtag(tag, id);
+				for (auto& r : cohort->readings) {
+					delTagFromReading(*r, nt);
+				}
+			};
+
 			// This loop acts on the result of the previous loop; letting the rules do their thing on the valid readings.
 			for (size_t i = 0; i < cohort->readings.size(); ++i) {
 				Reading* tr = get_sub_reading(cohort->readings[i], rule.sub_reading);
@@ -2136,14 +2177,17 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 										attach->setRelated();
 										cohort->setRelated();
 										rel_did_anything |= cohort->addRelation(tter->hash, attach->global_number);
+										add_relation_rtag(cohort, tter, attach->global_number);
 									}
 									else if (type == K_SETRELATION) {
 										attach->setRelated();
 										cohort->setRelated();
 										rel_did_anything |= cohort->setRelation(tter->hash, attach->global_number);
+										set_relation_rtag(cohort, tter, attach->global_number);
 									}
 									else {
 										rel_did_anything |= cohort->remRelation(tter->hash, attach->global_number);
+										rem_relation_rtag(cohort, tter, attach->global_number);
 									}
 								}
 								if (rel_did_anything) {
@@ -2193,13 +2237,16 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 									if (type == K_ADDRELATIONS) {
 										cohort->setRelated();
 										rel_did_anything |= cohort->addRelation(tter->hash, attach->global_number);
+										add_relation_rtag(cohort, tter, attach->global_number);
 									}
 									else if (type == K_SETRELATIONS) {
 										cohort->setRelated();
 										rel_did_anything |= cohort->setRelation(tter->hash, attach->global_number);
+										set_relation_rtag(cohort, tter, attach->global_number);
 									}
 									else {
 										rel_did_anything |= cohort->remRelation(tter->hash, attach->global_number);
+										rem_relation_rtag(cohort, tter, attach->global_number);
 									}
 								}
 								for (auto tter : *sublist) {
@@ -2209,13 +2256,16 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 									if (type == K_ADDRELATIONS) {
 										attach->setRelated();
 										rel_did_anything |= attach->addRelation(tter->hash, cohort->global_number);
+										add_relation_rtag(attach, tter, cohort->global_number);
 									}
 									else if (type == K_SETRELATIONS) {
 										attach->setRelated();
 										rel_did_anything |= attach->setRelation(tter->hash, cohort->global_number);
+										set_relation_rtag(attach, tter, cohort->global_number);
 									}
 									else {
 										rel_did_anything |= attach->remRelation(tter->hash, cohort->global_number);
+										rem_relation_rtag(attach, tter, cohort->global_number);
 									}
 								}
 								if (rel_did_anything) {
