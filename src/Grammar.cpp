@@ -1005,6 +1005,12 @@ void Grammar::reindex(bool unused_sets, bool used_tags) {
 		}
 		//*/
 		bool needs = false;
+		if (r->sublist && sets_vstr.test(r->sublist->number)) {
+			needs = true;
+		}
+		if (r->maplist && sets_vstr.test(r->maplist->number)) {
+			needs = true;
+		}
 		if (r->dep_target && nk.count(r->dep_target)) {
 			needs = true;
 		}
