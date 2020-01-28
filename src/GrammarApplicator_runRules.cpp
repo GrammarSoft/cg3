@@ -280,10 +280,10 @@ Reading* GrammarApplicator::get_sub_reading(Reading* tr, int sub_reading) {
 #define APPEND_TAGLIST_TO_READING(taglist, reading)                                  \
 	do {                                                                             \
 		for (auto tter : (taglist)) {                                                \
-			auto hash = tter->hash;                                                  \
 			while (tter->type & T_VARSTRING) {                                       \
 				tter = generateVarstringTag(tter);                                   \
 			}                                                                        \
+			auto hash = tter->hash;                                                  \
 			if (tter->type & T_MAPPING || tter->tag[0] == grammar->mapping_prefix) { \
 				mappings->push_back(tter);                                           \
 			}                                                                        \
