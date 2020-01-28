@@ -433,6 +433,7 @@ void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& outp
 				lSWindow = cSWindow;
 				++numWindows;
 				did_soft_lookback = false;
+				dep_highest_seen = 0;
 
 				if (grammar->has_bag_of_tags) {
 					// This is slow and not 100% correct as it doesn't remove the tags from the previous window
