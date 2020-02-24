@@ -376,7 +376,7 @@ CG-mode provides the following specific keyboard key bindings:
          nil				; KEYWORDS-ONLY
          'case-fold ; some keywords (e.g. x vs X) are case-sensitive,
                                         ; but that doesn't matter for highlighting
-         ((?/ . "w") (?~ . "w") (?. . "w") (?- . "w") (?_ . "w"))
+         ((?/ . "w") (?~ . "w") (?. . "w") (?- . "w") (?_ . "w") (?& . "w"))
          nil ;	  beginning-of-line		; SYNTAX-BEGIN
          (font-lock-syntactic-keywords . cg-font-lock-syntactic-keywords)
          (font-lock-syntactic-face-function . cg-font-lock-syntactic-face-function)))
