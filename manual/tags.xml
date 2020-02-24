@@ -97,7 +97,8 @@
     <para>
       Alternative syntax is prefixing with <code>VSTR:</code>. This is used to build tags that are not textual, or tags
       that need secondary processing such as regex or case-insensitive matching. E.g., <code>VSTR:@m$1</code> would
-      create a mapping tag or <code>VSTR:"$1.*"r</code> to create a regex tag.
+      create a mapping tag or <code>VSTR:"$1.*"r</code> to create a regex tag. To include spaces in such tags, escape them
+      with a backslash, e.g. <code>VSTR:"$1\ $2"r</code> (otherwise it is treated as two tags).
     </para>
     <para>
       One can also manipulate the case of the resulting tag via %U, %u, %L, and %l.
