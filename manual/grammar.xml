@@ -209,6 +209,9 @@
       Rules are applied in the order they are declared. In the above example
       that would execute SELECT first and then the MAP rule.
     </para>
+    <para>
+      Sections may optionally have <link linkend="rule-options">rule options (flags)</link> which will be inherited by all rules within that section. Each new section resets this list. In order to parse the section name from rule options, the list of rule options must come after a <code>:</code> with space before it.
+    </para>
 
     <section id="grammar-before-sections">
       <title>BEFORE-SECTIONS</title>
