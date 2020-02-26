@@ -49,6 +49,7 @@ public:
 	[[noreturn]] void error(const char* str);
 	[[noreturn]] void error(const char* str, UChar c);
 	[[noreturn]] void error(const char* str, const UChar* p);
+	[[noreturn]] void error(const char* str, const UChar* p, const UString& msg);
 	[[noreturn]] void error(const char* str, UChar c, const UChar* p);
 	[[noreturn]] void error(const char* str, const char* s, const UChar* p);
 	[[noreturn]] void error(const char* str, const UChar* s, const UChar* p);
@@ -64,6 +65,7 @@ private:
 	uint32_t verbosity_level;
 	uint32_t sets_counter;
 	uint32_t seen_mapping_prefix;
+	flags_t section_flags;
 	bool option_vislcg_compat;
 	bool in_section, in_before_sections, in_after_sections, in_null_section;
 	bool no_isets, no_itmpls, strict_wforms, strict_bforms, strict_second, strict_regex = false, strict_icase = false;
@@ -89,8 +91,9 @@ private:
 	ContextualTest* parseContextualTestList(UChar*& p, Rule* rule = nullptr, bool in_tmpl = false);
 	void parseContextualTests(UChar*& p, Rule* rule);
 	void parseContextualDependencyTests(UChar*& p, Rule* rule);
+	flags_t parseRuleFlags(UChar*& p);
 	void parseRule(UChar*& p, KEYWORDS key);
-	void parseAnchorish(UChar*& p);
+	void parseAnchorish(UChar*& p, bool rule_flags = true);
 
 	int error_counter;
 	[[noreturn]] void incErrorCount();

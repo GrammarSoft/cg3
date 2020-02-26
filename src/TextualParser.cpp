@@ -100,6 +100,12 @@ void TextualParser::error(const char* str, const UChar* p) {
 	incErrorCount();
 }
 
+void TextualParser::error(const char* str, const UChar* p, const UString& msg) {
+	ux_bufcpy(nearbuf, p, 20);
+	u_fprintf(ux_stderr, str, filebase, result->lines, nearbuf, msg.c_str());
+	incErrorCount();
+}
+
 void TextualParser::error(const char* str, UChar c, const UChar* p) {
 	ux_bufcpy(nearbuf, p, 20);
 	u_fprintf(ux_stderr, str, filebase, c, result->lines, nearbuf);
@@ -1012,6 +1018,93 @@ void TextualParser::parseContextualDependencyTests(UChar*& p, Rule* rule) {
 	rule->addContextualTest(t, rule->dep_tests);
 }
 
+flags_t TextualParser::parseRuleFlags(UChar*& p) {
+	flags_t rv;
+
+	result->lines += SKIPWS(p);
+
+	auto lp = p;
+	bool setflag = true;
+	while (setflag) {
+		setflag = false;
+		for (uint32_t i = 0; i < FLAGS_COUNT; i++) {
+			UChar* op = p;
+			if (ux_simplecasecmp(p, g_flags[i])) {
+				p += g_flags[i].size();
+				rv.flags |= (1 << i);
+				setflag = true;
+
+				if (i == FL_SUB) {
+					if (*p != ':') {
+						goto undo_flag;
+					}
+					++p;
+					UChar* n = p;
+					result->lines += SKIPTOWS(n, 0, true);
+					auto c = static_cast<int32_t>(n - p);
+					u_strncpy(&gbuffers[0][0], p, c);
+					gbuffers[0][c] = 0;
+					p = n;
+					if (gbuffers[0][0] == '*') {
+						rv.sub_reading = GSR_ANY;
+					}
+					else {
+						u_sscanf(&gbuffers[0][0], "%d", &rv.sub_reading);
+					}
+				}
+
+				// Rule flags followed by letters or valid set characters should not be flags.
+				if (*p != '(' && *p != ';' && !ISSPACE(*p)) {
+				undo_flag:
+					rv.flags &= ~(1 << i);
+					p = op;
+					setflag = false;
+					break;
+				}
+
+				AST_OPEN(RuleFlag);
+				cur_ast->b = op;
+				AST_CLOSE(p);
+			}
+			result->lines += SKIPWS(p);
+			// If any of these is the next char, there cannot possibly be more rule options...
+			if (*p == '(' || *p == 'T' || *p == 't' || *p == ';') {
+				setflag = false;
+				break;
+			}
+		}
+	}
+
+	std::bitset<sizeof(rv.flags) * CHAR_BIT> bits;
+	for (auto excl : flag_excls) {
+		bits = rv.flags & excl;
+		if (bits.count() > 1) {
+			UString msg;
+			for (size_t i = 0; i < FLAGS_COUNT; ++i) {
+				if (bits.test(i)) {
+					msg += ' ';
+					msg += g_flags[i];
+				}
+			}
+			error("%s: Error: Line %u near `%S`: Mutually exclusive flags:%S!\n", lp, msg);
+		}
+	}
+
+	if (rv.flags & RF_UNMAPLAST && rv.flags & RF_SAFE) {
+		error("%s: Error: Line %u near `%S`: SAFE and UNMAPLAST are mutually exclusive!\n", lp);
+	}
+
+	if (rv.flags & RF_UNMAPLAST) {
+		rv.flags |= RF_UNSAFE;
+	}
+	if (rv.flags & RF_ENCL_FINAL) {
+		result->has_encl_final = true;
+	}
+	result->lines += SKIPWS(p);
+
+	return rv;
+}
+
 void TextualParser::parseRule(UChar*& p, KEYWORDS key) {
 	AST_OPEN(Rule);
 	Rule* rule = result->allocateRule();
@@ -1112,97 +1205,20 @@ void TextualParser::parseRule(UChar*& p, KEYWORDS key) {
 		AST_CLOSE(p);
 	}
 
-	lp = p;
-	bool setflag = true;
-	while (setflag) {
-		setflag = false;
-		for (uint32_t i = 0; i < FLAGS_COUNT; i++) {
-			UChar* op = p;
-			if (ux_simplecasecmp(p, g_flags[i])) {
-				p += g_flags[i].size();
-				rule->flags |= (1 << i);
-				setflag = true;
+	auto flags = parseRuleFlags(p);
+	rule->flags = flags.flags;
+	rule->sub_reading = flags.sub_reading;
 
-				if (i == FL_SUB) {
-					if (*p != ':') {
-						goto undo_flag;
-					}
-					++p;
-					UChar* n = p;
-					result->lines += SKIPTOWS(n, 0, true);
-					auto c = static_cast<int32_t>(n - p);
-					u_strncpy(&gbuffers[0][0], p, c);
-					gbuffers[0][c] = 0;
-					p = n;
-					if (gbuffers[0][0] == '*') {
-						rule->sub_reading = GSR_ANY;
-					}
-					else {
-						u_sscanf(&gbuffers[0][0], "%d", &rule->sub_reading);
-					}
-				}
-
-				// Rule flags followed by letters or valid set characters should not be flags.
-				if (*p != '(' && !ISSPACE(*p)) {
-				undo_flag:
-					rule->flags &= ~(1 << i);
-					p = op;
-					setflag = false;
-					break;
-				}
-
-				AST_OPEN(RuleFlag);
-				cur_ast->b = op;
-				AST_CLOSE(p);
-			}
-			result->lines += SKIPWS(p);
-			// If any of these is the next char, there cannot possibly be more rule options...
-			if (*p == '(' || *p == 'T' || *p == 't' || *p == ';') {
-				setflag = false;
-				break;
+	if (section_flags.flags) {
+		for (size_t i = 0; i < FLAGS_COUNT; ++i) {
+			auto f = (1ull << i);
+			if ((section_flags.flags & f) && !(rule->flags & _flags_excls[i])) {
+				rule->flags |= f;
 			}
 		}
 	}
-	if (rule->flags & MASK_ENCL) {
-		std::bitset<sizeof(rule->flags) * CHAR_BIT> bits(static_cast<uint64_t>(rule->flags & MASK_ENCL));
-		if (bits.count() > 1) {
-			error("%s: Error: Line %u near `%S`: ENCL_* are all mutually exclusive!\n", lp);
-		}
-	}
-	if (rule->flags & RF_KEEPORDER && rule->flags & RF_VARYORDER) {
-		error("%s: Error: Line %u near `%S`: KEEPORDER and VARYORDER are mutually exclusive!\n", lp);
-	}
-	if (rule->flags & RF_REMEMBERX && rule->flags & RF_RESETX) {
-		error("%s: Error: Line %u near `%S`: REMEMBERX and RESETX are mutually exclusive!\n", lp);
-	}
-	if (rule->flags & RF_NEAREST && rule->flags & RF_ALLOWLOOP) {
-		error("%s: Error: Line %u near `%S`: NEAREST and ALLOWLOOP are mutually exclusive!\n", lp);
-	}
-	if (rule->flags & RF_UNSAFE && rule->flags & RF_SAFE) {
-		error("%s: Error: Line %u near `%S`: SAFE and UNSAFE are mutually exclusive!\n", lp);
-	}
-	if (rule->flags & RF_UNMAPLAST && rule->flags & RF_SAFE) {
-		error("%s: Error: Line %u near `%S`: SAFE and UNMAPLAST are mutually exclusive!\n", lp);
-	}
-
-	if (rule->flags & RF_DELAYED && rule->flags & RF_IMMEDIATE) {
-		error("%s: Error: Line %u near `%S`: IMMEDIATE and DELAYED are mutually exclusive!\n", lp);
-	}
-	if (rule->flags & RF_DELAYED && rule->flags & RF_IGNORED) {
-		error("%s: Error: Line %u near `%S`: IGNORED and DELAYED are mutually exclusive!\n", lp);
-	}
-	if (rule->flags & RF_IGNORED && rule->flags & RF_IMMEDIATE) {
-		error("%s: Error: Line %u near `%S`: IMMEDIATE and IGNORED are mutually exclusive!\n", lp);
-	}
-
-	if (rule->flags & RF_WITHCHILD && rule->flags & RF_NOCHILD) {
-		error("%s: Error: Line %u near `%S`: WITHCHILD and NOCHILD are mutually exclusive!\n", lp);
-	}
-	if (rule->flags & RF_ITERATE && rule->flags & RF_NOITERATE) {
-		error("%s: Error: Line %u near `%S`: ITERATE and NOITERATE are mutually exclusive!\n", lp);
-	}
-	if (rule->flags & RF_BEFORE && rule->flags & RF_AFTER) {
-		error("%s: Error: Line %u near `%S`: BEFORE and AFTER are mutually exclusive!\n", lp);
+	if (section_flags.sub_reading && !rule->sub_reading) {
+		rule->sub_reading = section_flags.sub_reading;
 	}
 
 	if (!(rule->flags & (RF_ITERATE | RF_NOITERATE))) {
@@ -1213,13 +1229,6 @@ void TextualParser::parseRule(UChar*& p, KEYWORDS key) {
 	if (key == K_UNMAP && !(rule->flags & (RF_SAFE | RF_UNSAFE))) {
 		rule->flags |= RF_SAFE;
 	}
-	if (rule->flags & RF_UNMAPLAST) {
-		rule->flags |= RF_UNSAFE;
-	}
-	if (rule->flags & RF_ENCL_FINAL) {
-		result->has_encl_final = true;
-	}
-	result->lines += SKIPWS(p);
 
 	if (rule->flags & RF_WITHCHILD) {
 		AST_OPEN(RuleWithChildTarget);
@@ -1544,18 +1553,28 @@ void TextualParser::parseRule(UChar*& p, KEYWORDS key) {
 	AST_CLOSE(p);
 }
 
-void TextualParser::parseAnchorish(UChar*& p) {
-	AST_OPEN(AnchorName);
-	UChar* n = p;
-	result->lines += SKIPTOWS(n, 0, true);
-	auto c = static_cast<int32_t>(n - p);
-	u_strncpy(&gbuffers[0][0], p, c);
-	gbuffers[0][c] = 0;
-	if (!only_sets) {
-		result->addAnchor(&gbuffers[0][0], static_cast<uint32_t>(result->rule_by_number.size()), true);
+void TextualParser::parseAnchorish(UChar*& p, bool rule_flags) {
+	// Initial : now forbidden to allow for section rule flags
+	if (*p != ':') {
+		AST_OPEN(AnchorName);
+		UChar* n = p;
+		result->lines += SKIPTOWS(n, 0, true);
+		auto c = static_cast<int32_t>(n - p);
+		u_strncpy(&gbuffers[0][0], p, c);
+		gbuffers[0][c] = 0;
+		if (!only_sets) {
+			result->addAnchor(&gbuffers[0][0], static_cast<uint32_t>(result->rule_by_number.size()), true);
+		}
+		p = n;
+		AST_CLOSE(p);
 	}
-	p = n;
-	AST_CLOSE(p);
+
+	result->lines += SKIPWS(p, ':');
+	if (rule_flags && *p == ':') {
+		++p;
+		section_flags = parseRuleFlags(p);
+	}
+
 	result->lines += SKIPWS(p, ';');
 	if (*p != ';') {
 		error("%s: Error: Expected closing ; on line %u near `%S` after anchor/section name!\n", p);
@@ -2256,7 +2275,7 @@ void TextualParser::parseFromUChar(UChar* input, const char* fname) {
 				AST_OPEN(Anchor);
 				p += 6;
 				result->lines += SKIPWS(p);
-				parseAnchorish(p);
+				parseAnchorish(p, false);
 				AST_CLOSE(p);
 			}
 			// INCLUDE

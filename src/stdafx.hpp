@@ -126,6 +126,11 @@ typedef std::vector<UString> UStringVector;
 typedef std::vector<uint32_t> uint32Vector;
 namespace bc = ::boost::container;
 
+struct flags_t {
+	uint32_t flags = 0;
+	int32_t sub_reading = 0;
+};
+
 inline UString operator "" _us(const char* str, std::size_t len) {
 	UString us(len, 0);
 	for (size_t i = 0; i < len; ++i) {

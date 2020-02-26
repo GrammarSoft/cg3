@@ -35,7 +35,7 @@ class Grammar;
 class Set;
 
 // This must be kept in lock-step with Strings.hpp's FLAGS
-enum {
+enum RULE_FLAGS : uint64_t {
 	RF_NEAREST      = (1 <<  0),
 	RF_ALLOWLOOP    = (1 <<  1),
 	RF_DELAYED      = (1 <<  2),
@@ -67,9 +67,32 @@ enum {
 	RF_AFTER        = (1 << 28),
 	RF_IGNORED      = (1 << 29),
 	RF_LOOKIGNORED  = (1 << 30),
-
-	MASK_ENCL       = RF_ENCL_INNER | RF_ENCL_OUTER | RF_ENCL_FINAL | RF_ENCL_ANY,
 };
+
+using rule_flags_t = std::underlying_type<RULE_FLAGS>::type;
+
+constexpr rule_flags_t flag_excls[] = {
+	RF_NEAREST | RF_ALLOWLOOP,
+	RF_DELAYED | RF_IMMEDIATE | RF_IGNORED,
+	RF_UNSAFE | RF_SAFE,
+	RF_REMEMBERX | RF_RESETX,
+	RF_KEEPORDER | RF_VARYORDER,
+	RF_ENCL_INNER | RF_ENCL_OUTER | RF_ENCL_FINAL | RF_ENCL_ANY,
+	RF_WITHCHILD | RF_NOCHILD,
+	RF_ITERATE | RF_NOITERATE,
+	RF_BEFORE | RF_AFTER,
+};
+
+constexpr auto init_flag_excls(rule_flags_t v) {
+	for (auto excl : flag_excls) {
+		if (excl & (static_cast<rule_flags_t>(1) << v)) {
+			return excl;
+		}
+	}
+	return static_cast<rule_flags_t>(0);
+}
+
+constexpr auto _flags_excls = make_array<FLAGS_COUNT>(init_flag_excls);
 
 class Rule {
 public:
