@@ -465,21 +465,43 @@ void ApertiumApplicator::processReading(Reading* cReading, const UChar* reading_
 		++m;
 	}
 
+	TagVector taglist;
+	TagVector prefix_taglist; // Tags coming before the lemma, e.g. kuyaʼ/<impf><o_sg3><s_sg3>yaʼ<v><tv>
+
 	// We encapsulate baseforms within '"' for internal processing.
 	base += '"';
+	bool first = true; // This is true so long as we have prefixed tags
 	while (*c != '\0') {
+//		u_fprintf(ux_stderr, ">> c: %C, base: %S\n", *c, base.c_str());
 		if (*c == '*') { // Initial asterisk means word is unknown, and
 			             // should just be copied in the output.
 			unknown = true;
+			first = false;
 		}
 		// Mark the reading as deleted if initial character is the Not Sign
 		if (base[1] == 0 && *c == not_sign) {
 			cReading->deleted = true;
+			first = false;
 			++c;
 			continue;
 		}
-		if (*c == '<' || *c == '\0') {
+		if (*c == '\0' || (*c == '<' && !first)) {
 			break;
+		}
+		if (*c == '<' && first) {
+			UString bf;
+			++c;
+			while(*c != '>') {
+				bf += *c;
+				++c;
+			}
+			//bf += *c;
+//			u_fprintf(ux_stderr, ">> bf: %S\n", bf.c_str());
+			prefix_taglist.push_back(addTag(bf));
+			++c;
+			continue;
+		} else {
+			first = false;
 		}
 		base += *c;
 		++c;
@@ -491,9 +513,8 @@ void ApertiumApplicator::processReading(Reading* cReading, const UChar* reading_
 	}
 	base += '"';
 
-	//	u_fprintf(ux_stderr, ">> b: %S s: %S\n", base.c_str(), suf.c_str());
+//	u_fprintf(ux_stderr, ">> b: %S s: %S\n", base.c_str(), suf.c_str());
 
-	TagVector taglist;
 
 	Tag* tag = addTag(base);
 
@@ -510,6 +531,7 @@ void ApertiumApplicator::processReading(Reading* cReading, const UChar* reading_
 
 	// Now read in the tags
 	while (*c != '\0') {
+//		u_fprintf(ux_stderr, ">> c: %C, tmptag: %S\n", *c, tmptag.c_str());
 		if (*c == '\0') {
 			return;
 		}
@@ -577,6 +599,15 @@ void ApertiumApplicator::processReading(Reading* cReading, const UChar* reading_
 		++c;
 	}
 
+
+//	u_fprintf(ux_stderr, "Read tags.\n");
+
+
+	foreach (iter, prefix_taglist) {
+		taglist.push_back(*iter);
+		prefix_taglist.pop_back();
+	}
+
 	// Search from the back until we find a baseform, then add all tags from there until the end onto the reading
 	while (!taglist.empty()) {
 		Reading* reading = cReading;
@@ -610,6 +641,7 @@ void ApertiumApplicator::processReading(Reading* cReading, const UChar* reading_
 			}
 		}
 	}
+
 
 	assert(taglist.empty() && "ApertiumApplicator::processReading() did not handle all tags.");
 }
