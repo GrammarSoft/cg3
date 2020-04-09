@@ -30,8 +30,14 @@
 namespace CG3 {
 class ContextualTest;
 
-class CohortIterator : public std::iterator<std::input_iterator_tag, Cohort*> {
+class CohortIterator {
 public:
+	using iterator_category = std::input_iterator_tag;
+	using value_type = Cohort*;
+	using difference_type = ptrdiff_t;
+	using pointer = value_type*;
+	using reference = value_type&;
+
 	CohortIterator(Cohort* cohort = nullptr, const ContextualTest* test = nullptr, bool span = false);
 
 	virtual ~CohortIterator();
@@ -117,8 +123,14 @@ protected:
 	CohortSet::const_iterator m_cohortsetiter;
 };
 
-class MultiCohortIterator : public std::iterator<std::input_iterator_tag, Cohort*> {
+class MultiCohortIterator {
 public:
+	using iterator_category = std::input_iterator_tag;
+	using value_type = Cohort*;
+	using difference_type = ptrdiff_t;
+	using pointer = value_type*;
+	using reference = value_type&;
+
 	MultiCohortIterator(Cohort* cohort = nullptr, const ContextualTest* test = nullptr, bool span = false);
 
 	virtual ~MultiCohortIterator();
