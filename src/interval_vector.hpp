@@ -56,21 +56,25 @@ private:
 			return (ub < o);
 		}
 	};
-	typedef typename std::vector<interval> Cont;
-	typedef typename Cont::iterator ContIter;
-	typedef typename Cont::const_iterator ContConstIter;
+	using Cont = typename std::vector<interval>;
+	using ContIter = typename Cont::iterator;
+	using ContConstIter = typename Cont::const_iterator;
 	Cont elements;
 	size_t _size;
 
 public:
-	class const_iterator : public std::iterator<std::bidirectional_iterator_tag, T> {
+	class const_iterator {
 	private:
 		const Cont* elements;
 		ContConstIter it;
 		T t;
 
 	public:
-		typedef T reference;
+		using iterator_category = std::bidirectional_iterator_tag;
+		using value_type = T;
+		using difference_type = ptrdiff_t;
+		using pointer = T*;
+		using reference = value_type;
 
 		const_iterator()
 		  : elements(nullptr)
@@ -151,10 +155,10 @@ public:
 		}
 	};
 
-	typedef const_iterator iterator;
-	typedef size_t size_type;
-	typedef T value_type;
-	typedef T key_type;
+	using iterator = const_iterator;
+	using size_type = size_t;
+	using value_type = T;
+	using key_type = T;
 
 	interval_vector()
 	  : _size(0)
@@ -343,7 +347,7 @@ public:
 	}
 };
 
-typedef interval_vector<uint32_t> uint32IntervalVector;
+using uint32IntervalVector = interval_vector<uint32_t>;
 }
 
 #endif

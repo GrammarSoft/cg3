@@ -34,14 +34,18 @@ namespace CG3 {
 template<typename T, T res_empty = T(-1), T res_del = T(-1) - 1>
 class flat_unordered_set {
 public:
-	class const_iterator : public std::iterator<std::bidirectional_iterator_tag, T> {
+	class const_iterator {
 	private:
 		friend class flat_unordered_set;
 		const flat_unordered_set* fus;
 		size_t i;
 
 	public:
-		typedef T reference;
+		using iterator_category = std::bidirectional_iterator_tag;
+		using value_type = T;
+		using difference_type = ptrdiff_t;
+		using pointer = T*;
+		using reference = value_type;
 
 		const_iterator()
 		  : fus(nullptr)
@@ -108,11 +112,11 @@ public:
 		}
 	};
 
-	typedef const_iterator iterator;
-	typedef typename std::vector<T> container;
-	typedef typename container::size_type size_type;
-	typedef T value_type;
-	typedef T key_type;
+	using iterator = const_iterator;
+	using container = typename std::vector<T>;
+	using size_type = typename container::size_type;
+	using value_type = T;
+	using key_type = T;
 	enum {
 		DEFAULT_CAP = static_cast<size_type>(16u),
 	};
@@ -291,7 +295,7 @@ private:
 	friend class const_iterator;
 };
 
-typedef flat_unordered_set<uint32_t> uint32FlatHashSet;
+using uint32FlatHashSet = flat_unordered_set<uint32_t>;
 }
 
 #endif
