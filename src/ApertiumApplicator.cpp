@@ -599,13 +599,22 @@ void ApertiumApplicator::processReading(Reading* cReading, const UChar* reading_
 		++c;
 	}
 
-
-//	u_fprintf(ux_stderr, "Read tags.\n");
-
-
-	foreach (iter, prefix_taglist) {
-		taglist.push_back(*iter);
-		prefix_taglist.pop_back();
+	if (!prefix_taglist.empty()) {
+		// Insert prefix tags after the first baseform
+		for (auto it = taglist.begin(), bf = taglist.end(); it != taglist.end(); ++it) {
+			if ((*it)->type & T_BASEFORM) {
+				if (bf == taglist.end()) {
+					bf = it;
+				}
+				else {
+					taglist.insert(it, prefix_taglist.begin(), prefix_taglist.end());
+					prefix_taglist.clear();
+					break;
+				}
+			}
+		}
+		// If we did not insert before 2nd baseform, append to the end
+		taglist.insert(taglist.end(), prefix_taglist.begin(), prefix_taglist.end());
 	}
 
 	// Search from the back until we find a baseform, then add all tags from there until the end onto the reading
@@ -641,7 +650,6 @@ void ApertiumApplicator::processReading(Reading* cReading, const UChar* reading_
 			}
 		}
 	}
-
 
 	assert(taglist.empty() && "ApertiumApplicator::processReading() did not handle all tags.");
 }
