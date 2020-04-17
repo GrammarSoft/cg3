@@ -57,6 +57,12 @@ public:
 		{
 		}
 
+		const_iterator(const const_iterator& o)
+		  : fus(o.fus)
+		  , i(o.i)
+		{
+		}
+
 		const_iterator(const flat_unordered_map& fus, size_t i = 0)
 		  : fus(&fus)
 		  , i(i)
