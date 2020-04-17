@@ -175,6 +175,34 @@ void Reading::clear() {
 	tags_string_hash = 0;
 }
 
+Reading& Reading::operator=(const Reading& r) {
+	mapped = r.mapped;
+	deleted = r.deleted;
+	noprint = r.noprint;
+	matched_target = r.matched_target;
+	matched_tests = r.matched_tests;
+	immutable = r.immutable;
+	baseform = r.baseform;
+	hash = r.hash;
+	hash_plain = r.hash_plain;
+	number = r.number;
+	tags_bloom = r.tags_bloom;
+	tags_plain_bloom = r.tags_plain_bloom;
+	tags_textual_bloom = r.tags_textual_bloom;
+	mapping = r.mapping;
+	parent = r.parent;
+	next = r.next;
+	hit_by = r.hit_by;
+	tags_list = r.tags_list;
+	tags = r.tags;
+	tags_plain = r.tags_plain;
+	tags_textual = r.tags_textual;
+	tags_numerical = r.tags_numerical;
+	tags_string = r.tags_string;
+	tags_string_hash = r.tags_string_hash;
+	return *this;
+}
+
 Reading* Reading::allocateReading(Cohort* p) {
 	return alloc_reading(p);
 }
