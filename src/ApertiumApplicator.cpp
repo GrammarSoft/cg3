@@ -426,195 +426,77 @@ void ApertiumApplicator::runGrammarOnText(std::istream& input, std::ostream& out
  *   sellout<vblex><imp><p2><sg># ouzh+indirect<prn><obj><p3><m><sg>
  *   be# happy<vblex><inf> (for chaining cg-proc)
  */
-void ApertiumApplicator::processReading(Reading* cReading, const UChar* reading_string) {
-	const UChar* m = reading_string;
-	const UChar* c = reading_string;
-	UString tmptag;
-	UString base;
-	UString suf;
-	bool tags = false;
-	bool unknown = false;
-	bool multi = false;
-	UChar join_idx = '0'; // Set the join index to the number '0' in ASCII/UTF-8
+void ApertiumApplicator::processReading(Reading* cReading, UChar* p) {
+	TagList taglist;
 
-	insert_if_exists(cReading->parent->possible_sets, grammar->sets_any);
+	UString bf{'"'};
+	TagList tags;
+	TagList prefix_tags;
 
-	// Look through the reading for the '#' symbol signifying that
-	// this is a multiword.
-	while (*m != '\0') {
-		if (*m == '\0') {
-			break;
+	while (*p) {
+		auto n = p;
+		while (*n && *n != '#' && *n != '+' && *n != '<') {
+			++n;
 		}
-
-		if (*m == '<') {
-			tags = true;
+		// Found a baseform (if something is between start and [#+<], it must be part of the baseform)
+		if (n != p) {
+			auto c = *n;
+			*n = 0;
+			bf += p;
+			*n = c;
+			p = n;
 		}
-
-		if (*m == '#' && tags == true) { // We only want to shift the lemq if we have seen tags
-			multi = true;
-		}
-
-		if (*m == '+' && multi == true) { // If we see a '+' and we are in a multiword queue, we want to stop appending
-			multi = false;
-		}
-
-		if (multi) {
-			suf += *m;
-		}
-
-		++m;
-	}
-
-	TagVector taglist;
-	TagVector prefix_taglist; // Tags coming before the lemma, e.g. kuyaʼ/<impf><o_sg3><s_sg3>yaʼ<v><tv>
-
-	// We encapsulate baseforms within '"' for internal processing.
-	base += '"';
-	bool first = true; // This is true so long as we have prefixed tags
-	while (*c != '\0') {
-//		u_fprintf(ux_stderr, ">> c: %C, base: %S\n", *c, base.c_str());
-		if (*c == '*') { // Initial asterisk means word is unknown, and
-			             // should just be copied in the output.
-			unknown = true;
-			first = false;
-		}
-		// Mark the reading as deleted if initial character is the Not Sign
-		if (base[1] == 0 && *c == not_sign) {
-			cReading->deleted = true;
-			first = false;
-			++c;
-			continue;
-		}
-		if (*c == '\0' || (*c == '<' && !first)) {
-			break;
-		}
-		if (*c == '<' && first) {
-			UString bf;
-			++c;
-			while(*c != '>') {
-				bf += *c;
-				++c;
+		// Found a tag start, so read until >
+		if (*n == '<') {
+			p = n + 1;
+			while (*n && *n != '>') {
+				++n;
 			}
-			//bf += *c;
-//			u_fprintf(ux_stderr, ">> bf: %S\n", bf.c_str());
-			prefix_taglist.push_back(addTag(bf));
-			++c;
-			continue;
-		} else {
-			first = false;
-		}
-		base += *c;
-		++c;
-	}
-
-	if (!suf.empty()) { // Append the multiword suffix to the baseform
-		// (this is normally done in pretransfer)
-		base += suf;
-	}
-	base += '"';
-
-//	u_fprintf(ux_stderr, ">> b: %S s: %S\n", base.c_str(), suf.c_str());
-
-
-	Tag* tag = addTag(base);
-
-	if (unknown) {
-		cReading->baseform = tag->hash;
-		addTagToReading(*cReading, tag);
-		return;
-	}
-
-	taglist.push_back(tag);
-
-	bool joiner = false;
-	bool intag = false;
-
-	// Now read in the tags
-	while (*c != '\0') {
-//		u_fprintf(ux_stderr, ">> c: %C, tmptag: %S\n", *c, tmptag.c_str());
-		if (*c == '\0') {
-			return;
-		}
-
-		if (*c == '+') {
-			multi = false;
-			joiner = true;
-			++join_idx;
-		}
-		if (*c == '#' && intag == false) { // If we're outside a tag, and we see #, don't append
-			multi = true;
-		}
-
-		if (*c == '<') {
-			multi = false;
-			if (intag == true) {
-				u_fprintf(ux_stderr, "Error: The Apertium stream format does not allow '<' in tag names.\n");
-				++c;
+			if (*n != '>') {
+				u_fprintf(ux_stderr, "Warning: Did not find matching > to close the tag.\n");
 				continue;
 			}
-			intag = true;
-
-			if (joiner == true) {
-				UString bf;
-				bf += '"';
-				if (tmptag[0] == '+') {
-					bf.append(tmptag.begin() + 1, tmptag.end());
-				}
-				else {
-					bf += tmptag;
-				}
-				bf += '"';
-				taglist.push_back(addTag(bf));
-
-				tmptag.clear();
-				joiner = false;
+			auto c = *n;
+			*n = 0;
+			if (bf.size() == 1) {
+				prefix_tags.push_back(addTag(p));
 			}
-			++c;
-			continue;
-		}
-		else if (*c == '>') {
-			multi = false;
-			if (intag == false) {
-				u_fprintf(ux_stderr, "Error: The Apertium stream format does not allow '>' outside tag names.\n");
-				++c;
-				continue;
+			else {
+				tags.push_back(addTag(p));
 			}
-
-			intag = false;
-
-			taglist.push_back(addTag(tmptag));
-
-			tmptag.clear();
-			joiner = false;
-			++c;
-			continue;
+			*n = c;
+			p = n + 1;
 		}
-
-		if (multi == true) { // Multiword queue is not part of a tag
-			++c;
-			continue;
+		// Found a multiword marker, so read until [+<]
+		if (*n == '#') {
+			p = n;
+			while (*n && *n != '<' && *n != '+') {
+				++n;
+			}
+			auto c = *n;
+			*n = 0;
+			bf += p;
+			*n = c;
+			p = n;
 		}
-
-		tmptag += *c;
-		++c;
+		// Found a sub-reading delimiter, so append current tags to the list in the correct order
+		if (*n == '+') {
+			bf += '"';
+			taglist.push_back(addTag(bf));
+			taglist.insert(taglist.end(), tags.begin(), tags.end());
+			taglist.insert(taglist.end(), prefix_tags.begin(), prefix_tags.end());
+			bf.resize(1);
+			tags.clear();
+			prefix_tags.clear();
+			p = n + 1;
+		}
 	}
 
-	if (!prefix_taglist.empty()) {
-		// Insert prefix tags after the first baseform
-		for (auto it = taglist.begin(), bf = taglist.end(); it != taglist.end(); ++it) {
-			if ((*it)->type & T_BASEFORM) {
-				if (bf == taglist.end()) {
-					bf = it;
-				}
-				else {
-					taglist.insert(it, prefix_taglist.begin(), prefix_taglist.end());
-					prefix_taglist.clear();
-					break;
-				}
-			}
-		}
-		// If we did not insert before 2nd baseform, append to the end
-		taglist.insert(taglist.end(), prefix_taglist.begin(), prefix_taglist.end());
+	if (bf.size() > 1) {
+		bf += '"';
+		taglist.push_back(addTag(bf));
+		taglist.insert(taglist.end(), tags.begin(), tags.end());
+		taglist.insert(taglist.end(), prefix_tags.begin(), prefix_tags.end());
 	}
 
 	// Search from the back until we find a baseform, then add all tags from there until the end onto the reading
@@ -654,8 +536,8 @@ void ApertiumApplicator::processReading(Reading* cReading, const UChar* reading_
 	assert(taglist.empty() && "ApertiumApplicator::processReading() did not handle all tags.");
 }
 
-void ApertiumApplicator::processReading(Reading* cReading, const UString& reading_string) {
-	return processReading(cReading, reading_string.c_str());
+void ApertiumApplicator::processReading(Reading* cReading, UString& reading_string) {
+	return processReading(cReading, &reading_string[0]);
 }
 
 void ApertiumApplicator::testPR(std::ostream& output) {
