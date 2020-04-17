@@ -71,6 +71,8 @@ public:
 	~Reading();
 	void clear();
 
+	Reading& operator=(const Reading& r);
+
 	Reading* allocateReading(Cohort* p);
 	Reading* allocateReading(const Reading& r);
 

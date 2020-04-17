@@ -41,6 +41,11 @@ public:
 		std::copy(other.value, other.value + 4, &value[0]);
 	}
 
+	bloomish& operator=(const bloomish<Cont>& other) {
+		std::copy(other.value, other.value + 4, &value[0]);
+		return *this;
+	}
+
 	void clear() {
 		std::fill(value, value + 4, static_cast<Cont>(0));
 	}
