@@ -276,6 +276,9 @@ int main(int argc, char* argv[]) {
 	if (options[PIPE_DELETED].doesOccur) {
 		applicator.pipe_deleted = true;
 	}
+	if (options[NO_BREAK].doesOccur) {
+		applicator.add_spacing = false;
+	}
 
 	applicator.is_conv = true;
 	applicator.trace = true;
