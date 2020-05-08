@@ -552,6 +552,9 @@ void GAppSetOpts(CG3::GrammarApplicator& applicator, UConverter* conv) {
 	if (options[STATISTICS].doesOccur) {
 		applicator.enableStatistics();
 	}
+	if (options[NO_BREAK].doesOccur) {
+		applicator.add_spacing = false;
+	}
 #ifndef HAVE_TICK_COUNTER
 	if (options[STATISTICS].doesOccur) {
 		std::cerr << "Error: Sorry, this build cannot gather statistics due to missing high resolution timers." << std::endl;

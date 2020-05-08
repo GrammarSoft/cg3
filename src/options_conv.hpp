@@ -51,6 +51,7 @@ enum OPTIONS {
 	SUB_LTR,
 	ORDERED,
 	PIPE_DELETED,
+	NO_BREAK,
 	NUM_OPTIONS,
 };
 
@@ -79,6 +80,7 @@ UOption options[] = {
 	UOPTION_DEF_D("ltr",          'l', UOPT_NO_ARG,       "sets sub-reading direction to LTR"),
 	UOPTION_DEF_D("ordered",      'o', UOPT_NO_ARG,       "tag order matters mode"),
 	UOPTION_DEF_D("deleted",        0, UOPT_NO_ARG,       "read deleted readings as such, instead of as text"),
+	UOPTION_DEF_D("no-break",     'B', UOPT_NO_ARG,       "inhibits any extra whitespace in output"),
 };
 }
 

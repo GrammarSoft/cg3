@@ -570,7 +570,9 @@ void GrammarApplicator::printSingleWindow(SingleWindow* window, std::ostream& ou
 		Cohort* cohort = window->cohorts[c];
 		printCohort(cohort, output);
 	}
-	u_fputc('\n', output);
+	if (add_spacing) {
+		u_fputc('\n', output);
+	}
 	u_fflush(output);
 }
 

@@ -88,6 +88,7 @@ enum OPTIONS {
 	SHOW_TAG_HASHES,
 	SHOW_SET_HASHES,
 	DUMP_AST,
+	NO_BREAK,
 	NUM_OPTIONS,
 };
 
@@ -161,6 +162,7 @@ UOption options[] = {
 	UOPTION_DEF_D("show-tag-hashes",       0, UOPT_NO_ARG,       "prints a list of tags and their hashes as they are parsed during the run"),
 	UOPTION_DEF_D("show-set-hashes",       0, UOPT_NO_ARG,       "prints a list of sets and their hashes; implies --grammar-only"),
 	UOPTION_DEF_D("dump-ast",              0, UOPT_NO_ARG,       "prints the grammar parse tree; implies --grammar-only"),
+	UOPTION_DEF_D("no-break",            'B', UOPT_NO_ARG,       "inhibits any extra whitespace in output"),
 };
 }
 
