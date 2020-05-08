@@ -98,6 +98,7 @@ public:
 	bool is_conv;
 	bool split_mappings;
 	bool pipe_deleted = false;
+	bool add_spacing = true;
 
 	bool dep_has_spanned;
 	uint32_t dep_delimit;
