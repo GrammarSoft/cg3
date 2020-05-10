@@ -179,6 +179,7 @@ protected:
 
 	UString span_pattern_latin;
 	UString span_pattern_utf;
+	UChar ws[4]{ ' ', '\t', 0, 0 };
 
 	uint32_t numLines;
 	uint32_t numWindows;
