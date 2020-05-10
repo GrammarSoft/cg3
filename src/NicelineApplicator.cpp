@@ -455,8 +455,6 @@ void NicelineApplicator::printReading(const Reading* reading, std::ostream& outp
 }
 
 void NicelineApplicator::printCohort(Cohort* cohort, std::ostream& output) {
-	constexpr UChar ws[] = { ' ', '\t', 0 };
-
 	if (cohort->local_number == 0) {
 		goto removed;
 	}
@@ -488,7 +486,7 @@ removed:
 	u_fputc('\n', output);
 	if (!cohort->text.empty() && cohort->text.find_first_not_of(ws) != UString::npos) {
 		u_fprintf(output, "%S", cohort->text.c_str());
-		if (!ISNL(cohort->text[cohort->text.size() - 1])) {
+		if (!ISNL(cohort->text.back())) {
 			u_fputc('\n', output);
 		}
 	}
@@ -497,7 +495,7 @@ removed:
 void NicelineApplicator::printSingleWindow(SingleWindow* window, std::ostream& output) {
 	if (!window->text.empty()) {
 		u_fprintf(output, "%S", window->text.c_str());
-		if (!ISNL(window->text[window->text.size() - 1])) {
+		if (!ISNL(window->text.back())) {
 			u_fputc('\n', output);
 		}
 	}

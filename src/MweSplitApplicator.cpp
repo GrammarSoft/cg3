@@ -161,7 +161,7 @@ void MweSplitApplicator::printSingleWindow(SingleWindow* window, std::ostream& o
 
 	if (!window->text.empty()) {
 		u_fprintf(output, "%S", window->text.c_str());
-		if (!ISNL(window->text[window->text.size() - 1])) {
+		if (!ISNL(window->text.back())) {
 			u_fputc('\n', output);
 		}
 	}
