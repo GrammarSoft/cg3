@@ -166,7 +166,7 @@ Tag* TextualParser::parseTag(const UChar* to, const UChar* p) {
 				error("%s: Error: Baseform tag %S not on the strict-tags list, on line %u near `%S`!\n", tag->tag.c_str(), p);
 			}
 		}
-		else if (tag->tag[0] == '<' && tag->tag[tag->tag.size() - 1] == '>') {
+		else if (tag->tag.front() == '<' && tag->tag.back() == '>') {
 			if (strict_second) {
 				error("%s: Error: Secondary tag %S not on the strict-tags list, on line %u near `%S`!\n", tag->tag.c_str(), p);
 			}
