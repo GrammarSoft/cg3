@@ -744,13 +744,21 @@ struct pool_cleaner {
 	}
 };
 
+#if __cplusplus >= 201703L
+	template<typename F, typename ...Args>
+	using invoke_result = typename std::invoke_result<F, Args...>;
+#else
+	template<typename F, typename ...Args>
+	using invoke_result = typename std::result_of<F(Args...)>;
+#endif
+
 template<class Function, std::size_t... Indices>
-constexpr auto make_array_helper(Function f, std::index_sequence<Indices...>)->std::array<typename std::result_of<Function(std::size_t)>::type, sizeof...(Indices)> {
+constexpr auto make_array_helper(Function f, std::index_sequence<Indices...>) -> std::array<typename invoke_result<Function, std::size_t>::type, sizeof...(Indices)> {
 	return { { f(Indices)... } };
 }
 
 template<int N, class Function>
-constexpr auto make_array(Function f)->std::array<typename std::result_of<Function(std::size_t)>::type, N> {
+constexpr auto make_array(Function f) -> std::array<typename invoke_result<Function, std::size_t>::type, N> {
 	return make_array_helper(f, std::make_index_sequence<N>{});
 }
 

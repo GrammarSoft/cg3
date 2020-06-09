@@ -130,6 +130,7 @@ public:
 	virtual void runGrammarOnText(std::istream& input, std::ostream& output);
 
 	bool has_dep;
+	bool parse_dep = false;
 	uint32_t dep_highest_seen;
 	std::unique_ptr<Window> gWindow;
 	void reflowDependencyWindow(uint32_t max = 0);
