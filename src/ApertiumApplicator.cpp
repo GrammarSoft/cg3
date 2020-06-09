@@ -811,6 +811,11 @@ void ApertiumApplicator::printSingleWindow(SingleWindow* window, std::ostream& o
 		if (!cohort->text.empty()) {
 			u_fprintf(output, "%S", cohort->text.c_str());
 		}
+		for (auto& c : cohort->removed) {
+			if (!c->text.empty()) {
+				u_fprintf(output, "%S", c->text.c_str());
+			}
+		}
 
 		u_fflush(output);
 	}
