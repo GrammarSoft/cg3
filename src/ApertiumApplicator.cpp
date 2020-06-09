@@ -319,8 +319,7 @@ void ApertiumApplicator::runGrammarOnText(std::istream& input, std::ostream& out
 
 					insert_if_exists(cReading->parent->possible_sets, grammar->sets_any);
 
-					addTagToReading(*cReading, cCohort->wordform);
-					processReading(cReading, current_reading);
+					processReading(cReading, current_reading, cCohort->wordform);
 
 					if (grammar->sub_readings_ltr && cReading->next) {
 						cReading = reverse(cReading);
@@ -343,9 +342,7 @@ void ApertiumApplicator::runGrammarOnText(std::istream& input, std::ostream& out
 					Reading* cReading = nullptr;
 					cReading = alloc_reading(cCohort);
 
-					addTagToReading(*cReading, cCohort->wordform);
-
-					processReading(cReading, current_reading);
+					processReading(cReading, current_reading, cCohort->wordform);
 
 					if (grammar->sub_readings_ltr && cReading->next) {
 						cReading = reverse(cReading);
@@ -426,9 +423,10 @@ void ApertiumApplicator::runGrammarOnText(std::istream& input, std::ostream& out
  *   sellout<vblex><imp><p2><sg># ouzh+indirect<prn><obj><p3><m><sg>
  *   be# happy<vblex><inf> (for chaining cg-proc)
  */
-void ApertiumApplicator::processReading(Reading* cReading, UChar* p) {
-	TagList taglist;
+void ApertiumApplicator::processReading(Reading* cReading, UChar* p, Tag* wform) {
+	addTagToReading(*cReading, wform);
 
+	TagList taglist;
 	UString bf{'"'};
 	TagList tags;
 	TagList prefix_tags;
@@ -509,6 +507,7 @@ void ApertiumApplicator::processReading(Reading* cReading, UChar* p) {
 					Reading* nr = reading->allocateReading(reading->parent);
 					reading->next = nr;
 					reading = nr;
+					addTagToReading(*reading, wform);
 				}
 				// Add tags
 				TagList mappings;
@@ -536,8 +535,8 @@ void ApertiumApplicator::processReading(Reading* cReading, UChar* p) {
 	assert(taglist.empty() && "ApertiumApplicator::processReading() did not handle all tags.");
 }
 
-void ApertiumApplicator::processReading(Reading* cReading, UString& reading_string) {
-	return processReading(cReading, &reading_string[0]);
+void ApertiumApplicator::processReading(Reading* cReading, UString& reading_string, Tag* wform) {
+	return processReading(cReading, &reading_string[0], wform);
 }
 
 void ApertiumApplicator::testPR(std::ostream& output) {
@@ -552,7 +551,7 @@ void ApertiumApplicator::testPR(std::ostream& output) {
 	for (size_t i = 0; i < 6; ++i) {
 		UString text(texts[i].begin(), texts[i].end());
 		Reading* reading = alloc_reading();
-		processReading(reading, text);
+		processReading(reading, text, grammar->single_tags[grammar->tag_any]);
 		if (grammar->sub_readings_ltr && reading->next) {
 			reading = reverse(reading);
 		}
@@ -723,11 +722,17 @@ void ApertiumApplicator::printSingleWindow(SingleWindow* window, std::ostream& o
 	}
 
 	for (uint32_t c = 0; c < window->cohorts.size(); c++) {
+		Cohort* cohort = window->cohorts[c];
+
 		if (c == 0) { // Skip magic cohort
+			for (auto& c : cohort->removed) {
+				if (!c->text.empty()) {
+					u_fprintf(output, "%S", c->text.c_str());
+				}
+			}
 			continue;
 		}
 
-		Cohort* cohort = window->cohorts[c];
 		cohort->unignoreAll();
 
 		if (!split_mappings) {
