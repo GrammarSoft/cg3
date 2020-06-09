@@ -55,8 +55,8 @@ protected:
 
 private:
 	void printReading(Reading* reading, std::ostream& output, ApertiumCasing casing, int firstlower);
-	void processReading(Reading* cReading, UChar* reading_string);
-	void processReading(Reading* cReading, UString& reading_string);
+	void processReading(Reading* cReading, UChar* reading_string, Tag* wform);
+	void processReading(Reading* cReading, UString& reading_string, Tag* wform);
 };
 }
 
