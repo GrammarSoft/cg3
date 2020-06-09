@@ -503,7 +503,7 @@ uint32_t GrammarApplicator::addTagToReading(Reading& reading, Tag* tag, bool reh
 	if (!reading.baseform && (tag->type & T_BASEFORM)) {
 		reading.baseform = tag->hash;
 	}
-	if (grammar->has_dep && (tag->type & T_DEPENDENCY) && !(reading.parent->type & CT_DEP_DONE)) {
+	if (parse_dep && (tag->type & T_DEPENDENCY) && !(reading.parent->type & CT_DEP_DONE)) {
 		reading.parent->dep_self = tag->dep_self;
 		reading.parent->dep_parent = tag->dep_parent;
 		if (tag->dep_parent == tag->dep_self) {

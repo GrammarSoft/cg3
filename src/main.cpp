@@ -518,6 +518,7 @@ void GAppSetOpts(CG3::GrammarApplicator& applicator, UConverter* conv) {
 		else {
 			applicator.dep_delimit = 10;
 		}
+		applicator.parse_dep = true;
 	}
 	if (options[DEP_ABSOLUTE].doesOccur) {
 		applicator.dep_absolute = true;

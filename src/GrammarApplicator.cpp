@@ -163,6 +163,9 @@ void GrammarApplicator::index() {
 	if (grammar->ordered) {
 		ordered = true;
 	}
+	if (grammar->has_dep || dep_delimit) {
+		parse_dep = true;
+	}
 
 	if (!grammar->before_sections.empty()) {
 		uint32IntervalVector& m = runsections[-1];
