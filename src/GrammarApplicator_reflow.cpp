@@ -199,7 +199,7 @@ bool GrammarApplicator::attachParentChild(Cohort& parent, Cohort& child, bool al
 
 void GrammarApplicator::reflowDependencyWindow(uint32_t max) {
 	if (dep_delimit && !max && !input_eof && !gWindow->next.empty() && gWindow->next.back()->cohorts.size() > 1) {
-		max = gWindow->next.back()->cohorts[1]->global_number;
+		max = gWindow->next.back()->cohorts[0]->global_number;
 	}
 
 	if (gWindow->dep_window.empty() || gWindow->dep_window.begin()->second->parent == 0) {
@@ -274,10 +274,11 @@ void GrammarApplicator::reflowDependencyWindow(uint32_t max) {
 				}
 				else {
 					if (!(cohort->type & CT_DEP_DONE)) {
-						uint32_t dep_real = gWindow->dep_map.find(cohort->dep_parent)->second;
+						auto dep_real = gWindow->dep_map.find(cohort->dep_parent)->second;
 						cohort->dep_parent = dep_real;
 					}
-					std::map<uint32_t, Cohort*>::iterator tmp = gWindow->cohort_map.find(cohort->dep_parent);
+					gWindow->cohort_map[0] = cohort->parent->cohorts[0];
+					auto tmp = gWindow->cohort_map.find(cohort->dep_parent);
 					if (tmp != gWindow->cohort_map.end()) {
 						tmp->second->addChild(cohort->dep_self);
 					}
@@ -286,11 +287,14 @@ void GrammarApplicator::reflowDependencyWindow(uint32_t max) {
 			}
 		}
 	}
+
+	gWindow->dep_map.clear();
+	gWindow->dep_window.clear();
 }
 
 void GrammarApplicator::reflowRelationWindow(uint32_t max) {
 	if (!max && !input_eof && !gWindow->next.empty() && gWindow->next.back()->cohorts.size() > 1) {
-		max = gWindow->next.back()->cohorts[1]->global_number;
+		max = gWindow->next.back()->cohorts[0]->global_number;
 	}
 
 	Cohort* cohort = gWindow->current->cohorts[1];
@@ -795,9 +799,8 @@ Cohort* GrammarApplicator::delimitAt(SingleWindow& current, Cohort* cohort) {
 
 	nwin->has_enclosures = current.has_enclosures;
 
-	current.parent->cohort_counter++;
 	Cohort* cCohort = alloc_cohort(nwin);
-	cCohort->global_number = 0;
+	cCohort->global_number = current.parent->cohort_counter++;
 	cCohort->wordform = tag_begin;
 
 	Reading* cReading = alloc_reading(cCohort);

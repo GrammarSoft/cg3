@@ -31,7 +31,7 @@ namespace CG3 {
 
 void GrammarApplicator::initEmptySingleWindow(SingleWindow* cSWindow) {
 	Cohort* cCohort = alloc_cohort(cSWindow);
-	cCohort->global_number = 0;
+	cCohort->global_number = gWindow->cohort_counter++;
 	cCohort->wordform = tag_begin;
 
 	Reading* cReading = alloc_reading(cCohort);
@@ -413,8 +413,6 @@ void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& outp
 			// Check whether the cohort still belongs to the window, as per --dep-delimit
 			if (!is_deleted && dep_delimit && dep_highest_seen && (cCohort->dep_self <= dep_highest_seen || cCohort->dep_self - dep_highest_seen > dep_delimit)) {
 				reflowDependencyWindow(cCohort->global_number);
-				gWindow->dep_map.clear();
-				gWindow->dep_window.clear();
 
 				for (auto iter : cSWindow->cohorts.back()->readings) {
 					addTagToReading(*iter, endtag);

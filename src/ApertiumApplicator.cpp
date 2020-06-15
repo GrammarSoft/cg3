@@ -206,7 +206,7 @@ void ApertiumApplicator::runGrammarOnText(std::istream& input, std::ostream& out
 
 				// Create 0th Cohort which serves as the beginning of sentence
 				cCohort = alloc_cohort(cSWindow);
-				cCohort->global_number = 0;
+				cCohort->global_number = gWindow->cohort_counter++;
 				cCohort->wordform = tag_begin;
 
 				cReading = alloc_reading(cCohort);
