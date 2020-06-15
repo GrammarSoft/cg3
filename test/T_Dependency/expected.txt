@@ -46,34 +46,34 @@
 "<root>"
 	"root" #1→0
 "<one>"
-	"one" #2→1 ID:22 R:leftmost-sibling:23
+	"one" #2→1 ID:25 R:leftmost-sibling:26
 "<two>"
-	"two" @cc-found #3→1 ID:23 R:leftmost-self-or-descendent:23
+	"two" @cc-found #3→1 ID:26 R:leftmost-self-or-descendent:26
 "<three>"
-	"three" #4→3 ID:24 R:leftmost-descendent:23 R:right-descendent:23 R:right-child:23 R:rightmost-right-direct-child:23 R:leftmost-direct-child:23 R:rightmost-direct-child:23
+	"three" #4→3 ID:27 R:leftmost-descendent:26 R:right-descendent:26 R:right-child:26 R:rightmost-right-direct-child:26 R:leftmost-direct-child:26 R:rightmost-direct-child:26
 "<four>"
-	"four" #5→6 ID:25 R:leftmost-self-or-ancestor:0 R:left-self-or-parent:25 R:right-parent:26 R:rightmost-deepest-parent:26 R:leftmost-left-ancestor:0 R:right-ancestor:26 R:rightmost-right-ancestor:26 R:left-ancestor:0 R:rightmost-self-or-ancestor:26 R:leftmost-ancestor:0 R:right-self-or-parent:25 R:rightmost-ancestor:26
+	"four" #5→6 ID:28 R:leftmost-self-or-ancestor:23 R:left-self-or-parent:28 R:right-parent:29 R:rightmost-deepest-parent:29 R:leftmost-left-ancestor:23 R:right-ancestor:29 R:rightmost-right-ancestor:29 R:left-ancestor:23 R:rightmost-self-or-ancestor:29 R:leftmost-ancestor:23 R:right-self-or-parent:28 R:rightmost-ancestor:29
 "<five>"
-	"five" #6→4 ID:26 R:rightmost-right-deepest-child:23
+	"five" #6→4 ID:29 R:rightmost-right-deepest-child:26
 "<six>"
-	"six" #7→5 ID:27 R:rightmost-descendent:23 R:rightmost-deepest-child:23 R:rightmost-self-or-descendent:23 R:rightmost-right-descendent:23 R:leftmost-deepest-child:23
+	"six" #7→5 ID:30 R:rightmost-descendent:26 R:rightmost-deepest-child:26 R:rightmost-self-or-descendent:26 R:rightmost-right-descendent:26 R:leftmost-deepest-child:26
 "<seven>"
-	"seven" #8→1 ID:28 R:rightmost-sibling:23
+	"seven" #8→1 ID:31 R:rightmost-sibling:26
 "<$.>"
 
 "<læreren>"
-	"lærer" <left> <1> <Hprof> <sentstart> <Hpers> <H> N UTR S DEF NOM @SUBJ> @ss-cSN-good #1→2 ID:30
+	"lærer" <left> <1> <Hprof> <sentstart> <Hpers> <H> N UTR S DEF NOM @SUBJ> @ss-cSN-good #1→2 ID:34
 "<bestræbte>"
 	"bestræbe" <2> <v:på^vrp> <fn:try_to> <¤vr> <mv> <¤vr> V IMPF 3S AKT @FS-STA #2→0
 "<sig>"
-	"sig" <right> <3> <refl> <H> PRON <H> PERS nG 3S ACC @<ACC §REFL #3→2 ID:32
+	"sig" <right> <3> <refl> <H> PRON <H> PERS nG 3S ACC @<ACC §REFL #3→2 ID:36
 "<på>"
 	"på" <right> <4> PRP @<PIV #4→2
 "<at>"
 	"at" <5> INFM @INFM #5→6
 "<undervise>"
-	"undervise" <6> <v:vt> <fn:teach> <mv> V INF AKT @ICL-P< #6→4 ID:35
+	"undervise" <6> <v:vt> <fn:teach> <mv> V INF AKT @ICL-P< #6→4 ID:39
 "<alle>"
-	"al" <right> <7> <quant> DET PRON nG P NOM @<ACC #7→6 ID:36
+	"al" <right> <7> <quant> DET PRON nG P NOM @<ACC #7→6 ID:40
 "<$.>"
 	"." $. <8> PU @PU #8→7

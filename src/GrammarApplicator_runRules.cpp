@@ -2456,8 +2456,6 @@ void GrammarApplicator::runGrammarOnWindow() {
 
 	if (has_dep) {
 		reflowDependencyWindow();
-		gWindow->dep_map.clear();
-		gWindow->dep_window.clear();
 		if (!input_eof && !gWindow->next.empty() && gWindow->next.back()->cohorts.size() > 1) {
 			for (auto cohort : gWindow->next.back()->cohorts) {
 				gWindow->dep_window[cohort->global_number] = cohort;
