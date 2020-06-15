@@ -34,10 +34,10 @@ typedef std::vector<SingleWindow*> SingleWindowCont;
 
 class Window {
 public:
-	GrammarApplicator* parent;
-	uint32_t cohort_counter;
-	uint32_t window_counter;
-	uint32_t window_span;
+	GrammarApplicator* parent = nullptr;
+	uint32_t cohort_counter = 0;
+	uint32_t window_counter = 0;
+	uint32_t window_span = 0;
 
 	std::map<uint32_t, Cohort*> cohort_map;
 	uint32FlatHashMap dep_map;
@@ -45,7 +45,7 @@ public:
 	uint32FlatHashMap relation_map;
 
 	SingleWindowCont previous;
-	SingleWindow* current;
+	SingleWindow* current = nullptr;
 	SingleWindowCont next;
 
 	Window(GrammarApplicator* p);

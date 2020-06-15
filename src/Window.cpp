@@ -28,10 +28,6 @@ namespace CG3 {
 
 Window::Window(GrammarApplicator* p)
   : parent(p)
-  , cohort_counter(1)
-  , window_counter(0)
-  , window_span(0)
-  , current(nullptr)
 {
 }
 

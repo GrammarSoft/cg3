@@ -1,7 +1,7 @@
 "<word>"
 	"word" none @none ADD:21
 "<word>"
-	"word" third @none ID:2 R:End3:10 ADD:21
+	"word" third @none ID:2 R:End3:11 ADD:21
 "<word>"
 	"word" none @none ADD:21
 "<word>"
@@ -12,21 +12,21 @@
 "<word>"
 	"word" none @none ADD:21
 "<word>"
-	"word" second @none ID:7 R:OtherSecond:12 ADD:21
+	"word" second @none ID:8 R:OtherSecond:13 ADD:21
 "<word>"
 	"word" none @none ADD:21
 "<word>"
-	"word" first @none ID:9 ADD:21
+	"word" first @none ID:10 ADD:21
 "<word>"
-	"word" startfourth @4to3 @*to3 ID:10 R:Begin4:2 R:Begin4:20 ADDRELATIONS(Begin4,End4):11 ADDRELATIONS(Begin4,End3):12 ADD:15 ADD:16
+	"word" startfourth @4to3 @*to3 ID:11 R:Begin4:2 R:Begin4:22 ADDRELATIONS(Begin4,End4):11 ADDRELATIONS(Begin4,End3):12 ADD:15 ADD:16
 "<word>"
-	"word" startfirst @none ID:11 ADDRELATION(First):3 REMRELATION(First):8 ADD:21
+	"word" startfirst @none ID:12 ADDRELATION(First):3 REMRELATION(First):8 ADD:21
 "<word>"
-	"word" startsecond @careful @none @var-relation ID:12 R:OtherSecond:7 R:Second:14 ADDRELATION(Second):4 ADDRELATION(OtherSecond):5 SETRELATION(OtherSecond):6 SETRELATION(OtherSecond):7 ADD:19 ADD:21 ADD:29
+	"word" startsecond @careful @none @var-relation ID:13 R:OtherSecond:8 R:Second:15 ADDRELATION(Second):4 ADDRELATION(OtherSecond):5 SETRELATION(OtherSecond):6 SETRELATION(OtherSecond):7 ADD:19 ADD:21 ADD:29
 "<word>"
-	"word" startthird @none ID:13 ADDRELATIONS(Begin3,End3):10 REMRELATIONS(Begin3,End3):13 ADD:21
+	"word" startthird @none ID:14 ADDRELATIONS(Begin3,End3):10 REMRELATIONS(Begin3,End3):13 ADD:21
 "<word>"
-	"word" second @none ID:14 ADD:21
+	"word" second @none ID:15 ADD:21
 "<word>"
 	"word" first @none ADD:21
 "<word>"
@@ -39,11 +39,10 @@
 "<word>"
 	"word" none @none ADD:21
 "<word>"
-	"word" fourth @none ID:20 R:End4:10 ADD:21
+	"word" fourth @none ID:22 R:End4:11 ADD:21
 "<word>"
 	"word" none @none ADD:21
 "<word>"
 	"word" fourth @none ADD:21
 "<$.>"
 	"$." @none ADD:21
-
