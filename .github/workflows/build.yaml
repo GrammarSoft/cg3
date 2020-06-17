@@ -1,0 +1,23 @@
+name: CG-3 CI Build
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: dependencies
+      run: |
+           sudo apt-get -qy update
+           sudo apt-get -qfy install --no-install-recommends libboost-dev libicu-dev cmake build-essential perl python3-dev python3-setuptools swig
+    - name: cmake
+      run: cmake -DENABLE_PYTHON_BINDINGS=ON .
+    - name: build
+      run: cmake --build . -v -j 4
+    - name: test
+      run: ctest -V
+    - name: test suite
+      run: ./test/runall.pl
+    - name: install
+      run: sudo cmake --install .
