@@ -29,6 +29,32 @@
 
 namespace CG3 {
 
+inline bool testStringAgainst(const UString& str, std::vector<URegularExpression*>& rxs) {
+	bool rv = false;
+
+	for (size_t i = 0; i < rxs.size(); ++i) {
+		UErrorCode status = U_ZERO_ERROR;
+		uregex_setText(rxs[i], str.c_str(), static_cast<int32_t>(str.size()), &status);
+		if (status != U_ZERO_ERROR) {
+			CG3Quit(1);
+		}
+		status = U_ZERO_ERROR;
+		if (uregex_find(rxs[i], -1, &status)) {
+			rv = true;
+			if (i != 0) {
+				// Move regex that matched up front as it'll more likely match first next time
+				std::swap(rxs[0], rxs[i]);
+			}
+			break;
+		}
+		if (status != U_ZERO_ERROR) {
+			CG3Quit(1);
+		}
+	}
+
+	return rv;
+}
+
 void GrammarApplicator::initEmptySingleWindow(SingleWindow* cSWindow) {
 	Cohort* cCohort = alloc_cohort(cSWindow);
 	cCohort->global_number = gWindow->cohort_counter++;
@@ -624,7 +650,23 @@ void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& outp
 				}
 
 				if (line[0]) {
-					if (lCohort) {
+					if (lSWindow && lCohort && testStringAgainst(line, text_delimiters)) {
+						lSWindow->text_post += &line[0];
+
+						for (auto iter : cCohort->readings) {
+							addTagToReading(*iter, endtag);
+						}
+
+						splitAllMappings(all_mappings, *cCohort, true);
+						cSWindow->appendCohort(cCohort);
+						cCohort->line_number = numLines;
+						lSWindow = cSWindow;
+						cSWindow = nullptr;
+						cCohort = nullptr;
+						numCohorts++;
+						did_soft_lookback = false;
+					}
+					else if (lCohort) {
 						lCohort->text += &line[0];
 					}
 					else if (lSWindow) {

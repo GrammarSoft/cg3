@@ -824,6 +824,11 @@ void ApertiumApplicator::printSingleWindow(SingleWindow* window, std::ostream& o
 
 		u_fflush(output);
 	}
+
+	if (!window->text_post.empty()) {
+		u_fprintf(output, "%S", window->text_post.c_str());
+		u_fflush(output);
+	}
 }
 
 void ApertiumApplicator::mergeMappings(Cohort& cohort) {

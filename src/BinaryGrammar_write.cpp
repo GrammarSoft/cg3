@@ -50,52 +50,55 @@ int BinaryGrammar::writeBinaryGrammar(FILE* output) {
 	fwrite_throw(&u32tmp, sizeof(u32tmp), 1, output);
 
 	if (grammar->has_dep) {
-		fields |= (1 << 0);
+		fields |= BINF_DEP;
 	}
 	if (grammar->mapping_prefix) {
-		fields |= (1 << 1);
+		fields |= BINF_PREFIX;
 	}
 	if (grammar->sub_readings_ltr) {
-		fields |= (1 << 2);
+		fields |= BINF_SUB_LTR;
 	}
 	if (!grammar->single_tags_list.empty()) {
-		fields |= (1 << 3);
+		fields |= BINF_TAGS;
 	}
 	if (!grammar->reopen_mappings.empty()) {
-		fields |= (1 << 4);
+		fields |= BINF_REOPEN_MAP;
 	}
 	if (!grammar->preferred_targets.empty()) {
-		fields |= (1 << 5);
+		fields |= BINF_PREF_TARGETS;
 	}
 	if (!grammar->parentheses.empty()) {
-		fields |= (1 << 6);
+		fields |= BINF_ENCLS;
 	}
 	if (!grammar->anchors.empty()) {
-		fields |= (1 << 7);
+		fields |= BINF_ANCHORS;
 	}
 	if (!grammar->sets_list.empty()) {
-		fields |= (1 << 8);
+		fields |= BINF_SETS;
 	}
 	if (grammar->delimiters) {
-		fields |= (1 << 9);
+		fields |= BINF_DELIMS;
 	}
 	if (grammar->soft_delimiters) {
-		fields |= (1 << 10);
+		fields |= BINF_SOFT_DELIMS;
 	}
 	if (!grammar->contexts.empty()) {
-		fields |= (1 << 11);
+		fields |= BINF_CONTEXTS;
 	}
 	if (!grammar->rule_by_number.empty()) {
-		fields |= (1 << 12);
+		fields |= BINF_RULES;
 	}
 	if (grammar->has_relations) {
-		fields |= (1 << 13);
+		fields |= BINF_RELATIONS;
 	}
 	if (grammar->has_bag_of_tags) {
-		fields |= (1 << 14);
+		fields |= BINF_BAG;
 	}
 	if (grammar->ordered) {
-		fields |= (1 << 15);
+		fields |= BINF_ORDERED;
+	}
+	if (grammar->text_delimiters) {
+		fields |= BINF_TEXT_DELIMS;
 	}
 
 	u32tmp = hton32(fields);
@@ -296,6 +299,11 @@ int BinaryGrammar::writeBinaryGrammar(FILE* output) {
 
 	if (grammar->soft_delimiters) {
 		u32tmp = hton32(grammar->soft_delimiters->number);
+		fwrite_throw(&u32tmp, sizeof(u32tmp), 1, output);
+	}
+
+	if (grammar->text_delimiters) {
+		u32tmp = hton32(grammar->text_delimiters->number);
 		fwrite_throw(&u32tmp, sizeof(u32tmp), 1, output);
 	}
 

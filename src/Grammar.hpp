@@ -84,12 +84,13 @@ public:
 	typedef std::unordered_map<uint32_t, boost::dynamic_bitset<>> sets_by_tag_t;
 	sets_by_tag_t sets_by_tag;
 
-	uint32IntervalVector* rules_any;
-	boost::dynamic_bitset<>* sets_any;
+	uint32IntervalVector* rules_any = nullptr;
+	boost::dynamic_bitset<>* sets_any = nullptr;
 
-	Set* delimiters;
-	Set* soft_delimiters;
-	uint32_t tag_any;
+	Set* delimiters = nullptr;
+	Set* soft_delimiters = nullptr;
+	Set* text_delimiters = nullptr;
+	uint32_t tag_any = 0;
 	uint32Vector preferred_targets;
 	uint32SortedVector reopen_mappings;
 	typedef bc::flat_map<uint32_t, uint32_t> parentheses_t;

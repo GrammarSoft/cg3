@@ -28,6 +28,26 @@
 namespace CG3 {
 class ContextualTest;
 
+enum : uint32_t {
+	BINF_DEP          = (1 <<  0),
+	BINF_PREFIX       = (1 <<  1),
+	BINF_SUB_LTR      = (1 <<  2),
+	BINF_TAGS         = (1 <<  3),
+	BINF_REOPEN_MAP   = (1 <<  4),
+	BINF_PREF_TARGETS = (1 <<  5),
+	BINF_ENCLS        = (1 <<  6),
+	BINF_ANCHORS      = (1 <<  7),
+	BINF_SETS         = (1 <<  8),
+	BINF_DELIMS       = (1 <<  9),
+	BINF_SOFT_DELIMS  = (1 << 10),
+	BINF_CONTEXTS     = (1 << 11),
+	BINF_RULES        = (1 << 12),
+	BINF_RELATIONS    = (1 << 13),
+	BINF_BAG          = (1 << 14),
+	BINF_ORDERED      = (1 << 15),
+	BINF_TEXT_DELIMS  = (1 << 16),
+};
+
 class BinaryGrammar : public IGrammarParser {
 public:
 	BinaryGrammar(Grammar& result, std::ostream& ux_err);
