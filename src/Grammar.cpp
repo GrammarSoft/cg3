@@ -40,11 +40,6 @@ Grammar::Grammar()
   , lines(0)
   , verbosity_level(0)
   , total_time(0)
-  , rules_any(nullptr)
-  , sets_any(nullptr)
-  , delimiters(nullptr)
-  , soft_delimiters(nullptr)
-  , tag_any(0)
 {
 	// Nothing in the actual body...
 }
@@ -77,6 +72,9 @@ void Grammar::addSet(Set*& to) {
 	}
 	else if (!soft_delimiters && to->name == stringbits[S_SOFTDELIMITSET]) {
 		soft_delimiters = to;
+	}
+	else if (!text_delimiters && to->name == stringbits[S_TEXTDELIMITSET]) {
+		text_delimiters = to;
 	}
 	if (verbosity_level > 0 && to->name[0] == 'T' && to->name[1] == ':') {
 		u_fprintf(ux_stderr, "Warning: Set name %S looks like a misattempt of template usage on line %u.\n", to->name.c_str(), to->line);
@@ -756,6 +754,9 @@ void Grammar::reindex(bool unused_sets, bool used_tags) {
 		}
 		if (soft_delimiters) {
 			soft_delimiters->markUsed(*this);
+		}
+		if (text_delimiters) {
+			text_delimiters->markUsed(*this);
 		}
 
 		contexts_t tosave;

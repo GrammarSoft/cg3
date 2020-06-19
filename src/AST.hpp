@@ -85,6 +85,7 @@ enum ASTType {
 	AST_TemplateName,
 	AST_TemplateRef,
 	AST_TemplateShorthand,
+	AST_TextDelimiters,
 	NUM_ASTTypes
 };
 const char* ASTType_str[NUM_ASTTypes] = {};

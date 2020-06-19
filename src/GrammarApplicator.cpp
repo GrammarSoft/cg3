@@ -121,6 +121,10 @@ GrammarApplicator::~GrammarApplicator() {
 	}
 	grammar = nullptr;
 	ux_stderr = nullptr;
+
+	for (auto rx : text_delimiters) {
+		uregex_close(rx);
+	}
 }
 
 void GrammarApplicator::resetIndexes() {
@@ -150,6 +154,59 @@ void GrammarApplicator::setGrammar(Grammar* res) {
 	index_readingSet_yes.resize(grammar->sets_list.size());
 	index_readingSet_no.clear();
 	index_readingSet_no.resize(grammar->sets_list.size());
+
+	if (res->text_delimiters) {
+		TagList theTags;
+		trie_getTagList(res->text_delimiters->trie, theTags);
+		trie_getTagList(res->text_delimiters->trie_special, theTags);
+		for (auto& t : theTags) {
+			UParseError pe;
+			UErrorCode status = U_ZERO_ERROR;
+
+			uint32_t flags = (t->type & T_CASE_INSENSITIVE) ? UREGEX_CASE_INSENSITIVE : 0;
+			text_delimiters.push_back(uregex_open(t->tag.c_str(), static_cast<int32_t>(t->tag.size()), flags, &pe, &status));
+			if (status != U_ZERO_ERROR) {
+				u_fprintf(ux_stderr, "Error: uregex_open returned %s trying to parse pattern %S - cannot continue!\n", u_errorName(status), t->tag.c_str());
+				CG3Quit(1);
+			}
+		}
+	}
+}
+
+void GrammarApplicator::setTextDelimiter(UString rx) {
+	for (auto r : text_delimiters) {
+		uregex_close(r);
+	}
+	text_delimiters.clear();
+
+	if (rx.empty()) {
+		return;
+	}
+
+	bool icase = false;
+	if (rx.size() >= 3 && rx.front() == '/') {
+		rx.erase(rx.begin());
+		while (rx.back() == '/' || rx.back() == 'r' || rx.back() == 'i') {
+			if (rx.back() == 'i') {
+				icase = true;
+			}
+			else if (rx.back() == '/') {
+				rx.pop_back();
+				break;
+			}
+			rx.pop_back();
+		}
+	}
+
+	UParseError pe;
+	UErrorCode status = U_ZERO_ERROR;
+
+	uint32_t flags = icase ? UREGEX_CASE_INSENSITIVE : 0;
+	text_delimiters.push_back(uregex_open(rx.c_str(), static_cast<int32_t>(rx.size()), flags, &pe, &status));
+	if (status != U_ZERO_ERROR) {
+		u_fprintf(ux_stderr, "Error: uregex_open returned %s trying to parse pattern %S - cannot continue!\n", u_errorName(status), rx.c_str());
+		CG3Quit(1);
+	}
 }
 
 void GrammarApplicator::index() {
@@ -574,6 +631,14 @@ void GrammarApplicator::printSingleWindow(SingleWindow* window, std::ostream& ou
 		Cohort* cohort = window->cohorts[c];
 		printCohort(cohort, output);
 	}
+
+	if (!window->text_post.empty() && window->text_post.find_first_not_of(ws) != UString::npos) {
+		u_fprintf(output, "%S", window->text_post.c_str());
+		if (!ISNL(window->text_post.back())) {
+			u_fputc('\n', output);
+		}
+	}
+
 	if (add_spacing) {
 		u_fputc('\n', output);
 	}
