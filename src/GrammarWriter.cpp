@@ -152,6 +152,9 @@ int GrammarWriter::writeGrammar(std::ostream& output) {
 			else if (s == grammar->soft_delimiters) {
 				s->name = stringbits[S_SOFTDELIMITSET];
 			}
+			else if (s == grammar->text_delimiters) {
+				s->name = stringbits[S_TEXTDELIMITSET];
+			}
 			else {
 				s->name.resize(12);
 				s->name.resize(u_sprintf(&s->name[0], "S%u", s->number));

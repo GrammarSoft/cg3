@@ -511,6 +511,17 @@ void GAppSetOpts(CG3::GrammarApplicator& applicator, UConverter* conv) {
 	if (options[HARD_LIMIT].doesOccur) {
 		applicator.hard_limit = abs(atoi(options[HARD_LIMIT].value));
 	}
+	if (options[TEXT_DELIMIT].doesOccur) {
+		CG3::UString rx = CG3::stringbits[CG3::S_TEXTDELIM_DEFAULT];
+		if (options[TEXT_DELIMIT].value) {
+			UErrorCode status = U_ZERO_ERROR;
+			size_t sn = strlen(options[TEXT_DELIMIT].value);
+			CG3::UString buf(sn * 3, 0);
+			auto len = ucnv_toUChars(conv, &buf[0], static_cast<int32_t>(sn * 3), options[TEXT_DELIMIT].value, static_cast<int32_t>(sn), &status);
+			rx.assign(buf.begin(), buf.begin() + len);
+		}
+		applicator.setTextDelimiter(rx);
+	}
 	if (options[DEP_DELIMIT].doesOccur) {
 		if (options[DEP_DELIMIT].value) {
 			applicator.dep_delimit = abs(atoi(options[DEP_DELIMIT].value));

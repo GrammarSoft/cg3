@@ -47,11 +47,7 @@ void free_swindow(SingleWindow* s) {
 }
 
 SingleWindow::SingleWindow(Window* p)
-  : number(0)
-  , has_enclosures(false)
-  , next(nullptr)
-  , previous(nullptr)
-  , parent(p)
+  : parent(p)
 {
 	#ifdef CG_TRACE_OBJECTS
 	std::cerr << "OBJECT: " << __PRETTY_FUNCTION__ << std::endl;
@@ -125,6 +121,7 @@ void SingleWindow::clear() {
 	previous = nullptr;
 	parent = nullptr;
 	text.clear();
+	text_post.clear();
 	cohorts.clear();
 	valid_rules.clear();
 	hit_external.clear();

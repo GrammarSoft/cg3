@@ -89,13 +89,13 @@ int BinaryGrammar::parse_grammar(std::istream& input) {
 	fread_throw(&u32tmp, sizeof(uint32_t), 1, input);
 	fields = ntoh32(u32tmp);
 
-	grammar->has_dep = (fields & (1 << 0)) != 0;
-	grammar->sub_readings_ltr = (fields & (1 << 2)) != 0;
-	grammar->has_relations = (fields & (1 << 13)) != 0;
-	grammar->has_bag_of_tags = (fields & (1 << 14)) != 0;
-	grammar->ordered = (fields & (1 << 15)) != 0;
+	grammar->has_dep = (fields & BINF_DEP) != 0;
+	grammar->sub_readings_ltr = (fields & BINF_SUB_LTR) != 0;
+	grammar->has_relations = (fields & BINF_RELATIONS) != 0;
+	grammar->has_bag_of_tags = (fields & BINF_BAG) != 0;
+	grammar->ordered = (fields & BINF_ORDERED) != 0;
 
-	if (fields & (1 << 1)) {
+	if (fields & BINF_PREFIX) {
 		ucnv_reset(conv);
 		fread_throw(&u32tmp, sizeof(uint32_t), 1, input);
 		u32tmp = ntoh32(u32tmp);
@@ -108,7 +108,7 @@ int BinaryGrammar::parse_grammar(std::istream& input) {
 	tag_varsets_t tag_varsets;
 
 	u32tmp = 0;
-	if (fields & (1 << 3)) {
+	if (fields & BINF_TAGS) {
 		fread_throw(&u32tmp, sizeof(uint32_t), 1, input);
 		u32tmp = ntoh32(u32tmp);
 	}
@@ -243,7 +243,7 @@ int BinaryGrammar::parse_grammar(std::istream& input) {
 	}
 
 	u32tmp = 0;
-	if (fields & (1 << 4)) {
+	if (fields & BINF_REOPEN_MAP) {
 		fread_throw(&u32tmp, sizeof(uint32_t), 1, input);
 		u32tmp = ntoh32(u32tmp);
 	}
@@ -255,7 +255,7 @@ int BinaryGrammar::parse_grammar(std::istream& input) {
 	}
 
 	u32tmp = 0;
-	if (fields & (1 << 5)) {
+	if (fields & BINF_PREF_TARGETS) {
 		fread_throw(&u32tmp, sizeof(uint32_t), 1, input);
 		u32tmp = ntoh32(u32tmp);
 	}
@@ -267,7 +267,7 @@ int BinaryGrammar::parse_grammar(std::istream& input) {
 	}
 
 	u32tmp = 0;
-	if (fields & (1 << 6)) {
+	if (fields & BINF_ENCLS) {
 		fread_throw(&u32tmp, sizeof(uint32_t), 1, input);
 		u32tmp = ntoh32(u32tmp);
 	}
@@ -282,7 +282,7 @@ int BinaryGrammar::parse_grammar(std::istream& input) {
 	}
 
 	u32tmp = 0;
-	if (fields & (1 << 7)) {
+	if (fields & BINF_ANCHORS) {
 		fread_throw(&u32tmp, sizeof(uint32_t), 1, input);
 		u32tmp = ntoh32(u32tmp);
 	}
@@ -296,7 +296,7 @@ int BinaryGrammar::parse_grammar(std::istream& input) {
 	}
 
 	u32tmp = 0;
-	if (fields & (1 << 8)) {
+	if (fields & BINF_SETS) {
 		fread_throw(&u32tmp, sizeof(uint32_t), 1, input);
 		u32tmp = ntoh32(u32tmp);
 	}
@@ -373,20 +373,26 @@ int BinaryGrammar::parse_grammar(std::istream& input) {
 		}
 	}
 
-	if (fields & (1 << 9)) {
+	if (fields & BINF_DELIMS) {
 		fread_throw(&u32tmp, sizeof(uint32_t), 1, input);
 		u32tmp = ntoh32(u32tmp);
 		grammar->delimiters = grammar->sets_list[u32tmp];
 	}
 
-	if (fields & (1 << 10)) {
+	if (fields & BINF_SOFT_DELIMS) {
 		fread_throw(&u32tmp, sizeof(uint32_t), 1, input);
 		u32tmp = ntoh32(u32tmp);
 		grammar->soft_delimiters = grammar->sets_list[u32tmp];
 	}
 
+	if (fields & BINF_TEXT_DELIMS) {
+		fread_throw(&u32tmp, sizeof(uint32_t), 1, input);
+		u32tmp = ntoh32(u32tmp);
+		grammar->text_delimiters = grammar->sets_list[u32tmp];
+	}
+
 	u32tmp = 0;
-	if (fields & (1 << 11)) {
+	if (fields & BINF_CONTEXTS) {
 		fread_throw(&u32tmp, sizeof(uint32_t), 1, input);
 		u32tmp = ntoh32(u32tmp);
 	}
@@ -397,7 +403,7 @@ int BinaryGrammar::parse_grammar(std::istream& input) {
 	}
 
 	u32tmp = 0;
-	if (fields & (1 << 12)) {
+	if (fields & BINF_RULES) {
 		fread_throw(&u32tmp, sizeof(uint32_t), 1, input);
 		u32tmp = ntoh32(u32tmp);
 	}

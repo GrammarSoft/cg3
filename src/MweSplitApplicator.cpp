@@ -174,6 +174,14 @@ void MweSplitApplicator::printSingleWindow(SingleWindow* window, std::ostream& o
 			printCohort(iter, output);
 		}
 	}
+
+	if (!window->text_post.empty()) {
+		u_fprintf(output, "%S", window->text_post.c_str());
+		if (!ISNL(window->text_post.back())) {
+			u_fputc('\n', output);
+		}
+	}
+
 	u_fputc('\n', output);
 	u_fflush(output);
 }

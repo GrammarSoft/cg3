@@ -34,11 +34,12 @@ class Window;
 
 class SingleWindow {
 public:
-	uint32_t number;
-	bool has_enclosures;
-	SingleWindow *next, *previous;
-	Window* parent;
+	uint32_t number = 0;
+	bool has_enclosures = false;
+	SingleWindow *next = nullptr, *previous = nullptr;
+	Window* parent = nullptr;
 	UString text;
+	UString text_post;
 	CohortVector cohorts;
 	uint32IntervalVector valid_rules;
 	uint32SortedVector hit_external;

@@ -505,6 +505,14 @@ void NicelineApplicator::printSingleWindow(SingleWindow* window, std::ostream& o
 		Cohort* cohort = window->cohorts[c];
 		printCohort(cohort, output);
 	}
+
+	if (!window->text_post.empty()) {
+		u_fprintf(output, "%S", window->text_post.c_str());
+		if (!ISNL(window->text_post.back())) {
+			u_fputc('\n', output);
+		}
+	}
+
 	u_fputc('\n', output);
 	u_fflush(output);
 }

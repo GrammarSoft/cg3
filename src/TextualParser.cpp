@@ -1650,6 +1650,42 @@ void TextualParser::parseFromUChar(UChar* input, const char* fname) {
 				}
 				AST_CLOSE(p + 1);
 			}
+			// TEXT-DELIMITERS
+			else if (IS_ICASE(p, "TEXT-DELIMITERS", "text-delimiters")) {
+				if (result->text_delimiters) {
+					error("%s: Error: Cannot redefine TEXT-DELIMITERS on line %u near `%S`!\n", p);
+				}
+				result->text_delimiters = result->allocateSet();
+				result->text_delimiters->line = result->lines;
+				result->text_delimiters->setName(stringbits[S_TEXTDELIMITSET]);
+				AST_OPEN(TextDelimiters);
+				p += 15;
+				result->lines += SKIPWS(p, '=');
+				if (*p != '=') {
+					error("%s: Error: Encountered a %C before the expected = on line %u near `%S`!\n", *p, p);
+				}
+				++p;
+				parseTagList(p, result->text_delimiters);
+				result->addSet(result->text_delimiters);
+				if (result->text_delimiters->trie.empty() && result->text_delimiters->trie_special.empty()) {
+					error("%s: Error: TEXT-DELIMITERS declared, but no definitions given, on line %u near `%S`!\n", p);
+				}
+
+				TagList theTags;
+				trie_getTagList(result->text_delimiters->trie, theTags);
+				trie_getTagList(result->text_delimiters->trie_special, theTags);
+				for (auto& tag : theTags) {
+					if (!(tag->type & T_REGEXP)) {
+						error("%s: Error: TEXT-DELIMITERS had non-regex tag on line %u near %S!\n", tag->tag.c_str());
+					}
+				}
+
+				result->lines += SKIPWS(p, ';');
+				if (*p != ';') {
+					error("%s: Error: Expected closing ; before line %u near `%S`!\n", p);
+				}
+				AST_CLOSE(p + 1);
+			}
 			// MAPPING-PREFIX
 			else if (IS_ICASE(p, "MAPPING-PREFIX", "mapping-prefix")) {
 				if (seen_mapping_prefix) {

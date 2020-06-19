@@ -125,6 +125,7 @@ public:
 	void disableStatistics();
 
 	void setGrammar(Grammar* res);
+	void setTextDelimiter(UString rx);
 	void index();
 
 	virtual void runGrammarOnText(std::istream& input, std::ostream& output);
@@ -227,6 +228,7 @@ protected:
 
 	typedef bc::flat_map<uint32_t, Reading*> readings_plain_t;
 	readings_plain_t readings_plain;
+	std::vector<URegularExpression*> text_delimiters;
 
 	typedef bc::flat_map<uint32_t, const void*> unif_tags_t;
 	bc::flat_map<uint32_t, unif_tags_t*> unif_tags_rs;
