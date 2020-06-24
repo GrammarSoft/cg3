@@ -82,6 +82,10 @@ int main(int argc, char* argv[]) {
 	if (argc < 0 || options[HELP1].doesOccur || options[HELP2].doesOccur) {
 		fprintf(out, "Usage: vislcg3 [OPTIONS]\n");
 		fprintf(out, "\n");
+		fprintf(out, "Environment variable:\n");
+		fprintf(out, " CG3_DEFAULT: Sets default cmdline options, which the actual passed options will override.\n");
+		fprintf(out, " CG3_OVERRIDE: Sets forced cmdline options, which will override any passed option.\n");
+		fprintf(out, "\n");
 		fprintf(out, "Options:\n");
 
 		size_t longest = 0;

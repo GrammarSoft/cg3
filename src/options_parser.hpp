@@ -29,6 +29,7 @@ auto options_override = options;
 inline void parse_opts(const char* which, decltype(options)& where) {
 	if (auto _env = getenv(which)) {
 		std::string env(_env);
+		env.push_back(0);
 		std::vector<char*> argv(1); // 0th element is the program name
 		auto p = &env[0];
 		while (*p) {
