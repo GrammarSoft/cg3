@@ -55,7 +55,7 @@ enum OPTIONS {
 	NUM_OPTIONS,
 };
 
-UOption options[] = {
+std::array<UOption, NUM_OPTIONS> options{
 	UOPTION_DEF_D("help",         'h', UOPT_NO_ARG,       "shows this help"),
 	UOPTION_DEF_D("?",            '?', UOPT_NO_ARG,       "shows this help"),
 	UOPTION_DEF_D("prefix",       'p', UOPT_REQUIRES_ARG, "sets the mapping prefix; defaults to @"),
@@ -82,6 +82,9 @@ UOption options[] = {
 	UOPTION_DEF_D("deleted",        0, UOPT_NO_ARG,       "read deleted readings as such, instead of as text"),
 	UOPTION_DEF_D("no-break",     'B', UOPT_NO_ARG,       "inhibits any extra whitespace in output"),
 };
+
+#include "options_parser.hpp"
+
 }
 
 #endif

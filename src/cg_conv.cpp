@@ -42,7 +42,18 @@ int main(int argc, char* argv[]) {
 	}
 
 	U_MAIN_INIT_ARGS(argc, argv);
-	argc = u_parseArgs(argc, argv, NUM_OPTIONS, options);
+	argc = u_parseArgs(argc, argv, NUM_OPTIONS, options.data());
+
+	parse_opts("CG3_CONV_DEFAULT", options_default);
+	parse_opts("CG3_CONV_OVERRIDE", options_override);
+	for (size_t i = 0; i < options.size(); ++i) {
+		if (options_default[i].doesOccur && !options[i].doesOccur) {
+			options[i] = options_default[i];
+		}
+		if (options_override[i].doesOccur) {
+			options[i] = options_override[i];
+		}
+	}
 
 	if (argc < 0 || options[HELP1].doesOccur || options[HELP2].doesOccur) {
 		FILE* out = (argc < 0) ? stderr : stdout;

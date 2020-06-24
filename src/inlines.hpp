@@ -212,7 +212,8 @@ inline bool ISSPACE(const UChar c) {
 	return (c == 0x20 || c == 0x09 || c == 0x0A || c == 0x0D || c == 0xA0 || u_isWhitespace(c));
 }
 
-inline bool ISSTRING(const UChar* p, const uint32_t c) {
+template<typename Char>
+inline bool ISSTRING(const Char* p, const uint32_t c) {
 	if (*(p - 1) == '"' && *(p + c + 1) == '"') {
 		return true;
 	}
@@ -232,7 +233,8 @@ inline bool ISNL(const UChar c) {
 	);
 }
 
-inline bool ISESC(const UChar* p) {
+template<typename Char>
+inline bool ISESC(const Char* p) {
 	uint32_t a = 1;
 	while (*(p - a) == '\\') {
 		a++;
@@ -240,12 +242,13 @@ inline bool ISESC(const UChar* p) {
 	return (a % 2 == 0);
 }
 
-inline bool ISSPACE(const UChar* p) {
+template<typename Char>
+inline bool ISSPACE(const Char* p) {
 	return ISSPACE(*p) && !ISESC(p);
 }
 
-template<typename C, size_t N>
-inline bool IS_ICASE(const UChar* p, const C (&uc)[N], const C (&lc)[N]) {
+template<typename Char, typename C, size_t N>
+inline bool IS_ICASE(const Char* p, const C (&uc)[N], const C (&lc)[N]) {
 	// N - 1 due to null terminator for string constants
 	if (ISSTRING(p, N - 1)) {
 		return false;
@@ -258,14 +261,16 @@ inline bool IS_ICASE(const UChar* p, const C (&uc)[N], const C (&lc)[N]) {
 	return true;
 }
 
-inline void BACKTONL(UChar*& p) {
+template<typename Char>
+inline void BACKTONL(Char*& p) {
 	while (*p && !ISNL(*p) && (*p != ';' || ISESC(p))) {
 		p--;
 	}
 	++p;
 }
 
-inline uint32_t SKIPLN(UChar*& p) {
+template<typename Char>
+inline uint32_t SKIPLN(Char*& p) {
 	while (*p && !ISNL(*p)) {
 		++p;
 	}
@@ -273,7 +278,8 @@ inline uint32_t SKIPLN(UChar*& p) {
 	return 1;
 }
 
-inline uint32_t SKIPWS(UChar*& p, const UChar a = 0, const UChar b = 0, const bool allowhash = false) {
+template<typename Char>
+inline uint32_t SKIPWS(Char*& p, const UChar a = 0, const UChar b = 0, const bool allowhash = false) {
 	uint32_t s = 0;
 	while (*p && *p != a && *p != b) {
 		if (ISNL(*p)) {
@@ -291,7 +297,8 @@ inline uint32_t SKIPWS(UChar*& p, const UChar a = 0, const UChar b = 0, const bo
 	return s;
 }
 
-inline uint32_t SKIPTOWS(UChar*& p, const UChar a = 0, const bool allowhash = false, const bool allowscol = false) {
+template<typename Char>
+inline uint32_t SKIPTOWS(Char*& p, const UChar a = 0, const bool allowhash = false, const bool allowscol = false) {
 	uint32_t s = 0;
 	while (*p && !ISSPACE(p)) {
 		if (!allowhash && *p == '#' && !ISESC(p)) {
@@ -313,7 +320,8 @@ inline uint32_t SKIPTOWS(UChar*& p, const UChar a = 0, const bool allowhash = fa
 	return s;
 }
 
-inline uint32_t SKIPTO(UChar*& p, const UChar a) {
+template<typename Char>
+inline uint32_t SKIPTO(Char*& p, const UChar a) {
 	uint32_t s = 0;
 	while (*p && (*p != a || ISESC(p))) {
 		if (ISNL(*p)) {
@@ -324,7 +332,8 @@ inline uint32_t SKIPTO(UChar*& p, const UChar a) {
 	return s;
 }
 
-inline void SKIPTO_NOSPAN(UChar*& p, const UChar a) {
+template<typename Char>
+inline void SKIPTO_NOSPAN(Char*& p, const UChar a) {
 	while (*p && (*p != a || ISESC(p))) {
 		if (ISNL(*p)) {
 			break;
@@ -333,7 +342,8 @@ inline void SKIPTO_NOSPAN(UChar*& p, const UChar a) {
 	}
 }
 
-inline void SKIPTO_NOSPAN_RAW(UChar*& p, const UChar a) {
+template<typename Char>
+inline void SKIPTO_NOSPAN_RAW(Char*& p, const UChar a) {
 	while (*p && *p != a) {
 		if (ISNL(*p)) {
 			break;
