@@ -93,7 +93,7 @@ enum OPTIONS {
 	NUM_OPTIONS,
 };
 
-UOption options[] = {
+std::array<UOption,NUM_OPTIONS> options{
 	UOPTION_DEF_D("help",                'h', UOPT_NO_ARG,       "shows this help"),
 	UOPTION_DEF_D("?",                   '?', UOPT_NO_ARG,       "shows this help"),
 	UOPTION_DEF_D("version",             'V', UOPT_NO_ARG,       "prints copyright and version information"),
@@ -166,6 +166,9 @@ UOption options[] = {
 	UOPTION_DEF_D("dump-ast",              0, UOPT_NO_ARG,       "prints the grammar parse tree; implies --grammar-only"),
 	UOPTION_DEF_D("no-break",            'B', UOPT_NO_ARG,       "inhibits any extra whitespace in output"),
 };
+
+#include "options_parser.hpp"
+
 }
 
 #endif

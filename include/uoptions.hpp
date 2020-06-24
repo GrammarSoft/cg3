@@ -61,10 +61,10 @@ struct UOption {
 
 /* macro for an entry in a declaration of UOption[] */
 #define UOPTION_DEF(longName, shortName, hasArg) \
-    { longName, NULL, NULL, NULL, shortName, hasArg, 0, NULL}
+    UOption{ longName, NULL, NULL, NULL, shortName, hasArg, 0, NULL}
 /* added by Tino Didriksen <mail@tinodidriksen.com> */
 #define UOPTION_DEF_D(longName, shortName, hasArg, desc) \
-    { longName, NULL, NULL, NULL, shortName, hasArg, 0, desc}
+    UOption{ longName, NULL, NULL, NULL, shortName, hasArg, 0, desc}
 
 /* ICU Tools option definitions */
 #define UOPTION_HELP_H              UOPTION_DEF("help", 'h', UOPT_NO_ARG)
