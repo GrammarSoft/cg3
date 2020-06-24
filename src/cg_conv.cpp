@@ -59,6 +59,10 @@ int main(int argc, char* argv[]) {
 		FILE* out = (argc < 0) ? stderr : stdout;
 		fprintf(out, "Usage: cg-conv [OPTIONS]\n");
 		fprintf(out, "\n");
+		fprintf(out, "Environment variable:\n");
+		fprintf(out, " CG3_CONV_DEFAULT: Sets default cmdline options, which the actual passed options will override.\n");
+		fprintf(out, " CG3_CONV_OVERRIDE: Sets forced cmdline options, which will override any passed option.\n");
+		fprintf(out, "\n");
 		fprintf(out, "Options:\n");
 
 		size_t longest = 0;

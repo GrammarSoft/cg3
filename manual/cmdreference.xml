@@ -16,6 +16,10 @@
     <screen>
 Usage: vislcg3 [OPTIONS]
 
+Environment variable:
+ CG3_DEFAULT: Sets default cmdline options, which the actual passed options will override.
+ CG3_OVERRIDE: Sets forced cmdline options, which will override any passed option.
+
 Options:
  -h, --help                 shows this help
  -?, --?                    shows this help
@@ -37,19 +41,16 @@ Options:
  -I, --stdin                file to read input from instead of stdin
  -O, --stdout               file to print output to instead of stdout
  -E, --stderr               file to print errors to instead of stderr
- -C, --codepage-all         codepage to use for grammar, input, and output streams; defaults to UTF-8
-     --codepage-grammar     codepage to use for grammar; overrides --codepage-all
-     --codepage-input       codepage to use for input; overrides --codepage-all
-     --codepage-output      codepage to use for output and errors; overrides --codepage-all
      --no-mappings          disables all MAP, ADD, and REPLACE rules
      --no-corrections       disables all SUBSTITUTE and APPEND rules
      --no-before-sections   disables all rules in BEFORE-SECTIONS parts
      --no-sections          disables all rules in SECTION parts
      --no-after-sections    disables all rules in AFTER-SECTIONS parts
- -t, --trace                prints debug output alongside with normal output
+ -t, --trace                prints debug output alongside normal output; optionally stops execution
      --trace-name-only      if a rule is named, omit the line number; implies --trace
      --trace-no-removed     does not print removed readings; implies --trace
      --trace-encl           traces which enclosure pass is currently happening; implies --trace
+     --deleted              read deleted readings as such, instead of as text
      --dry-run              make no actual changes to the input
      --single-run           runs each section only once; same as --max-runs 1
      --max-runs             runs each section max N times; defaults to unlimited (0)
@@ -63,17 +64,22 @@ Options:
      --always-span          forces scanning tests to always span across window boundaries
      --soft-limit           number of cohorts after which the SOFT-DELIMITERS kick in; defaults to 300
      --hard-limit           number of cohorts after which the window is forcefully cut; defaults to 500
+ -T, --text-delimit         additional delimit based on non-CG text, ensuring it isn't attached to a cohort; defaults to /(^|\n)&lt;/s/r
  -D, --dep-delimit          delimit windows based on dependency instead of DELIMITERS; defaults to 10
+     --dep-absolute         outputs absolute cohort numbers rather than relative ones
      --dep-original         outputs the original input dependency tag even if it is no longer valid
      --dep-allow-loops      allows the creation of circular dependencies
      --dep-no-crossing      prevents the creation of dependencies that would result in crossing branches
      --no-magic-readings    prevents running rules on magic readings
  -o, --no-pass-origin       prevents scanning tests from passing the point of origin
+     --split-mappings       keep mapped readings separate in output
  -e, --show-end-tags        allows the &lt;&lt;&lt; tags to appear in output
      --show-unused-sets     prints a list of unused sets and their line numbers; implies --grammar-only
-     --show-tags            prints a list of unique tags; implies --grammar-only
+     --show-tags            prints a list of unique used tags; implies --grammar-only
      --show-tag-hashes      prints a list of tags and their hashes as they are parsed during the run
      --show-set-hashes      prints a list of sets and their hashes; implies --grammar-only
+     --dump-ast             prints the grammar parse tree; implies --grammar-only
+ -B, --no-break             inhibits any extra whitespace in output
     </screen>
   </section>
 
@@ -89,6 +95,10 @@ Options:
     <screen>
 Usage: cg-conv [OPTIONS]
 
+Environment variable:
+ CG3_CONV_DEFAULT: Sets default cmdline options, which the actual passed options will override.
+ CG3_CONV_OVERRIDE: Sets forced cmdline options, which will override any passed option.
+
 Options:
  -h, --help          shows this help
  -?, --?             shows this help
@@ -99,8 +109,10 @@ Options:
  -a, --in-apertium   sets input format to Apertium
  -f, --in-fst        sets input format to HFST/XFST
  -p, --in-plain      sets input format to plain text
+     --add-tags      adds minimal analysis to readings (implies -p)
  -C, --out-cg        sets output format to CG (default)
  -A, --out-apertium  sets output format to Apertium
+ -M, --out-matxin    sets output format to Matxin
  -N, --out-niceline  sets output format to Niceline CG
  -P, --out-plain     sets output format to plain text
  -W, --wfactor       FST weight factor (defaults to 1.0)
@@ -108,6 +120,9 @@ Options:
  -S, --sub-delim     FST sub-reading delimiters (defaults to #)
  -r, --rtl           sets sub-reading direction to RTL (default)
  -l, --ltr           sets sub-reading direction to LTR
+ -o, --ordered       tag order matters mode
+     --deleted       read deleted readings as such, instead of as text
+ -B, --no-break      inhibits any extra whitespace in output
     </screen>
   </section>
 
