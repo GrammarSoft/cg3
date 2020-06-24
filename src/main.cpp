@@ -39,8 +39,19 @@ int main(int argc, char* argv[]) {
 	srand(static_cast<uint32_t>(time(0)));
 
 	U_MAIN_INIT_ARGS(argc, argv);
-	argc = u_parseArgs(argc, argv, NUM_OPTIONS, options);
+	argc = u_parseArgs(argc, argv, NUM_OPTIONS, options.data());
 	FILE* out = stderr;
+
+	parse_opts("CG3_DEFAULT", options_default);
+	parse_opts("CG3_OVERRIDE", options_override);
+	for (size_t i = 0; i < options.size(); ++i) {
+		if (options_default[i].doesOccur && !options[i].doesOccur) {
+			options[i] = options_default[i];
+		}
+		if (options_override[i].doesOccur) {
+			options[i] = options_override[i];
+		}
+	}
 
 	if (options[VERSION_TOO_OLD].doesOccur) {
 		std::cout << CG3_TOO_OLD << std::endl;

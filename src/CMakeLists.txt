@@ -165,6 +165,7 @@ add_executable(cg-conv
 	PlaintextApplicator.cpp
 	PlaintextApplicator.hpp
 	options_conv.hpp
+	options_parser.hpp
 	)
 cg3_link(cg-conv)
 target_link_libraries(cg-conv ${LINKLIB})
@@ -173,7 +174,11 @@ add_executable(cg-mwesplit cg-mwesplit.cpp)
 cg3_link(cg-mwesplit)
 target_link_libraries(cg-mwesplit ${LINKLIB})
 
-add_executable(vislcg3 main.cpp options.hpp)
+add_executable(vislcg3
+	main.cpp
+	options.hpp
+	options_parser.hpp
+	)
 cg3_link(vislcg3)
 target_link_libraries(vislcg3 ${LINKLIB})
 
