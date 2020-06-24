@@ -154,7 +154,7 @@ const UString stringbits[STRINGS_COUNT] = {
 	"_S_DELIMITERS_"_us,
 	"_S_SOFT_DELIMITERS_"_us,
 	"_S_TEXT_DELIMITERS_"_us,
-	"/^</s/r"_us,
+	"/(^|\\n)</s/r"_us,
 	">>>"_us,
 	"<<<"_us,
 	" LINK 0 "_us,

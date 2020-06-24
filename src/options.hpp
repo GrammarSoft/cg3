@@ -148,7 +148,7 @@ std::array<UOption,NUM_OPTIONS> options{
 	UOPTION_DEF_D("always-span",           0, UOPT_NO_ARG,       "forces scanning tests to always span across window boundaries"),
 	UOPTION_DEF_D("soft-limit",            0, UOPT_REQUIRES_ARG, "number of cohorts after which the SOFT-DELIMITERS kick in; defaults to 300"),
 	UOPTION_DEF_D("hard-limit",            0, UOPT_REQUIRES_ARG, "number of cohorts after which the window is forcefully cut; defaults to 500"),
-	UOPTION_DEF_D("text-delimit",        'T', UOPT_OPTIONAL_ARG, "additional delimit based on non-CG text, ensuring it isn't attached to a cohort; defaults to /^</s/r"),
+	UOPTION_DEF_D("text-delimit",        'T', UOPT_OPTIONAL_ARG, "additional delimit based on non-CG text, ensuring it isn't attached to a cohort; defaults to /(^|\\n)</s/r"),
 	UOPTION_DEF_D("dep-delimit",         'D', UOPT_OPTIONAL_ARG, "delimit windows based on dependency instead of DELIMITERS; defaults to 10"),
 	UOPTION_DEF_D("dep-absolute",          0, UOPT_NO_ARG,       "outputs absolute cohort numbers rather than relative ones"),
 	UOPTION_DEF_D("dep-original",          0, UOPT_NO_ARG,       "outputs the original input dependency tag even if it is no longer valid"),

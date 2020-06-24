@@ -218,6 +218,7 @@
     <indexterm>
       <primary>DELIMITERS</primary>
       <seealso>SOFT-DELIMITERS</seealso>
+      <seealso>TEXT-DELIMITERS</seealso>
     </indexterm>
     <para>
       Sets a list of hard delimiters. If one of these are found the disambuation window is cut
@@ -667,6 +668,7 @@
     <indexterm>
       <primary>SOFT-DELIMITERS</primary>
       <seealso>DELIMITERS</seealso>
+      <seealso>TEXT-DELIMITERS</seealso>
     </indexterm>
     <para>
       Sets a list of soft delimiters. If a disambiguation window is approaching the soft-limit
@@ -764,6 +766,24 @@
       TEMPLATE name = (1 (N) LINK 1 (V)) OR (-1 (N) LINK 1 (V)) ;
       TEMPLATE other = (T:name LINK 1 (P)) OR (1 (C)) ;
       SELECT (x) IF ((T:name) OR (T:other)) ;
+    </screen>
+  </section>
+
+  <section id="keyword-text-delimiters">
+    <title>TEXT-DELIMITERS</title>
+    <indexterm>
+      <primary>TEXT-DELIMITERS</primary>
+      <seealso>DELIMITERS</seealso>
+      <seealso>SOFT-DELIMITERS</seealso>
+    </indexterm>
+    <para>
+      Sets a list of non-CG text delimiters.
+      If any of the patterns match non-CG text between cohorts, the window will be delimited at that point.
+      Internally, this is converted to the magic set _S_TEXT_DELIMITERS_.
+      If cmdline flag <code>-T</code> is passed, that will override any pattern set in the grammar.
+    </para>
+    <screen>
+      TEXT-DELIMITERS = /(^|\n)&lt;s/r ;
     </screen>
   </section>
 
