@@ -108,13 +108,13 @@ Options:
  -n, --in-niceline   sets input format to Niceline CG
  -a, --in-apertium   sets input format to Apertium
  -f, --in-fst        sets input format to HFST/XFST
- -p, --in-plain      sets input format to plain text
-     --add-tags      adds minimal analysis to readings (implies -p)
+ -x, --in-plain      sets input format to plain text
+     --add-tags      adds minimal analysis to readings (implies -x)
  -C, --out-cg        sets output format to CG (default)
  -A, --out-apertium  sets output format to Apertium
  -M, --out-matxin    sets output format to Matxin
  -N, --out-niceline  sets output format to Niceline CG
- -P, --out-plain     sets output format to plain text
+ -X, --out-plain     sets output format to plain text
  -W, --wfactor       FST weight factor (defaults to 1.0)
      --wtag          FST weight tag prefix (defaults to W)
  -S, --sub-delim     FST sub-reading delimiters (defaults to #)
