@@ -622,6 +622,10 @@ void TextualParser::parseContextualTestPosition(UChar*& p, ContextualTest& t) {
 			t.pos |= POS_NUMERIC_BRANCH;
 			++p;
 		}
+		if (*p == 't') {
+			t.pos |= POS_OTHER;
+			++p;
+		}
 		if (*p == 'B') {
 			result->has_bag_of_tags = true;
 			t.pos |= POS_BAG_OF_TAGS;

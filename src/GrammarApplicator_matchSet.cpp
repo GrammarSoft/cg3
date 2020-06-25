@@ -904,6 +904,9 @@ bool GrammarApplicator::doesSetMatchCohortNormal(Cohort& cohort, const uint32_t 
 					continue;
 				}
 			}
+			if (reading->active && context && (context->options & POS_OTHER)) {
+				continue;
+			}
 			if (doesSetMatchCohort_helper(cohort, *reading, *theset, context)) {
 				retval = true;
 			}
@@ -959,6 +962,9 @@ bool GrammarApplicator::doesSetMatchCohortCareful(Cohort& cohort, const uint32_t
 				if (!reading) {
 					continue;
 				}
+			}
+			if (reading->active && context && (context->options & POS_OTHER)) {
+				continue;
 			}
 			retval = doesSetMatchCohort_helper(cohort, *reading, *theset, context);
 			if (!retval) {

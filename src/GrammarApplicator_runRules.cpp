@@ -617,6 +617,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 				target = nullptr;
 				mark = cohort;
 				uint8_t orz = regexgrps.first;
+				reading->active = true;
 				// Actually check if the reading is a valid target. First check if rule target matches...
 				if (rule.target && doesSetMatchReading(*reading, rule.target, (set.type & (ST_CHILD_UNIFY | ST_SPECIAL)) != 0)) {
 					bool regex_prop = true;
@@ -702,6 +703,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 					++rule.num_fail;
 				}
 				readings_plain.insert(std::make_pair(reading->hash_plain, reading));
+				reading->active = false;
 
 				if (reading != cohort->readings[i]) {
 					cohort->readings[i]->matched_target = reading->matched_target;

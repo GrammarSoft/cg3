@@ -295,6 +295,18 @@
     </screen>
   </section>
 
+  <section id="test-other">
+    <title>Non-Target Readings</title>
+    <indexterm>
+      <primary>t</primary>
+    </indexterm>
+    <para>
+      Position modifier 't' makes the test only consider readings other than the currently active one.
+      This can be combined with 'C' to mean all other readings.
+      Currently only makes sense for contexts that look at the target cohort, such as position 0.
+    </para>
+  </section>
+
   <section id="test-bag-of-tags">
     <title>Bag of Tags</title>
     <indexterm>
