@@ -1816,6 +1816,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						index_ruleCohort_no.clear();
 
 						CohortSet withs;
+						target = cohort;
 						withs.insert(target);
 						Cohort* merge_at = target;
 						for (auto it : rule.dep_tests) {
