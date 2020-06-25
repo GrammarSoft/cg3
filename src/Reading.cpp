@@ -51,6 +51,7 @@ Reading* alloc_reading(const Reading& o) {
 		r->matched_target = false;
 		r->matched_tests = false;
 		r->immutable = false;
+		r->active = false;
 		r->baseform = o.baseform;
 		r->hash = o.hash;
 		r->hash_plain = o.hash_plain;
@@ -84,19 +85,8 @@ void free_reading(Reading* r) {
 }
 
 Reading::Reading(Cohort* p)
-  : mapped(false)
-  , deleted(false)
-  , noprint(false)
-  , matched_target(false)
-  , matched_tests(false)
-  , immutable(false)
-  , baseform(0)
-  , hash(0)
-  , hash_plain(0)
-  , number(static_cast<uint32_t>(p ? (p->readings.size() * 1000 + 1000) : 0))
-  , mapping(nullptr)
+  : number(static_cast<uint32_t>(p ? (p->readings.size() * 1000 + 1000) : 0))
   , parent(p)
-  , next(nullptr)
 {
 	#ifdef CG_TRACE_OBJECTS
 	std::cerr << "OBJECT: " << __PRETTY_FUNCTION__ << std::endl;
@@ -110,6 +100,7 @@ Reading::Reading(const Reading& r)
   , matched_target(false)
   , matched_tests(false)
   , immutable(r.immutable)
+  , active(r.active)
   , baseform(r.baseform)
   , hash(r.hash)
   , hash_plain(r.hash_plain)
@@ -154,6 +145,7 @@ void Reading::clear() {
 	matched_target = false;
 	matched_tests = false;
 	immutable = false;
+	active = false;
 	baseform = 0;
 	hash = 0;
 	hash_plain = 0;
@@ -182,6 +174,7 @@ Reading& Reading::operator=(const Reading& r) {
 	matched_target = r.matched_target;
 	matched_tests = r.matched_tests;
 	immutable = r.immutable;
+	active = r.active;
 	baseform = r.baseform;
 	hash = r.hash;
 	hash_plain = r.hash_plain;

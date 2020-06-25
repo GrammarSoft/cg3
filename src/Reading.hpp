@@ -36,23 +36,24 @@ typedef std::vector<Reading*> ReadingList;
 
 class Reading {
 public:
-	uint8_t mapped : 1;
-	uint8_t deleted : 1;
-	uint8_t noprint : 1;
-	uint8_t matched_target : 1;
-	uint8_t matched_tests : 1;
-	uint8_t immutable : 1;
+	uint8_t mapped : 1 = false;
+	uint8_t deleted : 1 = false;
+	uint8_t noprint : 1 = false;
+	uint8_t matched_target : 1 = false;
+	uint8_t matched_tests : 1 = false;
+	uint8_t immutable : 1 = false;
+	uint8_t active : 1 = false;
 
-	uint32_t baseform;
-	uint32_t hash;
-	uint32_t hash_plain;
-	uint32_t number;
+	uint32_t baseform = 0;
+	uint32_t hash = 0;
+	uint32_t hash_plain = 0;
+	uint32_t number = 0;
 	uint32Bloomish tags_bloom;
 	uint32Bloomish tags_plain_bloom;
 	uint32Bloomish tags_textual_bloom;
-	Tag* mapping;
-	Cohort* parent;
-	Reading* next;
+	Tag* mapping = nullptr;
+	Cohort* parent = nullptr;
+	Reading* next = nullptr;
 	uint32Vector hit_by;
 	typedef uint32Vector tags_list_t;
 	tags_list_t tags_list;
