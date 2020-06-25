@@ -74,6 +74,7 @@ enum : uint64_t {
 	POS_NO_BARRIER     = (1ull << 36), // N
 	POS_WITH           = (1ull << 37), // w
 	POS_LOOK_IGNORED   = (1ull << 38), // I
+	POS_OTHER          = (1ull << 39), // t
 
 	MASK_POS_DEP       = POS_DEP_PARENT | POS_DEP_SIBLING | POS_DEP_CHILD | POS_DEP_GLOB,
 	MASK_POS_DEPREL    = MASK_POS_DEP | POS_RELATION,
