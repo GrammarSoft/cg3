@@ -85,7 +85,14 @@ void free_reading(Reading* r) {
 }
 
 Reading::Reading(Cohort* p)
-  : number(static_cast<uint32_t>(p ? (p->readings.size() * 1000 + 1000) : 0))
+  : mapped(false)
+  , deleted(false)
+  , noprint(false)
+  , matched_target(false)
+  , matched_tests(false)
+  , immutable(false)
+  , active(false)
+  , number(static_cast<uint32_t>(p ? (p->readings.size() * 1000 + 1000) : 0))
   , parent(p)
 {
 	#ifdef CG_TRACE_OBJECTS
