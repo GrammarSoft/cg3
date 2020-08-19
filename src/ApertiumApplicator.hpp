@@ -38,18 +38,12 @@ public:
 	bool wordform_case;
 	bool print_word_forms;
 	bool print_only_first;
-	void setNullFlush(bool pNullFlush);
 
 	void testPR(std::ostream& output);
 
 protected:
-	bool nullFlush;
-	bool runningWithNullFlush;
-
 	void printReading(Reading* reading, std::ostream& output);
 	void printSingleWindow(SingleWindow* window, std::ostream& output);
-
-	void runGrammarOnTextWrapperNullFlush(std::istream& input, std::ostream& output);
 
 	void mergeMappings(Cohort& cohort);
 
