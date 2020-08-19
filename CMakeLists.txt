@@ -51,7 +51,7 @@ else()
 	include(CheckCXXCompilerFlag)
 
 	foreach(flag "-Wno-unused-result" "-flto")
-		string(REGEX REPLACE "[^A-Za-z0-9]" "-" _flag ${flag})
+		string(REGEX REPLACE "[^A-Za-z0-9]" "" _flag ${flag})
 		CHECK_CXX_COMPILER_FLAG(${flag} COMPILER_SUPPORTS_${_flag})
 		if(COMPILER_SUPPORTS_${_flag})
 			set(_FLAGS_COMMON "${_FLAGS_COMMON} ${flag}")
@@ -70,7 +70,7 @@ else()
 
 	# Enable latest possible C standard
 	foreach(flag "-std=c2x" "-std=c11" "-std=c1x" "-std=c99")
-		string(REGEX REPLACE "[^a-z0-9]" "-" _flag ${flag})
+		string(REGEX REPLACE "[^a-z0-9]" "" _flag ${flag})
 		CHECK_C_COMPILER_FLAG(${flag} COMPILER_SUPPORTS_${_flag})
 		if(COMPILER_SUPPORTS_${_flag})
 			set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${flag}")

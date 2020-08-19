@@ -87,7 +87,6 @@ int main(int argc, char* argv[]) {
 	int cmd = 0;
 	int sections = 0;
 	int stream_format = 1;
-	bool null_flush = false;
 	std::string single_rule;
 
 	UErrorCode status = U_ZERO_ERROR;
@@ -108,14 +107,12 @@ int main(int argc, char* argv[]) {
 	};
 #endif
 
-	// This is to make pedantic compilers not complain about the while (true) condition...silly MSVC.
-	int c = 0;
-	while (c != -1) {
+	for (;;) {
 #if HAVE_GETOPT_LONG
 		int option_index;
-		c = getopt_long(argc, argv, "ds:f:tr:n1wvhz", long_options, &option_index);
+		auto c = getopt_long(argc, argv, "ds:f:tr:n1wvhz", long_options, &option_index);
 #else
-		c = getopt(argc, argv, "ds:f:tr:in1wvhz");
+		auto c = getopt(argc, argv, "ds:f:tr:in1wvhz");
 #endif
 		if (c == -1) {
 			break;
@@ -169,7 +166,7 @@ int main(int argc, char* argv[]) {
 			exit(EXIT_SUCCESS);
 			break;
 		case 'z':
-			null_flush = true;
+			// Null-flush is default
 			break;
 		case 'h':
 		default:
@@ -265,7 +262,7 @@ int main(int argc, char* argv[]) {
 	}
 	else if (stream_format == 2) {
 		CG3::MatxinApplicator* matxinApplicator = new CG3::MatxinApplicator(std::cerr);
-		matxinApplicator->setNullFlush(null_flush);
+		matxinApplicator->setNullFlush(true);
 		matxinApplicator->wordform_case = wordform_case;
 		matxinApplicator->print_word_forms = print_word_forms;
 		matxinApplicator->print_only_first = only_first;
@@ -273,7 +270,6 @@ int main(int argc, char* argv[]) {
 	}
 	else {
 		CG3::ApertiumApplicator* apertiumApplicator = new CG3::ApertiumApplicator(std::cerr);
-		apertiumApplicator->setNullFlush(null_flush);
 		apertiumApplicator->wordform_case = wordform_case;
 		apertiumApplicator->print_word_forms = print_word_forms;
 		apertiumApplicator->print_only_first = only_first;

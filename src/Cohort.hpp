@@ -57,6 +57,7 @@ public:
 	uint32_t is_pleft, is_pright;
 	SingleWindow* parent;
 	UString text;
+	UString wblank;
 	Cohort *prev, *next;
 	Reading* wread;
 	ReadingList readings;
