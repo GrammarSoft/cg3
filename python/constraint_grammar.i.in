@@ -130,7 +130,6 @@ void CGProc::cg_proc(int argc, char **argv, char *input_path, char *output_path)
 	std::unique_ptr<CG3::GrammarApplicator> applicator;
 
 	CG3::ApertiumApplicator* apertiumApplicator = new CG3::ApertiumApplicator(std::cerr);
-	apertiumApplicator->setNullFlush(null_flush);
 	apertiumApplicator->wordform_case = wordform_case;
 	apertiumApplicator->print_word_forms = print_word_forms;
 	apertiumApplicator->print_only_first = only_first;
