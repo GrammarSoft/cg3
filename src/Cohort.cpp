@@ -114,6 +114,7 @@ void Cohort::clear() {
 	parent = nullptr;
 
 	text.clear();
+	wblank.clear();
 	num_max.clear();
 	num_min.clear();
 	dep_children.clear();

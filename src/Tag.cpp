@@ -100,7 +100,7 @@ void Tag::parseTagRaw(const UChar* to, Grammar* grammar) {
 		if ((tmp[0] == '"' && tmp[length - 1] == '"') || (tmp[0] == '<' && tmp[length - 1] == '>')) {
 			type |= T_TEXTUAL;
 			if (tmp[0] == '"' && tmp[length - 1] == '"') {
-				if (tmp[1] == '<' && tmp[length - 2] == '>') {
+				if (tmp[1] == '<' && tmp[length - 2] == '>' && length > 4) {
 					type |= T_WORDFORM;
 				}
 				else {

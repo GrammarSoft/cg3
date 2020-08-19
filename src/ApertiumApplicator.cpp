@@ -29,44 +29,23 @@
 
 namespace CG3 {
 
+constexpr UChar esc_lt = '\1';
+
 ApertiumApplicator::ApertiumApplicator(std::ostream& ux_err)
   : GrammarApplicator(ux_err)
 {
-	nullFlush = false;
 	wordform_case = false;
 	unique_tags = false;
 	print_word_forms = true;
 	print_only_first = false;
-	runningWithNullFlush = false;
-}
-
-void ApertiumApplicator::setNullFlush(bool pNullFlush) {
-	nullFlush = pNullFlush;
-}
-
-void ApertiumApplicator::runGrammarOnTextWrapperNullFlush(std::istream& input, std::ostream& output) {
-	setNullFlush(false);
-	runningWithNullFlush = true;
-	while (!input.eof()) {
-		runGrammarOnText(input, output);
-		u_fputc('\0', output);
-		u_fflush(output);
-	}
-	runningWithNullFlush = false;
 }
 
 /*
  * Run a constraint grammar on an Apertium input stream
  */
-
 void ApertiumApplicator::runGrammarOnText(std::istream& input, std::ostream& output) {
 	ux_stdin = &input;
 	ux_stdout = &output;
-
-	if (nullFlush) {
-		runGrammarOnTextWrapperNullFlush(input, output);
-		return;
-	}
 
 	if (!input.good()) {
 		u_fprintf(ux_stderr, "Error: Input is null - nothing to parse!\n");
@@ -95,21 +74,27 @@ void ApertiumApplicator::runGrammarOnText(std::istream& input, std::ostream& out
 		}
 	}
 
-	UChar inchar = 0;        // Current character
-	bool superblank = false; // Are we in a superblank ?
-	bool incohort = false;   // Are we in a cohort ?
-	UString firstblank;      // Blanks before the first window
+	UChar c = 0;        // Current character
+	bool in_blank = false;   // Are we in a superblank ?
+	bool in_wblank = false;  // Are we in a word-bound blank ?
+	bool in_cohort = false;  // Are we in a cohort ?
+	UString blank;           // Blank between tokens, including superblanks
+	UString unesc;           // Same blank, unescaped
+	UString wblank;
+	UString token;           // Current token (cohort)
 
 	index();
 
 	uint32_t resetAfter = ((num_windows + 4) * 2 + 1);
+
+	const auto wb_start = "[["_us;
+	const auto wb_end = "]]"_us;
 
 	begintag = addTag(stringbits[S_BEGINTAG])->hash; // Beginning of sentence tag
 	endtag = addTag(stringbits[S_ENDTAG])->hash;     // End of sentence tag
 
 	SingleWindow* cSWindow = nullptr; // Current single window (Cohort frame)
 	Cohort* cCohort = nullptr;        // Current cohort
-	Reading* cReading = nullptr;      // Current reading
 
 	SingleWindow* lSWindow = nullptr; // Left hand single window
 
@@ -119,97 +104,153 @@ void ApertiumApplicator::runGrammarOnText(std::istream& input, std::ostream& out
 
 	ux_stripBOM(input);
 
-	while ((inchar = u_fgetc(input)) != 0) {
-		if (input.eof()) {
-			break;
+	auto ensure_endtag = [&]() {
+		if (lSWindow && !lSWindow->cohorts.empty() && lSWindow->cohorts.back()->readings.front()->tags.count(endtag) == 0) {
+			for (auto iter : lSWindow->cohorts.back()->readings) {
+				addTagToReading(*iter, endtag);
+			}
 		}
+	};
 
-		if (inchar == '[') { // Start of a superblank section
-			superblank = true;
-		}
+	auto flush = [&](bool n = false) {
+		ensure_endtag();
 
-		if (inchar == ']') { // End of a superblank section
-			superblank = false;
-		}
-
-		if (inchar == '\\' && !incohort && !superblank) {
-			if (cCohort) {
-				cCohort->text += inchar;
-				inchar = u_fgetc(input);
-				cCohort->text += inchar;
+		if (!blank.empty()) {
+			if (lSWindow && !lSWindow->cohorts.empty()) {
+				lSWindow->cohorts.back()->text += blank;
 			}
 			else if (lSWindow) {
-				lSWindow->text += inchar;
-				inchar = u_fgetc(input);
-				lSWindow->text += inchar;
+				lSWindow->text += blank;
 			}
 			else {
-				u_fprintf(output, "%C", inchar);
-				inchar = u_fgetc(input);
-				u_fprintf(output, "%C", inchar);
+				u_fprintf(output, "%S", blank.c_str());
+			}
+			blank.clear();
+		}
+
+		// Run the grammar & print results
+		while (!gWindow->next.empty()) {
+			gWindow->shuffleWindowsDown();
+			runGrammarOnWindow();
+		}
+
+		gWindow->shuffleWindowsDown();
+		while (!gWindow->previous.empty()) {
+			SingleWindow* tmp = gWindow->previous.front();
+			printSingleWindow(tmp, output);
+			free_swindow(tmp);
+			gWindow->previous.erase(gWindow->previous.begin());
+		}
+
+		if (c && c != 0xffff) {
+			u_fprintf(output, "%C", c); // eg. final newline
+		}
+
+		if (n) {
+			u_fputc('\0', output);
+		}
+		u_fflush(output);
+
+		in_blank = false;
+		in_wblank = false;
+		in_cohort = false;
+		lSWindow = nullptr;
+		cSWindow = nullptr;
+		cCohort = nullptr;
+		token.clear();
+	};
+
+	while ((c = u_fgetc(input)) != U_EOF) {
+		if (c == '\n') {
+			++numLines;
+		}
+
+		if (c == '\\') {
+			auto n = u_fgetc(input);
+			if (!in_cohort) {
+				blank += c;
+				blank += n;
+				unesc += n;
+			}
+			else {
+				token += c;
+				token += n;
 			}
 			continue;
 		}
 
-		if (inchar == '^') {
-			incohort = true;
-		}
-
-		if (superblank == true || inchar == ']' || incohort == false) {
-			if (cCohort) {
-				cCohort->text += inchar;
-			}
-			else if (lSWindow) {
-				lSWindow->text += inchar;
-			}
-			else {
-				firstblank += inchar; // add to lSWindow when it is created
-			}
+		if (c == 0) {
+			flush(true);
 			continue;
 		}
 
-		if (incohort) {
-			// Create magic reading
-			if (cCohort && cCohort->readings.empty()) {
-				initEmptyCohort(*cCohort);
+		if (!in_cohort && c == '[') {
+			if (in_blank) {
+				in_wblank = true;
 			}
-			if (cCohort && cSWindow->cohorts.size() >= soft_limit && grammar->soft_delimiters && doesSetMatchCohortNormal(*cCohort, grammar->soft_delimiters->number)) {
-				// ie. we've read some cohorts
-				for (auto iter : cCohort->readings) {
-					addTagToReading(*iter, endtag);
-				}
+			in_blank = true;
+		}
+		else if (!in_blank && c == '^') {
+			in_cohort = true;
+		}
 
-				cSWindow->appendCohort(cCohort);
-				lSWindow = cSWindow;
-				cSWindow = nullptr;
-				cCohort = nullptr;
-				numCohorts++;
-			} // end >= soft_limit
-			if (cCohort && (cSWindow->cohorts.size() >= hard_limit || (grammar->delimiters && doesSetMatchCohortNormal(*cCohort, grammar->delimiters->number)))) {
-				if (!is_conv && cSWindow->cohorts.size() >= hard_limit) {
-					u_fprintf(ux_stderr, "Warning: Hard limit of %u cohorts reached at cohort %S (#%u) - forcing break.\n", hard_limit, cCohort->wordform->tag.c_str(), numCohorts);
-					u_fflush(ux_stderr);
-				}
-				for (auto iter : cCohort->readings) {
-					addTagToReading(*iter, endtag);
-				}
+		if (!in_cohort) {
+			blank += c;
+			unesc += c;
+		}
+		else {
+			token += c;
+		}
 
-				cSWindow->appendCohort(cCohort);
-				lSWindow = cSWindow;
-				cSWindow = nullptr;
-				cCohort = nullptr;
-				numCohorts++;
-			} // end >= hard_limit
+		if (in_wblank && c == ']') {
+			in_wblank = false;
+		}
+		else if (in_blank && c == ']') {
+			in_blank = false;
+		}
+		else if (!in_blank && c == '$') {
+			if (!in_cohort) {
+				u_fprintf(ux_stderr, "Error: $ found without prior ^ on line %u.\n", numLines);
+				CG3Quit(1);
+			}
+			in_cohort = false;
+
+			if (!blank.empty()) {
+				wblank.clear();
+				auto b = blank.find(wb_start);
+				auto e = blank.find(wb_end, b);
+				if (b != UString::npos && e != UString::npos) {
+					// Word-bound blanks are always immediately prior to the token they belong to
+					wblank = blank.substr(b);
+					blank.erase(b, UString::npos);
+				}
+			}
+			if (!wblank.empty() && (wblank[wblank.size() - 1] != ']' || wblank[wblank.size() - 2] != ']')) {
+				u_fprintf(ux_stderr, "Error: Word-bound blank was not immediately prior to token on line %u.\n", numLines);
+				CG3Quit(1);
+			}
+
+			if (cCohort) {
+				cCohort->text += blank;
+				blank.clear();
+			}
+			else if (lSWindow) {
+				lSWindow->text += blank;
+				blank.clear();
+			}
+
 			// If we don't have a current window, create one
 			if (!cSWindow) {
+				ensure_endtag();
+
 				cSWindow = gWindow->allocAppendSingleWindow();
 
 				// Create 0th Cohort which serves as the beginning of sentence
-				cCohort = alloc_cohort(cSWindow);
+				auto cCohort = alloc_cohort(cSWindow);
 				cCohort->global_number = gWindow->cohort_counter++;
 				cCohort->wordform = tag_begin;
 
-				cReading = alloc_reading(cCohort);
+				auto cReading = alloc_reading(cCohort);
 				cReading->baseform = begintag;
 				insert_if_exists(cReading->parent->possible_sets, grammar->sets_any);
 				addTagToReading(*cReading, begintag);
@@ -219,195 +260,148 @@ void ApertiumApplicator::runGrammarOnText(std::istream& input, std::ostream& out
 				cSWindow->appendCohort(cCohort);
 
 				lSWindow = cSWindow;
-				lSWindow->text = firstblank;
-				firstblank.clear();
-				cCohort = nullptr;
-				numWindows++;
+				lSWindow->text = blank;
+				blank.clear();
+				++numWindows;
 			} // created at least one cSWindow by now
 
-			// If the current cohort is looking ok, and we have an available
-			// window, add the cohort to the window.
-			if (cCohort && cSWindow) {
-				cSWindow->appendCohort(cCohort);
+			cCohort = alloc_cohort(cSWindow);
+			cCohort->global_number = gWindow->cohort_counter++;
+			numCohorts++;
+
+			cCohort->text = blank;
+			blank.clear();
+			cCohort->wblank = wblank;
+			wblank.clear();
+
+			blank += '"';
+			blank += '<';
+			UChar* p = &token[1];
+			for (; *p && *p != '/' && *p != '<'; ++p) {
+				if (*p == '\\') {
+					++p;
+				}
+				blank += *p;
 			}
-			if (gWindow->next.size() > num_windows) {
+			blank += '>';
+			blank += '"';
+			cCohort->wordform = addTag(blank);
+
+			// Handle the static reading of ^estació<n><f><sg>/season<n><sg>/station<n><sg>$
+			// Gobble up all <tags> until the first / or $ and stuff them in the static reading
+			if (*p == '<') {
+				++p;
+				blank.clear();
+				//u_fprintf(ux_stderr, "Static reading\n");
+				cCohort->wread = alloc_reading(cCohort);
+				for (; *p && *p != '/' && *p != '$'; ++p) {
+					if (*p == '\\') {
+						++p;
+						blank += *p;
+						continue;
+					}
+					if (*p == '<') {
+						continue;
+					}
+					if (*p == '>') {
+						Tag* t = addTag(blank);
+						addTagToReading(*cCohort->wread, t);
+						//u_fprintf(ux_stderr, "Adding tag %S\n", tag.c_str());
+						blank.clear();
+						continue;
+					}
+					blank += *p;
+				}
+			}
+
+			// Read in the readings
+			if (*p == '/') {
+				++p;
+				blank.clear();
+
+				for (; *p; ++p) {
+					if (*p == '\\') {
+						++p;
+						if (*p == '<') {
+							blank += esc_lt;
+						}
+						else {
+							blank += *p;
+						}
+						continue;
+					}
+					if (*p == '/' || *p == '$') {
+						auto cReading = alloc_reading(cCohort);
+						processReading(cReading, blank, cCohort->wordform);
+
+						if (grammar->sub_readings_ltr && cReading->next) {
+							cReading = reverse(cReading);
+						}
+
+						if (cReading->deleted) {
+							cCohort->deleted.push_back(cReading);
+						}
+						else {
+							cCohort->appendReading(cReading);
+						}
+						++numReadings;
+
+						if (!cReading->baseform) {
+							u_fprintf(ux_stderr, "Warning: Cohort %u on line %u had no valid baseform.\n", numCohorts, numLines);
+							u_fflush(ux_stderr);
+						}
+						blank.clear();
+						continue;
+					}
+					blank += *p;
+				}
+			}
+
+			// Create magic reading, if needed
+			if (cCohort->readings.empty()) {
+				initEmptyCohort(*cCohort);
+			}
+			insert_if_exists(cCohort->possible_sets, grammar->sets_any);
+			cSWindow->appendCohort(cCohort);
+
+			bool did_delim = false;
+			if (cCohort && cSWindow->cohorts.size() >= soft_limit && grammar->soft_delimiters && doesSetMatchCohortNormal(*cCohort, grammar->soft_delimiters->number)) {
+				for (auto iter : cCohort->readings) {
+					addTagToReading(*iter, endtag);
+				}
+
+				lSWindow = cSWindow;
+				cSWindow = nullptr;
+				cCohort = nullptr;
+				did_delim = true;
+			} // end >= soft_limit
+			if (cCohort && (cSWindow->cohorts.size() >= hard_limit || (grammar->delimiters && doesSetMatchCohortNormal(*cCohort, grammar->delimiters->number)))) {
+				if (!is_conv && cSWindow->cohorts.size() >= hard_limit) {
+					u_fprintf(ux_stderr, "Warning: Hard limit of %u cohorts reached at cohort %S (#%u) on line %u - forcing break.\n", hard_limit, cCohort->wordform->tag.c_str(), numCohorts, numLines);
+					u_fflush(ux_stderr);
+				}
+				for (auto iter : cCohort->readings) {
+					addTagToReading(*iter, endtag);
+				}
+
+				lSWindow = cSWindow;
+				cSWindow = nullptr;
+				cCohort = nullptr;
+				did_delim = true;
+			} // end >= hard_limit
+
+			if (did_delim && gWindow->next.size() > num_windows) {
 				gWindow->shuffleWindowsDown();
 				runGrammarOnWindow();
 				if (numWindows % resetAfter == 0) {
 					resetIndexes();
 				}
 			}
-			cCohort = alloc_cohort(cSWindow);
-			cCohort->global_number = gWindow->cohort_counter++;
-
-			// Read in the word form
-			UString wordform;
-
-			wordform += '"';
-			// We encapsulate wordforms within '"<' and
-			// '>"' for internal processing.
-			wordform += '<';
-			for (;;) {
-				inchar = u_fgetc(input);
-
-				if (inchar == '/' || inchar == '<') {
-					break;
-				}
-				else if (inchar == '\\') {
-					inchar = u_fgetc(input);
-					wordform += inchar;
-				}
-				else {
-					wordform += inchar;
-				}
-			}
-			wordform += '>';
-			wordform += '"';
-
-			//u_fprintf(output, "# %S\n", wordform);
-			cCohort->wordform = addTag(wordform);
-			numCohorts++;
-
-			// We're now at the beginning of the readings
-			UString current_reading;
-			Reading* cReading = nullptr;
-
-			// Handle the static reading of ^estació<n><f><sg>/season<n><sg>/station<n><sg>$
-			// Gobble up all <tags> until the first / or $ and stuff them in the static reading
-			if (inchar == '<') {
-				//u_fprintf(ux_stderr, "Static reading\n");
-				cCohort->wread = alloc_reading(cCohort);
-				UString tag;
-				do {
-					inchar = u_fgetc(input);
-					if (inchar == '\\') {
-						inchar = u_fgetc(input);
-						tag += inchar;
-						continue;
-					}
-					if (inchar == '<') {
-						continue;
-					}
-					if (inchar == '>') {
-						Tag* t = addTag(tag);
-						addTagToReading(*cCohort->wread, t);
-						//u_fprintf(ux_stderr, "Adding tag %S\n", tag.c_str());
-						tag.clear();
-						continue;
-					}
-					if (inchar == '/' || inchar == '$') {
-						break;
-					}
-					tag += inchar;
-				} while (inchar != '/' && inchar != '$');
-			}
-
-			// Read in the readings
-			while (incohort) {
-				inchar = u_fgetc(input);
-
-				if (inchar == '\\') {
-					// TODO: \< in baseforms -- ^foo\<bars/foo\<bar$ currently outputs ^foo\<bars/foo$
-					inchar = u_fgetc(input);
-					current_reading += inchar;
-					continue;
-				}
-
-				if (inchar == '$') {
-					// Add the final reading of the cohort
-					cReading = alloc_reading(cCohort);
-
-					insert_if_exists(cReading->parent->possible_sets, grammar->sets_any);
-
-					processReading(cReading, current_reading, cCohort->wordform);
-
-					if (grammar->sub_readings_ltr && cReading->next) {
-						cReading = reverse(cReading);
-					}
-
-					if (cReading->deleted) {
-						cCohort->deleted.push_back(cReading);
-					}
-					else {
-						cCohort->appendReading(cReading);
-					}
-					++numReadings;
-
-					current_reading.clear();
-
-					incohort = false;
-				}
-
-				if (inchar == '/') { // Reached end of reading
-					Reading* cReading = nullptr;
-					cReading = alloc_reading(cCohort);
-
-					processReading(cReading, current_reading, cCohort->wordform);
-
-					if (grammar->sub_readings_ltr && cReading->next) {
-						cReading = reverse(cReading);
-					}
-
-					if (cReading->deleted) {
-						cCohort->deleted.push_back(cReading);
-					}
-					else {
-						cCohort->appendReading(cReading);
-					}
-					++numReadings;
-
-					current_reading.clear();
-					continue; // while not $
-				}
-
-				current_reading += inchar;
-			} // end while not $
-
-			if (!cReading->baseform) {
-				u_fprintf(ux_stderr, "Warning: Cohort %u on line %u had no valid baseform.\n", numCohorts, numLines);
-				u_fflush(ux_stderr);
-			}
-		} // end reading
-	}     // end input loop
-
-	if (!firstblank.empty()) {
-		u_fprintf(output, "%S", firstblank.c_str());
-		firstblank.clear();
-	}
-
-	if (cCohort && cSWindow) {
-		cSWindow->appendCohort(cCohort);
-		// Create magic reading
-		if (cCohort->readings.empty()) {
-			initEmptyCohort(*cCohort);
+			token.clear();
 		}
-		for (auto iter : cCohort->readings) {
-			addTagToReading(*iter, endtag);
-		}
-		cReading = nullptr;
-		cCohort = nullptr;
-		cSWindow = nullptr;
 	}
 
-	// Run the grammar & print results
-	while (!gWindow->next.empty()) {
-		gWindow->shuffleWindowsDown();
-		runGrammarOnWindow();
-	}
-
-	gWindow->shuffleWindowsDown();
-	while (!gWindow->previous.empty()) {
-		SingleWindow* tmp = gWindow->previous.front();
-		printSingleWindow(tmp, output);
-		free_swindow(tmp);
-		gWindow->previous.erase(gWindow->previous.begin());
-	}
-
-	if ((inchar) && inchar != 0xffff) {
-		u_fprintf(output, "%C", inchar); // eg. final newline
-	}
-
-	u_fflush(output);
+	flush();
 
 	ticks tmp = getticks();
 	grammar->total_time = elapsed(tmp, timer);
@@ -434,6 +428,9 @@ void ApertiumApplicator::processReading(Reading* cReading, UChar* p, Tag* wform)
 	while (*p) {
 		auto n = p;
 		while (*n && *n != '#' && *n != '+' && *n != '<') {
+			if (*n == esc_lt) {
+				*n = '<';
+			}
 			++n;
 		}
 		// Found a baseform (if something is between start and [#+<], it must be part of the baseform)
@@ -451,7 +448,7 @@ void ApertiumApplicator::processReading(Reading* cReading, UChar* p, Tag* wform)
 				++n;
 			}
 			if (*n != '>') {
-				u_fprintf(ux_stderr, "Warning: Did not find matching > to close the tag.\n");
+				u_fprintf(ux_stderr, "Warning: Did not find matching > to close the tag on line %u.\n", numLines);
 				continue;
 			}
 			auto c = *n;
@@ -737,6 +734,10 @@ void ApertiumApplicator::printSingleWindow(SingleWindow* window, std::ostream& o
 
 		if (!split_mappings) {
 			mergeMappings(*cohort);
+		}
+
+		if (!cohort->wblank.empty()) {
+			u_fprintf(output, "%S", cohort->wblank.c_str());
 		}
 
 		// Start of cohort
