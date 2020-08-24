@@ -79,7 +79,6 @@ void ApertiumApplicator::runGrammarOnText(std::istream& input, std::ostream& out
 	bool in_wblank = false;  // Are we in a word-bound blank ?
 	bool in_cohort = false;  // Are we in a cohort ?
 	UString blank;           // Blank between tokens, including superblanks
-	UString unesc;           // Same blank, unescaped
 	UString wblank;
 	UString token;           // Current token (cohort)
 
@@ -96,7 +95,8 @@ void ApertiumApplicator::runGrammarOnText(std::istream& input, std::ostream& out
 	SingleWindow* cSWindow = nullptr; // Current single window (Cohort frame)
 	Cohort* cCohort = nullptr;        // Current cohort
 
-	SingleWindow* lSWindow = nullptr; // Left hand single window
+	SingleWindow* lSWindow = nullptr; // Last seen single window
+	Cohort* lCohort = nullptr;        // Last seen cohort
 
 	gWindow->window_span = num_windows;
 	gtimer = getticks();
@@ -116,7 +116,10 @@ void ApertiumApplicator::runGrammarOnText(std::istream& input, std::ostream& out
 		ensure_endtag();
 
 		if (!blank.empty()) {
-			if (lSWindow && !lSWindow->cohorts.empty()) {
+			if (lCohort) {
+				lCohort->text += blank;
+			}
+			else if (lSWindow && !lSWindow->cohorts.empty()) {
 				lSWindow->cohorts.back()->text += blank;
 			}
 			else if (lSWindow) {
@@ -155,6 +158,7 @@ void ApertiumApplicator::runGrammarOnText(std::istream& input, std::ostream& out
 		in_wblank = false;
 		in_cohort = false;
 		lSWindow = nullptr;
+		lCohort = nullptr;
 		cSWindow = nullptr;
 		cCohort = nullptr;
 		token.clear();
@@ -170,7 +174,6 @@ void ApertiumApplicator::runGrammarOnText(std::istream& input, std::ostream& out
 			if (!in_cohort) {
 				blank += c;
 				blank += n;
-				unesc += n;
 			}
 			else {
 				token += c;
@@ -196,7 +199,6 @@ void ApertiumApplicator::runGrammarOnText(std::istream& input, std::ostream& out
 
 		if (!in_cohort) {
 			blank += c;
-			unesc += c;
 		}
 		else {
 			token += c;
@@ -234,6 +236,10 @@ void ApertiumApplicator::runGrammarOnText(std::istream& input, std::ostream& out
 				cCohort->text += blank;
 				blank.clear();
 			}
+			else if (lCohort) {
+				lCohort->text += blank;
+				blank.clear();
+			}
 			else if (lSWindow) {
 				lSWindow->text += blank;
 				blank.clear();
@@ -265,7 +271,7 @@ void ApertiumApplicator::runGrammarOnText(std::istream& input, std::ostream& out
 				++numWindows;
 			} // created at least one cSWindow by now
 
-			cCohort = alloc_cohort(cSWindow);
+			lCohort = cCohort = alloc_cohort(cSWindow);
 			cCohort->global_number = gWindow->cohort_counter++;
 			numCohorts++;
 
