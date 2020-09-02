@@ -82,3 +82,6 @@
 ;	"girjeprošeakta" N Sem/Act Sg Gen PxSg2 <W:10.0000000000>
 ;		"oahppu" N Sem/Edu Cmp/SgNom Cmp <W:10.0000000000> REMOVE:2110:longest-match
 :\n
+"<a b>"
+	"b" tag "< b>"
+		"a" tag "<a>"

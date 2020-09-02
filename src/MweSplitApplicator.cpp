@@ -79,6 +79,7 @@ std::vector<Cohort*> MweSplitApplicator::splitMwe(Cohort* cohort) {
 		cos.push_back(cohort);
 		return cos;
 	}
+	UString pretext;
 	for (auto r : cohort->readings) {
 		size_t pos = std::numeric_limits<size_t>::max();
 		Reading* prev = NULL; // prev == NULL || prev->next == rNew (or a ->next of rNew)
@@ -94,13 +95,23 @@ std::vector<Cohort*> MweSplitApplicator::splitMwe(Cohort* cohort) {
 					c = alloc_cohort(cohort->parent);
 					c->global_number = gWindow->cohort_counter++;
 					cohort->parent->appendCohort(c);
+					if(pretext.size() > 0) {
+						c->text = pretext;
+						pretext.clear();
+					}
 					cos.push_back(c);
 				}
 				c = cos[pos];
 
+				const size_t wfBeg = 2; // index after the initial '"<'
+				const size_t spBeg0 = wfTag->tag.find_first_not_of(rtrimblank, wfBeg); // index skipping initial space
+				const size_t spBeg = sub->next ? spBeg0 : wfBeg; // can't put pretext on first word / deepest reading
 				const size_t wfEnd = wfTag->tag.size() - 3; // index before the final '>"'
-				const size_t i = 1 + wfTag->tag.find_last_not_of(rtrimblank, wfEnd);
-				const UString& wf = wfTag->tag.substr(0, i) + wfTag->tag.substr(wfEnd + 1);
+				const size_t spEnd = 1 + wfTag->tag.find_last_not_of(rtrimblank, wfEnd); // index before post-space
+				const UString& wf =
+					  wfTag->tag.substr(0,     wfBeg)
+					+ wfTag->tag.substr(spBeg, spEnd - spBeg)
+					+ wfTag->tag.substr(wfEnd + 1);
 				if (c->wordform != 0 && wf != c->wordform->tag) {
 					u_fprintf(ux_stderr, "WARNING: Line %u: Ambiguous wordform-tags for same cohort, '%S' vs '%S', not splitting.\n", numLines, wf.c_str(), c->wordform->tag.c_str());
 					cos.clear();
@@ -108,8 +119,11 @@ std::vector<Cohort*> MweSplitApplicator::splitMwe(Cohort* cohort) {
 					return cos;
 				}
 				c->wordform = addTag(wf);
-				if (i < wfEnd + 1) {
-					c->text = textprefix + wfTag->tag.substr(i, wfEnd + 1 - i);
+				if (spBeg > wfBeg) {
+					pretext = textprefix + wfTag->tag.substr(wfBeg, spBeg - wfBeg);
+				}
+				if (spEnd < wfEnd + 1) {
+					c->text = textprefix + wfTag->tag.substr(spEnd, wfEnd + 1 - spEnd);
 				}
 
 				Reading* rNew = alloc_reading(*sub);
