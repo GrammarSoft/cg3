@@ -297,30 +297,6 @@ Reading* GrammarApplicator::get_sub_reading(Reading* tr, int sub_reading) {
 		}                                                                            \
 	} while (0)
 
-#define INSERT_TAGLIST_TO_READING(iter, taglist, reading)                          \
-	do {                                                                           \
-		for (auto tag : (taglist)) {                                               \
-			if (tag->type & T_VARSTRING) {                                         \
-				tag = generateVarstringTag(tag);                                   \
-			}                                                                      \
-			if (tag->hash == grammar->tag_any) {                                   \
-				break;                                                             \
-			}                                                                      \
-			if (tag->type & T_MAPPING || tag->tag[0] == grammar->mapping_prefix) { \
-				mappings->push_back(tag);                                          \
-			}                                                                      \
-			else {                                                                 \
-				(iter) = (reading).tags_list.insert((iter), tag->hash);            \
-				++(iter);                                                          \
-			}                                                                      \
-			if (updateValidRules(rules, intersects, tag->hash, (reading))) {       \
-				iter_rules = intersects.find(rule.number);                         \
-				iter_rules_end = intersects.end();                                 \
-			}                                                                      \
-		}                                                                          \
-		reflowReading(reading);                                                    \
-	} while (0)
-
 /**
  * Applies the passed rules to the passed SingleWindow.
  *
@@ -1024,6 +1000,29 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 					unif_sets = unif_sets_rs[reading.hash_plain];
 				}
 
+				auto insert_taglist_to_reading = [&](auto& iter, auto& taglist, auto& reading, auto& mappings) {
+					for (auto tag : taglist) {
+						if (tag->type & T_VARSTRING) {
+							tag = generateVarstringTag(tag);
+						}
+						if (tag->hash == grammar->tag_any) {
+							break;
+						}
+						if (tag->type & T_MAPPING || tag->tag[0] == grammar->mapping_prefix) {
+							mappings->push_back(tag);
+						}
+						else {
+							iter = reading.tags_list.insert(iter, tag->hash);
+							++iter;
+						}
+						if (updateValidRules(rules, intersects, tag->hash, reading)) {
+							iter_rules = intersects.find(rule.number);
+							iter_rules_end = intersects.end();
+						}
+					}
+					reflowReading(reading);
+				};
+
 				// Select is also special as it will remove non-matching readings
 				if (type == K_SELECT) {
 					if (good) {
@@ -1440,6 +1439,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 
 						bool did_insert = false;
 						if (rule.childset1) {
+							bool found_spot = false;
 							auto spot_tags = ss_taglist.get();
 							getTagList(*grammar->sets_list[rule.childset1], spot_tags);
 							FILL_TAG_LIST(spot_tags);
@@ -1455,15 +1455,18 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 									++tmp;
 								}
 								if (found) {
+									found_spot = true;
 									break;
 								}
 							}
-							if (rule.flags & RF_AFTER) {
-								std::advance(it, spot_tags->size());
-							}
-							if (it != reading.tags_list.end()) {
-								INSERT_TAGLIST_TO_READING(it, *theTags, reading);
-								did_insert = true;
+							if (found_spot) {
+								if (rule.flags & RF_AFTER) {
+									std::advance(it, spot_tags->size());
+								}
+								if (it != reading.tags_list.end()) {
+									insert_taglist_to_reading(it, *theTags, reading, mappings);
+									did_insert = true;
+								}
 							}
 						}
 
@@ -1800,7 +1803,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 								std::advance(it, spot_tags->size());
 							}
 							if (it != cReading->tags_list.end()) {
-								INSERT_TAGLIST_TO_READING(it, *theTags, *cReading);
+								insert_taglist_to_reading(it, *theTags, *cReading, mappings);
 								did_insert = true;
 							}
 						}
