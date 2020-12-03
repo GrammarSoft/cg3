@@ -398,8 +398,12 @@ CG-mode provides the following specific keyboard key bindings:
     ;; TODO: emacs 25 prefers `font-lock-ensure' and `font-lock-flush' over fontify
     (font-lock-fontify-buffer))
   (add-hook 'after-change-functions #'cg-after-change nil 'buffer-local)
-  (let ((buf (current-buffer)))
-    (run-with-idle-timer 1 'repeat 'cg-output-hl buf)))
+  (let* ((buf (current-buffer))
+         (hl-timer (run-with-idle-timer 1 'repeat 'cg-output-hl buf)))
+    (add-hook 'kill-buffer-hook
+              (lambda () (cancel-timer hl-timer))
+              nil
+              'local)))
 
 
 (defconst cg-font-lock-syntactic-keywords
