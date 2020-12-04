@@ -91,16 +91,14 @@ Tag::~Tag() {
 
 void Tag::parseTagRaw(const UChar* to, Grammar* grammar) {
 	type = 0;
-	size_t length = u_strlen(to);
+	const size_t length = u_strlen(to);
 	assert(length && "parseTagRaw() will not work with empty strings.");
 
-	const UChar* tmp = to;
-
-	if (tmp[0] && (tmp[0] == '"' || tmp[0] == '<')) {
-		if ((tmp[0] == '"' && tmp[length - 1] == '"') || (tmp[0] == '<' && tmp[length - 1] == '>')) {
+	if (to[0] && (to[0] == '"' || to[0] == '<')) {
+		if ((to[0] == '"' && to[length - 1] == '"') || (to[0] == '<' && to[length - 1] == '>')) {
 			type |= T_TEXTUAL;
-			if (tmp[0] == '"' && tmp[length - 1] == '"') {
-				if (tmp[1] == '<' && tmp[length - 2] == '>' && length > 4) {
+			if (to[0] == '"' && to[length - 1] == '"') {
+				if (to[1] == '<' && to[length - 2] == '>' && length > 4) {
 					type |= T_WORDFORM;
 				}
 				else {
@@ -110,7 +108,7 @@ void Tag::parseTagRaw(const UChar* to, Grammar* grammar) {
 		}
 	}
 
-	tag.assign(tmp, length);
+	tag.assign(to, length);
 
 	for (auto iter : grammar->regex_tags) {
 		UErrorCode status = U_ZERO_ERROR;
