@@ -30,7 +30,7 @@
 	#pragma warning (disable: 4456)
 	// warning C4458: declaration hides class member
 	#pragma warning (disable: 4458)
-	// warning C4312: 'operation' : conversion from 'type1' to 'type2' of greater size 
+	// warning C4312: 'operation' : conversion from 'type1' to 'type2' of greater size
 	#pragma warning (disable: 4312)
 
 	#if !defined(cg3_EXPORTS)
@@ -62,6 +62,7 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <stack>
+#include <array>
 #include <limits>
 #include <ctime>
 #include <cmath>
