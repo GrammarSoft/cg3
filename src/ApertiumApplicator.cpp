@@ -251,19 +251,8 @@ void ApertiumApplicator::runGrammarOnText(std::istream& input, std::ostream& out
 
 				cSWindow = gWindow->allocAppendSingleWindow();
 
-				// Create 0th Cohort which serves as the beginning of sentence
-				auto cCohort = alloc_cohort(cSWindow);
-				cCohort->global_number = gWindow->cohort_counter++;
-				cCohort->wordform = tag_begin;
+				initEmptySingleWindow(cSWindow);
 
-				auto cReading = alloc_reading(cCohort);
-				cReading->baseform = begintag;
-				insert_if_exists(cReading->parent->possible_sets, grammar->sets_any);
-				addTagToReading(*cReading, begintag);
-
-				cCohort->appendReading(cReading);
-
-				cSWindow->appendCohort(cCohort);
 
 				lSWindow = cSWindow;
 				lSWindow->text = blank;
