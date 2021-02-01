@@ -48,6 +48,16 @@ protected:
 	void mergeMappings(Cohort& cohort);
 
 private:
+	/**
+	 * Parse a stream variable from cleaned blank.
+	 *
+	 * Tries not to do anything more than what happens in GrammarApplicator_runGrammar.cpp, for
+	 * easy merging.
+	 *
+	 * @param cleaned something like "<STREAMCMD:SETVAR:forskjell_skilnad" (note: no trailing >).
+	 */
+	void parseStreamVar(const SingleWindow* cSWindow, UString& cleaned,
+			    uint32FlatHashMap& variables_set, uint32FlatHashSet& variables_rem, uint32SortedVector& variables_output);
 	void printReading(Reading* reading, std::ostream& output, ApertiumCasing casing, int firstlower);
 	void processReading(Reading* cReading, UChar* reading_string, Tag* wform);
 	void processReading(Reading* cReading, UString& reading_string, Tag* wform);

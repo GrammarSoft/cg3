@@ -40,6 +40,113 @@ ApertiumApplicator::ApertiumApplicator(std::ostream& ux_err)
 	print_only_first = false;
 }
 
+void ApertiumApplicator::parseStreamVar(const SingleWindow* cSWindow, UString& cleaned,
+					uint32FlatHashMap& variables_set, uint32FlatHashSet& variables_rem, uint32SortedVector& variables_output) {
+	size_t packoff = 0;
+	if (u_strncmp(&cleaned[0], stringbits[S_CMD_SETVAR].c_str(), stringbits[S_CMD_SETVAR].size()) == 0) {
+		// u_fprintf(ux_stderr, "Info: SETVAR encountered on line %u.\n", numLines);
+		cleaned[packoff - 1] = 0;
+		// line[0] = 0;
+
+		UChar* s = &cleaned[stringbits[S_CMD_SETVAR].size()];
+		UChar* c = u_strchr(s, ',');
+		UChar* d = u_strchr(s, '=');
+		if (c == 0 && d == 0) {
+			Tag* tag = addTag(s);
+			variables_set[tag->hash] = grammar->tag_any;
+			variables_rem.erase(tag->hash);
+			variables_output.insert(tag->hash);
+			if (cSWindow == nullptr) {
+				variables[tag->hash] = grammar->tag_any;
+			}
+		}
+		else {
+			uint32_t a = 0, b = 0;
+			while (c || d) {
+				if (d && (d < c || c == nullptr)) {
+					d[0] = 0;
+					if (!s[0]) {
+						u_fprintf(ux_stderr, "Warning: SETVAR on line %u had no identifier before the =! Defaulting to identifier *.\n", numLines);
+						a = grammar->tag_any;
+					}
+					else {
+						a = addTag(s)->hash;
+					}
+					if (c) {
+						c[0] = 0;
+						s = c + 1;
+					}
+					if (!d[1]) {
+						u_fprintf(ux_stderr, "Warning: SETVAR on line %u had no value after the =! Defaulting to value *.\n", numLines);
+						b = grammar->tag_any;
+					}
+					else {
+						b = addTag(d + 1)->hash;
+					}
+					if (!c) {
+						d = nullptr;
+						s = nullptr;
+					}
+					variables_set[a] = b;
+					variables_rem.erase(a);
+					variables_output.insert(a);
+				}
+				else if (c && (c < d || d == nullptr)) {
+					c[0] = 0;
+					if (!s[0]) {
+						u_fprintf(ux_stderr, "Warning: SETVAR on line %u had no identifier after the ,! Defaulting to identifier *.\n", numLines);
+						a = grammar->tag_any;
+					}
+					else {
+						a = addTag(s)->hash;
+					}
+					s = c + 1;
+					variables_set[a] = grammar->tag_any;
+					variables_rem.erase(a);
+					variables_output.insert(a);
+				}
+				if (s) {
+					c = u_strchr(s, ',');
+					d = u_strchr(s, '=');
+					if (c == nullptr && d == nullptr) {
+						a = addTag(s)->hash;
+						variables_set[a] = grammar->tag_any;
+						variables_rem.erase(a);
+						variables_output.insert(a);
+						s = nullptr;
+					}
+				}
+			}
+		}
+	}
+	else if (u_strncmp(&cleaned[0], stringbits[S_CMD_REMVAR].c_str(), stringbits[S_CMD_REMVAR].size()) == 0) {
+		//u_fprintf(ux_stderr, "Info: REMVAR encountered on line %u.\n", numLines);
+		cleaned[packoff - 1] = 0;
+		// line[0] = 0;
+
+		UChar* s = &cleaned[stringbits[S_CMD_REMVAR].size()];
+		UChar* c = u_strchr(s, ',');
+		uint32_t a = 0;
+		while (c && *c) {
+			c[0] = 0;
+			if (s[0]) {
+				a = addTag(s)->hash;
+				variables_set.erase(a);
+				variables_rem.insert(a);
+				variables_output.insert(a);
+			}
+			s = c + 1;
+			c = u_strchr(s, ',');
+		}
+		if (s && s[0]) {
+			a = addTag(s)->hash;
+			variables_set.erase(a);
+			variables_rem.insert(a);
+			variables_output.insert(a);
+		}
+	}
+}
+
 /*
  * Run a constraint grammar on an Apertium input stream
  */
@@ -101,6 +208,10 @@ void ApertiumApplicator::runGrammarOnText(std::istream& input, std::ostream& out
 	gWindow->window_span = num_windows;
 	gtimer = getticks();
 	ticks timer(gtimer);
+
+	uint32FlatHashMap variables_set;
+	uint32FlatHashSet variables_rem;
+	uint32SortedVector variables_output;
 
 	ux_stripBOM(input);
 
@@ -209,6 +320,12 @@ void ApertiumApplicator::runGrammarOnText(std::istream& input, std::ostream& out
 		}
 		else if (in_blank && c == ']') {
 			in_blank = false;
+			if (blank.size() > 14 // contains at least "[<STREAMCMD:>]"
+			    && blank[1] == '<' && blank[blank.size() - 2] == '>') {
+				UString cleaned = blank.substr(1, blank.size() - 3);
+				parseStreamVar(cSWindow, cleaned,
+					       variables_set, variables_rem, variables_output);
+			}
 		}
 		else if (!in_blank && c == '$') {
 			if (!in_cohort) {
@@ -253,6 +370,12 @@ void ApertiumApplicator::runGrammarOnText(std::istream& input, std::ostream& out
 
 				initEmptySingleWindow(cSWindow);
 
+				cSWindow->variables_set = variables_set;
+				variables_set.clear();
+				cSWindow->variables_rem = variables_rem;
+				variables_rem.clear();
+				cSWindow->variables_output = variables_output;
+				variables_output.clear();
 
 				lSWindow = cSWindow;
 				lSWindow->text = blank;
