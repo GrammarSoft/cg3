@@ -38,6 +38,7 @@ ApertiumApplicator::ApertiumApplicator(std::ostream& ux_err)
 	unique_tags = false;
 	print_word_forms = true;
 	print_only_first = false;
+	delimit_lexical_units = true;
 }
 
 void ApertiumApplicator::parseStreamVar(const SingleWindow* cSWindow, UString& cleaned,
@@ -859,7 +860,9 @@ void ApertiumApplicator::printSingleWindow(SingleWindow* window, std::ostream& o
 		}
 
 		// Start of cohort
-		u_fprintf(output, "^");
+		if(delimit_lexical_units) {
+			u_fprintf(output, "^");
+		}
 
 		if (print_word_forms == true) {
 			// Lop off the initial and final '"' characters
@@ -929,7 +932,9 @@ void ApertiumApplicator::printSingleWindow(SingleWindow* window, std::ostream& o
 			}
 		}
 
-		u_fprintf(output, "$");
+		if (delimit_lexical_units) {
+			u_fprintf(output, "$");
+		}
 		// End of cohort
 
 		if (!cohort->text.empty()) {

@@ -41,7 +41,7 @@ void endProgram(char* name) {
 	fprintf(stdout, "VISL CG-3 Disambiguator version %u.%u.%u.%u\n",
 	  CG3_VERSION_MAJOR, CG3_VERSION_MINOR, CG3_VERSION_PATCH, CG3_REVISION);
 	cout << basename(name) << ": process a stream with a constraint grammar" << endl;
-	cout << "USAGE: " << basename(name) << " [-t] [-s] [-d] [-r rule] grammar_file [input_file [output_file]]" << endl;
+	cout << "USAGE: " << basename(name) << " [-t] [-s] [-d] [-g] [-r rule] grammar_file [input_file [output_file]]" << endl;
 	cout << "Options:" << endl;
 #if HAVE_GETOPT_LONG
 	cout << "	-d, --disambiguation:	 morphological disambiguation" << endl;
@@ -54,6 +54,7 @@ void endProgram(char* name) {
 	cout << "	-w, --wordform-case:	 enforce surface case on lemma/baseform " << endl;
 	cout << "				   (to work with -w option of lt-proc)" << endl;
 	cout << "	-n, --no-word-forms:	 do not print out the word form of each cohort" << endl;
+	cout << "	-g, --generation:	 do not surround lexical units in ^$" << endl;
 	cout << "	-1, --first:	 	 only output the first analysis if ambiguity remains" << endl;
 	cout << "	-z, --null-flush:	flush output on the null character" << endl;
 
@@ -70,6 +71,7 @@ void endProgram(char* name) {
 	cout << "	-w:	 enforce surface case on lemma/baseform " << endl;
 	cout << "		   (to work with -w option of lt-proc)" << endl;
 	cout << "	-n:	 do not print out the word form of each cohort" << endl;
+	cout << "	-g:	 do not surround lexical units in ^$" << endl;
 	cout << "	-1:	 only output the first analysis if ambiguity remains" << endl;
 	cout << "	-z:	 flush output on the null character" << endl;
 
@@ -83,6 +85,7 @@ int main(int argc, char* argv[]) {
 	bool trace = false;
 	bool wordform_case = false;
 	bool print_word_forms = true;
+	bool delimit_lexical_units = true;
 	bool only_first = false;
 	int cmd = 0;
 	int sections = 0;
@@ -100,6 +103,7 @@ int main(int argc, char* argv[]) {
 		{"trace", 		0, 0, 't'},
 		{"wordform-case",	0, 0, 'w'},
 		{"no-word-forms",	0, 0, 'n'},
+		{"generation",		0, 0, 'g'},
 		{"version",   		0, 0, 'v'},
 		{"first",   		0, 0, '1'},
 		{"help",		0, 0, 'h'},
@@ -112,7 +116,7 @@ int main(int argc, char* argv[]) {
 		int option_index;
 		auto c = getopt_long(argc, argv, "ds:f:tr:n1wvhz", long_options, &option_index);
 #else
-		auto c = getopt(argc, argv, "ds:f:tr:in1wvhz");
+		auto c = getopt(argc, argv, "ds:f:tr:ing1wvhz");
 #endif
 		if (c == -1) {
 			break;
@@ -149,6 +153,10 @@ int main(int argc, char* argv[]) {
 
 		case 'n':
 			print_word_forms = false;
+			break;
+
+		case 'g':
+			delimit_lexical_units = false;
 			break;
 
 		case '1':
@@ -273,6 +281,7 @@ int main(int argc, char* argv[]) {
 		apertiumApplicator->wordform_case = wordform_case;
 		apertiumApplicator->print_word_forms = print_word_forms;
 		apertiumApplicator->print_only_first = only_first;
+		apertiumApplicator->delimit_lexical_units = delimit_lexical_units;
 		applicator.reset(apertiumApplicator);
 	}
 

@@ -38,6 +38,7 @@ public:
 	bool wordform_case;
 	bool print_word_forms;
 	bool print_only_first;
+	bool delimit_lexical_units;
 
 	void testPR(std::ostream& output);
 
