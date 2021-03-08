@@ -35,10 +35,10 @@ CohortIterator::CohortIterator(Cohort* cohort, const ContextualTest* test, bool 
 CohortIterator::~CohortIterator() {
 }
 
-bool CohortIterator::operator==(const CohortIterator& other) {
+bool CohortIterator::operator==(const CohortIterator& other) const {
 	return (m_cohort == other.m_cohort);
 }
-bool CohortIterator::operator!=(const CohortIterator& other) {
+bool CohortIterator::operator!=(const CohortIterator& other) const {
 	return (m_cohort != other.m_cohort);
 }
 
@@ -356,10 +356,10 @@ MultiCohortIterator::MultiCohortIterator(Cohort* cohort, const ContextualTest* t
 MultiCohortIterator::~MultiCohortIterator() {
 }
 
-bool MultiCohortIterator::operator==(const MultiCohortIterator& other) {
+bool MultiCohortIterator::operator==(const MultiCohortIterator& other) const {
 	return (m_cohort == other.m_cohort);
 }
-bool MultiCohortIterator::operator!=(const MultiCohortIterator& other) {
+bool MultiCohortIterator::operator!=(const MultiCohortIterator& other) const {
 	return (m_cohort != other.m_cohort);
 }
 
