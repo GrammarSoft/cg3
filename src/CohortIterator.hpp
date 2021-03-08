@@ -42,8 +42,8 @@ public:
 
 	virtual ~CohortIterator();
 
-	bool operator==(const CohortIterator& other);
-	bool operator!=(const CohortIterator& other);
+	bool operator==(const CohortIterator& other) const;
+	bool operator!=(const CohortIterator& other) const;
 
 	virtual CohortIterator& operator++();
 
@@ -135,8 +135,8 @@ public:
 
 	virtual ~MultiCohortIterator();
 
-	bool operator==(const MultiCohortIterator& other);
-	bool operator!=(const MultiCohortIterator& other);
+	bool operator==(const MultiCohortIterator& other) const;
+	bool operator!=(const MultiCohortIterator& other) const;
 
 	virtual MultiCohortIterator& operator++();
 
