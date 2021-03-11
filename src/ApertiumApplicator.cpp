@@ -610,7 +610,7 @@ void ApertiumApplicator::processReading(Reading* cReading, UChar* p, Tag* wform)
 		}
 	}
 
-	if (bf.size() > 1) {
+	if (!bf.empty() || !tags.empty() || !prefix_tags.empty()) {
 		bf += '"';
 		taglist.push_back(addTag(bf));
 		taglist.insert(taglist.end(), tags.begin(), tags.end());
