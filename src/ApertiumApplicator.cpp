@@ -274,6 +274,10 @@ void ApertiumApplicator::runGrammarOnText(std::istream& input, std::ostream& out
 		cSWindow = nullptr;
 		cCohort = nullptr;
 		token.clear();
+		variables_rem.clear();
+		variables_set.clear();
+		variables_output.clear();
+		variables.clear();
 	};
 
 	while ((c = u_fgetc(input)) != U_EOF) {
