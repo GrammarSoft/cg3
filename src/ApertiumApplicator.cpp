@@ -493,12 +493,10 @@ void ApertiumApplicator::processReading(Reading* cReading, UChar* p, Tag* wform)
 		}
 	}
 
-	if (bf.size() > 1) {
-		bf += '"';
-		taglist.push_back(addTag(bf));
-		taglist.insert(taglist.end(), tags.begin(), tags.end());
-		taglist.insert(taglist.end(), prefix_tags.begin(), prefix_tags.end());
-	}
+	bf += '"';
+	taglist.push_back(addTag(bf));
+	taglist.insert(taglist.end(), tags.begin(), tags.end());
+	taglist.insert(taglist.end(), prefix_tags.begin(), prefix_tags.end());
 
 	// Search from the back until we find a baseform, then add all tags from there until the end onto the reading
 	while (!taglist.empty()) {
