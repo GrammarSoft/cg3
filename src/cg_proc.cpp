@@ -86,6 +86,7 @@ int main(int argc, char* argv[]) {
 	bool wordform_case = false;
 	bool print_word_forms = true;
 	bool delimit_lexical_units = true;
+	bool surface_readings = false;
 	bool only_first = false;
 	int cmd = 0;
 	int sections = 0;
@@ -157,6 +158,7 @@ int main(int argc, char* argv[]) {
 
 		case 'g':
 			delimit_lexical_units = false;
+			surface_readings = true;
 			break;
 
 		case '1':
@@ -282,6 +284,7 @@ int main(int argc, char* argv[]) {
 		apertiumApplicator->print_word_forms = print_word_forms;
 		apertiumApplicator->print_only_first = only_first;
 		apertiumApplicator->delimit_lexical_units = delimit_lexical_units;
+		apertiumApplicator->surface_readings = surface_readings;
 		applicator.reset(apertiumApplicator);
 	}
 
