@@ -718,6 +718,12 @@ void ApertiumApplicator::printReading(Reading* reading, std::ostream& output, Ap
 		// Tag::printTagRaw(output, single_tags[reading->baseform]);
 	}
 
+	if(surface_readings && !trace) {
+		// As with lt-proc -g, when output has tags (meaning
+		// ungenerated words), don't print unless tracing (lt-proc -d)
+		return;
+	}
+
 	// Reorder: MAPPING tags should appear before the join of multiword tags,
 	// turn <vblex><actv><pri><p3><pl>+í<pr><@FMAINV><@FOO>$
 	// into <vblex><actv><pri><p3><pl><@FMAINV><@FOO>+í<pr>$
