@@ -710,6 +710,9 @@ void ApertiumApplicator::printReading(Reading* reading, std::ostream& output, Ap
 			}
 			bf_escaped += bf[i];
 		}
+		if(surface_readings && bf.length() > 0 && bf_escaped[0] == '@') {
+			bf_escaped[0] = '#';
+		}
 		u_fprintf(output, "%S", bf_escaped.c_str());
 
 		// Tag::printTagRaw(output, single_tags[reading->baseform]);
@@ -740,6 +743,7 @@ void ApertiumApplicator::printReading(Reading* reading, std::ostream& output, Ap
 	tags_list.insert(tags_list.end(), multitags_list.begin(), multitags_list.end());
 
 	uint32SortedVector used_tags;
+	const UString escape = surface_readings ? "\\"_us : ""_us;
 	for (auto tter : tags_list) {
 		if (unique_tags) {
 			if (used_tags.find(tter) != used_tags.end()) {
@@ -756,10 +760,10 @@ void ApertiumApplicator::printReading(Reading* reading, std::ostream& output, Ap
 				u_fprintf(output, "%S", tag->tag.c_str());
 			}
 			else if (tag->tag[0] == '&') {
-				u_fprintf(output, "<%S>", substr(tag->tag, 2).c_str());
+				u_fprintf(output, "%S<%S%S>", escape.c_str(), substr(tag->tag, 2).c_str(), escape.c_str());
 			}
 			else {
-				u_fprintf(output, "<%S>", tag->tag.c_str());
+				u_fprintf(output, "%S<%S%S>", escape.c_str(), tag->tag.c_str(), escape.c_str());
 			}
 		}
 	}
