@@ -339,18 +339,24 @@ void ApertiumApplicator::runGrammarOnText(std::istream& input, std::ostream& out
 			}
 			in_cohort = false;
 
+			bool is_closing_wblank = false;
 			if (!blank.empty()) {
 				wblank.clear();
 				auto b = blank.find(wb_start);
 				auto e = blank.find(wb_end, b);
 				if (b != UString::npos && e != UString::npos) {
-					// Word-bound blanks are always immediately prior to the token they belong to
+					// Word-bound blanks are always immediately prior to the token they belong to,
+					// except closing word blanks which are immediately after
 					wblank = blank.substr(b);
 					blank.erase(b, UString::npos);
+					if (e == b+3 && wblank[2] == '/') {
+						is_closing_wblank = true;
+					}
 				}
 			}
-			if (!wblank.empty() && (wblank[wblank.size() - 1] != ']' || wblank[wblank.size() - 2] != ']')) {
-				u_fprintf(ux_stderr, "Error: Word-bound blank was not immediately prior to token on line %u.\n", numLines);
+			if (!is_closing_wblank && // there are characters in the blank after the ]]:
+			    !wblank.empty() && (wblank[wblank.size() - 1] != ']' || wblank[wblank.size() - 2] != ']')) {
+				u_fprintf(ux_stderr, "Error: Word-bound blank was not immediately prior to token on line %u\n", numLines);
 				CG3Quit(1);
 			}
 
