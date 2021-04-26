@@ -1,0 +1,8 @@
+DELIMITERS = "<.>" "<!>" ;
+
+LIST kj_k = v:kj_k ;
+
+SECTION
+
+SELECT kj_k IF (0 (VAR:kj_k)) ;
+REMOVE kj_k ;
