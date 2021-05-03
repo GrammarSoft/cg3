@@ -5,7 +5,7 @@
   <title>Installation &amp; Updating</title>
   <para>
     These guidelines are primarily for Linux, although I develop on Windows
-    using <ulink url="https://www.visualstudio.com/vs/community/">Visual Studio 2017</ulink>.
+    using <ulink url="https://www.visualstudio.com/vs/community/">Visual Studio</ulink>.
   </para>
 
   <section id="cmake">
@@ -64,8 +64,7 @@
       <ulink url="https://build.opensuse.org/project/show/home:TinoDidriksen:nightly">ready-made nightly repository</ulink>,
       installable via e.g.
       <screen>
-        su -
-        wget 'http://download.opensuse.org/repositories/home:/TinoDidriksen:/nightly/CentOS_7/home:TinoDidriksen:nightly.repo' -O /etc/yum.repos.d/td-nightly.repo
+        wget https://apertium.projectjj.com/rpm/install-nightly.sh -O - | sudo bash
         yum check-upgrade
         yum install cg3
       </screen>
@@ -105,7 +104,7 @@
       <para>
         Launch a Terminal and in that do
         <screen>
-          brew install homebrew/science/vislcg3
+          curl https://apertium.projectjj.com/osx/install-nightly.sh | sudo bash
         </screen>
         Rest of this page can be skipped.
       </para>
@@ -136,13 +135,20 @@
       <para>
         Launch a Terminal and in that do
         <screen>
+          curl https://apertium.projectjj.com/osx/install-nightly.sh | sudo bash
+        </screen>
+        Rest of this page can be skipped.
+      </para>
+      <para>
+        Or if you want to install from source, do
+        <screen>
           sudo port install cmake
           sudo port install boost
           sudo port install icu
           cd /tmp
           svn co https://visl.sdu.dk/svn/visl/tools/vislcg3/trunk vislcg3
           cd vislcg3/
-          ./cmake.sh --prefix=/opt/local
+          ./cmake.sh
           make -j3
           ./test/runall.pl
           sudo make install
