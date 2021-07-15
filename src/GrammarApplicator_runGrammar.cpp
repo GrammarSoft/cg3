@@ -488,6 +488,12 @@ void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& outp
 					if (verbosity_level > 0) {
 						u_fprintf(ux_stderr, "Info: FLUSH encountered on line %u. Flushing...\n", numLines);
 					}
+
+					auto backSWindow = gWindow->back();
+					if (backSWindow) {
+						backSWindow->flush_after = true;
+					}
+
 					if (cCohort && cSWindow) {
 						splitAllMappings(all_mappings, *cCohort, true);
 						cSWindow->appendCohort(cCohort);
@@ -519,7 +525,9 @@ void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& outp
 						free_swindow(tmp);
 						gWindow->previous.erase(gWindow->previous.begin());
 					}
-					u_fprintf(output, "%S", &line[0]);
+					if (!backSWindow) {
+						u_fprintf(output, "%S", &line[0]);
+					}
 					line[0] = 0;
 					variables.clear();
 					u_fflush(output);
