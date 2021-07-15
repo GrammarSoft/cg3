@@ -227,6 +227,11 @@ void ApertiumApplicator::runGrammarOnText(std::istream& input, std::ostream& out
 	auto flush = [&](bool n = false) {
 		ensure_endtag();
 
+		auto backSWindow = n ? gWindow->back() : nullptr;
+		if (backSWindow) {
+			backSWindow->flush_after = true;
+		}
+
 		if (!blank.empty()) {
 			if (lCohort) {
 				lCohort->text += blank;
@@ -261,7 +266,7 @@ void ApertiumApplicator::runGrammarOnText(std::istream& input, std::ostream& out
 			u_fprintf(output, "%C", c); // eg. final newline
 		}
 
-		if (n) {
+		if (n && !backSWindow) {
 			u_fputc('\0', output);
 		}
 		u_fflush(output);
@@ -969,6 +974,10 @@ void ApertiumApplicator::printSingleWindow(SingleWindow* window, std::ostream& o
 	if (!window->text_post.empty()) {
 		u_fprintf(output, "%S", window->text_post.c_str());
 		u_fflush(output);
+	}
+
+	if (window->flush_after) {
+		u_fputc('\0', output);
 	}
 }
 
