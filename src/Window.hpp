@@ -54,6 +54,7 @@ public:
 	SingleWindow* allocSingleWindow();
 	SingleWindow* allocPushSingleWindow();
 	SingleWindow* allocAppendSingleWindow();
+	SingleWindow* back();
 	void shuffleWindowsDown();
 	void rebuildSingleWindowLinks();
 	void rebuildCohortLinks();

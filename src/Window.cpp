@@ -79,6 +79,19 @@ SingleWindow* Window::allocAppendSingleWindow() {
 	return swindow;
 }
 
+SingleWindow* Window::back() {
+	if (!next.empty()) {
+		return next.back();
+	}
+	else if (current) {
+		return current;
+	}
+	else if (!previous.empty()) {
+		return previous.back();
+	}
+	return nullptr;
+}
+
 void Window::shuffleWindowsDown() {
 	if (current) {
 		current->variables_set = parent->variables;

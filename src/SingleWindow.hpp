@@ -36,6 +36,7 @@ class SingleWindow {
 public:
 	uint32_t number = 0;
 	bool has_enclosures = false;
+	bool flush_after = false;
 	SingleWindow *next = nullptr, *previous = nullptr;
 	Window* parent = nullptr;
 	UString text;

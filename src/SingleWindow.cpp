@@ -117,6 +117,7 @@ void SingleWindow::clear() {
 
 	number = 0;
 	has_enclosures = false;
+	flush_after = false;
 	next = nullptr;
 	previous = nullptr;
 	parent = nullptr;
