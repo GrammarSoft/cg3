@@ -1,7 +1,7 @@
 DELIMITERS = "<$.>" ;
 
 SECTION
-SELECT (wanted) (NOT 1* ("blocker"))
+SELECT (wanted) (NOT 1* ("blocker")) ;
 
 SECTION
-REMOVE ("blocker")
+REMOVE ("blocker") ;
