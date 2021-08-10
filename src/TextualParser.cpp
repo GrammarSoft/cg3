@@ -478,6 +478,10 @@ Set* TextualParser::parseSetInline(UChar*& p, Set* s) {
 	}
 	AST_CLOSE(p);
 
+	if (!s && sets.empty()) {
+		error("%s: Error: Expected set on line %u near `%S`!\n", p);
+	}
+
 	if (!s && sets.size() == 1) {
 		s = result->getSet(sets.back());
 	}
