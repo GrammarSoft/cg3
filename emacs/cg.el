@@ -152,6 +152,8 @@ Don't change without re-evaluating `cg-kw-re' (or all of cg.el).")
 
 (defconst cg-kw-rule-list
   '("SUBSTITUTE"
+    "PROTECT"
+    "UNPROTECT"
     "IFF"
     "ADDCOHORT" "REMCOHORT"
     "COPY"
