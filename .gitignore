@@ -20,6 +20,13 @@ Makefile
 /install_manifest.txt
 .ccls-cache/
 *so*
+*~
+*.bak
+/test/**/diff*.txt
+/test/**/output*.txt
+/test/**/std*.txt
+/test/**/*.cg3b
+/test/**/*.bin
 
 __pycache__
 /python/constraint_grammar_wrap.cpp
