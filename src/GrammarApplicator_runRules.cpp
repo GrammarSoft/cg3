@@ -898,7 +898,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 					cohort->prev->removed.push_back(cohort);
 				}
 				cohort->detach();
-				for (auto cm : current.parent->cohort_map) {
+				for (auto& cm : current.parent->cohort_map) {
 					cm.second->dep_children.erase(cohort->dep_self);
 				}
 				current.parent->cohort_map.erase(cohort->global_number);
@@ -927,7 +927,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 				auto nt = make_relation_rtag(tag, id);
 				for (auto& r : cohort->readings) {
 					for (auto it = r->tags_list.begin(); it != r->tags_list.end();) {
-						auto utag = single_tags[*it]->tag;
+						const auto& utag = single_tags[*it]->tag;
 						if (utag[0] == 'R' && utag[1] == ':' && utag.size() > 2 + tag->tag.size() && utag[2 + tag->tag.size()] == ':' && utag.compare(2, tag->tag.size(), tag->tag) == 0) {
 							r->tags.erase(*it);
 							r->tags_textual.erase(*it);
@@ -1408,7 +1408,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						cohort->type |= CT_REMOVED;
 						cohort->prev->removed.push_back(cohort);
 						cohort->detach();
-						for (auto cm : current.parent->cohort_map) {
+						for (auto& cm : current.parent->cohort_map) {
 							cm.second->dep_children.erase(cohort->dep_self);
 						}
 						current.parent->cohort_map.erase(cohort->global_number);
@@ -2453,7 +2453,7 @@ void GrammarApplicator::runGrammarOnWindow() {
 	SingleWindow* current = gWindow->current;
 	did_final_enclosure = false;
 
-	for (auto vit : current->variables_set) {
+	for (const auto& vit : current->variables_set) {
 		variables[vit.first] = vit.second;
 	}
 	for (auto vit : current->variables_rem) {

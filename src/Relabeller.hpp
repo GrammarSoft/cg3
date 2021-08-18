@@ -38,9 +38,9 @@ public:
 	void relabel();
 
 private:
-	std::ostream* ux_stderr;
-	Grammar* grammar;
-	const Grammar* relabels;
+	std::ostream* ux_stderr = nullptr;
+	Grammar* grammar = nullptr;
+	const Grammar* relabels = nullptr;
 
 	typedef std::unordered_map<UString, UString, hash_ustring> UStringMap;
 	typedef std::unordered_map<UString, Set*, hash_ustring> UStringSetMap;

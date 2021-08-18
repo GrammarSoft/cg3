@@ -36,22 +36,22 @@ class Anchor;
 
 class Grammar {
 public:
-	std::ostream* ux_stderr;
-	std::ostream* ux_stdout;
+	std::ostream* ux_stderr = nullptr;
+	std::ostream* ux_stdout = nullptr;
 
-	bool has_dep;
-	bool has_bag_of_tags;
-	bool has_relations;
-	bool has_encl_final;
-	bool has_protect;
-	bool is_binary;
-	bool sub_readings_ltr;
+	bool has_dep = false;
+	bool has_bag_of_tags = false;
+	bool has_relations = false;
+	bool has_encl_final = false;
+	bool has_protect = false;
+	bool is_binary = false;
+	bool sub_readings_ltr = false;
 	bool ordered = false;
-	size_t grammar_size;
-	UChar mapping_prefix;
-	uint32_t lines;
-	uint32_t verbosity_level;
-	mutable double total_time;
+	size_t grammar_size = 0;
+	UChar mapping_prefix = '@';
+	uint32_t lines = 0;
+	uint32_t verbosity_level = 0;
+	mutable double total_time = 0;
 
 	std::vector<Tag*> single_tags_list;
 	Taguint32HashMap single_tags;
@@ -107,7 +107,7 @@ public:
 	RuleVector null_section;
 	RuleVector wf_rules;
 
-	Grammar();
+	Grammar() = default;
 	~Grammar();
 
 	void addSet(Set*& to);

@@ -29,7 +29,6 @@ BinaryGrammar::BinaryGrammar(Grammar& res, std::ostream& ux_err)
   : IGrammarParser(res, ux_err)
 {
 	grammar = result;
-	verbosity = 0;
 }
 
 void BinaryGrammar::setCompatible(bool) {

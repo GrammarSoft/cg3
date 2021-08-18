@@ -65,7 +65,7 @@ public:
 private:
 	int parse_grammar(UString& buffer) override;
 
-	Grammar* grammar;
+	Grammar* grammar = nullptr;
 	void writeContextualTest(ContextualTest* t, FILE* output);
 	ContextualTest* readContextualTest(std::istream& input);
 

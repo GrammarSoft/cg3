@@ -45,8 +45,8 @@
         # For TCMalloc, optional
         sudo apt-get install libgoogle-perftools-dev
         cd /tmp/
-        svn co https://visl.sdu.dk/svn/visl/tools/vislcg3/trunk vislcg3
-        cd vislcg3/
+        git clone https://github.com/GrammarSoft/cg3
+        cd cg3/
         ./cmake.sh
         make -j3
         ./test/runall.pl
@@ -84,8 +84,8 @@
         # For TCMalloc, optional
         yum install google-perftools-devel
         cd /tmp/
-        svn co https://visl.sdu.dk/svn/visl/tools/vislcg3/trunk vislcg3
-        cd vislcg3/
+        git clone https://github.com/GrammarSoft/cg3
+        cd cg3/
         ./cmake.sh
         make -j3
         ./test/runall.pl
@@ -116,8 +116,8 @@
           brew install icu4c
           brew link icu4c
           cd /tmp
-          svn co https://visl.sdu.dk/svn/visl/tools/vislcg3/trunk vislcg3
-          cd vislcg3/
+          git clone https://github.com/GrammarSoft/cg3
+          cd cg3/
           ./cmake.sh
           make -j3
           ./test/runall.pl
@@ -146,8 +146,8 @@
           sudo port install boost
           sudo port install icu
           cd /tmp
-          svn co https://visl.sdu.dk/svn/visl/tools/vislcg3/trunk vislcg3
-          cd vislcg3/
+          git clone https://github.com/GrammarSoft/cg3
+          cd cg3/
           ./cmake.sh
           make -j3
           ./test/runall.pl
@@ -228,9 +228,8 @@
     <para>
       As any user in any folder where you can find it again:
       <screen>
-        svn co \
-        &nbsp; <ulink url="https://visl.sdu.dk/svn/visl/tools/vislcg3/trunk/">https://visl.sdu.dk/svn/visl/tools/vislcg3/trunk</ulink> vislcg3
-        cd vislcg3/
+        git clone https://github.com/GrammarSoft/cg3
+        cd cg3/
         ./cmake.sh
         make
         ./test/runall.pl

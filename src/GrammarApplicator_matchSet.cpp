@@ -346,7 +346,7 @@ uint32_t GrammarApplicator::doesTagMatchReading(const Reading& reading, const Ta
 		}
 	}
 	else if (tag.type & T_NUMERICAL) {
-		for (auto mter : reading.tags_numerical) {
+		for (const auto& mter : reading.tags_numerical) {
 			const Tag& itag = *(mter.second);
 			double compval = tag.comparison_val;
 			if (compval <= NUMERIC_MIN) {

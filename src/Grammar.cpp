@@ -25,25 +25,6 @@
 
 namespace CG3 {
 
-Grammar::Grammar()
-  : ux_stderr(nullptr)
-  , ux_stdout(nullptr)
-  , has_dep(false)
-  , has_bag_of_tags(false)
-  , has_relations(false)
-  , has_encl_final(false)
-  , has_protect(false)
-  , is_binary(false)
-  , sub_readings_ltr(false)
-  , grammar_size(0)
-  , mapping_prefix('@')
-  , lines(0)
-  , verbosity_level(0)
-  , total_time(0)
-{
-	// Nothing in the actual body...
-}
-
 Grammar::~Grammar() {
 	for (auto iter_set : sets_list) {
 		destroySet(iter_set);
@@ -61,7 +42,7 @@ Grammar::~Grammar() {
 		delete iter_rules;
 	}
 
-	for (auto cntx : contexts) {
+	for (auto& cntx : contexts) {
 		delete cntx.second;
 	}
 }
@@ -617,7 +598,7 @@ void Grammar::renameAllRules() {
 }
 
 void Grammar::reindex(bool unused_sets, bool used_tags) {
-	for (auto dset : sets_by_contents) {
+	for (const auto& dset : sets_by_contents) {
 		if (dset.second->number == std::numeric_limits<uint32_t>::max()) {
 			dset.second->type |= ST_USED;
 			continue;
@@ -628,7 +609,7 @@ void Grammar::reindex(bool unused_sets, bool used_tags) {
 		dset.second->number = 0;
 	}
 
-	for (auto sset : static_sets) {
+	for (const auto& sset : static_sets) {
 		uint32_t sh = hash_value(sset);
 		if (set_alias.find(sh) != set_alias.end()) {
 			u_fprintf(ux_stderr, "Error: Static set %S is an alias; only real sets may be made static!\n", sset.c_str());
@@ -772,7 +753,7 @@ void Grammar::reindex(bool unused_sets, bool used_tags) {
 
 	if (unused_sets) {
 		u_fprintf(ux_stdout, "Unused sets:\n");
-		for (auto rset : sets_by_contents) {
+		for (const auto& rset : sets_by_contents) {
 			if (!(rset.second->type & ST_USED) && !rset.second->name.empty() && maybe_used_sets.count(rset.second) == 0) {
 				if (!is_internal(rset.second->name)) {
 					u_fprintf(ux_stdout, "Line %u set %S\n", rset.second->line, rset.second->name.c_str());
@@ -785,13 +766,13 @@ void Grammar::reindex(bool unused_sets, bool used_tags) {
 
 	// Stuff below this line is not optional...
 
-	for (auto tset : sets_by_contents) {
+	for (const auto& tset : sets_by_contents) {
 		if (tset.second->type & ST_USED) {
 			addSetToList(tset.second);
 		}
 	}
 
-	for (auto iter_tags : single_tags) {
+	for (const auto& iter_tags : single_tags) {
 		Tag* tag = iter_tags.second;
 		if (tag->tag[0] == mapping_prefix) {
 			tag->type |= T_MAPPING;

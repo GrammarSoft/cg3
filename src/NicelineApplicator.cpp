@@ -31,8 +31,6 @@ namespace CG3 {
 
 NicelineApplicator::NicelineApplicator(std::ostream& ux_err)
   : GrammarApplicator(ux_err)
-  , did_warn_statictags(false)
-  , did_warn_subreadings(false)
 {
 }
 
@@ -432,7 +430,7 @@ void NicelineApplicator::printReading(const Reading* reading, std::ostream& outp
 	if (reading->parent->type & CT_RELATED) {
 		u_fprintf(output, " ID:%u", reading->parent->global_number);
 		if (!reading->parent->relations.empty()) {
-			for (auto miter : reading->parent->relations) {
+			for (const auto& miter : reading->parent->relations) {
 				for (auto siter : miter.second) {
 					u_fprintf(output, " R:%S:%u", grammar->single_tags.find(miter.first)->second->tag.c_str(), siter);
 				}

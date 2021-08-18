@@ -324,7 +324,7 @@ int BinaryGrammar::readBinaryGrammar_10043(std::istream& input) {
 	}
 
 	// Actually assign sets to the varstring tags now that sets are loaded
-	for (auto iter : tag_varsets) {
+	for (const auto& iter : tag_varsets) {
 		Tag* t = grammar->single_tags_list[iter.first];
 		for (auto uit : iter.second) {
 			Set* s = grammar->sets_list[uit];
@@ -474,7 +474,7 @@ int BinaryGrammar::readBinaryGrammar_10043(std::istream& input) {
 	}
 
 	// Bind the named templates to where they are used
-	for (auto it : deferred_tmpls) {
+	for (auto& it : deferred_tmpls) {
 		auto tmt = templates.find(it.second);
 		it.first->tmpl = tmt->second;
 	}

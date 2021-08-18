@@ -82,21 +82,21 @@ class Tag {
 public:
 	CG3_IMPORTS static std::ostream* dump_hashes_out;
 
-	C_OPS comparison_op;
-	double comparison_val;
-	uint32_t type;
-	uint32_t comparison_hash;
-	uint32_t dep_self, dep_parent;
-	uint32_t hash;
-	uint32_t plain_hash;
-	uint32_t number;
-	uint32_t seed;
+	C_OPS comparison_op = OP_NOP;
+	double comparison_val = 0;
+	uint32_t type = 0;
+	uint32_t comparison_hash = 0;
+	uint32_t dep_self = 0, dep_parent = 0;
+	uint32_t hash = 0;
+	uint32_t plain_hash = 0;
+	uint32_t number = 0;
+	uint32_t seed = 0;
 	UString tag;
 	std::unique_ptr<SetVector> vs_sets;
 	std::unique_ptr<UStringVector> vs_names;
-	mutable URegularExpression* regexp;
+	mutable URegularExpression* regexp = nullptr;
 
-	Tag();
+	Tag() = default;
 	Tag(const Tag& o);
 	~Tag();
 	void parseTagRaw(const UChar* to, Grammar* grammar);

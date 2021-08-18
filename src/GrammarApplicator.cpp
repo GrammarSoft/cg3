@@ -32,79 +32,8 @@
 namespace CG3 {
 
 GrammarApplicator::GrammarApplicator(std::ostream& ux_err)
-  : always_span(false)
-  , apply_mappings(true)
-  , apply_corrections(true)
-  , no_before_sections(false)
-  , no_sections(false)
-  , no_after_sections(false)
-  , trace(false)
-  , trace_name_only(false)
-  , trace_no_removed(false)
-  , trace_encl(false)
-  , allow_magic_readings(true)
-  , no_pass_origin(false)
-  , unsafe(false)
-  , ordered(false)
-  , show_end_tags(false)
-  , unicode_tags(false)
-  , unique_tags(false)
-  , dry_run(false)
-  , owns_grammar(false)
-  , input_eof(false)
-  , seen_barrier(false)
-  , is_conv(false)
-  , split_mappings(false)
-  , dep_has_spanned(false)
-  , dep_delimit(0)
-  , dep_absolute(false)
-  , dep_original(false)
-  , dep_block_loops(true)
-  , dep_block_crossing(false)
-  , num_windows(2)
-  , soft_limit(300)
-  , hard_limit(500)
-  , verbosity_level(0)
-  , debug_level(0)
-  , section_max_count(0)
-  , has_dep(false)
-  , dep_highest_seen(0)
-  , has_relations(false)
-  , grammar(nullptr)
-  , ux_stderr(&ux_err)
-  , filebase(nullptr)
-  , numLines(0)
-  , numWindows(0)
-  , numCohorts(0)
-  , numReadings(0)
-  , did_index(false)
-  , numsections(0)
+  : ux_stderr(&ux_err)
   , ci_depths(6, 0)
-  , match_single(0)
-  , match_comp(0)
-  , match_sub(0)
-  , begintag(0)
-  , endtag(0)
-  , substtag(0)
-  , tag_begin(nullptr)
-  , tag_end(nullptr)
-  , tag_subst(nullptr)
-  , par_left_tag(0)
-  , par_right_tag(0)
-  , par_left_pos(0)
-  , par_right_pos(0)
-  , did_final_enclosure(false)
-  , same_basic(0)
-  , target(nullptr)
-  , mark(nullptr)
-  , attach_to(nullptr)
-  , current_rule(nullptr)
-  , unif_tags(nullptr)
-  , unif_last_wordform(0)
-  , unif_last_baseform(0)
-  , unif_last_textual(0)
-  , unif_sets(nullptr)
-  , statistics(false)
 {
 	gWindow.reset(new Window(this));
 }
@@ -354,7 +283,7 @@ Tag* GrammarApplicator::addTag(const UChar* txt, bool vstr) {
 	bool reflow = false;
 	if ((tag->type & T_REGEXP) && !is_textual(tag->tag)) {
 		if (grammar->regex_tags.insert(tag->regexp).second) {
-			for (auto titer : single_tags) {
+			for (auto& titer : single_tags) {
 				if (titer.second->type & T_TEXTUAL) {
 					continue;
 				}
@@ -373,7 +302,7 @@ Tag* GrammarApplicator::addTag(const UChar* txt, bool vstr) {
 	}
 	if ((tag->type & T_CASE_INSENSITIVE) && !is_textual(tag->tag)) {
 		if (grammar->icase_tags.insert(tag).second) {
-			for (auto titer : single_tags) {
+			for (auto& titer : single_tags) {
 				if (titer.second->type & T_TEXTUAL) {
 					continue;
 				}
@@ -520,7 +449,7 @@ void GrammarApplicator::printReading(const Reading* reading, std::ostream& outpu
 	if (reading->parent->type & CT_RELATED) {
 		u_fprintf(output, " ID:%u", reading->parent->global_number);
 		if (!reading->parent->relations.empty()) {
-			for (auto miter : reading->parent->relations) {
+			for (const auto& miter : reading->parent->relations) {
 				for (auto siter : miter.second) {
 					u_fprintf(output, " R:%S:%u", single_tags.find(miter.first)->second->tag.c_str(), siter);
 				}

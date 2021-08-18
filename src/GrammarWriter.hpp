@@ -34,7 +34,7 @@ class ContextualTest;
 
 class GrammarWriter {
 public:
-	bool statistics;
+	bool statistics = false;
 
 	GrammarWriter(Grammar& res, std::ostream& ux_err);
 	~GrammarWriter();
@@ -42,9 +42,9 @@ public:
 	int writeGrammar(std::ostream& output);
 
 private:
-	std::ostream* ux_stderr;
+	std::ostream* ux_stderr = nullptr;
 	uint32FlatHashSet used_sets;
-	const Grammar* grammar;
+	const Grammar* grammar = nullptr;
 
 	void printTag(std::ostream& out, const Tag& tag);
 	void printSet(std::ostream& output, const Set& curset);

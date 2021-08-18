@@ -52,18 +52,7 @@ void free_cohort(Cohort* c) {
 }
 
 Cohort::Cohort(SingleWindow* p)
-  : type(0)
-  , global_number(0)
-  , local_number(0)
-  , wordform(nullptr)
-  , dep_self(0)
-  , dep_parent(DEP_NO_PARENT)
-  , is_pleft(0)
-  , is_pright(0)
-  , parent(p)
-  , prev(nullptr)
-  , next(nullptr)
-  , wread(nullptr)
+  : parent(p)
 {
 	#ifdef CG_TRACE_OBJECTS
 	std::cerr << "OBJECT: " << __PRETTY_FUNCTION__ << std::endl;
@@ -202,7 +191,7 @@ void Cohort::updateMinMax() {
 	num_min.clear();
 	num_max.clear();
 	for (auto rter : readings) {
-		for (auto nter : rter->tags_numerical) {
+		for (const auto& nter : rter->tags_numerical) {
 			const Tag* tag = nter.second;
 			if (num_min.find(tag->comparison_hash) == num_min.end() || tag->comparison_val < num_min[tag->comparison_hash]) {
 				num_min[tag->comparison_hash] = tag->comparison_val;

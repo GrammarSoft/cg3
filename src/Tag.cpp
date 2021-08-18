@@ -28,24 +28,6 @@ namespace CG3 {
 
 std::ostream* Tag::dump_hashes_out = nullptr;
 
-Tag::Tag()
-  : comparison_op(OP_NOP)
-  , comparison_val(0)
-  , type(0)
-  , comparison_hash(0)
-  , dep_self(0)
-  , dep_parent(0)
-  , hash(0)
-  , plain_hash(0)
-  , number(0)
-  , seed(0)
-  , regexp(nullptr)
-{
-	#ifdef CG_TRACE_OBJECTS
-	std::cerr << "OBJECT: " << __PRETTY_FUNCTION__ << std::endl;
-	#endif
-}
-
 Tag::Tag(const Tag& o)
   : comparison_op(o.comparison_op)
   , comparison_val(o.comparison_val)

@@ -31,11 +31,7 @@ namespace CG3 {
 
 FSTApplicator::FSTApplicator(std::ostream& ux_err)
   : GrammarApplicator(ux_err)
-  , wfactor(1.0)
 {
-	wtag += 'W';
-	sub_delims += '#';
-	//sub_delims += '+';
 }
 
 void FSTApplicator::runGrammarOnText(std::istream& input, std::ostream& output) {

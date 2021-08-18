@@ -17,8 +17,7 @@ namespace CG3_GetOpt {
 
 #define EOF	(-1)
 #define ERR(s, c)	if (opterr){\
-	char errbuf[2];\
-	errbuf[0] = c; errbuf[1] = '\n';\
+	char errbuf[2]{c, '\n'};\
 	(void) fwrite(argv[0], (unsigned)strlen(argv[0]), 1, stderr);\
 	(void) fwrite(s, (unsigned)strlen(s), 1, stderr);\
 	(void) fwrite(errbuf, 2, 1, stderr);}

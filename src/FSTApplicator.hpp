@@ -32,9 +32,9 @@ public:
 	FSTApplicator(std::ostream& ux_err);
 	void runGrammarOnText(std::istream& input, std::ostream& output);
 
-	double wfactor;
-	UString wtag;
-	UString sub_delims;
+	double wfactor = 1.0;
+	UString wtag{'W'};
+	UString sub_delims{'#'};
 };
 }
 

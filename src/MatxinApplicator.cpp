@@ -32,12 +32,6 @@ namespace CG3 {
 MatxinApplicator::MatxinApplicator(std::ostream& ux_err)
   : GrammarApplicator(ux_err)
 {
-	nullFlush = false;
-	wordform_case = false;
-	unique_tags = false;
-	print_word_forms = true;
-	print_only_first = false;
-	runningWithNullFlush = false;
 }
 
 bool MatxinApplicator::getNullFlush() {
