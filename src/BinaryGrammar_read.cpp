@@ -365,7 +365,7 @@ int BinaryGrammar::parse_grammar(std::istream& input) {
 	}
 
 	// Actually assign sets to the varstring tags now that sets are loaded
-	for (auto iter : tag_varsets) {
+	for (const auto& iter : tag_varsets) {
 		Tag* t = grammar->single_tags_list[iter.first];
 		for (auto uit : iter.second) {
 			Set* s = grammar->sets_list[uit];
@@ -519,12 +519,12 @@ int BinaryGrammar::parse_grammar(std::istream& input) {
 	}
 
 	// Bind the templates to where they are used
-	for (auto it : deferred_tmpls) {
+	for (const auto& it : deferred_tmpls) {
 		it.first->tmpl = grammar->contexts.find(it.second)->second;
 	}
 
 	// Bind the OR'ed contexts to where they are used
-	for (auto it : deferred_ors) {
+	for (const auto& it : deferred_ors) {
 		it.first->ors.reserve(it.second.size());
 		for (auto orit : it.second) {
 			it.first->ors.push_back(grammar->contexts.find(orit)->second);

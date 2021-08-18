@@ -27,18 +27,6 @@ namespace CG3 {
 
 std::ostream* Set::dump_hashes_out = nullptr;
 
-Set::Set()
-  : type(0)
-  , line(0)
-  , hash(0)
-  , number(0)
-  , num_fail(0)
-  , num_match(0)
-  , total_time(0)
-{
-	// Nothing in the actual body...
-}
-
 bool Set::empty() const {
 	return (ff_tags.empty() && trie.empty() && trie_special.empty() && sets.empty());
 }

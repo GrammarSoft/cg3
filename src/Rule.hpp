@@ -97,26 +97,26 @@ constexpr auto _flags_excls = make_array<FLAGS_COUNT>(init_flag_excls);
 class Rule {
 public:
 	UString name;
-	Tag* wordform;
-	uint32_t target;
-	uint32_t childset1, childset2;
-	uint32_t line, number;
-	uint32_t varname, varvalue; // ToDo: varvalue is unused
-	uint32_t flags;
-	int32_t section;
-	int32_t sub_reading;
-	KEYWORDS type;
-	Set* maplist;
-	Set* sublist;
+	Tag* wordform = nullptr;
+	uint32_t target = 0;
+	uint32_t childset1 = 0, childset2 = 0;
+	uint32_t line = 0, number = 0;
+	uint32_t varname = 0, varvalue = 0; // ToDo: varvalue is unused
+	uint32_t flags = 0;
+	int32_t section = 0;
+	int32_t sub_reading = 0;
+	KEYWORDS type = K_IGNORE;
+	Set* maplist = nullptr;
+	Set* sublist = nullptr;
 
 	mutable ContextList tests;
 	mutable ContextList dep_tests;
-	mutable uint32_t num_fail, num_match;
-	mutable double total_time;
-	mutable ContextualTest* dep_target;
+	mutable uint32_t num_fail = 0, num_match = 0;
+	mutable double total_time = 0;
+	mutable ContextualTest* dep_target = nullptr;
 
-	Rule();
-	~Rule();
+	Rule() = default;
+	~Rule() = default;
 	void setName(const UChar* to);
 
 	void resetStatistics();

@@ -33,16 +33,16 @@ public:
 	void runGrammarOnText(std::istream& input, std::ostream& output);
 
 	bool getNullFlush();
-	bool wordform_case;
-	bool print_word_forms;
-	bool print_only_first;
+	bool wordform_case = false;
+	bool print_word_forms = true;
+	bool print_only_first = false;
 	void setNullFlush(bool pNullFlush);
 
 	void testPR(std::ostream& output);
 
 protected:
 	struct Node {
-		int self;
+		int self = 0;
 		UString lemma;
 		UString form;
 		UString pos;
@@ -53,8 +53,8 @@ protected:
 	std::map<int, Node> nodes;
 	std::map<int, std::vector<int>> deps;
 
-	bool nullFlush;
-	bool runningWithNullFlush;
+	bool nullFlush = false;
+	bool runningWithNullFlush = false;
 
 	void printReading(Reading* reading, Node& n, std::ostream& output);
 	void printSingleWindow(SingleWindow* window, std::ostream& output);

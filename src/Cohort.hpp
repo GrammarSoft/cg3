@@ -47,19 +47,21 @@ constexpr auto DEP_NO_PARENT = std::numeric_limits<uint32_t>::max();
 
 class Cohort {
 public:
-	uint8_t type;
+	uint8_t type = 0;
 	// ToDo: Get rid of global_number in favour of Cohort* relations
-	uint32_t global_number;
-	uint32_t local_number;
-	Tag* wordform;
-	uint32_t dep_self;
-	uint32_t dep_parent;
-	uint32_t is_pleft, is_pright;
-	SingleWindow* parent;
+	uint32_t global_number = 0;
+	uint32_t local_number = 0;
+	Tag* wordform = nullptr;
+	uint32_t dep_self = 0;
+	uint32_t dep_parent = DEP_NO_PARENT;
+	uint32_t is_pleft = 0;
+	uint32_t is_pright = 0;
+	SingleWindow* parent = nullptr;
 	UString text;
 	UString wblank;
-	Cohort *prev, *next;
-	Reading* wread;
+	Cohort* prev = nullptr;
+	Cohort* next = nullptr;
+	Reading* wread = nullptr;
 	ReadingList readings;
 	ReadingList deleted;
 	ReadingList delayed;

@@ -69,7 +69,7 @@ Cohort* GrammarApplicator::runSingleTest(Cohort* cohort, const ContextualTest* t
 		*deep = cohort;
 	}
 
-	dSMC_Context context = { test, deep, origin, test->pos, false, false, false };
+	dSMC_Context context = { test, deep, origin, test->pos };
 
 	if (test->pos & POS_CAREFUL) {
 		*retval = doesSetMatchCohortCareful(*cohort, test->target, &context);
@@ -661,7 +661,7 @@ Cohort* GrammarApplicator::runDependencyTest(SingleWindow* sWindow, Cohort* curr
 	// ToDo: This whole function could resolve cohorts earlier and skip doing it twice
 	if (test->pos & MASK_POS_LORR) {
 		// I think this way around makes most sense? Loop over the container that's slower to look up in. But tests will show.
-		for (auto iter : sWindow->parent->cohort_map) {
+		for (const auto& iter : sWindow->parent->cohort_map) {
 			if (deps->count(iter.second->global_number)) {
 				if (test->pos & POS_LEFT) {
 					if (less_Cohort(iter.second, current)) {
@@ -789,7 +789,7 @@ Cohort* GrammarApplicator::runRelationTest(SingleWindow* sWindow, Cohort* curren
 	}
 
 	if (rtag->hash == grammar->tag_any) {
-		for (auto riter : current->relations) {
+		for (const auto& riter : current->relations) {
 			for (auto citer : riter.second) {
 				std::map<uint32_t, Cohort*>::iterator it = sWindow->parent->cohort_map.find(citer);
 				if (it != sWindow->parent->cohort_map.end()) {

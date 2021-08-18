@@ -90,25 +90,25 @@ enum GSR_SPECIALS {
 
 class ContextualTest {
 public:
-	bool is_used;
-	int32_t offset;
-	int32_t offset_sub;
-	uint32_t line;
-	uint32_t hash;
-	uint32_t seed;
-	uint64_t pos;
-	uint32_t target;
-	uint32_t relation;
-	uint32_t barrier;
-	uint32_t cbarrier;
-	mutable uint32_t num_fail, num_match;
-	mutable double total_time;
-	ContextualTest* tmpl;
-	ContextualTest* linked;
+	bool is_used = false;
+	int32_t offset = 0;
+	int32_t offset_sub = 0;
+	uint32_t line = 0;
+	uint32_t hash = 0;
+	uint32_t seed = 0;
+	uint64_t pos = 0;
+	uint32_t target = 0;
+	uint32_t relation = 0;
+	uint32_t barrier = 0;
+	uint32_t cbarrier = 0;
+	mutable uint32_t num_fail = 0, num_match = 0;
+	mutable double total_time = 0;
+	ContextualTest* tmpl = nullptr;
+	ContextualTest* linked = nullptr;
 
 	ContextVector ors;
 
-	ContextualTest();
+	ContextualTest() = default;
 
 	bool operator==(const ContextualTest&) const;
 	bool operator!=(const ContextualTest& o) const { return !(*this == o); }

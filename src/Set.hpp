@@ -47,12 +47,12 @@ class Set {
 public:
 	CG3_IMPORTS static std::ostream* dump_hashes_out;
 
-	uint8_t type;
-	uint32_t line;
-	uint32_t hash;
-	uint32_t number;
-	mutable uint32_t num_fail, num_match;
-	mutable double total_time;
+	uint8_t type = 0;
+	uint32_t line = 0;
+	uint32_t hash = 0;
+	uint32_t number = 0;
+	mutable uint32_t num_fail = 0, num_match = 0;
+	mutable double total_time = 0;
 	UString name;
 
 	trie_t trie;
@@ -62,7 +62,7 @@ public:
 	uint32Vector set_ops;
 	uint32Vector sets;
 
-	Set();
+	Set() = default;
 	~Set() {
 		trie_delete(trie);
 		trie_delete(trie_special);

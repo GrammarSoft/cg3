@@ -31,22 +31,6 @@ namespace CG3 {
 
 TextualParser::TextualParser(Grammar& res, std::ostream& ux_err, bool _dump_ast)
   : IGrammarParser(res, ux_err)
-  , filebase(nullptr)
-  , verbosity_level(0)
-  , sets_counter(100)
-  , seen_mapping_prefix(0)
-  , option_vislcg_compat(false)
-  , in_section(false)
-  , in_before_sections(true)
-  , in_after_sections(false)
-  , in_null_section(false)
-  , no_isets(false)
-  , no_itmpls(false)
-  , strict_wforms(false)
-  , strict_bforms(false)
-  , strict_second(false)
-  , filename(nullptr)
-  , error_counter(0)
 {
 	dump_ast = _dump_ast;
 }
@@ -2863,7 +2847,7 @@ int TextualParser::parse_grammar(UString& data) {
 		} while (*p);
 	}
 
-	for (auto it : deferred_tmpls) {
+	for (auto& it : deferred_tmpls) {
 		uint32_t cn = hash_value(it.second.second);
 		if (result->templates.find(cn) == result->templates.end()) {
 			u_fprintf(ux_stderr, "%s: Error: Unknown template '%S' referenced on line %u!\n", filebase, it.second.second.c_str(), it.second.first);

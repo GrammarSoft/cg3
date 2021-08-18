@@ -56,22 +56,22 @@ public:
 	[[noreturn]] void error(const char* str, const char* s, const UChar* S, const UChar* p);
 	Tag* addTag(Tag* tag);
 	Grammar* get_grammar() { return result; }
-	const char* filebase;
+	const char* filebase = nullptr;
 	uint32SortedVector strict_tags;
 	uint32SortedVector list_tags;
 
 private:
 	UChar nearbuf[32]{};
-	uint32_t verbosity_level;
-	uint32_t sets_counter;
-	uint32_t seen_mapping_prefix;
+	uint32_t verbosity_level = 0;
+	uint32_t sets_counter = 100;
+	uint32_t seen_mapping_prefix = 0;
 	flags_t section_flags;
-	bool option_vislcg_compat;
-	bool in_section, in_before_sections, in_after_sections, in_null_section;
-	bool no_isets, no_itmpls, strict_wforms, strict_bforms, strict_second, strict_regex = false, strict_icase = false;
+	bool option_vislcg_compat = false;
+	bool in_section = false, in_before_sections = true, in_after_sections = false, in_null_section = false;
+	bool no_isets = false, no_itmpls = false, strict_wforms = false, strict_bforms = false, strict_second = false, strict_regex = false, strict_icase = false;
 	bool self_no_barrier = false;
 	bool only_sets = false;
-	const char* filename;
+	const char* filename = nullptr;
 
 	typedef std::unordered_map<ContextualTest*, std::pair<size_t, UString>> deferred_t;
 	deferred_t deferred_tmpls;
@@ -95,7 +95,7 @@ private:
 	void parseRule(UChar*& p, KEYWORDS key);
 	void parseAnchorish(UChar*& p, bool rule_flags = true);
 
-	int error_counter;
+	int error_counter = 0;
 	[[noreturn]] void incErrorCount();
 };
 }

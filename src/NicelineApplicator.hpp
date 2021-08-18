@@ -29,8 +29,8 @@ namespace CG3 {
 
 class NicelineApplicator : public virtual GrammarApplicator {
 private:
-	bool did_warn_statictags;
-	bool did_warn_subreadings;
+	bool did_warn_statictags = false;
+	bool did_warn_subreadings = false;
 
 public:
 	NicelineApplicator(std::ostream& ux_err);

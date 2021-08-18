@@ -27,7 +27,6 @@
 namespace CG3 {
 
 GrammarWriter::GrammarWriter(Grammar& res, std::ostream& ux_err) {
-	statistics = false;
 	ux_stderr = &ux_err;
 	grammar = &res;
 }

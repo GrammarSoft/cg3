@@ -52,9 +52,9 @@ public:
 	virtual void reset(Cohort* cohort = nullptr, const ContextualTest* test = nullptr, bool span = false);
 
 protected:
-	bool m_span;
-	Cohort* m_cohort;
-	const ContextualTest* m_test;
+	bool m_span = false;
+	Cohort* m_cohort = nullptr;
+	const ContextualTest* m_test = nullptr;
 };
 
 class TopologyLeftIter : public CohortIterator {

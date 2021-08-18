@@ -34,11 +34,6 @@ constexpr UChar esc_lt = '\1';
 ApertiumApplicator::ApertiumApplicator(std::ostream& ux_err)
   : GrammarApplicator(ux_err)
 {
-	wordform_case = false;
-	unique_tags = false;
-	print_word_forms = true;
-	print_only_first = false;
-	delimit_lexical_units = true;
 }
 
 void ApertiumApplicator::parseStreamVar(const SingleWindow* cSWindow, UString& cleaned,

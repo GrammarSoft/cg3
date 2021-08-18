@@ -184,7 +184,7 @@ int BinaryGrammar::writeBinaryGrammar(FILE* output) {
 		if (t->vs_names) {
 			fields |= (1 << 11);
 			writeSwapped<uint32_t>(buffer, static_cast<uint32_t>(t->vs_names->size()));
-			for (auto iter : *t->vs_names) {
+			for (const auto& iter : *t->vs_names) {
 				ucnv_reset(conv);
 				i32tmp = ucnv_fromUChars(conv, &cbuffers[0][0], CG3_BUFFER_SIZE - 1, iter.c_str(), static_cast<int32_t>(iter.size()), &err);
 				writeSwapped(buffer, i32tmp);
@@ -221,7 +221,7 @@ int BinaryGrammar::writeBinaryGrammar(FILE* output) {
 		u32tmp = hton32((uint32_t)grammar->parentheses.size());
 		fwrite_throw(&u32tmp, sizeof(u32tmp), 1, output);
 	}
-	for (auto iter_par : grammar->parentheses) {
+	for (const auto& iter_par : grammar->parentheses) {
 		u32tmp = hton32(iter_par.first);
 		fwrite_throw(&u32tmp, sizeof(u32tmp), 1, output);
 		u32tmp = hton32(iter_par.second);
@@ -232,7 +232,7 @@ int BinaryGrammar::writeBinaryGrammar(FILE* output) {
 		u32tmp = hton32((uint32_t)grammar->anchors.size());
 		fwrite_throw(&u32tmp, sizeof(u32tmp), 1, output);
 	}
-	for (auto iter_anchor : grammar->anchors) {
+	for (const auto& iter_anchor : grammar->anchors) {
 		u32tmp = hton32(iter_anchor.first);
 		fwrite_throw(&u32tmp, sizeof(u32tmp), 1, output);
 		u32tmp = hton32(iter_anchor.second);

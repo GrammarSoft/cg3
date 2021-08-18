@@ -35,11 +35,11 @@ public:
 
 	void runGrammarOnText(std::istream& input, std::ostream& output);
 
-	bool wordform_case;
-	bool print_word_forms;
-	bool print_only_first;
-	bool delimit_lexical_units; // Should cohorts be surrounded by ^$ ?
-	bool surface_readings;	    // Should readings have escaped symbols as if they were surface forms?
+	bool wordform_case = false;
+	bool print_word_forms = true;
+	bool print_only_first = false;
+	bool delimit_lexical_units = true; // Should cohorts be surrounded by ^$ ?
+	bool surface_readings = false;	   // Should readings have escaped symbols as if they were surface forms?
 
 	void testPR(std::ostream& output);
 

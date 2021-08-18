@@ -62,61 +62,61 @@ struct tmpl_context_t {
 };
 
 struct dSMC_Context {
-	const ContextualTest* test;
-	Cohort** deep;
-	Cohort* origin;
-	uint64_t options;
-	bool did_test;
-	bool matched_target;
-	bool matched_tests;
-	bool in_barrier;
+	const ContextualTest* test = nullptr;
+	Cohort** deep = nullptr;
+	Cohort* origin = nullptr;
+	uint64_t options = 0;
+	bool did_test = false;
+	bool matched_target = false;
+	bool matched_tests = false;
+	bool in_barrier = false;
 };
 
 class GrammarApplicator {
 public:
-	bool always_span;
-	bool apply_mappings;
-	bool apply_corrections;
-	bool no_before_sections;
-	bool no_sections;
-	bool no_after_sections;
-	bool trace;
-	bool trace_name_only;
-	bool trace_no_removed;
-	bool trace_encl;
-	bool allow_magic_readings;
-	bool no_pass_origin;
-	bool unsafe;
-	bool ordered;
-	bool show_end_tags;
-	bool unicode_tags;
-	bool unique_tags;
-	bool dry_run;
-	bool owns_grammar;
-	bool input_eof;
-	bool seen_barrier;
-	bool is_conv;
-	bool split_mappings;
+	bool always_span = false;
+	bool apply_mappings = true;
+	bool apply_corrections = true;
+	bool no_before_sections = false;
+	bool no_sections = false;
+	bool no_after_sections = false;
+	bool trace = false;
+	bool trace_name_only = false;
+	bool trace_no_removed = false;
+	bool trace_encl = false;
+	bool allow_magic_readings = true;
+	bool no_pass_origin = false;
+	bool unsafe = false;
+	bool ordered = false;
+	bool show_end_tags = false;
+	bool unicode_tags = false;
+	bool unique_tags = false;
+	bool dry_run = false;
+	bool owns_grammar = false;
+	bool input_eof = false;
+	bool seen_barrier = false;
+	bool is_conv = false;
+	bool split_mappings = false;
 	bool pipe_deleted = false;
 	bool add_spacing = true;
 
-	bool dep_has_spanned;
-	uint32_t dep_delimit;
-	bool dep_absolute;
-	bool dep_original;
-	bool dep_block_loops;
-	bool dep_block_crossing;
+	bool dep_has_spanned = false;
+	uint32_t dep_delimit = 0;
+	bool dep_absolute = false;
+	bool dep_original = false;
+	bool dep_block_loops = true;
+	bool dep_block_crossing = false;
 
-	uint32_t num_windows;
-	uint32_t soft_limit;
-	uint32_t hard_limit;
+	uint32_t num_windows = 2;
+	uint32_t soft_limit = 300;
+	uint32_t hard_limit = 500;
 	uint32Vector sections;
 	uint32IntervalVector valid_rules;
 	uint32IntervalVector trace_rules;
 	uint32FlatHashMap variables;
-	uint32_t verbosity_level;
-	uint32_t debug_level;
-	uint32_t section_max_count;
+	uint32_t verbosity_level = 0;
+	uint32_t debug_level = 0;
+	uint32_t section_max_count = 0;
 
 	GrammarApplicator(std::ostream& ux_err);
 	virtual ~GrammarApplicator();
@@ -130,16 +130,16 @@ public:
 
 	virtual void runGrammarOnText(std::istream& input, std::ostream& output);
 
-	bool has_dep;
+	bool has_dep = false;
 	bool parse_dep = false;
-	uint32_t dep_highest_seen;
+	uint32_t dep_highest_seen = 0;
 	std::unique_ptr<Window> gWindow;
 	void reflowDependencyWindow(uint32_t max = 0);
 
-	bool has_relations;
+	bool has_relations = false;
 	void reflowRelationWindow(uint32_t max = 0);
 
-	Grammar* grammar;
+	Grammar* grammar = nullptr;
 
 	// Moved these public to help the library API
 	Tag* addTag(Tag* tag);
@@ -157,8 +157,8 @@ public:
 
 	std::istream* ux_stdin = nullptr;
 	std::ostream* ux_stdout = nullptr;
-	std::ostream* ux_stderr;
-	UChar* filebase;
+	std::ostream* ux_stderr = nullptr;
+	UChar* filebase = nullptr;
 	void error(const char* str, const UChar* p);
 	void error(const char* str, const char* s, const UChar* p);
 	void error(const char* str, const UChar* s, const UChar* p);
@@ -183,15 +183,15 @@ protected:
 	UString span_pattern_utf;
 	UChar ws[4]{ ' ', '\t', 0, 0 };
 
-	uint32_t numLines;
-	uint32_t numWindows;
-	uint32_t numCohorts;
-	uint32_t numReadings;
+	uint32_t numLines = 0;
+	uint32_t numWindows = 0;
+	uint32_t numCohorts = 0;
+	uint32_t numReadings = 0;
 
-	bool did_index;
+	bool did_index = false;
 	sorted_vector<std::pair<uint32_t, uint32_t>> dep_deep_seen;
 
-	uint32_t numsections;
+	uint32_t numsections = 0;
 	typedef std::map<int32_t, uint32IntervalVector> RSType;
 	RSType runsections;
 
@@ -206,12 +206,12 @@ protected:
 	std::map<uint32_t, DepDescendentIter> depDescendentIters;
 	std::map<uint32_t, DepAncestorIter> depAncestorIters;
 
-	uint32_t match_single, match_comp, match_sub;
-	uint32_t begintag, endtag, substtag;
-	Tag *tag_begin, *tag_end, *tag_subst;
-	uint32_t par_left_tag, par_right_tag;
-	uint32_t par_left_pos, par_right_pos;
-	bool did_final_enclosure;
+	uint32_t match_single = 0, match_comp = 0, match_sub = 0;
+	uint32_t begintag = 0, endtag = 0, substtag = 0;
+	Tag *tag_begin = nullptr, *tag_end = nullptr, *tag_subst = nullptr;
+	uint32_t par_left_tag = 0, par_right_tag = 0;
+	uint32_t par_left_pos = 0, par_right_pos = 0;
+	bool did_final_enclosure = false;
 
 	tmpl_context_t tmpl_cntx;
 
@@ -219,12 +219,12 @@ protected:
 	std::pair<uint8_t, regexgrps_t*> regexgrps;
 	bc::flat_map<uint32_t, uint8_t> regexgrps_z;
 	bc::flat_map<uint32_t, regexgrps_t*> regexgrps_c;
-	uint32_t same_basic;
-	Cohort* target;
-	Cohort* mark;
-	Cohort* attach_to;
-	Cohort* merge_with{};
-	Rule* current_rule;
+	uint32_t same_basic = 0;
+	Cohort* target = nullptr;
+	Cohort* mark = nullptr;
+	Cohort* attach_to = nullptr;
+	Cohort* merge_with = nullptr;
+	Rule* current_rule = nullptr;
 
 	typedef bc::flat_map<uint32_t, Reading*> readings_plain_t;
 	readings_plain_t readings_plain;
@@ -236,11 +236,11 @@ protected:
 	typedef bc::flat_map<uint32_t, uint32SortedVector> unif_sets_t;
 	bc::flat_map<uint32_t, unif_sets_t*> unif_sets_rs;
 	std::vector<unif_sets_t> unif_sets_store;
-	unif_tags_t* unif_tags;
-	uint32_t unif_last_wordform;
-	uint32_t unif_last_baseform;
-	uint32_t unif_last_textual;
-	unif_sets_t* unif_sets;
+	unif_tags_t* unif_tags = nullptr;
+	uint32_t unif_last_wordform = 0;
+	uint32_t unif_last_baseform = 0;
+	uint32_t unif_last_textual = 0;
+	unif_sets_t* unif_sets = nullptr;
 	bc::flat_map<uint32_t, uint32_t> rule_hits;
 
 	scoped_stack<TagList> ss_taglist;
@@ -295,7 +295,7 @@ protected:
 	bool doesSetMatchCohortNormal(Cohort& cohort, const uint32_t set, dSMC_Context* context = nullptr);
 	bool doesSetMatchCohortCareful(Cohort& cohort, const uint32_t set, dSMC_Context* context = nullptr);
 
-	bool statistics;
+	bool statistics = false;
 	ticks gtimer{};
 
 	Cohort* delimitAt(SingleWindow& current, Cohort* cohort);
