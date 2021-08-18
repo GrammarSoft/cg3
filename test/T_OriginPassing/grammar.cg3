@@ -14,5 +14,7 @@ ADD (@error-reset-left) (five) (-1* (two) LINK 1*O (eight) LINK -1* (one)) ;
 ADD (@not-reset-left) (five) (-1* (two) LINK 1*O (eight) LINK NOT -1* (one)) ;
 ADD (@reset-left) (five) (-1* (two) LINK 1*O (eight) LINK -1* (three)) ;
 
-ADD (@error-origin) (four) (-1* (one) LINK 1* (four)) ;
-ADD (@error-origin) (four) (1* (eight) LINK -1* (four)) ;
+ADD (@not-origin-left) (four) (-1* (one) LINK NOT 1* (four)) ;
+ADD (@not-origin-right) (four) (1* (eight) LINK NOT -1* (four)) ;
+ADD (@error-origin-left) (four) (-1* (one) LINK 1* (four)) ;
+ADD (@error-origin-right) (four) (1* (eight) LINK -1* (four)) ;

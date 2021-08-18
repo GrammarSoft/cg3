@@ -84,9 +84,7 @@ Cohort* GrammarApplicator::runSingleTest(Cohort* cohort, const ContextualTest* t
 	}
 
 	if (origin && (test->offset != 0 || (test->pos & (POS_SCANALL | POS_SCANFIRST))) && origin == cohort && origin->local_number != 0) {
-		if (!(test->pos & POS_NOT)) {
-			*retval = false;
-		}
+		cohort = nullptr;
 		rvs |= TRV_BREAK;
 	}
 	if (context.matched_target && (test->pos & POS_SCANFIRST)) {
@@ -102,7 +100,7 @@ Cohort* GrammarApplicator::runSingleTest(Cohort* cohort, const ContextualTest* t
 	context.deep = nullptr;
 	context.origin = nullptr;
 	context.did_test = true;
-	if (test->barrier) {
+	if (test->barrier && cohort) {
 		dSMC_Context context = { nullptr, nullptr, nullptr, test->pos & ~POS_CAREFUL, false, false, false, true };
 		bool barrier = doesSetMatchCohortNormal(*cohort, test->barrier, &context);
 		if (barrier) {
@@ -111,7 +109,7 @@ Cohort* GrammarApplicator::runSingleTest(Cohort* cohort, const ContextualTest* t
 			rvs &= ~TRV_BREAK_DEFAULT;
 		}
 	}
-	if (test->cbarrier) {
+	if (test->cbarrier && cohort) {
 		dSMC_Context context = { nullptr, nullptr, nullptr, test->pos | POS_CAREFUL, false, false, false, true };
 		bool cbarrier = doesSetMatchCohortCareful(*cohort, test->cbarrier, &context);
 		if (cbarrier) {
