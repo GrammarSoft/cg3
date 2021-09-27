@@ -322,7 +322,7 @@ void GrammarApplicator::reflowRelationWindow(uint32_t max) {
 
 			// Defer missing relations for later
 			if (newrel->empty()) {
-				cohort->relations_input.erase(rel++);
+				rel = cohort->relations_input.erase(rel);
 			}
 			else {
 				rel->second = newrel;

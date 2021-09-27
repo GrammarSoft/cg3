@@ -451,7 +451,12 @@ void GrammarApplicator::printReading(const Reading* reading, std::ostream& outpu
 		if (!reading->parent->relations.empty()) {
 			for (const auto& miter : reading->parent->relations) {
 				for (auto siter : miter.second) {
-					u_fprintf(output, " R:%S:%u", single_tags.find(miter.first)->second->tag.c_str(), siter);
+					// ToDo: On-the-fly and relations from input should never be allocated in the grammar
+					auto it = grammar->single_tags.find(miter.first);
+					if (it == grammar->single_tags.end()) {
+						it = single_tags.find(miter.first);
+					}
+					u_fprintf(output, " R:%S:%u", it->second->tag.c_str(), siter);
 				}
 			}
 		}
