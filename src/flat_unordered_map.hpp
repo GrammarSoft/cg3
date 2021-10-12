@@ -129,13 +129,17 @@ public:
 	size_t insert(const value_type& t) {
 		assert(t.first != res_empty && t.first != res_del && "Key cannot be res_empty or res_del!");
 
+		if (deleted && size_ + deleted == capacity()) {
+			reserve(capacity());
+		}
+
 		if ((size_ + 1) * 3 / 2 >= capacity() / 2) {
 			reserve(std::max(static_cast<size_type>(DEFAULT_CAP), capacity() * 2));
 		}
 		size_t max = capacity() - 1;
 		size_t spot = hash_value(t.first) & max;
 		while (elements[spot].first != res_empty && elements[spot].first != t.first) {
-			spot = (spot + 5) & max;
+			spot = hash_value_sz(spot) & max;
 		}
 		if (elements[spot].first != t.first) {
 			elements[spot] = t;
@@ -169,7 +173,7 @@ public:
 		size_t max = capacity() - 1;
 		size_t spot = hash_value(t) & max;
 		while (elements[spot].first != res_empty && elements[spot].first != t) {
-			spot = (spot + 5) & max;
+			spot = hash_value_sz(spot) & max;
 		}
 		if (elements[spot].first == t) {
 			elements[spot].first = res_del;
@@ -207,7 +211,7 @@ public:
 			size_t max = capacity() - 1;
 			size_t spot = hash_value(t) & max;
 			while (elements[spot].first != res_empty && elements[spot].first != t) {
-				spot = (spot + 5) & max;
+				spot = hash_value_sz(spot) & max;
 			}
 			if (elements[spot].first == t) {
 				it.fus = this;
@@ -225,12 +229,16 @@ public:
 	V& operator[](const T& t) {
 		assert(t != res_empty && t != res_del && "Key cannot be res_empty or res_del!");
 
+		if (deleted && size_ + deleted == capacity()) {
+			reserve(capacity());
+		}
+
 		size_t at = std::numeric_limits<size_t>::max();
 		if (size_) {
 			size_t max = capacity() - 1;
 			size_t spot = hash_value(t) & max;
 			while (elements[spot].first != res_empty && elements[spot].first != t) {
-				spot = (spot + 5) & max;
+				spot = hash_value_sz(spot) & max;
 			}
 			if (elements[spot].first == t) {
 				at = spot;
@@ -288,7 +296,7 @@ public:
 		for (auto& val : vals) {
 			size_t spot = hash_value(val.first) & max;
 			while (elements[spot].first != res_empty && elements[spot].first != val.first) {
-				spot = (spot + 5) & max;
+				spot = hash_value_sz(spot) & max;
 			}
 			elements[spot] = val;
 		}
@@ -327,8 +335,12 @@ private:
 	size_type deleted = 0;
 	container elements;
 
-	T hash_value(T t) const {
-		return (t << 8) | ((t >> 8) & 0xFF);
+	size_type hash_value_sz(size_type t) const {
+		return t * 3663850746527583589ull + 11210403176660999867ull;
+	}
+
+	size_type hash_value(T t) const {
+		return hash_value_sz(static_cast<size_type>(t));
 	}
 
 	friend class const_iterator;
