@@ -126,11 +126,6 @@ public:
 		DEFAULT_CAP = static_cast<size_type>(16u),
 	};
 
-	flat_unordered_map()
-	  : size_(0)
-	{
-	}
-
 	size_t insert(const value_type& t) {
 		assert(t.first != res_empty && t.first != res_del && "Key cannot be res_empty or res_del!");
 
@@ -180,6 +175,12 @@ public:
 			elements[spot].first = res_del;
 			elements[spot].second = V();
 			--size_;
+			if (size_ == 0 && deleted != 0) {
+				clear();
+			}
+			else {
+				++deleted;
+			}
 		}
 	}
 
@@ -188,6 +189,12 @@ public:
 		elements[it.i].second = V();
 		++it;
 		--size_;
+		if (size_ == 0 && deleted != 0) {
+			clear();
+		}
+		else {
+			++deleted;
+		}
 		return it;
 	}
 
@@ -269,21 +276,21 @@ public:
 		static container vals;
 		vals.resize(0);
 		vals.reserve(size_);
-		for (size_type i = 0, ie = capacity(); i < ie; ++i) {
-			if (elements[i].first != res_empty && elements[i].first != res_del) {
-				vals.push_back(elements[i]);
+		for (auto& elem : elements) {
+			if (elem.first != res_empty && elem.first != res_del) {
+				vals.push_back(elem);
 			}
 		}
 
 		clear(n);
 		size_ = vals.size();
 		size_t max = capacity() - 1;
-		for (size_type i = 0, ie = vals.size(); i < ie; ++i) {
-			size_t spot = hash_value(vals[i].first) & max;
-			while (elements[spot].first != res_empty && elements[spot].first != vals[i].first) {
+		for (auto& val : vals) {
+			size_t spot = hash_value(val.first) & max;
+			while (elements[spot].first != res_empty && elements[spot].first != val.first) {
 				spot = (spot + 5) & max;
 			}
-			elements[spot] = vals[i];
+			elements[spot] = val;
 		}
 	}
 
@@ -299,6 +306,7 @@ public:
 
 	void swap(flat_unordered_map& other) {
 		std::swap(size_, other.size_);
+		std::swap(deleted, other.deleted);
 		elements.swap(other.elements);
 	}
 
@@ -307,6 +315,7 @@ public:
 		elements.resize(0);
 		elements.resize(std::max(size_, n), std::make_pair(res_empty, V()));
 		size_ = 0;
+		deleted = 0;
 	}
 
 	container& get() {
@@ -314,7 +323,8 @@ public:
 	}
 
 private:
-	size_type size_;
+	size_type size_ = 0;
+	size_type deleted = 0;
 	container elements;
 
 	T hash_value(T t) const {

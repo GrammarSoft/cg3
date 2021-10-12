@@ -127,11 +127,6 @@ public:
 		DEFAULT_CAP = static_cast<size_type>(16u),
 	};
 
-	flat_unordered_set()
-	  : size_(0)
-	{
-	}
-
 	void insert(T t) {
 		assert(t != res_empty && t != res_del && "Value cannot be res_empty or res_del!");
 
@@ -179,6 +174,12 @@ public:
 		if (elements[spot] == t) {
 			elements[spot] = res_del;
 			--size_;
+			if (size_ == 0 && deleted != 0) {
+				clear();
+			}
+			else {
+				++deleted;
+			}
 		}
 	}
 
@@ -186,6 +187,12 @@ public:
 		elements[it.i] = res_del;
 		++it;
 		--size_;
+		if (size_ == 0 && deleted != 0) {
+			clear();
+		}
+		else {
+			++deleted;
+		}
 		return it;
 	}
 
@@ -246,21 +253,21 @@ public:
 		static thread_local container vals;
 		vals.resize(0);
 		vals.reserve(size_);
-		for (size_type i = 0, ie = capacity(); i < ie; ++i) {
-			if (elements[i] != res_empty && elements[i] != res_del) {
-				vals.push_back(elements[i]);
+		for (auto& elem : elements) {
+			if (elem != res_empty && elem != res_del) {
+				vals.push_back(elem);
 			}
 		}
 
 		clear(n);
 		size_ = vals.size();
 		size_t max = capacity() - 1;
-		for (size_type i = 0, ie = vals.size(); i < ie; ++i) {
-			size_t spot = hash_value(vals[i]) & max;
-			while (elements[spot] != res_empty && elements[spot] != vals[i]) {
+		for (auto& val : vals) {
+			size_t spot = hash_value(val) & max;
+			while (elements[spot] != res_empty && elements[spot] != val) {
 				spot = (spot + 5) & max;
 			}
-			elements[spot] = vals[i];
+			elements[spot] = val;
 		}
 	}
 
@@ -276,6 +283,7 @@ public:
 
 	void swap(flat_unordered_set& other) {
 		std::swap(size_, other.size_);
+		std::swap(deleted, other.deleted);
 		elements.swap(other.elements);
 	}
 
@@ -284,6 +292,7 @@ public:
 		elements.resize(0);
 		elements.resize(std::max(size_, n), res_empty);
 		size_ = 0;
+		deleted = 0;
 	}
 
 	container& get() {
@@ -291,7 +300,8 @@ public:
 	}
 
 private:
-	size_type size_;
+	size_type size_ = 0;
+	size_type deleted = 0;
 	container elements;
 
 	T hash_value(T t) const {
