@@ -642,7 +642,7 @@ Cohort* GrammarApplicator::runDependencyTest(SingleWindow* sWindow, Cohort* curr
 			deps = &(current->parent->cohorts[0]->dep_children);
 		}
 		else {
-			std::map<uint32_t, Cohort*>::iterator it = current->parent->parent->cohort_map.find(current->dep_parent);
+			auto it = current->parent->parent->cohort_map.find(current->dep_parent);
 			if (it != current->parent->parent->cohort_map.end() && it->second && !it->second->dep_children.empty()) {
 				deps = &(it->second->dep_children);
 			}
@@ -789,7 +789,7 @@ Cohort* GrammarApplicator::runRelationTest(SingleWindow* sWindow, Cohort* curren
 	if (rtag->hash == grammar->tag_any) {
 		for (const auto& riter : current->relations) {
 			for (auto citer : riter.second) {
-				std::map<uint32_t, Cohort*>::iterator it = sWindow->parent->cohort_map.find(citer);
+				auto it = sWindow->parent->cohort_map.find(citer);
 				if (it != sWindow->parent->cohort_map.end()) {
 					rels.insert(it->second);
 				}
@@ -797,10 +797,10 @@ Cohort* GrammarApplicator::runRelationTest(SingleWindow* sWindow, Cohort* curren
 		}
 	}
 	else {
-		RelationCtn::const_iterator riter = current->relations.find(rtag->hash);
+		auto riter = current->relations.find(rtag->hash);
 		if (riter != current->relations.end()) {
 			for (auto citer : riter->second) {
-				std::map<uint32_t, Cohort*>::iterator it = sWindow->parent->cohort_map.find(citer);
+				auto it = sWindow->parent->cohort_map.find(citer);
 				if (it != sWindow->parent->cohort_map.end()) {
 					rels.insert(it->second);
 				}

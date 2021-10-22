@@ -100,7 +100,7 @@ cg3_grammar* cg3_grammar_load(const char* filename) {
 	}
 	input.close();
 
-	Grammar* grammar = new Grammar;
+	auto grammar = new Grammar;
 	grammar->ux_stderr = ux_stderr.get();
 	grammar->ux_stdout = ux_stdout.get();
 
@@ -128,7 +128,7 @@ cg3_grammar* cg3_grammar_load_buffer(const char* buffer, size_t length) {
 		return 0;
 	}
 
-	Grammar* grammar = new Grammar;
+	auto grammar = new Grammar;
 	grammar->ux_stderr = ux_stderr.get();
 	grammar->ux_stdout = ux_stdout.get();
 
@@ -151,12 +151,12 @@ cg3_grammar* cg3_grammar_load_buffer(const char* buffer, size_t length) {
 }
 
 void cg3_grammar_free(cg3_grammar* grammar_) {
-	Grammar* grammar = static_cast<Grammar*>(grammar_);
+	auto grammar = static_cast<Grammar*>(grammar_);
 	delete grammar;
 }
 
 cg3_applicator* cg3_applicator_create(cg3_grammar* grammar_) {
-	Grammar* grammar = static_cast<Grammar*>(grammar_);
+	auto grammar = static_cast<Grammar*>(grammar_);
 	GrammarApplicator* applicator = new GrammarApplicator(*ux_stderr);
 	applicator->setGrammar(grammar);
 	applicator->index();
@@ -238,8 +238,8 @@ inline Tag* _tag_copy(GrammarApplicator* from, GrammarApplicator* to, uint32_t h
 }
 
 inline Reading* _reading_copy(Cohort* nc, Reading* oldr, bool is_sub = false) {
-	Reading* nr = alloc_reading(nc);
-	GrammarApplicator* ga = nc->parent->parent->parent;
+	auto nr = alloc_reading(nc);
+	auto ga = nc->parent->parent->parent;
 	insert_if_exists(nr->parent->possible_sets, ga->grammar->sets_any);
 	ga->addTagToReading(*nr, nc->wordform);
 	TagList mappings;
@@ -265,7 +265,7 @@ inline Cohort* _cohort_copy(SingleWindow* ns, Cohort* oc) {
 	Cohort* nc = alloc_cohort(ns);
 	nc->wordform = _tag_copy(ns->parent->parent, oc->wordform);
 	for (auto r : oc->readings) {
-		Reading* nr = _reading_copy(nc, r);
+		auto nr = _reading_copy(nc, r);
 		nc->appendReading(nr);
 	}
 	return nc;
@@ -314,42 +314,42 @@ void cg3_sentence_free(cg3_sentence* sentence_) {
 
 void cg3_sentence_addcohort(cg3_sentence* sentence_, cg3_cohort* cohort_) {
 	SingleWindow* sentence = static_cast<SingleWindow*>(sentence_);
-	Cohort* cohort = static_cast<Cohort*>(cohort_);
+	auto cohort = static_cast<Cohort*>(cohort_);
 	sentence->appendCohort(cohort);
 }
 
 cg3_cohort* cg3_cohort_create(cg3_sentence* sentence_) {
 	SingleWindow* sentence = static_cast<SingleWindow*>(sentence_);
-	Cohort* cohort = alloc_cohort(sentence);
+	auto cohort = alloc_cohort(sentence);
 	cohort->global_number = sentence->parent->cohort_counter++;
 	return cohort;
 }
 
 void cg3_cohort_setwordform(cg3_cohort* cohort_, cg3_tag* tag_) {
-	Cohort* cohort = static_cast<Cohort*>(cohort_);
-	Tag* tag = static_cast<Tag*>(tag_);
+	auto cohort = static_cast<Cohort*>(cohort_);
+	auto tag = static_cast<Tag*>(tag_);
 	cohort->wordform = tag;
 }
 
 cg3_tag* cg3_cohort_getwordform(cg3_cohort* cohort_) {
-	Cohort* cohort = static_cast<Cohort*>(cohort_);
+	auto cohort = static_cast<Cohort*>(cohort_);
 	return cohort->wordform;
 }
 
 uint32_t cg3_cohort_getid(cg3_cohort* cohort_) {
-	Cohort* cohort = static_cast<Cohort*>(cohort_);
+	auto cohort = static_cast<Cohort*>(cohort_);
 	return cohort->global_number;
 }
 
 void cg3_cohort_setdependency(cg3_cohort* cohort_, uint32_t dep_self, uint32_t dep_parent) {
-	Cohort* cohort = static_cast<Cohort*>(cohort_);
+	auto cohort = static_cast<Cohort*>(cohort_);
 	cohort->parent->parent->parent->has_dep = true;
 	cohort->dep_self = dep_self;
 	cohort->dep_parent = dep_parent;
 }
 
 void cg3_cohort_getdependency(cg3_cohort* cohort_, uint32_t* dep_self, uint32_t* dep_parent) {
-	Cohort* cohort = static_cast<Cohort*>(cohort_);
+	auto cohort = static_cast<Cohort*>(cohort_);
 	if (dep_self) {
 		*dep_self = cohort->dep_self;
 	}
@@ -387,38 +387,38 @@ void cg3_cohort_getrelation_u8(cg3_cohort *cohort_, const char *rel, uint32_t *r
 //*/
 
 void cg3_cohort_addreading(cg3_cohort* cohort_, cg3_reading* reading_) {
-	Cohort* cohort = static_cast<Cohort*>(cohort_);
-	Reading* reading = static_cast<Reading*>(reading_);
+	auto cohort = static_cast<Cohort*>(cohort_);
+	auto reading = static_cast<Reading*>(reading_);
 	cohort->appendReading(reading);
 }
 
 size_t cg3_cohort_numreadings(cg3_cohort* cohort_) {
-	Cohort* cohort = static_cast<Cohort*>(cohort_);
+	auto cohort = static_cast<Cohort*>(cohort_);
 	return cohort->readings.size();
 }
 
 cg3_reading* cg3_cohort_getreading(cg3_cohort* cohort_, size_t which) {
-	Cohort* cohort = static_cast<Cohort*>(cohort_);
+	auto cohort = static_cast<Cohort*>(cohort_);
 	return cohort->readings[which];
 }
 
 void cg3_cohort_free(cg3_cohort* cohort_) {
-	Cohort* cohort = static_cast<Cohort*>(cohort_);
+	auto cohort = static_cast<Cohort*>(cohort_);
 	delete cohort;
 }
 
 cg3_reading* cg3_reading_create(cg3_cohort* cohort_) {
-	Cohort* cohort = static_cast<Cohort*>(cohort_);
-	GrammarApplicator* ga = cohort->parent->parent->parent;
-	Reading* reading = alloc_reading(cohort);
+	auto cohort = static_cast<Cohort*>(cohort_);
+	auto ga = cohort->parent->parent->parent;
+	auto reading = alloc_reading(cohort);
 	insert_if_exists(reading->parent->possible_sets, ga->grammar->sets_any);
 	ga->addTagToReading(*reading, cohort->wordform);
 	return reading;
 }
 
 cg3_status cg3_reading_addtag(cg3_reading* reading_, cg3_tag* tag_) {
-	Reading* reading = static_cast<Reading*>(reading_);
-	Tag* tag = static_cast<Tag*>(tag_);
+	auto reading = static_cast<Reading*>(reading_);
+	auto tag = static_cast<Tag*>(tag_);
 	if (tag->type & T_MAPPING) {
 		if (reading->mapping && reading->mapping != tag) {
 			u_fprintf(ux_stderr, "CG3 Error: Cannot add a mapping tag to a reading which already is mapped!\n");
@@ -426,64 +426,64 @@ cg3_status cg3_reading_addtag(cg3_reading* reading_, cg3_tag* tag_) {
 		}
 	}
 
-	GrammarApplicator* ga = reading->parent->parent->parent->parent;
+	auto ga = reading->parent->parent->parent->parent;
 	ga->addTagToReading(*reading, tag);
 
 	return CG3_SUCCESS;
 }
 
 size_t cg3_reading_numtags(cg3_reading* reading_) {
-	Reading* reading = static_cast<Reading*>(reading_);
+	auto reading = static_cast<Reading*>(reading_);
 	return reading->tags_list.size();
 }
 
 cg3_tag* cg3_reading_gettag(cg3_reading* reading_, size_t which) {
-	Reading* reading = static_cast<Reading*>(reading_);
-	Reading::tags_list_t::iterator it = reading->tags_list.begin();
+	auto reading = static_cast<Reading*>(reading_);
+	auto it = reading->tags_list.begin();
 	std::advance(it, which);
-	GrammarApplicator* ga = reading->parent->parent->parent->parent;
+	auto ga = reading->parent->parent->parent->parent;
 	return ga->single_tags.find(*it)->second;
 }
 
 size_t cg3_reading_numtraces(cg3_reading* reading_) {
-	Reading* reading = static_cast<Reading*>(reading_);
+	auto reading = static_cast<Reading*>(reading_);
 	return reading->hit_by.size();
 }
 
 uint32_t cg3_reading_gettrace(cg3_reading* reading_, size_t which) {
-	Reading* reading = static_cast<Reading*>(reading_);
-	Grammar* grammar = reading->parent->parent->parent->parent->grammar;
-	const Rule* r = grammar->rule_by_number[reading->hit_by[which]];
+	auto reading = static_cast<Reading*>(reading_);
+	auto grammar = reading->parent->parent->parent->parent->grammar;
+	auto r = grammar->rule_by_number[reading->hit_by[which]];
 	return r->line;
 }
 
 void cg3_reading_free(cg3_reading* reading_) {
-	Reading* reading = static_cast<Reading*>(reading_);
+	auto reading = static_cast<Reading*>(reading_);
 	delete reading;
 }
 
 cg3_reading* cg3_subreading_create(cg3_reading* reading_) {
-	Reading* reading = static_cast<Reading*>(reading_);
+	auto reading = static_cast<Reading*>(reading_);
 	return cg3_reading_create(reading->parent);
 }
 
 cg3_status cg3_reading_setsubreading(cg3_reading* reading_, cg3_reading* subreading_) {
-	Reading* reading = static_cast<Reading*>(reading_);
-	Reading* subreading = static_cast<Reading*>(subreading_);
+	auto reading = static_cast<Reading*>(reading_);
+	auto subreading = static_cast<Reading*>(subreading_);
 	delete reading->next;
 	reading->next = subreading;
 	return CG3_SUCCESS;
 }
 
 size_t cg3_reading_numsubreadings(cg3_reading* reading_) {
-	Reading* reading = static_cast<Reading*>(reading_);
+	auto reading = static_cast<Reading*>(reading_);
 	return (reading->next != 0);
 }
 
 cg3_reading* cg3_reading_getsubreading(cg3_reading* reading_, size_t which) {
 	(void)which;
 	assert((which == 1) && "There can currently only be 1 sub-reading per reading, but the API is future-proof");
-	Reading* reading = static_cast<Reading*>(reading_);
+	auto reading = static_cast<Reading*>(reading_);
 	return reading->next;
 }
 
@@ -492,7 +492,7 @@ void cg3_subreading_free(cg3_reading* subreading_) {
 }
 
 cg3_tag* cg3_tag_create_u(cg3_applicator* applicator_, const UChar* text) {
-	GrammarApplicator* applicator = static_cast<GrammarApplicator*>(applicator_);
+	auto applicator = static_cast<GrammarApplicator*>(applicator_);
 	return applicator->addTag(text);
 }
 
@@ -542,12 +542,12 @@ cg3_tag* cg3_tag_create_w(cg3_applicator* applicator, const wchar_t* text) {
 }
 
 const UChar* cg3_tag_gettext_u(cg3_tag* tag_) {
-	Tag* tag = static_cast<Tag*>(tag_);
+	auto tag = static_cast<Tag*>(tag_);
 	return tag->tag.c_str();
 }
 
 const char* cg3_tag_gettext_u8(cg3_tag* tag_) {
-	Tag* tag = static_cast<Tag*>(tag_);
+	auto tag = static_cast<Tag*>(tag_);
 	UErrorCode status = U_ZERO_ERROR;
 
 	u_strToUTF8(&cbuffers[0][0], CG3_BUFFER_SIZE - 1, 0, tag->tag.c_str(), static_cast<int32_t>(tag->tag.size()), &status);
@@ -560,12 +560,12 @@ const char* cg3_tag_gettext_u8(cg3_tag* tag_) {
 }
 
 const uint16_t* cg3_tag_gettext_u16(cg3_tag* tag_) {
-	Tag* tag = static_cast<Tag*>(tag_);
+	auto tag = static_cast<Tag*>(tag_);
 	return reinterpret_cast<const uint16_t*>(tag->tag.c_str());
 }
 
 const uint32_t* cg3_tag_gettext_u32(cg3_tag* tag_) {
-	Tag* tag = static_cast<Tag*>(tag_);
+	auto tag = static_cast<Tag*>(tag_);
 	UErrorCode status = U_ZERO_ERROR;
 
 	UChar32* tmp = reinterpret_cast<UChar32*>(&cbuffers[0][0]);
@@ -580,10 +580,10 @@ const uint32_t* cg3_tag_gettext_u32(cg3_tag* tag_) {
 }
 
 const wchar_t* cg3_tag_gettext_w(cg3_tag* tag_) {
-	Tag* tag = static_cast<Tag*>(tag_);
+	auto tag = static_cast<Tag*>(tag_);
 	UErrorCode status = U_ZERO_ERROR;
 
-	wchar_t* tmp = reinterpret_cast<wchar_t*>(&cbuffers[0][0]);
+	auto tmp = reinterpret_cast<wchar_t*>(&cbuffers[0][0]);
 
 	u_strToWCS(tmp, (CG3_BUFFER_SIZE / sizeof(wchar_t)) - 1, 0, tag->tag.c_str(), static_cast<int32_t>(tag->tag.size()), &status);
 	if (U_FAILURE(status)) {
@@ -596,20 +596,20 @@ const wchar_t* cg3_tag_gettext_w(cg3_tag* tag_) {
 
 // These 3 from Paul Meurer <paul.meurer@uni.no>
 size_t cg3_cohort_numdelreadings(cg3_cohort* cohort_) {
-	Cohort* cohort = static_cast<Cohort*>(cohort_);
+	auto cohort = static_cast<Cohort*>(cohort_);
 	return cohort->deleted.size();
 }
 
 cg3_reading* cg3_cohort_getdelreading(cg3_cohort* cohort_, size_t which) {
-	Cohort* cohort = static_cast<Cohort*>(cohort_);
-	ReadingList::iterator it = cohort->deleted.begin();
+	auto cohort = static_cast<Cohort*>(cohort_);
+	auto it = cohort->deleted.begin();
 	std::advance(it, which);
 	return *it;
 }
 
 size_t cg3_reading_gettrace_ruletype(cg3_reading* reading_, size_t which) {
-	Reading* reading = static_cast<Reading*>(reading_);
-	Grammar* grammar = reading->parent->parent->parent->parent->grammar;
-	const Rule* r = grammar->rule_by_number[reading->hit_by[which]];
+	auto reading = static_cast<Reading*>(reading_);
+	auto grammar = reading->parent->parent->parent->parent->grammar;
+	auto r = grammar->rule_by_number[reading->hit_by[which]];
 	return r->type;
 }

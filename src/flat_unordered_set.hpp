@@ -208,7 +208,7 @@ public:
 		if (size_) {
 			size_t max = capacity() - 1;
 			size_t spot = hash_value(t) & max;
-			while (elements[spot] != res_empty && elements[spot] != t) {
+			for (size_t i = 0; i < capacity() * 4 && elements[spot] != res_empty && elements[spot] != t; ++i) {
 				spot = hash_value_sz(spot) & max;
 			}
 			if (elements[spot] == t) {
@@ -218,6 +218,14 @@ public:
 		}
 
 		return it;
+	}
+
+	const_iterator find(T t) {
+		if (deleted && size_ + deleted == capacity()) {
+			reserve(capacity());
+		}
+
+		return const_cast<const flat_unordered_set*>(this)->find(t);
 	}
 
 	size_t count(T t) const {
