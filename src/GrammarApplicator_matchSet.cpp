@@ -46,7 +46,7 @@ inline bool TagSet_SubsetOf_TSet(const TagSortedVector& a, const T& b) {
 		return false;
 	}
 	//*/
-	typename T::const_iterator bi = b.lower_bound((*a.begin())->hash);
+	auto bi = b.lower_bound((*a.begin())->hash);
 	for (auto ai : a) {
 		while (bi != b.end() && *bi < ai->hash) {
 			++bi;
@@ -572,8 +572,8 @@ bool GrammarApplicator::doesSetMatchReading_tags(const Reading& reading, const S
 	// If there are no special circumstances the first test boils down to finding whether the tag stores intersect
 	// 80% of calls try this first.
 	if (!theset.trie.empty() && !reading.tags_plain.empty()) {
-		trie_t::const_iterator iiter = theset.trie.lower_bound(single_tags.find(reading.tags_plain.front())->second);
-		uint32SortedVector::const_iterator oiter = reading.tags_plain.lower_bound(theset.trie.begin()->first->hash);
+		auto iiter = theset.trie.lower_bound(single_tags.find(reading.tags_plain.front())->second);
+		auto oiter = reading.tags_plain.lower_bound(theset.trie.begin()->first->hash);
 		while (oiter != reading.tags_plain.end() && iiter != theset.trie.end()) {
 			if (*oiter == iiter->first->hash) {
 				if (iiter->second.terminal) {

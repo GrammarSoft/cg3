@@ -108,7 +108,7 @@ DepParentIter& DepParentIter::operator++() {
 		return *this;
 	}
 	if (m_cohort->dep_parent != DEP_NO_PARENT) {
-		std::map<uint32_t, Cohort*>::iterator it = m_cohort->parent->parent->cohort_map.find(m_cohort->dep_parent);
+		auto it = m_cohort->parent->parent->cohort_map.find(m_cohort->dep_parent);
 		if (it != m_cohort->parent->parent->cohort_map.end()) {
 			Cohort* cohort = it->second;
 			if (cohort->type & CT_REMOVED) {

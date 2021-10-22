@@ -634,7 +634,7 @@ void ApertiumApplicator::processReading(Reading* cReading, UChar* p, Tag* wform)
 				}
 				// Add tags
 				TagList mappings;
-				TagVector::iterator iter = riter.base();
+				auto iter = riter.base();
 				for (--iter; iter != taglist.end(); ++iter) {
 					if ((*iter)->type & T_MAPPING || (*iter)->tag[0] == grammar->mapping_prefix) {
 						mappings.push_back(*iter);

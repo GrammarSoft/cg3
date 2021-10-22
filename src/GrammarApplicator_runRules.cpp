@@ -75,7 +75,7 @@ bool GrammarApplicator::updateRuleToCohorts(Cohort& c, const uint32_t& rsit) {
 
 bool GrammarApplicator::updateValidRules(const uint32IntervalVector& rules, uint32IntervalVector& intersects, const uint32_t& hash, Reading& reading) {
 	size_t os = intersects.size();
-	Grammar::rules_by_tag_t::const_iterator it = grammar->rules_by_tag.find(hash);
+	auto it = grammar->rules_by_tag.find(hash);
 	if (it != grammar->rules_by_tag.end()) {
 		Cohort& c = *(reading.parent);
 		for (auto rsit : (it->second)) {
@@ -394,7 +394,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 		if (debug_level > 1) {
 			std::cerr << "DEBUG: " << cohortset->size() << "/" << current.cohorts.size() << " = " << double(cohortset->size()) / double(current.cohorts.size()) << std::endl;
 		}
-		for (CohortSet::const_iterator rocit = cohortset->begin(); rocit != cohortset->end();) {
+		for (auto rocit = cohortset->cbegin(); rocit != cohortset->cend();) {
 			Cohort* cohort = *rocit;
 			++rocit;
 
@@ -553,7 +553,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 				// Check if any previous reading of this cohort had the same plain signature, and if so just copy their results
 				// This cache is cleared on a per-cohort basis
 				if (!(set.type & (ST_SPECIAL | ST_MAPPING | ST_CHILD_UNIFY)) && !readings_plain.empty()) {
-					readings_plain_t::const_iterator rpit = readings_plain.find(reading->hash_plain);
+					auto rpit = readings_plain.find(reading->hash_plain);
 					if (rpit != readings_plain.end()) {
 						reading->matched_target = rpit->second->matched_target;
 						reading->matched_tests = rpit->second->matched_tests;

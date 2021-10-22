@@ -575,7 +575,7 @@ void MatxinApplicator::processReading(Reading* cReading, const UChar* reading_st
 				}
 				// Add tags
 				TagList mappings;
-				TagVector::iterator iter = riter.base();
+				auto iter = riter.base();
 				for (--iter; iter != taglist.end(); ++iter) {
 					if ((*iter)->type & T_MAPPING || (*iter)->tag[0] == grammar->mapping_prefix) {
 						mappings.push_back(*iter);

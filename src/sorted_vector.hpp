@@ -188,6 +188,14 @@ public:
 		return elements.end();
 	}
 
+	const_iterator cbegin() const {
+		return elements.cbegin();
+	}
+
+	const_iterator cend() const {
+		return elements.cend();
+	}
+
 	const_reverse_iterator rbegin() const {
 		return elements.rbegin();
 	}

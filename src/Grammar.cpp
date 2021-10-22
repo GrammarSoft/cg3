@@ -229,16 +229,16 @@ void Grammar::addSet(Set*& to) {
 }
 
 Set* Grammar::getSet(uint32_t which) const {
-	Setuint32HashMap::const_iterator iter = sets_by_contents.find(which);
+	auto iter = sets_by_contents.find(which);
 	if (iter != sets_by_contents.end()) {
 		return iter->second;
 	}
 	else {
-		uint32FlatHashMap::const_iterator iter = sets_by_name.find(which);
+		auto iter = sets_by_name.find(which);
 		if (iter != sets_by_name.end()) {
-			Setuint32HashMap::const_iterator citer = sets_by_contents.find(iter->second);
+			auto citer = sets_by_contents.find(iter->second);
 			if (citer != sets_by_contents.end()) {
-				set_name_seeds_t::const_iterator iter2 = set_name_seeds.find(citer->second->name);
+				auto iter2 = set_name_seeds.find(citer->second->name);
 				if (iter2 != set_name_seeds.end()) {
 					return getSet(iter->second + iter2->second);
 				}
@@ -530,7 +530,7 @@ ContextualTest* Grammar::addContextualTest(ContextualTest* t) {
 	}
 
 	for (uint32_t seed = 0; seed < 1000; ++seed) {
-		contexts_t::iterator cit = contexts.find(t->hash + seed);
+		auto cit = contexts.find(t->hash + seed);
 		if (cit == contexts.end()) {
 			contexts[t->hash + seed] = t;
 			t->hash += seed;
@@ -564,7 +564,7 @@ void Grammar::addTemplate(ContextualTest* test, const UChar* name) {
 
 void Grammar::addAnchor(const UChar* to, uint32_t at, bool primary) {
 	uint32_t ah = allocateTag(to)->hash;
-	uint32FlatHashMap::iterator it = anchors.find(ah);
+	auto it = anchors.find(ah);
 	if (primary && it != anchors.end()) {
 		u_fprintf(ux_stderr, "Error: Redefinition attempt for anchor '%S' on line %u!\n", to, lines);
 		CG3Quit(1);

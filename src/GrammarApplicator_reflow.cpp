@@ -63,7 +63,7 @@ bool GrammarApplicator::isChildOf(const Cohort* child, const Cohort* parent) {
 				retval = false;
 				break;
 			}
-			std::map<uint32_t, Cohort*>::iterator it = gWindow->cohort_map.find(inner->dep_parent);
+			auto it = gWindow->cohort_map.find(inner->dep_parent);
 			if (it != gWindow->cohort_map.end()) {
 				inner = it->second;
 			}
@@ -109,7 +109,7 @@ bool GrammarApplicator::wouldParentChildLoop(const Cohort* parent, const Cohort*
 				retval = false;
 				break;
 			}
-			std::map<uint32_t, Cohort*>::iterator it = gWindow->cohort_map.find(inner->dep_parent);
+			auto it = gWindow->cohort_map.find(inner->dep_parent);
 			if (it != gWindow->cohort_map.end()) {
 				inner = it->second;
 			}
@@ -138,7 +138,7 @@ bool GrammarApplicator::wouldParentChildCross(const Cohort* parent, const Cohort
 	uint32_t mx = std::max(parent->global_number, child->global_number);
 
 	for (uint32_t i = mn + 1; i < mx; ++i) {
-		std::map<uint32_t, Cohort*>::iterator it = gWindow->cohort_map.find(parent->dep_parent);
+		auto it = gWindow->cohort_map.find(parent->dep_parent);
 		if (it != gWindow->cohort_map.end() && it->second->dep_parent != DEP_NO_PARENT) {
 			if (it->second->dep_parent < mn || it->second->dep_parent > mx) {
 				return true;
@@ -176,7 +176,7 @@ bool GrammarApplicator::attachParentChild(Cohort& parent, Cohort& child, bool al
 	if (child.dep_parent == DEP_NO_PARENT) {
 		child.dep_parent = child.dep_self;
 	}
-	std::map<uint32_t, Cohort*>::iterator it = gWindow->cohort_map.find(child.dep_parent);
+	auto it = gWindow->cohort_map.find(child.dep_parent);
 	if (it != gWindow->cohort_map.end()) {
 		it->second->remChild(child.dep_self);
 	}
@@ -307,11 +307,11 @@ void GrammarApplicator::reflowRelationWindow(uint32_t max) {
 			break;
 		}
 
-		for (RelationCtn::iterator rel = cohort->relations_input.begin(); rel != cohort->relations_input.end();) {
+		for (auto rel = cohort->relations_input.begin(); rel != cohort->relations_input.end();) {
 			auto newrel = ss_u32sv.get();
 
 			for (auto target : rel->second) {
-				uint32FlatHashMap::iterator it = gWindow->relation_map.find(target);
+				auto it = gWindow->relation_map.find(target);
 				if (it != gWindow->relation_map.end()) {
 					cohort->relations[rel->first].insert(it->second);
 				}
@@ -466,7 +466,7 @@ uint32_t GrammarApplicator::addTagToReading(Reading& reading, Tag* tag, bool reh
 		tag = generateVarstringTag(tag);
 	}
 
-	Grammar::sets_by_tag_t::const_iterator it = grammar->sets_by_tag.find(tag->hash);
+	auto it = grammar->sets_by_tag.find(tag->hash);
 	if (it != grammar->sets_by_tag.end()) {
 		reading.parent->possible_sets.resize(std::max(reading.parent->possible_sets.size(), it->second.size()));
 		reading.parent->possible_sets |= it->second;
@@ -599,7 +599,7 @@ bool GrammarApplicator::unmapReading(Reading& reading, const uint32_t rule) {
 }
 
 void GrammarApplicator::splitMappings(TagList& mappings, Cohort& cohort, Reading& reading, bool mapped) {
-	for (TagList::iterator it = mappings.begin(); it != mappings.end();) {
+	for (auto it = mappings.begin(); it != mappings.end();) {
 		Tag*& tag = *it;
 		while (tag->type & T_VARSTRING) {
 			tag = generateVarstringTag(tag);
