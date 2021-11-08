@@ -259,6 +259,7 @@ public:
 	void reserve(size_type n) {
 		if (size_ == 0) {
 			elements.resize(n, res_empty);
+			deleted = 0;
 			return;
 		}
 
