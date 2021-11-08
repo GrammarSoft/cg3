@@ -286,6 +286,7 @@ public:
 	void reserve(size_type n) {
 		if (size_ == 0) {
 			elements.resize(n, std::make_pair(res_empty, V()));
+			deleted = 0;
 			return;
 		}
 

@@ -118,9 +118,9 @@ inline int ux_isSetOp(const UChar* it) {
 			return S_FAILFAST;
 		case '\\':
 			return S_SET_DIFF;
-		case 8745:
+		case u'\u2229':
 			return S_SET_ISECT_U;
-		case 8710:
+		case u'\u2206':
 			return S_SET_SYMDIFF_U;
 		default:
 			break;
