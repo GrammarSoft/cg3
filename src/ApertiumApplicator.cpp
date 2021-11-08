@@ -489,6 +489,9 @@ void ApertiumApplicator::runGrammarOnText(std::istream& input, std::ostream& out
 			}
 			insert_if_exists(cCohort->possible_sets, grammar->sets_any);
 			cSWindow->appendCohort(cCohort);
+			if (cCohort->wordform->tag[2] == '@') {
+				cCohort->type |= CT_AP_UNKNOWN;
+			}
 
 			bool did_delim = false;
 			if (cCohort && cSWindow->cohorts.size() >= soft_limit && grammar->soft_delimiters && doesSetMatchCohortNormal(*cCohort, grammar->soft_delimiters->number)) {
@@ -711,6 +714,9 @@ void ApertiumApplicator::printReading(Reading* reading, std::ostream& output, Ap
 			if (bf[i] == '^' || bf[i] == '\\' || bf[i] == '/' || bf[i] == '$' || bf[i] == '[' || bf[i] == ']' || bf[i] == '{' || bf[i] == '}' || bf[i] == '<' || bf[i] == '>') {
 				bf_escaped += '\\';
 			}
+			if ((reading->parent->type & CT_AP_UNKNOWN) && bf[i] == '@') {
+				bf_escaped += '\\';
+			}
 			bf_escaped += bf[i];
 		}
 		if(surface_readings && bf.length() > 0 && bf_escaped[0] == '@') {
@@ -888,6 +894,9 @@ void ApertiumApplicator::printSingleWindow(SingleWindow* window, std::ostream& o
 			UString wf_escaped;
 			for (int i = 0; i < wf.length(); ++i) {
 				if (wf[i] == '^' || wf[i] == '\\' || wf[i] == '/' || wf[i] == '$' || wf[i] == '[' || wf[i] == ']' || wf[i] == '{' || wf[i] == '}' || wf[i] == '<' || wf[i] == '>') {
+					wf_escaped += '\\';
+				}
+				if ((cohort->type & CT_AP_UNKNOWN) && wf[i] == '@') {
 					wf_escaped += '\\';
 				}
 				wf_escaped += wf[i];

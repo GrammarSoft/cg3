@@ -41,6 +41,7 @@ enum {
 	CT_REMOVED     = (1 <<  2),
 	CT_NUM_CURRENT = (1 <<  3),
 	CT_DEP_DONE    = (1 <<  4),
+	CT_AP_UNKNOWN  = (1 <<  5),
 };
 
 constexpr auto DEP_NO_PARENT = std::numeric_limits<uint32_t>::max();
