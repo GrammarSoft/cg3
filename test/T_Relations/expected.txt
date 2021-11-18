@@ -22,7 +22,7 @@
 "<word>"
 	"word" startfirst @none ID:12 ADDRELATION(First):3 REMRELATION(First):8 ADD:21
 "<word>"
-	"word" startsecond @careful @none @var-relation ID:13 R:OtherSecond:8 R:Second:15 ADDRELATION(Second):4 ADDRELATION(OtherSecond):5 SETRELATION(OtherSecond):6 SETRELATION(OtherSecond):7 ADD:19 ADD:21 ADD:29
+	"word" startsecond @careful @none @var-relation @var-capture-Other ID:13 R:OtherSecond:8 R:Second:15 ADDRELATION(Second):4 ADDRELATION(OtherSecond):5 SETRELATION(OtherSecond):6 SETRELATION(OtherSecond):7 ADD:19 ADD:21 ADD:29 ADD:32
 "<word>"
 	"word" startthird @none ID:14 ADDRELATIONS(Begin3,End3):10 REMRELATIONS(Begin3,End3):13 ADD:21
 "<word>"

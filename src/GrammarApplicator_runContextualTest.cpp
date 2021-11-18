@@ -780,6 +780,7 @@ Cohort* GrammarApplicator::runRelationTest(SingleWindow* sWindow, Cohort* curren
 
 	// Recursion may happen, so can't be static
 	CohortSet rels;
+	uint8_t regexgrpz = regexgrps.first;
 
 	auto rtag = single_tags[test->relation];
 	while (rtag->type & T_VARSTRING) {
@@ -792,6 +793,19 @@ Cohort* GrammarApplicator::runRelationTest(SingleWindow* sWindow, Cohort* curren
 				auto it = sWindow->parent->cohort_map.find(citer);
 				if (it != sWindow->parent->cohort_map.end()) {
 					rels.insert(it->second);
+				}
+			}
+		}
+	}
+	else if (rtag->type & T_REGEXP) {
+		UErrorCode status = U_ZERO_ERROR;
+		auto caps = uregex_groupCount(rtag->regexp, &status);
+		for (const auto& riter : current->relations) {
+			for (auto citer : riter.second) {
+				auto it = sWindow->parent->cohort_map.find(citer);
+				if (it != sWindow->parent->cohort_map.end() && doesTagMatchRegexp(riter.first, *rtag, caps != 0)) {
+					rels.insert(it->second);
+					regexgrps.first = std::min(regexgrps.first, static_cast<uint8_t>(regexgrpz + caps));
 				}
 			}
 		}
@@ -853,6 +867,9 @@ Cohort* GrammarApplicator::runRelationTest(SingleWindow* sWindow, Cohort* curren
 		}
 	}
 
+	if (!rv) {
+		regexgrps.first = regexgrpz;
+	}
 	return rv;
 }
 }
