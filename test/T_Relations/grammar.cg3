@@ -27,3 +27,6 @@ REMRELATIONS (NoSuchRelation) (Begin3) (startthird) FROM (0*W (third)) ;
 
 ADD (@var-relation-error) (/^start\(second\)$/r) (r:VSTR:$1 (*)) ;
 ADD (@var-relation) (/^start\(second\)$/r) (r:VSTR:%u$1 (*)) ;
+
+ADD (VSTR:@var-capture-err-$1) (startsecond) (r:/^Second\(.+\)$/r (*)) ;
+ADD (VSTR:@var-capture-$1) (startsecond) (r:/^\(.+\)Second$/r (*)) ;
