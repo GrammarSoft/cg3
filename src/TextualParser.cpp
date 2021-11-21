@@ -2229,6 +2229,7 @@ void TextualParser::parseFromUChar(UChar* input, const char* fname) {
 					std::pair<size_t, bool*>(S_STRICT_ICASE, &strict_icase),
 					std::pair<size_t, bool*>(S_SELF_NO_BARRIER, &self_no_barrier),
 					std::pair<size_t, bool*>(S_ORDERED, &result->ordered),
+					std::pair<size_t, bool*>(S_ADDCOHORT_ATTACH, &result->addcohort_attach),
 				};
 
 				while (*p != ';') {
@@ -2246,6 +2247,10 @@ void TextualParser::parseFromUChar(UChar* input, const char* fname) {
 					if (!found) {
 						error("%s: Error: Invalid option found on line %u near `%S`!\n", p);
 					}
+				}
+
+				if (result->addcohort_attach) {
+					result->has_dep = true;
 				}
 
 				result->lines += SKIPWS(p, ';');

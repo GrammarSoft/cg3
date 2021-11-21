@@ -94,6 +94,7 @@ int BinaryGrammar::parse_grammar(std::istream& input) {
 	grammar->has_relations = (fields & BINF_RELATIONS) != 0;
 	grammar->has_bag_of_tags = (fields & BINF_BAG) != 0;
 	grammar->ordered = (fields & BINF_ORDERED) != 0;
+	grammar->addcohort_attach = (fields & BINF_ADDCOHORT_ATTACH) != 0;
 
 	if (fields & BINF_PREFIX) {
 		ucnv_reset(conv);

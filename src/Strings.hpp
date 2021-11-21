@@ -185,6 +185,7 @@ enum : uint32_t {
 	S_VSU,
 	S_VSl,
 	S_VSL,
+	S_ADDCOHORT_ATTACH,
 	STRINGS_COUNT,
 };
 

@@ -812,6 +812,9 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 
 				current.parent->cohort_map[cCohort->global_number] = cCohort;
 				current.parent->dep_window[cCohort->global_number] = cCohort;
+				if (grammar->addcohort_attach && (type == K_ADDCOHORT_BEFORE || type == K_ADDCOHORT_AFTER)) {
+					attachParentChild(*cohort, *cCohort);
+				}
 
 				if (cCohort->readings.empty()) {
 					initEmptyCohort(*cCohort);
