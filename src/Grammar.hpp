@@ -47,6 +47,7 @@ public:
 	bool is_binary = false;
 	bool sub_readings_ltr = false;
 	bool ordered = false;
+	bool addcohort_attach = false;
 	size_t grammar_size = 0;
 	UChar mapping_prefix = '@';
 	uint32_t lines = 0;

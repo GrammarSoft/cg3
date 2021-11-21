@@ -1,6 +1,8 @@
 DELIMITERS = "<$.>" ;
 PARENTHESES = ("(" ")") ;
 
+OPTIONS += addcohort-attach ;
+
 ADD (@last-old) (<<<) ;
 REMCOHORT (<<<) ;
 ADD (@last-after-rem) (<<<) ;

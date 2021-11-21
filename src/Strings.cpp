@@ -213,6 +213,7 @@ const UString stringbits[STRINGS_COUNT] = {
 	"\x01U"_us,
 	"\x01l"_us,
 	"\x01L"_us,
+	"addcohort-attach"_us,
 };
 
 std::vector<UString> gbuffers(NUM_GBUFFERS, UString(CG3_BUFFER_SIZE, 0));

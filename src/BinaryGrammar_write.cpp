@@ -100,6 +100,9 @@ int BinaryGrammar::writeBinaryGrammar(FILE* output) {
 	if (grammar->text_delimiters) {
 		fields |= BINF_TEXT_DELIMS;
 	}
+	if (grammar->addcohort_attach) {
+		fields |= BINF_ADDCOHORT_ATTACH;
+	}
 
 	u32tmp = hton32(fields);
 	fwrite_throw(&u32tmp, sizeof(u32tmp), 1, output);

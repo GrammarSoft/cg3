@@ -46,6 +46,7 @@ enum : uint32_t {
 	BINF_BAG          = (1 << 14),
 	BINF_ORDERED      = (1 << 15),
 	BINF_TEXT_DELIMS  = (1 << 16),
+	BINF_ADDCOHORT_ATTACH = (1 << 17),
 };
 
 class BinaryGrammar : public IGrammarParser {
