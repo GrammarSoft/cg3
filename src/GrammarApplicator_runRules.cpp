@@ -662,10 +662,13 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						++rule.num_match;
 
 						if (regex_prop && i && !regexgrps_c.empty()) {
-							auto it = regexgrps_c.find(cohort->readings[i - 1]->number);
-							if (it != regexgrps_c.end()) {
-								regexgrps_c.insert(std::make_pair(reading->number, it->second));
-								regexgrps_z.insert(std::make_pair(reading->number, regexgrps_z.find(cohort->readings[i - 1]->number)->second));
+							for (auto z = i; z > 0; --z) {
+								auto it = regexgrps_c.find(cohort->readings[z - 1]->number);
+								if (it != regexgrps_c.end()) {
+									regexgrps_c.insert(std::make_pair(reading->number, it->second));
+									regexgrps_z.insert(std::make_pair(reading->number, regexgrps_z.find(cohort->readings[z - 1]->number)->second));
+									break;
+								}
 							}
 						}
 					}
