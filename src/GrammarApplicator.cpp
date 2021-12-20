@@ -79,6 +79,10 @@ void GrammarApplicator::setGrammar(Grammar* res) {
 	endtag = tag_end->hash;
 	substtag = tag_subst->hash;
 
+	UString mp{ grammar->mapping_prefix };
+	mprefix_key = addTag("_MPREFIX"_us)->hash;
+	mprefix_value = addTag(mp)->hash;
+
 	index_readingSet_yes.clear();
 	index_readingSet_yes.resize(grammar->sets_list.size());
 	index_readingSet_no.clear();

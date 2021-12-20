@@ -235,6 +235,10 @@ int BinaryGrammar::parse_grammar(std::istream& input) {
 			}
 		}
 		// 1 << 12 used earlier
+		if (fields & (1 << 13)) {
+			fread_throw(&u32tmp, sizeof(uint32_t), 1, input);
+			t->variable_hash = ntoh32(u32tmp);
+		}
 
 		grammar->single_tags[t->hash] = t;
 		grammar->single_tags_list[t->number] = t;

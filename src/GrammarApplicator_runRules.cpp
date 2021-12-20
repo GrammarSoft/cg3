@@ -2465,6 +2465,7 @@ void GrammarApplicator::runGrammarOnWindow() {
 	for (auto vit : current->variables_rem) {
 		variables.erase(vit);
 	}
+	variables[mprefix_key] = mprefix_value;
 
 	if (has_dep) {
 		reflowDependencyWindow();

@@ -86,7 +86,11 @@ public:
 	double comparison_val = 0;
 	uint32_t type = 0;
 	uint32_t comparison_hash = 0;
-	uint32_t dep_self = 0, dep_parent = 0;
+	uint32_t dep_self = 0;
+	union {
+		uint32_t dep_parent = 0;
+		uint32_t variable_hash;
+	};
 	uint32_t hash = 0;
 	uint32_t plain_hash = 0;
 	uint32_t number = 0;
