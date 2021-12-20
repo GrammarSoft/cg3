@@ -1,3 +1,4 @@
+<STREAMCMD:SETVAR:value=something>
 <STREAMCMD:SETVAR:news>
 
 <STREAMCMD:SETVAR:poetry>

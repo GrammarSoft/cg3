@@ -74,6 +74,7 @@ Tag* parseTag(const UChar* to, const UChar* p, State& state) {
 		}
 		if (tmp[0] == 'V' && tmp[1] == 'A' && tmp[2] == 'R' && tmp[3] == ':') {
 			tag->type |= T_VARIABLE;
+			tag->variable_hash = 0;
 			tmp += 4;
 			length -= 4;
 		}
@@ -189,7 +190,15 @@ Tag* parseTag(const UChar* to, const UChar* p, State& state) {
 			}
 		}
 
-		tag->comparison_hash = hash_value(tag->tag);
+		if ((tag->type & T_VARIABLE) && tag->tag.find('=') != UString::npos) {
+			size_t pos = tag->tag.find('=');
+			tag->comparison_op = OP_EQUALS;
+			tag->variable_hash = parseTag(&tag->tag[pos + 1], p, state)->hash;
+			tag->comparison_hash = hash_value(tag->tag.substr(0, pos));
+		}
+		else {
+			tag->comparison_hash = hash_value(tag->tag);
+		}
 
 		if (tag->tag[0] == '<' && tag->tag[length - 1] == '>') {
 			tag->parseNumeric();

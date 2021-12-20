@@ -212,6 +212,7 @@ protected:
 	uint32_t par_left_tag = 0, par_right_tag = 0;
 	uint32_t par_left_pos = 0, par_right_pos = 0;
 	bool did_final_enclosure = false;
+	uint32_t mprefix_key = 0, mprefix_value = 0;
 
 	tmpl_context_t tmpl_cntx;
 

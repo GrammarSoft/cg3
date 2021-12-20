@@ -471,13 +471,28 @@ uint32_t GrammarApplicator::doesTagMatchReading(const Reading& reading, const Ta
 		}
 	}
 	else if (tag.type & T_VARIABLE) {
-		if (variables.find(tag.comparison_hash) == variables.end()) {
-			//u_fprintf(ux_stderr, "Info: %S failed.\n", tag.tag.c_str());
-			match = 0;
-		}
-		else {
-			//u_fprintf(ux_stderr, "Info: %S matched.\n", tag.tag.c_str());
-			match = tag.hash;
+		match = 0;
+		auto it = variables.find(tag.comparison_hash);
+		if (it != variables.end()) {
+			if (tag.variable_hash == 0) {
+				match = tag.hash;
+			}
+			else {
+				auto comp = single_tags.find(tag.variable_hash)->second;
+				if (comp->type & T_REGEXP) {
+					if (doesTagMatchRegexp(it->second, *comp, bypass_index)) {
+						match = tag.hash;
+					}
+				}
+				else if (comp->type & T_CASE_INSENSITIVE) {
+					if (doesTagMatchIcase(it->second, *comp, bypass_index)) {
+						match = tag.hash;
+					}
+				}
+				else if (comp->hash == it->second) {
+					match = tag.hash;
+				}
+			}
 		}
 	}
 	else if (tag.type & T_PAR_LEFT) {

@@ -1,5 +1,6 @@
 <STREAMCMD:REMVAR:news>
 <STREAMCMD:SETVAR:poetry>
+<STREAMCMD:SETVAR:value=something>
 "<They>"
 	"they" PERS @poetry
 "<say>"
@@ -17,7 +18,7 @@
 "<keep>"
 	"keep" V @poetry
 "<.>"
-	"." @poetry
+	"." @poetry @value-plain @value-icase @value-regex @value-regex-eth @mapping-prefix-@
 
 <STREAMCMD:SETVAR:drama>
 <STREAMCMD:REMVAR:poetry>
@@ -38,7 +39,7 @@
 "<scarf>"
 	"scarf" N @drama
 "<?>"
-	"?" @drama
+	"?" @drama @value-plain @value-icase @value-regex @value-regex-eth @mapping-prefix-@
 
 "<Do>"
 	"do" V @drama
@@ -57,5 +58,4 @@
 "<scarf>"
 	"scarf" N @drama
 "<?>"
-	"?" @drama
-
+	"?" @drama @value-plain @value-icase @value-regex @value-regex-eth @mapping-prefix-@

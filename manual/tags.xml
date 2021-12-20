@@ -359,8 +359,13 @@
       Global variables persist until unset and are not bound to any window, cohort, or reading.
     </para>
     <para>
-      You can query a global variable with the form VAR:name (implemented) or query whether a variable has a
-      specific value with VAR:name=value (not implemented just yet).
+      You can query a global variable with the form <code>VAR:name</code> or query whether a variable has a
+      specific value with <code>VAR:name=value</code>. The value test can also be in the form of
+      <link linkend="regex-icase">// regular expressions</link>, a'la <code>VAR:name=/val.*/r</code>,
+      including capturing parts of the value.
+    </para>
+    <para>
+      The runtime value of mapping prefix is stored in the special variable named <code>_MPREFIX</code>.
     </para>
     <screen>
       REMOVE (@poetry) IF (0 (VAR:news)) ;
