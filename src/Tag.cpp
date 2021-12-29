@@ -94,7 +94,7 @@ void Tag::parseTagRaw(const UChar* to, Grammar* grammar) {
 
 	for (auto iter : grammar->regex_tags) {
 		UErrorCode status = U_ZERO_ERROR;
-		uregex_setText(iter, tag.c_str(), static_cast<int32_t>(tag.size()), &status);
+		uregex_setText(iter, tag.c_str(), SI32(tag.size()), &status);
 		if (status == U_ZERO_ERROR) {
 			if (uregex_find(iter, -1, &status)) {
 				type |= T_TEXTUAL;

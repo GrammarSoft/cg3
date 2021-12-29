@@ -39,12 +39,6 @@ GrammarApplicator::GrammarApplicator(std::ostream& ux_err)
 }
 
 GrammarApplicator::~GrammarApplicator() {
-	for (auto& iter_stag : single_tags) {
-		if (iter_stag.second && !(iter_stag.second->type & T_GRAMMAR)) {
-			delete iter_stag.second;
-		}
-	}
-
 	if (owns_grammar) {
 		delete grammar;
 	}
@@ -71,7 +65,6 @@ void GrammarApplicator::resetIndexes() {
 
 void GrammarApplicator::setGrammar(Grammar* res) {
 	grammar = res;
-	single_tags = grammar->single_tags;
 	tag_begin = addTag(stringbits[S_BEGINTAG]);
 	tag_end = addTag(stringbits[S_ENDTAG]);
 	tag_subst = addTag(stringbits[S_IGNORE]);
@@ -97,7 +90,7 @@ void GrammarApplicator::setGrammar(Grammar* res) {
 			UErrorCode status = U_ZERO_ERROR;
 
 			uint32_t flags = (t->type & T_CASE_INSENSITIVE) ? UREGEX_CASE_INSENSITIVE : 0;
-			text_delimiters.push_back(uregex_open(t->tag.c_str(), static_cast<int32_t>(t->tag.size()), flags, &pe, &status));
+			text_delimiters.push_back(uregex_open(t->tag.c_str(), SI32(t->tag.size()), flags, &pe, &status));
 			if (status != U_ZERO_ERROR) {
 				u_fprintf(ux_stderr, "Error: uregex_open returned %s trying to parse pattern %S - cannot continue!\n", u_errorName(status), t->tag.c_str());
 				CG3Quit(1);
@@ -135,7 +128,7 @@ void GrammarApplicator::setTextDelimiter(UString rx) {
 	UErrorCode status = U_ZERO_ERROR;
 
 	uint32_t flags = icase ? UREGEX_CASE_INSENSITIVE : 0;
-	text_delimiters.push_back(uregex_open(rx.c_str(), static_cast<int32_t>(rx.size()), flags, &pe, &status));
+	text_delimiters.push_back(uregex_open(rx.c_str(), SI32(rx.size()), flags, &pe, &status));
 	if (status != U_ZERO_ERROR) {
 		u_fprintf(ux_stderr, "Error: uregex_open returned %s trying to parse pattern %S - cannot continue!\n", u_errorName(status), rx.c_str());
 		CG3Quit(1);
@@ -179,7 +172,7 @@ void GrammarApplicator::index() {
 	}
 
 	if (sections.empty()) {
-		int32_t smax = static_cast<int32_t>(grammar->sections.size());
+		int32_t smax = SI32(grammar->sections.size());
 		for (int32_t i = 0; i < smax; i++) {
 			for (auto r : grammar->rules) {
 				if (r->section < 0 || r->section > i) {
@@ -191,11 +184,11 @@ void GrammarApplicator::index() {
 		}
 	}
 	else {
-		numsections = static_cast<uint32_t>(sections.size());
+		numsections = UI32(sections.size());
 		for (uint32_t n = 0; n < numsections; n++) {
 			for (uint32_t e = 0; e <= n; e++) {
 				for (auto r : grammar->rules) {
-					if (r->section != static_cast<int32_t>(sections[e]) - 1) {
+					if (r->section != SI32(sections[e]) - 1) {
 						continue;
 					}
 					uint32IntervalVector& m = runsections[n];
@@ -221,7 +214,7 @@ void GrammarApplicator::index() {
 	span_pattern_utf = local_utf_pattern;
 	span_pattern_latin = local_latin_pattern;
 
-	uint8_t w = static_cast<uint8_t>(floor(log10(hard_limit)) + 1);
+	auto w = UI8(floor(log10(hard_limit)) + 1);
 	span_pattern_utf[6] = span_pattern_utf[13] = '0' + w;
 	span_pattern_latin[6] = span_pattern_latin[14] = '0' + w;
 
@@ -242,7 +235,7 @@ Tag* GrammarApplicator::addTag(Tag* tag) {
 	for (; seed < 10000; seed++) {
 		uint32_t ih = hash + seed;
 		Taguint32HashMap::iterator it;
-		if ((it = single_tags.find(ih)) != single_tags.end()) {
+		if ((it = grammar->single_tags.find(ih)) != grammar->single_tags.end()) {
 			Tag* t = it->second;
 			if (t == tag) {
 				return tag;
@@ -260,17 +253,17 @@ Tag* GrammarApplicator::addTag(Tag* tag) {
 			}
 			tag->seed = seed;
 			hash = tag->rehash();
-			single_tags[hash] = tag;
+			grammar->single_tags[hash] = tag;
 			break;
 		}
 	}
-	return single_tags[hash];
+	return grammar->single_tags[hash];
 }
 
 Tag* GrammarApplicator::addTag(const UChar* txt, bool vstr) {
 	Taguint32HashMap::iterator it;
 	uint32_t thash = hash_value(txt);
-	if ((it = single_tags.find(thash)) != single_tags.end() && !it->second->tag.empty() && it->second->tag == txt) {
+	if ((it = grammar->single_tags.find(thash)) != grammar->single_tags.end() && !it->second->tag.empty() && it->second->tag == txt) {
 		return it->second;
 	}
 
@@ -287,13 +280,13 @@ Tag* GrammarApplicator::addTag(const UChar* txt, bool vstr) {
 	bool reflow = false;
 	if ((tag->type & T_REGEXP) && !is_textual(tag->tag)) {
 		if (grammar->regex_tags.insert(tag->regexp).second) {
-			for (auto& titer : single_tags) {
+			for (auto& titer : grammar->single_tags) {
 				if (titer.second->type & T_TEXTUAL) {
 					continue;
 				}
 				for (auto iter : grammar->regex_tags) {
 					UErrorCode status = U_ZERO_ERROR;
-					uregex_setText(iter, titer.second->tag.c_str(), static_cast<int32_t>(titer.second->tag.size()), &status);
+					uregex_setText(iter, titer.second->tag.c_str(), SI32(titer.second->tag.size()), &status);
 					if (status == U_ZERO_ERROR) {
 						if (uregex_find(iter, -1, &status)) {
 							titer.second->type |= T_TEXTUAL;
@@ -306,7 +299,7 @@ Tag* GrammarApplicator::addTag(const UChar* txt, bool vstr) {
 	}
 	if ((tag->type & T_CASE_INSENSITIVE) && !is_textual(tag->tag)) {
 		if (grammar->icase_tags.insert(tag).second) {
-			for (auto& titer : single_tags) {
+			for (auto& titer : grammar->single_tags) {
 				if (titer.second->type & T_TEXTUAL) {
 					continue;
 				}
@@ -372,7 +365,7 @@ void GrammarApplicator::printReading(const Reading* reading, std::ostream& outpu
 	}
 
 	if (reading->baseform) {
-		u_fprintf(output, "%S", single_tags.find(reading->baseform)->second->tag.c_str());
+		u_fprintf(output, "%S", grammar->single_tags.find(reading->baseform)->second->tag.c_str());
 	}
 
 	uint32SortedVector unique;
@@ -389,7 +382,7 @@ void GrammarApplicator::printReading(const Reading* reading, std::ostream& outpu
 			}
 			unique.insert(tter);
 		}
-		const Tag* tag = single_tags[tter];
+		const Tag* tag = grammar->single_tags[tter];
 		if (tag->type & T_DEPENDENCY && has_dep && !dep_original) {
 			continue;
 		}
@@ -458,7 +451,7 @@ void GrammarApplicator::printReading(const Reading* reading, std::ostream& outpu
 					// ToDo: On-the-fly and relations from input should never be allocated in the grammar
 					auto it = grammar->single_tags.find(miter.first);
 					if (it == grammar->single_tags.end()) {
-						it = single_tags.find(miter.first);
+						it = grammar->single_tags.find(miter.first);
 					}
 					u_fprintf(output, " R:%S:%u", it->second->tag.c_str(), siter);
 				}
@@ -499,7 +492,7 @@ void GrammarApplicator::printCohort(Cohort* cohort, std::ostream& output) {
 			if (tter == cohort->wordform->hash) {
 				continue;
 			}
-			const Tag* tag = single_tags[tter];
+			const Tag* tag = grammar->single_tags[tter];
 			u_fprintf(output, " %S", tag->tag.c_str());
 		}
 	}
@@ -541,11 +534,11 @@ removed:
 
 void GrammarApplicator::printSingleWindow(SingleWindow* window, std::ostream& output) {
 	for (auto var : window->variables_output) {
-		Tag* key = single_tags[var];
+		Tag* key = grammar->single_tags[var];
 		auto iter = window->variables_set.find(var);
 		if (iter != window->variables_set.end()) {
 			if (iter->second != grammar->tag_any) {
-				Tag* value = single_tags[iter->second];
+				Tag* value = grammar->single_tags[iter->second];
 				u_fprintf(output, "%S%S=%S>\n", stringbits[S_CMD_SETVAR].c_str(), key->tag.c_str(), value->tag.c_str());
 			}
 			else {
@@ -564,7 +557,7 @@ void GrammarApplicator::printSingleWindow(SingleWindow* window, std::ostream& ou
 		}
 	}
 
-	uint32_t cs = static_cast<uint32_t>(window->cohorts.size());
+	uint32_t cs = UI32(window->cohorts.size());
 	for (uint32_t c = 0; c < cs; c++) {
 		Cohort* cohort = window->cohorts[c];
 		printCohort(cohort, output);
@@ -604,7 +597,7 @@ void GrammarApplicator::pipeOutReading(const Reading* reading, std::ostream& out
 	writeRaw(ss, flags);
 
 	if (reading->baseform) {
-		writeUTF8String(ss, single_tags.find(reading->baseform)->second->tag);
+		writeUTF8String(ss, grammar->single_tags.find(reading->baseform)->second->tag);
 	}
 
 	uint32_t cs = 0;
@@ -612,7 +605,7 @@ void GrammarApplicator::pipeOutReading(const Reading* reading, std::ostream& out
 		if (tter == reading->baseform || tter == reading->parent->wordform->hash) {
 			continue;
 		}
-		const Tag* tag = single_tags.find(tter)->second;
+		const Tag* tag = grammar->single_tags.find(tter)->second;
 		if (tag->type & T_DEPENDENCY && has_dep) {
 			continue;
 		}
@@ -624,7 +617,7 @@ void GrammarApplicator::pipeOutReading(const Reading* reading, std::ostream& out
 		if (tter == reading->baseform || tter == reading->parent->wordform->hash) {
 			continue;
 		}
-		const Tag* tag = single_tags.find(tter)->second;
+		const Tag* tag = grammar->single_tags.find(tter)->second;
 		if (tag->type & T_DEPENDENCY && has_dep) {
 			continue;
 		}
@@ -632,7 +625,7 @@ void GrammarApplicator::pipeOutReading(const Reading* reading, std::ostream& out
 	}
 
 	const auto& str = ss.str();
-	cs = static_cast<uint32_t>(str.size());
+	cs = UI32(str.size());
 	writeRaw(output, cs);
 	output.write(str.c_str(), str.size());
 }
@@ -657,7 +650,7 @@ void GrammarApplicator::pipeOutCohort(const Cohort* cohort, std::ostream& output
 
 	writeUTF8String(ss, cohort->wordform->tag);
 
-	uint32_t cs = static_cast<uint32_t>(cohort->readings.size());
+	uint32_t cs = UI32(cohort->readings.size());
 	writeRaw(ss, cs);
 	for (auto rter1 : cohort->readings) {
 		pipeOutReading(rter1, ss);
@@ -667,7 +660,7 @@ void GrammarApplicator::pipeOutCohort(const Cohort* cohort, std::ostream& output
 	}
 
 	const auto& str = ss.str();
-	cs = static_cast<uint32_t>(str.size());
+	cs = UI32(str.size());
 	writeRaw(output, cs);
 	output.write(str.c_str(), str.size());
 }
@@ -677,7 +670,7 @@ void GrammarApplicator::pipeOutSingleWindow(const SingleWindow& window, Process&
 
 	writeRaw(ss, window.number);
 
-	uint32_t cs = (uint32_t)window.cohorts.size() - 1;
+	auto cs = UI32(window.cohorts.size()) - 1;
 	writeRaw(ss, cs);
 
 	for (uint32_t c = 1; c < cs + 1; c++) {
@@ -685,7 +678,7 @@ void GrammarApplicator::pipeOutSingleWindow(const SingleWindow& window, Process&
 	}
 
 	const auto& str = ss.str();
-	cs = static_cast<uint32_t>(str.size());
+	cs = UI32(str.size());
 	writeRaw(output, cs);
 	output.write(str.c_str(), str.size());
 
@@ -719,7 +712,7 @@ void GrammarApplicator::pipeInReading(Reading* reading, Process& input, bool for
 
 	if (flags & (1 << 3)) {
 		UString str = readUTF8String(ss);
-		if (str != single_tags.find(reading->baseform)->second->tag) {
+		if (str != grammar->single_tags.find(reading->baseform)->second->tag) {
 			Tag* tag = addTag(str);
 			reading->baseform = tag->hash;
 		}

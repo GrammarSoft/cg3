@@ -91,7 +91,7 @@ void FSTApplicator::runGrammarOnText(std::istream& input, std::ostream& output) 
 		++lines;
 		size_t offset = 0, packoff = 0;
 		// Read as much of the next line as will fit in the current buffer
-		while (u_fgets(&line[offset], static_cast<int32_t>(line.size() - offset - 1), input)) {
+		while (u_fgets(&line[offset], SI32(line.size() - offset - 1), input)) {
 			// Copy the segment just read to cleaned
 			for (size_t i = offset; i < line.size(); ++i) {
 				// Only copy one space character, regardless of how many are in input
@@ -296,7 +296,7 @@ void FSTApplicator::runGrammarOnText(std::istream& input, std::ostream& output) 
 					u_fprintf(ux_stderr, "Warning: Line %u had no valid baseform.\n", numLines);
 					u_fflush(ux_stderr);
 				}
-				if (single_tags[cReading->baseform]->tag.size() == 2) {
+				if (grammar->single_tags[cReading->baseform]->tag.size() == 2) {
 					delTagFromReading(*cReading, cReading->baseform);
 					cReading->baseform = makeBaseFromWord(cCohort->wordform->hash)->hash;
 				}

@@ -178,7 +178,7 @@ inline bool ux_simplecasecmp(const UChar* a, const UString& b) {
 
 inline bool ux_strCaseCompare(const UString& a, const UString& b) {
 	UErrorCode status = U_ZERO_ERROR;
-	auto rv = u_strCaseCompare(a.c_str(), static_cast<int32_t>(a.size()), b.c_str(), static_cast<int32_t>(b.size()), U_FOLD_CASE_DEFAULT, &status);
+	auto rv = u_strCaseCompare(a.c_str(), SI32(a.size()), b.c_str(), SI32(b.size()), U_FOLD_CASE_DEFAULT, &status);
 	if (status != U_ZERO_ERROR) {
 		throw new std::runtime_error(u_errorName(status));
 	}

@@ -67,7 +67,7 @@ enum : uint32_t {
 	T_ATTACHTO         = (1 << 19),
 	T_SPECIAL          = (1 << 20),
 	T_USED             = (1 << 21),
-	T_GRAMMAR          = (1 << 22),
+	//T_GRAMMAR          = (1 << 22), // No longer needed since switch to grammar-owned single_tags
 	T_SET              = (1 << 23),
 	T_VSTR             = (1 << 24),
 	T_ENCL             = (1 << 25),

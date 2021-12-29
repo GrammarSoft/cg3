@@ -189,14 +189,14 @@ void cg3_applicator_setoption(cg3_applicator* applicator_, cg3_option option, vo
 	GrammarApplicator* applicator = static_cast<GrammarApplicator*>(applicator_);
 	switch (option) {
 	case CG3O_SECTIONS: {
-		uint32_t* value = static_cast<uint32_t*>(value_);
+		auto value = static_cast<uint32_t*>(value_);
 		for (uint32_t i = 1; i <= *value; ++i) {
 			applicator->sections.push_back(i);
 		}
 		break;
 	}
 	case CG3O_SECTIONS_TEXT: {
-		const char* value = static_cast<const char*>(value_);
+		auto value = static_cast<const char*>(value_);
 		GAppSetOpts_ranged(value, applicator->sections);
 		break;
 	}
@@ -233,7 +233,7 @@ inline Tag* _tag_copy(GrammarApplicator* to, Tag* t) {
 }
 
 inline Tag* _tag_copy(GrammarApplicator* from, GrammarApplicator* to, uint32_t hash) {
-	Tag* t = from->single_tags[hash];
+	Tag* t = from->grammar->single_tags[hash];
 	return _tag_copy(to, t);
 }
 
@@ -366,7 +366,7 @@ void cg3_cohort_getrelation_u(cg3_cohort *cohort_, const UChar *rel, uint32_t *r
 	if ((cohort->type & CT_RELATED) && !cohort->relations.empty()) {
 		for (auto miter : cohort->relations) {
 			for (auto siter : miter->second) {
-				if (ga->single_tags.find(miter.first)->second->tag == rel) {
+				if (ga->grammar->single_tags.find(miter.first)->second->tag == rel) {
 					*rel_parent = siter;
 				}
 			}
@@ -442,7 +442,7 @@ cg3_tag* cg3_reading_gettag(cg3_reading* reading_, size_t which) {
 	auto it = reading->tags_list.begin();
 	std::advance(it, which);
 	auto ga = reading->parent->parent->parent->parent;
-	return ga->single_tags.find(*it)->second;
+	return ga->grammar->single_tags.find(*it)->second;
 }
 
 size_t cg3_reading_numtraces(cg3_reading* reading_) {
@@ -499,7 +499,7 @@ cg3_tag* cg3_tag_create_u(cg3_applicator* applicator_, const UChar* text) {
 cg3_tag* cg3_tag_create_u8(cg3_applicator* applicator, const char* text) {
 	UErrorCode status = U_ZERO_ERROR;
 
-	u_strFromUTF8(&gbuffers[0][0], CG3_BUFFER_SIZE - 1, 0, text, static_cast<int32_t>(strlen(text)), &status);
+	u_strFromUTF8(&gbuffers[0][0], CG3_BUFFER_SIZE - 1, 0, text, SI32(strlen(text)), &status);
 	if (U_FAILURE(status)) {
 		u_fprintf(ux_stderr, "CG3 Error: Failed to convert text from UTF-8 to UTF-16. Status = %s\n", u_errorName(status));
 		return 0;
@@ -532,7 +532,7 @@ cg3_tag* cg3_tag_create_u32(cg3_applicator* applicator, const uint32_t* text) {
 cg3_tag* cg3_tag_create_w(cg3_applicator* applicator, const wchar_t* text) {
 	UErrorCode status = U_ZERO_ERROR;
 
-	u_strFromWCS(&gbuffers[0][0], CG3_BUFFER_SIZE - 1, 0, text, static_cast<int32_t>(wcslen(text)), &status);
+	u_strFromWCS(&gbuffers[0][0], CG3_BUFFER_SIZE - 1, 0, text, SI32(wcslen(text)), &status);
 	if (U_FAILURE(status)) {
 		u_fprintf(ux_stderr, "CG3 Error: Failed to convert text from wchar_t to UTF-16. Status = %s\n", u_errorName(status));
 		return 0;
@@ -550,7 +550,7 @@ const char* cg3_tag_gettext_u8(cg3_tag* tag_) {
 	auto tag = static_cast<Tag*>(tag_);
 	UErrorCode status = U_ZERO_ERROR;
 
-	u_strToUTF8(&cbuffers[0][0], CG3_BUFFER_SIZE - 1, 0, tag->tag.c_str(), static_cast<int32_t>(tag->tag.size()), &status);
+	u_strToUTF8(&cbuffers[0][0], CG3_BUFFER_SIZE - 1, 0, tag->tag.c_str(), SI32(tag->tag.size()), &status);
 	if (U_FAILURE(status)) {
 		u_fprintf(ux_stderr, "CG3 Error: Failed to convert text from UChar to UTF-8. Status = %s\n", u_errorName(status));
 		return 0;
@@ -570,7 +570,7 @@ const uint32_t* cg3_tag_gettext_u32(cg3_tag* tag_) {
 
 	UChar32* tmp = reinterpret_cast<UChar32*>(&cbuffers[0][0]);
 
-	u_strToUTF32(tmp, (CG3_BUFFER_SIZE / sizeof(UChar32)) - 1, 0, tag->tag.c_str(), static_cast<int32_t>(tag->tag.size()), &status);
+	u_strToUTF32(tmp, (CG3_BUFFER_SIZE / sizeof(UChar32)) - 1, 0, tag->tag.c_str(), SI32(tag->tag.size()), &status);
 	if (U_FAILURE(status)) {
 		u_fprintf(ux_stderr, "CG3 Error: Failed to convert text from UChar to UTF-32. Status = %s\n", u_errorName(status));
 		return 0;
@@ -585,7 +585,7 @@ const wchar_t* cg3_tag_gettext_w(cg3_tag* tag_) {
 
 	auto tmp = reinterpret_cast<wchar_t*>(&cbuffers[0][0]);
 
-	u_strToWCS(tmp, (CG3_BUFFER_SIZE / sizeof(wchar_t)) - 1, 0, tag->tag.c_str(), static_cast<int32_t>(tag->tag.size()), &status);
+	u_strToWCS(tmp, (CG3_BUFFER_SIZE / sizeof(wchar_t)) - 1, 0, tag->tag.c_str(), SI32(tag->tag.size()), &status);
 	if (U_FAILURE(status)) {
 		u_fprintf(ux_stderr, "CG3 Error: Failed to convert text from UChar to UTF-32. Status = %s\n", u_errorName(status));
 		return 0;

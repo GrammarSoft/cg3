@@ -74,9 +74,9 @@ uint32_t GrammarApplicator::doesTagMatchRegexp(uint32_t test, const Tag& tag, bo
 		match = test;
 	}
 	else {
-		const Tag& itag = *(single_tags.find(test)->second);
+		const Tag& itag = *(grammar->single_tags.find(test)->second);
 		UErrorCode status = U_ZERO_ERROR;
-		uregex_setText(tag.regexp, itag.tag.c_str(), static_cast<int32_t>(itag.tag.size()), &status);
+		uregex_setText(tag.regexp, itag.tag.c_str(), SI32(itag.tag.size()), &status);
 		if (status != U_ZERO_ERROR) {
 			u_fprintf(ux_stderr, "Error: uregex_setText(MatchSet) returned %s for tag %S before input line %u - cannot continue!\n", u_errorName(status), tag.tag.c_str(), numLines);
 			CG3Quit(1);
@@ -124,7 +124,7 @@ uint32_t GrammarApplicator::doesTagMatchIcase(uint32_t test, const Tag& tag, boo
 		match = test;
 	}
 	else {
-		const Tag& itag = *(single_tags.find(test)->second);
+		const Tag& itag = *(grammar->single_tags.find(test)->second);
 		if (ux_strCaseCompare(tag.tag, itag.tag)) {
 			match = itag.hash;
 		}
@@ -150,7 +150,7 @@ uint32_t GrammarApplicator::doesRegexpMatchLine(const Reading& reading, const Ta
 	}
 	else {
 		UErrorCode status = U_ZERO_ERROR;
-		uregex_setText(tag.regexp, reading.tags_string.c_str(), static_cast<int32_t>(reading.tags_string.size()), &status);
+		uregex_setText(tag.regexp, reading.tags_string.c_str(), SI32(reading.tags_string.size()), &status);
 		if (status != U_ZERO_ERROR) {
 			u_fprintf(ux_stderr, "Error: uregex_setText(MatchSet) returned %s for tag %S before input line %u - cannot continue!\n", u_errorName(status), tag.tag.c_str(), numLines);
 			CG3Quit(1);
@@ -255,7 +255,7 @@ uint32_t GrammarApplicator::doesTagMatchReading(const Reading& reading, const Ta
 	else if (tag.type & T_META) {
 		if (tag.regexp && !reading.parent->text.empty()) {
 			UErrorCode status = U_ZERO_ERROR;
-			uregex_setText(tag.regexp, reading.parent->text.c_str(), static_cast<int32_t>(reading.parent->text.size()), &status);
+			uregex_setText(tag.regexp, reading.parent->text.c_str(), SI32(reading.parent->text.size()), &status);
 			if (status != U_ZERO_ERROR) {
 				u_fprintf(ux_stderr, "Error: uregex_setText(MatchSet) returned %s for tag %S before input line %u - cannot continue!\n", u_errorName(status), tag.tag.c_str(), numLines);
 				CG3Quit(1);
@@ -325,7 +325,7 @@ uint32_t GrammarApplicator::doesTagMatchReading(const Reading& reading, const Ta
 		}
 		else {
 			for (auto mter : reading.tags_textual) {
-				const Tag& itag = *(single_tags.find(mter)->second);
+				const Tag& itag = *(grammar->single_tags.find(mter)->second);
 				if (!(itag.type & (T_BASEFORM | T_WORDFORM))) {
 					match = itag.hash;
 					if (unif_mode) {
@@ -478,7 +478,7 @@ uint32_t GrammarApplicator::doesTagMatchReading(const Reading& reading, const Ta
 				match = tag.hash;
 			}
 			else {
-				auto comp = single_tags.find(tag.variable_hash)->second;
+				auto comp = grammar->single_tags.find(tag.variable_hash)->second;
 				if (comp->type & T_REGEXP) {
 					if (doesTagMatchRegexp(it->second, *comp, bypass_index)) {
 						match = tag.hash;
@@ -587,7 +587,7 @@ bool GrammarApplicator::doesSetMatchReading_tags(const Reading& reading, const S
 	// If there are no special circumstances the first test boils down to finding whether the tag stores intersect
 	// 80% of calls try this first.
 	if (!theset.trie.empty() && !reading.tags_plain.empty()) {
-		auto iiter = theset.trie.lower_bound(single_tags.find(reading.tags_plain.front())->second);
+		auto iiter = theset.trie.lower_bound(grammar->single_tags.find(reading.tags_plain.front())->second);
 		auto oiter = reading.tags_plain.lower_bound(theset.trie.begin()->first->hash);
 		while (oiter != reading.tags_plain.end() && iiter != theset.trie.end()) {
 			if (*oiter == iiter->first->hash) {

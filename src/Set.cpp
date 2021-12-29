@@ -33,7 +33,7 @@ bool Set::empty() const {
 
 void Set::setName(uint32_t to) {
 	if (!to) {
-		to = static_cast<uint32_t>(rand());
+		to = UI32(rand());
 	}
 	size_t n = sprintf(&cbuffers[0][0], "_G_%u_%u_", line, to);
 	name.reserve(n);

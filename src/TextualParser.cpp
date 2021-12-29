@@ -195,7 +195,7 @@ void TextualParser::parseTagList(UChar*& p, Set* s) {
 						}
 					}
 					result->lines += SKIPTOWS(n, ')', true);
-					auto c = static_cast<int32_t>(n - p);
+					auto c = SI32(n - p);
 					u_strncpy(&gbuffers[0][0], p, c);
 					gbuffers[0][c] = 0;
 					Tag* t = parseTag(&gbuffers[0][0], p);
@@ -221,7 +221,7 @@ void TextualParser::parseTagList(UChar*& p, Set* s) {
 					}
 				}
 				result->lines += SKIPTOWS(n, 0, true);
-				auto c = static_cast<int32_t>(n - p);
+				auto c = SI32(n - p);
 				u_strncpy(&gbuffers[0][0], p, c);
 				gbuffers[0][c] = 0;
 				Tag* t = parseTag(&gbuffers[0][0], p);
@@ -310,7 +310,7 @@ Set* TextualParser::parseSetInline(UChar*& p, Set* s) {
 							}
 						}
 						result->lines += SKIPTOWS(n, ')', true);
-						auto c = static_cast<int32_t>(n - p);
+						auto c = SI32(n - p);
 						u_strncpy(&gbuffers[0][0], p, c);
 						gbuffers[0][c] = 0;
 						Tag* t = parseTag(&gbuffers[0][0], p);
@@ -357,7 +357,7 @@ Set* TextualParser::parseSetInline(UChar*& p, Set* s) {
 					while (n[-1] == ',' || n[-1] == ']') {
 						--n;
 					}
-					auto c = static_cast<int32_t>(n - p);
+					auto c = SI32(n - p);
 					u_strncpy(&gbuffers[0][0], p, c);
 					gbuffers[0][c] = 0;
 					Set* tmp = parseSet(&gbuffers[0][0], p);
@@ -439,7 +439,7 @@ Set* TextualParser::parseSetInline(UChar*& p, Set* s) {
 				else {
 					result->lines += SKIPTOWS(n, 0, true);
 				}
-				auto c = static_cast<int32_t>(n - p);
+				auto c = SI32(n - p);
 				u_strncpy(&gbuffers[0][0], p, c);
 				gbuffers[0][c] = 0;
 				//dieIfKeyword(&gbuffers[0][0]);
@@ -635,7 +635,7 @@ void TextualParser::parseContextualTestPosition(UChar*& p, ContextualTest& t) {
 			p += 2;
 			UChar* n = p;
 			SKIPTOWS(n, '(');
-			auto c = static_cast<int32_t>(n - p);
+			auto c = SI32(n - p);
 			u_strncpy(&gbuffers[0][0], p, c);
 			gbuffers[0][c] = 0;
 			Tag* tag = parseTag(&gbuffers[0][0], p);
@@ -647,7 +647,7 @@ void TextualParser::parseContextualTestPosition(UChar*& p, ContextualTest& t) {
 			++p;
 		}
 		if (*p == 'r' && (t.pos & POS_RIGHT)) {
-			t.pos &= ~static_cast<uint64_t>(POS_RIGHT);
+			t.pos &= ~UI64(POS_RIGHT);
 			t.pos |= POS_RIGHTMOST;
 			++p;
 		}
@@ -656,7 +656,7 @@ void TextualParser::parseContextualTestPosition(UChar*& p, ContextualTest& t) {
 			++p;
 		}
 		if (*p == 'l' && (t.pos & POS_LEFT)) {
-			t.pos &= ~static_cast<uint64_t>(POS_LEFT);
+			t.pos &= ~UI64(POS_LEFT);
 			t.pos |= POS_LEFTMOST;
 			++p;
 		}
@@ -818,7 +818,7 @@ ContextualTest* TextualParser::parseContextualTestList(UChar*& p, Rule* rule, bo
 	UChar* pos_p = p;
 	UChar* n = p;
 	result->lines += SKIPTOWS(n, '(');
-	auto c = static_cast<int32_t>(n - p);
+	auto c = SI32(n - p);
 	u_strncpy(&gbuffers[0][0], p, c);
 	gbuffers[0][c] = 0;
 	if (ux_isEmpty(&gbuffers[0][0])) {
@@ -904,7 +904,7 @@ ContextualTest* TextualParser::parseContextualTestList(UChar*& p, Rule* rule, bo
 			p += 2;
 			n = p;
 			result->lines += SKIPTOWS(n, ')');
-			auto c = static_cast<int32_t>(n - p);
+			auto c = SI32(n - p);
 			u_strncpy(&gbuffers[0][0], p, c);
 			gbuffers[0][c] = 0;
 			uint32_t cn = hash_value(&gbuffers[0][0]);
@@ -1033,7 +1033,7 @@ flags_t TextualParser::parseRuleFlags(UChar*& p) {
 					++p;
 					UChar* n = p;
 					result->lines += SKIPTOWS(n, 0, true);
-					auto c = static_cast<int32_t>(n - p);
+					auto c = SI32(n - p);
 					u_strncpy(&gbuffers[0][0], p, c);
 					gbuffers[0][c] = 0;
 					p = n;
@@ -1120,7 +1120,7 @@ void TextualParser::parseRule(UChar*& p, KEYWORDS key) {
 			}
 		}
 		result->lines += SKIPTOWS(n, 0, true);
-		auto c = static_cast<int32_t>(n - lp);
+		auto c = SI32(n - lp);
 		u_strncpy(&gbuffers[0][0], lp, c);
 		gbuffers[0][c] = 0;
 		Tag* wform = parseTag(&gbuffers[0][0], lp);
@@ -1138,7 +1138,7 @@ void TextualParser::parseRule(UChar*& p, KEYWORDS key) {
 		AST_OPEN(RuleName);
 		UChar* n = p;
 		result->lines += SKIPTOWS(n, '(');
-		auto c = static_cast<int32_t>(n - p);
+		auto c = SI32(n - p);
 		u_strncpy(&gbuffers[0][0], p, c);
 		gbuffers[0][c] = 0;
 		if (!gbuffers[0][0]) {
@@ -1181,7 +1181,7 @@ void TextualParser::parseRule(UChar*& p, KEYWORDS key) {
 			}
 		}
 		result->lines += SKIPTOWS(n, 0, true);
-		auto c = static_cast<int32_t>(n - p);
+		auto c = SI32(n - p);
 		if (*p == '"') {
 			u_strncpy(&gbuffers[0][0], p + 1, c - 1);
 			gbuffers[0][c - 2] = 0;
@@ -1551,11 +1551,11 @@ void TextualParser::parseAnchorish(UChar*& p, bool rule_flags) {
 		AST_OPEN(AnchorName);
 		UChar* n = p;
 		result->lines += SKIPTOWS(n, 0, true);
-		auto c = static_cast<int32_t>(n - p);
+		auto c = SI32(n - p);
 		u_strncpy(&gbuffers[0][0], p, c);
 		gbuffers[0][c] = 0;
 		if (!only_sets) {
-			result->addAnchor(&gbuffers[0][0], static_cast<uint32_t>(result->rule_by_number.size()), true);
+			result->addAnchor(&gbuffers[0][0], UI32(result->rule_by_number.size()), true);
 		}
 		p = n;
 		AST_CLOSE(p);
@@ -1698,7 +1698,7 @@ void TextualParser::parseFromUChar(UChar* input, const char* fname) {
 				AST_OPEN(Tag);
 				UChar* n = p;
 				result->lines += SKIPTOWS(n, ';');
-				auto c = static_cast<int32_t>(n - p);
+				auto c = SI32(n - p);
 				u_strncpy(&gbuffers[0][0], p, c);
 				gbuffers[0][c] = 0;
 				p = n;
@@ -1737,7 +1737,7 @@ void TextualParser::parseFromUChar(UChar* input, const char* fname) {
 						}
 					}
 					result->lines += SKIPTOWS(n, ';', true);
-					auto c = static_cast<int32_t>(n - p);
+					auto c = SI32(n - p);
 					u_strncpy(&gbuffers[0][0], p, c);
 					gbuffers[0][c] = 0;
 					Tag* t = parseTag(&gbuffers[0][0], p);
@@ -1778,7 +1778,7 @@ void TextualParser::parseFromUChar(UChar* input, const char* fname) {
 						}
 					}
 					result->lines += SKIPTOWS(n, ';', true);
-					auto c = static_cast<int32_t>(n - p);
+					auto c = SI32(n - p);
 					u_strncpy(&gbuffers[0][0], p, c);
 					gbuffers[0][c] = 0;
 					Tag* t = parseTag(&gbuffers[0][0], p);
@@ -1919,7 +1919,7 @@ void TextualParser::parseFromUChar(UChar* input, const char* fname) {
 						}
 					}
 					result->lines += SKIPTOWS(n, ';', true);
-					auto c = static_cast<int32_t>(n - p);
+					auto c = SI32(n - p);
 					u_strncpy(&gbuffers[0][0], p, c);
 					gbuffers[0][c] = 0;
 					Tag* t = parseTag(&gbuffers[0][0], p);
@@ -1952,7 +1952,7 @@ void TextualParser::parseFromUChar(UChar* input, const char* fname) {
 				while (n[-1] == ',' || n[-1] == ']') {
 					--n;
 				}
-				auto c = static_cast<int32_t>(n - p);
+				auto c = SI32(n - p);
 				u_strncpy(&gbuffers[0][0], p, c);
 				gbuffers[0][c] = 0;
 				s->setName(&gbuffers[0][0]);
@@ -1995,7 +1995,7 @@ void TextualParser::parseFromUChar(UChar* input, const char* fname) {
 				while (n[-1] == ',' || n[-1] == ']') {
 					--n;
 				}
-				auto c = static_cast<int32_t>(n - p);
+				auto c = SI32(n - p);
 				u_strncpy(&gbuffers[0][0], p, c);
 				gbuffers[0][c] = 0;
 				s->setName(&gbuffers[0][0]);
@@ -2283,7 +2283,7 @@ void TextualParser::parseFromUChar(UChar* input, const char* fname) {
 						}
 					}
 					result->lines += SKIPTOWS(n, ';', true);
-					auto c = static_cast<int32_t>(n - p);
+					auto c = SI32(n - p);
 					u_strncpy(&gbuffers[0][0], p, c);
 					gbuffers[0][c] = 0;
 					Tag* t = parseTag(&gbuffers[0][0], p);
@@ -2330,7 +2330,7 @@ void TextualParser::parseFromUChar(UChar* input, const char* fname) {
 				AST_OPEN(IncludeFilename);
 				UChar* n = p;
 				result->lines += SKIPTOWS(n, 0, true);
-				auto c = static_cast<int32_t>(n - p);
+				auto c = SI32(n - p);
 				u_strncpy(&gbuffers[0][0], p, c);
 				gbuffers[0][c] = 0;
 				p = n;
@@ -2382,7 +2382,7 @@ void TextualParser::parseFromUChar(UChar* input, const char* fname) {
 
 				grammarbufs.emplace_back(new UString(grammar_size * 2, 0));
 				auto& data = *grammarbufs.back().get();
-				uint32_t read = u_file_read(&data[4], static_cast<int32_t>(grammar_size * 2), grammar);
+				uint32_t read = u_file_read(&data[4], SI32(grammar_size * 2), grammar);
 				u_fclose(grammar);
 				if (read >= grammar_size * 2 - 1) {
 					u_fprintf(ux_stderr, "%s: Error: Converting from underlying codepage to UTF-16 exceeded factor 2 buffer.\n", filebase);
@@ -2474,7 +2474,7 @@ void TextualParser::parseFromUChar(UChar* input, const char* fname) {
 				AST_OPEN(TemplateName);
 				UChar* n = p;
 				result->lines += SKIPTOWS(n, 0, true);
-				auto c = static_cast<int32_t>(n - p);
+				auto c = SI32(n - p);
 				u_strncpy(&gbuffers[0][0], p, c);
 				gbuffers[0][c] = 0;
 				UString name(&gbuffers[0][0]);
@@ -2489,7 +2489,7 @@ void TextualParser::parseFromUChar(UChar* input, const char* fname) {
 				swapper_false swp(no_itmpls, no_itmpls);
 
 				ContextualTest* t = parseContextualTestList(p, nullptr, true);
-				t->line = static_cast<uint32_t>(line);
+				t->line = UI32(line);
 				result->addTemplate(t, name.c_str());
 
 				result->lines += SKIPWS(p, ';');
@@ -2533,7 +2533,7 @@ void TextualParser::parseFromUChar(UChar* input, const char* fname) {
 					}
 					result->lines += SKIPTOWS(n, ')', true);
 					AST_CLOSE(n);
-					c = static_cast<int32_t>(n - p);
+					c = SI32(n - p);
 					u_strncpy(&gbuffers[0][0], p, c);
 					gbuffers[0][c] = 0;
 					left = parseTag(&gbuffers[0][0], p);
@@ -2554,7 +2554,7 @@ void TextualParser::parseFromUChar(UChar* input, const char* fname) {
 					}
 					result->lines += SKIPTOWS(n, ')', true);
 					AST_CLOSE(n);
-					c = static_cast<int32_t>(n - p);
+					c = SI32(n - p);
 					u_strncpy(&gbuffers[0][0], p, c);
 					gbuffers[0][c] = 0;
 					right = parseTag(&gbuffers[0][0], p);
@@ -2655,7 +2655,7 @@ int TextualParser::parse_grammar(const char* fname) {
 	// It reads into the buffer at offset 4 because certain functions may look back, so we need some nulls in front.
 	grammarbufs.emplace_back(new UString(result->grammar_size * 2, 0));
 	auto& data = *grammarbufs.back().get();
-	uint32_t read = u_file_read(&data[4], static_cast<int32_t>(result->grammar_size * 2), grammar);
+	uint32_t read = u_file_read(&data[4], SI32(result->grammar_size * 2), grammar);
 	u_fclose(grammar);
 	if (read >= result->grammar_size * 2 - 1) {
 		u_fprintf(ux_stderr, "%s: Error: Converting from underlying codepage to UTF-16 exceeded factor 2 buffer.\n", filebase);
@@ -2676,7 +2676,7 @@ int TextualParser::parse_grammar(const char* buffer, size_t length) {
 
 	UErrorCode err = U_ZERO_ERROR;
 	UConverter* conv = ucnv_open("UTF-8", &err);
-	auto tmp = ucnv_toUChars(conv, &data[4], static_cast<int32_t>(length * 2), buffer, static_cast<int32_t>(length), &err);
+	auto tmp = ucnv_toUChars(conv, &data[4], SI32(length * 2), buffer, SI32(length), &err);
 
 	if (static_cast<size_t>(tmp) >= length * 2 - 1) {
 		u_fprintf(ux_stderr, "%s: Error: Converting from underlying codepage to UTF-16 exceeded factor 2 buffer!\n", filebase);
@@ -2794,7 +2794,7 @@ int TextualParser::parse_grammar(UString& data) {
 
 	parseFromUChar(&data[4], filename);
 
-	result->addAnchor(keywords[K_END], static_cast<uint32_t>(result->rule_by_number.size() - 1), true);
+	result->addAnchor(keywords[K_END], UI32(result->rule_by_number.size() - 1), true);
 
 	for (auto it : result->rule_by_number) {
 		if (!it->name.empty()) {
@@ -2913,6 +2913,8 @@ int TextualParser::parse_grammar(UString& data) {
 		}
 	}
 
+	result->num_tags = result->single_tags_list.size();
+
 	return error_counter;
 }
 
@@ -2926,7 +2928,7 @@ void TextualParser::setVerbosity(uint32_t level) {
 
 void TextualParser::addRuleToGrammar(Rule* rule) {
 	if (in_section) {
-		rule->section = static_cast<int32_t>(result->sections.size()) - 1;
+		rule->section = SI32(result->sections.size()) - 1;
 		result->addRule(rule);
 	}
 	else if (in_after_sections) {

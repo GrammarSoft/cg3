@@ -253,7 +253,7 @@ Reading* GrammarApplicator::get_sub_reading(Reading* tr, int sub_reading) {
 					}                                                               \
 					auto stag = doesTagMatchReading(reading, *tt, false, true);     \
 					if (stag) {                                                     \
-						(taglist)->insert(it, single_tags.find(stag)->second);      \
+						(taglist)->insert(it, grammar->single_tags.find(stag)->second); \
 					}                                                               \
 				}                                                                   \
 				continue;                                                           \
@@ -271,7 +271,7 @@ Reading* GrammarApplicator::get_sub_reading(Reading* tr, int sub_reading) {
 				}                                                               \
 				auto stag = doesTagMatchReading(reading, *tt, false, true);     \
 				if (stag) {                                                     \
-					tt = single_tags.find(stag)->second;                        \
+					tt = grammar->single_tags.find(stag)->second;               \
 				}                                                               \
 			}                                                                   \
 		}                                                                       \
@@ -616,7 +616,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 							// Keeps track of where we have been, to prevent infinite recursion in trees with loops
 							dep_deep_seen.clear();
 							// Reset the counters for which types of CohortIterator we have in play
-							std::fill(ci_depths.begin(), ci_depths.end(), static_cast<uint32_t>(0));
+							std::fill(ci_depths.begin(), ci_depths.end(), UI32(0));
 							tmpl_cntx.clear();
 							// Run the contextual test...
 							if (!(test->pos & POS_PASS_ORIGIN) && (no_pass_origin || (test->pos & POS_NO_PASS_ORIGIN))) {
@@ -772,12 +772,12 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 								continue;
 							}
 							tags.reserve(tags.size() + nt.size() - 2);
-							tags[i] = single_tags[nt[2]];
+							tags[i] = grammar->single_tags[nt[2]];
 							for (size_t j = 3, k = 1; j < nt.size(); ++j) {
-								if (single_tags[nt[j]]->type & T_DEPENDENCY) {
+								if (grammar->single_tags[nt[j]]->type & T_DEPENDENCY) {
 									continue;
 								}
-								tags.insert(tags.begin() + i + k, single_tags[nt[j]]);
+								tags.insert(tags.begin() + i + k, grammar->single_tags[nt[j]]);
 								++k;
 							}
 						}
@@ -865,7 +865,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 				}
 
 				foreach (iter, current.cohorts) {
-					(*iter)->local_number = static_cast<uint32_t>(std::distance(current.cohorts.begin(), iter));
+					(*iter)->local_number = UI32(std::distance(current.cohorts.begin(), iter));
 				}
 				gWindow->rebuildCohortLinks();
 
@@ -910,7 +910,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 				current.parent->cohort_map.erase(cohort->global_number);
 				current.cohorts.erase(current.cohorts.begin() + cohort->local_number);
 				foreach (iter, current.cohorts) {
-					(*iter)->local_number = static_cast<uint32_t>(std::distance(current.cohorts.begin(), iter));
+					(*iter)->local_number = UI32(std::distance(current.cohorts.begin(), iter));
 				}
 				gWindow->rebuildCohortLinks();
 			};
@@ -933,7 +933,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 				auto nt = make_relation_rtag(tag, id);
 				for (auto& r : cohort->readings) {
 					for (auto it = r->tags_list.begin(); it != r->tags_list.end();) {
-						const auto& utag = single_tags[*it]->tag;
+						const auto& utag = grammar->single_tags[*it]->tag;
 						if (utag[0] == 'R' && utag[1] == ':' && utag.size() > 2 + tag->tag.size() && utag[2 + tag->tag.size()] == ':' && utag.compare(2, tag->tag.size(), tag->tag) == 0) {
 							r->tags.erase(*it);
 							r->tags_textual.erase(*it);
@@ -1123,9 +1123,9 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 
 						auto ei = externals.find(rule.varname);
 						if (ei == externals.end()) {
-							Tag* ext = single_tags.find(rule.varname)->second;
+							Tag* ext = grammar->single_tags.find(rule.varname)->second;
 							UErrorCode err = U_ZERO_ERROR;
-							u_strToUTF8(&cbuffers[0][0], static_cast<int32_t>(CG3_BUFFER_SIZE - 1), nullptr, ext->tag.c_str(), static_cast<int32_t>(ext->tag.size()), &err);
+							u_strToUTF8(&cbuffers[0][0], SI32(CG3_BUFFER_SIZE - 1), nullptr, ext->tag.c_str(), SI32(ext->tag.size()), &err);
 
 							Process& es = externals[rule.varname];
 							try {
@@ -1236,9 +1236,9 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						std::vector<std::pair<uint32_t, uint32_t>> cohort_dep(cohorts.size());
 						cohort_dep.front().second = DEP_NO_PARENT;
 						cohort_dep.back().first = DEP_NO_PARENT;
-						cohort_dep.back().second = static_cast<uint32_t>(cohort_dep.size() - 1);
+						cohort_dep.back().second = UI32(cohort_dep.size() - 1);
 						for (size_t i = 1; i < cohort_dep.size() - 1; ++i) {
-							cohort_dep[i].second = static_cast<uint32_t>(i);
+							cohort_dep[i].second = UI32(i);
 						}
 
 						size_t i = 0;
@@ -1267,7 +1267,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 								if (dep_self[0] == 'c' || dep_self[0] == 'd') {
 									cohort_dep[i - 1].first = DEP_NO_PARENT;
 									if (rel_trg == DEP_NO_PARENT) {
-										rel_trg = static_cast<uint32_t>(i - 1);
+										rel_trg = UI32(i - 1);
 									}
 								}
 								else if (u_sscanf(dep_self, "%i", &cohort_dep[i - 1].first) != 1) {
@@ -1284,14 +1284,14 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 								continue;
 							}
 							if (tter->tag.size() == 3 && tter->tag[0] == 'R' && tter->tag[1] == ':' && tter->tag[2] == '*') {
-								rel_trg = static_cast<uint32_t>(i - 1);
+								rel_trg = UI32(i - 1);
 								continue;
 							}
 							readings->back().push_back(tter);
 						}
 
 						if (rel_trg == DEP_NO_PARENT) {
-							rel_trg = static_cast<uint32_t>(cohorts.size() - 1);
+							rel_trg = UI32(cohorts.size() - 1);
 						}
 
 						for (size_t i = 0; i < cohorts.size(); ++i) {
@@ -1313,12 +1313,12 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 											continue;
 										}
 										tags.reserve(tags.size() + nt.size() - 2);
-										tags[i] = single_tags[nt[2]];
+										tags[i] = grammar->single_tags[nt[2]];
 										for (size_t j = 3, k = 1; j < nt.size(); ++j) {
-											if (single_tags[nt[j]]->type & T_DEPENDENCY) {
+											if (grammar->single_tags[nt[j]]->type & T_DEPENDENCY) {
 												continue;
 											}
-											tags.insert(tags.begin() + i + k, single_tags[nt[j]]);
+											tags.insert(tags.begin() + i + k, grammar->single_tags[nt[j]]);
 											++k;
 										}
 									}
@@ -1422,7 +1422,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 
 						// Reindex and rebuild the window
 						foreach (iter, current.cohorts) {
-							(*iter)->local_number = static_cast<uint32_t>(std::distance(current.cohorts.begin(), iter));
+							(*iter)->local_number = UI32(std::distance(current.cohorts.begin(), iter));
 						}
 						gWindow->rebuildCohortLinks();
 						indexSingleWindow(current);
@@ -2090,7 +2090,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 								}
 
 								foreach (iter, current.cohorts) {
-									(*iter)->local_number = static_cast<uint32_t>(std::distance(current.cohorts.begin(), iter));
+									(*iter)->local_number = UI32(std::distance(current.cohorts.begin(), iter));
 								}
 
 								for (auto iter : edges) {
@@ -2127,7 +2127,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 								}
 							}
 							foreach (iter, current.cohorts) {
-								(*iter)->local_number = static_cast<uint32_t>(std::distance(current.cohorts.begin(), iter));
+								(*iter)->local_number = UI32(std::distance(current.cohorts.begin(), iter));
 							}
 							gWindow->rebuildCohortLinks();
 
@@ -2593,18 +2593,18 @@ label_unpackEnclosures:
 				size_t ne = c->enclosed.size();
 				for (size_t j = nc - 1; j > i; --j) {
 					current->cohorts[j + ne] = current->cohorts[j];
-					current->cohorts[j + ne]->local_number = static_cast<uint32_t>(j + ne);
+					current->cohorts[j + ne]->local_number = UI32(j + ne);
 				}
 				for (size_t j = 0; j < ne; ++j) {
 					current->cohorts[i + j + 1] = c->enclosed[j];
-					current->cohorts[i + j + 1]->local_number = static_cast<uint32_t>(i + j + 1);
+					current->cohorts[i + j + 1]->local_number = UI32(i + j + 1);
 					current->cohorts[i + j + 1]->parent = current;
 					current->cohorts[i + j + 1]->type &= ~CT_ENCLOSED;
 				}
 				par_left_tag = c->enclosed[0]->is_pleft;
 				par_right_tag = c->enclosed[ne - 1]->is_pright;
-				par_left_pos = static_cast<uint32_t>(i + 1);
-				par_right_pos = static_cast<uint32_t>(i + ne);
+				par_left_pos = UI32(i + 1);
+				par_right_pos = UI32(i + ne);
 				c->enclosed.clear();
 				if (rv & RV_TRACERULE) {
 					goto label_unpackEnclosures;

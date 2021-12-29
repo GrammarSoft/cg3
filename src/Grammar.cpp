@@ -271,7 +271,7 @@ void Grammar::addSetToList(Set* s) {
 				}
 			}
 			sets_list.push_back(s);
-			s->number = static_cast<uint32_t>(sets_list.size() - 1);
+			s->number = UI32(sets_list.size() - 1);
 		}
 	}
 }
@@ -425,7 +425,7 @@ Rule* Grammar::allocateRule() {
 }
 
 void Grammar::addRule(Rule* rule) {
-	rule->number = static_cast<uint32_t>(rule_by_number.size());
+	rule->number = UI32(rule_by_number.size());
 	rule_by_number.push_back(rule);
 }
 
@@ -462,7 +462,6 @@ Tag* Grammar::allocateTag(const UString& txt) {
 }
 
 Tag* Grammar::addTag(Tag* tag) {
-	tag->type |= T_GRAMMAR;
 	uint32_t hash = tag->rehash();
 	for (uint32_t seed = 0; seed < 10000; seed++) {
 		uint32_t ih = hash + seed;
@@ -486,7 +485,7 @@ Tag* Grammar::addTag(Tag* tag) {
 			tag->seed = seed;
 			hash = tag->rehash();
 			single_tags_list.push_back(tag);
-			tag->number = static_cast<uint32_t>(single_tags_list.size() - 1);
+			tag->number = UI32(single_tags_list.size() - 1);
 			single_tags[hash] = tag;
 			break;
 		}
@@ -571,7 +570,7 @@ void Grammar::addAnchor(const UChar* to, uint32_t at, bool primary) {
 	}
 	if (at > rule_by_number.size()) {
 		u_fprintf(ux_stderr, "Warning: No corresponding rule available for anchor '%S' on line %u!\n", to, lines);
-		at = static_cast<uint32_t>(rule_by_number.size());
+		at = UI32(rule_by_number.size());
 	}
 	if (it == anchors.end()) {
 		anchors[ah] = at;
@@ -668,7 +667,7 @@ void Grammar::reindex(bool unused_sets, bool used_tags) {
 		}
 		for (auto iter : regex_tags) {
 			UErrorCode status = U_ZERO_ERROR;
-			uregex_setText(iter, titer->tag.c_str(), static_cast<int32_t>(titer->tag.size()), &status);
+			uregex_setText(iter, titer->tag.c_str(), SI32(titer->tag.size()), &status);
 			if (status == U_ZERO_ERROR) {
 				if (uregex_find(iter, -1, &status)) {
 					titer->type |= T_TEXTUAL;

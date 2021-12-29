@@ -30,7 +30,7 @@
 namespace CG3 {
 
 Tag* GrammarApplicator::makeBaseFromWord(uint32_t tag) {
-	return makeBaseFromWord(single_tags.find(tag)->second);
+	return makeBaseFromWord(grammar->single_tags.find(tag)->second);
 }
 
 Tag* GrammarApplicator::makeBaseFromWord(Tag* tag) {
@@ -42,7 +42,7 @@ Tag* GrammarApplicator::makeBaseFromWord(Tag* tag) {
 	n.clear();
 	n.resize(len - 2);
 	n[0] = n[len - 3] = '"';
-	u_strncpy(&n[1], tag->tag.c_str() + 2, static_cast<int32_t>(len - 4));
+	u_strncpy(&n[1], tag->tag.c_str() + 2, SI32(len - 4));
 	Tag* nt = addTag(n);
 	return nt;
 }
@@ -358,7 +358,7 @@ void GrammarApplicator::reflowReading(Reading& reading) {
 Tag* GrammarApplicator::generateVarstringTag(const Tag* tag) {
 	static thread_local UnicodeString tmp;
 	tmp.remove();
-	tmp.append(tag->tag.c_str(), static_cast<int32_t>(tag->tag.size()));
+	tmp.append(tag->tag.c_str(), SI32(tag->tag.size()));
 	bool did_something = false;
 
 	// Convert %[UuLl] markers to control codes to avoid having combined %$1 accidentally match %L
@@ -457,7 +457,7 @@ Tag* GrammarApplicator::generateVarstringTag(const Tag* tag) {
 }
 
 uint32_t GrammarApplicator::addTagToReading(Reading& reading, uint32_t utag, bool rehash) {
-	Tag* tag = single_tags.find(utag)->second;
+	Tag* tag = grammar->single_tags.find(utag)->second;
 	return addTagToReading(reading, tag, rehash);
 }
 
@@ -635,10 +635,10 @@ void GrammarApplicator::splitMappings(TagList& mappings, Cohort& cohort, Reading
 		}
 		Reading* nr = alloc_reading(reading);
 		nr->mapped = mapped;
-		nr->number = static_cast<uint32_t>(reading.number - i--);
+		nr->number = UI32(reading.number - i--);
 		uint32_t mp = addTagToReading(*nr, ttag);
 		if (mp != ttag->hash) {
-			nr->mapping = single_tags.find(mp)->second;
+			nr->mapping = grammar->single_tags.find(mp)->second;
 		}
 		else {
 			nr->mapping = ttag;
@@ -650,7 +650,7 @@ void GrammarApplicator::splitMappings(TagList& mappings, Cohort& cohort, Reading
 	reading.mapped = mapped;
 	uint32_t mp = addTagToReading(reading, tag);
 	if (mp != tag->hash) {
-		reading.mapping = single_tags.find(mp)->second;
+		reading.mapping = grammar->single_tags.find(mp)->second;
 	}
 	else {
 		reading.mapping = tag;
@@ -818,7 +818,7 @@ Cohort* GrammarApplicator::delimitAt(SingleWindow& current, Cohort* cohort) {
 		current.cohorts[nc]->parent = nwin;
 		nwin->appendCohort(current.cohorts[nc]);
 	}
-	c = static_cast<uint32_t>(current.cohorts.size() - c);
+	c = UI32(current.cohorts.size() - c);
 	for (nc = 0; nc < c - 1; nc++) {
 		current.cohorts.pop_back();
 	}
@@ -837,7 +837,7 @@ void GrammarApplicator::reflowTextuals_Reading(Reading& r) {
 		reflowTextuals_Reading(*r.next);
 	}
 	for (auto it : r.tags) {
-		Tag* tag = single_tags.find(it)->second;
+		Tag* tag = grammar->single_tags.find(it)->second;
 		if (tag->type & T_TEXTUAL) {
 			r.tags_textual.insert(it);
 			r.tags_textual_bloom.insert(it);

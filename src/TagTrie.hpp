@@ -260,7 +260,7 @@ inline void trie_serialize(const trie_t& trie, std::ostream& out) {
 		writeSwapped<uint32_t>(out, kv.first->number);
 		writeSwapped<uint8_t>(out, kv.second.terminal);
 		if (kv.second.trie) {
-			writeSwapped<uint32_t>(out, static_cast<uint32_t>(kv.second.trie->size()));
+			writeSwapped<uint32_t>(out, UI32(kv.second.trie->size()));
 			trie_serialize(*kv.second.trie, out);
 		}
 		else {

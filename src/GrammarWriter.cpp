@@ -195,7 +195,7 @@ int GrammarWriter::writeGrammar(std::ostream& output) {
 		found = false;
 		for (auto rule_iter : grammar->rule_by_number) {
 			const Rule& r = *rule_iter;
-			if (r.section == static_cast<int32_t>(isec)) {
+			if (r.section == SI32(isec)) {
 				if (!found) {
 					u_fprintf(output, "\nSECTION\n");
 					found = true;
