@@ -153,7 +153,6 @@ public:
 	typedef std::map<Reading*, TagList> all_mappings_t;
 	void splitMappings(TagList& mappings, Cohort& cohort, Reading& reading, bool mapped = false);
 	void splitAllMappings(all_mappings_t& all_mappings, Cohort& cohort, bool mapped = false);
-	Taguint32HashMap single_tags;
 
 	std::istream* ux_stdin = nullptr;
 	std::ostream* ux_stdout = nullptr;

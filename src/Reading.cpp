@@ -33,7 +33,7 @@ Reading* alloc_reading(Cohort* p) {
 		r = new Reading(p);
 	}
 	else {
-		r->number = static_cast<uint32_t>(p ? (p->readings.size() * 1000 + 1000) : 0);
+		r->number = UI32(p ? (p->readings.size() * 1000 + 1000) : 0);
 		r->parent = p;
 	}
 	return r;
@@ -92,7 +92,7 @@ Reading::Reading(Cohort* p)
   , matched_tests(false)
   , immutable(false)
   , active(false)
-  , number(static_cast<uint32_t>(p ? (p->readings.size() * 1000 + 1000) : 0))
+  , number(UI32(p ? (p->readings.size() * 1000 + 1000) : 0))
   , parent(p)
 {
 	#ifdef CG_TRACE_OBJECTS

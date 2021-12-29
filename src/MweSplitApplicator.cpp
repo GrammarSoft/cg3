@@ -49,7 +49,7 @@ const Tag* MweSplitApplicator::maybeWfTag(const Reading* r) {
 		if (tter == r->baseform || tter == r->parent->wordform->hash) {
 			continue;
 		}
-		const Tag* tag = single_tags[tter];
+		const Tag* tag = grammar->single_tags[tter];
 		// If we are to split, there has to be at least one wordform on a head (not-sub) reading
 		if (tag->type & T_WORDFORM) {
 			return tag;
@@ -157,11 +157,11 @@ std::vector<Cohort*> MweSplitApplicator::splitMwe(Cohort* cohort) {
 
 void MweSplitApplicator::printSingleWindow(SingleWindow* window, std::ostream& output) {
 	for (auto var : window->variables_output) {
-		Tag* key = single_tags[var];
+		Tag* key = grammar->single_tags[var];
 		auto iter = window->variables_set.find(var);
 		if (iter != window->variables_set.end()) {
 			if (iter->second != grammar->tag_any) {
-				Tag* value = single_tags[iter->second];
+				Tag* value = grammar->single_tags[iter->second];
 				u_fprintf(output, "%S%S=%S>\n", stringbits[S_CMD_SETVAR].c_str(), key->tag.c_str(), value->tag.c_str());
 			}
 			else {
@@ -180,7 +180,7 @@ void MweSplitApplicator::printSingleWindow(SingleWindow* window, std::ostream& o
 		}
 	}
 
-	uint32_t cs = (uint32_t)window->cohorts.size();
+	auto cs = UI32(window->cohorts.size());
 	for (uint32_t c = 0; c < cs; c++) {
 		Cohort* cohort = window->cohorts[c];
 		std::vector<Cohort*> cs = splitMwe(cohort);

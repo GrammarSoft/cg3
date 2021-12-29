@@ -86,7 +86,7 @@ uint32_t ContextualTest::rehash() {
 		hash = hash_value(hash, linked->rehash());
 	}
 	if (tmpl) {
-		hash = hash_value(hash, static_cast<uint32_t>(reinterpret_cast<uintptr_t>(tmpl)));
+		hash = hash_value(hash, UI32(reinterpret_cast<uintptr_t>(tmpl)));
 	}
 	for (auto iter : ors) {
 		hash = hash_value(hash, iter->rehash());

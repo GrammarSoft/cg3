@@ -89,7 +89,7 @@ void NicelineApplicator::runGrammarOnText(std::istream& input, std::ostream& out
 		++lines;
 		size_t offset = 0, packoff = 0;
 		// Read as much of the next line as will fit in the current buffer
-		while (u_fgets(&line[offset], static_cast<int32_t>(line.size() - offset - 1), input)) {
+		while (u_fgets(&line[offset], SI32(line.size() - offset - 1), input)) {
 			// Copy the segment just read to cleaned
 			for (size_t i = offset; i < line.size(); ++i) {
 				// Only copy one space character, regardless of how many are in input
@@ -357,7 +357,7 @@ void NicelineApplicator::printReading(const Reading* reading, std::ostream& outp
 	}
 	u_fputc('\t', output);
 	if (reading->baseform) {
-		u_fprintf(output, "[%.*S]", single_tags.find(reading->baseform)->second->tag.size() - 2, single_tags.find(reading->baseform)->second->tag.c_str() + 1);
+		u_fprintf(output, "[%.*S]", grammar->single_tags.find(reading->baseform)->second->tag.size() - 2, grammar->single_tags.find(reading->baseform)->second->tag.c_str() + 1);
 	}
 
 	uint32SortedVector unique;
@@ -374,7 +374,7 @@ void NicelineApplicator::printReading(const Reading* reading, std::ostream& outp
 			}
 			unique.insert(tter);
 		}
-		const Tag* tag = single_tags[tter];
+		const Tag* tag = grammar->single_tags[tter];
 		if (tag->type & T_DEPENDENCY && has_dep && !dep_original) {
 			continue;
 		}
@@ -498,7 +498,7 @@ void NicelineApplicator::printSingleWindow(SingleWindow* window, std::ostream& o
 		}
 	}
 
-	uint32_t cs = static_cast<uint32_t>(window->cohorts.size());
+	uint32_t cs = UI32(window->cohorts.size());
 	for (uint32_t c = 0; c < cs; c++) {
 		Cohort* cohort = window->cohorts[c];
 		printCohort(cohort, output);

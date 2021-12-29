@@ -23,6 +23,31 @@
 #ifndef c6d28b7452ec699b_INLINES_H
 #define c6d28b7452ec699b_INLINES_H
 
+template<typename T>
+constexpr inline int32_t SI32(T t) {
+	return static_cast<int32_t>(t);
+}
+
+template<typename T>
+constexpr inline uint8_t UI8(T t) {
+	return static_cast<uint8_t>(t);
+}
+
+template<typename T>
+constexpr inline uint16_t UI16(T t) {
+	return static_cast<uint16_t>(t);
+}
+
+template<typename T>
+constexpr inline uint32_t UI32(T t) {
+	return static_cast<uint32_t>(t);
+}
+
+template<typename T>
+constexpr inline uint64_t UI64(T t) {
+	return static_cast<uint64_t>(t);
+}
+
 namespace CG3 {
 
 constexpr double NUMERIC_MIN = static_cast<double>(-(1ll << 48ll));
@@ -40,13 +65,13 @@ constexpr uint32_t CG3_HASH_SEED = 705577479u;
 #endif
 
 #if !defined (get16bits)
-#define get16bits(d) ((((uint32_t)(((const uint8_t*)(d))[1])) << 8) \
-					   +(uint32_t)(((const uint8_t*)(d))[0]) )
+#define get16bits(d) (((UI32(((const uint8_t*)(d))[1])) << 8) \
+					   +UI32(((const uint8_t*)(d))[0]) )
 #endif
 
 inline uint32_t SuperFastHash(const char* data, size_t len = 0, uint32_t hash = CG3_HASH_SEED) {
 	if (hash == 0) {
-		hash = static_cast<uint32_t>(len);
+		hash = UI32(len);
 	}
 	uint32_t tmp;
 	uint32_t rem;
@@ -103,7 +128,7 @@ inline uint32_t SuperFastHash(const char* data, size_t len = 0, uint32_t hash = 
 
 inline uint32_t SuperFastHash(const UChar* data, size_t len = 0, uint32_t hash = CG3_HASH_SEED) {
 	if (hash == 0) {
-		hash = static_cast<uint32_t>(len);
+		hash = UI32(len);
 	}
 	uint32_t tmp;
 	uint32_t rem;
@@ -190,8 +215,8 @@ inline uint32_t hash_value(uint32_t c, uint32_t h = CG3_HASH_SEED) {
 
 inline uint32_t hash_value(uint64_t c) {
 	/*
-	uint32_t tmp = hash_value(static_cast<uint32_t>(c & 0xFFFFFFFF));
-	tmp = hash_value(static_cast<uint32_t>((c >> 32) & 0xFFFFFFFF), tmp);
+	uint32_t tmp = hash_value(UI32(c & 0xFFFFFFFF));
+	tmp = hash_value(UI32((c >> 32) & 0xFFFFFFFF), tmp);
 	return tmp;
 	/*/
 	uint32_t tmp = SuperFastHash(reinterpret_cast<const char*>(&c), sizeof(c));
@@ -362,7 +387,7 @@ inline void CG3Quit(const int32_t c = 0, const char* file = nullptr, const uint3
 }
 
 inline constexpr uint64_t make_64(uint32_t hi, uint32_t low) {
-	return (static_cast<uint64_t>(hi) << 32) | static_cast<uint64_t>(low);
+	return (UI64(hi) << 32) | UI64(low);
 }
 
 template<typename T, size_t N>
@@ -423,9 +448,9 @@ inline void writeUTF8String(std::ostream& output, const UChar* str, size_t len =
 	std::vector<char> buffer(len * 4);
 	int32_t olen = 0;
 	UErrorCode status = U_ZERO_ERROR;
-	u_strToUTF8(&buffer[0], static_cast<int32_t>(len * 4 - 1), &olen, str, static_cast<int32_t>(len), &status);
+	u_strToUTF8(&buffer[0], SI32(len * 4 - 1), &olen, str, SI32(len), &status);
 
-	auto cs = static_cast<uint16_t>(olen);
+	auto cs = UI16(olen);
 	writeRaw(output, cs);
 	output.write(&buffer[0], cs);
 }
@@ -458,11 +483,11 @@ inline UString readUTF8String(S& input) {
 #endif
 
 inline uint32_t hton32(uint32_t val) {
-	return static_cast<uint32_t>(htonl(val));
+	return UI32(htonl(val));
 }
 
 inline uint32_t ntoh32(uint32_t val) {
-	return static_cast<uint32_t>(ntohl(val));
+	return UI32(ntohl(val));
 }
 
 template<typename T>
@@ -471,19 +496,19 @@ inline void writeSwapped(std::ostream& stream, const T& value) {
 		stream.write(reinterpret_cast<const char*>(&value), sizeof(T));
 	}
 	else if (sizeof(T) == 2) {
-		auto tmp = static_cast<uint16_t>(htons(static_cast<uint16_t>(value)));
+		auto tmp = UI16(htons(UI16(value)));
 		stream.write(reinterpret_cast<const char*>(&tmp), sizeof(T));
 	}
 	else if (sizeof(T) == 4) {
-		auto tmp = static_cast<uint32_t>(htonl(static_cast<uint32_t>(value)));
+		auto tmp = UI32(htonl(UI32(value)));
 		stream.write(reinterpret_cast<const char*>(&tmp), sizeof(T));
 	}
 	else if (sizeof(T) == 8) {
 		uint64_t tmp = value;
 #ifndef BIG_ENDIAN
-		auto high = hton32(static_cast<uint32_t>(tmp >> 32));
-		auto low = hton32(static_cast<uint32_t>(tmp & 0xFFFFFFFFULL));
-		tmp = (static_cast<uint64_t>(low) << 32) | high;
+		auto high = hton32(UI32(tmp >> 32));
+		auto low = hton32(UI32(tmp & 0xFFFFFFFFULL));
+		tmp = (UI64(low) << 32) | high;
 #endif
 		stream.write(reinterpret_cast<const char*>(&tmp), sizeof(T));
 	}
@@ -498,8 +523,8 @@ inline void writeSwapped(std::ostream& stream, const T& value) {
 template<>
 inline void writeSwapped(std::ostream& stream, const double& value) {
 	int exp = 0;
-	auto mant64 = static_cast<uint64_t>(std::numeric_limits<int64_t>::max() * frexp(value, &exp));
-	auto exp32 = static_cast<uint32_t>(exp);
+	auto mant64 = UI64(std::numeric_limits<int64_t>::max() * frexp(value, &exp));
+	auto exp32 = UI32(exp);
 	writeSwapped(stream, mant64);
 	writeSwapped(stream, exp32);
 }
@@ -528,9 +553,9 @@ inline T readSwapped(std::istream& stream) {
 		uint64_t tmp = 0;
 		stream.read(reinterpret_cast<char*>(&tmp), sizeof(T));
 #ifndef BIG_ENDIAN
-		auto high = ntoh32(static_cast<uint32_t>(tmp >> 32));
-		auto low = ntoh32(static_cast<uint32_t>(tmp & 0xFFFFFFFFULL));
-		tmp = (static_cast<uint64_t>(low) << 32) | high;
+		auto high = ntoh32(UI32(tmp >> 32));
+		auto low = ntoh32(UI32(tmp & 0xFFFFFFFFULL));
+		tmp = (UI64(low) << 32) | high;
 #endif
 		return static_cast<T>(tmp);
 	}

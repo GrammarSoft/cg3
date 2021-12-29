@@ -175,7 +175,7 @@ Tag* parseTag(const UChar* to, const UChar* p, State& state) {
 
 		for (auto iter : state.get_grammar()->regex_tags) {
 			UErrorCode status = U_ZERO_ERROR;
-			uregex_setText(iter, tag->tag.c_str(), static_cast<int32_t>(tag->tag.size()), &status);
+			uregex_setText(iter, tag->tag.c_str(), SI32(tag->tag.size()), &status);
 			if (status != U_ZERO_ERROR) {
 				state.error("%s: Error: uregex_setText(parseTag) returned %s on line %u near `%S` - cannot continue!\n", u_errorName(status), p);
 			}
@@ -263,10 +263,10 @@ Tag* parseTag(const UChar* to, const UChar* p, State& state) {
 				}
 
 				if (tag->type & T_CASE_INSENSITIVE) {
-					tag->regexp = uregex_open(rt.c_str(), static_cast<int32_t>(rt.size()), UREGEX_CASE_INSENSITIVE, &pe, &status);
+					tag->regexp = uregex_open(rt.c_str(), SI32(rt.size()), UREGEX_CASE_INSENSITIVE, &pe, &status);
 				}
 				else {
-					tag->regexp = uregex_open(rt.c_str(), static_cast<int32_t>(rt.size()), 0, &pe, &status);
+					tag->regexp = uregex_open(rt.c_str(), SI32(rt.size()), 0, &pe, &status);
 				}
 				if (status != U_ZERO_ERROR) {
 					state.error("%s: Error: uregex_open returned %s trying to parse tag %S on line %u near `%S` - cannot continue!\n", u_errorName(status), tag->tag.c_str(), p);

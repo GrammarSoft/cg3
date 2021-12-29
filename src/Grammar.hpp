@@ -49,6 +49,7 @@ public:
 	bool ordered = false;
 	bool addcohort_attach = false;
 	size_t grammar_size = 0;
+	size_t num_tags = 0;
 	UChar mapping_prefix = '@';
 	uint32_t lines = 0;
 	uint32_t verbosity_level = 0;
@@ -156,15 +157,15 @@ template<typename Stream>
 inline void _trie_unserialize(trie_t& trie, Stream& input, Grammar& grammar, uint32_t num_tags) {
 	for (uint32_t i = 0; i < num_tags; ++i) {
 		uint32_t u32tmp = 0;
-		fread_throw(&u32tmp, sizeof(uint32_t), 1, input);
+		fread_throw(&u32tmp, sizeof(u32tmp), 1, input);
 		u32tmp = ntoh32(u32tmp);
 		trie_node_t& node = trie[grammar.single_tags_list[u32tmp]];
 
 		uint8_t u8tmp = 0;
-		fread_throw(&u8tmp, sizeof(uint8_t), 1, input);
+		fread_throw(&u8tmp, sizeof(u8tmp), 1, input);
 		node.terminal = (u8tmp != 0);
 
-		fread_throw(&u32tmp, sizeof(uint32_t), 1, input);
+		fread_throw(&u32tmp, sizeof(u32tmp), 1, input);
 		u32tmp = ntoh32(u32tmp);
 		if (u32tmp) {
 			if (!node.trie) {

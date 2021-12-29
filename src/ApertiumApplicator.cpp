@@ -695,7 +695,7 @@ void ApertiumApplicator::printReading(Reading* reading, std::ostream& output, Ap
 
 	if (reading->baseform) {
 		// Lop off the initial and final '"' characters
-		UnicodeString bf(single_tags[reading->baseform]->tag.c_str() + 1, static_cast<int32_t>(single_tags[reading->baseform]->tag.size() - 2));
+		UnicodeString bf(grammar->single_tags[reading->baseform]->tag.c_str() + 1, SI32(grammar->single_tags[reading->baseform]->tag.size() - 2));
 
 		if (wordform_case) {
 			if (casing == ApertiumCasing::Upper) {
@@ -724,7 +724,7 @@ void ApertiumApplicator::printReading(Reading* reading, std::ostream& output, Ap
 		}
 		u_fprintf(output, "%S", bf_escaped.c_str());
 
-		// Tag::printTagRaw(output, single_tags[reading->baseform]);
+		// Tag::printTagRaw(output, grammar->single_tags[reading->baseform]);
 	}
 
 	if(surface_readings && !trace) {
@@ -740,7 +740,7 @@ void ApertiumApplicator::printReading(Reading* reading, std::ostream& output, Ap
 	Reading::tags_list_t multitags_list; // everything after a +, until the first MAPPING tag
 	bool multi = false;
 	for (auto tter : reading->tags_list) {
-		const Tag* tag = single_tags[tter];
+		const Tag* tag = grammar->single_tags[tter];
 		if (tag->tag[0] == '+') {
 			multi = true;
 		}
@@ -769,7 +769,7 @@ void ApertiumApplicator::printReading(Reading* reading, std::ostream& output, Ap
 		if (tter == endtag || tter == begintag) {
 			continue;
 		}
-		const Tag* tag = single_tags[tter];
+		const Tag* tag = grammar->single_tags[tter];
 		if (!(tag->type & T_BASEFORM) && !(tag->type & T_WORDFORM)) {
 			if (tag->tag[0] == '+') {
 				u_fprintf(output, "%S", tag->tag.c_str());
@@ -811,7 +811,7 @@ void ApertiumApplicator::printReading(Reading* reading, std::ostream& output) {
 		}
 		if (last->baseform) {
 			// Including the initial and final '"' characters
-			UString* bftag = &single_tags[last->baseform]->tag;
+			UString* bftag = &grammar->single_tags[last->baseform]->tag;
 			// Excluding the initial and final '"' characters
 			size_t bf_length = bftag->size() - 2;
 			UString* wftag = &reading->parent->wordform->tag;
@@ -890,7 +890,7 @@ void ApertiumApplicator::printSingleWindow(SingleWindow* window, std::ostream& o
 		if (print_word_forms == true) {
 			// Lop off the initial and final '"' characters
 			// ToDo: A copy does not need to be made here - use pointer offsets
-			UnicodeString wf(cohort->wordform->tag.c_str() + 2, static_cast<int32_t>(cohort->wordform->tag.size() - 4));
+			UnicodeString wf(cohort->wordform->tag.c_str() + 2, SI32(cohort->wordform->tag.size() - 4));
 			UString wf_escaped;
 			for (int i = 0; i < wf.length(); ++i) {
 				if (wf[i] == '^' || wf[i] == '\\' || wf[i] == '/' || wf[i] == '$' || wf[i] == '[' || wf[i] == ']' || wf[i] == '{' || wf[i] == '}' || wf[i] == '<' || wf[i] == '>') {
@@ -909,7 +909,7 @@ void ApertiumApplicator::printSingleWindow(SingleWindow* window, std::ostream& o
 					if (tter == cohort->wordform->hash) {
 						continue;
 					}
-					const Tag* tag = single_tags[tter];
+					const Tag* tag = grammar->single_tags[tter];
 					u_fprintf(output, "<%S>", tag->tag.c_str());
 				}
 			}
@@ -917,7 +917,7 @@ void ApertiumApplicator::printSingleWindow(SingleWindow* window, std::ostream& o
 
 		bool need_slash = print_word_forms;
 
-		//Tag::printTagRaw(output, single_tags[cohort->wordform]);
+		//Tag::printTagRaw(output, grammar->single_tags[cohort->wordform]);
 		std::sort(cohort->readings.begin(), cohort->readings.end(), CG3::Reading::cmp_number);
 		for (auto reading : cohort->readings) {
 			if (need_slash) {

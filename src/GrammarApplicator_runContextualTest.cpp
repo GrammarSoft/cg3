@@ -142,7 +142,7 @@ Cohort* GrammarApplicator::runSingleTest(SingleWindow* sWindow, size_t i, const 
 
 Cohort* getCohortInWindow(SingleWindow*& sWindow, size_t position, const ContextualTest* test, int32_t& pos) {
 	Cohort* cohort = nullptr;
-	pos = static_cast<int32_t>(position) + test->offset;
+	pos = SI32(position) + test->offset;
 	// ToDo: (NOT*) and (*C) tests can be cached
 	if ((test->pos & POS_ABSOLUTE) && (test->pos & (POS_SPAN_LEFT|POS_SPAN_RIGHT))) {
 		if (sWindow->previous && (test->pos & POS_SPAN_LEFT)) {
@@ -157,14 +157,14 @@ Cohort* getCohortInWindow(SingleWindow*& sWindow, size_t position, const Context
 	}
 	if (test->pos & POS_ABSOLUTE) {
 		if (test->offset < 0) {
-			pos = static_cast<int32_t>(sWindow->cohorts.size()) + test->offset;
+			pos = SI32(sWindow->cohorts.size()) + test->offset;
 		}
 		else {
 			pos = test->offset;
 		}
 	}
 	if (pos >= 0) {
-		if (pos >= static_cast<int32_t>(sWindow->cohorts.size()) && (test->pos & (POS_SPAN_RIGHT | POS_SPAN_BOTH)) && sWindow->next) {
+		if (pos >= SI32(sWindow->cohorts.size()) && (test->pos & (POS_SPAN_RIGHT | POS_SPAN_BOTH)) && sWindow->next) {
 			sWindow = sWindow->next;
 			pos = 0;
 		}
@@ -172,10 +172,10 @@ Cohort* getCohortInWindow(SingleWindow*& sWindow, size_t position, const Context
 	else {
 		if ((test->pos & (POS_SPAN_LEFT | POS_SPAN_BOTH)) && sWindow->previous) {
 			sWindow = sWindow->previous;
-			pos = static_cast<int32_t>(sWindow->cohorts.size()) - 1;
+			pos = SI32(sWindow->cohorts.size()) - 1;
 		}
 	}
-	if (pos >= 0 && pos < static_cast<int32_t>(sWindow->cohorts.size())) {
+	if (pos >= 0 && pos < SI32(sWindow->cohorts.size())) {
 		cohort = sWindow->cohorts[pos];
 	}
 	return cohort;
@@ -205,11 +205,11 @@ bool GrammarApplicator::posOutputHelper(const SingleWindow* sWindow, size_t posi
 	}
 	else {
 		// ...otherwise, positive offsets need to match the leftmost of entry/exit
-		if (test->offset > 0 && static_cast<int32_t>(cs[0]->local_number) - static_cast<int32_t>(position) == test->offset) {
+		if (test->offset > 0 && SI32(cs[0]->local_number) - SI32(position) == test->offset) {
 			good = true;
 		}
 		// ...and, negative offsets need to match the rightmost of entry/exit
-		else if (test->offset < 0 && static_cast<int32_t>(cs[3]->local_number) - static_cast<int32_t>(position) == test->offset) {
+		else if (test->offset < 0 && SI32(cs[3]->local_number) - SI32(position) == test->offset) {
 			good = true;
 		}
 	}
@@ -471,7 +471,7 @@ Cohort* GrammarApplicator::runContextualTest(SingleWindow* sWindow, size_t posit
 						if ((test->pos & (POS_SPAN_BOTH | POS_SPAN_LEFT) || always_span)) {
 							left = left->previous;
 							if (left) {
-								lpos = static_cast<int32_t>(i + left->cohorts.size());
+								lpos = SI32(i + left->cohorts.size());
 							}
 						}
 						else {
@@ -520,7 +520,7 @@ Cohort* GrammarApplicator::runContextualTest(SingleWindow* sWindow, size_t posit
 			size_t seen = 0;
 			if ((test->pos & POS_SELF) && (!(test->pos & MASK_POS_LORR) || ((test->pos & POS_DEP_PARENT) && !(test->pos & POS_DEP_GLOB)))) {
 				++seen;
-				assert(pos >= 0 && pos < static_cast<int32_t>(sWindow->cohorts.size()) && "Somehow, the input position wasn't inside the current window.");
+				assert(pos >= 0 && pos < SI32(sWindow->cohorts.size()) && "Somehow, the input position wasn't inside the current window.");
 				Cohort* self = sWindow->cohorts[position];
 				nc = runSingleTest(self, test, rvs, &retval, deep, origin);
 				if (!retval && (rvs & TRV_BREAK_DEFAULT)) {
@@ -782,7 +782,7 @@ Cohort* GrammarApplicator::runRelationTest(SingleWindow* sWindow, Cohort* curren
 	CohortSet rels;
 	uint8_t regexgrpz = regexgrps.first;
 
-	auto rtag = single_tags[test->relation];
+	auto rtag = grammar->single_tags[test->relation];
 	while (rtag->type & T_VARSTRING) {
 		rtag = generateVarstringTag(rtag);
 	}
@@ -805,7 +805,7 @@ Cohort* GrammarApplicator::runRelationTest(SingleWindow* sWindow, Cohort* curren
 				auto it = sWindow->parent->cohort_map.find(citer);
 				if (it != sWindow->parent->cohort_map.end() && doesTagMatchRegexp(riter.first, *rtag, caps != 0)) {
 					rels.insert(it->second);
-					regexgrps.first = std::min(regexgrps.first, static_cast<uint8_t>(regexgrpz + caps));
+					regexgrps.first = std::min(regexgrps.first, UI8(regexgrpz + caps));
 				}
 			}
 		}

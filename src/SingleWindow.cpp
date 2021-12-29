@@ -136,7 +136,7 @@ void SingleWindow::clear() {
 }
 
 void SingleWindow::appendCohort(Cohort* cohort) {
-	cohort->local_number = (uint32_t)cohorts.size();
+	cohort->local_number = UI32(cohorts.size());
 	cohort->parent = this;
 
 	if (cohort->dep_self) {

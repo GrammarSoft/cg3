@@ -627,7 +627,7 @@ void MatxinApplicator::printReading(Reading* reading, Node& node, std::ostream& 
 	}
 
 	// Lop off the initial and final '"' characters
-	UnicodeString bf(single_tags[reading->baseform]->tag.c_str() + 1, static_cast<int32_t>(single_tags[reading->baseform]->tag.size() - 2));
+	UnicodeString bf(grammar->single_tags[reading->baseform]->tag.c_str() + 1, SI32(grammar->single_tags[reading->baseform]->tag.size() - 2));
 
 	node.lemma = bf.getTerminatedBuffer();
 
@@ -639,7 +639,7 @@ void MatxinApplicator::printReading(Reading* reading, Node& node, std::ostream& 
 	bool multi = false;
 	bool first = true;
 	for (auto tter : reading->tags_list) {
-		const Tag* tag = single_tags[tter];
+		const Tag* tag = grammar->single_tags[tter];
 		if (tag->tag[0] == '+') {
 			multi = true;
 		}
@@ -669,7 +669,7 @@ void MatxinApplicator::printReading(Reading* reading, Node& node, std::ostream& 
 		if (tter == endtag || tter == begintag) {
 			continue;
 		}
-		const Tag* tag = single_tags[tter];
+		const Tag* tag = grammar->single_tags[tter];
 		if (!(tag->type & T_BASEFORM) && !(tag->type & T_WORDFORM)) {
 			if (tag->tag[0] == '+') {
 				u_fprintf(output, "%S", tag->tag.c_str());
@@ -721,7 +721,7 @@ void MatxinApplicator::printSingleWindow(SingleWindow* window, std::ostream& out
 
 		// Lop off the initial and final '"' characters
 		// ToDo: A copy does not need to be made here - use pointer offsets
-		UnicodeString wf(cohort->wordform->tag.c_str() + 2, static_cast<int32_t>(cohort->wordform->tag.size() - 4));
+		UnicodeString wf(cohort->wordform->tag.c_str() + 2, SI32(cohort->wordform->tag.size() - 4));
 		UString wf_escaped;
 		for (int i = 0; i < wf.length(); ++i) {
 			if (wf[i] == '&') {
@@ -752,13 +752,13 @@ void MatxinApplicator::printSingleWindow(SingleWindow* window, std::ostream& out
 				if (tter == cohort->wordform->hash) {
 					continue;
 				}
-				const Tag *tag = single_tags[tter];
+				const Tag *tag = grammar->single_tags[tter];
 				u_fprintf(output, "<%S>", tag->tag.c_str());
 			}
 		}
 //*/
 
-		//Tag::printTagRaw(output, single_tags[cohort->wordform]);
+		//Tag::printTagRaw(output, grammar->single_tags[cohort->wordform]);
 		Reading* reading = cohort->readings[0];
 
 		printReading(reading, n, output);
