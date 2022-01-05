@@ -52,6 +52,43 @@ std::string ux_dirname(const char* in) {
 }
 }
 
+size_t get_line_clean(CG3::UString& line, CG3::UString& cleaned, std::istream& input) {
+	using namespace CG3;
+
+	size_t offset = 0, packoff = 0;
+	// Read as much of the next line as will fit in the current buffer
+	while (u_fgets(&line[offset], SI32(line.size() - offset - 1), input)) {
+		// Copy the segment just read to cleaned
+		for (; offset < line.size(); ++offset) {
+			// Only copy one space character, regardless of how many are in input
+			if (ISSPACE(line[offset]) && !ISNL(line[offset])) {
+				cleaned[packoff++] = ' ';
+				while (ISSPACE(line[offset]) && !ISNL(line[offset])) {
+					++offset;
+				}
+			}
+			// Break if there is a newline
+			if (ISNL(line[offset])) {
+				cleaned[packoff + 1] = cleaned[packoff] = 0;
+				return packoff;
+			}
+			if (line[offset] == 0) {
+				cleaned[packoff + 1] = cleaned[packoff] = 0;
+				break;
+			}
+			cleaned[packoff++] = line[offset];
+		}
+		// Either buffer wasn't big enough, or someone fed us malformed data thinking U+0085 is ellipsis when it in fact is Next Line (NEL)
+		if (packoff > line.size() / 2) {
+			// If we reached this, buffer wasn't big enough. Double the size of the buffer and try again.
+			line.resize(line.size() * 2, 0);
+			cleaned.resize(line.size() + 1, 0);
+		}
+	}
+
+	return packoff;
+}
+
 // ICU std::istream input wrappers
 UChar* u_fgets(UChar* s, int32_t n, std::istream& input) {
 	using namespace CG3;

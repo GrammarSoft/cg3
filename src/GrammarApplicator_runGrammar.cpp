@@ -151,40 +151,8 @@ void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& outp
 
 	while (!input.eof()) {
 		++lines;
-		size_t offset = 0, packoff = 0;
-		// Read as much of the next line as will fit in the current buffer
-		while (u_fgets(&line[offset], SI32(line.size() - offset - 1), input)) {
-			// Copy the segment just read to cleaned
-			for (size_t i = offset; i < line.size(); ++i) {
-				// Only copy one space character, regardless of how many are in input
-				if (ISSPACE(line[i]) && !ISNL(line[i])) {
-					cleaned[packoff++] = ' ';
-					while (ISSPACE(line[i]) && !ISNL(line[i])) {
-						++i;
-					}
-				}
-				// Break if there is a newline
-				if (ISNL(line[i])) {
-					cleaned[packoff + 1] = cleaned[packoff] = 0;
-					goto gotaline; // Oh how I wish C++ had break 2;
-				}
-				if (line[i] == 0) {
-					cleaned[packoff + 1] = cleaned[packoff] = 0;
-					break;
-				}
-				cleaned[packoff++] = line[i];
-			}
-			// Either buffer wasn't big enough, or someone fed us malformed data thinking U+0085 is ellipsis when it in fact is Next Line (NEL)
-			line = cleaned;
-			offset = packoff;
-			if (packoff > line.size() / 2) {
-				// If we reached this, buffer wasn't big enough. Double the size of the buffer and try again.
-				line.resize(line.size() * 2, 0);
-				cleaned.resize(line.size() + 1, 0);
-			}
-		}
+		auto packoff = get_line_clean(line, cleaned, input);
 
-	gotaline:
 		// Trim trailing whitespace
 		while (cleaned[0] && ISSPACE(cleaned[packoff - 1])) {
 			cleaned[packoff - 1] = 0;
