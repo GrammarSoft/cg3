@@ -65,20 +65,20 @@ inline bool TagSet_SubsetOf_TSet(const TagSortedVector& a, const T& b) {
 * @param[in] tag The tag to test against; only uses the hash and regexp members
 */
 uint32_t GrammarApplicator::doesTagMatchRegexp(uint32_t test, const Tag& tag, bool bypass_index) {
+	UErrorCode status = U_ZERO_ERROR;
 	uint32_t match = 0;
 	uint32_t ih = hash_value(tag.hash, test);
 	if (!bypass_index && index_matches(index_regexp_no, ih)) {
 		match = 0;
 	}
-	else if (!bypass_index && index_matches(index_regexp_yes, ih)) {
+	else if (!bypass_index && uregex_groupCount(tag.regexp, &status) == 0 && index_matches(index_regexp_yes, ih)) {
 		match = test;
 	}
 	else {
 		const Tag& itag = *(grammar->single_tags.find(test)->second);
-		UErrorCode status = U_ZERO_ERROR;
 		uregex_setText(tag.regexp, itag.tag.c_str(), SI32(itag.tag.size()), &status);
 		if (status != U_ZERO_ERROR) {
-			u_fprintf(ux_stderr, "Error: uregex_setText(MatchSet) returned %s for tag %S before input line %u - cannot continue!\n", u_errorName(status), tag.tag.c_str(), numLines);
+			u_fprintf(ux_stderr, "Error: uregex_setText(MatchTag) returned %s for tag %S before input line %u - cannot continue!\n", u_errorName(status), tag.tag.c_str(), numLines);
 			CG3Quit(1);
 		}
 		status = U_ZERO_ERROR;
@@ -86,7 +86,7 @@ uint32_t GrammarApplicator::doesTagMatchRegexp(uint32_t test, const Tag& tag, bo
 			match = itag.hash;
 		}
 		if (status != U_ZERO_ERROR) {
-			u_fprintf(ux_stderr, "Error: uregex_find(MatchSet) returned %s for tag %S before input line %u - cannot continue!\n", u_errorName(status), tag.tag.c_str(), numLines);
+			u_fprintf(ux_stderr, "Error: uregex_find(MatchTag) returned %s for tag %S before input line %u - cannot continue!\n", u_errorName(status), tag.tag.c_str(), numLines);
 			CG3Quit(1);
 		}
 		if (match) {
@@ -140,19 +140,19 @@ uint32_t GrammarApplicator::doesTagMatchIcase(uint32_t test, const Tag& tag, boo
 
 // ToDo: Remove for real ordered mode
 uint32_t GrammarApplicator::doesRegexpMatchLine(const Reading& reading, const Tag& tag, bool bypass_index) {
+	UErrorCode status = U_ZERO_ERROR;
 	uint32_t match = 0;
 	uint32_t ih = hash_value(reading.tags_string_hash, tag.hash);
 	if (!bypass_index && index_matches(index_regexp_no, ih)) {
 		match = 0;
 	}
-	else if (!bypass_index && index_matches(index_regexp_yes, ih)) {
+	else if (!bypass_index && uregex_groupCount(tag.regexp, &status) == 0 && index_matches(index_regexp_yes, ih)) {
 		match = reading.tags_string_hash;
 	}
 	else {
-		UErrorCode status = U_ZERO_ERROR;
 		uregex_setText(tag.regexp, reading.tags_string.c_str(), SI32(reading.tags_string.size()), &status);
 		if (status != U_ZERO_ERROR) {
-			u_fprintf(ux_stderr, "Error: uregex_setText(MatchSet) returned %s for tag %S before input line %u - cannot continue!\n", u_errorName(status), tag.tag.c_str(), numLines);
+			u_fprintf(ux_stderr, "Error: uregex_setText(MatchLine) returned %s for tag %S before input line %u - cannot continue!\n", u_errorName(status), tag.tag.c_str(), numLines);
 			CG3Quit(1);
 		}
 		status = U_ZERO_ERROR;
@@ -160,7 +160,7 @@ uint32_t GrammarApplicator::doesRegexpMatchLine(const Reading& reading, const Ta
 			match = reading.tags_string_hash;
 		}
 		if (status != U_ZERO_ERROR) {
-			u_fprintf(ux_stderr, "Error: uregex_find(MatchSet) returned %s for tag %S before input line %u - cannot continue!\n", u_errorName(status), tag.tag.c_str(), numLines);
+			u_fprintf(ux_stderr, "Error: uregex_find(MatchLine) returned %s for tag %S before input line %u - cannot continue!\n", u_errorName(status), tag.tag.c_str(), numLines);
 			CG3Quit(1);
 		}
 		if (match) {
