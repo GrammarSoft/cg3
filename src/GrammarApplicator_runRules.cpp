@@ -516,8 +516,8 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 			regexgrps_c.reserve(std::max(regexgrps_c.size(), cohort->readings.size()));
 
 			size_t used_unif = 0;
-			unif_tags_store.resize(std::max(unif_tags_store.size(), cohort->readings.size()));
-			unif_sets_store.resize(std::max(unif_sets_store.size(), cohort->readings.size()));
+			unif_tags_store.resize(std::max(unif_tags_store.size(), cohort->readings.size() + 1));
+			unif_sets_store.resize(std::max(unif_sets_store.size(), cohort->readings.size() + 1));
 
 			// This loop figures out which readings, if any, that are valid targets for the current rule
 			// Criteria for valid is that the reading must match both target and all contextual tests
@@ -1004,6 +1004,12 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 				else if (unif_tags_rs.count(reading.hash_plain)) {
 					unif_tags = unif_tags_rs[reading.hash_plain];
 					unif_sets = unif_sets_rs[reading.hash_plain];
+				}
+				else {
+					unif_tags = &unif_tags_store[used_unif];
+					unif_sets = &unif_sets_store[used_unif];
+					clear(*unif_tags);
+					clear(*unif_sets);
 				}
 
 				auto insert_taglist_to_reading = [&](auto& iter, auto& taglist, auto& reading, auto& mappings) {
