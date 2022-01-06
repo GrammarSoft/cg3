@@ -5,6 +5,11 @@ set(PYTHON_FILE "constraint_grammar.py")
 set(CPP_WRAP_FILE "constraint_grammar_wrap.cpp")
 file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/cg3.py" "from constraint_grammar import *\n")
 
+set(BUILD_DEFS "")
+get_directory_property(_defs DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} COMPILE_DEFINITIONS)
+foreach(d ${_defs})
+	set(BUILD_DEFS "${BUILD_DEFS} -D${d}")
+endforeach()
 configure_file(constraint_grammar.i.in constraint_grammar.i @ONLY)
 configure_file(setup.py.in setup.py)
 

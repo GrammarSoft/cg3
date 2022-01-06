@@ -50,6 +50,15 @@ std::string ux_dirname(const char* in) {
 	}
 	return tmp;
 }
+
+void findAndReplace(UnicodeString& str, CG3::UStringView from, CG3::UStringView to) {
+	int32_t offset = 0;
+	while ((offset = str.indexOf(from.data(), from.size(), offset)) != -1) {
+		str.replace(offset, from.size(), to.data(), 0, to.size());
+		offset += to.size();
+	}
+}
+
 }
 
 size_t get_line_clean(CG3::UString& line, CG3::UString& cleaned, std::istream& input) {
