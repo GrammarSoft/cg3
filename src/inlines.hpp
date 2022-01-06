@@ -187,6 +187,10 @@ inline uint32_t hash_value(const UString& str, uint32_t h = 0) {
 	return hash_value(str.c_str(), h, str.size());
 }
 
+inline uint32_t hash_value(const UStringView& str, uint32_t h = 0) {
+	return hash_value(str.data(), h, str.size());
+}
+
 inline uint32_t hash_value(const char* str, uint32_t hash = 0, size_t len = 0) {
 	if (hash == 0) {
 		hash = CG3_HASH_SEED;
@@ -228,7 +232,15 @@ struct hash_ustring {
 	size_t operator()(const UString& str) const {
 		return hash_value(str);
 	}
+
+	size_t operator()(const UStringView& str) const {
+		return hash_value(str);
+	}
 };
+
+inline UStringView USV(UnicodeString& str) {
+	return UStringView(str.getTerminatedBuffer(), str.length());
+}
 
 inline bool ISSPACE(const UChar c) {
 	if (c <= 0xFF && c != 0x09 && c != 0x0A && c != 0x0D && c != 0x20 && c != 0xA0) {

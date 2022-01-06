@@ -203,7 +203,7 @@ void PlaintextApplicator::runGrammarOnText(std::istream& input, std::ostream& ou
 					--len;
 				}
 				if (*p) {
-					tokens.insert(tokens.begin() + tkz, p);
+					tokens.insert(tokens.begin() + tkz, UnicodeString(p));
 				}
 			}
 

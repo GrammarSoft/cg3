@@ -66,12 +66,13 @@ inline bool TagSet_SubsetOf_TSet(const TagSortedVector& a, const T& b) {
 */
 uint32_t GrammarApplicator::doesTagMatchRegexp(uint32_t test, const Tag& tag, bool bypass_index) {
 	UErrorCode status = U_ZERO_ERROR;
+	int32_t gc = uregex_groupCount(tag.regexp, &status);
 	uint32_t match = 0;
 	uint32_t ih = hash_value(tag.hash, test);
 	if (!bypass_index && index_matches(index_regexp_no, ih)) {
 		match = 0;
 	}
-	else if (!bypass_index && uregex_groupCount(tag.regexp, &status) == 0 && index_matches(index_regexp_yes, ih)) {
+	else if (!bypass_index && gc == 0 && index_matches(index_regexp_yes, ih)) {
 		match = test;
 	}
 	else {
@@ -90,7 +91,6 @@ uint32_t GrammarApplicator::doesTagMatchRegexp(uint32_t test, const Tag& tag, bo
 			CG3Quit(1);
 		}
 		if (match) {
-			int32_t gc = uregex_groupCount(tag.regexp, &status);
 			if (gc > 0 && regexgrps.second != 0) {
 				UChar tmp[1024];
 				for (int i = 1; i <= gc; ++i) {
@@ -141,12 +141,13 @@ uint32_t GrammarApplicator::doesTagMatchIcase(uint32_t test, const Tag& tag, boo
 // ToDo: Remove for real ordered mode
 uint32_t GrammarApplicator::doesRegexpMatchLine(const Reading& reading, const Tag& tag, bool bypass_index) {
 	UErrorCode status = U_ZERO_ERROR;
+	int32_t gc = uregex_groupCount(tag.regexp, &status);
 	uint32_t match = 0;
 	uint32_t ih = hash_value(reading.tags_string_hash, tag.hash);
 	if (!bypass_index && index_matches(index_regexp_no, ih)) {
 		match = 0;
 	}
-	else if (!bypass_index && uregex_groupCount(tag.regexp, &status) == 0 && index_matches(index_regexp_yes, ih)) {
+	else if (!bypass_index && gc == 0 && index_matches(index_regexp_yes, ih)) {
 		match = reading.tags_string_hash;
 	}
 	else {
@@ -164,7 +165,6 @@ uint32_t GrammarApplicator::doesRegexpMatchLine(const Reading& reading, const Ta
 			CG3Quit(1);
 		}
 		if (match) {
-			int32_t gc = uregex_groupCount(tag.regexp, &status);
 			// ToDo: Allow regex captures from dependency target contexts without any captures in normal target contexts
 			if (gc > 0 && regexgrps.second != 0) {
 				UChar tmp[1024];

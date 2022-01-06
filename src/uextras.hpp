@@ -237,6 +237,7 @@ inline UChar* ux_bufcpy(UChar* dst, const UChar* src, size_t n) {
 }
 
 std::string ux_dirname(const char* in);
+void findAndReplace(UnicodeString& str, CG3::UStringView from, CG3::UStringView to);
 }
 
 #endif

@@ -363,7 +363,7 @@ Tag* GrammarApplicator::generateVarstringTag(const Tag* tag) {
 
 	// Convert %[UuLl] markers to control codes to avoid having combined %$1 accidentally match %L
 	for (size_t i = 0; i < 4; ++i) {
-		tmp.findAndReplace(stringbits[S_VSu_raw + i].c_str(), stringbits[S_VSu + i].c_str());
+		findAndReplace(tmp, stringbits[S_VSu_raw + i].c_str(), stringbits[S_VSu + i].c_str());
 	}
 
 	// Replace unified sets with their matching tags
@@ -380,14 +380,14 @@ Tag* GrammarApplicator::generateVarstringTag(const Tag* tag) {
 					rpl += '_';
 				}
 			}
-			tmp.findAndReplace((*tag->vs_names)[i].c_str(), rpl.c_str());
+			findAndReplace(tmp, (*tag->vs_names)[i].c_str(), rpl.c_str());
 			did_something = true;
 		}
 	}
 
 	// Replace $1-$9 with their respective match groups
 	for (size_t i = 0; i < regexgrps.first && i < 9; ++i) {
-		tmp.findAndReplace(stringbits[S_VS1 + i].c_str(), (*regexgrps.second)[i]);
+		findAndReplace(tmp, stringbits[S_VS1 + i].c_str(), USV((*regexgrps.second)[i]));
 		did_something = true;
 	}
 

@@ -122,8 +122,15 @@ else()
 	include_directories("include/posix")
 endif()
 
+add_definitions(-DUNISTR_FROM_CHAR_EXPLICIT=explicit -DUNISTR_FROM_STRING_EXPLICIT=explicit)
 include_directories("include")
 include_directories("src")
+
+include(CheckIncludeFileCXX)
+CHECK_INCLUDE_FILE_CXX(string_view HAS_SV)
+if(HAS_SV)
+	add_definitions(-DHAS_SV)
+endif()
 
 enable_testing()
 

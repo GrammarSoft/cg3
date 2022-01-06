@@ -72,6 +72,7 @@
 #include <sys/stat.h>
 #include <cstdint>
 #include <cycle.h>
+#include "string_view.hpp"
 
 // cycle.h doesn't know all platforms (such as ARM), so fall back on clock()
 #ifndef HAVE_TICK_COUNTER
@@ -123,6 +124,7 @@ using namespace icu;
 
 namespace CG3 {
 typedef std::basic_string<UChar> UString;
+typedef std::basic_string_view<UChar> UStringView;
 typedef std::vector<UString> UStringVector;
 typedef std::vector<uint32_t> uint32Vector;
 namespace bc = ::boost::container;
