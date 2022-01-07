@@ -61,7 +61,7 @@ void findAndReplace(UnicodeString& str, CG3::UStringView from, CG3::UStringView 
 
 }
 
-size_t get_line_clean(CG3::UString& line, CG3::UString& cleaned, std::istream& input) {
+size_t get_line_clean(CG3::UString& line, CG3::UString& cleaned, std::istream& input, bool keep_tabs) {
 	using namespace CG3;
 
 	size_t offset = 0, packoff = 0;
@@ -71,10 +71,17 @@ size_t get_line_clean(CG3::UString& line, CG3::UString& cleaned, std::istream& i
 		for (; offset < line.size(); ++offset) {
 			// Only copy one space character, regardless of how many are in input
 			if (ISSPACE(line[offset]) && !ISNL(line[offset])) {
-				cleaned[packoff++] = ' ';
+				UChar space = (line[offset] == '\t' ? '\t' : ' ');
 				while (ISSPACE(line[offset]) && !ISNL(line[offset])) {
+					if (line[offset] == '\t') {
+						space = line[offset];
+					}
 					++offset;
 				}
+				if (!keep_tabs) {
+					space = ' ';
+				}
+				cleaned[packoff++] = space;
 			}
 			// Break if there is a newline
 			if (ISNL(line[offset])) {

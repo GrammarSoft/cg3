@@ -89,7 +89,7 @@ void FSTApplicator::runGrammarOnText(std::istream& input, std::ostream& output) 
 
 	while (!input.eof()) {
 		++lines;
-		auto packoff = get_line_clean(line, cleaned, input);
+		auto packoff = get_line_clean(line, cleaned, input, true);
 
 		// Trim trailing whitespace
 		while (cleaned[0] && ISSPACE(cleaned[packoff - 1])) {
