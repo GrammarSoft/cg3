@@ -85,7 +85,7 @@ inline bool ux_stripBOM(std::istream& stream) {
 	return true;
 }
 
-size_t get_line_clean(CG3::UString& line, CG3::UString& cleaned, std::istream& input);
+size_t get_line_clean(CG3::UString& line, CG3::UString& cleaned, std::istream& input, bool keep_tabs = false);
 
 // ICU std::istream input wrappers
 UChar* u_fgets(UChar* s, int32_t n, std::istream& input);
