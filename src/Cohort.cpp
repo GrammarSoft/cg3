@@ -228,6 +228,7 @@ bool Cohort::addRelation(uint32_t rel, uint32_t cohort) {
 }
 
 bool Cohort::setRelation(uint32_t rel, uint32_t cohort) {
+	relations_input.erase(rel);
 	auto& cohorts = relations[rel];
 	if (cohorts.size() == 1 && cohorts.find(cohort) != cohorts.end()) {
 		return false;
@@ -241,6 +242,7 @@ bool Cohort::remRelation(uint32_t rel, uint32_t cohort) {
 	if (relations.find(rel) != relations.end()) {
 		const size_t sz = relations.find(rel)->second.size();
 		relations.find(rel)->second.erase(cohort);
+		relations_input.find(rel)->second.erase(cohort);
 		return (sz != relations.find(rel)->second.size());
 	}
 	return false;

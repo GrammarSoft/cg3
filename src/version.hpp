@@ -29,7 +29,7 @@ constexpr auto CG3_COPYRIGHT_STRING = "Copyright (C) 2007-2021 GrammarSoft ApS. 
 
 constexpr uint32_t CG3_VERSION_MAJOR = 1;
 constexpr uint32_t CG3_VERSION_MINOR = 3;
-constexpr uint32_t CG3_VERSION_PATCH = 5;
+constexpr uint32_t CG3_VERSION_PATCH = 6;
 constexpr uint32_t CG3_REVISION = 13892;
 constexpr uint32_t CG3_FEATURE_REV = 13892;
 constexpr uint32_t CG3_TOO_OLD = 10373;
