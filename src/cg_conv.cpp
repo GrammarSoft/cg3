@@ -280,6 +280,7 @@ int main(int argc, char* argv[]) {
 
 	if (options[OUT_APERTIUM].doesOccur) {
 		applicator.setOutputFormat(CG3::FMT_APERTIUM);
+		applicator.unicode_tags = true;
 	}
 	else if (options[OUT_NICELINE].doesOccur) {
 		applicator.setOutputFormat(CG3::FMT_NICELINE);
@@ -288,6 +289,9 @@ int main(int argc, char* argv[]) {
 		applicator.setOutputFormat(CG3::FMT_PLAIN);
 	}
 
+	if (options[UNICODE_TAGS].doesOccur) {
+		applicator.unicode_tags = true;
+	}
 	if (options[PIPE_DELETED].doesOccur) {
 		applicator.pipe_deleted = true;
 	}
@@ -295,6 +299,8 @@ int main(int argc, char* argv[]) {
 		applicator.add_spacing = false;
 	}
 
+	applicator.parse_dep = true;
+	applicator.has_dep = true;
 	applicator.is_conv = true;
 	applicator.trace = true;
 	applicator.verbosity_level = 0;
