@@ -80,7 +80,6 @@ void CGProc::cg_proc(int argc, char **argv, char *input_path, char *output_path)
 	bool print_word_forms = true;
 	bool only_first = false;
 	int sections = 0;
-	bool null_flush = false;
 	std::string single_rule;
 
 	std::ifstream input;
@@ -122,7 +121,6 @@ void CGProc::cg_proc(int argc, char **argv, char *input_path, char *output_path)
 				break;
 
 			case 'z':
-				null_flush = true;
 				break;
 		}
 	}

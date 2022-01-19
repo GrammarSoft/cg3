@@ -748,6 +748,10 @@ void ApertiumApplicator::printReading(Reading* reading, std::ostream& output, Ap
 			multi = false;
 		}
 
+		if (tag->type & T_DEPENDENCY && has_dep && !dep_original) {
+			continue;
+		}
+
 		if (multi) {
 			multitags_list.push_back(tter);
 		}
@@ -781,6 +785,25 @@ void ApertiumApplicator::printReading(Reading* reading, std::ostream& output, Ap
 				u_fprintf(output, "%S<%S%S>", escape.c_str(), tag->tag.c_str(), escape.c_str());
 			}
 		}
+	}
+
+	if (has_dep && !(reading->parent->type & CT_REMOVED) && !reading->next) {
+		if (!reading->parent->dep_self) {
+			reading->parent->dep_self = reading->parent->global_number;
+		}
+		const Cohort* pr = nullptr;
+		pr = reading->parent;
+		if (reading->parent->dep_parent != DEP_NO_PARENT) {
+			if (reading->parent->dep_parent == 0) {
+				pr = reading->parent->parent->cohorts[0];
+			}
+			else if (reading->parent->parent->parent->cohort_map.find(reading->parent->dep_parent) != reading->parent->parent->parent->cohort_map.end()) {
+				pr = reading->parent->parent->parent->cohort_map[reading->parent->dep_parent];
+			}
+		}
+
+		constexpr UChar pattern[] = { '<', '#', '%', 'u', u'\u2192', '%', 'u', '>', 0 };
+		u_fprintf_u(output, pattern, reading->parent->local_number, pr->local_number);
 	}
 
 	if (trace) {
