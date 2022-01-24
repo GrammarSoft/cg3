@@ -262,11 +262,14 @@ public:
 		if (it == elements.end()) {
 			return end();
 		}
-		if (it->ub < t || it->lb > t) {
+		if (it->ub < t) {
 			++it;
 			if (it == elements.end()) {
 				return end();
 			}
+			t = it->lb;
+		}
+		if (it->lb > t) {
 			t = it->lb;
 		}
 		return const_iterator(elements, it, t);
