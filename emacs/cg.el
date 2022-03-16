@@ -1,10 +1,10 @@
 ;;; cg.el --- major mode for editing Constraint Grammar files  -*- lexical-binding: t; coding: utf-8 -*-
 
-;; Copyright (C) 2010-2018 Kevin Brubeck Unhammer
+;; Copyright (C) 2010-2022 Kevin Brubeck Unhammer
 
 ;; Author: Kevin Brubeck Unhammer <unhammer@fsfe.org>
-;; Version: 0.3.1
-;; Package-Requires: ((emacs "24.3"))
+;; Version: 0.4.0
+;; Package-Requires: ((emacs "26.1"))
 ;; Url: https://visl.sdu.dk/constraint_grammar.html
 ;; Keywords: languages
 
@@ -42,8 +42,8 @@
 
 ;; I recommend using `company-mode' for tab-completion, and
 ;; `smartparens-mode' if you're used to it (`paredit-mode' does not
-;; work well if you have set names with the # character in them). Both
-;; are available from MELPA (see http://melpa.milkbox.net/).
+;; work well if you have set names with the # character in them).
+;; Both are available from MELPA (see http://melpa.milkbox.net/).
 ;;
 ;; You can lazy-load company-mode for cg-mode like this:
 ;;
@@ -67,10 +67,10 @@
 
 ;;; Code:
 
-(defconst cg-version "0.3.1" "Version of cg-mode.")
+(defconst cg-version "0.4.0" "Version of cg-mode.")
 
-(eval-when-compile (require 'cl))
-(require 'cl-lib)
+(eval-when-compile (require 'cl-lib))
+(require 'xref)
 
 ;;;============================================================================
 ;;;
@@ -312,7 +312,7 @@ Don't change without re-evaluating the file.")
         (n (if (numberp n) n 1))
         (initial-point (point-marker)))
     (while (< i n)
-      (incf i)
+      (cl-incf i)
       (let* ((r (save-excursion
                   (if (search-forward ";" nil 'noerror)
                       (1+ (point-marker))
@@ -600,7 +600,102 @@ select the whole string \"SELECT:1022:rulename\")."
 
 
 
-;;; "Flycheck" ----------------------------------------------------------------
+;;; Flymake ----------------------------------------------------------------
+
+(defvar-local cg--flymake-proc nil)
+
+(defvar cg--flymake-ignore-unused-sets
+  (list "_MARK_" "_PAREN_" "_ENCL_" "_TARGET_" "_ATTACHTO_" "_SAME_BASIC_"))
+
+(defvar cg--flymake-warnings-pattern
+  (rx
+   (or
+    ;; apertium-nob.nob.rlx: Error: Garbage data encountered on line 7922 near `REMUVE`!
+    (seq ": " (group-n 1 (or "Error" "Warning")) ": "
+         (group-n 2 (* not-newline))
+         " on line " (group-n 3 (+ digit)))
+    ;; Unused sets:
+    ;; Line 0 set _TARGET_
+    ;; Line 103 set %én%
+    (seq bol "Line " (group-n 4 (+ digit))
+         " set " (group-n 5 (* not-newline)))
+    ;; apertium-nob.nob.rlx: Warning: LIST <noen> was defined twice with the same contents: Lines 375 and 33650.
+    (seq ": Warning: "
+         (group-n 6 (* not-newline))
+         ": Lines "
+         (group-n 7 (+ digit))
+         " and "
+         (group-n 8 (+ digit))))))
+
+(defun cg-flymake (report-fn &rest _args)
+  "Flymake backend for Constraint Grammar.
+REPORT-FN as in other flymake backends."
+  (unless (executable-find "vislcg3")
+    (error "Cannot find the `vislcg3' executable"))
+  (when (process-live-p cg--flymake-proc)
+    (kill-process cg--flymake-proc))
+  (save-restriction
+    (widen)
+    (let ((source (current-buffer))
+          (tempfile (with-temp-message ""
+                      (make-temp-file "cg-flymake" nil ".cg3" (buffer-string)))))
+      (setq
+       cg--flymake-proc
+       (make-process
+        :name "cg-flymake"
+        :noquery t
+        :connection-type 'pipe
+        :stderr nil           ; 2>&1
+        :buffer (generate-new-buffer " *cg-flymake*")
+        :command (list "vislcg3" "--grammar-only" "--show-unused-sets" "--grammar" tempfile)
+        :sentinel
+        (lambda (proc _event)
+          (when (eq 'exit (process-status proc))
+            (unwind-protect
+                (if (with-current-buffer source (eq proc cg--flymake-proc)) ; proc is not obsolete
+                    (with-current-buffer (process-buffer proc)
+                      (goto-char (point-min))
+                      (cl-loop
+                       while (search-forward-regexp
+                              cg--flymake-warnings-pattern ; either match groups (1 2 3) or (4 5) or (6 7 8)
+                              nil
+                              'noerror)
+                       unless (member (match-string 5) cg--flymake-ignore-unused-sets)
+                       for msg = (or (match-string 2)
+                                     (and (match-string 5)
+                                          (concat "Unused set " (match-string 5)))
+                                     (and (match-string 6)
+                                          (concat (match-string 6) " line " (match-string 8))))
+                       for (beg . end) = (flymake-diag-region
+                                          source
+                                          (string-to-number (or (match-string 3)
+                                                                (match-string 4)
+                                                                (match-string 7))))
+                       for type = (if (equal (match-string 1) "Error")
+                                      :error
+                                    :warning)
+                       collect (flymake-make-diagnostic source
+                                                        beg
+                                                        end
+                                                        type
+                                                        msg)
+                       into diags
+                       finally (funcall report-fn diags)))
+                  (flymake-log :warning "Canceling obsolete check %s"
+                               proc))
+              (kill-buffer (process-buffer proc))
+              (delete-file tempfile)))))))))
+
+(defun cg-flymake-setup-backend ()
+  "Enable flymake checking for Constraint Grammar buffers."
+  (add-hook 'flymake-diagnostic-functions 'cg-flymake nil t)
+  (flymake-mode 1))
+
+(add-hook 'cg-mode-hook 'cg-flymake-setup-backend)
+
+
+
+;;; Running examples ----------------------------------------------------------------
 (require 'compile)
 
 (defvar cg--file nil
@@ -621,12 +716,6 @@ to.")
 (defvar cg--cache-pre-pipe nil
   "Which pre-pipe the output of `cg--check-cache-buffer' had.")
 (make-variable-buffer-local 'cg--cache-pre-pipe)
-
-(unless (fboundp 'file-name-base)	; shim for 24.3 function
-  (defun file-name-base (&optional filename)
-    (let ((filename (or filename (buffer-file-name))))
-      (file-name-nondirectory (file-name-sans-extension filename)))))
-
 
 (defun cg-edit-input (&optional pick-buffer)
   "Open a buffer to edit the input sent when running `cg-check'.
@@ -1102,55 +1191,56 @@ Similarly, `cg-post-pipe' is run on output."
 
 ;;; xref support --------------------------------------------------------------
 
-(when (featurep 'xref)
-  (declare-function xref-make-bogus-location "xref" (message))
-  (declare-function xref-make "xref" (summary location))
-  (declare-function xref-collect-references "xref" (symbol dir))
+(declare-function xref-make-bogus-location "xref" (message))
+(declare-function xref-make "xref" (summary location))
+(declare-function xref-collect-references "xref" (symbol dir))
 
-  (cl-defmethod xref-backend-identifier-at-point ((_backend (eql cg)))
-    (format "%s" (symbol-at-point)))
+(cl-defmethod xref-backend-identifier-at-point ((_backend (eql cg)))
+  (format "%s" (symbol-at-point)))
 
-  (defvar cg--set-definition-re "^ *\\(?:[Ll][Ii][Ss]\\|[Ss][Ee]\\)t\\s +\\(%s\\)\\(?:\\s \\|=\\)")
+(defvar cg--set-definition-re "^ *\\(?:[Ll][Ii][Ss]\\|[Ss][Ee]\\)t\\s +\\(%s\\)\\(?:\\s \\|=\\)")
 
-  (cl-defmethod xref-backend-identifier-completion-table ((_backend (eql cg)))
-    (completion-table-dynamic
-     (lambda (prefix)
-       (let* ((prefix-re (concat (replace-quote prefix)
-                                 "\\S *"))
-              (def-re (format cg--set-definition-re prefix-re))
-              matches)
-         (save-excursion
-           (save-restriction
-             (widen)
-             (goto-char (point-min))
-             (while (re-search-forward def-re nil 'noerror)
-               (push (match-string-no-properties 1) matches))))
-         matches))
-     'switch-buffer))
+(cl-defmethod xref-backend-identifier-completion-table ((_backend (eql cg)))
+  (completion-table-dynamic
+   (lambda (prefix)
+     (let* ((prefix-re (concat (replace-quote prefix)
+                               "\\S *"))
+            (def-re (format cg--set-definition-re prefix-re))
+            matches)
+       (save-excursion
+         (save-restriction
+           (widen)
+           (goto-char (point-min))
+           (while (re-search-forward def-re nil 'noerror)
+             (push (match-string-no-properties 1) matches))))
+       matches))
+   'switch-buffer))
 
-  (cl-defmethod xref-backend-definitions ((_backend (eql cg)) symbol)
-    (let* ((loc
-            (save-excursion
-              (save-restriction
-                (widen)
-                (goto-char (point-min))
-                (and
-                 (re-search-forward (format cg--set-definition-re symbol) nil 'noerror)
-                 (xref-make-file-location (buffer-file-name)
-                                          (line-number-at-pos) ; TODO: this is slow!
-                                          (current-column)))))))
-      (when loc
-        (list (xref-make (format "%s" symbol) loc)))))
+(cl-defmethod xref-backend-definitions ((_backend (eql cg)) symbol)
+  (let* ((loc
+          (save-excursion
+            (save-restriction
+              (widen)
+              (goto-char (point-min))
+              (and
+               (re-search-forward (format cg--set-definition-re symbol) nil 'noerror)
+               (xref-make-file-location (buffer-file-name)
+                                        (line-number-at-pos) ; TODO: this is slow!
+                                        (current-column)))))))
+    (when loc
+      (list (xref-make (format "%s" symbol) loc)))))
 
-  (cl-defmethod xref-backend-references ((_backend (eql cg)) symbol)
-    (message "Not yet implemented")
-    nil)
+(cl-defmethod xref-backend-references ((_backend (eql cg)) symbol)
+  (message "Not yet implemented")
+  nil)
 
-  (defun cg--xref-backend () 'cg)
-  (add-hook 'cg-mode-hook
-            (defun cg--setup-xref ()
-              (define-key cg-mode-map (kbd "M-.") 'xref-find-definitions)
-              (add-hook 'xref-backend-functions #'cg--xref-backend nil t))))
+(defun cg--xref-backend () 'cg)
+
+(defun cg-setup-xref ()
+  (define-key cg-mode-map (kbd "M-.") 'xref-find-definitions)
+  (add-hook 'xref-backend-functions #'cg--xref-backend nil t))
+
+(add-hook 'cg-mode-hook #'cg-setup-xref)
 
 
 ;;; Keybindings ---------------------------------------------------------------
@@ -1181,8 +1271,9 @@ Similarly, `cg-post-pipe' is run on output."
 (define-key cg-mode-map (kbd "C-c C-n") 'next-error)
 (define-key cg-mode-map (kbd "C-c C-p") 'previous-error)
 
-;;; Turn on for .cg3 files ----------------------------------------------------
+;;; Turn on for .cg3 and .rlx files -------------------------------------------
 ;;;###autoload
+(add-to-list 'auto-mode-alist '("\\.rlx\\'" . cg-mode))
 (add-to-list 'auto-mode-alist '("\\.cg3\\'" . cg-mode))
 ;; Tino Didriksen recommends this file suffix.
 
