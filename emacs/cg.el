@@ -1,4 +1,4 @@
-;;; cg.el --- major mode for editing Constraint Grammar files  -*- lexical-binding: t; coding: utf-8 -*-
+;;; cg.el --- Major mode for editing Constraint Grammar files  -*- lexical-binding: t; coding: utf-8 -*-
 
 ;; Copyright (C) 2010-2022 Kevin Brubeck Unhammer
 
@@ -55,13 +55,11 @@
 ;; - investigate bug in `show-smartparens-mode' causing slowness
 ;; - different syntax highlighting for sets and tags (difficult)
 ;; - use something like prolog-clause-start to define M-a/e etc.
-;; - run vislcg3 --show-unused-sets and buttonise with line numbers (like Occur does)
 ;; - indentation function (based on prolog again?)
 ;; - the rest of the keywords
 ;; - https://visl.sdu.dk/cg3/single/#regex-icase
 ;; - keyword tab-completion
 ;; - `font-lock-syntactic-keywords' is obsolete since 24.1
-;; - goto-set/list
 ;; - show definition of set/list-at-point in modeline
 ;; - show section name/number in modeline
 
@@ -307,8 +305,9 @@ Don't change without re-evaluating the file.")
           (throw 'ret nil)))
       (throw 'ret t))))
 
-(defun cg--comment/uncomment-rule (comment &optional n)
-  "Comment/uncomment a rule around point."
+(defun cg--comment-uncomment-rule (comment &optional n)
+  "Toggle whether rule-at-point is commented out or not.
+If COMMENT, always comment out.  If N is a number, do that many rules."
   (let ((i 0)
         (n (if (numberp n) n 1))
         (initial-point (point-marker)))
@@ -341,13 +340,13 @@ Don't change without re-evaluating the file.")
   "Comment a rule around point.
 With a prefix argument N, comment that many rules."
   (interactive "p")
-  (cg--comment/uncomment-rule 'comment n))
+  (cg--comment-uncomment-rule 'comment n))
 
 (defun cg-uncomment-rule (&optional n)
   "Uncomment a rule around point.
 With a prefix argument N, uncomment that many rules."
   (interactive "p")
-  (cg--comment/uncomment-rule nil n))
+  (cg--comment-uncomment-rule nil n))
 
 (defun cg-comment-or-uncomment-rule (&optional n)
   "Comment the rule at point.
@@ -544,10 +543,11 @@ From http://www.emacswiki.org/emacs/StringPermutations"
       input)))
 
 (defun cg-occur-list (&optional prefix words)
-  "Do an occur-check for the left-side of a LIST/SET
-assignment. `words' is a space-separated list of words which
-*all* must occur between LIST/SET and =. Optional prefix argument
-`prefix' lets you specify a prefix to the name of LIST/SET.
+  "Do an occur-check for the left-side of a LIST/SET assignment.
+
+WORDS is a space-separated list of words which *all* must occur
+between LIST/SET and =.  Optional prefix argument PREFIX lets you
+specify a prefix to the name of LIST/SET.
 
 This is useful if you have a whole bunch of this stuff:
 LIST subst-mask/fem = (n m) (np m) (n f) (np f) ;
@@ -708,12 +708,11 @@ buffer corresponds to.")
   "Which CG input buffer the `cg-mode' buffer corresponds to.")
 (make-variable-buffer-local 'cg--input-buffer)
 (defvar cg--tmp nil     ; TODO: could use cg--file iff buffer-modified-p
-  "Which temporary file was sent in lieu of `cg--file' to
-compilation (in case the buffer of `cg--file' was not saved)")
+  "Which temporary file was sent in lieu of `cg--file' to compilation.
+In case the buffer of `cg--file' was not saved.")
 (make-variable-buffer-local 'cg--tmp)
 (defvar cg--cache-in nil
-  "Which input buffer the `cg--check-cache-buffer' corresponds
-to.")
+  "Which input buffer the `cg--check-cache-buffer' corresponds to.")
 (make-variable-buffer-local 'cg--cache-in)
 (defvar cg--cache-pre-pipe nil
   "Which pre-pipe the output of `cg--check-cache-buffer' had.")
@@ -872,25 +871,23 @@ This gets tacked on the end of the generated expressions.")
   "Used to turn ellipses into spaces when hiding analyses.")
 
 (defvar cg-sent-tag "\\bsent\\b"
-  "When using `cg-output-hide-analyses', any cohort matching this
-regex gets a newline tacked on after the wordform.")
+  "Any cohort matching this regex gets a newline tacked on after the wordform.
+For `cg-output-hide-analyses'.")
 
 (defvar cg-output-unhide-regex nil
-  "Regular expression exempt from hiding when doing
-`cg-output-hide-analyses'.")
+  "Regular expression exempt from hiding when doing `cg-output-hide-analyses'.")
 
 (defvar cg--output-hiding-analyses nil
-  "If non-nil, re-hide analyses after `cg-check'. Saves you from
-having to re-enter the buffer and press `h' if you you want to
-keep analyses hidden most of the time.")
+  "If non-nil, re-hide analyses after `cg-check'.
+Saves you from having to re-enter the buffer and press `h' if you
+you want to keep analyses hidden most of the time.")
 
 (defvar cg--output-unhide-history nil)
 
 
 
 (define-compilation-mode cg-output-mode "CG-out"
-  "Major mode for output of Constraint Grammar compilations and
-runs."
+  "Major mode for output of Constraint Grammar compilations and runs."
   (setq-local tool-bar-map cg-output-mode-tool-bar-map)
   ;; cg-output-mode-font-lock-keywords applied automagically
   (set (make-local-variable 'compilation-skip-threshold)
@@ -1041,7 +1038,7 @@ Use 0 to check immediately after each change."
 	  (with-demoted-errors (cg-check))))))))
 
 (defun cg-output-hl (cg-buffer)
-  "Highlight the symbol at point in the output buffer."
+  "Highlight the symbol at point of CG-BUFFER in the output buffer."
   (when (eq (current-buffer) cg-buffer)
     (let* ((sym (symbol-at-point))
 	   (sym-re (concat "\\(?:^\\|[ \"(:]\\)\\("
@@ -1085,8 +1082,9 @@ Use 0 to check immediately after each change."
   (process-send-eof proc))
 
 (defun cg-check ()
-  "Run vislcg3 --trace on the buffer (a temporary file is created
-in case you haven't saved yet).
+  "Run vislcg3 --trace on the buffer with your example inputs.
+
+A temporary file is created in case you haven't saved yet.
 
 If you've set `cg-pre-pipe', input will first be sent through
 that.  Set your test input sentence(s) with `cg-edit-input'.
@@ -1162,11 +1160,13 @@ Similarly, `cg-post-pipe' is run on output."
     (cg-output-hide-analyses)))
 
 (defun cg-back-to-file-and-edit-input ()
+  "Open buffer with example inputs."
   (interactive)
   (cg-back-to-file)
   (cg-edit-input))
 
 (defun cg-back-to-file ()
+  "Open buffer of grammar rules file."
   (interactive)
   (let ((cg-buffer (find-buffer-visiting cg--file)))
     (bury-buffer)
@@ -1178,12 +1178,14 @@ Similarly, `cg-post-pipe' is run on output."
 
 
 (defun cg-back-to-file-and-check ()
+  "Open buffer of grammar rules file and check examples."
   (interactive)
   (cg-back-to-file)
   (cg-check))
 
 
 (defun cg-toggle-check-after-change ()
+  "Toggle whether we should run examples on each change to rules."
   (interactive)
   (setq cg-check-after-change (not cg-check-after-change))
   (message "%s after each change" (if cg-check-after-change
