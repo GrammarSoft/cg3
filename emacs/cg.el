@@ -71,6 +71,7 @@
 
 (eval-when-compile (require 'cl-lib))
 (require 'xref)
+(require 'tool-bar)
 
 ;;;============================================================================
 ;;;
@@ -382,6 +383,7 @@ CG-mode provides the following specific keyboard key bindings:
          nil ;	  beginning-of-line		; SYNTAX-BEGIN
          (font-lock-syntactic-keywords . cg-font-lock-syntactic-keywords)
          (font-lock-syntactic-face-function . cg-font-lock-syntactic-face-function)))
+  (setq-local tool-bar-map cg-mode-tool-bar-map)
   ;; Indentation
   (set (make-local-variable 'indent-line-function) #'cg-indent-line)
   ;; Comments and blocks
@@ -763,6 +765,7 @@ or call `cg-check' from another CG file)."
 (define-derived-mode cg-input-mode fundamental-mode "CG-in"
   "Input for `cg-mode' buffers."
   (use-local-map cg-input-mode-map)
+  (setq-local tool-bar-map cg-input-mode-tool-bar-map)
   (add-hook 'after-change-functions #'cg-input-mode-bork-cache nil t))
 
 
@@ -888,6 +891,7 @@ keep analyses hidden most of the time.")
 (define-compilation-mode cg-output-mode "CG-out"
   "Major mode for output of Constraint Grammar compilations and
 runs."
+  (setq-local tool-bar-map cg-output-mode-tool-bar-map)
   ;; cg-output-mode-font-lock-keywords applied automagically
   (set (make-local-variable 'compilation-skip-threshold)
        1)
@@ -1242,6 +1246,56 @@ Similarly, `cg-post-pipe' is run on output."
 
 (add-hook 'cg-mode-hook #'cg-setup-xref)
 
+;;; Tool-bar ---------------------------------------------------------------
+(defvar cg-mode-tool-bar-map
+  (when (keymapp tool-bar-map)
+    (let ((map (copy-keymap tool-bar-map)))
+      (define-key-after map [separator-cg] menu-bar-separator)
+      (tool-bar-local-item
+       "show" 'cg-edit-input 'cg-edit-input map
+       :help "Edit input examples")
+      (tool-bar-local-item
+       "spell" 'cg-check 'cg-check map
+       :help "Check input with grammar")
+      (define-key-after map [separator-cg-2] menu-bar-separator)
+      (tool-bar-local-item
+       "sort-criteria" 'cg-output-set-unhide 'cg-output-set-unhide map
+       :help "Show only matching analyses in output")
+      (tool-bar-local-item
+       "describe" 'cg-output-toggle-analyses 'cg-output-toggle-analyses map
+       :help "Toggle analyses in output")
+      map)))
+
+(defvar cg-input-mode-tool-bar-map
+  (when (keymapp tool-bar-map)
+    (let ((map (copy-keymap tool-bar-map)))
+      (define-key-after map [separator-cg] menu-bar-separator)
+      (tool-bar-local-item
+       "show" 'cg-back-to-file 'cg-back-to-file map
+       :help "Back to grammar rules file")
+      (tool-bar-local-item
+       "spell" 'cg-back-to-file-and-check 'cg-back-to-file-and-check map
+       :help "Check input with grammar")
+      map)))
+
+(defvar cg-output-mode-tool-bar-map
+  (when (keymapp tool-bar-map)
+    (let ((map (copy-keymap tool-bar-map)))
+      (define-key-after map [separator-cg] menu-bar-separator)
+      (tool-bar-local-item
+       "show" 'cg-back-to-file-and-edit-input 'cg-back-to-file-and-edit-input map
+       :help "Back to grammar rules file")
+      (tool-bar-local-item
+       "spell" 'cg-back-to-file-and-check 'cg-back-to-file-and-check map
+       :help "Check input examples with grammar")
+      (define-key-after map [separator-cg-2] menu-bar-separator)
+      (tool-bar-local-item
+       "sort-criteria" 'cg-output-set-unhide 'cg-output-set-unhide map
+       :help "Show only matching analyses in output")
+      (tool-bar-local-item
+       "describe" 'cg-output-toggle-analyses 'cg-output-toggle-analyses map
+       :help "Toggle analyses in output")
+      map)))
 
 ;;; Keybindings ---------------------------------------------------------------
 (define-key cg-mode-map (kbd "C-c C-o") #'cg-occur-list)
