@@ -273,13 +273,74 @@ Don't change without re-evaluating the file.")
     table)
   "Syntax table for CG mode.")
 
+
+
+;;; Tool-bar -----------------------------------------------------------------
+
+(defvar cg-mode-tool-bar-map
+  (when (keymapp tool-bar-map)
+    (let ((map (copy-keymap tool-bar-map)))
+      (define-key-after map [separator-cg] menu-bar-separator)
+      (tool-bar-local-item
+       "show" 'cg-edit-input 'cg-edit-input map
+       :help "Edit input examples")
+      (tool-bar-local-item
+       "spell" 'cg-check 'cg-check map
+       :help "Check input with grammar")
+      (define-key-after map [separator-cg-2] menu-bar-separator)
+      (tool-bar-local-item
+       "sort-criteria" 'cg-output-set-unhide 'cg-output-set-unhide map
+       :help "Show only matching analyses in output")
+      (tool-bar-local-item
+       "describe" 'cg-output-toggle-analyses 'cg-output-toggle-analyses map
+       :help "Toggle analyses in output")
+      map)))
+
+(defvar cg-input-mode-tool-bar-map
+  (when (keymapp tool-bar-map)
+    (let ((map (copy-keymap tool-bar-map)))
+      (define-key-after map [separator-cg] menu-bar-separator)
+      (tool-bar-local-item
+       "show" 'cg-back-to-file 'cg-back-to-file map
+       :help "Back to grammar rules file")
+      (tool-bar-local-item
+       "spell" 'cg-back-to-file-and-check 'cg-back-to-file-and-check map
+       :help "Check input with grammar")
+      map)))
+
+(defvar cg-output-mode-tool-bar-map
+  (when (keymapp tool-bar-map)
+    (let ((map (copy-keymap tool-bar-map)))
+      (define-key-after map [separator-cg] menu-bar-separator)
+      (tool-bar-local-item
+       "show" 'cg-back-to-file-and-edit-input 'cg-back-to-file-and-edit-input map
+       :help "Back to grammar rules file")
+      (tool-bar-local-item
+       "spell" 'cg-back-to-file-and-check 'cg-back-to-file-and-check map
+       :help "Check input examples with grammar")
+      (define-key-after map [separator-cg-2] menu-bar-separator)
+      (tool-bar-local-item
+       "sort-criteria" 'cg-output-set-unhide 'cg-output-set-unhide map
+       :help "Show only matching analyses in output")
+      (tool-bar-local-item
+       "describe" 'cg-output-toggle-analyses 'cg-output-toggle-analyses map
+       :help "Toggle analyses in output")
+      map)))
+
+
+
+
+;;; Navigation/comments ------------------------------------------------------
+
 (defun cg-beginning-of-defun ()
+  "Go to beginning of a rule."
   (re-search-backward defun-prompt-regexp nil 'noerror)
   (while (nth 4 (syntax-ppss))
     (re-search-backward defun-prompt-regexp nil 'noerror))
   (re-search-backward "\"<[^\"]>\"" (line-beginning-position) 'noerror))
 
 (defun cg-end-of-defun ()
+  "Go to end of a rule."
   (and (search-forward ";")
        (re-search-forward defun-prompt-regexp nil 'noerror)
        (goto-char (match-beginning 0)))
@@ -290,11 +351,13 @@ Don't change without re-evaluating the file.")
   (re-search-backward "\"<[^\"]>\"" (line-beginning-position) 'noerror))
 
 (defun cg--line-commented-p ()
+  "Check if this line is commented or not."
   (save-excursion
     (back-to-indentation)
     (looking-at "#")))
 
 (defun cg--region-commented-p (beg end)
+  "Check if the region BEG .. END is *completely* commented or not."
   (catch 'ret
     (save-excursion
       (goto-char beg)
@@ -363,6 +426,7 @@ With a prefix argument N, (un)comment that many rules."
       (cg-uncomment-rule n)
     (cg-comment-rule n)))
 
+
 
 ;;;###autoload
 (define-derived-mode cg-mode prog-mode "CG"
@@ -401,8 +465,7 @@ CG-mode provides the following specific keyboard key bindings:
   (when font-lock-mode
     (setq font-lock-set-defaults nil)
     (font-lock-set-defaults)
-    ;; TODO: emacs 25 prefers `font-lock-ensure' and `font-lock-flush' over fontify
-    (font-lock-fontify-buffer))
+    (font-lock-ensure))
   (add-hook 'after-change-functions #'cg-after-change nil 'buffer-local)
   (let* ((buf (current-buffer))
          (hl-timer (run-with-idle-timer 1 'repeat 'cg-output-hl buf)))
@@ -529,6 +592,7 @@ From http://www.emacswiki.org/emacs/StringPermutations"
                input)))
 
 (defun cg-read-arg (prompt history &optional default)
+  "Ensure DEFAULT is in HISTORY and call `read-from-minibuffer' with PROMPT."
   (let* ((default (or default (car history)))
          (input
           (read-from-minibuffer
@@ -734,16 +798,17 @@ text file you've already opened) to use as CG input buffer."
 
 ;;;###autoload
 (defcustom cg-check-do-cache t
-  "If non-nil, `cg-check' caches the output of `cg-pre-pipe' (the
-cache is emptied whenever you make a change in the input buffer,
-or call `cg-check' from another CG file)."
+  "If non-nil, `cg-check' caches the output of `cg-pre-pipe'.
+The cache is emptied whenever you make a change in the input buffer,
+or call `cg-check' from another CG file."
   :group 'cg
   :type 'bool)
 
 (defvar cg--check-cache-buffer nil "See `cg-check-do-cache'.")
 
 (defun cg-input-mode-bork-cache (_from _to _len)
-  "Since `cg-check' will not reuse a cache unless `cg--file' and
+  "Purge the `cg-check' cache.
+Since `cg-check' will not reuse a cache unless `cg--file' and
 `cg--cache-in' match."
   (when cg--check-cache-buffer
     (with-current-buffer cg--check-cache-buffer
@@ -752,6 +817,7 @@ or call `cg-check' from another CG file)."
             cg--cache-in nil))))
 
 (defun cg-pristine-cache-buffer (file in pre-pipe)
+  "Make a new cache-buffer bound to this cg FILE, PRE-PIPE and input buffer IN."
   (with-current-buffer (setq cg--check-cache-buffer
                              (get-buffer-create "*cg-pre-cache*"))
     (widen)
@@ -808,6 +874,7 @@ after FILE; if it is 'pipe, the buffer will be named after the
     buf))
 
 (defun cg-get-file ()
+  "Get the name of the CG rule file for the output buffer."
   (list cg--file))
 
 (defconst cg-output-regexp-alist
@@ -930,9 +997,11 @@ you want to keep analyses hidden most of the time.")
 
 
 (defun cg-output-remove-overlay (overlay)
+  "Remove the invisible cg-output OVERLAY."
   (remove-overlays (overlay-start overlay) (overlay-end overlay) 'invisible 'cg-output))
 
 (defun cg-output-hide-region (from to)
+  "Hide the region FROM .. TO using invisible overlays."
   (remove-overlays from to 'invisible 'cg-output)
   (let ((o (make-overlay from to nil)))
     (overlay-put o 'evaporate t)
@@ -979,6 +1048,7 @@ from hiding.  Call `cg-output-show-all' to turn off all hiding."
       (cg-output-unhide-some cg-output-unhide-regex))))
 
 (defun cg-output-unhide-some (needle)
+  "Remove invisible-overlays matching NEEDLE."
   (save-excursion
     (goto-char (point-min))
     (while (re-search-forward needle nil 'noerror)
@@ -1029,6 +1099,7 @@ Use 0 to check immediately after each change."
 
 (defvar cg--after-change-timer nil)
 (defun cg-after-change (_from _to _len)
+  "For use in `after-change-functions'."
   (when (and cg-check-after-change
              (not (member cg--after-change-timer timer-list)))
     (setq
@@ -1060,15 +1131,18 @@ Use 0 to check immediately after each change."
 			 'face cg-output-highlight-face)))))))
 
 (defun cg-output-running ()
+  "Check if we're already running a vislcg3 process."
   (let ((proc (get-buffer-process (cg-output-buffer))))
     (and proc (eq (process-status proc) 'run))))
 
 (defun cg-output-buffer-name (mode)
+  "Construct a name for the output buffer if we're in the right MODE."
   (if (equal mode "cg-output")
       (concat "*CG output for " (file-name-base cg--file) "*")
     (error "Unexpected mode %S" mode)))
 
 (defun cg-output-buffer ()
+  "Get or make the output buffer for this grammar file."
   (let ((cg--file (if (eq major-mode 'cg-mode)
 		      (buffer-file-name)
 		    cg--file)))
@@ -1151,6 +1225,7 @@ Similarly, `cg-post-pipe' is run on output."
     (display-buffer out)))
 
 (defun cg-check-finish-function (buffer _change)
+  "BUFFER as in `compilation-finish-functions'."
   ;; Note: this makes `recompile' not work, which is why `g' is
   ;; rebound in `cg-output-mode'
   (let ((w (get-buffer-window buffer)))
@@ -1205,11 +1280,13 @@ Similarly, `cg-post-pipe' is run on output."
 (declare-function xref-collect-references "xref" (symbol dir))
 
 (cl-defmethod xref-backend-identifier-at-point ((_backend (eql cg)))
+  "Return identifier at point for CG syntax."
   (format "%s" (symbol-at-point)))
 
 (defvar cg--set-definition-re "^ *\\(?:[Ll][Ii][Ss]\\|[Ss][Ee]\\)t\\s +\\(%s\\)\\(?:\\s \\|=\\)")
 
 (cl-defmethod xref-backend-identifier-completion-table ((_backend (eql cg)))
+  "Return the completion table for CG identifiers."
   (completion-table-dynamic
    (lambda (prefix)
      (let* ((prefix-re (concat (replace-quote prefix)
@@ -1226,6 +1303,8 @@ Similarly, `cg-post-pipe' is run on output."
    'switch-buffer))
 
 (cl-defmethod xref-backend-definitions ((_backend (eql cg)) symbol)
+  "Find definitions of SYMBOL.
+Only lists/sets for now."
   (let* ((loc
           (save-excursion
             (save-restriction
@@ -1240,67 +1319,20 @@ Similarly, `cg-post-pipe' is run on output."
       (list (xref-make (format "%s" symbol) loc)))))
 
 (cl-defmethod xref-backend-references ((_backend (eql cg)) symbol)
+  "Find references of SYMBOL – not yet implemented."
   (message "Not yet implemented")
   nil)
 
-(defun cg--xref-backend () 'cg)
+(defun cg--xref-backend ()
+  "Use this in `xref-backend-functions' to get CG references."
+  'cg)
 
 (defun cg-setup-xref ()
+  "Use this in `cg-mode-hook' to get CG cross-references."
   (define-key cg-mode-map (kbd "M-.") 'xref-find-definitions)
   (add-hook 'xref-backend-functions #'cg--xref-backend nil t))
 
 (add-hook 'cg-mode-hook #'cg-setup-xref)
-
-;;; Tool-bar ---------------------------------------------------------------
-(defvar cg-mode-tool-bar-map
-  (when (keymapp tool-bar-map)
-    (let ((map (copy-keymap tool-bar-map)))
-      (define-key-after map [separator-cg] menu-bar-separator)
-      (tool-bar-local-item
-       "show" 'cg-edit-input 'cg-edit-input map
-       :help "Edit input examples")
-      (tool-bar-local-item
-       "spell" 'cg-check 'cg-check map
-       :help "Check input with grammar")
-      (define-key-after map [separator-cg-2] menu-bar-separator)
-      (tool-bar-local-item
-       "sort-criteria" 'cg-output-set-unhide 'cg-output-set-unhide map
-       :help "Show only matching analyses in output")
-      (tool-bar-local-item
-       "describe" 'cg-output-toggle-analyses 'cg-output-toggle-analyses map
-       :help "Toggle analyses in output")
-      map)))
-
-(defvar cg-input-mode-tool-bar-map
-  (when (keymapp tool-bar-map)
-    (let ((map (copy-keymap tool-bar-map)))
-      (define-key-after map [separator-cg] menu-bar-separator)
-      (tool-bar-local-item
-       "show" 'cg-back-to-file 'cg-back-to-file map
-       :help "Back to grammar rules file")
-      (tool-bar-local-item
-       "spell" 'cg-back-to-file-and-check 'cg-back-to-file-and-check map
-       :help "Check input with grammar")
-      map)))
-
-(defvar cg-output-mode-tool-bar-map
-  (when (keymapp tool-bar-map)
-    (let ((map (copy-keymap tool-bar-map)))
-      (define-key-after map [separator-cg] menu-bar-separator)
-      (tool-bar-local-item
-       "show" 'cg-back-to-file-and-edit-input 'cg-back-to-file-and-edit-input map
-       :help "Back to grammar rules file")
-      (tool-bar-local-item
-       "spell" 'cg-back-to-file-and-check 'cg-back-to-file-and-check map
-       :help "Check input examples with grammar")
-      (define-key-after map [separator-cg-2] menu-bar-separator)
-      (tool-bar-local-item
-       "sort-criteria" 'cg-output-set-unhide 'cg-output-set-unhide map
-       :help "Show only matching analyses in output")
-      (tool-bar-local-item
-       "describe" 'cg-output-toggle-analyses 'cg-output-toggle-analyses map
-       :help "Toggle analyses in output")
-      map)))
 
 ;;; Keybindings ---------------------------------------------------------------
 (define-key cg-mode-map (kbd "C-c C-o") #'cg-occur-list)
