@@ -394,7 +394,10 @@ CG-mode provides the following specific keyboard key bindings:
   (set (make-local-variable 'defun-prompt-regexp) (concat cg-kw-re "\\(?::[^\n\t ]+\\)[\t ]"))
   (set (make-local-variable 'beginning-of-defun-function) #'cg-beginning-of-defun)
   (set (make-local-variable 'end-of-defun-function) #'cg-end-of-defun)
-
+  ;; Dabbrev is about as much completion as we can expect for now, ensure it works:
+  (setq-local dabbrev-upcase-means-case-search t)
+  (add-to-list 'completion-at-point-functions 'dabbrev-completion)
+  ;; Syntax highlighting:
   (when font-lock-mode
     (setq font-lock-set-defaults nil)
     (font-lock-set-defaults)
