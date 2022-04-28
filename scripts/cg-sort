@@ -10,22 +10,54 @@ BEGIN {
 }
 use open qw( :encoding(UTF-8) :std );
 
+use Getopt::Long;
+Getopt::Long::Configure('bundling');
+Getopt::Long::Configure('no_ignore_case');
+my %opts = ();
+GetOptions(\%opts, ('weight|w:s', 'reverse|r'));
+
+my $W = 'W';
+if (exists($opts{weight}) && length($opts{weight})) {
+   $W = $opts{weight};
+}
+
 my $in_cohort = 0;
 my %readings = ();
 my %deleted = ();
 my $trail = '';
+
+sub sort_weight {
+   $a =~ m/<\Q$W\E:([\d.]+)>/;
+   my $wa = $1 || 0.0;
+   $b =~ m/<\Q$W\E:([\d.]+)>/;
+   my $wb = $1 || 0.0;
+
+   if ($wa == $wb) {
+      return $a cmp $b;
+   }
+   return $wa <=> $wb;
+}
+
+sub print_sorted_readings {
+   if (exists($opts{weight})) {
+      @_ = sort sort_weight @_;
+   }
+   else {
+      @_ = sort @_;
+   }
+   if (exists($opts{reverse})) {
+      @_ = reverse @_;
+   }
+   print join('', @_);
+}
 
 sub print_sorted {
    if (!$in_cohort) {
       return;
    }
 
-   foreach (sort(keys(%readings))) {
-      print;
-   }
-   foreach (sort(keys(%deleted))) {
-      print;
-   }
+   print_sorted_readings(keys(%readings));
+   print_sorted_readings(keys(%deleted));
 
    print $trail;
 
