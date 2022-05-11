@@ -197,6 +197,9 @@ void MweSplitApplicator::printSingleWindow(SingleWindow* window, std::ostream& o
 	}
 
 	u_fputc('\n', output);
+	if (window->flush_after) {
+		u_fprintf(output, "%S\n", stringbits[S_CMD_FLUSH].c_str());
+	}
 	u_fflush(output);
 }
 }
