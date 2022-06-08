@@ -1362,6 +1362,9 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 							current.cohorts.insert(current.cohorts.begin() + cohort->local_number + i + 1, cCohort);
 						}
 
+						// Move text from the to-be-deleted cohort to the last new cohort
+						std::swap(cohorts.back().first->text, cohort->text);
+
 						for (size_t i = 0; i < cohorts.size(); ++i) {
 							Cohort* cCohort = cohorts[i].first;
 
