@@ -893,7 +893,12 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 				// ToDo: Named relations must be erased
 				while (!cohort->dep_children.empty()) {
 					uint32_t ch = cohort->dep_children.back();
-					attachParentChild(*current.parent->cohort_map[cohort->dep_parent], *current.parent->cohort_map[ch], true, true);
+					if (cohort->dep_parent == DEP_NO_PARENT) {
+						attachParentChild(*current.parent->cohort_map[0], *current.parent->cohort_map[ch], true, true);
+					}
+					else {
+						attachParentChild(*current.parent->cohort_map[cohort->dep_parent], *current.parent->cohort_map[ch], true, true);
+					}
 					cohort->dep_children.erase(ch);
 				}
 				cohort->type |= CT_REMOVED;
