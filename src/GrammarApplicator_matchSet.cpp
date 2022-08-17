@@ -58,6 +58,30 @@ inline bool TagSet_SubsetOf_TSet(const TagSortedVector& a, const T& b) {
 	return true;
 }
 
+template<typename RXGS, typename Tag>
+inline void captureRegex(int32_t gc, RXGS& regexgrps, Tag& tag) {
+	constexpr auto BUFSIZE = 1024;
+	UErrorCode status = U_ZERO_ERROR;
+	UChar _tmp[BUFSIZE];
+	UString _stmp;
+	UChar* tmp = _tmp;
+	for (int i = 1; i <= gc; ++i) {
+		tmp[0] = 0;
+		int32_t len = uregex_group(tag.regexp, i, tmp, BUFSIZE, &status);
+		if (len >= BUFSIZE) {
+			status = U_ZERO_ERROR;
+			_stmp.resize(len + 1);
+			tmp = &_stmp[0];
+			uregex_group(tag.regexp, i, tmp, len + 1, &status);
+		}
+		regexgrps.second->resize(std::max(static_cast<size_t>(regexgrps.first) + 1, regexgrps.second->size()));
+		UnicodeString& ucstr = (*regexgrps.second)[regexgrps.first];
+		ucstr.remove();
+		ucstr.append(tmp, len);
+		++regexgrps.first;
+	}
+}
+
 /**
 * Tests whether a given input tag matches a given tag's stored regular expression.
 *
@@ -92,16 +116,7 @@ uint32_t GrammarApplicator::doesTagMatchRegexp(uint32_t test, const Tag& tag, bo
 		}
 		if (match) {
 			if (gc > 0 && regexgrps.second != 0) {
-				UChar tmp[1024];
-				for (int i = 1; i <= gc; ++i) {
-					tmp[0] = 0;
-					int32_t len = uregex_group(tag.regexp, i, tmp, 1024, &status);
-					regexgrps.second->resize(std::max(static_cast<size_t>(regexgrps.first) + 1, regexgrps.second->size()));
-					UnicodeString& ucstr = (*regexgrps.second)[regexgrps.first];
-					ucstr.remove();
-					ucstr.append(tmp, len);
-					++regexgrps.first;
-				}
+				captureRegex(gc, regexgrps, tag);
 			}
 			else {
 				index_regexp_yes.insert(ih);
@@ -167,16 +182,7 @@ uint32_t GrammarApplicator::doesRegexpMatchLine(const Reading& reading, const Ta
 		if (match) {
 			// ToDo: Allow regex captures from dependency target contexts without any captures in normal target contexts
 			if (gc > 0 && regexgrps.second != 0) {
-				UChar tmp[1024];
-				for (int i = 1; i <= gc; ++i) {
-					tmp[0] = 0;
-					int32_t len = uregex_group(tag.regexp, i, tmp, 1024, &status);
-					regexgrps.second->resize(std::max(static_cast<size_t>(regexgrps.first) + 1, regexgrps.second->size()));
-					UnicodeString& ucstr = (*regexgrps.second)[regexgrps.first];
-					ucstr.remove();
-					ucstr.append(tmp, len);
-					++regexgrps.first;
-				}
+				captureRegex(gc, regexgrps, tag);
 			}
 			else {
 				index_regexp_yes.insert(ih);
@@ -271,16 +277,7 @@ uint32_t GrammarApplicator::doesTagMatchReading(const Reading& reading, const Ta
 			if (match) {
 				int32_t gc = uregex_groupCount(tag.regexp, &status);
 				if (gc > 0 && regexgrps.second != 0) {
-					UChar tmp[1024];
-					for (int i = 1; i <= gc; ++i) {
-						tmp[0] = 0;
-						int32_t len = uregex_group(tag.regexp, i, tmp, 1024, &status);
-						regexgrps.second->resize(std::max(static_cast<size_t>(regexgrps.first) + 1, regexgrps.second->size()));
-						UnicodeString& ucstr = (*regexgrps.second)[regexgrps.first];
-						ucstr.remove();
-						ucstr.append(tmp, len);
-						++regexgrps.first;
-					}
+					captureRegex(gc, regexgrps, tag);
 				}
 			}
 		}
