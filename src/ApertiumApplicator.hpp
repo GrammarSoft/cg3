@@ -45,6 +45,7 @@ public:
 
 protected:
 	void printReading(Reading* reading, std::ostream& output);
+	void printCohort(Cohort* cohort, std::ostream& output);
 	void printSingleWindow(SingleWindow* window, std::ostream& output);
 
 	void mergeMappings(Cohort& cohort);

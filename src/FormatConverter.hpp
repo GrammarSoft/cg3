@@ -51,6 +51,7 @@ public:
 
 protected:
 	CG_FORMATS informat, outformat;
+	void printCohort(Cohort* cohort, std::ostream& output);
 	void printSingleWindow(SingleWindow* window, std::ostream& output);
 };
 }
