@@ -73,6 +73,33 @@ void FormatConverter::runGrammarOnText(std::istream& input, std::ostream& output
 	}
 }
 
+void FormatConverter::printCohort(Cohort* cohort, std::ostream& output) {
+	switch (outformat) {
+	case FMT_CG: {
+		GrammarApplicator::printCohort(cohort, output);
+		break;
+	}
+	case FMT_APERTIUM: {
+		ApertiumApplicator::printCohort(cohort, output);
+		break;
+	}
+	case FMT_FST: {
+		FSTApplicator::printCohort(cohort, output);
+		break;
+	}
+	case FMT_NICELINE: {
+		NicelineApplicator::printCohort(cohort, output);
+		break;
+	}
+	case FMT_PLAIN: {
+		PlaintextApplicator::printCohort(cohort, output);
+		break;
+	}
+	default:
+		CG3Quit();
+	}
+}
+
 void FormatConverter::printSingleWindow(SingleWindow* window, std::ostream& output) {
 	switch (outformat) {
 	case FMT_CG: {

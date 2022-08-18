@@ -876,6 +876,107 @@ void ApertiumApplicator::printReading(Reading* reading, std::ostream& output) {
 	printReading(reading, output, casing, firstlower);
 }
 
+void ApertiumApplicator::printCohort(Cohort* cohort, std::ostream& output) {
+	cohort->unignoreAll();
+
+	if (!split_mappings) {
+		mergeMappings(*cohort);
+	}
+
+	if (!cohort->wblank.empty()) {
+		u_fprintf(output, "%S", cohort->wblank.c_str());
+	}
+
+	// Start of cohort
+	if (delimit_lexical_units) {
+		u_fprintf(output, "^");
+	}
+
+	if (print_word_forms == true) {
+		// Lop off the initial and final '"' characters
+		// ToDo: A copy does not need to be made here - use pointer offsets
+		UnicodeString wf(cohort->wordform->tag.c_str() + 2, SI32(cohort->wordform->tag.size() - 4));
+		UString wf_escaped;
+		for (int i = 0; i < wf.length(); ++i) {
+			if (wf[i] == '^' || wf[i] == '\\' || wf[i] == '/' || wf[i] == '$' || wf[i] == '[' || wf[i] == ']' || wf[i] == '{' || wf[i] == '}' || wf[i] == '<' || wf[i] == '>') {
+				wf_escaped += '\\';
+			}
+			if ((cohort->type & CT_AP_UNKNOWN) && wf[i] == '@') {
+				wf_escaped += '\\';
+			}
+			wf_escaped += wf[i];
+		}
+		u_fprintf(output, "%S", wf_escaped.c_str());
+
+		// Print the static reading tags
+		if (cohort->wread) {
+			for (auto tter : cohort->wread->tags_list) {
+				if (tter == cohort->wordform->hash) {
+					continue;
+				}
+				const Tag* tag = grammar->single_tags[tter];
+				u_fprintf(output, "<%S>", tag->tag.c_str());
+			}
+		}
+	}
+
+	bool need_slash = print_word_forms;
+
+	//Tag::printTagRaw(output, grammar->single_tags[cohort->wordform]);
+	std::sort(cohort->readings.begin(), cohort->readings.end(), CG3::Reading::cmp_number);
+	for (auto reading : cohort->readings) {
+		if (need_slash) {
+			u_fprintf(output, "/");
+		}
+		need_slash = true;
+		if (grammar->sub_readings_ltr && reading->next) {
+			reading = reverse(reading);
+		}
+		printReading(reading, output);
+		if (print_only_first == true) {
+			break;
+		}
+	}
+
+	if (trace) {
+		std::sort(cohort->delayed.begin(), cohort->delayed.end(), CG3::Reading::cmp_number);
+		for (auto reading : cohort->delayed) {
+			if (need_slash) {
+				u_fprintf(output, "/%C", not_sign);
+			}
+			need_slash = true;
+			if (grammar->sub_readings_ltr && reading->next) {
+				reading = reverse(reading);
+			}
+			printReading(reading, output);
+		}
+		std::sort(cohort->deleted.begin(), cohort->deleted.end(), CG3::Reading::cmp_number);
+		for (auto reading : cohort->deleted) {
+			if (need_slash) {
+				u_fprintf(output, "/%C", not_sign);
+			}
+			need_slash = true;
+			if (grammar->sub_readings_ltr && reading->next) {
+				reading = reverse(reading);
+			}
+			printReading(reading, output);
+		}
+	}
+
+	if (delimit_lexical_units) {
+		u_fprintf(output, "$");
+	}
+	// End of cohort
+
+	if (!cohort->text.empty()) {
+		u_fprintf(output, "%S", cohort->text.c_str());
+	}
+	for (auto& c : cohort->removed) {
+		if (!c->text.empty()) {
+			u_fprintf(output, "%S", c->text.c_str());
+		}
+	}
+}
 
 void ApertiumApplicator::printSingleWindow(SingleWindow* window, std::ostream& output) {
 	// Window text comes at the left
@@ -895,106 +996,7 @@ void ApertiumApplicator::printSingleWindow(SingleWindow* window, std::ostream& o
 			continue;
 		}
 
-		cohort->unignoreAll();
-
-		if (!split_mappings) {
-			mergeMappings(*cohort);
-		}
-
-		if (!cohort->wblank.empty()) {
-			u_fprintf(output, "%S", cohort->wblank.c_str());
-		}
-
-		// Start of cohort
-		if(delimit_lexical_units) {
-			u_fprintf(output, "^");
-		}
-
-		if (print_word_forms == true) {
-			// Lop off the initial and final '"' characters
-			// ToDo: A copy does not need to be made here - use pointer offsets
-			UnicodeString wf(cohort->wordform->tag.c_str() + 2, SI32(cohort->wordform->tag.size() - 4));
-			UString wf_escaped;
-			for (int i = 0; i < wf.length(); ++i) {
-				if (wf[i] == '^' || wf[i] == '\\' || wf[i] == '/' || wf[i] == '$' || wf[i] == '[' || wf[i] == ']' || wf[i] == '{' || wf[i] == '}' || wf[i] == '<' || wf[i] == '>') {
-					wf_escaped += '\\';
-				}
-				if ((cohort->type & CT_AP_UNKNOWN) && wf[i] == '@') {
-					wf_escaped += '\\';
-				}
-				wf_escaped += wf[i];
-			}
-			u_fprintf(output, "%S", wf_escaped.c_str());
-
-			// Print the static reading tags
-			if (cohort->wread) {
-				for (auto tter : cohort->wread->tags_list) {
-					if (tter == cohort->wordform->hash) {
-						continue;
-					}
-					const Tag* tag = grammar->single_tags[tter];
-					u_fprintf(output, "<%S>", tag->tag.c_str());
-				}
-			}
-		}
-
-		bool need_slash = print_word_forms;
-
-		//Tag::printTagRaw(output, grammar->single_tags[cohort->wordform]);
-		std::sort(cohort->readings.begin(), cohort->readings.end(), CG3::Reading::cmp_number);
-		for (auto reading : cohort->readings) {
-			if (need_slash) {
-				u_fprintf(output, "/");
-			}
-			need_slash = true;
-			if (grammar->sub_readings_ltr && reading->next) {
-				reading = reverse(reading);
-			}
-			printReading(reading, output);
-			if (print_only_first == true) {
-				break;
-			}
-		}
-
-		if (trace) {
-			std::sort(cohort->delayed.begin(), cohort->delayed.end(), CG3::Reading::cmp_number);
-			for (auto reading : cohort->delayed) {
-				if (need_slash) {
-					u_fprintf(output, "/%C", not_sign);
-				}
-				need_slash = true;
-				if (grammar->sub_readings_ltr && reading->next) {
-					reading = reverse(reading);
-				}
-				printReading(reading, output);
-			}
-			std::sort(cohort->deleted.begin(), cohort->deleted.end(), CG3::Reading::cmp_number);
-			for (auto reading : cohort->deleted) {
-				if (need_slash) {
-					u_fprintf(output, "/%C", not_sign);
-				}
-				need_slash = true;
-				if (grammar->sub_readings_ltr && reading->next) {
-					reading = reverse(reading);
-				}
-				printReading(reading, output);
-			}
-		}
-
-		if (delimit_lexical_units) {
-			u_fprintf(output, "$");
-		}
-		// End of cohort
-
-		if (!cohort->text.empty()) {
-			u_fprintf(output, "%S", cohort->text.c_str());
-		}
-		for (auto& c : cohort->removed) {
-			if (!c->text.empty()) {
-				u_fprintf(output, "%S", c->text.c_str());
-			}
-		}
-
+		printCohort(cohort, output);
 		u_fflush(output);
 	}
 
