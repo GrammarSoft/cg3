@@ -415,4 +415,115 @@ void FSTApplicator::runGrammarOnText(std::istream& input, std::ostream& output) 
 
 	u_fflush(output);
 }
+void FSTApplicator::printReading(const Reading* reading, std::ostream& output) {
+	if (reading->noprint) {
+		return;
+	}
+	if (reading->deleted) {
+		return;
+	}
+
+	if (reading->next) {
+		printReading(reading->next, output);
+		u_fprintf(output, "%S", sub_delims.c_str());
+	}
+
+	if (reading->baseform) {
+		auto& tag = grammar->single_tags.find(reading->baseform)->second->tag;
+		u_fprintf(output, "%.*S", tag.size() - 2, tag.c_str() + 1);
+	}
+
+	uint32SortedVector unique;
+	for (auto tter : reading->tags_list) {
+		if ((!show_end_tags && tter == endtag) || tter == begintag) {
+			continue;
+		}
+		if (tter == reading->baseform || tter == reading->parent->wordform->hash) {
+			continue;
+		}
+		if (unique_tags) {
+			if (unique.find(tter) != unique.end()) {
+				continue;
+			}
+			unique.insert(tter);
+		}
+		const Tag* tag = grammar->single_tags[tter];
+		if (tag->type & T_DEPENDENCY && has_dep && !dep_original) {
+			continue;
+		}
+		if (tag->type & T_RELATION && has_relations) {
+			continue;
+		}
+		u_fprintf(output, "+%S", tag->tag.c_str());
+	}
+}
+
+void FSTApplicator::printCohort(Cohort* cohort, std::ostream& output) {
+	if (cohort->local_number == 0) {
+		goto removed;
+	}
+	if (cohort->type & CT_REMOVED) {
+		goto removed;
+	}
+
+	if (cohort->wread && !did_warn_statictags) {
+		u_fprintf(ux_stderr, "Warning: FST CG format cannot output static tags! You are losing information!\n");
+		u_fflush(ux_stderr);
+		did_warn_statictags = true;
+	}
+
+	cohort->unignoreAll();
+
+	if (!split_mappings) {
+		mergeMappings(*cohort);
+	}
+
+	{
+		auto& wform = cohort->wordform->tag;
+		if (cohort->readings.empty() || (cohort->readings.size() == 1 && cohort->readings[0]->noprint)) {
+			u_fprintf(output, "%.*S\t+?\n", wform.size() - 4, wform.c_str() + 2);
+		}
+		else {
+			for (auto rter : cohort->readings) {
+				u_fprintf(output, "%.*S\t", wform.size() - 4, wform.c_str() + 2);
+				printReading(rter, output);
+				u_fputc('\n', output);
+			}
+		}
+		u_fputc('\n', output);
+	}
+
+removed:
+	if (!cohort->text.empty() && cohort->text.find_first_not_of(ws) != UString::npos) {
+		u_fprintf(output, "%S", cohort->text.c_str());
+		if (!ISNL(cohort->text.back())) {
+			u_fputc('\n', output);
+		}
+	}
+}
+
+void FSTApplicator::printSingleWindow(SingleWindow* window, std::ostream& output) {
+	if (!window->text.empty()) {
+		u_fprintf(output, "%S", window->text.c_str());
+		if (!ISNL(window->text.back())) {
+			u_fputc('\n', output);
+		}
+	}
+
+	uint32_t cs = UI32(window->cohorts.size());
+	for (uint32_t c = 0; c < cs; c++) {
+		Cohort* cohort = window->cohorts[c];
+		printCohort(cohort, output);
+	}
+
+	if (!window->text_post.empty()) {
+		u_fprintf(output, "%S", window->text_post.c_str());
+		if (!ISNL(window->text_post.back())) {
+			u_fputc('\n', output);
+		}
+	}
+
+	u_fputc('\n', output);
+	u_fflush(output);
+}
 }

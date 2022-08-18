@@ -282,6 +282,9 @@ int main(int argc, char* argv[]) {
 		applicator.setOutputFormat(CG3::FMT_APERTIUM);
 		applicator.unicode_tags = true;
 	}
+	else if (options[OUT_FST].doesOccur) {
+		applicator.setOutputFormat(CG3::FMT_FST);
+	}
 	else if (options[OUT_NICELINE].doesOccur) {
 		applicator.setOutputFormat(CG3::FMT_NICELINE);
 	}

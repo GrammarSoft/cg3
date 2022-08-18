@@ -28,9 +28,16 @@
 namespace CG3 {
 
 class FSTApplicator : public virtual GrammarApplicator {
+private:
+	bool did_warn_statictags = false;
+
 public:
 	FSTApplicator(std::ostream& ux_err);
 	void runGrammarOnText(std::istream& input, std::ostream& output);
+
+	void printReading(const Reading* reading, std::ostream& output);
+	void printCohort(Cohort* cohort, std::ostream& output);
+	void printSingleWindow(SingleWindow* window, std::ostream& output);
 
 	double wfactor = 1.0;
 	UString wtag{'W'};

@@ -83,6 +83,10 @@ void FormatConverter::printSingleWindow(SingleWindow* window, std::ostream& outp
 		ApertiumApplicator::printSingleWindow(window, output);
 		break;
 	}
+	case FMT_FST: {
+		FSTApplicator::printSingleWindow(window, output);
+		break;
+	}
 	case FMT_NICELINE: {
 		NicelineApplicator::printSingleWindow(window, output);
 		break;
