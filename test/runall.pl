@@ -21,42 +21,47 @@ my @binlist = (
 	"../vislcg3",
 	);
 my @unlinks = (
-   'diff.txt',
-   'output.txt',
-   'grammar.cg3b',
-   'diff.bin.txt',
-   'output.bin.txt',
-   );
+	'diff.txt',
+	'output.txt',
+	'grammar.cg3b',
+	'diff.bin.txt',
+	'output.bin.txt',
+	);
 my $binary = "vislcg3";
 
 sub run_pl {
-   my ($binary,$override,$args) = @_;
+	my ($binary,$override,$args) = @_;
+	my $good = 1;
 
-   `"$binary" $args $override -g grammar.cg3 -I input.txt -O output.txt >stdout.txt 2>stderr.txt`;
-   `diff -B expected.txt output.txt >diff.txt`;
+	`"$binary" $args $override -g grammar.cg3 -I input.txt -O output.txt >stdout.txt 2>stderr.txt`;
+	`diff -B expected.txt output.txt >diff.txt`;
 
-   if (-s "diff.txt") {
-      print STDERR "Fail ";
-   } else {
-      print STDERR "Success ";
-   }
+	if (-s "diff.txt") {
+		print STDERR "Fail ";
+		$good = 0;
+	} else {
+		print STDERR "Success ";
+	}
 
-   `"$binary" $args $override -g grammar.cg3 --grammar-only --grammar-bin grammar.cg3b >stdout.bin.txt 2>stderr.bin.txt`;
-   my $gf = undef;
-   for my $g (glob('*.cg3b*')) {
-      `"$binary" $args $override -g '$g' -I input.txt -O output.bin.txt >>stdout.bin.txt 2>>stderr.bin.txt`;
-      `diff -B expected.txt output.bin.txt >diff.bin.txt`;
-      if (-s "diff.bin.txt") {
-         $gf = $g;
-         last;
-      }
-   }
+	`"$binary" $args $override -g grammar.cg3 --grammar-only --grammar-bin grammar.cg3b >stdout.bin.txt 2>stderr.bin.txt`;
+	my $gf = undef;
+	for my $g (glob('*.cg3b*')) {
+		`"$binary" $args $override -g '$g' -I input.txt -O output.bin.txt >>stdout.bin.txt 2>>stderr.bin.txt`;
+		`diff -B expected.txt output.bin.txt >diff.bin.txt`;
+		if (-s "diff.bin.txt") {
+			$gf = $g;
+			last;
+		}
+	}
 
-   if (-s "diff.bin.txt") {
-      print STDERR "Fail ($gf).\n";
-   } else {
-      print STDERR "Success.\n";
-   }
+	if (-s "diff.bin.txt") {
+		print STDERR "Fail ($gf).\n";
+		$good = 0;
+	} else {
+		print STDERR "Success.\n";
+	}
+
+	return $good;
 }
 
 foreach (@binlist) {
@@ -82,6 +87,8 @@ print STDERR "Binary found at: $binary\n";
 
 print STDERR "\nRunning tests...\n";
 
+my $bad = 0;
+
 my @tests = grep { -x } glob('./T_*');
 foreach (@tests) {
 	if ($ARGV[0] && $ARGV[0] ne "" && !(/$ARGV[0]/i)) {
@@ -98,9 +105,9 @@ foreach (@tests) {
 		print STDERR "(".`cat "./$test/byline.txt"`.") ";
 	}
 	for my $u (@unlinks) {
-	   if (-e $u) {
-	      unlink $u;
-	   }
+		if (-e $u) {
+			unlink $u;
+		}
 	}
 
 	my $c = '""';
@@ -109,14 +116,21 @@ foreach (@tests) {
 	}
 	my $args = '';
 	if (-s 'args.txt') {
-	   $args = `cat args.txt`;
+		$args = `cat args.txt`;
 	}
 	if (-x 'run.pl') {
-	   `./run.pl "$binary" \Q$c\E $args`;
+		`./run.pl "$binary" \Q$c\E $args`;
+		if ($?) {
+			$bad = 1;
+		}
 	}
 	else {
-	   run_pl($binary, $c, $args);
+		if (!run_pl($binary, $c, $args)) {
+			$bad = 1;
+		}
 	}
 }
 
 print STDERR "\n";
+
+exit($bad);

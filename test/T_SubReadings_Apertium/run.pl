@@ -19,12 +19,15 @@ if (!$binary_proc || $binary_proc eq '' || !(-x $binary_proc)) {
 	die("Error: $binary_proc is not executable!");
 }
 
+my $bad = 0;
+
 `"$binary_comp" grammar.cg3 grammar.cg3b >stdout.txt 2>stderr.txt`;
 
 if (-s "grammar.cg3b") {
 	print STDERR "Success ";
 } else {
 	print STDERR "Fail ";
+	$bad = 1;
 }
 
 `"$binary_proc" grammar.cg3b input.txt output.txt >>stdout.txt 2>>stderr.txt`;
@@ -32,6 +35,9 @@ if (-s "grammar.cg3b") {
 
 if (-s "diff.txt") {
 	print STDERR "Fail.\n";
+	$bad = 1;
 } else {
 	print STDERR "Success.\n";
 }
+
+exit($bad);
