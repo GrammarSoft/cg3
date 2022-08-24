@@ -25,6 +25,7 @@
 #include "ContextualTest.hpp"
 #include "parser_helpers.hpp"
 #include "AST.hpp"
+#include <wordexp.h>
 #include <bitset>
 
 namespace CG3 {
@@ -2344,13 +2345,24 @@ void TextualParser::parseFromUChar(UChar* input, const char* fname) {
 				UErrorCode err = U_ZERO_ERROR;
 				u_strToUTF8(&cbuffers[0][0], CG3_BUFFER_SIZE - 1, 0, &gbuffers[0][0], u_strlen(&gbuffers[0][0]), &err);
 
-				std::string abspath;
-				if (cbuffers[0][0] == '/') {
-					abspath = &cbuffers[0][0];
+				std::string abspath = &cbuffers[0][0];
+
+				if (abspath.find_first_of("~$*") != std::string::npos) {
+					wordexp_t p;
+					auto rv = wordexp(abspath.c_str(), &p, WRDE_NOCMD | WRDE_UNDEF);
+					if (rv) {
+						u_fprintf(ux_stderr, "%s: Error: Cannot shell-expand %s due to error %d - bailing out!\n", filebase, abspath.c_str(), rv);
+						CG3Quit(1);
+					}
+					// ToDo: Include all files expanded to, not just the first
+					abspath = p.we_wordv[0];
+					wordfree(&p);
 				}
-				else {
-					abspath = ux_dirname(fname);
-					abspath += &cbuffers[0][0];
+
+				if (abspath[0] != '/') {
+					auto tmp = ux_dirname(fname);
+					tmp += abspath;
+					abspath.swap(tmp);
 				}
 
 				size_t grammar_size = 0;

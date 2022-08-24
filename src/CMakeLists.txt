@@ -124,6 +124,8 @@ if(WIN32)
 	set(LIBCG3_SOURCES
 		"${CMAKE_SOURCE_DIR}/include/win32/getopt.cpp"
 		"${CMAKE_SOURCE_DIR}/include/win32/getopt.h"
+		"${CMAKE_SOURCE_DIR}/include/win32/wordexp.cpp"
+		"${CMAKE_SOURCE_DIR}/include/win32/wordexp.h"
 		${LIBCG3_SOURCES}
 		)
 endif()
