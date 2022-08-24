@@ -30,10 +30,12 @@ my @unlinks = (
    'grammar-out.cg3b',
 );
 for my $u (@unlinks) {
-        if (-e $u) {
-                unlink $u;
-        }
+   if (-e $u) {
+      unlink $u;
+   }
 }
+
+my $bad = 0;
 
 `"$binary_comp" grammar.cg3 grammar.cg3b >stdout.txt 2>stderr.txt`;
 `"$binary_relabel" grammar.cg3b relabel.cg3r grammar-out.cg3b >>stdout.txt 2>>stderr.txt`;
@@ -42,6 +44,7 @@ if (-s "grammar.cg3b" && -s "grammar-out.cg3b") {
 	print STDERR "Success ";
 } else {
 	print STDERR "Fail ";
+	$bad = 1;
 }
 
 `"$binary_proc" grammar-out.cg3b input.txt output.txt 2>>stderr.txt`;
@@ -49,6 +52,9 @@ if (-s "grammar.cg3b" && -s "grammar-out.cg3b") {
 
 if (-s "diff.txt") {
 	print STDERR "Fail.\n";
+	$bad = 1;
 } else {
 	print STDERR "Success.\n";
 }
+
+exit($bad);

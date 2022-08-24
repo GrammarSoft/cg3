@@ -17,11 +17,14 @@ if (!$binary || $binary eq '' || !(-x $binary)) {
 	die("Error: $binary is not executable!");
 }
 
+my $bad = 0;
+
 `"$binary" $ARGV[1] -g grammar.cg3 -I input.txt -O output.txt >stdout.txt 2>stderr.txt`;
 `diff -B expected.txt output.txt >diff.txt`;
 
 if (-s "diff.txt") {
 	print STDERR "Fail ";
+	$bad = 1;
 } else {
 	print STDERR "Success ";
 }
@@ -32,6 +35,9 @@ if (-s "diff.txt") {
 
 if (-s "diff.bin.txt") {
 	print STDERR "Fail.\n";
+	$bad = 1;
 } else {
 	print STDERR "Success.\n";
 }
+
+exit($bad);
