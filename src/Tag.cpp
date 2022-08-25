@@ -94,7 +94,7 @@ void Tag::parseTagRaw(const UChar* to, Grammar* grammar) {
 
 	for (auto iter : grammar->regex_tags) {
 		UErrorCode status = U_ZERO_ERROR;
-		uregex_setText(iter, tag.c_str(), SI32(tag.size()), &status);
+		uregex_setText(iter, tag.data(), SI32(tag.size()), &status);
 		if (status == U_ZERO_ERROR) {
 			if (uregex_find(iter, -1, &status)) {
 				type |= T_TEXTUAL;
@@ -111,23 +111,23 @@ void Tag::parseTagRaw(const UChar* to, Grammar* grammar) {
 		parseNumeric();
 	}
 	if (tag[0] == '#') {
-		if (u_sscanf(tag.c_str(), "#%i->%i", &dep_self, &dep_parent) == 2 && dep_self != 0) {
+		if (u_sscanf(tag.data(), "#%i->%i", &dep_self, &dep_parent) == 2 && dep_self != 0) {
 			type |= T_DEPENDENCY;
 		}
 		constexpr UChar local_dep_unicode[] = { '#', '%', 'i', u'\u2192', '%', 'i', 0 };
-		if (u_sscanf_u(tag.c_str(), local_dep_unicode, &dep_self, &dep_parent) == 2 && dep_self != 0) {
+		if (u_sscanf_u(tag.data(), local_dep_unicode, &dep_self, &dep_parent) == 2 && dep_self != 0) {
 			type |= T_DEPENDENCY;
 		}
 	}
 	if (tag[0] == 'I' && tag[1] == 'D' && tag[2] == ':' && u_isdigit(tag[3])) {
-		if (u_sscanf(tag.c_str(), "ID:%i", &dep_self) == 1 && dep_self != 0) {
+		if (u_sscanf(tag.data(), "ID:%i", &dep_self) == 1 && dep_self != 0) {
 			type |= T_RELATION;
 		}
 	}
 	if (tag[0] == 'R' && tag[1] == ':') {
 		UChar relname[256];
 		dep_parent = std::numeric_limits<uint32_t>::max();
-		if (u_sscanf(tag.c_str(), "R:%[^:]:%i", &relname, &dep_parent) == 2 && dep_parent != std::numeric_limits<uint32_t>::max()) {
+		if (u_sscanf(tag.data(), "R:%[^:]:%i", &relname, &dep_parent) == 2 && dep_parent != std::numeric_limits<uint32_t>::max()) {
 			type |= T_RELATION;
 			Tag* reltag = grammar->allocateTag(relname);
 			comparison_hash = reltag->hash;
@@ -151,7 +151,7 @@ void Tag::parseNumeric() {
 	tkey[0] = 0;
 	top[0] = 0;
 	txval[0] = 0;
-	if (u_sscanf(tag.c_str(), "%*[<]%[^<>=:!]%[<>=:!]%[-.MAXIN0-9]%*[>]", &tkey, &top, &txval) == 3 && top[0] && txval[0]) {
+	if (u_sscanf(tag.data(), "%*[<]%[^<>=:!]%[<>=:!]%[-.MAXIN0-9]%*[>]", &tkey, &top, &txval) == 3 && top[0] && txval[0]) {
 		double tval = 0;
 		int32_t r = u_strspn(txval, spn);
 		if (txval[0] == 'M' && txval[1] == 'A' && txval[2] == 'X' && txval[3] == 0) {
@@ -260,8 +260,8 @@ uint32_t Tag::rehash() {
 	}
 
 	if (dump_hashes_out) {
-		u_fprintf(dump_hashes_out, "DEBUG: Hash %u with seed %u for tag %S\n", hash, seed, tag.c_str());
-		u_fprintf(dump_hashes_out, "DEBUG: Plain hash %u with seed %u for tag %S\n", plain_hash, seed, tag.c_str());
+		u_fprintf(dump_hashes_out, "DEBUG: Hash %u with seed %u for tag %S\n", hash, seed, tag.data());
+		u_fprintf(dump_hashes_out, "DEBUG: Plain hash %u with seed %u for tag %S\n", plain_hash, seed, tag.data());
 	}
 
 	return hash;

@@ -50,7 +50,7 @@ void GrammarWriter::printSet(std::ostream& output, const Set& curset) {
 			}
 		}
 		used_sets.insert(curset.number);
-		u_fprintf(output, "LIST %S = ", curset.name.c_str());
+		u_fprintf(output, "LIST %S = ", curset.name.data());
 		TagVectorSet tagsets[] = { trie_getTagsOrdered(curset.trie), trie_getTagsOrdered(curset.trie_special) };
 		for (auto& tvs : tagsets) {
 			for (auto& tags : tvs) {
@@ -81,14 +81,14 @@ void GrammarWriter::printSet(std::ostream& output, const Set& curset) {
 				u_fprintf(output, "#Set Matched: %u ; NoMatch: %u ; TotalTime: %f\n", curset.num_match, curset.num_fail, curset.total_time);
 			}
 		}
-		const UChar* n = curset.name.c_str();
+		const UChar* n = curset.name.data();
 		if ((n[0] == '$' && n[1] == '$') || (n[0] == '&' && n[1] == '&')) {
 			u_fprintf(output, "# ");
 		}
 		u_fprintf(output, "SET %S = ", n);
-		u_fprintf(output, "%S ", grammar->sets_list[curset.sets[0]]->name.c_str());
+		u_fprintf(output, "%S ", grammar->sets_list[curset.sets[0]]->name.data());
 		for (uint32_t i = 0; i < curset.sets.size() - 1; i++) {
-			u_fprintf(output, "%S %S ", stringbits[curset.set_ops[i]].c_str(), grammar->sets_list[curset.sets[i + 1]]->name.c_str());
+			u_fprintf(output, "%S %S ", stringbits[curset.set_ops[i]].data(), grammar->sets_list[curset.sets[i + 1]]->name.data());
 		}
 		u_fprintf(output, " ;\n\n");
 	}
@@ -126,7 +126,7 @@ int GrammarWriter::writeGrammar(std::ostream& output) {
 	if (!grammar->static_sets.empty()) {
 		u_fprintf(output, "STATIC-SETS =");
 		for (auto& str : grammar->static_sets) {
-			u_fprintf(output, " %S", str.c_str());
+			u_fprintf(output, " %S", str.data());
 		}
 		u_fprintf(output, " ;\n");
 	}
@@ -146,13 +146,13 @@ int GrammarWriter::writeGrammar(std::ostream& output) {
 	for (auto s : grammar->sets_list) {
 		if (s->name.empty()) {
 			if (s == grammar->delimiters) {
-				s->name = stringbits[S_DELIMITSET];
+				s->name = STR_DELIMITSET;
 			}
 			else if (s == grammar->soft_delimiters) {
-				s->name = stringbits[S_SOFTDELIMITSET];
+				s->name = STR_SOFTDELIMITSET;
 			}
 			else if (s == grammar->text_delimiters) {
-				s->name = stringbits[S_TEXTDELIMITSET];
+				s->name = STR_TEXTDELIMITSET;
 			}
 			else {
 				s->name.resize(12);
@@ -248,34 +248,34 @@ void GrammarWriter::printRule(std::ostream& to, const Rule& rule) {
 		u_fprintf(to, " ");
 	}
 
-	u_fprintf(to, "%S", keywords[rule.type].c_str());
+	u_fprintf(to, "%S", keywords[rule.type].data());
 
 	if (!rule.name.empty() && !(rule.name[0] == '_' && rule.name[1] == 'R' && rule.name[2] == '_')) {
-		u_fprintf(to, ":%S", rule.name.c_str());
+		u_fprintf(to, ":%S", rule.name.data());
 	}
 	u_fprintf(to, " ");
 
 	for (uint32_t i = 0; i < FLAGS_COUNT; i++) {
 		if (rule.flags & (1 << i)) {
 			if (i == FL_SUB) {
-				u_fprintf(to, "%S:%d ", g_flags[i].c_str(), rule.sub_reading);
+				u_fprintf(to, "%S:%d ", g_flags[i].data(), rule.sub_reading);
 			}
 			else {
-				u_fprintf(to, "%S ", g_flags[i].c_str());
+				u_fprintf(to, "%S ", g_flags[i].data());
 			}
 		}
 	}
 
 	if (rule.sublist) {
-		u_fprintf(to, "%S ", rule.sublist->name.c_str());
+		u_fprintf(to, "%S ", rule.sublist->name.data());
 	}
 
 	if (rule.maplist) {
-		u_fprintf(to, "%S ", rule.maplist->name.c_str());
+		u_fprintf(to, "%S ", rule.maplist->name.data());
 	}
 
 	if (rule.target) {
-		u_fprintf(to, "%S ", grammar->sets_list[rule.target]->name.c_str());
+		u_fprintf(to, "%S ", grammar->sets_list[rule.target]->name.data());
 	}
 
 	for (auto it : rule.tests) {
@@ -421,19 +421,19 @@ void GrammarWriter::printContextualTest(std::ostream& to, const ContextualTest& 
 			u_fprintf(to, "I");
 		}
 		if (test.pos & POS_RELATION) {
-			u_fprintf(to, "r:%S", grammar->single_tags.find(test.relation)->second->tag.c_str());
+			u_fprintf(to, "r:%S", grammar->single_tags.find(test.relation)->second->tag.data());
 		}
 
 		u_fprintf(to, " ");
 
 		if (test.target) {
-			u_fprintf(to, "%S ", grammar->sets_list[test.target]->name.c_str());
+			u_fprintf(to, "%S ", grammar->sets_list[test.target]->name.data());
 		}
 		if (test.cbarrier) {
-			u_fprintf(to, "CBARRIER %S ", grammar->sets_list[test.cbarrier]->name.c_str());
+			u_fprintf(to, "CBARRIER %S ", grammar->sets_list[test.cbarrier]->name.data());
 		}
 		if (test.barrier) {
-			u_fprintf(to, "BARRIER %S ", grammar->sets_list[test.barrier]->name.c_str());
+			u_fprintf(to, "BARRIER %S ", grammar->sets_list[test.barrier]->name.data());
 		}
 	}
 
@@ -445,6 +445,6 @@ void GrammarWriter::printContextualTest(std::ostream& to, const ContextualTest& 
 
 void GrammarWriter::printTag(std::ostream& to, const Tag& tag) {
 	UString str = tag.toUString(true);
-	u_fprintf(to, "%S", str.c_str());
+	u_fprintf(to, "%S", str.data());
 }
 }

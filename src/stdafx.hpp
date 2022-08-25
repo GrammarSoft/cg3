@@ -57,6 +57,7 @@
 #include <list>
 #include <vector>
 #include <string>
+#include <string_view>
 #include <set>
 #include <map>
 #include <unordered_map>
@@ -72,7 +73,6 @@
 #include <sys/stat.h>
 #include <cstdint>
 #include <cycle.h>
-#include "string_view.hpp"
 
 // cycle.h doesn't know all platforms (such as ARM), so fall back on clock()
 #ifndef HAVE_TICK_COUNTER
@@ -133,22 +133,6 @@ struct flags_t {
 	uint32_t flags = 0;
 	int32_t sub_reading = 0;
 };
-
-inline UString operator "" _us(const char* str, std::size_t len) {
-	UString us(len, 0);
-	for (size_t i = 0; i < len; ++i) {
-		us[i] = str[i];
-	}
-	return us;
-}
-
-inline UString operator "" _us(const char16_t* str, std::size_t len) {
-	UString us(len, 0);
-	for (size_t i = 0; i < len; ++i) {
-		us[i] = str[i];
-	}
-	return us;
-}
 }
 
 #include "inlines.hpp"

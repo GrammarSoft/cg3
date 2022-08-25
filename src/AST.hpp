@@ -154,12 +154,12 @@ const UChar* xml_encode(const UChar* b, const UChar* e) {
 			buf += *b;
 		}
 	}
-	return buf.c_str();
+	return buf.data();
 }
 
 void print_ast(std::ostream& out, const UChar* b, size_t n, const ASTNode& node) {
 	std::string indent(n, ' ');
-	u_fprintf(out, "%s<%s l=\"%u\" b=\"%u\" e=\"%u\"", indent.c_str(), ASTType_str[node.type], node.line, UI32(node.b - b), UI32(node.e - b));
+	u_fprintf(out, "%s<%s l=\"%u\" b=\"%u\" e=\"%u\"", indent.data(), ASTType_str[node.type], node.line, UI32(node.b - b), UI32(node.e - b));
 	if (node.type == AST_AnchorName || node.type == AST_ContextMod || node.type == AST_ContextPos || node.type == AST_IncludeFilename || node.type == AST_MappingPrefix || node.type == AST_Option || node.type == AST_RuleAddcohortWhere || node.type == AST_RuleDirection || node.type == AST_RuleExternalCmd || node.type == AST_RuleExternalType || node.type == AST_RuleFlag || node.type == AST_RuleMoveType || node.type == AST_RuleName || node.type == AST_RuleType || node.type == AST_RuleWordform || node.type == AST_SetName || node.type == AST_SetOp || node.type == AST_SubReadingsDirection || node.type == AST_Tag || node.type == AST_TemplateName || node.type == AST_TemplateRef) {
 		u_fprintf(out, " t=\"%S\"", xml_encode(node.b, node.e));
 	}
@@ -176,7 +176,7 @@ void print_ast(std::ostream& out, const UChar* b, size_t n, const ASTNode& node)
 			print_ast(out, b, n + 1, it);
 		}
 	}
-	u_fprintf(out, "%s</%s>\n", indent.c_str(), ASTType_str[node.type]);
+	u_fprintf(out, "%s</%s>\n", indent.data(), ASTType_str[node.type]);
 }
 
 struct ASTHelper {

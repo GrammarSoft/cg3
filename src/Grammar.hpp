@@ -126,10 +126,16 @@ public:
 
 	void addAnchor(const UChar* to, uint32_t at, bool primary = false);
 	void addAnchor(const UString& to, uint32_t at, bool primary = false);
+	void addAnchor(const UStringView& to, uint32_t at, bool primary = false) {
+		return addAnchor(to.data(), at, primary);
+	}
 
 	Tag* allocateTag();
 	Tag* allocateTag(const UChar* tag);
 	Tag* allocateTag(const UString& tag);
+	Tag* allocateTag(const UStringView& tag) {
+		return allocateTag(tag.data());
+	}
 	Tag* addTag(Tag* tag);
 	void destroyTag(Tag* tag);
 	void addTagToSet(Tag* rtag, Set* set);

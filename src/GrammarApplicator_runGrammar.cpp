@@ -34,7 +34,7 @@ inline bool testStringAgainst(const UString& str, std::vector<URegularExpression
 
 	for (size_t i = 0; i < rxs.size(); ++i) {
 		UErrorCode status = U_ZERO_ERROR;
-		uregex_setText(rxs[i], str.c_str(), SI32(str.size()), &status);
+		uregex_setText(rxs[i], str.data(), SI32(str.size()), &status);
 		if (status != U_ZERO_ERROR) {
 			CG3Quit(1);
 		}
@@ -221,7 +221,7 @@ void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& outp
 			}
 			if (cCohort && (cSWindow->cohorts.size() >= hard_limit || (!dep_delimit && grammar->delimiters && doesSetMatchCohortNormal(*cCohort, grammar->delimiters->number)))) {
 				if (!is_conv && cSWindow->cohorts.size() >= hard_limit) {
-					u_fprintf(ux_stderr, "Warning: Hard limit of %u cohorts reached at cohort %S (#%u) on line %u - forcing break.\n", hard_limit, cCohort->wordform->tag.c_str(), numCohorts, numLines);
+					u_fprintf(ux_stderr, "Warning: Hard limit of %u cohorts reached at cohort %S (#%u) on line %u - forcing break.\n", hard_limit, cCohort->wordform->tag.data(), numCohorts, numLines);
 					u_fflush(ux_stderr);
 				}
 				for (auto iter : cCohort->readings) {
@@ -391,7 +391,7 @@ void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& outp
 				auto iter = all_mappings.find(cReading);
 				if (iter != all_mappings.end()) {
 					while (iter->second.size() > 1) {
-						u_fprintf(ux_stderr, "Warning: Sub-reading mapping %S on line %u will be discarded.\n", iter->second.back()->tag.c_str(), numLines);
+						u_fprintf(ux_stderr, "Warning: Sub-reading mapping %S on line %u will be discarded.\n", iter->second.back()->tag.data(), numLines);
 						u_fflush(ux_stderr);
 						iter->second.pop_back();
 					}
@@ -451,7 +451,7 @@ void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& outp
 			}
 		istext:
 			if (cleaned[0]) {
-				if (&cleaned[0] == stringbits[S_CMD_FLUSH]) {
+				if (&cleaned[0] == STR_CMD_FLUSH) {
 					if (verbosity_level > 0) {
 						u_fprintf(ux_stderr, "Info: FLUSH encountered on line %u. Flushing...\n", numLines);
 					}
@@ -502,31 +502,31 @@ void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& outp
 					fflush(stdout);
 					fflush(stderr);
 				}
-				else if (&cleaned[0] == stringbits[S_CMD_IGNORE]) {
+				else if (&cleaned[0] == STR_CMD_IGNORE) {
 					if (verbosity_level > 0) {
 						u_fprintf(ux_stderr, "Info: IGNORE encountered on line %u. Passing through all input...\n", numLines);
 					}
 					ignoreinput = true;
 				}
-				else if (&cleaned[0] == stringbits[S_CMD_RESUME]) {
+				else if (&cleaned[0] == STR_CMD_RESUME) {
 					if (verbosity_level > 0) {
 						u_fprintf(ux_stderr, "Info: RESUME encountered on line %u. Resuming CG...\n", numLines);
 					}
 					ignoreinput = false;
 				}
-				else if (&cleaned[0] == stringbits[S_CMD_EXIT]) {
+				else if (&cleaned[0] == STR_CMD_EXIT) {
 					if (verbosity_level > 0) {
 						u_fprintf(ux_stderr, "Info: EXIT encountered on line %u. Exiting...\n", numLines);
 					}
 					u_fprintf(output, "%S", &line[0]);
 					goto CGCMD_EXIT;
 				}
-				else if (u_strncmp(&cleaned[0], stringbits[S_CMD_SETVAR].c_str(), stringbits[S_CMD_SETVAR].size()) == 0) {
+				else if (u_strncmp(&cleaned[0], STR_CMD_SETVAR.data(), STR_CMD_SETVAR.size()) == 0) {
 					//u_fprintf(ux_stderr, "Info: SETVAR encountered on line %u.\n", numLines);
 					cleaned[packoff - 1] = 0;
 					line[0] = 0;
 
-					UChar* s = &cleaned[stringbits[S_CMD_SETVAR].size()];
+					UChar* s = &cleaned[STR_CMD_SETVAR.size()];
 					UChar* c = u_strchr(s, ',');
 					UChar* d = u_strchr(s, '=');
 					if (c == 0 && d == 0) {
@@ -597,12 +597,12 @@ void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& outp
 						}
 					}
 				}
-				else if (u_strncmp(&cleaned[0], stringbits[S_CMD_REMVAR].c_str(), stringbits[S_CMD_REMVAR].size()) == 0) {
+				else if (u_strncmp(&cleaned[0], STR_CMD_REMVAR.data(), STR_CMD_REMVAR.size()) == 0) {
 					//u_fprintf(ux_stderr, "Info: REMVAR encountered on line %u.\n", numLines);
 					cleaned[packoff - 1] = 0;
 					line[0] = 0;
 
-					UChar* s = &cleaned[stringbits[S_CMD_REMVAR].size()];
+					UChar* s = &cleaned[STR_CMD_REMVAR.size()];
 					UChar* c = u_strchr(s, ',');
 					uint32_t a = 0;
 					while (c && *c) {

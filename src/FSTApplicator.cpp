@@ -195,7 +195,7 @@ void FSTApplicator::runGrammarOnText(std::istream& input, std::ostream& output) 
 
 				while (space && *space && (space = u_strchr(space, '+')) != 0) {
 					if (base && base[0]) {
-						int32_t f = u_strcspn(base, sub_delims.c_str());
+						int32_t f = u_strcspn(base, sub_delims.data());
 						UChar* hash = nullptr;
 						if (f && base + f < space) {
 							hash = const_cast<UChar*>(base) + f;
@@ -214,7 +214,7 @@ void FSTApplicator::runGrammarOnText(std::istream& input, std::ostream& output) 
 							tag += '"';
 							tag += base;
 							tag += '"';
-							base = tag.c_str();
+							base = tag.data();
 						}
 						if (base[0] == 0) {
 							base = notag;
@@ -246,7 +246,7 @@ void FSTApplicator::runGrammarOnText(std::istream& input, std::ostream& output) 
 						tag += '"';
 						tag += base;
 						tag += '"';
-						base = tag.c_str();
+						base = tag.data();
 					}
 					Tag* tag = addTag(base);
 					if (tag->type & T_MAPPING || tag->tag[0] == grammar->mapping_prefix) {
@@ -330,7 +330,7 @@ void FSTApplicator::runGrammarOnText(std::istream& input, std::ostream& output) 
 			}
 			if (cCohort && (cSWindow->cohorts.size() >= hard_limit || (!dep_delimit && grammar->delimiters && doesSetMatchCohortNormal(*cCohort, grammar->delimiters->number)))) {
 				if (!is_conv && cSWindow->cohorts.size() >= hard_limit) {
-					u_fprintf(ux_stderr, "Warning: Hard limit of %u cohorts reached at cohort %S (#%u) on line %u - forcing break.\n", hard_limit, cCohort->wordform->tag.c_str(), numCohorts, numLines);
+					u_fprintf(ux_stderr, "Warning: Hard limit of %u cohorts reached at cohort %S (#%u) on line %u - forcing break.\n", hard_limit, cCohort->wordform->tag.data(), numCohorts, numLines);
 					u_fflush(ux_stderr);
 				}
 				for (auto iter : cCohort->readings) {
@@ -425,12 +425,12 @@ void FSTApplicator::printReading(const Reading* reading, std::ostream& output) {
 
 	if (reading->next) {
 		printReading(reading->next, output);
-		u_fprintf(output, "%S", sub_delims.c_str());
+		u_fprintf(output, "%S", sub_delims.data());
 	}
 
 	if (reading->baseform) {
 		auto& tag = grammar->single_tags.find(reading->baseform)->second->tag;
-		u_fprintf(output, "%.*S", tag.size() - 2, tag.c_str() + 1);
+		u_fprintf(output, "%.*S", tag.size() - 2, tag.data() + 1);
 	}
 
 	uint32SortedVector unique;
@@ -454,7 +454,7 @@ void FSTApplicator::printReading(const Reading* reading, std::ostream& output) {
 		if (tag->type & T_RELATION && has_relations) {
 			continue;
 		}
-		u_fprintf(output, "+%S", tag->tag.c_str());
+		u_fprintf(output, "+%S", tag->tag.data());
 	}
 }
 
@@ -481,11 +481,11 @@ void FSTApplicator::printCohort(Cohort* cohort, std::ostream& output) {
 	{
 		auto& wform = cohort->wordform->tag;
 		if (cohort->readings.empty() || (cohort->readings.size() == 1 && cohort->readings[0]->noprint)) {
-			u_fprintf(output, "%.*S\t+?\n", wform.size() - 4, wform.c_str() + 2);
+			u_fprintf(output, "%.*S\t+?\n", wform.size() - 4, wform.data() + 2);
 		}
 		else {
 			for (auto rter : cohort->readings) {
-				u_fprintf(output, "%.*S\t", wform.size() - 4, wform.c_str() + 2);
+				u_fprintf(output, "%.*S\t", wform.size() - 4, wform.data() + 2);
 				printReading(rter, output);
 				u_fputc('\n', output);
 			}
@@ -495,7 +495,7 @@ void FSTApplicator::printCohort(Cohort* cohort, std::ostream& output) {
 
 removed:
 	if (!cohort->text.empty() && cohort->text.find_first_not_of(ws) != UString::npos) {
-		u_fprintf(output, "%S", cohort->text.c_str());
+		u_fprintf(output, "%S", cohort->text.data());
 		if (!ISNL(cohort->text.back())) {
 			u_fputc('\n', output);
 		}
@@ -504,7 +504,7 @@ removed:
 
 void FSTApplicator::printSingleWindow(SingleWindow* window, std::ostream& output) {
 	if (!window->text.empty()) {
-		u_fprintf(output, "%S", window->text.c_str());
+		u_fprintf(output, "%S", window->text.data());
 		if (!ISNL(window->text.back())) {
 			u_fputc('\n', output);
 		}
@@ -517,7 +517,7 @@ void FSTApplicator::printSingleWindow(SingleWindow* window, std::ostream& output
 	}
 
 	if (!window->text_post.empty()) {
-		u_fprintf(output, "%S", window->text_post.c_str());
+		u_fprintf(output, "%S", window->text_post.data());
 		if (!ISNL(window->text_post.back())) {
 			u_fputc('\n', output);
 		}

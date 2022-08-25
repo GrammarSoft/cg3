@@ -86,7 +86,6 @@ set(LIBCG3_HEADERS
 	sorted_vector.hpp
 	stdafx.hpp
 	streambuf.hpp
-	string_view.hpp
 	uextras.hpp
 	version.hpp
 	)

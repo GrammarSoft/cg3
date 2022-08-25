@@ -301,7 +301,7 @@ int main(int argc, char* argv[]) {
 	if (!single_rule.empty()) {
 		auto sn = SI32(single_rule.size());
 		CG3::UString buf(sn * 3, 0);
-		u_charsToUChars(single_rule.c_str(), &buf[0], sn);
+		u_charsToUChars(single_rule.data(), &buf[0], sn);
 		for (auto rule : applicator->grammar->rule_by_number) {
 			if (rule->name == buf) {
 				applicator->valid_rules.push_back(rule->number);

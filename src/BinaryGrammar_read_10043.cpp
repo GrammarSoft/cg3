@@ -167,7 +167,7 @@ int BinaryGrammar::readBinaryGrammar_10043(std::istream& input) {
 					t->regexp = uregex_open(&gbuffers[0][0], i32tmp, 0, &pe, &status);
 				}
 				if (status != U_ZERO_ERROR) {
-					u_fprintf(ux_stderr, "Error: uregex_open returned %s trying to parse tag %S - cannot continue!\n", u_errorName(status), t->tag.c_str());
+					u_fprintf(ux_stderr, "Error: uregex_open returned %s trying to parse tag %S - cannot continue!\n", u_errorName(status), t->tag.data());
 					CG3Quit(1);
 				}
 			}

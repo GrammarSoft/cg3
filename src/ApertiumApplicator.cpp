@@ -39,12 +39,12 @@ ApertiumApplicator::ApertiumApplicator(std::ostream& ux_err)
 void ApertiumApplicator::parseStreamVar(const SingleWindow* cSWindow, UString& cleaned,
 					uint32FlatHashMap& variables_set, uint32FlatHashSet& variables_rem, uint32SortedVector& variables_output) {
 	size_t packoff = 0;
-	if (u_strncmp(&cleaned[0], stringbits[S_CMD_SETVAR].c_str(), stringbits[S_CMD_SETVAR].size()) == 0) {
+	if (u_strncmp(&cleaned[0], STR_CMD_SETVAR.data(), STR_CMD_SETVAR.size()) == 0) {
 		// u_fprintf(ux_stderr, "Info: SETVAR encountered on line %u.\n", numLines);
 		cleaned[packoff - 1] = 0;
 		// line[0] = 0;
 
-		UChar* s = &cleaned[stringbits[S_CMD_SETVAR].size()];
+		UChar* s = &cleaned[STR_CMD_SETVAR.size()];
 		UChar* c = u_strchr(s, ',');
 		UChar* d = u_strchr(s, '=');
 		if (c == 0 && d == 0) {
@@ -115,12 +115,12 @@ void ApertiumApplicator::parseStreamVar(const SingleWindow* cSWindow, UString& c
 			}
 		}
 	}
-	else if (u_strncmp(&cleaned[0], stringbits[S_CMD_REMVAR].c_str(), stringbits[S_CMD_REMVAR].size()) == 0) {
+	else if (u_strncmp(&cleaned[0], STR_CMD_REMVAR.data(), STR_CMD_REMVAR.size()) == 0) {
 		//u_fprintf(ux_stderr, "Info: REMVAR encountered on line %u.\n", numLines);
 		cleaned[packoff - 1] = 0;
 		// line[0] = 0;
 
-		UChar* s = &cleaned[stringbits[S_CMD_REMVAR].size()];
+		UChar* s = &cleaned[STR_CMD_REMVAR.size()];
 		UChar* c = u_strchr(s, ',');
 		uint32_t a = 0;
 		while (c && *c) {
@@ -189,11 +189,11 @@ void ApertiumApplicator::runGrammarOnText(std::istream& input, std::ostream& out
 
 	uint32_t resetAfter = ((num_windows + 4) * 2 + 1);
 
-	const auto wb_start = "[["_us;
-	const auto wb_end = "]]"_us;
+	constexpr UStringView wb_start{ u"[[" };
+	constexpr UStringView wb_end{ u"]]" };
 
-	begintag = addTag(stringbits[S_BEGINTAG])->hash; // Beginning of sentence tag
-	endtag = addTag(stringbits[S_ENDTAG])->hash;     // End of sentence tag
+	begintag = addTag(STR_BEGINTAG)->hash; // Beginning of sentence tag
+	endtag = addTag(STR_ENDTAG)->hash;     // End of sentence tag
 
 	SingleWindow* cSWindow = nullptr; // Current single window (Cohort frame)
 	Cohort* cCohort = nullptr;        // Current cohort
@@ -238,7 +238,7 @@ void ApertiumApplicator::runGrammarOnText(std::istream& input, std::ostream& out
 				lSWindow->text += blank;
 			}
 			else {
-				u_fprintf(output, "%S", blank.c_str());
+				u_fprintf(output, "%S", blank.data());
 			}
 			blank.clear();
 		}
@@ -432,7 +432,7 @@ void ApertiumApplicator::runGrammarOnText(std::istream& input, std::ostream& out
 					if (*p == '>') {
 						Tag* t = addTag(blank);
 						addTagToReading(*cCohort->wread, t);
-						//u_fprintf(ux_stderr, "Adding tag %S\n", tag.c_str());
+						//u_fprintf(ux_stderr, "Adding tag %S\n", tag.data());
 						blank.clear();
 						continue;
 					}
@@ -506,7 +506,7 @@ void ApertiumApplicator::runGrammarOnText(std::istream& input, std::ostream& out
 			} // end >= soft_limit
 			if (cCohort && (cSWindow->cohorts.size() >= hard_limit || (grammar->delimiters && doesSetMatchCohortNormal(*cCohort, grammar->delimiters->number)))) {
 				if (!is_conv && cSWindow->cohorts.size() >= hard_limit) {
-					u_fprintf(ux_stderr, "Warning: Hard limit of %u cohorts reached at cohort %S (#%u) on line %u - forcing break.\n", hard_limit, cCohort->wordform->tag.c_str(), numCohorts, numLines);
+					u_fprintf(ux_stderr, "Warning: Hard limit of %u cohorts reached at cohort %S (#%u) on line %u - forcing break.\n", hard_limit, cCohort->wordform->tag.data(), numCohorts, numLines);
 					u_fflush(ux_stderr);
 				}
 				for (auto iter : cCohort->readings) {
@@ -695,7 +695,7 @@ void ApertiumApplicator::printReading(Reading* reading, std::ostream& output, Ap
 
 	if (reading->baseform) {
 		// Lop off the initial and final '"' characters
-		UnicodeString bf(grammar->single_tags[reading->baseform]->tag.c_str() + 1, SI32(grammar->single_tags[reading->baseform]->tag.size() - 2));
+		UnicodeString bf(grammar->single_tags[reading->baseform]->tag.data() + 1, SI32(grammar->single_tags[reading->baseform]->tag.size() - 2));
 
 		if (wordform_case) {
 			if (casing == ApertiumCasing::Upper) {
@@ -722,7 +722,7 @@ void ApertiumApplicator::printReading(Reading* reading, std::ostream& output, Ap
 		if(surface_readings && bf.length() > 0 && bf_escaped[0] == '@') {
 			bf_escaped[0] = '#';
 		}
-		u_fprintf(output, "%S", bf_escaped.c_str());
+		u_fprintf(output, "%S", bf_escaped.data());
 
 		// Tag::printTagRaw(output, grammar->single_tags[reading->baseform]);
 	}
@@ -762,7 +762,7 @@ void ApertiumApplicator::printReading(Reading* reading, std::ostream& output, Ap
 	tags_list.insert(tags_list.end(), multitags_list.begin(), multitags_list.end());
 
 	uint32SortedVector used_tags;
-	const UString escape = surface_readings ? "\\"_us : ""_us;
+	UStringView escape{ surface_readings ? u"\\" : u"" };
 	for (auto tter : tags_list) {
 		if (unique_tags) {
 			if (used_tags.find(tter) != used_tags.end()) {
@@ -776,13 +776,13 @@ void ApertiumApplicator::printReading(Reading* reading, std::ostream& output, Ap
 		const Tag* tag = grammar->single_tags[tter];
 		if (!(tag->type & T_BASEFORM) && !(tag->type & T_WORDFORM)) {
 			if (tag->tag[0] == '+') {
-				u_fprintf(output, "%S", tag->tag.c_str());
+				u_fprintf(output, "%S", tag->tag.data());
 			}
 			else if (tag->tag[0] == '&') {
-				u_fprintf(output, "%S<%S%S>", escape.c_str(), substr(tag->tag, 2).c_str(), escape.c_str());
+				u_fprintf(output, "%S<%S%S>", escape.data(), substr(tag->tag, 2).data(), escape.data());
 			}
 			else {
-				u_fprintf(output, "%S<%S%S>", escape.c_str(), tag->tag.c_str(), escape.c_str());
+				u_fprintf(output, "%S<%S%S>", escape.data(), tag->tag.data(), escape.data());
 			}
 		}
 	}
@@ -884,7 +884,7 @@ void ApertiumApplicator::printCohort(Cohort* cohort, std::ostream& output) {
 	}
 
 	if (!cohort->wblank.empty()) {
-		u_fprintf(output, "%S", cohort->wblank.c_str());
+		u_fprintf(output, "%S", cohort->wblank.data());
 	}
 
 	// Start of cohort
@@ -895,7 +895,7 @@ void ApertiumApplicator::printCohort(Cohort* cohort, std::ostream& output) {
 	if (print_word_forms == true) {
 		// Lop off the initial and final '"' characters
 		// ToDo: A copy does not need to be made here - use pointer offsets
-		UnicodeString wf(cohort->wordform->tag.c_str() + 2, SI32(cohort->wordform->tag.size() - 4));
+		UnicodeString wf(cohort->wordform->tag.data() + 2, SI32(cohort->wordform->tag.size() - 4));
 		UString wf_escaped;
 		for (int i = 0; i < wf.length(); ++i) {
 			if (wf[i] == '^' || wf[i] == '\\' || wf[i] == '/' || wf[i] == '$' || wf[i] == '[' || wf[i] == ']' || wf[i] == '{' || wf[i] == '}' || wf[i] == '<' || wf[i] == '>') {
@@ -906,7 +906,7 @@ void ApertiumApplicator::printCohort(Cohort* cohort, std::ostream& output) {
 			}
 			wf_escaped += wf[i];
 		}
-		u_fprintf(output, "%S", wf_escaped.c_str());
+		u_fprintf(output, "%S", wf_escaped.data());
 
 		// Print the static reading tags
 		if (cohort->wread) {
@@ -915,7 +915,7 @@ void ApertiumApplicator::printCohort(Cohort* cohort, std::ostream& output) {
 					continue;
 				}
 				const Tag* tag = grammar->single_tags[tter];
-				u_fprintf(output, "<%S>", tag->tag.c_str());
+				u_fprintf(output, "<%S>", tag->tag.data());
 			}
 		}
 	}
@@ -969,11 +969,11 @@ void ApertiumApplicator::printCohort(Cohort* cohort, std::ostream& output) {
 	// End of cohort
 
 	if (!cohort->text.empty()) {
-		u_fprintf(output, "%S", cohort->text.c_str());
+		u_fprintf(output, "%S", cohort->text.data());
 	}
 	for (auto& c : cohort->removed) {
 		if (!c->text.empty()) {
-			u_fprintf(output, "%S", c->text.c_str());
+			u_fprintf(output, "%S", c->text.data());
 		}
 	}
 }
@@ -981,7 +981,7 @@ void ApertiumApplicator::printCohort(Cohort* cohort, std::ostream& output) {
 void ApertiumApplicator::printSingleWindow(SingleWindow* window, std::ostream& output) {
 	// Window text comes at the left
 	if (!window->text.empty()) {
-		u_fprintf(output, "%S", window->text.c_str());
+		u_fprintf(output, "%S", window->text.data());
 	}
 
 	for (uint32_t c = 0; c < window->cohorts.size(); c++) {
@@ -990,7 +990,7 @@ void ApertiumApplicator::printSingleWindow(SingleWindow* window, std::ostream& o
 		if (c == 0) { // Skip magic cohort
 			for (auto& c : cohort->removed) {
 				if (!c->text.empty()) {
-					u_fprintf(output, "%S", c->text.c_str());
+					u_fprintf(output, "%S", c->text.data());
 				}
 			}
 			continue;
@@ -1001,7 +1001,7 @@ void ApertiumApplicator::printSingleWindow(SingleWindow* window, std::ostream& o
 	}
 
 	if (!window->text_post.empty()) {
-		u_fprintf(output, "%S", window->text_post.c_str());
+		u_fprintf(output, "%S", window->text_post.data());
 		u_fflush(output);
 	}
 
