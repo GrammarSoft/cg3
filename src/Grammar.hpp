@@ -114,6 +114,7 @@ public:
 
 	void addSet(Set*& to);
 	Set* getSet(uint32_t which) const;
+	void appendToSet(Set*& to);
 	Set* allocateSet();
 	void destroySet(Set* set);
 	void addSetToList(Set* s);
@@ -169,7 +170,7 @@ inline void _trie_unserialize(trie_t& trie, Stream& input, Grammar& grammar, uin
 		u32tmp = ntoh32(u32tmp);
 		if (u32tmp) {
 			if (!node.trie) {
-				node.trie = new trie_t;
+				node.trie.reset(new trie_t);
 			}
 			trie_unserialize(*node.trie, input, grammar, u32tmp);
 		}
