@@ -184,7 +184,7 @@ inline uint32_t hash_value(const UChar* str, uint32_t hash = 0, size_t len = 0) 
 }
 
 inline uint32_t hash_value(const UString& str, uint32_t h = 0) {
-	return hash_value(str.c_str(), h, str.size());
+	return hash_value(str.data(), h, str.size());
 }
 
 inline uint32_t hash_value(const UStringView& str, uint32_t h = 0) {
@@ -468,7 +468,7 @@ inline void writeUTF8String(std::ostream& output, const UChar* str, size_t len =
 }
 
 inline void writeUTF8String(std::ostream& output, const UString& str) {
-	writeUTF8String(output, str.c_str(), str.size());
+	writeUTF8String(output, str.data(), str.size());
 }
 
 template<typename S>
@@ -791,21 +791,13 @@ struct pool_cleaner {
 	}
 };
 
-#if __cplusplus >= 201703L
-	template<typename F, typename ...Args>
-	using invoke_result = typename std::invoke_result<F, Args...>;
-#else
-	template<typename F, typename ...Args>
-	using invoke_result = typename std::result_of<F(Args...)>;
-#endif
-
 template<class Function, std::size_t... Indices>
-constexpr auto make_array_helper(Function f, std::index_sequence<Indices...>) -> std::array<typename invoke_result<Function, std::size_t>::type, sizeof...(Indices)> {
+constexpr auto make_array_helper(Function f, std::index_sequence<Indices...>) -> std::array<typename std::invoke_result<Function, std::size_t>::type, sizeof...(Indices)> {
 	return { { f(Indices)... } };
 }
 
 template<int N, class Function>
-constexpr auto make_array(Function f) -> std::array<typename invoke_result<Function, std::size_t>::type, N> {
+constexpr auto make_array(Function f) -> std::array<typename std::invoke_result<Function, std::size_t>::type, N> {
 	return make_array_helper(f, std::make_index_sequence<N>{});
 }
 

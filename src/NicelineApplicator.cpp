@@ -144,7 +144,7 @@ void NicelineApplicator::runGrammarOnText(std::istream& input, std::ostream& out
 			}
 			if (cCohort && (cSWindow->cohorts.size() >= hard_limit || (!dep_delimit && grammar->delimiters && doesSetMatchCohortNormal(*cCohort, grammar->delimiters->number)))) {
 				if (!is_conv && cSWindow->cohorts.size() >= hard_limit) {
-					u_fprintf(ux_stderr, "Warning: Hard limit of %u cohorts reached at cohort %S (#%u) on line %u - forcing break.\n", hard_limit, cCohort->wordform->tag.c_str(), numCohorts, numLines);
+					u_fprintf(ux_stderr, "Warning: Hard limit of %u cohorts reached at cohort %S (#%u) on line %u - forcing break.\n", hard_limit, cCohort->wordform->tag.data(), numCohorts, numLines);
 					u_fflush(ux_stderr);
 				}
 				for (auto iter : cCohort->readings) {
@@ -326,7 +326,7 @@ void NicelineApplicator::printReading(const Reading* reading, std::ostream& outp
 	}
 	u_fputc('\t', output);
 	if (reading->baseform) {
-		u_fprintf(output, "[%.*S]", grammar->single_tags.find(reading->baseform)->second->tag.size() - 2, grammar->single_tags.find(reading->baseform)->second->tag.c_str() + 1);
+		u_fprintf(output, "[%.*S]", grammar->single_tags.find(reading->baseform)->second->tag.size() - 2, grammar->single_tags.find(reading->baseform)->second->tag.data() + 1);
 	}
 
 	uint32SortedVector unique;
@@ -350,7 +350,7 @@ void NicelineApplicator::printReading(const Reading* reading, std::ostream& outp
 		if (tag->type & T_RELATION && has_relations) {
 			continue;
 		}
-		u_fprintf(output, " %S", tag->tag.c_str());
+		u_fprintf(output, " %S", tag->tag.data());
 	}
 
 	if (has_dep && !(reading->parent->type & CT_REMOVED)) {
@@ -401,7 +401,7 @@ void NicelineApplicator::printReading(const Reading* reading, std::ostream& outp
 		if (!reading->parent->relations.empty()) {
 			for (const auto& miter : reading->parent->relations) {
 				for (auto siter : miter.second) {
-					u_fprintf(output, " R:%S:%u", grammar->single_tags.find(miter.first)->second->tag.c_str(), siter);
+					u_fprintf(output, " R:%S:%u", grammar->single_tags.find(miter.first)->second->tag.data(), siter);
 				}
 			}
 		}
@@ -429,7 +429,7 @@ void NicelineApplicator::printCohort(Cohort* cohort, std::ostream& output) {
 		goto removed;
 	}
 
-	u_fprintf(output, "%.*S", cohort->wordform->tag.size() - 4, cohort->wordform->tag.c_str() + 2);
+	u_fprintf(output, "%.*S", cohort->wordform->tag.size() - 4, cohort->wordform->tag.data() + 2);
 	if (cohort->wread && !did_warn_statictags) {
 		u_fprintf(ux_stderr, "Warning: Niceline CG format cannot output static tags! You are losing information!\n");
 		u_fflush(ux_stderr);
@@ -452,7 +452,7 @@ void NicelineApplicator::printCohort(Cohort* cohort, std::ostream& output) {
 removed:
 	u_fputc('\n', output);
 	if (!cohort->text.empty() && cohort->text.find_first_not_of(ws) != UString::npos) {
-		u_fprintf(output, "%S", cohort->text.c_str());
+		u_fprintf(output, "%S", cohort->text.data());
 		if (!ISNL(cohort->text.back())) {
 			u_fputc('\n', output);
 		}
@@ -461,7 +461,7 @@ removed:
 
 void NicelineApplicator::printSingleWindow(SingleWindow* window, std::ostream& output) {
 	if (!window->text.empty()) {
-		u_fprintf(output, "%S", window->text.c_str());
+		u_fprintf(output, "%S", window->text.data());
 		if (!ISNL(window->text.back())) {
 			u_fputc('\n', output);
 		}
@@ -474,7 +474,7 @@ void NicelineApplicator::printSingleWindow(SingleWindow* window, std::ostream& o
 	}
 
 	if (!window->text_post.empty()) {
-		u_fprintf(output, "%S", window->text_post.c_str());
+		u_fprintf(output, "%S", window->text_post.data());
 		if (!ISNL(window->text_post.back())) {
 			u_fputc('\n', output);
 		}

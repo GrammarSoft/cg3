@@ -114,7 +114,7 @@ if(BIG_ENDIAN)
 endif()
 
 if(WIN32)
-	add_definitions(-DUNICODE -D_UNICODE -D_SECURE_SCL=0 -D_ITERATOR_DEBUG_LEVEL=0 -D_CRT_SECURE_NO_DEPRECATE -DWIN32_LEAN_AND_MEAN -DVC_EXTRALEAN -DNOMINMAX)
+	add_definitions(-DUNICODE -D_UNICODE -D_SECURE_SCL=0 -D_ITERATOR_DEBUG_LEVEL=0 -D_CRT_SECURE_NO_DEPRECATE -DWIN32_LEAN_AND_MEAN -DVC_EXTRALEAN -DNOMINMAX -D_SILENCE_CXX20_CISO646_REMOVED_WARNING)
 	include_directories("include/win32")
 else()
 	add_definitions(-D_POSIX_C_SOURCE=200112)
@@ -125,12 +125,6 @@ endif()
 add_definitions(-DUNISTR_FROM_CHAR_EXPLICIT=explicit -DUNISTR_FROM_STRING_EXPLICIT=explicit)
 include_directories("include")
 include_directories("src")
-
-include(CheckIncludeFileCXX)
-CHECK_INCLUDE_FILE_CXX(string_view HAS_SV)
-if(HAS_SV)
-	add_definitions(-DHAS_SV)
-endif()
 
 enable_testing()
 

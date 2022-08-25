@@ -48,17 +48,17 @@ Grammar::~Grammar() {
 }
 
 void Grammar::addSet(Set*& to) {
-	if (!delimiters && to->name == stringbits[S_DELIMITSET]) {
+	if (!delimiters && to->name == STR_DELIMITSET) {
 		delimiters = to;
 	}
-	else if (!soft_delimiters && to->name == stringbits[S_SOFTDELIMITSET]) {
+	else if (!soft_delimiters && to->name == STR_SOFTDELIMITSET) {
 		soft_delimiters = to;
 	}
-	else if (!text_delimiters && to->name == stringbits[S_TEXTDELIMITSET]) {
+	else if (!text_delimiters && to->name == STR_TEXTDELIMITSET) {
 		text_delimiters = to;
 	}
 	if (verbosity_level > 0 && to->name[0] == 'T' && to->name[1] == ':') {
-		u_fprintf(ux_stderr, "Warning: Set name %S looks like a misattempt of template usage on line %u.\n", to->name.c_str(), to->line);
+		u_fprintf(ux_stderr, "Warning: Set name %S looks like a misattempt of template usage on line %u.\n", to->name.data(), to->line);
 	}
 
 	if (!to->sets.empty() && !(to->type & (ST_TAG_UNIFY | ST_CHILD_UNIFY | ST_SET_UNIFY))) {
@@ -112,7 +112,7 @@ void Grammar::addSet(Set*& to) {
 
 			to->reindex(*this);
 			if (verbosity_level > 1 && !is_internal(to->name)) {
-				u_fprintf(ux_stderr, "Info: SET %S on line %u changed to a LIST.\n", to->name.c_str(), to->line);
+				u_fprintf(ux_stderr, "Info: SET %S on line %u changed to a LIST.\n", to->name.data(), to->line);
 				u_fflush(ux_stderr);
 			}
 		}
@@ -124,15 +124,15 @@ void Grammar::addSet(Set*& to) {
 		Set* negative = allocateSet();
 
 		UString str;
-		str = stringbits[S_GPREFIX];
+		str = STR_GPREFIX;
 		str += to->name;
 		str += '_';
-		str += stringbits[S_POSITIVE];
+		str += STR_POSITIVE;
 		positive->setName(str);
-		str = stringbits[S_GPREFIX];
+		str = STR_GPREFIX;
 		str += to->name;
 		str += '_';
-		str += stringbits[S_NEGATIVE];
+		str += STR_NEGATIVE;
 		negative->setName(str);
 
 		positive->trie.swap(to->trie);
@@ -167,14 +167,14 @@ void Grammar::addSet(Set*& to) {
 
 		to->reindex(*this);
 		if (verbosity_level > 1) {
-			u_fprintf(ux_stderr, "Info: LIST %S on line %u was split into two sets.\n", to->name.c_str(), to->line);
+			u_fprintf(ux_stderr, "Info: LIST %S on line %u was split into two sets.\n", to->name.data(), to->line);
 			u_fflush(ux_stderr);
 		}
 	}
 
 	uint32_t chash = to->rehash();
 	for (; !is_internal(to->name);) {
-		uint32_t nhash = hash_value(to->name.c_str());
+		uint32_t nhash = hash_value(to->name.data());
 		if (sets_by_name.find(nhash) != sets_by_name.end()) {
 			Set* a = sets_by_contents.find(sets_by_name.find(nhash)->second)->second;
 			if (a == to || a->hash == to->hash) {
@@ -191,14 +191,14 @@ void Grammar::addSet(Set*& to) {
 		else if (chash != sets_by_contents.find(sets_by_name.find(nhash)->second)->second->hash) {
 			Set* a = sets_by_contents.find(sets_by_name.find(nhash)->second)->second;
 			if (a->name == to->name) {
-				u_fprintf(ux_stderr, "Error: Set %S already defined at line %u. Redefinition attempted at line %u!\n", a->name.c_str(), a->line, to->line);
+				u_fprintf(ux_stderr, "Error: Set %S already defined at line %u. Redefinition attempted at line %u!\n", a->name.data(), a->line, to->line);
 				CG3Quit(1);
 			}
 			else {
 				for (uint32_t seed = 0; seed < 1000; ++seed) {
 					if (sets_by_name.find(nhash + seed) == sets_by_name.end()) {
 						if (verbosity_level > 0 && !is_internal(to->name)) {
-							u_fprintf(ux_stderr, "Warning: Set %S got hash seed %u.\n", to->name.c_str(), seed);
+							u_fprintf(ux_stderr, "Warning: Set %S got hash seed %u.\n", to->name.data(), seed);
 							u_fflush(ux_stderr);
 						}
 						set_name_seeds[to->name] = seed;
@@ -219,7 +219,7 @@ void Grammar::addSet(Set*& to) {
 			a->reindex(*this);
 			to->reindex(*this);
 			if ((a->type & (ST_SPECIAL | ST_TAG_UNIFY | ST_CHILD_UNIFY | ST_SET_UNIFY)) != (to->type & (ST_SPECIAL | ST_TAG_UNIFY | ST_CHILD_UNIFY | ST_SET_UNIFY)) || a->set_ops.size() != to->set_ops.size() || a->sets.size() != to->sets.size() || a->trie.size() != to->trie.size() || a->trie_special.size() != to->trie_special.size()) {
-				u_fprintf(ux_stderr, "Error: Content hash collision between set %S on line %u and %S on line %u!\n", a->name.c_str(), a->line, to->name.c_str(), to->line);
+				u_fprintf(ux_stderr, "Error: Content hash collision between set %S on line %u and %S on line %u!\n", a->name.data(), a->line, to->name.data(), to->line);
 				CG3Quit(1);
 			}
 			destroySet(to);
@@ -252,7 +252,7 @@ Set* Grammar::getSet(uint32_t which) const {
 }
 
 void Grammar::appendToSet(Set*& to) {
-	auto nhash = hash_value(to->name.c_str());
+	auto nhash = hash_value(to->name.data());
 	auto tset = getSet(nhash);
 
 	auto snit = set_name_seeds.find(to->name);
@@ -267,7 +267,7 @@ void Grammar::appendToSet(Set*& to) {
 
 	if (!tset->sets.empty()) {
 		auto fset = getSet(tset->sets[0]);
-		if (fset->name.find(stringbits[S_GPREFIX]) != 0 || fset->name.find(stringbits[S_POSITIVE]) == UString::npos) {
+		if (fset->name.find(STR_GPREFIX) != 0 || fset->name.find(STR_POSITIVE) == UString::npos) {
 			auto ns = allocateSet();
 			ns->setName(to->name);
 			ns->line = to->line;
@@ -347,8 +347,8 @@ void Grammar::addSetToList(Set* s) {
 void Grammar::allocateDummySet() {
 	Set* set_c = allocateSet();
 	set_c->line = 0;
-	set_c->setName(stringbits[S_IGNORE]);
-	Tag* t = allocateTag(stringbits[S_IGNORE]);
+	set_c->setName(STR_DUMMY);
+	Tag* t = allocateTag(STR_DUMMY);
 	addTagToSet(t, set_c);
 	addSet(set_c);
 	set_c->number = std::numeric_limits<uint32_t>::max();
@@ -364,7 +364,7 @@ uint32_t Grammar::removeNumericTags(uint32_t s) {
 			uint32_t ns = removeNumericTags(i);
 			if (ns == 0) {
 				set = getSet(i);
-				u_fprintf(ux_stderr, "Error: Removing numeric tags for branch resulted in set %S on line %u being empty!\n", set->name.c_str(), set->line);
+				u_fprintf(ux_stderr, "Error: Removing numeric tags for branch resulted in set %S on line %u being empty!\n", set->name.data(), set->line);
 				CG3Quit(1);
 			}
 			if (ns != i) {
@@ -376,7 +376,7 @@ uint32_t Grammar::removeNumericTags(uint32_t s) {
 			Set* ns = allocateSet();
 			ns->type = set->type;
 			ns->line = set->line;
-			ns->name = stringbits[S_GPREFIX];
+			ns->name = STR_GPREFIX;
 			ns->name += set->name;
 			ns->name += '_';
 			ns->name += 'B';
@@ -422,14 +422,14 @@ uint32_t Grammar::removeNumericTags(uint32_t s) {
 				tags.push_back(single_tags[tag_any]);
 				ntags[tags] = true;
 				if (verbosity_level > 0) {
-					u_fprintf(ux_stderr, "Warning: Set %S was empty and replaced with the * set in the C branch on line %u.\n", set->name.c_str(), set->line);
+					u_fprintf(ux_stderr, "Warning: Set %S was empty and replaced with the * set in the C branch on line %u.\n", set->name.data(), set->line);
 					u_fflush(ux_stderr);
 				}
 			}
 			Set* ns = allocateSet();
 			ns->type = set->type;
 			ns->line = set->line;
-			ns->name = stringbits[S_GPREFIX];
+			ns->name = STR_GPREFIX;
 			ns->name += set->name;
 			ns->name += '_';
 			ns->name += 'B';
@@ -526,7 +526,7 @@ Tag* Grammar::allocateTag(const UChar* txt) {
 }
 
 Tag* Grammar::allocateTag(const UString& txt) {
-	return allocateTag(txt.c_str());
+	return allocateTag(txt.data());
 }
 
 Tag* Grammar::addTag(Tag* tag) {
@@ -547,7 +547,7 @@ Tag* Grammar::addTag(Tag* tag) {
 		}
 		else {
 			if (verbosity_level > 0 && seed) {
-				u_fprintf(ux_stderr, "Warning: Tag %S got hash seed %u.\n", tag->tag.c_str(), seed);
+				u_fprintf(ux_stderr, "Warning: Tag %S got hash seed %u.\n", tag->tag.data(), seed);
 				u_fflush(ux_stderr);
 			}
 			tag->seed = seed;
@@ -646,7 +646,7 @@ void Grammar::addAnchor(const UChar* to, uint32_t at, bool primary) {
 }
 
 void Grammar::addAnchor(const UString& to, uint32_t at, bool primary) {
-	return addAnchor(to.c_str(), at, primary);
+	return addAnchor(to.data(), at, primary);
 }
 
 void Grammar::resetStatistics() {
@@ -679,13 +679,13 @@ void Grammar::reindex(bool unused_sets, bool used_tags) {
 	for (const auto& sset : static_sets) {
 		uint32_t sh = hash_value(sset);
 		if (set_alias.find(sh) != set_alias.end()) {
-			u_fprintf(ux_stderr, "Error: Static set %S is an alias; only real sets may be made static!\n", sset.c_str());
+			u_fprintf(ux_stderr, "Error: Static set %S is an alias; only real sets may be made static!\n", sset.data());
 			CG3Quit(1);
 		}
 		Set* s = getSet(sh);
 		if (!s) {
 			if (verbosity_level > 0) {
-				u_fprintf(ux_stderr, "Warning: Set %S was not defined, so cannot make it static.\n", sset.c_str());
+				u_fprintf(ux_stderr, "Warning: Set %S was not defined, so cannot make it static.\n", sset.data());
 			}
 			continue;
 		}
@@ -735,7 +735,7 @@ void Grammar::reindex(bool unused_sets, bool used_tags) {
 		}
 		for (auto iter : regex_tags) {
 			UErrorCode status = U_ZERO_ERROR;
-			uregex_setText(iter, titer->tag.c_str(), SI32(titer->tag.size()), &status);
+			uregex_setText(iter, titer->tag.data(), SI32(titer->tag.size()), &status);
 			if (status == U_ZERO_ERROR) {
 				if (uregex_find(iter, -1, &status)) {
 					titer->type |= T_TEXTUAL;
@@ -823,7 +823,7 @@ void Grammar::reindex(bool unused_sets, bool used_tags) {
 		for (const auto& rset : sets_by_contents) {
 			if (!(rset.second->type & ST_USED) && !rset.second->name.empty() && maybe_used_sets.count(rset.second) == 0) {
 				if (!is_internal(rset.second->name)) {
-					u_fprintf(ux_stdout, "Line %u set %S\n", rset.second->line, rset.second->name.c_str());
+					u_fprintf(ux_stdout, "Line %u set %S\n", rset.second->line, rset.second->name.data());
 				}
 			}
 		}
@@ -944,14 +944,14 @@ void Grammar::reindex(bool unused_sets, bool used_tags) {
 			else if (cnum != sets_list[sets_by_name.find(nhash)->second]->number) {
 				Set* a = sets_list[sets_by_name.find(nhash)->second];
 				if (a->name == to->name) {
-					u_fprintf(ux_stderr, "Error: Static set %S already defined. Redefinition attempted!\n", a->name.c_str());
+					u_fprintf(ux_stderr, "Error: Static set %S already defined. Redefinition attempted!\n", a->name.data());
 					CG3Quit(1);
 				}
 				else {
 					for (uint32_t seed = 0; seed < 1000; ++seed) {
 						if (sets_by_name.find(nhash + seed) == sets_by_name.end()) {
 							if (verbosity_level > 0) {
-								u_fprintf(ux_stderr, "Warning: Static set %S got hash seed %u.\n", to->name.c_str(), seed);
+								u_fprintf(ux_stderr, "Warning: Static set %S got hash seed %u.\n", to->name.data(), seed);
 								u_fflush(ux_stderr);
 							}
 							set_name_seeds[to->name] = seed;
@@ -1089,7 +1089,7 @@ void Grammar::reindex(bool unused_sets, bool used_tags) {
 			Tag* tag = iter_tags.second;
 			if (tag->type & T_USED) {
 				UString tmp(tag->toUString(true));
-				u_fprintf(ux_stdout, "%S\n", tmp.c_str());
+				u_fprintf(ux_stdout, "%S\n", tmp.data());
 			}
 		}
 		exit(0);

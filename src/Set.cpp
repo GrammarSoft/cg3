@@ -71,10 +71,10 @@ uint32_t Set::rehash() {
 
 		// Parse and incorporate multi-use identifier, if any
 		uint32_t u = 0;
-		if (name[0] == '&' && u_sscanf(name.c_str(), "&&%u:%*S", &u) == 1 && u != 0) {
+		if (name[0] == '&' && u_sscanf(name.data(), "&&%u:%*S", &u) == 1 && u != 0) {
 			retval = hash_value(u, retval);
 		}
-		else if (name[0] == '$' && u_sscanf(name.c_str(), "$$%u:%*S", &u) == 1 && u != 0) {
+		else if (name[0] == '$' && u_sscanf(name.data(), "$$%u:%*S", &u) == 1 && u != 0) {
 			retval = hash_value(u, retval);
 		}
 	}
@@ -101,10 +101,10 @@ uint32_t Set::rehash() {
 
 	if (dump_hashes_out) {
 		if (sets.empty()) {
-			u_fprintf(dump_hashes_out, "DEBUG: Hash %u for set %S (LIST)\n", hash, name.c_str());
+			u_fprintf(dump_hashes_out, "DEBUG: Hash %u for set %S (LIST)\n", hash, name.data());
 		}
 		else {
-			u_fprintf(dump_hashes_out, "DEBUG: Hash %u for set %S (SET)\n", hash, name.c_str());
+			u_fprintf(dump_hashes_out, "DEBUG: Hash %u for set %S (SET)\n", hash, name.data());
 		}
 	}
 

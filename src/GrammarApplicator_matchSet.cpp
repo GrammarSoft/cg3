@@ -101,9 +101,9 @@ uint32_t GrammarApplicator::doesTagMatchRegexp(uint32_t test, const Tag& tag, bo
 	}
 	else {
 		const Tag& itag = *(grammar->single_tags.find(test)->second);
-		uregex_setText(tag.regexp, itag.tag.c_str(), SI32(itag.tag.size()), &status);
+		uregex_setText(tag.regexp, itag.tag.data(), SI32(itag.tag.size()), &status);
 		if (status != U_ZERO_ERROR) {
-			u_fprintf(ux_stderr, "Error: uregex_setText(MatchTag) returned %s for tag %S before input line %u - cannot continue!\n", u_errorName(status), tag.tag.c_str(), numLines);
+			u_fprintf(ux_stderr, "Error: uregex_setText(MatchTag) returned %s for tag %S before input line %u - cannot continue!\n", u_errorName(status), tag.tag.data(), numLines);
 			CG3Quit(1);
 		}
 		status = U_ZERO_ERROR;
@@ -111,7 +111,7 @@ uint32_t GrammarApplicator::doesTagMatchRegexp(uint32_t test, const Tag& tag, bo
 			match = itag.hash;
 		}
 		if (status != U_ZERO_ERROR) {
-			u_fprintf(ux_stderr, "Error: uregex_find(MatchTag) returned %s for tag %S before input line %u - cannot continue!\n", u_errorName(status), tag.tag.c_str(), numLines);
+			u_fprintf(ux_stderr, "Error: uregex_find(MatchTag) returned %s for tag %S before input line %u - cannot continue!\n", u_errorName(status), tag.tag.data(), numLines);
 			CG3Quit(1);
 		}
 		if (match) {
@@ -166,9 +166,9 @@ uint32_t GrammarApplicator::doesRegexpMatchLine(const Reading& reading, const Ta
 		match = reading.tags_string_hash;
 	}
 	else {
-		uregex_setText(tag.regexp, reading.tags_string.c_str(), SI32(reading.tags_string.size()), &status);
+		uregex_setText(tag.regexp, reading.tags_string.data(), SI32(reading.tags_string.size()), &status);
 		if (status != U_ZERO_ERROR) {
-			u_fprintf(ux_stderr, "Error: uregex_setText(MatchLine) returned %s for tag %S before input line %u - cannot continue!\n", u_errorName(status), tag.tag.c_str(), numLines);
+			u_fprintf(ux_stderr, "Error: uregex_setText(MatchLine) returned %s for tag %S before input line %u - cannot continue!\n", u_errorName(status), tag.tag.data(), numLines);
 			CG3Quit(1);
 		}
 		status = U_ZERO_ERROR;
@@ -176,7 +176,7 @@ uint32_t GrammarApplicator::doesRegexpMatchLine(const Reading& reading, const Ta
 			match = reading.tags_string_hash;
 		}
 		if (status != U_ZERO_ERROR) {
-			u_fprintf(ux_stderr, "Error: uregex_find(MatchLine) returned %s for tag %S before input line %u - cannot continue!\n", u_errorName(status), tag.tag.c_str(), numLines);
+			u_fprintf(ux_stderr, "Error: uregex_find(MatchLine) returned %s for tag %S before input line %u - cannot continue!\n", u_errorName(status), tag.tag.data(), numLines);
 			CG3Quit(1);
 		}
 		if (match) {
@@ -261,9 +261,9 @@ uint32_t GrammarApplicator::doesTagMatchReading(const Reading& reading, const Ta
 	else if (tag.type & T_META) {
 		if (tag.regexp && !reading.parent->text.empty()) {
 			UErrorCode status = U_ZERO_ERROR;
-			uregex_setText(tag.regexp, reading.parent->text.c_str(), SI32(reading.parent->text.size()), &status);
+			uregex_setText(tag.regexp, reading.parent->text.data(), SI32(reading.parent->text.size()), &status);
 			if (status != U_ZERO_ERROR) {
-				u_fprintf(ux_stderr, "Error: uregex_setText(MatchSet) returned %s for tag %S before input line %u - cannot continue!\n", u_errorName(status), tag.tag.c_str(), numLines);
+				u_fprintf(ux_stderr, "Error: uregex_setText(MatchSet) returned %s for tag %S before input line %u - cannot continue!\n", u_errorName(status), tag.tag.data(), numLines);
 				CG3Quit(1);
 			}
 			status = U_ZERO_ERROR;
@@ -271,7 +271,7 @@ uint32_t GrammarApplicator::doesTagMatchReading(const Reading& reading, const Ta
 				match = tag.hash;
 			}
 			if (status != U_ZERO_ERROR) {
-				u_fprintf(ux_stderr, "Error: uregex_find(MatchSet) returned %s for tag %S before input line %u - cannot continue!\n", u_errorName(status), tag.tag.c_str(), numLines);
+				u_fprintf(ux_stderr, "Error: uregex_find(MatchSet) returned %s for tag %S before input line %u - cannot continue!\n", u_errorName(status), tag.tag.data(), numLines);
 				CG3Quit(1);
 			}
 			if (match) {
@@ -721,15 +721,8 @@ bool GrammarApplicator::doesSetMatchReading(const Reading& reading, const uint32
 						}
 					}
 					break;
-				case S_NOT:
-					if (!match) {
-						if (!doesSetMatchReading(reading, theset.sets[i + 1], bypass_index, ((theset.type & ST_TAG_UNIFY) != 0) | unif_mode)) {
-							match = true;
-						}
-					}
-					break;
 				default:
-					break;
+					throw std::runtime_error("Set operator not implemented!");
 				}
 				++i;
 			}

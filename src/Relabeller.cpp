@@ -39,36 +39,36 @@ Relabeller::Relabeller(Grammar& res, const Grammar& relabels, std::ostream& ux_e
 		Set* target = relabels.sets_list[rule->target];
 		const TagVector& toTags = trie_getTagList(target->trie);
 		if (!(rule->maplist->trie_special.empty() && target->trie_special.empty())) {
-			u_fprintf(ux_stderr, "Warning: Relabel rule '%S' on line %d has %d special tags, skipping!\n", rule->name.c_str(), rule->line);
+			u_fprintf(ux_stderr, "Warning: Relabel rule '%S' on line %d has %d special tags, skipping!\n", rule->name.data(), rule->line);
 			continue;
 		}
 		if (!rule->tests.empty()) {
-			u_fprintf(ux_stderr, "Warning: Relabel rule '%S' on line %d had context tests, skipping!\n", rule->name.c_str(), rule->line);
+			u_fprintf(ux_stderr, "Warning: Relabel rule '%S' on line %d had context tests, skipping!\n", rule->name.data(), rule->line);
 			continue;
 		}
 		if (rule->wordform) {
-			u_fprintf(ux_stderr, "Warning: Relabel rule '%S' on line %d had a wordform, skipping!\n", rule->name.c_str(), rule->line);
+			u_fprintf(ux_stderr, "Warning: Relabel rule '%S' on line %d had a wordform, skipping!\n", rule->name.data(), rule->line);
 			continue;
 		}
 		if (rule->type != K_MAP) {
-			u_fprintf(ux_stderr, "Warning: Relabel rule '%S' on line %d has unexpected keyword (expected MAP), skipping!\n", rule->name.c_str(), rule->line);
+			u_fprintf(ux_stderr, "Warning: Relabel rule '%S' on line %d has unexpected keyword (expected MAP), skipping!\n", rule->name.data(), rule->line);
 			continue;
 		}
 		if (fromTags.size() != 1) {
-			u_fprintf(ux_stderr, "Warning: Relabel rule '%S' on line %d has %d tags in the maplist (expected 1), skipping!\n", rule->name.c_str(), rule->line, fromTags.size());
+			u_fprintf(ux_stderr, "Warning: Relabel rule '%S' on line %d has %d tags in the maplist (expected 1), skipping!\n", rule->name.data(), rule->line, fromTags.size());
 			continue;
 		}
 		Tag* fromTag = fromTags[0];
 		for (auto toit : toTags) {
 			if (toit->type & T_SPECIAL) {
-				u_fprintf(ux_stderr, "Warning: Special tags (%S) not supported yet.\n", toit->tag.c_str());
+				u_fprintf(ux_stderr, "Warning: Special tags (%S) not supported yet.\n", toit->tag.data());
 			}
 		}
 		if (!toTags.empty()) {
-			as_list->emplace(fromTag->tag.c_str(), target);
+			as_list->emplace(fromTag->tag.data(), target);
 		}
 		else {
-			as_set->emplace(fromTag->tag.c_str(), target);
+			as_set->emplace(fromTag->tag.data(), target);
 		}
 	}
 

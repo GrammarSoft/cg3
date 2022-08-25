@@ -90,7 +90,7 @@ Tag* parseTag(const UChar* to, const UChar* p, State& state) {
 
 			tag->tag.assign(tmp);
 			if (tag->tag.empty()) {
-				state.error("%s: Error: Parsing tag %S resulted in an empty tag on line %u near `%S` - cannot continue!\n", tag->tag.c_str(), p);
+				state.error("%s: Error: Parsing tag %S resulted in an empty tag on line %u near `%S` - cannot continue!\n", tag->tag.data(), p);
 			}
 
 			goto label_isVarstring;
@@ -159,7 +159,7 @@ Tag* parseTag(const UChar* to, const UChar* p, State& state) {
 			tag->tag += tmp[i];
 		}
 		if (tag->tag.empty()) {
-			state.error("%s: Error: Parsing tag %S resulted in an empty tag on line %u near `%S` - cannot continue!\n", tag->tag.c_str(), p);
+			state.error("%s: Error: Parsing tag %S resulted in an empty tag on line %u near `%S` - cannot continue!\n", tag->tag.data(), p);
 		}
 
 		// ToDo: Remove for real ordered mode
@@ -175,7 +175,7 @@ Tag* parseTag(const UChar* to, const UChar* p, State& state) {
 
 		for (auto iter : state.get_grammar()->regex_tags) {
 			UErrorCode status = U_ZERO_ERROR;
-			uregex_setText(iter, tag->tag.c_str(), SI32(tag->tag.size()), &status);
+			uregex_setText(iter, tag->tag.data(), SI32(tag->tag.size()), &status);
 			if (status != U_ZERO_ERROR) {
 				state.error("%s: Error: uregex_setText(parseTag) returned %s on line %u near `%S` - cannot continue!\n", u_errorName(status), p);
 			}
@@ -207,43 +207,43 @@ Tag* parseTag(const UChar* to, const UChar* p, State& state) {
 		if (tag->tag[0] == '#') {
 			uint32_t dep_self = 0;
 			uint32_t dep_parent = 0;
-			if (u_sscanf(tag->tag.c_str(), "#%i->%i", &dep_self, &dep_parent) == 2 && dep_self != 0) {
+			if (u_sscanf(tag->tag.data(), "#%i->%i", &dep_self, &dep_parent) == 2 && dep_self != 0) {
 				tag->type |= T_DEPENDENCY;
 			}
 			constexpr UChar local_dep_unicode[] = { '#', '%', 'i', u'\u2192', '%', 'i', 0 };
-			if (u_sscanf_u(tag->tag.c_str(), local_dep_unicode, &dep_self, &dep_parent) == 2 && dep_self != 0) {
+			if (u_sscanf_u(tag->tag.data(), local_dep_unicode, &dep_self, &dep_parent) == 2 && dep_self != 0) {
 				tag->type |= T_DEPENDENCY;
 			}
 		}
 		//*/
 
-		if (tag->tag == stringbits[S_ASTERIK]) {
+		if (tag->tag == STR_ASTERIK) {
 			tag->type |= T_ANY;
 		}
-		else if (tag->tag == stringbits[S_UU_LEFT]) {
+		else if (tag->tag == STR_UU_LEFT) {
 			tag->type |= T_PAR_LEFT;
 		}
-		else if (tag->tag == stringbits[S_UU_RIGHT]) {
+		else if (tag->tag == STR_UU_RIGHT) {
 			tag->type |= T_PAR_RIGHT;
 		}
-		else if (tag->tag == stringbits[S_UU_ENCL]) {
+		else if (tag->tag == STR_UU_ENCL) {
 			tag->type |= T_ENCL;
 		}
-		else if (tag->tag == stringbits[S_UU_TARGET]) {
+		else if (tag->tag == STR_UU_TARGET) {
 			tag->type |= T_TARGET;
 		}
-		else if (tag->tag == stringbits[S_UU_MARK]) {
+		else if (tag->tag == STR_UU_MARK) {
 			tag->type |= T_MARK;
 		}
-		else if (tag->tag == stringbits[S_UU_ATTACHTO]) {
+		else if (tag->tag == STR_UU_ATTACHTO) {
 			tag->type |= T_ATTACHTO;
 		}
-		else if (tag->tag == stringbits[S_UU_SAME_BASIC]) {
+		else if (tag->tag == STR_UU_SAME_BASIC) {
 			tag->type |= T_SAME_BASIC;
 		}
 
 		if (tag->type & T_REGEXP) {
-			if (tag->tag == stringbits[S_RXTEXT_ANY] || tag->tag == stringbits[S_RXBASE_ANY] || tag->tag == stringbits[S_RXWORD_ANY]) {
+			if (tag->tag == STR_RXTEXT_ANY || tag->tag == STR_RXBASE_ANY || tag->tag == STR_RXWORD_ANY) {
 				// ToDo: Add a case-insensitive version of T_REGEXP_ANY for unification
 				tag->type |= T_REGEXP_ANY;
 				tag->type &= ~T_REGEXP;
@@ -263,13 +263,13 @@ Tag* parseTag(const UChar* to, const UChar* p, State& state) {
 				}
 
 				if (tag->type & T_CASE_INSENSITIVE) {
-					tag->regexp = uregex_open(rt.c_str(), SI32(rt.size()), UREGEX_CASE_INSENSITIVE, &pe, &status);
+					tag->regexp = uregex_open(rt.data(), SI32(rt.size()), UREGEX_CASE_INSENSITIVE, &pe, &status);
 				}
 				else {
-					tag->regexp = uregex_open(rt.c_str(), SI32(rt.size()), 0, &pe, &status);
+					tag->regexp = uregex_open(rt.data(), SI32(rt.size()), 0, &pe, &status);
 				}
 				if (status != U_ZERO_ERROR) {
-					state.error("%s: Error: uregex_open returned %s trying to parse tag %S on line %u near `%S` - cannot continue!\n", u_errorName(status), tag->tag.c_str(), p);
+					state.error("%s: Error: uregex_open returned %s trying to parse tag %S on line %u near `%S` - cannot continue!\n", u_errorName(status), tag->tag.data(), p);
 				}
 			}
 		}

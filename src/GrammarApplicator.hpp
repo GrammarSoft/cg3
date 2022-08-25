@@ -145,6 +145,9 @@ public:
 	Tag* addTag(Tag* tag);
 	Tag* addTag(const UChar* tag, bool vstr = false);
 	Tag* addTag(const UString& txt, bool vstr = false);
+	Tag* addTag(const UStringView& txt, bool vstr = false) {
+		return addTag(txt.data(), vstr);
+	}
 	void initEmptySingleWindow(SingleWindow* cSWindow);
 	uint32_t addTagToReading(Reading& reading, uint32_t tag, bool rehash = true);
 	uint32_t addTagToReading(Reading& reading, Tag* tag, bool rehash = true);

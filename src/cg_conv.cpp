@@ -114,7 +114,7 @@ int main(int argc, char* argv[]) {
 	grammar.ux_stderr = &std::cerr;
 	grammar.allocateDummySet();
 	grammar.delimiters = grammar.allocateSet();
-	grammar.addTagToSet(grammar.allocateTag(CG3::stringbits[0]), grammar.delimiters);
+	grammar.addTagToSet(grammar.allocateTag(CG3::STR_DUMMY), grammar.delimiters);
 	grammar.reindex();
 
 	CG3::FormatConverter applicator(std::cerr);
@@ -186,7 +186,7 @@ int main(int argc, char* argv[]) {
 
 		CG3::UString buffer(BUF_SIZE, 0);
 		int32_t nr = 0;
-		u_strFromUTF8(&buffer[0], BUF_SIZE, &nr, buf8.c_str(), SI32(sz), &status);
+		u_strFromUTF8(&buffer[0], BUF_SIZE, &nr, buf8.data(), SI32(sz), &status);
 		if (U_FAILURE(status)) {
 			throw std::runtime_error("UTF-8 to UTF-16 conversion failed");
 		}
@@ -195,7 +195,7 @@ int main(int argc, char* argv[]) {
 
 		for (;;) {
 			rx = uregex_openC("^\"<[^>]+>\".*?^\\s+\"[^\"]+\"", UREGEX_DOTALL | UREGEX_MULTILINE, 0, &status);
-			uregex_setText(rx, buffer.c_str(), SI32(buffer.size()), &status);
+			uregex_setText(rx, buffer.data(), SI32(buffer.size()), &status);
 			if (uregex_find(rx, -1, &status)) {
 				fmt = CG3::FMT_CG;
 				break;
@@ -203,7 +203,7 @@ int main(int argc, char* argv[]) {
 			uregex_close(rx);
 
 			rx = uregex_openC("^\\S+ *\t *\\[\\S+\\]", UREGEX_DOTALL | UREGEX_MULTILINE, 0, &status);
-			uregex_setText(rx, buffer.c_str(), SI32(buffer.size()), &status);
+			uregex_setText(rx, buffer.data(), SI32(buffer.size()), &status);
 			if (uregex_find(rx, -1, &status)) {
 				fmt = CG3::FMT_NICELINE;
 				break;
@@ -211,7 +211,7 @@ int main(int argc, char* argv[]) {
 			uregex_close(rx);
 
 			rx = uregex_openC("^\\S+ *\t *\"\\S+\"", UREGEX_DOTALL | UREGEX_MULTILINE, 0, &status);
-			uregex_setText(rx, buffer.c_str(), SI32(buffer.size()), &status);
+			uregex_setText(rx, buffer.data(), SI32(buffer.size()), &status);
 			if (uregex_find(rx, -1, &status)) {
 				fmt = CG3::FMT_NICELINE;
 				break;
@@ -219,7 +219,7 @@ int main(int argc, char* argv[]) {
 			uregex_close(rx);
 
 			rx = uregex_openC("\\^[^/]+(/[^<]+(<[^>]+>)+)+\\$", UREGEX_DOTALL | UREGEX_MULTILINE, 0, &status);
-			uregex_setText(rx, buffer.c_str(), SI32(buffer.size()), &status);
+			uregex_setText(rx, buffer.data(), SI32(buffer.size()), &status);
 			if (uregex_find(rx, -1, &status)) {
 				fmt = CG3::FMT_APERTIUM;
 				break;
@@ -227,7 +227,7 @@ int main(int argc, char* argv[]) {
 			uregex_close(rx);
 
 			rx = uregex_openC("^\\S+\t\\S+(\\+\\S+)+$", UREGEX_DOTALL | UREGEX_MULTILINE, 0, &status);
-			uregex_setText(rx, buffer.c_str(), SI32(buffer.size()), &status);
+			uregex_setText(rx, buffer.data(), SI32(buffer.size()), &status);
 			if (uregex_find(rx, -1, &status)) {
 				fmt = CG3::FMT_FST;
 				break;

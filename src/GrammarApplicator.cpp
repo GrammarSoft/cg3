@@ -65,15 +65,15 @@ void GrammarApplicator::resetIndexes() {
 
 void GrammarApplicator::setGrammar(Grammar* res) {
 	grammar = res;
-	tag_begin = addTag(stringbits[S_BEGINTAG]);
-	tag_end = addTag(stringbits[S_ENDTAG]);
-	tag_subst = addTag(stringbits[S_IGNORE]);
+	tag_begin = addTag(STR_BEGINTAG);
+	tag_end = addTag(STR_ENDTAG);
+	tag_subst = addTag(STR_DUMMY);
 	begintag = tag_begin->hash;
 	endtag = tag_end->hash;
 	substtag = tag_subst->hash;
 
 	UString mp{ grammar->mapping_prefix };
-	mprefix_key = addTag("_MPREFIX"_us)->hash;
+	mprefix_key = addTag(UStringView{ u"_MPREFIX" })->hash;
 	mprefix_value = addTag(mp)->hash;
 
 	index_readingSet_yes.clear();
@@ -90,9 +90,9 @@ void GrammarApplicator::setGrammar(Grammar* res) {
 			UErrorCode status = U_ZERO_ERROR;
 
 			uint32_t flags = (t->type & T_CASE_INSENSITIVE) ? UREGEX_CASE_INSENSITIVE : 0;
-			text_delimiters.push_back(uregex_open(t->tag.c_str(), SI32(t->tag.size()), flags, &pe, &status));
+			text_delimiters.push_back(uregex_open(t->tag.data(), SI32(t->tag.size()), flags, &pe, &status));
 			if (status != U_ZERO_ERROR) {
-				u_fprintf(ux_stderr, "Error: uregex_open returned %s trying to parse pattern %S - cannot continue!\n", u_errorName(status), t->tag.c_str());
+				u_fprintf(ux_stderr, "Error: uregex_open returned %s trying to parse pattern %S - cannot continue!\n", u_errorName(status), t->tag.data());
 				CG3Quit(1);
 			}
 		}
@@ -128,9 +128,9 @@ void GrammarApplicator::setTextDelimiter(UString rx) {
 	UErrorCode status = U_ZERO_ERROR;
 
 	uint32_t flags = icase ? UREGEX_CASE_INSENSITIVE : 0;
-	text_delimiters.push_back(uregex_open(rx.c_str(), SI32(rx.size()), flags, &pe, &status));
+	text_delimiters.push_back(uregex_open(rx.data(), SI32(rx.size()), flags, &pe, &status));
 	if (status != U_ZERO_ERROR) {
-		u_fprintf(ux_stderr, "Error: uregex_open returned %s trying to parse pattern %S - cannot continue!\n", u_errorName(status), rx.c_str());
+		u_fprintf(ux_stderr, "Error: uregex_open returned %s trying to parse pattern %S - cannot continue!\n", u_errorName(status), rx.data());
 		CG3Quit(1);
 	}
 }
@@ -248,7 +248,7 @@ Tag* GrammarApplicator::addTag(Tag* tag) {
 		}
 		else {
 			if (seed && verbosity_level > 0) {
-				u_fprintf(ux_stderr, "Warning: Tag %S got hash seed %u.\n", tag->tag.c_str(), seed);
+				u_fprintf(ux_stderr, "Warning: Tag %S got hash seed %u.\n", tag->tag.data(), seed);
 				u_fflush(ux_stderr);
 			}
 			tag->seed = seed;
@@ -286,7 +286,7 @@ Tag* GrammarApplicator::addTag(const UChar* txt, bool vstr) {
 				}
 				for (auto iter : grammar->regex_tags) {
 					UErrorCode status = U_ZERO_ERROR;
-					uregex_setText(iter, titer.second->tag.c_str(), SI32(titer.second->tag.size()), &status);
+					uregex_setText(iter, titer.second->tag.data(), SI32(titer.second->tag.size()), &status);
 					if (status == U_ZERO_ERROR) {
 						if (uregex_find(iter, -1, &status)) {
 							titer.second->type |= T_TEXTUAL;
@@ -320,17 +320,17 @@ Tag* GrammarApplicator::addTag(const UChar* txt, bool vstr) {
 
 Tag* GrammarApplicator::addTag(const UString& txt, bool vstr) {
 	assert(txt.size() && "addTag() will not work with empty strings.");
-	return addTag(txt.c_str(), vstr);
+	return addTag(txt.data(), vstr);
 }
 
 void GrammarApplicator::printTrace(std::ostream& output, uint32_t hit_by) {
 	if (hit_by < grammar->rule_by_number.size()) {
 		const Rule* r = grammar->rule_by_number[hit_by];
-		u_fprintf(output, "%S", keywords[r->type].c_str());
+		u_fprintf(output, "%S", keywords[r->type].data());
 		if (r->type == K_ADDRELATION || r->type == K_SETRELATION || r->type == K_REMRELATION || r->type == K_ADDRELATIONS || r->type == K_SETRELATIONS || r->type == K_REMRELATIONS) {
-			u_fprintf(output, "(%S", r->maplist->getNonEmpty().begin()->first->tag.c_str());
+			u_fprintf(output, "(%S", r->maplist->getNonEmpty().begin()->first->tag.data());
 			if (r->type == K_ADDRELATIONS || r->type == K_SETRELATIONS || r->type == K_REMRELATIONS) {
-				u_fprintf(output, ",%S", r->sublist->getNonEmpty().begin()->first->tag.c_str());
+				u_fprintf(output, ",%S", r->sublist->getNonEmpty().begin()->first->tag.data());
 			}
 			u_fprintf(output, ")");
 		}
@@ -339,7 +339,7 @@ void GrammarApplicator::printTrace(std::ostream& output, uint32_t hit_by) {
 		}
 		if (!r->name.empty()) {
 			u_fputc(':', output);
-			u_fprintf(output, "%S", r->name.c_str());
+			u_fprintf(output, "%S", r->name.data());
 		}
 	}
 	else {
@@ -365,7 +365,7 @@ void GrammarApplicator::printReading(const Reading* reading, std::ostream& outpu
 	}
 
 	if (reading->baseform) {
-		u_fprintf(output, "%S", grammar->single_tags.find(reading->baseform)->second->tag.c_str());
+		u_fprintf(output, "%S", grammar->single_tags.find(reading->baseform)->second->tag.data());
 	}
 
 	uint32SortedVector unique;
@@ -389,7 +389,7 @@ void GrammarApplicator::printReading(const Reading* reading, std::ostream& outpu
 		if (tag->type & T_RELATION && has_relations) {
 			continue;
 		}
-		u_fprintf(output, " %S", tag->tag.c_str());
+		u_fprintf(output, " %S", tag->tag.data());
 	}
 
 	if (has_dep && !(reading->parent->type & CT_REMOVED)) {
@@ -422,9 +422,9 @@ void GrammarApplicator::printReading(const Reading* reading, std::ostream& outpu
 			  pr->local_number);
 		}
 		else {
-			pattern = span_pattern_latin.c_str();
+			pattern = span_pattern_latin.data();
 			if (unicode_tags) {
-				pattern = span_pattern_utf.c_str();
+				pattern = span_pattern_utf.data();
 			}
 			if (reading->parent->dep_parent == DEP_NO_PARENT) {
 				u_fprintf_u(output, pattern,
@@ -453,7 +453,7 @@ void GrammarApplicator::printReading(const Reading* reading, std::ostream& outpu
 					if (it == grammar->single_tags.end()) {
 						it = grammar->single_tags.find(miter.first);
 					}
-					u_fprintf(output, " R:%S:%u", it->second->tag.c_str(), siter);
+					u_fprintf(output, " R:%S:%u", it->second->tag.data(), siter);
 				}
 			}
 		}
@@ -486,14 +486,14 @@ void GrammarApplicator::printCohort(Cohort* cohort, std::ostream& output) {
 		u_fputc(';', output);
 		u_fputc(' ', output);
 	}
-	u_fprintf(output, "%S", cohort->wordform->tag.c_str());
+	u_fprintf(output, "%S", cohort->wordform->tag.data());
 	if (cohort->wread) {
 		for (auto tter : cohort->wread->tags_list) {
 			if (tter == cohort->wordform->hash) {
 				continue;
 			}
 			const Tag* tag = grammar->single_tags[tter];
-			u_fprintf(output, " %S", tag->tag.c_str());
+			u_fprintf(output, " %S", tag->tag.data());
 		}
 	}
 	u_fputc('\n', output);
@@ -521,7 +521,7 @@ void GrammarApplicator::printCohort(Cohort* cohort, std::ostream& output) {
 
 removed:
 	if (!cohort->text.empty() && cohort->text.find_first_not_of(ws) != UString::npos) {
-		u_fprintf(output, "%S", cohort->text.c_str());
+		u_fprintf(output, "%S", cohort->text.data());
 		if (!ISNL(cohort->text.back())) {
 			u_fputc('\n', output);
 		}
@@ -539,19 +539,19 @@ void GrammarApplicator::printSingleWindow(SingleWindow* window, std::ostream& ou
 		if (iter != window->variables_set.end()) {
 			if (iter->second != grammar->tag_any) {
 				Tag* value = grammar->single_tags[iter->second];
-				u_fprintf(output, "%S%S=%S>\n", stringbits[S_CMD_SETVAR].c_str(), key->tag.c_str(), value->tag.c_str());
+				u_fprintf(output, "%S%S=%S>\n", STR_CMD_SETVAR.data(), key->tag.data(), value->tag.data());
 			}
 			else {
-				u_fprintf(output, "%S%S>\n", stringbits[S_CMD_SETVAR].c_str(), key->tag.c_str());
+				u_fprintf(output, "%S%S>\n", STR_CMD_SETVAR.data(), key->tag.data());
 			}
 		}
 		else {
-			u_fprintf(output, "%S%S>\n", stringbits[S_CMD_REMVAR].c_str(), key->tag.c_str());
+			u_fprintf(output, "%S%S>\n", STR_CMD_REMVAR.data(), key->tag.data());
 		}
 	}
 
 	if (!window->text.empty() && window->text.find_first_not_of(ws) != UString::npos) {
-		u_fprintf(output, "%S", window->text.c_str());
+		u_fprintf(output, "%S", window->text.data());
 		if (!ISNL(window->text.back())) {
 			u_fputc('\n', output);
 		}
@@ -564,7 +564,7 @@ void GrammarApplicator::printSingleWindow(SingleWindow* window, std::ostream& ou
 	}
 
 	if (!window->text_post.empty() && window->text_post.find_first_not_of(ws) != UString::npos) {
-		u_fprintf(output, "%S", window->text_post.c_str());
+		u_fprintf(output, "%S", window->text_post.data());
 		if (!ISNL(window->text_post.back())) {
 			u_fputc('\n', output);
 		}
@@ -574,7 +574,7 @@ void GrammarApplicator::printSingleWindow(SingleWindow* window, std::ostream& ou
 		u_fputc('\n', output);
 	}
 	if (window->flush_after) {
-		u_fprintf(output, "%S\n", stringbits[S_CMD_FLUSH].c_str());
+		u_fprintf(output, "%S\n", STR_CMD_FLUSH.data());
 	}
 	u_fflush(output);
 }
@@ -627,7 +627,7 @@ void GrammarApplicator::pipeOutReading(const Reading* reading, std::ostream& out
 	const auto& str = ss.str();
 	cs = UI32(str.size());
 	writeRaw(output, cs);
-	output.write(str.c_str(), str.size());
+	output.write(str.data(), str.size());
 }
 
 void GrammarApplicator::pipeOutCohort(const Cohort* cohort, std::ostream& output) {
@@ -662,7 +662,7 @@ void GrammarApplicator::pipeOutCohort(const Cohort* cohort, std::ostream& output
 	const auto& str = ss.str();
 	cs = UI32(str.size());
 	writeRaw(output, cs);
-	output.write(str.c_str(), str.size());
+	output.write(str.data(), str.size());
 }
 
 void GrammarApplicator::pipeOutSingleWindow(const SingleWindow& window, Process& output) {
@@ -680,7 +680,7 @@ void GrammarApplicator::pipeOutSingleWindow(const SingleWindow& window, Process&
 	const auto& str = ss.str();
 	cs = UI32(str.size());
 	writeRaw(output, cs);
-	output.write(str.c_str(), str.size());
+	output.write(str.data(), str.size());
 
 	output.flush();
 }
@@ -717,7 +717,7 @@ void GrammarApplicator::pipeInReading(Reading* reading, Process& input, bool for
 			reading->baseform = tag->hash;
 		}
 		if (debug_level > 1) {
-			u_fprintf(ux_stderr, "DEBUG: reading baseform %S\n", str.c_str());
+			u_fprintf(ux_stderr, "DEBUG: reading baseform %S\n", str.data());
 		}
 	}
 	else {
@@ -740,7 +740,7 @@ void GrammarApplicator::pipeInReading(Reading* reading, Process& input, bool for
 		Tag* tag = addTag(str);
 		reading->tags_list.push_back(tag->hash);
 		if (debug_level > 1) {
-			u_fprintf(ux_stderr, "DEBUG: tag %S\n", tag->tag.c_str());
+			u_fprintf(ux_stderr, "DEBUG: tag %S\n", tag->tag.data());
 		}
 	}
 
@@ -783,7 +783,7 @@ void GrammarApplicator::pipeInCohort(Cohort* cohort, Process& input) {
 		cohort->wordform = tag;
 		force_readings = true;
 		if (debug_level > 1) {
-			u_fprintf(ux_stderr, "DEBUG: cohort wordform %S\n", tag->tag.c_str());
+			u_fprintf(ux_stderr, "DEBUG: cohort wordform %S\n", tag->tag.data());
 		}
 	}
 
@@ -798,7 +798,7 @@ void GrammarApplicator::pipeInCohort(Cohort* cohort, Process& input) {
 	if (flags & (1 << 0)) {
 		cohort->text = readUTF8String(input);
 		if (debug_level > 1) {
-			u_fprintf(ux_stderr, "DEBUG: cohort text %S\n", cohort->text.c_str());
+			u_fprintf(ux_stderr, "DEBUG: cohort text %S\n", cohort->text.data());
 		}
 	}
 }

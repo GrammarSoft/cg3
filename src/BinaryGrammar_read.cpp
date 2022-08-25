@@ -35,7 +35,7 @@ int BinaryGrammar::parse_grammar(UString&) {
 }
 
 int BinaryGrammar::parse_grammar(const std::string& buffer) {
-	return parse_grammar(buffer.c_str(), buffer.size());
+	return parse_grammar(buffer.data(), buffer.size());
 }
 
 int BinaryGrammar::parse_grammar(const char* buffer, size_t length) {
@@ -200,7 +200,7 @@ int BinaryGrammar::parse_grammar(std::istream& input) {
 					t->regexp = uregex_open(&gbuffers[0][0], i32tmp, 0, &pe, &status);
 				}
 				if (status != U_ZERO_ERROR) {
-					u_fprintf(ux_stderr, "Error: uregex_open returned %s trying to parse tag %S - cannot continue!\n", u_errorName(status), t->tag.c_str());
+					u_fprintf(ux_stderr, "Error: uregex_open returned %s trying to parse tag %S - cannot continue!\n", u_errorName(status), t->tag.data());
 					CG3Quit(1);
 				}
 			}

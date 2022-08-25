@@ -527,7 +527,7 @@ void GAppSetOpts(CG3::GrammarApplicator& applicator, UConverter* conv) {
 		applicator.hard_limit = abs(atoi(options[HARD_LIMIT].value));
 	}
 	if (options[TEXT_DELIMIT].doesOccur) {
-		CG3::UString rx = CG3::stringbits[CG3::S_TEXTDELIM_DEFAULT];
+		CG3::UString rx{ CG3::STR_TEXTDELIM_DEFAULT };
 		if (options[TEXT_DELIMIT].value) {
 			UErrorCode status = U_ZERO_ERROR;
 			size_t sn = strlen(options[TEXT_DELIMIT].value);

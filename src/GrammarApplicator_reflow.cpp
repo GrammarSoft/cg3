@@ -42,7 +42,7 @@ Tag* GrammarApplicator::makeBaseFromWord(Tag* tag) {
 	n.clear();
 	n.resize(len - 2);
 	n[0] = n[len - 3] = '"';
-	u_strncpy(&n[1], tag->tag.c_str() + 2, SI32(len - 4));
+	u_strncpy(&n[1], tag->tag.data() + 2, SI32(len - 4));
 	Tag* nt = addTag(n);
 	return nt;
 }
@@ -358,12 +358,14 @@ void GrammarApplicator::reflowReading(Reading& reading) {
 Tag* GrammarApplicator::generateVarstringTag(const Tag* tag) {
 	static thread_local UnicodeString tmp;
 	tmp.remove();
-	tmp.append(tag->tag.c_str(), SI32(tag->tag.size()));
+	tmp.append(tag->tag.data(), SI32(tag->tag.size()));
 	bool did_something = false;
 
 	// Convert %[UuLl] markers to control codes to avoid having combined %$1 accidentally match %L
+	constexpr UStringView raw[] = { STR_VSu_raw, STR_VSU_raw, STR_VSl_raw, STR_VSL_raw };
+	constexpr UStringView x01[] = { STR_VSu, STR_VSU, STR_VSl, STR_VSL };
 	for (size_t i = 0; i < 4; ++i) {
-		findAndReplace(tmp, stringbits[S_VSu_raw + i].c_str(), stringbits[S_VSu + i].c_str());
+		findAndReplace(tmp, raw[i].data(), x01[i].data());
 	}
 
 	// Replace unified sets with their matching tags
@@ -380,14 +382,15 @@ Tag* GrammarApplicator::generateVarstringTag(const Tag* tag) {
 					rpl += '_';
 				}
 			}
-			findAndReplace(tmp, (*tag->vs_names)[i].c_str(), rpl.c_str());
+			findAndReplace(tmp, (*tag->vs_names)[i].data(), rpl.data());
 			did_something = true;
 		}
 	}
 
 	// Replace $1-$9 with their respective match groups
+	constexpr UStringView grp[] = { STR_VS1, STR_VS2, STR_VS3, STR_VS4, STR_VS5, STR_VS6, STR_VS7, STR_VS8, STR_VS9 };
 	for (size_t i = 0; i < regexgrps.first && i < 9; ++i) {
-		findAndReplace(tmp, stringbits[S_VS1 + i].c_str(), USV((*regexgrps.second)[i]));
+		findAndReplace(tmp, grp[i].data(), USV((*regexgrps.second)[i]));
 		did_something = true;
 	}
 
@@ -396,19 +399,19 @@ Tag* GrammarApplicator::generateVarstringTag(const Tag* tag) {
 	do {
 		found = false;
 		int32_t pos = -1, mpos = -1;
-		if ((pos = tmp.lastIndexOf(stringbits[S_VSu].c_str(), stringbits[S_VSu].size(), 0)) != -1) {
+		if ((pos = tmp.lastIndexOf(STR_VSu.data(), STR_VSu.size(), 0)) != -1) {
 			found = true;
 			mpos = std::max(mpos, pos);
 		}
-		if ((pos = tmp.lastIndexOf(stringbits[S_VSU].c_str(), stringbits[S_VSU].size(), mpos)) != -1) {
+		if ((pos = tmp.lastIndexOf(STR_VSU.data(), STR_VSU.size(), mpos)) != -1) {
 			found = true;
 			mpos = std::max(mpos, pos);
 		}
-		if ((pos = tmp.lastIndexOf(stringbits[S_VSl].c_str(), stringbits[S_VSl].size(), mpos)) != -1) {
+		if ((pos = tmp.lastIndexOf(STR_VSl.data(), STR_VSl.size(), mpos)) != -1) {
 			found = true;
 			mpos = std::max(mpos, pos);
 		}
-		if ((pos = tmp.lastIndexOf(stringbits[S_VSL].c_str(), stringbits[S_VSL].size(), mpos)) != -1) {
+		if ((pos = tmp.lastIndexOf(STR_VSL.data(), STR_VSL.size(), mpos)) != -1) {
 			found = true;
 			mpos = std::max(mpos, pos);
 		}
@@ -450,7 +453,7 @@ Tag* GrammarApplicator::generateVarstringTag(const Tag* tag) {
 
 	const UChar* nt = tmp.getTerminatedBuffer();
 	if (!did_something && nt == tag->tag) {
-		u_fprintf(ux_stderr, "Warning: Unable to generate from tag '%S'! Possibly missing KEEPORDER and/or capturing regex from grammar on line %u before input line %u.\n", tag->tag.c_str(), grammar->lines, numLines);
+		u_fprintf(ux_stderr, "Warning: Unable to generate from tag '%S'! Possibly missing KEEPORDER and/or capturing regex from grammar on line %u before input line %u.\n", tag->tag.data(), grammar->lines, numLines);
 		u_fflush(ux_stderr);
 	}
 	return addTag(nt, true);

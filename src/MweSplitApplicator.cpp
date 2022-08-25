@@ -30,7 +30,7 @@ MweSplitApplicator::MweSplitApplicator(std::ostream& ux_err)
 	grammar->ux_stderr = ux_stderr;
 	grammar->allocateDummySet();
 	grammar->delimiters = grammar->allocateSet();
-	grammar->addTagToSet(grammar->allocateTag(CG3::stringbits[0]), grammar->delimiters);
+	grammar->addTagToSet(grammar->allocateTag(CG3::STR_DUMMY), grammar->delimiters);
 	grammar->reindex();
 	setGrammar(grammar);
 	owns_grammar = true;
@@ -73,7 +73,7 @@ std::vector<Cohort*> MweSplitApplicator::splitMwe(Cohort* cohort) {
 
 	if (n_wftags < n_goodreadings) {
 		if (n_wftags > 0) {
-			u_fprintf(ux_stderr, "WARNING: Line %u: Some but not all main-readings of %S had wordform-tags (not completely mwe-disambiguated?), not splitting.\n", cohort->line_number, cohort->wordform->tag.c_str());
+			u_fprintf(ux_stderr, "WARNING: Line %u: Some but not all main-readings of %S had wordform-tags (not completely mwe-disambiguated?), not splitting.\n", cohort->line_number, cohort->wordform->tag.data());
 			// We also don't split if wordform-tags were only on sub-readings, but should we warn on such faulty input?
 		}
 		cos.push_back(cohort);
@@ -113,7 +113,7 @@ std::vector<Cohort*> MweSplitApplicator::splitMwe(Cohort* cohort) {
 					+ wfTag->tag.substr(spBeg, spEnd - spBeg)
 					+ wfTag->tag.substr(wfEnd + 1);
 				if (c->wordform != 0 && wf != c->wordform->tag) {
-					u_fprintf(ux_stderr, "WARNING: Line %u: Ambiguous wordform-tags for same cohort, '%S' vs '%S', not splitting.\n", numLines, wf.c_str(), c->wordform->tag.c_str());
+					u_fprintf(ux_stderr, "WARNING: Line %u: Ambiguous wordform-tags for same cohort, '%S' vs '%S', not splitting.\n", numLines, wf.data(), c->wordform->tag.data());
 					cos.clear();
 					cos.push_back(cohort);
 					return cos;
@@ -146,7 +146,7 @@ std::vector<Cohort*> MweSplitApplicator::splitMwe(Cohort* cohort) {
 		}
 	}
 	if (cos.size() == 0) {
-		u_fprintf(ux_stderr, "WARNING: Line %u: Tried splitting %S, but got no new cohorts; shouldn't happen.", numLines, cohort->wordform->tag.c_str());
+		u_fprintf(ux_stderr, "WARNING: Line %u: Tried splitting %S, but got no new cohorts; shouldn't happen.", numLines, cohort->wordform->tag.data());
 		cos.push_back(cohort);
 	}
 	// The last word forms are the top readings:
@@ -162,19 +162,19 @@ void MweSplitApplicator::printSingleWindow(SingleWindow* window, std::ostream& o
 		if (iter != window->variables_set.end()) {
 			if (iter->second != grammar->tag_any) {
 				Tag* value = grammar->single_tags[iter->second];
-				u_fprintf(output, "%S%S=%S>\n", stringbits[S_CMD_SETVAR].c_str(), key->tag.c_str(), value->tag.c_str());
+				u_fprintf(output, "%S%S=%S>\n", STR_CMD_SETVAR.data(), key->tag.data(), value->tag.data());
 			}
 			else {
-				u_fprintf(output, "%S%S>\n", stringbits[S_CMD_SETVAR].c_str(), key->tag.c_str());
+				u_fprintf(output, "%S%S>\n", STR_CMD_SETVAR.data(), key->tag.data());
 			}
 		}
 		else {
-			u_fprintf(output, "%S%S>\n", stringbits[S_CMD_REMVAR].c_str(), key->tag.c_str());
+			u_fprintf(output, "%S%S>\n", STR_CMD_REMVAR.data(), key->tag.data());
 		}
 	}
 
 	if (!window->text.empty()) {
-		u_fprintf(output, "%S", window->text.c_str());
+		u_fprintf(output, "%S", window->text.data());
 		if (!ISNL(window->text.back())) {
 			u_fputc('\n', output);
 		}
@@ -190,7 +190,7 @@ void MweSplitApplicator::printSingleWindow(SingleWindow* window, std::ostream& o
 	}
 
 	if (!window->text_post.empty()) {
-		u_fprintf(output, "%S", window->text_post.c_str());
+		u_fprintf(output, "%S", window->text_post.data());
 		if (!ISNL(window->text_post.back())) {
 			u_fputc('\n', output);
 		}
@@ -198,7 +198,7 @@ void MweSplitApplicator::printSingleWindow(SingleWindow* window, std::ostream& o
 
 	u_fputc('\n', output);
 	if (window->flush_after) {
-		u_fprintf(output, "%S\n", stringbits[S_CMD_FLUSH].c_str());
+		u_fprintf(output, "%S\n", STR_CMD_FLUSH.data());
 	}
 	u_fflush(output);
 }

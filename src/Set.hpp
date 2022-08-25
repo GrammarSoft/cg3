@@ -71,6 +71,9 @@ public:
 	void setName(uint32_t to = 0);
 	void setName(const UChar* to);
 	void setName(const UString& to);
+	void setName(const UStringView& to) {
+		return setName(to.data());
+	}
 
 	bool empty() const;
 	uint32_t rehash();

@@ -136,7 +136,7 @@ void PlaintextApplicator::runGrammarOnText(std::istream& input, std::ostream& ou
 			}
 			if (cCohort && (cSWindow->cohorts.size() >= hard_limit || (!dep_delimit && grammar->delimiters && doesSetMatchCohortNormal(*cCohort, grammar->delimiters->number)))) {
 				if (!is_conv && cSWindow->cohorts.size() >= hard_limit) {
-					u_fprintf(ux_stderr, "Warning: Hard limit of %u cohorts reached at cohort %S (#%u) on line %u - forcing break.\n", hard_limit, cCohort->wordform->tag.c_str(), numCohorts, numLines);
+					u_fprintf(ux_stderr, "Warning: Hard limit of %u cohorts reached at cohort %S (#%u) on line %u - forcing break.\n", hard_limit, cCohort->wordform->tag.data(), numCohorts, numLines);
 					u_fflush(ux_stderr);
 				}
 				for (auto iter : cCohort->readings) {
@@ -320,7 +320,7 @@ void PlaintextApplicator::printCohort(Cohort* cohort, std::ostream& output) {
 		return;
 	}
 
-	u_fprintf(output, "%.*S ", cohort->wordform->tag.size() - 4, cohort->wordform->tag.c_str() + 2);
+	u_fprintf(output, "%.*S ", cohort->wordform->tag.size() - 4, cohort->wordform->tag.data() + 2);
 }
 
 void PlaintextApplicator::printSingleWindow(SingleWindow* window, std::ostream& output) {

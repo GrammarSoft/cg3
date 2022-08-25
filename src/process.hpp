@@ -73,7 +73,7 @@ public:
 		siStartInfo.dwFlags |= STARTF_USESTDHANDLES;
 
 		BOOL bSuccess = CreateProcessA(nullptr,
-			const_cast<char*>(cmdline.c_str()),
+			const_cast<char*>(cmdline.data()),
 			nullptr,
 			nullptr,
 			TRUE,
@@ -167,10 +167,10 @@ public:
 	}
 
 	void start(const std::string& cmdline) {
-		child = popen_plus(cmdline.c_str());
+		child = popen_plus(cmdline.data());
 		if (child == nullptr) {
 			std::string msg = "Process could not start!\nCmdline: ";
-			msg += cmdline.c_str();
+			msg += cmdline.data();
 			msg += '\n';
 			msg = formatLastError(msg);
 			throw std::runtime_error(msg);

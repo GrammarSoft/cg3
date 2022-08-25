@@ -922,7 +922,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 
 			auto make_relation_rtag = [&](Tag* tag, uint32_t id) {
 				UChar tmp[256] = { 0 };
-				u_sprintf(tmp, "R:%S:%u", tag->tag.c_str(), id);
+				u_sprintf(tmp, "R:%S:%u", tag->tag.data(), id);
 				auto nt = addTag(tmp);
 				return nt;
 			};
@@ -1083,7 +1083,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						}
 						auto it = grammar->anchors.find(to->hash);
 						if (it == grammar->anchors.end()) {
-							u_fprintf(ux_stderr, "Warning: JUMP on line %u could not find anchor '%S'.\n", rule.line, to->tag.c_str());
+							u_fprintf(ux_stderr, "Warning: JUMP on line %u could not find anchor '%S'.\n", rule.line, to->tag.data());
 						}
 						else {
 							iter_rules = intersects.lower_bound(it->second);
@@ -1106,7 +1106,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 							if (rule.flags & RF_OUTPUT) {
 								current.variables_output.insert(tag->hash);
 							}
-							//u_fprintf(ux_stderr, "Info: RemVariable fired for %S.\n", tag->tag.c_str());
+							//u_fprintf(ux_stderr, "Info: RemVariable fired for %S.\n", tag->tag.data());
 						}
 						break;
 					}
@@ -1118,7 +1118,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						if (rule.flags & RF_OUTPUT) {
 							current.variables_output.insert(names.front()->hash);
 						}
-						//u_fprintf(ux_stderr, "Info: SetVariable fired for %S.\n", names.front()->tag.c_str());
+						//u_fprintf(ux_stderr, "Info: SetVariable fired for %S.\n", names.front()->tag.data());
 						break;
 					}
 					else if (type == K_DELIMIT) {
@@ -1136,7 +1136,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						if (ei == externals.end()) {
 							Tag* ext = grammar->single_tags.find(rule.varname)->second;
 							UErrorCode err = U_ZERO_ERROR;
-							u_strToUTF8(&cbuffers[0][0], SI32(CG3_BUFFER_SIZE - 1), nullptr, ext->tag.c_str(), SI32(ext->tag.size()), &err);
+							u_strToUTF8(&cbuffers[0][0], SI32(CG3_BUFFER_SIZE - 1), nullptr, ext->tag.data(), SI32(ext->tag.size()), &err);
 
 							Process& es = externals[rule.varname];
 							try {
@@ -1274,7 +1274,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 
 							UChar dep_self[12] = {};
 							UChar dep_parent[12] = {};
-							if (u_sscanf(tter->tag.c_str(), "%[0-9cd]->%[0-9pm]", &dep_self, &dep_parent) == 2) {
+							if (u_sscanf(tter->tag.data(), "%[0-9cd]->%[0-9pm]", &dep_self, &dep_parent) == 2) {
 								if (dep_self[0] == 'c' || dep_self[0] == 'd') {
 									cohort_dep[i - 1].first = DEP_NO_PARENT;
 									if (rel_trg == DEP_NO_PARENT) {
@@ -2450,7 +2450,7 @@ uint32_t GrammarApplicator::runGrammarOnSingleWindow(SingleWindow& current) {
 				for (size_t i = 1; i < current.cohorts.size(); ++i) {
 					Tag* t = current.cohorts[i]->wordform;
 					tag.assign(t->tag.begin() + 2, t->tag.begin() + t->tag.size() - 2);
-					u_fprintf(ux_stderr, " %S", tag.c_str());
+					u_fprintf(ux_stderr, " %S", tag.data());
 				}
 				u_fprintf(ux_stderr, "\n");
 				u_fflush(ux_stderr);
@@ -2574,7 +2574,7 @@ label_runGrammarOnWindow_begin:
 		for (size_t i = 1; i < current->cohorts.size(); ++i) {
 			Tag* t = current->cohorts[i]->wordform;
 			tag.assign(t->tag.begin() + 2, t->tag.begin() + t->tag.size() - 2);
-			u_fprintf(ux_stderr, " %S", tag.c_str());
+			u_fprintf(ux_stderr, " %S", tag.data());
 		}
 		u_fprintf(ux_stderr, "\n");
 		u_fflush(ux_stderr);

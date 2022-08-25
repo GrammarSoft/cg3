@@ -102,8 +102,8 @@ void MatxinApplicator::runGrammarOnText(std::istream& input, std::ostream& outpu
 
 	uint32_t resetAfter = ((num_windows + 4) * 2 + 1);
 
-	begintag = addTag(stringbits[S_BEGINTAG])->hash; // Beginning of sentence tag
-	endtag = addTag(stringbits[S_ENDTAG])->hash;     // End of sentence tag
+	begintag = addTag(STR_BEGINTAG)->hash; // Beginning of sentence tag
+	endtag = addTag(STR_ENDTAG)->hash;     // End of sentence tag
 
 	SingleWindow* cSWindow = nullptr; // Current single window (Cohort frame)
 	Cohort* cCohort = nullptr;        // Current cohort
@@ -185,7 +185,7 @@ void MatxinApplicator::runGrammarOnText(std::istream& input, std::ostream& outpu
 			} // end >= soft_limit
 			if (cCohort && (cSWindow->cohorts.size() >= hard_limit || (grammar->delimiters && doesSetMatchCohortNormal(*cCohort, grammar->delimiters->number)))) {
 				if (!is_conv && cSWindow->cohorts.size() >= hard_limit) {
-					u_fprintf(ux_stderr, "Warning: Hard limit of %u cohorts reached at cohort %S (#%u) on line %u - forcing break.\n", hard_limit, cCohort->wordform->tag.c_str(), numCohorts, numLines);
+					u_fprintf(ux_stderr, "Warning: Hard limit of %u cohorts reached at cohort %S (#%u) on line %u - forcing break.\n", hard_limit, cCohort->wordform->tag.data(), numCohorts, numLines);
 					u_fflush(ux_stderr);
 				}
 				for (auto iter : cCohort->readings) {
@@ -289,7 +289,7 @@ void MatxinApplicator::runGrammarOnText(std::istream& input, std::ostream& outpu
 					if (inchar == '>') {
 						Tag* t = addTag(tag);
 						addTagToReading(*cCohort->wread, t);
-						//u_fprintf(ux_stderr, "Adding tag %S\n", tag.c_str());
+						//u_fprintf(ux_stderr, "Adding tag %S\n", tag.data());
 						tag.clear();
 						continue;
 					}
@@ -363,7 +363,7 @@ void MatxinApplicator::runGrammarOnText(std::istream& input, std::ostream& outpu
 	} // end input loop
 
 	if (!firstblank.empty()) {
-		u_fprintf(output, "%S", firstblank.c_str());
+		u_fprintf(output, "%S", firstblank.data());
 		firstblank.clear();
 	}
 
@@ -476,7 +476,7 @@ void MatxinApplicator::processReading(Reading* cReading, const UChar* reading_st
 	}
 	base += '"';
 
-	//	u_fprintf(ux_stderr, ">> b: %S s: %S\n", base.c_str(), suf.c_str());
+	//	u_fprintf(ux_stderr, ">> b: %S s: %S\n", base.data(), suf.data());
 
 	TagVector taglist;
 
@@ -600,7 +600,7 @@ void MatxinApplicator::processReading(Reading* cReading, const UChar* reading_st
 }
 
 void MatxinApplicator::processReading(Reading* cReading, const UString& reading_string) {
-	return processReading(cReading, reading_string.c_str());
+	return processReading(cReading, reading_string.data());
 }
 
 void MatxinApplicator::printReading(Reading* reading, Node& node, std::ostream& output) {
@@ -627,7 +627,7 @@ void MatxinApplicator::printReading(Reading* reading, Node& node, std::ostream& 
 	}
 
 	// Lop off the initial and final '"' characters
-	UnicodeString bf(grammar->single_tags[reading->baseform]->tag.c_str() + 1, SI32(grammar->single_tags[reading->baseform]->tag.size() - 2));
+	UnicodeString bf(grammar->single_tags[reading->baseform]->tag.data() + 1, SI32(grammar->single_tags[reading->baseform]->tag.size() - 2));
 
 	node.lemma = bf.getTerminatedBuffer();
 
@@ -672,14 +672,14 @@ void MatxinApplicator::printReading(Reading* reading, Node& node, std::ostream& 
 		const Tag* tag = grammar->single_tags[tter];
 		if (!(tag->type & T_BASEFORM) && !(tag->type & T_WORDFORM)) {
 			if (tag->tag[0] == '+') {
-				u_fprintf(output, "%S", tag->tag.c_str());
+				u_fprintf(output, "%S", tag->tag.data());
 			}
 			else if (tag->tag[0] == '@') {
-				//u_fprintf(output, "<%S>", tag->tag.c_str());
+				//u_fprintf(output, "<%S>", tag->tag.data());
 				node.si = tag->tag;
 			}
 			else {
-				//u_fprintf(output, "<%S>", tag->tag.c_str());
+				//u_fprintf(output, "<%S>", tag->tag.data());
 				if (first) {
 					mi += tag->tag;
 					first = false;
@@ -698,7 +698,7 @@ void MatxinApplicator::printSingleWindow(SingleWindow* window, std::ostream& out
 	/*
 	// Window text comes at the left
 	if (!window->text.empty()) {
-		u_fprintf(output, "%S", window->text.c_str());
+		u_fprintf(output, "%S", window->text.data());
 	}
 //*/
 
@@ -721,7 +721,7 @@ void MatxinApplicator::printSingleWindow(SingleWindow* window, std::ostream& out
 
 		// Lop off the initial and final '"' characters
 		// ToDo: A copy does not need to be made here - use pointer offsets
-		UnicodeString wf(cohort->wordform->tag.c_str() + 2, SI32(cohort->wordform->tag.size() - 4));
+		UnicodeString wf(cohort->wordform->tag.data() + 2, SI32(cohort->wordform->tag.size() - 4));
 		UString wf_escaped;
 		for (int i = 0; i < wf.length(); ++i) {
 			if (wf[i] == '&') {
@@ -753,7 +753,7 @@ void MatxinApplicator::printSingleWindow(SingleWindow* window, std::ostream& out
 					continue;
 				}
 				const Tag *tag = grammar->single_tags[tter];
-				u_fprintf(output, "<%S>", tag->tag.c_str());
+				u_fprintf(output, "<%S>", tag->tag.data());
 			}
 		}
 //*/
@@ -775,20 +775,20 @@ void MatxinApplicator::printSingleWindow(SingleWindow* window, std::ostream& out
 
 		if (cohort->dep_parent == DEP_NO_PARENT) {
 			deps[r].push_back(cohort->global_number);
-			//u_fprintf(output, "+[%d] %d -> %d || %d || %S\n", c, cohort->global_number, cohort->dep_parent, r, cohort->text.c_str());
+			//u_fprintf(output, "+[%d] %d -> %d || %d || %S\n", c, cohort->global_number, cohort->dep_parent, r, cohort->text.data());
 		}
 		else {
 			deps[cohort->dep_parent].push_back(cohort->global_number);
-			//u_fprintf(output, "#[%d] %d -> %d || %d || %S\n", c, cohort->global_number, cohort->dep_parent, r, cohort->text.c_str());
+			//u_fprintf(output, "#[%d] %d -> %d || %d || %S\n", c, cohort->global_number, cohort->dep_parent, r, cohort->text.data());
 		}
 
 		/*
-		u_fprintf(output, "[%d] %d -> %d || %S\n", c, cohort->global_number, cohort->dep_parent, cohort->text.c_str());
+		u_fprintf(output, "[%d] %d -> %d || %S\n", c, cohort->global_number, cohort->dep_parent, cohort->text.data());
 		u_fprintf(output, "$");
 		// End of cohort
 
 		if (!cohort->text.empty()) {
-			u_fprintf(output, "%S", cohort->text.c_str());
+			u_fprintf(output, "%S", cohort->text.data());
 		}
 //*/
 
@@ -807,7 +807,7 @@ void MatxinApplicator::procNode(int& depth, std::map<int, Node>& nodes, std::map
 	depth = depth + 1;
 
 	// Cut off first character, if not empty
-	const UChar* si = node.si.c_str() + !node.si.empty();
+	const UChar* si = node.si.data() + !node.si.empty();
 
 	if (n != 0) {
 		for (int i = 0; i < depth * 2; i++) {
@@ -815,10 +815,10 @@ void MatxinApplicator::procNode(int& depth, std::map<int, Node>& nodes, std::map
 		}
 
 		if (v.size() > 0) {
-			u_fprintf(output, "<NODE ord=\"%d\" alloc=\"0\" form=\"%S\" lem=\"%S\" mi=\"%S\" si=\"%S\">\n", node.self, node.form.c_str(), node.lemma.c_str(), node.mi.c_str(), si);
+			u_fprintf(output, "<NODE ord=\"%d\" alloc=\"0\" form=\"%S\" lem=\"%S\" mi=\"%S\" si=\"%S\">\n", node.self, node.form.data(), node.lemma.data(), node.mi.data(), si);
 		}
 		else {
-			u_fprintf(output, "<NODE ord=\"%d\" alloc=\"0\" form=\"%S\" lem=\"%S\" mi=\"%S\" si=\"%S\"/>\n", node.self, node.form.c_str(), node.lemma.c_str(), node.mi.c_str(), si);
+			u_fprintf(output, "<NODE ord=\"%d\" alloc=\"0\" form=\"%S\" lem=\"%S\" mi=\"%S\" si=\"%S\"/>\n", node.self, node.form.data(), node.lemma.data(), node.mi.data(), si);
 			depth = depth - 1;
 		}
 	}

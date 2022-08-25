@@ -543,14 +543,14 @@ cg3_tag* cg3_tag_create_w(cg3_applicator* applicator, const wchar_t* text) {
 
 const UChar* cg3_tag_gettext_u(cg3_tag* tag_) {
 	auto tag = static_cast<Tag*>(tag_);
-	return tag->tag.c_str();
+	return tag->tag.data();
 }
 
 const char* cg3_tag_gettext_u8(cg3_tag* tag_) {
 	auto tag = static_cast<Tag*>(tag_);
 	UErrorCode status = U_ZERO_ERROR;
 
-	u_strToUTF8(&cbuffers[0][0], CG3_BUFFER_SIZE - 1, 0, tag->tag.c_str(), SI32(tag->tag.size()), &status);
+	u_strToUTF8(&cbuffers[0][0], CG3_BUFFER_SIZE - 1, 0, tag->tag.data(), SI32(tag->tag.size()), &status);
 	if (U_FAILURE(status)) {
 		u_fprintf(ux_stderr, "CG3 Error: Failed to convert text from UChar to UTF-8. Status = %s\n", u_errorName(status));
 		return 0;
@@ -561,7 +561,7 @@ const char* cg3_tag_gettext_u8(cg3_tag* tag_) {
 
 const uint16_t* cg3_tag_gettext_u16(cg3_tag* tag_) {
 	auto tag = static_cast<Tag*>(tag_);
-	return reinterpret_cast<const uint16_t*>(tag->tag.c_str());
+	return reinterpret_cast<const uint16_t*>(tag->tag.data());
 }
 
 const uint32_t* cg3_tag_gettext_u32(cg3_tag* tag_) {
@@ -570,7 +570,7 @@ const uint32_t* cg3_tag_gettext_u32(cg3_tag* tag_) {
 
 	UChar32* tmp = reinterpret_cast<UChar32*>(&cbuffers[0][0]);
 
-	u_strToUTF32(tmp, (CG3_BUFFER_SIZE / sizeof(UChar32)) - 1, 0, tag->tag.c_str(), SI32(tag->tag.size()), &status);
+	u_strToUTF32(tmp, (CG3_BUFFER_SIZE / sizeof(UChar32)) - 1, 0, tag->tag.data(), SI32(tag->tag.size()), &status);
 	if (U_FAILURE(status)) {
 		u_fprintf(ux_stderr, "CG3 Error: Failed to convert text from UChar to UTF-32. Status = %s\n", u_errorName(status));
 		return 0;
@@ -585,7 +585,7 @@ const wchar_t* cg3_tag_gettext_w(cg3_tag* tag_) {
 
 	auto tmp = reinterpret_cast<wchar_t*>(&cbuffers[0][0]);
 
-	u_strToWCS(tmp, (CG3_BUFFER_SIZE / sizeof(wchar_t)) - 1, 0, tag->tag.c_str(), SI32(tag->tag.size()), &status);
+	u_strToWCS(tmp, (CG3_BUFFER_SIZE / sizeof(wchar_t)) - 1, 0, tag->tag.data(), SI32(tag->tag.size()), &status);
 	if (U_FAILURE(status)) {
 		u_fprintf(ux_stderr, "CG3 Error: Failed to convert text from UChar to UTF-32. Status = %s\n", u_errorName(status));
 		return 0;
