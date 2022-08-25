@@ -127,6 +127,7 @@
         INCLUDE other-file-name ;
       </screen>
       The file name should not be quoted and the line must end with semi-colon.
+      On Posix platforms the path will be shell expanded if it contains any of <code>~ $ *</code>.
       The include candidate will be looked for at a path relative to the file performing the include.
       Be careful not to make circular includes as they will loop forever.
     </para>
