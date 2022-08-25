@@ -262,30 +262,45 @@ void Grammar::appendToSet(Set*& to) {
 	}
 	sets_by_name.erase(nhash);
 
-	auto name = to->name;
 	tset->setName(UI32(sets_by_contents.size()));
 	addSet(tset);
 
 	if (!tset->sets.empty()) {
-		// This assumes (positive - negative) split
-		auto set = getSet(tset->sets[0]);
-		auto tvs = trie_getTags(set->trie);
-		for (auto& tv : tvs) {
-			trie_insert(to->trie, tv);
-		}
-		tvs = trie_getTags(set->trie_special);
-		for (auto& tv : tvs) {
-			trie_insert(to->trie_special, tv);
-		}
+		auto fset = getSet(tset->sets[0]);
+		if (fset->name.find(stringbits[S_GPREFIX]) != 0 || fset->name.find(stringbits[S_POSITIVE]) == UString::npos) {
+			auto ns = allocateSet();
+			ns->setName(to->name);
+			ns->line = to->line;
 
-		set = getSet(tset->sets[1]);
-		TagVector tva[2]{ trie_getTagList(set->trie), trie_getTagList(set->trie_special) };
-		for (auto& tv : tva) {
-			for (auto t : tv) {
-				auto tag = new Tag(*t);
-				tag->type |= T_FAILFAST;
-				tag = addTag(tag);
-				addTagToSet(tag, to);
+			to->setName(UI32(sets_by_contents.size() + 1));
+			addSet(to);
+
+			ns->sets.push_back(tset->hash);
+			ns->sets.push_back(to->hash);
+			ns->set_ops.push_back(S_OR);
+			to = ns;
+		}
+		else {
+			// This is a set split into (positive - negative), so copy it, append, and re-split
+			auto set = getSet(tset->sets[0]);
+			auto tvs = trie_getTags(set->trie);
+			for (auto& tv : tvs) {
+				trie_insert(to->trie, tv);
+			}
+			tvs = trie_getTags(set->trie_special);
+			for (auto& tv : tvs) {
+				trie_insert(to->trie_special, tv);
+			}
+
+			set = getSet(tset->sets[1]);
+			TagVector tva[2]{ trie_getTagList(set->trie), trie_getTagList(set->trie_special) };
+			for (auto& tv : tva) {
+				for (auto t : tv) {
+					auto tag = new Tag(*t);
+					tag->type |= T_FAILFAST;
+					tag = addTag(tag);
+					addTagToSet(tag, to);
+				}
 			}
 		}
 	}

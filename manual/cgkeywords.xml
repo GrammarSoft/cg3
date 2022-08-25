@@ -322,11 +322,16 @@
       <primary>LIST</primary>
     </indexterm>
     <para>
-      Defines a new set based on a list of tags.
+      Defines a new set based on a list of tags, or appends to an existing set.
     </para>
     <screen>
       LIST setname = tag othertag (mtag htag) ltag ;
+
+      LIST setname += even more tags ;
     </screen>
+    <para>
+      If the named set is of <link linkend="keyword-set">SET-type</link>, then the new tags will be in a set OR'ed onto the existing one.
+    </para>
   </section>
 
   <section id="keyword-map">

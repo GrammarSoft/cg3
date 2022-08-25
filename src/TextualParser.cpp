@@ -1966,12 +1966,6 @@ void TextualParser::parseFromUChar(UChar* input, const char* fname) {
 					if (!aset) {
 						error("%s: Error: Cannot append to non-existing set %S on line %u near `%S`!\n", s->name.c_str(), p);
 					}
-					if (!aset->sets.empty()) {
-						auto fset = result->getSet(aset->sets[0]);
-						if (fset->name.find(stringbits[S_GPREFIX]) != 0 || fset->name.find(stringbits[S_POSITIVE]) == UString::npos) {
-							error("%s: Error: Cannot append to SET-type set %S on line %u near `%S`!\n", s->name.c_str(), p);
-						}
-					}
 					++p;
 					append = true;
 				}
