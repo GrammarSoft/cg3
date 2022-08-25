@@ -345,7 +345,6 @@ void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& outp
 				delete cReading;
 				cReading = nullptr;
 				if (is_deleted) {
-					// ToDo: Use string_view instead, when able
 					cleaned.insert(cleaned.begin(), ';');
 					line.insert(line.begin(), ';');
 				}

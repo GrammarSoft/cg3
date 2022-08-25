@@ -1960,6 +1960,21 @@ void TextualParser::parseFromUChar(UChar* input, const char* fname) {
 				p = n;
 				AST_CLOSE(p);
 				result->lines += SKIPWS(p, '=');
+				bool append = false;
+				if (p[0] == '+' && p[1] == '=') {
+					auto aset = result->getSet(hash_value(s->name.c_str()));
+					if (!aset) {
+						error("%s: Error: Cannot append to non-existing set %S on line %u near `%S`!\n", s->name.c_str(), p);
+					}
+					if (!aset->sets.empty()) {
+						auto fset = result->getSet(aset->sets[0]);
+						if (fset->name.find(stringbits[S_GPREFIX]) != 0 || fset->name.find(stringbits[S_POSITIVE]) == UString::npos) {
+							error("%s: Error: Cannot append to SET-type set %S on line %u near `%S`!\n", s->name.c_str(), p);
+						}
+					}
+					++p;
+					append = true;
+				}
 				if (*p != '=') {
 					error("%s: Error: Encountered a %C before the expected = on line %u near `%S`!\n", *p, p);
 				}
@@ -1973,7 +1988,12 @@ void TextualParser::parseFromUChar(UChar* input, const char* fname) {
 						u_fflush(ux_stderr);
 					}
 				}
-				result->addSet(s);
+				if (append) {
+					result->appendToSet(s);
+				}
+				else {
+					result->addSet(s);
+				}
 				if (s->empty()) {
 					error("%s: Error: LIST %S declared, but no definitions given, on line %u near `%S`!\n", s->name.c_str(), p);
 				}

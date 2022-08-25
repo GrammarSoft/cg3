@@ -31,21 +31,8 @@ struct trie_node_t;
 typedef bc::flat_map<Tag*, trie_node_t, compare_Tag> trie_t;
 
 struct trie_node_t {
-	bool terminal;
-	trie_t* trie;
-
-	trie_node_t()
-	  : terminal(false)
-	  , trie(nullptr)
-	{
-	}
-
-	/*
-	// Due to how flat_map works with copying elements around, let's not do cleanup the usual way
-	~trie_node_t() {
-		delete trie;
-	}
-	//*/
+	bool terminal = false;
+	std::unique_ptr<trie_t> trie;
 };
 
 inline bool trie_insert(trie_t& trie, const TagVector& tv, size_t w = 0) {
@@ -55,21 +42,18 @@ inline bool trie_insert(trie_t& trie, const TagVector& tv, size_t w = 0) {
 	}
 	if (w < tv.size() - 1) {
 		if (!node.trie) {
-			node.trie = new trie_t;
+			node.trie.reset(new trie_t);
 			//std::cerr << "new Trie" << std::endl;
 		}
 		return trie_insert(*node.trie, tv, w + 1);
 	}
 	node.terminal = true;
-	if (node.trie) {
-		delete node.trie;
-		node.trie = nullptr;
-	}
+	node.trie.reset();
 	return true;
 }
 
-inline trie_t* _trie_copy_helper(const trie_t& trie) {
-	auto nt = new trie_t;
+inline std::unique_ptr<trie_t> _trie_copy_helper(const trie_t& trie) {
+	auto nt = std::make_unique<trie_t>();
 	for (auto& p : trie) {
 		(*nt)[p.first].terminal = p.second.terminal;
 		if (p.second.trie) {
@@ -94,8 +78,7 @@ inline void trie_delete(trie_t& trie) {
 	for (auto& p : trie) {
 		if (p.second.trie) {
 			trie_delete(*p.second.trie);
-			delete p.second.trie;
-			p.second.trie = nullptr;
+			p.second.trie.reset();
 		}
 	}
 }

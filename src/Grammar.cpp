@@ -251,6 +251,59 @@ Set* Grammar::getSet(uint32_t which) const {
 	return 0;
 }
 
+void Grammar::appendToSet(Set*& to) {
+	auto nhash = hash_value(to->name.c_str());
+	auto tset = getSet(nhash);
+
+	auto snit = set_name_seeds.find(to->name);
+	if (snit != set_name_seeds.end()) {
+		nhash += snit->second;
+		set_name_seeds.erase(snit);
+	}
+	sets_by_name.erase(nhash);
+
+	auto name = to->name;
+	tset->setName(UI32(sets_by_contents.size()));
+	addSet(tset);
+
+	if (!tset->sets.empty()) {
+		// This assumes (positive - negative) split
+		auto set = getSet(tset->sets[0]);
+		auto tvs = trie_getTags(set->trie);
+		for (auto& tv : tvs) {
+			trie_insert(to->trie, tv);
+		}
+		tvs = trie_getTags(set->trie_special);
+		for (auto& tv : tvs) {
+			trie_insert(to->trie_special, tv);
+		}
+
+		set = getSet(tset->sets[1]);
+		TagVector tva[2]{ trie_getTagList(set->trie), trie_getTagList(set->trie_special) };
+		for (auto& tv : tva) {
+			for (auto t : tv) {
+				auto tag = new Tag(*t);
+				tag->type |= T_FAILFAST;
+				tag = addTag(tag);
+				addTagToSet(tag, to);
+			}
+		}
+	}
+	else {
+		auto tvs = trie_getTags(tset->trie);
+		for (auto& tv : tvs) {
+			trie_insert(to->trie, tv);
+		}
+		tvs = trie_getTags(tset->trie_special);
+		for (auto& tv : tvs) {
+			trie_insert(to->trie_special, tv);
+		}
+		to->ff_tags.insert(tset->ff_tags.begin(), tset->ff_tags.end());
+	}
+
+	addSet(to);
+}
+
 Set* Grammar::allocateSet() {
 	Set* ns = new Set;
 	sets_all.insert(ns);
