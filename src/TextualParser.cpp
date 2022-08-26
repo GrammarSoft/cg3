@@ -1828,6 +1828,43 @@ void TextualParser::parseFromUChar(UChar* input, const char* fname) {
 				}
 				AST_CLOSE(p + 1);
 			}
+			// UNDEF-SETS
+			else if (IS_ICASE(p, "UNDEF-SETS", "undef-sets")) {
+				AST_OPEN(UndefSets);
+				p += 10;
+				result->lines += SKIPWS(p, '=');
+				if (*p != '=') {
+					error("%s: Error: Encountered a %C before the expected = on line %u near `%S`!\n", *p, p);
+				}
+				++p;
+				result->lines += SKIPWS(p);
+
+				bool did = false;
+				UString name;
+				while (*p && *p != ';') {
+					AST_OPEN(SetName);
+					UChar* n = p;
+					result->lines += SKIPTOWS(n, ';', true);
+					name.assign(p, n);
+					if (!result->undefSet(name)) {
+						u_fprintf(ux_stderr, "%s: Warning: Set %S wasn't defined on line %u.\n", filebase, name.data(), result->lines);
+						u_fflush(ux_stderr);
+					}
+					p = n;
+					AST_CLOSE(p);
+					result->lines += SKIPWS(p);
+					did = true;
+				}
+
+				if (!did) {
+					error("%s: Error: UNDEF-SETS declared, but no definitions given, on line %u near `%S`!\n", p);
+				}
+				result->lines += SKIPWS(p, ';');
+				if (*p != ';') {
+					error("%s: Error: Expected closing ; before line %u near `%S`!\n", p);
+				}
+				AST_CLOSE(p + 1);
+			}
 			// ADDRELATIONS
 			else if (IS_ICASE(p, "ADDRELATIONS", "addrelations")) {
 				parseRule(p, K_ADDRELATIONS);

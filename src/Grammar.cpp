@@ -319,6 +319,27 @@ void Grammar::appendToSet(Set*& to) {
 	addSet(to);
 }
 
+bool Grammar::undefSet(const UString& name) {
+	auto nhash = hash_value(name.data());
+	auto tset = getSet(nhash);
+	if (tset) {
+		tset->setName(UI32(sets_by_contents.size()));
+	}
+
+	auto snit = set_name_seeds.find(name);
+	if (snit != set_name_seeds.end()) {
+		nhash += snit->second;
+		set_name_seeds.erase(snit);
+	}
+
+	auto sbnit = sets_by_name.find(nhash);
+	if (sbnit != sets_by_name.end()) {
+		sets_by_name.erase(sbnit);
+		return true;
+	}
+	return false;
+}
+
 Set* Grammar::allocateSet() {
 	Set* ns = new Set;
 	sets_all.insert(ns);

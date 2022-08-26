@@ -331,6 +331,7 @@
     </screen>
     <para>
       If the named set is of <link linkend="keyword-set">SET-type</link>, then the new tags will be in a set OR'ed onto the existing one.
+      See <link linkend="set-manipulation">set manipulation</link>.
     </para>
   </section>
 
@@ -802,6 +803,20 @@
     <para>
       An inline keyword put before the contextual target of a SETPARENT or SETCHILD rule.
     </para>
+  </section>
+
+  <section id="keyword-undef-sets">
+    <title>UNDEF-SETS</title>
+    <indexterm>
+      <primary>UNDEF-SETS</primary>
+    </indexterm>
+    <para>
+      A list of set names that will be undefined and made available for redefinition.
+      See <link linkend="set-manipulation">set manipulation</link>.
+    </para>
+    <screen>
+      UNDEF-SETS = VINF ADV ;
+    </screen>
   </section>
 
   <section id="keyword-unmap">

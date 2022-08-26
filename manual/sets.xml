@@ -185,6 +185,45 @@
     </section>
   </section>
 
+  <section id="set-manipulation">
+    <title>Set Manipulation</title>
+
+    <section id="set-manipulation-undef">
+      <title>Undefining Sets</title>
+      <para>
+        <link linkend="keyword-undef-sets"><code>UNDEF-SETS</code></link> lets you undefine/unlink sets so later definitions can reuse the name.
+        This does not delete a set, nor can it alter past uses of a set. Prior uses of a set remain linked to the old set.
+      </para>
+      <screen>
+        LIST ADV = ADV ;
+        LIST VFIN = (V FIN) ;
+
+        UNDEF-SETS = VINF ADV ;
+        SET ADV = A OR D OR V ;
+        LIST VFIN = VFIN ;
+      </screen>
+    </section>
+
+    <section id="set-manipulation-append">
+      <title>Appending to Sets</title>
+      <para>
+        <link linkend="keyword-list"><code>LIST</code> with <code>+=</code></link> lets you append tags to an existing LIST or SET.
+        This does not alter past uses of a set. Prior uses of a set remain linked to the old definition.
+      </para>
+      <para>
+        For <link linkend="keyword-list"><code>LIST</code></link>-type sets, this creates a new set that is a combination of all tags from the existing set plus all the new tags.
+      </para>
+      <para>
+        For <link linkend="keyword-set"><code>SET</code></link>-type sets, the new tags are OR'ed onto the existing set. This can lead to surprising behavior if the existing set is complex.
+      </para>
+      <screen>
+        LIST VFIN = (V FIN) ;
+
+        LIST VFIN += VFIN ;
+      </screen>
+    </section>
+  </section>
+
   <section id="set-unification">
     <title>Unification</title>
 
