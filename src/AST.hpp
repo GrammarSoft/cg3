@@ -74,6 +74,7 @@ enum ASTType {
 	AST_SetOp,
 	AST_SoftDelimiters,
 	AST_StaticSets,
+	AST_UndefSets,
 	AST_StrictTags,
 	AST_ListTags,
 	AST_SubReadings,

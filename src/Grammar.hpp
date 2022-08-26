@@ -115,6 +115,7 @@ public:
 	void addSet(Set*& to);
 	Set* getSet(uint32_t which) const;
 	void appendToSet(Set*& to);
+	bool undefSet(const UString& name);
 	Set* allocateSet();
 	void destroySet(Set* set);
 	void addSetToList(Set* s);
