@@ -317,6 +317,16 @@ void Grammar::appendToSet(Set*& to) {
 	}
 
 	addSet(to);
+
+	if (to->name == STR_DELIMITSET) {
+		delimiters = to;
+	}
+	else if (to->name == STR_SOFTDELIMITSET) {
+		soft_delimiters = to;
+	}
+	else if (to->name == STR_TEXTDELIMITSET) {
+		text_delimiters = to;
+	}
 }
 
 bool Grammar::undefSet(const UString& name) {

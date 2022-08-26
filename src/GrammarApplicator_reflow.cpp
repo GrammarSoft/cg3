@@ -800,6 +800,8 @@ Cohort* GrammarApplicator::delimitAt(SingleWindow& current, Cohort* cohort) {
 
 	assert(nwin != 0);
 
+	std::swap(current.flush_after, nwin->flush_after);
+	std::swap(current.text_post, nwin->text_post);
 	nwin->has_enclosures = current.has_enclosures;
 
 	Cohort* cCohort = alloc_cohort(nwin);
