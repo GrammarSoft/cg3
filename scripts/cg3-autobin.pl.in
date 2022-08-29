@@ -114,9 +114,10 @@ sub mtime_rec {
 	my ($fn) = @_;
 	my ($dev,$ino,$mode,$nlink,$uid,$gid,$rdev,$size,$atime,$mtime,$ctime,$blksize,$blocks) = stat($fn);
 	my $g = file_get_contents($fn);
+	$g =~ s@#[^\n]*\n@\n@g;
 	#print STDERR "DEBUG: $fn mtime $mtime\n";
 
-	while ($g =~ m@(?:^|\s|\n|;)INCLUDE(?:\s+STATIC)?\s+(.+?)\s+;@gsi) {
+	while ($g =~ m@(?:^|\n|;)INCLUDE(?:\s+STATIC)?\s+(.+?)\s+;@gsi) {
 		my $ifn = $1;
 		#print STDERR "DEBUG: Including $ifn (pre-expand)\n";
 		if ($ifn =~ m@[~*\$]@) {
