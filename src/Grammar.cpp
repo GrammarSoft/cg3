@@ -252,17 +252,8 @@ Set* Grammar::getSet(uint32_t which) const {
 }
 
 void Grammar::appendToSet(Set*& to) {
-	auto nhash = hash_value(to->name.data());
-	auto tset = getSet(nhash);
+	auto tset = undefSet(to->name);
 
-	auto snit = set_name_seeds.find(to->name);
-	if (snit != set_name_seeds.end()) {
-		nhash += snit->second;
-		set_name_seeds.erase(snit);
-	}
-	sets_by_name.erase(nhash);
-
-	tset->setName(UI32(sets_by_contents.size()));
 	addSet(tset);
 
 	if (!tset->sets.empty()) {
@@ -329,25 +320,34 @@ void Grammar::appendToSet(Set*& to) {
 	}
 }
 
-bool Grammar::undefSet(const UString& name) {
-	auto nhash = hash_value(name.data());
-	auto tset = getSet(nhash);
-	if (tset) {
-		tset->setName(UI32(sets_by_contents.size()));
+Set* Grammar::undefSet(const UString& _name) {
+	Set* tset = nullptr;
+
+	UStringView pfxs[]{u"$$", u"&&", u""};
+	UString name;
+	name.reserve(_name.size() + 2);
+	for (auto pfx : pfxs) {
+		name.assign(pfx);
+		name.append(_name);
+		auto nhash = hash_value(name.data());
+		tset = getSet(nhash);
+		if (tset) {
+			tset->setName(UI32(sets_by_contents.size()));
+		}
+
+		auto snit = set_name_seeds.find(name);
+		if (snit != set_name_seeds.end()) {
+			nhash += snit->second;
+			set_name_seeds.erase(snit);
+		}
+
+		auto sbnit = sets_by_name.find(nhash);
+		if (sbnit != sets_by_name.end()) {
+			sets_by_name.erase(sbnit);
+		}
 	}
 
-	auto snit = set_name_seeds.find(name);
-	if (snit != set_name_seeds.end()) {
-		nhash += snit->second;
-		set_name_seeds.erase(snit);
-	}
-
-	auto sbnit = sets_by_name.find(nhash);
-	if (sbnit != sets_by_name.end()) {
-		sets_by_name.erase(sbnit);
-		return true;
-	}
-	return false;
+	return tset;
 }
 
 Set* Grammar::allocateSet() {
