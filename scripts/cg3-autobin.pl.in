@@ -1,7 +1,10 @@
 #!/usr/bin/env perl
+# -*- mode: cperl; indent-tabs-mode: t; tab-width: 3; cperl-indent-level: 3; -*-
 BEGIN { $| = 1; }
 use warnings;
 use strict;
+use List::Util qw(max);
+use File::Basename;
 use File::Spec;
 use Getopt::Long;
 use Digest::SHA qw(sha1_hex);
@@ -98,7 +101,39 @@ while (my ($k,$v) = each(%h)) {
 	}
 }
 
-my ($dev,$ino,$mode,$nlink,$uid,$gid,$rdev,$size,$atime,$mtime,$ctime,$blksize,$blocks) = stat($h{'grammar'});
+sub file_get_contents {
+	my ($fname) = @_;
+	local $/ = undef;
+	open FILE, '<:encoding(UTF-8)', $fname or die "Could not open ${fname}: $!\n";
+	my $data = <FILE>;
+	close FILE;
+	return $data;
+}
+
+sub mtime_rec {
+	my ($fn) = @_;
+	my ($dev,$ino,$mode,$nlink,$uid,$gid,$rdev,$size,$atime,$mtime,$ctime,$blksize,$blocks) = stat($fn);
+	my $g = file_get_contents($fn);
+	#print STDERR "DEBUG: $fn mtime $mtime\n";
+
+	while ($g =~ m@(?:^|\s|\n|;)INCLUDE(?:\s+STATIC)?\s+(.+?)\s+;@gsi) {
+		my $ifn = $1;
+		#print STDERR "DEBUG: Including $ifn (pre-expand)\n";
+		if ($ifn =~ m@[~*\$]@) {
+			$ifn = glob($ifn);
+		}
+		if ($ifn !~ m@^/@) {
+			$ifn = dirname($fn).'/'.$ifn;
+		}
+		#print STDERR "DEBUG: Including $ifn\n";
+		$mtime = max($mtime, mtime_rec($ifn));
+	}
+
+	return $mtime;
+}
+
+my $mtime = mtime_rec($h{'grammar'});
+#print STDERR "DEBUG: mtime $mtime\n";
 
 my $bn = File::Spec->tmpdir()."/".sha1_hex($args.$h{'grammar'}).".".$revision.".".$mtime.".cg3b";
 
