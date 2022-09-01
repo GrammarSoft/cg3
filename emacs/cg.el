@@ -458,9 +458,8 @@ CG-mode provides the following specific keyboard key bindings:
   (set (make-local-variable 'defun-prompt-regexp) (concat cg-kw-re "\\(?::[^\n\t ]+\\)[\t ]"))
   (set (make-local-variable 'beginning-of-defun-function) #'cg-beginning-of-defun)
   (set (make-local-variable 'end-of-defun-function) #'cg-end-of-defun)
-  ;; Dabbrev is about as much completion as we can expect for now, ensure it works:
-  (setq-local dabbrev-upcase-means-case-search t)
-  (add-to-list 'completion-at-point-functions 'dabbrev-completion)
+  ;; Completion:
+  (add-to-list 'completion-at-point-functions 'cg-complete-list-set)
   ;; Syntax highlighting:
   (when font-lock-mode
     (setq font-lock-set-defaults nil)
@@ -1302,6 +1301,14 @@ Similarly, `cg-post-pipe' is run on output."
              (push (match-string-no-properties 1) matches))))
        matches))
    'switch-buffer))
+
+(defun cg-complete-list-set ()
+  "Simple dabbrev-like completion for `completion-at-point-functions'."
+  (let ((bounds (or (bounds-of-thing-at-point 'symbol)
+                    (cons (point) (point)))))
+    (list (car bounds)
+          (cdr bounds)
+          (xref-backend-identifier-completion-table 'cg))))
 
 (cl-defmethod xref-backend-definitions ((_backend (eql cg)) symbol)
   "Find definitions of SYMBOL.
