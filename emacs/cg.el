@@ -1247,9 +1247,10 @@ Similarly, `cg-post-pipe' is run on output."
   "Open buffer of grammar rules file."
   (interactive)
   (let ((cg-buffer (find-buffer-visiting cg--file)))
-    (bury-buffer)
+    (if (cdr (window-list))
+        (delete-window)
+      (bury-buffer))
     (let ((cg-window (get-buffer-window cg-buffer)))
-
       (if cg-window
 	  (select-window cg-window)
 	(pop-to-buffer cg-buffer)))))
