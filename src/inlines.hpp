@@ -29,6 +29,11 @@ constexpr inline int32_t SI32(T t) {
 }
 
 template<typename T>
+constexpr inline int64_t SI64(T t) {
+	return static_cast<int64_t>(t);
+}
+
+template<typename T>
 constexpr inline uint8_t UI8(T t) {
 	return static_cast<uint8_t>(t);
 }
@@ -535,7 +540,7 @@ inline void writeSwapped(std::ostream& stream, const T& value) {
 template<>
 inline void writeSwapped(std::ostream& stream, const double& value) {
 	int exp = 0;
-	auto mant64 = UI64(std::numeric_limits<int64_t>::max() * frexp(value, &exp));
+	auto mant64 = UI64(SI64(std::numeric_limits<int64_t>::max() * frexp(value, &exp)));
 	auto exp32 = UI32(exp);
 	writeSwapped(stream, mant64);
 	writeSwapped(stream, exp32);
@@ -579,7 +584,7 @@ inline double readSwapped(std::istream& stream) {
 	auto mant64 = readSwapped<uint64_t>(stream);
 	auto exp = static_cast<int>(readSwapped<int32_t>(stream));
 
-	auto value = static_cast<double>(static_cast<int64_t>(mant64)) / std::numeric_limits<int64_t>::max();
+	auto value = static_cast<double>(SI64(mant64)) / std::numeric_limits<int64_t>::max();
 
 	return ldexp(value, exp);
 }
