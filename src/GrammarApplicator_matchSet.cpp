@@ -897,8 +897,6 @@ bool GrammarApplicator::doesSetMatchCohortNormal(Cohort& cohort, const uint32_t 
 		lists[3] = &cohort.ignored;
 	}
 
-	bool non_match_was_sub = false;
-
 	for (auto list : lists) {
 		if (list == nullptr) {
 			continue;
@@ -908,7 +906,6 @@ bool GrammarApplicator::doesSetMatchCohortNormal(Cohort& cohort, const uint32_t 
 				// ToDo: Barriers need some way to escape sub-readings
 				reading = get_sub_reading(reading, context->test->offset_sub);
 				if (!reading) {
-					non_match_was_sub = true;
 					continue;
 				}
 			}
@@ -933,7 +930,8 @@ bool GrammarApplicator::doesSetMatchCohortNormal(Cohort& cohort, const uint32_t 
 
 	if (context && !context->matched_target) {
 		if (!grammar->sets_any || set >= grammar->sets_any->size() || !grammar->sets_any->test(set)) {
-			if (!non_match_was_sub && set < cohort.possible_sets.size()) {
+			bool was_sub = (context->test && (context->test->offset_sub != 0));
+			if (!was_sub && set < cohort.possible_sets.size()) {
 				cohort.possible_sets.reset(set);
 			}
 		}
