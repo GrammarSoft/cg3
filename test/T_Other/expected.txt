@@ -1,4 +1,0 @@
-"<a>"
-	"a" a d @other-good
-	"a" b d
-	"a" c e @other-good-C

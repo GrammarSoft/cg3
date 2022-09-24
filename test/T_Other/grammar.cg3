@@ -1,8 +1,0 @@
-DELIMITERS = "<.>" ;
-
-ADD (@other-good) (a) (0t (b)) ;
-ADD (@other-bad) (a) (0t (a)) ;
-ADD (@other-bad) (a) (0tC (b)) ;
-
-ADD (@other-good-C) (e) (0tC (d)) ;
-ADD (@other-bad-C) (d) (0tC (e)) ;
