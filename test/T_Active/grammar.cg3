@@ -1,0 +1,14 @@
+DELIMITERS = "<.>" ;
+
+ADD (@active-good) (a) (0T (a)) ;
+ADD (@active-bad) (a) (0T (b)) ;
+
+ADD (@inactive-good) (a) (0t (b)) ;
+ADD (@inactive-bad) (a) (0t (a)) ;
+ADD (@inactive-bad) (a) (0tC (b)) ;
+
+ADD (@active-good-C) (e) (0TC (e)) ;
+ADD (@active-bad-C) (d) (0TC (e)) ;
+
+ADD (@inactive-good-C) (e) (0tC (d)) ;
+ADD (@inactive-bad-C) (d) (0tC (e)) ;

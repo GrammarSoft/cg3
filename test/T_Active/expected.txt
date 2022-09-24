@@ -1,0 +1,4 @@
+"<a>"
+	"a" a d @active-good
+	"a" b d
+	"a" c e @active-good-C @inactive-good-C

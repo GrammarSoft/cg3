@@ -611,8 +611,12 @@ void TextualParser::parseContextualTestPosition(UChar*& p, ContextualTest& t) {
 			t.pos |= POS_NUMERIC_BRANCH;
 			++p;
 		}
+		if (*p == 'T') {
+			t.pos |= POS_ACTIVE;
+			++p;
+		}
 		if (*p == 't') {
-			t.pos |= POS_OTHER;
+			t.pos |= POS_INACTIVE;
 			++p;
 		}
 		if (*p == 'B') {
