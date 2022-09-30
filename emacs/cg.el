@@ -1108,26 +1108,44 @@ Use 0 to check immediately after each change."
       nil
       (lambda ()
         (unless (cg-output-running)
-	  (with-demoted-errors (cg-check))))))))
+	  (with-demoted-errors "cg-after-change: %S" (cg-check))))))))
+
+(defcustom cg-output-always-highlight nil
+  "Regexp patterns of tags to always highlight in output, with a face to use."
+  :local t
+  :type '(repeat (cons regexp face)))
+
+(defun cg-output-hl-always-patterns ()
+  "Highlight the `cg-output-always-highlight' patterns in output.
+That variable is buffer-local, but the value is copied from cg
+buffer to cg-output-buffer on check."
+  (with-current-buffer (cg-output-buffer)
+    (dolist (pat.face cg-output-always-highlight)
+      (cg-hl-pat (car pat.face) (cdr pat.face)))))
 
 (defun cg-output-hl (cg-buffer)
   "Highlight the symbol at point of CG-BUFFER in the output buffer."
   (when (eq (current-buffer) cg-buffer)
     (let* ((sym (symbol-at-point))
-	   (sym-re (concat "\\(?:^\\|[ \"(:]\\)\\("
-			   (regexp-quote (symbol-name sym))
-			   "\\)\\(?:[:)\" ]\\|$\\)")))
+	   (sym-re (regexp-quote (symbol-name sym))))
       ;; TODO: make regexp-opts of the LIST definitions and search
       ;; those as well?
       (with-current-buffer (cg-output-buffer)
-	(when (and sym
-		   (get-buffer-window)
-		   (not (cg-output-running)))
-	  (remove-overlays (point-min) (point-max) 'face cg-output-highlight-face)
-	  (goto-char (point-min))
-	  (while (re-search-forward sym-re nil 'noerror)
-	    (overlay-put (make-overlay (match-beginning 1) (match-end 1))
-			 'face cg-output-highlight-face)))))))
+        (when (and sym-re
+	           (get-buffer-window)
+	           (not (cg-output-running)))
+          (remove-overlays (point-min) (point-max) 'face cg-output-highlight-face)
+          (cg-hl-pat sym-re cg-output-highlight-face))))))
+
+(defun cg-hl-pat (pat face)
+  "Highlight tag matching regex PAT with FACE in current buffer."
+  (let ((pat-delimited (concat "\\(?:^\\|[ \"(:]\\)\\("
+			       pat
+                               "\\)\\(?:[:)\" ]\\|$\\)")))
+    (goto-char (point-min))
+    (while (re-search-forward pat-delimited nil 'noerror)
+      (overlay-put (make-overlay (match-beginning 1) (match-end 1))
+		   'face face))))
 
 (defun cg-output-running ()
   "Check if we're already running a vislcg3 process."
@@ -1189,9 +1207,12 @@ Similarly, `cg-post-pipe' is run on output."
                    (compilation-start
                     cmd
                     'cg-output-mode
-                    'cg-output-buffer-name))))
+                    'cg-output-buffer-name)))
+       ; copy of the buffer-local variable
+       (patterns cg-output-always-highlight))
 
     (with-current-buffer out
+      (setq-local cg-output-always-highlight patterns)
       (setq cg--tmp tmp)
       (setq cg--file file))
 
@@ -1233,6 +1254,7 @@ Similarly, `cg-post-pipe' is run on output."
         (scroll-up-line 4))))
   (with-current-buffer buffer
     (delete-file cg--tmp))
+  (cg-output-hl-always-patterns)
   (when cg--output-hiding-analyses
     (cg-output-hide-analyses)))
 
