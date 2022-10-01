@@ -168,7 +168,7 @@
           &lt;target&gt; [contextual_tests] ;
     </screen>
     <para>
-      Inserts a new cohort before or after the target.
+      Inserts a new cohort before or after the target. See also <link linkend="grammar-options-addcattach">addcohort-attach</link>.
     </para>
     <para>
       WITHCHILD uses the children of the cohort you're targeting as edges so you can avoid creating cohorts

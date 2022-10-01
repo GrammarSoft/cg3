@@ -25,6 +25,16 @@
       OPTIONS += no-inline-templates ;
     </screen>
 
+    <section id="grammar-options-addcattach">
+      <title>addcohort-attach</title>
+      <indexterm>
+        <primary>addcohort-attach</primary>
+      </indexterm>
+      <para>
+        Causes ADDCOHORT to set the dependency parent of the newly added cohort to the target cohort.
+      </para>
+    </section>
+
     <section id="grammar-options-noisets">
       <title>no-inline-sets</title>
       <indexterm>
