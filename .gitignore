@@ -19,7 +19,7 @@ Makefile
 /src/CTestTestfile.cmake
 /install_manifest.txt
 .ccls-cache/
-*so*
+*.so*
 *~
 *.bak
 /test/**/diff*.txt
