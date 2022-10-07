@@ -4,9 +4,9 @@ use warnings;
 use strict;
 use utf8;
 BEGIN {
-	$| = 1;
-	binmode(STDIN, ':encoding(UTF-8)');
-	binmode(STDOUT, ':encoding(UTF-8)');
+   $| = 1;
+   binmode(STDIN, ':encoding(UTF-8)');
+   binmode(STDOUT, ':encoding(UTF-8)');
 }
 use open qw( :encoding(UTF-8) :std );
 
@@ -14,7 +14,26 @@ use Getopt::Long;
 Getopt::Long::Configure('bundling');
 Getopt::Long::Configure('no_ignore_case');
 my %opts = ();
-GetOptions(\%opts, ('weight|w:s', 'reverse|r'));
+GetOptions(\%opts, ('weight|w:s', 'reverse|r', 'help|?'));
+
+sub print_help {
+   print <<'XOUT';
+Usage: cg-sort [OPTIONS]
+
+Pipe a CG stream through this to sort and unique the readings of each cohort.
+
+Options:
+ -?, --help       outputs this help
+ -w, --weight     sorts by a numeric tag; defaults to W
+ -r, --reverse    reverses the sort order
+
+XOUT
+}
+
+if (defined $opts{'help'}) {
+   print_help();
+   exit(0);
+}
 
 my $W = 'W';
 if (exists($opts{weight}) && length($opts{weight})) {

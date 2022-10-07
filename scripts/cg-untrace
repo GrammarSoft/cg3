@@ -4,11 +4,30 @@ use warnings;
 use strict;
 use utf8;
 BEGIN {
-	$| = 1;
-	binmode(STDIN, ':encoding(UTF-8)');
-	binmode(STDOUT, ':encoding(UTF-8)');
+   $| = 1;
+   binmode(STDIN, ':encoding(UTF-8)');
+   binmode(STDOUT, ':encoding(UTF-8)');
 }
 use open qw( :encoding(UTF-8) :std );
+
+use Getopt::Long;
+Getopt::Long::Configure('no_ignore_case');
+my %opts = ();
+GetOptions(\%opts, ('help|?'));
+
+sub print_help {
+   print <<'XOUT';
+Usage: cg-untrace
+
+Pipe a CG stream through this to remove all deleted readings and tracing tags.
+
+XOUT
+}
+
+if (defined $opts{'help'}) {
+   print_help();
+   exit(0);
+}
 
 while (<STDIN>) {
    # Discard deleted readings
