@@ -1,0 +1,6 @@
+"<the>"
+	"the" det def #1->3 SETPARENT:5
+"<big>"
+	"big" adj #2->3 SETPARENT:3 REMCOHORT:4
+"<dog>"
+	"dog" n sg #3->3

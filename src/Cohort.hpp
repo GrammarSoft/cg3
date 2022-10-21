@@ -73,6 +73,7 @@ public:
 	boost::dynamic_bitset<> possible_sets;
 	CohortVector enclosed;
 	CohortVector removed;
+	CohortVector ignored_cohorts;
 	RelationCtn relations;
 	RelationCtn relations_input;
 	uint32_t line_number = 0;
