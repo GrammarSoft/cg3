@@ -1,0 +1,6 @@
+"<the>"
+	"the" det def
+"<big>"
+	"big" adj
+"<dog>"
+	"dog" n sg

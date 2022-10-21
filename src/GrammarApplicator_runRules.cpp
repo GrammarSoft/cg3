@@ -1169,7 +1169,37 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						break;
 					}
 					else if (type == K_REMCOHORT) {
-						rem_cohort(cohort);
+						// REMCOHORT-IGNORED
+						if (rule.flags & RF_IGNORED) {
+							for (auto iter : cohort->readings) {
+								iter->hit_by.push_back(rule.number);
+							}
+							if (!cohort->enclosed.empty()) {
+								cohort->prev->enclosed.insert(cohort->prev->enclosed.end(), cohort->enclosed.begin(), cohort->enclosed.end());
+								cohort->enclosed.clear();
+							}
+							for (auto& cs : current.rule_to_cohorts) {
+								cs.erase(cohort);
+							}
+							cohort->type |= CT_IGNORED;
+							if (!cohort->prev->enclosed.empty()) {
+								cohort->prev->enclosed.back()->ignored_cohorts.push_back(cohort);
+							}
+							else {
+								cohort->prev->ignored_cohorts.push_back(cohort);
+							}
+							cohort->detach();
+							current.parent->cohort_map.erase(cohort->global_number);
+							current.cohorts.erase(current.cohorts.begin() + cohort->local_number);
+							foreach (iter, current.cohorts) {
+								(*iter)->local_number = UI32(std::distance(current.cohorts.begin(), iter));
+							}
+							gWindow->rebuildCohortLinks();
+							reflowDependencyWindow();
+						}
+						else {
+							rem_cohort(cohort);
+						}
 
 						// If we just removed the last cohort, add <<< to the new last cohort
 						if (cohort->readings.front()->tags.count(endtag)) {
@@ -2642,6 +2672,19 @@ label_unpackEnclosures:
 			goto label_runGrammarOnWindow_begin;
 		}
 	}
+
+	bool any_ignored_cohorts = false;
+	for (size_t i = 0; i < current->cohorts.size(); i++) {
+		Cohort* cc = current->cohorts[i];
+		cc->local_number = i;
+		if (!cc->ignored_cohorts.empty()) {
+			current->cohorts.insert(current->cohorts.begin()+i+1,
+									cc->ignored_cohorts.begin(),
+									cc->ignored_cohorts.end());
+			any_ignored_cohorts = true;
+		}
+	}
+	if (any_ignored_cohorts) reflowDependencyWindow();
 }
 }
 

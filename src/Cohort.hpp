@@ -42,6 +42,7 @@ enum {
 	CT_NUM_CURRENT = (1 <<  3),
 	CT_DEP_DONE    = (1 <<  4),
 	CT_AP_UNKNOWN  = (1 <<  5),
+	CT_IGNORED     = (1 <<  6),
 };
 
 constexpr auto DEP_NO_PARENT = std::numeric_limits<uint32_t>::max();
@@ -73,6 +74,7 @@ public:
 	boost::dynamic_bitset<> possible_sets;
 	CohortVector enclosed;
 	CohortVector removed;
+	CohortVector ignored_cohorts;
 	RelationCtn relations;
 	RelationCtn relations_input;
 	uint32_t line_number = 0;
