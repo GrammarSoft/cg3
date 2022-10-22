@@ -1,5 +1,7 @@
 "<the>"
 	"the" det def
+"<very>"
+	"very" adv
 "<big>"
 	"big" adj
 "<dog>"

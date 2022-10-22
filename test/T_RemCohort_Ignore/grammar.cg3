@@ -1,5 +1,6 @@
 DELIMITERS = "<$.>" ;
 
 SETPARENT (adj) TO (1 (n)) ;
-REMCOHORT IGNORED (adj) IF (p (*)) ;
+SETPARENT (adv) TO (1 (adj)) ;
+REMCOHORT IGNORED WITHCHILD (*) (adj) IF (p (*)) ;
 SETPARENT (det) TO (1 (n)) ;

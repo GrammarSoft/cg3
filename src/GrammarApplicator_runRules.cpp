@@ -735,6 +735,38 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 			const size_t state_num_ignored = cohort->ignored.size();
 			bool readings_changed = false;
 
+			auto get_withchild = [&](Cohort* cohort) {
+				CohortSet cohorts;
+				if (rule.childset1) {
+					for (auto iter : current.cohorts) {
+						// Always consider the target cohort a match
+						if (iter->global_number == cohort->global_number) {
+							cohorts.insert(iter);
+						}
+						else if (iter->dep_parent == cohort->global_number && doesSetMatchCohortNormal(*iter, rule.childset1)) {
+							cohorts.insert(iter);
+						}
+					}
+					CohortSet more;
+					for (auto iter : current.cohorts) {
+						for (auto cht : cohorts) {
+							// Do not grab the whole tree from the root, in case WithChild is not (*)
+							if (cht->global_number == cohort->global_number) {
+								continue;
+							}
+							if (isChildOf(iter, cht)) {
+								more.insert(iter);
+							}
+						}
+					}
+					cohorts.insert(more.begin(), more.end());
+				}
+				else {
+					cohorts.insert(cohort);
+				}
+				return cohorts;
+			};
+
 			auto add_cohort = [&](Cohort* cohort) {
 				Cohort* cCohort = alloc_cohort(&current);
 				cCohort->global_number = gWindow->cohort_counter++;
@@ -832,34 +864,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 					}
 				}
 
-				CohortSet cohorts;
-				if (rule.childset1) {
-					for (auto iter : current.cohorts) {
-						// Always consider the target cohort a match
-						if (iter->global_number == cohort->global_number) {
-							cohorts.insert(iter);
-						}
-						else if (iter->dep_parent == cohort->global_number && doesSetMatchCohortNormal(*iter, rule.childset1)) {
-							cohorts.insert(iter);
-						}
-					}
-					CohortSet more;
-					for (auto iter : current.cohorts) {
-						for (auto cht : cohorts) {
-							// Do not grab the whole tree from the root, in case WithChild is not (*)
-							if (cht->global_number == cohort->global_number) {
-								continue;
-							}
-							if (isChildOf(iter, cht)) {
-								more.insert(iter);
-							}
-						}
-					}
-					cohorts.insert(more.begin(), more.end());
-				}
-				else {
-					cohorts.insert(cohort);
-				}
+				CohortSet cohorts = get_withchild(cohort);
 
 				if (type == K_ADDCOHORT_BEFORE) {
 					current.cohorts.insert(current.cohorts.begin() + cohorts.front()->local_number, cCohort);
@@ -922,6 +927,29 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 					(*iter)->local_number = UI32(std::distance(current.cohorts.begin(), iter));
 				}
 				gWindow->rebuildCohortLinks();
+			};
+
+			auto ignore_cohort = [&](Cohort* cohort) {
+				for (auto iter : cohort->readings) {
+					iter->hit_by.push_back(rule.number);
+				}
+				if (!cohort->enclosed.empty()) {
+					cohort->prev->enclosed.insert(cohort->prev->enclosed.end(), cohort->enclosed.begin(), cohort->enclosed.end());
+					cohort->enclosed.clear();
+				}
+				for (auto& cs : current.rule_to_cohorts) {
+					cs.erase(cohort);
+				}
+				cohort->type |= CT_REMOVED;
+				if (!cohort->prev->enclosed.empty()) {
+					cohort->prev->enclosed.back()->ignored_cohorts.push_back(cohort);
+				}
+				else {
+					cohort->prev->ignored_cohorts.push_back(cohort);
+				}
+				cohort->detach();
+				current.parent->cohort_map.erase(cohort->global_number);
+				current.cohorts.erase(current.cohorts.begin() + cohort->local_number);
 			};
 
 			auto make_relation_rtag = [&](Tag* tag, uint32_t id) {
@@ -1171,26 +1199,10 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 					else if (type == K_REMCOHORT) {
 						// REMCOHORT-IGNORED
 						if (rule.flags & RF_IGNORED) {
-							for (auto iter : cohort->readings) {
-								iter->hit_by.push_back(rule.number);
+							CohortSet cohorts = get_withchild(cohort);
+							reverse_foreach (iter, cohorts) {
+								ignore_cohort(*iter);
 							}
-							if (!cohort->enclosed.empty()) {
-								cohort->prev->enclosed.insert(cohort->prev->enclosed.end(), cohort->enclosed.begin(), cohort->enclosed.end());
-								cohort->enclosed.clear();
-							}
-							for (auto& cs : current.rule_to_cohorts) {
-								cs.erase(cohort);
-							}
-							cohort->type |= CT_REMOVED;
-							if (!cohort->prev->enclosed.empty()) {
-								cohort->prev->enclosed.back()->ignored_cohorts.push_back(cohort);
-							}
-							else {
-								cohort->prev->ignored_cohorts.push_back(cohort);
-							}
-							cohort->detach();
-							current.parent->cohort_map.erase(cohort->global_number);
-							current.cohorts.erase(current.cohorts.begin() + cohort->local_number);
 							foreach (iter, current.cohorts) {
 								(*iter)->local_number = UI32(std::distance(current.cohorts.begin(), iter));
 							}
