@@ -1,6 +1,16 @@
 "<the>"
 	"the" det def
+"<very>"
+	"very" adv
 "<big>"
 	"big" adj
 "<dog>"
 	"dog" n sg
+"<l>"
+	"l" prep
+"<'mr>"
+	"'mr" verb infc
+"<.>"
+	"." punct
+"<quickly>"
+	"quickly" adv
