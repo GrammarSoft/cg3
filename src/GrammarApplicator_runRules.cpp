@@ -735,23 +735,22 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 			const size_t state_num_ignored = cohort->ignored.size();
 			bool readings_changed = false;
 
-			auto get_withchild = [&](Cohort* cohort) {
-				CohortSet cohorts;
-				if (rule.childset1) {
+			auto collect_subtree = [&](CohortSet& cs, Cohort* head, uint32_t cset) {
+				if (cset) {
 					for (auto iter : current.cohorts) {
-						// Always consider the target cohort a match
-						if (iter->global_number == cohort->global_number) {
-							cohorts.insert(iter);
+						// Always consider the initial cohort a match
+						if (iter->global_number == head->global_number) {
+							cs.insert(iter);
 						}
-						else if (iter->dep_parent == cohort->global_number && doesSetMatchCohortNormal(*iter, rule.childset1)) {
-							cohorts.insert(iter);
+						else if (iter->dep_parent == head->global_number && doesSetMatchCohortNormal(*iter, cset)) {
+							cs.insert(iter);
 						}
 					}
 					CohortSet more;
 					for (auto iter : current.cohorts) {
-						for (auto cht : cohorts) {
+						for (auto cht : cs) {
 							// Do not grab the whole tree from the root, in case WithChild is not (*)
-							if (cht->global_number == cohort->global_number) {
+							if (cht->global_number == head->global_number) {
 								continue;
 							}
 							if (isChildOf(iter, cht)) {
@@ -759,12 +758,11 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 							}
 						}
 					}
-					cohorts.insert(more.begin(), more.end());
+					cs.insert(more.begin(), more.end());
 				}
 				else {
-					cohorts.insert(cohort);
+					cs.insert(head);
 				}
-				return cohorts;
 			};
 
 			auto add_cohort = [&](Cohort* cohort) {
@@ -864,7 +862,8 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 					}
 				}
 
-				CohortSet cohorts = get_withchild(cohort);
+				CohortSet cohorts;
+				collect_subtree(cohorts, cohort, rule.childset1);
 
 				if (type == K_ADDCOHORT_BEFORE) {
 					current.cohorts.insert(current.cohorts.begin() + cohorts.front()->local_number, cCohort);
@@ -1199,7 +1198,8 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 					else if (type == K_REMCOHORT) {
 						// REMCOHORT-IGNORED
 						if (rule.flags & RF_IGNORED) {
-							CohortSet cohorts = get_withchild(cohort);
+							CohortSet cohorts;
+							collect_subtree(cohorts, cohort, rule.childset1);
 							reverse_foreach (iter, cohorts) {
 								ignore_cohort(*iter);
 							}
@@ -2069,61 +2069,8 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 							}
 							else {
 								CohortSet edges;
-								if (rule.childset2) {
-									for (auto iter : current.cohorts) {
-										// Always consider the anchor cohort a match
-										if (iter->global_number == attach->global_number) {
-											edges.insert(iter);
-										}
-										else if (iter->dep_parent == attach->global_number && doesSetMatchCohortNormal(*iter, rule.childset2)) {
-											edges.insert(iter);
-										}
-									}
-									CohortSet more;
-									for (auto iter : current.cohorts) {
-										for (auto edge : edges) {
-											// Do not grab the whole tree from the root, in case WithChild is not (*)
-											if (edge->global_number == attach->global_number) {
-												continue;
-											}
-											if (isChildOf(iter, edge)) {
-												more.insert(iter);
-											}
-										}
-									}
-									edges.insert(more.begin(), more.end());
-								}
-								else {
-									edges.insert(attach);
-								}
-
-								if (rule.childset1) {
-									for (auto iter : current.cohorts) {
-										// Always consider the target cohort a match
-										if (iter->global_number == cohort->global_number) {
-											cohorts.insert(iter);
-										}
-										else if (iter->dep_parent == cohort->global_number && doesSetMatchCohortNormal(*iter, rule.childset1)) {
-											cohorts.insert(iter);
-										}
-									}
-									CohortSet more;
-									for (auto iter : current.cohorts) {
-										for (auto cht : cohorts) {
-											// Do not grab the whole tree from the root, in case WithChild is not (*)
-											if (cht->global_number == cohort->global_number) {
-												continue;
-											}
-											if (isChildOf(iter, cht)) {
-												more.insert(iter);
-											}
-										}
-									}
-									cohorts.insert(more.begin(), more.end());
-								}
-								else {
-									cohorts.insert(cohort);
-								}
+								collect_subtree(edges, attach, rule.childset2);
+								collect_subtree(cohorts, cohort, rule.childset1);
 
 								bool need_clean = false;
 								for (auto iter : cohorts) {
@@ -2685,12 +2632,14 @@ label_unpackEnclosures:
 		}
 	}
 
+	bool should_reflow = false;
 	bool any_ignored_cohorts = true;
 	while (any_ignored_cohorts) {
 		any_ignored_cohorts = false;
 		for (size_t i = 0; i < current->cohorts.size(); ++i) {
 			Cohort* cc = current->cohorts[i];
 			cc->local_number = UI32(i); // Will also adjust newly restored cohorts
+			current->parent->cohort_map.insert(std::make_pair(cc->global_number, cc));
 
 			if (!cc->ignored_cohorts.empty()) {
 				for (auto& c : cc->ignored_cohorts) {
@@ -2702,9 +2651,10 @@ label_unpackEnclosures:
 			}
 		}
 		if (any_ignored_cohorts) {
-			reflowDependencyWindow();
+			should_reflow = true;
 		}
 	}
+	if (should_reflow) reflowDependencyWindow();
 }
 }
 
