@@ -5,5 +5,6 @@ SETPARENT (adv) TO (1 (adj)) ;
 REMCOHORT IGNORED WITHCHILD (*) (adj) IF (p (*)) ;
 SETPARENT (det) TO (1 (n)) ;
 
-REMCOHORT IGNORED (punct) ;
+REMCOHORT IGNORED (punct) IF (-1 (verb)) ;
 MERGECOHORTS ("<le'emor>" "$2$1"v SCONJ *) ("('mr)"r verb infc) WITH (-1 ("(l)"r prep)) ;
+SETPARENT (adv) TO (-1 (SCONJ)) ;

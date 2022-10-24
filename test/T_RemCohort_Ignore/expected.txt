@@ -14,3 +14,5 @@
 	"l'mr" SCONJ verb infc #5->5 MERGECOHORTS:9
 "<.>"
 	"." punct #6->6 REMCOHORT:8
+"<quickly>"
+	"quickly" adv #7->5 SETPARENT:10

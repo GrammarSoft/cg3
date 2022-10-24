@@ -12,3 +12,5 @@
 	"'mr" verb infc
 "<.>"
 	"." punct
+"<quickly>"
+	"quickly" adv
