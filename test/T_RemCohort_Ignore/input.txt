@@ -6,3 +6,9 @@
 	"big" adj
 "<dog>"
 	"dog" n sg
+"<l>"
+	"l" prep
+"<'mr>"
+	"'mr" verb infc
+"<.>"
+	"." punct

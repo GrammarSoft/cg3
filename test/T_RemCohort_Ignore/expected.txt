@@ -6,3 +6,11 @@
 	"big" adj #3->4 SETPARENT:3 REMCOHORT:5
 "<dog>"
 	"dog" n sg #4->4
+; "<l>"
+;	"l" prep MERGECOHORTS:9
+; "<'mr>"
+;	"'mr" verb infc MERGECOHORTS:9
+"<le'emor>"
+	"l'mr" SCONJ verb infc #5->5 MERGECOHORTS:9
+"<.>"
+	"." punct #6->6 REMCOHORT:8

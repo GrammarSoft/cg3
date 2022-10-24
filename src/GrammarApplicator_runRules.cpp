@@ -1921,6 +1921,9 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						cohort = add_cohort(merge_at);
 
 						for (auto c : withs) {
+							if (!c->ignored_cohorts.empty()) {
+								cohort->ignored_cohorts.insert(cohort->ignored_cohorts.end(), c->ignored_cohorts.begin(), c->ignored_cohorts.end());
+							}
 							rem_cohort(c);
 						}
 
