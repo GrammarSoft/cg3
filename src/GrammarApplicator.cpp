@@ -73,7 +73,7 @@ void GrammarApplicator::setGrammar(Grammar* res) {
 	substtag = tag_subst->hash;
 
 	UString mp{ grammar->mapping_prefix };
-	mprefix_key = addTag(UStringView{ u"_MPREFIX" })->hash;
+	mprefix_key = addTag(u"_MPREFIX"_usv)->hash;
 	mprefix_value = addTag(mp)->hash;
 
 	index_readingSet_yes.clear();

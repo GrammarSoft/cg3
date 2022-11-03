@@ -189,8 +189,8 @@ void ApertiumApplicator::runGrammarOnText(std::istream& input, std::ostream& out
 
 	uint32_t resetAfter = ((num_windows + 4) * 2 + 1);
 
-	constexpr UStringView wb_start{ u"[[" };
-	constexpr UStringView wb_end{ u"]]" };
+	constexpr UStringView wb_start{ u"[["_usv };
+	constexpr UStringView wb_end{ u"]]"_usv };
 
 	begintag = addTag(STR_BEGINTAG)->hash; // Beginning of sentence tag
 	endtag = addTag(STR_ENDTAG)->hash;     // End of sentence tag
@@ -762,7 +762,7 @@ void ApertiumApplicator::printReading(Reading* reading, std::ostream& output, Ap
 	tags_list.insert(tags_list.end(), multitags_list.begin(), multitags_list.end());
 
 	uint32SortedVector used_tags;
-	UStringView escape{ surface_readings ? u"\\" : u"" };
+	UStringView escape{ surface_readings ? u"\\"_usv : u""_usv };
 	for (auto tter : tags_list) {
 		if (unique_tags) {
 			if (used_tags.find(tter) != used_tags.end()) {

@@ -323,7 +323,7 @@ void Grammar::appendToSet(Set*& to) {
 Set* Grammar::undefSet(const UString& _name) {
 	Set* tset = nullptr;
 
-	UStringView pfxs[]{u"$$", u"&&", u""};
+	UStringView pfxs[]{u"$$"_usv, u"&&"_usv, u""_usv};
 	UString name;
 	name.reserve(_name.size() + 2);
 	for (auto pfx : pfxs) {

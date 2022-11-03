@@ -247,6 +247,11 @@ inline UStringView USV(UnicodeString& str) {
 	return UStringView(str.getTerminatedBuffer(), str.length());
 }
 
+// Horrible hack to make CentOS 7 (EL7) behave
+inline constexpr UStringView operator "" _usv(const char16_t* str, size_t len) {
+	return UStringView(static_cast<const UChar*>(static_cast<const void*>(str)), len);
+}
+
 inline bool ISSPACE(const UChar c) {
 	if (c <= 0xFF && c != 0x09 && c != 0x0A && c != 0x0D && c != 0x20 && c != 0xA0) {
 		return false;
