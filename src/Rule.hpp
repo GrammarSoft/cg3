@@ -94,6 +94,9 @@ constexpr auto init_flag_excls(rule_flags_t v) {
 
 constexpr auto _flags_excls = make_array<FLAGS_COUNT>(init_flag_excls);
 
+class Rule;
+typedef std::vector<Rule*> RuleVector;
+
 class Rule {
 public:
 	UString name;
@@ -108,6 +111,7 @@ public:
 	KEYWORDS type = K_IGNORE;
 	Set* maplist = nullptr;
 	Set* sublist = nullptr;
+	RuleVector sub_rules;
 
 	mutable ContextList tests;
 	mutable ContextList dep_tests;
@@ -127,7 +131,6 @@ public:
 	static bool cmp_quality(const Rule* a, const Rule* b);
 };
 
-typedef std::vector<Rule*> RuleVector;
 typedef std::map<uint32_t, Rule*> RuleByLineMap;
 typedef std::unordered_map<uint32_t, Rule*> RuleByLineHashMap;
 }

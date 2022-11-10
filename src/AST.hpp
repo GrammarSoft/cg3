@@ -62,6 +62,7 @@ enum ASTType {
 	AST_RuleMoveType,
 	AST_RuleName,
 	AST_RuleSublist,
+	AST_RuleSubrules,
 	AST_RuleTarget,
 	AST_RuleType,
 	AST_RuleWithChildDepTarget,

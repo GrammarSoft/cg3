@@ -67,10 +67,11 @@ private:
 	uint32_t seen_mapping_prefix = 0;
 	flags_t section_flags;
 	bool option_vislcg_compat = false;
-	bool in_section = false, in_before_sections = true, in_after_sections = false, in_null_section = false;
+	bool in_section = false, in_before_sections = true, in_after_sections = false, in_null_section = false, in_nested_rule = false;
 	bool no_isets = false, no_itmpls = false, strict_wforms = false, strict_bforms = false, strict_second = false, strict_regex = false, strict_icase = false;
 	bool self_no_barrier = false;
 	bool only_sets = false;
+	Rule* nested_rule = nullptr;
 	const char* filename = nullptr;
 
 	typedef std::unordered_map<ContextualTest*, std::pair<size_t, UString>> deferred_t;

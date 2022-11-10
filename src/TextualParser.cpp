@@ -1534,6 +1534,120 @@ void TextualParser::parseRule(UChar*& p, KEYWORDS key) {
 		}
 	}
 
+	result->lines += SKIPWS(p, '{', ';');
+	if (*p == '{') {
+		++p;
+		bool prev_in_nested_rule = in_nested_rule;
+		Rule* prev_nested_rule = nested_rule;
+		in_nested_rule = true;
+		nested_rule = rule;
+		AST_OPEN(RuleSubrules);
+		result->lines += SKIPWS(p);
+		do {
+			// ADDRELATIONS
+			if (IS_ICASE(p, "ADDRELATIONS", "addrelations")) {
+				parseRule(p, K_ADDRELATIONS); // line 1884
+			}
+			// SETRELATIONS
+			else if (IS_ICASE(p, "SETRELATIONS", "setrelations")) {
+				parseRule(p, K_SETRELATIONS);
+			}
+			// REMRELATIONS
+			else if (IS_ICASE(p, "REMRELATIONS", "remrelations")) {
+				parseRule(p, K_REMRELATIONS);
+			}
+			// ADDRELATION
+			else if (IS_ICASE(p, "ADDRELATION", "addrelation")) {
+				parseRule(p, K_ADDRELATION);
+			}
+			// SETRELATION
+			else if (IS_ICASE(p, "SETRELATION", "setrelation")) {
+				parseRule(p, K_SETRELATION);
+			}
+			// REMRELATION
+			else if (IS_ICASE(p, "REMRELATION", "remrelation")) {
+				parseRule(p, K_REMRELATION);
+			}
+			// SETVARIABLE
+			else if (IS_ICASE(p, "SETVARIABLE", "setvariable")) {
+				parseRule(p, K_SETVARIABLE);
+			}
+			// REMVARIABLE
+			else if (IS_ICASE(p, "REMVARIABLE", "remvariable")) {
+				parseRule(p, K_REMVARIABLE);
+			}
+			// SETPARENT
+			else if (IS_ICASE(p, "SETPARENT", "setparent")) {
+				parseRule(p, K_SETPARENT);
+			}
+			// SETCHILD
+			else if (IS_ICASE(p, "SETCHILD", "setchild")) {
+				parseRule(p, K_SETCHILD);
+			}
+			// RESTORE
+			else if (IS_ICASE(p, "RESTORE", "restore")) {
+				parseRule(p, K_RESTORE);
+			}
+			// IFF
+			else if (IS_ICASE(p, "IFF", "iff")) {
+				parseRule(p, K_IFF);
+			}
+			// MAP
+			else if (IS_ICASE(p, "MAP", "map")) {
+				parseRule(p, K_MAP);
+			}
+			// ADD
+			else if (IS_ICASE(p, "ADD", "add")) {
+				parseRule(p, K_ADD);
+			}
+			// APPEND
+			else if (IS_ICASE(p, "APPEND", "append")) {
+				parseRule(p, K_APPEND);
+			}
+			// SELECT
+			else if (IS_ICASE(p, "SELECT", "select")) {
+				parseRule(p, K_SELECT);
+			}
+			// REMOVE
+			else if (IS_ICASE(p, "REMOVE", "remove")) {
+				parseRule(p, K_REMOVE);
+			}
+			// REPLACE
+			else if (IS_ICASE(p, "REPLACE", "replace")) {
+				parseRule(p, K_REPLACE);
+			}
+			// SUBSTITUTE
+			else if (IS_ICASE(p, "SUBSTITUTE", "substitute")) {
+				parseRule(p, K_SUBSTITUTE);
+			}
+			// COPY
+			else if (IS_ICASE(p, "COPY", "copy")) {
+				parseRule(p, K_COPY);
+			}
+			// UNMAP
+			else if (IS_ICASE(p, "UNMAP", "unmap")) {
+				parseRule(p, K_UNMAP);
+			}
+			// PROTECT
+			else if (IS_ICASE(p, "PROTECT", "protect")) {
+				parseRule(p, K_PROTECT);
+			}
+			// UNPROTECT
+			else if (IS_ICASE(p, "UNPROTECT", "unprotect")) {
+				parseRule(p, K_UNPROTECT);
+			}
+			result->lines += SKIPWS(p, '}', ';');
+			if (*p == ';') {
+				++p;
+				result->lines += SKIPWS(p);
+			}
+		} while (*p != '}');
+		++p;
+		AST_CLOSE(p);
+		nested_rule = prev_nested_rule;
+		in_nested_rule = prev_in_nested_rule;
+	}
+
 	rule->reverseContextualTests();
 	if (only_sets) {
 		result->destroyRule(rule);
@@ -2994,7 +3108,11 @@ void TextualParser::setVerbosity(uint32_t level) {
 }
 
 void TextualParser::addRuleToGrammar(Rule* rule) {
-	if (in_section) {
+	if (in_nested_rule) {
+		rule->section = -4; // TODO: does this need to be defined?
+		nested_rule->sub_rules.push_back(rule);
+	}
+	else if (in_section) {
 		rule->section = SI32(result->sections.size()) - 1;
 		result->addRule(rule);
 	}
