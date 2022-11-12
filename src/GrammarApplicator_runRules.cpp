@@ -297,6 +297,348 @@ Reading* GrammarApplicator::get_sub_reading(Reading* tr, int sub_reading) {
 		}                                                                            \
 	} while (0)
 
+void GrammarApplicator::runSingleRule(SingleWindow& current, Rule& rule, RuleCallback reading_cb, RuleCallback cohort_cb) {
+	finish_cohort_loop = true;
+	KEYWORDS type = rule.type;
+	const Set& set = *(grammar->sets_list[rule.target]);
+	CohortSet* cohortset = &current.rule_to_cohorts[rule.number];
+	if (debug_level > 1) {
+		std::cerr << "DEBUG: " << cohortset->size() << "/" << current.cohorts.size() << " = " << double(cohortset->size()) / double(current.cohorts.size()) << std::endl;
+	}
+	for (auto rocit = cohortset->cbegin(); rocit != cohortset->cend();) {
+		Cohort* cohort = *rocit;
+		++rocit;
+
+		if (debug_level > 1) {
+			std::cerr << "DEBUG: Trying cohort " << cohort->global_number << ":" << cohort->local_number << std::endl;
+		}
+
+		// If the current cohort is the initial >>> one, skip it.
+		if (cohort->local_number == 0) {
+			continue;
+		}
+		// If the cohort is removed, skip it...
+		// Removed cohorts are still in the precalculated rule_to_cohorts map,
+		// and it would take time to go through the whole map searching for the cohort.
+		// Haven't tested whether it is worth it...
+		if (cohort->type & CT_REMOVED) {
+			continue;
+		}
+
+		uint32_t c = cohort->local_number;
+		// If the cohort is temporarily unavailable due to parentheses, skip it.
+		if ((cohort->type & CT_ENCLOSED) || cohort->parent != &current) {
+			continue;
+		}
+		// If there are no readings, skip it.
+		// This is unlikely to happen as all cohorts will get a magic reading during input,
+		// and not many use the unsafe Remove rules.
+		if (cohort->readings.empty()) {
+			continue;
+		}
+		// If there's no reason to even attempt to restore, just skip it.
+		if (rule.type == K_RESTORE) {
+			if ((rule.flags & RF_DELAYED) && cohort->delayed.empty()) {
+				continue;
+			}
+			else if ((rule.flags & RF_IGNORED) && cohort->ignored.empty()) {
+				continue;
+			}
+			else if (!(rule.flags & (RF_DELAYED|RF_IGNORED)) && cohort->deleted.empty()) {
+				continue;
+			}
+		}
+		// If there is not even a remote chance the target set might match this cohort, skip it.
+		if (rule.sub_reading == 0 && (rule.target >= cohort->possible_sets.size() || !cohort->possible_sets.test(rule.target))) {
+			continue;
+		}
+
+		// If there is only 1 reading left and it is a Select or safe Remove rule, skip it.
+		if (cohort->readings.size() == 1) {
+			if (type == K_SELECT) {
+				continue;
+			}
+			if (type == K_REMOVE || type == K_IFF) {
+				if (cohort->readings.front()->noprint) {
+					continue;
+				}
+				if ((!unsafe || (rule.flags & RF_SAFE)) && !(rule.flags & RF_UNSAFE)) {
+					continue;
+				}
+			}
+		}
+		else if (type == K_UNMAP && rule.flags & RF_SAFE) {
+			continue;
+		}
+		// If it's a Delimit rule and we're at the final cohort, skip it.
+		if (type == K_DELIMIT && c == current.cohorts.size() - 1) {
+				continue;
+		}
+
+		// If the rule is only supposed to run inside a parentheses, check if cohort is.
+		if (rule.flags & RF_ENCL_INNER) {
+			if (!par_left_pos) {
+				continue;
+			}
+			if (cohort->local_number < par_left_pos || cohort->local_number > par_right_pos) {
+				continue;
+			}
+		}
+		// ...and if the rule should only run outside parentheses, check if cohort is.
+		else if (rule.flags & RF_ENCL_OUTER) {
+			if (par_left_pos && cohort->local_number >= par_left_pos && cohort->local_number <= par_right_pos) {
+				continue;
+			}
+		}
+
+		// Check if on previous runs the rule did not match this cohort, and skip if that is the case.
+		// This cache is cleared if any rule causes any state change in the window.
+		uint32_t ih = hash_value(rule.number, cohort->global_number);
+		if (index_matches(index_ruleCohort_no, ih)) {
+			continue;
+		}
+		index_ruleCohort_no.insert(ih);
+
+		size_t num_active = 0;
+		size_t num_iff = 0;
+		attach_to = cohort;
+
+		// Assume that Iff rules are really Remove rules, until proven otherwise.
+		if (rule.type == K_IFF) {
+			type = K_REMOVE;
+		}
+
+		bool did_test = false;
+		bool test_good = false;
+		bool matched_target = false;
+
+		clear(readings_plain);
+		clear(subs_any);
+
+		// Varstring capture groups exist on a per-cohort basis, since we may need them for mapping later.
+		clear(regexgrps_z);
+		clear(regexgrps_c);
+		clear(unif_tags_rs);
+		clear(unif_sets_rs);
+
+		size_t used_regex = 0;
+		regexgrps_store.resize(std::max(regexgrps_store.size(), cohort->readings.size()));
+		regexgrps_z.reserve(std::max(regexgrps_z.size(), cohort->readings.size()));
+		regexgrps_c.reserve(std::max(regexgrps_c.size(), cohort->readings.size()));
+
+		size_t used_unif = 0;
+		unif_tags_store.resize(std::max(unif_tags_store.size(), cohort->readings.size() + 1));
+		unif_sets_store.resize(std::max(unif_sets_store.size(), cohort->readings.size() + 1));
+
+		Rule_Context context;
+		context.target = cohort;
+
+		// This loop figures out which readings, if any, that are valid targets for the current rule
+		// Criteria for valid is that the reading must match both target and all contextual tests
+		for (size_t i = 0; i < cohort->readings.size(); ++i) {
+			// ToDo: Switch sub-readings so that they build up a passed in vector<Reading*>
+			Reading* reading = get_sub_reading(cohort->readings[i], rule.sub_reading);
+			if (!reading) {
+				cohort->readings[i]->matched_target = false;
+				cohort->readings[i]->matched_tests = false;
+				continue;
+			}
+			context.target_reading = cohort->readings[i];
+			context.target_subreading = reading;
+
+			// The state is stored in the readings themselves, so clear the old states
+			reading->matched_target = false;
+			reading->matched_tests = false;
+
+			if (reading->mapped && (rule.type == K_MAP || rule.type == K_ADD || rule.type == K_REPLACE)) {
+				continue;
+			}
+			if (reading->noprint && !allow_magic_readings) {
+				continue;
+			}
+			if (reading->immutable && rule.type != K_UNPROTECT) {
+				if (type == K_SELECT) {
+					reading->matched_target = true;
+					reading->matched_tests = true;
+				}
+				++num_active;
+				++num_iff;
+				continue;
+			}
+
+			// Check if any previous reading of this cohort had the same plain signature, and if so just copy their results
+			// This cache is cleared on a per-cohort basis
+			if (!(set.type & (ST_SPECIAL | ST_MAPPING | ST_CHILD_UNIFY)) && !readings_plain.empty()) {
+				auto rpit = readings_plain.find(reading->hash_plain);
+				if (rpit != readings_plain.end()) {
+					reading->matched_target = rpit->second->matched_target;
+					reading->matched_tests = rpit->second->matched_tests;
+					if (reading->matched_tests) {
+						++num_active;
+					}
+					if (regexgrps_c.count(rpit->second->number)) {
+						regexgrps_c[reading->number];
+						regexgrps_c[reading->number] = regexgrps_c[rpit->second->number];
+						regexgrps_z[reading->number];
+						regexgrps_z[reading->number] = regexgrps_z[rpit->second->number];
+					}
+					continue;
+				}
+			}
+
+			// Regex capture is done on a per-reading basis, so clear all captured state.
+			regexgrps.first = 0;
+			regexgrps.second = &regexgrps_store[used_regex];
+
+			// Unification is done on a per-reading basis, so clear all unification state.
+			unif_tags = &unif_tags_store[used_unif];
+			unif_sets = &unif_sets_store[used_unif];
+			unif_tags_rs[reading->hash_plain] = unif_tags;
+			unif_sets_rs[reading->hash_plain] = unif_sets;
+			unif_tags_rs[reading->hash] = unif_tags;
+			unif_sets_rs[reading->hash] = unif_sets;
+			++used_unif;
+
+			unif_last_wordform = 0;
+			unif_last_baseform = 0;
+			unif_last_textual = 0;
+			clear(*unif_tags);
+			clear(*unif_sets);
+
+			same_basic = reading->hash_plain;
+			target = nullptr;
+			mark = cohort;
+			uint8_t orz = regexgrps.first;
+			for (auto r = cohort->readings[i]; r; r = r->next) {
+				r->active = true;
+			}
+			// Actually check if the reading is a valid target. First check if rule target matches...
+			if (rule.target && doesSetMatchReading(*reading, rule.target, (set.type & (ST_CHILD_UNIFY | ST_SPECIAL)) != 0)) {
+				bool regex_prop = true;
+				if (orz != regexgrps.first) {
+					did_test = false;
+					regex_prop = false;
+				}
+				target = cohort;
+				reading->matched_target = true;
+				matched_target = true;
+				bool good = true;
+				// If we didn't already run the contextual tests, run them now.
+				if (!did_test) {
+					context.context.clear();
+					foreach (it, rule.tests) {
+						ContextualTest* test = *it;
+						if (rule.flags & RF_RESETX || !(rule.flags & RF_REMEMBERX)) {
+							mark = cohort;
+						}
+						seen_barrier = false;
+						// Keeps track of where we have been, to prevent infinite recursion in trees with loops
+						dep_deep_seen.clear();
+						// Reset the counters for which types of CohortIterator we have in play
+						std::fill(ci_depths.begin(), ci_depths.end(), UI32(0));
+						tmpl_cntx.clear();
+						// Run the contextual test...
+						Cohort* next_test = nullptr;
+						if (!(test->pos & POS_PASS_ORIGIN) && (no_pass_origin || (test->pos & POS_NO_PASS_ORIGIN))) {
+							next_test = runContextualTest(&current, c, test, nullptr, cohort);
+						}
+						else {
+							next_test = runContextualTest(&current, c, test);
+						}
+						context.context.push_back(next_test);
+						test_good = (next_test != nullptr);
+						if (!test_good) {
+							good = test_good;
+							if (!statistics) {
+								if (it != rule.tests.begin() && !(rule.flags & (RF_REMEMBERX | RF_KEEPORDER))) {
+									rule.tests.erase(it);
+									rule.tests.push_front(test);
+								}
+								break;
+							}
+						}
+						did_test = ((set.type & (ST_CHILD_UNIFY | ST_SPECIAL)) == 0 && unif_tags->empty() && unif_sets->empty());
+					}
+				}
+				else {
+					good = test_good;
+				}
+				if (good || (rule.type == K_IFF && reading->matched_target)) {
+					reading_cb(context);
+					if (!finish_cohort_loop) return;
+				}
+				if (good) {
+					// We've found a match, so Iff should be treated as Select instead of Remove
+					if (rule.type == K_IFF && type != K_SELECT) {
+						type = K_SELECT;
+						if (grammar->has_protect) {
+							for (size_t j = 0; j < i; ++j) {
+								Reading* reading = get_sub_reading(cohort->readings[j], rule.sub_reading);
+								if (reading && reading->immutable) {
+									reading->matched_target = true;
+									reading->matched_tests = true;
+									++num_active;
+									++num_iff;
+								}
+							}
+						}
+					}
+					reading->matched_tests = true;
+					++num_active;
+					++rule.num_match;
+
+					if (regex_prop && i && !regexgrps_c.empty()) {
+						for (auto z = i; z > 0; --z) {
+							auto it = regexgrps_c.find(cohort->readings[z - 1]->number);
+							if (it != regexgrps_c.end()) {
+								regexgrps_c.insert(std::make_pair(reading->number, it->second));
+								regexgrps_z.insert(std::make_pair(reading->number, regexgrps_z.find(cohort->readings[z - 1]->number)->second));
+								break;
+							}
+						}
+					}
+				}
+				else {
+					regexgrps.first = orz;
+				}
+				++num_iff;
+			}
+			else {
+				regexgrps.first = orz;
+				++rule.num_fail;
+			}
+			readings_plain.insert(std::make_pair(reading->hash_plain, reading));
+			for (auto r = cohort->readings[i]; r; r = r->next) {
+				r->active = false;
+			}
+
+			if (reading != cohort->readings[i]) {
+				cohort->readings[i]->matched_target = reading->matched_target;
+				cohort->readings[i]->matched_tests = reading->matched_tests;
+			}
+			if (regexgrps.first) {
+				regexgrps_c[reading->number] = regexgrps.second;
+				regexgrps_z[reading->number] = regexgrps.first;
+				++used_regex;
+			}
+		}
+
+		// If none of the readings were valid targets, remove this cohort from the rule's possible cohorts.
+		if (num_active == 0 && (num_iff == 0 || rule.type != K_IFF)) {
+			if (!matched_target) {
+				--rocit;                         // We have already incremented rocit earlier, so take one step back...
+				rocit = cohortset->erase(rocit); // ...and one step forward again
+			}
+			continue;
+		}
+		else {
+			cohort_cb(context);
+			if (!finish_cohort_loop) return;
+		}
+	}
+}
+
+
 /**
  * Applies the passed rules to the passed SingleWindow.
  *
@@ -387,106 +729,36 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 			tstamp = getticks();
 		}
 
+		auto no_op = [](Rule_Context& context) {};
+
+		auto select_remove_reading = [&](Rule_Context& context) {
+			if (rule.type == K_SELECT || (rule.type == K_IFF && context.target_subreading->matched_tests)) {
+				selected.push_back(context.target_reading);
+			}
+			else {
+				removed.push_back(context.target_reading);
+			}
+			index_ruleCohort_no.clear();
+		};
+
+		auto modify_reading = [&](Rule_Context& context) {
+			if (rule.type == K_PROTECT) {
+				context.target_subreading->immutable = true;
+			}
+			else if (rule.type == K_UNPROTECT) {
+				context.target_subreading->immutable = false;
+			}
+		};
+
 		const Set& set = *(grammar->sets_list[rule.target]);
 		grammar->lines = rule.line;
 
 		CohortSet* cohortset = &current.rule_to_cohorts[rule.number];
-		if (debug_level > 1) {
-			std::cerr << "DEBUG: " << cohortset->size() << "/" << current.cohorts.size() << " = " << double(cohortset->size()) / double(current.cohorts.size()) << std::endl;
-		}
 		for (auto rocit = cohortset->cbegin(); rocit != cohortset->cend();) {
 			Cohort* cohort = *rocit;
 			++rocit;
-
-			if (debug_level > 1) {
-				std::cerr << "DEBUG: Trying cohort " << cohort->global_number << ":" << cohort->local_number << std::endl;
-			}
-
-			// If the current cohort is the initial >>> one, skip it.
-			if (cohort->local_number == 0) {
-				continue;
-			}
-			// If the cohort is removed, skip it...
-			// Removed cohorts are still in the precalculated rule_to_cohorts map,
-			// and it would take time to go through the whole map searching for the cohort.
-			// Haven't tested whether it is worth it...
-			if (cohort->type & CT_REMOVED) {
-				continue;
-			}
-
 			uint32_t c = cohort->local_number;
-			// If the cohort is temporarily unavailable due to parentheses, skip it.
-			if ((cohort->type & CT_ENCLOSED) || cohort->parent != &current) {
-				continue;
-			}
-			// If there are no readings, skip it.
-			// This is unlikely to happen as all cohorts will get a magic reading during input,
-			// and not many use the unsafe Remove rules.
-			if (cohort->readings.empty()) {
-				continue;
-			}
-			// If there's no reason to even attempt to restore, just skip it.
-			if (rule.type == K_RESTORE) {
-				if ((rule.flags & RF_DELAYED) && cohort->delayed.empty()) {
-					continue;
-				}
-				else if ((rule.flags & RF_IGNORED) && cohort->ignored.empty()) {
-					continue;
-				}
-				else if (!(rule.flags & (RF_DELAYED|RF_IGNORED)) && cohort->deleted.empty()) {
-					continue;
-				}
-			}
-			// If there is not even a remote chance the target set might match this cohort, skip it.
-			if (rule.sub_reading == 0 && (rule.target >= cohort->possible_sets.size() || !cohort->possible_sets.test(rule.target))) {
-				continue;
-			}
 
-			// If there is only 1 reading left and it is a Select or safe Remove rule, skip it.
-			if (cohort->readings.size() == 1) {
-				if (type == K_SELECT) {
-					continue;
-				}
-				if (type == K_REMOVE || type == K_IFF) {
-					if (cohort->readings.front()->noprint) {
-						continue;
-					}
-					if ((!unsafe || (rule.flags & RF_SAFE)) && !(rule.flags & RF_UNSAFE)) {
-						continue;
-					}
-				}
-			}
-			else if (type == K_UNMAP && rule.flags & RF_SAFE) {
-				continue;
-			}
-			// If it's a Delimit rule and we're at the final cohort, skip it.
-			if (type == K_DELIMIT && c == current.cohorts.size() - 1) {
-				continue;
-			}
-
-			// If the rule is only supposed to run inside a parentheses, check if cohort is.
-			if (rule.flags & RF_ENCL_INNER) {
-				if (!par_left_pos) {
-					continue;
-				}
-				if (cohort->local_number < par_left_pos || cohort->local_number > par_right_pos) {
-					continue;
-				}
-			}
-			// ...and if the rule should only run outside parentheses, check if cohort is.
-			else if (rule.flags & RF_ENCL_OUTER) {
-				if (par_left_pos && cohort->local_number >= par_left_pos && cohort->local_number <= par_right_pos) {
-					continue;
-				}
-			}
-
-			// Check if on previous runs the rule did not match this cohort, and skip if that is the case.
-			// This cache is cleared if any rule causes any state change in the window.
-			uint32_t ih = hash_value(rule.number, cohort->global_number);
-			if (index_matches(index_ruleCohort_no, ih)) {
-				continue;
-			}
-			index_ruleCohort_no.insert(ih);
 
 			size_t num_active = 0;
 			size_t num_iff = 0;

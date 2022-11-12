@@ -72,6 +72,18 @@ struct dSMC_Context {
 	bool in_barrier = false;
 };
 
+struct Rule_Context {
+	Cohort* target = nullptr;
+	Reading* target_reading = nullptr;
+	Reading* target_subreading = nullptr;
+	std::vector<Cohort*> context;
+	std::vector<Cohort*> dep_context;
+	Cohort* attach_to = nullptr;
+	Cohort* mark = nullptr;
+};
+
+typedef std::function<void(Rule_Context&)> RuleCallback;
+
 class GrammarApplicator {
 public:
 	bool always_span = false;
@@ -268,6 +280,8 @@ protected:
 	uint32_t runGrammarOnSingleWindow(SingleWindow& current);
 	bool updateValidRules(const uint32IntervalVector& rules, uint32IntervalVector& intersects, const uint32_t& hash, Reading& reading);
 	uint32_t runRulesOnSingleWindow(SingleWindow& current, const uint32IntervalVector& rules);
+	bool finish_cohort_loop = true;
+	void runSingleRule(SingleWindow& current, Rule& rule, RuleCallback reading_cb, RuleCallback cohort_cb);
 
 	enum ST_RETVALS {
 		TRV_BREAK         = (1 <<  0),

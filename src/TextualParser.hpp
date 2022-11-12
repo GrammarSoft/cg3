@@ -96,6 +96,7 @@ private:
 	void parseContextualTests(UChar*& p, Rule* rule);
 	void parseContextualDependencyTests(UChar*& p, Rule* rule);
 	flags_t parseRuleFlags(UChar*& p);
+	bool maybeParseRule(UChar*& p);
 	void parseRule(UChar*& p, KEYWORDS key);
 	void parseAnchorish(UChar*& p, bool rule_flags = true);
 
