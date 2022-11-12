@@ -280,8 +280,13 @@ protected:
 	uint32_t runGrammarOnSingleWindow(SingleWindow& current);
 	bool updateValidRules(const uint32IntervalVector& rules, uint32IntervalVector& intersects, const uint32_t& hash, Reading& reading);
 	uint32_t runRulesOnSingleWindow(SingleWindow& current, const uint32IntervalVector& rules);
+	// set these to false to break the 2 loops in runSingleRule()
+	bool reset_cohorts_for_loop = false;
+	bool finish_reading_loop = true;
 	bool finish_cohort_loop = true;
-	void runSingleRule(SingleWindow& current, Rule& rule, RuleCallback reading_cb, RuleCallback cohort_cb);
+	size_t used_regex = 0;
+	bool runSingleRule(SingleWindow& current, const Rule& rule, RuleCallback reading_cb, RuleCallback cohort_cb);
+	bool getDepContext(SingleWindow& current, const Rule& rule, Rule_Context& context);
 
 	enum ST_RETVALS {
 		TRV_BREAK         = (1 <<  0),
