@@ -20,11 +20,8 @@ include_directories(${Boost_INCLUDE_DIRS})
 link_directories(${Boost_LIBRARY_DIRS})
 
 # ICU
-find_package(ICU REQUIRED)
+find_package(ICU 50.0 COMPONENTS i18n io uc data REQUIRED)
 if(ICU_FOUND)
-	if(ICU_VERSION VERSION_LESS "50.0")
-		message(FATAL_ERROR "ICU is too old - ${ICU_VERSION} was found, but CG-3 requires 50.0 or newer")
-	endif()
 	include_directories(${ICU_INCLUDE_DIRS})
 	message(STATUS "Found ICU version ${ICU_VERSION}")
 endif()
@@ -47,10 +44,18 @@ macro(cg3_link target)
 	if(WIN32)
 		target_link_libraries(${target} "wsock32.lib")
 	endif()
+	if(EMSCRIPTEN)
+		target_link_options(${target} PRIVATE
+			-sEXPORTED_RUNTIME_METHODS=ccall,cwrap
+			# Generated with: pcregrep -o 'cg3_\S+\(' src/cg3.h | perl -wpne "s/\(//g; s/^/'_/; s/\n/',/;"
+			-sEXPORTED_FUNCTIONS=['_cg3_init','_cg3_init','_cg3_cleanup','_cg3_cleanup','_cg3_grammar_load','_cg3_grammar_load_buffer','_cg3_grammar_free','_cg3_applicator_create','_cg3_applicator_setflags','_cg3_applicator_setoption','_cg3_applicator_setoption','_cg3_applicator_setoption','_cg3_applicator_free','_cg3_run_grammar_on_text','_cg3_run_grammar_on_text_fns','_cg3_mwesplitapplicator_create','_cg3_sentence_new','_cg3_sentence_copy','_cg3_sentence_runrules','_cg3_sentence_addcohort','_cg3_sentence_numcohorts','_cg3_sentence_getcohort','_cg3_sentence_free','_cg3_cohort_create','_cg3_cohort_setwordform','_cg3_cohort_getwordform','_cg3_cohort_getid','_cg3_cohort_setdependency','_cg3_cohort_getdependency','_cg3_cohort_addreading','_cg3_cohort_numreadings','_cg3_cohort_getreading','_cg3_cohort_free','_cg3_reading_create','_cg3_reading_addtag','_cg3_reading_numtags','_cg3_reading_gettag','_cg3_reading_numtraces','_cg3_reading_gettrace','_cg3_reading_free','_cg3_subreading_create','_cg3_reading_setsubreading','_cg3_reading_numsubreadings','_cg3_reading_getsubreading','_cg3_subreading_free','_cg3_tag_create_u','_cg3_tag_create_u8','_cg3_tag_create_u16','_cg3_tag_create_u32','_cg3_tag_create_w','_cg3_tag_gettext_u','_cg3_tag_gettext_u8','_cg3_tag_gettext_u16','_cg3_tag_gettext_u32','_cg3_tag_gettext_w','_cg3_cohort_numdelreadings','_cg3_cohort_getdelreading','_cg3_reading_gettrace_ruletype']
+			-sASSERTIONS=1
+			)
+	endif()
 
 	target_link_libraries(${target} ${CMAKE_THREAD_LIBS_INIT})
 	target_link_libraries(${target} ${Boost_LIBRARIES})
-	target_link_libraries(${target} ${ICU_LIBRARIES} ${ICU_IO_LIBRARIES} ${ICU_I18N_LIBRARIES})
+	target_link_libraries(${target} ${ICU_LIBRARIES})
 endmacro()
 
 set(LIBCG3_HEADERS
@@ -119,12 +124,17 @@ set(LIBCG3_SOURCES
 	${POPEN_PLUS_CPP}
 	${LIBCG3_HEADERS}
 	)
+if(WIN32 OR EMSCRIPTEN)
+	set(LIBCG3_SOURCES
+		"${CMAKE_SOURCE_DIR}/include/wordexp/wordexp.cpp"
+		"${CMAKE_SOURCE_DIR}/include/wordexp/wordexp.h"
+		${LIBCG3_SOURCES}
+		)
+endif()
 if(WIN32)
 	set(LIBCG3_SOURCES
-		"${CMAKE_SOURCE_DIR}/include/win32/getopt.cpp"
-		"${CMAKE_SOURCE_DIR}/include/win32/getopt.h"
-		"${CMAKE_SOURCE_DIR}/include/win32/wordexp.cpp"
-		"${CMAKE_SOURCE_DIR}/include/win32/wordexp.h"
+		"${CMAKE_SOURCE_DIR}/include/getopt/getopt.cpp"
+		"${CMAKE_SOURCE_DIR}/include/getopt/getopt.h"
 		${LIBCG3_SOURCES}
 		)
 endif()
