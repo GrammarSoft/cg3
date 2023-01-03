@@ -217,6 +217,13 @@ void cg3_run_grammar_on_text(cg3_applicator* applicator_, std_istream* is_, std_
 	applicator->runGrammarOnText(*is, *os);
 }
 
+void cg3_run_grammar_on_text_fns(cg3_applicator* applicator_, const char* input, const char* output) {
+	GrammarApplicator* applicator = static_cast<GrammarApplicator*>(applicator_);
+	std::ifstream is(input, std::ios::binary);
+	std::ofstream os(output, std::ios::binary);
+	applicator->runGrammarOnText(is, os);
+}
+
 cg3_sentence* cg3_sentence_new(cg3_applicator* applicator_) {
 	GrammarApplicator* applicator = static_cast<GrammarApplicator*>(applicator_);
 	SingleWindow* current = applicator->gWindow->allocSingleWindow();
