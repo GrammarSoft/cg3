@@ -14,7 +14,7 @@ use Getopt::Long;
 Getopt::Long::Configure('bundling');
 Getopt::Long::Configure('no_ignore_case');
 my %opts = ();
-GetOptions(\%opts, ('weight|w:s', 'reverse|r', 'help|?'));
+GetOptions(\%opts, ('weight|w:s', 'reverse|r', 'first|1', 'help|?'));
 
 sub print_help {
    print <<'XOUT';
@@ -26,6 +26,7 @@ Options:
  -?, --help       outputs this help
  -w, --weight     sorts by a numeric tag; defaults to W
  -r, --reverse    reverses the sort order
+ -1, --first      only keep the first reading
 
 XOUT
 }
@@ -58,6 +59,9 @@ sub sort_weight {
 }
 
 sub print_sorted_readings {
+   if (!@_) {
+      return;
+   }
    if (exists($opts{weight})) {
       @_ = sort sort_weight @_;
    }
@@ -67,7 +71,12 @@ sub print_sorted_readings {
    if (exists($opts{reverse})) {
       @_ = reverse @_;
    }
-   print join('', @_);
+   if (exists($opts{first})) {
+      print $_[0];
+   }
+   else {
+      print join('', @_);
+   }
 }
 
 sub print_sorted {
