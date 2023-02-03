@@ -31,7 +31,7 @@
 namespace CG3 {
 
 template<typename State>
-Tag* parseTag(const UChar* to, const UChar* p, State& state) {
+Tag* parseTag(const UChar* to, const UChar* p, State& state, bool unescape=true) {
 	if (to[0] == 0) {
 		state.error("%s: Error: Empty tag on line %u near `%S`! Forgot to fill in a ()?\n", p);
 	}
@@ -149,7 +149,7 @@ Tag* parseTag(const UChar* to, const UChar* p, State& state) {
 		}
 
 		for (size_t i = 0, oldlength = length; tmp[i] != 0 && i < oldlength; ++i) {
-			if (tmp[i] == '\\') {
+			if (unescape && tmp[i] == '\\') {
 				++i;
 				--length;
 			}
@@ -193,7 +193,7 @@ Tag* parseTag(const UChar* to, const UChar* p, State& state) {
 		if ((tag->type & T_VARIABLE) && tag->tag.find('=') != UString::npos) {
 			size_t pos = tag->tag.find('=');
 			tag->comparison_op = OP_EQUALS;
-			tag->variable_hash = parseTag(&tag->tag[pos + 1], p, state)->hash;
+			tag->variable_hash = parseTag(&tag->tag[pos + 1], p, state, false)->hash;
 			tag->comparison_hash = hash_value(tag->tag.substr(0, pos));
 		}
 		else {
