@@ -1199,8 +1199,14 @@ Similarly, `cg-post-pipe' is run on output."
        (post-pipe (if (and cg-post-pipe (not (equal "" cg-post-pipe)))
                       (concat " | " cg-post-pipe)
                     ""))
+       ;; cg-proc doesn't expect the --grammar argument (a bit hacky,
+       ;; better would be to make cg-extra-args a function taking
+       ;; grammar path as string):
+       (grammar-arg (if (string-match-p ".*cg-proc$" cg-command)
+                        ""
+                      "--grammar"))
        (cmd (concat
-             cg-command " " cg-extra-args " --grammar " tmp
+             cg-command " " cg-extra-args " " grammar-arg " " tmp " "
              post-pipe))
        (in (cg--get-input-buffer file))
        (out (progn (write-region (point-min) (point-max) tmp)
