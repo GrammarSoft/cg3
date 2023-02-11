@@ -82,6 +82,49 @@ inline void captureRegex(int32_t gc, RXGS& regexgrps, Tag& tag) {
 	}
 }
 
+ReadingSpec GrammarApplicator::get_attach_to() {
+	if (context_stack.empty()) {
+		ReadingSpec ret;
+		return ret;
+	}
+	else {
+		return context_stack.back().attach_to;
+	}
+}
+
+Cohort* GrammarApplicator::get_mark() {
+	if (context_stack.empty()) return nullptr;
+	else return context_stack.back().mark;
+}
+
+ReadingSpec GrammarApplicator::get_apply_to() {
+	if (context_stack.empty()) {
+		ReadingSpec ret;
+		return ret;
+	}
+	else if (context_stack.back().attach_to.cohort != nullptr) {
+		return context_stack.back().attach_to;
+	}
+	else {
+		return context_stack.back().target;
+	}
+}
+
+void GrammarApplicator::set_attach_to(Reading* reading, Reading* subreading) {
+	if (!context_stack.empty()) {
+		auto& spec = context_stack.back().attach_to;
+		spec.cohort = reading->parent;
+		spec.reading = reading;
+		spec.subreading = subreading;
+	}
+}
+
+void GrammarApplicator::set_mark(Cohort* cohort) {
+	if (!context_stack.empty()) {
+		context_stack.back().mark = cohort;
+	}
+}
+
 /**
 * Tests whether a given input tag matches a given tag's stored regular expression.
 *
@@ -513,12 +556,12 @@ uint32_t GrammarApplicator::doesTagMatchReading(const Reading& reading, const Ta
 		}
 	}
 	else if (tag.type & T_MARK) {
-		if (mark && reading.parent == mark) {
+		if (reading.parent == get_mark()) {
 			match = grammar->tag_any;
 		}
 	}
 	else if (tag.type & T_ATTACHTO) {
-		if (attach_to && reading.parent == attach_to) {
+		if (reading.parent == get_attach_to().cohort) {
 			match = grammar->tag_any;
 		}
 	}

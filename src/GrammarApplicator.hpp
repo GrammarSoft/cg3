@@ -72,19 +72,28 @@ struct dSMC_Context {
 	bool in_barrier = false;
 };
 
-struct Rule_Context {
-	Cohort* target = nullptr;
-	Reading* target_reading = nullptr;
-	Reading* target_subreading = nullptr;
-	std::vector<Cohort*> context;
-	std::vector<Cohort*> dep_context;
-	Cohort* attach_to = nullptr;
-	Reading* attach_to_reading = nullptr;
-	Reading* attach_to_subreading = nullptr;
-	Cohort* mark = nullptr;
+// value can be either tag or trie, but we only ever compare pointers
+// and never dereference, so just make it void*
+typedef bc::flat_map<uint32_t, const void*> unif_tags_t;
+typedef bc::flat_map<uint32_t, uint32SortedVector> unif_sets_t;
+
+struct ReadingSpec {
+	Cohort* cohort = nullptr;
+	Reading* reading = nullptr;
+	Reading* subreading = nullptr;
 };
 
-typedef std::function<void(Rule_Context&)> RuleCallback;
+struct Rule_Context {
+	ReadingSpec target;
+	std::vector<Cohort*> context;
+	std::vector<Cohort*> dep_context;
+	ReadingSpec attach_to;
+	Cohort* mark = nullptr;
+	unif_tags_t unif_tags;
+	unif_sets_t unif_sets;
+};
+
+typedef std::function<void(void)> RuleCallback;
 
 class GrammarApplicator {
 public:
@@ -238,19 +247,24 @@ protected:
 	bc::flat_map<uint32_t, regexgrps_t*> regexgrps_c;
 	uint32_t same_basic = 0;
 	Cohort* target = nullptr;
-	Cohort* mark = nullptr;
-	Cohort* attach_to = nullptr;
 	Cohort* merge_with = nullptr;
 	Rule* current_rule = nullptr;
+	std::vector<Rule_Context> context_stack;
+
+	ReadingSpec get_attach_to();
+	Cohort* get_mark();
+	ReadingSpec get_apply_to();
+	void set_attach_to(Reading* reading, Reading* subreading = nullptr);
+	void set_mark(Cohort* cohort);
 
 	typedef bc::flat_map<uint32_t, Reading*> readings_plain_t;
 	readings_plain_t readings_plain;
 	std::vector<URegularExpression*> text_delimiters;
 
-	typedef bc::flat_map<uint32_t, const void*> unif_tags_t;
+
 	bc::flat_map<uint32_t, unif_tags_t*> unif_tags_rs;
 	std::vector<unif_tags_t> unif_tags_store;
-	typedef bc::flat_map<uint32_t, uint32SortedVector> unif_sets_t;
+
 	bc::flat_map<uint32_t, unif_sets_t*> unif_sets_rs;
 	std::vector<unif_sets_t> unif_sets_store;
 	unif_tags_t* unif_tags = nullptr;
@@ -288,7 +302,7 @@ protected:
 	bool finish_cohort_loop = true;
 	size_t used_regex = 0;
 	bool runSingleRule(SingleWindow& current, const Rule& rule, RuleCallback reading_cb, RuleCallback cohort_cb);
-	bool getDepContext(SingleWindow& current, const Rule& rule, Rule_Context& context);
+	bool getDepContext(SingleWindow& current, const Rule& rule);
 
 	enum ST_RETVALS {
 		TRV_BREAK         = (1 <<  0),

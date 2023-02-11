@@ -33,10 +33,10 @@ namespace CG3 {
 Cohort* GrammarApplicator::runSingleTest(Cohort* cohort, const ContextualTest* test, uint8_t& rvs, bool* retval, Cohort** deep, Cohort* origin) {
 	uint8_t regexgrpz = regexgrps.first;
 	if (test->pos & POS_MARK_SET) {
-		mark = cohort;
+		set_mark(cohort);
 	}
 	if (test->pos & POS_ATTACH_TO) {
-		if (attach_to != cohort) {
+		if (get_attach_to().cohort != cohort) {
 			// Clear readings for rules that care about readings
 			ReadingList* lists[4] = { &cohort->readings };
 			if (test->pos & POS_LOOK_DELETED) {
@@ -60,7 +60,7 @@ Cohort* GrammarApplicator::runSingleTest(Cohort* cohort, const ContextualTest* t
 			}
 		}
 
-		attach_to = cohort;
+		//attach_to = cohort; //TODO: what does this become?
 	}
 	if (test->pos & POS_WITH) {
 		merge_with = cohort;
@@ -292,8 +292,8 @@ Cohort* GrammarApplicator::runContextualTest(SingleWindow* sWindow, size_t posit
 	}
 
 	if (test->pos & POS_MARK_JUMP) {
-		sWindow = mark->parent;
-		position = mark->local_number;
+		sWindow = get_mark()->parent;
+		position = get_mark()->local_number;
 	}
 	int32_t pos = 0;
 
