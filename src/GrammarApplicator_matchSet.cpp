@@ -82,49 +82,6 @@ inline void captureRegex(int32_t gc, RXGS& regexgrps, Tag& tag) {
 	}
 }
 
-ReadingSpec GrammarApplicator::get_attach_to() {
-	if (context_stack.empty()) {
-		ReadingSpec ret;
-		return ret;
-	}
-	else {
-		return context_stack.back().attach_to;
-	}
-}
-
-Cohort* GrammarApplicator::get_mark() {
-	if (context_stack.empty()) return nullptr;
-	else return context_stack.back().mark;
-}
-
-ReadingSpec GrammarApplicator::get_apply_to() {
-	if (context_stack.empty()) {
-		ReadingSpec ret;
-		return ret;
-	}
-	else if (context_stack.back().attach_to.cohort != nullptr) {
-		return context_stack.back().attach_to;
-	}
-	else {
-		return context_stack.back().target;
-	}
-}
-
-void GrammarApplicator::set_attach_to(Reading* reading, Reading* subreading) {
-	if (!context_stack.empty()) {
-		auto& spec = context_stack.back().attach_to;
-		spec.cohort = reading->parent;
-		spec.reading = reading;
-		spec.subreading = subreading;
-	}
-}
-
-void GrammarApplicator::set_mark(Cohort* cohort) {
-	if (!context_stack.empty()) {
-		context_stack.back().mark = cohort;
-	}
-}
-
 /**
 * Tests whether a given input tag matches a given tag's stored regular expression.
 *
@@ -587,12 +544,8 @@ bool GrammarApplicator::doesSetMatchReading_trie(const Reading& reading, const S
 				continue;
 			}
 			if (kv.second.terminal) {
-				if (unif_mode) {
-					auto it = unif_tags->find(theset.number);
-					if (it != unif_tags->end() && it->second != &kv) {
-						continue;
-					}
-					(*unif_tags)[theset.number] = &kv;
+				if (unif_mode && !check_unif_tags(theset.number, &kv)) {
+					continue;
 				}
 				return true;
 			}
@@ -632,13 +585,9 @@ bool GrammarApplicator::doesSetMatchReading_tags(const Reading& reading, const S
 		while (oiter != reading.tags_plain.end() && iiter != theset.trie.end()) {
 			if (*oiter == iiter->first->hash) {
 				if (iiter->second.terminal) {
-					if (unif_mode) {
-						auto it = unif_tags->find(theset.number);
-						if (it != unif_tags->end() && it->second != &*iiter) {
-							++iiter;
-							continue;
-						}
-						(*unif_tags)[theset.number] = &*iiter;
+					if (unif_mode && !check_unif_tags(theset.number, &*iiter)) {
+						++iiter;
+						continue;
 					}
 					retval = true;
 					break;
@@ -711,7 +660,7 @@ bool GrammarApplicator::doesSetMatchReading(const Reading& reading, const uint32
 	// &&unified sets
 	else if (theset.type & ST_SET_UNIFY) {
 		// First time, figure out all the sub-sets that match the reading and store them for later comparison
-		auto& usets = (*unif_sets)[theset.number];
+		auto& usets = (*context_stack.back().unif_sets)[theset.number];
 		if (usets.empty()) {
 			const Set& uset = *grammar->sets_list[theset.sets[0]];
 			const size_t size = uset.sets.size();
@@ -781,7 +730,8 @@ bool GrammarApplicator::doesSetMatchReading(const Reading& reading, const uint32
 			}
 		}
 		// Propagate unified tag to other sets of this set, if applicable
-		if (unif_mode || (theset.type & ST_TAG_UNIFY)) {
+		if ((unif_mode || (theset.type & ST_TAG_UNIFY)) && !context_stack.empty()) {
+			auto unif_tags = context_stack.back().unif_tags;
 			const void* tag = nullptr;
 			for (size_t i = 0; i < size; ++i) {
 				auto it = unif_tags->find(theset.sets[i]);
@@ -878,9 +828,9 @@ inline bool GrammarApplicator::doesSetMatchCohort_helper(Cohort& cohort, Reading
 	auto usets = ss_usets.get();
 	uint8_t orz = regexgrps.first;
 
-	if (context && !(current_rule->flags & FL_CAPTURE_UNIF) && (theset.type & ST_CHILD_UNIFY)) {
-		*utags = *unif_tags;
-		*usets = *unif_sets;
+	if (context && !(current_rule->flags & FL_CAPTURE_UNIF) && (theset.type & ST_CHILD_UNIFY) && !context_stack.empty()) {
+		*utags = *context_stack.back().unif_tags;
+		*usets = *context_stack.back().unif_sets;
 	}
 	if (doesSetMatchReading(reading, theset.number, (theset.type & (ST_CHILD_UNIFY | ST_SPECIAL)) != 0)) {
 		retval = true;
@@ -900,11 +850,11 @@ inline bool GrammarApplicator::doesSetMatchCohort_helper(Cohort& cohort, Reading
 			reading.matched_tests = retval;
 		}
 	}
-	if (!retval && context && !(current_rule->flags & FL_CAPTURE_UNIF) && (theset.type & ST_CHILD_UNIFY) && (utags->size() != unif_tags->size() || *utags != *unif_tags)) {
-		unif_tags->swap(utags);
+	if (!retval && context && !(current_rule->flags & FL_CAPTURE_UNIF) && (theset.type & ST_CHILD_UNIFY) && !context_stack.empty() && (utags->size() != context_stack.back().unif_tags->size() || *utags != *context_stack.back().unif_tags)) {
+		context_stack.back().unif_tags->swap(utags);
 	}
-	if (!retval && context && !(current_rule->flags & FL_CAPTURE_UNIF) && (theset.type & ST_CHILD_UNIFY) && usets->size() != unif_sets->size()) {
-		unif_sets->swap(usets);
+	if (!retval && context && !(current_rule->flags & FL_CAPTURE_UNIF) && (theset.type & ST_CHILD_UNIFY) && !context_stack.empty() && usets->size() != context_stack.back().unif_sets->size()) {
+		context_stack.back().unif_sets->swap(usets);
 	}
 	if (!retval) {
 		regexgrps.first = orz;

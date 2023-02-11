@@ -89,8 +89,8 @@ struct Rule_Context {
 	std::vector<Cohort*> dep_context;
 	ReadingSpec attach_to;
 	Cohort* mark = nullptr;
-	unif_tags_t unif_tags;
-	unif_sets_t unif_sets;
+	unif_tags_t* unif_tags = nullptr;
+	unif_sets_t* unif_sets = nullptr;
 };
 
 typedef std::function<void(void)> RuleCallback;
@@ -256,6 +256,7 @@ protected:
 	ReadingSpec get_apply_to();
 	void set_attach_to(Reading* reading, Reading* subreading = nullptr);
 	void set_mark(Cohort* cohort);
+	bool check_unif_tags(uint32_t set, const void* val);
 
 	typedef bc::flat_map<uint32_t, Reading*> readings_plain_t;
 	readings_plain_t readings_plain;
@@ -267,11 +268,9 @@ protected:
 
 	bc::flat_map<uint32_t, unif_sets_t*> unif_sets_rs;
 	std::vector<unif_sets_t> unif_sets_store;
-	unif_tags_t* unif_tags = nullptr;
 	uint32_t unif_last_wordform = 0;
 	uint32_t unif_last_baseform = 0;
 	uint32_t unif_last_textual = 0;
-	unif_sets_t* unif_sets = nullptr;
 	bc::flat_map<uint32_t, uint32_t> rule_hits;
 
 	scoped_stack<TagList> ss_taglist;

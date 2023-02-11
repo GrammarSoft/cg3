@@ -104,6 +104,7 @@ set(LIBCG3_SOURCES
 	ContextualTest.cpp
 	Grammar.cpp
 	GrammarApplicator.cpp
+	GrammarApplicator_context.cpp
 	GrammarApplicator_matchSet.cpp
 	GrammarApplicator_reflow.cpp
 	GrammarApplicator_runContextualTest.cpp

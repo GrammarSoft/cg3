@@ -118,7 +118,7 @@ TagList GrammarApplicator::getTagList(const Set& theSet, bool unif_mode) const {
 
 void GrammarApplicator::getTagList(const Set& theSet, TagList& theTags, bool unif_mode) const {
 	if (theSet.type & ST_SET_UNIFY) {
-		const auto& usets = (*unif_sets)[theSet.number];
+		const auto& usets = (*context_stack.back().unif_sets)[theSet.number];
 		const Set& pSet = *(grammar->sets_list[theSet.sets[0]]);
 		for (auto iter : pSet.sets) {
 			if (usets.count(iter)) {
@@ -137,6 +137,7 @@ void GrammarApplicator::getTagList(const Set& theSet, TagList& theTags, bool uni
 		}
 	}
 	else if (unif_mode) {
+		auto unif_tags = context_stack.back().unif_tags;
 		auto iter = unif_tags->find(theSet.number);
 		if (iter != unif_tags->end()) {
 			trie_getTagList(theSet.trie, theTags, iter->second);
@@ -461,7 +462,7 @@ bool GrammarApplicator::runSingleRule(SingleWindow& current, const Rule& rule, R
 
 	    // This loop figures out which readings, if any, that are valid targets for the current rule
 		// Criteria for valid is that the reading must match both target and all contextual tests
-		for (size_t i = 0; i < cohort->readings.size(); ++i) {
+		for (size_t i = 0, max_cohort = cohort->readings.size(); i < max_cohort; ++i) {
 			// ToDo: Switch sub-readings so that they build up a passed in vector<Reading*>
 			Reading* reading = get_sub_reading(cohort->readings[i], rule.sub_reading);
 			if (!reading) {
@@ -517,22 +518,20 @@ bool GrammarApplicator::runSingleRule(SingleWindow& current, const Rule& rule, R
 			regexgrps.second = &regexgrps_store[used_regex];
 
 			// Unification is done on a per-reading basis, so clear all unification state.
-			unif_tags = &unif_tags_store[used_unif];
-			unif_sets = &unif_sets_store[used_unif];
-			unif_tags_rs[reading->hash_plain] = unif_tags;
-			unif_sets_rs[reading->hash_plain] = unif_sets;
-			unif_tags_rs[reading->hash] = unif_tags;
-			unif_sets_rs[reading->hash] = unif_sets;
+			context_stack.back().unif_tags = &unif_tags_store[used_unif];
+			context_stack.back().unif_sets = &unif_sets_store[used_unif];
+			unif_tags_rs[reading->hash_plain] = context_stack.back().unif_tags;
+			unif_sets_rs[reading->hash_plain] = context_stack.back().unif_sets;
+			unif_tags_rs[reading->hash] = context_stack.back().unif_tags;
+			unif_sets_rs[reading->hash] = context_stack.back().unif_sets;
 			++used_unif;
 
-			context_stack.back().unif_tags.clear();
-			context_stack.back().unif_sets.clear();
+			context_stack.back().unif_tags->clear();
+			context_stack.back().unif_sets->clear();
 
 			unif_last_wordform = 0;
 			unif_last_baseform = 0;
 			unif_last_textual = 0;
-			clear(*unif_tags);
-			clear(*unif_sets);
 
 			same_basic = reading->hash_plain;
 			target = nullptr;
@@ -586,7 +585,7 @@ bool GrammarApplicator::runSingleRule(SingleWindow& current, const Rule& rule, R
 								break;
 							}
 						}
-						did_test = ((set.type & (ST_CHILD_UNIFY | ST_SPECIAL)) == 0 && unif_tags->empty() && unif_sets->empty());
+						did_test = ((set.type & (ST_CHILD_UNIFY | ST_SPECIAL)) == 0 && context_stack.back().unif_tags->empty() && context_stack.back().unif_sets->empty());
 					}
 				}
 				else {
@@ -1970,8 +1969,8 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 				while (!attached) {
 					auto utags = ss_utags.get();
 					auto usets = ss_usets.get();
-					*utags = *unif_tags;
-					*usets = *unif_sets;
+					*utags = *context_stack.back().unif_tags;
+					*usets = *context_stack.back().unif_sets;
 
 					Cohort* attach = nullptr;
 					seen_targets->insert(target->global_number);
@@ -2007,8 +2006,8 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						context_stack.back().target.cohort = attach;
 						context_stack.back().target.reading = nullptr;
 						context_stack.back().target.subreading = nullptr;
-						unif_tags->swap(utags);
-						unif_sets->swap(usets);
+						context_stack.back().unif_tags->swap(utags);
+						context_stack.back().unif_sets->swap(usets);
 						if (rule.dep_target->offset != 0) {
 							// Temporarily set offset to +/- 1
 							rule.dep_target->offset = ((rule.dep_target->offset < 0) ? -1 : 1);
