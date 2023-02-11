@@ -437,6 +437,7 @@ bool GrammarApplicator::runSingleRule(SingleWindow& current, const Rule& rule, R
 
 		Rule_Context context;
 		context.target = cohort;
+		Reading* prev_attach_to = nullptr;
 
 		auto reset_cohorts = [&]() {
 			cohortset = &current.rule_to_cohorts[rule.number];
@@ -589,6 +590,7 @@ bool GrammarApplicator::runSingleRule(SingleWindow& current, const Rule& rule, R
 				}
 				if (good || (rule.type == K_IFF && reading->matched_target)) {
 					reset_cohorts_for_loop = false;
+					bool swap_ac = (attach_to != context.target);
 					reading_cb(context);
 					if (!finish_cohort_loop) return anything_changed;
 					if (reset_cohorts_for_loop) {
@@ -2236,7 +2238,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 		}
 		if (should_bail) goto bailout;
 		if (should_repeat) goto repeat_rule;
-																						 if (delimited) break;
+		if (delimited) break;
 
 		if (statistics) {
 			ticks tmp = getticks();

@@ -79,6 +79,8 @@ struct Rule_Context {
 	std::vector<Cohort*> context;
 	std::vector<Cohort*> dep_context;
 	Cohort* attach_to = nullptr;
+	Reading* attach_to_reading = nullptr;
+	Reading* attach_to_subreading = nullptr;
 	Cohort* mark = nullptr;
 };
 

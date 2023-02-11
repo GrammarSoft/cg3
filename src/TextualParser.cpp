@@ -1993,8 +1993,6 @@ void TextualParser::parseFromUChar(UChar* input, const char* fname) {
 				}
 				AST_CLOSE(p + 1);
 			}
-			else if (maybeParseRule(p)) {
-			}
 			// EXTERNAL
 			else if (IS_ICASE(p, "EXTERNAL", "external")) {
 				parseRule(p, K_EXTERNAL);
@@ -2696,6 +2694,8 @@ void TextualParser::parseFromUChar(UChar* input, const char* fname) {
 					}
 				}
 				++p;
+			}
+			else if (maybeParseRule(p)) {
 			}
 			// No keyword found at this position, skip a character.
 			else {
