@@ -638,7 +638,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 							if (!test_good) {
 								good = test_good;
 								if (!statistics) {
-									if (it != rule.tests.begin() && !(rule.flags & (RF_REMEMBERX | RF_KEEPORDER))) {
+									if (it != rule.tests.begin() && !(rule.flags & RF_KEEPORDER)) {
 										rule.tests.erase(it);
 										rule.tests.push_front(test);
 									}
