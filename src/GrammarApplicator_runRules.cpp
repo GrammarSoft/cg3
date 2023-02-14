@@ -291,9 +291,9 @@ Reading* GrammarApplicator::get_sub_reading(Reading* tr, int sub_reading) {
 				mappings->push_back(tter);                                           \
 			}                                                                        \
 			else {                                                                   \
-				hash = addTagToReading((*get_apply_to().subreading), tter);          \
+				hash = addTagToReading(reading, tter);          \
 			}                                                                        \
-			if (updateValidRules(rules, intersects, hash, (*get_apply_to().subreading))) {              \
+			if (updateValidRules(rules, intersects, hash, reading)) {              \
 				iter_rules = intersects.find(rule.number);                           \
 				iter_rules_end = intersects.end();                                   \
 			}                                                                        \
@@ -462,15 +462,16 @@ bool GrammarApplicator::runSingleRule(SingleWindow& current, const Rule& rule, R
 
 	    // This loop figures out which readings, if any, that are valid targets for the current rule
 		// Criteria for valid is that the reading must match both target and all contextual tests
-		for (size_t i = 0, max_cohort = cohort->readings.size(); i < max_cohort; ++i) {
+		auto cohort_readings = cohort->readings;
+		for (size_t i = 0; i < cohort_readings.size(); ++i) {
 			// ToDo: Switch sub-readings so that they build up a passed in vector<Reading*>
-			Reading* reading = get_sub_reading(cohort->readings[i], rule.sub_reading);
+			Reading* reading = get_sub_reading(cohort_readings[i], rule.sub_reading);
 			if (!reading) {
-				cohort->readings[i]->matched_target = false;
-				cohort->readings[i]->matched_tests = false;
+				cohort_readings[i]->matched_target = false;
+				cohort_readings[i]->matched_tests = false;
 				continue;
 			}
-			context_stack.back().target.reading = cohort->readings[i];
+			context_stack.back().target.reading = cohort_readings[i];
 			context_stack.back().target.subreading = reading;
 
 			// The state is stored in the readings themselves, so clear the old states
@@ -1095,7 +1096,28 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 			if (rule.type == K_SELECT || (rule.type == K_IFF && !selected.empty())) {
 				if (selected.size() < get_apply_to().cohort->readings.size()) {
 					if (!selected.empty()) {
-						get_apply_to().cohort->readings.swap(selected);
+						Cohort* target = get_apply_to().cohort;
+						ReadingList drop;
+						size_t si = 0;
+						for (size_t ri = 0; ri < target->readings.size(); ri++) {
+							if (target->readings[ri] == selected[si]) {
+								si++;
+							}
+							else {
+								target->readings[ri]->deleted = true;
+								drop.push_back(target->readings[ri]);
+							}
+						}
+						target->readings.swap(selected);
+						if (rule.flags & RF_DELAYED) {
+							target->delayed.insert(target->delayed.end(), drop.begin(), drop.end());
+						}
+						else if (rule.flags & RF_IGNORED) {
+							target->ignored.insert(target->ignored.end(), drop.begin(), drop.end());
+						}
+						else {
+							target->deleted.insert(target->deleted.end(), drop.begin(), drop.end());
+						}
 					}
 				}
 			}
