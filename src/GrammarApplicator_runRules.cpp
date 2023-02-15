@@ -1100,6 +1100,13 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						ReadingList drop;
 						size_t si = 0;
 						for (size_t ri = 0; ri < target->readings.size(); ri++) {
+							// manually trace, since reading_cb
+							// doesn't get called on non-matching readings
+							Reading* rd = target->readings[ri];
+							if (rule.sub_reading != 32767) {
+								rd = get_sub_reading(rd, rule.sub_reading);
+							}
+							rd->hit_by.push_back(rule.number);
 							if (target->readings[ri] == selected[si]) {
 								si++;
 							}
@@ -1118,6 +1125,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						else {
 							target->deleted.insert(target->deleted.end(), drop.begin(), drop.end());
 						}
+						readings_changed = true;
 					}
 				}
 			}
@@ -1147,6 +1155,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 					if (debug_level > 0) {
 						std::cerr << "DEBUG: Rule " << rule.line << " hit cohort " << get_apply_to().cohort->local_number << std::endl;
 					}
+					readings_changed = true;
 				}
 				if (get_apply_to().cohort->readings.empty()) {
 					initEmptyCohort(*get_apply_to().cohort);
