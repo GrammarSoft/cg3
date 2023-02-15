@@ -496,6 +496,7 @@ bool GrammarApplicator::runSingleRule(SingleWindow& current, const Rule& rule, R
 
 			// Check if any previous reading of this cohort had the same plain signature, and if so just copy their results
 			// This cache is cleared on a per-cohort basis
+			did_test = false;
 			if (!(set.type & (ST_SPECIAL | ST_MAPPING | ST_CHILD_UNIFY)) && !readings_plain.empty()) {
 				auto rpit = readings_plain.find(reading->hash_plain);
 				if (rpit != readings_plain.end()) {
@@ -510,7 +511,8 @@ bool GrammarApplicator::runSingleRule(SingleWindow& current, const Rule& rule, R
 						regexgrps_z[reading->number];
 						regexgrps_z[reading->number] = regexgrps_z[rpit->second->number];
 					}
-					continue;
+					did_test = true;
+					//continue;
 				}
 			}
 
