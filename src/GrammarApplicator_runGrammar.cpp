@@ -521,7 +521,7 @@ void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& outp
 					u_fprintf(output, "%S", &line[0]);
 					goto CGCMD_EXIT;
 				}
-				else if (u_strncmp(&cleaned[0], STR_CMD_SETVAR.data(), STR_CMD_SETVAR.size()) == 0) {
+				else if (u_strncmp(&cleaned[0], STR_CMD_SETVAR.data(), SI32(STR_CMD_SETVAR.size())) == 0) {
 					//u_fprintf(ux_stderr, "Info: SETVAR encountered on line %u.\n", numLines);
 					cleaned[packoff - 1] = 0;
 					line[0] = 0;
@@ -597,7 +597,7 @@ void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& outp
 						}
 					}
 				}
-				else if (u_strncmp(&cleaned[0], STR_CMD_REMVAR.data(), STR_CMD_REMVAR.size()) == 0) {
+				else if (u_strncmp(&cleaned[0], STR_CMD_REMVAR.data(), SI32(STR_CMD_REMVAR.size())) == 0) {
 					//u_fprintf(ux_stderr, "Info: REMVAR encountered on line %u.\n", numLines);
 					cleaned[packoff - 1] = 0;
 					line[0] = 0;
