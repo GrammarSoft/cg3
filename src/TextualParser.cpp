@@ -125,7 +125,7 @@ Tag* TextualParser::parseTag(const UChar* to, const UChar* p) {
 	}
 
 	if (!strict_tags.empty() && !strict_tags.count(tag->plain_hash)) {
-		if (tag->type & (T_ANY | T_VARSTRING | T_VSTR | T_META | T_VARIABLE | T_SET | T_PAR_LEFT | T_PAR_RIGHT | T_ENCL | T_TARGET | T_MARK | T_ATTACHTO | T_SAME_BASIC)) {
+		if (tag->type & (T_ANY | T_VARSTRING | T_VSTR | T_META | T_VARIABLE | T_LOCAL_VARIABLE | T_SET | T_PAR_LEFT | T_PAR_RIGHT | T_ENCL | T_TARGET | T_MARK | T_ATTACHTO | T_SAME_BASIC)) {
 			// Always allow...
 		}
 		else if (tag->tag == STR_BEGINTAG || tag->tag == STR_ENDTAG) {

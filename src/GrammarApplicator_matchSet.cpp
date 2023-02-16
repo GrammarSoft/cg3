@@ -467,10 +467,11 @@ uint32_t GrammarApplicator::doesTagMatchReading(const Reading& reading, const Ta
 			}
 		}
 	}
-	else if (tag.type & T_VARIABLE) {
+	else if (tag.type & (T_VARIABLE|T_LOCAL_VARIABLE)) {
 		match = 0;
-		auto it = variables.find(tag.comparison_hash);
-		if (it != variables.end()) {
+		auto& vars = (tag.type & T_LOCAL_VARIABLE) ? reading.parent->parent->variables_set : variables;
+		auto it = vars.find(tag.comparison_hash);
+		if (it != vars.end()) {
 			if (tag.variable_hash == 0) {
 				match = tag.hash;
 			}

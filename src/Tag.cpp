@@ -230,6 +230,9 @@ uint32_t Tag::rehash() {
 	if (type & T_VARIABLE) {
 		hash = hash_value("VAR:", hash);
 	}
+	if (type & T_LOCAL_VARIABLE) {
+		hash = hash_value("LVAR:", hash);
+	}
 	if (type & T_SET) {
 		hash = hash_value("SET:", hash);
 	}
@@ -298,6 +301,13 @@ UString Tag::toUString(bool escape) const {
 		str += ':';
 	}
 	if (type & T_VARIABLE) {
+		str += 'V';
+		str += 'A';
+		str += 'R';
+		str += ':';
+	}
+	if (type & T_LOCAL_VARIABLE) {
+		str += 'L';
 		str += 'V';
 		str += 'A';
 		str += 'R';

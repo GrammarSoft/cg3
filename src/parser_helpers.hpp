@@ -78,6 +78,11 @@ Tag* parseTag(const UChar* to, const UChar* p, State& state, bool unescape=true)
 			tmp += 4;
 			length -= 4;
 		}
+		if (tmp[0] == 'L' && tmp[1] == 'V' && tmp[2] == 'A' && tmp[3] == 'R' && tmp[4] == ':') {
+			tag->type |= T_LOCAL_VARIABLE;
+			tmp += 5;
+			length -= 5;
+		}
 		if (tmp[0] == 'S' && tmp[1] == 'E' && tmp[2] == 'T' && tmp[3] == ':') {
 			tag->type |= T_SET;
 			tmp += 4;
@@ -190,7 +195,7 @@ Tag* parseTag(const UChar* to, const UChar* p, State& state, bool unescape=true)
 			}
 		}
 
-		if ((tag->type & T_VARIABLE) && tag->tag.find('=') != UString::npos) {
+		if ((tag->type & (T_VARIABLE|T_LOCAL_VARIABLE)) && tag->tag.find('=') != UString::npos) {
 			size_t pos = tag->tag.find('=');
 			tag->comparison_op = OP_EQUALS;
 			tag->variable_hash = parseTag(&tag->tag[pos + 1], p, state, false)->hash;
@@ -288,7 +293,7 @@ Tag* parseTag(const UChar* to, const UChar* p, State& state, bool unescape=true)
 		tag->type |= T_SPECIAL;
 	}
 
-	if (tag->type & T_VARSTRING && tag->type & (T_REGEXP | T_REGEXP_ANY | T_VARIABLE | T_META)) {
+	if (tag->type & T_VARSTRING && tag->type & (T_REGEXP | T_REGEXP_ANY | T_VARIABLE | T_LOCAL_VARIABLE | T_META)) {
 		state.error("%s: Error: Tag %S cannot mix varstring with any other special feature on line %u near `%S`!\n", to, p);
 	}
 

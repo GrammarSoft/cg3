@@ -15,3 +15,14 @@ ADD (VSTR:@mapping-prefix-$1) (<<< VAR:_MPREFIX=/^\(.+\)$/r) ;
 ADD (@error-value-plain) (<<< VAR:value=some) ;
 ADD (@error-value-icase) (<<< VAR:value=/soME/i) ;
 ADD (@error-value-regex) (<<< VAR:value=/^methi/r) ;
+
+ADD (@local-current) (<<< LVAR:value=something) ;
+ADD (@error-current) (<<< LVAR:value=somethingx) ;
+
+ADD (@local-previous) (<<<) (*-1 (>>>) LINK -1W (LVAR:value=something)) ;
+ADD (@local-previousx) (<<<) (*-1 (>>>) LINK -1W (LVAR:value=somethingx)) ;
+
+ADD (@local-next) (<<<) (*1W (>>> LVAR:drama)) ;
+
+SETVARIABLE OUTPUT (value) (somethingx) (VAR:value=something) ;
+SETVARIABLE OUTPUT (value) (something) (<<<) (*-1 (>>>) LINK -1W (LVAR:value=somethingx)) ;

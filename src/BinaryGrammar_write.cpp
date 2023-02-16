@@ -196,7 +196,7 @@ int BinaryGrammar::writeBinaryGrammar(FILE* output) {
 			}
 		}
 		// 1 << 12 used above
-		if ((t->type & T_VARIABLE) && t->variable_hash) {
+		if ((t->type & (T_VARIABLE|T_LOCAL_VARIABLE)) && t->variable_hash) {
 			fields |= (1 << 13);
 			writeSwapped(buffer, t->variable_hash);
 		}
