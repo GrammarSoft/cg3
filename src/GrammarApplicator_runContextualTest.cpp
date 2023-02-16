@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2007-2021, GrammarSoft ApS
+* Copyright (C) 2007-2023, GrammarSoft ApS
 * Developed by Tino Didriksen <mail@tinodidriksen.com>
 * Design by Eckhard Bick <eckhard.bick@mail.dk>, Tino Didriksen <mail@tinodidriksen.com>
 *
@@ -285,6 +285,7 @@ Cohort* GrammarApplicator::runContextualTest(SingleWindow* sWindow, size_t posit
 
 	Cohort* cohort = nullptr;
 	bool retval = true;
+	auto orgSWin = sWindow;
 
 	ticks tstamp(gtimer);
 	if (statistics) {
@@ -520,8 +521,8 @@ Cohort* GrammarApplicator::runContextualTest(SingleWindow* sWindow, size_t posit
 			size_t seen = 0;
 			if ((test->pos & POS_SELF) && (!(test->pos & MASK_POS_LORR) || ((test->pos & POS_DEP_PARENT) && !(test->pos & POS_DEP_GLOB)))) {
 				++seen;
-				assert(pos >= 0 && pos < SI32(sWindow->cohorts.size()) && "Somehow, the input position wasn't inside the current window.");
-				Cohort* self = sWindow->cohorts[position];
+				assert(pos >= 0 && pos < SI32(orgSWin->cohorts.size()) && "Somehow, the input position wasn't inside the current window.");
+				Cohort* self = orgSWin->cohorts[position];
 				nc = runSingleTest(self, test, rvs, &retval, deep, origin);
 				if (!retval && (rvs & TRV_BREAK_DEFAULT)) {
 					rvs &= ~(TRV_BREAK | TRV_BREAK_DEFAULT);
