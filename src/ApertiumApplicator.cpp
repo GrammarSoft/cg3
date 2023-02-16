@@ -39,7 +39,7 @@ ApertiumApplicator::ApertiumApplicator(std::ostream& ux_err)
 void ApertiumApplicator::parseStreamVar(const SingleWindow* cSWindow, UString& cleaned,
 					uint32FlatHashMap& variables_set, uint32FlatHashSet& variables_rem, uint32SortedVector& variables_output) {
 	size_t packoff = 0;
-	if (u_strncmp(&cleaned[0], STR_CMD_SETVAR.data(), STR_CMD_SETVAR.size()) == 0) {
+	if (u_strncmp(&cleaned[0], STR_CMD_SETVAR.data(), SI32(STR_CMD_SETVAR.size())) == 0) {
 		// u_fprintf(ux_stderr, "Info: SETVAR encountered on line %u.\n", numLines);
 		cleaned[packoff - 1] = 0;
 		// line[0] = 0;
@@ -115,7 +115,7 @@ void ApertiumApplicator::parseStreamVar(const SingleWindow* cSWindow, UString& c
 			}
 		}
 	}
-	else if (u_strncmp(&cleaned[0], STR_CMD_REMVAR.data(), STR_CMD_REMVAR.size()) == 0) {
+	else if (u_strncmp(&cleaned[0], STR_CMD_REMVAR.data(), SI32(STR_CMD_REMVAR.size())) == 0) {
 		//u_fprintf(ux_stderr, "Info: REMVAR encountered on line %u.\n", numLines);
 		cleaned[packoff - 1] = 0;
 		// line[0] = 0;
@@ -687,7 +687,7 @@ void ApertiumApplicator::testPR(std::ostream& output) {
 	}
 }
 
-void ApertiumApplicator::printReading(Reading* reading, std::ostream& output, ApertiumCasing casing, int firstlower) {
+void ApertiumApplicator::printReading(Reading* reading, std::ostream& output, ApertiumCasing casing, int32_t firstlower) {
 	if (reading->next) {
 		printReading(reading->next, output, casing, firstlower);
 		u_fputc('+', output);
@@ -873,7 +873,7 @@ void ApertiumApplicator::printReading(Reading* reading, std::ostream& output) {
 			}
 		}
 	} // if (wordform_case)
-	printReading(reading, output, casing, firstlower);
+	printReading(reading, output, casing, SI32(firstlower));
 }
 
 void ApertiumApplicator::printCohort(Cohort* cohort, std::ostream& output) {
