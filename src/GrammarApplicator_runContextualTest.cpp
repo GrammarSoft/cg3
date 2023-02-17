@@ -296,7 +296,7 @@ Cohort* GrammarApplicator::runContextualTest(SingleWindow* sWindow, size_t posit
 		sWindow = mark->parent;
 		position = mark->local_number;
 	}
-	int32_t pos = 0;
+	int32_t pos = static_cast<int32_t>(position) + test->offset;
 
 	if (test->tmpl) {
 		Cohort* cdeep = nullptr;
@@ -521,7 +521,7 @@ Cohort* GrammarApplicator::runContextualTest(SingleWindow* sWindow, size_t posit
 			size_t seen = 0;
 			if ((test->pos & POS_SELF) && (!(test->pos & MASK_POS_LORR) || ((test->pos & POS_DEP_PARENT) && !(test->pos & POS_DEP_GLOB)))) {
 				++seen;
-				assert(pos >= 0 && pos < SI32(orgSWin->cohorts.size()) && "Somehow, the input position wasn't inside the current window.");
+				assert(position >= 0 && position < SI32(orgSWin->cohorts.size()) && "Somehow, the input position wasn't inside the current window.");
 				Cohort* self = orgSWin->cohorts[position];
 				nc = runSingleTest(self, test, rvs, &retval, deep, origin);
 				if (!retval && (rvs & TRV_BREAK_DEFAULT)) {
