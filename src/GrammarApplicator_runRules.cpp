@@ -300,6 +300,15 @@ Reading* GrammarApplicator::get_sub_reading(Reading* tr, int sub_reading) {
 		}                                                                            \
 	} while (0)
 
+#define VARSTRINGIFY(tag)                                      \
+	do {                                                       \
+		while ((tag)->type & T_VARSTRING) {                    \
+			(tag) = generateVarstringTag((tag));               \
+		}                                                      \
+    }                                                          \
+	while (0)
+
+
 bool GrammarApplicator::runSingleRule(SingleWindow& current, const Rule& rule, RuleCallback reading_cb, RuleCallback cohort_cb) {
 	finish_cohort_loop = true;
 	bool anything_changed = false;
@@ -695,20 +704,20 @@ bool GrammarApplicator::getDepContext(SingleWindow& current, const Rule& rule) {
 	tmpl_cntx.clear();
 	dep_deep_seen.clear();
 	if (runContextualTest(get_apply_to().cohort->parent, get_apply_to().cohort->local_number, rule.dep_target, &context_stack.back().attach_to.cohort) && get_attach_to().cohort) {
-		bool good = true;
 		for (auto it : rule.dep_tests) {
 			set_mark(get_attach_to().cohort);
 			dep_deep_seen.clear();
 			tmpl_cntx.clear();
-			good = good && (runContextualTest(get_attach_to().cohort->parent, get_attach_to().cohort->local_number, it) != nullptr);
+			bool good = (runContextualTest(get_attach_to().cohort->parent, get_attach_to().cohort->local_number, it) != nullptr);
 			if (!good) {
-				auto& at = context_stack.back().attach_to;
+				/*auto& at = context_stack.back().attach_to;
 				at.cohort = nullptr;
 				at.reading = nullptr;
-				at.subreading = nullptr;
+				at.subreading = nullptr;*/
 				return false;
 			}
 		}
+		return true;
 	}
 	return false;
 }
@@ -1268,6 +1277,9 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 		};
 
 		auto reading_cb = [&]() {
+			if (rule.type != K_SELECT) {
+				TRACE;
+			}
 			if (rule.type == K_SELECT || (rule.type == K_IFF && get_apply_to().subreading->matched_tests)) {
 				selected.push_back(get_apply_to().reading);
 				index_ruleCohort_no.clear();
@@ -1993,25 +2005,13 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 
 				reset_cohorts_for_loop = true;
 			}
-			else if (type == K_SETPARENT || type == K_SETCHILD) {
-				int32_t orgoffset = rule.dep_target->offset;
-				auto seen_targets = ss_u32sv.get();
-
-				bool attached = false;
-				Cohort* target = get_apply_to().cohort;
-				while (!attached) {
-					auto utags = ss_utags.get();
-					auto usets = ss_usets.get();
-					*utags = *context_stack.back().unif_tags;
-					*usets = *context_stack.back().unif_sets;
-
-					Cohort* attach = nullptr;
-					seen_targets->insert(target->global_number);
-					seen_barrier = false;
-					if (getDepContext(current, rule)) {
-						bool break_after = seen_barrier || (rule.flags & RF_NEAREST);
-						attach = get_attach_to().cohort;
-						swapper<Cohort*> sw((rule.flags & RF_REVERSE) != 0, attach, target);
+			else if (type == K_SETPARENT || type == K_SETCHILD || type == K_ADDRELATION || type == K_SETRELATION || type == K_REMRELATION || type == K_ADDRELATIONS || type == K_SETRELATIONS || type == K_REMRELATIONS) {
+				auto dep_target_cb = [&]() -> bool {
+					Cohort* target = context_stack.back().target.cohort;
+					Cohort* attach = context_stack.back().attach_to.cohort;
+					swapper<Cohort*> sw((rule.flags & RF_REVERSE) != 0, target, attach);
+					if (type == K_SETPARENT || type == K_SETCHILD) {
+						bool attached = false;
 						if (type == K_SETPARENT) {
 							attached = attachParentChild(*attach, *target, (rule.flags & RF_ALLOWLOOP) != 0, (rule.flags & RF_ALLOWCROSS) != 0);
 						}
@@ -2020,31 +2020,173 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						}
 						if (attached) {
 							index_ruleCohort_no.clear();
-							get_apply_to().subreading->noprint = false;
+							// force TRACE to use target
+							context_stack.back().attach_to.cohort = nullptr;
+							TRACE;
+							context_stack.back().target.subreading->noprint = false;
 							has_dep = true;
 							readings_changed = true;
-							break;
+						}
+						return attached;
+					}
+					else if (type == K_ADDRELATION || type == K_SETRELATION || type == K_REMRELATION) {
+						bool rel_did_anything = false;
+						auto theTags = ss_taglist.get();
+						getTagList(*rule.maplist, theTags);
+						for (auto tter : *theTags) {
+							VARSTRINGIFY(tter);
+							if (type == K_ADDRELATION) {
+								attach->setRelated();
+								target->setRelated();
+								rel_did_anything |= target->addRelation(tter->hash, attach->global_number);
+								add_relation_rtag(target, tter, attach->global_number);
+							}
+							else if (type == K_SETRELATION) {
+								attach->setRelated();
+								target->setRelated();
+								rel_did_anything |= target->setRelation(tter->hash, attach->global_number);
+								set_relation_rtag(target, tter, attach->global_number);
+							}
+							else {
+								rel_did_anything |= target->remRelation(tter->hash, attach->global_number);
+								rem_relation_rtag(target, tter, attach->global_number);
+							}
+						}
+						if (rel_did_anything) {
+							index_ruleCohort_no.clear();
+							// force TRACE to use target
+							context_stack.back().attach_to.cohort = nullptr;
+							TRACE;
+							context_stack.back().target.subreading->noprint = false;
+							readings_changed = true;
+						}
+						// don't scan onwards if failed
+						return true;
+					}
+					else if (type == K_ADDRELATIONS || type == K_SETRELATIONS || type == K_REMRELATIONS) {
+						bool rel_did_anything = false;
+
+						auto sublist = ss_taglist.get();
+						getTagList(*rule.sublist, sublist);
+
+						auto maplist = ss_taglist.get();
+						getTagList(*rule.maplist, maplist);
+
+						for (auto tter : *maplist) {
+							VARSTRINGIFY(tter);
+							if (type == K_ADDRELATIONS) {
+								target->setRelated();
+								rel_did_anything |= target->addRelation(tter->hash, attach->global_number);
+								add_relation_rtag(target, tter, attach->global_number);
+							}
+							else if (type == K_SETRELATIONS) {
+								target->setRelated();
+								rel_did_anything |= target->setRelation(tter->hash, attach->global_number);
+								set_relation_rtag(target, tter, attach->global_number);
+							}
+							else {
+								rel_did_anything |= target->remRelation(tter->hash, attach->global_number);
+								rem_relation_rtag(target, tter, attach->global_number);
+							}
+						}
+						for (auto tter : *sublist) {
+							VARSTRINGIFY(tter);
+							if (type == K_ADDRELATIONS) {
+								attach->setRelated();
+								rel_did_anything |= attach->addRelation(tter->hash, target->global_number);
+								add_relation_rtag(attach, tter, target->global_number);
+							}
+							else if (type == K_SETRELATIONS) {
+								attach->setRelated();
+								rel_did_anything |= attach->setRelation(tter->hash, target->global_number);
+								set_relation_rtag(attach, tter, target->global_number);
+							}
+							else {
+								rel_did_anything |= attach->remRelation(tter->hash, target->global_number);
+								rem_relation_rtag(attach, tter, target->global_number);
+							}
+						}
+						if (rel_did_anything) {
+							index_ruleCohort_no.clear();
+							// force TRACE to use target
+							context_stack.back().attach_to.cohort = nullptr;
+							TRACE;
+							context_stack.back().target.subreading->noprint = false;
+							readings_changed = true;
+						}
+						// don't scan onwards if failed
+						return true;
+					}
+					return true;
+				};
+				int32_t orgoffset = rule.dep_target->offset;
+				auto seen_targets = ss_u32sv.get();
+
+				ReadingSpec orgtarget = context_stack.back().target;
+				while (true) {
+					auto utags = ss_utags.get();
+					auto usets = ss_usets.get();
+					*utags = *context_stack.back().unif_tags;
+					*usets = *context_stack.back().unif_sets;
+
+					Cohort* attach = nullptr;
+					Cohort* target = context_stack.back().target.cohort;
+					seen_targets->insert(target->global_number);
+					dep_deep_seen.clear();
+					tmpl_cntx.clear();
+					context_stack.back().attach_to.cohort = nullptr;
+					context_stack.back().attach_to.reading = nullptr;
+					context_stack.back().attach_to.subreading = nullptr;
+					seen_barrier = false;
+					if (runContextualTest(target->parent, target->local_number, rule.dep_target, &attach) && attach) {
+						bool break_after = seen_barrier || (rule.flags & RF_NEAREST);
+						if (get_attach_to().cohort) {
+							attach = get_attach_to().cohort;
+						}
+						bool good = true;
+						for (auto it : rule.dep_tests) {
+							context_stack.back().mark = attach;
+							dep_deep_seen.clear();
+							tmpl_cntx.clear();
+							bool test_good = (runContextualTest(attach->parent, attach->local_number, it) != nullptr);
+							if (!test_good) {
+								good = test_good;
+								break;
+							}
+						}
+						if (!get_attach_to().cohort) {
+							context_stack.back().attach_to.cohort = attach;
+						}
+						if (good) {
+							ReadingSpec temp = context_stack.back().target;
+							context_stack.back().target = orgtarget;
+							bool attached = dep_target_cb();
+							if (attached) {
+								break;
+							}
+							else {
+								context_stack.back().target = temp;
+							}
 						}
 						if (break_after) {
 							break;
 						}
-					}
-					else if (seen_targets->count(attach->global_number)) {
-						// We've found a cohort we have seen before...
-						// We assume running the test again would result in the same, so don't bother.
-						break;
-					}
-					if (!attached) {
+						if (seen_targets->count(attach->global_number)) {
+							// We've found a cohort we have seen before...
+							// We assume running the test again would result in the same, so don't bother.
+							break;
+						}
 						// Did not successfully attach due to loop restrictions; look onwards from here
-						context_stack.back().target.cohort = attach;
-						context_stack.back().target.reading = nullptr;
-						context_stack.back().target.subreading = nullptr;
+						context_stack.back().target = context_stack.back().attach_to;
 						context_stack.back().unif_tags->swap(utags);
 						context_stack.back().unif_sets->swap(usets);
 						if (rule.dep_target->offset != 0) {
 							// Temporarily set offset to +/- 1
 							rule.dep_target->offset = ((rule.dep_target->offset < 0) ? -1 : 1);
 						}
+					}
+					else {
+						break;
 					}
 				}
 				rule.dep_target->offset = orgoffset;
@@ -2173,99 +2315,6 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						sorter.do_sort = true;
 					}
 					finish_reading_loop = false;
-				}
-			}
-			else if (type == K_ADDRELATION || type == K_SETRELATION || type == K_REMRELATION) {
-				// ToDo: Maybe allow SetRelation family to scan on after failed tests?
-				if (getDepContext(current, rule)) {
-					swapper<ReadingSpec> sw((rule.flags & RF_REVERSE) != 0, context_stack.back().attach_to, context_stack.back().target);
-					bool rel_did_anything = false;
-					auto theTags = ss_taglist.get();
-					getTagList(*rule.maplist, theTags);
-
-					for (auto tter : *theTags) {
-						while (tter->type & T_VARSTRING) {
-							tter = generateVarstringTag(tter);
-						}
-						if (type == K_ADDRELATION) {
-							get_attach_to().cohort->setRelated();
-							get_apply_to().cohort->setRelated();
-							rel_did_anything |= get_apply_to().cohort->addRelation(tter->hash, get_attach_to().cohort->global_number);
-							add_relation_rtag(get_apply_to().cohort, tter, get_attach_to().cohort->global_number);
-						}
-						else if (type == K_SETRELATION) {
-							get_attach_to().cohort->setRelated();
-							get_apply_to().cohort->setRelated();
-							rel_did_anything |= get_apply_to().cohort->setRelation(tter->hash, get_attach_to().cohort->global_number);
-							set_relation_rtag(get_apply_to().cohort, tter, get_attach_to().cohort->global_number);
-						}
-						else {
-							rel_did_anything |= get_apply_to().cohort->remRelation(tter->hash, get_attach_to().cohort->global_number);
-							rem_relation_rtag(get_apply_to().cohort, tter, get_attach_to().cohort->global_number);
-						}
-					}
-					if (rel_did_anything) {
-						index_ruleCohort_no.clear();
-						get_apply_to().subreading->noprint = false;
-						readings_changed = true;
-					}
-				}
-				finish_reading_loop = false;
-			}
-			else if (rule.type == K_ADDRELATIONS || type == K_SETRELATIONS || type == K_REMRELATIONS) {
-				if (getDepContext(current, rule)) {
-					swapper<ReadingSpec> sw((rule.flags & RF_REVERSE) != 0, context_stack.back().attach_to, context_stack.back().target);
-					bool rel_did_anything = false;
-
-					auto sublist = ss_taglist.get();
-					getTagList(*rule.sublist, sublist);
-
-					auto maplist = ss_taglist.get();
-					getTagList(*rule.maplist, maplist);
-
-					for (auto tter : *maplist) {
-						while (tter->type & T_VARSTRING) {
-							tter = generateVarstringTag(tter);
-						}
-						if (type == K_ADDRELATIONS) {
-							get_apply_to().cohort->setRelated();
-							rel_did_anything |= get_apply_to().cohort->addRelation(tter->hash, get_attach_to().cohort->global_number);
-							add_relation_rtag(get_apply_to().cohort, tter, get_attach_to().cohort->global_number);
-						}
-						else if (type == K_SETRELATIONS) {
-							get_apply_to().cohort->setRelated();
-							rel_did_anything |= get_apply_to().cohort->setRelation(tter->hash, get_attach_to().cohort->global_number);
-							set_relation_rtag(get_apply_to().cohort, tter, get_attach_to().cohort->global_number);
-						}
-						else {
-							rel_did_anything |= get_apply_to().cohort->remRelation(tter->hash, get_attach_to().cohort->global_number);
-							rem_relation_rtag(get_apply_to().cohort, tter, get_attach_to().cohort->global_number);
-						}
-					}
-					for (auto tter : *sublist) {
-						while (tter->type & T_VARSTRING) {
-							tter = generateVarstringTag(tter);
-						}
-						if (type == K_ADDRELATIONS) {
-							get_attach_to().cohort->setRelated();
-							rel_did_anything |= get_attach_to().cohort->addRelation(tter->hash, get_apply_to().cohort->global_number);
-							add_relation_rtag(get_attach_to().cohort, tter, get_apply_to().cohort->global_number);
-						}
-						else if (type == K_SETRELATIONS) {
-							get_attach_to().cohort->setRelated();
-							rel_did_anything |= get_attach_to().cohort->setRelation(tter->hash, get_apply_to().cohort->global_number);
-							set_relation_rtag(get_attach_to().cohort, tter, get_apply_to().cohort->global_number);
-						}
-						else {
-							rel_did_anything |= get_attach_to().cohort->remRelation(tter->hash, get_apply_to().cohort->global_number);
-							rem_relation_rtag(get_attach_to().cohort, tter, get_apply_to().cohort->global_number);
-						}
-					}
-					if (rel_did_anything) {
-						index_ruleCohort_no.clear();
-						get_apply_to().subreading->noprint = false;
-						readings_changed = true;
-					}
 				}
 			}
 		};
