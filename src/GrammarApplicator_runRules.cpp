@@ -2193,6 +2193,8 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 				finish_reading_loop = false;
 			}
 			else if (type == K_MOVE_AFTER || type == K_MOVE_BEFORE || type == K_SWITCH) {
+				// this is a per-cohort rule
+				finish_reading_loop = false;
 				// Calculate hash of current state to later compare whether this move/switch actually did anything
 				uint32_t phash = 0;
 				uint32_t chash = 0;
@@ -2202,29 +2204,50 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 				}
 
 				// ToDo: ** tests will not correctly work for MOVE/SWITCH; cannot move cohorts between windows
-				if (getDepContext(current, rule) && get_apply_to().cohort->parent == get_attach_to().cohort->parent) {
-					if (get_apply_to().cohort == get_attach_to().cohort || get_apply_to().cohort->local_number == 0) {
-						finish_reading_loop = false;
+				Cohort* attach = nullptr;
+				Cohort* cohort = context_stack.back().target.cohort;
+				uint32_t c = cohort->local_number;
+				dep_deep_seen.clear();
+				tmpl_cntx.clear();
+				context_stack.back().attach_to.cohort = nullptr;
+				context_stack.back().attach_to.reading = nullptr;
+				context_stack.back().attach_to.subreading = nullptr;
+				if (runContextualTest(&current, c, rule.dep_target, &attach) && attach && cohort->parent == attach->parent) {
+					if (get_attach_to().cohort) {
+						attach = get_attach_to().cohort;
+					}
+					bool good = true;
+					for (auto it : rule.dep_tests) {
+						context_stack.back().mark = attach;
+						dep_deep_seen.clear();
+						tmpl_cntx.clear();
+						bool test_good = (runContextualTest(attach->parent, attach->local_number, it) != nullptr);
+						if (!test_good) {
+							good = test_good;
+							break;
+						}
+					}
+
+					if (!good || cohort == attach || cohort->local_number == 0) {
 						return;
 					}
 
-					swapper<ReadingSpec> sw((rule.flags & RF_REVERSE) != 0, context_stack.back().attach_to, context_stack.back().target);
+					swapper<Cohort*> sw((rule.flags & RF_REVERSE) != 0, attach, cohort);
 					CohortSet cohorts;
 
 					if (type == K_SWITCH) {
-						if (get_attach_to().cohort->local_number == 0) {
-							finish_reading_loop = false;
+						if (attach->local_number == 0) {
 							return;
 						}
-						current.cohorts[get_apply_to().cohort->local_number] = get_attach_to().cohort;
-						current.cohorts[get_attach_to().cohort->local_number] = get_apply_to().cohort;
-						cohorts.insert(get_attach_to().cohort);
-						cohorts.insert(get_apply_to().cohort);
+						current.cohorts[cohort->local_number] = attach;
+						current.cohorts[attach->local_number] = cohort;
+						cohorts.insert(attach);
+						cohorts.insert(cohort);
 					}
 					else {
 						CohortSet edges;
-						collect_subtree(edges, get_attach_to().cohort, rule.childset2);
-						collect_subtree(cohorts, get_apply_to().cohort, rule.childset1);
+						collect_subtree(edges, attach, rule.childset2);
+						collect_subtree(cohorts, cohort, rule.childset1);
 
 						bool need_clean = false;
 						for (auto iter : cohorts) {
@@ -2314,7 +2337,6 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						readings_changed = true;
 						sorter.do_sort = true;
 					}
-					finish_reading_loop = false;
 				}
 			}
 		};
