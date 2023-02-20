@@ -521,6 +521,7 @@ bool GrammarApplicator::runSingleRule(SingleWindow& current, const Rule& rule, R
 						regexgrps_z[reading->number] = regexgrps_z[rpit->second->number];
 					}
 					did_test = true;
+					test_good = rpit->second->matched_tests;
 					//continue;
 				}
 			}
@@ -1557,7 +1558,8 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 			else if (rule.type == K_ADD || rule.type == K_MAP) {
 				auto state_hash = get_apply_to().subreading->hash;
 				index_ruleCohort_no.clear();
-				get_apply_to().subreading->noprint = false;
+				auto& reading = *(get_apply_to().subreading);
+				reading.noprint = false;
 				auto mappings = ss_taglist.get();
 				auto theTags = ss_taglist.get();
 				getTagList(*rule.maplist, theTags);
@@ -1568,8 +1570,8 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 					auto spot_tags = ss_taglist.get();
 					getTagList(*grammar->sets_list[rule.childset1], spot_tags);
 					FILL_TAG_LIST(spot_tags);
-					auto it = get_apply_to().subreading->tags_list.begin();
-					for (; it != get_apply_to().subreading->tags_list.end(); ++it) {
+					auto it = reading.tags_list.begin();
+					for (; it != reading.tags_list.end(); ++it) {
 						bool found = true;
 						auto tmp = it;
 						for (auto tag : *spot_tags) {
@@ -1588,23 +1590,23 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						if (rule.flags & RF_AFTER) {
 							std::advance(it, spot_tags->size());
 						}
-						if (it != get_apply_to().subreading->tags_list.end()) {
-							insert_taglist_to_reading(it, *theTags, *get_apply_to().subreading, mappings);
+						if (it != reading.tags_list.end()) {
+							insert_taglist_to_reading(it, *theTags, reading, mappings);
 							did_insert = true;
 						}
 					}
 				}
 
 				if (!did_insert) {
-					APPEND_TAGLIST_TO_READING(*theTags, *get_apply_to().subreading);
+					APPEND_TAGLIST_TO_READING(*theTags, reading);
 				}
 				if (!mappings->empty()) {
-					splitMappings(mappings, *get_apply_to().cohort, *get_apply_to().subreading, rule.type == K_MAP);
+					splitMappings(mappings, *get_apply_to().cohort, reading, rule.type == K_MAP);
 				}
 				if (rule.type == K_MAP) {
-					get_apply_to().subreading->mapped = true;
+					reading.mapped = true;
 				}
-				if (get_apply_to().subreading->hash != state_hash) {
+				if (reading.hash != state_hash) {
 					readings_changed = true;
 				}
 			}
