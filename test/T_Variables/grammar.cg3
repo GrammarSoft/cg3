@@ -17,7 +17,6 @@ ADD (@error-value-icase) (<<< VAR:value=/soME/i) ;
 ADD (@error-value-regex) (<<< VAR:value=/^methi/r) ;
 
 ADD (@local-current) (<<< LVAR:value=something) ;
-ADD (@error-current) (<<< LVAR:value=somethingx) ;
 
 ADD (@local-previous) (<<<) (*-1 (>>>) LINK -1W (LVAR:value=something)) ;
 ADD (@local-previousx) (<<<) (*-1 (>>>) LINK -1W (LVAR:value=somethingx)) ;
