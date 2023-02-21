@@ -60,4 +60,4 @@
 "<scarf>"
 	"scarf" N @drama
 "<?>"
-	"?" @drama @value-plain @value-icase @value-regex @value-regex-eth @mapping-prefix-@ @local-previous
+	"?" @drama @value-plain @value-icase @value-regex @value-regex-eth @mapping-prefix-@ @local-current @local-previous
