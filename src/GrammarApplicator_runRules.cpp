@@ -1279,7 +1279,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 		};
 
 		auto reading_cb = [&]() {
-			if (rule.type != K_SELECT && rule.type != K_RESTORE && rule.type != K_UNMAP && rule.type != K_REMOVE && rule.type != K_MERGECOHORTS && rule.type != K_SUBSTITUTE) {
+			if (rule.type != K_SELECT && rule.type != K_RESTORE && rule.type != K_UNMAP && rule.type != K_REMOVE && rule.type != K_MERGECOHORTS && rule.type != K_SUBSTITUTE && rule.type != K_SPLITCOHORT && rule.type != K_ADDRELATIONS) {
 				TRACE;
 				// TODO: IFF tracing is messed up
 			}
