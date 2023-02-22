@@ -1279,7 +1279,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 		};
 
 		auto reading_cb = [&]() {
-			if (rule.type != K_SELECT && rule.type != K_RESTORE && rule.type != K_UNMAP && rule.type != K_REMOVE) {
+			if (rule.type != K_SELECT && rule.type != K_RESTORE && rule.type != K_UNMAP && rule.type != K_REMOVE && rule.type != K_MERGECOHORTS && rule.type != K_SUBSTITUTE) {
 				TRACE;
 				// TODO: IFF tracing is messed up
 			}
@@ -1947,22 +1947,23 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 				index_ruleCohort_no.clear();
 
 				CohortSet withs;
-				withs.insert(get_apply_to().cohort);
-				Cohort* merge_at = get_apply_to().cohort;
-				bool test_good = true;
+				Cohort* target = get_apply_to().cohort;
+				withs.insert(target);
+				Cohort* merge_at = target;
 				for (auto it : rule.dep_tests) {
 					auto& at = context_stack.back().attach_to;
 					at.cohort = nullptr;
 					at.reading = nullptr;
 					at.subreading = nullptr;
 					merge_with = nullptr;
-					set_mark(get_apply_to().cohort);
+					set_mark(target);
 					dep_deep_seen.clear();
 					tmpl_cntx.clear();
 					Cohort* attach = nullptr;
-					test_good = (runContextualTest(get_apply_to().cohort->parent, get_apply_to().cohort->local_number, it, &attach) && attach);
+					bool test_good = (runContextualTest(target->parent, target->local_number, it, &attach) && attach);
 					if (!test_good) {
-						break;
+						finish_reading_loop = false;
+						return;
 					}
 					if (get_attach_to().cohort) {
 						merge_at = get_attach_to().cohort;
@@ -1977,10 +1978,8 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						withs.insert(attach);
 					}
 				}
-				if (!test_good) {
-					finish_reading_loop = false;
-					return;
-				}
+
+				TRACE;
 
 				context_stack.back().target.cohort = add_cohort(merge_at);
 
