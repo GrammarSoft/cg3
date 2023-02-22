@@ -1279,7 +1279,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 		};
 
 		auto reading_cb = [&]() {
-			if (rule.type != K_SELECT) {
+			if (rule.type != K_SELECT && rule.type != K_RESTORE) {
 				TRACE;
 				// TODO: IFF tracing is messed up
 			}
