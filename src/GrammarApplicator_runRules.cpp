@@ -604,19 +604,6 @@ bool GrammarApplicator::runSingleRule(SingleWindow& current, const Rule& rule, R
 				else {
 					good = test_good;
 				}
-				if (good || (rule.type == K_IFF && reading->matched_target)) {
-					reset_cohorts_for_loop = false;
-					reading_cb();
-					if (!finish_cohort_loop) {
-						context_stack.pop_back();
-						return anything_changed;
-					}
-					if (reset_cohorts_for_loop) {
-						reset_cohorts();
-						break;
-					}
-					if (!finish_reading_loop) break;
-				}
 				if (good) {
 					// We've found a match, so Iff should be treated as Select instead of Remove
 					if (rule.type == K_IFF && type != K_SELECT) {
@@ -652,6 +639,20 @@ bool GrammarApplicator::runSingleRule(SingleWindow& current, const Rule& rule, R
 					regexgrps.first = orz;
 				}
 				++num_iff;
+				if (good || (rule.type == K_IFF && reading->matched_target)) {
+					reset_cohorts_for_loop = false;
+					std::cerr << "    reading_cb()\n";
+					reading_cb();
+					if (!finish_cohort_loop) {
+						context_stack.pop_back();
+						return anything_changed;
+					}
+					if (reset_cohorts_for_loop) {
+						reset_cohorts();
+						break;
+					}
+					if (!finish_reading_loop) break;
+				}
 			}
 			else {
 				regexgrps.first = orz;
@@ -1280,6 +1281,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 		auto reading_cb = [&]() {
 			if (rule.type != K_SELECT) {
 				TRACE;
+				// TODO: IFF tracing is messed up
 			}
 			if (rule.type == K_SELECT || (rule.type == K_IFF && get_apply_to().subreading->matched_tests)) {
 				selected.push_back(get_apply_to().reading);

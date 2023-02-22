@@ -89,6 +89,9 @@ print STDERR "\nRunning tests...\n";
 
 my $bad = 0;
 
+my $total = 0;
+my $failed = 0;
+
 my @tests = grep { -x } glob('./T_*');
 foreach (@tests) {
 	if ($ARGV[0] && $ARGV[0] ne "" && !(/$ARGV[0]/i)) {
@@ -122,15 +125,21 @@ foreach (@tests) {
 		`./run.pl "$binary" \Q$c\E $args`;
 		if ($?) {
 			$bad = 1;
+			$failed += 1;
 		}
 	}
 	else {
 		if (!run_pl($binary, $c, $args)) {
 			$bad = 1;
+			$failed += 1;
 		}
 	}
+	$total += 1;
 }
 
 print STDERR "\n";
+
+my $success = $total - $failed;
+print STDERR "$success / $total tests passing\n";
 
 exit($bad);
