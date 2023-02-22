@@ -1279,10 +1279,6 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 		};
 
 		auto reading_cb = [&]() {
-			if (rule.type != K_SELECT && rule.type != K_RESTORE && rule.type != K_UNMAP && rule.type != K_REMOVE && rule.type != K_MERGECOHORTS && rule.type != K_SUBSTITUTE && rule.type != K_SPLITCOHORT && rule.type != K_ADDRELATIONS) {
-				TRACE;
-				// TODO: IFF tracing is messed up
-			}
 			if (rule.type == K_SELECT || (rule.type == K_IFF && get_apply_to().subreading->matched_tests)) {
 				selected.push_back(get_apply_to().reading);
 				index_ruleCohort_no.clear();
@@ -1300,9 +1296,11 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 				index_ruleCohort_no.clear();
 			}
 			else if (rule.type == K_PROTECT) {
+				TRACE;
 				get_apply_to().subreading->immutable = true;
 			}
 			else if (rule.type == K_UNPROTECT) {
+				TRACE;
 				get_apply_to().subreading->immutable = false;
 			}
 			else if (rule.type == K_UNMAP) {
@@ -1313,6 +1311,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 			}
 			else if (type == K_ADDCOHORT_AFTER || type == K_ADDCOHORT_BEFORE) {
 				index_ruleCohort_no.clear();
+				TRACE;
 
 				auto cCohort = add_cohort(get_apply_to().cohort);
 
@@ -1559,6 +1558,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 				reset_cohorts_for_loop = true;
 			}
 			else if (rule.type == K_ADD || rule.type == K_MAP) {
+				TRACE;
 				auto state_hash = get_apply_to().subreading->hash;
 				index_ruleCohort_no.clear();
 				auto& reading = *(get_apply_to().subreading);
@@ -1818,6 +1818,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 			}
 			else if (rule.type == K_APPEND) {
 				index_ruleCohort_no.clear();
+				TRACE;
 
 				Tag* bf = nullptr;
 				std::vector<TagList> readings;
@@ -1887,6 +1888,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 				Reading* cReading = get_apply_to().cohort->allocateAppendReading(*get_apply_to().reading);
 				++numReadings;
 				index_ruleCohort_no.clear();
+				TRACE;
 				cReading->hit_by.push_back(rule.number);
 				cReading->noprint = false;
 
@@ -1978,8 +1980,6 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						withs.insert(attach);
 					}
 				}
-
-				TRACE;
 
 				context_stack.back().target.cohort = add_cohort(merge_at);
 
@@ -2342,6 +2342,9 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						sorter.do_sort = true;
 					}
 				}
+			}
+			else if (rule.type != K_REMCOHORT) {
+				TRACE;
 			}
 		};
 
