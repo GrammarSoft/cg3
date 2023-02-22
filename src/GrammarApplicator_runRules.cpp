@@ -1279,7 +1279,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 		};
 
 		auto reading_cb = [&]() {
-			if (rule.type != K_SELECT && rule.type != K_RESTORE) {
+			if (rule.type != K_SELECT && rule.type != K_RESTORE && rule.type != K_UNMAP && rule.type != K_REMOVE) {
 				TRACE;
 				// TODO: IFF tracing is messed up
 			}
@@ -1294,6 +1294,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 					}
 				}
 				else {
+					TRACE;
 					removed.push_back(get_apply_to().reading);
 				}
 				index_ruleCohort_no.clear();
