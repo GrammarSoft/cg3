@@ -848,6 +848,12 @@ inline bool GrammarApplicator::doesSetMatchCohort_helper(Cohort& cohort, Reading
 		retval = doesSetMatchCohort_testLinked(cohort, theset, context);
 		if (context->options & POS_ATTACH_TO) {
 			reading.matched_tests = retval;
+			if (retval && !context_stack.empty()) {
+				context_stack.back().attach_to.cohort = &cohort;
+				// TODO
+				context_stack.back().attach_to.reading = &reading;
+				context_stack.back().attach_to.subreading = &reading;
+			}
 		}
 	}
 	if (!retval && context && !(current_rule->flags & FL_CAPTURE_UNIF) && (theset.type & ST_CHILD_UNIFY) && !context_stack.empty() && (utags->size() != context_stack.back().unif_tags->size() || *utags != *context_stack.back().unif_tags)) {
