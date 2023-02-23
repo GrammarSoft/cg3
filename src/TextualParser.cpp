@@ -1536,27 +1536,30 @@ void TextualParser::parseRule(UChar*& p, KEYWORDS key) {
 		}
 	}
 
-	result->lines += SKIPWS(p, '{', ';');
-	if (*p == '{') {
-		++p;
-		bool prev_in_nested_rule = in_nested_rule;
-		Rule* prev_nested_rule = nested_rule;
-		in_nested_rule = true;
-		nested_rule = rule;
-		AST_OPEN(RuleSubrules);
-		result->lines += SKIPWS(p);
-		do {
-			maybeParseRule(p);
-			result->lines += SKIPWS(p, '}', ';');
-			if (*p == ';') {
-				++p;
-				result->lines += SKIPWS(p);
-			}
-		} while (*p != '}');
-		++p;
-		AST_CLOSE(p);
-		nested_rule = prev_nested_rule;
-		in_nested_rule = prev_in_nested_rule;
+	if (key == K_FIND) {
+		rule->flags |= RF_KEEPORDER;
+		result->lines += SKIPWS(p, '{', ';');
+		if (*p == '{') {
+			++p;
+			bool prev_in_nested_rule = in_nested_rule;
+			Rule* prev_nested_rule = nested_rule;
+			in_nested_rule = true;
+			nested_rule = rule;
+			AST_OPEN(RuleSubrules);
+			result->lines += SKIPWS(p);
+			do {
+				maybeParseRule(p);
+				result->lines += SKIPWS(p, '}', ';');
+				if (*p == ';') {
+					++p;
+					result->lines += SKIPWS(p);
+				}
+			} while (*p != '}');
+			++p;
+			AST_CLOSE(p);
+			nested_rule = prev_nested_rule;
+			in_nested_rule = prev_in_nested_rule;
+		}
 	}
 
 	rule->reverseContextualTests();
@@ -1578,7 +1581,7 @@ void TextualParser::parseRule(UChar*& p, KEYWORDS key) {
 bool TextualParser::maybeParseRule(UChar*& p) {
 	// ADDRELATIONS
 	if (IS_ICASE(p, "ADDRELATIONS", "addrelations")) {
-		parseRule(p, K_ADDRELATIONS); // line 1884
+		parseRule(p, K_ADDRELATIONS);
 	}
 	// SETRELATIONS
 	else if (IS_ICASE(p, "SETRELATIONS", "setrelations")) {
@@ -1667,6 +1670,9 @@ bool TextualParser::maybeParseRule(UChar*& p) {
 	// UNPROTECT
 	else if (IS_ICASE(p, "UNPROTECT", "unprotect")) {
 		parseRule(p, K_UNPROTECT);
+	}
+	else if (IS_ICASE(p, "FIND", "find")) {
+		parseRule(p, K_FIND);
 	}
 	else {
 		// we didn't see a rule
@@ -3035,7 +3041,8 @@ void TextualParser::setVerbosity(uint32_t level) {
 
 void TextualParser::addRuleToGrammar(Rule* rule) {
 	if (in_nested_rule) {
-		rule->section = -4; // TODO: does this need to be defined?
+		rule->section = -3;
+		result->addRule(rule);
 		nested_rule->sub_rules.push_back(rule);
 	}
 	else if (in_section) {

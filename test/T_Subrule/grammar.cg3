@@ -2,9 +2,8 @@ DELIMITERS = "<.>" ;
 
 LIST @det = @det ;
 
-SECTION
-
-MAP @det (det def) IF (1X (n)) {
+FIND (det def) IF (1X (n)) {
+  MAP @det (*) ;
   SETPARENT (*) TO (1 _MARK_) ;
   SETCHILD (*) TO (-1 (predet)) ;
 } ;
