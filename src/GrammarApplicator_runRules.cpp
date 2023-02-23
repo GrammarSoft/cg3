@@ -507,6 +507,9 @@ bool GrammarApplicator::runSingleRule(SingleWindow& current, const Rule& rule, R
 			context_stack.back().regexgrp_ct = 0;
 			context_stack.back().regexgrps = &regexgrps_store[used_regex];
 
+			context_stack.back().unif_tags = nullptr;
+			context_stack.back().unif_sets = nullptr;
+
 			// Check if any previous reading of this cohort had the same plain signature, and if so just copy their results
 			// This cache is cleared on a per-cohort basis
 			did_test = false;
@@ -527,27 +530,30 @@ bool GrammarApplicator::runSingleRule(SingleWindow& current, const Rule& rule, R
 						context_stack.back().regexgrp_ct = regexgrps_z[reading->number];
 						context_stack.back().regexgrps = regexgrps_c[reading->number];
 					}
+					context_stack.back().unif_tags = unif_tags_rs[reading->hash_plain];
+					context_stack.back().unif_sets = unif_sets_rs[reading->hash_plain];
 					did_test = true;
 					test_good = rpit->second->matched_tests;
-					//continue;
 				}
 			}
 
-			// Unification is done on a per-reading basis, so clear all unification state.
-			context_stack.back().unif_tags = &unif_tags_store[used_unif];
-			context_stack.back().unif_sets = &unif_sets_store[used_unif];
-			unif_tags_rs[reading->hash_plain] = context_stack.back().unif_tags;
-			unif_sets_rs[reading->hash_plain] = context_stack.back().unif_sets;
-			unif_tags_rs[reading->hash] = context_stack.back().unif_tags;
-			unif_sets_rs[reading->hash] = context_stack.back().unif_sets;
-			++used_unif;
+			if (!did_test) {
+				// Unification is done on a per-reading basis, so clear all unification state.
+				context_stack.back().unif_tags = &unif_tags_store[used_unif];
+				context_stack.back().unif_sets = &unif_sets_store[used_unif];
+				unif_tags_rs[reading->hash_plain] = context_stack.back().unif_tags;
+				unif_sets_rs[reading->hash_plain] = context_stack.back().unif_sets;
+				unif_tags_rs[reading->hash] = context_stack.back().unif_tags;
+				unif_sets_rs[reading->hash] = context_stack.back().unif_sets;
+				++used_unif;
 
-			context_stack.back().unif_tags->clear();
-			context_stack.back().unif_sets->clear();
+				context_stack.back().unif_tags->clear();
+				context_stack.back().unif_sets->clear();
 
-			unif_last_wordform = 0;
-			unif_last_baseform = 0;
-			unif_last_textual = 0;
+				unif_last_wordform = 0;
+				unif_last_baseform = 0;
+				unif_last_textual = 0;
+			}
 
 			same_basic = reading->hash_plain;
 			target = nullptr;
@@ -819,6 +825,8 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 		bool readings_changed = false;
 		bool should_repeat = false;
 		bool should_bail = false;
+		// SUBSTITUTE should update wordform once per cohort not per reading
+		Tag* substitute_wordform = nullptr;
 
 		auto reindex = [&]() {
 			foreach (iter, current.cohorts) {
@@ -1274,6 +1282,38 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 				}
 				readings_changed = true;
 				reset_cohorts_for_loop = true;
+			}
+			else if (type == K_SUBSTITUTE) {
+				Cohort* target = get_apply_to().cohort;
+				if (substitute_wordform != nullptr && substitute_wordform != target->wordform) {
+					for (auto r : target->readings) {
+						delTagFromReading(*r, target->wordform);
+						addTagToReading(*r, substitute_wordform);
+					}
+					for (auto r : target->deleted) {
+						delTagFromReading(*r, target->wordform);
+						addTagToReading(*r, substitute_wordform);
+					}
+					for (auto r : target->delayed) {
+						delTagFromReading(*r, target->wordform);
+						addTagToReading(*r, substitute_wordform);
+					}
+					target->wordform = substitute_wordform;
+					for (auto r : grammar->wf_rules) {
+						if (doesWordformsMatch(substitute_wordform, r->wordform)) {
+							current.rule_to_cohorts[r->number].insert(target);
+							intersects.insert(r->number);
+						}
+						else {
+							current.rule_to_cohorts[r->number].erase(target);
+						}
+					}
+					// TODO: is this needed?
+					//updateValidRules(rules, intersects, substitute_wordform->hash, *get_apply_to().subreading);
+					iter_rules = intersects.find(rule.number);
+					iter_rules_end = intersects.end();
+					readings_changed = true;
+				}
 			}
 		};
 
@@ -1780,31 +1820,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						splitMappings(mappings, *get_apply_to().cohort, *get_apply_to().subreading, true);
 					}
 					if (wf && wf != get_apply_to().subreading->parent->wordform) {
-						for (auto r : get_apply_to().subreading->parent->readings) {
-							delTagFromReading(*r, get_apply_to().subreading->parent->wordform);
-							addTagToReading(*r, wf);
-						}
-						for (auto r : get_apply_to().subreading->parent->deleted) {
-							delTagFromReading(*r, get_apply_to().subreading->parent->wordform);
-							addTagToReading(*r, wf);
-						}
-						for (auto r : get_apply_to().subreading->parent->delayed) {
-							delTagFromReading(*r, get_apply_to().subreading->parent->wordform);
-							addTagToReading(*r, wf);
-						}
-						get_apply_to().subreading->parent->wordform = wf;
-						for (auto r : grammar->wf_rules) {
-							if (doesWordformsMatch(wf, r->wordform)) {
-								current.rule_to_cohorts[r->number].insert(get_apply_to().cohort);
-								intersects.insert(r->number);
-							}
-							else {
-								current.rule_to_cohorts[r->number].erase(get_apply_to().cohort);
-							}
-						}
-						updateValidRules(rules, intersects, wf->hash, *get_apply_to().subreading);
-						iter_rules = intersects.find(rule.number);
-						iter_rules_end = intersects.end();
+						substitute_wordform = wf;
 					}
 				}
 				if (get_apply_to().subreading->hash != state_hash) {
