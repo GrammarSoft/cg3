@@ -499,6 +499,7 @@ bool GrammarApplicator::runSingleRule(SingleWindow& current, const Rule& rule, R
 				if (type == K_SELECT) {
 					reading->matched_target = true;
 					reading->matched_tests = true;
+					reading_contexts.push_back(context_stack.back());
 				}
 				++num_active;
 				++num_iff;
