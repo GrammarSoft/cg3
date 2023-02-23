@@ -91,6 +91,8 @@ struct Rule_Context {
 	Cohort* mark = nullptr;
 	unif_tags_t* unif_tags = nullptr;
 	unif_sets_t* unif_sets = nullptr;
+	uint8_t regexgrp_ct = 0;
+	regexgrps_t* regexgrps = nullptr;
 };
 
 typedef std::function<void(void)> RuleCallback;
@@ -242,7 +244,6 @@ protected:
 	tmpl_context_t tmpl_cntx;
 
 	std::vector<regexgrps_t> regexgrps_store;
-	std::pair<uint8_t, regexgrps_t*> regexgrps;
 	bc::flat_map<uint32_t, uint8_t> regexgrps_z;
 	bc::flat_map<uint32_t, regexgrps_t*> regexgrps_c;
 	uint32_t same_basic = 0;

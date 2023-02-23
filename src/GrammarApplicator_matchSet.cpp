@@ -59,7 +59,7 @@ inline bool TagSet_SubsetOf_TSet(const TagSortedVector& a, const T& b) {
 }
 
 template<typename RXGS, typename Tag>
-inline void captureRegex(int32_t gc, RXGS& regexgrps, Tag& tag) {
+inline void captureRegex(int32_t gc, uint8_t& regexgrp_ct, RXGS* regexgrps, Tag& tag) {
 	constexpr auto BUFSIZE = 1024;
 	UErrorCode status = U_ZERO_ERROR;
 	UChar _tmp[BUFSIZE];
@@ -74,11 +74,11 @@ inline void captureRegex(int32_t gc, RXGS& regexgrps, Tag& tag) {
 			tmp = &_stmp[0];
 			uregex_group(tag.regexp, i, tmp, len + 1, &status);
 		}
-		regexgrps.second->resize(std::max(static_cast<size_t>(regexgrps.first) + 1, regexgrps.second->size()));
-		UnicodeString& ucstr = (*regexgrps.second)[regexgrps.first];
+		regexgrps->resize(std::max(static_cast<size_t>(regexgrp_ct) + 1, regexgrps->size()));
+		UnicodeString& ucstr = (*regexgrps)[regexgrp_ct];
 		ucstr.remove();
 		ucstr.append(tmp, len);
-		++regexgrps.first;
+		++regexgrp_ct;
 	}
 }
 
@@ -115,8 +115,8 @@ uint32_t GrammarApplicator::doesTagMatchRegexp(uint32_t test, const Tag& tag, bo
 			CG3Quit(1);
 		}
 		if (match) {
-			if (gc > 0 && regexgrps.second != 0) {
-				captureRegex(gc, regexgrps, tag);
+			if (gc > 0 && !context_stack.empty() && context_stack.back().regexgrps != 0) {
+				captureRegex(gc, context_stack.back().regexgrp_ct, context_stack.back().regexgrps, tag);
 			}
 			else {
 				index_regexp_yes.insert(ih);
@@ -181,8 +181,8 @@ uint32_t GrammarApplicator::doesRegexpMatchLine(const Reading& reading, const Ta
 		}
 		if (match) {
 			// ToDo: Allow regex captures from dependency target contexts without any captures in normal target contexts
-			if (gc > 0 && regexgrps.second != 0) {
-				captureRegex(gc, regexgrps, tag);
+			if (gc > 0 && !context_stack.empty() && context_stack.back().regexgrps != 0) {
+				captureRegex(gc, context_stack.back().regexgrp_ct, context_stack.back().regexgrps, tag);
 			}
 			else {
 				index_regexp_yes.insert(ih);
@@ -276,8 +276,8 @@ uint32_t GrammarApplicator::doesTagMatchReading(const Reading& reading, const Ta
 			}
 			if (match) {
 				int32_t gc = uregex_groupCount(tag.regexp, &status);
-				if (gc > 0 && regexgrps.second != 0) {
-					captureRegex(gc, regexgrps, tag);
+				if (gc > 0 && !context_stack.empty() && context_stack.back().regexgrps != 0) {
+					captureRegex(gc, context_stack.back().regexgrp_ct, context_stack.back().regexgrps, tag);
 				}
 			}
 		}
@@ -832,7 +832,7 @@ inline bool GrammarApplicator::doesSetMatchCohort_helper(Cohort& cohort, Reading
 	bool retval = false;
 	auto utags = ss_utags.get();
 	auto usets = ss_usets.get();
-	uint8_t orz = regexgrps.first;
+	uint8_t orz = (context_stack.empty() ? 0 : context_stack.back().regexgrp_ct);
 
 	if (context && !(current_rule->flags & FL_CAPTURE_UNIF) && (theset.type & ST_CHILD_UNIFY) && !context_stack.empty()) {
 		*utags = *context_stack.back().unif_tags;
@@ -868,8 +868,8 @@ inline bool GrammarApplicator::doesSetMatchCohort_helper(Cohort& cohort, Reading
 	if (!retval && context && !(current_rule->flags & FL_CAPTURE_UNIF) && (theset.type & ST_CHILD_UNIFY) && !context_stack.empty() && usets->size() != context_stack.back().unif_sets->size()) {
 		context_stack.back().unif_sets->swap(usets);
 	}
-	if (!retval) {
-		regexgrps.first = orz;
+	if (!retval && !context_stack.empty()) {
+		context_stack.back().regexgrp_ct = orz;
 	}
 	return retval;
 }

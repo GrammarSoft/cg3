@@ -250,8 +250,8 @@ Reading* GrammarApplicator::get_sub_reading(Reading* tr, int sub_reading) {
 				auto tt = *it;                                                      \
 				it = (taglist)->erase(it);                                          \
 				if (tt->type & T_SPECIAL) {                                         \
-					if (regexgrps.second == nullptr) {                              \
-						regexgrps.second = &regexgrps_store[used_regex];            \
+					if (context_stack.back().regexgrps == nullptr) { \
+						context_stack.back().regexgrps = &regexgrps_store[used_regex]; \
 					}                                                               \
 					auto stag = doesTagMatchReading(reading, *tt, false, true);     \
 					if (stag) {                                                     \
@@ -269,8 +269,8 @@ Reading* GrammarApplicator::get_sub_reading(Reading* tr, int sub_reading) {
 		Reading& reading = *get_apply_to().subreading;							\
 		for (auto& tt : *(taglist)) {                                           \
 			if (tt->type & T_SPECIAL) {                                         \
-				if (regexgrps.second == nullptr) {                              \
-					regexgrps.second = &regexgrps_store[used_regex];            \
+				if (context_stack.back().regexgrps == nullptr) {			\
+					context_stack.back().regexgrps = &regexgrps_store[used_regex]; \
 				}                                                               \
 				auto stag = doesTagMatchReading(reading, *tt, false, true);     \
 				if (stag) {                                                     \
@@ -503,6 +503,10 @@ bool GrammarApplicator::runSingleRule(SingleWindow& current, const Rule& rule, R
 				continue;
 			}
 
+			// Regex capture is done on a per-reading basis, so clear all captured state.
+			context_stack.back().regexgrp_ct = 0;
+			context_stack.back().regexgrps = &regexgrps_store[used_regex];
+
 			// Check if any previous reading of this cohort had the same plain signature, and if so just copy their results
 			// This cache is cleared on a per-cohort basis
 			did_test = false;
@@ -519,16 +523,15 @@ bool GrammarApplicator::runSingleRule(SingleWindow& current, const Rule& rule, R
 						regexgrps_c[reading->number] = regexgrps_c[rpit->second->number];
 						regexgrps_z[reading->number];
 						regexgrps_z[reading->number] = regexgrps_z[rpit->second->number];
+
+						context_stack.back().regexgrp_ct = regexgrps_z[reading->number];
+						context_stack.back().regexgrps = regexgrps_c[reading->number];
 					}
 					did_test = true;
 					test_good = rpit->second->matched_tests;
 					//continue;
 				}
 			}
-
-			// Regex capture is done on a per-reading basis, so clear all captured state.
-			regexgrps.first = 0;
-			regexgrps.second = &regexgrps_store[used_regex];
 
 			// Unification is done on a per-reading basis, so clear all unification state.
 			context_stack.back().unif_tags = &unif_tags_store[used_unif];
@@ -549,14 +552,14 @@ bool GrammarApplicator::runSingleRule(SingleWindow& current, const Rule& rule, R
 			same_basic = reading->hash_plain;
 			target = nullptr;
 			set_mark(cohort);
-			uint8_t orz = regexgrps.first;
+			uint8_t orz = context_stack.back().regexgrp_ct;
 			for (auto r = cohort->readings[i]; r; r = r->next) {
 				r->active = true;
 			}
 			// Actually check if the reading is a valid target. First check if rule target matches...
 			if (rule.target && doesSetMatchReading(*reading, rule.target, (set.type & (ST_CHILD_UNIFY | ST_SPECIAL)) != 0)) {
 				bool regex_prop = true;
-				if (orz != regexgrps.first) {
+				if (orz != context_stack.back().regexgrp_ct) {
 					did_test = false;
 					regex_prop = false;
 				}
@@ -636,12 +639,11 @@ bool GrammarApplicator::runSingleRule(SingleWindow& current, const Rule& rule, R
 					}
 				}
 				else {
-					regexgrps.first = orz;
+					context_stack.back().regexgrp_ct = orz;
 				}
 				++num_iff;
 				if (good || (rule.type == K_IFF && reading->matched_target)) {
 					reset_cohorts_for_loop = false;
-					std::cerr << "    reading_cb()\n";
 					reading_cb();
 					if (!finish_cohort_loop) {
 						context_stack.pop_back();
@@ -655,7 +657,7 @@ bool GrammarApplicator::runSingleRule(SingleWindow& current, const Rule& rule, R
 				}
 			}
 			else {
-				regexgrps.first = orz;
+				context_stack.back().regexgrp_ct = orz;
 				++rule.num_fail;
 			}
 			readings_plain.insert(std::make_pair(reading->hash_plain, reading));
@@ -667,9 +669,9 @@ bool GrammarApplicator::runSingleRule(SingleWindow& current, const Rule& rule, R
 				cohort->readings[i]->matched_target = reading->matched_target;
 				cohort->readings[i]->matched_tests = reading->matched_tests;
 			}
-			if (regexgrps.first) {
-				regexgrps_c[reading->number] = regexgrps.second;
-				regexgrps_z[reading->number] = regexgrps.first;
+			if (context_stack.back().regexgrp_ct) {
+				regexgrps_c[reading->number] = context_stack.back().regexgrps;
+				regexgrps_z[reading->number] = context_stack.back().regexgrp_ct;
 				++used_regex;
 			}
 		}

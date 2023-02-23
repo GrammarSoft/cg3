@@ -389,8 +389,8 @@ Tag* GrammarApplicator::generateVarstringTag(const Tag* tag) {
 
 	// Replace $1-$9 with their respective match groups
 	constexpr UStringView grp[] = { STR_VS1, STR_VS2, STR_VS3, STR_VS4, STR_VS5, STR_VS6, STR_VS7, STR_VS8, STR_VS9 };
-	for (size_t i = 0; i < regexgrps.first && i < 9; ++i) {
-		findAndReplace(tmp, grp[i].data(), USV((*regexgrps.second)[i]));
+	for (size_t i = 0; i < context_stack.back().regexgrp_ct && i < 9; ++i) {
+		findAndReplace(tmp, grp[i].data(), USV((*context_stack.back().regexgrps)[i]));
 		did_something = true;
 	}
 
