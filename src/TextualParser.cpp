@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2007-2021, GrammarSoft ApS
+* Copyright (C) 2007-2023, GrammarSoft ApS
 * Developed by Tino Didriksen <mail@tinodidriksen.com>
 * Design by Eckhard Bick <eckhard.bick@mail.dk>, Tino Didriksen <mail@tinodidriksen.com>
 *
@@ -125,7 +125,7 @@ Tag* TextualParser::parseTag(const UChar* to, const UChar* p) {
 	}
 
 	if (!strict_tags.empty() && !strict_tags.count(tag->plain_hash)) {
-		if (tag->type & (T_ANY | T_VARSTRING | T_VSTR | T_META | T_VARIABLE | T_SET | T_PAR_LEFT | T_PAR_RIGHT | T_ENCL | T_TARGET | T_MARK | T_ATTACHTO | T_SAME_BASIC)) {
+		if (tag->type & (T_ANY | T_VARSTRING | T_VSTR | T_META | T_VARIABLE | T_LOCAL_VARIABLE | T_SET | T_PAR_LEFT | T_PAR_RIGHT | T_ENCL | T_TARGET | T_MARK | T_ATTACHTO | T_SAME_BASIC)) {
 			// Always allow...
 		}
 		else if (tag->tag == STR_BEGINTAG || tag->tag == STR_ENDTAG) {
@@ -966,7 +966,7 @@ ContextualTest* TextualParser::parseContextualTestList(UChar*& p, Rule* rule, bo
 
 	if (linked) {
 		t->linked = parseContextualTestList(p, rule, in_tmpl);
-		if ((t->pos & POS_NONE) && !(t->linked->pos & POS_MARK_JUMP)) {
+		if (t->pos & POS_NONE) {
 			error("%s: Error: It does not make sense to LINK from a NONE test; perhaps you meant NOT or NEGATE on line %u near `%S`?\n", p);
 		}
 	}
@@ -1093,6 +1093,9 @@ flags_t TextualParser::parseRuleFlags(UChar*& p) {
 
 	if (rv.flags & RF_UNMAPLAST) {
 		rv.flags |= RF_UNSAFE;
+	}
+	if (rv.flags & RF_REMEMBERX) {
+		rv.flags |= RF_KEEPORDER;
 	}
 	if (rv.flags & RF_ENCL_FINAL) {
 		result->has_encl_final = true;
@@ -1529,8 +1532,7 @@ void TextualParser::parseRule(UChar*& p, KEYWORDS key) {
 			}
 		}
 		if (found) {
-			u_fprintf(ux_stderr, "%s: Warning: Rule on line %u had 'x' in the first part of a contextual test, but no REMEMBERX flag.\n", filebase, result->lines);
-			u_fflush(ux_stderr);
+			rule->flags |= RF_REMEMBERX | RF_KEEPORDER;
 		}
 	}
 

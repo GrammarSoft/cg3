@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2007-2021, GrammarSoft ApS
+* Copyright (C) 2007-2023, GrammarSoft ApS
 * Developed by Tino Didriksen <mail@tinodidriksen.com>
 * Design by Eckhard Bick <eckhard.bick@mail.dk>, Tino Didriksen <mail@tinodidriksen.com>
 *
@@ -196,7 +196,7 @@ int BinaryGrammar::writeBinaryGrammar(FILE* output) {
 			}
 		}
 		// 1 << 12 used above
-		if ((t->type & T_VARIABLE) && t->variable_hash) {
+		if ((t->type & (T_VARIABLE|T_LOCAL_VARIABLE)) && t->variable_hash) {
 			fields |= (1 << 13);
 			writeSwapped(buffer, t->variable_hash);
 		}

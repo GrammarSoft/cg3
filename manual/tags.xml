@@ -377,6 +377,19 @@
     </para>
   </section>
 
+  <section id="local-variables">
+    <title>Local Variables</title>
+    <para>
+      Almost identical to <link linkend="global-variables">global variables</link>, but uses <code>LVAR</code> instead of <code>VAR</code>, and variables are bound to windows.
+    </para>
+    <para>
+      Global variables are remembered on a per-window basis. When the current window has no more possible rules, the current variable state is recorded in the window. Later windows looking back with <link linkend="test-spanning">W</link> can then query what a given variable's value was at that time. It is also possible to query future windows' variable values if the stream contains <link linkend="cmd-setvar">SETVAR</link> and the window is in the lookahead buffer.
+    </para>
+    <para>
+      When LVAR queries the current window, it is the same as VAR.
+    </para>
+  </section>
+
   <section id="fail-fast-tag">
     <title>Fail-Fast Tag</title>
     <para>

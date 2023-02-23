@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2007-2021, GrammarSoft ApS
+* Copyright (C) 2007-2023, GrammarSoft ApS
 * Developed by Tino Didriksen <mail@tinodidriksen.com>
 * Design by Eckhard Bick <eckhard.bick@mail.dk>, Tino Didriksen <mail@tinodidriksen.com>
 *
@@ -61,7 +61,7 @@ private:
 	 */
 	void parseStreamVar(const SingleWindow* cSWindow, UString& cleaned,
 			    uint32FlatHashMap& variables_set, uint32FlatHashSet& variables_rem, uint32SortedVector& variables_output);
-	void printReading(Reading* reading, std::ostream& output, ApertiumCasing casing, int firstlower);
+	void printReading(Reading* reading, std::ostream& output, ApertiumCasing casing, int32_t firstlower);
 	void processReading(Reading* cReading, UChar* reading_string, Tag* wform);
 	void processReading(Reading* cReading, UString& reading_string, Tag* wform);
 };

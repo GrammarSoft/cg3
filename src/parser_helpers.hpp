@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2007-2021, GrammarSoft ApS
+* Copyright (C) 2007-2023, GrammarSoft ApS
 * Developed by Tino Didriksen <mail@tinodidriksen.com>
 * Design by Eckhard Bick <eckhard.bick@mail.dk>, Tino Didriksen <mail@tinodidriksen.com>
 *
@@ -31,7 +31,7 @@
 namespace CG3 {
 
 template<typename State>
-Tag* parseTag(const UChar* to, const UChar* p, State& state) {
+Tag* parseTag(const UChar* to, const UChar* p, State& state, bool unescape=true) {
 	if (to[0] == 0) {
 		state.error("%s: Error: Empty tag on line %u near `%S`! Forgot to fill in a ()?\n", p);
 	}
@@ -77,6 +77,11 @@ Tag* parseTag(const UChar* to, const UChar* p, State& state) {
 			tag->variable_hash = 0;
 			tmp += 4;
 			length -= 4;
+		}
+		if (tmp[0] == 'L' && tmp[1] == 'V' && tmp[2] == 'A' && tmp[3] == 'R' && tmp[4] == ':') {
+			tag->type |= T_LOCAL_VARIABLE;
+			tmp += 5;
+			length -= 5;
 		}
 		if (tmp[0] == 'S' && tmp[1] == 'E' && tmp[2] == 'T' && tmp[3] == ':') {
 			tag->type |= T_SET;
@@ -149,7 +154,7 @@ Tag* parseTag(const UChar* to, const UChar* p, State& state) {
 		}
 
 		for (size_t i = 0, oldlength = length; tmp[i] != 0 && i < oldlength; ++i) {
-			if (tmp[i] == '\\') {
+			if (unescape && tmp[i] == '\\') {
 				++i;
 				--length;
 			}
@@ -190,10 +195,10 @@ Tag* parseTag(const UChar* to, const UChar* p, State& state) {
 			}
 		}
 
-		if ((tag->type & T_VARIABLE) && tag->tag.find('=') != UString::npos) {
+		if ((tag->type & (T_VARIABLE|T_LOCAL_VARIABLE)) && tag->tag.find('=') != UString::npos) {
 			size_t pos = tag->tag.find('=');
 			tag->comparison_op = OP_EQUALS;
-			tag->variable_hash = parseTag(&tag->tag[pos + 1], p, state)->hash;
+			tag->variable_hash = parseTag(&tag->tag[pos + 1], p, state, false)->hash;
 			tag->comparison_hash = hash_value(tag->tag.substr(0, pos));
 		}
 		else {
@@ -288,7 +293,7 @@ Tag* parseTag(const UChar* to, const UChar* p, State& state) {
 		tag->type |= T_SPECIAL;
 	}
 
-	if (tag->type & T_VARSTRING && tag->type & (T_REGEXP | T_REGEXP_ANY | T_VARIABLE | T_META)) {
+	if (tag->type & T_VARSTRING && tag->type & (T_REGEXP | T_REGEXP_ANY | T_VARIABLE | T_LOCAL_VARIABLE | T_META)) {
 		state.error("%s: Error: Tag %S cannot mix varstring with any other special feature on line %u near `%S`!\n", to, p);
 	}
 

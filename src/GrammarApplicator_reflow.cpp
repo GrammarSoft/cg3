@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2007-2021, GrammarSoft ApS
+* Copyright (C) 2007-2023, GrammarSoft ApS
 * Developed by Tino Didriksen <mail@tinodidriksen.com>
 * Design by Eckhard Bick <eckhard.bick@mail.dk>, Tino Didriksen <mail@tinodidriksen.com>
 *
@@ -399,19 +399,19 @@ Tag* GrammarApplicator::generateVarstringTag(const Tag* tag) {
 	do {
 		found = false;
 		int32_t pos = -1, mpos = -1;
-		if ((pos = tmp.lastIndexOf(STR_VSu.data(), STR_VSu.size(), 0)) != -1) {
+		if ((pos = tmp.lastIndexOf(STR_VSu.data(), SI32(STR_VSu.size()), 0)) != -1) {
 			found = true;
 			mpos = std::max(mpos, pos);
 		}
-		if ((pos = tmp.lastIndexOf(STR_VSU.data(), STR_VSU.size(), mpos)) != -1) {
+		if ((pos = tmp.lastIndexOf(STR_VSU.data(), SI32(STR_VSU.size()), mpos)) != -1) {
 			found = true;
 			mpos = std::max(mpos, pos);
 		}
-		if ((pos = tmp.lastIndexOf(STR_VSl.data(), STR_VSl.size(), mpos)) != -1) {
+		if ((pos = tmp.lastIndexOf(STR_VSl.data(), SI32(STR_VSl.size()), mpos)) != -1) {
 			found = true;
 			mpos = std::max(mpos, pos);
 		}
-		if ((pos = tmp.lastIndexOf(STR_VSL.data(), STR_VSL.size(), mpos)) != -1) {
+		if ((pos = tmp.lastIndexOf(STR_VSL.data(), SI32(STR_VSL.size()), mpos)) != -1) {
 			found = true;
 			mpos = std::max(mpos, pos);
 		}

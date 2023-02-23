@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2007-2021, GrammarSoft ApS
+* Copyright (C) 2007-2023, GrammarSoft ApS
 * Developed by Tino Didriksen <mail@tinodidriksen.com>
 * Design by Eckhard Bick <eckhard.bick@mail.dk>, Tino Didriksen <mail@tinodidriksen.com>
 *
@@ -53,9 +53,9 @@ std::string ux_dirname(const char* in) {
 
 void findAndReplace(UnicodeString& str, CG3::UStringView from, CG3::UStringView to) {
 	int32_t offset = 0;
-	while ((offset = str.indexOf(from.data(), from.size(), offset)) != -1) {
-		str.replace(offset, from.size(), to.data(), 0, to.size());
-		offset += to.size();
+	while ((offset = str.indexOf(from.data(), SI32(from.size()), offset)) != -1) {
+		str.replace(offset, SI32(from.size()), to.data(), 0, SI32(to.size()));
+		offset += SI32(to.size());
 	}
 }
 

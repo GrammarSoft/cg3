@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2007-2021, GrammarSoft ApS
+* Copyright (C) 2007-2023, GrammarSoft ApS
 * Developed by Tino Didriksen <mail@tinodidriksen.com>
 * Design by Eckhard Bick <eckhard.bick@mail.dk>, Tino Didriksen <mail@tinodidriksen.com>
 *
@@ -467,10 +467,16 @@ uint32_t GrammarApplicator::doesTagMatchReading(const Reading& reading, const Ta
 			}
 		}
 	}
-	else if (tag.type & T_VARIABLE) {
+	else if (tag.type & (T_VARIABLE|T_LOCAL_VARIABLE)) {
 		match = 0;
-		auto it = variables.find(tag.comparison_hash);
-		if (it != variables.end()) {
+		auto& vars = [&]() -> auto& {
+			if (reading.parent->parent == gWindow->current || !(tag.type & T_LOCAL_VARIABLE)) {
+				return variables;
+			}
+			return reading.parent->parent->variables_set;
+		}();
+		auto it = vars.find(tag.comparison_hash);
+		if (it != vars.end()) {
 			if (tag.variable_hash == 0) {
 				match = tag.hash;
 			}

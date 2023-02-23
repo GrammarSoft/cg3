@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2007-2021, GrammarSoft ApS
+* Copyright (C) 2007-2023, GrammarSoft ApS
 * Developed by Tino Didriksen <mail@tinodidriksen.com>
 * Design by Eckhard Bick <eckhard.bick@mail.dk>, Tino Didriksen <mail@tinodidriksen.com>
 *
@@ -1343,6 +1343,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 
 				Tag* wf = nullptr;
 				for (auto tter : *theTags) {
+					VARSTRINGIFY(tter);
 					if (tter->type & T_WORDFORM) {
 						cohorts.resize(cohorts.size() + 1);
 						cohorts.back().first = alloc_cohort(&current);

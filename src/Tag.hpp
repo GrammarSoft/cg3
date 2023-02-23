@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2007-2021, GrammarSoft ApS
+* Copyright (C) 2007-2023, GrammarSoft ApS
 * Developed by Tino Didriksen <mail@tinodidriksen.com>
 * Design by Eckhard Bick <eckhard.bick@mail.dk>, Tino Didriksen <mail@tinodidriksen.com>
 *
@@ -67,7 +67,7 @@ enum : uint32_t {
 	T_ATTACHTO         = (1 << 19),
 	T_SPECIAL          = (1 << 20),
 	T_USED             = (1 << 21),
-	//T_GRAMMAR          = (1 << 22), // No longer needed since switch to grammar-owned single_tags
+	T_LOCAL_VARIABLE   = (1 << 22),
 	T_SET              = (1 << 23),
 	T_VSTR             = (1 << 24),
 	T_ENCL             = (1 << 25),
@@ -75,7 +75,7 @@ enum : uint32_t {
 
 	T_REGEXP_LINE      = (1u << 31), // ToDo: Remove for real ordered mode
 
-	MASK_TAG_SPECIAL   = T_ANY | T_TARGET | T_MARK | T_ATTACHTO | T_PAR_LEFT | T_PAR_RIGHT | T_NUMERICAL | T_VARIABLE | T_META | T_FAILFAST | T_CASE_INSENSITIVE | T_REGEXP | T_REGEXP_ANY | T_VARSTRING | T_SET | T_ENCL | T_SAME_BASIC,
+	MASK_TAG_SPECIAL   = T_ANY | T_TARGET | T_MARK | T_ATTACHTO | T_PAR_LEFT | T_PAR_RIGHT | T_NUMERICAL | T_VARIABLE | T_LOCAL_VARIABLE | T_META | T_FAILFAST | T_CASE_INSENSITIVE | T_REGEXP | T_REGEXP_ANY | T_VARSTRING | T_SET | T_ENCL | T_SAME_BASIC,
 };
 
 class Tag {

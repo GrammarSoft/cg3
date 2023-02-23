@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2007-2021, GrammarSoft ApS
+* Copyright (C) 2007-2023, GrammarSoft ApS
 * Developed by Tino Didriksen <mail@tinodidriksen.com>
 * Design by Eckhard Bick <eckhard.bick@mail.dk>, Tino Didriksen <mail@tinodidriksen.com>
 *
@@ -25,13 +25,13 @@
 
 #include <cstdint>
 
-constexpr auto CG3_COPYRIGHT_STRING = "Copyright (C) 2007-2021 GrammarSoft ApS. Licensed under GPLv3+";
+constexpr auto CG3_COPYRIGHT_STRING = "Copyright (C) 2007-2023 GrammarSoft ApS. Licensed under GPLv3+";
 
 constexpr uint32_t CG3_VERSION_MAJOR = 1;
 constexpr uint32_t CG3_VERSION_MINOR = 3;
-constexpr uint32_t CG3_VERSION_PATCH = 9;
-constexpr uint32_t CG3_REVISION = 13892;
-constexpr uint32_t CG3_FEATURE_REV = 13892;
+constexpr uint32_t CG3_VERSION_PATCH = 12;
+constexpr uint32_t CG3_REVISION = 13893;
+constexpr uint32_t CG3_FEATURE_REV = 13893;
 constexpr uint32_t CG3_TOO_OLD = 10373;
 constexpr uint32_t CG3_EXTERNAL_PROTOCOL = 7226;
 
