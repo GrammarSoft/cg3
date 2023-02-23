@@ -591,7 +591,7 @@ bool GrammarApplicator::runSingleRule(SingleWindow& current, const Rule& rule, R
 						if (!test_good) {
 							good = test_good;
 							if (!statistics) {
-								if (it != rule.tests.begin() && !(rule.flags & (RF_REMEMBERX | RF_KEEPORDER))) {
+								if (it != rule.tests.begin() && !(rule.flags & RF_KEEPORDER)) {
 									rule.tests.erase(it);
 									rule.tests.push_front(test);
 								}
@@ -865,9 +865,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 			getTagList(*rule.maplist, theTags);
 
 			for (auto tter : *theTags) {
-				while (tter->type & T_VARSTRING) {
-					tter = generateVarstringTag(tter);
-				}
+				VARSTRINGIFY(tter);
 				if (tter->type & T_WORDFORM) {
 					cCohort->wordform = tter;
 					wf = tter;
@@ -917,9 +915,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 				TagList mappings;
 				for (auto tter : rit) {
 					uint32_t hash = tter->hash;
-					while (tter->type & T_VARSTRING) {
-						tter = generateVarstringTag(tter);
-					}
+					VARSTRINGIFY(tter);
 					if (tter->type & T_MAPPING || tter->tag[0] == grammar->mapping_prefix) {
 						mappings.push_back(tter);
 					}
@@ -1176,9 +1172,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 			}
 			else if (type == K_JUMP) {
 				auto to = getTagList(*rule.maplist).front();
-				while (to->type & T_VARSTRING) {
-					to = generateVarstringTag(to);
-				}
+				VARSTRINGIFY(to);
 				auto it = grammar->anchors.find(to->hash);
 				if (it == grammar->anchors.end()) {
 					u_fprintf(ux_stderr, "Warning: JUMP on line %u could not find anchor '%S'.\n", rule.line, to->tag.data());
@@ -1192,6 +1186,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 			else if (type == K_REMVARIABLE) {
 				auto names = getTagList(*rule.maplist);
 				for (auto tag : names) {
+					VARSTRINGIFY(tag);
 					variables.erase(tag->hash);
 					if (rule.flags & RF_OUTPUT) {
 						current.variables_output.insert(tag->hash);
@@ -1202,6 +1197,8 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 			else if (type == K_SETVARIABLE) {
 				auto names = getTagList(*rule.maplist);
 				auto values = getTagList(*rule.sublist);
+				VARSTRINGIFY(names.front());
+				VARSTRINGIFY(values.front());
 				variables[names.front()->hash] = values.front()->hash;
 				if (rule.flags & RF_OUTPUT) {
 					current.variables_output.insert(names.front()->hash);
@@ -1343,15 +1340,12 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 
 				Tag* wf = nullptr;
 				for (auto tter : *theTags) {
-					VARSTRINGIFY(tter);
 					if (tter->type & T_WORDFORM) {
 						cohorts.resize(cohorts.size() + 1);
 						cohorts.back().first = alloc_cohort(&current);
 						cohorts.back().first->global_number = gWindow->cohort_counter++;
 						wf = tter;
-						while (wf->type & T_VARSTRING) {
-							wf = generateVarstringTag(wf);
-						}
+						VARSTRINGIFY(wf);
 						cohorts.back().first->wordform = wf;
 						continue;
 					}
@@ -1455,9 +1449,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 
 						for (auto tter : tags) {
 							uint32_t hash = tter->hash;
-							while (tter->type & T_VARSTRING) {
-								tter = generateVarstringTag(tter);
-							}
+							VARSTRINGIFY(tter);
 							if (tter->type & T_MAPPING || tter->tag[0] == grammar->mapping_prefix) {
 								mappings.push_back(tter);
 							}
@@ -1827,9 +1819,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 				getTagList(*rule.maplist, theTags);
 
 				for (auto tter : *theTags) {
-					while (tter->type & T_VARSTRING) {
-						tter = generateVarstringTag(tter);
-					}
+					VARSTRINGIFY(tter);
 					if (tter->type & T_BASEFORM) {
 						bf = tter;
 						readings.resize(readings.size() + 1);
@@ -1851,9 +1841,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 					TagList mappings;
 					for (auto tter : rit) {
 						uint32_t hash = tter->hash;
-						while (tter->type & T_VARSTRING) {
-							tter = generateVarstringTag(tter);
-						}
+						VARSTRINGIFY(tter);
 						if (tter->type & T_MAPPING || tter->tag[0] == grammar->mapping_prefix) {
 							mappings.push_back(tter);
 						}
