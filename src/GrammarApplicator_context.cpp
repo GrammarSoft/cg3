@@ -75,7 +75,7 @@ void GrammarApplicator::set_mark(Cohort* cohort) {
 
 bool GrammarApplicator::check_unif_tags(uint32_t set, const void* val) {
 	if (context_stack.empty()) return false;
-	auto unif_tags = *(context_stack.back().unif_tags);
+	auto& unif_tags = *(context_stack.back().unif_tags);
 	auto it = unif_tags.find(set);
 	if (it != unif_tags.end()) {
 		return it->second == val;

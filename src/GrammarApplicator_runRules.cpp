@@ -417,6 +417,9 @@ bool GrammarApplicator::runSingleRule(SingleWindow& current, const Rule& rule, R
 		size_t num_active = 0;
 		size_t num_iff = 0;
 
+		std::vector<Rule_Context> reading_contexts;
+		reading_contexts.reserve(cohort->readings.size());
+
 		// Assume that Iff rules are really Remove rules, until proven otherwise.
 		if (rule.type == K_IFF) {
 			type = K_REMOVE;
@@ -471,16 +474,15 @@ bool GrammarApplicator::runSingleRule(SingleWindow& current, const Rule& rule, R
 
 	    // This loop figures out which readings, if any, that are valid targets for the current rule
 		// Criteria for valid is that the reading must match both target and all contextual tests
-		auto cohort_readings = cohort->readings;
-		for (size_t i = 0; i < cohort_readings.size(); ++i) {
+		for (size_t i = 0; i < cohort->readings.size(); ++i) {
 			// ToDo: Switch sub-readings so that they build up a passed in vector<Reading*>
-			Reading* reading = get_sub_reading(cohort_readings[i], rule.sub_reading);
+			Reading* reading = get_sub_reading(cohort->readings[i], rule.sub_reading);
 			if (!reading) {
-				cohort_readings[i]->matched_target = false;
-				cohort_readings[i]->matched_tests = false;
+				cohort->readings[i]->matched_target = false;
+				cohort->readings[i]->matched_tests = false;
 				continue;
 			}
-			context_stack.back().target.reading = cohort_readings[i];
+			context_stack.back().target.reading = cohort->readings[i];
 			context_stack.back().target.subreading = reading;
 
 			// The state is stored in the readings themselves, so clear the old states
@@ -502,13 +504,6 @@ bool GrammarApplicator::runSingleRule(SingleWindow& current, const Rule& rule, R
 				++num_iff;
 				continue;
 			}
-
-			// Regex capture is done on a per-reading basis, so clear all captured state.
-			context_stack.back().regexgrp_ct = 0;
-			context_stack.back().regexgrps = &regexgrps_store[used_regex];
-
-			context_stack.back().unif_tags = nullptr;
-			context_stack.back().unif_sets = nullptr;
 
 			// Check if any previous reading of this cohort had the same plain signature, and if so just copy their results
 			// This cache is cleared on a per-cohort basis
@@ -534,26 +529,30 @@ bool GrammarApplicator::runSingleRule(SingleWindow& current, const Rule& rule, R
 					context_stack.back().unif_sets = unif_sets_rs[reading->hash_plain];
 					did_test = true;
 					test_good = rpit->second->matched_tests;
+					reading_contexts.push_back(context_stack.back());
+					continue;
 				}
 			}
 
-			if (!did_test) {
-				// Unification is done on a per-reading basis, so clear all unification state.
-				context_stack.back().unif_tags = &unif_tags_store[used_unif];
-				context_stack.back().unif_sets = &unif_sets_store[used_unif];
-				unif_tags_rs[reading->hash_plain] = context_stack.back().unif_tags;
-				unif_sets_rs[reading->hash_plain] = context_stack.back().unif_sets;
-				unif_tags_rs[reading->hash] = context_stack.back().unif_tags;
-				unif_sets_rs[reading->hash] = context_stack.back().unif_sets;
-				++used_unif;
+			// Regex capture is done on a per-reading basis, so clear all captured state.
+			context_stack.back().regexgrp_ct = 0;
+			context_stack.back().regexgrps = &regexgrps_store[used_regex];
 
-				context_stack.back().unif_tags->clear();
-				context_stack.back().unif_sets->clear();
+			// Unification is done on a per-reading basis, so clear all unification state.
+			context_stack.back().unif_tags = &unif_tags_store[used_unif];
+			context_stack.back().unif_sets = &unif_sets_store[used_unif];
+			unif_tags_rs[reading->hash_plain] = context_stack.back().unif_tags;
+			unif_sets_rs[reading->hash_plain] = context_stack.back().unif_sets;
+			unif_tags_rs[reading->hash] = context_stack.back().unif_tags;
+			unif_sets_rs[reading->hash] = context_stack.back().unif_sets;
+			++used_unif;
 
-				unif_last_wordform = 0;
-				unif_last_baseform = 0;
-				unif_last_textual = 0;
-			}
+			context_stack.back().unif_tags->clear();
+			context_stack.back().unif_sets->clear();
+
+			unif_last_wordform = 0;
+			unif_last_baseform = 0;
+			unif_last_textual = 0;
 
 			same_basic = reading->hash_plain;
 			target = nullptr;
@@ -648,19 +647,6 @@ bool GrammarApplicator::runSingleRule(SingleWindow& current, const Rule& rule, R
 					context_stack.back().regexgrp_ct = orz;
 				}
 				++num_iff;
-				if (good || (rule.type == K_IFF && reading->matched_target)) {
-					reset_cohorts_for_loop = false;
-					reading_cb();
-					if (!finish_cohort_loop) {
-						context_stack.pop_back();
-						return anything_changed;
-					}
-					if (reset_cohorts_for_loop) {
-						reset_cohorts();
-						break;
-					}
-					if (!finish_reading_loop) break;
-				}
 			}
 			else {
 				context_stack.back().regexgrp_ct = orz;
@@ -680,6 +666,7 @@ bool GrammarApplicator::runSingleRule(SingleWindow& current, const Rule& rule, R
 				regexgrps_z[reading->number] = context_stack.back().regexgrp_ct;
 				++used_regex;
 			}
+			reading_contexts.push_back(context_stack.back());
 		}
 
 		if (state_num_readings != cohort->readings.size() || state_num_removed != cohort->deleted.size() || state_num_delayed != cohort->delayed.size() || state_num_ignored != cohort->ignored.size()) {
@@ -693,17 +680,49 @@ bool GrammarApplicator::runSingleRule(SingleWindow& current, const Rule& rule, R
 				--rocit;                         // We have already incremented rocit earlier, so take one step back...
 				rocit = cohortset->erase(rocit); // ...and one step forward again
 			}
+			context_stack.pop_back();
+			continue;
 		}
-		else {
+
+		// All readings were valid targets, which means there is nothing to do for Select or safe Remove rules.
+		if (num_active == cohort->readings.size()) {
+			if (type == K_SELECT) {
+				context_stack.pop_back();
+				continue;
+			}
+			if (type == K_REMOVE && (!unsafe || (rule.flags & RF_SAFE)) && !(rule.flags & RF_UNSAFE)) {
+				context_stack.pop_back();
+				continue;
+			}
+		}
+
+		for (auto& ctx : reading_contexts) {
+			if (!ctx.target.subreading->matched_target) continue;
+			if (!ctx.target.subreading->matched_tests && rule.type != K_IFF) {
+				continue;
+			}
+			context_stack.back() = ctx;
 			reset_cohorts_for_loop = false;
-			cohort_cb();
+			reading_cb();
 			if (!finish_cohort_loop) {
 				context_stack.pop_back();
 				return anything_changed;
 			}
 			if (reset_cohorts_for_loop) {
 				reset_cohorts();
+				break;
 			}
+			if (!finish_reading_loop) break;
+		}
+
+		reset_cohorts_for_loop = false;
+		cohort_cb();
+		if (!finish_cohort_loop) {
+			context_stack.pop_back();
+			return anything_changed;
+		}
+		if (reset_cohorts_for_loop) {
+			reset_cohorts();
 		}
 		context_stack.pop_back();
 	}
@@ -1113,39 +1132,37 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 
 		auto cohort_cb = [&]() {
 			if (rule.type == K_SELECT || (rule.type == K_IFF && !selected.empty())) {
-				if (selected.size() < get_apply_to().cohort->readings.size()) {
-					if (!selected.empty()) {
-						Cohort* target = get_apply_to().cohort;
-						ReadingList drop;
-						size_t si = 0;
-						for (size_t ri = 0; ri < target->readings.size(); ri++) {
-							// manually trace, since reading_cb
-							// doesn't get called on non-matching readings
-							Reading* rd = target->readings[ri];
-							if (rule.sub_reading != 32767) {
-								rd = get_sub_reading(rd, rule.sub_reading);
-							}
-							rd->hit_by.push_back(rule.number);
-							if (target->readings[ri] == selected[si]) {
-								si++;
-							}
-							else {
-								target->readings[ri]->deleted = true;
-								drop.push_back(target->readings[ri]);
-							}
+				Cohort* target = get_apply_to().cohort;
+				if (selected.size() < target->readings.size() && !selected.empty()) {
+					ReadingList drop;
+					size_t si = 0;
+					for (size_t ri = 0; ri < target->readings.size(); ri++) {
+						// manually trace, since reading_cb
+						// doesn't get called on non-matching readings
+						Reading* rd = target->readings[ri];
+						if (rule.sub_reading != 32767) {
+							rd = get_sub_reading(rd, rule.sub_reading);
 						}
-						target->readings.swap(selected);
-						if (rule.flags & RF_DELAYED) {
-							target->delayed.insert(target->delayed.end(), drop.begin(), drop.end());
-						}
-						else if (rule.flags & RF_IGNORED) {
-							target->ignored.insert(target->ignored.end(), drop.begin(), drop.end());
+						rd->hit_by.push_back(rule.number);
+						if (target->readings[ri] == selected[si]) {
+							si++;
 						}
 						else {
-							target->deleted.insert(target->deleted.end(), drop.begin(), drop.end());
+							target->readings[ri]->deleted = true;
+							drop.push_back(target->readings[ri]);
 						}
-						readings_changed = true;
 					}
+					target->readings.swap(selected);
+					if (rule.flags & RF_DELAYED) {
+						target->delayed.insert(target->delayed.end(), drop.begin(), drop.end());
+					}
+					else if (rule.flags & RF_IGNORED) {
+						target->ignored.insert(target->ignored.end(), drop.begin(), drop.end());
+					}
+					else {
+						target->deleted.insert(target->deleted.end(), drop.begin(), drop.end());
+					}
+					readings_changed = true;
 				}
 			}
 			else if (rule.type == K_REMOVE || rule.type == K_IFF) {
