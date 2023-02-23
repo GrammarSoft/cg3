@@ -832,7 +832,6 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 		}
 
 		ticks tstamp(gtimer);
-		KEYWORDS type = rule->type;
 
 		if (!apply_mappings && (rule->type == K_MAP || rule->type == K_ADD || rule->type == K_REPLACE)) {
 			continue;
