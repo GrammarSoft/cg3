@@ -10,7 +10,7 @@
 "<the>"
 	"the" det def sp @det #1->2
 "<things>"
-	"thing" n pl #2->3
+	"thing" n pl #2->2
 "<.>"
 	"." sent #3->3
 

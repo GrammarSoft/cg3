@@ -2,6 +2,7 @@
 	"all" predet sp
 "<the>"
 	"the" det def sp
+	"the" det def skip
 "<things>"
 	"thing" n pl
 "<.>"

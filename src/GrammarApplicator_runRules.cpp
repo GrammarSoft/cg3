@@ -561,7 +561,14 @@ bool GrammarApplicator::runSingleRule(SingleWindow& current, const Rule& rule, R
 
 			same_basic = reading->hash_plain;
 			target = nullptr;
-			set_mark(cohort);
+			if (context_stack.size() > 1) {
+				Cohort* m = context_stack[context_stack.size()-2].mark;
+				if (m) set_mark(m);
+				else set_mark(cohort);
+			}
+			else {
+				set_mark(cohort);
+			}
 			uint8_t orz = context_stack.back().regexgrp_ct;
 			for (auto r = cohort->readings[i]; r; r = r->next) {
 				r->active = true;
@@ -969,7 +976,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 
 			current.parent->cohort_map[cCohort->global_number] = cCohort;
 			current.parent->dep_window[cCohort->global_number] = cCohort;
-			if (grammar->addcohort_attach && (type == K_ADDCOHORT_BEFORE || type == K_ADDCOHORT_AFTER)) {
+			if (grammar->addcohort_attach && (rule->type == K_ADDCOHORT_BEFORE || rule->type == K_ADDCOHORT_AFTER)) {
 				attachParentChild(*cohort, *cCohort);
 			}
 
@@ -985,7 +992,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 			CohortSet cohorts;
 			collect_subtree(cohorts, cohort, rule->childset1);
 
-			if (type == K_ADDCOHORT_BEFORE) {
+			if (rule->type == K_ADDCOHORT_BEFORE) {
 				current.cohorts.insert(current.cohorts.begin() + cohorts.front()->local_number, cCohort);
 			}
 			else {
@@ -1204,7 +1211,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 				}
 				selected.clear();
 			}
-			else if (type == K_JUMP) {
+			else if (rule->type == K_JUMP) {
 				auto to = getTagList(*rule->maplist).front();
 				VARSTRINGIFY(to);
 				auto it = grammar->anchors.find(to->hash);
@@ -1217,7 +1224,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 					should_repeat = true;
 				}
 			}
-			else if (type == K_REMVARIABLE) {
+			else if (rule->type == K_REMVARIABLE) {
 				auto names = getTagList(*rule->maplist);
 				for (auto tag : names) {
 					VARSTRINGIFY(tag);
@@ -1228,7 +1235,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 					//u_fprintf(ux_stderr, "Info: RemVariable fired for %S.\n", tag->tag.data());
 				}
 			}
-			else if (type == K_SETVARIABLE) {
+			else if (rule->type == K_SETVARIABLE) {
 				auto names = getTagList(*rule->maplist);
 				auto values = getTagList(*rule->sublist);
 				VARSTRINGIFY(names.front());
@@ -1239,13 +1246,13 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 				}
 				//u_fprintf(ux_stderr, "Info: SetVariable fired for %S.\n", names.front()->tag.data());
 			}
-			else if (type == K_DELIMIT) {
+			else if (rule->type == K_DELIMIT) {
 				delimitAt(current, get_apply_to().cohort);
 				delimited = true;
 				readings_changed = true;
 			}
-			else if (type == K_EXTERNAL_ONCE || type == K_EXTERNAL_ALWAYS) {
-				if (type == K_EXTERNAL_ONCE && !current.hit_external.insert(rule->line).second) {
+			else if (rule->type == K_EXTERNAL_ONCE || rule->type == K_EXTERNAL_ALWAYS) {
+				if (rule->type == K_EXTERNAL_ONCE && !current.hit_external.insert(rule->line).second) {
 					return;
 				}
 
@@ -1278,7 +1285,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 				iter_rules_end = intersects.end();
 				reset_cohorts_for_loop = true;
 			}
-			else if (type == K_REMCOHORT) {
+			else if (rule->type == K_REMCOHORT) {
 				// REMCOHORT-IGNORED
 				if (rule->flags & RF_IGNORED) {
 					CohortSet cohorts;
@@ -1307,7 +1314,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 				readings_changed = true;
 				reset_cohorts_for_loop = true;
 			}
-			else if (type == K_SUBSTITUTE) {
+			else if (rule->type == K_SUBSTITUTE) {
 				Cohort* target = get_apply_to().cohort;
 				if (substitute_wordform != nullptr && substitute_wordform != target->wordform) {
 					for (auto r : target->readings) {
@@ -1372,7 +1379,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 					readings_changed = true;
 				}
 			}
-			else if (type == K_ADDCOHORT_AFTER || type == K_ADDCOHORT_BEFORE) {
+			else if (rule->type == K_ADDCOHORT_AFTER || rule->type == K_ADDCOHORT_BEFORE) {
 				index_ruleCohort_no.clear();
 				TRACE;
 
@@ -1976,7 +1983,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 				readings_changed = true;
 				reflowReading(*cReading);
 			}
-			else if (type == K_MERGECOHORTS) {
+			else if (rule->type == K_MERGECOHORTS) {
 				index_ruleCohort_no.clear();
 
 				CohortSet withs;
@@ -2040,14 +2047,14 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 
 				reset_cohorts_for_loop = true;
 			}
-			else if (type == K_SETPARENT || type == K_SETCHILD || type == K_ADDRELATION || type == K_SETRELATION || type == K_REMRELATION || type == K_ADDRELATIONS || type == K_SETRELATIONS || type == K_REMRELATIONS) {
+			else if (rule->type == K_SETPARENT || rule->type == K_SETCHILD || rule->type == K_ADDRELATION || rule->type == K_SETRELATION || rule->type == K_REMRELATION || rule->type == K_ADDRELATIONS || rule->type == K_SETRELATIONS || rule->type == K_REMRELATIONS) {
 				auto dep_target_cb = [&]() -> bool {
 					Cohort* target = context_stack.back().target.cohort;
 					Cohort* attach = context_stack.back().attach_to.cohort;
 					swapper<Cohort*> sw((rule->flags & RF_REVERSE) != 0, target, attach);
-					if (type == K_SETPARENT || type == K_SETCHILD) {
+					if (rule->type == K_SETPARENT || rule->type == K_SETCHILD) {
 						bool attached = false;
-						if (type == K_SETPARENT) {
+						if (rule->type == K_SETPARENT) {
 							attached = attachParentChild(*attach, *target, (rule->flags & RF_ALLOWLOOP) != 0, (rule->flags & RF_ALLOWCROSS) != 0);
 						}
 						else {
@@ -2066,19 +2073,19 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						}
 						return attached;
 					}
-					else if (type == K_ADDRELATION || type == K_SETRELATION || type == K_REMRELATION) {
+					else if (rule->type == K_ADDRELATION || rule->type == K_SETRELATION || rule->type == K_REMRELATION) {
 						bool rel_did_anything = false;
 						auto theTags = ss_taglist.get();
 						getTagList(*rule->maplist, theTags);
 						for (auto tter : *theTags) {
 							VARSTRINGIFY(tter);
-							if (type == K_ADDRELATION) {
+							if (rule->type == K_ADDRELATION) {
 								attach->setRelated();
 								target->setRelated();
 								rel_did_anything |= target->addRelation(tter->hash, attach->global_number);
 								add_relation_rtag(target, tter, attach->global_number);
 							}
-							else if (type == K_SETRELATION) {
+							else if (rule->type == K_SETRELATION) {
 								attach->setRelated();
 								target->setRelated();
 								rel_did_anything |= target->setRelation(tter->hash, attach->global_number);
@@ -2102,7 +2109,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						// don't scan onwards if failed
 						return true;
 					}
-					else if (type == K_ADDRELATIONS || type == K_SETRELATIONS || type == K_REMRELATIONS) {
+					else if (rule->type == K_ADDRELATIONS || rule->type == K_SETRELATIONS || rule->type == K_REMRELATIONS) {
 						bool rel_did_anything = false;
 
 						auto sublist = ss_taglist.get();
@@ -2113,12 +2120,12 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 
 						for (auto tter : *maplist) {
 							VARSTRINGIFY(tter);
-							if (type == K_ADDRELATIONS) {
+							if (rule->type == K_ADDRELATIONS) {
 								target->setRelated();
 								rel_did_anything |= target->addRelation(tter->hash, attach->global_number);
 								add_relation_rtag(target, tter, attach->global_number);
 							}
-							else if (type == K_SETRELATIONS) {
+							else if (rule->type == K_SETRELATIONS) {
 								target->setRelated();
 								rel_did_anything |= target->setRelation(tter->hash, attach->global_number);
 								set_relation_rtag(target, tter, attach->global_number);
@@ -2130,12 +2137,12 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						}
 						for (auto tter : *sublist) {
 							VARSTRINGIFY(tter);
-							if (type == K_ADDRELATIONS) {
+							if (rule->type == K_ADDRELATIONS) {
 								attach->setRelated();
 								rel_did_anything |= attach->addRelation(tter->hash, target->global_number);
 								add_relation_rtag(attach, tter, target->global_number);
 							}
-							else if (type == K_SETRELATIONS) {
+							else if (rule->type == K_SETRELATIONS) {
 								attach->setRelated();
 								rel_did_anything |= attach->setRelation(tter->hash, target->global_number);
 								set_relation_rtag(attach, tter, target->global_number);
@@ -2233,7 +2240,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 				rule->dep_target->offset = orgoffset;
 				finish_reading_loop = false;
 			}
-			else if (type == K_MOVE_AFTER || type == K_MOVE_BEFORE || type == K_SWITCH) {
+			else if (rule->type == K_MOVE_AFTER || rule->type == K_MOVE_BEFORE || rule->type == K_SWITCH) {
 				// this is a per-cohort rule
 				finish_reading_loop = false;
 				// Calculate hash of current state to later compare whether this move/switch actually did anything
@@ -2276,7 +2283,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 					swapper<Cohort*> sw((rule->flags & RF_REVERSE) != 0, attach, cohort);
 					CohortSet cohorts;
 
-					if (type == K_SWITCH) {
+					if (rule->type == K_SWITCH) {
 						if (attach->local_number == 0) {
 							return;
 						}
@@ -2333,13 +2340,13 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						}
 
 						uint32_t spot = 0;
-						if (type == K_MOVE_BEFORE) {
+						if (rule->type == K_MOVE_BEFORE) {
 							spot = edges.front()->local_number;
 							if (spot == 0) {
 								spot = 1;
 							}
 						}
-						else if (type == K_MOVE_AFTER) {
+						else if (rule->type == K_MOVE_AFTER) {
 							spot = edges.back()->local_number + 1;
 						}
 
@@ -2382,16 +2389,16 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 			}
 			else if (rule->type == K_FIND) {
 				TRACE;
-				finish_reading_loop = false;
-				Rule* cur_was = current_rule;
-				Rule* rule_was = rule;
 				for (auto& sr : rule->sub_rules) {
+					Rule* cur_was = current_rule;
+					Rule* rule_was = rule;
 					current_rule = sr;
 					rule = sr;
 					runSingleRule(current, *rule, reading_cb, cohort_cb);
+					current_rule = cur_was;
+					rule = rule_was;
 				}
-				current_rule = cur_was;
-				rule = rule_was;
+				finish_reading_loop = false;
 			}
 			else if (rule->type != K_REMCOHORT) {
 				TRACE;
