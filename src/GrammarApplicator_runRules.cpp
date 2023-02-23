@@ -1144,7 +1144,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 							rd = get_sub_reading(rd, rule.sub_reading);
 						}
 						rd->hit_by.push_back(rule.number);
-						if (target->readings[ri] == selected[si]) {
+						if (si < selected.size() && target->readings[ri] == selected[si]) {
 							si++;
 						}
 						else {
@@ -1164,6 +1164,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 					}
 					readings_changed = true;
 				}
+				selected.clear();
 			}
 			else if (rule.type == K_REMOVE || rule.type == K_IFF) {
 				if (!removed.empty() && (removed.size() < get_apply_to().cohort->readings.size() || (unsafe && !(rule.flags & RF_SAFE)) || (rule.flags & RF_UNSAFE))) {
@@ -1196,6 +1197,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 				if (get_apply_to().cohort->readings.empty()) {
 					initEmptyCohort(*get_apply_to().cohort);
 				}
+				selected.clear();
 			}
 			else if (type == K_JUMP) {
 				auto to = getTagList(*rule.maplist).front();
