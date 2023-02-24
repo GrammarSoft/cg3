@@ -234,12 +234,12 @@ Reading* GrammarApplicator::get_sub_reading(Reading* tr, int sub_reading) {
 	return tr;
 }
 
-#define TRACE                                                      \
-	do {                                                           \
+#define TRACE                                                       \
+	do {                                                            \
 		get_apply_to().subreading->hit_by.push_back(rule->number);  \
 		if (rule->sub_reading == 32767) {                           \
 			get_apply_to().reading->hit_by.push_back(rule->number); \
-		}                                                          \
+		}                                                           \
 	} while (0)
 
 #define FILL_TAG_LIST(taglist)                                                      \
@@ -264,20 +264,20 @@ Reading* GrammarApplicator::get_sub_reading(Reading* tr, int sub_reading) {
 		}                                                                           \
 	} while (0)
 
-#define FILL_TAG_LIST_RAW(taglist)                                              \
-	do {                                                                        \
-		Reading& reading = *get_apply_to().subreading;							\
-		for (auto& tt : *(taglist)) {                                           \
-			if (tt->type & T_SPECIAL) {                                         \
-				if (context_stack.back().regexgrps == nullptr) {			\
-					context_stack.back().regexgrps = &regexgrps_store[used_regex]; \
-				}                                                               \
-				auto stag = doesTagMatchReading(reading, *tt, false, true);     \
-				if (stag) {                                                     \
-					tt = grammar->single_tags.find(stag)->second;               \
-				}                                                               \
-			}                                                                   \
-		}                                                                       \
+#define FILL_TAG_LIST_RAW(taglist)                                              	\
+	do {                                                                        	\
+		Reading& reading = *get_apply_to().subreading;								\
+		for (auto& tt : *(taglist)) {                                           	\
+			if (tt->type & T_SPECIAL) {                                         	\
+				if (context_stack.back().regexgrps == nullptr) {					\
+					context_stack.back().regexgrps = &regexgrps_store[used_regex]; 	\
+				}                                                               	\
+				auto stag = doesTagMatchReading(reading, *tt, false, true);     	\
+				if (stag) {                                                     	\
+					tt = grammar->single_tags.find(stag)->second;               	\
+				}                                                               	\
+			}                                                                   	\
+		}                                                                       	\
 	} while (0)
 
 #define APPEND_TAGLIST_TO_READING(taglist, reading)                                  \
@@ -291,10 +291,10 @@ Reading* GrammarApplicator::get_sub_reading(Reading* tr, int sub_reading) {
 				mappings->push_back(tter);                                           \
 			}                                                                        \
 			else {                                                                   \
-				hash = addTagToReading(reading, tter);          \
+				hash = addTagToReading((reading), tter);							 \
 			}                                                                        \
-			if (updateValidRules(rules, intersects, hash, reading)) {              \
-				iter_rules = intersects.find(rule->number);                           \
+			if (updateValidRules(rules, intersects, hash, reading)) {                \
+				iter_rules = intersects.find(rule->number);                          \
 				iter_rules_end = intersects.end();                                   \
 			}                                                                        \
 		}                                                                            \
