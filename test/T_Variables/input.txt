@@ -48,6 +48,7 @@
 	"really" ADV
 "<think>"
 	"think" V
+<STREAMCMD:SETVAR:trailing-1>
 "<it>"
 	"it" PERS
 "<needs>"
@@ -57,3 +58,5 @@
 "<scarf>"
 	"scarf" N
 "<?>"
+
+<STREAMCMD:SETVAR:trailing-2>
