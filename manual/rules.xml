@@ -604,10 +604,30 @@
       Additionally, FIND creates magic sets $C1-$C9 referring to the cohorts matched by the outer contextual tests. If _MARK_ is set, it will also be accessible to the inner rules.
     </para>
     <screen>
+      # the following input
+      "&lt;the&gt;"
+        "the" det def
+      "&lt;silly&gt;"
+        "silly" adj
+      "&lt;example&gt;"
+        "example" n sg
+
+      # to this rule
       FIND (n) IF (-1 (adj)) (-2 (det def)) {
-        SETCHILD (*) TO (-1* $C1 OR $C2) ;
+        SETCHILD REPEAT (*) TO (-1* $C1 OR $C2) (NOT p (*)) ;
       } ;
+
+      # would output
+      "&lt;the&gt;"
+        "the" det def #1-&gt;3
+      "&lt;silly&gt;"
+        "silly" adj #2-&gt;3
+      "&lt;example&gt;"
+        "example" n sg #3-&gt;3
     </screen>
+    <para>
+      Note that rules inside FIND are only run once each time FIND is run, unless they have REPEAT, and thus without REPEAT, the rule above would otherwise attach only the adjective.
+    </para>
   </section>
 
   <section id="rule-options">

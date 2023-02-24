@@ -2378,15 +2378,25 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 			}
 			else if (rule->type == K_FIND) {
 				TRACE;
+				std::cerr << "running " << rule->line << std::endl;
+				bool any_readings_changed = false;
+				readings_changed = false;
 				for (auto& sr : rule->sub_rules) {
 					Rule* cur_was = current_rule;
 					Rule* rule_was = rule;
 					current_rule = sr;
 					rule = sr;
-					runSingleRule(current, *rule, reading_cb, cohort_cb);
+					bool result = false;
+					do {
+						readings_changed = false;
+						std::cerr << "  running nested " << rule->line<< " flags = " << (rule->flags & RF_REPEAT) << std::endl;
+						result = runSingleRule(current, *rule, reading_cb, cohort_cb);
+						any_readings_changed = any_readings_changed || result || readings_changed;
+					} while ((result || readings_changed) && (rule->flags & RF_REPEAT) != 0) ;
 					current_rule = cur_was;
 					rule = rule_was;
 				}
+				readings_changed = any_readings_changed;
 				finish_reading_loop = false;
 			}
 			else if (rule->type != K_REMCOHORT) {
