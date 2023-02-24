@@ -85,6 +85,9 @@ SingleWindow::~SingleWindow() {
 			previous->next = nullptr;
 		}
 	}
+	if (nested_rule_to_cohorts) {
+		delete nested_rule_to_cohorts;
+	}
 }
 
 void SingleWindow::clear() {

@@ -1,5 +1,5 @@
 "<all>"
-	"all" predet sp #1->2
+	"all" predet sp #1->3
 "<the>"
 	"the" det def sp @det #2->3
 "<things>"

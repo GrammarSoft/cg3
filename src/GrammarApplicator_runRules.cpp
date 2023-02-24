@@ -315,16 +315,25 @@ bool GrammarApplicator::runSingleRule(SingleWindow& current, const Rule& rule, R
 	KEYWORDS type = rule.type;
 	const Set& set = *(grammar->sets_list[rule.target]);
 	CohortSet* cohortset = &current.rule_to_cohorts[rule.number];
+	if (!context_stack.empty()) {
+		if (current.nested_rule_to_cohorts == nullptr) {
+			current.nested_rule_to_cohorts = new CohortSet();
+		}
+		cohortset = current.nested_rule_to_cohorts;
+		cohortset->clear();
+		cohortset->insert(get_apply_to().cohort);
+		for (auto& t : set.trie_special) {
+			if (t.first->type & T_CONTEXT && t.first->context_ref_pos <= context_stack.back().context.size()) {
+				cohortset->insert(context_stack.back().context[t.first->context_ref_pos-1]);
+			}
+		}
+	}
 	if (debug_level > 1) {
 		std::cerr << "DEBUG: " << cohortset->size() << "/" << current.cohorts.size() << " = " << double(cohortset->size()) / double(current.cohorts.size()) << std::endl;
 	}
 	for (auto rocit = cohortset->cbegin(); rocit != cohortset->cend();) {
 		Cohort* cohort = *rocit;
 		++rocit;
-
-		if (!context_stack.empty() && get_apply_to().cohort != cohort) {
-			continue;
-		}
 
 		finish_reading_loop = true;
 

@@ -6,5 +6,5 @@ FIND (det def) IF (1X (n)) {
   REMOVE (skip) ;
   MAP @det (*) ;
   SETPARENT (*) TO (1 _MARK_) ;
-  SETCHILD (*) TO (-1 (predet)) ;
+  SETCHILD $C1 TO (-1* (predet)) ;
 } ;
