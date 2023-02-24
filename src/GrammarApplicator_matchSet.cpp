@@ -856,8 +856,8 @@ inline bool GrammarApplicator::doesSetMatchCohort_helper(Cohort& cohort, Reading
 			reading.matched_tests = retval;
 			if (retval && !context_stack.empty()) {
 				context_stack.back().attach_to.cohort = &cohort;
-				// TODO
-				context_stack.back().attach_to.reading = &reading;
+				// This will be set by doesSetMatchCohortNormal
+				context_stack.back().attach_to.reading = nullptr;
 				context_stack.back().attach_to.subreading = &reading;
 			}
 		}
@@ -907,6 +907,7 @@ bool GrammarApplicator::doesSetMatchCohortNormal(Cohort& cohort, const uint32_t 
 			continue;
 		}
 		for (auto reading : *list) {
+			Reading* reading_head = reading;
 			if (context && context->test) {
 				// ToDo: Barriers need some way to escape sub-readings
 				reading = get_sub_reading(reading, context->test->offset_sub);
@@ -922,6 +923,13 @@ bool GrammarApplicator::doesSetMatchCohortNormal(Cohort& cohort, const uint32_t 
 			}
 			if (doesSetMatchCohort_helper(cohort, *reading, *theset, context)) {
 				retval = true;
+				// if there's a subreading, _helper doesn't know the
+				// parent, so set it here
+				if (!context_stack.empty() &&
+					context_stack.back().attach_to.cohort == &cohort &&
+					context_stack.back().attach_to.subreading == reading) {
+					context_stack.back().attach_to.reading = reading_head;
+				}
 			}
 			if (retval && (!context || !(context->test && context->test->linked) || context->did_test)) {
 				return retval;

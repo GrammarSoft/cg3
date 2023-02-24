@@ -855,8 +855,6 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 		bool readings_changed = false;
 		bool should_repeat = false;
 		bool should_bail = false;
-		// SUBSTITUTE should update wordform once per cohort not per reading
-		Tag* substitute_wordform = nullptr;
 
 		auto reindex = [&]() {
 			foreach (iter, current.cohorts) {
@@ -1312,38 +1310,6 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 				}
 				readings_changed = true;
 				reset_cohorts_for_loop = true;
-			}
-			else if (rule->type == K_SUBSTITUTE) {
-				Cohort* target = get_apply_to().cohort;
-				if (substitute_wordform != nullptr && substitute_wordform != target->wordform) {
-					for (auto r : target->readings) {
-						delTagFromReading(*r, target->wordform);
-						addTagToReading(*r, substitute_wordform);
-					}
-					for (auto r : target->deleted) {
-						delTagFromReading(*r, target->wordform);
-						addTagToReading(*r, substitute_wordform);
-					}
-					for (auto r : target->delayed) {
-						delTagFromReading(*r, target->wordform);
-						addTagToReading(*r, substitute_wordform);
-					}
-					target->wordform = substitute_wordform;
-					for (auto r : grammar->wf_rules) {
-						if (doesWordformsMatch(substitute_wordform, r->wordform)) {
-							current.rule_to_cohorts[r->number].insert(target);
-							intersects.insert(r->number);
-						}
-						else {
-							current.rule_to_cohorts[r->number].erase(target);
-						}
-					}
-					// TODO: is this needed?
-					//updateValidRules(rules, intersects, substitute_wordform->hash, *get_apply_to().subreading);
-					iter_rules = intersects.find(rule->number);
-					iter_rules_end = intersects.end();
-					readings_changed = true;
-				}
 			}
 		};
 
@@ -1850,7 +1816,31 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						splitMappings(mappings, *get_apply_to().cohort, *get_apply_to().subreading, true);
 					}
 					if (wf && wf != get_apply_to().subreading->parent->wordform) {
-						substitute_wordform = wf;
+												for (auto r : get_apply_to().subreading->parent->readings) {
+							delTagFromReading(*r, get_apply_to().subreading->parent->wordform);
+							addTagToReading(*r, wf);
+						}
+						for (auto r : get_apply_to().subreading->parent->deleted) {
+							delTagFromReading(*r, get_apply_to().subreading->parent->wordform);
+							addTagToReading(*r, wf);
+						}
+						for (auto r : get_apply_to().subreading->parent->delayed) {
+							delTagFromReading(*r, get_apply_to().subreading->parent->wordform);
+							addTagToReading(*r, wf);
+						}
+						get_apply_to().subreading->parent->wordform = wf;
+						for (auto r : grammar->wf_rules) {
+							if (doesWordformsMatch(wf, r->wordform)) {
+								current.rule_to_cohorts[r->number].insert(get_apply_to().cohort);
+								intersects.insert(r->number);
+							}
+							else {
+								current.rule_to_cohorts[r->number].erase(get_apply_to().cohort);
+							}
+						}
+						updateValidRules(rules, intersects, wf->hash, *get_apply_to().subreading);
+						iter_rules = intersects.find(rule->number);
+						iter_rules_end = intersects.end();
 					}
 				}
 				if (get_apply_to().subreading->hash != state_hash) {

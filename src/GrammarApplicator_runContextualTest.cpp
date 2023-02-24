@@ -59,8 +59,6 @@ Cohort* GrammarApplicator::runSingleTest(Cohort* cohort, const ContextualTest* t
 				}
 			}
 		}
-
-		//attach_to = cohort; //TODO: what does this become?
 	}
 	if (test->pos & POS_WITH) {
 		merge_with = cohort;
