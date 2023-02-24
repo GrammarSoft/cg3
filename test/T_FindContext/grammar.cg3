@@ -1,0 +1,6 @@
+DELIMITERS = "<.>" ;
+
+FIND (det def) IF (1* (n)) {
+  SETPARENT (*) (0 (sp)) TO (1* $C1) ;
+  SETPARENT (*) (0 (pl)) TO (-1* (n)) ;
+} ;

@@ -200,6 +200,10 @@ int BinaryGrammar::writeBinaryGrammar(FILE* output) {
 			fields |= (1 << 13);
 			writeSwapped(buffer, t->variable_hash);
 		}
+		if (t->type & T_CONTEXT) {
+			fields |= (1 << 14);
+			writeSwapped(buffer, t->context_ref_pos);
+		}
 
 		u32tmp = hton32(fields);
 		fwrite_throw(&u32tmp, sizeof(u32tmp), 1, output);

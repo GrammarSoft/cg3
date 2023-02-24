@@ -239,6 +239,10 @@ int BinaryGrammar::parse_grammar(std::istream& input) {
 			fread_throw(&u32tmp, sizeof(u32tmp), 1, input);
 			t->variable_hash = ntoh32(u32tmp);
 		}
+		if (fields & (1 << 14)) {
+			fread_throw(&u32tmp, sizeof(u32tmp), 1, input);
+			t->context_ref_pos = ntoh32(u32tmp);
+		}
 
 		grammar->single_tags[t->hash] = t;
 		grammar->single_tags_list[t->number] = t;

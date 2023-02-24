@@ -533,6 +533,16 @@ uint32_t GrammarApplicator::doesTagMatchReading(const Reading& reading, const Ta
 			match = grammar->tag_any;
 		}
 	}
+	else if (tag.type & T_CONTEXT) {
+		if (context_stack.size() > 1) {
+			auto& list = context_stack[context_stack.size()-2].context;
+			if (tag.context_ref_pos <= list.size()) {
+				if (reading.parent == list[tag.context_ref_pos-1]) {
+					match = grammar->tag_any;
+				}
+			}
+		}
+	}
 
 	if (match) {
 		++match_single;

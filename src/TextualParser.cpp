@@ -2904,6 +2904,18 @@ int TextualParser::parse_grammar(UString& data) {
 		result->addTagToSet(t, set_c);
 		result->addSet(set_c);
 	}
+	// Create context sets for nested rules
+	{
+		constexpr UStringView grp[] = { STR_UU_C1, STR_UU_C2, STR_UU_C3, STR_UU_C4, STR_UU_C5, STR_UU_C6, STR_UU_C7, STR_UU_C8, STR_UU_C9 };
+		for (size_t i = 0; i < 9; i++) {
+			Set* set_c = result->allocateSet();
+			set_c->line = 0;
+			set_c->setName(grp[i]);
+			Tag* t = parseTag(grp[i]);
+			result->addTagToSet(t, set_c);
+			result->addSet(set_c);
+		}
+	}
 
 	parseFromUChar(&data[4], filename);
 
