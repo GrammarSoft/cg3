@@ -75,6 +75,7 @@
 
   Flow control:
       JUMP &lt;anchor_name&gt; &lt;target&gt; [contextual_tests] ;
+      FIND &lt;target&gt; [contextual_tests] { [rules] } ;
     </screen>
   </section>
 
@@ -575,6 +576,38 @@
       respectively; jumping to START will re-run all currently active rules, while jumping to END will skip all remaining
       rules.
     </para>
+  </section>
+
+  <section id="find">
+    <title>FIND</title>
+    <indexterm>
+      <primary>FIND</primary>
+    </indexterm>
+    <screen>
+      FIND &lt;target&lt; [contextual_tests] { [rules] } ;
+    </screen>
+    <para>
+      Matches a pattern and runs a list of rules on the matched cohort only.
+    </para>
+    <screen>
+      FIND (det def) {
+        MAP @det (*) ;
+        SETPARENT (*) TO (1* (n)) ;
+      } ;
+
+      # is equivalent to
+
+      MAP @det (det def) ;
+      SETPARENT (det def) TO (1* (n)) ;
+    </screen>
+    <para>
+      Additionally, FIND creates magic sets $C1-$C9 referring to the cohorts matched by the outer contextual tests. If _MARK_ is set, it will also be accessible to the inner rules.
+    </para>
+    <screen>
+      FIND (n) IF (-1 (adj)) (-2 (det def)) {
+        SETCHILD (*) TO (-1* $C1 OR $C2) ;
+      } ;
+    </screen>
   </section>
 
   <section id="rule-options">
