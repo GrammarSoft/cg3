@@ -61,3 +61,6 @@
 	"scarf" N @drama
 "<?>"
 	"?" @drama @value-plain @value-icase @value-regex @value-regex-eth @mapping-prefix-@ @local-current @local-previous
+
+<STREAMCMD:SETVAR:trailing-1>
+<STREAMCMD:SETVAR:trailing-2>
