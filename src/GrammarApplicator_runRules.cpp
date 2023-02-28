@@ -1245,7 +1245,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						it = variables.find(tag->hash);
 					}
 					if (it != variables.end()) {
-						if (rule.flags & RF_OUTPUT) {
+						if (rule->flags & RF_OUTPUT) {
 							current.variables_output.insert(it->first);
 						}
 						variables.erase(it);
