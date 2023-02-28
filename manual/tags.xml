@@ -360,9 +360,9 @@
     </para>
     <para>
       You can query a global variable with the form <code>VAR:name</code> or query whether a variable has a
-      specific value with <code>VAR:name=value</code>. The value test can also be in the form of
-      <link linkend="regex-icase">// regular expressions</link>, a'la <code>VAR:name=/val.*/r</code>,
-      including capturing parts of the value.
+      specific value with <code>VAR:name=value</code>. Both the name and value test can be in the form of
+      <link linkend="regex-icase">// regular expressions</link>, a'la <code>VAR:/ame/r=value</code> or <code>VAR:name=/val.*/r</code>,
+      including capturing parts.
     </para>
     <para>
       The runtime value of mapping prefix is stored in the special variable named <code>_MPREFIX</code>.

@@ -1,15 +1,20 @@
 DELIMITERS = "<.>" "<?>" ;
 
-REMVARIABLE (news) (VAR:news) (0 (VAR:poetry) OR (VAR:drama)) ;
+REMVARIABLE (/ews/r) (VAR:news) (0 (VAR:poetry) OR (VAR:drama)) ;
 
 ADD (@poetry) (VAR:poetry) ;
 ADD (@drama) (VAR:drama) ;
 ADD (@news) (VAR:news) ;
 
-ADD (@value-plain) (<<< VAR:value=something) ;
+ADD (@plain) (<<< VAR:value=something) ;
 ADD (@value-icase) (<<< VAR:value=/soMEthing/i) ;
 ADD (@value-regex) (<<< VAR:value=/methi/r) ;
+ADD (@key-icase) (<<< VAR:/vALue/i=something) ;
+ADD (@key-regex) (<<< VAR:/val./r=something) ;
+ADD (@key-regex) (<<< VAR:/val./r=something) ;
+ADD (@key-value-mixed) (<<< VAR:/vALue/i=/methi/r) ;
 ADD (VSTR:@value-regex-$1) (<<< VAR:value=/m\(eth\)i/r) ;
+ADD (VSTR:@key-regex-$1) (<<< VAR:/v\(al\)u/r=something) ;
 ADD (VSTR:@mapping-prefix-$1) (<<< VAR:_MPREFIX=/^\(.+\)$/r) ;
 
 ADD (@error-value-plain) (<<< VAR:value=some) ;

@@ -475,7 +475,17 @@ uint32_t GrammarApplicator::doesTagMatchReading(const Reading& reading, const Ta
 			}
 			return reading.parent->parent->variables_set;
 		}();
-		auto it = vars.find(tag.comparison_hash);
+		auto key = grammar->single_tags.find(tag.comparison_hash)->second;
+		auto it = vars.begin();
+		if (key->type & T_REGEXP) {
+			it = std::find_if(it, vars.end(), [&](auto& kv) { return doesTagMatchRegexp(kv.first, *key, bypass_index); });
+		}
+		else if (key->type & T_CASE_INSENSITIVE) {
+			it = std::find_if(it, vars.end(), [&](auto& kv) { return doesTagMatchIcase(kv.first, *key, bypass_index); });
+		}
+		else {
+			it = vars.find(tag.comparison_hash);
+		}
 		if (it != vars.end()) {
 			if (tag.variable_hash == 0) {
 				match = tag.hash;

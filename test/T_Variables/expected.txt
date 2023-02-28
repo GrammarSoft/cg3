@@ -18,7 +18,7 @@
 "<keep>"
 	"keep" V @poetry
 "<.>"
-	"." @poetry @value-plain @value-icase @value-regex @value-regex-eth @mapping-prefix-@ @local-current @local-next
+	"." @poetry @plain @value-icase @value-regex @key-icase @key-regex @key-value-mixed @value-regex-eth @key-regex-al @mapping-prefix-@ @local-current @local-next
 
 <STREAMCMD:SETVAR:drama>
 <STREAMCMD:REMVAR:poetry>
@@ -40,7 +40,7 @@
 "<scarf>"
 	"scarf" N @drama
 "<?>"
-	"?" @drama @value-regex @value-regex-eth @mapping-prefix-@ @local-previousx
+	"?" @drama @value-regex @key-value-mixed @value-regex-eth @mapping-prefix-@ @local-previousx
 
 <STREAMCMD:SETVAR:value=somethingx>
 "<Do>"
@@ -60,7 +60,7 @@
 "<scarf>"
 	"scarf" N @drama
 "<?>"
-	"?" @drama @value-plain @value-icase @value-regex @value-regex-eth @mapping-prefix-@ @local-current @local-previous
+	"?" @drama @plain @value-icase @value-regex @key-icase @key-regex @key-value-mixed @value-regex-eth @key-regex-al @mapping-prefix-@ @local-current @local-previous
 
 <STREAMCMD:SETVAR:trailing-1>
 <STREAMCMD:SETVAR:trailing-2>
