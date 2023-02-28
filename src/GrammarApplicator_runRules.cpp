@@ -2304,10 +2304,10 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						}
 
 						if (need_clean) {
-							if (isChildOf(get_apply_to().cohort, get_attach_to().cohort)) {
+							if (isChildOf(cohort, attach)) {
 								edges.erase(cohorts.rbegin(), cohorts.rend());
 							}
-							else /* if (isChildOf(get_attach_to().cohort, get_apply_to().cohort)) */ {
+							else /* if (isChildOf(attach, cohort)) */ {
 								cohorts.erase(edges.rbegin(), edges.rend());
 							}
 						}
