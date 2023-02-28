@@ -101,7 +101,7 @@ Tag* parseTag(const UChar* to, const UChar* p, State& state, bool unescape=true)
 			goto label_isVarstring;
 		}
 
-		if (tmp[0] && (tmp[0] == '"' || tmp[0] == '<' || tmp[0] == '/')) {
+		if (tmp[0] && !(tag->type & (T_VARIABLE|T_LOCAL_VARIABLE)) && (tmp[0] == '"' || tmp[0] == '<' || tmp[0] == '/')) {
 			size_t oldlength = length;
 
 			// Parse the suffixes r, i, v but max only one of each.
@@ -195,11 +195,18 @@ Tag* parseTag(const UChar* to, const UChar* p, State& state, bool unescape=true)
 			}
 		}
 
-		if ((tag->type & (T_VARIABLE|T_LOCAL_VARIABLE)) && tag->tag.find('=') != UString::npos) {
+		if (tag->type & (T_VARIABLE|T_LOCAL_VARIABLE)) {
 			size_t pos = tag->tag.find('=');
-			tag->comparison_op = OP_EQUALS;
-			tag->variable_hash = parseTag(&tag->tag[pos + 1], p, state, false)->hash;
-			tag->comparison_hash = hash_value(tag->tag.substr(0, pos));
+			if (pos != UString::npos) {
+				tag->comparison_op = OP_EQUALS;
+				tag->variable_hash = parseTag(&tag->tag[pos + 1], p, state, false)->hash;
+				tag->tag[pos] = 0;
+				tag->comparison_hash = parseTag(tag->tag.c_str(), p, state, false)->hash;
+				tag->tag[pos] = '=';
+			}
+			else {
+				tag->comparison_hash = parseTag(tag->tag.c_str(), p, state, false)->hash;
+			}
 		}
 		else {
 			tag->comparison_hash = hash_value(tag->tag);

@@ -1136,11 +1136,23 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						auto names = getTagList(*rule.maplist);
 						for (auto tag : names) {
 							VARSTRINGIFY(tag);
-							variables.erase(tag->hash);
-							if (rule.flags & RF_OUTPUT) {
-								current.variables_output.insert(tag->hash);
+							auto it = variables.begin();
+							if (tag->type & T_REGEXP) {
+								it = std::find_if(it, variables.end(), [&](auto& kv) { return doesTagMatchRegexp(kv.first, *tag); });
 							}
-							//u_fprintf(ux_stderr, "Info: RemVariable fired for %S.\n", tag->tag.data());
+							else if (tag->type & T_CASE_INSENSITIVE) {
+								it = std::find_if(it, variables.end(), [&](auto& kv) { return doesTagMatchIcase(kv.first, *tag); });
+							}
+							else {
+								it = variables.find(tag->hash);
+							}
+							if (it != variables.end()) {
+								if (rule.flags & RF_OUTPUT) {
+									current.variables_output.insert(it->first);
+								}
+								variables.erase(it);
+								//u_fprintf(ux_stderr, "Info: RemVariable fired for %S.\n", tag->tag.data());
+							}
 						}
 						break;
 					}
