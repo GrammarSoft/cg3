@@ -1,9 +1,9 @@
 DELIMITERS = "<.>" ;
 
-FIND (n sg) IF (-1 (adj)) (-2 (det def)) {
+WITH (n sg) IF (-1 (adj)) (-2 (det def)) {
   SETCHILD (*) TO (-1* $C1 OR $C2) (NOT p (*)) ;
 } ;
 
-FIND (n pl) IF (-1 (adj)) (-2 (det def)) {
+WITH (n pl) IF (-1 (adj)) (-2 (det def)) {
   SETCHILD REPEAT (*) TO (-1* $C1 OR $C2) (NOT p (*)) ;
 } ;

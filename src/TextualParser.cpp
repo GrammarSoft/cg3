@@ -1536,7 +1536,7 @@ void TextualParser::parseRule(UChar*& p, KEYWORDS key) {
 		}
 	}
 
-	if (key == K_FIND) {
+	if (key == K_WITH) {
 		rule->flags |= RF_KEEPORDER;
 		result->lines += SKIPWS(p, '{', ';');
 		if (*p == '{') {
@@ -1671,8 +1671,8 @@ bool TextualParser::maybeParseRule(UChar*& p) {
 	else if (IS_ICASE(p, "UNPROTECT", "unprotect")) {
 		parseRule(p, K_UNPROTECT);
 	}
-	else if (IS_ICASE(p, "FIND", "find")) {
-		parseRule(p, K_FIND);
+	else if (IS_ICASE(p, "WITH", "with")) {
+		parseRule(p, K_WITH);
 	}
 	else {
 		// we didn't see a rule

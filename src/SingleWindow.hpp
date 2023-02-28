@@ -47,7 +47,7 @@ public:
 	std::vector<CohortSet> rule_to_cohorts;
 	// used by GrammarApplicator::runSingleRule
 	// so that it doesn't need to allocate a new one
-	// or edit a rule's actual list when applying a subrule of FIND
+	// or edit a rule's actual list when applying a subrule of WITH
 	CohortSet* nested_rule_to_cohorts = nullptr;
 	uint32FlatHashMap variables_set;
 	uint32FlatHashSet variables_rem;

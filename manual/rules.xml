@@ -75,7 +75,7 @@
 
   Flow control:
       JUMP &lt;anchor_name&gt; &lt;target&gt; [contextual_tests] ;
-      FIND &lt;target&gt; [contextual_tests] { [rules] } ;
+      WITH &lt;target&gt; [contextual_tests] { [rules] } ;
     </screen>
   </section>
 
@@ -579,18 +579,18 @@
   </section>
 
   <section id="find">
-    <title>FIND</title>
+    <title>WITH</title>
     <indexterm>
-      <primary>FIND</primary>
+      <primary>WITH</primary>
     </indexterm>
     <screen>
-      FIND &lt;target&lt; [contextual_tests] { [rules] } ;
+      WITH &lt;target&lt; [contextual_tests] { [rules] } ;
     </screen>
     <para>
       Matches a pattern and runs a list of rules on the matched cohort only.
     </para>
     <screen>
-      FIND (det def) {
+      WITH (det def) {
         MAP @det (*) ;
         SETPARENT (*) TO (1* (n)) ;
       } ;
@@ -601,7 +601,7 @@
       SETPARENT (det def) TO (1* (n)) ;
     </screen>
     <para>
-      Additionally, FIND creates magic sets $C1-$C9 referring to the cohorts matched by the outer contextual tests. If _MARK_ is set, it will also be accessible to the inner rules.
+      Additionally, WITH creates magic sets $C1-$C9 referring to the cohorts matched by the outer contextual tests. If _MARK_ is set, it will also be accessible to the inner rules.
     </para>
     <screen>
       # the following input
@@ -613,7 +613,7 @@
         "example" n sg
 
       # to this rule
-      FIND (n) IF (-1 (adj)) (-2 (det def)) {
+      WITH (n) IF (-1 (adj)) (-2 (det def)) {
         SETCHILD REPEAT (*) TO (-1* $C1 OR $C2) (NOT p (*)) ;
       } ;
 
@@ -626,7 +626,7 @@
         "example" n sg #3-&gt;3
     </screen>
     <para>
-      Note that rules inside FIND are only run once each time FIND is run, unless they have REPEAT, and thus without REPEAT, the rule above would otherwise attach only the adjective.
+      Note that rules inside WITH are only run once each time WITH is run, unless they have REPEAT, and thus without REPEAT, the rule above would otherwise attach only the adjective.
     </para>
   </section>
 
