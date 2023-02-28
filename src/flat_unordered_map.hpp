@@ -35,12 +35,12 @@ namespace CG3 {
 template<typename T, typename V, T res_empty = T(-1), T res_del = T(-1) - 1>
 class flat_unordered_map {
 public:
-	typedef std::pair<const T, V> value_type;
-	typedef std::pair<T, V> value_type_real;
-	typedef T key_type;
-	typedef V mapped_type;
-	typedef typename std::vector<value_type_real> container;
-	typedef typename container::size_type size_type;
+	using value_type = std::pair<const T, V>;
+	using value_type_real = std::pair<T, V>;
+	using key_type = T;
+	using mapped_type = V;
+	using container = typename std::vector<value_type_real>;
+	using size_type = typename container::size_type;
 
 	class const_iterator {
 	private:
@@ -49,7 +49,11 @@ public:
 		size_t i;
 
 	public:
-		typedef value_type reference;
+		using iterator_category = std::bidirectional_iterator_tag;
+		using value_type = flat_unordered_map::value_type;
+		using difference_type = ptrdiff_t;
+		using pointer = value_type*;
+		using reference = value_type;
 
 		const_iterator()
 		  : fus(nullptr)

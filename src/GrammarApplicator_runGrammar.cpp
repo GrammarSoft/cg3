@@ -691,6 +691,23 @@ void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& outp
 
 	u_fflush(output);
 
+	for (auto var : variables_output) {
+		Tag* key = grammar->single_tags[var];
+		auto iter = variables_set.find(var);
+		if (iter != variables_set.end()) {
+			if (iter->second != grammar->tag_any) {
+				Tag* value = grammar->single_tags[iter->second];
+				u_fprintf(output, "%S%S=%S>\n", STR_CMD_SETVAR.data(), key->tag.data(), value->tag.data());
+			}
+			else {
+				u_fprintf(output, "%S%S>\n", STR_CMD_SETVAR.data(), key->tag.data());
+			}
+		}
+		else {
+			u_fprintf(output, "%S%S>\n", STR_CMD_REMVAR.data(), key->tag.data());
+		}
+	}
+
 CGCMD_EXIT:
 	ticks tmp = getticks();
 	grammar->total_time = elapsed(tmp, timer);
