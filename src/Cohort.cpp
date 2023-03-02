@@ -239,11 +239,16 @@ bool Cohort::setRelation(uint32_t rel, uint32_t cohort) {
 }
 
 bool Cohort::remRelation(uint32_t rel, uint32_t cohort) {
-	if (relations.find(rel) != relations.end()) {
-		const size_t sz = relations.find(rel)->second.size();
-		relations.find(rel)->second.erase(cohort);
-		relations_input.find(rel)->second.erase(cohort);
-		return (sz != relations.find(rel)->second.size());
+	auto it = relations.find(rel);
+	if (it != relations.end()) {
+		auto& rels = it->second;
+		const size_t sz = rels.size();
+		rels.erase(cohort);
+		auto it_in = relations_input.find(rel);
+		if (it_in != relations_input.end()) {
+			it_in->second.erase(cohort);
+		}
+		return (sz != rels.size());
 	}
 	return false;
 }
