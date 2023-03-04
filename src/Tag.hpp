@@ -72,10 +72,11 @@ enum : uint32_t {
 	T_VSTR             = (1 << 24),
 	T_ENCL             = (1 << 25),
 	T_RELATION         = (1 << 26),
+	T_CONTEXT          = (1 << 27),
 
 	T_REGEXP_LINE      = (1u << 31), // ToDo: Remove for real ordered mode
 
-	MASK_TAG_SPECIAL   = T_ANY | T_TARGET | T_MARK | T_ATTACHTO | T_PAR_LEFT | T_PAR_RIGHT | T_NUMERICAL | T_VARIABLE | T_LOCAL_VARIABLE | T_META | T_FAILFAST | T_CASE_INSENSITIVE | T_REGEXP | T_REGEXP_ANY | T_VARSTRING | T_SET | T_ENCL | T_SAME_BASIC,
+	MASK_TAG_SPECIAL   = T_ANY | T_TARGET | T_MARK | T_ATTACHTO | T_PAR_LEFT | T_PAR_RIGHT | T_NUMERICAL | T_VARIABLE | T_LOCAL_VARIABLE | T_META | T_FAILFAST | T_CASE_INSENSITIVE | T_REGEXP | T_REGEXP_ANY | T_VARSTRING | T_SET | T_ENCL | T_SAME_BASIC | T_CONTEXT,
 };
 
 class Tag {
@@ -90,6 +91,7 @@ public:
 	union {
 		uint32_t dep_parent = 0;
 		uint32_t variable_hash;
+		uint32_t context_ref_pos;
 	};
 	uint32_t hash = 0;
 	uint32_t plain_hash = 0;

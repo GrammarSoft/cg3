@@ -1,0 +1,26 @@
+"<the>"
+	"the" det def
+"<silly>"
+	"silly" adj
+"<example>"
+	"example" n sg
+"<.>"
+	"." sent
+
+"<the>"
+	"the" det def
+"<silly>"
+	"silly" adj
+"<examples>"
+	"example" n pl
+"<.>"
+	"." sent
+
+"<the>"
+	"the" det def #1->1
+"<silly>"
+	"silly" adj #2->3
+"<example>"
+	"example" n sg #3->3
+"<.>"
+	"." sent #4->4

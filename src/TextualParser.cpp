@@ -1536,6 +1536,32 @@ void TextualParser::parseRule(UChar*& p, KEYWORDS key) {
 		}
 	}
 
+	if (key == K_WITH) {
+		rule->flags |= RF_KEEPORDER;
+		result->lines += SKIPWS(p, '{', ';');
+		if (*p == '{') {
+			++p;
+			bool prev_in_nested_rule = in_nested_rule;
+			Rule* prev_nested_rule = nested_rule;
+			in_nested_rule = true;
+			nested_rule = rule;
+			AST_OPEN(RuleSubrules);
+			result->lines += SKIPWS(p);
+			do {
+				maybeParseRule(p);
+				result->lines += SKIPWS(p, '}', ';');
+				if (*p == ';') {
+					++p;
+					result->lines += SKIPWS(p);
+				}
+			} while (*p != '}');
+			++p;
+			AST_CLOSE(p);
+			nested_rule = prev_nested_rule;
+			in_nested_rule = prev_in_nested_rule;
+		}
+	}
+
 	rule->reverseContextualTests();
 	if (only_sets) {
 		result->destroyRule(rule);
@@ -1550,6 +1576,110 @@ void TextualParser::parseRule(UChar*& p, KEYWORDS key) {
 		u_fflush(ux_stderr);
 	}
 	AST_CLOSE(p);
+}
+
+bool TextualParser::maybeParseRule(UChar*& p) {
+	// ADDRELATIONS
+	if (IS_ICASE(p, "ADDRELATIONS", "addrelations")) {
+		parseRule(p, K_ADDRELATIONS);
+	}
+	// SETRELATIONS
+	else if (IS_ICASE(p, "SETRELATIONS", "setrelations")) {
+		parseRule(p, K_SETRELATIONS);
+	}
+	// REMRELATIONS
+	else if (IS_ICASE(p, "REMRELATIONS", "remrelations")) {
+		parseRule(p, K_REMRELATIONS);
+	}
+	// ADDRELATION
+	else if (IS_ICASE(p, "ADDRELATION", "addrelation")) {
+		parseRule(p, K_ADDRELATION);
+	}
+	// SETRELATION
+	else if (IS_ICASE(p, "SETRELATION", "setrelation")) {
+		parseRule(p, K_SETRELATION);
+	}
+	// REMRELATION
+	else if (IS_ICASE(p, "REMRELATION", "remrelation")) {
+		parseRule(p, K_REMRELATION);
+	}
+	// SETVARIABLE
+	else if (IS_ICASE(p, "SETVARIABLE", "setvariable")) {
+		parseRule(p, K_SETVARIABLE);
+	}
+	// REMVARIABLE
+	else if (IS_ICASE(p, "REMVARIABLE", "remvariable")) {
+		parseRule(p, K_REMVARIABLE);
+	}
+	// SETPARENT
+	else if (IS_ICASE(p, "SETPARENT", "setparent")) {
+		parseRule(p, K_SETPARENT);
+	}
+	// SETCHILD
+	else if (IS_ICASE(p, "SETCHILD", "setchild")) {
+		parseRule(p, K_SETCHILD);
+	}
+	// RESTORE
+	else if (IS_ICASE(p, "RESTORE", "restore")) {
+		parseRule(p, K_RESTORE);
+	}
+	// IFF
+	else if (IS_ICASE(p, "IFF", "iff")) {
+		parseRule(p, K_IFF);
+	}
+	// MAP
+	else if (IS_ICASE(p, "MAP", "map")) {
+		parseRule(p, K_MAP);
+	}
+	// ADD
+	else if (IS_ICASE(p, "ADD", "add")) {
+		parseRule(p, K_ADD);
+	}
+	// APPEND
+	else if (IS_ICASE(p, "APPEND", "append")) {
+		parseRule(p, K_APPEND);
+	}
+	// SELECT
+	else if (IS_ICASE(p, "SELECT", "select")) {
+		parseRule(p, K_SELECT);
+	}
+	// REMOVE
+	else if (IS_ICASE(p, "REMOVE", "remove")) {
+		parseRule(p, K_REMOVE);
+	}
+	// REPLACE
+	else if (IS_ICASE(p, "REPLACE", "replace")) {
+		parseRule(p, K_REPLACE);
+	}
+	// SUBSTITUTE
+	else if (IS_ICASE(p, "SUBSTITUTE", "substitute")) {
+		parseRule(p, K_SUBSTITUTE);
+	}
+	// COPY
+	else if (IS_ICASE(p, "COPY", "copy")) {
+		parseRule(p, K_COPY);
+			}
+	// UNMAP
+	else if (IS_ICASE(p, "UNMAP", "unmap")) {
+		parseRule(p, K_UNMAP);
+	}
+	// PROTECT
+	else if (IS_ICASE(p, "PROTECT", "protect")) {
+		parseRule(p, K_PROTECT);
+	}
+	// UNPROTECT
+	else if (IS_ICASE(p, "UNPROTECT", "unprotect")) {
+		parseRule(p, K_UNPROTECT);
+	}
+	else if (IS_ICASE(p, "WITH", "with")) {
+		parseRule(p, K_WITH);
+	}
+	else {
+		// we didn't see a rule
+		return false;
+	}
+	// the else clause didn't fire so we DID see a rule
+	return true;
 }
 
 void TextualParser::parseAnchorish(UChar*& p, bool rule_flags) {
@@ -1871,46 +2001,6 @@ void TextualParser::parseFromUChar(UChar* input, const char* fname) {
 				}
 				AST_CLOSE(p + 1);
 			}
-			// ADDRELATIONS
-			else if (IS_ICASE(p, "ADDRELATIONS", "addrelations")) {
-				parseRule(p, K_ADDRELATIONS);
-			}
-			// SETRELATIONS
-			else if (IS_ICASE(p, "SETRELATIONS", "setrelations")) {
-				parseRule(p, K_SETRELATIONS);
-			}
-			// REMRELATIONS
-			else if (IS_ICASE(p, "REMRELATIONS", "remrelations")) {
-				parseRule(p, K_REMRELATIONS);
-			}
-			// ADDRELATION
-			else if (IS_ICASE(p, "ADDRELATION", "addrelation")) {
-				parseRule(p, K_ADDRELATION);
-			}
-			// SETRELATION
-			else if (IS_ICASE(p, "SETRELATION", "setrelation")) {
-				parseRule(p, K_SETRELATION);
-			}
-			// REMRELATION
-			else if (IS_ICASE(p, "REMRELATION", "remrelation")) {
-				parseRule(p, K_REMRELATION);
-			}
-			// SETVARIABLE
-			else if (IS_ICASE(p, "SETVARIABLE", "setvariable")) {
-				parseRule(p, K_SETVARIABLE);
-			}
-			// REMVARIABLE
-			else if (IS_ICASE(p, "REMVARIABLE", "remvariable")) {
-				parseRule(p, K_REMVARIABLE);
-			}
-			// SETPARENT
-			else if (IS_ICASE(p, "SETPARENT", "setparent")) {
-				parseRule(p, K_SETPARENT);
-			}
-			// SETCHILD
-			else if (IS_ICASE(p, "SETCHILD", "setchild")) {
-				parseRule(p, K_SETCHILD);
-			}
 			// EXTERNAL
 			else if (IS_ICASE(p, "EXTERNAL", "external")) {
 				parseRule(p, K_EXTERNAL);
@@ -2039,6 +2129,8 @@ void TextualParser::parseFromUChar(UChar* input, const char* fname) {
 					error("%s: Error: Expected closing ; before line %u near `%S`!\n", p);
 				}
 				AST_CLOSE(p + 1);
+			}
+			else if (maybeParseRule(p)) {
 			}
 			// SET
 			else if (IS_ICASE(p, "SET", "set")) {
@@ -2466,45 +2558,9 @@ void TextualParser::parseFromUChar(UChar* input, const char* fname) {
 
 				parseFromUChar(&data[4], abspath.data());
 			}
-			// IFF
-			else if (IS_ICASE(p, "IFF", "iff")) {
-				parseRule(p, K_IFF);
-			}
-			// MAP
-			else if (IS_ICASE(p, "MAP", "map")) {
-				parseRule(p, K_MAP);
-			}
-			// ADD
-			else if (IS_ICASE(p, "ADD", "add")) {
-				parseRule(p, K_ADD);
-			}
-			// APPEND
-			else if (IS_ICASE(p, "APPEND", "append")) {
-				parseRule(p, K_APPEND);
-			}
-			// SELECT
-			else if (IS_ICASE(p, "SELECT", "select")) {
-				parseRule(p, K_SELECT);
-			}
-			// REMOVE
-			else if (IS_ICASE(p, "REMOVE", "remove")) {
-				parseRule(p, K_REMOVE);
-			}
-			// REPLACE
-			else if (IS_ICASE(p, "REPLACE", "replace")) {
-				parseRule(p, K_REPLACE);
-			}
 			// DELIMIT
 			else if (IS_ICASE(p, "DELIMIT", "delimit")) {
 				parseRule(p, K_DELIMIT);
-			}
-			// SUBSTITUTE
-			else if (IS_ICASE(p, "SUBSTITUTE", "substitute")) {
-				parseRule(p, K_SUBSTITUTE);
-			}
-			// COPY
-			else if (IS_ICASE(p, "COPY", "copy")) {
-				parseRule(p, K_COPY);
 			}
 			// JUMP
 			else if (IS_ICASE(p, "JUMP", "jump")) {
@@ -2521,18 +2577,6 @@ void TextualParser::parseFromUChar(UChar* input, const char* fname) {
 			// EXECUTE
 			else if (IS_ICASE(p, "EXECUTE", "execute")) {
 				parseRule(p, K_EXECUTE);
-			}
-			// UNMAP
-			else if (IS_ICASE(p, "UNMAP", "unmap")) {
-				parseRule(p, K_UNMAP);
-			}
-			// PROTECT
-			else if (IS_ICASE(p, "PROTECT", "protect")) {
-				parseRule(p, K_PROTECT);
-			}
-			// UNPROTECT
-			else if (IS_ICASE(p, "UNPROTECT", "unprotect")) {
-				parseRule(p, K_UNPROTECT);
 			}
 			// TEMPLATE
 			else if (IS_ICASE(p, "TEMPLATE", "template")) {
@@ -2860,6 +2904,18 @@ int TextualParser::parse_grammar(UString& data) {
 		result->addTagToSet(t, set_c);
 		result->addSet(set_c);
 	}
+	// Create context sets for nested rules
+	{
+		constexpr UStringView grp[] = { STR_UU_C1, STR_UU_C2, STR_UU_C3, STR_UU_C4, STR_UU_C5, STR_UU_C6, STR_UU_C7, STR_UU_C8, STR_UU_C9 };
+		for (size_t i = 0; i < 9; i++) {
+			Set* set_c = result->allocateSet();
+			set_c->line = 0;
+			set_c->setName(grp[i]);
+			Tag* t = parseTag(grp[i]);
+			result->addTagToSet(t, set_c);
+			result->addSet(set_c);
+		}
+	}
 
 	parseFromUChar(&data[4], filename);
 
@@ -2996,7 +3052,12 @@ void TextualParser::setVerbosity(uint32_t level) {
 }
 
 void TextualParser::addRuleToGrammar(Rule* rule) {
-	if (in_section) {
+	if (in_nested_rule) {
+		rule->section = -3;
+		result->addRule(rule);
+		nested_rule->sub_rules.push_back(rule);
+	}
+	else if (in_section) {
 		rule->section = SI32(result->sections.size()) - 1;
 		result->addRule(rule);
 	}

@@ -92,6 +92,7 @@ enum KEYWORDS : uint32_t {
 	K_UNPROTECT,
 	K_MERGECOHORTS,
 	K_RESTORE,
+	K_WITH,
 	KEYWORD_COUNT,
 };
 
@@ -245,6 +246,7 @@ constexpr UStringView keywords[KEYWORD_COUNT] = {
 	u"UNPROTECT",
 	u"MERGECOHORTS",
 	u"RESTORE",
+	u"WITH",
 };
 
 constexpr UStringView stringbits[] = {
@@ -301,6 +303,15 @@ constexpr UStringView
 	STR_UU_ATTACHTO{ u"_ATTACHTO_" },
 	STR_UU_ENCL{ u"_ENCL_" },
 	STR_UU_SAME_BASIC{ u"_SAME_BASIC_" },
+	STR_UU_C1{ u"_C1_" },
+	STR_UU_C2{ u"_C2_" },
+	STR_UU_C3{ u"_C3_" },
+	STR_UU_C4{ u"_C4_" },
+	STR_UU_C5{ u"_C5_" },
+	STR_UU_C6{ u"_C6_" },
+	STR_UU_C7{ u"_C7_" },
+	STR_UU_C8{ u"_C8_" },
+	STR_UU_C9{ u"_C9_" },
 	STR_RXTEXT_ANY{ u"<.*>" },
 	STR_RXBASE_ANY{ u"\".*\"" },
 	STR_RXWORD_ANY{ u"\"<.*>\"" },

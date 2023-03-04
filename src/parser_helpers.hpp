@@ -253,6 +253,42 @@ Tag* parseTag(const UChar* to, const UChar* p, State& state, bool unescape=true)
 		else if (tag->tag == STR_UU_SAME_BASIC) {
 			tag->type |= T_SAME_BASIC;
 		}
+		else if (tag->tag == STR_UU_C1) {
+			tag->type |= T_CONTEXT;
+			tag->context_ref_pos = 1;
+		}
+		else if (tag->tag == STR_UU_C2) {
+			tag->type |= T_CONTEXT;
+			tag->context_ref_pos = 2;
+		}
+		else if (tag->tag == STR_UU_C3) {
+			tag->type |= T_CONTEXT;
+			tag->context_ref_pos = 3;
+		}
+		else if (tag->tag == STR_UU_C4) {
+			tag->type |= T_CONTEXT;
+			tag->context_ref_pos = 4;
+		}
+		else if (tag->tag == STR_UU_C5) {
+			tag->type |= T_CONTEXT;
+			tag->context_ref_pos = 5;
+		}
+		else if (tag->tag == STR_UU_C6) {
+			tag->type |= T_CONTEXT;
+			tag->context_ref_pos = 6;
+		}
+		else if (tag->tag == STR_UU_C7) {
+			tag->type |= T_CONTEXT;
+			tag->context_ref_pos = 7;
+		}
+		else if (tag->tag == STR_UU_C8) {
+			tag->type |= T_CONTEXT;
+			tag->context_ref_pos = 8;
+		}
+		else if (tag->tag == STR_UU_C9) {
+			tag->type |= T_CONTEXT;
+			tag->context_ref_pos = 9;
+		}
 
 		if (tag->type & T_REGEXP) {
 			if (tag->tag == STR_RXTEXT_ANY || tag->tag == STR_RXBASE_ANY || tag->tag == STR_RXWORD_ANY) {

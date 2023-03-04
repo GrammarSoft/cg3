@@ -118,7 +118,7 @@ TagList GrammarApplicator::getTagList(const Set& theSet, bool unif_mode) const {
 
 void GrammarApplicator::getTagList(const Set& theSet, TagList& theTags, bool unif_mode) const {
 	if (theSet.type & ST_SET_UNIFY) {
-		const auto& usets = (*unif_sets)[theSet.number];
+		const auto& usets = (*context_stack.back().unif_sets)[theSet.number];
 		const Set& pSet = *(grammar->sets_list[theSet.sets[0]]);
 		for (auto iter : pSet.sets) {
 			if (usets.count(iter)) {
@@ -137,6 +137,7 @@ void GrammarApplicator::getTagList(const Set& theSet, TagList& theTags, bool uni
 		}
 	}
 	else if (unif_mode) {
+		auto unif_tags = context_stack.back().unif_tags;
 		auto iter = unif_tags->find(theSet.number);
 		if (iter != unif_tags->end()) {
 			trie_getTagList(theSet.trie, theTags, iter->second);
@@ -233,23 +234,24 @@ Reading* GrammarApplicator::get_sub_reading(Reading* tr, int sub_reading) {
 	return tr;
 }
 
-#define TRACE                                           \
-	do {                                                \
-		reading.hit_by.push_back(rule.number);          \
-		if (rule.sub_reading == 32767) {                \
-			reading_head.hit_by.push_back(rule.number); \
-		}                                               \
+#define TRACE                                                       \
+	do {                                                            \
+		get_apply_to().subreading->hit_by.push_back(rule->number);  \
+		if (rule->sub_reading == 32767) {                           \
+			get_apply_to().reading->hit_by.push_back(rule->number); \
+		}                                                           \
 	} while (0)
 
 #define FILL_TAG_LIST(taglist)                                                      \
 	do {                                                                            \
+		Reading& reading = *get_apply_to().subreading;								\
 		for (auto it = (taglist)->begin(); it != (taglist)->end();) {               \
 			if (reading.tags.find((*it)->hash) == reading.tags.end()) {             \
 				auto tt = *it;                                                      \
 				it = (taglist)->erase(it);                                          \
 				if (tt->type & T_SPECIAL) {                                         \
-					if (regexgrps.second == nullptr) {                              \
-						regexgrps.second = &regexgrps_store[used_regex];            \
+					if (context_stack.back().regexgrps == nullptr) { \
+						context_stack.back().regexgrps = &regexgrps_store[used_regex]; \
 					}                                                               \
 					auto stag = doesTagMatchReading(reading, *tt, false, true);     \
 					if (stag) {                                                     \
@@ -262,19 +264,20 @@ Reading* GrammarApplicator::get_sub_reading(Reading* tr, int sub_reading) {
 		}                                                                           \
 	} while (0)
 
-#define FILL_TAG_LIST_RAW(taglist)                                              \
-	do {                                                                        \
-		for (auto& tt : *(taglist)) {                                           \
-			if (tt->type & T_SPECIAL) {                                         \
-				if (regexgrps.second == nullptr) {                              \
-					regexgrps.second = &regexgrps_store[used_regex];            \
-				}                                                               \
-				auto stag = doesTagMatchReading(reading, *tt, false, true);     \
-				if (stag) {                                                     \
-					tt = grammar->single_tags.find(stag)->second;               \
-				}                                                               \
-			}                                                                   \
-		}                                                                       \
+#define FILL_TAG_LIST_RAW(taglist)                                              	\
+	do {                                                                        	\
+		Reading& reading = *get_apply_to().subreading;								\
+		for (auto& tt : *(taglist)) {                                           	\
+			if (tt->type & T_SPECIAL) {                                         	\
+				if (context_stack.back().regexgrps == nullptr) {					\
+					context_stack.back().regexgrps = &regexgrps_store[used_regex]; 	\
+				}                                                               	\
+				auto stag = doesTagMatchReading(reading, *tt, false, true);     	\
+				if (stag) {                                                     	\
+					tt = grammar->single_tags.find(stag)->second;               	\
+				}                                                               	\
+			}                                                                   	\
+		}                                                                       	\
 	} while (0)
 
 #define APPEND_TAGLIST_TO_READING(taglist, reading)                                  \
@@ -288,10 +291,10 @@ Reading* GrammarApplicator::get_sub_reading(Reading* tr, int sub_reading) {
 				mappings->push_back(tter);                                           \
 			}                                                                        \
 			else {                                                                   \
-				hash = addTagToReading((reading), tter);                             \
+				hash = addTagToReading((reading), tter);							 \
 			}                                                                        \
-			if (updateValidRules(rules, intersects, hash, (reading))) {              \
-				iter_rules = intersects.find(rule.number);                           \
+			if (updateValidRules(rules, intersects, hash, reading)) {                \
+				iter_rules = intersects.find(rule->number);                          \
 				iter_rules_end = intersects.end();                                   \
 			}                                                                        \
 		}                                                                            \
@@ -304,6 +307,448 @@ Reading* GrammarApplicator::get_sub_reading(Reading* tr, int sub_reading) {
 		}                                                      \
     }                                                          \
 	while (0)
+
+
+bool GrammarApplicator::runSingleRule(SingleWindow& current, const Rule& rule, RuleCallback reading_cb, RuleCallback cohort_cb) {
+	finish_cohort_loop = true;
+	bool anything_changed = false;
+	KEYWORDS type = rule.type;
+	const Set& set = *(grammar->sets_list[rule.target]);
+	CohortSet* cohortset = &current.rule_to_cohorts[rule.number];
+	if (!context_stack.empty()) {
+		if (current.nested_rule_to_cohorts == nullptr) {
+			current.nested_rule_to_cohorts = new CohortSet();
+		}
+		cohortset = current.nested_rule_to_cohorts;
+		cohortset->clear();
+		cohortset->insert(get_apply_to().cohort);
+		for (auto& t : set.trie_special) {
+			if (t.first->type & T_CONTEXT && t.first->context_ref_pos <= context_stack.back().context.size()) {
+				cohortset->insert(context_stack.back().context[t.first->context_ref_pos-1]);
+			}
+		}
+	}
+	if (debug_level > 1) {
+		std::cerr << "DEBUG: " << cohortset->size() << "/" << current.cohorts.size() << " = " << double(cohortset->size()) / double(current.cohorts.size()) << std::endl;
+	}
+	for (auto rocit = cohortset->cbegin(); rocit != cohortset->cend();) {
+		Cohort* cohort = *rocit;
+		++rocit;
+
+		finish_reading_loop = true;
+
+		if (debug_level > 1) {
+			std::cerr << "DEBUG: Trying cohort " << cohort->global_number << ":" << cohort->local_number << std::endl;
+		}
+
+		// If the current cohort is the initial >>> one, skip it.
+		if (cohort->local_number == 0) {
+			continue;
+		}
+		// If the cohort is removed, skip it...
+		// Removed cohorts are still in the precalculated rule_to_cohorts map,
+		// and it would take time to go through the whole map searching for the cohort.
+		// Haven't tested whether it is worth it...
+		if (cohort->type & CT_REMOVED) {
+			continue;
+		}
+
+		uint32_t c = cohort->local_number;
+		// If the cohort is temporarily unavailable due to parentheses, skip it.
+		if ((cohort->type & CT_ENCLOSED) || cohort->parent != &current) {
+			continue;
+		}
+		// If there are no readings, skip it.
+		// This is unlikely to happen as all cohorts will get a magic reading during input,
+		// and not many use the unsafe Remove rules.
+		if (cohort->readings.empty()) {
+			continue;
+		}
+		// If there's no reason to even attempt to restore, just skip it.
+		if (rule.type == K_RESTORE) {
+			if ((rule.flags & RF_DELAYED) && cohort->delayed.empty()) {
+				continue;
+			}
+			else if ((rule.flags & RF_IGNORED) && cohort->ignored.empty()) {
+				continue;
+			}
+			else if (!(rule.flags & (RF_DELAYED|RF_IGNORED)) && cohort->deleted.empty()) {
+				continue;
+			}
+		}
+		// If there is not even a remote chance the target set might match this cohort, skip it.
+		if (rule.sub_reading == 0 && (rule.target >= cohort->possible_sets.size() || !cohort->possible_sets.test(rule.target))) {
+			continue;
+		}
+
+		// If there is only 1 reading left and it is a Select or safe Remove rule, skip it.
+		if (cohort->readings.size() == 1) {
+			if (type == K_SELECT) {
+				continue;
+			}
+			if (type == K_REMOVE || type == K_IFF) {
+				if (cohort->readings.front()->noprint) {
+					continue;
+				}
+				if ((!unsafe || (rule.flags & RF_SAFE)) && !(rule.flags & RF_UNSAFE)) {
+					continue;
+				}
+			}
+		}
+		else if (type == K_UNMAP && rule.flags & RF_SAFE) {
+			continue;
+		}
+		// If it's a Delimit rule and we're at the final cohort, skip it.
+		if (type == K_DELIMIT && c == current.cohorts.size() - 1) {
+				continue;
+		}
+
+		// If the rule is only supposed to run inside a parentheses, check if cohort is.
+		if (rule.flags & RF_ENCL_INNER) {
+			if (!par_left_pos) {
+				continue;
+			}
+			if (cohort->local_number < par_left_pos || cohort->local_number > par_right_pos) {
+				continue;
+			}
+		}
+		// ...and if the rule should only run outside parentheses, check if cohort is.
+		else if (rule.flags & RF_ENCL_OUTER) {
+			if (par_left_pos && cohort->local_number >= par_left_pos && cohort->local_number <= par_right_pos) {
+				continue;
+			}
+		}
+
+		// Check if on previous runs the rule did not match this cohort, and skip if that is the case.
+		// This cache is cleared if any rule causes any state change in the window.
+		uint32_t ih = hash_value(rule.number, cohort->global_number);
+		if (index_matches(index_ruleCohort_no, ih)) {
+			continue;
+		}
+		index_ruleCohort_no.insert(ih);
+
+		size_t num_active = 0;
+		size_t num_iff = 0;
+
+		std::vector<Rule_Context> reading_contexts;
+		reading_contexts.reserve(cohort->readings.size());
+
+		// Assume that Iff rules are really Remove rules, until proven otherwise.
+		if (rule.type == K_IFF) {
+			type = K_REMOVE;
+		}
+
+		bool did_test = false;
+		bool test_good = false;
+		bool matched_target = false;
+
+		clear(readings_plain);
+		clear(subs_any);
+
+		// Varstring capture groups exist on a per-cohort basis, since we may need them for mapping later.
+		clear(regexgrps_z);
+		clear(regexgrps_c);
+		clear(unif_tags_rs);
+		clear(unif_sets_rs);
+
+		used_regex = 0;
+		regexgrps_store.resize(std::max(regexgrps_store.size(), cohort->readings.size()));
+		regexgrps_z.reserve(std::max(regexgrps_z.size(), cohort->readings.size()));
+		regexgrps_c.reserve(std::max(regexgrps_c.size(), cohort->readings.size()));
+
+		size_t used_unif = 0;
+		unif_tags_store.resize(std::max(unif_tags_store.size(), cohort->readings.size() + 1));
+		unif_sets_store.resize(std::max(unif_sets_store.size(), cohort->readings.size() + 1));
+
+		{
+			Rule_Context context;
+			context.target.cohort = cohort;
+			context_stack.push_back(std::move(context));
+		}
+
+		auto reset_cohorts = [&]() {
+			cohortset = &current.rule_to_cohorts[rule.number];
+			if (get_apply_to().cohort->type & CT_REMOVED) {
+				rocit = cohortset->lower_bound(current.cohorts[get_apply_to().cohort->local_number]);
+			}
+			else {
+				rocit = cohortset->find(current.cohorts[get_apply_to().cohort->local_number]);
+				if (rocit != cohortset->end()) {
+					++rocit;
+				}
+			}
+		};
+
+	    // Remember the current state so we can compare later to see if anything has changed
+		const size_t state_num_readings = cohort->readings.size();
+		const size_t state_num_removed = cohort->deleted.size();
+		const size_t state_num_delayed = cohort->delayed.size();
+		const size_t state_num_ignored = cohort->ignored.size();
+
+	    // This loop figures out which readings, if any, that are valid targets for the current rule
+		// Criteria for valid is that the reading must match both target and all contextual tests
+		for (size_t i = 0; i < cohort->readings.size(); ++i) {
+			// ToDo: Switch sub-readings so that they build up a passed in vector<Reading*>
+			Reading* reading = get_sub_reading(cohort->readings[i], rule.sub_reading);
+			if (!reading) {
+				cohort->readings[i]->matched_target = false;
+				cohort->readings[i]->matched_tests = false;
+				continue;
+			}
+			context_stack.back().target.reading = cohort->readings[i];
+			context_stack.back().target.subreading = reading;
+
+			// The state is stored in the readings themselves, so clear the old states
+			reading->matched_target = false;
+			reading->matched_tests = false;
+
+			if (reading->mapped && (rule.type == K_MAP || rule.type == K_ADD || rule.type == K_REPLACE)) {
+				continue;
+			}
+			if (reading->noprint && !allow_magic_readings) {
+				continue;
+			}
+			if (reading->immutable && rule.type != K_UNPROTECT) {
+				if (type == K_SELECT) {
+					reading->matched_target = true;
+					reading->matched_tests = true;
+					reading_contexts.push_back(context_stack.back());
+				}
+				++num_active;
+				++num_iff;
+				continue;
+			}
+
+			// Check if any previous reading of this cohort had the same plain signature, and if so just copy their results
+			// This cache is cleared on a per-cohort basis
+			did_test = false;
+			if (!(set.type & (ST_SPECIAL | ST_MAPPING | ST_CHILD_UNIFY)) && !readings_plain.empty()) {
+				auto rpit = readings_plain.find(reading->hash_plain);
+				if (rpit != readings_plain.end()) {
+					reading->matched_target = rpit->second->matched_target;
+					reading->matched_tests = rpit->second->matched_tests;
+					if (reading->matched_tests) {
+						++num_active;
+					}
+					if (regexgrps_c.count(rpit->second->number)) {
+						regexgrps_c[reading->number];
+						regexgrps_c[reading->number] = regexgrps_c[rpit->second->number];
+						regexgrps_z[reading->number];
+						regexgrps_z[reading->number] = regexgrps_z[rpit->second->number];
+
+						context_stack.back().regexgrp_ct = regexgrps_z[reading->number];
+						context_stack.back().regexgrps = regexgrps_c[reading->number];
+					}
+					context_stack.back().unif_tags = unif_tags_rs[reading->hash_plain];
+					context_stack.back().unif_sets = unif_sets_rs[reading->hash_plain];
+					did_test = true;
+					test_good = rpit->second->matched_tests;
+					reading_contexts.push_back(context_stack.back());
+					continue;
+				}
+			}
+
+			// Regex capture is done on a per-reading basis, so clear all captured state.
+			context_stack.back().regexgrp_ct = 0;
+			context_stack.back().regexgrps = &regexgrps_store[used_regex];
+
+			// Unification is done on a per-reading basis, so clear all unification state.
+			context_stack.back().unif_tags = &unif_tags_store[used_unif];
+			context_stack.back().unif_sets = &unif_sets_store[used_unif];
+			unif_tags_rs[reading->hash_plain] = context_stack.back().unif_tags;
+			unif_sets_rs[reading->hash_plain] = context_stack.back().unif_sets;
+			unif_tags_rs[reading->hash] = context_stack.back().unif_tags;
+			unif_sets_rs[reading->hash] = context_stack.back().unif_sets;
+			++used_unif;
+
+			context_stack.back().unif_tags->clear();
+			context_stack.back().unif_sets->clear();
+
+			unif_last_wordform = 0;
+			unif_last_baseform = 0;
+			unif_last_textual = 0;
+
+			same_basic = reading->hash_plain;
+			target = nullptr;
+			if (context_stack.size() > 1) {
+				Cohort* m = context_stack[context_stack.size()-2].mark;
+				if (m) set_mark(m);
+				else set_mark(cohort);
+			}
+			else {
+				set_mark(cohort);
+			}
+			uint8_t orz = context_stack.back().regexgrp_ct;
+			for (auto r = cohort->readings[i]; r; r = r->next) {
+				r->active = true;
+			}
+			// Actually check if the reading is a valid target. First check if rule target matches...
+			if (rule.target && doesSetMatchReading(*reading, rule.target, (set.type & (ST_CHILD_UNIFY | ST_SPECIAL)) != 0)) {
+				bool regex_prop = true;
+				if (orz != context_stack.back().regexgrp_ct) {
+					did_test = false;
+					regex_prop = false;
+				}
+				target = cohort;
+				reading->matched_target = true;
+				matched_target = true;
+				bool good = true;
+				// If we didn't already run the contextual tests, run them now.
+				if (!did_test) {
+					context_stack.back().context.clear();
+					foreach (it, rule.tests) {
+						ContextualTest* test = *it;
+						if (rule.flags & RF_RESETX || !(rule.flags & RF_REMEMBERX)) {
+							set_mark(cohort);
+						}
+						seen_barrier = false;
+						// Keeps track of where we have been, to prevent infinite recursion in trees with loops
+						dep_deep_seen.clear();
+						// Reset the counters for which types of CohortIterator we have in play
+						std::fill(ci_depths.begin(), ci_depths.end(), UI32(0));
+						tmpl_cntx.clear();
+						// Run the contextual test...
+						Cohort* next_test = nullptr;
+						if (!(test->pos & POS_PASS_ORIGIN) && (no_pass_origin || (test->pos & POS_NO_PASS_ORIGIN))) {
+							next_test = runContextualTest(&current, c, test, nullptr, cohort);
+						}
+						else {
+							next_test = runContextualTest(&current, c, test);
+						}
+						context_stack.back().context.push_back(next_test);
+						test_good = (next_test != nullptr);
+						if (!test_good) {
+							good = test_good;
+							if (!statistics) {
+								if (it != rule.tests.begin() && !(rule.flags & RF_KEEPORDER)) {
+									rule.tests.erase(it);
+									rule.tests.push_front(test);
+								}
+								break;
+							}
+						}
+						did_test = ((set.type & (ST_CHILD_UNIFY | ST_SPECIAL)) == 0 && context_stack.back().unif_tags->empty() && context_stack.back().unif_sets->empty());
+					}
+				}
+				else {
+					good = test_good;
+				}
+				if (good) {
+					// We've found a match, so Iff should be treated as Select instead of Remove
+					if (rule.type == K_IFF && type != K_SELECT) {
+						type = K_SELECT;
+						if (grammar->has_protect) {
+							for (size_t j = 0; j < i; ++j) {
+								Reading* reading = get_sub_reading(cohort->readings[j], rule.sub_reading);
+								if (reading && reading->immutable) {
+									reading->matched_target = true;
+									reading->matched_tests = true;
+									++num_active;
+									++num_iff;
+								}
+							}
+						}
+					}
+					reading->matched_tests = true;
+					++num_active;
+					++rule.num_match;
+
+					if (regex_prop && i && !regexgrps_c.empty()) {
+						for (auto z = i; z > 0; --z) {
+							auto it = regexgrps_c.find(cohort->readings[z - 1]->number);
+							if (it != regexgrps_c.end()) {
+								regexgrps_c.insert(std::make_pair(reading->number, it->second));
+								regexgrps_z.insert(std::make_pair(reading->number, regexgrps_z.find(cohort->readings[z - 1]->number)->second));
+								break;
+							}
+						}
+					}
+				}
+				else {
+					context_stack.back().regexgrp_ct = orz;
+				}
+				++num_iff;
+			}
+			else {
+				context_stack.back().regexgrp_ct = orz;
+				++rule.num_fail;
+			}
+			readings_plain.insert(std::make_pair(reading->hash_plain, reading));
+			for (auto r = cohort->readings[i]; r; r = r->next) {
+				r->active = false;
+			}
+
+			if (reading != cohort->readings[i]) {
+				cohort->readings[i]->matched_target = reading->matched_target;
+				cohort->readings[i]->matched_tests = reading->matched_tests;
+			}
+			if (context_stack.back().regexgrp_ct) {
+				regexgrps_c[reading->number] = context_stack.back().regexgrps;
+				regexgrps_z[reading->number] = context_stack.back().regexgrp_ct;
+				++used_regex;
+			}
+			reading_contexts.push_back(context_stack.back());
+		}
+
+		if (state_num_readings != cohort->readings.size() || state_num_removed != cohort->deleted.size() || state_num_delayed != cohort->delayed.size() || state_num_ignored != cohort->ignored.size()) {
+			anything_changed = true;
+			cohort->type &= ~CT_NUM_CURRENT;
+		}
+
+		// If none of the readings were valid targets, remove this cohort from the rule's possible cohorts.
+		if (num_active == 0 && (num_iff == 0 || rule.type != K_IFF)) {
+			if (!matched_target) {
+				--rocit;                         // We have already incremented rocit earlier, so take one step back...
+				rocit = cohortset->erase(rocit); // ...and one step forward again
+			}
+			context_stack.pop_back();
+			continue;
+		}
+
+		// All readings were valid targets, which means there is nothing to do for Select or safe Remove rules.
+		if (num_active == cohort->readings.size()) {
+			if (type == K_SELECT) {
+				context_stack.pop_back();
+				continue;
+			}
+			if (type == K_REMOVE && (!unsafe || (rule.flags & RF_SAFE)) && !(rule.flags & RF_UNSAFE)) {
+				context_stack.pop_back();
+				continue;
+			}
+		}
+
+		for (auto& ctx : reading_contexts) {
+			if (!ctx.target.subreading->matched_target) continue;
+			if (!ctx.target.subreading->matched_tests && rule.type != K_IFF) {
+				continue;
+			}
+			context_stack.back() = ctx;
+			reset_cohorts_for_loop = false;
+			reading_cb();
+			if (!finish_cohort_loop) {
+				context_stack.pop_back();
+				return anything_changed;
+			}
+			if (reset_cohorts_for_loop) {
+				reset_cohorts();
+				break;
+			}
+			if (!finish_reading_loop) break;
+		}
+
+		reset_cohorts_for_loop = false;
+		cohort_cb();
+		if (!finish_cohort_loop) {
+			context_stack.pop_back();
+			return anything_changed;
+		}
+		if (reset_cohorts_for_loop) {
+			reset_cohorts();
+		}
+		context_stack.pop_back();
+	}
+	return anything_changed;
+}
 
 /**
  * Applies the passed rules to the passed SingleWindow.
@@ -368,26 +813,25 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 		}
 
 		current_rule = grammar->rule_by_number[j];
-		const Rule& rule = *(grammar->rule_by_number[j]);
+		Rule* rule = grammar->rule_by_number[j];
 		if (debug_level > 1) {
-			std::cerr << "DEBUG: Trying rule " << rule.line << std::endl;
+			std::cerr << "DEBUG: Trying rule " << rule->line << std::endl;
 		}
 
 		ticks tstamp(gtimer);
-		KEYWORDS type = rule.type;
 
-		if (!apply_mappings && (rule.type == K_MAP || rule.type == K_ADD || rule.type == K_REPLACE)) {
+		if (!apply_mappings && (rule->type == K_MAP || rule->type == K_ADD || rule->type == K_REPLACE)) {
 			continue;
 		}
-		if (!apply_corrections && (rule.type == K_SUBSTITUTE || rule.type == K_APPEND)) {
+		if (!apply_corrections && (rule->type == K_SUBSTITUTE || rule->type == K_APPEND)) {
 			continue;
 		}
 		// If there are parentheses and the rule is marked as only run on the final pass, skip if this is not it.
 		if (current.has_enclosures) {
-			if ((rule.flags & RF_ENCL_FINAL) && !did_final_enclosure) {
+			if ((rule->flags & RF_ENCL_FINAL) && !did_final_enclosure) {
 				continue;
 			}
-			if (did_final_enclosure && !(rule.flags & RF_ENCL_FINAL)) {
+			if (did_final_enclosure && !(rule->flags & RF_ENCL_FINAL)) {
 				continue;
 			}
 		}
@@ -395,440 +839,1040 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 			tstamp = getticks();
 		}
 
-		const Set& set = *(grammar->sets_list[rule.target]);
-		grammar->lines = rule.line;
+		bool readings_changed = false;
+		bool should_repeat = false;
+		bool should_bail = false;
 
-		CohortSet* cohortset = &current.rule_to_cohorts[rule.number];
-		if (debug_level > 1) {
-			std::cerr << "DEBUG: " << cohortset->size() << "/" << current.cohorts.size() << " = " << double(cohortset->size()) / double(current.cohorts.size()) << std::endl;
-		}
-		for (auto rocit = cohortset->cbegin(); rocit != cohortset->cend();) {
-			Cohort* cohort = *rocit;
-			++rocit;
+		auto reindex = [&]() {
+			foreach (iter, current.cohorts) {
+				(*iter)->local_number = UI32(std::distance(current.cohorts.begin(), iter));
+			}
+			gWindow->rebuildCohortLinks();
+		};
 
-			if (debug_level > 1) {
-				std::cerr << "DEBUG: Trying cohort " << cohort->global_number << ":" << cohort->local_number << std::endl;
-			}
-
-			// If the current cohort is the initial >>> one, skip it.
-			if (cohort->local_number == 0) {
-				continue;
-			}
-			// If the cohort is removed, skip it...
-			// Removed cohorts are still in the precalculated rule_to_cohorts map,
-			// and it would take time to go through the whole map searching for the cohort.
-			// Haven't tested whether it is worth it...
-			if (cohort->type & CT_REMOVED) {
-				continue;
-			}
-
-			uint32_t c = cohort->local_number;
-			// If the cohort is temporarily unavailable due to parentheses, skip it.
-			if ((cohort->type & CT_ENCLOSED) || cohort->parent != &current) {
-				continue;
-			}
-			// If there are no readings, skip it.
-			// This is unlikely to happen as all cohorts will get a magic reading during input,
-			// and not many use the unsafe Remove rules.
-			if (cohort->readings.empty()) {
-				continue;
-			}
-			// If there's no reason to even attempt to restore, just skip it.
-			if (rule.type == K_RESTORE) {
-				if ((rule.flags & RF_DELAYED) && cohort->delayed.empty()) {
-					continue;
-				}
-				else if ((rule.flags & RF_IGNORED) && cohort->ignored.empty()) {
-					continue;
-				}
-				else if (!(rule.flags & (RF_DELAYED|RF_IGNORED)) && cohort->deleted.empty()) {
-					continue;
-				}
-			}
-			// If there is not even a remote chance the target set might match this cohort, skip it.
-			if (rule.sub_reading == 0 && (rule.target >= cohort->possible_sets.size() || !cohort->possible_sets.test(rule.target))) {
-				continue;
-			}
-
-			// If there is only 1 reading left and it is a Select or safe Remove rule, skip it.
-			if (cohort->readings.size() == 1) {
-				if (type == K_SELECT) {
-					continue;
-				}
-				if (type == K_REMOVE || type == K_IFF) {
-					if (cohort->readings.front()->noprint) {
-						continue;
+		auto collect_subtree = [&](CohortSet& cs, Cohort* head, uint32_t cset) {
+			if (cset) {
+				for (auto iter : current.cohorts) {
+					// Always consider the initial cohort a match
+					if (iter->global_number == head->global_number) {
+						cs.insert(iter);
 					}
-					if ((!unsafe || (rule.flags & RF_SAFE)) && !(rule.flags & RF_UNSAFE)) {
-						continue;
+					else if (iter->dep_parent == head->global_number && doesSetMatchCohortNormal(*iter, cset)) {
+						cs.insert(iter);
 					}
 				}
-			}
-			else if (type == K_UNMAP && rule.flags & RF_SAFE) {
-				continue;
-			}
-			// If it's a Delimit rule and we're at the final cohort, skip it.
-			if (type == K_DELIMIT && c == current.cohorts.size() - 1) {
-				continue;
-			}
-
-			// If the rule is only supposed to run inside a parentheses, check if cohort is.
-			if (rule.flags & RF_ENCL_INNER) {
-				if (!par_left_pos) {
-					continue;
-				}
-				if (cohort->local_number < par_left_pos || cohort->local_number > par_right_pos) {
-					continue;
-				}
-			}
-			// ...and if the rule should only run outside parentheses, check if cohort is.
-			else if (rule.flags & RF_ENCL_OUTER) {
-				if (par_left_pos && cohort->local_number >= par_left_pos && cohort->local_number <= par_right_pos) {
-					continue;
-				}
-			}
-
-			// Check if on previous runs the rule did not match this cohort, and skip if that is the case.
-			// This cache is cleared if any rule causes any state change in the window.
-			uint32_t ih = hash_value(rule.number, cohort->global_number);
-			if (index_matches(index_ruleCohort_no, ih)) {
-				continue;
-			}
-			index_ruleCohort_no.insert(ih);
-
-			size_t num_active = 0;
-			size_t num_iff = 0;
-			attach_to = cohort;
-
-			// Assume that Iff rules are really Remove rules, until proven otherwise.
-			if (rule.type == K_IFF) {
-				type = K_REMOVE;
-			}
-
-			bool did_test = false;
-			bool test_good = false;
-			bool matched_target = false;
-
-			clear(readings_plain);
-			clear(subs_any);
-
-			// Varstring capture groups exist on a per-cohort basis, since we may need them for mapping later.
-			clear(regexgrps_z);
-			clear(regexgrps_c);
-			clear(unif_tags_rs);
-			clear(unif_sets_rs);
-
-			size_t used_regex = 0;
-			regexgrps_store.resize(std::max(regexgrps_store.size(), cohort->readings.size()));
-			regexgrps_z.reserve(std::max(regexgrps_z.size(), cohort->readings.size()));
-			regexgrps_c.reserve(std::max(regexgrps_c.size(), cohort->readings.size()));
-
-			size_t used_unif = 0;
-			unif_tags_store.resize(std::max(unif_tags_store.size(), cohort->readings.size() + 1));
-			unif_sets_store.resize(std::max(unif_sets_store.size(), cohort->readings.size() + 1));
-
-			// This loop figures out which readings, if any, that are valid targets for the current rule
-			// Criteria for valid is that the reading must match both target and all contextual tests
-			for (size_t i = 0; i < cohort->readings.size(); ++i) {
-				// ToDo: Switch sub-readings so that they build up a passed in vector<Reading*>
-				Reading* reading = get_sub_reading(cohort->readings[i], rule.sub_reading);
-				if (!reading) {
-					cohort->readings[i]->matched_target = false;
-					cohort->readings[i]->matched_tests = false;
-					continue;
-				}
-
-				// The state is stored in the readings themselves, so clear the old states
-				reading->matched_target = false;
-				reading->matched_tests = false;
-
-				if (reading->mapped && (rule.type == K_MAP || rule.type == K_ADD || rule.type == K_REPLACE)) {
-					continue;
-				}
-				if (reading->noprint && !allow_magic_readings) {
-					continue;
-				}
-				if (reading->immutable && rule.type != K_UNPROTECT) {
-					if (type == K_SELECT) {
-						reading->matched_target = true;
-						reading->matched_tests = true;
-					}
-					++num_active;
-					++num_iff;
-					continue;
-				}
-
-				// Check if any previous reading of this cohort had the same plain signature, and if so just copy their results
-				// This cache is cleared on a per-cohort basis
-				if (!(set.type & (ST_SPECIAL | ST_MAPPING | ST_CHILD_UNIFY)) && !readings_plain.empty()) {
-					auto rpit = readings_plain.find(reading->hash_plain);
-					if (rpit != readings_plain.end()) {
-						reading->matched_target = rpit->second->matched_target;
-						reading->matched_tests = rpit->second->matched_tests;
-						if (reading->matched_tests) {
-							++num_active;
+				CohortSet more;
+				for (auto iter : current.cohorts) {
+					for (auto cht : cs) {
+						// Do not grab the whole tree from the root, in case WithChild is not (*)
+						if (cht->global_number == head->global_number) {
+							continue;
 						}
-						if (regexgrps_c.count(rpit->second->number)) {
-							regexgrps_c[reading->number];
-							regexgrps_c[reading->number] = regexgrps_c[rpit->second->number];
-							regexgrps_z[reading->number];
-							regexgrps_z[reading->number] = regexgrps_z[rpit->second->number];
-						}
-						continue;
-					}
-				}
-
-				// Regex capture is done on a per-reading basis, so clear all captured state.
-				regexgrps.first = 0;
-				regexgrps.second = &regexgrps_store[used_regex];
-
-				// Unification is done on a per-reading basis, so clear all unification state.
-				unif_tags = &unif_tags_store[used_unif];
-				unif_sets = &unif_sets_store[used_unif];
-				unif_tags_rs[reading->hash_plain] = unif_tags;
-				unif_sets_rs[reading->hash_plain] = unif_sets;
-				unif_tags_rs[reading->hash] = unif_tags;
-				unif_sets_rs[reading->hash] = unif_sets;
-				++used_unif;
-
-				unif_last_wordform = 0;
-				unif_last_baseform = 0;
-				unif_last_textual = 0;
-				clear(*unif_tags);
-				clear(*unif_sets);
-
-				same_basic = reading->hash_plain;
-				target = nullptr;
-				mark = cohort;
-				uint8_t orz = regexgrps.first;
-				for (auto r = cohort->readings[i]; r; r = r->next) {
-					r->active = true;
-				}
-				// Actually check if the reading is a valid target. First check if rule target matches...
-				if (rule.target && doesSetMatchReading(*reading, rule.target, (set.type & (ST_CHILD_UNIFY | ST_SPECIAL)) != 0)) {
-					bool regex_prop = true;
-					if (orz != regexgrps.first) {
-						did_test = false;
-						regex_prop = false;
-					}
-					target = cohort;
-					reading->matched_target = true;
-					matched_target = true;
-					bool good = true;
-					// If we didn't already run the contextual tests, run them now.
-					if (!did_test) {
-						foreach (it, rule.tests) {
-							ContextualTest* test = *it;
-							if (rule.flags & RF_RESETX || !(rule.flags & RF_REMEMBERX)) {
-								mark = cohort;
-							}
-							seen_barrier = false;
-							// Keeps track of where we have been, to prevent infinite recursion in trees with loops
-							dep_deep_seen.clear();
-							// Reset the counters for which types of CohortIterator we have in play
-							std::fill(ci_depths.begin(), ci_depths.end(), UI32(0));
-							tmpl_cntx.clear();
-							// Run the contextual test...
-							if (!(test->pos & POS_PASS_ORIGIN) && (no_pass_origin || (test->pos & POS_NO_PASS_ORIGIN))) {
-								test_good = (runContextualTest(&current, c, test, nullptr, cohort) != nullptr);
-							}
-							else {
-								test_good = (runContextualTest(&current, c, test) != nullptr);
-							}
-							if (!test_good) {
-								good = test_good;
-								if (!statistics) {
-									if (it != rule.tests.begin() && !(rule.flags & RF_KEEPORDER)) {
-										rule.tests.erase(it);
-										rule.tests.push_front(test);
-									}
-									break;
-								}
-							}
-							did_test = ((set.type & (ST_CHILD_UNIFY | ST_SPECIAL)) == 0 && unif_tags->empty() && unif_sets->empty());
+						if (isChildOf(iter, cht)) {
+							more.insert(iter);
 						}
 					}
-					else {
-						good = test_good;
-					}
-					if (good) {
-						// We've found a match, so Iff should be treated as Select instead of Remove
-						if (rule.type == K_IFF && type != K_SELECT) {
-							type = K_SELECT;
-							if (grammar->has_protect) {
-								for (size_t j = 0; j < i; ++j) {
-									Reading* reading = get_sub_reading(cohort->readings[j], rule.sub_reading);
-									if (reading && reading->immutable) {
-										reading->matched_target = true;
-										reading->matched_tests = true;
-										++num_active;
-										++num_iff;
-									}
-								}
-							}
-						}
-						reading->matched_tests = true;
-						++num_active;
-						++rule.num_match;
-
-						if (regex_prop && i && !regexgrps_c.empty()) {
-							for (auto z = i; z > 0; --z) {
-								auto it = regexgrps_c.find(cohort->readings[z - 1]->number);
-								if (it != regexgrps_c.end()) {
-									regexgrps_c.insert(std::make_pair(reading->number, it->second));
-									regexgrps_z.insert(std::make_pair(reading->number, regexgrps_z.find(cohort->readings[z - 1]->number)->second));
-									break;
-								}
-							}
-						}
-					}
-					else {
-						regexgrps.first = orz;
-					}
-					++num_iff;
 				}
-				else {
-					regexgrps.first = orz;
-					++rule.num_fail;
-				}
-				readings_plain.insert(std::make_pair(reading->hash_plain, reading));
-				for (auto r = cohort->readings[i]; r; r = r->next) {
-					r->active = false;
-				}
-
-				if (reading != cohort->readings[i]) {
-					cohort->readings[i]->matched_target = reading->matched_target;
-					cohort->readings[i]->matched_tests = reading->matched_tests;
-				}
-				if (regexgrps.first) {
-					regexgrps_c[reading->number] = regexgrps.second;
-					regexgrps_z[reading->number] = regexgrps.first;
-					++used_regex;
-				}
+				cs.insert(more.begin(), more.end());
 			}
-
-			// If none of the readings were valid targets, remove this cohort from the rule's possible cohorts.
-			if (num_active == 0 && (num_iff == 0 || rule.type != K_IFF)) {
-				if (!matched_target) {
-					--rocit;                         // We have already incremented rocit earlier, so take one step back...
-					rocit = cohortset->erase(rocit); // ...and one step forward again
-				}
-				continue;
+			else {
+				cs.insert(head);
 			}
+		};
 
-			// All readings were valid targets, which means there is nothing to do for Select or safe Remove rules.
-			if (num_active == cohort->readings.size()) {
-				if (type == K_SELECT) {
+		auto add_cohort = [&](Cohort* cohort) {
+			Cohort* cCohort = alloc_cohort(&current);
+			cCohort->global_number = gWindow->cohort_counter++;
+
+			Tag* wf = nullptr;
+			std::vector<TagList> readings;
+			auto theTags = ss_taglist.get();
+			getTagList(*rule->maplist, theTags);
+
+			for (auto tter : *theTags) {
+				VARSTRINGIFY(tter);
+				if (tter->type & T_WORDFORM) {
+					cCohort->wordform = tter;
+					wf = tter;
 					continue;
 				}
-				if (type == K_REMOVE && (!unsafe || (rule.flags & RF_SAFE)) && !(rule.flags & RF_UNSAFE)) {
-					continue;
+				if (!wf) {
+					u_fprintf(ux_stderr, "Error: There must be a wordform before any other tags in ADDCOHORT/MERGECOHORTS on line %u before input line %u.\n", rule->line, numLines);
+					CG3Quit(1);
 				}
+				if (tter->type & T_BASEFORM) {
+					readings.resize(readings.size() + 1);
+					readings.back().push_back(wf);
+				}
+				if (readings.empty()) {
+					u_fprintf(ux_stderr, "Error: There must be a baseform after the wordform in ADDCOHORT/MERGECOHORTS on line %u before input line %u.\n", rule->line, numLines);
+					CG3Quit(1);
+				}
+				readings.back().push_back(tter);
 			}
 
-			// Keep track of which readings got removed and selected
-			removed.resize(0);
-			selected.resize(0);
-
-			bool swap_ac = (attach_to != cohort);
-			Cohort* ac_c = cohort;
-			if (swap_ac) {
-				std::swap(attach_to, cohort);
-			}
-
-			// Remember the current state so we can compare later to see if anything has changed
-			const size_t state_num_readings = cohort->readings.size();
-			const size_t state_num_removed = cohort->deleted.size();
-			const size_t state_num_delayed = cohort->delayed.size();
-			const size_t state_num_ignored = cohort->ignored.size();
-			bool readings_changed = false;
-
-			auto collect_subtree = [&](CohortSet& cs, Cohort* head, uint32_t cset) {
-				if (cset) {
-					for (auto iter : current.cohorts) {
-						// Always consider the initial cohort a match
-						if (iter->global_number == head->global_number) {
-							cs.insert(iter);
+			for (auto& tags : readings) {
+				for (size_t i = 0; i < tags.size(); ++i) {
+					if (tags[i]->hash == grammar->tag_any) {
+						auto& nt = cohort->readings.front()->tags_list;
+						if (nt.size() <= 2) {
+							continue;
 						}
-						else if (iter->dep_parent == head->global_number && doesSetMatchCohortNormal(*iter, cset)) {
-							cs.insert(iter);
-						}
-					}
-					CohortSet more;
-					for (auto iter : current.cohorts) {
-						for (auto cht : cs) {
-							// Do not grab the whole tree from the root, in case WithChild is not (*)
-							if (cht->global_number == head->global_number) {
+						tags.reserve(tags.size() + nt.size() - 2);
+						tags[i] = grammar->single_tags[nt[2]];
+						for (size_t j = 3, k = 1; j < nt.size(); ++j) {
+							if (grammar->single_tags[nt[j]]->type & T_DEPENDENCY) {
 								continue;
 							}
-							if (isChildOf(iter, cht)) {
-								more.insert(iter);
-							}
+							tags.insert(tags.begin() + i + k, grammar->single_tags[nt[j]]);
+							++k;
 						}
 					}
-					cs.insert(more.begin(), more.end());
+				}
+			}
+
+			for (auto& rit : readings) {
+				Reading* cReading = alloc_reading(cCohort);
+				++numReadings;
+				insert_if_exists(cReading->parent->possible_sets, grammar->sets_any);
+				cReading->hit_by.push_back(rule->number);
+				cReading->noprint = false;
+				TagList mappings;
+				for (auto tter : rit) {
+					uint32_t hash = tter->hash;
+					VARSTRINGIFY(tter);
+					if (tter->type & T_MAPPING || tter->tag[0] == grammar->mapping_prefix) {
+						mappings.push_back(tter);
+					}
+					else {
+						hash = addTagToReading(*cReading, hash);
+					}
+					if (updateValidRules(rules, intersects, hash, *cReading)) {
+						iter_rules = intersects.find(rule->number);
+						iter_rules_end = intersects.end();
+					}
+				}
+				if (!mappings.empty()) {
+					splitMappings(mappings, *cCohort, *cReading);
+				}
+				cCohort->appendReading(cReading);
+			}
+
+			current.parent->cohort_map[cCohort->global_number] = cCohort;
+			current.parent->dep_window[cCohort->global_number] = cCohort;
+			if (grammar->addcohort_attach && (rule->type == K_ADDCOHORT_BEFORE || rule->type == K_ADDCOHORT_AFTER)) {
+				attachParentChild(*cohort, *cCohort);
+			}
+
+			if (cCohort->readings.empty()) {
+				initEmptyCohort(*cCohort);
+				if (trace) {
+					auto r = cCohort->readings.front();
+					r->hit_by.push_back(rule->number);
+					r->noprint = false;
+				}
+			}
+
+			CohortSet cohorts;
+			collect_subtree(cohorts, cohort, rule->childset1);
+
+			if (rule->type == K_ADDCOHORT_BEFORE) {
+				current.cohorts.insert(current.cohorts.begin() + cohorts.front()->local_number, cCohort);
+			}
+			else {
+				current.cohorts.insert(current.cohorts.begin() + cohorts.back()->local_number + 1, cCohort);
+			}
+
+			foreach (iter, current.cohorts) {
+				(*iter)->local_number = UI32(std::distance(current.cohorts.begin(), iter));
+			}
+			gWindow->rebuildCohortLinks();
+
+			return cCohort;
+		};
+
+		auto rem_cohort = [&](Cohort* cohort) {
+			for (auto iter : cohort->readings) {
+				iter->hit_by.push_back(rule->number);
+				iter->deleted = true;
+				if (trace) {
+					iter->noprint = false;
+				}
+			}
+			// Move any enclosed parentheses to the previous cohort
+			if (!cohort->enclosed.empty()) {
+				cohort->prev->enclosed.insert(cohort->prev->enclosed.end(), cohort->enclosed.begin(), cohort->enclosed.end());
+				cohort->enclosed.clear();
+			}
+			// Remove the cohort from all rules
+			for (auto& cs : current.rule_to_cohorts) {
+				cs.erase(cohort);
+			}
+			// Forward all children of this cohort to the parent of this cohort
+			// ToDo: Named relations must be erased
+			while (!cohort->dep_children.empty()) {
+				uint32_t ch = cohort->dep_children.back();
+				if (cohort->dep_parent == DEP_NO_PARENT) {
+					attachParentChild(*current.parent->cohort_map[0], *current.parent->cohort_map[ch], true, true);
 				}
 				else {
-					cs.insert(head);
+					attachParentChild(*current.parent->cohort_map[cohort->dep_parent], *current.parent->cohort_map[ch], true, true);
 				}
-			};
+				cohort->dep_children.erase(ch);
+			}
+			cohort->type |= CT_REMOVED;
+			if (!cohort->prev->enclosed.empty()) {
+				cohort->prev->enclosed.back()->removed.push_back(cohort);
+			}
+			else {
+				cohort->prev->removed.push_back(cohort);
+			}
+			cohort->detach();
+			for (auto& cm : current.parent->cohort_map) {
+				cm.second->dep_children.erase(cohort->dep_self);
+			}
+			current.parent->cohort_map.erase(cohort->global_number);
+			current.cohorts.erase(current.cohorts.begin() + cohort->local_number);
+			foreach (iter, current.cohorts) {
+				(*iter)->local_number = UI32(std::distance(current.cohorts.begin(), iter));
+			}
+			gWindow->rebuildCohortLinks();
+		};
 
-			auto add_cohort = [&](Cohort* cohort) {
-				Cohort* cCohort = alloc_cohort(&current);
-				cCohort->global_number = gWindow->cohort_counter++;
+		auto ignore_cohort = [&](Cohort* cohort) {
+			for (auto iter : cohort->readings) {
+				iter->hit_by.push_back(rule->number);
+			}
+			if (!cohort->enclosed.empty()) {
+				cohort->prev->enclosed.insert(cohort->prev->enclosed.end(), cohort->enclosed.begin(), cohort->enclosed.end());
+				cohort->enclosed.clear();
+			}
+			for (auto& cs : current.rule_to_cohorts) {
+				cs.erase(cohort);
+			}
+			cohort->type |= CT_REMOVED;
+			if (!cohort->prev->enclosed.empty()) {
+				cohort->prev->enclosed.back()->ignored_cohorts.push_back(cohort);
+			}
+			else {
+				cohort->prev->ignored_cohorts.push_back(cohort);
+			}
+			cohort->detach();
+			current.parent->cohort_map.erase(cohort->global_number);
+			current.cohorts.erase(current.cohorts.begin() + cohort->local_number);
+		};
+
+		auto make_relation_rtag = [&](Tag* tag, uint32_t id) {
+			UChar tmp[256] = { 0 };
+			u_sprintf(tmp, "R:%S:%u", tag->tag.data(), id);
+			auto nt = addTag(tmp);
+			return nt;
+		};
+
+		auto add_relation_rtag = [&](Cohort* cohort, Tag* tag, uint32_t id) {
+			auto nt = make_relation_rtag(tag, id);
+			for (auto& r : cohort->readings) {
+				addTagToReading(*r, nt);
+			}
+		};
+
+		auto set_relation_rtag = [&](Cohort* cohort, Tag* tag, uint32_t id) {
+			auto nt = make_relation_rtag(tag, id);
+			for (auto& r : cohort->readings) {
+				for (auto it = r->tags_list.begin(); it != r->tags_list.end();) {
+					const auto& utag = grammar->single_tags[*it]->tag;
+					if (utag[0] == 'R' && utag[1] == ':' && utag.size() > 2 + tag->tag.size() && utag[2 + tag->tag.size()] == ':' && utag.compare(2, tag->tag.size(), tag->tag) == 0) {
+						r->tags.erase(*it);
+						r->tags_textual.erase(*it);
+						r->tags_numerical.erase(*it);
+						r->tags_plain.erase(*it);
+						it = r->tags_list.erase(it);
+					}
+					else {
+						++it;
+					}
+				}
+				addTagToReading(*r, nt);
+			}
+		};
+
+		auto rem_relation_rtag = [&](Cohort* cohort, Tag* tag, uint32_t id) {
+			auto nt = make_relation_rtag(tag, id);
+			for (auto& r : cohort->readings) {
+				delTagFromReading(*r, nt);
+			}
+		};
+
+		auto insert_taglist_to_reading = [&](auto& iter, auto& taglist, auto& reading, auto& mappings) {
+			for (auto tag : taglist) {
+				if (tag->type & T_VARSTRING) {
+					tag = generateVarstringTag(tag);
+				}
+				if (tag->hash == grammar->tag_any) {
+					break;
+				}
+				if (tag->type & T_MAPPING || tag->tag[0] == grammar->mapping_prefix) {
+					mappings->push_back(tag);
+				}
+				else {
+					iter = reading.tags_list.insert(iter, tag->hash);
+					++iter;
+				}
+				if (updateValidRules(rules, intersects, tag->hash, reading)) {
+					iter_rules = intersects.find(rule->number);
+					iter_rules_end = intersects.end();
+				}
+			}
+			reflowReading(reading);
+		};
+
+		auto cohort_cb = [&]() {
+			if (rule->type == K_SELECT || (rule->type == K_IFF && !selected.empty())) {
+				Cohort* target = get_apply_to().cohort;
+				if (selected.size() < target->readings.size() && !selected.empty()) {
+					ReadingList drop;
+					size_t si = 0;
+					for (size_t ri = 0; ri < target->readings.size(); ri++) {
+						// Manually trace, since reading_cb doesn't get called on non-matching readings
+						Reading* rd = target->readings[ri];
+						if (rule->sub_reading != 32767) {
+							rd = get_sub_reading(rd, rule->sub_reading);
+						}
+						rd->hit_by.push_back(rule->number);
+						if (si < selected.size() && target->readings[ri] == selected[si]) {
+							si++;
+						}
+						else {
+							target->readings[ri]->deleted = true;
+							drop.push_back(target->readings[ri]);
+						}
+					}
+					target->readings.swap(selected);
+					if (rule->flags & RF_DELAYED) {
+						target->delayed.insert(target->delayed.end(), drop.begin(), drop.end());
+					}
+					else if (rule->flags & RF_IGNORED) {
+						target->ignored.insert(target->ignored.end(), drop.begin(), drop.end());
+					}
+					else {
+						target->deleted.insert(target->deleted.end(), drop.begin(), drop.end());
+					}
+					readings_changed = true;
+				}
+				selected.clear();
+			}
+			else if (rule->type == K_REMOVE || rule->type == K_IFF) {
+				if (!removed.empty() && (removed.size() < get_apply_to().cohort->readings.size() || (unsafe && !(rule->flags & RF_SAFE)) || (rule->flags & RF_UNSAFE))) {
+					if (rule->flags & RF_DELAYED) {
+						get_apply_to().cohort->delayed.insert(get_apply_to().cohort->delayed.end(), removed.begin(), removed.end());
+					}
+					else if (rule->flags & RF_IGNORED) {
+						get_apply_to().cohort->ignored.insert(get_apply_to().cohort->ignored.end(), removed.begin(), removed.end());
+					}
+					else {
+						get_apply_to().cohort->deleted.insert(get_apply_to().cohort->deleted.end(), removed.begin(), removed.end());
+					}
+					size_t oz = get_apply_to().cohort->readings.size();
+					while (!removed.empty()) {
+						removed.back()->deleted = true;
+						for (size_t i = 0; i < oz; ++i) {
+							if (get_apply_to().cohort->readings[i] == removed.back()) {
+								--oz;
+								std::swap(get_apply_to().cohort->readings[i], get_apply_to().cohort->readings[oz]);
+							}
+						}
+						removed.pop_back();
+					}
+					get_apply_to().cohort->readings.resize(oz);
+					if (debug_level > 0) {
+						std::cerr << "DEBUG: Rule " << rule->line << " hit cohort " << get_apply_to().cohort->local_number << std::endl;
+					}
+					readings_changed = true;
+				}
+				if (get_apply_to().cohort->readings.empty()) {
+					initEmptyCohort(*get_apply_to().cohort);
+				}
+				selected.clear();
+			}
+			else if (rule->type == K_JUMP) {
+				auto to = getTagList(*rule->maplist).front();
+				VARSTRINGIFY(to);
+				auto it = grammar->anchors.find(to->hash);
+				if (it == grammar->anchors.end()) {
+					u_fprintf(ux_stderr, "Warning: JUMP on line %u could not find anchor '%S'.\n", rule->line, to->tag.data());
+				}
+				else {
+					iter_rules = intersects.lower_bound(it->second);
+					finish_cohort_loop = false;
+					should_repeat = true;
+				}
+			}
+			else if (rule->type == K_REMVARIABLE) {
+				auto names = getTagList(*rule->maplist);
+				for (auto tag : names) {
+					VARSTRINGIFY(tag);
+          auto it = variables.begin();
+					if (tag->type & T_REGEXP) {
+						it = std::find_if(it, variables.end(), [&](auto& kv) { return doesTagMatchRegexp(kv.first, *tag); });
+					}
+					else if (tag->type & T_CASE_INSENSITIVE) {
+						it = std::find_if(it, variables.end(), [&](auto& kv) { return doesTagMatchIcase(kv.first, *tag); });
+					}
+					else {
+						it = variables.find(tag->hash);
+					}
+					if (it != variables.end()) {
+						if (rule->flags & RF_OUTPUT) {
+							current.variables_output.insert(it->first);
+						}
+						variables.erase(it);
+						//u_fprintf(ux_stderr, "Info: RemVariable fired for %S.\n", tag->tag.data());
+					}
+				}
+			}
+			else if (rule->type == K_SETVARIABLE) {
+				auto names = getTagList(*rule->maplist);
+				auto values = getTagList(*rule->sublist);
+				VARSTRINGIFY(names.front());
+				VARSTRINGIFY(values.front());
+				variables[names.front()->hash] = values.front()->hash;
+				if (rule->flags & RF_OUTPUT) {
+					current.variables_output.insert(names.front()->hash);
+				}
+				//u_fprintf(ux_stderr, "Info: SetVariable fired for %S.\n", names.front()->tag.data());
+			}
+			else if (rule->type == K_DELIMIT) {
+				delimitAt(current, get_apply_to().cohort);
+				delimited = true;
+				readings_changed = true;
+			}
+			else if (rule->type == K_EXTERNAL_ONCE || rule->type == K_EXTERNAL_ALWAYS) {
+				if (rule->type == K_EXTERNAL_ONCE && !current.hit_external.insert(rule->line).second) {
+					return;
+				}
+
+				auto ei = externals.find(rule->varname);
+				if (ei == externals.end()) {
+					Tag* ext = grammar->single_tags.find(rule->varname)->second;
+					UErrorCode err = U_ZERO_ERROR;
+					u_strToUTF8(&cbuffers[0][0], SI32(CG3_BUFFER_SIZE - 1), nullptr, ext->tag.data(), SI32(ext->tag.size()), &err);
+
+					Process& es = externals[rule->varname];
+					try {
+						es.start(&cbuffers[0][0]);
+						writeRaw(es, CG3_EXTERNAL_PROTOCOL);
+					}
+					catch (std::exception& e) {
+						u_fprintf(ux_stderr, "Error: External on line %u resulted in error: %s\n", rule->line, e.what());
+						CG3Quit(1);
+					}
+					ei = externals.find(rule->varname);
+				}
+
+				pipeOutSingleWindow(current, ei->second);
+				pipeInSingleWindow(current, ei->second);
+
+				indexSingleWindow(current);
+				readings_changed = true;
+				index_ruleCohort_no.clear();
+				intersects = current.valid_rules.intersect(rules);
+				iter_rules = intersects.find(rule->number);
+				iter_rules_end = intersects.end();
+				reset_cohorts_for_loop = true;
+			}
+			else if (rule->type == K_REMCOHORT) {
+				// REMCOHORT-IGNORED
+				if (rule->flags & RF_IGNORED) {
+					CohortSet cohorts;
+					collect_subtree(cohorts, get_apply_to().cohort, rule->childset1);
+					reverse_foreach (iter, cohorts) {
+						ignore_cohort(*iter);
+					}
+					reindex();
+					reflowDependencyWindow();
+				}
+				else {
+					rem_cohort(get_apply_to().cohort);
+				}
+
+				// If we just removed the last cohort, add <<< to the new last cohort
+				if (get_apply_to().cohort->readings.front()->tags.count(endtag)) {
+					for (auto r : current.cohorts.back()->readings) {
+						addTagToReading(*r, endtag);
+						if (updateValidRules(rules, intersects, endtag, *r)) {
+							iter_rules = intersects.find(rule->number);
+							iter_rules_end = intersects.end();
+						}
+					}
+					index_ruleCohort_no.clear();
+				}
+				readings_changed = true;
+				reset_cohorts_for_loop = true;
+			}
+		};
+
+		RuleCallback reading_cb = [&]() {
+			if (rule->type == K_SELECT || (rule->type == K_IFF && get_apply_to().subreading->matched_tests)) {
+				selected.push_back(get_apply_to().reading);
+				index_ruleCohort_no.clear();
+			}
+			else if (rule->type == K_REMOVE || rule->type == K_IFF) {
+				if (rule->type == K_REMOVE && (rule->flags & RF_UNMAPLAST) && removed.size() == get_apply_to().cohort->readings.size() - 1) {
+					if (unmapReading(*get_apply_to().subreading, rule->number)) {
+						readings_changed = true;
+					}
+				}
+				else {
+					TRACE;
+					removed.push_back(get_apply_to().reading);
+				}
+				index_ruleCohort_no.clear();
+			}
+			else if (rule->type == K_PROTECT) {
+				TRACE;
+				get_apply_to().subreading->immutable = true;
+			}
+			else if (rule->type == K_UNPROTECT) {
+				TRACE;
+				get_apply_to().subreading->immutable = false;
+			}
+			else if (rule->type == K_UNMAP) {
+				if (unmapReading(*get_apply_to().subreading, rule->number)) {
+					index_ruleCohort_no.clear();
+					readings_changed = true;
+				}
+			}
+			else if (rule->type == K_ADDCOHORT_AFTER || rule->type == K_ADDCOHORT_BEFORE) {
+				index_ruleCohort_no.clear();
+				TRACE;
+
+				auto cCohort = add_cohort(get_apply_to().cohort);
+
+				// If the new cohort is now the last cohort, add <<< to it and remove <<< from previous last cohort
+				if (current.cohorts.back() == cCohort) {
+					for (auto r : current.cohorts[current.cohorts.size() - 2]->readings) {
+						delTagFromReading(*r, endtag);
+					}
+					for (auto r : current.cohorts.back()->readings) {
+						addTagToReading(*r, endtag);
+						if (updateValidRules(rules, intersects, endtag, *r)) {
+							iter_rules = intersects.find(rule->number);
+							iter_rules_end = intersects.end();
+						}
+					}
+				}
+				indexSingleWindow(current);
+				readings_changed = true;
+
+				reset_cohorts_for_loop = true;
+			}
+			else if (rule->type == K_SPLITCOHORT) {
+				index_ruleCohort_no.clear();
+
+				std::vector<std::pair<Cohort*, std::vector<TagList>>> cohorts;
+
+				auto theTags = ss_taglist.get();
+				getTagList(*rule->maplist, theTags);
 
 				Tag* wf = nullptr;
-				std::vector<TagList> readings;
-				auto theTags = ss_taglist.get();
-				getTagList(*rule.maplist, theTags);
-
 				for (auto tter : *theTags) {
-					VARSTRINGIFY(tter);
 					if (tter->type & T_WORDFORM) {
-						cCohort->wordform = tter;
+						cohorts.resize(cohorts.size() + 1);
+						cohorts.back().first = alloc_cohort(&current);
+						cohorts.back().first->global_number = gWindow->cohort_counter++;
 						wf = tter;
+						VARSTRINGIFY(wf);
+						cohorts.back().first->wordform = wf;
 						continue;
 					}
 					if (!wf) {
-						u_fprintf(ux_stderr, "Error: There must be a wordform before any other tags in ADDCOHORT/MERGECOHORTS on line %u before input line %u.\n", rule.line, numLines);
+						u_fprintf(ux_stderr, "Error: There must be a wordform before any other tags in SPLITCOHORT on line %u before input line %u.\n", rule->line, numLines);
 						CG3Quit(1);
 					}
-					if (tter->type & T_BASEFORM) {
-						readings.resize(readings.size() + 1);
-						readings.back().push_back(wf);
+				}
+
+				uint32_t rel_trg = DEP_NO_PARENT;
+				std::vector<std::pair<uint32_t, uint32_t>> cohort_dep(cohorts.size());
+				cohort_dep.front().second = DEP_NO_PARENT;
+				cohort_dep.back().first = DEP_NO_PARENT;
+				cohort_dep.back().second = UI32(cohort_dep.size() - 1);
+				for (size_t i = 1; i < cohort_dep.size() - 1; ++i) {
+					cohort_dep[i].second = UI32(i);
+				}
+
+				size_t i = 0;
+				std::vector<TagList>* readings = &cohorts.front().second;
+				Tag* bf = nullptr;
+				for (auto tter : *theTags) {
+					if (tter->type & T_WORDFORM) {
+						++i;
+						bf = nullptr;
+						continue;
 					}
-					if (readings.empty()) {
-						u_fprintf(ux_stderr, "Error: There must be a baseform after the wordform in ADDCOHORT/MERGECOHORTS on line %u before input line %u.\n", rule.line, numLines);
+					if (tter->type & T_BASEFORM) {
+						readings = &cohorts[i - 1].second;
+						readings->resize(readings->size() + 1);
+						readings->back().push_back(cohorts[i - 1].first->wordform);
+						bf = tter;
+					}
+					if (!bf) {
+						u_fprintf(ux_stderr, "Error: There must be a baseform after the wordform in SPLITCOHORT on line %u before input line %u.\n", rule->line, numLines);
+						CG3Quit(1);
+					}
+
+					UChar dep_self[12] = {};
+					UChar dep_parent[12] = {};
+					if (u_sscanf(tter->tag.data(), "%[0-9cd]->%[0-9pm]", &dep_self, &dep_parent) == 2) {
+						if (dep_self[0] == 'c' || dep_self[0] == 'd') {
+							cohort_dep[i - 1].first = DEP_NO_PARENT;
+							if (rel_trg == DEP_NO_PARENT) {
+								rel_trg = UI32(i - 1);
+							}
+						}
+						else if (u_sscanf(dep_self, "%i", &cohort_dep[i - 1].first) != 1) {
+							u_fprintf(ux_stderr, "Error: SPLITCOHORT dependency mapping dep_self was not valid on line %u before input line %u.\n", rule->line, numLines);
+							CG3Quit(1);
+						}
+						if (dep_parent[0] == 'p' || dep_parent[0] == 'm') {
+							cohort_dep[i - 1].second = DEP_NO_PARENT;
+						}
+						else if (u_sscanf(dep_parent, "%i", &cohort_dep[i - 1].second) != 1) {
+							u_fprintf(ux_stderr, "Error: SPLITCOHORT dependency mapping dep_parent was not valid on line %u before input line %u.\n", rule->line, numLines);
+							CG3Quit(1);
+						}
+						continue;
+					}
+					if (tter->tag.size() == 3 && tter->tag[0] == 'R' && tter->tag[1] == ':' && tter->tag[2] == '*') {
+						rel_trg = UI32(i - 1);
+						continue;
+					}
+					readings->back().push_back(tter);
+				}
+
+				if (rel_trg == DEP_NO_PARENT) {
+					rel_trg = UI32(cohorts.size() - 1);
+				}
+
+				for (size_t i = 0; i < cohorts.size(); ++i) {
+					Cohort* cCohort = cohorts[i].first;
+					readings = &cohorts[i].second;
+
+					for (auto tags : *readings) {
+						Reading* cReading = alloc_reading(cCohort);
+						++numReadings;
+						insert_if_exists(cReading->parent->possible_sets, grammar->sets_any);
+						cReading->hit_by.push_back(rule->number);
+						cReading->noprint = false;
+						TagList mappings;
+
+						for (size_t i = 0; i < tags.size(); ++i) {
+							if (tags[i]->hash == grammar->tag_any) {
+								uint32Vector& nt = get_apply_to().cohort->readings.front()->tags_list;
+								if (nt.size() <= 2) {
+									continue;
+								}
+								tags.reserve(tags.size() + nt.size() - 2);
+								tags[i] = grammar->single_tags[nt[2]];
+								for (size_t j = 3, k = 1; j < nt.size(); ++j) {
+									if (grammar->single_tags[nt[j]]->type & T_DEPENDENCY) {
+										continue;
+									}
+									tags.insert(tags.begin() + i + k, grammar->single_tags[nt[j]]);
+									++k;
+								}
+							}
+						}
+
+						for (auto tter : tags) {
+							uint32_t hash = tter->hash;
+							VARSTRINGIFY(tter);
+							if (tter->type & T_MAPPING || tter->tag[0] == grammar->mapping_prefix) {
+								mappings.push_back(tter);
+							}
+							else {
+								hash = addTagToReading(*cReading, hash);
+							}
+							if (updateValidRules(rules, intersects, hash, *cReading)) {
+								iter_rules = intersects.find(rule->number);
+								iter_rules_end = intersects.end();
+							}
+						}
+						if (!mappings.empty()) {
+							splitMappings(mappings, *cCohort, *cReading);
+						}
+						cCohort->appendReading(cReading);
+					}
+
+					if (cCohort->readings.empty()) {
+						initEmptyCohort(*cCohort);
+					}
+
+					current.parent->dep_window[cCohort->global_number] = cCohort;
+					current.parent->cohort_map[cCohort->global_number] = cCohort;
+
+					current.cohorts.insert(current.cohorts.begin() + get_apply_to().cohort->local_number + i + 1, cCohort);
+				}
+
+				// Move text from the to-be-deleted cohort to the last new cohort
+				std::swap(cohorts.back().first->text, get_apply_to().cohort->text);
+
+				for (size_t i = 0; i < cohorts.size(); ++i) {
+					Cohort* cCohort = cohorts[i].first;
+
+					if (cohort_dep[i].first == DEP_NO_PARENT) {
+						while (!get_apply_to().cohort->dep_children.empty()) {
+							uint32_t ch = get_apply_to().cohort->dep_children.back();
+							attachParentChild(*cCohort, *current.parent->cohort_map[ch], true, true);
+							get_apply_to().cohort->dep_children.erase(ch); // Just in case the attachment can't be made for some reason
+						}
+					}
+
+					if (cohort_dep[i].second == DEP_NO_PARENT) {
+						if (current.parent->cohort_map.count(get_apply_to().cohort->dep_parent)) {
+							attachParentChild(*current.parent->cohort_map[get_apply_to().cohort->dep_parent], *cCohort, true, true);
+						}
+					}
+					else {
+						attachParentChild(*current.parent->cohort_map[cohorts.front().first->global_number + cohort_dep[i].second - 1], *cCohort, true, true);
+					}
+
+					// Re-attach all named relations to the dependency tail or R:* cohort
+					if (rel_trg == i && (get_apply_to().cohort->type & CT_RELATED)) {
+						cCohort->setRelated();
+						cCohort->relations.swap(get_apply_to().cohort->relations);
+
+						std::pair<SingleWindow**, size_t> swss[3] = {
+							std::make_pair(&gWindow->previous[0], gWindow->previous.size()),
+							std::make_pair(&gWindow->current, static_cast<size_t>(1)),
+							std::make_pair(&gWindow->next[0], gWindow->next.size()),
+						};
+						for (auto sws : swss) {
+							for (size_t sw = 0; sw < sws.second; ++sw) {
+								for (auto ch : sws.first[sw]->cohorts) {
+									for (auto& rel : ch->relations) {
+										if (rel.second.count(get_apply_to().cohort->global_number)) {
+											rel.second.erase(get_apply_to().cohort->global_number);
+											rel.second.insert(cCohort->global_number);
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+
+				// Remove the source cohort
+				for (auto iter : get_apply_to().cohort->readings) {
+					iter->hit_by.push_back(rule->number);
+					iter->deleted = true;
+				}
+				// Move any enclosed parentheses to the previous cohort
+				if (!get_apply_to().cohort->enclosed.empty()) {
+					get_apply_to().cohort->prev->enclosed.insert(get_apply_to().cohort->prev->enclosed.end(), get_apply_to().cohort->enclosed.begin(), get_apply_to().cohort->enclosed.end());
+					get_apply_to().cohort->enclosed.clear();
+				}
+				get_apply_to().cohort->type |= CT_REMOVED;
+				get_apply_to().cohort->prev->removed.push_back(get_apply_to().cohort);
+				get_apply_to().cohort->detach();
+				for (auto& cm : current.parent->cohort_map) {
+					cm.second->dep_children.erase(get_apply_to().cohort->dep_self);
+				}
+				current.parent->cohort_map.erase(get_apply_to().cohort->global_number);
+				current.cohorts.erase(current.cohorts.begin() + get_apply_to().cohort->local_number);
+
+				reindex();
+				indexSingleWindow(current);
+				readings_changed = true;
+
+				reset_cohorts_for_loop = true;
+			}
+			else if (rule->type == K_ADD || rule->type == K_MAP) {
+				TRACE;
+				auto state_hash = get_apply_to().subreading->hash;
+				index_ruleCohort_no.clear();
+				auto& reading = *(get_apply_to().subreading);
+				reading.noprint = false;
+				auto mappings = ss_taglist.get();
+				auto theTags = ss_taglist.get();
+				getTagList(*rule->maplist, theTags);
+
+				bool did_insert = false;
+				if (rule->childset1) {
+					bool found_spot = false;
+					auto spot_tags = ss_taglist.get();
+					getTagList(*grammar->sets_list[rule->childset1], spot_tags);
+					FILL_TAG_LIST(spot_tags);
+					auto it = reading.tags_list.begin();
+					for (; it != reading.tags_list.end(); ++it) {
+						bool found = true;
+						auto tmp = it;
+						for (auto tag : *spot_tags) {
+							if (*tmp != tag->hash) {
+								found = false;
+								break;
+							}
+							++tmp;
+						}
+						if (found) {
+							found_spot = true;
+							break;
+						}
+					}
+					if (found_spot) {
+						if (rule->flags & RF_AFTER) {
+							std::advance(it, spot_tags->size());
+						}
+						if (it != reading.tags_list.end()) {
+							insert_taglist_to_reading(it, *theTags, reading, mappings);
+							did_insert = true;
+						}
+					}
+				}
+
+				if (!did_insert) {
+					APPEND_TAGLIST_TO_READING(*theTags, reading);
+				}
+				if (!mappings->empty()) {
+					splitMappings(mappings, *get_apply_to().cohort, reading, rule->type == K_MAP);
+				}
+				if (rule->type == K_MAP) {
+					reading.mapped = true;
+				}
+				if (reading.hash != state_hash) {
+					readings_changed = true;
+				}
+			}
+			else if (rule->type == K_RESTORE) {
+				bool did_restore = false;
+				auto move_rs = [&](ReadingList& rl) {
+					for (size_t i = 0; i < rl.size();) {
+						if (doesSetMatchReading(*rl[i], rule->maplist->number)) {
+							rl[i]->deleted = false;
+							rl[i]->hit_by.push_back(rule->number);
+							get_apply_to().cohort->readings.push_back(rl[i]);
+							rl.erase(rl.begin() + i);
+							did_restore = true;
+						}
+						else {
+							++i;
+						}
+					}
+				};
+
+				if (rule->flags & RF_DELAYED) {
+					move_rs(get_apply_to().cohort->delayed);
+				}
+				else if (rule->flags & RF_IGNORED) {
+					move_rs(get_apply_to().cohort->ignored);
+				}
+				else {
+					move_rs(get_apply_to().cohort->deleted);
+				}
+
+				if (did_restore) {
+					TRACE;
+				}
+				finish_reading_loop = false;
+			}
+			else if (rule->type == K_REPLACE) {
+				auto state_hash = get_apply_to().subreading->hash;
+				index_ruleCohort_no.clear();
+				TRACE;
+				get_apply_to().subreading->noprint = false;
+				get_apply_to().subreading->tags_list.clear();
+				get_apply_to().subreading->tags_list.push_back(get_apply_to().cohort->wordform->hash);
+				get_apply_to().subreading->tags_list.push_back(get_apply_to().subreading->baseform);
+				reflowReading(*get_apply_to().subreading);
+				auto mappings = ss_taglist.get();
+				auto theTags = ss_taglist.get();
+				getTagList(*rule->maplist, theTags);
+
+				APPEND_TAGLIST_TO_READING(*theTags, *get_apply_to().subreading);
+
+				if (!mappings->empty()) {
+					splitMappings(mappings, *get_apply_to().cohort, *get_apply_to().subreading, true);
+				}
+				if (get_apply_to().subreading->hash != state_hash) {
+					readings_changed = true;
+				}
+			}
+			else if (rule->type == K_SUBSTITUTE) {
+				// ToDo: Check whether this substitution will do nothing at all to the end result
+				// ToDo: Not actually...instead, test whether any reading in the cohort already is the end result
+
+				auto state_hash = get_apply_to().subreading->hash;
+				auto theTags = ss_taglist.get();
+				getTagList(*rule->sublist, theTags);
+
+				// Modify the list of tags to remove to be the actual list of tags present, including matching regex and icase tags
+				FILL_TAG_LIST(theTags);
+
+				// Perform the tag removal, remembering the position of the final removed tag for use as insertion spot
+				size_t tpos = std::numeric_limits<size_t>::max();
+				bool plain = true;
+				for (size_t i = 0; i < get_apply_to().subreading->tags_list.size();) {
+					auto& remter = get_apply_to().subreading->tags_list[i];
+
+					if (plain && remter == (*theTags->begin())->hash) {
+						if (get_apply_to().subreading->baseform == remter) {
+							get_apply_to().subreading->baseform = 0;
+						}
+						remter = substtag;
+						tpos = i;
+						for (size_t j = 1; j < theTags->size() && i < get_apply_to().subreading->tags_list.size(); ++j, ++i) {
+							auto& remter = get_apply_to().subreading->tags_list[i];
+							auto tter = (*theTags)[j]->hash;
+							if (remter != tter) {
+								plain = false;
+								break;
+							}
+							get_apply_to().subreading->tags_list.erase(get_apply_to().subreading->tags_list.begin() + i);
+							get_apply_to().subreading->tags.erase(tter);
+							if (get_apply_to().subreading->baseform == tter) {
+								get_apply_to().subreading->baseform = 0;
+							}
+						}
+						continue;
+					}
+
+					for (auto tter : *theTags) {
+						if (remter != tter->hash) {
+							continue;
+						}
+						tpos = i;
+						remter = substtag;
+						get_apply_to().subreading->tags.erase(tter->hash);
+						if (get_apply_to().subreading->baseform == tter->hash) {
+							get_apply_to().subreading->baseform = 0;
+						}
+					}
+
+					++i;
+				}
+
+				// Should Substitute really do nothing if no tags were removed? 2013-10-21, Eckhard says this is expected behavior.
+				if (tpos != std::numeric_limits<size_t>::max()) {
+					if (!plain) {
+						for (size_t i = 0; i < get_apply_to().subreading->tags_list.size() && i < tpos;) {
+							if (get_apply_to().subreading->tags_list[i] == substtag) {
+								get_apply_to().subreading->tags_list.erase(get_apply_to().subreading->tags_list.begin() + i);
+								--tpos;
+							}
+							else {
+								++i;
+							}
+						}
+					}
+
+					Tag* wf = nullptr;
+					index_ruleCohort_no.clear();
+					TRACE;
+					get_apply_to().subreading->noprint = false;
+					if (tpos >= get_apply_to().subreading->tags_list.size()) {
+						tpos = get_apply_to().subreading->tags_list.size() - 1;
+					}
+					++tpos;
+					auto mappings = ss_taglist.get();
+					auto theTags = ss_taglist.get();
+					getTagList(*rule->maplist, theTags);
+
+					for (size_t i = 0; i < get_apply_to().subreading->tags_list.size();) {
+						if (get_apply_to().subreading->tags_list[i] == substtag) {
+							get_apply_to().subreading->tags_list.erase(get_apply_to().subreading->tags_list.begin() + i);
+							tpos = i;
+
+							for (auto tag : *theTags) {
+								if (tag->type & T_VARSTRING) {
+									tag = generateVarstringTag(tag);
+								}
+								if (tag->hash == grammar->tag_any) {
+									break;
+								}
+								if (tag->type & T_MAPPING || tag->tag[0] == grammar->mapping_prefix) {
+									mappings->push_back(tag);
+								}
+								else {
+									if (tag->type & T_WORDFORM) {
+										wf = tag;
+									}
+									get_apply_to().subreading->tags_list.insert(get_apply_to().subreading->tags_list.begin() + tpos, tag->hash);
+									++tpos;
+								}
+								if (updateValidRules(rules, intersects, tag->hash, *get_apply_to().subreading)) {
+									iter_rules = intersects.find(rule->number);
+									iter_rules_end = intersects.end();
+								}
+							}
+						}
+						else {
+							++i;
+						}
+					}
+					reflowReading(*get_apply_to().subreading);
+
+					if (!mappings->empty()) {
+						splitMappings(mappings, *get_apply_to().cohort, *get_apply_to().subreading, true);
+					}
+					if (wf && wf != get_apply_to().subreading->parent->wordform) {
+												for (auto r : get_apply_to().subreading->parent->readings) {
+							delTagFromReading(*r, get_apply_to().subreading->parent->wordform);
+							addTagToReading(*r, wf);
+						}
+						for (auto r : get_apply_to().subreading->parent->deleted) {
+							delTagFromReading(*r, get_apply_to().subreading->parent->wordform);
+							addTagToReading(*r, wf);
+						}
+						for (auto r : get_apply_to().subreading->parent->delayed) {
+							delTagFromReading(*r, get_apply_to().subreading->parent->wordform);
+							addTagToReading(*r, wf);
+						}
+						get_apply_to().subreading->parent->wordform = wf;
+						for (auto r : grammar->wf_rules) {
+							if (doesWordformsMatch(wf, r->wordform)) {
+								current.rule_to_cohorts[r->number].insert(get_apply_to().cohort);
+								intersects.insert(r->number);
+							}
+							else {
+								current.rule_to_cohorts[r->number].erase(get_apply_to().cohort);
+							}
+						}
+						updateValidRules(rules, intersects, wf->hash, *get_apply_to().subreading);
+						iter_rules = intersects.find(rule->number);
+						iter_rules_end = intersects.end();
+					}
+				}
+				if (get_apply_to().subreading->hash != state_hash) {
+					readings_changed = true;
+				}
+			}
+			else if (rule->type == K_APPEND) {
+				index_ruleCohort_no.clear();
+				TRACE;
+
+				Tag* bf = nullptr;
+				std::vector<TagList> readings;
+				auto theTags = ss_taglist.get();
+				getTagList(*rule->maplist, theTags);
+
+				for (auto tter : *theTags) {
+					VARSTRINGIFY(tter);
+					if (tter->type & T_BASEFORM) {
+						bf = tter;
+						readings.resize(readings.size() + 1);
+					}
+					if (bf == nullptr) {
+						u_fprintf(ux_stderr, "Error: There must be a baseform before any other tags in APPEND on line %u.\n", rule->line);
 						CG3Quit(1);
 					}
 					readings.back().push_back(tter);
 				}
 
-				for (auto& tags : readings) {
-					for (size_t i = 0; i < tags.size(); ++i) {
-						if (tags[i]->hash == grammar->tag_any) {
-							auto& nt = cohort->readings.front()->tags_list;
-							if (nt.size() <= 2) {
-								continue;
-							}
-							tags.reserve(tags.size() + nt.size() - 2);
-							tags[i] = grammar->single_tags[nt[2]];
-							for (size_t j = 3, k = 1; j < nt.size(); ++j) {
-								if (grammar->single_tags[nt[j]]->type & T_DEPENDENCY) {
-									continue;
-								}
-								tags.insert(tags.begin() + i + k, grammar->single_tags[nt[j]]);
-								++k;
-							}
-						}
-					}
-				}
-
-				for (auto& rit : readings) {
-					Reading* cReading = alloc_reading(cCohort);
+				for (const auto& rit : readings) {
+					Reading* cReading = alloc_reading(get_apply_to().cohort);
 					++numReadings;
 					insert_if_exists(cReading->parent->possible_sets, grammar->sets_any);
-					cReading->hit_by.push_back(rule.number);
+					addTagToReading(*cReading, get_apply_to().cohort->wordform);
+					cReading->hit_by.push_back(rule->number);
 					cReading->noprint = false;
 					TagList mappings;
 					for (auto tter : rit) {
@@ -838,1564 +1882,561 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 							mappings.push_back(tter);
 						}
 						else {
-							hash = addTagToReading(*cReading, hash);
+							hash = addTagToReading(*cReading, tter);
 						}
 						if (updateValidRules(rules, intersects, hash, *cReading)) {
-							iter_rules = intersects.find(rule.number);
+							iter_rules = intersects.find(rule->number);
 							iter_rules_end = intersects.end();
 						}
 					}
 					if (!mappings.empty()) {
-						splitMappings(mappings, *cCohort, *cReading);
+						splitMappings(mappings, *get_apply_to().cohort, *cReading);
 					}
-					cCohort->appendReading(cReading);
+					get_apply_to().cohort->appendReading(cReading);
 				}
 
-				current.parent->cohort_map[cCohort->global_number] = cCohort;
-				current.parent->dep_window[cCohort->global_number] = cCohort;
-				if (grammar->addcohort_attach && (type == K_ADDCOHORT_BEFORE || type == K_ADDCOHORT_AFTER)) {
-					attachParentChild(*cohort, *cCohort);
-				}
-
-				if (cCohort->readings.empty()) {
-					initEmptyCohort(*cCohort);
-					if (trace) {
-						auto r = cCohort->readings.front();
-						r->hit_by.push_back(rule.number);
-						r->noprint = false;
-					}
-				}
-
-				CohortSet cohorts;
-				collect_subtree(cohorts, cohort, rule.childset1);
-
-				if (type == K_ADDCOHORT_BEFORE) {
-					current.cohorts.insert(current.cohorts.begin() + cohorts.front()->local_number, cCohort);
-				}
-				else {
-					current.cohorts.insert(current.cohorts.begin() + cohorts.back()->local_number + 1, cCohort);
-				}
-
-				foreach (iter, current.cohorts) {
-					(*iter)->local_number = UI32(std::distance(current.cohorts.begin(), iter));
-				}
-				gWindow->rebuildCohortLinks();
-
-				return cCohort;
-			};
-
-			auto rem_cohort = [&](Cohort* cohort) {
-				for (auto iter : cohort->readings) {
-					iter->hit_by.push_back(rule.number);
-					iter->deleted = true;
-					if (trace) {
-						iter->noprint = false;
-					}
-				}
-				// Move any enclosed parentheses to the previous cohort
-				if (!cohort->enclosed.empty()) {
-					cohort->prev->enclosed.insert(cohort->prev->enclosed.end(), cohort->enclosed.begin(), cohort->enclosed.end());
-					cohort->enclosed.clear();
-				}
-				// Remove the cohort from all rules
-				for (auto& cs : current.rule_to_cohorts) {
-					cs.erase(cohort);
-				}
-				// Forward all children of this cohort to the parent of this cohort
-				// ToDo: Named relations must be erased
-				while (!cohort->dep_children.empty()) {
-					uint32_t ch = cohort->dep_children.back();
-					if (cohort->dep_parent == DEP_NO_PARENT) {
-						attachParentChild(*current.parent->cohort_map[0], *current.parent->cohort_map[ch], true, true);
-					}
-					else {
-						attachParentChild(*current.parent->cohort_map[cohort->dep_parent], *current.parent->cohort_map[ch], true, true);
-					}
-					cohort->dep_children.erase(ch);
-				}
-				cohort->type |= CT_REMOVED;
-				if (!cohort->prev->enclosed.empty()) {
-					cohort->prev->enclosed.back()->removed.push_back(cohort);
-				}
-				else {
-					cohort->prev->removed.push_back(cohort);
-				}
-				cohort->detach();
-				for (auto& cm : current.parent->cohort_map) {
-					cm.second->dep_children.erase(cohort->dep_self);
-				}
-				current.parent->cohort_map.erase(cohort->global_number);
-				current.cohorts.erase(current.cohorts.begin() + cohort->local_number);
-				foreach (iter, current.cohorts) {
-					(*iter)->local_number = UI32(std::distance(current.cohorts.begin(), iter));
-				}
-				gWindow->rebuildCohortLinks();
-			};
-
-			auto ignore_cohort = [&](Cohort* cohort) {
-				for (auto iter : cohort->readings) {
-					iter->hit_by.push_back(rule.number);
-				}
-				if (!cohort->enclosed.empty()) {
-					cohort->prev->enclosed.insert(cohort->prev->enclosed.end(), cohort->enclosed.begin(), cohort->enclosed.end());
-					cohort->enclosed.clear();
-				}
-				for (auto& cs : current.rule_to_cohorts) {
-					cs.erase(cohort);
-				}
-				cohort->type |= CT_REMOVED;
-				if (!cohort->prev->enclosed.empty()) {
-					cohort->prev->enclosed.back()->ignored_cohorts.push_back(cohort);
-				}
-				else {
-					cohort->prev->ignored_cohorts.push_back(cohort);
-				}
-				cohort->detach();
-				current.parent->cohort_map.erase(cohort->global_number);
-				current.cohorts.erase(current.cohorts.begin() + cohort->local_number);
-			};
-
-			auto make_relation_rtag = [&](Tag* tag, uint32_t id) {
-				UChar tmp[256] = { 0 };
-				u_sprintf(tmp, "R:%S:%u", tag->tag.data(), id);
-				auto nt = addTag(tmp);
-				return nt;
-			};
-
-			auto add_relation_rtag = [&](Cohort* cohort, Tag* tag, uint32_t id) {
-				auto nt = make_relation_rtag(tag, id);
-				for (auto& r : cohort->readings) {
-					addTagToReading(*r, nt);
-				}
-			};
-
-			auto set_relation_rtag = [&](Cohort* cohort, Tag* tag, uint32_t id) {
-				auto nt = make_relation_rtag(tag, id);
-				for (auto& r : cohort->readings) {
-					for (auto it = r->tags_list.begin(); it != r->tags_list.end();) {
-						const auto& utag = grammar->single_tags[*it]->tag;
-						if (utag[0] == 'R' && utag[1] == ':' && utag.size() > 2 + tag->tag.size() && utag[2 + tag->tag.size()] == ':' && utag.compare(2, tag->tag.size(), tag->tag) == 0) {
-							r->tags.erase(*it);
-							r->tags_textual.erase(*it);
-							r->tags_numerical.erase(*it);
-							r->tags_plain.erase(*it);
-							it = r->tags_list.erase(it);
-						}
-						else {
-							++it;
+				if (get_apply_to().cohort->readings.size() > 1) {
+					foreach (rit, get_apply_to().cohort->readings) {
+						if ((*rit)->noprint) {
+							delete *rit;
+							rit = get_apply_to().cohort->readings.erase(rit);
+							rit_end = get_apply_to().cohort->readings.end();
 						}
 					}
-					addTagToReading(*r, nt);
-				}
-			};
-
-			auto rem_relation_rtag = [&](Cohort* cohort, Tag* tag, uint32_t id) {
-				auto nt = make_relation_rtag(tag, id);
-				for (auto& r : cohort->readings) {
-					delTagFromReading(*r, nt);
-				}
-			};
-
-			// This loop acts on the result of the previous loop; letting the rules do their thing on the valid readings.
-			for (size_t i = 0; i < cohort->readings.size(); ++i) {
-				Reading* tr = get_sub_reading(cohort->readings[i], rule.sub_reading);
-				if (!tr) {
-					tr = cohort->readings[i];
-					tr->matched_target = false;
 				}
 
-				Reading& reading = *tr;
-				Reading& reading_head = *cohort->readings[i];
-				bool good = reading.matched_tests;
-				const uint32_t state_hash = reading.hash;
+				readings_changed = true;
+				finish_reading_loop = false;
+			}
+			else if (rule->type == K_COPY) {
+				// ToDo: Maybe just goto Substitute directly?
+				Reading* cReading = get_apply_to().cohort->allocateAppendReading(*get_apply_to().reading);
+				++numReadings;
+				index_ruleCohort_no.clear();
+				TRACE;
+				cReading->hit_by.push_back(rule->number);
+				cReading->noprint = false;
 
-				if (regexgrps_c.count(reading.number)) {
-					regexgrps.second = regexgrps_c[reading.number];
-					regexgrps.first = regexgrps_z[reading.number];
-				}
-				else {
-					// No captures for this reading, so can't possibly have used all available stores, so it's safe to use the final one. Famous last words.
-					regexgrps.first = 0;
-					regexgrps.second = &regexgrps_store.back();
-				}
-
-				// Iff needs extra special care; if it is a Remove type and we matched the target, go ahead.
-				// If it had matched the tests it would have been Select type.
-				if (rule.type == K_IFF && type == K_REMOVE && reading.matched_target) {
-					++rule.num_match;
-					good = true;
-				}
-
-				if (debug_level > 1) {
-					std::cerr << "DEBUG: Rule " << rule.line << " fired on reading " << i << std::endl;
-				}
-				if (dry_run) {
-					if (good) {
-						TRACE;
-					}
-					continue;
-				}
-				unif_tags = nullptr;
-				unif_sets = nullptr;
-				if (unif_tags_rs.count(reading.hash)) {
-					unif_tags = unif_tags_rs[reading.hash];
-					unif_sets = unif_sets_rs[reading.hash];
-				}
-				else if (unif_tags_rs.count(reading.hash_plain)) {
-					unif_tags = unif_tags_rs[reading.hash_plain];
-					unif_sets = unif_sets_rs[reading.hash_plain];
-				}
-				else {
-					unif_tags = &unif_tags_store[used_unif];
-					unif_sets = &unif_sets_store[used_unif];
-					clear(*unif_tags);
-					clear(*unif_sets);
-				}
-
-				auto insert_taglist_to_reading = [&](auto& iter, auto& taglist, auto& reading, auto& mappings) {
-					for (auto tag : taglist) {
-						if (tag->type & T_VARSTRING) {
-							tag = generateVarstringTag(tag);
+				if (rule->sublist) {
+					auto excepts = ss_taglist.get();
+					getTagList(*rule->sublist, excepts);
+					FILL_TAG_LIST_RAW(excepts);
+					for (auto r = cReading; r; r = r->next) {
+						for (auto tter : *excepts) {
+							delTagFromReading(*r, tter);
 						}
-						if (tag->hash == grammar->tag_any) {
+					}
+				}
+
+				auto mappings = ss_taglist.get();
+				auto theTags = ss_taglist.get();
+				getTagList(*rule->maplist, theTags);
+
+				bool did_insert = false;
+				if (rule->childset1) {
+					auto spot_tags = ss_taglist.get();
+					getTagList(*grammar->sets_list[rule->childset1], spot_tags);
+					FILL_TAG_LIST(spot_tags);
+					auto it = cReading->tags_list.begin();
+					for (; it != cReading->tags_list.end(); ++it) {
+						bool found = true;
+						auto tmp = it;
+						for (auto tag : *spot_tags) {
+							if (*tmp != tag->hash) {
+								found = false;
+								break;
+							}
+							++tmp;
+						}
+						if (found) {
 							break;
 						}
-						if (tag->type & T_MAPPING || tag->tag[0] == grammar->mapping_prefix) {
-							mappings->push_back(tag);
+					}
+					if (rule->flags & RF_AFTER) {
+						std::advance(it, spot_tags->size());
+					}
+					if (it != cReading->tags_list.end()) {
+						insert_taglist_to_reading(it, *theTags, *cReading, mappings);
+						did_insert = true;
+					}
+				}
+
+				if (!did_insert) {
+					APPEND_TAGLIST_TO_READING(*theTags, *cReading);
+				}
+				if (!mappings->empty()) {
+					splitMappings(mappings, *get_apply_to().cohort, *cReading, true);
+				}
+				readings_changed = true;
+				reflowReading(*cReading);
+			}
+			else if (rule->type == K_MERGECOHORTS) {
+				index_ruleCohort_no.clear();
+
+				CohortSet withs;
+				Cohort* target = get_apply_to().cohort;
+				withs.insert(target);
+				Cohort* merge_at = target;
+				for (auto it : rule->dep_tests) {
+					auto& at = context_stack.back().attach_to;
+					at.cohort = nullptr;
+					at.reading = nullptr;
+					at.subreading = nullptr;
+					merge_with = nullptr;
+					set_mark(target);
+					dep_deep_seen.clear();
+					tmpl_cntx.clear();
+					Cohort* attach = nullptr;
+					bool test_good = (runContextualTest(target->parent, target->local_number, it, &attach) && attach);
+					if (!test_good) {
+						finish_reading_loop = false;
+						return;
+					}
+					if (get_attach_to().cohort) {
+						merge_at = get_attach_to().cohort;
+						if (merge_with) {
+							withs.insert(merge_with);
 						}
-						else {
-							iter = reading.tags_list.insert(iter, tag->hash);
-							++iter;
-						}
-						if (updateValidRules(rules, intersects, tag->hash, reading)) {
-							iter_rules = intersects.find(rule.number);
+					}
+					else if (merge_with) {
+						withs.insert(merge_with);
+					}
+					else {
+						withs.insert(attach);
+					}
+				}
+
+				context_stack.back().target.cohort = add_cohort(merge_at);
+
+				for (auto c : withs) {
+					if (!c->ignored_cohorts.empty()) {
+						get_apply_to().cohort->ignored_cohorts.insert(get_apply_to().cohort->ignored_cohorts.end(), c->ignored_cohorts.begin(), c->ignored_cohorts.end());
+						c->ignored_cohorts.clear();
+					}
+					rem_cohort(c);
+				}
+
+				// If the last cohort was removed or inserted after, add <<< to the new end
+				if (current.cohorts.back()->readings.front()->tags.count(endtag) == 0) {
+					for (auto r : current.cohorts[current.cohorts.size() - 2]->readings) {
+						delTagFromReading(*r, endtag);
+					}
+					for (auto r : current.cohorts.back()->readings) {
+						addTagToReading(*r, endtag);
+						if (updateValidRules(rules, intersects, endtag, *r)) {
+							iter_rules = intersects.find(rule->number);
 							iter_rules_end = intersects.end();
 						}
 					}
-					reflowReading(reading);
-				};
-
-				// Select is also special as it will remove non-matching readings
-				if (type == K_SELECT) {
-					if (good) {
-						selected.push_back(&reading_head);
-						index_ruleCohort_no.clear();
-						TRACE;
-					}
-					else {
-						removed.push_back(&reading_head);
-						index_ruleCohort_no.clear();
-						TRACE;
-					}
-					if (good) {
-						if (debug_level > 0) {
-							std::cerr << "DEBUG: Rule " << rule.line << " hit cohort " << cohort->local_number << std::endl;
-						}
-					}
 				}
-				// Handle all other rule types normally, except that some will break out of the loop as they only make sense to do once per cohort.
-				else if (good) {
-					if (type == K_REMOVE) {
-						if ((rule.flags & RF_UNMAPLAST) && removed.size() == cohort->readings.size() - 1) {
-							if (unmapReading(reading, rule.number)) {
-								readings_changed = true;
-							}
+				indexSingleWindow(current);
+				readings_changed = true;
+
+				reset_cohorts_for_loop = true;
+			}
+			else if (rule->type == K_SETPARENT || rule->type == K_SETCHILD || rule->type == K_ADDRELATION || rule->type == K_SETRELATION || rule->type == K_REMRELATION || rule->type == K_ADDRELATIONS || rule->type == K_SETRELATIONS || rule->type == K_REMRELATIONS) {
+				auto dep_target_cb = [&]() -> bool {
+					Cohort* target = context_stack.back().target.cohort;
+					Cohort* attach = context_stack.back().attach_to.cohort;
+					swapper<Cohort*> sw((rule->flags & RF_REVERSE) != 0, target, attach);
+					if (rule->type == K_SETPARENT || rule->type == K_SETCHILD) {
+						bool attached = false;
+						if (rule->type == K_SETPARENT) {
+							attached = attachParentChild(*attach, *target, (rule->flags & RF_ALLOWLOOP) != 0, (rule->flags & RF_ALLOWCROSS) != 0);
 						}
 						else {
-							removed.push_back(&reading_head);
+							attached = attachParentChild(*target, *attach, (rule->flags & RF_ALLOWLOOP) != 0, (rule->flags & RF_ALLOWCROSS) != 0);
+						}
+						if (attached) {
+							index_ruleCohort_no.clear();
+							// force TRACE to use target
+							Cohort* at_was = context_stack.back().attach_to.cohort;
+							context_stack.back().attach_to.cohort = nullptr;
 							TRACE;
+							context_stack.back().attach_to.cohort = at_was;
+							context_stack.back().target.subreading->noprint = false;
+							has_dep = true;
+							readings_changed = true;
 						}
-						index_ruleCohort_no.clear();
-						if (debug_level > 0) {
-							std::cerr << "DEBUG: Rule " << rule.line << " hit cohort " << cohort->local_number << std::endl;
-						}
+						return attached;
 					}
-					else if (type == K_JUMP) {
-						TRACE;
-						auto to = getTagList(*rule.maplist).front();
-						VARSTRINGIFY(to);
-						auto it = grammar->anchors.find(to->hash);
-						if (it == grammar->anchors.end()) {
-							u_fprintf(ux_stderr, "Warning: JUMP on line %u could not find anchor '%S'.\n", rule.line, to->tag.data());
-						}
-						else {
-							iter_rules = intersects.lower_bound(it->second);
-							goto repeat_rule;
-						}
-					}
-					else if (type == K_PROTECT) {
-						TRACE;
-						reading.immutable = true;
-					}
-					else if (type == K_UNPROTECT) {
-						TRACE;
-						reading.immutable = false;
-					}
-					else if (type == K_REMVARIABLE) {
-						TRACE;
-						auto names = getTagList(*rule.maplist);
-						for (auto tag : names) {
-							VARSTRINGIFY(tag);
-							auto it = variables.begin();
-							if (tag->type & T_REGEXP) {
-								it = std::find_if(it, variables.end(), [&](auto& kv) { return doesTagMatchRegexp(kv.first, *tag); });
+					else if (rule->type == K_ADDRELATION || rule->type == K_SETRELATION || rule->type == K_REMRELATION) {
+						bool rel_did_anything = false;
+						auto theTags = ss_taglist.get();
+						getTagList(*rule->maplist, theTags);
+						for (auto tter : *theTags) {
+							VARSTRINGIFY(tter);
+							if (rule->type == K_ADDRELATION) {
+								attach->setRelated();
+								target->setRelated();
+								rel_did_anything |= target->addRelation(tter->hash, attach->global_number);
+								add_relation_rtag(target, tter, attach->global_number);
 							}
-							else if (tag->type & T_CASE_INSENSITIVE) {
-								it = std::find_if(it, variables.end(), [&](auto& kv) { return doesTagMatchIcase(kv.first, *tag); });
+							else if (rule->type == K_SETRELATION) {
+								attach->setRelated();
+								target->setRelated();
+								rel_did_anything |= target->setRelation(tter->hash, attach->global_number);
+								set_relation_rtag(target, tter, attach->global_number);
 							}
 							else {
-								it = variables.find(tag->hash);
-							}
-							if (it != variables.end()) {
-								if (rule.flags & RF_OUTPUT) {
-									current.variables_output.insert(it->first);
-								}
-								variables.erase(it);
-								//u_fprintf(ux_stderr, "Info: RemVariable fired for %S.\n", tag->tag.data());
+								rel_did_anything |= target->remRelation(tter->hash, attach->global_number);
+								rem_relation_rtag(target, tter, attach->global_number);
 							}
 						}
-						break;
-					}
-					else if (type == K_SETVARIABLE) {
-						TRACE;
-						auto names = getTagList(*rule.maplist);
-						auto values = getTagList(*rule.sublist);
-						VARSTRINGIFY(names.front());
-						VARSTRINGIFY(values.front());
-						variables[names.front()->hash] = values.front()->hash;
-						if (rule.flags & RF_OUTPUT) {
-							current.variables_output.insert(names.front()->hash);
+						if (rel_did_anything) {
+							index_ruleCohort_no.clear();
+							// force TRACE to use target
+							Cohort* at_was = context_stack.back().attach_to.cohort;
+							context_stack.back().attach_to.cohort = nullptr;
+							TRACE;
+							context_stack.back().attach_to.cohort = at_was;
+							context_stack.back().target.subreading->noprint = false;
+							readings_changed = true;
 						}
-						//u_fprintf(ux_stderr, "Info: SetVariable fired for %S.\n", names.front()->tag.data());
-						break;
+						// don't scan onwards if failed
+						return true;
 					}
-					else if (type == K_DELIMIT) {
-						delimitAt(current, cohort);
-						delimited = true;
-						readings_changed = true;
-						break;
+					else if (rule->type == K_ADDRELATIONS || rule->type == K_SETRELATIONS || rule->type == K_REMRELATIONS) {
+						bool rel_did_anything = false;
+
+						auto sublist = ss_taglist.get();
+						getTagList(*rule->sublist, sublist);
+
+						auto maplist = ss_taglist.get();
+						getTagList(*rule->maplist, maplist);
+
+						for (auto tter : *maplist) {
+							VARSTRINGIFY(tter);
+							if (rule->type == K_ADDRELATIONS) {
+								target->setRelated();
+								rel_did_anything |= target->addRelation(tter->hash, attach->global_number);
+								add_relation_rtag(target, tter, attach->global_number);
+							}
+							else if (rule->type == K_SETRELATIONS) {
+								target->setRelated();
+								rel_did_anything |= target->setRelation(tter->hash, attach->global_number);
+								set_relation_rtag(target, tter, attach->global_number);
+							}
+							else {
+								rel_did_anything |= target->remRelation(tter->hash, attach->global_number);
+								rem_relation_rtag(target, tter, attach->global_number);
+							}
+						}
+						for (auto tter : *sublist) {
+							VARSTRINGIFY(tter);
+							if (rule->type == K_ADDRELATIONS) {
+								attach->setRelated();
+								rel_did_anything |= attach->addRelation(tter->hash, target->global_number);
+								add_relation_rtag(attach, tter, target->global_number);
+							}
+							else if (rule->type == K_SETRELATIONS) {
+								attach->setRelated();
+								rel_did_anything |= attach->setRelation(tter->hash, target->global_number);
+								set_relation_rtag(attach, tter, target->global_number);
+							}
+							else {
+								rel_did_anything |= attach->remRelation(tter->hash, target->global_number);
+								rem_relation_rtag(attach, tter, target->global_number);
+							}
+						}
+						if (rel_did_anything) {
+							index_ruleCohort_no.clear();
+							// force TRACE to use target
+							Cohort* at_was = context_stack.back().attach_to.cohort;
+							context_stack.back().attach_to.cohort = nullptr;
+							TRACE;
+							context_stack.back().attach_to.cohort = at_was;
+							context_stack.back().target.subreading->noprint = false;
+							readings_changed = true;
+						}
+						// don't scan onwards if failed
+						return true;
 					}
-					else if (type == K_EXTERNAL_ONCE || type == K_EXTERNAL_ALWAYS) {
-						if (type == K_EXTERNAL_ONCE && !current.hit_external.insert(rule.line).second) {
+					return true;
+				};
+				int32_t orgoffset = rule->dep_target->offset;
+				auto seen_targets = ss_u32sv.get();
+
+				ReadingSpec orgtarget = context_stack.back().target;
+				while (true) {
+					auto utags = ss_utags.get();
+					auto usets = ss_usets.get();
+					*utags = *context_stack.back().unif_tags;
+					*usets = *context_stack.back().unif_sets;
+
+					Cohort* attach = nullptr;
+					Cohort* target = context_stack.back().target.cohort;
+					seen_targets->insert(target->global_number);
+					dep_deep_seen.clear();
+					tmpl_cntx.clear();
+					context_stack.back().attach_to.cohort = nullptr;
+					context_stack.back().attach_to.reading = nullptr;
+					context_stack.back().attach_to.subreading = nullptr;
+					seen_barrier = false;
+					if (runContextualTest(target->parent, target->local_number, rule->dep_target, &attach) && attach) {
+						bool break_after = seen_barrier || (rule->flags & RF_NEAREST);
+						if (get_attach_to().cohort) {
+							attach = get_attach_to().cohort;
+						}
+						bool good = true;
+						for (auto it : rule->dep_tests) {
+							context_stack.back().mark = attach;
+							dep_deep_seen.clear();
+							tmpl_cntx.clear();
+							bool test_good = (runContextualTest(attach->parent, attach->local_number, it) != nullptr);
+							if (!test_good) {
+								good = test_good;
+								break;
+							}
+						}
+						if (!get_attach_to().cohort) {
+							context_stack.back().attach_to.cohort = attach;
+						}
+						if (good) {
+							ReadingSpec temp = context_stack.back().target;
+							context_stack.back().target = orgtarget;
+							bool attached = dep_target_cb();
+							if (attached) {
+								break;
+							}
+							else {
+								context_stack.back().target = temp;
+							}
+						}
+						if (break_after) {
 							break;
 						}
-
-						auto ei = externals.find(rule.varname);
-						if (ei == externals.end()) {
-							Tag* ext = grammar->single_tags.find(rule.varname)->second;
-							UErrorCode err = U_ZERO_ERROR;
-							u_strToUTF8(&cbuffers[0][0], SI32(CG3_BUFFER_SIZE - 1), nullptr, ext->tag.data(), SI32(ext->tag.size()), &err);
-
-							Process& es = externals[rule.varname];
-							try {
-								es.start(&cbuffers[0][0]);
-								writeRaw(es, CG3_EXTERNAL_PROTOCOL);
-							}
-							catch (std::exception& e) {
-								u_fprintf(ux_stderr, "Error: External on line %u resulted in error: %s\n", rule.line, e.what());
-								CG3Quit(1);
-							}
-							ei = externals.find(rule.varname);
+						if (seen_targets->count(attach->global_number)) {
+							// We've found a cohort we have seen before...
+							// We assume running the test again would result in the same, so don't bother.
+							break;
 						}
-
-						pipeOutSingleWindow(current, ei->second);
-						pipeInSingleWindow(current, ei->second);
-
-						indexSingleWindow(current);
-						readings_changed = true;
-						index_ruleCohort_no.clear();
-						intersects = current.valid_rules.intersect(rules);
-						iter_rules = intersects.find(rule.number);
-						iter_rules_end = intersects.end();
-						cohortset = &current.rule_to_cohorts[rule.number];
-						rocit = cohortset->find(cohort);
-						++rocit;
+						// Did not successfully attach due to loop restrictions; look onwards from here
+						context_stack.back().target = context_stack.back().attach_to;
+						context_stack.back().unif_tags->swap(utags);
+						context_stack.back().unif_sets->swap(usets);
+						if (rule->dep_target->offset != 0) {
+							// Temporarily set offset to +/- 1
+							rule->dep_target->offset = ((rule->dep_target->offset < 0) ? -1 : 1);
+						}
+					}
+					else {
 						break;
 					}
-					else if (type == K_REMCOHORT) {
-						// REMCOHORT-IGNORED
-						if (rule.flags & RF_IGNORED) {
-							CohortSet cohorts;
-							collect_subtree(cohorts, cohort, rule.childset1);
-							reverse_foreach (iter, cohorts) {
-								ignore_cohort(*iter);
-							}
-							foreach (iter, current.cohorts) {
-								(*iter)->local_number = UI32(std::distance(current.cohorts.begin(), iter));
-							}
-							gWindow->rebuildCohortLinks();
-							reflowDependencyWindow();
-						}
-						else {
-							rem_cohort(cohort);
-						}
+				}
+				rule->dep_target->offset = orgoffset;
+				finish_reading_loop = false;
+			}
+			else if (rule->type == K_MOVE_AFTER || rule->type == K_MOVE_BEFORE || rule->type == K_SWITCH) {
+				// this is a per-cohort rule
+				finish_reading_loop = false;
+				// Calculate hash of current state to later compare whether this move/switch actually did anything
+				uint32_t phash = 0;
+				uint32_t chash = 0;
+				for (const auto& c : current.cohorts) {
+					phash = hash_value(c->global_number, phash);
+					chash = hash_value(c->readings[0]->hash, chash);
+				}
 
-						// If we just removed the last cohort, add <<< to the new last cohort
-						if (cohort->readings.front()->tags.count(endtag)) {
-							for (auto r : current.cohorts.back()->readings) {
-								addTagToReading(*r, endtag);
-								if (updateValidRules(rules, intersects, endtag, *r)) {
-									iter_rules = intersects.find(rule.number);
-									iter_rules_end = intersects.end();
-								}
-							}
-							index_ruleCohort_no.clear();
-							cohortset = &current.rule_to_cohorts[rule.number];
-							rocit = cohortset->end();
-						}
-						else if (cohortset->empty()) {
-							rocit = cohortset->end();
-						}
-						else {
-							rocit = cohortset->lower_bound(current.cohorts[cohort->local_number]);
-						}
-						readings_changed = true;
-						break;
+				// ToDo: ** tests will not correctly work for MOVE/SWITCH; cannot move cohorts between windows
+				Cohort* attach = nullptr;
+				Cohort* cohort = context_stack.back().target.cohort;
+				uint32_t c = cohort->local_number;
+				dep_deep_seen.clear();
+				tmpl_cntx.clear();
+				context_stack.back().attach_to.cohort = nullptr;
+				context_stack.back().attach_to.reading = nullptr;
+				context_stack.back().attach_to.subreading = nullptr;
+				if (runContextualTest(&current, c, rule->dep_target, &attach) && attach && cohort->parent == attach->parent) {
+					if (get_attach_to().cohort) {
+						attach = get_attach_to().cohort;
 					}
-					else if (type == K_ADDCOHORT_AFTER || type == K_ADDCOHORT_BEFORE) {
-						TRACE;
-						index_ruleCohort_no.clear();
-
-						auto cCohort = add_cohort(cohort);
-
-						// If the new cohort is now the last cohort, add <<< to it and remove <<< from previous last cohort
-						if (current.cohorts.back() == cCohort) {
-							for (auto r : current.cohorts[current.cohorts.size() - 2]->readings) {
-								delTagFromReading(*r, endtag);
-							}
-							for (auto r : current.cohorts.back()->readings) {
-								addTagToReading(*r, endtag);
-								if (updateValidRules(rules, intersects, endtag, *r)) {
-									iter_rules = intersects.find(rule.number);
-									iter_rules_end = intersects.end();
-								}
-							}
+					bool good = true;
+					for (auto it : rule->dep_tests) {
+						context_stack.back().mark = attach;
+						dep_deep_seen.clear();
+						tmpl_cntx.clear();
+						bool test_good = (runContextualTest(attach->parent, attach->local_number, it) != nullptr);
+						if (!test_good) {
+							good = test_good;
+							break;
 						}
-						indexSingleWindow(current);
-						readings_changed = true;
-
-						cohortset = &current.rule_to_cohorts[rule.number];
-						rocit = cohortset->find(cohort);
-						++rocit;
-						break;
 					}
-					else if (rule.type == K_SPLITCOHORT) {
-						index_ruleCohort_no.clear();
 
-						std::vector<std::pair<Cohort*, std::vector<TagList>>> cohorts;
+					if (!good || cohort == attach || cohort->local_number == 0) {
+						return;
+					}
 
-						auto theTags = ss_taglist.get();
-						getTagList(*rule.maplist, theTags);
+					swapper<Cohort*> sw((rule->flags & RF_REVERSE) != 0, attach, cohort);
+					CohortSet cohorts;
 
-						Tag* wf = nullptr;
-						for (auto tter : *theTags) {
-							if (tter->type & T_WORDFORM) {
-								cohorts.resize(cohorts.size() + 1);
-								cohorts.back().first = alloc_cohort(&current);
-								cohorts.back().first->global_number = gWindow->cohort_counter++;
-								wf = tter;
-								VARSTRINGIFY(wf);
-								cohorts.back().first->wordform = wf;
-								continue;
-							}
-							if (!wf) {
-								u_fprintf(ux_stderr, "Error: There must be a wordform before any other tags in SPLITCOHORT on line %u before input line %u.\n", rule.line, numLines);
-								CG3Quit(1);
+					if (rule->type == K_SWITCH) {
+						if (attach->local_number == 0) {
+							return;
+						}
+						current.cohorts[cohort->local_number] = attach;
+						current.cohorts[attach->local_number] = cohort;
+						cohorts.insert(attach);
+						cohorts.insert(cohort);
+					}
+					else {
+						CohortSet edges;
+						collect_subtree(edges, attach, rule->childset2);
+						collect_subtree(cohorts, cohort, rule->childset1);
+
+						bool need_clean = false;
+						for (auto iter : cohorts) {
+							if (edges.count(iter)) {
+								need_clean = true;
+								break;
 							}
 						}
 
-						uint32_t rel_trg = DEP_NO_PARENT;
-						std::vector<std::pair<uint32_t, uint32_t>> cohort_dep(cohorts.size());
-						cohort_dep.front().second = DEP_NO_PARENT;
-						cohort_dep.back().first = DEP_NO_PARENT;
-						cohort_dep.back().second = UI32(cohort_dep.size() - 1);
-						for (size_t i = 1; i < cohort_dep.size() - 1; ++i) {
-							cohort_dep[i].second = UI32(i);
-						}
-
-						size_t i = 0;
-						std::vector<TagList>* readings = &cohorts.front().second;
-						Tag* bf = nullptr;
-						for (auto tter : *theTags) {
-							if (tter->type & T_WORDFORM) {
-								++i;
-								bf = nullptr;
-								continue;
+						if (need_clean) {
+							if (isChildOf(cohort, attach)) {
+								edges.erase(cohorts.rbegin(), cohorts.rend());
 							}
-							if (tter->type & T_BASEFORM) {
-								readings = &cohorts[i - 1].second;
-								readings->resize(readings->size() + 1);
-								readings->back().push_back(cohorts[i - 1].first->wordform);
-								bf = tter;
-							}
-							if (!bf) {
-								u_fprintf(ux_stderr, "Error: There must be a baseform after the wordform in SPLITCOHORT on line %u before input line %u.\n", rule.line, numLines);
-								CG3Quit(1);
-							}
-
-							UChar dep_self[12] = {};
-							UChar dep_parent[12] = {};
-							if (u_sscanf(tter->tag.data(), "%[0-9cd]->%[0-9pm]", &dep_self, &dep_parent) == 2) {
-								if (dep_self[0] == 'c' || dep_self[0] == 'd') {
-									cohort_dep[i - 1].first = DEP_NO_PARENT;
-									if (rel_trg == DEP_NO_PARENT) {
-										rel_trg = UI32(i - 1);
-									}
-								}
-								else if (u_sscanf(dep_self, "%i", &cohort_dep[i - 1].first) != 1) {
-									u_fprintf(ux_stderr, "Error: SPLITCOHORT dependency mapping dep_self was not valid on line %u before input line %u.\n", rule.line, numLines);
-									CG3Quit(1);
-								}
-								if (dep_parent[0] == 'p' || dep_parent[0] == 'm') {
-									cohort_dep[i - 1].second = DEP_NO_PARENT;
-								}
-								else if (u_sscanf(dep_parent, "%i", &cohort_dep[i - 1].second) != 1) {
-									u_fprintf(ux_stderr, "Error: SPLITCOHORT dependency mapping dep_parent was not valid on line %u before input line %u.\n", rule.line, numLines);
-									CG3Quit(1);
-								}
-								continue;
-							}
-							if (tter->tag.size() == 3 && tter->tag[0] == 'R' && tter->tag[1] == ':' && tter->tag[2] == '*') {
-								rel_trg = UI32(i - 1);
-								continue;
-							}
-							readings->back().push_back(tter);
-						}
-
-						if (rel_trg == DEP_NO_PARENT) {
-							rel_trg = UI32(cohorts.size() - 1);
-						}
-
-						for (size_t i = 0; i < cohorts.size(); ++i) {
-							Cohort* cCohort = cohorts[i].first;
-							readings = &cohorts[i].second;
-
-							for (auto tags : *readings) {
-								Reading* cReading = alloc_reading(cCohort);
-								++numReadings;
-								insert_if_exists(cReading->parent->possible_sets, grammar->sets_any);
-								cReading->hit_by.push_back(rule.number);
-								cReading->noprint = false;
-								TagList mappings;
-
-								for (size_t i = 0; i < tags.size(); ++i) {
-									if (tags[i]->hash == grammar->tag_any) {
-										uint32Vector& nt = cohort->readings.front()->tags_list;
-										if (nt.size() <= 2) {
-											continue;
-										}
-										tags.reserve(tags.size() + nt.size() - 2);
-										tags[i] = grammar->single_tags[nt[2]];
-										for (size_t j = 3, k = 1; j < nt.size(); ++j) {
-											if (grammar->single_tags[nt[j]]->type & T_DEPENDENCY) {
-												continue;
-											}
-											tags.insert(tags.begin() + i + k, grammar->single_tags[nt[j]]);
-											++k;
-										}
-									}
-								}
-
-								for (auto tter : tags) {
-									uint32_t hash = tter->hash;
-									VARSTRINGIFY(tter);
-									if (tter->type & T_MAPPING || tter->tag[0] == grammar->mapping_prefix) {
-										mappings.push_back(tter);
-									}
-									else {
-										hash = addTagToReading(*cReading, hash);
-									}
-									if (updateValidRules(rules, intersects, hash, *cReading)) {
-										iter_rules = intersects.find(rule.number);
-										iter_rules_end = intersects.end();
-									}
-								}
-								if (!mappings.empty()) {
-									splitMappings(mappings, *cCohort, *cReading);
-								}
-								cCohort->appendReading(cReading);
-							}
-
-							if (cCohort->readings.empty()) {
-								initEmptyCohort(*cCohort);
-							}
-
-							current.parent->dep_window[cCohort->global_number] = cCohort;
-							current.parent->cohort_map[cCohort->global_number] = cCohort;
-
-							current.cohorts.insert(current.cohorts.begin() + cohort->local_number + i + 1, cCohort);
-						}
-
-						// Move text from the to-be-deleted cohort to the last new cohort
-						std::swap(cohorts.back().first->text, cohort->text);
-
-						for (size_t i = 0; i < cohorts.size(); ++i) {
-							Cohort* cCohort = cohorts[i].first;
-
-							if (cohort_dep[i].first == DEP_NO_PARENT) {
-								while (!cohort->dep_children.empty()) {
-									uint32_t ch = cohort->dep_children.back();
-									attachParentChild(*cCohort, *current.parent->cohort_map[ch], true, true);
-									cohort->dep_children.erase(ch); // Just in case the attachment can't be made for some reason
-								}
-							}
-
-							if (cohort_dep[i].second == DEP_NO_PARENT) {
-								if (current.parent->cohort_map.count(cohort->dep_parent)) {
-									attachParentChild(*current.parent->cohort_map[cohort->dep_parent], *cCohort, true, true);
-								}
-							}
-							else {
-								attachParentChild(*current.parent->cohort_map[cohorts.front().first->global_number + cohort_dep[i].second - 1], *cCohort, true, true);
-							}
-
-							// Re-attach all named relations to the dependency tail or R:* cohort
-							if (rel_trg == i && (cohort->type & CT_RELATED)) {
-								cCohort->setRelated();
-								cCohort->relations.swap(cohort->relations);
-
-								std::pair<SingleWindow**, size_t> swss[3] = {
-									std::make_pair(&gWindow->previous[0], gWindow->previous.size()),
-									std::make_pair(&gWindow->current, static_cast<size_t>(1)),
-									std::make_pair(&gWindow->next[0], gWindow->next.size()),
-								};
-								for (auto sws : swss) {
-									for (size_t sw = 0; sw < sws.second; ++sw) {
-										for (auto ch : sws.first[sw]->cohorts) {
-											for (auto& rel : ch->relations) {
-												if (rel.second.count(cohort->global_number)) {
-													rel.second.erase(cohort->global_number);
-													rel.second.insert(cCohort->global_number);
-												}
-											}
-										}
-									}
-								}
+							else /* if (isChildOf(attach, cohort)) */ {
+								cohorts.erase(edges.rbegin(), edges.rend());
 							}
 						}
+						if (cohorts.empty() || edges.empty()) {
+							finish_reading_loop = false;
+							return;
+						}
 
-						// Remove the source cohort
-						for (auto iter : cohort->readings) {
-							iter->hit_by.push_back(rule.number);
-							iter->deleted = true;
+						reverse_foreach (iter, cohorts) {
+							current.cohorts.erase(current.cohorts.begin() + (*iter)->local_number);
 						}
-						// Move any enclosed parentheses to the previous cohort
-						if (!cohort->enclosed.empty()) {
-							cohort->prev->enclosed.insert(cohort->prev->enclosed.end(), cohort->enclosed.begin(), cohort->enclosed.end());
-							cohort->enclosed.clear();
-						}
-						cohort->type |= CT_REMOVED;
-						cohort->prev->removed.push_back(cohort);
-						cohort->detach();
-						for (auto& cm : current.parent->cohort_map) {
-							cm.second->dep_children.erase(cohort->dep_self);
-						}
-						current.parent->cohort_map.erase(cohort->global_number);
-						current.cohorts.erase(current.cohorts.begin() + cohort->local_number);
 
-						// Reindex and rebuild the window
 						foreach (iter, current.cohorts) {
 							(*iter)->local_number = UI32(std::distance(current.cohorts.begin(), iter));
 						}
-						gWindow->rebuildCohortLinks();
-						indexSingleWindow(current);
-						readings_changed = true;
 
-						cohortset = &current.rule_to_cohorts[rule.number];
-						rocit = cohortset->find(current.cohorts[cohort->local_number]);
-						if (rocit != cohortset->end()) {
-							++rocit;
-						}
-						break;
-					}
-					else if (rule.type == K_ADD || rule.type == K_MAP) {
-						index_ruleCohort_no.clear();
-						TRACE;
-						reading.noprint = false;
-						auto mappings = ss_taglist.get();
-						auto theTags = ss_taglist.get();
-						getTagList(*rule.maplist, theTags);
-
-						bool did_insert = false;
-						if (rule.childset1) {
-							bool found_spot = false;
-							auto spot_tags = ss_taglist.get();
-							getTagList(*grammar->sets_list[rule.childset1], spot_tags);
-							FILL_TAG_LIST(spot_tags);
-							auto it = reading.tags_list.begin();
-							for (; it != reading.tags_list.end(); ++it) {
-								bool found = true;
-								auto tmp = it;
-								for (auto tag : *spot_tags) {
-									if (*tmp != tag->hash) {
-										found = false;
-										break;
-									}
-									++tmp;
-								}
-								if (found) {
-									found_spot = true;
-									break;
-								}
-							}
-							if (found_spot) {
-								if (rule.flags & RF_AFTER) {
-									std::advance(it, spot_tags->size());
-								}
-								if (it != reading.tags_list.end()) {
-									insert_taglist_to_reading(it, *theTags, reading, mappings);
-									did_insert = true;
-								}
-							}
-						}
-
-						if (!did_insert) {
-							APPEND_TAGLIST_TO_READING(*theTags, reading);
-						}
-						if (!mappings->empty()) {
-							splitMappings(mappings, *cohort, reading, rule.type == K_MAP);
-						}
-						if (rule.type == K_MAP) {
-							reading.mapped = true;
-						}
-						if (reading.hash != state_hash) {
-							readings_changed = true;
-						}
-					}
-					else if (rule.type == K_UNMAP) {
-						if (unmapReading(reading, rule.number)) {
-							index_ruleCohort_no.clear();
-							readings_changed = true;
-						}
-					}
-					else if (rule.type == K_RESTORE) {
-						bool did_restore = false;
-						auto move_rs = [&](ReadingList& rl) {
-							for (size_t i = 0; i < rl.size();) {
-								if (doesSetMatchReading(*rl[i], rule.maplist->number)) {
-									rl[i]->deleted = false;
-									rl[i]->hit_by.push_back(rule.number);
-									cohort->readings.push_back(rl[i]);
-									rl.erase(rl.begin() + i);
-									did_restore = true;
-								}
-								else {
-									++i;
-								}
-							}
-						};
-
-						if (rule.flags & RF_DELAYED) {
-							move_rs(cohort->delayed);
-						}
-						else if (rule.flags & RF_IGNORED) {
-							move_rs(cohort->ignored);
-						}
-						else {
-							move_rs(cohort->deleted);
-						}
-
-						if (did_restore) {
-							TRACE;
-						}
-						break;
-					}
-					else if (rule.type == K_REPLACE) {
-						index_ruleCohort_no.clear();
-						TRACE;
-						reading.noprint = false;
-						reading.tags_list.clear();
-						reading.tags_list.push_back(cohort->wordform->hash);
-						reading.tags_list.push_back(reading.baseform);
-						reflowReading(reading);
-						auto mappings = ss_taglist.get();
-						auto theTags = ss_taglist.get();
-						getTagList(*rule.maplist, theTags);
-
-						APPEND_TAGLIST_TO_READING(*theTags, reading);
-
-						if (!mappings->empty()) {
-							splitMappings(mappings, *cohort, reading, true);
-						}
-						if (reading.hash != state_hash) {
-							readings_changed = true;
-						}
-					}
-					else if (rule.type == K_SUBSTITUTE) {
-						// ToDo: Check whether this substitution will do nothing at all to the end result
-						// ToDo: Not actually...instead, test whether any reading in the cohort already is the end result
-
-						auto theTags = ss_taglist.get();
-						getTagList(*rule.sublist, theTags);
-
-						// Modify the list of tags to remove to be the actual list of tags present, including matching regex and icase tags
-						FILL_TAG_LIST(theTags);
-
-						// Perform the tag removal, remembering the position of the final removed tag for use as insertion spot
-						size_t tpos = std::numeric_limits<size_t>::max();
-						bool plain = true;
-						for (size_t i = 0; i < reading.tags_list.size();) {
-							auto& remter = reading.tags_list[i];
-
-							if (plain && remter == (*theTags->begin())->hash) {
-								if (reading.baseform == remter) {
-									reading.baseform = 0;
-								}
-								remter = substtag;
-								tpos = i;
-								for (size_t j = 1; j < theTags->size() && i < reading.tags_list.size(); ++j, ++i) {
-									auto& remter = reading.tags_list[i];
-									auto tter = (*theTags)[j]->hash;
-									if (remter != tter) {
-										plain = false;
-										break;
-									}
-									reading.tags_list.erase(reading.tags_list.begin() + i);
-									reading.tags.erase(tter);
-									if (reading.baseform == tter) {
-										reading.baseform = 0;
-									}
-								}
-								continue;
-							}
-
-							for (auto tter : *theTags) {
-								if (remter != tter->hash) {
-									continue;
-								}
-								tpos = i;
-								remter = substtag;
-								reading.tags.erase(tter->hash);
-								if (reading.baseform == tter->hash) {
-									reading.baseform = 0;
-								}
-							}
-
-							++i;
-						}
-
-						// Should Substitute really do nothing if no tags were removed? 2013-10-21, Eckhard says this is expected behavior.
-						if (tpos != std::numeric_limits<size_t>::max()) {
-							if (!plain) {
-								for (size_t i = 0; i < reading.tags_list.size() && i < tpos;) {
-									if (reading.tags_list[i] == substtag) {
-										reading.tags_list.erase(reading.tags_list.begin() + i);
-										--tpos;
-									}
-									else {
-										++i;
-									}
-								}
-							}
-
-							Tag* wf = nullptr;
-							index_ruleCohort_no.clear();
-							TRACE;
-							reading.noprint = false;
-							if (tpos >= reading.tags_list.size()) {
-								tpos = reading.tags_list.size() - 1;
-							}
-							++tpos;
-							auto mappings = ss_taglist.get();
-							auto theTags = ss_taglist.get();
-							getTagList(*rule.maplist, theTags);
-
-							for (size_t i = 0; i < reading.tags_list.size();) {
-								if (reading.tags_list[i] == substtag) {
-									reading.tags_list.erase(reading.tags_list.begin() + i);
-									tpos = i;
-
-									for (auto tag : *theTags) {
-										if (tag->type & T_VARSTRING) {
-											tag = generateVarstringTag(tag);
-										}
-										if (tag->hash == grammar->tag_any) {
-											break;
-										}
-										if (tag->type & T_MAPPING || tag->tag[0] == grammar->mapping_prefix) {
-											mappings->push_back(tag);
-										}
-										else {
-											if (tag->type & T_WORDFORM) {
-												wf = tag;
-											}
-											reading.tags_list.insert(reading.tags_list.begin() + tpos, tag->hash);
-											++tpos;
-										}
-										if (updateValidRules(rules, intersects, tag->hash, reading)) {
-											iter_rules = intersects.find(rule.number);
-											iter_rules_end = intersects.end();
-										}
-									}
-								}
-								else {
-									++i;
-								}
-							}
-							reflowReading(reading);
-
-							if (!mappings->empty()) {
-								splitMappings(mappings, *cohort, reading, true);
-							}
-							if (wf && wf != reading.parent->wordform) {
-								for (auto r : reading.parent->readings) {
-									delTagFromReading(*r, reading.parent->wordform);
-									addTagToReading(*r, wf);
-								}
-								for (auto r : reading.parent->deleted) {
-									delTagFromReading(*r, reading.parent->wordform);
-									addTagToReading(*r, wf);
-								}
-								for (auto r : reading.parent->delayed) {
-									delTagFromReading(*r, reading.parent->wordform);
-									addTagToReading(*r, wf);
-								}
-								reading.parent->wordform = wf;
-								for (auto r : grammar->wf_rules) {
-									if (doesWordformsMatch(wf, r->wordform)) {
-										current.rule_to_cohorts[r->number].insert(cohort);
-										intersects.insert(r->number);
-									}
-									else {
-										current.rule_to_cohorts[r->number].erase(cohort);
-									}
-								}
-								updateValidRules(rules, intersects, wf->hash, reading);
-								iter_rules = intersects.find(rule.number);
-								iter_rules_end = intersects.end();
-							}
-						}
-						if (reading.hash != state_hash) {
-							readings_changed = true;
-						}
-					}
-					else if (rule.type == K_APPEND) {
-						index_ruleCohort_no.clear();
-
-						Tag* bf = nullptr;
-						std::vector<TagList> readings;
-						auto theTags = ss_taglist.get();
-						getTagList(*rule.maplist, theTags);
-
-						for (auto tter : *theTags) {
-							VARSTRINGIFY(tter);
-							if (tter->type & T_BASEFORM) {
-								bf = tter;
-								readings.resize(readings.size() + 1);
-							}
-							if (bf == nullptr) {
-								u_fprintf(ux_stderr, "Error: There must be a baseform before any other tags in APPEND on line %u.\n", rule.line);
+						for (auto iter : edges) {
+							if (iter->parent != get_apply_to().cohort->parent) {
+								u_fprintf(ux_stderr, "Error: Move/Switch on line %u tried to move across window boundaries.\n", rule->line);
 								CG3Quit(1);
 							}
-							readings.back().push_back(tter);
-						}
-
-						for (const auto& rit : readings) {
-							Reading* cReading = alloc_reading(cohort);
-							++numReadings;
-							insert_if_exists(cReading->parent->possible_sets, grammar->sets_any);
-							addTagToReading(*cReading, cohort->wordform);
-							cReading->hit_by.push_back(rule.number);
-							cReading->noprint = false;
-							TagList mappings;
-							for (auto tter : rit) {
-								uint32_t hash = tter->hash;
-								VARSTRINGIFY(tter);
-								if (tter->type & T_MAPPING || tter->tag[0] == grammar->mapping_prefix) {
-									mappings.push_back(tter);
-								}
-								else {
-									hash = addTagToReading(*cReading, tter);
-								}
-								if (updateValidRules(rules, intersects, hash, *cReading)) {
-									iter_rules = intersects.find(rule.number);
-									iter_rules_end = intersects.end();
-								}
-							}
-							if (!mappings.empty()) {
-								splitMappings(mappings, *cohort, *cReading);
-							}
-							cohort->appendReading(cReading);
-						}
-
-						if (cohort->readings.size() > 1) {
-							foreach (rit, cohort->readings) {
-								if ((*rit)->noprint) {
-									delete *rit;
-									rit = cohort->readings.erase(rit);
-									rit_end = cohort->readings.end();
-								}
-							}
-						}
-
-						readings_changed = true;
-						break;
-					}
-					else if (rule.type == K_COPY) {
-						// ToDo: Maybe just goto Substitute directly?
-						Reading* cReading = cohort->allocateAppendReading(reading_head);
-						++numReadings;
-						index_ruleCohort_no.clear();
-						cReading->hit_by.push_back(rule.number);
-						cReading->noprint = false;
-
-						if (rule.sublist) {
-							auto excepts = ss_taglist.get();
-							getTagList(*rule.sublist, excepts);
-							FILL_TAG_LIST_RAW(excepts);
-							for (auto r = cReading; r; r = r->next) {
-								for (auto tter : *excepts) {
-									delTagFromReading(*r, tter);
-								}
-							}
-						}
-
-						auto mappings = ss_taglist.get();
-						auto theTags = ss_taglist.get();
-						getTagList(*rule.maplist, theTags);
-
-						bool did_insert = false;
-						if (rule.childset1) {
-							auto spot_tags = ss_taglist.get();
-							getTagList(*grammar->sets_list[rule.childset1], spot_tags);
-							FILL_TAG_LIST(spot_tags);
-							auto it = cReading->tags_list.begin();
-							for (; it != cReading->tags_list.end(); ++it) {
-								bool found = true;
-								auto tmp = it;
-								for (auto tag : *spot_tags) {
-									if (*tmp != tag->hash) {
-										found = false;
-										break;
-									}
-									++tmp;
-								}
-								if (found) {
-									break;
-								}
-							}
-							if (rule.flags & RF_AFTER) {
-								std::advance(it, spot_tags->size());
-							}
-							if (it != cReading->tags_list.end()) {
-								insert_taglist_to_reading(it, *theTags, *cReading, mappings);
-								did_insert = true;
-							}
-						}
-
-						if (!did_insert) {
-							APPEND_TAGLIST_TO_READING(*theTags, *cReading);
-						}
-						if (!mappings->empty()) {
-							splitMappings(mappings, *cohort, *cReading, true);
-						}
-						readings_changed = true;
-						reflowReading(*cReading);
-					}
-					else if (type == K_MERGECOHORTS) {
-						index_ruleCohort_no.clear();
-
-						CohortSet withs;
-						target = cohort;
-						withs.insert(target);
-						Cohort* merge_at = target;
-						for (auto it : rule.dep_tests) {
-							attach_to = nullptr;
-							merge_with = nullptr;
-							mark = cohort;
-							dep_deep_seen.clear();
-							tmpl_cntx.clear();
-							Cohort* attach = nullptr;
-							test_good = (runContextualTest(target->parent, target->local_number, it, &attach) && attach);
-							if (!test_good) {
-								break;
-							}
-							if (attach_to) {
-								merge_at = attach_to;
-								if (merge_with) {
-									withs.insert(merge_with);
-								}
-							}
-							else if (merge_with) {
-								withs.insert(merge_with);
-							}
-							else {
-								withs.insert(attach);
-							}
-						}
-						if (!test_good) {
-							break;
-						}
-
-						cohort = add_cohort(merge_at);
-
-						for (auto c : withs) {
-							if (!c->ignored_cohorts.empty()) {
-								cohort->ignored_cohorts.insert(cohort->ignored_cohorts.end(), c->ignored_cohorts.begin(), c->ignored_cohorts.end());
-								c->ignored_cohorts.clear();
-							}
-							rem_cohort(c);
-						}
-
-						// If the last cohort was removed or inserted after, add <<< to the new end
-						if (current.cohorts.back()->readings.front()->tags.count(endtag) == 0) {
-							for (auto r : current.cohorts[current.cohorts.size() - 2]->readings) {
-								delTagFromReading(*r, endtag);
-							}
-							for (auto r : current.cohorts.back()->readings) {
-								addTagToReading(*r, endtag);
-								if (updateValidRules(rules, intersects, endtag, *r)) {
-									iter_rules = intersects.find(rule.number);
-									iter_rules_end = intersects.end();
-								}
-							}
-						}
-						indexSingleWindow(current);
-						readings_changed = true;
-
-						cohortset = &current.rule_to_cohorts[rule.number];
-						rocit = cohortset->lower_bound(current.cohorts[cohort->local_number]);
-						break;
-					}
-					else if (type == K_SETPARENT || type == K_SETCHILD) {
-						int32_t orgoffset = rule.dep_target->offset;
-						auto seen_targets = ss_u32sv.get();
-
-						bool attached = false;
-						Cohort* target = cohort;
-						while (!attached) {
-							auto utags = ss_utags.get();
-							auto usets = ss_usets.get();
-							*utags = *unif_tags;
-							*usets = *unif_sets;
-
-							Cohort* attach = nullptr;
-							seen_targets->insert(target->global_number);
-							dep_deep_seen.clear();
-							tmpl_cntx.clear();
-							attach_to = nullptr;
-							seen_barrier = false;
-							if (runContextualTest(target->parent, target->local_number, rule.dep_target, &attach) && attach) {
-								bool break_after = seen_barrier || (rule.flags & RF_NEAREST);
-								if (attach_to) {
-									attach = attach_to;
-								}
-								bool good = true;
-								for (auto it : rule.dep_tests) {
-									mark = attach;
-									dep_deep_seen.clear();
-									tmpl_cntx.clear();
-									test_good = (runContextualTest(attach->parent, attach->local_number, it) != nullptr);
-									if (!test_good) {
-										good = test_good;
-										break;
-									}
-								}
-								if (good) {
-									swapper<Cohort*> sw((rule.flags & RF_REVERSE) != 0, attach, cohort);
-									if (type == K_SETPARENT) {
-										attached = attachParentChild(*attach, *cohort, (rule.flags & RF_ALLOWLOOP) != 0, (rule.flags & RF_ALLOWCROSS) != 0);
-									}
-									else {
-										attached = attachParentChild(*cohort, *attach, (rule.flags & RF_ALLOWLOOP) != 0, (rule.flags & RF_ALLOWCROSS) != 0);
-									}
-									if (attached) {
-										index_ruleCohort_no.clear();
-										TRACE;
-										reading.noprint = false;
-										has_dep = true;
-										readings_changed = true;
-										break;
-									}
-								}
-								if (break_after) {
-									break;
-								}
-								if (seen_targets->count(attach->global_number)) {
-									// We've found a cohort we have seen before...
-									// We assume running the test again would result in the same, so don't bother.
-									break;
-								}
-								if (!attached) {
-									// Did not successfully attach due to loop restrictions; look onwards from here
-									target = attach;
-									unif_tags->swap(utags);
-									unif_sets->swap(usets);
-									if (rule.dep_target->offset != 0) {
-										// Temporarily set offset to +/- 1
-										rule.dep_target->offset = ((rule.dep_target->offset < 0) ? -1 : 1);
-									}
-								}
-							}
-							else {
-								break;
-							}
-						}
-						rule.dep_target->offset = orgoffset;
-						break;
-					}
-					else if (type == K_MOVE_AFTER || type == K_MOVE_BEFORE || type == K_SWITCH) {
-						// Calculate hash of current state to later compare whether this move/switch actually did anything
-						uint32_t phash = 0;
-						uint32_t chash = 0;
-						for (const auto& c : current.cohorts) {
-							phash = hash_value(c->global_number, phash);
-							chash = hash_value(c->readings[0]->hash, chash);
-						}
-
-						// ToDo: ** tests will not correctly work for MOVE/SWITCH; cannot move cohorts between windows
-						Cohort* attach = nullptr;
-						dep_deep_seen.clear();
-						tmpl_cntx.clear();
-						attach_to = nullptr;
-						if (runContextualTest(&current, c, rule.dep_target, &attach) && attach && cohort->parent == attach->parent) {
-							if (attach_to) {
-								attach = attach_to;
-							}
-							bool good = true;
-							for (auto it : rule.dep_tests) {
-								mark = attach;
-								dep_deep_seen.clear();
-								tmpl_cntx.clear();
-								test_good = (runContextualTest(attach->parent, attach->local_number, it) != nullptr);
-								if (!test_good) {
-									good = test_good;
-									break;
-								}
-							}
-
-							if (!good || cohort == attach || cohort->local_number == 0) {
-								break;
-							}
-
-							swapper<Cohort*> sw((rule.flags & RF_REVERSE) != 0, attach, cohort);
-							CohortSet cohorts;
-
-							if (type == K_SWITCH) {
-								if (attach->local_number == 0) {
-									break;
-								}
-								current.cohorts[cohort->local_number] = attach;
-								current.cohorts[attach->local_number] = cohort;
-								cohorts.insert(attach);
-								cohorts.insert(cohort);
-							}
-							else {
-								CohortSet edges;
-								collect_subtree(edges, attach, rule.childset2);
-								collect_subtree(cohorts, cohort, rule.childset1);
-
-								bool need_clean = false;
-								for (auto iter : cohorts) {
-									if (edges.count(iter)) {
-										need_clean = true;
-										break;
-									}
-								}
-
-								if (need_clean) {
-									if (isChildOf(cohort, attach)) {
-										edges.erase(cohorts.rbegin(), cohorts.rend());
-									}
-									else /* if (isChildOf(attach, cohort)) */ {
-										cohorts.erase(edges.rbegin(), edges.rend());
-									}
-								}
-								if (cohorts.empty() || edges.empty()) {
-									break;
-								}
-
-								reverse_foreach (iter, cohorts) {
-									current.cohorts.erase(current.cohorts.begin() + (*iter)->local_number);
-								}
-
-								foreach (iter, current.cohorts) {
-									(*iter)->local_number = UI32(std::distance(current.cohorts.begin(), iter));
-								}
-
-								for (auto iter : edges) {
-									if (iter->parent != cohort->parent) {
-										u_fprintf(ux_stderr, "Error: Move/Switch on line %u tried to move across window boundaries.\n", rule.line);
-										CG3Quit(1);
-									}
-									for (auto cohort : cohorts) {
-										if (iter == cohort) {
-											u_fprintf(ux_stderr, "Error: Move/Switch on line %u tried to move to a removed position.\n", rule.line);
-											CG3Quit(1);
-										}
-									}
-								}
-
-								uint32_t spot = 0;
-								if (type == K_MOVE_BEFORE) {
-									spot = edges.front()->local_number;
-									if (spot == 0) {
-										spot = 1;
-									}
-								}
-								else if (type == K_MOVE_AFTER) {
-									spot = edges.back()->local_number + 1;
-								}
-
-								if (spot > current.cohorts.size()) {
-									u_fprintf(ux_stderr, "Error: Move/Switch on line %u tried to move out of bounds.\n", rule.line);
+							for (auto cohort : cohorts) {
+								if (iter == cohort) {
+									u_fprintf(ux_stderr, "Error: Move/Switch on line %u tried to move to a removed position.\n", rule->line);
 									CG3Quit(1);
 								}
-
-								reverse_foreach (iter, cohorts) {
-									current.cohorts.insert(current.cohorts.begin() + spot, *iter);
-								}
-							}
-							foreach (iter, current.cohorts) {
-								(*iter)->local_number = UI32(std::distance(current.cohorts.begin(), iter));
-							}
-							gWindow->rebuildCohortLinks();
-
-							// Compare whether this move/switch actually did anything
-							uint32_t phash_n = 0;
-							uint32_t chash_n = 0;
-							for (const auto& c : current.cohorts) {
-								phash_n = hash_value(c->global_number, phash_n);
-								chash_n = hash_value(c->readings[0]->hash, chash_n);
-							}
-
-							if (phash != phash_n || chash != chash_n) {
-								if (++rule_hits[rule.number] > current.cohorts.size() * 100) {
-									u_fprintf(ux_stderr, "Warning: Move/Switch endless loop detected for rule on line %u around input line %u - bailing out!\n", rule.line, cohort->line_number);
-									goto bailout;
-								}
-
-								for (auto c : cohorts) {
-									for (auto iter : c->readings) {
-										iter->hit_by.push_back(rule.number);
-									}
-								}
-								readings_changed = true;
-								sorter.do_sort = true;
-							}
-							break;
-						}
-					}
-					else if (type == K_ADDRELATION || type == K_SETRELATION || type == K_REMRELATION) {
-						Cohort* attach = nullptr;
-						dep_deep_seen.clear();
-						attach_to = nullptr;
-						// ToDo: Maybe allow SetRelation family to scan on after failed tests?
-						if (runContextualTest(&current, c, rule.dep_target, &attach) && attach) {
-							if (attach_to) {
-								attach = attach_to;
-							}
-							bool good = true;
-							for (auto it : rule.dep_tests) {
-								mark = attach;
-								dep_deep_seen.clear();
-								test_good = (runContextualTest(attach->parent, attach->local_number, it) != nullptr);
-								if (!test_good) {
-									good = test_good;
-									break;
-								}
-							}
-							if (good) {
-								swapper<Cohort*> sw((rule.flags & RF_REVERSE) != 0, attach, cohort);
-								bool rel_did_anything = false;
-								auto theTags = ss_taglist.get();
-								getTagList(*rule.maplist, theTags);
-
-								for (auto tter : *theTags) {
-									VARSTRINGIFY(tter);
-									if (type == K_ADDRELATION) {
-										attach->setRelated();
-										cohort->setRelated();
-										rel_did_anything |= cohort->addRelation(tter->hash, attach->global_number);
-										add_relation_rtag(cohort, tter, attach->global_number);
-									}
-									else if (type == K_SETRELATION) {
-										attach->setRelated();
-										cohort->setRelated();
-										rel_did_anything |= cohort->setRelation(tter->hash, attach->global_number);
-										set_relation_rtag(cohort, tter, attach->global_number);
-									}
-									else {
-										rel_did_anything |= cohort->remRelation(tter->hash, attach->global_number);
-										rem_relation_rtag(cohort, tter, attach->global_number);
-									}
-								}
-								if (rel_did_anything) {
-									index_ruleCohort_no.clear();
-									TRACE;
-									reading.noprint = false;
-									readings_changed = true;
-								}
 							}
 						}
-						break;
-					}
-					else if (type == K_ADDRELATIONS || type == K_SETRELATIONS || type == K_REMRELATIONS) {
-						Cohort* attach = nullptr;
-						dep_deep_seen.clear();
-						tmpl_cntx.clear();
-						attach_to = nullptr;
-						if (runContextualTest(&current, c, rule.dep_target, &attach) && attach) {
-							if (attach_to) {
-								attach = attach_to;
-							}
-							bool good = true;
-							for (auto it : rule.dep_tests) {
-								mark = attach;
-								dep_deep_seen.clear();
-								tmpl_cntx.clear();
-								test_good = (runContextualTest(attach->parent, attach->local_number, it) != nullptr);
-								if (!test_good) {
-									good = test_good;
-									break;
-								}
-							}
-							if (good) {
-								swapper<Cohort*> sw((rule.flags & RF_REVERSE) != 0, attach, cohort);
-								bool rel_did_anything = false;
 
-								auto sublist = ss_taglist.get();
-								getTagList(*rule.sublist, sublist);
-
-								auto maplist = ss_taglist.get();
-								getTagList(*rule.maplist, maplist);
-
-								for (auto tter : *maplist) {
-									VARSTRINGIFY(tter);
-									if (type == K_ADDRELATIONS) {
-										cohort->setRelated();
-										rel_did_anything |= cohort->addRelation(tter->hash, attach->global_number);
-										add_relation_rtag(cohort, tter, attach->global_number);
-									}
-									else if (type == K_SETRELATIONS) {
-										cohort->setRelated();
-										rel_did_anything |= cohort->setRelation(tter->hash, attach->global_number);
-										set_relation_rtag(cohort, tter, attach->global_number);
-									}
-									else {
-										rel_did_anything |= cohort->remRelation(tter->hash, attach->global_number);
-										rem_relation_rtag(cohort, tter, attach->global_number);
-									}
-								}
-								for (auto tter : *sublist) {
-									VARSTRINGIFY(tter);
-									if (type == K_ADDRELATIONS) {
-										attach->setRelated();
-										rel_did_anything |= attach->addRelation(tter->hash, cohort->global_number);
-										add_relation_rtag(attach, tter, cohort->global_number);
-									}
-									else if (type == K_SETRELATIONS) {
-										attach->setRelated();
-										rel_did_anything |= attach->setRelation(tter->hash, cohort->global_number);
-										set_relation_rtag(attach, tter, cohort->global_number);
-									}
-									else {
-										rel_did_anything |= attach->remRelation(tter->hash, cohort->global_number);
-										rem_relation_rtag(attach, tter, cohort->global_number);
-									}
-								}
-								if (rel_did_anything) {
-									index_ruleCohort_no.clear();
-									TRACE;
-									reading.noprint = false;
-									readings_changed = true;
-								}
+						uint32_t spot = 0;
+						if (rule->type == K_MOVE_BEFORE) {
+							spot = edges.front()->local_number;
+							if (spot == 0) {
+								spot = 1;
 							}
 						}
-					}
-				}
-			}
+						else if (rule->type == K_MOVE_AFTER) {
+							spot = edges.back()->local_number + 1;
+						}
 
-			// We've marked all readings for removal, so check if the rule is unsafe and undo if not.
-			// Iff rules can slip through the previous checks and come all the way here.
-			if (type == K_REMOVE && removed.size() == cohort->readings.size() && (!unsafe || (rule.flags & RF_SAFE)) && !(rule.flags & RF_UNSAFE)) {
-				removed.clear();
-			}
+						if (spot > current.cohorts.size()) {
+							u_fprintf(ux_stderr, "Error: Move/Switch on line %u tried to move out of bounds.\n", rule->line);
+							CG3Quit(1);
+						}
 
-			// Actually remove readings from the cohort
-			if (!removed.empty()) {
-				if (rule.flags & RF_DELAYED) {
-					cohort->delayed.insert(cohort->delayed.end(), removed.begin(), removed.end());
-				}
-				else if (rule.flags & RF_IGNORED) {
-					cohort->ignored.insert(cohort->ignored.end(), removed.begin(), removed.end());
-				}
-				else {
-					cohort->deleted.insert(cohort->deleted.end(), removed.begin(), removed.end());
-				}
-				size_t oz = cohort->readings.size();
-				while (!removed.empty()) {
-					removed.back()->deleted = true;
-					for (size_t i = 0; i < oz; ++i) {
-						if (cohort->readings[i] == removed.back()) {
-							--oz;
-							std::swap(cohort->readings[i], cohort->readings[oz]);
+						reverse_foreach (iter, cohorts) {
+							current.cohorts.insert(current.cohorts.begin() + spot, *iter);
 						}
 					}
-					removed.pop_back();
-				}
-				cohort->readings.resize(oz);
-				if (debug_level > 0) {
-					std::cerr << "DEBUG: Rule " << rule.line << " hit cohort " << cohort->local_number << std::endl;
-				}
-			}
-			// If there are any selected cohorts, just swap them in...
-			if (!selected.empty()) {
-				cohort->readings.swap(selected);
-			}
+					reindex();
 
-			if (cohort->readings.empty()) {
-				initEmptyCohort(*cohort);
-			}
+					// Compare whether this move/switch actually did anything
+					uint32_t phash_n = 0;
+					uint32_t chash_n = 0;
+					for (const auto& c : current.cohorts) {
+						phash_n = hash_value(c->global_number, phash_n);
+						chash_n = hash_value(c->readings[0]->hash, chash_n);
+					}
 
-			// Cohort state has changed, so mark that the section did something
-			if (state_num_readings != cohort->readings.size() || state_num_removed != cohort->deleted.size() || state_num_delayed != cohort->delayed.size() || state_num_ignored != cohort->ignored.size() || readings_changed) {
-				if (!(rule.flags & RF_NOITERATE) && section_max_count != 1) {
-					section_did_something = true;
-				}
-				rule_did_something = true;
-				cohort->type &= ~CT_NUM_CURRENT;
-			}
+					if (phash != phash_n || chash != chash_n) {
+						if (++rule_hits[rule->number] > current.cohorts.size() * 100) {
+							u_fprintf(ux_stderr, "Warning: Move/Switch endless loop detected for rule on line %u around input line %u - bailing out!\n", rule->line, get_apply_to().cohort->line_number);
+							should_bail = true;
+							finish_cohort_loop = false;
+							return;
+						}
 
-			if (delimited) {
-				break;
-			}
-
-			if (swap_ac) {
-				cohort = ac_c;
-				if (cohortset->empty()) {
-					rocit = cohortset->end();
-				}
-				else {
-					rocit = cohortset->find(current.cohorts[cohort->local_number]);
-					if (rocit != cohortset->end()) {
-						++rocit;
+						for (auto c : cohorts) {
+							for (auto iter : c->readings) {
+								iter->hit_by.push_back(rule->number);
+							}
+						}
+						readings_changed = true;
+						sorter.do_sort = true;
 					}
 				}
 			}
+			else if (rule->type == K_WITH) {
+				TRACE;
+				bool any_readings_changed = false;
+				readings_changed = false;
+				for (auto& sr : rule->sub_rules) {
+					Rule* cur_was = current_rule;
+					Rule* rule_was = rule;
+					current_rule = sr;
+					rule = sr;
+					bool result = false;
+					do {
+						readings_changed = false;
+						result = runSingleRule(current, *rule, reading_cb, cohort_cb);
+						any_readings_changed = any_readings_changed || result || readings_changed;
+					} while ((result || readings_changed) && (rule->flags & RF_REPEAT) != 0) ;
+					current_rule = cur_was;
+					rule = rule_was;
+				}
+				readings_changed = any_readings_changed;
+				finish_reading_loop = false;
+			}
+			else if (rule->type != K_REMCOHORT) {
+				TRACE;
+			}
+		};
+
+		removed.resize(0);
+		selected.resize(0);
+		bool rv = runSingleRule(current, *rule, reading_cb, cohort_cb);
+		if (rv || readings_changed) {
+			if (!(rule->flags & RF_NOITERATE) && section_max_count != 1) {
+				section_did_something = true;
+			}
+			rule_did_something = true;
+		}
+		if (should_bail) {
+			goto bailout;
+		}
+		if (should_repeat) {
+			goto repeat_rule;
 		}
 
 		if (statistics) {
 			ticks tmp = getticks();
-			rule.total_time += elapsed(tmp, tstamp);
+			rule->total_time += elapsed(tmp, tstamp);
 		}
 
 		if (rule_did_something) {
-			if (trace_rules.contains(rule.line)) {
+			if (trace_rules.contains(rule->line)) {
 				retval |= RV_TRACERULE;
 			}
 		}
 		if (delimited) {
 			break;
 		}
-		if (rule_did_something && (rule.flags & RF_REPEAT)) {
+		if (rule_did_something && (rule->flags & RF_REPEAT)) {
 			index_ruleCohort_no.clear();
 			goto repeat_rule;
 		}
 
 		if (false) {
 		bailout:
-			rule_hits[rule.number] = 0;
+			rule_hits[rule->number] = 0;
 			index_ruleCohort_no.clear();
 		}
 

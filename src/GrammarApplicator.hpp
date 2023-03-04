@@ -72,6 +72,31 @@ struct dSMC_Context {
 	bool in_barrier = false;
 };
 
+// Value can be either tag or trie, but we only ever compare pointers
+// and never dereference, so just make it void*
+typedef bc::flat_map<uint32_t, const void*> unif_tags_t;
+typedef bc::flat_map<uint32_t, uint32SortedVector> unif_sets_t;
+
+struct ReadingSpec {
+	Cohort* cohort = nullptr;
+	Reading* reading = nullptr;
+	Reading* subreading = nullptr;
+};
+
+struct Rule_Context {
+	ReadingSpec target;
+	std::vector<Cohort*> context;
+	std::vector<Cohort*> dep_context;
+	ReadingSpec attach_to;
+	Cohort* mark = nullptr;
+	unif_tags_t* unif_tags = nullptr;
+	unif_sets_t* unif_sets = nullptr;
+	uint8_t regexgrp_ct = 0;
+	regexgrps_t* regexgrps = nullptr;
+};
+
+typedef std::function<void(void)> RuleCallback;
+
 class GrammarApplicator {
 public:
 	bool always_span = false;
@@ -219,31 +244,34 @@ protected:
 	tmpl_context_t tmpl_cntx;
 
 	std::vector<regexgrps_t> regexgrps_store;
-	std::pair<uint8_t, regexgrps_t*> regexgrps;
 	bc::flat_map<uint32_t, uint8_t> regexgrps_z;
 	bc::flat_map<uint32_t, regexgrps_t*> regexgrps_c;
 	uint32_t same_basic = 0;
 	Cohort* target = nullptr;
-	Cohort* mark = nullptr;
-	Cohort* attach_to = nullptr;
 	Cohort* merge_with = nullptr;
 	Rule* current_rule = nullptr;
+	std::vector<Rule_Context> context_stack;
+
+	ReadingSpec get_attach_to();
+	Cohort* get_mark();
+	ReadingSpec get_apply_to();
+	void set_attach_to(Reading* reading, Reading* subreading = nullptr);
+	void set_mark(Cohort* cohort);
+	bool check_unif_tags(uint32_t set, const void* val);
 
 	typedef bc::flat_map<uint32_t, Reading*> readings_plain_t;
 	readings_plain_t readings_plain;
 	std::vector<URegularExpression*> text_delimiters;
 
-	typedef bc::flat_map<uint32_t, const void*> unif_tags_t;
+
 	bc::flat_map<uint32_t, unif_tags_t*> unif_tags_rs;
 	std::vector<unif_tags_t> unif_tags_store;
-	typedef bc::flat_map<uint32_t, uint32SortedVector> unif_sets_t;
+
 	bc::flat_map<uint32_t, unif_sets_t*> unif_sets_rs;
 	std::vector<unif_sets_t> unif_sets_store;
-	unif_tags_t* unif_tags = nullptr;
 	uint32_t unif_last_wordform = 0;
 	uint32_t unif_last_baseform = 0;
 	uint32_t unif_last_textual = 0;
-	unif_sets_t* unif_sets = nullptr;
 	bc::flat_map<uint32_t, uint32_t> rule_hits;
 
 	scoped_stack<TagList> ss_taglist;
@@ -268,6 +296,12 @@ protected:
 	uint32_t runGrammarOnSingleWindow(SingleWindow& current);
 	bool updateValidRules(const uint32IntervalVector& rules, uint32IntervalVector& intersects, const uint32_t& hash, Reading& reading);
 	uint32_t runRulesOnSingleWindow(SingleWindow& current, const uint32IntervalVector& rules);
+	// set these to false to break the 2 loops in runSingleRule()
+	bool reset_cohorts_for_loop = false;
+	bool finish_reading_loop = true;
+	bool finish_cohort_loop = true;
+	size_t used_regex = 0;
+	bool runSingleRule(SingleWindow& current, const Rule& rule, RuleCallback reading_cb, RuleCallback cohort_cb);
 
 	enum ST_RETVALS {
 		TRV_BREAK         = (1 <<  0),

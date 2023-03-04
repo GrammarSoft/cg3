@@ -1,0 +1,10 @@
+DELIMITERS = "<.>" ;
+
+LIST @det = @det ;
+
+WITH (det def) IF (1X (n)) {
+  REMOVE (skip) ;
+  MAP @det (*) ;
+  SETPARENT (*) TO (1 _MARK_) ;
+  SETCHILD _C1_ TO (-1* (predet)) ;
+} ;

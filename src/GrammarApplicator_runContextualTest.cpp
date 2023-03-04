@@ -31,12 +31,12 @@
 namespace CG3 {
 
 Cohort* GrammarApplicator::runSingleTest(Cohort* cohort, const ContextualTest* test, uint8_t& rvs, bool* retval, Cohort** deep, Cohort* origin) {
-	uint8_t regexgrpz = regexgrps.first;
+	uint8_t regexgrpz = context_stack.back().regexgrp_ct;
 	if (test->pos & POS_MARK_SET) {
-		mark = cohort;
+		set_mark(cohort);
 	}
 	if (test->pos & POS_ATTACH_TO) {
-		if (attach_to != cohort) {
+		if (get_attach_to().cohort != cohort) {
 			// Clear readings for rules that care about readings
 			ReadingList* lists[4] = { &cohort->readings };
 			if (test->pos & POS_LOOK_DELETED) {
@@ -59,8 +59,6 @@ Cohort* GrammarApplicator::runSingleTest(Cohort* cohort, const ContextualTest* t
 				}
 			}
 		}
-
-		attach_to = cohort;
 	}
 	if (test->pos & POS_WITH) {
 		merge_with = cohort;
@@ -125,7 +123,7 @@ Cohort* GrammarApplicator::runSingleTest(Cohort* cohort, const ContextualTest* t
 		rvs &= ~(TRV_BREAK | TRV_BARRIER);
 	}
 	if (!*retval) {
-		regexgrps.first = regexgrpz;
+		context_stack.back().regexgrp_ct = regexgrpz;
 	}
 	return cohort;
 }
@@ -293,8 +291,8 @@ Cohort* GrammarApplicator::runContextualTest(SingleWindow* sWindow, size_t posit
 	}
 
 	if (test->pos & POS_MARK_JUMP) {
-		sWindow = mark->parent;
-		position = mark->local_number;
+		sWindow = get_mark()->parent;
+		position = get_mark()->local_number;
 	}
 	int32_t pos = static_cast<int32_t>(position) + test->offset;
 
@@ -781,7 +779,7 @@ Cohort* GrammarApplicator::runRelationTest(SingleWindow* sWindow, Cohort* curren
 
 	// Recursion may happen, so can't be static
 	CohortSet rels;
-	uint8_t regexgrpz = regexgrps.first;
+	uint8_t regexgrpz = context_stack.back().regexgrp_ct;
 
 	auto rtag = grammar->single_tags[test->relation];
 	while (rtag->type & T_VARSTRING) {
@@ -806,7 +804,7 @@ Cohort* GrammarApplicator::runRelationTest(SingleWindow* sWindow, Cohort* curren
 				auto it = sWindow->parent->cohort_map.find(citer);
 				if (it != sWindow->parent->cohort_map.end() && doesTagMatchRegexp(riter.first, *rtag, caps != 0)) {
 					rels.insert(it->second);
-					regexgrps.first = std::min(regexgrps.first, UI8(regexgrpz + caps));
+					context_stack.back().regexgrp_ct = std::min(context_stack.back().regexgrp_ct, UI8(regexgrpz + caps));
 				}
 			}
 		}
@@ -869,7 +867,7 @@ Cohort* GrammarApplicator::runRelationTest(SingleWindow* sWindow, Cohort* curren
 	}
 
 	if (!rv) {
-		regexgrps.first = regexgrpz;
+		context_stack.back().regexgrp_ct = regexgrpz;
 	}
 	return rv;
 }

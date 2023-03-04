@@ -239,6 +239,10 @@ int BinaryGrammar::parse_grammar(std::istream& input) {
 			fread_throw(&u32tmp, sizeof(u32tmp), 1, input);
 			t->variable_hash = ntoh32(u32tmp);
 		}
+		if (fields & (1 << 14)) {
+			fread_throw(&u32tmp, sizeof(u32tmp), 1, input);
+			t->context_ref_pos = ntoh32(u32tmp);
+		}
 
 		grammar->single_tags[t->hash] = t;
 		grammar->single_tags_list[t->number] = t;
@@ -520,6 +524,18 @@ int BinaryGrammar::parse_grammar(std::istream& input) {
 			ContextualTest* t = grammar->contexts[u32tmp];
 			r->addContextualTest(t, r->tests);
 		}
+
+		if (fields & (1 << 15)) {
+			fread_throw(&u32tmp, sizeof(u32tmp), 1, input);
+			u32tmp = ntoh32(u32tmp);
+			uint32_t num_sub_rules = u32tmp;
+			for (uint32_t j = 0; j < num_sub_rules; j++) {
+				fread_throw(&u32tmp, sizeof(u32tmp), 1, input);
+				u32tmp = ntoh32(u32tmp);
+				r->sub_rules.push_back(grammar->rule_by_number[u32tmp]);
+			}
+		}
+
 		grammar->rule_by_number[r->number] = r;
 	}
 

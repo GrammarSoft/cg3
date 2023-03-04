@@ -1,0 +1,6 @@
+DELIMITERS = "<.>" ;
+
+WITH (det def) IF (1* (n)) {
+  SETPARENT (*) (0 (sp)) TO (1* _C1_) ;
+  SETPARENT (*) (0 (pl)) TO (-1* (n)) ;
+} ;

@@ -9,6 +9,7 @@ chdir $bindir or die("Error: Could not change directory to $bindir !");
 
 # Search paths for the binary
 my @binlist = (
+	"../build/src/vislcg3",
 	"../../build/VS17/src/Debug/vislcg3",
 	"../../build/VS17/src/Release/vislcg3",
 	"../src/Debug/vislcg3",
@@ -63,19 +64,19 @@ sub run_pl {
 }
 
 foreach (@binlist) {
-	if (-x $_) {
+	if (-x $_ && int(`$_ --min-binary-revision 2>/dev/null`) >= 10373) {
 		$binary = $_;
 		last;
 	}
-	elsif (-x $_.".exe") {
+	elsif (-x $_.".exe" && int(`$_.exe --min-binary-revision 2>/dev/null`) >= 10373) {
 		$binary = $_.".exe";
 		last;
 	}
-	elsif (-x "../".$_) {
+	elsif (-x "../".$_ && int(`../$_ --min-binary-revision 2>/dev/null`) >= 10373) {
 		$binary = "../".$_;
 		last;
 	}
-	elsif (-x "../".$_.".exe") {
+	elsif (-x "../".$_.".exe" && int(`../$_.exe --min-binary-revision 2>/dev/null`) >= 10373) {
 		$binary = "../".$_.".exe";
 		last;
 	}
@@ -86,6 +87,9 @@ print STDERR "Binary found at: $binary\n";
 print STDERR "\nRunning tests...\n";
 
 my $bad = 0;
+
+my $total = 0;
+my $failed = 0;
 
 my @tests = grep { -x } glob('./T_*');
 foreach (@tests) {
@@ -120,15 +124,21 @@ foreach (@tests) {
 		`./run.pl "$binary" \Q$c\E $args`;
 		if ($?) {
 			$bad = 1;
+			$failed += 1;
 		}
 	}
 	else {
 		if (!run_pl($binary, $c, $args)) {
 			$bad = 1;
+			$failed += 1;
 		}
 	}
+	$total += 1;
 }
 
 print STDERR "\n";
+
+my $success = $total - $failed;
+print STDERR "$success / $total tests passing\n";
 
 exit($bad);
