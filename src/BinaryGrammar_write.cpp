@@ -200,6 +200,10 @@ int BinaryGrammar::writeBinaryGrammar(FILE* output) {
 			fields |= (1 << 13);
 			writeSwapped(buffer, t->variable_hash);
 		}
+		if (t->type & T_CONTEXT) {
+			fields |= (1 << 14);
+			writeSwapped(buffer, t->context_ref_pos);
+		}
 
 		u32tmp = hton32(fields);
 		fwrite_throw(&u32tmp, sizeof(u32tmp), 1, output);
@@ -400,6 +404,9 @@ int BinaryGrammar::writeBinaryGrammar(FILE* output) {
 			fields |= (1 << 14);
 			writeSwapped(buffer, r->number);
 		}
+		if (!r->sub_rules.empty()) {
+			fields |= (1 << 15);
+		}
 
 		u32tmp = hton32(fields);
 		fwrite_throw(&u32tmp, sizeof(u32tmp), 1, output);
@@ -425,6 +432,15 @@ int BinaryGrammar::writeBinaryGrammar(FILE* output) {
 		for (auto it : r->tests) {
 			u32tmp = hton32(it->hash);
 			fwrite_throw(&u32tmp, sizeof(u32tmp), 1, output);
+		}
+
+		if (!r->sub_rules.empty()) {
+			u32tmp = hton32(static_cast<unsigned long>(r->sub_rules.size()));
+			fwrite_throw(&u32tmp, sizeof(u32tmp), 1, output);
+			for (auto it : r->sub_rules) {
+				u32tmp = hton32(it->number);
+				fwrite_throw(&u32tmp, sizeof(u32tmp), 1, output);
+			}
 		}
 	}
 

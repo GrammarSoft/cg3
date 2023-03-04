@@ -1,0 +1,30 @@
+"<all>"
+	"all" predet sp
+"<the>"
+	"the" det def sp
+"<things>"
+	"thing" n pl
+"<.>"
+	"." sent
+
+"<potatoes>"
+	"potato" n pl
+"<are>"
+	"be" vbser pl
+"<the>"
+	"the" det def pl
+"<things>"
+	"thing" n pl
+"<.>"
+	"." sent
+
+"<all>"
+	"all" predet sp
+"<the>"
+	"the" det def sp
+"<pretty>"
+	"pretty" adj
+"<things>"
+	"thing" n pl
+"<.>"
+	"." sent

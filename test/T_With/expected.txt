@@ -1,0 +1,26 @@
+"<all>"
+	"all" predet sp #1->3
+"<the>"
+	"the" det def sp @det #2->3
+"<things>"
+	"thing" n pl #3->3
+"<.>"
+	"." sent #4->4
+
+"<the>"
+	"the" det def sp @det #1->2
+"<things>"
+	"thing" n pl #2->2
+"<.>"
+	"." sent #3->3
+
+"<all>"
+	"all" predet sp #1->1
+"<the>"
+	"the" det def sp #2->2
+"<pretty>"
+	"pretty" adj #3->3
+"<things>"
+	"thing" n pl #4->4
+"<.>"
+	"." sent #5->5

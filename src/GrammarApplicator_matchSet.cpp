@@ -59,7 +59,7 @@ inline bool TagSet_SubsetOf_TSet(const TagSortedVector& a, const T& b) {
 }
 
 template<typename RXGS, typename Tag>
-inline void captureRegex(int32_t gc, RXGS& regexgrps, Tag& tag) {
+inline void captureRegex(int32_t gc, uint8_t& regexgrp_ct, RXGS* regexgrps, Tag& tag) {
 	constexpr auto BUFSIZE = 1024;
 	UErrorCode status = U_ZERO_ERROR;
 	UChar _tmp[BUFSIZE];
@@ -74,11 +74,11 @@ inline void captureRegex(int32_t gc, RXGS& regexgrps, Tag& tag) {
 			tmp = &_stmp[0];
 			uregex_group(tag.regexp, i, tmp, len + 1, &status);
 		}
-		regexgrps.second->resize(std::max(static_cast<size_t>(regexgrps.first) + 1, regexgrps.second->size()));
-		UnicodeString& ucstr = (*regexgrps.second)[regexgrps.first];
+		regexgrps->resize(std::max(static_cast<size_t>(regexgrp_ct) + 1, regexgrps->size()));
+		UnicodeString& ucstr = (*regexgrps)[regexgrp_ct];
 		ucstr.remove();
 		ucstr.append(tmp, len);
-		++regexgrps.first;
+		++regexgrp_ct;
 	}
 }
 
@@ -115,8 +115,8 @@ uint32_t GrammarApplicator::doesTagMatchRegexp(uint32_t test, const Tag& tag, bo
 			CG3Quit(1);
 		}
 		if (match) {
-			if (gc > 0 && regexgrps.second != 0) {
-				captureRegex(gc, regexgrps, tag);
+			if (gc > 0 && !context_stack.empty() && context_stack.back().regexgrps != 0) {
+				captureRegex(gc, context_stack.back().regexgrp_ct, context_stack.back().regexgrps, tag);
 			}
 			else {
 				index_regexp_yes.insert(ih);
@@ -181,8 +181,8 @@ uint32_t GrammarApplicator::doesRegexpMatchLine(const Reading& reading, const Ta
 		}
 		if (match) {
 			// ToDo: Allow regex captures from dependency target contexts without any captures in normal target contexts
-			if (gc > 0 && regexgrps.second != 0) {
-				captureRegex(gc, regexgrps, tag);
+			if (gc > 0 && !context_stack.empty() && context_stack.back().regexgrps != 0) {
+				captureRegex(gc, context_stack.back().regexgrp_ct, context_stack.back().regexgrps, tag);
 			}
 			else {
 				index_regexp_yes.insert(ih);
@@ -276,8 +276,8 @@ uint32_t GrammarApplicator::doesTagMatchReading(const Reading& reading, const Ta
 			}
 			if (match) {
 				int32_t gc = uregex_groupCount(tag.regexp, &status);
-				if (gc > 0 && regexgrps.second != 0) {
-					captureRegex(gc, regexgrps, tag);
+				if (gc > 0 && !context_stack.empty() && context_stack.back().regexgrps != 0) {
+					captureRegex(gc, context_stack.back().regexgrp_ct, context_stack.back().regexgrps, tag);
 				}
 			}
 		}
@@ -529,18 +529,28 @@ uint32_t GrammarApplicator::doesTagMatchReading(const Reading& reading, const Ta
 		}
 	}
 	else if (tag.type & T_MARK) {
-		if (mark && reading.parent == mark) {
+		if (reading.parent == get_mark()) {
 			match = grammar->tag_any;
 		}
 	}
 	else if (tag.type & T_ATTACHTO) {
-		if (attach_to && reading.parent == attach_to) {
+		if (reading.parent == get_attach_to().cohort) {
 			match = grammar->tag_any;
 		}
 	}
 	else if (tag.type & T_SAME_BASIC) {
 		if (reading.hash_plain == same_basic) {
 			match = grammar->tag_any;
+		}
+	}
+	else if (tag.type & T_CONTEXT) {
+		if (context_stack.size() > 1) {
+			auto& list = context_stack[context_stack.size()-2].context;
+			if (tag.context_ref_pos <= list.size()) {
+				if (reading.parent == list[tag.context_ref_pos-1]) {
+					match = grammar->tag_any;
+				}
+			}
 		}
 	}
 
@@ -560,12 +570,8 @@ bool GrammarApplicator::doesSetMatchReading_trie(const Reading& reading, const S
 				continue;
 			}
 			if (kv.second.terminal) {
-				if (unif_mode) {
-					auto it = unif_tags->find(theset.number);
-					if (it != unif_tags->end() && it->second != &kv) {
-						continue;
-					}
-					(*unif_tags)[theset.number] = &kv;
+				if (unif_mode && !check_unif_tags(theset.number, &kv)) {
+					continue;
 				}
 				return true;
 			}
@@ -605,13 +611,9 @@ bool GrammarApplicator::doesSetMatchReading_tags(const Reading& reading, const S
 		while (oiter != reading.tags_plain.end() && iiter != theset.trie.end()) {
 			if (*oiter == iiter->first->hash) {
 				if (iiter->second.terminal) {
-					if (unif_mode) {
-						auto it = unif_tags->find(theset.number);
-						if (it != unif_tags->end() && it->second != &*iiter) {
-							++iiter;
-							continue;
-						}
-						(*unif_tags)[theset.number] = &*iiter;
+					if (unif_mode && !check_unif_tags(theset.number, &*iiter)) {
+						++iiter;
+						continue;
 					}
 					retval = true;
 					break;
@@ -684,7 +686,7 @@ bool GrammarApplicator::doesSetMatchReading(const Reading& reading, const uint32
 	// &&unified sets
 	else if (theset.type & ST_SET_UNIFY) {
 		// First time, figure out all the sub-sets that match the reading and store them for later comparison
-		auto& usets = (*unif_sets)[theset.number];
+		auto& usets = (*context_stack.back().unif_sets)[theset.number];
 		if (usets.empty()) {
 			const Set& uset = *grammar->sets_list[theset.sets[0]];
 			const size_t size = uset.sets.size();
@@ -754,7 +756,8 @@ bool GrammarApplicator::doesSetMatchReading(const Reading& reading, const uint32
 			}
 		}
 		// Propagate unified tag to other sets of this set, if applicable
-		if (unif_mode || (theset.type & ST_TAG_UNIFY)) {
+		if ((unif_mode || (theset.type & ST_TAG_UNIFY)) && !context_stack.empty()) {
+			auto unif_tags = context_stack.back().unif_tags;
 			const void* tag = nullptr;
 			for (size_t i = 0; i < size; ++i) {
 				auto it = unif_tags->find(theset.sets[i]);
@@ -849,11 +852,11 @@ inline bool GrammarApplicator::doesSetMatchCohort_helper(Cohort& cohort, Reading
 	bool retval = false;
 	auto utags = ss_utags.get();
 	auto usets = ss_usets.get();
-	uint8_t orz = regexgrps.first;
+	uint8_t orz = (context_stack.empty() ? 0 : context_stack.back().regexgrp_ct);
 
-	if (context && !(current_rule->flags & FL_CAPTURE_UNIF) && (theset.type & ST_CHILD_UNIFY)) {
-		*utags = *unif_tags;
-		*usets = *unif_sets;
+	if (context && !(current_rule->flags & FL_CAPTURE_UNIF) && (theset.type & ST_CHILD_UNIFY) && !context_stack.empty()) {
+		*utags = *context_stack.back().unif_tags;
+		*usets = *context_stack.back().unif_sets;
 	}
 	if (doesSetMatchReading(reading, theset.number, (theset.type & (ST_CHILD_UNIFY | ST_SPECIAL)) != 0)) {
 		retval = true;
@@ -871,16 +874,22 @@ inline bool GrammarApplicator::doesSetMatchCohort_helper(Cohort& cohort, Reading
 		retval = doesSetMatchCohort_testLinked(cohort, theset, context);
 		if (context->options & POS_ATTACH_TO) {
 			reading.matched_tests = retval;
+			if (retval && !context_stack.empty()) {
+				context_stack.back().attach_to.cohort = &cohort;
+				// This will be set by doesSetMatchCohortNormal
+				context_stack.back().attach_to.reading = nullptr;
+				context_stack.back().attach_to.subreading = &reading;
+			}
 		}
 	}
-	if (!retval && context && !(current_rule->flags & FL_CAPTURE_UNIF) && (theset.type & ST_CHILD_UNIFY) && (utags->size() != unif_tags->size() || *utags != *unif_tags)) {
-		unif_tags->swap(utags);
+	if (!retval && context && !(current_rule->flags & FL_CAPTURE_UNIF) && (theset.type & ST_CHILD_UNIFY) && !context_stack.empty() && (utags->size() != context_stack.back().unif_tags->size() || *utags != *context_stack.back().unif_tags)) {
+		context_stack.back().unif_tags->swap(utags);
 	}
-	if (!retval && context && !(current_rule->flags & FL_CAPTURE_UNIF) && (theset.type & ST_CHILD_UNIFY) && usets->size() != unif_sets->size()) {
-		unif_sets->swap(usets);
+	if (!retval && context && !(current_rule->flags & FL_CAPTURE_UNIF) && (theset.type & ST_CHILD_UNIFY) && !context_stack.empty() && usets->size() != context_stack.back().unif_sets->size()) {
+		context_stack.back().unif_sets->swap(usets);
 	}
-	if (!retval) {
-		regexgrps.first = orz;
+	if (!retval && !context_stack.empty()) {
+		context_stack.back().regexgrp_ct = orz;
 	}
 	return retval;
 }
@@ -918,6 +927,7 @@ bool GrammarApplicator::doesSetMatchCohortNormal(Cohort& cohort, const uint32_t 
 			continue;
 		}
 		for (auto reading : *list) {
+			Reading* reading_head = reading;
 			if (context && context->test) {
 				// ToDo: Barriers need some way to escape sub-readings
 				reading = get_sub_reading(reading, context->test->offset_sub);
@@ -933,6 +943,13 @@ bool GrammarApplicator::doesSetMatchCohortNormal(Cohort& cohort, const uint32_t 
 			}
 			if (doesSetMatchCohort_helper(cohort, *reading, *theset, context)) {
 				retval = true;
+				// if there's a subreading, _helper doesn't know the
+				// parent, so set it here
+				if (!context_stack.empty() &&
+					context_stack.back().attach_to.cohort == &cohort &&
+					context_stack.back().attach_to.subreading == reading) {
+					context_stack.back().attach_to.reading = reading_head;
+				}
 			}
 			if (retval && (!context || !(context->test && context->test->linked) || context->did_test)) {
 				return retval;

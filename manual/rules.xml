@@ -75,6 +75,7 @@
 
   Flow control:
       JUMP &lt;anchor_name&gt; &lt;target&gt; [contextual_tests] ;
+      WITH &lt;target&gt; [contextual_tests] { [rules] } ;
     </screen>
   </section>
 
@@ -574,6 +575,58 @@
       There are also two special anchors <code>START</code> and <code>END</code> which represent line 0 and infinity
       respectively; jumping to START will re-run all currently active rules, while jumping to END will skip all remaining
       rules.
+    </para>
+  </section>
+
+  <section id="with">
+    <title>WITH</title>
+    <indexterm>
+      <primary>WITH</primary>
+    </indexterm>
+    <screen>
+      WITH &lt;target&lt; [contextual_tests] { [rules] } ;
+    </screen>
+    <para>
+      Matches a pattern and runs a list of rules on the matched cohort only.
+    </para>
+    <screen>
+      WITH (det def) {
+        MAP @det (*) ;
+        SETPARENT (*) TO (1* (n)) ;
+      } ;
+
+      # is equivalent to
+
+      MAP @det (det def) ;
+      SETPARENT (det def) TO (1* (n)) ;
+    </screen>
+    <para>
+      Additionally, WITH creates magic sets _C1_ through _C9_ referring to the cohorts matched by the outer contextual tests. If _MARK_ is set, it will also be accessible to the inner rules.
+    </para>
+    <screen>
+      # the following input
+      "&lt;the&gt;"
+        "the" det def
+      "&lt;silly&gt;"
+        "silly" adj
+      "&lt;example&gt;"
+        "example" n sg
+
+      # to this rule
+      WITH (n) IF (-1 (adj)) (-2 (det def)) {
+        SETCHILD REPEAT (*) TO (-1* _C1_ OR _C2_) (NOT p (*)) ;
+      } ;
+
+      # would output
+      "&lt;the&gt;"
+        "the" det def #1-&gt;3
+      "&lt;silly&gt;"
+        "silly" adj #2-&gt;3
+      "&lt;example&gt;"
+        "example" n sg #3-&gt;3
+    </screen>
+    <para>
+      Note that rules inside WITH are only run once each time WITH is run, unless they have REPEAT, and thus without REPEAT, the rule above would otherwise attach only the adjective.
     </para>
   </section>
 
