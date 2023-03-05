@@ -1,0 +1,30 @@
+"<all>"
+	"all" predet sp #1->1
+"<the>"
+	"the" det def sp #2->3
+"<things>"
+	"thing" n pl #3->3
+"<.>"
+	"." sent #4->4
+
+"<potatoes>"
+	"potato" n pl #1->1
+"<are>"
+	"be" vbser pl @Y #2->2
+"<the>"
+	"the" det def pl #3->3
+"<things>"
+	"thing" n pl #4->4
+"<.>"
+	"." sent #5->5
+
+"<all>"
+	"all" predet sp #1->1
+"<the>"
+	"the" det def sp #2->4
+"<pretty>"
+	"pretty" adj #3->3
+"<things>"
+	"thing" n pl #4->4
+"<.>"
+	"." sent @X #5->5

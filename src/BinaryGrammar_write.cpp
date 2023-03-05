@@ -521,6 +521,10 @@ void BinaryGrammar::writeContextualTest(ContextualTest* t, FILE* output) {
 	if (t->linked) {
 		fields |= (1 << 11);
 	}
+	if (t->context_jump_pos) {
+		fields |= (1 << 12);
+		writeSwapped(buffer, t->context_jump_pos);
+	}
 
 	u32tmp = hton32(fields);
 	fwrite_throw(&u32tmp, sizeof(u32tmp), 1, output);

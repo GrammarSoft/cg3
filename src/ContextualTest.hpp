@@ -56,7 +56,7 @@ enum : uint64_t {
 	POS_ALL            = (1 << 18), // Prefix ALL
 	POS_DEP_DEEP       = (1 << 19), // * or **
 	POS_MARK_SET       = (1 << 20), // X
-	POS_MARK_JUMP      = (1 << 21), // x
+	POS_MARK_JUMP      = (1 << 21), // x, jM
 	POS_LOOK_DELETED   = (1 << 22), // D
 	POS_LOOK_DELAYED   = (1 << 23), // d
 	POS_TMPL_OVERRIDE  = (1 << 24),
@@ -76,6 +76,9 @@ enum : uint64_t {
 	POS_LOOK_IGNORED   = (1ull << 38), // I
 	POS_INACTIVE       = (1ull << 39), // t
 	POS_ACTIVE         = (1ull << 40), // T
+	POS_ATTACH_JUMP    = (1ull << 41), // jA
+	POS_TARGET_JUMP    = (1ull << 42), // jT
+	POS_CONTEXT_JUMP   = (1ull << 43), // jCn
 
 	MASK_POS_DEP       = POS_DEP_PARENT | POS_DEP_SIBLING | POS_DEP_CHILD | POS_DEP_GLOB,
 	MASK_POS_DEPREL    = MASK_POS_DEP | POS_RELATION,
@@ -83,6 +86,7 @@ enum : uint64_t {
 	MASK_POS_LORR      = POS_LEFT | POS_RIGHT | POS_LEFTMOST | POS_RIGHTMOST,
 	MASK_POS_SCAN      = POS_SCANFIRST | POS_SCANALL | POS_DEP_DEEP | POS_DEP_GLOB,
 	MASK_SELF_NB       = POS_SELF | POS_NO_BARRIER,
+	MASK_POS_JUMP      = POS_MARK_JUMP | POS_ATTACH_JUMP | POS_TARGET_JUMP | POS_CONTEXT_JUMP,
 };
 
 enum GSR_SPECIALS {
@@ -102,6 +106,7 @@ public:
 	uint32_t relation = 0;
 	uint32_t barrier = 0;
 	uint32_t cbarrier = 0;
+	uint32_t context_jump_pos = 0;
 	mutable uint32_t num_fail = 0, num_match = 0;
 	mutable double total_time = 0;
 	ContextualTest* tmpl = nullptr;
@@ -129,6 +134,7 @@ inline void copy_cntx(const ContextualTest* src, ContextualTest* trg) {
 	trg->relation = src->relation;
 	trg->barrier = src->barrier;
 	trg->cbarrier = src->cbarrier;
+	trg->context_jump_pos = src->context_jump_pos;
 	trg->tmpl = src->tmpl;
 	trg->linked = src->linked;
 }

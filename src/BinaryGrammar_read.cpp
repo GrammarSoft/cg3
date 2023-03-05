@@ -629,6 +629,11 @@ ContextualTest* BinaryGrammar::readContextualTest(std::istream& input) {
 		fread_throw(&i32tmp, sizeof(i32tmp), 1, input);
 		t->offset_sub = SI32(ntohl(i32tmp));
 	}
+	if (fields & (1 << 12)) {
+		fread_throw(&u32tmp, sizeof(u32tmp), 1, input);
+		u32tmp = ntoh32(u32tmp);
+		t->context_jump_pos = u32tmp;
+	}
 	if (fields & (1 << 10)) {
 		fread_throw(&u32tmp, sizeof(u32tmp), 1, input);
 		uint32_t num_ors = ntoh32(u32tmp);
