@@ -168,6 +168,13 @@
         Currently only used with <link linkend="mergecohorts">MergeCohorts</link>.
       </para>
     </section>
+
+    <section id="test-mark-jump-other">
+      <title>Jump to Cohort</title>
+      <para>
+        'j' jumps to a particular cohort: 'jM' for _MARK_ (identical to 'x'), 'jA' for _ATTACHTO_, 'jT' for _TARGET_, and 'jC1'-'jC9' for _C1_-_C9_.
+      </para>
+    </section>
   </section>
 
   <section id="test-deleted">

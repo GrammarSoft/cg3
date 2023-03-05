@@ -290,11 +290,40 @@ Cohort* GrammarApplicator::runContextualTest(SingleWindow* sWindow, size_t posit
 		tstamp = getticks();
 	}
 
-	if (test->pos & POS_MARK_JUMP) {
-		sWindow = get_mark()->parent;
-		position = get_mark()->local_number;
+	if (test->pos & MASK_POS_JUMP) {
+		Cohort* j = nullptr;
+		if (test->pos & POS_MARK_JUMP) {
+			j = get_mark();
+		}
+		else if (test->pos & POS_ATTACH_JUMP) {
+			j = get_attach_to().cohort;
+		}
+		else if (test->pos & POS_TARGET_JUMP) {
+			if (!context_stack.empty()) {
+				j = context_stack.back().target.cohort;
+			}
+		}
+		else if (test->pos & POS_CONTEXT_JUMP) {
+			if (context_stack.size() > 1 && test->context_jump_pos > 0) {
+				auto& ctx = context_stack[context_stack.size()-2];
+				if (ctx.context.size() >= test->context_jump_pos) {
+					j = ctx.context[test->context_jump_pos-1];
+				}
+			}
+		}
+		if (j) {
+			sWindow = j->parent;
+			position = j->local_number;
+		}
+		else {
+			retval = false;
+		}
 	}
 	int32_t pos = static_cast<int32_t>(position) + test->offset;
+	if (!retval) {
+		// jump failed because position does not exist
+		goto label_gotACohort;
+	}
 
 	if (test->tmpl) {
 		Cohort* cdeep = nullptr;
