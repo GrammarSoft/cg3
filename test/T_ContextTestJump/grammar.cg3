@@ -1,0 +1,9 @@
+DELIMITERS = "<.>" ;
+
+WITH (det def) IF (1* (n)) {
+  SETPARENT (*) (jT (sp)) TO (jC1 (*)) ;
+} ;
+
+MAP (@X) (predet) (1X (det) LINK 1*A (sent) LINK jM1 (adj)) ;
+
+MAP KEEPORDER (@Y) (n pl) (1A (vbser)) (jA1 (det)) ;
