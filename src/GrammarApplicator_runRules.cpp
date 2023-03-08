@@ -814,6 +814,9 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 
 		current_rule = grammar->rule_by_number[j];
 		Rule* rule = grammar->rule_by_number[j];
+		if (rule->type == K_IGNORE) {
+			continue;
+		}
 		if (debug_level > 1) {
 			std::cerr << "DEBUG: Trying rule " << rule->line << std::endl;
 		}
