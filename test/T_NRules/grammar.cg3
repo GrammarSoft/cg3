@@ -1,0 +1,8 @@
+DELIMITERS = "<$.>" ;
+
+ADD:pick (@good1) (*) ;
+ADD:picked (@good2) (*) ;
+
+ADD:pickX (@bad1) (*) ;
+ADD:neither (@bad2) (*) ;
+ADD (@bad3) (*) ;

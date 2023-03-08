@@ -253,6 +253,30 @@ int main(int argc, char* argv[]) {
 	}
 	main_timer = clock();
 
+	if (options[NRULES].doesOccur) {
+		UConverter* conv = ucnv_open(codepage_cli, &status);
+		size_t sn = strlen(options[NRULES].value);
+		CG3::UString buf(sn * 3, 0);
+		buf.resize(ucnv_toUChars(conv, &buf[0], SI32(buf.size()), options[NRULES].value, SI32(sn), &status));
+		parser->nrules = uregex_open(buf.c_str(), SI32(buf.size()), 0, nullptr, &status);
+		if (status != U_ZERO_ERROR) {
+			u_fprintf(std::cerr, "Error: uregex_open returned %s trying to parse --nrules %S\n", u_errorName(status), buf.c_str());
+			CG3Quit(1);
+		}
+	}
+
+	if (options[NRULES_INV].doesOccur) {
+		UConverter* conv = ucnv_open(codepage_cli, &status);
+		size_t sn = strlen(options[NRULES_INV].value);
+		CG3::UString buf(sn * 3, 0);
+		buf.resize(ucnv_toUChars(conv, &buf[0], SI32(buf.size()), options[NRULES_INV].value, SI32(sn), &status));
+		parser->nrules_inv = uregex_open(buf.c_str(), SI32(buf.size()), 0, nullptr, &status);
+		if (status != U_ZERO_ERROR) {
+			u_fprintf(std::cerr, "Error: uregex_open returned %s trying to parse --nrules-v %S\n", u_errorName(status), buf.c_str());
+			CG3Quit(1);
+		}
+	}
+
 	if (parser->parse_grammar(options[GRAMMAR].value)) {
 		std::cerr << "Error: Grammar could not be parsed - exiting!" << std::endl;
 		CG3Quit(1);

@@ -36,7 +36,14 @@ public:
 	{
 	}
 
-	virtual ~IGrammarParser() = default;
+	virtual ~IGrammarParser() {
+		if (nrules) {
+			uregex_close(nrules);
+		}
+		if (nrules_inv) {
+			uregex_close(nrules_inv);
+		}
+	}
 	virtual void setCompatible(bool compat) = 0;
 	virtual void setVerbosity(uint32_t level) = 0;
 	virtual int parse_grammar(const char* buffer, size_t length) = 0;
@@ -45,6 +52,8 @@ public:
 	virtual int parse_grammar(const char* filename) = 0;
 
 	std::ostream* ux_stderr = nullptr;
+	URegularExpression* nrules = nullptr;
+	URegularExpression* nrules_inv = nullptr;
 
 protected:
 	virtual int parse_grammar(UString& buffer) = 0;

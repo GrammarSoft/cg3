@@ -1563,7 +1563,27 @@ void TextualParser::parseRule(UChar*& p, KEYWORDS key) {
 	}
 
 	rule->reverseContextualTests();
-	if (only_sets) {
+
+	bool destroy = only_sets;
+	UErrorCode status;
+	if (nrules) {
+		status = U_ZERO_ERROR;
+		uregex_setText(nrules, rule->name.c_str(), SI32(rule->name.size()), &status);
+		status = U_ZERO_ERROR;
+		if (!uregex_find(nrules, -1, &status)) {
+			destroy = true;
+		}
+	}
+	if (nrules_inv) {
+		status = U_ZERO_ERROR;
+		uregex_setText(nrules_inv, rule->name.c_str(), SI32(rule->name.size()), &status);
+		status = U_ZERO_ERROR;
+		if (uregex_find(nrules_inv, -1, &status)) {
+			destroy = true;
+		}
+	}
+
+	if (destroy) {
 		result->destroyRule(rule);
 	}
 	else {

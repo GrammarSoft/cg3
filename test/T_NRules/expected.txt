@@ -1,0 +1,2 @@
+"<word>"
+	"word" wanted @good1 @good2
