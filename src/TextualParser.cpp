@@ -1691,6 +1691,27 @@ bool TextualParser::maybeParseRule(UChar*& p) {
 	else if (IS_ICASE(p, "UNPROTECT", "unprotect")) {
 		parseRule(p, K_UNPROTECT);
 	}
+	// DELIMIT
+	else if (IS_ICASE(p, "DELIMIT", "delimit")) {
+		parseRule(p, K_DELIMIT);
+	}
+	// JUMP
+	else if (IS_ICASE(p, "JUMP", "jump")) {
+		parseRule(p, K_JUMP);
+	}
+	// MOVE
+	else if (IS_ICASE(p, "MOVE", "move")) {
+		parseRule(p, K_MOVE);
+	}
+	// SWITCH
+	else if (IS_ICASE(p, "SWITCH", "switch")) {
+		parseRule(p, K_SWITCH);
+	}
+	// EXECUTE
+	else if (IS_ICASE(p, "EXECUTE", "execute")) {
+		parseRule(p, K_EXECUTE);
+	}
+	// WITH
 	else if (IS_ICASE(p, "WITH", "with")) {
 		parseRule(p, K_WITH);
 	}
@@ -2150,10 +2171,8 @@ void TextualParser::parseFromUChar(UChar* input, const char* fname) {
 				}
 				AST_CLOSE(p + 1);
 			}
-			else if (maybeParseRule(p)) {
-			}
 			// SET
-			else if (IS_ICASE(p, "SET", "set")) {
+			else if (IS_ICASE(p, "SET", "set") && !u_isalnum(p[3])) {
 				Set* s = result->allocateSet();
 				s->line = result->lines;
 				AST_OPEN(Set);
@@ -2578,26 +2597,6 @@ void TextualParser::parseFromUChar(UChar* input, const char* fname) {
 
 				parseFromUChar(&data[4], abspath.data());
 			}
-			// DELIMIT
-			else if (IS_ICASE(p, "DELIMIT", "delimit")) {
-				parseRule(p, K_DELIMIT);
-			}
-			// JUMP
-			else if (IS_ICASE(p, "JUMP", "jump")) {
-				parseRule(p, K_JUMP);
-			}
-			// MOVE
-			else if (IS_ICASE(p, "MOVE", "move")) {
-				parseRule(p, K_MOVE);
-			}
-			// SWITCH
-			else if (IS_ICASE(p, "SWITCH", "switch")) {
-				parseRule(p, K_SWITCH);
-			}
-			// EXECUTE
-			else if (IS_ICASE(p, "EXECUTE", "execute")) {
-				parseRule(p, K_EXECUTE);
-			}
 			// TEMPLATE
 			else if (IS_ICASE(p, "TEMPLATE", "template")) {
 				AST_OPEN(Template);
@@ -2724,6 +2723,9 @@ void TextualParser::parseFromUChar(UChar* input, const char* fname) {
 					}
 				}
 				++p;
+			}
+			// Has to happen last, or things like MAPPINGS will be parsed as MAP PINGS
+			else if (maybeParseRule(p)) {
 			}
 			// No keyword found at this position, skip a character.
 			else {
