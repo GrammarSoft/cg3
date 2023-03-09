@@ -25,6 +25,9 @@ my @unlinks = (
 	'grammar.cg3b',
 	'diff.bin.txt',
 	'output.bin.txt',
+	'grammar.out.cg3',
+	'diff.out.txt',
+	'output.out.txt',
 	);
 my $binary = "vislcg3";
 
@@ -32,6 +35,7 @@ sub run_pl {
 	my ($binary,$override,$args) = @_;
 	my $good = 1;
 
+	# Normal run
 	`"$binary" $args $override -g grammar.cg3 -I input.txt -O output.txt >stdout.txt 2>stderr.txt`;
 	`diff -B expected.txt output.txt >diff.txt`;
 
@@ -42,6 +46,20 @@ sub run_pl {
 		print STDERR "Success ";
 	}
 
+	# Write out the parsed grammar, run from the output
+	`"$binary" $args $override -g grammar.cg3 --grammar-only --grammar-out grammar.out.cg3 >stdout.out.txt 2>stderr.out.txt`;
+	`"$binary" $args $override -g grammar.out.cg3 -I input.txt -O output.out.txt >>stdout.out.txt 2>>stderr.out.txt`;
+	`diff -B expected.txt output.out.txt >diff.out.txt`;
+
+	if (-s "diff.out.txt") {
+	   # We don't care about this just yet
+		print STDERR "(Fail) ";
+		#$good = 0;
+	} else {
+		print STDERR "Success ";
+	}
+
+	# Compile the grammar, run from the compiled form
 	`"$binary" $args $override -g grammar.cg3 --grammar-only --grammar-bin grammar.cg3b >stdout.bin.txt 2>stderr.bin.txt`;
 	my $gf = undef;
 	for my $g (glob('*.cg3b*')) {
