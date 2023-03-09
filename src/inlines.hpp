@@ -24,6 +24,11 @@
 #define c6d28b7452ec699b_INLINES_H
 
 template<typename T>
+constexpr inline int8_t SI8(T t) {
+	return static_cast<int8_t>(t);
+}
+
+template<typename T>
 constexpr inline int32_t SI32(T t) {
 	return static_cast<int32_t>(t);
 }
@@ -51,6 +56,11 @@ constexpr inline uint32_t UI32(T t) {
 template<typename T>
 constexpr inline uint64_t UI64(T t) {
 	return static_cast<uint64_t>(t);
+}
+
+template<typename T>
+constexpr inline size_t UIZ(T t) {
+	return static_cast<size_t>(t);
 }
 
 namespace CG3 {
@@ -256,10 +266,10 @@ inline bool ISSPACE(const UChar c) {
 
 template<typename Char>
 inline bool ISSTRING(const Char* p, const uint32_t c) {
-	if (*(p - 1) == '"' && *(p + c + 1) == '"') {
+	if (p[-1] == '"' && p[c + 1] == '"') {
 		return true;
 	}
-	if (*(p - 1) == '<' && *(p + c + 1) == '>') {
+	if (p[-1] == '<' && p[c + 1] == '>') {
 		return true;
 	}
 	return false;

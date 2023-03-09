@@ -502,7 +502,7 @@ void TextualParser::parseContextualTestPosition(UChar*& p, ContextualTest& t) {
 
 	size_t tries;
 	for (tries = 0; *p != ' ' && *p != '(' && *p != '/' && tries < 100; ++tries) {
-		if (*p == '*' && *(p + 1) == '*') {
+		if (*p == '*' && p[1] == '*') {
 			t.pos |= POS_SCANALL;
 			p += 2;
 		}
@@ -580,7 +580,7 @@ void TextualParser::parseContextualTestPosition(UChar*& p, ContextualTest& t) {
 			++p;
 		}
 		if (*p == 'x') {
-			t.pos |= POS_MARK_JUMP;
+			t.pos |= POS_JUMP;
 			++p;
 		}
 		if (*p == 'D') {
@@ -635,7 +635,7 @@ void TextualParser::parseContextualTestPosition(UChar*& p, ContextualTest& t) {
 				++p;
 			}
 		}
-		if (*p == 'r' && *(p + 1) == ':') {
+		if (*p == 'r' && p[1] == ':') {
 			t.pos |= POS_RELATION;
 			p += 2;
 			UChar* n = p;
@@ -666,22 +666,24 @@ void TextualParser::parseContextualTestPosition(UChar*& p, ContextualTest& t) {
 			++p;
 		}
 		if (*p == 'j') {
-			if (*(p+1) == 'M') {
-				t.pos |= POS_MARK_JUMP;
+			if (p[1] == 'M') {
+				t.pos |= POS_JUMP;
 				p += 2;
 			}
-			else if (*(p+1) == 'A') {
-				t.pos |= POS_ATTACH_JUMP;
+			else if (p[1] == 'A') {
+				t.pos |= POS_JUMP;
+				t.jump_pos = JUMP_ATTACH;
 				p += 2;
 			}
-			else if (*(p+1) == 'T') {
-				t.pos |= POS_TARGET_JUMP;
+			else if (p[1] == 'T') {
+				t.pos |= POS_JUMP;
+				t.jump_pos = JUMP_TARGET;
 				p += 2;
 			}
-			else if (*(p+1) == 'C' && u_isdigit(*(p+2))) {
+			else if (p[1] == 'C' && u_isdigit(p[2])) {
 				p += 2;
-				t.pos |= POS_CONTEXT_JUMP;
-				t.context_jump_pos = *p - '0';
+				t.pos |= POS_JUMP;
+				t.jump_pos = SI8(*p - '0');
 				++p;
 			}
 		}
@@ -697,7 +699,7 @@ void TextualParser::parseContextualTestPosition(UChar*& p, ContextualTest& t) {
 
 		size_t tries;
 		for (tries = 0; *p != ' ' && *p != '(' && tries < 100; ++tries) {
-			if (*p == '*' && *(p + 1) == '*') {
+			if (*p == '*' && p[1] == '*') {
 				t.offset_sub = GSR_ANY;
 				p += 2;
 			}
@@ -791,13 +793,6 @@ void TextualParser::parseContextualTestPosition(UChar*& p, ContextualTest& t) {
 	if ((t.pos & POS_UNKNOWN) && (t.pos != POS_UNKNOWN || had_digits)) {
 		error("%s: Error: Invalid position on line %u near `%S` - '?' cannot be combined with anything else!\n", n);
 	}
-	if ((t.pos & MASK_POS_JUMP) &&
-		!(((t.pos & MASK_POS_JUMP) == POS_MARK_JUMP) ||
-		  ((t.pos & MASK_POS_JUMP) == POS_ATTACH_JUMP) ||
-		  ((t.pos & MASK_POS_JUMP) == POS_TARGET_JUMP) ||
-		  ((t.pos & MASK_POS_JUMP) == POS_CONTEXT_JUMP))) {
-		error("%s: Error: Invalid position on line %u near `%S` - cannot jump to multiple cohorts!\n", n);
-		}
 	if ((t.pos & POS_SCANALL) && (t.pos & POS_NOT)) {
 		ux_bufcpy(nearbuf, n, 20);
 		u_fprintf(ux_stderr, "%s: Warning: Line %u near `%S`: We don't think mixing NOT and ** makes sense...\n", filebase, result->lines, nearbuf);
@@ -1541,18 +1536,18 @@ void TextualParser::parseRule(UChar*& p, KEYWORDS key) {
 
 	if (!(rule->flags & RF_REMEMBERX)) {
 		bool found = false;
-		if (rule->dep_target && (rule->dep_target->pos & POS_MARK_JUMP)) {
+		if (rule->dep_target && (rule->dep_target->pos & POS_JUMP) && rule->dep_target->jump_pos == JUMP_MARK) {
 			found = true;
 		}
 		else {
 			for (auto it : rule->tests) {
-				if (it->pos & POS_MARK_JUMP) {
+				if ((it->pos & POS_JUMP) && it->jump_pos == JUMP_MARK) {
 					found = true;
 					break;
 				}
 			}
 			for (auto it : rule->dep_tests) {
-				if (it->pos & POS_MARK_JUMP) {
+				if ((it->pos & POS_JUMP) && it->jump_pos == JUMP_MARK) {
 					found = true;
 					break;
 				}
@@ -2744,8 +2739,8 @@ void TextualParser::parseFromUChar(UChar* input, const char* fname) {
 			}
 			// END
 			else if (IS_ICASE(p, "END", "end")) {
-				if (ISNL(*(p - 1)) || ISSPACE(*(p - 1))) {
-					if (*(p + 3) == 0 || ISNL(*(p + 3)) || ISSPACE(*(p + 3))) {
+				if (ISNL(p[-1]) || ISSPACE(p[-1])) {
+					if (p[3] == 0 || ISNL(p[3]) || ISSPACE(p[3])) {
 						break;
 					}
 				}

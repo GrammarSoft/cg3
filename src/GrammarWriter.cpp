@@ -408,8 +408,19 @@ void GrammarWriter::printContextualTest(std::ostream& to, const ContextualTest& 
 		if (test.pos & POS_MARK_SET) {
 			u_fprintf(to, "X");
 		}
-		if (test.pos & POS_MARK_JUMP) {
-			u_fprintf(to, "x");
+		if (test.pos & POS_JUMP) {
+			if (test.jump_pos == JUMP_MARK) {
+				u_fprintf(to, "x");
+			}
+			else if (test.jump_pos == JUMP_ATTACH) {
+				u_fprintf(to, "jA");
+			}
+			else if (test.jump_pos == JUMP_TARGET) {
+				u_fprintf(to, "jT");
+			}
+			else {
+				u_fprintf(to, "jC%d", test.jump_pos);
+			}
 		}
 		if (test.pos & POS_LOOK_DELETED) {
 			u_fprintf(to, "D");

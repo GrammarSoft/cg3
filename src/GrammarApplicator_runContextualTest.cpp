@@ -240,7 +240,7 @@ Cohort* GrammarApplicator::runContextualTest_tmpl(SingleWindow* sWindow, size_t 
 	uint32_t orgbar = tmpl->barrier;
 	if (test->pos & POS_TMPL_OVERRIDE) {
 		tmpl->pos = test->pos;
-		tmpl->pos &= ~(POS_NEGATE | POS_NOT | POS_MARK_JUMP);
+		tmpl->pos &= ~(POS_NEGATE | POS_NOT | POS_JUMP);
 		tmpl->offset = test->offset;
 		if (test->offset != 0 && !(test->pos & (POS_SCANFIRST | POS_SCANALL | POS_ABSOLUTE))) {
 			tmpl->pos |= POS_SCANALL;
@@ -290,24 +290,24 @@ Cohort* GrammarApplicator::runContextualTest(SingleWindow* sWindow, size_t posit
 		tstamp = getticks();
 	}
 
-	if (test->pos & MASK_POS_JUMP) {
+	if (test->pos & POS_JUMP) {
 		Cohort* j = nullptr;
-		if (test->pos & POS_MARK_JUMP) {
+		if (test->jump_pos == JUMP_MARK) {
 			j = get_mark();
 		}
-		else if (test->pos & POS_ATTACH_JUMP) {
+		else if (test->jump_pos == JUMP_ATTACH) {
 			j = get_attach_to().cohort;
 		}
-		else if (test->pos & POS_TARGET_JUMP) {
+		else if (test->jump_pos == JUMP_TARGET) {
 			if (!context_stack.empty()) {
 				j = context_stack.back().target.cohort;
 			}
 		}
-		else if (test->pos & POS_CONTEXT_JUMP) {
-			if (context_stack.size() > 1 && test->context_jump_pos > 0) {
-				auto& ctx = context_stack[context_stack.size()-2];
-				if (ctx.context.size() >= test->context_jump_pos) {
-					j = ctx.context[test->context_jump_pos-1];
+		else {
+			if (context_stack.size() > 1) {
+				auto& ctx = context_stack[context_stack.size() - 2];
+				if (ctx.context.size() >= UIZ(test->jump_pos)) {
+					j = ctx.context[test->jump_pos - 1];
 				}
 			}
 		}
