@@ -470,6 +470,25 @@ int BinaryGrammar::readBinaryGrammar_10043(std::istream& input) {
 			ContextualTest* t = contexts_list[u32tmp - 1];
 			r->addContextualTest(t, r->tests);
 		}
+
+		UErrorCode status;
+		if (nrules) {
+			status = U_ZERO_ERROR;
+			uregex_setText(nrules, r->name.c_str(), SI32(r->name.size()), &status);
+			status = U_ZERO_ERROR;
+			if (!uregex_find(nrules, -1, &status)) {
+				r->type = K_IGNORE;
+			}
+		}
+		if (nrules_inv) {
+			status = U_ZERO_ERROR;
+			uregex_setText(nrules_inv, r->name.c_str(), SI32(r->name.size()), &status);
+			status = U_ZERO_ERROR;
+			if (uregex_find(nrules_inv, -1, &status)) {
+				r->type = K_IGNORE;
+			}
+		}
+
 		grammar->rule_by_number[r->number] = r;
 	}
 
