@@ -300,7 +300,7 @@ inline bool IS_ICASE(const Char* p, const C (&uc)[N], const C (&lc)[N]) {
 			return false;
 		}
 	}
-	return true;
+	return !u_isalnum(p[N - 1]);
 }
 
 template<typename Char>

@@ -1711,6 +1711,30 @@ bool TextualParser::maybeParseRule(UChar*& p) {
 	else if (IS_ICASE(p, "EXECUTE", "execute")) {
 		parseRule(p, K_EXECUTE);
 	}
+	// EXTERNAL
+	else if (IS_ICASE(p, "EXTERNAL", "external")) {
+		parseRule(p, K_EXTERNAL);
+	}
+	// REMCOHORT
+	else if (IS_ICASE(p, "REMCOHORT", "remcohort")) {
+		parseRule(p, K_REMCOHORT);
+	}
+	// ADDCOHORT
+	else if (IS_ICASE(p, "ADDCOHORT", "addcohort")) {
+		parseRule(p, K_ADDCOHORT);
+	}
+	// SPLITCOHORT
+	else if (IS_ICASE(p, "SPLITCOHORT", "splitcohort")) {
+		parseRule(p, K_SPLITCOHORT);
+	}
+	// MERGECOHORTS
+	else if (IS_ICASE(p, "MERGECOHORTS", "mergecohorts")) {
+		parseRule(p, K_MERGECOHORTS);
+	}
+	// RESTORE
+	else if (IS_ICASE(p, "RESTORE", "restore")) {
+		parseRule(p, K_RESTORE);
+	}
 	// WITH
 	else if (IS_ICASE(p, "WITH", "with")) {
 		parseRule(p, K_WITH);
@@ -2042,30 +2066,6 @@ void TextualParser::parseFromUChar(UChar* input, const char* fname) {
 				}
 				AST_CLOSE(p + 1);
 			}
-			// EXTERNAL
-			else if (IS_ICASE(p, "EXTERNAL", "external")) {
-				parseRule(p, K_EXTERNAL);
-			}
-			// REMCOHORT
-			else if (IS_ICASE(p, "REMCOHORT", "remcohort")) {
-				parseRule(p, K_REMCOHORT);
-			}
-			// ADDCOHORT
-			else if (IS_ICASE(p, "ADDCOHORT", "addcohort")) {
-				parseRule(p, K_ADDCOHORT);
-			}
-			// SPLITCOHORT
-			else if (IS_ICASE(p, "SPLITCOHORT", "splitcohort")) {
-				parseRule(p, K_SPLITCOHORT);
-			}
-			// MERGECOHORTS
-			else if (IS_ICASE(p, "MERGECOHORTS", "mergecohorts")) {
-				parseRule(p, K_MERGECOHORTS);
-			}
-			// RESTORE
-			else if (IS_ICASE(p, "RESTORE", "restore")) {
-				parseRule(p, K_RESTORE);
-			}
 			// SETS
 			else if (IS_ICASE(p, "SETS", "sets")) {
 				p += 4;
@@ -2172,7 +2172,7 @@ void TextualParser::parseFromUChar(UChar* input, const char* fname) {
 				AST_CLOSE(p + 1);
 			}
 			// SET
-			else if (IS_ICASE(p, "SET", "set") && !u_isalnum(p[3])) {
+			else if (IS_ICASE(p, "SET", "set")) {
 				Set* s = result->allocateSet();
 				s->line = result->lines;
 				AST_OPEN(Set);
