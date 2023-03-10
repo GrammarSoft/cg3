@@ -20,7 +20,7 @@ include_directories(${Boost_INCLUDE_DIRS})
 link_directories(${Boost_LIBRARY_DIRS})
 
 # ICU
-find_package(ICU 50.0 COMPONENTS i18n io uc data REQUIRED)
+find_package(ICU 59.0 COMPONENTS i18n io uc data REQUIRED)
 if(ICU_FOUND)
 	include_directories(${ICU_INCLUDE_DIRS})
 	message(STATUS "Found ICU version ${ICU_VERSION}")
