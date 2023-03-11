@@ -475,35 +475,39 @@ uint32_t GrammarApplicator::doesTagMatchReading(const Reading& reading, const Ta
 			}
 			return reading.parent->parent->variables_set;
 		}();
-		auto key = grammar->single_tags.find(tag.comparison_hash)->second;
-		auto it = vars.begin();
-		if (key->type & T_REGEXP) {
-			it = std::find_if(it, vars.end(), [&](auto& kv) { return doesTagMatchRegexp(kv.first, *key, bypass_index); });
-		}
-		else if (key->type & T_CASE_INSENSITIVE) {
-			it = std::find_if(it, vars.end(), [&](auto& kv) { return doesTagMatchIcase(kv.first, *key, bypass_index); });
-		}
-		else {
-			it = vars.find(tag.comparison_hash);
-		}
-		if (it != vars.end()) {
-			if (tag.variable_hash == 0) {
-				match = tag.hash;
+
+		auto kit = grammar->single_tags.find(tag.comparison_hash);
+		if (kit != grammar->single_tags.end()) {
+			auto key = kit->second;
+			auto it = vars.begin();
+			if (key->type & T_REGEXP) {
+				it = std::find_if(it, vars.end(), [&](auto& kv) { return doesTagMatchRegexp(kv.first, *key, bypass_index); });
+			}
+			else if (key->type & T_CASE_INSENSITIVE) {
+				it = std::find_if(it, vars.end(), [&](auto& kv) { return doesTagMatchIcase(kv.first, *key, bypass_index); });
 			}
 			else {
-				auto comp = grammar->single_tags.find(tag.variable_hash)->second;
-				if (comp->type & T_REGEXP) {
-					if (doesTagMatchRegexp(it->second, *comp, bypass_index)) {
-						match = tag.hash;
-					}
-				}
-				else if (comp->type & T_CASE_INSENSITIVE) {
-					if (doesTagMatchIcase(it->second, *comp, bypass_index)) {
-						match = tag.hash;
-					}
-				}
-				else if (comp->hash == it->second) {
+				it = vars.find(tag.comparison_hash);
+			}
+			if (it != vars.end()) {
+				if (tag.variable_hash == 0) {
 					match = tag.hash;
+				}
+				else {
+					auto comp = grammar->single_tags.find(tag.variable_hash)->second;
+					if (comp->type & T_REGEXP) {
+						if (doesTagMatchRegexp(it->second, *comp, bypass_index)) {
+							match = tag.hash;
+						}
+					}
+					else if (comp->type & T_CASE_INSENSITIVE) {
+						if (doesTagMatchIcase(it->second, *comp, bypass_index)) {
+							match = tag.hash;
+						}
+					}
+					else if (comp->hash == it->second) {
+						match = tag.hash;
+					}
 				}
 			}
 		}
