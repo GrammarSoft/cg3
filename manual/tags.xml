@@ -29,6 +29,10 @@
   </screen>
   </para>
 
+  <para>
+    The tag '&gt;&gt;&gt;' is added to the 0th (invisible) cohort in the window, and the tag '&lt;&lt;&lt;' is added to the last cohort in the window. They can be used as markers to see if scans have reached those positions.
+  </para>
+
   <section id="tag-order">
     <title>Tag Order</title>
     <para>

@@ -239,10 +239,7 @@
     </indexterm>
     <para>
       Denotes the end of the grammar. Nothing after this keyword is read.
-      <emphasis>
-        Deprecated: Remnant from older versions of CG;
-        the end of the file will do just fine.
-      </emphasis>
+      Useful for debugging.
     </para>
   </section>
 
@@ -267,8 +264,7 @@
       <primary>IF</primary>
     </indexterm>
     <para>
-      <emphasis>Deprecated: has no effect in CG-3.</emphasis>
-      An inline keyword put before the first contextual test of a rule.
+      An optional inline keyword put before the first contextual test of a rule.
     </para>
   </section>
 
@@ -329,10 +325,6 @@
 
       LIST setname += even more tags ;
     </screen>
-    <para>
-      If the named set is of <link linkend="keyword-set">SET-type</link>, then the new tags will be in a set OR'ed onto the existing one.
-      See <link linkend="set-manipulation">set manipulation</link>.
-    </para>
   </section>
 
   <section id="keyword-map">
@@ -754,8 +746,7 @@
       <primary>TARGET</primary>
     </indexterm>
     <para>
-      <emphasis>Deprecated: has no effect in CG-3.</emphasis>
-      An inline keyword put before the target of a rule.
+      An optional inline keyword put before the target of a rule.
     </para>
   </section>
 

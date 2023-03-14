@@ -492,6 +492,48 @@
     </para>
   </section>
 
+  <section id="select">
+    <title>SELECT</title>
+    <indexterm>
+      <primary>SELECT</primary>
+    </indexterm>
+    <screen>
+      [wordform] SELECT &lt;target&gt; [contextual_tests] ;
+    </screen>
+    <para>
+      Deletes all readings in the cohort except the ones matching the target set.
+    </para>
+  </section>
+
+  <section id="remove">
+    <title>REMOVE</title>
+    <indexterm>
+      <primary>REMOVE</primary>
+    </indexterm>
+    <screen>
+      [wordform] REMOVE &lt;target&gt; [contextual_tests] ;
+    </screen>
+    <para>
+      Deletes the readings matching the target set.
+    </para>
+  </section>
+
+  <section id="iff">
+    <title>IFF</title>
+    <indexterm>
+      <primary>IFF</primary>
+    </indexterm>
+    <screen>
+      [wordform] IFF &lt;target&gt; [contextual_tests] ;
+    </screen>
+    <para>
+      If the contextual tests are satisfied, <link linkend="select">select</link> the readings matching the target set. Otherwise, <link linkend="select">remove</link> the readings matching the target set.
+      <emphasis>
+        This had so little utility that VISLCG did not implement it. We have chosen to implement it in CG-3 because there was no reason to omit it, but admit there are almost no uses for it.
+      </emphasis>
+    </para>
+  </section>
+
   <section id="restore">
     <title>RESTORE</title>
     <indexterm>

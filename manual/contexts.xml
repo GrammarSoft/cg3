@@ -24,6 +24,70 @@
     </para>
   </section>
 
+  <section id="test-number">
+    <title>1, 2, 3, etc</title>
+    <indexterm>
+      <primary>1</primary>
+    </indexterm>
+    <para>
+      A number indicates the topological offset from the rule target or linked cohort that the test should start at. For scanning tests, the sign of the number also influences which direction to scan. Positive numbers both start left and scan towards the left, and negative both start right and scan towards the right.
+    </para>
+    <screen>
+      # Test whether the cohort to the immediate left matches the set N
+      (1 N)
+
+      # Test whether the cohort two to the right, or any other cohorts rightwards of that, matches the set V
+      (-2* V)
+    </screen>
+    <para>
+      If the offset exceeds the window boundaries, the match proceeds as-if it was against a null cohort. For normal tests this means they automatically fail, and NOT and NEGATE tests will succeed.
+    </para>
+  </section>
+
+  <section id="test-absolute">
+    <title>@</title>
+    <indexterm>
+      <primary>@</primary>
+    </indexterm>
+    <para>
+      '@' is the topological absolute position in the window. It is often used to start a test at the beginning of the sentence without having to scan for <code>(-1* &gt;&gt;&gt;)</code> to find it. Positive numbers are offsets from the start of the window, and negative numbers are from the end of the window. Thus '@1' is the first cohort and '@-1' is the last cohort.
+    </para>
+    <para>
+      Special cases combined with window spanning: '@1&lt;' is the first word of the previous window, '@-1&lt;' is the last word of the previous window, '@1&gt;' is the first word of the next window, and '@-1&gt;' is the last word of the next window.
+    </para>
+    <screen>
+      # Test whether the first cohort in the window matches the set N
+      (@1 N)
+
+      # Test whether the last cohort in the window is a full stop
+      (@-1 ("."))
+    </screen>
+  </section>
+
+  <section id="test-careful">
+    <title>C</title>
+    <indexterm>
+      <primary>C</primary>
+    </indexterm>
+    <para>
+      'C' causes the test to be performed in a careful manner, this is it requires that all readings match the set. Normally a test such as <code>(1 N)</code> tests whether any reading matches the set N, but <code>(1C N)</code> requires that all readings match N.
+    </para>
+  </section>
+
+  <section id="test-not">
+    <title>NOT</title>
+    <indexterm>
+      <primary>NOT</primary>
+    </indexterm>
+    <para>
+      NOT will invert the result of the immediately following test.
+    </para>
+    <screen>
+      # The following cohort, if it exists, must not match the set N
+      (NOT 1 N)
+    </screen>
+  </section>
+
   <section id="test-negate">
     <title>NEGATE</title>
     <indexterm>
@@ -37,6 +101,40 @@
         VISLCG emulated the NEGATE functionality for tests that started with NOT.
       </emphasis>
     </para>
+  </section>
+
+  <section id="test-scanning">
+    <title>Scanning</title>
+    <indexterm>
+      <primary>*</primary>
+    </indexterm>
+    <indexterm>
+      <primary>**</primary>
+    </indexterm>
+    <para>
+      '*' and '**' start at the given offset and then continues looking in that direction until they find a match or reach the window boundary. '*' stops at the first cohort that matches the set, regardless of whether that cohort satisfies any linked conditions. '**' searches until it finds a cohort that matches both the set and any linked conditions.
+    </para>
+    <screen>
+      # Find an adjective to the left and check whether that adjective has a noun to the immediate right. Stop at the first adjective.
+      (-1* ADJ LINK N)
+
+      # Find an adjective to the left and check whether that adjective has a noun to the immediate right. If it does not have a noun to the immediate right, scan further left and test next adjective position. Repeat.
+      (**-1 ADJ LINK N)
+    </screen>
+  </section>
+
+  <section id="test-barrier">
+    <title>BARRIER</title>
+    <indexterm>
+      <primary>BARRIER</primary>
+    </indexterm>
+    <para>
+      Halts a scan if it sees a cohort matching the set. Especially important to prevent '**' scans from looking too far.
+    </para>
+    <screen>
+      # Find an N to the right, but don't look beyond any V
+      (*1 N BARRIER V)
+    </screen>
   </section>
 
   <section id="test-cbarrier">
@@ -87,6 +185,7 @@
       <title>Span Left</title>
       <para>
         '&lt;' allows a test to span beyond boundaries in left direction only.
+        Use 'W' instead, unless it is a complex test or other good reason to require '&lt;'.
       </para>
       <screen>
         (-3**&lt; (someset))
@@ -97,6 +196,7 @@
       <title>Span Right</title>
       <para>
         '&gt;' allows a test to span beyond boundaries in right direction only.
+        Use 'W' instead, unless it is a complex test or other good reason to require '&gt;'.
       </para>
       <screen>
         (2*&gt; (someset))
