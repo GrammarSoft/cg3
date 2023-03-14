@@ -4,6 +4,48 @@
 <chapter id="sets">
   <title>Sets</title>
 
+  <section id="set-definition">
+    <title>Defining Sets</title>
+
+    <section id="set-list">
+      <title>LIST</title>
+      <indexterm>
+        <primary>LIST</primary>
+      </indexterm>
+      <para>
+        Defines a new set based on a list of tags, or appends to an existing set.
+        Composite tags in <code>()</code> require that all tags match.
+        <code>LIST</code> cannot perform set operations - all elements of a <code>LIST</code> definition is parsed as literal tags, not other sets.
+      </para>
+      <screen>
+        LIST setname = tag othertag (mtag htag) ltag ;
+
+        LIST setname += even more tags ;
+      </screen>
+      <para>
+        If the named set for <code>+=</code> is of <link linkend="keyword-set">SET-type</link>, then the new tags will be in a set OR'ed onto the existing one.
+        See <link linkend="set-manipulation">set manipulation</link>.
+      </para>
+      <para>
+        Avoid cluttering your grammar with <code>LIST N = N;</code> definitions by using <link linkend="list-tags">LIST-TAGS</link> or <link linkend="strict-tags">STRICT-TAGS</link> instead.
+      </para>
+    </section>
+
+    <section id="set-set">
+      <title>SET</title>
+      <indexterm>
+        <primary>SET</primary>
+      </indexterm>
+      <para>
+        Defines a new set based on <link linkend="set-operators">operations</link> between existing sets.
+        To include literal tags or composite tags in operations, define an inline set with <code>()</code>.
+      </para>
+      <screen>
+        SET setname = someset + someotherset - (tag) ;
+      </screen>
+    </section>
+  </section>
+
   <section id="set-operators">
     <title>Set Operators</title>
 
