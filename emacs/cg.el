@@ -230,7 +230,7 @@ Don't change without re-evaluating the file.")
 (put 'cg-indentation 'safe-local-variable 'integerp)
 
 (defconst cg-font-lock-keywords-1
-  (let ((<word>? "\\(?:\"<[^>]+>\"\\)?"))
+  (let ((<word>? "\\(?:\"<[^>]+>\"[irv]*\\)?"))
     `((,(format "^[ \t]*\\(%s\\)[ \t]+\\(\\(\\sw\\|\\s_\\)+\\)" cg-kw-set-re)
        (1 font-lock-keyword-face)
        (2 font-lock-variable-name-face))
