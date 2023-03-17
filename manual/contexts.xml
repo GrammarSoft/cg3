@@ -266,6 +266,7 @@
       <para>
         'w' sets the cohort to be merged with to the currently active cohort of the test's target.
         Currently only used with <link linkend="mergecohorts">MergeCohorts</link>.
+        It can also be used in contextual tests for <link linkend="with">With</link> to specify which cohort should be accessible in the subrule context.
       </para>
     </section>
 

@@ -609,13 +609,19 @@ bool GrammarApplicator::runSingleRule(SingleWindow& current, const Rule& rule, R
 						tmpl_cntx.clear();
 						// Run the contextual test...
 						Cohort* next_test = nullptr;
+						Cohort* result = nullptr;
+						Cohort** deep = nullptr;
+						if (rule.type == K_WITH) {
+							deep = &result;
+							merge_with = nullptr;
+						}
 						if (!(test->pos & POS_PASS_ORIGIN) && (no_pass_origin || (test->pos & POS_NO_PASS_ORIGIN))) {
-							next_test = runContextualTest(&current, c, test, nullptr, cohort);
+							next_test = runContextualTest(&current, c, test, deep, cohort);
 						}
 						else {
-							next_test = runContextualTest(&current, c, test);
+							next_test = runContextualTest(&current, c, test, deep);
 						}
-						context_stack.back().context.push_back(next_test);
+						context_stack.back().context.push_back(merge_with ? merge_with : result);
 						test_good = (next_test != nullptr);
 						if (!test_good) {
 							good = test_good;
