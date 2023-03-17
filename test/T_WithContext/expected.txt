@@ -5,18 +5,18 @@
 "<things>"
 	"thing" n pl #3->3
 "<.>"
-	"." sent #4->4
+	"." sent #4->3
 
 "<potatoes>"
 	"potato" n pl #1->1
 "<are>"
-	"be" vbser pl #2->2
+	"be" vbser pl #2->4
 "<the>"
 	"the" det def pl #3->1
 "<things>"
 	"thing" n pl #4->4
 "<.>"
-	"." sent #5->5
+	"." sent #5->1
 
 "<all>"
 	"all" predet sp #1->1
@@ -27,4 +27,4 @@
 "<things>"
 	"thing" n pl #4->4
 "<.>"
-	"." sent #5->5
+	"." sent #5->4
