@@ -85,6 +85,13 @@
     </para>
   </section>
 
+  <section id="line-match">
+    <title>Line Matching</title>
+    <para>
+      Tags in the form <code>//l</code> are regular expressions matched on the whole literal reading. Used to match exact tag sequences. Special helper <code>__</code> will expand to <code>(^|$| | .+? )</code> and can be used to ensure there are only whole tags before/after/between something.
+    </para>
+  </section>
+
   <section id="variable-strings">
     <title>Variable Strings</title>
     <para>

@@ -25,6 +25,7 @@ Makefile
 /test/**/diff*.txt
 /test/**/output*.txt
 /test/**/std*.txt
+/test/**/*.out.cg3
 /test/**/*.cg3b
 /test/**/*.bin
 

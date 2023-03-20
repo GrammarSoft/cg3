@@ -1,9 +1,0 @@
-DELIMITERS = "<.>" ;
-
-WITH (n sg) IF (-1 (adj)) (-2 (det def)) {
-  SETCHILD (*) TO (-1* _C1_ OR _C2_) (NOT p (*)) ;
-} ;
-
-WITH (n pl) IF (-1 (adj)) (-2 (det def)) {
-  SETCHILD REPEAT (*) TO (-1* _C1_ OR _C2_) (NOT p (*)) ;
-} ;
