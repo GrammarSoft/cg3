@@ -1091,6 +1091,11 @@ flags_t TextualParser::parseRuleFlags(UChar*& p) {
 				setflag = false;
 				break;
 			}
+			// These flags must be the last flag, as a set will follow
+			if (setflag && (i == FL_WITHCHILD || i == FL_NOCHILD || i == FL_BEFORE || i == FL_AFTER)) {
+				setflag = false;
+				break;
+			}
 		}
 	}
 

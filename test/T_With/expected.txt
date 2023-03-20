@@ -1,26 +1,32 @@
 "<all>"
 	"all" predet sp #1->3
 "<the>"
-	"the" det def sp @det #2->3
+	"the" det def sp @det #2->3 WITH:5 MAP:7 SETPARENT:8 WITH:12 SETPARENT:13
+;	"the" det def skip #2->3 REMOVE:6
 "<things>"
-	"thing" n pl #3->3
+	"thing" n pl #3->3 SETCHILD:9
 "<.>"
-	"." sent #4->4
+	"." sent #4->3 WITH:17 SETPARENT:18
 
+"<potatoes>"
+	"potato" n pl #1->1
+"<are>"
+	"be" vbser pl #2->4 WITH:21 SETPARENT:22
+	"be" vbser pl skip #2->4 SUBSTITUTE:23 SUBSTITUTE:23 SUBSTITUTE:23 SUBSTITUTE:23
 "<the>"
-	"the" det def sp @det #1->2
+	"the" det def pl @det #3->1 WITH:5 MAP:7 SETPARENT:8 WITH:12 SETPARENT:14
 "<things>"
-	"thing" n pl #2->2
+	"thing" n pl #4->4
 "<.>"
-	"." sent #3->3
+	"." sent #5->1 WITH:17 SETPARENT:18
 
 "<all>"
 	"all" predet sp #1->1
 "<the>"
-	"the" det def sp #2->2
+	"the" det def sp #2->4 WITH:12 SETPARENT:13
 "<pretty>"
 	"pretty" adj #3->3
 "<things>"
 	"thing" n pl #4->4
 "<.>"
-	"." sent #5->5
+	"." sent #5->4 WITH:17 SETPARENT:18

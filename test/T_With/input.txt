@@ -8,8 +8,13 @@
 "<.>"
 	"." sent
 
+"<potatoes>"
+	"potato" n pl
+"<are>"
+	"be" vbser pl
+	"be" snip1 snip2 snip3 snip4 vbser pl skip
 "<the>"
-	"the" det def sp
+	"the" det def pl
 "<things>"
 	"thing" n pl
 "<.>"
