@@ -3,20 +3,18 @@
 * Developed by Tino Didriksen <mail@tinodidriksen.com>
 * Design by Eckhard Bick <eckhard.bick@mail.dk>, Tino Didriksen <mail@tinodidriksen.com>
 *
-* This file is part of VISL CG-3
-*
-* VISL CG-3 is free software: you can redistribute it and/or modify
+* This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation, either version 3 of the License, or
 * (at your option) any later version.
 *
-* VISL CG-3 is distributed in the hope that it will be useful,
+* This program is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with VISL CG-3.  If not, see <http://www.gnu.org/licenses/>.
+* along with this progam.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 #include "MatxinApplicator.hpp"
@@ -112,8 +110,6 @@ void MatxinApplicator::runGrammarOnText(std::istream& input, std::ostream& outpu
 	SingleWindow* lSWindow = nullptr; // Left hand single window
 
 	gWindow->window_span = num_windows;
-	gtimer = getticks();
-	ticks timer(gtimer);
 
 	ux_stripBOM(input);
 
@@ -241,10 +237,9 @@ void MatxinApplicator::runGrammarOnText(std::istream& input, std::ostream& outpu
 			// Read in the word form
 			UString wordform;
 
-			wordform += '"';
 			// We encapsulate wordforms within '"<' and
 			// '>"' for internal processing.
-			wordform += '<';
+			wordform.append(u"\"<");
 			for (;;) {
 				inchar = u_fgetc(input);
 
@@ -259,8 +254,7 @@ void MatxinApplicator::runGrammarOnText(std::istream& input, std::ostream& outpu
 					wordform += inchar;
 				}
 			}
-			wordform += '>';
-			wordform += '"';
+			wordform.append(u">\"");
 
 			//u_fprintf(output, "# %S\n", wordform);
 			cCohort->wordform = addTag(wordform);
@@ -402,9 +396,6 @@ void MatxinApplicator::runGrammarOnText(std::istream& input, std::ostream& outpu
 	u_fprintf(output, "</corpus>\n");
 
 	u_fflush(output);
-
-	ticks tmp = getticks();
-	grammar->total_time = elapsed(tmp, timer);
 } // runGrammarOnText
 
 /*
@@ -694,7 +685,7 @@ void MatxinApplicator::printReading(Reading* reading, Node& node, std::ostream& 
 	node.mi = mi;
 }
 
-void MatxinApplicator::printSingleWindow(SingleWindow* window, std::ostream& output) {
+void MatxinApplicator::printSingleWindow(SingleWindow* window, std::ostream& output, bool profiling) {
 	/*
 	// Window text comes at the left
 	if (!window->text.empty()) {
@@ -711,8 +702,12 @@ void MatxinApplicator::printSingleWindow(SingleWindow* window, std::ostream& out
 
 		Cohort* cohort = window->cohorts[c];
 
-		if (!split_mappings) {
-			mergeMappings(*cohort);
+		if (!profiling) {
+			cohort->unignoreAll();
+
+			if (!split_mappings) {
+				mergeMappings(*cohort);
+			}
 		}
 
 		// Start of cohort
@@ -725,19 +720,10 @@ void MatxinApplicator::printSingleWindow(SingleWindow* window, std::ostream& out
 		UString wf_escaped;
 		for (int i = 0; i < wf.length(); ++i) {
 			if (wf[i] == '&') {
-				wf_escaped += '&';
-				wf_escaped += 'a';
-				wf_escaped += 'm';
-				wf_escaped += 'p';
-				wf_escaped += ';';
+				wf_escaped.append(u"&amp;");
 			}
 			else if (wf[i] == '"') {
-				wf_escaped += '&';
-				wf_escaped += 'q';
-				wf_escaped += 'u';
-				wf_escaped += 'o';
-				wf_escaped += 't';
-				wf_escaped += ';';
+				wf_escaped.append(u"&quot;");
 			}
 			wf_escaped += wf[i];
 		}
@@ -892,7 +878,7 @@ void MatxinApplicator::mergeMappings(Cohort& cohort) {
 		order.push_back(nr);
 	}
 
-	std::sort(order.begin(), order.end(), CG3::Reading::cmp_number);
+	std::sort(order.begin(), order.end(), Reading::cmp_number);
 	cohort.readings.insert(cohort.readings.begin(), order.begin(), order.end());
 }
 }

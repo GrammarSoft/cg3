@@ -1,22 +1,19 @@
 /*
 * Copyright (C) 2007-2023, GrammarSoft ApS
 * Developed by Tino Didriksen <mail@tinodidriksen.com>
-* Design by Eckhard Bick <eckhard.bick@mail.dk>, Tino Didriksen <mail@tinodidriksen.com>
 *
-* This file is part of VISL CG-3
-*
-* VISL CG-3 is free software: you can redistribute it and/or modify
+* This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation, either version 3 of the License, or
 * (at your option) any later version.
 *
-* VISL CG-3 is distributed in the hope that it will be useful,
+* This program is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with VISL CG-3.  If not, see <http://www.gnu.org/licenses/>.
+* along with this progam.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 #pragma once
@@ -84,8 +81,6 @@ inline bool ux_stripBOM(std::istream& stream) {
 
 	return true;
 }
-
-size_t get_line_clean(CG3::UString& line, CG3::UString& cleaned, std::istream& input, bool keep_tabs = false);
 
 // ICU std::istream input wrappers
 UChar* u_fgets(UChar* s, int32_t n, std::istream& input);
@@ -241,7 +236,9 @@ inline UChar* ux_bufcpy(UChar* dst, const UChar* src, size_t n) {
 }
 
 std::string ux_dirname(const char* in);
-void findAndReplace(UnicodeString& str, CG3::UStringView from, CG3::UStringView to);
+void findAndReplace(UnicodeString& str, UStringView from, UStringView to);
+size_t get_line_clean(UString& line, UString& cleaned, std::istream& input, bool keep_tabs = false);
+
 }
 
 #endif

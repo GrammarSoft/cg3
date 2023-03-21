@@ -3,20 +3,18 @@
 * Developed by Tino Didriksen <mail@tinodidriksen.com>
 * Design by Eckhard Bick <eckhard.bick@mail.dk>, Tino Didriksen <mail@tinodidriksen.com>
 *
-* This file is part of VISL CG-3
-*
-* VISL CG-3 is free software: you can redistribute it and/or modify
+* This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation, either version 3 of the License, or
 * (at your option) any later version.
 *
-* VISL CG-3 is distributed in the hope that it will be useful,
+* This program is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with VISL CG-3.  If not, see <http://www.gnu.org/licenses/>.
+* along with this progam.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 #pragma once
@@ -72,24 +70,11 @@
 #include <ciso646>
 #include <sys/stat.h>
 #include <cstdint>
-#include <cycle.h>
-
-// cycle.h doesn't know all platforms (such as ARM), so fall back on clock()
-#ifndef HAVE_TICK_COUNTER
-	typedef clock_t ticks;
-
-	inline ticks getticks() {
-		return clock();
-	}
-
-	INLINE_ELAPSED(inline);
-
-	#define HAVE_TICK_COUNTER
-#endif
 
 #include <boost/container/flat_set.hpp>
 #include <boost/container/flat_map.hpp>
 #include <boost/dynamic_bitset.hpp>
+#include <boost/endian/conversion.hpp>
 
 #define foreach(iter, container) \
 	if (!(container).empty())    \
@@ -99,12 +84,9 @@
 	if (!(container).empty())            \
 		for (auto iter = (container).rbegin(), iter##_end = (container).rend(); iter != iter##_end; ++iter)
 
-#ifdef _WIN32
-	#include <winsock.h> // for hton() and family.
-#else
+#ifndef _WIN32
 	#include <unistd.h>
 	#include <libgen.h>
-	#include <netinet/in.h> // for hton() and family.
 #endif
 
 // ICU includes
@@ -128,6 +110,7 @@ typedef std::basic_string_view<UChar> UStringView;
 typedef std::vector<UString> UStringVector;
 typedef std::vector<uint32_t> uint32Vector;
 namespace bc = ::boost::container;
+namespace be = ::boost::endian;
 
 struct flags_t {
 	uint32_t flags = 0;

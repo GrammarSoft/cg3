@@ -3,20 +3,18 @@
 * Developed by Tino Didriksen <mail@tinodidriksen.com>
 * Design by Eckhard Bick <eckhard.bick@mail.dk>, Tino Didriksen <mail@tinodidriksen.com>
 *
-* This file is part of VISL CG-3
-*
-* VISL CG-3 is free software: you can redistribute it and/or modify
+* This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation, either version 3 of the License, or
 * (at your option) any later version.
 *
-* VISL CG-3 is distributed in the hope that it will be useful,
+* This program is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with VISL CG-3.  If not, see <http://www.gnu.org/licenses/>.
+* along with this progam.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 #include "GrammarApplicator.hpp"
@@ -285,11 +283,6 @@ Cohort* GrammarApplicator::runContextualTest(SingleWindow* sWindow, size_t posit
 	bool retval = true;
 	auto orgSWin = sWindow;
 
-	ticks tstamp(gtimer);
-	if (statistics) {
-		tstamp = getticks();
-	}
-
 	if (test->pos & POS_JUMP) {
 		Cohort* j = nullptr;
 		if (test->jump_pos == JUMP_MARK) {
@@ -319,7 +312,7 @@ Cohort* GrammarApplicator::runContextualTest(SingleWindow* sWindow, size_t posit
 			retval = false;
 		}
 	}
-	int32_t pos = static_cast<int32_t>(position) + test->offset;
+	int32_t pos = SI32(position) + test->offset;
 	if (!retval) {
 		// jump failed because position does not exist
 		goto label_gotACohort;
@@ -548,7 +541,7 @@ Cohort* GrammarApplicator::runContextualTest(SingleWindow* sWindow, size_t posit
 			size_t seen = 0;
 			if ((test->pos & POS_SELF) && (!(test->pos & MASK_POS_LORR) || ((test->pos & POS_DEP_PARENT) && !(test->pos & POS_DEP_GLOB)))) {
 				++seen;
-				assert(position >= 0 && position < SI32(orgSWin->cohorts.size()) && "Somehow, the input position wasn't inside the current window.");
+				assert(position < orgSWin->cohorts.size() && "Somehow, the input position wasn't inside the current window.");
 				Cohort* self = orgSWin->cohorts[position];
 				nc = runSingleTest(self, test, rvs, &retval, deep, origin);
 				if (!retval && (rvs & TRV_BREAK_DEFAULT)) {
@@ -605,17 +598,22 @@ label_gotACohort:
 	if (test->pos & POS_NEGATE) {
 		retval = !retval;
 	}
-	if (retval) {
-		test->num_match++;
-	}
-	else {
-		test->num_fail++;
-	}
 
-	if (statistics) {
-		ticks tmp = getticks();
-		test->total_time += elapsed(tmp, tstamp);
+	/*
+	if (profiler) {
+		auto it = profiler->contexts.find(test->hash);
+		if (it != profiler->contexts.end()) {
+			if (retval) {
+				++it->second.num_match;
+				auto rc = std::make_pair(current_rule->number + 1, test->hash);
+				++profiler->rule_contexts[rc];
+			}
+			else {
+				++it->second.num_fail;
+			}
+		}
 	}
+	//*/
 
 	if (!retval) {
 		cohort = nullptr;

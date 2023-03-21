@@ -5,18 +5,18 @@
  *
  * This file is part of VISL CG-3
  *
- * VISL CG-3 is free software: you can redistribute it and/or modify
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * VISL CG-3 is distributed in the hope that it will be useful,
+ * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with VISL CG-3.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this progam.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 #include "stdafx.hpp"
@@ -33,10 +33,10 @@
 
 #include "version.hpp"
 
-using CG3::CG3Quit;
+using namespace CG3;
 
 void endProgram(char* name) {
-	if (name != NULL) {
+	if (name) {
 		fprintf(stdout, "VISL CG-3 Relabeller version %u.%u.%u.%u\n",
 		  CG3_VERSION_MAJOR, CG3_VERSION_MINOR, CG3_VERSION_PATCH, CG3_REVISION);
 		std::cout << basename(name) << ": relabel a binary grammar using a relabelling file" << std::endl;
@@ -46,8 +46,7 @@ void endProgram(char* name) {
 }
 
 // like libcg3's, but with a non-void grammar …
-CG3::Grammar* cg3_grammar_load(const char* filename, std::ostream& ux_stdout, std::ostream& ux_stderr, bool require_binary = false) {
-	using namespace CG3;
+Grammar* cg3_grammar_load(const char* filename, std::ostream& ux_stdout, std::ostream& ux_stderr, bool require_binary = false) {
 	std::ifstream input(filename, std::ios::binary);
 	if (!input) {
 		u_fprintf(ux_stderr, "Error: Error opening %s for reading!\n", filename);
@@ -103,15 +102,15 @@ int main(int argc, char* argv[]) {
 	ucnv_setDefaultName("UTF-8");
 	uloc_setDefault("en_US_POSIX", &status);
 
-	std::unique_ptr<CG3::Grammar> grammar{ cg3_grammar_load(argv[1], std::cout, std::cerr, true) };
-	std::unique_ptr<CG3::Grammar> relabel_grammar{ cg3_grammar_load(argv[2], std::cout, std::cerr) };
+	std::unique_ptr<Grammar> grammar{ cg3_grammar_load(argv[1], std::cout, std::cerr, true) };
+	std::unique_ptr<Grammar> relabel_grammar{ cg3_grammar_load(argv[2], std::cout, std::cerr) };
 
-	CG3::Relabeller relabeller(*grammar, *relabel_grammar, std::cerr);
+	Relabeller relabeller(*grammar, *relabel_grammar, std::cerr);
 	relabeller.relabel();
 
 	FILE* gout = fopen(argv[3], "wb");
 	if (gout) {
-		CG3::BinaryGrammar writer(*grammar, std::cerr);
+		BinaryGrammar writer(*grammar, std::cerr);
 		writer.writeBinaryGrammar(gout);
 	}
 	else {

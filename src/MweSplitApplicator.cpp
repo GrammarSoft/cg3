@@ -3,20 +3,18 @@
 * Developed by Tino Didriksen <mail@tinodidriksen.com>
 * Design by Eckhard Bick <eckhard.bick@mail.dk>, Tino Didriksen <mail@tinodidriksen.com>
 *
-* This file is part of VISL CG-3
-*
-* VISL CG-3 is free software: you can redistribute it and/or modify
+* This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation, either version 3 of the License, or
 * (at your option) any later version.
 *
-* VISL CG-3 is distributed in the hope that it will be useful,
+* This program is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with VISL CG-3.  If not, see <http://www.gnu.org/licenses/>.
+* along with this progam.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 #include "MweSplitApplicator.hpp"
@@ -26,11 +24,11 @@ namespace CG3 {
 MweSplitApplicator::MweSplitApplicator(std::ostream& ux_err)
   : GrammarApplicator(ux_err)
 {
-	CG3::Grammar* grammar = new CG3::Grammar;
+	Grammar* grammar = new Grammar;
 	grammar->ux_stderr = ux_stderr;
 	grammar->allocateDummySet();
 	grammar->delimiters = grammar->allocateSet();
-	grammar->addTagToSet(grammar->allocateTag(CG3::STR_DUMMY), grammar->delimiters);
+	grammar->addTagToSet(grammar->allocateTag(STR_DUMMY), grammar->delimiters);
 	grammar->reindex();
 	setGrammar(grammar);
 	owns_grammar = true;
@@ -55,7 +53,7 @@ const Tag* MweSplitApplicator::maybeWfTag(const Reading* r) {
 			return tag;
 		}
 	}
-	return NULL;
+	return nullptr;
 }
 
 std::vector<Cohort*> MweSplitApplicator::splitMwe(Cohort* cohort) {
@@ -65,7 +63,7 @@ std::vector<Cohort*> MweSplitApplicator::splitMwe(Cohort* cohort) {
 	size_t n_wftags = 0;
 	size_t n_goodreadings = 0;
 	for (auto rter1 : cohort->readings) {
-		if (maybeWfTag(rter1) != NULL) {
+		if (maybeWfTag(rter1) != nullptr) {
 			++n_wftags;
 		}
 		++n_goodreadings;
@@ -82,10 +80,10 @@ std::vector<Cohort*> MweSplitApplicator::splitMwe(Cohort* cohort) {
 	UString pretext;
 	for (auto r : cohort->readings) {
 		size_t pos = std::numeric_limits<size_t>::max();
-		Reading* prev = NULL; // prev == NULL || prev->next == rNew (or a ->next of rNew)
+		Reading* prev = nullptr; // prev == NULL || prev->next == rNew (or a ->next of rNew)
 		for (auto sub = r; sub; sub = sub->next) {
 			const Tag* wfTag = maybeWfTag(sub);
-			if (wfTag == NULL) {
+			if (wfTag == nullptr) {
 				prev = prev->next;
 			}
 			else {
@@ -137,9 +135,8 @@ std::vector<Cohort*> MweSplitApplicator::splitMwe(Cohort* cohort) {
 				cos[pos]->appendReading(rNew);
 				rNew->parent = cos[pos];
 
-				if (prev != NULL) {
+				if (prev != nullptr) {
 					free_reading(prev->next);
-					prev->next = nullptr;
 				}
 				prev = rNew;
 			}
@@ -155,7 +152,7 @@ std::vector<Cohort*> MweSplitApplicator::splitMwe(Cohort* cohort) {
 	return cos;
 }
 
-void MweSplitApplicator::printSingleWindow(SingleWindow* window, std::ostream& output) {
+void MweSplitApplicator::printSingleWindow(SingleWindow* window, std::ostream& output, bool profiling) {
 	for (auto var : window->variables_output) {
 		Tag* key = grammar->single_tags[var];
 		auto iter = window->variables_set.find(var);
@@ -185,7 +182,7 @@ void MweSplitApplicator::printSingleWindow(SingleWindow* window, std::ostream& o
 		Cohort* cohort = window->cohorts[c];
 		std::vector<Cohort*> cs = splitMwe(cohort);
 		for (auto iter : cs) {
-			printCohort(iter, output);
+			printCohort(iter, output, profiling);
 		}
 	}
 

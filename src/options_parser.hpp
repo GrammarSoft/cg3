@@ -3,20 +3,18 @@
 * Developed by Tino Didriksen <mail@tinodidriksen.com>
 * Design by Eckhard Bick <eckhard.bick@mail.dk>, Tino Didriksen <mail@tinodidriksen.com>
 *
-* This file is part of VISL CG-3
-*
-* VISL CG-3 is free software: you can redistribute it and/or modify
+* This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation, either version 3 of the License, or
 * (at your option) any later version.
 *
-* VISL CG-3 is distributed in the hope that it will be useful,
+* This program is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with VISL CG-3.  If not, see <http://www.gnu.org/licenses/>.
+* along with this progam.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 #pragma once
@@ -27,18 +25,19 @@ auto options_default = options;
 auto options_override = options;
 
 inline void parse_opts(const char* which, decltype(options)& where) {
+	using namespace CG3;
 	if (auto _env = getenv(which)) {
 		std::string env(_env);
 		env.push_back(0);
 		std::vector<char*> argv(1); // 0th element is the program name
 		auto p = &env[0];
 		while (*p) {
-			while (*p && CG3::ISSPACE(*p)) {
+			while (*p && ISSPACE(*p)) {
 				++p;
 			}
 			if (*p == '-') {
 				auto n = p;
-				CG3::SKIPTOWS(p);
+				SKIPTOWS(p);
 				*p = 0;
 				argv.push_back(n);
 				++p;
@@ -46,7 +45,7 @@ inline void parse_opts(const char* which, decltype(options)& where) {
 			else if (*p == '"') {
 				++p;
 				auto n = p;
-				CG3::SKIPTO(p, '"');
+				SKIPTO(p, '"');
 				*p = 0;
 				argv.push_back(n);
 				++p;
@@ -54,14 +53,14 @@ inline void parse_opts(const char* which, decltype(options)& where) {
 			else if (*p == '\'') {
 				++p;
 				auto n = p;
-				CG3::SKIPTO(p, '\'');
+				SKIPTO(p, '\'');
 				*p = 0;
 				argv.push_back(n);
 				++p;
 			}
 			else {
 				auto n = p;
-				CG3::SKIPTOWS(p);
+				SKIPTOWS(p);
 				*p = 0;
 				argv.push_back(n);
 				++p;

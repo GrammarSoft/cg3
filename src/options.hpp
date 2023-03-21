@@ -3,20 +3,18 @@
 * Developed by Tino Didriksen <mail@tinodidriksen.com>
 * Design by Eckhard Bick <eckhard.bick@mail.dk>, Tino Didriksen <mail@tinodidriksen.com>
 *
-* This file is part of VISL CG-3
-*
-* VISL CG-3 is free software: you can redistribute it and/or modify
+* This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation, either version 3 of the License, or
 * (at your option) any later version.
 *
-* VISL CG-3 is distributed in the hope that it will be useful,
+* This program is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with VISL CG-3.  If not, see <http://www.gnu.org/licenses/>.
+* along with this progam.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 #pragma once
@@ -66,9 +64,7 @@ enum OPTIONS {
 	DRYRUN,
 	SINGLERUN,
 	MAXRUNS,
-	STATISTICS,
-	OPTIMIZE_UNSAFE,
-	OPTIMIZE_SAFE,
+	PROFILING,
 	MAPPING_PREFIX,
 	UNICODE_TAGS,
 	UNIQUE_TAGS,
@@ -141,9 +137,7 @@ std::array<UOption,NUM_OPTIONS> options{
 	UOPTION_DEF_D("dry-run",               0, UOPT_NO_ARG,       "make no actual changes to the input"),
 	UOPTION_DEF_D("single-run",            0, UOPT_NO_ARG,       "runs each section only once; same as --max-runs 1"),
 	UOPTION_DEF_D("max-runs",              0, UOPT_REQUIRES_ARG, "runs each section max N times; defaults to unlimited (0)"),
-	UOPTION_DEF_D("statistics",          'S', UOPT_NO_ARG,       "gathers profiling statistics while applying grammar"),
-	UOPTION_DEF_D("optimize-unsafe",     'Z', UOPT_NO_ARG,       "destructively optimize the profiled grammar to be faster"),
-	UOPTION_DEF_D("optimize-safe",       'z', UOPT_NO_ARG,       "conservatively optimize the profiled grammar to be faster"),
+	UOPTION_DEF_D("profile",               0, UOPT_REQUIRES_ARG, "gathers profiling statistics and code coverage into a SQLite database"),
 	UOPTION_DEF_D("prefix",              'p', UOPT_REQUIRES_ARG, "sets the mapping prefix; defaults to @"),
 	UOPTION_DEF_D("unicode-tags",          0, UOPT_NO_ARG,       "outputs Unicode code points for things like ->"),
 	UOPTION_DEF_D("unique-tags",           0, UOPT_NO_ARG,       "outputs unique tags only once per reading"),

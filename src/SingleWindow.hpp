@@ -3,20 +3,18 @@
 * Developed by Tino Didriksen <mail@tinodidriksen.com>
 * Design by Eckhard Bick <eckhard.bick@mail.dk>, Tino Didriksen <mail@tinodidriksen.com>
 *
-* This file is part of VISL CG-3
-*
-* VISL CG-3 is free software: you can redistribute it and/or modify
+* This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation, either version 3 of the License, or
 * (at your option) any later version.
 *
-* VISL CG-3 is distributed in the hope that it will be useful,
+* This program is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with VISL CG-3.  If not, see <http://www.gnu.org/licenses/>.
+* along with this progam.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 #pragma once
@@ -46,7 +44,7 @@ public:
 	uint32SortedVector hit_external;
 	std::vector<CohortSet> rule_to_cohorts;
 	// Used by GrammarApplicator::runSingleRule so that it doesn't need to allocate a new one or edit a rule's actual list when applying a subrule of WITH
-	CohortSet* nested_rule_to_cohorts = nullptr;
+	std::unique_ptr<CohortSet> nested_rule_to_cohorts;
 	uint32FlatHashMap variables_set;
 	uint32FlatHashSet variables_rem;
 	uint32SortedVector variables_output;
@@ -60,7 +58,7 @@ public:
 };
 
 SingleWindow* alloc_swindow(Window* p);
-void free_swindow(SingleWindow* s);
+void free_swindow(SingleWindow*& s);
 
 inline bool less_Cohort(const Cohort* a, const Cohort* b) {
 	if (a->local_number == b->local_number) {

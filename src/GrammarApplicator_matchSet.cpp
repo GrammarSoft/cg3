@@ -3,20 +3,18 @@
 * Developed by Tino Didriksen <mail@tinodidriksen.com>
 * Design by Eckhard Bick <eckhard.bick@mail.dk>, Tino Didriksen <mail@tinodidriksen.com>
 *
-* This file is part of VISL CG-3
-*
-* VISL CG-3 is free software: you can redistribute it and/or modify
+* This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation, either version 3 of the License, or
 * (at your option) any later version.
 *
-* VISL CG-3 is distributed in the hope that it will be useful,
+* This program is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with VISL CG-3.  If not, see <http://www.gnu.org/licenses/>.
+* along with this progam.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 #include "GrammarApplicator.hpp"
@@ -528,7 +526,7 @@ uint32_t GrammarApplicator::doesTagMatchReading(const Reading& reading, const Ta
 		}
 	}
 	else if (tag.type & T_TARGET) {
-		if (target && reading.parent == target) {
+		if (rule_target && reading.parent == rule_target) {
 			match = grammar->tag_any;
 		}
 	}
@@ -671,11 +669,6 @@ bool GrammarApplicator::doesSetMatchReading(const Reading& reading, const uint32
 
 	bool retval = false;
 
-	ticks tstamp(gtimer);
-	if (statistics) {
-		tstamp = getticks();
-	}
-
 	// ToDo: Make all places have Set* directly so we don't need to perform this lookup.
 	const Set& theset = *grammar->sets_list[set];
 
@@ -776,16 +769,6 @@ bool GrammarApplicator::doesSetMatchReading(const Reading& reading, const uint32
 				}
 			}
 		}
-	}
-	if (statistics) {
-		if (retval) {
-			theset.num_match++;
-		}
-		else {
-			theset.num_fail++;
-		}
-		ticks tmp = getticks();
-		theset.total_time += elapsed(tmp, tstamp);
 	}
 
 	// Store the result in the indexes in hopes that later runs can pull it directly from them.

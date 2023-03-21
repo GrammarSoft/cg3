@@ -42,8 +42,6 @@
       Launch a Terminal from Applications -&gt; Accessories, and in that do
       <screen>
         sudo apt-get install g++ libicu-dev subversion cmake libboost-dev build-essential
-        # For TCMalloc, optional
-        sudo apt-get install libgoogle-perftools-dev
         cd /tmp/
         git clone https://github.com/GrammarSoft/cg3
         cd cg3/
@@ -81,8 +79,6 @@
       <screen>
         su -
         yum install gcc-c++ libicu-devel subversion cmake boost-devel make
-        # For TCMalloc, optional
-        yum install google-perftools-devel
         cd /tmp/
         git clone https://github.com/GrammarSoft/cg3
         cd cg3/

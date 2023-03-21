@@ -3,33 +3,31 @@
 * Developed by Tino Didriksen <mail@tinodidriksen.com>
 * Design by Eckhard Bick <eckhard.bick@mail.dk>, Tino Didriksen <mail@tinodidriksen.com>
 *
-* This file is part of VISL CG-3
-*
-* VISL CG-3 is free software: you can redistribute it and/or modify
+* This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation, either version 3 of the License, or
 * (at your option) any later version.
 *
-* VISL CG-3 is distributed in the hope that it will be useful,
+* This program is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with VISL CG-3.  If not, see <http://www.gnu.org/licenses/>.
+* along with this progam.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 #include "SingleWindow.hpp"
 #include "GrammarApplicator.hpp"
 #include "Window.hpp"
+#include "pool.hpp"
 
 namespace CG3 {
 
-std::vector<SingleWindow*> pool_swindows;
-pool_cleaner<std::vector<SingleWindow*>> cleaner_swindows(pool_swindows);
+extern pool<SingleWindow> pool_swindows;
 
 SingleWindow* alloc_swindow(Window* p) {
-	SingleWindow* s = pool_get(pool_swindows);
+	SingleWindow* s = pool_swindows.get();
 	if (s == nullptr) {
 		s = new SingleWindow(p);
 	}
@@ -39,24 +37,25 @@ SingleWindow* alloc_swindow(Window* p) {
 	return s;
 }
 
-void free_swindow(SingleWindow* s) {
+void free_swindow(SingleWindow*& s) {
 	if (s == nullptr) {
 		return;
 	}
-	pool_put(pool_swindows, s);
+	pool_swindows.put(s);
+	s = 0;
 }
 
 SingleWindow::SingleWindow(Window* p)
   : parent(p)
 {
 	#ifdef CG_TRACE_OBJECTS
-	std::cerr << "OBJECT: " << __PRETTY_FUNCTION__ << std::endl;
+	std::cerr << "OBJECT: " << VOIDP(this) << " " << __PRETTY_FUNCTION__ << std::endl;
 	#endif
 }
 
 SingleWindow::~SingleWindow() {
 	#ifdef CG_TRACE_OBJECTS
-	std::cerr << "OBJECT: " << __PRETTY_FUNCTION__ << ": " << cohorts.size() << std::endl;
+	std::cerr << "OBJECT: " << VOIDP(this) << " " << __PRETTY_FUNCTION__ << ": " << cohorts.size() << std::endl;
 	#endif
 
 	if (cohorts.size() > 1) {
@@ -71,7 +70,7 @@ SingleWindow::~SingleWindow() {
 	}
 
 	for (auto iter : cohorts) {
-		delete iter;
+		free_cohort(iter);
 	}
 	if (next && previous) {
 		next->previous = previous;
@@ -84,9 +83,6 @@ SingleWindow::~SingleWindow() {
 		if (previous) {
 			previous->next = nullptr;
 		}
-	}
-	if (nested_rule_to_cohorts) {
-		delete nested_rule_to_cohorts;
 	}
 }
 

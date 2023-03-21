@@ -5,18 +5,18 @@
  *
  * This file is part of VISL CG-3
  *
- * VISL CG-3 is free software: you can redistribute it and/or modify
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * VISL CG-3 is distributed in the hope that it will be useful,
+ * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with VISL CG-3.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this progam.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 #include "stdafx.hpp"
@@ -32,10 +32,10 @@
 
 #include "version.hpp"
 
-using CG3::CG3Quit;
+using namespace CG3;
 
 void endProgram(char* name) {
-	if (name != NULL) {
+	if (name) {
 		fprintf(stdout, "VISL CG-3 Compiler version %u.%u.%u.%u\n",
 		  CG3_VERSION_MAJOR, CG3_VERSION_MINOR, CG3_VERSION_PATCH, CG3_REVISION);
 		std::cout << basename(name) << ": compile a binary grammar from a text file" << std::endl;
@@ -62,27 +62,27 @@ int main(int argc, char* argv[]) {
 	ucnv_setDefaultName("UTF-8");
 	uloc_setDefault("en_US_POSIX", &status);
 
-	CG3::Grammar grammar;
+	Grammar grammar;
 
-	std::unique_ptr<CG3::IGrammarParser> parser;
+	std::unique_ptr<IGrammarParser> parser;
 	FILE* input = fopen(argv[1], "rb");
 
 	if (!input) {
 		std::cerr << "Error: Error opening " << argv[1] << " for reading!" << std::endl;
 		CG3Quit(1);
 	}
-	if (fread(&CG3::cbuffers[0][0], 1, 4, input) != 4) {
+	if (fread(&cbuffers[0][0], 1, 4, input) != 4) {
 		std::cerr << "Error: Error reading first 4 bytes from grammar!" << std::endl;
 		CG3Quit(1);
 	}
 	fclose(input);
 
-	if (CG3::is_cg3b(CG3::cbuffers[0])) {
+	if (is_cg3b(cbuffers[0])) {
 		std::cerr << "Binary grammar detected. Cannot re-compile binary grammars." << std::endl;
 		CG3Quit(1);
 	}
 	else {
-		parser.reset(new CG3::TextualParser(grammar, std::cerr));
+		parser.reset(new TextualParser(grammar, std::cerr));
 	}
 
 	grammar.ux_stderr = &std::cerr;
@@ -108,7 +108,7 @@ int main(int argc, char* argv[]) {
 	FILE* gout = fopen(argv[2], "wb");
 
 	if (gout) {
-		CG3::BinaryGrammar writer(grammar, std::cerr);
+		BinaryGrammar writer(grammar, std::cerr);
 		writer.writeBinaryGrammar(gout);
 	}
 	else {

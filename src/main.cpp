@@ -3,20 +3,18 @@
 * Developed by Tino Didriksen <mail@tinodidriksen.com>
 * Design by Eckhard Bick <eckhard.bick@mail.dk>, Tino Didriksen <mail@tinodidriksen.com>
 *
-* This file is part of VISL CG-3
-*
-* VISL CG-3 is free software: you can redistribute it and/or modify
+* This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation, either version 3 of the License, or
 * (at your option) any later version.
 *
-* VISL CG-3 is distributed in the hope that it will be useful,
+* This program is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with VISL CG-3.  If not, see <http://www.gnu.org/licenses/>.
+* along with this progam.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 #include "stdafx.hpp"
@@ -29,8 +27,8 @@
 
 #include "options.hpp"
 using namespace Options;
-using CG3::CG3Quit;
-void GAppSetOpts(CG3::GrammarApplicator& applicator, UConverter* conv);
+using namespace CG3;
+void GAppSetOpts(GrammarApplicator& applicator, UConverter* conv);
 
 int main(int argc, char* argv[]) {
 	clock_t main_timer = clock();
@@ -199,28 +197,28 @@ int main(int argc, char* argv[]) {
 		ux_stdin = _ux_stdin.get();
 	}
 
-	CG3::Grammar grammar;
+	Grammar grammar;
 
 	if (options[SHOW_TAG_HASHES].doesOccur) {
-		CG3::Tag::dump_hashes_out = ux_stderr;
+		Tag::dump_hashes_out = ux_stderr;
 	}
 	if (options[SHOW_SET_HASHES].doesOccur) {
-		CG3::Set::dump_hashes_out = ux_stderr;
+		Set::dump_hashes_out = ux_stderr;
 	}
 
-	std::unique_ptr<CG3::IGrammarParser> parser;
+	std::unique_ptr<IGrammarParser> parser;
 	FILE* input = fopen(options[GRAMMAR].value, "rb");
 	if (!input) {
 		std::cerr << "Error: Error opening " << options[GRAMMAR].value << " for reading!" << std::endl;
 		CG3Quit(1);
 	}
-	if (fread(&CG3::cbuffers[0][0], 1, 4, input) != 4) {
+	if (fread(&cbuffers[0][0], 1, 4, input) != 4) {
 		std::cerr << "Error: Error reading first 4 bytes from grammar!" << std::endl;
 		CG3Quit(1);
 	}
 	fclose(input);
 
-	if (CG3::is_cg3b(CG3::cbuffers[0])) {
+	if (is_cg3b(cbuffers[0])) {
 		if (options[VERBOSE].doesOccur) {
 			std::cerr << "Info: Binary grammar detected." << std::endl;
 		}
@@ -228,10 +226,10 @@ int main(int argc, char* argv[]) {
 			std::cerr << "Error: --dump-ast is for textual grammars only!" << std::endl;
 			CG3Quit(1);
 		}
-		parser.reset(new CG3::BinaryGrammar(grammar, *ux_stderr));
+		parser.reset(new BinaryGrammar(grammar, *ux_stderr));
 	}
 	else {
-		parser.reset(new CG3::TextualParser(grammar, *ux_stderr, options[DUMP_AST].doesOccur != 0));
+		parser.reset(new TextualParser(grammar, *ux_stderr, options[DUMP_AST].doesOccur != 0));
 	}
 	if (options[VERBOSE].doesOccur) {
 		if (options[VERBOSE].value) {
@@ -256,7 +254,7 @@ int main(int argc, char* argv[]) {
 	if (options[NRULES].doesOccur) {
 		UConverter* conv = ucnv_open(codepage_cli, &status);
 		size_t sn = strlen(options[NRULES].value);
-		CG3::UString buf(sn * 3, 0);
+		UString buf(sn * 3, 0);
 		buf.resize(ucnv_toUChars(conv, &buf[0], SI32(buf.size()), options[NRULES].value, SI32(sn), &status));
 		parser->nrules = uregex_open(buf.c_str(), SI32(buf.size()), 0, nullptr, &status);
 		if (status != U_ZERO_ERROR) {
@@ -268,7 +266,7 @@ int main(int argc, char* argv[]) {
 	if (options[NRULES_INV].doesOccur) {
 		UConverter* conv = ucnv_open(codepage_cli, &status);
 		size_t sn = strlen(options[NRULES_INV].value);
-		CG3::UString buf(sn * 3, 0);
+		UString buf(sn * 3, 0);
 		buf.resize(ucnv_toUChars(conv, &buf[0], SI32(buf.size()), options[NRULES_INV].value, SI32(sn), &status));
 		parser->nrules_inv = uregex_open(buf.c_str(), SI32(buf.size()), 0, nullptr, &status);
 		if (status != U_ZERO_ERROR) {
@@ -277,19 +275,33 @@ int main(int argc, char* argv[]) {
 		}
 	}
 
+	std::unique_ptr<Profiler> profiler;
+	if (options[PROFILING].doesOccur) {
+		profiler.reset(new Profiler);
+		dynamic_cast<TextualParser*>(parser.get())->profiler = profiler.get();
+	}
+
 	if (parser->parse_grammar(options[GRAMMAR].value)) {
 		std::cerr << "Error: Grammar could not be parsed - exiting!" << std::endl;
 		CG3Quit(1);
 	}
 
 	if (options[DUMP_AST].doesOccur) {
-		dynamic_cast<CG3::TextualParser*>(parser.get())->print_ast(*ux_stdout);
+		dynamic_cast<TextualParser*>(parser.get())->print_ast(*ux_stdout);
+	}
+	if (options[PROFILING].doesOccur) {
+		auto& buf = profiler->buf;
+		buf.str("");
+		buf.clear();
+		dynamic_cast<TextualParser*>(parser.get())->print_ast(buf);
+		auto sz = profiler->addString(buf.str());
+		profiler->grammar_ast = sz;
 	}
 
 	if (options[MAPPING_PREFIX].doesOccur) {
 		UConverter* conv = ucnv_open(codepage_cli, &status);
 		size_t sn = strlen(options[MAPPING_PREFIX].value);
-		CG3::UString buf(sn * 3, 0);
+		UString buf(sn * 3, 0);
 		ucnv_toUChars(conv, &buf[0], SI32(buf.size()), options[MAPPING_PREFIX].value, SI32(sn), &status);
 		if (grammar.is_binary && grammar.mapping_prefix != buf[0]) {
 			std::cerr << "Error: Mapping prefix must match the one used for compiling the binary grammar!" << std::endl;
@@ -323,27 +335,18 @@ int main(int argc, char* argv[]) {
 		}
 	}
 
-	if (options[STATISTICS].doesOccur && !(options[GRAMMAR_BIN].doesOccur || options[GRAMMAR_OUT].doesOccur)) {
-		std::cerr << "Error: Does not make sense to gather statistics if you are not writing the compiled grammar back out somehow." << std::endl;
+	if (options[PROFILING].doesOccur && options[GRAMMAR_ONLY].doesOccur) {
+		std::cerr << "Error: Cannot gather profiling data with no input to run grammar on." << std::endl;
 		CG3Quit(1);
-	}
-	if (options[STATISTICS].doesOccur && options[GRAMMAR_ONLY].doesOccur) {
-		std::cerr << "Error: Cannot gather statistics with no input to run grammar on." << std::endl;
-		CG3Quit(1);
-	}
-	if (options[OPTIMIZE_UNSAFE].doesOccur && options[OPTIMIZE_SAFE].doesOccur) {
-		std::cerr << "Error: Cannot optimize in both unsafe and safe mode." << std::endl;
-		CG3Quit(1);
-	}
-
-	if (options[STATISTICS].doesOccur) {
-		grammar.renameAllRules();
 	}
 
 	if (!options[GRAMMAR_ONLY].doesOccur) {
-		CG3::GrammarApplicator applicator(*ux_stderr);
+		GrammarApplicator applicator(*ux_stderr);
 		applicator.setGrammar(&grammar);
 		GAppSetOpts(applicator, conv);
+		if (options[PROFILING].doesOccur) {
+			applicator.profiler = profiler.get();
+		}
 		applicator.runGrammarOnText(*ux_stdin, *ux_stdout);
 
 		if (options[VERBOSE].doesOccur) {
@@ -352,48 +355,10 @@ int main(int argc, char* argv[]) {
 		main_timer = clock();
 	}
 
-	if (options[OPTIMIZE_UNSAFE].doesOccur) {
-		std::vector<uint32_t> bad;
-		for (auto ir : grammar.rule_by_number) {
-			if (ir->num_match == 0) {
-				bad.push_back(ir->number);
-			}
-		}
-		reverse_foreach (br, bad) {
-			CG3::Rule* r = grammar.rule_by_number[*br];
-			grammar.rule_by_number.erase(grammar.rule_by_number.begin() + *br);
-			grammar.destroyRule(r);
-		}
-		std::cerr << "Optimizer removed " << bad.size() << " rules." << std::endl;
-		grammar.reindex();
-		std::cerr << "Grammar has " << grammar.sections.size() << " sections, " << grammar.templates.size() << " templates, " << grammar.rule_by_number.size() << " rules, " << grammar.sets_list.size() << " sets, " << grammar.single_tags.size() << " tags." << std::endl;
-	}
-	if (options[OPTIMIZE_SAFE].doesOccur) {
-		CG3::RuleVector bad;
-		for (auto ir : grammar.rule_by_number) {
-			if (ir->num_match == 0) {
-				bad.push_back(ir);
-			}
-		}
-		reverse_foreach (br, bad) {
-			grammar.rule_by_number.erase(grammar.rule_by_number.begin() + (*br)->number);
-		}
-		for (auto br : bad) {
-			br->number = UI32(grammar.rule_by_number.size());
-			grammar.rule_by_number.push_back(br);
-		}
-		std::cerr << "Optimizer moved " << bad.size() << " rules." << std::endl;
-		grammar.reindex();
-		std::cerr << "Grammar has " << grammar.sections.size() << " sections, " << grammar.templates.size() << " templates, " << grammar.rule_by_number.size() << " rules, " << grammar.sets_list.size() << " sets, " << grammar.single_tags.size() << " tags." << std::endl;
-	}
-
 	if (options[GRAMMAR_OUT].doesOccur) {
 		std::ofstream gout(options[GRAMMAR_OUT].value, std::ios::binary);
 		if (gout) {
-			CG3::GrammarWriter writer(grammar, *ux_stderr);
-			if (options[STATISTICS].doesOccur) {
-				writer.statistics = true;
-			}
+			GrammarWriter writer(grammar, *ux_stderr);
 			writer.writeGrammar(gout);
 
 			if (options[VERBOSE].doesOccur) {
@@ -409,7 +374,7 @@ int main(int argc, char* argv[]) {
 	if (options[GRAMMAR_BIN].doesOccur) {
 		FILE* gout = fopen(options[GRAMMAR_BIN].value, "wb");
 		if (gout) {
-			CG3::BinaryGrammar writer(grammar, *ux_stderr);
+			BinaryGrammar writer(grammar, *ux_stderr);
 			writer.writeBinaryGrammar(gout);
 
 			if (options[VERBOSE].doesOccur) {
@@ -422,6 +387,10 @@ int main(int argc, char* argv[]) {
 		}
 	}
 
+	if (options[PROFILING].doesOccur) {
+		profiler->write(options[PROFILING].value);
+	}
+
 	ucnv_close(conv);
 	u_cleanup();
 
@@ -432,7 +401,7 @@ int main(int argc, char* argv[]) {
 	return status;
 }
 
-void GAppSetOpts(CG3::GrammarApplicator& applicator, UConverter* conv) {
+void GAppSetOpts(GrammarApplicator& applicator, UConverter* conv) {
 	if (options[ALWAYS_SPAN].doesOccur) {
 		applicator.always_span = true;
 	}
@@ -474,7 +443,7 @@ void GAppSetOpts(CG3::GrammarApplicator& applicator, UConverter* conv) {
 	if (options[TRACE].doesOccur) {
 		applicator.trace = true;
 		if (options[TRACE].value) {
-			CG3::GAppSetOpts_ranged(options[TRACE].value, applicator.trace_rules, false);
+			GAppSetOpts_ranged(options[TRACE].value, applicator.trace_rules, false);
 		}
 	}
 	if (options[TRACE_NAME_ONLY].doesOccur) {
@@ -502,10 +471,10 @@ void GAppSetOpts(CG3::GrammarApplicator& applicator, UConverter* conv) {
 		applicator.section_max_count = abs(atoi(options[MAXRUNS].value));
 	}
 	if (options[SECTIONS].doesOccur) {
-		CG3::GAppSetOpts_ranged(options[SECTIONS].value, applicator.sections);
+		GAppSetOpts_ranged(options[SECTIONS].value, applicator.sections);
 	}
 	if (options[RULES].doesOccur) {
-		CG3::GAppSetOpts_ranged(options[RULES].value, applicator.valid_rules);
+		GAppSetOpts_ranged(options[RULES].value, applicator.valid_rules);
 	}
 	if (options[RULE].doesOccur) {
 		if (options[RULE].value[0] >= '0' && options[RULE].value[0] <= '9') {
@@ -514,7 +483,7 @@ void GAppSetOpts(CG3::GrammarApplicator& applicator, UConverter* conv) {
 		else {
 			UErrorCode status = U_ZERO_ERROR;
 			size_t sn = strlen(options[RULE].value);
-			CG3::UString buf(sn * 3, 0);
+			UString buf(sn * 3, 0);
 			ucnv_toUChars(conv, &buf[0], SI32(sn * 3), options[RULE].value, SI32(sn), &status);
 
 			for (auto rule : applicator.grammar->rule_by_number) {
@@ -551,11 +520,11 @@ void GAppSetOpts(CG3::GrammarApplicator& applicator, UConverter* conv) {
 		applicator.hard_limit = abs(atoi(options[HARD_LIMIT].value));
 	}
 	if (options[TEXT_DELIMIT].doesOccur) {
-		CG3::UString rx{ CG3::STR_TEXTDELIM_DEFAULT };
+		UString rx{ STR_TEXTDELIM_DEFAULT };
 		if (options[TEXT_DELIMIT].value) {
 			UErrorCode status = U_ZERO_ERROR;
 			size_t sn = strlen(options[TEXT_DELIMIT].value);
-			CG3::UString buf(sn * 3, 0);
+			UString buf(sn * 3, 0);
 			auto len = ucnv_toUChars(conv, &buf[0], SI32(sn * 3), options[TEXT_DELIMIT].value, SI32(sn), &status);
 			rx.assign(buf.begin(), buf.begin() + len);
 		}
@@ -594,22 +563,7 @@ void GAppSetOpts(CG3::GrammarApplicator& applicator, UConverter* conv) {
 	if (options[SHOW_END_TAGS].doesOccur) {
 		applicator.show_end_tags = true;
 	}
-	if (options[OPTIMIZE_UNSAFE].doesOccur) {
-		options[STATISTICS].doesOccur = true;
-	}
-	if (options[OPTIMIZE_SAFE].doesOccur) {
-		options[STATISTICS].doesOccur = true;
-	}
-	if (options[STATISTICS].doesOccur) {
-		applicator.enableStatistics();
-	}
 	if (options[NO_BREAK].doesOccur) {
 		applicator.add_spacing = false;
 	}
-#ifndef HAVE_TICK_COUNTER
-	if (options[STATISTICS].doesOccur) {
-		std::cerr << "Error: Sorry, this build cannot gather statistics due to missing high resolution timers." << std::endl;
-		CG3Quit(1);
-	}
-#endif
 }

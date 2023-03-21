@@ -3,32 +3,30 @@
 * Developed by Tino Didriksen <mail@tinodidriksen.com>
 * Design by Eckhard Bick <eckhard.bick@mail.dk>, Tino Didriksen <mail@tinodidriksen.com>
 *
-* This file is part of VISL CG-3
-*
-* VISL CG-3 is free software: you can redistribute it and/or modify
+* This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation, either version 3 of the License, or
 * (at your option) any later version.
 *
-* VISL CG-3 is distributed in the hope that it will be useful,
+* This program is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with VISL CG-3.  If not, see <http://www.gnu.org/licenses/>.
+* along with this progam.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 #include "Reading.hpp"
 #include "Cohort.hpp"
+#include "pool.hpp"
 
 namespace CG3 {
 
-ReadingList pool_readings;
-pool_cleaner<ReadingList> cleaner_readings(pool_readings);
+extern pool<Reading> pool_readings;
 
 Reading* alloc_reading(Cohort* p) {
-	Reading* r = pool_get(pool_readings);
+	Reading* r = pool_readings.get();
 	if (r == nullptr) {
 		r = new Reading(p);
 	}
@@ -40,7 +38,7 @@ Reading* alloc_reading(Cohort* p) {
 }
 
 Reading* alloc_reading(const Reading& o) {
-	Reading* r = pool_get(pool_readings);
+	Reading* r = pool_readings.get();
 	if (r == nullptr) {
 		r = new Reading(o);
 	}
@@ -77,11 +75,12 @@ Reading* alloc_reading(const Reading& o) {
 	return r;
 }
 
-void free_reading(Reading* r) {
+void free_reading(Reading*& r) {
 	if (r == nullptr) {
 		return;
 	}
-	pool_put(pool_readings, r);
+	pool_readings.put(r);
+	r = 0;
 }
 
 Reading::Reading(Cohort* p)
@@ -96,7 +95,7 @@ Reading::Reading(Cohort* p)
   , parent(p)
 {
 	#ifdef CG_TRACE_OBJECTS
-	std::cerr << "OBJECT: " << __PRETTY_FUNCTION__ << std::endl;
+	std::cerr << "OBJECT: " << VOIDP(this) << " " << __PRETTY_FUNCTION__ << std::endl;
 	#endif
 }
 
@@ -128,7 +127,7 @@ Reading::Reading(const Reading& r)
   , tags_string_hash(r.tags_string_hash)
 {
 	#ifdef CG_TRACE_OBJECTS
-	std::cerr << "OBJECT: " << __PRETTY_FUNCTION__ << std::endl;
+	std::cerr << "OBJECT: " << VOIDP(this) << " " << __PRETTY_FUNCTION__ << std::endl;
 	#endif
 
 	if (next) {
@@ -138,11 +137,10 @@ Reading::Reading(const Reading& r)
 
 Reading::~Reading() {
 	#ifdef CG_TRACE_OBJECTS
-		std::cerr << "OBJECT: " << __PRETTY_FUNCTION__ << ": " << tags.size() << ", " << hit_by.size() << std::endl;
+	std::cerr << "OBJECT: " << VOIDP(this) << " " << __PRETTY_FUNCTION__ << ": " << tags.size() << ", " << hit_by.size() << std::endl;
 	#endif
 
-	delete next;
-	next = nullptr;
+	free_reading(next);
 }
 
 void Reading::clear() {

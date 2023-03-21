@@ -3,20 +3,18 @@
 * Developed by Tino Didriksen <mail@tinodidriksen.com>
 * Design by Eckhard Bick <eckhard.bick@mail.dk>, Tino Didriksen <mail@tinodidriksen.com>
 *
-* This file is part of VISL CG-3
-*
-* VISL CG-3 is free software: you can redistribute it and/or modify
+* This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation, either version 3 of the License, or
 * (at your option) any later version.
 *
-* VISL CG-3 is distributed in the hope that it will be useful,
+* This program is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with VISL CG-3.  If not, see <http://www.gnu.org/licenses/>.
+* along with this progam.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 #include "TextualParser.hpp"
@@ -33,7 +31,7 @@ namespace CG3 {
 TextualParser::TextualParser(Grammar& res, std::ostream& ux_err, bool _dump_ast)
   : IGrammarParser(res, ux_err)
 {
-	dump_ast = _dump_ast;
+	parse_ast = _dump_ast;
 }
 
 void TextualParser::print_ast(std::ostream& out) {
@@ -41,7 +39,9 @@ void TextualParser::print_ast(std::ostream& out) {
 		return;
 	}
 	u_fprintf(out, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
-	u_fprintf(out, "<!-- l is line; b is begin, e is end, both are absolute UTF-16 code unit offsets (not code point) in the file -->\n");
+	u_fprintf(out, "<!-- l is line -->\n");
+	u_fprintf(out, "<!-- b is begin, e is end - both are absolute UTF-16 code unit offsets (not code point) in the file -->\n");
+	u_fprintf(out, "<!-- u is the deduplicated objects' unique identifier -->\n");
 	::print_ast(out, ast.cs.front().b, 0, ast.cs.front());
 }
 
@@ -202,7 +202,7 @@ void TextualParser::parseTagList(UChar*& p, Set* s, bool ordered) {
 					Tag* t = parseTag(&gbuffers[0][0], p);
 					tags.push_back(t);
 					p = n;
-					AST_CLOSE(p);
+					AST_CLOSE_ID(p, t->hash);
 					result->lines += SKIPWS(p, ';', ')');
 				}
 				if (*p != ')') {
@@ -228,7 +228,7 @@ void TextualParser::parseTagList(UChar*& p, Set* s, bool ordered) {
 				Tag* t = parseTag(&gbuffers[0][0], p);
 				tags.push_back(t);
 				p = n;
-				AST_CLOSE(p);
+				AST_CLOSE_ID(p, t->hash);
 			}
 
 			if (!ordered) {
@@ -322,14 +322,13 @@ Set* TextualParser::parseSetInline(UChar*& p, Set* s) {
 						Tag* t = parseTag(&gbuffers[0][0], p);
 						tags.push_back(t);
 						p = n;
-						AST_CLOSE(p);
+						AST_CLOSE_ID(p, t->hash);
 						result->lines += SKIPWS(p, ';', ')');
 					}
 					if (*p != ')') {
 						error("%s: Error: Expected closing ) on line %u near `%S`!\n", p);
 					}
 					++p;
-					AST_CLOSE(p);
 
 					if (tags.size() == 0) {
 						error("%s: Error: Empty inline set on line %u near `%S`! Use (*) if you want to replace with nothing.\n", n);
@@ -355,6 +354,7 @@ Set* TextualParser::parseSetInline(UChar*& p, Set* s) {
 
 					result->addSet(set_c);
 					sets.push_back(set_c->hash);
+					AST_CLOSE_ID(p, set_c->hash);
 				}
 				else {
 					AST_OPEN(SetName);
@@ -370,7 +370,7 @@ Set* TextualParser::parseSetInline(UChar*& p, Set* s) {
 					uint32_t sh = tmp->hash;
 					sets.push_back(sh);
 					p = n;
-					AST_CLOSE(p);
+					AST_CLOSE_ID(p, sh);
 				}
 
 				if (!set_ops.empty() && (set_ops.back() == S_SET_DIFF || set_ops.back() == S_SET_ISECT_U || set_ops.back() == S_SET_SYMDIFF_U)) {
@@ -466,7 +466,6 @@ Set* TextualParser::parseSetInline(UChar*& p, Set* s) {
 			error("%s: Error: Expected set on line %u near `%S`!\n", p);
 		}
 	}
-	AST_CLOSE(p);
 
 	if (!s && sets.empty()) {
 		error("%s: Error: Expected set on line %u near `%S`!\n", p);
@@ -482,6 +481,8 @@ Set* TextualParser::parseSetInline(UChar*& p, Set* s) {
 		s->sets.swap(sets);
 		s->set_ops.swap(set_ops);
 	}
+
+	AST_CLOSE_ID(p, s->hash);
 	return s;
 }
 
@@ -958,7 +959,7 @@ ContextualTest* TextualParser::parseContextualTestList(UChar*& p, Rule* rule, bo
 			result->lines += SKIPWS(p);
 			Set* s = parseSetInlineWrapper(p);
 			t->cbarrier = s->hash;
-			AST_CLOSE(p);
+			AST_CLOSE_ID(p, s->hash);
 		}
 		result->lines += SKIPWS(p);
 		if (ux_simplecasecmp(p, STR_BARRIER)) {
@@ -967,7 +968,7 @@ ContextualTest* TextualParser::parseContextualTestList(UChar*& p, Rule* rule, bo
 			result->lines += SKIPWS(p);
 			Set* s = parseSetInlineWrapper(p);
 			t->barrier = s->hash;
-			AST_CLOSE(p);
+			AST_CLOSE_ID(p, s->hash);
 		}
 		result->lines += SKIPWS(p);
 
@@ -1003,8 +1004,6 @@ ContextualTest* TextualParser::parseContextualTestList(UChar*& p, Rule* rule, bo
 		u_fflush(ux_stderr);
 	}
 
-	AST_CLOSE(p);
-
 	if (rule) {
 		if (rule->flags & RF_LOOKDELETED) {
 			t->pos |= POS_LOOK_DELETED;
@@ -1018,9 +1017,15 @@ ContextualTest* TextualParser::parseContextualTestList(UChar*& p, Rule* rule, bo
 	}
 
 	t = result->addContextualTest(ot);
+	if (profiler) {
+		profiler->addContext(t->hash, filename, cur_ast->b - cur_grammar, p - cur_grammar);
+	}
 	if (t->tmpl) {
 		deferred_tmpls[t] = tmpl_data;
 	}
+
+	AST_CLOSE_ID(p, t->hash);
+
 	return t;
 }
 
@@ -1164,7 +1169,7 @@ void TextualParser::parseRule(UChar*& p, KEYWORDS key) {
 		gbuffers[0][c] = 0;
 		Tag* wform = parseTag(&gbuffers[0][0], lp);
 		rule->wordform = wform;
-		AST_CLOSE(n);
+		AST_CLOSE_ID(n, wform->hash);
 	}
 
 	AST_OPEN(RuleType);
@@ -1614,19 +1619,24 @@ void TextualParser::parseRule(UChar*& p, KEYWORDS key) {
 		}
 	}
 
-	if (destroy) {
-		result->destroyRule(rule);
-	}
-	else {
-		addRuleToGrammar(rule);
-	}
-
 	result->lines += SKIPWS(p, ';');
 	if (*p != ';') {
 		u_fprintf(ux_stderr, "%s: Warning: Expected closing ; on line %u after previous rule!\n", filebase, result->lines);
 		u_fflush(ux_stderr);
 	}
-	AST_CLOSE(p);
+
+	if (destroy) {
+		result->destroyRule(rule);
+		AST_CLOSE(p);
+	}
+	else {
+		addRuleToGrammar(rule);
+
+		if (profiler) {
+			profiler->addRule(filename, cur_ast->b - cur_grammar, p - cur_grammar);
+		}
+		AST_CLOSE_ID(p, rule->number + 1);
+	}
 }
 
 bool TextualParser::maybeParseRule(UChar*& p) {
@@ -1811,7 +1821,18 @@ void TextualParser::parseFromUChar(UChar* input, const char* fname) {
 		u_fprintf(ux_stderr, "%s: Error: Input is empty - cannot continue!\n", fname);
 		CG3Quit(1);
 	}
+	if (profiler) {
+		parse_ast = true;
+	}
 
+	auto id = ++num_grammars;
+	if (profiler) {
+		UnicodeString str(input);
+		std::string utf8;
+		str.toUTF8String(utf8);
+		id = profiler->addGrammar(fname, utf8);
+	}
+	cur_grammar = input;
 	UChar* p = input;
 	result->lines = 1;
 	AST_OPEN(Grammar);
@@ -1847,7 +1868,7 @@ void TextualParser::parseFromUChar(UChar* input, const char* fname) {
 				if (*p != ';') {
 					error("%s: Error: Expected closing ; before line %u near `%S`!\n", p);
 				}
-				AST_CLOSE(p + 1);
+				AST_CLOSE_ID(p + 1, result->delimiters->hash);
 			}
 			// SOFT-DELIMITERS
 			else if (IS_ICASE(p, "SOFT-DELIMITERS", "soft-delimiters")) {
@@ -1873,7 +1894,7 @@ void TextualParser::parseFromUChar(UChar* input, const char* fname) {
 				if (*p != ';') {
 					error("%s: Error: Expected closing ; before line %u near `%S`!\n", p);
 				}
-				AST_CLOSE(p + 1);
+				AST_CLOSE_ID(p + 1, result->soft_delimiters->hash);
 			}
 			// TEXT-DELIMITERS
 			else if (IS_ICASE(p, "TEXT-DELIMITERS", "text-delimiters")) {
@@ -1909,7 +1930,7 @@ void TextualParser::parseFromUChar(UChar* input, const char* fname) {
 				if (*p != ';') {
 					error("%s: Error: Expected closing ; before line %u near `%S`!\n", p);
 				}
-				AST_CLOSE(p + 1);
+				AST_CLOSE_ID(p + 1, result->text_delimiters->hash);
 			}
 			// MAPPING-PREFIX
 			else if (IS_ICASE(p, "MAPPING-PREFIX", "mapping-prefix")) {
@@ -1976,7 +1997,7 @@ void TextualParser::parseFromUChar(UChar* input, const char* fname) {
 					Tag* t = parseTag(&gbuffers[0][0], p);
 					result->preferred_targets.push_back(t->hash);
 					p = n;
-					AST_CLOSE(p);
+					AST_CLOSE_ID(p, t->hash);
 					result->lines += SKIPWS(p);
 				}
 
@@ -2017,7 +2038,7 @@ void TextualParser::parseFromUChar(UChar* input, const char* fname) {
 					Tag* t = parseTag(&gbuffers[0][0], p);
 					result->reopen_mappings.insert(t->hash);
 					p = n;
-					AST_CLOSE(p);
+					AST_CLOSE_ID(p, t->hash);
 					result->lines += SKIPWS(p);
 				}
 
@@ -2131,7 +2152,7 @@ void TextualParser::parseFromUChar(UChar* input, const char* fname) {
 					Tag* t = parseTag(&gbuffers[0][0], p);
 					tmp.insert(t->hash);
 					p = n;
-					AST_CLOSE(p);
+					AST_CLOSE_ID(p, t->hash);
 					result->lines += SKIPWS(p);
 				}
 
@@ -2205,7 +2226,7 @@ void TextualParser::parseFromUChar(UChar* input, const char* fname) {
 				if (*p != ';') {
 					error("%s: Error: Expected closing ; before line %u near `%S`!\n", p);
 				}
-				AST_CLOSE(p + 1);
+				AST_CLOSE_ID(p + 1, s->hash);
 			}
 			// SET
 			else if (IS_ICASE(p, "SET", "set")) {
@@ -2263,7 +2284,7 @@ void TextualParser::parseFromUChar(UChar* input, const char* fname) {
 				if (*p != ';') {
 					error("%s: Error: Expected closing ; before line %u near `%S`! Probably caused by missing set operator.\n", p);
 				}
-				AST_CLOSE(p + 1);
+				AST_CLOSE_ID(p + 1, s->hash);
 			}
 			// MAPPINGS
 			else if (IS_ICASE(p, "MAPPINGS", "mappings")) {
@@ -2514,7 +2535,7 @@ void TextualParser::parseFromUChar(UChar* input, const char* fname) {
 					Tag* t = parseTag(&gbuffers[0][0], p);
 					tmp.insert(t->hash);
 					p = n;
-					AST_CLOSE(p);
+					AST_CLOSE_ID(p, t->hash);
 					result->lines += SKIPWS(p);
 				}
 
@@ -2630,6 +2651,8 @@ void TextualParser::parseFromUChar(UChar* input, const char* fname) {
 				swapper<uint32_t> oswap(true, olines, result->lines);
 				const char* obase = nullptr;
 				swapper<const char*> bswap(true, obase, filebase);
+				UChar* cgram = nullptr;
+				swapper<UChar*> gswap(true, cgram, cur_grammar);
 
 				parseFromUChar(&data[4], abspath.data());
 			}
@@ -2700,13 +2723,13 @@ void TextualParser::parseFromUChar(UChar* input, const char* fname) {
 						}
 					}
 					result->lines += SKIPTOWS(n, ')', true);
-					AST_CLOSE(n);
 					c = SI32(n - p);
 					u_strncpy(&gbuffers[0][0], p, c);
 					gbuffers[0][c] = 0;
 					left = parseTag(&gbuffers[0][0], p);
 					result->lines += SKIPWS(n);
 					p = n;
+					AST_CLOSE_ID(p, left->hash);
 
 					if (*p == ')') {
 						error("%s: Error: Encountered ) before the expected Right tag on line %u near `%S`!\n", p);
@@ -2721,13 +2744,13 @@ void TextualParser::parseFromUChar(UChar* input, const char* fname) {
 						}
 					}
 					result->lines += SKIPTOWS(n, ')', true);
-					AST_CLOSE(n);
 					c = SI32(n - p);
 					u_strncpy(&gbuffers[0][0], p, c);
 					gbuffers[0][c] = 0;
 					right = parseTag(&gbuffers[0][0], p);
 					result->lines += SKIPWS(n);
 					p = n;
+					AST_CLOSE_ID(p, right->hash);
 
 					if (*p != ')') {
 						error("%s: Error: Encountered %C before the expected ) on line %u near `%S`!\n", *p, p);
@@ -2790,7 +2813,7 @@ void TextualParser::parseFromUChar(UChar* input, const char* fname) {
 		}
 	}
 
-	AST_CLOSE(p);
+	AST_CLOSE_ID(p, id);
 }
 
 int TextualParser::parse_grammar(const char* fname) {
@@ -3070,6 +3093,13 @@ int TextualParser::parse_grammar(UString& data) {
 			orc->ors.push_back(safec);
 			orc->ors.push_back(unsafec);
 			orc = result->addContextualTest(orc);
+
+			if (profiler) {
+				auto pc = profiler->contexts.find(tmp->hash);
+				if (pc != profiler->contexts.end()) {
+					profiler->addContext(orc->hash, filename, pc->second.b, pc->second.e);
+				}
+			}
 
 			for (auto& cntx : result->contexts) {
 				if (cntx.second->linked == tmp) {

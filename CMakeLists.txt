@@ -29,13 +29,7 @@ set(VERSION "${_cg3_VERSION_MAJOR}.${_cg3_VERSION_MINOR}.${_cg3_VERSION_PATCH}.$
 include(GNUInstallDirs)
 
 option(BUILD_SHARED_LIBS "Set to OFF to use static library" ON)
-option(USE_TCMALLOC "Set to OFF to disable linking against TCMalloc" ON)
 option(ENABLE_PYTHON_BINDINGS "Set to ON to build the Python wrapper" OFF)
-
-if(APPLE)
-	message(STATUS "Disabling TCMalloc for OS X")
-	set(USE_TCMALLOC OFF)
-endif()
 
 if(MSVC)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /utf-8 /std:c++latest /Zc:__cplusplus /permissive- /W4 /MP")

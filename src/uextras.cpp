@@ -3,20 +3,18 @@
 * Developed by Tino Didriksen <mail@tinodidriksen.com>
 * Design by Eckhard Bick <eckhard.bick@mail.dk>, Tino Didriksen <mail@tinodidriksen.com>
 *
-* This file is part of VISL CG-3
-*
-* VISL CG-3 is free software: you can redistribute it and/or modify
+* This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation, either version 3 of the License, or
 * (at your option) any later version.
 *
-* VISL CG-3 is distributed in the hope that it will be useful,
+* This program is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with VISL CG-3.  If not, see <http://www.gnu.org/licenses/>.
+* along with this progam.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 #ifdef _WIN32
@@ -51,7 +49,7 @@ std::string ux_dirname(const char* in) {
 	return tmp;
 }
 
-void findAndReplace(UnicodeString& str, CG3::UStringView from, CG3::UStringView to) {
+void findAndReplace(UnicodeString& str, UStringView from, UStringView to) {
 	int32_t offset = 0;
 	while ((offset = str.indexOf(from.data(), SI32(from.size()), offset)) != -1) {
 		str.replace(offset, SI32(from.size()), to.data(), 0, SI32(to.size()));
@@ -59,11 +57,7 @@ void findAndReplace(UnicodeString& str, CG3::UStringView from, CG3::UStringView 
 	}
 }
 
-}
-
-size_t get_line_clean(CG3::UString& line, CG3::UString& cleaned, std::istream& input, bool keep_tabs) {
-	using namespace CG3;
-
+size_t get_line_clean(UString& line, UString& cleaned, std::istream& input, bool keep_tabs) {
 	size_t offset = 0, packoff = 0;
 	// Read as much of the next line as will fit in the current buffer
 	while (u_fgets(&line[offset], SI32(line.size() - offset - 1), input)) {
@@ -103,6 +97,8 @@ size_t get_line_clean(CG3::UString& line, CG3::UString& cleaned, std::istream& i
 	}
 
 	return packoff;
+}
+
 }
 
 // ICU std::istream input wrappers

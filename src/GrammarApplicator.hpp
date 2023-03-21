@@ -3,20 +3,18 @@
 * Developed by Tino Didriksen <mail@tinodidriksen.com>
 * Design by Eckhard Bick <eckhard.bick@mail.dk>, Tino Didriksen <mail@tinodidriksen.com>
 *
-* This file is part of VISL CG-3
-*
-* VISL CG-3 is free software: you can redistribute it and/or modify
+* This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation, either version 3 of the License, or
 * (at your option) any later version.
 *
-* VISL CG-3 is distributed in the hope that it will be useful,
+* This program is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with VISL CG-3.  If not, see <http://www.gnu.org/licenses/>.
+* along with this progam.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 #pragma once
@@ -27,7 +25,9 @@
 #include "Tag.hpp"
 #include "TagTrie.hpp"
 #include "CohortIterator.hpp"
+#include "Profiler.hpp"
 #include "Rule.hpp"
+#include "Window.hpp"
 #include "interval_vector.hpp"
 #include "flat_unordered_set.hpp"
 #include "scoped_stack.hpp"
@@ -36,7 +36,6 @@
 class Process;
 
 namespace CG3 {
-class Window;
 class Grammar;
 class Reading;
 class SingleWindow;
@@ -146,9 +145,6 @@ public:
 	GrammarApplicator(std::ostream& ux_err);
 	virtual ~GrammarApplicator();
 
-	void enableStatistics();
-	void disableStatistics();
-
 	void setGrammar(Grammar* res);
 	void setTextDelimiter(UString rx);
 	void index();
@@ -165,6 +161,7 @@ public:
 	void reflowRelationWindow(uint32_t max = 0);
 
 	Grammar* grammar = nullptr;
+	Profiler* profiler = nullptr;
 
 	// Moved these public to help the library API
 	Tag* addTag(Tag* tag);
@@ -195,8 +192,8 @@ public:
 protected:
 	void printTrace(std::ostream& output, uint32_t hit_by);
 	void printReading(const Reading* reading, std::ostream& output, size_t sub = 1);
-	virtual void printCohort(Cohort* cohort, std::ostream& output);
-	virtual void printSingleWindow(SingleWindow* window, std::ostream& output);
+	virtual void printCohort(Cohort* cohort, std::ostream& output, bool profiling = false);
+	virtual void printSingleWindow(SingleWindow* window, std::ostream& output, bool profiling = false);
 
 	void pipeOutReading(const Reading* reading, std::ostream& output);
 	void pipeOutCohort(const Cohort* cohort, std::ostream& output);
@@ -247,7 +244,8 @@ protected:
 	bc::flat_map<uint32_t, uint8_t> regexgrps_z;
 	bc::flat_map<uint32_t, regexgrps_t*> regexgrps_c;
 	uint32_t same_basic = 0;
-	Cohort* target = nullptr;
+	Cohort* rule_target = nullptr;
+	Cohort* context_target = nullptr;
 	Cohort* merge_with = nullptr;
 	Rule* current_rule = nullptr;
 	std::vector<Rule_Context> context_stack;
@@ -332,9 +330,6 @@ protected:
 	bool doesSetMatchCohortNormal(Cohort& cohort, const uint32_t set, dSMC_Context* context = nullptr);
 	bool doesSetMatchCohortCareful(Cohort& cohort, const uint32_t set, dSMC_Context* context = nullptr);
 
-	bool statistics = false;
-	ticks gtimer{};
-
 	Cohort* delimitAt(SingleWindow& current, Cohort* cohort);
 	void reflowReading(Reading& reading);
 	Tag* generateVarstringTag(const Tag* tag);
@@ -359,6 +354,59 @@ protected:
 
 	std::deque<Reading> subs_any;
 	Reading* get_sub_reading(Reading* tr, int sub_reading);
+
+	template<typename T>
+	void addProfilingExample(T& item) {
+		auto& buf = profiler->buf;
+
+		bool ttrace = false;
+		swapper<bool> _st(true, trace, ttrace);
+
+		// Whole context, both before and after current window
+		buf.str("");
+		buf.clear();
+
+		buf << "# PREVIOUS\n";
+		for (auto s : gWindow->previous) {
+			printSingleWindow(s, buf, true);
+		}
+		buf << "# CURRENT\n";
+		printSingleWindow(gWindow->current, buf, true);
+		buf << "# NEXT\n";
+		for (auto s : gWindow->next) {
+			printSingleWindow(s, buf, true);
+		}
+
+		auto sz = profiler->addString(buf.str());
+		item.example_window = sz;
+
+		// Target cohort
+		buf.str("");
+		buf.clear();
+		printCohort(context_target, buf, true);
+		sz = profiler->addString(buf.str());
+		item.example_target = sz;
+	}
+
+	void profileRuleContext(bool test_good, const Rule* rule, const ContextualTest* test) {
+		if (profiler) {
+			auto pit = profiler->contexts.find(test->hash);
+			if (pit != profiler->contexts.end()) {
+				auto& t = pit->second;
+				if ((test_good && !(test->pos & POS_NEGATE)) || (!test_good && (test->pos & POS_NEGATE))) {
+					++t.num_match;
+					if (!t.example_window) {
+						addProfilingExample(t);
+					}
+					auto rc = std::make_pair(rule->number + 1, test->hash);
+					++profiler->rule_contexts[rc];
+				}
+				else {
+					++t.num_fail;
+				}
+			}
+		}
+	}
 };
 }
 

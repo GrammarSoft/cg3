@@ -3,20 +3,18 @@
 * Developed by Tino Didriksen <mail@tinodidriksen.com>
 * Design by Eckhard Bick <eckhard.bick@mail.dk>, Tino Didriksen <mail@tinodidriksen.com>
 *
-* This file is part of VISL CG-3
-*
-* VISL CG-3 is free software: you can redistribute it and/or modify
+* This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation, either version 3 of the License, or
 * (at your option) any later version.
 *
-* VISL CG-3 is distributed in the hope that it will be useful,
+* This program is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with VISL CG-3.  If not, see <http://www.gnu.org/licenses/>.
+* along with this progam.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 #pragma once
@@ -61,6 +59,11 @@ constexpr inline uint64_t UI64(T t) {
 template<typename T>
 constexpr inline size_t UIZ(T t) {
 	return static_cast<size_t>(t);
+}
+
+template<typename T>
+constexpr inline void* VOIDP(T t) {
+	return static_cast<void*>(t);
 }
 
 namespace CG3 {
@@ -513,6 +516,26 @@ inline UString readUTF8String(S& input) {
 	#pragma warning (disable: 4127)
 #endif
 
+template<typename T>
+T htonl(T t) {
+	return be::native_to_big(t);
+}
+
+template<typename T>
+T htons(T t) {
+	return be::native_to_big(t);
+}
+
+template<typename T>
+T ntohl(T t) {
+	return be::big_to_native(t);
+}
+
+template<typename T>
+T ntohs(T t) {
+	return be::big_to_native(t);
+}
+
 inline uint32_t hton32(uint32_t val) {
 	return UI32(htonl(val));
 }
@@ -726,6 +749,26 @@ inline T* reverse(T* head) {
 	return nr;
 }
 
+template <typename T>
+struct Reversed {
+	T& t;
+};
+
+template <typename T>
+auto begin(Reversed<T> c) {
+	return std::rbegin(c.t);
+}
+
+template <typename T>
+auto end(Reversed<T> c) {
+	return std::rend(c.t);
+}
+
+template <typename T>
+Reversed<T> reversed(T&& c) {
+	return { c };
+}
+
 template<typename Cont, typename T>
 inline void erase(Cont& cont, const T& val) {
 	cont.erase(std::remove(cont.begin(), cont.end(), val), cont.end());
@@ -753,62 +796,6 @@ inline size_t fwrite_throw(const void* buffer, size_t size, size_t count, FILE* 
 	}
 	return rv;
 }
-
-template<typename Pool, typename Var>
-void pool_get(Pool& pool, Var& var) {
-	if (!pool.empty()) {
-		var.swap(pool.back());
-		var.clear();
-		pool.pop_back();
-	}
-}
-
-template<typename Pool, typename Var>
-void pool_put(Pool& pool, Var& var) {
-	pool.resize(pool.size() + 1);
-	var.swap(pool.back());
-}
-
-template<typename Pool, typename Var>
-void pool_get(Pool& pool, Var*& var) {
-	var = nullptr;
-	if (!pool.empty()) {
-		var = pool.back();
-		pool.pop_back();
-	}
-}
-
-template<typename Pool>
-typename Pool::value_type pool_get(Pool& pool) {
-	typename Pool::value_type var = nullptr;
-	if (!pool.empty()) {
-		var = pool.back();
-		pool.pop_back();
-	}
-	return var;
-}
-
-template<typename Pool, typename Var>
-void pool_put(Pool& pool, Var* var) {
-	var->clear();
-	pool.push_back(var);
-}
-
-template<typename Pool>
-struct pool_cleaner {
-	Pool& pool;
-
-	pool_cleaner(Pool& pool)
-	  : pool(pool)
-	{
-	}
-
-	~pool_cleaner() {
-		for (auto p : pool) {
-			delete p;
-		}
-	}
-};
 
 template<class Function, std::size_t... Indices>
 constexpr auto make_array_helper(Function f, std::index_sequence<Indices...>) -> std::array<typename std::invoke_result<Function, std::size_t>::type, sizeof...(Indices)> {

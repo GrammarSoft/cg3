@@ -3,20 +3,18 @@
 * Developed by Tino Didriksen <mail@tinodidriksen.com>
 * Design by Eckhard Bick <eckhard.bick@mail.dk>, Tino Didriksen <mail@tinodidriksen.com>
 *
-* This file is part of VISL CG-3
-*
-* VISL CG-3 is free software: you can redistribute it and/or modify
+* This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation, either version 3 of the License, or
 * (at your option) any later version.
 *
-* VISL CG-3 is distributed in the hope that it will be useful,
+* This program is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with VISL CG-3.  If not, see <http://www.gnu.org/licenses/>.
+* along with this progam.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 #include "GrammarApplicator.hpp"
@@ -316,10 +314,10 @@ bool GrammarApplicator::runSingleRule(SingleWindow& current, const Rule& rule, R
 	const Set& set = *(grammar->sets_list[rule.target]);
 	CohortSet* cohortset = &current.rule_to_cohorts[rule.number];
 	if (!context_stack.empty()) {
-		if (current.nested_rule_to_cohorts == nullptr) {
-			current.nested_rule_to_cohorts = new CohortSet();
+		if (!current.nested_rule_to_cohorts) {
+			current.nested_rule_to_cohorts.reset(new CohortSet());
 		}
-		cohortset = current.nested_rule_to_cohorts;
+		cohortset = current.nested_rule_to_cohorts.get();
 		cohortset->clear();
 		cohortset->insert(get_apply_to().cohort);
 		for (auto& t : set.trie_special) {
@@ -569,7 +567,7 @@ bool GrammarApplicator::runSingleRule(SingleWindow& current, const Rule& rule, R
 			unif_last_textual = 0;
 
 			same_basic = reading->hash_plain;
-			target = nullptr;
+			rule_target = context_target = nullptr;
 			if (context_stack.size() > 1) {
 				Cohort* m = context_stack[context_stack.size()-2].mark;
 				if (m) set_mark(m);
@@ -589,7 +587,7 @@ bool GrammarApplicator::runSingleRule(SingleWindow& current, const Rule& rule, R
 					did_test = false;
 					regex_prop = false;
 				}
-				target = cohort;
+				rule_target = context_target = cohort;
 				reading->matched_target = true;
 				matched_target = true;
 				bool good = true;
@@ -623,15 +621,16 @@ bool GrammarApplicator::runSingleRule(SingleWindow& current, const Rule& rule, R
 						}
 						context_stack.back().context.push_back(merge_with ? merge_with : result);
 						test_good = (next_test != nullptr);
+
+						profileRuleContext(test_good, &rule, test);
+
 						if (!test_good) {
 							good = test_good;
-							if (!statistics) {
-								if (it != rule.tests.begin() && !(rule.flags & RF_KEEPORDER)) {
-									rule.tests.erase(it);
-									rule.tests.push_front(test);
-								}
-								break;
+							if (it != rule.tests.begin() && !(rule.flags & RF_KEEPORDER)) {
+								rule.tests.erase(it);
+								rule.tests.push_front(test);
 							}
+							break;
 						}
 						did_test = ((set.type & (ST_CHILD_UNIFY | ST_SPECIAL)) == 0 && context_stack.back().unif_tags->empty() && context_stack.back().unif_sets->empty());
 					}
@@ -657,7 +656,13 @@ bool GrammarApplicator::runSingleRule(SingleWindow& current, const Rule& rule, R
 					}
 					reading->matched_tests = true;
 					++num_active;
-					++rule.num_match;
+					if (profiler) {
+						auto& r = profiler->rules[rule.number + 1];
+						++r.num_match;
+						if (!r.example_window) {
+							addProfilingExample(r);
+						}
+					}
 
 					if (regex_prop && i && !regexgrps_c.empty()) {
 						for (auto z = i; z > 0; --z) {
@@ -677,7 +682,9 @@ bool GrammarApplicator::runSingleRule(SingleWindow& current, const Rule& rule, R
 			}
 			else {
 				context_stack.back().regexgrp_ct = orz;
-				++rule.num_fail;
+				if (profiler) {
+					++profiler->rules[rule.number + 1].num_fail;
+				}
 			}
 			readings_plain.insert(std::make_pair(reading->hash_plain, reading));
 			for (auto r = cohort->readings[i]; r; r = r->next) {
@@ -827,8 +834,6 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 			std::cerr << "DEBUG: Trying rule " << rule->line << std::endl;
 		}
 
-		ticks tstamp(gtimer);
-
 		if (!apply_mappings && (rule->type == K_MAP || rule->type == K_ADD || rule->type == K_REPLACE)) {
 			continue;
 		}
@@ -843,9 +848,6 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 			if (did_final_enclosure && !(rule->flags & RF_ENCL_FINAL)) {
 				continue;
 			}
-		}
-		if (statistics) {
-			tstamp = getticks();
 		}
 
 		bool readings_changed = false;
@@ -1220,7 +1222,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 				auto names = getTagList(*rule->maplist);
 				for (auto tag : names) {
 					VARSTRINGIFY(tag);
-          auto it = variables.begin();
+					auto it = variables.begin();
 					if (tag->type & T_REGEXP) {
 						it = std::find_if(it, variables.end(), [&](auto& kv) { return doesTagMatchRegexp(kv.first, *tag); });
 					}
@@ -1294,8 +1296,8 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 				if (rule->flags & RF_IGNORED) {
 					CohortSet cohorts;
 					collect_subtree(cohorts, get_apply_to().cohort, rule->childset1);
-					reverse_foreach (iter, cohorts) {
-						ignore_cohort(*iter);
+					for (auto c : reversed(cohorts)) {
+						ignore_cohort(c);
 					}
 					reindex();
 					reflowDependencyWindow();
@@ -1907,7 +1909,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 				if (get_apply_to().cohort->readings.size() > 1) {
 					foreach (rit, get_apply_to().cohort->readings) {
 						if ((*rit)->noprint) {
-							delete *rit;
+							free_reading(*rit);
 							rit = get_apply_to().cohort->readings.erase(rit);
 							rit_end = get_apply_to().cohort->readings.end();
 						}
@@ -1997,6 +1999,9 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 					tmpl_cntx.clear();
 					Cohort* attach = nullptr;
 					bool test_good = (runContextualTest(target->parent, target->local_number, it, &attach) && attach);
+
+					profileRuleContext(test_good, rule, it);
+
 					if (!test_good) {
 						finish_reading_loop = false;
 						return;
@@ -2183,16 +2188,22 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 					context_stack.back().attach_to.subreading = nullptr;
 					seen_barrier = false;
 					if (runContextualTest(target->parent, target->local_number, rule->dep_target, &attach) && attach) {
+						profileRuleContext(true, rule, rule->dep_target);
+
 						bool break_after = seen_barrier || (rule->flags & RF_NEAREST);
 						if (get_attach_to().cohort) {
 							attach = get_attach_to().cohort;
 						}
+						context_target = attach;
 						bool good = true;
 						for (auto it : rule->dep_tests) {
 							context_stack.back().mark = attach;
 							dep_deep_seen.clear();
 							tmpl_cntx.clear();
 							bool test_good = (runContextualTest(attach->parent, attach->local_number, it) != nullptr);
+
+							profileRuleContext(test_good, rule, it);
+
 							if (!test_good) {
 								good = test_good;
 								break;
@@ -2257,15 +2268,21 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 				context_stack.back().attach_to.reading = nullptr;
 				context_stack.back().attach_to.subreading = nullptr;
 				if (runContextualTest(&current, c, rule->dep_target, &attach) && attach && cohort->parent == attach->parent) {
+					profileRuleContext(true, rule, rule->dep_target);
+
 					if (get_attach_to().cohort) {
 						attach = get_attach_to().cohort;
 					}
+					context_target = attach;
 					bool good = true;
 					for (auto it : rule->dep_tests) {
 						context_stack.back().mark = attach;
 						dep_deep_seen.clear();
 						tmpl_cntx.clear();
 						bool test_good = (runContextualTest(attach->parent, attach->local_number, it) != nullptr);
+
+						profileRuleContext(test_good, rule, it);
+
 						if (!test_good) {
 							good = test_good;
 							break;
@@ -2314,8 +2331,8 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 							return;
 						}
 
-						reverse_foreach (iter, cohorts) {
-							current.cohorts.erase(current.cohorts.begin() + (*iter)->local_number);
+						for (auto c : reversed(cohorts)) {
+							current.cohorts.erase(current.cohorts.begin() + c->local_number);
 						}
 
 						foreach (iter, current.cohorts) {
@@ -2351,8 +2368,8 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 							CG3Quit(1);
 						}
 
-						reverse_foreach (iter, cohorts) {
-							current.cohorts.insert(current.cohorts.begin() + spot, *iter);
+						for (auto c : reversed(cohorts)) {
+							current.cohorts.insert(current.cohorts.begin() + spot, c);
 						}
 					}
 					reindex();
@@ -2423,11 +2440,6 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 		}
 		if (should_repeat) {
 			goto repeat_rule;
-		}
-
-		if (statistics) {
-			ticks tmp = getticks();
-			rule->total_time += elapsed(tmp, tstamp);
 		}
 
 		if (rule_did_something) {
