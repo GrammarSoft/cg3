@@ -24,6 +24,7 @@ Makefile
 *.bak
 /test/**/diff*.txt
 /test/**/output*.txt
+/test/**/untraced*.txt
 /test/**/std*.txt
 /test/**/*.out.cg3
 /test/**/*.cg3b

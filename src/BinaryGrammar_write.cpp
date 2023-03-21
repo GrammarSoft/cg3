@@ -264,10 +264,13 @@ int BinaryGrammar::writeBinaryGrammar(FILE* output) {
 			fields |= (1 << 0);
 			writeSwapped(buffer, s->number);
 		}
-		// Field 1 is unused
-		if (s->type) {
+		if (s->type >= ST_ORDERED) {
+			fields |= (1 << 1);
+			writeSwapped(buffer, UI32(s->type));
+		}
+		else {
 			fields |= (1 << 2);
-			writeSwapped(buffer, s->type);
+			writeSwapped(buffer, UI8(s->type));
 		}
 		if (!s->getNonEmpty().empty()) {
 			fields |= (1 << 3);

@@ -87,7 +87,7 @@ private:
 	Tag* parseTag(const UStringView& to, const UChar* p = nullptr) {
 		return parseTag(to.data(), p);
 	}
-	void parseTagList(UChar*& p, Set* s);
+	void parseTagList(UChar*& p, Set* s, bool ordered = false);
 	Set* parseSet(const UChar* name, const UChar* p = nullptr);
 	Set* parseSetInline(UChar*& p, Set* s = nullptr);
 	Set* parseSetInlineWrapper(UChar*& p);

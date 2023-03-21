@@ -16,7 +16,7 @@ my $compiler = $bpath."cg-comp";
 `diff -B expected.txt output.txt >diff.txt`;
 
 if (-s "diff.txt") {
-	print STDERR "Fail.\n";
+	print STDERR "Fail\n";
 } else {
-	print STDERR "Success.\n";
+	print STDERR "Success\n";
 }

@@ -53,7 +53,7 @@ if (-s "diff.txt") {
 	print STDERR "Fail (expected).\n";
 	#$bad = 1; # Expected?
 } else {
-	print STDERR "Success.\n";
+	print STDERR "Success\n";
 }
 
 exit($bad);

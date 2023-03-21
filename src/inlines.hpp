@@ -257,6 +257,10 @@ inline UStringView USV(UnicodeString& str) {
 	return UStringView(str.getTerminatedBuffer(), str.length());
 }
 
+inline UStringView USV(UString& str) {
+	return UStringView(str);
+}
+
 inline bool ISSPACE(const UChar c) {
 	if (c <= 0xFF && c != 0x09 && c != 0x0A && c != 0x0D && c != 0x20 && c != 0xA0) {
 		return false;

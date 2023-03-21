@@ -39,6 +39,7 @@ enum {
 	ST_MAPPING     = (1 <<  5),
 	ST_USED        = (1 <<  6),
 	ST_STATIC      = (1 <<  7),
+	ST_ORDERED     = (1 <<  8),
 
 	MASK_ST_UNIFY  = ST_TAG_UNIFY | ST_SET_UNIFY | ST_CHILD_UNIFY,
 };
@@ -47,7 +48,7 @@ class Set {
 public:
 	CG3_IMPORTS static std::ostream* dump_hashes_out;
 
-	uint8_t type = 0;
+	uint16_t type = 0; // Stored as 32bit in binary format, so safe to bump when needed
 	uint32_t line = 0;
 	uint32_t hash = 0;
 	uint32_t number = 0;

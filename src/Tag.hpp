@@ -98,6 +98,7 @@ public:
 	uint32_t number = 0;
 	uint32_t seed = 0;
 	UString tag;
+	UString tag_raw;
 	std::unique_ptr<SetVector> vs_sets;
 	std::unique_ptr<UStringVector> vs_names;
 	mutable URegularExpression* regexp = nullptr;

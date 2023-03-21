@@ -38,6 +38,7 @@ while (<STDIN>) {
    if (/^\s+"/) {
       # ...strip trace tags
       while (s/ [-A-Z]+:[^"\s\n]+//g) {}
+      while (s/ (ADD|REM|SET)RELATIONS?\(\S+\):[^"\s\n]+//g) {}
    }
    print;
 }

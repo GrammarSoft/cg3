@@ -93,6 +93,8 @@ enum KEYWORDS : uint32_t {
 	K_MERGECOHORTS,
 	K_RESTORE,
 	K_WITH,
+	K_OLIST,
+	K_OSET,
 	KEYWORD_COUNT,
 };
 
@@ -247,6 +249,8 @@ constexpr UStringView keywords[KEYWORD_COUNT] = {
 	u"MERGECOHORTS",
 	u"RESTORE",
 	u"WITH",
+	u"OLIST",
+	u"OSET",
 };
 
 constexpr UStringView stringbits[] = {

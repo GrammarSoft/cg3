@@ -44,7 +44,9 @@ public:
 private:
 	std::ostream* ux_stderr = nullptr;
 	uint32FlatHashSet used_sets;
+	uint32FlatHashSet seen_rules;
 	const Grammar* grammar = nullptr;
+	std::multimap<uint32_t, uint32_t> anchors;
 
 	void printTag(std::ostream& out, const Tag& tag);
 	void printSet(std::ostream& output, const Set& curset);
