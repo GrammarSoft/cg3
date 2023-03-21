@@ -171,7 +171,7 @@ Tag* TextualParser::addTag(Tag* tag) {
 	return result->addTag(tag);
 }
 
-void TextualParser::parseTagList(UChar*& p, Set* s) {
+void TextualParser::parseTagList(UChar*& p, Set* s, bool ordered) {
 	AST_OPEN(TagList);
 	TagVectorSet taglists;
 	bc::flat_map<Tag*, size_t> tag_freq;
@@ -231,9 +231,11 @@ void TextualParser::parseTagList(UChar*& p, Set* s) {
 				AST_CLOSE(p);
 			}
 
-			// sort + uniq the tags
-			std::sort(tags.begin(), tags.end(), compare_Tag());
-			tags.erase(std::unique(tags.begin(), tags.end(), equal_Tag()), tags.end());
+			if (!ordered) {
+				// sort + uniq the tags
+				std::sort(tags.begin(), tags.end(), compare_Tag());
+				tags.erase(std::unique(tags.begin(), tags.end(), equal_Tag()), tags.end());
+			}
 			// If this particular list of tags hasn't already been seen, then increment their frequency counts
 			if (taglists.insert(tags).second) {
 				for (auto t : tags) {
@@ -251,9 +253,11 @@ void TextualParser::parseTagList(UChar*& p, Set* s) {
 			continue;
 		}
 		TagVector& tv = const_cast<TagVector&>(tvc);
-		// Sort tags by frequency, high-to-low
-		// Doing this yields a very cheap imperfect form of trie compression, but it's good enough
-		std::sort(tv.begin(), tv.end(), fs);
+		if (!ordered) {
+			// Sort tags by frequency, high-to-low
+			// Doing this yields a very cheap imperfect form of trie compression, but it's good enough
+			std::sort(tv.begin(), tv.end(), fs);
+		}
 		bool special = false;
 		for (auto tag : tv) {
 			if (tag->type & T_SPECIAL) {
@@ -295,6 +299,7 @@ Set* TextualParser::parseSetInline(UChar*& p, Set* s) {
 					UChar* n = p;
 					++p;
 					Set* set_c = result->allocateSet();
+					set_c->type |= ST_ORDERED;
 					set_c->line = result->lines;
 					set_c->setName(sets_counter++);
 					TagVector tags;
@@ -1091,11 +1096,10 @@ flags_t TextualParser::parseRuleFlags(UChar*& p) {
 				setflag = false;
 				break;
 			}
-			// These flags must be the last flag, as a set will follow
-			if (setflag && (i == FL_WITHCHILD || i == FL_NOCHILD || i == FL_BEFORE || i == FL_AFTER)) {
-				setflag = false;
-				break;
-			}
+		}
+		// These flags must be the last flag, as a set will follow
+		if (rv.flags & (RF_WITHCHILD | RF_NOCHILD | RF_BEFORE | RF_AFTER)) {
+			break;
 		}
 	}
 
@@ -2141,11 +2145,16 @@ void TextualParser::parseFromUChar(UChar* input, const char* fname) {
 				list_tags.swap(tmp);
 				AST_CLOSE(p + 1);
 			}
-			// LIST
-			else if (IS_ICASE(p, "LIST", "list")) {
+			// LIST, OLIST
+			else if (IS_ICASE(p, "LIST", "list") || IS_ICASE(p, "OLIST", "olist")) {
 				Set* s = result->allocateSet();
 				s->line = result->lines;
+				bool ordered = false;
 				AST_OPEN(List);
+				if (*p == 'O') {
+					++p;
+					ordered = true;
+				}
 				p += 4;
 				result->lines += SKIPWS(p);
 				AST_OPEN(SetName);
@@ -2174,7 +2183,7 @@ void TextualParser::parseFromUChar(UChar* input, const char* fname) {
 					error("%s: Error: Encountered a %C before the expected = on line %u near `%S`!\n", *p, p);
 				}
 				++p;
-				parseTagList(p, s);
+				parseTagList(p, s, ordered);
 				s->rehash();
 				if (append) {
 					result->appendToSet(s);

@@ -34,10 +34,10 @@ if (-s "diff.txt") {
 `diff -B expected.txt output.bin.txt >diff.bin.txt`;
 
 if (-s "diff.bin.txt") {
-	print STDERR "Fail.\n";
+	print STDERR "Fail\n";
 	$bad = 1;
 } else {
-	print STDERR "Success.\n";
+	print STDERR "Success\n";
 }
 
 exit($bad);

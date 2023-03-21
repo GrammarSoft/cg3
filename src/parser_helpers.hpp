@@ -340,6 +340,10 @@ Tag* parseTag(const UChar* to, const UChar* p, State& state, bool unescape=true)
 		state.error("%s: Error: Tag %S cannot mix varstring with any other special feature on line %u near `%S`!\n", to, p);
 	}
 
+	if (USV(tag->tag) != to) {
+		tag->tag_raw = to;
+	}
+
 	return state.addTag(tag);
 }
 

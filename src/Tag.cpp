@@ -287,6 +287,10 @@ void Tag::allocateVsNames() {
 }
 
 UString Tag::toUString(bool escape) const {
+	if (!tag_raw.empty()) {
+		return tag_raw;
+	}
+
 	UString str;
 	str.reserve(tag.size());
 
@@ -331,9 +335,9 @@ UString Tag::toUString(bool escape) const {
 		str += '/';
 	}
 
-	if (escape) {
+	if (escape && tag[0] != '"') {
 		for (auto c : tag) {
-			if (c == '\\' || c == '(' || c == ')' || c == ';' || c == '#') {
+			if (c == '\\' || c == '(' || c == ')' || c == ';' || c == '#' || c == ' ') {
 				str += '\\';
 			}
 			str += c;
@@ -346,11 +350,14 @@ UString Tag::toUString(bool escape) const {
 	if (type & (T_CASE_INSENSITIVE | T_REGEXP) && !is_textual(tag)) {
 		str += '/';
 	}
+	if (type & T_REGEXP_LINE) {
+		str += 'l';
+	}
+	else if (type & (T_REGEXP | T_REGEXP_ANY)) {
+		str += 'r';
+	}
 	if (type & T_CASE_INSENSITIVE) {
 		str += 'i';
-	}
-	if (type & T_REGEXP) {
-		str += 'r';
 	}
 	if ((type & T_VARSTRING) && !(type & T_VSTR)) {
 		str += 'v';

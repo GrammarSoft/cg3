@@ -28,6 +28,8 @@ my @unlinks = (
 	'grammar.out.cg3',
 	'diff.out.txt',
 	'output.out.txt',
+	'untraced.txt',
+	'untraced.out.txt',
 	);
 my $binary = "vislcg3";
 
@@ -47,14 +49,15 @@ sub run_pl {
 	}
 
 	# Write out the parsed grammar, run from the output
+	`cat expected.txt | $bindir/../scripts/cg-untrace > untraced.txt`;
 	`"$binary" $args $override -g grammar.cg3 --grammar-only --grammar-out grammar.out.cg3 >stdout.out.txt 2>stderr.out.txt`;
 	`"$binary" $args $override -g grammar.out.cg3 -I input.txt -O output.out.txt >>stdout.out.txt 2>>stderr.out.txt`;
-	`diff -B expected.txt output.out.txt >diff.out.txt`;
+	`cat output.out.txt | $bindir/../scripts/cg-untrace > untraced.out.txt`;
+	`diff -B untraced.txt untraced.out.txt >diff.out.txt`;
 
 	if (-s "diff.out.txt") {
-	   # We don't care about this just yet
-		print STDERR "(Fail) ";
-		#$good = 0;
+		print STDERR "Fail ";
+		$good = 0;
 	} else {
 		print STDERR "Success ";
 	}
@@ -72,10 +75,10 @@ sub run_pl {
 	}
 
 	if (-s "diff.bin.txt") {
-		print STDERR "Fail ($gf).\n";
+		print STDERR "Fail ($gf)\n";
 		$good = 0;
 	} else {
-		print STDERR "Success.\n";
+		print STDERR "Success\n";
 	}
 
 	return $good;

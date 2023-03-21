@@ -54,8 +54,8 @@ if (my $e = $@) {
   print STDERR "Fail: $e\n";
 }
 elsif ($tries != 0) {
-  print STDERR "Fail.\n";
+  print STDERR "Fail\n";
 }
 else {
-  print STDERR "Success.\n";
+  print STDERR "Success\n";
 }

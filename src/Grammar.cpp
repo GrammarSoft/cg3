@@ -839,6 +839,14 @@ void Grammar::reindex(bool unused_sets, bool used_tags) {
 		}
 
 		contexts_t tosave;
+		for (auto& cntx : templates) {
+			if (cntx.second->is_used) {
+				tosave[cntx.first] = cntx.second;
+			}
+		}
+		templates.swap(tosave);
+
+		tosave.clear();
 		for (auto& cntx : contexts) {
 			if (cntx.second->is_used) {
 				tosave[cntx.first] = cntx.second;
@@ -925,7 +933,7 @@ void Grammar::reindex(bool unused_sets, bool used_tags) {
 			u_fflush(ux_stderr);
 		}
 		if ((rule->maplist && (rule->maplist->type & ST_CHILD_UNIFY)) || (rule->sublist && (rule->sublist->type & ST_CHILD_UNIFY))) {
-			rule->flags |= FL_CAPTURE_UNIF;
+			rule->flags |= RF_CAPTURE_UNIF;
 		}
 		if (is_binary) {
 			continue;

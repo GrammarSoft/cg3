@@ -51,10 +51,10 @@ if (-s "grammar.cg3b" && -s "grammar-out.cg3b") {
 `diff -B expected.txt output.txt >diff.txt`;
 
 if (-s "diff.txt") {
-	print STDERR "Fail.\n";
+	print STDERR "Fail\n";
 	$bad = 1;
 } else {
-	print STDERR "Success.\n";
+	print STDERR "Success\n";
 }
 
 exit($bad);

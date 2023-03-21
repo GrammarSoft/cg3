@@ -19,10 +19,10 @@ my $bad = 0;
 `diff -ZB expected.txt output.txt >diff.txt`;
 
 if (-s "diff.txt") {
-	print STDERR "Fail.\n";
+	print STDERR "Fail\n";
 	$bad = 1;
 } else {
-	print STDERR "Success Success.\n";
+	print STDERR "Success Success\n";
 }
 
 exit($bad);

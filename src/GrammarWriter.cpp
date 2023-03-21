@@ -29,6 +29,10 @@ namespace CG3 {
 GrammarWriter::GrammarWriter(Grammar& res, std::ostream& ux_err) {
 	ux_stderr = &ux_err;
 	grammar = &res;
+
+	for (auto at : res.anchors) {
+		anchors.insert(std::make_pair(at.second, at.first));
+	}
 }
 
 GrammarWriter::~GrammarWriter() {
@@ -50,6 +54,9 @@ void GrammarWriter::printSet(std::ostream& output, const Set& curset) {
 			}
 		}
 		used_sets.insert(curset.number);
+		if (curset.type & ST_ORDERED) {
+			u_fprintf(output, "O");
+		}
 		u_fprintf(output, "LIST %S = ", curset.name.data());
 		TagVectorSet tagsets[] = { trie_getTagsOrdered(curset.trie), trie_getTagsOrdered(curset.trie_special) };
 		for (auto& tvs : tagsets) {
@@ -84,6 +91,9 @@ void GrammarWriter::printSet(std::ostream& output, const Set& curset) {
 		const UChar* n = curset.name.data();
 		if ((n[0] == '$' && n[1] == '$') || (n[0] == '&' && n[1] == '&')) {
 			u_fprintf(output, "# ");
+		}
+		if (curset.type & ST_ORDERED) {
+			u_fprintf(output, "O");
 		}
 		u_fprintf(output, "SET %S = ", n);
 		u_fprintf(output, "%S ", grammar->sets_list[curset.sets[0]]->name.data());
@@ -140,6 +150,25 @@ int GrammarWriter::writeGrammar(std::ostream& output) {
 		u_fprintf(output, " ;\n");
 	}
 
+	if (!grammar->parentheses.empty()) {
+		u_fprintf(output, "PARENTHESES = ");
+		for (auto iter : grammar->parentheses) {
+			u_fprintf(output, "(");
+			printTag(output, *(grammar->single_tags.find(iter.first)->second));
+			u_fprintf(output, " ");
+			printTag(output, *(grammar->single_tags.find(iter.second)->second));
+			u_fprintf(output, ") ");
+		}
+		u_fprintf(output, ";\n");
+	}
+
+	if (grammar->ordered) {
+		u_fprintf(output, "OPTIONS += ordered ;\n");
+	}
+	if (grammar->addcohort_attach) {
+		u_fprintf(output, "OPTIONS += addcohort-attach ;\n");
+	}
+
 	u_fprintf(output, "\n");
 
 	used_sets.clear();
@@ -169,6 +198,12 @@ int GrammarWriter::writeGrammar(std::ostream& output) {
 		printSet(output, *s);
 	}
 	u_fprintf(output, "\n");
+
+	for (auto t : grammar->templates) {
+		u_fprintf(output, "TEMPLATE %u = ", t.second->hash);
+		printContextualTest(output, *t.second);
+		u_fprintf(output, " ;\n");
+	}
 
 	/*
 	for (BOOST_AUTO(cntx, grammar->templates.begin()); cntx != grammar->templates.end(); ++cntx) {
@@ -233,8 +268,21 @@ int GrammarWriter::writeGrammar(std::ostream& output) {
 	return 0;
 }
 
-// ToDo: Make printRule do the right thing for MOVE_ and ADDCOHORT_ BEFORE|AFTER
 void GrammarWriter::printRule(std::ostream& to, const Rule& rule) {
+	if (seen_rules.count(rule.number)) {
+		return;
+	}
+	seen_rules.insert(rule.number);
+
+	auto as = anchors.equal_range(rule.number);
+	for (auto ait = as.first; ait != as.second; ++ait) {
+		auto tag = USV(grammar->single_tags.find(ait->second)->second->tag);
+		if (tag == keywords[K_START] || tag == keywords[K_END] || tag == rule.name) {
+			continue;
+		}
+		u_fprintf(to, "ANCHOR %S ;\n", tag.data());
+	}
+
 	if (statistics) {
 		if (ceil(rule.total_time) == floor(rule.total_time)) {
 			u_fprintf(to, "\n#Rule Matched: %u ; NoMatch: %u ; TotalTime: %.0f\n", rule.num_match, rule.num_fail, rule.total_time);
@@ -248,7 +296,18 @@ void GrammarWriter::printRule(std::ostream& to, const Rule& rule) {
 		u_fprintf(to, " ");
 	}
 
-	u_fprintf(to, "%S", keywords[rule.type].data());
+	auto type = rule.type;
+	if (rule.type == K_MOVE_BEFORE || rule.type == K_MOVE_AFTER) {
+		type = K_MOVE;
+	}
+	if (rule.type == K_ADDCOHORT_BEFORE || rule.type == K_ADDCOHORT_AFTER) {
+		type = K_ADDCOHORT;
+	}
+	if (rule.type == K_EXTERNAL_ONCE || rule.type == K_EXTERNAL_ALWAYS) {
+		type = K_EXTERNAL;
+	}
+
+	u_fprintf(to, "%S", keywords[type].data());
 
 	if (!rule.name.empty() && !(rule.name[0] == '_' && rule.name[1] == 'R' && rule.name[2] == '_')) {
 		u_fprintf(to, ":%S", rule.name.data());
@@ -256,6 +315,9 @@ void GrammarWriter::printRule(std::ostream& to, const Rule& rule) {
 	u_fprintf(to, " ");
 
 	for (uint32_t i = 0; i < FLAGS_COUNT; i++) {
+		if (i == FL_BEFORE || i == FL_AFTER) {
+			continue;
+		}
 		if (rule.flags & (1 << i)) {
 			if (i == FL_SUB) {
 				u_fprintf(to, "%S:%d ", g_flags[i].data(), rule.sub_reading);
@@ -266,12 +328,42 @@ void GrammarWriter::printRule(std::ostream& to, const Rule& rule) {
 		}
 	}
 
-	if (rule.sublist) {
+	if (rule.flags & RF_WITHCHILD) {
+		u_fprintf(to, "%S ", grammar->sets_list[rule.childset1]->name.data());
+	}
+
+	if (rule.type == K_SUBSTITUTE || rule.type == K_EXECUTE) {
 		u_fprintf(to, "%S ", rule.sublist->name.data());
 	}
 
 	if (rule.maplist) {
 		u_fprintf(to, "%S ", rule.maplist->name.data());
+	}
+
+	if (rule.sublist && (rule.type == K_ADDRELATIONS || rule.type == K_SETRELATIONS || rule.type == K_REMRELATIONS || rule.type == K_SETVARIABLE || rule.type == K_COPY)) {
+		if (rule.type == K_COPY) {
+			u_fprintf(to, "EXCEPT ");
+		}
+		u_fprintf(to, "%S ", rule.sublist->name.data());
+	}
+
+	if (rule.type == K_ADD || rule.type == K_MAP || rule.type == K_SUBSTITUTE || rule.type == K_COPY) {
+		if (rule.flags & RF_BEFORE) {
+			u_fprintf(to, "BEFORE ");
+		}
+		if (rule.flags & RF_AFTER) {
+			u_fprintf(to, "AFTER ");
+		}
+		if (rule.childset1) {
+			u_fprintf(to, "%S ", grammar->sets_list[rule.childset1]->name.data());
+		}
+	}
+
+	if (rule.type == K_ADDCOHORT_BEFORE) {
+		u_fprintf(to, "BEFORE ");
+	}
+	else if (rule.type == K_ADDCOHORT_AFTER) {
+		u_fprintf(to, "AFTER ");
 	}
 
 	if (rule.target) {
@@ -298,6 +390,9 @@ void GrammarWriter::printRule(std::ostream& to, const Rule& rule) {
 	}
 
 	if (rule.dep_target) {
+		if (rule.childset2) {
+			u_fprintf(to, "WITHCHILD %S ", grammar->sets_list[rule.childset2]->name.data());
+		}
 		u_fprintf(to, "(");
 		printContextualTest(to, *(rule.dep_target));
 		u_fprintf(to, ") ");
@@ -306,6 +401,16 @@ void GrammarWriter::printRule(std::ostream& to, const Rule& rule) {
 		u_fprintf(to, "(");
 		printContextualTest(to, *it);
 		u_fprintf(to, ") ");
+	}
+
+	if (rule.type == K_WITH) {
+		u_fprintf(to, "{\n");
+		for (auto r : rule.sub_rules) {
+			u_fprintf(to, "\t");
+			printRule(to, *r);
+			u_fprintf(to, " ;\n");
+		}
+		u_fprintf(to, "}\n");
 	}
 }
 
@@ -318,27 +423,10 @@ void GrammarWriter::printContextualTest(std::ostream& to, const ContextualTest& 
 			u_fprintf(to, "\n#Test Matched: %u ; NoMatch: %u ; TotalTime: %f\n", test.num_match, test.num_fail, test.total_time);
 		}
 	}
-	if (test.tmpl) {
-		u_fprintf(to, "T:%u ", test.tmpl->hash);
+	if (test.pos & POS_NEGATE) {
+		u_fprintf(to, "NEGATE ");
 	}
-	else if (!test.ors.empty()) {
-		for (auto iter = test.ors.begin(); iter != test.ors.end();) {
-			u_fprintf(to, "(");
-			printContextualTest(to, **iter);
-			u_fprintf(to, ")");
-			iter++;
-			if (iter != test.ors.end()) {
-				u_fprintf(to, " OR ");
-			}
-			else {
-				u_fprintf(to, " ");
-			}
-		}
-	}
-	else {
-		if (test.pos & POS_NEGATE) {
-			u_fprintf(to, "NEGATE ");
-		}
+	if ((test.pos & POS_TMPL_OVERRIDE) || (!test.tmpl && test.ors.empty())) {
 		if (test.pos & POS_ALL) {
 			u_fprintf(to, "ALL ");
 		}
@@ -354,15 +442,33 @@ void GrammarWriter::printContextualTest(std::ostream& to, const ContextualTest& 
 		if (test.pos & POS_SCANALL) {
 			u_fprintf(to, "**");
 		}
-		else if (test.pos & POS_SCANFIRST) {
+		else if (test.pos & (POS_SCANFIRST | POS_DEP_DEEP)) {
 			u_fprintf(to, "*");
 		}
 
+		if (test.pos & POS_LEFTMOST) {
+			u_fprintf(to, "ll");
+		}
+		if (test.pos & POS_LEFT) {
+			u_fprintf(to, "l");
+		}
+		if (test.pos & POS_RIGHTMOST) {
+			u_fprintf(to, "rr");
+		}
+		if (test.pos & POS_RIGHT) {
+			u_fprintf(to, "r");
+		}
 		if (test.pos & POS_DEP_CHILD) {
 			u_fprintf(to, "c");
 		}
 		if (test.pos & POS_DEP_PARENT) {
+			if (test.pos & POS_DEP_GLOB) {
+				u_fprintf(to, "p");
+			}
 			u_fprintf(to, "p");
+		}
+		else if (test.pos & POS_DEP_GLOB) {
+			u_fprintf(to, "cc");
 		}
 		if (test.pos & POS_DEP_SIBLING) {
 			u_fprintf(to, "s");
@@ -377,7 +483,7 @@ void GrammarWriter::printContextualTest(std::ostream& to, const ContextualTest& 
 		if (test.pos & POS_UNKNOWN) {
 			u_fprintf(to, "?");
 		}
-		else {
+		else if (!(test.pos & (POS_DEP_CHILD | POS_DEP_SIBLING | POS_DEP_PARENT | POS_DEP_GLOB | POS_LEFT_PAR | POS_RIGHT_PAR | POS_RELATION | POS_BAG_OF_TAGS))) {
 			u_fprintf(to, "%d", test.offset);
 		}
 
@@ -428,24 +534,66 @@ void GrammarWriter::printContextualTest(std::ostream& to, const ContextualTest& 
 		if (test.pos & POS_LOOK_DELAYED) {
 			u_fprintf(to, "d");
 		}
+		if (test.pos & POS_ACTIVE) {
+			u_fprintf(to, "T");
+		}
+		if (test.pos & POS_INACTIVE) {
+			u_fprintf(to, "t");
+		}
 		if (test.pos & POS_LOOK_IGNORED) {
 			u_fprintf(to, "I");
 		}
+		if (test.pos & POS_ATTACH_TO) {
+			u_fprintf(to, "A");
+		}
+		if (test.pos & POS_WITH) {
+			u_fprintf(to, "w");
+		}
+		if (test.pos & POS_BAG_OF_TAGS) {
+			u_fprintf(to, "B");
+		}
 		if (test.pos & POS_RELATION) {
-			u_fprintf(to, "r:%S", grammar->single_tags.find(test.relation)->second->tag.data());
+			u_fprintf(to, "r:");
+			printTag(to, *grammar->single_tags.find(test.relation)->second);
+		}
+		if (test.offset_sub) {
+			if (test.offset_sub == GSR_ANY) {
+				u_fprintf(to, "/*");
+			}
+			else {
+				u_fprintf(to, "/%d", test.offset_sub);
+			}
 		}
 
 		u_fprintf(to, " ");
+	}
 
-		if (test.target) {
-			u_fprintf(to, "%S ", grammar->sets_list[test.target]->name.data());
+	if (test.tmpl) {
+		u_fprintf(to, "T:%u ", test.tmpl->hash);
+	}
+	else if (!test.ors.empty()) {
+		for (auto iter = test.ors.begin(); iter != test.ors.end();) {
+			u_fprintf(to, "(");
+			printContextualTest(to, **iter);
+			u_fprintf(to, ")");
+			iter++;
+			if (iter != test.ors.end()) {
+				u_fprintf(to, " OR ");
+			}
+			else {
+				u_fprintf(to, " ");
+			}
 		}
-		if (test.cbarrier) {
-			u_fprintf(to, "CBARRIER %S ", grammar->sets_list[test.cbarrier]->name.data());
-		}
-		if (test.barrier) {
-			u_fprintf(to, "BARRIER %S ", grammar->sets_list[test.barrier]->name.data());
-		}
+	}
+
+	if (test.target) {
+		u_fprintf(to, "%S ", grammar->sets_list[test.target]->name.data());
+	}
+	if (test.cbarrier) {
+		u_fprintf(to, "CBARRIER %S ", grammar->sets_list[test.cbarrier]->name.data());
+	}
+	if (test.barrier) {
+		u_fprintf(to, "BARRIER %S ", grammar->sets_list[test.barrier]->name.data());
 	}
 
 	if (test.linked) {

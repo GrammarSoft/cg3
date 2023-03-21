@@ -322,7 +322,10 @@ int BinaryGrammar::parse_grammar(std::istream& input) {
 			fread_throw(&u32tmp, sizeof(u32tmp), 1, input);
 			s->number = ntoh32(u32tmp);
 		}
-		// Field 1 is unused
+		if (fields & (1 << 1)) {
+			fread_throw(&u32tmp, sizeof(u32tmp), 1, input);
+			s->type = UI16(ntoh32(u32tmp));
+		}
 		if (fields & (1 << 2)) {
 			fread_throw(&u8tmp, sizeof(u8tmp), 1, input);
 			s->type = u8tmp;
