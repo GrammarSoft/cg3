@@ -3,20 +3,18 @@
 * Developed by Tino Didriksen <mail@tinodidriksen.com>
 * Design by Eckhard Bick <eckhard.bick@mail.dk>, Tino Didriksen <mail@tinodidriksen.com>
 *
-* This file is part of VISL CG-3
-*
-* VISL CG-3 is free software: you can redistribute it and/or modify
+* This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation, either version 3 of the License, or
 * (at your option) any later version.
 *
-* VISL CG-3 is distributed in the hope that it will be useful,
+* This program is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with VISL CG-3.  If not, see <http://www.gnu.org/licenses/>.
+* along with this progam.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 #include "Grammar.hpp"
@@ -409,9 +407,7 @@ uint32_t Grammar::removeNumericTags(uint32_t s) {
 			ns->line = set->line;
 			ns->name = STR_GPREFIX;
 			ns->name += set->name;
-			ns->name += '_';
-			ns->name += 'B';
-			ns->name += '_';
+			ns->name.append(u"_B_");
 			ns->sets = sets;
 			ns->set_ops = set->set_ops;
 			addSet(ns);
@@ -462,9 +458,7 @@ uint32_t Grammar::removeNumericTags(uint32_t s) {
 			ns->line = set->line;
 			ns->name = STR_GPREFIX;
 			ns->name += set->name;
-			ns->name += '_';
-			ns->name += 'B';
-			ns->name += '_';
+			ns->name.append(u"_B_");
 
 			for (auto& it : ntags) {
 				if (it.second) {
@@ -678,21 +672,6 @@ void Grammar::addAnchor(const UChar* to, uint32_t at, bool primary) {
 
 void Grammar::addAnchor(const UString& to, uint32_t at, bool primary) {
 	return addAnchor(to.data(), at, primary);
-}
-
-void Grammar::resetStatistics() {
-	total_time = 0;
-	for (auto r : rules) {
-		r->resetStatistics();
-	}
-}
-
-void Grammar::renameAllRules() {
-	for (auto r : rule_by_number) {
-		gbuffers[0][0] = 0;
-		u_sprintf(&gbuffers[0][0], "L%u", r->line);
-		r->setName(&gbuffers[0][0]);
-	}
 }
 
 void Grammar::reindex(bool unused_sets, bool used_tags) {

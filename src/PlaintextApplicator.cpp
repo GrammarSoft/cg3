@@ -3,20 +3,18 @@
 * Developed by Tino Didriksen <mail@tinodidriksen.com>
 * Design by Eckhard Bick <eckhard.bick@mail.dk>, Tino Didriksen <mail@tinodidriksen.com>
 *
-* This file is part of VISL CG-3
-*
-* VISL CG-3 is free software: you can redistribute it and/or modify
+* This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation, either version 3 of the License, or
 * (at your option) any later version.
 *
-* VISL CG-3 is distributed in the hope that it will be useful,
+* This program is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with VISL CG-3.  If not, see <http://www.gnu.org/licenses/>.
+* along with this progam.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 #include "PlaintextApplicator.hpp"
@@ -101,10 +99,10 @@ void PlaintextApplicator::runGrammarOnText(std::istream& input, std::ostream& ou
 			}
 			if (cSWindow && cSWindow->cohorts.size() >= soft_limit && grammar->soft_delimiters && !did_soft_lookback) {
 				did_soft_lookback = true;
-				reverse_foreach (iter, cSWindow->cohorts) {
-					if (doesSetMatchCohortNormal(**iter, grammar->soft_delimiters->number)) {
+				for (auto c : reversed(cSWindow->cohorts)) {
+					if (doesSetMatchCohortNormal(*c, grammar->soft_delimiters->number)) {
 						did_soft_lookback = false;
-						Cohort* cohort = delimitAt(*cSWindow, *iter);
+						Cohort* cohort = delimitAt(*cSWindow, c);
 						cSWindow = cohort->parent->next;
 						if (cCohort) {
 							cCohort->parent = cSWindow;
@@ -224,11 +222,9 @@ void PlaintextApplicator::runGrammarOnText(std::istream& input, std::ostream& ou
 				cCohort = alloc_cohort(cSWindow);
 				cCohort->global_number = gWindow->cohort_counter++;
 				tag.clear();
-				tag += '"';
-				tag += '<';
+				tag.append(u"\"<");
 				tag += token.getTerminatedBuffer();
-				tag += '>';
-				tag += '"';
+				tag.append(u">\"");
 				cCohort->wordform = addTag(tag);
 				lCohort = cCohort;
 				numCohorts++;
@@ -312,7 +308,7 @@ void PlaintextApplicator::runGrammarOnText(std::istream& input, std::ostream& ou
 	u_fflush(output);
 }
 
-void PlaintextApplicator::printCohort(Cohort* cohort, std::ostream& output) {
+void PlaintextApplicator::printCohort(Cohort* cohort, std::ostream& output, bool) {
 	if (cohort->local_number == 0) {
 		return;
 	}
@@ -323,11 +319,11 @@ void PlaintextApplicator::printCohort(Cohort* cohort, std::ostream& output) {
 	u_fprintf(output, "%.*S ", cohort->wordform->tag.size() - 4, cohort->wordform->tag.data() + 2);
 }
 
-void PlaintextApplicator::printSingleWindow(SingleWindow* window, std::ostream& output) {
+void PlaintextApplicator::printSingleWindow(SingleWindow* window, std::ostream& output, bool profiling) {
 	uint32_t cs = UI32(window->cohorts.size());
 	for (uint32_t c = 0; c < cs; c++) {
 		Cohort* cohort = window->cohorts[c];
-		printCohort(cohort, output);
+		printCohort(cohort, output, profiling);
 	}
 	u_fputc('\n', output);
 	u_fflush(output);

@@ -3,20 +3,18 @@
 * Developed by Tino Didriksen <mail@tinodidriksen.com>
 * Design by Eckhard Bick <eckhard.bick@mail.dk>, Tino Didriksen <mail@tinodidriksen.com>
 *
-* This file is part of VISL CG-3
-*
-* VISL CG-3 is free software: you can redistribute it and/or modify
+* This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation, either version 3 of the License, or
 * (at your option) any later version.
 *
-* VISL CG-3 is distributed in the hope that it will be useful,
+* This program is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with VISL CG-3.  If not, see <http://www.gnu.org/licenses/>.
+* along with this progam.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 #include "GrammarApplicator.hpp"
@@ -673,7 +671,7 @@ void GrammarApplicator::splitAllMappings(all_mappings_t& all_mappings, Cohort& c
 		}
 		splitMappings(iter->second, cohort, *reading, mapped);
 	}
-	std::sort(cohort.readings.begin(), cohort.readings.end(), CG3::Reading::cmp_number);
+	std::sort(cohort.readings.begin(), cohort.readings.end(), Reading::cmp_number);
 	if (!grammar->reopen_mappings.empty()) {
 		for (auto reading : cohort.readings) {
 			if (reading->mapping && grammar->reopen_mappings.count(reading->mapping->hash)) {
@@ -761,7 +759,7 @@ void GrammarApplicator::mergeReadings(ReadingList& readings) {
 		order.push_back(nr);
 	}
 
-	std::sort(order.begin(), order.end(), CG3::Reading::cmp_number);
+	std::sort(order.begin(), order.end(), Reading::cmp_number);
 	readings.insert(readings.begin(), order.begin(), order.end());
 }
 

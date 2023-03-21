@@ -3,20 +3,18 @@
 * Developed by Tino Didriksen <mail@tinodidriksen.com>
 * Design by Eckhard Bick <eckhard.bick@mail.dk>, Tino Didriksen <mail@tinodidriksen.com>
 *
-* This file is part of VISL CG-3
-*
-* VISL CG-3 is free software: you can redistribute it and/or modify
+* This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation, either version 3 of the License, or
 * (at your option) any later version.
 *
-* VISL CG-3 is distributed in the hope that it will be useful,
+* This program is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with VISL CG-3.  If not, see <http://www.gnu.org/licenses/>.
+* along with this progam.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 #include "Tag.hpp"
@@ -43,7 +41,7 @@ Tag::Tag(const Tag& o)
   , regexp(nullptr)
 {
 	#ifdef CG_TRACE_OBJECTS
-	std::cerr << "OBJECT: " << __PRETTY_FUNCTION__ << std::endl;
+	std::cerr << "OBJECT: " << VOIDP(this) << " " << __PRETTY_FUNCTION__ << std::endl;
 	#endif
 
 	if (o.vs_names) {
@@ -62,7 +60,7 @@ Tag::Tag(const Tag& o)
 
 Tag::~Tag() {
 	#ifdef CG_TRACE_OBJECTS
-	std::cerr << "OBJECT: " << __PRETTY_FUNCTION__ << std::endl;
+	std::cerr << "OBJECT: " << VOIDP(this) << " " << __PRETTY_FUNCTION__ << std::endl;
 	#endif
 
 	if (regexp) {
@@ -298,37 +296,19 @@ UString Tag::toUString(bool escape) const {
 		str += '^';
 	}
 	if (type & T_META) {
-		str += 'M';
-		str += 'E';
-		str += 'T';
-		str += 'A';
-		str += ':';
+		str.append(u"META:");
 	}
 	if (type & T_VARIABLE) {
-		str += 'V';
-		str += 'A';
-		str += 'R';
-		str += ':';
+		str.append(u"VAR:");
 	}
 	if (type & T_LOCAL_VARIABLE) {
-		str += 'L';
-		str += 'V';
-		str += 'A';
-		str += 'R';
-		str += ':';
+		str.append(u"LVAR:");
 	}
 	if (type & T_SET) {
-		str += 'S';
-		str += 'E';
-		str += 'T';
-		str += ':';
+		str.append(u"SET:");
 	}
 	if (type & T_VSTR) {
-		str += 'V';
-		str += 'S';
-		str += 'T';
-		str += 'R';
-		str += ':';
+		str.append(u"VSTR:");
 	}
 
 	if (type & (T_CASE_INSENSITIVE | T_REGEXP) && !is_textual(tag)) {

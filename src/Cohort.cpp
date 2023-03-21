@@ -3,20 +3,18 @@
 * Developed by Tino Didriksen <mail@tinodidriksen.com>
 * Design by Eckhard Bick <eckhard.bick@mail.dk>, Tino Didriksen <mail@tinodidriksen.com>
 *
-* This file is part of VISL CG-3
-*
-* VISL CG-3 is free software: you can redistribute it and/or modify
+* This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation, either version 3 of the License, or
 * (at your option) any later version.
 *
-* VISL CG-3 is distributed in the hope that it will be useful,
+* This program is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with VISL CG-3.  If not, see <http://www.gnu.org/licenses/>.
+* along with this progam.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 #include "Cohort.hpp"
@@ -27,14 +25,14 @@
 #include "Reading.hpp"
 #include "Window.hpp"
 #include "SingleWindow.hpp"
+#include "pool.hpp"
 
 namespace CG3 {
 
-CohortVector pool_cohorts;
-pool_cleaner<CohortVector> cleaner_cohorts(pool_cohorts);
+extern pool<Cohort> pool_cohorts;
 
 Cohort* alloc_cohort(SingleWindow* p) {
-	Cohort* c = pool_get(pool_cohorts);
+	Cohort* c = pool_cohorts.get();
 	if (c == 0) {
 		c = new Cohort(p);
 	}
@@ -44,39 +42,40 @@ Cohort* alloc_cohort(SingleWindow* p) {
 	return c;
 }
 
-void free_cohort(Cohort* c) {
+void free_cohort(Cohort*& c) {
 	if (c == 0) {
 		return;
 	}
-	pool_put(pool_cohorts, c);
+	pool_cohorts.put(c);
+	c = 0;
 }
 
 Cohort::Cohort(SingleWindow* p)
   : parent(p)
 {
 	#ifdef CG_TRACE_OBJECTS
-	std::cerr << "OBJECT: " << __PRETTY_FUNCTION__ << std::endl;
+	std::cerr << "OBJECT: " << VOIDP(this) << " " << __PRETTY_FUNCTION__ << std::endl;
 	#endif
 }
 
 Cohort::~Cohort() {
 	#ifdef CG_TRACE_OBJECTS
-	std::cerr << "OBJECT: " << __PRETTY_FUNCTION__ << ": " << readings.size() << ", " << deleted.size() << ", " << delayed.size() << std::endl;
+	std::cerr << "OBJECT: " << VOIDP(this) << " " << __PRETTY_FUNCTION__ << ": " << readings.size() << ", " << deleted.size() << ", " << delayed.size() << std::endl;
 	#endif
 
 	for (auto iter1 : readings) {
-		delete (iter1);
+		free_reading(iter1);
 	}
 	for (auto iter2 : deleted) {
-		delete (iter2);
+		free_reading(iter2);
 	}
 	for (auto iter3 : delayed) {
-		delete (iter3);
+		free_reading(iter3);
 	}
-	delete wread;
+	free_reading(wread);
 
 	for (auto iter : removed) {
-		delete (iter);
+		free_cohort(iter);
 	}
 	if (parent) {
 		parent->parent->cohort_map.erase(global_number);

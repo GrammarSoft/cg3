@@ -3,20 +3,18 @@
 * Developed by Tino Didriksen <mail@tinodidriksen.com>
 * Design by Eckhard Bick <eckhard.bick@mail.dk>, Tino Didriksen <mail@tinodidriksen.com>
 *
-* This file is part of VISL CG-3
-*
-* VISL CG-3 is free software: you can redistribute it and/or modify
+* This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation, either version 3 of the License, or
 * (at your option) any later version.
 *
-* VISL CG-3 is distributed in the hope that it will be useful,
+* This program is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with VISL CG-3.	If not, see <http://www.gnu.org/licenses/>.
+* along with this progam.	If not, see <https://www.gnu.org/licenses/>.
 */
 
 #include "stdafx.hpp"
@@ -33,8 +31,7 @@
 #endif
 
 #include "version.hpp"
-
-using CG3::CG3Quit;
+using namespace CG3;
 
 void endProgram(char* name) {
 	using namespace std;
@@ -195,11 +192,11 @@ int main(int argc, char* argv[]) {
 	ucnv_setDefaultName("UTF-8");
 	uloc_setDefault("en_US_POSIX", &status);
 
-	CG3::Grammar grammar;
+	Grammar grammar;
 
 	/* Add a / in front to enable this test...
 	{
-		CG3::ApertiumApplicator a;
+		ApertiumApplicator a;
 		//grammar.sub_readings_ltr = true;
 		a.setGrammar(&grammar);
 		a.testPR(ux_stdout);
@@ -209,11 +206,11 @@ int main(int argc, char* argv[]) {
 
 	if (optind <= (argc - 1)) {
 		FILE* in = fopen(argv[optind], "rb");
-		if (in == NULL || ferror(in)) {
+		if (in == nullptr || ferror(in)) {
 			endProgram(argv[0]);
 		}
 
-		if (fread(&CG3::cbuffers[0][0], 1, 4, in) != 4) {
+		if (fread(&cbuffers[0][0], 1, 4, in) != 4) {
 			std::cerr << "Error: Error reading first 4 bytes from grammar!" << std::endl;
 			CG3Quit(1);
 		}
@@ -245,15 +242,15 @@ int main(int argc, char* argv[]) {
 		ux_stdout = _ux_stdout.get();
 	}
 
-	std::unique_ptr<CG3::IGrammarParser> parser;
-	if (CG3::is_cg3b(CG3::cbuffers[0])) {
-		parser.reset(new CG3::BinaryGrammar(grammar, std::cerr));
+	std::unique_ptr<IGrammarParser> parser;
+	if (is_cg3b(cbuffers[0])) {
+		parser.reset(new BinaryGrammar(grammar, std::cerr));
 	}
 	else {
 		// Forbidding text grammars makes debugging very annoying
 		std::cerr << "Warning: Text grammar detected - to better process textual" << std::endl;
 		std::cerr << "grammars, use `vislcg3'; to compile this grammar, use `cg-comp'" << std::endl;
-		parser.reset(new CG3::TextualParser(grammar, std::cerr));
+		parser.reset(new TextualParser(grammar, std::cerr));
 	}
 
 	grammar.ux_stderr = &std::cerr;
@@ -265,13 +262,13 @@ int main(int argc, char* argv[]) {
 
 	grammar.reindex();
 
-	std::unique_ptr<CG3::GrammarApplicator> applicator;
+	std::unique_ptr<GrammarApplicator> applicator;
 
 	if (stream_format == 0) {
-		applicator.reset(new CG3::GrammarApplicator(std::cerr));
+		applicator.reset(new GrammarApplicator(std::cerr));
 	}
 	else if (stream_format == 2) {
-		CG3::MatxinApplicator* matxinApplicator = new CG3::MatxinApplicator(std::cerr);
+		MatxinApplicator* matxinApplicator = new MatxinApplicator(std::cerr);
 		matxinApplicator->setNullFlush(true);
 		matxinApplicator->wordform_case = wordform_case;
 		matxinApplicator->print_word_forms = print_word_forms;
@@ -279,7 +276,7 @@ int main(int argc, char* argv[]) {
 		applicator.reset(matxinApplicator);
 	}
 	else {
-		CG3::ApertiumApplicator* apertiumApplicator = new CG3::ApertiumApplicator(std::cerr);
+		ApertiumApplicator* apertiumApplicator = new ApertiumApplicator(std::cerr);
 		apertiumApplicator->wordform_case = wordform_case;
 		apertiumApplicator->print_word_forms = print_word_forms;
 		apertiumApplicator->print_only_first = only_first;
@@ -300,7 +297,7 @@ int main(int argc, char* argv[]) {
 	// This is if we want to run a single rule  (-r option)
 	if (!single_rule.empty()) {
 		auto sn = SI32(single_rule.size());
-		CG3::UString buf(sn * 3, 0);
+		UString buf(sn * 3, 0);
 		u_charsToUChars(single_rule.data(), &buf[0], sn);
 		for (auto rule : applicator->grammar->rule_by_number) {
 			if (rule->name == buf) {

@@ -3,20 +3,18 @@
 * Developed by Tino Didriksen <mail@tinodidriksen.com>
 * Design by Eckhard Bick <eckhard.bick@mail.dk>, Tino Didriksen <mail@tinodidriksen.com>
 *
-* This file is part of VISL CG-3
-*
-* VISL CG-3 is free software: you can redistribute it and/or modify
+* This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation, either version 3 of the License, or
 * (at your option) any later version.
 *
-* VISL CG-3 is distributed in the hope that it will be useful,
+* This program is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with VISL CG-3.  If not, see <http://www.gnu.org/licenses/>.
+* along with this progam.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 #include "NicelineApplicator.hpp"
@@ -110,10 +108,10 @@ void NicelineApplicator::runGrammarOnText(std::istream& input, std::ostream& out
 
 			if (cSWindow && cSWindow->cohorts.size() >= soft_limit && grammar->soft_delimiters && !did_soft_lookback) {
 				did_soft_lookback = true;
-				reverse_foreach (iter, cSWindow->cohorts) {
-					if (doesSetMatchCohortNormal(**iter, grammar->soft_delimiters->number)) {
+				for (auto c : reversed(cSWindow->cohorts)) {
+					if (doesSetMatchCohortNormal(*c, grammar->soft_delimiters->number)) {
 						did_soft_lookback = false;
-						Cohort* cohort = delimitAt(*cSWindow, *iter);
+						Cohort* cohort = delimitAt(*cSWindow, c);
 						cSWindow = cohort->parent->next;
 						if (cCohort) {
 							cCohort->parent = cSWindow;
@@ -184,11 +182,9 @@ void NicelineApplicator::runGrammarOnText(std::istream& input, std::ostream& out
 			}
 
 			UString tag;
-			tag += '"';
-			tag += '<';
+			tag.append(u"\"<");
 			tag += &cleaned[0];
-			tag += '>';
-			tag += '"';
+			tag.append(u">\"");
 
 			cCohort = alloc_cohort(cSWindow);
 			cCohort->global_number = gWindow->cohort_counter++;
@@ -421,7 +417,7 @@ void NicelineApplicator::printReading(const Reading* reading, std::ostream& outp
 	}
 }
 
-void NicelineApplicator::printCohort(Cohort* cohort, std::ostream& output) {
+void NicelineApplicator::printCohort(Cohort* cohort, std::ostream& output, bool profiling) {
 	if (cohort->local_number == 0) {
 		goto removed;
 	}
@@ -436,10 +432,12 @@ void NicelineApplicator::printCohort(Cohort* cohort, std::ostream& output) {
 		did_warn_statictags = true;
 	}
 
-	cohort->unignoreAll();
+	if (!profiling) {
+		cohort->unignoreAll();
 
-	if (!split_mappings) {
-		mergeMappings(*cohort);
+		if (!split_mappings) {
+			mergeMappings(*cohort);
+		}
 	}
 
 	if (cohort->readings.empty()) {
@@ -459,7 +457,7 @@ removed:
 	}
 }
 
-void NicelineApplicator::printSingleWindow(SingleWindow* window, std::ostream& output) {
+void NicelineApplicator::printSingleWindow(SingleWindow* window, std::ostream& output, bool profiling) {
 	if (!window->text.empty()) {
 		u_fprintf(output, "%S", window->text.data());
 		if (!ISNL(window->text.back())) {
@@ -470,7 +468,7 @@ void NicelineApplicator::printSingleWindow(SingleWindow* window, std::ostream& o
 	uint32_t cs = UI32(window->cohorts.size());
 	for (uint32_t c = 0; c < cs; c++) {
 		Cohort* cohort = window->cohorts[c];
-		printCohort(cohort, output);
+		printCohort(cohort, output, profiling);
 	}
 
 	if (!window->text_post.empty()) {

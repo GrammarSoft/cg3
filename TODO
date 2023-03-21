@@ -1,36 +1,27 @@
-ToDo: Rules can be dynamically reordered in "optimize correct" mode by moving the offending rule to the end of the section
-ToDo: Refactor statistics to be gathered in their own objects rather than inline with Grammar, Rules, ContextualTest, Set
-ToDo: Enable a daemonized version. Easily doable via Perl's Net::Server::PreFork.
 ToDo: Make use of Preferred-Targets
 ToDo: Move DoesTagMatchSet to Grammar
 ToDo: Line number on all applicable warnings
 ToDo: Add --only-mappings-corrections --only-mappings --only-corrections
 ToDo: Section groups to allow multiple before/after-sections
 ToDo: "X Marks the Spot": Using x without setting a new X is equivalent to writing multiple () tests.
-ToDo: Optimize-unsafe by eliminating tests which do no good (either always true or never the only one to block).
 ToDo: Investigate effects of SetParent/Child and Xx.
 ToDo: Rule option blocks: OPTIONS +NEAREST -DELAYED
 ToDo: Transaction blocks: TRANSACTION, COMMIT, ROLLBACK
 ToDo: Binary input/output stream for lossless chaining of multiple CG-3
 ToDo: Add --ordered and ORDERED UNORDERED rule/set/list options.
-ToDo: Allow multiple contextual position per test via ,
 ToDo: Make all tag containers have Tag* instead of uint32_t
 ToDo: Make all set containers have Set* instead of uint32_t
 ToDo: SELECT $$sem IF (-1 N LINK 0 (<+{$$sem,<(.*)>,$1}>)) ;
-ToDo: Use Cohort iterator instead of subfunctions
 ToDo: Make things less magic (explain what magic means in the various contexts)
 ToDo: Handle duplicate different sets and delimiters from INCLUDE files. Possibly make new keyword or option for INCLUDE. Handle line numbering how?
 ToDo: Don't output a warning if it is identical to last output warning.
-ToDo: Allow rules to be run on contextual test targets, if all tests are true.
 ToDo: Rules don't currently require ; termination...should they?
-ToDo: Cache shared contexts between close rules
 ToDo: Test what happens if you RemCohort a whole window
 ToDo: Runtime or section flag to disable or choose when re-running happens when enclosures get unpacked
 ToDo: Document how REMRELATIONS may operate only one-way if two-way doesn't exist.
 ToDo: Relation sets with either same head, or any head
 ToDo: Preferred sets or contexts that fall away after a failure
 ToDo: Template left/right edge for linking onwards; 2 template types, add flag for free-form templates; check that +1 or -1 is target; stack for edges
-ToDo: Optimize case-insensitive tags by pre-calculating the lower-case variants
 ToDo: Make contextual tests optional but greedy with ?
 ToDo: COPY ONLY
 ToDo: Cohort-wide versions of set operators; use-case is testing multiple mapping tags at once, while that prefix is in effect

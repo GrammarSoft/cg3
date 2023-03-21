@@ -3,20 +3,18 @@
 * Developed by Tino Didriksen <mail@tinodidriksen.com>
 * Design by Eckhard Bick <eckhard.bick@mail.dk>, Tino Didriksen <mail@tinodidriksen.com>
 *
-* This file is part of VISL CG-3
-*
-* VISL CG-3 is free software: you can redistribute it and/or modify
+* This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation, either version 3 of the License, or
 * (at your option) any later version.
 *
-* VISL CG-3 is distributed in the hope that it will be useful,
+* This program is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with VISL CG-3.  If not, see <http://www.gnu.org/licenses/>.
+* along with this progam.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 #include "ApertiumApplicator.hpp"
@@ -202,8 +200,6 @@ void ApertiumApplicator::runGrammarOnText(std::istream& input, std::ostream& out
 	Cohort* lCohort = nullptr;        // Last seen cohort
 
 	gWindow->window_span = num_windows;
-	gtimer = getticks();
-	ticks timer(gtimer);
 
 	uint32FlatHashMap variables_set;
 	uint32FlatHashSet variables_rem;
@@ -400,8 +396,7 @@ void ApertiumApplicator::runGrammarOnText(std::istream& input, std::ostream& out
 			cCohort->wblank = wblank;
 			wblank.clear();
 
-			blank += '"';
-			blank += '<';
+			blank.append(u"\"<");
 			UChar* p = &token[1];
 			for (; *p && *p != '/' && *p != '<'; ++p) {
 				if (*p == '\\') {
@@ -409,8 +404,7 @@ void ApertiumApplicator::runGrammarOnText(std::istream& input, std::ostream& out
 				}
 				blank += *p;
 			}
-			blank += '>';
-			blank += '"';
+			blank.append(u">\"");
 			cCohort->wordform = addTag(blank);
 
 			// Handle the static reading of ^estació<n><f><sg>/season<n><sg>/station<n><sg>$
@@ -531,9 +525,6 @@ void ApertiumApplicator::runGrammarOnText(std::istream& input, std::ostream& out
 	}
 
 	flush();
-
-	ticks tmp = getticks();
-	grammar->total_time = elapsed(tmp, timer);
 } // runGrammarOnText
 
 /*
@@ -683,7 +674,7 @@ void ApertiumApplicator::testPR(std::ostream& output) {
 		}
 		printReading(reading, output);
 		u_fprintf(output, "\n");
-		delete reading;
+		free_reading(reading);
 	}
 }
 
@@ -876,11 +867,13 @@ void ApertiumApplicator::printReading(Reading* reading, std::ostream& output) {
 	printReading(reading, output, casing, SI32(firstlower));
 }
 
-void ApertiumApplicator::printCohort(Cohort* cohort, std::ostream& output) {
-	cohort->unignoreAll();
+void ApertiumApplicator::printCohort(Cohort* cohort, std::ostream& output, bool profiling) {
+	if (!profiling) {
+		cohort->unignoreAll();
 
-	if (!split_mappings) {
-		mergeMappings(*cohort);
+		if (!split_mappings) {
+			mergeMappings(*cohort);
+		}
 	}
 
 	if (!cohort->wblank.empty()) {
@@ -923,7 +916,7 @@ void ApertiumApplicator::printCohort(Cohort* cohort, std::ostream& output) {
 	bool need_slash = print_word_forms;
 
 	//Tag::printTagRaw(output, grammar->single_tags[cohort->wordform]);
-	std::sort(cohort->readings.begin(), cohort->readings.end(), CG3::Reading::cmp_number);
+	std::sort(cohort->readings.begin(), cohort->readings.end(), Reading::cmp_number);
 	for (auto reading : cohort->readings) {
 		if (need_slash) {
 			u_fprintf(output, "/");
@@ -939,7 +932,7 @@ void ApertiumApplicator::printCohort(Cohort* cohort, std::ostream& output) {
 	}
 
 	if (trace) {
-		std::sort(cohort->delayed.begin(), cohort->delayed.end(), CG3::Reading::cmp_number);
+		std::sort(cohort->delayed.begin(), cohort->delayed.end(), Reading::cmp_number);
 		for (auto reading : cohort->delayed) {
 			if (need_slash) {
 				u_fprintf(output, "/%C", not_sign);
@@ -950,7 +943,7 @@ void ApertiumApplicator::printCohort(Cohort* cohort, std::ostream& output) {
 			}
 			printReading(reading, output);
 		}
-		std::sort(cohort->deleted.begin(), cohort->deleted.end(), CG3::Reading::cmp_number);
+		std::sort(cohort->deleted.begin(), cohort->deleted.end(), Reading::cmp_number);
 		for (auto reading : cohort->deleted) {
 			if (need_slash) {
 				u_fprintf(output, "/%C", not_sign);
@@ -978,7 +971,7 @@ void ApertiumApplicator::printCohort(Cohort* cohort, std::ostream& output) {
 	}
 }
 
-void ApertiumApplicator::printSingleWindow(SingleWindow* window, std::ostream& output) {
+void ApertiumApplicator::printSingleWindow(SingleWindow* window, std::ostream& output, bool profiling) {
 	// Window text comes at the left
 	if (!window->text.empty()) {
 		u_fprintf(output, "%S", window->text.data());
@@ -996,7 +989,7 @@ void ApertiumApplicator::printSingleWindow(SingleWindow* window, std::ostream& o
 			continue;
 		}
 
-		printCohort(cohort, output);
+		printCohort(cohort, output, profiling);
 		u_fflush(output);
 	}
 
@@ -1056,7 +1049,7 @@ void ApertiumApplicator::mergeMappings(Cohort& cohort) {
 		}
 	}
 
-	std::sort(order.begin(), order.end(), CG3::Reading::cmp_number);
+	std::sort(order.begin(), order.end(), Reading::cmp_number);
 	cohort.readings.insert(cohort.readings.begin(), order.begin(), order.end());
 }
 }

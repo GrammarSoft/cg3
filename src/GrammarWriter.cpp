@@ -3,20 +3,18 @@
 * Developed by Tino Didriksen <mail@tinodidriksen.com>
 * Design by Eckhard Bick <eckhard.bick@mail.dk>, Tino Didriksen <mail@tinodidriksen.com>
 *
-* This file is part of VISL CG-3
-*
-* VISL CG-3 is free software: you can redistribute it and/or modify
+* This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation, either version 3 of the License, or
 * (at your option) any later version.
 *
-* VISL CG-3 is distributed in the hope that it will be useful,
+* This program is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with VISL CG-3.  If not, see <http://www.gnu.org/licenses/>.
+* along with this progam.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 #include "GrammarWriter.hpp"
@@ -45,14 +43,6 @@ void GrammarWriter::printSet(std::ostream& output, const Set& curset) {
 	}
 
 	if (curset.sets.empty()) {
-		if (statistics) {
-			if (ceil(curset.total_time) == floor(curset.total_time)) {
-				u_fprintf(output, "#List Matched: %u ; NoMatch: %u ; TotalTime: %.0f\n", curset.num_match, curset.num_fail, curset.total_time);
-			}
-			else {
-				u_fprintf(output, "#List Matched: %u ; NoMatch: %u ; TotalTime: %f\n", curset.num_match, curset.num_fail, curset.total_time);
-			}
-		}
 		used_sets.insert(curset.number);
 		if (curset.type & ST_ORDERED) {
 			u_fprintf(output, "O");
@@ -80,14 +70,6 @@ void GrammarWriter::printSet(std::ostream& output, const Set& curset) {
 		for (auto s : curset.sets) {
 			printSet(output, *(grammar->sets_list[s]));
 		}
-		if (statistics) {
-			if (ceil(curset.total_time) == floor(curset.total_time)) {
-				u_fprintf(output, "#Set Matched: %u ; NoMatch: %u ; TotalTime: %.0f\n", curset.num_match, curset.num_fail, curset.total_time);
-			}
-			else {
-				u_fprintf(output, "#Set Matched: %u ; NoMatch: %u ; TotalTime: %f\n", curset.num_match, curset.num_fail, curset.total_time);
-			}
-		}
 		const UChar* n = curset.name.data();
 		if ((n[0] == '$' && n[1] == '$') || (n[0] == '&' && n[1] == '&')) {
 			u_fprintf(output, "# ");
@@ -114,14 +96,6 @@ int GrammarWriter::writeGrammar(std::ostream& output) {
 		CG3Quit(1);
 	}
 
-	if (statistics) {
-		if (ceil(grammar->total_time) == floor(grammar->total_time)) {
-			u_fprintf(output, "# Total ticks spent applying grammar: %.0f\n", grammar->total_time);
-		}
-		else {
-			u_fprintf(output, "# Total ticks spent applying grammar: %f\n", grammar->total_time);
-		}
-	}
 	u_fprintf(output, "# DELIMITERS and SOFT-DELIMITERS do not exist. Instead, look for the sets _S_DELIMITERS_ and _S_SOFT_DELIMITERS_.\n");
 
 	u_fprintf(output, "MAPPING-PREFIX = %C ;\n", grammar->mapping_prefix);
@@ -283,14 +257,6 @@ void GrammarWriter::printRule(std::ostream& to, const Rule& rule) {
 		u_fprintf(to, "ANCHOR %S ;\n", tag.data());
 	}
 
-	if (statistics) {
-		if (ceil(rule.total_time) == floor(rule.total_time)) {
-			u_fprintf(to, "\n#Rule Matched: %u ; NoMatch: %u ; TotalTime: %.0f\n", rule.num_match, rule.num_fail, rule.total_time);
-		}
-		else {
-			u_fprintf(to, "\n#Rule Matched: %u ; NoMatch: %u ; TotalTime: %f\n", rule.num_match, rule.num_fail, rule.total_time);
-		}
-	}
 	if (rule.wordform) {
 		printTag(to, *rule.wordform);
 		u_fprintf(to, " ");
@@ -415,14 +381,6 @@ void GrammarWriter::printRule(std::ostream& to, const Rule& rule) {
 }
 
 void GrammarWriter::printContextualTest(std::ostream& to, const ContextualTest& test) {
-	if (statistics) {
-		if (ceil(test.total_time) == floor(test.total_time)) {
-			u_fprintf(to, "\n#Test Matched: %u ; NoMatch: %u ; TotalTime: %.0f\n", test.num_match, test.num_fail, test.total_time);
-		}
-		else {
-			u_fprintf(to, "\n#Test Matched: %u ; NoMatch: %u ; TotalTime: %f\n", test.num_match, test.num_fail, test.total_time);
-		}
-	}
 	if (test.pos & POS_NEGATE) {
 		u_fprintf(to, "NEGATE ");
 	}

@@ -3,20 +3,18 @@
 * Developed by Tino Didriksen <mail@tinodidriksen.com>
 * Design by Eckhard Bick <eckhard.bick@mail.dk>, Tino Didriksen <mail@tinodidriksen.com>
 *
-* This file is part of VISL CG-3
-*
-* VISL CG-3 is free software: you can redistribute it and/or modify
+* This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation, either version 3 of the License, or
 * (at your option) any later version.
 *
-* VISL CG-3 is distributed in the hope that it will be useful,
+* This program is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with VISL CG-3.  If not, see <http://www.gnu.org/licenses/>.
+* along with this progam.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 #include "GrammarApplicator.hpp"
@@ -137,8 +135,6 @@ void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& outp
 	Reading* lReading = nullptr;
 
 	gWindow->window_span = num_windows;
-	gtimer = getticks();
-	ticks timer(gtimer);
 
 	uint32FlatHashMap variables_set;
 	uint32FlatHashSet variables_rem;
@@ -185,10 +181,10 @@ void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& outp
 			}
 			if (cSWindow && cSWindow->cohorts.size() >= soft_limit && grammar->soft_delimiters && !did_soft_lookback) {
 				did_soft_lookback = true;
-				reverse_foreach (iter, cSWindow->cohorts) {
-					if (doesSetMatchCohortNormal(**iter, grammar->soft_delimiters->number)) {
+				for (auto c : reversed(cSWindow->cohorts)) {
+					if (doesSetMatchCohortNormal(*c, grammar->soft_delimiters->number)) {
 						did_soft_lookback = false;
-						Cohort* cohort = delimitAt(*cSWindow, *iter);
+						Cohort* cohort = delimitAt(*cSWindow, c);
 						cSWindow = cohort->parent->next;
 						if (cCohort) {
 							cCohort->parent = cSWindow;
@@ -342,8 +338,7 @@ void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& outp
 				if (!indents.empty() && indents.back().second->next == cReading) {
 					indents.back().second->next = nullptr;
 				}
-				delete cReading;
-				cReading = nullptr;
+				free_reading(cReading);
 				if (is_deleted) {
 					cleaned.insert(cleaned.begin(), ';');
 					line.insert(line.begin(), ';');
@@ -709,8 +704,6 @@ void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& outp
 	}
 
 CGCMD_EXIT:
-	ticks tmp = getticks();
-	grammar->total_time = elapsed(tmp, timer);
 	if (verbosity_level > 0) {
 		u_fprintf(ux_stderr, "Did %u lines, %u windows, %u cohorts, %u readings.\n", numLines, numWindows, numCohorts, numReadings);
 		u_fflush(ux_stderr);

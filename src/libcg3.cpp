@@ -3,20 +3,18 @@
 * Developed by Tino Didriksen <mail@tinodidriksen.com>
 * Design by Eckhard Bick <eckhard.bick@mail.dk>, Tino Didriksen <mail@tinodidriksen.com>
 *
-* This file is part of VISL CG-3
-*
-* VISL CG-3 is free software: you can redistribute it and/or modify
+* This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation, either version 3 of the License, or
 * (at your option) any later version.
 *
-* VISL CG-3 is distributed in the hope that it will be useful,
+* This program is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with VISL CG-3.  If not, see <http://www.gnu.org/licenses/>.
+* along with this progam.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 #include "stdafx.hpp"
@@ -316,7 +314,7 @@ cg3_cohort* cg3_sentence_getcohort(cg3_sentence* sentence_, size_t which) {
 
 void cg3_sentence_free(cg3_sentence* sentence_) {
 	SingleWindow* sentence = static_cast<SingleWindow*>(sentence_);
-	delete sentence;
+	free_swindow(sentence);
 }
 
 void cg3_sentence_addcohort(cg3_sentence* sentence_, cg3_cohort* cohort_) {
@@ -411,7 +409,7 @@ cg3_reading* cg3_cohort_getreading(cg3_cohort* cohort_, size_t which) {
 
 void cg3_cohort_free(cg3_cohort* cohort_) {
 	auto cohort = static_cast<Cohort*>(cohort_);
-	delete cohort;
+	free_cohort(cohort);
 }
 
 cg3_reading* cg3_reading_create(cg3_cohort* cohort_) {
@@ -466,7 +464,7 @@ uint32_t cg3_reading_gettrace(cg3_reading* reading_, size_t which) {
 
 void cg3_reading_free(cg3_reading* reading_) {
 	auto reading = static_cast<Reading*>(reading_);
-	delete reading;
+	free_reading(reading);
 }
 
 cg3_reading* cg3_subreading_create(cg3_reading* reading_) {
@@ -477,7 +475,7 @@ cg3_reading* cg3_subreading_create(cg3_reading* reading_) {
 cg3_status cg3_reading_setsubreading(cg3_reading* reading_, cg3_reading* subreading_) {
 	auto reading = static_cast<Reading*>(reading_);
 	auto subreading = static_cast<Reading*>(subreading_);
-	delete reading->next;
+	free_reading(reading->next);
 	reading->next = subreading;
 	return CG3_SUCCESS;
 }

@@ -3,20 +3,18 @@
 * Developed by Tino Didriksen <mail@tinodidriksen.com>
 * Design by Eckhard Bick <eckhard.bick@mail.dk>, Tino Didriksen <mail@tinodidriksen.com>
 *
-* This file is part of VISL CG-3
-*
-* VISL CG-3 is free software: you can redistribute it and/or modify
+* This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation, either version 3 of the License, or
 * (at your option) any later version.
 *
-* VISL CG-3 is distributed in the hope that it will be useful,
+* This program is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with VISL CG-3.  If not, see <http://www.gnu.org/licenses/>.
+* along with this progam.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 #include "GrammarApplicator.hpp"
@@ -28,8 +26,14 @@
 #include "Reading.hpp"
 #include "parser_helpers.hpp"
 #include "process.hpp"
+#include "pool.hpp"
 
 namespace CG3 {
+
+// Order is important - we want SingleWindows to be destroyed first, then Cohorts, then Readings
+pool<Reading> pool_readings;
+pool<Cohort> pool_cohorts;
+pool<SingleWindow> pool_swindows;
 
 GrammarApplicator::GrammarApplicator(std::ostream& ux_err)
   : ux_stderr(&ux_err)
@@ -219,14 +223,6 @@ void GrammarApplicator::index() {
 	span_pattern_latin[6] = span_pattern_latin[14] = '0' + w;
 
 	did_index = true;
-}
-
-void GrammarApplicator::enableStatistics() {
-	statistics = true;
-}
-
-void GrammarApplicator::disableStatistics() {
-	statistics = false;
 }
 
 Tag* GrammarApplicator::addTag(Tag* tag) {
@@ -448,7 +444,6 @@ void GrammarApplicator::printReading(const Reading* reading, std::ostream& outpu
 		if (!reading->parent->relations.empty()) {
 			for (const auto& miter : reading->parent->relations) {
 				for (auto siter : miter.second) {
-					// ToDo: On-the-fly and relations from input should never be allocated in the grammar
 					auto it = grammar->single_tags.find(miter.first);
 					if (it == grammar->single_tags.end()) {
 						it = grammar->single_tags.find(miter.first);
@@ -474,7 +469,7 @@ void GrammarApplicator::printReading(const Reading* reading, std::ostream& outpu
 	}
 }
 
-void GrammarApplicator::printCohort(Cohort* cohort, std::ostream& output) {
+void GrammarApplicator::printCohort(Cohort* cohort, std::ostream& output, bool profiling) {
 	if (cohort->local_number == 0) {
 		goto removed;
 	}
@@ -498,22 +493,24 @@ void GrammarApplicator::printCohort(Cohort* cohort, std::ostream& output) {
 	}
 	u_fputc('\n', output);
 
-	cohort->unignoreAll();
+	if (!profiling) {
+		cohort->unignoreAll();
 
-	if (!split_mappings) {
-		mergeMappings(*cohort);
+		if (!split_mappings) {
+			mergeMappings(*cohort);
+		}
 	}
 
-	std::sort(cohort->readings.begin(), cohort->readings.end(), CG3::Reading::cmp_number);
+	std::sort(cohort->readings.begin(), cohort->readings.end(), Reading::cmp_number);
 	for (auto rter1 : cohort->readings) {
 		printReading(rter1, output);
 	}
 	if (trace && !trace_no_removed) {
-		std::sort(cohort->delayed.begin(), cohort->delayed.end(), CG3::Reading::cmp_number);
+		std::sort(cohort->delayed.begin(), cohort->delayed.end(), Reading::cmp_number);
 		for (auto rter3 : cohort->delayed) {
 			printReading(rter3, output);
 		}
-		std::sort(cohort->deleted.begin(), cohort->deleted.end(), CG3::Reading::cmp_number);
+		std::sort(cohort->deleted.begin(), cohort->deleted.end(), Reading::cmp_number);
 		for (auto rter2 : cohort->deleted) {
 			printReading(rter2, output);
 		}
@@ -528,11 +525,11 @@ removed:
 	}
 
 	for (auto iter : cohort->removed) {
-		printCohort(iter, output);
+		printCohort(iter, output, profiling);
 	}
 }
 
-void GrammarApplicator::printSingleWindow(SingleWindow* window, std::ostream& output) {
+void GrammarApplicator::printSingleWindow(SingleWindow* window, std::ostream& output, bool profiling) {
 	for (auto var : window->variables_output) {
 		Tag* key = grammar->single_tags[var];
 		auto iter = window->variables_set.find(var);
@@ -560,7 +557,7 @@ void GrammarApplicator::printSingleWindow(SingleWindow* window, std::ostream& ou
 	uint32_t cs = UI32(window->cohorts.size());
 	for (uint32_t c = 0; c < cs; c++) {
 		Cohort* cohort = window->cohorts[c];
-		printCohort(cohort, output);
+		printCohort(cohort, output, profiling);
 	}
 
 	if (!window->text_post.empty() && window->text_post.find_first_not_of(ws) != UString::npos) {

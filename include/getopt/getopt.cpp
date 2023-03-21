@@ -67,7 +67,7 @@ int getopt(int argc, char **argv, const char *opts) {
 			sp = 1;
 			optind++;
 		}
-		optarg = NULL;
+		optarg = nullptr;
 	}
 	return(c);
 }

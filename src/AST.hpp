@@ -1,22 +1,19 @@
 /*
 * Copyright (C) 2007-2023, GrammarSoft ApS
 * Developed by Tino Didriksen <mail@tinodidriksen.com>
-* Design by Eckhard Bick <eckhard.bick@mail.dk>, Tino Didriksen <mail@tinodidriksen.com>
 *
-* This file is part of VISL CG-3
-*
-* VISL CG-3 is free software: you can redistribute it and/or modify
+* This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation, either version 3 of the License, or
 * (at your option) any later version.
 *
-* VISL CG-3 is distributed in the hope that it will be useful,
+* This program is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with VISL CG-3.  If not, see <http://www.gnu.org/licenses/>.
+* along with this progam.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 #pragma once
@@ -95,8 +92,9 @@ const char* ASTType_str[NUM_ASTTypes] = {};
 struct ASTHelper;
 struct ASTNode {
 	ASTType type;
-	size_t line;
-	const UChar *b, *e;
+	size_t line = 0;
+	const UChar *b = nullptr, *e = nullptr;
+	uint32_t u = 0;
 	std::vector<ASTNode> cs;
 
 	ASTNode(ASTType type = AST_Unknown, size_t line = 0, const UChar* b = nullptr, const UChar* e = nullptr)
@@ -107,7 +105,7 @@ struct ASTNode {
 	{}
 };
 
-bool dump_ast = false;
+bool parse_ast = false;
 ASTNode ast;
 ASTNode* cur_ast = &ast;
 ASTHelper* cur_ast_help = nullptr;
@@ -118,39 +116,19 @@ const UChar* xml_encode(const UChar* b, const UChar* e) {
 	buf.reserve(e - b);
 	for (; b != e; ++b) {
 		if (*b == '&') {
-			buf += '&';
-			buf += 'a';
-			buf += 'm';
-			buf += 'p';
-			buf += ';';
+			buf.append(u"&amp;");
 		}
 		else if (*b == '"') {
-			buf += '&';
-			buf += 'q';
-			buf += 'u';
-			buf += 'o';
-			buf += 't';
-			buf += ';';
+			buf.append(u"&quot;");
 		}
 		else if (*b == '\'') {
-			buf += '&';
-			buf += 'a';
-			buf += 'p';
-			buf += 'o';
-			buf += 's';
-			buf += ';';
+			buf.append(u"&apos;");
 		}
 		else if (*b == '<') {
-			buf += '&';
-			buf += 'l';
-			buf += 't';
-			buf += ';';
+			buf.append(u"&lt;");
 		}
 		else if (*b == '>') {
-			buf += '&';
-			buf += 'g';
-			buf += 't';
-			buf += ';';
+			buf.append(u"&gt;");
 		}
 		else {
 			buf += *b;
@@ -164,6 +142,9 @@ void print_ast(std::ostream& out, const UChar* b, size_t n, const ASTNode& node)
 	u_fprintf(out, "%s<%s l=\"%u\" b=\"%u\" e=\"%u\"", indent.data(), ASTType_str[node.type], node.line, UI32(node.b - b), UI32(node.e - b));
 	if (node.type == AST_AnchorName || node.type == AST_ContextMod || node.type == AST_ContextPos || node.type == AST_IncludeFilename || node.type == AST_MappingPrefix || node.type == AST_Option || node.type == AST_RuleAddcohortWhere || node.type == AST_RuleDirection || node.type == AST_RuleExternalCmd || node.type == AST_RuleExternalType || node.type == AST_RuleFlag || node.type == AST_RuleMoveType || node.type == AST_RuleName || node.type == AST_RuleType || node.type == AST_RuleWordform || node.type == AST_SetName || node.type == AST_SetOp || node.type == AST_SubReadingsDirection || node.type == AST_Tag || node.type == AST_TemplateName || node.type == AST_TemplateRef) {
 		u_fprintf(out, " t=\"%S\"", xml_encode(node.b, node.e));
+	}
+	if (node.u) {
+		u_fprintf(out, " u=\"%u\"", node.u);
 	}
 	if (node.cs.empty()) {
 		u_fprintf(out, "/>\n");
@@ -190,7 +171,7 @@ struct ASTHelper {
 	  , h(cur_ast_help)
 	{
 		cur_ast_help = this;
-		if (!dump_ast) {
+		if (!parse_ast) {
 			c = nullptr;
 			h = nullptr;
 			return;
@@ -206,7 +187,7 @@ struct ASTHelper {
 	}
 
 	void destroy() {
-		if (!dump_ast) {
+		if (!parse_ast) {
 			return;
 		}
 		cur_ast = c;
@@ -228,6 +209,12 @@ struct ASTHelper {
 #define AST_CLOSE(p)             \
 	do {                         \
 		cur_ast->e = (p);        \
+		cur_ast_help->destroy(); \
+	} while (false)
+#define AST_CLOSE_ID(p, n)       \
+	do {                         \
+		cur_ast->e = (p);        \
+		cur_ast->u = (n);        \
 		cur_ast_help->destroy(); \
 	} while (false)
 

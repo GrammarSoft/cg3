@@ -8,13 +8,13 @@ endif()
 find_path(Boost_LOCAL NAMES boost/config.hpp PATHS "../include" NO_DEFAULT_PATH)
 if(Boost_LOCAL)
 	set(BOOST_ROOT "../include")
-	find_package(Boost 1.53.0)
+	find_package(Boost 1.62.0)
 endif()
 if(NOT Boost_FOUND)
 	unset(BOOST_ROOT)
 	message(STATUS "Did not find Boost locally; trying globally...")
 	message(STATUS "If this doesn't work, run ./get-boost.sh and try again.")
-	find_package(Boost 1.53.0 REQUIRED)
+	find_package(Boost 1.62.0 REQUIRED)
 endif()
 include_directories(${Boost_INCLUDE_DIRS})
 link_directories(${Boost_LIBRARY_DIRS})
@@ -26,24 +26,16 @@ if(ICU_FOUND)
 	message(STATUS "Found ICU version ${ICU_VERSION}")
 endif()
 
-if(NOT CMAKE_BUILD_TYPE STREQUAL Debug AND USE_TCMALLOC)
-	find_library(GOOGLE_TCMALLOC_LIB tcmalloc)
-	if(GOOGLE_TCMALLOC_LIB)
-		message(STATUS "Found tcmalloc: ${GOOGLE_TCMALLOC_LIB}")
-		set(GOOGLE_TCMALLOC_ENABLED 1)
-	else()
-		message(STATUS "Can't find tcmalloc - skipping")
-	endif()
+if(VCPKG_TOOLCHAIN)
+	find_path(SQLITE3_INCLUDE_DIRS sqlite3.h REQUIRED)
+	find_library(SQLITE3_LIBRARIES sqlite3 REQUIRED)
+else()
+	find_package(PkgConfig REQUIRED)
+	pkg_search_module(SQLITE3 REQUIRED sqlite3)
 endif()
+include_directories(${SQLITE3_INCLUDE_DIRS})
 
 macro(cg3_link target)
-	if(GOOGLE_TCMALLOC_ENABLED)
-		target_link_libraries(${target} ${GOOGLE_TCMALLOC_LIB})
-	endif()
-
-	if(WIN32)
-		target_link_libraries(${target} "wsock32.lib")
-	endif()
 	if(EMSCRIPTEN)
 		target_link_options(${target} PRIVATE
 			-sEXPORTED_RUNTIME_METHODS=ccall,cwrap
@@ -56,6 +48,7 @@ macro(cg3_link target)
 	target_link_libraries(${target} ${CMAKE_THREAD_LIBS_INIT})
 	target_link_libraries(${target} ${Boost_LIBRARIES})
 	target_link_libraries(${target} ${ICU_LIBRARIES})
+	target_link_libraries(${target} ${SQLITE3_LIBRARIES})
 endmacro()
 
 set(LIBCG3_HEADERS
@@ -70,6 +63,7 @@ set(LIBCG3_HEADERS
 	Relabeller.hpp
 	MweSplitApplicator.hpp
 	IGrammarParser.hpp
+	Profiler.hpp
 	Reading.hpp
 	Rule.hpp
 	Set.hpp
@@ -86,6 +80,7 @@ set(LIBCG3_HEADERS
 	inlines.hpp
 	interval_vector.hpp
 	parser_helpers.hpp
+	pool.hpp
 	process.hpp
 	scoped_stack.hpp
 	sorted_vector.hpp
@@ -113,6 +108,7 @@ set(LIBCG3_SOURCES
 	GrammarWriter.cpp
 	Relabeller.cpp
 	MweSplitApplicator.cpp
+	Profiler.cpp
 	Reading.cpp
 	Rule.cpp
 	Set.cpp

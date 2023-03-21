@@ -3,20 +3,18 @@
 * Developed by Tino Didriksen <mail@tinodidriksen.com>
 * Design by Eckhard Bick <eckhard.bick@mail.dk>, Tino Didriksen <mail@tinodidriksen.com>
 *
-* This file is part of VISL CG-3
-*
-* VISL CG-3 is free software: you can redistribute it and/or modify
+* This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation, either version 3 of the License, or
 * (at your option) any later version.
 *
-* VISL CG-3 is distributed in the hope that it will be useful,
+* This program is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with VISL CG-3.  If not, see <http://www.gnu.org/licenses/>.
+* along with this progam.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 #include "FSTApplicator.hpp"
@@ -111,11 +109,9 @@ void FSTApplicator::runGrammarOnText(std::istream& input, std::ostream& output) 
 			space[0] = 0;
 
 			UString tag;
-			tag += '"';
-			tag += '<';
+			tag.append(u"\"<");
 			tag += &cleaned[0];
-			tag += '>';
-			tag += '"';
+			tag.append(u">\"");
 
 			if (!cCohort) {
 				if (!cSWindow) {
@@ -297,10 +293,10 @@ void FSTApplicator::runGrammarOnText(std::istream& input, std::ostream& output) 
 			}
 			if (cSWindow && cSWindow->cohorts.size() >= soft_limit && grammar->soft_delimiters && !did_soft_lookback) {
 				did_soft_lookback = true;
-				reverse_foreach (iter, cSWindow->cohorts) {
-					if (doesSetMatchCohortNormal(**iter, grammar->soft_delimiters->number)) {
+				for (auto c : reversed(cSWindow->cohorts)) {
+					if (doesSetMatchCohortNormal(*c, grammar->soft_delimiters->number)) {
 						did_soft_lookback = false;
-						Cohort* cohort = delimitAt(*cSWindow, *iter);
+						Cohort* cohort = delimitAt(*cSWindow, c);
 						cSWindow = cohort->parent->next;
 						if (cCohort) {
 							cCohort->parent = cSWindow;
@@ -458,7 +454,7 @@ void FSTApplicator::printReading(const Reading* reading, std::ostream& output) {
 	}
 }
 
-void FSTApplicator::printCohort(Cohort* cohort, std::ostream& output) {
+void FSTApplicator::printCohort(Cohort* cohort, std::ostream& output, bool profiling) {
 	if (cohort->local_number == 0) {
 		goto removed;
 	}
@@ -472,10 +468,12 @@ void FSTApplicator::printCohort(Cohort* cohort, std::ostream& output) {
 		did_warn_statictags = true;
 	}
 
-	cohort->unignoreAll();
+	if (!profiling) {
+		cohort->unignoreAll();
 
-	if (!split_mappings) {
-		mergeMappings(*cohort);
+		if (!split_mappings) {
+			mergeMappings(*cohort);
+		}
 	}
 
 	{
@@ -502,7 +500,7 @@ removed:
 	}
 }
 
-void FSTApplicator::printSingleWindow(SingleWindow* window, std::ostream& output) {
+void FSTApplicator::printSingleWindow(SingleWindow* window, std::ostream& output, bool profiling) {
 	if (!window->text.empty()) {
 		u_fprintf(output, "%S", window->text.data());
 		if (!ISNL(window->text.back())) {
@@ -513,7 +511,7 @@ void FSTApplicator::printSingleWindow(SingleWindow* window, std::ostream& output
 	uint32_t cs = UI32(window->cohorts.size());
 	for (uint32_t c = 0; c < cs; c++) {
 		Cohort* cohort = window->cohorts[c];
-		printCohort(cohort, output);
+		printCohort(cohort, output, profiling);
 	}
 
 	if (!window->text_post.empty()) {
