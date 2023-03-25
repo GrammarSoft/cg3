@@ -516,6 +516,23 @@ inline UString readUTF8String(S& input) {
 	#pragma warning (disable: 4127)
 #endif
 
+// macOS has macros for these that somehow only reveal themselves in the Python binding
+#ifdef htonl
+#undef htonl
+#endif
+
+#ifdef htons
+#undef htons
+#endif
+
+#ifdef ntohl
+#undef ntohl
+#endif
+
+#ifdef ntohs
+#undef ntohs
+#endif
+
 template<typename T>
 T htonl(T t) {
 	return be::native_to_big(t);
