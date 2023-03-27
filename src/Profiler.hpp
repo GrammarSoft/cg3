@@ -28,23 +28,39 @@
 
 namespace CG3 {
 
+enum : uint8_t {
+	ET_RULE = 0,
+	ET_CONTEXT = 1,
+};
+
 struct Profiler {
 	std::map<std::string, size_t, std::less<>> strings;
 	std::map<size_t, size_t> grammars;
 	size_t grammar_ast = 0;
 	std::stringstream buf;
 
+	struct Key {
+		uint8_t type = ET_RULE;
+		uint32_t id = 0;
+
+		bool operator<(const Key& o) const {
+			if (type == o.type) {
+				return id < o.id;
+			}
+			return type < o.type;
+		}
+	};
+
 	struct Entry {
-		size_t grammar = 0;
+		uint8_t type = ET_RULE;
+		uint32_t grammar = 0;
 		size_t b = 0;
 		size_t e = 0;
 		size_t num_match = 0;
 		size_t num_fail = 0;
 		size_t example_window = 0;
-		size_t example_target = 0;
 	};
-	std::map<uint32_t, Entry> rules;
-	std::map<uint32_t, Entry> contexts;
+	std::map<Key, Entry> entries;
 	std::map<std::pair<uint32_t, uint32_t>, size_t> rule_contexts;
 
 	size_t addString(std::string_view str) {
@@ -64,20 +80,21 @@ struct Profiler {
 		return UI32(g);
 	}
 
-	void addRule(std::string_view fname, size_t b, size_t e) {
-		auto str = addString(fname);
-		auto sz = UI32(rules.size() + 1);
-		rules.emplace(sz, Entry{str, b, e});
+	void addRule(uint32_t n, uint32_t g, size_t b, size_t e) {
+		Key k{ET_RULE, n};
+		entries.emplace(k, Entry{ET_RULE, g, b, e});
 	}
 
-	void addContext(uint32_t c, std::string_view fname, size_t b, size_t e) {
-		if (contexts.count(c) == 0) {
-			auto str = addString(fname);
-			contexts.emplace(c, Entry{str, b, e});
+	void addContext(uint32_t c, uint32_t g, size_t b, size_t e) {
+		Key k{ ET_CONTEXT, c };
+		if (entries.count(k) == 0) {
+			entries.emplace(k, Entry{ET_CONTEXT, g, b, e});
 		}
 	}
 
 	void write(const char* fname);
+
+	void read(const char* fname);
 };
 
 }

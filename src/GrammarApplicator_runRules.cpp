@@ -657,7 +657,8 @@ bool GrammarApplicator::runSingleRule(SingleWindow& current, const Rule& rule, R
 					reading->matched_tests = true;
 					++num_active;
 					if (profiler) {
-						auto& r = profiler->rules[rule.number + 1];
+						Profiler::Key k{ET_RULE, rule.number + 1 };
+						auto& r = profiler->entries[k];
 						++r.num_match;
 						if (!r.example_window) {
 							addProfilingExample(r);
@@ -683,7 +684,8 @@ bool GrammarApplicator::runSingleRule(SingleWindow& current, const Rule& rule, R
 			else {
 				context_stack.back().regexgrp_ct = orz;
 				if (profiler) {
-					++profiler->rules[rule.number + 1].num_fail;
+					Profiler::Key k{ ET_RULE, rule.number + 1 };
+					++profiler->entries[k].num_fail;
 				}
 			}
 			readings_plain.insert(std::make_pair(reading->hash_plain, reading));

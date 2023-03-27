@@ -25,6 +25,7 @@ if(ICU_FOUND)
 	include_directories(${ICU_INCLUDE_DIRS})
 	message(STATUS "Found ICU version ${ICU_VERSION}")
 endif()
+link_directories(${ICU_LIBRARY_DIRS})
 
 if(VCPKG_TOOLCHAIN)
 	find_path(SQLITE3_INCLUDE_DIRS sqlite3.h REQUIRED)
@@ -34,6 +35,7 @@ else()
 	pkg_search_module(SQLITE3 REQUIRED sqlite3)
 endif()
 include_directories(${SQLITE3_INCLUDE_DIRS})
+link_directories(${SQLITE3_LIBRARY_DIRS})
 
 macro(cg3_link target)
 	if(EMSCRIPTEN)
@@ -45,10 +47,13 @@ macro(cg3_link target)
 			)
 	endif()
 
-	target_link_libraries(${target} ${CMAKE_THREAD_LIBS_INIT})
-	target_link_libraries(${target} ${Boost_LIBRARIES})
-	target_link_libraries(${target} ${ICU_LIBRARIES})
-	target_link_libraries(${target} ${SQLITE3_LIBRARIES})
+	target_link_libraries(${target}
+		${CMAKE_THREAD_LIBS_INIT}
+		${STDFS_LIB}
+		${Boost_LIBRARIES}
+		${ICU_LIBRARIES}
+		${SQLITE3_LIBRARIES}
+		)
 endmacro()
 
 set(LIBCG3_HEADERS
@@ -141,12 +146,12 @@ set_target_properties(cg3 PROPERTIES SOVERSION ${_cg3_VERSION_MAJOR})
 cg3_link(cg3)
 set(LINKLIB cg3)
 
-add_executable(cg-comp cg_comp.cpp)
+add_executable(cg-comp cg-comp.cpp)
 cg3_link(cg-comp)
 target_link_libraries(cg-comp ${LINKLIB})
 
 add_executable(cg-proc
-	cg_proc.cpp
+	cg-proc.cpp
 	ApertiumApplicator.cpp
 	ApertiumApplicator.hpp
 	MatxinApplicator.cpp
@@ -160,7 +165,7 @@ cg3_link(cg-relabel)
 target_link_libraries(cg-relabel ${LINKLIB})
 
 add_executable(cg-conv
-	cg_conv.cpp
+	cg-conv.cpp
 	ApertiumApplicator.cpp
 	ApertiumApplicator.hpp
 	MatxinApplicator.cpp
@@ -182,6 +187,10 @@ target_link_libraries(cg-conv ${LINKLIB})
 add_executable(cg-mwesplit cg-mwesplit.cpp)
 cg3_link(cg-mwesplit)
 target_link_libraries(cg-mwesplit ${LINKLIB})
+
+add_executable(cg-annotate cg-annotate.cpp)
+cg3_link(cg-annotate)
+target_link_libraries(cg-annotate ${LINKLIB})
 
 add_executable(vislcg3
 	main.cpp

@@ -1018,7 +1018,7 @@ ContextualTest* TextualParser::parseContextualTestList(UChar*& p, Rule* rule, bo
 
 	t = result->addContextualTest(ot);
 	if (profiler) {
-		profiler->addContext(t->hash, filename, cur_ast->b - cur_grammar, p - cur_grammar);
+		profiler->addContext(t->hash, cur_grammar_n, cur_ast->b - cur_grammar, p - cur_grammar);
 	}
 	if (t->tmpl) {
 		deferred_tmpls[t] = tmpl_data;
@@ -1633,7 +1633,7 @@ void TextualParser::parseRule(UChar*& p, KEYWORDS key) {
 		addRuleToGrammar(rule);
 
 		if (profiler) {
-			profiler->addRule(filename, cur_ast->b - cur_grammar, p - cur_grammar);
+			profiler->addRule(rule->number + 1, cur_grammar_n, cur_ast->b - cur_grammar, p - cur_grammar);
 		}
 		AST_CLOSE_ID(p, rule->number + 1);
 	}
@@ -1833,6 +1833,7 @@ void TextualParser::parseFromUChar(UChar* input, const char* fname) {
 		id = profiler->addGrammar(fname, utf8);
 	}
 	cur_grammar = input;
+	cur_grammar_n = id;
 	UChar* p = input;
 	result->lines = 1;
 	AST_OPEN(Grammar);
@@ -2648,11 +2649,13 @@ void TextualParser::parseFromUChar(UChar* input, const char* fname) {
 				data.resize(read + 4 + 1);
 
 				uint32_t olines = 0;
-				swapper<uint32_t> oswap(true, olines, result->lines);
+				swapper oswap(true, olines, result->lines);
 				const char* obase = nullptr;
-				swapper<const char*> bswap(true, obase, filebase);
+				swapper bswap(true, obase, filebase);
 				UChar* cgram = nullptr;
-				swapper<UChar*> gswap(true, cgram, cur_grammar);
+				swapper gswap(true, cgram, cur_grammar);
+				uint32_t ngram = 0;
+				swapper gnswap(true, ngram, cur_grammar_n);
 
 				parseFromUChar(&data[4], abspath.data());
 			}
@@ -3095,9 +3098,10 @@ int TextualParser::parse_grammar(UString& data) {
 			orc = result->addContextualTest(orc);
 
 			if (profiler) {
-				auto pc = profiler->contexts.find(tmp->hash);
-				if (pc != profiler->contexts.end()) {
-					profiler->addContext(orc->hash, filename, pc->second.b, pc->second.e);
+				Profiler::Key k{ET_CONTEXT, tmp->hash};
+				auto pc = profiler->entries.find(k);
+				if (pc != profiler->entries.end()) {
+					profiler->addContext(orc->hash, cur_grammar_n, pc->second.b, pc->second.e);
 				}
 			}
 

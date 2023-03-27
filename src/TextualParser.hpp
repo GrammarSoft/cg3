@@ -74,6 +74,7 @@ private:
 	Rule* nested_rule = nullptr;
 	const char* filename = nullptr;
 	UChar* cur_grammar = nullptr;
+	uint32_t cur_grammar_n = 0;
 	uint32_t num_grammars = 0;
 
 	typedef std::unordered_map<ContextualTest*, std::pair<size_t, UString>> deferred_t;
