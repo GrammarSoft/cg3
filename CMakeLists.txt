@@ -106,6 +106,16 @@ if(BIG_ENDIAN)
 	add_definitions(-DBIG_ENDIAN)
 endif()
 
+CHECK_INCLUDE_FILE_CXX(filesystem HAS_FS)
+if(HAS_FS)
+	add_definitions(-DHAS_FS)
+endif()
+
+# std::filesystem is in a separate library until g++ 9
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 9)
+	set(STDFS_LIB stdc++fs)
+endif()
+
 if(WIN32)
 	add_definitions(-DUNICODE -D_UNICODE -D_SECURE_SCL=0 -D_ITERATOR_DEBUG_LEVEL=0 -D_CRT_SECURE_NO_DEPRECATE -DWIN32_LEAN_AND_MEAN -DVC_EXTRALEAN -DNOMINMAX -D_SILENCE_CXX20_CISO646_REMOVED_WARNING)
 	include_directories("include/getopt" "include/wordexp")

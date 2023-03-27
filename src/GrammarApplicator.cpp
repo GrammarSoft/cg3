@@ -474,6 +474,10 @@ void GrammarApplicator::printCohort(Cohort* cohort, std::ostream& output, bool p
 		goto removed;
 	}
 
+	if (profiling && cohort == rule_target) {
+		u_fprintf(output, "# RULE TARGET BEGIN\n");
+	}
+
 	if (cohort->type & CT_REMOVED) {
 		if (!trace || trace_no_removed) {
 			goto removed;
@@ -526,6 +530,10 @@ removed:
 
 	for (auto iter : cohort->removed) {
 		printCohort(iter, output, profiling);
+	}
+
+	if (profiling && cohort == rule_target) {
+		u_fprintf(output, "# RULE TARGET END\n");
 	}
 }
 

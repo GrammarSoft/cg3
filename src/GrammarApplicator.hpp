@@ -366,32 +366,26 @@ protected:
 		buf.str("");
 		buf.clear();
 
-		buf << "# PREVIOUS\n";
+		buf << "# PREVIOUS WINDOWS\n";
 		for (auto s : gWindow->previous) {
 			printSingleWindow(s, buf, true);
 		}
-		buf << "# CURRENT\n";
+		buf << "# CURRENT WINDOW\n";
 		printSingleWindow(gWindow->current, buf, true);
-		buf << "# NEXT\n";
+		buf << "# NEXT WINDOWS\n";
 		for (auto s : gWindow->next) {
 			printSingleWindow(s, buf, true);
 		}
 
 		auto sz = profiler->addString(buf.str());
 		item.example_window = sz;
-
-		// Target cohort
-		buf.str("");
-		buf.clear();
-		printCohort(context_target, buf, true);
-		sz = profiler->addString(buf.str());
-		item.example_target = sz;
 	}
 
 	void profileRuleContext(bool test_good, const Rule* rule, const ContextualTest* test) {
 		if (profiler) {
-			auto pit = profiler->contexts.find(test->hash);
-			if (pit != profiler->contexts.end()) {
+			Profiler::Key k{ ET_CONTEXT, test->hash };
+			auto pit = profiler->entries.find(k);
+			if (pit != profiler->entries.end()) {
 				auto& t = pit->second;
 				if ((test_good && !(test->pos & POS_NEGATE)) || (!test_good && (test->pos & POS_NEGATE))) {
 					++t.num_match;

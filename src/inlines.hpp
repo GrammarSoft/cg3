@@ -824,6 +824,24 @@ constexpr auto make_array(Function f) -> std::array<typename std::invoke_result<
 	return make_array_helper(f, std::make_index_sequence<N>{});
 }
 
+namespace details {
+	inline void _concat(std::string&) {
+	}
+
+	template<typename T, typename... Args>
+	inline void _concat(std::string& msg, const T& t, Args... args) {
+		msg.append(t);
+		_concat(msg, args...);
+	}
+}
+
+template<typename T, typename... Args>
+inline std::string concat(const T& value, Args... args) {
+	std::string msg(value);
+	details::_concat(msg, args...);
+	return msg;
+}
+
 }
 
 #endif
