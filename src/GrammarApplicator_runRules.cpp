@@ -1151,7 +1151,9 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						if (rule->sub_reading != 32767) {
 							rd = get_sub_reading(rd, rule->sub_reading);
 						}
-						rd->hit_by.push_back(rule->number);
+						if (rd) {
+							rd->hit_by.push_back(rule->number);
+						}
 						if (si < selected.size() && target->readings[ri] == selected[si]) {
 							si++;
 						}
