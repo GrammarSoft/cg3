@@ -1113,6 +1113,7 @@ Use 0 to check immediately after each change."
 (defcustom cg-output-always-highlight nil
   "Regexp patterns of tags to always highlight in output, with a face to use."
   :local t
+  :safe (lambda (_) t)
   :type '(repeat (cons regexp face)))
 
 (defun cg-output-hl-always-patterns ()
