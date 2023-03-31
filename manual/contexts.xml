@@ -30,13 +30,13 @@
       <primary>1</primary>
     </indexterm>
     <para>
-      A number indicates the topological offset from the rule target or linked cohort that the test should start at. For scanning tests, the sign of the number also influences which direction to scan. Positive numbers both start left and scan towards the left, and negative both start right and scan towards the right.
+      A number indicates the topological offset from the rule target or linked cohort that the test should start at. For scanning tests, the sign of the number also influences which direction to scan. Positive numbers both start right and scan towards the right, and negative both start left and scan towards the left.
     </para>
     <screen>
-      # Test whether the cohort to the immediate left matches the set N
+      # Test whether the cohort to the immediate right matches the set N
       (1 N)
 
-      # Test whether the cohort two to the right, or any other cohorts rightwards of that, matches the set V
+      # Test whether the cohort two to the left, or any other cohorts leftwards of that, matches the set V
       (-2* V)
     </screen>
     <para>
