@@ -313,19 +313,24 @@ bool GrammarApplicator::runSingleRule(SingleWindow& current, const Rule& rule, R
 	KEYWORDS type = rule.type;
 	const Set& set = *(grammar->sets_list[rule.target]);
 	CohortSet* cohortset = &current.rule_to_cohorts[rule.number];
-	if (!context_stack.empty()) {
-		if (!current.nested_rule_to_cohorts) {
-			current.nested_rule_to_cohorts.reset(new CohortSet());
-		}
-		cohortset = current.nested_rule_to_cohorts.get();
-		cohortset->clear();
-		cohortset->insert(get_apply_to().cohort);
-		for (auto& t : set.trie_special) {
-			if (t.first->type & T_CONTEXT && t.first->context_ref_pos <= context_stack.back().context.size()) {
-				cohortset->insert(context_stack.back().context[t.first->context_ref_pos-1]);
+
+	auto override_cohortset = [&]() {
+		if (!context_stack.empty()) {
+			if (!current.nested_rule_to_cohorts) {
+				current.nested_rule_to_cohorts.reset(new CohortSet());
+			}
+			cohortset = current.nested_rule_to_cohorts.get();
+			cohortset->clear();
+			cohortset->insert(get_apply_to().cohort);
+			for (auto& t : set.trie_special) {
+				if (t.first->type & T_CONTEXT && t.first->context_ref_pos <= context_stack.back().context.size()) {
+					cohortset->insert(context_stack.back().context[t.first->context_ref_pos - 1]);
+				}
 			}
 		}
-	}
+	};
+	override_cohortset();
+
 	if (debug_level > 1) {
 		std::cerr << "DEBUG: " << cohortset->size() << "/" << current.cohorts.size() << " = " << double(cohortset->size()) / double(current.cohorts.size()) << std::endl;
 	}
@@ -466,6 +471,7 @@ bool GrammarApplicator::runSingleRule(SingleWindow& current, const Rule& rule, R
 
 		auto reset_cohorts = [&]() {
 			cohortset = &current.rule_to_cohorts[rule.number];
+			override_cohortset();
 			if (get_apply_to().cohort->type & CT_REMOVED) {
 				rocit = cohortset->lower_bound(current.cohorts[get_apply_to().cohort->local_number]);
 			}
