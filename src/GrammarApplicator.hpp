@@ -298,6 +298,7 @@ protected:
 	bool reset_cohorts_for_loop = false;
 	bool finish_reading_loop = true;
 	bool finish_cohort_loop = true;
+	bool in_nested = false;
 	size_t used_regex = 0;
 	bool runSingleRule(SingleWindow& current, const Rule& rule, RuleCallback reading_cb, RuleCallback cohort_cb);
 
