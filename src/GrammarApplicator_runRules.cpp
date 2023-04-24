@@ -315,7 +315,7 @@ bool GrammarApplicator::runSingleRule(SingleWindow& current, const Rule& rule, R
 	CohortSet* cohortset = &current.rule_to_cohorts[rule.number];
 
 	auto override_cohortset = [&]() {
-		if (!context_stack.empty()) {
+		if (in_nested) {
 			if (!current.nested_rule_to_cohorts) {
 				current.nested_rule_to_cohorts.reset(new CohortSet());
 			}
@@ -2414,6 +2414,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 				TRACE;
 				bool any_readings_changed = false;
 				readings_changed = false;
+				in_nested = true;
 				for (auto& sr : rule->sub_rules) {
 					Rule* cur_was = current_rule;
 					Rule* rule_was = rule;
@@ -2428,6 +2429,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 					current_rule = cur_was;
 					rule = rule_was;
 				}
+				in_nested = false;
 				readings_changed = any_readings_changed;
 				finish_reading_loop = false;
 			}
