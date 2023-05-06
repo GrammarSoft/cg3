@@ -1042,9 +1042,13 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 			cohort->type |= CT_REMOVED;
 			if (!cohort->prev->enclosed.empty()) {
 				cohort->prev->enclosed.back()->removed.push_back(cohort);
+				cohort->prev->enclosed.back()->ignored_cohorts.insert(cohort->prev->enclosed.back()->ignored_cohorts.end(), cohort->ignored_cohorts.begin(), cohort->ignored_cohorts.end());
+				cohort->ignored_cohorts.clear();
 			}
 			else {
 				cohort->prev->removed.push_back(cohort);
+				cohort->prev->ignored_cohorts.insert(cohort->prev->ignored_cohorts.end(), cohort->ignored_cohorts.begin(), cohort->ignored_cohorts.end());
+				cohort->ignored_cohorts.clear();
 			}
 			cohort->detach();
 			for (auto& cm : current.parent->cohort_map) {

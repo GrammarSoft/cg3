@@ -16,3 +16,9 @@
 	"." punct #6->6 REMCOHORT:8
 "<quickly>"
 	"quickly" adv #7->5 SETPARENT:10
+; "<x>"
+;	"x" x REMCOHORT:13
+"<y>"
+	"y" y #8->8 REMCOHORT:12
+"<z>"
+	"z" z #9->7 SETPARENT:14

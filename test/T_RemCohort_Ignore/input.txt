@@ -14,3 +14,9 @@
 	"." punct
 "<quickly>"
 	"quickly" adv
+"<x>"
+	"x" x
+"<y>"
+	"y" y
+"<z>"
+	"z" z

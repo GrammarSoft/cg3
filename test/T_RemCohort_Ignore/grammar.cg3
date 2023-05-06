@@ -8,3 +8,7 @@ SETPARENT (det) TO (1 (n)) ;
 REMCOHORT IGNORED (punct) IF (-1 (verb)) ;
 MERGECOHORTS ("<le'emor>" "$2$1"v SCONJ *) ("('mr)"r verb infc) WITH (-1 ("(l)"r prep)) ;
 SETPARENT (adv) TO (-1 (SCONJ)) ;
+
+REMCOHORT IGNORED (y) ;
+REMCOHORT (x) ;
+SETPARENT (z) TO (-1 (*)) ;
