@@ -1265,6 +1265,9 @@ void TextualParser::parseRule(UChar*& p, KEYWORDS key) {
 	if (key == K_UNMAP && !(rule->flags & (RF_SAFE | RF_UNSAFE))) {
 		rule->flags |= RF_SAFE;
 	}
+	if (key == K_SETPARENT && !(rule->flags & (RF_SAFE | RF_UNSAFE))) {
+		rule->flags |= (safe_setparent ? RF_SAFE : RF_UNSAFE);
+	}
 
 	if (rule->flags & RF_WITHCHILD) {
 		AST_OPEN(RuleWithChildTarget);
@@ -2477,6 +2480,7 @@ void TextualParser::parseFromUChar(UChar* input, const char* fname) {
 					std::pair<UStringView, bool*>(STR_SELF_NO_BARRIER, &self_no_barrier),
 					std::pair<UStringView, bool*>(STR_ORDERED, &result->ordered),
 					std::pair<UStringView, bool*>(STR_ADDCOHORT_ATTACH, &result->addcohort_attach),
+					std::pair<UStringView, bool*>(STR_SAFE_SETPARENT, &safe_setparent),
 				};
 
 				while (*p != ';') {

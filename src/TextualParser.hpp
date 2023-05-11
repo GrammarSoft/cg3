@@ -70,6 +70,7 @@ private:
 	bool in_section = false, in_before_sections = true, in_after_sections = false, in_null_section = false, in_nested_rule = false;
 	bool no_isets = false, no_itmpls = false, strict_wforms = false, strict_bforms = false, strict_second = false, strict_regex = false, strict_icase = false;
 	bool self_no_barrier = false;
+	bool safe_setparent = false;
 	bool only_sets = false;
 	Rule* nested_rule = nullptr;
 	const char* filename = nullptr;
