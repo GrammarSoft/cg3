@@ -1,7 +1,7 @@
 "<There>"
 	"there" <*> ADV @F-SUBJ @notp @nonep @negatep #1->1
 "<once>"
-	"once" ADV @ADVL @notp @nonep @negatep #2->2
+	"once" ADV @ADVL #2->3
 "<was>"
 	"be" <SVC/N> <SVC/A> V PAST SG1/3 VFIN IMP @FMV @notp @nonep @negatep #3->3
 "<a>"
@@ -20,4 +20,3 @@
 	"street" N NOM SG @P< #10->8
 "<$.>"
 	"$." vis #11->0
-
