@@ -423,7 +423,7 @@ bool GrammarApplicator::runSingleRule(SingleWindow& current, const Rule& rule, R
 		}
 
 		// If this is SETPARENT SAFE and there's already a parent, skip it.
-		if (type == K_SETPARENT && rule.flags & RF_SAFE && cohort->dep_parent != DEP_NO_PARENT) {
+		if (type == K_SETPARENT && (rule.flags & RF_SAFE) && cohort->dep_parent != DEP_NO_PARENT) {
 			continue;
 		}
 
@@ -2730,7 +2730,6 @@ label_unpackEnclosures:
 			Cohort* cc = current->cohorts[i];
 			cc->local_number = UI32(i); // Will also adjust newly restored cohorts
 			current->parent->cohort_map.insert(std::make_pair(cc->global_number, cc));
-			current->parent->dep_window.insert(std::make_pair(cc->global_number, cc));
 
 			if (!cc->ignored_cohorts.empty()) {
 				for (auto& c : cc->ignored_cohorts) {
