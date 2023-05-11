@@ -347,6 +347,7 @@ constexpr UStringView
 	STR_SELF_NO_BARRIER{ u"self-no-barrier" },
 	STR_ORDERED{ u"ordered" },
 	STR_ADDCOHORT_ATTACH{ u"addcohort-attach" },
+	STR_SAFE_SETPARENT{ u"safe-setparent" },
 	STR_DUMMY{ u"__CG3_DUMMY_STRINGBIT__" }
 	;
 

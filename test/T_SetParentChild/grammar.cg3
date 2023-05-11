@@ -11,6 +11,8 @@ SETPARENT (@>N) TO (1* (N)) ;
 SETPARENT (@P<) TO (-1* (PRP)) ;
 
 SETPARENT (@ADVL) (0 (PRP)) TO (-1* (ADV)) (0 (@ADVL)) ;
+# This one will only apply to things not matched by the previous one
+SETPARENT SAFE (@ADVL) TO (1 (*)) ;
 
 ADD (@notp) (*) (NOT p (*)) ;
 ADD (@nonep) (*) (NONE p (*)) ;
