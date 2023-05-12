@@ -426,6 +426,9 @@ bool GrammarApplicator::runSingleRule(SingleWindow& current, const Rule& rule, R
 		if (type == K_SETPARENT && (rule.flags & RF_SAFE) && cohort->dep_parent != DEP_NO_PARENT) {
 			continue;
 		}
+		if ((rule.flags & RF_NOPARENT) && cohort->dep_parent != DEP_NO_PARENT) {
+			continue;
+		}
 
 		// Check if on previous runs the rule did not match this cohort, and skip if that is the case.
 		// This cache is cleared if any rule causes any state change in the window.
@@ -512,6 +515,9 @@ bool GrammarApplicator::runSingleRule(SingleWindow& current, const Rule& rule, R
 			reading->matched_tests = false;
 
 			if (reading->mapped && (rule.type == K_MAP || rule.type == K_ADD || rule.type == K_REPLACE)) {
+				continue;
+			}
+			if (reading->mapped && (rule.flags & RF_NOMAPPED)) {
 				continue;
 			}
 			if (reading->noprint && !allow_magic_readings) {

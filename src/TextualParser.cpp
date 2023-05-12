@@ -1056,11 +1056,11 @@ flags_t TextualParser::parseRuleFlags(UChar*& p) {
 	bool setflag = true;
 	while (setflag) {
 		setflag = false;
-		for (uint32_t i = 0; i < FLAGS_COUNT; i++) {
+		for (size_t i = 0; i < FLAGS_COUNT; i++) {
 			UChar* op = p;
 			if (ux_simplecasecmp(p, g_flags[i])) {
 				p += g_flags[i].size();
-				rv.flags |= (1 << i);
+				rv.flags |= (1ull << i);
 				setflag = true;
 
 				if (i == FL_SUB) {
@@ -1085,7 +1085,7 @@ flags_t TextualParser::parseRuleFlags(UChar*& p) {
 				// Rule flags followed by letters or valid set characters should not be flags.
 				if (*p != '(' && *p != ';' && !ISSPACE(*p)) {
 				undo_flag:
-					rv.flags &= ~(1 << i);
+					rv.flags &= ~(1ull << i);
 					p = op;
 					setflag = false;
 					break;

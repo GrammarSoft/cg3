@@ -856,7 +856,8 @@
         <primary>UNSAFE</primary>
       </indexterm>
       <para>
-        Applicable for rules REMOVE and IFF and UNMAP.
+        Regarding mapping, flag is applicable for rules REMOVE and IFF and UNMAP.
+        Regarding dependency, flag is applicable for SETPARENT.
         Not compatible with option SAFE.
       </para>
       <para>
@@ -866,6 +867,9 @@
       <para>
         For UNMAP, marking it UNSAFE allows it to work on more than the last reading in the cohort.
       </para>
+      <para>
+        For SETPARENT, UNSAFE counters a global safe-setparent option.
+      </para>
     </section>
 
     <section id="rule-options-safe">
@@ -874,7 +878,8 @@
         <primary>SAFE</primary>
       </indexterm>
       <para>
-        Applicable for rules REMOVE and IFF and UNMAP.
+        Regarding mapping, flag is applicable for rules REMOVE and IFF and UNMAP.
+        Regarding dependency, flag is applicable for SETPARENT.
         Not compatible with option UNSAFE.
       </para>
       <para>
@@ -883,6 +888,9 @@
       </para>
       <para>
         For UNMAP, marking it SAFE only lets it act if the cohort has exactly one reading.
+      </para>
+      <para>
+        For SETPARENT, SAFE prevents running if the cohort already has a parent.
       </para>
     </section>
 
@@ -1114,6 +1122,33 @@
         If the rule does anything that changes the state of the window, REPEAT forces the rule to run through the
         window again after the current pass. Does not by itself cause a full section reiteration.
         Useful for making <link linkend="substitute">SUBSTITUTE</link> remove all matching tags instead of just one.
+      </para>
+    </section>
+
+    <section id="rule-options-nomapped">
+      <title>NOMAPPED</title>
+      <indexterm>
+        <primary>NOMAPPED</primary>
+      </indexterm>
+      <para>
+        Applicable for all rule types.
+      </para>
+      <para>
+        NOMAPPED prevents the rule from running on mapped readings.
+        A reading is considered mapped either via rule type MAP or from input.
+      </para>
+    </section>
+
+    <section id="rule-options-noparent">
+      <title>NOPARENT</title>
+      <indexterm>
+        <primary>NOPARENT</primary>
+      </indexterm>
+      <para>
+        Applicable for all rule types.
+      </para>
+      <para>
+        NOMAPPED prevents the rule from running on cohorts that have a dependency parent.
       </para>
     </section>
   </section>

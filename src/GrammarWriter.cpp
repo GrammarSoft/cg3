@@ -284,7 +284,7 @@ void GrammarWriter::printRule(std::ostream& to, const Rule& rule) {
 		if (i == FL_BEFORE || i == FL_AFTER) {
 			continue;
 		}
-		if (rule.flags & (1 << i)) {
+		if (rule.flags & (1ull << i)) {
 			if (i == FL_SUB) {
 				u_fprintf(to, "%S:%d ", g_flags[i].data(), rule.sub_reading);
 			}
