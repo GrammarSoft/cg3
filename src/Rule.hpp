@@ -65,6 +65,8 @@ enum RULE_FLAGS : uint64_t {
 	RF_AFTER        = (1 << 28),
 	RF_IGNORED      = (1 << 29),
 	RF_LOOKIGNORED  = (1 << 30),
+	RF_NOMAPPED     = (1ull << 31),
+	RF_NOPARENT     = (1ull << 32),
 };
 
 using rule_flags_t = std::underlying_type<RULE_FLAGS>::type;
@@ -103,7 +105,7 @@ public:
 	uint32_t childset1 = 0, childset2 = 0;
 	uint32_t line = 0, number = 0;
 	uint32_t varname = 0, varvalue = 0; // ToDo: varvalue is unused
-	uint32_t flags = 0;
+	uint64_t flags = 0;
 	int32_t section = 0;
 	int32_t sub_reading = 0;
 	KEYWORDS type = K_IGNORE;

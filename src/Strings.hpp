@@ -140,6 +140,8 @@ enum : uint32_t {
 	FL_AFTER,
 	FL_IGNORED,
 	FL_LOOKIGNORED,
+	FL_NOMAPPED,
+	FL_NOPARENT,
 	FLAGS_COUNT,
 };
 }
@@ -179,6 +181,8 @@ constexpr UStringView g_flags[FLAGS_COUNT] = {
 	u"AFTER",
 	u"IGNORED",
 	u"LOOKIGNORED",
+	u"NOMAPPED",
+	u"NOPARENT",
 };
 
 constexpr UStringView keywords[KEYWORD_COUNT] = {

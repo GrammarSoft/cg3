@@ -439,8 +439,12 @@ int BinaryGrammar::parse_grammar(std::istream& input) {
 			r->line = ntoh32(u32tmp);
 		}
 		if (fields & (1 << 3)) {
-			fread_throw(&u32tmp, sizeof(u32tmp), 1, input);
-			r->flags = ntoh32(u32tmp);
+			if (fields & (1 << 16)) {
+				r->flags = readSwapped<uint64_t>(input);
+			}
+			else {
+				r->flags = readSwapped<uint32_t>(input);
+			}
 		}
 		if (fields & (1 << 4)) {
 			fread_throw(&u32tmp, sizeof(u32tmp), 1, input);

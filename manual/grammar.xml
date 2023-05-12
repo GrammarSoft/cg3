@@ -25,6 +25,17 @@
       OPTIONS += no-inline-templates ;
     </screen>
 
+    <section id="grammar-options-safe-setparent">
+      <title>safe-setparent</title>
+      <indexterm>
+        <primary>safe-setparent</primary>
+      </indexterm>
+      <para>
+        Adds rule flag SAFE to all SETPARENT rules, meaning they won't run on cohorts that already have a parent.
+        Can be countered per-rule with flag UNSAFE.
+      </para>
+    </section>
+
     <section id="grammar-options-addcattach">
       <title>addcohort-attach</title>
       <indexterm>

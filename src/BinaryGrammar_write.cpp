@@ -352,7 +352,13 @@ int BinaryGrammar::writeBinaryGrammar(FILE* output) {
 		}
 		if (r->flags) {
 			fields |= (1 << 3);
-			writeSwapped(buffer, r->flags);
+			if (r->flags > std::numeric_limits<uint32_t>::max()) {
+				fields |= (1 << 16);
+				writeSwapped(buffer, r->flags);
+			}
+			else {
+				writeSwapped(buffer, UI32(r->flags));
+			}
 		}
 		if (!r->name.empty()) {
 			fields |= (1 << 4);
