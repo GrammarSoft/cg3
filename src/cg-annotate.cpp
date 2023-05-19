@@ -20,6 +20,7 @@
 #include "sorted_vector.hpp"
 #include "stdafx.hpp"
 #include "filesystem.hpp"
+#include <deque>
 namespace fs = ::std::filesystem;
 using namespace CG3;
 
@@ -114,12 +115,91 @@ int main(int argc, char* argv[]) {
 
 	// Extract each rule and context's start offset, per grammar
 	std::map<size_t, std::map<std::pair<size_t,size_t>, Profiler::Key>> offsets;
+	std::map<size_t, std::map<size_t, std::deque<std::string>>> tags;
+	std::map<size_t, size_t> lines_width;
 	auto todos_ast = {
 		std::tuple("<Rule ", ET_RULE),
 		std::tuple("<Context ", ET_CONTEXT),
 	};
 	for (auto& it : asts) {
 		auto& ast = it.second;
+		lines_width[it.first] = UI64(std::log10(std::count(ast.begin(), ast.end(), '\n')) + 1);
+
+		size_t last = 0;
+		while ((last = ast.find(" l=\"", last)) != std::string::npos) {
+			auto tagoff = ast.rfind("<", last) + 1;
+			auto tag = std::string_view(&ast[tagoff], last - tagoff);
+
+			auto b = ast.find(" b=\"", last) + 4;
+			b = std::stoul(ast.substr(b, ast.find("\"", b) - b));
+			html.clear();
+			html += "<span class=\"cg";
+			html += tag;
+			html += "\">";
+			tags[it.first][b].push_back(html);
+
+			auto e = ast.find(" e=\"", last) + 4;
+			e = std::stoul(ast.substr(e, ast.find("\"", e) - e));
+			html.clear();
+			html += "</span>";
+			tags[it.first][e].push_front(html);
+
+			if (tag == "Rule" || tag == "Context") {
+				auto u = UI32(ast.find(" u=\"", last) + 4);
+				u = std::stoul(ast.substr(u, ast.find("\"", u) - u));
+
+				Profiler::Key k{ ET_RULE, u };
+				if (tag == "Context") {
+					k.type = ET_CONTEXT;
+				}
+
+				auto eit = profiler.entries.find(k);
+				if (eit != profiler.entries.end()) {
+					auto& entry = eit->second;
+
+					html.clear();
+					html += "<a href=\"";
+					if (it.second.type == ET_RULE) {
+						html += "rs/";
+					}
+					else {
+						html += "cs/";
+					}
+					html += std::to_string(it.second.id);
+					html += ".html\"";
+					if (entry.type == ET_RULE || !rid.second) {
+						if (entry.num_match != 0) {
+							html += R"X( class="entry good"><span class="stats">M:)X";
+						}
+						else {
+							html += R"X( class="entry bad"><span class="stats">M:)X";
+						}
+						html += std::to_string(entry.num_match);
+						html += ", F:";
+						html += std::to_string(entry.num_fail);
+					}
+					else {
+						std::pair k{ rid.second, it.second.id };
+						auto rct = profiler.rule_contexts.find(k);
+						if (rct != profiler.rule_contexts.end() && rct->second) {
+							html += R"X( class="entry context good"><span class="stats">M:)X";
+							html += std::to_string(rct->second);
+						}
+						else {
+							html += R"X( class="entry context bad"><span class="stats">M:0)X";
+						}
+					}
+					html += "</span>";
+
+					html.clear();
+					html += "</a>";
+					tags[it.first][e].push_front(html);
+				}
+			}
+
+			++last;
+		}
+
 		for (auto todo : todos_ast) {
 			size_t last = 0;
 			while ((last = ast.find(std::get<0>(todo), last)) != std::string::npos) {
