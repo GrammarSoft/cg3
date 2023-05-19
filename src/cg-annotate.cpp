@@ -20,6 +20,7 @@
 #include "sorted_vector.hpp"
 #include "stdafx.hpp"
 #include "filesystem.hpp"
+#include <deque>
 namespace fs = ::std::filesystem;
 using namespace CG3;
 
@@ -113,30 +114,91 @@ int main(int argc, char* argv[]) {
 	}
 
 	// Extract each rule and context's start offset, per grammar
-	std::map<size_t, std::map<std::pair<size_t,size_t>, Profiler::Key>> offsets;
-	auto todos_ast = {
-		std::tuple("<Rule ", ET_RULE),
-		std::tuple("<Context ", ET_CONTEXT),
-	};
+	std::map<size_t, std::map<size_t, std::deque<std::string>>> gs_tags;
+	std::map<size_t, size_t> lines_width;
 	for (auto& it : asts) {
 		auto& ast = it.second;
-		for (auto todo : todos_ast) {
-			size_t last = 0;
-			while ((last = ast.find(std::get<0>(todo), last)) != std::string::npos) {
-				auto b = ast.find(" b=\"", last) + 4;
-				b = std::stoul(ast.substr(b, ast.find("\"", b) - b));
+		lines_width[it.first] = UI64(std::log10(std::count(ast.begin(), ast.end(), '\n')) + 1);
 
-				auto e = ast.find(" e=\"", last) + 4;
-				e = std::stoul(ast.substr(e, ast.find("\"", e) - e));
+		size_t last = 0;
+		uint32_t rid = 0;
+		while ((last = ast.find(" l=\"", last)) != std::string::npos) {
+			auto tagoff = ast.rfind("<", last) + 1;
+			auto tag = std::string_view(&ast[tagoff], last - tagoff);
 
+			auto b = ast.find(" b=\"", last) + 4;
+			b = std::stoul(ast.substr(b, ast.find("\"", b) - b));
+			html.clear();
+			html += "<span class=\"cg-elem cg";
+			html += tag;
+			html += "\">";
+			gs_tags[it.first][b].push_back(html);
+
+			auto e = ast.find(" e=\"", last) + 4;
+			e = std::stoul(ast.substr(e, ast.find("\"", e) - e));
+			html.clear();
+			html += "</span>";
+			gs_tags[it.first][e].push_front(html);
+
+			if (tag == "Rule" || tag == "Context") {
 				auto u = UI32(ast.find(" u=\"", last) + 4);
 				u = std::stoul(ast.substr(u, ast.find("\"", u) - u));
 
-				std::pair k{b, e};
-				offsets[it.first][k] = { std::get<1>(todo), u };
+				Profiler::Key k{ ET_RULE, u };
+				if (tag == "Context") {
+					k.type = ET_CONTEXT;
+				}
 
-				++last;
+				auto eit = profiler.entries.find(k);
+				if (eit != profiler.entries.end()) {
+					auto& entry = eit->second;
+
+					html.clear();
+					html += "<a href=\"";
+					if (entry.type == ET_RULE) {
+						html += "rs/";
+					}
+					else {
+						html += "cs/";
+					}
+					html += std::to_string(eit->first.id);
+					html += ".html\"";
+					if (entry.type == ET_RULE || !rid) {
+						if (entry.num_match != 0) {
+							html += R"X( class="entry good"><span class="stats">M:)X";
+						}
+						else {
+							html += R"X( class="entry bad"><span class="stats">M:)X";
+						}
+						html += std::to_string(entry.num_match);
+						html += ", F:";
+						html += std::to_string(entry.num_fail);
+					}
+					else {
+						std::pair k{ rid, eit->first.id };
+						auto rct = profiler.rule_contexts.find(k);
+						if (rct != profiler.rule_contexts.end() && rct->second) {
+							html += R"X( class="entry context good"><span class="stats">M:)X";
+							html += std::to_string(rct->second);
+						}
+						else {
+							html += R"X( class="entry context bad"><span class="stats">M:0)X";
+						}
+					}
+					html += "</span>";
+					gs_tags[it.first][b].push_back(html);
+
+					html.clear();
+					html += "</a>";
+					gs_tags[it.first][e].push_front(html);
+
+					if (entry.type == ET_RULE) {
+						rid = eit->first.id;
+					}
+				}
 			}
+
+			++last;
 		}
 	}
 
@@ -157,81 +219,36 @@ int main(int argc, char* argv[]) {
 		html.resize(sz);
 
 		auto gz = profiler.grammars[g];
-		buf.clear();
-		auto& offs = offsets[gz];
+		auto& tags = gs_tags[gz];
+		html.reserve(tags.rbegin()->first * 8);
 
-		sorted_vector<size_t, std::greater<>> close;
-		size_t e = 0;
-		std::pair<size_t, uint32_t> rid;
-		for (auto& it : offs) {
-			auto eit = profiler.entries.find(it.second);
-			if (eit == profiler.entries.end()) {
-				continue;
-			}
-			auto& entry = eit->second;
-
-			while (!close.empty() && close.back() <= it.first.first) {
-				if (rid.first == it.first.first) {
-					rid = {};
-				}
-				buf.clear();
-				auto tmp = grammar.tempSubStringBetween(SI32(e), SI32(close.back()));
-				tmp.toUTF8String(buf);
-				html += xml_encode(buf);
-				html += "</a>";
-				e = close.back();
-				close.pop_back();
-			}
-
+		size_t last = 0;
+		size_t ln = 1;
+		std::string lnbuf;
+		lnbuf.clear();
+		lnbuf.resize(64);
+		lnbuf.resize(sprintf(&lnbuf[0], "<span class=\"ln\">%06zu</span>", ln));
+		html += lnbuf;
+		for (auto& it : tags) {
 			buf.clear();
-			auto tmp = grammar.tempSubStringBetween(SI32(e), SI32(it.first.first));
+			auto tmp = grammar.tempSubStringBetween(SI32(last), SI32(it.first));
+			last = it.first;
 			tmp.toUTF8String(buf);
-			html += xml_encode(buf);
-			e = it.first.first;
-
-			html += "<a href=\"";
-			if (it.second.type == ET_RULE) {
-				html += "rs/";
-			}
-			else {
-				html += "cs/";
-			}
-			html += std::to_string(it.second.id);
-			html += ".html\"";
-			if (entry.type == ET_RULE || !rid.second) {
-				if (entry.num_match != 0) {
-					html += R"X( class="entry good"><span class="stats">M:)X";
-				}
-				else {
-					html += R"X( class="entry bad"><span class="stats">M:)X";
-				}
-				html += std::to_string(entry.num_match);
-				html += ", F:";
-				html += std::to_string(entry.num_fail);
-			}
-			else {
-				std::pair k{rid.second, it.second.id};
-				auto rct = profiler.rule_contexts.find(k);
-				if (rct != profiler.rule_contexts.end() && rct->second) {
-					html += R"X( class="entry context good"><span class="stats">M:)X";
-					html += std::to_string(rct->second);
-				}
-				else {
-					html += R"X( class="entry context bad"><span class="stats">M:0)X";
+			buf = xml_encode(buf);
+			for (auto& c : buf) {
+				html += c;
+				if (c == '\n') {
+					++ln;
+					lnbuf.clear();
+					lnbuf.resize(64);
+					lnbuf.resize(sprintf(&lnbuf[0], "<span class=\"ln\">%06zu</span>", ln));
+					html += lnbuf;
 				}
 			}
-			html += "</span>";
-
-			if (entry.type == ET_RULE) {
-				rid = std::pair(it.first.first, it.second.id);
+			for (auto& tag : it.second) {
+				html += tag;
 			}
-			close.push_back(it.first.second);
 		}
-
-		buf.clear();
-		auto tmp = grammar.tempSubStringBetween(SI32(e));
-		tmp.toUTF8String(buf);
-		html += xml_encode(buf);
 
 		html += R"X(</div>
 </body>
@@ -332,8 +349,32 @@ html, body {
 	font-family: sans-serif;
 }
 
+.p-2 {
+	padding: 1ex;
+}
+
 a {
 	text-decoration: none;
+}
+
+.cg-elem {
+	position: relative;
+}
+
+.cgDelimiters, .cgList, .cgSet, .cgTemplate {
+	color: #0000ff;
+}
+
+.cgTag {
+	color: #008000;
+}
+
+.cgSetName, .cgTemplateName {
+	color: #800080;
+}
+
+.cgSetOp {
+	color: #ff00ff;
 }
 
 .entry {
@@ -353,6 +394,7 @@ a {
 .pre-wrap {
 	white-space: pre-wrap;
 	font-family: monospace;
+	padding-left: 9ex;
 }
 
 .bad {
@@ -368,8 +410,13 @@ a {
 	background-color: #eee;
 }
 
-.p-2 {
-	padding: 1ex;
+.ln {
+	white-space: nowrap;
+	margin-right: 1ex;
+	margin-left: -9ex;
+	background-color: #ddd;
+	user-select: none;
+	color: #000;
 }
 )X");
 }
