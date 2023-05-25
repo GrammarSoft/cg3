@@ -126,6 +126,7 @@ int main(int argc, char* argv[]) {
 		lines_width[it.first] = UI64(std::log10(std::count(ast.begin(), ast.end(), '\n')) + 1);
 
 		size_t last = 0;
+		uint32_t rid = 0;
 		while ((last = ast.find(" l=\"", last)) != std::string::npos) {
 			auto tagoff = ast.rfind("<", last) + 1;
 			auto tag = std::string_view(&ast[tagoff], last - tagoff);
@@ -159,15 +160,15 @@ int main(int argc, char* argv[]) {
 
 					html.clear();
 					html += "<a href=\"";
-					if (it.second.type == ET_RULE) {
+					if (entry.type == ET_RULE) {
 						html += "rs/";
 					}
 					else {
 						html += "cs/";
 					}
-					html += std::to_string(it.second.id);
+					html += std::to_string(eit->first.id);
 					html += ".html\"";
-					if (entry.type == ET_RULE || !rid.second) {
+					if (entry.type == ET_RULE || !rid) {
 						if (entry.num_match != 0) {
 							html += R"X( class="entry good"><span class="stats">M:)X";
 						}
@@ -179,7 +180,7 @@ int main(int argc, char* argv[]) {
 						html += std::to_string(entry.num_fail);
 					}
 					else {
-						std::pair k{ rid.second, it.second.id };
+						std::pair k{ rid, eit->first.id };
 						auto rct = profiler.rule_contexts.find(k);
 						if (rct != profiler.rule_contexts.end() && rct->second) {
 							html += R"X( class="entry context good"><span class="stats">M:)X";
@@ -190,10 +191,15 @@ int main(int argc, char* argv[]) {
 						}
 					}
 					html += "</span>";
+					tags[it.first][b].push_back(html);
 
 					html.clear();
 					html += "</a>";
 					tags[it.first][e].push_front(html);
+
+					if (entry.type == ET_RULE) {
+						rid = eit->first.id;
+					}
 				}
 			}
 
