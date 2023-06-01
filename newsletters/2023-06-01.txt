@@ -1,0 +1,55 @@
+A new release of CG-3 has been tagged v1.4.5 (binary rev 13897).
+
+Haven't made done one of these rundowns since last NoDaLiDa workshop in 2019, and didn't quite make it in time for last week's NoDaLiDa.
+
+Authoritative repository is now on Github: https://github.com/GrammarSoft/cg3
+
+Notable new features:
+- Nested rules keyword With implemented by Daniel Glen Swanson. See https://visl.sdu.dk/cg3/chunked/rules.html#with
+- Implemented code coverage / profiling to find annotated examples. See https://visl.sdu.dk/cg3/chunked/profiling.html
+
+New features:
+- Added rule flags NoMapped and NoParent which will cause the rule to skip mapped readings or cohorts with a dependency parent.
+- Cmdline flag --dep-absolute will cause dependency to be written with globally unique cohort IDs
+- Added rule flags Ignored that will make Remove hide away readings for the current grammar. See https://visl.sdu.dk/cg3/chunked/rules.html#rule-options-ignored
+- RemCohort can take Ignored to hide away whole cohorts. And Ignored WithChild to hide away whole dependency sub-trees.
+- Added rule flag LookIgnored and context modifier 'I' to allow rules and contexts to look at ignored readings.
+- Added rule type Restore to revive previously deleted/ignored readings. See https://visl.sdu.dk/cg3/chunked/rules.html#restore
+- Section headers can now have rule flags, which will then apply to all rules in that section.
+- Cmdline flag -B will inhibit and trim whitespace between/after cohorts.
+- Cmdline flag -T will delimit based on a regex of non-CG data. Defaults to /(^|\n)<s/. See also https://visl.sdu.dk/cg3/chunked/cgkeywords.html#keyword-text-delimiters
+- Environment variables CG3_DEFAULT and CG3_OVERRIDE can set and override CG-3 cmdline parameters. Ditto CG3_CONV_DEFAULT and CG3_CONV_OVERRIDE for cg-conv.
+- Added context modifier 't' to look at non-target readings, and 'T' to only look at target readings. See https://visl.sdu.dk/cg3/chunked/contexts.html#test-active
+- Added global option addcohort-attach to make all AddCohort rules automatically attach to the nearest neighbour. See https://visl.sdu.dk/cg3/chunked/grammar.html#grammar-options
+- cg-sort can now sort by weight (-w), reverse (-r), and keep only the first reading (-1).
+- cg-conv can now convert back to FST format with -F.
+- List += can append tags to an existing set.
+- New directive Undef-Sets to delete sets and allow their redefinition. Mostly used when including a common grammar that you want to make a few exceptions to.
+- Implemented window-local stream variables. See https://visl.sdu.dk/cg3/chunked/tags.html#local-variables
+- Cmdline flag --nrules and --nrules-v to filter which named rules to include in the parse.
+- Tag type line match to match the literal whole reading line. See https://visl.sdu.dk/cg3/chunked/tags.html#line-match
+
+Changes:
+- Jump targets can now be constructed from unification and varstrings.
+- Relation queries can now be constructed from varstrings.
+- Relations now exist as tags during the run so they can be captured with regex.
+- Relation queries themselves can also be captured with regex.
+- Binary grammars should now be reproducible.
+- Baseforms may now be empty strings.
+- SetVariable/RemVariable now allow varstrings for variable names and values.
+- Stream variables can now have their values tested by equality and regex. See https://visl.sdu.dk/cg3/chunked/tags.html#global-variables
+- Lots of updates and new features to the Emacs mode by Kevin Brubeck Unhammer.
+- On Posix platforms, Include paths are now shell-expanded so tilde and environment variables can be used.
+- Codebase now requires C++17
+
+Fixed Bugs:
+- Shorthand @< and @> will now fail if there is no previous/next window to look at.
+
+Main site is https://visl.sdu.dk/cg3.html
+Google Group is https://groups.google.com/group/constraint-grammar
+Source is at https://github.com/GrammarSoft/cg3
+OS X binaries are at https://apertium.projectjj.com/osx/
+RHEL/Fedora/CentOS/OpenSUSE packages are at https://apertium.projectjj.com/rpm/howto.txt
+Debian/Ubuntu packages are at https://apertium.projectjj.com/apt/howto.txt
+
+-- Tino Didriksen

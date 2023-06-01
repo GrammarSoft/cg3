@@ -53,6 +53,7 @@
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="sets.xml" />
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="tags.xml" />
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="subreadings.xml" />
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="profiling.xml" />
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="binarygrammar.xml" />
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="externals.xml" />
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="streamcmds.xml" />

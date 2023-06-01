@@ -34,6 +34,8 @@ Options:
  -s, --sections             number or ranges of sections to run; defaults to all sections
      --rules                number or ranges of rules to run; defaults to all rules
      --rule                 a name or number of a single rule to run
+     --nrules               a regex for which rule names to parse/run; defaults to all rules
+     --nrules-v             a regex for which rule names not to parse/run
  -d, --debug                enables debug output (very noisy)
  -v, --verbose              increases verbosity
      --quiet                squelches warnings (same as -v 0)
@@ -54,9 +56,7 @@ Options:
      --dry-run              make no actual changes to the input
      --single-run           runs each section only once; same as --max-runs 1
      --max-runs             runs each section max N times; defaults to unlimited (0)
- -S, --statistics           gathers profiling statistics while applying grammar
- -Z, --optimize-unsafe      destructively optimize the profiled grammar to be faster
- -z, --optimize-safe        conservatively optimize the profiled grammar to be faster
+     --profile              gathers profiling statistics and code coverage into a SQLite database
  -p, --prefix               sets the mapping prefix; defaults to @
      --unicode-tags         outputs Unicode code points for things like -&gt;
      --unique-tags          outputs unique tags only once per reading
@@ -112,6 +112,7 @@ Options:
      --add-tags      adds minimal analysis to readings (implies -x)
  -C, --out-cg        sets output format to CG (default)
  -A, --out-apertium  sets output format to Apertium
+ -F, --out-fst       sets output format to HFST/XFST
  -M, --out-matxin    sets output format to Matxin
  -N, --out-niceline  sets output format to Niceline CG
  -X, --out-plain     sets output format to plain text
@@ -121,6 +122,8 @@ Options:
  -r, --rtl           sets sub-reading direction to RTL (default)
  -l, --ltr           sets sub-reading direction to LTR
  -o, --ordered       tag order matters mode
+ -D, --parse-dep     parse dependency (defaults to treating as normal tags)
+     --unicode-tags  outputs Unicode code points for things like -&gt;
      --deleted       read deleted readings as such, instead of as text
  -B, --no-break      inhibits any extra whitespace in output
     </screen>
@@ -147,17 +150,24 @@ USAGE: cg-comp grammar_file output_file
       Made for the Apertium toolchain.
     </para>
     <screen>
-USAGE: cg-proc [-t] [-s] [-d] grammar_file [input_file [output_file]]
+USAGE: cg-proc [-t] [-s] [-d] [-g] [-r rule] grammar_file [input_file [output_file]]
 
 Options:
- -d, --disambiguation:    morphological disambiguation
- -s, --sections=NUM:      specify number of sections to process
- -f, --stream-format=NUM: set the format of the I/O stream to NUM,
-                            where `0' is VISL format and `1' is
-                            Apertium format (default: 1)
- -t, --trace:             print debug output on stderr
- -v, --version:           version
- -h, --help:              show this help
+        -d:      morphological disambiguation (default behaviour)
+        -s:      specify number of sections to process
+        -f:      set the format of the I/O stream to NUM,
+                   where `0' is VISL format, `1' is
+                   Apertium format and `2' is Matxin (default: 1)
+        -r:      run only the named rule
+        -t:      print debug output on stderr
+        -w:      enforce surface case on lemma/baseform
+                   (to work with -w option of lt-proc)
+        -n:      do not print out the word form of each cohort
+        -g:      do not surround lexical units in ^$
+        -1:      only output the first analysis if ambiguity remains
+        -z:      flush output on the null character
+        -v:      version
+        -h:      show this help
     </screen>
   </section>
 

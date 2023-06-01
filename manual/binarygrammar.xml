@@ -68,10 +68,10 @@
     </section>
 
     <section id="binarystatistics">
-      <title>--grammar-info, --grammar-out, --statistics</title>
+      <title>--grammar-info, --grammar-out, --profile</title>
       <para>
         Since binary grammars cannot be written back out in textual form, the command line options
-        --grammar-info, --grammar-out, and --statistics will not work in binary mode.
+        --grammar-info, --grammar-out, and --profile will not work in binary mode.
       </para>
     </section>
   </section>
