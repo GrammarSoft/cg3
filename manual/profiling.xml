@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE chapter SYSTEM "docbook-dtd-45/docbookx.dtd">
+
+<chapter id="profiling">
+  <title>Profiling / Code Coverage</title>
+
+  <section id="prof-what-why">
+    <title>What and why</title>
+    <para>
+      Grammars tend to accumulate rules and conditions over time, as exceptions and corner cases are discovered. But these are very rarely removed again, since they may still be useful but nobody knows if they really are. These tools aim to solve that problem, by letting you test a grammar against a large corpus and see exactly what rules and contexts are used, how often they are used (or not), and examples of contexts in which they are used.
+    </para>
+  </section>
+
+  <section id="prof-gather">
+    <title>Gathering profiling data</title>
+    <para>
+      When running a corpus through a grammar, the extra cmdline flag <code>--profile data.sqlite</code> will gather code coverage and data for hits and misses for every rule and condition into an SQLite 3 database. Each run must use its own database, but they can subsequently be merged with <code>cg-merge-annotations output.sqlite input-one.sqlite input-two.sqlite input-three.sqlite ...</code>.
+    </para>
+  </section>
+
+  <section id="prof-annotate">
+    <title>Annotating</title>
+    <para>
+      Use <code>cg-annotate data.sqlite /path/to/output</code> to render the gathered data as HTML. This will create a <code>/path/to/output/index.html</code> file that you can open in a browser, alongside files with hit examples for each rule and context.
+    </para>
+    <para>
+      In case of included grammars, each grammar is rendered separately. And in each rendering, the rules and conditions that matched are clickable to go to a page where an example context is shown. The example has <code># RULE TARGET BEGIN</code> and <code># RULE TARGET END</code> to mark exactly what cohort triggered the rule/condition.
+    </para>
+  </section>
+</chapter>
