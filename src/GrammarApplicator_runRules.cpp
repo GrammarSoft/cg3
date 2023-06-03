@@ -910,7 +910,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 			}
 		};
 
-		auto add_cohort = [&](Cohort* cohort) {
+		auto add_cohort = [&](Cohort* cohort, int& spacesInAddedWf) {
 			Cohort* cCohort = alloc_cohort(&current);
 			cCohort->global_number = gWindow->cohort_counter++;
 
@@ -920,6 +920,10 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 			getTagList(*rule->maplist, theTags);
 
 			for (auto tter : *theTags) {
+				if(tter->type & T_WORDFORM) {
+					spacesInAddedWf = std::count_if(tter->tag.begin(), tter->tag.end(),
+								       [](unsigned char c){ return c == ' '; });
+                                }
 				VARSTRINGIFY(tter);
 				if (tter->type & T_WORDFORM) {
 					cCohort->wordform = tter;
@@ -1382,7 +1386,8 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 				index_ruleCohort_no.clear();
 				TRACE;
 
-				auto cCohort = add_cohort(get_apply_to().cohort);
+				int spacesInAddedWf = 0; // not used here
+				auto cCohort = add_cohort(get_apply_to().cohort, spacesInAddedWf);
 
 				// If the new cohort is now the last cohort, add <<< to it and remove <<< from previous last cohort
 				if (current.cohorts.back() == cCohort) {
@@ -2045,12 +2050,19 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 					}
 				}
 
-				context_stack.back().target.cohort = add_cohort(merge_at);
+				int spacesInAddedWf = 0;
+				context_stack.back().target.cohort = add_cohort(merge_at, spacesInAddedWf);
 
 				for (auto c : withs) {
 					if (!c->ignored_cohorts.empty()) {
 						get_apply_to().cohort->ignored_cohorts.insert(get_apply_to().cohort->ignored_cohorts.end(), c->ignored_cohorts.begin(), c->ignored_cohorts.end());
 						c->ignored_cohorts.clear();
+					}
+					size_t foundSpace = c->text.find_first_of(' ');
+					while(spacesInAddedWf && foundSpace != std::string::npos) {
+						c->text.erase(foundSpace, 1);
+						foundSpace = c->text.find_first_of(' ');
+						spacesInAddedWf--;
 					}
 					rem_cohort(c);
 				}

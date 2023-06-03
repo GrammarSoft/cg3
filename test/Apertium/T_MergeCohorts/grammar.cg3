@@ -1,0 +1,14 @@
+DELIMITERS = "." ;
+
+LIST wf = "<(\\p{Lu}\\p{L}+)>"r ;
+LIST bf = "(\\p{Lu}\\p{L}+)"r ;
+LIST ln = (np cog) ;
+LIST mn = (np ant) (np cog) ;
+
+AFTER-SECTIONS                  # only run once
+
+MERGECOHORTS ("<$1 $3>"v "$2 $4"v cgguess *)
+                     wf + bf + mn
+          WITH
+                  (1 wf + bf + ln)
+;
