@@ -643,7 +643,7 @@
       SETPARENT (det def) TO (1* (n)) ;
     </screen>
     <para>
-      Additionally, WITH creates magic sets _C1_ through _C9_ referring to the cohorts matched by the outer contextual tests. If _MARK_ is set, it will also be accessible to the inner rules. These sets are also accessible with the jump contextual positions jC1 through jC9 and jM.
+      Additionally, WITH creates magic sets _C1_ through _C9_ referring to the cohorts matched by the outer contextual tests. If _MARK_ is set, it will also be accessible to the inner rules. These sets are also accessible with the jump contextual positions jC1 through jC9 and jM. When using linked tests, the values of these magic sets can be controled with <link linkend="test-mark-with">the w contextual specifier</link>.
     </para>
     <screen>
       # the following input
