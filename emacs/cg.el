@@ -1174,7 +1174,10 @@ buffer to cg-output-buffer on check."
   (when string
     (process-send-string proc string))
   (process-send-string proc "\n")
-  (process-send-eof proc))
+  (process-send-eof proc)
+  ;; two eof's needed for some pre-pipes, not sure why:
+  (when (process-live-p proc)
+    (process-send-eof proc)))
 
 (defun cg-check ()
   "Run vislcg3 --trace on the buffer with your example inputs.
