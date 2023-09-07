@@ -910,7 +910,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 			}
 		};
 
-		auto add_cohort = [&](Cohort* cohort, int& spacesInAddedWf) {
+		auto add_cohort = [&](Cohort* cohort, size_t& spacesInAddedWf) {
 			Cohort* cCohort = alloc_cohort(&current);
 			cCohort->global_number = gWindow->cohort_counter++;
 
@@ -921,9 +921,8 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 
 			for (auto tter : *theTags) {
 				if(tter->type & T_WORDFORM) {
-					spacesInAddedWf = std::count_if(tter->tag.begin(), tter->tag.end(),
-								       [](unsigned char c){ return c == ' '; });
-                                }
+					spacesInAddedWf = std::count_if(tter->tag.begin(), tter->tag.end(), [](UChar c){ return c == ' '; });
+				}
 				VARSTRINGIFY(tter);
 				if (tter->type & T_WORDFORM) {
 					cCohort->wordform = tter;
@@ -1386,7 +1385,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 				index_ruleCohort_no.clear();
 				TRACE;
 
-				int spacesInAddedWf = 0; // not used here
+				size_t spacesInAddedWf = 0; // not used here
 				auto cCohort = add_cohort(get_apply_to().cohort, spacesInAddedWf);
 
 				// If the new cohort is now the last cohort, add <<< to it and remove <<< from previous last cohort
@@ -2050,7 +2049,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 					}
 				}
 
-				int spacesInAddedWf = 0;
+				size_t spacesInAddedWf = 0;
 				context_stack.back().target.cohort = add_cohort(merge_at, spacesInAddedWf);
 
 				for (auto c : withs) {
