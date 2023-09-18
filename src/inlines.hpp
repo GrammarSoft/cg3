@@ -57,6 +57,11 @@ constexpr inline uint64_t UI64(T t) {
 }
 
 template<typename T>
+constexpr inline double DBL(T t) {
+	return static_cast<double>(t);
+}
+
+template<typename T>
 constexpr inline size_t UIZ(T t) {
 	return static_cast<size_t>(t);
 }
@@ -68,8 +73,8 @@ constexpr inline void* VOIDP(T t) {
 
 namespace CG3 {
 
-constexpr double NUMERIC_MIN = static_cast<double>(-(1ll << 48ll));
-constexpr double NUMERIC_MAX = static_cast<double>((1ll << 48ll) - 1);
+constexpr double NUMERIC_MIN = DBL(-(1ll << 48ll));
+constexpr double NUMERIC_MAX = DBL((1ll << 48ll) - 1);
 constexpr uint32_t CG3_HASH_SEED = 705577479u;
 
 /*
@@ -594,7 +599,7 @@ inline void writeSwapped(std::ostream& stream, const T& value) {
 template<>
 inline void writeSwapped(std::ostream& stream, const double& value) {
 	int exp = 0;
-	auto mant64 = UI64(SI64(std::numeric_limits<int64_t>::max() * frexp(value, &exp)));
+	auto mant64 = UI64(SI64(DBL(std::numeric_limits<int64_t>::max()) * frexp(value, &exp)));
 	auto exp32 = UI32(exp);
 	writeSwapped(stream, mant64);
 	writeSwapped(stream, exp32);
@@ -638,7 +643,7 @@ inline double readSwapped(std::istream& stream) {
 	auto mant64 = readSwapped<uint64_t>(stream);
 	auto exp = static_cast<int>(readSwapped<int32_t>(stream));
 
-	auto value = static_cast<double>(SI64(mant64)) / std::numeric_limits<int64_t>::max();
+	auto value = DBL(SI64(mant64)) / DBL(std::numeric_limits<int64_t>::max());
 
 	return ldexp(value, exp);
 }
