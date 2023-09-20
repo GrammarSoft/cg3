@@ -963,6 +963,7 @@ you want to keep analyses hidden most of the time.")
   (setq imenu-generic-expression
         '((nil "^#*\\s *\\(SECTION\\|CONSTRAINTS\\).*" 0)
           (nil "^#*\\s *DELIMITERS.*" 0)
+          (nil "^#*\\s *MAPPINGS.*" 0)
           (nil "^#*\\s *\\(BEFORE\\|AFTER\\)-SECTIONS.*" 0))))
 
 
