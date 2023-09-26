@@ -66,6 +66,7 @@ set(LIBCG3_HEADERS
 	GrammarApplicator.hpp
 	GrammarWriter.hpp
 	Relabeller.hpp
+	MathParser.hpp
 	MweSplitApplicator.hpp
 	IGrammarParser.hpp
 	Profiler.hpp

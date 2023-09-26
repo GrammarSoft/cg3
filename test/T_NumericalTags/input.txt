@@ -12,11 +12,13 @@
 	"word" <VALUE:x10>
 "<max>"
 	"max" <X=1000>
+	"max" <X=950>
 	"max" <X=-1000>
 	"max" <X:0>
 	"max" <Waffles>
 "<min>"
 	"min" <N=1000>
 	"min" <N=-1000>
+	"min" <N=-950>
 	"min" <N:0>
 	"min" <Waffles>
