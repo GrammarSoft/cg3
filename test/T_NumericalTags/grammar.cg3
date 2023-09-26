@@ -12,6 +12,9 @@ ADD (@zero) (<VALUE=0>) ;
 ADD (@max) (<VALUE=MAX>) ;
 ADD (@min) (<VALUE=MIN>) ;
 
+ADD (@gt-max-80) (<X>MAX-80>) ;
+ADD (@lt-min+80) (<N<MIN+80>) ;
+
 SECTION
 
 REMOVE (<X=MIN>) ;

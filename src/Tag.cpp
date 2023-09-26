@@ -144,15 +144,29 @@ void Tag::parseNumeric() {
 	}
 	UChar tkey[256];
 	UChar top[256];
-	UChar txval[256];
-	UChar spn[] = { '-', '.', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 0 };
 	tkey[0] = 0;
 	top[0] = 0;
-	txval[0] = 0;
-	if (u_sscanf(tag.data(), "%*[<]%[^<>=:!]%[<>=:!]%[-.MAXIN0-9]%*[>]", &tkey, &top, &txval) == 3 && top[0] && txval[0]) {
+	if (u_sscanf(tag.data(), "%*[<]%[^<>=:!]%[<>=:!]", &tkey, &top) == 2 && top[0]) {
+		auto tkz = u_strlen(tkey);
+		auto toz = u_strlen(top);
+		if (tkz + toz + 1 >= tag.size()) {
+			return;
+		}
+
+		UChar txval[256];
+		std::copy(tag.begin() + tkz + toz + 1, tag.end() - 1, txval);
+		txval[tag.size() - tkz - toz - 2] = 0;
+		if (txval[0] == 0) {
+			return;
+		}
+
 		double tval = 0;
-		int32_t r = u_strspn(txval, spn);
-		if (txval[0] == 'M' && txval[1] == 'A' && txval[2] == 'X' && txval[3] == 0) {
+		auto r = u_strspn(txval, u"-.0123456789");
+		if (txval[r] && (UStringView(txval).find_first_of(u"-+*/^%()=") != UStringView::npos)) {
+			comparison_offset = u_strlen(tkey) + u_strlen(top) + 1;
+			type |= T_NUMERIC_MATH;
+		}
+		else if (txval[0] == 'M' && txval[1] == 'A' && txval[2] == 'X' && txval[3] == 0) {
 			tval = NUMERIC_MAX;
 		}
 		else if (txval[0] == 'M' && txval[1] == 'I' && txval[2] == 'N' && txval[3] == 0) {

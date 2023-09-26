@@ -25,6 +25,7 @@
 #include "SingleWindow.hpp"
 #include "Reading.hpp"
 #include "ContextualTest.hpp"
+#include "MathParser.hpp"
 
 namespace CG3 {
 
@@ -343,14 +344,22 @@ uint32_t GrammarApplicator::doesTagMatchReading(const Reading& reading, const Ta
 	else if (tag.type & T_NUMERICAL) {
 		for (const auto& mter : reading.tags_numerical) {
 			const Tag& itag = *(mter.second);
-			double compval = tag.comparison_val;
-			if (compval <= NUMERIC_MIN) {
-				compval = reading.parent->getMin(tag.comparison_hash);
-			}
-			else if (compval >= NUMERIC_MAX) {
-				compval = reading.parent->getMax(tag.comparison_hash);
-			}
 			if (tag.comparison_hash == itag.comparison_hash) {
+				double compval = tag.comparison_val;
+				if ((tag.type & T_NUMERIC_MATH) && tag.comparison_offset) {
+					MathParser mp(reading.parent->getMin(tag.comparison_hash), reading.parent->getMax(tag.comparison_hash));
+					UStringView exp(tag.tag);
+					exp.remove_prefix(tag.comparison_offset);
+					exp.remove_suffix(1);
+					compval = mp.eval(exp);
+				}
+				else if (compval <= NUMERIC_MIN) {
+					compval = reading.parent->getMin(tag.comparison_hash);
+				}
+				else if (compval >= NUMERIC_MAX) {
+					compval = reading.parent->getMax(tag.comparison_hash);
+				}
+
 				if (tag.comparison_op == OP_EQUALS && itag.comparison_op == OP_EQUALS && compval == itag.comparison_val) {
 					match = itag.hash;
 				}

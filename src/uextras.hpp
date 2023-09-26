@@ -166,7 +166,7 @@ inline bool ux_simplecasecmp(const UChar* a, const UChar* b, const size_t n) {
 
 	// If there is a combining character after the last plain letter, it's not a match
 	// But since that's a whole function call, short circuit for most likely suffixes
-	return a[n] == 0 || ISSPACE(a[n]) || u_getCombiningClass(a[n]) == 0;
+	return a[n] == 0 || ISSPACE(a[n]) || ISDELIM(a[n]) || u_getCombiningClass(a[n]) == 0;
 }
 
 inline bool ux_simplecasecmp(const UChar* a, const UString& b) {
@@ -175,6 +175,10 @@ inline bool ux_simplecasecmp(const UChar* a, const UString& b) {
 
 inline bool ux_simplecasecmp(const UChar* a, const UStringView& b) {
 	return ux_simplecasecmp(a, b.data(), b.size());
+}
+
+inline bool ux_simplecasecmp(const UStringView& a, const UStringView& b) {
+	return ux_simplecasecmp(a.data(), b.data(), b.size());
 }
 
 inline bool ux_strCaseCompare(const UString& a, const UString& b) {

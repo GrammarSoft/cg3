@@ -71,6 +71,7 @@ enum : uint32_t {
 	T_ENCL             = (1 << 25),
 	T_RELATION         = (1 << 26),
 	T_CONTEXT          = (1 << 27),
+	T_NUMERIC_MATH     = (1 << 28),
 
 	T_REGEXP_LINE      = (1u << 31), // ToDo: Remove for real ordered mode
 
@@ -90,6 +91,7 @@ public:
 		uint32_t dep_parent = 0;
 		uint32_t variable_hash;
 		uint32_t context_ref_pos;
+		uint32_t comparison_offset;
 	};
 	uint32_t hash = 0;
 	uint32_t plain_hash = 0;
