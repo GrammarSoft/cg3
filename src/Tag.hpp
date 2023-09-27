@@ -113,7 +113,7 @@ public:
 	void markUsed();
 	void allocateVsSets();
 	void allocateVsNames();
-	void parseNumeric();
+	void parseNumeric(bool trusted = false);
 };
 
 struct compare_Tag {

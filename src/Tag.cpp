@@ -21,6 +21,7 @@
 #include "Set.hpp"
 #include "Grammar.hpp"
 #include "Strings.hpp"
+#include "MathParser.hpp"
 
 namespace CG3 {
 
@@ -106,7 +107,7 @@ void Tag::parseTagRaw(const UChar* to, Grammar* grammar) {
 	}
 
 	if (tag[0] == '<' && tag[length - 1] == '>') {
-		parseNumeric();
+		parseNumeric(false);
 	}
 	if (tag[0] == '#') {
 		if (u_sscanf(tag.data(), "#%i->%i", &dep_self, &dep_parent) == 2 && dep_self != 0) {
@@ -138,7 +139,7 @@ void Tag::parseTagRaw(const UChar* to, Grammar* grammar) {
 	}
 }
 
-void Tag::parseNumeric() {
+void Tag::parseNumeric(bool trusted) {
 	if (tag.size() >= 256) {
 		return;
 	}
@@ -149,7 +150,7 @@ void Tag::parseNumeric() {
 	if (u_sscanf(tag.data(), "%*[<]%[^<>=:!]%[<>=:!]", &tkey, &top) == 2 && top[0]) {
 		auto tkz = u_strlen(tkey);
 		auto toz = u_strlen(top);
-		if (tkz + toz + 1 >= tag.size()) {
+		if (UIZ(tkz + toz + 1) >= tag.size()) {
 			return;
 		}
 
@@ -162,8 +163,19 @@ void Tag::parseNumeric() {
 
 		double tval = 0;
 		auto r = u_strspn(txval, u"-.0123456789");
-		if (txval[r] && (UStringView(txval).find_first_of(u"-+*/^%()=") != UStringView::npos)) {
+		if (trusted && txval[r] && (UStringView(txval).find_first_of(u"-+*/^%()=") != UStringView::npos) && (UStringView(txval).find_first_of(u"\"\\<>[]{}!?&$¤#£@~`´';:,|_") == UStringView::npos)) {
 			comparison_offset = u_strlen(tkey) + u_strlen(top) + 1;
+			try {
+				MathParser mp(NUMERIC_MIN, NUMERIC_MAX);
+				UStringView exp(tag);
+				exp.remove_prefix(comparison_offset);
+				exp.remove_suffix(1);
+				mp.eval(exp);
+			}
+			catch (...) {
+				comparison_offset = 0;
+				return;
+			}
 			type |= T_NUMERIC_MATH;
 		}
 		else if (txval[0] == 'M' && txval[1] == 'A' && txval[2] == 'X' && txval[3] == 0) {

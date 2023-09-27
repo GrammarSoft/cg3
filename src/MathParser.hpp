@@ -55,7 +55,7 @@ public:
 	double eval(UStringView exp);
 };
 
-double MathParser::eval(UStringView exp) {
+inline double MathParser::eval(UStringView exp) {
 	double result = 0;
 	exp_ptr = exp;
 	get_token();
@@ -69,7 +69,7 @@ double MathParser::eval(UStringView exp) {
 	return result;
 }
 
-void MathParser::eval_assign(double& result) {
+inline void MathParser::eval_assign(double& result) {
 	UStringView temp_token;
 	if (tok_type == VARIABLE) {
 		UStringView t_ptr = exp_ptr;
@@ -91,7 +91,7 @@ void MathParser::eval_assign(double& result) {
 	eval_add_sub(result);
 }
 
-void MathParser::eval_add_sub(double& result) {
+inline void MathParser::eval_add_sub(double& result) {
 	UChar op = 0;
 	double temp = 0;
 	eval_mul_div(result);
@@ -109,7 +109,7 @@ void MathParser::eval_add_sub(double& result) {
 	}
 }
 
-void MathParser::eval_mul_div(double& result) {
+inline void MathParser::eval_mul_div(double& result) {
 	UChar op = 0;
 	double temp = 0;
 	eval_exp(result);
@@ -127,7 +127,7 @@ void MathParser::eval_mul_div(double& result) {
 	}
 }
 
-void MathParser::eval_exp(double& result) {
+inline void MathParser::eval_exp(double& result) {
 	double temp = 0;
 	eval_unary(result);
 	while (token[0] == '^') {
@@ -137,7 +137,7 @@ void MathParser::eval_exp(double& result) {
 	}
 }
 
-void MathParser::eval_unary(double& result) {
+inline void MathParser::eval_unary(double& result) {
 	UChar op = 0;
 	if ((tok_type == DELIMITER) && (token[0] == '+' || token[0] == '-')) {
 		op = token[0];
@@ -150,7 +150,7 @@ void MathParser::eval_unary(double& result) {
 }
 
 // Process a function, a parenthesized expression, a value or a variable
-void MathParser::eval_func(double& result) {
+inline void MathParser::eval_func(double& result) {
 	bool isfunc = (tok_type == FUNCTION);
 	UStringView temp_token;
 	if (isfunc) {
@@ -258,7 +258,7 @@ void MathParser::eval_func(double& result) {
 	}
 }
 
-void MathParser::get_token() {
+inline void MathParser::get_token() {
 	token = exp_ptr;
 	tok_type = 0;
 	if (exp_ptr.empty()) {
