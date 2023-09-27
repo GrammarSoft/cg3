@@ -210,8 +210,8 @@ Tag* parseTag(const UChar* to, const UChar* p, State& state, bool unescape=true)
 			tag->comparison_hash = hash_value(tag->tag);
 		}
 
-		if (tag->tag[0] == '<' && tag->tag[length - 1] == '>') {
-			tag->parseNumeric();
+		if (tag->tag[0] == '<' && tag->tag[length - 1] == '>' && !(tag->type & (T_CASE_INSENSITIVE | T_REGEXP | T_REGEXP_LINE | T_VARSTRING))) {
+			tag->parseNumeric(true);
 		}
 		/*
 		if (tag->tag[0] == '#') {
