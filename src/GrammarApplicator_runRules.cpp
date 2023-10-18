@@ -180,9 +180,9 @@ Reading* GrammarApplicator::get_sub_reading(Reading* tr, int sub_reading) {
 			tr = tr->next;
 			reading->tags_list.push_back(0);
 			reading->tags_list.insert(reading->tags_list.end(), tr->tags_list.begin(), tr->tags_list.end());
-			for (auto tag : tr->tags) {
+			for (auto& tag : tr->tags) {
 				reading->tags.insert(tag);
-				reading->tags_bloom.insert(tag);
+				reading->tags_bloom.insert(tag.first);
 			}
 			for (auto tag : tr->tags_plain) {
 				reading->tags_plain.insert(tag);

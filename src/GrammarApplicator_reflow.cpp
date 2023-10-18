@@ -472,7 +472,7 @@ uint32_t GrammarApplicator::addTagToReading(Reading& reading, Tag* tag, bool reh
 		reading.parent->possible_sets.resize(std::max(reading.parent->possible_sets.size(), it->second.size()));
 		reading.parent->possible_sets |= it->second;
 	}
-	reading.tags.insert(tag->hash);
+	reading.tags.emplace(tag->hash, TagMeta{UI32(reading.tags.size() + 1)});
 	reading.tags_list.push_back(tag->hash);
 	reading.tags_bloom.insert(tag->hash);
 	// ToDo: Remove for real ordered mode
@@ -536,7 +536,7 @@ uint32_t GrammarApplicator::addTagToReading(Reading& reading, Tag* tag, bool reh
 
 	if (grammar->has_bag_of_tags) {
 		Reading& bot = reading.parent->parent->bag_of_tags;
-		bot.tags.insert(tag->hash);
+		bot.tags.emplace(tag->hash, TagMeta{});
 		bot.tags_list.push_back(tag->hash);
 		bot.tags_bloom.insert(tag->hash);
 
@@ -839,11 +839,11 @@ void GrammarApplicator::reflowTextuals_Reading(Reading& r) {
 	if (r.next) {
 		reflowTextuals_Reading(*r.next);
 	}
-	for (auto it : r.tags) {
-		Tag* tag = grammar->single_tags.find(it)->second;
+	for (auto& it : r.tags) {
+		Tag* tag = grammar->single_tags.find(it.first)->second;
 		if (tag->type & T_TEXTUAL) {
-			r.tags_textual.insert(it);
-			r.tags_textual_bloom.insert(it);
+			r.tags_textual.insert(it.first);
+			r.tags_textual_bloom.insert(it.first);
 		}
 	}
 }

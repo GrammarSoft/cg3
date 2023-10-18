@@ -30,7 +30,11 @@ namespace CG3 {
 class Cohort;
 class Reading;
 
-typedef std::vector<Reading*> ReadingList;
+using ReadingList = std::vector<Reading*>;
+
+struct TagMeta {
+	uint32_t pos = 0;
+};
 
 class Reading {
 public:
@@ -53,12 +57,13 @@ public:
 	Cohort* parent = nullptr;
 	Reading* next = nullptr;
 	uint32Vector hit_by;
-	typedef uint32Vector tags_list_t;
+	using tags_list_t = uint32Vector;
 	tags_list_t tags_list;
-	uint32SortedVector tags;
+	using tags_t = bc::flat_multimap<uint32_t, TagMeta>;
+	tags_t tags;
 	uint32SortedVector tags_plain;
 	uint32SortedVector tags_textual;
-	typedef bc::flat_map<uint32_t, Tag*> tags_numerical_t;
+	using tags_numerical_t = bc::flat_map<uint32_t, Tag*>;
 	tags_numerical_t tags_numerical;
 
 	// ToDo: Remove for real ordered mode
