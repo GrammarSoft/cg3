@@ -23,6 +23,7 @@
 #include <vector>
 #include <algorithm>
 #include <functional>
+#include <iterator>
 #include <cstdint>
 
 namespace CG3 {
