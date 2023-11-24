@@ -919,6 +919,12 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 			auto theTags = ss_taglist.get();
 			getTagList(*rule->maplist, theTags);
 
+			for (auto& tter : *theTags) {
+				if (tter->type & T_VSTR) {
+					VARSTRINGIFY(tter);
+				}
+			}
+
 			for (auto tter : *theTags) {
 				if(tter->type & T_WORDFORM) {
 					spacesInAddedWf = std::count_if(tter->tag.begin(), tter->tag.end(), [](UChar c){ return c == ' '; });
@@ -1414,6 +1420,12 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 				auto theTags = ss_taglist.get();
 				getTagList(*rule->maplist, theTags);
 
+				for (auto& tter : *theTags) {
+					if (tter->type & T_VSTR) {
+						VARSTRINGIFY(tter);
+					}
+				}
+
 				Tag* wf = nullptr;
 				for (auto tter : *theTags) {
 					if (tter->type & T_WORDFORM) {
@@ -1893,6 +1905,12 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 				std::vector<TagList> readings;
 				auto theTags = ss_taglist.get();
 				getTagList(*rule->maplist, theTags);
+
+				for (auto& tter : *theTags) {
+					if (tter->type & T_VSTR) {
+						VARSTRINGIFY(tter);
+					}
+				}
 
 				for (auto tter : *theTags) {
 					VARSTRINGIFY(tter);
