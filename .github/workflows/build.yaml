@@ -23,5 +23,5 @@ jobs:
       run: sudo cmake --install .
     - name: test python
       run: |
-        cd python && make install
+        cd python && sudo make install && cd ..
         python3 -c "import constraint_grammar; print(dir(constraint_grammar))"
