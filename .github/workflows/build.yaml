@@ -24,4 +24,4 @@ jobs:
     - name: test python
       run: |
         cd python && sudo make install && cd ..
-        python3 -c "import constraint_grammar; print(dir(constraint_grammar))"
+        sudo python3 -c "import constraint_grammar; print(dir(constraint_grammar))"
