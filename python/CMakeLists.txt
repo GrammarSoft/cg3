@@ -33,7 +33,7 @@ add_custom_target(wrapper ALL
 )
 
 if(NOT PYTHON_INSTALL_PARAMS)
-	set(PYTHON_INSTALL_PARAMS "--prefix=${CMAKE_INSTALL_PREFIX} --no-index --find-links=wheels/")  # TODO what was the point of --root=\$ENV{DESTDIR}/ ?
+	set(PYTHON_INSTALL_PARAMS "--prefix=${CMAKE_INSTALL_PREFIX} --no-index --find-links=wheels/")  # TODO keep --root=\$ENV{DESTDIR}/ ?
 endif()
 
 set(INSTALL_WRAPPER "${PYTHON_EXECUTABLE} -m pip install ${PYTHON_INSTALL_PARAMS} constraint_grammar")

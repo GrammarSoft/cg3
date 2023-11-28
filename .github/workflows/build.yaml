@@ -22,4 +22,4 @@ jobs:
     - name: install
       run: sudo cmake --install .
     - name: test python
-      run: python3 --version && python3.10 -c "import cg3; print(dir(cg3))"
+      run: python3 -c "import constraint_grammar; print(dir(constraint_grammar))"
