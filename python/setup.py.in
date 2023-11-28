@@ -3,18 +3,11 @@
 """
 Setup for SWIG Python bindings for constraint_grammar
 """
+
 from os import path
-from distutils.core import Extension, setup
-from distutils.command.build import build
 
-
-class CustomBuild(build):
-    sub_commands = [
-        ('build_ext', build.has_ext_modules),
-        ('build_py', build.has_pure_modules),
-        ('build_clib', build.has_c_libraries),
-        ('build_scripts', build.has_scripts),
-    ]
+from setuptools import Extension
+from setuptools import setup
 
 
 def get_sources():
@@ -48,7 +41,6 @@ setup(
     long_description='SWIG interface to constraint_grammar for use in apertium-python',
     # TODO: author, author_email, maintainer, url
     license='GPL-3.0+',
-    cmdclass={'build': CustomBuild},
     ext_modules=[constraint_grammar_module],
     py_modules=['constraint_grammar', 'cg3'],
 )

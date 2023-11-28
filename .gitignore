@@ -37,6 +37,7 @@ __pycache__
 /python/constraint_grammar_wrap.cpp
 /python/constraint_grammar.i
 /python/constraint_grammar.py
+/python/wheels/
 /python/setup.py
 /python/build*
 *.egg-info/
