@@ -21,7 +21,7 @@ jobs:
     - name: test suite
       run: ./test/runall.pl
     - name: install
-      run: sudo cmake --install . --trace --verbose
+      run: sudo cmake --install . --verbose
     - name: test python
       run: |
         python3 -c "import sys; print(sys.path)"
