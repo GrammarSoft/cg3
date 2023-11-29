@@ -18,12 +18,8 @@ endforeach()
 configure_file(constraint_grammar.i.in constraint_grammar.i @ONLY)
 configure_file(setup.py.in setup.py)
 
-if(NOT PYTHON_BUILD_PARAMS)
-	set(PYTHON_BUILD_PARAMS "--no-deps" "--wheel-dir" "wheels")
-endif()
-
 add_custom_command(OUTPUT ${CPP_WRAP_FILE} ${PYTHON_FILE}
-	COMMAND ${PYTHON_EXECUTABLE} -m pip wheel ${PYTHON_BUILD_PARAMS} .
+	COMMAND ${PYTHON_EXECUTABLE} -m build
 	COMMENT "Building ${PYTHON_FILE}"
 )
 
@@ -33,7 +29,7 @@ add_custom_target(wrapper ALL
 )
 
 if(NOT PYTHON_INSTALL_PARAMS)
-	set(PYTHON_INSTALL_PARAMS "--prefix=${CMAKE_INSTALL_PREFIX} --no-index --find-links=wheels/")  # TODO keep --root=\$ENV{DESTDIR}/ ?
+	set(PYTHON_INSTALL_PARAMS "--prefix=${CMAKE_INSTALL_PREFIX} --no-index --find-links=dist/")  # TODO keep --root=\$ENV{DESTDIR}/ ?
 endif()
 
 set(INSTALL_WRAPPER "${PYTHON_EXECUTABLE} -m pip install ${PYTHON_INSTALL_PARAMS} constraint_grammar")

@@ -10,7 +10,7 @@ jobs:
     - name: dependencies
       run: |
            sudo apt-get -qy update
-           sudo apt-get -qfy install --no-install-recommends libboost-dev libicu-dev cmake build-essential perl python3-dev python3-setuptools swig
+           sudo apt-get -qfy install --no-install-recommends cmake build-essential libboost-dev libicu-dev libsqlite3-dev perl pkg-config python3-build python3-dev python3-pip python3-setuptools swig
     - name: cmake
       run: cmake -DENABLE_PYTHON_BINDINGS=ON .
     - name: build
@@ -22,6 +22,4 @@ jobs:
     - name: install
       run: sudo cmake --install .
     - name: test python
-      run: |
-        cd python && sudo make install && cd ..
-        sudo python3 -c "import constraint_grammar; print(dir(constraint_grammar))"
+      run: python3 -c "import constraint_grammar; print(dir(constraint_grammar))"
