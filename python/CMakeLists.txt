@@ -19,7 +19,7 @@ configure_file(constraint_grammar.i.in constraint_grammar.i @ONLY)
 configure_file(setup.py.in setup.py)
 
 add_custom_command(OUTPUT ${CPP_WRAP_FILE} ${PYTHON_FILE}
-	COMMAND ${PYTHON_EXECUTABLE} setup.py build_ext
+	COMMAND swig -python -c++ -I/usr/include -I. -Isrc -Iinclude -Wall -o python/constraint_grammar_wrap.cpp python/constraint_grammar.i
 	COMMAND ${PYTHON_EXECUTABLE} -m build
 	COMMENT "Building ${PYTHON_FILE}"
 )
