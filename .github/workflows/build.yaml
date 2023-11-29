@@ -10,7 +10,7 @@ jobs:
     - name: dependencies
       run: |
            sudo apt-get -qy update
-           sudo apt-get -qfy install --no-install-recommends cmake build-essential libboost-dev libicu-dev libsqlite3-dev perl pkg-config python3-build python3-dev python3-pip python3-setuptools swig
+           sudo apt-get -qfy install --no-install-recommends cmake build-essential libboost-dev libicu-dev libsqlite3-dev perl pkg-config python3-build python3-dev python3-pip python3-setuptools python3-venv swig
     - name: cmake
       run: cmake -DENABLE_PYTHON_BINDINGS=ON .
     - name: build
