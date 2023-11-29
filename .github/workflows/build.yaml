@@ -21,11 +21,8 @@ jobs:
     - name: test suite
       run: ./test/runall.pl
     - name: install
-      run: sudo cmake --install . --verbose
+      run: sudo cmake --install .
     - name: test python
       run: |
-        python3 -c "import sys; print(sys.path)"
-        sudo find / -name "constraint_grammar.py"
-        cd python/dist && unzip *.whl && ls -l && cd ../..
         python3 -c "import constraint_grammar; print(dir(constraint_grammar))"
         python3 -c "import cg3; print(dir(cg3))"
