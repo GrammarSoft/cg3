@@ -54,14 +54,14 @@ private:
 	CG3::Grammar grammar;
 
 public:
-	CGProc(char *dictionary_path);
+	CGProc(char *grammar_path);
 	void cg_proc(int argc, char **argv, char *input_path, char *output_path);
 };
 
-CGProc::CGProc(char *dictionary_path)
+CGProc::CGProc(char *grammar_path)
 {
 	std::unique_ptr<CG3::IGrammarParser> parser;
-	FILE* dictionary = fopen(dictionary_path, "rb");
+	FILE* dictionary = fopen(grammar_path, "rb");
 	fread(&CG3::cbuffers[0][0], 1, 4, dictionary);
 	fclose(dictionary);
 	if (CG3::cbuffers[0][0] == 'C' && CG3::cbuffers[0][1] == 'G' && CG3::cbuffers[0][2] == '3' && CG3::cbuffers[0][3] == 'B') {
@@ -70,7 +70,7 @@ CGProc::CGProc(char *dictionary_path)
 	else {
 		parser.reset(new CG3::TextualParser(grammar, std::cerr));
 	}
-	parser->parse_grammar(dictionary_path);
+	parser->parse_grammar(grammar_path);
 }
 
 void CGProc::cg_proc(int argc, char **argv, char *input_path, char *output_path)
