@@ -61,9 +61,9 @@ public:
 CGProc::CGProc(char *grammar_path)
 {
 	std::unique_ptr<CG3::IGrammarParser> parser;
-	FILE* dictionary = fopen(grammar_path, "rb");
-	fread(&CG3::cbuffers[0][0], 1, 4, dictionary);
-	fclose(dictionary);
+	FILE* grammar_file = fopen(grammar_path, "rb");
+	fread(&CG3::cbuffers[0][0], 1, 4, grammar_file);
+	fclose(grammar_file);
 	if (CG3::cbuffers[0][0] == 'C' && CG3::cbuffers[0][1] == 'G' && CG3::cbuffers[0][2] == '3' && CG3::cbuffers[0][3] == 'B') {
 		parser.reset(new CG3::BinaryGrammar(grammar, std::cerr));
 	}
