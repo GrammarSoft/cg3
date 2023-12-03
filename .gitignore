@@ -3,8 +3,10 @@
 /CMakeCache.txt
 /CMakeFiles
 Makefile
+/src/cg-annotate
 /src/cg-comp
 /src/cg-conv
+/src/cg-merge-annotations
 /src/cg-mwesplit
 /src/cg-proc
 /src/cg-relabel
@@ -31,8 +33,11 @@ Makefile
 /test/**/*.bin
 
 __pycache__
+/python/cg3.py
 /python/constraint_grammar_wrap.cpp
+/python/constraint_grammar.i
 /python/constraint_grammar.py
+/python/dist/
 /python/setup.py
 /python/build*
 *.egg-info/

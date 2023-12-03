@@ -19,7 +19,8 @@ configure_file(constraint_grammar.i.in constraint_grammar.i @ONLY)
 configure_file(setup.py.in setup.py)
 
 add_custom_command(OUTPUT ${CPP_WRAP_FILE} ${PYTHON_FILE}
-	COMMAND ${PYTHON_EXECUTABLE} setup.py build
+	COMMAND swig -python -c++ -I/usr/include -I.. -I../src -I../include -Wall -o constraint_grammar_wrap.cpp constraint_grammar.i
+	COMMAND ${PYTHON_EXECUTABLE} -m build
 	COMMENT "Building ${PYTHON_FILE}"
 )
 
@@ -29,8 +30,8 @@ add_custom_target(wrapper ALL
 )
 
 if(NOT PYTHON_INSTALL_PARAMS)
-	set(PYTHON_INSTALL_PARAMS "--prefix=${CMAKE_INSTALL_PREFIX} --root=\$ENV{DESTDIR}/")
+	set(PYTHON_INSTALL_PARAMS "--no-index --find-links=dist/")  # TODO removing --prefix=${CMAKE_INSTALL_PREFIX} --root=\$ENV{DESTDIR}/ probably has downstream effects
 endif()
 
-set(INSTALL_WRAPPER "${PYTHON_EXECUTABLE} setup.py install ${PYTHON_INSTALL_PARAMS}")
+set(INSTALL_WRAPPER "${PYTHON_EXECUTABLE} -m pip install ${PYTHON_INSTALL_PARAMS} constraint_grammar")
 install(CODE "execute_process(COMMAND ${INSTALL_WRAPPER} WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})")
