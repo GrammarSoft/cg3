@@ -56,28 +56,67 @@ macro(cg3_link target)
 		)
 endmacro()
 
-set(LIBCG3_HEADERS
+set(LIBCG3_SOURCES
 	AST.hpp
+	ApertiumApplicator.cpp
+	ApertiumApplicator.hpp
+	BinaryGrammar.cpp
 	BinaryGrammar.hpp
+	BinaryGrammar_read.cpp
+	BinaryGrammar_read_10043.cpp
+	BinaryGrammar_write.cpp
+	Cohort.cpp
 	Cohort.hpp
+	CohortIterator.cpp
 	CohortIterator.hpp
+	ContextualTest.cpp
 	ContextualTest.hpp
+	FSTApplicator.cpp
+	FSTApplicator.hpp
+	FormatConverter.cpp
+	FormatConverter.hpp
+	Grammar.cpp
 	Grammar.hpp
+	GrammarApplicator.cpp
 	GrammarApplicator.hpp
+	GrammarApplicator_context.cpp
+	GrammarApplicator_matchSet.cpp
+	GrammarApplicator_reflow.cpp
+	GrammarApplicator_runContextualTest.cpp
+	GrammarApplicator_runGrammar.cpp
+	GrammarApplicator_runRules.cpp
+	GrammarWriter.cpp
 	GrammarWriter.hpp
-	Relabeller.hpp
-	MathParser.hpp
-	MweSplitApplicator.hpp
 	IGrammarParser.hpp
+	MathParser.hpp
+	MatxinApplicator.cpp
+	MatxinApplicator.hpp
+	MweSplitApplicator.cpp
+	MweSplitApplicator.hpp
+	NicelineApplicator.cpp
+	NicelineApplicator.hpp
+	PlaintextApplicator.cpp
+	PlaintextApplicator.hpp
+	Profiler.cpp
 	Profiler.hpp
+	Reading.cpp
 	Reading.hpp
+	Relabeller.cpp
+	Relabeller.hpp
+	Rule.cpp
 	Rule.hpp
+	Set.cpp
 	Set.hpp
+	SingleWindow.cpp
 	SingleWindow.hpp
+	Strings.cpp
 	Strings.hpp
+	Tag.cpp
 	Tag.hpp
 	TagTrie.hpp
+	TextualParser.cpp
 	TextualParser.hpp
+	Window.cpp
 	Window.hpp
 	bloomish.hpp
 	cg3.h
@@ -92,40 +131,10 @@ set(LIBCG3_HEADERS
 	sorted_vector.hpp
 	stdafx.hpp
 	streambuf.hpp
+	uextras.cpp
 	uextras.hpp
 	version.hpp
-	)
-set(LIBCG3_SOURCES
-	BinaryGrammar.cpp
-	BinaryGrammar_read.cpp
-	BinaryGrammar_read_10043.cpp
-	BinaryGrammar_write.cpp
-	Cohort.cpp
-	CohortIterator.cpp
-	ContextualTest.cpp
-	Grammar.cpp
-	GrammarApplicator.cpp
-	GrammarApplicator_context.cpp
-	GrammarApplicator_matchSet.cpp
-	GrammarApplicator_reflow.cpp
-	GrammarApplicator_runContextualTest.cpp
-	GrammarApplicator_runGrammar.cpp
-	GrammarApplicator_runRules.cpp
-	GrammarWriter.cpp
-	Relabeller.cpp
-	MweSplitApplicator.cpp
-	Profiler.cpp
-	Reading.cpp
-	Rule.cpp
-	Set.cpp
-	SingleWindow.cpp
-	Strings.cpp
-	Tag.cpp
-	TextualParser.cpp
-	Window.cpp
-	uextras.cpp
 	${POPEN_PLUS_CPP}
-	${LIBCG3_HEADERS}
 	)
 if(WIN32 OR EMSCRIPTEN)
 	set(LIBCG3_SOURCES
@@ -151,13 +160,7 @@ add_executable(cg-comp cg-comp.cpp)
 cg3_link(cg-comp)
 target_link_libraries(cg-comp ${LINKLIB})
 
-add_executable(cg-proc
-	cg-proc.cpp
-	ApertiumApplicator.cpp
-	ApertiumApplicator.hpp
-	MatxinApplicator.cpp
-	MatxinApplicator.hpp
-	)
+add_executable(cg-proc cg-proc.cpp)
 cg3_link(cg-proc)
 target_link_libraries(cg-proc ${LINKLIB})
 
@@ -167,18 +170,6 @@ target_link_libraries(cg-relabel ${LINKLIB})
 
 add_executable(cg-conv
 	cg-conv.cpp
-	ApertiumApplicator.cpp
-	ApertiumApplicator.hpp
-	MatxinApplicator.cpp
-	MatxinApplicator.hpp
-	FormatConverter.cpp
-	FormatConverter.hpp
-	FSTApplicator.cpp
-	FSTApplicator.hpp
-	NicelineApplicator.cpp
-	NicelineApplicator.hpp
-	PlaintextApplicator.cpp
-	PlaintextApplicator.hpp
 	options_conv.hpp
 	options_parser.hpp
 	)

@@ -20,6 +20,7 @@ configure_file(setup.py.in setup.py)
 
 add_custom_command(OUTPUT ${CPP_WRAP_FILE} ${PYTHON_FILE}
 	COMMAND ${PYTHON_EXECUTABLE} setup.py build
+	DEPENDS cg3
 	COMMENT "Building ${PYTHON_FILE}"
 )
 

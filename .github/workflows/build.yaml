@@ -21,3 +21,8 @@ jobs:
       run: ./test/runall.pl
     - name: install
       run: sudo cmake --install .
+    - name: test python
+      run: |
+        sudo ldconfig
+        python3 -c "import constraint_grammar; print(dir(constraint_grammar))"
+        python3 -c "import cg3; print(dir(cg3))"
