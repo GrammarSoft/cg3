@@ -64,21 +64,21 @@ int BinaryGrammar::parse_grammar(std::istream& input) {
 	}
 
 	fread_throw(&u32tmp, sizeof(u32tmp), 1, input);
-	u32tmp = ntoh32(u32tmp);
-	if (u32tmp <= 10297) {
+	auto bin_revision = ntoh32(u32tmp);
+	if (bin_revision <= BIN_REV_ANCIENT) {
 		if (verbosity >= 1) {
-			u_fprintf(ux_stderr, "Warning: Grammar revision is %u, but current format is %u or later. Please recompile the binary grammar with latest CG-3.\n", u32tmp, CG3_FEATURE_REV);
+			u_fprintf(ux_stderr, "Warning: Grammar revision is %u, but current format is %u or later. Please recompile the binary grammar with latest CG-3.\n", bin_revision, CG3_FEATURE_REV);
 			u_fflush(ux_stderr);
 		}
 		input.seekg(0);
 		return readBinaryGrammar_10043(input);
 	}
-	if (u32tmp < CG3_TOO_OLD) {
-		u_fprintf(ux_stderr, "Error: Grammar revision is %u, but this loader requires %u or later!\n", u32tmp, CG3_TOO_OLD);
+	if (bin_revision < CG3_TOO_OLD) {
+		u_fprintf(ux_stderr, "Error: Grammar revision is %u, but this loader requires %u or later!\n", bin_revision, CG3_TOO_OLD);
 		CG3Quit(1);
 	}
-	if (u32tmp > CG3_FEATURE_REV) {
-		u_fprintf(ux_stderr, "Error: Grammar revision is %u, but this loader only knows up to revision %u!\n", u32tmp, CG3_FEATURE_REV);
+	if (bin_revision > CG3_FEATURE_REV) {
+		u_fprintf(ux_stderr, "Error: Grammar revision is %u, but this loader only knows up to revision %u!\n", bin_revision, CG3_FEATURE_REV);
 		CG3Quit(1);
 	}
 
@@ -100,6 +100,22 @@ int BinaryGrammar::parse_grammar(std::istream& input) {
 		u32tmp = ntoh32(u32tmp);
 		fread_throw(&cbuffers[0][0], 1, u32tmp, input);
 		i32tmp = ucnv_toUChars(conv, &grammar->mapping_prefix, 1, &cbuffers[0][0], u32tmp, &err);
+	}
+
+	if (bin_revision >= BIN_REV_CMDARGS) {
+		fread_throw(&u32tmp, sizeof(u32tmp), 1, input);
+		u32tmp = ntoh32(u32tmp);
+		if (u32tmp) {
+			grammar->cmdargs.resize(u32tmp);
+			fread_throw(&grammar->cmdargs[0], 1, u32tmp, input);
+		}
+
+		fread_throw(&u32tmp, sizeof(u32tmp), 1, input);
+		u32tmp = ntoh32(u32tmp);
+		if (u32tmp) {
+			grammar->cmdargs_override.resize(u32tmp);
+			fread_throw(&grammar->cmdargs_override[0], 1, u32tmp, input);
+		}
 	}
 
 	// Keep track of which sets that the varstring tags used; we can't just assign them as sets are not loaded yet

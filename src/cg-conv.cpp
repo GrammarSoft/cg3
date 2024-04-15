@@ -38,11 +38,10 @@ int main(int argc, char* argv[]) {
 		CG3Quit(1);
 	}
 
-	U_MAIN_INIT_ARGS(argc, argv);
 	argc = u_parseArgs(argc, argv, NUM_OPTIONS, options.data());
 
-	parse_opts("CG3_CONV_DEFAULT", options_default);
-	parse_opts("CG3_CONV_OVERRIDE", options_override);
+	parse_opts_env("CG3_CONV_DEFAULT", options_default);
+	parse_opts_env("CG3_CONV_OVERRIDE", options_override);
 	for (size_t i = 0; i < options.size(); ++i) {
 		if (options_default[i].doesOccur && !options[i].doesOccur) {
 			options[i] = options_default[i];
@@ -64,13 +63,13 @@ int main(int argc, char* argv[]) {
 
 		size_t longest = 0;
 		for (uint32_t i = 0; i < NUM_OPTIONS; i++) {
-			if (options[i].description) {
+			if (!options[i].description.empty()) {
 				size_t len = strlen(options[i].longName);
 				longest = std::max(longest, len);
 			}
 		}
 		for (uint32_t i = 0; i < NUM_OPTIONS; i++) {
-			if (options[i].description && options[i].description[0] != '!') {
+			if (!options[i].description.empty() && options[i].description[0] != '!') {
 				fprintf(out, " ");
 				if (options[i].shortName) {
 					fprintf(out, "-%c,", options[i].shortName);
@@ -83,7 +82,7 @@ int main(int argc, char* argv[]) {
 				while (ldiff--) {
 					fprintf(out, " ");
 				}
-				fprintf(out, "  %s", options[i].description);
+				fprintf(out, "  %s", options[i].description.c_str());
 				fprintf(out, "\n");
 			}
 		}
@@ -245,32 +244,32 @@ int main(int argc, char* argv[]) {
 		grammar.sub_readings_ltr = true;
 	}
 	if (options[MAPPING_PREFIX].doesOccur) {
-		auto sn = SI32(strlen(options[MAPPING_PREFIX].value));
+		auto sn = SI32(options[MAPPING_PREFIX].value.size());
 		UString buf(sn * 3, 0);
 		UConverter* conv = ucnv_open(codepage_default, &status);
-		ucnv_toUChars(conv, &buf[0], SI32(buf.size()), options[MAPPING_PREFIX].value, sn, &status);
+		ucnv_toUChars(conv, &buf[0], SI32(buf.size()), options[MAPPING_PREFIX].value.c_str(), sn, &status);
 		ucnv_close(conv);
 		grammar.mapping_prefix = buf[0];
 	}
 	if (options[SUB_DELIMITER].doesOccur) {
-		auto sn = SI32(strlen(options[SUB_DELIMITER].value));
+		auto sn = SI32(options[SUB_DELIMITER].value.size());
 		applicator.sub_delims.resize(sn * 2);
 		UConverter* conv = ucnv_open(codepage_default, &status);
-		sn = ucnv_toUChars(conv, &applicator.sub_delims[0], SI32(applicator.sub_delims.size()), options[SUB_DELIMITER].value, sn, &status);
+		sn = ucnv_toUChars(conv, &applicator.sub_delims[0], SI32(applicator.sub_delims.size()), options[SUB_DELIMITER].value.c_str(), sn, &status);
 		applicator.sub_delims.resize(sn);
 		applicator.sub_delims += '+';
 		ucnv_close(conv);
 	}
 	if (options[FST_WTAG].doesOccur) {
-		auto sn = SI32(strlen(options[FST_WTAG].value));
+		auto sn = SI32(options[FST_WTAG].value.size());
 		applicator.wtag.resize(sn * 2);
 		UConverter* conv = ucnv_open(codepage_default, &status);
-		sn = ucnv_toUChars(conv, &applicator.wtag[0], SI32(applicator.wtag.size()), options[FST_WTAG].value, sn, &status);
+		sn = ucnv_toUChars(conv, &applicator.wtag[0], SI32(applicator.wtag.size()), options[FST_WTAG].value.c_str(), sn, &status);
 		applicator.wtag.resize(sn);
 		ucnv_close(conv);
 	}
 	if (options[FST_WFACTOR].doesOccur) {
-		applicator.wfactor = strtof(options[FST_WFACTOR].value, 0);
+		applicator.wfactor = std::stod(options[FST_WFACTOR].value);
 	}
 
 	applicator.setOutputFormat(FMT_CG);

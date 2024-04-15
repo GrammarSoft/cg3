@@ -107,6 +107,13 @@ int GrammarWriter::writeGrammar(std::ostream& output) {
 		u_fprintf(output, "SUBREADINGS = RTL ;\n");
 	}
 
+	if (!grammar->cmdargs.empty()) {
+		u_fprintf(output, "CMDARGS += %s ;\n", grammar->cmdargs.c_str());
+	}
+	if (!grammar->cmdargs_override.empty()) {
+		u_fprintf(output, "CMDARGS-OVERRIDE += %s ;\n", grammar->cmdargs_override.c_str());
+	}
+
 	if (!grammar->static_sets.empty()) {
 		u_fprintf(output, "STATIC-SETS =");
 		for (auto& str : grammar->static_sets) {

@@ -52,7 +52,7 @@
 "<three>"
 	"three" #4→3 ID:27 R:leftmost-descendent:26 R:right-descendent:26 R:right-child:26 R:rightmost-right-direct-child:26 R:leftmost-direct-child:26 R:rightmost-direct-child:26
 "<four>"
-	"four" #5→6 ID:28 R:leftmost-self-or-ancestor:23 R:left-self-or-parent:28 R:right-parent:29 R:rightmost-deepest-parent:29 R:leftmost-left-ancestor:23 R:right-ancestor:29 R:rightmost-right-ancestor:29 R:left-ancestor:23 R:rightmost-self-or-ancestor:29 R:leftmost-ancestor:23 R:right-self-or-parent:28 R:rightmost-ancestor:29
+	"four" #5→6 ID:28 R:leftmost-self-or-ancestor:24 R:left-self-or-parent:28 R:right-parent:29 R:rightmost-deepest-parent:29 R:leftmost-left-ancestor:24 R:right-ancestor:29 R:rightmost-right-ancestor:29 R:left-ancestor:24 R:rightmost-self-or-ancestor:29 R:leftmost-ancestor:24 R:right-self-or-parent:28 R:rightmost-ancestor:29
 "<five>"
 	"five" #6→4 ID:29 R:rightmost-right-deepest-child:26
 "<six>"
@@ -62,7 +62,7 @@
 "<$.>"
 
 "<læreren>"
-	"lærer" <left> <1> <Hprof> <sentstart> <Hpers> <H> N UTR S DEF NOM @SUBJ> @ss-cSN-good #1→2 ID:34
+	"lærer" <left> <1> <Hprof> <sentstart> <Hpers> <H> N UTR S DEF NOM @SUBJ> @ss-cSN-good #1→2 ID:33
 "<bestræbte>"
 	"bestræbe" <2> <v:på^vrp> <fn:try_to> <¤vr> <mv> <¤vr> V IMPF 3S AKT @FS-STA #2→0
 "<sig>"

@@ -1,0 +1,6 @@
+DELIMITERS = "<.>" ;
+MAPPING-PREFIX = § ;
+
+CMDARGS += --num-windows 4 ;
+
+ADD (§seen-1) ("word") (-1*W (1)) ;

@@ -53,6 +53,9 @@ public:
 	uint32_t verbosity_level = 0;
 	mutable double total_time = 0;
 
+	std::string cmdargs;
+	std::string cmdargs_override;
+
 	std::vector<Tag*> single_tags_list;
 	Taguint32HashMap single_tags;
 

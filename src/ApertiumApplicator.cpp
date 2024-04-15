@@ -848,7 +848,7 @@ void ApertiumApplicator::printReading(Reading* reading, std::ostream& output) {
 						break;
 					}
 					else {
-						uppercaseseen++;
+						++uppercaseseen;
 					}
 				}
 			}
