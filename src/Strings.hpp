@@ -93,6 +93,8 @@ enum KEYWORDS : uint32_t {
 	K_WITH,
 	K_OLIST,
 	K_OSET,
+	K_CMDARGS,
+	K_CMDARGS_OVERRIDE,
 	KEYWORD_COUNT,
 };
 
@@ -253,6 +255,8 @@ constexpr UStringView keywords[KEYWORD_COUNT] = {
 	u"WITH",
 	u"OLIST",
 	u"OSET",
+	u"CMDARGS",
+	u"CMDARGS-OVERRIDE",
 };
 
 constexpr UStringView stringbits[] = {

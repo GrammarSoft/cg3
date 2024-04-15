@@ -113,6 +113,20 @@ int BinaryGrammar::writeBinaryGrammar(FILE* output) {
 		fwrite_throw(&cbuffers[0][0], i32tmp, 1, output);
 	}
 
+	i32tmp = SI32(grammar->cmdargs.size());
+	u32tmp = hton32(UI32(i32tmp));
+	fwrite_throw(&u32tmp, sizeof(u32tmp), 1, output);
+	if (i32tmp) {
+		fwrite_throw(&grammar->cmdargs[0], i32tmp, 1, output);
+	}
+
+	i32tmp = SI32(grammar->cmdargs_override.size());
+	u32tmp = hton32(UI32(i32tmp));
+	fwrite_throw(&u32tmp, sizeof(u32tmp), 1, output);
+	if (i32tmp) {
+		fwrite_throw(&grammar->cmdargs_override[0], i32tmp, 1, output);
+	}
+
 	if (grammar->num_tags) {
 		u32tmp = hton32(UI32(grammar->num_tags));
 		fwrite_throw(&u32tmp, sizeof(u32tmp), 1, output);

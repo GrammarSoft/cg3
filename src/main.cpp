@@ -36,12 +36,11 @@ int main(int argc, char* argv[]) {
 	UErrorCode status = U_ZERO_ERROR;
 	srand(UI32(time(0)));
 
-	U_MAIN_INIT_ARGS(argc, argv);
 	argc = u_parseArgs(argc, argv, NUM_OPTIONS, options.data());
 	FILE* out = stderr;
 
-	parse_opts("CG3_DEFAULT", options_default);
-	parse_opts("CG3_OVERRIDE", options_override);
+	parse_opts_env("CG3_DEFAULT", options_default);
+	parse_opts_env("CG3_OVERRIDE", options_override);
 	for (size_t i = 0; i < options.size(); ++i) {
 		if (options_default[i].doesOccur && !options[i].doesOccur) {
 			options[i] = options_default[i];
@@ -88,13 +87,13 @@ int main(int argc, char* argv[]) {
 
 		size_t longest = 0;
 		for (uint32_t i = 0; i < NUM_OPTIONS; i++) {
-			if (options[i].description) {
+			if (!options[i].description.empty()) {
 				size_t len = strlen(options[i].longName);
 				longest = std::max(longest, len);
 			}
 		}
 		for (uint32_t i = 0; i < NUM_OPTIONS; i++) {
-			if (options[i].description) {
+			if (!options[i].description.empty()) {
 				fprintf(out, " ");
 				if (options[i].shortName) {
 					fprintf(out, "-%c,", options[i].shortName);
@@ -107,7 +106,7 @@ int main(int argc, char* argv[]) {
 				while (ldiff--) {
 					fprintf(out, " ");
 				}
-				fprintf(out, "  %s", options[i].description);
+				fprintf(out, "  %s", options[i].description.c_str());
 				fprintf(out, "\n");
 			}
 		}
@@ -131,7 +130,7 @@ int main(int argc, char* argv[]) {
 	if (options[QUIET].doesOccur) {
 		options[VERBOSE].doesOccur = false;
 	}
-	if (options[VERBOSE].doesOccur && options[VERBOSE].value && strcmp(options[VERBOSE].value, "0") == 0) {
+	if (options[VERBOSE].doesOccur && !options[VERBOSE].value.empty() && options[VERBOSE].value == "0") {
 		options[VERBOSE].doesOccur = false;
 	}
 
@@ -152,7 +151,7 @@ int main(int argc, char* argv[]) {
 
 	uloc_setDefault("en_US_POSIX", &status);
 
-	UConverter* conv = ucnv_open(ucnv_getDefaultName(), &status);
+	UConverter* conv = ucnv_open(codepage_cli, &status);
 
 	std::ostream* ux_stdout = &std::cout;
 	std::unique_ptr<std::ofstream> _ux_stdout;
@@ -182,7 +181,7 @@ int main(int argc, char* argv[]) {
 	std::unique_ptr<std::ifstream> _ux_stdin;
 	if (options[STDIN].doesOccur) {
 		struct stat info;
-		int serr = stat(options[STDIN].value, &info);
+		int serr = stat(options[STDIN].value.c_str(), &info);
 		if (serr) {
 			std::cerr << "Error: Cannot stat " << options[STDIN].value << " due to error " << serr << "!" << std::endl;
 			CG3Quit(1);
@@ -207,7 +206,7 @@ int main(int argc, char* argv[]) {
 	}
 
 	std::unique_ptr<IGrammarParser> parser;
-	FILE* input = fopen(options[GRAMMAR].value, "rb");
+	FILE* input = fopen(options[GRAMMAR].value.c_str(), "rb");
 	if (!input) {
 		std::cerr << "Error: Error opening " << options[GRAMMAR].value << " for reading!" << std::endl;
 		CG3Quit(1);
@@ -232,8 +231,8 @@ int main(int argc, char* argv[]) {
 		parser.reset(new TextualParser(grammar, *ux_stderr, options[DUMP_AST].doesOccur != 0));
 	}
 	if (options[VERBOSE].doesOccur) {
-		if (options[VERBOSE].value) {
-			uint32_t verbosity_level = abs(atoi(options[VERBOSE].value));
+		if (!options[VERBOSE].value.empty()) {
+			uint32_t verbosity_level = std::stoul(options[VERBOSE].value);
 			parser->setVerbosity(verbosity_level);
 			grammar.verbosity_level = verbosity_level;
 		}
@@ -252,10 +251,10 @@ int main(int argc, char* argv[]) {
 	main_timer = clock();
 
 	if (options[NRULES].doesOccur) {
-		UConverter* conv = ucnv_open(codepage_cli, &status);
-		size_t sn = strlen(options[NRULES].value);
+		ucnv_reset(conv);
+		auto sn = options[NRULES].value.size();
 		UString buf(sn * 3, 0);
-		buf.resize(ucnv_toUChars(conv, &buf[0], SI32(buf.size()), options[NRULES].value, SI32(sn), &status));
+		buf.resize(ucnv_toUChars(conv, &buf[0], SI32(buf.size()), options[NRULES].value.c_str(), SI32(sn), &status));
 		parser->nrules = uregex_open(buf.c_str(), SI32(buf.size()), 0, nullptr, &status);
 		if (status != U_ZERO_ERROR) {
 			u_fprintf(std::cerr, "Error: uregex_open returned %s trying to parse --nrules %S\n", u_errorName(status), buf.c_str());
@@ -264,10 +263,10 @@ int main(int argc, char* argv[]) {
 	}
 
 	if (options[NRULES_INV].doesOccur) {
-		UConverter* conv = ucnv_open(codepage_cli, &status);
-		size_t sn = strlen(options[NRULES_INV].value);
+		ucnv_reset(conv);
+		auto sn = options[NRULES_INV].value.size();
 		UString buf(sn * 3, 0);
-		buf.resize(ucnv_toUChars(conv, &buf[0], SI32(buf.size()), options[NRULES_INV].value, SI32(sn), &status));
+		buf.resize(ucnv_toUChars(conv, &buf[0], SI32(buf.size()), options[NRULES_INV].value.c_str(), SI32(sn), &status));
 		parser->nrules_inv = uregex_open(buf.c_str(), SI32(buf.size()), 0, nullptr, &status);
 		if (status != U_ZERO_ERROR) {
 			u_fprintf(std::cerr, "Error: uregex_open returned %s trying to parse --nrules-v %S\n", u_errorName(status), buf.c_str());
@@ -281,9 +280,28 @@ int main(int argc, char* argv[]) {
 		dynamic_cast<TextualParser*>(parser.get())->profiler = profiler.get();
 	}
 
-	if (parser->parse_grammar(options[GRAMMAR].value)) {
+	if (parser->parse_grammar(options[GRAMMAR].value.c_str())) {
 		std::cerr << "Error: Grammar could not be parsed - exiting!" << std::endl;
 		CG3Quit(1);
+	}
+
+	if (!grammar.cmdargs.empty()) {
+		auto args = grammar.cmdargs;
+		args.push_back(0);
+		parse_opts(args.data(), grammar_options_default);
+	}
+	if (!grammar.cmdargs_override.empty()) {
+		auto args = grammar.cmdargs_override;
+		args.push_back(0);
+		parse_opts(args.data(), grammar_options_override);
+	}
+	for (size_t i = 0; i < options.size(); ++i) {
+		if (grammar_options_default[i].doesOccur && !options[i].doesOccur) {
+			options[i] = grammar_options_default[i];
+		}
+		if (grammar_options_override[i].doesOccur && !options_override[i].doesOccur) {
+			options[i] = grammar_options_override[i];
+		}
 	}
 
 	if (options[DUMP_AST].doesOccur) {
@@ -299,16 +317,15 @@ int main(int argc, char* argv[]) {
 	}
 
 	if (options[MAPPING_PREFIX].doesOccur) {
-		UConverter* conv = ucnv_open(codepage_cli, &status);
-		size_t sn = strlen(options[MAPPING_PREFIX].value);
+		ucnv_reset(conv);
+		auto sn = options[MAPPING_PREFIX].value.size();
 		UString buf(sn * 3, 0);
-		ucnv_toUChars(conv, &buf[0], SI32(buf.size()), options[MAPPING_PREFIX].value, SI32(sn), &status);
+		ucnv_toUChars(conv, &buf[0], SI32(buf.size()), options[MAPPING_PREFIX].value.c_str(), SI32(sn), &status);
 		if (grammar.is_binary && grammar.mapping_prefix != buf[0]) {
 			std::cerr << "Error: Mapping prefix must match the one used for compiling the binary grammar!" << std::endl;
 			CG3Quit(1);
 		}
 		grammar.mapping_prefix = buf[0];
-		ucnv_close(conv);
 	}
 	if (options[VERBOSE].doesOccur) {
 		std::cerr << "Reindexing grammar..." << std::endl;
@@ -372,7 +389,7 @@ int main(int argc, char* argv[]) {
 	}
 
 	if (options[GRAMMAR_BIN].doesOccur) {
-		FILE* gout = fopen(options[GRAMMAR_BIN].value, "wb");
+		FILE* gout = fopen(options[GRAMMAR_BIN].value.c_str(), "wb");
 		if (gout) {
 			BinaryGrammar writer(grammar, *ux_stderr);
 			writer.writeBinaryGrammar(gout);
@@ -388,7 +405,7 @@ int main(int argc, char* argv[]) {
 	}
 
 	if (options[PROFILING].doesOccur) {
-		profiler->write(options[PROFILING].value);
+		profiler->write(options[PROFILING].value.c_str());
 	}
 
 	ucnv_close(conv);
@@ -442,8 +459,8 @@ void GAppSetOpts(GrammarApplicator& applicator, UConverter* conv) {
 	}
 	if (options[TRACE].doesOccur) {
 		applicator.trace = true;
-		if (options[TRACE].value) {
-			GAppSetOpts_ranged(options[TRACE].value, applicator.trace_rules, false);
+		if (!options[TRACE].value.empty()) {
+			GAppSetOpts_ranged(options[TRACE].value.c_str(), applicator.trace_rules, false);
 		}
 	}
 	if (options[TRACE_NAME_ONLY].doesOccur) {
@@ -468,23 +485,24 @@ void GAppSetOpts(GrammarApplicator& applicator, UConverter* conv) {
 		applicator.section_max_count = 1;
 	}
 	if (options[MAXRUNS].doesOccur) {
-		applicator.section_max_count = abs(atoi(options[MAXRUNS].value));
+		applicator.section_max_count = std::stoul(options[MAXRUNS].value);
 	}
 	if (options[SECTIONS].doesOccur) {
-		GAppSetOpts_ranged(options[SECTIONS].value, applicator.sections);
+		GAppSetOpts_ranged(options[SECTIONS].value.c_str(), applicator.sections);
 	}
 	if (options[RULES].doesOccur) {
-		GAppSetOpts_ranged(options[RULES].value, applicator.valid_rules);
+		GAppSetOpts_ranged(options[RULES].value.c_str(), applicator.valid_rules);
 	}
 	if (options[RULE].doesOccur) {
 		if (options[RULE].value[0] >= '0' && options[RULE].value[0] <= '9') {
-			applicator.valid_rules.push_back(atoi(options[RULE].value));
+			applicator.valid_rules.push_back(std::stoi(options[RULE].value));
 		}
 		else {
 			UErrorCode status = U_ZERO_ERROR;
-			size_t sn = strlen(options[RULE].value);
+			auto sn = options[RULE].value.size();
 			UString buf(sn * 3, 0);
-			ucnv_toUChars(conv, &buf[0], SI32(sn * 3), options[RULE].value, SI32(sn), &status);
+			ucnv_reset(conv);
+			ucnv_toUChars(conv, &buf[0], SI32(sn * 3), options[RULE].value.c_str(), SI32(sn), &status);
 
 			for (auto rule : applicator.grammar->rule_by_number) {
 				if (rule->name == buf) {
@@ -494,16 +512,16 @@ void GAppSetOpts(GrammarApplicator& applicator, UConverter* conv) {
 		}
 	}
 	if (options[VERBOSE].doesOccur) {
-		if (options[VERBOSE].value) {
-			applicator.verbosity_level = abs(atoi(options[VERBOSE].value));
+		if (!options[VERBOSE].value.empty()) {
+			applicator.verbosity_level = std::stoul(options[VERBOSE].value);
 		}
 		else {
 			applicator.verbosity_level = 1;
 		}
 	}
 	if (options[DODEBUG].doesOccur) {
-		if (options[DODEBUG].value) {
-			applicator.debug_level = abs(atoi(options[DODEBUG].value));
+		if (!options[DODEBUG].value.empty()) {
+			applicator.debug_level = std::stoul(options[DODEBUG].value);
 		}
 		else {
 			applicator.debug_level = 1;
@@ -511,28 +529,29 @@ void GAppSetOpts(GrammarApplicator& applicator, UConverter* conv) {
 		std::cerr << "Debug level set to " << applicator.debug_level << std::endl;
 	}
 	if (options[NUM_WINDOWS].doesOccur) {
-		applicator.num_windows = abs(atoi(options[NUM_WINDOWS].value));
+		applicator.num_windows = std::stoul(options[NUM_WINDOWS].value);
 	}
 	if (options[SOFT_LIMIT].doesOccur) {
-		applicator.soft_limit = abs(atoi(options[SOFT_LIMIT].value));
+		applicator.soft_limit = std::stoul(options[SOFT_LIMIT].value);
 	}
 	if (options[HARD_LIMIT].doesOccur) {
-		applicator.hard_limit = abs(atoi(options[HARD_LIMIT].value));
+		applicator.hard_limit = std::stoul(options[HARD_LIMIT].value);
 	}
 	if (options[TEXT_DELIMIT].doesOccur) {
 		UString rx{ STR_TEXTDELIM_DEFAULT };
-		if (options[TEXT_DELIMIT].value) {
+		if (!options[TEXT_DELIMIT].value.empty()) {
 			UErrorCode status = U_ZERO_ERROR;
-			size_t sn = strlen(options[TEXT_DELIMIT].value);
+			auto sn = options[TEXT_DELIMIT].value.size();
 			UString buf(sn * 3, 0);
-			auto len = ucnv_toUChars(conv, &buf[0], SI32(sn * 3), options[TEXT_DELIMIT].value, SI32(sn), &status);
+			ucnv_reset(conv);
+			auto len = ucnv_toUChars(conv, &buf[0], SI32(sn * 3), options[TEXT_DELIMIT].value.c_str(), SI32(sn), &status);
 			rx.assign(buf.begin(), buf.begin() + len);
 		}
 		applicator.setTextDelimiter(rx);
 	}
 	if (options[DEP_DELIMIT].doesOccur) {
-		if (options[DEP_DELIMIT].value) {
-			applicator.dep_delimit = abs(atoi(options[DEP_DELIMIT].value));
+		if (!options[DEP_DELIMIT].value.empty()) {
+			applicator.dep_delimit = std::stoul(options[DEP_DELIMIT].value);
 		}
 		else {
 			applicator.dep_delimit = 10;

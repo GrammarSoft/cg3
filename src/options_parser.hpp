@@ -24,49 +24,56 @@
 auto options_default = options;
 auto options_override = options;
 
-inline void parse_opts(const char* which, decltype(options)& where) {
+auto grammar_options_default = options;
+auto grammar_options_override = options;
+
+inline void parse_opts(char* p, decltype(options)& where) {
+	using namespace CG3;
+	std::vector<char*> argv(1); // 0th element is the program name
+	while (*p) {
+		while (*p && ISSPACE(*p)) {
+			++p;
+		}
+		if (*p == '-') {
+			auto n = p;
+			SKIPTOWS(p);
+			*p = 0;
+			argv.push_back(n);
+			++p;
+		}
+		else if (*p == '"') {
+			++p;
+			auto n = p;
+			SKIPTO(p, '"');
+			*p = 0;
+			argv.push_back(n);
+			++p;
+		}
+		else if (*p == '\'') {
+			++p;
+			auto n = p;
+			SKIPTO(p, '\'');
+			*p = 0;
+			argv.push_back(n);
+			++p;
+		}
+		else {
+			auto n = p;
+			SKIPTOWS(p);
+			*p = 0;
+			argv.push_back(n);
+			++p;
+		}
+	}
+	u_parseArgs(static_cast<int>(argv.size()), &argv[0], NUM_OPTIONS, where.data());
+}
+
+inline void parse_opts_env(const char* which, decltype(options)& where) {
 	using namespace CG3;
 	if (auto _env = getenv(which)) {
 		std::string env(_env);
 		env.push_back(0);
-		std::vector<char*> argv(1); // 0th element is the program name
-		auto p = &env[0];
-		while (*p) {
-			while (*p && ISSPACE(*p)) {
-				++p;
-			}
-			if (*p == '-') {
-				auto n = p;
-				SKIPTOWS(p);
-				*p = 0;
-				argv.push_back(n);
-				++p;
-			}
-			else if (*p == '"') {
-				++p;
-				auto n = p;
-				SKIPTO(p, '"');
-				*p = 0;
-				argv.push_back(n);
-				++p;
-			}
-			else if (*p == '\'') {
-				++p;
-				auto n = p;
-				SKIPTO(p, '\'');
-				*p = 0;
-				argv.push_back(n);
-				++p;
-			}
-			else {
-				auto n = p;
-				SKIPTOWS(p);
-				*p = 0;
-				argv.push_back(n);
-				++p;
-			}
-		}
-		u_parseArgs(static_cast<int>(argv.size()), &argv[0], NUM_OPTIONS, where.data());
+		parse_opts(&env[0], where);
 	}
 }
 

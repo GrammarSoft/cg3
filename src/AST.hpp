@@ -30,6 +30,7 @@ enum ASTType {
 	AST_Barrier,
 	AST_BarrierSafe,
 	AST_BeforeSections,
+	AST_CmdArgs,
 	AST_CompositeTag,
 	AST_Context,
 	AST_ContextMod,

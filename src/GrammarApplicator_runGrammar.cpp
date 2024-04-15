@@ -280,7 +280,7 @@ void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& outp
 				addTagToReading(*cCohort->wread, cCohort->wordform);
 				while (space[0]) {
 					SKIPWS(space, 0, 0, true);
-					UChar* n = space;
+					auto n = space;
 					if (*n == '"') {
 						++n;
 						SKIPTO_NOSPAN(n, '"');

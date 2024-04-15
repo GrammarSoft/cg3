@@ -35,8 +35,8 @@ enum OPTIONS {
 	NUM_OPTIONS,
 };
 UOption options[] = {
-	UOPTION_DEF_D("help", 'h', UOPT_NO_ARG,       "shows this help"),
-	UOPTION_DEF_D("?",    '?', UOPT_NO_ARG,       "shows this help"),
+	UOption{"help", 'h', UOPT_NO_ARG,       "shows this help"},
+	UOption{"?",    '?', UOPT_NO_ARG,       "shows this help"},
 };
 }
 using namespace Options;
@@ -51,7 +51,6 @@ int main(int argc, char** argv) {
 		CG3Quit(1);
 	}
 
-	U_MAIN_INIT_ARGS(argc, argv);
 	argc = u_parseArgs(argc, argv, NUM_OPTIONS, options);
 
 	if (argc < 0 || options[HELP1].doesOccur || options[HELP2].doesOccur) {
@@ -62,13 +61,13 @@ int main(int argc, char** argv) {
 
 		size_t longest = 0;
 		for (uint32_t i = 0; i < NUM_OPTIONS; i++) {
-			if (options[i].description) {
+			if (!options[i].description.empty()) {
 				size_t len = strlen(options[i].longName);
 				longest = std::max(longest, len);
 			}
 		}
 		for (uint32_t i = 0; i < NUM_OPTIONS; i++) {
-			if (options[i].description && options[i].description[0] != '!') {
+			if (!options[i].description.empty() && options[i].description[0] != '!') {
 				fprintf(out, " ");
 				if (options[i].shortName) {
 					fprintf(out, "-%c,", options[i].shortName);
@@ -81,7 +80,7 @@ int main(int argc, char** argv) {
 				while (ldiff--) {
 					fprintf(out, " ");
 				}
-				fprintf(out, "  %s", options[i].description);
+				fprintf(out, "  %s", options[i].description.c_str());
 				fprintf(out, "\n");
 			}
 		}

@@ -1,0 +1,47 @@
+"<word>"
+	"word" 1
+"<.>"
+
+"<word>"
+	"word" 2
+"<.>"
+
+"<word>"
+	"word" 3
+"<.>"
+
+"<word>"
+	"word" 4
+"<.>"
+
+"<word>"
+	"word" 5
+"<.>"
+
+"<word>"
+	"word" 6
+"<.>"
+
+"<word>"
+	"word" 7
+"<.>"
+
+"<word>"
+	"word" 8
+"<.>"
+
+"<word>"
+	"word" 9
+"<.>"
+
+"<word>"
+	"word" 10
+"<.>"
+
+"<word>"
+	"word" 11
+"<.>"
+
+"<word>"
+	"word" 12
+"<.>"

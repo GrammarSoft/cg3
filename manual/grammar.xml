@@ -15,6 +15,29 @@
     </screen>
   </section>
 
+  <section id="grammar-cmdargs">
+    <title>CMDARGS, CMDARGS-OVERRIDE</title>
+    <indexterm>
+      <primary>CMDARGS</primary>
+    </indexterm>
+    <indexterm>
+      <primary>CMDARGS-OVERRIDE</primary>
+    </indexterm>
+    <para>
+      You can set default cmdline arguments with <code>CMDARGS += ... ;</code>.
+      Currently arguments can only be added, hence <code>+=</code>, but removing and assignment can be implemented if needed.
+    </para>
+    <para>
+      Similarly, <code>CMDARGS-OVERRIDE += ... ;</code> will set cmdline arguments that will override the ones actually passed on the command line.
+    </para>
+    <para>
+      The <link linkend="cmdargs-override">order of argument sources</link> is well defined.
+    </para>
+    <screen>
+      CMDARGS += --num-windows 5 ;
+    </screen>
+  </section>
+
   <section id="grammar-options">
     <title>OPTIONS</title>
     <para>

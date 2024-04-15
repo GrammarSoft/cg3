@@ -316,17 +316,21 @@ inline bool ISSPACE(const Char* p) {
 }
 
 template<typename Char, typename C, size_t N>
-inline bool IS_ICASE(const Char* p, const C (&uc)[N], const C (&lc)[N]) {
+inline size_t IS_ICASE(const Char* p, const C (&uc)[N], const C (&lc)[N]) {
 	// N - 1 due to null terminator for string constants
 	if (ISSTRING(p, N - 1)) {
-		return false;
+		return 0;
 	}
-	for (size_t i = 0; i < N - 1; ++i) {
+	size_t i = 0;
+	for (; i < N - 1; ++i) {
 		if (p[i] != uc[i] && p[i] != lc[i]) {
-			return false;
+			return 0;
 		}
 	}
-	return !u_isalnum(p[N - 1]);
+	if (!u_isalnum(p[N - 1])) {
+		return i;
+	}
+	return 0;
 }
 
 template<typename Char>

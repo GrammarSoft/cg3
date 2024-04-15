@@ -47,6 +47,9 @@ enum : uint32_t {
 	BINF_ADDCOHORT_ATTACH = (1 << 17),
 };
 
+constexpr uint32_t BIN_REV_ANCIENT = 10297;
+constexpr uint32_t BIN_REV_CMDARGS = 13898;
+
 class BinaryGrammar : public IGrammarParser {
 public:
 	BinaryGrammar(Grammar& result, std::ostream& ux_err);
