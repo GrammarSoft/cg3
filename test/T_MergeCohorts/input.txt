@@ -8,8 +8,8 @@
 	"o" <artd> <-sam> DET F S @>N #4→5
 "<mulher>"
 	"mulher" <Hattr> N F S @P< #5→3
-"<$.>"
-	"$." PU @PU #6→0 <<<
+"<.>"
+	"." PU @PU #6→0 <<<
 </s>
 
 "<o>"
@@ -24,8 +24,8 @@
 	"um" <arti> <-sam> DET F S @>N #75→76
 "<árvore>"
 	"árvore" <Btree> N F S @P< #76→74
-"<$.>"
-	"$." PU @PU #77→0 <<<
+"<.>"
+	"." PU @PU #77→0 <<<
 </s>
 
 "<em>"
@@ -40,8 +40,8 @@
 	"o" <artd> DET M S @>N #45→46
 "<recorde>"
 	"recorde" <ac> N M S @<ACC #46→44
-"<$.>"
-	"$." PU @PU #47→0
+"<.>"
+	"." PU @PU #47→0
 
 "<root>"
 	"root" #1->0
@@ -59,3 +59,11 @@
 	"six" #7->5
 "<seven>"
 	"seven" #8->1
+"<?>"
+	"1" CLB
+"<!>"
+	"2" CLB
+"<!>"
+	"3" CLB
+"<?>"
+	"4" CLB

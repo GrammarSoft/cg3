@@ -1,17 +1,17 @@
 "<ele>"
 	"ele" PERS M 3S NOM @SUBJ> #1->3
 "<her el>"
-	"el her" merged #2->2 MERGECOHORTS:3
+	"el her" merged #2->2 MERGECOHORTS:4
 "<bate>"
 	"bater" <fmc> <mv> V PR 3S IND VFIN @FS-STA #3->0
 ; "<em>"
-;	"em" <sam-> PRP @<PIV MERGECOHORTS:3
+;	"em" <sam-> PRP @<PIV MERGECOHORTS:4
 "<a>"
 	"o" <artd> <-sam> DET F S @>N #4->3
 ; "<mulher>"
-;	"mulher" <Hattr> N F S @P< MERGECOHORTS:3
-"<$.>"
-	"$." PU @PU #5->0
+;	"mulher" <Hattr> N F S @P< MERGECOHORTS:4
+"<.>"
+	"." PU @PU #5->0
 </s>
 
 "<o>"
@@ -26,8 +26,8 @@
 	"um" <arti> <-sam> DET F S @>N #5->6
 "<árvore>"
 	"árvore" <Btree> N F S @P< #6->4
-"<$.>"
-	"$." PU @PU #7->0
+"<.>"
+	"." PU @PU #7->0
 </s>
 
 "<em>"
@@ -42,8 +42,8 @@
 	"o" <artd> DET M S @>N #5->6
 "<recorde>"
 	"recorde" <ac> N M S @<ACC #6->4
-"<$.>"
-	"$." PU @PU #7->0
+"<.>"
+	"." PU @PU #7->0
 
 "<root>"
 	"root" #1->0
@@ -61,3 +61,17 @@
 	"six" #7->5
 "<seven>"
 	"seven" #8->1
+; "<?>"
+;	"1" CLB MERGECOHORTS:9
+; "<?>"
+;	"12" CLB Heur/Merged MERGECOHORTS:9 MERGECOHORTS:9
+; "<!>"
+;	"2" CLB MERGECOHORTS:9
+; "<?>"
+;	"123" CLB Heur/Merged MERGECOHORTS:9 MERGECOHORTS:9
+; "<!>"
+;	"3" CLB MERGECOHORTS:9
+"<?>"
+	"1234" CLB Heur/Merged #9->9 MERGECOHORTS:9
+; "<?>"
+;	"4" CLB MERGECOHORTS:9

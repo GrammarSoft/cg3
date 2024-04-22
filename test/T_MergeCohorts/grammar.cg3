@@ -1,6 +1,9 @@
-DELIMITERS = "<$.>" ;
+Delimiters = "<.>" "<?>" "<!>" ;
+CmdArgs += --num-windows 5 ;
 
-MERGECOHORTS ("<$1 $2>"v "$2 $1"v merged) ("em") WITH
+MergeCohorts ("<$1 $2>"v "$2 $1"v merged) ("em") With
 	(1* ("mul(her)"r))
 	(-1*A ("(el)e"r) LINK 1 (*))
 	;
+
+MergeCohorts Repeat ("<$1>"v "$2$3"v CLB Heur/Merged) ("<(.*)>"r "([^<].*)"r) + _S_DELIMITERS_ With (1W (>>>) LINK 1 ("([^<].*)"r) + _S_DELIMITERS_) ;
