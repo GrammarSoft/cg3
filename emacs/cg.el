@@ -1,6 +1,6 @@
 ;;; cg.el --- Major mode for editing Constraint Grammar files  -*- lexical-binding: t; coding: utf-8 -*-
 
-;; Copyright (C) 2010-2022 Kevin Brubeck Unhammer
+;; Copyright (C) 2010-2024 Kevin Brubeck Unhammer
 
 ;; Author: Kevin Brubeck Unhammer <unhammer@fsfe.org>
 ;; Version: 0.4.0

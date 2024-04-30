@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2007-2023, GrammarSoft ApS
+* Copyright (C) 2007-2024, GrammarSoft ApS
 * Developed by Tino Didriksen <mail@tinodidriksen.com>
 *
 * This program is free software: you can redistribute it and/or modify
