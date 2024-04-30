@@ -425,6 +425,13 @@ void NicelineApplicator::printCohort(Cohort* cohort, std::ostream& output, bool 
 		goto removed;
 	}
 
+	if (!cohort->wblank.empty()) {
+		u_fprintf(output, "%S", cohort->wblank.data());
+		if (!ISNL(cohort->wblank.back())) {
+			u_fputc('\n', output);
+		}
+	}
+
 	u_fprintf(output, "%.*S", cohort->wordform->tag.size() - 4, cohort->wordform->tag.data() + 2);
 	if (cohort->wread && !did_warn_statictags) {
 		u_fprintf(ux_stderr, "Warning: Niceline CG format cannot output static tags! You are losing information!\n");
