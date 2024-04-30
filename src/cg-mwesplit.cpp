@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2023, GrammarSoft ApS
+ * Copyright (C) 2007-2024, GrammarSoft ApS
  * Developed by Tino Didriksen <mail@tinodidriksen.com>
  * Design by Eckhard Bick <eckhard.bick@mail.dk>, Tino Didriksen <mail@tinodidriksen.com>
  *
