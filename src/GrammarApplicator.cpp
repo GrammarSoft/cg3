@@ -478,6 +478,13 @@ void GrammarApplicator::printCohort(Cohort* cohort, std::ostream& output, bool p
 		u_fprintf(output, "# RULE TARGET BEGIN\n");
 	}
 
+	if (!cohort->wblank.empty()) {
+		u_fprintf(output, "%S", cohort->wblank.data());
+		if (!ISNL(cohort->wblank.back())) {
+			u_fputc('\n', output);
+		}
+	}
+
 	if (cohort->type & CT_REMOVED) {
 		if (!trace || trace_no_removed) {
 			goto removed;

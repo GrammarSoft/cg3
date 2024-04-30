@@ -462,6 +462,13 @@ void FSTApplicator::printCohort(Cohort* cohort, std::ostream& output, bool profi
 		goto removed;
 	}
 
+	if (!cohort->wblank.empty()) {
+		u_fprintf(output, "%S", cohort->wblank.data());
+		if (!ISNL(cohort->wblank.back())) {
+			u_fputc('\n', output);
+		}
+	}
+
 	if (cohort->wread && !did_warn_statictags) {
 		u_fprintf(ux_stderr, "Warning: FST CG format cannot output static tags! You are losing information!\n");
 		u_fflush(ux_stderr);
