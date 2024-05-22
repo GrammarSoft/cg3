@@ -9,24 +9,24 @@
 	"baseform3" tag3 @stillhere #4->1 ADDCOHORT-BEFORE:16 ADD:22 ADD:22 ADD:22
 	"baseform4" tag4 @stillhere #4->1 ADDCOHORT-BEFORE:16 ADD:22 ADD:22 ADD:22
 	"baseform5" @stillhere #4->1 ADDCOHORT-BEFORE:16 ADD:22 ADD:22 ADD:22
-"<(>"
-	"(" @stillhere #5->1 ADD:22
-"<inside>"
-	"inside" inside @stillhere #6->1 ADD:22
-"<)>"
-	")" @stillhere #7->1 ADD:22
 ; "<word>"
 ;	"word" notwanted REMCOHORT:21
 ;	"matchme" wanted ADDCOHORT-BEFORE:14 ADDCOHORT-AFTER:15 ADDCOHORT-BEFORE:16 ADDCOHORT-BEFORE:18 ADDCOHORT-AFTER:19 REMCOHORT:21
 ;	"word" notmeeither REMCOHORT:21
 "<wordform2>"
-	"baseform2" tag2 @stillhere #8->1 ADDCOHORT-AFTER:15 ADD:22 ADD:22 ADD:22
+	"baseform2" tag2 @stillhere #5->1 ADDCOHORT-AFTER:15 ADD:22 ADD:22 ADD:22
+"<(>"
+	"(" @stillhere #6->1 ADD:22
+"<inside>"
+	"inside" inside @stillhere #7->1 ADD:22
+"<)>"
+	")" @stillhere #8->1 ADD:22
 "<word>"
 	"word" notwanted @last-after-rem @stillhere #9->1 ADD:8 ADDCOHORT-AFTER:9 ADD:22 ADD:22 ADD:22
 	"word" notmeeither @last-after-rem @stillhere #9->1 ADD:8 ADD:22 ADD:22 ADD:22
-; "<last>"
-;	"last" last cohort @last-old ADD:6 REMCOHORT:7
 "<new last>"
 	"new last" new last cohort @last-after-add @stillhere @last-after-rem #10->9 ADDCOHORT-AFTER:9 ADD:10 ADD:22 ADD:22 ADD:8 ADD:10 ADD:22
 ; "<wordform5>"
 ;	"baseform5" tag5 @stillhere @last-old ADDCOHORT-AFTER:19 ADD:22 ADD:22 ADD:6 REMCOHORT:7
+; "<last>"
+;	"last" last cohort @last-old ADD:6 REMCOHORT:7

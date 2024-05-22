@@ -695,12 +695,10 @@ void MatxinApplicator::printSingleWindow(SingleWindow* window, std::ostream& out
 
 	u_fprintf(output, "  <SENTENCE ord=\"%d\" alloc=\"0\">\n", window->number);
 
-	for (size_t c = 0; c < window->cohorts.size(); ++c) {
-		if (c == 0) { // Skip magic cohort
+	for (auto& cohort : window->all_cohorts) {
+		if (cohort->local_number == 0 || (cohort->type & CT_REMOVED)) {
 			continue;
 		}
-
-		Cohort* cohort = window->cohorts[c];
 
 		if (!profiling) {
 			cohort->unignoreAll();
