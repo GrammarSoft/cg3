@@ -320,9 +320,7 @@ void PlaintextApplicator::printCohort(Cohort* cohort, std::ostream& output, bool
 }
 
 void PlaintextApplicator::printSingleWindow(SingleWindow* window, std::ostream& output, bool profiling) {
-	uint32_t cs = UI32(window->cohorts.size());
-	for (uint32_t c = 0; c < cs; c++) {
-		Cohort* cohort = window->cohorts[c];
+	for (auto& cohort : window->all_cohorts) {
 		printCohort(cohort, output, profiling);
 	}
 	u_fputc('\n', output);

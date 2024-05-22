@@ -530,7 +530,10 @@ uint32_t GrammarApplicator::doesTagMatchReading(const Reading& reading, const Ta
 		}
 	}
 	else if (tag.type & T_ENCL) {
-		if (!reading.parent->enclosed.empty()) {
+		auto sw = reading.parent->parent;
+		auto c = std::find(sw->all_cohorts.begin() + reading.parent->local_number, sw->all_cohorts.end(), reading.parent);
+		++c;
+		if (c != sw->all_cohorts.end() && (*c)->enclosed) {
 			match = true;
 		}
 	}

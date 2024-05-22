@@ -515,9 +515,7 @@ void FSTApplicator::printSingleWindow(SingleWindow* window, std::ostream& output
 		}
 	}
 
-	uint32_t cs = UI32(window->cohorts.size());
-	for (uint32_t c = 0; c < cs; c++) {
-		Cohort* cohort = window->cohorts[c];
+	for (auto& cohort : window->all_cohorts) {
 		printCohort(cohort, output, profiling);
 	}
 

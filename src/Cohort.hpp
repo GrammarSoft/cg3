@@ -40,6 +40,7 @@ enum {
 	CT_NUM_CURRENT = (1 <<  3),
 	CT_DEP_DONE    = (1 <<  4),
 	CT_AP_UNKNOWN  = (1 <<  5),
+	CT_IGNORED     = (1 <<  6),
 };
 
 constexpr auto DEP_NO_PARENT = std::numeric_limits<uint32_t>::max();
@@ -50,6 +51,7 @@ public:
 	// ToDo: Get rid of global_number in favour of Cohort* relations
 	uint32_t global_number = 0;
 	uint32_t local_number = 0;
+	uint32_t enclosed = 0;
 	Tag* wordform = nullptr;
 	uint32_t dep_self = 0;
 	uint32_t dep_parent = DEP_NO_PARENT;
@@ -69,9 +71,6 @@ public:
 	num_t num_max, num_min;
 	uint32SortedVector dep_children;
 	boost::dynamic_bitset<> possible_sets;
-	CohortVector enclosed;
-	CohortVector removed;
-	CohortVector ignored_cohorts;
 	RelationCtn relations;
 	RelationCtn relations_input;
 	uint32_t line_number = 0;

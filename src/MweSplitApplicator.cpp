@@ -181,7 +181,7 @@ void MweSplitApplicator::printSingleWindow(SingleWindow* window, std::ostream& o
 	for (uint32_t c = 0; c < cs; c++) {
 		Cohort* cohort = window->cohorts[c];
 		std::vector<Cohort*> cs = splitMwe(cohort);
-		for (auto iter : cs) {
+		for (auto& iter : cs) {
 			printCohort(iter, output, profiling);
 		}
 	}

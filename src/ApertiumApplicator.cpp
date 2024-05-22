@@ -868,6 +868,13 @@ void ApertiumApplicator::printReading(Reading* reading, std::ostream& output) {
 }
 
 void ApertiumApplicator::printCohort(Cohort* cohort, std::ostream& output, bool profiling) {
+	if (cohort->local_number == 0 || (cohort->type & CT_REMOVED)) {
+		if (!cohort->text.empty()) {
+			u_fprintf(output, "%S", cohort->text.data());
+		}
+		return;
+	}
+
 	if (!profiling) {
 		cohort->unignoreAll();
 
@@ -964,11 +971,6 @@ void ApertiumApplicator::printCohort(Cohort* cohort, std::ostream& output, bool 
 	if (!cohort->text.empty()) {
 		u_fprintf(output, "%S", cohort->text.data());
 	}
-	for (auto& c : cohort->removed) {
-		if (!c->text.empty()) {
-			u_fprintf(output, "%S", c->text.data());
-		}
-	}
 }
 
 void ApertiumApplicator::printSingleWindow(SingleWindow* window, std::ostream& output, bool profiling) {
@@ -977,18 +979,7 @@ void ApertiumApplicator::printSingleWindow(SingleWindow* window, std::ostream& o
 		u_fprintf(output, "%S", window->text.data());
 	}
 
-	for (uint32_t c = 0; c < window->cohorts.size(); c++) {
-		Cohort* cohort = window->cohorts[c];
-
-		if (c == 0) { // Skip magic cohort
-			for (auto& c : cohort->removed) {
-				if (!c->text.empty()) {
-					u_fprintf(output, "%S", c->text.data());
-				}
-			}
-			continue;
-		}
-
+	for (auto& cohort : window->all_cohorts) {
 		printCohort(cohort, output, profiling);
 		u_fflush(output);
 	}

@@ -39,6 +39,7 @@ public:
 	Window* parent = nullptr;
 	UString text;
 	UString text_post;
+	CohortVector all_cohorts;
 	CohortVector cohorts;
 	uint32IntervalVector valid_rules;
 	uint32SortedVector hit_external;
