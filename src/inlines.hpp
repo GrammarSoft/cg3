@@ -315,6 +315,16 @@ inline bool ISSPACE(const Char* p) {
 	return ISSPACE(*p) && !ISESC(p);
 }
 
+template<typename Char>
+inline bool ISALPHA_C(Char p) {
+	return (p < 255) && isalpha(p);
+}
+
+template<typename Char>
+inline bool ISDIGIT_C(Char p) {
+	return (p < 255) && isdigit(p);
+}
+
 template<typename Char, typename C, size_t N>
 inline size_t IS_ICASE(const Char* p, const C (&uc)[N], const C (&lc)[N]) {
 	// N - 1 due to null terminator for string constants

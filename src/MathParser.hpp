@@ -273,7 +273,7 @@ inline void MathParser::get_token() {
 		token = exp_ptr.substr(0, 1);
 		exp_ptr.remove_prefix(1);
 	}
-	else if (isalpha(exp_ptr[0])) {
+	else if (ISALPHA_C(exp_ptr[0])) {
 		token = exp_ptr.substr(0, exp_ptr.find_first_of(u" +-/*%^=()"));
 		exp_ptr.remove_prefix(token.size());
 		while (ISSPACE(exp_ptr[0])) {
@@ -281,7 +281,7 @@ inline void MathParser::get_token() {
 		}
 		tok_type = (exp_ptr[0] == '(') ? FUNCTION : VARIABLE;
 	}
-	else if (isdigit(exp_ptr[0]) || exp_ptr[0] == '.') {
+	else if (ISDIGIT_C(exp_ptr[0]) || exp_ptr[0] == '.') {
 		token = exp_ptr.substr(0, exp_ptr.find_first_of(u" +-/*%^=()"));
 		exp_ptr.remove_prefix(token.size());
 		tok_type = NUMBER;
