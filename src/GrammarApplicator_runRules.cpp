@@ -2781,7 +2781,7 @@ label_unpackEnclosures:
 					current->cohorts[j]->local_number = UI32(j);
 					current->cohorts[j - ne] = nullptr;
 				}
-				for (size_t i = la + 1, j = 0; i < ra; ++i) {
+				for (size_t j = 0; i < ra; ++i) {
 					if (current->all_cohorts[i]->enclosed == 0) {
 						current->cohorts[ni + j + 1] = current->all_cohorts[i];
 						current->cohorts[ni + j + 1]->local_number = UI32(ni + j + 1);
