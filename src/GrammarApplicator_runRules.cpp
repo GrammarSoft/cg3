@@ -1894,7 +1894,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						splitMappings(mappings, *get_apply_to().cohort, *get_apply_to().subreading, true);
 					}
 					if (wf && wf != get_apply_to().subreading->parent->wordform) {
-												for (auto r : get_apply_to().subreading->parent->readings) {
+						for (auto r : get_apply_to().subreading->parent->readings) {
 							delTagFromReading(*r, get_apply_to().subreading->parent->wordform);
 							addTagToReading(*r, wf);
 						}

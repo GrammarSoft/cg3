@@ -1574,7 +1574,9 @@ void TextualParser::parseRule(UChar*& p, KEYWORDS key) {
 			AST_OPEN(RuleSubrules);
 			result->lines += SKIPWS(p);
 			do {
-				maybeParseRule(p);
+				if (!maybeParseRule(p)) {
+					error("%s: Error: Expected rule on line %u near `%S`!\n", p);
+				}
 				result->lines += SKIPWS(p, '}', ';');
 				if (*p == ';') {
 					++p;
