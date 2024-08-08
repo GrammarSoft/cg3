@@ -1,0 +1,35 @@
+"<w4>"
+	"b4" tags from copied @Before-To-WithChild #1->2
+		"b4s1" sub-reading copied @Before-To-WithChild #1->2
+"<w4>"
+	"b4" tags from copied @Before-From-WithChild #2->3
+		"b4s1" sub-reading copied @Before-From-WithChild #2->3
+"<w1>"
+	"b1" #3->6
+"<w4>"
+	"b4" tags from copied @Before-From-NoChild #4->6
+		"b4s1" sub-reading copied @Before-From-NoChild #4->6
+"<w4>"
+	"b4" tags from copied @Before-To-NoChild #5->6
+		"b4s1" sub-reading copied @Before-To-NoChild #5->6
+"<w2>"
+	"b2" target #6->0
+"<w4>"
+	"b4" tags from copied @After-To-NoChild #7->6
+		"b4s1" sub-reading copied @After-To-NoChild #7->6
+"<w4>"
+	"b4" tags from copied @After-From-NoChild #8->6
+		"b4s1" sub-reading copied @After-From-NoChild #8->6
+"<w3>"
+	"b3" #9->6
+"<w4>"
+	"b4" tags snip from #10->9
+		"b4s1" sub-reading snip #10->9
+"<w4>"
+	"b4" tags from copied @After-From-WithChild #11->10
+		"b4s1" sub-reading copied @After-From-WithChild #11->10
+"<w4>"
+	"b4" tags from copied @After-To-WithChild #12->11
+		"b4s1" sub-reading copied @After-To-WithChild #12->11
+"<.>"
+	"." #13->0

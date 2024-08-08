@@ -1,0 +1,11 @@
+"<w1>"
+	"b1" #1->2
+"<w2>"
+	"b2" target #2->0
+"<w3>"
+	"b3" #3->2
+"<w4>"
+	"b4" tags snip from #4->3
+		"b4s1" sub-reading snip
+"<.>"
+	"." #5->0

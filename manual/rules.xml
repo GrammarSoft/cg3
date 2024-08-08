@@ -57,6 +57,10 @@
   Cohort manipulation:
       ADDCOHORT &lt;cohort tags&gt; BEFORE|AFTER [WITHCHILD &lt;child_set&gt;|NOCHILD]
           &lt;target&gt; [contextual_tests] ;
+      COPYCOHORT &lt;added tags&gt; [EXCEPT &lt;removed tags&gt;] &lt;target&gt; [contextual_tests]
+          TO [BEFORE|AFTER] [WITHCHILD &lt;child_set&gt;|NOCHILD] &lt;contextual targets&gt; ;
+      COPYCOHORT &lt;added tags&gt; [EXCEPT &lt;removed tags&gt;] [BEFORE|AFTER] [WITHCHILD &lt;child_set&gt;|NOCHILD]
+          &lt;target&gt; [contextual_tests] FROM &lt;contextual targets&gt; ;
       REMCOHORT &lt;target&gt; [contextual_tests] ;
       SPLITCOHORT &lt;cohort recipe&gt; &lt;target&gt; [contextual_tests] ;
       MERGECOHORTS &lt;cohort recipe&gt; &lt;target&gt; [contextual_tests] WITH &lt;contextual targets&gt; ;
@@ -183,6 +187,37 @@
     </screen>
   </section>
 
+  <section id="copycohort">
+    <title>COPYCOHORT</title>
+    <indexterm>
+      <primary>COPYCOHORT</primary>
+    </indexterm>
+    <screen>
+      [wordform] COPYCOHORT &lt;added tags&gt; [EXCEPT &lt;removed tags&gt;] &lt;target&gt; [contextual_tests]
+          TO [BEFORE|AFTER] [WITHCHILD &lt;child_set&gt;|NOCHILD] &lt;contextual targets&gt; ;
+      [wordform] COPYCOHORT &lt;added tags&gt; [EXCEPT &lt;removed tags&gt;] [BEFORE|AFTER] [WITHCHILD &lt;child_set&gt;|NOCHILD]
+          &lt;target&gt; [contextual_tests] FROM &lt;contextual targets&gt; ;
+    </screen>
+    <para>
+      Copies the current cohort to before or after the contextual target.
+      Or copies a contextual target cohort to before or after the current cohort.
+      The added tags is not optional, but you can specify * to not actually add any tags.
+    </para>
+    <para>
+      The newly added cohort will be dependency-attached to the nearest cohort towards the target.
+      Relations are not currently copied.
+    </para>
+    <para>
+      WITHCHILD uses the children of the cohort you're targeting as edges so you can avoid creating cohorts
+      in the middle of another dependency group.
+      If you specify WITHCHILD you will need to provide a set that the children you want to apply must match.
+      The (*) set will match all children.
+    </para>
+    <screen>
+      CopyCohort (copied) Except (snip) Before WithChild (*) (target) From (1* (from) - (copied)) ;
+    </screen>
+  </section>
+
   <section id="remcohort">
     <title>REMCOHORT</title>
     <indexterm>
@@ -232,7 +267,7 @@
         "&lt;$1&gt;"v "$1"v tags * tags c->2
         # inherit named relations with R:*, and inherit dependency parents with 2->p
         "&lt;$2&gt;"v "$2"v tags go here R:* 2->p
-        ) ("&lt;([^-]+)-([^-]+)&gt;" other tags) (1* (context)) ;
+        ) ("&lt;([^-]+)-([^-]+)&gt;"r other tags) (1* (context)) ;
     </screen>
   </section>
 

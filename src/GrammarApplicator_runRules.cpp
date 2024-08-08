@@ -2126,6 +2126,169 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 
 				reset_cohorts_for_loop = true;
 			}
+			else if (rule->type == K_COPYCOHORT) {
+				Cohort* attach = nullptr;
+				Cohort* cohort = context_stack.back().target.cohort;
+				uint32_t c = cohort->local_number;
+				dep_deep_seen.clear();
+				tmpl_cntx.clear();
+				context_stack.back().attach_to.cohort = nullptr;
+				context_stack.back().attach_to.reading = nullptr;
+				context_stack.back().attach_to.subreading = nullptr;
+				if (runContextualTest(&current, c, rule->dep_target, &attach) && attach) {
+					profileRuleContext(true, rule, rule->dep_target);
+
+					if (get_attach_to().cohort) {
+						attach = get_attach_to().cohort;
+					}
+					context_target = attach;
+					bool good = true;
+					for (auto it : rule->dep_tests) {
+						context_stack.back().mark = attach;
+						dep_deep_seen.clear();
+						tmpl_cntx.clear();
+						bool test_good = (runContextualTest(attach->parent, attach->local_number, it) != nullptr);
+
+						profileRuleContext(test_good, rule, it);
+
+						if (!test_good) {
+							good = test_good;
+							break;
+						}
+					}
+
+					if (!good || cohort == attach || cohort->local_number == 0) {
+						return;
+					}
+
+					auto childset = rule->childset2;
+					if (rule->flags & RF_REVERSE) {
+						std::swap(cohort, attach);
+						childset = rule->childset1;
+					}
+
+					Cohort* cCohort = alloc_cohort(attach->parent);
+					cCohort->global_number = gWindow->cohort_counter++;
+					cCohort->wordform = cohort->wordform;
+					insert_if_exists(cCohort->possible_sets, grammar->sets_any);
+
+					auto theTags = ss_taglist.get();
+					getTagList(*rule->maplist, theTags);
+
+					for (auto& tter : *theTags) {
+						if (tter->type & T_VSTR) {
+							VARSTRINGIFY(tter);
+						}
+					}
+
+					auto excepts = ss_taglist.get();
+					if (rule->sublist) {
+						getTagList(*rule->sublist, excepts);
+						FILL_TAG_LIST_RAW(excepts);
+					}
+
+					std::vector<Reading*> rs;
+					for (auto r : cohort->readings) {
+						rs.clear();
+						for (; r; r = r->next) {
+							auto cReading = alloc_reading(cCohort);
+							++numReadings;
+							cReading->hit_by.push_back(rule->number);
+							cReading->noprint = false;
+							TagList mappings;
+							for (auto hash : r->tags_list) {
+								auto tter = grammar->single_tags[hash];
+								if (tter->type & T_MAPPING || tter->tag[0] == grammar->mapping_prefix) {
+									mappings.push_back(tter);
+								}
+								else {
+									hash = addTagToReading(*cReading, hash);
+								}
+								if (updateValidRules(rules, intersects, hash, *cReading)) {
+									iter_rules = intersects.find(rule->number);
+									iter_rules_end = intersects.end();
+								}
+							}
+							for (auto tter : *theTags) {
+								auto hash = tter->hash;
+								if (hash == grammar->tag_any) {
+									continue;
+								}
+								if (tter->type & T_MAPPING || tter->tag[0] == grammar->mapping_prefix) {
+									mappings.push_back(tter);
+								}
+								else {
+									hash = addTagToReading(*cReading, hash);
+								}
+								if (updateValidRules(rules, intersects, hash, *cReading)) {
+									iter_rules = intersects.find(rule->number);
+									iter_rules_end = intersects.end();
+								}
+							}
+							if (!mappings.empty()) {
+								splitMappings(mappings, *cCohort, *cReading);
+							}
+							rs.push_back(cReading);
+						}
+						auto rn = rs.front();
+						for (size_t j = 1; j < rs.size(); ++j) {
+							rn->next = rs[j];
+							rn = rn->next;
+						}
+						cCohort->appendReading(rs.front());
+					}
+
+					if (cCohort->readings.empty()) {
+						initEmptyCohort(*cCohort);
+						if (trace) {
+							auto r = cCohort->readings.front();
+							r->hit_by.push_back(rule->number);
+							r->noprint = false;
+						}
+					}
+
+					for (auto r : cCohort->readings) {
+						for (; r; r = r->next) {
+							for (auto tter : *excepts) {
+								delTagFromReading(*r, tter);
+							}
+						}
+					}
+
+					if (cohort->wread) {
+						cCohort->wread = alloc_reading(cCohort);
+						for (auto hash : cohort->wread->tags_list) {
+							hash = addTagToReading(*cCohort->wread, hash);
+							if (updateValidRules(rules, intersects, hash, *cCohort->wread)) {
+								iter_rules = intersects.find(rule->number);
+								iter_rules_end = intersects.end();
+							}
+						}
+					}
+
+					current.parent->cohort_map[cCohort->global_number] = cCohort;
+					current.parent->dep_window[cCohort->global_number] = cCohort;
+
+					CohortSet edges;
+					collect_subtree(edges, attach, childset);
+
+					if (rule->flags & RF_BEFORE) {
+						current.cohorts.insert(current.cohorts.begin() + edges.front()->local_number, cCohort);
+						current.all_cohorts.insert(std::find(current.all_cohorts.begin() + edges.front()->local_number, current.all_cohorts.end(), edges.front()), cCohort);
+						attachParentChild(*edges.front(), *cCohort);
+					}
+					else {
+						current.cohorts.insert(current.cohorts.begin() + edges.back()->local_number + 1, cCohort);
+						current.all_cohorts.insert(std::find(current.all_cohorts.begin() + edges.back()->local_number, current.all_cohorts.end(), edges.back()) + 1, cCohort);
+						attachParentChild(*edges.back(), *cCohort);
+					}
+
+					foreach(iter, current.cohorts) {
+						(*iter)->local_number = UI32(std::distance(current.cohorts.begin(), iter));
+					}
+					gWindow->rebuildCohortLinks();
+				}
+			}
 			else if (rule->type == K_SETPARENT || rule->type == K_SETCHILD || rule->type == K_ADDRELATION || rule->type == K_SETRELATION || rule->type == K_REMRELATION || rule->type == K_ADDRELATIONS || rule->type == K_SETRELATIONS || rule->type == K_REMRELATIONS) {
 				auto dep_target_cb = [&]() -> bool {
 					Cohort* target = context_stack.back().target.cohort;
