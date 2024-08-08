@@ -156,6 +156,8 @@ Don't change without re-evaluating `cg-kw-re' (or all of cg.el).")
     "IFF"
     "ADDCOHORT" "REMCOHORT"
     "MERGECOHORTS"
+    "COPYCOHORT"
+    "SPLITCOHORT"
     "COPY"
     "MOVE" "SWITCH"
     "EXTERNAL" "DELIMIT"
@@ -213,6 +215,7 @@ Don't change without re-evaluating the file.")
 				"CBARRIER"
 				"OR"
 				"TARGET"
+				"EXCEPT"
 				"IF"
 				"AFTER"
 				"BEFORE"
@@ -661,7 +664,7 @@ select the whole string \"SELECT:1022:rulename\")."
                           (yank)
                           (buffer-substring-no-properties (point-min)(point-max))))))
     (if (string-match
-         "\\(\\(select\\|iff\\|remove\\|map\\|addcohort\\|remcohort\\|switch\\|copy\\|add\\|substitute\\|mergecohorts\\):\\)?\\([0-9]+\\)"
+         "\\(\\(select\\|iff\\|remove\\|map\\|addcohort\\|remcohort\\|switch\\|copy\\|add\\|substitute\\|mergecohorts\\|copycohort\\|splitcohort\\):\\)?\\([0-9]+\\)"
          rule)
         (progn (goto-char (point-min))
 	       (forward-line (1- (string-to-number (match-string 3 rule))))
