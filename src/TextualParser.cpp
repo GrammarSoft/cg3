@@ -1320,13 +1320,13 @@ void TextualParser::parseRule(UChar*& p, KEYWORDS key) {
 		AST_CLOSE(p);
 	}
 
-	if (rule->sub_reading == GSR_ANY && (key == K_MAP || key == K_ADD || key == K_REPLACE || key == K_SUBSTITUTE || key == K_COPY)) {
-		error("%s: Error: SUB:* on line %u is not yet valid for MAP/ADD/REPLACE/SUBSTITUTE/COPY!\n");
+	if (rule->sub_reading == GSR_ANY && (key == K_MAP || key == K_ADD || key == K_REPLACE || key == K_SUBSTITUTE || key == K_COPY || key == K_COPYCOHORT)) {
+		error("%s: Error: SUB:* on line %u is not yet valid for MAP/ADD/REPLACE/SUBSTITUTE/COPY/COPYCOHORT!\n");
 	}
 
 	result->lines += SKIPWS(p);
 	lp = p;
-	if (key == K_MAP || key == K_ADD || key == K_REPLACE || key == K_APPEND || key == K_SUBSTITUTE || key == K_COPY || key == K_ADDRELATIONS || key == K_ADDRELATION || key == K_SETRELATIONS || key == K_SETRELATION || key == K_REMRELATIONS || key == K_REMRELATION || key == K_SETVARIABLE || key == K_REMVARIABLE || key == K_ADDCOHORT || key == K_JUMP || key == K_SPLITCOHORT || key == K_MERGECOHORTS || key == K_RESTORE) {
+	if (key == K_MAP || key == K_ADD || key == K_REPLACE || key == K_APPEND || key == K_SUBSTITUTE || key == K_COPY || key == K_COPYCOHORT || key == K_ADDRELATIONS || key == K_ADDRELATION || key == K_SETRELATIONS || key == K_SETRELATION || key == K_REMRELATIONS || key == K_REMRELATION || key == K_SETVARIABLE || key == K_REMVARIABLE || key == K_ADDCOHORT || key == K_JUMP || key == K_SPLITCOHORT || key == K_MERGECOHORTS || key == K_RESTORE) {
 		AST_OPEN(RuleMaplist);
 		swapper_false swp(no_isets, no_isets);
 		Set* s = parseSetInlineWrapper(p);
@@ -1342,7 +1342,7 @@ void TextualParser::parseRule(UChar*& p, KEYWORDS key) {
 	}
 
 	bool copy_except = false;
-	if (key == K_COPY && ux_simplecasecmp(p, STR_EXCEPT)) {
+	if ((key == K_COPY || key == K_COPYCOHORT) && ux_simplecasecmp(p, STR_EXCEPT)) {
 		AST_OPEN(RuleExcept);
 		p += STR_EXCEPT.size();
 		copy_except = true;
@@ -1382,7 +1382,7 @@ void TextualParser::parseRule(UChar*& p, KEYWORDS key) {
 		AST_CLOSE(p);
 	}
 
-	if (key == K_ADD || key == K_MAP || key == K_SUBSTITUTE || key == K_COPY) {
+	if (key == K_ADD || key == K_MAP || key == K_SUBSTITUTE || key == K_COPY || key == K_COPYCOHORT) {
 		if (ux_simplecasecmp(p, STR_AFTER)) {
 			p += STR_AFTER.size();
 			rule->flags |= RF_AFTER;
@@ -1391,7 +1391,7 @@ void TextualParser::parseRule(UChar*& p, KEYWORDS key) {
 			p += STR_BEFORE.size();
 			rule->flags |= RF_BEFORE;
 		}
-		if (rule->flags & (RF_BEFORE | RF_AFTER)) {
+		if (key != K_COPYCOHORT && (rule->flags & (RF_BEFORE | RF_AFTER))) {
 			Set* s = parseSetInlineWrapper(p);
 			rule->childset1 = s->hash;
 		}
@@ -1451,7 +1451,7 @@ void TextualParser::parseRule(UChar*& p, KEYWORDS key) {
 	}
 	AST_CLOSE(p);
 
-	if (key == K_SETPARENT || key == K_SETCHILD || key == K_ADDRELATIONS || key == K_ADDRELATION || key == K_SETRELATIONS || key == K_SETRELATION || key == K_REMRELATIONS || key == K_REMRELATION || key == K_MOVE || key == K_SWITCH || key == K_MERGECOHORTS) {
+	if (key == K_SETPARENT || key == K_SETCHILD || key == K_ADDRELATIONS || key == K_ADDRELATION || key == K_SETRELATIONS || key == K_SETRELATION || key == K_REMRELATIONS || key == K_REMRELATION || key == K_MOVE || key == K_SWITCH || key == K_MERGECOHORTS || key == K_COPYCOHORT) {
 		result->lines += SKIPWS(p);
 		if (key == K_MOVE) {
 			AST_OPEN(RuleMoveType);
@@ -1486,13 +1486,25 @@ void TextualParser::parseRule(UChar*& p, KEYWORDS key) {
 				rule->flags |= RF_REVERSE;
 			}
 			else {
-				error("%s: Error: Expected dependency keyword TO or FROM on line %u near `%S`!\n", p);
+				error("%s: Error: Expected dependency/target keyword TO or FROM on line %u near `%S`!\n", p);
 			}
 			AST_CLOSE(p);
 		}
 		result->lines += SKIPWS(p);
 
-		if (key == K_MOVE) {
+		if (key == K_COPYCOHORT && !(rule->flags & RF_REVERSE)) {
+			if (ux_simplecasecmp(p, STR_AFTER)) {
+				p += STR_AFTER.size();
+				rule->flags |= RF_AFTER;
+			}
+			else if (ux_simplecasecmp(p, STR_BEFORE)) {
+				p += STR_BEFORE.size();
+				rule->flags |= RF_BEFORE;
+			}
+			result->lines += SKIPWS(p);
+		}
+
+		if (key == K_MOVE || key == K_COPYCOHORT) {
 			AST_OPEN(RuleWithChildDepTarget);
 			if (ux_simplecasecmp(p, g_flags[FL_WITHCHILD])) {
 				p += g_flags[FL_WITHCHILD].size();
@@ -1536,6 +1548,9 @@ void TextualParser::parseRule(UChar*& p, KEYWORDS key) {
 	}
 	if (key == K_SETRELATION || key == K_SETRELATIONS || key == K_ADDRELATION || key == K_ADDRELATIONS || key == K_REMRELATION || key == K_REMRELATIONS) {
 		result->has_relations = true;
+	}
+	if (key == K_COPYCOHORT && !(rule->flags & (RF_BEFORE|RF_AFTER))) {
+		rule->flags |= RF_AFTER;
 	}
 
 	if (!(rule->flags & RF_REMEMBERX)) {
@@ -1708,10 +1723,14 @@ bool TextualParser::maybeParseRule(UChar*& p) {
 	else if (IS_ICASE(p, "SUBSTITUTE", "substitute")) {
 		parseRule(p, K_SUBSTITUTE);
 	}
+	// COPYCOHORT
+	else if (IS_ICASE(p, "COPYCOHORT", "copycohort")) {
+		parseRule(p, K_COPYCOHORT);
+	}
 	// COPY
 	else if (IS_ICASE(p, "COPY", "copy")) {
 		parseRule(p, K_COPY);
-			}
+	}
 	// UNMAP
 	else if (IS_ICASE(p, "UNMAP", "unmap")) {
 		parseRule(p, K_UNMAP);

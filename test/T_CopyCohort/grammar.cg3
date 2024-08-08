@@ -1,0 +1,11 @@
+Delimiters = "<.>" ;
+
+CopyCohort (@Before-From-NoChild copied) Except (snip) Before (target) From (1* (from) - (copied)) ;
+CopyCohort (@Before-From-WithChild copied) Except (snip) Before WithChild (*) (target) From (1* (from) - (copied)) ;
+CopyCohort (@After-From-NoChild copied) Except (snip) After (target) From (1* (from) - (copied)) ;
+CopyCohort (@After-From-WithChild copied) Except (snip) After WithChild (*) (target) From (1* (from) - (copied)) ;
+
+CopyCohort (@Before-To-NoChild copied) Except (snip) (from) - (copied) To Before (-1* (target)) ;
+CopyCohort (@Before-To-WithChild copied) Except (snip) (from) - (copied) To Before WithChild (*) (-1* (target)) ;
+CopyCohort (@After-To-NoChild copied) Except (snip) (from) - (copied) To After (-1* (target)) ;
+CopyCohort (@After-To-WithChild copied) Except (snip) (from) - (copied) To After WithChild (*) (-1* (target)) ;
