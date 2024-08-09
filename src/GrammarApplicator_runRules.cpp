@@ -880,9 +880,12 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 		bool should_repeat = false;
 		bool should_bail = false;
 
-		auto reindex = [&]() {
-			foreach (iter, current.cohorts) {
-				(*iter)->local_number = UI32(std::distance(current.cohorts.begin(), iter));
+		auto reindex = [&](SingleWindow* which = nullptr) {
+			if (!which) {
+				which = &current;
+			}
+			foreach (iter, which->cohorts) {
+				(*iter)->local_number = UI32(std::distance(which->cohorts.begin(), iter));
 			}
 			gWindow->rebuildCohortLinks();
 		};
@@ -2273,20 +2276,20 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 					collect_subtree(edges, attach, childset);
 
 					if (rule->flags & RF_BEFORE) {
-						current.cohorts.insert(current.cohorts.begin() + edges.front()->local_number, cCohort);
-						current.all_cohorts.insert(std::find(current.all_cohorts.begin() + edges.front()->local_number, current.all_cohorts.end(), edges.front()), cCohort);
+						attach->parent->cohorts.insert(attach->parent->cohorts.begin() + edges.front()->local_number, cCohort);
+						attach->parent->all_cohorts.insert(std::find(attach->parent->all_cohorts.begin() + edges.front()->local_number, attach->parent->all_cohorts.end(), edges.front()), cCohort);
 						attachParentChild(*edges.front(), *cCohort);
 					}
 					else {
-						current.cohorts.insert(current.cohorts.begin() + edges.back()->local_number + 1, cCohort);
-						current.all_cohorts.insert(std::find(current.all_cohorts.begin() + edges.back()->local_number, current.all_cohorts.end(), edges.back()) + 1, cCohort);
+						attach->parent->cohorts.insert(attach->parent->cohorts.begin() + edges.back()->local_number + 1, cCohort);
+						attach->parent->all_cohorts.insert(std::find(attach->parent->all_cohorts.begin() + edges.back()->local_number, attach->parent->all_cohorts.end(), edges.back()) + 1, cCohort);
 						attachParentChild(*edges.back(), *cCohort);
 					}
 
-					foreach(iter, current.cohorts) {
-						(*iter)->local_number = UI32(std::distance(current.cohorts.begin(), iter));
-					}
-					gWindow->rebuildCohortLinks();
+					reindex(attach->parent);
+					indexSingleWindow(*attach->parent);
+					readings_changed = true;
+					reset_cohorts_for_loop = true;
 				}
 			}
 			else if (rule->type == K_SETPARENT || rule->type == K_SETCHILD || rule->type == K_ADDRELATION || rule->type == K_SETRELATION || rule->type == K_REMRELATION || rule->type == K_ADDRELATIONS || rule->type == K_SETRELATIONS || rule->type == K_REMRELATIONS) {
