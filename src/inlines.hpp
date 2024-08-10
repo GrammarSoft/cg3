@@ -777,6 +777,27 @@ private:
 	T* p;
 };
 
+class scope_guard {
+public:
+	scope_guard(std::function<void()> func, bool good = true)
+		: func(func)
+		, good(good)
+	{}
+
+	~scope_guard() {
+		if (good) {
+			func();
+		}
+	}
+
+	void set(bool val = true) {
+		good = val;
+	}
+private:
+	std::function<void()> func;
+	bool good = true;
+};
+
 template<typename T>
 inline T* reverse(T* head) {
 	T* nr = nullptr;
