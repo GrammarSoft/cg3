@@ -43,6 +43,7 @@
 #include <exception>
 #include <stdexcept>
 #include <algorithm>
+#include <functional>
 #include <iterator>
 #include <iostream>
 #include <fstream>

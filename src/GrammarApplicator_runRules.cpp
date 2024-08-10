@@ -70,7 +70,38 @@ bool GrammarApplicator::updateRuleToCohorts(Cohort& c, const uint32_t& rsit) {
 		indexSingleWindow(*current);
 	}
 	CohortSet& cohortset = current->rule_to_cohorts[rsit];
-	cohortset.insert(&c);
+	std::vector<size_t> csi;
+	for (size_t i = 0; i < cohortsets.size(); ++i) {
+		if (cohortsets[i] != &cohortset) {
+			continue;
+		}
+		csi.push_back(i);
+	}
+	if (!csi.empty()) {
+		auto cap = cohortset.capacity();
+		std::vector<CohortSet::const_iterator*> ends;
+		std::vector<std::pair<CohortSet::const_iterator*,Cohort*>> chs;
+		for (size_t i = 0; i < csi.size(); ++i) {
+			if (*rocits[csi[i]] == cohortset.end()) {
+				ends.push_back(rocits[csi[i]]);
+			}
+			else {
+				chs.push_back(std::pair(rocits[csi[i]], **rocits[csi[i]]));
+			}
+		}
+		cohortset.insert(&c);
+		for (auto it : ends) {
+			*it = cohortset.end();
+		}
+		if (cap != cohortset.capacity()) {
+			for (auto& it : chs) {
+				*it.first = cohortset.find(it.second);
+			}
+		}
+	}
+	else {
+		cohortset.insert(&c);
+	}
 	return current->valid_rules.insert(rsit);
 }
 
@@ -333,11 +364,19 @@ bool GrammarApplicator::runSingleRule(SingleWindow& current, const Rule& rule, R
 		}
 	};
 	override_cohortset();
+	cohortsets.push_back(cohortset);
+	rocits.push_back(nullptr);
+
+	scope_guard popper([&]() {
+		cohortsets.pop_back();
+		rocits.pop_back();
+		});
 
 	if (debug_level > 1) {
 		std::cerr << "DEBUG: " << cohortset->size() << "/" << current.cohorts.size() << " = " << double(cohortset->size()) / double(current.cohorts.size()) << std::endl;
 	}
-	for (auto rocit = cohortset->cbegin(); rocit != cohortset->cend();) {
+	for (auto rocit = cohortset->cbegin(); (!cohortset->empty()) && (rocit != cohortset->cend());) {
+		rocits.back() = &rocit;
 		Cohort* cohort = *rocit;
 		++rocit;
 
@@ -483,6 +522,7 @@ bool GrammarApplicator::runSingleRule(SingleWindow& current, const Rule& rule, R
 		auto reset_cohorts = [&]() {
 			cohortset = &current.rule_to_cohorts[rule.number];
 			override_cohortset();
+			cohortsets.back() = cohortset;
 			if (get_apply_to().cohort->type & CT_REMOVED) {
 				rocit = cohortset->lower_bound(current.cohorts[get_apply_to().cohort->local_number]);
 			}
