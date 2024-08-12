@@ -91,11 +91,11 @@ uint32_t GrammarApplicator::doesTagMatchRegexp(uint32_t test, const Tag& tag, bo
 	UErrorCode status = U_ZERO_ERROR;
 	int32_t gc = uregex_groupCount(tag.regexp, &status);
 	uint32_t match = 0;
-	uint32_t ih = hash_value(tag.hash, test);
-	if (!bypass_index && index_matches(index_regexp_no, ih)) {
+	auto ih = (UI64(tag.hash) << 32) | test;
+	if (!bypass_index && index_regexp_no.contains(ih)) {
 		match = 0;
 	}
-	else if (!bypass_index && gc == 0 && index_matches(index_regexp_yes, ih)) {
+	else if (!bypass_index && gc == 0 && index_regexp_yes.contains(ih)) {
 		match = test;
 	}
 	else {
@@ -130,11 +130,11 @@ uint32_t GrammarApplicator::doesTagMatchRegexp(uint32_t test, const Tag& tag, bo
 
 uint32_t GrammarApplicator::doesTagMatchIcase(uint32_t test, const Tag& tag, bool bypass_index) {
 	uint32_t match = 0;
-	uint32_t ih = hash_value(tag.hash, test);
-	if (!bypass_index && index_matches(index_icase_no, ih)) {
+	auto ih = (UI64(tag.hash) << 32) | test;
+	if (!bypass_index && index_icase_no.contains(ih)) {
 		match = 0;
 	}
-	else if (!bypass_index && index_matches(index_icase_yes, ih)) {
+	else if (!bypass_index && index_icase_yes.contains(ih)) {
 		match = test;
 	}
 	else {
@@ -157,11 +157,11 @@ uint32_t GrammarApplicator::doesRegexpMatchLine(const Reading& reading, const Ta
 	UErrorCode status = U_ZERO_ERROR;
 	int32_t gc = uregex_groupCount(tag.regexp, &status);
 	uint32_t match = 0;
-	uint32_t ih = hash_value(reading.tags_string_hash, tag.hash);
-	if (!bypass_index && index_matches(index_regexp_no, ih)) {
+	auto ih = (UI64(reading.tags_string_hash) << 32) | tag.hash;
+	if (!bypass_index && index_regexp_no.contains(ih)) {
 		match = 0;
 	}
-	else if (!bypass_index && gc == 0 && index_matches(index_regexp_yes, ih)) {
+	else if (!bypass_index && gc == 0 && index_regexp_yes.contains(ih)) {
 		match = reading.tags_string_hash;
 	}
 	else {
@@ -671,10 +671,10 @@ bool GrammarApplicator::doesSetMatchReading(const Reading& reading, const uint32
 	// Only 30% of tests get past this.
 	// ToDo: This is not good enough...while numeric tags are special, their failures can be indexed.
 	if (!bypass_index && !unif_mode) {
-		if (index_readingSet_no[set].find(reading.hash) != index_readingSet_no[set].end()) {
+		if (index_readingSet_no[set].contains(reading.hash)) {
 			return false;
 		}
-		if (index_readingSet_yes[set].find(reading.hash) != index_readingSet_yes[set].end()) {
+		if (index_readingSet_yes[set].contains(reading.hash)) {
 			return true;
 		}
 	}

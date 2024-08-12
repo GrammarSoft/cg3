@@ -511,6 +511,9 @@ void GAppSetOpts(GrammarApplicator& applicator, UConverter* conv) {
 			}
 		}
 	}
+	if (options[DEBUG_RULES].doesOccur) {
+		GAppSetOpts_ranged(options[DEBUG_RULES].value.c_str(), applicator.debug_rules, false);
+	}
 	if (options[VERBOSE].doesOccur) {
 		if (!options[VERBOSE].value.empty()) {
 			applicator.verbosity_level = std::stoul(options[VERBOSE].value);

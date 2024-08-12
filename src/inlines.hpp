@@ -475,11 +475,6 @@ inline bool is_cg3b(const S& s) {
 	return (s[0] == 'C' && s[1] == 'G' && s[2] == '3' && s[3] == 'B');
 }
 
-template<typename Cont, typename VT>
-inline bool index_matches(const Cont& index, const VT& entry) {
-	return (index.find(entry) != index.end());
-}
-
 inline void insert_if_exists(boost::dynamic_bitset<>& cont, const boost::dynamic_bitset<>* other) {
 	if (other && !other->empty()) {
 		cont.resize(std::max(cont.size(), other->size()));

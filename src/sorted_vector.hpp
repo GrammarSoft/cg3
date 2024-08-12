@@ -170,6 +170,10 @@ public:
 		return (find(t) != end());
 	}
 
+	bool contains(T t) const {
+		return (find(t) != end());
+	}
+
 	iterator begin() {
 		return elements.begin();
 	}

@@ -44,6 +44,7 @@ Options:
      --nrules               a regex for which rule names to parse/run; defaults to all rules
      --nrules-v             a regex for which rule names not to parse/run
  -d, --debug                enables debug output (very noisy)
+     --debug-rules          number or ranges of rules to debug
  -v, --verbose              increases verbosity
      --quiet                squelches warnings (same as -v 0)
  -2, --vislcg-compat        enables compatibility mode for older CG-2 and vislcg grammars
