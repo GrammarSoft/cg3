@@ -137,6 +137,7 @@ public:
 	uint32Vector sections;
 	uint32IntervalVector valid_rules;
 	uint32IntervalVector trace_rules;
+	uint32IntervalVector debug_rules;
 	uint32FlatHashMap variables;
 	uint32_t verbosity_level = 0;
 	uint32_t debug_level = 0;
@@ -279,10 +280,10 @@ protected:
 	scoped_stack<unif_sets_t> ss_usets;
 	scoped_stack<uint32SortedVector> ss_u32sv;
 
-	uint32FlatHashSet index_regexp_yes;
-	uint32FlatHashSet index_regexp_no;
-	uint32FlatHashSet index_icase_yes;
-	uint32FlatHashSet index_icase_no;
+	uint64FlatHashSet index_regexp_yes;
+	uint64FlatHashSet index_regexp_no;
+	uint64FlatHashSet index_icase_yes;
+	uint64FlatHashSet index_icase_no;
 	std::vector<uint32FlatHashSet> index_readingSet_yes;
 	std::vector<uint32FlatHashSet> index_readingSet_no;
 	uint32FlatHashSet index_ruleCohort_no;
@@ -357,6 +358,34 @@ protected:
 
 	std::deque<Reading> subs_any;
 	Reading* get_sub_reading(Reading* tr, int sub_reading);
+
+	void printDebugRule(const Rule& rule, bool target = true, bool cntx = true) {
+		static std::stringstream buf;
+
+		bool ttrace = false;
+		swapper<bool> _st(true, trace, ttrace);
+
+		// Whole context, both before and after current window
+		buf.str("");
+		buf.clear();
+
+		buf << "# ===== BEGIN RULE " << rule.line << (target ? " TARGET-MATCH" : " TARGET-FAIL") << (cntx ? " CONTEXT-MATCH" : " CONTEXT-FAIL") << " =====\n";
+
+		buf << "# PREVIOUS WINDOWS\n";
+		for (auto s : gWindow->previous) {
+			printSingleWindow(s, buf, true);
+		}
+		buf << "# CURRENT WINDOW\n";
+		printSingleWindow(gWindow->current, buf, true);
+		buf << "# NEXT WINDOWS\n";
+		for (auto s : gWindow->next) {
+			printSingleWindow(s, buf, true);
+		}
+
+		buf << "# ===== END RULE " << rule.line << " =====\n";
+
+		u_fprintf(ux_stderr, "%s", buf.str().c_str());
+	}
 
 	template<typename T>
 	void addProfilingExample(T& item) {

@@ -235,6 +235,10 @@ public:
 		return (find(t) != end());
 	}
 
+	bool contains(T t) const {
+		return (find(t) != end());
+	}
+
 	V& operator[](const T& t) {
 		assert(t != res_empty && t != res_del && "Key cannot be res_empty or res_del!");
 

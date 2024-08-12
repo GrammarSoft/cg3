@@ -475,7 +475,7 @@ bool GrammarApplicator::runSingleRule(SingleWindow& current, const Rule& rule, R
 		// Check if on previous runs the rule did not match this cohort, and skip if that is the case.
 		// This cache is cleared if any rule causes any state change in the window.
 		uint32_t ih = hash_value(rule.number, cohort->global_number);
-		if (index_matches(index_ruleCohort_no, ih)) {
+		if (index_ruleCohort_no.contains(ih)) {
 			continue;
 		}
 		index_ruleCohort_no.insert(ih);
@@ -640,6 +640,7 @@ bool GrammarApplicator::runSingleRule(SingleWindow& current, const Rule& rule, R
 			for (auto r = cohort->readings[i]; r; r = r->next) {
 				r->active = true;
 			}
+			rule_target = cohort;
 			// Actually check if the reading is a valid target. First check if rule target matches...
 			if (rule.target && doesSetMatchReading(*reading, rule.target, (set.type & (ST_CHILD_UNIFY | ST_SPECIAL)) != 0)) {
 				bool regex_prop = true;
@@ -724,6 +725,9 @@ bool GrammarApplicator::runSingleRule(SingleWindow& current, const Rule& rule, R
 							addProfilingExample(r);
 						}
 					}
+					if (!debug_rules.empty() && debug_rules.contains(rule.line)) {
+						printDebugRule(rule);
+					}
 
 					if (regex_prop && i && !regexgrps_c.empty()) {
 						for (auto z = i; z > 0; --z) {
@@ -738,6 +742,9 @@ bool GrammarApplicator::runSingleRule(SingleWindow& current, const Rule& rule, R
 				}
 				else {
 					context_stack.back().regexgrp_ct = orz;
+					if (!debug_rules.empty() && debug_rules.contains(rule.line)) {
+						printDebugRule(rule, true, false);
+					}
 				}
 				++num_iff;
 			}
@@ -746,6 +753,9 @@ bool GrammarApplicator::runSingleRule(SingleWindow& current, const Rule& rule, R
 				if (profiler) {
 					Profiler::Key k{ ET_RULE, rule.number + 1 };
 					++profiler->entries[k].num_fail;
+				}
+				if (!debug_rules.empty() && debug_rules.contains(rule.line)) {
+					printDebugRule(rule, false, false);
 				}
 			}
 			readings_plain.insert(std::make_pair(reading->hash_plain, reading));

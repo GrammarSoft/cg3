@@ -1126,7 +1126,6 @@ inline void trie_indexToRule(const trie_t& trie, Grammar& grammar, uint32_t r) {
 void Grammar::indexSetToRule(uint32_t r, Set* s) {
 	if (s->type & (ST_SPECIAL | ST_TAG_UNIFY)) {
 		indexTagToRule(tag_any, r);
-		return;
 	}
 
 	trie_indexToRule(s->trie, *this, r);

@@ -229,6 +229,10 @@ public:
 		return (find(t) != end());
 	}
 
+	bool contains(T t) const {
+		return (find(t) != end());
+	}
+
 	const_iterator begin() const {
 		if (size_ == 0) {
 			return end();
@@ -326,6 +330,7 @@ private:
 };
 
 using uint32FlatHashSet = flat_unordered_set<uint32_t>;
+using uint64FlatHashSet = flat_unordered_set<uint64_t>;
 }
 
 #endif
