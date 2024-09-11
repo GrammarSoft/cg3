@@ -172,7 +172,6 @@ void Profiler::read(const char* fname) {
 
 	sqlite3* db = nullptr;
 	sqlite3_stmt* s = nullptr;
-	int r = 0;
 	std::string tmp;
 	if (sqlite3_open_v2(fname, &db, SQLITE_OPEN_READONLY, nullptr) != SQLITE_OK) {
 		throw std::runtime_error(concat("sqlite3_open_v2() error: ", sqlite3_errmsg(db)));
@@ -182,7 +181,7 @@ void Profiler::read(const char* fname) {
 	if (sqlite3_prepare_v2(db, "SELECT * FROM strings", -1, &s, nullptr) != SQLITE_OK) {
 		throw std::runtime_error(concat("sqlite3 error preparing select from strings table: ", sqlite3_errmsg(db)));
 	}
-	while ((r = sqlite3_step(s)) == SQLITE_ROW) {
+	while (sqlite3_step(s) == SQLITE_ROW) {
 		auto sz = UIZ(sqlite3_column_int64(s, 0));
 		tmp.assign(reinterpret_cast<const char*>(sqlite3_column_text(s, 1)));
 		strings[std::move(tmp)] = sz;
@@ -193,7 +192,7 @@ void Profiler::read(const char* fname) {
 	if (sqlite3_prepare_v2(db, "SELECT * FROM grammars", -1, &s, nullptr) != SQLITE_OK) {
 		throw std::runtime_error(concat("sqlite3 error preparing select from grammars table: ", sqlite3_errmsg(db)));
 	}
-	while ((r = sqlite3_step(s)) == SQLITE_ROW) {
+	while (sqlite3_step(s) == SQLITE_ROW) {
 		auto f = UIZ(sqlite3_column_int64(s, 0));
 		auto g = UIZ(sqlite3_column_int64(s, 1));
 		grammars[f] = g;
@@ -204,7 +203,7 @@ void Profiler::read(const char* fname) {
 	if (sqlite3_prepare_v2(db, "SELECT * FROM entries", -1, &s, nullptr) != SQLITE_OK) {
 		throw std::runtime_error(concat("sqlite3 error preparing select from entries table: ", sqlite3_errmsg(db)));
 	}
-	while ((r = sqlite3_step(s)) == SQLITE_ROW) {
+	while (sqlite3_step(s) == SQLITE_ROW) {
 		auto type = UI8(sqlite3_column_int64(s, 0));
 		auto id = UI32(sqlite3_column_int64(s, 1));
 		Profiler::Key k{type, id};
@@ -223,7 +222,7 @@ void Profiler::read(const char* fname) {
 	if (sqlite3_prepare_v2(db, "SELECT * FROM rule_contexts", -1, &s, nullptr) != SQLITE_OK) {
 		throw std::runtime_error(concat("sqlite3 error preparing select from rule_contexts table: ", sqlite3_errmsg(db)));
 	}
-	while ((r = sqlite3_step(s)) == SQLITE_ROW) {
+	while (sqlite3_step(s) == SQLITE_ROW) {
 		auto r = UI32(sqlite3_column_int64(s, 0));
 		auto c = UI32(sqlite3_column_int64(s, 1));
 		rule_contexts[std::pair(r,c)] = UIZ(sqlite3_column_int64(s, 2));

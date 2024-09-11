@@ -2875,9 +2875,6 @@ void GrammarApplicator::runGrammarOnWindow() {
 			if (p != grammar->parentheses.end()) {
 				auto right = iter.base();
 				--right;
-				--right;
-				c = *right;
-				++right;
 				bool found = false;
 				CohortVector encs;
 				for (; right != current->cohorts.end(); ++right) {
