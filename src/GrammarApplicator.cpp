@@ -439,7 +439,7 @@ void GrammarApplicator::printReading(const Reading* reading, std::ostream& outpu
 		}
 	}
 
-	if (reading->parent->type & CT_RELATED) {
+	if (print_ids || reading->parent->type & CT_RELATED) {
 		u_fprintf(output, " ID:%u", reading->parent->global_number);
 		if (!reading->parent->relations.empty()) {
 			for (const auto& miter : reading->parent->relations) {

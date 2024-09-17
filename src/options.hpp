@@ -69,6 +69,7 @@ enum OPTIONS {
 	MAPPING_PREFIX,
 	UNICODE_TAGS,
 	UNIQUE_TAGS,
+	PRINT_IDS,
 	NUM_WINDOWS,
 	ALWAYS_SPAN,
 	SOFT_LIMIT,
@@ -143,6 +144,7 @@ std::array<UOption,NUM_OPTIONS> options{
 	UOption{"prefix",              'p', UOPT_REQUIRES_ARG, "sets the mapping prefix; defaults to @"},
 	UOption{"unicode-tags",          0, UOPT_NO_ARG,       "outputs Unicode code points for things like ->"},
 	UOption{"unique-tags",           0, UOPT_NO_ARG,       "outputs unique tags only once per reading"},
+	UOption{"print-ids",             0, UOPT_NO_ARG,       "always output IDs"},
 
 	UOption{"num-windows",           0, UOPT_REQUIRES_ARG, "number of windows to keep in before/ahead buffers; defaults to 2"},
 	UOption{"always-span",           0, UOPT_NO_ARG,       "forces scanning tests to always span across window boundaries"},
