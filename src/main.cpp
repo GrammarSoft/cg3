@@ -531,6 +531,9 @@ void GAppSetOpts(GrammarApplicator& applicator, UConverter* conv) {
 		}
 		std::cerr << "Debug level set to " << applicator.debug_level << std::endl;
 	}
+	if (options[PRINT_IDS].doesOccur) {
+		applicator.print_ids = true;
+	}
 	if (options[NUM_WINDOWS].doesOccur) {
 		applicator.num_windows = std::stoul(options[NUM_WINDOWS].value);
 	}
