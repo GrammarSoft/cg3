@@ -123,6 +123,7 @@ public:
 	bool split_mappings = false;
 	bool pipe_deleted = false;
 	bool add_spacing = true;
+	bool print_ids = false;
 
 	bool dep_has_spanned = false;
 	uint32_t dep_delimit = 0;
