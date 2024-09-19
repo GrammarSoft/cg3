@@ -9,30 +9,32 @@ chdir $bindir or die("Error: Could not change directory to $bindir !");
 
 # Search paths for the binary
 my @binlist = (
-	"../../build/VS16/src/Debug/vislcg3",
-	"../../build/VS16/src/Release/vislcg3",
+	"../build/src/vislcg3",
+	"../../build/VS17/src/Debug/vislcg3",
+	"../../build/VS17/src/Release/vislcg3",
+	"../src/Debug/vislcg3",
+	"../src/Release/vislcg3",
 	"../Debug/vislcg3",
-	"../Common/vislcg3",
 	"../Release/vislcg3",
 	"../src/vislcg3",
 	"../vislcg3",
-);
+	);
 my $binary = "vislcg3";
 
 foreach (@binlist) {
-	if (-x $_) {
+	if (-x $_ && int(`$_ --min-binary-revision 2>/dev/null`) >= 10373) {
 		$binary = $_;
 		last;
 	}
-	elsif (-x $_.".exe") {
+	elsif (-x $_.".exe" && int(`$_.exe --min-binary-revision 2>/dev/null`) >= 10373) {
 		$binary = $_.".exe";
 		last;
 	}
-	elsif (-x "../".$_) {
+	elsif (-x "../".$_ && int(`../$_ --min-binary-revision 2>/dev/null`) >= 10373) {
 		$binary = "../".$_;
 		last;
 	}
-	elsif (-x "../".$_.".exe") {
+	elsif (-x "../".$_.".exe" && int(`../$_.exe --min-binary-revision 2>/dev/null`) >= 10373) {
 		$binary = "../".$_.".exe";
 		last;
 	}

@@ -33,7 +33,7 @@ Tag* GrammarApplicator::makeBaseFromWord(uint32_t tag) {
 
 Tag* GrammarApplicator::makeBaseFromWord(Tag* tag) {
 	const size_t len = tag->tag.size();
-	if (len < 5) {
+	if (len < 4) {
 		return tag;
 	}
 	static thread_local UString n;
