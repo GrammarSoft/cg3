@@ -398,7 +398,7 @@ void ApertiumApplicator::runGrammarOnText(std::istream& input, std::ostream& out
 
 			blank.append(u"\"<");
 			UChar* p = &token[1];
-			for (; *p && *p != '/' && *p != '<'; ++p) {
+			for (; *p && *p != '/' && *p != '<' && *p != '$'; ++p) {
 				if (*p == '\\') {
 					++p;
 				}
@@ -406,6 +406,7 @@ void ApertiumApplicator::runGrammarOnText(std::istream& input, std::ostream& out
 			}
 			blank.append(u">\"");
 			cCohort->wordform = addTag(blank);
+			blank.clear();
 
 			// Handle the static reading of ^estació<n><f><sg>/season<n><sg>/station<n><sg>$
 			// Gobble up all <tags> until the first / or $ and stuff them in the static reading
@@ -807,10 +808,6 @@ void ApertiumApplicator::printReading(Reading* reading, std::ostream& output, Ap
 }
 
 void ApertiumApplicator::printReading(Reading* reading, std::ostream& output) {
-	if (reading->noprint) {
-		return;
-	}
-
 	size_t firstlower = 0;
 	ApertiumCasing casing = ApertiumCasing::Lower;
 
@@ -925,6 +922,9 @@ void ApertiumApplicator::printCohort(Cohort* cohort, std::ostream& output, bool 
 	//Tag::printTagRaw(output, grammar->single_tags[cohort->wordform]);
 	std::sort(cohort->readings.begin(), cohort->readings.end(), Reading::cmp_number);
 	for (auto reading : cohort->readings) {
+		if (reading->noprint) {
+			continue;
+		}
 		if (need_slash) {
 			u_fprintf(output, "/");
 		}
@@ -941,6 +941,9 @@ void ApertiumApplicator::printCohort(Cohort* cohort, std::ostream& output, bool 
 	if (trace) {
 		std::sort(cohort->delayed.begin(), cohort->delayed.end(), Reading::cmp_number);
 		for (auto reading : cohort->delayed) {
+			if (reading->noprint) {
+				continue;
+			}
 			if (need_slash) {
 				u_fprintf(output, "/%C", not_sign);
 			}
@@ -952,6 +955,9 @@ void ApertiumApplicator::printCohort(Cohort* cohort, std::ostream& output, bool 
 		}
 		std::sort(cohort->deleted.begin(), cohort->deleted.end(), Reading::cmp_number);
 		for (auto reading : cohort->deleted) {
+			if (reading->noprint) {
+				continue;
+			}
 			if (need_slash) {
 				u_fprintf(output, "/%C", not_sign);
 			}
