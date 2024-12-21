@@ -292,8 +292,10 @@ Cohort* GrammarApplicator::runContextualTest(SingleWindow* sWindow, size_t posit
 			j = get_attach_to().cohort;
 		}
 		else if (test->jump_pos == JUMP_TARGET) {
-			if (!context_stack.empty()) {
-				j = context_stack.back().target.cohort;
+			for (auto& it : reversed(context_stack)) {
+				if (it.is_with) {
+					j = it.target.cohort;
+				}
 			}
 		}
 		else {

@@ -92,6 +92,7 @@ struct Rule_Context {
 	unif_sets_t* unif_sets = nullptr;
 	uint8_t regexgrp_ct = 0;
 	regexgrps_t* regexgrps = nullptr;
+	bool is_with = false;
 };
 
 typedef std::function<void(void)> RuleCallback;
