@@ -516,6 +516,7 @@ bool GrammarApplicator::runSingleRule(SingleWindow& current, const Rule& rule, R
 		{
 			Rule_Context context;
 			context.target.cohort = cohort;
+			context.is_with = (rule.type == K_WITH);
 			context_stack.push_back(std::move(context));
 		}
 

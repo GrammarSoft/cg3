@@ -30,6 +30,9 @@ bool ContextualTest::operator==(const ContextualTest& other) const {
 	if (pos != other.pos) {
 		return false;
 	}
+	if (jump_pos != other.jump_pos) {
+		return false;
+	}
 	if (target != other.target) {
 		return false;
 	}
@@ -68,6 +71,7 @@ uint32_t ContextualTest::rehash() {
 	}
 
 	hash = hash_value(pos);
+	hash = hash_value(hash, jump_pos);
 	hash = hash_value(hash, target);
 	hash = hash_value(hash, barrier);
 	hash = hash_value(hash, cbarrier);
