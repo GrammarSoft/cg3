@@ -30,6 +30,7 @@ include(GNUInstallDirs)
 
 option(BUILD_SHARED_LIBS "Set to OFF to use static library" ON)
 option(ENABLE_PYTHON_BINDINGS "Set to ON to build the Python wrapper" OFF)
+option(ENABLE_PROFILING "Set to OFF to disable profiling, and thus the SQLite dependency" ON)
 
 if(MSVC)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /utf-8 /std:c++latest /Zc:__cplusplus /permissive- /W4 /MP")
@@ -114,6 +115,10 @@ endif()
 # std::filesystem is in a separate library until g++ 9
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 9)
 	set(STDFS_LIB stdc++fs)
+endif()
+
+if(NOT ENABLE_PROFILING)
+	add_definitions(-DDISABLE_PROFILING=1)
 endif()
 
 if(WIN32)
