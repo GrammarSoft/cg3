@@ -18,6 +18,23 @@
 
 #include "Profiler.hpp"
 #include "stdafx.hpp"
+
+#ifdef DISABLE_PROFILING
+
+namespace CG3 {
+
+void Profiler::write(const char* fname) {
+	throw std::runtime_error("Profiling disabled");
+}
+
+void Profiler::read(const char* fname) {
+	throw std::runtime_error("Profiling disabled");
+}
+
+}
+
+#else
+
 #include <sqlite3.h>
 
 namespace CG3 {
@@ -231,3 +248,5 @@ void Profiler::read(const char* fname) {
 }
 
 }
+
+#endif
