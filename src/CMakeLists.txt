@@ -2,6 +2,9 @@
 # There's some weird bug/interaction with recent Apple toolchains and this, so disable for now.
 if(NOT APPLE)
 	find_package(Threads REQUIRED)
+else()
+	# See https://trac.macports.org/ticket/71642
+	cmake_policy(SET CMP0167 OLD)
 endif()
 
 # Boost
