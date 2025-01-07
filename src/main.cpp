@@ -225,6 +225,10 @@ int main(int argc, char* argv[]) {
 			std::cerr << "Error: --dump-ast is for textual grammars only!" << std::endl;
 			CG3Quit(1);
 		}
+		if (options[PROFILING].doesOccur) {
+			std::cerr << "Error: --profile is for textual grammars only!" << std::endl;
+			CG3Quit(1);
+		}
 		parser.reset(new BinaryGrammar(grammar, *ux_stderr));
 	}
 	else {
