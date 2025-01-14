@@ -2526,6 +2526,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 							// We assume running the test again would result in the same, so don't bother.
 							break;
 						}
+						seen_targets->insert(attach->global_number);
 						// Did not successfully attach due to loop restrictions; look onwards from here
 						context_stack.back().target = context_stack.back().attach_to;
 						context_stack.back().unif_tags->swap(utags);
