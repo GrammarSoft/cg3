@@ -114,7 +114,7 @@ namespace bc = ::boost::container;
 namespace be = ::boost::endian;
 
 struct flags_t {
-	uint32_t flags = 0;
+	uint64_t flags = 0;
 	int32_t sub_reading = 0;
 };
 }

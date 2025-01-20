@@ -1,15 +1,15 @@
 "<ele>"
 	"ele" PERS M 3S NOM @SUBJ> #1→2
 "<bate>"
-	"bater" <fmc> <mv> V PR 3S IND VFIN @FS-STA #2→0
+	"bater" <fmc> <mv> V PR 3S IND VFIN @FS-STA ID:2 #2→0
 "<em>"
-	"em" <sam-> PRP @<PIV #3→2
+	"em" <sam-> PRP @<PIV R:Zubba:2 ID:3 #3→2
 "<a>"
-	"o" <artd> <-sam> DET F S @>N #4→5
+	"o" <artd> <-sam> DET F S R:Hubba:3 @>N #4→5
 "<mulher>"
-	"mulher" <Hattr> N F S @P< #5→3
+	"mulher" <Hattr> N F S ID:5 @P< #5→3
 "<.>"
-	"." PU @PU #6→0 <<<
+	"." PU @PU R:Bubba:5 #6→0 <<<
 </s>
 
 "<o>"
