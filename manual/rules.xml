@@ -325,7 +325,8 @@
         (1A ("the") LINK 1w ("word"))
     </screen>
     <para>
-      MergeCohorts does not currently handle dependencies or named relations.
+      MergeCohorts does not currently handle named relations.
+      See also <link linkend="grammar-options-mergecattach">mergecohorts-attach</link>.
     </para>
   </section>
 

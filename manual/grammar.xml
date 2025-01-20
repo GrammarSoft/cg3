@@ -69,6 +69,16 @@
       </para>
     </section>
 
+    <section id="grammar-options-mergecattach">
+      <title>mergecohorts-attach</title>
+      <indexterm>
+        <primary>mergecohorts-attach</primary>
+      </indexterm>
+      <para>
+        Causes MERGECOHORTS to set the dependency parent of the newly added cohort to the parent of the target cohort.
+      </para>
+    </section>
+
     <section id="grammar-options-noisets">
       <title>no-inline-sets</title>
       <indexterm>
