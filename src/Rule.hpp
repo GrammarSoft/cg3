@@ -67,6 +67,7 @@ enum RULE_FLAGS : uint64_t {
 	RF_LOOKIGNORED  = (1 << 30),
 	RF_NOMAPPED     = (1ull << 31),
 	RF_NOPARENT     = (1ull << 32),
+	RF_DETACH       = (1ull << 33),
 };
 
 using rule_flags_t = std::underlying_type<RULE_FLAGS>::type;

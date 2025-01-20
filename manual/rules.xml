@@ -325,7 +325,8 @@
         (1A ("the") LINK 1w ("word"))
     </screen>
     <para>
-      MergeCohorts does not currently handle dependencies or named relations.
+      By default, the created cohort will inherit all dependencies and relations of the merged cohorts.
+      Rule flag <link linkend="rule-options-detach">DETACH</link> will prevent that behavior.
     </para>
   </section>
 
@@ -1189,7 +1190,20 @@
         Applicable for all rule types.
       </para>
       <para>
-        NOMAPPED prevents the rule from running on cohorts that have a dependency parent.
+        NOPARENT prevents the rule from running on cohorts that have a dependency parent.
+      </para>
+    </section>
+
+    <section id="rule-options-detach">
+      <title>DETACH</title>
+      <indexterm>
+        <primary>DETACH</primary>
+      </indexterm>
+      <para>
+        Applicable for rule type MERGECOHORTS.
+      </para>
+      <para>
+        Prevents the cohort created by the rule from inheriting all dependencies and relations of the merged cohorts.
       </para>
     </section>
   </section>

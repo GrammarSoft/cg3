@@ -1049,7 +1049,7 @@ flags_t TextualParser::parseRuleFlags(UChar*& p) {
 	bool setflag = true;
 	while (setflag) {
 		setflag = false;
-		for (size_t i = 0; i < FLAGS_COUNT; i++) {
+		for (size_t i = 0; i < FLAGS_COUNT; ++i) {
 			UChar* op = p;
 			if (ux_simplecasecmp(p, g_flags[i])) {
 				p += g_flags[i].size();
@@ -1546,7 +1546,7 @@ void TextualParser::parseRule(UChar*& p, KEYWORDS key) {
 	if (key == K_SETPARENT || key == K_SETCHILD || key == K_SPLITCOHORT || key == K_MERGECOHORTS) {
 		result->has_dep = true;
 	}
-	if (key == K_SETRELATION || key == K_SETRELATIONS || key == K_ADDRELATION || key == K_ADDRELATIONS || key == K_REMRELATION || key == K_REMRELATIONS) {
+	if (key == K_SETRELATION || key == K_SETRELATIONS || key == K_ADDRELATION || key == K_ADDRELATIONS || key == K_REMRELATION || key == K_REMRELATIONS || key == K_MERGECOHORTS) {
 		result->has_relations = true;
 	}
 	if (key == K_COPYCOHORT && !(rule->flags & (RF_BEFORE|RF_AFTER))) {

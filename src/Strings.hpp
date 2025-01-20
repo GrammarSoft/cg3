@@ -145,6 +145,7 @@ enum : uint32_t {
 	FL_LOOKIGNORED,
 	FL_NOMAPPED,
 	FL_NOPARENT,
+	FL_DETACH,
 	FLAGS_COUNT,
 };
 }
@@ -186,6 +187,7 @@ constexpr UStringView g_flags[FLAGS_COUNT] = {
 	u"LOOKIGNORED",
 	u"NOMAPPED",
 	u"NOPARENT",
+	u"DETACH",
 };
 
 constexpr UStringView keywords[KEYWORD_COUNT] = {

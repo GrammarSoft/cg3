@@ -971,7 +971,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 			}
 		};
 
-		auto add_cohort = [&](Cohort* cohort, size_t& spacesInAddedWf) {
+		auto add_cohort = [&](Cohort* cohort, size_t& spacesInAddedWf, CohortSet* withs = nullptr) {
 			Cohort* cCohort = alloc_cohort(&current);
 			cCohort->global_number = gWindow->cohort_counter++;
 
@@ -1062,6 +1062,74 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 			current.parent->dep_window[cCohort->global_number] = cCohort;
 			if (grammar->addcohort_attach && (rule->type == K_ADDCOHORT_BEFORE || rule->type == K_ADDCOHORT_AFTER)) {
 				attachParentChild(*cohort, *cCohort);
+			}
+			else if (rule->type == K_MERGECOHORTS && !(rule->flags & RF_DETACH)) {
+				auto c = context_stack.back().target.cohort;
+				if (c->dep_parent == DEP_NO_PARENT || !current.parent->cohort_map.count(c->dep_parent)) {
+					// Don't introduce dependencies
+					if (has_dep) {
+						if (!withs->count(cohort)) {
+							// Insertion target isn't being merged, so attach to that
+							attachParentChild(*cohort, *cCohort);
+						}
+						else {
+							// Attach to nearest un-merged token
+							auto next = cohort->next;
+							auto prev = cohort->prev;
+							for (; next || prev ;) {
+								if (next && next->parent != cohort->parent) {
+									next = nullptr;
+								}
+								if (next && !withs->count(next)) {
+									attachParentChild(*next, *cCohort);
+									break;
+								}
+								if (next) {
+									next = next->next;
+								}
+
+								if (prev && prev->parent != cohort->parent) {
+									prev = nullptr;
+								}
+								if (prev && !withs->count(prev)) {
+									attachParentChild(*prev, *cCohort);
+									break;
+								}
+								if (prev) {
+									prev = prev->prev;
+								}
+							}
+						}
+					}
+				}
+				else {
+					attachParentChild(*current.parent->cohort_map[c->dep_parent], *cCohort);
+				}
+
+				std::set<uint32_t> ps;
+				for (auto c : *withs) {
+					ps.insert(c->global_number);
+					if (c->type & CT_RELATED) {
+						for (auto& riter : c->relations) {
+							cCohort->relations[riter.first].insert(riter.second.begin(), riter.second.end());
+						}
+						cCohort->type |= CT_RELATED;
+					}
+				}
+				for (auto c : current.all_cohorts) {
+					if (ps.count(c->dep_parent)) {
+						attachParentChild(*cCohort, *c);
+					}
+					for (auto& riter : c->relations) {
+						for (auto r : ps) {
+							if (riter.second.count(r)) {
+								riter.second.erase(r);
+								riter.second.insert(cCohort->global_number);
+								cCohort->type |= CT_RELATED;
+							}
+						}
+					}
+				}
 			}
 
 			if (cCohort->readings.empty()) {
@@ -2150,7 +2218,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 				}
 
 				size_t spacesInAddedWf = 0;
-				context_stack.back().target.cohort = add_cohort(merge_at, spacesInAddedWf);
+				context_stack.back().target.cohort = add_cohort(merge_at, spacesInAddedWf, &withs);
 
 				for (auto c : withs) {
 					size_t foundSpace = c->text.find_first_of(' ');
@@ -2349,6 +2417,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 					Cohort* attach = context_stack.back().attach_to.cohort;
 					swapper<Cohort*> sw((rule->flags & RF_REVERSE) != 0, target, attach);
 					if (rule->type == K_SETPARENT || rule->type == K_SETCHILD) {
+						has_dep = true;
 						bool attached = false;
 						if (rule->type == K_SETPARENT) {
 							attached = attachParentChild(*attach, *target, (rule->flags & RF_ALLOWLOOP) != 0, (rule->flags & RF_ALLOWCROSS) != 0);
@@ -2370,6 +2439,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						return attached;
 					}
 					else if (rule->type == K_ADDRELATION || rule->type == K_SETRELATION || rule->type == K_REMRELATION) {
+						has_relations = true;
 						bool rel_did_anything = false;
 						auto theTags = ss_taglist.get();
 						getTagList(*rule->maplist, theTags);
@@ -2406,6 +2476,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						return true;
 					}
 					else if (rule->type == K_ADDRELATIONS || rule->type == K_SETRELATIONS || rule->type == K_REMRELATIONS) {
+						has_relations = true;
 						bool rel_did_anything = false;
 
 						auto sublist = ss_taglist.get();
