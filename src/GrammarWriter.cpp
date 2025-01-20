@@ -149,6 +149,9 @@ int GrammarWriter::writeGrammar(std::ostream& output) {
 	if (grammar->addcohort_attach) {
 		u_fprintf(output, "OPTIONS += addcohort-attach ;\n");
 	}
+	if (grammar->mergecohorts_attach) {
+		u_fprintf(output, "OPTIONS += mergecohorts-attach ;\n");
+	}
 
 	u_fprintf(output, "\n");
 

@@ -2511,6 +2511,7 @@ void TextualParser::parseFromUChar(UChar* input, const char* fname) {
 					std::pair<UStringView, bool*>(STR_SELF_NO_BARRIER, &self_no_barrier),
 					std::pair<UStringView, bool*>(STR_ORDERED, &result->ordered),
 					std::pair<UStringView, bool*>(STR_ADDCOHORT_ATTACH, &result->addcohort_attach),
+					std::pair<UStringView, bool*>(STR_MERGECOHORTS_ATTACH, &result->mergecohorts_attach),
 					std::pair<UStringView, bool*>(STR_SAFE_SETPARENT, &safe_setparent),
 				};
 

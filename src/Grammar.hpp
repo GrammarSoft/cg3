@@ -46,6 +46,7 @@ public:
 	bool sub_readings_ltr = false;
 	bool ordered = false;
 	bool addcohort_attach = false;
+	bool mergecohorts_attach = false;
 	size_t grammar_size = 0;
 	size_t num_tags = 0;
 	UChar mapping_prefix = '@';

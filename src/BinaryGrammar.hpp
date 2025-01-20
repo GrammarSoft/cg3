@@ -45,6 +45,7 @@ enum : uint32_t {
 	BINF_ORDERED      = (1 << 15),
 	BINF_TEXT_DELIMS  = (1 << 16),
 	BINF_ADDCOHORT_ATTACH = (1 << 17),
+	BINF_MERGECOHORTS_ATTACH = (1 << 18),
 };
 
 constexpr uint32_t BIN_REV_ANCIENT = 10297;

@@ -1063,6 +1063,9 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 			if (grammar->addcohort_attach && (rule->type == K_ADDCOHORT_BEFORE || rule->type == K_ADDCOHORT_AFTER)) {
 				attachParentChild(*cohort, *cCohort);
 			}
+			else if (grammar->mergecohorts_attach && rule->type == K_MERGECOHORTS) {
+				attachParentChild(*context_stack.back().target.cohort, *cCohort);
+			}
 
 			if (cCohort->readings.empty()) {
 				initEmptyCohort(*cCohort);

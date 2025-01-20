@@ -101,6 +101,9 @@ int BinaryGrammar::writeBinaryGrammar(FILE* output) {
 	if (grammar->addcohort_attach) {
 		fields |= BINF_ADDCOHORT_ATTACH;
 	}
+	if (grammar->mergecohorts_attach) {
+		fields |= BINF_MERGECOHORTS_ATTACH;
+	}
 
 	u32tmp = hton32(fields);
 	fwrite_throw(&u32tmp, sizeof(u32tmp), 1, output);
