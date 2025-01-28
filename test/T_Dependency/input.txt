@@ -77,3 +77,10 @@
 	"al" <right> <7> <quant> DET PRON nG P NOM R:sd-REC:6 @<ACC  #7->6
 "<$.>"
 	"." $. <8> PU @PU  #8->7
+
+"<I>"
+	"me" prn p1 sg #1->2
+"<like>"
+	"like" vblex pres #2->0
+"<potatoes>"
+	"potato" n pl #3->2

@@ -73,3 +73,5 @@ ADD (@bag-any) ("o") (BW ("<seven>")) ;
 ADD (@bag-any-not) ("o") (NOT BW ("<seven>")) ;
 
 ADD (@ss-cSN-good) TARGET ("lærer" @SUBJ>) (p (*) LINK **cSN (<mv>) BARRIER (V IMPF) LINK c (@<ACC) - (IARG) - (INS) - (<idf>) - (<refl>)) ;
+
+REMPARENT ("potato" n) ;
