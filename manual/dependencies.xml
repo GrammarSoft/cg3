@@ -59,6 +59,22 @@
     </screen>
   </section>
 
+  <section id="dep-remparent">
+    <title>REMPARENT</title>
+    <indexterm>
+      <primary>SETCHILD</primary>
+    </indexterm>
+    <screen>
+      [wordform] REMPARENT &lt;target&gt; [contextual_tests] ;
+    </screen>
+    <para>
+      Sets the target as having no parent.
+    </para>
+    <screen>
+      REMPARENT targetset IF (p (cop)) ;
+    </screen>
+  </section>
+
   <section id="dep-input">
     <title>Existing Trees in Input</title>
     <para>

@@ -472,6 +472,11 @@ bool GrammarApplicator::runSingleRule(SingleWindow& current, const Rule& rule, R
 			continue;
 		}
 
+		// If this is REMPARENT and there's no parent, skip it.
+		if (type == K_REMPARENT && cohort->dep_parent == DEP_NO_PARENT) {
+			continue;
+		}
+
 		// Check if on previous runs the rule did not match this cohort, and skip if that is the case.
 		// This cache is cleared if any rule causes any state change in the window.
 		uint32_t ih = hash_value(rule.number, cohort->global_number);
@@ -2613,6 +2618,12 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 				}
 				rule->dep_target->offset = orgoffset;
 				finish_reading_loop = false;
+			}
+			else if (rule->type == K_REMPARENT) {
+				// this is a per-cohort rule
+				finish_reading_loop = false;
+				TRACE;
+				get_apply_to().cohort->dep_parent = DEP_NO_PARENT;
 			}
 			else if (rule->type == K_MOVE_AFTER || rule->type == K_MOVE_BEFORE || rule->type == K_SWITCH) {
 				// this is a per-cohort rule
