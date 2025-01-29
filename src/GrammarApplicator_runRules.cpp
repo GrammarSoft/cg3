@@ -1910,6 +1910,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 				auto state_hash = get_apply_to().subreading->hash;
 				auto theTags = ss_taglist.get();
 				getTagList(*rule->sublist, theTags);
+				bool appending = (theTags->size() == 1 && (*theTags)[0]->comparison_hash == grammar->tag_any);
 
 				// Modify the list of tags to remove to be the actual list of tags present, including matching regex and icase tags
 				FILL_TAG_LIST(theTags);
@@ -1955,6 +1956,12 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 					}
 
 					++i;
+				}
+
+				if (appending) {
+					get_apply_to().subreading->tags_list.push_back(substtag);
+					tpos = get_apply_to().subreading->tags_list.size();
+					reflowReading(*(get_apply_to().subreading));
 				}
 
 				// Should Substitute really do nothing if no tags were removed? 2013-10-21, Eckhard says this is expected behavior.

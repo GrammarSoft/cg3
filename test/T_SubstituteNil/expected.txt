@@ -1,5 +1,4 @@
 "<word>"
 	"word" notwanted
-	"word" before after
+	"word" before after potato
 	"word" notmeeither
-
