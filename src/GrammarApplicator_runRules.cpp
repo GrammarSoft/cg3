@@ -2636,17 +2636,29 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 				// this is a per-cohort rule
 				finish_reading_loop = false;
 				TRACE;
+
+				// collect cohorts
 				Cohort* child = get_apply_to().cohort;
 				Cohort* parent = current.parent->cohort_map[child->dep_parent];
-				auto it = current.parent->cohort_map.find(parent->dep_parent);
+				auto grandparent_number = parent->dep_parent;
+				CohortSet siblings;
+				collect_subtree(siblings, parent, rule->childset1);
+
+				// clear dependencies
+				child->dep_parent = DEP_NO_PARENT;
+				parent->dep_parent = DEP_NO_PARENT;
+				for (auto s : siblings) {
+					s->dep_parent = DEP_NO_PARENT;
+				}
+
+				// reattach
+				auto it = current.parent->cohort_map.find(grandparent_number);
 				if (it != current.parent->cohort_map.end()) {
 					attachParentChild(*(it->second), *child);
 				}
-				CohortSet siblings;
-				collect_subtree(siblings, parent, rule->childset1);
-				parent->dep_parent = child->global_number;
+				attachParentChild(*child, *parent);
 				for (auto s : siblings) {
-					s->dep_parent = child->global_number;
+					attachParentChild(*child, *s);
 				}
 			}
 			else if (rule->type == K_MOVE_AFTER || rule->type == K_MOVE_BEFORE || rule->type == K_SWITCH) {
