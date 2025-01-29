@@ -62,7 +62,7 @@
   <section id="dep-remparent">
     <title>REMPARENT</title>
     <indexterm>
-      <primary>SETCHILD</primary>
+      <primary>REMPARENT</primary>
     </indexterm>
     <screen>
       [wordform] REMPARENT &lt;target&gt; [contextual_tests] ;
@@ -72,6 +72,44 @@
     </para>
     <screen>
       REMPARENT targetset IF (p (cop)) ;
+    </screen>
+  </section>
+
+  <section id="dep-switchparent">
+    <title>SWITCHPARENT</title>
+    <indexterm>
+      <primary>SWITCHPARENT</primary>
+    </indexterm>
+    <screen>
+      [wordform] SWITCHPARENT [WITHCHILD &lt;child_set&gt;] &lt;target&gt; [contextual_tests] ;
+    </screen>
+    <para>
+      Sets the grandparent of the target as its parent and sets the target as the parent of the previous parent. If <link linkend="rule-options-withchild">WTIHCHILD</link> is present, any siblings of the target which match the set will also become children of the target.
+    </para>
+    <screen>
+      "&lt;and&gt;"
+	      "and" CCONJ #1->2
+      "&lt;in&gt;"
+  	    "in" ADP #2->0
+      "&lt;the&gt;"
+	      "the" DET #3->4
+      "&lt;house&gt;"
+	      "house" NOUN #4->2
+      "&lt;.&gt;"
+	      "." PUNCT #5->2
+
+      SWITCHPARENT WITHCHILD (*) - (PUNCT) (NOUN) IF (p (ADP)) ;
+
+      "&lt;and&gt;"
+	      "and" CCONJ #1->4
+      "&lt;in&gt;"
+  	    "in" ADP #2->4
+      "&lt;the&gt;"
+	      "the" DET #3->4
+      "&lt;house&gt;"
+	      "house" NOUN #4->0
+      "&lt;.&gt;"
+	      "." PUNCT #5->2
     </screen>
   </section>
 

@@ -1,0 +1,4 @@
+CMDARGS += -D ;
+DELIMITERS = "<.>" ;
+
+SWITCHPARENT WITHCHILD (*) - (PUNCT) (NOUN) IF (p (ADP)) ;

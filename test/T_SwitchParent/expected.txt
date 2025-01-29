@@ -1,0 +1,36 @@
+"<and>"
+	"and" CCONJ #1->4
+"<in>"
+	"in" ADP #2->4
+"<the>"
+	"the" DET #3->4
+"<house>"
+	"house" NOUN #4->0
+"<.>"
+	"." PUNCT #5->2
+
+"<there>"
+	"there" PRON #1->0
+"<and>"
+	"and" CCONJ #2->5
+"<in>"
+	"in" ADP #3->5
+"<the>"
+	"the" DET #4->5
+"<house>"
+	"house" NOUN #5->1
+"<.>"
+	"." PUNCT #6->3
+
+"<there>"
+	"there" PRON #1->0
+"<and>"
+	"and" CCONJ #2->5
+"<in>"
+	"in" ADP #3->5
+"<the>"
+	"the" DET #4->5
+"<house>"
+	"house" NOUN #5->5
+"<.>"
+	"." PUNCT #6->3

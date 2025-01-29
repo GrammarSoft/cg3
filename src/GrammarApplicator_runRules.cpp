@@ -473,7 +473,7 @@ bool GrammarApplicator::runSingleRule(SingleWindow& current, const Rule& rule, R
 		}
 
 		// If this is REMPARENT and there's no parent, skip it.
-		if (type == K_REMPARENT && cohort->dep_parent == DEP_NO_PARENT) {
+		if ((type == K_REMPARENT || type == K_SWITCHPARENT) && cohort->dep_parent == DEP_NO_PARENT) {
 			continue;
 		}
 
@@ -2631,6 +2631,23 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 				finish_reading_loop = false;
 				TRACE;
 				get_apply_to().cohort->dep_parent = DEP_NO_PARENT;
+			}
+			else if (rule->type == K_SWITCHPARENT) {
+				// this is a per-cohort rule
+				finish_reading_loop = false;
+				TRACE;
+				Cohort* child = get_apply_to().cohort;
+				Cohort* parent = current.parent->cohort_map[child->dep_parent];
+				auto it = current.parent->cohort_map.find(parent->dep_parent);
+				if (it != current.parent->cohort_map.end()) {
+					attachParentChild(*(it->second), *child);
+				}
+				CohortSet siblings;
+				collect_subtree(siblings, parent, rule->childset1);
+				parent->dep_parent = child->global_number;
+				for (auto s : siblings) {
+					s->dep_parent = child->global_number;
+				}
 			}
 			else if (rule->type == K_MOVE_AFTER || rule->type == K_MOVE_BEFORE || rule->type == K_SWITCH) {
 				// this is a per-cohort rule

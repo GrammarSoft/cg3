@@ -164,7 +164,7 @@ Don't change without re-evaluating `cg-kw-re' (or all of cg.el).")
     "MAP"    "ADD"
     "UNMAP"
     "SELECT" "REMOVE"
-    "SETPARENT"    "SETCHILD"     "REMPARENT"
+    "SETPARENT"    "SETCHILD"     "REMPARENT"    "SWITCHPARENT"
     "ADDRELATION"  "REMRELATION"  "SETRELATION"
     "ADDRELATIONS" "REMRELATIONS" "SETRELATIONS"
     "SETVARIABLE"  "REMVARIABLE"

@@ -40,6 +40,7 @@
       SETCHILD &lt;target&gt; [contextual_tests]
           TO|FROM &lt;contextual_target&gt; [contextual_tests] ;
       REMPARENT &lt;target&gt; [contextual_tests] ;
+      SWITCHPARENT [WITHCHILD &lt;child_set&gt;] &lt;target&gt; [contextual_tests] ;
 
   Relation manipulation:
       ADDRELATION &lt;name&gt; &lt;target&gt; [contextual_tests]
