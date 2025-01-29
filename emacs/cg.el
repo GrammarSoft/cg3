@@ -164,7 +164,7 @@ Don't change without re-evaluating `cg-kw-re' (or all of cg.el).")
     "MAP"    "ADD"
     "UNMAP"
     "SELECT" "REMOVE"
-    "SETPARENT"    "SETCHILD"
+    "SETPARENT"    "SETCHILD"     "REMPARENT"
     "ADDRELATION"  "REMRELATION"  "SETRELATION"
     "ADDRELATIONS" "REMRELATIONS" "SETRELATIONS"
     "SETVARIABLE"  "REMVARIABLE"
@@ -203,7 +203,14 @@ Don't change without re-evaluating `cg-kw-re' (or all of cg.el)." )
 			     "UNMAPLAST"
 			     "REVERSE"
 			     "SUB"
-			     "OUTPUT")
+				 "OUTPUT"
+				 "CAPTURE_UNIF"
+				 "REPEAT"
+				 "IGNORED"
+				 "LOOKIGNORED"
+				 "NOMAPPED"
+				 "NOPARENT"
+				 "DETACH")
   "Rule flags used for highlighting.
 from https://visl.sdu.dk/svn/visl/tools/vislcg3/trunk/src/Strings.cpp
 Don't change without re-evaluating the file.")
