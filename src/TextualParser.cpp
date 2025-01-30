@@ -1691,6 +1691,10 @@ bool TextualParser::maybeParseRule(UChar*& p) {
 	else if (IS_ICASE(p, "REMPARENT", "remparent")) {
 		parseRule(p, K_REMPARENT);
 	}
+	// SWITCHPARENT
+	else if (IS_ICASE(p, "SWITCHPARENT", "switchparent")) {
+		parseRule(p, K_SWITCHPARENT);
+	}
 	// RESTORE
 	else if (IS_ICASE(p, "RESTORE", "restore")) {
 		parseRule(p, K_RESTORE);
