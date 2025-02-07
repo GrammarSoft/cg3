@@ -107,6 +107,7 @@ if(BIG_ENDIAN)
 	add_definitions(-DBIG_ENDIAN)
 endif()
 
+include(CheckIncludeFileCXX)
 CHECK_INCLUDE_FILE_CXX(filesystem HAS_FS)
 if(HAS_FS)
 	add_definitions(-DHAS_FS)
