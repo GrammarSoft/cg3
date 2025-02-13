@@ -34,3 +34,16 @@
 	"house" NOUN #5->5
 "<.>"
 	"." PUNCT #6->3
+
+"<in>"
+	"in" ADP #1->3
+"<the>"
+	"the" DET #2->3
+"<house>"
+	"house" NOUN #3->0
+"<and>"
+	"and" CCONJ #4->5
+"<there>"
+	"there" PRON #5->3
+"<.>"
+	"." PUNCT #6->1

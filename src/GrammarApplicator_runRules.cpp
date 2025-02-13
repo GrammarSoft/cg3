@@ -2642,7 +2642,11 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 				Cohort* parent = current.parent->cohort_map[child->dep_parent];
 				auto grandparent_number = parent->dep_parent;
 				CohortSet siblings;
-				collect_subtree(siblings, parent, rule->childset1);
+				for (auto iter : current.cohorts) {
+					if (iter->dep_parent == parent->global_number && doesSetMatchCohortNormal(*iter, rule->childset1)) {
+						siblings.insert(iter);
+					}
+				}
 
 				// clear dependencies
 				child->dep_parent = DEP_NO_PARENT;
