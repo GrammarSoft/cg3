@@ -168,6 +168,7 @@ Don't change without re-evaluating `cg-kw-re' (or all of cg.el).")
     "ADDRELATION"  "REMRELATION"  "SETRELATION"
     "ADDRELATIONS" "REMRELATIONS" "SETRELATIONS"
     "SETVARIABLE"  "REMVARIABLE"
+    "CMDARGS" "CMDARGS-OVERRIDE" "OPTIONS"
     "APPEND")
   "Rule-starter keywords for indentation, highlighting etc.
 Don't change without re-evaluating `cg-kw-re' (or all of cg.el)." )
@@ -477,6 +478,7 @@ CG-mode provides the following specific keyboard key bindings:
     (font-lock-set-defaults)
     (font-lock-ensure))
   (add-hook 'after-change-functions #'cg-after-change nil 'buffer-local)
+  ;; TODO: Use new track-changes library for ↑ in Emacs >= 30.1, more performant than after-change-functions
   (let* ((buf (current-buffer))
          (hl-timer (run-with-idle-timer 1 'repeat 'cg-output-hl buf)))
     (add-hook 'kill-buffer-hook
