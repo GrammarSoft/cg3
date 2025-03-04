@@ -7,9 +7,9 @@ function profile_revision($rev) {
 	shell_exec('rm -rf '.$dir.' 2>&1 >/dev/null');
 
 	echo "Exporting revision $rev...\n";
-	shell_exec('svn export -r '.$rev.' --ignore-externals svn+ssh://beta.visl.sdu.dk/usr/local/svn/repos/visl/tools/vislcg3/trunk '.$dir.' >/dev/null 2>&1');
+	shell_exec('svn export -r '.$rev.' --ignore-externals svn+ssh://edu.visl.dk/usr/local/svn/repos/visl/tools/vislcg3/trunk '.$dir.' >/dev/null 2>&1');
 	chdir($dir);
-	shell_exec('svn export -r 10017 --ignore-externals svn+ssh://beta.visl.sdu.dk/usr/local/svn/repos/visl/trunk/parsers/dansk/etc/dancg.cg dancg >/dev/null 2>&1');
+	shell_exec('svn export -r 10017 --ignore-externals svn+ssh://edu.visl.dk/usr/local/svn/repos/visl/trunk/parsers/dansk/etc/dancg.cg dancg >/dev/null 2>&1');
 	echo "Compiling...\n";
 
 	if (file_exists('./src/all_vislcg3.cpp')) {

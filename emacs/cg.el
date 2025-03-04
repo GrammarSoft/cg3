@@ -5,7 +5,7 @@
 ;; Author: Kevin Brubeck Unhammer <unhammer@fsfe.org>
 ;; Version: 0.4.0
 ;; Package-Requires: ((emacs "26.1"))
-;; Url: https://visl.sdu.dk/constraint_grammar.html
+;; Url: https://edu.visl.dk/constraint_grammar.html
 ;; Keywords: languages
 
 ;; This file is not part of GNU Emacs.
@@ -57,7 +57,7 @@
 ;; - use something like prolog-clause-start to define M-a/e etc.
 ;; - indentation function (based on prolog again?)
 ;; - the rest of the keywords
-;; - https://visl.sdu.dk/cg3/single/#regex-icase
+;; - https://edu.visl.dk/cg3/single/#regex-icase
 ;; - keyword tab-completion
 ;; - `font-lock-syntactic-keywords' is obsolete since 24.1
 ;; - show definition of set/list-at-point in modeline
@@ -213,7 +213,7 @@ Don't change without re-evaluating `cg-kw-re' (or all of cg.el)." )
 				 "NOPARENT"
 				 "DETACH")
   "Rule flags used for highlighting.
-from https://visl.sdu.dk/svn/visl/tools/vislcg3/trunk/src/Strings.cpp
+from https://edu.visl.dk/svn/visl/tools/vislcg3/trunk/src/Strings.cpp
 Don't change without re-evaluating the file.")
 (defconst cg-kw-context-flags '("NOT"
 				"NEGATE"
