@@ -1,10 +1,6 @@
 find_package(SWIG 3.0 REQUIRED)
-if(CMAKE_VERSION VERSION_GREATER_EQUAL "3.12.0")
-	find_package(Python 3.5 REQUIRED)
-	set(PYTHON_EXECUTABLE ${Python_EXECUTABLE})
-else()
-	find_package(PythonInterp 3.5 REQUIRED)
-endif()
+find_package(Python 3.8 REQUIRED)
+set(PYTHON_EXECUTABLE ${Python_EXECUTABLE})
 
 set(PYTHON_FILE "constraint_grammar.py")
 set(CPP_WRAP_FILE "constraint_grammar_wrap.cpp")
