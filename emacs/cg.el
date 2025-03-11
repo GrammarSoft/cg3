@@ -143,7 +143,7 @@ See also `cg-command' and `cg-pre-pipe'."
   '("LIST" "SET" "TEMPLATE"
     ;; These are not sets (and don't have names after the kw) but we
     ;; have them here to make beginning-of-defun work:
-    "MAPPING-PREFIX" "SOFT-DELIMITERS" "DELIMITERS")
+    "MAPPING-PREFIX" "SOFT-DELIMITERS" "PARENTHESES" "DELIMITERS")
   "List-like keywords used for indentation, highlighting etc.
 Don't change without re-evaluating `cg-kw-re' (or all of cg.el).")
 (defconst cg-kw-set-re (regexp-opt cg-kw-set-list)
