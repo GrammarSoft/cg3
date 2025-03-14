@@ -1,4 +1,8 @@
 "<a>"
-	"a" a d @active-good
+	"a" h
+"<a>"
+	"a" a d @inactive-good-Na @active-good-a @inactive-good-b @inactive-good-unintuitive-a
 	"a" b d
-	"a" c e @active-good-C @inactive-good-C
+	"a" c e @active-good-Ce @inactive-good-Cd
+"<a>"
+	"a" h

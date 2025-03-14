@@ -1,14 +1,17 @@
 DELIMITERS = "<.>" ;
 
-ADD (@active-good) (a) (0T (a)) ;
-ADD (@active-bad) (a) (0T (b)) ;
+ADD (@inactive-good-Na) (a) (NEGATE 0t (a)) ;
+ADD (@inactive-bad-Nb) (a) (NEGATE 0t (b)) ;
 
-ADD (@inactive-good) (a) (0t (b)) ;
-ADD (@inactive-bad) (a) (0t (a)) ;
-ADD (@inactive-bad) (a) (0tC (b)) ;
+ADD (@active-good-a) (a) (0T (a)) ;
+ADD (@active-bad-b) (a) (0T (b)) ;
 
-ADD (@active-good-C) (e) (0TC (e)) ;
-ADD (@active-bad-C) (d) (0TC (e)) ;
+ADD (@inactive-good-b) (a) (0t (b)) ;
+ADD (@inactive-good-unintuitive-a) (a) (0t (a)) ;
+ADD (@inactive-bad-Cb) (a) (0tC (b)) ;
 
-ADD (@inactive-good-C) (e) (0tC (d)) ;
-ADD (@inactive-bad-C) (d) (0tC (e)) ;
+ADD (@active-good-Ce) (e) (0TC (e)) ;
+ADD (@active-bad-Ce) (d) (0TC (e)) ;
+
+ADD (@inactive-good-Cd) (e) (0tC (d)) ;
+ADD (@inactive-bad-Ce) (d) (0tC (e)) ;

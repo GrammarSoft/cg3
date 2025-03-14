@@ -960,7 +960,7 @@ bool GrammarApplicator::doesSetMatchCohortNormal(Cohort& cohort, const uint32_t 
 		retval = doesSetMatchCohort_testLinked(cohort, *theset, context);
 	}
 
-	if (context && !context->matched_target) {
+	if (context && !context->matched_target && !(context->options & (POS_ACTIVE | POS_INACTIVE))) {
 		if (!grammar->sets_any || set >= grammar->sets_any->size() || !grammar->sets_any->test(set)) {
 			bool was_sub = (context->test && (context->test->offset_sub != 0));
 			if (!was_sub && set < cohort.possible_sets.size()) {
