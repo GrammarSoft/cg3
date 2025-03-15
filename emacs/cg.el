@@ -71,6 +71,10 @@
 (require 'xref)
 (require 'tool-bar)
 
+
+(autoload 'cl-remove "cl-seq")
+(autoload 'cl-mapcan "cl-extra")
+
 ;;;============================================================================
 ;;;
 ;;; Define the formal stuff for a major mode named cg.
@@ -537,7 +541,8 @@ beginning of the region to highlight; see
     (((class color) (min-colors 16) (background dark))  :foreground "LightSalmon" :underline "orange")
     (((class color) (min-colors 8)) :foreground "green" :underline "orange")
     (t :slant italic))
-  "CG mode face used to highlight troublesome strings with unescaped quotes in them.")
+  "CG mode face used to highlight troublesome strings.
+E.g. strings with unescaped quotes in them.")
 
 
 
@@ -815,7 +820,7 @@ text file you've already opened) to use as CG input buffer."
 The cache is emptied whenever you make a change in the input buffer,
 or call `cg-check' from another CG file."
   :group 'cg
-  :type 'bool)
+  :type 'boolean)
 
 (defvar cg--check-cache-buffer nil "See `cg-check-do-cache'.")
 
@@ -854,12 +859,11 @@ Since `cg-check' will not reuse a cache unless `cg--file' and
 (defcustom cg-per-buffer-input 'pipe
   "Make input buffers specific to their source CG's.
 
-If it is 'pipe (the default), input buffers will be shared by all
-CG's that have the same value for `cg-pre-pipe'.
+If it is the symbol `pipe' (the default), input buffers will be shared
+by all CG's that have the same value for `cg-pre-pipe'.
 
-If this is 'buffer or t, the input buffer created by
-`cg-edit-input' will be specific to the CG buffer it was called
-from.
+If this is the symbol `buffer' or t, the input buffer created by
+`cg-edit-input' will be specific to the CG buffer it was called from.
 
 If it is nil, all CG buffers share one input buffer."
   :type 'symbol)
@@ -874,8 +878,8 @@ If it is nil, all CG buffers share one input buffer."
 
 (defun cg--get-input-buffer (file)
   "Return a (possibly new) input buffer.
-If `cg-per-buffer-input' is t, the buffer will have be named
-after FILE; if it is 'pipe, the buffer will be named after the
+If `cg-per-buffer-input' is t, the buffer will have be named after FILE;
+if it is the symbol `pipe', the buffer will be named after the
 `cg-pre-pipe'."
   (let ((buf (if (buffer-live-p cg--input-buffer)
                  cg--input-buffer
@@ -1115,7 +1119,7 @@ See `cg-output-hide-analyses'."
 (defcustom cg-check-after-change nil
   "If non-nil, run `cg-check' on grammar after each change to the buffer."
   :group 'cg
-  :type 'bool)
+  :type 'boolean)
 
 ;;;###autoload
 (defcustom cg-check-after-change-secs 1
