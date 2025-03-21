@@ -2876,6 +2876,8 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 		}
 
 		if (rule_did_something) {
+			iter_rules = intersects.find(rule->number);
+			iter_rules_end = intersects.end();
 			if (trace_rules.contains(rule->line)) {
 				retval |= RV_TRACERULE;
 			}
