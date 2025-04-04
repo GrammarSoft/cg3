@@ -25,7 +25,7 @@
 
 namespace CG3 {
 
-enum ApertiumCasing { Lower, Title, Upper };
+enum ApertiumCasing { Nochange, Title, Upper };
 
 class ApertiumApplicator : public virtual GrammarApplicator {
 public:
