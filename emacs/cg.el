@@ -1278,6 +1278,11 @@ Similarly, `cg-post-pipe' is run on output."
                                        (when (eq (process-status cg-proc) 'run)
                                          (process-send-string cg-proc string))))
         (set-process-sentinel pre-proc (lambda (_pre-proc _string)
+                                         (let ((status (process-exit-status pre-proc)))
+                                           (when (/= 0 status)
+                                             (with-current-buffer cache-buffer
+                                               (insert (format "%s failed with exit code %d" cg-pre-pipe status)))
+                                             (display-buffer cache-buffer nil)))
                                          (when (eq (process-status cg-proc) 'run)
                                            (cg-end-process cg-proc))))
         (with-current-buffer in
