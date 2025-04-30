@@ -1270,7 +1270,7 @@ Similarly, `cg-post-pipe' is run on output."
 
       (let ((cg-proc (get-buffer-process out))
             (pre-proc (start-process "cg-pre-pipe" "*cg-pre-pipe-output*"
-                                     "/bin/bash" "-c" pre-pipe))
+                                     "/bin/bash" "-o" "pipefail" "-c" pre-pipe))
             (cache-buffer (cg-pristine-cache-buffer file in pre-pipe)))
         (set-process-filter pre-proc (lambda (_pre-proc string)
                                        (with-current-buffer cache-buffer
