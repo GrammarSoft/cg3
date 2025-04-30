@@ -985,6 +985,16 @@ you want to keep analyses hidden most of the time.")
 
 
 
+(defun cg--colourise-compilation-buffer ()
+  (require 'ansi-color)
+  (read-only-mode 1)
+  (ansi-color-apply-on-region compilation-filter-start (point))
+  (save-excursion
+    (let ((end (point)))
+      (goto-char compilation-filter-start)
+      (while (re-search-forward "\\[\\(1A\\|0G\\)" end 'noerror)
+        (replace-match "" nil nil))))
+  (read-only-mode -1))
 
 (define-compilation-mode cg-output-mode "CG-out"
   "Major mode for output of Constraint Grammar compilations and runs."
@@ -1012,6 +1022,7 @@ you want to keep analyses hidden most of the time.")
        nil)
   (set (make-local-variable 'compilation-finish-functions)
        (list #'cg-check-finish-function))
+  (add-hook 'compilation-filter-hook #'cg--colourise-compilation-buffer nil 'local)
   (modify-syntax-entry ?§ "_")
   (modify-syntax-entry ?@ "_")
   ;; For cg-output-hide-analyses:
