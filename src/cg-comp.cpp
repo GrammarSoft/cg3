@@ -105,7 +105,7 @@ int main(int argc, char* argv[]) {
 		std::cerr << "Grammar has dependency rules." << std::endl;
 	}
 
-	FILE* gout = fopen(argv[2], "wb");
+	std::ofstream gout(argv[2], std::ios::binary);
 
 	if (gout) {
 		BinaryGrammar writer(grammar, std::cerr);

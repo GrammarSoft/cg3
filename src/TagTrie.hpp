@@ -238,14 +238,14 @@ inline TagVectorSet trie_getTagsOrdered(const trie_t& trie) {
 
 inline void trie_serialize(const trie_t& trie, std::ostream& out) {
 	for (auto& kv : trie) {
-		writeSwapped<uint32_t>(out, kv.first->number);
-		writeSwapped<uint8_t>(out, kv.second.terminal);
+		writeBE<uint32_t>(out, kv.first->number);
+		writeBE<uint8_t>(out, kv.second.terminal);
 		if (kv.second.trie) {
-			writeSwapped<uint32_t>(out, UI32(kv.second.trie->size()));
+			writeBE<uint32_t>(out, UI32(kv.second.trie->size()));
 			trie_serialize(*kv.second.trie, out);
 		}
 		else {
-			writeSwapped<uint32_t>(out, 0);
+			writeBE<uint32_t>(out, 0);
 		}
 	}
 }

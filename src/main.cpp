@@ -393,7 +393,7 @@ int main(int argc, char* argv[]) {
 	}
 
 	if (options[GRAMMAR_BIN].doesOccur) {
-		FILE* gout = fopen(options[GRAMMAR_BIN].value.c_str(), "wb");
+		std::ofstream gout(options[GRAMMAR_BIN].value, std::ios::binary);
 		if (gout) {
 			BinaryGrammar writer(grammar, *ux_stderr);
 			writer.writeBinaryGrammar(gout);
