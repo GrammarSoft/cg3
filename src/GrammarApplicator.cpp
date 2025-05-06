@@ -27,6 +27,7 @@
 #include "parser_helpers.hpp"
 #include "process.hpp"
 #include "pool.hpp"
+#include "options.hpp"
 
 namespace CG3 {
 
@@ -880,6 +881,193 @@ void GrammarApplicator::error(const char* str, const char* s, const UChar* S, co
 	else {
 		constexpr UChar buf[] = { 'R', 'T', ' ', 'I', 'N', 'P', 'U', 'T', 0 };
 		u_fprintf(ux_stderr, str, buf, s, S, numLines, buf);
+	}
+}
+
+void GrammarApplicator::setOptions(UConverter* conv) {
+	using namespace Options;
+	bool needs_del = false;
+	if (!conv) {
+		needs_del = true;
+		UErrorCode status;
+		conv = ucnv_open(ucnv_getDefaultName(), &status);
+	}
+
+	if (options[ALWAYS_SPAN].doesOccur) {
+		always_span = true;
+	}
+	unicode_tags = false;
+	if (options[UNICODE_TAGS].doesOccur) {
+		unicode_tags = true;
+	}
+	unique_tags = false;
+	if (options[UNIQUE_TAGS].doesOccur) {
+		unique_tags = true;
+	}
+	apply_mappings = true;
+	if (options[NOMAPPINGS].doesOccur) {
+		apply_mappings = false;
+	}
+	apply_corrections = true;
+	if (options[NOCORRECTIONS].doesOccur) {
+		apply_corrections = false;
+	}
+	no_before_sections = false;
+	if (options[NOBEFORESECTIONS].doesOccur) {
+		no_before_sections = true;
+	}
+	no_sections = false;
+	if (options[NOSECTIONS].doesOccur) {
+		no_sections = true;
+	}
+	no_after_sections = false;
+	if (options[NOAFTERSECTIONS].doesOccur) {
+		no_after_sections = true;
+	}
+	unsafe = false;
+	if (options[UNSAFE].doesOccur) {
+		unsafe = true;
+	}
+	if (options[ORDERED].doesOccur) {
+		ordered = true;
+	}
+	if (options[TRACE].doesOccur) {
+		trace = true;
+		if (!options[TRACE].value.empty()) {
+			GAppSetOpts_ranged(options[TRACE].value.c_str(), trace_rules, false);
+		}
+	}
+	if (options[TRACE_NAME_ONLY].doesOccur) {
+		trace = true;
+		trace_name_only = true;
+	}
+	if (options[TRACE_NO_REMOVED].doesOccur) {
+		trace = true;
+		trace_no_removed = true;
+	}
+	if (options[TRACE_ENCL].doesOccur) {
+		trace = true;
+		trace_encl = true;
+	}
+	if (options[PIPE_DELETED].doesOccur) {
+		pipe_deleted = true;
+	}
+	if (options[DRYRUN].doesOccur) {
+		dry_run = true;
+	}
+	if (options[SINGLERUN].doesOccur) {
+		section_max_count = 1;
+	}
+	if (options[MAXRUNS].doesOccur) {
+		section_max_count = std::stoul(options[MAXRUNS].value);
+	}
+	if (options[SECTIONS].doesOccur) {
+		GAppSetOpts_ranged(options[SECTIONS].value.c_str(), sections);
+	}
+	if (options[RULES].doesOccur) {
+		GAppSetOpts_ranged(options[RULES].value.c_str(), valid_rules);
+	}
+	if (options[RULE].doesOccur) {
+		if (options[RULE].value[0] >= '0' && options[RULE].value[0] <= '9') {
+			valid_rules.push_back(std::stoi(options[RULE].value));
+		}
+		else {
+			UErrorCode status = U_ZERO_ERROR;
+			auto sn = options[RULE].value.size();
+			UString buf(sn * 3, 0);
+			ucnv_reset(conv);
+			ucnv_toUChars(conv, &buf[0], SI32(sn * 3), options[RULE].value.c_str(), SI32(sn), &status);
+
+			for (auto rule : grammar->rule_by_number) {
+				if (rule->name == buf) {
+					valid_rules.push_back(rule->number);
+				}
+			}
+		}
+	}
+	if (options[DEBUG_RULES].doesOccur) {
+		GAppSetOpts_ranged(options[DEBUG_RULES].value.c_str(), debug_rules, false);
+	}
+	if (options[VERBOSE].doesOccur) {
+		if (!options[VERBOSE].value.empty()) {
+			verbosity_level = std::stoul(options[VERBOSE].value);
+		}
+		else {
+			verbosity_level = 1;
+		}
+	}
+	if (options[DODEBUG].doesOccur) {
+		if (!options[DODEBUG].value.empty()) {
+			debug_level = std::stoul(options[DODEBUG].value);
+		}
+		else {
+			debug_level = 1;
+		}
+		std::cerr << "Debug level set to " << debug_level << std::endl;
+	}
+	if (options[PRINT_IDS].doesOccur) {
+		print_ids = true;
+	}
+	if (options[NUM_WINDOWS].doesOccur) {
+		num_windows = std::stoul(options[NUM_WINDOWS].value);
+	}
+	if (options[SOFT_LIMIT].doesOccur) {
+		soft_limit = std::stoul(options[SOFT_LIMIT].value);
+	}
+	if (options[HARD_LIMIT].doesOccur) {
+		hard_limit = std::stoul(options[HARD_LIMIT].value);
+	}
+	if (options[TEXT_DELIMIT].doesOccur) {
+		UString rx{ STR_TEXTDELIM_DEFAULT };
+		if (!options[TEXT_DELIMIT].value.empty()) {
+			UErrorCode status = U_ZERO_ERROR;
+			auto sn = options[TEXT_DELIMIT].value.size();
+			UString buf(sn * 3, 0);
+			ucnv_reset(conv);
+			auto len = ucnv_toUChars(conv, &buf[0], SI32(sn * 3), options[TEXT_DELIMIT].value.c_str(), SI32(sn), &status);
+			rx.assign(buf.begin(), buf.begin() + len);
+		}
+		setTextDelimiter(rx);
+	}
+	if (options[DEP_DELIMIT].doesOccur) {
+		if (!options[DEP_DELIMIT].value.empty()) {
+			dep_delimit = std::stoul(options[DEP_DELIMIT].value);
+		}
+		else {
+			dep_delimit = 10;
+		}
+		parse_dep = true;
+	}
+	if (options[DEP_ABSOLUTE].doesOccur) {
+		dep_absolute = true;
+	}
+	if (options[DEP_ORIGINAL].doesOccur) {
+		dep_original = true;
+	}
+	if (options[DEP_ALLOW_LOOPS].doesOccur) {
+		dep_block_loops = false;
+	}
+	if (options[DEP_BLOCK_CROSSING].doesOccur) {
+		dep_block_crossing = true;
+	}
+	if (options[MAGIC_READINGS].doesOccur) {
+		allow_magic_readings = false;
+	}
+	if (options[NO_PASS_ORIGIN].doesOccur) {
+		no_pass_origin = true;
+	}
+	if (options[SPLIT_MAPPINGS].doesOccur) {
+		split_mappings = true;
+	}
+	if (options[SHOW_END_TAGS].doesOccur) {
+		show_end_tags = true;
+	}
+	if (options[NO_BREAK].doesOccur) {
+		add_spacing = false;
+	}
+
+	if (needs_del) {
+		ucnv_close(conv);
 	}
 }
 }
