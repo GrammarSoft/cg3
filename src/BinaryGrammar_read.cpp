@@ -46,15 +46,13 @@ int BinaryGrammar::parse_grammar(const char* buffer, size_t length) {
 int BinaryGrammar::parse_grammar(std::istream& input) {
 	input.exceptions(std::ios::failbit | std::ios::eofbit | std::ios::badbit);
 
-	uint32_t fields = 0;
 	uint32_t u32tmp = 0;
 	int32_t i32tmp = 0;
-	uint8_t u8tmp = 0;
 	UErrorCode err = U_ZERO_ERROR;
 	UConverter* conv = ucnv_open("UTF-8", &err);
 	std::stringstream buffer;
 
-	if (fread_throw(&cbuffers[0][0], 1, 4, input) != 4) {
+	if (!input.read(&cbuffers[0][0], 4)) {
 		std::cerr << "Error: Error reading first 4 bytes from grammar!" << std::endl;
 		CG3Quit(1);
 	}
@@ -63,8 +61,7 @@ int BinaryGrammar::parse_grammar(std::istream& input) {
 		CG3Quit(1);
 	}
 
-	fread_throw(&u32tmp, sizeof(u32tmp), 1, input);
-	auto bin_revision = ntoh32(u32tmp);
+	auto bin_revision = readBE<uint32_t>(input);
 	if (bin_revision <= BIN_REV_ANCIENT) {
 		if (verbosity >= 1) {
 			u_fprintf(ux_stderr, "Warning: Grammar revision is %u, but current format is %u or later. Please recompile the binary grammar with latest CG-3.\n", bin_revision, CG3_FEATURE_REV);
@@ -84,8 +81,7 @@ int BinaryGrammar::parse_grammar(std::istream& input) {
 
 	grammar->is_binary = true;
 
-	fread_throw(&u32tmp, sizeof(u32tmp), 1, input);
-	fields = ntoh32(u32tmp);
+	auto fields = readBE<uint32_t>(input);
 
 	grammar->has_dep = (fields & BINF_DEP) != 0;
 	grammar->sub_readings_ltr = (fields & BINF_SUB_LTR) != 0;
@@ -96,25 +92,22 @@ int BinaryGrammar::parse_grammar(std::istream& input) {
 
 	if (fields & BINF_PREFIX) {
 		ucnv_reset(conv);
-		fread_throw(&u32tmp, sizeof(u32tmp), 1, input);
-		u32tmp = ntoh32(u32tmp);
-		fread_throw(&cbuffers[0][0], 1, u32tmp, input);
+		u32tmp = readBE<uint32_t>(input);
+		input.read(&cbuffers[0][0], u32tmp);
 		i32tmp = ucnv_toUChars(conv, &grammar->mapping_prefix, 1, &cbuffers[0][0], u32tmp, &err);
 	}
 
 	if (bin_revision >= BIN_REV_CMDARGS) {
-		fread_throw(&u32tmp, sizeof(u32tmp), 1, input);
-		u32tmp = ntoh32(u32tmp);
+		u32tmp = readBE<uint32_t>(input);
 		if (u32tmp) {
 			grammar->cmdargs.resize(u32tmp);
-			fread_throw(&grammar->cmdargs[0], 1, u32tmp, input);
+			input.read(&grammar->cmdargs[0], u32tmp);
 		}
 
-		fread_throw(&u32tmp, sizeof(u32tmp), 1, input);
-		u32tmp = ntoh32(u32tmp);
+		u32tmp = readBE<uint32_t>(input);
 		if (u32tmp) {
 			grammar->cmdargs_override.resize(u32tmp);
-			fread_throw(&grammar->cmdargs_override[0], 1, u32tmp, input);
+			input.read(&grammar->cmdargs_override[0], u32tmp);
 		}
 	}
 
@@ -124,51 +117,40 @@ int BinaryGrammar::parse_grammar(std::istream& input) {
 
 	u32tmp = 0;
 	if (fields & BINF_TAGS) {
-		fread_throw(&u32tmp, sizeof(u32tmp), 1, input);
-		u32tmp = ntoh32(u32tmp);
+		u32tmp = readBE<uint32_t>(input);
 	}
-	uint32_t num_single_tags = u32tmp;
+	auto num_single_tags = u32tmp;
 	grammar->num_tags = num_single_tags;
 	grammar->single_tags_list.resize(num_single_tags);
 	for (uint32_t i = 0; i < num_single_tags; i++) {
 		Tag* t = grammar->allocateTag();
 
-		uint32_t fields = 0;
-		fread_throw(&u32tmp, sizeof(u32tmp), 1, input);
-		fields = ntoh32(u32tmp);
+		auto fields = readBE<uint32_t>(input);
 
 		if (fields & (1 << 0)) {
-			fread_throw(&u32tmp, sizeof(u32tmp), 1, input);
-			t->number = ntoh32(u32tmp);
+			t->number = readBE<uint32_t>(input);
 		}
 		if (fields & (1 << 1)) {
-			fread_throw(&u32tmp, sizeof(u32tmp), 1, input);
-			t->hash = ntoh32(u32tmp);
+			t->hash = readBE<uint32_t>(input);
 		}
 		if (fields & (1 << 2)) {
-			fread_throw(&u32tmp, sizeof(u32tmp), 1, input);
-			t->plain_hash = ntoh32(u32tmp);
+			t->plain_hash = readBE<uint32_t>(input);
 		}
 		if (fields & (1 << 3)) {
-			fread_throw(&u32tmp, sizeof(u32tmp), 1, input);
-			t->seed = ntoh32(u32tmp);
+			t->seed = readBE<uint32_t>(input);
 		}
 		if (fields & (1 << 4)) {
-			fread_throw(&u32tmp, sizeof(u32tmp), 1, input);
-			t->type = ntoh32(u32tmp);
+			t->type = readBE<uint32_t>(input);
 		}
 
 		if (fields & (1 << 5)) {
-			fread_throw(&u32tmp, sizeof(u32tmp), 1, input);
-			t->comparison_hash = ntoh32(u32tmp);
+			t->comparison_hash = readBE<uint32_t>(input);
 		}
 		if (fields & (1 << 6)) {
-			fread_throw(&u32tmp, sizeof(u32tmp), 1, input);
-			t->comparison_op = (C_OPS)ntohl(u32tmp);
+			t->comparison_op = static_cast<C_OPS>(readBE<uint32_t>(input));
 		}
 		if (fields & (1 << 7)) {
-			fread_throw(&i32tmp, sizeof(i32tmp), 1, input);
-			t->comparison_val = SI32(ntohl(i32tmp));
+			t->comparison_val = readBE<int32_t>(input);
 			if (t->comparison_val <= std::numeric_limits<int32_t>::min()) {
 				t->comparison_val = NUMERIC_MIN;
 			}
@@ -178,30 +160,28 @@ int BinaryGrammar::parse_grammar(std::istream& input) {
 		}
 		if (fields & (1 << 12)) {
 			char buf[sizeof(uint64_t) + sizeof(int32_t)] = {};
-			fread_throw(&buf[0], sizeof(buf), 1, input);
+			input.read(&buf[0], sizeof(buf));
 			buffer.str("");
 			buffer.clear();
 			buffer.write(buf, sizeof(buf));
-			t->comparison_val = readSwapped<double>(buffer);
+			t->comparison_val = readBE<double>(buffer);
 		}
 
 		if (fields & (1 << 8)) {
-			fread_throw(&u32tmp, sizeof(u32tmp), 1, input);
-			u32tmp = ntoh32(u32tmp);
+			u32tmp = readBE<uint32_t>(input);
 			if (u32tmp) {
 				ucnv_reset(conv);
-				fread_throw(&cbuffers[0][0], 1, u32tmp, input);
+				input.read(&cbuffers[0][0], u32tmp);
 				i32tmp = ucnv_toUChars(conv, &gbuffers[0][0], CG3_BUFFER_SIZE - 1, &cbuffers[0][0], u32tmp, &err);
 				t->tag = &gbuffers[0][0];
 			}
 		}
 
 		if (fields & (1 << 9)) {
-			fread_throw(&u32tmp, sizeof(u32tmp), 1, input);
-			u32tmp = ntoh32(u32tmp);
+			u32tmp = readBE<uint32_t>(input);
 			if (u32tmp) {
 				ucnv_reset(conv);
-				fread_throw(&cbuffers[0][0], 1, u32tmp, input);
+				input.read(&cbuffers[0][0], u32tmp);
 				i32tmp = ucnv_toUChars(conv, &gbuffers[0][0], CG3_BUFFER_SIZE - 1, &cbuffers[0][0], u32tmp, &err);
 
 				UParseError pe;
@@ -221,28 +201,24 @@ int BinaryGrammar::parse_grammar(std::istream& input) {
 		}
 
 		if (fields & (1 << 10)) {
-			fread_throw(&u32tmp, sizeof(u32tmp), 1, input);
-			auto num = ntoh32(u32tmp);
+			auto num = readBE<uint32_t>(input);
 			t->allocateVsSets();
 			t->vs_sets->reserve(num);
 			tag_varsets[t->number].reserve(num);
 			for (size_t i = 0; i < num; ++i) {
-				fread_throw(&u32tmp, sizeof(u32tmp), 1, input);
-				u32tmp = ntoh32(u32tmp);
+				u32tmp = readBE<uint32_t>(input);
 				tag_varsets[t->number].push_back(u32tmp);
 			}
 		}
 		if (fields & (1 << 11)) {
-			fread_throw(&u32tmp, sizeof(u32tmp), 1, input);
-			auto num = ntoh32(u32tmp);
+			auto num = readBE<uint32_t>(input);
 			t->allocateVsNames();
 			t->vs_names->reserve(num);
 			for (size_t i = 0; i < num; ++i) {
-				fread_throw(&u32tmp, sizeof(u32tmp), 1, input);
-				u32tmp = ntoh32(u32tmp);
+				u32tmp = readBE<uint32_t>(input);
 				if (u32tmp) {
 					ucnv_reset(conv);
-					fread_throw(&cbuffers[0][0], 1, u32tmp, input);
+					input.read(&cbuffers[0][0], u32tmp);
 					i32tmp = ucnv_toUChars(conv, &gbuffers[0][0], CG3_BUFFER_SIZE - 1, &cbuffers[0][0], u32tmp, &err);
 					t->vs_names->push_back(&gbuffers[0][0]);
 				}
@@ -250,12 +226,10 @@ int BinaryGrammar::parse_grammar(std::istream& input) {
 		}
 		// 1 << 12 used earlier
 		if (fields & (1 << 13)) {
-			fread_throw(&u32tmp, sizeof(u32tmp), 1, input);
-			t->variable_hash = ntoh32(u32tmp);
+			t->variable_hash = readBE<uint32_t>(input);
 		}
 		if (fields & (1 << 14)) {
-			fread_throw(&u32tmp, sizeof(u32tmp), 1, input);
-			t->context_ref_pos = ntoh32(u32tmp);
+			t->context_ref_pos = readBE<uint32_t>(input);
 		}
 
 		grammar->single_tags[t->hash] = t;
@@ -267,122 +241,99 @@ int BinaryGrammar::parse_grammar(std::istream& input) {
 
 	u32tmp = 0;
 	if (fields & BINF_REOPEN_MAP) {
-		fread_throw(&u32tmp, sizeof(u32tmp), 1, input);
-		u32tmp = ntoh32(u32tmp);
+		u32tmp = readBE<uint32_t>(input);
 	}
-	uint32_t num_remaps = u32tmp;
+	auto num_remaps = u32tmp;
 	for (uint32_t i = 0; i < num_remaps; ++i) {
-		fread_throw(&u32tmp, sizeof(u32tmp), 1, input);
-		u32tmp = ntoh32(u32tmp);
+		u32tmp = readBE<uint32_t>(input);
 		grammar->reopen_mappings.insert(u32tmp);
 	}
 
 	u32tmp = 0;
 	if (fields & BINF_PREF_TARGETS) {
-		fread_throw(&u32tmp, sizeof(u32tmp), 1, input);
-		u32tmp = ntoh32(u32tmp);
+		u32tmp = readBE<uint32_t>(input);
 	}
-	uint32_t num_pref_targets = u32tmp;
+	auto num_pref_targets = u32tmp;
 	for (uint32_t i = 0; i < num_pref_targets; i++) {
-		fread_throw(&u32tmp, sizeof(u32tmp), 1, input);
-		u32tmp = ntoh32(u32tmp);
+		u32tmp = readBE<uint32_t>(input);
 		grammar->preferred_targets.push_back(u32tmp);
 	}
 
 	u32tmp = 0;
 	if (fields & BINF_ENCLS) {
-		fread_throw(&u32tmp, sizeof(u32tmp), 1, input);
-		u32tmp = ntoh32(u32tmp);
+		u32tmp = readBE<uint32_t>(input);
 	}
-	uint32_t num_par_pairs = u32tmp;
+	auto num_par_pairs = u32tmp;
 	for (uint32_t i = 0; i < num_par_pairs; i++) {
-		fread_throw(&u32tmp, sizeof(u32tmp), 1, input);
-		uint32_t left = ntoh32(u32tmp);
-		fread_throw(&u32tmp, sizeof(u32tmp), 1, input);
-		uint32_t right = ntoh32(u32tmp);
+		auto left = readBE<uint32_t>(input);
+		auto right = readBE<uint32_t>(input);
 		grammar->parentheses[left] = right;
 		grammar->parentheses_reverse[right] = left;
 	}
 
 	u32tmp = 0;
 	if (fields & BINF_ANCHORS) {
-		fread_throw(&u32tmp, sizeof(u32tmp), 1, input);
-		u32tmp = ntoh32(u32tmp);
+		u32tmp = readBE<uint32_t>(input);
 	}
-	uint32_t num_par_anchors = u32tmp;
+	auto num_par_anchors = u32tmp;
 	for (uint32_t i = 0; i < num_par_anchors; i++) {
-		fread_throw(&u32tmp, sizeof(u32tmp), 1, input);
-		uint32_t left = ntoh32(u32tmp);
-		fread_throw(&u32tmp, sizeof(u32tmp), 1, input);
-		uint32_t right = ntoh32(u32tmp);
+		auto left = readBE<uint32_t>(input);
+		auto right = readBE<uint32_t>(input);
 		grammar->anchors[left] = right;
 	}
 
 	u32tmp = 0;
 	if (fields & BINF_SETS) {
-		fread_throw(&u32tmp, sizeof(u32tmp), 1, input);
-		u32tmp = ntoh32(u32tmp);
+		u32tmp = readBE<uint32_t>(input);
 	}
-	uint32_t num_sets = u32tmp;
+	auto num_sets = u32tmp;
 	grammar->sets_list.resize(num_sets);
 	for (uint32_t i = 0; i < num_sets; i++) {
 		Set* s = grammar->allocateSet();
 
-		uint32_t fields = 0;
-		fread_throw(&u32tmp, sizeof(u32tmp), 1, input);
-		fields = ntoh32(u32tmp);
+		auto fields = readBE<uint32_t>(input);
 
 		if (fields & (1 << 0)) {
-			fread_throw(&u32tmp, sizeof(u32tmp), 1, input);
-			s->number = ntoh32(u32tmp);
+			s->number = readBE<uint32_t>(input);
 		}
 		if (fields & (1 << 1)) {
-			fread_throw(&u32tmp, sizeof(u32tmp), 1, input);
-			s->type = UI16(ntoh32(u32tmp));
+			s->type = UI16(readBE<uint32_t>(input));
 		}
 		if (fields & (1 << 2)) {
-			fread_throw(&u8tmp, sizeof(u8tmp), 1, input);
-			s->type = u8tmp;
+			s->type = readBE<uint8_t>(input);
 		}
 
 		if (fields & (1 << 3)) {
-			fread_throw(&u32tmp, sizeof(u32tmp), 1, input);
-			u32tmp = ntoh32(u32tmp);
+			u32tmp = readBE<uint32_t>(input);
 			if (u32tmp) {
 				trie_unserialize(s->trie, input, *grammar, u32tmp);
 			}
-			fread_throw(&u32tmp, sizeof(u32tmp), 1, input);
-			u32tmp = ntoh32(u32tmp);
+			u32tmp = readBE<uint32_t>(input);
 			if (u32tmp) {
 				trie_unserialize(s->trie_special, input, *grammar, u32tmp);
 			}
 		}
 		if (fields & (1 << 4)) {
-			fread_throw(&u32tmp, sizeof(u32tmp), 1, input);
-			u32tmp = ntoh32(u32tmp);
-			uint32_t num_set_ops = u32tmp;
+			u32tmp = readBE<uint32_t>(input);
+			auto num_set_ops = u32tmp;
 			for (uint32_t j = 0; j < num_set_ops; j++) {
-				fread_throw(&u32tmp, sizeof(u32tmp), 1, input);
-				u32tmp = ntoh32(u32tmp);
+				u32tmp = readBE<uint32_t>(input);
 				s->set_ops.push_back(u32tmp);
 			}
 		}
 		if (fields & (1 << 5)) {
-			fread_throw(&u32tmp, sizeof(u32tmp), 1, input);
-			u32tmp = ntoh32(u32tmp);
-			uint32_t num_sets = u32tmp;
+			u32tmp = readBE<uint32_t>(input);
+			auto num_sets = u32tmp;
 			for (uint32_t j = 0; j < num_sets; j++) {
-				fread_throw(&u32tmp, sizeof(u32tmp), 1, input);
-				u32tmp = ntoh32(u32tmp);
+				u32tmp = readBE<uint32_t>(input);
 				s->sets.push_back(u32tmp);
 			}
 		}
 		if (fields & (1 << 6)) {
-			fread_throw(&u32tmp, sizeof(u32tmp), 1, input);
-			u32tmp = ntoh32(u32tmp);
+			u32tmp = readBE<uint32_t>(input);
 			if (u32tmp) {
 				ucnv_reset(conv);
-				fread_throw(&cbuffers[0][0], 1, u32tmp, input);
+				input.read(&cbuffers[0][0], u32tmp);
 				i32tmp = ucnv_toUChars(conv, &gbuffers[0][0], CG3_BUFFER_SIZE - 1, &cbuffers[0][0], u32tmp, &err);
 				s->setName(&gbuffers[0][0]);
 			}
@@ -400,29 +351,25 @@ int BinaryGrammar::parse_grammar(std::istream& input) {
 	}
 
 	if (fields & BINF_DELIMS) {
-		fread_throw(&u32tmp, sizeof(u32tmp), 1, input);
-		u32tmp = ntoh32(u32tmp);
+		u32tmp = readBE<uint32_t>(input);
 		grammar->delimiters = grammar->sets_list[u32tmp];
 	}
 
 	if (fields & BINF_SOFT_DELIMS) {
-		fread_throw(&u32tmp, sizeof(u32tmp), 1, input);
-		u32tmp = ntoh32(u32tmp);
+		u32tmp = readBE<uint32_t>(input);
 		grammar->soft_delimiters = grammar->sets_list[u32tmp];
 	}
 
 	if (fields & BINF_TEXT_DELIMS) {
-		fread_throw(&u32tmp, sizeof(u32tmp), 1, input);
-		u32tmp = ntoh32(u32tmp);
+		u32tmp = readBE<uint32_t>(input);
 		grammar->text_delimiters = grammar->sets_list[u32tmp];
 	}
 
 	u32tmp = 0;
 	if (fields & BINF_CONTEXTS) {
-		fread_throw(&u32tmp, sizeof(u32tmp), 1, input);
-		u32tmp = ntoh32(u32tmp);
+		u32tmp = readBE<uint32_t>(input);
 	}
-	uint32_t num_contexts = u32tmp;
+	auto num_contexts = u32tmp;
 	for (uint32_t i = 0; i < num_contexts; i++) {
 		ContextualTest* t = readContextualTest(input);
 		grammar->contexts[t->hash] = t;
@@ -430,67 +377,56 @@ int BinaryGrammar::parse_grammar(std::istream& input) {
 
 	u32tmp = 0;
 	if (fields & BINF_RULES) {
-		fread_throw(&u32tmp, sizeof(u32tmp), 1, input);
-		u32tmp = ntoh32(u32tmp);
+		u32tmp = readBE<uint32_t>(input);
 	}
-	uint32_t num_rules = u32tmp;
+	auto num_rules = u32tmp;
 	grammar->rule_by_number.resize(num_rules);
 	for (uint32_t i = 0; i < num_rules; i++) {
 		Rule* r = grammar->allocateRule();
 
-		uint32_t fields = 0;
-		fread_throw(&u32tmp, sizeof(u32tmp), 1, input);
-		fields = ntoh32(u32tmp);
+		auto fields = readBE<uint32_t>(input);
 
 		if (fields & (1 << 0)) {
-			fread_throw(&i32tmp, sizeof(i32tmp), 1, input);
-			r->section = SI32(ntohl(i32tmp));
+			r->section = readBE<int32_t>(input);
 		}
 		if (fields & (1 << 1)) {
-			fread_throw(&u32tmp, sizeof(u32tmp), 1, input);
-			r->type = (KEYWORDS)ntohl(u32tmp);
+			r->type = static_cast<KEYWORDS>(readBE<uint32_t>(input));
 		}
 		if (fields & (1 << 2)) {
-			fread_throw(&u32tmp, sizeof(u32tmp), 1, input);
-			r->line = ntoh32(u32tmp);
+			r->line = readBE<uint32_t>(input);
 		}
 		if (fields & (1 << 3)) {
 			if (fields & (1 << 16)) {
-				r->flags = readSwapped<uint64_t>(input);
+				r->flags = readBE<uint64_t>(input);
 			}
 			else {
-				r->flags = readSwapped<uint32_t>(input);
+				r->flags = readBE<uint32_t>(input);
 			}
 		}
 		if (fields & (1 << 4)) {
-			fread_throw(&u32tmp, sizeof(u32tmp), 1, input);
-			u32tmp = ntoh32(u32tmp);
+			u32tmp = readBE<uint32_t>(input);
 			if (u32tmp) {
 				ucnv_reset(conv);
-				fread_throw(&cbuffers[0][0], 1, u32tmp, input);
+				input.read(&cbuffers[0][0], u32tmp);
 				i32tmp = ucnv_toUChars(conv, &gbuffers[0][0], CG3_BUFFER_SIZE - 1, &cbuffers[0][0], u32tmp, &err);
 				r->setName(&gbuffers[0][0]);
 			}
 		}
 		if (fields & (1 << 5)) {
-			fread_throw(&u32tmp, sizeof(u32tmp), 1, input);
-			r->target = ntoh32(u32tmp);
+			r->target = readBE<uint32_t>(input);
 		}
 		if (fields & (1 << 6)) {
-			fread_throw(&u32tmp, sizeof(u32tmp), 1, input);
-			r->wordform = grammar->single_tags_list[ntoh32(u32tmp)];
+			u32tmp = readBE<uint32_t>(input);
+			r->wordform = grammar->single_tags_list[u32tmp];
 		}
 		if (fields & (1 << 7)) {
-			fread_throw(&u32tmp, sizeof(u32tmp), 1, input);
-			r->varname = ntoh32(u32tmp);
+			r->varname = readBE<uint32_t>(input);
 		}
 		if (fields & (1 << 8)) {
-			fread_throw(&u32tmp, sizeof(u32tmp), 1, input);
-			r->varvalue = ntoh32(u32tmp);
+			r->varvalue = readBE<uint32_t>(input);
 		}
 		if (fields & (1 << 9)) {
-			fread_throw(&u32tmp, sizeof(u32tmp), 1, input);
-			u32tmp = ntoh32(u32tmp);
+			u32tmp = readBE<uint32_t>(input);
 			int32_t v = u32tmp;
 			if (u32tmp & (1 << 31)) {
 				u32tmp &= ~(1 << 31);
@@ -500,59 +436,49 @@ int BinaryGrammar::parse_grammar(std::istream& input) {
 			r->sub_reading = v;
 		}
 		if (fields & (1 << 10)) {
-			fread_throw(&u32tmp, sizeof(u32tmp), 1, input);
-			r->childset1 = ntoh32(u32tmp);
+			r->childset1 = readBE<uint32_t>(input);
 		}
 		if (fields & (1 << 11)) {
-			fread_throw(&u32tmp, sizeof(u32tmp), 1, input);
-			r->childset2 = ntoh32(u32tmp);
+			r->childset2 = readBE<uint32_t>(input);
 		}
 		if (fields & (1 << 12)) {
-			fread_throw(&u32tmp, sizeof(u32tmp), 1, input);
-			r->maplist = grammar->sets_list[ntoh32(u32tmp)];
+			u32tmp = readBE<uint32_t>(input);
+			r->maplist = grammar->sets_list[u32tmp];
 		}
 		if (fields & (1 << 13)) {
-			fread_throw(&u32tmp, sizeof(u32tmp), 1, input);
-			r->sublist = grammar->sets_list[ntoh32(u32tmp)];
+			u32tmp = readBE<uint32_t>(input);
+			r->sublist = grammar->sets_list[u32tmp];
 		}
 		if (fields & (1 << 14)) {
-			fread_throw(&u32tmp, sizeof(u32tmp), 1, input);
-			r->number = ntoh32(u32tmp);
+			r->number = readBE<uint32_t>(input);
 		}
 
-		fread_throw(&u32tmp, sizeof(u32tmp), 1, input);
-		u32tmp = ntoh32(u32tmp);
+		u32tmp = readBE<uint32_t>(input);
 		if (u32tmp) {
 			r->dep_target = grammar->contexts[u32tmp];
 		}
 
-		fread_throw(&u32tmp, sizeof(u32tmp), 1, input);
-		u32tmp = ntoh32(u32tmp);
-		uint32_t num_dep_tests = u32tmp;
+		u32tmp = readBE<uint32_t>(input);
+		auto num_dep_tests = u32tmp;
 		for (uint32_t j = 0; j < num_dep_tests; j++) {
-			fread_throw(&u32tmp, sizeof(u32tmp), 1, input);
-			u32tmp = ntoh32(u32tmp);
+			u32tmp = readBE<uint32_t>(input);
 			ContextualTest* t = grammar->contexts[u32tmp];
 			r->addContextualTest(t, r->dep_tests);
 		}
 
-		fread_throw(&u32tmp, sizeof(u32tmp), 1, input);
-		u32tmp = ntoh32(u32tmp);
-		uint32_t num_tests = u32tmp;
+		u32tmp = readBE<uint32_t>(input);
+		auto num_tests = u32tmp;
 		for (uint32_t j = 0; j < num_tests; j++) {
-			fread_throw(&u32tmp, sizeof(u32tmp), 1, input);
-			u32tmp = ntoh32(u32tmp);
+			u32tmp = readBE<uint32_t>(input);
 			ContextualTest* t = grammar->contexts[u32tmp];
 			r->addContextualTest(t, r->tests);
 		}
 
 		if (fields & (1 << 15)) {
-			fread_throw(&u32tmp, sizeof(u32tmp), 1, input);
-			u32tmp = ntoh32(u32tmp);
-			uint32_t num_sub_rules = u32tmp;
+			u32tmp = readBE<uint32_t>(input);
+			auto num_sub_rules = u32tmp;
 			for (uint32_t j = 0; j < num_sub_rules; j++) {
-				fread_throw(&u32tmp, sizeof(u32tmp), 1, input);
-				u32tmp = ntoh32(u32tmp);
+				u32tmp = readBE<uint32_t>(input);
 				r->sub_rules.push_back(grammar->rule_by_number[u32tmp]);
 			}
 		}
@@ -597,76 +523,57 @@ int BinaryGrammar::parse_grammar(std::istream& input) {
 
 ContextualTest* BinaryGrammar::readContextualTest(std::istream& input) {
 	ContextualTest* t = grammar->allocateContextualTest();
-	uint32_t fields = 0;
 	uint32_t u32tmp = 0;
-	int32_t i32tmp = 0;
-	int8_t i8tmp = 0;
-	uint32_t tmpl = 0;
 
-	fread_throw(&u32tmp, sizeof(u32tmp), 1, input);
-	fields = ntoh32(u32tmp);
+	auto fields = readBE<uint32_t>(input);
 
 	if (fields & (1 << 0)) {
-		fread_throw(&u32tmp, sizeof(u32tmp), 1, input);
-		t->hash = ntoh32(u32tmp);
+		t->hash = readBE<uint32_t>(input);
 	}
 	if (fields & (1 << 1)) {
-		fread_throw(&u32tmp, sizeof(u32tmp), 1, input);
-		t->pos = ntoh32(u32tmp);
+		t->pos = readBE<uint32_t>(input);
 		if (t->pos & POS_64BIT) {
-			fread_throw(&u32tmp, sizeof(u32tmp), 1, input);
-			t->pos |= UI64(ntohl(u32tmp)) << 32;
+			u32tmp = readBE<uint32_t>(input);
+			t->pos |= UI64(u32tmp) << 32;
 		}
 	}
 	if (fields & (1 << 2)) {
-		fread_throw(&i32tmp, sizeof(i32tmp), 1, input);
-		t->offset = SI32(ntohl(i32tmp));
+		t->offset = readBE<int32_t>(input);
 	}
 	if (fields & (1 << 3)) {
-		fread_throw(&u32tmp, sizeof(u32tmp), 1, input);
-		tmpl = ntoh32(u32tmp);
-		deferred_tmpls[t] = tmpl;
+		u32tmp = readBE<uint32_t>(input);
+		deferred_tmpls[t] = u32tmp;
 	}
 	if (fields & (1 << 4)) {
-		fread_throw(&u32tmp, sizeof(u32tmp), 1, input);
-		t->target = ntoh32(u32tmp);
+		t->target = readBE<uint32_t>(input);
 	}
 	if (fields & (1 << 5)) {
-		fread_throw(&u32tmp, sizeof(u32tmp), 1, input);
-		t->line = ntoh32(u32tmp);
+		t->line = readBE<uint32_t>(input);
 	}
 	if (fields & (1 << 6)) {
-		fread_throw(&u32tmp, sizeof(u32tmp), 1, input);
-		t->relation = ntoh32(u32tmp);
+		t->relation = readBE<uint32_t>(input);
 	}
 	if (fields & (1 << 7)) {
-		fread_throw(&u32tmp, sizeof(u32tmp), 1, input);
-		t->barrier = ntoh32(u32tmp);
+		t->barrier = readBE<uint32_t>(input);
 	}
 	if (fields & (1 << 8)) {
-		fread_throw(&u32tmp, sizeof(u32tmp), 1, input);
-		t->cbarrier = ntoh32(u32tmp);
+		t->cbarrier = readBE<uint32_t>(input);
 	}
 	if (fields & (1 << 9)) {
-		fread_throw(&i32tmp, sizeof(i32tmp), 1, input);
-		t->offset_sub = SI32(ntohl(i32tmp));
+		t->offset_sub = readBE<int32_t>(input);
 	}
 	if (fields & (1 << 12)) {
-		fread_throw(&i8tmp, sizeof(i8tmp), 1, input);
-		t->jump_pos = i8tmp;
+		t->jump_pos = readBE<int8_t>(input);
 	}
 	if (fields & (1 << 10)) {
-		fread_throw(&u32tmp, sizeof(u32tmp), 1, input);
-		uint32_t num_ors = ntoh32(u32tmp);
+		auto num_ors = readBE<uint32_t>(input);
 		for (uint32_t i = 0; i < num_ors; ++i) {
-			fread_throw(&u32tmp, sizeof(u32tmp), 1, input);
-			u32tmp = ntoh32(u32tmp);
+			u32tmp = readBE<uint32_t>(input);
 			deferred_ors[t].push_back(u32tmp);
 		}
 	}
 	if (fields & (1 << 11)) {
-		fread_throw(&u32tmp, sizeof(u32tmp), 1, input);
-		u32tmp = ntoh32(u32tmp);
+		u32tmp = readBE<uint32_t>(input);
 		t->linked = grammar->contexts[u32tmp];
 	}
 

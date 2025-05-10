@@ -54,7 +54,7 @@ class BinaryGrammar : public IGrammarParser {
 public:
 	BinaryGrammar(Grammar& result, std::ostream& ux_err);
 
-	int writeBinaryGrammar(FILE* output);
+	int writeBinaryGrammar(std::ostream& output);
 
 	void setCompatible(bool compat) override;
 	void setVerbosity(uint32_t level) override;
@@ -68,7 +68,7 @@ private:
 	int parse_grammar(UString& buffer) override;
 
 	Grammar* grammar = nullptr;
-	void writeContextualTest(ContextualTest* t, FILE* output);
+	void writeContextualTest(ContextualTest* t, std::ostream& output);
 	ContextualTest* readContextualTest(std::istream& input);
 
 	typedef std::unordered_map<ContextualTest*, uint32_t> deferred_t;

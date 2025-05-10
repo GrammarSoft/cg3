@@ -58,7 +58,7 @@ enum OPTIONS {
 	NUM_OPTIONS,
 };
 
-std::array<UOption, NUM_OPTIONS> options{
+std::array<UOption, NUM_OPTIONS> options_conv{
 	UOption{"help",         'h', UOPT_NO_ARG,       "shows this help"},
 	UOption{"?",            '?', UOPT_NO_ARG,       "shows this help"},
 	UOption{"prefix",       'p', UOPT_REQUIRES_ARG, "sets the mapping prefix; defaults to @"},
@@ -90,6 +90,12 @@ std::array<UOption, NUM_OPTIONS> options{
 	UOption{"deleted",        0, UOPT_NO_ARG,       "read deleted readings as such, instead of as text"},
 	UOption{"no-break",     'B', UOPT_NO_ARG,       "inhibits any extra whitespace in output"},
 };
+
+inline auto options_default = options_conv;
+inline auto options_override = options_conv;
+
+inline auto grammar_options_default = options_conv;
+inline auto grammar_options_override = options_conv;
 
 #include "options_parser.hpp"
 

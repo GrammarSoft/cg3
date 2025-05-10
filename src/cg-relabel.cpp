@@ -108,7 +108,7 @@ int main(int argc, char* argv[]) {
 	Relabeller relabeller(*grammar, *relabel_grammar, std::cerr);
 	relabeller.relabel();
 
-	FILE* gout = fopen(argv[3], "wb");
+	std::ofstream gout(argv[3], std::ios::binary);
 	if (gout) {
 		BinaryGrammar writer(*grammar, std::cerr);
 		writer.writeBinaryGrammar(gout);

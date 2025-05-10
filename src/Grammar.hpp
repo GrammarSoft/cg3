@@ -160,20 +160,15 @@ public:
 	void contextAdjustTarget(ContextualTest*);
 };
 
-template<typename Stream>
-inline void _trie_unserialize(trie_t& trie, Stream& input, Grammar& grammar, uint32_t num_tags) {
+inline void trie_unserialize(trie_t& trie, std::istream& input, Grammar& grammar, uint32_t num_tags) {
 	for (uint32_t i = 0; i < num_tags; ++i) {
-		uint32_t u32tmp = 0;
-		fread_throw(&u32tmp, sizeof(u32tmp), 1, input);
-		u32tmp = ntoh32(u32tmp);
+		auto u32tmp = readBE<uint32_t>(input);
 		trie_node_t& node = trie[grammar.single_tags_list[u32tmp]];
 
-		uint8_t u8tmp = 0;
-		fread_throw(&u8tmp, sizeof(u8tmp), 1, input);
+		auto u8tmp = readBE<uint8_t>(input);
 		node.terminal = (u8tmp != 0);
 
-		fread_throw(&u32tmp, sizeof(u32tmp), 1, input);
-		u32tmp = ntoh32(u32tmp);
+		u32tmp = readBE<uint32_t>(input);
 		if (u32tmp) {
 			if (!node.trie) {
 				node.trie.reset(new trie_t);
@@ -181,14 +176,6 @@ inline void _trie_unserialize(trie_t& trie, Stream& input, Grammar& grammar, uin
 			trie_unserialize(*node.trie, input, grammar, u32tmp);
 		}
 	}
-}
-
-inline void trie_unserialize(trie_t& trie, FILE* input, Grammar& grammar, uint32_t num_tags) {
-	return _trie_unserialize(trie, input, grammar, num_tags);
-}
-
-inline void trie_unserialize(trie_t& trie, std::istream& input, Grammar& grammar, uint32_t num_tags) {
-	return _trie_unserialize(trie, input, grammar, num_tags);
 }
 }
 

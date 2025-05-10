@@ -985,6 +985,16 @@ you want to keep analyses hidden most of the time.")
 
 
 
+(defun cg--colourise-compilation-buffer ()
+  (require 'ansi-color)
+  (read-only-mode 1)
+  (ansi-color-apply-on-region compilation-filter-start (point))
+  (save-excursion
+    (let ((end (point)))
+      (goto-char compilation-filter-start)
+      (while (re-search-forward "\\[\\(1A\\|0G\\)" end 'noerror)
+        (replace-match "" nil nil))))
+  (read-only-mode -1))
 
 (define-compilation-mode cg-output-mode "CG-out"
   "Major mode for output of Constraint Grammar compilations and runs."
@@ -1012,6 +1022,7 @@ you want to keep analyses hidden most of the time.")
        nil)
   (set (make-local-variable 'compilation-finish-functions)
        (list #'cg-check-finish-function))
+  (add-hook 'compilation-filter-hook #'cg--colourise-compilation-buffer nil 'local)
   (modify-syntax-entry ?§ "_")
   (modify-syntax-entry ?@ "_")
   ;; For cg-output-hide-analyses:
@@ -1270,7 +1281,7 @@ Similarly, `cg-post-pipe' is run on output."
 
       (let ((cg-proc (get-buffer-process out))
             (pre-proc (start-process "cg-pre-pipe" "*cg-pre-pipe-output*"
-                                     "/bin/bash" "-c" pre-pipe))
+                                     "/bin/bash" "-o" "pipefail" "-c" pre-pipe))
             (cache-buffer (cg-pristine-cache-buffer file in pre-pipe)))
         (set-process-filter pre-proc (lambda (_pre-proc string)
                                        (with-current-buffer cache-buffer
@@ -1278,6 +1289,11 @@ Similarly, `cg-post-pipe' is run on output."
                                        (when (eq (process-status cg-proc) 'run)
                                          (process-send-string cg-proc string))))
         (set-process-sentinel pre-proc (lambda (_pre-proc _string)
+                                         (let ((status (process-exit-status pre-proc)))
+                                           (when (/= 0 status)
+                                             (with-current-buffer cache-buffer
+                                               (insert (format "%s failed with exit code %d" cg-pre-pipe status)))
+                                             (display-buffer cache-buffer nil)))
                                          (when (eq (process-status cg-proc) 'run)
                                            (cg-end-process cg-proc))))
         (with-current-buffer in
