@@ -104,7 +104,7 @@ void FormatConverter::printCohort(Cohort* cohort, std::ostream& output, bool pro
 	}
 	default:
 		CG3Quit();
-	}
+}
 }
 
 void FormatConverter::printSingleWindow(SingleWindow* window, std::ostream& output, bool profiling) {
@@ -135,6 +135,43 @@ void FormatConverter::printSingleWindow(SingleWindow* window, std::ostream& outp
 	}
 	default:
 		CG3Quit();
+}
+}
+
+void FormatConverter::printStreamCommand(const UString& cmd, std::ostream& output) {
+	switch (outformat) {
+	case FMT_JSONL: {
+		JsonlApplicator::printStreamCommand(cmd, output);
+		break;
+	}
+	case FMT_CG:
+	case FMT_APERTIUM:
+	case FMT_FST:
+	case FMT_NICELINE:
+	case FMT_PLAIN:
+	default: {
+		GrammarApplicator::printStreamCommand(cmd, output);
+		break;
+	}
 	}
 }
+
+void FormatConverter::printPlainTextLine(const UString& line, std::ostream& output) {
+	switch (outformat) {
+	case FMT_JSONL: {
+		JsonlApplicator::printPlainTextLine(line, output);
+		break;
+	}
+	case FMT_CG:
+	case FMT_APERTIUM:
+	case FMT_FST:
+	case FMT_NICELINE:
+	case FMT_PLAIN:
+	default: {
+		GrammarApplicator::printPlainTextLine(line, output);
+		break;
+	}
+	}
 }
+
+} // namespace CG3

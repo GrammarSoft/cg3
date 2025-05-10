@@ -242,6 +242,7 @@ inline UChar* ux_bufcpy(UChar* dst, const UChar* src, size_t n) {
 std::string ux_dirname(const char* in);
 void findAndReplace(UnicodeString& str, UStringView from, UStringView to);
 size_t get_line_clean(UString& line, UString& cleaned, std::istream& input, bool keep_tabs = false);
+std::string ustring_to_utf8(const UString& ustr);
 
 }
 

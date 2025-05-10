@@ -2,70 +2,87 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://edu.visl.dk/cg3-cohort.schema.json",
   "type": "object",
-  "title": "CG3 Cohort",
-  "description": "Schema for each line of the JSONL CG3 stream representing a cohort",
-  "required": ["w"],
-  "properties": {
-    "w": {
-      "type": "string",
-      "description": "The token (i.e. wordform) of the cohort"
-    },
-    "sts": {
-      "type": "array",
-      "description": "Static tags for the cohort",
-      "items": {
-        "type": "string"
-      }
-    },
-    "rs": {
-      "type": "array",
-      "description": "List of readings in the cohort",
-      "items": {
-        "$ref": "#/definitions/reading"
-      },
-    "drs": {
-        "type": "array",
-        "description": "List of deleted readings in the cohort",
-        "items": {
-          "$ref": "#/definitions/reading"
-        }
-      }
-    },
-    "ds": {
-      "type": "string",
-      "description": "Dependency relation for the cohort itself"
-    },
-    "dp": {
-      "type": "string",
-      "description": "Dependency relation for the parent of the cohort"
-    },
-    "z": {
-      "type": "string",
-      "description": "Text suffix (whitespace, etc.) associated with the cohort"
-    }
-  },
-  "definitions": {
-    "reading": {
-      "type": "object",
-      "description": "A reading in the cohort",
-      "required": ["l", "ts"],
+  "title": "CG3 JSON Line Schema",
+  "description": "Cohort ('w'), Stream command ('cmd'), or Plain text line ('t')",
+  "oneOf": [
+    {
+      "required": ["w"],
       "properties": {
-        "l": {
+        "w": {
           "type": "string",
-          "description": "The lemma (i.e. base form or lexeme) of the reading"
+          "description": "The token (i.e. wordform) of the cohort"
         },
-        "ts": {
+        "sts": {
           "type": "array",
-          "description": "Tags associated with the reading",
-          "items": {
-            "type": "string"
-          }
+          "description": "Static tags for the cohort",
+          "items": {"type": "string"}
         },
-        "s": {
-          "$ref": "#/definitions/reading",
-          "description": "Subreading associated with the reading"
+        "rs": {
+          "type": "array",
+          "description": "List of readings in the cohort",
+          "items": {"$ref": "#/oneOf/0/definitions/reading"}
+        },
+        "drs": {
+          "type": "array",
+          "description": "List of deleted readings in the cohort",
+          "items": { "$ref": "#/oneOf/0/definitions/reading"}
+        },
+        "ds": {
+          "type": "integer",
+          "description": "Dependency relation for the cohort itself"
+        },
+        "dp": {
+          "type": "integer",
+          "description": "Dependency relation for the parent of the cohort"
+        },
+        "z": {
+          "type": "string",
+          "description": "Text suffix (whitespace, etc.) associated with the cohort",
+          "not": {
+            "pattern": "^;.*"
+          }
+        }
+      },
+      "definitions": {
+        "reading": {
+          "type": "object",
+          "description": "A reading in the cohort",
+          "required": ["l"],
+          "properties": {
+            "l": {
+              "type": "string",
+              "description": "The lemma (i.e. base form or lexeme) of the reading"
+            },
+            "ts": {
+              "type": "array",
+              "description": "Tags associated with the reading",
+              "items": {"type": "string"}
+            },
+            "s": {
+              "$ref": "#/oneOf/0/definitions/reading",
+              "description": "Subreading associated with the reading"
+            }
+          }
+        }
+      }
+    },
+    {
+      "required": ["cmd"],
+      "properties": {
+        "cmd": {
+          "type": "string",
+          "description": "A stream command, e.g. <STREAMCMD:REMVAR:poetry,year>"
+        }
+      }
+    },
+    {
+      "required": ["t"],
+      "properties": {
+        "t": {
+          "type": "string",
+          "description": "A plain text line, e.g. a comment or a blank line"
         }
       }
     }
-  }
+  ]
 }

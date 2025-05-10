@@ -51,8 +51,10 @@ public:
 
 protected:
 	CG_FORMATS informat, outformat;
-	void printCohort(Cohort* cohort, std::ostream& output, bool profiling = false);
-	void printSingleWindow(SingleWindow* window, std::ostream& output, bool profiling = false);
+	void printCohort(Cohort* cohort, std::ostream& output, bool profiling = false) override;
+	void printSingleWindow(SingleWindow* window, std::ostream& output, bool profiling = false) override;
+	void printStreamCommand(const UString& cmd, std::ostream& output) override;
+	void printPlainTextLine(const UString& line, std::ostream& output) override;
 };
 }
 

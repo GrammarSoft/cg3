@@ -30,10 +30,12 @@ public:
 	bool add_tags = false;
 
 	PlaintextApplicator(std::ostream& ux_err);
-	void runGrammarOnText(std::istream& input, std::ostream& output);
 
-	void printCohort(Cohort* cohort, std::ostream& output, bool profiling = false);
-	void printSingleWindow(SingleWindow* window, std::ostream& output, bool profiling = false);
+	void runGrammarOnText(std::istream& input, std::ostream& output) override;
+
+protected:
+	void printCohort(Cohort* cohort, std::ostream& output, bool profiling = false) override;
+	void printSingleWindow(SingleWindow* window, std::ostream& output, bool profiling = false) override;
 };
 }
 

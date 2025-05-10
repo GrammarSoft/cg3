@@ -99,6 +99,39 @@ size_t get_line_clean(UString& line, UString& cleaned, std::istream& input, bool
 	return packoff;
 }
 
+std::string ustring_to_utf8(const UString& ustr) {
+	std::string utf8_str;
+	if (!ustr.empty()) {
+		utf8_str.reserve(ustr.length() * 4);
+	}
+	UErrorCode status = U_ZERO_ERROR;
+	int32_t required_length = 0;
+	u_strToUTF8(nullptr, 0, &required_length, ustr.data(), ustr.length(), &status);
+
+	if (status == U_BUFFER_OVERFLOW_ERROR || status == U_ZERO_ERROR) {
+		if (required_length > 0) {
+			utf8_str.resize(required_length);
+			status = U_ZERO_ERROR;
+			int32_t written_length = 0;
+
+			u_strToUTF8(&utf8_str[0], required_length, &written_length, ustr.data(), ustr.length(), &status);
+
+			if (U_FAILURE(status)) {
+				// Consider logging: u_fprintf(stderr, "ICU u_strToUTF8 conversion failed: %s\n", u_errorName(status));
+				return "";
+			}
+
+			if (written_length < required_length) {
+				utf8_str.resize(written_length);
+			}
+		}
+	}
+	else if (U_FAILURE(status)) {
+		return "";
+	}
+	return utf8_str;
+}
+
 }
 
 // ICU std::istream input wrappers
