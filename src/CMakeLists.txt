@@ -107,6 +107,8 @@ set(LIBCG3_SOURCES
 	GrammarWriter.cpp
 	GrammarWriter.hpp
 	IGrammarParser.hpp
+	JsonlApplicator.cpp
+	JsonlApplicator.hpp
 	MathParser.hpp
 	MatxinApplicator.cpp
 	MatxinApplicator.hpp
