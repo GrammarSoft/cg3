@@ -297,19 +297,52 @@ void JsonlApplicator::runGrammarOnText(std::istream& input, std::ostream& output
 			UString cmd_ustr = json_to_ustring(doc["cmd"]);
 			if (!cmd_ustr.empty()) {
 				if (cmd_ustr == STR_CMD_FLUSH) {
-					// Similar logic as in GrammarApplicator::runGrammarOnText for FLUSH
 					if (verbosity_level > 0) {
 						u_fprintf(ux_stderr, "Info: FLUSH command encountered in JSONL input on line %u. Flushing...\n", numLines);
 					}
-					if (cSWindow) {
-						cSWindow->flush_after = true;
-					} else {
-						printStreamCommand(cmd_ustr, output);
+
+					auto backSWindow = gWindow->back();
+					if (backSWindow) {
+						backSWindow->flush_after = true;
 					}
+
+					if (lCohort && cSWindow && !cSWindow->cohorts.empty() && cSWindow->cohorts.back() == lCohort) {
+						for (auto iter : lCohort->readings) {
+							addTagToReading(*iter, endtag);
+						}
+					}
+
+					lCohort = nullptr;
 					cSWindow = nullptr;
 					lSWindow = nullptr;
-					cCohort = nullptr;
-					lCohort = nullptr;
+
+					// Process and print all buffered windows
+					while (!gWindow->next.empty()) {
+						gWindow->shuffleWindowsDown();
+						runGrammarOnWindow();
+						if (numWindows % resetAfter == 0) {
+							resetIndexes();
+						}
+						if (verbosity_level > 0) {
+							u_fprintf(ux_stderr, "Progress: L:%u, W:%u, C:%u, R:%u\r", lines, numWindows, numCohorts, numReadings);
+							u_fflush(ux_stderr);
+						}
+					}
+					gWindow->shuffleWindowsDown();
+					while (!gWindow->previous.empty()) {
+						SingleWindow* tmp = gWindow->previous.front();
+						printSingleWindow(tmp, output);
+						free_swindow(tmp);
+						gWindow->previous.erase(gWindow->previous.begin());
+					}
+
+					if (!backSWindow) {
+						printStreamCommand(cmd_ustr, output);
+					}
+
+					variables.clear();
+					u_fflush(output);
+					u_fflush(*ux_stderr);
 				}
 				else if (cmd_ustr == STR_CMD_IGNORE) {
 					ignoreinput = true;
@@ -340,18 +373,14 @@ void JsonlApplicator::runGrammarOnText(std::istream& input, std::ostream& output
 					}
 					variables_set[key_tag->hash] = value_hash;
 					variables_rem.erase(key_tag->hash);
-					if (std::find(variables_output.begin(), variables_output.end(), key_tag->hash) == variables_output.end()) {
-						variables_output.insert(key_tag->hash);
-					}
+					variables_output.insert(key_tag->hash);
 				}
 				else if (u_strncmp(cmd_ustr.data(), STR_CMD_REMVAR.data(), STR_CMD_REMVAR.length()) == 0) {
 					UString cmd_payload = cmd_ustr.substr(STR_CMD_REMVAR.length(), cmd_ustr.length() - STR_CMD_REMVAR.length() -1); // Remove <STREAMCMD:REMVAR: and >
 					Tag* key_tag = addTag(cmd_payload);
 					variables_set.erase(key_tag->hash);
 					variables_rem.insert(key_tag->hash);
-					if (std::find(variables_output.begin(), variables_output.end(), key_tag->hash) == variables_output.end()) {
-						variables_output.insert(key_tag->hash);
-					}
+					variables_output.insert(key_tag->hash);
 				}
 			}
 			else {
@@ -481,9 +510,30 @@ void JsonlApplicator::runGrammarOnText(std::istream& input, std::ostream& output
 		gWindow->previous.erase(gWindow->previous.begin());
 	}
 
+	u_fflush(output);
+
+	// Print any remaining 'global' variables that were set/rem'd after the last window was finalized
+	for (auto var : variables_output) {
+		Tag* key = grammar->single_tags[var];
+		auto iter = variables_set.find(var);
+		UString cmd_buf;
+		if (iter != variables_set.end()) {
+			if (iter->second != grammar->tag_any) {
+				Tag* value = grammar->single_tags[iter->second];
+				cmd_buf.append(STR_CMD_SETVAR).append(key->tag).append(u"=").append(value->tag).append(u">");
+			}
+			else {
+				cmd_buf.append(STR_CMD_SETVAR).append(key->tag).append(u">");
+			}
+		}
+		else { // Implies it was in variables_rem if it's in variables_output but not variables_set
+			cmd_buf.append(STR_CMD_REMVAR).append(key->tag).append(u">");
+		}
+		printStreamCommand(cmd_buf, output);
+	}
+
 CGCMD_EXIT_JSONL: // Label for EXIT command
 
-	u_fflush(output);
 	if (verbosity_level > 0) {
 		u_fprintf(ux_stderr, "Progress: L:%u, W:%u, C:%u, R:%u - Done.\n", lines, numWindows, numCohorts, numReadings);
 		u_fflush(ux_stderr);

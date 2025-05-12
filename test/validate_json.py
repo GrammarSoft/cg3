@@ -124,11 +124,11 @@ for input_file in input_files:
                 tofile=f'{fro_label}_output',
                 lineterm='\n'
             )
-            print("       Differences:")
+            print("\nDifferences:")
             for line in diff:
-                print(f"       {line}", end="") # Write directly to preserve formatting
+                print(f"{line}", end="") # Write directly to preserve formatting
             intermediate_stream = output[to_label]["process"].stdout.strip()
-            print(f"       Intermediate stream:{intermediate_stream}\n\n{"="*79}")
+            print(f"\nIntermediate stream:\n{intermediate_stream}\n\n{"="*79}")
             overall_to_fro_errors += 1
             continue
 
