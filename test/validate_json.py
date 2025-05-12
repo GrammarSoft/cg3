@@ -29,7 +29,7 @@ PROCESS_TIMEOUT = 5 # Adjust as needed
 
 def strip_deps(string):
     """Strips dependencies from a string."""
-    return re.sub(r'\s*#\d+->\d+', '', string)
+    return re.sub(r'\s*<?#\d+(->|→)\d+>?', '', string)
 
 
 def jsonl_has_validation_errors(output_lines, validator, filename):
@@ -75,64 +75,68 @@ overall_to_fro_errors = 0
 overall_json_validation_errors = 0
 output = {}
 
-skipped_dirs = ["Apertium/"]  # TODO add T_Variables/ and T_InputCommands/
-skipped_dirs_regex = "|".join([re.escape(dir) for dir in skipped_dirs])
-print(f"Skipping directories: {skipped_dirs}")
 for input_file in input_files:
-    if re.search(skipped_dirs_regex, str(input_file)):
-        continue
+    if "Apertium/" in str(input_file):
+        orig_fmt = "a"
+        ORIG_FMT = "A"
+    else:
+        orig_fmt = "c"
+        ORIG_FMT = "C"
 
     with open(input_file, 'r', encoding='utf-8') as f:
         input_content = f.read()
 
-    cC_process = subprocess.run(
-        [str(CG_CONV_PATH), "-c", "-C"] + CG_CONV_EXTRA_ARGS,
+    identity_process = subprocess.run(
+        [str(CG_CONV_PATH), f"-{orig_fmt}", f"-{ORIG_FMT}"] + CG_CONV_EXTRA_ARGS,
         input=input_content, # Pass file content as stdin
         capture_output=True,
         text=True,
     )
-    output["cC"] = {"in": input_content,
-                    "process": cC_process,
-                    "out_str": strip_deps(cC_process.stdout)}
+    output[f"{orig_fmt}{ORIG_FMT}"] = {
+        "in": input_content,
+        "process": identity_process,
+        "out_str": strip_deps(identity_process.stdout)}
 
-    for stream_format in "j":  # TODO a, f and n
-        to_label = f'c{stream_format.upper()}'
-        to_process = subprocess.run(
-            [str(CG_CONV_PATH), "-c", f"-{stream_format.upper()}"] + CG_CONV_EXTRA_ARGS,
-            input=cC_process.stdout,
-            capture_output=True,
-            text=True,
+    to_label = f'{orig_fmt}J'
+    to_process = subprocess.run(
+        [str(CG_CONV_PATH), f"-{orig_fmt}", "-J"] + CG_CONV_EXTRA_ARGS,
+        input=identity_process.stdout,
+        capture_output=True,
+        text=True,
+    )
+    output[to_label] = {"process": to_process,
+                        "out_str": strip_deps(to_process.stdout)}
+    fro_label = f'j{ORIG_FMT}'
+    fro_process = subprocess.run(
+        [str(CG_CONV_PATH), f"-j", f"-{ORIG_FMT}"] + CG_CONV_EXTRA_ARGS,
+        input=to_process.stdout,
+        capture_output=True,
+        text=True,
+    )
+    output[fro_label] = {"process": fro_process,
+                         "out_str": strip_deps(fro_process.stdout)}
+    if output[f"{orig_fmt}{ORIG_FMT}"]["out_str"] != output[fro_label]["out_str"]:
+        print(f"ERROR: cg-conv {orig_fmt}{ORIG_FMT} output differs from {to_label}->{fro_label} output for {input_file}")
+        if 'fooey' in output[fro_label]["out_str"]:
+            print(bytes(output[f"{orig_fmt}{ORIG_FMT}"]["out_str"], 'utf-8'))
+            print(bytes(output[fro_label]["out_str"], 'utf-8'))
+        # Generate and print a unified diff
+        diff = difflib.unified_diff(
+            output[f"{orig_fmt}{ORIG_FMT}"]["out_str"].splitlines(keepends=True),
+            output[fro_label]["out_str"].splitlines(keepends=True),
+            fromfile=f'{orig_fmt}{ORIG_FMT}_output',
+            tofile=f'{fro_label}_output',
+            lineterm='\n'
         )
-        output[to_label] = {"process": to_process,
-                            "out_str": strip_deps(to_process.stdout)}
-        fro_label = f'{stream_format}C'
-        fro_process = subprocess.run(
-            [str(CG_CONV_PATH), f"-{stream_format}", "-C"] + CG_CONV_EXTRA_ARGS,
-            input=to_process.stdout,
-            capture_output=True,
-            text=True,
-        )
-        output[fro_label] = {"process": fro_process,
-                             "out_str": strip_deps(fro_process.stdout)}
-        if output["cC"]["out_str"] != output[fro_label]["out_str"]:
-            print(f"ERROR: cg-conv cC output differs from {to_label}->{fro_label} output for {input_file}")
-            # Generate and print a unified diff
-            diff = difflib.unified_diff(
-                output["cC"]["out_str"].splitlines(keepends=True),
-                output[fro_label]["out_str"].splitlines(keepends=True),
-                fromfile='cC_output',
-                tofile=f'{fro_label}_output',
-                lineterm='\n'
-            )
-            print("\nDifferences:")
-            for line in diff:
-                print(f"{line}", end="") # Write directly to preserve formatting
-            intermediate_stream = output[to_label]["process"].stdout.strip()
-            print(f"\nIntermediate stream:\n{intermediate_stream}\n\n{"="*79}")
-            overall_to_fro_errors += 1
-            continue
+        print("\nDifferences:")
+        for line in diff:
+            print(f"{line}", end="") # Write directly to preserve formatting
+        intermediate_stream = output[to_label]["process"].stdout.strip()
+        print(f"\nIntermediate stream:\n{intermediate_stream}\n\n{"="*79}")
+        overall_to_fro_errors += 1
+        continue
 
-    output_lines = output["cJ"]["process"].stdout.strip().split('\n')
+    output_lines = output[f"{orig_fmt}J"]["process"].stdout.strip().split('\n')
     if jsonl_has_validation_errors(output_lines, validator, str(input_file)):
         overall_json_validation_errors += 1
 
