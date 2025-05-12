@@ -26,6 +26,7 @@
 
 #include "options_conv.hpp"
 using namespace Options;
+using namespace OptionsConv;
 using namespace CG3;
 
 int main(int argc, char* argv[]) {

@@ -23,7 +23,10 @@
 
 #include <uoptions.hpp>
 
-namespace Options {
+namespace OptionsConv {
+
+using namespace ::Options;
+
 enum OPTIONS {
 	HELP1,
 	HELP2,
