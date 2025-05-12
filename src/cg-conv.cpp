@@ -155,7 +155,7 @@ int main(int argc, char* argv[]) {
 	else if (options_conv[IN_PLAIN].doesOccur) {
 		fmt = FMT_PLAIN;
 	}
-	else if (options[IN_JSONL].doesOccur) {
+	else if (options_conv[IN_JSONL].doesOccur) {
 		fmt = FMT_JSONL;
 	}
 
@@ -310,7 +310,7 @@ int main(int argc, char* argv[]) {
 	else if (options_conv[OUT_PLAIN].doesOccur) {
 		applicator.setOutputFormat(FMT_PLAIN);
 	}
-	else if (options[OUT_JSONL].doesOccur) {
+	else if (options_conv[OUT_JSONL].doesOccur) {
 		applicator.setOutputFormat(FMT_JSONL);
 	}
 

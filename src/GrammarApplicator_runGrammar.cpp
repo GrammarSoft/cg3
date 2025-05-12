@@ -491,7 +491,7 @@ void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& outp
 					}
 
 					if (!backSWindow) {
-						printPlainTextLine(line, output); // TODO printStreamCommand ?
+						printStreamCommand(UString(STR_CMD_FLUSH), output);
 					}
 					line[0] = 0;
 					variables.clear();
@@ -530,7 +530,6 @@ void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& outp
 					//u_fprintf(ux_stderr, "Info: SETVAR encountered on line %u.\n", numLines);
 					is_cmd = true;
 					cleaned[packoff - 1] = 0;
-					printStreamCommand(&cleaned[0], output);
 					line[0] = 0;
 
 					UChar* s = &cleaned[STR_CMD_SETVAR.size()];
@@ -608,7 +607,6 @@ void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& outp
 					//u_fprintf(ux_stderr, "Info: REMVAR encountered on line %u.\n", numLines);
 					is_cmd = true;
 					cleaned[packoff - 1] = 0;
-					printStreamCommand(&cleaned[0], output);
 					line[0] = 0;
 
 					UChar* s = &cleaned[STR_CMD_REMVAR.size()];

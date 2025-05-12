@@ -488,7 +488,10 @@ void GrammarApplicator::printCohort(Cohort* cohort, std::ostream& output, bool p
 	}
 
 	if (!cohort->wblank.empty()) {
-		u_fprintf(output, "%S", cohort->wblank.data());
+		printPlainTextLine(cohort->wblank, output);
+		if (!ISNL(cohort->wblank.back())) {
+			u_fputc('\n', output);
+		}
 	}
 
 	if (cohort->type & CT_REMOVED) {
@@ -535,7 +538,10 @@ void GrammarApplicator::printCohort(Cohort* cohort, std::ostream& output, bool p
 
 removed:
 	if (!cohort->text.empty() && cohort->text.find_first_not_of(ws) != UString::npos) {
-		u_fprintf(output, "%S", cohort->text.data());
+		printPlainTextLine(cohort->text, output);
+		if (!ISNL(cohort->text.back())) {
+			u_fputc('\n', output);
+		}
 	}
 
 	if (profiling && cohort == rule_target) {
