@@ -633,7 +633,7 @@ void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& outp
 
 				if (line[0]) {
 					if (lSWindow && lCohort && testStringAgainst(line, text_delimiters)) {
-						lSWindow->text_post += line;
+						lSWindow->text_post += &line[0];
 
 						for (auto iter : cCohort->readings) {
 							addTagToReading(*iter, endtag);
@@ -649,13 +649,13 @@ void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& outp
 						did_soft_lookback = false;
 					}
 					else if (lCohort) {
-						lCohort->text += line;
+						lCohort->text += &line[0];
 					}
 					else if (lSWindow) {
-						lSWindow->text += line;
+						lSWindow->text += &line[0];
 					}
 					else if (!is_cmd) {
-						printPlainTextLine(line, output);
+						printPlainTextLine(&line[0], output);
 					}
 				}
 			}
