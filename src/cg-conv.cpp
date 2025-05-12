@@ -89,6 +89,18 @@ int main(int argc, char* argv[]) {
 			}
 		}
 
+		fprintf(out, "\n\nKeys for JSONL format:\n");
+		fprintf(out, "===============================================================================\n");
+		fprintf(out, "Cohort:                     Reading:                   Stream Command:\n");
+		fprintf(out, "    w  wordform/token          l  lemma/base form        cmd  stream command\n");
+		fprintf(out, "  sts  static tags            ts  tags\n");
+		fprintf(out, "   rs  readings                s  subreading\n");
+		fprintf(out, "  drs  deleted readings                                Plain text:\n");
+		fprintf(out, "   ds  dependency self                                     t  text line\n");
+		fprintf(out, "   dp  dependency parent\n");
+		fprintf(out, "    z  text line(s) suffix\n");
+		fprintf(out, "===============================================================================\n");
+
 		return argc < 0 ? U_ILLEGAL_ARGUMENT_ERROR : U_ZERO_ERROR;
 	}
 
@@ -144,6 +156,9 @@ int main(int argc, char* argv[]) {
 	}
 	else if (options_conv[IN_PLAIN].doesOccur) {
 		fmt = FMT_PLAIN;
+	}
+	else if (options_conv[IN_JSONL].doesOccur) {
+		fmt = FMT_JSONL;
 	}
 
 	if (options_conv[IN_AUTO].doesOccur || fmt == FMT_INVALID) {
@@ -230,6 +245,14 @@ int main(int argc, char* argv[]) {
 				fmt = FMT_FST;
 				break;
 			}
+			uregex_close(rx);
+
+			rx = uregex_openC("^\\{", UREGEX_MULTILINE, 0, &status);
+			uregex_setText(rx, buffer.data(), SI32(buffer.size()), &status);
+			if (uregex_find(rx, -1, &status)) {
+				fmt = FMT_JSONL;
+				break;
+			}
 
 			fmt = FMT_PLAIN;
 			break;
@@ -288,6 +311,9 @@ int main(int argc, char* argv[]) {
 	}
 	else if (options_conv[OUT_PLAIN].doesOccur) {
 		applicator.setOutputFormat(FMT_PLAIN);
+	}
+	else if (options_conv[OUT_JSONL].doesOccur) {
+		applicator.setOutputFormat(FMT_JSONL);
 	}
 
 	if (options_conv[UNICODE_TAGS].doesOccur) {

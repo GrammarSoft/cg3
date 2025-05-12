@@ -272,7 +272,7 @@ void PlaintextApplicator::runGrammarOnText(std::istream& input, std::ostream& ou
 					lSWindow->text += &line[0];
 				}
 				else {
-					u_fprintf(output, "%S", &line[0]);
+					printPlainTextLine(&line[0], output);
 				}
 			}
 		}

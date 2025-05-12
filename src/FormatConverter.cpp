@@ -24,10 +24,11 @@ namespace CG3 {
 FormatConverter::FormatConverter(std::ostream& ux_err)
   : GrammarApplicator(ux_err)
   , ApertiumApplicator(ux_err)
+  , FSTApplicator(ux_err)
+  , JsonlApplicator(ux_err)
+  , MatxinApplicator(ux_err)
   , NicelineApplicator(ux_err)
   , PlaintextApplicator(ux_err)
-  , FSTApplicator(ux_err)
-  , MatxinApplicator(ux_err)
   , informat(FMT_CG)
   , outformat(FMT_CG)
 {
@@ -66,6 +67,10 @@ void FormatConverter::runGrammarOnText(std::istream& input, std::ostream& output
 		FSTApplicator::runGrammarOnText(input, output);
 		break;
 	}
+	case FMT_JSONL: {
+		JsonlApplicator::runGrammarOnText(input, output);
+		break;
+	}
 	default:
 		CG3Quit();
 	}
@@ -91,6 +96,10 @@ void FormatConverter::printCohort(Cohort* cohort, std::ostream& output, bool pro
 	}
 	case FMT_PLAIN: {
 		PlaintextApplicator::printCohort(cohort, output, profiling);
+		break;
+	}
+	case FMT_JSONL: {
+		JsonlApplicator::printCohort(cohort, output, profiling);
 		break;
 	}
 	default:
@@ -120,8 +129,49 @@ void FormatConverter::printSingleWindow(SingleWindow* window, std::ostream& outp
 		PlaintextApplicator::printSingleWindow(window, output, profiling);
 		break;
 	}
+	case FMT_JSONL: {
+		JsonlApplicator::printSingleWindow(window, output, profiling);
+		break;
+	}
 	default:
 		CG3Quit();
+}
+}
+
+void FormatConverter::printStreamCommand(const UString& cmd, std::ostream& output) {
+	switch (outformat) {
+	case FMT_JSONL: {
+		JsonlApplicator::printStreamCommand(cmd, output);
+		break;
+	}
+	case FMT_CG:
+	case FMT_APERTIUM:
+	case FMT_FST:
+	case FMT_NICELINE:
+	case FMT_PLAIN:
+	default: {
+		GrammarApplicator::printStreamCommand(cmd, output);
+		break;
+	}
 	}
 }
+
+void FormatConverter::printPlainTextLine(const UString& line, std::ostream& output) {
+	switch (outformat) {
+	case FMT_JSONL: {
+		JsonlApplicator::printPlainTextLine(line, output);
+		break;
+	}
+	case FMT_CG:
+	case FMT_APERTIUM:
+	case FMT_FST:
+	case FMT_NICELINE:
+	case FMT_PLAIN:
+	default: {
+		GrammarApplicator::printPlainTextLine(line, output);
+		break;
+	}
+	}
 }
+
+} // namespace CG3
