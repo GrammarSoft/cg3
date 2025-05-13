@@ -28,18 +28,21 @@
 using namespace CG3;
 
 #include <uoptions.hpp>
-namespace Options {
+namespace OptionsMWE {
+using ::Options::UOption;
+using ::Options::UOPT_NO_ARG;
+
 enum OPTIONS {
 	HELP1,
 	HELP2,
-	NUM_OPTIONS,
+	NUM_OPTIONS_MWE,
 };
-UOption options[] = {
+UOption options_mwe[] = {
 	UOption{"help", 'h', UOPT_NO_ARG,       "shows this help"},
 	UOption{"?",    '?', UOPT_NO_ARG,       "shows this help"},
 };
 }
-using namespace Options;
+using namespace OptionsMWE;
 
 int main(int argc, char** argv) {
 	UErrorCode status = U_ZERO_ERROR;
@@ -51,36 +54,36 @@ int main(int argc, char** argv) {
 		CG3Quit(1);
 	}
 
-	argc = u_parseArgs(argc, argv, NUM_OPTIONS, options);
+	argc = u_parseArgs(argc, argv, NUM_OPTIONS_MWE, options_mwe);
 
-	if (argc < 0 || options[HELP1].doesOccur || options[HELP2].doesOccur) {
+	if (argc < 0 || options_mwe[HELP1].doesOccur || options_mwe[HELP2].doesOccur) {
 		FILE* out = (argc < 0) ? stderr : stdout;
 		fprintf(out, "Usage: cg-mwesplit [OPTIONS]\n");
 		fprintf(out, "\n");
 		fprintf(out, "Options:\n");
 
 		size_t longest = 0;
-		for (uint32_t i = 0; i < NUM_OPTIONS; i++) {
-			if (!options[i].description.empty()) {
-				size_t len = strlen(options[i].longName);
+		for (uint32_t i = 0; i < NUM_OPTIONS_MWE; i++) {
+			if (!options_mwe[i].description.empty()) {
+				size_t len = strlen(options_mwe[i].longName);
 				longest = std::max(longest, len);
 			}
 		}
-		for (uint32_t i = 0; i < NUM_OPTIONS; i++) {
-			if (!options[i].description.empty() && options[i].description[0] != '!') {
+		for (uint32_t i = 0; i < NUM_OPTIONS_MWE; i++) {
+			if (!options_mwe[i].description.empty() && options_mwe[i].description[0] != '!') {
 				fprintf(out, " ");
-				if (options[i].shortName) {
-					fprintf(out, "-%c,", options[i].shortName);
+				if (options_mwe[i].shortName) {
+					fprintf(out, "-%c,", options_mwe[i].shortName);
 				}
 				else {
 					fprintf(out, "   ");
 				}
-				fprintf(out, " --%s", options[i].longName);
-				size_t ldiff = longest - strlen(options[i].longName);
+				fprintf(out, " --%s", options_mwe[i].longName);
+				size_t ldiff = longest - strlen(options_mwe[i].longName);
 				while (ldiff--) {
 					fprintf(out, " ");
 				}
-				fprintf(out, "  %s", options[i].description.c_str());
+				fprintf(out, "  %s", options_mwe[i].description.c_str());
 				fprintf(out, "\n");
 			}
 		}

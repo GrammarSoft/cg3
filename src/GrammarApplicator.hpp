@@ -192,6 +192,8 @@ public:
 	void error(const char* str, const char* s, const UChar* S, const UChar* p);
 	Grammar* get_grammar() { return grammar; }
 
+	void setOptions(UConverter* conv = nullptr);
+
 protected:
 	void printTrace(std::ostream& output, uint32_t hit_by);
 	void printReading(const Reading* reading, std::ostream& output, size_t sub = 1);

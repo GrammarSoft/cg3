@@ -287,7 +287,7 @@ inline void MathParser::get_token() {
 		tok_type = NUMBER;
 	}
 
-	if ((tok_type == VARIABLE)) {
+	if (tok_type == VARIABLE) {
 		if (ux_simplecasecmp(token, u"MIN") || ux_simplecasecmp(token, u"MAX")) {
 			// Nothing
 		}

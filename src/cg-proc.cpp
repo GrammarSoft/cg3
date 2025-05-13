@@ -31,6 +31,9 @@
 #endif
 
 #include "version.hpp"
+#include "options.hpp"
+#include "options_parser.hpp"
+using namespace Options;
 using namespace CG3;
 
 void endProgram(char* name) {
@@ -192,6 +195,17 @@ int main(int argc, char* argv[]) {
 	ucnv_setDefaultName("UTF-8");
 	uloc_setDefault("en_US_POSIX", &status);
 
+	parse_opts_env("CG3_DEFAULT", options_default);
+	parse_opts_env("CG3_OVERRIDE", options_override);
+	for (size_t i = 0; i < options.size(); ++i) {
+		if (options_default[i].doesOccur && !options[i].doesOccur) {
+			options[i] = options_default[i];
+		}
+		if (options_override[i].doesOccur) {
+			options[i] = options_override[i];
+		}
+	}
+
 	Grammar grammar;
 
 	/* Add a / in front to enable this test...
@@ -262,6 +276,25 @@ int main(int argc, char* argv[]) {
 
 	grammar.reindex();
 
+	if (!grammar.cmdargs.empty()) {
+		auto args = grammar.cmdargs;
+		args.push_back(0);
+		parse_opts(args.data(), grammar_options_default);
+	}
+	if (!grammar.cmdargs_override.empty()) {
+		auto args = grammar.cmdargs_override;
+		args.push_back(0);
+		parse_opts(args.data(), grammar_options_override);
+	}
+	for (size_t i = 0; i < options.size(); ++i) {
+		if (grammar_options_default[i].doesOccur && !options[i].doesOccur) {
+			options[i] = grammar_options_default[i];
+		}
+		if (grammar_options_override[i].doesOccur && !options_override[i].doesOccur) {
+			options[i] = grammar_options_override[i];
+		}
+	}
+
 	std::unique_ptr<GrammarApplicator> applicator;
 
 	if (stream_format == 0) {
@@ -286,6 +319,7 @@ int main(int argc, char* argv[]) {
 	}
 
 	applicator->setGrammar(&grammar);
+	applicator->setOptions();
 	for (int32_t i = 1; i <= sections; i++) {
 		applicator->sections.push_back(i);
 	}

@@ -23,7 +23,12 @@
 
 #include <uoptions.hpp>
 
-namespace Options {
+namespace OptionsConv {
+
+using ::Options::UOption;
+using ::Options::UOPT_NO_ARG;
+using ::Options::UOPT_REQUIRES_ARG;
+
 enum OPTIONS {
 	HELP1,
 	HELP2,
@@ -53,10 +58,10 @@ enum OPTIONS {
 	UNICODE_TAGS,
 	PIPE_DELETED,
 	NO_BREAK,
-	NUM_OPTIONS,
+	NUM_OPTIONS_CONV,
 };
 
-std::array<UOption, NUM_OPTIONS> options{
+std::array<UOption, NUM_OPTIONS_CONV> options_conv{
 	UOption{"help",         'h', UOPT_NO_ARG,       "shows this help"},
 	UOption{"?",            '?', UOPT_NO_ARG,       "shows this help"},
 	UOption{"prefix",       'p', UOPT_REQUIRES_ARG, "sets the mapping prefix; defaults to @"},
@@ -87,7 +92,11 @@ std::array<UOption, NUM_OPTIONS> options{
 	UOption{"no-break",     'B', UOPT_NO_ARG,       "inhibits any extra whitespace in output"},
 };
 
-#include "options_parser.hpp"
+inline auto options_default = options_conv;
+inline auto options_override = options_conv;
+
+inline auto grammar_options_default = options_conv;
+inline auto grammar_options_override = options_conv;
 
 }
 

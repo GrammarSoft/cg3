@@ -26,9 +26,9 @@
 #include "version.hpp"
 
 #include "options.hpp"
+#include "options_parser.hpp"
 using namespace Options;
 using namespace CG3;
-void GAppSetOpts(GrammarApplicator& applicator, UConverter* conv);
 
 int main(int argc, char* argv[]) {
 	clock_t main_timer = clock();
@@ -36,7 +36,7 @@ int main(int argc, char* argv[]) {
 	UErrorCode status = U_ZERO_ERROR;
 	srand(UI32(time(0)));
 
-	argc = u_parseArgs(argc, argv, NUM_OPTIONS, options.data());
+	argc = u_parseArgs(argc, argv, options.size(), options.data());
 	FILE* out = stderr;
 
 	parse_opts_env("CG3_DEFAULT", options_default);
@@ -86,13 +86,13 @@ int main(int argc, char* argv[]) {
 		fprintf(out, "Options:\n");
 
 		size_t longest = 0;
-		for (uint32_t i = 0; i < NUM_OPTIONS; i++) {
+		for (uint32_t i = 0; i < options.size(); i++) {
 			if (!options[i].description.empty()) {
 				size_t len = strlen(options[i].longName);
 				longest = std::max(longest, len);
 			}
 		}
-		for (uint32_t i = 0; i < NUM_OPTIONS; i++) {
+		for (uint32_t i = 0; i < options.size(); i++) {
 			if (!options[i].description.empty()) {
 				fprintf(out, " ");
 				if (options[i].shortName) {
@@ -364,7 +364,7 @@ int main(int argc, char* argv[]) {
 	if (!options[GRAMMAR_ONLY].doesOccur) {
 		GrammarApplicator applicator(*ux_stderr);
 		applicator.setGrammar(&grammar);
-		GAppSetOpts(applicator, conv);
+		applicator.setOptions(conv);
 		if (options[PROFILING].doesOccur) {
 			applicator.profiler = profiler.get();
 		}
@@ -420,179 +420,4 @@ int main(int argc, char* argv[]) {
 	}
 
 	return status;
-}
-
-void GAppSetOpts(GrammarApplicator& applicator, UConverter* conv) {
-	if (options[ALWAYS_SPAN].doesOccur) {
-		applicator.always_span = true;
-	}
-	applicator.unicode_tags = false;
-	if (options[UNICODE_TAGS].doesOccur) {
-		applicator.unicode_tags = true;
-	}
-	applicator.unique_tags = false;
-	if (options[UNIQUE_TAGS].doesOccur) {
-		applicator.unique_tags = true;
-	}
-	applicator.apply_mappings = true;
-	if (options[NOMAPPINGS].doesOccur) {
-		applicator.apply_mappings = false;
-	}
-	applicator.apply_corrections = true;
-	if (options[NOCORRECTIONS].doesOccur) {
-		applicator.apply_corrections = false;
-	}
-	applicator.no_before_sections = false;
-	if (options[NOBEFORESECTIONS].doesOccur) {
-		applicator.no_before_sections = true;
-	}
-	applicator.no_sections = false;
-	if (options[NOSECTIONS].doesOccur) {
-		applicator.no_sections = true;
-	}
-	applicator.no_after_sections = false;
-	if (options[NOAFTERSECTIONS].doesOccur) {
-		applicator.no_after_sections = true;
-	}
-	applicator.unsafe = false;
-	if (options[UNSAFE].doesOccur) {
-		applicator.unsafe = true;
-	}
-	if (options[ORDERED].doesOccur) {
-		applicator.ordered = true;
-	}
-	if (options[TRACE].doesOccur) {
-		applicator.trace = true;
-		if (!options[TRACE].value.empty()) {
-			GAppSetOpts_ranged(options[TRACE].value.c_str(), applicator.trace_rules, false);
-		}
-	}
-	if (options[TRACE_NAME_ONLY].doesOccur) {
-		applicator.trace = true;
-		applicator.trace_name_only = true;
-	}
-	if (options[TRACE_NO_REMOVED].doesOccur) {
-		applicator.trace = true;
-		applicator.trace_no_removed = true;
-	}
-	if (options[TRACE_ENCL].doesOccur) {
-		applicator.trace = true;
-		applicator.trace_encl = true;
-	}
-	if (options[PIPE_DELETED].doesOccur) {
-		applicator.pipe_deleted = true;
-	}
-	if (options[DRYRUN].doesOccur) {
-		applicator.dry_run = true;
-	}
-	if (options[SINGLERUN].doesOccur) {
-		applicator.section_max_count = 1;
-	}
-	if (options[MAXRUNS].doesOccur) {
-		applicator.section_max_count = std::stoul(options[MAXRUNS].value);
-	}
-	if (options[SECTIONS].doesOccur) {
-		GAppSetOpts_ranged(options[SECTIONS].value.c_str(), applicator.sections);
-	}
-	if (options[RULES].doesOccur) {
-		GAppSetOpts_ranged(options[RULES].value.c_str(), applicator.valid_rules);
-	}
-	if (options[RULE].doesOccur) {
-		if (options[RULE].value[0] >= '0' && options[RULE].value[0] <= '9') {
-			applicator.valid_rules.push_back(std::stoi(options[RULE].value));
-		}
-		else {
-			UErrorCode status = U_ZERO_ERROR;
-			auto sn = options[RULE].value.size();
-			UString buf(sn * 3, 0);
-			ucnv_reset(conv);
-			ucnv_toUChars(conv, &buf[0], SI32(sn * 3), options[RULE].value.c_str(), SI32(sn), &status);
-
-			for (auto rule : applicator.grammar->rule_by_number) {
-				if (rule->name == buf) {
-					applicator.valid_rules.push_back(rule->number);
-				}
-			}
-		}
-	}
-	if (options[DEBUG_RULES].doesOccur) {
-		GAppSetOpts_ranged(options[DEBUG_RULES].value.c_str(), applicator.debug_rules, false);
-	}
-	if (options[VERBOSE].doesOccur) {
-		if (!options[VERBOSE].value.empty()) {
-			applicator.verbosity_level = std::stoul(options[VERBOSE].value);
-		}
-		else {
-			applicator.verbosity_level = 1;
-		}
-	}
-	if (options[DODEBUG].doesOccur) {
-		if (!options[DODEBUG].value.empty()) {
-			applicator.debug_level = std::stoul(options[DODEBUG].value);
-		}
-		else {
-			applicator.debug_level = 1;
-		}
-		std::cerr << "Debug level set to " << applicator.debug_level << std::endl;
-	}
-	if (options[PRINT_IDS].doesOccur) {
-		applicator.print_ids = true;
-	}
-	if (options[NUM_WINDOWS].doesOccur) {
-		applicator.num_windows = std::stoul(options[NUM_WINDOWS].value);
-	}
-	if (options[SOFT_LIMIT].doesOccur) {
-		applicator.soft_limit = std::stoul(options[SOFT_LIMIT].value);
-	}
-	if (options[HARD_LIMIT].doesOccur) {
-		applicator.hard_limit = std::stoul(options[HARD_LIMIT].value);
-	}
-	if (options[TEXT_DELIMIT].doesOccur) {
-		UString rx{ STR_TEXTDELIM_DEFAULT };
-		if (!options[TEXT_DELIMIT].value.empty()) {
-			UErrorCode status = U_ZERO_ERROR;
-			auto sn = options[TEXT_DELIMIT].value.size();
-			UString buf(sn * 3, 0);
-			ucnv_reset(conv);
-			auto len = ucnv_toUChars(conv, &buf[0], SI32(sn * 3), options[TEXT_DELIMIT].value.c_str(), SI32(sn), &status);
-			rx.assign(buf.begin(), buf.begin() + len);
-		}
-		applicator.setTextDelimiter(rx);
-	}
-	if (options[DEP_DELIMIT].doesOccur) {
-		if (!options[DEP_DELIMIT].value.empty()) {
-			applicator.dep_delimit = std::stoul(options[DEP_DELIMIT].value);
-		}
-		else {
-			applicator.dep_delimit = 10;
-		}
-		applicator.parse_dep = true;
-	}
-	if (options[DEP_ABSOLUTE].doesOccur) {
-		applicator.dep_absolute = true;
-	}
-	if (options[DEP_ORIGINAL].doesOccur) {
-		applicator.dep_original = true;
-	}
-	if (options[DEP_ALLOW_LOOPS].doesOccur) {
-		applicator.dep_block_loops = false;
-	}
-	if (options[DEP_BLOCK_CROSSING].doesOccur) {
-		applicator.dep_block_crossing = true;
-	}
-	if (options[MAGIC_READINGS].doesOccur) {
-		applicator.allow_magic_readings = false;
-	}
-	if (options[NO_PASS_ORIGIN].doesOccur) {
-		applicator.no_pass_origin = true;
-	}
-	if (options[SPLIT_MAPPINGS].doesOccur) {
-		applicator.split_mappings = true;
-	}
-	if (options[SHOW_END_TAGS].doesOccur) {
-		applicator.show_end_tags = true;
-	}
-	if (options[NO_BREAK].doesOccur) {
-		applicator.add_spacing = false;
-	}
 }
