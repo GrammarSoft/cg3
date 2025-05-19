@@ -1,3 +1,5 @@
+find_package(RapidJSON REQUIRED)
+
 if(EMSCRIPTEN)
 	message(STATUS "Detected EMSCRIPTEN: skipping local library discovery and using Emscripten ports")
 	# Emscripten ports flags for Boost, ICU, SQLite3:
