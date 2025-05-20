@@ -1,3 +1,5 @@
+find_package(RapidJSON REQUIRED)
+
 if(EMSCRIPTEN)
 	message(STATUS "Detected EMSCRIPTEN: skipping local library discovery and using Emscripten ports")
 	# Emscripten ports flags for Boost, ICU, SQLite3:
@@ -107,6 +109,8 @@ set(LIBCG3_SOURCES
 	GrammarWriter.cpp
 	GrammarWriter.hpp
 	IGrammarParser.hpp
+	JsonlApplicator.cpp
+	JsonlApplicator.hpp
 	MathParser.hpp
 	MatxinApplicator.cpp
 	MatxinApplicator.hpp

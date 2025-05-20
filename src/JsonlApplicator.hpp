@@ -1,7 +1,7 @@
 /*
-* Copyright (C) 2007-2025, GrammarSoft ApS
+* Copyright (C) 2024, GrammarSoft ApS
 * Developed by Tino Didriksen <mail@tinodidriksen.com>
-* Design by Eckhard Bick <eckhard.bick@mail.dk>, Tino Didriksen <mail@tinodidriksen.com>
+* Based on contributions from GitHub Copilot
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -17,45 +17,34 @@
 * along with this progam.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#pragma once
-#ifndef c6d28b7452ec699b_FORMATCONVERTER_H
-#define c6d28b7452ec699b_FORMATCONVERTER_H
+#ifndef JSONLAPPLICATOR_HPP
+#define JSONLAPPLICATOR_HPP
 
-#include "ApertiumApplicator.hpp"
-#include "FSTApplicator.hpp"
-#include "JsonlApplicator.hpp"
-#include "MatxinApplicator.hpp"
-#include "NicelineApplicator.hpp"
-#include "PlaintextApplicator.hpp"
+#include "GrammarApplicator.hpp"
+#include "rapidjson/document.h"
 
 namespace CG3 {
-enum CG_FORMATS {
-	FMT_INVALID,
-	FMT_CG,
-	FMT_NICELINE,
-	FMT_APERTIUM,
-	FMT_MATXIN,
-	FMT_FST,
-	FMT_PLAIN,
-	FMT_JSONL,
-	NUM_FORMATS,
-};
 
-class FormatConverter : public ApertiumApplicator, public FSTApplicator, public JsonlApplicator, public MatxinApplicator, public NicelineApplicator, public PlaintextApplicator {
+class JsonlApplicator : public virtual GrammarApplicator {
 public:
-	FormatConverter(std::ostream& ux_err);
+	JsonlApplicator(std::ostream& ux_err);
+	~JsonlApplicator() override;
 
-	void runGrammarOnText(std::istream& input, std::ostream& output);
-	void setInputFormat(CG_FORMATS format);
-	void setOutputFormat(CG_FORMATS format);
+	void runGrammarOnText(std::istream& input, std::ostream& output) override;
 
 protected:
-	CG_FORMATS informat, outformat;
 	void printCohort(Cohort* cohort, std::ostream& output, bool profiling = false) override;
 	void printSingleWindow(SingleWindow* window, std::ostream& output, bool profiling = false) override;
 	void printStreamCommand(const UString& cmd, std::ostream& output) override;
 	void printPlainTextLine(const UString& line, std::ostream& output) override;
-};
-}
 
-#endif
+private:
+	void parseJsonCohort(const rapidjson::Value& obj, SingleWindow* cSWindow, Cohort*& cCohort);
+	Reading* parseJsonReading(const rapidjson::Value& reading_obj, Cohort* parentCohort);
+	void buildJsonReading(const Reading* reading, rapidjson::Value& reading_json, rapidjson::Document::AllocatorType& allocator);
+	void buildJsonTags(const Reading* reading, rapidjson::Value& tags_json, rapidjson::Document::AllocatorType& allocator);
+};
+
+} // namespace CG3
+
+#endif // JSONLAPPLICATOR_HPP

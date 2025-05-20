@@ -446,10 +446,12 @@ void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& outp
 			}
 		istext:
 			if (cleaned[0]) {
+				bool is_cmd = false;
 				if (&cleaned[0] == STR_CMD_FLUSH) {
 					if (verbosity_level > 0) {
 						u_fprintf(ux_stderr, "Info: FLUSH encountered on line %u. Flushing...\n", numLines);
 					}
+					is_cmd = true;
 
 					auto backSWindow = gWindow->back();
 					if (backSWindow) {
@@ -487,8 +489,9 @@ void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& outp
 						free_swindow(tmp);
 						gWindow->previous.erase(gWindow->previous.begin());
 					}
+
 					if (!backSWindow) {
-						u_fprintf(output, "%S", &line[0]);
+						printStreamCommand(UString(STR_CMD_FLUSH), output);
 					}
 					line[0] = 0;
 					variables.clear();
@@ -501,23 +504,31 @@ void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& outp
 					if (verbosity_level > 0) {
 						u_fprintf(ux_stderr, "Info: IGNORE encountered on line %u. Passing through all input...\n", numLines);
 					}
+					is_cmd = true;
 					ignoreinput = true;
+					printStreamCommand(UString(STR_CMD_IGNORE), output);
+					line[0] = 0;
 				}
 				else if (&cleaned[0] == STR_CMD_RESUME) {
 					if (verbosity_level > 0) {
 						u_fprintf(ux_stderr, "Info: RESUME encountered on line %u. Resuming CG...\n", numLines);
 					}
+					is_cmd = true;
 					ignoreinput = false;
+					printStreamCommand(UString(STR_CMD_RESUME), output);
+					line[0] = 0;
 				}
 				else if (&cleaned[0] == STR_CMD_EXIT) {
 					if (verbosity_level > 0) {
 						u_fprintf(ux_stderr, "Info: EXIT encountered on line %u. Exiting...\n", numLines);
 					}
-					u_fprintf(output, "%S", &line[0]);
+					is_cmd = true;
+					printStreamCommand(UString(STR_CMD_EXIT), output);
 					goto CGCMD_EXIT;
 				}
 				else if (u_strncmp(&cleaned[0], STR_CMD_SETVAR.data(), SI32(STR_CMD_SETVAR.size())) == 0) {
 					//u_fprintf(ux_stderr, "Info: SETVAR encountered on line %u.\n", numLines);
+					is_cmd = true;
 					cleaned[packoff - 1] = 0;
 					line[0] = 0;
 
@@ -594,6 +605,7 @@ void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& outp
 				}
 				else if (u_strncmp(&cleaned[0], STR_CMD_REMVAR.data(), SI32(STR_CMD_REMVAR.size())) == 0) {
 					//u_fprintf(ux_stderr, "Info: REMVAR encountered on line %u.\n", numLines);
+					is_cmd = true;
 					cleaned[packoff - 1] = 0;
 					line[0] = 0;
 
@@ -642,8 +654,8 @@ void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& outp
 					else if (lSWindow) {
 						lSWindow->text += &line[0];
 					}
-					else {
-						u_fprintf(output, "%S", &line[0]);
+					else if (!is_cmd) {
+						printPlainTextLine(&line[0], output);
 					}
 				}
 			}
@@ -689,18 +701,20 @@ void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& outp
 	for (auto var : variables_output) {
 		Tag* key = grammar->single_tags[var];
 		auto iter = variables_set.find(var);
+		UString cmd_buf;
 		if (iter != variables_set.end()) {
 			if (iter->second != grammar->tag_any) {
 				Tag* value = grammar->single_tags[iter->second];
-				u_fprintf(output, "%S%S=%S>\n", STR_CMD_SETVAR.data(), key->tag.data(), value->tag.data());
+				cmd_buf.append(STR_CMD_SETVAR).append(key->tag).append(u"=").append(value->tag).append(u">");
 			}
 			else {
-				u_fprintf(output, "%S%S>\n", STR_CMD_SETVAR.data(), key->tag.data());
+				cmd_buf.append(STR_CMD_SETVAR).append(key->tag).append(u">");
 			}
 		}
 		else {
-			u_fprintf(output, "%S%S>\n", STR_CMD_REMVAR.data(), key->tag.data());
+			cmd_buf.append(STR_CMD_REMVAR).append(key->tag).append(u">");
 		}
+		printStreamCommand(cmd_buf, output);
 	}
 
 CGCMD_EXIT:

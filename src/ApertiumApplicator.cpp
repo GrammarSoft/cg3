@@ -228,7 +228,7 @@ void ApertiumApplicator::runGrammarOnText(std::istream& input, std::ostream& out
 				lSWindow->text += blank;
 			}
 			else {
-				u_fprintf(output, "%S", blank.data());
+				printPlainTextLine(blank, output);
 			}
 			blank.clear();
 		}
@@ -248,7 +248,7 @@ void ApertiumApplicator::runGrammarOnText(std::istream& input, std::ostream& out
 		}
 
 		if (c && c != 0xffff) {
-			u_fprintf(output, "%C", c); // eg. final newline
+			printPlainTextLine(UString(1, c), output); // TODO this does not appear to show up in any test/**/input.txt processing so it is untested
 		}
 
 		if (n && !backSWindow) {
@@ -672,7 +672,7 @@ void ApertiumApplicator::testPR(std::ostream& output) {
 	}
 }
 
-void ApertiumApplicator::printReading(Reading* reading, std::ostream& output, ApertiumCasing casing, int32_t firstlower) {
+void ApertiumApplicator::printReading(const Reading* reading, std::ostream& output, ApertiumCasing casing, int32_t firstlower) {
 	if (reading->next) {
 		printReading(reading->next, output, casing, firstlower);
 		u_fputc('+', output);
@@ -800,7 +800,7 @@ void ApertiumApplicator::printReading(Reading* reading, std::ostream& output, Ap
 	}
 }
 
-void ApertiumApplicator::printReading(Reading* reading, std::ostream& output) {
+void ApertiumApplicator::printReading(const Reading* reading, std::ostream& output) {
 	ApertiumCasing casing = ApertiumCasing::Nochange;
 
 	if (wordform_case) {
@@ -808,7 +808,7 @@ void ApertiumApplicator::printReading(Reading* reading, std::ostream& output) {
 		// was called with "-w" option (which puts
 		// dictionary case on lemma/basefrom)
 		// cf. fst_processor.cc in lttoolbox
-		Reading* last = reading;
+		const Reading* last = reading;
 		while (last->next && last->next->baseform) {
 			last = last->next;
 		}

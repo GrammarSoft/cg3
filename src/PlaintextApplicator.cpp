@@ -219,50 +219,50 @@ void PlaintextApplicator::runGrammarOnText(std::istream& input, std::ostream& ou
 					}
 				}
 
-				cCohort = alloc_cohort(cSWindow);
-				cCohort->global_number = gWindow->cohort_counter++;
+			cCohort = alloc_cohort(cSWindow);
+			cCohort->global_number = gWindow->cohort_counter++;
+			tag.clear();
+			tag.append(u"\"<");
+			tag += token.getTerminatedBuffer();
+			tag.append(u">\"");
+		cCohort->wordform = addTag(tag);
+			lCohort = cCohort;
+			numCohorts++;
+			cReading = initEmptyCohort(*cCohort);
+			cReading->noprint = !add_tags;
+			if (add_tags) {
+				constexpr char _tag[] = "<cg-conv>";
+				tag.assign(_tag, _tag + sizeof(_tag) - 1);
+				addTagToReading(*cReading, addTag(tag));
+			}
+			if (add_tags && (first_upper || all_upper || mixed_upper)) {
+				delTagFromReading(*cReading, cReading->baseform);
+				token.toLower();
 				tag.clear();
-				tag.append(u"\"<");
+				tag += '"';
 				tag += token.getTerminatedBuffer();
-				tag.append(u">\"");
-				cCohort->wordform = addTag(tag);
-				lCohort = cCohort;
-				numCohorts++;
-				cReading = initEmptyCohort(*cCohort);
-				cReading->noprint = !add_tags;
-				if (add_tags) {
-					constexpr char _tag[] = "<cg-conv>";
+				tag += '"';
+				addTagToReading(*cReading, addTag(tag));
+				if (all_upper) {
+					constexpr char _tag[] = "<all-upper>";
 					tag.assign(_tag, _tag + sizeof(_tag) - 1);
 					addTagToReading(*cReading, addTag(tag));
 				}
-				if (add_tags && (first_upper || all_upper || mixed_upper)) {
-					delTagFromReading(*cReading, cReading->baseform);
-					token.toLower();
-					tag.clear();
-					tag += '"';
-					tag += token.getTerminatedBuffer();
-					tag += '"';
+				if (first_upper) {
+					constexpr char _tag[] = "<first-upper>";
+					tag.assign(_tag, _tag + sizeof(_tag) - 1);
 					addTagToReading(*cReading, addTag(tag));
-					if (all_upper) {
-						constexpr char _tag[] = "<all-upper>";
-						tag.assign(_tag, _tag + sizeof(_tag) - 1);
-						addTagToReading(*cReading, addTag(tag));
-					}
-					if (first_upper) {
-						constexpr char _tag[] = "<first-upper>";
-						tag.assign(_tag, _tag + sizeof(_tag) - 1);
-						addTagToReading(*cReading, addTag(tag));
-					}
-					if (mixed_upper && !all_upper) {
-						constexpr char _tag[] = "<mixed-upper>";
-						tag.assign(_tag, _tag + sizeof(_tag) - 1);
-						addTagToReading(*cReading, addTag(tag));
-					}
 				}
-				cSWindow->appendCohort(cCohort);
-				cCohort = nullptr;
+				if (mixed_upper && !all_upper) {
+					constexpr char _tag[] = "<mixed-upper>";
+					tag.assign(_tag, _tag + sizeof(_tag) - 1);
+					addTagToReading(*cReading, addTag(tag));
+				}
 			}
+			cSWindow->appendCohort(cCohort);
+			cCohort = nullptr;
 		}
+	}
 		else {
 			if (cleaned[0] && line[0]) {
 				if (lCohort) {
@@ -272,7 +272,7 @@ void PlaintextApplicator::runGrammarOnText(std::istream& input, std::ostream& ou
 					lSWindow->text += &line[0];
 				}
 				else {
-					u_fprintf(output, "%S", &line[0]);
+					printPlainTextLine(&line[0], output);
 				}
 			}
 		}
@@ -317,7 +317,7 @@ void PlaintextApplicator::printCohort(Cohort* cohort, std::ostream& output, bool
 	}
 
 	u_fprintf(output, "%.*S ", cohort->wordform->tag.size() - 4, cohort->wordform->tag.data() + 2);
-}
+	}
 
 void PlaintextApplicator::printSingleWindow(SingleWindow* window, std::ostream& output, bool profiling) {
 	for (auto& cohort : window->all_cohorts) {
@@ -325,5 +325,5 @@ void PlaintextApplicator::printSingleWindow(SingleWindow* window, std::ostream& 
 	}
 	u_fputc('\n', output);
 	u_fflush(output);
-}
+	}
 }
