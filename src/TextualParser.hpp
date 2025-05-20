@@ -87,7 +87,9 @@ private:
 	void addRuleToGrammar(Rule* rule);
 
 	Tag* parseTag(const UChar* to, const UChar* p = nullptr);
-	Tag* parseTag(const UString& to, const UChar* p = nullptr);
+	Tag* parseTag(const UString& to, const UChar* p = nullptr) {
+		return parseTag(to.data(), p);
+	}
 	Tag* parseTag(const UStringView& to, const UChar* p = nullptr) {
 		return parseTag(to.data(), p);
 	}

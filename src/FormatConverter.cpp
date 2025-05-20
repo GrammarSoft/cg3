@@ -138,7 +138,7 @@ void FormatConverter::printSingleWindow(SingleWindow* window, std::ostream& outp
 }
 }
 
-void FormatConverter::printStreamCommand(const UString& cmd, std::ostream& output) {
+void FormatConverter::printStreamCommand(UStringView cmd, std::ostream& output) {
 	switch (outformat) {
 	case FMT_JSONL: {
 		JsonlApplicator::printStreamCommand(cmd, output);
@@ -156,7 +156,7 @@ void FormatConverter::printStreamCommand(const UString& cmd, std::ostream& outpu
 	}
 }
 
-void FormatConverter::printPlainTextLine(const UString& line, std::ostream& output) {
+void FormatConverter::printPlainTextLine(UStringView line, std::ostream& output) {
 	switch (outformat) {
 	case FMT_JSONL: {
 		JsonlApplicator::printPlainTextLine(line, output);

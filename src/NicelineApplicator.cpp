@@ -281,7 +281,7 @@ void NicelineApplicator::runGrammarOnText(std::istream& input, std::ostream& out
 				}
 			}
 		}
-		numLines++;
+		++numLines;
 		line[0] = cleaned[0] = 0;
 	}
 

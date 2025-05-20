@@ -660,7 +660,7 @@ void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& outp
 				}
 			}
 		}
-		numLines++;
+		++numLines;
 		line[0] = cleaned[0] = 0;
 	}
 

@@ -320,11 +320,11 @@ Tag* GrammarApplicator::addTag(const UString& txt, bool vstr) {
 	return addTag(txt.data(), vstr);
 }
 
-void GrammarApplicator::printStreamCommand(const UString& cmd, std::ostream& output) {
+void GrammarApplicator::printStreamCommand(UStringView cmd, std::ostream& output) {
 	u_fprintf(output, "%S\n", cmd.data());
 }
 
-void GrammarApplicator::printPlainTextLine(const UString& line, std::ostream& output) {
+void GrammarApplicator::printPlainTextLine(UStringView line, std::ostream& output) {
 	u_fprintf(output, "%S", line.data());
 }
 

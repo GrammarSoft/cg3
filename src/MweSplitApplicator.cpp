@@ -106,7 +106,7 @@ std::vector<Cohort*> MweSplitApplicator::splitMwe(Cohort* cohort) {
 				const size_t spBeg = sub->next ? spBeg0 : wfBeg; // can't put pretext on first word / deepest reading
 				const size_t wfEnd = wfTag->tag.size() - 3; // index before the final '>"'
 				const size_t spEnd = 1 + wfTag->tag.find_last_not_of(rtrimblank, wfEnd); // index before post-space
-				const UString& wf =
+				auto wf =
 					  wfTag->tag.substr(0,     wfBeg)
 					+ wfTag->tag.substr(spBeg, spEnd - spBeg)
 					+ wfTag->tag.substr(wfEnd + 1);

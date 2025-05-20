@@ -65,7 +65,9 @@ protected:
 
 private:
 	void processReading(Reading* cReading, const UChar* reading_string);
-	void processReading(Reading* cReading, const UString& reading_string);
+	void processReading(Reading* cReading, const UString& reading_string) {
+		return processReading(cReading, reading_string.data());
+	}
 };
 }
 

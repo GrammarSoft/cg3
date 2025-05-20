@@ -276,7 +276,7 @@ void PlaintextApplicator::runGrammarOnText(std::istream& input, std::ostream& ou
 				}
 			}
 		}
-		numLines++;
+		++numLines;
 		line[0] = cleaned[0] = 0;
 	}
 

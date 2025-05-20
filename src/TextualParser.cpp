@@ -174,10 +174,6 @@ Tag* TextualParser::parseTag(const UChar* to, const UChar* p) {
 	return tag;
 }
 
-Tag* TextualParser::parseTag(const UString& to, const UChar* p) {
-	return parseTag(to.data(), p);
-}
-
 Tag* TextualParser::addTag(Tag* tag) {
 	return result->addTag(tag);
 }

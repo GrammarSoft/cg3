@@ -35,8 +35,8 @@ public:
 protected:
 	void printCohort(Cohort* cohort, std::ostream& output, bool profiling = false) override;
 	void printSingleWindow(SingleWindow* window, std::ostream& output, bool profiling = false) override;
-	void printStreamCommand(const UString& cmd, std::ostream& output) override;
-	void printPlainTextLine(const UString& line, std::ostream& output) override;
+	void printStreamCommand(UStringView cmd, std::ostream& output) override;
+	void printPlainTextLine(UStringView line, std::ostream& output) override;
 
 private:
 	void parseJsonCohort(const rapidjson::Value& obj, SingleWindow* cSWindow, Cohort*& cCohort);

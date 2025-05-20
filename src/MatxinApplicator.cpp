@@ -353,7 +353,7 @@ void MatxinApplicator::runGrammarOnText(std::istream& input, std::ostream& outpu
 				u_fflush(ux_stderr);
 			}
 		} // end reading
-		numLines++;
+		++numLines;
 	} // end input loop
 
 	if (!firstblank.empty()) {
@@ -588,10 +588,6 @@ void MatxinApplicator::processReading(Reading* cReading, const UChar* reading_st
 	}
 
 	assert(taglist.empty() && "MatxinApplicator::processReading() did not handle all tags.");
-}
-
-void MatxinApplicator::processReading(Reading* cReading, const UString& reading_string) {
-	return processReading(cReading, reading_string.data());
 }
 
 void MatxinApplicator::printReading(Reading* reading, Node& node, std::ostream& output) {

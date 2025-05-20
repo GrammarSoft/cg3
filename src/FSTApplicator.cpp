@@ -380,7 +380,7 @@ void FSTApplicator::runGrammarOnText(std::istream& input, std::ostream& output) 
 				}
 			}
 		}
-		numLines++;
+		++numLines;
 		line[0] = cleaned[0] = 0;
 	}
 
