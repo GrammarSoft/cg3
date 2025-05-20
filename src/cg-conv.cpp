@@ -25,7 +25,9 @@
 #include "version.hpp"
 
 #include "options_conv.hpp"
+#include "options_parser.hpp"
 using namespace Options;
+using namespace OptionsConv;
 using namespace CG3;
 
 int main(int argc, char* argv[]) {
@@ -38,7 +40,7 @@ int main(int argc, char* argv[]) {
 		CG3Quit(1);
 	}
 
-	argc = u_parseArgs(argc, argv, NUM_OPTIONS, options_conv.data());
+	argc = u_parseArgs(argc, argv, options_conv.size(), options_conv.data());
 
 	parse_opts_env("CG3_CONV_DEFAULT", options_default);
 	parse_opts_env("CG3_CONV_OVERRIDE", options_override);
@@ -62,13 +64,13 @@ int main(int argc, char* argv[]) {
 		fprintf(out, "Options:\n");
 
 		size_t longest = 0;
-		for (uint32_t i = 0; i < NUM_OPTIONS; i++) {
+		for (uint32_t i = 0; i < options_conv.size(); i++) {
 			if (!options_conv[i].description.empty()) {
 				size_t len = strlen(options_conv[i].longName);
 				longest = std::max(longest, len);
 			}
 		}
-		for (uint32_t i = 0; i < NUM_OPTIONS; i++) {
+		for (uint32_t i = 0; i < options_conv.size(); i++) {
 			if (!options_conv[i].description.empty() && options_conv[i].description[0] != '!') {
 				fprintf(out, " ");
 				if (options_conv[i].shortName) {

@@ -21,6 +21,8 @@
 #ifndef c6d28b7452ec699b_OPTIONS_PARSER_H
 #define c6d28b7452ec699b_OPTIONS_PARSER_H
 
+namespace Options {
+
 template<typename Opts>
 inline void parse_opts(char* p, Opts& where) {
 	using namespace CG3;
@@ -60,7 +62,7 @@ inline void parse_opts(char* p, Opts& where) {
 			++p;
 		}
 	}
-	u_parseArgs(static_cast<int>(argv.size()), &argv[0], NUM_OPTIONS, where.data());
+	u_parseArgs(static_cast<int>(argv.size()), &argv[0], where.size(), where.data());
 }
 
 template<typename Opts>
@@ -71,6 +73,8 @@ inline void parse_opts_env(const char* which, Opts& where) {
 		env.push_back(0);
 		parse_opts(&env[0], where);
 	}
+}
+
 }
 
 #endif

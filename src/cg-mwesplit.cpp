@@ -28,18 +28,21 @@
 using namespace CG3;
 
 #include <uoptions.hpp>
-namespace Options {
+namespace OptionsMWE {
+using ::Options::UOption;
+using ::Options::UOPT_NO_ARG;
+
 enum OPTIONS {
 	HELP1,
 	HELP2,
-	NUM_OPTIONS,
+	NUM_OPTIONS_MWE,
 };
 UOption options_mwe[] = {
 	UOption{"help", 'h', UOPT_NO_ARG,       "shows this help"},
 	UOption{"?",    '?', UOPT_NO_ARG,       "shows this help"},
 };
 }
-using namespace Options;
+using namespace OptionsMWE;
 
 int main(int argc, char** argv) {
 	UErrorCode status = U_ZERO_ERROR;
@@ -51,7 +54,7 @@ int main(int argc, char** argv) {
 		CG3Quit(1);
 	}
 
-	argc = u_parseArgs(argc, argv, NUM_OPTIONS, options_mwe);
+	argc = u_parseArgs(argc, argv, NUM_OPTIONS_MWE, options_mwe);
 
 	if (argc < 0 || options_mwe[HELP1].doesOccur || options_mwe[HELP2].doesOccur) {
 		FILE* out = (argc < 0) ? stderr : stdout;
@@ -60,13 +63,13 @@ int main(int argc, char** argv) {
 		fprintf(out, "Options:\n");
 
 		size_t longest = 0;
-		for (uint32_t i = 0; i < NUM_OPTIONS; i++) {
+		for (uint32_t i = 0; i < NUM_OPTIONS_MWE; i++) {
 			if (!options_mwe[i].description.empty()) {
 				size_t len = strlen(options_mwe[i].longName);
 				longest = std::max(longest, len);
 			}
 		}
-		for (uint32_t i = 0; i < NUM_OPTIONS; i++) {
+		for (uint32_t i = 0; i < NUM_OPTIONS_MWE; i++) {
 			if (!options_mwe[i].description.empty() && options_mwe[i].description[0] != '!') {
 				fprintf(out, " ");
 				if (options_mwe[i].shortName) {

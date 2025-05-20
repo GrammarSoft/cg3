@@ -95,7 +95,7 @@ struct UOption {
  * @param argv This parameter is modified
  * @param options This parameter is modified
  */
-inline int u_parseArgs(int argc, char* argv[], int optionCount, UOption options[]) {
+inline int u_parseArgs(int argc, char* argv[], size_t optionCount, UOption options[]) {
 	char *arg;
 	int i = 1, remaining = 1;
 	char c, stopOptions = 0;
@@ -114,8 +114,7 @@ inline int u_parseArgs(int argc, char* argv[], int optionCount, UOption options[
 				}
 				else {
 					/* search for the option string */
-					int j;
-					for (j = 0; j < optionCount; ++j) {
+					for (size_t j = 0; j < optionCount; ++j) {
 						if (options[j].longName && strcmp(arg, options[j].longName) == 0) {
 							option = options + j;
 							break;
@@ -144,8 +143,7 @@ inline int u_parseArgs(int argc, char* argv[], int optionCount, UOption options[
 				/* process one or more short options */
 				do {
 					/* search for the option letter */
-					int j;
-					for (j = 0; j < optionCount; ++j) {
+					for (size_t j = 0; j < optionCount; ++j) {
 						if (c == options[j].shortName) {
 							option = options + j;
 							break;

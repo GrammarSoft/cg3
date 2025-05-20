@@ -147,6 +147,9 @@ set(LIBCG3_SOURCES
 	flat_unordered_set.hpp
 	inlines.hpp
 	interval_vector.hpp
+	options.cpp
+	options.hpp
+	options_parser.hpp
 	parser_helpers.hpp
 	pool.hpp
 	process.hpp
@@ -194,7 +197,6 @@ target_link_libraries(cg-relabel ${LINKLIB})
 add_executable(cg-conv
 	cg-conv.cpp
 	options_conv.hpp
-	options_parser.hpp
 	)
 cg3_link(cg-conv)
 target_link_libraries(cg-conv ${LINKLIB})
@@ -213,8 +215,6 @@ target_link_libraries(cg-merge-annotations ${LINKLIB})
 
 add_executable(vislcg3
 	main.cpp
-	options.hpp
-	options_parser.hpp
 	)
 cg3_link(vislcg3)
 target_link_libraries(vislcg3 ${LINKLIB})

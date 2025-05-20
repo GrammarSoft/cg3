@@ -26,6 +26,7 @@
 #include "version.hpp"
 
 #include "options.hpp"
+#include "options_parser.hpp"
 using namespace Options;
 using namespace CG3;
 
@@ -35,7 +36,7 @@ int main(int argc, char* argv[]) {
 	UErrorCode status = U_ZERO_ERROR;
 	srand(UI32(time(0)));
 
-	argc = u_parseArgs(argc, argv, NUM_OPTIONS, options.data());
+	argc = u_parseArgs(argc, argv, options.size(), options.data());
 	FILE* out = stderr;
 
 	parse_opts_env("CG3_DEFAULT", options_default);
@@ -85,13 +86,13 @@ int main(int argc, char* argv[]) {
 		fprintf(out, "Options:\n");
 
 		size_t longest = 0;
-		for (uint32_t i = 0; i < NUM_OPTIONS; i++) {
+		for (uint32_t i = 0; i < options.size(); i++) {
 			if (!options[i].description.empty()) {
 				size_t len = strlen(options[i].longName);
 				longest = std::max(longest, len);
 			}
 		}
-		for (uint32_t i = 0; i < NUM_OPTIONS; i++) {
+		for (uint32_t i = 0; i < options.size(); i++) {
 			if (!options[i].description.empty()) {
 				fprintf(out, " ");
 				if (options[i].shortName) {

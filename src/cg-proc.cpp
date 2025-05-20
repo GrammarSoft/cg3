@@ -32,6 +32,7 @@
 
 #include "version.hpp"
 #include "options.hpp"
+#include "options_parser.hpp"
 using namespace Options;
 using namespace CG3;
 
