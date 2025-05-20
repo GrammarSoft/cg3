@@ -34,13 +34,9 @@ ApertiumApplicator::ApertiumApplicator(std::ostream& ux_err)
 {
 }
 
-void ApertiumApplicator::parseStreamVar(const SingleWindow* cSWindow, UString& cleaned,
-					uint32FlatHashMap& variables_set, uint32FlatHashSet& variables_rem, uint32SortedVector& variables_output) {
-	size_t packoff = 0;
+void ApertiumApplicator::parseStreamVar(const SingleWindow* cSWindow, UString& cleaned, uint32FlatHashMap& variables_set, uint32FlatHashSet& variables_rem, uint32SortedVector& variables_output) {
 	if (u_strncmp(&cleaned[0], STR_CMD_SETVAR.data(), SI32(STR_CMD_SETVAR.size())) == 0) {
 		// u_fprintf(ux_stderr, "Info: SETVAR encountered on line %u.\n", numLines);
-		cleaned[packoff - 1] = 0;
-		// line[0] = 0;
 
 		UChar* s = &cleaned[STR_CMD_SETVAR.size()];
 		UChar* c = u_strchr(s, ',');
@@ -115,8 +111,6 @@ void ApertiumApplicator::parseStreamVar(const SingleWindow* cSWindow, UString& c
 	}
 	else if (u_strncmp(&cleaned[0], STR_CMD_REMVAR.data(), SI32(STR_CMD_REMVAR.size())) == 0) {
 		//u_fprintf(ux_stderr, "Info: REMVAR encountered on line %u.\n", numLines);
-		cleaned[packoff - 1] = 0;
-		// line[0] = 0;
 
 		UChar* s = &cleaned[STR_CMD_REMVAR.size()];
 		UChar* c = u_strchr(s, ',');
@@ -323,9 +317,8 @@ void ApertiumApplicator::runGrammarOnText(std::istream& input, std::ostream& out
 			in_blank = false;
 			if (blank.size() > 14 // contains at least "[<STREAMCMD:>]"
 			    && blank[1] == '<' && blank[blank.size() - 2] == '>') {
-				UString cleaned = blank.substr(1, blank.size() - 3);
-				parseStreamVar(cSWindow, cleaned,
-					       variables_set, variables_rem, variables_output);
+				auto cleaned = blank.substr(1, blank.size() - 3);
+				parseStreamVar(cSWindow, cleaned, variables_set, variables_rem, variables_output);
 			}
 		}
 		else if (!in_blank && c == '$') {
