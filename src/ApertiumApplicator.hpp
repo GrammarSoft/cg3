@@ -57,9 +57,8 @@ private:
 	 *
 	 * @param cleaned something like "<STREAMCMD:SETVAR:forskjell_skilnad" (note: no trailing >).
 	 */
-	void parseStreamVar(const SingleWindow* cSWindow, UString& cleaned,
-			    uint32FlatHashMap& variables_set, uint32FlatHashSet& variables_rem, uint32SortedVector& variables_output);
-	void printReading(const Reading* reading, std::ostream& output, ApertiumCasing casing, int32_t firstlower);
+	void parseStreamVar(const SingleWindow* cSWindow, UString& cleaned, uint32FlatHashMap& variables_set, uint32FlatHashSet& variables_rem, uint32SortedVector& variables_output);
+	void printReading(Reading* reading, std::ostream& output, ApertiumCasing casing, int32_t firstlower);
 	void processReading(Reading* cReading, UChar* reading_string, Tag* wform);
 	void processReading(Reading* cReading, UString& reading_string, Tag* wform);
 };
