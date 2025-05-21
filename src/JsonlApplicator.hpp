@@ -17,11 +17,11 @@
 * along with this progam.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef JSONLAPPLICATOR_HPP
-#define JSONLAPPLICATOR_HPP
+#ifndef c6d28b7452ec699b_JSONLAPPLICATOR_HPP
+#define c6d28b7452ec699b_JSONLAPPLICATOR_HPP
 
 #include "GrammarApplicator.hpp"
-#include "rapidjson/document.h"
+#include <rapidjson/document.h>
 
 namespace CG3 {
 
@@ -45,6 +45,6 @@ private:
 	void buildJsonTags(const Reading* reading, rapidjson::Value& tags_json, rapidjson::Document::AllocatorType& allocator);
 };
 
-} // namespace CG3
+}
 
-#endif // JSONLAPPLICATOR_HPP
+#endif

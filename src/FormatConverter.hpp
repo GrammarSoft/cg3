@@ -27,35 +27,32 @@
 #include "MatxinApplicator.hpp"
 #include "NicelineApplicator.hpp"
 #include "PlaintextApplicator.hpp"
+#include "Grammar.hpp"
+#include "cg3.h"
 
 namespace CG3 {
-enum CG_FORMATS {
-	FMT_INVALID,
-	FMT_CG,
-	FMT_NICELINE,
-	FMT_APERTIUM,
-	FMT_MATXIN,
-	FMT_FST,
-	FMT_PLAIN,
-	FMT_JSONL,
-	NUM_FORMATS,
-};
+
+cg3_sformat detectFormat(std::string_view str);
 
 class FormatConverter : public ApertiumApplicator, public FSTApplicator, public JsonlApplicator, public MatxinApplicator, public NicelineApplicator, public PlaintextApplicator {
 public:
 	FormatConverter(std::ostream& ux_err);
 
 	void runGrammarOnText(std::istream& input, std::ostream& output);
-	void setInputFormat(CG_FORMATS format);
-	void setOutputFormat(CG_FORMATS format);
+
+	std::unique_ptr<std::istream> detectFormat(std::istream& in);
+	cg3_sformat fmt_input = CG3SF_CG;
+	cg3_sformat fmt_output = CG3SF_CG;
+
+	Grammar conv_grammar;
 
 protected:
-	CG_FORMATS informat, outformat;
 	void printCohort(Cohort* cohort, std::ostream& output, bool profiling = false) override;
 	void printSingleWindow(SingleWindow* window, std::ostream& output, bool profiling = false) override;
 	void printStreamCommand(UStringView cmd, std::ostream& output) override;
 	void printPlainTextLine(UStringView line, std::ostream& output) override;
 };
+
 }
 
 #endif

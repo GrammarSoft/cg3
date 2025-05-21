@@ -18,8 +18,80 @@
 */
 
 #include "FormatConverter.hpp"
+#include "streambuf.hpp"
 
 namespace CG3 {
+
+constexpr auto BUF_SIZE = 1000;
+
+cg3_sformat detectFormat(std::string_view buf8) {
+	cg3_sformat fmt = CG3SF_INVALID;
+	UErrorCode status = U_ZERO_ERROR;
+
+	UString buffer(BUF_SIZE, 0);
+	int32_t nr = 0;
+	u_strFromUTF8(&buffer[0], BUF_SIZE, &nr, buf8.data(), SI32(buf8.size()), &status);
+	if (U_FAILURE(status)) {
+		throw std::runtime_error("UTF-8 to UTF-16 conversion failed");
+	}
+	buffer.resize(nr);
+	URegularExpression* rx = nullptr;
+
+	for (;;) {
+		rx = uregex_openC("^\"<[^>]+>\".*?^\\s+\"[^\"]+\"", UREGEX_DOTALL | UREGEX_MULTILINE, 0, &status);
+		uregex_setText(rx, buffer.data(), SI32(buffer.size()), &status);
+		if (uregex_find(rx, -1, &status)) {
+			fmt = CG3SF_CG;
+			break;
+		}
+		uregex_close(rx);
+
+		rx = uregex_openC("^\\S+ *\t *\\[\\S+\\]", UREGEX_DOTALL | UREGEX_MULTILINE, 0, &status);
+		uregex_setText(rx, buffer.data(), SI32(buffer.size()), &status);
+		if (uregex_find(rx, -1, &status)) {
+			fmt = CG3SF_NICELINE;
+			break;
+		}
+		uregex_close(rx);
+
+		rx = uregex_openC("^\\S+ *\t *\"\\S+\"", UREGEX_DOTALL | UREGEX_MULTILINE, 0, &status);
+		uregex_setText(rx, buffer.data(), SI32(buffer.size()), &status);
+		if (uregex_find(rx, -1, &status)) {
+			fmt = CG3SF_NICELINE;
+			break;
+		}
+		uregex_close(rx);
+
+		rx = uregex_openC("\\^[^/]+(/[^<]+(<[^>]+>)+)+\\$", UREGEX_DOTALL | UREGEX_MULTILINE, 0, &status);
+		uregex_setText(rx, buffer.data(), SI32(buffer.size()), &status);
+		if (uregex_find(rx, -1, &status)) {
+			fmt = CG3SF_APERTIUM;
+			break;
+		}
+		uregex_close(rx);
+
+		rx = uregex_openC("^\\S+\t\\S+(\\+\\S+)+$", UREGEX_DOTALL | UREGEX_MULTILINE, 0, &status);
+		uregex_setText(rx, buffer.data(), SI32(buffer.size()), &status);
+		if (uregex_find(rx, -1, &status)) {
+			fmt = CG3SF_FST;
+			break;
+		}
+		uregex_close(rx);
+
+		rx = uregex_openC("^\\{", UREGEX_MULTILINE, 0, &status);
+		uregex_setText(rx, buffer.data(), SI32(buffer.size()), &status);
+		if (uregex_find(rx, -1, &status)) {
+			fmt = CG3SF_JSONL;
+			break;
+		}
+
+		fmt = CG3SF_PLAIN;
+		break;
+	}
+	uregex_close(rx);
+
+	return fmt;
+}
 
 FormatConverter::FormatConverter(std::ostream& ux_err)
   : GrammarApplicator(ux_err)
@@ -29,45 +101,53 @@ FormatConverter::FormatConverter(std::ostream& ux_err)
   , MatxinApplicator(ux_err)
   , NicelineApplicator(ux_err)
   , PlaintextApplicator(ux_err)
-  , informat(FMT_CG)
-  , outformat(FMT_CG)
 {
+	conv_grammar.ux_stderr = &ux_err;
+	conv_grammar.allocateDummySet();
+	conv_grammar.delimiters = conv_grammar.allocateSet();
+	conv_grammar.addTagToSet(conv_grammar.allocateTag(STR_DUMMY), conv_grammar.delimiters);
+	conv_grammar.reindex();
+
+	setGrammar(&conv_grammar);
 }
 
-void FormatConverter::setInputFormat(CG_FORMATS format) {
-	informat = format;
-}
+std::unique_ptr<std::istream> FormatConverter::detectFormat(std::istream& in) {
+	std::unique_ptr<std::istream> instream;
 
-void FormatConverter::setOutputFormat(CG_FORMATS format) {
-	outformat = format;
+	std::string buf8 = read_utf8(in, BUF_SIZE);
+
+	fmt_input = CG3::detectFormat(buf8);
+
+	instream.reset(new std::istream(new bstreambuf(in, std::move(buf8))));
+	return instream;
 }
 
 void FormatConverter::runGrammarOnText(std::istream& input, std::ostream& output) {
 	ux_stdin = &input;
 	ux_stdout = &output;
 
-	switch (informat) {
-	case FMT_CG: {
+	switch (fmt_input) {
+	case CG3SF_CG: {
 		GrammarApplicator::runGrammarOnText(input, output);
 		break;
 	}
-	case FMT_APERTIUM: {
+	case CG3SF_APERTIUM: {
 		ApertiumApplicator::runGrammarOnText(input, output);
 		break;
 	}
-	case FMT_NICELINE: {
+	case CG3SF_NICELINE: {
 		NicelineApplicator::runGrammarOnText(input, output);
 		break;
 	}
-	case FMT_PLAIN: {
+	case CG3SF_PLAIN: {
 		PlaintextApplicator::runGrammarOnText(input, output);
 		break;
 	}
-	case FMT_FST: {
+	case CG3SF_FST: {
 		FSTApplicator::runGrammarOnText(input, output);
 		break;
 	}
-	case FMT_JSONL: {
+	case CG3SF_JSONL: {
 		JsonlApplicator::runGrammarOnText(input, output);
 		break;
 	}
@@ -77,28 +157,28 @@ void FormatConverter::runGrammarOnText(std::istream& input, std::ostream& output
 }
 
 void FormatConverter::printCohort(Cohort* cohort, std::ostream& output, bool profiling) {
-	switch (outformat) {
-	case FMT_CG: {
+	switch (fmt_output) {
+	case CG3SF_CG: {
 		GrammarApplicator::printCohort(cohort, output, profiling);
 		break;
 	}
-	case FMT_APERTIUM: {
+	case CG3SF_APERTIUM: {
 		ApertiumApplicator::printCohort(cohort, output, profiling);
 		break;
 	}
-	case FMT_FST: {
+	case CG3SF_FST: {
 		FSTApplicator::printCohort(cohort, output, profiling);
 		break;
 	}
-	case FMT_NICELINE: {
+	case CG3SF_NICELINE: {
 		NicelineApplicator::printCohort(cohort, output, profiling);
 		break;
 	}
-	case FMT_PLAIN: {
+	case CG3SF_PLAIN: {
 		PlaintextApplicator::printCohort(cohort, output, profiling);
 		break;
 	}
-	case FMT_JSONL: {
+	case CG3SF_JSONL: {
 		JsonlApplicator::printCohort(cohort, output, profiling);
 		break;
 	}
@@ -108,28 +188,28 @@ void FormatConverter::printCohort(Cohort* cohort, std::ostream& output, bool pro
 }
 
 void FormatConverter::printSingleWindow(SingleWindow* window, std::ostream& output, bool profiling) {
-	switch (outformat) {
-	case FMT_CG: {
+	switch (fmt_output) {
+	case CG3SF_CG: {
 		GrammarApplicator::printSingleWindow(window, output, profiling);
 		break;
 	}
-	case FMT_APERTIUM: {
+	case CG3SF_APERTIUM: {
 		ApertiumApplicator::printSingleWindow(window, output, profiling);
 		break;
 	}
-	case FMT_FST: {
+	case CG3SF_FST: {
 		FSTApplicator::printSingleWindow(window, output, profiling);
 		break;
 	}
-	case FMT_NICELINE: {
+	case CG3SF_NICELINE: {
 		NicelineApplicator::printSingleWindow(window, output, profiling);
 		break;
 	}
-	case FMT_PLAIN: {
+	case CG3SF_PLAIN: {
 		PlaintextApplicator::printSingleWindow(window, output, profiling);
 		break;
 	}
-	case FMT_JSONL: {
+	case CG3SF_JSONL: {
 		JsonlApplicator::printSingleWindow(window, output, profiling);
 		break;
 	}
@@ -139,16 +219,16 @@ void FormatConverter::printSingleWindow(SingleWindow* window, std::ostream& outp
 }
 
 void FormatConverter::printStreamCommand(UStringView cmd, std::ostream& output) {
-	switch (outformat) {
-	case FMT_JSONL: {
+	switch (fmt_output) {
+	case CG3SF_JSONL: {
 		JsonlApplicator::printStreamCommand(cmd, output);
 		break;
 	}
-	case FMT_CG:
-	case FMT_APERTIUM:
-	case FMT_FST:
-	case FMT_NICELINE:
-	case FMT_PLAIN:
+	case CG3SF_CG:
+	case CG3SF_APERTIUM:
+	case CG3SF_FST:
+	case CG3SF_NICELINE:
+	case CG3SF_PLAIN:
 	default: {
 		GrammarApplicator::printStreamCommand(cmd, output);
 		break;
@@ -157,16 +237,16 @@ void FormatConverter::printStreamCommand(UStringView cmd, std::ostream& output) 
 }
 
 void FormatConverter::printPlainTextLine(UStringView line, std::ostream& output) {
-	switch (outformat) {
-	case FMT_JSONL: {
+	switch (fmt_output) {
+	case CG3SF_JSONL: {
 		JsonlApplicator::printPlainTextLine(line, output);
 		break;
 	}
-	case FMT_CG:
-	case FMT_APERTIUM:
-	case FMT_FST:
-	case FMT_NICELINE:
-	case FMT_PLAIN:
+	case CG3SF_CG:
+	case CG3SF_APERTIUM:
+	case CG3SF_FST:
+	case CG3SF_NICELINE:
+	case CG3SF_PLAIN:
 	default: {
 		GrammarApplicator::printPlainTextLine(line, output);
 		break;
@@ -174,4 +254,4 @@ void FormatConverter::printPlainTextLine(UStringView line, std::ostream& output)
 	}
 }
 
-} // namespace CG3
+}

@@ -87,6 +87,8 @@ UChar* u_fgets(UChar* s, int32_t n, std::istream& input);
 
 UChar u_fgetc(std::istream& input);
 
+std::string read_utf8(std::istream& in, size_t len = 1000);
+
 // ICU std::ostream output wrappers
 void u_fflush(std::ostream& output);
 void u_fflush(std::ostream* output);

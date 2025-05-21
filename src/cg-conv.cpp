@@ -20,7 +20,6 @@
 #include "stdafx.hpp"
 #include "Grammar.hpp"
 #include "FormatConverter.hpp"
-#include "streambuf.hpp"
 
 #include "version.hpp"
 
@@ -115,27 +114,19 @@ int main(int argc, char* argv[]) {
 	const char* codepage_default = ucnv_getDefaultName();
 	uloc_setDefault("en_US_POSIX", &status);
 
-	Grammar grammar;
+	FormatConverter applicator(std::cerr);
 
+	Grammar& grammar = applicator.conv_grammar;
 	if (options_conv[ORDERED].doesOccur) {
 		grammar.ordered = true;
 	}
-
-	grammar.ux_stderr = &std::cerr;
-	grammar.allocateDummySet();
-	grammar.delimiters = grammar.allocateSet();
-	grammar.addTagToSet(grammar.allocateTag(STR_DUMMY), grammar.delimiters);
-	grammar.reindex();
-
-	FormatConverter applicator(std::cerr);
-	applicator.setGrammar(&grammar);
 
 	ux_stripBOM(std::cin);
 
 	std::istream* instream = &std::cin;
 	std::unique_ptr<std::istream> _instream;
 
-	CG_FORMATS fmt = FMT_INVALID;
+	cg3_sformat fmt = CG3SF_INVALID;
 
 	if (options_conv[ADD_TAGS].doesOccur) {
 		options_conv[IN_PLAIN].doesOccur = true;
@@ -143,127 +134,31 @@ int main(int argc, char* argv[]) {
 	}
 
 	if (options_conv[IN_CG].doesOccur) {
-		fmt = FMT_CG;
+		fmt = CG3SF_CG;
 	}
 	else if (options_conv[IN_NICELINE].doesOccur) {
-		fmt = FMT_NICELINE;
+		fmt = CG3SF_NICELINE;
 	}
 	else if (options_conv[IN_APERTIUM].doesOccur) {
-		fmt = FMT_APERTIUM;
+		fmt = CG3SF_APERTIUM;
 	}
 	else if (options_conv[IN_FST].doesOccur) {
-		fmt = FMT_FST;
+		fmt = CG3SF_FST;
 	}
 	else if (options_conv[IN_PLAIN].doesOccur) {
-		fmt = FMT_PLAIN;
+		fmt = CG3SF_PLAIN;
 	}
 	else if (options_conv[IN_JSONL].doesOccur) {
-		fmt = FMT_JSONL;
+		fmt = CG3SF_JSONL;
 	}
 
-	if (options_conv[IN_AUTO].doesOccur || fmt == FMT_INVALID) {
-		constexpr auto BUF_SIZE = 1000;
-
-		std::string buf8(BUF_SIZE, 0);
-		std::cin.read(&buf8[0], BUF_SIZE - 4);
-		auto sz = static_cast<size_t>(std::cin.gcount());
-		if (buf8[sz - 1] & 0x80) {
-			for (size_t i = sz - 1; ; --i) {
-				if ((buf8[i] & 0xF0) == 0xF0) {
-					i = sz - 1 - i;
-					if (!std::cin.read(&buf8[sz], 3 - i)) {
-						throw std::runtime_error("Could not read expected bytes from stream");
-					}
-					sz += 3 - i;
-					break;
-				}
-				else if ((buf8[i] & 0xE0) == 0xE0) {
-					i = sz - 1 - i;
-					if (!std::cin.read(&buf8[sz], 2 - i)) {
-						throw std::runtime_error("Could not read expected bytes from stream");
-					}
-					sz += 2 - i;
-					break;
-				}
-				else if ((buf8[i] & 0xC0) == 0xC0) {
-					i = sz - 1 - i;
-					if (!std::cin.read(&buf8[sz], 1 - i)) {
-						throw std::runtime_error("Could not read expected bytes from stream");
-					}
-					sz += 1 - i;
-					break;
-				}
-			}
-		}
-		buf8.resize(sz);
-
-		UString buffer(BUF_SIZE, 0);
-		int32_t nr = 0;
-		u_strFromUTF8(&buffer[0], BUF_SIZE, &nr, buf8.data(), SI32(sz), &status);
-		if (U_FAILURE(status)) {
-			throw std::runtime_error("UTF-8 to UTF-16 conversion failed");
-		}
-		buffer.resize(nr);
-		URegularExpression* rx = nullptr;
-
-		for (;;) {
-			rx = uregex_openC("^\"<[^>]+>\".*?^\\s+\"[^\"]+\"", UREGEX_DOTALL | UREGEX_MULTILINE, 0, &status);
-			uregex_setText(rx, buffer.data(), SI32(buffer.size()), &status);
-			if (uregex_find(rx, -1, &status)) {
-				fmt = FMT_CG;
-				break;
-			}
-			uregex_close(rx);
-
-			rx = uregex_openC("^\\S+ *\t *\\[\\S+\\]", UREGEX_DOTALL | UREGEX_MULTILINE, 0, &status);
-			uregex_setText(rx, buffer.data(), SI32(buffer.size()), &status);
-			if (uregex_find(rx, -1, &status)) {
-				fmt = FMT_NICELINE;
-				break;
-			}
-			uregex_close(rx);
-
-			rx = uregex_openC("^\\S+ *\t *\"\\S+\"", UREGEX_DOTALL | UREGEX_MULTILINE, 0, &status);
-			uregex_setText(rx, buffer.data(), SI32(buffer.size()), &status);
-			if (uregex_find(rx, -1, &status)) {
-				fmt = FMT_NICELINE;
-				break;
-			}
-			uregex_close(rx);
-
-			rx = uregex_openC("\\^[^/]+(/[^<]+(<[^>]+>)+)+\\$", UREGEX_DOTALL | UREGEX_MULTILINE, 0, &status);
-			uregex_setText(rx, buffer.data(), SI32(buffer.size()), &status);
-			if (uregex_find(rx, -1, &status)) {
-				fmt = FMT_APERTIUM;
-				break;
-			}
-			uregex_close(rx);
-
-			rx = uregex_openC("^\\S+\t\\S+(\\+\\S+)+$", UREGEX_DOTALL | UREGEX_MULTILINE, 0, &status);
-			uregex_setText(rx, buffer.data(), SI32(buffer.size()), &status);
-			if (uregex_find(rx, -1, &status)) {
-				fmt = FMT_FST;
-				break;
-			}
-			uregex_close(rx);
-
-			rx = uregex_openC("^\\{", UREGEX_MULTILINE, 0, &status);
-			uregex_setText(rx, buffer.data(), SI32(buffer.size()), &status);
-			if (uregex_find(rx, -1, &status)) {
-				fmt = FMT_JSONL;
-				break;
-			}
-
-			fmt = FMT_PLAIN;
-			break;
-		}
-		uregex_close(rx);
-
-		_instream.reset(new std::istream(new bstreambuf(std::cin, std::move(buf8))));
+	if (options_conv[IN_AUTO].doesOccur || fmt == CG3SF_INVALID) {
+		_instream = applicator.detectFormat(std::cin);
 		instream = _instream.get();
+		fmt = applicator.fmt_input;
 	}
 
-	applicator.setInputFormat(fmt);
+	applicator.fmt_input = fmt;
 
 	if (options_conv[SUB_LTR].doesOccur) {
 		grammar.sub_readings_ltr = true;
@@ -297,23 +192,23 @@ int main(int argc, char* argv[]) {
 		applicator.wfactor = std::stod(options_conv[FST_WFACTOR].value);
 	}
 
-	applicator.setOutputFormat(FMT_CG);
+	applicator.fmt_output = CG3SF_CG;
 
 	if (options_conv[OUT_APERTIUM].doesOccur) {
-		applicator.setOutputFormat(FMT_APERTIUM);
+		applicator.fmt_output = CG3SF_APERTIUM;
 		applicator.unicode_tags = true;
 	}
 	else if (options_conv[OUT_FST].doesOccur) {
-		applicator.setOutputFormat(FMT_FST);
+		applicator.fmt_output = CG3SF_FST;
 	}
 	else if (options_conv[OUT_NICELINE].doesOccur) {
-		applicator.setOutputFormat(FMT_NICELINE);
+		applicator.fmt_output = CG3SF_NICELINE;
 	}
 	else if (options_conv[OUT_PLAIN].doesOccur) {
-		applicator.setOutputFormat(FMT_PLAIN);
+		applicator.fmt_output = CG3SF_PLAIN;
 	}
 	else if (options_conv[OUT_JSONL].doesOccur) {
-		applicator.setOutputFormat(FMT_JSONL);
+		applicator.fmt_output = CG3SF_JSONL;
 	}
 
 	if (options_conv[UNICODE_TAGS].doesOccur) {

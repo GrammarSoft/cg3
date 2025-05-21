@@ -23,6 +23,7 @@
 #include "BinaryGrammar.hpp"
 #include "GrammarApplicator.hpp"
 #include "MweSplitApplicator.hpp"
+#include "FormatConverter.hpp"
 #include "Window.hpp"
 #include "SingleWindow.hpp"
 #include "version.hpp"
@@ -151,6 +152,39 @@ cg3_grammar* cg3_grammar_load_buffer(const char* buffer, size_t length) {
 void cg3_grammar_free(cg3_grammar* grammar_) {
 	auto grammar = static_cast<Grammar*>(grammar_);
 	delete grammar;
+}
+
+cg3_sformat cg3_detect_sformat(const char* filename) {
+	std::ifstream input(filename, std::ios::binary);
+	if (!input) {
+		u_fprintf(ux_stderr, "CG3 Error: Error opening %s for reading!\n", filename);
+		return CG3SF_INVALID;
+	}
+
+	std::string buf8 = read_utf8(input);
+
+	return detectFormat(buf8);
+}
+
+cg3_sformat cg3_detect_sformat_buffer(const char* buffer, size_t length) {
+	return detectFormat(std::string_view(buffer, length));
+}
+
+cg3_applicator* cg3_sconverter_create(cg3_sformat fmt_in, cg3_sformat fmt_out) {
+	FormatConverter* applicator = new FormatConverter(*ux_stderr);
+	applicator->is_conv = true;
+	applicator->trace = true;
+	applicator->verbosity_level = 0;
+	applicator->fmt_input = fmt_in;
+	applicator->fmt_output = fmt_out;
+	return static_cast<GrammarApplicator*>(applicator);
+}
+
+void cg3_sconverter_run_fns(cg3_applicator* applicator_, const char* input, const char* output) {
+	FormatConverter* applicator = static_cast<FormatConverter*>(applicator_);
+	std::ifstream is(input, std::ios::binary);
+	std::ofstream os(output, std::ios::binary);
+	applicator->runGrammarOnText(is, os);
 }
 
 cg3_applicator* cg3_applicator_create(cg3_grammar* grammar_) {

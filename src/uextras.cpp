@@ -195,6 +195,44 @@ UChar u_fgetc(std::istream& input) {
 	return u16[0];
 }
 
+std::string read_utf8(std::istream& input, size_t BUF_SIZE) {
+	std::string buf8(BUF_SIZE, 0);
+
+	input.read(&buf8[0], BUF_SIZE - 4);
+	auto sz = static_cast<size_t>(input.gcount());
+	if (buf8[sz - 1] & 0x80) {
+		for (size_t i = sz - 1; ; --i) {
+			if ((buf8[i] & 0xF0) == 0xF0) {
+				i = sz - 1 - i;
+				if (!input.read(&buf8[sz], 3 - i)) {
+					throw std::runtime_error("Could not read expected bytes from stream");
+				}
+				sz += 3 - i;
+				break;
+			}
+			else if ((buf8[i] & 0xE0) == 0xE0) {
+				i = sz - 1 - i;
+				if (!input.read(&buf8[sz], 2 - i)) {
+					throw std::runtime_error("Could not read expected bytes from stream");
+				}
+				sz += 2 - i;
+				break;
+			}
+			else if ((buf8[i] & 0xC0) == 0xC0) {
+				i = sz - 1 - i;
+				if (!input.read(&buf8[sz], 1 - i)) {
+					throw std::runtime_error("Could not read expected bytes from stream");
+				}
+				sz += 1 - i;
+				break;
+			}
+		}
+	}
+	buf8.resize(sz);
+
+	return buf8;
+}
+
 // ICU std::ostream output wrappers
 void u_fflush(std::ostream& output) {
 	output.flush();
