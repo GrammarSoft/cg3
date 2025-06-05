@@ -359,10 +359,10 @@ Tag* GrammarApplicator::generateVarstringTag(const Tag* tag) {
 	tmp.append(tag->tag.data(), SI32(tag->tag.size()));
 	bool did_something = false;
 
-	// Convert %[UuLl] markers to control codes to avoid having combined %$1 accidentally match %L
-	constexpr UStringView raw[] = { STR_VSu_raw, STR_VSU_raw, STR_VSl_raw, STR_VSL_raw };
-	constexpr UStringView x01[] = { STR_VSu, STR_VSU, STR_VSl, STR_VSL };
-	for (size_t i = 0; i < 4; ++i) {
+	// Convert %[UuLl] and $1-9 markers to control codes to avoid having combined %$1 accidentally match %L or have $s in data be filled
+	constexpr UStringView raw[] = { STR_VSu_raw, STR_VSU_raw, STR_VSl_raw, STR_VSL_raw, STR_VS1_raw, STR_VS2_raw, STR_VS3_raw, STR_VS4_raw, STR_VS5_raw, STR_VS6_raw, STR_VS7_raw, STR_VS8_raw, STR_VS9_raw };
+	constexpr UStringView x01[] = { STR_VSu, STR_VSU, STR_VSl, STR_VSL, STR_VS1, STR_VS2, STR_VS3, STR_VS4, STR_VS5, STR_VS6, STR_VS7, STR_VS8, STR_VS9 };
+	for (size_t i = 0; i < 13; ++i) {
 		findAndReplace(tmp, raw[i].data(), x01[i].data());
 	}
 
