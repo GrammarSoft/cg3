@@ -445,7 +445,7 @@ void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& outp
 				}
 			}
 		istext:
-			if (cleaned[0]) {
+			if (line[0]) {
 				bool is_cmd = false;
 				if (&cleaned[0] == STR_CMD_FLUSH) {
 					if (verbosity_level > 0) {
