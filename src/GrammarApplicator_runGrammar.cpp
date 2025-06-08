@@ -445,7 +445,7 @@ void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& outp
 				}
 			}
 		istext:
-			if (cleaned[0]) {
+			if (line[0]) {
 				if (&cleaned[0] == STR_CMD_FLUSH) {
 					if (verbosity_level > 0) {
 						u_fprintf(ux_stderr, "Info: FLUSH encountered on line %u. Flushing...\n", numLines);
