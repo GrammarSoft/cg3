@@ -2258,7 +2258,12 @@ void TextualParser::parseFromUChar(UChar* input, const char* fname) {
 					Set* tmp = result->getSet(s->hash);
 					if (tmp) {
 						if (verbosity_level > 0 && !is_internal(tmp->name)) {
-							u_fprintf(ux_stderr, "%s: Warning: LIST %S was defined twice with the same contents: Lines %u and %u.\n", filebase, s->name.data(), tmp->line, s->line);
+							if (s->name == tmp->name) {
+								u_fprintf(ux_stderr, "%s: Warning: Multiple definitions of identical LIST %S: Lines %u and %u.\n", filebase, s->name.data(), tmp->line, s->line);
+							}
+							else {
+								u_fprintf(ux_stderr, "%s: Warning: LIST %S was defined twice with the same contents: Lines %u and %u.\n", filebase, s->name.data(), tmp->line, s->line);
+							}
 							u_fflush(ux_stderr);
 						}
 					}
@@ -2306,7 +2311,12 @@ void TextualParser::parseFromUChar(UChar* input, const char* fname) {
 				Set* tmp = result->getSet(s->hash);
 				if (tmp) {
 					if (verbosity_level > 0 && !is_internal(tmp->name)) {
-						u_fprintf(ux_stderr, "%s: Warning: SET %S was defined twice with the same contents: Lines %u and %u.\n", filebase, s->name.data(), tmp->line, s->line);
+						if (s->name == tmp->name) {
+							u_fprintf(ux_stderr, "%s: Warning: Multiple definitions of identical SET %S: Lines %u and %u.\n", filebase, s->name.data(), tmp->line, s->line);
+						}
+						else {
+							u_fprintf(ux_stderr, "%s: Warning: SET %S was defined twice with the same contents: Lines %u and %u.\n", filebase, s->name.data(), tmp->line, s->line);
+						}
 						u_fflush(ux_stderr);
 					}
 				}
