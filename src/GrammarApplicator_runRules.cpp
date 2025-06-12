@@ -394,7 +394,7 @@ bool GrammarApplicator::runSingleRule(SingleWindow& current, const Rule& rule, R
 		// Removed cohorts are still in the precalculated rule_to_cohorts map,
 		// and it would take time to go through the whole map searching for the cohort.
 		// Haven't tested whether it is worth it...
-		if (cohort->type & CT_REMOVED) {
+		if (cohort->type & (CT_REMOVED | CT_IGNORED)) {
 			continue;
 		}
 
@@ -529,7 +529,7 @@ bool GrammarApplicator::runSingleRule(SingleWindow& current, const Rule& rule, R
 			cohortset = &current.rule_to_cohorts[rule.number];
 			override_cohortset();
 			cohortsets.back() = cohortset;
-			if (get_apply_to().cohort->type & CT_REMOVED) {
+			if (get_apply_to().cohort->type & (CT_REMOVED | CT_IGNORED)) {
 				rocit = cohortset->lower_bound(current.cohorts[get_apply_to().cohort->local_number]);
 			}
 			else {
