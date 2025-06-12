@@ -96,6 +96,12 @@ void TextualParser::error(const char* str, const UChar* p) {
 	incErrorCount();
 }
 
+void TextualParser::error(const char* str, const UChar* p, UChar c) {
+	ux_bufcpy(nearbuf, p, 20);
+	u_fprintf(ux_stderr, str, filebase, result->lines, nearbuf, c);
+	incErrorCount();
+}
+
 void TextualParser::error(const char* str, const UChar* p, const UString& msg) {
 	ux_bufcpy(nearbuf, p, 20);
 	u_fprintf(ux_stderr, str, filebase, result->lines, nearbuf, msg.data());
@@ -737,7 +743,7 @@ void TextualParser::parseContextualTestPosition(UChar*& p, ContextualTest& t) {
 	}
 
 	if (tries >= 100) {
-		error("%s: Error: Invalid position on line %u near `%S` - caused endless loop!\n", n);
+		error("%s: Error: Invalid position on line %u near `%S` - unknown specifier %C\n", n, *p);
 	}
 	else if (tries >= 20) {
 		ux_bufcpy(nearbuf, n, 20);
