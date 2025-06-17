@@ -4,6 +4,7 @@
 /CMakeFiles
 Makefile
 /build
+/wasm-build
 /src/cg-comp
 /src/cg-conv
 /src/cg-mwesplit

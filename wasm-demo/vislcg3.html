@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>vislcg3 demo</title>
+    <script src="libcg3.js"></script>
+    <style>
+        .container {
+            display: flex;
+            gap: 10px;
+        }
+
+        .column {
+            flex: 1;
+        }
+
+        textarea {
+            width: 100%;
+            height: 400px;
+            font-family: monospace;
+        }
+
+        pre {
+            border: 1px solid #000000;
+            height: 400px;
+            overflow: auto;
+            margin: 0;
+            padding: 2px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>VislCG3 Grammar Applicator</h1>
+
+    <div>
+        <button id="apply-btn">Apply grammar</button>
+        <!-- <br>
+        <label><input type="checkbox" id="show-traces"> Show traces</label> -->
+    </div>
+
+    <div class="container">
+        <div class="column">
+            <label for="grammar-text">Grammar:</label><br>
+            <textarea id="grammar-text" placeholder="Enter CG3 grammar here...">DELIMITERS = "<$.>" "<!>" "<?>" ;
+LIST N = n ;
+SELECT N ;</textarea>
+        </div>
+
+        <div class="column">
+            <label for="input-text">Input stream:</label><br>
+            <textarea id="input-text" placeholder="Enter input stream here...">"<word>"
+	"word" n
+	"word" v
+</textarea>
+        </div>
+
+        <div class="column">
+            <label for="output-text">Output:</label><br>
+            <pre id="output-text"></pre>
+        </div>
+    </div>
+
+    <script>
+        let cg3 = null;
+
+        // Initialize CG3 module
+        async function initCG3() {
+            try {
+                console.log('Loading CG3 module...');
+                cg3 = await createCG3Module();
+                cg3._cg3_init_default();
+                console.log('CG3 module loaded successfully!');
+            } catch (error) {
+                console.error('Failed to load CG3 module:', error.message);
+            }
+        }
+
+        async function vislcg3(input_stream, grammar = cg3GrammarString) {
+            if (!cg3) {
+                throw new Error('CG3 module not initialized');
+            }
+
+            const timestamp = Date.now();
+            const randomFloat = Math.random();
+            const tmpFilename = `/tmp/vislcg3-${timestamp}-${randomFloat}`;
+            const grammarFile = `${tmpFilename}.cg3`;
+            cg3.FS.writeFile(grammarFile, grammar, { encoding: 'utf8' });
+            const inputFile = `${tmpFilename}.in`;
+            const outputFile = `${tmpFilename}.out`;
+            cg3.FS.writeFile(inputFile, input_stream, { encoding: 'utf8' });
+
+            const cg3_grammar_load = cg3.cwrap('cg3_grammar_load', 'number', ['string']);
+            const cg3_applicator_create = cg3.cwrap('cg3_applicator_create', 'number', ['number']);
+            const cg3_run_grammar_on_text_fns = cg3.cwrap('cg3_run_grammar_on_text_fns', null, ['number', 'string', 'string']);
+
+            const grammar_ptr = cg3_grammar_load(grammarFile);
+            if (grammar_ptr === 0) throw new Error('Failed to load CG3 grammar');
+
+            const applicator_ptr = cg3_applicator_create(grammar_ptr);
+            if (applicator_ptr === 0) throw new Error('Failed to create CG3 applicator');
+
+
+            cg3_run_grammar_on_text_fns(applicator_ptr, inputFile, outputFile);
+            const output_stream = cg3.FS.readFile(outputFile, { encoding: 'utf8' });
+
+            cg3.FS.unlink(grammarFile);
+            cg3.FS.unlink(inputFile);
+            cg3.FS.unlink(outputFile);
+
+            return output_stream;
+        }
+
+        // Apply grammar button handler
+        async function applyGrammar() {
+            const grammarText = document.getElementById('grammar-text').value.trim();
+            const inputText = document.getElementById('input-text').value.trim();
+            const outputEl = document.getElementById('output-text');
+            // const showTraces = document.getElementById('show-traces').checked;
+
+            if (!inputText) {
+                alert('Please enter some input text.');
+                return;
+            }
+
+            try {
+                console.log('Applying grammar...');
+
+                const result = await vislcg3(inputText, grammarText);
+
+                outputEl.textContent = result;
+                console.log('Grammar applied successfully!');
+
+            } catch (error) {
+                outputEl.textContent = `Error: ${error.message}`;
+                console.error('Grammar application failed:', error.message);
+            }
+        }
+
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', () => {
+            // Add click handler to apply button
+            document.getElementById('apply-btn').addEventListener('click', applyGrammar);
+
+            // Initialize CG3 module
+            initCG3();
+        });
+    </script>
+</body>
+
+</html>
