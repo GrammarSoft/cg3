@@ -4,6 +4,9 @@
 /CMakeFiles
 Makefile
 /build
+/wasm-build
+/wasm-demo/libcg3.js
+/wasm-demo/libcg3.wasm
 /src/cg-comp
 /src/cg-conv
 /src/cg-mwesplit

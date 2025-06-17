@@ -191,18 +191,23 @@ cg3_sformat cg3_detect_sformat_buffer(const char* buffer, size_t length) {
 	return detectFormat(std::string_view(buffer, length));
 }
 
-cg3_applicator* cg3_sconverter_create(cg3_sformat fmt_in, cg3_sformat fmt_out) {
+cg3_sconverter* cg3_sconverter_create(cg3_sformat fmt_in, cg3_sformat fmt_out) {
 	FormatConverter* applicator = new FormatConverter(*ux_stderr);
 	applicator->is_conv = true;
 	applicator->trace = true;
 	applicator->verbosity_level = 0;
 	applicator->fmt_input = fmt_in;
 	applicator->fmt_output = fmt_out;
-	return static_cast<GrammarApplicator*>(applicator);
+	return applicator;
 }
 
-void cg3_sconverter_run_fns(cg3_applicator* applicator_, const char* input, const char* output) {
-	FormatConverter* applicator = static_cast<FormatConverter*>(applicator_);
+void cg3_sconverter_free(cg3_sconverter* converter_) {
+	FormatConverter* fc_applicator = static_cast<FormatConverter*>(converter_);
+	delete fc_applicator; // Delete as the concrete type FormatConverter
+}
+
+void cg3_sconverter_run_fns(cg3_sconverter* converter_, const char* input, const char* output) {
+	FormatConverter* applicator = static_cast<FormatConverter*>(converter_);
 	std::ifstream is(input, std::ios::binary);
 	std::ofstream os(output, std::ios::binary);
 	applicator->runGrammarOnText(is, os);

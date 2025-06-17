@@ -61,10 +61,9 @@ endif()
 macro(cg3_link target)
 	if(EMSCRIPTEN)
 		target_link_options(${target} PRIVATE
-			-sEXPORTED_RUNTIME_METHODS=ccall,cwrap
-			# Generated with: pcregrep -o 'cg3_\S+\(' src/cg3.h | perl -wpne "s/\(//g; s/^/'_/; s/\n/',/;"
-			-sEXPORTED_FUNCTIONS=['_cg3_init','_cg3_init','_cg3_cleanup','_cg3_cleanup','_cg3_grammar_load','_cg3_grammar_load_buffer','_cg3_grammar_free','_cg3_applicator_create','_cg3_applicator_setflags','_cg3_applicator_setoption','_cg3_applicator_setoption','_cg3_applicator_setoption','_cg3_applicator_free','_cg3_run_grammar_on_text','_cg3_run_grammar_on_text_fns','_cg3_mwesplitapplicator_create','_cg3_sentence_new','_cg3_sentence_copy','_cg3_sentence_runrules','_cg3_sentence_addcohort','_cg3_sentence_numcohorts','_cg3_sentence_getcohort','_cg3_sentence_free','_cg3_cohort_create','_cg3_cohort_setwordform','_cg3_cohort_getwordform','_cg3_cohort_getid','_cg3_cohort_setdependency','_cg3_cohort_getdependency','_cg3_cohort_addreading','_cg3_cohort_numreadings','_cg3_cohort_getreading','_cg3_cohort_free','_cg3_reading_create','_cg3_reading_addtag','_cg3_reading_numtags','_cg3_reading_gettag','_cg3_reading_numtraces','_cg3_reading_gettrace','_cg3_reading_free','_cg3_subreading_create','_cg3_reading_setsubreading','_cg3_reading_numsubreadings','_cg3_reading_getsubreading','_cg3_subreading_free','_cg3_tag_create_u','_cg3_tag_create_u8','_cg3_tag_create_u16','_cg3_tag_create_u32','_cg3_tag_create_w','_cg3_tag_gettext_u','_cg3_tag_gettext_u8','_cg3_tag_gettext_u16','_cg3_tag_gettext_u32','_cg3_tag_gettext_w','_cg3_cohort_numdelreadings','_cg3_cohort_getdelreading','_cg3_reading_gettrace_ruletype']
-			-sASSERTIONS=1
+			-sEXPORTED_RUNTIME_METHODS=ccall,cwrap,FS
+			# Generated with: pcregrep -o 'cg3_\S+\(' src/cg3.h | perl -wpne "s/\(//g; s/^/'_/; s/\n',/;"
+			-sEXPORTED_FUNCTIONS=['_cg3_init','_cg3_init','_cg3_cleanup','_cg3_cleanup','_cg3_grammar_load','_cg3_grammar_load_buffer','_cg3_grammar_free','_cg3_detect_sformat','_cg3_detect_sformat_buffer','_cg3_sconverter_create','_cg3_sconverter_free','_cg3_sconverter_run_fns','_cg3_applicator_create','_cg3_applicator_setflags','_cg3_applicator_setoption','_cg3_applicator_setoption','_cg3_applicator_setoption','_cg3_applicator_free','_cg3_run_grammar_on_text','_cg3_run_grammar_on_text_fns','_cg3_mwesplitapplicator_create','_cg3_sentence_new','_cg3_sentence_copy','_cg3_sentence_runrules','_cg3_sentence_addcohort','_cg3_sentence_numcohorts','_cg3_sentence_getcohort','_cg3_sentence_free','_cg3_cohort_create','_cg3_cohort_setwordform','_cg3_cohort_getwordform','_cg3_cohort_getid','_cg3_cohort_setdependency','_cg3_cohort_getdependency','_cg3_cohort_addreading','_cg3_cohort_numreadings','_cg3_cohort_getreading','_cg3_cohort_free','_cg3_reading_create','_cg3_reading_addtag','_cg3_reading_numtags','_cg3_reading_gettag','_cg3_reading_numtraces','_cg3_reading_gettrace','_cg3_reading_free','_cg3_subreading_create','_cg3_reading_setsubreading','_cg3_reading_numsubreadings','_cg3_reading_getsubreading','_cg3_subreading_free','_cg3_tag_create_u','_cg3_tag_create_u8','_cg3_tag_create_u16','_cg3_tag_create_u32','_cg3_tag_create_w','_cg3_tag_gettext_u','_cg3_tag_gettext_u8','_cg3_tag_gettext_u16','_cg3_tag_gettext_u32','_cg3_tag_gettext_w','_cg3_cohort_numdelreadings','_cg3_cohort_getdelreading','_cg3_reading_gettrace_ruletype']
 			)
 	else()
 		target_link_libraries(${target}
@@ -182,47 +181,49 @@ set_target_properties(cg3 PROPERTIES SOVERSION ${_cg3_VERSION_MAJOR})
 cg3_link(cg3)
 set(LINKLIB cg3)
 
-add_executable(cg-comp cg-comp.cpp)
-cg3_link(cg-comp)
-target_link_libraries(cg-comp ${LINKLIB})
+if(NOT EMSCRIPTEN)
+	add_executable(cg-comp cg-comp.cpp)
+	cg3_link(cg-comp)
+	target_link_libraries(cg-comp ${LINKLIB})
 
-add_executable(cg-proc cg-proc.cpp)
-cg3_link(cg-proc)
-target_link_libraries(cg-proc ${LINKLIB})
+	add_executable(cg-proc cg-proc.cpp)
+	cg3_link(cg-proc)
+	target_link_libraries(cg-proc ${LINKLIB})
 
-add_executable(cg-relabel cg-relabel.cpp)
-cg3_link(cg-relabel)
-target_link_libraries(cg-relabel ${LINKLIB})
+	add_executable(cg-relabel cg-relabel.cpp)
+	cg3_link(cg-relabel)
+	target_link_libraries(cg-relabel ${LINKLIB})
 
-add_executable(cg-conv
-	cg-conv.cpp
-	options_conv.hpp
-	)
-cg3_link(cg-conv)
-target_link_libraries(cg-conv ${LINKLIB})
+	add_executable(cg-conv
+		cg-conv.cpp
+		options_conv.hpp
+		)
+	cg3_link(cg-conv)
+	target_link_libraries(cg-conv ${LINKLIB})
 
-add_executable(cg-mwesplit cg-mwesplit.cpp)
-cg3_link(cg-mwesplit)
-target_link_libraries(cg-mwesplit ${LINKLIB})
+	add_executable(cg-mwesplit cg-mwesplit.cpp)
+	cg3_link(cg-mwesplit)
+	target_link_libraries(cg-mwesplit ${LINKLIB})
 
-add_executable(cg-annotate cg-annotate.cpp)
-cg3_link(cg-annotate)
-target_link_libraries(cg-annotate ${LINKLIB})
+	add_executable(cg-annotate cg-annotate.cpp)
+	cg3_link(cg-annotate)
+	target_link_libraries(cg-annotate ${LINKLIB})
 
-add_executable(cg-merge-annotations cg-merge-annotations.cpp)
-cg3_link(cg-merge-annotations)
-target_link_libraries(cg-merge-annotations ${LINKLIB})
+	add_executable(cg-merge-annotations cg-merge-annotations.cpp)
+	cg3_link(cg-merge-annotations)
+	target_link_libraries(cg-merge-annotations ${LINKLIB})
 
-add_executable(vislcg3
-	main.cpp
-	)
-cg3_link(vislcg3)
-target_link_libraries(vislcg3 ${LINKLIB})
+	add_executable(vislcg3
+		main.cpp
+		)
+	cg3_link(vislcg3)
+	target_link_libraries(vislcg3 ${LINKLIB})
 
-add_executable(test_libcg3 test_libcg3.c)
-target_link_libraries(test_libcg3 ${LINKLIB})
+	add_executable(test_libcg3 test_libcg3.c)
+	target_link_libraries(test_libcg3 ${LINKLIB})
+endif()
 
-if(APPLE)
+if(APPLE AND NOT EMSCRIPTEN)
 	foreach(t cg-conv cg-comp cg-proc cg-relabel cg-mwesplit cg-annotate cg-merge-annotations vislcg3)
 		set("_file_${t}" $<TARGET_FILE:${t}>)
 		add_custom_command(
@@ -238,8 +239,16 @@ if(APPLE)
 	endforeach()
 endif()
 
-add_test(t_libcg3 test_libcg3 "${CMAKE_CURRENT_SOURCE_DIR}/../test/T_Select/grammar.cg3")
+if(NOT EMSCRIPTEN)
+	add_test(t_libcg3 test_libcg3 "${CMAKE_CURRENT_SOURCE_DIR}/../test/T_Select/grammar.cg3")
 
-install(TARGETS cg3 ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
-install(FILES cg3.h DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
-install(TARGETS cg-comp cg-proc cg-relabel cg-mwesplit cg-conv cg-annotate cg-merge-annotations vislcg3 RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+	install(TARGETS cg3 ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+	install(FILES cg3.h DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+	install(TARGETS cg-comp cg-proc cg-relabel cg-mwesplit cg-conv cg-annotate cg-merge-annotations vislcg3 RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+endif()
+
+if(EMSCRIPTEN)
+	add_executable(libcg3_wasm libcg3.cpp ${LIBCG3_SOURCES})
+	cg3_link(libcg3_wasm)
+	set_target_properties(libcg3_wasm PROPERTIES OUTPUT_NAME "libcg3")
+endif()
