@@ -36,9 +36,20 @@ namespace {
 std::unique_ptr<std::istream> ux_stdin;
 std::unique_ptr<std::ostream> ux_stdout;
 std::unique_ptr<std::ostream> ux_stderr;
+
+bool did_init = false;
+bool did_cleanup = false;
 }
 
 cg3_status cg3_init(FILE* in, FILE* out, FILE* err) {
+	if (did_cleanup) {
+		fprintf(err, "CG3 Error: Cannot init after cleanup!\n");
+		return CG3_ERROR;
+	}
+	if (did_init) {
+		return CG3_SUCCESS;
+	}
+
 	UErrorCode status = U_ZERO_ERROR;
 	u_init(&status);
 	if (U_FAILURE(status) && status != U_FILE_ACCESS_ERROR) {
@@ -74,16 +85,26 @@ cg3_status cg3_init(FILE* in, FILE* out, FILE* err) {
 		return CG3_ERROR;
 	}
 
+	did_init = true;
 	return CG3_SUCCESS;
 }
 
 cg3_status cg3_cleanup(void) {
+	if (!did_init) {
+		u_fprintf(ux_stderr, "CG3 Error: Must init before cleanup!\n");
+		return CG3_ERROR;
+	}
+	if (did_cleanup) {
+		return CG3_SUCCESS;
+	}
+
 	ux_stdin.reset();
 	ux_stdout.reset();
 	ux_stderr.reset();
 
 	u_cleanup();
 
+	did_cleanup = true;
 	return CG3_SUCCESS;
 }
 
