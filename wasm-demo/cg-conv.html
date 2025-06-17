@@ -56,10 +56,6 @@
                 console.log('Loading CG3 module...');
                 cg3 = await createCG3Module();
 
-                // Initialize CG3
-                const cg3_init_default = cg3.cwrap('cg3_init_default', 'number', []);
-                const result = cg3_init_default();
-
                 if (result !== 0) {
                     throw new Error('Failed to initialize CG3');
                 }
