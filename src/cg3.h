@@ -36,6 +36,7 @@ extern "C" {
 typedef void cg3_grammar;
 typedef void cg3_applicator;
 typedef cg3_applicator cg3_mwesplitapplicator;
+typedef void cg3_sconverter;
 typedef void cg3_sentence;
 typedef void cg3_cohort;
 typedef void cg3_reading;
@@ -92,8 +93,9 @@ void cg3_grammar_free(cg3_grammar* grammar);
 
 cg3_sformat cg3_detect_sformat(const char* filename);
 cg3_sformat cg3_detect_sformat_buffer(const char* buffer, size_t length);
-cg3_applicator* cg3_sconverter_create(cg3_sformat fmt_in, cg3_sformat fmt_out);
-void cg3_sconverter_run_fns(cg3_applicator*, const char* input, const char* output);
+cg3_sconverter* cg3_sconverter_create(cg3_sformat fmt_in, cg3_sformat fmt_out);
+void cg3_sconverter_free(cg3_sconverter* converter_);
+void cg3_sconverter_run_fns(cg3_sconverter* converter_, const char* input, const char* output);
 
 cg3_applicator* cg3_applicator_create(cg3_grammar* grammar);
 // Pass in OR'ed values from cg3_flags; each call resets flags, so set all needed ones in a single call.

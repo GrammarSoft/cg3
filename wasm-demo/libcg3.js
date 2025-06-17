@@ -1,0 +1,1 @@
+../wasm-build/src/libcg3.js

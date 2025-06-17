@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>cg-conv demo</title>
+    <script src="libcg3.js"></script>
+</head>
+
+<body>
+    <h1>CG3 Format Converter</h1>
+
+    <div>
+        <label for="input-text">Input Text:</label><br>
+        <textarea id="input-text" placeholder="Paste your text here..." style="width: 100%;" rows="20">"<word>"
+	"word" N
+</textarea>
+    </div>
+
+    <div>
+        <label for="input-format">Input Format:</label>
+        <select id="input-format">
+            <option value="auto">Auto-detect</option>
+            <option value="cg">CG</option>
+            <option value="niceline">Niceline</option>
+            <option value="apertium">Apertium</option>
+            <option value="fst">FST</option>
+            <option value="plain">Plain</option>
+            <option value="jsonl">JSONL</option>
+        </select>
+
+        <label for="output-format">Output Format:</label>
+        <select id="output-format">
+            <option value="cg" selected>CG</option>
+            <option value="niceline">Niceline</option>
+            <option value="apertium">Apertium</option>
+            <option value="fst">FST</option>
+            <option value="plain">Plain</option>
+            <option value="jsonl">JSONL</option>
+        </select>
+    </div>
+
+    <button id="process-btn">Process</button>
+
+    <div>
+        <label for="output-text">Output:</label><br>
+        <pre id="output-text"></pre>
+    </div>
+
+    <script>
+        let cg3 = null;
+
+        // Initialize CG3 module
+        async function initCG3() {
+            try {
+                console.log('Loading CG3 module...');
+                cg3 = await createCG3Module();
+                console.log('CG3 module loaded successfully!');
+            } catch (error) {
+                console.error('Failed to load CG3 module:', error.message);
+            }
+        }
+
+        // Format conversion function
+        async function cgConv(input_stream, options = {}) {
+            if (!cg3) {
+                throw new Error('CG3 module not initialized');
+            }
+
+            // Default options
+            const {
+                input_format = 'auto',   // 'auto', 'cg', 'niceline', 'apertium', 'fst', 'plain', 'jsonl'
+                output_format = 'cg',    // 'cg', 'niceline', 'apertium', 'fst', 'plain', 'jsonl'
+                unicode_tags = false,
+                pipe_deleted = false,
+                no_break = false,
+                parse_dep = false,
+                add_tags = false,
+                sub_ltr = false,
+                mapping_prefix = null,
+                sub_delimiter = null,
+                fst_wtag = null,
+                fst_wfactor = null
+            } = options;
+
+            const formatMap = {
+                'cg': 1,
+                'niceline': 2,
+                'apertium': 3,
+                'fst': 5,
+                'plain': 6,
+                'jsonl': 7
+            };
+
+            const cg3_detect_sformat_buffer = cg3.cwrap('cg3_detect_sformat_buffer', 'number', ['string', 'number']);
+            const cg3_sconverter_create = cg3.cwrap('cg3_sconverter_create', 'number', ['number', 'number']);
+            const cg3_sconverter_run_fns = cg3.cwrap('cg3_sconverter_run_fns', null, ['number', 'string', 'string']);
+            const cg3_sconverter_free = cg3.cwrap('cg3_sconverter_free', null, ['number']);
+
+            let input_fmt;
+            if (input_format === 'auto') {
+                input_fmt = cg3_detect_sformat_buffer(input_stream, input_stream.length);
+                if (input_fmt === 0) { // CG3SF_INVALID
+                    throw new Error('Could not detect input format');
+                }
+            } else {
+                input_fmt = formatMap[input_format];
+                if (!input_fmt) {
+                    throw new Error(`Unknown input format: ${input_format}`);
+                }
+            }
+
+            const output_fmt = formatMap[output_format];
+            if (!output_fmt) {
+                throw new Error(`Unknown output format: ${output_format}`);
+            }
+
+            const converter = cg3_sconverter_create(input_fmt, output_fmt);
+            if (converter === 0) {
+                throw new Error('Failed to create format converter');
+            }
+
+            try {
+                // Set converter options if needed
+                // Note: The libcg3 API doesn't expose all the FormatConverter options directly,
+                // so some advanced options from cg-conv might not be available through the C API
+
+                const timestamp = Date.now();
+                const randomFloat = Math.random();
+                const tmpFilename = `/tmp/cgconv-${timestamp}-${randomFloat}`;
+                const inputFile = `${tmpFilename}.in`;
+                const outputFile = `${tmpFilename}.out`;
+
+                cg3.FS.writeFile(inputFile, input_stream, { encoding: 'utf8' });
+                cg3_sconverter_run_fns(converter, inputFile, outputFile);
+                const output_stream = cg3.FS.readFile(outputFile, { encoding: 'utf8' });
+
+                cg3.FS.unlink(inputFile);
+                cg3.FS.unlink(outputFile);
+
+                return output_stream;
+
+            } finally {
+                cg3_sconverter_free(converter);
+            }
+        }
+
+
+        // Process button handler
+        async function processText() {
+            const inputText = document.getElementById('input-text').value.trim();
+            const inputFormat = document.getElementById('input-format').value;
+            const outputFormat = document.getElementById('output-format').value;
+            const outputEl = document.getElementById('output-text');
+
+            if (!inputText) {
+                console.error('Please enter some text to convert.');
+                return;
+            }
+
+            try {
+                console.log('Converting...');
+
+                const result = await cgConv(inputText, {
+                    input_format: inputFormat,
+                    output_format: outputFormat
+                });
+
+                outputEl.textContent = result;
+                console.log('Conversion completed successfully!');
+
+            } catch (error) {
+                outputEl.textContent = `Error: ${error.message}`;
+                console.error('Conversion failed:', error.message);
+            }
+        }
+
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', () => {
+            // Add click handler to process button
+            document.getElementById('process-btn').addEventListener('click', processText);
+
+            // Initialize CG3 module
+            initCG3();
+        });
+    </script>
+</body>
+
+</html>
