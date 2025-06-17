@@ -8,6 +8,18 @@ if ! [ -f src/cg3.h ]; then
     exit 1
 fi
 
+# Check if we are running in a Docker container
+if [ -f /.dockerenv ]; then
+    echo "Running in a Docker container. Proceeding with build."
+else
+    echo "This script is intended to be run in a Debian/Ubuntu container."
+    read -p "Do you want to continue? (y/n) " answer
+    if [[ ! $answer =~ ^[Yy]$ ]]; then
+        echo "Exiting."
+        exit 1
+    fi
+fi
+
 CG3_ROOT=$(pwd)
 
 if command -v sudo >/dev/null 2>&1; then
