@@ -70,7 +70,6 @@ SELECT N ;</textarea>
             try {
                 console.log('Loading CG3 module...');
                 cg3 = await createCG3Module();
-                cg3._cg3_init_default();
                 console.log('CG3 module loaded successfully!');
             } catch (error) {
                 console.error('Failed to load CG3 module:', error.message);

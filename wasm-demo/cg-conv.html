@@ -55,11 +55,6 @@
             try {
                 console.log('Loading CG3 module...');
                 cg3 = await createCG3Module();
-
-                if (result !== 0) {
-                    throw new Error('Failed to initialize CG3');
-                }
-
                 console.log('CG3 module loaded successfully!');
             } catch (error) {
                 console.error('Failed to load CG3 module:', error.message);
