@@ -63,14 +63,17 @@ Cohort::~Cohort() {
 	std::cerr << "OBJECT: " << VOIDP(this) << " " << __PRETTY_FUNCTION__ << ": " << readings.size() << ", " << deleted.size() << ", " << delayed.size() << std::endl;
 	#endif
 
-	for (auto iter1 : readings) {
-		free_reading(iter1);
+	for (auto iter : readings) {
+		free_reading(iter);
 	}
-	for (auto iter2 : deleted) {
-		free_reading(iter2);
+	for (auto iter : deleted) {
+		free_reading(iter);
 	}
-	for (auto iter3 : delayed) {
-		free_reading(iter3);
+	for (auto iter : delayed) {
+		free_reading(iter);
+	}
+	for (auto iter : ignored) {
+		free_reading(iter);
 	}
 	free_reading(wread);
 
@@ -91,12 +94,14 @@ void Cohort::clear() {
 	type = 0;
 	global_number = 0;
 	local_number = 0;
+	enclosed = 0;
 	wordform = nullptr;
 	dep_self = 0;
 	dep_parent = DEP_NO_PARENT;
 	is_pleft = 0;
 	is_pright = 0;
 	parent = nullptr;
+	line_number = 0;
 
 	text.clear();
 	wblank.clear();
@@ -107,14 +112,17 @@ void Cohort::clear() {
 	relations.clear();
 	relations_input.clear();
 
-	for (auto iter1 : readings) {
-		free_reading(iter1);
+	for (auto iter : readings) {
+		free_reading(iter);
 	}
-	for (auto iter2 : deleted) {
-		free_reading(iter2);
+	for (auto iter : deleted) {
+		free_reading(iter);
 	}
-	for (auto iter3 : delayed) {
-		free_reading(iter3);
+	for (auto iter : delayed) {
+		free_reading(iter);
+	}
+	for (auto iter : ignored) {
+		free_reading(iter);
 	}
 	free_reading(wread);
 
