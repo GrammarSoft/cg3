@@ -60,6 +60,9 @@ export LDFLAGS="-sMODULARIZE=1 \
 		 -sALLOW_MEMORY_GROWTH=1 \
 		 -sFORCE_FILESYSTEM=1 \
 		 -sASSERTIONS=1 \
+		 -sSTACK_SIZE=4194304 \
+		 -sDISABLE_EXCEPTION_CATCHING=0 \
+		 -sNO_DISABLE_EXCEPTION_CATCHING \
 		 -sENVIRONMENT=web"
 export CPPFLAGS="-I/usr/local/include"
 export CXXFLAGS="-I/usr/local/include"

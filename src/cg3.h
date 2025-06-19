@@ -88,10 +88,12 @@ cg3_status cg3_init(FILE* in, FILE* out, FILE* err);
 cg3_status cg3_cleanup(void);
 
 cg3_grammar* cg3_grammar_load(const char* filename);
+// Length may be 0, in which case length is determined via strlen(buffer)
 cg3_grammar* cg3_grammar_load_buffer(const char* buffer, size_t length);
 void cg3_grammar_free(cg3_grammar* grammar);
 
 cg3_sformat cg3_detect_sformat(const char* filename);
+// Length may be 0, in which case length is determined via strlen(buffer)
 cg3_sformat cg3_detect_sformat_buffer(const char* buffer, size_t length);
 cg3_sconverter* cg3_sconverter_create(cg3_sformat fmt_in, cg3_sformat fmt_out);
 void cg3_sconverter_free(cg3_sconverter* converter_);

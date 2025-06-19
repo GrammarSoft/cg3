@@ -143,6 +143,9 @@ cg3_grammar* cg3_grammar_load(const char* filename) {
 }
 
 cg3_grammar* cg3_grammar_load_buffer(const char* buffer, size_t length) {
+	if (length == 0) {
+		length = strlen(buffer);
+	}
 	if (length < 4) {
 		u_fprintf(ux_stderr, "CG3 Error: Error reading first 4 bytes from grammar!\n");
 		return 0;
@@ -188,6 +191,9 @@ cg3_sformat cg3_detect_sformat(const char* filename) {
 }
 
 cg3_sformat cg3_detect_sformat_buffer(const char* buffer, size_t length) {
+	if (length == 0) {
+		length = strlen(buffer);
+	}
 	return detectFormat(std::string_view(buffer, length));
 }
 
