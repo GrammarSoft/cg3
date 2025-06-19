@@ -1884,7 +1884,7 @@ void TextualParser::parseFromUChar(UChar* input, const char* fname) {
 				++p;
 				parseTagList(p, result->delimiters);
 				result->addSet(result->delimiters);
-				if (result->delimiters->trie.empty() && result->delimiters->trie_special.empty()) {
+				if (result->delimiters->empty()) {
 					error("%s: Error: DELIMITERS declared, but no definitions given, on line %u near `%S`!\n", p);
 				}
 				result->lines += SKIPWS(p, ';');
@@ -1910,7 +1910,7 @@ void TextualParser::parseFromUChar(UChar* input, const char* fname) {
 				++p;
 				parseTagList(p, result->soft_delimiters);
 				result->addSet(result->soft_delimiters);
-				if (result->soft_delimiters->trie.empty() && result->soft_delimiters->trie_special.empty()) {
+				if (result->soft_delimiters->empty()) {
 					error("%s: Error: SOFT-DELIMITERS declared, but no definitions given, on line %u near `%S`!\n", p);
 				}
 				result->lines += SKIPWS(p, ';');
@@ -1936,7 +1936,7 @@ void TextualParser::parseFromUChar(UChar* input, const char* fname) {
 				++p;
 				parseTagList(p, result->text_delimiters);
 				result->addSet(result->text_delimiters);
-				if (result->text_delimiters->trie.empty() && result->text_delimiters->trie_special.empty()) {
+				if (result->text_delimiters->empty()) {
 					error("%s: Error: TEXT-DELIMITERS declared, but no definitions given, on line %u near `%S`!\n", p);
 				}
 
