@@ -96,6 +96,7 @@ cg3_sformat detectFormat(std::string_view buf8) {
 FormatConverter::FormatConverter(std::ostream& ux_err)
   : GrammarApplicator(ux_err)
   , ApertiumApplicator(ux_err)
+  , BinaryApplicator(ux_err)
   , FSTApplicator(ux_err)
   , JsonlApplicator(ux_err)
   , MatxinApplicator(ux_err)
@@ -151,6 +152,10 @@ void FormatConverter::runGrammarOnText(std::istream& input, std::ostream& output
 		JsonlApplicator::runGrammarOnText(input, output);
 		break;
 	}
+	case CG3SF_BINARY: {
+		BinaryApplicator::runGrammarOnText(input, output);
+		break;
+	}
 	default:
 		CG3Quit();
 	}
@@ -182,6 +187,8 @@ void FormatConverter::printCohort(Cohort* cohort, std::ostream& output, bool pro
 		JsonlApplicator::printCohort(cohort, output, profiling);
 		break;
 	}
+	case CG3SF_BINARY:
+		break;
 	default:
 		CG3Quit();
 	}
@@ -213,6 +220,10 @@ void FormatConverter::printSingleWindow(SingleWindow* window, std::ostream& outp
 		JsonlApplicator::printSingleWindow(window, output, profiling);
 		break;
 	}
+	case CG3SF_BINARY: {
+		BinaryApplicator::printSingleWindow(window, output, profiling);
+		break;
+	}
 	default:
 		CG3Quit();
 }
@@ -224,6 +235,8 @@ void FormatConverter::printStreamCommand(UStringView cmd, std::ostream& output) 
 		JsonlApplicator::printStreamCommand(cmd, output);
 		break;
 	}
+	case CG3SF_BINARY:
+		break;
 	case CG3SF_CG:
 	case CG3SF_APERTIUM:
 	case CG3SF_FST:
@@ -242,6 +255,8 @@ void FormatConverter::printPlainTextLine(UStringView line, std::ostream& output)
 		JsonlApplicator::printPlainTextLine(line, output);
 		break;
 	}
+	case CG3SF_BINARY:
+		break;
 	case CG3SF_CG:
 	case CG3SF_APERTIUM:
 	case CG3SF_FST:
