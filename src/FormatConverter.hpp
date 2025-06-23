@@ -22,6 +22,7 @@
 #define c6d28b7452ec699b_FORMATCONVERTER_H
 
 #include "ApertiumApplicator.hpp"
+#include "BinaryApplicator.hpp"
 #include "FSTApplicator.hpp"
 #include "JsonlApplicator.hpp"
 #include "MatxinApplicator.hpp"
@@ -34,7 +35,7 @@ namespace CG3 {
 
 cg3_sformat detectFormat(std::string_view str);
 
-class FormatConverter : public ApertiumApplicator, public FSTApplicator, public JsonlApplicator, public MatxinApplicator, public NicelineApplicator, public PlaintextApplicator {
+class FormatConverter : public ApertiumApplicator, public BinaryApplicator, public FSTApplicator, public JsonlApplicator, public MatxinApplicator, public NicelineApplicator, public PlaintextApplicator {
 public:
 	FormatConverter(std::ostream& ux_err);
 

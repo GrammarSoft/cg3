@@ -1,0 +1,347 @@
+/*
+* Copyright (C) 2007-2025, GrammarSoft ApS
+* Developed by Tino Didriksen <mail@tinodidriksen.com>
+* Design by Eckhard Bick <eckhard.bick@mail.dk>, Tino Didriksen <mail@tinodidriksen.com>
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this progam.  If not, see <https://www.gnu.org/licenses/>.
+*/
+
+#include "BinaryApplicator.hpp"
+#include "Grammar.hpp"
+
+namespace CG3 {
+
+BinaryApplicator::BinaryApplicator(std::ostream& ux_err)
+  : GrammarApplicator(ux_err)
+{
+}
+
+void BinaryApplicator::runGrammarOnText(std::istream& input, std::ostream& output) {
+  ux_stdin = &input;
+  ux_stdout = &output;
+
+  if (!input.good()) {
+    u_fprintf(ux_stderr, "Error: Input is null - nothing to parse!\n");
+    CG3Quit(1);
+  }
+  if (input.eof()) {
+    u_fprintf(ux_stderr, "Error: Input is empty - nothing to parse!\n");
+    CG3Quit(1);
+  }
+  if (!output) {
+    u_fprintf(ux_stderr, "Error: Output is null - cannot write to nothing!\n");
+    CG3Quit(1);
+  }
+
+  if (!grammar) {
+    u_fprintf(ux_stderr, "Error: No grammar provided - cannot continue! Hint: call setGrammar() first.\n");
+    CG3Quit(1);
+  }
+
+  index();
+
+  uint32_t resetAfter = ((num_windows + 4) * 2 + 1);
+  bool flushAfter = false;
+
+  gWindow->window_span = num_windows;
+
+  while (!input.eof()) {
+    flushAfter = readWindow();
+    gWindow->shuffleWindowsDown();
+    runGrammarOnWindow();
+    ++numWindows;
+    if (numWindows % resetAfter == 0) {
+      resetIndexes();
+    }
+    if (flushAfter) {
+      while (!gWindow->next.empty()) {
+	gWindow->shuffleWindowsDown();
+	runGrammarOnWindow();
+      }
+      gWindow->shuffleWindowsDown();
+      while (!gWindow->previous.empty()) {
+	SingleWindow* tmp = gWindow->previous.front();
+	printSingleWindow(tmp, output);
+	free_swindow(tmp);
+	gWindow->previous.erase(gWindow->previous.begin());
+      }
+    }
+  }
+}
+
+#define READ_U16_INTO(dest) \
+  do { \
+    (dest) = reinterpret_cast<uint16_t*>(&buf[pos])[0]; \
+    pos += 2; \
+  } while (false)
+
+#define READ_U32_INTO(dest) \
+  do { \
+    (dest) = reinterpret_cast<uint32_t*>(&buf[pos])[0]; \
+    pos += 4; \
+  } while (false)
+
+#define READ_STR_INTO(dest)			\
+  do { \
+    uint16_t tl = reinterpret_cast<uint16_t*>(&buf[pos])[0]; \
+    pos += 2; \
+    (dest).clear(); \
+    (dest).resize(tl, 0); \
+    int32_t olen = 0; \
+    UErrorCode status = U_ZERO_ERROR; \
+    u_strFromUTF8(&(dest)[0], tl, &olen, &buf[pos], tl, &status); \
+    (dest).resize(olen); \
+    pos += tl; \
+  } while (false)
+
+bool BinaryApplicator::readWindow() {
+  SingleWindow* cSWindow = gWindow->allocAppendSingleWindow();
+  
+  uint32_t cs = 0;
+  readRaw(*ux_stdin, cs);
+
+  if (ux_stdin->eof()) {
+    return true;
+  }
+
+  std::string buf(cs, 0);
+  ux_stdin->read(&buf[0], cs);
+  uint32_t pos = 0;
+
+  // TODO: flags
+  uint16_t flags;
+  READ_U16_INTO(flags);
+  if (flags & BFW_FLUSH) {
+    cSWindow->flush_after = true;
+  }
+
+  TagVector window_tags;
+  uint16_t tag_count;
+  READ_U16_INTO(tag_count);
+  for (uint16_t i = 0; i < tag_count; i++) {
+    UString tg;
+    READ_STR_INTO(tg);
+    u_fprintf(ux_stderr, "pos = %u, tg = %S, i = %u / %u\n", pos, tg.data(), i, tag_count);
+    window_tags.push_back(addTag(tg));
+  }
+
+  uint16_t var_count;
+  READ_U16_INTO(var_count);
+  // TODO
+
+  READ_STR_INTO(cSWindow->text);
+  READ_STR_INTO(cSWindow->text_post);
+
+  uint16_t cohort_count;
+  READ_U16_INTO(cohort_count);
+  uint16_t tag;
+  for (uint16_t cn = 0; cn < cohort_count; cn++) {
+    Cohort* cCohort = alloc_cohort(cSWindow);
+    cCohort->global_number = gWindow->cohort_counter++;
+
+    READ_U16_INTO(flags);
+    /*if (flags & BFC_DELETED) {
+      cCohort->type |= CT_DELETED;
+      }*/
+
+    READ_U16_INTO(tag);
+    cCohort->wordform = window_tags[tag];
+
+    READ_U16_INTO(tag_count);
+    if (tag_count) {
+      cCohort->wread = alloc_reading(cCohort);
+      for (uint16_t tn = 0; tn < tag_count; tn++) {
+	READ_U16_INTO(tag);
+	addTagToReading(*cCohort->wread, window_tags[tag]);
+      }
+    }
+
+    READ_U32_INTO(cCohort->dep_self);
+    READ_U32_INTO(cCohort->dep_parent);
+
+    READ_STR_INTO(cCohort->text);
+    READ_STR_INTO(cCohort->wblank);
+
+    uint16_t reading_count;
+    READ_U16_INTO(reading_count);
+    Reading* prev = nullptr;
+    for (uint16_t rn = 0; rn < reading_count; rn++) {
+      Reading* cReading = alloc_reading(cCohort);
+      addTagToReading(*cReading, cCohort->wordform);
+
+      READ_U16_INTO(flags);
+      if (flags & BFR_DELETED) {
+	cReading->deleted = 1;
+      }
+
+      READ_U16_INTO(tag_count);
+      for (uint16_t tn = 0; tn < tag_count; tn++) {
+	READ_U16_INTO(tag);
+	addTagToReading(*cReading, window_tags[tag]);
+      }
+      
+      if (prev && flags & BFR_SUBREADING) {
+	prev->next = cReading;
+      }
+      else {
+	cCohort->appendReading(cReading);
+      }
+      prev = cReading;
+    }
+  }
+
+  return cSWindow->flush_after;
+}
+
+#define WRITE_U16_INTO(n, buffer) \
+  do { \
+    std::string tmp(2, 0);	       \
+    uint16_t tmp_n = (n); \
+    tmp.assign(reinterpret_cast<char*>(&tmp_n), 2);	\
+    (buffer) += tmp; \
+  } while (false)
+
+#define WRITE_U32_INTO(n, buffer) \
+  do { \
+    std::string tmp(4, 0);	       \
+    uint32_t tmp_n = (n); \
+    tmp.assign(reinterpret_cast<char*>(&tmp_n), 4);	\
+    (buffer) += tmp; \
+  } while (false)
+
+#define WRITE_TAG_INTO(tag_, buffer) \
+  do { \
+    if (tag_index.find((tag_)) == tag_index.end()) { \
+      tag_index[(tag_)] = tags_to_write.size(); \
+      tags_to_write.push_back((tag_)); \
+      u_fprintf(ux_stderr, "adding tag %S\n", (tag_)->tag.data());	\
+    } \
+    WRITE_U16_INTO(tag_index[(tag_)], buffer); \
+  } while (false)
+
+#define WRITE_STR_INTO(s, buffer) \
+  do { \
+    std::string tmp((s).size() * 4, 0);		\
+    int32_t olen = 0; \
+    UErrorCode status = U_ZERO_ERROR; \
+    u_strToUTF8(&tmp[0], SI32((s).size() * 4 - 1), &olen, (s).data(), SI32((s).size()), &status); \
+    tmp.resize(olen); \
+    WRITE_U16_INTO(UI16(olen), (buffer)); \
+    (buffer) += tmp; \
+  } while (false)
+
+void BinaryApplicator::printSingleWindow(SingleWindow* window, std::ostream& output, bool profiling) {
+  TagVector tags_to_write;
+  std::map<Tag*, uint32_t> tag_index;
+
+  std::string cohort_buffer;
+  uint16_t cohort_count = 0;
+  for (auto& cohort : window->all_cohorts) {
+    if (cohort->local_number == 0 || (cohort->type & CT_REMOVED)) {
+      continue;
+    }
+    cohort_count++;
+
+    uint16_t flags = 0;
+    WRITE_U16_INTO(flags, cohort_buffer);
+
+    WRITE_TAG_INTO(cohort->wordform, cohort_buffer);
+    if (cohort->wread) {
+      std::string tag_buffer;
+      uint16_t tag_count = 0;
+      for (auto tter : cohort->wread->tags_list) {
+	if (tter == cohort->wordform->hash) {
+	  continue;
+	}
+	WRITE_TAG_INTO(grammar->single_tags[tter], tag_buffer);
+	tag_count++;
+      }
+      WRITE_U16_INTO(tag_count, cohort_buffer);
+      cohort_buffer += tag_buffer;
+    }
+    else {
+      WRITE_U16_INTO(0, cohort_buffer);
+    }
+
+    WRITE_U32_INTO(cohort->dep_self, cohort_buffer);
+    WRITE_U32_INTO(cohort->dep_parent, cohort_buffer);
+
+    WRITE_STR_INTO(cohort->text, cohort_buffer);
+    WRITE_STR_INTO(cohort->wblank, cohort_buffer);
+    
+    std::string reading_buffer;
+    uint16_t reading_count = 0;
+    std::sort(cohort->readings.begin(), cohort->readings.end(), Reading::cmp_number);
+    for (auto top_reading : cohort->readings) {
+      if (top_reading->noprint) {
+	continue;
+      }
+      auto reading = top_reading;
+      while (reading) {
+	reading_count++;
+	uint16_t flags = 0;
+	if (reading != top_reading) {
+	  flags |= BFR_SUBREADING;
+	}
+	std::string tag_buffer;
+	uint16_t tag_count = 0;
+	if (reading->baseform) {
+	  WRITE_TAG_INTO(grammar->single_tags[reading->baseform], tag_buffer);
+	  tag_count++;
+	}
+	for (auto& tter : reading->tags_list) {
+	  auto tag = grammar->single_tags[tter];
+	  if (tag->type & T_BASEFORM) {
+	    continue;
+	  }
+	  WRITE_TAG_INTO(tag, tag_buffer);
+	  tag_count++;
+	}
+	WRITE_U16_INTO(tag_count, reading_buffer);
+	reading_buffer += tag_buffer;
+	reading = reading->next;
+      }
+    }
+    WRITE_U16_INTO(reading_count, cohort_buffer);
+    cohort_buffer += reading_buffer;
+  }
+  
+  std::string header_buffer;
+
+  uint16_t flags = 0;
+  if (window->flush_after) {
+    flags |= BFW_FLUSH;
+  }
+  WRITE_U16_INTO(flags, header_buffer);
+
+  WRITE_U16_INTO(tags_to_write.size(), header_buffer);
+  for (auto& tag : tags_to_write) {
+    WRITE_STR_INTO(tag->tag, header_buffer);
+  }
+
+  // TODO: variables
+  WRITE_U16_INTO(0, header_buffer);
+
+  WRITE_STR_INTO(window->text, header_buffer);
+  WRITE_STR_INTO(window->text_post, header_buffer);
+
+  WRITE_U16_INTO(cohort_count, header_buffer);
+
+  uint32_t total_size = header_buffer.size() + cohort_buffer.size();
+  writeRaw(output, total_size);
+  output.write(header_buffer.data(), header_buffer.size());
+  output.write(cohort_buffer.data(), cohort_buffer.size());
+  output.flush();
+}
+}

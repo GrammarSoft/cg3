@@ -80,6 +80,7 @@ typedef enum {
 	CG3SF_FST,
 	CG3SF_PLAIN,
 	CG3SF_JSONL,
+	CG3SF_BINARY,
 } cg3_sformat;
 
 // Default usage: if (!cg3_init(stdin, stdout, stderr)) { exit(1); }
