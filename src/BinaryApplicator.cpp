@@ -19,6 +19,7 @@
 
 #include "BinaryApplicator.hpp"
 #include "Grammar.hpp"
+#include "version.hpp"
 
 namespace CG3 {
 
@@ -47,6 +48,23 @@ void BinaryApplicator::runGrammarOnText(std::istream& input, std::ostream& outpu
   if (!grammar) {
     u_fprintf(ux_stderr, "Error: No grammar provided - cannot continue! Hint: call setGrammar() first.\n");
     CG3Quit(1);
+  }
+
+  {
+    std::string header(8, 0);
+    if (!input.read(&header[0], 8)) {
+      u_fprintf(ux_stderr, "Error: Could not read stream header!\n");
+      CG3Quit(1);
+    }
+    if (!is_cg3bsf(header)) {
+      u_fprintf(ux_stderr, "Error: Stream does not start with magic bytes - cannot read as binary!\n");
+      CG3Quit(1);
+    }
+    uint32_t version = reinterpret_cast<uint32_t*>(&header[4])[0];
+    if (version != CG3_BINARY_STREAM) {
+      u_fprintf(ux_stderr, "Error: Stream is version %u but this reader only knows version %u!\n", version, CG3_BINARY_STREAM);
+      CG3Quit(1);
+    }
   }
 
   index();
@@ -119,15 +137,15 @@ void BinaryApplicator::runGrammarOnText(std::istream& input, std::ostream& outpu
   } while (false)
 
 bool BinaryApplicator::readWindow() {
-  SingleWindow* cSWindow = gWindow->allocAppendSingleWindow();
-  initEmptySingleWindow(cSWindow);
-  
   uint32_t cs = 0;
   readRaw(*ux_stdin, cs);
 
   if (ux_stdin->eof()) {
     return true;
   }
+
+  SingleWindow* cSWindow = gWindow->allocAppendSingleWindow();
+  initEmptySingleWindow(cSWindow);
 
   std::string buf(cs, 0);
   ux_stdin->read(&buf[0], cs);
@@ -204,7 +222,7 @@ bool BinaryApplicator::readWindow() {
 	READ_U16_INTO(tag);
 	addTagToReading(*cReading, window_tags[tag]);
       }
-      
+
       if (prev && (flags & BFR_SUBREADING)) {
 	prev->next = cReading;
       }
@@ -262,6 +280,13 @@ bool BinaryApplicator::readWindow() {
   } while (false)
 
 void BinaryApplicator::printSingleWindow(SingleWindow* window, std::ostream& output, bool profiling) {
+  if (window->number == 1) {
+    output.write("CGBF", 4);
+    std::string version;
+    WRITE_U32_INTO(CG3_BINARY_STREAM, version);
+    output.write(version.data(), 4);
+  }
+
   TagVector tags_to_write;
   std::map<Tag*, uint32_t> tag_index;
 
@@ -299,7 +324,7 @@ void BinaryApplicator::printSingleWindow(SingleWindow* window, std::ostream& out
 
     WRITE_STR_INTO(cohort->text, cohort_buffer);
     WRITE_STR_INTO(cohort->wblank, cohort_buffer);
-    
+
     std::string reading_buffer;
     uint16_t reading_count = 0;
     std::sort(cohort->readings.begin(), cohort->readings.end(), Reading::cmp_number);
@@ -334,7 +359,7 @@ void BinaryApplicator::printSingleWindow(SingleWindow* window, std::ostream& out
     WRITE_U16_INTO(reading_count, cohort_buffer);
     cohort_buffer += reading_buffer;
   }
-  
+
   std::string header_buffer;
 
   uint16_t flags = 0;

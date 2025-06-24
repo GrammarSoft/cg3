@@ -475,6 +475,11 @@ inline bool is_cg3b(const S& s) {
 	return (s[0] == 'C' && s[1] == 'G' && s[2] == '3' && s[3] == 'B');
 }
 
+template<typename S>
+inline bool is_cg3bsf(const S& s) {
+	return (s[0] == 'C' && s[1] == 'G' && s[2] == 'B' && s[3] == 'F');
+}
+
 inline void insert_if_exists(boost::dynamic_bitset<>& cont, const boost::dynamic_bitset<>* other) {
 	if (other && !other->empty()) {
 		cont.resize(std::max(cont.size(), other->size()));
