@@ -28,6 +28,11 @@ cg3_sformat detectFormat(std::string_view buf8) {
 	cg3_sformat fmt = CG3SF_INVALID;
 	UErrorCode status = U_ZERO_ERROR;
 
+	if (is_cg3bsf(buf8)) {
+		fmt = CG3SF_BINARY;
+		return fmt;
+	}
+
 	UString buffer(BUF_SIZE, 0);
 	int32_t nr = 0;
 	u_strFromUTF8(&buffer[0], BUF_SIZE, &nr, buf8.data(), SI32(buf8.size()), &status);

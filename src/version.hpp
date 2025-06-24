@@ -32,5 +32,6 @@ constexpr uint32_t CG3_REVISION = 13898;
 constexpr uint32_t CG3_FEATURE_REV = 13898;
 constexpr uint32_t CG3_TOO_OLD = 10373;
 constexpr uint32_t CG3_EXTERNAL_PROTOCOL = 7226;
+constexpr uint32_t CG3_BINARY_STREAM = 1;
 
 #endif
