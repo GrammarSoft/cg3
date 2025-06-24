@@ -56,28 +56,41 @@ void BinaryApplicator::runGrammarOnText(std::istream& input, std::ostream& outpu
 
   gWindow->window_span = num_windows;
 
+  auto flush = [&]() {
+    if (gWindow->back()) {
+      gWindow->back()->flush_after = true;
+    }
+
+    while (!gWindow->next.empty()) {
+      gWindow->shuffleWindowsDown();
+      runGrammarOnWindow();
+    }
+
+    gWindow->shuffleWindowsDown();
+    while (!gWindow->previous.empty()) {
+      SingleWindow* tmp = gWindow->previous.front();
+      printSingleWindow(tmp, output);
+      free_swindow(tmp);
+      gWindow->previous.erase(gWindow->previous.begin());
+    }
+    flushAfter = false;
+  };
+
   while (!input.eof()) {
     flushAfter = readWindow();
-    gWindow->shuffleWindowsDown();
-    runGrammarOnWindow();
     ++numWindows;
-    if (numWindows % resetAfter == 0) {
-      resetIndexes();
+    if (gWindow->next.size() > num_windows) {
+      gWindow->shuffleWindowsDown();
+      runGrammarOnWindow();
+      if (numWindows % resetAfter == 0) {
+	resetIndexes();
+      }
     }
     if (flushAfter) {
-      while (!gWindow->next.empty()) {
-	gWindow->shuffleWindowsDown();
-	runGrammarOnWindow();
-      }
-      gWindow->shuffleWindowsDown();
-      while (!gWindow->previous.empty()) {
-	SingleWindow* tmp = gWindow->previous.front();
-	printSingleWindow(tmp, output);
-	free_swindow(tmp);
-	gWindow->previous.erase(gWindow->previous.begin());
-      }
+      flush();
     }
   }
+  flush();
 }
 
 #define READ_U16_INTO(dest) \
@@ -107,6 +120,7 @@ void BinaryApplicator::runGrammarOnText(std::istream& input, std::ostream& outpu
 
 bool BinaryApplicator::readWindow() {
   SingleWindow* cSWindow = gWindow->allocAppendSingleWindow();
+  initEmptySingleWindow(cSWindow);
   
   uint32_t cs = 0;
   readRaw(*ux_stdin, cs);
@@ -132,7 +146,6 @@ bool BinaryApplicator::readWindow() {
   for (uint16_t i = 0; i < tag_count; i++) {
     UString tg;
     READ_STR_INTO(tg);
-    u_fprintf(ux_stderr, "pos = %u, tg = %S, i = %u / %u\n", pos, tg.data(), i, tag_count);
     window_tags.push_back(addTag(tg));
   }
 
@@ -149,6 +162,7 @@ bool BinaryApplicator::readWindow() {
   for (uint16_t cn = 0; cn < cohort_count; cn++) {
     Cohort* cCohort = alloc_cohort(cSWindow);
     cCohort->global_number = gWindow->cohort_counter++;
+    numCohorts++;
 
     READ_U16_INTO(flags);
     /*if (flags & BFC_DELETED) {
@@ -181,9 +195,9 @@ bool BinaryApplicator::readWindow() {
       addTagToReading(*cReading, cCohort->wordform);
 
       READ_U16_INTO(flags);
-      if (flags & BFR_DELETED) {
-	cReading->deleted = 1;
-      }
+
+      READ_U16_INTO(tag);
+      cReading->baseform = window_tags[tag]->hash;
 
       READ_U16_INTO(tag_count);
       for (uint16_t tn = 0; tn < tag_count; tn++) {
@@ -191,14 +205,21 @@ bool BinaryApplicator::readWindow() {
 	addTagToReading(*cReading, window_tags[tag]);
       }
       
-      if (prev && flags & BFR_SUBREADING) {
+      if (prev && (flags & BFR_SUBREADING)) {
 	prev->next = cReading;
+      }
+      else if (flags & BFR_DELETED) {
+	cCohort->deleted.push_back(cReading);
       }
       else {
 	cCohort->appendReading(cReading);
       }
       prev = cReading;
+      ++numReadings;
     }
+
+    insert_if_exists(cCohort->possible_sets, grammar->sets_any);
+    cSWindow->appendCohort(cCohort);
   }
 
   return cSWindow->flush_after;
@@ -220,14 +241,13 @@ bool BinaryApplicator::readWindow() {
     (buffer) += tmp; \
   } while (false)
 
-#define WRITE_TAG_INTO(tag_, buffer) \
+#define WRITE_TAG_INTO(tag, buffer) \
   do { \
-    if (tag_index.find((tag_)) == tag_index.end()) { \
-      tag_index[(tag_)] = tags_to_write.size(); \
-      tags_to_write.push_back((tag_)); \
-      u_fprintf(ux_stderr, "adding tag %S\n", (tag_)->tag.data());	\
+    if (tag_index.find((tag)) == tag_index.end()) { \
+      tag_index[(tag)] = tags_to_write.size(); \
+      tags_to_write.push_back((tag)); \
     } \
-    WRITE_U16_INTO(tag_index[(tag_)], buffer); \
+    WRITE_U16_INTO(tag_index[(tag)], buffer); \
   } while (false)
 
 #define WRITE_STR_INTO(s, buffer) \
@@ -294,15 +314,13 @@ void BinaryApplicator::printSingleWindow(SingleWindow* window, std::ostream& out
 	if (reading != top_reading) {
 	  flags |= BFR_SUBREADING;
 	}
+	WRITE_U16_INTO(flags, reading_buffer);
+	WRITE_TAG_INTO(grammar->single_tags[reading->baseform], reading_buffer);
 	std::string tag_buffer;
 	uint16_t tag_count = 0;
-	if (reading->baseform) {
-	  WRITE_TAG_INTO(grammar->single_tags[reading->baseform], tag_buffer);
-	  tag_count++;
-	}
 	for (auto& tter : reading->tags_list) {
 	  auto tag = grammar->single_tags[tter];
-	  if (tag->type & T_BASEFORM) {
+	  if ((tag->type & T_WORDFORM) || (tag->type & T_BASEFORM)) {
 	    continue;
 	  }
 	  WRITE_TAG_INTO(tag, tag_buffer);
