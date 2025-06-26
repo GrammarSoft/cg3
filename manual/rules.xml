@@ -25,7 +25,7 @@
       SUBSTITUTE &lt;locate tags&gt; &lt;replacement tags&gt; &lt;target&gt; [contextual_tests] ;
       UNMAP &lt;target&gt; [contextual_tests] ;
 
-      REPLACE &lt;tags&gt; &lt;target&gt; [contextual_tests] ;
+      REPLACE &lt;tags&gt; [EXCEPT &lt;except tags&gt;] &lt;target&gt; [contextual_tests] ;
       APPEND &lt;tags&gt; &lt;target&gt; [contextual_tests] ;
       COPY &lt;extra tags&gt; [EXCEPT &lt;except tags&gt;] [BEFORE|AFTER &lt;tags&gt;] &lt;target&gt; [contextual_tests] ;
 
@@ -374,11 +374,13 @@
       <primary>REPLACE</primary>
     </indexterm>
     <screen>
-      [wordform] REPLACE &lt;tags&gt; &lt;target&gt; [contextual_tests] ;
+      [wordform] REPLACE &lt;tags&gt; [EXCEPT &lt;except tags&gt;] &lt;target&gt; [contextual_tests] ;
     </screen>
     <para>
-      Removes all tags from a reading except the base form, then appends the given tags.
+      Removes all tags from a reading, then appends the given tags.
+      The baseform is only removed if the given tags include a new baseform.
       Cannot target readings that are considered mapped due to earlier MAP rules or from input.
+      Optionally excludes certain tags from being removed.
     </para>
     <screen>
       REPLACE (&lt;v-act&gt; V INF @func) TARGET (target);
