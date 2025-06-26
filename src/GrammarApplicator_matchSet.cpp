@@ -81,6 +81,136 @@ inline void captureRegex(int32_t gc, uint8_t& regexgrp_ct, RXGS* regexgrps, Tag&
 	}
 }
 
+uint32_t test_tag_numerical(const Reading& reading, const Tag& tag, const Tag& itag) {
+	uint32_t match = 0;
+	if (tag.comparison_hash == itag.comparison_hash) {
+		double compval = tag.comparison_val;
+		if ((tag.type & T_NUMERIC_MATH) && tag.comparison_offset) {
+			MathParser mp(reading.parent->getMin(tag.comparison_hash), reading.parent->getMax(tag.comparison_hash));
+			UStringView exp(tag.tag);
+			exp.remove_prefix(tag.comparison_offset);
+			exp.remove_suffix(1);
+			compval = mp.eval(exp);
+		}
+		else if (compval <= NUMERIC_MIN) {
+			compval = reading.parent->getMin(tag.comparison_hash);
+		}
+		else if (compval >= NUMERIC_MAX) {
+			compval = reading.parent->getMax(tag.comparison_hash);
+		}
+
+		if (tag.comparison_op == OP_EQUALS && itag.comparison_op == OP_EQUALS && compval == itag.comparison_val) {
+			match = itag.hash;
+		}
+		else if (tag.comparison_op == OP_NOTEQUALS && itag.comparison_op == OP_EQUALS && compval != itag.comparison_val) {
+			match = itag.hash;
+		}
+		else if (tag.comparison_op == OP_EQUALS && itag.comparison_op == OP_NOTEQUALS && compval != itag.comparison_val) {
+			match = itag.hash;
+		}
+		else if (tag.comparison_op == OP_NOTEQUALS && itag.comparison_op == OP_NOTEQUALS && compval == itag.comparison_val) {
+			match = itag.hash;
+		}
+		else if (tag.comparison_op == OP_EQUALS && itag.comparison_op == OP_LESSTHAN && compval < itag.comparison_val) {
+			match = itag.hash;
+		}
+		else if (tag.comparison_op == OP_EQUALS && itag.comparison_op == OP_LESSEQUALS && compval <= itag.comparison_val) {
+			match = itag.hash;
+		}
+		else if (tag.comparison_op == OP_EQUALS && itag.comparison_op == OP_GREATERTHAN && compval > itag.comparison_val) {
+			match = itag.hash;
+		}
+		else if (tag.comparison_op == OP_EQUALS && itag.comparison_op == OP_GREATEREQUALS && compval >= itag.comparison_val) {
+			match = itag.hash;
+		}
+		else if (tag.comparison_op == OP_NOTEQUALS && itag.comparison_op == OP_LESSTHAN) {
+			match = itag.hash;
+		}
+		else if (tag.comparison_op == OP_NOTEQUALS && itag.comparison_op == OP_LESSEQUALS) {
+			match = itag.hash;
+		}
+		else if (tag.comparison_op == OP_NOTEQUALS && itag.comparison_op == OP_GREATERTHAN) {
+			match = itag.hash;
+		}
+		else if (tag.comparison_op == OP_NOTEQUALS && itag.comparison_op == OP_GREATEREQUALS) {
+			match = itag.hash;
+		}
+		else if (tag.comparison_op == OP_LESSTHAN && itag.comparison_op == OP_NOTEQUALS) {
+			match = itag.hash;
+		}
+		else if (tag.comparison_op == OP_LESSEQUALS && itag.comparison_op == OP_NOTEQUALS) {
+			match = itag.hash;
+		}
+		else if (tag.comparison_op == OP_GREATERTHAN && itag.comparison_op == OP_NOTEQUALS) {
+			match = itag.hash;
+		}
+		else if (tag.comparison_op == OP_GREATEREQUALS && itag.comparison_op == OP_NOTEQUALS) {
+			match = itag.hash;
+		}
+		else if (tag.comparison_op == OP_LESSTHAN && itag.comparison_op == OP_EQUALS && compval > itag.comparison_val) {
+			match = itag.hash;
+		}
+		else if (tag.comparison_op == OP_LESSEQUALS && itag.comparison_op == OP_EQUALS && compval >= itag.comparison_val) {
+			match = itag.hash;
+		}
+		else if (tag.comparison_op == OP_LESSTHAN && itag.comparison_op == OP_LESSTHAN) {
+			match = itag.hash;
+		}
+		else if (tag.comparison_op == OP_LESSEQUALS && itag.comparison_op == OP_LESSEQUALS) {
+			match = itag.hash;
+		}
+		else if (tag.comparison_op == OP_LESSEQUALS && itag.comparison_op == OP_LESSTHAN) {
+			match = itag.hash;
+		}
+		else if (tag.comparison_op == OP_LESSTHAN && itag.comparison_op == OP_LESSEQUALS) {
+			match = itag.hash;
+		}
+		else if (tag.comparison_op == OP_LESSTHAN && itag.comparison_op == OP_GREATERTHAN && compval > itag.comparison_val) {
+			match = itag.hash;
+		}
+		else if (tag.comparison_op == OP_LESSTHAN && itag.comparison_op == OP_GREATEREQUALS && compval > itag.comparison_val) {
+			match = itag.hash;
+		}
+		else if (tag.comparison_op == OP_LESSEQUALS && itag.comparison_op == OP_GREATERTHAN && compval > itag.comparison_val) {
+			match = itag.hash;
+		}
+		else if (tag.comparison_op == OP_LESSEQUALS && itag.comparison_op == OP_GREATEREQUALS && compval >= itag.comparison_val) {
+			match = itag.hash;
+		}
+		else if (tag.comparison_op == OP_GREATERTHAN && itag.comparison_op == OP_EQUALS && compval < itag.comparison_val) {
+			match = itag.hash;
+		}
+		else if (tag.comparison_op == OP_GREATEREQUALS && itag.comparison_op == OP_EQUALS && compval <= itag.comparison_val) {
+			match = itag.hash;
+		}
+		else if (tag.comparison_op == OP_GREATERTHAN && itag.comparison_op == OP_GREATERTHAN) {
+			match = itag.hash;
+		}
+		else if (tag.comparison_op == OP_GREATEREQUALS && itag.comparison_op == OP_GREATEREQUALS) {
+			match = itag.hash;
+		}
+		else if (tag.comparison_op == OP_GREATEREQUALS && itag.comparison_op == OP_GREATERTHAN) {
+			match = itag.hash;
+		}
+		else if (tag.comparison_op == OP_GREATERTHAN && itag.comparison_op == OP_GREATEREQUALS) {
+			match = itag.hash;
+		}
+		else if (tag.comparison_op == OP_GREATERTHAN && itag.comparison_op == OP_LESSTHAN && compval < itag.comparison_val) {
+			match = itag.hash;
+		}
+		else if (tag.comparison_op == OP_GREATERTHAN && itag.comparison_op == OP_LESSEQUALS && compval < itag.comparison_val) {
+			match = itag.hash;
+		}
+		else if (tag.comparison_op == OP_GREATEREQUALS && itag.comparison_op == OP_LESSTHAN && compval < itag.comparison_val) {
+			match = itag.hash;
+		}
+		else if (tag.comparison_op == OP_GREATEREQUALS && itag.comparison_op == OP_LESSEQUALS && compval <= itag.comparison_val) {
+			match = itag.hash;
+		}
+	}
+	return match;
+}
+
 /**
 * Tests whether a given input tag matches a given tag's stored regular expression.
 *
@@ -344,134 +474,7 @@ uint32_t GrammarApplicator::doesTagMatchReading(const Reading& reading, const Ta
 	else if (tag.type & T_NUMERICAL) {
 		for (const auto& mter : reading.tags_numerical) {
 			const Tag& itag = *(mter.second);
-			if (tag.comparison_hash == itag.comparison_hash) {
-				double compval = tag.comparison_val;
-				if ((tag.type & T_NUMERIC_MATH) && tag.comparison_offset) {
-					MathParser mp(reading.parent->getMin(tag.comparison_hash), reading.parent->getMax(tag.comparison_hash));
-					UStringView exp(tag.tag);
-					exp.remove_prefix(tag.comparison_offset);
-					exp.remove_suffix(1);
-					compval = mp.eval(exp);
-				}
-				else if (compval <= NUMERIC_MIN) {
-					compval = reading.parent->getMin(tag.comparison_hash);
-				}
-				else if (compval >= NUMERIC_MAX) {
-					compval = reading.parent->getMax(tag.comparison_hash);
-				}
-
-				if (tag.comparison_op == OP_EQUALS && itag.comparison_op == OP_EQUALS && compval == itag.comparison_val) {
-					match = itag.hash;
-				}
-				else if (tag.comparison_op == OP_NOTEQUALS && itag.comparison_op == OP_EQUALS && compval != itag.comparison_val) {
-					match = itag.hash;
-				}
-				else if (tag.comparison_op == OP_EQUALS && itag.comparison_op == OP_NOTEQUALS && compval != itag.comparison_val) {
-					match = itag.hash;
-				}
-				else if (tag.comparison_op == OP_NOTEQUALS && itag.comparison_op == OP_NOTEQUALS && compval == itag.comparison_val) {
-					match = itag.hash;
-				}
-				else if (tag.comparison_op == OP_EQUALS && itag.comparison_op == OP_LESSTHAN && compval < itag.comparison_val) {
-					match = itag.hash;
-				}
-				else if (tag.comparison_op == OP_EQUALS && itag.comparison_op == OP_LESSEQUALS && compval <= itag.comparison_val) {
-					match = itag.hash;
-				}
-				else if (tag.comparison_op == OP_EQUALS && itag.comparison_op == OP_GREATERTHAN && compval > itag.comparison_val) {
-					match = itag.hash;
-				}
-				else if (tag.comparison_op == OP_EQUALS && itag.comparison_op == OP_GREATEREQUALS && compval >= itag.comparison_val) {
-					match = itag.hash;
-				}
-				else if (tag.comparison_op == OP_NOTEQUALS && itag.comparison_op == OP_LESSTHAN) {
-					match = itag.hash;
-				}
-				else if (tag.comparison_op == OP_NOTEQUALS && itag.comparison_op == OP_LESSEQUALS) {
-					match = itag.hash;
-				}
-				else if (tag.comparison_op == OP_NOTEQUALS && itag.comparison_op == OP_GREATERTHAN) {
-					match = itag.hash;
-				}
-				else if (tag.comparison_op == OP_NOTEQUALS && itag.comparison_op == OP_GREATEREQUALS) {
-					match = itag.hash;
-				}
-				else if (tag.comparison_op == OP_LESSTHAN && itag.comparison_op == OP_NOTEQUALS) {
-					match = itag.hash;
-				}
-				else if (tag.comparison_op == OP_LESSEQUALS && itag.comparison_op == OP_NOTEQUALS) {
-					match = itag.hash;
-				}
-				else if (tag.comparison_op == OP_GREATERTHAN && itag.comparison_op == OP_NOTEQUALS) {
-					match = itag.hash;
-				}
-				else if (tag.comparison_op == OP_GREATEREQUALS && itag.comparison_op == OP_NOTEQUALS) {
-					match = itag.hash;
-				}
-				else if (tag.comparison_op == OP_LESSTHAN && itag.comparison_op == OP_EQUALS && compval > itag.comparison_val) {
-					match = itag.hash;
-				}
-				else if (tag.comparison_op == OP_LESSEQUALS && itag.comparison_op == OP_EQUALS && compval >= itag.comparison_val) {
-					match = itag.hash;
-				}
-				else if (tag.comparison_op == OP_LESSTHAN && itag.comparison_op == OP_LESSTHAN) {
-					match = itag.hash;
-				}
-				else if (tag.comparison_op == OP_LESSEQUALS && itag.comparison_op == OP_LESSEQUALS) {
-					match = itag.hash;
-				}
-				else if (tag.comparison_op == OP_LESSEQUALS && itag.comparison_op == OP_LESSTHAN) {
-					match = itag.hash;
-				}
-				else if (tag.comparison_op == OP_LESSTHAN && itag.comparison_op == OP_LESSEQUALS) {
-					match = itag.hash;
-				}
-				else if (tag.comparison_op == OP_LESSTHAN && itag.comparison_op == OP_GREATERTHAN && compval > itag.comparison_val) {
-					match = itag.hash;
-				}
-				else if (tag.comparison_op == OP_LESSTHAN && itag.comparison_op == OP_GREATEREQUALS && compval > itag.comparison_val) {
-					match = itag.hash;
-				}
-				else if (tag.comparison_op == OP_LESSEQUALS && itag.comparison_op == OP_GREATERTHAN && compval > itag.comparison_val) {
-					match = itag.hash;
-				}
-				else if (tag.comparison_op == OP_LESSEQUALS && itag.comparison_op == OP_GREATEREQUALS && compval >= itag.comparison_val) {
-					match = itag.hash;
-				}
-				else if (tag.comparison_op == OP_GREATERTHAN && itag.comparison_op == OP_EQUALS && compval < itag.comparison_val) {
-					match = itag.hash;
-				}
-				else if (tag.comparison_op == OP_GREATEREQUALS && itag.comparison_op == OP_EQUALS && compval <= itag.comparison_val) {
-					match = itag.hash;
-				}
-				else if (tag.comparison_op == OP_GREATERTHAN && itag.comparison_op == OP_GREATERTHAN) {
-					match = itag.hash;
-				}
-				else if (tag.comparison_op == OP_GREATEREQUALS && itag.comparison_op == OP_GREATEREQUALS) {
-					match = itag.hash;
-				}
-				else if (tag.comparison_op == OP_GREATEREQUALS && itag.comparison_op == OP_GREATERTHAN) {
-					match = itag.hash;
-				}
-				else if (tag.comparison_op == OP_GREATERTHAN && itag.comparison_op == OP_GREATEREQUALS) {
-					match = itag.hash;
-				}
-				else if (tag.comparison_op == OP_GREATERTHAN && itag.comparison_op == OP_LESSTHAN && compval < itag.comparison_val) {
-					match = itag.hash;
-				}
-				else if (tag.comparison_op == OP_GREATERTHAN && itag.comparison_op == OP_LESSEQUALS && compval < itag.comparison_val) {
-					match = itag.hash;
-				}
-				else if (tag.comparison_op == OP_GREATEREQUALS && itag.comparison_op == OP_LESSTHAN && compval < itag.comparison_val) {
-					match = itag.hash;
-				}
-				else if (tag.comparison_op == OP_GREATEREQUALS && itag.comparison_op == OP_LESSEQUALS && compval <= itag.comparison_val) {
-					match = itag.hash;
-				}
-				if (match) {
-					break;
-				}
-			}
+			match = test_tag_numerical(reading, tag, itag);
 		}
 	}
 	else if (tag.type & (T_VARIABLE|T_LOCAL_VARIABLE)) {
@@ -574,6 +577,43 @@ uint32_t GrammarApplicator::doesTagMatchReading(const Reading& reading, const Ta
 	}
 
 	return retval;
+}
+
+void GrammarApplicator::getTagsMatching(const Reading& reading, TagList& theTags, TagList& rvTags) {
+	for (auto _tag : theTags) {
+		auto& tag = *_tag;
+		for (auto tt : reading.tags_list) {
+			uint32_t match = 0;
+			auto itag = grammar->single_tags.find(tt)->second;
+
+			if (tag.regexp) {
+				match = doesTagMatchRegexp(tt, tag);
+			}
+			else if (tag.type & T_CASE_INSENSITIVE) {
+				match = doesTagMatchIcase(tt, tag);
+			}
+			else if ((tag.type & T_REGEXP_ANY) && (itag->type & T_TEXTUAL)) {
+				if ((tag.type & T_BASEFORM) && (itag->type & T_BASEFORM)) {
+					match = reading.baseform;
+				}
+				else if ((tag.type & T_WORDFORM) && (itag->type & T_WORDFORM)) {
+					match = reading.parent->wordform->hash;
+				}
+				else if (!(itag->type & (T_BASEFORM | T_WORDFORM))) {
+					match = itag->hash;
+				}
+			}
+			else if ((tag.type & T_NUMERICAL) && (itag->type & T_NUMERICAL)) {
+				match = test_tag_numerical(reading, tag, *itag);
+			}
+			else if (tag.hash == itag->hash) {
+				match = itag->hash;
+			}
+			if (match) {
+				rvTags.push_back(itag);
+			}
+		}
+	}
 }
 
 bool GrammarApplicator::doesSetMatchReading_trie(const Reading& reading, const Set& theset, const trie_t& trie, bool unif_mode) {

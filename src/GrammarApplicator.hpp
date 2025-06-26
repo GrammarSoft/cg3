@@ -348,6 +348,7 @@ protected:
 	bool unmapReading(Reading& reading, const uint32_t rule);
 	TagList getTagList(const Set& theSet, bool unif_mode = false) const;
 	void getTagList(const Set& theSet, TagList& theTags, bool unif_mode = false) const;
+	void getTagsMatching(const Reading& reading, TagList& theTags, TagList& rvTags);
 	void mergeReadings(ReadingList& readings);
 	void mergeMappings(Cohort& cohort);
 	bool isChildOf(const Cohort* child, const Cohort* parent);

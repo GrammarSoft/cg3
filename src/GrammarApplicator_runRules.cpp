@@ -1882,24 +1882,41 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 				finish_reading_loop = false;
 			}
 			else if (rule->type == K_REPLACE) {
-				auto state_hash = get_apply_to().subreading->hash;
+				auto& reading = *get_apply_to().subreading;
+				auto state_hash = reading.hash;
 				index_ruleCohort_no.clear();
 				TRACE;
-				get_apply_to().subreading->noprint = false;
-				get_apply_to().subreading->tags_list.clear();
-				get_apply_to().subreading->tags_list.push_back(get_apply_to().cohort->wordform->hash);
-				get_apply_to().subreading->tags_list.push_back(get_apply_to().subreading->baseform);
-				reflowReading(*get_apply_to().subreading);
+				reading.noprint = false;
+
+				auto excepts = ss_taglist.get();
+				if (rule->sublist) {
+					auto tags = ss_taglist.get();
+					getTagList(*rule->sublist, tags);
+					getTagsMatching(reading, tags, excepts);
+				}
+
+				reading.tags_list.clear();
+				reading.tags_list.push_back(get_apply_to().cohort->wordform->hash);
+				auto bform = reading.baseform;
+				reading.baseform = 0;
+				reflowReading(reading);
 				auto mappings = ss_taglist.get();
 				auto theTags = ss_taglist.get();
 				getTagList(*rule->maplist, theTags);
 
-				APPEND_TAGLIST_TO_READING(*theTags, *get_apply_to().subreading);
+				APPEND_TAGLIST_TO_READING(*theTags, reading);
+
+				for (auto tter : *excepts) {
+					addTagToReading(reading, tter);
+				}
+				if (!reading.baseform) {
+					addTagToReading(reading, bform);
+				}
 
 				if (!mappings->empty()) {
-					splitMappings(mappings, *get_apply_to().cohort, *get_apply_to().subreading, true);
+					splitMappings(mappings, *get_apply_to().cohort, reading, true);
 				}
-				if (get_apply_to().subreading->hash != state_hash) {
+				if (reading.hash != state_hash) {
 					readings_changed = true;
 				}
 			}
@@ -2138,9 +2155,11 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 				cReading->noprint = false;
 
 				if (rule->sublist) {
+					auto tags = ss_taglist.get();
+					getTagList(*rule->sublist, tags);
 					auto excepts = ss_taglist.get();
-					getTagList(*rule->sublist, excepts);
-					FILL_TAG_LIST_RAW(excepts);
+					getTagsMatching(*cReading, tags, excepts);
+					excepts->insert(excepts->end(), tags->begin(), tags->end());
 					for (auto r = cReading; r; r = r->next) {
 						for (auto tter : *excepts) {
 							delTagFromReading(*r, tter);
@@ -2317,8 +2336,10 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 
 					auto excepts = ss_taglist.get();
 					if (rule->sublist) {
-						getTagList(*rule->sublist, excepts);
-						FILL_TAG_LIST_RAW(excepts);
+						auto tags = ss_taglist.get();
+						getTagList(*rule->sublist, tags);
+						getTagsMatching(*get_apply_to().subreading, tags, excepts);
+						excepts->insert(excepts->end(), tags->begin(), tags->end());
 					}
 
 					std::vector<Reading*> rs;
@@ -3022,6 +3043,9 @@ void GrammarApplicator::runGrammarOnWindow() {
 						++lc;
 						++left;
 					}
+					if (verbosity_level > 0) {
+						u_fprintf(ux_stderr, "Info: Wrapped enclosure between lines %u to %u\n", encs.front()->line_number, encs.back()->line_number);
+					}
 					current->cohorts.resize(current->cohorts.size() - encs.size());
 					auto ec = std::find(current->all_cohorts.begin() + encs.front()->local_number, current->all_cohorts.end(), encs.front());
 					--ec;
@@ -3130,6 +3154,9 @@ label_unpackEnclosures:
 				}
 				par_left_tag = current->all_cohorts[la + 1]->is_pleft;
 				par_right_tag = current->all_cohorts[ra - 1]->is_pright;
+				if (verbosity_level > 0) {
+					u_fprintf(ux_stderr, "Info: Unwrapped enclosure between lines %u to %u\n", current->all_cohorts[la + 1]->line_number, current->all_cohorts[ra - 1]->line_number);
+				}
 				par_left_pos = UI32(ni + 1);
 				par_right_pos = UI32(ni + ne);
 				if (rv & RV_TRACERULE) {

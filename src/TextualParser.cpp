@@ -39,6 +39,42 @@
 
 namespace CG3 {
 
+bool is_mapping_list(Grammar* result, Set* s) {
+	bool is_list = true;
+	if (!(s->trie.empty() && s->trie_special.empty() && !(s->type & (ST_TAG_UNIFY | ST_SET_UNIFY | ST_CHILD_UNIFY)))) {
+		auto tries = { &s->trie, &s->trie_special };
+		for (auto& trie : tries) {
+			if (trie->empty()) {
+				continue;
+			}
+			// ToDo: Optimize to iterate over the tags directly instead of making a copy
+			auto ctags = trie_getTags(*trie);
+			for (auto& it : ctags) {
+				for (auto& tag : it) {
+					if (tag->type & (T_FAILFAST | T_REGEXP_LINE)) {
+						return false;
+					}
+				}
+			}
+		}
+		return is_list;
+	}
+	for (auto op : s->set_ops) {
+		if (op != S_OR) {
+			is_list = false;
+			break;
+		}
+	}
+	for (auto i : s->sets) {
+		auto set = result->getSet(i);
+		if (!is_mapping_list(result, set)) {
+			is_list = false;
+			break;
+		}
+	}
+	return is_list;
+};
+
 TextualParser::TextualParser(Grammar& res, std::ostream& ux_err, bool _dump_ast)
   : IGrammarParser(res, ux_err)
 {
@@ -1270,42 +1306,6 @@ void TextualParser::parseRule(UChar*& p, KEYWORDS key) {
 		rule->childset1 = 0;
 	}
 
-	auto is_mapping_list = [&](Set *s) {
-		bool is_list = true;
-		if (!(s->trie.empty() && s->trie_special.empty() && !(s->type & (ST_TAG_UNIFY | ST_SET_UNIFY | ST_CHILD_UNIFY)))) {
-			auto tries = { &s->trie, &s->trie_special };
-			for (auto& trie : tries) {
-				if (trie->empty()) {
-					continue;
-				}
-				// ToDo: Optimize to iterate over the tags directly instead of making a copy
-				auto ctags = trie_getTags(*trie);
-				for (auto& it : ctags) {
-					for (auto& tag : it) {
-						if (tag->type & (T_FAILFAST | T_REGEXP_LINE)) {
-							return false;
-						}
-					}
-				}
-			}
-			return is_list;
-		}
-		for (auto op : s->set_ops) {
-			if (op != S_OR) {
-				is_list = false;
-				break;
-			}
-		}
-		for (auto i : s->sets) {
-			auto set = result->getSet(i);
-			if (set->trie.empty() && set->trie_special.empty() && !(set->type & (ST_TAG_UNIFY | ST_SET_UNIFY | ST_CHILD_UNIFY))) {
-				is_list = false;
-				break;
-			}
-		}
-		return is_list;
-	};
-
 	lp = p;
 	if (key == K_SUBSTITUTE || key == K_EXECUTE) {
 		AST_OPEN(RuleSublist);
@@ -1316,7 +1316,7 @@ void TextualParser::parseRule(UChar*& p, KEYWORDS key) {
 		if (s->empty()) {
 			error("%s: Error: Empty substitute set on line %u near `%S`!\n", lp);
 		}
-		if (!is_mapping_list(s)) {
+		if (!is_mapping_list(result, s)) {
 			error("%s: Error: Substitute set on line %u near `%S` was neither unified nor of LIST type!\n", lp);
 		}
 		AST_CLOSE(p);
@@ -1337,14 +1337,14 @@ void TextualParser::parseRule(UChar*& p, KEYWORDS key) {
 		if (s->empty()) {
 			error("%s: Error: Empty mapping set on line %u near `%S`!\n", lp);
 		}
-		if (!is_mapping_list(s)) {
+		if (!is_mapping_list(result, s)) {
 			error("%s: Error: Mapping set on line %u near `%S` was neither unified nor of LIST type!\n", lp);
 		}
 		AST_CLOSE(p);
 	}
 
 	bool copy_except = false;
-	if ((key == K_COPY || key == K_COPYCOHORT) && ux_simplecasecmp(p, STR_EXCEPT)) {
+	if ((key == K_COPY || key == K_COPYCOHORT || key == K_REPLACE) && ux_simplecasecmp(p, STR_EXCEPT)) {
 		AST_OPEN(RuleExcept);
 		p += STR_EXCEPT.size();
 		copy_except = true;
@@ -1357,12 +1357,13 @@ void TextualParser::parseRule(UChar*& p, KEYWORDS key) {
 		AST_OPEN(RuleSublist);
 		swapper_false swp(no_isets, no_isets);
 		Set* s = parseSetInlineWrapper(p);
+		//s = result->flattenSet(s);
 		s->reindex(*result);
 		rule->sublist = s;
 		if (s->empty()) {
 			error("%s: Error: Empty relation set on line %u near `%S`!\n", lp);
 		}
-		if (!is_mapping_list(s)) {
+		if (!is_mapping_list(result, s)) {
 			error("%s: Error: Relation/Value set on line %u near `%S` was neither unified nor of LIST type!\n", lp);
 		}
 		AST_CLOSE(p);
