@@ -593,14 +593,20 @@ void GrammarApplicator::getTagsMatching(const Reading& reading, TagList& theTags
 				match = doesTagMatchIcase(tt, tag);
 			}
 			else if ((tag.type & T_REGEXP_ANY) && (itag->type & T_TEXTUAL)) {
-				if ((tag.type & T_BASEFORM) && (itag->type & T_BASEFORM)) {
-					match = reading.baseform;
+				if (tag.type & T_BASEFORM) {
+					if (itag->type & T_BASEFORM) {
+						match = reading.baseform;
+					}
 				}
-				else if ((tag.type & T_WORDFORM) && (itag->type & T_WORDFORM)) {
-					match = reading.parent->wordform->hash;
+				else if (tag.type & T_WORDFORM) {
+					if (itag->type & T_WORDFORM) {
+						match = reading.parent->wordform->hash;
+					}
 				}
 				else if (!(itag->type & (T_BASEFORM | T_WORDFORM))) {
-					match = itag->hash;
+					if ((tag.tag[0] == '"' && itag->tag[0] == '"') || (tag.tag[0] == '<' && itag->tag[0] == '<')) {
+						match = itag->hash;
+					}
 				}
 			}
 			else if ((tag.type & T_NUMERICAL) && (itag->type & T_NUMERICAL)) {
