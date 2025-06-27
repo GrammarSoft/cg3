@@ -224,6 +224,8 @@ bool BinaryApplicator::readWindow() {
 
 	READ_U32_INTO(cCohort->dep_self);
 	READ_U32_INTO(cCohort->dep_parent);
+	gWindow->dep_window[cCohort->dep_self] = cCohort;
+	gWindow->relation_map[cCohort->dep_self] = cCohort->global_number;
 
 	if (cCohort->dep_parent != DEP_NO_PARENT) {
 		has_dep = true;
@@ -235,7 +237,7 @@ bool BinaryApplicator::readWindow() {
 		READ_U16_INTO(tag);
 		uint32_t head;
 		READ_U32_INTO(head);
-		cCohort->relations_input[window_tags[tag]->comparison_hash].insert(head);
+		cCohort->relations_input[window_tags[tag]->hash].insert(head);
 	}
 	if (rel_count) {
 		has_relations = true;
