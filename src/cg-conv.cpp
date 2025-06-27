@@ -151,6 +151,9 @@ int main(int argc, char* argv[]) {
 	else if (options_conv[IN_JSONL].doesOccur) {
 		fmt = CG3SF_JSONL;
 	}
+	else if (options_conv[IN_BINARY].doesOccur) {
+		fmt = CG3SF_BINARY;
+	}
 
 	if (options_conv[IN_AUTO].doesOccur || fmt == CG3SF_INVALID) {
 		_instream = applicator.detectFormat(std::cin);
@@ -209,6 +212,9 @@ int main(int argc, char* argv[]) {
 	}
 	else if (options_conv[OUT_JSONL].doesOccur) {
 		applicator.fmt_output = CG3SF_JSONL;
+	}
+	else if (options_conv[OUT_BINARY].doesOccur) {
+		applicator.fmt_output = CG3SF_BINARY;
 	}
 
 	if (options_conv[UNICODE_TAGS].doesOccur) {

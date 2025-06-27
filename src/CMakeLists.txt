@@ -80,6 +80,8 @@ set(LIBCG3_SOURCES
 	AST.hpp
 	ApertiumApplicator.cpp
 	ApertiumApplicator.hpp
+	BinaryApplicator.cpp
+	BinaryApplicator.hpp
 	BinaryGrammar.cpp
 	BinaryGrammar.hpp
 	BinaryGrammar_read.cpp

@@ -18,20 +18,39 @@
 */
 
 #pragma once
-#ifndef c6d28b7452ec699b_VERSION_H
-#define c6d28b7452ec699b_VERSION_H
+#ifndef GRAMMARAPPLICATORBINARY_H
+#define GRAMMARAPPLICATORBINARY_H
 
-#include <cstdint>
+#include "GrammarApplicator.hpp"
 
-constexpr auto CG3_COPYRIGHT_STRING = "Copyright (C) 2007-2025 GrammarSoft ApS. Licensed under GPLv3+";
+namespace CG3 {
 
-constexpr uint32_t CG3_VERSION_MAJOR = 1;
-constexpr uint32_t CG3_VERSION_MINOR = 5;
-constexpr uint32_t CG3_VERSION_PATCH = 7;
-constexpr uint32_t CG3_REVISION = 13898;
-constexpr uint32_t CG3_FEATURE_REV = 13898;
-constexpr uint32_t CG3_TOO_OLD = 10373;
-constexpr uint32_t CG3_EXTERNAL_PROTOCOL = 7226;
-constexpr uint32_t CG3_BINARY_STREAM = 1;
+enum BinaryFormatFlags {
+	// Window
+	BFW_FLUSH         = (1 << 1),
+	// Cohort
+	BFC_RELATED       = (1 << 1),
+	// Reading
+	BFR_SUBREADING    = (1 << 1),
+	BFR_DELETED       = (1 << 2),
+	// Variables
+	BFV_SETVAR        = 1,
+	BFV_SETVAR_ANY    = 2,
+	BFV_REMVAR        = 3,
+};
+
+class BinaryApplicator : public virtual GrammarApplicator {
+public:
+  BinaryApplicator(std::ostream& ux_err);
+
+  void runGrammarOnText(std::istream& input, std::ostream& output);
+
+protected:
+  void printSingleWindow(SingleWindow* window, std::ostream& output, bool profiling = false) override;
+
+private:
+	bool readWindow();
+};
+}
 
 #endif
