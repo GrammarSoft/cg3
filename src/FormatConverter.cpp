@@ -132,6 +132,10 @@ void FormatConverter::runGrammarOnText(std::istream& input, std::ostream& output
 	ux_stdin = &input;
 	ux_stdout = &output;
 
+	if (fmt_output == CG3SF_BINARY || fmt_input == CG3SF_BINARY) {
+		grammar->has_relations = true;
+	}
+
 	switch (fmt_input) {
 	case CG3SF_CG: {
 		GrammarApplicator::runGrammarOnText(input, output);

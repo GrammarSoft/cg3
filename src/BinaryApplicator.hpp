@@ -29,8 +29,7 @@ enum BinaryFormatFlags {
 	// Window
 	BFW_FLUSH         = (1 << 1),
 	// Cohort
-	BFC_DELETED       = (1 << 1),
-	BFC_RIGHTWARD_REL = (1 << 2),
+	BFC_RELATED       = (1 << 1),
 	// Reading
 	BFR_SUBREADING    = (1 << 1),
 	BFR_DELETED       = (1 << 2),
@@ -51,8 +50,6 @@ protected:
 
 private:
 	bool readWindow();
-	uint32_t max_input_id = 0;
-	std::map<uint32_t, uint32_t> id_updates;
 };
 }
 
