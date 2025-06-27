@@ -388,8 +388,20 @@ void BinaryApplicator::printSingleWindow(SingleWindow* window, std::ostream& out
 		WRITE_U16_INTO(0, cohort_buffer);
     }
 
-    WRITE_U32_INTO(cohort->dep_self, cohort_buffer);
-    WRITE_U32_INTO(cohort->dep_parent, cohort_buffer);
+    WRITE_U32_INTO(cohort->global_number, cohort_buffer);
+	if (cohort->dep_parent == 0 || cohort->dep_parent == DEP_NO_PARENT) {
+		WRITE_U32_INTO(cohort->dep_parent, cohort_buffer);
+	}
+	else {
+		const Cohort* pr = nullptr;
+		if (gWindow->cohort_map.find(cohort->dep_parent) != gWindow->cohort_map.end()) {
+			const Cohort* pr = gWindow->cohort_map[cohort->dep_parent];
+			WRITE_U32_INTO(pr->global_number, cohort_buffer);
+		}
+		else {
+			WRITE_U32_INTO(DEP_NO_PARENT, cohort_buffer);
+		}
+	}
 
 	std::string rel_buffer;
 	uint16_t rel_count = 0;
