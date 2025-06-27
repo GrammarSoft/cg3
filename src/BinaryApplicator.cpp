@@ -92,7 +92,6 @@ void BinaryApplicator::runGrammarOnText(std::istream& input, std::ostream& outpu
       gWindow->previous.erase(gWindow->previous.begin());
     }
     flushAfter = false;
-	id_updates.clear();
   };
 
   while (!input.eof()) {
@@ -197,9 +196,6 @@ bool BinaryApplicator::readWindow() {
   READ_STR_INTO(cSWindow->text);
   READ_STR_INTO(cSWindow->text_post);
 
-  uint32_t id_start = max_input_id;
-  uint32_t offset = gWindow->cohort_counter - max_input_id;
-
   uint16_t cohort_count;
   READ_U16_INTO(cohort_count);
   uint16_t tag;
@@ -209,9 +205,10 @@ bool BinaryApplicator::readWindow() {
     numCohorts++;
 
     READ_U16_INTO(flags);
-    /*if (flags & BFC_DELETED) {
-      cCohort->type |= CT_DELETED;
-      }*/
+	if (flags & BFC_RELATED) {
+		cCohort->type |= CT_RELATED;
+		has_relations = true;
+	}
 
     READ_U16_INTO(tag);
     cCohort->wordform = window_tags[tag];
@@ -225,17 +222,25 @@ bool BinaryApplicator::readWindow() {
 		}
     }
 
-	uint32_t self, parent;
-    READ_U32_INTO(self);
-    READ_U32_INTO(parent);
-	if (self > max_input_id) {
-		max_input_id = self;
+	READ_U32_INTO(cCohort->dep_self);
+	READ_U32_INTO(cCohort->dep_parent);
+
+	if (cCohort->dep_parent != DEP_NO_PARENT) {
+		has_dep = true;
 	}
-	if (parent != DEP_NO_PARENT) {
-		cCohort->dep_parent = parent + offset;
+
+	uint16_t rel_count;
+	READ_U16_INTO(rel_count);
+	for (uint16_t rn = 0; rn < rel_count; rn++) {
+		READ_U16_INTO(tag);
+		uint32_t head;
+		READ_U32_INTO(head);
+		cCohort->relations_input[window_tags[tag]->comparison_hash].insert(head);
 	}
-	if (flags & BFC_RIGHTWARD_REL) {
-		id_updates[self] = cCohort->global_number;
+	if (rel_count) {
+		has_relations = true;
+		gWindow->relation_map[cCohort->dep_self] = cCohort->global_number;
+		cCohort->type |= CT_RELATED;
 	}
 
     READ_STR_INTO(cCohort->text);
@@ -360,28 +365,47 @@ void BinaryApplicator::printSingleWindow(SingleWindow* window, std::ostream& out
     cohort_count++;
 
     uint16_t flags = 0;
+	if (cohort->type & CT_RELATED) {
+		flags |= BFC_RELATED;
+	}
     WRITE_U16_INTO(flags, cohort_buffer);
 
     WRITE_TAG_INTO(cohort->wordform, cohort_buffer);
     if (cohort->wread) {
-      std::string tag_buffer;
-      uint16_t tag_count = 0;
-      for (auto tter : cohort->wread->tags_list) {
-	if (tter == cohort->wordform->hash) {
-	  continue;
-	}
-	WRITE_TAG_INTO(grammar->single_tags[tter], tag_buffer);
-	tag_count++;
-      }
-      WRITE_U16_INTO(tag_count, cohort_buffer);
-      cohort_buffer += tag_buffer;
+		std::string tag_buffer;
+		uint16_t tag_count = 0;
+		for (auto tter : cohort->wread->tags_list) {
+			if (tter == cohort->wordform->hash) {
+				continue;
+			}
+			WRITE_TAG_INTO(grammar->single_tags[tter], tag_buffer);
+			tag_count++;
+		}
+		WRITE_U16_INTO(tag_count, cohort_buffer);
+		cohort_buffer += tag_buffer;
     }
     else {
-      WRITE_U16_INTO(0, cohort_buffer);
+		WRITE_U16_INTO(0, cohort_buffer);
     }
 
     WRITE_U32_INTO(cohort->dep_self, cohort_buffer);
     WRITE_U32_INTO(cohort->dep_parent, cohort_buffer);
+
+	std::string rel_buffer;
+	uint16_t rel_count = 0;
+	for (const auto& miter : cohort->relations) {
+		auto it = grammar->single_tags.find(miter.first);
+		if (it == grammar->single_tags.end()) {
+			it = grammar->single_tags.find(miter.first);
+		}
+		for (auto siter : miter.second) {
+			rel_count += 1;
+			WRITE_TAG_INTO(it->second, rel_buffer);
+			WRITE_U32_INTO(siter, rel_buffer);
+		}
+	}
+	WRITE_U16_INTO(rel_count, cohort_buffer);
+	cohort_buffer += rel_buffer;
 
     WRITE_STR_INTO(cohort->text, cohort_buffer);
     WRITE_STR_INTO(cohort->wblank, cohort_buffer);
@@ -390,32 +414,32 @@ void BinaryApplicator::printSingleWindow(SingleWindow* window, std::ostream& out
     uint16_t reading_count = 0;
     std::sort(cohort->readings.begin(), cohort->readings.end(), Reading::cmp_number);
     for (auto top_reading : cohort->readings) {
-      if (top_reading->noprint) {
-	continue;
-      }
-      auto reading = top_reading;
-      while (reading) {
-	reading_count++;
-	uint16_t flags = 0;
-	if (reading != top_reading) {
-	  flags |= BFR_SUBREADING;
-	}
-	WRITE_U16_INTO(flags, reading_buffer);
-	WRITE_TAG_INTO(grammar->single_tags[reading->baseform], reading_buffer);
-	std::string tag_buffer;
-	uint16_t tag_count = 0;
-	for (auto& tter : reading->tags_list) {
-	  auto tag = grammar->single_tags[tter];
-	  if ((tag->type & T_WORDFORM) || (tag->type & T_BASEFORM)) {
-	    continue;
-	  }
-	  WRITE_TAG_INTO(tag, tag_buffer);
-	  tag_count++;
-	}
-	WRITE_U16_INTO(tag_count, reading_buffer);
-	reading_buffer += tag_buffer;
-	reading = reading->next;
-      }
+		if (top_reading->noprint) {
+			continue;
+		}
+		auto reading = top_reading;
+		while (reading) {
+			reading_count++;
+			uint16_t flags = 0;
+			if (reading != top_reading) {
+				flags |= BFR_SUBREADING;
+			}
+			WRITE_U16_INTO(flags, reading_buffer);
+			WRITE_TAG_INTO(grammar->single_tags[reading->baseform], reading_buffer);
+			std::string tag_buffer;
+			uint16_t tag_count = 0;
+			for (auto& tter : reading->tags_list) {
+				auto tag = grammar->single_tags[tter];
+				if (tag->type & (T_WORDFORM | T_BASEFORM | T_DEPENDENCY | T_RELATION)) {
+					continue;
+				}
+				WRITE_TAG_INTO(tag, tag_buffer);
+				tag_count++;
+			}
+			WRITE_U16_INTO(tag_count, reading_buffer);
+			reading_buffer += tag_buffer;
+			reading = reading->next;
+		}
     }
     WRITE_U16_INTO(reading_count, cohort_buffer);
     cohort_buffer += reading_buffer;
