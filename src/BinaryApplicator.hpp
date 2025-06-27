@@ -26,13 +26,18 @@
 namespace CG3 {
 
 enum BinaryFormatFlags {
-  // Window
-  BFW_FLUSH      = (1 << 1),
-  // Cohort
-  BFC_DELETED    = (1 << 1),
-  // Reading
-  BFR_SUBREADING = (1 << 1),
-  BFR_DELETED    = (1 << 2),
+	// Window
+	BFW_FLUSH         = (1 << 1),
+	// Cohort
+	BFC_DELETED       = (1 << 1),
+	BFC_RIGHTWARD_REL = (1 << 2),
+	// Reading
+	BFR_SUBREADING    = (1 << 1),
+	BFR_DELETED       = (1 << 2),
+	// Variables
+	BFV_SETVAR        = 1,
+	BFV_SETVAR_ANY    = 2,
+	BFV_REMVAR        = 3,
 };
 
 class BinaryApplicator : public virtual GrammarApplicator {
@@ -45,7 +50,9 @@ protected:
   void printSingleWindow(SingleWindow* window, std::ostream& output, bool profiling = false) override;
 
 private:
-  bool readWindow();
+	bool readWindow();
+	uint32_t max_input_id = 0;
+	std::map<uint32_t, uint32_t> id_updates;
 };
 }
 

@@ -92,6 +92,7 @@ void BinaryApplicator::runGrammarOnText(std::istream& input, std::ostream& outpu
       gWindow->previous.erase(gWindow->previous.begin());
     }
     flushAfter = false;
+	id_updates.clear();
   };
 
   while (!input.eof()) {
@@ -169,10 +170,35 @@ bool BinaryApplicator::readWindow() {
 
   uint16_t var_count;
   READ_U16_INTO(var_count);
-  // TODO
+  for (uint16_t vn = 0; vn < var_count; vn++) {
+	  char mode = buf[pos];
+	  pos++;
+	  uint16_t tag1, tag2;
+	  READ_U16_INTO(tag1);
+	  READ_U16_INTO(tag2);
+	  auto hash1 = window_tags[tag1]->hash;
+	  if (mode == BFV_SETVAR) {
+		  cSWindow->variables_set[hash1] = window_tags[tag2]->hash;
+		  cSWindow->variables_rem.erase(hash1);
+		  cSWindow->variables_output.insert(hash1);
+	  }
+	  else if (mode == BFV_SETVAR_ANY) {
+		  cSWindow->variables_set[hash1] = grammar->tag_any;
+		  cSWindow->variables_rem.erase(hash1);
+		  cSWindow->variables_output.insert(hash1);
+	  }
+	  else if (mode == BFV_REMVAR) {
+		  cSWindow->variables_set.erase(hash1);
+		  cSWindow->variables_rem.insert(hash1);
+		  cSWindow->variables_output.insert(hash1);
+	  }
+  }
 
   READ_STR_INTO(cSWindow->text);
   READ_STR_INTO(cSWindow->text_post);
+
+  uint32_t id_start = max_input_id;
+  uint32_t offset = gWindow->cohort_counter - max_input_id;
 
   uint16_t cohort_count;
   READ_U16_INTO(cohort_count);
@@ -192,15 +218,25 @@ bool BinaryApplicator::readWindow() {
 
     READ_U16_INTO(tag_count);
     if (tag_count) {
-      cCohort->wread = alloc_reading(cCohort);
-      for (uint16_t tn = 0; tn < tag_count; tn++) {
-	READ_U16_INTO(tag);
-	addTagToReading(*cCohort->wread, window_tags[tag]);
-      }
+		cCohort->wread = alloc_reading(cCohort);
+		for (uint16_t tn = 0; tn < tag_count; tn++) {
+			READ_U16_INTO(tag);
+			addTagToReading(*cCohort->wread, window_tags[tag]);
+		}
     }
 
-    READ_U32_INTO(cCohort->dep_self);
-    READ_U32_INTO(cCohort->dep_parent);
+	uint32_t self, parent;
+    READ_U32_INTO(self);
+    READ_U32_INTO(parent);
+	if (self > max_input_id) {
+		max_input_id = self;
+	}
+	if (parent != DEP_NO_PARENT) {
+		cCohort->dep_parent = parent + offset;
+	}
+	if (flags & BFC_RIGHTWARD_REL) {
+		id_updates[self] = cCohort->global_number;
+	}
 
     READ_STR_INTO(cCohort->text);
     READ_STR_INTO(cCohort->wblank);
@@ -290,6 +326,31 @@ void BinaryApplicator::printSingleWindow(SingleWindow* window, std::ostream& out
   TagVector tags_to_write;
   std::map<Tag*, uint32_t> tag_index;
 
+  uint16_t var_count = 0;
+  std::string var_buffer;
+  for (auto var : window->variables_output) {
+	  var_count++;
+	  Tag* key = grammar->single_tags[var];
+	  auto iter = window->variables_set.find(var);
+	  if (iter != window->variables_set.end()) {
+		  if (iter->second != grammar->tag_any) {
+			  var_buffer += static_cast<char>(BFV_SETVAR);
+			  WRITE_TAG_INTO(key, var_buffer);
+			  WRITE_TAG_INTO(grammar->single_tags[iter->second], var_buffer);
+		  }
+		  else {
+			  var_buffer += static_cast<char>(BFV_SETVAR_ANY);
+			  WRITE_TAG_INTO(key, var_buffer);
+			  WRITE_U16_INTO(0, var_buffer);
+		  }
+	  }
+	  else {
+		  var_buffer += static_cast<char>(BFV_REMVAR);
+		  WRITE_TAG_INTO(key, var_buffer);
+		  WRITE_U16_INTO(0, var_buffer);
+	  }
+  }
+
   std::string cohort_buffer;
   uint16_t cohort_count = 0;
   for (auto& cohort : window->all_cohorts) {
@@ -373,8 +434,8 @@ void BinaryApplicator::printSingleWindow(SingleWindow* window, std::ostream& out
     WRITE_STR_INTO(tag->tag, header_buffer);
   }
 
-  // TODO: variables
-  WRITE_U16_INTO(0, header_buffer);
+  WRITE_U16_INTO(var_count, header_buffer);
+  header_buffer += var_buffer;
 
   WRITE_STR_INTO(window->text, header_buffer);
   WRITE_STR_INTO(window->text_post, header_buffer);
