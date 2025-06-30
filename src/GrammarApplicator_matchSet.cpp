@@ -474,7 +474,10 @@ uint32_t GrammarApplicator::doesTagMatchReading(const Reading& reading, const Ta
 	else if (tag.type & T_NUMERICAL) {
 		for (const auto& mter : reading.tags_numerical) {
 			const Tag& itag = *(mter.second);
-			match = test_tag_numerical(reading, tag, itag);
+			auto rv = test_tag_numerical(reading, tag, itag);
+			if (rv) {
+				match = rv;
+			}
 		}
 	}
 	else if (tag.type & (T_VARIABLE|T_LOCAL_VARIABLE)) {
