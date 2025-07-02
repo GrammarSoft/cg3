@@ -161,6 +161,7 @@ bool BinaryApplicator::readWindow() {
   TagVector window_tags;
   uint16_t tag_count;
   READ_U16_INTO(tag_count);
+  window_tags.reserve(tag_count);
   for (uint16_t i = 0; i < tag_count; i++) {
     UString tg;
     READ_STR_INTO(tg);
@@ -218,7 +219,8 @@ bool BinaryApplicator::readWindow() {
 		cCohort->wread = alloc_reading(cCohort);
 		for (uint16_t tn = 0; tn < tag_count; tn++) {
 			READ_U16_INTO(tag);
-			addTagToReading(*cCohort->wread, window_tags[tag]);
+			addTagToReading(*cCohort->wread, window_tags[tag],
+							(tn + 1 == tag_count));
 		}
     }
 
@@ -262,18 +264,18 @@ bool BinaryApplicator::readWindow() {
 
       READ_U16_INTO(tag_count);
       for (uint16_t tn = 0; tn < tag_count; tn++) {
-	READ_U16_INTO(tag);
-	addTagToReading(*cReading, window_tags[tag]);
+		  READ_U16_INTO(tag);
+		  addTagToReading(*cReading, window_tags[tag], (tn+1 == tag_count));
       }
 
       if (prev && (flags & BFR_SUBREADING)) {
-	prev->next = cReading;
+		  prev->next = cReading;
       }
       else if (flags & BFR_DELETED) {
-	cCohort->deleted.push_back(cReading);
+		  cCohort->deleted.push_back(cReading);
       }
       else {
-	cCohort->appendReading(cReading);
+		  cCohort->appendReading(cReading);
       }
       prev = cReading;
       ++numReadings;
@@ -395,7 +397,6 @@ void BinaryApplicator::printSingleWindow(SingleWindow* window, std::ostream& out
 		WRITE_U32_INTO(cohort->dep_parent, cohort_buffer);
 	}
 	else {
-		const Cohort* pr = nullptr;
 		if (gWindow->cohort_map.find(cohort->dep_parent) != gWindow->cohort_map.end()) {
 			const Cohort* pr = gWindow->cohort_map[cohort->dep_parent];
 			WRITE_U32_INTO(pr->global_number, cohort_buffer);
