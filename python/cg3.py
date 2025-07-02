@@ -32,6 +32,11 @@ class Window:
 	flush_after: bool = False
 
 def parse_binary_window(buf):
+	'''Given a bytestring `buf` containing a single window
+	(not including the length header), parse and return a Window()
+	object. For most applications you probbaly want parse_binary_stream()
+	instead.'''
+
 	pos = 0
 	def read_pat(pat):
 		nonlocal pos, buf
@@ -106,6 +111,9 @@ def parse_binary_window(buf):
 	return window
 
 def parse_binary_stream(fin):
+	'''Given a file `fin`, yield a series of Window() objects.
+	raises ValueError if stream header is missing or invalid.'''
+
 	header = fin.read(8)
 	label, version = struct.unpack('<4sI', header)
 	if label != b'CGBF':
