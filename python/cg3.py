@@ -9,7 +9,7 @@ from typing import DefaultDict, Dict, List, Optional
 class Reading:
 	lemma: str = ''
 	tags: List[str] = field(default_factory=list)
-	subreading: Optional[Reading] = None
+	subreading: Optional['Reading'] = None
 
 @dataclass
 class Cohort:
@@ -17,7 +17,7 @@ class Cohort:
 	readings: List[Reading] = field(default_factory=list)
 	dep_self: int = 0
 	dep_head: Optional[int] = None
-	relations: DefalutDict[str, List[int]] = field(
+	relations: DefaultDict[str, List[int]] = field(
 		default_factory=lambda: defaultdict(list))
 	text: str = ''
 	wblank: str = ''
@@ -45,9 +45,8 @@ def parse_binary_window(buf):
 	def read_str():
 		l = read_u16()
 		if l == 0:
-			return b''
-		return read_pat(f'{l}s')[0]
-		return s.decode('utf-8')
+			return ''
+		return read_pat(f'{l}s')[0].decode('utf-8')
 	window = Window()
 	window_flags = read_u16()
 	if window_flags & 1:
