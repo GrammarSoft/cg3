@@ -16,7 +16,7 @@ class Cohort:
 	static: Reading = field(default_factory=Reading)
 	readings: List[Reading] = field(default_factory=list)
 	dep_self: int = 0
-	dep_head: Optional[int] = None
+	dep_parent: Optional[int] = None
 	relations: DefaultDict[str, List[int]] = field(
 		default_factory=lambda: defaultdict(list))
 	text: str = ''

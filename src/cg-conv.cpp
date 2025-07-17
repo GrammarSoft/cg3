@@ -232,6 +232,15 @@ int main(int argc, char* argv[]) {
 		applicator.parse_dep = true;
 		applicator.has_dep = true;
 	}
+	if (options_conv[DEP_DELIMIT].doesOccur) {
+		if (!options_conv[DEP_DELIMIT].value.empty()) {
+			applicator.dep_delimit = std::stoul(options_conv[DEP_DELIMIT].value);
+		}
+		else {
+			applicator.dep_delimit = 10;
+		}
+		applicator.parse_dep = true;
+	}
 	applicator.is_conv = true;
 	applicator.trace = true;
 	applicator.verbosity_level = 0;

@@ -27,6 +27,7 @@ namespace OptionsConv {
 
 using ::Options::UOption;
 using ::Options::UOPT_NO_ARG;
+using ::Options::UOPT_OPTIONAL_ARG;
 using ::Options::UOPT_REQUIRES_ARG;
 
 enum OPTIONS {
@@ -59,6 +60,7 @@ enum OPTIONS {
 	SUB_LTR,
 	ORDERED,
 	PARSE_DEP,
+	DEP_DELIMIT,
 	UNICODE_TAGS,
 	PIPE_DELETED,
 	NO_BREAK,
@@ -95,6 +97,7 @@ std::array<UOption, NUM_OPTIONS_CONV> options_conv{
 	UOption{"ltr",          'l', UOPT_NO_ARG,       "sets sub-reading direction to LTR"},
 	UOption{"ordered",      'o', UOPT_NO_ARG,       "tag order matters mode"},
 	UOption{"parse-dep",    'D', UOPT_NO_ARG,       "parse dependency (defaults to treating as normal tags)"},
+	UOption{"dep-delimit",    0, UOPT_OPTIONAL_ARG, "delimit windows based on dependency; defaults to 10"},
 	UOption{"unicode-tags",   0, UOPT_NO_ARG,       "outputs Unicode code points for things like ->"},
 	UOption{"deleted",        0, UOPT_NO_ARG,       "read deleted readings as such, instead of as text"},
 	UOption{"no-break",     'B', UOPT_NO_ARG,       "inhibits any extra whitespace in output"},

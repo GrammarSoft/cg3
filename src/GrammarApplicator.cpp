@@ -1009,6 +1009,9 @@ void GrammarApplicator::setOptions(UConverter* conv) {
 	if (options[PRINT_IDS].doesOccur) {
 		print_ids = true;
 	}
+	if (options[PRINT_DEP].doesOccur) {
+		has_dep = true;
+	}
 	if (options[NUM_WINDOWS].doesOccur) {
 		num_windows = std::stoul(options[NUM_WINDOWS].value);
 	}
