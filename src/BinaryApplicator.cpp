@@ -217,6 +217,7 @@ bool BinaryApplicator::readWindow() {
     READ_U16_INTO(tag_count);
     if (tag_count) {
 		cCohort->wread = alloc_reading(cCohort);
+		addTagToReading(*cCohort->wread, cCohort->wordform);
 		for (uint16_t tn = 0; tn < tag_count; tn++) {
 			READ_U16_INTO(tag);
 			addTagToReading(*cCohort->wread, window_tags[tag],
