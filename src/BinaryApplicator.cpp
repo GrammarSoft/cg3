@@ -260,7 +260,7 @@ bool BinaryApplicator::readWindow() {
       READ_U16_INTO(flags);
 
       READ_U16_INTO(tag);
-      cReading->baseform = window_tags[tag]->hash;
+	  addTagToReading(*cReading, window_tags[tag]);
 
       READ_U16_INTO(tag_count);
       for (uint16_t tn = 0; tn < tag_count; tn++) {
