@@ -37,7 +37,7 @@ my @unlinks = (
 my $binary = "vislcg3";
 
 sub run_pl {
-	my ($binary,$override,$args) = @_;
+	my ($binary,$override,$args,$bsfargs) = @_;
 	my $good = 1;
 
 	# Normal run
@@ -87,7 +87,7 @@ sub run_pl {
 	# Normal run, but with binary I/O
 	my $conv = $binary;
 	$conv =~ s@vislcg3(\.exe)?$@cg-conv@g;
-	`cat input.txt | "$conv" --in-cg --out-binary 2>stderr.bsf.conv1.txt | "$binary" $args $override -g grammar.cg3 --in-binary --out-binary 2>stderr.bsf.vislcg3.txt | "$conv" --in-binary --out-cg 2>stderr.bsf.conv2.txt | "$bindir/../scripts/cg-sort" -m | grep -v '<STREAMCMD:FLUSH>' >output.bsf.txt`;
+	`cat input.txt | "$conv" --in-cg --out-binary $bsfargs 2>stderr.bsf.conv1.txt | "$binary" $args $override -g grammar.cg3 --in-binary --out-binary 2>stderr.bsf.vislcg3.txt | "$conv" --in-binary --out-cg 2>stderr.bsf.conv2.txt | "$bindir/../scripts/cg-sort" -m | grep -v '<STREAMCMD:FLUSH>' >output.bsf.txt`;
 	`cat expected.txt | $bindir/../scripts/cg-untrace | "$bindir/../scripts/cg-sort" -m > expected.bsf.txt`;
 	`diff -B expected.bsf.txt output.bsf.txt >diff.bsf.txt`;
 
@@ -159,6 +159,10 @@ foreach (@tests) {
 	if (-s 'args.txt') {
 		$args = `cat args.txt`;
 	}
+	my $bsfargs = '';
+	if (-s 'bsfargs.txt') {
+		$bsfargs = `cat bsfargs.txt`;
+	}
 	if (-x 'run.pl') {
 		`./run.pl "$binary" \Q$c\E $args`;
 		if ($?) {
@@ -167,7 +171,7 @@ foreach (@tests) {
 		}
 	}
 	else {
-		if (!run_pl($binary, $c, $args)) {
+		if (!run_pl($binary, $c, $args, $bsfargs)) {
 			$bad = 1;
 			$failed += 1;
 		}
