@@ -95,7 +95,22 @@ options_t options{
 	UOption{"show-tag-hashes",       0, UOPT_NO_ARG,       "prints a list of tags and their hashes as they are parsed during the run"},
 	UOption{"show-set-hashes",       0, UOPT_NO_ARG,       "prints a list of sets and their hashes; implies --grammar-only"},
 	UOption{"dump-ast",              0, UOPT_NO_ARG,       "prints the grammar parse tree; implies --grammar-only"},
-	UOption{"no-break",            'B', UOPT_NO_ARG,       "inhibits any extra whitespace in output"},
+	UOption{"no-break",              0, UOPT_NO_ARG,       "inhibits any extra whitespace in output"},
+	UOption{"in-cg",                 0, UOPT_NO_ARG,       "sets input format to CG (default)"},
+	UOption{"in-niceline",           0, UOPT_NO_ARG,       "sets input format to Niceline CG"},
+	UOption{"in-apertium",           0, UOPT_NO_ARG,       "sets input format to Apertium"},
+	UOption{"in-fst",                0, UOPT_NO_ARG,       "sets input format to HFST/XFST"},
+	UOption{"in-plain",              0, UOPT_NO_ARG,       "sets input format to plain text"},
+	UOption{"in-jsonl",              0, UOPT_NO_ARG,       "sets input format to JSONL (experimental)"},
+	UOption{"in-binary",             0, UOPT_NO_ARG,       "sets input format to binary (experimental)"},
+	UOption{"out-cg",                0, UOPT_NO_ARG,       "sets output format to CG (default)"},
+	UOption{"out-apertium",          0, UOPT_NO_ARG,       "sets output format to Apertium"},
+	UOption{"out-fst",               0, UOPT_NO_ARG,       "sets output format to HFST/XFST"},
+	UOption{"out-matxin",            0, UOPT_NO_ARG,       "sets output format to Matxin"},
+	UOption{"out-niceline",          0, UOPT_NO_ARG,       "sets output format to Niceline CG"},
+	UOption{"out-plain",             0, UOPT_NO_ARG,       "sets output format to plain text"},
+	UOption{"out-jsonl",             0, UOPT_NO_ARG,       "sets output format to JSONL (experimental)"},
+	UOption{"out-binary",            0, UOPT_NO_ARG,       "sets output format to binary (experimental)"},
 };
 
 options_t options_default = options;

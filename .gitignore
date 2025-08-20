@@ -32,6 +32,7 @@ Makefile
 /test/**/output*.txt
 /test/**/untraced*.txt
 /test/**/std*.txt
+/test/**/*.bsf*.txt
 /test/**/*.out.cg3
 /test/**/*.cg3b
 /test/**/*.bin

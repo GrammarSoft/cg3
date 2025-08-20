@@ -2,9 +2,9 @@
 use strict;
 use warnings;
 use Cwd qw(realpath);
+use FindBin qw($Bin);
 
-my ($bindir, $sep) = $0 =~ /^(.*)(\\|\/).*/;
-$bindir = realpath $bindir;
+my $bindir = realpath $Bin;
 chdir $bindir or die("Error: Could not change directory to $bindir !");
 
 # Search paths for the binary
@@ -25,6 +25,9 @@ my @unlinks = (
 	'grammar.cg3b',
 	'diff.bin.txt',
 	'output.bin.txt',
+	'diff.bsf.txt',
+	'expected.bsf.txt',
+	'output.bsf.txt',
 	'grammar.out.cg3',
 	'diff.out.txt',
 	'output.out.txt',
@@ -75,12 +78,27 @@ sub run_pl {
 	}
 
 	if (-s "diff.bin.txt") {
-		print STDERR "Fail ($gf)\n";
+		print STDERR "Fail ($gf) ";
 		$good = 0;
 	} else {
-		print STDERR "Success\n";
+		print STDERR "Success ";
 	}
 
+	# Normal run, but with binary I/O
+	my $conv = $binary;
+	$conv =~ s@vislcg3(\.exe)?$@cg-conv@g;
+	`cat input.txt | "$conv" --in-cg --out-binary 2>stderr.bsf.conv1.txt | "$binary" $args $override -g grammar.cg3 --in-binary --out-binary 2>stderr.bsf.vislcg3.txt | "$conv" --in-binary --out-cg 2>stderr.bsf.conv2.txt | "$bindir/../scripts/cg-sort" -m | grep -v '<STREAMCMD:FLUSH>' >output.bsf.txt`;
+	`cat expected.txt | $bindir/../scripts/cg-untrace | "$bindir/../scripts/cg-sort" -m > expected.bsf.txt`;
+	`diff -B expected.bsf.txt output.bsf.txt >diff.bsf.txt`;
+
+	if (-s "diff.bsf.txt") {
+		print STDERR "Fail";
+		$good = 0;
+	} else {
+		print STDERR "Success";
+	}
+
+	print STDERR "\n";
 	return $good;
 }
 
