@@ -451,10 +451,17 @@ void BinaryApplicator::printSingleWindow(SingleWindow* window, std::ostream& out
 			WRITE_TAG_INTO(grammar->single_tags[reading->baseform], reading_buffer);
 			std::string tag_buffer;
 			uint16_t tag_count = 0;
+			uint32SortedVector unique;
 			for (auto& tter : reading->tags_list) {
 				auto tag = grammar->single_tags[tter];
 				if (tag->type & (T_WORDFORM | T_BASEFORM | T_DEPENDENCY | T_RELATION)) {
 					continue;
+				}
+				if (unique_tags) {
+					if (unique.find(tter) != unique.end()) {
+						continue;
+					}
+					unique.insert(tter);
 				}
 				WRITE_TAG_INTO(tag, tag_buffer);
 				tag_count++;
