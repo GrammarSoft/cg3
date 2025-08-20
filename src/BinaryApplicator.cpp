@@ -283,6 +283,12 @@ bool BinaryApplicator::readWindow() {
       ++numReadings;
     }
 
+	if (cn+1 == cohort_count) {
+		for (auto iter : cCohort->readings) {
+			addTagToReading(*iter, endtag);
+		}
+	}
+
     insert_if_exists(cCohort->possible_sets, grammar->sets_any);
     cSWindow->appendCohort(cCohort);
   }
