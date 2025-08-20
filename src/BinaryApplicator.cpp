@@ -253,6 +253,7 @@ bool BinaryApplicator::readWindow() {
 
     uint16_t reading_count;
     READ_U16_INTO(reading_count);
+	if (!reading_count) initEmptyCohort(*cCohort);
     Reading* prev = nullptr;
     for (uint16_t rn = 0; rn < reading_count; rn++) {
       Reading* cReading = alloc_reading(cCohort);
