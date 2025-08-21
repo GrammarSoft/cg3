@@ -87,7 +87,11 @@ sub run_pl {
 	# Normal run, but with binary I/O
 	my $conv = $binary;
 	$conv =~ s@vislcg3(\.exe)?$@cg-conv@g;
-	`cat input.txt | "$conv" --in-cg --out-binary $bsfargs 2>stderr.bsf.conv1.txt | "$binary" $args $override -g grammar.cg3 --in-binary --out-binary 2>stderr.bsf.vislcg3.txt | "$conv" --in-binary --out-cg 2>stderr.bsf.conv2.txt | "$bindir/../scripts/cg-sort" -m | grep -v '<STREAMCMD:FLUSH>' >output.bsf.txt`;
+	if (-s "bsfgrammar.cg3") {
+		`cat input.txt | "$binary" --in-cg --out-binary -g bsfgrammar.cg3 2>stderr.bsf.conv1.txt | "$binary" $args $override -g grammar.cg3 --in-binary --out-binary 2>stderr.bsf.vislcg3.txt | "$conv" --in-binary --out-cg 2>stderr.bsf.conv2.txt | "$bindir/../scripts/cg-sort" -m | grep -v '<STREAMCMD:FLUSH>' >output.bsf.txt`;
+	} else {
+		`cat input.txt | "$conv" --in-cg --out-binary $bsfargs 2>stderr.bsf.conv1.txt | "$binary" $args $override -g grammar.cg3 --in-binary --out-binary 2>stderr.bsf.vislcg3.txt | "$conv" --in-binary --out-cg 2>stderr.bsf.conv2.txt | "$bindir/../scripts/cg-sort" -m | grep -v '<STREAMCMD:FLUSH>' >output.bsf.txt`;
+	}
 	`cat expected.txt | $bindir/../scripts/cg-untrace | "$bindir/../scripts/cg-sort" -m > expected.bsf.txt`;
 	`diff -B expected.bsf.txt output.bsf.txt >diff.bsf.txt`;
 
