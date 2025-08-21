@@ -285,7 +285,9 @@ bool BinaryApplicator::readWindow() {
 
 	if (cn+1 == cohort_count) {
 		for (auto iter : cCohort->readings) {
-			addTagToReading(*iter, endtag);
+			if (iter->tags.find(endtag) == iter->tags.end()) {
+				addTagToReading(*iter, endtag);
+			}
 		}
 	}
 
