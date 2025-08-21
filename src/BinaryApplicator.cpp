@@ -157,6 +157,9 @@ bool BinaryApplicator::readWindow() {
   if (flags & BFW_FLUSH) {
     cSWindow->flush_after = true;
   }
+  if (flags & BFW_DEP_SPAN) {
+	  dep_has_spanned = true;
+  }
 
   TagVector window_tags;
   uint16_t tag_count;
@@ -482,6 +485,9 @@ void BinaryApplicator::printSingleWindow(SingleWindow* window, std::ostream& out
   uint16_t flags = 0;
   if (window->flush_after) {
     flags |= BFW_FLUSH;
+  }
+  if (dep_has_spanned) {
+	  flags |= BFW_DEP_SPAN;
   }
   WRITE_U16_INTO(flags, header_buffer);
 

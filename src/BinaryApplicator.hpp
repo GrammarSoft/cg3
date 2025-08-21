@@ -28,6 +28,7 @@ namespace CG3 {
 enum BinaryFormatFlags {
 	// Window
 	BFW_FLUSH         = (1 << 1),
+	BFW_DEP_SPAN      = (1 << 2),
 	// Cohort
 	BFC_RELATED       = (1 << 1),
 	// Reading

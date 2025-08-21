@@ -30,6 +30,7 @@ class Window:
 	text: str = ''
 	text_post: str = ''
 	flush_after: bool = False
+	dep_has_spanned: bool = False
 
 def parse_binary_window(buf):
 	'''Given a bytestring `buf` containing a single window
@@ -56,6 +57,8 @@ def parse_binary_window(buf):
 	window_flags = read_u16()
 	if window_flags & 1:
 		window.flush_after = True
+	if window_flags & 2:
+		window.dep_has_spanned = True
 	tag_count = read_u16()
 	tags = [read_str() for i in range(tag_count)]
 	def read_tags():
