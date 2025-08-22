@@ -427,7 +427,12 @@ void BinaryApplicator::printSingleWindow(SingleWindow* window, std::ostream& out
 	else {
 		if (gWindow->cohort_map.find(cohort->dep_parent) != gWindow->cohort_map.end()) {
 			const Cohort* pr = gWindow->cohort_map[cohort->dep_parent];
-			WRITE_U32_INTO(pr->global_number, cohort_buffer);
+			if (pr->local_number == 0) {
+				WRITE_U32_INTO(0, cohort_buffer);
+			}
+			else {
+				WRITE_U32_INTO(pr->global_number, cohort_buffer);
+			}
 		}
 		else {
 			WRITE_U32_INTO(DEP_NO_PARENT, cohort_buffer);
