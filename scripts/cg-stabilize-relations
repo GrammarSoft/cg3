@@ -1,0 +1,22 @@
+#!/usr/bin/env python3
+
+import argparse
+import re
+import sys
+
+parser = argparse.ArgumentParser('Pipe a CG stream through this to stabilize IDs and relations so they have consistent numbers')
+args = parser.parse_args()
+
+id_map = {}
+
+tag = re.compile(r'\b(ID:|R:\w+:)(\d+)\b')
+def repl(matchobj):
+    global id_map
+    n = matchobj.group(2)
+    if n not in id_map:
+        id_map[n] = str(len(id_map) + 1)
+    return matchobj.group(1) + id_map[n]
+
+for line in sys.stdin:
+    sys.stdout.write(tag.sub(repl, line))
+
