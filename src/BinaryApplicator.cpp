@@ -268,10 +268,19 @@ bool BinaryApplicator::readWindow() {
 	  addTagToReading(*cReading, window_tags[tag]);
 
       READ_U16_INTO(tag_count);
+	  TagList mappings;
       for (uint16_t tn = 0; tn < tag_count; tn++) {
 		  READ_U16_INTO(tag);
-		  addTagToReading(*cReading, window_tags[tag], (tn+1 == tag_count));
+		  if (window_tags[tag]->type & T_MAPPING) {
+			  mappings.push_back(window_tags[tag]);
+		  }
+		  else {
+			  addTagToReading(*cReading, window_tags[tag]);
+		  }
       }
+	  if (!mappings.empty()) {
+		  splitMappings(mappings, *cCohort, *cReading, true);
+	  }
 
       if (prev && (flags & BFR_SUBREADING)) {
 		  prev->next = cReading;
