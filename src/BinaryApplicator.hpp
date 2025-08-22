@@ -27,13 +27,13 @@ namespace CG3 {
 
 enum BinaryFormatFlags {
 	// Window
-	BFW_FLUSH         = (1 << 1),
-	BFW_DEP_SPAN      = (1 << 2),
+	BFW_FLUSH         = (1 << 0),
+	BFW_DEP_SPAN      = (1 << 1),
 	// Cohort
-	BFC_RELATED       = (1 << 1),
+	BFC_RELATED       = (1 << 0),
 	// Reading
-	BFR_SUBREADING    = (1 << 1),
-	BFR_DELETED       = (1 << 2),
+	BFR_SUBREADING    = (1 << 0),
+	BFR_DELETED       = (1 << 1),
 	// Variables
 	BFV_SETVAR        = 1,
 	BFV_SETVAR_ANY    = 2,
