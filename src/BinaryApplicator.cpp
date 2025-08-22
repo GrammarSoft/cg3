@@ -169,6 +169,12 @@ bool BinaryApplicator::readWindow() {
     UString tg;
     READ_STR_INTO(tg);
     window_tags.push_back(addTag(tg));
+	if (tg[0] == grammar->mapping_prefix) {
+		window_tags.back()->type |= T_MAPPING;
+	}
+	else {
+		window_tags.back()->type &= ~T_MAPPING;
+	}
   }
 
   uint16_t var_count;
