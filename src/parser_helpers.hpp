@@ -54,7 +54,7 @@ Tag* parseTag(const UChar* to, const UChar* p, State& state, bool unescape=true)
 		const UChar* tmp = to;
 		while (tmp[0] && tmp[0] == '^') {
 			tag->type |= T_FAILFAST;
-			tmp++;
+			++tmp;
 		}
 
 		size_t length = u_strlen(tmp);

@@ -19,4 +19,3 @@ def repl(matchobj):
 
 for line in sys.stdin:
     sys.stdout.write(tag.sub(repl, line))
-

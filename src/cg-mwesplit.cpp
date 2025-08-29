@@ -63,13 +63,13 @@ int main(int argc, char** argv) {
 		fprintf(out, "Options:\n");
 
 		size_t longest = 0;
-		for (uint32_t i = 0; i < NUM_OPTIONS_MWE; i++) {
+		for (uint32_t i = 0; i < NUM_OPTIONS_MWE; ++i) {
 			if (!options_mwe[i].description.empty()) {
 				size_t len = strlen(options_mwe[i].longName);
 				longest = std::max(longest, len);
 			}
 		}
-		for (uint32_t i = 0; i < NUM_OPTIONS_MWE; i++) {
+		for (uint32_t i = 0; i < NUM_OPTIONS_MWE; ++i) {
 			if (!options_mwe[i].description.empty() && options_mwe[i].description[0] != '!') {
 				fprintf(out, " ");
 				if (options_mwe[i].shortName) {

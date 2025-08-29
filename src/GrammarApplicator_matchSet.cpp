@@ -803,12 +803,12 @@ bool GrammarApplicator::doesSetMatchReading(const Reading& reading, const uint32
 				++i;
 			}
 			if (match) {
-				match_sub++;
+				++match_sub;
 				retval = true;
 				break;
 			}
 			if (failfast) {
-				match_sub++;
+				++match_sub;
 				retval = false;
 				break;
 			}

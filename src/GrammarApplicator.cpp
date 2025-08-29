@@ -178,7 +178,7 @@ void GrammarApplicator::index() {
 
 	if (sections.empty()) {
 		int32_t smax = SI32(grammar->sections.size());
-		for (int32_t i = 0; i < smax; i++) {
+		for (int32_t i = 0; i < smax; ++i) {
 			for (auto r : grammar->rules) {
 				if (r->section < 0 || r->section > i) {
 					continue;
@@ -190,8 +190,8 @@ void GrammarApplicator::index() {
 	}
 	else {
 		numsections = UI32(sections.size());
-		for (uint32_t n = 0; n < numsections; n++) {
-			for (uint32_t e = 0; e <= n; e++) {
+		for (uint32_t n = 0; n < numsections; ++n) {
+			for (uint32_t e = 0; e <= n; ++e) {
 				for (auto r : grammar->rules) {
 					if (r->section != SI32(sections[e]) - 1) {
 						continue;
@@ -229,7 +229,7 @@ void GrammarApplicator::index() {
 Tag* GrammarApplicator::addTag(Tag* tag) {
 	uint32_t hash = tag->rehash();
 	uint32_t seed = 0;
-	for (; seed < 10000; seed++) {
+	for (; seed < 10000; ++seed) {
 		uint32_t ih = hash + seed;
 		Taguint32HashMap::iterator it;
 		if ((it = grammar->single_tags.find(ih)) != grammar->single_tags.end()) {
@@ -387,7 +387,7 @@ void GrammarApplicator::printReading(const Reading* reading, std::ostream& outpu
 			}
 			unique.insert(tter);
 		}
-		const Tag* tag = grammar->single_tags[tter];
+		auto tag = grammar->single_tags[tter];
 		if (tag->type & T_DEPENDENCY && has_dep && !dep_original) {
 			continue;
 		}
@@ -401,14 +401,13 @@ void GrammarApplicator::printReading(const Reading* reading, std::ostream& outpu
 		if (!reading->parent->dep_self) {
 			reading->parent->dep_self = reading->parent->global_number;
 		}
-		const Cohort* pr = nullptr;
-		pr = reading->parent;
+		auto pr = reading->parent;
 		if (reading->parent->dep_parent != DEP_NO_PARENT) {
 			if (reading->parent->dep_parent == 0) {
 				pr = reading->parent->parent->cohorts[0];
 			}
-			else if (reading->parent->parent->parent->cohort_map.find(reading->parent->dep_parent) != reading->parent->parent->parent->cohort_map.end()) {
-				pr = reading->parent->parent->parent->cohort_map[reading->parent->dep_parent];
+			else if (gWindow->cohort_map.find(reading->parent->dep_parent) != gWindow->cohort_map.end()) {
+				pr = gWindow->cohort_map[reading->parent->dep_parent];
 			}
 		}
 
@@ -681,7 +680,7 @@ void GrammarApplicator::pipeOutSingleWindow(const SingleWindow& window, Process&
 	auto cs = UI32(window.cohorts.size()) - 1;
 	writeRaw(ss, cs);
 
-	for (uint32_t c = 1; c < cs + 1; c++) {
+	for (uint32_t c = 1; c < cs + 1; ++c) {
 		pipeOutCohort(window.cohorts[c], ss);
 	}
 

@@ -150,7 +150,7 @@ inline int ux_isSetOp(const UChar* it) {
 inline bool ux_isEmpty(const UChar* text) {
 	size_t length = u_strlen(text);
 	if (length > 0) {
-		for (size_t i = 0; i < length; i++) {
+		for (size_t i = 0; i < length; ++i) {
 			if (!ISSPACE(text[i])) {
 				return false;
 			}

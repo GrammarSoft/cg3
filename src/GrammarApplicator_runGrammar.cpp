@@ -80,7 +80,7 @@ Reading* GrammarApplicator::initEmptyCohort(Cohort& cCohort) {
 	addTagToReading(*cReading, cCohort.wordform);
 	cReading->noprint = true;
 	cCohort.appendReading(cReading);
-	numReadings++;
+	++numReadings;
 	return cReading;
 }
 
@@ -212,7 +212,7 @@ void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& outp
 				lSWindow = cSWindow;
 				cSWindow = nullptr;
 				cCohort = nullptr;
-				numCohorts++;
+				++numCohorts;
 				did_soft_lookback = false;
 			}
 			if (cCohort && (cSWindow->cohorts.size() >= hard_limit || (!dep_delimit && grammar->delimiters && doesSetMatchCohortNormal(*cCohort, grammar->delimiters->number)))) {
@@ -230,7 +230,7 @@ void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& outp
 				lSWindow = cSWindow;
 				cSWindow = nullptr;
 				cCohort = nullptr;
-				numCohorts++;
+				++numCohorts;
 				did_soft_lookback = false;
 			}
 			if (!cSWindow) {
@@ -247,7 +247,7 @@ void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& outp
 
 				lSWindow = cSWindow;
 				cCohort = nullptr;
-				numWindows++;
+				++numWindows;
 				did_soft_lookback = false;
 			}
 			if (cCohort && cSWindow) {
@@ -271,7 +271,7 @@ void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& outp
 			lCohort = cCohort;
 			lReading = nullptr;
 			indents.clear();
-			numCohorts++;
+			++numCohorts;
 			cCohort->line_number = numLines;
 
 			space += 2;
@@ -396,7 +396,7 @@ void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& outp
 				readings->back()->rehash();
 			}
 			indents.push_back(std::make_pair(indent, cReading));
-			numReadings++;
+			++numReadings;
 
 			// Check whether the cohort still belongs to the window, as per --dep-delimit
 			if (!is_deleted && dep_delimit && dep_highest_seen && (cCohort->dep_self <= dep_highest_seen || cCohort->dep_self - dep_highest_seen > dep_delimit)) {
@@ -645,7 +645,7 @@ void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& outp
 						lSWindow = cSWindow;
 						cSWindow = nullptr;
 						cCohort = nullptr;
-						numCohorts++;
+						++numCohorts;
 						did_soft_lookback = false;
 					}
 					else if (lCohort) {

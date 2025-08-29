@@ -305,7 +305,7 @@ template<typename Char>
 inline bool ISESC(const Char* p) {
 	uint32_t a = 1;
 	while (*(p - a) == '\\') {
-		a++;
+		++a;
 	}
 	return (a % 2 == 0);
 }

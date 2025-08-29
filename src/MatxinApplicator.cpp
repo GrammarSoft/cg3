@@ -177,7 +177,7 @@ void MatxinApplicator::runGrammarOnText(std::istream& input, std::ostream& outpu
 				lSWindow = cSWindow;
 				cSWindow = nullptr;
 				cCohort = nullptr;
-				numCohorts++;
+				++numCohorts;
 			} // end >= soft_limit
 			if (cCohort && (cSWindow->cohorts.size() >= hard_limit || (grammar->delimiters && doesSetMatchCohortNormal(*cCohort, grammar->delimiters->number)))) {
 				if (!is_conv && cSWindow->cohorts.size() >= hard_limit) {
@@ -192,7 +192,7 @@ void MatxinApplicator::runGrammarOnText(std::istream& input, std::ostream& outpu
 				lSWindow = cSWindow;
 				cSWindow = nullptr;
 				cCohort = nullptr;
-				numCohorts++;
+				++numCohorts;
 			} // end >= hard_limit
 			// If we don't have a current window, create one
 			if (!cSWindow) {
@@ -216,7 +216,7 @@ void MatxinApplicator::runGrammarOnText(std::istream& input, std::ostream& outpu
 				lSWindow->text = firstblank;
 				firstblank.clear();
 				cCohort = nullptr;
-				numWindows++;
+				++numWindows;
 			} // created at least one cSWindow by now
 
 			// If the current cohort is looking ok, and we have an available
@@ -258,7 +258,7 @@ void MatxinApplicator::runGrammarOnText(std::istream& input, std::ostream& outpu
 
 			//u_fprintf(output, "# %S\n", wordform);
 			cCohort->wordform = addTag(wordform);
-			numCohorts++;
+			++numCohorts;
 
 			// We're now at the beginning of the readings
 			UString current_reading;
@@ -319,7 +319,7 @@ void MatxinApplicator::runGrammarOnText(std::istream& input, std::ostream& outpu
 					}
 
 					cCohort->appendReading(cReading);
-					numReadings++;
+					++numReadings;
 
 					current_reading.clear();
 
@@ -339,7 +339,7 @@ void MatxinApplicator::runGrammarOnText(std::istream& input, std::ostream& outpu
 					}
 
 					cCohort->appendReading(cReading);
-					numReadings++;
+					++numReadings;
 
 					current_reading.clear();
 					continue; // while not $
@@ -790,7 +790,7 @@ void MatxinApplicator::procNode(int& depth, std::map<int, Node>& nodes, std::map
 	const UChar* si = node.si.data() + !node.si.empty();
 
 	if (n != 0) {
-		for (int i = 0; i < depth * 2; i++) {
+		for (int i = 0; i < depth * 2; ++i) {
 			u_fprintf(output, " ");
 		}
 
@@ -818,7 +818,7 @@ void MatxinApplicator::procNode(int& depth, std::map<int, Node>& nodes, std::map
 	}
 
 	if (n != 0) {
-		for (int i = 0; i < depth * 2; i++) {
+		for (int i = 0; i < depth * 2; ++i) {
 			u_fprintf(output, " ");
 		}
 

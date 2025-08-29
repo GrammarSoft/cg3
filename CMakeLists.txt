@@ -149,7 +149,7 @@ if(EMSCRIPTEN)
 	endif()
 endif()
 
-add_definitions(-DUNISTR_FROM_CHAR_EXPLICIT=explicit -DUNISTR_FROM_STRING_EXPLICIT=explicit)
+add_definitions(-DUNISTR_FROM_CHAR_EXPLICIT=explicit -DUNISTR_FROM_STRING_EXPLICIT=explicit -DU_CHARSET_IS_UTF8=1)
 include_directories("include")
 include_directories("src")
 

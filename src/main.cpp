@@ -86,13 +86,13 @@ int main(int argc, char* argv[]) {
 		fprintf(out, "Options:\n");
 
 		size_t longest = 0;
-		for (uint32_t i = 0; i < options.size(); i++) {
+		for (uint32_t i = 0; i < options.size(); ++i) {
 			if (!options[i].description.empty()) {
 				size_t len = strlen(options[i].longName);
 				longest = std::max(longest, len);
 			}
 		}
-		for (uint32_t i = 0; i < options.size(); i++) {
+		for (uint32_t i = 0; i < options.size(); ++i) {
 			if (!options[i].description.empty()) {
 				fprintf(out, " ");
 				if (options[i].shortName) {

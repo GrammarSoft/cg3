@@ -129,7 +129,7 @@ void PlaintextApplicator::runGrammarOnText(std::istream& input, std::ostream& ou
 				lCohort = cCohort;
 				cSWindow = nullptr;
 				cCohort = nullptr;
-				numCohorts++;
+				++numCohorts;
 				did_soft_lookback = false;
 			}
 			if (cCohort && (cSWindow->cohorts.size() >= hard_limit || (!dep_delimit && grammar->delimiters && doesSetMatchCohortNormal(*cCohort, grammar->delimiters->number)))) {
@@ -146,7 +146,7 @@ void PlaintextApplicator::runGrammarOnText(std::istream& input, std::ostream& ou
 				lCohort = cCohort;
 				cSWindow = nullptr;
 				cCohort = nullptr;
-				numCohorts++;
+				++numCohorts;
 				did_soft_lookback = false;
 			}
 			if (!cSWindow) {
@@ -157,7 +157,7 @@ void PlaintextApplicator::runGrammarOnText(std::istream& input, std::ostream& ou
 				lSWindow = cSWindow;
 				lCohort = cSWindow->cohorts[0];
 				cCohort = nullptr;
-				numWindows++;
+				++numWindows;
 				did_soft_lookback = false;
 			}
 			if (gWindow->next.size() > num_windows) {
@@ -227,7 +227,7 @@ void PlaintextApplicator::runGrammarOnText(std::istream& input, std::ostream& ou
 				tag.append(u">\"");
 				cCohort->wordform = addTag(tag);
 				lCohort = cCohort;
-				numCohorts++;
+				++numCohorts;
 				cReading = initEmptyCohort(*cCohort);
 				cReading->noprint = !add_tags;
 				if (add_tags) {

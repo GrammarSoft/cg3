@@ -645,7 +645,7 @@ void GrammarApplicator::splitMappings(TagList& mappings, Cohort& cohort, Reading
 			nr->mapping = ttag;
 		}
 		cohort.appendReading(nr);
-		numReadings++;
+		++numReadings;
 	}
 
 	reading.mapped = mapped;

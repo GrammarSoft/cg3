@@ -43,14 +43,14 @@ Window::~Window() {
 
 SingleWindow* Window::allocSingleWindow() {
 	SingleWindow* swindow = alloc_swindow(this);
-	window_counter++;
+	++window_counter;
 	swindow->number = window_counter;
 	return swindow;
 }
 
 SingleWindow* Window::allocPushSingleWindow() {
 	SingleWindow* swindow = alloc_swindow(this);
-	window_counter++;
+	++window_counter;
 	swindow->number = window_counter;
 	if (!next.empty()) {
 		swindow->next = next.front();
@@ -66,7 +66,7 @@ SingleWindow* Window::allocPushSingleWindow() {
 
 SingleWindow* Window::allocAppendSingleWindow() {
 	SingleWindow* swindow = alloc_swindow(this);
-	window_counter++;
+	++window_counter;
 	swindow->number = window_counter;
 	if (!next.empty()) {
 		swindow->previous = next.back();

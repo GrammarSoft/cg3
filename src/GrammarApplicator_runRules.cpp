@@ -1332,7 +1332,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 				if (selected.size() < target->readings.size() && !selected.empty()) {
 					ReadingList drop;
 					size_t si = 0;
-					for (size_t ri = 0; ri < target->readings.size(); ri++) {
+					for (size_t ri = 0; ri < target->readings.size(); ++ri) {
 						// Manually trace, since reading_cb doesn't get called on non-matching readings
 						Reading* rd = target->readings[ri];
 						if (rule->sub_reading != 32767) {
@@ -1342,7 +1342,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 							rd->hit_by.push_back(rule->number);
 						}
 						if (si < selected.size() && target->readings[ri] == selected[si]) {
-							si++;
+							++si;
 						}
 						else {
 							target->readings[ri]->deleted = true;

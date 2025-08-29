@@ -382,7 +382,7 @@ void ApertiumApplicator::runGrammarOnText(std::istream& input, std::ostream& out
 
 			lCohort = cCohort = alloc_cohort(cSWindow);
 			cCohort->global_number = gWindow->cohort_counter++;
-			numCohorts++;
+			++numCohorts;
 
 			cCohort->text = blank;
 			blank.clear();
@@ -782,8 +782,8 @@ void ApertiumApplicator::printReading(const Reading* reading, std::ostream& outp
 			if (reading->parent->dep_parent == 0) {
 				pr = reading->parent->parent->cohorts[0];
 			}
-			else if (reading->parent->parent->parent->cohort_map.find(reading->parent->dep_parent) != reading->parent->parent->parent->cohort_map.end()) {
-				pr = reading->parent->parent->parent->cohort_map[reading->parent->dep_parent];
+			else if (gWindow->cohort_map.find(reading->parent->dep_parent) != gWindow->cohort_map.end()) {
+				pr = gWindow->cohort_map[reading->parent->dep_parent];
 			}
 		}
 

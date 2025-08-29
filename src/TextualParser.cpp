@@ -2678,25 +2678,32 @@ void TextualParser::parseFromUChar(UChar* input, const char* fname) {
 					grammar_size = static_cast<size_t>(_stat.st_size);
 				}
 
-				UFILE* grammar = u_fopen(abspath.data(), "rb", nullptr, nullptr);
-				if (!grammar) {
-					u_fprintf(ux_stderr, "%s: Error: Error opening %s for reading!\n", filebase, abspath.data());
-					CG3Quit(1);
-				}
-				UChar32 bom = u_fgetcx(grammar);
-				if (bom != 0xfeff && bom != static_cast<UChar32>(0xffffffff)) {
-					u_fungetc(bom, grammar);
+				std::string buf;
+				buf.resize(grammar_size);
+				{
+					std::ifstream grammar(abspath.data(), std::ios::binary);
+					if (!grammar) {
+						u_fprintf(ux_stderr, "%s: Error: Error opening %s for reading!\n", filebase, abspath.data());
+						CG3Quit(1);
+					}
+					if (!grammar.read(&buf[0], grammar_size)) {
+						u_fprintf(ux_stderr, "%s: Error: Error reading %s!\n", filebase, abspath.data());
+						CG3Quit(1);
+					}
+					if (buf[0] == '\xEF' && buf[1] == '\xBB' && buf[2] == '\xBF') {
+						buf.erase(0, 3);
+					}
 				}
 
 				grammarbufs.emplace_back(new UString(grammar_size * 2, 0));
 				auto& data = *grammarbufs.back().get();
-				uint32_t read = u_file_read(&data[4], SI32(grammar_size * 2), grammar);
-				u_fclose(grammar);
-				if (read >= grammar_size * 2 - 1) {
+				int32_t size = 0;
+				u_strFromUTF8(&data[4], SI32(grammar_size * 2), &size, buf.data(), SI32(buf.size()), &err);
+				if (size >= SI32(grammar_size * 2 - 1)) {
 					u_fprintf(ux_stderr, "%s: Error: Converting from underlying codepage to UTF-16 exceeded factor 2 buffer.\n", filebase);
 					CG3Quit(1);
 				}
-				data.resize(read + 4 + 1);
+				data.resize(size + 4 + 1);
 
 				uint32_t olines = 0;
 				swapper oswap(true, olines, result->lines);
@@ -2877,26 +2884,34 @@ int TextualParser::parse_grammar(const char* fname) {
 		result->grammar_size = static_cast<size_t>(_stat.st_size);
 	}
 
-	UFILE* grammar = u_fopen(filename, "rb", nullptr, nullptr);
-	if (!grammar) {
-		u_fprintf(ux_stderr, "%s: Error: Error opening %s for reading!\n", filebase, filename);
-		CG3Quit(1);
-	}
-	UChar32 bom = u_fgetcx(grammar);
-	if (bom != 0xfeff && bom != static_cast<UChar32>(0xffffffff)) {
-		u_fungetc(bom, grammar);
+	std::string buf;
+	buf.resize(result->grammar_size);
+	{
+		std::ifstream grammar(filename, std::ios::binary);
+		if (!grammar) {
+			u_fprintf(ux_stderr, "%s: Error: Error opening %s for reading!\n", filebase, filename);
+			CG3Quit(1);
+		}
+		if (!grammar.read(&buf[0], result->grammar_size)) {
+			u_fprintf(ux_stderr, "%s: Error: Error reading %s!\n", filebase, filename);
+			CG3Quit(1);
+		}
+		if (buf[0] == '\xEF' && buf[1] == '\xBB' && buf[2] == '\xBF') {
+			buf.erase(0, 3);
+		}
 	}
 
 	// It reads into the buffer at offset 4 because certain functions may look back, so we need some nulls in front.
 	grammarbufs.emplace_back(new UString(result->grammar_size * 2, 0));
 	auto& data = *grammarbufs.back().get();
-	uint32_t read = u_file_read(&data[4], SI32(result->grammar_size * 2), grammar);
-	u_fclose(grammar);
-	if (read >= result->grammar_size * 2 - 1) {
+	int32_t size = 0;
+	UErrorCode err = U_ZERO_ERROR;
+	u_strFromUTF8(&data[4], SI32(result->grammar_size * 2), &size, buf.data(), SI32(buf.size()), &err);
+	if (size >= SI32(result->grammar_size * 2 - 1)) {
 		u_fprintf(ux_stderr, "%s: Error: Converting from underlying codepage to UTF-16 exceeded factor 2 buffer.\n", filebase);
 		CG3Quit(1);
 	}
-	data.resize(read + 4 + 1);
+	data.resize(size + 4 + 1);
 
 	return parse_grammar(data);
 }
@@ -2909,12 +2924,11 @@ int TextualParser::parse_grammar(const char* buffer, size_t length) {
 	grammarbufs.emplace_back(new UString(length * 2, 0));
 	auto& data = *grammarbufs.back().get();
 
+	int32_t size = 0;
 	UErrorCode err = U_ZERO_ERROR;
-	UConverter* conv = ucnv_open("UTF-8", &err);
-	auto tmp = ucnv_toUChars(conv, &data[4], SI32(length * 2), buffer, SI32(length), &err);
-
-	if (static_cast<size_t>(tmp) >= length * 2 - 1) {
-		u_fprintf(ux_stderr, "%s: Error: Converting from underlying codepage to UTF-16 exceeded factor 2 buffer!\n", filebase);
+	u_strFromUTF8(&data[4], SI32(result->grammar_size * 2), &size, buffer, SI32(length), &err);
+	if (size >= SI32(result->grammar_size * 2 - 1)) {
+		u_fprintf(ux_stderr, "%s: Error: Converting from underlying codepage to UTF-16 exceeded factor 2 buffer.\n", filebase);
 		CG3Quit(1);
 	}
 
@@ -3029,7 +3043,7 @@ int TextualParser::parse_grammar(UString& data) {
 	// Create context sets for nested rules
 	{
 		constexpr UStringView grp[] = { STR_UU_C1, STR_UU_C2, STR_UU_C3, STR_UU_C4, STR_UU_C5, STR_UU_C6, STR_UU_C7, STR_UU_C8, STR_UU_C9 };
-		for (size_t i = 0; i < 9; i++) {
+		for (size_t i = 0; i < 9; ++i) {
 			Set* set_c = result->allocateSet();
 			set_c->line = 0;
 			set_c->setName(grp[i]);

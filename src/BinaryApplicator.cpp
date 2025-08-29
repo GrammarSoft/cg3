@@ -165,7 +165,7 @@ bool BinaryApplicator::readWindow() {
   uint16_t tag_count;
   READ_U16_INTO(tag_count);
   window_tags.reserve(tag_count);
-  for (uint16_t i = 0; i < tag_count; i++) {
+  for (uint16_t i = 0; i < tag_count; ++i) {
     UString tg;
     READ_STR_INTO(tg);
     window_tags.push_back(addTag(tg));
@@ -179,9 +179,9 @@ bool BinaryApplicator::readWindow() {
 
   uint16_t var_count;
   READ_U16_INTO(var_count);
-  for (uint16_t vn = 0; vn < var_count; vn++) {
+  for (uint16_t vn = 0; vn < var_count; ++vn) {
 	  char mode = buf[pos];
-	  pos++;
+	  ++pos;
 	  uint16_t tag1, tag2;
 	  READ_U16_INTO(tag1);
 	  READ_U16_INTO(tag2);
@@ -209,10 +209,10 @@ bool BinaryApplicator::readWindow() {
   uint16_t cohort_count;
   READ_U16_INTO(cohort_count);
   uint16_t tag;
-  for (uint16_t cn = 0; cn < cohort_count; cn++) {
+  for (uint16_t cn = 0; cn < cohort_count; ++cn) {
     Cohort* cCohort = alloc_cohort(cSWindow);
     cCohort->global_number = gWindow->cohort_counter++;
-    numCohorts++;
+    ++numCohorts;
 
     READ_U16_INTO(flags);
 	if (flags & BFC_RELATED) {
@@ -227,7 +227,7 @@ bool BinaryApplicator::readWindow() {
     if (tag_count) {
 		cCohort->wread = alloc_reading(cCohort);
 		addTagToReading(*cCohort->wread, cCohort->wordform);
-		for (uint16_t tn = 0; tn < tag_count; tn++) {
+		for (uint16_t tn = 0; tn < tag_count; ++tn) {
 			READ_U16_INTO(tag);
 			addTagToReading(*cCohort->wread, window_tags[tag],
 							(tn + 1 == tag_count));
@@ -236,7 +236,6 @@ bool BinaryApplicator::readWindow() {
 
 	READ_U32_INTO(cCohort->dep_self);
 	READ_U32_INTO(cCohort->dep_parent);
-	gWindow->dep_window[cCohort->dep_self] = cCohort;
 	gWindow->relation_map[cCohort->dep_self] = cCohort->global_number;
 
 	if (cCohort->dep_parent != DEP_NO_PARENT) {
@@ -245,7 +244,7 @@ bool BinaryApplicator::readWindow() {
 
 	uint16_t rel_count;
 	READ_U16_INTO(rel_count);
-	for (uint16_t rn = 0; rn < rel_count; rn++) {
+	for (uint16_t rn = 0; rn < rel_count; ++rn) {
 		READ_U16_INTO(tag);
 		uint32_t head;
 		READ_U32_INTO(head);
@@ -264,7 +263,7 @@ bool BinaryApplicator::readWindow() {
     READ_U16_INTO(reading_count);
 	if (!reading_count) initEmptyCohort(*cCohort);
     Reading* prev = nullptr;
-    for (uint16_t rn = 0; rn < reading_count; rn++) {
+    for (uint16_t rn = 0; rn < reading_count; ++rn) {
       Reading* cReading = alloc_reading(cCohort);
       addTagToReading(*cReading, cCohort->wordform);
 
@@ -275,7 +274,7 @@ bool BinaryApplicator::readWindow() {
 
       READ_U16_INTO(tag_count);
 	  TagList mappings;
-      for (uint16_t tn = 0; tn < tag_count; tn++) {
+      for (uint16_t tn = 0; tn < tag_count; ++tn) {
 		  READ_U16_INTO(tag);
 		  if (window_tags[tag]->type & T_MAPPING) {
 			  mappings.push_back(window_tags[tag]);
@@ -319,7 +318,7 @@ bool BinaryApplicator::readWindow() {
 #define WRITE_U16_INTO(n, buffer) \
   do { \
     std::string tmp(2, 0);	       \
-    uint16_t tmp_n = (n); \
+    auto tmp_n = static_cast<uint16_t>(n); \
     tmp.assign(reinterpret_cast<char*>(&tmp_n), 2);	\
     (buffer) += tmp; \
   } while (false)
@@ -327,7 +326,7 @@ bool BinaryApplicator::readWindow() {
 #define WRITE_U32_INTO(n, buffer) \
   do { \
     std::string tmp(4, 0);	       \
-    uint32_t tmp_n = (n); \
+    auto tmp_n = static_cast<uint32_t>(n); \
     tmp.assign(reinterpret_cast<char*>(&tmp_n), 4);	\
     (buffer) += tmp; \
   } while (false)
@@ -335,7 +334,7 @@ bool BinaryApplicator::readWindow() {
 #define WRITE_TAG_INTO(tag, buffer) \
   do { \
     if (tag_index.find((tag)) == tag_index.end()) { \
-      tag_index[(tag)] = tags_to_write.size(); \
+      tag_index[(tag)] = UI32(tags_to_write.size()); \
       tags_to_write.push_back((tag)); \
     } \
     WRITE_U16_INTO(tag_index[(tag)], buffer); \
@@ -366,7 +365,7 @@ void BinaryApplicator::printSingleWindow(SingleWindow* window, std::ostream& out
   uint16_t var_count = 0;
   std::string var_buffer;
   for (auto var : window->variables_output) {
-	  var_count++;
+	  ++var_count;
 	  Tag* key = grammar->single_tags[var];
 	  auto iter = window->variables_set.find(var);
 	  if (iter != window->variables_set.end()) {
@@ -394,7 +393,7 @@ void BinaryApplicator::printSingleWindow(SingleWindow* window, std::ostream& out
     if (cohort->local_number == 0 || (cohort->type & CT_REMOVED)) {
       continue;
     }
-    cohort_count++;
+    ++cohort_count;
 
     uint16_t flags = 0;
 	if (cohort->type & CT_RELATED) {
@@ -411,7 +410,7 @@ void BinaryApplicator::printSingleWindow(SingleWindow* window, std::ostream& out
 				continue;
 			}
 			WRITE_TAG_INTO(grammar->single_tags[tter], tag_buffer);
-			tag_count++;
+			++tag_count;
 		}
 		WRITE_U16_INTO(tag_count, cohort_buffer);
 		cohort_buffer += tag_buffer;
@@ -426,7 +425,7 @@ void BinaryApplicator::printSingleWindow(SingleWindow* window, std::ostream& out
 	}
 	else {
 		if (gWindow->cohort_map.find(cohort->dep_parent) != gWindow->cohort_map.end()) {
-			const Cohort* pr = gWindow->cohort_map[cohort->dep_parent];
+			auto pr = gWindow->cohort_map[cohort->dep_parent];
 			if (pr->local_number == 0) {
 				WRITE_U32_INTO(0, cohort_buffer);
 			}
@@ -447,7 +446,7 @@ void BinaryApplicator::printSingleWindow(SingleWindow* window, std::ostream& out
 			it = grammar->single_tags.find(miter.first);
 		}
 		for (auto siter : miter.second) {
-			rel_count += 1;
+			++rel_count;
 			WRITE_TAG_INTO(it->second, rel_buffer);
 			WRITE_U32_INTO(siter, rel_buffer);
 		}
@@ -467,7 +466,7 @@ void BinaryApplicator::printSingleWindow(SingleWindow* window, std::ostream& out
 		}
 		auto reading = top_reading;
 		while (reading) {
-			reading_count++;
+			++reading_count;
 			uint16_t flags = 0;
 			if (reading != top_reading) {
 				flags |= BFR_SUBREADING;
@@ -489,7 +488,7 @@ void BinaryApplicator::printSingleWindow(SingleWindow* window, std::ostream& out
 					unique.insert(tter);
 				}
 				WRITE_TAG_INTO(tag, tag_buffer);
-				tag_count++;
+				++tag_count;
 			}
 			WRITE_U16_INTO(tag_count, reading_buffer);
 			reading_buffer += tag_buffer;
@@ -524,7 +523,7 @@ void BinaryApplicator::printSingleWindow(SingleWindow* window, std::ostream& out
 
   WRITE_U16_INTO(cohort_count, header_buffer);
 
-  uint32_t total_size = header_buffer.size() + cohort_buffer.size();
+  auto total_size = UI32(header_buffer.size() + cohort_buffer.size());
   writeRaw(output, total_size);
   output.write(header_buffer.data(), header_buffer.size());
   output.write(cohort_buffer.data(), cohort_buffer.size());

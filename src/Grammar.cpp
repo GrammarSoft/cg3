@@ -552,7 +552,7 @@ Tag* Grammar::allocateTag(const UChar* txt) {
 
 Tag* Grammar::addTag(Tag* tag) {
 	uint32_t hash = tag->rehash();
-	for (uint32_t seed = 0; seed < 10000; seed++) {
+	for (uint32_t seed = 0; seed < 10000; ++seed) {
 		uint32_t ih = hash + seed;
 		Taguint32HashMap::iterator it;
 		if ((it = single_tags.find(ih)) != single_tags.end()) {
