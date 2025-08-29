@@ -29,7 +29,6 @@
 #include "NicelineApplicator.hpp"
 #include "PlaintextApplicator.hpp"
 #include "Grammar.hpp"
-#include "cg3.h"
 
 namespace CG3 {
 
@@ -42,8 +41,6 @@ public:
 	void runGrammarOnText(std::istream& input, std::ostream& output);
 
 	std::unique_ptr<std::istream> detectFormat(std::istream& in);
-	cg3_sformat fmt_input = CG3SF_CG;
-	cg3_sformat fmt_output = CG3SF_CG;
 
 	Grammar conv_grammar;
 

@@ -387,6 +387,24 @@ void BinaryApplicator::printSingleWindow(SingleWindow* window, std::ostream& out
 	  }
   }
 
+  // Move text belonging to removed cohorts to prior not-removed cohorts, or the containing window
+  for (size_t i = 0; i < window->all_cohorts.size(); ++i) {
+	  auto cohort = window->all_cohorts[i];
+	  if (cohort->local_number == 0 || (cohort->type & CT_REMOVED)) {
+		  if (!cohort->text.empty()) {
+			  for (size_t j = i; j > 0; --j) {
+				  if (window->all_cohorts[j - 1]->local_number == 0 || (window->all_cohorts[j - 1]->type & CT_REMOVED)) {
+					  continue;
+				  }
+				  window->all_cohorts[j-1]->text += cohort->text;
+				  cohort->text.clear();
+			  }
+			  window->text += cohort->text;
+			  cohort->text.clear();
+		  }
+	  }
+  }
+
   std::string cohort_buffer;
   uint16_t cohort_count = 0;
   for (auto& cohort : window->all_cohorts) {

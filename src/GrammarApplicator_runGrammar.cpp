@@ -145,6 +145,12 @@ void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& outp
 
 	ux_stripBOM(input);
 
+	if (fmt_output == CG3SF_BINARY) {
+		cSWindow = gWindow->allocAppendSingleWindow();
+		initEmptySingleWindow(cSWindow);
+		lSWindow = cSWindow;
+	}
+
 	while (!input.eof()) {
 		++lines;
 		auto packoff = get_line_clean(line, cleaned, input);
