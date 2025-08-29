@@ -229,8 +229,7 @@ bool BinaryApplicator::readWindow() {
 		addTagToReading(*cCohort->wread, cCohort->wordform);
 		for (uint16_t tn = 0; tn < tag_count; ++tn) {
 			READ_U16_INTO(tag);
-			addTagToReading(*cCohort->wread, window_tags[tag],
-							(tn + 1 == tag_count));
+			addTagToReading(*cCohort->wread, window_tags[tag], (tn + 1 == tag_count));
 		}
     }
 
@@ -496,7 +495,10 @@ void BinaryApplicator::printSingleWindow(SingleWindow* window, std::ostream& out
 			uint32SortedVector unique;
 			for (auto& tter : reading->tags_list) {
 				auto tag = grammar->single_tags[tter];
-				if (tag->type & (T_WORDFORM | T_BASEFORM | T_DEPENDENCY | T_RELATION)) {
+				if (tter == reading->baseform || tter == reading->parent->wordform->hash) {
+					continue;
+				}
+				if (tag->type & (T_DEPENDENCY | T_RELATION)) {
 					continue;
 				}
 				if (unique_tags) {
