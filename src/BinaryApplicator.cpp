@@ -134,31 +134,6 @@ void BinaryApplicator::runGrammarOnText(std::istream& input, std::ostream& outpu
 	flush(false);
 }
 
-#define READ_U16_INTO(dest)                                 \
-	do {                                                    \
-		(dest) = reinterpret_cast<uint16_t*>(&buf[pos])[0]; \
-		pos += 2;                                           \
-	} while (false)
-
-#define READ_U32_INTO(dest)                                 \
-	do {                                                    \
-		(dest) = reinterpret_cast<uint32_t*>(&buf[pos])[0]; \
-		pos += 4;                                           \
-	} while (false)
-
-#define READ_STR_INTO(dest)                                           \
-	do {                                                              \
-		uint16_t tl = reinterpret_cast<uint16_t*>(&buf[pos])[0];      \
-		pos += 2;                                                     \
-		(dest).clear();                                               \
-		(dest).resize(tl, 0);                                         \
-		int32_t olen = 0;                                             \
-		UErrorCode status = U_ZERO_ERROR;                             \
-		u_strFromUTF8(&(dest)[0], tl, &olen, &buf[pos], tl, &status); \
-		(dest).resize(olen);                                          \
-		pos += tl;                                                    \
-	} while (false)
-
 BinaryPacket BinaryApplicator::readPacket() {
 	BinaryPacket packet;
 	readLE(*ux_stdin, packet.type);
@@ -190,16 +165,49 @@ void BinaryApplicator::readWindow(void*& payload) {
 	ux_stdin->read(&buf[0], cs);
 	uint32_t pos = 0;
 
+	auto READ_U16_INTO = [&](uint16_t& dest) {
+		dest = *reinterpret_cast<uint16_t*>(&buf[pos]);
+		be::little_to_native_inplace(dest);
+		pos += sizeof(dest);
+	};
+
+	auto READ_U16 = [&]() {
+		uint16_t dest;
+		READ_U16_INTO(dest);
+		return dest;
+	};
+
+	auto READ_U32_INTO = [&](uint32_t& dest) {
+		dest = *reinterpret_cast<uint32_t*>(&buf[pos]);
+		be::little_to_native_inplace(dest);
+		pos += sizeof(dest);
+	};
+
+	auto READ_U32 = [&]() {
+		uint32_t dest;
+		READ_U32_INTO(dest);
+		return dest;
+	};
+
+	auto READ_STR_INTO = [&](UString& dest) {
+		auto tl = READ_U16();
+		dest.clear();
+		dest.resize(tl);
+		int32_t olen = 0;
+		UErrorCode status = U_ZERO_ERROR;
+		u_strFromUTF8(&(dest)[0], tl, &olen, &buf[pos], tl, &status);
+		dest.resize(olen);
+		pos += tl;
+	};
+
 	// TODO: flags
-	uint16_t flags;
-	READ_U16_INTO(flags);
+	auto flags = READ_U16();
 	if (flags & BFW_DEP_SPAN) {
 		dep_has_spanned = true;
 	}
 
 	TagVector window_tags;
-	uint16_t tag_count;
-	READ_U16_INTO(tag_count);
+	auto tag_count = READ_U16();
 	window_tags.reserve(tag_count);
 	for (uint16_t i = 0; i < tag_count; ++i) {
 		UString tg;
@@ -213,14 +221,12 @@ void BinaryApplicator::readWindow(void*& payload) {
 		}
 	}
 
-	uint16_t var_count;
-	READ_U16_INTO(var_count);
+	auto var_count = READ_U16();
 	for (uint16_t vn = 0; vn < var_count; ++vn) {
 		char mode = buf[pos];
 		++pos;
-		uint16_t tag1, tag2;
-		READ_U16_INTO(tag1);
-		READ_U16_INTO(tag2);
+		auto tag1 = READ_U16();
+		auto tag2 = READ_U16();
 		auto hash1 = window_tags[tag1]->hash;
 		if (mode == BFV_SETVAR) {
 			cSWindow->variables_set[hash1] = window_tags[tag2]->hash;
@@ -242,8 +248,7 @@ void BinaryApplicator::readWindow(void*& payload) {
 	READ_STR_INTO(cSWindow->text);
 	READ_STR_INTO(cSWindow->text_post);
 
-	uint16_t cohort_count;
-	READ_U16_INTO(cohort_count);
+	auto cohort_count = READ_U16();
 	uint16_t tag;
 	for (uint16_t cn = 0; cn < cohort_count; ++cn) {
 		Cohort* cCohort = alloc_cohort(cSWindow);
@@ -277,12 +282,10 @@ void BinaryApplicator::readWindow(void*& payload) {
 			has_dep = true;
 		}
 
-		uint16_t rel_count;
-		READ_U16_INTO(rel_count);
+		auto rel_count = READ_U16();
 		for (uint16_t rn = 0; rn < rel_count; ++rn) {
 			READ_U16_INTO(tag);
-			uint32_t head;
-			READ_U32_INTO(head);
+			auto head = READ_U32();
 			cCohort->relations_input[window_tags[tag]->hash].insert(head);
 		}
 		if (rel_count) {
@@ -294,10 +297,10 @@ void BinaryApplicator::readWindow(void*& payload) {
 		READ_STR_INTO(cCohort->text);
 		READ_STR_INTO(cCohort->wblank);
 
-		uint16_t reading_count;
-		READ_U16_INTO(reading_count);
-		if (!reading_count)
+		auto reading_count = READ_U16();
+		if (!reading_count) {
 			initEmptyCohort(*cCohort);
+		}
 		Reading* prev = nullptr;
 		for (uint16_t rn = 0; rn < reading_count; ++rn) {
 			Reading* cReading = alloc_reading(cCohort);
@@ -361,42 +364,6 @@ void BinaryApplicator::readText(void*& payload) {
 	payload = &text;
 }
 
-#define WRITE_U16_INTO(n, buffer)                       \
-	do {                                                \
-		std::string tmp(2, 0);                          \
-		auto tmp_n = static_cast<uint16_t>(n);          \
-		tmp.assign(reinterpret_cast<char*>(&tmp_n), 2); \
-		(buffer) += tmp;                                \
-	} while (false)
-
-#define WRITE_U32_INTO(n, buffer)                       \
-	do {                                                \
-		std::string tmp(4, 0);                          \
-		auto tmp_n = static_cast<uint32_t>(n);          \
-		tmp.assign(reinterpret_cast<char*>(&tmp_n), 4); \
-		(buffer) += tmp;                                \
-	} while (false)
-
-#define WRITE_TAG_INTO(tag, buffer)                        \
-	do {                                                   \
-		if (tag_index.find((tag)) == tag_index.end()) {    \
-			tag_index[(tag)] = UI32(tags_to_write.size()); \
-			tags_to_write.push_back((tag));                \
-		}                                                  \
-		WRITE_U16_INTO(tag_index[(tag)], buffer);          \
-	} while (false)
-
-#define WRITE_STR_INTO(s, buffer)                                                                     \
-	do {                                                                                              \
-		std::string tmp((s).size() * 4, 0);                                                           \
-		int32_t olen = 0;                                                                             \
-		UErrorCode status = U_ZERO_ERROR;                                                             \
-		u_strToUTF8(&tmp[0], SI32((s).size() * 4 - 1), &olen, (s).data(), SI32((s).size()), &status); \
-		tmp.resize(olen);                                                                             \
-		WRITE_U16_INTO(UI16(olen), (buffer));                                                         \
-		(buffer) += tmp;                                                                              \
-	} while (false)
-
 void BinaryApplicator::printSingleWindow(SingleWindow* window, std::ostream& output, bool profiling) {
 	if (!header_done) {
 		output.write("CGBF", 4);
@@ -407,7 +374,41 @@ void BinaryApplicator::printSingleWindow(SingleWindow* window, std::ostream& out
 	writeLE(output, UI8(BFP_WINDOW));
 
 	TagVector tags_to_write;
-	std::map<Tag*, uint32_t> tag_index;
+	std::map<Tag*, uint16_t> tag_index;
+
+	auto WRITE_U16_INTO = [&](uint16_t n, std::string& buffer) {
+		be::native_to_little_inplace(n);
+		auto chr = reinterpret_cast<char*>(&n);
+		buffer += chr[0];
+		buffer += chr[1];
+	};
+
+	auto WRITE_U32_INTO = [&](uint32_t n, std::string& buffer) {
+		be::native_to_little_inplace(n);
+		auto chr = reinterpret_cast<char*>(&n);
+		buffer += chr[0];
+		buffer += chr[1];
+		buffer += chr[2];
+		buffer += chr[3];
+	};
+
+	auto WRITE_TAG_INTO = [&](Tag* tag, std::string& buffer) {
+		if (tag_index.find(tag) == tag_index.end()) {
+			tag_index[tag] = UI16(tags_to_write.size());
+			tags_to_write.push_back(tag);
+		}
+		WRITE_U16_INTO(tag_index[tag], buffer);
+	};
+
+	auto WRITE_STR_INTO = [&](const UString& s, std::string& buffer) {
+		std::string tmp(s.size() * 4, 0);
+		int32_t olen = 0;
+		UErrorCode status = U_ZERO_ERROR;
+		u_strToUTF8(&tmp[0], SI32(s.size() * 4 - 1), &olen, s.data(), SI32(s.size()), &status);
+		tmp.resize(olen);
+		WRITE_U16_INTO(UI16(olen), buffer);
+		buffer += tmp;
+	};
 
 	uint16_t var_count = 0;
 	std::string var_buffer;
@@ -576,7 +577,7 @@ void BinaryApplicator::printSingleWindow(SingleWindow* window, std::ostream& out
 	}
 	WRITE_U16_INTO(flags, header_buffer);
 
-	WRITE_U16_INTO(tags_to_write.size(), header_buffer);
+	WRITE_U16_INTO(UI16(tags_to_write.size()), header_buffer);
 	for (auto& tag : tags_to_write) {
 		WRITE_STR_INTO(tag->tag, header_buffer);
 	}
