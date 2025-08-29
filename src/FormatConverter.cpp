@@ -244,8 +244,10 @@ void FormatConverter::printStreamCommand(UStringView cmd, std::ostream& output) 
 		JsonlApplicator::printStreamCommand(cmd, output);
 		break;
 	}
-	case CG3SF_BINARY:
+	case CG3SF_BINARY: {
+		BinaryApplicator::printStreamCommand(cmd, output);
 		break;
+	}
 	case CG3SF_CG:
 	case CG3SF_APERTIUM:
 	case CG3SF_FST:
@@ -264,8 +266,10 @@ void FormatConverter::printPlainTextLine(UStringView line, std::ostream& output)
 		JsonlApplicator::printPlainTextLine(line, output);
 		break;
 	}
-	case CG3SF_BINARY:
+	case CG3SF_BINARY: {
+		BinaryApplicator::printPlainTextLine(line, output);
 		break;
+	}
 	case CG3SF_CG:
 	case CG3SF_APERTIUM:
 	case CG3SF_FST:

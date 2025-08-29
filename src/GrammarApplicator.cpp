@@ -581,7 +581,7 @@ void GrammarApplicator::printSingleWindow(SingleWindow* window, std::ostream& ou
 	}
 
 	if (window->flush_after) {
-		printStreamCommand(UString(STR_CMD_FLUSH), output);
+		printStreamCommand(STR_CMD_FLUSH, output);
 	}
 	u_fflush(output);
 }
@@ -604,7 +604,7 @@ void GrammarApplicator::pipeOutReading(const Reading* reading, std::ostream& out
 	writeRaw(ss, flags);
 
 	if (reading->baseform) {
-		writeUTF8String(ss, grammar->single_tags.find(reading->baseform)->second->tag);
+		writeUTF8_Raw(ss, grammar->single_tags.find(reading->baseform)->second->tag);
 	}
 
 	uint32_t cs = 0;
@@ -628,7 +628,7 @@ void GrammarApplicator::pipeOutReading(const Reading* reading, std::ostream& out
 		if (tag->type & T_DEPENDENCY && has_dep) {
 			continue;
 		}
-		writeUTF8String(ss, tag->tag);
+		writeUTF8_Raw(ss, tag->tag);
 	}
 
 	const auto& str = ss.str();
@@ -655,7 +655,7 @@ void GrammarApplicator::pipeOutCohort(const Cohort* cohort, std::ostream& output
 		writeRaw(ss, cohort->dep_parent);
 	}
 
-	writeUTF8String(ss, cohort->wordform->tag);
+	writeUTF8_Raw(ss, cohort->wordform->tag);
 
 	uint32_t cs = UI32(cohort->readings.size());
 	writeRaw(ss, cs);
@@ -663,7 +663,7 @@ void GrammarApplicator::pipeOutCohort(const Cohort* cohort, std::ostream& output
 		pipeOutReading(rter1, ss);
 	}
 	if (!cohort->text.empty()) {
-		writeUTF8String(ss, cohort->text);
+		writeUTF8_Raw(ss, cohort->text);
 	}
 
 	const auto& str = ss.str();
@@ -718,7 +718,7 @@ void GrammarApplicator::pipeInReading(Reading* reading, Process& input, bool for
 	reading->deleted = (flags & (1 << 2)) != 0;
 
 	if (flags & (1 << 3)) {
-		UString str = readUTF8String(ss);
+		UString str = readUTF8_Raw(ss);
 		if (str != grammar->single_tags.find(reading->baseform)->second->tag) {
 			Tag* tag = addTag(str);
 			reading->baseform = tag->hash;
@@ -743,7 +743,7 @@ void GrammarApplicator::pipeInReading(Reading* reading, Process& input, bool for
 	}
 
 	for (size_t i = 0; i < cs; ++i) {
-		UString str = readUTF8String(ss);
+		UString str = readUTF8_Raw(ss);
 		Tag* tag = addTag(str);
 		reading->tags_list.push_back(tag->hash);
 		if (debug_level > 1) {
@@ -784,7 +784,7 @@ void GrammarApplicator::pipeInCohort(Cohort* cohort, Process& input) {
 	}
 
 	bool force_readings = false;
-	UString str = readUTF8String(input);
+	UString str = readUTF8_Raw(input);
 	if (str != cohort->wordform->tag) {
 		Tag* tag = addTag(str);
 		cohort->wordform = tag;
@@ -803,7 +803,7 @@ void GrammarApplicator::pipeInCohort(Cohort* cohort, Process& input) {
 	}
 
 	if (flags & (1 << 0)) {
-		cohort->text = readUTF8String(input);
+		cohort->text = readUTF8_Raw(input);
 		if (debug_level > 1) {
 			u_fprintf(ux_stderr, "DEBUG: cohort text %S\n", cohort->text.data());
 		}

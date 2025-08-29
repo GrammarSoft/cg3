@@ -154,11 +154,14 @@ void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& outp
 		variables_output.clear();
 	};
 
-	if (fmt_output == CG3SF_BINARY) {
-		cSWindow = gWindow->allocAppendSingleWindow();
-		initEmptySingleWindow(cSWindow);
-		lSWindow = cSWindow;
-	}
+	auto binary_maybe_window = [&]() {
+		if (fmt_output == CG3SF_BINARY) {
+			cSWindow = gWindow->allocAppendSingleWindow();
+			initEmptySingleWindow(cSWindow);
+			lSWindow = cSWindow;
+		}
+	};
+	binary_maybe_window();
 
 	while (!input.eof()) {
 		++lines;
@@ -502,7 +505,7 @@ void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& outp
 					}
 
 					if (!backSWindow) {
-						printStreamCommand(UString(STR_CMD_FLUSH), output);
+						printStreamCommand(STR_CMD_FLUSH, output);
 					}
 					line[0] = 0;
 					variables.clear();
@@ -517,7 +520,7 @@ void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& outp
 					}
 					is_cmd = true;
 					ignoreinput = true;
-					printStreamCommand(UString(STR_CMD_IGNORE), output);
+					printStreamCommand(STR_CMD_IGNORE, output);
 					line[0] = 0;
 				}
 				else if (&cleaned[0] == STR_CMD_RESUME) {
@@ -526,7 +529,7 @@ void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& outp
 					}
 					is_cmd = true;
 					ignoreinput = false;
-					printStreamCommand(UString(STR_CMD_RESUME), output);
+					printStreamCommand(STR_CMD_RESUME, output);
 					line[0] = 0;
 				}
 				else if (&cleaned[0] == STR_CMD_EXIT) {
@@ -534,7 +537,7 @@ void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& outp
 						u_fprintf(ux_stderr, "Info: EXIT encountered on line %u. Exiting...\n", numLines);
 					}
 					is_cmd = true;
-					printStreamCommand(UString(STR_CMD_EXIT), output);
+					printStreamCommand(STR_CMD_EXIT, output);
 					goto CGCMD_EXIT;
 				}
 				else if (u_strncmp(&cleaned[0], STR_CMD_SETVAR.data(), SI32(STR_CMD_SETVAR.size())) == 0) {
@@ -691,8 +694,7 @@ void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& outp
 		cSWindow = nullptr;
 	}
 	if (fmt_output == CG3SF_BINARY && !variables_output.empty()) {
-		cSWindow = gWindow->allocAppendSingleWindow();
-		initEmptySingleWindow(cSWindow);
+		binary_maybe_window();
 		adopt_variables();
 	}
 	while (!gWindow->next.empty()) {

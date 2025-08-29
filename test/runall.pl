@@ -90,7 +90,6 @@ sub run_pl {
 	`echo "Include Static grammar.cg3 ;" > grammar.bsf.cg3`;
 	`cat input.txt | "$binary" $args --in-cg --out-binary -g grammar.bsf.cg3 2>stderr.bsf.conv1.txt | "$binary" $args $override -g grammar.cg3 --in-binary --out-binary 2>stderr.bsf.vislcg3.txt | "$binary" $args --in-binary --out-cg -g grammar.bsf.cg3 2>stderr.bsf.conv2.txt | "$bindir/../scripts/cg-untrace" | "$bindir/../scripts/cg-sort" -m | "$bindir/../scripts/cg-stabilize-relations" >output.bsf.txt`;
 	`cat expected.txt | "$bindir/../scripts/cg-untrace" | "$bindir/../scripts/cg-sort" -m | "$bindir/../scripts/cg-stabilize-relations" > expected.bsf.txt`;
-	`echo '<STREAMCMD:FLUSH>' >> expected.bsf.txt`;
 	`diff -B expected.bsf.txt output.bsf.txt >diff.bsf.txt`;
 
 	if (-s "diff.bsf.txt") {
