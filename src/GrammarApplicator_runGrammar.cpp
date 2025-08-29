@@ -145,6 +145,15 @@ void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& outp
 
 	ux_stripBOM(input);
 
+	auto adopt_variables = [&]() {
+		cSWindow->variables_set.insert(variables_set.begin(), variables_set.end());
+		variables_set.clear();
+		cSWindow->variables_rem.insert(variables_rem.begin(), variables_rem.end());
+		variables_rem.clear();
+		cSWindow->variables_output.insert(variables_output.begin(), variables_output.end());
+		variables_output.clear();
+	};
+
 	if (fmt_output == CG3SF_BINARY) {
 		cSWindow = gWindow->allocAppendSingleWindow();
 		initEmptySingleWindow(cSWindow);
@@ -244,13 +253,6 @@ void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& outp
 				cSWindow = gWindow->allocAppendSingleWindow();
 				initEmptySingleWindow(cSWindow);
 
-				cSWindow->variables_set = variables_set;
-				variables_set.clear();
-				cSWindow->variables_rem = variables_rem;
-				variables_rem.clear();
-				cSWindow->variables_output = variables_output;
-				variables_output.clear();
-
 				lSWindow = cSWindow;
 				cCohort = nullptr;
 				++numWindows;
@@ -270,6 +272,9 @@ void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& outp
 					u_fprintf(ux_stderr, "Progress: L:%u, W:%u, C:%u, R:%u\r", lines, numWindows, numCohorts, numReadings);
 					u_fflush(ux_stderr);
 				}
+			}
+			if (cSWindow->all_cohorts.size() == 1) {
+				adopt_variables();
 			}
 			cCohort = alloc_cohort(cSWindow);
 			cCohort->global_number = gWindow->cohort_counter++;
@@ -684,6 +689,11 @@ void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& outp
 		cReading = nullptr;
 		cCohort = nullptr;
 		cSWindow = nullptr;
+	}
+	if (fmt_output == CG3SF_BINARY && !variables_output.empty()) {
+		cSWindow = gWindow->allocAppendSingleWindow();
+		initEmptySingleWindow(cSWindow);
+		adopt_variables();
 	}
 	while (!gWindow->next.empty()) {
 		gWindow->shuffleWindowsDown();
