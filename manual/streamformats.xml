@@ -195,10 +195,21 @@
     </para>
     <para>
       The stream begins with a header containing <code>CGBF</code> followed by a 4-byte version number (currently <code>1</code>).
-      After that, each window begins with 4 bytes specifying the length of the block and then the following structure:
+      After that, each packet begins with 1 byte indicating its contents.
+      <code>1</code> is a window, <code>2></code> is a command, and <code>3></code> is text.
+    </para>
+    <para>
+      Command packets have a second byte identifying the command: <code>1</code> for <code>FLUSH</code>, <code>2</code> for <code>EXIT</code>, <code>3</code> for <code>IGNORE</code>, and <code>4</code> for <code>RESUME</code>.
+      Commands which manipulate variables are represented in window packets.
+    </para>
+    <para>
+      Text packets consist of a 2-byte length followed by the contents in UTF-8.
+    </para>
+    <para>
+      Each window packet begins with 4 bytes specifying the length of the block and then the following structure:
       <screen>
         window flags [2]
-          &gt; 1 = flush_after
+          &gt; 1 = has multi-window dependencies
         tags [array of str]
         variables [array]
           mode
@@ -211,6 +222,7 @@
         text_post [str]
         cohorts [array]
           flags [2]
+            &gt; 1 = is target of a relation
           wordform [tag]
           static_tags [array of tag]
           dep_self [4]
@@ -223,6 +235,7 @@
           readings [array]
             flags [2]
               &gt; 1 = is subreading of predecessor
+              &gt; 2 = deleted
             baseform [tag]
             tags [array of tag]
       </screen>
