@@ -10,6 +10,7 @@ class Reading:
 	lemma: str = ''
 	tags: List[str] = field(default_factory=list)
 	subreading: Optional['Reading'] = None
+	deleted: bool = False
 
 @dataclass
 class Cohort:
@@ -29,8 +30,14 @@ class Window:
 	rem_vars: List[str] = field(default_factory=list)
 	text: str = ''
 	text_post: str = ''
-	flush_after: bool = False
 	dep_has_spanned: bool = False
+
+@dataclass
+class Packet:
+	type: str = ''
+	window: Optional[Window] = None
+	command: str = ''
+	text: str = ''
 
 def parse_binary_window(buf):
 	'''Given a bytestring `buf` containing a single window
@@ -56,8 +63,6 @@ def parse_binary_window(buf):
 	window = Window()
 	window_flags = read_u16()
 	if window_flags & 1:
-		window.flush_after = True
-	if window_flags & 2:
 		window.dep_has_spanned = True
 	tag_count = read_u16()
 	tags = [read_str() for i in range(tag_count)]
@@ -109,13 +114,17 @@ def parse_binary_window(buf):
 				prev.subreading = reading
 			else:
 				cohort.readings.append(reading)
+			if reading_flags & 2:
+				reading.deleted = True
 			prev = reading
 		window.cohorts.append(cohort)
 	return window
 
-def parse_binary_stream(fin):
-	'''Given a file `fin`, yield a series of Window() objects.
-	raises ValueError if stream header is missing or invalid.'''
+def parse_binary_stream(fin, windows_only=False):
+	'''Given a file `fin`, yield a series of Packet() objects.
+	raises ValueError if stream header is missing or invalid.
+	If `windows_only` is True, packets containing commands or text
+	are skipped and Window() objects are returned instead.'''
 
 	header = fin.read(8)
 	label, version = struct.unpack('<4sI', header)
@@ -124,11 +133,45 @@ def parse_binary_stream(fin):
 	if version != 1:
 		raise ValueError('Unknown binary format version!')
 	while True:
-		spec = fin.read(4)
-		if len(spec) != 4:
-			break;
-		block_len = struct.unpack('<I', spec)[0]
-		block = fin.read(block_len)
-		if len(block) != block_len:
+		ptype = fin.read(1)
+		if len(ptype) != 1:
 			break
-		yield parse_binary_window(block)
+		if ptype[0] == 1:
+			spec = fin.read(4)
+			if len(spec) != 4:
+				break;
+			block_len = struct.unpack('<I', spec)[0]
+			block = fin.read(block_len)
+			if len(block) != block_len:
+				break
+			window = parse_binary_window(block)
+			if windows_only:
+				yield window
+			else:
+				yield Packet(type='window', window=window)
+		elif ptype[0] == 2:
+			cmd = fin.read(1)
+			if len(cmd) != 1:
+				break
+			if windows_only:
+				continue
+			pack = Packet(type='command')
+			if cmd[0] == 1:
+				pack.command = 'FLUSH'
+			elif cmd[0] == 2:
+				pack.command = 'EXIT'
+			elif cmd[0] == 3:
+				pack.command = 'IGNORE'
+			elif cmd[0] == 4:
+				pack.command = 'RESUME'
+			else:
+				continue
+		elif ptype[0] == 3:
+			lbuf = fin.read(2)
+			ln = struct.unpack('<I', lbuf)[0]
+			pack = Packet(type='text')
+			pack.text = fin.read(ln).decode('utf-8')
+			if not windows_only:
+				yield pack
+		else:
+			continue
