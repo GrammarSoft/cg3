@@ -31,6 +31,7 @@
 #include "interval_vector.hpp"
 #include "flat_unordered_set.hpp"
 #include "scoped_stack.hpp"
+#include "cg3.h"
 #include <deque>
 
 class Process;
@@ -125,6 +126,9 @@ public:
 	bool pipe_deleted = false;
 	bool add_spacing = true;
 	bool print_ids = false;
+
+	cg3_sformat fmt_input = CG3SF_CG;
+	cg3_sformat fmt_output = CG3SF_CG;
 
 	bool dep_has_spanned = false;
 	uint32_t dep_delimit = 0;

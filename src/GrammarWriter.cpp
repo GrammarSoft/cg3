@@ -79,7 +79,7 @@ void GrammarWriter::printSet(std::ostream& output, const Set& curset) {
 		}
 		u_fprintf(output, "SET %S = ", n);
 		u_fprintf(output, "%S ", grammar->sets_list[curset.sets[0]]->name.data());
-		for (uint32_t i = 0; i < curset.sets.size() - 1; i++) {
+		for (uint32_t i = 0; i < curset.sets.size() - 1; ++i) {
 			u_fprintf(output, "%S %S ", stringbits[curset.set_ops[i]].data(), grammar->sets_list[curset.sets[i + 1]]->name.data());
 		}
 		u_fprintf(output, " ;\n\n");
@@ -287,7 +287,7 @@ void GrammarWriter::printRule(std::ostream& to, const Rule& rule) {
 	}
 	u_fprintf(to, " ");
 
-	for (uint32_t i = 0; i < FLAGS_COUNT; i++) {
+	for (uint32_t i = 0; i < FLAGS_COUNT; ++i) {
 		if (i == FL_BEFORE || i == FL_AFTER || i == FL_WITHCHILD) {
 			continue;
 		}
@@ -544,7 +544,7 @@ void GrammarWriter::printContextualTest(std::ostream& to, const ContextualTest& 
 			u_fprintf(to, "(");
 			printContextualTest(to, **iter);
 			u_fprintf(to, ")");
-			iter++;
+			++iter;
 			if (iter != test.ors.end()) {
 				u_fprintf(to, " OR ");
 			}

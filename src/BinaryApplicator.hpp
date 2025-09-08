@@ -18,39 +18,65 @@
 */
 
 #pragma once
-#ifndef c6d28b7452ec699b_FORMATCONVERTER_H
-#define c6d28b7452ec699b_FORMATCONVERTER_H
+#ifndef c6d28b7452ec699b_GRAMMARAPPLICATORBINARY_H
+#define c6d28b7452ec699b_GRAMMARAPPLICATORBINARY_H
 
-#include "ApertiumApplicator.hpp"
-#include "BinaryApplicator.hpp"
-#include "FSTApplicator.hpp"
-#include "JsonlApplicator.hpp"
-#include "MatxinApplicator.hpp"
-#include "NicelineApplicator.hpp"
-#include "PlaintextApplicator.hpp"
-#include "Grammar.hpp"
+#include "GrammarApplicator.hpp"
 
 namespace CG3 {
 
-cg3_sformat detectFormat(std::string_view str);
+enum BinaryFormatFlags {
+	// Window
+	BFW_DEP_SPAN      = (1 << 0),
+	// Cohort
+	BFC_RELATED       = (1 << 0),
+	// Reading
+	BFR_SUBREADING    = (1 << 0),
+	BFR_DELETED       = (1 << 1),
+	// Variables
+	BFV_SETVAR        = 1,
+	BFV_SETVAR_ANY    = 2,
+	BFV_REMVAR        = 3,
+};
 
-class FormatConverter : public ApertiumApplicator, public BinaryApplicator, public FSTApplicator, public JsonlApplicator, public MatxinApplicator, public NicelineApplicator, public PlaintextApplicator {
+enum BinaryPacketType : uint8_t {
+	BFP_INVALID       = 0,
+	BFP_WINDOW        = 1,
+	BFP_COMMAND       = 2,
+	BFP_TEXT          = 3,
+};
+
+enum BinaryCommandType : uint8_t {
+	BFC_FLUSH         = 1,
+	BFC_EXIT          = 2,
+	BFC_IGNORE        = 3,
+	BFC_RESUME        = 4,
+};
+
+struct BinaryPacket {
+	BinaryPacketType type = BFP_INVALID;
+	void* payload = nullptr;
+};
+
+class BinaryApplicator : public virtual GrammarApplicator {
 public:
-	FormatConverter(std::ostream& ux_err);
+	BinaryApplicator(std::ostream& ux_err);
 
 	void runGrammarOnText(std::istream& input, std::ostream& output);
 
-	std::unique_ptr<std::istream> detectFormat(std::istream& in);
-
-	Grammar conv_grammar;
-
 protected:
-	void printCohort(Cohort* cohort, std::ostream& output, bool profiling = false) override;
 	void printSingleWindow(SingleWindow* window, std::ostream& output, bool profiling = false) override;
 	void printStreamCommand(UStringView cmd, std::ostream& output) override;
 	void printPlainTextLine(UStringView line, std::ostream& output) override;
-};
 
+private:
+	bool header_done = false;
+	UString text;
+	BinaryPacket readPacket();
+	void readWindow(void*& payload);
+	void readCommand(void*& payload);
+	void readText(void*& payload);
+};
 }
 
 #endif

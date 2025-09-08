@@ -27,6 +27,7 @@ namespace OptionsConv {
 
 using ::Options::UOption;
 using ::Options::UOPT_NO_ARG;
+using ::Options::UOPT_OPTIONAL_ARG;
 using ::Options::UOPT_REQUIRES_ARG;
 
 enum OPTIONS {
@@ -41,6 +42,7 @@ enum OPTIONS {
 	IN_FST,
 	IN_PLAIN,
 	IN_JSONL,
+	IN_BINARY,
 	ADD_TAGS,
 	OUT_CG,
 	OUT_CG2,
@@ -50,6 +52,7 @@ enum OPTIONS {
 	OUT_NICELINE,
 	OUT_PLAIN,
 	OUT_JSONL,
+	OUT_BINARY,
 	FST_WFACTOR,
 	FST_WTAG,
 	SUB_DELIMITER,
@@ -57,6 +60,7 @@ enum OPTIONS {
 	SUB_LTR,
 	ORDERED,
 	PARSE_DEP,
+	DEP_DELIMIT,
 	UNICODE_TAGS,
 	PIPE_DELETED,
 	NO_BREAK,
@@ -75,6 +79,7 @@ std::array<UOption, NUM_OPTIONS_CONV> options_conv{
 	UOption{"in-fst",       'f', UOPT_NO_ARG,       "sets input format to HFST/XFST"},
 	UOption{"in-plain",     'x', UOPT_NO_ARG,       "sets input format to plain text"},
 	UOption{"in-jsonl",     'j', UOPT_NO_ARG,       "sets input format to JSONL (experimental, specs below)"},
+	UOption{"in-binary",    'z', UOPT_NO_ARG,       "sets input format to binary (experimental)"},
 	UOption{"add-tags",       0, UOPT_NO_ARG,       "adds minimal analysis to readings (implies -x)"},
 	UOption{"out-cg",       'C', UOPT_NO_ARG,       "sets output format to CG (default)"},
 	UOption{"V",            'V', UOPT_NO_ARG},
@@ -84,6 +89,7 @@ std::array<UOption, NUM_OPTIONS_CONV> options_conv{
 	UOption{"out-niceline", 'N', UOPT_NO_ARG,       "sets output format to Niceline CG"},
 	UOption{"out-plain",    'X', UOPT_NO_ARG,       "sets output format to plain text"},
 	UOption{"out-jsonl",    'J', UOPT_NO_ARG,       "sets output format to JSONL (experimental, specs below)"},
+	UOption{"out-binary",   'Z', UOPT_NO_ARG,       "sets output format to binary (experimental)"},
 	UOption{"wfactor",      'W', UOPT_REQUIRES_ARG, "FST weight factor (defaults to 1.0)"},
 	UOption{"wtag",           0, UOPT_REQUIRES_ARG, "FST weight tag prefix (defaults to W)"},
 	UOption{"sub-delim",    'S', UOPT_REQUIRES_ARG, "FST sub-reading delimiters (defaults to #)"},
@@ -91,6 +97,7 @@ std::array<UOption, NUM_OPTIONS_CONV> options_conv{
 	UOption{"ltr",          'l', UOPT_NO_ARG,       "sets sub-reading direction to LTR"},
 	UOption{"ordered",      'o', UOPT_NO_ARG,       "tag order matters mode"},
 	UOption{"parse-dep",    'D', UOPT_NO_ARG,       "parse dependency (defaults to treating as normal tags)"},
+	UOption{"dep-delimit",    0, UOPT_OPTIONAL_ARG, "delimit windows based on dependency; defaults to 10"},
 	UOption{"unicode-tags",   0, UOPT_NO_ARG,       "outputs Unicode code points for things like ->"},
 	UOption{"deleted",        0, UOPT_NO_ARG,       "read deleted readings as such, instead of as text"},
 	UOption{"no-break",     'B', UOPT_NO_ARG,       "inhibits any extra whitespace in output"},

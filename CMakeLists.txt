@@ -149,7 +149,7 @@ if(EMSCRIPTEN)
 	endif()
 endif()
 
-add_definitions(-DUNISTR_FROM_CHAR_EXPLICIT=explicit -DUNISTR_FROM_STRING_EXPLICIT=explicit)
+add_definitions(-DUNISTR_FROM_CHAR_EXPLICIT=explicit -DUNISTR_FROM_STRING_EXPLICIT=explicit -DU_CHARSET_IS_UTF8=1)
 include_directories("include")
 include_directories("src")
 
@@ -165,6 +165,7 @@ configure_file(scripts/cg3-autobin.pl.in scripts/cg3-autobin.pl @ONLY)
 install(PROGRAMS
 	"${CMAKE_CURRENT_BINARY_DIR}/scripts/cg3-autobin.pl"
 	"${CMAKE_CURRENT_SOURCE_DIR}/scripts/cg-sort"
+	"${CMAKE_CURRENT_SOURCE_DIR}/scripts/cg-stabilize-relations"
 	"${CMAKE_CURRENT_SOURCE_DIR}/scripts/cg-strictify"
 	"${CMAKE_CURRENT_SOURCE_DIR}/scripts/cg-untrace"
 	DESTINATION ${CMAKE_INSTALL_BINDIR})

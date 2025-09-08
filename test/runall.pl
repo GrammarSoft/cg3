@@ -2,10 +2,12 @@
 use strict;
 use warnings;
 use Cwd qw(realpath);
+use FindBin qw($Bin);
 
-my ($bindir, $sep) = $0 =~ /^(.*)(\\|\/).*/;
-$bindir = realpath $bindir;
+my $bindir = realpath $Bin;
 chdir $bindir or die("Error: Could not change directory to $bindir !");
+
+$ENV{PERL_UNICODE} = 'SDA';
 
 # Search paths for the binary
 my @binlist = (
@@ -25,6 +27,9 @@ my @unlinks = (
 	'grammar.cg3b',
 	'diff.bin.txt',
 	'output.bin.txt',
+	'diff.bsf.txt',
+	'expected.bsf.txt',
+	'output.bsf.txt',
 	'grammar.out.cg3',
 	'diff.out.txt',
 	'output.out.txt',
@@ -36,6 +41,12 @@ my $binary = "vislcg3";
 sub run_pl {
 	my ($binary,$override,$args) = @_;
 	my $good = 1;
+
+	my $prefix = '@';
+	if (-s 'prefix.txt') {
+		$prefix = `cat prefix.txt`;
+		chomp($prefix);
+	}
 
 	# Normal run
 	`"$binary" $args $override -g grammar.cg3 -I input.txt -O output.txt >stdout.txt 2>stderr.txt`;
@@ -75,12 +86,26 @@ sub run_pl {
 	}
 
 	if (-s "diff.bin.txt") {
-		print STDERR "Fail ($gf)\n";
+		print STDERR "Fail ($gf) ";
 		$good = 0;
 	} else {
-		print STDERR "Success\n";
+		print STDERR "Success ";
 	}
 
+	# Normal run, but with binary I/O
+	`echo "Include Static grammar.cg3 ;" > grammar.bsf.cg3`;
+	`cat input.txt | "$binary" $args --in-cg --out-binary -g grammar.bsf.cg3 2>stderr.bsf.conv1.txt | "$binary" $args $override -g grammar.cg3 --in-binary --out-binary 2>stderr.bsf.vislcg3.txt | "$binary" $args --in-binary --out-cg -g grammar.bsf.cg3 2>stderr.bsf.conv2.txt | "$bindir/../scripts/cg-untrace" | "$bindir/../scripts/cg-sort" -m '$prefix' | "$bindir/../scripts/cg-stabilize-relations" >output.bsf.txt`;
+	`cat expected.txt | "$bindir/../scripts/cg-untrace" | "$bindir/../scripts/cg-sort" -m '$prefix' | "$bindir/../scripts/cg-stabilize-relations" > expected.bsf.txt`;
+	`diff -B expected.bsf.txt output.bsf.txt >diff.bsf.txt`;
+
+	if (-s "diff.bsf.txt") {
+		print STDERR "Fail";
+		$good = 0;
+	} else {
+		print STDERR "Success";
+	}
+
+	print STDERR "\n";
 	return $good;
 }
 
@@ -140,6 +165,7 @@ foreach (@tests) {
 	my $args = '';
 	if (-s 'args.txt') {
 		$args = `cat args.txt`;
+		chomp($args);
 	}
 	if (-x 'run.pl') {
 		`./run.pl "$binary" \Q$c\E $args`;

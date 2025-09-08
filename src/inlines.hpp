@@ -305,7 +305,7 @@ template<typename Char>
 inline bool ISESC(const Char* p) {
 	uint32_t a = 1;
 	while (*(p - a) == '\\') {
-		a++;
+		++a;
 	}
 	return (a % 2 == 0);
 }
@@ -475,6 +475,11 @@ inline bool is_cg3b(const S& s) {
 	return (s[0] == 'C' && s[1] == 'G' && s[2] == '3' && s[3] == 'B');
 }
 
+template<typename S>
+inline bool is_cg3bsf(const S& s) {
+	return (s[0] == 'C' && s[1] == 'G' && s[2] == 'B' && s[3] == 'F');
+}
+
 inline void insert_if_exists(boost::dynamic_bitset<>& cont, const boost::dynamic_bitset<>* other) {
 	if (other && !other->empty()) {
 		cont.resize(std::max(cont.size(), other->size()));
@@ -492,7 +497,58 @@ inline void readRaw(S& stream, T& value) {
 	stream.read(reinterpret_cast<char*>(&value), sizeof(T));
 }
 
-inline void writeUTF8String(std::ostream& output, const UChar* str, size_t len = 0) {
+template<typename T>
+inline void writeBE(std::ostream& stream, T value) {
+	value = be::native_to_big(value);
+	writeRaw(stream, value);
+}
+
+template<>
+inline void writeBE(std::ostream& stream, double value) {
+	int exp = 0;
+	auto mant64 = UI64(SI64(DBL(std::numeric_limits<int64_t>::max()) * frexp(value, &exp)));
+	auto exp32 = UI32(exp);
+	writeBE(stream, mant64);
+	writeBE(stream, exp32);
+}
+
+template<typename S, typename T>
+inline void writeLE(S& stream, T value) {
+	value = be::native_to_little(value);
+	writeRaw(stream, value);
+}
+
+template<typename T>
+inline T readBE(std::istream& stream) {
+	T value;
+	readRaw(stream, value);
+	return be::big_to_native(value);
+}
+
+template<>
+inline double readBE(std::istream& stream) {
+	auto mant64 = readBE<uint64_t>(stream);
+	auto exp = static_cast<int>(readBE<int32_t>(stream));
+
+	auto value = DBL(SI64(mant64)) / DBL(std::numeric_limits<int64_t>::max());
+
+	return ldexp(value, exp);
+}
+
+template<typename S, typename T>
+inline void readLE(S& stream, T& value) {
+	readRaw(stream, value);
+	be::little_to_native_inplace(value);
+}
+
+template<typename T>
+inline T readLE(std::istream& stream) {
+	T value;
+	readRaw(stream, value);
+	return be::little_to_native(value);
+}
+
+inline void writeUTF8_Raw(std::ostream& output, const UChar* str, size_t len = 0) {
 	if (len == 0) {
 		len = u_strlen(str);
 	}
@@ -507,12 +563,35 @@ inline void writeUTF8String(std::ostream& output, const UChar* str, size_t len =
 	output.write(&buffer[0], cs);
 }
 
-inline void writeUTF8String(std::ostream& output, const UString& str) {
-	writeUTF8String(output, str.data(), str.size());
+inline void writeUTF8_Raw(std::ostream& output, const UString& str) {
+	writeUTF8_Raw(output, str.data(), str.size());
+}
+
+inline void writeUTF8_LE(std::ostream& output, const UChar* str, size_t len = 0) {
+	if (len == 0) {
+		len = u_strlen(str);
+	}
+
+	std::vector<char> buffer(len * 4);
+	int32_t olen = 0;
+	UErrorCode status = U_ZERO_ERROR;
+	u_strToUTF8(&buffer[0], SI32(len * 4 - 1), &olen, str, SI32(len), &status);
+
+	auto cs = UI16(olen);
+	writeLE(output, cs);
+	output.write(&buffer[0], cs);
+}
+
+inline void writeUTF8_LE(std::ostream& output, const UString& str) {
+	writeUTF8_LE(output, str.data(), str.size());
+}
+
+inline void writeUTF8_LE(std::ostream& output, const UStringView& str) {
+	writeUTF8_LE(output, str.data(), str.size());
 }
 
 template<typename S>
-inline UString readUTF8String(S& input) {
+inline UString readUTF8_Raw(S& input) {
 	uint16_t len = 0;
 	readRaw(input, len);
 
@@ -529,53 +608,29 @@ inline UString readUTF8String(S& input) {
 	return rv;
 }
 
-#ifdef _MSC_VER
-	// warning C4127: conditional expression is constant
-	#pragma warning (disable: 4127)
-#endif
+template<typename S, typename Str>
+inline void readUTF8_LE(S& input, Str& rv) {
+	uint16_t len = 0;
+	readLE(input, len);
 
-template<typename T>
-inline void writeBE(std::ostream& stream, T value) {
-	value = be::native_to_big(value);
-	stream.write(reinterpret_cast<const char*>(&value), sizeof(value));
-	if (!stream) {
-		throw std::runtime_error("Stream was in bad state in writeBE()");
-	}
+	rv.clear();
+	rv.resize(len);
+	std::vector<char> buffer(len);
+	input.read(&buffer[0], len);
+
+	int32_t olen = 0;
+	UErrorCode status = U_ZERO_ERROR;
+	u_strFromUTF8(&rv[0], len, &olen, &buffer[0], len, &status);
+
+	rv.resize(olen);
 }
 
-template<>
-inline void writeBE(std::ostream& stream, double value) {
-	int exp = 0;
-	auto mant64 = UI64(SI64(DBL(std::numeric_limits<int64_t>::max()) * frexp(value, &exp)));
-	auto exp32 = UI32(exp);
-	writeBE(stream, mant64);
-	writeBE(stream, exp32);
+template<typename S>
+inline UString readUTF8_LE(S& input) {
+	UString rv;
+	readUTF8_LE(input, rv);
+	return rv;
 }
-
-template<typename T>
-inline T readBE(std::istream& stream) {
-	if (!stream) {
-		throw std::runtime_error("Stream was in bad state in readBE()");
-	}
-	T tmp;
-	stream.read(reinterpret_cast<char*>(&tmp), sizeof(tmp));
-	return be::big_to_native(tmp);
-}
-
-template<>
-inline double readBE(std::istream& stream) {
-	auto mant64 = readBE<uint64_t>(stream);
-	auto exp = static_cast<int>(readBE<int32_t>(stream));
-
-	auto value = DBL(SI64(mant64)) / DBL(std::numeric_limits<int64_t>::max());
-
-	return ldexp(value, exp);
-}
-
-#ifdef _MSC_VER
-	// warning C4127: conditional expression is constant
-	#pragma warning (default: 4127)
-#endif
 
 template<typename Cont>
 inline void GAppSetOpts_ranged(const char* value, Cont& cont, bool fill = true) {

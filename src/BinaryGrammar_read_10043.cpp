@@ -83,7 +83,7 @@ int BinaryGrammar::readBinaryGrammar_10043(std::istream& input) {
 	auto num_single_tags = u32tmp;
 	grammar->num_tags = num_single_tags;
 	grammar->single_tags_list.resize(num_single_tags);
-	for (uint32_t i = 0; i < num_single_tags; i++) {
+	for (uint32_t i = 0; i < num_single_tags; ++i) {
 		Tag* t = grammar->allocateTag();
 
 		auto fields = readBE<uint32_t>(input);
@@ -190,7 +190,7 @@ int BinaryGrammar::readBinaryGrammar_10043(std::istream& input) {
 		u32tmp = readBE<uint32_t>(input);
 	}
 	auto num_pref_targets = u32tmp;
-	for (uint32_t i = 0; i < num_pref_targets; i++) {
+	for (uint32_t i = 0; i < num_pref_targets; ++i) {
 		u32tmp = readBE<uint32_t>(input);
 		grammar->preferred_targets.push_back(u32tmp);
 	}
@@ -200,7 +200,7 @@ int BinaryGrammar::readBinaryGrammar_10043(std::istream& input) {
 		u32tmp = readBE<uint32_t>(input);
 	}
 	auto num_par_pairs = u32tmp;
-	for (uint32_t i = 0; i < num_par_pairs; i++) {
+	for (uint32_t i = 0; i < num_par_pairs; ++i) {
 		auto left = readBE<uint32_t>(input);
 		auto right = readBE<uint32_t>(input);
 		grammar->parentheses[left] = right;
@@ -212,7 +212,7 @@ int BinaryGrammar::readBinaryGrammar_10043(std::istream& input) {
 		u32tmp = readBE<uint32_t>(input);
 	}
 	uint32_t num_par_anchors = u32tmp;
-	for (uint32_t i = 0; i < num_par_anchors; i++) {
+	for (uint32_t i = 0; i < num_par_anchors; ++i) {
 		auto left = readBE<uint32_t>(input);
 		auto right = readBE<uint32_t>(input);
 		grammar->anchors[left] = right;
@@ -224,7 +224,7 @@ int BinaryGrammar::readBinaryGrammar_10043(std::istream& input) {
 	}
 	auto num_sets = u32tmp;
 	grammar->sets_list.resize(num_sets);
-	for (uint32_t i = 0; i < num_sets; i++) {
+	for (uint32_t i = 0; i < num_sets; ++i) {
 		Set* s = grammar->allocateSet();
 
 		auto fields = readBE<uint32_t>(input);
@@ -252,14 +252,14 @@ int BinaryGrammar::readBinaryGrammar_10043(std::istream& input) {
 		if (fields & (1 << 4)) {
 			u32tmp = readBE<uint32_t>(input);
 			auto num_set_ops = u32tmp;
-			for (uint32_t j = 0; j < num_set_ops; j++) {
+			for (uint32_t j = 0; j < num_set_ops; ++j) {
 				u32tmp = readBE<uint32_t>(input);
 				s->set_ops.push_back(u32tmp);
 			}
 		}
 		if (fields & (1 << 5)) {
 			auto num_sets = readBE<uint32_t>(input);
-			for (uint32_t j = 0; j < num_sets; j++) {
+			for (uint32_t j = 0; j < num_sets; ++j) {
 				u32tmp = readBE<uint32_t>(input);
 				s->sets.push_back(u32tmp);
 			}
@@ -302,7 +302,7 @@ int BinaryGrammar::readBinaryGrammar_10043(std::istream& input) {
 	}
 	auto num_contexts = u32tmp;
 	contexts_list.resize(num_contexts);
-	for (uint32_t i = 0; i < num_contexts; i++) {
+	for (uint32_t i = 0; i < num_contexts; ++i) {
 		ContextualTest* t = readContextualTest_10043(input);
 		grammar->contexts[t->hash] = t;
 		contexts_list[i] = t;
@@ -314,7 +314,7 @@ int BinaryGrammar::readBinaryGrammar_10043(std::istream& input) {
 	}
 	auto num_rules = u32tmp;
 	grammar->rule_by_number.resize(num_rules);
-	for (uint32_t i = 0; i < num_rules; i++) {
+	for (uint32_t i = 0; i < num_rules; ++i) {
 		Rule* r = grammar->allocateRule();
 
 		auto fields = readBE<uint32_t>(input);
@@ -387,14 +387,14 @@ int BinaryGrammar::readBinaryGrammar_10043(std::istream& input) {
 		}
 
 		auto num_dep_tests = readBE<uint32_t>(input);
-		for (uint32_t j = 0; j < num_dep_tests; j++) {
+		for (uint32_t j = 0; j < num_dep_tests; ++j) {
 			u32tmp = readBE<uint32_t>(input);
 			ContextualTest* t = contexts_list[u32tmp - 1];
 			r->addContextualTest(t, r->dep_tests);
 		}
 
 		auto num_tests = readBE<uint32_t>(input);
-		for (uint32_t j = 0; j < num_tests; j++) {
+		for (uint32_t j = 0; j < num_tests; ++j) {
 			u32tmp = readBE<uint32_t>(input);
 			ContextualTest* t = contexts_list[u32tmp - 1];
 			r->addContextualTest(t, r->tests);

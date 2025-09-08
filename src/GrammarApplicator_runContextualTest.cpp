@@ -477,7 +477,7 @@ Cohort* GrammarApplicator::runContextualTest(SingleWindow* sWindow, size_t posit
 				goto label_gotACohort;
 			}
 
-			for (uint32_t i = 1; left || right; i++) {
+			for (uint32_t i = 1; left || right; ++i) {
 				if (left) {
 					rvs = 0;
 					cohort = runSingleTest(left, lpos - i, test, rvs, &retval, deep, origin);

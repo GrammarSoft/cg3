@@ -1,8 +1,8 @@
 "<word>"
-	"word" @mapped $tag §tag £tag @tag ADD:4 ADD:5 ADD:6 ADD:7
+	"word" @mapped $tag §tag @tag £tag ADD:4 ADD:5 ADD:6 ADD:7
 	"word" £mapped
-	"word" §mapped $tag §tag £tag @tag ADD:4 ADD:5 ADD:6 ADD:7
-	"word" $mapped $tag §tag £tag @tag ADD:4 ADD:5 ADD:6 ADD:7
+	"word" §mapped $tag §tag @tag £tag ADD:4 ADD:5 ADD:6 ADD:7
+	"word" $mapped $tag §tag @tag £tag ADD:4 ADD:5 ADD:6 ADD:7
 "<word2>"
 	"word2" a £re-mapped UNMAP:9:normal MAP:12
 "<word2>"
@@ -16,4 +16,3 @@
 "<word3>"
 	"word3" a b c REMOVE:15
 ;	"word3" a b c £a £b £c REMOVE:15
-

@@ -63,13 +63,13 @@ int main(int argc, char* argv[]) {
 		fprintf(out, "Options:\n");
 
 		size_t longest = 0;
-		for (uint32_t i = 0; i < options_conv.size(); i++) {
+		for (uint32_t i = 0; i < options_conv.size(); ++i) {
 			if (!options_conv[i].description.empty()) {
 				size_t len = strlen(options_conv[i].longName);
 				longest = std::max(longest, len);
 			}
 		}
-		for (uint32_t i = 0; i < options_conv.size(); i++) {
+		for (uint32_t i = 0; i < options_conv.size(); ++i) {
 			if (!options_conv[i].description.empty() && options_conv[i].description[0] != '!') {
 				fprintf(out, " ");
 				if (options_conv[i].shortName) {
@@ -151,6 +151,9 @@ int main(int argc, char* argv[]) {
 	else if (options_conv[IN_JSONL].doesOccur) {
 		fmt = CG3SF_JSONL;
 	}
+	else if (options_conv[IN_BINARY].doesOccur) {
+		fmt = CG3SF_BINARY;
+	}
 
 	if (options_conv[IN_AUTO].doesOccur || fmt == CG3SF_INVALID) {
 		_instream = applicator.detectFormat(std::cin);
@@ -210,6 +213,9 @@ int main(int argc, char* argv[]) {
 	else if (options_conv[OUT_JSONL].doesOccur) {
 		applicator.fmt_output = CG3SF_JSONL;
 	}
+	else if (options_conv[OUT_BINARY].doesOccur) {
+		applicator.fmt_output = CG3SF_BINARY;
+	}
 
 	if (options_conv[UNICODE_TAGS].doesOccur) {
 		applicator.unicode_tags = true;
@@ -225,6 +231,15 @@ int main(int argc, char* argv[]) {
 	if (options_conv[PARSE_DEP].doesOccur) {
 		applicator.parse_dep = true;
 		applicator.has_dep = true;
+	}
+	if (options_conv[DEP_DELIMIT].doesOccur) {
+		if (!options_conv[DEP_DELIMIT].value.empty()) {
+			applicator.dep_delimit = std::stoul(options_conv[DEP_DELIMIT].value);
+		}
+		else {
+			applicator.dep_delimit = 10;
+		}
+		applicator.parse_dep = true;
 	}
 	applicator.is_conv = true;
 	applicator.trace = true;

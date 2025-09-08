@@ -778,7 +778,7 @@ void JsonlApplicator::printSingleWindow(SingleWindow* window, std::ostream& outp
 
 	// Print flush command if needed
 	if (window->flush_after) {
-		printStreamCommand(UString(STR_CMD_FLUSH), output);
+		printStreamCommand(STR_CMD_FLUSH, output);
 	}
 }
 

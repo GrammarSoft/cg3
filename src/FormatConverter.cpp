@@ -28,6 +28,11 @@ cg3_sformat detectFormat(std::string_view buf8) {
 	cg3_sformat fmt = CG3SF_INVALID;
 	UErrorCode status = U_ZERO_ERROR;
 
+	if (is_cg3bsf(buf8)) {
+		fmt = CG3SF_BINARY;
+		return fmt;
+	}
+
 	UString buffer(BUF_SIZE, 0);
 	int32_t nr = 0;
 	u_strFromUTF8(&buffer[0], BUF_SIZE, &nr, buf8.data(), SI32(buf8.size()), &status);
@@ -96,6 +101,7 @@ cg3_sformat detectFormat(std::string_view buf8) {
 FormatConverter::FormatConverter(std::ostream& ux_err)
   : GrammarApplicator(ux_err)
   , ApertiumApplicator(ux_err)
+  , BinaryApplicator(ux_err)
   , FSTApplicator(ux_err)
   , JsonlApplicator(ux_err)
   , MatxinApplicator(ux_err)
@@ -126,6 +132,10 @@ void FormatConverter::runGrammarOnText(std::istream& input, std::ostream& output
 	ux_stdin = &input;
 	ux_stdout = &output;
 
+	if (fmt_output == CG3SF_BINARY || fmt_input == CG3SF_BINARY) {
+		grammar->has_relations = true;
+	}
+
 	switch (fmt_input) {
 	case CG3SF_CG: {
 		GrammarApplicator::runGrammarOnText(input, output);
@@ -149,6 +159,10 @@ void FormatConverter::runGrammarOnText(std::istream& input, std::ostream& output
 	}
 	case CG3SF_JSONL: {
 		JsonlApplicator::runGrammarOnText(input, output);
+		break;
+	}
+	case CG3SF_BINARY: {
+		BinaryApplicator::runGrammarOnText(input, output);
 		break;
 	}
 	default:
@@ -182,6 +196,8 @@ void FormatConverter::printCohort(Cohort* cohort, std::ostream& output, bool pro
 		JsonlApplicator::printCohort(cohort, output, profiling);
 		break;
 	}
+	case CG3SF_BINARY:
+		break;
 	default:
 		CG3Quit();
 	}
@@ -213,6 +229,10 @@ void FormatConverter::printSingleWindow(SingleWindow* window, std::ostream& outp
 		JsonlApplicator::printSingleWindow(window, output, profiling);
 		break;
 	}
+	case CG3SF_BINARY: {
+		BinaryApplicator::printSingleWindow(window, output, profiling);
+		break;
+	}
 	default:
 		CG3Quit();
 }
@@ -222,6 +242,10 @@ void FormatConverter::printStreamCommand(UStringView cmd, std::ostream& output) 
 	switch (fmt_output) {
 	case CG3SF_JSONL: {
 		JsonlApplicator::printStreamCommand(cmd, output);
+		break;
+	}
+	case CG3SF_BINARY: {
+		BinaryApplicator::printStreamCommand(cmd, output);
 		break;
 	}
 	case CG3SF_CG:
@@ -240,6 +264,10 @@ void FormatConverter::printPlainTextLine(UStringView line, std::ostream& output)
 	switch (fmt_output) {
 	case CG3SF_JSONL: {
 		JsonlApplicator::printPlainTextLine(line, output);
+		break;
+	}
+	case CG3SF_BINARY: {
+		BinaryApplicator::printPlainTextLine(line, output);
 		break;
 	}
 	case CG3SF_CG:

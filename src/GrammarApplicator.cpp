@@ -178,7 +178,7 @@ void GrammarApplicator::index() {
 
 	if (sections.empty()) {
 		int32_t smax = SI32(grammar->sections.size());
-		for (int32_t i = 0; i < smax; i++) {
+		for (int32_t i = 0; i < smax; ++i) {
 			for (auto r : grammar->rules) {
 				if (r->section < 0 || r->section > i) {
 					continue;
@@ -190,8 +190,8 @@ void GrammarApplicator::index() {
 	}
 	else {
 		numsections = UI32(sections.size());
-		for (uint32_t n = 0; n < numsections; n++) {
-			for (uint32_t e = 0; e <= n; e++) {
+		for (uint32_t n = 0; n < numsections; ++n) {
+			for (uint32_t e = 0; e <= n; ++e) {
 				for (auto r : grammar->rules) {
 					if (r->section != SI32(sections[e]) - 1) {
 						continue;
@@ -229,7 +229,7 @@ void GrammarApplicator::index() {
 Tag* GrammarApplicator::addTag(Tag* tag) {
 	uint32_t hash = tag->rehash();
 	uint32_t seed = 0;
-	for (; seed < 10000; seed++) {
+	for (; seed < 10000; ++seed) {
 		uint32_t ih = hash + seed;
 		Taguint32HashMap::iterator it;
 		if ((it = grammar->single_tags.find(ih)) != grammar->single_tags.end()) {
@@ -374,6 +374,9 @@ void GrammarApplicator::printReading(const Reading* reading, std::ostream& outpu
 	}
 
 	uint32SortedVector unique;
+	static thread_local TagList mappings;
+	mappings.clear();
+
 	for (auto tter : reading->tags_list) {
 		if ((!show_end_tags && tter == endtag) || tter == begintag) {
 			continue;
@@ -387,13 +390,21 @@ void GrammarApplicator::printReading(const Reading* reading, std::ostream& outpu
 			}
 			unique.insert(tter);
 		}
-		const Tag* tag = grammar->single_tags[tter];
+		auto tag = grammar->single_tags[tter];
 		if (tag->type & T_DEPENDENCY && has_dep && !dep_original) {
 			continue;
 		}
 		if (tag->type & T_RELATION && has_relations) {
 			continue;
 		}
+		if (tag->type & T_MAPPING) {
+			// Move mappings to the end
+			mappings.push_back(tag);
+			continue;
+		}
+		u_fprintf(output, " %S", tag->tag.data());
+	}
+	for (auto tag : mappings) {
 		u_fprintf(output, " %S", tag->tag.data());
 	}
 
@@ -401,14 +412,13 @@ void GrammarApplicator::printReading(const Reading* reading, std::ostream& outpu
 		if (!reading->parent->dep_self) {
 			reading->parent->dep_self = reading->parent->global_number;
 		}
-		const Cohort* pr = nullptr;
-		pr = reading->parent;
+		auto pr = reading->parent;
 		if (reading->parent->dep_parent != DEP_NO_PARENT) {
 			if (reading->parent->dep_parent == 0) {
 				pr = reading->parent->parent->cohorts[0];
 			}
-			else if (reading->parent->parent->parent->cohort_map.find(reading->parent->dep_parent) != reading->parent->parent->parent->cohort_map.end()) {
-				pr = reading->parent->parent->parent->cohort_map[reading->parent->dep_parent];
+			else if (gWindow->cohort_map.find(reading->parent->dep_parent) != gWindow->cohort_map.end()) {
+				pr = gWindow->cohort_map[reading->parent->dep_parent];
 			}
 		}
 
@@ -582,7 +592,7 @@ void GrammarApplicator::printSingleWindow(SingleWindow* window, std::ostream& ou
 	}
 
 	if (window->flush_after) {
-		printStreamCommand(UString(STR_CMD_FLUSH), output);
+		printStreamCommand(STR_CMD_FLUSH, output);
 	}
 	u_fflush(output);
 }
@@ -605,7 +615,7 @@ void GrammarApplicator::pipeOutReading(const Reading* reading, std::ostream& out
 	writeRaw(ss, flags);
 
 	if (reading->baseform) {
-		writeUTF8String(ss, grammar->single_tags.find(reading->baseform)->second->tag);
+		writeUTF8_Raw(ss, grammar->single_tags.find(reading->baseform)->second->tag);
 	}
 
 	uint32_t cs = 0;
@@ -629,7 +639,7 @@ void GrammarApplicator::pipeOutReading(const Reading* reading, std::ostream& out
 		if (tag->type & T_DEPENDENCY && has_dep) {
 			continue;
 		}
-		writeUTF8String(ss, tag->tag);
+		writeUTF8_Raw(ss, tag->tag);
 	}
 
 	const auto& str = ss.str();
@@ -656,7 +666,7 @@ void GrammarApplicator::pipeOutCohort(const Cohort* cohort, std::ostream& output
 		writeRaw(ss, cohort->dep_parent);
 	}
 
-	writeUTF8String(ss, cohort->wordform->tag);
+	writeUTF8_Raw(ss, cohort->wordform->tag);
 
 	uint32_t cs = UI32(cohort->readings.size());
 	writeRaw(ss, cs);
@@ -664,7 +674,7 @@ void GrammarApplicator::pipeOutCohort(const Cohort* cohort, std::ostream& output
 		pipeOutReading(rter1, ss);
 	}
 	if (!cohort->text.empty()) {
-		writeUTF8String(ss, cohort->text);
+		writeUTF8_Raw(ss, cohort->text);
 	}
 
 	const auto& str = ss.str();
@@ -681,7 +691,7 @@ void GrammarApplicator::pipeOutSingleWindow(const SingleWindow& window, Process&
 	auto cs = UI32(window.cohorts.size()) - 1;
 	writeRaw(ss, cs);
 
-	for (uint32_t c = 1; c < cs + 1; c++) {
+	for (uint32_t c = 1; c < cs + 1; ++c) {
 		pipeOutCohort(window.cohorts[c], ss);
 	}
 
@@ -719,7 +729,7 @@ void GrammarApplicator::pipeInReading(Reading* reading, Process& input, bool for
 	reading->deleted = (flags & (1 << 2)) != 0;
 
 	if (flags & (1 << 3)) {
-		UString str = readUTF8String(ss);
+		UString str = readUTF8_Raw(ss);
 		if (str != grammar->single_tags.find(reading->baseform)->second->tag) {
 			Tag* tag = addTag(str);
 			reading->baseform = tag->hash;
@@ -744,7 +754,7 @@ void GrammarApplicator::pipeInReading(Reading* reading, Process& input, bool for
 	}
 
 	for (size_t i = 0; i < cs; ++i) {
-		UString str = readUTF8String(ss);
+		UString str = readUTF8_Raw(ss);
 		Tag* tag = addTag(str);
 		reading->tags_list.push_back(tag->hash);
 		if (debug_level > 1) {
@@ -785,7 +795,7 @@ void GrammarApplicator::pipeInCohort(Cohort* cohort, Process& input) {
 	}
 
 	bool force_readings = false;
-	UString str = readUTF8String(input);
+	UString str = readUTF8_Raw(input);
 	if (str != cohort->wordform->tag) {
 		Tag* tag = addTag(str);
 		cohort->wordform = tag;
@@ -804,7 +814,7 @@ void GrammarApplicator::pipeInCohort(Cohort* cohort, Process& input) {
 	}
 
 	if (flags & (1 << 0)) {
-		cohort->text = readUTF8String(input);
+		cohort->text = readUTF8_Raw(input);
 		if (debug_level > 1) {
 			u_fprintf(ux_stderr, "DEBUG: cohort text %S\n", cohort->text.data());
 		}
@@ -1008,6 +1018,9 @@ void GrammarApplicator::setOptions(UConverter* conv) {
 	}
 	if (options[PRINT_IDS].doesOccur) {
 		print_ids = true;
+	}
+	if (options[PRINT_DEP].doesOccur) {
+		has_dep = true;
 	}
 	if (options[NUM_WINDOWS].doesOccur) {
 		num_windows = std::stoul(options[NUM_WINDOWS].value);

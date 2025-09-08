@@ -80,7 +80,7 @@ Reading* GrammarApplicator::initEmptyCohort(Cohort& cCohort) {
 	addTagToReading(*cReading, cCohort.wordform);
 	cReading->noprint = true;
 	cCohort.appendReading(cReading);
-	numReadings++;
+	++numReadings;
 	return cReading;
 }
 
@@ -144,6 +144,24 @@ void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& outp
 	all_mappings_t all_mappings;
 
 	ux_stripBOM(input);
+
+	auto adopt_variables = [&]() {
+		cSWindow->variables_set.insert(variables_set.begin(), variables_set.end());
+		variables_set.clear();
+		cSWindow->variables_rem.insert(variables_rem.begin(), variables_rem.end());
+		variables_rem.clear();
+		cSWindow->variables_output.insert(variables_output.begin(), variables_output.end());
+		variables_output.clear();
+	};
+
+	auto binary_maybe_window = [&]() {
+		if (fmt_output == CG3SF_BINARY) {
+			cSWindow = gWindow->allocAppendSingleWindow();
+			initEmptySingleWindow(cSWindow);
+			lSWindow = cSWindow;
+		}
+	};
+	binary_maybe_window();
 
 	while (!input.eof()) {
 		++lines;
@@ -212,7 +230,7 @@ void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& outp
 				lSWindow = cSWindow;
 				cSWindow = nullptr;
 				cCohort = nullptr;
-				numCohorts++;
+				++numCohorts;
 				did_soft_lookback = false;
 			}
 			if (cCohort && (cSWindow->cohorts.size() >= hard_limit || (!dep_delimit && grammar->delimiters && doesSetMatchCohortNormal(*cCohort, grammar->delimiters->number)))) {
@@ -230,7 +248,7 @@ void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& outp
 				lSWindow = cSWindow;
 				cSWindow = nullptr;
 				cCohort = nullptr;
-				numCohorts++;
+				++numCohorts;
 				did_soft_lookback = false;
 			}
 			if (!cSWindow) {
@@ -238,16 +256,9 @@ void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& outp
 				cSWindow = gWindow->allocAppendSingleWindow();
 				initEmptySingleWindow(cSWindow);
 
-				cSWindow->variables_set = variables_set;
-				variables_set.clear();
-				cSWindow->variables_rem = variables_rem;
-				variables_rem.clear();
-				cSWindow->variables_output = variables_output;
-				variables_output.clear();
-
 				lSWindow = cSWindow;
 				cCohort = nullptr;
-				numWindows++;
+				++numWindows;
 				did_soft_lookback = false;
 			}
 			if (cCohort && cSWindow) {
@@ -265,13 +276,16 @@ void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& outp
 					u_fflush(ux_stderr);
 				}
 			}
+			if (cSWindow->all_cohorts.size() == 1) {
+				adopt_variables();
+			}
 			cCohort = alloc_cohort(cSWindow);
 			cCohort->global_number = gWindow->cohort_counter++;
 			cCohort->wordform = addTag(&cleaned[0]);
 			lCohort = cCohort;
 			lReading = nullptr;
 			indents.clear();
-			numCohorts++;
+			++numCohorts;
 			cCohort->line_number = numLines;
 
 			space += 2;
@@ -354,6 +368,7 @@ void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& outp
 				if (base && base[0]) {
 					Tag* tag = addTag(base);
 					if (tag->type & T_MAPPING || tag->tag[0] == grammar->mapping_prefix) {
+						tag->type |= T_MAPPING;
 						all_mappings[cReading].push_back(tag);
 					}
 					else {
@@ -369,6 +384,7 @@ void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& outp
 			if (base && base[0]) {
 				Tag* tag = addTag(base);
 				if (tag->type & T_MAPPING || tag->tag[0] == grammar->mapping_prefix) {
+					tag->type |= T_MAPPING;
 					all_mappings[cReading].push_back(tag);
 				}
 				else {
@@ -396,7 +412,7 @@ void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& outp
 				readings->back()->rehash();
 			}
 			indents.push_back(std::make_pair(indent, cReading));
-			numReadings++;
+			++numReadings;
 
 			// Check whether the cohort still belongs to the window, as per --dep-delimit
 			if (!is_deleted && dep_delimit && dep_highest_seen && (cCohort->dep_self <= dep_highest_seen || cCohort->dep_self - dep_highest_seen > dep_delimit)) {
@@ -491,7 +507,7 @@ void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& outp
 					}
 
 					if (!backSWindow) {
-						printStreamCommand(UString(STR_CMD_FLUSH), output);
+						printStreamCommand(STR_CMD_FLUSH, output);
 					}
 					line[0] = 0;
 					variables.clear();
@@ -506,7 +522,7 @@ void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& outp
 					}
 					is_cmd = true;
 					ignoreinput = true;
-					printStreamCommand(UString(STR_CMD_IGNORE), output);
+					printStreamCommand(STR_CMD_IGNORE, output);
 					line[0] = 0;
 				}
 				else if (&cleaned[0] == STR_CMD_RESUME) {
@@ -515,7 +531,7 @@ void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& outp
 					}
 					is_cmd = true;
 					ignoreinput = false;
-					printStreamCommand(UString(STR_CMD_RESUME), output);
+					printStreamCommand(STR_CMD_RESUME, output);
 					line[0] = 0;
 				}
 				else if (&cleaned[0] == STR_CMD_EXIT) {
@@ -523,7 +539,7 @@ void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& outp
 						u_fprintf(ux_stderr, "Info: EXIT encountered on line %u. Exiting...\n", numLines);
 					}
 					is_cmd = true;
-					printStreamCommand(UString(STR_CMD_EXIT), output);
+					printStreamCommand(STR_CMD_EXIT, output);
 					goto CGCMD_EXIT;
 				}
 				else if (u_strncmp(&cleaned[0], STR_CMD_SETVAR.data(), SI32(STR_CMD_SETVAR.size())) == 0) {
@@ -645,7 +661,7 @@ void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& outp
 						lSWindow = cSWindow;
 						cSWindow = nullptr;
 						cCohort = nullptr;
-						numCohorts++;
+						++numCohorts;
 						did_soft_lookback = false;
 					}
 					else if (lCohort) {
@@ -678,6 +694,10 @@ void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& outp
 		cReading = nullptr;
 		cCohort = nullptr;
 		cSWindow = nullptr;
+	}
+	if (fmt_output == CG3SF_BINARY && !variables_output.empty()) {
+		binary_maybe_window();
+		adopt_variables();
 	}
 	while (!gWindow->next.empty()) {
 		gWindow->shuffleWindowsDown();

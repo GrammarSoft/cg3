@@ -137,7 +137,7 @@ void NicelineApplicator::runGrammarOnText(std::istream& input, std::ostream& out
 				lSWindow = cSWindow;
 				cSWindow = nullptr;
 				cCohort = nullptr;
-				numCohorts++;
+				++numCohorts;
 				did_soft_lookback = false;
 			}
 			if (cCohort && (cSWindow->cohorts.size() >= hard_limit || (!dep_delimit && grammar->delimiters && doesSetMatchCohortNormal(*cCohort, grammar->delimiters->number)))) {
@@ -153,7 +153,7 @@ void NicelineApplicator::runGrammarOnText(std::istream& input, std::ostream& out
 				lSWindow = cSWindow;
 				cSWindow = nullptr;
 				cCohort = nullptr;
-				numCohorts++;
+				++numCohorts;
 				did_soft_lookback = false;
 			}
 			if (!cSWindow) {
@@ -163,7 +163,7 @@ void NicelineApplicator::runGrammarOnText(std::istream& input, std::ostream& out
 
 				lSWindow = cSWindow;
 				cCohort = nullptr;
-				numWindows++;
+				++numWindows;
 				did_soft_lookback = false;
 			}
 			if (cCohort && cSWindow) {
@@ -190,7 +190,7 @@ void NicelineApplicator::runGrammarOnText(std::istream& input, std::ostream& out
 			cCohort->global_number = gWindow->cohort_counter++;
 			cCohort->wordform = addTag(tag);
 			lCohort = cCohort;
-			numCohorts++;
+			++numCohorts;
 
 			++space;
 			while (space && space[0]) {
@@ -257,7 +257,7 @@ void NicelineApplicator::runGrammarOnText(std::istream& input, std::ostream& out
 					splitMappings(mappings, *cCohort, *cReading, true);
 				}
 				cCohort->appendReading(cReading);
-				numReadings++;
+				++numReadings;
 
 				if (tab) {
 					space = ++tab;
@@ -359,8 +359,8 @@ void NicelineApplicator::printReading(const Reading* reading, std::ostream& outp
 			if (reading->parent->dep_parent == 0) {
 				pr = reading->parent->parent->cohorts[0];
 			}
-			else if (reading->parent->parent->parent->cohort_map.find(reading->parent->dep_parent) != reading->parent->parent->parent->cohort_map.end()) {
-				pr = reading->parent->parent->parent->cohort_map[reading->parent->dep_parent];
+			else if (gWindow->cohort_map.find(reading->parent->dep_parent) != gWindow->cohort_map.end()) {
+				pr = gWindow->cohort_map[reading->parent->dep_parent];
 			}
 		}
 

@@ -14,7 +14,7 @@ use Getopt::Long;
 Getopt::Long::Configure('bundling');
 Getopt::Long::Configure('no_ignore_case');
 my %opts = ();
-GetOptions(\%opts, ('weight|w:s', 'reverse|r', 'first|1', 'help|?'));
+GetOptions(\%opts, ('weight|w:s', 'mapping|m:s', 'reverse|r', 'first|1', 'help|?'));
 
 sub print_help {
    print <<'XOUT';
@@ -25,6 +25,7 @@ Pipe a CG stream through this to sort and unique the readings of each cohort.
 Options:
  -?, --help       outputs this help
  -w, --weight     sorts by a numeric tag; defaults to W
+ -m, --mapping    sorts mapping tags with given prefix; defaults to @
  -r, --reverse    reverses the sort order
  -1, --first      only keep the first reading
 
@@ -39,6 +40,11 @@ if (defined $opts{'help'}) {
 my $W = 'W';
 if (exists($opts{weight}) && length($opts{weight})) {
    $W = $opts{weight};
+}
+
+my $M = '@';
+if (exists($opts{mapping}) && length($opts{mapping})) {
+   $M = $opts{mapping};
 }
 
 my $in_cohort = 0;
@@ -65,6 +71,14 @@ sub sort_weight {
 sub print_sorted_readings {
    if (!@_) {
       return;
+   }
+   if (exists($opts{mapping})) {
+      foreach (@_) {
+         my @tags = ($_ =~ m@ ($M\S+)@g);
+         @tags = sort @tags;
+         my $t = join(' ', @tags);
+         $_ =~ s@( $M\S+)+@ $t@;
+      }
    }
    if (exists($opts{weight})) {
       @_ = sort sort_weight @_;

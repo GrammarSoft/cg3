@@ -22,7 +22,7 @@
 #include "TextualParser.hpp"
 #include "GrammarWriter.hpp"
 #include "BinaryGrammar.hpp"
-#include "GrammarApplicator.hpp"
+#include "FormatConverter.hpp"
 #include "version.hpp"
 
 #include "options.hpp"
@@ -86,13 +86,13 @@ int main(int argc, char* argv[]) {
 		fprintf(out, "Options:\n");
 
 		size_t longest = 0;
-		for (uint32_t i = 0; i < options.size(); i++) {
+		for (uint32_t i = 0; i < options.size(); ++i) {
 			if (!options[i].description.empty()) {
 				size_t len = strlen(options[i].longName);
 				longest = std::max(longest, len);
 			}
 		}
-		for (uint32_t i = 0; i < options.size(); i++) {
+		for (uint32_t i = 0; i < options.size(); ++i) {
 			if (!options[i].description.empty()) {
 				fprintf(out, " ");
 				if (options[i].shortName) {
@@ -362,9 +362,55 @@ int main(int argc, char* argv[]) {
 	}
 
 	if (!options[GRAMMAR_ONLY].doesOccur) {
-		GrammarApplicator applicator(*ux_stderr);
+		FormatConverter applicator(*ux_stderr);
+		applicator.fmt_input = CG3SF_CG;
+
+		if (options[IN_CG].doesOccur) {
+			applicator.fmt_input = CG3SF_CG;
+		}
+		else if (options[IN_NICELINE].doesOccur) {
+			applicator.fmt_input = CG3SF_NICELINE;
+		}
+		else if (options[IN_APERTIUM].doesOccur) {
+			applicator.fmt_input = CG3SF_APERTIUM;
+		}
+		else if (options[IN_FST].doesOccur) {
+			applicator.fmt_input = CG3SF_FST;
+		}
+		else if (options[IN_PLAIN].doesOccur) {
+			applicator.fmt_input = CG3SF_PLAIN;
+		}
+		else if (options[IN_JSONL].doesOccur) {
+			applicator.fmt_input = CG3SF_JSONL;
+		}
+		else if (options[IN_BINARY].doesOccur) {
+			applicator.fmt_input = CG3SF_BINARY;
+		}
+
 		applicator.setGrammar(&grammar);
 		applicator.setOptions(conv);
+
+		applicator.fmt_output = CG3SF_CG;
+		if (options[OUT_APERTIUM].doesOccur) {
+			applicator.fmt_output = CG3SF_APERTIUM;
+			applicator.unicode_tags = true;
+		}
+		else if (options[OUT_FST].doesOccur) {
+			applicator.fmt_output = CG3SF_FST;
+		}
+		else if (options[OUT_NICELINE].doesOccur) {
+			applicator.fmt_output = CG3SF_NICELINE;
+		}
+		else if (options[OUT_PLAIN].doesOccur) {
+			applicator.fmt_output = CG3SF_PLAIN;
+		}
+		else if (options[OUT_JSONL].doesOccur) {
+			applicator.fmt_output = CG3SF_JSONL;
+		}
+		else if (options[OUT_BINARY].doesOccur) {
+			applicator.fmt_output = CG3SF_BINARY;
+		}
+
 		if (options[PROFILING].doesOccur) {
 			applicator.profiler = profiler.get();
 		}

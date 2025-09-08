@@ -22,6 +22,7 @@
 #include "TextualParser.hpp"
 #include "BinaryGrammar.hpp"
 #include "ApertiumApplicator.hpp"
+#include "BinaryApplicator.hpp"
 #include "MatxinApplicator.hpp"
 #include "GrammarApplicator.hpp"
 
@@ -48,7 +49,8 @@ void endProgram(char* name) {
 	cout << "	-s, --sections=NUM:	 specify number of sections to process" << endl;
 	cout << "	-f, --stream-format=NUM: set the format of the I/O stream to NUM," << endl;
 	cout << "				   where `0' is VISL format, `1' is Apertium" << endl;
-	cout << "				   format (default: 1)" << endl;
+	cout << "				   format, `2` is Matxin, and `3` is binary" << endl;
+	cout << "                  (default: 1)" << endl;
 	cout << "	-r, --rule=NAME:	 run only the named rule" << endl;
 	cout << "	-t, --trace:		 print debug output on stderr" << endl;
 	cout << "	-w, --wordform-case:	 enforce surface case on lemma/baseform " << endl;
@@ -65,7 +67,8 @@ void endProgram(char* name) {
 	cout << "	-s:	 specify number of sections to process" << endl;
 	cout << "	-f: 	 set the format of the I/O stream to NUM," << endl;
 	cout << "		   where `0' is VISL format, `1' is " << endl;
-	cout << "		   Apertium format and `2' is Matxin (default: 1)" << endl;
+	cout << "		   Apertium format, `2' is Matxin," << endl;
+	cout << "          and `3` is binary (default: 1)" << endl;
 	cout << "	-r:	 run only the named rule" << endl;
 	cout << "	-t:	 print debug output on stderr" << endl;
 	cout << "	-w:	 enforce surface case on lemma/baseform " << endl;
@@ -308,6 +311,10 @@ int main(int argc, char* argv[]) {
 		matxinApplicator->print_only_first = only_first;
 		applicator.reset(matxinApplicator);
 	}
+	else if (stream_format == 3) {
+		BinaryApplicator* binaryApplicator = new BinaryApplicator(std::cerr);
+		applicator.reset(binaryApplicator);
+	}
 	else {
 		ApertiumApplicator* apertiumApplicator = new ApertiumApplicator(std::cerr);
 		apertiumApplicator->wordform_case = wordform_case;
@@ -320,7 +327,7 @@ int main(int argc, char* argv[]) {
 
 	applicator->setGrammar(&grammar);
 	applicator->setOptions();
-	for (int32_t i = 1; i <= sections; i++) {
+	for (int32_t i = 1; i <= sections; ++i) {
 		applicator->sections.push_back(i);
 	}
 
