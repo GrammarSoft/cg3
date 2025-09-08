@@ -7,6 +7,8 @@ use FindBin qw($Bin);
 my $bindir = realpath $Bin;
 chdir $bindir or die("Error: Could not change directory to $bindir !");
 
+$ENV{PERL_UNICODE} = 'SDA';
+
 # Search paths for the binary
 my @binlist = (
 	"../build/src/vislcg3",
