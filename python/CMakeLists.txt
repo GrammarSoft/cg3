@@ -11,6 +11,7 @@ get_directory_property(_defs DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} COMPILE_DEFIN
 foreach(d ${_defs})
 	set(BUILD_DEFS "${BUILD_DEFS} -D${d}")
 endforeach()
+configure_file(cg3.py.in cg3.py @ONLY)
 configure_file(constraint_grammar.i.in constraint_grammar.i @ONLY)
 configure_file(setup.py.in setup.py)
 
