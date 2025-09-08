@@ -368,6 +368,7 @@ void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& outp
 				if (base && base[0]) {
 					Tag* tag = addTag(base);
 					if (tag->type & T_MAPPING || tag->tag[0] == grammar->mapping_prefix) {
+						tag->type |= T_MAPPING;
 						all_mappings[cReading].push_back(tag);
 					}
 					else {
@@ -383,6 +384,7 @@ void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& outp
 			if (base && base[0]) {
 				Tag* tag = addTag(base);
 				if (tag->type & T_MAPPING || tag->tag[0] == grammar->mapping_prefix) {
+					tag->type |= T_MAPPING;
 					all_mappings[cReading].push_back(tag);
 				}
 				else {

@@ -491,6 +491,7 @@ uint32_t GrammarApplicator::addTagToReading(Reading& reading, Tag* tag, bool reh
 	}
 
 	if (tag->type & T_MAPPING || tag->tag[0] == grammar->mapping_prefix) {
+		tag->type |= T_MAPPING;
 		if (reading.mapping && reading.mapping != tag) {
 			u_fprintf(ux_stderr, "Error: addTagToReading() cannot add a mapping tag to a reading which already is mapped!\n");
 			CG3Quit(1);

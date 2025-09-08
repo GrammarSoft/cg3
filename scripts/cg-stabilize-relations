@@ -9,7 +9,7 @@ args = parser.parse_args()
 
 id_map = {}
 
-tag = re.compile(r'\b(ID:|R:\w+:)(\d+)\b')
+tag = re.compile(r'\b(ID:|R:[^:\s]+:)(\d+)\b')
 def repl(matchobj):
     global id_map
     n = matchobj.group(2)

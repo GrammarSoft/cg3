@@ -40,6 +40,12 @@ sub run_pl {
 	my ($binary,$override,$args) = @_;
 	my $good = 1;
 
+	my $prefix = '@';
+	if (-s 'prefix.txt') {
+		$prefix = `cat prefix.txt`;
+		chomp($prefix);
+	}
+
 	# Normal run
 	`"$binary" $args $override -g grammar.cg3 -I input.txt -O output.txt >stdout.txt 2>stderr.txt`;
 	`diff -B expected.txt output.txt >diff.txt`;
@@ -85,11 +91,9 @@ sub run_pl {
 	}
 
 	# Normal run, but with binary I/O
-	my $conv = $binary;
-	$conv =~ s@vislcg3(\.exe)?$@cg-conv@g;
 	`echo "Include Static grammar.cg3 ;" > grammar.bsf.cg3`;
-	`cat input.txt | "$binary" $args --in-cg --out-binary -g grammar.bsf.cg3 2>stderr.bsf.conv1.txt | "$binary" $args $override -g grammar.cg3 --in-binary --out-binary 2>stderr.bsf.vislcg3.txt | "$binary" $args --in-binary --out-cg -g grammar.bsf.cg3 2>stderr.bsf.conv2.txt | "$bindir/../scripts/cg-untrace" | "$bindir/../scripts/cg-sort" -m | "$bindir/../scripts/cg-stabilize-relations" >output.bsf.txt`;
-	`cat expected.txt | "$bindir/../scripts/cg-untrace" | "$bindir/../scripts/cg-sort" -m | "$bindir/../scripts/cg-stabilize-relations" > expected.bsf.txt`;
+	`cat input.txt | "$binary" $args --in-cg --out-binary -g grammar.bsf.cg3 2>stderr.bsf.conv1.txt | "$binary" $args $override -g grammar.cg3 --in-binary --out-binary 2>stderr.bsf.vislcg3.txt | "$binary" $args --in-binary --out-cg -g grammar.bsf.cg3 2>stderr.bsf.conv2.txt | "$bindir/../scripts/cg-untrace" | "$bindir/../scripts/cg-sort" -m '$prefix' | "$bindir/../scripts/cg-stabilize-relations" >output.bsf.txt`;
+	`cat expected.txt | "$bindir/../scripts/cg-untrace" | "$bindir/../scripts/cg-sort" -m '$prefix' | "$bindir/../scripts/cg-stabilize-relations" > expected.bsf.txt`;
 	`diff -B expected.bsf.txt output.bsf.txt >diff.bsf.txt`;
 
 	if (-s "diff.bsf.txt") {
@@ -159,6 +163,7 @@ foreach (@tests) {
 	my $args = '';
 	if (-s 'args.txt') {
 		$args = `cat args.txt`;
+		chomp($args);
 	}
 	if (-x 'run.pl') {
 		`./run.pl "$binary" \Q$c\E $args`;

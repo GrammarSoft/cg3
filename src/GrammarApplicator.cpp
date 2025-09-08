@@ -374,6 +374,9 @@ void GrammarApplicator::printReading(const Reading* reading, std::ostream& outpu
 	}
 
 	uint32SortedVector unique;
+	static thread_local TagList mappings;
+	mappings.clear();
+
 	for (auto tter : reading->tags_list) {
 		if ((!show_end_tags && tter == endtag) || tter == begintag) {
 			continue;
@@ -394,6 +397,14 @@ void GrammarApplicator::printReading(const Reading* reading, std::ostream& outpu
 		if (tag->type & T_RELATION && has_relations) {
 			continue;
 		}
+		if (tag->type & T_MAPPING) {
+			// Move mappings to the end
+			mappings.push_back(tag);
+			continue;
+		}
+		u_fprintf(output, " %S", tag->tag.data());
+	}
+	for (auto tag : mappings) {
 		u_fprintf(output, " %S", tag->tag.data());
 	}
 
