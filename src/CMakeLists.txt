@@ -1,4 +1,5 @@
 find_package(RapidJSON REQUIRED)
+include_directories(${RapidJSON_INCLUDE_DIRS})
 
 if(EMSCRIPTEN)
 	message(STATUS "Detected EMSCRIPTEN: skipping local library discovery and using Emscripten ports")
