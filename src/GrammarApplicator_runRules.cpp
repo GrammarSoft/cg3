@@ -572,7 +572,7 @@ bool GrammarApplicator::runSingleRule(SingleWindow& current, const Rule& rule, R
 			if (reading->noprint && !allow_magic_readings) {
 				continue;
 			}
-			if (reading->immutable && rule.type != K_UNPROTECT) {
+			if (reading->immutable && (rule.type == K_PROTECT || rule.type == K_ADD || rule.type == K_MAP || rule.type == K_REPLACE || rule.type == K_SELECT || rule.type == K_REMOVE || rule.type == K_IFF || rule.type == K_SUBSTITUTE || rule.type == K_UNMAP)) {
 				if (type == K_SELECT) {
 					reading->matched_target = true;
 					reading->matched_tests = true;
