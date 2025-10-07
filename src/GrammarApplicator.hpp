@@ -261,7 +261,7 @@ protected:
 	Rule* current_rule = nullptr;
 	std::vector<Rule_Context> context_stack;
 	std::vector<CohortSet*> cohortsets;
-	std::vector<CohortSet::const_iterator*> rocits;
+	std::vector<size_t*> rocits;
 
 	ReadingSpec get_attach_to();
 	Cohort* get_mark();

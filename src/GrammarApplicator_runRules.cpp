@@ -79,23 +79,23 @@ bool GrammarApplicator::updateRuleToCohorts(Cohort& c, const uint32_t& rsit) {
 	}
 	if (!csi.empty()) {
 		auto cap = cohortset.capacity();
-		std::vector<CohortSet::const_iterator*> ends;
-		std::vector<std::pair<CohortSet::const_iterator*,Cohort*>> chs;
+		std::vector<size_t*> ends;
+		std::vector<std::pair<size_t*,Cohort*>> chs;
 		for (size_t i = 0; i < csi.size(); ++i) {
-			if (*rocits[csi[i]] == cohortset.end()) {
+			if (*rocits[csi[i]] >= cohortset.size()) {
 				ends.push_back(rocits[csi[i]]);
 			}
 			else {
-				chs.push_back(std::pair(rocits[csi[i]], **rocits[csi[i]]));
+				chs.push_back(std::pair(rocits[csi[i]], cohortset.at(*rocits[csi[i]])));
 			}
 		}
 		cohortset.insert(&c);
 		for (auto it : ends) {
-			*it = cohortset.end();
+			*it = cohortset.size();
 		}
 		if (cap != cohortset.capacity()) {
 			for (auto& it : chs) {
-				*it.first = cohortset.find(it.second);
+				*it.first = cohortset.find_n(it.second);
 			}
 		}
 	}
@@ -375,9 +375,9 @@ bool GrammarApplicator::runSingleRule(SingleWindow& current, const Rule& rule, R
 	if (debug_level > 1) {
 		std::cerr << "DEBUG: " << cohortset->size() << "/" << current.cohorts.size() << " = " << double(cohortset->size()) / double(current.cohorts.size()) << std::endl;
 	}
-	for (auto rocit = cohortset->cbegin(); (!cohortset->empty()) && (rocit != cohortset->cend());) {
+	for (size_t rocit = 0; rocit < cohortset->size();) {
 		rocits.back() = &rocit;
-		Cohort* cohort = *rocit;
+		Cohort* cohort = cohortset->at(rocit);
 		++rocit;
 
 		finish_reading_loop = true;
@@ -529,14 +529,10 @@ bool GrammarApplicator::runSingleRule(SingleWindow& current, const Rule& rule, R
 			cohortset = &current.rule_to_cohorts[rule.number];
 			override_cohortset();
 			cohortsets.back() = cohortset;
-			if (get_apply_to().cohort->type & (CT_REMOVED | CT_IGNORED)) {
-				rocit = cohortset->lower_bound(current.cohorts[get_apply_to().cohort->local_number]);
-			}
-			else {
-				rocit = cohortset->find(current.cohorts[get_apply_to().cohort->local_number]);
-				if (rocit != cohortset->end()) {
-					++rocit;
-				}
+			auto gac = get_apply_to().cohort;
+			rocit = gac->local_number;
+			if (!(gac->type & (CT_REMOVED | CT_IGNORED)) && rocit < cohortset->size()) {
+				++rocit;
 			}
 		};
 
@@ -790,7 +786,7 @@ bool GrammarApplicator::runSingleRule(SingleWindow& current, const Rule& rule, R
 		if (num_active == 0 && (num_iff == 0 || rule.type != K_IFF)) {
 			if (!matched_target) {
 				--rocit;                         // We have already incremented rocit earlier, so take one step back...
-				rocit = cohortset->erase(rocit); // ...and one step forward again
+				cohortset->erase_n(rocit); // ...and one step forward again
 			}
 			context_stack.pop_back();
 			continue;
@@ -1223,7 +1219,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 				}
 				else if (current.next) {
 					current.next->text = current.text_post + current.next->text;
-					current.next->all_cohorts.insert(current.previous->all_cohorts.begin() + 1, current.all_cohorts.begin() + 1, current.all_cohorts.end());
+					current.next->all_cohorts.insert(current.next->all_cohorts.begin() + 1, current.all_cohorts.begin() + 1, current.all_cohorts.end());
 				}
 				current.all_cohorts.clear();
 
@@ -1755,9 +1751,9 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						cCohort->relations.swap(get_apply_to().cohort->relations);
 
 						std::pair<SingleWindow**, size_t> swss[3] = {
-							std::make_pair(&gWindow->previous[0], gWindow->previous.size()),
+							std::make_pair(gWindow->previous.data(), gWindow->previous.size()),
 							std::make_pair(&gWindow->current, static_cast<size_t>(1)),
-							std::make_pair(&gWindow->next[0], gWindow->next.size()),
+							std::make_pair(gWindow->next.data(), gWindow->next.size()),
 						};
 						for (auto sws : swss) {
 							for (size_t sw = 0; sw < sws.second; ++sw) {

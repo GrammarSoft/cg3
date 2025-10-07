@@ -95,7 +95,7 @@ inline void MathParser::eval_add_sub(double& result) {
 	UChar op = 0;
 	double temp = 0;
 	eval_mul_div(result);
-	while ((op = token[0]) == '+' || op == '-') {
+	while (!token.empty() && ((op = token[0]) == '+' || op == '-')) {
 		get_token();
 		eval_mul_div(temp);
 		switch (op) {
@@ -113,7 +113,7 @@ inline void MathParser::eval_mul_div(double& result) {
 	UChar op = 0;
 	double temp = 0;
 	eval_exp(result);
-	while ((op = token[0]) == '*' || op == '/') {
+	while (!token.empty() && ((op = token[0]) == '*' || op == '/')) {
 		get_token();
 		eval_exp(temp);
 		switch (op) {
@@ -130,7 +130,7 @@ inline void MathParser::eval_mul_div(double& result) {
 inline void MathParser::eval_exp(double& result) {
 	double temp = 0;
 	eval_unary(result);
-	while (token[0] == '^') {
+	while (!token.empty() && token[0] == '^') {
 		get_token();
 		eval_unary(temp);
 		result = pow(result, temp);

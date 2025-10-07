@@ -81,7 +81,11 @@ public:
 		//*/
 		iterator it = std::lower_bound(elements.begin(), elements.end(), t, comp);
 		size_t at = std::distance(elements.begin(), it);
-		if (it == elements.end() || comp(*it, t) || comp(t, *it)) {
+		if (it == elements.end()) {
+			elements.emplace_back(t);
+			return std::make_pair(elements.begin() + at, true);
+		}
+		if (comp(*it, t) || comp(t, *it)) {
 			elements.insert(it, t);
 			return std::make_pair(elements.begin() + at, true);
 		}
@@ -142,6 +146,10 @@ public:
 		return elements.erase(elements.begin() + o);
 	}
 
+	void erase_n(size_type i) {
+		elements.erase(elements.begin() + i);
+	}
+
 	template<typename It>
 	void erase(It b, It e) {
 		for (; b != e; ++b) {
@@ -166,7 +174,12 @@ public:
 		return it;
 	}
 
-	size_t count(T t) const {
+	size_type find_n(T t) const {
+		auto it = find(t);
+		return std::distance(elements.begin(), it);
+	}
+
+	size_type count(T t) const {
 		return (find(t) != end());
 	}
 
@@ -212,6 +225,10 @@ public:
 
 	T back() const {
 		return elements.back();
+	}
+
+	T& at(size_type i) {
+		return elements[i];
 	}
 
 	iterator lower_bound(T t) {

@@ -172,9 +172,25 @@ public:
 	}
 
 	bool insert(T t) {
+		if (elements.empty()) {
+			elements.emplace_back(interval(t));
+			return true;
+		}
 		auto it = std::lower_bound(elements.begin(), elements.end(), t);
 		if (it != elements.end() && t >= it->lb && t <= it->ub) {
 			return false;
+		}
+		if (it == elements.begin()) {
+			if (it->ub + 1 == t) {
+				++it->ub;
+			}
+			else if (it->lb - 1 == t) {
+				--it->lb;
+			}
+			else {
+				elements.insert(it, interval(t));
+			}
+			return true;
 		}
 		auto pr = it - 1;
 		if (it != elements.begin() && pr->ub + 1 == t) {
