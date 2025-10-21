@@ -51,10 +51,20 @@ def parse_binary_window(buf):
 		ret = struct.unpack_from('<'+pat, buf, pos)
 		pos += struct.calcsize('<'+pat)
 		return ret
+	# These two get called often enough that pre-compiling them
+    # gives us a ~25% speedup over calling read_pat()
+	u16_reader = struct.Struct('<H')
 	def read_u16():
-		return read_pat('H')[0]
+		nonlocal pos
+		ret = u16_reader.unpack_from(buf, pos)[0]
+		pos += 2
+		return ret
+	u32_reader = struct.Struct('<I')
 	def read_u32():
-		return read_pat('I')[0]
+		nonlocal pos
+		ret = u32_reader.unpack_from(buf, pos)[0]
+		pos += 4
+		return ret
 	def read_str():
 		l = read_u16()
 		if l == 0:
