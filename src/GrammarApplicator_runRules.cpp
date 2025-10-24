@@ -487,6 +487,7 @@ bool GrammarApplicator::runSingleRule(SingleWindow& current, const Rule& rule, R
 
 		size_t num_active = 0;
 		size_t num_iff = 0;
+		size_t num_immutable = 0;
 
 		std::vector<Rule_Context> reading_contexts;
 		reading_contexts.reserve(cohort->readings.size());
@@ -568,14 +569,17 @@ bool GrammarApplicator::runSingleRule(SingleWindow& current, const Rule& rule, R
 			if (reading->noprint && !allow_magic_readings) {
 				continue;
 			}
-			if (reading->immutable && (rule.type == K_PROTECT || rule.type == K_ADD || rule.type == K_MAP || rule.type == K_REPLACE || rule.type == K_SELECT || rule.type == K_REMOVE || rule.type == K_IFF || rule.type == K_SUBSTITUTE || rule.type == K_UNMAP)) {
+			if (reading->immutable && rule.type != K_UNPROTECT) {
+				if (rule.type == K_PROTECT || rule.type == K_ADD || rule.type == K_MAP || rule.type == K_REPLACE || rule.type == K_SELECT || rule.type == K_REMOVE || rule.type == K_IFF || rule.type == K_SUBSTITUTE || rule.type == K_UNMAP) {
+					++num_active;
+				}
 				if (type == K_SELECT) {
 					reading->matched_target = true;
 					reading->matched_tests = true;
 					reading_contexts.push_back(context_stack.back());
 				}
-				++num_active;
 				++num_iff;
+				++num_immutable;
 				continue;
 			}
 
@@ -784,7 +788,7 @@ bool GrammarApplicator::runSingleRule(SingleWindow& current, const Rule& rule, R
 
 		// If none of the readings were valid targets, remove this cohort from the rule's possible cohorts.
 		if (num_active == 0 && (num_iff == 0 || rule.type != K_IFF)) {
-			if (!matched_target) {
+			if (num_immutable == 0 && !matched_target) {
 				--rocit;                         // We have already incremented rocit earlier, so take one step back...
 				cohortset->erase_n(rocit); // ...and one step forward again
 			}
