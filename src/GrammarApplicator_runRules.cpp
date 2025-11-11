@@ -2192,7 +2192,9 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						}
 					}
 					if (rule->flags & RF_AFTER) {
-						std::advance(it, spot_tags->size());
+						for (size_t i = 0; it != cReading->tags_list.end() && i != spot_tags->size(); ++i) {
+							++it;
+						}
 					}
 					if (it != cReading->tags_list.end()) {
 						insert_taglist_to_reading(it, *theTags, *cReading, mappings);
