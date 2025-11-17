@@ -531,7 +531,12 @@ bool GrammarApplicator::runSingleRule(SingleWindow& current, const Rule& rule, R
 			override_cohortset();
 			cohortsets.back() = cohortset;
 			auto gac = get_apply_to().cohort;
-			rocit = gac->local_number;
+			auto lb = cohortset->lower_bound(current.cohorts[gac->local_number]);
+			if (lb == cohortset->end()) {
+				rocit = cohortset->size();
+			} else {
+				rocit = cohortset->find_n(*lb);
+			}
 			if (!(gac->type & (CT_REMOVED | CT_IGNORED)) && rocit < cohortset->size()) {
 				++rocit;
 			}
