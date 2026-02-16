@@ -22,6 +22,7 @@
 #include "TextualParser.hpp"
 #include "BinaryGrammar.hpp"
 #include "GrammarApplicator.hpp"
+#include "BinaryApplicator.hpp"
 #include "MweSplitApplicator.hpp"
 #include "FormatConverter.hpp"
 #include "Window.hpp"
@@ -227,6 +228,14 @@ cg3_applicator* cg3_applicator_create(cg3_grammar* grammar_) {
 	return applicator;
 }
 
+cg3_applicator* cg3_applicator_create_binary(cg3_grammar* grammar_) {
+	auto grammar = static_cast<Grammar*>(grammar_);
+	BinaryApplicator* applicator = new BinaryApplicator(*ux_stderr);
+	applicator->setGrammar(grammar);
+	applicator->index();
+	return applicator;
+}
+
 cg3_mwesplitapplicator* cg3_mwesplitapplicator_create() {
 	auto mwe = new MweSplitApplicator(*ux_stderr);
 	return static_cast<GrammarApplicator*>(mwe);
@@ -286,6 +295,21 @@ void cg3_run_grammar_on_text_fns(cg3_applicator* applicator_, const char* input,
 	std::ifstream is(input, std::ios::binary);
 	std::ofstream os(output, std::ios::binary);
 	applicator->runGrammarOnText(is, os);
+}
+
+size_t cg3_run_grammar_on_buffer(cg3_applicator* applicator_, const char* input, size_t in_length, char* output, size_t out_length) {
+	GrammarApplicator* applicator = static_cast<GrammarApplicator*>(applicator_);
+	std::string istr(input, in_length);
+	std::istringstream is(istr);
+	std::ostringstream os;
+	applicator->runGrammarOnText(is, os);
+	// Ideally we would write directly to output without copying,
+	// but I couldn't figure out how to do that, and this is good
+	// enough for my purposes. -DGS 2026-02-16
+	const auto& ostr = os.str();
+	auto mx = (ostr.size() > out_length ? out_length : ostr.size());
+	memcpy(output, ostr.data(), mx);
+	return mx;
 }
 
 cg3_sentence* cg3_sentence_new(cg3_applicator* applicator_) {

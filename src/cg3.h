@@ -101,6 +101,7 @@ void cg3_sconverter_free(cg3_sconverter* converter_);
 void cg3_sconverter_run_fns(cg3_sconverter* converter_, const char* input, const char* output);
 
 cg3_applicator* cg3_applicator_create(cg3_grammar* grammar);
+cg3_applicator* cg3_applicator_create_binary(cg3_grammar* grammar);
 // Pass in OR'ed values from cg3_flags; each call resets flags, so set all needed ones in a single call.
 void cg3_applicator_setflags(cg3_applicator* applicator, uint32_t flags);
 /*
@@ -115,6 +116,7 @@ void cg3_applicator_free(cg3_applicator* applicator);
 
 void cg3_run_grammar_on_text(cg3_applicator*, std_istream*, std_ostream*);
 void cg3_run_grammar_on_text_fns(cg3_applicator*, const char* input, const char* output);
+size_t cg3_run_grammar_on_buffer(cg3_applicator* applicator_, const char* input, size_t in_length, char* output, size_t out_length);
 
 cg3_mwesplitapplicator* cg3_mwesplitapplicator_create();
 #define cg3_mwesplitapplicator_free cg3_applicator_free
