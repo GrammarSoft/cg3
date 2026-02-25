@@ -345,6 +345,15 @@ void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& outp
 				--space;
 			}
 
+			// Retry without escaping, to catch baseforms that have \ before the last "
+			if (*space != '"') {
+				space = base;
+				++space;
+				SKIPTO_NOSPAN_RAW(space, '"');
+				SKIPTOWS(space, 0, true, true);
+				--space;
+			}
+
 			// This does not consider wordforms as invalid readings since chained CG-3 may produce such
 			if (*space != '"') {
 				u_fprintf(ux_stderr, "Warning: %S on line %u looked like a reading but wasn't - treated as text.\n", &cleaned[0], numLines);
