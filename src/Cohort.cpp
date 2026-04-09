@@ -29,7 +29,7 @@
 
 namespace CG3 {
 
-extern pool<Cohort> pool_cohorts;
+extern thread_local pool<Cohort> pool_cohorts;
 
 Cohort* alloc_cohort(SingleWindow* p) {
 	Cohort* c = pool_cohorts.get();

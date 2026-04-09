@@ -32,9 +32,9 @@
 namespace CG3 {
 
 // Order is important - we want SingleWindows to be destroyed first, then Cohorts, then Readings
-pool<Reading> pool_readings;
-pool<Cohort> pool_cohorts;
-pool<SingleWindow> pool_swindows;
+thread_local pool<Reading> pool_readings;
+thread_local pool<Cohort> pool_cohorts;
+thread_local pool<SingleWindow> pool_swindows;
 
 GrammarApplicator::GrammarApplicator(std::ostream& ux_err)
   : ux_stderr(&ux_err)
@@ -48,7 +48,7 @@ GrammarApplicator::~GrammarApplicator() {
 		delete grammar;
 	}
 	grammar = nullptr;
-	ux_stderr = nullptr;
+	//ux_stderr = nullptr;
 
 	for (auto rx : text_delimiters) {
 		uregex_close(rx);

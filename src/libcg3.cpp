@@ -283,6 +283,11 @@ void cg3_applicator_free(cg3_applicator* applicator_) {
 	delete applicator;
 }
 
+void cg3_applicator_free_binary(cg3_applicator* applicator_) {
+	GrammarApplicator* applicator = static_cast<BinaryApplicator*>(applicator_);
+	delete applicator;
+}
+
 void cg3_run_grammar_on_text(cg3_applicator* applicator_, std_istream* is_, std_ostream* os_) {
 	GrammarApplicator* applicator = static_cast<GrammarApplicator*>(applicator_);
 	std::istream* is = static_cast<std::istream*>(is_);
@@ -299,6 +304,21 @@ void cg3_run_grammar_on_text_fns(cg3_applicator* applicator_, const char* input,
 
 size_t cg3_run_grammar_on_buffer(cg3_applicator* applicator_, const char* input, size_t in_length, char* output, size_t out_length) {
 	GrammarApplicator* applicator = static_cast<GrammarApplicator*>(applicator_);
+	std::string istr(input, in_length);
+	std::istringstream is(istr);
+	std::ostringstream os;
+	applicator->runGrammarOnText(is, os);
+	// Ideally we would write directly to output without copying,
+	// but I couldn't figure out how to do that, and this is good
+	// enough for my purposes. -DGS 2026-02-16
+	const auto& ostr = os.str();
+	auto mx = (ostr.size() > out_length ? out_length : ostr.size());
+	memcpy(output, ostr.data(), mx);
+	return mx;
+}
+
+size_t cg3_run_grammar_on_buffer_binary(cg3_applicator* applicator_, const char* input, size_t in_length, char* output, size_t out_length) {
+	BinaryApplicator* applicator = static_cast<BinaryApplicator*>(applicator_);
 	std::string istr(input, in_length);
 	std::istringstream is(istr);
 	std::ostringstream os;
