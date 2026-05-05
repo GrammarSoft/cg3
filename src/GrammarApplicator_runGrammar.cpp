@@ -670,6 +670,7 @@ void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& outp
 						lSWindow = cSWindow;
 						cSWindow = nullptr;
 						cCohort = nullptr;
+						lCohort = nullptr;
 						++numCohorts;
 						did_soft_lookback = false;
 					}
@@ -677,7 +678,12 @@ void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& outp
 						lCohort->text += &line[0];
 					}
 					else if (lSWindow) {
-						lSWindow->text += &line[0];
+						if (!lSWindow->text_post.empty()) {
+							lSWindow->text_post += &line[0];
+						}
+						else {
+							lSWindow->text += &line[0];
+						}
 					}
 					else if (!is_cmd) {
 						printPlainTextLine(&line[0], output);
