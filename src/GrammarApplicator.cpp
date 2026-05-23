@@ -48,7 +48,7 @@ GrammarApplicator::~GrammarApplicator() {
 		delete grammar;
 	}
 	grammar = nullptr;
-	//ux_stderr = nullptr;
+	ux_stderr = nullptr;
 
 	for (auto rx : text_delimiters) {
 		uregex_close(rx);
