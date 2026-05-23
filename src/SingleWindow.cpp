@@ -24,7 +24,7 @@
 
 namespace CG3 {
 
-extern pool<SingleWindow> pool_swindows;
+extern thread_local pool<SingleWindow> pool_swindows;
 
 SingleWindow* alloc_swindow(Window* p) {
 	SingleWindow* s = pool_swindows.get();

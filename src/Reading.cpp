@@ -23,7 +23,7 @@
 
 namespace CG3 {
 
-extern pool<Reading> pool_readings;
+extern thread_local pool<Reading> pool_readings;
 
 Reading* alloc_reading(Cohort* p) {
 	Reading* r = pool_readings.get();

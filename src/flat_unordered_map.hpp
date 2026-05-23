@@ -295,7 +295,7 @@ public:
 			return;
 		}
 
-		static container vals;
+		thread_local static container vals;
 		vals.resize(0);
 		vals.reserve(size_);
 		for (auto& elem : elements) {

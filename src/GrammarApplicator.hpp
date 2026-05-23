@@ -371,7 +371,7 @@ protected:
 	Reading* get_sub_reading(Reading* tr, int sub_reading);
 
 	void printDebugRule(const Rule& rule, bool target = true, bool cntx = true) {
-		static std::stringstream buf;
+		thread_local static std::stringstream buf;
 
 		bool ttrace = false;
 		swapper<bool> _st(true, trace, ttrace);

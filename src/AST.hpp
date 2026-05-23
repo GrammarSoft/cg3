@@ -88,7 +88,7 @@ enum ASTType {
 	AST_TextDelimiters,
 	NUM_ASTTypes
 };
-const char* ASTType_str[NUM_ASTTypes] = {};
+thread_local const char* ASTType_str[NUM_ASTTypes] = {};
 
 struct ASTHelper;
 struct ASTNode {
@@ -106,10 +106,10 @@ struct ASTNode {
 	{}
 };
 
-bool parse_ast = false;
-ASTNode ast;
-ASTNode* cur_ast = &ast;
-ASTHelper* cur_ast_help = nullptr;
+thread_local bool parse_ast = false;
+thread_local ASTNode ast;
+thread_local ASTNode* cur_ast = &ast;
+thread_local ASTHelper* cur_ast_help = nullptr;
 
 const UChar* xml_encode(const UChar* b, const UChar* e) {
 	static thread_local CG3::UString buf;
