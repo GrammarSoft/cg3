@@ -44,12 +44,20 @@
     </para>
   </section>
 
+  <section id="unicode-escapes">
+    <title>Unicode Escapes</title>
+    <para>
+      Unicode code points can be inserted as-is into CG-3 grammars, but if the code point is difficult or impossible to render you can use <code>\u</code> escapes. There are 2 forms: <code>\uXXXX</code> with exactly 4 hex digits, or <code>\u{XXXXXXXX}</code> with a variable number of hex digits. E.g., <code>\u200D</code> yields a zero-width joiner and <code>\u{20}</code> yields a space.
+    </para>
+  </section>
+
   <section id="literal-string-modifiers">
     <title>Literal String Modifiers</title>
     <para>
-      The first two additions to the feature sheet all display what I refer to as
-      literal string modifiers, and there are two of such: 'i' for case-insensitive,
-      and 'r' for a regular expression match.
+      The first two additions to the feature sheet are
+      literal string modifiers, of which there are several: 'i' for case-insensitive,
+      'r' for a regular expression match, 'v' for variable string, 'p' for escape-preserving variable string,
+      and 'l' for regex line matches.
       Using these modifiers will significantly slow down the matching as a hash lookup will no
       longer be enough. You can combine 'ir' for case-insensitive regular expressions.
       Regular expressions are evaluated via ICU, so
@@ -101,7 +109,7 @@
       though that would be highly unpredictable in practice.
     </para>
     <para>
-      Variable string tags are in the form of "string"v, "&lt;string&gt;"v, and &lt;string&gt;v, where variables matching
+      Variable string tags are in the form of <code>"string"v</code>, <code>"&lt;string&gt;"v</code>, and <code>&lt;string&gt;v</code>, where variables matching
       $1 through $9 will be replaced with the corresponding group from the regular expression match.
       Multiple occurances of a single variable is allowed, so e.g. "$1$2$1"v would contain group 1 twice.
     </para>
@@ -110,6 +118,9 @@
       that need secondary processing such as regex or case-insensitive matching. E.g., <code>VSTR:@m$1</code> would
       create a mapping tag or <code>VSTR:"$1.*"r</code> to create a regex tag. To include spaces in such tags, escape them
       with a backslash, e.g. <code>VSTR:"$1\ $2"r</code> (otherwise it is treated as two tags).
+    </para>
+    <para>
+      If backslashes are to be preserved in the result, instead use suffix <code>p</code> or prefix <code>PSTR:</code>, as in <code>"string"p</code> or <code>PSTR:@m$1</code>.
     </para>
     <para>
       One can also manipulate the case of the resulting tag via %U, %u, %L, and %l.

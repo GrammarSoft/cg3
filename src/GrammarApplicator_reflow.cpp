@@ -380,16 +380,18 @@ Tag* GrammarApplicator::generateVarstringTag(const Tag* tag) {
 					rpl += '_';
 				}
 			}
-			findAndReplace(tmp, (*tag->vs_names)[i].data(), rpl.data());
-			did_something = true;
+			if (findAndReplace(tmp, (*tag->vs_names)[i].data(), rpl.data())) {
+				did_something = true;
+			}
 		}
 	}
 
 	// Replace $1-$9 with their respective match groups
 	constexpr UStringView grp[] = { STR_VS1, STR_VS2, STR_VS3, STR_VS4, STR_VS5, STR_VS6, STR_VS7, STR_VS8, STR_VS9 };
 	for (size_t i = 0; i < context_stack.back().regexgrp_ct && i < 9; ++i) {
-		findAndReplace(tmp, grp[i].data(), USV((*context_stack.back().regexgrps)[i]));
-		did_something = true;
+		if (findAndReplace(tmp, grp[i].data(), USV((*context_stack.back().regexgrps)[i]))) {
+			did_something = true;
+		}
 	}
 
 	// Handle %U %u %L %l markers.
@@ -454,7 +456,7 @@ Tag* GrammarApplicator::generateVarstringTag(const Tag* tag) {
 		u_fprintf(ux_stderr, "Warning: Unable to generate from tag '%S'! Possibly missing KEEPORDER and/or capturing regex from grammar on line %u before input line %u.\n", tag->tag.data(), grammar->lines, numLines);
 		u_fflush(ux_stderr);
 	}
-	return addTag(nt, true);
+	return addTag(nt, tag->type);
 }
 
 uint32_t GrammarApplicator::addTagToReading(Reading& reading, uint32_t utag, bool rehash) {

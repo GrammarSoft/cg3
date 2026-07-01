@@ -103,6 +103,7 @@
 #include <unicode/ustring.h>
 #include <unicode/uregex.h>
 #include <unicode/ubrk.h>
+#include <unicode/regex.h>
 using namespace icu;
 
 namespace CG3 {

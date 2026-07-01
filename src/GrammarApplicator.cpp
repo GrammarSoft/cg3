@@ -257,7 +257,7 @@ Tag* GrammarApplicator::addTag(Tag* tag) {
 	return grammar->single_tags[hash];
 }
 
-Tag* GrammarApplicator::addTag(const UChar* txt, bool vstr) {
+Tag* GrammarApplicator::addTag(const UChar* txt, uint32_t type) {
 	Taguint32HashMap::iterator it;
 	uint32_t thash = hash_value(txt);
 	if ((it = grammar->single_tags.find(thash)) != grammar->single_tags.end() && !it->second->tag.empty() && it->second->tag == txt) {
@@ -265,8 +265,8 @@ Tag* GrammarApplicator::addTag(const UChar* txt, bool vstr) {
 	}
 
 	Tag* tag = nullptr;
-	if (vstr) {
-		tag = ::CG3::parseTag(txt, 0, *this);
+	if (type & T_VARSTRING) {
+		tag = ::CG3::parseTag(txt, 0, *this, (type & T_PRESERVE_ESC) == 0);
 	}
 	else {
 		tag = new Tag();
@@ -315,9 +315,9 @@ Tag* GrammarApplicator::addTag(const UChar* txt, bool vstr) {
 	return tag;
 }
 
-Tag* GrammarApplicator::addTag(const UString& txt, bool vstr) {
+Tag* GrammarApplicator::addTag(const UString& txt, uint32_t type) {
 	assert(txt.size() && "addTag() will not work with empty strings.");
-	return addTag(txt.data(), vstr);
+	return addTag(txt.data(), type);
 }
 
 void GrammarApplicator::printStreamCommand(UStringView cmd, std::ostream& output) {

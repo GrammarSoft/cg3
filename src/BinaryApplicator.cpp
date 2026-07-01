@@ -365,6 +365,8 @@ void BinaryApplicator::readText(void*& payload) {
 }
 
 void BinaryApplicator::printSingleWindow(SingleWindow* window, std::ostream& output, bool profiling) {
+	(void)profiling;
+
 	if (!header_done) {
 		output.write("CGBF", 4);
 		writeLE(output, CG3_BINARY_STREAM);

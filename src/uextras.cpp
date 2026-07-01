@@ -49,12 +49,15 @@ std::string ux_dirname(const char* in) {
 	return tmp;
 }
 
-void findAndReplace(UnicodeString& str, UStringView from, UStringView to) {
+size_t findAndReplace(UnicodeString& str, UStringView from, UStringView to) {
+	size_t rv = 0;
 	int32_t offset = 0;
 	while ((offset = str.indexOf(from.data(), SI32(from.size()), offset)) != -1) {
 		str.replace(offset, SI32(from.size()), to.data(), 0, SI32(to.size()));
 		offset += SI32(to.size());
+		++rv;
 	}
+	return rv;
 }
 
 size_t get_line_clean(UString& line, UString& cleaned, std::istream& input, bool keep_tabs) {

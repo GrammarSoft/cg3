@@ -72,6 +72,7 @@ enum : uint32_t {
 	T_RELATION         = (1 << 26),
 	T_CONTEXT          = (1 << 27),
 	T_NUMERIC_MATH     = (1 << 28),
+	T_PRESERVE_ESC     = (1 << 29),
 
 	T_REGEXP_LINE      = (1u << 31), // ToDo: Remove for real ordered mode
 

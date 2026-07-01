@@ -23,10 +23,16 @@
 
 #include "Tag.hpp"
 #include "Set.hpp"
-#include "Grammar.hpp"
 #include "Strings.hpp"
 
 namespace CG3 {
+
+	namespace {
+		inline thread_local UString tmp_tag;
+		inline thread_local UText tmp_ut = UTEXT_INITIALIZER;
+		inline thread_local UErrorCode tmp_status = U_ZERO_ERROR;
+		inline thread_local RegexMatcher rx_u(UnicodeString(R"X(\\u((?:[0-9a-fA-F]{4})|\{(?:[0-9a-fA-F]+)\}))X"), 0, tmp_status);
+	}
 
 template<typename State>
 Tag* parseTag(const UChar* to, const UChar* p, State& state, bool unescape=true) {
@@ -39,6 +45,76 @@ Tag* parseTag(const UChar* to, const UChar* p, State& state, bool unescape=true)
 	if (ux_isSetOp(to) != S_IGNORE) {
 		u_fprintf(state.ux_stderr, "%s: Warning: Tag '%S' on line %u looks like a set operator. Maybe you meant to do SET instead of LIST?\n", state.filebase, to, state.get_grammar()->lines);
 		u_fflush(state.ux_stderr);
+	}
+
+	// Parse \uxxxx and \u{x} as Unicode code points
+	if (u_strstr(to, u"\\u")) {
+		tmp_tag.clear();
+		utext_openUChars(&tmp_ut, to, u_strlen(to), &tmp_status);
+		rx_u.reset(&tmp_ut);
+		int32_t l = 0;
+		bool did = false;
+		while (rx_u.find()) {
+			auto mb = rx_u.start(0, tmp_status);
+			auto me = rx_u.end(0, tmp_status);
+			auto sb = rx_u.start(1, tmp_status);
+			auto se = rx_u.end(1, tmp_status);
+			tmp_tag.append(to + l, to + mb);
+			if (to[sb] == '{') {
+				++sb;
+			}
+			if (to[se - 1] == '}') {
+				--se;
+			}
+			UChar32 uc = 0;
+			for (size_t i = 0; i < UIZ(se - sb); ++i) {
+				UChar c = to[se - i - 1];
+				switch (c) {
+				case 'a':
+				case 'A':
+					uc += 10 << (i * 4);
+					break;
+				case 'b':
+				case 'B':
+					uc += 11 << (i * 4);
+					break;
+				case 'c':
+				case 'C':
+					uc += 12 << (i * 4);
+					break;
+				case 'd':
+				case 'D':
+					uc += 13 << (i * 4);
+					break;
+				case 'e':
+				case 'E':
+					uc += 14 << (i * 4);
+					break;
+				case 'f':
+				case 'F':
+					uc += 15 << (i * 4);
+					break;
+				default:
+					uc += (c - '0') << (i * 4);
+					break;
+				}
+			}
+			if (uc > 0xFFFF) {
+				uc -= 0x10000;
+				tmp_tag += UChar((uc >> 10) + 0xD800);
+				tmp_tag += UChar((uc & 0x3FF) + 0xDC00);
+			}
+			else {
+				tmp_tag += UChar(uc);
+			}
+			l = me;
+			did = true;
+		}
+		if (did) {
+			tmp_tag.append(to + l);
+			to = tmp_tag.c_str();
+		}
+		utext_close(&tmp_ut);
 	}
 
 	Taguint32HashMap::iterator it;
@@ -86,7 +162,10 @@ Tag* parseTag(const UChar* to, const UChar* p, State& state, bool unescape=true)
 			tmp += 4;
 			length -= 4;
 		}
-		if (tmp[0] == 'V' && tmp[1] == 'S' && tmp[2] == 'T' && tmp[3] == 'R' && tmp[4] == ':') {
+		if ((tmp[0] == 'V' || tmp[0] == 'P') && tmp[1] == 'S' && tmp[2] == 'T' && tmp[3] == 'R' && tmp[4] == ':') {
+			if (tmp[0] == 'P') {
+				tag->type |= T_PRESERVE_ESC;
+			}
 			tag->type |= T_VARSTRING;
 			tag->type |= T_VSTR;
 			tmp += 5;
@@ -102,8 +181,8 @@ Tag* parseTag(const UChar* to, const UChar* p, State& state, bool unescape=true)
 		if (tmp[0] && !(tag->type & (T_VARIABLE|T_LOCAL_VARIABLE)) && (tmp[0] == '"' || tmp[0] == '<' || tmp[0] == '/')) {
 			size_t oldlength = length;
 
-			// Parse the suffixes r, i, v but max only one of each.
-			while (tmp[length - 1] == 'i' || tmp[length - 1] == 'r' || tmp[length - 1] == 'v' || tmp[length - 1] == 'l') {
+			// Parse the suffixes r, i, v, l, p but max only one of each.
+			while (tmp[length - 1] == 'i' || tmp[length - 1] == 'r' || tmp[length - 1] == 'v' || tmp[length - 1] == 'l' || tmp[length - 1] == 'p') {
 				if (!(tag->type & T_VARSTRING) && tmp[length - 1] == 'v') {
 					tag->type |= T_VARSTRING;
 					length--;
@@ -122,6 +201,12 @@ Tag* parseTag(const UChar* to, const UChar* p, State& state, bool unescape=true)
 				if (!(tag->type & T_REGEXP_LINE) && tmp[length - 1] == 'l') {
 					tag->type |= T_REGEXP;
 					tag->type |= T_REGEXP_LINE;
+					length--;
+					continue;
+				}
+				if (!(tag->type & T_PRESERVE_ESC) && tmp[length - 1] == 'p') {
+					tag->type |= T_VARSTRING;
+					tag->type |= T_PRESERVE_ESC;
 					length--;
 					continue;
 				}

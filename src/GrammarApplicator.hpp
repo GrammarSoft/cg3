@@ -170,12 +170,11 @@ public:
 	Grammar* grammar = nullptr;
 	Profiler* profiler = nullptr;
 
-	// Moved these public to help the library API
 	Tag* addTag(Tag* tag);
-	Tag* addTag(const UChar* tag, bool vstr = false);
-	Tag* addTag(const UString& txt, bool vstr = false);
-	Tag* addTag(const UStringView& txt, bool vstr = false) {
-		return addTag(txt.data(), vstr);
+	Tag* addTag(const UChar* tag, uint32_t type = 0);
+	Tag* addTag(const UString& txt, uint32_t type = 0);
+	Tag* addTag(const UStringView& txt, uint32_t type = 0) {
+		return addTag(txt.data(), type);
 	}
 	void initEmptySingleWindow(SingleWindow* cSWindow);
 	uint32_t addTagToReading(Reading& reading, uint32_t tag, bool rehash = true);
