@@ -492,10 +492,11 @@ void GrammarApplicator::runGrammarOnText(std::istream& input, std::ostream& outp
 						for (auto iter : cCohort->readings) {
 							addTagToReading(*iter, endtag);
 						}
-						cReading = lReading = nullptr;
-						cCohort = lCohort = nullptr;
-						cSWindow = lSWindow = nullptr;
 					}
+					cReading = lReading = nullptr;
+					cCohort = lCohort = nullptr;
+					cSWindow = lSWindow = nullptr;
+
 					while (!gWindow->next.empty()) {
 						gWindow->shuffleWindowsDown();
 						runGrammarOnWindow();
