@@ -109,8 +109,8 @@ options_t options{
 	UOption{"out-matxin",            0, UOPT_NO_ARG,       "sets output format to Matxin"},
 	UOption{"out-niceline",          0, UOPT_NO_ARG,       "sets output format to Niceline CG"},
 	UOption{"out-plain",             0, UOPT_NO_ARG,       "sets output format to plain text"},
-	UOption{"out-jsonl",             0, UOPT_NO_ARG,       "sets output format to JSONL (experimental)"},
-	UOption{"out-binary",            0, UOPT_NO_ARG,       "sets output format to binary (experimental)"},
+	UOption{"out-jsonl",             0, UOPT_NO_ARG,       "sets output format to JSONL"},
+	UOption{"out-binary",            0, UOPT_NO_ARG,       "sets output format to binary"},
 };
 
 options_t options_default = options;

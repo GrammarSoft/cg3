@@ -1,6 +1,9 @@
 /*
-* Copyright (C) 2024, GrammarSoft ApS
+* Copyright (C) 2025, GrammarSoft ApS
 * Developed by Tino Didriksen <mail@tinodidriksen.com>
+* Design by Eckhard Bick <eckhard.bick@mail.dk>, Tino Didriksen <mail@tinodidriksen.com>
+*
+* JSONL I/O developed by Robert Reynolds <reynoldsrjr@gmail.com>
 * Based on contributions from GitHub Copilot
 *
 * This program is free software: you can redistribute it and/or modify

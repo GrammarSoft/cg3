@@ -1,11 +1,15 @@
 /*
-* Copyright (C) 2024, GrammarSoft ApS
+* Copyright (C) 2025, GrammarSoft ApS
 * Developed by Tino Didriksen <mail@tinodidriksen.com>
+* Design by Eckhard Bick <eckhard.bick@mail.dk>, Tino Didriksen <mail@tinodidriksen.com>
+*
+* JSONL I/O developed by Robert Reynolds <reynoldsrjr@gmail.com>
+* Based on contributions from GitHub Copilot
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation, either version 3 of the License, or
-* any later version.
+* (at your option) any later version.
 *
 * This program is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
