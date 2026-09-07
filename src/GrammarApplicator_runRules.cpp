@@ -1946,7 +1946,7 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 				for (size_t i = 0; i < get_apply_to().subreading->tags_list.size();) {
 					auto& remter = get_apply_to().subreading->tags_list[i];
 
-					if (plain && remter == (*theTags->begin())->hash) {
+					if (plain && !theTags->empty() && remter == (*theTags->begin())->hash) {
 						if (get_apply_to().subreading->baseform == remter) {
 							get_apply_to().subreading->baseform = 0;
 						}
