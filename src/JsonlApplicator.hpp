@@ -28,6 +28,19 @@
 
 namespace CG3 {
 
+/*
+* JSONL stream format: one JSON object per line. Blank lines are skipped, and lines that are not a JSON
+* object are skipped with a warning. The full specification is in manual/streamformats.xml (stream-jsonl).
+*
+* Cohort:     {"w":"word", "wb":"...", "sts":[...], "z":"...", "ds":1, "dp":0, "id":1, "rels":{"name":[2]},
+*              "rs":[reading...], "drs":[reading...]}
+* Reading:    {"l":"lemma", "ts":["N","@SUBJ"], "tr":["SELECT:12"], "s":{sub-reading}}
+* Text:       {"t":"one line of text"}
+* Command:    {"cmd":"<STREAMCMD:FLUSH>"}
+*
+* "w" has no "<>" quotes and "l" has no "" quotes. Mapping tags go in "ts". "ds"/"dp" are window-local
+* numbers with 0 as the root, or global numbers with --dep-absolute or once a dependency has spanned windows.
+*/
 class JsonlApplicator : public virtual GrammarApplicator {
 public:
 	JsonlApplicator(std::ostream& ux_err);
@@ -42,10 +55,14 @@ protected:
 	void printPlainTextLine(UStringView line, std::ostream& output) override;
 
 private:
-	void parseJsonCohort(const rapidjson::Value& obj, SingleWindow* cSWindow, Cohort*& cCohort);
-	Reading* parseJsonReading(const rapidjson::Value& reading_obj, Cohort* parentCohort);
+	bool getJsonString(const rapidjson::Value& obj, const char* key, UString& out);
+	Cohort* parseJsonCohort(const rapidjson::Value& obj, SingleWindow* cSWindow);
+	Reading* parseJsonReading(const rapidjson::Value& reading_obj, Cohort* cohort, TagList& mappings);
+	void addSingleMapping(Reading& reading, TagList& mappings);
 	void buildJsonReading(const Reading* reading, rapidjson::Value& reading_json, rapidjson::Document::AllocatorType& allocator);
 	void buildJsonTags(const Reading* reading, rapidjson::Value& tags_json, rapidjson::Document::AllocatorType& allocator);
+	void printText(const UString& text, std::ostream& output);
+	void printVariables(const uint32SortedVector& vars_output, const uint32FlatHashMap& vars_set, std::ostream& output);
 };
 
 }

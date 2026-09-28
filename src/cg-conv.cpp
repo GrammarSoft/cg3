@@ -57,8 +57,8 @@ int main(int argc, char* argv[]) {
 		fprintf(out, "Usage: cg-conv [OPTIONS]\n");
 		fprintf(out, "\n");
 		fprintf(out, "Environment variable:\n");
-		fprintf(out, " CG3_CONV_DEFAULT: Sets default cmdline options_conv, which the actual passed options_conv will override.\n");
-		fprintf(out, " CG3_CONV_OVERRIDE: Sets forced cmdline options_conv, which will override any passed option.\n");
+		fprintf(out, " CG3_CONV_DEFAULT: Sets default cmdline options, which the actual passed options will override.\n");
+		fprintf(out, " CG3_CONV_OVERRIDE: Sets forced cmdline options, which will override any passed option.\n");
 		fprintf(out, "\n");
 		fprintf(out, "Options:\n");
 
@@ -88,16 +88,19 @@ int main(int argc, char* argv[]) {
 			}
 		}
 
-		fprintf(out, "\n\nKeys for JSONL format:\n");
+		fprintf(out, "\n\nKeys for JSONL format (one JSON object per line; full spec in the manual):\n");
 		fprintf(out, "===============================================================================\n");
-		fprintf(out, "Cohort:                     Reading:                   Stream Command:\n");
-		fprintf(out, "    w  wordform/token          l  lemma/base form        cmd  stream command\n");
-		fprintf(out, "  sts  static tags            ts  tags\n");
-		fprintf(out, "   rs  readings                s  subreading\n");
-		fprintf(out, "  drs  deleted readings                                Plain text:\n");
-		fprintf(out, "   ds  dependency self                                     t  text line\n");
+		fprintf(out, "Cohort:                     Reading:                   Stream command:\n");
+		fprintf(out, "    w  wordform, no \"<>\"        l  baseform, no \"\"       cmd  <STREAMCMD:...>\n");
+		fprintf(out, "   wb  word-bound blank        ts  tags, incl. mapping\n");
+		fprintf(out, "  sts  static tags              s  sub-reading         Plain text:\n");
+		fprintf(out, "   rs  readings                tr  rule trace              t  one line of text\n");
+		fprintf(out, "  drs  deleted readings\n");
+		fprintf(out, "   ds  dependency self\n");
 		fprintf(out, "   dp  dependency parent\n");
-		fprintf(out, "    z  text line(s) suffix\n");
+		fprintf(out, "   id  cohort ID\n");
+		fprintf(out, " rels  relations\n");
+		fprintf(out, "    z  text after cohort\n");
 		fprintf(out, "===============================================================================\n");
 
 		return argc < 0 ? U_ILLEGAL_ARGUMENT_ERROR : U_ZERO_ERROR;
