@@ -1,0 +1,4 @@
+{"w":"The","ds":1,"dp":2,"id":1,"rs":[{"l":"the","ts":["DET"],"tr":["SETPARENT:6"]}]}
+{"w":"cats","ds":2,"dp":3,"id":2,"rels":{},"rs":[{"l":"cat","ts":["N","PL","@SUBJ>"],"tr":["SELECT:3","MAP:5","SETPARENT:7"]}],"drs":[{"l":"cat","ts":["V","PRES","SG3"],"tr":["SELECT:3"]}]}
+{"w":"sleep","sts":["<verbal>"],"ds":3,"id":3,"rels":{"subj":[2]},"rs":[{"l":"sleep","ts":["V","PRES"],"tr":["ADDRELATION(subj):8"]}],"drs":[{"l":"sleep","ts":["N","SG"],"tr":["REMOVE:4"]}]}
+{"w":".","ds":4,"id":4,"rs":[{"l":".","ts":["CLB"]}]}
