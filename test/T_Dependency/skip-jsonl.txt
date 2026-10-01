@@ -1,0 +1,2 @@
+The ADDRELATION (leftmost-self-or-ancestor) rule targets the >>> cohort of a window created by --dep-delimit.
+That cohort is never printed, so the relation can't survive a round trip through a text format; CG loses it too.

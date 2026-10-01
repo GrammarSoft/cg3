@@ -1,0 +1,10 @@
+"<The>"
+	"the" DET #1->2 SETPARENT:6
+"<cats>"
+	"cat" N PL @SUBJ> #2->3 ID:2 SELECT:3 MAP:5 SETPARENT:7
+;	"cat" V PRES SG3 #2->3 ID:2 SELECT:3
+"<sleep>" <verbal>
+	"sleep" V PRES #3->3 ID:3 R:subj:2 ADDRELATION(subj):8
+;	"sleep" N SG #3->3 ID:3 R:subj:2 REMOVE:4
+"<.>"
+	"." CLB #4->4

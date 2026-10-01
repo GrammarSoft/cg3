@@ -1,0 +1,4 @@
+{"w":"ok","z":"<STREAMCMD:UNKNOWN>\n<STREAMCMD:SETVAR:x=1,y","rs":[{"l":"ok","ts":["A"]}]}
+{"w":"sub","rs":[{"l":"top","ts":["@M1"],"s":{"l":"low","ts":["@M2"]}}]}
+{"w":"deps","rs":[{"l":"<deps>","ts":["B"]}]}
+{"w":"t-and-w","z":"\nmulti","rs":[{"l":"tw"}]}

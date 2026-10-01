@@ -1,0 +1,8 @@
+DELIMITERS = "<.>" ;
+
+SELECT (N) IF (-1 (DET)) ;
+REMOVE (N) IF (0 (<verbal>)) ;
+MAP (@SUBJ>) TARGET (N) IF (1 (V)) ;
+SETPARENT (DET) TO (1 (N)) ;
+SETPARENT (N) TO (1 (V)) ;
+ADDRELATION (subj) (V) TO (-1 (N)) ;

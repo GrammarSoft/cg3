@@ -1,0 +1,4 @@
+{"w":"The","rs":[{"l":"the","ts":["DET"]}]}
+{"w":"cats","rs":[{"l":"cat","ts":["N","PL"]},{"l":"cat","ts":["V","PRES","SG3"]}]}
+{"w":"sleep","sts":["<verbal>"],"rs":[{"l":"sleep","ts":["V","PRES"]},{"l":"sleep","ts":["N","SG"]}]}
+{"w":".","rs":[{"l":".","ts":["CLB"]}]}

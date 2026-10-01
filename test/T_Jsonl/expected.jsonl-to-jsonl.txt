@@ -1,0 +1,13 @@
+{"t":"Text before the first cohort"}
+{"cmd":"<STREAMCMD:SETVAR:c=two>"}
+{"cmd":"<STREAMCMD:SETVAR:a=1>"}
+{"cmd":"<STREAMCMD:SETVAR:b>"}
+{"w":"The","sts":["<static>","\"static baseform\""],"ds":1,"dp":2,"rs":[{"l":"the","ts":["DET","@>N"]}]}
+{"w":"cats","z":"Text after cats\n\n  indented text","ds":2,"dp":3,"rs":[{"l":"cat","ts":["N","PL","@SUBJ>"]},{"l":"cat","ts":["N","PL","@OBJ>"]}],"drs":[{"l":"cat","ts":["V","PRES"]}]}
+{"w":"haven't","ds":3,"dp":0,"rs":[{"l":"not","ts":["ADV"],"s":{"l":"have","ts":["V","PRES"]}}]}
+{"w":".","ds":4,"dp":3,"rs":[{"l":".","ts":["CLB"]}]}
+{"cmd":"<STREAMCMD:FLUSH>"}
+{"cmd":"<STREAMCMD:REMVAR:c>"}
+{"cmd":"<STREAMCMD:REMVAR:b>"}
+{"w":"Ünïcode","ds":1,"dp":0,"rs":[{"l":"ünïcode","ts":["N","\"quoted tag\""]}]}
+{"w":"$.","z":"Trailing text","ds":2,"dp":1,"rs":[{"l":"$.","ts":["CLB"]}]}

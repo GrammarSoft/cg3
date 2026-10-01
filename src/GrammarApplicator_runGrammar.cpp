@@ -27,32 +27,6 @@
 
 namespace CG3 {
 
-inline bool testStringAgainst(const UString& str, std::vector<URegularExpression*>& rxs) {
-	bool rv = false;
-
-	for (size_t i = 0; i < rxs.size(); ++i) {
-		UErrorCode status = U_ZERO_ERROR;
-		uregex_setText(rxs[i], str.data(), SI32(str.size()), &status);
-		if (status != U_ZERO_ERROR) {
-			CG3Quit(1);
-		}
-		status = U_ZERO_ERROR;
-		if (uregex_find(rxs[i], -1, &status)) {
-			rv = true;
-			if (i != 0) {
-				// Move regex that matched up front as it'll more likely match first next time
-				std::swap(rxs[0], rxs[i]);
-			}
-			break;
-		}
-		if (status != U_ZERO_ERROR) {
-			CG3Quit(1);
-		}
-	}
-
-	return rv;
-}
-
 void GrammarApplicator::initEmptySingleWindow(SingleWindow* cSWindow) {
 	Cohort* cCohort = alloc_cohort(cSWindow);
 	cCohort->global_number = gWindow->cohort_counter++;

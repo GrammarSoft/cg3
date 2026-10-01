@@ -1,0 +1,13 @@
+{"w":"ok","rs":[{"l":"ok","ts":["A"]}]}
+
+{"w":"broken",
+["not","an","object"]
+{"cmd":"<STREAMCMD:UNKNOWN>"}
+{"cmd":"<STREAMCMD:SETVAR:x=1,y"}
+{"neither":"w nor t"}
+{"w":42,"rs":[{"l":"num","ts":"A"}]}
+{"w":"sub","rs":[{"l":"top","ts":["@M1"],"s":{"l":"low","ts":["@M2","@M3"]}}]}
+{"w":"deps","ds":"one","dp":2,"rs":[{"ts":[1,"B"]}]}
+{"t":"","w":"t-and-w","rs":[{"l":"tw"}]}
+{"t":""}
+{"t":"multi"}

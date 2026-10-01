@@ -101,15 +101,15 @@ options_t options{
 	UOption{"in-apertium",           0, UOPT_NO_ARG,       "sets input format to Apertium"},
 	UOption{"in-fst",                0, UOPT_NO_ARG,       "sets input format to HFST/XFST"},
 	UOption{"in-plain",              0, UOPT_NO_ARG,       "sets input format to plain text"},
-	UOption{"in-jsonl",              0, UOPT_NO_ARG,       "sets input format to JSONL (experimental)"},
-	UOption{"in-binary",             0, UOPT_NO_ARG,       "sets input format to binary (experimental)"},
+	UOption{"in-jsonl",              0, UOPT_NO_ARG,       "sets input format to JSONL; see cg-conv --help for the format"},
+	UOption{"in-binary",             0, UOPT_NO_ARG,       "sets input format to binary"},
 	UOption{"out-cg",                0, UOPT_NO_ARG,       "sets output format to CG (default)"},
 	UOption{"out-apertium",          0, UOPT_NO_ARG,       "sets output format to Apertium"},
 	UOption{"out-fst",               0, UOPT_NO_ARG,       "sets output format to HFST/XFST"},
 	UOption{"out-matxin",            0, UOPT_NO_ARG,       "sets output format to Matxin"},
 	UOption{"out-niceline",          0, UOPT_NO_ARG,       "sets output format to Niceline CG"},
 	UOption{"out-plain",             0, UOPT_NO_ARG,       "sets output format to plain text"},
-	UOption{"out-jsonl",             0, UOPT_NO_ARG,       "sets output format to JSONL"},
+	UOption{"out-jsonl",             0, UOPT_NO_ARG,       "sets output format to JSONL; see cg-conv --help for the format"},
 	UOption{"out-binary",            0, UOPT_NO_ARG,       "sets output format to binary"},
 };
 

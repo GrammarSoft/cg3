@@ -1,0 +1,12 @@
+Warning: Failed to parse JSON on line 3: Missing a name for object member. (offset 14). Skipping line.
+Warning: JSON on line 4 is not an object. Skipping line.
+Warning: Unknown or malformed stream command <STREAMCMD:UNKNOWN> on line 5 - treated as text.
+Warning: Unknown or malformed stream command <STREAMCMD:SETVAR:x=1,y on line 6 - treated as text.
+Warning: JSON object on line 7 has none of 'w', 't' or 'cmd'. Skipping line.
+Warning: 'w' on line 8 is not a string - ignored.
+Warning: Cohort on line 8 has an empty or invalid 'w' (wordform). Skipping line.
+Warning: Mapping tag @M3 on line 9 will be discarded, as this reading can only have one.
+Warning: Reading missing 'l' (baseform) on line 10.
+Warning: Non-string found in 'ts' (tags) array on line 10 - skipping.
+Warning: Reading on line 10 ended up with no baseform. Using wordform.
+Warning: 'ds' (dependency self) on line 10 is not a positive integer - ignored.

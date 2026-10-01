@@ -244,4 +244,122 @@
     </para>
   </section>
 
+  <section id="stream-jsonl">
+    <title>JSONL Format</title>
+    <indexterm>
+      <primary>JSONL Stream Format</primary>
+    </indexterm>
+    <para>
+      The JSONL format is for exchanging data with programs that already have a JSON parser.
+      It is read with <code>--in-jsonl</code> and written with <code>--out-jsonl</code> in vislcg3,
+      and with <code>-j</code> and <code>-J</code> in <link linkend="cg-conv">cg-conv</link>.
+      The cg-conv auto-detection picks JSONL if a line starts with <code>{</code> and no other format matched first.
+    </para>
+    <para>
+      The stream is UTF-8 with one JSON object per line.
+      Each object is a cohort, a line of text, or a stream command, in stream order.
+      The keys are the same as the <link linkend="stream-vislcg">VISL CG format</link> stores, minus the markup:
+      <screen>
+        Cohort:
+          w     wordform, without the "&lt; &gt;" quotes (string, required)
+          wb    word-bound blank (string)
+          sts   static tags (array of strings)
+          rs    readings (array of reading objects)
+          drs   deleted readings (array of reading objects)
+          ds    dependency self (number)
+          dp    dependency parent (number; 0 is the root)
+          id    cohort ID for relations (number)
+          rels  relations, as {"name": [ID, ...], ...} (object)
+          z     text after the cohort (string)
+        Reading:
+          l     baseform, without the " " quotes (string)
+          ts    tags, including mapping tags (array of strings)
+          s     sub-reading (reading object)
+          tr    rules that hit the reading, only written with --trace (array of strings)
+        Text:
+          t     one line of text, without the newline (string)
+        Stream command:
+          cmd   the whole command, such as "&lt;STREAMCMD:FLUSH&gt;" (string)
+      </screen>
+      Keys that are empty or don't apply are left out, and unknown keys are ignored.
+    </para>
+    <para>
+      An example in CG format, converted with <code>cg-conv -c -D --deleted -J</code>:
+      <screen>
+        &lt;STREAMCMD:SETVAR:genre=news,draft&gt;
+        "&lt;The&gt;" &lt;cap&gt;
+          "the" DET @&gt;N #1-&gt;2
+        "&lt;cats&gt;"
+          "cat" N PL @SUBJ&gt; #2-&gt;3
+        ;  "cat" V PRES #2-&gt;3
+        "&lt;haven't&gt;"
+          "not" ADV #3-&gt;0
+            "have" V PRES
+        "&lt;.&gt;"
+          "." CLB #4-&gt;3
+        A line of text
+        &lt;STREAMCMD:FLUSH&gt;
+      </screen>
+      <screen>
+        {"cmd":"&lt;STREAMCMD:SETVAR:genre=news&gt;"}
+        {"cmd":"&lt;STREAMCMD:SETVAR:draft&gt;"}
+        {"w":"The","sts":["&lt;cap&gt;"],"ds":1,"dp":2,"rs":[{"l":"the","ts":["DET","@&gt;N"]}]}
+        {"w":"cats","ds":2,"dp":3,"rs":[{"l":"cat","ts":["N","PL","@SUBJ&gt;"]}],"drs":[{"l":"cat","ts":["V","PRES"]}]}
+        {"w":"haven't","ds":3,"dp":0,"rs":[{"l":"not","ts":["ADV"],"s":{"l":"have","ts":["V","PRES"]}}]}
+        {"w":".","z":"A line of text","ds":4,"dp":3,"rs":[{"l":".","ts":["CLB"]}]}
+        {"cmd":"&lt;STREAMCMD:FLUSH&gt;"}
+      </screen>
+    </para>
+    <para>
+      Details:
+      <itemizedlist mark='bullet'>
+        <listitem><para>
+          A reading with several mapping tags in <code>ts</code> is split into one reading per mapping tag, as in the CG format.
+          Sub-readings and deleted readings keep only their first mapping tag.
+          The writer puts mapping tags last.
+        </para></listitem>
+        <listitem><para>
+          <code>s</code> nests: the sub-reading of a sub-reading is in its own <code>s</code>.
+        </para></listitem>
+        <listitem><para>
+          <code>ds</code> and <code>dp</code> are written whenever dependencies are in use (a dependency grammar, or <code>-D</code> in cg-conv).
+          They are window-local numbers starting at 1, with 0 as the root, like <code>#1-&gt;0</code> in the CG format.
+          With <code>--dep-absolute</code>, or once a dependency spans windows, they are global cohort numbers, but the root is still 0.
+          <code>dp</code> is left out when the cohort has no parent; <code>dp</code> equal to <code>ds</code> also means no parent.
+          The reader always uses <code>ds</code> and <code>dp</code>; it doesn't need <code>-D</code>.
+          Dependency tags such as <code>#1-&gt;2</code> in <code>ts</code> are treated the same way as in the CG format.
+        </para></listitem>
+        <listitem><para>
+          When relations are in use, every cohort gets an <code>id</code> (its global number), so that any cohort can be a relation target.
+          <code>rels</code> holds the cohort's relations as target IDs, and its presence (even as <code>{}</code>) marks the cohort as related,
+          like the <code>ID:</code> and <code>R:</code> tags in the CG format. With <code>--print-ids</code> every cohort gets an <code>id</code>.
+        </para></listitem>
+        <listitem><para>
+          <code>drs</code> is written under the same conditions as <code>;</code> lines in the CG format: with <code>--trace</code> and without <code>--trace-no-removed</code>.
+          cg-conv always writes it. <code>drs</code> is read only with <code>--deleted</code>; otherwise it is ignored.
+        </para></listitem>
+        <listitem><para>
+          Text after a cohort is written as <code>z</code>, with its lines separated by <code>\n</code> and without the last newline.
+          Other text is written as one <code>t</code> object per line.
+          The reader attaches a <code>t</code> line to the preceding cohort, the same way the CG reader attaches text lines, so <code>z</code> and <code>t</code> are interchangeable after a cohort.
+          An object with both <code>w</code> and <code>t</code> is a cohort, and <code>t</code> is ignored.
+        </para></listitem>
+        <listitem><para>
+          <code>cmd</code> accepts the same commands as the CG format; see <link linkend="streamcmds">Stream Commands</link>.
+          <code>SETVAR</code> and <code>REMVAR</code> can list several variables separated by commas.
+          The writer outputs one command per variable.
+          An unknown or malformed command is kept as text, with a warning.
+        </para></listitem>
+        <listitem><para>
+          Between <code>IGNORE</code> and <code>RESUME</code>, cohort lines are kept as text, the same way the CG reader passes them through.
+        </para></listitem>
+        <listitem><para>
+          Blank lines are skipped. Lines that are not valid JSON, not a JSON object, have none of <code>w</code>, <code>t</code> or <code>cmd</code>,
+          or have an empty <code>w</code> are skipped with a warning. Values of the wrong type are ignored with a warning,
+          and a reading without <code>l</code> gets the wordform as its baseform.
+        </para></listitem>
+      </itemizedlist>
+    </para>
+  </section>
+
 </chapter>

@@ -33,12 +33,15 @@
 #include "rapidjson/stringbuffer.h"
 #include "rapidjson/error/en.h"
 
+#include <sstream>
 #include <string>
 #include "uextras.hpp"
 
 namespace json = rapidjson;
 
 namespace CG3 {
+
+namespace {
 
 std::string ustring_to_utf8(UStringView ustr) {
 	std::string utf8_str;
@@ -54,6 +57,25 @@ std::string ustring_to_utf8(UStringView ustr) {
 	return utf8_str;
 }
 
+UString utf8_to_ustring(const char* str, size_t len) {
+	icu::UnicodeString unicode_str = icu::UnicodeString::fromUTF8(icu::StringPiece(str, SI32(len)));
+	return UString(unicode_str.getBuffer(), unicode_str.length());
+}
+
+json::Value to_json(UStringView str, json::Document::AllocatorType& allocator) {
+	auto utf8 = ustring_to_utf8(str);
+	return json::Value(utf8.c_str(), json::SizeType(utf8.size()), allocator);
+}
+
+void write_json_line(const json::Document& doc, std::ostream& output) {
+	json::StringBuffer buffer;
+	json::Writer<json::StringBuffer> writer(buffer);
+	doc.Accept(writer);
+	output << buffer.GetString() << "\n";
+}
+
+}
+
 JsonlApplicator::JsonlApplicator(std::ostream& ux_err)
   : GrammarApplicator(ux_err) {
 }
@@ -63,56 +85,72 @@ JsonlApplicator::~JsonlApplicator() {
 	// Empty destructor body
 }
 
-// Helper to safely get string from JSON, converting to UString
-UString json_to_ustring(const json::Value& val) {
-	if (val.IsString()) {
-		auto utf8_str = val.GetString();
-		auto len = val.GetStringLength();
-		// Use ICU's fromUTF8 to correctly handle UTF-8 encoding
-		icu::UnicodeString unicode_str = icu::UnicodeString::fromUTF8(icu::StringPiece(utf8_str, SI32(len)));
-		UString result(unicode_str.getBuffer(), unicode_str.length());
-		return result;
+// Reads obj[key] into out. Returns false if the key is absent, or warns and returns false if it isn't a string.
+bool JsonlApplicator::getJsonString(const json::Value& obj, const char* key, UString& out) {
+	auto it = obj.FindMember(key);
+	if (it == obj.MemberEnd()) {
+		return false;
 	}
-	return UString();
+	if (!it->value.IsString()) {
+		u_fprintf(ux_stderr, "Warning: '%s' on line %u is not a string - ignored.\n", key, numLines);
+		return false;
+	}
+	out = utf8_to_ustring(it->value.GetString(), it->value.GetStringLength());
+	return true;
 }
 
-// Helper function to parse a single reading (and its potential subreadings) from JSON
-Reading* JsonlApplicator::parseJsonReading(const json::Value& reading_obj, Cohort* parentCohort) {
-	if (!reading_obj.IsObject()) {
-		u_fprintf(ux_stderr, "Error: Expected reading object, but got different type on line %u.\n", numLines);
-		return nullptr;
+// Sub-readings and deleted readings can't be split into several readings, so they keep only their first mapping tag
+void JsonlApplicator::addSingleMapping(Reading& reading, TagList& mappings) {
+	if (mappings.empty()) {
+		return;
 	}
-	Reading* cReading = alloc_reading(parentCohort);
-	addTagToReading(*cReading, parentCohort->wordform);
+	for (size_t i = 1; i < mappings.size(); ++i) {
+		u_fprintf(ux_stderr, "Warning: Mapping tag %S on line %u will be discarded, as this reading can only have one.\n", mappings[i]->tag.data(), numLines);
+	}
+	addTagToReading(reading, mappings.front());
+	mappings.clear();
+}
 
-	// Parse baseform ("l")
-	if (reading_obj.HasMember("l")) {
-		auto& l_val = reading_obj["l"];
-		auto base_str = json_to_ustring(l_val);
-		if (!base_str.empty()) {
+// Parses a reading and its sub-readings. Mapping tags of the top reading are returned in mappings so the caller can split them.
+Reading* JsonlApplicator::parseJsonReading(const json::Value& reading_obj, Cohort* cohort, TagList& mappings) {
+	Reading* cReading = alloc_reading(cohort);
+	addTagToReading(*cReading, cohort->wordform);
+
+	UString str;
+	if (!reading_obj.HasMember("l")) {
+		u_fprintf(ux_stderr, "Warning: Reading missing 'l' (baseform) on line %u.\n", numLines);
+	}
+	else if (getJsonString(reading_obj, "l", str)) {
+		if (str.empty()) {
+			u_fprintf(ux_stderr, "Warning: Empty 'l' (baseform) in reading on line %u.\n", numLines);
+		}
+		else {
 			UString base_tag;
 			base_tag += '"';
-			base_tag += base_str;
+			base_tag += str;
 			base_tag += '"';
 			addTagToReading(*cReading, addTag(base_tag));
 		}
-		else {
-			u_fprintf(ux_stderr, "Warning: Empty 'l' (baseform) in reading on line %u.\n", numLines);
-		}
-	}
-	else {
-		u_fprintf(ux_stderr, "Warning: Reading missing 'l' (baseform) on line %u.\n", numLines);
 	}
 
-	// Parse tags ("ts")
-	if (reading_obj.HasMember("ts") && reading_obj["ts"].IsArray()) {
-		auto& tags_arr = reading_obj["ts"];
-		TagList mappings;
-		for (auto& tag_val : tags_arr.GetArray()) {
-			auto tag_str = json_to_ustring(tag_val);
-			if (!tag_str.empty()) {
-				auto tag = addTag(tag_str);
-				if (tag->type & T_MAPPING || (!tag_str.empty() && tag_str[0] == grammar->mapping_prefix)) {
+	auto ts = reading_obj.FindMember("ts");
+	if (ts != reading_obj.MemberEnd()) {
+		if (!ts->value.IsArray()) {
+			u_fprintf(ux_stderr, "Warning: 'ts' (tags) on line %u is not an array - ignored.\n", numLines);
+		}
+		else {
+			for (auto& tag_val : ts->value.GetArray()) {
+				if (!tag_val.IsString()) {
+					u_fprintf(ux_stderr, "Warning: Non-string found in 'ts' (tags) array on line %u - skipping.\n", numLines);
+					continue;
+				}
+				str = utf8_to_ustring(tag_val.GetString(), tag_val.GetStringLength());
+				if (str.empty()) {
+					continue;
+				}
+				auto tag = addTag(str);
+				if (tag->type & T_MAPPING || tag->tag[0] == grammar->mapping_prefix) {
+					tag->type |= T_MAPPING;
 					mappings.push_back(tag);
 				}
 				else {
@@ -120,91 +158,139 @@ Reading* JsonlApplicator::parseJsonReading(const json::Value& reading_obj, Cohor
 				}
 			}
 		}
-		if (!mappings.empty()) {
-			splitMappings(mappings, *parentCohort, *cReading, true);
-		}
 	}
 
-	// Parse subreading ("s") recursively
-	if (reading_obj.HasMember("s")) {
-		auto& sub_reading_val = reading_obj["s"];
-		if (sub_reading_val.IsObject()) {
-			auto subReading = parseJsonReading(sub_reading_val, parentCohort);
-			if (subReading) {
-				cReading->next = subReading;
-			}
-			else {
-				u_fprintf(ux_stderr, "Error: Failed to parse subreading object on line %u.\n", numLines);
-			}
+	auto sub = reading_obj.FindMember("s");
+	if (sub != reading_obj.MemberEnd()) {
+		if (sub->value.IsObject()) {
+			TagList sub_mappings;
+			cReading->next = parseJsonReading(sub->value, cohort, sub_mappings);
+			addSingleMapping(*cReading->next, sub_mappings);
 		}
 		else {
-			u_fprintf(ux_stderr, "Warning: Value for 's' (sub_reading) is not an object on line %u. Skipping.\n", numLines);
+			u_fprintf(ux_stderr, "Warning: Value for 's' (sub-reading) is not an object on line %u - skipping.\n", numLines);
 		}
 	}
 
-	// Ensure baseform exists
 	if (!cReading->baseform) {
-		cReading->baseform = parentCohort->wordform->hash;
+		cReading->baseform = cohort->wordform->hash;
 		u_fprintf(ux_stderr, "Warning: Reading on line %u ended up with no baseform. Using wordform.\n", numLines);
 	}
 
+	// The hash covers the sub-reading, which was attached after the tags were added
+	cReading->rehash();
 	return cReading;
 }
 
-void JsonlApplicator::parseJsonCohort(const json::Value& obj, SingleWindow* cSWindow, Cohort*& cCohort) {
-	cCohort = alloc_cohort(cSWindow);
+Cohort* JsonlApplicator::parseJsonCohort(const json::Value& obj, SingleWindow* cSWindow) {
+	Cohort* cCohort = alloc_cohort(cSWindow);
 	cCohort->global_number = gWindow->cohort_counter++;
+	cCohort->line_number = numLines;
 	++numCohorts;
 
-	UString wform_str;
-	if (obj.HasMember("w")) {
-		wform_str = json_to_ustring(obj["w"]);
-	}
-	else {
-		u_fprintf(ux_stderr, "Warning: JSON cohort on line %u missing 'w' (wordform). Using empty.\n", numLines);
-	}
+	UString str;
+	getJsonString(obj, "w", str); // Validated by the caller
 	UString wform_tag;
 	wform_tag.append(u"\"<");
-	wform_tag += wform_str;
+	wform_tag += str;
 	wform_tag.append(u">\"");
 	cCohort->wordform = addTag(wform_tag);
 
-	cCohort->wblank.clear();
-	if (obj.HasMember("z")) {
-		cCohort->text = json_to_ustring(obj["z"]);
+	str.clear();
+	if (getJsonString(obj, "wb", str)) {
+		cCohort->wblank = str;
 	}
 
-	// handle static tags ("sts")
-	if (obj.HasMember("sts") && obj["sts"].IsArray()) {
-		if (!cCohort->wread) {
-			cCohort->wread = alloc_reading(cCohort);
-			addTagToReading(*cCohort->wread, cCohort->wordform);
-			cCohort->wread->baseform = cCohort->wordform->hash;
+	// Text following the cohort. The CG reader keeps each line's newline, and the writer drops the last one, so add it back.
+	// An empty "z" is a blank line.
+	str.clear();
+	if (getJsonString(obj, "z", str)) {
+		cCohort->text = str;
+		cCohort->text += '\n';
+	}
+
+	auto sts = obj.FindMember("sts");
+	if (sts != obj.MemberEnd()) {
+		if (!sts->value.IsArray()) {
+			u_fprintf(ux_stderr, "Warning: 'sts' (static tags) on line %u is not an array - ignored.\n", numLines);
 		}
-		for (auto& tag_val : obj["sts"].GetArray()) {
-			auto tag_str = json_to_ustring(tag_val);
-			if (!tag_str.empty()) {
-				auto tag = addTag(tag_str);
-				cCohort->wread->tags_list.push_back(tag->hash);
+		else {
+			for (auto& tag_val : sts->value.GetArray()) {
+				if (!tag_val.IsString()) {
+					u_fprintf(ux_stderr, "Warning: Non-string found in 'sts' (static tags) array on line %u - skipping.\n", numLines);
+					continue;
+				}
+				str = utf8_to_ustring(tag_val.GetString(), tag_val.GetStringLength());
+				if (str.empty()) {
+					continue;
+				}
+				if (!cCohort->wread) {
+					cCohort->wread = alloc_reading(cCohort);
+					addTagToReading(*cCohort->wread, cCohort->wordform);
+				}
+				addTagToReading(*cCohort->wread, addTag(str));
 			}
 		}
 	}
 
-	if (obj.HasMember("rs") && obj["rs"].IsArray()) {
-		auto& readings_arr = obj["rs"];
-		for (auto& reading_val : readings_arr.GetArray()) {
-			if (!reading_val.IsObject()) {
-				u_fprintf(ux_stderr, "Warning: Non-object found in 'rs' (readings) array on line %u. Skipping.\n", numLines);
-				continue;
-			}
-			auto cReading = parseJsonReading(reading_val, cCohort);
-			if (cReading) {
+	auto rs = obj.FindMember("rs");
+	if (rs != obj.MemberEnd()) {
+		if (!rs->value.IsArray()) {
+			u_fprintf(ux_stderr, "Warning: 'rs' (readings) on line %u is not an array - ignored.\n", numLines);
+		}
+		else {
+			all_mappings_t all_mappings;
+			for (auto& reading_val : rs->value.GetArray()) {
+				if (!reading_val.IsObject()) {
+					u_fprintf(ux_stderr, "Warning: Non-object found in 'rs' (readings) array on line %u - skipping.\n", numLines);
+					continue;
+				}
+				TagList mappings;
+				auto cReading = parseJsonReading(reading_val, cCohort, mappings);
 				cCohort->appendReading(cReading);
-				++numReadings; // Increment only if parsing succeeded
+				if (!mappings.empty()) {
+					all_mappings[cReading] = mappings;
+				}
+				++numReadings;
 			}
-			else {
-				u_fprintf(ux_stderr, "Error: Failed to parse main reading on line %u.\n", numLines);
+			splitAllMappings(all_mappings, *cCohort, true);
+		}
+	}
+
+	// Before initEmptyCohort(), since setRelated() would make the empty reading printable
+	auto id = obj.FindMember("id");
+	if (id != obj.MemberEnd()) {
+		if (!id->value.IsUint() || id->value.GetUint() == 0) {
+			u_fprintf(ux_stderr, "Warning: 'id' on line %u is not a positive integer - ignored.\n", numLines);
+		}
+		else {
+			gWindow->relation_map[id->value.GetUint()] = cCohort->global_number;
+		}
+	}
+
+	// "rels" marks the cohort as related, even when it is empty
+	auto rels = obj.FindMember("rels");
+	if (rels != obj.MemberEnd()) {
+		if (!rels->value.IsObject()) {
+			u_fprintf(ux_stderr, "Warning: 'rels' (relations) on line %u is not an object - ignored.\n", numLines);
+		}
+		else {
+			for (auto& rel : rels->value.GetObject()) {
+				if (!rel.value.IsArray()) {
+					u_fprintf(ux_stderr, "Warning: Relation targets on line %u are not an array - ignored.\n", numLines);
+					continue;
+				}
+				auto name = addTag(utf8_to_ustring(rel.name.GetString(), rel.name.GetStringLength()));
+				for (auto& target : rel.value.GetArray()) {
+					if (!target.IsUint()) {
+						u_fprintf(ux_stderr, "Warning: Relation target on line %u is not a non-negative integer - skipping.\n", numLines);
+						continue;
+					}
+					cCohort->relations_input[name->hash].insert(target.GetUint());
+				}
 			}
+			has_relations = true;
+			cCohort->setRelated();
 		}
 	}
 
@@ -213,29 +299,58 @@ void JsonlApplicator::parseJsonCohort(const json::Value& obj, SingleWindow* cSWi
 	}
 	insert_if_exists(cCohort->possible_sets, grammar->sets_any);
 
-	if (obj.HasMember("ds") && obj["ds"].IsUint()) {
-		cCohort->dep_self = obj["ds"].GetUint();
-	}
-	if (obj.HasMember("dp") && obj["dp"].IsUint()) {
-		cCohort->dep_parent = obj["dp"].GetUint();
-	}
-
-	// parse deleted readings ("drs")
-	if (obj.HasMember("drs") && obj["drs"].IsArray()) {
-		for (auto& dr_val : obj["drs"].GetArray()) {
-			if (!dr_val.IsObject()) {
-				continue;
+	auto drs = obj.FindMember("drs");
+	if (drs != obj.MemberEnd()) {
+		if (!pipe_deleted) {
+			if (verbosity_level > 0) {
+				u_fprintf(ux_stderr, "Info: Ignoring 'drs' (deleted readings) on line %u; use --deleted to read them.\n", numLines);
 			}
-			auto delR = parseJsonReading(dr_val, cCohort);
-			if (delR) {
-				delR->deleted = true;
-				cCohort->deleted.push_back(delR);
-			}
-			else {
-				u_fprintf(ux_stderr, "Error: Failed to parse deleted reading on line %u.\n", numLines);
+		}
+		else if (!drs->value.IsArray()) {
+			u_fprintf(ux_stderr, "Warning: 'drs' (deleted readings) on line %u is not an array - ignored.\n", numLines);
+		}
+		else {
+			for (auto& dr_val : drs->value.GetArray()) {
+				if (!dr_val.IsObject()) {
+					u_fprintf(ux_stderr, "Warning: Non-object found in 'drs' (deleted readings) array on line %u - skipping.\n", numLines);
+					continue;
+				}
+				TagList mappings;
+				auto delR = parseJsonReading(dr_val, cCohort, mappings);
+				addSingleMapping(*delR, mappings);
+				for (auto r = delR; r; r = r->next) {
+					r->deleted = true;
+				}
+				cCohort->appendReading(delR, cCohort->deleted);
+				++numReadings;
 			}
 		}
 	}
+
+	auto ds = obj.FindMember("ds");
+	auto dp = obj.FindMember("dp");
+	if (ds != obj.MemberEnd()) {
+		if (!ds->value.IsUint() || ds->value.GetUint() == 0) {
+			u_fprintf(ux_stderr, "Warning: 'ds' (dependency self) on line %u is not a positive integer - ignored.\n", numLines);
+		}
+		else {
+			cCohort->dep_self = ds->value.GetUint();
+			if (dp != obj.MemberEnd()) {
+				if (!dp->value.IsUint()) {
+					u_fprintf(ux_stderr, "Warning: 'dp' (dependency parent) on line %u is not a non-negative integer - ignored.\n", numLines);
+				}
+				else if (dp->value.GetUint() != cCohort->dep_self) {
+					cCohort->dep_parent = dp->value.GetUint();
+				}
+			}
+			has_dep = true;
+		}
+	}
+	else if (dp != obj.MemberEnd()) {
+		u_fprintf(ux_stderr, "Warning: 'dp' (dependency parent) on line %u without 'ds' (dependency self) - ignored.\n", numLines);
+	}
+
+	return cCohort;
 }
 
 void JsonlApplicator::runGrammarOnText(std::istream& input, std::ostream& output) {
@@ -273,34 +388,127 @@ void JsonlApplicator::runGrammarOnText(std::istream& input, std::ostream& output
 	uint32_t resetAfter = ((num_windows + 4) * 2 + 1);
 
 	bool ignoreinput = false;
-	SingleWindow* cSWindow = nullptr;
-	Cohort* cCohort = nullptr;
+	bool did_soft_lookback = false;
+	SingleWindow* cSWindow = nullptr; // Window being filled; nullptr once it has been delimited
 	SingleWindow* lSWindow = nullptr;
-	Cohort* lCohort = nullptr;
+	Cohort* lCohort = nullptr; // Receives following text
 
 	gWindow->window_span = num_windows;
 
-	// Declare local variables for variable tracking, similar to GrammarApplicator::runGrammarOnText
 	uint32FlatHashMap variables_set;
 	uint32FlatHashSet variables_rem;
 	uint32SortedVector variables_output;
 
 	ux_stripBOM(input);
 
+	auto add_end_tag = [&](Cohort* cohort) {
+		for (auto iter : cohort->readings) {
+			if (iter->tags.find(endtag) == iter->tags.end()) {
+				addTagToReading(*iter, endtag);
+			}
+		}
+	};
+
+	auto new_window = [&]() {
+		cSWindow = gWindow->allocAppendSingleWindow();
+		initEmptySingleWindow(cSWindow);
+		lSWindow = cSWindow;
+		++numWindows;
+		did_soft_lookback = false;
+
+		cSWindow->variables_set.insert(variables_set.begin(), variables_set.end());
+		variables_set.clear();
+		cSWindow->variables_rem.insert(variables_rem.begin(), variables_rem.end());
+		variables_rem.clear();
+		cSWindow->variables_output.insert(variables_output.begin(), variables_output.end());
+		variables_output.clear();
+	};
+
+	// JSONL has no flag for dependencies that span windows, so look for them once they have been resolved.
+	// Windows are printed a few runs later, so the CG writer can still switch to its spanning enumeration.
+	auto check_dep_span = [&](SingleWindow* window) {
+		for (auto cohort : window->cohorts) {
+			if (cohort->dep_parent == 0 || cohort->dep_parent == DEP_NO_PARENT || !(cohort->type & CT_DEP_DONE)) {
+				continue;
+			}
+			auto it = gWindow->cohort_map.find(cohort->dep_parent);
+			if (it != gWindow->cohort_map.end() && it->second->parent != cohort->parent) {
+				dep_has_spanned = true;
+				return;
+			}
+		}
+	};
+
+	auto run_window = [&]() {
+		gWindow->shuffleWindowsDown();
+		runGrammarOnWindow();
+		if (has_dep && !dep_has_spanned) {
+			check_dep_span(gWindow->current);
+			for (auto window : gWindow->next) {
+				check_dep_span(window);
+			}
+		}
+		if (numWindows % resetAfter == 0) {
+			resetIndexes();
+		}
+		if (verbosity_level > 0) {
+			u_fprintf(ux_stderr, "Progress: L:%u, W:%u, C:%u, R:%u\r", numLines, numWindows, numCohorts, numReadings);
+			u_fflush(ux_stderr);
+		}
+	};
+
+	auto flush_windows = [&]() {
+		while (!gWindow->next.empty()) {
+			run_window();
+		}
+		gWindow->shuffleWindowsDown();
+		while (!gWindow->previous.empty()) {
+			auto tmp = gWindow->previous.front();
+			printSingleWindow(tmp, output);
+			free_swindow(tmp);
+			gWindow->previous.erase(gWindow->previous.begin());
+		}
+	};
+
+	// Same placement as the CG reader: text after a cohort belongs to that cohort, and --text-delimit ends the window
+	auto add_text = [&](const UString& text) {
+		if (lSWindow && lCohort && testStringAgainst(text, text_delimiters)) {
+			lSWindow->text_post += text;
+			if (cSWindow == lSWindow) {
+				add_end_tag(cSWindow->cohorts.back());
+				cSWindow = nullptr;
+			}
+			lCohort = nullptr;
+		}
+		else if (lCohort) {
+			lCohort->text += text;
+		}
+		else if (lSWindow) {
+			if (!lSWindow->text_post.empty()) {
+				lSWindow->text_post += text;
+			}
+			else {
+				lSWindow->text += text;
+			}
+		}
+		else {
+			printPlainTextLine(text, output);
+		}
+	};
+
 	std::string line_str;
 	while (std::getline(input, line_str)) {
-		++numLines; // Keep track for warnings
+		++numLines;
 
-		// Skip empty lines
-		if (line_str.empty() || line_str.find_first_not_of(" \t\n\v\f\r") == std::string::npos) {
+		if (line_str.find_first_not_of(" \t\n\v\f\r") == std::string::npos) {
 			continue;
 		}
 
 		json::Document doc;
-		json::ParseResult ok = doc.Parse(line_str.c_str());
+		json::ParseResult ok = doc.Parse(line_str.c_str(), line_str.size());
 
 		if (!ok) {
-			u_fprintf(ux_stderr, "Warning: Failed to parse JSON on line %u: %s (offset %zu). Skipping line.\n", numLines, json::GetParseError_En(ok.Code()), ok.Offset());
+			u_fprintf(ux_stderr, "Warning: Failed to parse JSON on line %u: %s (offset %u). Skipping line.\n", numLines, json::GetParseError_En(ok.Code()), UI32(ok.Offset()));
 			continue;
 		}
 
@@ -310,246 +518,226 @@ void JsonlApplicator::runGrammarOnText(std::istream& input, std::ostream& output
 		}
 
 		if (doc.HasMember("cmd")) {
-			auto cmd_ustr = json_to_ustring(doc["cmd"]);
-			if (!cmd_ustr.empty()) {
-				if (cmd_ustr == STR_CMD_FLUSH) {
-					if (verbosity_level > 0) {
-						u_fprintf(ux_stderr, "Info: FLUSH command encountered in JSONL input on line %u. Flushing...\n", numLines);
-					}
-
-					auto backSWindow = gWindow->back();
-					if (backSWindow) {
-						backSWindow->flush_after = true;
-					}
-
-					if (lCohort && cSWindow && !cSWindow->cohorts.empty() && cSWindow->cohorts.back() == lCohort) {
-						for (auto iter : lCohort->readings) {
-							addTagToReading(*iter, endtag);
-						}
-					}
-
-					lCohort = nullptr;
-					cSWindow = nullptr;
-					lSWindow = nullptr;
-
-					// Process and print all buffered windows
-					while (!gWindow->next.empty()) {
-						gWindow->shuffleWindowsDown();
-						runGrammarOnWindow();
-						if (numWindows % resetAfter == 0) {
-							resetIndexes();
-						}
-						if (verbosity_level > 0) {
-							u_fprintf(ux_stderr, "Progress: L:%u, W:%u, C:%u, R:%u\r", numLines, numWindows, numCohorts, numReadings);
-							u_fflush(ux_stderr);
-						}
-					}
-					gWindow->shuffleWindowsDown();
-					while (!gWindow->previous.empty()) {
-						auto tmp = gWindow->previous.front();
-						printSingleWindow(tmp, output);
-						free_swindow(tmp);
-						gWindow->previous.erase(gWindow->previous.begin());
-					}
-
-					if (!backSWindow) {
-						printStreamCommand(cmd_ustr, output);
-					}
-
-					variables.clear();
-					u_fflush(output);
-					u_fflush(*ux_stderr);
-				}
-				else if (cmd_ustr == STR_CMD_IGNORE) {
-					ignoreinput = true;
-					printStreamCommand(cmd_ustr, output);
-				}
-				else if (cmd_ustr == STR_CMD_RESUME) {
-					ignoreinput = false;
-					printStreamCommand(cmd_ustr, output);
-				}
-				else if (cmd_ustr == STR_CMD_EXIT) {
-					printStreamCommand(cmd_ustr, output);
-					goto CGCMD_EXIT_JSONL;
-				}
-				else if (u_strncmp(cmd_ustr.data(), STR_CMD_SETVAR.data(), SI32(STR_CMD_SETVAR.size())) == 0) {
-					auto cmd_payload = cmd_ustr.substr(STR_CMD_SETVAR.size(), cmd_ustr.size() - STR_CMD_SETVAR.size() -1); // Remove <STREAMCMD:SETVAR: and >
-					auto equals_pos = cmd_payload.find(u'=');
-					Tag* key_tag;
-					uint32_t value_hash;
-
-					if (equals_pos != UString::npos) {
-						auto key_str = cmd_payload.substr(0, equals_pos);
-						auto value_str = cmd_payload.substr(equals_pos + 1);
-						key_tag = addTag(key_str);
-						value_hash = addTag(value_str)->hash;
-					} else {
-						key_tag = addTag(cmd_payload);
-						value_hash = grammar->tag_any;
-					}
-					variables_set[key_tag->hash] = value_hash;
-					variables_rem.erase(key_tag->hash);
-					variables_output.insert(key_tag->hash);
-				}
-				else if (u_strncmp(cmd_ustr.data(), STR_CMD_REMVAR.data(), SI32(STR_CMD_REMVAR.size())) == 0) {
-					auto cmd_payload = cmd_ustr.substr(STR_CMD_REMVAR.size(), cmd_ustr.size() - STR_CMD_REMVAR.size() -1); // Remove <STREAMCMD:REMVAR: and >
-					auto key_tag = addTag(cmd_payload);
-					variables_set.erase(key_tag->hash);
-					variables_rem.insert(key_tag->hash);
-					variables_output.insert(key_tag->hash);
-				}
-			}
-			else {
-				u_fprintf(ux_stderr, "Warning: Empty 'cmd' value on line %u.\n", numLines);
-			}
-			continue;
-		}
-
-		if (ignoreinput) {
-			if (doc.HasMember("t")) {
-				auto t_ustr = json_to_ustring(doc["t"]);
-				if (!t_ustr.empty()) {
-					printPlainTextLine(t_ustr, output);
-				}
-			}
-			continue;
-		}
-
-		if (doc.HasMember("t") && !doc.HasMember("w")) {
-			auto t_ustr = json_to_ustring(doc["t"]);
-			if (!t_ustr.empty()) {
-				if (verbosity_level > 1) {
-					u_fprintf(ux_stderr, "Info: Plain text line found in JSONL input on line %u: %S\n", numLines, t_ustr.data());
-				}
-				if (lCohort) {
-					lCohort->text += t_ustr;
-				}
-				else if (lSWindow) {
-					lSWindow->text += t_ustr;
-				}
-				else {
-					printPlainTextLine(t_ustr, output);
-				}
-			}
-			else {
-				u_fprintf(ux_stderr, "Warning: Empty 't' value on line %u.\n", numLines);
-			}
-			continue; // Skip cohort processing for this line
-		}
-		else if (doc.HasMember("w"))  // "w" means it is a cohort
-		{
-			if (!cSWindow) {
-				cSWindow = gWindow->allocAppendSingleWindow();
-				initEmptySingleWindow(cSWindow);
-
-				// Transfer current variable state to the new window
-				cSWindow->variables_set = variables_set;
-				variables_set.clear();
-				cSWindow->variables_rem = variables_rem;
-				variables_rem.clear();
-				cSWindow->variables_output = variables_output;
-				variables_output.clear();
-
-				++numWindows;
-				lSWindow = cSWindow;
-			}
-
-			parseJsonCohort(doc, cSWindow, cCohort);
-
-			if (!cCohort) {
-				u_fprintf(ux_stderr, "Error: Failed to create cohort from JSON on line %u.\n", numLines);
+			UString cmd;
+			if (!getJsonString(doc, "cmd", cmd)) {
 				continue;
+			}
+			if (cmd.empty()) {
+				u_fprintf(ux_stderr, "Warning: Empty 'cmd' value on line %u.\n", numLines);
+				continue;
+			}
+
+			auto starts_with = [&](UStringView prefix) {
+				return cmd.size() > prefix.size() && cmd.back() == '>' && UStringView(cmd).substr(0, prefix.size()) == prefix;
+			};
+
+			if (cmd == STR_CMD_FLUSH) {
+				if (verbosity_level > 0) {
+					u_fprintf(ux_stderr, "Info: FLUSH encountered on line %u. Flushing...\n", numLines);
+				}
+
+				auto backSWindow = gWindow->back();
+				if (backSWindow) {
+					backSWindow->flush_after = true;
+				}
+				if (cSWindow) {
+					add_end_tag(cSWindow->cohorts.back());
+				}
+				lCohort = nullptr;
+				cSWindow = nullptr;
+				lSWindow = nullptr;
+
+				flush_windows();
+
+				if (!backSWindow) {
+					printStreamCommand(STR_CMD_FLUSH, output);
+				}
+
+				variables.clear();
+				u_fflush(output);
+				u_fflush(ux_stderr);
+			}
+			else if (cmd == STR_CMD_IGNORE) {
+				if (verbosity_level > 0) {
+					u_fprintf(ux_stderr, "Info: IGNORE encountered on line %u. Passing through all input...\n", numLines);
+				}
+				ignoreinput = true;
+				printStreamCommand(STR_CMD_IGNORE, output);
+			}
+			else if (cmd == STR_CMD_RESUME) {
+				if (verbosity_level > 0) {
+					u_fprintf(ux_stderr, "Info: RESUME encountered on line %u. Resuming CG...\n", numLines);
+				}
+				ignoreinput = false;
+				printStreamCommand(STR_CMD_RESUME, output);
+			}
+			else if (cmd == STR_CMD_EXIT) {
+				if (verbosity_level > 0) {
+					u_fprintf(ux_stderr, "Info: EXIT encountered on line %u. Exiting...\n", numLines);
+				}
+				printStreamCommand(STR_CMD_EXIT, output);
+				goto CGCMD_EXIT_JSONL;
+			}
+			else if (starts_with(STR_CMD_SETVAR)) {
+				// <STREAMCMD:SETVAR:a=1,b> sets a to 1 and b to *
+				auto payload = UStringView(cmd).substr(STR_CMD_SETVAR.size(), cmd.size() - STR_CMD_SETVAR.size() - 1);
+				for (size_t b = 0, e = 0; b <= payload.size(); b = e + 1) {
+					e = payload.find(',', b);
+					if (e == UStringView::npos) {
+						e = payload.size();
+					}
+					auto item = payload.substr(b, e - b);
+					auto eq = item.find('=');
+					auto key = item.substr(0, eq);
+					uint32_t a = grammar->tag_any;
+					uint32_t v = grammar->tag_any;
+					if (key.empty()) {
+						u_fprintf(ux_stderr, "Warning: SETVAR on line %u had an empty identifier! Defaulting to identifier *.\n", numLines);
+					}
+					else {
+						a = addTag(UString(key))->hash;
+					}
+					if (eq != UStringView::npos) {
+						if (eq + 1 == item.size()) {
+							u_fprintf(ux_stderr, "Warning: SETVAR on line %u had no value after the =! Defaulting to value *.\n", numLines);
+						}
+						else {
+							v = addTag(UString(item.substr(eq + 1)))->hash;
+						}
+					}
+					variables_set[a] = v;
+					variables_rem.erase(a);
+					variables_output.insert(a);
+				}
+			}
+			else if (starts_with(STR_CMD_REMVAR)) {
+				// <STREAMCMD:REMVAR:a,b> unsets a and b
+				auto payload = UStringView(cmd).substr(STR_CMD_REMVAR.size(), cmd.size() - STR_CMD_REMVAR.size() - 1);
+				for (size_t b = 0, e = 0; b <= payload.size(); b = e + 1) {
+					e = payload.find(',', b);
+					if (e == UStringView::npos) {
+						e = payload.size();
+					}
+					if (e == b) {
+						continue;
+					}
+					auto a = addTag(UString(payload.substr(b, e - b)))->hash;
+					variables_set.erase(a);
+					variables_rem.insert(a);
+					variables_output.insert(a);
+				}
+			}
+			else {
+				u_fprintf(ux_stderr, "Warning: Unknown or malformed stream command %S on line %u - treated as text.\n", cmd.data(), numLines);
+				cmd += '\n';
+				add_text(cmd);
+			}
+			continue;
+		}
+
+		if (doc.HasMember("w")) {
+			if (ignoreinput) {
+				// Pass the cohort through untouched, the same way the CG reader passes through ignored cohort lines
+				auto text = utf8_to_ustring(line_str.data(), line_str.size());
+				text += '\n';
+				add_text(text);
+				continue;
+			}
+
+			UString wform;
+			if (!getJsonString(doc, "w", wform) || wform.empty()) {
+				u_fprintf(ux_stderr, "Warning: Cohort on line %u has an empty or invalid 'w' (wordform). Skipping line.\n", numLines);
+				continue;
+			}
+
+			// Same as the CG reader: once past the soft limit, delimit at the last soft delimiter in the window, if any
+			if (cSWindow && cSWindow->cohorts.size() > soft_limit && grammar->soft_delimiters && !did_soft_lookback) {
+				did_soft_lookback = true;
+				for (auto c : reversed(cSWindow->cohorts)) {
+					if (doesSetMatchCohortNormal(*c, grammar->soft_delimiters->number)) {
+						did_soft_lookback = false;
+						cSWindow = delimitAt(*cSWindow, c)->parent->next;
+						lSWindow = cSWindow;
+						if (verbosity_level > 0) {
+							u_fprintf(ux_stderr, "Warning: Soft limit of %u cohorts reached at line %u but found suitable soft delimiter in buffer.\n", soft_limit, numLines);
+						}
+						break;
+					}
+				}
+			}
+			if (!cSWindow) {
+				new_window();
+			}
+			// Same look-ahead as the CG reader, so rules can see num_windows windows ahead
+			if (gWindow->next.size() > num_windows + 1) {
+				run_window();
+			}
+
+			auto cCohort = parseJsonCohort(doc, cSWindow);
+
+			// Check whether the cohort still belongs to the window, as per --dep-delimit. Cohorts without a dependency never start
+			// a new window; the CG reader only checks on reading lines, so a cohort without readings doesn't either.
+			if (dep_delimit && dep_highest_seen && cCohort->dep_self && cSWindow->cohorts.size() > 1 && (cCohort->dep_self <= dep_highest_seen || cCohort->dep_self - dep_highest_seen > dep_delimit)) {
+				reflowDependencyWindow(cCohort->global_number);
+				add_end_tag(cSWindow->cohorts.back());
+				new_window();
+				dep_highest_seen = 0;
+				cCohort->parent = cSWindow;
+				if (grammar->has_bag_of_tags) {
+					for (auto rit : cCohort->readings) {
+						reflowReading(*rit);
+					}
+				}
 			}
 
 			cSWindow->appendCohort(cCohort);
 			lCohort = cCohort;
 
-			bool did_delim = false;
-			if (cSWindow->cohorts.size() >= soft_limit && grammar->soft_delimiters && doesSetMatchCohortNormal(*cCohort, grammar->soft_delimiters->number)) {
+			// The CG reader checks the limits before appending the cohort, hence > instead of >=
+			if (cSWindow->cohorts.size() > soft_limit && grammar->soft_delimiters && doesSetMatchCohortNormal(*cCohort, grammar->soft_delimiters->number)) {
 				if (verbosity_level > 0) {
-					u_fprintf(ux_stderr, "Info: Soft limit of %u cohorts reached at line %u with soft delimiter.\n", soft_limit, numLines);
+					u_fprintf(ux_stderr, "Warning: Soft limit of %u cohorts reached at line %u but found suitable soft delimiter.\n", soft_limit, numLines);
 				}
-				for (auto iter : cCohort->readings) {
-					addTagToReading(*iter, endtag);
-				}
+				add_end_tag(cCohort);
 				cSWindow = nullptr;
-				cCohort = nullptr;
-				did_delim = true;
 			}
-			else if (cSWindow->cohorts.size() >= hard_limit || (grammar->delimiters && doesSetMatchCohortNormal(*cCohort, grammar->delimiters->number))) {
-				if (cSWindow->cohorts.size() >= hard_limit) {
+			else if (cSWindow->cohorts.size() > hard_limit || (!dep_delimit && grammar->delimiters && doesSetMatchCohortNormal(*cCohort, grammar->delimiters->number))) {
+				if (!is_conv && cSWindow->cohorts.size() > hard_limit) {
 					u_fprintf(ux_stderr, "Warning: Hard limit of %u cohorts reached at line %u - forcing break.\n", hard_limit, numLines);
 				}
-				for (auto iter : cCohort->readings) {
-					addTagToReading(*iter, endtag);
-				}
+				add_end_tag(cCohort);
 				cSWindow = nullptr;
-				cCohort = nullptr;
-				did_delim = true;
 			}
+			continue;
+		}
 
-			if (did_delim || gWindow->next.size() > num_windows) {
-				gWindow->shuffleWindowsDown();
-				runGrammarOnWindow();
-				if (numWindows % resetAfter == 0) {
-					resetIndexes();
-				}
-				if (verbosity_level > 0) {
-					u_fprintf(ux_stderr, "Progress: L:%u, W:%u, C:%u, R:%u\r", numLines, numWindows, numCohorts, numReadings);
-					u_fflush(ux_stderr);
-				}
+		if (doc.HasMember("t")) {
+			UString text;
+			if (getJsonString(doc, "t", text)) {
+				text += '\n';
+				add_text(text);
 			}
-			cCohort = nullptr;
+			continue;
 		}
+
+		u_fprintf(ux_stderr, "Warning: JSON object on line %u has none of 'w', 't' or 'cmd'. Skipping line.\n", numLines);
 	}
 
-	if (cSWindow && !cSWindow->cohorts.empty()) {
-		auto lastCohort = cSWindow->cohorts.back();
-		for (auto iter : lastCohort->readings) {
-			addTagToReading(*iter, endtag);
-		}
+	input_eof = true;
+
+	if (cSWindow) {
+		add_end_tag(cSWindow->cohorts.back());
+		cSWindow = nullptr;
 	}
 
-	while (!gWindow->next.empty()) {
-		gWindow->shuffleWindowsDown();
-		runGrammarOnWindow();
-	}
-	if (gWindow->current) {
-		runGrammarOnWindow();
-	}
-
-	gWindow->shuffleWindowsDown();
-	while (!gWindow->previous.empty()) {
-		auto tmp = gWindow->previous.front();
-		printSingleWindow(tmp, output);
-		free_swindow(tmp);
-		gWindow->previous.erase(gWindow->previous.begin());
-	}
+	flush_windows();
 
 	u_fflush(output);
 
-	// Print any remaining 'global' variables that were set/rem'd after the last window was finalized
-	for (auto var : variables_output) {
-		auto key = grammar->single_tags[var];
-		auto iter = variables_set.find(var);
-		UString cmd_buf;
-		if (iter != variables_set.end()) {
-			if (iter->second != grammar->tag_any) {
-				auto value = grammar->single_tags[iter->second];
-				cmd_buf.append(STR_CMD_SETVAR).append(key->tag).append(u"=").append(value->tag).append(u">");
-			}
-			else {
-				cmd_buf.append(STR_CMD_SETVAR).append(key->tag).append(u">");
-			}
-		}
-		else { // Implies it was in variables_rem if it's in variables_output but not variables_set
-			cmd_buf.append(STR_CMD_REMVAR).append(key->tag).append(u">");
-		}
-		printStreamCommand(cmd_buf, output);
-	}
+	// Variables that were set or removed after the last window
+	printVariables(variables_output, variables_set, output);
 
-CGCMD_EXIT_JSONL: // Label for EXIT command
-
+CGCMD_EXIT_JSONL:
 	if (verbosity_level > 0) {
 		u_fprintf(ux_stderr, "Progress: L:%u, W:%u, C:%u, R:%u - Done.\n", numLines, numWindows, numCohorts, numReadings);
 		u_fflush(ux_stderr);
@@ -560,14 +748,14 @@ void JsonlApplicator::buildJsonTags(const Reading* reading, json::Value& tags_js
 	assert(tags_json.IsArray());
 
 	uint32SortedVector unique;
+	TagList mappings;
 	for (auto tter : reading->tags_list) {
 		if ((!show_end_tags && tter == endtag) || tter == begintag) {
 			continue;
 		}
-		if (tter == reading->baseform || (reading->parent && tter == reading->parent->wordform->hash)) {
+		if (tter == reading->baseform || tter == reading->parent->wordform->hash) {
 			continue;
 		}
-
 		if (unique_tags) {
 			if (unique.find(tter) != unique.end()) {
 				continue;
@@ -576,38 +764,38 @@ void JsonlApplicator::buildJsonTags(const Reading* reading, json::Value& tags_js
 		}
 
 		auto tag = grammar->single_tags[tter];
-
 		if (tag->type & T_DEPENDENCY && has_dep && !dep_original) {
 			continue;
 		}
 		if (tag->type & T_RELATION && has_relations) {
 			continue;
 		}
-
-		auto utf8_tag = ustring_to_utf8(tag->tag);
-		json::Value tag_val(utf8_tag.c_str(), allocator);
-		tags_json.PushBack(tag_val, allocator);
+		if (tag->type & T_MAPPING) {
+			// Move mappings to the end, like the CG writer
+			mappings.push_back(tag);
+			continue;
+		}
+		tags_json.PushBack(to_json(tag->tag, allocator), allocator);
+	}
+	for (auto tag : mappings) {
+		tags_json.PushBack(to_json(tag->tag, allocator), allocator);
 	}
 }
 
 void JsonlApplicator::buildJsonReading(const Reading* reading, json::Value& reading_json, json::Document::AllocatorType& allocator) {
 	assert(reading_json.IsObject());
 
-	std::string baseform_utf8;
+	UStringView baseform;
 	if (reading->baseform) {
 		auto it = grammar->single_tags.find(reading->baseform);
 		if (it != grammar->single_tags.end()) {
-			auto& tag = it->second->tag;
-			if (tag.size() >= 2 && tag.front() == '"' && tag.back() == '"') {
-				baseform_utf8 = ustring_to_utf8(tag.substr(1, tag.size() - 2));
-			}
-			else {
-				baseform_utf8 = ustring_to_utf8(tag);
+			baseform = it->second->tag;
+			if (baseform.size() >= 2 && baseform.front() == '"' && baseform.back() == '"') {
+				baseform = baseform.substr(1, baseform.size() - 2);
 			}
 		}
 	}
-	json::Value l_val(baseform_utf8.c_str(), allocator);
-	reading_json.AddMember("l", l_val, allocator);
+	reading_json.AddMember("l", to_json(baseform, allocator), allocator);
 
 	json::Value tags_json(json::kArrayType);
 	buildJsonTags(reading, tags_json, allocator);
@@ -615,17 +803,28 @@ void JsonlApplicator::buildJsonReading(const Reading* reading, json::Value& read
 		reading_json.AddMember("ts", tags_json, allocator);
 	}
 
+	if (trace && !reading->hit_by.empty()) {
+		json::Value trace_json(json::kArrayType);
+		for (auto hit_by : reading->hit_by) {
+			std::ostringstream ss;
+			printTrace(ss, hit_by);
+			auto str = ss.str();
+			trace_json.PushBack(json::Value(str.c_str(), json::SizeType(str.size()), allocator), allocator);
+		}
+		reading_json.AddMember("tr", trace_json, allocator);
+	}
+
 	if (reading->next) {
 		json::Value sub_reading_obj(json::kObjectType);
-		buildJsonReading(reading->next, sub_reading_obj, allocator); // Recursively build next reading
-		if (!sub_reading_obj.ObjectEmpty()) {
-			reading_json.AddMember("s", sub_reading_obj, allocator);
-		}
+		buildJsonReading(reading->next, sub_reading_obj, allocator);
+		reading_json.AddMember("s", sub_reading_obj, allocator);
 	}
 }
 
 void JsonlApplicator::printCohort(Cohort* cohort, std::ostream& output, bool profiling) {
 	if (cohort->local_number == 0 || (cohort->type & CT_REMOVED)) {
+		// The cohort isn't printed, but the text that followed it is
+		printText(cohort->text, output);
 		return;
 	}
 
@@ -637,98 +836,108 @@ void JsonlApplicator::printCohort(Cohort* cohort, std::ostream& output, bool pro
 	doc.SetObject();
 	auto& allocator = doc.GetAllocator();
 
-	auto& wform_tag = cohort->wordform->tag;
-	std::string wform_utf8;
-	if (wform_tag.size() >= 4 && wform_tag.substr(0, 2) == u"\"<" && wform_tag.substr(wform_tag.size() - 2) == u">\"") {
-		wform_utf8 = ustring_to_utf8(wform_tag.substr(2, wform_tag.size() - 4));
+	UStringView wform = cohort->wordform->tag;
+	if (wform.size() >= 4 && wform.substr(0, 2) == u"\"<" && wform.substr(wform.size() - 2) == u">\"") {
+		wform = wform.substr(2, wform.size() - 4);
 	}
-	else {
-		wform_utf8 = ustring_to_utf8(wform_tag);
-	}
-	json::Value w_val(wform_utf8.c_str(), allocator);
-	doc.AddMember("w", w_val, allocator);
+	doc.AddMember("w", to_json(wform, allocator), allocator);
 
-	if (cohort->wread && !cohort->wread->tags_list.empty()) {
+	if (!cohort->wblank.empty()) {
+		doc.AddMember("wb", to_json(cohort->wblank, allocator), allocator);
+	}
+
+	if (cohort->wread) {
 		json::Value static_tags_json(json::kArrayType);
-		uint32SortedVector unique_sts;
-		for (const auto& tag_hash : cohort->wread->tags_list) {
-			if (cohort->wordform && tag_hash == cohort->wordform->hash) {
+		for (auto tter : cohort->wread->tags_list) {
+			if (tter == cohort->wordform->hash) {
 				continue;
 			}
-			if (unique_tags) {
-				if (unique_sts.find(tag_hash) != unique_sts.end()) {
-					continue;
-				}
-				unique_sts.insert(tag_hash);
-			}
-
-			auto it = grammar->single_tags.find(tag_hash);
-			if (it != grammar->single_tags.end()) {
-				auto tag_ptr = it->second;
-				if (tag_ptr) {
-					auto sts_tag_utf8 = ustring_to_utf8(tag_ptr->tag);
-					json::Value sts_tag_val(sts_tag_utf8.c_str(), allocator);
-					static_tags_json.PushBack(sts_tag_val, allocator);
-				}
-			}
+			static_tags_json.PushBack(to_json(grammar->single_tags[tter]->tag, allocator), allocator);
 		}
 		if (!static_tags_json.Empty()) {
 			doc.AddMember("sts", static_tags_json, allocator);
 		}
 	}
 
-	if (!cohort->text.empty()) {
-		auto z_text = cohort->text;
-		if (!z_text.empty() && z_text.back() == u'\n') {
-			z_text.pop_back();
+	if (!cohort->text.empty() && cohort->text.find_first_not_of(ws) != UString::npos) {
+		UStringView text = cohort->text;
+		if (ISNL(text.back())) {
+			text.remove_suffix(1);
 		}
-		if (!z_text.empty()) {
-			auto z_utf8 = ustring_to_utf8(z_text);
-			json::Value z_val(z_utf8.c_str(), allocator);
-			doc.AddMember("z", z_val, allocator);
+		doc.AddMember("z", to_json(text, allocator), allocator);
+	}
+
+	// Same numbering as GrammarApplicator::printReading(), except that the root is always 0 and "dp" is left out when there is no parent
+	if (has_dep) {
+		Cohort* pr = nullptr;
+		if (cohort->dep_parent != DEP_NO_PARENT) {
+			if (cohort->dep_parent == 0) {
+				pr = cohort->parent->cohorts[0];
+			}
+			else {
+				auto it = gWindow->cohort_map.find(cohort->dep_parent);
+				if (it != gWindow->cohort_map.end()) {
+					pr = it->second;
+				}
+			}
+		}
+		if (dep_absolute || dep_has_spanned) {
+			doc.AddMember("ds", cohort->global_number, allocator);
+			if (pr) {
+				doc.AddMember("dp", pr->local_number == 0 ? 0 : pr->global_number, allocator);
+			}
+		}
+		else {
+			doc.AddMember("ds", cohort->local_number, allocator);
+			if (pr) {
+				doc.AddMember("dp", pr->local_number, allocator);
+			}
 		}
 	}
 
-	if (has_dep && !(cohort->type & CT_REMOVED)) {
-		auto self_id = (cohort->dep_self == 0) ? cohort->global_number : cohort->dep_self;
-		doc.AddMember("ds", self_id, allocator);
-		if (cohort->dep_parent != DEP_NO_PARENT) {
-			doc.AddMember("dp", cohort->dep_parent, allocator);
+	// Every cohort gets an ID when relations are in use, so relation targets can always be found; "rels" marks related cohorts
+	if (has_relations || print_ids) {
+		doc.AddMember("id", cohort->global_number, allocator);
+	}
+	if (cohort->type & CT_RELATED) {
+		json::Value rels_json(json::kObjectType);
+		for (const auto& rel : cohort->relations) {
+			json::Value targets(json::kArrayType);
+			for (auto target : rel.second) {
+				targets.PushBack(target, allocator);
+			}
+			rels_json.AddMember(to_json(grammar->single_tags[rel.first]->tag, allocator), targets, allocator);
 		}
+		doc.AddMember("rels", rels_json, allocator);
 	}
 
 	std::sort(cohort->readings.begin(), cohort->readings.end(), Reading::cmp_number);
 
 	json::Value readings_json(json::kArrayType);
-	for (auto& reading : cohort->readings) {
+	for (auto reading : cohort->readings) {
 		if (reading->noprint) {
 			continue;
 		}
 		json::Value reading_json(json::kObjectType);
 		buildJsonReading(reading, reading_json, allocator);
-		if (!reading_json.ObjectEmpty()) {
-			readings_json.PushBack(reading_json, allocator);
-		}
-
-		if (!profiling) {
-			// In non-profiling mode, typically only the first (best) reading is printed.
-			// The schema allows multiple readings, so we keep this behavior for now.
-			// If only the single best reading should be output, uncomment the break.
-			// break;
-		}
+		readings_json.PushBack(reading_json, allocator);
 	}
 	if (!readings_json.Empty()) {
 		doc.AddMember("rs", readings_json, allocator);
 	}
 
-	if (!cohort->deleted.empty()) {
+	// Same condition as the CG writer
+	if (trace && !trace_no_removed) {
 		json::Value deleted_readings_json(json::kArrayType);
+		std::sort(cohort->delayed.begin(), cohort->delayed.end(), Reading::cmp_number);
 		std::sort(cohort->deleted.begin(), cohort->deleted.end(), Reading::cmp_number);
-		for (const auto& reading : cohort->deleted) {
-			// TODO Assuming deleted readings should always be included if present, regardless of noprint flag?
-			json::Value reading_json(json::kObjectType);
-			buildJsonReading(reading, reading_json, allocator);
-			if (!reading_json.ObjectEmpty()) {
+		for (auto list : { &cohort->delayed, &cohort->deleted }) {
+			for (auto reading : *list) {
+				if (reading->noprint) {
+					continue;
+				}
+				json::Value reading_json(json::kObjectType);
+				buildJsonReading(reading, reading_json, allocator);
 				deleted_readings_json.PushBack(reading_json, allocator);
 			}
 		}
@@ -737,21 +946,16 @@ void JsonlApplicator::printCohort(Cohort* cohort, std::ostream& output, bool pro
 		}
 	}
 
-	json::StringBuffer buffer;
-	json::Writer<json::StringBuffer> writer(buffer);
-	doc.Accept(writer);
-
-	output << buffer.GetString() << "\n";
+	write_json_line(doc, output);
 	output.flush();
 }
 
-void JsonlApplicator::printSingleWindow(SingleWindow* window, std::ostream& output, bool profiling) {
-	// Print variables as commands first
-	for (auto var : window->variables_output) {
+void JsonlApplicator::printVariables(const uint32SortedVector& vars_output, const uint32FlatHashMap& vars_set, std::ostream& output) {
+	for (auto var : vars_output) {
 		auto key = grammar->single_tags[var];
-		auto iter = window->variables_set.find(var);
+		auto iter = vars_set.find(var);
 		UString cmd_buf;
-		if (iter != window->variables_set.end()) {
+		if (iter != vars_set.end()) {
 			if (iter->second != grammar->tag_any) {
 				auto value = grammar->single_tags[iter->second];
 				cmd_buf.append(STR_CMD_SETVAR).append(key->tag).append(u"=").append(value->tag).append(u">");
@@ -765,59 +969,55 @@ void JsonlApplicator::printSingleWindow(SingleWindow* window, std::ostream& outp
 		}
 		printStreamCommand(cmd_buf, output);
 	}
+}
 
-	// Print pre-text
-	if (!window->text.empty()) {
-		printPlainTextLine(window->text, output);
-	}
+void JsonlApplicator::printSingleWindow(SingleWindow* window, std::ostream& output, bool profiling) {
+	printVariables(window->variables_output, window->variables_set, output);
+
+	printText(window->text, output);
 
 	for (auto& cohort : window->all_cohorts) {
 		printCohort(cohort, output, profiling);
 	}
 
-	// Print post-text
-	if (!window->text_post.empty()) {
-		printPlainTextLine(window->text_post, output);
-	}
+	printText(window->text_post, output);
 
-	// Print flush command if needed
 	if (window->flush_after) {
 		printStreamCommand(STR_CMD_FLUSH, output);
 	}
+	u_fflush(output);
 }
 
 void JsonlApplicator::printStreamCommand(UStringView cmd, std::ostream& output) {
 	json::Document doc;
 	doc.SetObject();
-	json::Document::AllocatorType& allocator = doc.GetAllocator();
-
-	auto cmd_utf8 = ustring_to_utf8(cmd);
-	json::Value cmd_val(cmd_utf8.c_str(), allocator);
-	doc.AddMember("cmd", cmd_val, allocator);
-
-	json::StringBuffer buffer;
-	json::Writer<json::StringBuffer> writer(buffer);
-	doc.Accept(writer);
-
-	output << buffer.GetString() << "\n";
+	doc.AddMember("cmd", to_json(cmd, doc.GetAllocator()), doc.GetAllocator());
+	write_json_line(doc, output);
 }
 
+// Skips text that is only whitespace, like the CG writer
+void JsonlApplicator::printText(const UString& text, std::ostream& output) {
+	if (!text.empty() && text.find_first_not_of(ws) != UString::npos) {
+		printPlainTextLine(text, output);
+	}
+}
+
+// Writes one {"t":...} object per line of text, without the newlines
 void JsonlApplicator::printPlainTextLine(UStringView line, std::ostream& output) {
-	// Ensure the input 'line' doesn't contain newlines if it represents a single logical line,
-	// unless that newline is intended to be part of the output.
-	json::Document doc;
-	doc.SetObject();
-	json::Document::AllocatorType& allocator = doc.GetAllocator();
-
-	auto line_utf8 = ustring_to_utf8(line);
-	json::Value t_val(line_utf8.c_str(), allocator);
-	doc.AddMember("t", t_val, allocator);
-
-	json::StringBuffer buffer;
-	json::Writer<json::StringBuffer> writer(buffer);
-	doc.Accept(writer);
-
-	output << buffer.GetString() << "\n";
+	if (!line.empty() && ISNL(line.back())) {
+		line.remove_suffix(1);
+	}
+	for (;;) {
+		auto nl = line.find('\n');
+		json::Document doc;
+		doc.SetObject();
+		doc.AddMember("t", to_json(line.substr(0, nl), doc.GetAllocator()), doc.GetAllocator());
+		write_json_line(doc, output);
+		if (nl == UStringView::npos) {
+			break;
+		}
+		line.remove_prefix(nl + 1);
+	}
 }
 
-} // namespace CG3
+}

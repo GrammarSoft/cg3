@@ -35,6 +35,8 @@ my @unlinks = (
 	'output.out.txt',
 	'untraced.txt',
 	'untraced.out.txt',
+	'diff.jsonl.txt',
+	'output.jsonl.txt',
 	);
 my $binary = "vislcg3";
 
@@ -99,6 +101,21 @@ sub run_pl {
 	`diff -B expected.bsf.txt output.bsf.txt >diff.bsf.txt`;
 
 	if (-s "diff.bsf.txt") {
+		print STDERR "Fail ";
+		$good = 0;
+	} else {
+		print STDERR "Success ";
+	}
+
+	# Normal run, but with JSONL I/O; skip-jsonl.txt says why a test can't round-trip
+	if (-e 'skip-jsonl.txt') {
+		print STDERR "Skip\n";
+		return $good;
+	}
+	`cat input.txt | "$binary" $args --in-cg --out-jsonl -g grammar.bsf.cg3 2>stderr.jsonl.conv1.txt | "$binary" $args $override -g grammar.cg3 --in-jsonl --out-jsonl 2>stderr.jsonl.vislcg3.txt | "$binary" $args --in-jsonl --out-cg -g grammar.bsf.cg3 2>stderr.jsonl.conv2.txt | "$bindir/../scripts/cg-untrace" | "$bindir/../scripts/cg-sort" -m '$prefix' | "$bindir/../scripts/cg-stabilize-relations" >output.jsonl.txt`;
+	`diff -B expected.bsf.txt output.jsonl.txt >diff.jsonl.txt`;
+
+	if (-s "diff.jsonl.txt") {
 		print STDERR "Fail";
 		$good = 0;
 	} else {

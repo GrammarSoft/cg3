@@ -68,6 +68,8 @@ Options:
  -p, --prefix               sets the mapping prefix; defaults to @
      --unicode-tags         outputs Unicode code points for things like -&gt;
      --unique-tags          outputs unique tags only once per reading
+     --print-ids            always output IDs
+     --print-dep            always output dependencies
      --num-windows          number of windows to keep in before/ahead buffers; defaults to 2
      --always-span          forces scanning tests to always span across window boundaries
      --soft-limit           number of cohorts after which the SOFT-DELIMITERS kick in; defaults to 300
@@ -87,7 +89,22 @@ Options:
      --show-tag-hashes      prints a list of tags and their hashes as they are parsed during the run
      --show-set-hashes      prints a list of sets and their hashes; implies --grammar-only
      --dump-ast             prints the grammar parse tree; implies --grammar-only
- -B, --no-break             inhibits any extra whitespace in output
+     --no-break             inhibits any extra whitespace in output
+     --in-cg                sets input format to CG (default)
+     --in-niceline          sets input format to Niceline CG
+     --in-apertium          sets input format to Apertium
+     --in-fst               sets input format to HFST/XFST
+     --in-plain             sets input format to plain text
+     --in-jsonl             sets input format to JSONL; see cg-conv --help for the format
+     --in-binary            sets input format to binary
+     --out-cg               sets output format to CG (default)
+     --out-apertium         sets output format to Apertium
+     --out-fst              sets output format to HFST/XFST
+     --out-matxin           sets output format to Matxin
+     --out-niceline         sets output format to Niceline CG
+     --out-plain            sets output format to plain text
+     --out-jsonl            sets output format to JSONL; see cg-conv --help for the format
+     --out-binary           sets output format to binary
     </screen>
   </section>
 
@@ -95,8 +112,8 @@ Options:
     <title>cg-conv</title>
     <para>
       cg-conv converts between <link linkend="streamformats">stream formats</link>.
-      It can currently convert from any of CG, Niceline CG, Apertium, HFST/XFST, and plain text formats,
-      turning them into CG, Niceline CG, Apertium, or plain text formats.
+      It can currently convert from any of CG, Niceline CG, Apertium, HFST/XFST, plain text, <link linkend="stream-jsonl">JSONL</link>, and <link linkend="stream-binary">binary</link> formats,
+      turning them into CG, Niceline CG, Apertium, HFST/XFST, Matxin, plain text, JSONL, or binary formats.
       By default it tries to auto-detect the input format and convert that to CG.
       Currently only meant for use in a pipe.
     </para>
@@ -117,6 +134,8 @@ Options:
  -a, --in-apertium   sets input format to Apertium
  -f, --in-fst        sets input format to HFST/XFST
  -x, --in-plain      sets input format to plain text
+ -j, --in-jsonl      sets input format to JSONL (specs below)
+ -z, --in-binary     sets input format to binary
      --add-tags      adds minimal analysis to readings (implies -x)
  -C, --out-cg        sets output format to CG (default)
  -A, --out-apertium  sets output format to Apertium
@@ -124,6 +143,8 @@ Options:
  -M, --out-matxin    sets output format to Matxin
  -N, --out-niceline  sets output format to Niceline CG
  -X, --out-plain     sets output format to plain text
+ -J, --out-jsonl     sets output format to JSONL (specs below)
+ -Z, --out-binary    sets output format to binary
  -W, --wfactor       FST weight factor (defaults to 1.0)
      --wtag          FST weight tag prefix (defaults to W)
  -S, --sub-delim     FST sub-reading delimiters (defaults to #)
@@ -131,9 +152,26 @@ Options:
  -l, --ltr           sets sub-reading direction to LTR
  -o, --ordered       tag order matters mode
  -D, --parse-dep     parse dependency (defaults to treating as normal tags)
+     --dep-delimit   delimit windows based on dependency; defaults to 10
      --unicode-tags  outputs Unicode code points for things like -&gt;
      --deleted       read deleted readings as such, instead of as text
  -B, --no-break      inhibits any extra whitespace in output
+
+
+Keys for JSONL format (one JSON object per line; full spec in the manual):
+===============================================================================
+Cohort:                     Reading:                   Stream command:
+    w  wordform, no "&lt;&gt;"        l  baseform, no ""       cmd  &lt;STREAMCMD:...&gt;
+   wb  word-bound blank        ts  tags, incl. mapping
+  sts  static tags              s  sub-reading         Plain text:
+   rs  readings                tr  rule trace              t  one line of text
+  drs  deleted readings
+   ds  dependency self
+   dp  dependency parent
+   id  cohort ID
+ rels  relations
+    z  text after cohort
+===============================================================================
     </screen>
   </section>
 

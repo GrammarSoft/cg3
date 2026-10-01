@@ -1,0 +1,22 @@
+Text before the first cohort
+<STREAMCMD:SETVAR:a=1,b,c=two>
+"<The>" <static> "static baseform"
+	"the" DET @>N #1->2
+"<cats>"
+	"cat" N PL @SUBJ> @OBJ> #2->3
+;	"cat" V PRES #2->3
+Text after cats
+
+  indented text
+"<haven't>"
+	"not" ADV #3->0
+		"have" V PRES
+"<.>"
+	"." CLB #4->3
+<STREAMCMD:REMVAR:b,c>
+<STREAMCMD:FLUSH>
+"<Ünïcode>"
+	"ünïcode" N "quoted tag" #1->0
+"<$.>"
+	"$." CLB #2->1
+Trailing text
