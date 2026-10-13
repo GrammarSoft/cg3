@@ -1,1 +1,2 @@
 ^Aa Bb/Aa Bb<cgguess><np><ant>$
+[[t:a:a; t:b:b; t:c:c]]^Aa Bb/Aa Bb<cgguess><np><ant>$

@@ -1129,6 +1129,11 @@ uint32_t GrammarApplicator::runRulesOnSingleWindow(SingleWindow& current, const 
 						cCohort->type |= CT_RELATED;
 					}
 				}
+				for (auto c : *withs) {
+					if (c->wblank.size() > cCohort->wblank.size()) {
+						cCohort->wblank = c->wblank;
+					}
+				}
 				for (auto c : current.all_cohorts) {
 					if (ps.count(c->dep_parent)) {
 						attachParentChild(*cCohort, *c);

@@ -1,1 +1,2 @@
 ^Aa/Aa<np><ant>$ ^Bb/Bb<np><cog><Aa><@app>$
+[[t:a:a; t:b:b]]^Aa/Aa<np><ant>$ [[t:a:a; t:b:b; t:c:c]]^Bb/Bb<np><cog><Aa><@app>$
