@@ -162,12 +162,18 @@ void FSTApplicator::runGrammarOnText(std::istream& input, std::ostream& output) 
 					}
 					buf[i] = 0;
 					if (strcmp(buf, "inf") == 0) {
-						i = sprintf(buf, "%f", NUMERIC_MAX);
+						i = snprintf(buf, sizeof(buf), "%f", NUMERIC_MAX);
 					}
 					else {
 						weight = strtof(buf, 0);
 						weight *= wfactor;
-						i = sprintf(buf, "%f", weight);
+						i = snprintf(buf, sizeof(buf), "%f", weight);
+					}
+					// A large finite weight expands to more than sizeof(buf) chars under %f;
+					// snprintf truncates but returns the length it wanted, so clamp i before
+					// it is used as a copy length below (otherwise the copy reads past buf).
+					if (i >= sizeof(buf)) {
+						i = sizeof(buf) - 1;
 					}
 					wtag_buf.clear();
 					wtag_buf.reserve(wtag.size() + i + 3);
