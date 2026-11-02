@@ -58,29 +58,23 @@
   <section id="fedora">
     <title>Fedora / Red Hat / CentOS / OpenSUSE</title>
     <para>
-      For any currently supported version of these RPM-based distros or compatible derivatives thereof, there is a
-      <ulink url="https://build.opensuse.org/project/show/home:TinoDidriksen:nightly">ready-made nightly repository</ulink>,
-      installable via e.g.
-      <screen>
-        wget https://apertium.projectjj.com/rpm/install-nightly.sh -O - | sudo bash
-        yum check-upgrade
-        yum install cg3
-      </screen>
-      See <ulink url="https://en.opensuse.org/openSUSE:Build_Service_Enduser_Info">openSUSE:Build_Service_Enduser_Info</ulink>
-      for how to use on other distros.
-      Rest of this page can be skipped.
+      Steps tested on a clean install of Fedora 44, but should work on any version.
     </para>
     <para>
-      Steps tested on a clean install of CentOS 6.3, but should work on any version.
-      It is assumed you have a working network connection.
+      Ensure that either <code>/etc/ld.so.conf</code> or one of the files in <code>/etc/ld.so.conf.d/</code>
+      contain <code>/usr/local/lib</code> and <code>/usr/local/lib64</code>. If none do, create a file <code>/etc/ld.so.conf.d/usr-local.conf</code> (this requires superuser/root) with contents:
+      <screen>
+        /usr/local/lib
+        /usr/local/lib64
+      </screen>
     </para>
     <para>
       Launch a Terminal from Applications -&gt; System Tools, and in that do
       <screen>
         su -
-        yum install gcc-c++ libicu-devel subversion cmake boost-devel make
+        dnf install git gcc-c++ libicu-devel cmake boost-devel make sqlite-devel rapidjson-devel perl
         cd /tmp/
-        git clone https://github.com/GrammarSoft/cg3
+        git clone --depth 1 https://github.com/GrammarSoft/cg3
         cd cg3/
         ./cmake.sh
         make -j3
